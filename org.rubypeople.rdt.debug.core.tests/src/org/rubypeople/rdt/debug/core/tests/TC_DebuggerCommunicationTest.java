@@ -41,7 +41,7 @@ public class TC_DebuggerCommunicationTest extends TestCase {
 		//suite.addTest(new TC_DebuggerCommunicationTest("testThreadIdsAndResume"));
 		//suite.addTest(new TC_DebuggerCommunicationTest("testThreadsAndFrames"));		
 		//suite.addTest(new TC_DebuggerCommunicationTest("testStepOver"));		
-		suite.addTest(new TC_DebuggerCommunicationTest("testThreadFramesAndVariables"));
+		//suite.addTest(new TC_DebuggerCommunicationTest("testThreadFramesAndVariables"));
 		//suite.addTest(new TC_DebuggerCommunicationTest("testVariableNil"));
 		//suite.addTest(new TC_DebuggerCommunicationTest("testVariableInstanceNested"));				
 		//suite.addTest(new TC_DebuggerCommunicationTest("testStaticVariableInstanceNested"));			
@@ -59,6 +59,8 @@ public class TC_DebuggerCommunicationTest extends TestCase {
 		//suite.addTest(new TC_DebuggerCommunicationTest("testVariableHashWithObjectKeys"));
 		//suite.addTest(new TC_DebuggerCommunicationTest("testVariableHashWithStringKeys"));
 		//suite.addTest(new TC_DebuggerCommunicationTest("testVariableWithXmlContent"));
+		  suite.addTest(new TC_DebuggerCommunicationTest("testVariableLocal"));
+
 		return suite;
 	}
 	*/
@@ -134,7 +136,7 @@ public class TC_DebuggerCommunicationTest extends TestCase {
 		if (binDir.startsWith("/") && File.separatorChar == '\\') {
 			binDir = binDir.substring(1);
 		}
-		String cmd = TC_DebuggerCommunicationTest.RUBY_INTERPRETER + " -I " + binDir + "../../org.rubypeople.rdt.launching/ruby -I" + getTmpDir().replace('\\', '/') + " -reclipseDebug.rb " + getRubyTestFilename();
+		String cmd = TC_DebuggerCommunicationTest.RUBY_INTERPRETER + " -I " + binDir + "../../org.rubypeople.rdt.launching/ruby -I" + getTmpDir().replace('\\', '/') + " -reclipseDebugVerbose.rb " + getRubyTestFilename();
 		System.out.println("Starting: " + cmd);
 		process = Runtime.getRuntime().exec(cmd);
 		rubyStderrRedirectorThread = new OutputRedirectorThread(process.getErrorStream());
@@ -506,6 +508,24 @@ public class TC_DebuggerCommunicationTest extends TestCase {
 		out.println("cont");
 	}
 
+	public void testVariableLocal() throws Exception {
+		createSocket(new String[] { "class User", "def initialize(id)", "@id=id", "end", "end", 
+				"class CallClass", "def method(user)", 	"puts user", "end", "end", 
+				"CallClass.new.method(User.new(22))" }) ;
+		runTo("test.rb", 8);
+		out.println("v local") ;
+		RubyVariable[] localVariables = getVariableReader().readVariables(createStackFrame());
+		assertEquals(2, localVariables.length);
+		RubyVariable userVariable = localVariables[1] ;
+		out.println("v i 1 " + userVariable.getObjectId());
+		RubyVariable[] userVariables = getVariableReader().readVariables(createStackFrame());
+		assertEquals(1, userVariables.length);
+		assertEquals("@id", userVariables[0].getName());
+		assertEquals("22", userVariables[0].getValue().getValueString());
+		assertEquals("Fixnum", userVariables[0].getValue().getReferenceTypeName());
+		assertTrue(!userVariables[0].getValue().hasVariables());
+	}		
+	
 	public void testVariableInstance() throws Exception {
 		createSocket(new String[] { "require 'test2.rb'", "customObject=Test2.new", "puts customObject" });
 		writeFile("test2.rb", new String[] { "class Test2", "def initialize", "@y=5", "end", "def to_s", "'test'", "end", "end" });
