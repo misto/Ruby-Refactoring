@@ -47,13 +47,21 @@
 	</builder>
 </extension>
    
+<!-- =================================================================================== -->
+<!-- Extension: Ruby File Types                                                          -->
+<!-- =================================================================================== -->
    <extension
          point="org.eclipse.team.core.fileTypes">
       <fileTypes
             type="text"
             extension="rb">
       </fileTypes>
+	<fileTypes
+            type="text"
+            extension="rbw">
+      </fileTypes>
    </extension>
+
    <extension
          id="problem"
          name="Ruby Problem"
@@ -77,5 +85,16 @@
             name="arguments">
       </attribute>
    </extension>
+
+<!-- =================================================================================== -->
+<!-- Extension: Ruby Content Types                                                       -->
+<!-- =================================================================================== -->
+<extension point="org.eclipse.core.runtime.contentTypes">
+	<!-- declares a content type for Ruby Source files -->
+	<content-type id="rubySource" name="%rubySourceName" 
+		base-type="org.eclipse.core.runtime.text"
+		priority="high"				
+		file-extensions="rb,rbw"/>
+</extension>
 
 </plugin>
