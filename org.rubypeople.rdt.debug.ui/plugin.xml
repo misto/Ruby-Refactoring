@@ -3,7 +3,7 @@
 <plugin
    id="org.rubypeople.rdt.debug.ui"
    name="%Plugin.name"
-   version="0.3.2"
+   version="0.4.0"
    provider-name="RubyPeople, Inc."
    class="org.rubypeople.rdt.internal.debug.ui.RdtDebugUiPlugin">
 
@@ -60,8 +60,8 @@
       <shortcut
             label="%LaunchShortcut.Ruby.label"
             icon="icons/full/ctool16/run_ruby.gif"
-            class="org.rubypeople.rdt.internal.debug.ui.launcher.RubyApplicationShortcut"
             modes="run, debug"
+            class="org.rubypeople.rdt.internal.debug.ui.launcher.RubyApplicationShortcut"
             id="org.rubypeople.rdt.debug.ui.applicationshortcut.ruby">
          <perspective
                id="org.eclipse.debug.ui.DebugPerspective">
@@ -118,18 +118,18 @@
          <action
                label="%showStaticVariables"
                style="toggle"
-               class="org.rubypeople.rdt.internal.debug.ui.actions.ShowStaticVariablesAction"
-               state="false"
                tooltip="showStaticAction.tooltip"
+               state="false"
+               class="org.rubypeople.rdt.internal.debug.ui.actions.ShowStaticVariablesAction"
                menubarPath="rubyActions"
                id="org.rubypeople.rdt.ui.variableViewActions.ShowStatic">
          </action>
          <action
                label="%showConstants"
                style="toggle"
-               class="org.rubypeople.rdt.internal.debug.ui.actions.ShowConstantsAction"
-               state="false"
                tooltip="showConstantAction.tooltip"
+               state="false"
+               class="org.rubypeople.rdt.internal.debug.ui.actions.ShowConstantsAction"
                menubarPath="rubyActions"
                id="org.rubypeople.rdt.ui.variableViewActions.ShowConstants">
          </action>
@@ -197,24 +197,24 @@
       </actionSetPartAssociation>
    </extension>
    -->
-   <!-- Context support -->
+<!-- Context support -->
    <extension
          point="org.eclipse.ui.contexts">
       <context
             name="Debugging Ruby"
             description="Debugging Ruby programs"
-            id="org.rubypeople.rdt.debug.ui.debugging"
-            parentId="org.eclipse.debug.ui.debugging">
+            parentId="org.eclipse.debug.ui.debugging"
+            id="org.rubypeople.rdt.debug.ui.debugging">
       </context>
    </extension>
    <extension
          point="org.eclipse.debug.ui.debugModelContextBindings">
       <modelContextBinding
-            contextId="org.rubypeople.rdt.debug.ui.debugging"
-            debugModelId="org.rubypeople.rdt.debug">
+            debugModelId="org.rubypeople.rdt.debug"
+            contextId="org.rubypeople.rdt.debug.ui.debugging">
       </modelContextBinding>
    </extension>
-   <!--
+<!--
    <extension
          point="org.eclipse.debug.ui.contextViewBindings">
       <contextViewBinding
