@@ -14,9 +14,9 @@ import org.eclipse.jface.text.rules.Token;
 import org.eclipse.jface.text.rules.WhitespaceRule;
 import org.eclipse.jface.text.rules.WordRule;
 import org.eclipse.swt.SWT;
-import org.rubypeople.rdt.internal.ui.rubyeditor.util.*;
-
-import sun.security.krb5.internal.i;
+import org.rubypeople.rdt.internal.ui.rubyeditor.util.RubyColorProvider;
+import org.rubypeople.rdt.internal.ui.rubyeditor.util.RubyWhitespaceDetector;
+import org.rubypeople.rdt.internal.ui.rubyeditor.util.RubyWordDetector;
 
 public class RubyCodeScanner extends RuleBasedScanner {
 	protected String[] keywords;

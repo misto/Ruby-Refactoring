@@ -1,4 +1,4 @@
-package org.rubypeople.rdt.internal.ui.rubyeditor.ruby;
+package org.rubypeople.rdt.internal.ui.text;
 
 import java.util.ArrayList;
 import java.util.List;

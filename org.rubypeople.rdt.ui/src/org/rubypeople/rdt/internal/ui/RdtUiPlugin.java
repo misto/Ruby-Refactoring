@@ -11,12 +11,15 @@ import org.eclipse.core.runtime.Status;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
+import org.rubypeople.rdt.internal.ui.text.RubyTextTools;
 
 public class RdtUiPlugin extends AbstractUIPlugin {
 	protected static RdtUiPlugin plugin;
 	
 	public static final String PLUGIN_ID = "org.rubypeople.rdt.ui"; //$NON-NLS-1$
 	public static final String RUBY_RESOURCES_VIEW_ID = PLUGIN_ID + ".ViewRubyResources"; //$NON-NLS-1$
+
+	protected RubyTextTools textTools;
 
 	public RdtUiPlugin(IPluginDescriptor descriptor) {
 		super(descriptor);
@@ -45,5 +48,13 @@ public class RdtUiPlugin extends AbstractUIPlugin {
 	
 	public static Shell getActiveWorkbenchShell() {
 		return getActiveWorkbenchWindow().getShell();
+	}
+	
+	public RubyTextTools getTextTools() {
+		if (textTools == null) {
+			textTools = new RubyTextTools();
+		}
+
+		return textTools;
 	}
 }
