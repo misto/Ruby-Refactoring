@@ -89,7 +89,7 @@ public class TC_DebuggerCommunicationTest extends TestCase {
 	}
 
 	public void startRubyProcess() throws Exception {
-		String cmd = "ruby -I" + TMP_DIR.replace('\\', '/') + " -reclipseDebug.rb " + this.getRubyTestFilename();
+		String cmd = "rubyw -I" + TMP_DIR.replace('\\', '/') + " -reclipseDebug.rb " + this.getRubyTestFilename();
 		System.out.println("Starting: " + cmd);
 		process = Runtime.getRuntime().exec(cmd);
 		rubyStderrRedirectorThread = new OutputRedirectorThread(process.getErrorStream());
