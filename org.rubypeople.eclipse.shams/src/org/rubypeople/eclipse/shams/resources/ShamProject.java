@@ -14,6 +14,7 @@ import org.eclipse.core.resources.IProjectNature;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IResourceVisitor;
 import org.eclipse.core.resources.IWorkspace;
+import org.eclipse.core.resources.ResourceAttributes;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IPluginDescriptor;
@@ -287,32 +288,49 @@ public class ShamProject extends ShamResource implements IProject {
 	 * @see org.eclipse.core.resources.IContainer#getDefaultCharset()
 	 */
 	public String getDefaultCharset() throws CoreException {
-		// TODO Auto-generated method stub
-		return null;
+		throw new RuntimeException("Need to implement on sham.");
 	}
 
 	/* (non-Javadoc)
 	 * @see org.eclipse.core.resources.IContainer#setDefaultCharset(java.lang.String)
 	 */
 	public void setDefaultCharset(String charset) throws CoreException {
-		// TODO Auto-generated method stub
-		
+		throw new RuntimeException("Need to implement on sham.");		
 	}
 
 	/* (non-Javadoc)
 	 * @see org.eclipse.core.resources.IProject#getWorkingLocation(java.lang.String)
 	 */
 	public IPath getWorkingLocation(String id) {
-		// TODO Auto-generated method stub
-		return null;
+		throw new RuntimeException("Need to implement on sham.");
 	}
 
 	/* (non-Javadoc)
 	 * @see org.eclipse.core.resources.IContainer#getDefaultCharset(boolean)
 	 */
 	public String getDefaultCharset(boolean checkImplicit) throws CoreException {
-		// TODO Auto-generated method stub
-		return null;
+		throw new RuntimeException("Need to implement on sham.");
+	}
+
+	/* (non-Javadoc)
+	 * @see org.eclipse.core.resources.IProject#open(int, org.eclipse.core.runtime.IProgressMonitor)
+	 */
+	public void open(int updateFlags, IProgressMonitor monitor) throws CoreException {
+		throw new RuntimeException("Need to implement on sham.");
+	}
+
+	/* (non-Javadoc)
+	 * @see org.eclipse.core.resources.IResource#getResourceAttributes()
+	 */
+	public ResourceAttributes getResourceAttributes() {
+		throw new RuntimeException("Need to implement on sham.");
+	}
+
+	/* (non-Javadoc)
+	 * @see org.eclipse.core.resources.IResource#setResourceAttributes(org.eclipse.core.resources.ResourceAttributes)
+	 */
+	public void setResourceAttributes(ResourceAttributes attributes) throws CoreException {
+		throw new RuntimeException("Need to implement on sham.");
 	}
 
 }

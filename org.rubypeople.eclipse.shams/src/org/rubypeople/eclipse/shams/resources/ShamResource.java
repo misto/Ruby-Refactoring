@@ -8,6 +8,7 @@ import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IResourceProxyVisitor;
 import org.eclipse.core.resources.IResourceVisitor;
 import org.eclipse.core.resources.IWorkspace;
+import org.eclipse.core.resources.ResourceAttributes;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -225,28 +226,37 @@ public class ShamResource implements IResource {
 	 * @see org.eclipse.core.resources.IResource#accept(org.eclipse.core.resources.IResourceProxyVisitor, int)
 	 */
 	public void accept(IResourceProxyVisitor arg0, int arg1) throws CoreException {
-		// TODO Auto-generated method stub
-
+		throw new RuntimeException("Need to implement on sham.");
 	}
 
 	public long getLocalTimeStamp() {
-		// TODO Auto-generated method stub
-		return 0;
+		throw new RuntimeException("Need to implement on sham.");
 	}
 
 	public long setLocalTimeStamp(long value) throws CoreException {
-		// TODO Auto-generated method stub
-		return 0;
+		throw new RuntimeException("Need to implement on sham.");
 	}
 
 	public boolean contains(ISchedulingRule rule) {
-		// TODO Auto-generated method stub
-		return false;
+		throw new RuntimeException("Need to implement on sham.");
 	}
 
 	public boolean isConflicting(ISchedulingRule rule) {
-		// TODO Auto-generated method stub
-		return false;
+		throw new RuntimeException("Need to implement on sham.");
+	}
+
+	/* (non-Javadoc)
+	 * @see org.eclipse.core.resources.IResource#getResourceAttributes()
+	 */
+	public ResourceAttributes getResourceAttributes() {
+		throw new RuntimeException("Need to implement on sham.");
+	}
+
+	/* (non-Javadoc)
+	 * @see org.eclipse.core.resources.IResource#setResourceAttributes(org.eclipse.core.resources.ResourceAttributes)
+	 */
+	public void setResourceAttributes(ResourceAttributes attributes) throws CoreException {
+		throw new RuntimeException("Need to implement on sham.");
 	}
 
 }

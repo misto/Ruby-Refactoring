@@ -139,4 +139,8 @@ public class ShamIPath implements IPath {
 		return path;
 	}
 
+	public String toPortableString() {
+		throw new RuntimeException("Unimplemented method in sham");
+	}
+
 }

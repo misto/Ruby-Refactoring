@@ -147,56 +147,56 @@ public class ShamLaunchManager implements ILaunchManager {
 
 	public ISourcePathComputer newSourcePathComputer(ILaunchConfiguration configuration)
 		throws CoreException {
-		// TODO Auto-generated method stub
-		return null;
+		throw new RuntimeException("Need to implement on sham.");
 	}
 
 	/* (non-Javadoc)
 	 * @see org.eclipse.debug.core.ILaunchManager#getNativeEnvironment()
 	 */
 	public Map getNativeEnvironment() {
-		// TODO Auto-generated method stub
-		return null;
+		throw new RuntimeException("Need to implement on sham.");
 	}
 
 	/* (non-Javadoc)
 	 * @see org.eclipse.debug.core.ILaunchManager#getLaunchMode(java.lang.String)
 	 */
 	public ILaunchMode getLaunchMode(String mode) {
-		// TODO Auto-generated method stub
-		return null;
+		throw new RuntimeException("Need to implement on sham.");
 	}
 
 	/* (non-Javadoc)
 	 * @see org.eclipse.debug.core.ILaunchManager#getSourcePathComputer(org.eclipse.debug.core.ILaunchConfiguration)
 	 */
 	public ISourcePathComputer getSourcePathComputer(ILaunchConfiguration configuration) throws CoreException {
-		// TODO Auto-generated method stub
-		return null;
+		throw new RuntimeException("Need to implement on sham.");
 	}
 
 	/* (non-Javadoc)
 	 * @see org.eclipse.debug.core.ILaunchManager#getSourcePathComputer(java.lang.String)
 	 */
 	public ISourcePathComputer getSourcePathComputer(String id) {
-		// TODO Auto-generated method stub
-		return null;
+		throw new RuntimeException("Need to implement on sham.");
 	}
 
 	/* (non-Javadoc)
 	 * @see org.eclipse.debug.core.ILaunchManager#getSourceContainerTypes()
 	 */
 	public ISourceContainerType[] getSourceContainerTypes() {
-		// TODO Auto-generated method stub
-		return null;
+		throw new RuntimeException("Need to implement on sham.");
 	}
 
 	/* (non-Javadoc)
 	 * @see org.eclipse.debug.core.ILaunchManager#getSourceContainerType(java.lang.String)
 	 */
 	public ISourceContainerType getSourceContainerType(String id) {
-		// TODO Auto-generated method stub
-		return null;
+		throw new RuntimeException("Need to implement on sham.");
+	}
+
+	/* (non-Javadoc)
+	 * @see org.eclipse.debug.core.ILaunchManager#isRegistered(org.eclipse.debug.core.ILaunch)
+	 */
+	public boolean isRegistered(ILaunch launch) {
+		throw new RuntimeException("Need to implement on sham.");
 	}
 
 }
