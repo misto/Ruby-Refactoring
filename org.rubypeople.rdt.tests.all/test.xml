@@ -4,6 +4,7 @@
   <!-- The property ${eclipse-home} should be passed into this script -->
   <!-- Set a meaningful default value for when it is not. -->
   <property name="eclipse-home" value="D:\eclipse-3.0"/>
+  <property name="rdt-tests-workspace" value="D:\Temp\rdt-tests-workspace"/>
   <property name="org.rubypeople.tests" value="org.rubypeople.rdt.tests.all"/>
 
   <!-- sets the properties eclipse-home, and library-file -->
@@ -26,11 +27,11 @@
   <target name="suite">
     <property name="rdt-folder" 
               value="${eclipse-home}/rdt_folder"/>
-    <delete dir="${rdt-folder}" quiet="true"/>
+    <delete dir="${rdt-tests-workspace}" quiet="true"/>
   	<echo message="RDT-RubyInterpreter: ${rdt.rubyInterpreter}"/>
-	<echo message="rdt-folder: ${rdt-folder}"/>
+	<echo message="rdt-folder: ${rdt-tests-workspace}"/>
     <ant target="ui-test" antfile="${library-file}" dir="${eclipse-home}">
-      <property name="data-dir" value="${rdt-folder}"/>
+      <property name="data-dir" value="${rdt-tests-workspace}"/>
       <property name="plugin-name" value="${plugin-name}"/>
       <property name="classname" 
                 value="org.rubypeople.rdt.tests.all.TS_RdtAllTests"/>
