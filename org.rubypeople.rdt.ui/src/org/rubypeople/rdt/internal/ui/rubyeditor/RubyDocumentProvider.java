@@ -38,8 +38,8 @@ import org.rubypeople.rdt.core.IRubyScript;
 import org.rubypeople.rdt.core.RubyCore;
 import org.rubypeople.rdt.core.RubyModelException;
 import org.rubypeople.rdt.core.parser.IProblem;
-import org.rubypeople.rdt.internal.ui.RubyPluginImages;
 import org.rubypeople.rdt.internal.ui.RubyPlugin;
+import org.rubypeople.rdt.internal.ui.RubyPluginImages;
 import org.rubypeople.rdt.internal.ui.text.ruby.IProblemRequestorExtension;
 import org.rubypeople.rdt.ui.PreferenceConstants;
 
@@ -254,17 +254,19 @@ public class RubyDocumentProvider extends TextFileDocumentProvider {
 			// http://bugs.eclipse.org/bugs/show_bug.cgi?id=18936
 			if (!fQuickFixImagesInitialized) {
 				// TODO Check with the correction processor (when we have one)!
-//				if (isProblem() && indicateQuixFixableProblems() /*&& JavaCorrectionProcessor.hasCorrections(this)*/) { // no light bulb for tasks
-//					if (!fgQuickFixImagesInitialized) {
+				if (isProblem() && indicateQuixFixableProblems() /*&& JavaCorrectionProcessor.hasCorrections(this)*/) { // no light bulb for tasks
+					if (!fgQuickFixImagesInitialized) {
+						fgQuickFixImage= RubyPluginImages.get(RubyPluginImages.IMG_OBJS_WARNING);
+						fgQuickFixErrorImage= RubyPluginImages.get(RubyPluginImages.IMG_OBJS_ERROR);
 //						fgQuickFixImage= RubyPluginImages.get(RubyPluginImages.IMG_OBJS_FIXABLE_PROBLEM);
 //						fgQuickFixErrorImage= RubyPluginImages.get(RubyPluginImages.IMG_OBJS_FIXABLE_ERROR);
-//						fgQuickFixImagesInitialized= true;
-//					}
-//					if (RubyMarkerAnnotation.ERROR_ANNOTATION_TYPE.equals(getType()))
-//						fImage= fgQuickFixErrorImage;
-//					else
-//						fImage= fgQuickFixImage;
-//				}
+						fgQuickFixImagesInitialized= true;
+					}
+					if (RubyMarkerAnnotation.ERROR_ANNOTATION_TYPE.equals(getType()))
+						fImage= fgQuickFixErrorImage;
+					else
+						fImage= fgQuickFixImage;
+				}
 				fQuickFixImagesInitialized= true;
 			}
 		}
