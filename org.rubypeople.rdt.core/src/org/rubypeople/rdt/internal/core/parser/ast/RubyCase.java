@@ -23,18 +23,17 @@
  *  along with RDT; if not, write to the Free Software
  *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
-package org.rubypeople.rdt.internal.core.parser;
+package org.rubypeople.rdt.internal.core.parser.ast;
 
-public class RubyClassVariable extends RubyElement {
+import org.rubypeople.rdt.internal.core.parser.Position;
+
+public class RubyCase extends RubyBlock {
 
 	/**
-	 * @param name
 	 * @param lineNum
 	 * @param offset
 	 */
-	public RubyClassVariable(String name, int lineNum, int offset) {
-		super(name, new Position(lineNum, offset));
-		setEnd(lineNum, offset + name.length() - 1);
+	public RubyCase(int lineNum, int offset) {
+		super("case", new Position(lineNum, offset));
 	}
-
 }

@@ -23,15 +23,18 @@
  *  along with RDT; if not, write to the Free Software
  *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
-package org.rubypeople.rdt.internal.core.parser;
+package org.rubypeople.rdt.internal.core.parser.ast;
 
-public class RubyUntil extends RubyBlock {
+import org.rubypeople.rdt.internal.core.parser.Position;
+
+public class RubyDo extends RubyBlock {
 
 	/**
 	 * @param lineNum
 	 * @param offset
 	 */
-	public RubyUntil(int lineNum, int offset) {
-		super("until", new Position(lineNum, offset));
+	public RubyDo(int lineNum, int offset) {
+		super("do", new Position(lineNum, offset));
 	}
+
 }

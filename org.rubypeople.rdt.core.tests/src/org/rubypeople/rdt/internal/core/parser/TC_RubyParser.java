@@ -27,6 +27,24 @@ package org.rubypeople.rdt.internal.core.parser;
 
 import junit.framework.TestCase;
 
+import org.rubypeople.rdt.internal.core.parser.ast.RubyBegin;
+import org.rubypeople.rdt.internal.core.parser.ast.RubyCase;
+import org.rubypeople.rdt.internal.core.parser.ast.RubyClass;
+import org.rubypeople.rdt.internal.core.parser.ast.RubyClassVariable;
+import org.rubypeople.rdt.internal.core.parser.ast.RubyDo;
+import org.rubypeople.rdt.internal.core.parser.ast.RubyElement;
+import org.rubypeople.rdt.internal.core.parser.ast.RubyFor;
+import org.rubypeople.rdt.internal.core.parser.ast.RubyGlobal;
+import org.rubypeople.rdt.internal.core.parser.ast.RubyIf;
+import org.rubypeople.rdt.internal.core.parser.ast.RubyInstanceVariable;
+import org.rubypeople.rdt.internal.core.parser.ast.RubyMethod;
+import org.rubypeople.rdt.internal.core.parser.ast.RubyModule;
+import org.rubypeople.rdt.internal.core.parser.ast.RubyRequires;
+import org.rubypeople.rdt.internal.core.parser.ast.RubyScript;
+import org.rubypeople.rdt.internal.core.parser.ast.RubyUnless;
+import org.rubypeople.rdt.internal.core.parser.ast.RubyUntil;
+import org.rubypeople.rdt.internal.core.parser.ast.RubyWhile;
+
 /**
  * @author Chris
  * 
@@ -590,11 +608,11 @@ public class TC_RubyParser extends TestCase {
 		RubyClass rubyClass = script.getClass("Bob");
 		assertEquals(1, rubyClass.getElementCount());
 	}
-	
-	public void testDoBlockAsObject () throws Exception {
+
+	public void testDoBlockAsObject() throws Exception {
 		RubyScript script = RubyParser.parse("class Bob\ndef CGI::escape(string)\nstring.gsub(/([^ a-zA-Z0-9_.-]+)/n) do\n'%' + 1.unpack('H2' * 1.size).join('%').upcase\nend.tr(' ', '+')\nwhile true\nputs 'blah'\nend\nend\nend");
 		// expect a class
-		assertEquals(1, script.getElementCount() );
+		assertEquals(1, script.getElementCount());
 		RubyClass rubyClass = script.getClass("Bob");
 		// expect a method
 		assertEquals(1, rubyClass.getElementCount());
@@ -602,14 +620,14 @@ public class TC_RubyParser extends TestCase {
 		// expect a do block and begin block
 		assertEquals(2, method.getElementCount());
 	}
-	
+
 	public void testIgnoresNonSubstitutedClassVariableInPercentRRegex() throws Exception {
 		RubyScript script = RubyParser.parse("class Bob\ndef decode_b(str)\nstr.gsub!(%r|@@var|) {\ndecode64(1)\n}\nend\nend");
 		assertEquals(1, script.getElementCount());
 		RubyClass rubyClass = script.getClass("Bob");
 		assertEquals(1, rubyClass.getElementCount());
 	}
-	
+
 	public void testRecognizesSubstitutedClassVariableInPercentRRegex() throws Exception {
 		RubyScript script = RubyParser.parse("class Bob\ndef decode_b(str)\nstr.gsub!(%r|#{@@var}|) {\ndecode64(1)\n}\nend\nend");
 		assertEquals(1, script.getElementCount());
@@ -623,74 +641,52 @@ public class TC_RubyParser extends TestCase {
 		RubyClass rubyClass = script.getClass("Bob");
 		assertEquals(1, rubyClass.getElementCount());
 	}
-	
+
 	public void testRecognizesSubstitutedClassVariableInPercentQString() throws Exception {
 		RubyScript script = RubyParser.parse("class Bob\ndef decode_b(str)\nstr.gsub!(%q:#{@@var}:) {\ndecode64(1)\n}\nend\nend");
 		assertEquals(1, script.getElementCount());
 		RubyClass rubyClass = script.getClass("Bob");
 		assertEquals(2, rubyClass.getElementCount());
 	}
-	
+
 	public void testIgnoresNonSubstitutedClassVariableInPercentCapitalQString() throws Exception {
 		RubyScript script = RubyParser.parse("class Bob\ndef decode_b(str)\nstr.gsub!(%Q{@@var}) {\ndecode64(1)\n}\nend\nend");
 		assertEquals(1, script.getElementCount());
 		RubyClass rubyClass = script.getClass("Bob");
 		assertEquals(1, rubyClass.getElementCount());
 	}
-	
+
 	public void testClassVariable() throws Exception {
 		RubyScript script = RubyParser.parse("class Bob\ndef decode_b(str)\nstr.gsub!(@@var) {\ndecode64(1)\n}\nend\nend");
 		assertEquals(1, script.getElementCount());
 		RubyClass rubyClass = script.getClass("Bob");
 		assertEquals(2, rubyClass.getElementCount());
 	}
-	
-	public void testInPercentString() {
-		assertFalse(RubyParser.inPercentString('q', 1, "%q(blah) end"));
-		assertTrue(RubyParser.inPercentString('q', 4, "%q(blah) end"));
-		assertTrue(RubyParser.inPercentString('q', 8, "%q(bla\\)h) end"));
-		assertFalse(RubyParser.inPercentString('q', 9, "%q(blah) end"));
-		assertFalse(RubyParser.inPercentString('q', 8, "%q(blah) end"));
-	}
-	
-	public void testIsOpenBracket() {
-		assertTrue(RubyParser.isOpenBracket('('));
-		assertTrue(RubyParser.isOpenBracket('{'));
-		assertTrue(RubyParser.isOpenBracket('['));
-		assertFalse(RubyParser.isOpenBracket('1'));
-	}
-	
-	public void testGetMatchingBracket() {
-		assertEquals(']', RubyParser.getMatchingBracket('['));
-		assertEquals(')', RubyParser.getMatchingBracket('('));
-		assertEquals('}', RubyParser.getMatchingBracket('{'));
-		assertEquals('\n', RubyParser.getMatchingBracket('1'));
-	}
-	
+
 	public void testIgnoresNonSubstitutedClassVariableInPercentCapitalQStringWithEscapedEndChar() throws Exception {
 		RubyScript script = RubyParser.parse("class Bob\ndef decode_b(str)\nstr.gsub!(%Q(blah\\)blah@@var)) {\ndecode64(1)\n}\nend\nend");
 		assertEquals(1, script.getElementCount());
 		RubyClass rubyClass = script.getClass("Bob");
 		assertEquals(1, rubyClass.getElementCount());
 	}
-	
+
 	public void testRecognizesSubstitutedClassVariableInPercentCapitalQStringWithEscapedEndChar() throws Exception {
 		RubyScript script = RubyParser.parse("class Bob\ndef decode_b(str)\nstr.gsub!(%Q(blah\\)blah#{@@var})) {\ndecode64(1)\n}\nend\nend");
 		assertEquals(1, script.getElementCount());
 		RubyClass rubyClass = script.getClass("Bob");
 		assertEquals(2, rubyClass.getElementCount());
 	}
-	
+
 	public void testIgnoreRequireInString() throws Exception {
 		RubyScript script = RubyParser.parse("eval \"require \\\"irb/ws-for-case-2\\\"\", TOPLEVEL_BINDING, __FILE__, __LINE__");
 		assertEquals(0, script.getElementCount());
 	}
-	
+
 	public void testIgnoreRequireNameNotInQuotes() throws Exception {
 		RubyScript script = RubyParser.parse("require ARGV[0].gsub(/.+::/, '')");
-		assertEquals(0, script.getElementCount() );
+		assertEquals(0, script.getElementCount());
 	}
-	
+
 	public void testCreatesInstanceVarIfUnknownSymbolInAttrModifier() throws Exception {
 		RubyScript script = RubyParser.parse("module Bob\nattr_reader :var\nend\n");
 		assertEquals(1, script.getElementCount());
@@ -701,5 +697,18 @@ public class TC_RubyParser extends TestCase {
 		RubyInstanceVariable var = (RubyInstanceVariable) bob.getElement("@var");
 		assertEquals(RubyElement.READ, var.getAccess());
 	}
-	
+
+	public void testFalsePositiveClassDeclaration() throws Exception {
+		RubyScript script = RubyParser.parse("class Bob\ndef initialize(parser_class = nil)\n@parser = (parser_class ? parser_class : $XMLParser)\nend\nend");
+		assertEquals(2, script.getElementCount());
+	}
+
+	public void testRecognizesDoWithNamedLocalVariables() throws Exception {
+		RubyScript script = RubyParser.parse("class Bob\ndef xml2obj(port)\nparser.parse(port) do |type, name, data|\nend\nend\n@var\nend");
+		assertEquals(1, script.getElementCount());
+		RubyClass rubyClass = script.getClass("Bob");
+		assertNotNull(rubyClass.getElement("@var"));
+		assertEquals(2, rubyClass.getElementCount());
+	}
+
 }

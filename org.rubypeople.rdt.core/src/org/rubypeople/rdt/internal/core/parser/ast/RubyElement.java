@@ -23,12 +23,14 @@
  *  along with RDT; if not, write to the Free Software
  *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
-package org.rubypeople.rdt.internal.core.parser;
+package org.rubypeople.rdt.internal.core.parser.ast;
 
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
+
+import org.rubypeople.rdt.internal.core.parser.Position;
 
 /**
  * @author Chris
@@ -50,7 +52,7 @@ public class RubyElement implements IRubyElement {
 	public static final String WRITE = "write";
 	public static final String PROTECTED = "protected";
 
-	protected RubyElement(String name, Position start) {
+	public RubyElement(String name, Position start) {
 		this.start = start;
 		this.name = name;
 	}

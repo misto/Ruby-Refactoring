@@ -23,15 +23,10 @@
  *  along with RDT; if not, write to the Free Software
  *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
-package org.rubypeople.rdt.internal.core.parser;
+package org.rubypeople.rdt.internal.core.parser.ast;
 
-public class RubyIf extends RubyBlock {
-
-	/**
-	 * @param lineNum
-	 * @param offset
-	 */
-	public RubyIf(int lineNum, int offset) {
-		super("if", new Position(lineNum, offset));
-	}
+public interface IRubyElement {
+	String getName();
+	boolean hasElements();
+	Object[] getElements();
 }

@@ -8,12 +8,14 @@ package org.rubypeople.rdt.internal.core.parser;
 
 import junit.framework.TestCase;
 
+import org.rubypeople.rdt.internal.core.parser.ast.RubyClass;
+import org.rubypeople.rdt.internal.core.parser.ast.RubyElement;
 
 /**
  * @author Chris
- *
- * To change the template for this generated type comment go to
- * Window - Preferences - Java - Code Generation - Code and Comments
+ * 
+ * To change the template for this generated type comment go to Window -
+ * Preferences - Java - Code Generation - Code and Comments
  */
 public class TC_RubyParserStack extends TestCase {
 
@@ -21,38 +23,37 @@ public class TC_RubyParserStack extends TestCase {
 		RubyParserStack stack = new RubyParserStack();
 		RubyElement element = new RubyElement("fakeName", new Position(1, 1));
 		stack.push(element);
-		assertEquals( element, stack.peek());
+		assertEquals(element, stack.peek());
 	}
-	
+
 	public void testPeekEmptyStack() {
 		RubyParserStack stack = new RubyParserStack();
-		try { 
+		try {
 			stack.peek();
 			fail("Did not throw a StackEmptyException when peeking an empty stack");
-		}
-		catch (StackEmptyException e) {
+		} catch (StackEmptyException e) {
 			// ignore expected exception
 		}
 	}
-	
-	public void testPushAndPop() throws Exception {
+
+	public void testPushAndClose() throws Exception {
 		RubyParserStack stack = new RubyParserStack();
 		RubyElement element = new RubyElement("fakeName", new Position(1, 1));
 		stack.push(element);
-		assertEquals( element, stack.pop());
+		stack.closeLastOpenElement(2,3);
+		assertEquals(new Position(2, 3), element.getEnd());
 	}
-	
-	public void testPopEmptyStack() {
+
+	public void testCloseEmptyStack() {
 		RubyParserStack stack = new RubyParserStack();
-		try { 
-			stack.pop();
-			fail("Did not throw a StackEmptyException when popping an empty stack");
-		}
-		catch (StackEmptyException e) {
+		try {
+			stack.closeLastOpenElement(1, 1);
+			fail("Did not throw a StackEmptyException when closing an element on an empty stack");
+		} catch (StackEmptyException e) {
 			// ignore expected exception
 		}
 	}
-	
+
 	public void testPushAndClear() throws Exception {
 		RubyParserStack stack = new RubyParserStack();
 		RubyElement element = new RubyElement("fakeName", new Position(1, 1));
@@ -61,7 +62,7 @@ public class TC_RubyParserStack extends TestCase {
 		stack.clear();
 		assertTrue(stack.isEmpty());
 	}
-	
+
 	public void testFindParentClassOrModuleAtRoot() {
 		RubyParserStack stack = new RubyParserStack();
 		RubyClass element = new RubyClass("fakeName", 1, 1);
@@ -69,14 +70,14 @@ public class TC_RubyParserStack extends TestCase {
 		assertEquals(1, stack.size());
 		assertEquals(element, stack.findParentClassOrModule());
 	}
-	
+
 	public void testFindParentClassOrModuleAtEnd() {
 		RubyParserStack stack = new RubyParserStack();
-		stack.push(new RubyElement("fakeName", new Position(1,1)));
+		stack.push(new RubyElement("fakeName", new Position(1, 1)));
 		RubyClass element = new RubyClass("fakeName", 1, 1);
 		stack.push(element);
 		assertEquals(2, stack.size());
 		assertEquals(element, stack.findParentClassOrModule());
 	}
-	
+
 }

@@ -23,15 +23,17 @@
  *  along with RDT; if not, write to the Free Software
  *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
-package org.rubypeople.rdt.internal.core.parser;
+package org.rubypeople.rdt.internal.core.parser.ast;
 
-public class RubyWhile extends RubyBlock {
+import org.rubypeople.rdt.internal.core.parser.Position;
+
+public class RubyFor extends RubyBlock {
 
 	/**
 	 * @param lineNum
 	 * @param offset
 	 */
-	public RubyWhile(int lineNum, int offset) {
-		super("while", new Position(lineNum, offset));
+	public RubyFor(int lineNum, int offset) {
+		super("for", new Position(lineNum, offset));
 	}
 }

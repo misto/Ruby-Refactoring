@@ -23,15 +23,42 @@
  *  along with RDT; if not, write to the Free Software
  *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
-package org.rubypeople.rdt.internal.core.parser;
+package org.rubypeople.rdt.internal.core.parser.ast;
 
-public class RubyCase extends RubyBlock {
+import org.rubypeople.rdt.internal.core.parser.Position;
+
+public class RubyMethod extends RubyElement {
 
 	/**
+	 * @param name
 	 * @param lineNum
 	 * @param offset
 	 */
-	public RubyCase(int lineNum, int offset) {
-		super("case", new Position(lineNum, offset));
+	public RubyMethod(String name, int lineNum, int offset) {
+		super(name, new Position(lineNum, offset));
+		access = PUBLIC;
 	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.rubypeople.rdt.core.tests.core.parser.TDDRubyElement#equals(java.lang.Object)
+	 */
+	public boolean equals(Object arg0) {
+		if (arg0 instanceof RubyMethod) {
+			RubyMethod method = (RubyMethod) arg0;
+			return method.getName().equals(getName()) && (method.getStart().equals(getStart()));
+		}
+		return false;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.rubypeople.rdt.core.tests.core.parser.TDDRubyElement#hashCode()
+	 */
+	public int hashCode() {
+		return (getName() + getStart()).hashCode();
+	}
+
 }

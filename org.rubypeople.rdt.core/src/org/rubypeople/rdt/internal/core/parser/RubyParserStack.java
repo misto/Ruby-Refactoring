@@ -28,6 +28,8 @@ package org.rubypeople.rdt.internal.core.parser;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.rubypeople.rdt.internal.core.parser.ast.*;
+
 public class RubyParserStack {
 
 	private List elements = new ArrayList();
@@ -50,7 +52,7 @@ public class RubyParserStack {
 	/**
 	 * @return
 	 */
-	RubyElement pop() throws StackEmptyException {
+	private RubyElement pop() throws StackEmptyException {
 		if (elements.isEmpty()) throw new StackEmptyException("Tried to remove an element from an empty stack");
 		return (RubyElement) elements.remove(elements.size() - 1);
 	}

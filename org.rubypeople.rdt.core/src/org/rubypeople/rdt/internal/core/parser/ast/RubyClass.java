@@ -23,12 +23,19 @@
  *  along with RDT; if not, write to the Free Software
  *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
-package org.rubypeople.rdt.internal.core.parser;
+package org.rubypeople.rdt.internal.core.parser.ast;
 
-public class RubyBlock extends RubyElement {
+import org.rubypeople.rdt.internal.core.parser.Position;
 
-	public RubyBlock(String name, Position start) {
-		super(name, start);
+public class RubyClass extends RubyElement {
+
+	/**
+	 * @param name
+	 * @param lineNum
+	 * @param offset
+	 */
+	public RubyClass(String name, int lineNum, int offset) {
+		super(name, new Position(lineNum, offset));
 	}
 
 	/*
@@ -37,9 +44,9 @@ public class RubyBlock extends RubyElement {
 	 * @see org.rubypeople.rdt.core.tests.core.parser.TDDRubyElement#equals(java.lang.Object)
 	 */
 	public boolean equals(Object arg0) {
-		if (arg0 instanceof RubyBlock) {
-			RubyBlock rubyIf = (RubyBlock) arg0;
-			return rubyIf.getClass().equals(getClass()) && (rubyIf.getStart().equals(getStart()));
+		if (arg0 instanceof RubyClass) {
+			RubyClass rubyClass = (RubyClass) arg0;
+			return (rubyClass.getName().equals(this.getName())) && (rubyClass.getStart().equals(this.getStart()));
 		}
 		return false;
 	}
@@ -50,11 +57,6 @@ public class RubyBlock extends RubyElement {
 	 * @see org.rubypeople.rdt.core.tests.core.parser.TDDRubyElement#hashCode()
 	 */
 	public int hashCode() {
-		String string =  Integer.toString(start.getLineNumber()) + Integer.toString(start.getOffset());
-		return string.hashCode();
-	}
-	
-	public boolean isOutlineElement() {
-		return false;
+		return (getName() + getStart()).hashCode();
 	}
 }

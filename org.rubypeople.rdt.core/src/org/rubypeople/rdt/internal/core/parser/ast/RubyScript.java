@@ -23,9 +23,12 @@
  *  along with RDT; if not, write to the Free Software
  *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
-package org.rubypeople.rdt.internal.core.parser;
+package org.rubypeople.rdt.internal.core.parser.ast;
 import java.util.HashSet;
 import java.util.Set;
+
+import org.rubypeople.rdt.internal.core.parser.ParseError;
+import org.rubypeople.rdt.internal.core.parser.Position;
 /**
  * @author Chris
  * 

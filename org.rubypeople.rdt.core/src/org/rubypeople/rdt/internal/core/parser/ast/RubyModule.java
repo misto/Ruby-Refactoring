@@ -23,18 +23,19 @@
  *  along with RDT; if not, write to the Free Software
  *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
-package org.rubypeople.rdt.internal.core.parser;
+package org.rubypeople.rdt.internal.core.parser.ast;
 
-public class RubyMethod extends RubyElement {
+import org.rubypeople.rdt.internal.core.parser.Position;
+
+public class RubyModule extends RubyElement {
 
 	/**
 	 * @param name
 	 * @param lineNum
 	 * @param offset
 	 */
-	public RubyMethod(String name, int lineNum, int offset) {
+	public RubyModule(String name, int lineNum, int offset) {
 		super(name, new Position(lineNum, offset));
-		access = PUBLIC;
 	}
 
 	/*
@@ -43,9 +44,9 @@ public class RubyMethod extends RubyElement {
 	 * @see org.rubypeople.rdt.core.tests.core.parser.TDDRubyElement#equals(java.lang.Object)
 	 */
 	public boolean equals(Object arg0) {
-		if (arg0 instanceof RubyMethod) {
-			RubyMethod method = (RubyMethod) arg0;
-			return method.getName().equals(getName()) && (method.getStart().equals(getStart()));
+		if (arg0 instanceof RubyModule) {
+			RubyModule rubyClass = (RubyModule) arg0;
+			return (rubyClass.getName().equals(this.getName())) && (rubyClass.getStart().equals(this.getStart()));
 		}
 		return false;
 	}
@@ -58,5 +59,4 @@ public class RubyMethod extends RubyElement {
 	public int hashCode() {
 		return (getName() + getStart()).hashCode();
 	}
-
 }

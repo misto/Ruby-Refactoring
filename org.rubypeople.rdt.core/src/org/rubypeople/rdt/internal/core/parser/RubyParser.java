@@ -35,11 +35,29 @@ import java.util.StringTokenizer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.rubypeople.rdt.internal.core.parser.ast.RubyBegin;
+import org.rubypeople.rdt.internal.core.parser.ast.RubyCase;
+import org.rubypeople.rdt.internal.core.parser.ast.RubyClass;
+import org.rubypeople.rdt.internal.core.parser.ast.RubyClassVariable;
+import org.rubypeople.rdt.internal.core.parser.ast.RubyDo;
+import org.rubypeople.rdt.internal.core.parser.ast.RubyElement;
+import org.rubypeople.rdt.internal.core.parser.ast.RubyFor;
+import org.rubypeople.rdt.internal.core.parser.ast.RubyGlobal;
+import org.rubypeople.rdt.internal.core.parser.ast.RubyIf;
+import org.rubypeople.rdt.internal.core.parser.ast.RubyInstanceVariable;
+import org.rubypeople.rdt.internal.core.parser.ast.RubyMethod;
+import org.rubypeople.rdt.internal.core.parser.ast.RubyModule;
+import org.rubypeople.rdt.internal.core.parser.ast.RubyRequires;
+import org.rubypeople.rdt.internal.core.parser.ast.RubyScript;
+import org.rubypeople.rdt.internal.core.parser.ast.RubyUnless;
+import org.rubypeople.rdt.internal.core.parser.ast.RubyUntil;
+import org.rubypeople.rdt.internal.core.parser.ast.RubyWhile;
+
 public class RubyParser {
 
 	private static RubyParserStack stack = new RubyParserStack();
 	private static RubyScript script;
-	private static final char[] VARIABLE_END_CHARS = { ' ', '.', '[', '(', ')', ']', ',', '}', '{'};
+	private static final char[] VARIABLE_END_CHARS = { ' ', '.', '[', '(', ')', ']', ',', '}', '{', ';'};
 	private static boolean inDocs;
 
 	private static final String START_OF_STATEMENT_REGEX = "^(;\\s+)?\\s*";
@@ -49,7 +67,8 @@ public class RubyParser {
 	private static final Pattern CASE_PATTERN = Pattern.compile(START_OF_STATEMENT_REGEX + "case ");
 	private static final Pattern IF_PATTERN = Pattern.compile(START_OF_STATEMENT_REGEX + "if ");
 	private static final Pattern END_PATTERN = Pattern.compile("^\\s*(.+\\s+)?end(\\..+)?(\\s+.+)?$");
-	private static final Pattern DO_PATTERN = Pattern.compile(".+\\s+do\\s*$");
+	private static final Pattern DO_PATTERN = Pattern.compile(".+\\s+do(\\s+\\|.+\\|)?\\s*$");
+	private static final Pattern CLASS_PATTERN = Pattern.compile(START_OF_STATEMENT_REGEX + "class ");
 
 	/**
 	 * @return
@@ -134,6 +153,7 @@ public class RubyParser {
 	private static void pushMultiLineElement(RubyElement element) {
 		try {
 			stack.pushAndLink(element);
+			log("Pushed multi-line element: " + element);
 		} catch (StackEmptyException e) {
 			log(e.getMessage());
 		}
@@ -146,7 +166,7 @@ public class RubyParser {
 		final String token = "=end";
 		if (curLine.indexOf(token) == -1) return curLine;
 		inDocs = false;
-		return curLine.substring(endIndexOf(curLine, token));
+		return curLine.substring(RubyParserUtil.endIndexOf(curLine, token));
 	}
 
 	/**
@@ -195,13 +215,12 @@ public class RubyParser {
 			if (element != null) {
 				element.setAccess(accessRightsToGrant);
 				continue;
-			}
-			else {
+			} else {
 				RubyInstanceVariable var = new RubyInstanceVariable("@" + elementName, lineNum, myLine.indexOf(elementName));
 				var.setAccess(accessRightsToGrant);
 				parent.addElement(var);
 			}
-			
+
 		}
 	}
 
@@ -220,27 +239,13 @@ public class RubyParser {
 	 * @return
 	 */
 	private static List getSymbols(String myLine, String prefix) {
-		String copy = myLine.substring(endIndexOf(myLine, prefix));
+		String copy = myLine.substring(RubyParserUtil.endIndexOf(myLine, prefix));
 		StringTokenizer tokenizer = new StringTokenizer(copy, ", ");
 		List list = new ArrayList();
 		while (tokenizer.hasMoreTokens()) {
 			list.add(tokenizer.nextToken().substring(1));
 		}
 		return list;
-	}
-
-	/**
-	 * Returns the index of the last char of <code>token</code> in <code>myLine</code>.
-	 * Returns -1 if there are no occurences. (myLine.indexOf(token) +
-	 * token.length())
-	 * 
-	 * @param myLine
-	 * @param token
-	 * @return
-	 */
-	private static int endIndexOf(String myLine, String token) {
-		if (myLine.indexOf(token) == -1) return -1;
-		return myLine.indexOf(token) + token.length();
 	}
 
 	/**
@@ -317,24 +322,7 @@ public class RubyParser {
 				openQuotes.add(newChar);
 			}
 		}
-		return !openQuotes.isEmpty() || inPercentString('q', index, curLine) || inPercentString('Q', index, curLine);
-	}
-
-	/**
-	 * @param index
-	 * @param curLine
-	 * @return
-	 */
-	static boolean inPercentString(char type, int index, String curLine) {
-		int end = endIndexOf(curLine, "%" + type);
-		if (end == -1) return false;
-		if (end > index) return false;
-		char c = curLine.charAt(end);
-		if (isOpenBracket(c)) c = getMatchingBracket(c);
-		for (int i = end + 1; i < index; i++) {
-			if (curLine.charAt(i) == c && curLine.charAt(i-1) != '\\') { return false; }
-		}
-		return true;
+		return !openQuotes.isEmpty() || RubyParserUtil.inPercentString('q', index, curLine) || RubyParserUtil.inPercentString('Q', index, curLine);
 	}
 
 	/**
@@ -465,35 +453,7 @@ public class RubyParser {
 	 * @return
 	 */
 	private static boolean inPercentRegex(int index, String curLine) {
-		return inPercentString('r', index, curLine);
-	}
-
-	/**
-	 * Returns the matching bracket for a given character. If it is not a
-	 * bracket, returns the newline character
-	 * 
-	 * @param c
-	 * @return
-	 */
-	static char getMatchingBracket(char c) {
-		switch (c) {
-		case '(':
-			return ')';
-		case '{':
-			return '}';
-		case '[':
-			return ']';
-		default:
-			return '\n';
-		}
-	}
-
-	/**
-	 * @param c
-	 * @return
-	 */
-	static boolean isOpenBracket(char c) {
-		return contains(new char[] { '(', '{', '['}, c);
+		return RubyParserUtil.inPercentString('r', index, curLine);
 	}
 
 	/**
@@ -518,9 +478,9 @@ public class RubyParser {
 	 */
 	private static void findRequires(String curLine, int lineNum) {
 		final String token = "require ";
-		int start = endIndexOf(curLine, token);
+		int start = RubyParserUtil.endIndexOf(curLine, token);
 		if (start == -1) return;
-		if (inQuotes(start, curLine) || inRegex(start, curLine)) return;		
+		if (inQuotes(start, curLine) || inRegex(start, curLine)) return;
 		String leftOver = curLine.substring(start);
 		for (int i = 0; i < leftOver.length(); i++) {
 			char c = leftOver.charAt(i);
@@ -553,12 +513,14 @@ public class RubyParser {
 	 * @param lineNum
 	 */
 	private static void findClass(String curLine, int lineNum) {
-		char[] tokens = { ' ', ';'};
-		int location = findElement("class ", tokens, curLine);
-		if (location == -1) return;
-		String name = getToken("class ", tokens, curLine);
-		if (Character.isLowerCase(name.charAt(0))) script.addParseError(new ParseError("Class names should begin with an uppercase letter.", lineNum, location, location + name.length()));
-		pushMultiLineElement(new RubyClass(name, lineNum, location));
+		Matcher classMatcher = CLASS_PATTERN.matcher(curLine);
+		if (classMatcher.find()) {
+			char[] tokens = { ' ', ';'};
+			String name = getToken("class ", tokens, curLine);
+			int start = classMatcher.end();
+			if (Character.isLowerCase(name.charAt(0))) script.addParseError(new ParseError("Class names should begin with an uppercase letter.", lineNum, start, start + name.length()));
+			pushMultiLineElement(new RubyClass(name, lineNum, start));
+		}
 	}
 
 	/**
@@ -575,7 +537,7 @@ public class RubyParser {
 	 * @return
 	 */
 	private static int findElement(String tokenIdentifier, char[] tokens, String curLine) {
-		int start = endIndexOf(curLine, tokenIdentifier);
+		int start = RubyParserUtil.endIndexOf(curLine, tokenIdentifier);
 		if (start == -1) return -1;
 		if (getToken(tokenIdentifier, tokens, curLine).length() == 0) return -1;
 		log("Found start of element: " + curLine);
@@ -600,7 +562,7 @@ public class RubyParser {
 	 * @param lineNum
 	 */
 	private static void findMethod(String curLine, int lineNum) {
-		int start = endIndexOf(curLine, "def ");
+		int start = RubyParserUtil.endIndexOf(curLine, "def ");
 		if (start == -1) return;
 		String name = getMethodName(curLine);
 		pushMultiLineElement(new RubyMethod(name, lineNum, start));
@@ -611,7 +573,7 @@ public class RubyParser {
 	 * @return
 	 */
 	private static String getMethodName(String curLine) {
-		char[] tokens = { '(', ' '};
+		char[] tokens = { '(', ' ', ';'};
 		return getToken("def ", tokens, curLine);
 	}
 
@@ -627,26 +589,11 @@ public class RubyParser {
 	 * @return
 	 */
 	private static String getToken(String prefix, char[] delimiters, String line) {
-		int endOfPrefix = endIndexOf(line, prefix);
+		int endOfPrefix = RubyParserUtil.endIndexOf(line, prefix);
 		for (int i = endOfPrefix; i < line.length(); i++) {
-			if (contains(delimiters, line.charAt(i))) { return line.substring(endOfPrefix, i); }
+			if (RubyParserUtil.contains(delimiters, line.charAt(i))) { return line.substring(endOfPrefix, i); }
 		}
 		return line.substring(endOfPrefix);
-	}
-
-	/**
-	 * Given a character array of characters and a character, the method
-	 * determines if the given character is contained in the array
-	 * 
-	 * @param chars
-	 * @param c
-	 * @return a boolean to indicate if this array contains the character
-	 */
-	private static boolean contains(char[] chars, char c) {
-		for (int i = 0; i < chars.length; i++) {
-			if (chars[i] == c) return true;
-		}
-		return false;
 	}
 
 	/**

@@ -23,38 +23,17 @@
  *  along with RDT; if not, write to the Free Software
  *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
-package org.rubypeople.rdt.internal.core.parser;
+package org.rubypeople.rdt.internal.core.parser.ast;
 
-public class RubyClass extends RubyElement {
+import org.rubypeople.rdt.internal.core.parser.Position;
+
+public class RubyBegin extends RubyBlock {
 
 	/**
-	 * @param name
 	 * @param lineNum
 	 * @param offset
 	 */
-	public RubyClass(String name, int lineNum, int offset) {
-		super(name, new Position(lineNum, offset));
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.rubypeople.rdt.core.tests.core.parser.TDDRubyElement#equals(java.lang.Object)
-	 */
-	public boolean equals(Object arg0) {
-		if (arg0 instanceof RubyClass) {
-			RubyClass rubyClass = (RubyClass) arg0;
-			return (rubyClass.getName().equals(this.getName())) && (rubyClass.getStart().equals(this.getStart()));
-		}
-		return false;
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.rubypeople.rdt.core.tests.core.parser.TDDRubyElement#hashCode()
-	 */
-	public int hashCode() {
-		return (getName() + getStart()).hashCode();
+	public RubyBegin(int lineNum, int offset) {
+		super("begin", new Position(lineNum, offset));
 	}
 }

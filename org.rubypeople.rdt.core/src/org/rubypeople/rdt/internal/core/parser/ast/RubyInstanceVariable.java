@@ -23,15 +23,21 @@
  *  along with RDT; if not, write to the Free Software
  *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
-package org.rubypeople.rdt.internal.core.parser;
+package org.rubypeople.rdt.internal.core.parser.ast;
 
-public class RubyBegin extends RubyBlock {
+import org.rubypeople.rdt.internal.core.parser.Position;
 
+public class RubyInstanceVariable extends RubyElement {
+	
 	/**
+	 * @param name
 	 * @param lineNum
 	 * @param offset
 	 */
-	public RubyBegin(int lineNum, int offset) {
-		super("begin", new Position(lineNum, offset));
+	public RubyInstanceVariable(String name, int lineNum, int offset) {
+		super(name, new Position(lineNum, offset));
+		setEnd(lineNum, offset + name.length() - 1);
+		access = RubyElement.PRIVATE;
 	}
+	
 }
