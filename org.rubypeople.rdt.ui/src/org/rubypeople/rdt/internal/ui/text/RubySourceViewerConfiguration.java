@@ -10,15 +10,16 @@ import org.eclipse.jface.text.rules.DefaultDamagerRepairer;
 import org.eclipse.jface.text.rules.ITokenScanner;
 import org.eclipse.jface.text.source.ISourceViewer;
 import org.eclipse.jface.text.source.SourceViewerConfiguration;
-import org.eclipse.ui.editors.text.TextEditor;
+import org.eclipse.ui.texteditor.ExtendedTextEditor;
 import org.rubypeople.rdt.internal.ui.RdtUiPlugin;
 import org.rubypeople.rdt.internal.ui.text.ruby.RubyCompletionProcessor;
 
 public class RubySourceViewerConfiguration extends SourceViewerConfiguration {
-	protected RubyTextTools textTools;
-	protected TextEditor textEditor;
 
-	public RubySourceViewerConfiguration(RubyTextTools theTextTools, TextEditor theTextEditor) {
+	protected RubyTextTools textTools;
+	protected ExtendedTextEditor textEditor;
+
+	public RubySourceViewerConfiguration(RubyTextTools theTextTools, ExtendedTextEditor theTextEditor) {
 		super();
 		textEditor = theTextEditor;
 		textTools = theTextTools;
@@ -63,7 +64,7 @@ public class RubySourceViewerConfiguration extends SourceViewerConfiguration {
 	}
 
 	public String[] getConfiguredContentTypes(ISourceViewer sourceViewer) {
-		return new String[] { IDocument.DEFAULT_CONTENT_TYPE, RubyPartitionScanner.MULTI_LINE_COMMENT, RubyPartitionScanner.SINGLE_LINE_COMMENT, RubyPartitionScanner.STRING };
+		return new String[] { IDocument.DEFAULT_CONTENT_TYPE, RubyPartitionScanner.MULTI_LINE_COMMENT, RubyPartitionScanner.SINGLE_LINE_COMMENT, RubyPartitionScanner.STRING};
 	}
 
 	public IContentAssistant getContentAssistant(ISourceViewer sourceViewer) {
@@ -76,13 +77,13 @@ public class RubySourceViewerConfiguration extends SourceViewerConfiguration {
 		RubyContentAssistPreference.configure(contentAssistant, getPreferenceStore());
 		return contentAssistant;
 	}
-	
+
 	protected IPreferenceStore getPreferenceStore() {
 		return RdtUiPlugin.getDefault().getPreferenceStore();
 	}
 
 	public String[] getDefaultPrefixes(ISourceViewer sourceViewer, String contentType) {
-		return new String[] { "#", "" };
+		return new String[] { "#", ""};
 	}
 
 }

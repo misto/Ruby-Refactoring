@@ -16,7 +16,7 @@ import org.eclipse.jface.text.IDocumentListener;
 import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.ui.IEditorInput;
-import org.eclipse.ui.editors.text.TextEditor;
+import org.eclipse.ui.texteditor.ExtendedTextEditor;
 import org.eclipse.ui.texteditor.MarkerUtilities;
 import org.rubypeople.rdt.internal.core.RubyPlugin;
 import org.rubypeople.rdt.internal.core.parser.IRubyElement;
@@ -28,12 +28,12 @@ import org.rubypeople.rdt.internal.core.parser.RubyScript;
 public class RubyOutlineContentProvider implements ITreeContentProvider, IDocumentListener {
 
 	protected Viewer viewer;
-	private TextEditor fTextEditor;
+	private ExtendedTextEditor fTextEditor;
 
 	/**
 	 * @param textEditor
 	 */
-	public RubyOutlineContentProvider(TextEditor textEditor) {
+	public RubyOutlineContentProvider(ExtendedTextEditor textEditor) {
 		this.fTextEditor = textEditor;
 	}
 
