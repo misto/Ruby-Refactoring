@@ -87,7 +87,13 @@ public class RubySourceLocator implements IPersistableSourceLocator, ISourcePres
 		if (filesystemFile.exists()) {
 			return new ExternalRubyFileEditorInput(filesystemFile);
 		}
-
+		
+		// If the file is relative to the working directory, ruby returns a relative path
+		filesystemFile = new File(this.absoluteWorkingDirectory + java.io.File.separator + sourceElement.getFilename()) ;
+		if (filesystemFile.exists()) {
+			return new ExternalRubyFileEditorInput(filesystemFile);
+		}
+		
 		RdtDebugCorePlugin.log(IStatus.INFO, RdtDebugUiMessages.getFormattedString("RdtDebugUiPlugin.couldNotOpenFile", sourceElement.getFilename())); //$NON-NLS-1$
 		return null;
 		

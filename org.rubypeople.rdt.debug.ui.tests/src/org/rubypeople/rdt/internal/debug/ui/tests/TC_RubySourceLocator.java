@@ -86,6 +86,25 @@ public class TC_RubySourceLocator extends TestCase {
 		
 		PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage().openEditor(input, sourceLocator.getEditorId(input, sourceElement)) ;
 		
+		// An External file which is relative to the working directory 
+		// If an external file is found within an include path, ruby seems always to deliver an
+		// absolte file path. But if the file found relative to the working directory, ruby
+		// shows a relative path
+		String workspacePath = workspace.getRoot().getLocation().toOSString() ;
+		File externalFile = new File(workspacePath + File.separator + "externalRelativeRubyFile.rb") ;
+		assertTrue(externalFile.createNewFile()) ;
+		// current directory = working dir = workspacePath/WorkingDirIsProject
+		rubyStackFrame = new RubyStackFrame(null,"../externalRelativeRubyFile.rb", 5, 1) ;
+		
+		sourceElement = sourceLocator.getSourceElement(rubyStackFrame) ;
+		input = sourceLocator.getEditorInput(sourceElement) ;
+		assertNotNull(input) ;
+		assertTrue(input.exists()) ;
+		
+		PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage().openEditor(input, sourceLocator.getEditorId(input, sourceElement)) ;		
+		
+		
+		
 	}
 	
 	public void testNotExistingFile() throws Exception {
