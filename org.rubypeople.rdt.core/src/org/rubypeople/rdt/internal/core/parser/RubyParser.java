@@ -515,10 +515,12 @@ public class RubyParser {
 		final String token = "require ";
 		int start = endIndexOf(curLine, token);
 		if (start == -1) return;
+		if (inQuotes(start, curLine) || inRegex(start, curLine)) return;		
 		String leftOver = curLine.substring(start);
 		for (int i = 0; i < leftOver.length(); i++) {
 			char c = leftOver.charAt(i);
-			if (!isQuoteChar(c)) continue;
+			if (Character.isWhitespace(c)) continue;
+			if (!isQuoteChar(c)) return;
 			String name = getToken(token + c, new char[] { c}, curLine);
 			RubyRequires requires = new RubyRequires(name, lineNum, start + 1);
 			if (!script.contains(requires)) {

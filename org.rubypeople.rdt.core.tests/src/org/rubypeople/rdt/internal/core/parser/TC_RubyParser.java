@@ -694,4 +694,14 @@ public class TC_RubyParser extends TestCase {
 		assertEquals(16, error.getEnd() );
 	}
 	
+	public void testIgnoreRequireInString() throws Exception {
+		RubyScript script = RubyParser.parse("eval \"require \\\"irb/ws-for-case-2\\\"\", TOPLEVEL_BINDING, __FILE__, __LINE__");
+		assertEquals(0, script.getElementCount());
+	}
+	
+	public void testIgnoreRequireNameNotInQuotes() throws Exception {
+		RubyScript script = RubyParser.parse("require ARGV[0].gsub(/.+::/, '')");
+		assertEquals(0, script.getElementCount() );
+	}
+	
 }
