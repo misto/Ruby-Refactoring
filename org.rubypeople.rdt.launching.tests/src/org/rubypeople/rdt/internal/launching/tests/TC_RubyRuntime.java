@@ -109,6 +109,10 @@ public class TC_RubyRuntime extends TestCase {
 			return false;
 		}
 
+		public String getCharset() throws CoreException {
+			return null;
+		}
+		
 		public void move(IPath destination, boolean force, boolean keepHistory, IProgressMonitor monitor) throws CoreException {}
 
 		public void setContents(IFileState source, boolean force, boolean keepHistory, IProgressMonitor monitor) throws CoreException {}
