@@ -44,4 +44,14 @@ public interface ParseRule {
 	 * @return
 	 */
 	public int getSeverity();
+
+	/**
+	 * @return
+	 */
+	public boolean addOnFailure();
+
+	/**
+	 * @return
+	 */
+	public boolean addError();
 }

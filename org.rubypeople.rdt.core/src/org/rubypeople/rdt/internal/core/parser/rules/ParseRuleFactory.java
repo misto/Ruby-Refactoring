@@ -3,9 +3,9 @@
  * 
  * Copyright (c) 2004 RubyPeople.
  * 
- * This file is part of the Ruby Development Tools (RDT) plugin for eclipse.
- * You can get copy of the GPL along with further information about RubyPeople
- * and third party software bundled with RDT in the file
+ * This file is part of the Ruby Development Tools (RDT) plugin for eclipse. You
+ * can get copy of the GPL along with further information about RubyPeople and
+ * third party software bundled with RDT in the file
  * org.rubypeople.rdt.core_0.4.0/RDT.license or otherwise at
  * http://www.rubypeople.org/RDT.license.
  * 
@@ -15,9 +15,8 @@
  * version.
  * 
  * RDT is distributed in the hope that it will be useful, but WITHOUT ANY
- * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
- * FOR A PARTICULAR PURPOSE. See the GNU General Public License for more
- * details.
+ * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
+ * A PARTICULAR PURPOSE. See the GNU General Public License for more details.
  * 
  * You should have received a copy of the GNU General Public License along with
  * RDT; if not, write to the Free Software Foundation, Inc., 59 Temple Place,
@@ -25,8 +24,10 @@
  */
 package org.rubypeople.rdt.internal.core.parser.rules;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import org.rubypeople.rdt.internal.core.parser.ast.RubyElement;
-import org.rubypeople.rdt.internal.core.parser.ast.RubyScript;
 
 public class ParseRuleFactory {
 
@@ -34,12 +35,27 @@ public class ParseRuleFactory {
 	 * @param token
 	 * @return
 	 */
-	public static ParseRule getRule(RubyElement token, RubyScript script) {
-		if (token.isType(RubyElement.CLASS)) { return new UpperCaseNameRule(token); }
-		if (token.isType(RubyElement.MODULE)) { return new UpperCaseNameRule(token); }
-		if (token.isType(RubyElement.REQUIRES)) { return new NoDuplicateRule(token, script); }
-		if (token.isVariable()) { return new NoEmptyNameRule(token); }
-		return new NullRule();
+	public static Set getRules(RubyElement token, RubyElement parent) {
+		Set set = new HashSet();
+		if (token.isType(RubyElement.CLASS)) {
+			set.add(new UpperCaseNameRule(token));
+			return set;
+		}
+		if (token.isType(RubyElement.MODULE)) {
+			set.add(new UpperCaseNameRule(token));
+			return set;
+		}
+		if (token.isType(RubyElement.REQUIRES)) {
+			set.add(new NoDuplicateRule(token, parent, true));
+			return set;
+		}
+		if (token.isVariable()) {
+			set.add(new NoDuplicateRule(token, parent, false));
+			set.add(new NoEmptyNameRule(token));
+			return set;
+		}
+		set.add(new NullRule());
+		return set;
 	}
 
 }

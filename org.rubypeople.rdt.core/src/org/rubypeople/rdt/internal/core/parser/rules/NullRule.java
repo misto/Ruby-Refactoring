@@ -50,4 +50,18 @@ public class NullRule implements ParseRule {
 		return ParseRule.OK;
 	}
 
+	/* (non-Javadoc)
+	 * @see org.rubypeople.rdt.internal.core.parser.rules.ParseRule#addOnFailure()
+	 */
+	public boolean addOnFailure() {
+		return true;
+	}
+
+	/* (non-Javadoc)
+	 * @see org.rubypeople.rdt.internal.core.parser.rules.ParseRule#addError()
+	 */
+	public boolean addError() {
+		return false;
+	}
+
 }

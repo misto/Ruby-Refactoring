@@ -47,7 +47,7 @@ public class RubyTokenizer {
 	private boolean tempInString = false;
 	private char tempEndChar;
 	private static final String percentChars = "qQr";
-	private static final String delimiters = " .;('\"/\t";
+	private static final String delimiters = " .;('\"/\t,";
 	private static final String BRACKETS = "({[";
 
 	// TODO Refactor determination whetehr we're in a String into common code!

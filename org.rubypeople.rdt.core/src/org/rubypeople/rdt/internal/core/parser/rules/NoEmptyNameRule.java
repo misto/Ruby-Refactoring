@@ -69,4 +69,18 @@ public class NoEmptyNameRule implements ParseRule {
 		return ParseRule.ERROR;
 	}
 
+	/* (non-Javadoc)
+	 * @see org.rubypeople.rdt.internal.core.parser.rules.ParseRule#addOnFailure()
+	 */
+	public boolean addOnFailure() {
+		return false;
+	}
+
+	/* (non-Javadoc)
+	 * @see org.rubypeople.rdt.internal.core.parser.rules.ParseRule#addError()
+	 */
+	public boolean addError() {
+		return true;
+	}
+
 }

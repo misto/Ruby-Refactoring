@@ -227,6 +227,14 @@ public class TC_RubyTokenizer extends TestCase {
 		assertEquals(RubyToken.IDENTIFIER, tokenizer.nextRubyToken().getType() );
 	}
 	
+	public void testCommaAtEndOfVariableIsIgnored() {
+		RubyTokenizer tokenizer = new RubyTokenizer("return [ @version, @status, @reason ]");
+		assertEquals(6, tokenizer.countTokens() );
+		assertEquals("return", tokenizer.nextRubyToken().getText());
+		assertEquals("[", tokenizer.nextRubyToken().getText());
+		assertEquals("@version", tokenizer.nextRubyToken().getText());
+	}
+	
 //	public void testInPercentString() {
 //		RubyTokenizer tokenizer = new RubyTokenizer("");
 //		assertFalse(tokenizer.inPercentString('q', 1, "%q(blah) end"));

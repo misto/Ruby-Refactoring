@@ -3,9 +3,9 @@
  * 
  * Copyright (c) 2004 RubyPeople.
  * 
- * This file is part of the Ruby Development Tools (RDT) plugin for eclipse.
- * You can get copy of the GPL along with further information about RubyPeople
- * and third party software bundled with RDT in the file
+ * This file is part of the Ruby Development Tools (RDT) plugin for eclipse. You
+ * can get copy of the GPL along with further information about RubyPeople and
+ * third party software bundled with RDT in the file
  * org.rubypeople.rdt.core_0.4.0/RDT.license or otherwise at
  * http://www.rubypeople.org/RDT.license.
  * 
@@ -15,9 +15,8 @@
  * version.
  * 
  * RDT is distributed in the hope that it will be useful, but WITHOUT ANY
- * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
- * FOR A PARTICULAR PURPOSE. See the GNU General Public License for more
- * details.
+ * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
+ * A PARTICULAR PURPOSE. See the GNU General Public License for more details.
  * 
  * You should have received a copy of the GNU General Public License along with
  * RDT; if not, write to the Free Software Foundation, Inc., 59 Temple Place,
@@ -31,6 +30,7 @@ import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 import java.util.StringTokenizer;
 
 import org.rubypeople.rdt.internal.core.parser.ast.RubyElement;
@@ -92,7 +92,10 @@ public class RubyParser {
 					if (token.isType(RubyToken.VARIABLE_SUBSTITUTION)) {
 						String varString = getVariable(token, lineNum);
 						int type = getType(varString);
-						if (type == RubyToken.IDENTIFIER) continue; // It's a local variable (hopefully)
+						if (type == RubyToken.IDENTIFIER) continue; // It's a
+						// local
+						// variable
+						// (hopefully)
 						addVariable(new RubyToken(type, varString, token.getOffset() + token.getText().indexOf(varString)), lineNum);
 						continue;
 					}
@@ -125,12 +128,9 @@ public class RubyParser {
 	 * @return
 	 */
 	private static int getType(String varString) {
-		if (varString.startsWith("$"))
-			return  RubyToken.GLOBAL;
-		if (varString.startsWith("@@"))
-			return RubyToken.CLASS_VARIABLE;
-		if (varString.startsWith("@"))
-			return RubyToken.INSTANCE_VARIABLE;
+		if (varString.startsWith("$")) return RubyToken.GLOBAL;
+		if (varString.startsWith("@@")) return RubyToken.CLASS_VARIABLE;
+		if (varString.startsWith("@")) return RubyToken.INSTANCE_VARIABLE;
 		return RubyToken.IDENTIFIER;
 	}
 
@@ -140,6 +140,8 @@ public class RubyParser {
 	 * @return
 	 */
 	private static String getVariable(RubyToken token, int lineNum) {
+		// TODO Make this logic be in Tokenizer, return the variable inside as a
+		// separate token!
 		String text = token.getText();
 		if (text.indexOf('{') == -1) { return text.substring(1); }
 		if (text.indexOf('}') == -1) {
@@ -155,17 +157,28 @@ public class RubyParser {
 	 */
 	private static void addVariable(RubyToken token, int lineNum) {
 		RubyElement element = new RubyElement(token.getType(), token.getText(), lineNum, token.getOffset());
-		ParseRule rule = ParseRuleFactory.getRule(element, script);
-		if (!rule.isAllowed()) {
-			log("Failed rule, adding parse error");
-			script.addParseError(rule.getError());
-			if (rule.getSeverity() == ParseRule.ERROR) return;
-			addElement(element);
-		} else {
-			log("Rule is Allowed!");
-			addElement(element);
-		}
+		applyRules(element);
+	}
 
+	/**
+	 * @param element
+	 * @param script2
+	 */
+	private static void applyRules(RubyElement element) {
+		Set rules = ParseRuleFactory.getRules(element, getParent(element));
+		boolean addElement = true;
+		for (Iterator iter = rules.iterator(); iter.hasNext();) {
+			ParseRule rule = (ParseRule) iter.next();
+			if (!rule.isAllowed()) {
+				log("Failed rule");
+				if (rule.addError()) {
+					log("Adding parse error");
+					script.addParseError(rule.getError());
+				}
+				if (!rule.addOnFailure()) addElement = false;
+			}
+		}
+		if (addElement) addElement(element);
 	}
 
 	private static void addElementDeclaration(RubyToken token, RubyTokenizer tokenizer, int lineNum) {
@@ -176,19 +189,7 @@ public class RubyParser {
 		RubyToken elementName = tokenizer.nextRubyToken();
 		String name = elementName.getText();
 		RubyElement element = new RubyElement(token.getType(), name, lineNum, elementName.getOffset());
-		ParseRule rule = ParseRuleFactory.getRule(element, script);
-		if (!rule.isAllowed()) {
-			// TODO Add rule that checks require name is a string (in quotes or
-			// a method which produces a string)
-			log("Failed rule, adding parse error");
-			script.addParseError(rule.getError());
-			if (rule.getSeverity() == ParseRule.ERROR) return;
-			addElement(element);
-		} else {
-			log("Rule is Allowed!");
-			addElement(element);
-		}
-
+		applyRules(element);
 	}
 
 	/**

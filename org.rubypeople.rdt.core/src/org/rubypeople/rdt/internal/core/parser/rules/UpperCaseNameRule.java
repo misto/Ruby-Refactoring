@@ -72,4 +72,18 @@ public class UpperCaseNameRule implements ParseRule {
 	public int getSeverity() {
 		return ParseRule.WARNING;
 	}
+
+	/* (non-Javadoc)
+	 * @see org.rubypeople.rdt.internal.core.parser.rules.ParseRule#addOnFailure()
+	 */
+	public boolean addOnFailure() {
+		return true;
+	}
+
+	/* (non-Javadoc)
+	 * @see org.rubypeople.rdt.internal.core.parser.rules.ParseRule#addError()
+	 */
+	public boolean addError() {
+		return true;
+	}
 }
