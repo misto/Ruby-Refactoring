@@ -65,16 +65,16 @@ public class RubyEnvironmentTab extends AbstractLaunchConfigurationTab {
 		loadPathListViewer.getList().setLayoutData(new GridData(GridData.FILL_BOTH));
 
 		TabItem loadPathTab = new TabItem(tabFolder, SWT.NONE, 0);
-		loadPathTab.setText("Load&path");
+		loadPathTab.setText(RdtDebugUiMessages.getString("LaunchConfigurationTab.RubyEnvironment.loadPathTab.label"));
 		loadPathTab.setControl(loadPathComposite);
 		loadPathTab.setData(loadPathListViewer);
 
 		loadPathDefaultButton = new Button(loadPathComposite, SWT.CHECK);
-		loadPathDefaultButton.setText("&Use default loadpath");
+		loadPathDefaultButton.setText(RdtDebugUiMessages.getString("LaunchConfigurationTab.RubyEnvironment.loadPathDefaultButton.label"));
 		loadPathDefaultButton.setLayoutData(new GridData(GridData.HORIZONTAL_ALIGN_BEGINNING));
 		loadPathDefaultButton.addSelectionListener(getLoadPathDefaultButtonSelectionListener());
-		//for now, until the load path is customizable on the configuration
-		loadPathDefaultButton.setEnabled(false);
+		
+		loadPathDefaultButton.setEnabled(false); //for now, until the load path is customizable on the configuration
 	}
 
 	protected SelectionListener getLoadPathSelectionListener() {
@@ -110,11 +110,11 @@ public class RubyEnvironmentTab extends AbstractLaunchConfigurationTab {
 		interpreterCombo.addModifyListener(getInterpreterComboModifyListener());
 
 		Button interpreterAddButton = new Button(interpreterComposite, SWT.PUSH);
-		interpreterAddButton.setText("N&ew...");
+		interpreterAddButton.setText(RdtDebugUiMessages.getString("LaunchConfigurationTab.RubyEnvironment.interpreterAddButton.label"));
 		interpreterAddButton.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent evt) {
 				RubyInterpreter newInterpreter = new RubyInterpreter(null, null);
-				EditInterpreterDialog editor = new EditInterpreterDialog(getShell(), "Add Interpreter");
+				EditInterpreterDialog editor = new EditInterpreterDialog(getShell(), RdtDebugUiMessages.getString("LaunchConfigurationTab.RubyEnvironment.editInterpreterDialog.title"));
 				editor.create();
 				editor.setInterpreterToEdit(newInterpreter);
 				if (EditInterpreterDialog.OK == editor.open()) {
@@ -126,7 +126,7 @@ public class RubyEnvironmentTab extends AbstractLaunchConfigurationTab {
 		});
 
 		TabItem interpreterTab = new TabItem(tabFolder, SWT.NONE);
-		interpreterTab.setText("&Interpreter");
+		interpreterTab.setText(RdtDebugUiMessages.getString("LaunchConfigurationTab.RubyEnvironment.interpreterTab.label"));
 		interpreterTab.setControl(interpreterComposite);
 	}
 

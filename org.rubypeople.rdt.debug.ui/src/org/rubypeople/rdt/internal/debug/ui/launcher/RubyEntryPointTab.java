@@ -36,9 +36,9 @@ public class RubyEntryPointTab extends AbstractLaunchConfigurationTab {
 	public void createControl(Composite parent) {
 		Composite composite = createPageRoot(parent);
 
-		new Label(composite, SWT.NONE).setText("Project:");
+		new Label(composite, SWT.NONE).setText(RdtDebugUiMessages.getString("LaunchConfigurationTab.RubyEntryPoint.projectLabel"));
 		projectSelector = new RubyProjectSelector(composite);
-		projectSelector.setBrowseDialogMessage("Choose the project containing the application entry point:");
+		projectSelector.setBrowseDialogMessage(RdtDebugUiMessages.getString("LaunchConfigurationTab.RubyEntryPoint.projectSelectorMessage"));
 		projectSelector.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
 		projectSelector.addModifyListener(new ModifyListener() {
 			public void modifyText(ModifyEvent evt) {
@@ -46,9 +46,9 @@ public class RubyEntryPointTab extends AbstractLaunchConfigurationTab {
 			}
 		});
 
-		new Label(composite, SWT.NONE).setText("File:");
+		new Label(composite, SWT.NONE).setText(RdtDebugUiMessages.getString("LaunchConfigurationTab.RubyEntryPoint.fileLabel"));
 		fileSelector = new RubyFileSelector(composite, projectSelector);
-		fileSelector.setBrowseDialogMessage("Choose the Ruby file that represents the application entry point:");
+		fileSelector.setBrowseDialogMessage(RdtDebugUiMessages.getString("LaunchConfigurationTab.RubyEntryPoint.fileSelectorMessage"));
 		fileSelector.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
 		fileSelector.addModifyListener(new ModifyListener() {
 			public void modifyText(ModifyEvent evt) {
@@ -111,12 +111,12 @@ public class RubyEntryPointTab extends AbstractLaunchConfigurationTab {
 
 		IProject project = projectSelector.getSelection();
 		if (project == null || !project.exists()) {
-			setErrorMessage("Invalid project selection.");
+			setErrorMessage(RdtDebugUiMessages.getString("LaunchConfigurationTab.RubyEntryPoint.invalidProjectSelectionMessage"));
 			return false;
 		}
 
 		if (fileSelector.getSelection() == null) {
-			setErrorMessage("Invalid Ruby file.");
+			setErrorMessage(RdtDebugUiMessages.getString("LaunchConfigurationTab.RubyEntryPoint.invalidFileSelectionMessage"));
 			return false;
 		}
 

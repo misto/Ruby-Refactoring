@@ -22,6 +22,7 @@ import org.eclipse.swt.widgets.DirectoryDialog;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
+import org.rubypeople.rdt.internal.debug.ui.RdtDebugUiMessages;
 import org.rubypeople.rdt.internal.debug.ui.RdtDebugUiPlugin;
 import org.rubypeople.rdt.internal.launching.RubyInterpreter;
 import org.rubypeople.rdt.internal.ui.dialog.StatusDialog;
@@ -40,14 +41,14 @@ public class EditInterpreterDialog extends StatusDialog {
 		interpreterToEdit = anInterpreter;
 		
 		String interpreterName = interpreterToEdit.getName();
-		interpreterNameText.setText(interpreterName != null ? interpreterName : "");
+		interpreterNameText.setText(interpreterName != null ? interpreterName : ""); //$NON-NLS-1$
 
 		IPath installLocation = interpreterToEdit.getInstallLocation();
-		interpreterLocationText.setText(installLocation != null ? installLocation.toOSString() : "");
+		interpreterLocationText.setText(installLocation != null ? installLocation.toOSString() : ""); //$NON-NLS-1$
 	}
 
 	protected void createLocationEntryField(Composite composite) {
-		new Label(composite, SWT.NONE).setText("Location:");
+		new Label(composite, SWT.NONE).setText(RdtDebugUiMessages.getString("EditInterpreterDialog.rubyInterpreter.path.label")); //$NON-NLS-1$
 
 		Composite locationComposite = new Composite(composite, SWT.NONE);
 		RowLayout locationLayout = new RowLayout();
@@ -65,7 +66,7 @@ public class EditInterpreterDialog extends StatusDialog {
 
 		Button browseButton = new Button(composite, SWT.PUSH);
 		browseButton.setLayoutData(new GridData(GridData.HORIZONTAL_ALIGN_END));
-		browseButton.setText("Browse...");
+		browseButton.setText(RdtDebugUiMessages.getString("EditInterpreterDialog.rubyInterpreter.path.browse.button.label")); //$NON-NLS-1$
 		browseButton.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
 				browseForInstallDir();
@@ -78,7 +79,7 @@ public class EditInterpreterDialog extends StatusDialog {
 	}
 
 	protected IStatus getMostSevereStatus() {
-		IStatus max = new Status(0, RdtDebugUiPlugin.PLUGIN_ID, IStatus.OK, "", null);
+		IStatus max = new Status(0, RdtDebugUiPlugin.PLUGIN_ID, IStatus.OK, "", null); //$NON-NLS-1$
 		for (int i = 0; i < allStatus.length; i++) {
 			IStatus curr = allStatus[i];
 			if (curr != null) {
@@ -96,17 +97,17 @@ public class EditInterpreterDialog extends StatusDialog {
 	protected IStatus validateInterpreterLocationText() {
 		File path = new File(interpreterLocationText.getText());
 		if (path.exists()) {
-			File rubyw = new File(path, "bin" + File.separator + "rubyw");
-			File rubyw_exe = new File(path, "bin" + File.separator + "rubyw.exe");
+			File rubyw = new File(path, "bin" + File.separator + "rubyw"); //$NON-NLS-1$ //$NON-NLS-2$
+			File rubyw_exe = new File(path, "bin" + File.separator + "rubyw.exe"); //$NON-NLS-1$ //$NON-NLS-2$
 			if (rubyw.isFile() || rubyw_exe.isFile())
-				return new Status(IStatus.OK, RdtDebugUiPlugin.PLUGIN_ID, 0, "", null);
+				return new Status(IStatus.OK, RdtDebugUiPlugin.PLUGIN_ID, 0, "", null); //$NON-NLS-1$
 		}
 
-		return new Status(IStatus.ERROR, RdtDebugUiPlugin.PLUGIN_ID, 1, "The directory containing bin/rubyw must be selected", null);
+		return new Status(IStatus.ERROR, RdtDebugUiPlugin.PLUGIN_ID, 1, RdtDebugUiMessages.getString("EditInterpreterDialog.rubyInterpreter.path.error"), null); //$NON-NLS-1$
 	}
 
 	protected void createNameEntryField(Composite composite) {
-		new Label(composite, SWT.NONE).setText("Interpreter Name:");
+		new Label(composite, SWT.NONE).setText(RdtDebugUiMessages.getString("EditInterpreterDialog.rubyInterpreter.name")); //$NON-NLS-1$
 
 		GridData gridData = new GridData(GridData.HORIZONTAL_ALIGN_FILL);
 		gridData.horizontalSpan = 2;
@@ -123,11 +124,11 @@ public class EditInterpreterDialog extends StatusDialog {
 
 	protected IStatus validateInterpreterNameText() {
 		int status = IStatus.OK;
-		String message = "";
+		String message = ""; //$NON-NLS-1$
 
 		if (interpreterNameText.getText() == null || interpreterNameText.getText().length() <= 0) {
 			status = IStatus.ERROR;
-			message = "Name cannot be empty";
+			message = RdtDebugUiMessages.getString("EditInterpreterDialog.rubyInterpreter.name.error"); //$NON-NLS-1$
 		}
 
 		return new Status(status, RdtDebugUiPlugin.PLUGIN_ID, 0, message, null);
@@ -136,7 +137,7 @@ public class EditInterpreterDialog extends StatusDialog {
 	protected void browseForInstallDir() {
 		DirectoryDialog dialog = new DirectoryDialog(getShell());
 		dialog.setFilterPath(interpreterLocationText.getText());
-		dialog.setMessage("Choose location");
+		dialog.setMessage(RdtDebugUiMessages.getString("EditInterpreterDialog.rubyInterpreter.path.browse.message")); //$NON-NLS-1$
 		String newPath = dialog.open();
 		if (newPath != null)
 			interpreterLocationText.setText(newPath);

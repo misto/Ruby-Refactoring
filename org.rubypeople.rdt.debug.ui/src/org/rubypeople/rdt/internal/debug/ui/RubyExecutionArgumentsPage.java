@@ -27,7 +27,7 @@ public class RubyExecutionArgumentsPage extends PropertyPage implements IWorkben
 		GridLayout layout = new GridLayout();
 		layout.numColumns = 2;
 		composite.setLayout(layout);
-		new Label(composite, SWT.NONE).setText("Interpreter Arguments:");
+		new Label(composite, SWT.NONE).setText(RdtDebugUiMessages.getString("LaunchConfigurationTab.RubyArguments.interpreter_args_box_title"));
 		new Label(composite, SWT.NONE).setText("                      ");
 		interpreterArgumentsText = new Text(composite, SWT.BORDER);
 		GridData interpreterArgumentsData = new GridData(GridData.HORIZONTAL_ALIGN_FILL);
@@ -35,7 +35,7 @@ public class RubyExecutionArgumentsPage extends PropertyPage implements IWorkben
 		interpreterArgumentsText.setLayoutData(interpreterArgumentsData);
 		interpreterArgumentsText.setText(getArgument("interpreter"));
 		
-		new Label(composite, SWT.NONE).setText("Program Arguments:");
+		new Label(composite, SWT.NONE).setText(RdtDebugUiMessages.getString("LaunchConfigurationTab.RubyArguments.program_args_box_title"));
 		programArgumentsText = new Text(composite, SWT.BORDER);
 		GridData programArgumentsData = new GridData(GridData.HORIZONTAL_ALIGN_FILL);
 		programArgumentsData.horizontalSpan = 2;

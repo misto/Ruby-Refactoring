@@ -25,6 +25,7 @@ import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPreferencePage;
+import org.rubypeople.rdt.internal.debug.ui.RdtDebugUiMessages;
 import org.rubypeople.rdt.internal.launching.RubyInterpreter;
 import org.rubypeople.rdt.internal.launching.RubyRuntime;
 
@@ -66,7 +67,7 @@ public class RubyInterpreterPreferencePage extends PreferencePage implements IWo
 
 		addButton = new Button(buttons, SWT.PUSH);
 		addButton.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
-		addButton.setText("Add");
+		addButton.setText(RdtDebugUiMessages.getString("RubyInterpreterPreferencePage.addButton.label")); //$NON-NLS-1$
 		addButton.addListener(SWT.Selection, new Listener() {
 			public void handleEvent(Event evt) {
 				addInterpreter();
@@ -75,7 +76,7 @@ public class RubyInterpreterPreferencePage extends PreferencePage implements IWo
 
 		editButton = new Button(buttons, SWT.PUSH);
 		editButton.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
-		editButton.setText("Edit");
+		editButton.setText(RdtDebugUiMessages.getString("RubyInterpreterPreferencePage.editButton.label")); //$NON-NLS-1$
 		editButton.addListener(SWT.Selection, new Listener() {
 			public void handleEvent(Event evt) {
 				editInterpreter();
@@ -84,7 +85,7 @@ public class RubyInterpreterPreferencePage extends PreferencePage implements IWo
 
 		removeButton = new Button(buttons, SWT.PUSH);
 		removeButton.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
-		removeButton.setText("Remove");
+		removeButton.setText(RdtDebugUiMessages.getString("RubyInterpreterPreferencePage.removeButton.label")); //$NON-NLS-1$
 		removeButton.addListener(SWT.Selection, new Listener() {
 			public void handleEvent(Event evt) {
 				removeInterpreter();
@@ -128,11 +129,11 @@ public class RubyInterpreterPreferencePage extends PreferencePage implements IWo
 		table.setLinesVisible(false);
 
 		TableColumn column = new TableColumn(table, SWT.NULL);
-		column.setText("Name");
+		column.setText(RdtDebugUiMessages.getString("RubyInterpreterPreferencePage.rubyInterpreterTable.interpreterName")); //$NON-NLS-1$
 		column.setWidth(125);
 
 		column = new TableColumn(table, SWT.NULL);
-		column.setText("Location");
+		column.setText(RdtDebugUiMessages.getString("RubyInterpreterPreferencePage.rubyInterpreterTable.interpreterPath")); //$NON-NLS-1$
 		column.setWidth(350);
 
 		return table;
@@ -148,7 +149,7 @@ public class RubyInterpreterPreferencePage extends PreferencePage implements IWo
 
 	protected void addInterpreter() {
 		RubyInterpreter newInterpreter = new RubyInterpreter(null, null);
-		EditInterpreterDialog editor = new EditInterpreterDialog(getShell(), "Add Interpreter");
+		EditInterpreterDialog editor = new EditInterpreterDialog(getShell(), RdtDebugUiMessages.getString("RubyInterpreterPreferencePage.EditInterpreterDialog.addInterpreter.title")); //$NON-NLS-1$
 		editor.create();
 		editor.setInterpreterToEdit(newInterpreter);
 		if (EditInterpreterDialog.OK == editor.open())
@@ -179,7 +180,7 @@ public class RubyInterpreterPreferencePage extends PreferencePage implements IWo
 	}
 
 	protected void editInterpreter() {
-		EditInterpreterDialog editor = new EditInterpreterDialog(getShell(), "Edit Interpreter");
+		EditInterpreterDialog editor = new EditInterpreterDialog(getShell(), RdtDebugUiMessages.getString("RubyInterpreterPreferencePage.EditInterpreterDialog.editInterpreter.title")); //$NON-NLS-1$
 		editor.create();
 		
 		RubyInterpreter anInterpreter = getSelectedInterpreter();
