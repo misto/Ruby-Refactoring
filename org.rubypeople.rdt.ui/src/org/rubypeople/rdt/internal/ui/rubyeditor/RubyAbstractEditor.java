@@ -58,6 +58,7 @@ public class RubyAbstractEditor extends TextEditor {
 	protected void handleOutlinePageSelection(SelectionChangedEvent event) {
 		StructuredSelection selection = (StructuredSelection) event.getSelection();
 		RubyElement element = (RubyElement) selection.getFirstElement();
+		if (element == null) return;
 		try {
 			int offset = getSourceViewer().getDocument().getLineOffset(element.getStart().getLineNumber());
 			selectAndReveal(offset + element.getStart().getOffset(), element.getName().length());
