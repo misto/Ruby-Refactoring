@@ -3,13 +3,13 @@
 
 	<target name="init">
 		<property name="plugin" value="org.rubypeople.rdt.doc.user"/>
-		<property name="version.suffix" value="_0.3.1"/>
+		<property name="version.suffix" value="_0.4.0"/>
 		<property name="full.name" value="${plugin}${version.suffix}"/>
 		<property name="temp.folder" value="${basedir}/temp.folder"/>
 		<property name="plugin.destination" value="${basedir}"/>
 		<property name="build.result.folder" value="${basedir}"/>
-        <property name="docbook.xsl.dir" value="../../../docbook/docbook-xsl-1.64.1"/>
-        <property name="docbook.dtd.dir" value="../../../docbook/dtd"/>
+        <property name="docbook.xsl.dir" value="../../docbook/docbook-xsl-1.64.1"/>
+        <property name="docbook.dtd.dir" value="../../docbook/dtd"/>
 	</target>
 
 	<target name="build.update.jar" depends="init">
