@@ -440,4 +440,37 @@ public class RubyParserTest extends TestCase {
 		RubyMethod hisMethod = (RubyMethod) bob.getElement("hisMethod");
 		assertEquals( RubyElement.PRIVATE, hisMethod.getAccess() );
 	}
+	
+	public void testAttributeReaderOnOneVariable() throws Exception {
+		RubyScript script = RubyParser.parse("module Bob\n@var = 1\nattr_reader :var\nend\n");
+		assertEquals(1, script.getElementCount());
+		assertTrue(script.contains(new RubyModule("Bob", 7)));
+		RubyModule bob = script.getModule("Bob");
+		assertEquals(1, bob.getElementCount() );
+		assertNotNull( bob.getElement("@var") );
+		RubyInstanceVariable var = (RubyInstanceVariable) bob.getElement("@var");
+		assertEquals( RubyElement.READ, var.getAccess() );
+	}
+	
+	public void testAttributeWriterOnOneVariable() throws Exception {
+		RubyScript script = RubyParser.parse("module Bob\n@var = 1\nattr_writer :var\nend\n");
+		assertEquals(1, script.getElementCount());
+		assertTrue(script.contains(new RubyModule("Bob", 7)));
+		RubyModule bob = script.getModule("Bob");
+		assertEquals(1, bob.getElementCount() );
+		assertNotNull( bob.getElement("@var") );
+		RubyInstanceVariable var = (RubyInstanceVariable) bob.getElement("@var");
+		assertEquals( RubyElement.WRITE, var.getAccess() );
+	}
+	
+	public void testAttributeAccessorOnOneVariable() throws Exception {
+		RubyScript script = RubyParser.parse("module Bob\n@var = 1\nattr_accessor :var\nend\n");
+		assertEquals(1, script.getElementCount());
+		assertTrue(script.contains(new RubyModule("Bob", 7)));
+		RubyModule bob = script.getModule("Bob");
+		assertEquals(1, bob.getElementCount() );
+		assertNotNull( bob.getElement("@var") );
+		RubyInstanceVariable var = (RubyInstanceVariable) bob.getElement("@var");
+		assertEquals( RubyElement.PUBLIC, var.getAccess() );
+	}
 }
