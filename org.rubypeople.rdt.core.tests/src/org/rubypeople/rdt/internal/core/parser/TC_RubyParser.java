@@ -734,5 +734,16 @@ public class TC_RubyParser extends TestCase {
 		RubyScript script = RubyParser.parse("alias $globalOne $globalTwo");
 		assertEquals(2, script.getElementCount());
 	}
+	
+	public void testEmptyClassName() throws Exception {
+		RubyScript script = RubyParser.parse("class ");
+		assertEquals(0, script.getElementCount() );
+		
+		RubyScript script2 = RubyParser.parse("class");
+		assertEquals(0, script2.getElementCount() );
+		
+		RubyScript script3 = RubyParser.parse("class  ");
+		assertEquals(0, script3.getElementCount() );
+	}
 
 }

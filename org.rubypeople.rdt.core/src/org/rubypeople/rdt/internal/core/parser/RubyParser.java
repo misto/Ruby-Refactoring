@@ -541,6 +541,7 @@ public class RubyParser {
 		if (classMatcher.find()) {
 			char[] tokens = { ' ', ';'};
 			String name = getToken("class ", tokens, curLine);
+			if (name.trim().length() == 0) return;
 			int start = classMatcher.end();
 			if (Character.isLowerCase(name.charAt(0))) script.addParseError(new ParseError("Class names should begin with an uppercase letter.", lineNum, start, start + name.length()));
 			pushMultiLineElement(new RubyClass(name, lineNum, start));
