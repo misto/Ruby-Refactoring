@@ -6,7 +6,9 @@
    version="0.3.2">
 
    <runtime>
-      <library name="rdtcoretests.jar"/>
+      <library name="rdtcoretests.jar">
+         <export name="*"/>
+      </library>
    </runtime>
    <requires>      
       <import plugin="org.eclipse.core.resources"/>

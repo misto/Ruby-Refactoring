@@ -8,7 +8,9 @@
    class="org.rubypeople.rdt.internal.debug.ui.tests.RdtDebugUiTestsPlugin">
 
    <runtime>
-      <library name="rdtdebuguitests.jar"/>
+      <library name="rdtdebuguitests.jar">
+         <export name="*"/>
+      </library>
    </runtime>
    <requires>
       <import plugin="org.eclipse.core.runtime.compatibility"/>
