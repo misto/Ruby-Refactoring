@@ -9,10 +9,13 @@
    </feature>
    <feature url="features/org.rubypeople.rdt_0.4.1.jar" id="org.rubypeople.rdt" version="0.4.1">
       <category name="RubyEclipse"/>
-   </feature>   
+   </feature>
    <feature url="features/org.rubypeople.rdt_0.4.2.jar" id="org.rubypeople.rdt" version="0.4.2">
       <category name="RubyEclipse"/>
-   </feature>   
+   </feature>
+   <feature url="features/org.rubypeople.rdt_0.5.0.jar" id="org.rubypeople.rdt" version="0.5.0">
+      <category name="RubyEclipse"/>
+   </feature>
    <category-def name="RubyEclipse" label="RDT">
       <description>
          The Ruby Development Tools.
