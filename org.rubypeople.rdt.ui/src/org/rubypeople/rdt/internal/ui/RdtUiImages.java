@@ -39,7 +39,12 @@ public class RdtUiImages {
 	public static final String IMG_CTOOLS_RUBYCLASS = NAME_PREFIX + "ruby_class.gif";
 	public static final String IMG_CTOOLS_RUBYMODULE = NAME_PREFIX + "ruby_module.gif";
 	public static final String IMG_CTOOLS_RUBYMETHOD = NAME_PREFIX + "ruby_method.gif";
+	public static final String IMG_CTOOLS_RUBYMETHOD_PRO = NAME_PREFIX + "ruby_method_pro.gif";
+	public static final String IMG_CTOOLS_RUBYMETHOD_PUB = NAME_PREFIX + "ruby_method_pub.gif";
 	public static final String IMG_CTOOLS_RUBYINSTVAR = NAME_PREFIX + "ruby_inst_var.gif";
+	public static final String IMG_CTOOLS_RUBYINSTVAR_PRIV = NAME_PREFIX + "ruby_inst_var_priv.gif";
+	public static final String IMG_CTOOLS_RUBYINSTVAR_READ = NAME_PREFIX + "ruby_inst_var_read.gif";
+	public static final String IMG_CTOOLS_RUBYINSTVAR_WRITE = NAME_PREFIX + "ruby_inst_var_write.gif";
 	public static final String IMG_CTOOLS_RUBYCLASSVAR = NAME_PREFIX + "ruby_class_var.gif";
 
 	public static final ImageDescriptor DESC_OBJS_ERROR = createManaged(OBJ_PREFIX, IMG_OBJS_ERROR);
@@ -52,7 +57,12 @@ public class RdtUiImages {
 	public static final ImageDescriptor DESC_CTOOL_RUBYCLASS = createManaged(CTOOL_PREFIX, IMG_CTOOLS_RUBYCLASS);
 	public static final ImageDescriptor DESC_CTOOL_RUBYMODULE = createManaged(CTOOL_PREFIX, IMG_CTOOLS_RUBYMODULE);
 	public static final ImageDescriptor DESC_CTOOL_RUBYMETHOD = createManaged(CTOOL_PREFIX, IMG_CTOOLS_RUBYMETHOD);
+	public static final ImageDescriptor DESC_CTOOL_RUBYMETHOD_PRO = createManaged(CTOOL_PREFIX, IMG_CTOOLS_RUBYMETHOD_PRO);
+	public static final ImageDescriptor DESC_CTOOL_RUBYMETHOD_PUB = createManaged(CTOOL_PREFIX, IMG_CTOOLS_RUBYMETHOD_PUB);
 	public static final ImageDescriptor DESC_CTOOL_RUBYINSTVAR = createManaged(CTOOL_PREFIX, IMG_CTOOLS_RUBYINSTVAR);
+	public static final ImageDescriptor DESC_CTOOL_RUBYINSTVAR_PRIV = createManaged(CTOOL_PREFIX, IMG_CTOOLS_RUBYINSTVAR_PRIV);
+	public static final ImageDescriptor DESC_CTOOL_RUBYINSTVAR_READ = createManaged(CTOOL_PREFIX, IMG_CTOOLS_RUBYINSTVAR_READ);
+	public static final ImageDescriptor DESC_CTOOL_RUBYINSTVAR_WRITE = createManaged(CTOOL_PREFIX, IMG_CTOOLS_RUBYINSTVAR_WRITE);
 	public static final ImageDescriptor DESC_CTOOL_RUBYCLASSVAR = createManaged(CTOOL_PREFIX, IMG_CTOOLS_RUBYCLASSVAR);
 
 	/**
