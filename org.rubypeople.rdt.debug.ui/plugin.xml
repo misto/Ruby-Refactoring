@@ -301,6 +301,14 @@
             </enablement>
          </action>
       </viewerContribution>
+      
    </extension>
-
+   <extension
+         point="org.eclipse.debug.ui.consoleLineTrackers">
+      <consoleLineTracker
+            class="org.rubypeople.rdt.internal.debug.ui.console.RubyConsoleTracker"
+            processType="ruby"
+            id="org.rubypeople.rdt.debug.ui.RubyConsoleTracker">
+      </consoleLineTracker>
+   </extension>
 </plugin>

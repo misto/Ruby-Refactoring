@@ -60,9 +60,12 @@ public class RubySourceLocator implements IPersistableSourceLocator, ISourcePres
 	 * @see org.eclipse.debug.core.model.ISourceLocator#getSourceElement(IStackFrame)
 	 */
 	public Object getSourceElement(IStackFrame stackFrame) {
-		return new SourceElement(((RubyStackFrame) stackFrame).getFileName(), this);
+		return this.getSourceElement( ((RubyStackFrame) stackFrame).getFileName());
 	}
-
+	
+	public Object getSourceElement(String pFilename) {
+		return new SourceElement(pFilename, this);
+	}
 	/**
 	 * @see org.eclipse.debug.ui.ISourcePresentation#getEditorId(IEditorInput,
 	 *          Object)

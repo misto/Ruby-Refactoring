@@ -2,7 +2,9 @@ package org.rubypeople.rdt.internal.launching;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Map;
 
 import org.eclipse.core.boot.BootLoader;
 import org.eclipse.core.resources.IProject;
@@ -26,8 +28,9 @@ public class InterpreterRunner {
 		} catch (IOException e) {
 			throw new RuntimeException("Unable to execute interpreter: " + commandLine + workingDirectory);
 		}
-
-		IProcess process = DebugPlugin.newProcess(launch, nativeRubyProcess, renderLabel(configuration));
+        Map defaultAttributes = new HashMap();
+        defaultAttributes.put(IProcess.ATTR_PROCESS_TYPE, "ruby");
+		IProcess process = DebugPlugin.newProcess(launch, nativeRubyProcess, renderLabel(configuration), defaultAttributes);
 		process.setAttribute(RdtLaunchingPlugin.PLUGIN_ID + ".launcher.cmdline", commandLine);
 		return process ;
 	}
