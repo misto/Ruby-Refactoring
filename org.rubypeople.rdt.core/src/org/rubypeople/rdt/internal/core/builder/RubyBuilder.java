@@ -6,11 +6,13 @@ package org.rubypeople.rdt.internal.core.builder;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
+import org.eclipse.core.resources.IResourceDelta;
 import org.eclipse.core.resources.IResourceProxy;
 import org.eclipse.core.resources.IResourceProxyVisitor;
 import org.eclipse.core.resources.IncrementalProjectBuilder;
@@ -30,10 +32,11 @@ import org.rubypeople.rdt.internal.core.parser.TaskParser;
  */
 public class RubyBuilder extends IncrementalProjectBuilder {
 
-	private static final boolean DEBUG = false;
+	private static final boolean DEBUG = true;
 	public static int MAX_AT_ONCE = 1000;
 	private IProject currentProject;
 	protected boolean compiledAllAtOnce;
+	private int totalWork = 10000;
 
 	public RubyBuilder() {}
 
@@ -44,20 +47,45 @@ public class RubyBuilder extends IncrementalProjectBuilder {
 	 *      java.util.Map, org.eclipse.core.runtime.IProgressMonitor)
 	 */
 	protected IProject[] build(int kind, Map args, IProgressMonitor monitor) throws CoreException {
-		RubyCore.log("Told to build");
-
+		monitor.beginTask("build", totalWork);
+		IProject[] returnProjects = new IProject[0];
 		this.currentProject = getProject();
-		if (currentProject == null || !currentProject.isAccessible()) return new IProject[0];
-		// FIXME Build incrementally by deltas if we can!
-		build();
+		if (currentProject == null || !currentProject.isAccessible()) return returnProjects;
+		
+		if (kind == INCREMENTAL_BUILD || kind == AUTO_BUILD) {
+			if (DEBUG) System.out.println("INCREMENTAL build...");
+			IResourceDelta delta = getDelta(currentProject);
+			List files = getAffectedFiles(delta.getAffectedChildren());
+			IFile[] fileArray = new IFile[files.size()];
+			System.arraycopy(files.toArray(), 0, fileArray, 0, fileArray.length);
+			compile(fileArray, monitor);
+			return returnProjects;
+		}
+		build(monitor);
 
 		// FIXME Get the required projects as in JavaBuilder
 		if (DEBUG) System.out.println("Finished build of " + currentProject.getName() //$NON-NLS-1$
 				+ " @ " + new Date(System.currentTimeMillis())); //$NON-NLS-1$
-		return new IProject[0];
+		return returnProjects;
 	}
 
-	public void build() {
+	private List getAffectedFiles(IResourceDelta[] deltas) {
+		List files = new ArrayList();
+		for (int i = 0; i < deltas.length; i++) {
+			IResourceDelta curDelta = deltas[i];
+			IResource resource = curDelta.getResource();
+			if (resource.getType() == IResource.FOLDER || resource.getType() == IResource.PROJECT) {
+				files.addAll(getAffectedFiles(curDelta.getAffectedChildren()));
+				continue;
+			}
+			if (resource.getType() != IResource.FILE) continue;
+			if (!org.rubypeople.rdt.internal.core.util.Util.isRubyLikeFileName(resource.getName())) continue;
+			files.add(resource);
+		}
+		return files;
+	}
+
+	private void build(IProgressMonitor monitor) {
 		if (DEBUG) System.out.println("FULL build"); //$NON-NLS-1$
 
 		try {
@@ -67,7 +95,7 @@ public class RubyBuilder extends IncrementalProjectBuilder {
 			if (sourceFiles.size() > 0) {
 				IFile[] allSourceFiles = new IFile[sourceFiles.size()];
 				sourceFiles.toArray(allSourceFiles);
-				compile(allSourceFiles);
+				compile(allSourceFiles, monitor);
 			}
 
 		} catch (CoreException e) {
@@ -98,8 +126,9 @@ public class RubyBuilder extends IncrementalProjectBuilder {
 	 * Compile the given elements, adding more elements to the work queue if
 	 * they are affected by the changes.
 	 */
-	protected void compile(IFile[] units) {
+	protected void compile(IFile[] units, IProgressMonitor monitor) {
 		int unitsLength = units.length;
+		int percentPerUnit = totalWork / unitsLength;
 		// do them all now
 		for (int i = 0; i < unitsLength; i++) {
 			try {
@@ -110,11 +139,12 @@ public class RubyBuilder extends IncrementalProjectBuilder {
 				try {
 					MarkerUtility.removeMarkers(file);
 					parser.parse(units[i].getName(), new InputStreamReader(file.getContents()));
-					MarkerUtility.createProblemMarkers(file, warnings.getWarnings());						
+					MarkerUtility.createProblemMarkers(file, warnings.getWarnings());
 				} catch (SyntaxException e) {
 					MarkerUtility.createSyntaxError(file, e);
 				}
 				createTasks(file);
+				monitor.worked(percentPerUnit);
 			} catch (CoreException e) {
 				RubyCore.log(e);
 			}
