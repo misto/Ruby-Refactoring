@@ -150,6 +150,10 @@ public class RubyAbstractEditor extends TextEditor {
 	 */
 	private void createMarkers(RubyScript script) throws CoreException {
 		IEditorInput input = getEditorInput();
+		if (input == null) {
+			// can happen at workbench shutdown
+			return ;
+		}
 		IResource resource = (IResource) ((IAdaptable) input).getAdapter(org.eclipse.core.resources.IResource.class);
 		if (resource == null) {
 		// happens if ruby file is external
