@@ -15,6 +15,7 @@
       <import plugin="org.rubypeople.rdt.debug.core"/>
       <import plugin="org.eclipse.debug.core"/>
       <import plugin="org.kxml2"/>
+      <import plugin="org.eclipse.core.resources"/>
    </requires>
 
 
