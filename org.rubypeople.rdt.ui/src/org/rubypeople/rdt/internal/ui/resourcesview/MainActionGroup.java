@@ -27,6 +27,7 @@ import org.eclipse.ui.views.navigator.ResourceSorter;
 
 public class MainActionGroup extends ActionGroup {
 
+	private NewWizardsActionGroup newWizardsActionGroup;
 	private OpenActionGroup openActionGroup;
 	private RefactorActionGroup refactorActionGroup;
 	private PropertyDialogAction propertyDialogAction ;
@@ -34,6 +35,7 @@ public class MainActionGroup extends ActionGroup {
 
 	public MainActionGroup(RubyResourcesView rubyResourcesView) {
 		ResourceNavigatorAdapter adapter = new ResourceNavigatorAdapter(rubyResourcesView) ;
+		this.newWizardsActionGroup = new NewWizardsActionGroup(rubyResourcesView.getSite());
 		this.openActionGroup = new OpenActionGroup(adapter);
 		this.refactorActionGroup = new RefactorActionGroup(adapter);
 		Shell shell = rubyResourcesView.getSite().getShell();
@@ -42,6 +44,7 @@ public class MainActionGroup extends ActionGroup {
 	}
 
 	public void fillContextMenu(IMenuManager menu) {
+		this.newWizardsActionGroup.fillContextMenu(menu);
 		this.openActionGroup.fillContextMenu(menu);
 		menu.add(new Separator());
 		this.refactorActionGroup.fillContextMenu(menu);
