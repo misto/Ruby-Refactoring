@@ -60,6 +60,7 @@
 	
 	<target name="package.rdt" depends="zip.plugin">
 		<mkdir dir="${package.temp.dir}"/>
+		<antcall target="package.jruby"/>
 		<unzip src="org.kxml2/org.kxml2_${version}.zip" dest="${package.temp.dir}"/>
 		<unzip src="org.rubypeople.rdt.core/org.rubypeople.rdt.core_${version}.zip" dest="${package.temp.dir}"/>
 		<unzip src="org.rubypeople.rdt.debug.ui/org.rubypeople.rdt.debug.ui_${version}.zip" dest="${package.temp.dir}"/>
@@ -100,5 +101,14 @@
 	
 	<target name="refresh" if="eclipse.running">
 		<eclipse.refreshLocal resource="org.rubypeople.rdt.build" depth="infinite"/>
+	</target>
+	
+	<target name="package.jruby">
+		<mkdir dir="${package.temp.dir}/org.jruby"/>
+		<mkdir dir="${package.temp.dir}/org.jruby/lib"/>
+		<copy file="org.jruby/plugin.xml" todir="${package.temp.dir}/org.jruby"/>
+		<copy todir="${package.temp.dir}/org.jruby/lib">
+			<fileset dir="org.jruby/lib"/>
+		</copy>
 	</target>
 </project>
