@@ -3,44 +3,36 @@ package org.rubypeople.rdt.internal.core.parser;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.StringReader;
-import java.util.ArrayList;
-import java.util.List;
 
 import org.apache.regexp.RE;
 import org.apache.regexp.RESyntaxException;
 
-public class RubyScript {
-	protected String content;
+public class RubyScript extends RubyElement {
+	protected RubyClass currentElement;
 
-	public RubyScript(String content) {
-		this.content = content;
+	public RubyScript(String source) {
+		super("A Ruby Script");
+		parse(source);
 	}
-	public Object[] getElements() {
-		List rootComponent = new ArrayList();
-		BufferedReader reader = new BufferedReader(new StringReader(content));
+	
+	protected void parse(String source) {
+		currentElement = new RubyClass("cannot start in a null state");
+		BufferedReader reader = new BufferedReader(new StringReader(source));
 		RE classMatcher = createClassMatcher();
 
-		int lineStartOffset = 0;
-		String previousLine = null;
 		String currentLine = null;
 		try {
 			while ((currentLine = reader.readLine()) != null) {
 				if (classMatcher.match(currentLine)) {
 					String className = getClassName(currentLine);
-//					int nameOffset = lineStartOffset + currentLine.indexOf("class ");
-//					int nameLength = 6 + className.length();
-//					rootComponent.add(new RubyClass(className, new SourceLocation(0,0,nameOffset,nameLength)));
-					rootComponent.add(className);
+					currentElement = new RubyClass(className); 
+					addElement(currentElement);
 				}
-
-//				if (previousLine != null)
-//					lineStartOffset += previousLine.length() + NEW_LINE_CHARACTER_COUNT;
-
-				previousLine = currentLine;
+				currentElement.parse(currentLine);
 			}
 		} catch (IOException e) {
+			throw new RuntimeException("Unexpected exception occurred parsing script", e);
 		}
-		return rootComponent.toArray();
 	}
 
 	protected RE createClassMatcher() {

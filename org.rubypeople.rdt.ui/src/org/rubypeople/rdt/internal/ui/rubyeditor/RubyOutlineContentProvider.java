@@ -5,13 +5,15 @@ import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.IDocumentListener;
 import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.viewers.Viewer;
+import org.rubypeople.rdt.internal.core.parser.IRubyElement;
 import org.rubypeople.rdt.internal.core.parser.RubyScript;
 
 public class RubyOutlineContentProvider implements ITreeContentProvider, IDocumentListener {
 	protected Viewer viewer;
 	
 	public Object[] getChildren(Object parentElement) {
-		return new Object[0];
+		IRubyElement rubyElement = (IRubyElement) parentElement;
+		return rubyElement.getElements();
 	}
 
 	public Object getParent(Object element) {
@@ -19,7 +21,8 @@ public class RubyOutlineContentProvider implements ITreeContentProvider, IDocume
 	}
 
 	public boolean hasChildren(Object element) {
-		return false;
+		IRubyElement rubyElement = (IRubyElement) element;
+		return rubyElement.hasElements();
 	}
 
 	public Object[] getElements(Object inputElement) {

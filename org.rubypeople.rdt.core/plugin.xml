@@ -10,7 +10,9 @@
       <library name="rdtcore.jar">
          <export name="*"/>
       </library>
-      <library name="lib/jakarta-regexp-1.2.jar"/>
+      <library name="lib/jakarta-regexp-1.2.jar">
+         <export name="*"/>
+      </library>
    </runtime>
    <requires>
       <import plugin="org.eclipse.core.runtime"/>
