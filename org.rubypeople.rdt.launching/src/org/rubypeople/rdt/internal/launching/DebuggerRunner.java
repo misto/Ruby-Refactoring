@@ -28,14 +28,17 @@ public class DebuggerRunner extends InterpreterRunner {
 		if (url != null && url.getProtocol().equals("jar")) {
 			String jarFile = url.getFile().substring(0, url.getFile().lastIndexOf("!"));
 			String dir = jarFile.substring(0, jarFile.lastIndexOf("/"));
-			return dir.replaceFirst("file:", "") + "/ruby";
+			if (dir.startsWith("file:")) {
+				dir = dir.substring(5);
+			}
+			return dir + "/ruby";
 		}
 		// ... but in a runtime workbench the class has been loaded from bin directory
 		url = this.getClass().getResource("/");
 		if (url != null && url.getProtocol().equals("file")) {
 			return url.getFile() + "../ruby";
 		}
-		throw new RuntimeException("Could not find directory of ruby debugger file.") ;		
+		throw new RuntimeException("Could not find directory of ruby debugger file.");
 	}
 
 	protected String renderLoadPath(InterpreterRunnerConfiguration configuration) {
