@@ -18,13 +18,12 @@ import org.eclipse.jface.text.reconciler.DirtyRegion;
 import org.eclipse.jface.text.reconciler.IReconcilingStrategy;
 import org.eclipse.jface.text.reconciler.IReconcilingStrategyExtension;
 import org.eclipse.ui.texteditor.IDocumentProvider;
-import org.eclipse.ui.texteditor.ITextEditor;
 import org.rubypeople.rdt.internal.core.parser.RubyParser;
 import org.rubypeople.rdt.internal.ui.RdtUiPlugin;
+import org.rubypeople.rdt.internal.ui.rubyeditor.RubyAbstractEditor;
 import org.rubypeople.rdt.internal.ui.rubyeditor.RubyDocumentProvider;
 import org.rubypeople.rdt.internal.ui.rubyeditor.outline.DocumentModelChangeEvent;
 import org.rubypeople.rdt.internal.ui.rubyeditor.outline.RubyCore;
-import org.rubypeople.rdt.internal.ui.rubyeditor.outline.RubyModel;
 
 public class RubyReconcilingStrategy implements IReconcilingStrategy, IReconcilingStrategyExtension {
 
@@ -34,21 +33,20 @@ public class RubyReconcilingStrategy implements IReconcilingStrategy, IReconcili
 	 */
 	public static final int DELAY = 500;
 
-	private ITextEditor fEditor;
+	private RubyAbstractEditor fEditor;
 
-	public RubyReconcilingStrategy(ITextEditor editor) {
+	public RubyReconcilingStrategy(RubyAbstractEditor editor) {
 		fEditor = editor;
 	}
 
 	private void internalReconcile(DirtyRegion dirtyRegion) {
 		try {
-			IDocumentProvider provider = fEditor.getDocumentProvider();
+			IDocumentProvider provider = fEditor.getDocumentProvider();		
+			// could provider also be ExternalRubyDocumentProvider ?
 			if (provider instanceof RubyDocumentProvider) {
-				RubyDocumentProvider documentProvider = (RubyDocumentProvider) provider;
-				IDocument doc = documentProvider.getDocument(fEditor.getEditorInput());
-				RubyModel model = documentProvider.getRubyModel(fEditor.getEditorInput()) ;
-				model.setScript(RubyParser.parse(doc.get()));
-				RubyCore.getDefault().notifyDocumentModelListeners(new DocumentModelChangeEvent(model));
+				IDocument doc = provider.getDocument(fEditor.getEditorInput());
+				fEditor.getRubyModel().setScript(RubyParser.parse(doc.get())) ; 
+				RubyCore.getDefault().notifyDocumentModelListeners(new DocumentModelChangeEvent(fEditor.getRubyModel()));
 			}
 		} catch (Exception e) {
 			RdtUiPlugin.log(e);
