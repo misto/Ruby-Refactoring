@@ -27,6 +27,8 @@ package org.rubypeople.rdt.internal.core.parser;
 
 import java.util.NoSuchElementException;
 
+import org.rubypeople.rdt.internal.core.parser.ast.RubyElement;
+
 import junit.framework.TestCase;
 
 public class TC_RubyTokenizer extends TestCase {
@@ -306,6 +308,16 @@ public class TC_RubyTokenizer extends TestCase {
 		assertEquals("=", tokenizer.nextRubyToken().getText());
 		assertEquals("0", tokenizer.nextRubyToken().getText());
 		assertEquals("@content_length", tokenizer.nextRubyToken().getText());
+	}
+	
+	public void testIfAfterEquals() {
+		RubyTokenizer tokenizer = new RubyTokenizer("proxySite = if proxyStr");
+		assertEquals( 4, tokenizer.countTokens() );
+		assertEquals("proxySite", tokenizer.nextRubyToken().getText());
+		assertEquals("=", tokenizer.nextRubyToken().getText());
+		RubyToken token = tokenizer.nextRubyToken();
+		assertEquals("if", token.getText());
+		assertTrue( token.isType(RubyElement.IF) );
 	}
 	
 //	public void testInPercentString() {

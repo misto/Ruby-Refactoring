@@ -918,6 +918,17 @@ public class TC_RubyParser extends TestCase {
 		assertEquals(RubyElement.PROTECTED, element.getElement("from").getAccess() );
 	}
 	
+	public void testIfAfterEqualsAssignment() throws Exception {
+		RubyScript script = RubyParser.parse("class Bob\ndef query( req, proxyStr )\nproxySite = if proxyStr\nproxyStr\nelse\n@proxy\nend\nend\nend");
+		assertEquals(1, script.getElementCount() );
+		RubyElement bob = script.getElement("Bob");
+		assertNotNull(bob);
+		assertEquals( 2, bob.getElementCount() );
+		RubyElement query = bob.getElement("query");
+		assertNotNull(query);
+		assertTrue(query.contains(new RubyElement(RubyElement.IF, "if", 2, 12)));
+	}
+	
 	/**
 	 * @param parent
 	 * @param type

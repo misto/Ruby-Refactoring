@@ -343,14 +343,18 @@ public class RubyTokenizer {
 	}
 
 	/**
+	 * Returns true if the index is preceded by any number whitespaces and the
+	 * first non whitespace character is ';' or '='
+	 * 
 	 * @param line
-	 * @param i
+	 * @param index
 	 * @return
 	 */
 	private boolean isStartOfStatement(String line, int index) {
 		for (int curPos = index - 1; curPos >= 0; curPos--) {
 			char c = line.charAt(curPos);
 			if (c == ';') return true;
+			if (c == '=') return true;
 			if (!Character.isWhitespace(c)) return false;
 		}
 		return true;
