@@ -24,6 +24,7 @@ public class RubyPluginImages {
 	protected static final String OVR_PREFIX = "ovr16";
 	private static final String T_ELCL= "elcl16"; 	//$NON-NLS-1$
 	protected static final String CTOOL_PREFIX = "ctool16";
+	private static final String T_WIZBAN= "wizban"; 	//$NON-NLS-1$
 
 	public static final String IMG_OBJS_ERROR = NAME_PREFIX + "error_obj.gif";
 	public static final String IMG_OBJS_WARNING = NAME_PREFIX + "warning_obj.gif";
@@ -49,6 +50,8 @@ public class RubyPluginImages {
 	public static final String IMG_OBJS_FIXABLE_PROBLEM= NAME_PREFIX + "quickfix_warning_obj.gif"; //$NON-NLS-1$
 	public static final String IMG_OBJS_FIXABLE_ERROR= NAME_PREFIX + "quickfix_error_obj.gif"; //$NON-NLS-1$
 
+	public static final ImageDescriptor DESC_WIZBAN_NEWJPRJ = create(T_WIZBAN, "newrprj_wiz.gif"); 			//$NON-NLS-1$
+	
 	static {
 		createManaged(OBJ_PREFIX, IMG_OBJS_FIXABLE_ERROR);
 		createManaged(OBJ_PREFIX, IMG_OBJS_FIXABLE_PROBLEM);
