@@ -553,6 +553,16 @@ persons = Hash[ Person.new('Lisa') =&gt; Person.new('Marge'),
 	</chapter>
 	<chapter id="WhatsNew">
 		<title>What's new</title>
+		<para>New in RDT 0.4.1:</para>
+		<itemizedlist>			
+			<listitem> Clickable stack traces in console (click to open editor) </listitem>
+			<listitem> Ruby Resources View updated, now more like regular navigator </listitem>
+    		<listitem> Outline: improved and faster </listitem>
+			<listitem> Warnings and error annotations for ruby code (experimental, enable in preferences to try) </listitem>			    		
+			<listitem> Editor: convert typed tab to spaces </listitem>
+			<listitem> Code Formatter: use tabs or spaces for indentation </listitem>			
+			<listitem> Debugger: debug with 1.8.0 on windows </listitem>
+		</itemizedlist>
 		<para>New in RDT 0.4.0:</para>
 		<itemizedlist>
 			<listitem> Runs with Eclipse 3.0 </listitem>
