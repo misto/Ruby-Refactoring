@@ -24,3 +24,4 @@ Changes since Release of 0.5.0
 * Tab jumps to correct position
 * Fixed bug [1098315]: Incorrect formatting if semicolon are used directly attached to keywords, i.e. no separating spaces
 * Test::Unit tests can be launched in debug mode
+* Syntax highlighting (and customization) of regular expressions and commands
