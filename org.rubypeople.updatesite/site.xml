@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<site>
+
+   <description url="http://studio.rolemodelsoftware.com/~awilliams/updates/">
+      Welcome to our update site. I hope it works someday!
+   </description>
+   <feature url="features/org.rubypeople.rdt_0.3.0.jar" id="org.rubypeople.rdt" version="0.3.0">
+      <category name="RubyEclipse"/>
+   </feature>
+   <category-def name="RubyEclipse" label="RDT">
+      <description>
+         The Ruby Development Tools.
+      </description>
+   </category-def>
+</site>
