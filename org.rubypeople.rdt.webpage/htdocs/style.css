@@ -22,43 +22,83 @@
 {
   
   #container {
-    width: 760px;
+    width: 786px;
     text-align: left ;
     padding: 0px 0px 0px 0px;
     margin: 0px 0px 0px 0px;
-    background-color: #FF6666 ;
+   
+  }
+  
+  #banner {
+    position: relative ;
   }
 
   #leftPart {
-    width: 128px;
-    float: left;   
-    height: 500px ;     
+  	position: absolute;
+  	padding-top: 30px ;
+    width: 134px;
+	top: 125px;
+    left:0px;
+    z-index:2 ;     
+  }  
+  
+  #menuTop {
+    position: relative ;
+    overflow: hidden;
+    width: 134px;
+    height: 10px ;  
+    background-image: url(images/menuBorderTop.gif) ;
+    background-repeat: no-repeat;
+    background-position: 0px 0px ;  
+    margin: 0px 0px 0px 0px;
+    padding: 0px 0px 0px 0px ;
+    font-size: 0px;
   }
+  
+  #menuBottom {
+    position: relative ;
+    overflow: hidden;
+    width: 134px;
+    height: 10px ;  
+    background-image: url(images/menuBorderBottom.gif) ;
+    background-repeat: no-repeat;
+    background-position: 0px 0px ;  
+    margin: 0px 0px 0px 0px;
+    padding: 0px 0px 0px 0px ;
+    font-size: 0px;
+  }
+  
 
   #mainPart {
-	position: relative ;
-    margin: 0px 0 0 128px ;
-    padding: 10px 0 0 0  ;
-    background-color: white ;
-    height: 500px ;
+        background-color: white;
+        border: 1px solid #777777;
+        position: relative;
+        margin: 20px 0 0 140px;
+        width: 643px;
   }
+  
   
   #mainPartHeader {
      background-color:#CC0000 ;
      font-weight: bold ; 
      color: #ffffff;
      padding: 4 0 4 2 ; 
-     margin-left: 4 ;   
+     margin: 6 4 2 4 ;   
   }
 
   #banner {
     position: relative ;
 	margin: 0 0 0 0 ;
 	padding: 0 0 0 0 ;
- }
+  }
 
  .menuEntry {
-	 padding: 4 0 0 0 ;
+     background-color: #FF6666 ;     
+     font-size: 0px;
+ }
+ 
+ .firstMenuEntry {
+   padding-top: 5px ;
  }
 
 
@@ -68,9 +108,14 @@
 
   #sfLogo {
   	text-align: center ;
-  	padding-top: 30px ;
+  	padding: 50px 0px 30px 0 ;
+  	background-color: #FF6666 ;
   }
 
+}
+
+.section {
+  margin-left: 8px ;
 }
 
 BODY, TD, TH  {
@@ -78,11 +123,13 @@ BODY, TD, TH  {
 	font-size : 12px;
 	font-weight : normal;
 	color : #000000;
+	
 }
 
 body {   
-    text-align: center ; 
-    margin: 0 0 0 0;    
+    text-align: left ; 
+    margin: 0 0 0 0;   
+    background-color: #999999; 
 }
 
 A:LINK  {

@@ -1,4 +1,7 @@
-<div class="menuEntry">
+		<div id="menuTop">
+        </div>	
+
+<div class="menuEntry firstMenuEntry">
 	<a href="index.rdt.html"><img src="images/welcome.gif" alt="Welcome" border=0></a>
 </div>
 
@@ -8,6 +11,10 @@
 
 <div class="menuEntry">
 	<a href="features.rdt.html"><img src="images/features.gif" border="0" alt="Features"></a>
+</div>
+
+<div class="menuEntry">
+	<a href="screenshots.rdt.html"><img src="images/screenshots.gif" border="0" alt="Screenshots"></a>
 </div>
 
 <div class="menuEntry">
@@ -36,4 +43,6 @@
      src="http://sourceforge.net/sflogo.php?group_id=50233&amp;type=1"
      width="88" height="31" border="0" alt="SourceForge Logo"></a>
     <br/>
+</div>
+<div id="menuBottom">
 </div>

@@ -35,6 +35,13 @@ else {
 	
   <body>   	
    <div id="container">
+	 <!-- the left part is positioned absolutely. It occures first, because IE
+		does not correctly handle mixed declarations of divs with relative and
+		absolute positioning -->
+     <div id="leftPart">
+	
+         <?php include 'menu.php';?>
+     </div>		
      <div id="banner">
 		 <table border="0" cellspacing="0" cellpadding="0" width="100%" bgcolor="#CC0000">
 		    <tr>
@@ -47,16 +54,13 @@ else {
 		      </td>
 		    </tr>           
 		  </table>		
-	</div> 
-    <div id="leftPart">
-         <?php include 'menu.php';?>
-    </div>	
-    <div id="mainPart">
+	 </div>   
+     <div id="mainPart">
 		  <div id="mainPartHeader">
 			<?= $title?>
 		  </div>
 		<?php  include "$page.php"; ?>
+     </div>
     </div>
-    
   </body>
 </html>
