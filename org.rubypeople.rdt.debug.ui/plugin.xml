@@ -250,7 +250,7 @@
          point="org.eclipse.debug.ui.launchShortcuts">
       <shortcut
             label="%RubyApplicationShortcut.label"
-            icon="icons/full/ctool16/java_app.gif"
+            icon="icons/full/ctool16/run_ruby.gif"
             class="org.rubypeople.rdt.internal.debug.ui.launcher.RubyApplicationShortcut"
             modes="run, debug"
             id="org.rubypeople.rdt.debug.ui.RubyShortcut">
