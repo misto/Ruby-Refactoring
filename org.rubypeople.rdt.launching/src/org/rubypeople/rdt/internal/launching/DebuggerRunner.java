@@ -21,9 +21,8 @@ public class DebuggerRunner extends InterpreterRunner {
 	protected String getDebugCommandLineArgument() {
 		if (RdtDebugCorePlugin.getDefault().isRubyDebuggerVerbose()) {
 			return " -reclipseDebugVerbose";
-		} else {
-			return " -reclipseDebug";
 		}
+		return " -reclipseDebug";
 	}
 
 	public static String getDirectoryOfRubyDebuggerFile() {
