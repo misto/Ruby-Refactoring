@@ -17,7 +17,7 @@ import org.xmlpull.v1.XmlPullParserException;
 public abstract class XmlStreamReader {
 	private SuspensionPoint breakpointHit;
 
-	public void readElement(XmlPullParser xpp) throws XmlPullParserException, IOException {
+	public void readElement(XmlPullParser xpp) throws XmlPullParserException, IOException, XmlStreamReaderException  {
 		int eventType = xpp.getEventType();
 		do {
 			if (eventType == xpp.START_DOCUMENT) {
@@ -35,7 +35,7 @@ public abstract class XmlStreamReader {
 		} while (eventType != xpp.END_DOCUMENT);
 	}
 
-	protected abstract void processStartElement(XmlPullParser xpp) ;
+	protected abstract void processStartElement(XmlPullParser xpp)  throws XmlStreamReaderException ;
 	protected void processEndElement(XmlPullParser xpp) {
 		String name = xpp.getName();
 		String uri = xpp.getNamespace();

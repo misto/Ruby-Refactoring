@@ -41,6 +41,11 @@ class DEBUGGER__
 	stdout.printf "    #%d  %s:%s%s\n", n, file, line, id ? ":in `#{id.id2name}'":""
       end
     end
+    
+    def printException(file, line, exception)
+      stdout.printf "%s:%d: `%s' (%s)\n", file, line, exception, exception.type
+      stdout.flush
+	end
 
     def printStepEnd(file, line, framesCount)
 
@@ -124,22 +129,8 @@ class DEBUGGER__
 
 
     def initialize
-      if ECLIPSE_DEBUG then
-	if ECLIPSE_CREATE_SOCKET then
-	  server = TCPServer.new('localhost', ECLIPSE_LISTEN_PORT)
-	  puts "ruby debugger listens on port #{ECLIPSE_LISTEN_PORT}"
-	  $stdout.flush
-	  @socket = server.accept
-	  @printer = XmlPrinter.new(@socket)
-	else
-	  puts "eclipse mode, reading from stdin"
-	  @printer = PrinterMultiplexer.new
-	  @printer.addPrinter(XmlPrinter.new(nil))
-	  @printer.addPrinter(CommandLinePrinter.new())
-	end	
-      else
-	@printer = CommandLinePrinter.new()
-      end
+      @printer = DEBUGGER__.printer
+      @socket = DEBUGGER__.socket
       if Thread.current == Thread.main
 	@stop_next = 1
       else
@@ -782,7 +773,7 @@ EOHELP
       file = File.basename(file)
       n = 1
       for b in break_points
-	#print "file=#{file}, pos=#{pos},  #{b[0]},#{b[1]},#{b[2]},#{b[3]} "
+	#print "file=#{file}, pos=#{pos},  #{b[0]},#{b[1]},#{b[2]},#{b[3]}\n "
 	if b[0]
 	  if b[1] == 0 and b[2] == file and b[3] == pos
 	    @printer.printBreakpoint(n, debug_funcname(id), file, pos)
@@ -800,13 +791,15 @@ EOHELP
     end
 
     def excn_handle(file, line, id, binding)
-      stdout.printf "%s:%d: `%s' (%s)\n", file, line, $!, $!.type
+      
       if $!.type <= SystemExit
+	stdout.printf "SystemExit at %s:%d: `%s' (%s)\n", file, line, $!, $!.type      
 	set_trace_func nil
 	exit
       end
-
+	  puts "#{@catch}"
       if @catch and ($!.type.ancestors.find { |e| e.to_s == @catch })
+	@printer.printException(file, line, $!)
 	fs = @frames.size
 	tb = caller(0)[-fs..-1]
 	if tb
@@ -816,6 +809,9 @@ EOHELP
 	end
 	suspend_all
 	debug_command(file, line, id, binding)
+
+      else
+	      stdout.printf "%s:%d: `%s' (%s)\n", file, line, $!, $!.type
       end
     end
 
@@ -1060,6 +1056,34 @@ EOHELP
     stdout.printf "Debug.rb\n"
     stdout.printf "Emacs support available.\n\n"
   end
+  
+  if ECLIPSE_DEBUG then
+	if ECLIPSE_CREATE_SOCKET then
+	  server = TCPServer.new('localhost', ECLIPSE_LISTEN_PORT)
+	  puts "ruby debugger listens on port #{ECLIPSE_LISTEN_PORT}"
+	  $stdout.flush
+	  @@socket = server.accept
+	  @@printer = XmlPrinter.new(@@socket)
+	else
+	  puts "eclipse mode, reading from stdin"
+	  @@socket = nil
+	  @@printer = PrinterMultiplexer.new
+	  @@printer.addPrinter(XmlPrinter.new(nil))
+	  @@printer.addPrinter(CommandLinePrinter.new())
+	end	
+      else
+	@@printer = CommandLinePrinter.new()
+      end
+      
+  def DEBUGGER__.printer
+     @@printer 
+  end
+
+  def DEBUGGER__.socket
+     @@socket 
+  end
+
+  
   set_trace_func proc { |event, file, line, id, binding, klass, *rest|
     DEBUGGER__.context.trace_func event, file, line, id, binding, klass
   }

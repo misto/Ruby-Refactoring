@@ -16,9 +16,8 @@ import org.rubypeople.rdt.internal.debug.core.model.RubyDebugTarget;
 import org.rubypeople.rdt.internal.debug.core.model.RubyStackFrame;
 import org.rubypeople.rdt.internal.debug.core.model.RubyThread;
 import org.rubypeople.rdt.internal.debug.core.model.RubyVariable;
-import org.rubypeople.rdt.internal.debug.core.parsing.BreakpointReader;
+import org.rubypeople.rdt.internal.debug.core.parsing.SuspensionReader;
 import org.rubypeople.rdt.internal.debug.core.parsing.FramesReader;
-import org.rubypeople.rdt.internal.debug.core.parsing.StepEndReader;
 import org.rubypeople.rdt.internal.debug.core.parsing.VariableReader;
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
@@ -60,18 +59,9 @@ public class RubyDebuggerProxy {
 			try {
 				System.out.println("Waiting for breakpoints.");
 				SuspensionPoint hit;
-				while ((hit = new BreakpointReader().readBreakpointHit(xpp)) != null) {
-					System.out.println("Hit breakpoint : " + hit);
-
-					System.out.println("Reading frames");
-					debuggerProxy.readFrames((RubyThread) getDebugTarget().getThreads()[0]) ;
-					try {
-						((RubyThread) getDebugTarget().getThreads()[0]).suspend();
-						// TODO: move fire event to RubyThread ?
-						DebugEvent ev = new DebugEvent(getDebugTarget().getThreads()[0], DebugEvent.SUSPEND, DebugEvent.BREAKPOINT);
-						DebugPlugin.getDefault().fireDebugEventSet(new DebugEvent[] { ev });
-					} catch (DebugException e) {
-					}
+				while ((hit = new SuspensionReader().readSuspension(xpp)) != null) {
+					System.out.println(hit);					
+					((RubyThread) getDebugTarget().getThreads()[0]).doSuspend(hit) ;
 					try {
 						System.out.println("Waiting for resume.");
 						Thread.sleep(Long.MAX_VALUE);
@@ -210,9 +200,19 @@ public class RubyDebuggerProxy {
 	public SuspensionPoint readStepOverEnd(RubyStackFrame stackFrame) {
 		try {
 			this.println("next " + stackFrame.getIndex());
-			return new StepEndReader().readEndOfStep(this.getXpp());
-		} catch (IOException e) {
-			e.printStackTrace();
+			return new SuspensionReader().readSuspension(this.getXpp());
+		} catch (Exception e) {
+			RdtDebugCorePlugin.log(e);
+			return null;
+		}
+	}
+
+	public SuspensionPoint readStepReturnEnd(RubyStackFrame stackFrame) {
+		try {			
+			this.println("next " + (stackFrame.getIndex() + 1));
+			return new SuspensionReader().readSuspension(this.getXpp());
+		} catch (Exception e) {
+			RdtDebugCorePlugin.log(e);
 			return null;
 		}
 	}
@@ -220,9 +220,9 @@ public class RubyDebuggerProxy {
 	public SuspensionPoint readStepIntoEnd(RubyStackFrame stackFrame) {
 		try {
 			this.println("step " + stackFrame.getIndex());
-			return new StepEndReader().readEndOfStep(this.getXpp());
-		} catch (IOException e) {
-			e.printStackTrace();
+			return new SuspensionReader().readSuspension(this.getXpp());
+		} catch (Exception e) {
+			RdtDebugCorePlugin.log(e);
 			return null;
 		}
 	}
@@ -234,7 +234,7 @@ public class RubyDebuggerProxy {
 			RubyStackFrame[] frames = new FramesReader().readFrames(thread, xpp);
 			return frames ;
 		} catch (IOException e) {
-			e.printStackTrace();
+			RdtDebugCorePlugin.log(e);
 			return null ;
 		}
 

@@ -1,7 +1,6 @@
 # Copyright (C) 2000  Network Applied Communication Laboratory, Inc.
 # Copyright (C) 2000  Information-technology Promotion Agency, Japan
-
-
+require 'cgi'
 # ECLIPSE_DEBUG turns on the eclipse mode which allows the rubyeclipse plugin
 # to talk to the debugger.
 ECLIPSE_DEBUG = true
@@ -65,14 +64,18 @@ class XmlPrinter
       return
     end
     valueString = value.to_s
-    if valueString !~ /^"/
-      valueString = "\"#{value}\""
+    if valueString =~ /^\"/ then
+      valueString.slice!(1..(valueString.length)-2) 
     end
-    out("<variable name=\"%s\" value=%s type=\"%s\" hasChildren=\"%s\"/>", name, valueString, value.type(), value.instance_variables.length > 0 )
+    out("<variable name=\"%s\" value=\"%s\" type=\"%s\" hasChildren=\"%s\"/>", name, CGI.escapeHTML(valueString), value.type(), value.instance_variables.length > 0 )
   end
 
   def printBreakpoint(n, debugFuncName, file, pos)
     out("<breakpoint file=\"%s\" line=\"%s\"/>", file, pos) 	      
+  end
+
+  def printException(file, pos, exception)
+    out("<exception file=\"%s\" line=\"%s\" type=\"%s\" message=\"%s\"/>", file, pos, exception.type, CGI.escapeHTML(exception.to_s)) 	      
   end
 
   def printStepEnd(file, line, framesCount)
