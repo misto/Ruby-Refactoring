@@ -151,12 +151,11 @@ public class RubyDebuggerProxy {
 	}
 
 	protected void println(String s) throws IOException {
-		System.out.println("Sending debugger: " + s);
+		RdtDebugCorePlugin.debug("Sending debugger: " + s);
 		try {
 			this.getWriter().println(s);
 		} catch (IOException e) {
-			System.out.println("Could not send to debugger. Exception occured.");
-			e.printStackTrace();
+			RdtDebugCorePlugin.debug("Could not send to debugger. Exception occured.", e);
 			throw e;
 		}
 	}
@@ -274,13 +273,13 @@ public class RubyDebuggerProxy {
 				System.setProperty(DEBUGGER_ACTIVE_KEY, "true") ;
 				getDebugTarget().updateThreads();
 				println("cont");
-				System.out.println("Waiting for breakpoints.");
+				RdtDebugCorePlugin.debug("Waiting for breakpoints.");
 				while (true) {
 					final SuspensionPoint hit = new SuspensionReader(getMultiReaderStrategy()).readSuspension();
-					System.out.println(hit);
 					if (hit == null) {
 						break;
 					}
+					RdtDebugCorePlugin.debug(hit);
 					new Thread() {
 						public void run() {
 							getDebugTarget().suspensionOccurred(hit);
@@ -289,8 +288,7 @@ public class RubyDebuggerProxy {
 					.start();
 				}
 			} catch (Exception ex) {
-				ex.printStackTrace();
-				RdtDebugCorePlugin.log(ex) ;
+				RdtDebugCorePlugin.debug("Exception in socket reader loop.", ex) ;
 			} finally {
 				System.setProperty(DEBUGGER_ACTIVE_KEY, "false") ;
 				getDebugTarget().terminate();
@@ -299,7 +297,7 @@ public class RubyDebuggerProxy {
 				} catch (IOException e) {
 					RdtDebugCorePlugin.log(e);
 				}
-				System.out.println("Socket loop finished.");
+				RdtDebugCorePlugin.debug("Socket reader loop finished.");
 			}
 		}
 	}

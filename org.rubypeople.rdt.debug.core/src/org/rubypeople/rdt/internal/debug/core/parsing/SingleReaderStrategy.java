@@ -2,6 +2,7 @@ package org.rubypeople.rdt.internal.debug.core.parsing;
 
 import java.io.IOException;
 
+import org.rubypeople.rdt.internal.debug.core.RdtDebugCorePlugin;
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
 
@@ -16,9 +17,9 @@ public class SingleReaderStrategy extends AbstractReadStrategy {
 		int eventType = xpp.getEventType();
 		do {
 			if (eventType == XmlPullParser.START_DOCUMENT) {
-				System.out.println("Start document");
+				RdtDebugCorePlugin.debug("Start document");
 			} else if (eventType == XmlPullParser.END_DOCUMENT) {
-				System.out.println("End document");
+				RdtDebugCorePlugin.debug("End document");
 				break ;
 			} else if (eventType == XmlPullParser.START_TAG) {
 				streamReader.processStartElement(xpp);

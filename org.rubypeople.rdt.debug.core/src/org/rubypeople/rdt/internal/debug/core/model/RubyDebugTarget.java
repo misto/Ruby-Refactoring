@@ -40,7 +40,7 @@ public class RubyDebugTarget implements IRubyDebugTarget {
 		// 2) once a thread has died its id is never reused for new threads again. Instead each new 
 		//    thread gets an id which is the currently highest id + 1.
 
-		System.out.println("udpating threads");
+		RdtDebugCorePlugin.debug("udpating threads");
 		ThreadInfo[] threadInfos = this.getRubyDebuggerProxy().readThreads();
 		RubyThread[] updatedThreads = new RubyThread[threadInfos.length];
 		int threadIndex = 0;

@@ -6,6 +6,7 @@ import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.Vector;
 
+import org.rubypeople.rdt.internal.debug.core.RdtDebugCorePlugin;
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
 
@@ -25,9 +26,9 @@ public class MultiReaderStrategy extends AbstractReadStrategy {
 				try {
 					readLoop();
 				} catch (SocketException e) {
-					System.out.println("read loop stopped because socket has been closed.") ;
+					RdtDebugCorePlugin.debug("read loop stopped because socket has been closed.") ;
 				} catch (Exception e) {
-					System.out.println("read loop stopped due to error : ");
+					RdtDebugCorePlugin.debug("read loop stopped due to error : ", e);
 					// needs PDE Junit otherwise
 					// RdtDebugCorePlugin.log(e);
 					e.printStackTrace();
@@ -41,7 +42,7 @@ public class MultiReaderStrategy extends AbstractReadStrategy {
 	}
 
 	protected void readLoop() throws XmlPullParserException, IOException, XmlStreamReaderException {
-		System.out.println("Starting xml read loop.");
+		RdtDebugCorePlugin.debug("Starting xml read loop.");
 		int eventType = xpp.getEventType();
 		do {
 			if (eventType == XmlPullParser.START_TAG) {
@@ -56,11 +57,11 @@ public class MultiReaderStrategy extends AbstractReadStrategy {
 			}
 			eventType = xpp.next();
 		} while (eventType != XmlPullParser.END_DOCUMENT);
-		System.out.println("Read loop stopped because end of stream was reached.");
+		RdtDebugCorePlugin.debug("Read loop stopped because end of stream was reached.");
 	}
 
 	protected void dispatchStartTag() throws XmlPullParserException, IOException, XmlStreamReaderException {
-		System.out.println("Dispatching start tag " + xpp.getName());
+		RdtDebugCorePlugin.debug("Dispatching start tag " + xpp.getName());
 		if (currentReader != null) {
 			currentReader.processStartElement(xpp);
 			return;
@@ -76,7 +77,7 @@ public class MultiReaderStrategy extends AbstractReadStrategy {
 			}
 			if (currentReader == null) {
 				missed += 1 ;
-				System.out.println("Missed Start Tag : " + xpp.getName());
+				RdtDebugCorePlugin.debug("Missed Start Tag : " + xpp.getName());
 				try {
 					Thread.sleep(200);
 				} catch (InterruptedException e) {
@@ -108,10 +109,10 @@ public class MultiReaderStrategy extends AbstractReadStrategy {
 	public void readElement(XmlStreamReader streamReader) {
 		this.addReader(streamReader);
 		try {
-			System.out.println("Thread is waiting for input: " + Thread.currentThread());
+			RdtDebugCorePlugin.debug("Thread is waiting for input: " + Thread.currentThread());
 			Thread.sleep(Long.MAX_VALUE);
 		} catch (InterruptedException e) {
-			System.out.println("Thread has finished processing : " + Thread.currentThread());
+			RdtDebugCorePlugin.debug("Thread has finished processing : " + Thread.currentThread());
 		}
 	}
 

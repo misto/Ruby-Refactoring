@@ -2,6 +2,7 @@ package org.rubypeople.rdt.internal.debug.core.parsing;
 
 import java.io.IOException;
 
+import org.rubypeople.rdt.internal.debug.core.RdtDebugCorePlugin;
 import org.rubypeople.rdt.internal.debug.core.SuspensionPoint;
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
@@ -27,9 +28,9 @@ public abstract class XmlStreamReader {
 		String name = xpp.getName();
 		String uri = xpp.getNamespace();
 		if ("".equals(uri))
-			System.out.println("End element: " + name);
+			RdtDebugCorePlugin.debug("End element: " + name);
 		else
-			System.out.println("End element:   {" + uri + "}" + name);
+			RdtDebugCorePlugin.debug("End element:   {" + uri + "}" + name);
 	}
 
 }
