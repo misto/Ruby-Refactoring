@@ -4,9 +4,11 @@
 	
 
 	<target name="init">
+		<echo message="Using docbook.root=${docbook.root}"/>
 		<property name="docbook.root" value="../../docbook"/>
+		<echo message="Using docbook.root=${docbook.root}"/>
         <property name="docbook.xsl.dir" value="${docbook.root}/docbook-xsl-1.64.1"/>
-        <property name="docbook.dtd.dir" value="${docbook.root}/dtd"/>
+        <property name="docbook.dtd.dir" value="${docbook.root}/dtd"/>		
 	</target>
 
 	<target name="clean.docbook.generated">
