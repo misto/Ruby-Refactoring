@@ -12,7 +12,6 @@ import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.jface.text.BadLocationException;
-import org.eclipse.jface.text.IAutoIndentStrategy;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.util.PropertyChangeEvent;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
@@ -25,6 +24,8 @@ import org.eclipse.ui.texteditor.WorkbenchChainedTextFontFieldEditor;
 import org.eclipse.ui.views.contentoutline.IContentOutlinePage;
 import org.rubypeople.rdt.internal.core.RubyPlugin;
 import org.rubypeople.rdt.internal.core.parser.ParseError;
+import org.rubypeople.rdt.internal.core.parser.ParseException;
+import org.rubypeople.rdt.internal.core.parser.RubyParser;
 import org.rubypeople.rdt.internal.core.parser.ast.RubyElement;
 import org.rubypeople.rdt.internal.core.parser.ast.RubyScript;
 import org.rubypeople.rdt.internal.ui.RdtUiPlugin;
@@ -32,16 +33,17 @@ import org.rubypeople.rdt.internal.ui.rubyeditor.outline.DocumentModelChangeEven
 import org.rubypeople.rdt.internal.ui.rubyeditor.outline.IDocumentModelListener;
 import org.rubypeople.rdt.internal.ui.rubyeditor.outline.RubyContentOutlinePage;
 import org.rubypeople.rdt.internal.ui.rubyeditor.outline.RubyCore;
-import org.rubypeople.rdt.internal.ui.text.IReconcilingParticipant;
+import org.rubypeople.rdt.internal.ui.rubyeditor.outline.RubyModel;
 import org.rubypeople.rdt.internal.ui.text.RubySourceViewerConfiguration;
 import org.rubypeople.rdt.internal.ui.text.RubyTextTools;
 
-public class RubyAbstractEditor extends ExtendedTextEditor implements IReconcilingParticipant {
+public class RubyAbstractEditor extends ExtendedTextEditor {
 
 	protected RubyContentOutlinePage outlinePage;
 	protected RubyTextTools textTools;
 	private IDocumentModelListener fListener;
 	private RubyCore fCore;
+	private RubyModel model;
 
 	protected void configurePreferenceStore() {
 		IPreferenceStore prefs = RdtUiPlugin.getDefault().getPreferenceStore();
@@ -55,11 +57,24 @@ public class RubyAbstractEditor extends ExtendedTextEditor implements IReconcili
 
 		textTools = RdtUiPlugin.getDefault().getTextTools();
 		setSourceViewerConfiguration(new RubySourceViewerConfiguration(textTools, this));
+		
 		if (fListener == null) {
 			fListener = createRubyModelChangeListener();
 		}
 		fCore = RubyCore.getDefault();
 		fCore.addDocumentModelListener(fListener);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.eclipse.ui.texteditor.ExtendedTextEditor#dispose()
+	 */
+	public void dispose() {
+		super.dispose();
+		// Remove the listener so we don't try and create markers on a closed
+		// document
+		fCore.removeDocumentModelListener(fListener);
 	}
 
 	/**
@@ -69,19 +84,31 @@ public class RubyAbstractEditor extends ExtendedTextEditor implements IReconcili
 		return new IDocumentModelListener() {
 
 			public void documentModelChanged(final DocumentModelChangeEvent event) {
-				getSite().getShell().getDisplay().asyncExec(new Runnable() {
-
-					public void run() {
-						try {
-							createMarkers(event.getModel().getScript(), getDocumentProvider().getDocument(getEditorInput()));
-						} catch (CoreException e) {
-							RdtUiPlugin.log(e);
-						}
+				if (model == null) {
+					try {
+						RubyDocumentProvider provider = (RubyDocumentProvider) getDocumentProvider();
+						model = provider.getRubyModel(getEditorInput()) ;
+						IDocument document = getDocumentProvider().getDocument(getEditorInput());
+						model.setScript(RubyParser.parse(document.get()));
+					} catch (ParseException e) {
+						RubyPlugin.log(e);
 					}
-				});
+				}
+				
+				if (event.getModel() == model) {
+					getSite().getShell().getDisplay().asyncExec(new Runnable() {
+
+						public void run() {
+							try {
+								createMarkers(event.getModel().getScript());
+							} catch (CoreException e) {
+								RdtUiPlugin.log(e);
+							}
+						}
+					});
+				}
 			}
 		};
-
 	}
 
 	public Object getAdapter(Class adapter) {
@@ -117,23 +144,11 @@ public class RubyAbstractEditor extends ExtendedTextEditor implements IReconcili
 		return textTools.affectsTextPresentation(event);
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.rubypeople.rdt.internal.ui.text.IReconcilingParticipant#reconciled()
-	 */
-	public void reconciled() {
-		IAutoIndentStrategy strategy = getSourceViewerConfiguration().getAutoIndentStrategy(null, null);
-		if (strategy instanceof RubyAutoIndentStrategy) {
-			((RubyAutoIndentStrategy) strategy).reconciled();
-		}
-	}
-
 	/**
 	 * @param script
 	 * @throws CoreException
 	 */
-	private void createMarkers(RubyScript script, IDocument doc) throws CoreException {
+	private void createMarkers(RubyScript script) throws CoreException {
 		IEditorInput input = getEditorInput();
 		IResource resource = (IResource) ((IAdaptable) input).getAdapter(org.eclipse.core.resources.IResource.class);
 		if (resource == null) {
@@ -141,6 +156,7 @@ public class RubyAbstractEditor extends ExtendedTextEditor implements IReconcili
 		return; }
 		resource.deleteMarkers(IMarker.PROBLEM, true, IResource.DEPTH_ONE);
 
+		IDocument doc = getDocumentProvider().getDocument(getEditorInput());
 		Set errors = script.getParseErrors();
 		for (Iterator iter = errors.iterator(); iter.hasNext();) {
 			ParseError pe = (ParseError) iter.next();
@@ -151,7 +167,7 @@ public class RubyAbstractEditor extends ExtendedTextEditor implements IReconcili
 				int offset = doc.getLineOffset(pe.getLine());
 				MarkerUtilities.setCharStart(attributes, offset + pe.getStart());
 				MarkerUtilities.setCharEnd(attributes, offset + pe.getEnd());
-				
+
 				attributes.put(IMarker.SEVERITY, pe.getSeverity());
 				try {
 					MarkerUtilities.createMarker(resource, attributes, IMarker.PROBLEM);
