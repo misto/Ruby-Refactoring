@@ -29,15 +29,10 @@
          point="org.eclipse.ui.preferencePages">
       <page
             name="%PreferencePage.RubyInterpreter.name"
-            category="org.rubypeople.rdt.debug.ui.preferences.PreferencePageRubyBase"
+            category="org.rubypeople.rdt.ui.preferences.PreferencePageRubyBase"
             class="org.rubypeople.rdt.internal.debug.ui.preferences.RubyInterpreterPreferencePage"
             id="org.rubypeople.rdt.debug.ui.preferences.PreferencePageRubyInterpreter">
-      </page>
-      <page
-            name="%PreferencePage.RubyBase.name"
-            class="org.rubypeople.rdt.internal.debug.ui.preferences.RubyBasePreferencePage"
-            id="org.rubypeople.rdt.debug.ui.preferences.PreferencePageRubyBase">
-      </page>
+      </page>      
    </extension>
    <extension
          point="org.eclipse.debug.ui.launchConfigurationTypeImages">
