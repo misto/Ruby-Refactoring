@@ -44,6 +44,7 @@ import org.rubypeople.rdt.core.IImportDeclaration;
 import org.rubypeople.rdt.core.IOpenable;
 import org.rubypeople.rdt.core.IProblemRequestor;
 import org.rubypeople.rdt.core.IRubyElement;
+import org.rubypeople.rdt.core.IRubyModelStatusConstants;
 import org.rubypeople.rdt.core.IRubyScript;
 import org.rubypeople.rdt.core.IRubyType;
 import org.rubypeople.rdt.core.ISourceRange;
@@ -131,6 +132,19 @@ public class RubyScript extends Openable implements IRubyScript {
 		perWorkingCopyInfo.endReporting();
 
 		return unitInfo.isStructureKnown();
+	}
+	
+	/*
+	 * Assume that this is a working copy
+	 */
+	protected void updateTimeStamp(RubyScript original) throws RubyModelException {
+		long timeStamp =
+			((IFile) original.getResource()).getModificationStamp();
+		if (timeStamp == IResource.NULL_STAMP) {
+			throw new RubyModelException(
+				new RubyModelStatus(IRubyModelStatusConstants.INVALID_RESOURCE));
+		}
+		((RubyScriptElementInfo) getElementInfo()).timestamp = timeStamp;
 	}
 
 	protected IStatus validateRubyScript(IResource resource) {
@@ -408,6 +422,14 @@ public class RubyScript extends Openable implements IRubyScript {
 			operation.runOperation(monitor);
 		}
 	}
+	
+	/**
+	 * @see IRubyScript#commitWorkingCopy(boolean, IProgressMonitor)
+	 */
+	public void commitWorkingCopy(boolean force, IProgressMonitor monitor) throws RubyModelException {
+		CommitWorkingCopyOperation op= new CommitWorkingCopyOperation(this, force);
+		op.runOperation(monitor);
+	}
 
 	/**
 	 * Returns true if this handle represents the same Java element as the given
@@ -454,6 +476,19 @@ public class RubyScript extends Openable implements IRubyScript {
 		// working copy is
 		// destroyed
 		return super.canBufferBeRemovedFromCache(buffer);
+	}
+	
+	/*
+	 * @see ICompilationUnit#hasResourceChanged()
+	 */
+	public boolean hasResourceChanged() {
+		if (!isWorkingCopy()) return false;
+		
+		// if resource got deleted, then #getModificationStamp() will answer IResource.NULL_STAMP, which is always different from the cached
+		// timestamp
+		Object info = RubyModelManager.getRubyModelManager().getInfo(this);
+		if (info == null) return false;
+		return ((RubyScriptElementInfo)info).timestamp != getResource().getModificationStamp();
 	}
 
 	/**

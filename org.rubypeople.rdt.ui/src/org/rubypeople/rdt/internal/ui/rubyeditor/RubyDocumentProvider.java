@@ -7,10 +7,17 @@ import java.util.List;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IResource;
+import org.eclipse.core.resources.IResourceRuleFactory;
+import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.NullProgressMonitor;
+import org.eclipse.core.runtime.SubProgressMonitor;
+import org.eclipse.core.runtime.jobs.ISchedulingRule;
 import org.eclipse.jface.preference.IPreferenceStore;
+import org.eclipse.jface.text.Assert;
 import org.eclipse.jface.text.BadLocationException;
+import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.Position;
 import org.eclipse.jface.text.source.Annotation;
 import org.eclipse.jface.text.source.AnnotationModelEvent;
@@ -27,6 +34,7 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.IFileEditorInput;
 import org.eclipse.ui.editors.text.EditorsUI;
 import org.eclipse.ui.editors.text.TextFileDocumentProvider;
+import org.eclipse.ui.texteditor.AbstractMarkerAnnotationModel;
 import org.eclipse.ui.texteditor.AnnotationPreference;
 import org.eclipse.ui.texteditor.AnnotationPreferenceLookup;
 import org.eclipse.ui.texteditor.IDocumentProvider;
@@ -55,6 +63,10 @@ public class RubyDocumentProvider extends TextFileDocumentProvider {
 	/** Preference key for temporary problems */
 	private final static String HANDLE_TEMPORARY_PROBLEMS= PreferenceConstants.EDITOR_EVALUTE_TEMPORARY_PROBLEMS;
 	
+	/** Indicates whether the save has been initialized by this provider */
+	private boolean fIsAboutToSave= false;
+	/** The save policy used by this provider */
+	private ISavePolicy fSavePolicy;
 	
 	public RubyDocumentProvider() {
 		IDocumentProvider provider = new TextFileDocumentProvider();
@@ -129,6 +141,15 @@ public class RubyDocumentProvider extends TextFileDocumentProvider {
 		IPreferenceStore store= RubyPlugin.getDefault().getPreferenceStore();
 		return store.getBoolean(HANDLE_TEMPORARY_PROBLEMS);
 	} 
+	
+	/*
+	 * @see org.eclipse.jdt.internal.ui.javaeditor.ICompilationUnitDocumentProvider#saveDocumentContent(org.eclipse.core.runtime.IProgressMonitor, java.lang.Object, org.eclipse.jface.text.IDocument, boolean)
+	 */
+	public void saveDocumentContent(IProgressMonitor monitor, Object element, IDocument document, boolean overwrite) throws CoreException {
+		if (!fIsAboutToSave)
+			return;
+		super.saveDocument(monitor, element, document, overwrite);
+	}
 
 	/*
 	 * @see org.eclipse.ui.editors.text.TextFileDocumentProvider#disposeFileInfo(java.lang.Object,
@@ -144,6 +165,159 @@ public class RubyDocumentProvider extends TextFileDocumentProvider {
 			}
 		}
 		super.disposeFileInfo(element, info);
+	}
+	
+	/*
+	 * @see org.eclipse.ui.editors.text.TextFileDocumentProvider#createSaveOperation(java.lang.Object, org.eclipse.jface.text.IDocument, boolean)
+	 */
+	protected DocumentProviderOperation createSaveOperation(final Object element, final IDocument document, final boolean overwrite) throws CoreException {
+		final FileInfo info= getFileInfo(element);
+		if (info instanceof RubyScriptInfo) {
+			return new DocumentProviderOperation() {
+				/*
+				 * @see org.eclipse.ui.editors.text.TextFileDocumentProvider.DocumentProviderOperation#execute(org.eclipse.core.runtime.IProgressMonitor)
+				 */
+				protected void execute(IProgressMonitor monitor) throws CoreException {
+					commitWorkingCopy(monitor, element, (RubyScriptInfo) info, overwrite);
+				}
+				/*
+				 * @see org.eclipse.ui.editors.text.TextFileDocumentProvider.DocumentProviderOperation#getSchedulingRule()
+				 */
+				public ISchedulingRule getSchedulingRule() {
+					if (info.fElement instanceof IFileEditorInput) {
+						IFile file= ((IFileEditorInput) info.fElement).getFile();
+						return computeSchedulingRule(file);
+					} else
+						return null;
+				}
+			};
+		}
+		return null;
+	}
+
+	protected void commitWorkingCopy(IProgressMonitor monitor, Object element, RubyScriptInfo info, boolean overwrite) throws CoreException {
+
+		if (monitor == null)
+			monitor= new NullProgressMonitor();
+		
+		monitor.beginTask("", 100); //$NON-NLS-1$
+
+		try {
+			IProgressMonitor subMonitor= getSubProgressMonitor(monitor, 50);
+			
+			try {
+				synchronized (info.fCopy) {
+					info.fCopy.reconcile(null, subMonitor);
+				}
+			} catch (RubyModelException ex) {
+				// Ignore: save anyway
+			} finally {
+				subMonitor.done();
+			}
+
+			IDocument document= info.fTextFileBuffer.getDocument();
+			IResource resource= info.fCopy.getResource();
+			
+			Assert.isTrue(resource instanceof IFile);
+			if (!resource.exists()) {
+				// underlying resource has been deleted, just recreate file, ignore the rest
+				subMonitor= getSubProgressMonitor(monitor, 50);
+				try {
+					createFileFromDocument(subMonitor, (IFile) resource, document);
+				} finally {
+					subMonitor.done();
+				}
+				return;
+			}
+			
+			if (fSavePolicy != null)
+				fSavePolicy.preSave(info.fCopy);
+			
+			try {
+				subMonitor= getSubProgressMonitor(monitor, 50);
+				fIsAboutToSave= true;
+				info.fCopy.commitWorkingCopy(overwrite, subMonitor);
+			} catch (CoreException x) {
+				// inform about the failure
+				fireElementStateChangeFailed(element);
+				throw x;
+			} catch (RuntimeException x) {
+				// inform about the failure
+				fireElementStateChangeFailed(element);
+				throw x;
+			} finally {
+				fIsAboutToSave= false;
+				subMonitor.done();
+			}
+			
+			// If here, the dirty state of the editor will change to "not dirty".
+			// Thus, the state changing flag will be reset.
+			if (info.fModel instanceof AbstractMarkerAnnotationModel) {
+				AbstractMarkerAnnotationModel model= (AbstractMarkerAnnotationModel) info.fModel;
+				model.updateMarkers(document);
+			}
+			
+			if (fSavePolicy != null) {
+				IRubyScript unit= fSavePolicy.postSave(info.fCopy);
+				if (unit != null && info.fModel instanceof AbstractMarkerAnnotationModel) {
+					IResource r= unit.getResource();
+					IMarker[] markers= r.findMarkers(IMarker.MARKER, true, IResource.DEPTH_ZERO);
+					if (markers != null && markers.length > 0) {
+						AbstractMarkerAnnotationModel model= (AbstractMarkerAnnotationModel) info.fModel;						
+						for (int i= 0; i < markers.length; i++)
+							model.updateMarker(document, markers[i], null);
+					}
+				}
+			}
+		} finally {
+			monitor.done();
+		}
+	}
+	
+	/**
+	 * Creates and returns a new sub-progress monitor for the
+	 * given parent monitor.
+	 * 
+	 * @param monitor the parent progress monitor
+	 * @param ticks the number of work ticks allocated from the parent monitor
+	 * @return the new sub-progress monitor
+	 */
+	private IProgressMonitor getSubProgressMonitor(IProgressMonitor monitor, int ticks) {
+		if (monitor != null)
+			return new SubProgressMonitor(monitor, ticks, SubProgressMonitor.PREPEND_MAIN_LABEL_TO_SUBTASK);
+
+		return new NullProgressMonitor();
+	}
+	
+	/**
+	 * Computes the scheduling rule needed to create or modify a resource. If
+	 * the resource exists, its modify rule is returned. If it does not, the 
+	 * resource hierarchy is iterated towards the workspace root to find the
+	 * first parent of <code>toCreateOrModify</code> that exists. Then the
+	 * 'create' rule for the last non-existing resource is returned.
+	 * <p>
+	 * XXX This is a workaround for https://bugs.eclipse.org/bugs/show_bug.cgi?id=67601
+	 * IResourceRuleFactory.createRule should iterate the hierarchy itself. 
+	 * </p>
+	 * <p> 
+	 * XXX to be replaced by call to TextFileDocumentProvider.computeSchedulingRule after 3.0
+	 * </p>
+	 * 
+	 * @param toCreateOrModify the resource to create or modify
+	 * @return the minimal scheduling rule needed to modify or create a resource
+	 */
+	private ISchedulingRule computeSchedulingRule(IResource toCreateOrModify) {
+		IResourceRuleFactory factory= ResourcesPlugin.getWorkspace().getRuleFactory();
+		if (toCreateOrModify.exists()) {
+			return factory.modifyRule(toCreateOrModify);
+		}
+		IResource parent= toCreateOrModify;
+		do {
+			toCreateOrModify= parent;
+			parent= toCreateOrModify.getParent();
+		} while (parent != null && !parent.exists());
+		
+		return factory.createRule(toCreateOrModify);
 	}
 
 	/**

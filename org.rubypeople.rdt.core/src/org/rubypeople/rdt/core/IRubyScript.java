@@ -209,7 +209,17 @@ public interface IRubyScript extends IRubyElement, ISourceReference, IParent, IO
 	 * @since 3.0
 	 */
 	IRubyScript getWorkingCopy(WorkingCopyOwner owner, IProblemRequestor requestor, IProgressMonitor monitor) throws RubyModelException;
-
+	
+	/**
+	 * Returns whether the resource of this working copy has changed since the
+	 * inception of this working copy.
+	 * Returns <code>false</code> if this compilation unit is not in working copy mode.
+	 * 
+	 * @return whether the resource has changed
+	 * @since 3.0
+	 */
+	public boolean hasResourceChanged();
+	
 	/**
 	 * Changes this compilation unit handle into a working copy. A new
 	 * <code>IBuffer</code> is created using this compilation unit handle's
@@ -242,6 +252,36 @@ public interface IRubyScript extends IRubyElement, ISourceReference, IParent, IO
 	 */
 	void becomeWorkingCopy(IProblemRequestor requestor, IProgressMonitor monitor) throws RubyModelException;
 
+	/**
+	 * Commits the contents of this working copy to its underlying resource.
+	 *
+	 * <p>It is possible that the contents of the original resource have changed
+	 * since this working copy was created, in which case there is an update conflict.
+	 * The value of the <code>force</code> parameter effects the resolution of
+	 * such a conflict:<ul>
+	 * <li> <code>true</code> - in this case the contents of this working copy are applied to
+	 * 	the underlying resource even though this working copy was created before
+	 *		a subsequent change in the resource</li>
+	 * <li> <code>false</code> - in this case a {@link JavaModelException} is thrown</li>
+	 * </ul>
+	 * <p>
+	 * Since 2.1, a working copy can be created on a not-yet existing compilation
+	 * unit. In particular, such a working copy can then be committed in order to create
+	 * the corresponding compilation unit.
+	 * </p>
+	 * @param force a flag to handle the cases when the contents of the original resource have changed
+	 * since this working copy was created
+	 * @param monitor the given progress monitor
+	 * @throws JavaModelException if this working copy could not commit. Reasons include:
+	 * <ul>
+	 * <li> A {@link org.eclipse.core.runtime.CoreException} occurred while updating an underlying resource
+	 * <li> This element is not a working copy (INVALID_ELEMENT_TYPES)
+	 * <li> A update conflict (described above) (UPDATE_CONFLICT)
+	 * </ul>
+	 * @since 3.0
+	 */
+	void commitWorkingCopy(boolean force, IProgressMonitor monitor) throws RubyModelException;
+	
 	/**
 	 * Changes this compilation unit in working copy mode back to its original
 	 * mode.
@@ -308,5 +348,4 @@ public interface IRubyScript extends IRubyElement, ISourceReference, IParent, IO
 	 * @since 3.0
 	 */
 	WorkingCopyOwner getOwner();
-
 }

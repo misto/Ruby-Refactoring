@@ -11,6 +11,8 @@ import java.util.ResourceBundle;
 
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.IPath;
+import org.eclipse.core.runtime.IStatus;
+import org.rubypeople.rdt.core.RubyConventions;
 
 /**
  * @author Chris
@@ -89,19 +91,19 @@ public class Util {
 						index = Integer.parseInt(argId);
 						if (arguments[index] == null) {
 							output.append('{').append(argId).append('}'); // leave
-																			// parameter
-																			// in
-																			// since
-																			// no
-																			// better
-																			// arg
-																			// '{0}'
+							// parameter
+							// in
+							// since
+							// no
+							// better
+							// arg
+							// '{0}'
 						} else {
 							output.append(arguments[index]);
 						}
 					} catch (NumberFormatException nfe) { // could be nested
-															// message ID
-															// {compiler.name}
+						// message ID
+						// {compiler.name}
 						boolean done = false;
 						if (!id.equals(argId)) {
 							String argMessage = null;
@@ -131,50 +133,54 @@ public class Util {
 		}
 		return output.toString();
 	}
-	
+
 	/**
 	 * Lookup the message with the given ID in this catalog and bind its
 	 * substitution locations with the given string.
 	 */
 	public static String bind(String id, String binding) {
-		return bind(id, new String[] {binding});
+		return bind(id, new String[] { binding});
 	}
-	
+
 	/**
 	 * Lookup the message with the given ID in this catalog and bind its
 	 * substitution locations with the given strings.
 	 */
 	public static String bind(String id, String binding1, String binding2) {
-		return bind(id, new String[] {binding1, binding2});
+		return bind(id, new String[] { binding1, binding2});
 	}
-	
+
 	/*
-	 * Returns whether the given resource path matches one of the inclusion/exclusion
-	 * patterns.
-	 * NOTE: should not be asked directly using pkg root pathes
+	 * Returns whether the given resource path matches one of the
+	 * inclusion/exclusion patterns. NOTE: should not be asked directly using
+	 * pkg root pathes
+	 * 
 	 * @see IClasspathEntry#getInclusionPatterns
 	 * @see IClasspathEntry#getExclusionPatterns
 	 */
 	public final static boolean isExcluded(IPath resourcePath, char[][] inclusionPatterns, char[][] exclusionPatterns, boolean isFolderPath) {
 		if (inclusionPatterns == null && exclusionPatterns == null) return false;
 		return isExcluded(resourcePath.toString().toCharArray(), inclusionPatterns, exclusionPatterns, isFolderPath);
-	}	
+	}
 
 	/*
 	 * Returns whether the given resource matches one of the exclusion patterns.
 	 * NOTE: should not be asked directly using pkg root pathes
+	 * 
 	 * @see IClasspathEntry#getExclusionPatterns
 	 */
 	public final static boolean isExcluded(IResource resource, char[][] inclusionPatterns, char[][] exclusionPatterns) {
 		IPath path = resource.getFullPath();
-		// ensure that folders are only excluded if all of their children are excluded
+		// ensure that folders are only excluded if all of their children are
+		// excluded
 		return isExcluded(path, inclusionPatterns, exclusionPatterns, resource.getType() == IResource.FOLDER);
 	}
-	
-	/* TODO (philippe) should consider promoting it to CharOperation
-	 * Returns whether the given resource path matches one of the inclusion/exclusion
-	 * patterns.
-	 * NOTE: should not be asked directly using pkg root pathes
+
+	/*
+	 * TODO (philippe) should consider promoting it to CharOperation Returns
+	 * whether the given resource path matches one of the inclusion/exclusion
+	 * patterns. NOTE: should not be asked directly using pkg root pathes
+	 * 
 	 * @see IClasspathEntry#getInclusionPatterns
 	 * @see IClasspathEntry#getExclusionPatterns
 	 */
@@ -187,11 +193,17 @@ public class Util {
 				char[] folderPattern = pattern;
 				if (isFolderPath) {
 					int lastSlash = CharOperation.lastIndexOf('/', pattern);
-					if (lastSlash != -1 && lastSlash != pattern.length-1){ // trailing slash -> adds '**' for free (see http://ant.apache.org/manual/dirtasks.html)
+					if (lastSlash != -1 && lastSlash != pattern.length - 1) { // trailing
+																				// slash
+																				// ->
+																				// adds
+																				// '**'
+																				// for
+																				// free
+																				// (see
+																				// http://ant.apache.org/manual/dirtasks.html)
 						int star = CharOperation.indexOf('*', pattern, lastSlash);
-						if ((star == -1
-								|| star >= pattern.length-1 
-								|| pattern[star+1] != '*')) {
+						if ((star == -1 || star >= pattern.length - 1 || pattern[star + 1] != '*')) {
 							folderPattern = CharOperation.subarray(pattern, 0, lastSlash);
 						}
 					}
@@ -203,35 +215,54 @@ public class Util {
 			return true; // never included
 		}
 		if (isFolderPath) {
-			path = CharOperation.concat(path, new char[] {'*'}, '/');
+			path = CharOperation.concat(path, new char[] { '*'}, '/');
 		}
 		exclusionCheck: if (exclusionPatterns != null) {
 			for (int i = 0, length = exclusionPatterns.length; i < length; i++) {
-				if (CharOperation.pathMatch(exclusionPatterns[i], path, true, '/')) {
-					return true;
-				}
+				if (CharOperation.pathMatch(exclusionPatterns[i], path, true, '/')) { return true; }
 			}
 		}
 		return false;
-	}			
-	
+	}
+
 	public static void verbose(String log) {
 		verbose(log, System.out);
 	}
+
 	public static synchronized void verbose(String log, PrintStream printStream) {
 		int start = 0;
 		do {
 			int end = log.indexOf('\n', start);
 			printStream.print(Thread.currentThread());
 			printStream.print(" "); //$NON-NLS-1$
-			printStream.print(log.substring(start, end == -1 ? log.length() : end+1));
-			start = end+1;
+			printStream.print(log.substring(start, end == -1 ? log.length() : end + 1));
+			start = end + 1;
 		} while (start != 0);
 		printStream.println();
 	}
 
 	public static boolean isRubyLikeFileName(String name) {
 		return name.endsWith(".rb") || name.endsWith(".rbw");
+	}
+
+	/**
+	 * Validate the given compilation unit name. A compilation unit name must
+	 * obey the following rules:
+	 * <ul>
+	 * <li> it must not be null
+	 * <li> it must include the <code>".rb"</code> or <code>".rbw"</code> suffix
+	 * <li> its prefix must be a valid identifier
+	 * </ul>
+	 * </p>
+	 * 
+	 * @param name
+	 *            the name of a compilation unit
+	 * @return a status object with code <code>IStatus.OK</code> if the given
+	 *         name is valid as a compilation unit name, otherwise a status
+	 *         object indicating what is wrong with the name
+	 */
+	public static boolean isValidRubyScriptName(String name) {
+		return RubyConventions.validateRubyScriptName(name).getSeverity() != IStatus.ERROR;
 	}
 
 }

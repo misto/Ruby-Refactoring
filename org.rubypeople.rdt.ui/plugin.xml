@@ -4,7 +4,7 @@
    id="org.rubypeople.rdt.ui"
    name="%Plugin.name"
    version="0.6.0"
-   provider-name="RubyPeople, Inc."
+   provider-name="%providerName"
    class="org.rubypeople.rdt.internal.ui.RubyPlugin">
 
    <runtime>
@@ -30,8 +30,8 @@
       <import plugin="org.eclipse.ui.forms"/>
       <import plugin="org.rubypeople.rdt.launching"/>
    </requires>
-   <extension-point id="foldingStructureProviders" name="foldingStructureProviders" schema="schema/foldingStructureProviders.exsd"/>
-   <extension-point id="editorPopupExtender" name="editorPopupExtender" schema="schema/org.rubypeople.rdt.ui.editorPopupExtender.exsd"/>
+   <extension-point id="foldingStructureProviders" name="%foldingStructureProviders" schema="schema/foldingStructureProviders.exsd"/>
+   <extension-point id="editorPopupExtender" name="%editorPopupExtender" schema="schema/org.rubypeople.rdt.ui.editorPopupExtender.exsd"/>
    <extension
          point="org.eclipse.ui.preferencePages">
       <page
@@ -107,7 +107,7 @@
          </filter>
       </page>
       <page
-            objectClass="org.rubypeople.rdt.core.RubyProject"
+            objectClass="org.rubypeople.rdt.core.IRubyProject"
             name="%PropertyPageRubyProject.name"
             class="org.rubypeople.rdt.internal.ui.RubyProjectPropertyPage"
             id="org.rubypeople.rdt.ui.PropertyPageRubyProject">
@@ -484,12 +484,11 @@
 		</factory>
 		
 		<factory 
-            class="org.eclipse.rdt.internal.ui.RubyElementAdapterFactory" 
+            class="org.rubypeople.rdt.internal.ui.RubyElementAdapterFactory" 
             adaptableType="org.eclipse.rdt.core.IRubyElement">
             
             <adapter type="org.eclipse.core.resources.IResource"/>
             <adapter type="org.eclipse.ui.IContributorResourceAdapter"/>
-            <adapter type="org.eclipse.ui.IContributorResourceAdapter2"/>
             
             <adapter type="org.eclipse.ui.views.tasklist.ITaskListResourceAdapter"/>
 		</factory>

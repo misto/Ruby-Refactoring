@@ -11,24 +11,21 @@
 package org.rubypeople.rdt.internal.ui;
 
 import org.eclipse.core.resources.IResource;
-import org.eclipse.core.resources.mapping.ResourceMapping;
 import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.core.runtime.IAdapterFactory;
 import org.eclipse.ui.IContributorResourceAdapter;
-import org.eclipse.ui.IContributorResourceAdapter2;
 import org.eclipse.ui.views.tasklist.ITaskListResourceAdapter;
 import org.rubypeople.rdt.core.IRubyElement;
 import org.rubypeople.rdt.core.IRubyScript;
-import org.rubypeople.rdt.internal.corext.util.RubyElementResourceMapping;
 import org.rubypeople.rdt.internal.corext.util.RubyModelUtil;
 
 /**
  * Implements basic UI support for Ruby elements. Implements handle to
  * persistent support for Ruby elements.
  */
-public class RubyElementAdapterFactory implements IAdapterFactory, IContributorResourceAdapter, IContributorResourceAdapter2 {
+public class RubyElementAdapterFactory implements IAdapterFactory, IContributorResourceAdapter{
 
-	private static Class[] PROPERTIES = new Class[] { IResource.class, IContributorResourceAdapter.class, IContributorResourceAdapter2.class, ITaskListResourceAdapter.class};
+	private static Class[] PROPERTIES = new Class[] { IResource.class, IContributorResourceAdapter.class, ITaskListResourceAdapter.class};
 
 	private static ITaskListResourceAdapter fgTaskListAdapter;
 
@@ -41,7 +38,6 @@ public class RubyElementAdapterFactory implements IAdapterFactory, IContributorR
 
 		if (IResource.class.equals(key)) { return getResource(ruby); }
 		if (IContributorResourceAdapter.class.equals(key)) { return this; }
-		if (IContributorResourceAdapter2.class.equals(key)) { return this; }
 		if (ITaskListResourceAdapter.class.equals(key)) { return getTaskListAdapter(); }
 		return null;
 	}
@@ -81,12 +77,5 @@ public class RubyElementAdapterFactory implements IAdapterFactory, IContributorR
 	private static ITaskListResourceAdapter getTaskListAdapter() {
 		if (fgTaskListAdapter == null) fgTaskListAdapter = new RubyTaskListAdapter();
 		return fgTaskListAdapter;
-	}
-
-	public ResourceMapping getAdaptedResourceMapping(IAdaptable adaptable) {
-		IRubyElement je = getRubyElement(adaptable);
-		if (je != null) return RubyElementResourceMapping.create(je);
-
-		return null;
 	}
 }

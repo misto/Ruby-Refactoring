@@ -26,9 +26,10 @@
 package org.rubypeople.rdt.core;
 
 import org.eclipse.core.resources.IResource;
+import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.core.runtime.IPath;
 
-public interface IRubyElement {
+public interface IRubyElement extends IAdaptable {
 
 	public static final int RUBY_MODEL = 0;
 	public static final int PROJECT = 1;

@@ -29,6 +29,7 @@ import java.util.HashMap;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.PlatformObject;
 import org.rubypeople.rdt.core.IOpenable;
 import org.rubypeople.rdt.core.IParent;
 import org.rubypeople.rdt.core.IRubyElement;
@@ -43,7 +44,7 @@ import org.rubypeople.rdt.core.RubyModelException;
  * @author Chris
  * 
  */
-public abstract class RubyElement implements IRubyElement {
+public abstract class RubyElement extends PlatformObject implements IRubyElement {
 
 	public static final IRubyElement[] NO_ELEMENTS = new IRubyElement[0];
 	protected static final Object NO_INFO = new Object();
