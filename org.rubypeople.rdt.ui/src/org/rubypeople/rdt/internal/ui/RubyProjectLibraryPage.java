@@ -23,8 +23,8 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
-import org.eclipse.ui.ISharedImages;
 import org.eclipse.ui.IWorkbench;
+import org.eclipse.ui.ide.IDE.SharedImages;
 import org.rubypeople.rdt.core.RubyProject;
 import org.rubypeople.rdt.internal.core.RubyPlugin;
 
@@ -86,7 +86,7 @@ public class RubyProjectLibraryPage {
 		ITableLabelProvider labelProvider = new ITableLabelProvider() {
 			public Image getColumnImage(Object element, int columnIndex) {
 				IWorkbench workbench= RdtUiPlugin.getDefault().getWorkbench();
-				return workbench.getSharedImages().getImage(ISharedImages.IMG_OBJ_PROJECT);
+				return workbench.getSharedImages().getImage(SharedImages.IMG_OBJ_PROJECT);
 			}
 
 			public String getColumnText(Object element, int columnIndex) {
