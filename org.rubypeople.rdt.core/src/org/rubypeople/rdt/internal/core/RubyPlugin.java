@@ -3,12 +3,11 @@ package org.rubypeople.rdt.internal.core;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.resources.ResourcesPlugin;
-import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IAdapterManager;
-import org.eclipse.core.runtime.IPluginDescriptor;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Plugin;
 import org.eclipse.core.runtime.Status;
+import org.osgi.framework.BundleContext;
 import org.rubypeople.rdt.core.RubyElement;
 import org.rubypeople.rdt.internal.core.parser.RubyParser;
 
@@ -21,8 +20,8 @@ public class RubyPlugin extends Plugin {
 
 	protected static RubyPlugin plugin;
 
-	public RubyPlugin(IPluginDescriptor descriptor) {
-		super(descriptor);
+	public RubyPlugin() {
+		super();
 		plugin = this;
 	}
 
@@ -34,8 +33,11 @@ public class RubyPlugin extends Plugin {
 		return ResourcesPlugin.getWorkspace();
 	}
 
-	public void startup() throws CoreException {
-		super.startup();
+	/* (non-Javadoc)
+	 * @see org.eclipse.core.runtime.Plugin#start(org.osgi.framework.BundleContext)
+	 */
+	public void start(BundleContext context) throws Exception {
+		super.start(context);
 		IAdapterManager manager = Platform.getAdapterManager();
 		manager.registerAdapters(new RubyElementAdapterFactory(), RubyElement.class);
 		manager.registerAdapters(new ResourceAdapterFactory(), IResource.class);
@@ -43,6 +45,7 @@ public class RubyPlugin extends Plugin {
 		isCodeFormatterDebugging = codeFormatterOption == null ? false : codeFormatterOption.equalsIgnoreCase("true");
 		String rubyParserOption = Platform.getDebugOption(RubyPlugin.PLUGIN_ID + "/rubyparser");
 		RubyParser.setDebugging(rubyParserOption == null ? false : rubyParserOption.equalsIgnoreCase("true"));
+	
 	}
 
 	public static void log(Exception runtimeException) {

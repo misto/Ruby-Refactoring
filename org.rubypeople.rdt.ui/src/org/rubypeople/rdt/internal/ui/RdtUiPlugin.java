@@ -1,7 +1,6 @@
 package org.rubypeople.rdt.internal.ui;
 
 import org.eclipse.core.resources.IWorkspace;
-import org.eclipse.core.runtime.IPluginDescriptor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.preference.IPreferenceStore;
@@ -13,7 +12,7 @@ import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.editors.text.EditorsUI;
 import org.eclipse.ui.editors.text.TextEditorPreferenceConstants;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
-import org.eclipse.ui.texteditor.MarkerAnnotationPreferences;
+import org.osgi.framework.BundleContext;
 import org.rubypeople.rdt.internal.core.RubyPlugin;
 import org.rubypeople.rdt.internal.formatter.CodeFormatter;
 import org.rubypeople.rdt.internal.ui.text.RubyColorConstants;
@@ -31,10 +30,19 @@ public class RdtUiPlugin extends AbstractUIPlugin implements RubyColorConstants 
 
 	protected RubyTextTools textTools;
 
-	public RdtUiPlugin(IPluginDescriptor descriptor) {
-		super(descriptor);
+	public RdtUiPlugin() {
+		super();
 		plugin = this;
-		// initialize textTools before any RubyEditor gets initialized, so that
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.eclipse.ui.plugin.AbstractUIPlugin#start(org.osgi.framework.BundleContext)
+	 */
+	public void start(BundleContext context) throws Exception {
+		super.start(context);
+		//		 initialize textTools before any RubyEditor gets initialized, so that
 		// textTools can
 		// register for property change events first. If the registration takes
 		// place in the
@@ -77,9 +85,9 @@ public class RdtUiPlugin extends AbstractUIPlugin implements RubyColorConstants 
 		return textTools;
 	}
 
-	public CodeFormatter getCodeFormatter() {		
-		char indentChar = this.getPreferenceStore().getBoolean(PreferenceConstants.FORMAT_USE_TAB) ? '\t' : ' ' ;
-		CodeFormatter codeFormatter = new CodeFormatter(indentChar, RubyPlugin.getDefault().isCodeFormatterDebugging());		
+	public CodeFormatter getCodeFormatter() {
+		char indentChar = this.getPreferenceStore().getBoolean(PreferenceConstants.FORMAT_USE_TAB) ? '\t' : ' ';
+		CodeFormatter codeFormatter = new CodeFormatter(indentChar, RubyPlugin.getDefault().isCodeFormatterDebugging());
 		codeFormatter.setIndentation(this.getPreferenceStore().getInt(PreferenceConstants.FORMAT_INDENTATION));
 		return codeFormatter;
 	}
@@ -98,7 +106,7 @@ public class RdtUiPlugin extends AbstractUIPlugin implements RubyColorConstants 
 		//
 		EditorsUI.useAnnotationsPreferencePage(store);
 		EditorsUI.useQuickDiffPreferencePage(store);
-		
+
 		PreferenceConverter.setDefault(store, RUBY_CONTENT_ASSISTANT_BACKGROUND, new RGB(150, 150, 0));
 		PreferenceConstants.initializeDefaultValues(store);
 		TextEditorPreferenceConstants.initializeDefaultValues(store);
@@ -109,11 +117,8 @@ public class RdtUiPlugin extends AbstractUIPlugin implements RubyColorConstants 
 	 */
 	public static IWorkbenchPage getActivePage() {
 		IWorkbenchWindow window = getDefault().getWorkbench().getActiveWorkbenchWindow();
-		if (window == null)
-			return null;
-		else
-			return getDefault().getWorkbench().getActiveWorkbenchWindow().getActivePage();
-
+		if (window == null) return null;
+		return getDefault().getWorkbench().getActiveWorkbenchWindow().getActivePage();
 	}
 
 }
