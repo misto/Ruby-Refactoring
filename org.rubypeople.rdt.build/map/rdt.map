@@ -9,7 +9,7 @@
 !* Example for pserver root: :pserver:anonymous@cvs.sf.net:/cvsroot/rubyeclipse
 
 
-feature@org.rubypeople.rdt=HEAD,:ext:anything:/cvsroot/rubyeclipse,,org.rubypeople.rdt-feature
+feature@org.rubypeople.rdt=HEAD,:ext:cvs.sf.net:/cvsroot/rubyeclipse,,org.rubypeople.rdt-feature
 
 
 plugin@org.kxml2=HEAD,:ext:cvs.sf.net:/cvsroot/rubyeclipse,
