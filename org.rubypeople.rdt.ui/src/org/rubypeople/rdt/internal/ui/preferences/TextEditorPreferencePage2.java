@@ -49,7 +49,6 @@ import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPreferencePage;
 import org.eclipse.ui.editors.text.ITextEditorHelpContextIds;
 import org.eclipse.ui.help.WorkbenchHelp;
-import org.eclipse.ui.internal.editors.text.EditorsPlugin;
 import org.eclipse.ui.texteditor.AnnotationPreference;
 import org.eclipse.ui.texteditor.ExtendedTextEditorPreferenceConstants;
 import org.eclipse.ui.texteditor.MarkerAnnotationPreferences;
@@ -798,8 +797,13 @@ public class TextEditorPreferencePage2 extends PreferencePage implements IWorkbe
 	 * @see PreferencePage#performOk()
 	 */
 	public boolean performOk() {
+		for (int i = 0; i < textPropertyWidgets.length; i++) {
+			TextPropertyWidget widget = textPropertyWidgets[i];
+			widget.stringColorEditor.store();
+			RdtUiPlugin.getDefault().getPreferenceStore().setValue(widget.property + RubyColorConstants.RUBY_ISBOLD_APPENDIX, widget.boldCheckBox.getSelection());
+		}
 		fOverlayStore.propagate();
-		EditorsPlugin.getDefault().savePluginPreferences();
+		RdtUiPlugin.getDefault().savePluginPreferences();
 		return true;
 	}
 
