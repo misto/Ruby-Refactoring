@@ -7,10 +7,13 @@
 !* files have been commited via ssh cvs access, it must also use ssh access. Otherwise
 !* some of the latest updates might be lost.
 !* Example for pserver root: :pserver:anonymous@cvs.sf.net:/cvsroot/rubyeclipse
+!* Because of security issues on the compile farm it is not possible to use ssh
+!* to access the cvs server. Therefore the build process can be configured to
+!* replace the ext method defined here with pserver. 
+!* See customTargets.xml target getMapFiles
 
 
 feature@org.rubypeople.rdt=HEAD,:ext:cvs.sf.net:/cvsroot/rubyeclipse,,org.rubypeople.rdt-feature
-
 
 plugin@org.kxml2=HEAD,:ext:cvs.sf.net:/cvsroot/rubyeclipse,
 plugin@org.rubypeople.rdt=HEAD,:ext:cvs.sf.net:/cvsroot/rubyeclipse,
@@ -22,8 +25,11 @@ plugin@org.rubypeople.rdt.launching=HEAD,:ext:cvs.sf.net:/cvsroot/rubyeclipse,
 plugin@org.rubypeople.rdt.testunit=HEAD,:ext:cvs.sf.net:/cvsroot/rubyeclipse,
 plugin@org.rubypeople.rdt.doc.user=HEAD,:ext:cvs.sf.net:/cvsroot/rubyeclipse,
 plugin@org.epic.regexp=HEAD,:ext:cvs.sf.net:/cvsroot/rubyeclipse,
+plugin@org.rubypeople.rdt.ri=HEAD,:ext:cvs.sf.net:/cvsroot/rubyeclipse,
+
 
 feature@org.rubypeople.rdt-tests=HEAD,:ext:cvs.sf.net:/cvsroot/rubyeclipse,,org.rubypeople.rdt-feature/unit-tests-feature
+
 plugin@org.rubypeople.eclipse.shams=HEAD,:ext:cvs.sf.net:/cvsroot/rubyeclipse,
 plugin@org.rubypeople.eclipse.testutils=HEAD,:ext:cvs.sf.net:/cvsroot/rubyeclipse,
 plugin@org.rubypeople.rdt.core.tests=HEAD,:ext:cvs.sf.net:/cvsroot/rubyeclipse,
