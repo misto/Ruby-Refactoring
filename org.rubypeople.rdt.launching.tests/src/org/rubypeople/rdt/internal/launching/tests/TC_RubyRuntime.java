@@ -299,6 +299,8 @@ public class TC_RubyRuntime extends TestCase {
 
 			return false;
 		}
+		public void setCharset(String newCharset) throws CoreException {
+		}
 
 	}
 }

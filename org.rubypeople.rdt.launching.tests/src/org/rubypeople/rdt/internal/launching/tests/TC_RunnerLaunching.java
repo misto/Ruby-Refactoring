@@ -213,6 +213,10 @@ public class TC_RunnerLaunching extends TestCase {
 		public Map getAttributes() throws CoreException {
 			return null;
 		}
+
+		public ILaunch launch(String mode, IProgressMonitor monitor, boolean build) throws CoreException {
+			return null;
+		}
 	}
 
 	public class ShamInterpreter extends RubyInterpreter {
