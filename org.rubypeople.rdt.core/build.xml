@@ -34,7 +34,7 @@
 		<mkdir dir="${destination.temp.folder}/${full.name}"/>
 		<copy file="${build.result.folder}/rdtcore.jar" todir="${destination.temp.folder}/${full.name}"/>
 		<copy todir="${destination.temp.folder}/${full.name}">
-			<fileset dir="${basedir}" includes="plugin.xml,plugin.properties"/>
+			<fileset dir="${basedir}" includes="plugin.xml,plugin.properties,lib/jakarta-regexp-1.2.jar"/>
 		</copy>
 	</target>
 
