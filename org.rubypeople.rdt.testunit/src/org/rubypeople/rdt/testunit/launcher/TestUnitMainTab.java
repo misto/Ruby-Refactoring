@@ -73,17 +73,6 @@ public class TestUnitMainTab extends AbstractLaunchConfigurationTab implements I
 	public void createControl(Composite parent) {
 		Composite composite = createPageRoot(parent);
 
-		new Label(composite, SWT.NONE).setText(TestUnitMessages.getString("JUnitMainTab.label.test"));
-		classSelector = new RubyClassSelector(composite);
-		classSelector.setBrowseDialogMessage(RdtDebugUiMessages.getString("LaunchConfigurationTab.RubyEntryPoint.projectSelectorMessage"));
-		classSelector.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
-		classSelector.addModifyListener(new ModifyListener() {
-
-			public void modifyText(ModifyEvent evt) {
-				updateLaunchConfigurationDialog();
-			}
-		});
-
 		new Label(composite, SWT.NONE).setText(RdtDebugUiMessages.getString("LaunchConfigurationTab.RubyEntryPoint.projectLabel"));
 		projectSelector = new RubyProjectSelector(composite);
 		projectSelector.setBrowseDialogMessage(RdtDebugUiMessages.getString("LaunchConfigurationTab.RubyEntryPoint.projectSelectorMessage"));
@@ -105,6 +94,18 @@ public class TestUnitMainTab extends AbstractLaunchConfigurationTab implements I
 				updateLaunchConfigurationDialog();
 			}
 		});
+	
+		new Label(composite, SWT.NONE).setText(TestUnitMessages.getString("JUnitMainTab.label.test"));
+		classSelector = new RubyClassSelector(composite, fileSelector, projectSelector);
+		classSelector.setBrowseDialogMessage(RdtDebugUiMessages.getString("LaunchConfigurationTab.RubyEntryPoint.projectSelectorMessage"));
+		classSelector.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
+		classSelector.addModifyListener(new ModifyListener() {
+
+			public void modifyText(ModifyEvent evt) {
+				updateLaunchConfigurationDialog();
+			}
+		});
+
 	}
 
 	protected Composite createPageRoot(Composite parent) {

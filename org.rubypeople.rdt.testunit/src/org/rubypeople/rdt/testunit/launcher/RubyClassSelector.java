@@ -28,6 +28,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.jface.window.Window;
 import org.eclipse.swt.SWT;
@@ -45,6 +46,8 @@ import org.eclipse.ui.dialogs.ElementListSelectionDialog;
 import org.rubypeople.rdt.internal.core.RubyCore;
 import org.rubypeople.rdt.internal.core.parser.ast.RubyElement;
 import org.rubypeople.rdt.internal.ui.rubyeditor.outline.RubyOutlineLabelProvider;
+import org.rubypeople.rdt.internal.ui.utils.RubyFileSelector;
+import org.rubypeople.rdt.internal.ui.utils.RubyProjectSelector;
 
 /**
  * @author Chris
@@ -59,11 +62,16 @@ public class RubyClassSelector {
 	protected String browseDialogMessage = EMPTY_STRING;
 	protected String browseDialogTitle = EMPTY_STRING;
 	protected String validatedSelectionText = EMPTY_STRING;
+	private RubyFileSelector fileSelector;
+	private RubyProjectSelector projectSelector;
 
 	/**
 	 * @param parent
+	 * @param fileSelector
 	 */
-	public RubyClassSelector(Composite parent) {
+	public RubyClassSelector(Composite parent, RubyFileSelector fileSelector, RubyProjectSelector projectSelector) {
+		this.fileSelector = fileSelector;
+		this.projectSelector = projectSelector;
 		composite = new Composite(parent, SWT.NONE);
 		GridLayout compositeLayout = new GridLayout();
 		compositeLayout.marginWidth = 0;
@@ -95,21 +103,47 @@ public class RubyClassSelector {
 	 *  
 	 */
 	protected void handleBrowseSelected() {
-		List typeList = new ArrayList();
-		IProject[] projects = RubyCore.getRubyProjects();
-		for (int i = 0; i < projects.length; i++) {
-			RubyElement[] types = TestSearchEngine.findTests(projects[i]);
-			typeList.addAll(Arrays.asList(types));
-		}
-
+		RubyElement[] types = getTypesInSelectedFile();
+		if (types == null) types = getTypesInSelectedProject();
+		if (types == null) types = getAllTypes();
 		ElementListSelectionDialog dialog = new ElementListSelectionDialog(getShell(), new RubyOutlineLabelProvider());
-		dialog.setElements(typeList.toArray());
+		dialog.setElements(types);
 		dialog.setTitle(browseDialogTitle);
 		dialog.setMessage(browseDialogMessage);
 		dialog.setMultipleSelection(false);
 		if (dialog.open() == Window.OK) {
 			textField.setText(((org.rubypeople.rdt.internal.core.parser.ast.RubyElement) dialog.getFirstResult()).getName());
 		}
+	}
+
+	private RubyElement[] getTypesInSelectedProject() {
+		IProject rubyProject = projectSelector.getSelection();
+		if (rubyProject == null) return null;
+		return TestSearchEngine.findTests(rubyProject);
+	}
+
+	private RubyElement[] getTypesInSelectedFile() {
+		String relativeFilePath = fileSelector.getValidatedSelectionText();
+		if (relativeFilePath == null || relativeFilePath.trim().length() == 0) return null;
+		IProject rubyProject = projectSelector.getSelection();
+		if (rubyProject == null) return null;
+		IFile file = rubyProject.getFile(relativeFilePath);
+		return TestSearchEngine.findTests(file);
+	}
+
+	/**
+	 * @return
+	 */
+	private RubyElement[] getAllTypes() {
+		List typeList = new ArrayList();
+		IProject[] projects = RubyCore.getRubyProjects();
+		for (int i = 0; i < projects.length; i++) {
+			RubyElement[] types = TestSearchEngine.findTests(projects[i]);
+			typeList.addAll(Arrays.asList(types));
+		}
+		RubyElement[] allTypes = new RubyElement[typeList.size()];
+		System.arraycopy(typeList.toArray(), 0, allTypes, 0, allTypes.length);
+		return allTypes;
 	}
 
 	/**
