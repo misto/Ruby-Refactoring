@@ -70,8 +70,8 @@ public class RubySourceViewerConfiguration extends SourceViewerConfiguration {
 		ContentAssistant contentAssistant = new ContentAssistant();
 		contentAssistant.setContentAssistProcessor(new RubyCompletionProcessor(textTools), IDocument.DEFAULT_CONTENT_TYPE);
 
-		contentAssistant.setProposalPopupOrientation(contentAssistant.PROPOSAL_OVERLAY);
-		contentAssistant.setContextInformationPopupOrientation(contentAssistant.CONTEXT_INFO_ABOVE);
+		contentAssistant.setProposalPopupOrientation(ContentAssistant.PROPOSAL_OVERLAY);
+		contentAssistant.setContextInformationPopupOrientation(ContentAssistant.CONTEXT_INFO_ABOVE);
 
 		RubyContentAssistPreference.configure(contentAssistant, getPreferenceStore());
 		return contentAssistant;

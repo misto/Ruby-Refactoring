@@ -25,7 +25,7 @@ public class RdtDebugUiPlugin extends AbstractUIPlugin {
 	}
 
 	public static IWorkbenchPage getActivePage() {
-		return getDefault().getActiveWorkbenchWindow().getActivePage();
+		return RdtDebugUiPlugin.getActiveWorkbenchWindow().getActivePage();
 	}
 
 	public static RdtDebugUiPlugin getDefault() {

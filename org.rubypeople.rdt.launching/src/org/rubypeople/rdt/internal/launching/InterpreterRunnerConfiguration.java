@@ -39,7 +39,7 @@ public class InterpreterRunnerConfiguration {
 		try {
 			projectName = configuration.getAttribute(RubyLaunchConfigurationAttribute.PROJECT_NAME, "");
 		} catch(CoreException e) {
-			RdtLaunchingPlugin.getDefault().log(e);
+			RdtLaunchingPlugin.log(e);
 		}
 
 		IProject project = RdtLaunchingPlugin.getWorkspace().getRoot().getProject(projectName);

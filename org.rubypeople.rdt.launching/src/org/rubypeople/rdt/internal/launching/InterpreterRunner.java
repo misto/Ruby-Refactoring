@@ -27,7 +27,7 @@ public class InterpreterRunner {
 			throw new RuntimeException("Unable to execute interpreter: " + commandLine + workingDirectory);
 		}
 
-		IProcess process = DebugPlugin.getDefault().newProcess(launch, nativeRubyProcess, renderLabel(configuration));
+		IProcess process = DebugPlugin.newProcess(launch, nativeRubyProcess, renderLabel(configuration));
 		process.setAttribute(RdtLaunchingPlugin.PLUGIN_ID + ".launcher.cmdline", commandLine);
 		return process ;
 	}

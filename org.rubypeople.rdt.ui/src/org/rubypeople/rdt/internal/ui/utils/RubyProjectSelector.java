@@ -1,6 +1,7 @@
 package org.rubypeople.rdt.internal.ui.utils;
 
 import org.eclipse.core.resources.IProject;
+import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.model.WorkbenchLabelProvider;
 import org.rubypeople.rdt.internal.core.RubyCore;
@@ -29,7 +30,7 @@ public class RubyProjectSelector extends ResourceSelector {
 		dialog.setMessage(browseDialogMessage);
 		dialog.setElements(RubyCore.getRubyProjects());
 
-		if (dialog.open() == dialog.OK) {
+		if (dialog.open() == Dialog.OK) {
 			textField.setText(((IProject) dialog.getFirstResult()).getName());
 		}
 	}

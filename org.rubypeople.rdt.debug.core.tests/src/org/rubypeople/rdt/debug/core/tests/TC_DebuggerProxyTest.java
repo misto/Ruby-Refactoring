@@ -5,18 +5,13 @@ import java.io.OutputStreamWriter;
 import java.io.PipedInputStream;
 import java.io.PipedOutputStream;
 import java.io.PrintWriter;
-import java.io.StringBufferInputStream;
-import java.io.StringWriter;
-import java.io.Writer;
+
+import junit.framework.TestCase;
 
 import org.rubypeople.rdt.internal.debug.core.RubyDebuggerProxy;
-import org.rubypeople.rdt.internal.debug.core.model.IRubyDebugTarget;
-import org.rubypeople.rdt.internal.debug.core.model.RubyDebugTarget;
 import org.rubypeople.rdt.internal.debug.core.model.ThreadInfo;
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserFactory;
-
-import junit.framework.TestCase;
 
 public class TC_DebuggerProxyTest extends TestCase {
 	private PrintWriter writer ;
@@ -40,8 +35,8 @@ public class TC_DebuggerProxyTest extends TestCase {
 	}
 
 	public void writeToDebuggerProxy(String text) throws Exception {
-		this.getPrintWriter().println(text) ;
-		this.getPrintWriter().flush() ;
+		getPrintWriter().println(text) ;
+		getPrintWriter().flush() ;
 	}
 
 	public void setUp() throws Exception {
@@ -59,10 +54,10 @@ public class TC_DebuggerProxyTest extends TestCase {
 	}
 
 	public void testMultipleBreakpoints() throws Exception  {
-		this.writeToDebuggerProxy("<breakpoint file=\"\" line=\"44\" threadId=\"2\"/>") ;
+		writeToDebuggerProxy("<breakpoint file=\"\" line=\"44\" threadId=\"2\"/>") ;
 		Thread.sleep(2000) ;
-		this.assertNotNull(this.getTarget().getLastSuspensionPoint()) ;
-		this.assertEquals(44, this.getTarget().getLastSuspensionPoint().getLine()) ;
+		assertNotNull(getTarget().getLastSuspensionPoint()) ;
+		assertEquals(44, getTarget().getLastSuspensionPoint().getLine()) ;
 		new Thread() {
 			public void run() {
 				try {
@@ -76,10 +71,10 @@ public class TC_DebuggerProxyTest extends TestCase {
 		}.start() ;
 
 		// blocks until threads are read
-		ThreadInfo[] threadInfos = this.getProxy().readThreads() ;		
-		this.assertEquals(1, threadInfos.length) ;
+		ThreadInfo[] threadInfos = getProxy().readThreads() ;		
+		assertEquals(1, threadInfos.length) ;
 		Thread.sleep(1000) ;
-		this.assertEquals(55, this.getTarget().getLastSuspensionPoint().getLine()) ;
+		assertEquals(55, getTarget().getLastSuspensionPoint().getLine()) ;
 	}
 
 }

@@ -1,6 +1,5 @@
 package org.rubypeople.rdt.debug.core.tests;
 
-import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.InputStreamReader;
@@ -8,9 +7,6 @@ import java.io.PrintWriter;
 import java.net.Socket;
 
 import junit.framework.TestCase;
-
-import org.eclipse.core.boot.BootLoader;
-import org.rubypeople.rdt.internal.debug.core.parsing.MultiReaderStrategy;
 
 public class TC_NonBlockingSocketReader extends TestCase {
 	private Socket socket ;
@@ -65,7 +61,7 @@ public class TC_NonBlockingSocketReader extends TestCase {
 		int diff = Math.abs(operationsInThreeSeconds - (operationsPerSecond*3)) ;
 		System.out.println(diff) ;
 		// allow 15 percent deviation
-		this.assertTrue(diff < operationsPerSecond * 0.15) ;
+		assertTrue(diff < operationsPerSecond * 0.15) ;
 	}
 
 }

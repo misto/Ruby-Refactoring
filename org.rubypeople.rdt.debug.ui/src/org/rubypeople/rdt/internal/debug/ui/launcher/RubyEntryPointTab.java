@@ -145,7 +145,7 @@ public class RubyEntryPointTab extends AbstractLaunchConfigurationTab {
 	}
 
 	protected void log(Throwable t) {
-		RdtDebugUiPlugin.getDefault().log(t);
+		RdtDebugUiPlugin.log(t);
 	}
 
 	public boolean canSave() {

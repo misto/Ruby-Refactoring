@@ -140,7 +140,7 @@ public class RubyArgumentsTab extends AbstractLaunchConfigurationTab {
 	}
 	
 	protected void log(Throwable t) {
-		RdtDebugUiPlugin.getDefault().log(t);
+		RdtDebugUiPlugin.log(t);
 	}
 
 	public Image getImage() {

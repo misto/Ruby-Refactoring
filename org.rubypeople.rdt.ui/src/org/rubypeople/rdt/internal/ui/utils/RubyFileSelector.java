@@ -6,8 +6,8 @@ import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
+import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.util.Assert;
-import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.model.WorkbenchLabelProvider;
 import org.rubypeople.rdt.internal.ui.RdtUiPlugin;
@@ -56,7 +56,7 @@ public class RubyFileSelector extends ResourceSelector {
 		dialog.setMessage(browseDialogMessage);
 		dialog.setElements(getRubyFiles());
 
-		if (dialog.open() == dialog.OK) {
+		if (dialog.open() == Dialog.OK) {
 			textField.setText(((IResource) dialog.getFirstResult()).getProjectRelativePath().toString());
 		}
 	}

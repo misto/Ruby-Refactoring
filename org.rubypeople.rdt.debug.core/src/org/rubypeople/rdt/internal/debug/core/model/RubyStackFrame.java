@@ -1,8 +1,5 @@
 package org.rubypeople.rdt.internal.debug.core.model;
 
-import java.util.ArrayList;
-import java.util.Vector;
-
 import org.eclipse.debug.core.DebugEvent;
 import org.eclipse.debug.core.DebugException;
 import org.eclipse.debug.core.DebugPlugin;
@@ -13,9 +10,6 @@ import org.eclipse.debug.core.model.IStackFrame;
 import org.eclipse.debug.core.model.IThread;
 import org.eclipse.debug.core.model.IVariable;
 import org.rubypeople.rdt.internal.debug.core.RubyDebuggerProxy;
-import org.rubypeople.rdt.internal.debug.core.StepSuspensionPoint;
-import org.rubypeople.rdt.internal.debug.core.SuspensionPoint;
-
 
 public class RubyStackFrame implements IStackFrame {
 

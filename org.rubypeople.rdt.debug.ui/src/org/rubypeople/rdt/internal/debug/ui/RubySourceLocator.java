@@ -1,27 +1,18 @@
 package org.rubypeople.rdt.internal.debug.ui;
 
-import org.eclipse.core.internal.resources.File;
-import org.eclipse.core.internal.resources.Workspace;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Path;
-import org.eclipse.core.runtime.Status;
 import org.eclipse.debug.core.ILaunchConfiguration;
 import org.eclipse.debug.core.model.IPersistableSourceLocator;
 import org.eclipse.debug.core.model.IStackFrame;
 import org.eclipse.debug.ui.ISourcePresentation;
-import org.eclipse.ui.IEditorDescriptor;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.PlatformUI;
-import org.eclipse.ui.internal.EditorWorkbook;
-import org.eclipse.ui.internal.WorkbenchPlugin;
-import org.eclipse.ui.internal.registry.EditorDescriptor;
 import org.eclipse.ui.part.FileEditorInput;
 import org.rubypeople.rdt.internal.debug.core.RdtDebugCorePlugin;
 import org.rubypeople.rdt.internal.debug.core.model.RubyStackFrame;
-import org.rubypeople.rdt.internal.launching.InterpreterRunnerConfiguration;
-import org.rubypeople.rdt.internal.launching.RdtLaunchingPlugin;
 import org.rubypeople.rdt.internal.launching.RubyLaunchConfigurationAttribute;
 
 

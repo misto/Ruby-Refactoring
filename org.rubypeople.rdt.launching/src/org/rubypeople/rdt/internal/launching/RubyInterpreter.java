@@ -3,7 +3,6 @@ package org.rubypeople.rdt.internal.launching;
 import java.io.File;
 import java.io.IOException;
 
-import org.eclipse.core.internal.resources.OS;
 import org.eclipse.core.runtime.IPath;
 
 public class RubyInterpreter {

@@ -3,11 +3,9 @@ package org.rubypeople.rdt.internal.debug.core.parsing;
 import java.io.IOException;
 import java.net.SocketException;
 import java.util.Hashtable;
-import java.util.Vector;
 import java.util.Iterator;
+import java.util.Vector;
 
-import org.eclipse.core.internal.runtime.Assert;
-import org.rubypeople.rdt.internal.debug.core.RdtDebugCorePlugin;
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
 
@@ -46,9 +44,9 @@ public class MultiReaderStrategy extends AbstractReadStrategy {
 		System.out.println("Starting xml read loop.");
 		int eventType = xpp.getEventType();
 		do {
-			if (eventType == xpp.START_TAG) {
+			if (eventType == XmlPullParser.START_TAG) {
 				this.dispatchStartTag();
-			} else if (eventType == xpp.END_TAG && currentReader != null) {
+			} else if (eventType == XmlPullParser.END_TAG && currentReader != null) {
 				if (xpp.getDepth() == 1) {
 					this.removeReader(currentReader);
 					currentReader = null;
@@ -57,7 +55,7 @@ public class MultiReaderStrategy extends AbstractReadStrategy {
 				}
 			}
 			eventType = xpp.next();
-		} while (eventType != xpp.END_DOCUMENT);
+		} while (eventType != XmlPullParser.END_DOCUMENT);
 		System.out.println("Read loop stopped because end of stream was reached.");
 	}
 
@@ -111,7 +109,7 @@ public class MultiReaderStrategy extends AbstractReadStrategy {
 		this.addReader(streamReader);
 		try {
 			System.out.println("Thread is waiting for input: " + Thread.currentThread());
-			Thread.currentThread().sleep(Long.MAX_VALUE);
+			Thread.sleep(Long.MAX_VALUE);
 		} catch (InterruptedException e) {
 			System.out.println("Thread has finished processing : " + Thread.currentThread());
 		}

@@ -104,10 +104,10 @@ public class RubyApplicationShortcut implements ILaunchShortcut {
 	}
 	
 	protected void log(String message) {
-		RdtDebugUiPlugin.getDefault().log(new Status(Status.INFO, RdtDebugUiPlugin.PLUGIN_ID, Status.INFO, message, null));
+		RdtDebugUiPlugin.log(new Status(Status.INFO, RdtDebugUiPlugin.PLUGIN_ID, Status.INFO, message, null));
 	}
 	
 	protected void log(Throwable t) {
-		RdtDebugUiPlugin.getDefault().log(t);
+		RdtDebugUiPlugin.log(t);
 	}
 }

@@ -15,19 +15,19 @@ public class SingleReaderStrategy extends AbstractReadStrategy {
 	
 		int eventType = xpp.getEventType();
 		do {
-			if (eventType == xpp.START_DOCUMENT) {
+			if (eventType == XmlPullParser.START_DOCUMENT) {
 				System.out.println("Start document");
-			} else if (eventType == xpp.END_DOCUMENT) {
+			} else if (eventType == XmlPullParser.END_DOCUMENT) {
 				System.out.println("End document");
 				break ;
-			} else if (eventType == xpp.START_TAG) {
+			} else if (eventType == XmlPullParser.START_TAG) {
 				streamReader.processStartElement(xpp);
-			} else if (eventType == xpp.END_TAG) {
+			} else if (eventType == XmlPullParser.END_TAG) {
 				streamReader.processEndElement(xpp);
 				if (xpp.getDepth() == 1) {
 					break ;	
 				}
-			} else if (eventType == xpp.TEXT) {
+			} else if (eventType == XmlPullParser.TEXT) {
 				//processText(xpp);
 			}
 			eventType = xpp.next();

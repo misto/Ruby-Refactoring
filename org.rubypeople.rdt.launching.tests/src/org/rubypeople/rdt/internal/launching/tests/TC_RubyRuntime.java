@@ -9,6 +9,7 @@ import java.io.Writer;
 import java.util.Arrays;
 
 import junit.framework.TestCase;
+
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFileState;

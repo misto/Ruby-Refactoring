@@ -1,7 +1,5 @@
 package org.rubypeople.rdt.internal.debug.core.model;
 
-import java.util.Vector;
-
 import org.eclipse.debug.core.DebugEvent;
 import org.eclipse.debug.core.DebugException;
 import org.eclipse.debug.core.DebugPlugin;

@@ -3,7 +3,6 @@ package org.rubypeople.rdt.internal.ui.text.ruby;
 import java.util.Hashtable;
 import java.util.List;
 
-import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.text.TextAttribute;
 import org.eclipse.jface.text.rules.BufferedRuleBasedScanner;
 import org.eclipse.jface.text.rules.IRule;
@@ -12,9 +11,7 @@ import org.eclipse.jface.text.rules.Token;
 import org.eclipse.jface.util.IPropertyChangeListener;
 import org.eclipse.jface.util.PropertyChangeEvent;
 import org.eclipse.swt.SWT;
-import org.rubypeople.rdt.internal.ui.RdtUiPlugin;
 import org.rubypeople.rdt.internal.ui.text.RubyColorConstants;
-import org.rubypeople.rdt.internal.ui.text.RubyColorProvider;
 import org.rubypeople.rdt.internal.ui.text.RubyTextTools;
 
 public abstract class AbstractRubyScanner extends BufferedRuleBasedScanner implements IPropertyChangeListener {

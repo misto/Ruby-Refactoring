@@ -1,12 +1,4 @@
-/*
- *(c) Copyright QNX Software Systems Ltd. 2002.
- * All Rights Reserved.
- * 
- */
 package org.rubypeople.rdt.internal.debug.core;
-
-import java.util.HashMap;
-import java.util.Map;
 
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IResource;
@@ -16,22 +8,11 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.debug.core.DebugException;
 import org.eclipse.debug.core.DebugPlugin;
-import org.eclipse.debug.core.model.Breakpoint;
-import org.eclipse.debug.core.model.IBreakpoint;
 import org.eclipse.debug.core.model.LineBreakpoint;
 
-/**
- * 
- * Enter type comment.
- * 
- * @since Aug 21, 2002
- */
 public class RubyLineBreakpoint extends LineBreakpoint {
 	private static final String RUBY_BREAKPOINT_MARKER = "org.rubypeople.rdt.debug.core.RubyBreakpointMarker"; //$NON-NLS-1$
 
-	/**
-	 * Constructor for CLineBreakpoint.
-	 */
 	public RubyLineBreakpoint(final IResource resource, final int lineNumber)
 		throws CoreException {
 		IWorkspaceRunnable wr = new IWorkspaceRunnable() {

@@ -14,11 +14,7 @@ import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.ui.IEditorInput;
-import org.eclipse.ui.ISharedImages;
-import org.eclipse.ui.internal.WorkbenchImages;
 import org.rubypeople.rdt.internal.debug.core.RubyLineBreakpoint;
-import org.rubypeople.rdt.internal.debug.core.model.RubyDebugTarget;
-import org.rubypeople.rdt.internal.debug.core.model.RubyStackFrame;
 import org.rubypeople.rdt.internal.debug.core.model.RubyThread;
 import org.rubypeople.rdt.internal.debug.core.model.RubyVariable;
 

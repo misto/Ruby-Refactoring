@@ -1,17 +1,11 @@
 package org.rubypeople.rdt.internal.debug.core.parsing;
 
-import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Vector;
 
 import org.rubypeople.rdt.internal.debug.core.RdtDebugCorePlugin;
-import org.rubypeople.rdt.internal.debug.core.SuspensionPoint;
 import org.rubypeople.rdt.internal.debug.core.model.RubyStackFrame;
-import org.rubypeople.rdt.internal.debug.core.model.RubyThread;
-import org.rubypeople.rdt.internal.debug.core.model.RubyValue;
 import org.rubypeople.rdt.internal.debug.core.model.RubyVariable;
 import org.xmlpull.v1.XmlPullParser;
-import org.xmlpull.v1.XmlPullParserException;
 
 public class VariableReader extends XmlStreamReader {
 

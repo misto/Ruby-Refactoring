@@ -2,26 +2,21 @@ package org.rubypeople.rdt.debug.core.tests;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
 
 import junit.framework.TestCase;
-import junit.framework.TestSuite;
 
 import org.rubypeople.rdt.internal.debug.core.ExceptionSuspensionPoint;
 import org.rubypeople.rdt.internal.debug.core.StepSuspensionPoint;
 import org.rubypeople.rdt.internal.debug.core.SuspensionPoint;
-import org.rubypeople.rdt.internal.debug.core.model.RubyDebugTarget;
 import org.rubypeople.rdt.internal.debug.core.model.RubyStackFrame;
 import org.rubypeople.rdt.internal.debug.core.model.RubyThread;
 import org.rubypeople.rdt.internal.debug.core.model.RubyVariable;
 import org.rubypeople.rdt.internal.debug.core.model.ThreadInfo;
-import org.rubypeople.rdt.internal.debug.core.parsing.MultiReaderStrategy;
-import org.rubypeople.rdt.internal.debug.core.parsing.SuspensionReader;
 import org.rubypeople.rdt.internal.debug.core.parsing.FramesReader;
+import org.rubypeople.rdt.internal.debug.core.parsing.MultiReaderStrategy;
 import org.rubypeople.rdt.internal.debug.core.parsing.SuspensionReader;
 import org.rubypeople.rdt.internal.debug.core.parsing.ThreadInfoReader;
 import org.rubypeople.rdt.internal.debug.core.parsing.VariableReader;
@@ -81,7 +76,7 @@ public class TC_DebuggerCommunicationTest extends TestCase {
 	}
 
 	private String getRubyTestFilename() {
-		return this.getTestFilename().replace('\\', '/');
+		return getTestFilename().replace('\\', '/');
 	}
 
 	protected XmlPullParser getXpp(Socket socket) throws Exception {
@@ -109,11 +104,11 @@ public class TC_DebuggerCommunicationTest extends TestCase {
 	}
 
 	public void startRubyProcess() throws Exception {
-		String binDir = this.getClass().getResource("/").getFile();
+		String binDir = getClass().getResource("/").getFile();
 		if (binDir.startsWith("/") && File.separatorChar == '\\') {
 			binDir = binDir.substring(1);
 		}
-		String cmd = "ruby -I " + binDir + "../../org.rubypeople.rdt.launching/ruby -I" + getTmpDir().replace('\\', '/') + " -reclipseDebug.rb " + this.getRubyTestFilename();
+		String cmd = "ruby -I " + binDir + "../../org.rubypeople.rdt.launching/ruby -I" + getTmpDir().replace('\\', '/') + " -reclipseDebug.rb " + getRubyTestFilename();
 		System.out.println("Starting: " + cmd);
 		process = Runtime.getRuntime().exec(cmd);
 		rubyStderrRedirectorThread = new OutputRedirectorThread(process.getErrorStream());
@@ -163,174 +158,174 @@ public class TC_DebuggerCommunicationTest extends TestCase {
 	}
 
 	private void createSocket(String[] lines) throws Exception {
-		this.writeFile("test.rb", lines);
-		this.startRubyProcess();
+		writeFile("test.rb", lines);
+		startRubyProcess();
 		socket = new Socket("localhost", 1098);
-		multiReaderStrategy = new MultiReaderStrategy(this.getXpp(socket));
+		multiReaderStrategy = new MultiReaderStrategy(getXpp(socket));
 		out = new PrintWriter(socket.getOutputStream(), true);
 	}
 
 	public void testNameError() throws Exception {
 
-		this.createSocket(new String[] { "puts 'x'" });
+		createSocket(new String[] { "puts 'x'" });
 		out.println("cont");
-		SuspensionPoint hit = this.getSuspensionReader().readSuspension();
+		SuspensionPoint hit = getSuspensionReader().readSuspension();
 		// TODO: assertion is wrong, I want the debugger to suspend here
 		// but there must be several catchpoints available
-		this.assertNull(hit);
+		assertNull(hit);
 	}
 
 	public void testBreakpoint() throws Exception {
 		// Breakpoint in line 1 does not work yet.
-		this.createSocket(new String[] { "puts 'a'", "def add", "puts 'b'", "end", "add()", "add()" });
+		createSocket(new String[] { "puts 'a'", "def add", "puts 'b'", "end", "add()", "add()" });
 		out.println("b test.rb:1");
 		out.println("b add test.rb:3");
 		out.println("cont");
 		System.out.println("Waiting for breakpoint..");
-		SuspensionPoint hit = this.getSuspensionReader().readSuspension();
-		this.assertNotNull(hit);
-		this.assertTrue(hit.isBreakpoint());
-		this.assertEquals(1, hit.getLine());
-		this.assertEquals("test.rb", hit.getFile());
+		SuspensionPoint hit = getSuspensionReader().readSuspension();
+		assertNotNull(hit);
+		assertTrue(hit.isBreakpoint());
+		assertEquals(1, hit.getLine());
+		assertEquals("test.rb", hit.getFile());
 		out.println("cont");
-		hit = this.getSuspensionReader().readSuspension();
-		this.assertNotNull(hit);
-		this.assertTrue(hit.isBreakpoint());
-		this.assertEquals(3, hit.getLine());
-		this.assertEquals("test.rb", hit.getFile());
+		hit = getSuspensionReader().readSuspension();
+		assertNotNull(hit);
+		assertTrue(hit.isBreakpoint());
+		assertEquals(3, hit.getLine());
+		assertEquals("test.rb", hit.getFile());
 		out.println("b remove test.rb:3");
 		out.println("cont");
-		hit = this.getSuspensionReader().readSuspension();
-		this.assertNull(hit);
+		hit = getSuspensionReader().readSuspension();
+		assertNull(hit);
 
 	}
 
 	public void testException() throws Exception {
-		this.createSocket(new String[] { "puts 'a'", "raise 'message'", "puts 'c'" });
+		createSocket(new String[] { "puts 'a'", "raise 'message'", "puts 'c'" });
 		out.println("cont");
 		System.out.println("Waiting for exception");
-		SuspensionPoint hit = this.getSuspensionReader().readSuspension();
-		this.assertNotNull(hit);
-		this.assertEquals(2, hit.getLine());
-		this.assertEquals(this.getOSIndependent(getTmpDir() + "test.rb"), hit.getFile());
-		this.assertTrue(hit.isException());
-		this.assertEquals("message", ((ExceptionSuspensionPoint) hit).getExceptionMessage());
-		this.assertEquals("RuntimeError", ((ExceptionSuspensionPoint) hit).getExceptionType());
+		SuspensionPoint hit = getSuspensionReader().readSuspension();
+		assertNotNull(hit);
+		assertEquals(2, hit.getLine());
+		assertEquals(getOSIndependent(getTmpDir() + "test.rb"), hit.getFile());
+		assertTrue(hit.isException());
+		assertEquals("message", ((ExceptionSuspensionPoint) hit).getExceptionMessage());
+		assertEquals("RuntimeError", ((ExceptionSuspensionPoint) hit).getExceptionType());
 		out.println("cont");
 	}
 
 	public void testBreakpointNeverReached() throws Exception {
-		this.createSocket(new String[] { "puts 'a'", "puts 'b'", "puts 'c'" });
+		createSocket(new String[] { "puts 'a'", "puts 'b'", "puts 'c'" });
 		out.println("b test.rb:10");
 		out.println("cont");
 		System.out.println("Waiting for breakpoint..");
-		SuspensionPoint hit = this.getSuspensionReader().readSuspension();
-		this.assertNull(hit);
+		SuspensionPoint hit = getSuspensionReader().readSuspension();
+		assertNull(hit);
 	}
 
 	public void testStepOver() throws Exception {
-		this.createSocket(new String[] { "puts 'a'", "puts 'b'", "puts 'c'" });
+		createSocket(new String[] { "puts 'a'", "puts 'b'", "puts 'c'" });
 		out.println("b test.rb:2");
 		out.println("cont");
-		this.getSuspensionReader().readSuspension();
+		getSuspensionReader().readSuspension();
 		out.println("next");
-		SuspensionPoint info = this.getSuspensionReader().readSuspension();
-		this.assertEquals(3, info.getLine());
-		this.assertEquals(this.getOSIndependent(getTmpDir() + "test.rb"), info.getFile());
-		this.assertTrue(info.isStep());
-		this.assertEquals(1, ((StepSuspensionPoint) info).getFramesNumber());
+		SuspensionPoint info = getSuspensionReader().readSuspension();
+		assertEquals(3, info.getLine());
+		assertEquals(getOSIndependent(getTmpDir() + "test.rb"), info.getFile());
+		assertTrue(info.isStep());
+		assertEquals(1, ((StepSuspensionPoint) info).getFramesNumber());
 		out.println("next");
-		info = this.getSuspensionReader().readSuspension();
-		this.assertNull(info);
+		info = getSuspensionReader().readSuspension();
+		assertNull(info);
 	}
 
 	public void testStepOverFrames() throws Exception {
-		this.createSocket(new String[] { "require 'test2.rb'", "puts 'a'", "Test2.new.print()" });
-		this.writeFile("test2.rb", new String[] { "class Test2", "def print", "puts 'XX'", "end", "end" });
+		createSocket(new String[] { "require 'test2.rb'", "puts 'a'", "Test2.new.print()" });
+		writeFile("test2.rb", new String[] { "class Test2", "def print", "puts 'XX'", "end", "end" });
 		PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
 		out.println("b test.rb:3");
 		out.println("cont");
-		this.getSuspensionReader().readSuspension();
+		getSuspensionReader().readSuspension();
 		out.println("next");
-		SuspensionPoint info = this.getSuspensionReader().readSuspension();
-		this.assertNull(info);
+		SuspensionPoint info = getSuspensionReader().readSuspension();
+		assertNull(info);
 	}
 
 	public void testStepOverFramesValue2() throws Exception {
-		this.createSocket(new String[] { "require 'test2.rb'", "puts 'a'", "Test2.new.print()" });
-		this.writeFile("test2.rb", new String[] { "class Test2", "def print", "puts 'XX'", "puts 'XX'", "end", "end" });
-		this.runTo("test2.rb", 3);
+		createSocket(new String[] { "require 'test2.rb'", "puts 'a'", "Test2.new.print()" });
+		writeFile("test2.rb", new String[] { "class Test2", "def print", "puts 'XX'", "puts 'XX'", "end", "end" });
+		runTo("test2.rb", 3);
 		out.println("next");
-		SuspensionPoint info = this.getSuspensionReader().readSuspension();
-		this.assertEquals(4, info.getLine());
-		this.assertEquals(this.getOSIndependent(getTmpDir() + "test2.rb"), info.getFile());
-		this.assertTrue(info.isStep());
-		this.assertEquals(2, ((StepSuspensionPoint) info).getFramesNumber());
+		SuspensionPoint info = getSuspensionReader().readSuspension();
+		assertEquals(4, info.getLine());
+		assertEquals(getOSIndependent(getTmpDir() + "test2.rb"), info.getFile());
+		assertTrue(info.isStep());
+		assertEquals(2, ((StepSuspensionPoint) info).getFramesNumber());
 		out.println("next");
-		info = this.getSuspensionReader().readSuspension();
-		this.assertNull(info);
+		info = getSuspensionReader().readSuspension();
+		assertNull(info);
 	}
 
 	public void testStepOverInDifferentFrame() throws Exception {
-		this.createSocket(new String[] { "require 'test2.rb'", "Test2.new.print()", "puts 'a'" });
-		this.writeFile("test2.rb", new String[] { "class Test2", "def print", "puts 'XX'", "puts 'XX'", "end", "end" });
-		this.runTo("test2.rb", 4);
+		createSocket(new String[] { "require 'test2.rb'", "Test2.new.print()", "puts 'a'" });
+		writeFile("test2.rb", new String[] { "class Test2", "def print", "puts 'XX'", "puts 'XX'", "end", "end" });
+		runTo("test2.rb", 4);
 		out.println("next");
-		SuspensionPoint info = this.getSuspensionReader().readSuspension();
-		this.assertEquals(3, info.getLine());
-		this.assertEquals(this.getOSIndependent(getTmpDir() + "test.rb"), info.getFile());
-		this.assertTrue(info.isStep());
-		this.assertEquals(1, ((StepSuspensionPoint) info).getFramesNumber());
+		SuspensionPoint info = getSuspensionReader().readSuspension();
+		assertEquals(3, info.getLine());
+		assertEquals(getOSIndependent(getTmpDir() + "test.rb"), info.getFile());
+		assertTrue(info.isStep());
+		assertEquals(1, ((StepSuspensionPoint) info).getFramesNumber());
 		out.println("cont");
 	}
 
 	public void testStepReturn() throws Exception {
-		this.createSocket(new String[] { "require 'test2.rb'", "Test2.new.print()", "puts 'a'" });
-		this.writeFile("test2.rb", new String[] { "class Test2", "def print", "puts 'XX'", "puts 'XX'", "end", "end" });
-		this.runTo("test2.rb", 4);
+		createSocket(new String[] { "require 'test2.rb'", "Test2.new.print()", "puts 'a'" });
+		writeFile("test2.rb", new String[] { "class Test2", "def print", "puts 'XX'", "puts 'XX'", "end", "end" });
+		runTo("test2.rb", 4);
 		out.println("next");
-		SuspensionPoint info = this.getSuspensionReader().readSuspension();
-		this.assertEquals(3, info.getLine());
-		this.assertEquals(this.getOSIndependent(getTmpDir() + "test.rb"), info.getFile());
-		this.assertTrue(info.isStep());
-		this.assertEquals(1, ((StepSuspensionPoint) info).getFramesNumber());
+		SuspensionPoint info = getSuspensionReader().readSuspension();
+		assertEquals(3, info.getLine());
+		assertEquals(getOSIndependent(getTmpDir() + "test.rb"), info.getFile());
+		assertTrue(info.isStep());
+		assertEquals(1, ((StepSuspensionPoint) info).getFramesNumber());
 		out.println("cont");
 	}
 
 	public void testHitBreakpointWhileSteppingOver() throws Exception {
-		this.createSocket(new String[] { "require 'test2.rb'", "Test2.new.print()", "puts 'a'" });
-		this.writeFile("test2.rb", new String[] { "class Test2", "def print", "puts 'XX'", "puts 'XX'", "end", "end" });
+		createSocket(new String[] { "require 'test2.rb'", "Test2.new.print()", "puts 'a'" });
+		writeFile("test2.rb", new String[] { "class Test2", "def print", "puts 'XX'", "puts 'XX'", "end", "end" });
 		out.println("b test2.rb:4");
-		this.runTo("test.rb", 2);
+		runTo("test.rb", 2);
 		out.println("next");
-		SuspensionPoint info = this.getSuspensionReader().readSuspension();
-		this.assertEquals(4, info.getLine());
-		this.assertEquals("test2.rb", info.getFile());
-		this.assertTrue(info.isBreakpoint());
+		SuspensionPoint info = getSuspensionReader().readSuspension();
+		assertEquals(4, info.getLine());
+		assertEquals("test2.rb", info.getFile());
+		assertTrue(info.isBreakpoint());
 		out.println("cont");
 	}
 
 	public void testStepInto() throws Exception {
-		this.createSocket(new String[] { "require 'test2.rb'", "puts 'a'", "Test2.new.print()" });
-		this.writeFile("test2.rb", new String[] { "class Test2", "def print", "puts 'XX'", "puts 'XX'", "end", "end" });
-		this.runTo("test.rb", 3);
+		createSocket(new String[] { "require 'test2.rb'", "puts 'a'", "Test2.new.print()" });
+		writeFile("test2.rb", new String[] { "class Test2", "def print", "puts 'XX'", "puts 'XX'", "end", "end" });
+		runTo("test.rb", 3);
 		out.println("step");
-		SuspensionPoint info = this.getSuspensionReader().readSuspension();
-		this.assertEquals(3, info.getLine());
-		this.assertEquals(getOSIndependent(getTmpDir() + "test2.rb"), info.getFile());
-		this.assertTrue(info.isStep());
-		this.assertEquals(2, ((StepSuspensionPoint) info).getFramesNumber());
+		SuspensionPoint info = getSuspensionReader().readSuspension();
+		assertEquals(3, info.getLine());
+		assertEquals(getOSIndependent(getTmpDir() + "test2.rb"), info.getFile());
+		assertTrue(info.isStep());
+		assertEquals(2, ((StepSuspensionPoint) info).getFramesNumber());
 		out.println("cont");
 	}
 
 	private void runToLine(int lineNumber) throws Exception {
-		this.runTo("test.rb", lineNumber);
+		runTo("test.rb", lineNumber);
 	}
 
 	private void runTo(String filename, int lineNumber) throws Exception {
 		out.println("b " + filename + ":" + lineNumber);
 		out.println("cont");
-		SuspensionPoint suspension = this.getSuspensionReader().readSuspension();
+		SuspensionPoint suspension = getSuspensionReader().readSuspension();
 		if (suspension == null) {
 			throw new RuntimeException("Expected suspension, but program exited.");
 		}
@@ -343,256 +338,256 @@ public class TC_DebuggerCommunicationTest extends TestCase {
 	}
 
 	public void testVariableNil() throws Exception {
-		this.createSocket(new String[] { "puts 'a'", "puts 'b'", "stringA='XX'" });
-		this.runToLine(2);
+		createSocket(new String[] { "puts 'a'", "puts 'b'", "stringA='XX'" });
+		runToLine(2);
 		out.println("v l");
-		RubyVariable[] variables = this.getVariableReader().readVariables(this.createStackFrame());
-		this.assertEquals(1, variables.length);
-		this.assertEquals("stringA", variables[0].getName());
-		this.assertEquals("nil", variables[0].getValue().getValueString());
-		this.assertEquals(null, variables[0].getValue().getReferenceTypeName());
-		this.assertTrue(!variables[0].getValue().hasVariables());
+		RubyVariable[] variables = getVariableReader().readVariables(createStackFrame());
+		assertEquals(1, variables.length);
+		assertEquals("stringA", variables[0].getName());
+		assertEquals("nil", variables[0].getValue().getValueString());
+		assertEquals(null, variables[0].getValue().getReferenceTypeName());
+		assertTrue(!variables[0].getValue().hasVariables());
 	}
 
 	public void testVariableWithXmlContent() throws Exception {
-		this.createSocket(new String[] { "stringA='<start test=\"\"/>'", "puts 'b'" });
-		this.runToLine(2);
+		createSocket(new String[] { "stringA='<start test=\"\"/>'", "puts 'b'" });
+		runToLine(2);
 		out.println("v l");
-		RubyVariable[] variables = this.getVariableReader().readVariables(this.createStackFrame());
-		this.assertEquals(1, variables.length);
-		this.assertEquals("stringA", variables[0].getName());
-		this.assertEquals("<start test=\"\"/>", variables[0].getValue().getValueString());
+		RubyVariable[] variables = getVariableReader().readVariables(createStackFrame());
+		assertEquals(1, variables.length);
+		assertEquals("stringA", variables[0].getName());
+		assertEquals("<start test=\"\"/>", variables[0].getValue().getValueString());
 	}
 
 	public void testVariablesInObject() throws Exception {
-		this.createSocket(new String[] { "class Test", "def initialize", "@y=5", "puts y", "end", "def to_s", "'test'", "end", "end", "Test.new()" });
-		this.runTo("test.rb", 4);
+		createSocket(new String[] { "class Test", "def initialize", "@y=5", "puts y", "end", "def to_s", "'test'", "end", "end", "Test.new()" });
+		runTo("test.rb", 4);
 		// Read numerical variable
 		out.println("v l");
-		RubyVariable[] variables = this.getVariableReader().readVariables(this.createStackFrame());
-		this.assertEquals(1, variables.length);
-		this.assertEquals("self", variables[0].getName());
-		this.assertEquals("test", variables[0].getValue().getValueString());
-		this.assertEquals("Test", variables[0].getValue().getReferenceTypeName());
-		this.assertTrue(variables[0].getValue().hasVariables());
+		RubyVariable[] variables = getVariableReader().readVariables(createStackFrame());
+		assertEquals(1, variables.length);
+		assertEquals("self", variables[0].getName());
+		assertEquals("test", variables[0].getValue().getValueString());
+		assertEquals("Test", variables[0].getValue().getReferenceTypeName());
+		assertTrue(variables[0].getValue().hasVariables());
 		out.println("v i self");
-		variables = this.getVariableReader().readVariables(this.createStackFrame());
-		this.assertEquals(1, variables.length);
-		this.assertEquals("@y", variables[0].getName());
-		this.assertEquals("5", variables[0].getValue().getValueString());
-		this.assertEquals("Fixnum", variables[0].getValue().getReferenceTypeName());
-		this.assertTrue(!variables[0].getValue().hasVariables());
+		variables = getVariableReader().readVariables(createStackFrame());
+		assertEquals(1, variables.length);
+		assertEquals("@y", variables[0].getName());
+		assertEquals("5", variables[0].getValue().getValueString());
+		assertEquals("Fixnum", variables[0].getValue().getReferenceTypeName());
+		assertTrue(!variables[0].getValue().hasVariables());
 		out.println("cont");
 	}
 
 	public void testVariableString() throws Exception {
-		this.createSocket(new String[] { "stringA='XX'", "puts stringA" });
-		this.runToLine(2);
+		createSocket(new String[] { "stringA='XX'", "puts stringA" });
+		runToLine(2);
 		// Read numerical variable
 		out.println("v l");
-		RubyVariable[] variables = this.getVariableReader().readVariables(this.createStackFrame());
-		this.assertEquals(1, variables.length);
-		this.assertEquals("stringA", variables[0].getName());
-		this.assertEquals("XX", variables[0].getValue().getValueString());
-		this.assertEquals("String", variables[0].getValue().getReferenceTypeName());
-		this.assertTrue(!variables[0].getValue().hasVariables());
+		RubyVariable[] variables = getVariableReader().readVariables(createStackFrame());
+		assertEquals(1, variables.length);
+		assertEquals("stringA", variables[0].getName());
+		assertEquals("XX", variables[0].getValue().getValueString());
+		assertEquals("String", variables[0].getValue().getReferenceTypeName());
+		assertTrue(!variables[0].getValue().hasVariables());
 		out.println("cont");
 	}
 
 	public void testVariableInstance() throws Exception {
-		this.createSocket(new String[] { "require 'test2.rb'", "customObject=Test2.new", "puts customObject" });
-		this.writeFile("test2.rb", new String[] { "class Test2", "def initialize", "@y=5", "end", "def to_s", "'test'", "end", "end" });
-		this.runTo("test2.rb", 6);
+		createSocket(new String[] { "require 'test2.rb'", "customObject=Test2.new", "puts customObject" });
+		writeFile("test2.rb", new String[] { "class Test2", "def initialize", "@y=5", "end", "def to_s", "'test'", "end", "end" });
+		runTo("test2.rb", 6);
 		out.println("v i 2 customObject");
-		RubyVariable[] variables = this.getVariableReader().readVariables(this.createStackFrame());
-		this.assertEquals(1, variables.length);
-		this.assertEquals("@y", variables[0].getName());
-		this.assertEquals("5", variables[0].getValue().getValueString());
-		this.assertEquals("Fixnum", variables[0].getValue().getReferenceTypeName());
-		this.assertTrue(!variables[0].getValue().hasVariables());
+		RubyVariable[] variables = getVariableReader().readVariables(createStackFrame());
+		assertEquals(1, variables.length);
+		assertEquals("@y", variables[0].getName());
+		assertEquals("5", variables[0].getValue().getValueString());
+		assertEquals("Fixnum", variables[0].getValue().getReferenceTypeName());
+		assertTrue(!variables[0].getValue().hasVariables());
 	}
 
 	public void testVariableInstanceNested() throws Exception {
-		this.createSocket(new String[] { "class Test", "def initialize(test)", "@privateTest = test", "end", "end", "test2 = Test.new(Test.new(nil))", "puts test" });
-		this.runToLine(7);
+		createSocket(new String[] { "class Test", "def initialize(test)", "@privateTest = test", "end", "end", "test2 = Test.new(Test.new(nil))", "puts test" });
+		runToLine(7);
 		out.println("v l");
-		RubyVariable[] variables = this.getVariableReader().readVariables(this.createStackFrame());
-		this.assertEquals(1, variables.length);
+		RubyVariable[] variables = getVariableReader().readVariables(createStackFrame());
+		assertEquals(1, variables.length);
 		RubyVariable test2Variable = variables[0];
-		this.assertEquals("test2", test2Variable.getName());
-		this.assertEquals("test2", test2Variable.getQualifiedName());
+		assertEquals("test2", test2Variable.getName());
+		assertEquals("test2", test2Variable.getQualifiedName());
 		out.println("v i " + test2Variable.getQualifiedName());
-		variables = this.getVariableReader().readVariables(test2Variable);
-		this.assertEquals(1, variables.length);
+		variables = getVariableReader().readVariables(test2Variable);
+		assertEquals(1, variables.length);
 		RubyVariable privateTestVariable = variables[0];
-		this.assertEquals("@privateTest", privateTestVariable.getName());
-		this.assertEquals("test2.@privateTest", privateTestVariable.getQualifiedName());
-		this.assertTrue(privateTestVariable.getValue().hasVariables());
+		assertEquals("@privateTest", privateTestVariable.getName());
+		assertEquals("test2.@privateTest", privateTestVariable.getQualifiedName());
+		assertTrue(privateTestVariable.getValue().hasVariables());
 		out.println("v i " + privateTestVariable.getQualifiedName());
-		variables = this.getVariableReader().readVariables(privateTestVariable);
-		this.assertEquals(1, variables.length);
+		variables = getVariableReader().readVariables(privateTestVariable);
+		assertEquals(1, variables.length);
 		RubyVariable privateTestprivateTestVariable = variables[0];
-		this.assertEquals("@privateTest", privateTestprivateTestVariable.getName());
-		this.assertEquals("test2.@privateTest.@privateTest", privateTestprivateTestVariable.getQualifiedName());
-		this.assertEquals("nil", privateTestprivateTestVariable.getValue().getValueString());
-		this.assertTrue(!privateTestprivateTestVariable.getValue().hasVariables());
+		assertEquals("@privateTest", privateTestprivateTestVariable.getName());
+		assertEquals("test2.@privateTest.@privateTest", privateTestprivateTestVariable.getQualifiedName());
+		assertEquals("nil", privateTestprivateTestVariable.getValue().getValueString());
+		assertTrue(!privateTestprivateTestVariable.getValue().hasVariables());
 	}
 
 	public void testVariablesInFrames() throws Exception {
-		this.createSocket(new String[] { "require 'test2.rb'", "y=5", "Test2.new().test()" });
-		this.writeFile("test2.rb", new String[] { "class Test2", "def test", "y=6", "puts y", "end", "end" });
-		this.runTo("test2.rb", 4);
+		createSocket(new String[] { "require 'test2.rb'", "y=5", "Test2.new().test()" });
+		writeFile("test2.rb", new String[] { "class Test2", "def test", "y=6", "puts y", "end", "end" });
+		runTo("test2.rb", 4);
 		out.println("v l");
-		RubyVariable[] variables = this.getVariableReader().readVariables(this.createStackFrame());
+		RubyVariable[] variables = getVariableReader().readVariables(createStackFrame());
 		// there are 2 variables self and y
-		this.assertEquals(2, variables.length);
+		assertEquals(2, variables.length);
 		// the variables are sorted: self = variables[0], y = variables[1]
-		this.assertEquals("y", variables[1].getName());
-		this.assertEquals("6", variables[1].getValue().getValueString());
+		assertEquals("y", variables[1].getName());
+		assertEquals("6", variables[1].getValue().getValueString());
 		out.println("v l 1");
-		variables = this.getVariableReader().readVariables(this.createStackFrame());
-		this.assertEquals(2, variables.length);
-		this.assertEquals("y", variables[1].getName());
-		this.assertEquals("6", variables[1].getValue().getValueString());
+		variables = getVariableReader().readVariables(createStackFrame());
+		assertEquals(2, variables.length);
+		assertEquals("y", variables[1].getName());
+		assertEquals("6", variables[1].getValue().getValueString());
 		out.println("v l 2");
-		variables = this.getVariableReader().readVariables(this.createStackFrame());
-		this.assertEquals(1, variables.length);
-		this.assertEquals("y", variables[0].getName());
-		this.assertEquals("5", variables[0].getValue().getValueString());
+		variables = getVariableReader().readVariables(createStackFrame());
+		assertEquals(1, variables.length);
+		assertEquals("y", variables[0].getName());
+		assertEquals("5", variables[0].getValue().getValueString());
 		// 20 is out of range, then the default frame is used, which is 1
 		out.println("v l 20");
-		variables = this.getVariableReader().readVariables(this.createStackFrame());
-		this.assertEquals(2, variables.length);
-		this.assertEquals("y", variables[1].getName());
-		this.assertEquals("6", variables[1].getValue().getValueString());
+		variables = getVariableReader().readVariables(createStackFrame());
+		assertEquals(2, variables.length);
+		assertEquals("y", variables[1].getName());
+		assertEquals("6", variables[1].getValue().getValueString());
 		out.println("cont");
 	}
 
 	public void testFrames() throws Exception {
-		this.createSocket(new String[] { "require 'test2.rb'", "test = Test2.new()", "test.print()", "test.print()" });
-		this.writeFile("test2.rb", new String[] { "class Test2", "def print", "puts 'XX'", "end", "end" });
-		this.runTo("test2.rb", 3);
+		createSocket(new String[] { "require 'test2.rb'", "test = Test2.new()", "test.print()", "test.print()" });
+		writeFile("test2.rb", new String[] { "class Test2", "def print", "puts 'XX'", "end", "end" });
+		runTo("test2.rb", 3);
 		out.println("b test.rb:4");
 		out.println("w");
 		RubyThread thread = new RubyThread(null, 0);
-		this.getFramesReader().readFrames(thread);
-		this.assertEquals(2, thread.getStackFrames().length);
+		getFramesReader().readFrames(thread);
+		assertEquals(2, thread.getStackFrames().length);
 		RubyStackFrame frame1 = (RubyStackFrame) thread.getStackFrames()[0];
-		this.assertEquals(this.getOSIndependent(getTmpDir() + "test2.rb"), frame1.getFileName());
-		this.assertEquals(1, frame1.getIndex());
-		this.assertEquals(3, frame1.getLineNumber());
+		assertEquals(getOSIndependent(getTmpDir() + "test2.rb"), frame1.getFileName());
+		assertEquals(1, frame1.getIndex());
+		assertEquals(3, frame1.getLineNumber());
 		RubyStackFrame frame2 = (RubyStackFrame) thread.getStackFrames()[1];
-		this.assertEquals(this.getOSIndependent(getTmpDir() + "test.rb"), frame2.getFileName());
-		this.assertEquals(2, frame2.getIndex());
-		this.assertEquals(3, frame2.getLineNumber());
+		assertEquals(getOSIndependent(getTmpDir() + "test.rb"), frame2.getFileName());
+		assertEquals(2, frame2.getIndex());
+		assertEquals(3, frame2.getLineNumber());
 		out.println("cont");
-		this.getSuspensionReader().readSuspension();
+		getSuspensionReader().readSuspension();
 		out.println("w");
-		this.getFramesReader().readFrames(thread);
-		this.assertEquals(1, thread.getStackFramesSize());
+		getFramesReader().readFrames(thread);
+		assertEquals(1, thread.getStackFramesSize());
 
 	}
 
 	public void testFramesWhenThreadSpawned() throws Exception {
-		this.createSocket(new String[] { "def startThread", "Thread.new() {  a = 5  }", "end", "def calc", "5 + 5", "end", "startThread()", "calc()" });
-		this.runTo("test.rb", 5);
+		createSocket(new String[] { "def startThread", "Thread.new() {  a = 5  }", "end", "def calc", "5 + 5", "end", "startThread()", "calc()" });
+		runTo("test.rb", 5);
 		RubyThread thread = new RubyThread(null, 0);
 		out.println("w");
-		this.getFramesReader().readFrames(thread);
-		this.assertEquals(2, thread.getStackFramesSize());
+		getFramesReader().readFrames(thread);
+		assertEquals(2, thread.getStackFramesSize());
 	}
 
 	public void testThreads() throws Exception {
-		this.createSocket(new String[] { "Thread.new {", "puts 'a'", "}", "Thread.pass", "puts 'b'" });
+		createSocket(new String[] { "Thread.new {", "puts 'a'", "}", "Thread.pass", "puts 'b'" });
 		out.println("b test.rb:2");
 		out.println("b test.rb:5");
 		out.println("cont");
-		SuspensionPoint point = this.getSuspensionReader().readSuspension();
+		SuspensionPoint point = getSuspensionReader().readSuspension();
 		if (point.getThreadId() == 2) {
-			this.assertEquals(2, point.getLine());
+			assertEquals(2, point.getLine());
 		} else {
-			this.assertEquals(5, point.getLine());
+			assertEquals(5, point.getLine());
 		}
 		out.println("cont");
-		point = this.getSuspensionReader().readSuspension();
+		point = getSuspensionReader().readSuspension();
 		if (point.getThreadId() == 2) {
-			this.assertEquals(2, point.getLine());
+			assertEquals(2, point.getLine());
 		} else {
-			this.assertEquals(5, point.getLine());
+			assertEquals(5, point.getLine());
 		}
 		out.println("cont");
 	}
 
 	public void testThreadIdsAndResume() throws Exception {
-		this.createSocket(new String[] { "threads=[]", "threads << Thread.new {", "puts 'a'", "}", "threads << Thread.new{", "puts 'b'", "}", "puts 'c'", "threads.each{|t| t.join()}" });
+		createSocket(new String[] { "threads=[]", "threads << Thread.new {", "puts 'a'", "}", "threads << Thread.new{", "puts 'b'", "}", "puts 'c'", "threads.each{|t| t.join()}" });
 		out.println("b test.rb:3");
 		out.println("b test.rb:6");
 		out.println("b test.rb:8");
 		out.println("cont");
-		this.getSuspensionReader().readSuspension();
-		this.getSuspensionReader().readSuspension();
-		this.getSuspensionReader().readSuspension();
+		getSuspensionReader().readSuspension();
+		getSuspensionReader().readSuspension();
+		getSuspensionReader().readSuspension();
 
 		out.println("th l");
-		ThreadInfo[] threads = this.getThreadInfoReader().readThreads();
-		this.assertEquals(3, threads.length);
-		this.assertEquals(1, threads[0].getId());
-		this.assertEquals(2, threads[1].getId());
-		this.assertEquals(3, threads[2].getId());
+		ThreadInfo[] threads = getThreadInfoReader().readThreads();
+		assertEquals(3, threads.length);
+		assertEquals(1, threads[0].getId());
+		assertEquals(2, threads[1].getId());
+		assertEquals(3, threads[2].getId());
 		out.println("th 2;cont");
 
 		out.println("th l");
-		threads = this.getThreadInfoReader().readThreads();
-		this.assertEquals(2, threads.length);
-		this.assertEquals(1, threads[0].getId());
-		this.assertEquals(3, threads[1].getId());
+		threads = getThreadInfoReader().readThreads();
+		assertEquals(2, threads.length);
+		assertEquals(1, threads[0].getId());
+		assertEquals(3, threads[1].getId());
 		out.println("th 3 ; cont");
 
 		out.println("th l");
-		threads = this.getThreadInfoReader().readThreads();
-		this.assertEquals(1, threads.length);
-		this.assertEquals(1, threads[0].getId());
+		threads = getThreadInfoReader().readThreads();
+		assertEquals(1, threads.length);
+		assertEquals(1, threads[0].getId());
 		out.println("cont");
 	}
 
 	public void testThreadFramesAndVariables() throws Exception {
-		this.createSocket(new String[] { "Thread.new {", "a=5", "x=6", "puts 'x'", "}", "b=10", "b=11" });
+		createSocket(new String[] { "Thread.new {", "a=5", "x=6", "puts 'x'", "}", "b=10", "b=11" });
 		out.println("b test.rb:3");
 		out.println("b test.rb:7");
 		out.println("cont");
-		this.getSuspensionReader().readSuspension();
-		this.getSuspensionReader().readSuspension();
+		getSuspensionReader().readSuspension();
+		getSuspensionReader().readSuspension();
 		// the main thread and the "puts 'a'" - thread are active
 		out.println("th l");
-		ThreadInfo[] threads = this.getThreadInfoReader().readThreads();
-		this.assertEquals(2, threads.length);
-		this.assertEquals(1, threads[0].getId());
-		this.assertEquals(2, threads[1].getId());
+		ThreadInfo[] threads = getThreadInfoReader().readThreads();
+		assertEquals(2, threads.length);
+		assertEquals(1, threads[0].getId());
+		assertEquals(2, threads[1].getId());
 		out.println("th 1 ; f ");
-		RubyStackFrame[] stackFrames = this.getFramesReader().readFrames(new RubyThread(null, 1));
-		this.assertEquals(1, stackFrames.length);
-		this.assertEquals(7, stackFrames[0].getLineNumber());
+		RubyStackFrame[] stackFrames = getFramesReader().readFrames(new RubyThread(null, 1));
+		assertEquals(1, stackFrames.length);
+		assertEquals(7, stackFrames[0].getLineNumber());
 		out.println("th 1 ; v l");
-		RubyVariable[] variables = this.getVariableReader().readVariables(stackFrames[0]);
-		this.assertEquals(1, variables.length);
-		this.assertEquals("b", variables[0].getName());
+		RubyVariable[] variables = getVariableReader().readVariables(stackFrames[0]);
+		assertEquals(1, variables.length);
+		assertEquals("b", variables[0].getName());
 		out.println("th 2 ; f");
-		stackFrames = this.getFramesReader().readFrames(new RubyThread(null, 1));
-		this.assertEquals(1, stackFrames.length);
-		this.assertEquals(3, stackFrames[0].getLineNumber());
+		stackFrames = getFramesReader().readFrames(new RubyThread(null, 1));
+		assertEquals(1, stackFrames.length);
+		assertEquals(3, stackFrames[0].getLineNumber());
 		out.println("th 2 ; v l");
-		variables = this.getVariableReader().readVariables(stackFrames[0]);
-		this.assertEquals(2, variables.length) ;
-		this.assertEquals("a", variables[0].getName()) ;
-		this.assertEquals("b", variables[1].getName()) ;
+		variables = getVariableReader().readVariables(stackFrames[0]);
+		assertEquals(2, variables.length) ;
+		assertEquals("a", variables[0].getName()) ;
+		assertEquals("b", variables[1].getName()) ;
 		out.println("th 2 ; next");
-		this.getSuspensionReader().readSuspension();
+		getSuspensionReader().readSuspension();
 		out.println("th 2 ; v l");		
-		variables = this.getVariableReader().readVariables(stackFrames[0]);
-		this.assertEquals(3, variables.length) ;
-		this.assertEquals("a", variables[0].getName()) ;
-		this.assertEquals("b", variables[1].getName()) ;
-		this.assertEquals("x", variables[2].getName()) ;		
+		variables = getVariableReader().readVariables(stackFrames[0]);
+		assertEquals(3, variables.length) ;
+		assertEquals("a", variables[0].getName()) ;
+		assertEquals("b", variables[1].getName()) ;
+		assertEquals("x", variables[2].getName()) ;		
 		
 	}
 

@@ -3,7 +3,6 @@ package org.rubypeople.rdt.internal.debug.core.parsing;
 import java.io.IOException;
 import java.util.ArrayList;
 
-import org.rubypeople.rdt.internal.debug.core.model.RubyStackFrame;
 import org.rubypeople.rdt.internal.debug.core.model.ThreadInfo;
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;

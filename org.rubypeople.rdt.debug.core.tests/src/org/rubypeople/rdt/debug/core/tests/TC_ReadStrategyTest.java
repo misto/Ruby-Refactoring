@@ -49,7 +49,7 @@ public class TC_ReadStrategyTest extends TestCase {
 		writer.println("<testTag/>") ;
 		writer.flush() ;		 
 		testTagReaderThread.join() ;
-		this.assertTrue("testTag", reader.isTagRead()) ;
+		assertTrue("testTag", reader.isTagRead()) ;
 	}
 
 	public void testMultiReaderStrategy() throws Exception {
@@ -80,19 +80,19 @@ public class TC_ReadStrategyTest extends TestCase {
 		} ;
 		breakpointReaderThread.start() ;
 		Thread.sleep(500) ; // wait for threads to be started
-		this.assertTrue(testTagReaderThread.isAlive()) ;
-		this.assertTrue(breakpointReaderThread.isAlive()) ;
+		assertTrue(testTagReaderThread.isAlive()) ;
+		assertTrue(breakpointReaderThread.isAlive()) ;
 		
 		writer.println("<testTag/>") ;
 		writer.flush() ;
 		testTagReaderThread.join() ;		 
-		this.assertTrue("testTag was read.", testTagReader.isTagRead()) ;
-		this.assertTrue("breakpoint was not yet read.", !breakpointReader.isTagRead()) ;		
-		this.assertTrue("breakpointReaderThread has not yet finished.",breakpointReaderThread.isAlive()) ; 
+		assertTrue("testTag was read.", testTagReader.isTagRead()) ;
+		assertTrue("breakpoint was not yet read.", !breakpointReader.isTagRead()) ;		
+		assertTrue("breakpointReaderThread has not yet finished.",breakpointReaderThread.isAlive()) ; 
 		writer.println("<breakpoint/>") ;
 		writer.flush() ;		 
 		breakpointReaderThread.join() ;
-		this.assertTrue("breakpoint was read.", breakpointReader.isTagRead()) ;		
+		assertTrue("breakpoint was read.", breakpointReader.isTagRead()) ;		
 		
 	}
 	
@@ -115,7 +115,7 @@ public class TC_ReadStrategyTest extends TestCase {
 		writer.println("<testTag><testTag/><testTag/></testTag>") ;
 		writer.flush() ;
 		testTagReaderThread.join() ;		 
-		this.assertEquals("testTag was read 3 times.", 3, testTagReader.getTagReadCount()) ;		
+		assertEquals("testTag was read 3 times.", 3, testTagReader.getTagReadCount()) ;		
 	}
 
 	public void testMultiReaderStrategyDontMissTag() throws Exception {
@@ -139,7 +139,7 @@ public class TC_ReadStrategyTest extends TestCase {
 		testTagReaderThread.start() ;
 		Thread.sleep(500) ; // wait for threads to be started				
 		testTagReaderThread.join() ;		 
-		this.assertEquals("testTag was read 2 times.", 2, testTagReader.getTagReadCount()) ;		
+		assertEquals("testTag was read 2 times.", 2, testTagReader.getTagReadCount()) ;		
 	}
 
 

@@ -1,7 +1,5 @@
 package org.rubypeople.rdt.internal.launching;
 
-import org.eclipse.core.resources.IFile;
-import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
@@ -9,7 +7,6 @@ import org.eclipse.core.runtime.Status;
 import org.eclipse.debug.core.ILaunch;
 import org.eclipse.debug.core.ILaunchConfiguration;
 import org.eclipse.debug.core.model.ILaunchConfigurationDelegate;
-import org.rubypeople.rdt.internal.core.RubyCore;
 
 public class RubyApplicationLaunchConfigurationDelegate implements ILaunchConfigurationDelegate {
 	protected static final InterpreterRunner interpreterRunner = new InterpreterRunner();

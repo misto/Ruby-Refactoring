@@ -1,6 +1,5 @@
 package org.rubypeople.rdt.internal.ui.rubyeditor;
 
-import java.text.MessageFormat;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
 

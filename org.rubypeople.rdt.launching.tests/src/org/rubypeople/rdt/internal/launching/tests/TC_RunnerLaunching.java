@@ -1,18 +1,15 @@
 package org.rubypeople.rdt.internal.launching.tests;
 
-import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.io.StringBufferInputStream;
-import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import junit.framework.TestCase;
+
 import org.eclipse.core.boot.BootLoader;
-import org.eclipse.core.internal.resources.Project;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
@@ -26,16 +23,10 @@ import org.eclipse.debug.core.ILaunchConfigurationType;
 import org.eclipse.debug.core.ILaunchConfigurationWorkingCopy;
 import org.eclipse.debug.core.ILaunchManager;
 import org.eclipse.debug.core.Launch;
-import org.eclipse.debug.internal.core.LaunchConfiguration;
-import org.rubypeople.eclipse.shams.resources.ShamFile;
-import org.rubypeople.eclipse.shams.runtime.ShamIPath;
 import org.rubypeople.eclipse.testutils.ResourceTools;
-import org.rubypeople.rdt.internal.launching.RdtLaunchingPlugin;
 import org.rubypeople.rdt.internal.launching.RubyInterpreter;
 import org.rubypeople.rdt.internal.launching.RubyLaunchConfigurationAttribute;
 import org.rubypeople.rdt.internal.launching.RubyRuntime;
-
-import junit.framework.TestCase;
 
 public class TC_RunnerLaunching extends TestCase {
 
@@ -69,9 +60,9 @@ public class TC_RunnerLaunching extends TestCase {
 
 	public void testDebugEnabled() throws Exception {
 		// check if debugging is enabled in plugin.xml
-		ILaunchConfigurationType launchConfigurationType = this.getLaunchManager().getLaunchConfigurationType(RubyLaunchConfigurationAttribute.RUBY_LAUNCH_CONFIGURATION_TYPE);
-		this.assertEquals("Ruby Application", launchConfigurationType.getName());
-		this.assertTrue("LaunchConfiguration supports debug", launchConfigurationType.supportsMode(ILaunchManager.DEBUG_MODE));
+		ILaunchConfigurationType launchConfigurationType = getLaunchManager().getLaunchConfigurationType(RubyLaunchConfigurationAttribute.RUBY_LAUNCH_CONFIGURATION_TYPE);
+		assertEquals("Ruby Application", launchConfigurationType.getName());
+		assertTrue("LaunchConfiguration supports debug", launchConfigurationType.supportsMode(ILaunchManager.DEBUG_MODE));
 	}
 
 	public void launch(boolean debug) throws Exception {
@@ -85,20 +76,20 @@ public class TC_RunnerLaunching extends TestCase {
 		RubyRuntime.getDefault().setSelectedInterpreter(interpreter);
 		ILaunchConfiguration configuration = new ShamLaunchConfiguration();
 		ILaunch launch = new Launch(configuration, debug ? ILaunchManager.DEBUG_MODE : ILaunchManager.RUN_MODE, null);
-		ILaunchConfigurationType launchConfigurationType = this.getLaunchManager().getLaunchConfigurationType(RubyLaunchConfigurationAttribute.RUBY_LAUNCH_CONFIGURATION_TYPE);		
+		ILaunchConfigurationType launchConfigurationType = getLaunchManager().getLaunchConfigurationType(RubyLaunchConfigurationAttribute.RUBY_LAUNCH_CONFIGURATION_TYPE);		
 		launchConfigurationType.getDelegate().launch(configuration, debug ? ILaunchManager.DEBUG_MODE : ILaunchManager.RUN_MODE, launch, null);
 		
-		this.assertEquals("One process has been spawned", 1, launch.getProcesses().length);
-		this.assertEquals("Assembled command line.", getCommandLine(project, debug), interpreter.getArguments()) ;
-		this.assertEquals("Process label.", "Ruby " + RUBY_COMMAND + " : " + RUBY_LIB_DIR + "/" + RUBY_FILE_NAME, launch.getProcesses()[0].getLabel()) ;
+		assertEquals("One process has been spawned", 1, launch.getProcesses().length);
+		assertEquals("Assembled command line.", getCommandLine(project, debug), interpreter.getArguments()) ;
+		assertEquals("Process label.", "Ruby " + RUBY_COMMAND + " : " + RUBY_LIB_DIR + "/" + RUBY_FILE_NAME, launch.getProcesses()[0].getLabel()) ;
 	}
 
 	public void testRunInDebugMode() throws Exception{
-		this.launch(true) ;	
+		launch(true) ;	
 	}
 
 	public void testRunInRunMode() throws Exception{
-		this.launch(false) ;	
+		launch(false) ;	
 	}
 
 
@@ -270,7 +261,7 @@ public class TC_RunnerLaunching extends TestCase {
 			return RUBY_COMMAND ;
 		}
 		public Process exec(String args, File workingDirectory) {
-			this.arguments = args;
+			arguments = args;
 			return new ShamProcess();
 		}
 	}

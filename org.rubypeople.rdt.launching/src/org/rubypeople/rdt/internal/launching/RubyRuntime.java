@@ -16,6 +16,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import javax.xml.parsers.SAXParserFactory;
+
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
 import org.xml.sax.Attributes;
@@ -106,7 +107,7 @@ public class RubyRuntime {
 			reader.setContentHandler(getRuntimeConfigurationContentHandler());
 			reader.parse(new InputSource(getRuntimeConfigurationReader()));
 		} catch(Exception e) {
-			RdtLaunchingPlugin.getDefault().log(e);
+			RdtLaunchingPlugin.log(e);
 		}
 	}
 

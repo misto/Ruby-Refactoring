@@ -2,9 +2,7 @@ package org.rubypeople.rdt.internal.ui.rubyeditor;
 
 import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.viewers.Viewer;
-import org.eclipse.ui.part.FileEditorInput;
 import org.rubypeople.rdt.internal.core.parser.RubyParsedComponent;
-import org.rubypeople.rdt.internal.core.parser.RubyParser;
 
 public class RubyOutlineContentProvider implements ITreeContentProvider {
 	public Object[] getChildren(Object parentElement) {
@@ -25,9 +23,9 @@ public class RubyOutlineContentProvider implements ITreeContentProvider {
 	}
 
 	public Object[] getElements(Object inputElement) {
-		FileEditorInput input = (FileEditorInput)inputElement;
-		RubyParsedComponent root = new RubyParser().getComponentHierarchy(input.getFile());
-		return new Object[] { root };
+//		FileEditorInput input = (FileEditorInput)inputElement;
+//		RubyParsedComponent root = new RubyParser().getComponentHierarchy(input.getFile());
+		return new Object[] { "Outline" };
 	}
 
 	public void dispose() {
