@@ -36,7 +36,7 @@
       <property name="classname" 
                 value="org.rubypeople.rdt.tests.all.TS_RdtAllTests"/>
 	  
-      <property name="vmargs" value="-Drdt.rubyInterpreter=${rdt.rubyInterpreter}"/>
+      <property name="vmargs" value="-Drdt.rubyInterpreter=&quot;${rdt.rubyInterpreter}&quot;"/>
     </ant>
     
   </target>
