@@ -45,7 +45,7 @@ public class RubyAbstractEditor extends TextEditor {
 	}
 
 	protected Object createRubyOutlinePage() {
-		outlinePage = new RubyContentOutlinePage(getSourceViewer().getDocument());
+		outlinePage = new RubyContentOutlinePage(getSourceViewer().getDocument(), this);
 		outlinePage.addSelectionChangedListener(new ISelectionChangedListener() {
 
 			public void selectionChanged(SelectionChangedEvent event) {
