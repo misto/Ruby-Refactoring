@@ -5,13 +5,13 @@ import org.eclipse.jface.action.Separator;
 import org.eclipse.ui.IActionBars;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IWorkbenchActionConstants;
-import org.eclipse.ui.editors.text.TextEditorActionContributor;
+import org.eclipse.ui.texteditor.BasicTextEditorActionContributor;
 import org.eclipse.ui.texteditor.ITextEditor;
 import org.eclipse.ui.texteditor.RetargetTextEditorAction;
 import org.rubypeople.rdt.internal.ui.RdtUiMessages;
 import org.rubypeople.rdt.ui.actions.RubyActionIds;
 
-public class RubyEditorActionContributor extends TextEditorActionContributor {
+public class RubyEditorActionContributor extends BasicTextEditorActionContributor {
 	protected RetargetTextEditorAction contentAssistProposal;
 
 	public RubyEditorActionContributor() {

@@ -45,8 +45,13 @@ public class RdtUiImages {
 	public static final String IMG_CTOOLS_RUBY_CLASS_VAR = NAME_PREFIX + "ruby_class_var.gif";
 	public static final String IMG_CTOOLS_RUBY_INSTANCE_VAR = NAME_PREFIX + "ruby_instance_var.gif";
 	public static final String IMG_CTOOLS_RUBY_CONSTANT = NAME_PREFIX + "ruby_constant.gif";
-	
+
+	public static final String IMG_OBJS_FIXABLE_PROBLEM= NAME_PREFIX + "quickfix_warning_obj.gif"; //$NON-NLS-1$
+	public static final String IMG_OBJS_FIXABLE_ERROR= NAME_PREFIX + "quickfix_error_obj.gif"; //$NON-NLS-1$
+
 	static {
+		createManaged(OBJ_PREFIX, IMG_OBJS_FIXABLE_ERROR);
+		createManaged(OBJ_PREFIX, IMG_OBJS_FIXABLE_PROBLEM);
 		createManaged(OBJ_PREFIX, IMG_OBJS_ERROR);
 		createManaged(OBJ_PREFIX, IMG_OBJS_WARNING);
 		createManaged(OBJ_PREFIX, IMG_OBJS_INFO);

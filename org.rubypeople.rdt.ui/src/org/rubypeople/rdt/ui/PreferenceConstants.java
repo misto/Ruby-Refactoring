@@ -1,6 +1,7 @@
 package org.rubypeople.rdt.ui;
 
 import org.eclipse.jface.preference.IPreferenceStore;
+import org.rubypeople.rdt.internal.ui.RubyPlugin;
 
 public class PreferenceConstants {
 
@@ -44,6 +45,15 @@ public class PreferenceConstants {
      */
     public static final String EDITOR_FOLDING_RDOC = "editor_folding_default_rdoc"; //$NON-NLS-1$
 
+	/**
+	 * A named preference that controls if temporary problems are evaluated and shown in the UI.
+	 * <p>
+	 * Value is of type <code>Boolean</code>.
+	 * </p>
+	 */
+	public final static String EDITOR_EVALUTE_TEMPORARY_PROBLEMS= "handleTemporaryProblems"; //$NON-NLS-1$
+
+
     /**
      * A named preference that stores the value for inner type folding for the
      * default folding provider.
@@ -80,11 +90,24 @@ public class PreferenceConstants {
 	 */
 	public static final String EDITOR_ITALIC_SUFFIX= "_italic"; //$NON-NLS-1$
 
+	/**
+	 * A named preference that controls if correction indicators are shown in the UI.
+	 * <p>
+	 * Value is of type <code>Boolean</code>.
+	 * </p>
+	 */
+	public final static String EDITOR_CORRECTION_INDICATION= "RubyEditor.ShowTemporaryProblem"; //$NON-NLS-1$
+
+
     public static void initializeDefaultValues(IPreferenceStore store) {
         store.setDefault(PreferenceConstants.FORMAT_INDENTATION, 2);
         store.setDefault(PreferenceConstants.FORMAT_USE_TAB, false);
         store.setDefault(PreferenceConstants.CREATE_PARSER_ANNOTATIONS, false);
 
+		// TODO Expose these preferences to the user!
+		store.setDefault(PreferenceConstants.EDITOR_CORRECTION_INDICATION, true);
+		store.setDefault(PreferenceConstants.EDITOR_EVALUTE_TEMPORARY_PROBLEMS, true);
+		
         // folding
         store.setDefault(PreferenceConstants.EDITOR_FOLDING_ENABLED, true);
         store.setDefault(PreferenceConstants.EDITOR_FOLDING_PROVIDER,
@@ -93,5 +116,15 @@ public class PreferenceConstants {
         store.setDefault(PreferenceConstants.EDITOR_FOLDING_INNERTYPES, true);
         store.setDefault(PreferenceConstants.EDITOR_FOLDING_METHODS, false);
     }
+
+
+	/**
+	 * Returns the RDT-UI preference store.
+	 * 
+	 * @return the RDT-UI preference store
+	 */
+	public static IPreferenceStore getPreferenceStore() {
+		return RubyPlugin.getDefault().getPreferenceStore();
+	}
 
 }

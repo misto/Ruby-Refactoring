@@ -6,18 +6,18 @@ import org.eclipse.ui.IFileEditorInput;
 import org.eclipse.ui.texteditor.MarkerAnnotation;
 import org.eclipse.ui.texteditor.ResourceMarkerAnnotationModel;
 
-public class RubyAnnotationModel extends ResourceMarkerAnnotationModel {
+public class OldRubyAnnotationModel extends ResourceMarkerAnnotationModel {
 
-	public RubyAnnotationModel(IFileEditorInput input) {
+	public OldRubyAnnotationModel(IFileEditorInput input) {
 		super(input.getFile());
 	}
 
-	public RubyAnnotationModel(IFile file) {
+	public OldRubyAnnotationModel(IFile file) {
 		super(file);
 	}
 
 	protected MarkerAnnotation createMarkerAnnotation(IMarker marker) {
-		return new RubyMarkerAnnotation(marker);
+		return new OldRubyMarkerAnnotation(marker);
 	}
 
 }
