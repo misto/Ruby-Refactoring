@@ -2,6 +2,7 @@ package org.rubypeople.rdt.internal.launching;
 
 import java.io.File;
 import java.io.IOException;
+import java.text.MessageFormat;
 
 import org.eclipse.core.runtime.IPath;
 
@@ -32,14 +33,15 @@ public class RubyInterpreter {
 		name = newName;
 	}
 	
-	public String getCommand() {
+	public String getCommand() throws IllegalCommandException {
 		if( new File(installLocation.toOSString()).isFile() ){
 			return installLocation.toOSString();
 		}
-		return null;
+		String errorMessage = MessageFormat.format(RdtLaunchingMessages.getString("RdtLaunchingPlugin.interpreterNotFound"), new Object[] {this.getName()}) ;
+		throw new IllegalCommandException(errorMessage) ;
 	}
 	
-	public Process exec(String arguments, File workingDirectory) throws IOException {
+	public Process exec(String arguments, File workingDirectory) throws IOException, IllegalCommandException {
 		return Runtime.getRuntime().exec(this.getCommand() + " " +  arguments, null, workingDirectory);
 	}
 	

@@ -2,6 +2,7 @@ package org.rubypeople.rdt.internal.launching;
 
 import java.io.File;
 
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.debug.core.ILaunch;
@@ -13,7 +14,7 @@ import org.rubypeople.rdt.internal.debug.core.model.RubyDebugTarget;
 
 public class DebuggerRunner extends InterpreterRunner {
 
-	public IProcess run(InterpreterRunnerConfiguration configuration, ILaunch launch) {
+	public IProcess run(InterpreterRunnerConfiguration configuration, ILaunch launch) throws CoreException {
 		IProcess process = super.run(configuration, launch);
 		RubyDebugTarget debugTarget = new RubyDebugTarget(launch, process);
 		RubyDebuggerProxy proxy = new RubyDebuggerProxy(debugTarget) ;

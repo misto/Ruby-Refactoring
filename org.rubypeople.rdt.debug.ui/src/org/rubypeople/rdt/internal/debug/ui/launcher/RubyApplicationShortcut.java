@@ -7,9 +7,11 @@ import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IAdaptable;
+import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.debug.core.*;
 import org.eclipse.debug.ui.ILaunchShortcut;
+import org.eclipse.jface.dialogs.ErrorDialog;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
@@ -51,6 +53,12 @@ public class RubyApplicationShortcut implements ILaunchShortcut {
 			}
 		} catch (CoreException e) {
 			log(e);
+			IStatus status= e.getStatus();
+			String title = RdtDebugUiMessages.getString("Dialog.launchErrorTitle") ;
+			String message = RdtDebugUiMessages.getString("Dialog.launchErrorMessage") ;
+			if (status != null) {
+				ErrorDialog.openError(RdtDebugUiPlugin.getActiveWorkbenchWindow().getShell(), title, message, status);
+			}
 		}
 	}
 

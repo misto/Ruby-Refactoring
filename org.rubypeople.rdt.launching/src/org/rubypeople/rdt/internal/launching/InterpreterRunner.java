@@ -5,6 +5,9 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.debug.core.DebugPlugin;
 import org.eclipse.debug.core.ILaunch;
 import org.eclipse.debug.core.model.IProcess;
@@ -13,7 +16,7 @@ public class InterpreterRunner {
    
 	public InterpreterRunner() {}
 
-	public IProcess run(InterpreterRunnerConfiguration configuration, ILaunch launch) {
+	public IProcess run(InterpreterRunnerConfiguration configuration, ILaunch launch) throws CoreException {
 		String commandLine = renderCommandLine(configuration);
 		File workingDirectory = configuration.getAbsoluteWorkingDirectory();
 
@@ -25,6 +28,10 @@ public class InterpreterRunner {
 		} catch (IOException e) {
 			throw new RuntimeException("Unable to execute interpreter: " + commandLine + workingDirectory);
 		}
+		catch (IllegalCommandException ex) {
+			IStatus errorStatus = new Status(IStatus.ERROR, RdtLaunchingPlugin.PLUGIN_ID, IStatus.OK, ex.getMessage(), null);
+			throw new CoreException(errorStatus) ;
+		}
         Map defaultAttributes = new HashMap();
         defaultAttributes.put(IProcess.ATTR_PROCESS_TYPE, "ruby");
 		IProcess process = DebugPlugin.newProcess(launch, nativeRubyProcess, renderLabel(configuration), defaultAttributes);
@@ -35,11 +42,15 @@ public class InterpreterRunner {
 	protected String renderLabel(InterpreterRunnerConfiguration configuration) {
 		StringBuffer buffer = new StringBuffer();
 
-		RubyInterpreter interpreter = configuration.getInterpreter();
-		buffer.append("Ruby ");
-		buffer.append(interpreter.getCommand());
-		buffer.append(" : ");
-		buffer.append(configuration.getFileName());
+		try {
+			RubyInterpreter interpreter = configuration.getInterpreter();
+			buffer.append("Ruby ");
+			buffer.append(interpreter.getCommand());
+			buffer.append(" : ");
+			buffer.append(configuration.getFileName());
+		} catch (IllegalCommandException e) {
+			// can't happen because renderLabel assumes that a successful launch has been done
+		}
 
 		return buffer.toString();
 	}
