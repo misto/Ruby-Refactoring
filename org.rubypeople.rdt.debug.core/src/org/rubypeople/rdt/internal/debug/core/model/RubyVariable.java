@@ -5,41 +5,39 @@ import org.eclipse.debug.core.ILaunch;
 import org.eclipse.debug.core.model.IDebugTarget;
 import org.eclipse.debug.core.model.IValue;
 import org.eclipse.debug.core.model.IVariable;
+import org.eclipse.jdt.debug.core.IJavaVariable;
 
-/**
- * @author Administrator
- *
- * To change this generated comment edit the template variable "typecomment":
- * Window>Preferences>Java>Templates.
- * To enable and disable the creation of type comments go to
- * Window>Preferences>Java>Code Generation.
- */
+
 public class RubyVariable implements IVariable {
 
-
+	private boolean isStatic ;
+	private boolean isLocal ;
+	private boolean isInstance ;
 	private RubyStackFrame stackFrame ;
 	private String name ;
 	private RubyValue value ;
 	private RubyVariable parent ;
 
-
-
-	public RubyVariable(RubyStackFrame stackFrame, String name) {
-		this.stackFrame = stackFrame ;
-		this.name = name ;
-		this.value = new RubyValue(this) ;
+	public RubyVariable(RubyStackFrame stackFrame, String name, String scope) {
+		this.initialize(stackFrame, name, scope, new RubyValue(this)) ;
 	}
 	
-	public RubyVariable(RubyStackFrame stackFrame, String name, RubyValue value) {
+	public RubyVariable(RubyStackFrame stackFrame, String name, String scope, RubyValue value) {
+		this.initialize(stackFrame, name, scope, value) ;
+	}
+	
+	public RubyVariable(RubyStackFrame stackFrame, String name, String scope, String value, String type, boolean hasChildren) {
+		this.initialize(stackFrame, name, scope,  new RubyValue(this, value, type, hasChildren)) ;
+	}
+
+	protected final void initialize(RubyStackFrame stackFrame, String name, String scope, RubyValue value) {
 		this.stackFrame = stackFrame ;	
 		this.value = value ;
 		this.name = name ;
-	}
-	
-	public RubyVariable(RubyStackFrame stackFrame, String name, String value, String type, boolean hasChildren) {
-		this.stackFrame = stackFrame ;
-		this.name = name ;
-		this.value = new RubyValue(this, value, type, hasChildren) ;
+
+		this.isStatic = scope.equals("class") ;
+		this.isLocal = scope.equals("local") ;
+		this.isInstance = scope.equals("instance") ;
 	}
 	
 	/**
@@ -128,6 +126,9 @@ public class RubyVariable implements IVariable {
 	 * @see org.eclipse.core.runtime.IAdaptable#getAdapter(Class)
 	 */
 	public Object getAdapter(Class adapter) {
+		if (adapter == IJavaVariable.class) {
+			return new JdtVariableAdapter(this) ;	
+		}
 		return null;
 	}
 	
@@ -135,26 +136,14 @@ public class RubyVariable implements IVariable {
 		return this.getName() + " = " + ((RubyValue) this.getValue()) ;	
 	}
 
-	/**
-	 * Returns the stackFrame.
-	 * @return RubyStackFrame
-	 */
 	public RubyStackFrame getStackFrame() {
 		return stackFrame;
 	}
 
-	/**
-	 * Returns the parent.
-	 * @return RubyVariable
-	 */
 	public RubyVariable getParent() {
 		return parent;
 	}
 
-	/**
-	 * Sets the parent.
-	 * @param parent The parent to set
-	 */
 	public void setParent(RubyVariable parent) {
 		this.parent = parent;
 	}
@@ -166,6 +155,18 @@ public class RubyVariable implements IVariable {
 		else {
 			return this.getName() ;	
 		}		
+	}
+
+	public boolean isInstance() {
+		return isInstance;
+	}
+
+	public boolean isLocal() {
+		return isLocal;
+	}
+
+	public boolean isStatic() {
+		return isStatic;
 	}
 
 }

@@ -107,7 +107,7 @@ public class RubyValue implements IValue {
 		if (this.getReferenceTypeName() == null) {			
 			return this.getValueString() ;				
 		}	
-		return this.getValueString() + " (" + this.getReferenceTypeName() +")" ;
+		return this.getValueString() ;
 	}
 
 }
