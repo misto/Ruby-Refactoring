@@ -6,10 +6,11 @@ import junit.framework.TestSuite;
 public class TS_Parser {
 
 	public static Test suite() {
-		TestSuite suite = new TestSuite("Test for org.rubypeople.rdt.core.tests.core.parser");
+		TestSuite suite = new TestSuite("Test for org.rubypeople.rdt.internal.core.parser");
 		//$JUnit-BEGIN$
 		suite.addTest(new TestSuite(TC_RubyClass.class));
 		suite.addTest(new TestSuite(TC_RubyParser.class));
+		suite.addTest(new TestSuite(TC_RubyParserStack.class));
 		//$JUnit-END$
 		return suite;
 	}
