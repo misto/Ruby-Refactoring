@@ -1,10 +1,8 @@
 package org.rubypeople.rdt.ui.actions;
 
 import java.util.ResourceBundle;
-import org.eclipse.jface.text.BadLocationException;
+
 import org.eclipse.jface.text.IDocument;
-import org.eclipse.jface.text.TextSelection;
-import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.ui.texteditor.ITextEditor;
 import org.eclipse.ui.texteditor.TextEditorAction;
 import org.rubypeople.rdt.internal.ui.RdtUiPlugin;
@@ -17,17 +15,20 @@ public class FormatAction extends TextEditorAction {
 
 	public void run() {
 		IDocument doc = this.getTextEditor().getDocumentProvider().getDocument(this.getTextEditor().getEditorInput());
-		try {
+	 	
+		           String allFormatted = RdtUiPlugin.getDefault().getCodeFormatter().formatString(doc.get());
+		doc.set(allFormatted);
+		/*try {
 			ISelection selection = this.getTextEditor().getSelectionProvider().getSelection();
 			if (selection instanceof TextSelection) {
 				TextSelection textSelection = (TextSelection) selection;
 				String formatted = RdtUiPlugin.getDefault().getCodeFormatter().formatString(textSelection.getText());
 				doc.replace(textSelection.getOffset(), textSelection.getLength(), formatted);
-
 			}
+			
 		} catch (BadLocationException e) {
 			RdtUiPlugin.log(e);
-		}
+		}*/
 
 		super.run();
 	}
