@@ -25,10 +25,10 @@
  */
 package org.rubypeople.rdt.internal.core.parser.ast;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Set;
 
 import org.rubypeople.rdt.internal.core.parser.ParseError;
-import org.rubypeople.rdt.internal.core.parser.Position;
 /**
  * @author Chris
  * 
@@ -39,35 +39,7 @@ public class RubyScript extends RubyElement {
 	private static final String DEFAULT_NAME = "DEFAULT_NAME";
 	
 	public RubyScript() {
-		super(DEFAULT_NAME, new Position(0,0));
-	}
-
-	/**
-	 * @param requires
-	 */
-	public void addRequires(RubyRequires requires) {
-		addElement(requires);
-	}
-	
-	/**
-	 * @param string
-	 * @return
-	 */
-	public RubyRequires getRequires(String string) {
-		return (RubyRequires) getElement(string);
-	}
-	/**
-	 * @param rubyClass
-	 */
-	public void addClass(RubyClass rubyClass) {
-		addElement(rubyClass);
-	}
-	/**
-	 * @param string
-	 * @return
-	 */
-	public RubyClass getClass(String string) {
-		return (RubyClass) getElement(string);
+		super(RubyElement.SCRIPT, DEFAULT_NAME, 0,0);
 	}
 	
 	/**
@@ -88,32 +60,26 @@ public class RubyScript extends RubyElement {
 	public Set getParseErrors() {
 		return parseErrors;
 	}
-	/**
-	 * @param string
-	 * @return
-	 */
-	public RubyModule getModule(String string) {
-		return (RubyModule) getElement(string);
-	}
-	/**
-	 * @param module
-	 */
-	public void addModule(RubyModule module) {
-		addElement(module);
-	}
-	/**
-	 * @param string
-	 * @return
-	 */
-	public RubyMethod getMethod(String string) {
-		return (RubyMethod) getElement(string);
-	}
 
 	/**
 	 * @return
 	 */
 	public int getErrorCount() {
 		return parseErrors.size();
+	}
+
+	/**
+	 * @param type
+	 * @return
+	 */
+	public Set getElements(int type) {
+		Set filteredElements = new HashSet();
+		Iterator iter = elements.iterator();
+		while(iter.hasNext()) {
+			RubyElement element = (RubyElement) iter.next();
+			if (element.isType(type)) filteredElements.add(element);
+		}
+		return filteredElements;
 	}
 
 }

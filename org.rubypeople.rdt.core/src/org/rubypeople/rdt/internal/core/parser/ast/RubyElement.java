@@ -31,6 +31,7 @@ import java.util.Iterator;
 import java.util.Set;
 
 import org.rubypeople.rdt.internal.core.parser.Position;
+import org.rubypeople.rdt.internal.core.parser.RubyToken;
 
 /**
  * @author Chris
@@ -44,17 +45,47 @@ public class RubyElement implements IRubyElement {
 	protected String name;
 	protected Position start;
 	protected Position end;
+	protected int type;
 	protected Set elements = new HashSet();
 
+	public static final int CASE = RubyToken.CASE;
+	public static final int WHILE = RubyToken.WHILE;
+	public static final int IF = RubyToken.IF;
+	public static final int DO = RubyToken.DO;
+	public static final int FOR = RubyToken.FOR;
+	public static final int BEGIN = RubyToken.BEGIN;
+	public static final int UNLESS = RubyToken.UNLESS;
+	public static final int UNTIL = RubyToken.UNTIL;
+	public static final int CLASS_VAR = RubyToken.CLASS_VARIABLE;
+	public static final int GLOBAL = RubyToken.GLOBAL;
+	public static final int SCRIPT = RubyToken.MAX_TOKEN_NUM + 1;
+	public static final int INSTANCE_VAR = RubyToken.INSTANCE_VARIABLE;
+	public static final int REQUIRES = RubyToken.REQUIRES;
+	public static final int MODULE = RubyToken.MODULE;
+	public static final int CLASS = RubyToken.CLASS;
+	public static final int METHOD = RubyToken.METHOD;
+	
 	public static final String PUBLIC = "public";
 	public static final String PRIVATE = "private";
 	public static final String READ = "read";
 	public static final String WRITE = "write";
 	public static final String PROTECTED = "protected";
 
-	public RubyElement(String name, Position start) {
-		this.start = start;
+	/**
+	 * @param string
+	 * @param name
+	 * @param lineNum
+	 * @param offset
+	 */
+	public RubyElement(int type, String name, int lineNum, int offset) {
+		this.type = type;
+		if (type == METHOD) {
+			access = PUBLIC;
+		} else if (type == INSTANCE_VAR) {
+			access = PRIVATE;
+		}
 		this.name = name;
+		this.start = new Position(lineNum, offset);
 	}
 
 	/**
@@ -95,7 +126,7 @@ public class RubyElement implements IRubyElement {
 	 * @see java.lang.Object#hashCode()
 	 */
 	public int hashCode() {
-		return name.hashCode();
+		return this.toString().hashCode();
 	}
 
 	/*
@@ -106,7 +137,7 @@ public class RubyElement implements IRubyElement {
 	public boolean equals(Object arg0) {
 		if (arg0 instanceof RubyElement) {
 			RubyElement element = (RubyElement) arg0;
-			return element.name.equals(this.name);
+			return element.isType(this.type) && element.name.equals(this.name) && element.start.equals(this.start);
 		}
 		return false;
 	}
@@ -130,7 +161,9 @@ public class RubyElement implements IRubyElement {
 	 * @return
 	 */
 	public boolean contains(RubyElement element) {
-		return elements.contains(element);
+		RubyElement dup = getElement(element.getName());
+		if (dup == null) return false;
+		return dup.equals(element);
 	}
 
 	public RubyElement getElement(String name) {
@@ -142,7 +175,15 @@ public class RubyElement implements IRubyElement {
 	}
 
 	public boolean isOutlineElement() {
+		if (isBlock()) { return false; }
 		return true;
+	}
+
+	/**
+	 * @return
+	 */
+	private boolean isBlock() {
+		return isType(RubyElement.FOR) || isType(RubyElement.CASE) || isType(RubyElement.DO) || isType(RubyElement.WHILE) || isType(RubyElement.UNLESS) || isType(RubyElement.UNTIL) || isType(RubyElement.IF) || isType(RubyElement.BEGIN);
 	}
 
 	/*
@@ -183,7 +224,7 @@ public class RubyElement implements IRubyElement {
 	 * @see java.lang.Object#toString()
 	 */
 	public String toString() {
-		return getClass().getName() + ": " + getName() + ", [" + getStart() + "," + getEnd() + "]";
+		return this.type + ": " + getName() + ", [" + getStart() + "," + getEnd() + "]";
 	}
 
 	/**
@@ -192,5 +233,27 @@ public class RubyElement implements IRubyElement {
 	 */
 	public void setEnd(int lineNum, int offset) {
 		this.end = new Position(lineNum, offset);
+	}
+
+	/**
+	 * @param i
+	 * @return
+	 */
+	public boolean isType(int i) {
+		return type == i;
+	}
+
+	/**
+	 * @return
+	 */
+	public boolean isMultiLine() {
+		return isType(RubyElement.CLASS) || isType(RubyElement.MODULE) || isType(RubyElement.METHOD) || isBlock();
+	}
+
+	/**
+	 * @return
+	 */
+	public boolean isVariable() {
+		return isType(RubyElement.CLASS_VAR) || isType(RubyElement.INSTANCE_VAR) || isType(RubyElement.GLOBAL);
 	}
 }
