@@ -21,6 +21,7 @@ public class RubyPlugin extends Plugin {
 
 	private List libraries;
 	private RubyLibrary selectedLibrary;
+	private boolean isCodeFormatterDebugging = false ;
 	
 	protected static RubyPlugin plugin;
 
@@ -42,6 +43,8 @@ public class RubyPlugin extends Plugin {
 		IAdapterManager manager= Platform.getAdapterManager();
 		manager.registerAdapters(new RubyElementAdapterFactory(), RubyElement.class);
 		manager.registerAdapters(new ResourceAdapterFactory(), IResource.class);
+		String codeFormatterOption = Platform.getDebugOption(RubyPlugin.PLUGIN_ID + "/codeformatter") ;
+		isCodeFormatterDebugging = codeFormatterOption == null ? false : codeFormatterOption.equalsIgnoreCase("true") ;
 	}
 
 	public static void log(Exception runtimeException) {
@@ -181,4 +184,7 @@ public class RubyPlugin extends Plugin {
 		log(new Exception(string));		
 	}
 
+	public boolean isCodeFormatterDebugging() {
+		return isCodeFormatterDebugging;
+	}
 }
