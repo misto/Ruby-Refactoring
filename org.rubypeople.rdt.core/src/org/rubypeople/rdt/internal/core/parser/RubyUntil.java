@@ -25,17 +25,13 @@
  */
 package org.rubypeople.rdt.internal.core.parser;
 
-/**
- * @author Chris
- * 
- * To change the template for this generated type comment go to Window - Preferences - Java - Code Generation - Code and Comments
- */
 public class RubyUntil extends RubyBlock {
 
 	/**
-	 * @param start
+	 * @param lineNum
+	 * @param offset
 	 */
-	public RubyUntil(Position start) {
-		super("until", start);
+	public RubyUntil(int lineNum, int offset) {
+		super("until", new Position(lineNum, offset));
 	}
 }

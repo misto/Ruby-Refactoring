@@ -25,17 +25,13 @@
  */
 package org.rubypeople.rdt.internal.core.parser;
 
-/**
- * @author Chris
- * 
- * To change the template for this generated type comment go to Window - Preferences - Java - Code Generation - Code and Comments
- */
 public class RubyCase extends RubyBlock {
 
 	/**
-	 * @param start
+	 * @param lineNum
+	 * @param offset
 	 */
-	public RubyCase(Position start) {
-		super("case", start);
+	public RubyCase(int lineNum, int offset) {
+		super("case", new Position(lineNum, offset));
 	}
 }

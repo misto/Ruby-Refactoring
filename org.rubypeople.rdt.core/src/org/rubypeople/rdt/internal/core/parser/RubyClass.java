@@ -24,19 +24,18 @@
  *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 package org.rubypeople.rdt.internal.core.parser;
-/**
- * @author Chris
- * 
- * To change the template for this generated type comment go to Window - Preferences - Java - Code Generation - Code and Comments
- */
+
 public class RubyClass extends RubyElement {
+
 	/**
 	 * @param name
-	 * @param start
+	 * @param lineNum
+	 * @param offset
 	 */
-	public RubyClass(String name, Position start) {
-		super(name, start);
+	public RubyClass(String name, int lineNum, int offset) {
+		super(name, new Position(lineNum, offset));
 	}
+
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -49,6 +48,7 @@ public class RubyClass extends RubyElement {
 		}
 		return false;
 	}
+
 	/*
 	 * (non-Javadoc)
 	 * 

@@ -25,19 +25,13 @@
  */
 package org.rubypeople.rdt.internal.core.parser;
 
-
-/**
- * @author Chris
- *
- * To change the template for this generated type comment go to
- * Window - Preferences - Java - Code Generation - Code and Comments
- */
 public class RubyBegin extends RubyBlock {
 
 	/**
-	 * @param i
+	 * @param lineNum
+	 * @param offset
 	 */
-	public RubyBegin(Position pos) {
-		super("begin", pos);
+	public RubyBegin(int lineNum, int offset) {
+		super("begin", new Position(lineNum, offset));
 	}
 }

@@ -25,14 +25,13 @@
  */
 package org.rubypeople.rdt.internal.core.parser;
 
-/**
- * @author Chris
- * 
- * To change the template for this generated type comment go to Window - Preferences - Java - Code Generation - Code and Comments
- */
 public class RubyIf extends RubyBlock {
 
-	public RubyIf(Position start) {
-		super("if", start);
+	/**
+	 * @param lineNum
+	 * @param offset
+	 */
+	public RubyIf(int lineNum, int offset) {
+		super("if", new Position(lineNum, offset));
 	}
 }

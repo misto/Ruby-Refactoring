@@ -25,20 +25,14 @@
  */
 package org.rubypeople.rdt.internal.core.parser;
 
-
-/**
- * @author Chris
- *
- * To change the template for this generated type comment go to
- * Window - Preferences - Java - Code Generation - Code and Comments
- */
 public class RubyDo extends RubyBlock {
 
 	/**
-	 * @param start
+	 * @param lineNum
+	 * @param offset
 	 */
-	public RubyDo(Position start) {
-		super("do", start);
+	public RubyDo(int lineNum, int offset) {
+		super("do", new Position(lineNum, offset));
 	}
 
 }

@@ -43,7 +43,7 @@ public class RubyParserStack {
 	 * @return
 	 */
 	public RubyElement peek() throws StackEmptyException {
-		if (elements.isEmpty()) throw new StackEmptyException();
+		if (elements.isEmpty()) throw new StackEmptyException("Tried to view the top element from an empty stack");
 		return (RubyElement) elements.get(elements.size() - 1);
 	}
 
@@ -97,7 +97,15 @@ public class RubyParserStack {
 	 *  
 	 */
 	public void closeLastOpenElement(int endLine, int offset) throws StackEmptyException {
-		pop().setEnd(new Position(endLine, offset));
+		pop().setEnd(endLine, offset);
+	}
+
+	/**
+	 * @param rubyBlock
+	 */
+	public void pushAndLink(RubyElement element) throws StackEmptyException {
+		peek().addElement(element);
+		push(element);		
 	}
 
 }

@@ -64,7 +64,7 @@ public class TC_RubyParserStack extends TestCase {
 	
 	public void testFindParentClassOrModuleAtRoot() {
 		RubyParserStack stack = new RubyParserStack();
-		RubyClass element = new RubyClass("fakeName", new Position(1, 1));
+		RubyClass element = new RubyClass("fakeName", 1, 1);
 		stack.push(element);
 		assertEquals(1, stack.size());
 		assertEquals(element, stack.findParentClassOrModule());
@@ -73,7 +73,7 @@ public class TC_RubyParserStack extends TestCase {
 	public void testFindParentClassOrModuleAtEnd() {
 		RubyParserStack stack = new RubyParserStack();
 		stack.push(new RubyElement("fakeName", new Position(1,1)));
-		RubyClass element = new RubyClass("fakeName", new Position(1, 1));
+		RubyClass element = new RubyClass("fakeName", 1, 1);
 		stack.push(element);
 		assertEquals(2, stack.size());
 		assertEquals(element, stack.findParentClassOrModule());

@@ -25,20 +25,15 @@
  */
 package org.rubypeople.rdt.internal.core.parser;
 
-/**
- * @author Chris
- *
- * To change the template for this generated type comment go to
- * Window - Preferences - Java - Code Generation - Code and Comments
- */
 public class RubyRequires extends RubyElement {
 
 	/**
-	 * @param string
-	 * @param start
+	 * @param name
+	 * @param lineNum
+	 * @param offset
 	 */
-	public RubyRequires(String string, Position start) {
-		super(string, start);
-		setEnd(new Position(start.getLineNumber(), name.length() + start.getOffset()));
+	public RubyRequires(String name, int lineNum, int offset) {
+		super(name, new Position(lineNum, offset));
+		setEnd(lineNum, name.length() + offset);
 	}
 }

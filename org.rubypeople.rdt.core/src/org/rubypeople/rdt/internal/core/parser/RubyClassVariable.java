@@ -25,24 +25,19 @@
  */
 package org.rubypeople.rdt.internal.core.parser;
 
-/**
- * @author Chris
- *
- * To change the template for this generated type comment go to
- * Window - Preferences - Java - Code Generation - Code and Comments
- */
 public class RubyClassVariable extends RubyElement {
 
 	/**
 	 * @param name
-	 * @param start
+	 * @param lineNum
+	 * @param offset
 	 */
-	public RubyClassVariable(String name, Position start) {
-		super(name, start);
-		setEnd(new Position(start.getLineNumber(), start.getOffset() + name.length() - 1));
+	public RubyClassVariable(String name, int lineNum, int offset) {
+		super(name, new Position(lineNum, offset));
+		setEnd(lineNum, offset + name.length() - 1);
 	}
-	
-	 
+
+
 	/* (non-Javadoc)
 	 * @see org.rubypeople.rdt.internal.core.parser.RubyElement#getName()
 	 */

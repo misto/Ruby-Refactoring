@@ -21,7 +21,7 @@ public class TC_RubyElement extends TestCase {
 		RubyElement element = new RubyElement("someElement", new Position(0,1));
 		RubyBlock block = new RubyBlock("block", new Position(1,1));
 		element.addElement(block);
-		RubyInstanceVariable var = new RubyInstanceVariable("var", new Position(1,1));
+		RubyInstanceVariable var = new RubyInstanceVariable("var", 1,1);
 		block.addElement(var);
 		Object[] elements = element.getElements();
 		assertEquals(var.getClass(), elements[0].getClass());

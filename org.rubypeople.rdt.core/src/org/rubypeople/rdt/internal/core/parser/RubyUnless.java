@@ -25,17 +25,13 @@
  */
 package org.rubypeople.rdt.internal.core.parser;
 
-/**
- * @author Chris
- * 
- * To change the template for this generated type comment go to Window - Preferences - Java - Code Generation - Code and Comments
- */
 public class RubyUnless extends RubyBlock {
 
 	/**
-	 * @param start
+	 * @param lineNum
+	 * @param offset
 	 */
-	public RubyUnless(Position start) {
-		super("unless", start);
+	public RubyUnless(int lineNum, int offset) {
+		super("unless", new Position(lineNum, offset));
 	}
 }

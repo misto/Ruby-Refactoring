@@ -25,19 +25,13 @@
  */
 package org.rubypeople.rdt.internal.core.parser;
 
-
-/**
- * @author Chris
- *
- * To change the template for this generated type comment go to
- * Window - Preferences - Java - Code Generation - Code and Comments
- */
 public class RubyWhile extends RubyBlock {
 
 	/**
-	 * @param start
+	 * @param lineNum
+	 * @param offset
 	 */
-	public RubyWhile(Position start) {
-		super("while", start);
+	public RubyWhile(int lineNum, int offset) {
+		super("while", new Position(lineNum, offset));
 	}
 }

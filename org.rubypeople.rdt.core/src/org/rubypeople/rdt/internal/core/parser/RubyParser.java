@@ -47,6 +47,7 @@ public class RubyParser {
 	private static final Pattern UNLESS_PATTERN = Pattern.compile(START_OF_STATEMENT_REGEX + "unless ");
 	private static final Pattern UNTIL_PATTERN = Pattern.compile(START_OF_STATEMENT_REGEX + "until ");
 	private static final Pattern CASE_PATTERN = Pattern.compile(START_OF_STATEMENT_REGEX + "case ");
+	private static final Pattern IF_PATTERN = Pattern.compile(START_OF_STATEMENT_REGEX + "if ");
 	private static final Pattern END_PATTERN = Pattern.compile("^\\s*(.+\\s+)?end(\\s+.+)?$");
 	private static final Pattern DO_PATTERN = Pattern.compile(".+\\s+do\\s*$");
 
@@ -65,12 +66,13 @@ public class RubyParser {
 				String myLine = curLine;
 				if (inDocs) {
 					myLine = findMultiLineDocEnd(curLine);
-					if (inDocs) {
-						offset = 0;
-						lineNum++;
-						continue;
-					}
 				}
+				if (inDocs) {
+					offset = 0;
+					lineNum++;
+					continue;
+				}
+
 				myLine = removeAfterPoundSymbol(myLine);
 				findMultiLineDocBeginning(myLine);
 				if (inDocs) {
@@ -104,7 +106,7 @@ public class RubyParser {
 		} catch (IOException e) {
 			throw new ParseException(e);
 		}
-		script.setEnd(new Position(lineNum, offset));
+		script.setEnd(lineNum, offset);
 
 		stack.clear();
 		return script;
@@ -117,23 +119,23 @@ public class RubyParser {
 	private static void findDo(String myLine, int lineNum) {
 		Matcher doMatcher = DO_PATTERN.matcher(myLine);
 		if (doMatcher.find()) {
-			int start = myLine.indexOf("do");
-			RubyDo rubyDo = new RubyDo(new Position(lineNum, start));
-			addBlock(rubyDo);
+			pushMultiLineElement(new RubyDo(lineNum, myLine.indexOf("do")));
 		}
 	}
 
 	/**
-	 * @param rubyBlock
+	 * Wraps the RubyParserStack's pushAndLink method with a try/throws clause
+	 * to log any StackEmptyExceptions
+	 * 
+	 * @param element
+	 *            the RubyElement to be pushed onto the stack and added to the
+	 *            last open element
 	 */
-	private static void addBlock(RubyBlock rubyBlock) {
+	private static void pushMultiLineElement(RubyElement element) {
 		try {
-			RubyElement element = stack.peek();
-			log("Adding " + rubyBlock + " to open element: " + element);
-			element.addElement(rubyBlock);
-			stack.push(rubyBlock);
+			stack.pushAndLink(element);
 		} catch (StackEmptyException e) {
-			log("Tried to add a block to the element of on top of stack, but stack is empty");
+			log(e.getMessage());
 		}
 	}
 
@@ -144,7 +146,7 @@ public class RubyParser {
 		final String token = "=end";
 		if (curLine.indexOf(token) == -1) return curLine;
 		inDocs = false;
-		return curLine.substring(curLine.indexOf(token) + token.length());
+		return curLine.substring(endIndexOf(curLine, token));
 	}
 
 	/**
@@ -194,9 +196,7 @@ public class RubyParser {
 				element.setAccess(accessRightsToGrant);
 				continue;
 			}
-			String error = "Attempting to set access rights " + accessRightsToGrant + " to an unknown element " + elementName;
-			log(error);
-			script.addParseError(new ParseError(error, lineNum, myLine.indexOf(elementName), elementName.length()));
+			script.addParseError(new ParseError("Attempting to set access rights " + accessRightsToGrant + " to an unknown element " + elementName, lineNum, myLine.indexOf(elementName), elementName.length()));
 		}
 	}
 
@@ -215,14 +215,26 @@ public class RubyParser {
 	 * @return
 	 */
 	private static List getSymbols(String myLine, String prefix) {
-		String copy = myLine.substring(myLine.indexOf(prefix) + prefix.length());
+		String copy = myLine.substring(endIndexOf(myLine, prefix));
 		StringTokenizer tokenizer = new StringTokenizer(copy, ", ");
 		List list = new ArrayList();
 		while (tokenizer.hasMoreTokens()) {
-			String token = tokenizer.nextToken();
-			list.add(token.substring(1));
+			list.add(tokenizer.nextToken().substring(1));
 		}
 		return list;
+	}
+
+	/**
+	 * Returns the index of the last char of <code>token</code> in <code>myLine</code>.
+	 * Returns -1 if there are no occurences. (myLine.indexOf(token) + token.length())
+	 * 
+	 * @param myLine
+	 * @param token
+	 * @return
+	 */
+	private static int endIndexOf(String myLine, String token) {
+		if (myLine.indexOf(token) == -1) return -1;
+		return myLine.indexOf(token) + token.length();
 	}
 
 	/**
@@ -232,8 +244,7 @@ public class RubyParser {
 	private static void findBegin(String myLine, int lineNum) {
 		int beginIndex = myLine.indexOf("begin");
 		if (beginIndex == -1) return;
-		RubyBegin begin = new RubyBegin(new Position(lineNum, beginIndex));
-		addBlock(begin);
+		pushMultiLineElement(new RubyBegin(lineNum, beginIndex));
 	}
 
 	/**
@@ -243,8 +254,7 @@ public class RubyParser {
 	private static void findFor(String myLine, int lineNum) {
 		int forIndex = myLine.indexOf("for ");
 		if ((forIndex != -1) && (!inQuotes(forIndex, myLine))) {
-			RubyFor rubyFor = new RubyFor(new Position(lineNum, forIndex));
-			addBlock(rubyFor);
+			pushMultiLineElement(new RubyFor(lineNum, forIndex));
 		}
 	}
 
@@ -255,16 +265,12 @@ public class RubyParser {
 	private static void findWhile(String myLine, int lineNum) {
 		Matcher whileMatcher = WHILE_PATTERN.matcher(myLine);
 		if (whileMatcher.find()) {
-			int start = whileMatcher.end() - 6;
-			RubyWhile rubyWhile = new RubyWhile(new Position(lineNum, start));
 			try {
-				RubyElement element = stack.peek();
-				if (!(element instanceof RubyCase)) {
-					element.addElement(rubyWhile);
-					stack.push(rubyWhile);
+				if (!(stack.peek() instanceof RubyCase)) {
+					pushMultiLineElement(new RubyWhile(lineNum, whileMatcher.end() - 6));
 				}
 			} catch (StackEmptyException e) {
-				log("Tried to add a block to the element of on top of stack, but stack is empty");
+				log(e.getMessage());
 			}
 		}
 	}
@@ -276,9 +282,7 @@ public class RubyParser {
 	private static String removeAfterPoundSymbol(String curLine) {
 		int poundStart = curLine.indexOf("#");
 		if (poundStart == -1) return curLine;
-		if (inQuotes(poundStart, curLine) || inRegex(poundStart, curLine)) { 
-			return curLine; 
-		}
+		if (inQuotes(poundStart, curLine) || inRegex(poundStart, curLine)) { return curLine; }
 		return curLine.substring(0, poundStart);
 	}
 
@@ -317,9 +321,7 @@ public class RubyParser {
 	private static void findUntil(String curLine, int lineNum) {
 		Matcher untilMatcher = UNTIL_PATTERN.matcher(curLine);
 		if (untilMatcher.find()) {
-			int start = untilMatcher.end() - 6;
-			RubyUntil until = new RubyUntil(new Position(lineNum, start));
-			addBlock(until);
+			pushMultiLineElement(new RubyUntil(lineNum, untilMatcher.end() - 6));
 		}
 	}
 
@@ -330,9 +332,7 @@ public class RubyParser {
 	private static void findCase(String curLine, int lineNum) {
 		Matcher caseMatcher = CASE_PATTERN.matcher(curLine);
 		if (caseMatcher.find()) {
-			int start = caseMatcher.end() - 5;
-			RubyCase rubyCase = new RubyCase(new Position(lineNum, start));
-			addBlock(rubyCase);
+			pushMultiLineElement(new RubyCase(lineNum, caseMatcher.end() - 5));
 		}
 	}
 
@@ -343,9 +343,7 @@ public class RubyParser {
 	private static void findUnless(String curLine, int lineNum) {
 		Matcher unlessMatcher = UNLESS_PATTERN.matcher(curLine);
 		if (unlessMatcher.find()) {
-			int unlessIndex = unlessMatcher.end() - 7;
-			RubyUnless unless = new RubyUnless(new Position(lineNum, unlessIndex));
-			addBlock(unless);
+			pushMultiLineElement(new RubyUnless(lineNum, unlessMatcher.end() - 7));
 		}
 	}
 
@@ -354,11 +352,9 @@ public class RubyParser {
 	 * @param lineNum
 	 */
 	private static void findIf(String curLine, int lineNum) {
-		Matcher ifMatcher = Pattern.compile("^(;\\s+)?\\s*if ").matcher(curLine);
+		Matcher ifMatcher = IF_PATTERN.matcher(curLine);
 		if (ifMatcher.find()) {
-			int ifIndex = ifMatcher.end() - 3;
-			RubyIf rubyIf = new RubyIf(new Position(lineNum, ifIndex));
-			addBlock(rubyIf);
+			pushMultiLineElement(new RubyIf(lineNum, ifMatcher.end() - 3));
 		}
 	}
 
@@ -371,8 +367,7 @@ public class RubyParser {
 		if (globalIndex == -1) return;
 		if ((inQuotes(globalIndex, curLine) || inRegex(globalIndex, curLine)) && !isSubstituted(globalIndex, curLine)) return;
 		String name = getToken("$", VARIABLE_END_CHARS, curLine);
-		RubyGlobal global = new RubyGlobal(name, new Position(lineNum, globalIndex + 1));
-		script.addElement(global);
+		script.addElement(new RubyGlobal(name, lineNum, globalIndex + 1));
 	}
 
 	/**
@@ -384,9 +379,7 @@ public class RubyParser {
 		if (instanceIndex == -1) return;
 		if ((inQuotes(instanceIndex, curLine) || inRegex(instanceIndex, curLine)) && !isSubstituted(instanceIndex, curLine)) return;
 		String name = getToken("@@", VARIABLE_END_CHARS, curLine);
-		log("Found class variable: " + name);
-		RubyClassVariable variable = new RubyClassVariable(name, new Position(lineNum, instanceIndex + "@@".length()));
-		addVariable(variable);
+		addVariable(new RubyClassVariable(name, lineNum, endIndexOf(curLine, "@@")));
 	}
 
 	/**
@@ -399,9 +392,7 @@ public class RubyParser {
 		if (curLine.indexOf("@@") != -1) return;
 		if ((inQuotes(instanceIndex, curLine) || inRegex(instanceIndex, curLine)) && !isSubstituted(instanceIndex, curLine)) return;
 		String name = getToken("@", VARIABLE_END_CHARS, curLine);
-		log("Found instance variable: " + name);
-		RubyInstanceVariable variable = new RubyInstanceVariable(name, new Position(lineNum, instanceIndex + "@".length()));
-		addVariable(variable);
+		addVariable(new RubyInstanceVariable(name, lineNum, endIndexOf(curLine, "@")));
 	}
 
 	/**
@@ -421,12 +412,12 @@ public class RubyParser {
 	 * @param curLine
 	 */
 	private static boolean isSubstituted(int instanceIndex, String curLine) {
-		return ( (curLine.charAt(instanceIndex - 1) == '#') || (curLine.substring(instanceIndex - 2, instanceIndex).equals("#{")) );
+		return ((curLine.charAt(instanceIndex - 1) == '#') || (curLine.substring(instanceIndex - 2, instanceIndex).equals("#{")));
 	}
 
 	/**
 	 * Returns true if the given index in the String curLine is inside a
-	 * regular expressions
+	 * regular expression
 	 * 
 	 * @param index
 	 *            the int position to check
@@ -466,15 +457,14 @@ public class RubyParser {
 	 */
 	private static void findRequires(String curLine, int lineNum) {
 		final String token = "require ";
-		if (curLine.indexOf(token) == -1) return;
-
-		int start = curLine.indexOf(token) + token.length();
+		int start = endIndexOf(curLine, token);
+		if (start == -1) return;
 		String leftOver = curLine.substring(start);
 		for (int i = 0; i < leftOver.length(); i++) {
 			char c = leftOver.charAt(i);
 			if (!isQuoteChar(c)) continue;
-			String name = getToken(token + c, new char[] { c}, curLine);
-			RubyRequires requires = new RubyRequires(name, new Position(lineNum, start + 1));
+			String name = getToken(token + c, new char[] { c }, curLine);
+			RubyRequires requires = new RubyRequires(name, lineNum, start + 1);
 			if (!script.contains(requires)) {
 				script.addRequires(requires);
 			} else {
@@ -485,8 +475,11 @@ public class RubyParser {
 	}
 
 	/**
+	 * Returns true if the given char c is ' or "
+	 * 
 	 * @param c
-	 * @return
+	 *            character to test
+	 * @return boolean indicating if character is a quote
 	 */
 	private static boolean isQuoteChar(char c) {
 		return (c == '\'') || (c == '"');
@@ -502,29 +495,22 @@ public class RubyParser {
 		if (location == -1) return;
 		String name = getToken("class ", tokens, curLine);
 		if (Character.isLowerCase(name.charAt(0))) script.addParseError(new ParseError("Class names should begin with an uppercase letter.", lineNum, location, location + name.length()));
-		RubyClass rubyClass = new RubyClass(name, new Position(lineNum, location));
-		try {
-			RubyElement element = stack.peek();
-			log("Adding class to open element: " + element);
-			element.addElement(rubyClass);
-			stack.push(rubyClass);
-		} catch (StackEmptyException e) {
-			log("Tried to add a class to the element on top of stack, but stack is empty");
-		}
+		pushMultiLineElement(new RubyClass(name, lineNum, location));
 	}
 
 	/**
-	 * Returns the startIndex of the element (given a tokenIdentifiere prefix). -1
-	 * if not found, or has an empty name
+	 * Returns the startIndex of the element (given a tokenIdentifier prefix). -1
+	 * if the tokenIdentifier is not found, or the element has an empty name
 	 * 
+	 * @param tokenIdentifierThe prefix which denotes a particular token i.e "require "
+	 * @param tokens a character array containg characters which can mark the end of the element name
+	 * @param curLine The String we'll be checking for the element
 	 * @return
 	 */
 	private static int findElement(String tokenIdentifier, char[] tokens, String curLine) {
-		int tokenIndex = curLine.indexOf(tokenIdentifier);
-		if (tokenIndex == -1) return -1;
-		int start = tokenIndex + tokenIdentifier.length();
-		String name = getToken(tokenIdentifier, tokens, curLine);
-		if (name.length() == 0) return -1;
+		int start = endIndexOf(curLine, tokenIdentifier);
+		if (start == -1) return -1;
+		if (getToken(tokenIdentifier, tokens, curLine).length() == 0) return -1;
 		log("Found start of element: " + curLine);
 		return start;
 	}
@@ -539,9 +525,7 @@ public class RubyParser {
 		if (start == -1) return;
 		String name = getToken("module ", tokens, curLine);
 		if (Character.isLowerCase(name.charAt(0))) script.addParseError(new ParseError("Module names should begin with an uppercase letter.", lineNum, start, start + name.length()));
-		RubyModule module = new RubyModule(name, new Position(lineNum, start));
-		script.addModule(module);
-		stack.push(module);
+		pushMultiLineElement(new RubyModule(name, lineNum, start));
 	}
 
 	/**
@@ -549,21 +533,10 @@ public class RubyParser {
 	 * @param lineNum
 	 */
 	private static void findMethod(String curLine, int lineNum) {
-		int methodIndex = curLine.indexOf("def");
-		if (methodIndex == -1) return;
-		log("Found method start: " + curLine);
-		int start = methodIndex + "def ".length();
+		int start = endIndexOf(curLine, "def ");
+		if (start == -1) return;
 		String name = getMethodName(curLine);
-		RubyMethod method = new RubyMethod(name, new Position(lineNum, start));
-		log("method = " + method);
-		try {
-			RubyElement element = stack.peek();
-			log("Adding method to open element: " + element);
-			element.addElement(method);
-			stack.push(method);
-		} catch (StackEmptyException e) {
-			log("Tried to add a method to the element on top of stack, but stack is empty");
-		}
+		pushMultiLineElement(new RubyMethod(name, lineNum, start));
 	}
 
 	/**
@@ -587,10 +560,9 @@ public class RubyParser {
 	 * @return
 	 */
 	private static String getToken(String prefix, char[] delimiters, String line) {
-		int endOfPrefix = line.indexOf(prefix) + prefix.length();
+		int endOfPrefix = endIndexOf(line, prefix);
 		for (int i = endOfPrefix; i < line.length(); i++) {
-			char c = line.charAt(i);
-			if (contains(delimiters, c)) { return line.substring(endOfPrefix, i); }
+			if (contains(delimiters, line.charAt(i))) { return line.substring(endOfPrefix, i); }
 		}
 		return line.substring(endOfPrefix);
 	}

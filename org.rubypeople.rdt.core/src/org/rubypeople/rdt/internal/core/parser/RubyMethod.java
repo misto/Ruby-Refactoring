@@ -25,24 +25,21 @@
  */
 package org.rubypeople.rdt.internal.core.parser;
 
-/**
- * @author Chris
- *
- * To change the template for this generated type comment go to
- * Window - Preferences - Java - Code Generation - Code and Comments
- */
 public class RubyMethod extends RubyElement {
 
 	/**
 	 * @param name
-	 * @param start
+	 * @param lineNum
+	 * @param offset
 	 */
-	public RubyMethod(String name, Position start) {
-		super(name, start);
+	public RubyMethod(String name, int lineNum, int offset) {
+		super(name, new Position(lineNum, offset));
 		access = PUBLIC;
 	}
-	
-	/* (non-Javadoc)
+
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see org.rubypeople.rdt.core.tests.core.parser.TDDRubyElement#equals(java.lang.Object)
 	 */
 	public boolean equals(Object arg0) {
@@ -52,8 +49,10 @@ public class RubyMethod extends RubyElement {
 		}
 		return false;
 	}
-	
-	/* (non-Javadoc)
+
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see org.rubypeople.rdt.core.tests.core.parser.TDDRubyElement#hashCode()
 	 */
 	public int hashCode() {

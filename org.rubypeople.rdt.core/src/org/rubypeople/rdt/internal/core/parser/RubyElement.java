@@ -109,13 +109,6 @@ public class RubyElement implements IRubyElement {
 	}
 
 	/**
-	 * @param end
-	 */
-	public void setEnd(Position end) {
-		this.end = end;
-	}
-
-	/**
 	 * @return
 	 */
 	public int getElementCount() {
@@ -188,5 +181,13 @@ public class RubyElement implements IRubyElement {
 	 */
 	public String toString() {
 		return getClass().getName() + ": " + getName() + ", [" + getStart() + "," + getEnd() + "]";
+	}
+
+	/**
+	 * @param lineNum
+	 * @param offset
+	 */
+	public void setEnd(int lineNum, int offset) {
+		this.end = new Position(lineNum, offset);
 	}
 }
