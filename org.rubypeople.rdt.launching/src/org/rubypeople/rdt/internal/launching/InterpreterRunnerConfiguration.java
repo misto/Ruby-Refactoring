@@ -20,7 +20,7 @@ public class InterpreterRunnerConfiguration {
 		IPath path = new Path(getFileName());
 		IProject project = getProject().getProject();
 
-		return project.getFile(path).getLocation().toOSString();
+		return project.getLocation().toOSString() + "/" + getFileName();
 	}
 	
 	public String getFileName() {
@@ -30,7 +30,7 @@ public class InterpreterRunnerConfiguration {
 			fileName = configuration.getAttribute(RubyLaunchConfigurationAttribute.FILE_NAME, "No file specified in configuration");
 		} catch(CoreException e) {}
 		
-		return fileName;
+		return fileName.replace('\\', '/');
 	}
 	
 	public RubyProject getProject() {
