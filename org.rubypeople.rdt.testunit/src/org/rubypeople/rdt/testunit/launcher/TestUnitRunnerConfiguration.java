@@ -30,6 +30,7 @@ public class TestUnitRunnerConfiguration extends InterpreterRunnerConfiguration 
 	public String getProgramArguments() {
 		int port = 6789;
 		String fileName = "";
+		String testClass = "";
 		boolean keepAlive = true;
 		try {
 			// Pull out the port and other unit testing variables
@@ -37,10 +38,11 @@ public class TestUnitRunnerConfiguration extends InterpreterRunnerConfiguration 
 			port = configuration.getAttribute(TestUnitLaunchConfiguration.PORT_ATTR, 6789);
 			fileName = configuration.getAttribute(TestUnitLaunchConfiguration.LAUNCH_CONTAINER_ATTR, "");
 			keepAlive = configuration.getAttribute(TestUnitLaunchConfiguration.ATTR_KEEPRUNNING, true);
+			testClass = configuration.getAttribute(TestUnitLaunchConfiguration.TESTTYPE_ATTR, "");
 		} catch (CoreException e) {
 			TestunitPlugin.log(e);
 		}
 		
-		return fileName + " " + port + " " + keepAlive;
+		return fileName + " " + port + " " + keepAlive + " " + testClass;
 	}
 }
