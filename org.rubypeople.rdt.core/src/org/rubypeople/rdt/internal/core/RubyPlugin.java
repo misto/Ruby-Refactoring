@@ -10,7 +10,7 @@ import org.eclipse.core.runtime.Plugin;
 
 public class RubyPlugin extends Plugin {
 	public final static String PLUGIN_ID = "org.rubypeople.rdt";
-	public final static String RUBY_NATURE_ID = "rubynature";
+	public final static String RUBY_NATURE_ID = PLUGIN_ID + ".rubynature";
 
 	protected static RubyPlugin plugin;
 	protected ResourceBundle resourceBundle;
@@ -19,7 +19,7 @@ public class RubyPlugin extends Plugin {
 		super(descriptor);
 		plugin = this;
 		try {
-			resourceBundle= ResourceBundle.getBundle("org.rubypeople.eclipse.rdt.RubyPluginResources");
+			resourceBundle= ResourceBundle.getBundle("org.rubypeople.rdt.RubyCoreMessages");
 		} catch (MissingResourceException x) {
 			resourceBundle = null;
 		}
@@ -37,7 +37,7 @@ public class RubyPlugin extends Plugin {
 		ResourceBundle bundle= RubyPlugin.getDefault().getResourceBundle();
 		try {
 			return bundle.getString(key);
-		} catch (MissingResourceException e) {
+		} catch (Exception e) {
 			return key;
 		}
 	}
