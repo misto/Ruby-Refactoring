@@ -48,7 +48,7 @@ public class RubyParser {
 	private static final Pattern UNTIL_PATTERN = Pattern.compile(START_OF_STATEMENT_REGEX + "until ");
 	private static final Pattern CASE_PATTERN = Pattern.compile(START_OF_STATEMENT_REGEX + "case ");
 	private static final Pattern IF_PATTERN = Pattern.compile(START_OF_STATEMENT_REGEX + "if ");
-	private static final Pattern END_PATTERN = Pattern.compile("^\\s*(.+\\s+)?end(\\s+.+)?$");
+	private static final Pattern END_PATTERN = Pattern.compile("^\\s*(.+\\s+)?end(\\..+)?(\\s+.+)?$");
 	private static final Pattern DO_PATTERN = Pattern.compile(".+\\s+do\\s*$");
 
 	/**
@@ -226,7 +226,8 @@ public class RubyParser {
 
 	/**
 	 * Returns the index of the last char of <code>token</code> in <code>myLine</code>.
-	 * Returns -1 if there are no occurences. (myLine.indexOf(token) + token.length())
+	 * Returns -1 if there are no occurences. (myLine.indexOf(token) +
+	 * token.length())
 	 * 
 	 * @param myLine
 	 * @param token
@@ -311,7 +312,24 @@ public class RubyParser {
 				openQuotes.add(newChar);
 			}
 		}
-		return !openQuotes.isEmpty();
+		return !openQuotes.isEmpty() || inPercentString('q', index, curLine) || inPercentString('Q', index, curLine);
+	}
+
+	/**
+	 * @param index
+	 * @param curLine
+	 * @return
+	 */
+	static boolean inPercentString(char type, int index, String curLine) {
+		int end = endIndexOf(curLine, "%" + type);
+		if (end == -1) return false;
+		if (end > index) return false;
+		char c = curLine.charAt(end);
+		if (isOpenBracket(c)) c = getMatchingBracket(c);
+		for (int i = end + 1; i < index; i++) {
+			if (curLine.charAt(i) == c && curLine.charAt(i-1) != '\\') { return false; }
+		}
+		return true;
 	}
 
 	/**
@@ -426,13 +444,51 @@ public class RubyParser {
 	 * @return
 	 */
 	private static boolean inRegex(int index, String curLine) {
+
 		boolean insideregex = false;
 		for (int curPosition = 0; curPosition < index; curPosition++) {
 			if (curLine.charAt(curPosition) == '/') {
 				insideregex = !insideregex;
 			}
 		}
-		return insideregex;
+		return insideregex || inPercentRegex(index, curLine);
+	}
+
+	/**
+	 * @param index
+	 * @param curLine
+	 * @return
+	 */
+	private static boolean inPercentRegex(int index, String curLine) {
+		return inPercentString('r', index, curLine);
+	}
+
+	/**
+	 * Returns the matching bracket for a given character. If it is not a
+	 * bracket, returns the newline character
+	 * 
+	 * @param c
+	 * @return
+	 */
+	static char getMatchingBracket(char c) {
+		switch (c) {
+		case '(':
+			return ')';
+		case '{':
+			return '}';
+		case '[':
+			return ']';
+		default:
+			return '\n';
+		}
+	}
+
+	/**
+	 * @param c
+	 * @return
+	 */
+	static boolean isOpenBracket(char c) {
+		return contains(new char[] { '(', '{', '['}, c);
 	}
 
 	/**
@@ -463,7 +519,7 @@ public class RubyParser {
 		for (int i = 0; i < leftOver.length(); i++) {
 			char c = leftOver.charAt(i);
 			if (!isQuoteChar(c)) continue;
-			String name = getToken(token + c, new char[] { c }, curLine);
+			String name = getToken(token + c, new char[] { c}, curLine);
 			RubyRequires requires = new RubyRequires(name, lineNum, start + 1);
 			if (!script.contains(requires)) {
 				script.addRequires(requires);
@@ -502,9 +558,13 @@ public class RubyParser {
 	 * Returns the startIndex of the element (given a tokenIdentifier prefix). -1
 	 * if the tokenIdentifier is not found, or the element has an empty name
 	 * 
-	 * @param tokenIdentifierThe prefix which denotes a particular token i.e "require "
-	 * @param tokens a character array containg characters which can mark the end of the element name
-	 * @param curLine The String we'll be checking for the element
+	 * @param tokenIdentifierThe
+	 *            prefix which denotes a particular token i.e "require "
+	 * @param tokens
+	 *            a character array containg characters which can mark the end
+	 *            of the element name
+	 * @param curLine
+	 *            The String we'll be checking for the element
 	 * @return
 	 */
 	private static int findElement(String tokenIdentifier, char[] tokens, String curLine) {
