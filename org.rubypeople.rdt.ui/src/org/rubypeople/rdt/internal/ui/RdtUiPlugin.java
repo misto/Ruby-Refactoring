@@ -10,6 +10,7 @@ import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchWindow;
+import org.eclipse.ui.editors.text.EditorsUI;
 import org.eclipse.ui.editors.text.TextEditorPreferenceConstants;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.eclipse.ui.texteditor.MarkerAnnotationPreferences;
@@ -95,10 +96,11 @@ public class RdtUiPlugin extends AbstractUIPlugin implements RubyColorConstants 
 		PreferenceConverter.setDefault(store, RUBY_SINGLE_LINE_COMMENT, new RGB(63, 127, 95));
 		store.setDefault(RUBY_SINGLE_LINE_COMMENT + RUBY_ISBOLD_APPENDIX, false);
 		//
+		EditorsUI.useAnnotationsPreferencePage(store);
+		EditorsUI.useQuickDiffPreferencePage(store);
+		
 		PreferenceConverter.setDefault(store, RUBY_CONTENT_ASSISTANT_BACKGROUND, new RGB(150, 150, 0));
 		PreferenceConstants.initializeDefaultValues(store);
-		super.initializeDefaultPreferences(store);
-		MarkerAnnotationPreferences.initializeDefaultValues(store);
 		TextEditorPreferenceConstants.initializeDefaultValues(store);
 	}
 

@@ -11,14 +11,7 @@
 
 package org.rubypeople.rdt.internal.ui.preferences;
 
-import java.text.Collator;
 import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.SortedSet;
-import java.util.TreeSet;
 
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.debug.internal.ui.actions.StatusInfo;
@@ -26,9 +19,7 @@ import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.DialogPage;
 import org.eclipse.jface.dialogs.IMessageProvider;
 import org.eclipse.jface.preference.ColorFieldEditor;
-import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.preference.PreferenceConverter;
-import org.eclipse.jface.preference.PreferencePage;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
@@ -52,10 +43,6 @@ import org.eclipse.ui.IWorkbenchPreferencePage;
 import org.eclipse.ui.editors.text.ITextEditorHelpContextIds;
 import org.eclipse.ui.help.WorkbenchHelp;
 import org.eclipse.ui.texteditor.AbstractDecoratedTextEditorPreferenceConstants;
-import org.eclipse.ui.texteditor.AnnotationPreference;
-import org.eclipse.ui.texteditor.MarkerAnnotationPreferences;
-import org.eclipse.ui.texteditor.quickdiff.QuickDiff;
-import org.eclipse.ui.texteditor.quickdiff.ReferenceProviderDescriptor;
 import org.rubypeople.rdt.internal.ui.RdtUiMessages;
 import org.rubypeople.rdt.internal.ui.RdtUiPlugin;
 import org.rubypeople.rdt.internal.ui.text.RubyColorConstants;
@@ -69,7 +56,7 @@ import org.rubypeople.rdt.ui.PreferenceConstants;
  * 
  * @since 2.1
  */
-public class TextEditorPreferencePage2 extends PreferencePage implements IWorkbenchPreferencePage {
+public class TextEditorPreferencePage2 extends RubyAbstractPreferencePage implements IWorkbenchPreferencePage {
 
 	private final String[][] fAppearanceColorListModel = new String[][] { { TextEditorMessages.getString("TextEditorPreferencePage.lineNumberForegroundColor"), AbstractDecoratedTextEditorPreferenceConstants.EDITOR_LINE_NUMBER_RULER_COLOR}, //$NON-NLS-1$
 			{ TextEditorMessages.getString("TextEditorPreferencePage.currentLineHighlighColor"), AbstractDecoratedTextEditorPreferenceConstants.EDITOR_CURRENT_LINE_COLOR}, //$NON-NLS-1$
@@ -83,22 +70,8 @@ public class TextEditorPreferencePage2 extends PreferencePage implements IWorkbe
 	protected Text indentationWidget;
 	protected final String[] colorProperties = { RubyColorConstants.RUBY_KEYWORD, RubyColorConstants.RUBY_MULTI_LINE_COMMENT, RubyColorConstants.RUBY_SINGLE_LINE_COMMENT, RubyColorConstants.RUBY_STRING, RubyColorConstants.RUBY_DEFAULT};
 
-	private final String[][] fAnnotationColorListModel;
+	//private final String[][] fAnnotationColorListModel;
 
-	private OverlayPreferenceStore fOverlayStore;
-
-	private Map fCheckBoxes = new HashMap();
-	private SelectionListener fCheckBoxListener = new SelectionListener() {
-
-		public void widgetDefaultSelected(SelectionEvent e) {}
-
-		public void widgetSelected(SelectionEvent e) {
-			Button button = (Button) e.widget;
-			fOverlayStore.setValue((String) fCheckBoxes.get(button), button.getSelection());
-		}
-	};
-
-	private Map fTextFields = new HashMap();
 	private ModifyListener fTextFieldListener = new ModifyListener() {
 
 		public void modifyText(ModifyEvent e) {
@@ -116,40 +89,24 @@ public class TextEditorPreferencePage2 extends PreferencePage implements IWorkbe
 	};
 
 	private List fAppearanceColorList;
-	private List fAnnotationList;
 	private List fQuickDiffProviderList;
 	private ColorEditor fAppearanceColorEditor;
-	private ColorEditor fAnnotationForegroundColorEditor;
 	private Button fShowInTextCheckBox;
 	private Button fHighlightInTextCheckBox;
 	private Button fShowInOverviewRulerCheckBox;
 	private Button fShowInVerticalRulerCheckBox;
-	private String[][] fQuickDiffProviderListModel;
+
 
 	public TextEditorPreferencePage2() {
 
 		setDescription(RdtUiMessages.getString("RubyEditorPreferencePage.description")); //$NON-NLS-1$
 		setPreferenceStore(RdtUiPlugin.getDefault().getPreferenceStore());
-
-		MarkerAnnotationPreferences preferences = new MarkerAnnotationPreferences();
-		fOverlayStore = createOverlayStore(preferences);
-
-		fAnnotationColorListModel = createAnnotationTypeListModel(preferences);
-		fQuickDiffProviderListModel = createQuickDiffReferenceListModel();
+		fOverlayStore = createOverlayStore();
 	}
 
-	private OverlayPreferenceStore createOverlayStore(MarkerAnnotationPreferences preferences) {
+	private OverlayPreferenceStore createOverlayStore() {
 
 		ArrayList overlayKeys = new ArrayList();
-		Iterator e = preferences.getAnnotationPreferences().iterator();
-		while (e.hasNext()) {
-			AnnotationPreference info = (AnnotationPreference) e.next();
-			overlayKeys.add(new OverlayPreferenceStore.OverlayKey(OverlayPreferenceStore.STRING, info.getColorPreferenceKey()));
-			overlayKeys.add(new OverlayPreferenceStore.OverlayKey(OverlayPreferenceStore.BOOLEAN, info.getTextPreferenceKey()));
-			if (info.getHighlightPreferenceKey() != null) overlayKeys.add(new OverlayPreferenceStore.OverlayKey(OverlayPreferenceStore.BOOLEAN, info.getHighlightPreferenceKey()));
-			overlayKeys.add(new OverlayPreferenceStore.OverlayKey(OverlayPreferenceStore.BOOLEAN, info.getOverviewRulerPreferenceKey()));
-			if (info.getVerticalRulerPreferenceKey() != null) overlayKeys.add(new OverlayPreferenceStore.OverlayKey(OverlayPreferenceStore.BOOLEAN, info.getVerticalRulerPreferenceKey()));
-		}
 
 		overlayKeys.add(new OverlayPreferenceStore.OverlayKey(OverlayPreferenceStore.STRING, AbstractDecoratedTextEditorPreferenceConstants.EDITOR_CURRENT_LINE_COLOR));
 		overlayKeys.add(new OverlayPreferenceStore.OverlayKey(OverlayPreferenceStore.BOOLEAN, AbstractDecoratedTextEditorPreferenceConstants.EDITOR_CURRENT_LINE));
@@ -158,7 +115,6 @@ public class TextEditorPreferencePage2 extends PreferencePage implements IWorkbe
 
 		overlayKeys.add(new OverlayPreferenceStore.OverlayKey(OverlayPreferenceStore.INT, PreferenceConstants.FORMAT_INDENTATION));
 		overlayKeys.add(new OverlayPreferenceStore.OverlayKey(OverlayPreferenceStore.BOOLEAN, PreferenceConstants.FORMAT_USE_TAB));
-		overlayKeys.add(new OverlayPreferenceStore.OverlayKey(OverlayPreferenceStore.BOOLEAN, PreferenceConstants.CREATE_PARSER_ANNOTATIONS));
 
 		overlayKeys.add(new OverlayPreferenceStore.OverlayKey(OverlayPreferenceStore.STRING, AbstractDecoratedTextEditorPreferenceConstants.EDITOR_PRINT_MARGIN_COLOR));
 		overlayKeys.add(new OverlayPreferenceStore.OverlayKey(OverlayPreferenceStore.INT, AbstractDecoratedTextEditorPreferenceConstants.EDITOR_PRINT_MARGIN_COLUMN));
@@ -169,73 +125,10 @@ public class TextEditorPreferencePage2 extends PreferencePage implements IWorkbe
 
 		overlayKeys.add(new OverlayPreferenceStore.OverlayKey(OverlayPreferenceStore.STRING, AbstractDecoratedTextEditorPreferenceConstants.EDITOR_LINE_NUMBER_RULER_COLOR));
 		overlayKeys.add(new OverlayPreferenceStore.OverlayKey(OverlayPreferenceStore.BOOLEAN, AbstractDecoratedTextEditorPreferenceConstants.EDITOR_LINE_NUMBER_RULER));
-		overlayKeys.add(new OverlayPreferenceStore.OverlayKey(OverlayPreferenceStore.BOOLEAN, AbstractDecoratedTextEditorPreferenceConstants.QUICK_DIFF_ALWAYS_ON));
-		overlayKeys.add(new OverlayPreferenceStore.OverlayKey(OverlayPreferenceStore.STRING, AbstractDecoratedTextEditorPreferenceConstants.QUICK_DIFF_DEFAULT_PROVIDER));
-		overlayKeys.add(new OverlayPreferenceStore.OverlayKey(OverlayPreferenceStore.BOOLEAN, AbstractDecoratedTextEditorPreferenceConstants.QUICK_DIFF_CHARACTER_MODE));
 
 		OverlayPreferenceStore.OverlayKey[] keys = new OverlayPreferenceStore.OverlayKey[overlayKeys.size()];
 		overlayKeys.toArray(keys);
 		return new OverlayPreferenceStore(getPreferenceStore(), keys);
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.eclipse.jface.preference.PreferencePage#doGetPreferenceStore()
-	 */
-	protected IPreferenceStore doGetPreferenceStore() {
-		return RdtUiPlugin.getDefault().getPreferenceStore();
-	}
-
-	private String[][] createAnnotationTypeListModel(MarkerAnnotationPreferences preferences) {
-		ArrayList listModelItems = new ArrayList();
-		SortedSet sortedPreferences = new TreeSet(new Comparator() {
-
-			/*
-			 * @see java.util.Comparator#compare(java.lang.Object,
-			 *      java.lang.Object)
-			 */
-			public int compare(Object o1, Object o2) {
-				if (!(o2 instanceof AnnotationPreference)) return -1;
-				if (!(o1 instanceof AnnotationPreference)) return 1;
-
-				AnnotationPreference a1 = (AnnotationPreference) o1;
-				AnnotationPreference a2 = (AnnotationPreference) o2;
-
-				return Collator.getInstance().compare(a1.getPreferenceLabel(), a2.getPreferenceLabel());
-
-			}
-		});
-		sortedPreferences.addAll(preferences.getAnnotationPreferences());
-		Iterator e = sortedPreferences.iterator();
-		while (e.hasNext()) {
-			AnnotationPreference info = (AnnotationPreference) e.next();
-			listModelItems.add(new String[] { info.getPreferenceLabel(), info.getColorPreferenceKey(), info.getTextPreferenceKey(), info.getOverviewRulerPreferenceKey(), info.getHighlightPreferenceKey(), info.getVerticalRulerPreferenceKey()});
-		}
-		String[][] items = new String[listModelItems.size()][];
-		listModelItems.toArray(items);
-		return items;
-	}
-
-	private String[][] createQuickDiffReferenceListModel() {
-		java.util.List descriptors = new QuickDiff().getReferenceProviderDescriptors();
-		ArrayList listModelItems = new ArrayList();
-		for (Iterator it = descriptors.iterator(); it.hasNext();) {
-			ReferenceProviderDescriptor descriptor = (ReferenceProviderDescriptor) it.next();
-			String label = descriptor.getLabel();
-			int i = label.indexOf('&');
-			while (i >= 0) {
-				if (i < label.length())
-					label = label.substring(0, i) + label.substring(i + 1);
-				else
-					label.substring(0, i);
-				i = label.indexOf('&');
-			}
-			listModelItems.add(new String[] { descriptor.getId(), label});
-		}
-		String[][] items = new String[listModelItems.size()][];
-		listModelItems.toArray(items);
-		return items;
 	}
 
 	/*
@@ -256,43 +149,6 @@ public class TextEditorPreferencePage2 extends PreferencePage implements IWorkbe
 		String key = fAppearanceColorListModel[i][1];
 		RGB rgb = PreferenceConverter.getColor(fOverlayStore, key);
 		fAppearanceColorEditor.setColorValue(rgb);
-	}
-
-	private void handleAnnotationListSelection() {
-		int i = fAnnotationList.getSelectionIndex();
-
-		String key = fAnnotationColorListModel[i][1];
-		RGB rgb = PreferenceConverter.getColor(fOverlayStore, key);
-		fAnnotationForegroundColorEditor.setColorValue(rgb);
-
-		key = fAnnotationColorListModel[i][2];
-		fShowInTextCheckBox.setSelection(fOverlayStore.getBoolean(key));
-
-		key = fAnnotationColorListModel[i][3];
-		fShowInOverviewRulerCheckBox.setSelection(fOverlayStore.getBoolean(key));
-
-		key = fAnnotationColorListModel[i][4];
-		if (key != null) {
-			fHighlightInTextCheckBox.setSelection(fOverlayStore.getBoolean(key));
-			fHighlightInTextCheckBox.setEnabled(true);
-		} else
-			fHighlightInTextCheckBox.setEnabled(false);
-
-		key = fAnnotationColorListModel[i][5];
-		if (key != null) {
-			fShowInVerticalRulerCheckBox.setSelection(fOverlayStore.getBoolean(key));
-			fShowInVerticalRulerCheckBox.setEnabled(true);
-		} else {
-			fShowInVerticalRulerCheckBox.setSelection(true);
-			fShowInVerticalRulerCheckBox.setEnabled(false);
-		}
-	}
-
-	private void handleProviderListSelection() {
-		int i = fQuickDiffProviderList.getSelectionIndex();
-
-		boolean b = fOverlayStore.getString(AbstractDecoratedTextEditorPreferenceConstants.QUICK_DIFF_DEFAULT_PROVIDER).equals(fQuickDiffProviderListModel[i][0]);
-		fSetDefaultButton.setEnabled(!b);
 	}
 
 	private Control createAppearancePage(Composite parent) {
@@ -424,257 +280,7 @@ public class TextEditorPreferencePage2 extends PreferencePage implements IWorkbe
 		return codeFormatterComposite;
 	}
 
-	private Control createQuickdiffPage(Composite parent) {
-		Composite composite = new Composite(parent, SWT.NONE);
-		GridLayout layout = new GridLayout();
-		layout.numColumns = 2;
-		composite.setLayout(layout);
 
-		String label = TextEditorMessages.getString("TextEditorPreferencePage.showQuickDiffPerDefault"); //$NON-NLS-1$
-		addCheckBox(composite, label, AbstractDecoratedTextEditorPreferenceConstants.QUICK_DIFF_ALWAYS_ON, 0);
-
-		label = TextEditorMessages.getString("TextEditorPreferencePage.quickDiffCharacterMode"); //$NON-NLS-1$
-		addCheckBox(composite, label, AbstractDecoratedTextEditorPreferenceConstants.QUICK_DIFF_CHARACTER_MODE, 0);
-
-		Label l = new Label(composite, SWT.LEFT);
-		GridData gd = new GridData(GridData.HORIZONTAL_ALIGN_FILL);
-		gd.horizontalSpan = 2;
-		gd.heightHint = convertHeightInCharsToPixels(1) / 2;
-		l.setLayoutData(gd);
-
-		l = new Label(composite, SWT.LEFT);
-		l.setText(TextEditorMessages.getString("TextEditorPreferencePage.quickdiff.referenceprovidertitle")); //$NON-NLS-1$
-		gd = new GridData(GridData.HORIZONTAL_ALIGN_FILL);
-		gd.horizontalSpan = 2;
-		l.setLayoutData(gd);
-
-		Composite editorComposite = new Composite(composite, SWT.NONE);
-		layout = new GridLayout();
-		layout.numColumns = 2;
-		layout.marginHeight = 0;
-		layout.marginWidth = 0;
-		editorComposite.setLayout(layout);
-		gd = new GridData(GridData.HORIZONTAL_ALIGN_FILL | GridData.FILL_VERTICAL);
-		gd.horizontalSpan = 2;
-		editorComposite.setLayoutData(gd);
-
-		fQuickDiffProviderList = new List(editorComposite, SWT.SINGLE | SWT.V_SCROLL | SWT.BORDER);
-		gd = new GridData(GridData.VERTICAL_ALIGN_BEGINNING | GridData.FILL_HORIZONTAL);
-		gd.heightHint = convertHeightInCharsToPixels(4);
-		fQuickDiffProviderList.setLayoutData(gd);
-
-		Composite stylesComposite = new Composite(editorComposite, SWT.NONE);
-		layout = new GridLayout();
-		layout.marginHeight = 0;
-		layout.marginWidth = 0;
-		layout.numColumns = 2;
-		stylesComposite.setLayout(layout);
-		stylesComposite.setLayoutData(new GridData(GridData.FILL_BOTH));
-
-		fSetDefaultButton = new Button(stylesComposite, SWT.PUSH);
-		fSetDefaultButton.setText(TextEditorMessages.getString("TextEditorPreferencePage.quickdiff.setDefault")); //$NON-NLS-1$
-		gd = new GridData(GridData.FILL_HORIZONTAL);
-		gd.horizontalAlignment = GridData.BEGINNING;
-		gd.horizontalSpan = 2;
-		fSetDefaultButton.setLayoutData(gd);
-
-		fQuickDiffProviderList.addSelectionListener(new SelectionListener() {
-
-			public void widgetDefaultSelected(SelectionEvent e) {
-			// do nothing
-			}
-
-			public void widgetSelected(SelectionEvent e) {
-				handleProviderListSelection();
-			}
-
-		});
-
-		fSetDefaultButton.addSelectionListener(new SelectionListener() {
-
-			public void widgetDefaultSelected(SelectionEvent e) {
-			// do nothing
-			}
-
-			public void widgetSelected(SelectionEvent e) {
-				int i = fQuickDiffProviderList.getSelectionIndex();
-				for (int j = 0; j < fQuickDiffProviderListModel.length; j++) {
-					if (fOverlayStore.getString(AbstractDecoratedTextEditorPreferenceConstants.QUICK_DIFF_DEFAULT_PROVIDER).equals(fQuickDiffProviderListModel[j][0])) {
-						fQuickDiffProviderList.remove(j);
-						fQuickDiffProviderList.add(fQuickDiffProviderListModel[j][1], j);
-					}
-					if (i == j) {
-						fQuickDiffProviderList.remove(j);
-						fQuickDiffProviderList.add(fQuickDiffProviderListModel[j][1] + " " + TextEditorMessages.getString("TextEditorPreferencePage.quickdiff.defaultlabel"), j); //$NON-NLS-1$//$NON-NLS-2$
-					}
-				}
-				fSetDefaultButton.setEnabled(false);
-				fQuickDiffProviderList.setSelection(i);
-				fQuickDiffProviderList.redraw();
-
-				fOverlayStore.setValue(AbstractDecoratedTextEditorPreferenceConstants.QUICK_DIFF_DEFAULT_PROVIDER, fQuickDiffProviderListModel[i][0]);
-			}
-		});
-
-		return composite;
-	}
-
-	private Control createAnnotationsPage(Composite parent) {
-		Composite composite = new Composite(parent, SWT.NULL);
-		GridLayout layout = new GridLayout();
-		layout.numColumns = 2;
-		composite.setLayout(layout);
-
-		String checkBoxlabel = RdtUiMessages.getString("RubyEditorPreferencePage.createParserAnnotations"); //$NON-NLS-1$
-		addCheckBox(composite, checkBoxlabel, PreferenceConstants.CREATE_PARSER_ANNOTATIONS, 0);
-
-		Label label = new Label(composite, SWT.LEFT);
-		label.setText(TextEditorMessages.getString("TextEditorPreferencePage.annotationPresentationOptions")); //$NON-NLS-1$
-		GridData gd = new GridData(GridData.HORIZONTAL_ALIGN_FILL);
-		gd.horizontalSpan = 2;
-		label.setLayoutData(gd);
-
-		Composite editorComposite = new Composite(composite, SWT.NONE);
-		layout = new GridLayout();
-		layout.numColumns = 2;
-		layout.marginHeight = 0;
-		layout.marginWidth = 0;
-		editorComposite.setLayout(layout);
-		gd = new GridData(GridData.HORIZONTAL_ALIGN_FILL | GridData.FILL_VERTICAL);
-		gd.horizontalSpan = 2;
-		editorComposite.setLayoutData(gd);
-
-		fAnnotationList = new List(editorComposite, SWT.SINGLE | SWT.V_SCROLL | SWT.BORDER);
-		gd = new GridData(GridData.VERTICAL_ALIGN_BEGINNING | GridData.FILL_HORIZONTAL);
-		gd.heightHint = convertHeightInCharsToPixels(10);
-		fAnnotationList.setLayoutData(gd);
-
-		Composite optionsComposite = new Composite(editorComposite, SWT.NONE);
-		layout = new GridLayout();
-		layout.marginHeight = 0;
-		layout.marginWidth = 0;
-		layout.numColumns = 2;
-		optionsComposite.setLayout(layout);
-		optionsComposite.setLayoutData(new GridData(GridData.FILL_BOTH));
-
-		fShowInTextCheckBox = new Button(optionsComposite, SWT.CHECK);
-		fShowInTextCheckBox.setText(TextEditorMessages.getString("TextEditorPreferencePage.annotations.showInText")); //$NON-NLS-1$
-		gd = new GridData(GridData.FILL_HORIZONTAL);
-		gd.horizontalAlignment = GridData.BEGINNING;
-		gd.horizontalSpan = 2;
-		fShowInTextCheckBox.setLayoutData(gd);
-
-		fHighlightInTextCheckBox = new Button(optionsComposite, SWT.CHECK);
-		fHighlightInTextCheckBox.setText(TextEditorMessages.getString("TextEditorPreferencePage.annotations.highlightInText")); //$NON-NLS-1$
-		gd = new GridData(GridData.FILL_HORIZONTAL);
-		gd.horizontalAlignment = GridData.BEGINNING;
-		gd.horizontalSpan = 2;
-		fHighlightInTextCheckBox.setLayoutData(gd);
-
-		fShowInOverviewRulerCheckBox = new Button(optionsComposite, SWT.CHECK);
-		fShowInOverviewRulerCheckBox.setText(TextEditorMessages.getString("TextEditorPreferencePage.annotations.showInOverviewRuler")); //$NON-NLS-1$
-		gd = new GridData(GridData.FILL_HORIZONTAL);
-		gd.horizontalAlignment = GridData.BEGINNING;
-		gd.horizontalSpan = 2;
-		fShowInOverviewRulerCheckBox.setLayoutData(gd);
-
-		fShowInVerticalRulerCheckBox = new Button(optionsComposite, SWT.CHECK);
-		fShowInVerticalRulerCheckBox.setText(TextEditorMessages.getString("TextEditorPreferencePage.annotations.showInVerticalRuler")); //$NON-NLS-1$
-		gd = new GridData(GridData.FILL_HORIZONTAL);
-		gd.horizontalAlignment = GridData.BEGINNING;
-		gd.horizontalSpan = 2;
-		fShowInVerticalRulerCheckBox.setLayoutData(gd);
-
-		label = new Label(optionsComposite, SWT.LEFT);
-		label.setText(TextEditorMessages.getString("TextEditorPreferencePage.annotations.color")); //$NON-NLS-1$
-		gd = new GridData();
-		gd.horizontalAlignment = GridData.BEGINNING;
-		label.setLayoutData(gd);
-
-		fAnnotationForegroundColorEditor = new ColorEditor(optionsComposite);
-		Button foregroundColorButton = fAnnotationForegroundColorEditor.getButton();
-		gd = new GridData(GridData.FILL_HORIZONTAL);
-		gd.horizontalAlignment = GridData.BEGINNING;
-		foregroundColorButton.setLayoutData(gd);
-
-		fAnnotationList.addSelectionListener(new SelectionListener() {
-
-			public void widgetDefaultSelected(SelectionEvent e) {
-			// do nothing
-			}
-
-			public void widgetSelected(SelectionEvent e) {
-				handleAnnotationListSelection();
-			}
-		});
-
-		fShowInTextCheckBox.addSelectionListener(new SelectionListener() {
-
-			public void widgetDefaultSelected(SelectionEvent e) {
-			// do nothing
-			}
-
-			public void widgetSelected(SelectionEvent e) {
-				int i = fAnnotationList.getSelectionIndex();
-				String key = fAnnotationColorListModel[i][2];
-				fOverlayStore.setValue(key, fShowInTextCheckBox.getSelection());
-			}
-		});
-
-		fHighlightInTextCheckBox.addSelectionListener(new SelectionListener() {
-
-			public void widgetDefaultSelected(SelectionEvent e) {
-			// do nothing
-			}
-
-			public void widgetSelected(SelectionEvent e) {
-				int i = fAnnotationList.getSelectionIndex();
-				String key = fAnnotationColorListModel[i][4];
-				fOverlayStore.setValue(key, fHighlightInTextCheckBox.getSelection());
-			}
-		});
-
-		fShowInOverviewRulerCheckBox.addSelectionListener(new SelectionListener() {
-
-			public void widgetDefaultSelected(SelectionEvent e) {
-			// do nothing
-			}
-
-			public void widgetSelected(SelectionEvent e) {
-				int i = fAnnotationList.getSelectionIndex();
-				String key = fAnnotationColorListModel[i][3];
-				fOverlayStore.setValue(key, fShowInOverviewRulerCheckBox.getSelection());
-			}
-		});
-
-		fShowInVerticalRulerCheckBox.addSelectionListener(new SelectionListener() {
-
-			public void widgetDefaultSelected(SelectionEvent e) {
-			// do nothing
-			}
-
-			public void widgetSelected(SelectionEvent e) {
-				int i = fAnnotationList.getSelectionIndex();
-				String key = fAnnotationColorListModel[i][5];
-				fOverlayStore.setValue(key, fShowInVerticalRulerCheckBox.getSelection());
-			}
-		});
-
-		foregroundColorButton.addSelectionListener(new SelectionListener() {
-
-			public void widgetDefaultSelected(SelectionEvent e) {
-			// do nothing
-			}
-
-			public void widgetSelected(SelectionEvent e) {
-				int i = fAnnotationList.getSelectionIndex();
-				String key = fAnnotationColorListModel[i][1];
-				PreferenceConverter.setValue(fOverlayStore, key, fAnnotationForegroundColorEditor.getColorValue());
-			}
-		});
-
-		return composite;
-	}
 
 	/*
 	 * @see PreferencePage#createContents(Composite)
@@ -699,14 +305,6 @@ public class TextEditorPreferencePage2 extends PreferencePage implements IWorkbe
 		item = new TabItem(folder, SWT.NONE);
 		item.setText("Syntax");
 		item.setControl(createSyntaxPage(folder));
-
-		item = new TabItem(folder, SWT.NONE);
-		item.setText(TextEditorMessages.getString("TextEditorPreferencePage.annotationsTab.title")); //$NON-NLS-1$
-		item.setControl(createAnnotationsPage(folder));
-
-		item = new TabItem(folder, SWT.NONE);
-		item.setText(TextEditorMessages.getString("TextEditorPreferencePage.quickdiffTab.title")); //$NON-NLS-1$
-		item.setControl(createQuickdiffPage(folder));
 
 		initialize();
 		Dialog.applyDialogFont(folder);
@@ -775,52 +373,6 @@ public class TextEditorPreferencePage2 extends PreferencePage implements IWorkbe
 				}
 			}
 		});
-
-		for (int i = 0; i < fAnnotationColorListModel.length; i++)
-			fAnnotationList.add(fAnnotationColorListModel[i][0]);
-		fAnnotationList.getDisplay().asyncExec(new Runnable() {
-
-			public void run() {
-				if (fAnnotationList != null && !fAnnotationList.isDisposed()) {
-					fAnnotationList.select(0);
-					handleAnnotationListSelection();
-				}
-			}
-		});
-
-		for (int i = 0; i < fQuickDiffProviderListModel.length; i++) {
-			String label = fQuickDiffProviderListModel[i][1];
-			if (fOverlayStore.getString(AbstractDecoratedTextEditorPreferenceConstants.QUICK_DIFF_DEFAULT_PROVIDER).equals(fQuickDiffProviderListModel[i][0])) label += " " + TextEditorMessages.getString("TextEditorPreferencePage.quickdiff.defaultlabel"); //$NON-NLS-1$ //$NON-NLS-2$
-			fQuickDiffProviderList.add(label);
-		}
-		fQuickDiffProviderList.getDisplay().asyncExec(new Runnable() {
-
-			public void run() {
-				if (fQuickDiffProviderList != null && !fQuickDiffProviderList.isDisposed()) {
-					fQuickDiffProviderList.select(0);
-					handleProviderListSelection();
-				}
-			}
-		});
-
-	}
-
-	private void initializeFields() {
-
-		Iterator e = fCheckBoxes.keySet().iterator();
-		while (e.hasNext()) {
-			Button b = (Button) e.next();
-			String key = (String) fCheckBoxes.get(b);
-			b.setSelection(fOverlayStore.getBoolean(key));
-		}
-
-		e = fTextFields.keySet().iterator();
-		while (e.hasNext()) {
-			Text t = (Text) e.next();
-			String key = (String) fTextFields.get(t);
-			t.setText(fOverlayStore.getString(key));
-		}
-
 	}
 
 	/*
@@ -850,9 +402,7 @@ public class TextEditorPreferencePage2 extends PreferencePage implements IWorkbe
 			textPropertyWidgets[i].loadDefault();
 		}
 
-		handleAppearanceColorListSelection();
-		handleAnnotationListSelection();
-		handleProviderListSelection();
+		handleAppearanceColorListSelection();		
 
 		super.performDefaults();
 	}
@@ -868,21 +418,6 @@ public class TextEditorPreferencePage2 extends PreferencePage implements IWorkbe
 		}
 
 		super.dispose();
-	}
-
-	private Button addCheckBox(Composite parent, String label, String key, int indentation) {
-		Button checkBox = new Button(parent, SWT.CHECK);
-		checkBox.setText(label);
-
-		GridData gd = new GridData(GridData.HORIZONTAL_ALIGN_BEGINNING);
-		gd.horizontalIndent = indentation;
-		gd.horizontalSpan = 2;
-		checkBox.setLayoutData(gd);
-		checkBox.addSelectionListener(fCheckBoxListener);
-
-		fCheckBoxes.put(checkBox, key);
-
-		return checkBox;
 	}
 
 	private Control addTextField(Composite composite, String label, String key, int textLimit, int indentation, boolean isNumber) {

@@ -10,7 +10,6 @@ import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.jface.preference.IPreferenceStore;
-import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.util.PropertyChangeEvent;
@@ -18,9 +17,10 @@ import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.ui.IEditorInput;
+import org.eclipse.ui.editors.text.EditorsUI;
 import org.eclipse.ui.editors.text.TextEditor;
+import org.eclipse.ui.texteditor.ChainedPreferenceStore;
 import org.eclipse.ui.texteditor.MarkerUtilities;
-import org.eclipse.ui.texteditor.WorkbenchChainedTextFontFieldEditor;
 import org.eclipse.ui.views.contentoutline.IContentOutlinePage;
 import org.rubypeople.rdt.internal.core.RubyPlugin;
 import org.rubypeople.rdt.internal.core.parser.ParseError;
@@ -44,15 +44,16 @@ public class RubyAbstractEditor extends TextEditor {
 	private RubyCore fCore;
 	private RubyModel model;
 
-	protected void configurePreferenceStore() {
-		IPreferenceStore prefs = RdtUiPlugin.getDefault().getPreferenceStore();
-		setPreferenceStore(prefs);
-
-		WorkbenchChainedTextFontFieldEditor.startPropagate(prefs, JFaceResources.TEXT_FONT);
+	private IPreferenceStore createCombinedPreferenceStore() {
+		IPreferenceStore rdtStore= RdtUiPlugin.getDefault().getPreferenceStore();
+		IPreferenceStore generalTextStore= EditorsUI.getPreferenceStore(); 
+		return new ChainedPreferenceStore(new IPreferenceStore[] { rdtStore, generalTextStore });
 	}
-
+	
 	protected void initializeEditor() {
-		configurePreferenceStore();
+		super.initializeEditor();
+		setPreferenceStore(this.createCombinedPreferenceStore());
+
 
 		textTools = RdtUiPlugin.getDefault().getTextTools();
 		setSourceViewerConfiguration(new RubySourceViewerConfiguration(textTools, this));
