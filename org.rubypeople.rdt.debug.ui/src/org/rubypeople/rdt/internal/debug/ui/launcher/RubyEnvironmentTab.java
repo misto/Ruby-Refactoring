@@ -148,6 +148,10 @@ public class RubyEnvironmentTab extends AbstractLaunchConfigurationTab {
 	}
 
 	public void setDefaults(ILaunchConfigurationWorkingCopy configuration) {
+		RubyInterpreter defaultInterpreter = RubyRuntime.getDefault().getSelectedInterpreter();
+		if (defaultInterpreter != null) {			
+			configuration.setAttribute(RubyLaunchConfigurationAttribute.SELECTED_INTERPRETER, defaultInterpreter.getName());
+		}
 	}
 
 	public void initializeFrom(ILaunchConfiguration configuration) {
@@ -162,7 +166,7 @@ public class RubyEnvironmentTab extends AbstractLaunchConfigurationTab {
 			setUseLoadPathDefaults(useDefaultLoadPath);
 			if (useDefaultLoadPath) {
 				String projectName = configuration.getAttribute(RubyLaunchConfigurationAttribute.PROJECT_NAME, "");
-				if (projectName != "") {
+				if (projectName.length() != 0) {
 					RubyProject project = RubyCore.getRubyProject(projectName);
 					if (project != null) {
 						List loadPathEntries = project.getLoadPathEntries();
