@@ -1,4 +1,4 @@
-package org.rubypeople.rdt.core.tests.core.parser;
+package org.rubypeople.rdt.internal.core.parser;
 
 import junit.framework.Test;
 import junit.framework.TestSuite;
@@ -9,7 +9,7 @@ public class TS_Parser {
 		TestSuite suite = new TestSuite("Test for org.rubypeople.rdt.core.tests.core.parser");
 		//$JUnit-BEGIN$
 		suite.addTest(new TestSuite(TC_RubyClass.class));
-		suite.addTest(new TestSuite(TC_RubyScript.class));
+		suite.addTest(new TestSuite(RubyParserTest.class));
 		//$JUnit-END$
 		return suite;
 	}

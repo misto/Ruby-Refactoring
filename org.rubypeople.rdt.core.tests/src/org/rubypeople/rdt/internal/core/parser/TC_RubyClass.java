@@ -1,4 +1,4 @@
-package org.rubypeople.rdt.core.tests.core.parser;
+package org.rubypeople.rdt.internal.core.parser;
 
 import junit.framework.TestCase;
 
