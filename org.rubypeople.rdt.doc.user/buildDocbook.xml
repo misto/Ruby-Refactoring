@@ -9,7 +9,9 @@
 	<target name="clean.docbook.generated">
 	    <delete file="toc.xml"/>
 	    <delete file="docbook.done"/>
-	    <delete dir="html"/>
+	    <delete>
+	      <fileset dir="html" includes="*.html"/>
+	    </delete>
 	</target>
 	
 	<target name="html" depends="init,clean.docbook.generated">
