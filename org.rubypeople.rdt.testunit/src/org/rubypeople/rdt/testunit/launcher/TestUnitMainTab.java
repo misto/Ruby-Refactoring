@@ -35,10 +35,14 @@ import org.eclipse.debug.ui.ILaunchConfigurationTab;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
+import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.dialogs.ElementListSelectionDialog;
 import org.rubypeople.rdt.core.IRubyElement;
 import org.rubypeople.rdt.internal.debug.ui.RdtDebugUiMessages;
@@ -52,7 +56,7 @@ import org.rubypeople.rdt.testunit.views.TestUnitMessages;
 
 /**
  * @author Chris
- *  
+ * 
  */
 public class TestUnitMainTab extends AbstractLaunchConfigurationTab implements ILaunchConfigurationTab {
 
@@ -63,6 +67,11 @@ public class TestUnitMainTab extends AbstractLaunchConfigurationTab implements I
 	private IProject rubyProject;
 	protected String lastProject = "";
 	protected String lastFile = "";
+	private Label classLabel;
+	private Button allClassesCheckBox;
+	private Button allMethodsCheckBox;
+	private Label testLabel;
+	private Text testMethodEditBox;
 
 	public TestUnitMainTab() {
 		super();
@@ -109,7 +118,21 @@ public class TestUnitMainTab extends AbstractLaunchConfigurationTab implements I
 			}
 		});
 
-		new Label(composite, SWT.NONE).setText(TestUnitMessages.getString("LaunchConfigurationTab.RubyEntryPoint.classLabel"));
+		allClassesCheckBox = new Button(composite, SWT.CHECK);
+		allClassesCheckBox.setText(TestUnitMessages.getString("LaunchConfigurationTab.RubyEntryPoint.allTestCases"));
+		allClassesCheckBox.addSelectionListener(new SelectionListener() {
+
+			public void widgetSelected(SelectionEvent e) {
+				updateLaunchConfigurationDialog();
+				setControlState();
+			}
+
+			public void widgetDefaultSelected(SelectionEvent e) {}
+		});
+
+		classLabel = new Label(composite, SWT.NONE);
+		classLabel.setText(TestUnitMessages.getString("LaunchConfigurationTab.RubyEntryPoint.classLabel"));
+
 		classSelector = new RubyClassSelector(composite, fileSelector, projectSelector);
 		classSelector.setBrowseDialogMessage(TestUnitMessages.getString("LaunchConfigurationTab.RubyEntryPoint.classSelectorMessage"));
 		classSelector.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
@@ -120,12 +143,49 @@ public class TestUnitMainTab extends AbstractLaunchConfigurationTab implements I
 			}
 		});
 
+		allMethodsCheckBox = new Button(composite, SWT.CHECK);
+		allMethodsCheckBox.setText(TestUnitMessages.getString("LaunchConfigurationTab.RubyEntryPoint.allTestMethods"));
+		allMethodsCheckBox.addSelectionListener(new SelectionListener() {
+
+			public void widgetSelected(SelectionEvent e) {
+				updateLaunchConfigurationDialog();
+				setControlState();
+			}
+
+			public void widgetDefaultSelected(SelectionEvent e) {}
+		});
+
+		testLabel = new Label(composite, SWT.NONE);
+		testLabel.setText(TestUnitMessages.getString("LaunchConfigurationTab.RubyEntryPoint.methodLabel"));
+
+		testMethodEditBox = new Text(composite, SWT.BORDER | SWT.BORDER);
+		testMethodEditBox.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
+		testMethodEditBox.addModifyListener(new ModifyListener() {
+
+			public void modifyText(ModifyEvent e) {
+				updateLaunchConfigurationDialog();
+
+			}
+		});
+		setControlState();
+
+	}
+
+	private void setControlState() {
+		boolean allClassesChecked = allClassesCheckBox.getSelection();
+		boolean allMethodsChecked = allMethodsCheckBox.getSelection();
+		classLabel.setEnabled(!allClassesChecked);
+		classSelector.setEnabled(!allClassesChecked);
+		allMethodsCheckBox.setEnabled(!allClassesChecked);
+		testLabel.setEnabled(!(allClassesChecked || allMethodsChecked));
+		testMethodEditBox.setEnabled(!(allClassesChecked || allMethodsChecked));
+
 	}
 
 	protected Composite createPageRoot(Composite parent) {
 		Composite composite = new Composite(parent, SWT.NONE);
 		GridLayout compositeLayout = new GridLayout();
-		compositeLayout.marginWidth = 0;
+		compositeLayout.marginWidth = 10;
 		compositeLayout.numColumns = 1;
 		composite.setLayout(compositeLayout);
 
@@ -139,28 +199,28 @@ public class TestUnitMainTab extends AbstractLaunchConfigurationTab implements I
 	 * @see org.eclipse.debug.ui.ILaunchConfigurationTab#setDefaults(org.eclipse.debug.core.ILaunchConfigurationWorkingCopy)
 	 */
 	public void setDefaults(ILaunchConfigurationWorkingCopy configuration) {
-        IResource selectedResource = RubyPlugin.getDefault().getSelectedResource();
-        String projectName = "";
-        String fileName = "";
-        String type = "";
-        
-        if (RubyPlugin.getDefault().isRubyFile(selectedResource)) {
-            projectName = selectedResource.getProject().getName();
-            fileName = selectedResource.getProjectRelativePath().toString();
-            IRubyElement[] types = TestSearchEngine.findTests((IFile) selectedResource);
-            if (types.length > 0) {
-                type = types[0].getElementName();
-            }
-        }
+		IResource selectedResource = RubyPlugin.getDefault().getSelectedResource();
+		String projectName = "";
+		String fileName = "";
+		String type = "";
 
-        configuration.setAttribute(RubyLaunchConfigurationAttribute.PROJECT_NAME, projectName);
-        configuration.setAttribute(TestUnitLaunchConfigurationDelegate.LAUNCH_CONTAINER_ATTR, fileName);
-        configuration.setAttribute(TestUnitLaunchConfigurationDelegate.TESTTYPE_ATTR, type);
-        configuration.setAttribute(TestUnitLaunchConfigurationDelegate.TESTNAME_ATTR, "");
+		if (RubyPlugin.getDefault().isRubyFile(selectedResource)) {
+			projectName = selectedResource.getProject().getName();
+			fileName = selectedResource.getProjectRelativePath().toString();
+			IRubyElement[] types = TestSearchEngine.findTests((IFile) selectedResource);
+			if (types.length > 0) {
+				type = types[0].getElementName();
+			}
+		}
 
-        // set hidden attribute
-        configuration.setAttribute(ILaunchConfiguration.ATTR_SOURCE_LOCATOR_ID, "org.rubypeople.rdt.debug.ui.rubySourceLocator");
-    }
+		configuration.setAttribute(RubyLaunchConfigurationAttribute.PROJECT_NAME, projectName);
+		configuration.setAttribute(TestUnitLaunchConfigurationDelegate.LAUNCH_CONTAINER_ATTR, fileName);
+		configuration.setAttribute(TestUnitLaunchConfigurationDelegate.TESTTYPE_ATTR, type);
+		configuration.setAttribute(TestUnitLaunchConfigurationDelegate.TESTNAME_ATTR, "");
+
+		// set hidden attribute
+		configuration.setAttribute(ILaunchConfiguration.ATTR_SOURCE_LOCATOR_ID, "org.rubypeople.rdt.debug.ui.rubySourceLocator");
+	}
 
 	/*
 	 * (non-Javadoc)
@@ -181,7 +241,17 @@ public class TestUnitMainTab extends AbstractLaunchConfigurationTab implements I
 			}
 			projectSelector.setSelectionText(projectName);
 			fileSelector.setSelectionText(configuration.getAttribute(TestUnitLaunchConfigurationDelegate.LAUNCH_CONTAINER_ATTR, ""));
-			classSelector.setSelectionText(configuration.getAttribute(TestUnitLaunchConfigurationDelegate.TESTTYPE_ATTR, ""));
+
+			String testClass = configuration.getAttribute(TestUnitLaunchConfigurationDelegate.TESTTYPE_ATTR, "");
+			classSelector.setSelectionText(testClass);
+			if (testClass.length() == 0) {
+				allClassesCheckBox.setSelection(true);
+			} else {
+				String testMethod = configuration.getAttribute(TestUnitLaunchConfigurationDelegate.TESTNAME_ATTR, "");
+				testMethodEditBox.setText(testMethod);
+				if (testMethod.length() == 0) allMethodsCheckBox.setSelection(true);
+			}
+			setControlState();
 		} catch (CoreException e) {
 			TestunitPlugin.log(e);
 		}
@@ -193,7 +263,15 @@ public class TestUnitMainTab extends AbstractLaunchConfigurationTab implements I
 	 * @see org.eclipse.debug.ui.ILaunchConfigurationTab#performApply(org.eclipse.debug.core.ILaunchConfigurationWorkingCopy)
 	 */
 	public void performApply(ILaunchConfigurationWorkingCopy configuration) {
-		configuration.setAttribute(TestUnitLaunchConfigurationDelegate.TESTTYPE_ATTR, classSelector.getValidatedSelectionText());
+		String testMethod = testMethodEditBox.getText();
+		if (allMethodsCheckBox.getSelection()) testMethod = "";
+		String testCaseClass = classSelector.getValidatedSelectionText();
+		if (allClassesCheckBox.getSelection()) {
+			testCaseClass = "";
+			testMethod = "";
+		}
+		configuration.setAttribute(TestUnitLaunchConfigurationDelegate.TESTNAME_ATTR, testMethod);
+		configuration.setAttribute(TestUnitLaunchConfigurationDelegate.TESTTYPE_ATTR, testCaseClass);
 		configuration.setAttribute(TestUnitLaunchConfigurationDelegate.LAUNCH_CONTAINER_ATTR, fileSelector.getValidatedSelectionText());
 	}
 

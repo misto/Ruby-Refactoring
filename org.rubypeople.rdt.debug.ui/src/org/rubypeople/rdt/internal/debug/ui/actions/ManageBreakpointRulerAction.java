@@ -37,6 +37,7 @@ import org.rubypeople.rdt.internal.debug.core.RubyLineBreakpoint;
  * @since Aug 23, 2002
  */
 public class ManageBreakpointRulerAction extends Action implements IUpdate {
+
 	private IVerticalRulerInfo fRuler;
 	private ITextEditor fTextEditor;
 	private String fMarkerType;
@@ -59,7 +60,9 @@ public class ManageBreakpointRulerAction extends Action implements IUpdate {
 		fRemoveLabel = "Remove Breakpoint";
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see org.eclipse.ui.texteditor.IUpdate#update()
 	 */
 	public void update() {
@@ -83,12 +86,12 @@ public class ManageBreakpointRulerAction extends Action implements IUpdate {
 		List breakpoints = new ArrayList();
 
 		AbstractMarkerAnnotationModel model = getAnnotationModel();
-		if (model == null) {
-			return breakpoints;
-		}
+		if (model == null) { return breakpoints; }
 		try {
-				IMarker[] markers = getResource().findMarkers("org.rubypeople.rdt.debug.core.RubyBreakpointMarker", // IBreakpoint.BREAKPOINT_MARKER,
-	false, IResource.DEPTH_INFINITE);
+			IResource resource = getResource();
+			if (resource == null) return breakpoints;
+			IMarker[] markers = resource.findMarkers("org.rubypeople.rdt.debug.core.RubyBreakpointMarker", // IBreakpoint.BREAKPOINT_MARKER,
+					false, IResource.DEPTH_INFINITE);
 
 			IBreakpointManager breakpointManager = DebugPlugin.getDefault().getBreakpointManager();
 			IDocument document = getDocument();
@@ -105,25 +108,26 @@ public class ManageBreakpointRulerAction extends Action implements IUpdate {
 		return breakpoints;
 	}
 
-	/** 
-	 * Returns the resource for which to create the marker, 
-	 * or <code>null</code> if there is no applicable resource.
-	 *
+	/**
+	 * Returns the resource for which to create the marker, or <code>null</code>
+	 * if there is no applicable resource.
+	 * 
 	 * @return the resource for which to create the marker or <code>null</code>
 	 */
 	protected IResource getResource() {
 		IEditorInput input = fTextEditor.getEditorInput();
 		IResource resource = (IResource) input.getAdapter(IFile.class);
-		if (resource == null)
-			resource = (IResource) input.getAdapter(IResource.class);
+		if (resource == null) resource = (IResource) input.getAdapter(IResource.class);
 		return resource;
 	}
 
 	/**
 	 * Checks whether a position includes the ruler's line of activity.
-	 *
-	 * @param position the position to be checked
-	 * @param document the document the position refers to
+	 * 
+	 * @param position
+	 *            the position to be checked
+	 * @param document
+	 *            the document the position refers to
 	 * @return <code>true</code> if the line is included by the given position
 	 */
 	protected boolean includesRulerLine(Position position, IDocument document) {
@@ -131,18 +135,15 @@ public class ManageBreakpointRulerAction extends Action implements IUpdate {
 			try {
 				int markerLine = document.getLineOfOffset(position.getOffset());
 				int line = fRuler.getLineOfLastMouseButtonActivity();
-				if (line == markerLine) {
-					return true;
-				}
-			} catch (BadLocationException x) {
-			}
+				if (line == markerLine) { return true; }
+			} catch (BadLocationException x) {}
 		}
 		return false;
 	}
 
 	/**
 	 * Returns this action's vertical ruler info.
-	 *
+	 * 
 	 * @return this action's vertical ruler
 	 */
 	protected IVerticalRulerInfo getVerticalRulerInfo() {
@@ -151,7 +152,7 @@ public class ManageBreakpointRulerAction extends Action implements IUpdate {
 
 	/**
 	 * Returns this action's editor.
-	 *
+	 * 
 	 * @return this action's editor
 	 */
 	protected ITextEditor getTextEditor() {
@@ -159,22 +160,21 @@ public class ManageBreakpointRulerAction extends Action implements IUpdate {
 	}
 
 	/**
-	 * Returns the <code>AbstractMarkerAnnotationModel</code> of the editor's input.
-	 *
+	 * Returns the <code>AbstractMarkerAnnotationModel</code> of the editor's
+	 * input.
+	 * 
 	 * @return the marker annotation model
 	 */
 	protected AbstractMarkerAnnotationModel getAnnotationModel() {
 		IDocumentProvider provider = fTextEditor.getDocumentProvider();
 		IAnnotationModel model = provider.getAnnotationModel(fTextEditor.getEditorInput());
-		if (model instanceof AbstractMarkerAnnotationModel) {
-			return (AbstractMarkerAnnotationModel) model;
-		}
+		if (model instanceof AbstractMarkerAnnotationModel) { return (AbstractMarkerAnnotationModel) model; }
 		return null;
 	}
 
 	/**
 	 * Returns the <code>IDocument</code> of the editor's input.
-	 *
+	 * 
 	 * @return the document of the editor's input
 	 */
 	protected IDocument getDocument() {
@@ -202,8 +202,7 @@ public class ManageBreakpointRulerAction extends Action implements IUpdate {
 			try {
 				DebugPlugin.getDefault().getBreakpointManager().removeBreakpoint(breakpoint, true);
 				return;
-			} catch (CoreException e) {
-			}
+			} catch (CoreException e) {}
 
 		}
 	}

@@ -19,7 +19,11 @@ import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.core.runtime.Status;
-import org.eclipse.debug.core.*;
+import org.eclipse.debug.core.DebugPlugin;
+import org.eclipse.debug.core.ILaunchConfiguration;
+import org.eclipse.debug.core.ILaunchConfigurationType;
+import org.eclipse.debug.core.ILaunchConfigurationWorkingCopy;
+import org.eclipse.debug.core.ILaunchManager;
 import org.eclipse.debug.ui.DebugUITools;
 import org.eclipse.debug.ui.IDebugModelPresentation;
 import org.eclipse.debug.ui.ILaunchShortcut;
@@ -38,7 +42,6 @@ import org.rubypeople.rdt.internal.launching.RubyRuntime;
 import org.rubypeople.rdt.internal.ui.RubyPlugin;
 import org.rubypeople.rdt.testunit.TestunitPlugin;
 import org.rubypeople.rdt.testunit.views.TestUnitMessages;
-import org.rubypeople.rdt.ui.RubyElementLabelProvider;
 
 public class TestUnitLaunchShortcut implements ILaunchShortcut {
 
@@ -88,43 +91,13 @@ public class TestUnitLaunchShortcut implements ILaunchShortcut {
 	private void doLaunch(String mode, IRubyElement rubyElement) {
 		try {
 			String container = getContainer(rubyElement);
+			ILaunchConfiguration config = findOrCreateLaunchConfiguration(rubyElement, mode, container, "", "");
+			if (config != null) 
+				config.launch(mode, null);
 			IRubyElement[] classes = TestSearchEngine.findTests((IFile) rubyElement.getUnderlyingResource());
-			String testClass = null;
-			if (classes.length == 0) {
-				MessageDialog.openInformation(getShell(), TestUnitMessages.getString("LaunchTestAction.dialog.title"), TestUnitMessages.getString("LaunchTestAction.message.notests")); //$NON-NLS-1$ //$NON-NLS-2$
-			} else if (classes.length > 1) {
-				testClass = chooseType(classes, mode);
-			} else {
-				testClass = classes[0].getElementName();
-			}
-			if (testClass != null) {
-				ILaunchConfiguration config = findOrCreateLaunchConfiguration(rubyElement, mode, container, testClass, "");
-				if (config != null) {
-					config.launch(mode, null);
-				}
-			}
 		} catch (CoreException e) {
 			log(e);
 		}
-	}
-
-	/**
-	 * Prompts the user to select a type
-	 * 
-	 * @return the selected type or <code>null</code> if none.
-	 */
-	protected String chooseType(IRubyElement[] types, String mode) {
-		ElementListSelectionDialog dialog = new ElementListSelectionDialog(getShell(), new RubyElementLabelProvider());
-		dialog.setElements(types);
-		dialog.setTitle(TestUnitMessages.getString("LaunchTestAction.dialog.title2")); //$NON-NLS-1$
-		if (mode.equals(ILaunchManager.DEBUG_MODE)) {
-			dialog.setMessage(TestUnitMessages.getString("LaunchTestAction.message.selectTestToRun")); //$NON-NLS-1$
-		} else {
-			dialog.setMessage(TestUnitMessages.getString("LaunchTestAction.message.selectTestToDebug")); //$NON-NLS-1$
-		}
-		dialog.setMultipleSelection(false);
-		if (dialog.open() == Window.OK) { return ((IRubyElement) dialog.getFirstResult()).getElementName(); }
-		return null;
 	}
 
 	protected ILaunchConfiguration findOrCreateLaunchConfiguration(IRubyElement rubyElement, String mode, String container, String testClass, String testName) throws CoreException {
@@ -136,13 +109,16 @@ public class TestUnitLaunchShortcut implements ILaunchShortcut {
 		candidateConfigs = new ArrayList(configs.length);
 		for (int i = 0; i < configs.length; i++) {
 			ILaunchConfiguration config = configs[i];
-			if ((config.getAttribute(TestUnitLaunchConfigurationDelegate.LAUNCH_CONTAINER_ATTR, "").equals(container)) && (config.getAttribute(TestUnitLaunchConfigurationDelegate.TESTTYPE_ATTR, "").equals(testClass)) && (config.getAttribute(TestUnitLaunchConfigurationDelegate.TESTNAME_ATTR, "").equals(testName)) && (config.getAttribute(RubyLaunchConfigurationAttribute.PROJECT_NAME, "").equals(rubyFile.getProject().getName()))) {
+			if ((config.getAttribute(TestUnitLaunchConfigurationDelegate.LAUNCH_CONTAINER_ATTR, "").equals(container)) 
+					&& (config.getAttribute(TestUnitLaunchConfigurationDelegate.TESTTYPE_ATTR, "").equals("")) 
+					&& (config.getAttribute(TestUnitLaunchConfigurationDelegate.TESTNAME_ATTR, "").equals(testName)) 
+					&& (config.getAttribute(RubyLaunchConfigurationAttribute.PROJECT_NAME, "").equals(rubyFile.getProject().getName()))) {
 				candidateConfigs.add(config);
 			}
 		}
 		switch (candidateConfigs.size()) {
 		case 0:
-			return createConfiguration(rubyFile, container, testClass, testName);
+			return createConfiguration(rubyFile, container, testName);
 		case 1:
 			return (ILaunchConfiguration) candidateConfigs.get(0);
 		default:
@@ -195,7 +171,7 @@ public class TestUnitLaunchShortcut implements ILaunchShortcut {
 		}
 	}
 
-	protected ILaunchConfiguration createConfiguration(IFile rubyFile, String container, String testClass, String testName) {
+	protected ILaunchConfiguration createConfiguration(IFile rubyFile, String container, String testName) {
 		if (RubyRuntime.getDefault().getSelectedInterpreter() == null) {
 			showNoInterpreterDialog();
 			return null;
@@ -218,7 +194,7 @@ public class TestUnitLaunchShortcut implements ILaunchShortcut {
 			wc.setAttribute(RubyLaunchConfigurationAttribute.SELECTED_INTERPRETER, RubyRuntime.getDefault().getSelectedInterpreter().getName());
 			wc.setAttribute(TestUnitLaunchConfigurationDelegate.LAUNCH_CONTAINER_ATTR, container);
 			wc.setAttribute(TestUnitLaunchConfigurationDelegate.TESTNAME_ATTR, testName);
-			wc.setAttribute(TestUnitLaunchConfigurationDelegate.TESTTYPE_ATTR, testClass);
+			wc.setAttribute(TestUnitLaunchConfigurationDelegate.TESTTYPE_ATTR, "");
 			wc.setAttribute(TestUnitLaunchConfigurationDelegate.PORT_ATTR, port);
 			wc.setAttribute(ILaunchConfiguration.ATTR_SOURCE_LOCATOR_ID, "org.rubypeople.rdt.debug.ui.rubySourceLocator");
 			config = wc.doSave();

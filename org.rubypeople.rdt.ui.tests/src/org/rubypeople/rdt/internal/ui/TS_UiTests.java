@@ -8,6 +8,7 @@ public class TS_UiTests {
 	public static Test suite() {
 		TestSuite suite = new TestSuite();		
 		suite.addTestSuite(TC_RubyViewerFilter.class);
+		suite.addTestSuite(TC_StackTraceLine.class);
 		suite.addTestSuite(TC_ResourceAdapterFactory.class);
 		return suite;
 	}

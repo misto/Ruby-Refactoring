@@ -70,8 +70,7 @@ module Test
           
           def getTestId(test)
             @tests << test
-            return test.object_id if test.respond_to? :object_id
-            return test.id
+            return test.respond_to?(:object_id) ? test.object_id : test.id
           end
          
           def escapeComma(s)
@@ -165,11 +164,7 @@ module Test
           
           def test_started(name)
             test = get_test(name)
-            if test.respond_to? :object_id
-              @last_test_id = test.object_id
-            else
-              @last_test_id = test.id
-            end            
+            @last_test_id = test.respond_to?(:object_id) ? test.object_id : test.id       
             @last_test_name = name
             output_single("%TESTS  #{@last_test_id},#{name}\n")
           end
@@ -193,6 +188,24 @@ module Test
             @io.flush
           end
         end
+      end
+    end
+        
+    module RDT
+      def self.buildSuite name
+          suite = TestSuite.new(name)
+          sub_suites = []
+          
+          ::ObjectSpace.each_object(Class) do |klass|
+            if(Test::Unit::TestCase > klass)
+              sub_suites << klass.suite
+            end
+          end
+          
+          sub_suites.sort! {|a,b| a.name <=> b.name }
+          sub_suites.each  {|s| suite << s}
+          
+          suite
       end
     end
   end
@@ -229,22 +242,29 @@ if __FILE__ == $0
   # 1. filename
   # 2. port
   # 3. keepAlive
-  # 4. test class name
-  # 5. test name (optional, unused right now)
+  # 4. test class name (optional)
+  # 5. test name (optional)
   #
   
   filename = ARGV[0].slice(0, ARGV[0].rindex('.'))
-  require filename.gsub(/.+::/, '')
   port = ARGV[1].to_i
   keepAliveString = ARGV[2]
   testClass = ARGV[3]
-  #testMethod = ARGV[4]
+  testMethod = ARGV[4]
+ 
+  require filename.gsub(/.+::/, '')
+  
+  if (testMethod)
+    testSuite = eval(testClass).new(testMethod)
+  elsif testClass  
+    testSuite = eval(testClass)
+  else
+    testSuite = Test::Unit::RDT.buildSuite filename
+  end
  
   session = createTcpSession('127.0.0.1', port)
-  testSuite = eval(testClass)
   remoteTestRunner = Test::Unit::UI::Eclipse::TestRunner.new(testSuite, session)
   remoteTestRunner.start
   session.close
   exit
 end
-

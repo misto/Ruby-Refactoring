@@ -58,6 +58,7 @@ public class TestUnitRunnerConfiguration extends InterpreterRunnerConfiguration 
 		int port = 6789;
 		String fileName = "";
 		String testClass = "";
+		String testMethod = "";
 		// FIXME Remove keepAlive on this end and remove looking for it on
 		// RemoteTestRunner.rb
 		boolean keepAlive = false;
@@ -67,18 +68,17 @@ public class TestUnitRunnerConfiguration extends InterpreterRunnerConfiguration 
 			port = configuration.getAttribute(TestUnitLaunchConfigurationDelegate.PORT_ATTR, 6789);
 			fileName = configuration.getAttribute(TestUnitLaunchConfigurationDelegate.LAUNCH_CONTAINER_ATTR, "");
 			testClass = configuration.getAttribute(TestUnitLaunchConfigurationDelegate.TESTTYPE_ATTR, "");
+			testMethod = configuration.getAttribute(TestUnitLaunchConfigurationDelegate.TESTNAME_ATTR, "");
 		} catch (CoreException e) {
 			TestunitPlugin.log(e);
 		}
 
-		return fileName + " " + port + " " + keepAlive + " " + testClass;
+		return fileName + " " + port + " " + keepAlive + " " + testClass + " " + testMethod;
 	}
 
 	public String renderLoadPath() {
 		String absoluteTestFilePath = RdtLaunchingPlugin.osDependentPath(this.getAbsoluteTestFileName());
-		if (absoluteTestFilePath.length() == 0) {
-			return super.renderLoadPath();
-		}
+		if (absoluteTestFilePath.length() == 0) { return super.renderLoadPath(); }
 		return super.renderLoadPath() + " -I " + absoluteTestFilePath;
 	}
 }

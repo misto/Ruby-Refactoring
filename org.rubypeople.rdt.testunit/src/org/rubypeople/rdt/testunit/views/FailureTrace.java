@@ -15,19 +15,6 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.StringReader;
 
-import org.eclipse.swt.SWT;
-import org.eclipse.swt.dnd.Clipboard;
-import org.eclipse.swt.events.DisposeEvent;
-import org.eclipse.swt.events.DisposeListener;
-import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.graphics.Image;
-import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Menu;
-import org.eclipse.swt.widgets.Shell;
-import org.eclipse.swt.widgets.Table;
-import org.eclipse.swt.widgets.TableItem;
-import org.eclipse.swt.widgets.ToolBar;
-
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuListener;
 import org.eclipse.jface.action.IMenuManager;
@@ -36,6 +23,20 @@ import org.eclipse.jface.action.ToolBarManager;
 import org.eclipse.jface.util.Assert;
 import org.eclipse.jface.util.IOpenEventListener;
 import org.eclipse.jface.util.OpenStrategy;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.dnd.Clipboard;
+import org.eclipse.swt.events.DisposeEvent;
+import org.eclipse.swt.events.DisposeListener;
+import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.events.SelectionListener;
+import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Menu;
+import org.eclipse.swt.widgets.Shell;
+import org.eclipse.swt.widgets.Table;
+import org.eclipse.swt.widgets.TableItem;
+import org.eclipse.swt.widgets.ToolBar;
+import org.rubypeople.rdt.internal.ui.util.StackTraceLine;
 
 /**
  * A pane that shows a stack trace of a failed test.
@@ -84,6 +85,14 @@ class FailureTrace implements IMenuListener {
 		});
 		
 		initMenu();
+		fTable.addSelectionListener(new SelectionListener() {
+		
+			public void widgetSelected(SelectionEvent e) {}
+			
+			public void widgetDefaultSelected(SelectionEvent e) {
+					new StackTraceLine(getSelectedText()).openEditor();
+			}
+		});
 		
 		parent.addDisposeListener(new DisposeListener() {
 			public void widgetDisposed(DisposeEvent e) {
@@ -118,27 +127,13 @@ class FailureTrace implements IMenuListener {
 	
 	private String getSelectedText() {
 		return fTable.getSelection()[0].getText();
-	}				
-
-	private Action createOpenEditorAction(String pLine) {
-	    // FIXME This is hard-coded to only .rb extensions
-	    // FIXME This is duplicated from the ConsoleTracker code in debug.ui
-	    String file = pLine.substring(0, pLine.indexOf(".rb:") + 3);
-	    int startOfSuffix = pLine.indexOf(".rb:");
-		if (startOfSuffix == -1) {
-			return null;
-		}
-		int startLineNumber = startOfSuffix + 4 ;
-		int endLineNumber = pLine.indexOf(":", startLineNumber);
-		if (endLineNumber == -1) {
-			endLineNumber = pLine.length();
-		}
+	}	
 		
-		int line = Integer.parseInt(pLine.substring(startLineNumber, endLineNumber));		
-		return new OpenEditorAtLineAction(fTestRunner, file, line);
+	private Action createOpenEditorAction(String traceLine) {
+		return new OpenEditorAction(new StackTraceLine(traceLine));
 	}
 
-    private void disposeIcons(){
+	private void disposeIcons(){
 		if (fExceptionIcon != null && !fExceptionIcon.isDisposed()) 
 			fExceptionIcon.dispose();
 		if (fStackIcon != null && !fStackIcon.isDisposed()) 
@@ -295,4 +290,17 @@ class FailureTrace implements IMenuListener {
     public Shell getShell() {
         return fTable.getShell();
     }
+	
+	private class OpenEditorAction extends Action {
+		private final StackTraceLine trace;
+	
+		public OpenEditorAction(StackTraceLine trace) {
+			super(TestUnitMessages.getString("OpenEditor.action.label"));
+			this.trace = trace;
+		}
+	
+		public void run() {
+			trace.openEditor();
+		}	
+	}
 }

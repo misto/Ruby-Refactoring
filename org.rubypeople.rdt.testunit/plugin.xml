@@ -23,8 +23,8 @@
       <import plugin="org.eclipse.core.resources"/>
       <import plugin="org.rubypeople.rdt.ui"/>
       <import plugin="org.rubypeople.rdt.debug.ui"/>
-      <import plugin="org.eclipse.jface.text"/>
       <import plugin="org.eclipse.ui.workbench.texteditor"/>
+      <import plugin="org.eclipse.text"/>
    </requires>
 
    <extension-point id="internal-testRunTabs" name="%testRunTabs.name" schema="schema/internal-testRunTabs.exsd"/>

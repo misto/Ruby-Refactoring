@@ -37,6 +37,7 @@ import org.eclipse.ui.texteditor.IDocumentProvider;
 import org.eclipse.ui.texteditor.ITextEditor;
 import org.rubypeople.rdt.internal.debug.ui.RdtDebugUiPlugin;
 import org.rubypeople.rdt.internal.debug.ui.RubySourceLocator;
+import org.rubypeople.rdt.internal.ui.util.StackTraceLine;
 
 /**
  * A hyperlink from a stack trace line of the form "*:*:"
@@ -44,11 +45,11 @@ import org.rubypeople.rdt.internal.debug.ui.RubySourceLocator;
 public class RubyStackTraceHyperlink implements IConsoleHyperlink {
 
 	private IConsole fConsole;
-	private RubyConsoleTracker.StackFrameInfo stackFrameInfo;
+	private StackTraceLine fTraceLine;
 
-	public RubyStackTraceHyperlink(IConsole console, RubyConsoleTracker.StackFrameInfo pStackFrameInfo) {
+	public RubyStackTraceHyperlink(IConsole console, StackTraceLine line) {
 		fConsole = console;
-		stackFrameInfo = pStackFrameInfo;
+		fTraceLine = line;
 	}
 
 	/**
@@ -94,13 +95,7 @@ public class RubyStackTraceHyperlink implements IConsoleHyperlink {
 		ISourceLocator sourceLocator = launch.getSourceLocator();
 		if (!(sourceLocator instanceof RubySourceLocator)) { return; }
 		rubySourceLocator = (RubySourceLocator) sourceLocator;
-		String filename;
-		try {
-			filename = this.getFilename();
-		} catch (BadLocationException e1) {
-			RdtDebugUiPlugin.log(new Status(IStatus.ERROR, RdtDebugUiPlugin.PLUGIN_ID, 0, "Could not get filname from stackframe.", e1));
-			return ;
-		}
+		String filename = this.getFilename();
 		try {
 			Object sourceElement = rubySourceLocator.getSourceElement(filename);
 			IEditorInput input = rubySourceLocator.getEditorInput(sourceElement);
@@ -125,16 +120,11 @@ public class RubyStackTraceHyperlink implements IConsoleHyperlink {
 	 * @exception CoreException if unable to parse the number
 	 */
 	public int getLineNumber() {
-		try {
-			return Integer.parseInt(stackFrameInfo.lineNumber);
-		} catch (NumberFormatException e) {
-			// stackFrameInfo.lineNumber is a verified number ;
-			return 0;
-		}
+		return fTraceLine.getLineNumber();
 	}
 
-	public String getFilename() throws BadLocationException {
-		return this.getLinkText().substring(0, stackFrameInfo.nameEnd - stackFrameInfo.start);
+	public String getFilename() {
+		return fTraceLine.getFilename();
 	}
 
 	/**

@@ -20,11 +20,14 @@
 package org.rubypeople.rdt.internal.debug.ui.console;
 
 
+import java.io.File;
+
 import org.eclipse.debug.ui.console.IConsole;
 import org.eclipse.debug.ui.console.IConsoleHyperlink;
 import org.eclipse.debug.ui.console.IConsoleLineTracker;
 import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.IRegion;
+import org.rubypeople.rdt.internal.ui.util.StackTraceLine;
 
 /**
  * Provides links for stack traces, eg:
@@ -37,6 +40,27 @@ import org.eclipse.jface.text.IRegion;
  */
 public class RubyConsoleTracker implements IConsoleLineTracker {
 	
+	
+		public interface FileExistanceChecker {
+			boolean fileExists(String filename);
+		}
+		
+		public static class StandardFileExistanceChecker implements FileExistanceChecker{
+	
+			public boolean fileExists(String filename) {
+				File file = new File(filename);
+				return file.exists();
+			}
+		}
+		private final FileExistanceChecker existanceChecker;
+	 	
+		public RubyConsoleTracker() {
+			this(new StandardFileExistanceChecker());
+		}
+	
+		public RubyConsoleTracker(FileExistanceChecker existance) {
+			this.existanceChecker = existance;
+		}
 	
 	/**
 	 * The console associated with this line tracker
@@ -51,41 +75,8 @@ public class RubyConsoleTracker implements IConsoleLineTracker {
 	}
 
 	
-	private StackFrameInfo detectStackFrame(String pLine) {
-		// FIXME This is hardcoded to only recognize .rb endings!
-		int startOfSuffix = pLine.indexOf(".rb:") ;
-		if (startOfSuffix == -1) {
-			return null ;
-		}
-		int startLineNumber = startOfSuffix + 4 ;
-		int endLineNumber = pLine.indexOf(":", startLineNumber) ;
-		if (endLineNumber == -1) {
-			endLineNumber = pLine.length() ;
-		}
-		String lineNumber = pLine.substring(startLineNumber, endLineNumber) ;	
-		for (int i = 0; i < lineNumber.length(); i++) {
-			char c = lineNumber.charAt(i) ;
-			if (c < '0' || c > '9') {
-				return null ;
-			}				
-		} 
-		
-		return new StackFrameInfo(0, endLineNumber, startOfSuffix+3, lineNumber) ;	
-	}
+	
 
-	private void setStartPos(String pLine, StackFrameInfo pStackFrameInfo) {
-		int fromOffset = pLine.indexOf("from ") ;
-		if (fromOffset == -1) {
-			return ;
-		}
-		for (int i = 0; i < fromOffset; i++) {
-			char charBeforeFrom = pLine.charAt(i) ;
-			if (!(charBeforeFrom == ' ' || charBeforeFrom == '\t')) {
-				return ;
-			}
-		}
-		pStackFrameInfo.start = 5 + fromOffset ;
-	}
 	
 	/**
 	 * @see org.eclipse.debug.ui.console.IConsoleLineTracker#lineAppended(org.eclipse.jface.text.IRegion)
@@ -94,14 +85,23 @@ public class RubyConsoleTracker implements IConsoleLineTracker {
 		try {
 			int offset = line.getOffset();
 			int length = line.getLength();
+			int prefix = 0;
+						
 			String text = fConsole.getDocument().get(offset, length);
-			StackFrameInfo sfi = this.detectStackFrame(text)	;
-			if (sfi == null) {
-				return ;
+			while (StackTraceLine.isTraceLine(text)) {
+				StackTraceLine stackTraceLine = new StackTraceLine(text);
+				if (! existanceChecker.fileExists(stackTraceLine.getFilename()))
+					return;
+				IConsoleHyperlink link = new RubyStackTraceHyperlink(fConsole, stackTraceLine);
+				fConsole.addLink(link, line.getOffset() + prefix + stackTraceLine.offset() , stackTraceLine.length());
+								
+				prefix = stackTraceLine.offset() + stackTraceLine.length();
+				text = text.substring(stackTraceLine.offset() + stackTraceLine.length());
+				if (text.startsWith(":in `require':")) {
+					text = text.substring(14);
+					prefix += 14;
+				}
 			}
-			this.setStartPos(text, sfi) ;
-			IConsoleHyperlink link = new RubyStackTraceHyperlink(fConsole, sfi);
-			fConsole.addLink(link, offset + sfi.start, sfi.end - sfi.start);			
 		} catch (BadLocationException e) {
 		}
 	}
@@ -112,20 +112,5 @@ public class RubyConsoleTracker implements IConsoleLineTracker {
 	public void dispose() {
 		fConsole = null;
 	}
-
-	public class StackFrameInfo {
-		
-		public StackFrameInfo(int pPosStart, int pPosEnd, int pNameEnd, String pLineNumber) {
-			start = pPosStart ;
-			end = pPosEnd ;
-			lineNumber = pLineNumber;
-			nameEnd = pNameEnd ;
-		}
-		public int start ;
-		public int nameEnd ;
-		public int end ;
-		public String lineNumber ;
-	}
-	
 	
 }
