@@ -2,16 +2,15 @@ package org.rubypeople.rdt.internal.ui.text.ruby;
 
 import java.text.MessageFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 import org.eclipse.jface.text.ITextViewer;
 import org.eclipse.jface.text.TextPresentation;
-import org.eclipse.jface.text.contentassist.CompletionProposal;
-import org.eclipse.jface.text.contentassist.ContextInformation;
-import org.eclipse.jface.text.contentassist.ICompletionProposal;
-import org.eclipse.jface.text.contentassist.IContentAssistProcessor;
-import org.eclipse.jface.text.contentassist.IContextInformation;
-import org.eclipse.jface.text.contentassist.IContextInformationPresenter;
-import org.eclipse.jface.text.contentassist.IContextInformationValidator;
+import org.eclipse.jface.text.contentassist.*;
+import org.rubypeople.rdt.internal.core.RubyPlugin;
+import org.rubypeople.rdt.internal.core.parser.ParseException;
+import org.rubypeople.rdt.internal.core.parser.RubyParser;
 import org.rubypeople.rdt.internal.ui.text.RubyTextTools;
 
 public class RubyCompletionProcessor implements IContentAssistProcessor {
@@ -24,19 +23,47 @@ public class RubyCompletionProcessor implements IContentAssistProcessor {
 		textTools = theTextTools;
 	}
 
-	public ICompletionProposal[] computeCompletionProposals(ITextViewer viewer, int documentOffset) {
-		String[] completionProposals = getDefaultProposals();
+	public ICompletionProposal[] computeCompletionProposals(ITextViewer viewer,
+			int documentOffset) {
+		ArrayList completionProposals = new ArrayList(
+				getDocumentsRubyElements(viewer));
+		completionProposals.addAll(Arrays.asList(getDefaultProposals()));
+		completionProposals.addAll(RubyProjectInformationProvider.instance()
+				.getLibraryClasses());
 		ArrayList possibleProposals = new ArrayList();
-		String prefix = getCurrentToken(viewer.getDocument().get(), documentOffset);
-		for (int i = 0; i < completionProposals.length; i++) {
-			if (completionProposals[i].startsWith(prefix)) {
-				IContextInformation info = new ContextInformation(completionProposals[i],MessageFormat.format("{0} some context information.", new Object[] { completionProposals[i] }));
-				possibleProposals.add(new CompletionProposal(completionProposals[i].substring(prefix.length(), completionProposals[i].length()),documentOffset,0,completionProposals[i].length() - prefix.length(),null,completionProposals[i],info,MessageFormat.format("Ruby keyword: {0}", new Object[] { completionProposals[i] })));
+
+		String prefix = getCurrentToken(viewer.getDocument().get(),
+				documentOffset);
+		for (int i = 0; i < completionProposals.size(); i++) {
+			String proposal = (String) completionProposals.get(i);
+			if (proposal.startsWith(prefix)) {
+				IContextInformation info = new ContextInformation(proposal,
+						MessageFormat.format("{0} some context information.",
+								new Object[]{proposal}));
+				possibleProposals.add(new CompletionProposal(proposal
+						.substring(prefix.length(), proposal.length()),
+						documentOffset, 0, proposal.length() - prefix.length(),
+						null, proposal, info, MessageFormat.format("Ruby keyword: {0}", new 
+								Object[] { proposal }) ));
 			}
 		}
-		ICompletionProposal[] result = new ICompletionProposal[possibleProposals.size()];
+		ICompletionProposal[] result = new ICompletionProposal[possibleProposals
+				.size()];
 		possibleProposals.toArray(result);
 		return result;
+	}
+
+	private List getDocumentsRubyElements(ITextViewer viewer) {
+		try {
+			RubyProjectInformationProvider projectInfo = RubyProjectInformationProvider
+					.instance();
+			return projectInfo.getAllElements(RubyParser.parse(viewer
+					.getDocument().get()));
+		}
+		catch (ParseException e) {
+			RubyPlugin.log(e);
+		}
+		return new ArrayList();
 	}
 
 	protected String[] getDefaultProposals() {
@@ -48,12 +75,16 @@ public class RubyCompletionProcessor implements IContentAssistProcessor {
 
 	protected String getCurrentToken(String documentString, int documentOffset) {
 		int tokenLength = 0;
-		while ((documentOffset - tokenLength > 0) && !Character.isWhitespace(documentString.charAt(documentOffset - tokenLength - 1)))
+		while ((documentOffset - tokenLength > 0)
+				&& !Character.isWhitespace(documentString.charAt(documentOffset
+						- tokenLength - 1)))
 			tokenLength++;
-		return documentString.substring((documentOffset - tokenLength), documentOffset);
+		return documentString.substring((documentOffset - tokenLength),
+				documentOffset);
 	}
 
-	public IContextInformation[] computeContextInformation(ITextViewer viewer, int documentOffset) {
+	public IContextInformation[] computeContextInformation(ITextViewer viewer,
+			int documentOffset) {
 		return null;
 	}
 
@@ -62,7 +93,7 @@ public class RubyCompletionProcessor implements IContentAssistProcessor {
 	}
 
 	public char[] getContextInformationAutoActivationCharacters() {
-		return new char[] { '#' };
+		return new char[]{'#'};
 	}
 
 	public IContextInformationValidator getContextInformationValidator() {
@@ -73,13 +104,18 @@ public class RubyCompletionProcessor implements IContentAssistProcessor {
 		return null;
 	}
 
-	protected class RubyContextInformationValidator implements IContextInformationValidator, IContextInformationPresenter {
+	protected class RubyContextInformationValidator
+			implements
+				IContextInformationValidator,
+				IContextInformationPresenter {
 		protected int installDocumentPosition;
 
 		/**
-		 * @see org.eclipse.jface.text.contentassist.IContextInformationPresenter#install(IContextInformation, ITextViewer, int)
+		 * @see org.eclipse.jface.text.contentassist.IContextInformationPresenter#install(IContextInformation,
+		 *      ITextViewer, int)
 		 */
-		public void install(IContextInformation info, ITextViewer viewer, int documentPosition) {
+		public void install(IContextInformation info, ITextViewer viewer,
+				int documentPosition) {
 			installDocumentPosition = documentPosition;
 		}
 
@@ -91,9 +127,11 @@ public class RubyCompletionProcessor implements IContentAssistProcessor {
 		}
 
 		/**
-		 * @see org.eclipse.jface.text.contentassist.IContextInformationPresenter#updatePresentation(int, TextPresentation)
+		 * @see org.eclipse.jface.text.contentassist.IContextInformationPresenter#updatePresentation(int,
+		 *      TextPresentation)
 		 */
-		public boolean updatePresentation(int documentPosition, TextPresentation presentation) {
+		public boolean updatePresentation(int documentPosition,
+				TextPresentation presentation) {
 			return false;
 		}
 	}
