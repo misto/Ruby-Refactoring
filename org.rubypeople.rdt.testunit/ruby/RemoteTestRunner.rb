@@ -126,7 +126,14 @@ module Test
           end
           
           def get_location(location)
-            return location[location.index('[') + 1, location.index(']') - 1].chop
+            openingBracket = location.index('[')
+            if openingBracket
+              return location[location.index('[') + 1, location.index(']') - 1].chop
+            else
+              # the stack trace from ruby 1.8.2 pre 3 on windows is formatted like follows:
+              # file:lineNo:in 'methodName'
+              return location
+            end
           end
           
           def get_trace(backtrace)
