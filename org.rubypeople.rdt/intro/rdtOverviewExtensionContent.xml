@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<introContent>
+  <!-- Extension to the SDK Overview Page. -->
+  <extensionContent alt-style="intro/css/rdt.properties" style="intro/css/rdtOverview.css" path="overview/page-content/overview-links/endAnchor">
+    <link label="Ruby Development Tools" url="http://org.eclipse.ui.intro/showHelpTopic?id=/org.rubypeople.rdt.doc.user/html/index.html" id="rdt">
+      <text>Overview of the Ruby Development Tools (RDT)</text>
+    </link>
+  </extensionContent>
+</introContent>
