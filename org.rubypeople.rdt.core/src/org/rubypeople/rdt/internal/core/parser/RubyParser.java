@@ -391,7 +391,7 @@ public class RubyParser {
 		if (requiresIndex != -1) {
 			log("Found requires: " + curLine);
 			int start = requiresIndex + "require \"".length();
-			if (start == curLine.length() ) return;			
+			if (start == curLine.length()) return;
 			String name = curLine.substring(start, curLine.length() - 1);
 			RubyRequires requires = new RubyRequires(name, new Position(lineNum, start));
 			if (!script.contains(requires)) {
@@ -407,18 +407,29 @@ public class RubyParser {
 	 * @param lineNum
 	 */
 	private static void findClass(String curLine, int lineNum) {
-		int classIndex = curLine.indexOf("class");
-		if (classIndex != -1) {
-			log("Found class start: " + curLine);
-			int start = classIndex + "class ".length();
-			String name = curLine.substring(start);
-			if (Character.isLowerCase(name.charAt(0))) script.addParseError(new ParseException("Class names should begin with an uppercase letter."));
-			RubyClass rubyClass = new RubyClass(name, new Position(lineNum, start));
-			RubyElement element = peek();
-			log("Adding class to open element: " + element);
-			element.addElement(rubyClass);
-			openElements.add(rubyClass);
-		}
+		char[] tokens = { ' ', ';'};
+		int location = findElement("class ", tokens, curLine);
+		if (location == -1) return;
+		String name = getToken("class ", tokens, curLine);
+		if (Character.isLowerCase(name.charAt(0))) script.addParseError(new ParseException("Class names should begin with an uppercase letter."));
+		RubyClass rubyClass = new RubyClass(name, new Position(lineNum, location));
+		RubyElement element = peek();
+		log("Adding class to open element: " + element);
+		element.addElement(rubyClass);
+		openElements.add(rubyClass);
+	}
+
+	/**
+	 * @return
+	 */
+	private static int findElement(String tokenIdentifier, char[] tokens, String curLine) {
+		int tokenIndex = curLine.indexOf(tokenIdentifier);
+		if (tokenIndex == -1) return -1;
+		int start = tokenIndex + tokenIdentifier.length();
+		String name = getToken(tokenIdentifier, tokens, curLine);
+		if (name.length() == 0) return -1;
+		log("Found start of element: " + curLine);
+		return start;
 	}
 
 	/**
@@ -426,16 +437,14 @@ public class RubyParser {
 	 * @param lineNum
 	 */
 	private static void findModule(String curLine, int lineNum) {
-		int moduleIndex = curLine.indexOf("module");
-		if (moduleIndex != -1) {
-			log("Found module start: " + curLine);
-			int start = moduleIndex + "module ".length();
-			String name = curLine.substring(start);
-			if (Character.isLowerCase(name.charAt(0))) script.addParseError(new ParseException("Module names should begin with an uppercase letter."));
-			RubyModule module = new RubyModule(name, new Position(lineNum, start));
-			script.addModule(module);
-			openElements.add(module);
-		}
+		char[] tokens = { ' ', ';'};
+		int start = findElement("module ", tokens, curLine);
+		if (start == -1) return;
+		String name = getToken("module ", tokens, curLine);
+		if (Character.isLowerCase(name.charAt(0))) script.addParseError(new ParseException("Module names should begin with an uppercase letter."));
+		RubyModule module = new RubyModule(name, new Position(lineNum, start));
+		script.addModule(module);
+		openElements.add(module);
 	}
 
 	/**
@@ -467,28 +476,36 @@ public class RubyParser {
 	}
 
 	/**
-	 * @param string
-	 * @param tokens
+	 * Given a string prefix, this method returns the next token (name) of the
+	 * line delimited by any character within the delimiters array. If the next
+	 * token is not ended by a member of the delimiters array, then the rest of
+	 * the string is returned.
+	 * 
+	 * @param prefix
+	 * @param delimiters
 	 * @param line
 	 * @return
 	 */
-	private static String getToken(String prefix, char[] tokens, String line) {
+	private static String getToken(String prefix, char[] delimiters, String line) {
 		int endOfPrefix = line.indexOf(prefix) + prefix.length();
 		for (int i = endOfPrefix; i < line.length(); i++) {
 			char c = line.charAt(i);
-			if (contains(tokens, c)) { return line.substring(endOfPrefix, i); }
+			if (contains(delimiters, c)) { return line.substring(endOfPrefix, i); }
 		}
 		return line.substring(endOfPrefix);
 	}
 
 	/**
-	 * @param tokens
+	 * Given a character array of characters and a character, the method
+	 * determines if the given character is contained in the array
+	 * 
+	 * @param chars
 	 * @param c
-	 * @return
+	 * @return a boolean to indicate if this array contains the character
 	 */
-	private static boolean contains(char[] tokens, char c) {
-		for (int i = 0; i < tokens.length; i++) {
-			if (tokens[i] == c) return true;
+	private static boolean contains(char[] chars, char c) {
+		for (int i = 0; i < chars.length; i++) {
+			if (chars[i] == c) return true;
 		}
 		return false;
 	}
