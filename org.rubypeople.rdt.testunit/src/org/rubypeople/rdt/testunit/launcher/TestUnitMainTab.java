@@ -81,6 +81,8 @@ public class TestUnitMainTab extends AbstractLaunchConfigurationTab implements I
 
 			public void modifyText(ModifyEvent evt) {
 				updateLaunchConfigurationDialog();
+				fileSelector.setSelectionText("");
+				classSelector.setSelectionText("");
 			}
 		});
 
@@ -92,6 +94,7 @@ public class TestUnitMainTab extends AbstractLaunchConfigurationTab implements I
 
 			public void modifyText(ModifyEvent evt) {
 				updateLaunchConfigurationDialog();
+				classSelector.setSelectionText("");
 			}
 		});
 	
@@ -146,8 +149,8 @@ public class TestUnitMainTab extends AbstractLaunchConfigurationTab implements I
 			InterpreterRunnerConfiguration config = new InterpreterRunnerConfiguration(configuration);
 			rubyProject = config.getProject().getProject();
 			projectSelector.setSelectionText(rubyProject.getName());
-			classSelector.setSelectionText(configuration.getAttribute(TestUnitLaunchConfiguration.TESTTYPE_ATTR, ""));
 			fileSelector.setSelectionText(configuration.getAttribute(TestUnitLaunchConfiguration.LAUNCH_CONTAINER_ATTR, ""));
+			classSelector.setSelectionText(configuration.getAttribute(TestUnitLaunchConfiguration.TESTTYPE_ATTR, ""));
 		} catch (CoreException e) {
 			TestunitPlugin.log(e);
 		}
