@@ -8,7 +8,7 @@ import org.eclipse.core.runtime.IAdapterManager;
 import org.eclipse.core.runtime.IPluginDescriptor;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Plugin;
-import org.rubypeople.rdt.core.RubyFile;
+import org.rubypeople.rdt.core.RubyElement;
 
 public class RubyPlugin extends Plugin {
 	public final static String PLUGIN_ID = "org.rubypeople.rdt";
@@ -32,7 +32,7 @@ public class RubyPlugin extends Plugin {
 	public void startup() throws CoreException {
 		super.startup();
 		IAdapterManager manager= Platform.getAdapterManager();
-		manager.registerAdapters(new RubyElementAdapterFactory(), RubyFile.class);
+		manager.registerAdapters(new RubyElementAdapterFactory(), RubyElement.class);
 		manager.registerAdapters(new ResourceAdapterFactory(), IResource.class);
 	}
 

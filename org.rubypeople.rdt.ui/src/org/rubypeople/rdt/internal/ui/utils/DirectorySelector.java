@@ -27,4 +27,12 @@ public class DirectorySelector extends ResourceSelector {
 			textField.setText(selectedDirectory);
 		}		
 	}
+
+	protected String validateResourceSelection() {
+		String directory = textField.getText();
+		File directoryFile = new File(directory);
+		if (directoryFile.exists() && directoryFile.isDirectory())
+			return directory;
+		return EMPTY_STRING;
+	}
 }

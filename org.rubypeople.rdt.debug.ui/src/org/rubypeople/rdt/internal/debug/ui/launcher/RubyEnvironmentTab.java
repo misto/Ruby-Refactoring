@@ -223,12 +223,6 @@ public class RubyEnvironmentTab extends AbstractLaunchConfigurationTab {
 		}
 	}
 
-	public boolean isValid() {
-		if (interpreterCombo.getSelectionIndex() >= 0)
-			return true;
-		return false;
-	}
-
 	protected Composite createPageRoot(Composite parent) {
 		Composite composite = new Composite(parent, SWT.NULL);
 		GridLayout layout = new GridLayout();
@@ -242,6 +236,21 @@ public class RubyEnvironmentTab extends AbstractLaunchConfigurationTab {
 
 	public String getName() {
 		return RdtDebugUiMessages.getString("LaunchConfigurationTab.RubyEnvironment.name");
+	}
+
+	public boolean isValid(ILaunchConfiguration launchConfig) {
+		try {
+			String selectedInterpreter = launchConfig.getAttribute(RubyLaunchConfigurationAttribute.SELECTED_INTERPRETER, "");
+			if (selectedInterpreter.length() == 0) {
+				setErrorMessage(RdtDebugUiMessages.getString("LaunchConfigurationTab.RubyEnvironment.interpreter_not_selected_error_message"));
+				return false;
+			}
+		} catch (CoreException e) {
+			throw new RuntimeException(e.getMessage());
+		}
+		
+		setErrorMessage(null);
+		return true;
 	}
 
 }

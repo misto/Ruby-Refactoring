@@ -1,10 +1,8 @@
 package org.rubypeople.eclipse.shams.debug.core;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
@@ -14,55 +12,14 @@ import org.eclipse.debug.core.ILaunchConfiguration;
 import org.eclipse.debug.core.ILaunchConfigurationType;
 import org.eclipse.debug.core.ILaunchConfigurationWorkingCopy;
 
-public class ShamLaunchConfigurationWorkingCopy implements ILaunchConfigurationWorkingCopy {
-	protected Map attributes = new HashMap();
+public class ShamLaunchConfiguration implements ILaunchConfiguration {
 
-	public ShamLaunchConfigurationWorkingCopy() {
+	public ShamLaunchConfiguration() {
 		super();
 	}
 
-	public boolean isDirty() {
-		throw new RuntimeException("Need to implement on sham.");
-	}
-
-	public ILaunchConfiguration doSave() throws CoreException {
-		return new ShamLaunchConfiguration();
-	}
-
-	public void setAttribute(String attributeName, int value) {
-		throw new RuntimeException("Need to implement on sham.");
-	}
-
-	public void setAttribute(String attributeName, String value) {
-		attributes.put(attributeName, value);
-	}
-
-	public void setAttribute(String attributeName, List value) {
-		throw new RuntimeException("Need to implement on sham.");
-	}
-
-	public void setAttribute(String attributeName, Map value) {
-		throw new RuntimeException("Need to implement on sham.");
-	}
-
-	public void setAttribute(String attributeName, boolean value) {
-		throw new RuntimeException("Need to implement on sham.");
-	}
-
-	public ILaunchConfiguration getOriginal() {
-		throw new RuntimeException("Need to implement on sham.");
-	}
-
-	public void rename(String name) {
-		throw new RuntimeException("Need to implement on sham.");
-	}
-
-	public void setContainer(IContainer container) {
-		throw new RuntimeException("Need to implement on sham.");
-	}
-
 	public ILaunch launch(String mode, IProgressMonitor monitor) throws CoreException {
-		throw new RuntimeException("Need to implement on sham.");
+		return null;
 	}
 
 	public boolean supportsMode(String mode) throws CoreException {
@@ -86,8 +43,7 @@ public class ShamLaunchConfigurationWorkingCopy implements ILaunchConfigurationW
 	}
 
 	public String getAttribute(String attributeName, String defaultValue) throws CoreException {
-		String value = (String) attributes.get(attributeName);
-		return value == null ? defaultValue : value;
+		return defaultValue;
 	}
 
 	public boolean getAttribute(String attributeName, boolean defaultValue) throws CoreException {

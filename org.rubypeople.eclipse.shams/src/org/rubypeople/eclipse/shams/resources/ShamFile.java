@@ -8,7 +8,6 @@ import org.eclipse.core.resources.IFileState;
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IProjectDescription;
-import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IResourceVisitor;
 import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.runtime.CoreException;
@@ -16,6 +15,7 @@ import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.QualifiedName;
+import org.rubypeople.eclipse.shams.runtime.ShamIPath;
 
 public class ShamFile extends ShamResource implements IFile {
 	public ShamFile(String fullPath) {
@@ -125,11 +125,11 @@ public class ShamFile extends ShamResource implements IFile {
 	}
 
 	public IProject getProject() {
-		throw new RuntimeException("Unimplemented method in sham");
+		return new ShamProject("not specified");
 	}
 
 	public IPath getProjectRelativePath() {
-		throw new RuntimeException("Unimplemented method in sham");
+		return new Path("");
 	}
 
 	public Object getSessionProperty(QualifiedName key) throws CoreException {

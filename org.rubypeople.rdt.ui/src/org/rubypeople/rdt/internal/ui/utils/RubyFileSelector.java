@@ -43,7 +43,7 @@ public class RubyFileSelector extends ResourceSelector {
 		if (fileName != null && !fileName.equals("")) {
 			IPath filePath = new Path(fileName);
 			IProject project = rubyProjectSelector.getSelection();
-			if (project.exists(filePath))
+			if (project != null && project.exists(filePath))
 				return project.getFile(filePath);
 		}
 			
@@ -61,4 +61,8 @@ public class RubyFileSelector extends ResourceSelector {
 		}
 	}
 
+	protected String validateResourceSelection() {
+		IFile selection = getSelection();
+		return selection == null ? EMPTY_STRING : selection.getProjectRelativePath().toString();
+	}
 }

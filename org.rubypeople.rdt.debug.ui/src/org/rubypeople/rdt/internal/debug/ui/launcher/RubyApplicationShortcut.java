@@ -17,6 +17,7 @@ import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorPart;
+import org.rubypeople.rdt.debug.ui.RdtDebugUiConstants;
 import org.rubypeople.rdt.internal.debug.ui.RdtDebugUiMessages;
 import org.rubypeople.rdt.internal.debug.ui.RdtDebugUiPlugin;
 import org.rubypeople.rdt.internal.launching.RubyLaunchConfigurationAttribute;
@@ -82,8 +83,10 @@ public class RubyApplicationShortcut implements ILaunchShortcut {
 		ILaunchConfiguration config = null;
 		try {
 			ILaunchConfigurationType configType = getRubyLaunchConfigType();
-			ILaunchConfigurationWorkingCopy wc = configType.newInstance(null, getLaunchManager().generateUniqueLaunchConfigurationNameFrom(rubyFile.getName())); 
-			wc.setAttribute(RubyLaunchConfigurationAttribute.FILE_NAME, rubyFile.getFullPath().toString());
+			ILaunchConfigurationWorkingCopy wc = configType.newInstance(null, getLaunchManager().generateUniqueLaunchConfigurationNameFrom(rubyFile.getName()));
+			wc.setAttribute(RubyLaunchConfigurationAttribute.PROJECT_NAME, rubyFile.getProject().getName());
+			wc.setAttribute(RubyLaunchConfigurationAttribute.FILE_NAME, rubyFile.getProjectRelativePath().toString());
+			wc.setAttribute(RubyLaunchConfigurationAttribute.WORKING_DIRECTORY, RdtDebugUiConstants.DEFAULT_WORKING_DIRECTORY);
 			config = wc.doSave();		
 		} catch (CoreException ce) {
 			RdtDebugUiPlugin.getDefault().log(ce);			

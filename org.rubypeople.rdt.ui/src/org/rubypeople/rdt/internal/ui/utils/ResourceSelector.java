@@ -1,6 +1,7 @@
 package org.rubypeople.rdt.internal.ui.utils;
 
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
@@ -12,10 +13,13 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 
 public abstract class ResourceSelector {
+	protected final static String EMPTY_STRING = "";
 	protected Composite composite;
 	protected Button browseButton;
 	protected Text textField;
-	protected String browseDialogMessage = "", browseDialogTitle = "";
+	protected String browseDialogMessage = EMPTY_STRING;
+	protected String browseDialogTitle = EMPTY_STRING;
+	protected String validatedSelectionText = EMPTY_STRING;
 
 	public ResourceSelector(Composite parent) {
 		composite = new Composite(parent, SWT.NONE);
@@ -27,6 +31,11 @@ public abstract class ResourceSelector {
 
 		textField = new Text(composite, SWT.SINGLE | SWT.BORDER);
 		textField.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
+		textField.addModifyListener(new ModifyListener() {
+			public void modifyText(ModifyEvent e) {
+				validatedSelectionText = validateResourceSelection();
+			}
+		});
 
 		browseButton = new Button(composite, SWT.PUSH);
 		browseButton.setText("Browse...");
@@ -38,6 +47,7 @@ public abstract class ResourceSelector {
 	}
 
 	protected abstract void handleBrowseSelected();
+	protected abstract String validateResourceSelection();
 
 	protected Shell getShell() {
 		return composite.getShell();
@@ -67,6 +77,10 @@ public abstract class ResourceSelector {
 
 	public String getSelectionText() {
 		return textField.getText();
+	}
+
+	public String getValidatedSelectionText() {
+		return validatedSelectionText;
 	}
 
 	public void setSelectionText(String newText) {

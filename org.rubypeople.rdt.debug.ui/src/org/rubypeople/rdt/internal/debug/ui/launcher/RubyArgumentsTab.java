@@ -17,6 +17,7 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
+import org.rubypeople.rdt.debug.ui.RdtDebugUiConstants;
 import org.rubypeople.rdt.internal.debug.ui.RdtDebugUiMessages;
 import org.rubypeople.rdt.internal.debug.ui.RdtDebugUiPlugin;
 import org.rubypeople.rdt.internal.launching.RubyLaunchConfigurationAttribute;
@@ -51,7 +52,7 @@ public class RubyArgumentsTab extends AbstractLaunchConfigurationTab {
 		useDefaultWorkingDirectoryButton = new Button(defaultWorkingDirectoryComposite, SWT.CHECK);
 		useDefaultWorkingDirectoryButton.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
-				setUseDefaultWorkingDirectory(((Button)e.getSource()).getSelection());
+				setUseDefaultWorkingDirectory(((Button) e.getSource()).getSelection());
 			}
 		});
 		new Label(defaultWorkingDirectoryComposite, SWT.NONE).setText(RdtDebugUiMessages.getString("LaunchConfigurationTab.RubyArguments.working_dir_use_default_message"));
@@ -72,17 +73,13 @@ public class RubyArgumentsTab extends AbstractLaunchConfigurationTab {
 		if (!useDefaultWorkingDirectoryButton.getSelection() == useDefault)
 			useDefaultWorkingDirectoryButton.setSelection(useDefault);
 		if (useDefault)
-			workingDirectorySelector.setSelectionText(getDefaultWorkingDir());
+			workingDirectorySelector.setSelectionText(RdtDebugUiConstants.DEFAULT_WORKING_DIRECTORY);
 		workingDirectorySelector.setEnabled(!useDefault);
 	}
 
 	public void setDefaults(ILaunchConfigurationWorkingCopy configuration) {
 		setUseDefaultWorkingDirectory(true);
-		configuration.setAttribute(RubyLaunchConfigurationAttribute.WORKING_DIRECTORY, getDefaultWorkingDir());
-	}
-
-	protected String getDefaultWorkingDir() {
-		return RdtDebugUiPlugin.getWorkspace().getRoot().getLocation().toString();
+		configuration.setAttribute(RubyLaunchConfigurationAttribute.WORKING_DIRECTORY, RdtDebugUiConstants.DEFAULT_WORKING_DIRECTORY);
 	}
 
 	public void initializeFrom(ILaunchConfiguration configuration) {
@@ -93,7 +90,8 @@ public class RubyArgumentsTab extends AbstractLaunchConfigurationTab {
 			interpreterArgs = configuration.getAttribute(RubyLaunchConfigurationAttribute.INTERPRETER_ARGUMENTS, "");
 			programArgs = configuration.getAttribute(RubyLaunchConfigurationAttribute.PROGRAM_ARGUMENTS, "");
 			useDefaultWorkDir = configuration.getAttribute(RubyLaunchConfigurationAttribute.USE_DEFAULT_WORKING_DIRECTORY, true);
-		} catch (CoreException e) {}
+		} catch (CoreException e) {
+		}
 
 		workingDirectorySelector.setSelectionText(workingDirectory);
 		interpreterArgsText.setText(interpreterArgs);
@@ -102,18 +100,10 @@ public class RubyArgumentsTab extends AbstractLaunchConfigurationTab {
 	}
 
 	public void performApply(ILaunchConfigurationWorkingCopy configuration) {
-		configuration.setAttribute(RubyLaunchConfigurationAttribute.WORKING_DIRECTORY, workingDirectorySelector.getSelectionText());
+		configuration.setAttribute(RubyLaunchConfigurationAttribute.WORKING_DIRECTORY, workingDirectorySelector.getValidatedSelectionText());
 		configuration.setAttribute(RubyLaunchConfigurationAttribute.INTERPRETER_ARGUMENTS, interpreterArgsText.getText());
 		configuration.setAttribute(RubyLaunchConfigurationAttribute.PROGRAM_ARGUMENTS, programArgsText.getText());
 		configuration.setAttribute(RubyLaunchConfigurationAttribute.USE_DEFAULT_WORKING_DIRECTORY, useDefaultWorkingDirectoryButton.getSelection());
-	}
-
-	public boolean isValid() {
-		String workingDirectory = workingDirectorySelector.getSelectionText();
-		File workingDirectoryFile = new File(workingDirectory);
-		if (workingDirectoryFile.exists() && workingDirectoryFile.isDirectory())
-			return true;
-		return false;
 	}
 
 	protected Composite createPageRoot(Composite parent) {
@@ -129,6 +119,21 @@ public class RubyArgumentsTab extends AbstractLaunchConfigurationTab {
 
 	public String getName() {
 		return RdtDebugUiMessages.getString("LaunchConfigurationTab.RubyArguments.name");
+	}
+
+	public boolean isValid(ILaunchConfiguration launchConfig) {
+		try {
+			String workingDirectory = launchConfig.getAttribute(RubyLaunchConfigurationAttribute.WORKING_DIRECTORY, "");
+			if (workingDirectory.length() == 0) {
+				setErrorMessage(RdtDebugUiMessages.getString("LaunchConfigurationTab.RubyArguments.working_dir_error_message"));
+				return false;
+			}
+		} catch (CoreException e) {
+			throw new RuntimeException(e.getMessage());
+		}
+
+		setErrorMessage(null);
+		return true;
 	}
 
 }

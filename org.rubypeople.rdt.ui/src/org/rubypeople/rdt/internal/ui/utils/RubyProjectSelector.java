@@ -34,4 +34,9 @@ public class RubyProjectSelector extends ResourceSelector {
 			textField.setText(((IProject) dialog.getFirstResult()).getName());
 		}
 	}
+
+	protected String validateResourceSelection() {
+		IProject project = getSelection();
+		return project == null ? EMPTY_STRING : project.getName();
+	}
 }

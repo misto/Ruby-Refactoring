@@ -1,5 +1,6 @@
 package org.rubypeople.rdt.internal.debug.ui.launcher;
 
+import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
@@ -91,7 +92,8 @@ public class RubyEntryPointTab extends AbstractLaunchConfigurationTab {
 		try {
 			projectName = configuration.getAttribute(RubyLaunchConfigurationAttribute.PROJECT_NAME, "");
 			fileName = configuration.getAttribute(RubyLaunchConfigurationAttribute.FILE_NAME, "");
-		} catch (CoreException e) {}
+		} catch (CoreException e) {
+		}
 
 		projectSelector.setSelectionText(projectName);
 		if (!"".equals(fileName))
@@ -99,28 +101,9 @@ public class RubyEntryPointTab extends AbstractLaunchConfigurationTab {
 	}
 
 	public void performApply(ILaunchConfigurationWorkingCopy configuration) {
-		if (isValid()) {
-			configuration.setAttribute(RubyLaunchConfigurationAttribute.PROJECT_NAME, projectSelector.getSelectionText());
-			configuration.setAttribute(RubyLaunchConfigurationAttribute.FILE_NAME, fileSelector.getSelection().getProjectRelativePath().toString());
-		}
-	}
-
-	public boolean isValid() {
-		setErrorMessage(null);
-		setMessage(null);
-
-		IProject project = projectSelector.getSelection();
-		if (project == null || !project.exists()) {
-			setErrorMessage(RdtDebugUiMessages.getString("LaunchConfigurationTab.RubyEntryPoint.invalidProjectSelectionMessage"));
-			return false;
-		}
-
-		if (fileSelector.getSelection() == null) {
-			setErrorMessage(RdtDebugUiMessages.getString("LaunchConfigurationTab.RubyEntryPoint.invalidFileSelectionMessage"));
-			return false;
-		}
-
-		return true;
+		configuration.setAttribute(RubyLaunchConfigurationAttribute.PROJECT_NAME, projectSelector.getSelectionText());
+		IFile file = fileSelector.getSelection();
+		configuration.setAttribute(RubyLaunchConfigurationAttribute.FILE_NAME, file == null ? "" : file.getProjectRelativePath().toString());
 	}
 
 	protected Composite createPageRoot(Composite parent) {
@@ -135,6 +118,28 @@ public class RubyEntryPointTab extends AbstractLaunchConfigurationTab {
 
 	public String getName() {
 		return RdtDebugUiMessages.getString("LaunchConfigurationTab.RubyEntryPoint.name");
+	}
+
+	public boolean isValid(ILaunchConfiguration launchConfig) {
+		try {
+				
+			String projectName = launchConfig.getAttribute(RubyLaunchConfigurationAttribute.PROJECT_NAME, "");
+			if (projectName.length() == 0) {
+				setErrorMessage(RdtDebugUiMessages.getString("LaunchConfigurationTab.RubyEntryPoint.invalidProjectSelectionMessage"));
+				return false;
+			}
+
+			String fileName = launchConfig.getAttribute(RubyLaunchConfigurationAttribute.FILE_NAME, "");
+			if (fileName.length() == 0) {
+				setErrorMessage(RdtDebugUiMessages.getString("LaunchConfigurationTab.RubyEntryPoint.invalidFileSelectionMessage"));
+				return false;
+			}
+		} catch (CoreException e) {
+			throw new RuntimeException(e.toString());
+		}
+		
+		setErrorMessage(null);
+		return true;
 	}
 
 }

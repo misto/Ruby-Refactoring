@@ -194,7 +194,7 @@ public class ShamProject extends ShamResource implements IProject {
 	}
 
 	public String getName() {
-		throw new RuntimeException("Unimplemented method in sham");
+		return projectName;
 	}
 
 	public IContainer getParent() {
