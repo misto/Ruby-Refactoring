@@ -102,20 +102,20 @@ public class MarkerUtility {
 	 * @param warning
 	 * @throws CoreException 
 	 */
-	private static void createTask(IResource resource, TaskTag warning) throws CoreException {
-		int lineNumber = warning.getLine();
+	private static void createTask(IResource resource, TaskTag task) throws CoreException {
+		int lineNumber = task.getSourceLineNumber();
 		if (lineNumber <= 0) lineNumber = 1;
-		IMarker marker = markerExists(resource, warning.getMessage(), lineNumber, IMarker.TASK);
+		IMarker marker = markerExists(resource, task.getMessage(), lineNumber, IMarker.TASK);
 		if (marker == null) {
 			HashMap map = new HashMap();
-			map.put(IMarker.PRIORITY, new Integer(warning.getPriority()));
-			map.put(IMarker.MESSAGE, warning.getMessage());
+			map.put(IMarker.PRIORITY, new Integer(task.getPriority()));
+			map.put(IMarker.MESSAGE, task.getMessage());
 			map.put(IMarker.LINE_NUMBER, new Integer(lineNumber));
 			map.put(IMarker.SEVERITY, new Integer(IMarker.SEVERITY_INFO));
 			map.put(IMarker.USER_EDITABLE, new Boolean(false));
 			map.put(IMarker.TRANSIENT, new Boolean(false));
-			map.put(IMarker.CHAR_START, new Integer(warning.getStart()));
-			map.put(IMarker.CHAR_END, new Integer(warning.getEnd()));
+			map.put(IMarker.CHAR_START, new Integer(task.getSourceStart()));
+			map.put(IMarker.CHAR_END, new Integer(task.getSourceEnd()));
 			marker = resource.createMarker(IMarker.TASK);
 			marker.setAttributes(map);
 		}

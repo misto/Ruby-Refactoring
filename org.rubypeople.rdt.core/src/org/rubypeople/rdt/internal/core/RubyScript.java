@@ -28,7 +28,6 @@ import java.io.BufferedReader;
 import java.io.CharArrayReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.io.StringReader;
 import java.util.Map;
 
 import org.eclipse.core.resources.IFile;
@@ -128,7 +127,7 @@ public class RubyScript extends Openable implements IRubyScript {
 
 		// compute other problems if needed
 		perWorkingCopyInfo.beginReporting();
-		RubyScriptProblemFinder.process(this, contents, this.owner, perWorkingCopyInfo, pm);
+		RubyScriptProblemFinder.process(this, contents, perWorkingCopyInfo, pm);
 		perWorkingCopyInfo.endReporting();
 
 		return unitInfo.isStructureKnown();

@@ -73,7 +73,7 @@ public class ReconcileWorkingCopyOperation { // TODO extends RubyModelOperation
 					IProblemRequestor problemRequestor = workingCopy.getPerWorkingCopyInfo();
 					if (problemRequestor != null && problemRequestor.isActive()) {
 						problemRequestor.beginReporting();
-						RubyScriptProblemFinder.process(workingCopy, workingCopy.getContents(), workingCopyOwner, problemRequestor, progressMonitor);					
+						RubyScriptProblemFinder.process(workingCopy, workingCopy.getContents(), problemRequestor, progressMonitor);					
 						problemRequestor.endReporting();
 						if (progressMonitor != null) progressMonitor.worked(1);
 					}

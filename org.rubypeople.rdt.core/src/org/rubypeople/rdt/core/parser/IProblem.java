@@ -78,11 +78,19 @@ public interface IProblem {
 	boolean isError();
 
 	/**
-	 * Checks the severity to see if the Error bit is not set.
+	 * Checks the severity to see if the Warning bit is not set.
 	 * 
-	 * @return true if the Error bit is not set for the severity, false
+	 * @return true if the Warning bit is not set for the severity, false
 	 *         otherwise
 	 */
 	boolean isWarning();
+	
+	/**
+	 * Checks the severity to see if the Task bit is not set.
+	 * 
+	 * @return true if the Task bit is not set for the severity, false
+	 *         otherwise
+	 */
+	boolean isTask();
 
 }

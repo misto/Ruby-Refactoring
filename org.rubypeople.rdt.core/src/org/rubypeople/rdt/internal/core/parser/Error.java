@@ -23,5 +23,9 @@ public class Error extends DefaultProblem {
 	public boolean isWarning() {
 		return false;
 	}
+	
+	public boolean isTask() {
+		return false;
+	}
 
 }

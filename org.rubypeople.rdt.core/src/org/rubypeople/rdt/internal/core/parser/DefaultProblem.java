@@ -45,8 +45,4 @@ abstract class DefaultProblem implements IProblem {
 	public int getSourceStart() {
 		return position.getStartOffset();
 	}
-
-	public abstract boolean isError();
-
-	public abstract boolean isWarning();
 }
