@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="org.rubypeople.rdt.debug.core" default="build.jars">
+
+	<property name="bootclasspath" value=""/>
+	<property name="ws" value="win32"/>
+	<property name="os" value="win32"/>
+	<property name="arch" value="x86"/>
+
+	<target name="init">
+		<property file="${basedir}/../org.rubypeople.rdt.build/build.properties"/>
+		<property file="${basedir}/build.properties"/>
+		<property name="full.name" value="${plugin}_${version}"/>
+		<property name="temp.folder" value="${basedir}/temp.folder"/>
+		<property name="plugin.destination" value="${basedir}"/>
+		<property name="build.result.folder" value="${basedir}"/>
+		<property name="jarfile" value="${plugin.name}.jar"/>
+		<property name="srcfile" value="${plugin.name}src.zip"/>
+		<property name="compile.target.dir" value="${basedir}/bin"/>
+	</target>
+
+	<target name="build.update.jar" depends="init">
+		<delete dir="${temp.folder}"/>
+		<mkdir dir="${temp.folder}"/>
+		<antcall target="build.jars"/>
+		<antcall target="gather.bin.parts">
+			<param name="destination.temp.folder" value="${temp.folder}/"/>
+		</antcall>
+		<zip zipfile="${plugin.destination}/${full.name}.jar" basedir="${temp.folder}/${full.name}" filesonly="false"/>
+		<delete dir="${temp.folder}"/>
+	</target>
+
+	<target name="gather.bin.parts" depends="init" if="destination.temp.folder">
+		<mkdir dir="${destination.temp.folder}/${full.name}"/>
+		<copy file="${build.result.folder}/${jarfile}" todir="${destination.temp.folder}/${full.name}"/>
+		<copy todir="${destination.temp.folder}/${full.name}">
+			<fileset dir="${basedir}" includes="${bin.includes}"/>
+		</copy>
+	</target>
+
+	<target name="compile" depends="init">
+		<echo>Compiling to ${compile.target.dir}.</echo>
+		<javac destdir="${compile.target.dir}" verbose="false" debug="on" includeAntRuntime="no" bootclasspath="${bootclasspath}" classpath="${plugin.classpath}">
+			<src path="src/"/>
+		</javac>
+	</target>
+
+	<target name="build.jars" depends="init">
+		<property name="destdir" value="${temp.folder}/${jarfile}.bin"/>
+		<delete dir="${destdir}"/>
+		<mkdir dir="${destdir}"/>
+		<echo>Building ${jarfile}</echo>
+		<antcall target="compile">
+			<param name="compile.target.dir" value="${destdir}"/>
+		</antcall>
+             
+		<!-- copy necessary resources -->
+		<copy todir="${destdir}">
+			<fileset dir="src/" excludes="**/*.java"/>
+		</copy>
+		<mkdir dir="${build.result.folder}"/>
+		<jar jarfile="${build.result.folder}/${jarfile}" basedir="${destdir}"/>
+		<delete dir="${destdir}"/>
+	</target>
+
+	<target name="build.sources" depends="init" unless="${srcfile}">
+		<mkdir dir="${build.result.folder}"/>
+		<zip zipfile="${build.result.folder}/${srcfile}" filesonly="false">
+			<fileset dir="src/" includes="**/*.java"/>
+		</zip>
+	</target>
+
+	<target name="build.zips" depends="init">
+	</target>
+
+	<target name="gather.sources" depends="init" if="destination.temp.folder">
+		<mkdir dir="${destination.temp.folder}/${full.name}"/>
+		<copy file="${build.result.folder}/${srcfile}" todir="${destination.temp.folder}/${full.name}"/>
+	</target>
+
+	<target name="gather.logs" depends="init" if="destination.temp.folder">
+		<mkdir dir="${destination.temp.folder}/${full.name}"/>
+		<copy file="${temp.folder}/rdtcore.jar.bin.log" todir="${destination.temp.folder}/${full.name}"/>
+	</target>
+
+	<target name="clean" depends="init">
+		<delete file="${build.result.folder}/${jarfile}"/>
+		<delete file="${build.result.folder}/${srcfile}"/>
+		<delete file="${plugin.destination}/${full.name}.jar"/>
+		<delete file="${plugin.destination}/${full.name}.zip"/>
+		<delete dir="${temp.folder}"/>
+	</target>
+
+	<target name="refresh" depends="init" if="eclipse.running">
+		<eclipse.refreshLocal resource="${plugin}" depth="infinite"/>
+	</target>
+
+	<target name="zip.plugin" depends="init">
+		<delete dir="${temp.folder}"/>
+		<mkdir dir="${temp.folder}"/>
+		<antcall target="build.jars"/>
+		<antcall target="build.sources"/>
+		<antcall target="gather.bin.parts">
+			<param name="destination.temp.folder" value="${temp.folder}/"/>
+		</antcall>
+		<antcall target="gather.sources">
+			<param name="destination.temp.folder" value="${temp.folder}/"/>
+		</antcall>
+		<delete>
+			<fileset dir="${temp.folder}" includes="**/*.bin.log"/>
+		</delete>
+		<zip zipfile="${plugin.destination}/${full.name}.zip" basedir="${temp.folder}" filesonly="true"/>
+		<delete dir="${temp.folder}"/>
+	</target>
+
+</project>
