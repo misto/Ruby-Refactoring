@@ -11,7 +11,10 @@
 		<!-- featureVersion might also be set from outside -->
 		<echo message="Using featureVersion=${featureVersion}"/>		
         <property name="docbook.xsl.dir" value="${docbook.root}/docbook-xsl-1.64.1"/>
-        <property name="docbook.dtd.dir" value="${docbook.root}/dtd"/>		
+        <property name="docbook.dtd.dir" value="${docbook.root}/dtd"/>	
+		<condition property="docbook.dir.exists">
+	      <available file="${docbook.root}"/>
+		</condition>	 	
 	</target>
 
 	<target name="clean.docbook.generated">
@@ -37,7 +40,7 @@
       </replace>
 	</target>
 	
-	<target name="html" depends="init,clean.docbook.generated,replaceVarInCustomizationLayer">
+	<target name="html" depends="init,clean.docbook.generated,replaceVarInCustomizationLayer" if="docbook.dir.exists">
 	 <!--${docbook.xsl.dir}/eclipse/eclipse.xsl -->
       <style includes="docbook.xml" basedir="." destdir="."  extension=".done" style="customizationLayerCopy.xsl">
         <param name="base.dir" expression="html/"/>
