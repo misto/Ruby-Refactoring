@@ -33,7 +33,6 @@ public class DefaultWorkingCopyOwner extends WorkingCopyOwner {
 	 * @deprecated Marked deprecated as it is using deprecated code
 	 */
 	public IBuffer createBuffer(IRubyScript workingCopy) {
-		RubyCore.log("in DefaultWorkingCopyOwner#createBuffer");
 		if (this.primaryBufferProvider != null) return this.primaryBufferProvider.createBuffer(workingCopy);
 		return super.createBuffer(workingCopy);
 	}

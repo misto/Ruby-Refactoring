@@ -101,13 +101,9 @@ public class RubyPlugin extends AbstractUIPlugin implements IRubyColorConstants 
 		WorkingCopyOwner.setPrimaryBufferProvider(new WorkingCopyOwner() {
 
 			public IBuffer createBuffer(IRubyScript workingCopy) {
-				RubyPlugin.log("in anonymous RdtUIPlugin#createBuffer");
 				IRubyScript original = workingCopy.getPrimary();
-				RubyPlugin.log("got Primary RubyScript");
 				IResource resource = original.getResource();
-				RubyPlugin.log("got Primary RubyScript's resource");
 				if (resource instanceof IFile) return new DocumentAdapter(workingCopy, (IFile) resource);
-				RubyPlugin.log("Returning NULL DocumentAdapter");
 				return DocumentAdapter.NULL;
 			}
 		});

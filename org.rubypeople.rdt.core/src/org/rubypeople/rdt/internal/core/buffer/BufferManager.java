@@ -51,7 +51,6 @@ public void addBuffer(IBuffer buffer) {
 	}
 }
 public IBuffer createBuffer(IOpenable owner) {
-	RubyCore.log("in BufferManager#createBuffer");
 	IRubyElement element = (IRubyElement)owner;
 	IResource resource = element.getResource();
 	return 

@@ -288,16 +288,12 @@ public class RubyScript extends Openable implements IRubyScript {
 		boolean isWorkingCopy = isWorkingCopy();
 		IBuffer buffer = isWorkingCopy ? this.owner.createBuffer(this) : BufferManager.getDefaultBufferManager().createBuffer(this);
 		if (buffer == null) return null;
-		RubyCore.log("Got buffer for RubyScript: " + buffer);
 
 		// set the buffer source
 		if (buffer.getCharacters() == null) {
-			RubyCore.log("buffer.getCharacters is null");
 			if (isWorkingCopy) {
-				RubyCore.log("This RubyScript is a working copy");
 				IRubyScript original;
 				if (!isPrimary() && (original = new RubyScript((RubyElement) getParent(), underlyingFile, getElementName(), DefaultWorkingCopyOwner.PRIMARY)).isOpen()) {
-					RubyCore.log("Setting buffer contents to original RubyScript's contents");
 					buffer.setContents(original.getSource());
 				} else {
 					IFile file = (IFile) getResource();
@@ -305,7 +301,6 @@ public class RubyScript extends Openable implements IRubyScript {
 						// initialize buffer with empty contents
 						buffer.setContents(new char[0]);
 					} else {
-						RubyCore.log("Setting buffer contents to file's contents");
 						buffer.setContents(Util.getResourceContentsAsCharArray(file));
 					}
 				}
@@ -322,7 +317,6 @@ public class RubyScript extends Openable implements IRubyScript {
 
 		// listen to buffer changes
 		buffer.addBufferChangedListener(this);
-		RubyCore.log("Finished opening buffer of RubyScript");
 		return buffer;
 	}
 
@@ -403,8 +397,6 @@ public class RubyScript extends Openable implements IRubyScript {
 		if (perWorkingCopyInfo == null) {
 			// close cu and its children
 			close();
-			RubyCore.log(toString());
-
 			BecomeWorkingCopyOperation operation = new BecomeWorkingCopyOperation(this, requestor);
 			operation.runOperation(monitor);
 		}

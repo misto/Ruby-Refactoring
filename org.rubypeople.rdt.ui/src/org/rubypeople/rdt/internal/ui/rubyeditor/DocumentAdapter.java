@@ -188,7 +188,6 @@ public class DocumentAdapter implements IBuffer, IDocumentListener {
      * This method is <code>public</code> for test purposes only.
      */
     public DocumentAdapter(IOpenable owner, IFile file) {
-    	RubyPlugin.log("Creating DocumentAdapter!");
         fOwner = owner;
         fFile = file;
 

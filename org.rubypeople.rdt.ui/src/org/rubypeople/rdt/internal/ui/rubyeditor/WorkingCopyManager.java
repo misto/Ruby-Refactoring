@@ -50,7 +50,6 @@ public class WorkingCopyManager implements IWorkingCopyManager, IWorkingCopyMana
 	 */
 	public void connect(IEditorInput input) throws CoreException {
 		fDocumentProvider.connect(input);
-		RubyPlugin.log("Connected to editor input with document provider");
 	}
 
 	/*

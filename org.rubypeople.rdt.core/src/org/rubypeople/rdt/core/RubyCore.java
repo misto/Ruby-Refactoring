@@ -306,7 +306,7 @@ public class RubyCore extends Plugin {
 			// TODO Do we need to check for the ruby nature?
 			if (aProject.hasNature(RubyCore.NATURE_ID)) { return new RubyProject(aProject, RubyModelManager.getRubyModelManager().getRubyModel()); }
 		} catch (CoreException e) {
-			RubyCore.log("Exception occurred in RubyCore#create(IProject): " + e.toString());
+			RubyCore.log(e);
 		}
 
 		return null;

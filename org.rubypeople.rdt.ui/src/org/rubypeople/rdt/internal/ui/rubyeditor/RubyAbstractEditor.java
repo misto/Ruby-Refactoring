@@ -122,11 +122,8 @@ public class RubyAbstractEditor extends TextEditor {
 	 * @see org.eclipse.ui.editors.text.TextEditor#doSetInput(org.eclipse.ui.IEditorInput)
 	 */
 	protected void doSetInput(IEditorInput input) throws CoreException {
-		RubyPlugin.log("In AsbtractRubyEditor#doSetInput");
 		super.doSetInput(input);
-		RubyPlugin.log("finished AsbtractRubyEditor#doSetInput");
 		setOutlinePageInput(outlinePage, input);
-		RubyPlugin.log("set Outline Page Input");
 	}
 
 	protected void setOutlinePageInput(RubyContentOutlinePage page, IEditorInput input) {
