@@ -43,6 +43,15 @@
             id="org.rubypeople.rdt.ui.preferences.PreferencePageRubyEditor">
       </page>
    </extension>
+    <extension
+         point="org.eclipse.ui.perspectiveExtensions">
+      <perspectiveExtension
+            targetID="org.eclipse.ui.resourcePerspective">
+         <perspectiveShortcut
+               id="org.rubypeople.rdt.ui.PerspectiveRuby">
+         </perspectiveShortcut>
+      </perspectiveExtension>
+   </extension>
    <extension
          point="org.eclipse.ui.perspectives">
       <perspective
@@ -104,6 +113,10 @@
    </extension>
    <extension
          point="org.eclipse.ui.views">
+      <category
+            name="%viewCategoryName"
+            id="org.rubypeople.rdt.ui.ruby">
+      </category>
       <view
             name="%ViewRubyResources.name"
             icon="icons/full/ctool16/ruby.gif"
