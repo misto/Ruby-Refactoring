@@ -126,7 +126,8 @@ public class TextEditorPreferencePage2 extends PreferencePage implements IWorkbe
 	private String[][] fQuickDiffProviderListModel;
 
 	public TextEditorPreferencePage2() {
-		setDescription("RubyEditorPreferencePage.description"); //$NON-NLS-1$
+		
+		setDescription(RdtUiMessages.getString("RubyEditorPreferencePage.description")); //$NON-NLS-1$
 		setPreferenceStore(RdtUiPlugin.getDefault().getPreferenceStore());
 
 		MarkerAnnotationPreferences preferences = new MarkerAnnotationPreferences();
