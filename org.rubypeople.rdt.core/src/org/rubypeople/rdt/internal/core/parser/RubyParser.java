@@ -385,7 +385,7 @@ public class RubyParser {
 		if (globalIndex == -1) return;
 		if ((inQuotes(globalIndex, curLine) || inRegex(globalIndex, curLine)) && !isSubstituted(globalIndex, curLine)) return;
 		String name = getToken("$", VARIABLE_END_CHARS, curLine);
-		script.addElement(new RubyGlobal(name, lineNum, globalIndex + 1));
+		script.addElement(new RubyGlobal("$" + name, lineNum, globalIndex));
 	}
 
 	/**
@@ -397,7 +397,7 @@ public class RubyParser {
 		if (instanceIndex == -1) return;
 		if ((inQuotes(instanceIndex, curLine) || inRegex(instanceIndex, curLine)) && !isSubstituted(instanceIndex, curLine)) return;
 		String name = getToken("@@", VARIABLE_END_CHARS, curLine);
-		addVariable(new RubyClassVariable(name, lineNum, endIndexOf(curLine, "@@")));
+		addVariable(new RubyClassVariable("@@" + name, lineNum, instanceIndex));
 	}
 
 	/**
@@ -410,7 +410,7 @@ public class RubyParser {
 		if (curLine.indexOf("@@") != -1) return;
 		if ((inQuotes(instanceIndex, curLine) || inRegex(instanceIndex, curLine)) && !isSubstituted(instanceIndex, curLine)) return;
 		String name = getToken("@", VARIABLE_END_CHARS, curLine);
-		addVariable(new RubyInstanceVariable(name, lineNum, endIndexOf(curLine, "@")));
+		addVariable(new RubyInstanceVariable("@" + name, lineNum, instanceIndex));
 	}
 
 	/**

@@ -37,13 +37,5 @@ public class RubyInstanceVariable extends RubyElement {
 		setEnd(lineNum, offset + name.length() - 1);
 		access = RubyElement.PRIVATE;
 	}
-
-
-	/* (non-Javadoc)
-	 * @see org.rubypeople.rdt.internal.core.parser.RubyElement#getName()
-	 */
-	public String getName() {
-		return "@" + super.getName();
-	}
 	
 }

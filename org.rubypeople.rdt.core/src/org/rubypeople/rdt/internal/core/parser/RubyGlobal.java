@@ -37,11 +37,4 @@ public class RubyGlobal extends RubyElement {
 		setEnd(lineNum, offset + name.length() - 1);
 	}
 
-
-	/* (non-Javadoc)
-	 * @see org.rubypeople.rdt.internal.core.parser.RubyElement#getName()
-	 */
-	public String getName() {
-		return '$' + super.getName();
-	}
 }
