@@ -26,6 +26,7 @@ public class NewProjectCreationWizard extends BasicNewResourceWizard implements 
 	protected WizardNewProjectCreationPage projectPage;
 	protected IConfigurationElement configurationElement;
 	protected IProject newProject;
+	protected String defaultProjectName = "";
 	
 	public NewProjectCreationWizard() {
 		setWindowTitle(RdtUiMessages.getString("NewProjectCreationWizard.windowTitle"));
@@ -89,6 +90,7 @@ public class NewProjectCreationWizard extends BasicNewResourceWizard implements 
 		projectPage = new WizardNewProjectCreationPage(RdtUiMessages.getString("WizardNewProjectCreationPage.pageName"));
 		projectPage.setTitle(RdtUiMessages.getString("WizardNewProjectCreationPage.pageTitle"));
 		projectPage.setDescription(RdtUiMessages.getString("WizardNewProjectCreationPage.pageDescription"));
+		projectPage.setInitialProjectName(this.getDefaultProjectName()) ;
 
 		addPage(projectPage);
 	}
@@ -97,4 +99,12 @@ public class NewProjectCreationWizard extends BasicNewResourceWizard implements 
 		configurationElement = config;
 	}
 
+
+	public String getDefaultProjectName() {
+		return defaultProjectName;
+	}
+
+	public void setDefaultProjectName(String defaultProjectName) {
+		this.defaultProjectName = defaultProjectName;
+	}
 }
