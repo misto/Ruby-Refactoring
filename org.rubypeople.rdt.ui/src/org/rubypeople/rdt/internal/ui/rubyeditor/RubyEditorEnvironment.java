@@ -1,6 +1,8 @@
 package org.rubypeople.rdt.internal.ui.rubyeditor;
 
 import org.eclipse.jface.text.rules.RuleBasedScanner;
+import org.rubypeople.rdt.internal.ui.rubyeditor.ruby.*;
+import org.rubypeople.rdt.internal.ui.rubyeditor.util.*;
 
 public class RubyEditorEnvironment {
 	protected static RubyColorProvider colorProvider;

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <plugin
    id="org.rubypeople.rdt.ui"
-   name="%pluginName"
+   name="%Plugin.name"
    version="0.1.0"
    provider-name="RubyPeople, Inc."
    class="org.rubypeople.rdt.internal.ui.RdtUiPlugin">
@@ -23,24 +23,24 @@
    <extension
          point="org.eclipse.ui.perspectives">
       <perspective
-            name="%perspectiveName"
+            name="%PerspectiveRuby.name"
             icon="icons/full/ctool16/ruby.gif"
             class="org.rubypeople.rdt.internal.ui.RdtPerspectiveFactory"
-            id="org.rubypeople.rdt.ui.RubyPerspective">
+            id="org.rubypeople.rdt.ui.PerspectiveRuby">
       </perspective>
    </extension>
    <extension
          point="org.eclipse.ui.newWizards">
       <category
             name="%NewWizardCategory.name"
-            id="org.rubypeople.rdt.ui.ruby">
+            id="org.rubypeople.rdt.ui.NewWizardCategoryRuby">
       </category>
       <wizard
-            name="%NewRubyProjectWizard.name"
+            name="%NewWizardRubyProject.name"
             icon="icons/full/ctool16/ruby.gif"
-            category="org.rubypeople.rdt.ui.ruby"
-            class="org.rubypeople.rdt.internal.ui.NewRubyProjectWizard"
-            id="org.rubypeople.rdt.ui.NewRubyProjectWizard">
+            category="org.rubypeople.rdt.ui.NewWizardCategoryRuby"
+            class="org.rubyeclipse.rdt.internal.ui.wizards.NewProjectCreationWizard"
+            id="org.rubypeople.rdt.ui.wizards.NewWizardProjectCreation">
          <description>
             Create a new Ruby project.
          </description>
@@ -50,17 +50,17 @@
          point="org.eclipse.ui.projectNatureImages">
       <image
             icon="icons/full/ovr16/ruby_ovr.gif"
-            natureId="org.rubypeople.rdt.rubynature"
-            id="org.rubypeople.rdt.rubynatureImage">
+            natureId="rubynature"
+            id="org.rubypeople.rdt.ui.ProjectNatureImageRuby">
       </image>
    </extension>
    <extension
          point="org.eclipse.ui.propertyPages">
       <page
             objectClass="org.eclipse.core.resources.IProject"
-            name="%RubyProjectPropertyPage.name"
+            name="%PropertyPageRubyProject.name"
             class="org.rubypeople.rdt.internal.ui.RubyProjectPropertyPage"
-            id="org.rubypeople.rdt.ui.RubyProjectPropertyPage">
+            id="org.rubypeople.rdt.ui.PropertyPageRubyProject">
          <filter
                name="nature"
                value="org.rubypeople.rdt.rubynature">
@@ -68,9 +68,9 @@
       </page>
       <page
             objectClass="org.rubypeople.rdt.internal.core.RubyProject"
-            name="%RubyProjectPropertyPage.name"
+            name="%PropertyPageRubyProject.name"
             class="org.rubypeople.rdt.internal.ui.RubyProjectPropertyPage"
-            id="org.rubypeople.rdt.ui.RubyProjectPropertyPage">
+            id="org.rubypeople.rdt.ui.PropertyPageRubyProject">
          <filter
                name="nature"
                value="org.rubypeople.rdt.rubynature">
@@ -80,29 +80,29 @@
    <extension
          point="org.eclipse.ui.views">
       <view
-            name="%rubyResourcesViewName"
+            name="%ViewRubyResources.name"
             icon="icons/full/ctool16/ruby.gif"
             class="org.rubypeople.rdt.internal.ui.RubyResourcesView"
-            id="org.rubypeople.rdt.ui.RubyResourcesView">
+            id="org.rubypeople.rdt.ui.ViewRubyResources">
       </view>
    </extension>
    <extension
          point="org.eclipse.ui.documentProviders">
       <provider
-            extensions="%rubyFileExtension"
+            extensions="%EditorRubyFile.extension"
             class="org.rubypeople.rdt.internal.ui.rubyeditor.RubyDocumentProvider"
-            id="org.rubypeople.rdt.ui.rubyDocumentProvider">
+            id="org.rubypeople.rdt.ui.DocumentProviderRubyFile">
       </provider>
    </extension>
    <extension
          point="org.eclipse.ui.editors">
       <editor
-            name="%rubyEditor.name"
+            name="%EditorRubyFile.name"
             icon="icons/full/ctool16/ruby.gif"
-            extensions="%rubyFileExtension"
+            extensions="%EditorRubyFile.extension"
             contributorClass="org.rubypeople.rdt.internal.ui.rubyeditor.RubyEditorActionContributor"
             class="org.rubypeople.rdt.internal.ui.rubyeditor.RubyEditor"
-            id="org.rubypeople.rdt.ui.rubyEditor">
+            id="org.rubypeople.rdt.ui.EditorRubyFile">
       </editor>
    </extension>
 

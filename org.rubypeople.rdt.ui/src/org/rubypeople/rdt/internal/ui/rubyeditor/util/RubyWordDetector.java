@@ -1,4 +1,4 @@
-package org.rubypeople.rdt.internal.ui.rubyeditor;
+package org.rubypeople.rdt.internal.ui.rubyeditor.util;
 
 import org.eclipse.jface.text.rules.IWordDetector;
 

@@ -1,4 +1,4 @@
-package org.rubypeople.rdt.internal.ui.rubyeditor;
+package org.rubypeople.rdt.internal.ui.rubyeditor.ruby;
 
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;

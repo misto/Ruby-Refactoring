@@ -1,4 +1,4 @@
-package org.rubypeople.rdt.internal.ui.rubyeditor;
+package org.rubypeople.rdt.internal.ui.rubyeditor.util;
 
 import java.util.HashMap;
 import java.util.Iterator;

@@ -2,11 +2,12 @@ package org.rubypeople.rdt.internal.ui.rubyeditor;
 
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.text.source.ISourceViewer;
-import org.eclipse.ui.texteditor.AbstractTextEditor;
 import org.eclipse.ui.texteditor.DefaultRangeIndicator;
+import org.eclipse.ui.texteditor.StatusTextEditor;
 import org.eclipse.ui.texteditor.TextOperationAction;
+import org.rubypeople.rdt.internal.ui.rubyeditor.ruby.RubyEditorMessages;
 
-public class RubyEditor extends AbstractTextEditor {
+public class RubyEditor extends StatusTextEditor {
 
 	public RubyEditor() {
 		initializeEditor();

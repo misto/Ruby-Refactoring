@@ -3,8 +3,9 @@ package org.rubypeople.rdt.internal.ui.rubyeditor;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.IDocumentPartitioner;
-import org.eclipse.jface.text.rules.RuleBasedPartitioner;
+import org.eclipse.jface.text.rules.DefaultPartitioner;
 import org.eclipse.ui.editors.text.FileDocumentProvider;
+import org.rubypeople.rdt.internal.ui.rubyeditor.ruby.*;
 
 public class RubyDocumentProvider extends FileDocumentProvider {
 	protected static RubyPartitionScanner partitionScanner;
@@ -24,8 +25,8 @@ public class RubyDocumentProvider extends FileDocumentProvider {
 		return document;
 	}
 
-	 protected RuleBasedPartitioner createRubyPartitioner() {
-		return new RuleBasedPartitioner(getRubyPartitionScanner(), TYPES);
+	 protected DefaultPartitioner createRubyPartitioner() {
+		return new DefaultPartitioner(getRubyPartitionScanner(), TYPES);
 	}
 	
 	protected RubyPartitionScanner getRubyPartitionScanner() {

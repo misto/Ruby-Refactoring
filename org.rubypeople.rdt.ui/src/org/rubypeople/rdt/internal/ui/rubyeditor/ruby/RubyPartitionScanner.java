@@ -1,4 +1,4 @@
-package org.rubypeople.rdt.internal.ui.rubyeditor;
+package org.rubypeople.rdt.internal.ui.rubyeditor.ruby;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -8,14 +8,11 @@ import org.eclipse.jface.text.rules.IRule;
 import org.eclipse.jface.text.rules.IToken;
 import org.eclipse.jface.text.rules.IWordDetector;
 import org.eclipse.jface.text.rules.MultiLineRule;
-import org.eclipse.jface.text.rules.PatternRule;
-import org.eclipse.jface.text.rules.RuleBasedScanner;
+import org.eclipse.jface.text.rules.RuleBasedPartitionScanner;
 import org.eclipse.jface.text.rules.SingleLineRule;
 import org.eclipse.jface.text.rules.Token;
-import org.eclipse.jface.text.rules.WordRule;
-import sun.security.krb5.internal.crypto.c;
 
-public class RubyPartitionScanner extends RuleBasedScanner {
+public class RubyPartitionScanner extends RuleBasedPartitionScanner {
 	public final static String MULTI_LINE_COMMENT = "multiline_comment";
 
 	public RubyPartitionScanner() {

@@ -240,7 +240,7 @@ public class RubyEnvironmentTab extends AbstractLaunchConfigurationTab {
 	}
 
 	public String getName() {
-		return LauncherMessages.getString("RubyEnvironmentTab.name");
+		return LauncherMessages.getString("LaunchConfigurationTab.RubyEnvironment.name");
 	}
 
 }

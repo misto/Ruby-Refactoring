@@ -7,6 +7,7 @@ import org.eclipse.ui.IWorkbenchActionConstants;
 import org.eclipse.ui.texteditor.BasicTextEditorActionContributor;
 import org.eclipse.ui.texteditor.ITextEditor;
 import org.eclipse.ui.texteditor.RetargetTextEditorAction;
+import org.rubypeople.rdt.internal.ui.rubyeditor.ruby.*;
 
 public class RubyEditorActionContributor extends BasicTextEditorActionContributor {
 	protected RetargetTextEditorAction contentAssistProposal;

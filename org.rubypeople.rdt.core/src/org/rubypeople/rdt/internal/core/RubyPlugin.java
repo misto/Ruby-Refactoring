@@ -10,7 +10,7 @@ import org.eclipse.core.runtime.Plugin;
 
 public class RubyPlugin extends Plugin {
 	public final static String PLUGIN_ID = "org.rubypeople.rdt";
-	public final static String RUBY_NATURE_ID = PLUGIN_ID + ".rubynature";
+	public final static String RUBY_NATURE_ID = "rubynature";
 
 	protected static RubyPlugin plugin;
 	protected ResourceBundle resourceBundle;

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <plugin
    id="org.rubypeople.rdt.debug.ui"
-   name="%pluginName"
+   name="%Plugin.name"
    version="0.1.0"
    provider-name="RubyPeople, Inc."
    class="org.rubypeople.rdt.internal.debug.ui.RdtDebugUiPlugin">
@@ -24,13 +24,13 @@
    <extension
          point="org.eclipse.ui.preferencePages">
       <page
-            name="%RubyInterpreterPreferencePage.name"
-            category="org.rubypeople.rdt.debug.ui.preferences.RubyBasePreferencPage"
+            name="%PreferencePageRubyInterpreter.name"
+            category="org.rubypeople.rdt.debug.ui.preferences.PreferencPageRubyBase"
             class="org.rubypeople.rdt.internal.debug.ui.preferences.RubyInterpreterPreferencePage"
-            id="org.rubypeople.rdt.debug.ui.preferences.RubyInterpreterPreferencePage">
+            id="org.rubypeople.rdt.debug.ui.preferences.PreferencePageRubyInterpreter">
       </page>
       <page
-            name="%RubyBasePreferencePage.name"
+            name="%PreferencePageRubyBase.name"
             class="org.rubypeople.rdt.internal.debug.ui.preferences.RubyBasePreferencePage"
             id="org.rubypeople.rdt.debug.ui.preferences.RubyBasePreferencPage">
       </page>
@@ -39,16 +39,16 @@
          point="org.eclipse.debug.ui.launchConfigurationTypeImages">
       <launchConfigurationTypeImage
             icon="icons/full/ctool16/runRuby.gif"
-            configTypeID="org.rubypeople.rdt.launching.rubyApplication"
-            id="org.rubypeople.rdt.debug.ui.launchConfigurationTypeImage.rubyApplication">
+            configTypeID="org.rubypeople.rdt.launching.LaunchConfigurationTypeRubyApplication"
+            id="org.rubypeople.rdt.debug.ui.LaunchConfigurationTypeImageRubyApplication">
       </launchConfigurationTypeImage>
    </extension>
    <extension
          point="org.eclipse.debug.ui.launchConfigurationTabGroups">
       <launchConfigurationTabGroup
-            type="org.rubypeople.rdt.launching.rubyApplication"
-            class="org.rubypeople.rdt.internal.debug.ui.launcher.LocalRubyApplicationTabGroup"
-            id="org.rubypeople.rdt.debug.ui.launchConfigurationTabGroup.localRubyApplication">
+            type="org.rubypeople.rdt.launching.LaunchConfigurationTypeRubyApplication"
+            class="org.rubypeople.rdt.internal.debug.ui.launcher.RubyApplicationTabGroup"
+            id="org.rubypeople.rdt.debug.ui.LaunchConfigurationTabGroupRubyApplication">
       </launchConfigurationTabGroup>
    </extension>
 

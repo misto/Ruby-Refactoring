@@ -13,7 +13,7 @@ public class RdtUiPlugin extends AbstractUIPlugin {
 	protected ResourceBundle resourceBundle;
 	
 	public static final String PLUGIN_ID = "org.rubypeople.rdt.ui";
-	public static final String RUBY_RESOURCES_VIEW_ID = PLUGIN_ID + ".RubyResourcesView";
+	public static final String RUBY_RESOURCES_VIEW_ID = PLUGIN_ID + ".ViewRubyResources";
 
 	public RdtUiPlugin(IPluginDescriptor descriptor) {
 		super(descriptor);

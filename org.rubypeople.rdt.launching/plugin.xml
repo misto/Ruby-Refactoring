@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <plugin
    id="org.rubypeople.rdt.launching"
-   name="%pluginName"
+   name="%Plugin.name"
    version="0.1.0"
    provider-name="RubyPeople, Inc."
    class="org.rubypeople.rdt.launching.RdtLaunchingPlugin">
@@ -25,10 +25,10 @@
    <extension
          point="org.eclipse.debug.core.launchConfigurationTypes">
       <launchConfigurationType
-            name="%rubyApplication.name"
+            name="%LaunchConfigurationTypeRubyApplication.name"
             delegate="org.rubypeople.rdt.internal.launching.RubyApplicationLaunchConfigurationDelegate"
             modes="run"
-            id="org.rubypeople.rdt.launching.rubyApplication">
+            id="org.rubypeople.rdt.launching.LaunchConfigurationTypeRubyApplication">
          <fileExtension
                default="true"
                extension="rb">

@@ -6,10 +6,12 @@ import org.eclipse.jface.text.contentassist.ContentAssistant;
 import org.eclipse.jface.text.contentassist.IContentAssistant;
 import org.eclipse.jface.text.presentation.IPresentationReconciler;
 import org.eclipse.jface.text.presentation.PresentationReconciler;
+import org.eclipse.jface.text.rules.DefaultDamagerRepairer;
 import org.eclipse.jface.text.rules.RuleBasedDamagerRepairer;
 import org.eclipse.jface.text.source.ISourceViewer;
 import org.eclipse.jface.text.source.SourceViewerConfiguration;
 import org.eclipse.swt.graphics.RGB;
+import org.rubypeople.rdt.internal.ui.rubyeditor.ruby.*;
 
 public class RubySourceViewerConfiguration extends SourceViewerConfiguration {
 
@@ -32,11 +34,11 @@ public class RubySourceViewerConfiguration extends SourceViewerConfiguration {
 	public IPresentationReconciler getPresentationReconciler(ISourceViewer sourceViewer) {
 		PresentationReconciler reconciler = new PresentationReconciler();
 
-		RuleBasedDamagerRepairer dr = new RuleBasedDamagerRepairer(RubyEditorEnvironment.getRubyCodeScanner());
+		DefaultDamagerRepairer dr = new DefaultDamagerRepairer(RubyEditorEnvironment.getRubyCodeScanner());
 		reconciler.setDamager(dr, IDocument.DEFAULT_CONTENT_TYPE);
 		reconciler.setRepairer(dr, IDocument.DEFAULT_CONTENT_TYPE);
 
-		dr = new RuleBasedDamagerRepairer(RubyEditorEnvironment.getRubyPartitionScanner());
+		dr = new DefaultDamagerRepairer(RubyEditorEnvironment.getRubyPartitionScanner());
 		reconciler.setDamager(dr, RubyPartitionScanner.MULTI_LINE_COMMENT);
 		reconciler.setRepairer(dr, RubyPartitionScanner.MULTI_LINE_COMMENT);
 

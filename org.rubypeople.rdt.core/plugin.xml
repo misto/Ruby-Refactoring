@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <plugin
    id="org.rubypeople.rdt"
-   name="%pluginName"
+   name="%Plugin.name"
    version="0.1.0"
    provider-name="RubyPeople, Inc."
    class="org.rubypeople.rdt.internal.core.RubyPlugin">
@@ -21,7 +21,7 @@
 
    <extension
          id="rubynature"
-         name="%rubyNatureName"
+         name="%NatureRuby.name"
          point="org.eclipse.core.resources.natures">
       <runtime>
          <run

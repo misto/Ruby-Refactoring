@@ -5,10 +5,10 @@ import org.eclipse.debug.ui.CommonTab;
 import org.eclipse.debug.ui.ILaunchConfigurationDialog;
 import org.eclipse.debug.ui.ILaunchConfigurationTab;
 
-public class LocalRubyApplicationTabGroup
+public class RubyApplicationTabGroup
 	extends AbstractLaunchConfigurationTabGroup {
 
-	public LocalRubyApplicationTabGroup() {
+	public RubyApplicationTabGroup() {
 		super();
 	}
 

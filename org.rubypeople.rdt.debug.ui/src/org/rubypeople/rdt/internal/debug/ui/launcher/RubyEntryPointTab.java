@@ -133,7 +133,7 @@ public class RubyEntryPointTab extends AbstractLaunchConfigurationTab {
 	}
 
 	public String getName() {
-		return LauncherMessages.getString("RubyEntryPointTab.name");
+		return LauncherMessages.getString("LaunchConfigurationTab.RubyEntryPoint.name");
 	}
 
 }

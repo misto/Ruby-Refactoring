@@ -1,4 +1,4 @@
-package org.rubypeople.rdt.internal.ui;
+package org.rubyeclipse.rdt.internal.ui.wizards;
 
 import java.lang.reflect.InvocationTargetException;
 
@@ -13,19 +13,19 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.SubProgressMonitor;
 import org.eclipse.jface.operation.IRunnableWithProgress;
+import org.eclipse.ui.INewWizard;
 import org.eclipse.ui.actions.WorkspaceModifyDelegatingOperation;
 import org.eclipse.ui.dialogs.WizardNewProjectCreationPage;
 import org.eclipse.ui.wizards.newresource.BasicNewProjectResourceWizard;
 import org.eclipse.ui.wizards.newresource.BasicNewResourceWizard;
 import org.rubypeople.rdt.internal.core.RubyPlugin;
-import sun.security.krb5.internal.crypto.e;
 
-public class NewRubyProjectWizard extends BasicNewResourceWizard implements IExecutableExtension {
+public class NewProjectCreationWizard extends BasicNewResourceWizard implements INewWizard, IExecutableExtension {
 	protected WizardNewProjectCreationPage projectPage;
 	protected IConfigurationElement configurationElement;
 	protected IProject newProject;
 	
-	public NewRubyProjectWizard() {
+	public NewProjectCreationWizard() {
 		setWindowTitle("New");
 	}
 

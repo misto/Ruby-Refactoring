@@ -41,9 +41,9 @@ public class RubyArgumentsTab extends AbstractLaunchConfigurationTab {
 	public void createControl(Composite parent) {
 		Composite composite = createPageRoot(parent);
 
-		new Label(composite, SWT.NONE).setText(LauncherMessages.getString("RubyArgumentsTab.working_dir"));
+		new Label(composite, SWT.NONE).setText(LauncherMessages.getString("LaunchConfigurationTab.RubyArguments.working_dir"));
 		workingDirectorySelector = new DirectorySelector(composite);
-		workingDirectorySelector.setBrowseDialogMessage(LauncherMessages.getString("RubyArgumentsTab.working_dir_browser_message"));
+		workingDirectorySelector.setBrowseDialogMessage(LauncherMessages.getString("LaunchConfigurationTab.RubyArguments.working_dir_browser_message"));
 		workingDirectorySelector.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
 		workingDirectorySelector.addModifyListener(new ModifyListener() {
 			public void modifyText(ModifyEvent e) {
@@ -61,16 +61,16 @@ public class RubyArgumentsTab extends AbstractLaunchConfigurationTab {
 				setUseDefaultWorkingDirectory(((Button)e.getSource()).getSelection());
 			}
 		});
-		new Label(defaultWorkingDirectoryComposite, SWT.NONE).setText(LauncherMessages.getString("RubyArgumentsTab.working_dir_use_default_message"));
+		new Label(defaultWorkingDirectoryComposite, SWT.NONE).setText(LauncherMessages.getString("LaunchConfigurationTab.RubyArguments.working_dir_use_default_message"));
 		defaultWorkingDirectoryComposite.pack();
 
 		Label verticalSpacer = new Label(composite, SWT.NONE);
 
-		new Label(composite, SWT.NONE).setText(LauncherMessages.getString("RubyArgumentsTab.interpreter_args_box_title"));
+		new Label(composite, SWT.NONE).setText(LauncherMessages.getString("LaunchConfigurationTab.RubyArguments.interpreter_args_box_title"));
 		interpreterArgsText = new Text(composite, SWT.MULTI | SWT.V_SCROLL | SWT.BORDER);
 		interpreterArgsText.setLayoutData(new GridData(GridData.FILL_BOTH));
 
-		new Label(composite, SWT.NONE).setText(LauncherMessages.getString("RubyArgumentsTab.program_args_box_title"));
+		new Label(composite, SWT.NONE).setText(LauncherMessages.getString("LaunchConfigurationTab.RubyArguments.program_args_box_title"));
 		programArgsText = new Text(composite, SWT.MULTI | SWT.V_SCROLL | SWT.BORDER);
 		programArgsText.setLayoutData(new GridData(GridData.FILL_BOTH));
 	}
@@ -135,7 +135,7 @@ public class RubyArgumentsTab extends AbstractLaunchConfigurationTab {
 	}
 
 	public String getName() {
-		return LauncherMessages.getString("RubyArgumentsTab.name");
+		return LauncherMessages.getString("LaunchConfigurationTab.RubyArguments.name");
 	}
 
 }
