@@ -163,7 +163,7 @@ public class RubyElement implements IRubyElement {
 			else {
 				Object[] elements = element.getElements();
 				if (elements.length > 0) {
-					outlineElements.add(Arrays.asList(elements));
+					outlineElements.addAll(Arrays.asList(elements));
 				} else {
 					continue;
 				}
