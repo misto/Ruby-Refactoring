@@ -34,25 +34,41 @@ public interface ParseRule {
 	int WARNING = IMarker.SEVERITY_WARNING;
 	int OK = IMarker.SEVERITY_INFO;
 
+	/**
+	 * Evaluates the rule and tells whether the rule has passed or not
+	 * 
+	 * @return true if the rule has been passed, false if not
+	 */
 	public boolean isAllowed();
 
 	/**
-	 * @return
+	 * Creates a ParseError which captures the failure of this rule
+	 * 
+	 * @return a ParseError generated to be used when this rule fails
 	 */
 	public ParseError getError();
 
 	/**
-	 * @return
+	 * Flag to indicate whether the element in question should be added to the
+	 * AST or ignored if this rule fails
+	 * 
+	 * @return a boolean to indicate whether failure of this rule should
+	 *         eliminate the element from the AST
 	 */
 	public boolean addOnFailure();
 
 	/**
-	 * @return
+	 * Flag to indicate whether the ParseError that this rule generates should
+	 * be added as a (potential) marker
+	 * 
+	 * @return true if the ParseError should be retrieved and used (potentially
+	 *         for markers)
 	 */
 	public boolean addError();
 
 	/**
-	 * 
+	 * Allows the ParseRule to optionally have some sort of processing that can
+	 * be run on the elements in question
 	 */
 	public void run();
 }
