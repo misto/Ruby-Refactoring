@@ -3,7 +3,7 @@
 
 	<target name="init">
 		<property name="feature" value="org.rubypeople.rdt"/>
-		<property name="feature.version.suffix" value="_0.3.1"/>
+		<property name="feature.version.suffix" value="_0.3.2"/>
 		<property name="feature.full.name" value="${feature}${feature.version.suffix}"/>
 		<property name="feature.temp.folder" value="${basedir}/feature.temp.folder"/>
 		<property name="feature.destination" value="${basedir}"/>

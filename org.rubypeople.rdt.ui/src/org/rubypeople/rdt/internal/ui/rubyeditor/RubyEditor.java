@@ -31,6 +31,7 @@ public class RubyEditor extends TextEditor {
 		super();
 		this.setRulerContextMenuId("org.rubypeople.rdt.ui.rubyeditor.rulerContextMenu") ;
 		this.setEditorContextMenuId("org.rubypeople.rdt.ui.rubyeditor.contextMenu") ;
+		setKeyBindingScopes(new String[] { "org.rubypeople.rdt.ui.rubyEditorScope" });  //$NON-NLS-1$
 	}
 
 	protected void configurePreferenceStore() {

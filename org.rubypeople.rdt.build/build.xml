@@ -32,13 +32,13 @@
 	<target name="package.rdt" depends="zip.plugin">
 		<mkdir dir="${package.temp.dir}"/>
 		<unzip src="org.kxml2/org.kxml2_2.1.4.zip" dest="${package.temp.dir}"/>
-		<unzip src="org.rubypeople.rdt.core/org.rubypeople.rdt.core_0.3.1.zip" dest="${package.temp.dir}"/>
-		<unzip src="org.rubypeople.rdt.debug.core/org.rubypeople.rdt.debug.core_0.3.1.zip" dest="${package.temp.dir}"/>
-		<unzip src="org.rubypeople.rdt.debug.ui/org.rubypeople.rdt.debug.ui_0.3.1.zip" dest="${package.temp.dir}"/>
-		<unzip src="org.rubypeople.rdt.doc.user/org.rubypeople.rdt.doc.user_0.3.1.zip" dest="${package.temp.dir}"/>
-		<unzip src="org.rubypeople.rdt.launching/org.rubypeople.rdt.launching_0.3.1.zip" dest="${package.temp.dir}"/>
-		<unzip src="org.rubypeople.rdt.ui/org.rubypeople.rdt.ui_0.3.1.zip" dest="${package.temp.dir}"/>
-		<zip zipfile="org.rubypeople.rdt.build/rubyeclipse_0.3.1.zip" basedir="${package.temp.dir}" filesonly="true"/>
+		<unzip src="org.rubypeople.rdt.core/org.rubypeople.rdt.core_0.3.2.zip" dest="${package.temp.dir}"/>
+		<unzip src="org.rubypeople.rdt.debug.core/org.rubypeople.rdt.debug.core_0.3.2.zip" dest="${package.temp.dir}"/>
+		<unzip src="org.rubypeople.rdt.debug.ui/org.rubypeople.rdt.debug.ui_0.3.2.zip" dest="${package.temp.dir}"/>
+		<unzip src="org.rubypeople.rdt.doc.user/org.rubypeople.rdt.doc.user_0.3.2.zip" dest="${package.temp.dir}"/>
+		<unzip src="org.rubypeople.rdt.launching/org.rubypeople.rdt.launching_0.3.2.zip" dest="${package.temp.dir}"/>
+		<unzip src="org.rubypeople.rdt.ui/org.rubypeople.rdt.ui_0.3.2.zip" dest="${package.temp.dir}"/>
+		<zip zipfile="org.rubypeople.rdt.build/rubyeclipse_0.3.2.zip" basedir="${package.temp.dir}" filesonly="true"/>
 		<delete dir="${package.temp.dir}"/>
 	</target>
 
@@ -54,7 +54,7 @@
 	</target>
 
 	<target name="clean">
-		<delete file="org.rubypeople.rdt.build/rubyeclipse_0.3.1.zip"/>
+		<delete file="org.rubypeople.rdt.build/rubyeclipse_0.3.2.zip"/>
 	</target>
 	
 	<target name="refresh" if="eclipse.running">

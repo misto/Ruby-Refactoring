@@ -120,6 +120,92 @@
             id="org.rubypeople.rdt.ui.EditorRubyFile">
       </editor>
    </extension>
+   <extension point="org.eclipse.ui.commands">
+   	<category
+		name="%category.source.name"
+		description="%category.source.description"
+		id="org.rubypeople.rdt.ui.category.source">
+	</category>
+	<scope
+		name="%scope.rubyEditor.name"
+		parent="org.eclipse.ui.textEditorScope"
+		description="%scope.rubyEditor.description"
+		id="org.rubypeople.rdt.ui.rubyEditorScope">
+	</scope>	
+   	<command
+		category="org.rubypeople.rdt.ui.category.source"
+		id="org.rubypeople.rdt.ui.edit.text.ruby.format"
+		name= "%ActionDefinition.format.name"
+		description= "%ActionDefinition.format.description">
+	</command>
+	<keyBinding
+		string="Ctrl+Shift+f"
+		scope="org.rubypeople.rdt.ui.rubyEditorScope"
+		command="org.rubypeople.rdt.ui.edit.text.ruby.format"
+		configuration="org.eclipse.ui.defaultAcceleratorConfiguration">
+	</keyBinding>
+   	<command
+		category="org.rubypeople.rdt.ui.category.source"
+		id="org.rubypeople.rdt.ui.edit.text.ruby.comment"
+		name= "%ActionDefinition.comment.name"
+		description= "%ActionDefinition.comment.description">
+	</command>
+	<keyBinding
+		string="Ctrl+/"
+		scope="org.rubypeople.rdt.ui.rubyEditorScope"
+		command="org.rubypeople.rdt.ui.edit.text.ruby.comment"
+		configuration="org.eclipse.ui.defaultAcceleratorConfiguration">
+	</keyBinding>
+   	<command
+		category="org.rubypeople.rdt.ui.category.source"
+		id="org.rubypeople.rdt.ui.edit.text.ruby.uncomment"
+		name= "%ActionDefinition.uncomment.name"
+		description= "%ActionDefinition.uncomment.description">
+	</command>
+	<keyBinding
+		string="Ctrl+\"
+		scope="org.rubypeople.rdt.ui.rubyEditorScope"
+		command="org.rubypeople.rdt.ui.edit.text.ruby.uncomment"
+		configuration="org.eclipse.ui.defaultAcceleratorConfiguration">
+	</keyBinding>
+   	<command
+		category="org.rubypeople.rdt.ui.category.source"
+		id="org.rubypeople.rdt.ui.edit.text.ruby.content.assist.proposals"
+		name= "%ActionDefinition.contentAssist.name"
+		description= "%ActionDefinition.contentAssist.description">
+	</command>
+	<keyBinding
+		string="Ctrl+Space"
+		scope="org.rubypeople.rdt.ui.rubyEditorScope"
+		command="org.rubypeople.rdt.ui.edit.text.ruby.content.assist.proposals"
+		configuration="org.eclipse.ui.defaultAcceleratorConfiguration">
+	</keyBinding>
+
+<!--
+         <accelerator
+               key="Ctrl+Space"
+               id="org.rubypeople.rdt.ui.edit.text.ruby.content.assist.proposals">
+         </accelerator>
+        
+         <accelerator
+               key="Ctrl+/"
+               id="org.rubypeople.rdt.ui.edit.text.ruby.comment">
+         </accelerator>
+         
+         <accelerator
+               key="Ctrl+\\"
+               id="org.rubypeople.rdt.ui.edit.text.ruby.uncomment">
+         </accelerator>
+
+         <accelerator
+               key="Ctrl+f"
+               id="org.rubypeople.rdt.ui.edit.text.ruby.format">
+         </accelerator>         
+-->         
+
+
+	
+   </extension>
    <extension
          point="org.eclipse.ui.actionDefinitions">
       <actionDefinition
@@ -132,25 +218,7 @@
             id="org.rubypeople.rdt.ui.edit.text.ruby.content.assist.proposals">
       </actionDefinition>
    </extension>
-   <extension
-         point="org.eclipse.ui.acceleratorSets">
-      <acceleratorSet
-            scopeId="org.eclipse.ui.textEditorScope"
-            configurationId="org.eclipse.ui.defaultAcceleratorConfiguration">
-         <accelerator
-               key="Ctrl+Space"
-               id="org.rubypeople.rdt.ui.edit.text.ruby.content.assist.proposals">
-         </accelerator>
-         <accelerator
-               key="Ctrl+/"
-               id="org.rubypeople.rdt.ui.edit.text.ruby.comment">
-         </accelerator>
-         <accelerator
-               key="Ctrl+\\"
-               id="org.rubypeople.rdt.ui.edit.text.ruby.uncomment">
-         </accelerator>
-      </acceleratorSet>
-   </extension>
+
    <extension
          point="org.eclipse.ui.actionSets">
       <actionSet
@@ -179,6 +247,7 @@
                menubarPath="org.rubypeople.rdt.ui.ruby.menu/editGroup"
                id="org.rubypeople.rdt.ui.actions.Comment">
          </action>
+<!--         
          <action
                definitionId="org.rubypeople.rdt.ui.edit.text.ruby.format"
                label="unused"
@@ -186,6 +255,7 @@
                menubarPath="org.rubypeople.rdt.ui.ruby.menu/editGroup"
                id="org.rubypeople.rdt.ui.actions.Format">
          </action>         
+-->         
       </actionSet>
    </extension>
    <extension
