@@ -26,13 +26,13 @@ import org.eclipse.core.runtime.Status;
 import org.eclipse.debug.core.ILaunch;
 import org.eclipse.debug.core.model.ISourceLocator;
 import org.eclipse.debug.ui.console.IConsole;
+import org.eclipse.debug.ui.console.IConsoleHyperlink;
 import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.IRegion;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.PlatformUI;
-import org.eclipse.ui.console.IHyperlink;
 import org.eclipse.ui.texteditor.IDocumentProvider;
 import org.eclipse.ui.texteditor.ITextEditor;
 import org.rubypeople.rdt.internal.debug.ui.RdtDebugUiPlugin;
@@ -41,7 +41,7 @@ import org.rubypeople.rdt.internal.debug.ui.RubySourceLocator;
 /**
  * A hyperlink from a stack trace line of the form "*:*:"
  */
-public class RubyStackTraceHyperlink implements IHyperlink {
+public class RubyStackTraceHyperlink implements IConsoleHyperlink {
 
 	private IConsole fConsole;
 	private RubyConsoleTracker.StackFrameInfo stackFrameInfo;

@@ -14,7 +14,6 @@ import org.eclipse.core.resources.IProjectNature;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IResourceVisitor;
 import org.eclipse.core.resources.IWorkspace;
-import org.eclipse.core.resources.ResourceAttributes;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IPluginDescriptor;
@@ -319,18 +318,5 @@ public class ShamProject extends ShamResource implements IProject {
 		throw new RuntimeException("Need to implement on sham.");
 	}
 
-	/* (non-Javadoc)
-	 * @see org.eclipse.core.resources.IResource#getResourceAttributes()
-	 */
-	public ResourceAttributes getResourceAttributes() {
-		throw new RuntimeException("Need to implement on sham.");
-	}
-
-	/* (non-Javadoc)
-	 * @see org.eclipse.core.resources.IResource#setResourceAttributes(org.eclipse.core.resources.ResourceAttributes)
-	 */
-	public void setResourceAttributes(ResourceAttributes attributes) throws CoreException {
-		throw new RuntimeException("Need to implement on sham.");
-	}
 
 }
