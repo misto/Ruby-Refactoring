@@ -21,6 +21,13 @@ public interface IRubyEditorActionDefinitionIds extends ITextEditorActionDefinit
 	public static final String FORMAT = "org.rubypeople.rdt.ui.edit.text.ruby.format";
 
 	/**
+	 * Action definition ID of the source -> toggle comment action
+	 * (value <code>"org.rubypeople.rdt.ui.edit.text.ruby.toggle.comment"</code>).
+	 * @since 3.0
+	 */
+	public static final String TOGGLE_COMMENT= "org.rubypeople.rdt.ui.edit.text.ruby.toggle.comment"; //$NON-NLS-1$
+		
+	/**
 	 * Action definition ID of the edit -> show RDoc action
 	 * (value <code>"org.rubypeople.rdt.ui.edit.text.ruby.show.rdoc"</code>).
 	 */

@@ -117,8 +117,7 @@
          </filter>
       </page>
    </extension>
-   <extension
-         point="org.eclipse.ui.views">
+   <extension point="org.eclipse.ui.views">
       <category
             name="%viewCategoryName"
             id="org.rubypeople.rdt.ui.ruby">
@@ -130,37 +129,34 @@
             class="org.rubypeople.rdt.internal.ui.resourcesview.RubyResourcesView"
             id="org.rubypeople.rdt.ui.ViewRubyResources">
       </view>
+      <view
+            name="RI"
+            icon="icons/full/elcl16/help.gif"
+            category="org.rubypeople.rdt.ui.ruby"
+            class="org.rubypeople.rdt.internal.ui.infoviews.RIView"
+            id="org.rubypeople.rdt.ui.views.RIView">
+      </view>
    </extension>
-       <extension
-         point="org.eclipse.ui.perspectiveExtensions">
-      <perspectiveExtension
-            targetID="org.eclipse.ui.resourcePerspective">
-         <perspectiveShortcut
-               id="org.rubypeople.rdt.ui.PerspectiveRuby">
-         </perspectiveShortcut>
-       </perspectiveExtension>
-       <perspectiveExtension
-            targetID="org.rubypeople.rdt.ui.PerspectiveRuby">
-         <newWizardShortcut id="org.rubypeople.rdt.ui.wizards.NewWizardProjectCreation"/>
-		 <newWizardShortcut id="org.eclipse.ui.wizards.new.folder"/>
-		 <newWizardShortcut id="org.eclipse.ui.wizards.new.file"/>
-         <viewShortcut id="org.eclipse.ui.views.ContentOutline"/>
-         <viewShortcut id="org.rubypeople.rdt.ui.ViewRubyResources"/>
-         <viewShortcut id="org.eclipse.ui.console.ConsoleView"/>
-         <viewShortcut id="org.eclipse.ui.views.ProblemView"/>   
-         <perspectiveShortcut
-               id="org.eclipse.ui.resourcePerspective">
-         </perspectiveShortcut>
-      </perspectiveExtension>
-      <perspectiveExtension
-            targetID="org.eclipse.jdt.ui.JavaPerspective">
-         <perspectiveShortcut
-               id="org.rubypeople.rdt.ui.PerspectiveRuby">
-         </perspectiveShortcut>
-      </perspectiveExtension>
-    </extension>
-   <extension
-         point="org.eclipse.ui.editors">
+   <extension point="org.eclipse.ui.perspectiveExtensions">
+   	 <perspectiveExtension targetID="org.eclipse.ui.resourcePerspective">
+       <perspectiveShortcut id="org.rubypeople.rdt.ui.PerspectiveRuby" />
+     </perspectiveExtension>
+     <perspectiveExtension targetID="org.rubypeople.rdt.ui.PerspectiveRuby">
+       <newWizardShortcut id="org.rubypeople.rdt.ui.wizards.NewWizardProjectCreation"/>
+	   <newWizardShortcut id="org.eclipse.ui.wizards.new.folder"/>
+	   <newWizardShortcut id="org.eclipse.ui.wizards.new.file"/>
+       <viewShortcut id="org.eclipse.ui.views.ContentOutline"/>
+       <viewShortcut id="org.rubypeople.rdt.ui.ViewRubyResources"/>
+       <viewShortcut id="org.eclipse.ui.console.ConsoleView"/>
+       <viewShortcut id="org.eclipse.ui.views.ProblemView"/>
+       <viewShortcut id="org.rubypeople.rdt.ui.views.RIView"/>   
+       <perspectiveShortcut id="org.eclipse.ui.resourcePerspective" />
+     </perspectiveExtension>
+     <perspectiveExtension targetID="org.eclipse.jdt.ui.JavaPerspective">
+       <perspectiveShortcut id="org.rubypeople.rdt.ui.PerspectiveRuby" />
+     </perspectiveExtension>
+   </extension>
+   <extension point="org.eclipse.ui.editors">
       <editor
             name="%EditorRubyFile.name"
             extensions="%EditorRubyFile.extension"
@@ -169,9 +165,6 @@
             contributorClass="org.rubypeople.rdt.internal.ui.rubyeditor.RubyEditorActionContributor"
             id="org.rubypeople.rdt.ui.EditorRubyFile">
       </editor>
-   </extension>
-   <extension
-         point="org.eclipse.ui.editors">
       <editor
             name="%ExternalEditorRubyFile.name"
             icon="icons/full/ctool16/ruby_page.gif"
@@ -235,6 +228,18 @@
             configuration="org.eclipse.ui.defaultAcceleratorConfiguration">
       </keyBinding>
       <command
+            name="%ActionDefinition.toggleComment.name"
+            description="%ActionDefinition.toggleComment.description"
+            category="org.rubypeople.rdt.ui.category.source"
+            id="org.rubypeople.rdt.ui.edit.text.ruby.toggle.comment">
+      </command>
+      <keyBinding
+            string="Ctrl+Shift+C"
+            scope="org.rubypeople.rdt.ui.rubyEditorScope"
+            command="org.rubypeople.rdt.ui.edit.text.ruby.toggle.comment"
+            configuration="org.eclipse.ui.defaultAcceleratorConfiguration">
+      </keyBinding>
+      <command
             name="%ActionDefinition.contentAssist.name"
             description="%ActionDefinition.contentAssist.description"
             category="org.rubypeople.rdt.ui.category.source"
@@ -287,11 +292,14 @@
                retarget="true"
                id="org.rubypeople.rdt.ui.actions.Comment">
          </action>
+         <action
+            definitionId="org.rubypeople.rdt.ui.edit.text.ruby.toggle.comment"
+            label="%ToggleCommentAction.label"
+            retarget="true"
+            menubarPath="org.rubypeople.rdt.ui.ruby.menu/editGroup"
+            id="org.rubypeople.rdt.ui.actions.ToggleComment">
+         </action>
       </actionSet>
-   </extension>
-   
-    <extension
-         point="org.eclipse.ui.actionSets">
       <actionSet
             label="%RubyElementCreationActionSet.label"
             description="%RubyElementCreationActionSet.description"
@@ -426,53 +434,6 @@
 			preferencesClass="org.rubypeople.rdt.internal.ui.text.folding.DefaultRubyFoldingPreferenceBlock">
 		</provider>
 	</extension>
-
-	<extension
-		point= "org.rubypeople.rdt.ui.foldingStructureProviders">
-		<provider
-			id="org.rubypeople.rdt.ui.text.defaultFoldingProvider"
-			name= "%defaultFoldingStructureProviderName"
-			class="org.rubypeople.rdt.internal.ui.text.folding.DefaultRubyFoldingStructureProvider"
-			preferencesClass="org.rubypeople.rdt.internal.ui.text.folding.DefaultRubyFoldingPreferenceBlock">
-		</provider>
-	</extension>
-	
-	<extension
-         id="RubyDocumentSetupParticipant"
-         name="%rubyDocumentSetupParticipant"
-         point="org.eclipse.core.filebuffers.documentSetup">
-      <participant
-            extensions="rb, rbw"
-            class="org.rubypeople.rdt.internal.ui.rubyeditor.RubyDocumentSetupParticipant">
-      </participant>
-   </extension>
-	   <extension
-         id="org.rubypeople.rdt.ui.rubyeditor.RubyDocumentFactory"
-         name="RubyDocumentFactory"
-         point="org.eclipse.core.filebuffers.documentCreation">
-      <factory
-            extensions="rb, rbw"
-            class="org.rubypeople.rdt.internal.ui.rubyeditor.RubyDocumentFactory">
-      </factory>
-   </extension>
-   
-   <extension
-         point="org.eclipse.ui.views">
-      <view
-            name="RI"
-            icon="icons/full/elcl16/help.gif"
-            category="org.rubypeople.rdt.ui.ruby"
-            class="org.rubypeople.rdt.internal.ui.infoviews.RIView"
-            id="org.rubypeople.rdt.ui.views.RIView">
-      </view>
-   </extension>
-   <extension
-         point="org.eclipse.ui.perspectiveExtensions">
-      <perspectiveExtension
-            targetID="org.rubypeople.rdt.ui.PerspectiveRuby">
-         <viewShortcut id="org.rubypeople.rdt.ui.views.RIView"/> 
-      </perspectiveExtension>
-   </extension>
    
    <extension point="org.eclipse.core.runtime.adapters">
    		<factory 

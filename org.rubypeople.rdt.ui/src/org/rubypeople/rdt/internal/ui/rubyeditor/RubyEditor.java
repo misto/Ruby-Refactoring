@@ -15,6 +15,7 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Preferences;
 import org.eclipse.jface.action.Action;
+import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.BadPositionCategoryException;
@@ -41,6 +42,7 @@ import org.eclipse.jface.text.source.Annotation;
 import org.eclipse.jface.text.source.IAnnotationModel;
 import org.eclipse.jface.text.source.ISourceViewer;
 import org.eclipse.jface.text.source.IVerticalRuler;
+import org.eclipse.jface.text.source.SourceViewerConfiguration;
 import org.eclipse.jface.text.source.projection.ProjectionSupport;
 import org.eclipse.jface.text.source.projection.ProjectionViewer;
 import org.eclipse.jface.util.PropertyChangeEvent;
@@ -59,6 +61,7 @@ import org.eclipse.ui.SelectionEnabler;
 import org.eclipse.ui.actions.ActionContext;
 import org.eclipse.ui.actions.ActionGroup;
 import org.eclipse.ui.editors.text.EditorsUI;
+import org.eclipse.ui.help.WorkbenchHelp;
 import org.eclipse.ui.texteditor.AnnotationPreference;
 import org.eclipse.ui.texteditor.ContentAssistAction;
 import org.eclipse.ui.texteditor.IEditorStatusLine;
@@ -67,6 +70,7 @@ import org.eclipse.ui.texteditor.MarkerAnnotation;
 import org.eclipse.ui.texteditor.TextOperationAction;
 import org.eclipse.ui.texteditor.link.EditorLinkedModeUI;
 import org.eclipse.ui.views.contentoutline.IContentOutlinePage;
+import org.rubypeople.rdt.internal.ui.IRubyHelpContextIds;
 import org.rubypeople.rdt.internal.ui.RubyPlugin;
 import org.rubypeople.rdt.internal.ui.RubyUIMessages;
 import org.rubypeople.rdt.internal.ui.text.IRubyPartitions;
@@ -137,11 +141,32 @@ public class RubyEditor extends RubyAbstractEditor {
 		action.setActionDefinitionId(IRubyEditorActionDefinitionIds.UNCOMMENT);
 		setAction("Uncomment", action);
 
+		action= new ToggleCommentAction(RubyEditorMessages.getResourceBundle(), "ToggleComment.", this); //$NON-NLS-1$
+		action.setActionDefinitionId(IRubyEditorActionDefinitionIds.TOGGLE_COMMENT);		
+		setAction("ToggleComment", action); //$NON-NLS-1$
+		markAsStateDependentAction("ToggleComment", true); //$NON-NLS-1$
+		WorkbenchHelp.setHelp(action, IRubyHelpContextIds.TOGGLE_COMMENT_ACTION);
+		configureToggleCommentAction();
+		
 		action = new FormatAction(RubyUIMessages.getResourceBundle(), "Format.", this);
 		action.setActionDefinitionId(IRubyEditorActionDefinitionIds.FORMAT);
 		setAction("Format", action);
 
 		actionGroup = new RubyActionGroup(this, ITextEditorActionConstants.GROUP_EDIT);
+	}
+	
+	/**
+	 * Configures the toggle comment action
+	 * 
+	 * @since 3.0
+	 */
+	private void configureToggleCommentAction() {
+		IAction action= getAction("ToggleComment"); //$NON-NLS-1$
+		if (action instanceof ToggleCommentAction) {
+			ISourceViewer sourceViewer= getSourceViewer();
+			SourceViewerConfiguration configuration= getSourceViewerConfiguration();
+			((ToggleCommentAction)action).configure(sourceViewer, configuration);
+		}
 	}
 
 	/*
@@ -158,13 +183,13 @@ public class RubyEditor extends RubyAbstractEditor {
 		fProjectionSupport.addSummarizableAnnotationType("org.eclipse.ui.workbench.texteditor.error"); //$NON-NLS-1$
 		fProjectionSupport.addSummarizableAnnotationType("org.eclipse.ui.workbench.texteditor.warning"); //$NON-NLS-1$
 		// TODO Uncomment and set up a proper hover for code folding!
-		// fProjectionSupport.setHoverControlCreator(new
-		// IInformationControlCreator() {
-		// public IInformationControl createInformationControl(Shell shell) {
-		// return new CustomSourceInformationControl(shell,
-		// IDocument.DEFAULT_CONTENT_TYPE);
-		// }
-		// });
+//		 fProjectionSupport.setHoverControlCreator(new
+//		 IInformationControlCreator() {
+//		 public IInformationControl createInformationControl(Shell shell) {
+//		 return new CustomSourceInformationControl(shell,
+//		 IDocument.DEFAULT_CONTENT_TYPE);
+//		 }
+//		 });
 		fProjectionSupport.install();
 
 		fProjectionModelUpdater = RubyPlugin.getDefault().getFoldingStructureProviderRegistry().getCurrentFoldingProvider();
@@ -531,7 +556,7 @@ public class RubyEditor extends RubyAbstractEditor {
 		String property = event.getProperty();
 
 		if (PreferenceConstants.FORMAT_USE_TAB.equals(property) || PreferenceConstants.FORMAT_INDENTATION.equals(property)) {
-			// TODO Shouldn't the indent stuff really be in teh source viewer
+			// TODO Shouldn't the indent stuff really be in the source viewer
 			// configuration?
 			if (getSourceViewer() instanceof RubySourceViewer) {
 				((RubySourceViewer) getSourceViewer()).initializeTabReplace();

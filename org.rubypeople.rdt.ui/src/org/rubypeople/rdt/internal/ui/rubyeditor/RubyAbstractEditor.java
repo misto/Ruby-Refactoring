@@ -14,6 +14,9 @@ import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.swt.custom.StyledText;
 import org.eclipse.ui.IEditorInput;
+import org.eclipse.ui.IPartService;
+import org.eclipse.ui.IWorkbenchPart;
+import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.editors.text.EditorsUI;
 import org.eclipse.ui.editors.text.TextEditor;
 import org.eclipse.ui.texteditor.ChainedPreferenceStore;
@@ -144,11 +147,23 @@ public class RubyAbstractEditor extends TextEditor {
 			}
 		}
 		// FIXME Uncomment so we bring editor to top
-		// if (!isActivePart() && RubyPlugin.getActivePage() != null)
-		// RubyPlugin.getActivePage().bringToTop(this);
+		if (!isActivePart() && RubyPlugin.getActivePage() != null)
+		  RubyPlugin.getActivePage().bringToTop(this);
 
 		// setSelection(reference, !isActivePart());
 		setSelection(reference, true);
+	}
+	
+	protected boolean isActivePart() {
+		IWorkbenchPart part= getActivePart();
+		return part != null && part.equals(this);
+	}
+	
+	private IWorkbenchPart getActivePart() {
+		IWorkbenchWindow window= getSite().getWorkbenchWindow();
+		IPartService service= window.getPartService();
+		IWorkbenchPart part= service.getActivePart();
+		return part;
 	}
 
 	protected void setSelection(ISourceReference reference, boolean moveCursor) {
