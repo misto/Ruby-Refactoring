@@ -34,6 +34,7 @@ import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
+import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
@@ -126,7 +127,7 @@ public class TextEditorPreferencePage2 extends PreferencePage implements IWorkbe
 	private String[][] fQuickDiffProviderListModel;
 
 	public TextEditorPreferencePage2() {
-		
+
 		setDescription(RdtUiMessages.getString("RubyEditorPreferencePage.description")); //$NON-NLS-1$
 		setPreferenceStore(RdtUiPlugin.getDefault().getPreferenceStore());
 
@@ -157,10 +158,10 @@ public class TextEditorPreferencePage2 extends PreferencePage implements IWorkbe
 
 		overlayKeys.add(new OverlayPreferenceStore.OverlayKey(OverlayPreferenceStore.INT, PreferenceConstants.FORMAT_INDENTATION));
 		overlayKeys.add(new OverlayPreferenceStore.OverlayKey(OverlayPreferenceStore.BOOLEAN, PreferenceConstants.FORMAT_USE_TAB));
-		
+
 		overlayKeys.add(new OverlayPreferenceStore.OverlayKey(OverlayPreferenceStore.STRING, ExtendedTextEditorPreferenceConstants.EDITOR_PRINT_MARGIN_COLOR));
 		overlayKeys.add(new OverlayPreferenceStore.OverlayKey(OverlayPreferenceStore.INT, ExtendedTextEditorPreferenceConstants.EDITOR_PRINT_MARGIN_COLUMN));
-		
+
 		overlayKeys.add(new OverlayPreferenceStore.OverlayKey(OverlayPreferenceStore.BOOLEAN, ExtendedTextEditorPreferenceConstants.EDITOR_PRINT_MARGIN));
 
 		overlayKeys.add(new OverlayPreferenceStore.OverlayKey(OverlayPreferenceStore.BOOLEAN, ExtendedTextEditorPreferenceConstants.EDITOR_OVERVIEW_RULER));
@@ -175,9 +176,10 @@ public class TextEditorPreferencePage2 extends PreferencePage implements IWorkbe
 		overlayKeys.toArray(keys);
 		return new OverlayPreferenceStore(getPreferenceStore(), keys);
 	}
-	
-	
-	/* (non-Javadoc)
+
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see org.eclipse.jface.preference.PreferencePage#doGetPreferenceStore()
 	 */
 	protected IPreferenceStore doGetPreferenceStore() {
@@ -301,7 +303,7 @@ public class TextEditorPreferencePage2 extends PreferencePage implements IWorkbe
 
 		String label = TextEditorMessages.getString("TextEditorPreferencePage.displayedTabWidth"); //$NON-NLS-1$
 		addTextField(appearanceComposite, label, ExtendedTextEditorPreferenceConstants.EDITOR_TAB_WIDTH, 3, 0, true);
-		
+
 		label = TextEditorMessages.getString("TextEditorPreferencePage.printMarginColumn"); //$NON-NLS-1$
 		addTextField(appearanceComposite, label, ExtendedTextEditorPreferenceConstants.EDITOR_PRINT_MARGIN_COLUMN, 3, 0, true);
 
@@ -387,7 +389,7 @@ public class TextEditorPreferencePage2 extends PreferencePage implements IWorkbe
 				PreferenceConverter.setValue(fOverlayStore, key, fAppearanceColorEditor.getColorValue());
 			}
 		});
-		
+
 		return appearanceComposite;
 	}
 
@@ -400,13 +402,27 @@ public class TextEditorPreferencePage2 extends PreferencePage implements IWorkbe
 
 		String label = RdtUiMessages.getString("RubyEditorPropertyPage.indentation"); //$NON-NLS-1$
 		addTextField(codeFormatterComposite, label, PreferenceConstants.FORMAT_INDENTATION, 3, 0, true);
- 
+
 		label = RdtUiMessages.getString("RubyEditorPropertyPage.useTab"); //$NON-NLS-1$
 		addCheckBox(codeFormatterComposite, label, PreferenceConstants.FORMAT_USE_TAB, 0);
 
-		return codeFormatterComposite ;
-	}	
-	
+		Label labelControl = new Label(codeFormatterComposite, SWT.WRAP);
+		GridData gd = new GridData(GridData.HORIZONTAL_ALIGN_BEGINNING);
+		gd.horizontalIndent = 3;
+		gd.horizontalSpan = 2;
+		gd.grabExcessVerticalSpace = true;
+		labelControl.setLayoutData(gd);
+
+		Point parentSize = parent.computeSize(SWT.DEFAULT, SWT.DEFAULT, true);
+		gd.widthHint = parentSize.x;
+		labelControl.setText(RdtUiMessages.getString("RubyEditorPropertyPage.tabSpaceExplanation"));
+		labelControl.getParent().layout(true);
+
+		labelControl.setSize(300, SWT.DEFAULT);
+
+		return codeFormatterComposite;
+	}
+
 	private Control createQuickdiffPage(Composite parent) {
 		Composite composite = new Composite(parent, SWT.NONE);
 		GridLayout layout = new GridLayout();
@@ -507,7 +523,7 @@ public class TextEditorPreferencePage2 extends PreferencePage implements IWorkbe
 		GridLayout layout = new GridLayout();
 		layout.numColumns = 2;
 		composite.setLayout(layout);
-		
+
 		String checkBoxlabel = RdtUiMessages.getString("RubyEditorPreferencePage.createParserAnnotations"); //$NON-NLS-1$
 		addCheckBox(composite, checkBoxlabel, PreferenceConstants.CREATE_PARSER_ANNOTATIONS, 0);
 
@@ -743,8 +759,6 @@ public class TextEditorPreferencePage2 extends PreferencePage implements IWorkbe
 		return composite;
 	}
 
-
-
 	private void initialize() {
 
 		initializeFields();
@@ -830,6 +844,10 @@ public class TextEditorPreferencePage2 extends PreferencePage implements IWorkbe
 		fOverlayStore.loadDefaults();
 
 		initializeFields();
+
+		for (int i = 0; i < textPropertyWidgets.length; i++) {
+			textPropertyWidgets[i].loadDefault();
+		}
 
 		handleAppearanceColorListSelection();
 		handleAnnotationListSelection();
@@ -973,6 +991,11 @@ public class TextEditorPreferencePage2 extends PreferencePage implements IWorkbe
 			boldCheckBox = new Button(parent, SWT.CHECK);
 			boldCheckBox.setSelection(getPreferenceStore().getBoolean(property + RubyColorConstants.RUBY_ISBOLD_APPENDIX));
 			boldCheckBox.setLayoutData(new GridData(GridData.HORIZONTAL_ALIGN_END));
+		}
+
+		public void loadDefault() {
+			stringColorEditor.loadDefault();
+			boldCheckBox.setSelection(getPreferenceStore().getBoolean(property + RubyColorConstants.RUBY_ISBOLD_APPENDIX));
 		}
 	}
 }
