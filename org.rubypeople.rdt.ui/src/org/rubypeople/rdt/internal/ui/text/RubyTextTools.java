@@ -1,5 +1,6 @@
 package org.rubypeople.rdt.internal.ui.text;
 
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.StringTokenizer;
@@ -9,6 +10,7 @@ import org.eclipse.jface.text.IDocumentPartitioner;
 import org.eclipse.jface.text.rules.DefaultPartitioner;
 import org.eclipse.jface.text.rules.IPartitionTokenScanner;
 import org.eclipse.jface.text.rules.ITokenScanner;
+import org.eclipse.jface.util.PropertyChangeEvent;
 import org.rubypeople.rdt.internal.ui.RdtUiPlugin;
 import org.rubypeople.rdt.internal.ui.rubyeditor.RubyEditorPreferences;
 import org.rubypeople.rdt.internal.ui.text.ruby.RubyCodeScanner;
@@ -43,7 +45,7 @@ public class RubyTextTools {
 		return partitionScanner;
 	}
 
-	protected ITokenScanner getCodeScanner() {
+	public RubyCodeScanner getCodeScanner() {
 		return codeScanner;
 	}
 
@@ -82,4 +84,9 @@ public class RubyTextTools {
 
 		return keywords;
 	}
+	
+	public boolean affectsTextPresentation(PropertyChangeEvent event) {
+		return this.getCodeScanner().affectsTextPresentation(event) ;
+	}
+
 }

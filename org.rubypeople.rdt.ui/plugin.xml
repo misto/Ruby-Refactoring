@@ -19,7 +19,20 @@
       <import plugin="org.rubypeople.rdt.core"/>
    </requires>
 
-
+   <extension
+         point="org.eclipse.ui.preferencePages">
+      <page
+            name="%PreferencePage.RubyBase.name"
+            class="org.rubypeople.rdt.internal.ui.preferences.RubyBasePreferencePage"
+            id="org.rubypeople.rdt.ui.preferences.PreferencePageRubyBase">
+      </page>
+      <page
+            name="%PreferencePage.RubyEditor.name"
+            category="org.rubypeople.rdt.ui.preferences.PreferencePageRubyBase"
+            class="org.rubypeople.rdt.internal.ui.preferences.RubyEditorPreferencePage"
+            id="org.rubypeople.rdt.ui.preferences.PreferencePageRubyEditor">
+      </page>
+   </extension>
    <extension
          point="org.eclipse.ui.perspectives">
       <perspective

@@ -20,11 +20,15 @@ public class RubyColorProvider {
 	public Color getColor(String colorKey) {
 		Color color = (Color) colorMap.get(colorKey);
 		if (color == null) {
-			RGB rgb = PreferenceConverter.getDefaultColor(RdtUiPlugin.getDefault().getPreferenceStore(), colorKey);
+			RGB rgb = PreferenceConverter.getColor(RdtUiPlugin.getDefault().getPreferenceStore(), colorKey);
 			color = new Color(Display.getCurrent(), rgb);
 			colorMap.put(colorKey, color);
 		}
 
 		return color;
+	}
+	
+	public void removeColor(String colorKey) {
+		colorMap.remove(colorKey) ;
 	}
 }
