@@ -53,22 +53,8 @@ public class RubyOutlineContentProvider implements ITreeContentProvider, IDocume
 	}
 
 	public Object[] getElements(Object inputElement) {
-		try {
-			RubyScript script = null;
-			IDocument doc = null;
-			try {
-				doc = (IDocument) inputElement;
-				script = RubyParser.parse(doc.get());
-			} catch (ParseException e) {
-				RubyPlugin.log(new RuntimeException(e));
-				return new Object[0];
-			}
-			createMarkers(script, doc);
-			return script.getElements();
-		} catch (CoreException e1) {
-			RubyPlugin.log(e1);
-		}
-		return new Object[0];
+		IRubyElement element = (IRubyElement) inputElement;
+		return element.getElements();
 	}
 
 	/**
@@ -111,8 +97,9 @@ public class RubyOutlineContentProvider implements ITreeContentProvider, IDocume
 
 	public void inputChanged(Viewer viewer, Object oldInput, Object newInput) {
 		this.viewer = viewer;
-		if (oldInput != null) ((IDocument) oldInput).removeDocumentListener(this);
-		if (newInput != null) ((IDocument) newInput).addDocumentListener(this);
+		RubyPlugin.log(	"Input changed, " + newInput.getClass().getName() );
+		//if (oldInput != null) ((IDocument) oldInput).removeDocumentListener(this);
+		//if (newInput != null) ((IDocument) newInput).addDocumentListener(this);
 	}
 
 	public void documentAboutToBeChanged(DocumentEvent event) {}
