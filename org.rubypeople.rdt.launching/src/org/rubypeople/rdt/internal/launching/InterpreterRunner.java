@@ -8,6 +8,7 @@ import java.util.Map;
 
 import org.eclipse.core.boot.BootLoader;
 import org.eclipse.core.resources.IProject;
+import org.eclipse.core.runtime.Path;
 import org.eclipse.debug.core.DebugPlugin;
 import org.eclipse.debug.core.ILaunch;
 import org.eclipse.debug.core.model.IProcess;
@@ -73,8 +74,9 @@ public class InterpreterRunner {
 		while (referencedProjects.hasNext()) {
 			addToLoadPath(loadPath, (IProject) referencedProjects.next());
 		}
-
-		loadPath.append(" -I " + osDependentPath(configuration.getAbsoluteFileDirectory())) ;
+		if (new Path(configuration.getFileName()).segmentCount() > 1) { ;
+			loadPath.append(" -I " + osDependentPath(configuration.getAbsoluteFileDirectory())) ;
+		}
 		return loadPath.toString();
 	}
 
