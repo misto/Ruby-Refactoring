@@ -373,7 +373,7 @@ class DEBUGGER__
           #@printer.debug("binding=%s", binding)
           localVars = eval("local_variables", binding)
           # v 1.8.1 dies in eval @printer.debug("HERE") 
-          if eval('self.to_s', binding) !~ "main" then
+          if eval('self.to_s', binding) !~ /"main"/ then
             localVars << "self"
           end
           var_list(localVars, binding, 'local')
@@ -1110,6 +1110,7 @@ class DEBUGGER__
   end
 
   def DEBUGGER__.readCommandLoop()
+    sleep(1.0) # workaround for large files with ruby 1.6.8, otherwise parse exceptions
     loop do
       sleep(0.1)
       newData, x, y = IO.select( [socket], nil, nil, 0.001 )    
@@ -1143,7 +1144,7 @@ class DEBUGGER__
   end
 
   server = TCPServer.new('localhost', ECLIPSE_LISTEN_PORT)
-  puts "ruby debugger listens on port #{ECLIPSE_LISTEN_PORT}"
+  puts "ruby #{RUBY_VERSION} debugger listens on port #{ECLIPSE_LISTEN_PORT}"
   $stdout.flush
   @@socket = server.accept
   @@printer = XmlPrinter.new(@@socket)
