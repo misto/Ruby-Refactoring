@@ -1,6 +1,8 @@
 package org.rubypeople.rdt.testunit.launcher;
 
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IPath;
+import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.debug.core.ILaunchConfiguration;
 import org.rubypeople.rdt.internal.launching.InterpreterRunnerConfiguration;
@@ -22,6 +24,28 @@ public class TestUnitRunnerConfiguration extends InterpreterRunnerConfiguration 
 			}
 		}
 		return filename;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.rubypeople.rdt.internal.launching.InterpreterRunnerConfiguration#getAbsoluteFileDirectory()
+	 */
+	public String getAbsoluteFileDirectory() {
+		IPath path = new Path(this.getFileName());
+		path = path.removeLastSegments(1);
+		return path.toOSString();
+	}
+
+	public String getAbsoluteTestFileName() {
+		String fileName = "";
+		try {
+			fileName = configuration.getAttribute(TestUnitLaunchConfiguration.LAUNCH_CONTAINER_ATTR, "");
+		} catch (CoreException e) {}
+
+		IPath path = new Path(fileName);
+		path = path.removeLastSegments(1);
+		return path.toOSString();
 	}
 
 	/*
