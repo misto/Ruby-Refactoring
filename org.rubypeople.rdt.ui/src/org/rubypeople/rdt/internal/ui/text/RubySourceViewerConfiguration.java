@@ -89,7 +89,6 @@ public class RubySourceViewerConfiguration extends SourceViewerConfiguration {
     public IReconciler getReconciler(ISourceViewer sourceViewer) {
 	    NotifyingReconciler reconciler= new NotifyingReconciler(new RubyReconcilingStrategy(textEditor), true);
 	    reconciler.setDelay(RubyReconcilingStrategy.DELAY);
-	    reconciler.addReconcilingParticipant(textEditor);
 	    return reconciler;
     }
 	
