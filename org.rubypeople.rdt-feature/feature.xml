@@ -2,7 +2,7 @@
 <feature
       id="org.rubypeople.rdt"
       label="Ruby Development Tools"
-      version="0.4.2"
+      version="0.5.0"
       provider-name="RubyPeople">
 
    <description>
