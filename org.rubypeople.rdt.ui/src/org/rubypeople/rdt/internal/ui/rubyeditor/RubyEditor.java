@@ -41,7 +41,7 @@ import org.eclipse.ui.texteditor.ITextEditorActionConstants;
 import org.eclipse.ui.texteditor.TextOperationAction;
 import org.eclipse.ui.texteditor.link.EditorLinkedModeUI;
 import org.eclipse.ui.views.contentoutline.IContentOutlinePage;
-import org.rubypeople.rdt.internal.ui.RdtUiMessages;
+import org.rubypeople.rdt.internal.ui.RubyUIMessages;
 import org.rubypeople.rdt.internal.ui.RubyPlugin;
 import org.rubypeople.rdt.internal.ui.text.IRubyPartitions;
 import org.rubypeople.rdt.internal.ui.text.RubyHeuristicScanner;
@@ -88,19 +88,19 @@ public class RubyEditor extends RubyAbstractEditor {
 	protected void createActions() {
 		super.createActions();
 
-		Action action = new ContentAssistAction(RdtUiMessages.getResourceBundle(), "ContentAssistProposal.", this);
+		Action action = new ContentAssistAction(RubyUIMessages.getResourceBundle(), "ContentAssistProposal.", this);
 		action.setActionDefinitionId(RubyEditorActionDefinitionIds.CONTENT_ASSIST_PROPOSALS);
 		setAction("ContentAssistProposal", action);
 
-		action = new TextOperationAction(RdtUiMessages.getResourceBundle(), "Comment.", this, ITextOperationTarget.PREFIX);
+		action = new TextOperationAction(RubyUIMessages.getResourceBundle(), "Comment.", this, ITextOperationTarget.PREFIX);
 		action.setActionDefinitionId(RubyEditorActionDefinitionIds.COMMENT);
 		setAction("Comment", action);
 
-		action = new TextOperationAction(RdtUiMessages.getResourceBundle(), "Uncomment.", this, ITextOperationTarget.STRIP_PREFIX);
+		action = new TextOperationAction(RubyUIMessages.getResourceBundle(), "Uncomment.", this, ITextOperationTarget.STRIP_PREFIX);
 		action.setActionDefinitionId(RubyEditorActionDefinitionIds.UNCOMMENT);
 		setAction("Uncomment", action);
 
-		action = new FormatAction(RdtUiMessages.getResourceBundle(), "Format.", this);
+		action = new FormatAction(RubyUIMessages.getResourceBundle(), "Format.", this);
 		action.setActionDefinitionId(RubyEditorActionDefinitionIds.FORMAT);
 		setAction("Format", action);
 

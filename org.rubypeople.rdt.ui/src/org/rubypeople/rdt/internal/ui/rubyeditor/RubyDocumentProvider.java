@@ -38,7 +38,7 @@ import org.rubypeople.rdt.core.IRubyScript;
 import org.rubypeople.rdt.core.RubyCore;
 import org.rubypeople.rdt.core.RubyModelException;
 import org.rubypeople.rdt.core.parser.IProblem;
-import org.rubypeople.rdt.internal.ui.RdtUiImages;
+import org.rubypeople.rdt.internal.ui.RubyPluginImages;
 import org.rubypeople.rdt.internal.ui.RubyPlugin;
 import org.rubypeople.rdt.internal.ui.text.ruby.IProblemRequestorExtension;
 import org.rubypeople.rdt.ui.PreferenceConstants;
@@ -227,11 +227,10 @@ public class RubyDocumentProvider extends TextFileDocumentProvider {
 			fProblem= problem;
 			fRubyScript= cu;
 
-			// FIXME Uncomment and send up tasks as well!
-//			if (IProblem.Task == fProblem.getID()) {
-//				setType(RubyMarkerAnnotation.TASK_ANNOTATION_TYPE);
-//				fLayer= TASK_LAYER;
-//			} else 
+			if (fProblem.isTask()) {
+				setType(RubyMarkerAnnotation.TASK_ANNOTATION_TYPE);
+				fLayer= TASK_LAYER;
+			} else 
 				if (fProblem.isWarning()) {
 				setType(RubyMarkerAnnotation.WARNING_ANNOTATION_TYPE);
 				fLayer= WARNING_LAYER;
@@ -257,8 +256,8 @@ public class RubyDocumentProvider extends TextFileDocumentProvider {
 				// TODO Check with the correction processor (when we have one)!
 				if (isProblem() && indicateQuixFixableProblems() /*&& JavaCorrectionProcessor.hasCorrections(this)*/) { // no light bulb for tasks
 					if (!fgQuickFixImagesInitialized) {
-						fgQuickFixImage= RdtUiImages.get(RdtUiImages.IMG_OBJS_FIXABLE_PROBLEM);
-						fgQuickFixErrorImage= RdtUiImages.get(RdtUiImages.IMG_OBJS_FIXABLE_ERROR);
+						fgQuickFixImage= RubyPluginImages.get(RubyPluginImages.IMG_OBJS_FIXABLE_PROBLEM);
+						fgQuickFixErrorImage= RubyPluginImages.get(RubyPluginImages.IMG_OBJS_FIXABLE_ERROR);
 						fgQuickFixImagesInitialized= true;
 					}
 					if (RubyMarkerAnnotation.ERROR_ANNOTATION_TYPE.equals(getType()))

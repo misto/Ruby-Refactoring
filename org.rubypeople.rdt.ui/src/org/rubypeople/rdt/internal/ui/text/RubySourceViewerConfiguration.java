@@ -9,6 +9,7 @@ import org.eclipse.jface.text.presentation.PresentationReconciler;
 import org.eclipse.jface.text.reconciler.IReconciler;
 import org.eclipse.jface.text.rules.DefaultDamagerRepairer;
 import org.eclipse.jface.text.rules.ITokenScanner;
+import org.eclipse.jface.text.source.IAnnotationHover;
 import org.eclipse.jface.text.source.ISourceViewer;
 import org.eclipse.jface.text.source.SourceViewerConfiguration;
 import org.eclipse.ui.texteditor.ITextEditor;
@@ -81,6 +82,13 @@ public class RubySourceViewerConfiguration extends SourceViewerConfiguration {
 
 		RubyContentAssistPreference.configure(contentAssistant, getPreferenceStore());
 		return contentAssistant;
+	}
+	
+	/*
+	 * @see SourceViewerConfiguration#getAnnotationHover(ISourceViewer)
+	 */
+	public IAnnotationHover getAnnotationHover(ISourceViewer sourceViewer) {
+		return new RubyAnnotationHover(RubyAnnotationHover.VERTICAL_RULER_HOVER);
 	}
 	
 	/**
