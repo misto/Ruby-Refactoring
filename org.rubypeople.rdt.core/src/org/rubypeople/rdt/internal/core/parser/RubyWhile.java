@@ -35,9 +35,9 @@ package org.rubypeople.rdt.internal.core.parser;
 public class RubyWhile extends RubyBlock {
 
 	/**
-	 * @param i
+	 * @param start
 	 */
-	public RubyWhile(int i) {
-		super("while", i);
+	public RubyWhile(Position start) {
+		super("while", start);
 	}
 }

@@ -34,11 +34,11 @@ package org.rubypeople.rdt.internal.core.parser;
 public class RubyMethod extends RubyElement {
 
 	/**
-	 * @param string
-	 * @param i
+	 * @param name
+	 * @param start
 	 */
-	public RubyMethod(String string, int i) {
-		super(string, i);
+	public RubyMethod(String name, Position start) {
+		super(name, start);
 		access = PUBLIC;
 	}
 	

@@ -37,7 +37,7 @@ public class RubyBegin extends RubyBlock {
 	/**
 	 * @param i
 	 */
-	public RubyBegin(int i) {
-		super("begin", i);
+	public RubyBegin(Position pos) {
+		super("begin", pos);
 	}
 }

@@ -35,7 +35,7 @@ public class RubyCase extends RubyBlock {
 	/**
 	 * @param start
 	 */
-	public RubyCase(int start) {
+	public RubyCase(Position start) {
 		super("case", start);
 	}
 }

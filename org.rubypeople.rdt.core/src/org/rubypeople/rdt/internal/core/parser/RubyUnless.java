@@ -35,7 +35,7 @@ public class RubyUnless extends RubyBlock {
 	/**
 	 * @param start
 	 */
-	public RubyUnless(int start) {
+	public RubyUnless(Position start) {
 		super("unless", start);
 	}
 }

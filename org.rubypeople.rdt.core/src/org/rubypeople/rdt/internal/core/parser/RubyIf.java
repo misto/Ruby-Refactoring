@@ -32,7 +32,7 @@ package org.rubypeople.rdt.internal.core.parser;
  */
 public class RubyIf extends RubyBlock {
 
-	public RubyIf(int start) {
+	public RubyIf(Position start) {
 		super("if", start);
 	}
 }

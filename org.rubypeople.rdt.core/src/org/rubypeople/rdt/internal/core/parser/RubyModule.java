@@ -34,11 +34,11 @@ package org.rubypeople.rdt.internal.core.parser;
 public class RubyModule extends RubyElement {
 
 	/**
-	 * @param string
-	 * @param i
+	 * @param name
+	 * @param start
 	 */
-	public RubyModule(String string, int i) {
-		super(string, i);
+	public RubyModule(String name, Position start) {
+		super(name, start);
 	}
 	
 	/* (non-Javadoc)

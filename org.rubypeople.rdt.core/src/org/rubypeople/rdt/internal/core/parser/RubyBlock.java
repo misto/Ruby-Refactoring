@@ -32,7 +32,7 @@ package org.rubypeople.rdt.internal.core.parser;
  */
 public class RubyBlock extends RubyElement {
 
-	public RubyBlock(String name, int start) {
+	public RubyBlock(String name, Position start) {
 		super(name, start);
 	}
 
@@ -55,7 +55,8 @@ public class RubyBlock extends RubyElement {
 	 * @see org.rubypeople.rdt.core.tests.core.parser.TDDRubyElement#hashCode()
 	 */
 	public int hashCode() {
-		return Integer.toString(start).hashCode();
+		String string =  Integer.toString(start.getLineNumber()) + Integer.toString(start.getOffset());
+		return string.hashCode();
 	}
 	
 	public boolean isOutlineElement() {

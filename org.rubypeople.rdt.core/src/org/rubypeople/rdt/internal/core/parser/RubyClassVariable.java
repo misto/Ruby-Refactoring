@@ -37,9 +37,9 @@ public class RubyClassVariable extends RubyElement {
 	 * @param name
 	 * @param start
 	 */
-	public RubyClassVariable(String name, int start) {
+	public RubyClassVariable(String name, Position start) {
 		super(name, start);
-		setEnd(start + name.length());
+		setEnd(new Position(start.getLineNumber(), start.getOffset() + name.length()));
 	}
 	
 	 

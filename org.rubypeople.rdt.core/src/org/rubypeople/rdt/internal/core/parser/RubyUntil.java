@@ -35,7 +35,7 @@ public class RubyUntil extends RubyBlock {
 	/**
 	 * @param start
 	 */
-	public RubyUntil(int start) {
+	public RubyUntil(Position start) {
 		super("until", start);
 	}
 }

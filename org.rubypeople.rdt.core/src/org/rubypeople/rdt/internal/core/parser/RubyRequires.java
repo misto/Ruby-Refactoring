@@ -35,10 +35,10 @@ public class RubyRequires extends RubyElement {
 
 	/**
 	 * @param string
-	 * @param i
+	 * @param start
 	 */
-	public RubyRequires(String string, int i, int j) {
-		super(string, i);
-		setEnd(j);
+	public RubyRequires(String string, Position start) {
+		super(string, start);
+		setEnd(new Position(start.getLineNumber(), name.length() + start.getOffset()));
 	}
 }

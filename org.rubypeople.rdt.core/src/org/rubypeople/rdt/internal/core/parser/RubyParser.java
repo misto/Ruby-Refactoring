@@ -55,35 +55,37 @@ public class RubyParser {
 		openElements.add(script);
 		BufferedReader reader = new BufferedReader(new StringReader(string));
 		String curLine = null;
+		int lineNum = 0;
 		int offset = 0;
 		try {
 			while ((curLine = reader.readLine()) != null) {
 				String myLine = removeAfterPoundSymbol(curLine);
-				findBegin(myLine, offset);
-				findIf(myLine, offset);
-				findCase(myLine, offset);
-				findUnless(myLine, offset);
-				findUntil(myLine, offset);
-				findWhile(myLine, offset);
-				findFor(myLine, offset);
-				findRequires(myLine, offset);
-				findModule(myLine, offset);
-				findClass(myLine, offset);
-				findMethod(myLine, offset);
-				findClassVariable(myLine, offset);
-				findInstanceVariable(myLine, offset);
-				findGlobal(myLine, offset);
+				findBegin(myLine, lineNum);
+				findIf(myLine, lineNum);
+				findCase(myLine, lineNum);
+				findUnless(myLine, lineNum);
+				findUntil(myLine, lineNum);
+				findWhile(myLine, lineNum);
+				findFor(myLine, lineNum);
+				findRequires(myLine, lineNum);
+				findModule(myLine, lineNum);
+				findClass(myLine, lineNum);
+				findMethod(myLine, lineNum);
+				findClassVariable(myLine, lineNum);
+				findInstanceVariable(myLine, lineNum);
+				findGlobal(myLine, lineNum);
 				findPrivateModifier(myLine);
 				findAttributeReaderModifier(myLine);
 				findAttributeWriterModifier(myLine);
 				findAttributeAccessor(myLine);
-				findEnd(myLine, offset);
-				offset += curLine.length();
+				findEnd(myLine, lineNum);
+				offset = 0;
+				lineNum++;
 			}
 		} catch (IOException e) {
 			throw new ParseException(e);
 		}
-		script.setEnd(offset);
+		script.setEnd(new Position(lineNum, offset));
 
 		cleanUp();
 		return script;
@@ -167,13 +169,13 @@ public class RubyParser {
 	}
 
 	/**
-	 * @param offset
+	 * @param lineNum
 	 * @param myLine
 	 */
-	private static void findBegin(String myLine, int offset) {
+	private static void findBegin(String myLine, int lineNum) {
 		int beginIndex = myLine.indexOf("begin");
 		if (beginIndex != -1) {
-			RubyBegin begin = new RubyBegin(offset + beginIndex);
+			RubyBegin begin = new RubyBegin(new Position(lineNum, beginIndex));
 			RubyElement element = peek();
 			element.addElement(begin);
 			openElements.add(begin);
@@ -181,13 +183,13 @@ public class RubyParser {
 	}
 
 	/**
-	 * @param offset
+	 * @param lineNum
 	 * @param myLine
 	 */
-	private static void findFor(String myLine, int offset) {
+	private static void findFor(String myLine, int lineNum) {
 		int forIndex = myLine.indexOf("for ");
 		if ((forIndex != -1) && (!inQuotes(forIndex, myLine))) {
-			RubyFor rubyFor = new RubyFor(offset + forIndex);
+			RubyFor rubyFor = new RubyFor(new Position(lineNum, forIndex));
 			RubyElement element = peek();
 			element.addElement(rubyFor);
 			openElements.add(rubyFor);
@@ -195,14 +197,14 @@ public class RubyParser {
 	}
 
 	/**
-	 * @param offset
+	 * @param lineNum
 	 * @param myLine
 	 */
-	private static void findWhile(String myLine, int offset) {
+	private static void findWhile(String myLine, int lineNum) {
 		Matcher whileMatcher = Pattern.compile("^(;\\s+)?\\s*while ").matcher(myLine);
 		if (whileMatcher.find()) {
 			int start = whileMatcher.end() - 6;
-			RubyWhile rubyWhile = new RubyWhile(start + offset);
+			RubyWhile rubyWhile = new RubyWhile(new Position(lineNum, start));
 			RubyElement element = peek();
 			if (!(element instanceof RubyCase)) {
 				element.addElement(rubyWhile);
@@ -249,13 +251,13 @@ public class RubyParser {
 
 	/**
 	 * @param curLine
-	 * @param offset
+	 * @param lineNum
 	 */
-	private static void findUntil(String curLine, int offset) {
+	private static void findUntil(String curLine, int lineNum) {
 		Matcher untilMatcher = Pattern.compile("^(;\\s+)?\\s*until ").matcher(curLine);
 		if (untilMatcher.find()) {
 			int start = untilMatcher.end() - 6;
-			RubyUntil until = new RubyUntil(start + offset);
+			RubyUntil until = new RubyUntil(new Position(lineNum, start));
 			RubyElement element = peek();
 			element.addElement(until);
 			openElements.add(until);
@@ -264,12 +266,13 @@ public class RubyParser {
 
 	/**
 	 * @param curLine
+	 * @param lineNum
 	 */
-	private static void findCase(String curLine, int offset) {
+	private static void findCase(String curLine, int lineNum) {
 		Matcher caseMatcher = Pattern.compile("^(;\\s+)?\\s*case ").matcher(curLine);
 		if (caseMatcher.find()) {
 			int start = caseMatcher.end() - 5;
-			RubyCase rubyCase = new RubyCase(start + offset);
+			RubyCase rubyCase = new RubyCase(new Position(lineNum, start));
 			RubyElement element = peek();
 			element.addElement(rubyCase);
 			openElements.add(rubyCase);
@@ -278,12 +281,13 @@ public class RubyParser {
 
 	/**
 	 * @param curLine
+	 * @param lineNum
 	 */
-	private static void findUnless(String curLine, int offset) {
+	private static void findUnless(String curLine, int lineNum) {
 		Matcher unlessMatcher = Pattern.compile("^(;\\s+)?\\s*unless ").matcher(curLine);
 		if (unlessMatcher.find()) {
 			int unlessIndex = unlessMatcher.end() - 7;
-			RubyUnless unless = new RubyUnless(offset + unlessIndex);
+			RubyUnless unless = new RubyUnless(new Position(lineNum, unlessIndex));
 			RubyElement element = peek();
 			element.addElement(unless);
 			openElements.add(unless);
@@ -292,13 +296,13 @@ public class RubyParser {
 
 	/**
 	 * @param curLine
-	 * @param offset
+	 * @param lineNum
 	 */
-	private static void findIf(String curLine, int offset) {
+	private static void findIf(String curLine, int lineNum) {
 		Matcher ifMatcher = Pattern.compile("^(;\\s+)?\\s*if ").matcher(curLine);
 		if (ifMatcher.find()) {
 			int ifIndex = ifMatcher.end() - 3;
-			RubyIf rubyIf = new RubyIf(offset + ifIndex);
+			RubyIf rubyIf = new RubyIf(new Position(lineNum, ifIndex));
 			RubyElement element = peek();
 			log("Adding if block to open element: " + element);
 			element.addElement(rubyIf);
@@ -308,26 +312,26 @@ public class RubyParser {
 
 	/**
 	 * @param curLine
-	 * @param offset
+	 * @param lineNum
 	 */
-	private static void findGlobal(String curLine, int offset) {
+	private static void findGlobal(String curLine, int lineNum) {
 		int globalIndex = curLine.indexOf("$");
 		if (globalIndex != -1) {
 			String name = getToken("$", VARIABLE_END_CHARS, curLine);
-			RubyGlobal global = new RubyGlobal(name, offset + globalIndex + 1);
+			RubyGlobal global = new RubyGlobal(name, new Position(lineNum, globalIndex + 1));
 			script.addElement(global);
 		}
 	}
 
 	/**
 	 * @param curLine
-	 * @param offset
+	 * @param lineNum
 	 */
-	private static void findClassVariable(String curLine, int offset) {
+	private static void findClassVariable(String curLine, int lineNum) {
 		int instanceIndex = curLine.indexOf("@@");
 		if (instanceIndex != -1) {
 			String name = getToken("@@", VARIABLE_END_CHARS, curLine);
-			RubyClassVariable variable = new RubyClassVariable(name, offset + instanceIndex + "@@".length());
+			RubyClassVariable variable = new RubyClassVariable(name, new Position(lineNum, instanceIndex + "@@".length()));
 			RubyElement element = peek();
 			element.addElement(variable);
 		}
@@ -335,15 +339,15 @@ public class RubyParser {
 
 	/**
 	 * @param curLine
-	 * @param offset
+	 * @param lineNum
 	 */
-	private static void findInstanceVariable(String curLine, int offset) {
+	private static void findInstanceVariable(String curLine, int lineNum) {
 		int instanceIndex = curLine.indexOf("@");
 		if (instanceIndex != -1) {
 			if (curLine.indexOf("@@") != -1) return;
 			String name = getToken("@", VARIABLE_END_CHARS, curLine);
 			log("Found instance variable: " + name);
-			RubyInstanceVariable variable = new RubyInstanceVariable(name, offset + instanceIndex + "@".length());
+			RubyInstanceVariable variable = new RubyInstanceVariable(name, new Position(lineNum, instanceIndex + "@".length()));
 			RubyElement element = findParentClassOrModule();
 			if (element != null) {
 				element.addElement(variable);
@@ -368,26 +372,28 @@ public class RubyParser {
 
 	/**
 	 * @param curLine
-	 * @param offset
+	 * @param lineNum
 	 */
-	private static void findEnd(String curLine, int offset) {
+	private static void findEnd(String curLine, int lineNum) {
 		int endIndex = curLine.indexOf("end");
 		if (endIndex != -1) {
 			log("Found end: " + curLine);
-			closeLastOpenElement(offset + endIndex);
+			closeLastOpenElement(lineNum, endIndex);
 		}
 	}
 
 	/**
 	 * @param curLine
+	 * @param lineNum
 	 */
-	private static void findRequires(String curLine, int offset) {
-		int requiresIndex = curLine.indexOf("require");
+	private static void findRequires(String curLine, int lineNum) {
+		int requiresIndex = curLine.indexOf("require ");
 		if (requiresIndex != -1) {
 			log("Found requires: " + curLine);
 			int start = requiresIndex + "require \"".length();
+			if (start == curLine.length() ) return;			
 			String name = curLine.substring(start, curLine.length() - 1);
-			RubyRequires requires = new RubyRequires(name, offset + start, offset + start + name.length());
+			RubyRequires requires = new RubyRequires(name, new Position(lineNum, start));
 			if (!script.contains(requires)) {
 				script.addRequires(requires);
 			} else {
@@ -398,15 +404,16 @@ public class RubyParser {
 
 	/**
 	 * @param curLine
+	 * @param lineNum
 	 */
-	private static void findClass(String curLine, int offset) {
+	private static void findClass(String curLine, int lineNum) {
 		int classIndex = curLine.indexOf("class");
 		if (classIndex != -1) {
 			log("Found class start: " + curLine);
 			int start = classIndex + "class ".length();
 			String name = curLine.substring(start);
 			if (Character.isLowerCase(name.charAt(0))) script.addParseError(new ParseException("Class names should begin with an uppercase letter."));
-			RubyClass rubyClass = new RubyClass(name, start + offset);
+			RubyClass rubyClass = new RubyClass(name, new Position(lineNum, start));
 			RubyElement element = peek();
 			log("Adding class to open element: " + element);
 			element.addElement(rubyClass);
@@ -416,15 +423,16 @@ public class RubyParser {
 
 	/**
 	 * @param curLine
+	 * @param lineNum
 	 */
-	private static void findModule(String curLine, int offset) {
+	private static void findModule(String curLine, int lineNum) {
 		int moduleIndex = curLine.indexOf("module");
 		if (moduleIndex != -1) {
 			log("Found module start: " + curLine);
 			int start = moduleIndex + "module ".length();
 			String name = curLine.substring(start);
 			if (Character.isLowerCase(name.charAt(0))) script.addParseError(new ParseException("Module names should begin with an uppercase letter."));
-			RubyModule module = new RubyModule(name, start + offset);
+			RubyModule module = new RubyModule(name, new Position(lineNum, start));
 			script.addModule(module);
 			openElements.add(module);
 		}
@@ -432,15 +440,15 @@ public class RubyParser {
 
 	/**
 	 * @param curLine
-	 * @param offset
+	 * @param lineNum
 	 */
-	private static void findMethod(String curLine, int offset) {
+	private static void findMethod(String curLine, int lineNum) {
 		int methodIndex = curLine.indexOf("def");
 		if (methodIndex != -1) {
 			log("Found method start: " + curLine);
 			int start = methodIndex + "def ".length();
 			String name = getMethodName(curLine);
-			RubyMethod method = new RubyMethod(name, offset + start);
+			RubyMethod method = new RubyMethod(name, new Position(lineNum, start));
 			log("method = " + method);
 			RubyElement element = peek();
 			log("Adding method to open element: " + element);
@@ -502,9 +510,9 @@ public class RubyParser {
 	/**
 	 *  
 	 */
-	private static void closeLastOpenElement(int end) {
+	private static void closeLastOpenElement(int endLine, int offset) {
 		RubyElement elem = (RubyElement) openElements.remove(openElements.size() - 1);
-		elem.setEnd(end);
+		elem.setEnd(new Position(endLine, offset));
 		log("Closed element:" + elem);
 	}
 }

@@ -37,9 +37,9 @@ public class RubyGlobal extends RubyElement {
 	 * @param name
 	 * @param start
 	 */
-	public RubyGlobal(String name, int start) {
+	public RubyGlobal(String name, Position start) {
 		super(name, start);
-		setEnd(start + name.length());
+		setEnd(new Position(start.getLineNumber(), start.getOffset() + name.length()));
 	}
 	
 	

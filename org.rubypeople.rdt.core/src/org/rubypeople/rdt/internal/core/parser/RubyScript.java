@@ -36,7 +36,7 @@ public class RubyScript extends RubyElement {
 	private static final String DEFAULT_NAME = "DEFAULT_NAME";
 	
 	public RubyScript() {
-		super(DEFAULT_NAME, 0);
+		super(DEFAULT_NAME, new Position(0,0));
 	}
 
 	/**

@@ -31,11 +31,11 @@ package org.rubypeople.rdt.internal.core.parser;
  */
 public class RubyClass extends RubyElement {
 	/**
-	 * @param string
-	 * @param i
+	 * @param name
+	 * @param start
 	 */
-	public RubyClass(String string, int i) {
-		super(string, i);
+	public RubyClass(String name, Position start) {
+		super(name, start);
 	}
 	/*
 	 * (non-Javadoc)

@@ -40,8 +40,8 @@ public class RubyElement implements IRubyElement {
 
 	protected String access;
 	protected String name;
-	protected int start;
-	protected int end;
+	protected Position start;
+	protected Position end;
 	protected Set elements = new HashSet();
 
 	public static final String PUBLIC = "public";
@@ -49,7 +49,7 @@ public class RubyElement implements IRubyElement {
 	public static final String READ = "read";
 	public static final String WRITE = "write";
 
-	protected RubyElement(String name, int start) {
+	protected RubyElement(String name, Position start) {
 		this.start = start;
 		this.name = name;
 	}
@@ -64,14 +64,14 @@ public class RubyElement implements IRubyElement {
 	/**
 	 * @return
 	 */
-	public int getStart() {
+	public Position getStart() {
 		return start;
 	}
 
 	/**
 	 * @return
 	 */
-	public int getEnd() {
+	public Position getEnd() {
 		return end;
 	}
 
@@ -81,7 +81,7 @@ public class RubyElement implements IRubyElement {
 	public String getAccess() {
 		return access;
 	}
-	
+
 	public void setAccess(String newAccess) {
 		access = newAccess;
 	}
@@ -111,7 +111,7 @@ public class RubyElement implements IRubyElement {
 	/**
 	 * @param end
 	 */
-	public void setEnd(int end) {
+	public void setEnd(Position end) {
 		this.end = end;
 	}
 
@@ -158,9 +158,15 @@ public class RubyElement implements IRubyElement {
 		Set outlineElements = new HashSet();
 		for (Iterator iter = elements.iterator(); iter.hasNext();) {
 			RubyElement element = (RubyElement) iter.next();
-			if (element.isOutlineElement()) outlineElements.add(element);
+			if (element.isOutlineElement())
+				outlineElements.add(element);
 			else {
-				outlineElements.add(Arrays.asList(element.getElements()));
+				Object[] elements = element.getElements();
+				if (elements.length > 0) {
+					outlineElements.add(Arrays.asList(elements));
+				} else {
+					continue;
+				}
 			}
 		}
 		return outlineElements.toArray();
@@ -172,7 +178,7 @@ public class RubyElement implements IRubyElement {
 	 * @see org.rubypeople.rdt.internal.core.parser.IRubyElement#hasElements()
 	 */
 	public boolean hasElements() {
-		return !elements.isEmpty();
+		return getElements().length > 0;
 	}
 
 	/*

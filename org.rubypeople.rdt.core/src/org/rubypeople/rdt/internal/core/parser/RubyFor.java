@@ -35,9 +35,9 @@ package org.rubypeople.rdt.internal.core.parser;
 public class RubyFor extends RubyBlock {
 
 	/**
-	 * @param i
+	 * @param start
 	 */
-	public RubyFor(int i) {
-		super("for", i);
+	public RubyFor(Position start) {
+		super("for", start);
 	}
 }
