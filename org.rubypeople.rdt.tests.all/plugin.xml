@@ -13,6 +13,7 @@
       <import plugin="org.rubypeople.rdt.debug.ui.tests"/>
       <import plugin="org.rubypeople.rdt.core.tests"/>
       <import plugin="org.rubypeople.rdt.launching.tests"/>
+      <import plugin="org.rubypeople.eclipse.testutils"/>
    </requires>
 
 

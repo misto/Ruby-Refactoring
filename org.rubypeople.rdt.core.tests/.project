@@ -8,6 +8,7 @@
 		<project>org.eclipse.core.runtime</project>
 		<project>org.junit</project>
 		<project>org.rubypeople.eclipse.shams</project>
+		<project>org.rubypeople.eclipse.testutils</project>
 		<project>org.rubypeople.rdt.core</project>
 	</projects>
 	<buildSpec>

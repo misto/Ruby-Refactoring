@@ -13,6 +13,7 @@
       <import plugin="org.junit"/>
       <import plugin="org.rubypeople.rdt.core"/>
       <import plugin="org.rubypeople.eclipse.shams"/>
+      <import plugin="org.rubypeople.eclipse.testutils"/>
    </requires>
 
 

@@ -9,6 +9,7 @@
 		<project>org.eclipse.ui</project>
 		<project>org.junit</project>
 		<project>org.rubypeople.eclipse.shams</project>
+		<project>org.rubypeople.eclipse.testutils</project>
 		<project>org.rubypeople.rdt.core</project>
 		<project>org.rubypeople.rdt.ui</project>
 	</projects>

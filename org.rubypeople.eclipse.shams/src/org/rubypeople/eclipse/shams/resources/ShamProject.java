@@ -20,7 +20,6 @@ import org.eclipse.core.runtime.IPluginDescriptor;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.QualifiedName;
-import org.rubypeople.eclipse.shams.runtime.ShamIPath;
 
 public class ShamProject extends ShamResource implements IProject {
 	protected String projectName;
@@ -30,7 +29,7 @@ public class ShamProject extends ShamResource implements IProject {
 		this(new Path("undefined by sham creator"), theProjectName);
 	}
 
-	public ShamProject(Path aPath, String theProjectName) {
+	public ShamProject(IPath aPath, String theProjectName) {
 		super(aPath);
 		projectName = theProjectName;
 	}

@@ -1,21 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <projectDescription>
-	<name>org.rubypeople.rdt.debug.ui.tests</name>
+	<name>org.rubypeople.eclipse.testutils</name>
 	<comment></comment>
 	<projects>
 		<project>org.eclipse.core.boot</project>
 		<project>org.eclipse.core.resources</project>
 		<project>org.eclipse.core.runtime</project>
-		<project>org.eclipse.debug.core</project>
-		<project>org.eclipse.debug.ui</project>
-		<project>org.eclipse.ui</project>
 		<project>org.junit</project>
-		<project>org.rubypeople.eclipse.shams</project>
-		<project>org.rubypeople.eclipse.testutils</project>
-		<project>org.rubypeople.rdt.core</project>
-		<project>org.rubypeople.rdt.debug.ui</project>
-		<project>org.rubypeople.rdt.launching</project>
-		<project>org.rubypeople.rdt.ui</project>
 	</projects>
 	<buildSpec>
 		<buildCommand>

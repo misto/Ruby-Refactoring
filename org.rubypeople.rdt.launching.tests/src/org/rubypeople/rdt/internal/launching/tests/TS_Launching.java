@@ -1,15 +1,16 @@
 package org.rubypeople.rdt.internal.launching.tests;
 
+import junit.framework.Test;
 import junit.framework.TestSuite;
 
-public class TS_Launching extends TestSuite {
+public class TS_Launching {
 
-	public static TestSuite suite() {
+	public static Test suite() {
 		TestSuite suite = new TestSuite();
-
+	
 		suite.addTestSuite(TC_RubyInterpreter.class);
 		suite.addTestSuite(TC_RubyRuntime.class);
-
+	
 		return suite;
 	}
 }

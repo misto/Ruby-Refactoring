@@ -1,5 +1,6 @@
 package org.rubypeople.eclipse.shams.resources;
 
+import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 
 import org.eclipse.core.resources.IContainer;
@@ -18,6 +19,8 @@ import org.eclipse.core.runtime.QualifiedName;
 import org.rubypeople.eclipse.shams.runtime.ShamIPath;
 
 public class ShamFile extends ShamResource implements IFile {
+	protected String contents = "";
+
 	public ShamFile(String fullPath) {
 		super(new Path(fullPath));
 	}
@@ -26,22 +29,27 @@ public class ShamFile extends ShamResource implements IFile {
 		super(aPath);
 	}
 
-	public void appendContents(InputStream source, boolean force, boolean keepHistory, IProgressMonitor monitor) throws CoreException {}
+	public void appendContents(InputStream source, boolean force, boolean keepHistory, IProgressMonitor monitor) throws CoreException {
+	}
 
-	public void appendContents(InputStream source, int updateFlags, IProgressMonitor monitor) throws CoreException {}
+	public void appendContents(InputStream source, int updateFlags, IProgressMonitor monitor) throws CoreException {
+	}
 
-	public void create(InputStream source, boolean force, IProgressMonitor monitor) throws CoreException {}
+	public void create(InputStream source, boolean force, IProgressMonitor monitor) throws CoreException {
+	}
 
-	public void create(InputStream source, int updateFlags, IProgressMonitor monitor) throws CoreException {}
+	public void create(InputStream source, int updateFlags, IProgressMonitor monitor) throws CoreException {
+	}
 
-	public void delete(boolean force, boolean keepHistory, IProgressMonitor monitor) throws CoreException {}
+	public void delete(boolean force, boolean keepHistory, IProgressMonitor monitor) throws CoreException {
+	}
 
 	public InputStream getContents() throws CoreException {
-		throw new RuntimeException("Unimplemented method in sham");
+		return new ByteArrayInputStream(contents.getBytes());
 	}
 
 	public InputStream getContents(boolean force) throws CoreException {
-		throw new RuntimeException("Unimplemented method in sham");
+		return getContents();
 	}
 
 	public int getEncoding() throws CoreException {
@@ -56,41 +64,61 @@ public class ShamFile extends ShamResource implements IFile {
 		throw new RuntimeException("Unimplemented method in sham");
 	}
 
-	public void move(IPath destination, boolean force, boolean keepHistory, IProgressMonitor monitor) throws CoreException {}
+	public void move(IPath destination, boolean force, boolean keepHistory, IProgressMonitor monitor) throws CoreException {
+	}
 
-	public void setContents(InputStream source, boolean force, boolean keepHistory, IProgressMonitor monitor) throws CoreException {}
+	public void setContents(InputStream source, boolean force, boolean keepHistory, IProgressMonitor monitor) throws CoreException {
+	}
 
-	public void setContents(IFileState source, boolean force, boolean keepHistory, IProgressMonitor monitor) throws CoreException {}
+	public void setContents(IFileState source, boolean force, boolean keepHistory, IProgressMonitor monitor) throws CoreException {
+	}
 
-	public void setContents(InputStream source, int updateFlags, IProgressMonitor monitor) throws CoreException {}
+	public void setContents(InputStream source, int updateFlags, IProgressMonitor monitor) throws CoreException {
+	}
 
-	public void setContents(IFileState source, int updateFlags, IProgressMonitor monitor) throws CoreException {}
+	public void setContents(IFileState source, int updateFlags, IProgressMonitor monitor) throws CoreException {
+	}
 
-	public void accept(IResourceVisitor visitor) throws CoreException {}
+	public void setContents(String shamContents) {
+		this.contents = shamContents;
+	}
 
-	public void accept(IResourceVisitor visitor, int depth, boolean includePhantoms) throws CoreException {}
+	public void accept(IResourceVisitor visitor) throws CoreException {
+	}
 
-	public void accept(IResourceVisitor visitor, int depth, int memberFlags) throws CoreException {}
+	public void accept(IResourceVisitor visitor, int depth, boolean includePhantoms) throws CoreException {
+	}
 
-	public void clearHistory(IProgressMonitor monitor) throws CoreException {}
+	public void accept(IResourceVisitor visitor, int depth, int memberFlags) throws CoreException {
+	}
 
-	public void copy(IProjectDescription description, boolean force, IProgressMonitor monitor) throws CoreException {}
+	public void clearHistory(IProgressMonitor monitor) throws CoreException {
+	}
 
-	public void copy(IPath destination, boolean force, IProgressMonitor monitor) throws CoreException {}
+	public void copy(IProjectDescription description, boolean force, IProgressMonitor monitor) throws CoreException {
+	}
 
-	public void copy(IProjectDescription description, int updateFlags, IProgressMonitor monitor) throws CoreException {}
+	public void copy(IPath destination, boolean force, IProgressMonitor monitor) throws CoreException {
+	}
 
-	public void copy(IPath destination, int updateFlags, IProgressMonitor monitor) throws CoreException {}
+	public void copy(IProjectDescription description, int updateFlags, IProgressMonitor monitor) throws CoreException {
+	}
+
+	public void copy(IPath destination, int updateFlags, IProgressMonitor monitor) throws CoreException {
+	}
 
 	public IMarker createMarker(String type) throws CoreException {
 		throw new RuntimeException("Unimplemented method in sham");
 	}
 
-	public void delete(boolean force, IProgressMonitor monitor) throws CoreException {}
+	public void delete(boolean force, IProgressMonitor monitor) throws CoreException {
+	}
 
-	public void delete(int updateFlags, IProgressMonitor monitor) throws CoreException {}
+	public void delete(int updateFlags, IProgressMonitor monitor) throws CoreException {
+	}
 
-	public void deleteMarkers(String type, boolean includeSubtypes, int depth) throws CoreException {}
+	public void deleteMarkers(String type, boolean includeSubtypes, int depth) throws CoreException {
+	}
 
 	public boolean exists() {
 		throw new RuntimeException("Unimplemented method in sham");
@@ -160,37 +188,49 @@ public class ShamFile extends ShamResource implements IFile {
 		throw new RuntimeException("Unimplemented method in sham");
 	}
 
-	public void move(IProjectDescription description, boolean force, boolean keepHistory, IProgressMonitor monitor) throws CoreException {}
+	public void move(IProjectDescription description, boolean force, boolean keepHistory, IProgressMonitor monitor) throws CoreException {
+	}
 
-	public void move(IPath destination, boolean force, IProgressMonitor monitor) throws CoreException {}
+	public void move(IPath destination, boolean force, IProgressMonitor monitor) throws CoreException {
+	}
 
-	public void move(IProjectDescription description, int updateFlags, IProgressMonitor monitor) throws CoreException {}
+	public void move(IProjectDescription description, int updateFlags, IProgressMonitor monitor) throws CoreException {
+	}
 
-	public void move(IPath destination, int updateFlags, IProgressMonitor monitor) throws CoreException {}
+	public void move(IPath destination, int updateFlags, IProgressMonitor monitor) throws CoreException {
+	}
 
-	public void refreshLocal(int depth, IProgressMonitor monitor) throws CoreException {}
+	public void refreshLocal(int depth, IProgressMonitor monitor) throws CoreException {
+	}
 
-	public void setLocal(boolean flag, int depth, IProgressMonitor monitor) throws CoreException {}
+	public void setLocal(boolean flag, int depth, IProgressMonitor monitor) throws CoreException {
+	}
 
-	public void setPersistentProperty(QualifiedName key, String value) throws CoreException {}
+	public void setPersistentProperty(QualifiedName key, String value) throws CoreException {
+	}
 
-	public void setReadOnly(boolean readOnly) {}
+	public void setReadOnly(boolean readOnly) {
+	}
 
-	public void setSessionProperty(QualifiedName key, Object value) throws CoreException {}
+	public void setSessionProperty(QualifiedName key, Object value) throws CoreException {
+	}
 
-	public void touch(IProgressMonitor monitor) throws CoreException {}
+	public void touch(IProgressMonitor monitor) throws CoreException {
+	}
 
 	public boolean isDerived() {
 		throw new RuntimeException("Unimplemented method in sham");
 	}
 
-	public void setDerived(boolean isDerived) throws CoreException {}
+	public void setDerived(boolean isDerived) throws CoreException {
+	}
 
 	public boolean isTeamPrivateMember() {
 		throw new RuntimeException("Unimplemented method in sham");
 	}
 
-	public void setTeamPrivateMember(boolean isTeamPrivate) throws CoreException {}
+	public void setTeamPrivateMember(boolean isTeamPrivate) throws CoreException {
+	}
 
 	public Object getAdapter(Class adapter) {
 		throw new RuntimeException("Unimplemented method in sham");

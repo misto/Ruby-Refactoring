@@ -3,12 +3,9 @@ package org.rubypeople.rdt.core.tests.core;
 import junit.framework.TestCase;
 
 import org.eclipse.core.resources.IProject;
-import org.eclipse.core.resources.IProjectDescription;
-import org.eclipse.core.resources.IWorkspace;
-import org.eclipse.core.resources.IWorkspaceRoot;
-import org.eclipse.core.runtime.CoreException;
 import org.rubypeople.eclipse.shams.resources.ShamFile;
 import org.rubypeople.eclipse.shams.resources.ShamProject;
+import org.rubypeople.eclipse.testutils.ResourceTools;
 import org.rubypeople.rdt.core.RubyFile;
 import org.rubypeople.rdt.internal.core.RubyCore;
 import org.rubypeople.rdt.internal.core.RubyPlugin;
@@ -38,22 +35,8 @@ public class TC_RubyCore extends TestCase {
 	}
 
 	public void testAddRubyNature() throws Exception {
-		IProject project = createProject("someProject");
+		IProject project = ResourceTools.createProject("someProject");
 		RubyCore.addRubyNature(project, null);
 		assertTrue(project.hasNature(RubyPlugin.RUBY_NATURE_ID));
-	}
-
-	public IProject createProject(String name) throws CoreException {
-		IWorkspace workspace = RubyPlugin.getWorkspace();
-		IWorkspaceRoot root = workspace.getRoot();
-		IProject project = root.getProject(name);
-		if (!project.exists()) {
-			IProjectDescription desc = workspace.newProjectDescription(project.getName());
-			project.create(desc, null);
-		}
-		if (!project.isOpen())
-			project.open(null);
-
-		return project;
 	}
 }

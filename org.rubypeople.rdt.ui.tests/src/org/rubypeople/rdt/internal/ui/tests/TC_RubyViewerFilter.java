@@ -2,10 +2,10 @@ package org.rubypeople.rdt.internal.ui.tests;
 
 import junit.framework.TestCase;
 
-import org.eclipse.core.internal.resources.Workspace;
+import org.eclipse.core.resources.IFile;
+import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
-import org.eclipse.core.resources.IWorkspace;
-import org.eclipse.core.resources.IWorkspaceRoot;
+import org.rubypeople.eclipse.testutils.ResourceTools;
 import org.rubypeople.rdt.internal.core.RubyCore;
 import org.rubypeople.rdt.internal.ui.RubyViewerFilter;
 
@@ -18,14 +18,19 @@ public class TC_RubyViewerFilter extends TestCase {
 	public void testSelect() throws Exception {
 		RubyViewerFilter filter = new RubyViewerFilter();
 		
-		// DUPLICATION: TC_RubyCore#testMakeRubyProject
-		IWorkspace workspace = new Workspace();
-		IWorkspaceRoot root = workspace.getRoot();
-		IProject project = root.getProject("ProjectOne");
-		project.open(null);
-		// DUPLICATION
-		assertTrue(!filter.select(null, root, project));
+		IProject project = ResourceTools.createProject("TCRubyViewerFilter");
+		assertTrue(!filter.select(null, null, project));
 		
 		RubyCore.addRubyNature(project, null);
+		assertTrue(filter.select(null, null, project));
+		
+		IFile file = project.getFile("TCRubyViewerFilterFile");
+		assertTrue(!filter.select(null, null, file));
+		
+		file = project.getFile("TCRubyViewerFilterFile.rb");
+		assertTrue(filter.select(null, null, file));
+		
+		IFolder folder = project.getFolder("TCRubyViewerFilterFolder");
+		assertTrue(filter.select(null, null, folder));
 	}
 }
