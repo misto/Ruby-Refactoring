@@ -30,7 +30,7 @@ import org.rubypeople.rdt.internal.core.RubyMethod;
  * @author Chris
  * 
  */
-public interface IRubyType extends IRubyElement, IMember {
+public interface IType extends IRubyElement, IMember {
 
 	public RubyMethod getMethod(String name);
 
@@ -46,7 +46,7 @@ public interface IRubyType extends IRubyElement, IMember {
 	 *                while accessing its corresponding resource.
 	 * @return the methods and constructors declared by this type
 	 */
-	IRubyMethod[] getMethods() throws RubyModelException;
+	IMethod[] getMethods() throws RubyModelException;
 
 	/**
 	 * @return
@@ -66,7 +66,7 @@ public interface IRubyType extends IRubyElement, IMember {
 	 *            the given simple name
 	 * @return the member type declared in this type with the given simple name
 	 */
-	IRubyType getType(String name);
+	IType getType(String name);
 
 	/**
 	 * @param string

@@ -29,23 +29,23 @@ import java.util.ArrayList;
 import org.rubypeople.rdt.core.IField;
 import org.rubypeople.rdt.core.IMember;
 import org.rubypeople.rdt.core.IRubyElement;
-import org.rubypeople.rdt.core.IRubyMethod;
+import org.rubypeople.rdt.core.IMethod;
 import org.rubypeople.rdt.core.IRubyScript;
-import org.rubypeople.rdt.core.IRubyType;
+import org.rubypeople.rdt.core.IType;
 import org.rubypeople.rdt.core.RubyModelException;
 
 /**
  * @author Chris
  * 
  */
-public class RubyType extends NamedMember implements IRubyType {
+public class RubyType extends NamedMember implements IType {
 
 	public RubyType(RubyElement parent, String name) {
 		super(parent, name);
 	}
 
 	/**
-	 * @see IRubyType
+	 * @see IType
 	 */
 	public String getSuperclassName() throws RubyModelException {
 		RubyTypeElementInfo info = (RubyTypeElementInfo) getElementInfo();
@@ -53,7 +53,7 @@ public class RubyType extends NamedMember implements IRubyType {
 	}
 
 	/**
-	 * @see IRubyType
+	 * @see IType
 	 */
 	public String[] getIncludedModuleNames() throws RubyModelException {
 		RubyTypeElementInfo info = (RubyTypeElementInfo) getElementInfo();
@@ -70,14 +70,14 @@ public class RubyType extends NamedMember implements IRubyType {
 	}
 
 	/**
-	 * @see IRubyType#getField
+	 * @see IType#getField
 	 */
 	public IField getField(String fieldName) {
 		return new RubyField(this, fieldName);
 	}
 
 	/**
-	 * @see IRubyType
+	 * @see IType
 	 */
 	public IField[] getFields() throws RubyModelException {
 		ArrayList list = getChildrenOfType(FIELD);
@@ -91,11 +91,11 @@ public class RubyType extends NamedMember implements IRubyType {
 	}
 
 	/**
-	 * @see IRubyType
+	 * @see IType
 	 */
-	public IRubyMethod[] getMethods() throws RubyModelException {
+	public IMethod[] getMethods() throws RubyModelException {
 		ArrayList list = getChildrenOfType(METHOD);
-		IRubyMethod[] array = new IRubyMethod[list.size()];
+		IMethod[] array = new IMethod[list.size()];
 		list.toArray(array);
 		return array;
 	}
@@ -103,11 +103,11 @@ public class RubyType extends NamedMember implements IRubyType {
 	/**
 	 * @see IMember
 	 */
-	public IRubyType getDeclaringType() {
+	public IType getDeclaringType() {
 		IRubyElement parentElement = getParent();
 		while (parentElement != null) {
 			if (parentElement.getElementType() == IRubyElement.TYPE) {
-				return (IRubyType) parentElement;
+				return (IType) parentElement;
 			} else if (parentElement instanceof IMember) {
 				parentElement = parentElement.getParent();
 			} else {
@@ -130,7 +130,7 @@ public class RubyType extends NamedMember implements IRubyType {
 		case IRubyElement.SCRIPT:
 			return ((IRubyScript) primaryParent).getType(this.name);
 		case IRubyElement.TYPE:
-			return ((IRubyType) primaryParent).getType(this.name);
+			return ((IType) primaryParent).getType(this.name);
 		case IRubyElement.INSTANCE_VAR:
 		case IRubyElement.CLASS_VAR:
 		case IRubyElement.BLOCK:
@@ -142,9 +142,9 @@ public class RubyType extends NamedMember implements IRubyType {
 	}
 
 	/**
-	 * @see IRubyType
+	 * @see IType
 	 */
-	public IRubyType getType(String typeName) {
+	public IType getType(String typeName) {
 		return new RubyType(this, typeName);
 	}
 

@@ -27,7 +27,7 @@ import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.osgi.framework.BundleContext;
-import org.rubypeople.rdt.core.IRubyType;
+import org.rubypeople.rdt.core.IType;
 import org.rubypeople.rdt.core.RubyCore;
 import org.rubypeople.rdt.testunit.launcher.SocketUtil;
 import org.rubypeople.rdt.testunit.launcher.TestUnitLaunchConfigurationDelegate;
@@ -178,7 +178,7 @@ public class TestunitPlugin extends AbstractUIPlugin implements ILaunchListener 
 		return activeWorkbenchWindow.getActivePage();
 	}
 
-	public void connectTestRunner(ILaunch launch, IRubyType finalType, int port) {
+	public void connectTestRunner(ILaunch launch, IType finalType, int port) {
 		TestUnitView testRunnerViewPart = showTestUnitViewInActivePage(findTestUnitViewInActivePage());
 		if (testRunnerViewPart != null) testRunnerViewPart.startTestRunListening(port, finalType, launch);
 	}
@@ -244,7 +244,7 @@ public class TestunitPlugin extends AbstractUIPlugin implements ILaunchListener 
 		if (!fTrackedLaunches.contains(launch)) return;
 
 		ILaunchConfiguration config = launch.getLaunchConfiguration();
-		IRubyType launchedType= null;
+		IType launchedType= null;
 		int port = -1;
 		if (config != null) {
 			try {
@@ -274,7 +274,7 @@ public class TestunitPlugin extends AbstractUIPlugin implements ILaunchListener 
 			return;
 		}
 		
-		final IRubyType finalType= launchedType;
+		final IType finalType= launchedType;
 		final int finalPort = port;
 		getDisplay().asyncExec(new Runnable() {
 

@@ -99,7 +99,7 @@ public interface IRubyScript extends IRubyElement, ISourceReference, IParent, IO
 	 * @return a handle onto the corresponding type. The type may or may not
 	 *         exist.
 	 */
-	IRubyType getType(String name);
+	IType getType(String name);
 
 	/**
 	 * Returns the primary compilation unit (whose owner is the primary owner)

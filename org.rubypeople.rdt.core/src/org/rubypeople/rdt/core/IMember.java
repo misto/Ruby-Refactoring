@@ -42,7 +42,7 @@ public interface IMember extends IRubyElement, ISourceReference, IParent {
 	 *         relative to the order they are defined in the source
 	 * @since 3.0
 	 */
-	IRubyType getType(String name, int occurrenceCount);
+	IType getType(String name, int occurrenceCount);
 
 	/**
 	 * Returns the type in which this member is declared, or <code>null</code>
@@ -53,7 +53,7 @@ public interface IMember extends IRubyElement, ISourceReference, IParent {
 	 *         if this member is not declared in a type (for example, a
 	 *         top-level type)
 	 */
-	IRubyType getDeclaringType();
+	IType getDeclaringType();
 
 	/**
 	 * Returns the source range of this member's simple name, or

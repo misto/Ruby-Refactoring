@@ -25,15 +25,15 @@
 package org.rubypeople.rdt.internal.core;
 
 import org.rubypeople.rdt.core.IRubyElement;
-import org.rubypeople.rdt.core.IRubyMethod;
-import org.rubypeople.rdt.core.IRubyType;
+import org.rubypeople.rdt.core.IMethod;
+import org.rubypeople.rdt.core.IType;
 import org.rubypeople.rdt.core.RubyModelException;
 
 /**
  * @author Chris
  * 
  */
-public class RubyMethod extends NamedMember implements IRubyMethod {
+public class RubyMethod extends NamedMember implements IMethod {
 
 	/**
 	 * @param name
@@ -57,7 +57,7 @@ public class RubyMethod extends NamedMember implements IRubyMethod {
 		IRubyElement primaryParent = this.parent.getPrimaryElement(false);
 		// FIXME We need to send more info than the method name. Number of
 		// params?
-		return ((IRubyType) primaryParent).getMethod(this.name);
+		return ((IType) primaryParent).getMethod(this.name);
 	}
 
 	public boolean isConstructor() {
@@ -74,7 +74,7 @@ public class RubyMethod extends NamedMember implements IRubyMethod {
 	 * 
 	 * @see org.rubypeople.rdt.core.IMember#getDeclaringType()
 	 */
-	public IRubyType getDeclaringType() {
+	public IType getDeclaringType() {
 		// TODO Auto-generated method stub
 		return null;
 	}

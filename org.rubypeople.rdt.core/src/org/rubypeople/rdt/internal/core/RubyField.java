@@ -26,7 +26,7 @@ package org.rubypeople.rdt.internal.core;
 
 import org.rubypeople.rdt.core.IField;
 import org.rubypeople.rdt.core.IRubyElement;
-import org.rubypeople.rdt.core.IRubyType;
+import org.rubypeople.rdt.core.IType;
 
 /**
  * @author Chris
@@ -57,7 +57,7 @@ public class RubyField extends NamedMember implements IField {
 			if (cu.isPrimary()) return this;
 		}
 		IRubyElement primaryParent = this.parent.getPrimaryElement(false);
-		return ((IRubyType) primaryParent).getField(this.name);
+		return ((IType) primaryParent).getField(this.name);
 	}
 
 	/*

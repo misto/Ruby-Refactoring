@@ -46,7 +46,7 @@ import org.rubypeople.rdt.core.IProblemRequestor;
 import org.rubypeople.rdt.core.IRubyElement;
 import org.rubypeople.rdt.core.IRubyModelStatusConstants;
 import org.rubypeople.rdt.core.IRubyScript;
-import org.rubypeople.rdt.core.IRubyType;
+import org.rubypeople.rdt.core.IType;
 import org.rubypeople.rdt.core.ISourceRange;
 import org.rubypeople.rdt.core.RubyCore;
 import org.rubypeople.rdt.core.RubyModelException;
@@ -273,7 +273,7 @@ public class RubyScript extends Openable implements IRubyScript {
 	/**
 	 * @see IRubyScript#getType(String)
 	 */
-	public IRubyType getType(String typeName) {
+	public IType getType(String typeName) {
 		return new RubyType(this, typeName);
 	}
 

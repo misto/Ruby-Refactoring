@@ -13,8 +13,8 @@ package org.rubypeople.rdt.internal.core;
 import org.rubypeople.rdt.core.IField;
 import org.rubypeople.rdt.core.IImportDeclaration;
 import org.rubypeople.rdt.core.IRubyElement;
-import org.rubypeople.rdt.core.IRubyMethod;
-import org.rubypeople.rdt.core.IRubyType;
+import org.rubypeople.rdt.core.IMethod;
+import org.rubypeople.rdt.core.IType;
 import org.rubypeople.rdt.core.ISourceImport;
 import org.rubypeople.rdt.core.RubyModelException;
 
@@ -59,17 +59,17 @@ public class RubyTypeElementInfo extends MemberElementInfo {
 	 * Backpointer to my type handle - useful for translation from info to
 	 * handle.
 	 */
-	protected IRubyType handle = null;
+	protected IType handle = null;
 
 	/**
 	 * Returns the IRubyType that is the enclosing type for this type, or
 	 * <code>null</code> if this type is a top level type.
 	 */
-	public IRubyType getEnclosingType() {
+	public IType getEnclosingType() {
 		IRubyElement parent = this.handle.getParent();
 		if (parent != null && parent.getElementType() == IRubyElement.TYPE) {
 			try {
-				return (IRubyType) ((RubyElement) parent).getElementInfo();
+				return (IType) ((RubyElement) parent).getElementInfo();
 			} catch (RubyModelException e) {
 				return null;
 			}
@@ -78,7 +78,7 @@ public class RubyTypeElementInfo extends MemberElementInfo {
 	}
 
 	/**
-	 * @see IRubyType
+	 * @see IType
 	 */
 	public IField[] getFields() {
 		RubyField[] fieldHandles = getFieldHandles();
@@ -119,12 +119,12 @@ public class RubyTypeElementInfo extends MemberElementInfo {
 	/**
 	 * Returns the handle for this type info
 	 */
-	public IRubyType getHandle() {
+	public IType getHandle() {
 		return this.handle;
 	}
 
 	/**
-	 * @see IRubyType
+	 * @see IType
 	 */
 	public ISourceImport[] getImports() {
 		if (this.imports == null) {
@@ -150,7 +150,7 @@ public class RubyTypeElementInfo extends MemberElementInfo {
 	}
 
 	/**
-	 * @see IRubyType
+	 * @see IType
 	 */
 	public String[] getIncludedModuleNames() {
 		if (this.handle.getElementName().length() == 0) { // if anonymous type
@@ -160,15 +160,15 @@ public class RubyTypeElementInfo extends MemberElementInfo {
 	}
 
 	/**
-	 * @see IRubyType
+	 * @see IType
 	 */
-	public IRubyType[] getMemberTypes() {
+	public IType[] getMemberTypes() {
 		RubyType[] memberTypeHandles = getMemberTypeHandles();
 		int length = memberTypeHandles.length;
-		IRubyType[] memberTypes = new IRubyType[length];
+		IType[] memberTypes = new IType[length];
 		for (int i = 0; i < length; i++) {
 			try {
-				IRubyType type = (IRubyType) memberTypeHandles[i].getElementInfo();
+				IType type = (IType) memberTypeHandles[i].getElementInfo();
 				memberTypes[i] = type;
 			} catch (RubyModelException e) {
 				// ignore
@@ -192,16 +192,16 @@ public class RubyTypeElementInfo extends MemberElementInfo {
 	}
 
 	/**
-	 * @see IRubyType
+	 * @see IType
 	 */
-	public IRubyMethod[] getMethods() {
+	public IMethod[] getMethods() {
 		RubyMethod[] methodHandles = getMethodHandles();
 		int length = methodHandles.length;
-		IRubyMethod[] methods = new IRubyMethod[length];
+		IMethod[] methods = new IMethod[length];
 		int methodIndex = 0;
 		for (int i = 0; i < length; i++) {
 			try {
-				IRubyMethod method = (IRubyMethod) methodHandles[i].getElementInfo();
+				IMethod method = (IMethod) methodHandles[i].getElementInfo();
 				methods[methodIndex++] = method;
 			} catch (RubyModelException e) {
 				// ignore
@@ -225,21 +225,21 @@ public class RubyTypeElementInfo extends MemberElementInfo {
 	}
 
 	/**
-	 * @see org.eclipse.jdt.internal.compiler.env.IRubyType#getName()
+	 * @see org.eclipse.jdt.internal.compiler.env.IType#getName()
 	 */
 	public char[] getName() {
 		return this.handle.getElementName().toCharArray();
 	}
 
 	/**
-	 * @see IRubyType
+	 * @see IType
 	 */
 	public String getPackageName() {
 		return this.packageName;
 	}
 
 	/**
-	 * @see IRubyType
+	 * @see IType
 	 */
 	public String getSuperclassName() {
 		if (this.handle.getElementName().length() == 0) { // if anonymous type
@@ -252,7 +252,7 @@ public class RubyTypeElementInfo extends MemberElementInfo {
 	/**
 	 * Sets the handle for this type info
 	 */
-	protected void setHandle(IRubyType handle) {
+	protected void setHandle(IType handle) {
 		this.handle = handle;
 	}
 

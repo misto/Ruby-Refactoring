@@ -127,7 +127,7 @@ import org.jruby.ast.visitor.NodeVisitor;
 import org.jruby.lexer.yacc.ISourcePosition;
 import org.jruby.runtime.Visibility;
 import org.rubypeople.rdt.core.IRubyElement;
-import org.rubypeople.rdt.core.IRubyMethod;
+import org.rubypeople.rdt.core.IMethod;
 import org.rubypeople.rdt.core.IRubyScript;
 import org.rubypeople.rdt.internal.core.parser.RubyParser;
 
@@ -646,9 +646,9 @@ public class RubyScriptStructureBuilder implements NodeVisitor {
 	private int convertVisibility(Visibility visibility) {
 		// FIXME What about the module function and public-protected
 		// visibilities?
-		if (visibility == Visibility.PUBLIC) return IRubyMethod.PUBLIC;
-		if (visibility == Visibility.PROTECTED) return IRubyMethod.PROTECTED;
-		return IRubyMethod.PRIVATE;
+		if (visibility == Visibility.PUBLIC) return IMethod.PUBLIC;
+		if (visibility == Visibility.PROTECTED) return IMethod.PROTECTED;
+		return IMethod.PRIVATE;
 	}
 
 	/**

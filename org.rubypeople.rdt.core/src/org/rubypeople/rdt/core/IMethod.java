@@ -29,7 +29,7 @@ package org.rubypeople.rdt.core;
  * @author Chris
  *  
  */
-public interface IRubyMethod extends IRubyElement, IMember {
+public interface IMethod extends IRubyElement, IMember {
 
 	public static final int PUBLIC = 0;
 	public static final int PROTECTED = 1;

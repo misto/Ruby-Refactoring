@@ -12,7 +12,7 @@ package org.rubypeople.rdt.internal.core;
 
 import org.rubypeople.rdt.core.IMember;
 import org.rubypeople.rdt.core.IRubyElement;
-import org.rubypeople.rdt.core.IRubyType;
+import org.rubypeople.rdt.core.IType;
 import org.rubypeople.rdt.core.ISourceRange;
 import org.rubypeople.rdt.core.RubyModelException;
 
@@ -40,9 +40,9 @@ public abstract class Member extends SourceRefElement implements IMember {
 	/**
 	 * @see IMember
 	 */
-	public IRubyType getDeclaringType() {
+	public IType getDeclaringType() {
 		RubyElement parentElement = (RubyElement) getParent();
-		if (parentElement.getElementType() == TYPE) { return (IRubyType) parentElement; }
+		if (parentElement.getElementType() == TYPE) { return (IType) parentElement; }
 		return null;
 	}
 	
@@ -85,7 +85,7 @@ public abstract class Member extends SourceRefElement implements IMember {
 	/**
 	 * @see IMember
 	 */
-	public IRubyType getType(String typeName, int count) {
+	public IType getType(String typeName, int count) {
 		RubyType type = new RubyType(this, typeName);
 		type.occurrenceCount = count;
 		return type;

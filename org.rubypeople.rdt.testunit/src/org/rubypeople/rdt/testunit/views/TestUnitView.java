@@ -57,7 +57,7 @@ import org.eclipse.ui.part.ViewPart;
 import org.eclipse.ui.progress.UIJob;
 import org.rubypeople.rdt.core.IRubyElement;
 import org.rubypeople.rdt.core.IRubyProject;
-import org.rubypeople.rdt.core.IRubyType;
+import org.rubypeople.rdt.core.IType;
 import org.rubypeople.rdt.testunit.ITestRunListener;
 import org.rubypeople.rdt.testunit.TestunitPlugin;
 import org.rubypeople.rdt.testunit.launcher.TestUnitLaunchConfigurationDelegate;
@@ -422,7 +422,7 @@ public class TestUnitView extends ViewPart implements ITestRunListener3 {
 		return fTestRunnerClient != null && fTestRunnerClient.isRunning() && ILaunchManager.DEBUG_MODE.equals(fLaunchMode);
 	}
 
-	public void startTestRunListening(int port, IRubyType type, ILaunch launch) {
+	public void startTestRunListening(int port, IType type, ILaunch launch) {
 	    if(type != null) fTestProject= type.getRubyProject();
 		fLaunchMode = launch.getLaunchMode();
 		aboutToLaunch();

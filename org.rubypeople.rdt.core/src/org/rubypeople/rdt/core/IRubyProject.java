@@ -66,9 +66,9 @@ public interface IRubyProject extends IRubyElement, IParent {
 	 * @return the first type found following this project's classpath with the
 	 *         given fully qualified name or <code>null</code> if none is
 	 *         found
-	 * @see IRubyType#getFullyQualifiedName(char)
+	 * @see IType#getFullyQualifiedName(char)
 	 * @since 2.0
 	 */
-	IRubyType findType(String fullyQualifiedName) throws RubyModelException;
+	IType findType(String fullyQualifiedName) throws RubyModelException;
 
 }

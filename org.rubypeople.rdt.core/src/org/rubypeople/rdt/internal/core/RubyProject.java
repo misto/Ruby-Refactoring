@@ -26,7 +26,7 @@ import org.rubypeople.rdt.core.ILoadpathEntry;
 import org.rubypeople.rdt.core.IParent;
 import org.rubypeople.rdt.core.IRubyElement;
 import org.rubypeople.rdt.core.IRubyProject;
-import org.rubypeople.rdt.core.IRubyType;
+import org.rubypeople.rdt.core.IType;
 import org.rubypeople.rdt.core.RubyCore;
 import org.rubypeople.rdt.core.RubyModelException;
 import org.xml.sax.Attributes;
@@ -390,7 +390,7 @@ public class RubyProject extends Openable implements IProjectNature, IRubyElemen
 	 * 
 	 * @see org.rubypeople.rdt.core.IRubyProject#findType(java.lang.String)
 	 */
-	public IRubyType findType(String fullyQualifiedName) {
+	public IType findType(String fullyQualifiedName) {
 		int index = fullyQualifiedName.lastIndexOf("::");
 		String className = null, packageName = null;
 		if (index == -1) {
@@ -409,16 +409,16 @@ public class RubyProject extends Openable implements IProjectNature, IRubyElemen
 	 * @param element
 	 * @param className
 	 */
-	private IRubyType searchChildren(IRubyElement element, String className) {
+	private IType searchChildren(IRubyElement element, String className) {
 		if (element.isType(IRubyElement.TYPE)) {
-			if (element.getElementName().equals(className)) return (IRubyType) element;
+			if (element.getElementName().equals(className)) return (IType) element;
 		}
 		if (!(element instanceof IParent)) return null;
 		try {
 			IRubyElement[] children = ((IParent) element).getChildren();
 			for (int i = 0; i < children.length; i++) {
 				IRubyElement child = children[i];
-				IRubyType type = searchChildren(child, className);
+				IType type = searchChildren(child, className);
 				if (type != null) return type;
 			}
 		} catch (RubyModelException e) {
