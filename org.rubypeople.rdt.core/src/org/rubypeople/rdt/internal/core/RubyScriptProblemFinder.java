@@ -26,15 +26,15 @@ import org.rubypeople.rdt.internal.core.parser.TaskParser;
 public class RubyScriptProblemFinder {
 
 	public static void process(RubyScript script, char[] charContents, IProblemRequestor problemRequestor, IProgressMonitor pm) {
-			RdtWarnings warnings = new RdtWarnings();
-			RubyParser parser = new RubyParser(warnings);
-			String contents = new String(charContents);
+		RdtWarnings warnings = new RdtWarnings();
+		RubyParser parser = new RubyParser(warnings);
+		String contents = new String(charContents);
 		try {
 			parser.parse(script.getElementName(), new StringReader(contents));
 		} catch (SyntaxException e) {
 			problemRequestor.acceptProblem(new Error(e.getPosition(), e.getMessage()));
 		}
-		
+
 		IEclipsePreferences preferences = RubyCore.getInstancePreferences();
 		TaskParser taskParser = new TaskParser(preferences);
 		taskParser.parse(contents);
