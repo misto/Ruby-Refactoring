@@ -67,11 +67,11 @@
       <editorContribution
             targetID="org.rubypeople.rdt.ui.EditorRubyFile"
             id="org.rubypeople.rdt.debug.ui.EditorRubyFile.BreakpointRulerActions">
-         <action
+         <action id="org.rubypeople.rdt.debug.ui.EditorRubyFile.ManageBreakpointRulerAction"
                label="%Dummy.label"
                class="org.rubypeople.rdt.internal.debug.ui.actions.ManageBreakpointRulerActionDelegate"
                actionID="RulerDoubleClick"
-               id="org.rubypeople.rdt.debug.ui.EditorRubyFile.ManageBreakpointRulerAction">
+               >
          </action>
       </editorContribution>
    </extension>
@@ -87,11 +87,11 @@
       <viewerContribution
             targetID="#rubyRulerContext"
             id="RubyRulerPopupActions">
-         <action
+         <action id="ManageBreakpointRulerActionDelegate"
                label="Add Breakpoint"
                class="org.rubypeople.rdt.internal.debug.ui.actions.ManageBreakpointRulerActionDelegate"
                menubarPath="debug"
-               id="ManageBreakpointRulerActionDelegate">
+               >
          </action>
       </viewerContribution>
    </extension>
@@ -103,5 +103,38 @@
             id="org.rubypeople.rdt.debug.ui.rubySourceLocator">
       </sourceLocator>
    </extension>
+   <extension point="org.eclipse.ui.viewActions">
+	<viewContribution
+		id="org.eclipse.jdt.ui.debug.VariableViewActions"
+		targetID="org.eclipse.debug.ui.VariableView">
+		<!--icon="icons/full/clcl16/static_co.gif"-->
+		<action id="org.rubypeople.rdt.ui.variableViewActions.ShowStatic"
+			label="%showStaticVariables"
+			style="toggle"
+			menubarPath="rubyActions"			
+			tooltip="showStaticAction.tooltip"
+			class="org.rubypeople.rdt.internal.debug.ui.actions.ShowStaticVariablesAction"
+			state="false">
+		</action>
+		<action id="org.rubypeople.rdt.ui.variableViewActions.ShowConstants"
+			label="%showConstants"
+			style="toggle"
+			menubarPath="rubyActions"			
+			tooltip="showConstantAction.tooltip"
+			class="org.rubypeople.rdt.internal.debug.ui.actions.ShowConstantsAction"
+			state="false">
+		</action>
+	</viewContribution>								
+  </extension>
+  <extension point = "org.eclipse.debug.ui.debugActionGroups">
+	<debugActionGroup
+		id = "org.rubypeople.rdt.debug.ui.rubyDebugActionGroup"
+	   	visible="true"
+	   	name="%RubyDebugActionGroup.name">
+	   	<action id="org.rubypeople.rdt.ui.variableViewActions.ShowStatic"/>
+	   	<action id="org.rubypeople.rdt.ui.variableViewActions.ShowConstants"/>
+	</debugActionGroup>
+  </extension>
+  
 
 </plugin>
