@@ -142,9 +142,9 @@ public class TC_RubyParser extends TestCase {
 		assertEquals(new Position(2, 0), script.getClass("Bob").getEnd());
 		RubyClass bob = script.getClass("Bob");
 		assertEquals(1, bob.getElementCount());
-		assertTrue(bob.contains(new RubyInstanceVariable("name", 1, 1)));
+		assertTrue(bob.contains(new RubyInstanceVariable("@name", 1, 0)));
 		assertNotNull(bob.getElement("@name"));
-		assertEquals(new Position(1, 1), bob.getElement("@name").getStart());
+		assertEquals(new Position(1, 0), bob.getElement("@name").getStart());
 		assertEquals(new Position(1, 4), bob.getElement("@name").getEnd());
 	}
 
@@ -156,9 +156,9 @@ public class TC_RubyParser extends TestCase {
 		assertEquals(new Position(2, 0), script.getClass("Bob").getEnd());
 		RubyClass bob = script.getClass("Bob");
 		assertEquals(1, bob.getElementCount());
-		assertTrue(bob.contains(new RubyClassVariable("name", 1, 2)));
+		assertTrue(bob.contains(new RubyClassVariable("@@name", 1, 0)));
 		assertNotNull(bob.getElement("@@name"));
-		assertEquals(new Position(1, 2), bob.getElement("@@name").getStart());
+		assertEquals(new Position(1, 0), bob.getElement("@@name").getStart());
 		assertEquals(new Position(1, 5), bob.getElement("@@name").getEnd());
 	}
 
@@ -168,9 +168,9 @@ public class TC_RubyParser extends TestCase {
 		assertTrue(script.contains(new RubyClass("Bob", 0, 6)));
 		assertEquals(new Position(0, 6), script.getClass("Bob").getStart());
 		assertEquals(new Position(2, 0), script.getClass("Bob").getEnd());
-		assertTrue(script.contains(new RubyGlobal("name", 1, 1)));
+		assertTrue(script.contains(new RubyGlobal("$name", 1, 0)));
 		assertNotNull(script.getElement("$name"));
-		assertEquals(new Position(1, 1), script.getElement("$name").getStart());
+		assertEquals(new Position(1, 0), script.getElement("$name").getStart());
 		assertEquals(new Position(1, 4), script.getElement("$name").getEnd());
 	}
 
@@ -314,7 +314,7 @@ public class TC_RubyParser extends TestCase {
 		assertNull(bob.getElement("@count"));
 	}
 
-	public void testPoundSymbolIgnoredInSideString() throws Exception {
+	public void testPoundSymbolIgnoredInsideString() throws Exception {
 		RubyScript script = RubyParser.parse("module Bob\nputs \"# text = #{@count}\"\nend\n");
 		assertEquals(1, script.getElementCount());
 		assertTrue(script.contains(new RubyModule("Bob", 0, 7)));
@@ -322,7 +322,7 @@ public class TC_RubyParser extends TestCase {
 		RubyModule bob = script.getModule("Bob");
 		assertEquals(1, bob.getElementCount());
 		assertNotNull(bob.getElement("@count"));
-		assertEquals(new Position(1, 18), bob.getElement("@count").getStart());
+		assertEquals(new Position(1, 17), bob.getElement("@count").getStart());
 	}
 
 	public void testRecognizesWhileBlock() throws Exception {
