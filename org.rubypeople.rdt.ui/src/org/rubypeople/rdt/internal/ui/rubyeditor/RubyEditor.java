@@ -76,6 +76,8 @@ public class RubyEditor extends RubyAbstractEditor {
 
 		if (PreferenceConstants.FORMAT_USE_TAB.equals(property) || PreferenceConstants.FORMAT_INDENTATION.equals(property)) {
 			this.initializeTabReplace();
+			// for rereading the indentPrefixes for shift left/right from the RubySourceViewerConfiguration
+			this.getSourceViewer().configure(this.getSourceViewerConfiguration()) ;			
 		}
 	}
 
@@ -133,4 +135,15 @@ public class RubyEditor extends RubyAbstractEditor {
 		}
 	}
 
+	public boolean isTabReplacing() {
+		return isTabReplacing;
+	}
+	
+	/**
+	 * 
+	 * @return Returns the replacement string for tab if isTabReplacing()
+	 */	
+	public String getTabReplaceString() {
+		return tabReplaceString;
+	}
 }

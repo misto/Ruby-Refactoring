@@ -13,6 +13,7 @@ import org.eclipse.jface.text.source.ISourceViewer;
 import org.eclipse.jface.text.source.SourceViewerConfiguration;
 import org.rubypeople.rdt.internal.ui.RdtUiPlugin;
 import org.rubypeople.rdt.internal.ui.rubyeditor.RubyAbstractEditor;
+import org.rubypeople.rdt.internal.ui.rubyeditor.RubyEditor;
 import org.rubypeople.rdt.internal.ui.text.ruby.RubyCompletionProcessor;
 
 public class RubySourceViewerConfiguration extends SourceViewerConfiguration {
@@ -95,5 +96,18 @@ public class RubySourceViewerConfiguration extends SourceViewerConfiguration {
 	    reconciler.setDelay(RubyReconcilingStrategy.DELAY);
 	    return reconciler;
     }
+    
+	public String[] getIndentPrefixes(ISourceViewer sourceViewer, String contentType) {
+		if (!(textEditor instanceof RubyEditor)) {
+			return super.getIndentPrefixes(sourceViewer, contentType) ;
+		}
+		RubyEditor rubyEditor = (RubyEditor) textEditor ;
+		if (rubyEditor.isTabReplacing()) {
+			return new String[] { rubyEditor.getTabReplaceString(), "\t", "" }; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+		}
+		else {
+			return new String[] { "\t", rubyEditor.getTabReplaceString(), "" }; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+		}
+	}    
 	
 }
