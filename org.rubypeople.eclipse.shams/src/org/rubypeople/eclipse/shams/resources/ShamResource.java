@@ -12,6 +12,7 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.QualifiedName;
+import org.eclipse.core.runtime.jobs.ISchedulingRule;
 
 public class ShamResource implements IResource {
 	protected IPath path;
@@ -226,6 +227,26 @@ public class ShamResource implements IResource {
 	public void accept(IResourceProxyVisitor arg0, int arg1) throws CoreException {
 		// TODO Auto-generated method stub
 
+	}
+
+	public long getLocalTimeStamp() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	public long setLocalTimeStamp(long value) throws CoreException {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	public boolean contains(ISchedulingRule rule) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	public boolean isConflicting(ISchedulingRule rule) {
+		// TODO Auto-generated method stub
+		return false;
 	}
 
 }

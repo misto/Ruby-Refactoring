@@ -19,7 +19,6 @@
       <import plugin="org.eclipse.core.resources"/>
       <import plugin="org.rubypeople.eclipse.testutils"/>
       <import plugin="org.apache.xerces"/>
-      <import plugin="org.eclipse.core.runtime"/>
    </requires>
 
 

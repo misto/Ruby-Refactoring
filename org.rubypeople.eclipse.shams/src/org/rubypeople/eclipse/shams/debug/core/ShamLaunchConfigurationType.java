@@ -55,4 +55,10 @@ public class ShamLaunchConfigurationType implements ILaunchConfigurationType {
 	public String getAttribute(String attributeName) {
 		return null;
 	}
+
+	public ILaunchConfigurationDelegate getDelegate(String mode)
+		throws CoreException {
+		return null;
+	}
+
 }

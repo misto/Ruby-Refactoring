@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.0"?>
 <plugin
    id="org.rubypeople.rdt.core.tests"
    name="org.rubypeople.rdt.core.tests"
@@ -7,14 +8,15 @@
    <runtime>
       <library name="rdtcoretests.jar"/>
    </runtime>
-   <requires>
+   <requires>      
       <import plugin="org.eclipse.core.resources"/>
-      <import plugin="org.eclipse.core.runtime"/>
+      <import plugin="org.eclipse.core.runtime.compatibility"/>
       <import plugin="org.junit"/>
       <import plugin="org.rubypeople.rdt.core"/>
       <import plugin="org.rubypeople.eclipse.shams"/>
       <import plugin="org.rubypeople.eclipse.testutils"/>
       <import plugin="org.kxml2"/>
+      <import plugin="org.apache.xerces"/>
    </requires>
 
 

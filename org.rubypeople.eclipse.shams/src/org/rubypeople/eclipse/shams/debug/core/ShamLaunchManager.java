@@ -17,6 +17,7 @@ import org.eclipse.debug.core.ILaunchesListener;
 import org.eclipse.debug.core.model.IDebugTarget;
 import org.eclipse.debug.core.model.IPersistableSourceLocator;
 import org.eclipse.debug.core.model.IProcess;
+import org.eclipse.debug.internal.core.sourcelookup.ISourcePathComputer;
 
 public class ShamLaunchManager implements ILaunchManager {
 	protected List launches = new ArrayList();
@@ -126,4 +127,26 @@ public class ShamLaunchManager implements ILaunchManager {
 	public ILaunchConfiguration getMovedTo(ILaunchConfiguration removedConfiguration) {
 		throw new RuntimeException("Need to implement on sham.");
 	}
+	public String[] getEnvironment(ILaunchConfiguration configuration)
+		throws CoreException {
+
+		return null;
+	}
+
+	public String getLaunchModeLabel(String mode) {
+
+		return null;
+	}
+
+	public String[] getLaunchModes() {
+
+		return null;
+	}
+
+	public ISourcePathComputer newSourcePathComputer(ILaunchConfiguration configuration)
+		throws CoreException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 }

@@ -128,7 +128,7 @@ public class TC_DebuggerCommunicationTest extends TestCase {
 		if (binDir.startsWith("/") && File.separatorChar == '\\') {
 			binDir = binDir.substring(1);
 		}
-		String cmd = "ruby -I " + binDir + "../../org.rubypeople.rdt.launching/ruby -I" + getTmpDir().replace('\\', '/') + " -reclipseDebug.rb " + getRubyTestFilename();
+		String cmd = "/usr/bin/ruby -I " + binDir + "../../org.rubypeople.rdt.launching/ruby -I" + getTmpDir().replace('\\', '/') + " -reclipseDebug.rb " + getRubyTestFilename();
 		System.out.println("Starting: " + cmd);
 		process = Runtime.getRuntime().exec(cmd);
 		rubyStderrRedirectorThread = new OutputRedirectorThread(process.getErrorStream());
