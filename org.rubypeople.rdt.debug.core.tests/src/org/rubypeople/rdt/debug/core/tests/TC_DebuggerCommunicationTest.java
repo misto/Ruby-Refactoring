@@ -153,7 +153,6 @@ public class TC_DebuggerCommunicationTest extends TestCase {
 	}
 
 	private void writeFile(String name, String[] content) throws Exception {
-		String fileName;
 		PrintWriter writer = new PrintWriter(new FileOutputStream(getTmpDir() + name));
 		for (int i = 0; i < content.length; i++) {
 			writer.println(content[i]);
