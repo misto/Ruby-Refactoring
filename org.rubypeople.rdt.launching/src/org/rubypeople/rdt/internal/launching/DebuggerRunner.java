@@ -1,9 +1,7 @@
 package org.rubypeople.rdt.internal.launching;
 
 import java.io.File;
-import java.net.URL;
 
-import org.eclipse.core.runtime.adaptor.EclipseClassLoader;
 import org.eclipse.debug.core.ILaunch;
 import org.eclipse.debug.core.model.IProcess;
 import org.rubypeople.rdt.internal.debug.core.RdtDebugCorePlugin;
@@ -21,15 +19,17 @@ public class DebuggerRunner extends InterpreterRunner {
 	}
 
 	protected String getDebugCommandLineArgument() {
-		return " -reclipseDebug";
+		if (RdtDebugCorePlugin.getDefault().isRubyDebuggerVerbose()) {
+			return " -reclipseDebugVerbose";
+		} else {
+			return " -reclipseDebug";
+		}
 	}
 
 	public static String getDirectoryOfRubyDebuggerFile() {
-	    // Lets check the new OSGI Bundles...
-		String pluginDir = RdtLaunchingPlugin.getDefault().getBundle().getLocation() ;
-		if (pluginDir.startsWith("reference:file:")) {
-			return pluginDir.substring(15) + "/ruby" ;
-		}
+		// Lets check the new OSGI Bundles...
+		String pluginDir = RdtLaunchingPlugin.getDefault().getBundle().getLocation();
+		if (pluginDir.startsWith("reference:file:")) { return pluginDir.substring(15) + "/ruby"; }
 		throw new RuntimeException("Could not find directory of ruby debugger file (eclipseDebug.rb).");
 	}
 
