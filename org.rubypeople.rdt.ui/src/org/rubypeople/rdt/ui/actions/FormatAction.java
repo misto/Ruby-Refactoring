@@ -28,8 +28,13 @@ public class FormatAction extends TextEditorAction {
 					String allFormatted = RdtUiPlugin.getDefault().getCodeFormatter().formatString(doc.get());
 					doc.set(allFormatted);
 				} else {
-					String formatted = RdtUiPlugin.getDefault().getCodeFormatter().formatString(text);
-					doc.replace(textSelection.getOffset(), textSelection.getLength(), formatted);
+					// format always complete lines, otherwise the indentation of the first line is lost
+					int startPos = doc.getLineOffset(textSelection.getStartLine()) ;
+					int endLine = textSelection.getEndLine() ;
+					int endPos = doc.getLineOffset(endLine) + doc.getLineLength(endLine) ;
+
+					String formatted = RdtUiPlugin.getDefault().getCodeFormatter().formatString(doc.get(startPos, endPos - startPos));
+					doc.replace(startPos, endPos-startPos, formatted);
 				}
 			}
 
