@@ -162,7 +162,8 @@ public class RubyAbstractEditor extends ExtendedTextEditor implements IReconcili
 				int offset = doc.getLineOffset(pe.getLine());
 				MarkerUtilities.setCharStart(attributes, offset + pe.getStart());
 				MarkerUtilities.setCharEnd(attributes, offset + pe.getEnd());
-				attributes.put(IMarker.SEVERITY, new Integer(IMarker.SEVERITY_WARNING));
+				
+				attributes.put(IMarker.SEVERITY, pe.getSeverity());
 				try {
 					MarkerUtilities.createMarker(resource, attributes, IMarker.PROBLEM);
 				} catch (CoreException x) {

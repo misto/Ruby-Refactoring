@@ -1,27 +1,26 @@
 /*
  * Author: C.Williams
- *
- *  Copyright (c) 2004 RubyPeople. 
- *
- *  This file is part of the Ruby Development Tools (RDT) plugin for eclipse.
- *  You can get copy of the GPL along with further information about RubyPeople 
- *  and third party software bundled with RDT in the file 
- *  org.rubypeople.rdt.core_0.4.0/RDT.license or otherwise at 
- *  http://www.rubypeople.org/RDT.license.
- *
- *  RDT is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2 of the License, or
- *  (at your option) any later version.
- *
- *  RDT is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of 
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
  * 
- *  You should have received a copy of the GNU General Public License
- *  along with RDT; if not, write to the Free Software
- *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Copyright (c) 2004 RubyPeople.
+ * 
+ * This file is part of the Ruby Development Tools (RDT) plugin for eclipse. You
+ * can get copy of the GPL along with further information about RubyPeople and
+ * third party software bundled with RDT in the file
+ * org.rubypeople.rdt.core_0.4.0/RDT.license or otherwise at
+ * http://www.rubypeople.org/RDT.license.
+ * 
+ * RDT is free software; you can redistribute it and/or modify it under the
+ * terms of the GNU General Public License as published by the Free Software
+ * Foundation; either version 2 of the License, or (at your option) any later
+ * version.
+ * 
+ * RDT is distributed in the hope that it will be useful, but WITHOUT ANY
+ * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
+ * A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License along with
+ * RDT; if not, write to the Free Software Foundation, Inc., 59 Temple Place,
+ * Suite 330, Boston, MA 02111-1307 USA
  */
 package org.rubypeople.rdt.internal.core.parser.ast;
 
@@ -64,7 +63,7 @@ public class RubyElement implements IRubyElement {
 	public static final int MODULE = RubyToken.MODULE;
 	public static final int CLASS = RubyToken.CLASS;
 	public static final int METHOD = RubyToken.METHOD;
-	
+
 	public static final String PUBLIC = "public";
 	public static final String PRIVATE = "private";
 	public static final String READ = "read";
@@ -262,5 +261,48 @@ public class RubyElement implements IRubyElement {
 	 */
 	public int getType() {
 		return type;
+	}
+
+	/**
+	 * Adds the access level to the current element's access. This method does
+	 * the nitty-gritty finding out if we added READ to a previously WRITE
+	 * element, making it PUBLIC, etc.
+	 * 
+	 * @param newAccess
+	 */
+	public void addAccess(String newAccess) {
+		if (newAccess == null) return;
+
+		if (isType(RubyElement.METHOD)) {
+			setAccess(newAccess);
+			return;
+		}
+
+		String oldAccess = getAccess();
+		if (newAccess.equals(RubyElement.PUBLIC)) {
+			setAccess(newAccess);
+			return;
+		}
+		if (newAccess.equals(RubyElement.READ)) {
+			if (oldAccess.equals(RubyElement.PRIVATE)) {
+				setAccess(newAccess);
+				return;
+			}
+			if (oldAccess.equals(RubyElement.WRITE)) {
+				setAccess(RubyElement.PUBLIC);
+				return;
+			}
+		}
+		if (newAccess.equals(RubyElement.WRITE)) {
+			if (oldAccess.equals(RubyElement.PRIVATE)) {
+				setAccess(newAccess);
+				return;
+			}
+			if (oldAccess.equals(RubyElement.READ)) {
+				setAccess(RubyElement.PUBLIC);
+				return;
+			}
+		}
+
 	}
 }

@@ -48,6 +48,10 @@ public class ParseRuleFactory {
 		if (token.isType(RubyElement.REQUIRES)) {
 			set.add(new NoDuplicateRule(token, parent, true));
 			return set;
+		}		
+		if (token.isType(RubyElement.METHOD)) {
+			set.add(new NoDuplicateRule(token, parent, false));
+			return set;
 		}
 		if (token.isVariable()) {
 			set.add(new NoDuplicateRule(token, parent, false));

@@ -156,7 +156,6 @@ public class TC_RubyTokenizer extends TestCase {
 		assertEquals("#{@@var}", tokenizer.nextRubyToken().getText());
 	}
 	
-	// TODO Handle this case!
 	public void testSpaceBetweenVariableSubstitution() {
 		RubyTokenizer tokenizer = new RubyTokenizer("%Q(blah #{ @@var })");
 		assertEquals("blah", tokenizer.nextRubyToken().getText());
@@ -229,10 +228,84 @@ public class TC_RubyTokenizer extends TestCase {
 	
 	public void testCommaAtEndOfVariableIsIgnored() {
 		RubyTokenizer tokenizer = new RubyTokenizer("return [ @version, @status, @reason ]");
-		assertEquals(6, tokenizer.countTokens() );
+		assertEquals(4, tokenizer.countTokens() );
 		assertEquals("return", tokenizer.nextRubyToken().getText());
-		assertEquals("[", tokenizer.nextRubyToken().getText());
 		assertEquals("@version", tokenizer.nextRubyToken().getText());
+	}
+	
+	public void testAttributeReaderModifierStatement() {
+		RubyTokenizer tokenizer = new RubyTokenizer("attr_reader :from		# Owner of this client.");
+		assertEquals(2, tokenizer.countTokens() );
+		RubyToken token = tokenizer.nextRubyToken();
+		assertEquals("attr_reader", token.getText());
+		assertTrue( token.isType(RubyToken.ATTR_READER) );
+		RubyToken tokenTwo = tokenizer.nextRubyToken();
+		assertEquals(":from", tokenTwo.getText());
+		assertTrue( tokenTwo.isType(RubyToken.SYMBOL) );
+	}
+	
+	public void testAttributeWriterModifierStatement() {
+		RubyTokenizer tokenizer = new RubyTokenizer("attr_writer :from		# Owner of this client.");
+		assertEquals(2, tokenizer.countTokens() );
+		RubyToken token = tokenizer.nextRubyToken();
+		assertEquals("attr_writer", token.getText());
+		assertTrue( token.isType(RubyToken.ATTR_WRITER) );
+		RubyToken tokenTwo = tokenizer.nextRubyToken();
+		assertEquals(":from", tokenTwo.getText());
+		assertTrue( tokenTwo.isType(RubyToken.SYMBOL) );
+	}
+	
+	public void testAttributeAccessorModifierStatement() {
+		RubyTokenizer tokenizer = new RubyTokenizer("attr_accessor :from		# Owner of this client.");
+		assertEquals(2, tokenizer.countTokens() );
+		RubyToken token = tokenizer.nextRubyToken();
+		assertEquals("attr_accessor", token.getText());
+		assertTrue( token.isType(RubyToken.ATTR_ACCESSOR) );
+		RubyToken tokenTwo = tokenizer.nextRubyToken();
+		assertEquals(":from", tokenTwo.getText());
+		assertTrue( tokenTwo.isType(RubyToken.SYMBOL) );	
+	}
+	
+	public void testPrivateModifierStatement() {
+		RubyTokenizer tokenizer = new RubyTokenizer("private :from		# Owner of this client.");
+		assertEquals(2, tokenizer.countTokens() );
+		RubyToken token = tokenizer.nextRubyToken();
+		assertEquals("private", token.getText());
+		assertTrue( token.isType(RubyToken.PRIVATE) );
+		RubyToken tokenTwo = tokenizer.nextRubyToken();
+		assertEquals(":from", tokenTwo.getText());
+		assertTrue( tokenTwo.isType(RubyToken.SYMBOL) );
+	}
+	
+	public void testProtectedModifierStatement() {
+		RubyTokenizer tokenizer = new RubyTokenizer("protected :from		# Owner of this client.");
+		assertEquals(2, tokenizer.countTokens() );
+		RubyToken token = tokenizer.nextRubyToken();
+		assertEquals("protected", token.getText());
+		assertTrue( token.isType(RubyToken.PROTECTED) );
+		RubyToken tokenTwo = tokenizer.nextRubyToken();
+		assertEquals(":from", tokenTwo.getText());
+		assertTrue( tokenTwo.isType(RubyToken.SYMBOL) );
+	}
+	
+	public void testBeginningSquareBracketIgnoredAfterVariable() {
+		RubyTokenizer tokenizer = new RubyTokenizer("data = @readbuf[0, @content_length]");
+		assertEquals(5, tokenizer.countTokens() );
+		assertEquals("data", tokenizer.nextRubyToken().getText());
+		assertEquals("=", tokenizer.nextRubyToken().getText());
+		assertEquals("@readbuf", tokenizer.nextRubyToken().getText());
+		assertEquals("0", tokenizer.nextRubyToken().getText());
+		assertEquals("@content_length", tokenizer.nextRubyToken().getText());
+	}
+	
+	public void testEndSquareBracketIgnoredAfterVariable() {
+		RubyTokenizer tokenizer = new RubyTokenizer("data, blah = [0, @content_length]");
+		assertEquals(5, tokenizer.countTokens() );
+		assertEquals("data", tokenizer.nextRubyToken().getText());
+		assertEquals("blah", tokenizer.nextRubyToken().getText());
+		assertEquals("=", tokenizer.nextRubyToken().getText());
+		assertEquals("0", tokenizer.nextRubyToken().getText());
+		assertEquals("@content_length", tokenizer.nextRubyToken().getText());
 	}
 	
 //	public void testInPercentString() {

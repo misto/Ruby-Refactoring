@@ -5,7 +5,6 @@ import org.eclipse.jface.text.IDocumentListener;
 import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.ui.texteditor.ExtendedTextEditor;
-import org.rubypeople.rdt.internal.core.RubyPlugin;
 import org.rubypeople.rdt.internal.core.parser.ast.IRubyElement;
 
 public class RubyOutlineContentProvider implements ITreeContentProvider, IDocumentListener {
@@ -31,7 +30,6 @@ public class RubyOutlineContentProvider implements ITreeContentProvider, IDocume
 
 	public boolean hasChildren(Object element) {
 		if (element instanceof IRubyElement) { return ((IRubyElement) element).hasElements(); }
-		RubyPlugin.log("A non IRubyElement is being asked for children: " + element);
 		return false;
 	}
 
@@ -44,8 +42,6 @@ public class RubyOutlineContentProvider implements ITreeContentProvider, IDocume
 
 	public void inputChanged(Viewer viewer, Object oldInput, Object newInput) {
 		this.viewer = viewer;
-		if (newInput != null)
-		RubyPlugin.log(	"Input changed, " + newInput.getClass().getName() );
 	}
 
 	public void documentAboutToBeChanged(DocumentEvent event) {}

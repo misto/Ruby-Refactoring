@@ -47,10 +47,10 @@ public class RubyTokenizer {
 	private boolean tempInString = false;
 	private char tempEndChar;
 	private static final String percentChars = "qQr";
-	private static final String delimiters = " .;('\"/\t,";
+	private static final String delimiters = " .;('\"/\t,[]";
 	private static final String BRACKETS = "({[";
 
-	// TODO Refactor determination whetehr we're in a String into common code!
+	// TODO Refactor determination whether we're in a String into common code!
 
 	/**
 	 * @param curLine
@@ -290,6 +290,15 @@ public class RubyTokenizer {
 			return RubyToken.IF_MODIFIER;
 		}
 
+		if (text.equals("private")) { return RubyToken.PRIVATE; }
+		if (text.equals("protected")) { return RubyToken.PROTECTED; }
+
+		if (text.equals("attr_reader")) { return RubyToken.ATTR_READER; }
+		if (text.equals("attr_writer")) { return RubyToken.ATTR_WRITER; }
+		if (text.equals("attr_accessor")) { return RubyToken.ATTR_ACCESSOR; }
+
+		if (text.startsWith(":")) { return RubyToken.SYMBOL; }
+
 		if (text.startsWith("@@")) { return RubyToken.CLASS_VARIABLE; }
 		if (text.charAt(0) == INSTANCE_START) { return RubyToken.INSTANCE_VARIABLE; }
 		if (text.charAt(0) == GLOBAL_START) { return RubyToken.GLOBAL; }
@@ -305,7 +314,6 @@ public class RubyTokenizer {
 	private boolean inVariableSubstitution(String str2, int start) {
 		boolean inVarSubs = false;
 		for (int i = 0; i < start; i++) {
-			String blah = str2.substring(i, i + 2);
 			if (inVarSubs && str2.charAt(i) == '}') {
 				inVarSubs = false;
 				continue;
@@ -315,7 +323,6 @@ public class RubyTokenizer {
 					inVarSubs = true;
 				}
 			}
-
 		}
 		return inVarSubs;
 	}

@@ -59,13 +59,10 @@ public class NoEmptyNameRule implements ParseRule {
 	 * @see org.rubypeople.rdt.internal.core.parser.ParseRule#getError()
 	 */
 	public ParseError getError() {
-		return new ParseError("Incomplete variable declaration", element.getStart().getLineNumber(), element.getStart().getOffset(), element.getStart().getOffset() + element.getName().length());
+		return new ParseError("Incomplete variable declaration", element.getStart().getLineNumber(), element.getStart().getOffset(), element.getStart().getOffset() + element.getName().length(), getSeverity());
 	}
 
-	/* (non-Javadoc)
-	 * @see org.rubypeople.rdt.internal.core.parser.ParseRule#getSeverity()
-	 */
-	public int getSeverity() {
+	private int getSeverity() {
 		return ParseRule.ERROR;
 	}
 
@@ -82,5 +79,10 @@ public class NoEmptyNameRule implements ParseRule {
 	public boolean addError() {
 		return true;
 	}
+
+	/* (non-Javadoc)
+	 * @see org.rubypeople.rdt.internal.core.parser.rules.ParseRule#run()
+	 */
+	public void run() {}
 
 }

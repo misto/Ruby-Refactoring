@@ -3,9 +3,9 @@
  * 
  * Copyright (c) 2004 RubyPeople.
  * 
- * This file is part of the Ruby Development Tools (RDT) plugin for eclipse.
- * You can get copy of the GPL along with further information about RubyPeople
- * and third party software bundled with RDT in the file
+ * This file is part of the Ruby Development Tools (RDT) plugin for eclipse. You
+ * can get copy of the GPL along with further information about RubyPeople and
+ * third party software bundled with RDT in the file
  * org.rubypeople.rdt.core_0.4.0/RDT.license or otherwise at
  * http://www.rubypeople.org/RDT.license.
  * 
@@ -15,9 +15,8 @@
  * version.
  * 
  * RDT is distributed in the hope that it will be useful, but WITHOUT ANY
- * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
- * FOR A PARTICULAR PURPOSE. See the GNU General Public License for more
- * details.
+ * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
+ * A PARTICULAR PURPOSE. See the GNU General Public License for more details.
  * 
  * You should have received a copy of the GNU General Public License along with
  * RDT; if not, write to the Free Software Foundation, Inc., 59 Temple Place,
@@ -33,7 +32,7 @@ public class NoDuplicateRule implements ParseRule {
 	private RubyElement element;
 	private RubyElement parent;
 	private boolean addError;
-	
+
 	/**
 	 * @param token
 	 */
@@ -43,7 +42,9 @@ public class NoDuplicateRule implements ParseRule {
 		this.addError = addError;
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see org.rubypeople.rdt.internal.core.parser.ParseRule#isAllowed()
 	 */
 	public boolean isAllowed() {
@@ -51,33 +52,54 @@ public class NoDuplicateRule implements ParseRule {
 		return (!(duplicate != null && duplicate.isType(element.getType())));
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see org.rubypeople.rdt.internal.core.parser.ParseRule#getError()
 	 */
 	public ParseError getError() {
-		return new ParseError("Duplicate element statement unnecessary.", element.getStart().getLineNumber(), element.getStart().getOffset(), element.getStart().getOffset() + element.getName().length());
+		String type = "element";
+		if (element.isType(RubyElement.REQUIRES)) type = "require";
+		return new ParseError("Duplicate " + type + " statement unnecessary.", element, getSeverity());
 	}
-	
-	
-	/* (non-Javadoc)
+
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see org.rubypeople.rdt.internal.core.parser.ParseRule#getSeverity()
 	 */
-	public int getSeverity() {
+	private int getSeverity() {
 		return ParseRule.ERROR;
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see org.rubypeople.rdt.internal.core.parser.rules.ParseRule#addOnFailure()
 	 */
 	public boolean addOnFailure() {
 		return false;
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see org.rubypeople.rdt.internal.core.parser.rules.ParseRule#addError()
 	 */
 	public boolean addError() {
 		return addError;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.rubypeople.rdt.internal.core.parser.rules.ParseRule#run()
+	 */
+	public void run() {
+		RubyElement dup = parent.getElement(element.getName());
+		if (dup != null && dup.isType(element.getType())) {
+			dup.addAccess(element.getAccess());
+		}
 	}
 
 }

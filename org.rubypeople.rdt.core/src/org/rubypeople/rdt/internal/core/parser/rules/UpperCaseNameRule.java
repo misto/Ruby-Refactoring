@@ -58,18 +58,14 @@ public class UpperCaseNameRule implements ParseRule {
 		else if (element.isType(RubyElement.MODULE)) {
 			type = "Module";
 		}
-		return new ParseError(type + " names should begin with an uppercase letter.", element.getStart().getLineNumber(), element.getStart().getOffset(), element.getStart().getOffset() + element.getName().length());
+		return new ParseError(type + " names should begin with an uppercase letter.", element, getSeverity());
 	}
 
 	public boolean isAllowed() {
 		return (!(Character.isLowerCase(element.getName().charAt(0))));
 	}
 	
-	
-	/* (non-Javadoc)
-	 * @see org.rubypeople.rdt.internal.core.parser.ParseRule#getSeverity()
-	 */
-	public int getSeverity() {
+	private int getSeverity() {
 		return ParseRule.WARNING;
 	}
 
@@ -86,4 +82,9 @@ public class UpperCaseNameRule implements ParseRule {
 	public boolean addError() {
 		return true;
 	}
+
+	/* (non-Javadoc)
+	 * @see org.rubypeople.rdt.internal.core.parser.rules.ParseRule#run()
+	 */
+	public void run() {}
 }

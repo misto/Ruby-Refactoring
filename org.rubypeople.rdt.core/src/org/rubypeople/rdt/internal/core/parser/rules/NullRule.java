@@ -64,4 +64,9 @@ public class NullRule implements ParseRule {
 		return false;
 	}
 
+	/* (non-Javadoc)
+	 * @see org.rubypeople.rdt.internal.core.parser.rules.ParseRule#run()
+	 */
+	public void run() {}
+
 }

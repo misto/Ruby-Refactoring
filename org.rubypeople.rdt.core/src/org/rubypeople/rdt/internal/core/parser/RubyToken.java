@@ -58,8 +58,13 @@ public class RubyToken {
 	public static final int UNLESS_MODIFIER = 21;
 	public static final int IF_MODIFIER = 22;
 	public static final int CONSTANT = 23;
-	public static final int MAX_TOKEN_NUM = 23;
-
+	public static final int ATTR_READER = 24;
+	public static final int SYMBOL = 25;
+	public static final int ATTR_WRITER = 26;
+	public static final int ATTR_ACCESSOR = 27;
+	public static final int PRIVATE = 28;
+	public static final int PROTECTED = 29;
+	
 	private int offset;
 	private String text;
 	private int type;
@@ -123,6 +128,20 @@ public class RubyToken {
 	 */
 	public boolean isVariable() {
 		return isType(RubyToken.INSTANCE_VARIABLE) || isType(GLOBAL) || isType(CLASS_VARIABLE);
+	}
+
+	/**
+	 * @return
+	 */
+	public boolean isAttributeModifier() {
+		return isType(RubyToken.ATTR_READER) || isType(RubyToken.ATTR_WRITER) || isType(RubyToken.ATTR_ACCESSOR);
+	}
+
+	/**
+	 * @return
+	 */
+	public boolean isMethodAccessModifier() {
+		return isType(RubyToken.PRIVATE) || isType(RubyToken.PROTECTED);
 	}
 
 }

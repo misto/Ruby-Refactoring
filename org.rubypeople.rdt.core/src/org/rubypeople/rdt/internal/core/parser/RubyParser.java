@@ -27,11 +27,8 @@ package org.rubypeople.rdt.internal.core.parser;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.StringReader;
-import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Set;
-import java.util.StringTokenizer;
 
 import org.rubypeople.rdt.internal.core.parser.ast.RubyElement;
 import org.rubypeople.rdt.internal.core.parser.ast.RubyScript;
@@ -106,11 +103,46 @@ public class RubyParser {
 							log(e.getMessage());
 						}
 					}
+					if (token.isAttributeModifier()) {
+						while (tokenizer.hasMoreTokens()) {
+							RubyToken next = tokenizer.nextRubyToken();
+							if (!next.isType(RubyToken.SYMBOL)) {
+								script.addParseError(new ParseError("Attribute modifier is not followed by one or more symbols", lineNum, next, ParseError.ERROR));
+								break;
+							}
+							String name = "@" + next.getText().substring(1);
+							RubyElement element = new RubyElement(RubyElement.INSTANCE_VAR, name, lineNum, next.getOffset());
+							if (token.isType(RubyToken.ATTR_READER))
+								element.setAccess(RubyElement.READ);
+							else if (token.isType(RubyToken.ATTR_WRITER))
+								element.setAccess(RubyElement.WRITE);
+							else if (token.isType(RubyToken.ATTR_ACCESSOR))
+								element.setAccess(RubyElement.PUBLIC);
+							applyRules(element);
+						}
+						continue;
+					}
+					
+					if (token.isMethodAccessModifier()) {
+						while (tokenizer.hasMoreTokens()) {
+							RubyToken next = tokenizer.nextRubyToken();
+							if (!next.isType(RubyToken.SYMBOL)) {
+								script.addParseError(new ParseError("Method access modifier is not followed by one or more symbols", lineNum, next, ParseError.ERROR));
+								break;
+							}
+							String name = next.getText().substring(1);
+							RubyElement element = new RubyElement(RubyElement.METHOD, name, lineNum, next.getOffset());
+							if (token.isType(RubyToken.PRIVATE))
+								element.setAccess(RubyElement.PRIVATE);
+							else if (token.isType(RubyToken.PROTECTED))
+								element.setAccess(RubyElement.PROTECTED);
+							applyRules(element);
+						}
+						continue;
+					}
 				}
-				findPrivateModifier(myLine, lineNum);
-				findAttributeReaderModifier(myLine, lineNum);
-				findAttributeWriterModifier(myLine, lineNum);
-				findAttributeAccessor(myLine, lineNum);
+				// TODO Fold these into Tokenizer as well!
+				//findPrivateModifier(myLine, lineNum);
 				offset = 0;
 				lineNum++;
 			}
@@ -145,7 +177,7 @@ public class RubyParser {
 		String text = token.getText();
 		if (text.indexOf('{') == -1) { return text.substring(1); }
 		if (text.indexOf('}') == -1) {
-			script.addParseError(new ParseError("Incomplete variable substitution", lineNum, token.getOffset(), token.getOffset() + text.length()));
+			script.addParseError(new ParseError("Incomplete variable substitution", lineNum, token.getOffset(), token.getOffset() + text.length(), ParseError.ERROR));
 			return text.substring(2);
 		}
 		return text.substring(2, text.indexOf('}'));
@@ -169,6 +201,7 @@ public class RubyParser {
 		boolean addElement = true;
 		for (Iterator iter = rules.iterator(); iter.hasNext();) {
 			ParseRule rule = (ParseRule) iter.next();
+			rule.run();
 			if (!rule.isAllowed()) {
 				log("Failed rule");
 				if (rule.addError()) {
@@ -183,7 +216,7 @@ public class RubyParser {
 
 	private static void addElementDeclaration(RubyToken token, RubyTokenizer tokenizer, int lineNum) {
 		if (!tokenizer.hasMoreTokens()) {
-			script.addParseError(new ParseError("Incomplete " + token.getType() + " declaration.", lineNum, token.getOffset(), token.getOffset() + token.getText().length()));
+			script.addParseError(new ParseError("Incomplete " + token.getType() + " declaration.", lineNum, token.getOffset(), token.getOffset() + token.getText().length(), ParseError.ERROR));
 			return;
 		}
 		RubyToken elementName = tokenizer.nextRubyToken();
@@ -221,7 +254,7 @@ public class RubyParser {
 		try {
 			return stack.peek();
 		} catch (StackEmptyException e) {
-			script.addParseError(new ParseError("Attempted to add element to empty stack", element.getStart().getLineNumber(), element.getStart().getOffset(), element.getEnd().getOffset()));
+			script.addParseError(new ParseError("Attempted to add element to empty stack", element, ParseError.INFO));
 			return script;
 		}
 	}
@@ -283,76 +316,6 @@ public class RubyParser {
 		if (myLine.indexOf("=begin") != -1) {
 			inDocs = true;
 		}
-	}
-
-	/**
-	 * @param myLine
-	 */
-	private static void findAttributeAccessor(String myLine, int lineNum) {
-		findAccessModifier(myLine, RubyElement.PUBLIC, "attr_accessor ", "@", lineNum);
-	}
-
-	/**
-	 * @param myLine
-	 */
-	private static void findAttributeWriterModifier(String myLine, int lineNum) {
-		findAccessModifier(myLine, RubyElement.WRITE, "attr_writer ", "@", lineNum);
-	}
-
-	/**
-	 * @param myLine
-	 */
-	private static void findAttributeReaderModifier(String myLine, int lineNum) {
-		findAccessModifier(myLine, RubyElement.READ, "attr_reader ", "@", lineNum);
-	}
-
-	/**
-	 * @param myLine
-	 */
-	private static void findAccessModifier(String myLine, String accessRightsToGrant, String accessModifierTag, String symbolPrefix, int lineNum) {
-		if (myLine.indexOf(accessModifierTag) == -1) return;
-
-		List tokens = getSymbols(myLine, accessModifierTag);
-		RubyElement parent = stack.findParentClassOrModule();
-		if (parent == null) return;
-
-		for (Iterator iter = tokens.iterator(); iter.hasNext();) {
-			String elementName = (String) iter.next();
-			RubyElement element = parent.getElement(symbolPrefix + elementName);
-			if (element != null) {
-				element.setAccess(accessRightsToGrant);
-				continue;
-			} else {
-				RubyElement var = new RubyElement(RubyElement.INSTANCE_VAR, "@" + elementName, lineNum, myLine.indexOf(elementName));
-				var.setAccess(accessRightsToGrant);
-				parent.addElement(var);
-			}
-
-		}
-	}
-
-	/**
-	 * @param myLine
-	 */
-	private static void findPrivateModifier(String myLine, int lineNum) {
-		findAccessModifier(myLine, RubyElement.PRIVATE, "private ", "", lineNum);
-	}
-
-	/**
-	 * Returns a list of symbol names given string of the format: "prefix
-	 * :symbol, :symbolTwo"
-	 * 
-	 * @param myLine
-	 * @return
-	 */
-	private static List getSymbols(String myLine, String prefix) {
-		String copy = myLine.substring(endIndexOf(myLine, prefix));
-		StringTokenizer tokenizer = new StringTokenizer(copy, ", ");
-		List list = new ArrayList();
-		while (tokenizer.hasMoreTokens()) {
-			list.add(tokenizer.nextToken().substring(1));
-		}
-		return list;
 	}
 
 	/**

@@ -25,13 +25,14 @@
  */
 package org.rubypeople.rdt.internal.core.parser.rules;
 
+import org.eclipse.core.resources.IMarker;
 import org.rubypeople.rdt.internal.core.parser.ParseError;
 
 public interface ParseRule {
 
-	int ERROR = 1;
-	int WARNING = 2;
-	int OK = 3;
+	int ERROR = IMarker.SEVERITY_ERROR;
+	int WARNING = IMarker.SEVERITY_WARNING;
+	int OK = IMarker.SEVERITY_INFO;
 
 	public boolean isAllowed();
 
@@ -43,15 +44,15 @@ public interface ParseRule {
 	/**
 	 * @return
 	 */
-	public int getSeverity();
-
-	/**
-	 * @return
-	 */
 	public boolean addOnFailure();
 
 	/**
 	 * @return
 	 */
 	public boolean addError();
+
+	/**
+	 * 
+	 */
+	public void run();
 }

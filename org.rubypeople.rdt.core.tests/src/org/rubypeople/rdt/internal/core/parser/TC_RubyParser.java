@@ -863,6 +863,61 @@ public class TC_RubyParser extends TestCase {
 		assertEquals(new Position(9, 0), script.getElement("Bar").getEnd());
 	}
 	
+	public void testAttributeReaderModifier() throws Exception {
+		RubyScript script = RubyParser.parse("class Bob\nattr_reader :from		# Owner of this client.\nend");
+		assertTrue(script.contains(new RubyElement(RubyElement.CLASS, "Bob", 0, 6)));
+		assertEquals(new Position(0, 6), script.getElement("Bob").getStart());
+		assertEquals(new Position(2, 0), script.getElement("Bob").getEnd());
+		RubyElement element = script.getElement("Bob");
+		assertEquals( 1, element.getElementCount() );
+		assertContainsSingleTokenElement(element, RubyElement.INSTANCE_VAR, "@from", 1, 12);
+		assertEquals(RubyElement.READ, element.getElement("@from").getAccess() );
+	}
+	
+	public void testAttributeWriterModifier() throws Exception {
+		RubyScript script = RubyParser.parse("class Bob\nattr_writer :from		# Owner of this client.\nend");
+		assertTrue(script.contains(new RubyElement(RubyElement.CLASS, "Bob", 0, 6)));
+		assertEquals(new Position(0, 6), script.getElement("Bob").getStart());
+		assertEquals(new Position(2, 0), script.getElement("Bob").getEnd());
+		RubyElement element = script.getElement("Bob");
+		assertEquals( 1, element.getElementCount() );
+		assertContainsSingleTokenElement(element, RubyElement.INSTANCE_VAR, "@from", 1, 12);
+		assertEquals(RubyElement.WRITE, element.getElement("@from").getAccess() );
+	}
+	
+	public void testAttributeAccessorModifier() throws Exception {
+		RubyScript script = RubyParser.parse("class Bob\nattr_accessor :from		# Owner of this client.\nend");
+		assertTrue(script.contains(new RubyElement(RubyElement.CLASS, "Bob", 0, 6)));
+		assertEquals(new Position(0, 6), script.getElement("Bob").getStart());
+		assertEquals(new Position(2, 0), script.getElement("Bob").getEnd());
+		RubyElement element = script.getElement("Bob");
+		assertEquals( 1, element.getElementCount() );
+		assertContainsSingleTokenElement(element, RubyElement.INSTANCE_VAR, "@from", 1, 14);
+		assertEquals(RubyElement.PUBLIC, element.getElement("@from").getAccess() );
+	}
+	
+	public void testPrivateModifier() throws Exception {
+		RubyScript script = RubyParser.parse("class Bob\ndef from\nend\nprivate :from		# Owner of this client.\nend");
+		assertTrue(script.contains(new RubyElement(RubyElement.CLASS, "Bob", 0, 6)));
+		assertEquals(new Position(4, 0), script.getElement("Bob").getEnd());
+		RubyElement element = script.getElement("Bob");
+		assertEquals( 1, element.getElementCount() );
+		assertTrue(element.contains(new RubyElement(RubyElement.METHOD, "from", 1, 4)));
+		assertEquals(new Position(2, 0), element.getElement("from").getEnd());
+		assertEquals(RubyElement.PRIVATE, element.getElement("from").getAccess() );
+	}
+	
+	public void testProtectedModifier() throws Exception {
+		RubyScript script = RubyParser.parse("class Bob\ndef from\nend\nprotected :from		# Owner of this client.\nend");
+		assertTrue(script.contains(new RubyElement(RubyElement.CLASS, "Bob", 0, 6)));
+		assertEquals(new Position(4, 0), script.getElement("Bob").getEnd());
+		RubyElement element = script.getElement("Bob");
+		assertEquals( 1, element.getElementCount() );
+		assertTrue(element.contains(new RubyElement(RubyElement.METHOD, "from", 1, 4)));
+		assertEquals(new Position(2, 0), element.getElement("from").getEnd());
+		assertEquals(RubyElement.PROTECTED, element.getElement("from").getAccess() );
+	}
+	
 	/**
 	 * @param parent
 	 * @param type
