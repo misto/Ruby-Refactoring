@@ -10,9 +10,9 @@
    <runtime>
       <library name="rdtcore.jar">
          <export name="*"/>
-         <packages prefixes="org.rubypeople.rdt"/>
-      </library>
-      <library name="lib/jakarta-regexp-1.2.jar">
+         <packages prefixes="org.rubypeople.rdt.core,org.rubypeople.rdt.internal.core,org.rubypeople.rdt.internal.formatter,org.rubypeople.rdt.internal.core.parser"/>
+      </library>      
+      <library name="extlib/jakarta-regexp-1.2.jar">
          <export name="*"/>
          <packages prefixes="org.apache.regexp"/>
       </library>
@@ -44,12 +44,28 @@
             extension="rb">
       </fileTypes>
    </extension>
-   <extension id="problem" point="org.eclipse.core.resources.markers" name="Ruby Problem">
-		<super type="org.eclipse.core.resources.problemmarker"/>
-		<super type="org.eclipse.core.resources.textmarker"/>
-		<persistent value="true"/>
-		<attribute name="id"/>
-		<attribute name="flags"/>
-		<attribute name="arguments"/>
-	</extension>
+   <extension
+         id="problem"
+         name="Ruby Problem"
+         point="org.eclipse.core.resources.markers">
+      <super
+            type="org.eclipse.core.resources.problemmarker">
+      </super>
+      <super
+            type="org.eclipse.core.resources.textmarker">
+      </super>
+      <persistent
+            value="true">
+      </persistent>
+      <attribute
+            name="id">
+      </attribute>
+      <attribute
+            name="flags">
+      </attribute>
+      <attribute
+            name="arguments">
+      </attribute>
+   </extension>
+
 </plugin>
