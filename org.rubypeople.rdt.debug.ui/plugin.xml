@@ -306,4 +306,7 @@
          <description>%cheatsheet.webservices.desc</description>
       </cheatsheet>
    </extension>
+	<extension point="org.eclipse.core.runtime.preferences">
+		<initializer class="org.rubypeople.rdt.internal.debug.ui.DebugUiPreferenceInitializer"/>
+	</extension>
 </plugin>
