@@ -11,8 +11,8 @@ public class TS_Parser {
 		TestSuite suite = new TestSuite("Test for org.rubypeople.rdt.internal.core.parser");
 		//$JUnit-BEGIN$
 		suite.addTest(new TestSuite(TC_RubyParser.class));
+		suite.addTest(new TestSuite(TC_RubyTokenizer.class));
 		suite.addTest(new TestSuite(TC_RubyParserStack.class));
-		suite.addTest(new TestSuite(TC_RubyParserUtil.class));
 		suite.addTest(new TestSuite(TC_RubyElement.class));
 		//$JUnit-END$
 		return suite;
