@@ -222,7 +222,9 @@ public class RubyCore extends Plugin {
 	}
 
 	public static void log(Exception e) {
-		log(Status.ERROR, e.getMessage(), e);
+		String msg = e.getMessage();
+		if (msg == null) msg = "";
+		log(Status.ERROR, msg, e);
 	}
 
 	/**
