@@ -1,0 +1,25 @@
+!***************  RDT CONTRIBUTION  ******************************************************** 
+
+
+feature@org.rubypeople.rdt=HEAD,:pserver:anonymous@cvs.sf.net:/cvsroot/rubyeclipse,,org.rubypeople.rdt-feature
+!* feature@org.rubypeople.rdt=HEAD,:ext:egal:/cvsroot/rubyeclipse,,org.rubypeople.rdt-feature
+
+plugin@org.kxml2=HEAD,:pserver:anonymous@cvs.sf.net:/cvsroot/rubyeclipse,
+plugin@org.rubypeople.rdt=HEAD,:pserver:anonymous@cvs.sf.net:/cvsroot/rubyeclipse,
+plugin@org.rubypeople.rdt.core=HEAD,:pserver:anonymous@cvs.sf.net:/cvsroot/rubyeclipse,
+plugin@org.rubypeople.rdt.debug.core=HEAD,:pserver:anonymous@cvs.sf.net:/cvsroot/rubyeclipse,
+plugin@org.rubypeople.rdt.debug.ui=HEAD,:pserver:anonymous@cvs.sf.net:/cvsroot/rubyeclipse,
+plugin@org.rubypeople.rdt.ui=HEAD,:pserver:anonymous@cvs.sf.net:/cvsroot/rubyeclipse,
+plugin@org.rubypeople.rdt.launching=HEAD,:pserver:anonymous@cvs.sf.net:/cvsroot/rubyeclipse,
+plugin@org.rubypeople.rdt.testunit=HEAD,:pserver:anonymous@cvs.sf.net:/cvsroot/rubyeclipse,
+plugin@org.rubypeople.rdt.doc.user=HEAD,:pserver:anonymous@cvs.sf.net:/cvsroot/rubyeclipse,
+
+feature@org.rubypeople.rdt-tests=HEAD,:ext:anything:/cvsroot/rubyeclipse,,org.rubypeople.rdt-feature/unit-tests-feature
+plugin@org.rubypeople.eclipse.shams=HEAD,:ext:anything:/cvsroot/rubyeclipse,
+plugin@org.rubypeople.eclipse.testutils=HEAD,:ext:anything:/cvsroot/rubyeclipse,
+plugin@org.rubypeople.rdt.core.tests=HEAD,:ext:anything:/cvsroot/rubyeclipse,
+plugin@org.rubypeople.rdt.ui.tests=HEAD,:ext:anything:/cvsroot/rubyeclipse,
+plugin@org.rubypeople.rdt.debug.core.tests=HEAD,:ext:anything:/cvsroot/rubyeclipse,
+plugin@org.rubypeople.rdt.debug.ui.tests=HEAD,:ext:anything:/cvsroot/rubyeclipse,
+plugin@org.rubypeople.rdt.launching.tests=HEAD,:ext:anything:/cvsroot/rubyeclipse,
+plugin@org.rubypeople.rdt.tests.all=HEAD,:ext:anything:/cvsroot/rubyeclipse,
