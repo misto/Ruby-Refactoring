@@ -28,6 +28,7 @@
       <import plugin="org.eclipse.jface.text"/>
       <import plugin="org.eclipse.ui.editors"/>
       <import plugin="org.eclipse.ui.ide"/>
+      <import plugin="org.eclipse.ui.cheatsheets"/>
    </requires>
 
    <extension
@@ -268,9 +269,10 @@
                               property="org.eclipse.debug.ui.matchesPattern">
                         </test>
                         <test
-                              value="*.rbw"
+                              value="*.rbx"
                               property="org.eclipse.debug.ui.matchesPattern">
                         </test>
+                        <test property="org.eclipse.debug.ui.matchesContentType" value="org.eclipse.ant.core.antBuildFile"/>
                      </or>
                   </iterate>
                </with>
@@ -289,5 +291,13 @@
          </perspective>
       </shortcut>
    </extension>
-
+   <extension 
+   		 point="org.eclipse.ui.cheatsheets.cheatSheetContent">
+      <cheatsheet
+            name="%cheatsheet.webservices.name"
+            contentFile="$nl$/cheatsheets/WebServices.xml"
+            id="org.rubypeople.rdt.webservices">
+         <description>%cheatsheet.webservices.desc</description>
+      </cheatsheet>
+   </extension>
 </plugin>

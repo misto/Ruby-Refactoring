@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="UTF-8" ?> 
+<cheatsheet title="Using RDT">
+
+	<intro 
+		href="/org.eclipse.platform.doc.user/reference/ref-cheatsheets.htm">
+		<description>
+            This cheat sheet is an introduction to the Ruby Development Tools (RDT)
+            and uses a real world scenario to show how the RDT can be leveraged in 
+            your work with ruby.
+            As a prerequiste you need to get and install soap4r 1.5.2. Although it
+            is included since ruby 1.8.1, you will need it because of the wsdl2ruby.rb
+            file, which is not part of ruby 1.8.1 or later.
+            Please note that for the debugging session on linux you need to use ruby 1.6.
+			To start working on this cheat sheet, 
+            click the &quot;Click to Begin&quot; button below.
+		</description>
+	</intro>
+
+	<item
+		href="/org.rubypeople.rdt.doc.user/html/ch01.html"
+		title="Interpreter setup">
+		<description>
+		   Make sure you have registered at least one ruby interpreter with RDT. Click on
+		   the help button if you don't know how to do that.
+		</description>
+	</item>
+
+	<item
+		title="Creating a Ruby project on soap4r">
+		<action
+			pluginId="org.rubypeople.rdt.debug.ui"
+		    param1="soap4r"
+			class="org.rubypeople.rdt.internal.debug.ui.cheatsheets.webservice.OpenNewRubyProjectWizardAction"/>
+		
+		<description>
+		   In order to run the wsdl2ruby from the soap4r package, you will create 
+		   first add a ruby project called soap4r on top of the soap4r installation directory.
+		   After clicking the &quot;Click to Perform&quot; button below, the new ruby project wizard
+		   will open. The project name &quot;soap4r&quot; is already entered. Disable the
+		   &quot;Use Default&quot; checkbox in the project content area and use the browse button 
+		   to select the directory to which you have unzipped the soap4r tar ball.		   
+		</description>
+	</item>
+	
+	<item
+		title="Create MyWebservice Project">
+		<action
+			pluginId="org.rubypeople.rdt.debug.ui"
+		    param1="MyWebservice"
+			class="org.rubypeople.rdt.internal.debug.ui.cheatsheets.webservice.OpenNewRubyProjectWizardAction"/>
+		
+		<description>
+		   In this step you create a new project within your workspace, which will be used
+		   to hold the wsdl file and the generated code from this file. The project is called
+		   &quot;MyWebservice&quot;
+			The &quot;Click to Perform&quot; button opens the Ruby project wizard again.
+			This time you can leave the &quot;Use Default&quot; checkbox enabled. This will create
+			the project as a subdirectory into your workspace location.
+		</description>
+	</item>	
+
+	<item		
+		title="Add wsdl file to MyWebservice">
+			<action
+			pluginId="org.rubypeople.rdt.debug.ui"
+		    param1="MyWebservice"
+			class="org.rubypeople.rdt.internal.debug.ui.cheatsheets.webservice.CreateWsdlFileAction"/>		
+		<description>
+		   Add a new file called sample.wsdl to the MyWebservice project. In the dialog which 
+		   &quot;Click to Perform&quot; brings up you only have to enter the file name &quot;sample.wsdl&quot;.
+		   The MyWebservice project is already selected as the container of this new resource.
+		</description>
+	</item>
+
+	<item
+		href="/org.rubypeople.rdt.doc.user/html/ch02s03.html"
+		title="Add content to sample.wsdl">
+		<action
+			pluginId="org.rubypeople.rdt.debug.ui"
+		    param1="/cheatsheets/Sample.wsdl"			
+		    param2="/MyWebservice/sample.wsdl"
+			class="org.rubypeople.rdt.internal.debug.ui.cheatsheets.webservice.CopyContentAction"/>		
+		
+		<description>
+			In the last step you have created the file sample.wsdl. But why is it not there? It is, 
+			but is filtered out: In the Ruby Resources views menu deselect &quot;Show Ruby Files only&quot;.
+			The &quot;Click to Perform&quot; buttons copies sample content to the wsdl file. The content is copied
+			from the Sample.wsdl file which ships with RDT.
+		</description>
+	</item>
+
+	<item
+		title="Run wsdl2ruby.rb">
+		<description>
+		  Open the soap4r project. Open the bin directory. Right-Click the wsdl2ruby.rb
+		  file and choose Run->Run Ruby Application. Check the console for the output of
+		  the process. There you find the required command line options.
+		</description>
+	</item>
+
+	<item
+		title="Modify the run configuration for server generation">
+	<action
+			pluginId="org.rubypeople.rdt.debug.ui"
+		    param1="/cheatsheets/Sample.wsdl"
+			class="org.rubypeople.rdt.internal.debug.ui.cheatsheets.webservice.OpenRunConfigurationAction"/>	
+		
+		<description>
+		  &quot;Click to Perform&quot; opens the run configuration, which is also available selection 
+		  Run->Run... from the main menu. The running of wsdl2ruby.rb in the last step has 
+		  created a run-configuration named &quot;wsdl2ruby.rb&quot;. Now open the Arguments tab
+		  and add &quot;-wsdl sample.wsdl --server&quot; to the program arguments. Then you change
+		  the working directory to the directory of the MyWebservice project. Therefore you must know
+		  where your workspace resides on the local disk: If you have forgotten which workspace you 
+		  are using or where it resides, you can choose &quot;File->Switch Workspace&quot;.
+		</description>
+	</item>
+	
+	<item
+		title="Create Run-Configuration for client generation">
+		<description>
+		  
+		</description>
+	</item>
+	
+	<item
+		title="Run server and client">
+		<description>
+		  
+		</description>
+	</item>
+
+	<item
+		title="Debug server">
+		<description>
+		  
+		</description>
+	</item>
+
+
+</cheatsheet>
