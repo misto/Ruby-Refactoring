@@ -2,6 +2,6 @@
 <?NLS TYPE="org.eclipse.help.toc"?>
 
 <toc label="Getting Started" link_to="toc.xml#gettingstarted"> 
-	<topic label="Preparing the Workbench"  href="html/gettingstarted/preparingTheWorkbench.html"> 
+	<topic label="Preparing the Workbench"  href="html/gettingStarted/preparingTheWorkbench.html"> 
 	</topic>
 </toc>
