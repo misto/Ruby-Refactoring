@@ -4,7 +4,7 @@
    id="org.rubypeople.rdt.debug.core"
    name="%Plugin.name"
    version="0.6.0"
-   provider-name="RubyPeople, Inc."
+   provider-name="%providerName"
    class="org.rubypeople.rdt.internal.debug.core.RdtDebugCorePlugin">
 
    <runtime>

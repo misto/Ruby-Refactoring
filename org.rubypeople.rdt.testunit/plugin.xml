@@ -2,9 +2,9 @@
 <?eclipse version="3.0"?>
 <plugin
    id="org.rubypeople.rdt.testunit"
-   name="Testunit Plug-in"
+   name="%pluginName"
    version="0.6.0"
-   provider-name="Rubypeople, Inc."
+   provider-name="%providerName"
    class="org.rubypeople.rdt.testunit.TestunitPlugin">
 
    <runtime>
