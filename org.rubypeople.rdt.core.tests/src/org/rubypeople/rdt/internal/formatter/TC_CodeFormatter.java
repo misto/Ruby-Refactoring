@@ -4,12 +4,14 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Hashtable;
 
-import org.apache.xerces.parsers.DOMParser;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.FactoryConfigurationError;
+import javax.xml.parsers.ParserConfigurationException;
+
 import org.rubypeople.rdt.internal.formatter.CodeFormatter;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
-import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
 import junit.framework.Assert;
@@ -30,7 +32,7 @@ public class TC_CodeFormatter extends TestCase {
 	}
 
 	private Hashtable testMap;
-	public TC_CodeFormatter(String name) throws IOException, SAXException {
+	public TC_CodeFormatter(String name) throws SAXException, IOException, ParserConfigurationException, FactoryConfigurationError {
 		super(name);
 		testMap = new Hashtable();
 		this.parseXmlConfiguration();
@@ -40,11 +42,8 @@ public class TC_CodeFormatter extends TestCase {
 		return input.substring(input.indexOf("\n") + 1);
 	}
 
-	public void parseXmlConfiguration() throws IOException, SAXException {
-		DOMParser parser = new DOMParser();
-		parser.parse(new InputSource(this.getClass().getResourceAsStream("FormatTestData.xml")));
-		Document document = parser.getDocument();
-
+	public void parseXmlConfiguration() throws SAXException, IOException, ParserConfigurationException, FactoryConfigurationError {
+		Document document = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(this.getClass().getResourceAsStream("FormatTestData.xml"));
 		NodeList tests = document.getElementsByTagName("test");
 		for (int i = 0; i < tests.getLength(); i++) {
 			Node test = tests.item(i);
