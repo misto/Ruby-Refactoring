@@ -181,6 +181,16 @@
             id="org.rubypeople.rdt.ui.ExternalRubyEditor">
       </editor>
    </extension>
+   
+   <extension
+         point="org.eclipse.ui.contexts">
+	  <context
+            name="%scope.rubyEditor.name"
+            description="%scope.rubyEditor.description"
+            parentId="org.eclipse.ui.textEditorScope"
+            id="org.rubypeople.rdt.ui.rubyEditorScope">
+      </context>
+   </extension>
    <extension
          point="org.eclipse.ui.commands">
       <category
@@ -188,12 +198,6 @@
             description="%category.source.description"
             id="org.rubypeople.rdt.ui.category.source">
       </category>
-      <scope
-            name="%scope.rubyEditor.name"
-            parent="org.eclipse.ui.textEditorScope"
-            description="%scope.rubyEditor.description"
-            id="org.rubypeople.rdt.ui.rubyEditorScope">
-      </scope>
       <command
             name="%ActionDefinition.format.name"
             description="%ActionDefinition.format.description"
