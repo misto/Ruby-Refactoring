@@ -1,3 +1,4 @@
+require 'test/unit'
 require 'test/unit/ui/testrunnermediator'
 
 module Test
@@ -49,7 +50,7 @@ module Test
               setup_mediator
               attach_to_mediator
               return start_mediator
-            rescue Exception
+            rescue NoMethodError
               $stdout.puts "Launched class is not compatible with Test::Unit::TestCase"
               output_single("%TESTC  0 v2\n")
               finished(0)
