@@ -13,6 +13,7 @@
 		<ant dir="org.rubypeople.rdt.core" target="clean"/>
 		<ant dir="org.rubypeople.rdt.debug.core" target="clean"/>
 		<ant dir="org.rubypeople.rdt.debug.ui" target="clean"/>
+		<ant dir="org.rubypeople.rdt.doc.user" target="clean"/>
 		<ant dir="org.rubypeople.rdt.launching" target="clean"/>
 		<ant dir="org.rubypeople.rdt.ui" target="clean"/>
 		<antcall target="clean"/>
@@ -23,6 +24,7 @@
 		<ant dir="org.rubypeople.rdt.core" target="zip.plugin"/>
 		<ant dir="org.rubypeople.rdt.debug.core" target="zip.plugin"/>
 		<ant dir="org.rubypeople.rdt.debug.ui" target="zip.plugin"/>
+		<ant dir="org.rubypeople.rdt.doc.user" target="zip.plugin"/>
 		<ant dir="org.rubypeople.rdt.launching" target="zip.plugin"/>
 		<ant dir="org.rubypeople.rdt.ui" target="zip.plugin"/>
 	</target>
@@ -33,6 +35,7 @@
 		<unzip src="org.rubypeople.rdt.core/org.rubypeople.rdt.core_0.3.1.zip" dest="${package.temp.dir}"/>
 		<unzip src="org.rubypeople.rdt.debug.core/org.rubypeople.rdt.debug.core_0.3.1.zip" dest="${package.temp.dir}"/>
 		<unzip src="org.rubypeople.rdt.debug.ui/org.rubypeople.rdt.debug.ui_0.3.1.zip" dest="${package.temp.dir}"/>
+		<unzip src="org.rubypeople.rdt.doc.user/org.rubypeople.rdt.doc.user_0.3.1.zip" dest="${package.temp.dir}"/>
 		<unzip src="org.rubypeople.rdt.launching/org.rubypeople.rdt.launching_0.3.1.zip" dest="${package.temp.dir}"/>
 		<unzip src="org.rubypeople.rdt.ui/org.rubypeople.rdt.ui_0.3.1.zip" dest="${package.temp.dir}"/>
 		<zip zipfile="org.rubypeople.rdt.build/rubyeclipse_0.3.1.zip" basedir="${package.temp.dir}" filesonly="true"/>
@@ -44,6 +47,7 @@
 		<ant dir="org.rubypeople.rdt.core" target="refresh"/>
 		<ant dir="org.rubypeople.rdt.debug.core" target="refresh"/>
 		<ant dir="org.rubypeople.rdt.debug.ui" target="refresh"/>
+		<ant dir="org.rubypeople.rdt.doc.user" target="refresh"/>
 		<ant dir="org.rubypeople.rdt.launching" target="refresh"/>
 		<ant dir="org.rubypeople.rdt.ui" target="refresh"/>
 		<antcall target="refresh"/>
