@@ -5,8 +5,10 @@ import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.IDocumentListener;
 import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.viewers.Viewer;
+import org.rubypeople.rdt.internal.core.RubyPlugin;
 import org.rubypeople.rdt.internal.core.parser.IRubyElement;
-import org.rubypeople.rdt.internal.core.parser.RubyScript;
+import org.rubypeople.rdt.internal.core.parser.ParseException;
+import org.rubypeople.rdt.internal.core.parser.RubyParser;
 
 public class RubyOutlineContentProvider implements ITreeContentProvider, IDocumentListener {
 	protected Viewer viewer;
@@ -26,7 +28,13 @@ public class RubyOutlineContentProvider implements ITreeContentProvider, IDocume
 	}
 
 	public Object[] getElements(Object inputElement) {
-		return new RubyScript(((IDocument) inputElement).get()).getElements();
+		try {
+			return RubyParser.parse(((IDocument) inputElement).get()).getElements();
+		}
+		catch (ParseException e) {
+			RubyPlugin.log(new RuntimeException(e));
+		}
+		return new Object[0];
 	}
 
 	public void dispose() {
