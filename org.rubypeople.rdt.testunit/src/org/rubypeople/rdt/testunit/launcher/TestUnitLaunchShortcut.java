@@ -84,7 +84,9 @@ public class TestUnitLaunchShortcut implements ILaunchShortcut {
 	private void doLaunch(String mode, RubyElement rubyElement) {
 		try {
 			String container = getContainer(rubyElement);
-			ILaunchConfiguration config = findOrCreateLaunchConfiguration(rubyElement, mode, container, "", "");
+			// TODO Check number of available and allow choice if more than one
+			String testClass = TestSearchEngine.findTests((IFile) rubyElement.getUnderlyingResource())[0].getName();
+			ILaunchConfiguration config = findOrCreateLaunchConfiguration(rubyElement, mode, container, testClass, "");
 			if (config != null) {
 				DebugUITools.launch(config, mode);
 			}
