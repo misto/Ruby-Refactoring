@@ -508,5 +508,47 @@ public class TC_RubyParser extends TestCase {
 		assertEquals(2, module.getElementCount() );
 		assertTrue(module.contains(new RubyDo(new Position(1, 52))));
 	}
+	
+	public void testIgnoresNonSubstitutedInstanceVariableInRegex() throws Exception {
+		RubyScript script = RubyParser.parse("class Bob\ndef decode_b(str)\nstr.gsub!(/=\\?SHIFT_JIS\\?B\\?([!->@-~]+)\\?=/i) {\ndecode64(1)\n}\nend\nend");
+		assertEquals(1, script.getElementCount());
+		RubyClass rubyClass = script.getClass("Bob");
+		assertEquals(1, rubyClass.getElementCount() );
+	}
+	
+	public void testIgnoresNonSubstitutedInstanceVariableInDoubleQuotes() throws Exception {
+		RubyScript script = RubyParser.parse("class Bob\ndef decode_b(str)\nputs \"@var\"\nend\nend");
+		assertEquals(1, script.getElementCount());
+		RubyClass rubyClass = script.getClass("Bob");
+		assertEquals(1, rubyClass.getElementCount() );
+	}
+	
+	public void testRecognizesSubstitutedInstanceVariableInDoubleQuotes() throws Exception {
+		RubyScript script = RubyParser.parse("class Bob\ndef decode_b(str)\nputs \"#{@var}\"\nend\nend");
+		assertEquals(1, script.getElementCount());
+		RubyClass rubyClass = script.getClass("Bob");
+		assertEquals(2, rubyClass.getElementCount() );
+	}
+	
+	public void testIgnoresNonSubstitutedClassVariableInRegex() throws Exception {
+		RubyScript script = RubyParser.parse("class Bob\ndef decode_b(str)\nstr.gsub!(/=\\?SHIFT_JIS\\?B\\?([!->@@-~]+)\\?=/i) {\ndecode64(1)\n}\nend\nend");
+		assertEquals(1, script.getElementCount());
+		RubyClass rubyClass = script.getClass("Bob");
+		assertEquals(1, rubyClass.getElementCount() );
+	}
+	
+	public void testIgnoresNonSubstitutedClassVariableInDoubleQuotes() throws Exception {
+		RubyScript script = RubyParser.parse("class Bob\ndef decode_b(str)\nputs \"@@var\"\nend\nend");
+		assertEquals(1, script.getElementCount());
+		RubyClass rubyClass = script.getClass("Bob");
+		assertEquals(1, rubyClass.getElementCount() );
+	}
+	
+	public void testRecognizesSubstitutedClassVariableInDoubleQuotes() throws Exception {
+		RubyScript script = RubyParser.parse("class Bob\ndef decode_b(str)\nputs \"#{@@var}\"\nend\nend");
+		assertEquals(1, script.getElementCount());
+		RubyClass rubyClass = script.getClass("Bob");
+		assertEquals(2, rubyClass.getElementCount() );
+	}
 
 }
