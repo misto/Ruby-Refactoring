@@ -4,6 +4,9 @@
  */
 package org.rubypeople.rdt.internal.core.parser;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.HashMap;
 import java.util.StringTokenizer;
 
@@ -146,5 +149,27 @@ public class TaskParser {
 			if (tasks[i].getAttribute(IMarker.LINE_NUMBER).toString().equals(String.valueOf(lineNumber)) && tasks[i].getAttribute(IMarker.MESSAGE).equals(message)) return tasks[i];
 		}
 		return null;
+	}
+
+	public void parse(IResource file, InputStreamReader reader) {
+		StringBuffer buffer = new StringBuffer();
+		BufferedReader buffered = null;
+		try {			
+			buffered = new BufferedReader(reader);
+			String line;
+			while ((line = buffered.readLine()) != null) {
+				buffer.append(line);
+				buffer.append('\n');
+			}
+			parse(file, buffer.toString());
+		} catch (IOException e) {
+			RubyCore.log(e);
+		} finally {
+			try {
+				if (buffered != null) buffered.close();
+			} catch (IOException e) {
+				// ignore
+			}
+		}		
 	}
 }

@@ -36,7 +36,6 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.preferences.IEclipsePreferences;
 import org.jruby.ast.Node;
 import org.jruby.lexer.yacc.SyntaxException;
 import org.rubypeople.rdt.core.IBuffer;
@@ -54,7 +53,6 @@ import org.rubypeople.rdt.internal.core.buffer.BufferManager;
 import org.rubypeople.rdt.internal.core.parser.MarkerUtility;
 import org.rubypeople.rdt.internal.core.parser.RdtWarnings;
 import org.rubypeople.rdt.internal.core.parser.RubyParser;
-import org.rubypeople.rdt.internal.core.parser.TaskParser;
 import org.rubypeople.rdt.internal.core.parser.Util;
 
 /**
@@ -109,8 +107,10 @@ public class RubyScript extends Openable implements IRubyScript {
 
 		try {
 			RubyCore.log("About to parse RubyScript!");
-			MarkerUtility.removeMarkers(underlyingResource);
-			RubyCore.log("Removed markers");
+			// FIXME Pass in a ProblemRequestor and add problems to it
+			// FIXME Have UI handle problems for working copies
+//			MarkerUtility.removeMarkers(underlyingResource);
+//			RubyCore.log("Removed markers");
 
 			RdtWarnings warnings = new RdtWarnings();
 			RubyCore.log("Created warnings object");
@@ -122,17 +122,16 @@ public class RubyScript extends Openable implements IRubyScript {
 			if (node != null) node.accept(visitor);
 			RubyCore.log("Built structure");
 
-			MarkerUtility.createWarnings(underlyingResource, warnings.getWarnings());
-			RubyCore.log("Created Warnings!");
+//			MarkerUtility.createWarnings(underlyingResource, warnings.getWarnings());
+//			RubyCore.log("Created Warnings!");
 
-			IEclipsePreferences preferences = RubyCore.getInstancePreferences();
-			TaskParser taskParser = new TaskParser(preferences);
-			taskParser.parse(underlyingResource, buffer.getContents());
+//			IEclipsePreferences preferences = RubyCore.getInstancePreferences();
+//			TaskParser taskParser = new TaskParser(preferences);
+//			taskParser.parse(underlyingResource, buffer.getContents());
 
 			unitInfo.setIsStructureKnown(true);
 		} catch (SyntaxException e) {
-			RubyCore.log(e);
-			MarkerUtility.createSyntaxError(underlyingResource, e);
+//			MarkerUtility.createSyntaxError(underlyingResource, e);
 			unitInfo.setIsStructureKnown(false);
 		} catch (Exception e) {
 			RubyCore.log(e);

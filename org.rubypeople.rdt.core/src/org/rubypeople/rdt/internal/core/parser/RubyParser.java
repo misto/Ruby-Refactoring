@@ -52,8 +52,6 @@ public class RubyParser {
 			result = parser.parse(lexerSource);
 		} catch (SyntaxException e) {
 			throw e;
-		} catch (Exception e) {
-			System.err.println(e);
 		} finally {
 			pool.returnParser(parser);
 		}

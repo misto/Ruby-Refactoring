@@ -51,6 +51,13 @@ public class RubyCore extends Plugin {
 	 * @since 3.0
 	 */
 	public static final String DEFAULT_TASK_TAGS = "TODO,FIXME,XXX"; //$NON-NLS-1$
+
+	/**
+	 * The identifier for the Ruby builder
+	 * (value <code>"org.rubypeople.rdt.core.rubybuilder"</code>).
+	 */
+	public static final String BUILDER_ID = PLUGIN_ID + ".rubybuilder" ; //$NON-NLS-1$
+
 	/**
 	 * Default task priority
 	 * 

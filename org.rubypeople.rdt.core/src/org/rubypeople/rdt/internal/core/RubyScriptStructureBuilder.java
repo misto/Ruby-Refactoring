@@ -312,24 +312,19 @@ public class RubyScriptStructureBuilder implements NodeVisitor {
 	public void visitConstDeclNode(ConstDeclNode iVisited) {
 		handleNode(iVisited);
 		String name = iVisited.getName();
-		RubyType type = getCurrentType();
+		RubyElement type = getCurrentType();
 		RubyConstant handle = new RubyConstant(type, name);
 		modelStack.push(handle);
-
 		RubyElementInfo parentInfo = getCurrentTypeInfo();
 		parentInfo.addChild(handle);
-
 		RubyFieldElementInfo info = new RubyFieldElementInfo();
 		info.setTypeName(estimateValueType(iVisited.getValueNode()));
 		ISourcePosition pos = iVisited.getPosition();
 		setTokenRange(pos, info, name);
 		// TODO Add more information about the variable
 		infoStack.push(info);
-
 		newElements.put(handle, info);
-
 		visitNode(iVisited.getValueNode());
-
 		modelStack.pop();
 		infoStack.pop();
 	}
@@ -342,7 +337,7 @@ public class RubyScriptStructureBuilder implements NodeVisitor {
 	public void visitClassVarAsgnNode(ClassVarAsgnNode iVisited) {
 		handleNode(iVisited);
 		String name = iVisited.getName();
-		RubyType type = getCurrentType();
+		RubyElement type = getCurrentType();
 		RubyClassVar handle = new RubyClassVar(type, name);
 		modelStack.push(handle);
 
@@ -371,7 +366,7 @@ public class RubyScriptStructureBuilder implements NodeVisitor {
 	 */
 	public void visitClassVarDeclNode(ClassVarDeclNode iVisited) {
 		handleNode(iVisited);
-		RubyType type = getCurrentType();
+		RubyElement type = getCurrentType();
 		RubyClassVar var = new RubyClassVar(type, iVisited.getName());
 
 		RubyElementInfo parentInfo = infoStack.peek();
@@ -397,7 +392,7 @@ public class RubyScriptStructureBuilder implements NodeVisitor {
 	/**
 	 * @return
 	 */
-	private RubyTypeElementInfo getCurrentTypeInfo() {
+	private RubyElementInfo getCurrentTypeInfo() {
 		List extras = new ArrayList();
 		RubyElementInfo element = infoStack.peek();
 		while (!(element instanceof RubyTypeElementInfo)) {
@@ -408,7 +403,8 @@ public class RubyScriptStructureBuilder implements NodeVisitor {
 		for (Iterator iter = extras.iterator(); iter.hasNext();) {
 			infoStack.push((RubyElementInfo) iter.next());
 		}
-		return (RubyTypeElementInfo) element;
+		if (element == null) return scriptInfo;
+		return element;
 	}
 
 	/*
@@ -614,7 +610,7 @@ public class RubyScriptStructureBuilder implements NodeVisitor {
 		Visibility visibility = currentVisibility;
 		if (name.equals("initialize")) visibility = Visibility.PROTECTED;
 
-		RubyType type = getCurrentType();
+		RubyElement type = getCurrentType();
 		RubyMethod method = new RubyMethod(type, name);
 		modelStack.push(method);
 
@@ -662,7 +658,7 @@ public class RubyScriptStructureBuilder implements NodeVisitor {
 	/**
 	 * @return
 	 */
-	private RubyType getCurrentType() {
+	private RubyElement getCurrentType() {
 		List extras = new ArrayList();
 		IRubyElement element = modelStack.peek();
 		while (!element.isType(IRubyElement.TYPE)) {
@@ -673,7 +669,8 @@ public class RubyScriptStructureBuilder implements NodeVisitor {
 		for (Iterator iter = extras.iterator(); iter.hasNext();) {
 			modelStack.push((RubyElement) iter.next());
 		}
-		return (RubyType) element;
+		if (element == null) return (RubyScript) script;
+		return (RubyElement) element;
 	}
 
 	/*
@@ -683,7 +680,7 @@ public class RubyScriptStructureBuilder implements NodeVisitor {
 	 */
 	public void visitDefsNode(DefsNode iVisited) {
 		handleNode(iVisited);
-		RubyType type = getCurrentType();
+		RubyElement type = getCurrentType();
 		RubyMethod method = new RubyMethod(type, iVisited.getName());
 		modelStack.push(method);
 
@@ -898,7 +895,7 @@ public class RubyScriptStructureBuilder implements NodeVisitor {
 		handleNode(iVisited);
 
 		String name = iVisited.getName();
-		RubyType type = getCurrentType();
+		RubyElement type = getCurrentType();
 		RubyInstVar var = new RubyInstVar(type, name);
 
 		RubyElementInfo parentInfo = getCurrentTypeInfo();
@@ -996,7 +993,7 @@ public class RubyScriptStructureBuilder implements NodeVisitor {
 		info.setTypeName(estimateValueType(iVisited.getValueNode()));
 		// TODO Set the info!
 		infoStack.push(info);
-		
+
 		newElements.put(var, info);
 
 		visitNode(iVisited.getValueNode());
@@ -1068,19 +1065,16 @@ public class RubyScriptStructureBuilder implements NodeVisitor {
 		String name = iVisited.getName();
 		RubyModule module = new RubyModule(modelStack.peek(), name);
 		modelStack.push(module);
+		
+		RubyElementInfo parentInfo = infoStack.peek();
+		parentInfo.addChild(module);
 
 		RubyTypeElementInfo info = new RubyTypeElementInfo();
 		info.setHandle(module);
 		ISourcePosition pos = iVisited.getPosition();
-		info.setNameSourceStart(pos.getStartOffset());
-		info.setNameSourceEnd(pos.getStartOffset() + name.length());
-		info.setSourceRangeStart(pos.getStartOffset());
-		info.setSourceRangeEnd(pos.getEndOffset());
+		setKeywordRange("module", pos, info, name);
 		// TODO Set more info!
-		infoStack.push(info);
-
-		RubyElementInfo parentInfo = infoStack.peek();
-		parentInfo.addChild(module);
+		infoStack.push(info);		
 
 		newElements.put(module, info);
 

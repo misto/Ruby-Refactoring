@@ -9,8 +9,10 @@ import java.util.Map;
 
 import javax.xml.parsers.SAXParserFactory;
 
+import org.eclipse.core.resources.ICommand;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
+import org.eclipse.core.resources.IProjectDescription;
 import org.eclipse.core.resources.IProjectNature;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IWorkspace;
@@ -25,8 +27,8 @@ import org.rubypeople.rdt.core.IParent;
 import org.rubypeople.rdt.core.IRubyElement;
 import org.rubypeople.rdt.core.IRubyProject;
 import org.rubypeople.rdt.core.IRubyType;
-import org.rubypeople.rdt.core.RubyModelException;
 import org.rubypeople.rdt.core.RubyCore;
+import org.rubypeople.rdt.core.RubyModelException;
 import org.xml.sax.Attributes;
 import org.xml.sax.ContentHandler;
 import org.xml.sax.InputSource;
@@ -57,9 +59,102 @@ public class RubyProject extends Openable implements IProjectNature, IRubyElemen
 		setProject(aProject);
 	}
 
-	public void configure() throws CoreException {}
+	/**
+	 * Configure the project with Java nature.
+	 */
+	public void configure() throws CoreException {
 
-	public void deconfigure() throws CoreException {}
+		// register Ruby builder
+		addToBuildSpec(RubyCore.BUILDER_ID);
+	}
+	
+	/**
+	 * Adds a builder to the build spec for the given project.
+	 */
+	protected void addToBuildSpec(String builderID) throws CoreException {
+
+		IProjectDescription description = this.project.getDescription();
+		int javaCommandIndex = getRubyCommandIndex(description.getBuildSpec());
+
+		if (javaCommandIndex == -1) {
+
+			// Add a Java command to the build spec
+			ICommand command = description.newCommand();
+			command.setBuilderName(builderID);
+			setRubyCommand(description, command);
+		}
+	}
+	
+	/**
+	 * Find the specific Ruby command amongst the given build spec
+	 * and return its index or -1 if not found.
+	 */
+	private int getRubyCommandIndex(ICommand[] buildSpec) {
+
+		for (int i = 0; i < buildSpec.length; ++i) {
+			if (buildSpec[i].getBuilderName().equals(RubyCore.BUILDER_ID)) {
+				return i;
+			}
+		}
+		return -1;
+	}
+	
+	/**
+	 * Update the Ruby command in the build spec (replace existing one if present,
+	 * add one first if none).
+	 */
+	private void setRubyCommand(
+		IProjectDescription description,
+		ICommand newCommand)
+		throws CoreException {
+
+		ICommand[] oldBuildSpec = description.getBuildSpec();
+		int oldRubyCommandIndex = getRubyCommandIndex(oldBuildSpec);
+		ICommand[] newCommands;
+
+		if (oldRubyCommandIndex == -1) {
+			// Add a Ruby build spec before other builders (1FWJK7I)
+			newCommands = new ICommand[oldBuildSpec.length + 1];
+			System.arraycopy(oldBuildSpec, 0, newCommands, 1, oldBuildSpec.length);
+			newCommands[0] = newCommand;
+		} else {
+		    oldBuildSpec[oldRubyCommandIndex] = newCommand;
+			newCommands = oldBuildSpec;
+		}
+
+		// Commit the spec change into the project
+		description.setBuildSpec(newCommands);
+		this.project.setDescription(description, null);
+	}
+
+	/**
+	/**
+	 * Removes the Java nature from the project.
+	 */
+	public void deconfigure() throws CoreException {
+
+		// deregister Ruby builder
+		removeFromBuildSpec(RubyCore.BUILDER_ID);
+	}
+	
+	/**
+	 * Removes the given builder from the build spec for the given project.
+	 */
+	protected void removeFromBuildSpec(String builderID) throws CoreException {
+
+		IProjectDescription description = this.project.getDescription();
+		ICommand[] commands = description.getBuildSpec();
+		for (int i = 0; i < commands.length; ++i) {
+			if (commands[i].getBuilderName().equals(builderID)) {
+				ICommand[] newCommands = new ICommand[commands.length - 1];
+				System.arraycopy(commands, 0, newCommands, 0, i);
+				System.arraycopy(commands, i + 1, newCommands, i, commands.length - i - 1);
+				description.setBuildSpec(newCommands);
+				this.project.setDescription(description, null);
+				return;
+			}
+		}
+	}
 
 	/**
 	 * Returns true if this handle represents the same Ruby project as the given

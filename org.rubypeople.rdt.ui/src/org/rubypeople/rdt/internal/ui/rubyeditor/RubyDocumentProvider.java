@@ -69,10 +69,10 @@ public class RubyDocumentProvider extends TextFileDocumentProvider {
 		if (!(info instanceof RubyScriptInfo)) return null;
 
 		RubyScriptInfo cuInfo = (RubyScriptInfo) info;
-		RubyPlugin.log(IStatus.INFO, "Making script become working copy");
 
+		// FIXME Pass in a RubyScriptAnnotationModel as an IProblemRequestor
+		// This is how the UI gets updated with the problems generated during parsing on a working copy
 		original.becomeWorkingCopy(getProgressMonitor());
-		RubyPlugin.log(IStatus.INFO, "Script should be working copy");
 		cuInfo.fCopy = original;
 		return cuInfo;
 	}

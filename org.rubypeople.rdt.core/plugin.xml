@@ -32,6 +32,21 @@
          </run>
       </runtime>
    </extension>
+   
+   <!-- =================================================================================== -->
+<!-- Extension: Ruby Builder                                                             -->
+<!-- =================================================================================== -->
+
+<extension 
+	point="org.eclipse.core.resources.builders" 
+	id="rubybuilder"
+	name="%rubyBuilderName">
+	<builder>
+		<run class="org.rubypeople.rdt.internal.core.builder.RubyBuilder">
+		</run>
+	</builder>
+</extension>
+   
    <extension
          point="org.eclipse.team.core.fileTypes">
       <fileTypes

@@ -230,4 +230,8 @@ public class Util {
 		printStream.println();
 	}
 
+	public static boolean isRubyLikeFileName(String name) {
+		return name.endsWith(".rb") || name.endsWith(".rbw");
+	}
+
 }
