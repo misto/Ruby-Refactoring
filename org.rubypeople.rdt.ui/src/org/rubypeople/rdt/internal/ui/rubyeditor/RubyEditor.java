@@ -71,7 +71,12 @@ public class RubyEditor extends RubyAbstractEditor {
 	protected void convertTabs(DocumentCommand command) {
 		if (!isTabReplacing) { return; }
 		if (command.text.equals("\t")) {
-			command.text = this.tabReplaceString;
+			IDocument document = getSourceViewer().getDocument();
+			int tabLength = this.tabReplaceString.length();
+			// if caret position can not be found, the column will be 0, and
+			// therefore the command.text will be the complete tabReplaceString
+			int posRel = this.getCaretPosition().getColumn() % tabLength;
+			command.text = this.tabReplaceString.substring(posRel);
 		}
 	}
 
