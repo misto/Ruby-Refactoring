@@ -78,6 +78,10 @@ public class RubyOutlineContentProvider implements ITreeContentProvider, IDocume
 	private void createMarkers(RubyScript script, IDocument doc) throws CoreException {
 		IEditorInput input = fTextEditor.getEditorInput();
 		IResource resource = (IResource) ((IAdaptable) input).getAdapter(org.eclipse.core.resources.IResource.class);
+		if (resource == null) {
+			// happens if ruby file is external
+			return ;
+		}
 		resource.deleteMarkers(IMarker.PROBLEM, true, IResource.DEPTH_ONE);
 
 		Set errors = script.getParseErrors();
