@@ -111,6 +111,10 @@ This Agreement is governed by the laws of the State of New York and the intellec
       <update label="rubyeclipse" url="http://rubyeclipse.sourceforge.net/updatesite"/>
    </url>
 
+   <includes
+         id="org.rubypeople.rdt.source"
+         version="0.0.0"/>
+
    <requires>
       <import plugin="org.eclipse.core.runtime.compatibility"/>
       <import plugin="org.eclipse.core.resources"/>
