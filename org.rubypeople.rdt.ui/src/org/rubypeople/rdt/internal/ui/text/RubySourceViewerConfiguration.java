@@ -33,6 +33,10 @@ public class RubySourceViewerConfiguration extends SourceViewerConfiguration {
 		reconciler.setDamager(dr, IDocument.DEFAULT_CONTENT_TYPE);
 		reconciler.setRepairer(dr, IDocument.DEFAULT_CONTENT_TYPE);
 
+		dr = new DefaultDamagerRepairer(getSinglelineCommentScanner());
+		reconciler.setDamager(dr, RubyPartitionScanner.SINGLE_LINE_COMMENT);
+		reconciler.setRepairer(dr, RubyPartitionScanner.SINGLE_LINE_COMMENT);
+		
 		dr = new DefaultDamagerRepairer(getMultilineCommentScanner());
 		reconciler.setDamager(dr, RubyPartitionScanner.MULTI_LINE_COMMENT);
 		reconciler.setRepairer(dr, RubyPartitionScanner.MULTI_LINE_COMMENT);
