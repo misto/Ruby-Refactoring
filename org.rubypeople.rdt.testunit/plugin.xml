@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.0"?>
+<plugin
+   id="org.rubypeople.rdt.testunit"
+   name="Testunit Plug-in"
+   version="0.4.2"
+   provider-name="Rubypeople, Inc."
+   class="org.rubypeople.rdt.testunit.TestunitPlugin">
+
+   <runtime>
+      <library name="testunit.jar">
+         <export name="*"/>
+      </library>
+   </runtime>
+
+   <requires>
+      <import plugin="org.eclipse.ui"/>
+      <import plugin="org.eclipse.core.runtime"/>
+      <import plugin="org.eclipse.debug.core"/>
+      <import plugin="org.eclipse.debug.ui"/>
+      <import plugin="org.rubypeople.rdt.launching"/>
+      <import plugin="org.rubypeople.rdt.core"/>
+      <import plugin="org.eclipse.core.resources"/>
+   </requires>
+   
+   <extension-point id="internal-testRunTabs" name="%testRunTabs.name" schema="schema/internal-testRunTabs.exsd"/>
+
+   <extension
+         point="org.rubypeople.rdt.testunit.internal-testRunTabs">
+      <testRunTab class="org.rubypeople.rdt.testunit.views.FailureTab"/>
+   </extension>
+
+   <extension
+         point="org.eclipse.ui.views">
+      <category
+            name="TestUnit Category"
+            id="org.rubypeople.rdt.testunit">
+      </category>
+      <view
+            name="Test::Unit"
+            icon="icons/full/eview16/testunit.gif"
+            category="org.rubypeople.rdt.testunit"
+            class="org.rubypeople.rdt.testunit.views.TestUnitView"
+            id="org.rubypeople.rdt.testunit.views.TestUnitView">
+      </view>
+   </extension>
+   <extension
+         point="org.eclipse.ui.perspectiveExtensions">
+      <perspectiveExtension
+            targetID="org.eclipse.ui.resourcePerspective">
+         <view
+               ratio="0.5"
+               relative="org.eclipse.ui.views.TaskList"
+               relationship="right"
+               id="org.rubypeople.rdt.testunit.views.TestUnitView">
+         </view>
+      </perspectiveExtension>
+   </extension>
+   
+      <extension
+         point="org.eclipse.debug.ui.launchShortcuts">
+      <shortcut
+            label="%TestUnitShortcut.label"
+            icon="icons/full/obj16/tulaunch.gif"
+            helpContextId="org.rubypeople.rdt.testunit.launch_shortcut"
+            class="org.rubypeople.rdt.testunit.launcher.TestUnitLaunchShortcut"
+            modes="run, debug"
+            id="org.rubypeople.rdt.testunit.testunitShortcut">
+         <contextualLaunch>
+            <enablement>
+               <with
+                     variable="selection">
+                  <count
+                        value="1">
+                  </count>
+               		<iterate>
+                 		<or>
+                   			<test property="org.eclipse.debug.ui.matchesPattern" value="*.rb"/>
+                   			<test property="org.eclipse.debug.ui.matchesPattern" value="*.rbw"/>
+                   			<test property="org.eclipse.debug.ui.matchesPattern" value="*.cgi"/>
+                 		</or>
+               		</iterate>
+               </with>
+            </enablement>
+         </contextualLaunch>
+         <perspective
+               id="org.rubypeople.rdt.ui.PerspectiveRuby">
+         </perspective>
+      </shortcut>
+   </extension>
+      <extension
+         point="org.eclipse.debug.core.launchConfigurationTypes">
+      <launchConfigurationType
+            name="%LaunchConfigurationTypeTestUnit.name"
+            delegate="org.rubypeople.rdt.testunit.launcher.TestUnitLaunchConfiguration"
+            modes="run"
+            id="org.rubypeople.rdt.testunit.launchconfig">
+         <fileExtension
+               default="false"
+               extension="rb">
+         </fileExtension>
+         <fileExtension
+               default="false"
+               extension="rbw">
+         </fileExtension>
+      </launchConfigurationType>
+   </extension>
+      <extension
+         point="org.eclipse.debug.ui.launchConfigurationTypeImages">
+      <launchConfigurationTypeImage
+            icon="icons/full/obj16/tulaunch.gif"
+            configTypeID="org.rubypeople.rdt.testunit.launchconfig"
+            id="org.rubypeople.rdt.debug.ui.LaunchConfigurationTypeImageTestUnit">
+      </launchConfigurationTypeImage>
+   </extension>
+   <!-- Hide until we create the tab group class
+   <extension
+         point="org.eclipse.debug.ui.launchConfigurationTabGroups">
+      <launchConfigurationTabGroup
+            type="org.rubypeople.rdt.testunit.launchconfig"
+            class="org.rubypeople.rdt.testunit.launcher.TestUnitTabGroup"
+            id="org.rubypeople.rdt.testunit.ui.LaunchConfigurationTabGroupTestUnit">
+      </launchConfigurationTabGroup>
+   </extension>
+   -->
+
+</plugin>
