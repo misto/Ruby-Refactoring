@@ -33,9 +33,9 @@ public class RubyEnvironmentTab extends AbstractLaunchConfigurationTab {
 	}
 
 	public boolean isValid() {
-		System.out.println("RubyEnvironmentTab.isValid():false");
+		System.out.println("RubyEnvironmentTab.isValid():true");
 
-		return false;
+		return true;
 	}
 
 	protected Composite createPageRoot(Composite parent) {

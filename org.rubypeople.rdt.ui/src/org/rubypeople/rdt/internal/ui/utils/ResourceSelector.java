@@ -1,6 +1,7 @@
-package org.rubypeople.rdt.ui.swtutils;
+package org.rubypeople.rdt.internal.ui.utils;
 
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.layout.GridData;
@@ -9,17 +10,18 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
-import org.rubypeople.rdt.internal.core.RubyProject;
-import org.rubypeople.rdt.internal.ui.dialog.RubyProjectListSelectionDialog;
 
-public class RubyProjectSelector {
+public abstract class ResourceSelector {
 	protected Composite composite;
-	protected Text textField;
 	protected Button browseButton;
+	protected Text textField;
+	protected String browseDialogMessage = "", browseDialogTitle = "";
 
-	public RubyProjectSelector(Composite parent) {
+	public ResourceSelector(Composite parent) {
 		composite = new Composite(parent, SWT.NONE);
 		GridLayout compositeLayout = new GridLayout();
+		compositeLayout.marginWidth = 0;
+		compositeLayout.marginHeight = 0;
 		compositeLayout.numColumns = 2;
 		composite.setLayout(compositeLayout);
 
@@ -30,24 +32,38 @@ public class RubyProjectSelector {
 		browseButton.setText("Browse...");
 		browseButton.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
-				browseForProject();
+				handleBrowseSelected();
 			}
 		});
+	}
+
+	protected abstract void handleBrowseSelected();
+
+	protected Shell getShell() {
+		return composite.getShell();
 	}
 
 	public void setLayoutData(Object layoutData) {
 		composite.setLayoutData(layoutData);
 	}
 
-	protected void browseForProject() {
-		RubyProjectListSelectionDialog dialog = new RubyProjectListSelectionDialog(getShell());
-
-		if (dialog.open() == dialog.OK) {
-			textField.setText(((RubyProject) dialog.getResult()[0]).getProject().getName());
-		}
+	public void addModifyListener(ModifyListener aListener) {
+		textField.addModifyListener(aListener);
 	}
 
-	protected Shell getShell() {
-		return composite.getShell();
+	public void setBrowseDialogMessage(String aMessage) {
+		browseDialogMessage = aMessage;
+	}
+
+	public void setBrowseDialogTitle(String aTitle) {
+		browseDialogTitle = aTitle;
+	}
+
+	public String getSelectionText() {
+		return textField.getText();
+	}
+
+	public void setSelectionText(String projectName) {
+		textField.setText(projectName);
 	}
 }

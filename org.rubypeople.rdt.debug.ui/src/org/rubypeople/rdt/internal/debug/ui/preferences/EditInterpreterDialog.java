@@ -32,7 +32,8 @@ public class EditInterpreterDialog extends StatusDialog {
 	protected IStatus[] allStatus = new IStatus[2];
 
 	protected EditInterpreterDialog(Shell parentShell, String aDialogTitle) {
-		super(parentShell, aDialogTitle);
+		super(parentShell);
+		setTitle(aDialogTitle);
 	}
 	
 	protected void setInterpreterToEdit(RubyInterpreter anInterpreter) {

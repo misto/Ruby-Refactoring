@@ -9,7 +9,7 @@ import org.rubypeople.rdt.internal.core.RubyPlugin;
 
 public class RubyViewerFilter extends ViewerFilter {
 
-	protected RubyViewerFilter() {
+	public RubyViewerFilter() {
 		super();
 	}
 

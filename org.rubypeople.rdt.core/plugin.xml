@@ -6,27 +6,26 @@
    provider-name="RubyPeople, Inc."
    class="org.rubypeople.rdt.internal.core.RubyPlugin">
 
-<runtime>
-   <library name="rdtcore.jar"/>
-</runtime>
-<requires>
-   <import plugin="org.eclipse.core.runtime"/>
-   <import plugin="org.eclipse.core.resources"/>
-   <import plugin="org.eclipse.ui"/>
-   <import plugin="org.junit"/>
-   <import plugin="org.apache.xerces"/>
-</requires>
-
-
-<extension
-      id="rubynature"
-      name="%rubyNatureName"
-      point="org.eclipse.core.resources.natures">
    <runtime>
-      <run
-            class="org.rubypeople.rdt.internal.core.RubyProject">
-      </run>
+      <library name="rdtcore.jar"/>
    </runtime>
-</extension>
+   <requires>
+      <import plugin="org.eclipse.core.runtime"/>
+      <import plugin="org.eclipse.core.resources"/>
+      <import plugin="org.junit"/>
+      <import plugin="org.apache.xerces"/>
+   </requires>
+
+
+   <extension
+         id="rubynature"
+         name="%rubyNatureName"
+         point="org.eclipse.core.resources.natures">
+      <runtime>
+         <run
+               class="org.rubypeople.rdt.internal.core.RubyProject">
+         </run>
+      </runtime>
+   </extension>
 
 </plugin>

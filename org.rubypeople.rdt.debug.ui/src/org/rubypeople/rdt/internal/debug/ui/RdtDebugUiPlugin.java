@@ -1,9 +1,14 @@
 package org.rubypeople.rdt.internal.debug.ui;
 
-import org.eclipse.ui.plugin.*;
-import org.eclipse.core.runtime.*;
-import org.eclipse.core.resources.*;
-import java.util.*;
+import java.util.MissingResourceException;
+import java.util.ResourceBundle;
+
+import org.eclipse.core.resources.IWorkspace;
+import org.eclipse.core.resources.ResourcesPlugin;
+import org.eclipse.core.runtime.IPluginDescriptor;
+import org.eclipse.ui.IWorkbenchPage;
+import org.eclipse.ui.IWorkbenchWindow;
+import org.eclipse.ui.plugin.AbstractUIPlugin;
 
 public class RdtDebugUiPlugin extends AbstractUIPlugin {
 	private static RdtDebugUiPlugin plugin;
@@ -19,6 +24,14 @@ public class RdtDebugUiPlugin extends AbstractUIPlugin {
 		} catch (MissingResourceException x) {
 			resourceBundle = null;
 		}
+	}
+
+	public static IWorkbenchWindow getActiveWorkbenchWindow() {
+		return getDefault().getWorkbench().getActiveWorkbenchWindow();
+	}	
+	
+	public static IWorkbenchPage getActivePage() {
+		return getDefault().getActiveWorkbenchWindow().getActivePage();
 	}
 
 	public static RdtDebugUiPlugin getDefault() {
