@@ -28,6 +28,7 @@ import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.osgi.framework.BundleContext;
 import org.rubypeople.rdt.internal.core.RubyPlugin;
+import org.rubypeople.rdt.testunit.launcher.SocketUtil;
 import org.rubypeople.rdt.testunit.launcher.TestUnitLaunchConfiguration;
 import org.rubypeople.rdt.testunit.views.TestUnitView;
 
@@ -245,14 +246,22 @@ public class TestunitPlugin extends AbstractUIPlugin implements ILaunchListener 
 		int port = -1;
 		if (config != null) {
 			try {
-				// test whether the launch defines the TestUnit attributes
+				// test whether the launch defines the TestUnit port attribute
 				port = config.getAttribute(TestUnitLaunchConfiguration.PORT_ATTR, -1);
 			} catch (CoreException e) {
 				e.printStackTrace();
 			}
 		}
+		if(port == -1) {
+			log("Failed to get a port from the launch! Trying to generate a new one.");
+			port = SocketUtil.findFreePort();
+		}
 
 		fTrackedLaunches.remove(launch);
+		if (port == -1) {
+			log("Failed to generate a port!");
+			return;
+		}
 		final int finalPort = port;
 		getDisplay().asyncExec(new Runnable() {
 
