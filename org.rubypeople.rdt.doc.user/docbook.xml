@@ -23,7 +23,7 @@
 				mechanisms, please see the Getting Started chapter of the 
 				Workbench User Guide. </para>
 			<sect2>
-				<title>Verifying Ruby Interpreter installation</title>
+				<title>Important Settings</title>
 				<orderedlist>
 					<listitem>
 						<para> Open the workbench preferences by selecting the 
@@ -36,8 +36,24 @@
 							selecting <emphasis>Ruby &gt; Installed 
 							Interpreters</emphasis> in the tree pane on the 
 							left. Click the <emphasis>Add button</emphasis> to 
-							define the location of your ruby executable. </para>
+							define the location of your ruby executable. A 
+							dialog opens where you can specify a name and path. 
+							Example settings are: name="ruby", 
+							path="/usr/bin".</para>
 					</listitem>
+					<listitem>
+						<para>If you want to use information from the standard 
+							ruby library for code completion, you can define 
+							the location of the standard library in the 
+							<emphasis>Library</emphasis> preference page. 
+							Click the <emphasis>Add Library</emphasis> Button 
+							to define the location of your ruby library. A 
+							dialog opens where you can specify a name and path. 
+							The name is just an identifier and the path 
+							specifies a directory, which will be recursively 
+							scanned for ruby files. Example settings are: 
+							name="ruby 1.6.8", path="/usr/lib/ruby/1.6"</para>
+					</listitem>					
 					<listitem>
 						<para> Leave the preferences by clicking on 
 							<emphasis>OK</emphasis>. </para>
@@ -64,7 +80,7 @@
 					</listitem>
 				</itemizedlist>
 			</sect2>
-			<sect2>
+			<sect2 id="debuggingYourApplication">
 				<title>Debugging your Application</title>
 				<itemizedlist>
 					<listitem>
@@ -231,6 +247,31 @@ persons = Hash[ Person.new('Lisa') =&gt; Person.new('Marge'),
 					</figure>
 				</sect3>
 			</sect2>
+			<sect2 id="debuggingRubyLibraries">
+				<title>Debugging into ruby libraries</title>
+				<para> If there are exceptions in a ruby library file, the 
+					program halts there and the ruby file is opened read only. 
+					That is because the library file is not part of the eclipse 
+					workspace. In order to edit such a file, a ruby project can 
+					be created upon the library directory: </para>
+				<itemizedlist>
+					<listitem>
+						<para>Select <emphasis>New &gt; Project &gt; Ruby 
+							Project</emphasis></para>
+					</listitem>
+					<listitem>
+						<para>Enter project name, e.g site-ruby</para>
+					</listitem>
+					<listitem>
+						<para>In the section <emphasis>Project 
+							contents</emphasis> deselect <emphasis>Use 
+							Default</emphasis> and enter the directory, e.g 
+							/usr/local/lib/site-ruby/1.6. Note, that there must 
+							be write access to that directory, because eclipse 
+							wants to create a .project file. </para>
+					</listitem>
+				</itemizedlist>
+			</sect2>
 			<sect2>
 				<title>Known limitations</title>
 				<para>The ruby debugger is still under development and there 
@@ -245,14 +286,14 @@ persons = Hash[ Person.new('Lisa') =&gt; Person.new('Marge'),
 							socket is set to 1098 and if this socket is bound 
 							already debugging is not possible. (The java 
 							debugger searches for a free socket before; that 
-							behaviour shoitemizedlistd be implemented for the 
+							behaviour should be implemented for the 
 							ruby debugger as well)</para>
 					</listitem>
 					<listitem>
-						<para>Threads are not refreshed regitemizedlistarly, 
-							i.e. you do not see the threads your application 
-							creates before a breakpoint (or exception or end of 
-							step) is reached</para>
+						<para>Threads are not refreshed regularly, i.e. you do 
+							not see the threads your application creates before 
+							a breakpoint (or exception or end of step) is 
+							reached</para>
 					</listitem>
 					<listitem>
 						<para>Only one ruby program can be debugged 
@@ -368,6 +409,25 @@ persons = Hash[ Person.new('Lisa') =&gt; Person.new('Marge'),
 				on the user preferences). You can also open the editor by 
 				opening Ruby elements, such as types, methods, or fields, from 
 				other views.</para>
+			<sect2 id="CodeCompletion">
+				<title>Code completion</title>
+				<para> If you press Ctrl+space in the ruby editor, a list with 
+					information from the current ruby files is displayed. This 
+					information includes classes, methods and variables. In 
+					addition to that the code completion also provides classes 
+					and modules, which are defined in one of the library paths 
+					you can set in the library preferences page. Therefore a 
+					starting string must be provided, e.g. if you type S 
+					followed by ctrl+space all modules and classes starting 
+					with S are displayed.</para>
+			</sect2>
+				<sect2 id="CodeFormatting">
+					<title>Code formatting</title>
+					<para>The code formatter formats either the whole file or 
+						the current selection, if there is one. In the latter 
+						case all the lines, which are covered from the 
+						selection, are formatted. </para>
+				</sect2>
 		</sect1>
 	</chapter>
 	<chapter id="TipsNTricks">

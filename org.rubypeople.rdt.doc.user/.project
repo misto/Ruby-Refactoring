@@ -3,6 +3,7 @@
 	<name>org.rubypeople.rdt.doc.user</name>
 	<comment></comment>
 	<projects>
+		<project>org.eclipse.core.runtime.compatibility</project>
 	</projects>
 	<buildSpec>
 		<buildCommand>
