@@ -1,5 +1,7 @@
 package org.rubypeople.rdt.internal.core;
 
+import java.io.File;
+
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.resources.ResourcesPlugin;
@@ -62,4 +64,17 @@ public class RubyPlugin extends Plugin {
 	public boolean isCodeFormatterDebugging() {
 		return isCodeFormatterDebugging;
 	}
+
+	public static String getOSDirectory(Plugin plugin) {
+        String location = plugin.getBundle().getLocation();
+        int prefixLength = location.indexOf('@');
+        if (prefixLength == -1) {
+            throw new RuntimeException("Location of launching bundle does not contain @: " + location);
+        }
+        String pluginDir = location.substring(prefixLength + 1);
+        if (!new File(pluginDir).exists()) {
+            throw new RuntimeException("Expected directory of eclipseDebug.rb does not exist: " + pluginDir);
+        }
+        return pluginDir;
+    }
 }
