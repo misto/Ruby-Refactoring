@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.jface.text.rules.EndOfLineRule;
-import org.eclipse.jface.text.rules.IRule;
+import org.eclipse.jface.text.rules.IPredicateRule;
 import org.eclipse.jface.text.rules.IToken;
 import org.eclipse.jface.text.rules.IWordDetector;
 import org.eclipse.jface.text.rules.MultiLineRule;
@@ -32,9 +32,9 @@ public class RubyPartitionScanner extends RuleBasedPartitionScanner {
 
 		rules.add(new MultiLineRule("=begin", "=end", comment));
 
-		IRule[] result = new IRule[rules.size()];
+		IPredicateRule[] result = new IPredicateRule[rules.size()];
 		rules.toArray(result);
-		setRules(result);
+		setPredicateRules(result);
 	}
 
 	static class EmptyCommentDetector implements IWordDetector {

@@ -1,8 +1,9 @@
 package org.rubypeople.rdt.internal.ui.rubyeditor;
 
 import org.eclipse.jface.text.rules.RuleBasedScanner;
-import org.rubypeople.rdt.internal.ui.rubyeditor.ruby.*;
-import org.rubypeople.rdt.internal.ui.rubyeditor.util.*;
+import org.rubypeople.rdt.internal.ui.rubyeditor.ruby.RubyCodeScanner;
+import org.rubypeople.rdt.internal.ui.rubyeditor.ruby.RubyPartitionScanner;
+import org.rubypeople.rdt.internal.ui.rubyeditor.util.RubyColorProvider;
 
 public class RubyEditorEnvironment {
 	protected static RubyColorProvider colorProvider;
@@ -16,6 +17,7 @@ public class RubyEditorEnvironment {
 			colorProvider = new RubyColorProvider();
 			codeScanner = new RubyCodeScanner(colorProvider);
 			partitionScanner = new RubyPartitionScanner();
+			isSetUp = true;
 		}
 	}
 
@@ -24,6 +26,7 @@ public class RubyEditorEnvironment {
 			codeScanner = null;
 			colorProvider.dispose();
 			colorProvider = null;
+			isSetUp = false;
 		}
 	}
 

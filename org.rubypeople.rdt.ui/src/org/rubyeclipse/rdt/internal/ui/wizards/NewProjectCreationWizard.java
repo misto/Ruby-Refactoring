@@ -35,8 +35,10 @@ public class NewProjectCreationWizard extends BasicNewResourceWizard implements 
 		try {
 			getContainer().run(false, true, projectCreationOperation);
 		} catch (InvocationTargetException e) {
+			System.out.println("InvocationTargetException executing projectCreationOperation in NewProjectCreationWizard#performFinish: " + e);
 			return false;
 		} catch (InterruptedException e) {
+			System.out.println("InterruptedException executing projectCreationOperation in NewProjectCreationWizard#performFinish: " + e);
 			return false;
 		}
 
