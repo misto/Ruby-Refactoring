@@ -26,6 +26,7 @@
 package org.rubypeople.rdt.internal.core.parser;
 
 import junit.framework.TestCase;
+import junit.framework.TestSuite;
 
 import org.rubypeople.rdt.internal.core.parser.ast.RubyBegin;
 import org.rubypeople.rdt.internal.core.parser.ast.RubyCase;
@@ -52,7 +53,19 @@ import org.rubypeople.rdt.internal.core.parser.ast.RubyWhile;
  * Preferences - Java - Code Generation - Code and Comments
  */
 public class TC_RubyParser extends TestCase {
-
+	
+	public TC_RubyParser(String arg0) {
+		super(arg0);
+	}
+	
+	/*
+	public static TestSuite suite() {
+		TestSuite suite = new TestSuite();
+		suite.addTest(new TC_RubyParser("testRecognizesGlobalProcessNumber"));
+	    return suite ;
+	}
+	*/
+	
 	public void testRecognizesSingleRequires() throws Exception {
 		RubyScript script = RubyParser.parse("require \"tk\"\n");
 		RubyRequires requires = new RubyRequires("tk", 0, 9);
@@ -191,6 +204,12 @@ public class TC_RubyParser extends TestCase {
 		assertEquals(new Position(1, 0), script.getElement("$name").getStart());
 		assertEquals(new Position(1, 4), script.getElement("$name").getEnd());
 	}
+	
+	public void testRecognizesGlobalProcessNumber() throws Exception {
+		RubyScript script = RubyParser.parse("@processNumber = $$");
+		assertEquals(2, script.getElementCount());
+		assertNotNull(script.getElement("$$"));
+	}	
 
 	public void testRecognizesIfBlock() throws Exception {
 		RubyScript script = RubyParser.parse("class Bob\ndef initialize\nif true\nputs \"Hi!\"\nelse\nputs \"Hello!\"\nend\nend\nend\n");

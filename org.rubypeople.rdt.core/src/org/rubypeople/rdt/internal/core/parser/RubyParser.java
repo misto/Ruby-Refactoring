@@ -386,7 +386,7 @@ public class RubyParser {
 			String name = getToken("$", VARIABLE_END_CHARS, curLine, globalIndex);
 			script.addElement(new RubyGlobal("$" + name, lineNum, globalIndex));
 			log("Found global:" + name);
-			location = globalIndex + name.length();
+			location = globalIndex + name.length() + 1;
 		}
 	}
 
