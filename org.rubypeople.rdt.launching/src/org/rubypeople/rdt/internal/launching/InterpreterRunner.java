@@ -9,6 +9,7 @@ import java.util.Map;
 import org.eclipse.core.boot.BootLoader;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.Path;
+import org.eclipse.core.runtime.Platform;
 import org.eclipse.debug.core.DebugPlugin;
 import org.eclipse.debug.core.ILaunch;
 import org.eclipse.debug.core.model.IProcess;
@@ -86,8 +87,12 @@ public class InterpreterRunner {
 	}
 
 	protected String osDependentPath(String aPath) {
-		if (BootLoader.getOS().equals(BootLoader.OS_WIN32))
+		if (Platform.getOS().equals(Platform.OS_WIN32)) {
+			if (aPath.startsWith(File.separator)) {
+				aPath = aPath.substring(1) ;
+			}
 			aPath = "\"" + aPath + "\"";
+		}
 
 		return aPath;
 	}
