@@ -8,7 +8,7 @@
 
 	<target name="init" depends="properties">
 		<property name="plugin" value="org.rubypeople.rdt"/>
-		<property name="version.suffix" value="_0.1.0"/>
+		<property name="version.suffix" value="_0.2.0"/>
 		<property name="full.name" value="${plugin}${version.suffix}"/>
 		<property name="temp.folder" value="${basedir}/temp.folder"/>
 		<property name="plugin.destination" value="${basedir}"/>
@@ -33,6 +33,9 @@
 	<target name="gather.bin.parts" depends="init" if="destination.temp.folder">
 		<mkdir dir="${destination.temp.folder}/${full.name}"/>
 		<copy file="${build.result.folder}/rdtcore.jar" todir="${destination.temp.folder}/${full.name}"/>
+		<copy todir="${destination.temp.folder}/${full.name}">
+			<fileset dir="${basedir}" includes="plugin.xml,${auto.includes},plugin.properties"/>
+		</copy>
 	</target>
 
 	<target name="rdtcore.jar" depends="init" unless="rdtcore.jar">
@@ -40,7 +43,7 @@
 		<delete dir="${temp.folder}/rdtcore.jar.bin"/>
 		<mkdir dir="${temp.folder}/rdtcore.jar.bin"/>
 		<!-- compile the source code -->
-		<javac destdir="${temp.folder}/rdtcore.jar.bin" failonerror="false" verbose="true" debug="on" includeAntRuntime="no" bootclasspath="${bootclasspath}" classpath="../org.eclipse.core.runtime/runtime.jar;../org.eclipse.core.resources/resources.jar;../org.eclipse.core.resources/bin;../org.apache.xerces/xerces.jar;../org.apache.xerces/bin;../org.eclipse.core.runtime/bin;../org.eclipse.core.boot/boot.jar;../org.eclipse.core.resources.win32/resources.jar;../org.junit/junit.jar;../org.junit/bin;../org.eclipse.core.boot/bin">
+		<javac destdir="${temp.folder}/rdtcore.jar.bin" failonerror="false" verbose="true" debug="on" includeAntRuntime="no" bootclasspath="${bootclasspath}" classpath="../org.eclipse.core.runtime/runtime.jar;../org.eclipse.core.resources/resources.jar;../org.eclipse.core.resources/bin;../org.apache.xerces/xercesImpl.jar;../org.apache.xerces/bin;../org.eclipse.core.runtime/bin;../org.eclipse.core.boot/boot.jar;../org.eclipse.core.resources.win32/resources.jar;C:/eclipse/plugins/org.junit_3.7.0/bin;../org.apache.xerces/xmlParserAPIs.jar;C:/eclipse/plugins/org.junit_3.7.0/junit.jar;../org.eclipse.core.boot/bin">
 			<src path="src/"/>
 		</javac>
 		<!-- copy necessary resources -->

@@ -3,7 +3,10 @@
 	<name>org.rubypeople.rdt.core</name>
 	<comment></comment>
 	<projects>
-		<project>org.rubypeople.eclipse.shams</project>
+		<project>org.apache.xerces</project>
+		<project>org.eclipse.core.boot</project>
+		<project>org.eclipse.core.resources</project>
+		<project>org.eclipse.core.runtime</project>
 	</projects>
 	<buildSpec>
 		<buildCommand>

@@ -8,7 +8,7 @@
 
 	<target name="init" depends="properties">
 		<property name="plugin" value="org.rubypeople.rdt.ui"/>
-		<property name="version.suffix" value="_0.1.0"/>
+		<property name="version.suffix" value="_0.2.0"/>
 		<property name="full.name" value="${plugin}${version.suffix}"/>
 		<property name="temp.folder" value="${basedir}/temp.folder"/>
 		<property name="plugin.destination" value="${basedir}"/>
@@ -33,6 +33,9 @@
 	<target name="gather.bin.parts" depends="init" if="destination.temp.folder">
 		<mkdir dir="${destination.temp.folder}/${full.name}"/>
 		<copy file="${build.result.folder}/rdtui.jar" todir="${destination.temp.folder}/${full.name}"/>
+		<copy todir="${destination.temp.folder}/${full.name}">
+			<fileset dir="${basedir}" includes="${auto.includes},plugin.properties,plugin.xml,icons/**/*"/>
+		</copy>
 	</target>
 
 	<target name="rdtui.jar" depends="init" unless="rdtui.jar">
