@@ -1,4 +1,4 @@
-package org.rubypeople.rdt.internal.debug.ui.tests.launcher;
+package org.rubypeople.rdt.internal.debug.ui.tests;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
@@ -18,7 +18,6 @@ import org.eclipse.debug.core.ILaunch;
 import org.eclipse.debug.core.ILaunchConfiguration;
 import org.eclipse.debug.core.ILaunchConfigurationType;
 import org.eclipse.debug.core.ILaunchConfigurationWorkingCopy;
-import org.eclipse.debug.internal.core.LaunchConfiguration;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.PlatformUI;
 import org.rubypeople.rdt.internal.debug.core.model.RubyStackFrame;
