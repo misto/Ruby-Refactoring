@@ -1,6 +1,8 @@
 package org.rubypeople.eclipse.shams.resources;
 
 import java.io.ByteArrayInputStream;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.InputStream;
 
 import org.eclipse.core.resources.IContainer;
@@ -19,13 +21,23 @@ import org.eclipse.core.runtime.QualifiedName;
 
 public class ShamFile extends ShamResource implements IFile {
 	protected String contents = "";
+	protected boolean readContentFromFile;
 
 	public ShamFile(String fullPath) {
-		super(new Path(fullPath));
+		this(fullPath, false);
 	}
 
 	public ShamFile(IPath aPath) {
+		this(aPath, false);
+	}
+
+	public ShamFile(String fullPath, boolean readContentFromFile) {
+		this(new Path(fullPath), readContentFromFile);
+	}
+
+	public ShamFile(IPath aPath, boolean readContentFromFile) {
 		super(aPath);
+		this.readContentFromFile = readContentFromFile;
 	}
 
 	public void appendContents(InputStream source, boolean force, boolean keepHistory, IProgressMonitor monitor) throws CoreException {
@@ -44,6 +56,13 @@ public class ShamFile extends ShamResource implements IFile {
 	}
 
 	public InputStream getContents() throws CoreException {
+		if (readContentFromFile) {
+			try {
+				return new FileInputStream(this.path.toString());
+			} catch (FileNotFoundException e) {
+				throw new RuntimeException(e);
+			}
+		}
 		return new ByteArrayInputStream(contents.getBytes());
 	}
 
@@ -234,5 +253,4 @@ public class ShamFile extends ShamResource implements IFile {
 	public Object getAdapter(Class adapter) {
 		throw new RuntimeException("Unimplemented method in sham");
 	}
-
 }
