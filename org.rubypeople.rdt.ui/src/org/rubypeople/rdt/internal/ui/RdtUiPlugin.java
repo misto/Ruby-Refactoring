@@ -45,7 +45,7 @@ public class RdtUiPlugin extends AbstractUIPlugin implements RubyColorConstants 
 		textTools = new RubyTextTools();
 		// Call the method to force it to build the library model when the
 		// plugin is loaded
-		RubyProjectInformationProvider.instance().getLibraryClassesAndModules();
+		// RubyProjectInformationProvider.instance().getLibraryClassesAndModules();
 	}
 
 	public static RdtUiPlugin getDefault() {

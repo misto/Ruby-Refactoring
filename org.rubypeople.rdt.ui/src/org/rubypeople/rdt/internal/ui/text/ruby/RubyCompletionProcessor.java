@@ -44,7 +44,7 @@ public class RubyCompletionProcessor implements IContentAssistProcessor {
 		// that prefix
 		if (prefix.length() > 0) {
 			completionProposals.addAll(Arrays.asList(getDefaultProposals()));
-			completionProposals.addAll(RubyProjectInformationProvider.instance().getLibraryClassesAndModules());
+			// completionProposals.addAll(RubyProjectInformationProvider.instance().getLibraryClassesAndModules());
 		}
 
 		ArrayList possibleProposals = new ArrayList();
