@@ -3,7 +3,7 @@
 <plugin
    id="org.rubypeople.rdt.launching"
    name="%Plugin.name"
-   version="0.4.0"
+   version="0.4.1"
    provider-name="RubyPeople, Inc."
    class="org.rubypeople.rdt.internal.launching.RdtLaunchingPlugin">
 
@@ -29,10 +29,12 @@
             delegate="org.rubypeople.rdt.internal.launching.RubyApplicationLaunchConfigurationDelegate"
             modes="run,debug"
             id="org.rubypeople.rdt.launching.LaunchConfigurationTypeRubyApplication">
+            <!--
          <fileExtension
                default="true"
                extension="rb">
          </fileExtension>
+         -->
       </launchConfigurationType>
    </extension>
 

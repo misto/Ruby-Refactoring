@@ -3,7 +3,7 @@
 <plugin
    id="org.rubypeople.rdt.ui"
    name="%Plugin.name"
-   version="0.4.0"
+   version="0.4.1"
    provider-name="RubyPeople, Inc."
    class="org.rubypeople.rdt.internal.ui.RdtUiPlugin">
 
@@ -318,5 +318,12 @@
       </specification>
       -->
   </extension>   
+   <extension
+         point="org.eclipse.ui.ide.resourceFilters">
+      <filter
+            selected="false"
+            pattern="*.xml">
+      </filter>
+   </extension>
 
 </plugin>

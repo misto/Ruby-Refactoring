@@ -34,7 +34,7 @@
 <extension
          point="org.eclipse.debug.core.launchConfigurationTypes">
       <launchConfigurationType
-            name="%LaunchConfigurationTypeRubyApplication.name"
+            name="DebugUiTestRunConfiguration"
             delegate="org.rubypeople.rdt.internal.debug.ui.tests.launcher.ShamApplicationLaunchConfigurationDelegate"
             modes="run,debug"
             id="org.rubypeople.rdt.debug.ui.tests.launching.LaunchConfigurationTypeSham">
