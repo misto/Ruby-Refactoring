@@ -1,6 +1,7 @@
 package org.rubypeople.rdt.internal.launching;
 
 import java.io.File;
+import java.io.IOException;
 
 import org.eclipse.core.internal.resources.OS;
 import org.eclipse.core.runtime.IPath;
@@ -41,6 +42,10 @@ public class RubyInterpreter {
 			return directory + "ruby";
 			
 		return null;
+	}
+	
+	public Process exec(String arguments, File workingDirectory) throws IOException {
+		return Runtime.getRuntime().exec(this.getCommand() + " " +  arguments, null, workingDirectory);
 	}
 	
 	public boolean equals(Object other) {
