@@ -4,7 +4,7 @@
  * To change the template for this generated file go to
  * Window - Preferences - Java - Code Generation - Code and Comments
  */
-package org.rubypeople.rdt.internal.ui.rubyeditor;
+package org.rubypeople.rdt.internal.ui.rubyeditor.outline;
 
 import org.eclipse.jface.viewers.ViewerSorter;
 import org.rubypeople.rdt.internal.core.parser.ast.RubyElement;

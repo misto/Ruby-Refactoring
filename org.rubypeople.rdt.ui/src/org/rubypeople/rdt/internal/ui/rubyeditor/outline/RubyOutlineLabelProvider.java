@@ -1,4 +1,4 @@
-package org.rubypeople.rdt.internal.ui.rubyeditor;
+package org.rubypeople.rdt.internal.ui.rubyeditor.outline;
 
 import org.eclipse.jface.viewers.ILabelProvider;
 import org.eclipse.jface.viewers.ILabelProviderListener;
