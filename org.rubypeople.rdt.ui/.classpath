@@ -1,18 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
-	<classpathentry excluding="**/CVS/" kind="src" path="src"/>
-	<classpathentry kind="src" path="/org.eclipse.ui.ide"/>
-	<classpathentry kind="src" path="/org.eclipse.ui.views"/>
-	<classpathentry kind="src" path="/org.eclipse.jface.text"/>
-	<classpathentry kind="src" path="/org.eclipse.ui.workbench.texteditor"/>
-	<classpathentry kind="src" path="/org.eclipse.ui.editors"/>
-	<classpathentry kind="src" path="/org.eclipse.core.runtime.compatibility"/>
-	<classpathentry kind="src" path="/org.eclipse.core.resources"/>
-	<classpathentry kind="src" path="/org.eclipse.ui"/>
-	<classpathentry kind="src" path="/org.eclipse.debug.ui"/>
-	<classpathentry kind="src" path="/org.rubypeople.rdt.core"/>
-	<classpathentry kind="src" path="/org.eclipse.ui.workbench"/>
+	<classpathentry kind="src" path="src/"/>
+	<classpathentry kind="con" path="org.eclipse.pde.core.requiredPlugins"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
-	<classpathentry kind="src" path="/org.eclipse.ui.console"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
