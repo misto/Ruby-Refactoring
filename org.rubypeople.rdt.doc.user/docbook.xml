@@ -141,10 +141,14 @@
 				<title>Code completion</title>
 				<para> If you press Ctrl+space in the ruby editor, a list with 
 					information from the current ruby file is displayed. This 
-					information includes classes, methods and variables. For 
-					RDT 0.4.2 a feature is planned which extends code 
-					completion to provide also classes and modules from 
-					required ruby files. </para>
+					information includes classes, modules, globals, methods and 
+					variables. There are also suggestions for keywords and some 
+					pre-defined globals. The keywords and globals are only 
+					shown if you have already typed at least one character. If 
+					the "token" preceding the cursor does match the beginning 
+					of any suggestions you will get no suggestions. For RDT 
+					0.4.2 an extension is planned which also provides classes 
+					and modules from required ruby files. </para>
 			</sect2>
 			<sect2 id="CodeFormatting">
 				<title>Code formatting</title>
