@@ -23,6 +23,8 @@ import org.eclipse.debug.core.ILaunchConfigurationType;
 import org.eclipse.debug.core.ILaunchConfigurationWorkingCopy;
 import org.eclipse.debug.core.ILaunchManager;
 import org.eclipse.debug.core.Launch;
+import org.eclipse.debug.internal.core.LaunchConfigurationType;
+import org.rubypeople.eclipse.shams.debug.core.ShamLaunchConfigurationType;
 import org.rubypeople.eclipse.testutils.ResourceTools;
 import org.rubypeople.rdt.internal.launching.DebuggerRunner;
 import org.rubypeople.rdt.internal.launching.RubyInterpreter;
@@ -51,8 +53,6 @@ public class TC_RunnerLaunching extends TestCase {
 		if (debug) {
 			commandLine.append(" -reclipseDebug");
 		}
-		commandLine.append(" -I " + quotation + project.getLocation().toOSString() + quotation);
-		commandLine.append(" -I " + quotation + project.getLocation().toOSString() + File.separator + RUBY_LIB_DIR + quotation) ;
 		if (debug) {
 			String dirOfRubyDebuggerFile = DebuggerRunner.getDirectoryOfRubyDebuggerFile().replace('/', File.separatorChar) ;
 			if (dirOfRubyDebuggerFile.startsWith("\\")) {
@@ -64,6 +64,8 @@ public class TC_RunnerLaunching extends TestCase {
 					+ dirOfRubyDebuggerFile
 					+ quotation);
 		}		
+        commandLine.append(" -I " + quotation + project.getLocation().toOSString() + quotation);
+        commandLine.append(" -I " + quotation + project.getLocation().toOSString() + File.separator + RUBY_LIB_DIR + quotation) ;
 		commandLine.append(" " + INTERPRETER_ARGUMENTS + " -- ");
 		// use always forward slashes for path relative to project dir
 		commandLine.append(
@@ -184,7 +186,7 @@ public class TC_RunnerLaunching extends TestCase {
 		}
 
 		public ILaunchConfigurationType getType() throws CoreException {
-			return null;
+			return new ShamLaunchConfigurationType();
 		}
 
 		public ILaunchConfigurationWorkingCopy getWorkingCopy() throws CoreException {
