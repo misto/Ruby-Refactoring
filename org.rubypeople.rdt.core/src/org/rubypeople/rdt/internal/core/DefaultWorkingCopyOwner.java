@@ -12,7 +12,6 @@ package org.rubypeople.rdt.internal.core;
 
 import org.rubypeople.rdt.core.IBuffer;
 import org.rubypeople.rdt.core.IRubyScript;
-import org.rubypeople.rdt.core.RubyCore;
 import org.rubypeople.rdt.core.WorkingCopyOwner;
 
 /**

@@ -10,7 +10,6 @@
  *******************************************************************************/
 package org.rubypeople.rdt.internal.ui.rubyeditor;
 
-import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.help.WorkbenchHelp;
 import org.eclipse.ui.texteditor.ITextEditor;
 import org.eclipse.ui.texteditor.TextEditorAction;

@@ -11,7 +11,6 @@
 package org.rubypeople.rdt.internal.ui.wizards;
 
 import org.eclipse.jface.wizard.Wizard;
-import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.help.WorkbenchHelp;
 import org.rubypeople.rdt.internal.ui.IRubyHelpContextIds;
 

@@ -129,10 +129,9 @@ public class RubyVariable implements IVariable {
 
     public String toString() {
         if (this.isHashValue()) {
-            return this.getName() + " => " + ((RubyValue) this.getValue());
-        } else {
-            return this.getName() + " = " + ((RubyValue) this.getValue());
+            return this.getName() + " => " + this.getValue();
         }
+		return this.getName() + " = " + this.getValue();
 
     }
 
@@ -155,9 +154,8 @@ public class RubyVariable implements IVariable {
         if (this.isHashValue()) {
             if (((RubyValue) this.getValue()).getReferenceTypeName().equals("String")) {
                 return parent.getQualifiedName() + "[" + this.getName() + "]";
-            } else {
-                return "[ObjectSpace._id2ref(" + this.getObjectId() + ")]";
             }
+			return "[ObjectSpace._id2ref(" + this.getObjectId() + ")]";
         }
         if (this.getName().startsWith("[")) {
             // Array

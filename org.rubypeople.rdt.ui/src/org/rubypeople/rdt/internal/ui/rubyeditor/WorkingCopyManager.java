@@ -18,7 +18,6 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.jface.text.Assert;
 import org.eclipse.ui.IEditorInput;
 import org.rubypeople.rdt.core.IRubyScript;
-import org.rubypeople.rdt.internal.ui.RubyPlugin;
 import org.rubypeople.rdt.ui.IWorkingCopyManager;
 import org.rubypeople.rdt.ui.IWorkingCopyManagerExtension;
 

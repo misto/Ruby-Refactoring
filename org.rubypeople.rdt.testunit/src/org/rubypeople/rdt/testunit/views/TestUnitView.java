@@ -60,7 +60,6 @@ import org.rubypeople.rdt.core.IRubyProject;
 import org.rubypeople.rdt.core.IRubyType;
 import org.rubypeople.rdt.testunit.ITestRunListener;
 import org.rubypeople.rdt.testunit.TestunitPlugin;
-import org.rubypeople.rdt.testunit.launcher.SocketUtil;
 import org.rubypeople.rdt.testunit.launcher.TestUnitLaunchConfigurationDelegate;
 
 public class TestUnitView extends ViewPart implements ITestRunListener3 {
@@ -415,26 +414,6 @@ public class TestUnitView extends ViewPart implements ITestRunListener3 {
 			}
 			MessageDialog.openInformation(getSite().getShell(), TestUnitMessages.getString("TestRunnerViewPart.cannotrerun.title"), //$NON-NLS-1$
 					TestUnitMessages.getString("TestRunnerViewPart.cannotrerurn.message") //$NON-NLS-1$
-					);
-		}
-	}
-
-	/**
-	 * @param className
-	 * @param launchMode
-	 * @param launchConfiguration
-	 */
-	private void rerunWithNewPort(String className, String launchMode, ILaunchConfiguration launchConfiguration) {
-		try {
-			String configName = TestUnitMessages.getFormattedString("TestRunnerViewPart.configName", className); //$NON-NLS-1$
-			ILaunchConfigurationWorkingCopy tmp = launchConfiguration.copy(configName);
-			// TODO Set a new port before restarting
-			int newPort = SocketUtil.findFreePort();
-			tmp.setAttribute(TestUnitLaunchConfigurationDelegate.PORT_ATTR, newPort);
-			// Set all the launch attributes now!
-			tmp.launch(launchMode, null);
-		} catch (CoreException e) {
-			ErrorDialog.openError(getSite().getShell(), TestUnitMessages.getString("TestRunnerViewPart.error.cannotrerun"), e.getMessage(), e.getStatus() //$NON-NLS-1$
 					);
 		}
 	}

@@ -18,7 +18,6 @@ import org.eclipse.core.resources.IResource;
 import org.rubypeople.rdt.core.IBuffer;
 import org.rubypeople.rdt.core.IOpenable;
 import org.rubypeople.rdt.core.IRubyElement;
-import org.rubypeople.rdt.core.RubyCore;
 import org.rubypeople.rdt.internal.core.Openable;
 
 /**

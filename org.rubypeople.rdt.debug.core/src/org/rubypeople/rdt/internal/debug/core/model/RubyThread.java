@@ -49,7 +49,7 @@ public class RubyThread implements IThread {
 		if (frames == null || frames.length == 0) {
 			return null;
 		}
-		return (IStackFrame) frames[0];
+		return frames[0];
 	}
 
 
