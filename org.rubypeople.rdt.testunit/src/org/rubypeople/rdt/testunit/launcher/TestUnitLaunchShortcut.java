@@ -102,7 +102,7 @@ public class TestUnitLaunchShortcut implements ILaunchShortcut {
 			if (testClass != null) {
 				ILaunchConfiguration config = findOrCreateLaunchConfiguration(rubyElement, mode, container, testClass, "");
 				if (config != null) {
-					DebugUITools.launch(config, mode);
+					config.launch(mode, null);
 				}
 			}
 		} catch (CoreException e) {
@@ -219,7 +219,6 @@ public class TestUnitLaunchShortcut implements ILaunchShortcut {
 			wc.setAttribute(TestUnitLaunchConfiguration.TESTNAME_ATTR, testName);
 			wc.setAttribute(TestUnitLaunchConfiguration.TESTTYPE_ATTR, testClass);
 			wc.setAttribute(TestUnitLaunchConfiguration.PORT_ATTR, port);
-			wc.setAttribute(TestUnitLaunchConfiguration.ATTR_KEEPRUNNING, false);
 			wc.setAttribute(ILaunchConfiguration.ATTR_SOURCE_LOCATOR_ID, "org.rubypeople.rdt.debug.ui.rubySourceLocator");
 			config = wc.doSave();
 		} catch (CoreException ce) {
