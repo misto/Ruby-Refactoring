@@ -13,6 +13,7 @@ import org.eclipse.jface.text.rules.ITokenScanner;
 import org.eclipse.jface.util.PropertyChangeEvent;
 import org.rubypeople.rdt.internal.ui.RdtUiPlugin;
 import org.rubypeople.rdt.internal.ui.rubyeditor.RubyEditorPreferences;
+import org.rubypeople.rdt.internal.ui.text.ruby.AbstractRubyScanner;
 import org.rubypeople.rdt.internal.ui.text.ruby.RubyCodeScanner;
 import org.rubypeople.rdt.internal.ui.text.ruby.SingleTokenRubyCodeScanner;
 
@@ -20,8 +21,8 @@ public class RubyTextTools {
 	protected String[] keywords;
 	protected RubyColorProvider colorProvider;
 	protected RubyPartitionScanner partitionScanner;
-	protected RubyCodeScanner codeScanner;
-	protected SingleTokenRubyCodeScanner multilineCommentScanner, singlelineCommentScanner, stringScanner;
+	protected AbstractRubyScanner codeScanner;
+	protected AbstractRubyScanner multilineCommentScanner, singlelineCommentScanner, stringScanner;
 
 	public RubyTextTools() {
 		super();
@@ -31,12 +32,12 @@ public class RubyTextTools {
 
 		codeScanner = new RubyCodeScanner(this);
 		multilineCommentScanner = new SingleTokenRubyCodeScanner(this, RubyColorConstants.RUBY_MULTI_LINE_COMMENT);
-		singlelineCommentScanner = new SingleTokenRubyCodeScanner(this, RubyColorConstants.RUBY_SINGLE_LINE_COMMENT);
+		singlelineCommentScanner = new RubyCodeScanner(this);
 		stringScanner = new SingleTokenRubyCodeScanner(this, RubyColorConstants.RUBY_STRING);
 	}
 
 	public IDocumentPartitioner createDocumentPartitioner() {
-		String[] types = new String[] { RubyPartitionScanner.MULTI_LINE_COMMENT, RubyPartitionScanner.STRING, RubyPartitionScanner.SINGLE_LINE_COMMENT };
+		String[] types = new String[] { RubyPartitionScanner.MULTI_LINE_COMMENT, RubyPartitionScanner.STRING };
 
 		return new DefaultPartitioner(getPartitionScanner(), types);
 	}
@@ -45,7 +46,7 @@ public class RubyTextTools {
 		return partitionScanner;
 	}
 
-	public RubyCodeScanner getCodeScanner() {
+	public AbstractRubyScanner getCodeScanner() {
 		return codeScanner;
 	}
 

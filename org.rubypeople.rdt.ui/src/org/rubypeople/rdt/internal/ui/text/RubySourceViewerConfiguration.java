@@ -36,10 +36,6 @@ public class RubySourceViewerConfiguration extends SourceViewerConfiguration {
 		reconciler.setDamager(dr, RubyPartitionScanner.MULTI_LINE_COMMENT);
 		reconciler.setRepairer(dr, RubyPartitionScanner.MULTI_LINE_COMMENT);
 
-		dr = new DefaultDamagerRepairer(getSinglelineCommentScanner());
-		reconciler.setDamager(dr, RubyPartitionScanner.SINGLE_LINE_COMMENT);
-		reconciler.setRepairer(dr, RubyPartitionScanner.SINGLE_LINE_COMMENT);
-
 		dr = new DefaultDamagerRepairer(getStringScanner());
 		reconciler.setDamager(dr, RubyPartitionScanner.STRING);
 		reconciler.setRepairer(dr, RubyPartitionScanner.STRING);
@@ -64,7 +60,7 @@ public class RubySourceViewerConfiguration extends SourceViewerConfiguration {
 	}
 
 	public String[] getConfiguredContentTypes(ISourceViewer sourceViewer) {
-		return new String[] { IDocument.DEFAULT_CONTENT_TYPE, RubyPartitionScanner.MULTI_LINE_COMMENT, RubyPartitionScanner.SINGLE_LINE_COMMENT, RubyPartitionScanner.STRING};
+		return new String[] { IDocument.DEFAULT_CONTENT_TYPE, RubyPartitionScanner.MULTI_LINE_COMMENT, RubyPartitionScanner.STRING};
 	}
 
 	public IContentAssistant getContentAssistant(ISourceViewer sourceViewer) {
