@@ -62,7 +62,7 @@ public class RubyEntryPointTab extends AbstractLaunchConfigurationTab {
 
 	public void setDefaults(ILaunchConfigurationWorkingCopy configuration) {
 		IResource selectedResource = RdtUiPlugin.getDefault().getSelectedResource() ;
-		if (!RubyCore.isRubyFile(selectedResource)) {
+		if (!RdtUiPlugin.getDefault().isRubyFile(selectedResource)) {
 			return ;
 		}
 		IProject project = selectedResource.getProject() ;

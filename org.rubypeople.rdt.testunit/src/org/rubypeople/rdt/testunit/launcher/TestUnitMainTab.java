@@ -145,7 +145,7 @@ public class TestUnitMainTab extends AbstractLaunchConfigurationTab implements I
         String fileName = "";
         String type = "";
         
-        if (RubyCore.isRubyFile(selectedResource)) {
+        if (RdtUiPlugin.getDefault().isRubyFile(selectedResource)) {
             projectName = selectedResource.getProject().getName();
             fileName = selectedResource.getProjectRelativePath().toString();
             RubyElement[] types = TestSearchEngine.findTests((IFile) selectedResource);
