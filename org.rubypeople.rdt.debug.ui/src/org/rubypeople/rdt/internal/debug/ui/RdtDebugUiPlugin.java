@@ -5,9 +5,11 @@ import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.IPluginDescriptor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
+import org.rubypeople.rdt.debug.ui.RdtDebugUiConstants;
 import org.rubypeople.rdt.internal.launching.RdtLaunchingMessages;
 
 public class RdtDebugUiPlugin extends AbstractUIPlugin {
@@ -41,5 +43,15 @@ public class RdtDebugUiPlugin extends AbstractUIPlugin {
 
 	public static void log(Throwable e) {
 		log(new Status(IStatus.ERROR, PLUGIN_ID, IStatus.ERROR, RdtDebugUiMessages.getString("RdtDebugUiPlugin.internalErrorOccurred"), e)); //$NON-NLS-1$
+	}
+
+	protected void initializeDefaultPreferences(IPreferenceStore store) {
+		super.initializeDefaultPreferences(store);
+		
+		store.setDefault(RdtDebugUiConstants.PREFERENCE_KEYWORDS, getDefaultKeywords());
+	}
+
+	protected String getDefaultKeywords() {
+		return "class,def,end,if,module,new,puts,require,rescue,throw,while";
 	}
 }

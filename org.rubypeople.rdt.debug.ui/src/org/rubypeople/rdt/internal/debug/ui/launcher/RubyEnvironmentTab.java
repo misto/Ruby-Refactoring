@@ -169,7 +169,7 @@ public class RubyEnvironmentTab extends AbstractLaunchConfigurationTab {
 				}
 			}
 		} catch (CoreException e) {
-			RdtDebugUiPlugin.log(e);
+			log(e);
 		}
 	}
 
@@ -183,7 +183,7 @@ public class RubyEnvironmentTab extends AbstractLaunchConfigurationTab {
 		try {
 			interpreterName = configuration.getAttribute(RubyLaunchConfigurationAttribute.SELECTED_INTERPRETER, "");
 		} catch (CoreException e) {
-			RdtDebugUiPlugin.log(e);
+			log(e);
 		}
 		if (interpreterName != null && !interpreterName.equals(""))
 			interpreterCombo.select(interpreterCombo.indexOf(interpreterName));
@@ -246,11 +246,15 @@ public class RubyEnvironmentTab extends AbstractLaunchConfigurationTab {
 				return false;
 			}
 		} catch (CoreException e) {
-			throw new RuntimeException(e.getMessage());
+			log(e);
 		}
 		
 		setErrorMessage(null);
 		return true;
+	}
+	
+	protected void log(Throwable t) {
+		RdtDebugUiPlugin.getDefault().log(t);
 	}
 
 }

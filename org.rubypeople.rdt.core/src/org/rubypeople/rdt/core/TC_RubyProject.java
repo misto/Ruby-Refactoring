@@ -1,4 +1,4 @@
-package org.rubypeople.rdt.internal.core;
+package org.rubypeople.rdt.core;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;

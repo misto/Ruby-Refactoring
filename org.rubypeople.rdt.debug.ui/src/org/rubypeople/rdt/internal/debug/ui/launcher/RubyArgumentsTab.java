@@ -1,7 +1,5 @@
 package org.rubypeople.rdt.internal.debug.ui.launcher;
 
-import java.io.File;
-
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.debug.core.ILaunchConfiguration;
 import org.eclipse.debug.core.ILaunchConfigurationWorkingCopy;
@@ -91,6 +89,7 @@ public class RubyArgumentsTab extends AbstractLaunchConfigurationTab {
 			programArgs = configuration.getAttribute(RubyLaunchConfigurationAttribute.PROGRAM_ARGUMENTS, "");
 			useDefaultWorkDir = configuration.getAttribute(RubyLaunchConfigurationAttribute.USE_DEFAULT_WORKING_DIRECTORY, true);
 		} catch (CoreException e) {
+			log(e);
 		}
 
 		workingDirectorySelector.setSelectionText(workingDirectory);
@@ -129,11 +128,15 @@ public class RubyArgumentsTab extends AbstractLaunchConfigurationTab {
 				return false;
 			}
 		} catch (CoreException e) {
-			throw new RuntimeException(e.getMessage());
+			log(e);
 		}
 
 		setErrorMessage(null);
 		return true;
+	}
+	
+	protected void log(Throwable t) {
+		RdtDebugUiPlugin.getDefault().log(t);
 	}
 
 }

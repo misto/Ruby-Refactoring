@@ -105,7 +105,9 @@ public class RubyRuntime {
 			XMLReader reader = SAXParserFactory.newInstance().newSAXParser().getXMLReader();
 			reader.setContentHandler(getRuntimeConfigurationContentHandler());
 			reader.parse(new InputSource(getRuntimeConfigurationReader()));
-		} catch(Exception e) {}
+		} catch(Exception e) {
+			RdtLaunchingPlugin.getDefault().log(e);
+		}
 	}
 
 	protected Reader getRuntimeConfigurationReader() {

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <plugin
-   id="org.rubypeople.rdt"
+   id="org.rubypeople.rdt.core"
    name="%Plugin.name"
    version="0.2.0"
    provider-name="RubyPeople, Inc."

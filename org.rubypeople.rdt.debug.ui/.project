@@ -9,6 +9,7 @@
 		<project>org.eclipse.debug.core</project>
 		<project>org.eclipse.debug.ui</project>
 		<project>org.eclipse.ui</project>
+		<project>org.junit</project>
 		<project>org.rubypeople.rdt.core</project>
 		<project>org.rubypeople.rdt.launching</project>
 		<project>org.rubypeople.rdt.ui</project>

@@ -11,7 +11,7 @@ import org.eclipse.core.runtime.Plugin;
 import org.rubypeople.rdt.core.RubyElement;
 
 public class RubyPlugin extends Plugin {
-	public final static String PLUGIN_ID = "org.rubypeople.rdt";
+	public final static String PLUGIN_ID = "org.rubypeople.rdt.core";
 	public final static String RUBY_NATURE_ID = PLUGIN_ID + ".rubynature";
 
 	protected static RubyPlugin plugin;

@@ -1,11 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
     <classpathentry kind="src" path="src/"/>
-    <classpathentry exported="true" kind="lib" path="rdtcore.jar" sourcepath="/org.rubypeople.rdt.core/rdtcoresrc.zip"/>
     <classpathentry kind="src" path="/org.eclipse.core.runtime"/>
     <classpathentry kind="src" path="/org.eclipse.core.resources"/>
-    <classpathentry kind="var"
-        path="ECLIPSE_HOME/plugins/org.junit_3.7.0/junit.jar" sourcepath="_ORG_ECLIPSE_JDT_SOURCE/org.junit_3.7.0/junitsrc.zip"/>
+    <classpathentry exported="true" kind="src" path="/org.junit"/>
     <classpathentry kind="src" path="/org.apache.xerces"/>
     <classpathentry exported="true" kind="src" path="/org.rubypeople.eclipse.shams"/>
     <classpathentry kind="var"

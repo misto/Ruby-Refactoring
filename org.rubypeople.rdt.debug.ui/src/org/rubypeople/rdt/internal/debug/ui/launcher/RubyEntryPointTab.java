@@ -27,6 +27,7 @@ import org.rubypeople.rdt.internal.ui.utils.RubyFileSelector;
 import org.rubypeople.rdt.internal.ui.utils.RubyProjectSelector;
 
 public class RubyEntryPointTab extends AbstractLaunchConfigurationTab {
+	protected String originalFileName, originalProjectName;
 	protected RubyProjectSelector projectSelector;
 	protected RubyFileSelector fileSelector;
 
@@ -87,17 +88,16 @@ public class RubyEntryPointTab extends AbstractLaunchConfigurationTab {
 	}
 
 	public void initializeFrom(ILaunchConfiguration configuration) {
-		String projectName = "", fileName = "";
-
 		try {
-			projectName = configuration.getAttribute(RubyLaunchConfigurationAttribute.PROJECT_NAME, "");
-			fileName = configuration.getAttribute(RubyLaunchConfigurationAttribute.FILE_NAME, "");
+			originalProjectName = configuration.getAttribute(RubyLaunchConfigurationAttribute.PROJECT_NAME, "");
+			originalFileName = configuration.getAttribute(RubyLaunchConfigurationAttribute.FILE_NAME, "");
 		} catch (CoreException e) {
+			log(e);
 		}
 
-		projectSelector.setSelectionText(projectName);
-		if (!"".equals(fileName))
-			fileSelector.setSelectionText(new Path(fileName).toOSString());
+		projectSelector.setSelectionText(originalProjectName);
+		if (!"".equals(originalFileName))
+			fileSelector.setSelectionText(new Path(originalFileName).toOSString());
 	}
 
 	public void performApply(ILaunchConfigurationWorkingCopy configuration) {
@@ -135,11 +135,18 @@ public class RubyEntryPointTab extends AbstractLaunchConfigurationTab {
 				return false;
 			}
 		} catch (CoreException e) {
-			throw new RuntimeException(e.toString());
+			log(e);
 		}
 		
 		setErrorMessage(null);
 		return true;
 	}
 
+	protected void log(Throwable t) {
+		RdtDebugUiPlugin.getDefault().log(t);
+	}
+
+	public boolean canSave() {
+		return getErrorMessage() == null;
+	}
 }

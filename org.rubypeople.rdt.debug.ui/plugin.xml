@@ -19,8 +19,8 @@
       <import plugin="org.eclipse.debug.ui"/>
       <import plugin="org.rubypeople.rdt.launching"/>
       <import plugin="org.rubypeople.rdt.ui"/>
-      <import plugin="org.rubypeople.rdt"/>
       <import plugin="org.junit"/>
+      <import plugin="org.rubypeople.rdt.core"/>
    </requires>
 
 

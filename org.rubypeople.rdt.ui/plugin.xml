@@ -15,8 +15,8 @@
       <import plugin="org.eclipse.core.runtime"/>
       <import plugin="org.eclipse.core.resources"/>
       <import plugin="org.eclipse.ui"/>
-      <import plugin="org.rubypeople.rdt"/>
       <import plugin="org.eclipse.debug.ui"/>
+      <import plugin="org.rubypeople.rdt.core"/>
    </requires>
 
 
@@ -51,7 +51,7 @@
          point="org.eclipse.ui.projectNatureImages">
       <image
             icon="icons/full/ovr16/ruby_ovr.gif"
-            natureId="org.rubypeople.rdt.rubynature"
+            natureId="org.rubypeople.rdt.core.rubynature"
             id="org.rubypeople.rdt.ui.ProjectNatureImageRuby">
       </image>
    </extension>
@@ -64,7 +64,7 @@
             id="org.rubypeople.rdt.ui.PropertyPageRubyProject">
          <filter
                name="nature"
-               value="org.rubypeople.rdt.rubynature">
+               value="org.rubypeople.rdt.core.rubynature">
          </filter>
       </page>
       <page
@@ -74,7 +74,7 @@
             id="org.rubypeople.rdt.ui.PropertyPageRubyProject">
          <filter
                name="nature"
-               value="org.rubypeople.rdt.rubynature">
+               value="org.rubypeople.rdt.core.rubynature">
          </filter>
       </page>
    </extension>

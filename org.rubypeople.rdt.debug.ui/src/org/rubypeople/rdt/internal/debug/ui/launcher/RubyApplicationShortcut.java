@@ -65,7 +65,7 @@ public class RubyApplicationShortcut implements ILaunchShortcut {
 				}
 			}
 		} catch (CoreException e) {
-			RdtDebugUiPlugin.getDefault().log(e);
+			log(e);
 		}
 		
 		switch (candidateConfigs.size()) {
@@ -89,7 +89,7 @@ public class RubyApplicationShortcut implements ILaunchShortcut {
 			wc.setAttribute(RubyLaunchConfigurationAttribute.WORKING_DIRECTORY, RdtDebugUiConstants.DEFAULT_WORKING_DIRECTORY);
 			config = wc.doSave();		
 		} catch (CoreException ce) {
-			RdtDebugUiPlugin.getDefault().log(ce);			
+			log(ce);			
 		}
 		return config;
 	}
