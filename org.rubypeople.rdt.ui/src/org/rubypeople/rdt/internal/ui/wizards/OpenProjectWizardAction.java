@@ -11,20 +11,23 @@
 package org.rubypeople.rdt.internal.ui.wizards;
 
 import org.eclipse.jface.wizard.Wizard;
-
 import org.eclipse.ui.PlatformUI;
-
+import org.eclipse.ui.help.WorkbenchHelp;
 import org.rubypeople.rdt.internal.ui.IRubyHelpContextIds;
 
 public class OpenProjectWizardAction extends AbstractOpenWizardAction {
 
 	public OpenProjectWizardAction() {
-		PlatformUI.getWorkbench().getHelpSystem().setHelp(this, IRubyHelpContextIds.OPEN_PROJECT_WIZARD_ACTION);
+		WorkbenchHelp.setHelp(this, IRubyHelpContextIds.OPEN_PROJECT_WIZARD_ACTION);
+//		 FIXME Uncomment and delete the above line when we move to 3.1+
+		//PlatformUI.getWorkbench().getHelpSystem().setHelp(this, IRubyHelpContextIds.OPEN_PROJECT_WIZARD_ACTION);
 	}
 	
 	public OpenProjectWizardAction(String label, Class[] acceptedTypes) {
 		super(label, acceptedTypes, true);
-		PlatformUI.getWorkbench().getHelpSystem().setHelp(this, IRubyHelpContextIds.OPEN_PROJECT_WIZARD_ACTION);
+		WorkbenchHelp.setHelp(this, IRubyHelpContextIds.OPEN_PROJECT_WIZARD_ACTION);
+		// FIXME Uncomment and delete the above line when we move to 3.1+
+		//PlatformUI.getWorkbench().getHelpSystem().setHelp(this, IRubyHelpContextIds.OPEN_PROJECT_WIZARD_ACTION);
 	}
 	
 	protected Wizard createWizard() { 

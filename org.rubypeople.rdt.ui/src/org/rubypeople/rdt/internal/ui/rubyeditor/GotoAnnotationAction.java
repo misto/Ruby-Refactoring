@@ -11,6 +11,7 @@
 package org.rubypeople.rdt.internal.ui.rubyeditor;
 
 import org.eclipse.ui.PlatformUI;
+import org.eclipse.ui.help.WorkbenchHelp;
 import org.eclipse.ui.texteditor.ITextEditor;
 import org.eclipse.ui.texteditor.TextEditorAction;
 
@@ -24,10 +25,15 @@ public class GotoAnnotationAction extends TextEditorAction {
 	public GotoAnnotationAction(String prefix, boolean forward) {
 		super(RubyEditorMessages.getResourceBundle(), prefix, null);
 		fForward= forward;
-		if (forward)
-			PlatformUI.getWorkbench().getHelpSystem().setHelp(this, IRubyHelpContextIds.GOTO_NEXT_ERROR_ACTION);
-		else
-			PlatformUI.getWorkbench().getHelpSystem().setHelp(this, IRubyHelpContextIds.GOTO_PREVIOUS_ERROR_ACTION);
+		if (forward) {
+			WorkbenchHelp.setHelp(this, IRubyHelpContextIds.GOTO_NEXT_ERROR_ACTION);
+			// FIXME Uncomment and delete the above line when we move to 3.1+
+			//PlatformUI.getWorkbench().getHelpSystem().setHelp(this, IRubyHelpContextIds.GOTO_NEXT_ERROR_ACTION);
+	    } else {
+			WorkbenchHelp.setHelp(this, IRubyHelpContextIds.GOTO_PREVIOUS_ERROR_ACTION);
+			// FIXME Uncomment and delete the above line when we move to 3.1+
+			//PlatformUI.getWorkbench().getHelpSystem().setHelp(this, IRubyHelpContextIds.GOTO_PREVIOUS_ERROR_ACTION);
+		}
 	}
 	
 	public void run() {
