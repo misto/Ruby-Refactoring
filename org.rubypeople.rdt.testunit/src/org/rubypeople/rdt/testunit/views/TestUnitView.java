@@ -61,7 +61,7 @@ import org.rubypeople.rdt.testunit.TestunitPlugin;
 import org.rubypeople.rdt.testunit.launcher.SocketUtil;
 import org.rubypeople.rdt.testunit.launcher.TestUnitLaunchConfiguration;
 
-public class TestUnitView extends ViewPart implements ITestRunListener {
+public class TestUnitView extends ViewPart implements ITestRunListener3 {
 
 	public static final String NAME = "org.rubypeople.rdt.testunit.views.TestUnitView";
 
@@ -149,6 +149,13 @@ public class TestUnitView extends ViewPart implements ITestRunListener {
 	private UpdateUIJob fUpdateJob;
 
 	/**
+	 * Whether the output scrolls and reveals tests as they are executed.
+	 */
+	private boolean fAutoScroll = true;
+
+	private ScrollLockAction fScrollLockAction;
+
+	/**
 	 * The constructor.
 	 */
 	public TestUnitView() {}
@@ -189,6 +196,7 @@ public class TestUnitView extends ViewPart implements ITestRunListener {
 		// TODO Uncomment when other actions and orientation are available
 		//IMenuManager viewMenu = actionBars.getMenuManager();
 		fRerunLastTestAction = new RerunLastAction();
+		fScrollLockAction = new ScrollLockAction(this);
 		//fNextAction= new ShowNextFailureAction(this);
 		//fPreviousAction= new ShowPreviousFailureAction(this);
 		//fStopAction= new StopAction();
@@ -205,9 +213,12 @@ public class TestUnitView extends ViewPart implements ITestRunListener {
 		//toolBar.add(fStopAction);
 		toolBar.add(new Separator());
 		toolBar.add(fRerunLastTestAction);
+		toolBar.add(fScrollLockAction);
 
 		//for (int i = 0; i < fToggleOrientationActions.length; ++i)
 		//	viewMenu.add(fToggleOrientationActions[i]);
+
+		fScrollLockAction.setChecked(!fAutoScroll);
 
 		actionBars.updateActionBars();
 	}
@@ -485,6 +496,14 @@ public class TestUnitView extends ViewPart implements ITestRunListener {
 			fUpdateJob.stop();
 			fUpdateJob = null;
 		}
+	}
+
+	public void setAutoScroll(boolean scroll) {
+		fAutoScroll = scroll;
+	}
+
+	public boolean isAutoScroll() {
+		return fAutoScroll;
 	}
 
 	public boolean isCreated() {
@@ -862,7 +881,7 @@ public class TestUnitView extends ViewPart implements ITestRunListener {
 
 	protected void selectFirstFailure() {
 		TestRunInfo firstFailure = (TestRunInfo) fFailures.get(0);
-		if (firstFailure != null /* && fAutoScroll */) {
+		if (firstFailure != null && fAutoScroll) {
 			fActiveRunTab.setSelectedTest(firstFailure.getTestId());
 			handleTestSelected(firstFailure.getTestId());
 		}
@@ -902,6 +921,22 @@ public class TestUnitView extends ViewPart implements ITestRunListener {
 
 	protected void doShowStatus() {
 		setContentDescription(fStatus);
+	}
+	
+	/*
+	 * @see ITestRunListener2#testTreeEntry
+	 */
+	public void testTreeEntry(final String treeEntry){
+		postSyncRunnable(new Runnable() {
+			public void run() {
+				if(isDisposed()) 
+					return;
+				for (Enumeration e= fTestRunTabs.elements(); e.hasMoreElements();) {
+					TestRunTab v= (TestRunTab) e.nextElement();
+					v.newTreeEntry(treeEntry);
+				}
+			}
+		});	
 	}
 
 	/**
