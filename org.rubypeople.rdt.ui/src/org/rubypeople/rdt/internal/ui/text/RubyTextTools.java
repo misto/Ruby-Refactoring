@@ -32,12 +32,12 @@ public class RubyTextTools {
 
 		codeScanner = new RubyCodeScanner(this);
 		multilineCommentScanner = new SingleTokenRubyCodeScanner(this, RubyColorConstants.RUBY_MULTI_LINE_COMMENT);
-		singlelineCommentScanner = new RubyCodeScanner(this);
+		singlelineCommentScanner = new SingleTokenRubyCodeScanner(this, RubyColorConstants.RUBY_SINGLE_LINE_COMMENT);
 		stringScanner = new SingleTokenRubyCodeScanner(this, RubyColorConstants.RUBY_STRING);
 	}
 
 	public IDocumentPartitioner createDocumentPartitioner() {
-		String[] types = new String[] { RubyPartitionScanner.MULTI_LINE_COMMENT, RubyPartitionScanner.STRING };
+		String[] types = new String[] { RubyPartitionScanner.MULTI_LINE_COMMENT, RubyPartitionScanner.STRING, RubyPartitionScanner.SINGLE_LINE_COMMENT };
 
 		return new DefaultPartitioner(getPartitionScanner(), types);
 	}
