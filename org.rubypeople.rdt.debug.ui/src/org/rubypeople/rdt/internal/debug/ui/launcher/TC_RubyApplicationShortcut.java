@@ -20,7 +20,6 @@ import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.StructuredSelection;
 import org.rubypeople.eclipse.shams.debug.core.ShamLaunchManager;
 import org.rubypeople.eclipse.shams.resources.ShamIFile;
-import org.rubypeople.rdt.internal.core.RubyFile;
 import org.rubypeople.rdt.internal.launching.RubyLaunchConfigurationAttribute;
 
 public class TC_RubyApplicationShortcut extends TestCase {
