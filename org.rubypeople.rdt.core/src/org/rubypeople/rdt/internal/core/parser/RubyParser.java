@@ -23,6 +23,7 @@ public class RubyParser {
 
 	private final RubyParserPool pool;
 	private IRubyWarnings warnings;
+	private static boolean isDebug;
 
 	public RubyParser() {
 		this(new NullWarnings());
@@ -62,7 +63,12 @@ public class RubyParser {
 	 * @param b
 	 */
 	public static void setDebugging(boolean b) {
-	// FIXME Enable/Disable debug logging!
+		isDebug = b;
+	}
+
+	public static boolean isDebugging() {
+		// TODO Auto-generated method stub
+		return isDebug;
 	}
 
 }

@@ -129,6 +129,7 @@ import org.jruby.runtime.Visibility;
 import org.rubypeople.rdt.core.IRubyElement;
 import org.rubypeople.rdt.core.IRubyMethod;
 import org.rubypeople.rdt.core.IRubyScript;
+import org.rubypeople.rdt.internal.core.parser.RubyParser;
 
 /**
  * @author Chris
@@ -143,6 +144,7 @@ public class RubyScriptStructureBuilder implements NodeVisitor {
 	private Visibility currentVisibility = Visibility.PUBLIC;
 	private Map newElements;
 	private RubyElementInfo importContainerInfo;
+	private boolean DEBUG = false;
 
 	/**
 	 * 
@@ -161,6 +163,7 @@ public class RubyScriptStructureBuilder implements NodeVisitor {
 		this.newElements = newElements;
 		modelStack.push(script);
 		infoStack.push(scriptInfo);
+		DEBUG = RubyParser.isDebugging();
 	}
 
 	/*
@@ -415,7 +418,7 @@ public class RubyScriptStructureBuilder implements NodeVisitor {
 	public void visitCallNode(CallNode iVisited) {
 		handleNode(iVisited);
 		// FIXME Evaluate the receiver and check to see if the method exists!
-		System.out.println(iVisited.getName());
+		if (DEBUG) System.out.println(iVisited.getName());
 		visitNode(iVisited.getReceiverNode());
 		visitNode(iVisited.getArgsNode());
 	}
@@ -481,7 +484,7 @@ public class RubyScriptStructureBuilder implements NodeVisitor {
 	 */
 	public void visitColon2Node(Colon2Node iVisited) {
 		handleNode(iVisited);
-		System.out.println(iVisited.getName());
+		if (DEBUG) System.out.println(iVisited.getName());
 		visitNode(iVisited.getLeftNode());
 	}
 
@@ -501,7 +504,7 @@ public class RubyScriptStructureBuilder implements NodeVisitor {
 	 */
 	public void visitConstNode(ConstNode iVisited) {
 		handleNode(iVisited);
-		System.out.println(iVisited.getName());
+		if (DEBUG) System.out.println(iVisited.getName());
 	}
 
 	/*
@@ -520,7 +523,7 @@ public class RubyScriptStructureBuilder implements NodeVisitor {
 
 		newElements.put(var, info);
 
-		System.out.println(iVisited.getName());
+		if (DEBUG) System.out.println(iVisited.getName());
 		visitNode(iVisited.getValueNode());
 
 		modelStack.pop();
@@ -564,7 +567,7 @@ public class RubyScriptStructureBuilder implements NodeVisitor {
 	 */
 	public void visitDVarNode(DVarNode iVisited) {
 		handleNode(iVisited);
-		System.out.println(iVisited.getName());
+		if (DEBUG) System.out.println(iVisited.getName());
 	}
 
 	/*
@@ -740,7 +743,7 @@ public class RubyScriptStructureBuilder implements NodeVisitor {
 	public void visitFCallNode(FCallNode iVisited) {
 		handleNode(iVisited);
 		// FIXME Evaluate self and check to see if the method exists!
-		System.out.println(iVisited.getName());
+		if (DEBUG) System.out.println(iVisited.getName());
 		String functionName = iVisited.getName();
 		if (functionName.equals("require") || functionName.equals("load")) {
 			ArrayNode node = (ArrayNode) iVisited.getArgsNode();
@@ -974,7 +977,7 @@ public class RubyScriptStructureBuilder implements NodeVisitor {
 		visitNode(iVisited.getIterNode());
 		visitNode(iVisited.getVarNode());
 		visitNode(iVisited.getBodyNode());
-		System.out.println("Iter Node ended");
+		if (DEBUG) System.out.println("Iter Node ended");
 
 		modelStack.pop();
 	}
@@ -1485,7 +1488,7 @@ public class RubyScriptStructureBuilder implements NodeVisitor {
 	 */
 	private void handleNode(Node visited) {
 		// TODO Uncomment for logging?
-		System.out.println(visited.toString() + ", position -> " + visited.getPosition());
+		if (DEBUG ) System.out.println(visited.toString() + ", position -> " + visited.getPosition());
 	}
 
 }
