@@ -179,6 +179,13 @@
                menubarPath="org.rubypeople.rdt.ui.ruby.menu/editGroup"
                id="org.rubypeople.rdt.ui.actions.Comment">
          </action>
+         <action
+               definitionId="org.rubypeople.rdt.ui.edit.text.ruby.format"
+               label="unused"
+               retarget="true"
+               menubarPath="org.rubypeople.rdt.ui.ruby.menu/editGroup"
+               id="org.rubypeople.rdt.ui.actions.Format">
+         </action>         
       </actionSet>
    </extension>
    <extension

@@ -11,8 +11,10 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.rubypeople.rdt.internal.core.RubyPlugin;
+import org.rubypeople.rdt.internal.formatter.CodeFormatter;
 import org.rubypeople.rdt.internal.ui.text.RubyColorConstants;
 import org.rubypeople.rdt.internal.ui.text.RubyTextTools;
+import org.rubypeople.rdt.ui.PreferenceConstants;
 
 public class RdtUiPlugin extends AbstractUIPlugin implements RubyColorConstants {
 	protected static RdtUiPlugin plugin;
@@ -20,7 +22,8 @@ public class RdtUiPlugin extends AbstractUIPlugin implements RubyColorConstants 
 	public static final String PLUGIN_ID = "org.rubypeople.rdt.ui"; //$NON-NLS-1$
 	public static final String RUBY_RESOURCES_VIEW_ID = PLUGIN_ID + ".ViewRubyResources"; //$NON-NLS-1$
 
-	protected RubyTextTools textTools;
+	protected RubyTextTools textTools ;
+	protected CodeFormatter codeFormatter ;
 
 	public RdtUiPlugin(IPluginDescriptor descriptor) {
 		super(descriptor);
@@ -60,6 +63,14 @@ public class RdtUiPlugin extends AbstractUIPlugin implements RubyColorConstants 
 		return textTools;
 	}
 	
+	public CodeFormatter getCodeFormatter() {
+		if (codeFormatter == null) {
+			codeFormatter = new CodeFormatter() ;
+		}
+		codeFormatter.setIndentation(this.getPreferenceStore().getInt(PreferenceConstants.FORMAT_INDENTATION)) ;
+		return codeFormatter ;
+	}
+	
 	protected void initializeDefaultPreferences(IPreferenceStore store) {
 		PreferenceConverter.setDefault(store, RUBY_DEFAULT, new RGB(0, 0, 0));
 		store.setDefault(RUBY_DEFAULT + RUBY_ISBOLD_APPENDIX, false);
@@ -73,6 +84,7 @@ public class RdtUiPlugin extends AbstractUIPlugin implements RubyColorConstants 
 		store.setDefault(RUBY_SINGLE_LINE_COMMENT + RUBY_ISBOLD_APPENDIX, false);
 		//
 		PreferenceConverter.setDefault(store, RUBY_CONTENT_ASSISTANT_BACKGROUND, new RGB(150, 150, 0));
+		PreferenceConstants.initializeDefaultValues(store) ;
 		super.initializeDefaultPreferences(store);
 	}
 
