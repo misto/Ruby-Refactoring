@@ -7,38 +7,45 @@ REM ***********************************
 REM The eclipse directory from which eclipse will be started for building and testing. 
 REM This eclipse instance will be the build host
 REM the AntRunner application is started within this eclipse installation
-set eclipseDir=D:\eclipse-3.0
+set eclipseDir=D:\eclipse\eclipse-3.0.1
 
 REM vm specifies the java vm which starts up the build host
 set vm=java
 
 REM The version of the PDE Build plug-in is needed to determine the script directory
 REM The version will probably be equal to the eclipse version
-set pdeBuildPluginVersion=3.0.0
+set pdeBuildPluginVersion=3.0.1
 
 REM The pluginAutomaticBuildDir contains the necessary files provided by the plug-in
 REM itself for the build-process, e.g. build.properties, customTargets.xml.
 REM It is not bound to reside in the workspace of the eclipse and can reside on any
 REM accessible location
-set pluginAutomaticBuildDir=D:\java\rdt-workspace-ssh\org.rubypeople.rdt.build\bootstrap
+set pluginAutomaticBuildDir=D:\build\org.rubypeople.rdt.build\bootstrap
 
 REM Directory where the build takes place. The workspace will also be created in this directory
-set buildDirectory=D:\Temp\RdtBuildDir
+set buildDirectory=D:\build\rdt
+
+REM use pserver method to connect to the repository both for fetching the map files and the plug-ins
+REM comment out for using ext method
+set usePserver=-DusePserver=true
 
 REM Verbose is a switch for the AntRunner application
-set verboseAnt=-verbose
-REM set verboseAnt=
+REM set verboseAnt=-verbose
+set verboseAnt=
 
 REM docboook.root is the directory where you unzipped the docbook zip file
 REM (http://213.203.244.123/rdt/docbook.tar.gz). It contains to subfolders:
 REM docbook-xsl-1.64.1 and dtd
 REM It must be a URI, windows style path names are not allowed
-set docbook.root=file:///D:/Temp//docbook
+set docbook.root=D:/Temp/docbook
 
 
 REM **********************************
 REM ************** TEST **************
 REM **********************************
+
+REM set to empty value if you want to run the tests after the build has finished
+set dontRunTests=-DdontRunTests=defined
 
 REM The directory to which the eclipse-Automated-Tests-xxx.zip has been unzipped. It contains files
 REM like runtests.bat and testframework.html.
@@ -96,7 +103,7 @@ REM Wenn man keine Fehler erlauben möchte: Wird im generierten File <buildDir>/<
 REM -DjavacFailOnError=true 
 
 
-%vm% -cp %eclipseDir%\startup.jar -Dosgi.ws=%ws% -Dosgi.os=%os% -Dosgi.arch=%arch% org.eclipse.core.launcher.Main -application org.eclipse.ant.core.antRunner -buildfile %buildfile% -data %buildDirectory%/workspace-build -Dconfigs="*,*,*" -Dbaseos=win32 -Dbasews=win32 -Dbasearch=x86 -Dbuilder=%pluginAutomaticBuildDir%  "-D%installmode%=true" -DjavacFailOnError=true -DbuildDirectory=%buildDirectory% -DbaseLocation=%eclipseDir% %verboseAnt% -DeclipseAutomatedTestHome=%eclipseAutomatedTestHome% -Drdt.rubyInterpreter="%rubyInterpreter%" -Drdt-tests-workspace=%buildDirectory%/workspace-rdt-tests -Ddocbook.root="%docbook.root%"
+%vm% -cp %eclipseDir%\startup.jar -Dosgi.ws=%ws% -Dosgi.os=%os% -Dosgi.arch=%arch% org.eclipse.core.launcher.Main -application org.eclipse.ant.core.antRunner -buildfile %buildfile% -data %buildDirectory%/workspace-build -Dconfigs="*,*,*" -Dbaseos=win32 -Dbasews=win32 -Dbasearch=x86 -Dbuilder=%pluginAutomaticBuildDir%  "-D%installmode%=true" -DjavacFailOnError=true -DbuildDirectory=%buildDirectory% -DbaseLocation=%eclipseDir% %verboseAnt% -DeclipseAutomatedTestHome=%eclipseAutomatedTestHome% -Drdt.rubyInterpreter="%rubyInterpreter%" -Drdt-tests-workspace=%buildDirectory%/workspace-rdt-tests %usePserver% %dontRunTests% -Ddocbook.root="%docbook.root%"
 goto end
 
 :end
