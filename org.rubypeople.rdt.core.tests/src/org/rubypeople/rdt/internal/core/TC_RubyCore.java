@@ -1,4 +1,4 @@
-package org.rubypeople.rdt.core.tests.core;
+package org.rubypeople.rdt.internal.core;
 
 import junit.framework.TestCase;
 

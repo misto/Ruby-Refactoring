@@ -1,4 +1,4 @@
-package org.rubypeople.rdt.core.tests.formatter;
+package org.rubypeople.rdt.internal.formatter;
 
 import java.io.IOException;
 import java.util.ArrayList;
