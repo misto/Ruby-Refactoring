@@ -45,9 +45,10 @@ import org.rubypeople.rdt.core.IOpenable;
 import org.rubypeople.rdt.core.IProblemRequestor;
 import org.rubypeople.rdt.core.IRubyElement;
 import org.rubypeople.rdt.core.IRubyModelStatusConstants;
+import org.rubypeople.rdt.core.IRubyProject;
 import org.rubypeople.rdt.core.IRubyScript;
-import org.rubypeople.rdt.core.IType;
 import org.rubypeople.rdt.core.ISourceRange;
+import org.rubypeople.rdt.core.IType;
 import org.rubypeople.rdt.core.RubyCore;
 import org.rubypeople.rdt.core.RubyModelException;
 import org.rubypeople.rdt.core.WorkingCopyOwner;
@@ -106,6 +107,8 @@ public class RubyScript extends Openable implements IRubyScript {
 		final char[] contents = buffer == null ? null : buffer.getCharacters();
 
 		RubyModelManager.PerWorkingCopyInfo perWorkingCopyInfo = getPerWorkingCopyInfo();
+		IRubyProject project = getRubyProject();
+		boolean computeProblems = RubyProject.hasRubyNature(project.getProject()) && perWorkingCopyInfo != null && perWorkingCopyInfo.isActive();
 
 		try {
 			RubyParser parser = new RubyParser();
@@ -127,23 +130,20 @@ public class RubyScript extends Openable implements IRubyScript {
 		unitInfo.timestamp = ((IFile) underlyingResource).getModificationStamp();
 
 		// compute other problems if needed
-		perWorkingCopyInfo.beginReporting();
-		RubyScriptProblemFinder.process(this, contents, perWorkingCopyInfo, pm);
-		perWorkingCopyInfo.endReporting();
-
+		if (computeProblems) {
+			perWorkingCopyInfo.beginReporting();
+			RubyScriptProblemFinder.process(this, contents, perWorkingCopyInfo, pm);
+			perWorkingCopyInfo.endReporting();
+		}
 		return unitInfo.isStructureKnown();
 	}
-	
+
 	/*
 	 * Assume that this is a working copy
 	 */
 	protected void updateTimeStamp(RubyScript original) throws RubyModelException {
-		long timeStamp =
-			((IFile) original.getResource()).getModificationStamp();
-		if (timeStamp == IResource.NULL_STAMP) {
-			throw new RubyModelException(
-				new RubyModelStatus(IRubyModelStatusConstants.INVALID_RESOURCE));
-		}
+		long timeStamp = ((IFile) original.getResource()).getModificationStamp();
+		if (timeStamp == IResource.NULL_STAMP) { throw new RubyModelException(new RubyModelStatus(IRubyModelStatusConstants.INVALID_RESOURCE)); }
 		((RubyScriptElementInfo) getElementInfo()).timestamp = timeStamp;
 	}
 
@@ -186,7 +186,7 @@ public class RubyScript extends Openable implements IRubyScript {
 		} // else the buffer of a working copy must remain open for the
 		// lifetime of the working copy
 	}
-	
+
 	/*
 	 * @see IRubyScript#getOwner()
 	 */
@@ -260,7 +260,7 @@ public class RubyScript extends Openable implements IRubyScript {
 			return new char[0];
 		}
 	}
-	
+
 	/*
 	 * (non-Rubydoc)
 	 * 
@@ -422,12 +422,12 @@ public class RubyScript extends Openable implements IRubyScript {
 			operation.runOperation(monitor);
 		}
 	}
-	
+
 	/**
 	 * @see IRubyScript#commitWorkingCopy(boolean, IProgressMonitor)
 	 */
 	public void commitWorkingCopy(boolean force, IProgressMonitor monitor) throws RubyModelException {
-		CommitWorkingCopyOperation op= new CommitWorkingCopyOperation(this, force);
+		CommitWorkingCopyOperation op = new CommitWorkingCopyOperation(this, force);
 		op.runOperation(monitor);
 	}
 
@@ -477,25 +477,26 @@ public class RubyScript extends Openable implements IRubyScript {
 		// destroyed
 		return super.canBufferBeRemovedFromCache(buffer);
 	}
-	
+
 	/**
 	 * @see Openable#hasBuffer()
 	 */
 	protected boolean hasBuffer() {
 		return true;
 	}
-	
+
 	/*
 	 * @see IRubyScript#hasResourceChanged()
 	 */
 	public boolean hasResourceChanged() {
 		if (!isWorkingCopy()) return false;
-		
-		// if resource got deleted, then #getModificationStamp() will answer IResource.NULL_STAMP, which is always different from the cached
+
+		// if resource got deleted, then #getModificationStamp() will answer
+		// IResource.NULL_STAMP, which is always different from the cached
 		// timestamp
 		Object info = RubyModelManager.getRubyModelManager().getInfo(this);
 		if (info == null) return false;
-		return ((RubyScriptElementInfo)info).timestamp != getResource().getModificationStamp();
+		return ((RubyScriptElementInfo) info).timestamp != getResource().getModificationStamp();
 	}
 
 	/**

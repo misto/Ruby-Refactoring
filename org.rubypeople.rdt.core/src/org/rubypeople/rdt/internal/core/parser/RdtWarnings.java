@@ -72,4 +72,8 @@ public class RdtWarnings implements IRubyWarnings {
 		return true;
 	}
 
+	public void clear() {
+		warnings.clear();		
+	}
+
 }
