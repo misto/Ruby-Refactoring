@@ -3,7 +3,7 @@
 <plugin
    id="org.rubypeople.rdt.debug.ui"
    name="%Plugin.name"
-   version="0.4.1"
+   version="0.4.2"
    provider-name="RubyPeople, Inc."
    class="org.rubypeople.rdt.internal.debug.ui.RdtDebugUiPlugin">
 
@@ -12,6 +12,7 @@
          <export name="*"/>
       </library>
    </runtime>
+
    <requires>
       <import plugin="org.eclipse.core.runtime.compatibility"/>
       <import plugin="org.eclipse.core.resources"/>
@@ -28,7 +29,6 @@
       <import plugin="org.eclipse.ui.editors"/>
       <import plugin="org.eclipse.ui.ide"/>
    </requires>
-
 
    <extension
          point="org.eclipse.ui.preferencePages">
@@ -60,8 +60,8 @@
       <shortcut
             label="%LaunchShortcut.Ruby.label"
             icon="icons/full/ctool16/run_ruby.gif"
-            modes="run, debug"
             class="org.rubypeople.rdt.internal.debug.ui.launcher.RubyApplicationShortcut"
+            modes="run, debug"
             id="org.rubypeople.rdt.debug.ui.applicationshortcut.ruby">
          <perspective
                id="org.eclipse.debug.ui.DebugPerspective">
@@ -114,22 +114,21 @@
       <viewContribution
             targetID="org.eclipse.debug.ui.VariableView"
             id="org.eclipse.jdt.ui.debug.VariableViewActions">
-<!--icon="icons/full/clcl16/static_co.gif"-->
          <action
                label="%showStaticVariables"
                style="toggle"
-               tooltip="showStaticAction.tooltip"
-               state="false"
                class="org.rubypeople.rdt.internal.debug.ui.actions.ShowStaticVariablesAction"
+               state="false"
+               tooltip="showStaticAction.tooltip"
                menubarPath="rubyActions"
                id="org.rubypeople.rdt.ui.variableViewActions.ShowStatic">
          </action>
          <action
                label="%showConstants"
                style="toggle"
-               tooltip="showConstantAction.tooltip"
-               state="false"
                class="org.rubypeople.rdt.internal.debug.ui.actions.ShowConstantsAction"
+               state="false"
+               tooltip="showConstantAction.tooltip"
                menubarPath="rubyActions"
                id="org.rubypeople.rdt.ui.variableViewActions.ShowConstants">
          </action>
@@ -149,62 +148,13 @@
          </action>
       </debugActionGroup>
    </extension>
-<!--  <extension
-         point="org.eclipse.ui.actionSets">
-      <actionSet
-            label="%RDTDebugActionSet.label"
-            visible="false"
-            id="org.rubypeople.rdt.debug.ui.RDTDebugActionSet">
-         <menu
-               label="%RunMenu.label"
-               path="additions"
-               id="org.eclipse.ui.run">
-            <separator
-                  name="rdtGroup">
-            </separator>
-         </menu>
-         <action
-               id="org.rubypeople.rdt.debug.ui.Inspect"
-               hoverIcon="icons/full/ctool16/insp_sbook.gif"
-               class="org.rubypeople.rdt.internal.debug.ui.actions.InspectAction"
-               definitionId="org.rubypeople.rdt.debug.ui.inspect"
-               disabledIcon="icons/full/dtool16/insp_sbook.gif"
-               icon="icons/full/etool16/insp_sbook.gif"
-               helpContextId="inspect_action_context"
-               label="%Inspect.label"
-               menubarPath="org.eclipse.ui.run/rdtGroup">
-         </action>
-      </actionSet>
-   </extension>
-   
-   <extension
-         point="org.eclipse.ui.perspectiveExtensions">
-      <perspectiveExtension
-            targetID="org.eclipse.debug.ui.DebugPerspective">
-         <actionSet
-               id="org.rubypeople.rdt.debug.ui.RDTDebugActionSet">
-         </actionSet>
-      </perspectiveExtension>
-   </extension>
-
-   <extension
-         point="org.eclipse.ui.actionSetPartAssociations">
-      <actionSetPartAssociation
-            targetID="org.rubypeople.rdt.debug.ui.RDTDebugActionSet">
-         <part
-               id="org.rubypeople.rdt.ui.EditorRubyFile">
-         </part>
-      </actionSetPartAssociation>
-   </extension>
-   -->
-<!-- Context support -->
    <extension
          point="org.eclipse.ui.contexts">
       <context
             name="Debugging Ruby"
             description="Debugging Ruby programs"
-            parentId="org.eclipse.debug.ui.debugging"
-            id="org.rubypeople.rdt.debug.ui.debugging">
+            id="org.rubypeople.rdt.debug.ui.debugging"
+            parentId="org.eclipse.debug.ui.debugging">
       </context>
    </extension>
    <extension
@@ -214,20 +164,6 @@
             contextId="org.rubypeople.rdt.debug.ui.debugging">
       </modelContextBinding>
    </extension>
-<!--
-   <extension
-         point="org.eclipse.debug.ui.contextViewBindings">
-      <contextViewBinding
-            viewId="org.eclipse.jdt.debug.ui.DisplayView"
-            contextId="org.eclipse.jdt.debug.ui.debugging"
-            autoClose="false">
-      </contextViewBinding>
-      <contextViewBinding
-            viewId="org.eclipse.jdt.debug.ui.MonitorsView"
-            contextId="org.eclipse.jdt.debug.ui.debugging">
-      </contextViewBinding>
-   </extension>
-   -->
    <extension
          point="org.eclipse.ui.popupMenus">
       <viewerContribution
@@ -301,7 +237,6 @@
             </enablement>
          </action>
       </viewerContribution>
-      
    </extension>
    <extension
          point="org.eclipse.debug.ui.consoleLineTrackers">
@@ -311,36 +246,48 @@
             id="org.rubypeople.rdt.debug.ui.RubyConsoleTracker">
       </consoleLineTracker>
    </extension>
-      <extension
+   <extension
          point="org.eclipse.debug.ui.launchShortcuts">
       <shortcut
             label="%RubyApplicationShortcut.label"
-            icon="icons/full/ctool16/java_app.gif"            
-            modes="run, debug"
+            icon="icons/full/ctool16/java_app.gif"
             class="org.rubypeople.rdt.internal.debug.ui.launcher.RubyApplicationShortcut"
+            modes="run, debug"
             id="org.rubypeople.rdt.debug.ui.RubyShortcut">
          <contextualLaunch>
-           <enablement>
-             <with variable="selection">
-               <count value="1"/>
-               <iterate>
-                 <or>
-                   <test property="org.eclipse.debug.ui.matchesPattern" value="*.rb"/>
-                   <test property="org.eclipse.debug.ui.matchesPattern" value="*.rbw"/>
-                 </or>
-               </iterate>
-             </with>
-           </enablement>
-           <contextLabel
-         	  mode="run"
-         	  label="%ContextualRunRubyApplication.label"/>
-  		   <contextLabel
-  		 	  mode="debug"
-  		 	  label="%ContextualDebugRubyApplication.label"/>
-  		 </contextualLaunch>
+            <enablement>
+               <with
+                     variable="selection">
+                  <count
+                        value="1">
+                  </count>
+                  <iterate>
+                     <or>
+                        <test
+                              value="*.rb"
+                              property="org.eclipse.debug.ui.matchesPattern">
+                        </test>
+                        <test
+                              value="*.rbw"
+                              property="org.eclipse.debug.ui.matchesPattern">
+                        </test>
+                     </or>
+                  </iterate>
+               </with>
+            </enablement>
+            <contextLabel
+                  label="%ContextualRunRubyApplication.label"
+                  mode="run">
+            </contextLabel>
+            <contextLabel
+                  label="%ContextualDebugRubyApplication.label"
+                  mode="debug">
+            </contextLabel>
+         </contextualLaunch>
          <perspective
                id="org.rubypeople.rdt.ui.PerspectiveRuby">
          </perspective>
       </shortcut>
    </extension>
+
 </plugin>

@@ -3,7 +3,7 @@
 <plugin
    id="org.rubypeople.rdt.core"
    name="%Plugin.name"
-   version="0.4.1"
+   version="0.4.2"
    provider-name="RubyPeople, Inc."
    class="org.rubypeople.rdt.internal.core.RubyPlugin">
 
@@ -13,13 +13,12 @@
          <packages prefixes="org.rubypeople.rdt.core,org.rubypeople.rdt.internal.core,org.rubypeople.rdt.internal.formatter,org.rubypeople.rdt.internal.core.parser"/>
       </library>
    </runtime>
+
    <requires>
       <import plugin="org.eclipse.core.runtime.compatibility"/>
-<!-- <import plugin="org.eclipse.core.runtime"/> -->
       <import plugin="org.eclipse.core.resources"/>
       <import plugin="org.eclipse.team.core"/>
    </requires>
-
 
    <extension
          id="rubynature"

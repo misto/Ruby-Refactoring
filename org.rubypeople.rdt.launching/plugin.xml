@@ -3,7 +3,7 @@
 <plugin
    id="org.rubypeople.rdt.launching"
    name="%Plugin.name"
-   version="0.4.1"
+   version="0.4.2"
    provider-name="RubyPeople, Inc."
    class="org.rubypeople.rdt.internal.launching.RdtLaunchingPlugin">
 
@@ -12,6 +12,7 @@
          <export name="*"/>
       </library>
    </runtime>
+
    <requires>
       <import plugin="org.eclipse.core.resources"/>
       <import plugin="org.eclipse.debug.core"/>
@@ -20,7 +21,6 @@
       <import plugin="org.eclipse.core.runtime.compatibility"/>
    </requires>
 
-
    <extension
          point="org.eclipse.debug.core.launchConfigurationTypes">
       <launchConfigurationType
@@ -28,12 +28,6 @@
             delegate="org.rubypeople.rdt.internal.launching.RubyApplicationLaunchConfigurationDelegate"
             modes="run,debug"
             id="org.rubypeople.rdt.launching.LaunchConfigurationTypeRubyApplication">
-            <!--
-         <fileExtension
-               default="true"
-               extension="rb">
-         </fileExtension>
-         -->
       </launchConfigurationType>
    </extension>
 

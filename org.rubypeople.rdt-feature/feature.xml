@@ -2,7 +2,7 @@
 <feature
       id="org.rubypeople.rdt"
       label="Ruby Development Tools"
-      version="0.4.1"
+      version="0.4.2"
       provider-name="RubyPeople">
 
    <description>
@@ -137,42 +137,42 @@ This Agreement is governed by the laws of the State of New York and the intellec
          id="org.rubypeople.rdt.debug.core"
          download-size="0"
          install-size="0"
-         version="0.4.1"/>
+         version="0.4.2"/>
 
    <plugin
          id="org.rubypeople.rdt.debug.ui"
          download-size="0"
          install-size="0"
-         version="0.4.1"/>
+         version="0.4.2"/>
 
    <plugin
          id="org.rubypeople.rdt.launching"
          download-size="0"
          install-size="0"
-         version="0.4.1"/>
+         version="0.4.2"/>
 
    <plugin
          id="org.rubypeople.rdt.core"
          download-size="0"
          install-size="0"
-         version="0.4.1"/>
+         version="0.4.2"/>
 
    <plugin
          id="org.rubypeople.rdt.ui"
          download-size="0"
          install-size="0"
-         version="0.4.1"/>
+         version="0.4.2"/>
 
    <plugin
          id="org.rubypeople.rdt.doc.user"
          download-size="0"
          install-size="0"
-         version="0.4.1"/>
+         version="0.4.2"/>
 
    <plugin
          id="org.rubypeople.rdt"
          download-size="0"
          install-size="0"
-         version="0.4.1"/>
+         version="0.4.2"/>
 
 </feature>

@@ -3,7 +3,7 @@
 <plugin
    id="org.rubypeople.rdt.ui"
    name="%Plugin.name"
-   version="0.4.1"
+   version="0.4.2"
    provider-name="RubyPeople, Inc."
    class="org.rubypeople.rdt.internal.ui.RdtUiPlugin">
 
@@ -13,6 +13,7 @@
          <packages prefixes="org.rubypeople.rdt.internal.ui,org.rubypeople.rdt.ui"/>
       </library>
    </runtime>
+
    <requires>
       <import plugin="org.eclipse.ui.ide"/>
       <import plugin="org.eclipse.ui.views"/>
@@ -27,7 +28,6 @@
       <import plugin="org.rubypeople.rdt.core"/>
       <import plugin="org.eclipse.ui.workbench"/>
    </requires>
-
 
    <extension
          point="org.eclipse.ui.preferencePages">
@@ -131,23 +131,21 @@
          point="org.eclipse.ui.editors">
       <editor
             name="%EditorRubyFile.name"
-            icon="icons/full/ctool16/ruby_page.gif"
             extensions="%EditorRubyFile.extension"
-            contributorClass="org.rubypeople.rdt.internal.ui.rubyeditor.RubyEditorActionContributor"
+            icon="icons/full/ctool16/ruby_page.gif"
             class="org.rubypeople.rdt.internal.ui.rubyeditor.RubyEditor"
+            contributorClass="org.rubypeople.rdt.internal.ui.rubyeditor.RubyEditorActionContributor"
             id="org.rubypeople.rdt.ui.EditorRubyFile">
       </editor>
    </extension>
    <extension
          point="org.eclipse.ui.editors">
-         <!-- external editor does not need extensions, because I don't want to have it show up in the Open context
-              menu. The external editor can only be choosen from the RubySourceLocator -->
       <editor
             name="%ExternalEditorRubyFile.name"
-            extensions=""
             icon="icons/full/ctool16/ruby_page.gif"
-            class="org.rubypeople.rdt.internal.ui.rubyeditor.ExternalRubyEditor"
+            extensions=""
             contributorClass="org.rubypeople.rdt.internal.ui.rubyeditor.RubyEditorActionContributor"
+            class="org.rubypeople.rdt.internal.ui.rubyeditor.ExternalRubyEditor"
             id="org.rubypeople.rdt.ui.ExternalRubyEditor">
       </editor>
    </extension>
@@ -166,8 +164,8 @@
       </scope>
       <command
             name="%ActionDefinition.format.name"
-            category="org.rubypeople.rdt.ui.category.source"
             description="%ActionDefinition.format.description"
+            category="org.rubypeople.rdt.ui.category.source"
             id="org.rubypeople.rdt.ui.edit.text.ruby.format">
       </command>
       <keyBinding
@@ -178,8 +176,8 @@
       </keyBinding>
       <command
             name="%ActionDefinition.comment.name"
-            category="org.rubypeople.rdt.ui.category.source"
             description="%ActionDefinition.comment.description"
+            category="org.rubypeople.rdt.ui.category.source"
             id="org.rubypeople.rdt.ui.edit.text.ruby.comment">
       </command>
       <keyBinding
@@ -190,8 +188,8 @@
       </keyBinding>
       <command
             name="%ActionDefinition.uncomment.name"
-            category="org.rubypeople.rdt.ui.category.source"
             description="%ActionDefinition.uncomment.description"
+            category="org.rubypeople.rdt.ui.category.source"
             id="org.rubypeople.rdt.ui.edit.text.ruby.uncomment">
       </command>
       <keyBinding
@@ -202,8 +200,8 @@
       </keyBinding>
       <command
             name="%ActionDefinition.contentAssist.name"
-            category="org.rubypeople.rdt.ui.category.source"
             description="%ActionDefinition.contentAssist.description"
+            category="org.rubypeople.rdt.ui.category.source"
             id="org.rubypeople.rdt.ui.edit.text.ruby.content.assist.proposals">
       </command>
       <keyBinding
@@ -242,15 +240,15 @@
          <action
                definitionId="org.rubypeople.rdt.ui.edit.text.ruby.uncomment"
                label="%UncommentAction.label"
-               retarget="true"
                menubarPath="org.rubypeople.rdt.ui.ruby.menu/editGroup"
+               retarget="true"
                id="org.rubypeople.rdt.ui.actions.Uncomment">
          </action>
          <action
                definitionId="org.rubypeople.rdt.ui.edit.text.ruby.comment"
                label="%CommentAction.label"
-               retarget="true"
                menubarPath="org.rubypeople.rdt.ui.ruby.menu/editGroup"
+               retarget="true"
                id="org.rubypeople.rdt.ui.actions.Comment">
          </action>
       </actionSet>
@@ -275,20 +273,20 @@
    <extension
          point="org.eclipse.ui.editors.annotationTypes">
       <type
-            markerType="org.rubypeople.rdt.core.problem"
             super="org.eclipse.ui.workbench.texteditor.error"
+            markerType="org.rubypeople.rdt.core.problem"
             name="org.rubypeople.rdt.ui.error"
             markerSeverity="2">
       </type>
       <type
-            markerType="org.rubypeople.rdt.core.problem"
             super="org.eclipse.ui.workbench.texteditor.warning"
+            markerType="org.rubypeople.rdt.core.problem"
             name="org.rubypeople.rdt.ui.warning"
             markerSeverity="1">
       </type>
       <type
-            markerType="org.rubypeople.rdt.core.problem"
             super="org.eclipse.ui.workbench.texteditor.info"
+            markerType="org.rubypeople.rdt.core.problem"
             name="org.rubypeople.rdt.ui.info"
             markerSeverity="0">
       </type>
@@ -310,14 +308,7 @@
             symbolicIcon="info"
             annotationType="org.rubypeople.rdt.ui.info">
       </specification>
-      <!-- the following specification is overruled by org.eclipse.jdt.ui
-      <specification
-            annotationType="org.eclipse.debug.core.breakpoint"
-            icon="icons/full/obj16/brkp_obj.gif"
-            annotationImageProvider="org.rubypeople.rdt.internal.ui.rubyeditor.BreakpointImageProvider">      
-      </specification>
-      -->
-  </extension>   
+   </extension>
    <extension
          point="org.eclipse.ui.ide.resourceFilters">
       <filter
