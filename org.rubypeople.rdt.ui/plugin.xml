@@ -121,7 +121,7 @@
    <extension
          point="org.eclipse.ui.acceleratorSets">
       <acceleratorSet
-            scopeId="org.eclipse.ui.globalScope"
+            scopeId="org.eclipse.ui.textEditorScope"
             configurationId="org.eclipse.ui.defaultAcceleratorConfiguration">
          <accelerator
                key="Ctrl+Space"
@@ -136,6 +136,38 @@
                id="org.rubypeople.rdt.ui.edit.text.ruby.uncomment">
          </accelerator>
       </acceleratorSet>
+   </extension>
+   <extension
+         point="org.eclipse.ui.actionSets">
+      <actionSet
+            label="%RubyActionSet.label"
+            visible="false"
+            id="org.rubypeople.rdt.ui.rubyActionSet">
+         <menu
+               label="%Ruby.menu.label"
+               path="edit"
+               id="org.rubypeople.rdt.ui.ruby.menu">
+            <separator
+                  name="editGroup">
+            </separator>
+         </menu>
+         <action
+               definitionId="org.rubypeople.rdt.ui.edit.text.ruby.uncomment"
+               accelerator="Ctrl+Shift+\\"
+               label="%UncommentAction.label"
+               retarget="true"
+               menubarPath="org.rubypeople.rdt.ui.ruby.menu/editGroup"
+               id="org.rubypeople.rdt.ui.actions.Uncomment">
+         </action>
+         <action
+               definitionId="org.rubypeople.rdt.ui.edit.text.ruby.comment"
+               accelerator="Ctrl+Shift+/"
+               label="%CommentAction.label"
+               retarget="true"
+               menubarPath="org.rubypeople.rdt.ui.ruby.menu/editGroup"
+               id="org.rubypeople.rdt.ui.actions.Comment">
+         </action>
+      </actionSet>
    </extension>
 
 </plugin>
