@@ -38,23 +38,10 @@
 							left. Click the <emphasis>Add button</emphasis> to 
 							define the location of your ruby executable. A 
 							dialog opens where you can specify a name and path. 
-							Example settings are: name="ruby", 
-							path="/usr/bin".</para>
+							Example settings are: name="ruby 1.6.7", 
+							path="/usr/bin". The name can be chosen freely. The 
+							path must contain a file "ruby" or "rubyw.exe". </para>
 					</listitem>
-					<listitem>
-						<warning>Code Completion for classes in libraries is postponed to version 0.4.1</warning>
-						<para>If you want to use information from the standard 
-							ruby library for code completion, you can define 
-							the location of the standard library in the 
-							<emphasis>Library</emphasis> preference page. 
-							Click the <emphasis>Add Library</emphasis> Button 
-							to define the location of your ruby library. A 
-							dialog opens where you can specify a name and path. 
-							The name is just an identifier and the path 
-							specifies a directory, which will be recursively 
-							scanned for ruby files. Example settings are: 
-							name="ruby 1.6.8", path="/usr/lib/ruby/1.6"</para>
-					</listitem>					
 					<listitem>
 						<para> Leave the preferences by clicking on 
 							<emphasis>OK</emphasis>. </para>
@@ -67,19 +54,12 @@
 			<sect2>
 				<title>Prerequisites</title>
 				<para>If you can debug your ruby application depends on the 
-					version of the ruby interpreter you are using: </para>
-				<itemizedlist>
-					<listitem>
-						<para>Windows. Only 1.6.8 (mswin32) works. 1.6.7 
-							(mswin32) is not sufficient. 1.8.0 is not yet 
-							supported. Other distributions than mswin32 have 
-							not been tested. </para>
-					</listitem>
-					<listitem>
-						<para>Linux. 1.6.7 and 1.6.8 have been tested and work. 
-							1.8.0 is not yet supported. </para>
-					</listitem>
-				</itemizedlist>
+					version of the ruby interpreter you are using. Ruby 1.6.8 
+					works on both Linux and Windows, 1.8.0 works also on 
+					Windows. For further information see <ulink 
+					url="http://213.203.244.123/wiki/wiki.phtml#Prerequisites_for_the_debugger"></ulink> 
+					</para>
+										
 			</sect2>
 			<sect2 id="debuggingYourApplication">
 				<title>Debugging your Application</title>
@@ -390,6 +370,25 @@ persons = Hash[ Person.new('Lisa') =&gt; Person.new('Marge'),
 				</itemizedlist>
 			</sect2>
 		</sect1>
+		<sect1 id="RubyResourcesView">
+			<title>Ruby Resources View</title>
+			<para>The Ruby Resources View provides the same features as the 
+				regular navigator does (e.g. optional linking between editor 
+				and Ruby Resources View, customizable Filtering, collapsing the 
+				tree, context menu). In addition to that, there is a toggle to 
+				show only ruby resources (.rb, .rbw and .cgi files).</para>
+			<para> As for the regular navigator, there can also be a filter 
+				defined for the Ruby Resources View. Per default there are two 
+				entries *.class and .* are in the filter list. This can be 
+				customized. For example if you are sick of xml files, you can 
+				add the following declaration to a plugin descriptor, e.g. to 
+				ECLIPSE_HOME/plugins/org.rubypeople.rdt.ui/plugin.xml: <code> 
+				&lt;extension point="org.eclipse.ui.ide.resourceFilters"&gt; 
+				&lt;filter selected="false" pattern="*.xml"&gt; &lt;/filter&gt; 
+				&lt;/extension&gt; </code> <figure> <title>Ruby Resources 
+				View</title> <graphic fileref="../images/rubyResources.png" 
+				format="PNG"/> </figure> </para>
+		</sect1>
 		<sect1 id="RubyEditor">
 			<title>Ruby Editor</title>
 			<para>The Ruby editor provides specialized features for editing 
@@ -412,7 +411,6 @@ persons = Hash[ Person.new('Lisa') =&gt; Person.new('Marge'),
 				other views.</para>
 			<sect2 id="CodeCompletion">
 				<title>Code completion</title>
-				<warning>Code Completion for classes in libraries is postponed to version 0.4.1</warning>
 				<para> If you press Ctrl+space in the ruby editor, a list with 
 					information from the current ruby files is displayed. This 
 					information includes classes, methods and variables. In 
@@ -428,8 +426,36 @@ persons = Hash[ Person.new('Lisa') =&gt; Person.new('Marge'),
 					<para>The code formatter formats either the whole file or 
 						the current selection, if there is one. In the latter 
 						case all the lines, which are covered from the 
-						selection, are formatted. </para>
+						selection, are formatted. The code formatter does not 
+						insert new lines but only indents existing lines. Both
+						spaces and tabs can be used for indentation. If spaces 
+						are used, the editor also transforms entered tab 
+						characters to spaces. The default are two spaces per 
+						tab.</para>
 				</sect2>
+		</sect1>
+		<sect1 id ="ConsoleView">
+			<title>Console View</title>
+			<para>The console view contains the output of a program. If the 
+				output of a ruby program contains a stack trace, every stack 
+				frame is clickable: When you place the mouse over a line in a 
+				stack trace, the pointer changes to the hyperlink symbol and 
+				clicking the hyperlink opens the associated file and moves to 
+				the appropriate line. If the file does not exist in the 
+				workspace, the Ruby External Editor is opened, which displays 
+				the file content read-only. <figure> <title>Console stack Trace 
+				with hyperlinks</title> <graphic 
+				fileref="../images/clickableStackTrace.png" format="PNG"/> 
+				</figure> </para>
+		</sect1>
+		<sect1 id="Outline View">
+			<title>Outline View</title>
+			<para>
+			The outline view displays the structure of the currently selected editor.
+			<figure> <title>Outline View</title> 
+			<graphic fileref="../images/outline.png" format="PNG"/> 
+			</figure>
+			</para>			
 		</sect1>
 	</chapter>
 	<chapter id="TipsNTricks">
