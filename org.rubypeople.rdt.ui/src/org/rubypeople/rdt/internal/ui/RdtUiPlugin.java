@@ -17,7 +17,6 @@ import org.rubypeople.rdt.internal.core.RubyPlugin;
 import org.rubypeople.rdt.internal.formatter.CodeFormatter;
 import org.rubypeople.rdt.internal.ui.text.RubyColorConstants;
 import org.rubypeople.rdt.internal.ui.text.RubyTextTools;
-import org.rubypeople.rdt.internal.ui.text.ruby.RubyProjectInformationProvider;
 import org.rubypeople.rdt.ui.PreferenceConstants;
 
 public class RdtUiPlugin extends AbstractUIPlugin implements RubyColorConstants {
@@ -43,9 +42,6 @@ public class RdtUiPlugin extends AbstractUIPlugin implements RubyColorConstants 
 		// immediately updated
 		// within the ruby editors.
 		textTools = new RubyTextTools();
-		// Call the method to force it to build the library model when the
-		// plugin is loaded
-		// RubyProjectInformationProvider.instance().getLibraryClassesAndModules();
 	}
 
 	public static RdtUiPlugin getDefault() {

@@ -29,6 +29,12 @@ public class TC_RubyViewerFilter extends TestCase {
 		file = project.getFile("TCRubyViewerFilterFile.rb");
 		assertTrue(filter.select(null, null, file));
 		
+		file = project.getFile("TCRubyViewerFilterFile.rbw");
+		assertTrue(filter.select(null, null, file));
+		
+		file = project.getFile("TCRubyViewerFilterFile.cgi");
+		assertTrue(filter.select(null, null, file));
+		
 		IFolder folder = project.getFolder("TCRubyViewerFilterFolder");
 		assertTrue(filter.select(null, null, folder));
 	}

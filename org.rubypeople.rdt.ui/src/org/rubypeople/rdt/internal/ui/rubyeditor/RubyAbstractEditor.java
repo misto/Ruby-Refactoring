@@ -127,17 +127,6 @@ public class RubyAbstractEditor extends ExtendedTextEditor implements IReconcili
 		if (strategy instanceof RubyAutoIndentStrategy) {
 			((RubyAutoIndentStrategy) strategy).reconciled();
 		}
-
-		// TODO Do we need this synchronize code?
-		//		Shell shell = getSite().getShell();
-		//		if (shell != null && !shell.isDisposed()) {
-		//			shell.getDisplay().asyncExec(new Runnable() {
-		//
-		//				public void run() {
-		//					synchronize(true);
-		//				}
-		//			});
-		//		}
 	}
 
 	/**

@@ -47,8 +47,13 @@ public class RubyCore {
 	}
 
 	public static RubyFile create(IFile aFile) {
-		if (RubyFile.EXTENSION.equalsIgnoreCase(aFile.getFileExtension()))
-			return new RubyFile(aFile);
+		for (int i = 0; i < RubyFile.EXTENSIONS.length; i++) {
+			if (RubyFile.EXTENSIONS[i].equalsIgnoreCase(aFile.getFileExtension()))
+				return new RubyFile(aFile);
+		}
+		
+		//if (RubyFile.EXTENSION.equalsIgnoreCase(aFile.getFileExtension()))
+		//	return new RubyFile(aFile);
 
 		return null;
 	}
