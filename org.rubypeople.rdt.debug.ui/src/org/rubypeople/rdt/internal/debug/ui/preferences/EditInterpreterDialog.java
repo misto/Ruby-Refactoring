@@ -97,9 +97,10 @@ public class EditInterpreterDialog extends StatusDialog {
 	protected IStatus validateInterpreterLocationText() {
 		File path = new File(interpreterLocationText.getText());
 		if (path.exists()) {
-			File rubyw = new File(path, "bin" + File.separator + "rubyw"); //$NON-NLS-1$ //$NON-NLS-2$
-			File rubyw_exe = new File(path, "bin" + File.separator + "rubyw.exe"); //$NON-NLS-1$ //$NON-NLS-2$
-			if (rubyw.isFile() || rubyw_exe.isFile())
+			File ruby = new File(path, "ruby"); //$NON-NLS-1$ //$NON-NLS-2$
+			File rubyw = new File(path, "rubyw"); //$NON-NLS-1$ //$NON-NLS-2$
+			File rubyw_exe = new File(path, "rubyw.exe"); //$NON-NLS-1$ //$NON-NLS-2$
+			if (ruby.isFile() || rubyw.isFile() || rubyw_exe.isFile())
 				return new Status(IStatus.OK, RdtDebugUiPlugin.PLUGIN_ID, 0, "", null); //$NON-NLS-1$
 		}
 

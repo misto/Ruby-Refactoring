@@ -11,13 +11,16 @@ import org.eclipse.jface.text.contentassist.IContentAssistProcessor;
 import org.eclipse.jface.text.contentassist.IContextInformation;
 import org.eclipse.jface.text.contentassist.IContextInformationPresenter;
 import org.eclipse.jface.text.contentassist.IContextInformationValidator;
+import org.rubypeople.rdt.internal.ui.text.RubyTextTools;
 
 public class RubyCompletionProcessor implements IContentAssistProcessor {
 	public static String[] proposals;
+	protected RubyTextTools textTools;
 	protected IContextInformationValidator contextInformationValidator = new RubyContextInformationValidator();
 
-	public RubyCompletionProcessor() {
+	public RubyCompletionProcessor(RubyTextTools theTextTools) {
 		super();
+		textTools = theTextTools;
 	}
 
 	public ICompletionProposal[] computeCompletionProposals(ITextViewer viewer, int documentOffset) {
@@ -32,7 +35,7 @@ public class RubyCompletionProcessor implements IContentAssistProcessor {
 
 	protected String[] getDefaultProposals() {
 		if (proposals == null) {
-			proposals = new String[] { "class", "def", "end" };
+			proposals = textTools.getKeyWords();
 		}
 
 		return proposals;

@@ -2,6 +2,7 @@ package org.rubypeople.rdt.internal.launching;
 
 import java.io.File;
 
+import org.eclipse.core.internal.resources.OS;
 import org.eclipse.core.runtime.IPath;
 
 public class RubyInterpreter {
@@ -32,7 +33,14 @@ public class RubyInterpreter {
 	}
 	
 	public String getCommand() {
-		return installLocation.toOSString() + File.separator + "bin" + File.separator + "rubyw.exe";
+		String directory = installLocation.toOSString() + File.separator;
+		if (new File(directory + "rubyw.exe").isFile())
+			return directory + "rubyw.exe";
+
+		if (new File(directory, "ruby").isFile())
+			return directory + "ruby";
+			
+		return null;
 	}
 	
 	public boolean equals(Object other) {

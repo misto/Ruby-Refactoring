@@ -11,15 +11,14 @@ import org.eclipse.jface.text.rules.Token;
 import org.eclipse.swt.SWT;
 import org.rubypeople.rdt.internal.ui.RdtUiPlugin;
 import org.rubypeople.rdt.internal.ui.text.RubyColorProvider;
+import org.rubypeople.rdt.internal.ui.text.RubyTextTools;
 
 public abstract class AbstractRubyScanner extends BufferedRuleBasedScanner {
-	protected RubyColorProvider colorProvider;
-	protected IPreferenceStore prefs;
+	protected RubyTextTools textTools;
 
-	public AbstractRubyScanner(RubyColorProvider aColorProvider, IPreferenceStore thePrefs) {
+	public AbstractRubyScanner(RubyTextTools theTextTools) {
 		super();
-		colorProvider = aColorProvider;
-		prefs = thePrefs;
+		textTools = theTextTools;
 	}
 
 	protected void initializeRules() {
@@ -38,8 +37,8 @@ public abstract class AbstractRubyScanner extends BufferedRuleBasedScanner {
 	}
 
 	protected IToken getToken(String colorKey) {
-		boolean bold = prefs.getBoolean(colorKey + "_bold");
-		return new Token(new TextAttribute(colorProvider.getColor(colorKey), null, bold ? SWT.BOLD : SWT.NORMAL));
+		boolean bold = textTools.getPreferenceStore().getBoolean(colorKey + "_bold");
+		return new Token(new TextAttribute(textTools.getColorProvider().getColor(colorKey), null, bold ? SWT.BOLD : SWT.NORMAL));
 	}
 
 }

@@ -18,6 +18,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 import org.rubypeople.rdt.internal.debug.ui.RdtDebugUiMessages;
+import org.rubypeople.rdt.internal.debug.ui.RdtDebugUiPlugin;
 import org.rubypeople.rdt.internal.launching.RubyLaunchConfigurationAttribute;
 import org.rubypeople.rdt.internal.ui.utils.DirectorySelector;
 
@@ -81,7 +82,7 @@ public class RubyArgumentsTab extends AbstractLaunchConfigurationTab {
 	}
 
 	protected String getDefaultWorkingDir() {
-		return System.getProperty("user.dir");
+		return RdtDebugUiPlugin.getWorkspace().getRoot().getLocation().toString();
 	}
 
 	public void initializeFrom(ILaunchConfiguration configuration) {
