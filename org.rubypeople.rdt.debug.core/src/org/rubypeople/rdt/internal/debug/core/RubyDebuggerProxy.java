@@ -59,6 +59,10 @@ public class RubyDebuggerProxy {
 	}
 
 	public void stop() {
+        if (rubyLoop == null) {
+            // only in tests, where no real connection is established
+        	return;   
+        }
 		rubyLoop.setShouldStop();
 		rubyLoop.interrupt();
 	}
