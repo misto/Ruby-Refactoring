@@ -16,6 +16,7 @@ import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
@@ -31,6 +32,7 @@ import org.rubypeople.rdt.internal.core.parser.ParseException;
 import org.rubypeople.rdt.internal.core.parser.RubyClass;
 import org.rubypeople.rdt.internal.core.parser.RubyClassVariable;
 import org.rubypeople.rdt.internal.core.parser.RubyElement;
+import org.rubypeople.rdt.internal.core.parser.RubyInstanceVariable;
 import org.rubypeople.rdt.internal.core.parser.RubyMethod;
 import org.rubypeople.rdt.internal.core.parser.RubyModule;
 import org.rubypeople.rdt.internal.core.parser.RubyParser;
@@ -60,7 +62,7 @@ public class RubyProjectInformationProvider {
 		return getRubyElements(element.getElements());
 	}
 
-	public List getLibraryClasses() {
+	public List getLibraryClassesAndModules() {
 		List classes = new ArrayList();
 		checkLibrary();
 		for (Iterator iter = library.iterator(); iter.hasNext();) {
@@ -68,12 +70,12 @@ public class RubyProjectInformationProvider {
 			Object[] elements = script.getElements();
 			for (int i = 0; i < elements.length; i++) {
 				RubyElement element = (RubyElement) elements[i];
-				if (element instanceof RubyClass) {
+				if ((element instanceof RubyClass) || (element instanceof RubyModule)) {
 					classes.add(element.getName());
 				}
 			}
 		}
-
+		Collections.sort(classes);
 		return classes;
 	}
 
@@ -273,11 +275,11 @@ public class RubyProjectInformationProvider {
 		List additions = new ArrayList();
 		for (int i = 0; i < elements.length; i++) {
 			RubyElement elem = (RubyElement) elements[i];
-			if (RubyMethod.class.equals(elem.getClass()) || RubyClassVariable.class.equals(elem.getClass())) {
+			if (RubyMethod.class.equals(elem.getClass()) || RubyClassVariable.class.equals(elem.getClass()) || RubyInstanceVariable.class.equals(elem.getClass())) {
 				additions.add(elem.getName());
 			}
 			if (RubyClass.class.equals(elem.getClass()) || RubyModule.class.equals(elem.getClass())) {
-				additions.add(elem.toString());
+				additions.add(elem.getName());
 				additions.addAll(getRubyElements(elem.getElements()));
 			}
 
