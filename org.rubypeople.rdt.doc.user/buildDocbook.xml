@@ -4,8 +4,8 @@
 	
 
 	<target name="init">
-		<echo message="Using docbook.root=${docbook.root}"/>
 		<property name="docbook.root" value="../../docbook"/>
+		<!-- docbook.root might also be set from outside -->
 		<echo message="Using docbook.root=${docbook.root}"/>
         <property name="docbook.xsl.dir" value="${docbook.root}/docbook-xsl-1.64.1"/>
         <property name="docbook.dtd.dir" value="${docbook.root}/dtd"/>		
@@ -17,11 +17,17 @@
 	    <delete>
 	      <fileset dir="html" includes="*.html"/>
 	    </delete>
+	    <delete file="customizationLayerCopy.xsl"/>
 	</target>
 	
-	<target name="html" depends="init,clean.docbook.generated">
+	<target name="replaceVarInCustomizationLayer">
+	   <copy file="customizationLayer.xsl" tofile="customizationLayerCopy.xsl"/>
+	   <replace file="customizationLayerCopy.xsl" token="@@DOCBOOKROOT@@" value="${docbook.root}"/>
+	</target>
+	
+	<target name="html" depends="init,clean.docbook.generated,replaceVarInCustomizationLayer">
 	 <!--${docbook.xsl.dir}/eclipse/eclipse.xsl -->
-      <style includes="docbook.xml" basedir="." destdir="."  extension=".done" style="customizationLayer.xsl">
+      <style includes="docbook.xml" basedir="." destdir="."  extension=".done" style="customizationLayerCopy.xsl">
         <param name="base.dir" expression="html/"/>
         <param name="manifest.in.base.dir" expression="0"/>
         <param name="eclipse.plugin.id" expression="org.rubypeople.rdt.doc.user"/>
