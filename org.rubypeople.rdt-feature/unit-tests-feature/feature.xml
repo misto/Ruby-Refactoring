@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <feature
-      id="org.rubypeople.rdttestsfeature"
+      id="org.rubypeople.rdt-tests"
       label="Ruby Development Tools Unit Tests"
       version="0.5.0"
       provider-name="RubyPeople">
