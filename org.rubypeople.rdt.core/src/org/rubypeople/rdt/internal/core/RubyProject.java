@@ -66,7 +66,7 @@ public class RubyProject implements IProjectNature {
 		}
 	}
 
-	protected List getLoadPathEntries() {
+	public List getLoadPathEntries() {
 		if (loadPathEntries == null) {
 			loadLoadPathEntries();
 		}
@@ -156,7 +156,7 @@ public class RubyProject implements IProjectNature {
 		}
 	}
 
-	public String getLoadPathXML() {
+	protected String getLoadPathXML() {
 		StringBuffer buffer = new StringBuffer();
 		buffer.append("<?xml version=\"1.0\" encoding=\"UTF-8\"?><loadpath>");
 

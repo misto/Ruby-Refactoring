@@ -3,7 +3,7 @@ package org.rubypeople.rdt.internal.debug.ui.launcher;
 import java.lang.reflect.InvocationTargetException;
 
 import org.eclipse.core.resources.IFile;
-import org.eclipse.core.runtime.IPath;
+import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.debug.core.DebugPlugin;
@@ -16,10 +16,12 @@ import org.eclipse.debug.core.model.IStackFrame;
 import org.eclipse.jface.dialogs.ProgressMonitorDialog;
 import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.ui.IEditorInput;
 import org.rubypeople.rdt.internal.debug.ui.RdtDebugUiPlugin;
 import org.rubypeople.rdt.launching.InterpreterRunner;
 import org.rubypeople.rdt.launching.InterpreterRunnerConfiguration;
 import org.rubypeople.rdt.launching.InterpreterRunnerResult;
+import sun.security.krb5.internal.i;
 
 public class RubyApplicationLauncherDelegate implements ILauncherDelegate {
 
@@ -93,6 +95,11 @@ public class RubyApplicationLauncherDelegate implements ILauncherDelegate {
 	protected IFile getRubyFile(Object[] selectedElements) {
 		for (int i = 0; i < selectedElements.length; i++) {
 			Object selected = selectedElements[i];
+			if (selected instanceof IEditorInput) {
+				IResource file = (IResource) ((IEditorInput)selected).getAdapter(IResource.class);
+				selected = file;
+			}
+
 			if (selected instanceof IFile) {
 				IFile fileSelected = (IFile) selected;
 				if ("rb".equals(fileSelected.getFileExtension()))

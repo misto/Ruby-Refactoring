@@ -15,12 +15,29 @@ public class RubyCore {
 
 		for (int i = 0; i < workspaceProjects.length; i++) {
 			IProject iProject = workspaceProjects[i];
-			try {
-				if (iProject.hasNature(RubyPlugin.RUBY_NATURE_ID))
-					rubyProjectsList.add(iProject);
-			} catch(CoreException e) {}
+			if (isRubyProject(iProject))
+				rubyProjectsList.add(iProject);
 		}
+
 		IProject[] rubyProjects = new IProject[rubyProjectsList.size()];
 		return (IProject[]) rubyProjectsList.toArray(rubyProjects);
+	}
+
+	public static RubyProject getRubyProject(String name) {
+		IProject aProject = RubyPlugin.getDefault().getWorkspace().getRoot().getProject(name);
+		if (isRubyProject(aProject)) {
+			RubyProject theRubyProject = new RubyProject();
+			theRubyProject.setProject(aProject);
+			return theRubyProject;
+		}
+		return null;
+	}
+
+	public static boolean isRubyProject(IProject aProject) {
+		try {
+			return aProject.hasNature(RubyPlugin.RUBY_NATURE_ID);
+		} catch (CoreException e) {}
+
+		return false;
 	}
 }
