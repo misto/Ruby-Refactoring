@@ -8,7 +8,6 @@ package org.rubypeople.rdt.internal.core.parser;
 
 import junit.framework.TestCase;
 
-import org.rubypeople.rdt.internal.core.parser.ast.RubyClass;
 import org.rubypeople.rdt.internal.core.parser.ast.RubyElement;
 
 /**
@@ -21,7 +20,7 @@ public class TC_RubyParserStack extends TestCase {
 
 	public void testPushAndPeek() throws Exception {
 		RubyParserStack stack = new RubyParserStack();
-		RubyElement element = new RubyElement("fakeName", new Position(1, 1));
+		RubyElement element = new RubyElement(RubyElement.METHOD, "fakeName", 1, 1);
 		stack.push(element);
 		assertEquals(element, stack.peek());
 	}
@@ -38,7 +37,7 @@ public class TC_RubyParserStack extends TestCase {
 
 	public void testPushAndClose() throws Exception {
 		RubyParserStack stack = new RubyParserStack();
-		RubyElement element = new RubyElement("fakeName", new Position(1, 1));
+		RubyElement element = new RubyElement(RubyElement.METHOD, "fakeName", 1, 1);
 		stack.push(element);
 		stack.closeLastOpenElement(2,3);
 		assertEquals(new Position(2, 3), element.getEnd());
@@ -56,7 +55,7 @@ public class TC_RubyParserStack extends TestCase {
 
 	public void testPushAndClear() throws Exception {
 		RubyParserStack stack = new RubyParserStack();
-		RubyElement element = new RubyElement("fakeName", new Position(1, 1));
+		RubyElement element = new RubyElement(RubyElement.METHOD, "fakeName", 1, 1);
 		stack.push(element);
 		assertEquals(1, stack.size());
 		stack.clear();
@@ -65,7 +64,7 @@ public class TC_RubyParserStack extends TestCase {
 
 	public void testFindParentClassOrModuleAtRoot() {
 		RubyParserStack stack = new RubyParserStack();
-		RubyClass element = new RubyClass("fakeName", 1, 1);
+		RubyElement element = new RubyElement(RubyElement.CLASS, "fakeName", 1, 1);
 		stack.push(element);
 		assertEquals(1, stack.size());
 		assertEquals(element, stack.findParentClassOrModule());
@@ -73,8 +72,8 @@ public class TC_RubyParserStack extends TestCase {
 
 	public void testFindParentClassOrModuleAtEnd() {
 		RubyParserStack stack = new RubyParserStack();
-		stack.push(new RubyElement("fakeName", new Position(1, 1)));
-		RubyClass element = new RubyClass("fakeName", 1, 1);
+		stack.push(new RubyElement(RubyElement.METHOD, "fakeName", 1, 1));
+		RubyElement element = new RubyElement(RubyElement.CLASS, "fakeName", 1, 1);
 		stack.push(element);
 		assertEquals(2, stack.size());
 		assertEquals(element, stack.findParentClassOrModule());

@@ -89,8 +89,7 @@ public class RubyParserStack {
 	public RubyElement findParentClassOrModule() {
 		for (int i = elements.size() - 1; i >= 0; i--) {
 			RubyElement element = (RubyElement) elements.get(i);
-
-			if ((element instanceof RubyModule) || (element instanceof RubyClass)) { return element; }
+			if (element.isType(RubyElement.MODULE) || element.isType(RubyElement.CLASS)) { return element; }
 		}
 		return null;
 	}
