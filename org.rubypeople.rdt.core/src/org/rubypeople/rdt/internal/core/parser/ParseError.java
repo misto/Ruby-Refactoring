@@ -37,7 +37,7 @@ public class ParseError {
 
 	public static final int WARNING = IMarker.SEVERITY_WARNING;
 	public static final int INFO = IMarker.SEVERITY_INFO;
-	public static final int ERROR = IMarker.SEVERITY_INFO;
+	public static final int ERROR = IMarker.SEVERITY_ERROR;
 
 	/**
 	 * @param error
