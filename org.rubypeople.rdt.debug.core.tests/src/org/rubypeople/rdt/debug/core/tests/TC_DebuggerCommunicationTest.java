@@ -7,6 +7,7 @@ import java.io.PrintWriter;
 import java.net.Socket;
 
 import junit.framework.TestCase;
+import junit.framework.TestSuite;
 
 import org.rubypeople.rdt.internal.debug.core.ExceptionSuspensionPoint;
 import org.rubypeople.rdt.internal.debug.core.StepSuspensionPoint;
@@ -28,9 +29,11 @@ public class TC_DebuggerCommunicationTest extends TestCase {
 	public static TestSuite suite() {
 
 		TestSuite suite = new TestSuite();
-		//suite.addTest(new TC_DebuggerCommunicationTest("testThreads"));
+		//suite.addTest(new TC_DebuggerCommunicationTest("testConstants"));
+		//suite.addTest(new TC_DebuggerCommunicationTest("testConstantDefinedInBothClassAndSuperclass"));
+		
 		//suite.addTest(new TC_DebuggerCommunicationTest("testVariablesInFrames"));
-		//suite.addTest(new TC_DebuggerCommunicationTest("testBreakpoint"));
+		suite.addTest(new TC_DebuggerCommunicationTest("testBreakpoint"));
 		//suite.addTest(new TC_DebuggerCommunicationTest("testFramesWhenThreadSpawned"));
 		//suite.addTest(new TC_DebuggerCommunicationTest("testThreadIdsAndResume"));
 		//suite.addTest(new TC_DebuggerCommunicationTest("testThreadsAndFrames"));		
@@ -42,7 +45,7 @@ public class TC_DebuggerCommunicationTest extends TestCase {
 		//suite.addTest(new TC_DebuggerCommunicationTest("testException"));
 		//suite.addTest(new TC_DebuggerCommunicationTest("testNameError"));
 		//suite.addTest(new TC_DebuggerCommunicationTest("testVariablesInObject"));	
-		suite.addTest(new TC_DebuggerCommunicationTest("testStaticVariables"));		
+		//suite.addTest(new TC_DebuggerCommunicationTest("testStaticVariables"));		
 		//suite.addTest(new TC_DebuggerCommunicationTest("testSingletonStaticVariables"));							
 		//suite.addTest(new TC_DebuggerCommunicationTest("testVariableString"));	
 
@@ -153,6 +156,7 @@ public class TC_DebuggerCommunicationTest extends TestCase {
 	}
 
 	private void writeFile(String name, String[] content) throws Exception {
+		String fileName;
 		PrintWriter writer = new PrintWriter(new FileOutputStream(getTmpDir() + name));
 		for (int i = 0; i < content.length; i++) {
 			writer.println(content[i]);
@@ -163,6 +167,7 @@ public class TC_DebuggerCommunicationTest extends TestCase {
 	private void createSocket(String[] lines) throws Exception {
 		writeFile("test.rb", lines);
 		startRubyProcess();
+		Thread.sleep(500) ;
 		socket = new Socket("localhost", 1098);
 		multiReaderStrategy = new MultiReaderStrategy(getXpp(socket));
 		out = new PrintWriter(socket.getOutputStream(), true);
@@ -422,6 +427,42 @@ public class TC_DebuggerCommunicationTest extends TestCase {
 		assertTrue(variables[0].isStatic()) ;
 		assertTrue(!variables[0].isLocal()) ;
 		assertTrue(!variables[0].isInstance()) ;				
+		assertTrue(!variables[0].getValue().hasVariables());
+		out.println("cont");
+	}
+
+
+	public void testConstants() throws Exception {
+		createSocket(new String[] { "class Test", "TestConstant=5", "end", "test=Test.new()", "puts 'a'" });
+		runTo("test.rb", 5);
+		out.println("v i test");
+		RubyVariable[] variables = getVariableReader().readVariables(createStackFrame());
+		assertEquals(1, variables.length);
+		assertEquals("TestConstant", variables[0].getName());
+		assertEquals("5", variables[0].getValue().getValueString());
+		assertEquals("Fixnum", variables[0].getValue().getReferenceTypeName());
+		assertTrue(variables[0].isConstant()) ;
+		assertTrue(!variables[0].isStatic()) ;
+		assertTrue(!variables[0].isLocal()) ;
+		assertTrue(!variables[0].isInstance()) ;						
+		assertTrue(!variables[0].getValue().hasVariables());
+		out.println("cont");
+	}
+
+
+	public void testConstantDefinedInBothClassAndSuperclass() throws Exception {
+		createSocket(new String[] { "class A", "TestConstant=5", "TestConstant2=2", "end", "class B < A", "TestConstant=6", "end", "b=B.new()", "puts 'a'" });
+		runTo("test.rb", 9);
+		out.println("v i b");
+		RubyVariable[] variables = getVariableReader().readVariables(createStackFrame());
+		assertEquals(1, variables.length);
+		assertEquals("TestConstant", variables[0].getName());
+		assertEquals("6", variables[0].getValue().getValueString());
+		assertEquals("Fixnum", variables[0].getValue().getReferenceTypeName());
+		assertTrue(variables[0].isConstant()) ;
+		assertTrue(!variables[0].isStatic()) ;
+		assertTrue(!variables[0].isLocal()) ;
+		assertTrue(!variables[0].isInstance()) ;						
 		assertTrue(!variables[0].getValue().hasVariables());
 		out.println("cont");
 	}
