@@ -24,9 +24,6 @@ import org.rubypeople.rdt.internal.debug.core.model.RubyVariable;
 
 public class DebugModelPresentation extends LabelProvider implements IDebugModelPresentation {
 
-	/**
-	 * @see IDebugModelPresentation#getText(Object)
-	 */
 	public String getText(Object item) {
 		if (item instanceof RubyLineBreakpoint) {
 			RubyLineBreakpoint breakpoint = (RubyLineBreakpoint) item;
@@ -41,62 +38,30 @@ public class DebugModelPresentation extends LabelProvider implements IDebugModel
 			return ((RubyVariable) item).toString() ;	
 		}
 		return DebugUIPlugin.getDefaultLabelProvider().getText(item) ;
-/*		else if (item instanceof RubyStackFrame) {
-			return ((RubyStackFrame) item).getName() ;
-		}
-		else if (item instanceof RubyThread) {
-			return ((RubyThread) item).getName() ;
-		}
-		else if (item instanceof RubyVariable) {
-			return ((RubyVariable) item).toString() ;	
-		}
-		return "type: " + item.getClass().getName(); */
 	}
 
 	protected IBreakpoint getBreakpoint(IMarker marker) {
 		return DebugPlugin.getDefault().getBreakpointManager().getBreakpoint(marker);
 	}
 
-	/**
-	 * @see org.eclipse.debug.ui.IDebugModelPresentation#computeDetail(IValue, IValueDetailListener)
-	 */
 	public void computeDetail(IValue value, IValueDetailListener listener) {
 		System.out.println("computeDetail.");
 	}
 
-	/**
-	 * @see org.eclipse.debug.ui.IDebugModelPresentation#setAttribute(String, Object)
-	 */
 	public void setAttribute(String attribute, Object value) {
 		System.out.println("setAttribute.");
 	}
 
-	/**
-	 * @see org.eclipse.debug.ui.ISourcePresentation#getEditorId(IEditorInput, Object)
-	 */
 	public String getEditorId(IEditorInput input, Object element) {
 		System.out.println("getEditorId.");
 		return "X";
 	}
 
-	/**
-	 * @see org.eclipse.debug.ui.ISourcePresentation#getEditorInput(Object)
-	 */
 	public IEditorInput getEditorInput(Object element) {
 		return null;
 	}
 
-	/**
-	 * @see org.eclipse.jface.viewers.ILabelProvider#getImage(Object)
-	 */
-	/*public Image getImage(Object arg0) {
-		return WorkbenchImages.getImageDescriptor(ISharedImages.IMG_OBJ_FOLDER).createImage();
-	}*/
 	public Image getImage(Object item) {
-		/*try {*/
-		/*if (item instanceof IJavaVariable) {
-			return getVariableImage((IAdaptable) item);
-		}*/
 		ImageDescriptor descriptor;
 		if (item instanceof IMarker || item instanceof RubyLineBreakpoint) {
 			descriptor = DebugUITools.getImageDescriptor(IDebugUIConstants.IMG_OBJS_BREAKPOINT);
@@ -114,18 +79,6 @@ public class DebugModelPresentation extends LabelProvider implements IDebugModel
 		}
 		// TODO: save image instead of creating a new one every time.
 		return descriptor.createImage();
-		/*
-		if (item instanceof IJavaStackFrame || item instanceof IJavaThread || item instanceof IJavaDebugTarget) {
-			return getDebugElementImage(item);
-		}
-		
-		} catch (CoreException e) {
-		if (!(e.getStatus().getException() instanceof VMDisconnectedException)) {
-			JDIDebugUIPlugin.log(e);
-		}
-		}
-		return null;
-		*/
 	}
 
 }
