@@ -8,7 +8,7 @@
  * Contributors:
  *     IBM Corporation - initial API and implementation
  *******************************************************************************/
-package org.rubypeople.rdt.ui.text.java.hover;
+package org.rubypeople.rdt.ui.text.ruby.hover;
 
 import org.eclipse.jface.text.ITextHover;
 import org.eclipse.ui.IEditorPart;

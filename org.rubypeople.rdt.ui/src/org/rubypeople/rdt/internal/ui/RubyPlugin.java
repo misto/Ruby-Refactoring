@@ -8,6 +8,8 @@ import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.preference.PreferenceConverter;
+import org.eclipse.jface.text.templates.ContextTypeRegistry;
+import org.eclipse.jface.text.templates.persistence.TemplateStore;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.swt.graphics.RGB;
@@ -30,6 +32,7 @@ import org.rubypeople.rdt.internal.ui.preferences.MockupPreferenceStore;
 import org.rubypeople.rdt.internal.ui.rubyeditor.DocumentAdapter;
 import org.rubypeople.rdt.internal.ui.rubyeditor.RubyDocumentProvider;
 import org.rubypeople.rdt.internal.ui.rubyeditor.WorkingCopyManager;
+import org.rubypeople.rdt.internal.ui.rubyeditor.templates.RubyTemplateAccess;
 import org.rubypeople.rdt.internal.ui.text.IRubyColorConstants;
 import org.rubypeople.rdt.internal.ui.text.PreferencesAdapter;
 import org.rubypeople.rdt.internal.ui.text.RubyTextTools;
@@ -323,6 +326,26 @@ public class RubyPlugin extends AbstractUIPlugin implements IRubyColorConstants 
 
 	public static void logErrorMessage(String message) {
 		log(new Status(IStatus.ERROR, getPluginId(), IRubyStatusConstants.INTERNAL_ERROR, message, null));
+	}
+
+	/**
+	 * Returns the template store for the java editor templates.
+	 * 
+	 * @return the template store for the ruby editor templates
+	 * @since 3.0
+	 */
+	public TemplateStore getTemplateStore() {
+		return RubyTemplateAccess.getDefault().getTemplateStore();
+	}
+	
+	/**
+	 * Returns the template context type registry for the ruby plugin.
+	 * 
+	 * @return the template context type registry for the ruby plugin
+	 * @since 3.0
+	 */
+	public ContextTypeRegistry getTemplateContextRegistry() {
+		return RubyTemplateAccess.getDefault().getContextTypeRegistry();
 	}
 
 }

@@ -12,6 +12,10 @@
 package org.rubypeople.rdt.internal.ui;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.Platform;
@@ -22,17 +26,18 @@ import org.eclipse.ui.IEditorRegistry;
 import org.eclipse.ui.IFileEditorMapping;
 import org.eclipse.ui.IPropertyListener;
 import org.eclipse.ui.internal.WorkbenchPlugin;
+import org.rubypeople.rdt.ui.IRubyConstants;
 
 /**
  * RubyViewerFilter uses the Editor mappings for recognising and filtering files
  * Both Editor mappings from plugin.xml and creating using the preferences page are considered
  */
 public class RubyFileMatcher {
-	public static final int PROP_MATCH_CRITERIA = 1 ;
+	public static final int PROP_MATCH_CRITERIA = 1;
 	
-	private String[] rubyFileExtensions ;
+	private String[] rubyFileExtensions;
 	private String[] rubyFileNames;	
-	private ListenerList propChangeListeners ; 
+	private ListenerList propChangeListeners; 
 	private IPropertyListener propertyListener = new IPropertyListener() {
 		public void propertyChanged(Object source, int property) { 
 			if (property == IEditorRegistry.PROP_CONTENTS && source instanceof IEditorRegistry) {
@@ -41,10 +46,19 @@ public class RubyFileMatcher {
 			}
 		}
 	} ;
-	
-	
 
-	
+	/**
+	 * The set of files that are generally associated with Ruby,
+	 * but aren't editable by the RubyEditor (they're not ruby code)
+	 */
+	private static Set RUBY_NON_EDITABLE_EXTENSIONS = new HashSet();
+	static {
+		RUBY_NON_EDITABLE_EXTENSIONS.add("yaml");
+		RUBY_NON_EDITABLE_EXTENSIONS.add("rhtml");
+		RUBY_NON_EDITABLE_EXTENSIONS.add("gem");
+		RUBY_NON_EDITABLE_EXTENSIONS.add("gemspec");
+	}
+		
 	public RubyFileMatcher() {
 		propChangeListeners = new ListenerList() ;
 		this.createFileExtensions() ;
@@ -68,22 +82,23 @@ public class RubyFileMatcher {
 	}
 	
 	public void createFileExtensions() {
-		ArrayList extensions = new ArrayList();
-		ArrayList filenames = new ArrayList();
+		List extensions = new ArrayList();
+		extensions.addAll(createDefaultExtensions());
+		List filenames = new ArrayList();
 		IFileEditorMapping[] mappings = WorkbenchPlugin.getDefault().getEditorRegistry().getFileEditorMappings();
 		for (int i = 0; i < mappings.length; i++) {
 			IFileEditorMapping mapping = mappings[i];
 			IEditorDescriptor[] editors = mapping.getEditors();
 			for (int j = 0; j < editors.length; j++) {
 				IEditorDescriptor descriptor = editors[j];
-				if (descriptor.getId().equals("org.rubypeople.rdt.ui.EditorRubyFile")) {
+				if (descriptor.getId().equals(IRubyConstants.EDITOR_ID)) {
 					// a mapping can also use a filename instead of a suffix
 					if (mapping.getExtension() != null && mapping.getExtension().length() != 0) {
 						extensions.add(mapping.getExtension());
 						break;
 					}
 					if (mapping.getName() != null && mapping.getName().length() != 0) {
-						filenames.add(mapping.getName()) ;
+						filenames.add(mapping.getName());
 						break ;
 					}
 				}
@@ -94,8 +109,12 @@ public class RubyFileMatcher {
 		this.rubyFileNames = (String[]) filenames.toArray(new String[filenames.size()]);
 	}
 	
+	private Collection createDefaultExtensions() {
+		return RUBY_NON_EDITABLE_EXTENSIONS;
+	}
+
 	public boolean hasRubyEditorAssociation(IFile file)  {
-		String fileExtension = file.getFileExtension() ;
+		String fileExtension = file.getFileExtension();
 		for (int i = 0; i < rubyFileExtensions.length; i++) {
 			if (rubyFileExtensions[i].equalsIgnoreCase(fileExtension)) {
 				return true;

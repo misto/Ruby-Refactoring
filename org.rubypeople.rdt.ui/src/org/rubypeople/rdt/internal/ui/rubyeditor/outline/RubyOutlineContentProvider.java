@@ -8,7 +8,7 @@ import org.eclipse.ui.model.WorkbenchAdapter;
 import org.rubypeople.rdt.core.IParent;
 import org.rubypeople.rdt.core.IRubyElement;
 import org.rubypeople.rdt.core.IRubyScript;
-import org.rubypeople.rdt.core.IRubyType;
+import org.rubypeople.rdt.core.IType;
 import org.rubypeople.rdt.core.RubyModelException;
 import org.rubypeople.rdt.internal.ui.RubyPlugin;
 
@@ -63,7 +63,7 @@ public class RubyOutlineContentProvider implements ITreeContentProvider {
 		if (fTopLevelTypeOnly) {
 			if (parent instanceof IRubyScript) {
 				try {
-					IRubyType type= getMainType((IRubyScript) parent);
+					IType type= getMainType((IRubyScript) parent);
 					return type != null ? type.getChildren() : NO_CLASS;
 				} catch (RubyModelException e) {
 					RubyPlugin.log(e);
@@ -81,7 +81,7 @@ public class RubyOutlineContentProvider implements ITreeContentProvider {
 	 * @return returns the primary type of the compilation unit, or
 	 * <code>null</code> if is does not have one
 	 */
-	protected IRubyType getMainType(IRubyScript compilationUnit) {
+	protected IType getMainType(IRubyScript compilationUnit) {
 		
 		if (compilationUnit == null)
 			return null;
@@ -90,7 +90,7 @@ public class RubyOutlineContentProvider implements ITreeContentProvider {
 		int index= name.indexOf('.');
 		if (index != -1)
 			name= name.substring(0, index);
-		IRubyType type= compilationUnit.getType(name);
+		IType type= compilationUnit.getType(name);
 		return type.exists() ? type : null;
 	}
 

@@ -8,7 +8,7 @@ package org.rubypeople.rdt.ui;
 
 import org.eclipse.jface.viewers.ViewerSorter;
 import org.rubypeople.rdt.core.IRubyElement;
-import org.rubypeople.rdt.core.IRubyType;
+import org.rubypeople.rdt.core.IType;
 
 /**
  * @author Chris
@@ -38,7 +38,7 @@ public class RubyElementSorter extends ViewerSorter {
 			if (rubyElement.isType(IRubyElement.GLOBAL)) return RUBY_GLOBAL;
 			if (rubyElement.isType(IRubyElement.METHOD)) return RUBY_METHOD;
 			if (rubyElement.isType(IRubyElement.TYPE)) {
-			    IRubyType rubyType = (IRubyType) rubyElement;
+			    IType rubyType = (IType) rubyElement;
 			    if(rubyType.isClass()) return RUBY_CLASS;
 			    return RUBY_MODULE;
 			}

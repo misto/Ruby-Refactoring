@@ -32,7 +32,7 @@ import org.rubypeople.rdt.internal.ui.text.HTMLTextPresenter;
 import org.rubypeople.rdt.internal.ui.text.RubyWordFinder;
 import org.rubypeople.rdt.ui.PreferenceConstants;
 import org.rubypeople.rdt.ui.actions.IRubyEditorActionDefinitionIds;
-import org.rubypeople.rdt.ui.text.java.hover.IRubyEditorTextHover;
+import org.rubypeople.rdt.ui.text.ruby.hover.IRubyEditorTextHover;
 
 /**
  * Abstract class for providing hover information for Ruby elements.

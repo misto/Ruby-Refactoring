@@ -23,7 +23,7 @@ import org.eclipse.ui.texteditor.ITextEditor;
 import org.rubypeople.rdt.core.IParent;
 import org.rubypeople.rdt.core.IRubyElement;
 import org.rubypeople.rdt.core.IRubyScript;
-import org.rubypeople.rdt.core.IRubyType;
+import org.rubypeople.rdt.core.IType;
 import org.rubypeople.rdt.core.ISourceRange;
 import org.rubypeople.rdt.core.ISourceReference;
 import org.rubypeople.rdt.core.RubyModelException;
@@ -158,7 +158,7 @@ public class DefaultRubyFoldingStructureProvider implements IProjectionListener,
 		boolean collapse = false;
 		switch (element.getElementType()) {
 		case IRubyElement.TYPE:
-			collapse = fAllowCollapsing && fCollapseInnerTypes && isInnerType((IRubyType) element);
+			collapse = fAllowCollapsing && fCollapseInnerTypes && isInnerType((IType) element);
 			createProjection = true;
 			break;
 		case IRubyElement.METHOD:
@@ -189,7 +189,7 @@ public class DefaultRubyFoldingStructureProvider implements IProjectionListener,
 		fCollapseMethods = store.getBoolean(PreferenceConstants.EDITOR_FOLDING_METHODS);
 	}
 
-	private boolean isInnerType(IRubyType type) {
+	private boolean isInnerType(IType type) {
 		IRubyElement parent = type.getParent();
 		if (parent != null) {
 			int parentType = parent.getElementType();

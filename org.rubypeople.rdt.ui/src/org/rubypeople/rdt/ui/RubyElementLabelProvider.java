@@ -4,8 +4,8 @@ import org.eclipse.jface.viewers.ILabelProvider;
 import org.eclipse.jface.viewers.ILabelProviderListener;
 import org.eclipse.swt.graphics.Image;
 import org.rubypeople.rdt.core.IRubyElement;
-import org.rubypeople.rdt.core.IRubyMethod;
-import org.rubypeople.rdt.core.IRubyType;
+import org.rubypeople.rdt.core.IMethod;
+import org.rubypeople.rdt.core.IType;
 import org.rubypeople.rdt.core.RubyModelException;
 import org.rubypeople.rdt.internal.ui.RubyPluginImages;
 import org.rubypeople.rdt.internal.ui.RubyPlugin;
@@ -30,10 +30,10 @@ public class RubyElementLabelProvider implements ILabelProvider {
 			if (rubyElement.isType(IRubyElement.LOCAL_VAR)) return RubyPluginImages.get(RubyPluginImages.IMG_CTOOLS_RUBY_LOCAL_VAR);
 			if (rubyElement.isType(IRubyElement.IMPORT)) return RubyPluginImages.get(RubyPluginImages.IMG_CTOOLS_RUBY_IMPORT);
 			if (rubyElement.isType(IRubyElement.METHOD)) {
-				IRubyMethod method = (IRubyMethod) rubyElement;
+				IMethod method = (IMethod) rubyElement;
 				try {
-					if (method.getVisibility() == IRubyMethod.PUBLIC) { return RubyPluginImages.get(RubyPluginImages.IMG_CTOOLS_RUBYMETHOD_PUB); }
-					if (method.getVisibility() == IRubyMethod.PROTECTED) { return RubyPluginImages.get(RubyPluginImages.IMG_CTOOLS_RUBYMETHOD_PRO); }
+					if (method.getVisibility() == IMethod.PUBLIC) { return RubyPluginImages.get(RubyPluginImages.IMG_CTOOLS_RUBYMETHOD_PUB); }
+					if (method.getVisibility() == IMethod.PROTECTED) { return RubyPluginImages.get(RubyPluginImages.IMG_CTOOLS_RUBYMETHOD_PRO); }
 				} catch (RubyModelException e) {
 					RubyPlugin.log(e);
 				}
@@ -45,7 +45,7 @@ public class RubyElementLabelProvider implements ILabelProvider {
 				return RubyPluginImages.get(RubyPluginImages.IMG_CTOOLS_RUBY_INSTANCE_VAR);
 			}
 			if (rubyElement.isType(IRubyElement.TYPE)) {
-			    IRubyType rubyType = (IRubyType) rubyElement;
+			    IType rubyType = (IType) rubyElement;
 			    if(rubyType.isClass()) return RubyPluginImages.get(RubyPluginImages.IMG_CTOOLS_RUBY_CLASS);
 			    return RubyPluginImages.get(RubyPluginImages.IMG_CTOOLS_RUBY_MODULE);
 			}

@@ -52,6 +52,7 @@ public class RubyPluginImages {
 	public static final String IMG_OBJS_FIXABLE_ERROR= NAME_PREFIX + "quickfix_error_obj.gif"; //$NON-NLS-1$
 
 	public static final ImageDescriptor DESC_WIZBAN_NEWJPRJ = create(T_WIZBAN, "newrprj_wiz.gif"); 			//$NON-NLS-1$
+	public static final ImageDescriptor DESC_WIZBAN_NEWCLASS = create(T_WIZBAN, "newclass_wiz.gif"); 			//$NON-NLS-1$
 
 	// RI
 	public static ImageDescriptor DESC_HELP;
