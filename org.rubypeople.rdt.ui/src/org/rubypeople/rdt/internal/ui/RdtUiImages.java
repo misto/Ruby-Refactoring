@@ -34,12 +34,20 @@ public class RdtUiImages {
 	public static final String IMG_OBJS_INFO = NAME_PREFIX + "info_obj.gif";
 	public static final String IMG_CTOOLS_RUBY_PAGE = NAME_PREFIX + "ruby_page.gif";
 	public static final String IMG_CTOOLS_RUBY = NAME_PREFIX + "ruby.gif";
+	public static final String IMG_CTOOLS_RUBYCLASS = NAME_PREFIX + "ruby_class.gif";
+	public static final String IMG_CTOOLS_RUBYMETHOD = NAME_PREFIX + "ruby_method.gif";
+	public static final String IMG_CTOOLS_RUBYINSTVAR = NAME_PREFIX + "ruby_inst_var.gif";
+	public static final String IMG_CTOOLS_RUBYCLASSVAR = NAME_PREFIX + "ruby_class_var.gif";
 
 	public static final ImageDescriptor DESC_OBJS_ERROR = createManaged(OBJ_PREFIX, IMG_OBJS_ERROR);
 	public static final ImageDescriptor DESC_OBJS_WARNING = createManaged(OBJ_PREFIX, IMG_OBJS_WARNING);
 	public static final ImageDescriptor DESC_OBJS_INFO = createManaged(OBJ_PREFIX, IMG_OBJS_INFO);
 	public static final ImageDescriptor DESC_CTOOL_RUBY_PAGE = createManaged(CTOOL_PREFIX, IMG_CTOOLS_RUBY_PAGE);
 	public static final ImageDescriptor DESC_CTOOL_RUBY = createManaged(CTOOL_PREFIX, IMG_CTOOLS_RUBY);
+	public static final ImageDescriptor DESC_CTOOL_RUBYCLASS = createManaged(CTOOL_PREFIX, IMG_CTOOLS_RUBYCLASS);
+	public static final ImageDescriptor DESC_CTOOL_RUBYMETHOD = createManaged(CTOOL_PREFIX, IMG_CTOOLS_RUBYMETHOD);
+	public static final ImageDescriptor DESC_CTOOL_RUBYINSTVAR = createManaged(CTOOL_PREFIX, IMG_CTOOLS_RUBYINSTVAR);
+	public static final ImageDescriptor DESC_CTOOL_RUBYCLASSVAR = createManaged(CTOOL_PREFIX, IMG_CTOOLS_RUBYCLASSVAR);
 
 	/**
 	 * Returns the image managed under the given key in this registry.
