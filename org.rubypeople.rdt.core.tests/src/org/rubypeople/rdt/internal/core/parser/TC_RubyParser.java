@@ -838,6 +838,18 @@ public class TC_RubyParser extends TestCase {
 		assertEquals(new Position(0, 7), script.getElement("Bob").getStart());
 		assertEquals(new Position(1, 0), script.getElement("Bob").getEnd());
 	}
+	
+	public void testDoesntAddDuplicateInstanceVariable() throws Exception {
+		RubyScript script = RubyParser.parse("class Bob\n@var\n@var\nend");
+		assertEquals(1, script.getElementCount());
+		assertTrue(script.contains(new RubyElement(RubyElement.CLASS, "Bob", 0, 6)));
+		assertEquals(new Position(0, 6), script.getElement("Bob").getStart());
+		assertEquals(new Position(3, 0), script.getElement("Bob").getEnd());
+		
+		RubyElement element = script.getElement("Bob");
+		assertEquals(1, element.getElementCount() );
+		assertContainsSingleTokenElement(element, RubyElement.INSTANCE_VAR, "@var", 1, 0);
+	}
 
 	public void testBug929637() throws Exception {
 		RubyScript script = RubyParser.parse("class Foo\ndef baz\n@things.each do | thing | \np thing\nend \nend\nend\n\nclass Bar\nend\n");
