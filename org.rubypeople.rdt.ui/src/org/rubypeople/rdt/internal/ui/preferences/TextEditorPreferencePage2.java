@@ -68,7 +68,7 @@ public class TextEditorPreferencePage2 extends RubyAbstractPreferencePage implem
 
 	protected TextPropertyWidget[] textPropertyWidgets;
 	protected Text indentationWidget;
-	protected final String[] colorProperties = { IRubyColorConstants.RUBY_KEYWORD, IRubyColorConstants.RUBY_MULTI_LINE_COMMENT, IRubyColorConstants.RUBY_SINGLE_LINE_COMMENT, IRubyColorConstants.RUBY_STRING, IRubyColorConstants.TASK_TAG, IRubyColorConstants.RUBY_REGEXP, IRubyColorConstants.RUBY_DEFAULT};
+	protected final String[] colorProperties = { IRubyColorConstants.RUBY_KEYWORD, IRubyColorConstants.RUBY_MULTI_LINE_COMMENT, IRubyColorConstants.RUBY_SINGLE_LINE_COMMENT, IRubyColorConstants.RUBY_STRING, IRubyColorConstants.TASK_TAG, IRubyColorConstants.RUBY_REGEXP, IRubyColorConstants.RUBY_COMMAND, IRubyColorConstants.RUBY_DEFAULT};
 
 	//private final String[][] fAnnotationColorListModel;
 

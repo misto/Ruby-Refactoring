@@ -59,7 +59,16 @@ public class RubySourceViewerConfiguration extends SourceViewerConfiguration {
 		reconciler.setDamager(dr, RubyPartitionScanner.REGULAR_EXPRESSION);
 		reconciler.setRepairer(dr, RubyPartitionScanner.REGULAR_EXPRESSION);
 		
+		dr = new DefaultDamagerRepairer(getCommandScanner());
+		reconciler.setDamager(dr, RubyPartitionScanner.COMMAND);
+		reconciler.setRepairer(dr, RubyPartitionScanner.COMMAND);
+		
+		
 		return reconciler;
+	}
+
+	private ITokenScanner getCommandScanner() {
+		return textTools.getCommandScanner();
 	}
 
 	protected ITokenScanner getCodeScanner() {

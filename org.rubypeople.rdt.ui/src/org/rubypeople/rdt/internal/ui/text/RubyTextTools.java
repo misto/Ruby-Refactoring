@@ -46,6 +46,7 @@ public class RubyTextTools {
 	/** The preference change listener */
 	private PreferenceListener fPreferenceListener = new PreferenceListener();
 	private SingleTokenRubyCodeScanner fRegexpScanner;
+	private SingleTokenRubyCodeScanner fCommandScanner;
 
 	/**
 	 * Creates a new Ruby text tools collection.
@@ -104,7 +105,8 @@ public class RubyTextTools {
 		fSinglelineCommentScanner = new RubyCommentScanner(fColorManager, store, coreStore, IRubyColorConstants.RUBY_SINGLE_LINE_COMMENT);
 		stringScanner = new SingleTokenRubyCodeScanner(fColorManager, store, IRubyColorConstants.RUBY_STRING);
 		fRegexpScanner = new SingleTokenRubyCodeScanner(fColorManager, store, IRubyColorConstants.RUBY_REGEXP);
-				
+		fCommandScanner = new SingleTokenRubyCodeScanner(fColorManager, store, IRubyColorConstants.RUBY_COMMAND);		
+		
 		fPreferenceStore = store;
 		fPreferenceStore.addPropertyChangeListener(fPreferenceListener);
 
@@ -130,6 +132,7 @@ public class RubyTextTools {
 		if (fSinglelineCommentScanner.affectsBehavior(event)) fSinglelineCommentScanner.adaptToPreferenceChange(event);
 		if (stringScanner.affectsBehavior(event)) stringScanner.adaptToPreferenceChange(event);
 		if (fRegexpScanner.affectsBehavior(event)) fRegexpScanner.adaptToPreferenceChange(event);
+		if (fCommandScanner.affectsBehavior(event)) fCommandScanner.adaptToPreferenceChange(event);
 		// if (fJavaDocScanner.affectsBehavior(event))
 		// fJavaDocScanner.adaptToPreferenceChange(event);
 	}
@@ -183,7 +186,8 @@ public class RubyTextTools {
 		|| fMultilineCommentScanner.affectsBehavior(event)
 		|| fSinglelineCommentScanner.affectsBehavior(event)
 		|| stringScanner.affectsBehavior(event)
-	    || fRegexpScanner.affectsBehavior(event);
+	    || fRegexpScanner.affectsBehavior(event)
+	    || fCommandScanner.affectsBehavior(event);
 	}
 
 	/**
@@ -217,6 +221,7 @@ public class RubyTextTools {
 		fSinglelineCommentScanner = null;
 		stringScanner = null;
 		fRegexpScanner = null;
+		fCommandScanner = null;
 		// fJavaDocScanner= null;
 		partitionScanner = null;
 
@@ -240,6 +245,10 @@ public class RubyTextTools {
 
 	public ITokenScanner getRegexpScanner() {
 		return fRegexpScanner;
+	}
+
+	public ITokenScanner getCommandScanner() {
+		return fCommandScanner;
 	}
 
 }

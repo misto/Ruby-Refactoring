@@ -18,8 +18,9 @@ public class RubyPartitionScanner extends RuleBasedPartitionScanner {
 	public final static String MULTI_LINE_COMMENT = "partition_scanner_ruby_multiline_comment";
 	public static final String SINGLE_LINE_COMMENT = "partition_scanner_ruby_singleline_comment";
 	public static final String REGULAR_EXPRESSION = "partition_scanner_ruby_regular_expression";
+	public static final String COMMAND = "partition_scanner_ruby_command";
 		
-	public static final String[] LEGAL_CONTENT_TYPES = {STRING, MULTI_LINE_COMMENT, SINGLE_LINE_COMMENT, REGULAR_EXPRESSION};
+	public static final String[] LEGAL_CONTENT_TYPES = {STRING, MULTI_LINE_COMMENT, SINGLE_LINE_COMMENT, REGULAR_EXPRESSION, COMMAND};
 		
 	public RubyPartitionScanner() {
 		super();
@@ -31,6 +32,7 @@ public class RubyPartitionScanner extends RuleBasedPartitionScanner {
 		IToken multiLineComment = new Token(MULTI_LINE_COMMENT);
 		IToken singleLineComment = new Token(SINGLE_LINE_COMMENT);
 		IToken regexp = new Token(REGULAR_EXPRESSION);
+		IToken command = new Token(COMMAND);
 
 		List rules = new ArrayList();
 
@@ -48,6 +50,10 @@ public class RubyPartitionScanner extends RuleBasedPartitionScanner {
 		createRuleWithOptionalEndChars(rules, "/", "/", new char[] {'s', 'u', 'e', 'n', 'x', 'm', 'o', 'i'}, regexp, '\\');
 		rules.add(new SingleLineRule("/", "/", regexp, '\\'));		
 		createGeneralDelimitedRules(rules, "%r", regexp, '\\');
+		
+		// Commands
+		rules.add(new SingleLineRule("`", "`", command, '\\'));
+		createGeneralDelimitedRules(rules, "%x", command, '\\');
 		
         // Single line comments
 		rules.add(new EndOfLineRule("#", singleLineComment));
