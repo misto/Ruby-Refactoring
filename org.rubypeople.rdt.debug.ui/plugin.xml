@@ -21,6 +21,7 @@
       <import plugin="org.rubypeople.rdt.ui"/>
       <import plugin="org.junit"/>
       <import plugin="org.rubypeople.rdt.core"/>
+      <import plugin="org.rubypeople.rdt.debug.core"/>
    </requires>
 
 
@@ -64,5 +65,43 @@
             id="org.rubypeople.rdt.debug.ui.applicationshortcut.ruby">
       </shortcut>
    </extension>
-
+   <extension
+         point="org.eclipse.ui.editorActions">
+      <editorContribution
+            targetID="org.rubypeople.rdt.ui.EditorRubyFile"
+            id="org.rubypeople.rdt.debug.ui.EditorRubyFile.BreakpointRulerActions">
+         <action
+               label="%Dummy.label"
+               class="org.rubypeople.rdt.internal.debug.ui.actions.ManageBreakpointRulerActionDelegate"
+               actionID="RulerDoubleClick"
+               id="org.rubypeople.rdt.debug.ui.EditorRubyFile.ManageBreakpointRulerAction">
+         </action>
+      </editorContribution>
+   </extension>
+   <extension 
+         point = "org.eclipse.debug.ui.debugModelPresentations"> 
+         <debugModelPresentation
+             class = "org.rubypeople.rdt.internal.debug.ui.DebugModelPresentation"
+             id = "org.rubypeople.rdt.debug">
+         </debugModelPresentation> 
+   </extension>
+   <extension 
+         point="org.eclipse.ui.popupMenus">
+	 <viewerContribution 
+	    id="RubyRulerPopupActions" 
+	    targetID="#rubyRulerContext">
+	    <action
+			id="ManageBreakpointRulerActionDelegate"
+			label="Add Breakpoint"
+			menubarPath="debug"
+			class="org.rubypeople.rdt.internal.debug.ui.actions.ManageBreakpointRulerActionDelegate">
+	    </action>
+	</viewerContribution>
+   </extension>	
+   <extension point = "org.eclipse.debug.core.sourceLocators">
+	<sourceLocator
+		id = "org.rubypeople.rdt.debug.ui.rubySourceLocator"
+	   	class="org.rubypeople.rdt.internal.debug.ui.RubySourceLocator"
+	   	name="RubySourceLocator"/>
+   </extension>
 </plugin>
