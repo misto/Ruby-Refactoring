@@ -100,6 +100,7 @@
             name="%EditorRubyFile.name"
             icon="icons/full/ctool16/ruby_sheet.png"
             extensions="%EditorRubyFile.extension"
+            contributorClass="org.rubypeople.rdt.internal.ui.rubyeditor.RubyEditorActionContributor"
             class="org.rubypeople.rdt.internal.ui.rubyeditor.RubyEditor"
             id="org.rubypeople.rdt.ui.EditorRubyFile">
       </editor>

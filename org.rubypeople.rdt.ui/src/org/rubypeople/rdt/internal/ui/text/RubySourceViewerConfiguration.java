@@ -1,6 +1,9 @@
 package org.rubypeople.rdt.internal.ui.text;
 
+import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.text.IDocument;
+import org.eclipse.jface.text.contentassist.ContentAssistant;
+import org.eclipse.jface.text.contentassist.IContentAssistant;
 import org.eclipse.jface.text.presentation.IPresentationReconciler;
 import org.eclipse.jface.text.presentation.PresentationReconciler;
 import org.eclipse.jface.text.rules.DefaultDamagerRepairer;
@@ -8,6 +11,8 @@ import org.eclipse.jface.text.rules.ITokenScanner;
 import org.eclipse.jface.text.source.ISourceViewer;
 import org.eclipse.jface.text.source.SourceViewerConfiguration;
 import org.eclipse.ui.editors.text.TextEditor;
+import org.rubypeople.rdt.internal.ui.RdtUiPlugin;
+import org.rubypeople.rdt.internal.ui.text.ruby.RubyCompletionProcessor;
 
 public class RubySourceViewerConfiguration extends SourceViewerConfiguration {
 	protected RubyTextTools textTools;
@@ -58,11 +63,22 @@ public class RubySourceViewerConfiguration extends SourceViewerConfiguration {
 	}
 
 	public String[] getConfiguredContentTypes(ISourceViewer sourceViewer) {
-		return new String[] {
-			IDocument.DEFAULT_CONTENT_TYPE,
-			RubyPartitionScanner.MULTI_LINE_COMMENT,
-			RubyPartitionScanner.SINGLE_LINE_COMMENT,
-			RubyPartitionScanner.STRING
-		};
+		return new String[] { IDocument.DEFAULT_CONTENT_TYPE, RubyPartitionScanner.MULTI_LINE_COMMENT, RubyPartitionScanner.SINGLE_LINE_COMMENT, RubyPartitionScanner.STRING };
 	}
+
+	public IContentAssistant getContentAssistant(ISourceViewer sourceViewer) {
+		ContentAssistant contentAssistant = new ContentAssistant();
+		contentAssistant.setContentAssistProcessor(new RubyCompletionProcessor(), IDocument.DEFAULT_CONTENT_TYPE);
+
+		contentAssistant.setProposalPopupOrientation(contentAssistant.PROPOSAL_OVERLAY);
+		contentAssistant.setContextInformationPopupOrientation(contentAssistant.CONTEXT_INFO_ABOVE);
+
+		RubyContentAssistPreference.configure(contentAssistant, getPreferenceStore());
+		return contentAssistant;
+	}
+	
+	protected IPreferenceStore getPreferenceStore() {
+		return RdtUiPlugin.getDefault().getPreferenceStore();
+	}
+
 }

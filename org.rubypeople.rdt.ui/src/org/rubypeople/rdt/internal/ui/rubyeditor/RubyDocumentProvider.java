@@ -15,12 +15,12 @@ public class RubyDocumentProvider extends FileDocumentProvider {
 
 	protected IDocument createDocument(Object element) throws CoreException {
 		IDocument document = super.createDocument(element);
-		if (document != null) {
-			RubyTextTools tools= RdtUiPlugin.getDefault().getTextTools();
-			IDocumentPartitioner partitioner= tools.createDocumentPartitioner();
-			document.setDocumentPartitioner(partitioner);
-			partitioner.connect(document);
-		}
+//		if (document != null) {
+//			RubyTextTools tools= RdtUiPlugin.getDefault().getTextTools();
+//			IDocumentPartitioner partitioner= tools.createDocumentPartitioner();
+//			document.setDocumentPartitioner(partitioner);
+//			partitioner.connect(document);
+//		}
 		return document;
 	}
 }

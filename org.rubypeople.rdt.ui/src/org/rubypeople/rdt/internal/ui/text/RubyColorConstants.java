@@ -8,5 +8,6 @@ public interface RubyColorConstants {
 	
 	public static final String RUBY_MULTI_LINE_COMMENT = "color_multiline_comment";
 	public static final String RUBY_SINGLE_LINE_COMMENT = "color_singleline_comment";
-
+	
+	public static final String RUBY_CONTENT_ASSISTANT_BACKGROUND = "color_ruby_content_assistant_background";
 }

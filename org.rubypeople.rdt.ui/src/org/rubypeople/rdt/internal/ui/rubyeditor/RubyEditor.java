@@ -29,6 +29,7 @@ public class RubyEditor extends TextEditor {
 		PreferenceConverter.setDefault(prefs, RubyColorConstants.RUBY_STRING, new RGB(15, 120, 142));
 		PreferenceConverter.setDefault(prefs, RubyColorConstants.RUBY_MULTI_LINE_COMMENT, new RGB(247, 32, 64));
 		PreferenceConverter.setDefault(prefs, RubyColorConstants.RUBY_SINGLE_LINE_COMMENT, new RGB(227, 64, 227));
+		PreferenceConverter.setDefault(prefs, RubyColorConstants.RUBY_CONTENT_ASSISTANT_BACKGROUND, new RGB(150, 150, 0));
 
 		prefs.setDefault(RubyColorConstants.RUBY_KEYWORD + "_bold", true);
 	}
@@ -44,12 +45,10 @@ public class RubyEditor extends TextEditor {
 	protected void createActions() {
 		super.createActions();
 		setAction("ContentAssistProposal", new TextOperationAction(RdtUiMessages.getResourceBundle(), "ContentAssistProposal.", this, ISourceViewer.CONTENTASSIST_PROPOSALS));
-		setAction("ContentAssistTip", new TextOperationAction(RdtUiMessages.getResourceBundle(), "ContentAssistTip.", this, ISourceViewer.CONTENTASSIST_CONTEXT_INFORMATION));
 	}
 
 	public void editorContextMenuAboutToShow(MenuManager menu) {
 		super.editorContextMenuAboutToShow(menu);
 		addAction(menu, "ContentAssistProposal");
-		addAction(menu, "ContentAssistTip");
 	}
 }
