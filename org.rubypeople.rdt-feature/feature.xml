@@ -111,9 +111,16 @@ This Agreement is governed by the laws of the State of New York and the intellec
       <update label="rubyeclipse" url="http://rubyeclipse.sourceforge.net/updatesite"/>
    </url>
 
+<!-- Due to a bug in the 3.0.1 Eclipse PDE, the Export... button in the feature manifest
+     editor does not work, if there is a source feature to be built. Therefore the customTargets.xml
+     will activate the includes-statement below before the build starts. 
+     In addition to that, the following line will be added to build.properties:
+     generate.feature@org.rubypeople.rdt.source=org.rubypeople.rdt  -->
+<!-- CLOSE_XML_COMMENT
    <includes
          id="org.rubypeople.rdt.source"
          version="0.0.0"/>
+START_XML_COMMENT -->
 
    <requires>
       <import plugin="org.eclipse.core.resources"/>
@@ -139,60 +146,60 @@ This Agreement is governed by the laws of the State of New York and the intellec
          id="org.kxml2"
          download-size="0"
          install-size="0"
-         version="2.1.4"/>
+         version="0.0.0"/>
 
    <plugin
          id="org.rubypeople.rdt.doc.user"
          download-size="0"
          install-size="0"
-         version="0.5.0"/>
+         version="0.0.0"/>
 
    <plugin
          id="org.epic.regexp"
          download-size="0"
          install-size="0"
-         version="0.1.3"/>
+         version="0.0.0"/>
 
    <plugin
          id="org.rubypeople.rdt.ui"
          download-size="0"
          install-size="0"
-         version="0.6.0"/>
+         version="0.0.0"/>
 
    <plugin
          id="org.rubypeople.rdt"
          download-size="0"
          install-size="0"
-         version="0.6.0"/>
+         version="0.0.0"/>
 
    <plugin
          id="org.rubypeople.rdt.testunit"
          download-size="0"
          install-size="0"
-         version="0.6.0"/>
+         version="0.0.0"/>
 
    <plugin
          id="org.rubypeople.rdt.launching"
          download-size="0"
          install-size="0"
-         version="0.6.0"/>
+         version="0.0.0"/>
 
    <plugin
          id="org.rubypeople.rdt.debug.ui"
          download-size="0"
          install-size="0"
-         version="0.6.0"/>
+         version="0.0.0"/>
 
    <plugin
          id="org.rubypeople.rdt.debug.core"
          download-size="0"
          install-size="0"
-         version="0.6.0"/>
+         version="0.0.0"/>
 
    <plugin
          id="org.rubypeople.rdt.core"
          download-size="0"
          install-size="0"
-         version="0.6.0"/>
+         version="0.0.0"/>
 
 </feature>
