@@ -38,13 +38,14 @@ import java.util.regex.Pattern;
 /**
  * @author Chris
  * 
- * To change the template for this generated type comment go to Window - Preferences - Java - Code Generation - Code and Comments
+ * To change the template for this generated type comment go to Window -
+ * Preferences - Java - Code Generation - Code and Comments
  */
 public class RubyParser {
 
 	private static List openElements = new ArrayList();
 	private static RubyScript script;
-	private static final char[] VARIABLE_END_CHARS = { ' ', '.', '[', '(', ')', ']', ',', '}', '{' };
+	private static final char[] VARIABLE_END_CHARS = { ' ', '.', '[', '(', ')', ']', ',', '}', '{'};
 
 	/**
 	 * @return
@@ -73,6 +74,9 @@ public class RubyParser {
 				findInstanceVariable(myLine, offset);
 				findGlobal(myLine, offset);
 				findPrivateModifier(myLine);
+				findAttributeReaderModifier(myLine);
+				findAttributeWriterModifier(myLine);
+				findAttributeAccessor(myLine);
 				findEnd(myLine, offset);
 				offset += curLine.length();
 			}
@@ -80,8 +84,7 @@ public class RubyParser {
 			throw new ParseException(e);
 		}
 		script.setEnd(offset);
-		
-		
+
 		cleanUp();
 		return script;
 	}
@@ -89,31 +92,59 @@ public class RubyParser {
 	/**
 	 * @param myLine
 	 */
-	private static void findPrivateModifier(String myLine) {
-		String priv = "private ";
-		if (myLine.indexOf(priv) != -1) {
-			List tokens = getSymbols(myLine, priv);
-			RubyElement element = findParentClassOrModule();
+	private static void findAttributeAccessor(String myLine) {
+		findAccessModifier(myLine, RubyElement.PUBLIC, "attr_accessor ", "@");
+	}
+
+	/**
+	 * @param myLine
+	 */
+	private static void findAttributeWriterModifier(String myLine) {
+		// TODO Auto-generated method stub
+		findAccessModifier(myLine, RubyElement.WRITE, "attr_writer ", "@");
+	}
+
+	/**
+	 * @param myLine
+	 */
+	private static void findAttributeReaderModifier(String myLine) {
+		findAccessModifier(myLine, RubyElement.READ, "attr_reader ", "@");
+	}
+
+	/**
+	 * @param myLine
+	 */
+	private static void findAccessModifier(String myLine, String accessRightsToGrant, String accessModifierTag, String symbolPrefix) {
+		if (myLine.indexOf(accessModifierTag) == -1) return;
+
+		List tokens = getSymbols(myLine, accessModifierTag);
+		RubyElement parent = findParentClassOrModule();
+		if (parent == null) return;
+
+		for (Iterator iter = tokens.iterator(); iter.hasNext();) {
+			String elementName = (String) iter.next();
+			RubyElement element = parent.getElement(symbolPrefix + elementName);
 			if (element != null) {
-				for (Iterator iter = tokens.iterator(); iter.hasNext();) {
-					String methodName = (String) iter.next();
-					RubyMethod method = (RubyMethod) element.getElement(methodName);
-					if (method != null) {
-						method.setAccess(RubyElement.PRIVATE);
-					}
-					else {
-						String error = "Setting private access rights to an unknown method " + methodName;
-						log(error);
-						script.addParseError(new ParseException(error));
-					}
-				}
+				element.setAccess(accessRightsToGrant);
+			} else {
+				String error = "Attempting to set access rights " + accessRightsToGrant + " to an unknown element " + elementName;
+				log(error);
+				script.addParseError(new ParseException(error));
 			}
 		}
 	}
 
 	/**
-	 * Returns a list of symbol names given string of the format:
-	 * "prefix :symbol, :symbolTwo"
+	 * @param myLine
+	 */
+	private static void findPrivateModifier(String myLine) {
+		findAccessModifier(myLine, RubyElement.PRIVATE, "private ", "");
+	}
+
+	/**
+	 * Returns a list of symbol names given string of the format: "prefix
+	 * :symbol, :symbolTwo"
+	 * 
 	 * @param myLine
 	 * @return
 	 */
@@ -121,7 +152,7 @@ public class RubyParser {
 		String copy = myLine.substring(myLine.indexOf(prefix) + prefix.length());
 		StringTokenizer tokenizer = new StringTokenizer(copy, ", ");
 		List list = new ArrayList();
-		while ( tokenizer.hasMoreTokens() ) {
+		while (tokenizer.hasMoreTokens()) {
 			String token = tokenizer.nextToken();
 			list.add(token.substring(1));
 		}
@@ -129,7 +160,7 @@ public class RubyParser {
 	}
 
 	/**
-	 * 
+	 *  
 	 */
 	private static void cleanUp() {
 		openElements.clear();
@@ -188,8 +219,7 @@ public class RubyParser {
 		String myLine = curLine;
 		int poundStart = curLine.indexOf("#");
 		if (poundStart != -1) {
-			if (!inQuotes(poundStart, curLine))
-				myLine = curLine.substring(0, poundStart);
+			if (!inQuotes(poundStart, curLine)) myLine = curLine.substring(0, poundStart);
 		}
 		return myLine;
 	}
@@ -310,8 +340,7 @@ public class RubyParser {
 	private static void findInstanceVariable(String curLine, int offset) {
 		int instanceIndex = curLine.indexOf("@");
 		if (instanceIndex != -1) {
-			if (curLine.indexOf("@@") != -1)
-				return;
+			if (curLine.indexOf("@@") != -1) return;
 			String name = getToken("@", VARIABLE_END_CHARS, curLine);
 			log("Found instance variable: " + name);
 			RubyInstanceVariable variable = new RubyInstanceVariable(name, offset + instanceIndex + "@".length());
@@ -319,8 +348,7 @@ public class RubyParser {
 			if (element != null) {
 				element.addElement(variable);
 				log("Added instance variable to open element: " + element);
-			}
-			else {
+			} else {
 				script.addElement(variable);
 			}
 		}
@@ -333,9 +361,7 @@ public class RubyParser {
 		for (int i = 1; i < openElements.size(); i++) {
 			RubyElement element = (RubyElement) openElements.get(openElements.size() - i);
 
-			if ((element instanceof RubyModule) || (element instanceof RubyClass) ) {
-				return element;
-			}
+			if ((element instanceof RubyModule) || (element instanceof RubyClass)) { return element; }
 		}
 		return null;
 	}
@@ -379,8 +405,7 @@ public class RubyParser {
 			log("Found class start: " + curLine);
 			int start = classIndex + "class ".length();
 			String name = curLine.substring(start);
-			if (Character.isLowerCase(name.charAt(0)))
-				script.addParseError(new ParseException("Class names should begin with an uppercase letter."));
+			if (Character.isLowerCase(name.charAt(0))) script.addParseError(new ParseException("Class names should begin with an uppercase letter."));
 			RubyClass rubyClass = new RubyClass(name, start + offset);
 			RubyElement element = peek();
 			log("Adding class to open element: " + element);
@@ -398,8 +423,7 @@ public class RubyParser {
 			log("Found module start: " + curLine);
 			int start = moduleIndex + "module ".length();
 			String name = curLine.substring(start);
-			if (Character.isLowerCase(name.charAt(0)))
-				script.addParseError(new ParseException("Module names should begin with an uppercase letter."));
+			if (Character.isLowerCase(name.charAt(0))) script.addParseError(new ParseException("Module names should begin with an uppercase letter."));
 			RubyModule module = new RubyModule(name, start + offset);
 			script.addModule(module);
 			openElements.add(module);
@@ -430,7 +454,7 @@ public class RubyParser {
 	 * @return
 	 */
 	private static String getMethodName(String curLine) {
-		char[] tokens = { '(', ' ' };
+		char[] tokens = { '(', ' '};
 		return getToken("def ", tokens, curLine);
 	}
 
@@ -444,9 +468,7 @@ public class RubyParser {
 		int endOfPrefix = line.indexOf(prefix) + prefix.length();
 		for (int i = endOfPrefix; i < line.length(); i++) {
 			char c = line.charAt(i);
-			if (contains(tokens, c)) {
-				return line.substring(endOfPrefix, i);
-			}
+			if (contains(tokens, c)) { return line.substring(endOfPrefix, i); }
 		}
 		return line.substring(endOfPrefix);
 	}
@@ -458,8 +480,7 @@ public class RubyParser {
 	 */
 	private static boolean contains(char[] tokens, char c) {
 		for (int i = 0; i < tokens.length; i++) {
-			if (tokens[i] == c)
-				return true;
+			if (tokens[i] == c) return true;
 		}
 		return false;
 	}
