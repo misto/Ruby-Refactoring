@@ -25,8 +25,6 @@
  */
 package org.rubypeople.rdt.internal.core.parser;
 
-import java.util.Iterator;
-
 import junit.framework.TestCase;
 
 /**
@@ -682,17 +680,6 @@ public class TC_RubyParser extends TestCase {
 		RubyClass rubyClass = script.getClass("Bob");
 		assertEquals(2, rubyClass.getElementCount());
 	}
-
-	public void testComplainsAboutUnknownSymbol() throws Exception {
-		RubyScript script = RubyParser.parse("class Bob\ndef method\nattr_reader :var\nend\nend");
-		assertEquals(1, script.getElementCount());
-		assertEquals(1, script.getErrorCount());
-		Iterator iter = script.getParseErrors().iterator();
-		ParseError error = (ParseError) iter.next();
-		assertEquals(2, error.getLine() );
-		assertEquals(13, error.getStart() );
-		assertEquals(16, error.getEnd() );
-	}
 	
 	public void testIgnoreRequireInString() throws Exception {
 		RubyScript script = RubyParser.parse("eval \"require \\\"irb/ws-for-case-2\\\"\", TOPLEVEL_BINDING, __FILE__, __LINE__");
@@ -702,6 +689,17 @@ public class TC_RubyParser extends TestCase {
 	public void testIgnoreRequireNameNotInQuotes() throws Exception {
 		RubyScript script = RubyParser.parse("require ARGV[0].gsub(/.+::/, '')");
 		assertEquals(0, script.getElementCount() );
+	}
+	
+	public void testCreatesInstanceVarIfUnknownSymbolInAttrModifier() throws Exception {
+		RubyScript script = RubyParser.parse("module Bob\nattr_reader :var\nend\n");
+		assertEquals(1, script.getElementCount());
+		assertTrue(script.contains(new RubyModule("Bob", 0, 7)));
+		RubyModule bob = script.getModule("Bob");
+		assertEquals(1, bob.getElementCount());
+		assertNotNull(bob.getElement("@var"));
+		RubyInstanceVariable var = (RubyInstanceVariable) bob.getElement("@var");
+		assertEquals(RubyElement.READ, var.getAccess());
 	}
 	
 }
