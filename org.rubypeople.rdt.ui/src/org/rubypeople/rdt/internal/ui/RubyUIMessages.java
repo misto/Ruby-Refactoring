@@ -5,7 +5,7 @@ import java.util.MissingResourceException;
 import java.util.ResourceBundle;
 
 public class RubyUIMessages {
-	private static final String RESOURCE_BUNDLE= "org.rubypeople.rdt.internal.ui.RubyUIMessages";
+	private static final String RESOURCE_BUNDLE= RubyUIMessages.class.getName();
 	private static ResourceBundle resourceBundle= ResourceBundle.getBundle(RESOURCE_BUNDLE);
 
 	private RubyUIMessages() {
