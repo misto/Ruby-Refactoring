@@ -27,34 +27,35 @@ package org.rubypeople.rdt.internal.core.parser.rules;
 
 import org.rubypeople.rdt.internal.core.parser.ParseError;
 import org.rubypeople.rdt.internal.core.parser.ast.RubyElement;
-import org.rubypeople.rdt.internal.core.parser.ast.RubyScript;
 
 public class NoDuplicateRule implements ParseRule {
 
 	private RubyElement element;
-	private RubyScript script;
+	private RubyElement parent;
+	private boolean addError;
 	
 	/**
 	 * @param token
 	 */
-	public NoDuplicateRule(RubyElement token, RubyScript script) {
+	public NoDuplicateRule(RubyElement token, RubyElement parent, boolean addError) {
 		this.element = token;
-		this.script = script;
+		this.parent = parent;
+		this.addError = addError;
 	}
 
 	/* (non-Javadoc)
 	 * @see org.rubypeople.rdt.internal.core.parser.ParseRule#isAllowed()
 	 */
 	public boolean isAllowed() {
-		RubyElement duplicate = script.getElement(element.getName());
-		return (!(duplicate != null && duplicate.isType(RubyElement.REQUIRES)));
+		RubyElement duplicate = parent.getElement(element.getName());
+		return (!(duplicate != null && duplicate.isType(element.getType())));
 	}
 
 	/* (non-Javadoc)
 	 * @see org.rubypeople.rdt.internal.core.parser.ParseRule#getError()
 	 */
 	public ParseError getError() {
-		return new ParseError("Duplicate require statement unnecessary.", element.getStart().getLineNumber(), element.getStart().getOffset(), element.getStart().getOffset() + element.getName().length());
+		return new ParseError("Duplicate element statement unnecessary.", element.getStart().getLineNumber(), element.getStart().getOffset(), element.getStart().getOffset() + element.getName().length());
 	}
 	
 	
@@ -63,6 +64,20 @@ public class NoDuplicateRule implements ParseRule {
 	 */
 	public int getSeverity() {
 		return ParseRule.ERROR;
+	}
+
+	/* (non-Javadoc)
+	 * @see org.rubypeople.rdt.internal.core.parser.rules.ParseRule#addOnFailure()
+	 */
+	public boolean addOnFailure() {
+		return false;
+	}
+
+	/* (non-Javadoc)
+	 * @see org.rubypeople.rdt.internal.core.parser.rules.ParseRule#addError()
+	 */
+	public boolean addError() {
+		return addError;
 	}
 
 }
