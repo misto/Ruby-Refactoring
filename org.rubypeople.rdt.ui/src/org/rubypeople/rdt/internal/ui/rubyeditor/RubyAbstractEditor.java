@@ -147,22 +147,21 @@ public class RubyAbstractEditor extends TextEditor {
 			}
 		}
 		// FIXME Uncomment so we bring editor to top
-		if (!isActivePart() && RubyPlugin.getActivePage() != null)
-		  RubyPlugin.getActivePage().bringToTop(this);
+		if (!isActivePart() && RubyPlugin.getActivePage() != null) RubyPlugin.getActivePage().bringToTop(this);
 
 		// setSelection(reference, !isActivePart());
 		setSelection(reference, true);
 	}
-	
+
 	protected boolean isActivePart() {
-		IWorkbenchPart part= getActivePart();
+		IWorkbenchPart part = getActivePart();
 		return part != null && part.equals(this);
 	}
-	
+
 	private IWorkbenchPart getActivePart() {
-		IWorkbenchWindow window= getSite().getWorkbenchWindow();
-		IPartService service= window.getPartService();
-		IWorkbenchPart part= service.getActivePart();
+		IWorkbenchWindow window = getSite().getWorkbenchWindow();
+		IPartService service = window.getPartService();
+		IWorkbenchPart part = service.getActivePart();
 		return part;
 	}
 
@@ -192,28 +191,26 @@ public class RubyAbstractEditor extends TextEditor {
 
 			try {
 				ISourceRange range = null;
-				// if (reference instanceof ILocalVariable) {
-				// IJavaElement je= ((ILocalVariable)reference).getParent();
-				// if (je instanceof ISourceReference)
-				// range= ((ISourceReference)je).getSourceRange();
-				// } else
-				// range= reference.getSourceRange();
-				//				
-				// if (range == null)
-				// return;
-				//				
-				// int offset= range.getOffset();
-				// int length= range.getLength();
-				//				
-				// if (offset < 0 || length < 0)
-				// return;
-				//				
-				// setHighlightRange(offset, length, moveCursor);
+//				if (reference instanceof ILocalVariable) {
+//					IRubyElement je = ((ILocalVariable) reference).getParent();
+//					if (je instanceof ISourceReference) range = ((ISourceReference) je).getSourceRange();
+//				} else
+					range = reference.getSourceRange();
 
-				if (!moveCursor) return;
+				if (range == null) return;
 
-				int offset = -1;
-				int length = -1;
+				int offset = range.getOffset();
+				int length = range.getLength();
+
+				if (offset < 0 || length < 0) return;
+
+				setHighlightRange(offset, length, moveCursor);
+
+				if (!moveCursor)
+					return;
+											
+				offset= -1;
+				length= -1;
 
 				if (reference instanceof IMember) {
 					range = ((IMember) reference).getNameRange();
