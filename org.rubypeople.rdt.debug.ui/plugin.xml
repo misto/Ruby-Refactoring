@@ -311,4 +311,36 @@
             id="org.rubypeople.rdt.debug.ui.RubyConsoleTracker">
       </consoleLineTracker>
    </extension>
+      <extension
+         point="org.eclipse.debug.ui.launchShortcuts">
+      <shortcut
+            label="%RubyApplicationShortcut.label"
+            icon="icons/full/ctool16/java_app.gif"            
+            modes="run, debug"
+            class="org.rubypeople.rdt.internal.debug.ui.launcher.RubyApplicationShortcut"
+            id="org.rubypeople.rdt.debug.ui.RubyShortcut">
+         <contextualLaunch>
+           <enablement>
+             <with variable="selection">
+               <count value="1"/>
+               <iterate>
+                 <or>
+                   <test property="org.eclipse.debug.ui.matchesPattern" value="*.rb"/>
+                   <test property="org.eclipse.debug.ui.matchesPattern" value="*.rbw"/>
+                 </or>
+               </iterate>
+             </with>
+           </enablement>
+           <contextLabel
+         	  mode="run"
+         	  label="%ContextualRunRubyApplication.label"/>
+  		   <contextLabel
+  		 	  mode="debug"
+  		 	  label="%ContextualDebugRubyApplication.label"/>
+  		 </contextualLaunch>
+         <perspective
+               id="org.rubypeople.rdt.ui.PerspectiveRuby">
+         </perspective>
+      </shortcut>
+   </extension>
 </plugin>
