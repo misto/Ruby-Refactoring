@@ -213,5 +213,13 @@ public class TC_RubyApplicationShortcut extends TestCase {
 			launched = false;
 			return temp;
 		}
+
+		public String getCategory() throws CoreException {
+			return null;
+		}
+
+		public Map getAttributes() throws CoreException {
+			return null;
+		}
 	}
 }

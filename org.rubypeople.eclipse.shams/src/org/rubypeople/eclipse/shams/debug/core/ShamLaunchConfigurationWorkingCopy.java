@@ -142,4 +142,15 @@ public class ShamLaunchConfigurationWorkingCopy implements ILaunchConfigurationW
 		throw new RuntimeException("Need to implement on sham.");
 	}
 
+	public void setAttributes(Map attributes) {
+		throw new RuntimeException("Need to implement on sham.");
+	}
+
+	public String getCategory() throws CoreException {
+		throw new RuntimeException("Need to implement on sham.");
+	}
+
+	public Map getAttributes() throws CoreException {
+		throw new RuntimeException("Need to implement on sham.");
+	}
 }

@@ -98,4 +98,11 @@ public class ShamLaunchConfiguration implements ILaunchConfiguration {
 		throw new RuntimeException("Need to implement on sham.");
 	}
 
+	public String getCategory() throws CoreException {
+		throw new RuntimeException("Need to implement on sham.");
+	}
+
+	public Map getAttributes() throws CoreException {
+		throw new RuntimeException("Need to implement on sham.");
+	}
 }

@@ -247,15 +247,27 @@ public class TC_RubyRuntime extends TestCase {
 			return null;
 		}
 
-		/**
-		 * @see IResource#isSynchronized(int)
-		 */
 		public boolean isSynchronized(int depth) {
 			return false;
 		}
 
 		public int getEncoding() throws CoreException {
 			return 0;
+		}
+
+		public void createLink(
+			IPath localLocation,
+			int updateFlags,
+			IProgressMonitor monitor)
+			throws CoreException {
+		}
+
+		public IPath getRawLocation() {
+			return null;
+		}
+
+		public boolean isLinked() {
+			return false;
 		}
 
 	}

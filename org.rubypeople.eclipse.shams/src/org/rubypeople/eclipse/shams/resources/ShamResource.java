@@ -211,5 +211,12 @@ public class ShamResource implements IResource {
 	public Object getAdapter(Class adapter) {
 		throw new RuntimeException("Need to implement on sham.");
 	}
+	
+	public IPath getRawLocation() {
+		throw new RuntimeException("Need to implement on sham.");
+	}
 
+	public boolean isLinked() {
+		throw new RuntimeException("Need to implement on sham.");
+	}
 }

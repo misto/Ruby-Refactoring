@@ -48,4 +48,11 @@ public class ShamLaunchConfigurationType implements ILaunchConfigurationType {
 		return null;
 	}
 
+	public String getCategory() {
+		return null;
+	}
+
+	public String getAttribute(String attributeName) {
+		return null;
+	}
 }

@@ -273,4 +273,15 @@ public class ShamFolder extends ShamResource implements IFolder {
 		throw new RuntimeException("Need to implement on sham.");
 	}
 
+	public void createLink(IPath localLocation, int updateFlags, IProgressMonitor monitor) throws CoreException {
+		throw new RuntimeException("Need to implement on sham.");
+	}
+
+	public IPath getRawLocation() {
+		throw new RuntimeException("Need to implement on sham.");
+	}
+
+	public boolean isLinked() {
+		throw new RuntimeException("Need to implement on sham.");
+	}
 }

@@ -253,4 +253,19 @@ public class ShamFile extends ShamResource implements IFile {
 	public Object getAdapter(Class adapter) {
 		throw new RuntimeException("Unimplemented method in sham");
 	}
+
+	public void createLink(
+		IPath localLocation,
+		int updateFlags,
+		IProgressMonitor monitor)
+		throws CoreException {
+	}
+
+	public IPath getRawLocation() {
+		return null;
+	}
+
+	public boolean isLinked() {
+		return false;
+	}
 }
