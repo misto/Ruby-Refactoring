@@ -12,7 +12,7 @@
 <xsl:param name="htmlhelp.title" >ABC</xsl:param>
 
 <xsl:template name="user.header.navigation">
-  <center style="font-weight: bold;">Ruby Development Tools Documentation - 0.4.2</center>
+  <center style="font-weight: bold;">Ruby Development Tools Documentation - @@VERSION@@</center>
 </xsl:template>
 
 

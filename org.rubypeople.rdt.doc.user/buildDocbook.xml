@@ -7,6 +7,9 @@
 		<property name="docbook.root" value="../../docbook"/>
 		<!-- docbook.root might also be set from outside -->
 		<echo message="Using docbook.root=${docbook.root}"/>
+		<property name="featureVersion" value="0.1.0"/>
+		<!-- featureVersion might also be set from outside -->
+		<echo message="Using featureVersion=${featureVersion}"/>		
         <property name="docbook.xsl.dir" value="${docbook.root}/docbook-xsl-1.64.1"/>
         <property name="docbook.dtd.dir" value="${docbook.root}/dtd"/>		
 	</target>
@@ -22,7 +25,16 @@
 	
 	<target name="replaceVarInCustomizationLayer">
 	   <copy file="customizationLayer.xsl" tofile="customizationLayerCopy.xsl"/>
-	   <replace file="customizationLayerCopy.xsl" token="@@DOCBOOKROOT@@" value="${docbook.root}"/>
+	   <replace file="customizationLayerCopy.xsl">	   
+	     <replacefilter token="@@VERSION@@" value="${featureVersion}"/>
+         <replacefilter token="@@DOCBOOKROOT@@" value="${docbook.root}"/>
+      </replace>
+	</target>
+
+	<target name="replaceVersionInPluginXml">
+	   <replace file="plugin.xml">	   
+	     <replacefilter token="1.0" value="${featureVersion}"/>
+      </replace>
 	</target>
 	
 	<target name="html" depends="init,clean.docbook.generated,replaceVarInCustomizationLayer">
@@ -37,7 +49,7 @@
      	 <dtd publicId="-//OASIS//DTD DocBook V3.1//EN" location="${docbook.dtd.dir}/docbookx.dtd"/>
         </xmlcatalog>
        </style>
-
+       <antcall target="replaceVersionInPluginXml"/>
      </target>
 
 </project>
