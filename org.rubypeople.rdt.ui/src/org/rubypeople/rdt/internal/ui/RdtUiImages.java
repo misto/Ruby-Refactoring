@@ -8,12 +8,11 @@ import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.resource.ImageRegistry;
 import org.eclipse.swt.graphics.Image;
 
-public class RubyPluginImages {
+public class RdtUiImages {
 
-	private static final String NAME_PREFIX = "org.rubypeople.rdt.ui.";
-	private static final int NAME_PREFIX_LENGTH = NAME_PREFIX.length();
-
-	private static URL iconBaseURL = null;
+	protected static final String NAME_PREFIX = "org.rubypeople.rdt.ui.";
+	protected static final int NAME_PREFIX_LENGTH = NAME_PREFIX.length();
+	protected static URL iconBaseURL;
 
 	static {
 		String pathSuffix = "icons/full/";
@@ -24,19 +23,23 @@ public class RubyPluginImages {
 		}
 	}
 
-	private final static ImageRegistry IMAGE_REGISTRY = new ImageRegistry();
+	protected static final ImageRegistry IMAGE_REGISTRY = new ImageRegistry();
+
+	protected static final String OBJ_PREFIX = "obj16";
+	protected static final String OVR_PREFIX = "ovr16";
+	protected static final String CTOOL_PREFIX = "ctool16";
 
 	public static final String IMG_OBJS_ERROR = NAME_PREFIX + "error_obj.gif";
 	public static final String IMG_OBJS_WARNING = NAME_PREFIX + "warning_obj.gif";
 	public static final String IMG_OBJS_INFO = NAME_PREFIX + "info_obj.gif";
+	public static final String IMG_CTOOLS_RUBY_PAGE = NAME_PREFIX + "ruby_page.gif";
+	public static final String IMG_CTOOLS_RUBY = NAME_PREFIX + "ruby.gif";
 
-	private static final String T_OBJ = "obj16";
-	private static final String T_OVR = "ovr16";
-	private static final String T_CTOOL = "ctool16";
-
-	public static final ImageDescriptor DESC_OBJS_REFACTORING_ERROR = createManaged(T_OBJ, IMG_OBJS_ERROR);
-	public static final ImageDescriptor DESC_OBJS_REFACTORING_WARNING = createManaged(T_OBJ, IMG_OBJS_WARNING);
-	public static final ImageDescriptor DESC_OBJS_REFACTORING_INFO = createManaged(T_OBJ, IMG_OBJS_INFO);
+	public static final ImageDescriptor DESC_OBJS_ERROR = createManaged(OBJ_PREFIX, IMG_OBJS_ERROR);
+	public static final ImageDescriptor DESC_OBJS_WARNING = createManaged(OBJ_PREFIX, IMG_OBJS_WARNING);
+	public static final ImageDescriptor DESC_OBJS_INFO = createManaged(OBJ_PREFIX, IMG_OBJS_INFO);
+	public static final ImageDescriptor DESC_CTOOL_RUBY_PAGE = createManaged(CTOOL_PREFIX, IMG_CTOOLS_RUBY_PAGE);
+	public static final ImageDescriptor DESC_CTOOL_RUBY = createManaged(CTOOL_PREFIX, IMG_CTOOLS_RUBY);
 
 	/**
 	 * Returns the image managed under the given key in this registry.
@@ -70,7 +73,7 @@ public class RubyPluginImages {
 
 	//---- Helper methods to access icons on the file system --------------------------------------
 
-	private static void setImageDescriptors(IAction action, String type, String relPath) {
+	protected static void setImageDescriptors(IAction action, String type, String relPath) {
 
 		try {
 			ImageDescriptor id = ImageDescriptor.createFromURL(makeIconFileURL("d" + type, relPath));
@@ -87,7 +90,7 @@ public class RubyPluginImages {
 		action.setImageDescriptor(create("e" + type, relPath));
 	}
 
-	private static ImageDescriptor createManaged(String prefix, String name) {
+	protected static ImageDescriptor createManaged(String prefix, String name) {
 		try {
 			ImageDescriptor result = ImageDescriptor.createFromURL(makeIconFileURL(prefix, name.substring(NAME_PREFIX_LENGTH)));
 			IMAGE_REGISTRY.put(name, result);
@@ -97,7 +100,7 @@ public class RubyPluginImages {
 		}
 	}
 
-	private static ImageDescriptor create(String prefix, String name) {
+	protected static ImageDescriptor create(String prefix, String name) {
 		try {
 			return ImageDescriptor.createFromURL(makeIconFileURL(prefix, name));
 		} catch (MalformedURLException e) {
@@ -105,7 +108,7 @@ public class RubyPluginImages {
 		}
 	}
 
-	private static URL makeIconFileURL(String prefix, String name) throws MalformedURLException {
+	protected static URL makeIconFileURL(String prefix, String name) throws MalformedURLException {
 		if (iconBaseURL == null)
 			throw new MalformedURLException();
 

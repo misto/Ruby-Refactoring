@@ -13,6 +13,7 @@ import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
+import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
@@ -23,6 +24,7 @@ import org.eclipse.ui.IWorkbenchPage;
 import org.rubypeople.rdt.internal.debug.ui.RdtDebugUiMessages;
 import org.rubypeople.rdt.internal.debug.ui.RdtDebugUiPlugin;
 import org.rubypeople.rdt.internal.launching.RubyLaunchConfigurationAttribute;
+import org.rubypeople.rdt.internal.ui.RdtUiImages;
 import org.rubypeople.rdt.internal.ui.utils.RubyFileSelector;
 import org.rubypeople.rdt.internal.ui.utils.RubyProjectSelector;
 
@@ -149,4 +151,9 @@ public class RubyEntryPointTab extends AbstractLaunchConfigurationTab {
 	public boolean canSave() {
 		return getErrorMessage() == null;
 	}
+
+	public Image getImage() {
+		return RdtUiImages.get(RdtUiImages.IMG_CTOOLS_RUBY_PAGE);
+	}
+
 }

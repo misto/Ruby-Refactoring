@@ -5,11 +5,20 @@
 
 0.2.0
 -----------------------------------------
+* Added some nifty icons and made existing icons have transparent backgrounds
 * Fixed Windows space in path issue
-* Editor now has soft keywords/colors
+* Editor now has soft keywords/colors, but you can't change them yet
 * Improved syntax highlighting
 * Interpreters now only need to know directory of ruby/rubyw. No .exe is required.
 * Project wizard now shows under new project
 * When only one interpreter is installed, it is the selected one
 * The default working directory is now the workspace folder
 * New project wizard no longer ignores custom project loctation
+* There is now a Ruby Application Shortcut launcher
+
+
+There are other things that have been improved that won't be obvious. There is one thing
+that you will need to do to make this thing work on existing Ruby Projects. You MUST CHANGE
+THE NATURE ID IN YOUR .project FILES FOR RUBY PROJECTS. It needs to be org.rubypeople.rdt.core.rubynature.
+You will then need to either close and reopen each project that you changed or restart the
+workbench.

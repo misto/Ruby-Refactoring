@@ -15,6 +15,7 @@ import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
+import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
@@ -33,6 +34,7 @@ import org.rubypeople.rdt.internal.debug.ui.preferences.EditInterpreterDialog;
 import org.rubypeople.rdt.internal.launching.RubyInterpreter;
 import org.rubypeople.rdt.internal.launching.RubyLaunchConfigurationAttribute;
 import org.rubypeople.rdt.internal.launching.RubyRuntime;
+import org.rubypeople.rdt.internal.ui.RdtUiImages;
 
 public class RubyEnvironmentTab extends AbstractLaunchConfigurationTab {
 	protected ListViewer loadPathListViewer;
@@ -255,6 +257,10 @@ public class RubyEnvironmentTab extends AbstractLaunchConfigurationTab {
 	
 	protected void log(Throwable t) {
 		RdtDebugUiPlugin.getDefault().log(t);
+	}
+
+	public Image getImage() {
+		return RdtUiImages.get(RdtUiImages.IMG_CTOOLS_RUBY);
 	}
 
 }

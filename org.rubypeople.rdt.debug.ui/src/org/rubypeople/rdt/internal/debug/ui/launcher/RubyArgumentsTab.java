@@ -9,6 +9,7 @@ import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
@@ -16,6 +17,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 import org.rubypeople.rdt.debug.ui.RdtDebugUiConstants;
+import org.rubypeople.rdt.debug.ui.RdtDebugUiImages;
 import org.rubypeople.rdt.internal.debug.ui.RdtDebugUiMessages;
 import org.rubypeople.rdt.internal.debug.ui.RdtDebugUiPlugin;
 import org.rubypeople.rdt.internal.launching.RubyLaunchConfigurationAttribute;
@@ -137,6 +139,10 @@ public class RubyArgumentsTab extends AbstractLaunchConfigurationTab {
 	
 	protected void log(Throwable t) {
 		RdtDebugUiPlugin.getDefault().log(t);
+	}
+
+	public Image getImage() {
+		return RdtDebugUiImages.get(RdtDebugUiImages.IMG_EVIEW_ARGUMENTS_TAB);
 	}
 
 }
