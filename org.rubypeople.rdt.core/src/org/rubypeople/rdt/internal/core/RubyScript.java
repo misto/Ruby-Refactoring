@@ -25,6 +25,7 @@
 package org.rubypeople.rdt.internal.core;
 
 import java.io.BufferedReader;
+import java.io.CharArrayReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.StringReader;
@@ -108,7 +109,7 @@ public class RubyScript extends Openable implements IRubyScript {
 
 		try {
 			RubyParser parser = new RubyParser();
-			Node node = parser.parse(getElementName(), new StringReader(new String(contents)));
+			Node node = parser.parse(getElementName(), new CharArrayReader(contents));
 			RubyScriptStructureBuilder visitor = new RubyScriptStructureBuilder(this, unitInfo, newElements);
 			if (node != null) node.accept(visitor);
 			unitInfo.setIsStructureKnown(true);

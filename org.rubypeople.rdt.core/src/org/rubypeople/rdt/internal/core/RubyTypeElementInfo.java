@@ -152,7 +152,7 @@ public class RubyTypeElementInfo extends MemberElementInfo {
 	/**
 	 * @see IRubyType
 	 */
-	public String[] getInterfaceNames() {
+	public String[] getIncludedModuleNames() {
 		if (this.handle.getElementName().length() == 0) { // if anonymous type
 			return null;
 		}

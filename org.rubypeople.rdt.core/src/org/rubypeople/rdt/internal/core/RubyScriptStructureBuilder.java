@@ -453,6 +453,7 @@ public class RubyScriptStructureBuilder implements NodeVisitor {
 		ISourcePosition pos = iVisited.getPosition();
 		setKeywordRange("class", pos, info, name);
 		// TODO Set the superclass!
+		info.setIncludedModuleNames(new String[] {"Kernel"});
 		infoStack.push(info);
 
 		newElements.put(handle, info);
@@ -460,6 +461,7 @@ public class RubyScriptStructureBuilder implements NodeVisitor {
 		visitNode(iVisited.getSuperNode());
 		visitNode(iVisited.getBodyNode());
 
+		// TODO Collect the included modules and set them here!
 		modelStack.pop();
 		infoStack.pop();
 	}

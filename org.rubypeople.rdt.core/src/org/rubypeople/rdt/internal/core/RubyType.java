@@ -24,9 +24,12 @@
  */
 package org.rubypeople.rdt.internal.core;
 
+import java.util.ArrayList;
+
 import org.rubypeople.rdt.core.IField;
 import org.rubypeople.rdt.core.IMember;
 import org.rubypeople.rdt.core.IRubyElement;
+import org.rubypeople.rdt.core.IRubyMethod;
 import org.rubypeople.rdt.core.IRubyScript;
 import org.rubypeople.rdt.core.IRubyType;
 import org.rubypeople.rdt.core.RubyModelException;
@@ -49,6 +52,14 @@ public class RubyType extends NamedMember implements IRubyType {
 		return info.getSuperclassName();
 	}
 
+	/**
+	 * @see IRubyType
+	 */
+	public String[] getIncludedModuleNames() throws RubyModelException {
+		RubyTypeElementInfo info = (RubyTypeElementInfo) getElementInfo();
+		return info.getIncludedModuleNames();
+	}
+
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -65,8 +76,45 @@ public class RubyType extends NamedMember implements IRubyType {
 		return new RubyField(this, fieldName);
 	}
 
+	/**
+	 * @see IRubyType
+	 */
+	public IField[] getFields() throws RubyModelException {
+		ArrayList list = getChildrenOfType(FIELD);
+		IField[] array = new IField[list.size()];
+		list.toArray(array);
+		return array;
+	}
+
 	public RubyMethod getMethod(String name) {
 		return new RubyMethod(this, name);
+	}
+
+	/**
+	 * @see IRubyType
+	 */
+	public IRubyMethod[] getMethods() throws RubyModelException {
+		ArrayList list = getChildrenOfType(METHOD);
+		IRubyMethod[] array = new IRubyMethod[list.size()];
+		list.toArray(array);
+		return array;
+	}
+
+	/**
+	 * @see IMember
+	 */
+	public IRubyType getDeclaringType() {
+		IRubyElement parentElement = getParent();
+		while (parentElement != null) {
+			if (parentElement.getElementType() == IRubyElement.TYPE) {
+				return (IRubyType) parentElement;
+			} else if (parentElement instanceof IMember) {
+				parentElement = parentElement.getParent();
+			} else {
+				return null;
+			}
+		}
+		return null;
 	}
 
 	/*
@@ -112,16 +160,6 @@ public class RubyType extends NamedMember implements IRubyType {
 	public boolean equals(Object o) {
 		if (!(o instanceof RubyType)) return false;
 		return super.equals(o);
-	}
-
-	/*
-	 * (non-Rubydoc)
-	 * 
-	 * @see org.rubypeople.rdt.core.IMember#getDeclaringType()
-	 */
-	public IRubyType getDeclaringType() {
-		// TODO Auto-generated method stub
-		return null;
 	}
 
 	/*

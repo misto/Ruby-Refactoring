@@ -45,7 +45,7 @@ public abstract class Member extends SourceRefElement implements IMember {
 		if (parentElement.getElementType() == TYPE) { return (IRubyType) parentElement; }
 		return null;
 	}
-
+	
 	/*
 	 * Returns the outermost context defining a local element. Per construction,
 	 * it can only be a method/field/initializarer member; thus, returns null if
@@ -98,7 +98,7 @@ public abstract class Member extends SourceRefElement implements IMember {
 		if (declaringType != null) {
 			String declaringName = ((RubyElement) getDeclaringType()).readableName();
 			StringBuffer buffer = new StringBuffer(declaringName);
-			buffer.append('.');
+			buffer.append("::");
 			buffer.append(this.getElementName());
 			return buffer.toString();
 		}

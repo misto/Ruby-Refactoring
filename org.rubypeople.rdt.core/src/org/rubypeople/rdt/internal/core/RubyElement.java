@@ -24,6 +24,7 @@
  */
 package org.rubypeople.rdt.internal.core;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -147,6 +148,25 @@ public abstract class RubyElement implements IRubyElement {
 			return ((RubyElementInfo) elementInfo).getChildren();
 		}
 		return NO_ELEMENTS;		
+	}
+	
+	/**
+	 * Returns a collection of (immediate) children of this node of the
+	 * specified type.
+	 *
+	 * @param type - one of the type constants defined by RubyElement
+	 */
+	public ArrayList getChildrenOfType(int type) throws RubyModelException {
+		IRubyElement[] children = getChildren();
+		int size = children.length;
+		ArrayList list = new ArrayList(size);
+		for (int i = 0; i < size; ++i) {
+			RubyElement elt = (RubyElement)children[i];
+			if (elt.getElementType() == type) {
+				list.add(elt);
+			}
+		}
+		return list;
 	}
 
 	/**

@@ -4,25 +4,29 @@
  */
 package org.rubypeople.rdt.internal.core;
 
+import java.util.ArrayList;
 import java.util.Map;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
+import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.Path;
 import org.rubypeople.rdt.core.IOpenable;
 import org.rubypeople.rdt.core.IRubyElement;
+import org.rubypeople.rdt.core.IRubyModel;
 import org.rubypeople.rdt.core.IRubyProject;
+import org.rubypeople.rdt.core.RubyModelException;
 
 /**
  * @author Chris
  * 
  */
-public class RubyModel extends Openable {
+public class RubyModel extends Openable implements IRubyModel {
 
 	protected RubyModel() {
 		super(null);
@@ -38,6 +42,30 @@ public class RubyModel extends Openable {
 	public boolean equals(Object o) {
 		if (!(o instanceof RubyModel)) return false;
 		return super.equals(o);
+	}
+
+	/**
+	 * @see IRubyModel
+	 */
+	public Object[] getNonRubyResources() throws RubyModelException {
+		return ((RubyModelInfo) getElementInfo()).getNonRubyResources();
+	}
+
+	/**
+	 * Finds the given project in the list of the java model's children. Returns
+	 * null if not found.
+	 */
+	public IRubyProject findRubyProject(IProject project) {
+		try {
+			IRubyProject[] projects = this.getRubyProjects();
+			for (int i = 0, length = projects.length; i < length; i++) {
+				IRubyProject rubyProject = projects[i];
+				if (project.equals(rubyProject.getProject())) { return rubyProject; }
+			}
+		} catch (RubyModelException e) {
+			// ruby model doesn't exist: cannot find any project
+		}
+		return null;
 	}
 
 	/*
@@ -70,6 +98,24 @@ public class RubyModel extends Openable {
 	 */
 	public IResource getUnderlyingResource() {
 		return null;
+	}
+
+	/**
+	 * Returns the workbench associated with this object.
+	 */
+	public IWorkspace getWorkspace() {
+		return ResourcesPlugin.getWorkspace();
+	}
+
+	/**
+	 * @see IRubyModel
+	 */
+	public IRubyProject[] getRubyProjects() throws RubyModelException {
+		ArrayList list = getChildrenOfType(PROJECT);
+		IRubyProject[] array = new IRubyProject[list.size()];
+		list.toArray(array);
+		return array;
+
 	}
 
 	protected boolean buildStructure(OpenableElementInfo info, IProgressMonitor pm, Map newElements, IResource underlyingResource) /*
@@ -108,6 +154,13 @@ public class RubyModel extends Openable {
 		default:
 			throw new IllegalArgumentException(org.rubypeople.rdt.internal.core.util.Util.bind("element.invalidResourceForProject")); //$NON-NLS-1$
 		}
+	}
+
+	/**
+	 * @see IRubyModel
+	 */
+	public IRubyProject getRubyProject(String projectName) {
+		return new RubyProject(ResourcesPlugin.getWorkspace().getRoot().getProject(projectName), this);
 	}
 
 }

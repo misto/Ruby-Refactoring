@@ -35,6 +35,20 @@ public interface IRubyType extends IRubyElement, IMember {
 	public RubyMethod getMethod(String name);
 
 	/**
+	 * Returns the methods and constructors declared by this type. For binary
+	 * types, this may include the special <code>&lt;clinit&gt</code>; method
+	 * and synthetic methods. If this is a source type, the results are listed
+	 * in the order in which they appear in the source, otherwise, the results
+	 * are in no particular order.
+	 * 
+	 * @exception RubyModelException
+	 *                if this element does not exist or if an exception occurs
+	 *                while accessing its corresponding resource.
+	 * @return the methods and constructors declared by this type
+	 */
+	IRubyMethod[] getMethods() throws RubyModelException;
+
+	/**
 	 * @return
 	 */
 	boolean isClass();
@@ -61,6 +75,19 @@ public interface IRubyType extends IRubyElement, IMember {
 	public IField getField(String string);
 
 	/**
+	 * Returns the fields declared by this type. If this is a source type, the
+	 * results are listed in the order in which they appear in the source,
+	 * otherwise, the results are in no particular order. For binary types, this
+	 * includes synthetic fields.
+	 * 
+	 * @exception RubyModelException
+	 *                if this element does not exist or if an exception occurs
+	 *                while accessing its corresponding resource.
+	 * @return the fields declared by this type
+	 */
+	IField[] getFields() throws RubyModelException;
+
+	/**
 	 * Returns the name of this type's superclass, or <code>null</code> for
 	 * source types that do not specify a superclass.
 	 * <p>
@@ -82,5 +109,30 @@ public interface IRubyType extends IRubyElement, IMember {
 	 *         source types that do not specify a superclass
 	 */
 	String getSuperclassName() throws RubyModelException;
+
+	/**
+	 * Returns the names of interfaces that this type implements or extends, in
+	 * the order in which they are listed in the source.
+	 * </p>
+	 * For classes, this gives the interfaces that this class implements. For
+	 * interfaces, this gives the interfaces that this interface extends. An
+	 * empty collection is returned if this type does not implement or extend
+	 * any interfaces. For source types, simple names are returned, for binary
+	 * types, qualified names are returned. For anonymous types, an empty
+	 * collection is always returned. If the list of supertypes includes
+	 * parameterized types, the string may include type arguments enclosed in
+	 * "&lt;&gt;". If the result is needed for anything other than display
+	 * purposes, use {@link #getSuperInterfaceTypeSignatures()} which returns
+	 * structured signature strings containing more precise information.
+	 * </p>
+	 * 
+	 * @exception RubyModelException
+	 *                if this element does not exist or if an exception occurs
+	 *                while accessing its corresponding resource.
+	 * @return the names of interfaces that this type implements or extends, in
+	 *         the order in which they are listed in the source, an empty
+	 *         collection if none
+	 */
+	String[] getIncludedModuleNames() throws RubyModelException;
 
 }
