@@ -57,4 +57,8 @@ public class RubyBlock extends RubyElement {
 	public int hashCode() {
 		return Integer.toString(start).hashCode();
 	}
+	
+	public boolean isOutlineElement() {
+		return false;
+	}
 }

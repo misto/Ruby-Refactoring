@@ -24,55 +24,61 @@
  *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 package org.rubypeople.rdt.internal.core.parser;
+
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 
-import org.rubypeople.rdt.internal.core.parser.IRubyElement;
 /**
  * @author Chris
  * 
- * To change the template for this generated type comment go to Window - Preferences - Java - Code Generation - Code and Comments
+ * To change the template for this generated type comment go to Window -
+ * Preferences - Java - Code Generation - Code and Comments
  */
 public class RubyElement implements IRubyElement {
-	
+
 	protected String access;
 	protected String name;
 	protected int start;
 	protected int end;
 	protected Set elements = new HashSet();
-	
+
 	public static final String PUBLIC = "public";
 	public static final String PRIVATE = "private";
-	
+
 	protected RubyElement(String name, int start) {
 		this.start = start;
 		this.name = name;
 	}
+
 	/**
 	 * @return
 	 */
 	public String getName() {
 		return name;
 	}
+
 	/**
 	 * @return
 	 */
 	public int getStart() {
 		return start;
 	}
+
 	/**
 	 * @return
 	 */
 	public int getEnd() {
 		return end;
 	}
+
 	/**
 	 * @return
 	 */
 	public String getAccess() {
 		return access;
-	}	
+	}
+
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -81,6 +87,7 @@ public class RubyElement implements IRubyElement {
 	public int hashCode() {
 		return name.hashCode();
 	}
+
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -93,24 +100,28 @@ public class RubyElement implements IRubyElement {
 		}
 		return false;
 	}
+
 	/**
 	 * @param end
 	 */
 	public void setEnd(int end) {
 		this.end = end;
 	}
+
 	/**
 	 * @return
 	 */
 	public int getElementCount() {
 		return elements.size();
 	}
+
 	/**
 	 * @param method
 	 */
 	public void addElement(RubyElement method) {
 		elements.add(method);
 	}
+
 	/**
 	 * @param element
 	 * @return
@@ -118,32 +129,42 @@ public class RubyElement implements IRubyElement {
 	public boolean contains(RubyElement element) {
 		return elements.contains(element);
 	}
+
 	public RubyElement getElement(String name) {
 		for (Iterator iter = elements.iterator(); iter.hasNext();) {
 			RubyElement element = (RubyElement) iter.next();
-			if (element.getName().equals(name)) {
-				return element;
-			}
+			if (element.getName().equals(name)) { return element; }
 		}
 		return null;
 	}
-	
-	
-	/* (non-Javadoc)
+
+	public boolean isOutlineElement() {
+		return true;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see org.rubypeople.rdt.internal.core.parser.IRubyElement#getElements()
 	 */
 	public Object[] getElements() {
-		return elements.toArray();
+		Set outlineElements = new HashSet();
+		for (Iterator iter = elements.iterator(); iter.hasNext();) {
+			RubyElement element = (RubyElement) iter.next();
+			if (element.isOutlineElement()) outlineElements.add(element);
+		}
+		return outlineElements.toArray();
 	}
-	
-	
-	/* (non-Javadoc)
+
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see org.rubypeople.rdt.internal.core.parser.IRubyElement#hasElements()
 	 */
 	public boolean hasElements() {
 		return !elements.isEmpty();
 	}
-	
+
 	/*
 	 * (non-Javadoc)
 	 * 
