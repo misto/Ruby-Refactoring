@@ -48,11 +48,9 @@ public class DebugModelPresentation extends LabelProvider implements IDebugModel
 	}
 
 	public void computeDetail(IValue value, IValueDetailListener listener) {
-		System.out.println("computeDetail.");
 	}
 
 	public void setAttribute(String attribute, Object value) {
-		System.out.println("setAttribute");
 		if (attribute.equals(IDebugModelPresentation.DISPLAY_VARIABLE_TYPE_NAMES)) {
 			this.isShowTypes = (Boolean) value ;	
 		}
