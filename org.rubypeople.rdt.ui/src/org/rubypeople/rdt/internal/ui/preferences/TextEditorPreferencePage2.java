@@ -155,9 +155,11 @@ public class TextEditorPreferencePage2 extends PreferencePage implements IWorkbe
 		overlayKeys.add(new OverlayPreferenceStore.OverlayKey(OverlayPreferenceStore.INT, ExtendedTextEditorPreferenceConstants.EDITOR_TAB_WIDTH));
 
 		overlayKeys.add(new OverlayPreferenceStore.OverlayKey(OverlayPreferenceStore.INT, PreferenceConstants.FORMAT_INDENTATION));
+		overlayKeys.add(new OverlayPreferenceStore.OverlayKey(OverlayPreferenceStore.BOOLEAN, PreferenceConstants.FORMAT_USE_TAB));
 		
 		overlayKeys.add(new OverlayPreferenceStore.OverlayKey(OverlayPreferenceStore.STRING, ExtendedTextEditorPreferenceConstants.EDITOR_PRINT_MARGIN_COLOR));
 		overlayKeys.add(new OverlayPreferenceStore.OverlayKey(OverlayPreferenceStore.INT, ExtendedTextEditorPreferenceConstants.EDITOR_PRINT_MARGIN_COLUMN));
+		
 		overlayKeys.add(new OverlayPreferenceStore.OverlayKey(OverlayPreferenceStore.BOOLEAN, ExtendedTextEditorPreferenceConstants.EDITOR_PRINT_MARGIN));
 
 		overlayKeys.add(new OverlayPreferenceStore.OverlayKey(OverlayPreferenceStore.BOOLEAN, ExtendedTextEditorPreferenceConstants.EDITOR_OVERVIEW_RULER));
@@ -290,8 +292,6 @@ public class TextEditorPreferencePage2 extends PreferencePage implements IWorkbe
 
 		String label = TextEditorMessages.getString("TextEditorPreferencePage.displayedTabWidth"); //$NON-NLS-1$
 		addTextField(appearanceComposite, label, ExtendedTextEditorPreferenceConstants.EDITOR_TAB_WIDTH, 3, 0, true);
-
-		this.addIndentation(appearanceComposite);
 		
 		label = TextEditorMessages.getString("TextEditorPreferencePage.printMarginColumn"); //$NON-NLS-1$
 		addTextField(appearanceComposite, label, ExtendedTextEditorPreferenceConstants.EDITOR_PRINT_MARGIN_COLUMN, 3, 0, true);
@@ -382,6 +382,22 @@ public class TextEditorPreferencePage2 extends PreferencePage implements IWorkbe
 		return appearanceComposite;
 	}
 
+	private Control createCodeFormatterPage(Composite parent) {
+
+		Composite codeFormatterComposite = new Composite(parent, SWT.NONE);
+		GridLayout layout = new GridLayout();
+		layout.numColumns = 2;
+		codeFormatterComposite.setLayout(layout);
+
+		String label = RdtUiMessages.getString("RubyEditorPropertyPage.indentation"); //$NON-NLS-1$
+		addTextField(codeFormatterComposite, label, PreferenceConstants.FORMAT_INDENTATION, 3, 0, true);
+ 
+		label = RdtUiMessages.getString("RubyEditorPropertyPage.useTab"); //$NON-NLS-1$
+		addCheckBox(codeFormatterComposite, label, PreferenceConstants.FORMAT_USE_TAB, 0);
+
+		return codeFormatterComposite ;
+	}	
+	
 	private Control createQuickdiffPage(Composite parent) {
 		Composite composite = new Composite(parent, SWT.NONE);
 		GridLayout layout = new GridLayout();
@@ -648,6 +664,10 @@ public class TextEditorPreferencePage2 extends PreferencePage implements IWorkbe
 		item.setControl(createAppearancePage(folder));
 
 		item = new TabItem(folder, SWT.NONE);
+		item.setText(RdtUiMessages.getString("RubyEditorPropertyPage.codeFormatterTabTitle"));
+		item.setControl(createCodeFormatterPage(folder));
+
+		item = new TabItem(folder, SWT.NONE);
 		item.setText("Syntax");
 		item.setControl(createSyntaxPage(folder));
 
@@ -711,10 +731,7 @@ public class TextEditorPreferencePage2 extends PreferencePage implements IWorkbe
 		return composite;
 	}
 
-	protected void addIndentation(Composite parent) {
-		String label = RdtUiMessages.getString("RubyEditorPropertyPage.indentation"); //$NON-NLS-1$
-		addTextField(parent, label, PreferenceConstants.FORMAT_INDENTATION, 3, 0, true);
-	}
+
 
 	private void initialize() {
 
