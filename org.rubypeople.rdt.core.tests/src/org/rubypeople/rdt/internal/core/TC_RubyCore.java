@@ -7,8 +7,6 @@ import org.rubypeople.eclipse.shams.resources.ShamFile;
 import org.rubypeople.eclipse.shams.resources.ShamProject;
 import org.rubypeople.eclipse.testutils.ResourceTools;
 import org.rubypeople.rdt.core.RubyFile;
-import org.rubypeople.rdt.internal.core.RubyCore;
-import org.rubypeople.rdt.internal.core.RubyPlugin;
 
 public class TC_RubyCore extends TestCase {
 

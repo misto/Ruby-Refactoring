@@ -7,8 +7,6 @@ import org.rubypeople.eclipse.shams.resources.ShamProject;
 import org.rubypeople.rdt.core.RubyElement;
 import org.rubypeople.rdt.core.RubyFile;
 import org.rubypeople.rdt.core.RubyProject;
-import org.rubypeople.rdt.internal.core.ResourceAdapterFactory;
-import org.rubypeople.rdt.internal.core.RubyPlugin;
 
 public class TC_ResourceAdapterFactory extends TestCase {
 
