@@ -41,8 +41,8 @@ public class TC_DebuggerCommunicationTest extends TestCase {
 		//suite.addTest(new TC_DebuggerCommunicationTest("testThreadIdsAndResume"));
 		//suite.addTest(new TC_DebuggerCommunicationTest("testThreadsAndFrames"));		
 		//suite.addTest(new TC_DebuggerCommunicationTest("testStepOver"));		
-		//suite.addTest(new TC_DebuggerCommunicationTest("testThreadFramesAndVariables"));
-		suite.addTest(new TC_DebuggerCommunicationTest("testVariableNil"));
+		suite.addTest(new TC_DebuggerCommunicationTest("testThreadFramesAndVariables"));
+		//suite.addTest(new TC_DebuggerCommunicationTest("testVariableNil"));
 		//suite.addTest(new TC_DebuggerCommunicationTest("testVariableInstanceNested"));				
 		//suite.addTest(new TC_DebuggerCommunicationTest("testStaticVariableInstanceNested"));			
 		//suite.addTest(new TC_DebuggerCommunicationTest("testException"));
@@ -74,6 +74,7 @@ public class TC_DebuggerCommunicationTest extends TestCase {
 		}
 		return tmpDir;
 	}
+	private static final String RUBY_INTERPRETER = "ruby.exe" ;
 	private Process process;
 	private OutputRedirectorThread rubyStdoutRedirectorThread;
 	private OutputRedirectorThread rubyStderrRedirectorThread;
@@ -133,7 +134,7 @@ public class TC_DebuggerCommunicationTest extends TestCase {
 		if (binDir.startsWith("/") && File.separatorChar == '\\') {
 			binDir = binDir.substring(1);
 		}
-		String cmd = "ruby -I " + binDir + "../../org.rubypeople.rdt.launching/ruby -I" + getTmpDir().replace('\\', '/') + " -reclipseDebug.rb " + getRubyTestFilename();
+		String cmd = TC_DebuggerCommunicationTest.RUBY_INTERPRETER + " -I " + binDir + "../../org.rubypeople.rdt.launching/ruby -I" + getTmpDir().replace('\\', '/') + " -reclipseDebug.rb " + getRubyTestFilename();
 		System.out.println("Starting: " + cmd);
 		process = Runtime.getRuntime().exec(cmd);
 		rubyStderrRedirectorThread = new OutputRedirectorThread(process.getErrorStream());
@@ -807,10 +808,10 @@ public class TC_DebuggerCommunicationTest extends TestCase {
 		assertEquals(1, stackFrames.length);
 		assertEquals(3, stackFrames[0].getLineNumber());
 		out.println("th 2 ; v l");
-		variables = getVariableReader().readVariables(stackFrames[0]);
-		assertEquals(2, variables.length) ;
+		variables = getVariableReader().readVariables(stackFrames[0]);		
 		assertEquals("a", variables[0].getName()) ;
 		assertEquals("b", variables[1].getName()) ;
+		// there is a third variable 'x' for ruby 1.8.0
 		out.println("th 2 ; next");
 		getSuspensionReader().readSuspension();
 		out.println("th 2 ; v l");		
