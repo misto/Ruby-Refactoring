@@ -40,6 +40,7 @@
             icon="icons/full/ctool16/ruby.gif"
             category="org.rubypeople.rdt.ui.NewWizardCategoryRuby"
             class="org.rubypeople.rdt.internal.ui.wizards.NewProjectCreationWizard"
+            project="true"
             id="org.rubypeople.rdt.ui.wizards.NewWizardProjectCreation">
          <description>
             Create a new Ruby project.
