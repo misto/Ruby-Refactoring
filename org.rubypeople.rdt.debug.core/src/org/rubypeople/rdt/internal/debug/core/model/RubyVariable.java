@@ -5,7 +5,6 @@ import org.eclipse.debug.core.ILaunch;
 import org.eclipse.debug.core.model.IDebugTarget;
 import org.eclipse.debug.core.model.IValue;
 import org.eclipse.debug.core.model.IVariable;
-import org.eclipse.jdt.debug.core.IJavaVariable;
 
 
 public class RubyVariable implements IVariable {
@@ -13,6 +12,7 @@ public class RubyVariable implements IVariable {
 	private boolean isStatic ;
 	private boolean isLocal ;
 	private boolean isInstance ;
+	private boolean isConstant ;
 	private RubyStackFrame stackFrame ;
 	private String name ;
 	private RubyValue value ;
@@ -38,6 +38,7 @@ public class RubyVariable implements IVariable {
 		this.isStatic = scope.equals("class") ;
 		this.isLocal = scope.equals("local") ;
 		this.isInstance = scope.equals("instance") ;
+		this.isConstant = scope.equals("constant") ;
 	}
 	
 	/**
@@ -126,9 +127,6 @@ public class RubyVariable implements IVariable {
 	 * @see org.eclipse.core.runtime.IAdaptable#getAdapter(Class)
 	 */
 	public Object getAdapter(Class adapter) {
-		if (adapter == IJavaVariable.class) {
-			return new JdtVariableAdapter(this) ;	
-		}
 		return null;
 	}
 	
@@ -168,5 +166,10 @@ public class RubyVariable implements IVariable {
 	public boolean isStatic() {
 		return isStatic;
 	}
+
+	public boolean isConstant() {
+		return isConstant;
+	}
+
 
 }
