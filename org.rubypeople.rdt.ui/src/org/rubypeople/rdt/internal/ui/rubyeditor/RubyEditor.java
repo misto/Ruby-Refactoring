@@ -13,6 +13,7 @@ import org.eclipse.ui.texteditor.DefaultRangeIndicator;
 import org.eclipse.ui.texteditor.ITextEditorActionConstants;
 import org.eclipse.ui.texteditor.TextOperationAction;
 import org.eclipse.ui.texteditor.WorkbenchChainedTextFontFieldEditor;
+import org.eclipse.ui.views.contentoutline.IContentOutlinePage;
 import org.rubypeople.rdt.internal.ui.RdtUiMessages;
 import org.rubypeople.rdt.internal.ui.RdtUiPlugin;
 import org.rubypeople.rdt.internal.ui.text.RubyColorConstants;
@@ -74,5 +75,17 @@ public class RubyEditor extends TextEditor {
 		super.editorContextMenuAboutToShow(menu);
 
 		actionGroup.fillContextMenu(menu);
+	}
+
+	public Object getAdapter(Class adapter) {
+		
+		if (IContentOutlinePage.class.equals(adapter))
+			return createRubyOutlinePage();
+		
+		return super.getAdapter(adapter);
+	}
+	
+	protected Object createRubyOutlinePage() {
+		return new RubyContentOutlinePage(this.getEditorInput());	
 	}
 }
