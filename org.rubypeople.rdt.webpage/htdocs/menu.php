@@ -22,7 +22,7 @@
 </div>
 
 <div class="menuEntry">
-      <a href="userdoc/index.html" target="rdtdoc"><img src="images/docs.gif" border="0" alt="Documentation"></a>
+      <a href="userdoc/html/index.html" target="rdtdoc"><img src="images/docs.gif" border="0" alt="Documentation"></a>
 </div>
 
 <div class="menuEntry">		
