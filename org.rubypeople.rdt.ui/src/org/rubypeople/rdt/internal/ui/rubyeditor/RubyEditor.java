@@ -4,13 +4,16 @@ import java.util.Arrays;
 
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuManager;
+import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.DocumentCommand;
+import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.ITextOperationTarget;
 import org.eclipse.jface.text.source.IOverviewRuler;
 import org.eclipse.jface.text.source.ISourceViewer;
 import org.eclipse.jface.text.source.IVerticalRuler;
 import org.eclipse.jface.text.source.SourceViewer;
 import org.eclipse.jface.util.PropertyChangeEvent;
+import org.eclipse.swt.custom.StyledText;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.texteditor.ContentAssistAction;
 import org.eclipse.ui.texteditor.ITextEditorActionConstants;
@@ -25,8 +28,10 @@ import org.rubypeople.rdt.ui.actions.RubyEditorActionDefinitionIds;
 public class RubyEditor extends RubyAbstractEditor {
 
 	protected RubyActionGroup actionGroup;
+
 	private String tabReplaceString;
-	private boolean isTabReplacing=false;
+
+	private boolean isTabReplacing = false;
 
 	public RubyEditor() {
 		super();
@@ -71,13 +76,14 @@ public class RubyEditor extends RubyAbstractEditor {
 	}
 
 	protected void handlePreferenceStoreChanged(PropertyChangeEvent event) {
-		super.handlePreferenceStoreChanged(event) ;
+		super.handlePreferenceStoreChanged(event);
 		String property = event.getProperty();
 
 		if (PreferenceConstants.FORMAT_USE_TAB.equals(property) || PreferenceConstants.FORMAT_INDENTATION.equals(property)) {
 			this.initializeTabReplace();
-			// for rereading the indentPrefixes for shift left/right from the RubySourceViewerConfiguration
-			this.getSourceViewer().configure(this.getSourceViewerConfiguration()) ;			
+			// for rereading the indentPrefixes for shift left/right from the
+			// RubySourceViewerConfiguration
+			this.getSourceViewer().configure(this.getSourceViewerConfiguration());
 		}
 	}
 
@@ -138,12 +144,56 @@ public class RubyEditor extends RubyAbstractEditor {
 	public boolean isTabReplacing() {
 		return isTabReplacing;
 	}
-	
+
 	/**
 	 * 
 	 * @return Returns the replacement string for tab if isTabReplacing()
-	 */	
+	 */
 	public String getTabReplaceString() {
 		return tabReplaceString;
+	}
+
+	public CaretPosition getCaretPosition() {
+		// needed for positioning the cursor after formatting without selection
+
+		StyledText styledText = this.getSourceViewer().getTextWidget();
+		int caret = widgetOffset2ModelOffset(getSourceViewer(), styledText.getCaretOffset());
+		IDocument document = getSourceViewer().getDocument();
+		try {
+			int line = document.getLineOfOffset(caret);
+			int lineOffset = document.getLineOffset(line);
+			return new CaretPosition(line, caret - lineOffset);
+		} catch (BadLocationException e) {
+			return new CaretPosition(0, 0);
+		}
+	}
+
+	public void setCaretPosition(CaretPosition pos) {
+
+		try {
+			int lineOffset = this.getSourceViewer().getDocument().getLineOffset(pos.line);
+			this.selectAndReveal(lineOffset + pos.column, 0);
+		} catch (BadLocationException e) {}
+	}
+
+	public class CaretPosition {
+
+		protected CaretPosition(int line, int column) {
+			this.line = line;
+			this.column = column;
+		}
+
+		protected int getColumn() {
+			return column;
+		}
+
+		protected int getLine() {
+			return line;
+		}
+
+		private int line;
+
+		private int column;
+
 	}
 }

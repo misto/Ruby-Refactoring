@@ -9,6 +9,7 @@ import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.ui.texteditor.ITextEditor;
 import org.eclipse.ui.texteditor.TextEditorAction;
 import org.rubypeople.rdt.internal.ui.RdtUiPlugin;
+import org.rubypeople.rdt.internal.ui.rubyeditor.RubyEditor;
 
 public class FormatAction extends TextEditorAction {
 
@@ -26,15 +27,19 @@ public class FormatAction extends TextEditorAction {
 				String text = textSelection.getText();
 				if (text == null || text.length() == 0) {
 					String allFormatted = RdtUiPlugin.getDefault().getCodeFormatter().formatString(doc.get());
+					RubyEditor rubyEditor = (RubyEditor) this.getTextEditor();
+					RubyEditor.CaretPosition cursorPos = rubyEditor.getCaretPosition();
 					doc.set(allFormatted);
+					rubyEditor.setCaretPosition(cursorPos);
 				} else {
-					// format always complete lines, otherwise the indentation of the first line is lost
-					int startPos = doc.getLineOffset(textSelection.getStartLine()) ;
-					int endLine = textSelection.getEndLine() ;
-					int endPos = doc.getLineOffset(endLine) + doc.getLineLength(endLine) ;
+					// format always complete lines, otherwise the indentation
+					// of the first line is lost
+					int startPos = doc.getLineOffset(textSelection.getStartLine());
+					int endLine = textSelection.getEndLine();
+					int endPos = doc.getLineOffset(endLine) + doc.getLineLength(endLine);
 
 					String formatted = RdtUiPlugin.getDefault().getCodeFormatter().formatString(doc.get(startPos, endPos - startPos));
-					doc.replace(startPos, endPos-startPos, formatted);
+					doc.replace(startPos, endPos - startPos, formatted);
 				}
 			}
 
