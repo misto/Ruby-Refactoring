@@ -12,7 +12,8 @@ import org.eclipse.debug.core.model.ILaunchConfigurationDelegate;
 import org.rubypeople.rdt.internal.core.RubyCore;
 
 public class RubyApplicationLaunchConfigurationDelegate implements ILaunchConfigurationDelegate {
-	protected static final InterpreterRunner runner = new InterpreterRunner();
+	protected static final InterpreterRunner interpreterRunner = new InterpreterRunner();
+	protected static final DebuggerRunner debuggerRunner = new DebuggerRunner();
 
 	public RubyApplicationLaunchConfigurationDelegate() {
 		super();
@@ -24,7 +25,10 @@ public class RubyApplicationLaunchConfigurationDelegate implements ILaunchConfig
 	public void launch(ILaunchConfiguration configuration, String mode, ILaunch launch, IProgressMonitor monitor) throws CoreException {
 		if (RubyRuntime.getDefault().getSelectedInterpreter() == null)
 			throw new CoreException(new Status(IStatus.ERROR, RdtLaunchingPlugin.PLUGIN_ID, IStatus.OK, "You must define an interpreter before running Ruby Applications.", null));
-
-		runner.run(new InterpreterRunnerConfiguration(configuration), launch);
+		if (mode.equals("debug")) {
+			debuggerRunner.run(new InterpreterRunnerConfiguration(configuration), launch);
+		} else {
+			interpreterRunner.run(new InterpreterRunnerConfiguration(configuration), launch);
+		}		
 	}
 }
