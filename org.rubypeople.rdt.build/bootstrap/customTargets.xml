@@ -85,7 +85,6 @@
 <!-- Steps to do before fetching the build elements -->
 <!-- ===================================================================== -->
 <target name="preFetch">
-	 <touch file="/tmp/preFetch"/>
 </target>
 
 <!-- ===================================================================== -->
