@@ -49,6 +49,229 @@
 				</orderedlist>
 			</sect2>
 		</sect1>
+			</chapter>
+	<chapter id="Concepts">
+		<title>Concepts</title>
+		<sect1 id="rubyProjects">
+			<title>Ruby projects</title>
+			<para>A Ruby project contains source code and related files for 
+				building a Ruby program.</para>
+			<para>A Ruby project also maintains a model of its contents. This 
+				model includes information about the type hierarchy, references 
+				and declarations of Ruby elements. This information is 
+				constantly updated as the user changes the Ruby source 
+				code.</para>
+			<para>You can organize Ruby projects in one way 
+				currently:<itemizedlist> <listitem> Using the project as the 
+				source container. This is the recommended organization for 
+				simple projects. </listitem> </itemizedlist> </para>
+		</sect1>
+		<sect1 id="RubyPerspectives">
+			<title>Ruby perspectives</title>
+			<para>The Ruby development tools contribute the following 
+				perspectives to the workbench:</para>
+			<sect2 id="RubyPerspectives_Ruby">
+				<title>Ruby</title>
+				<para>A perspective designed for working with Ruby projects. It 
+					consists of an editor area and the following views:</para>
+				<itemizedlist>
+					<listitem> Ruby Resources View </listitem>
+					<listitem>Outline </listitem>
+					<listitem>Console </listitem>
+				</itemizedlist>
+			</sect2>
+			<sect2 id="RubyPerspectives_RubyDebug">
+				<title>Debug</title>
+				<para>A perspective designed for debugging your Ruby program. 
+					It includes an editor area and the following views.</para>
+				<itemizedlist>
+					<listitem> Debug </listitem>
+					<listitem> Breakpoints </listitem>
+					<listitem> Expressions </listitem>
+					<listitem> Variables </listitem>
+					<listitem> Display </listitem>
+					<listitem> Outline </listitem>
+					<listitem> Console </listitem>
+				</itemizedlist>
+			</sect2>
+		</sect1>
+		<sect1 id="RubyResourcesView">
+			<title>Ruby Resources View</title>
+			<para>The Ruby Resources View provides the same features as the 
+				regular navigator does (e.g. optional linking between editor 
+				and Ruby Resources View, customizable Filtering, collapsing the 
+				tree, context menu). In addition to that, there is a toggle to 
+				show only ruby resources (.rb, .rbw and .cgi files).</para>
+			<para> As for the regular navigator, there can also be a filter 
+				defined for the Ruby Resources View. Per default there are two 
+				entries, *.class and .*, in the filter list. This can be 
+				customized. For example, if you are sick of xml files, you can 
+				add the following declaration to a plugin descriptor, e.g. to 
+				ECLIPSE_HOME/plugins/org.rubypeople.rdt.ui/plugin.xml:</para>
+			<programlisting><![CDATA[ 
+<extension point="org.eclipse.ui.ide.resourceFilters"> 
+    <filter selected="false" pattern="*.xml"></filter> 
+</extension> ]]> </programlisting>
+			<figure>
+				<title>Ruby Resources View</title>
+				<graphic fileref="../images/rubyResources.png" format="PNG"/>
+			</figure>
+		</sect1>
+		<sect1 id="RubyEditor">
+			<title>Ruby Editor</title>
+			<para>The Ruby editor provides specialized features for editing 
+				Ruby code.</para>
+			<para>Associated with the editor is a Ruby-specific Outline view, 
+				which shows the structure of the active Ruby script. It is 
+				updated as the user edits the script.</para>
+			<para>The editor includes the following features:</para>
+			<itemizedlist>
+				<listitem>Syntax highlighting</listitem>
+				<listitem>Content/code assist</listitem>
+				<listitem>Code formatting</listitem>
+				<listitem>Integrated debugging features</listitem>
+			</itemizedlist>
+			<para>The most common way to invoke the Ruby editor is to open a 
+				Ruby file from the Navigator or Ruby Resource View using pop-up 
+				menus or by clicking the file (single or double-click depending 
+				on the user preferences). You can also open the editor by 
+				opening Ruby elements, such as types, methods, or fields, from 
+				other views.</para>
+			<sect2 id="CodeCompletion">
+				<title>Code completion</title>
+				<para> If you press Ctrl+space in the ruby editor, a list with 
+					information from the current ruby files is displayed. This 
+					information includes classes, methods and variables. In 
+					addition to that the code completion also provides classes 
+					and modules, which are defined in one of the library paths 
+					you can set in the library preferences page. Therefore a 
+					starting string must be provided, e.g. if you type S 
+					followed by ctrl+space all modules and classes starting 
+					with S are displayed.</para>
+			</sect2>
+			<sect2 id="CodeFormatting">
+				<title>Code formatting</title>
+				<para>The code formatter formats either the whole file or the 
+					current selection, if there is one. In the latter case all 
+					the lines, which are covered from the selection, are 
+					formatted. The code formatter does not insert new lines but 
+					only indents existing lines. </para>
+				<para>There are two options to customize the behaviour of the 
+					formatter:</para>
+				<itemizedlist>
+					<listitem>
+						<para>The number of characters per indentation 
+							level</para>
+					</listitem>
+					<listitem>
+						<para>The character used for indentation can either be 
+							space or tab</para>
+					</listitem>
+				</itemizedlist>
+				<para>E.g. if you format a if/then/else block, the lines of the 
+					if and else blocks have an indentation level of 1 while the 
+					lines with keywords have an indentation level of 0. The 
+					default is to use spaces and two characters per indentation 
+					level, which indents the if and else blocks with two 
+					spaces. If you changed the second option to use tabs, the 
+					if and else blocks would be indented with two tabs.</para>
+				<para> When the second options is set to use spaces, typing a 
+					tab character in the editor inserts spaces instead of a 
+					tabs, too. The number of spaces used to replace the tab is 
+					equal to the number of characters per indentation level. By 
+					configuring the tab replacing settings with the code 
+					formatter settings, the difference between rawly entered 
+					code and formatted code can be minimized. </para>
+				<warning>
+					<para>In the current version (0.4.1) the code formatter 
+						does not recognize regular expressions, which are 
+						spread over multiple lines. That implies that these 
+						regular expressions might be indented.</para>
+				</warning>
+			</sect2>
+		</sect1>
+		<sect1 id ="ConsoleView">
+			<title>Console View</title>
+			<para>The console view contains the output of a program. If the 
+				output of a ruby program contains a stack trace, every stack 
+				frame is clickable: When you place the mouse over a line in a 
+				stack trace, the pointer changes to the hyperlink symbol and 
+				clicking the hyperlink opens the associated file and moves to 
+				the appropriate line. If the file does not exist in the 
+				workspace, the Ruby External Editor is opened, which displays 
+				the file content read-only. </para>
+			<figure>
+				<title>Console stack Trace with hyperlinks</title>
+				<graphic fileref="../images/clickableStackTrace.png" 
+					format="PNG"/>
+			</figure>
+		</sect1>
+		<sect1 id="OutlineView">
+			<title>Outline View</title>
+			<para> The outline view displays the structure of the currently 
+				selected editor. </para>
+			<figure>
+				<title>Outline View</title>
+				<graphic fileref="../images/outline.png" format="PNG"/>
+			</figure>
+		</sect1>
+		<sect1 id="RunningARubyApplication">
+			<title>Running a Ruby application</title>
+			<sect2 id="ContextMenu"><title>Starting from Ruby Resource View</title>
+				<para> The context menu of a ruby file in the Ruby Resource 
+					View has a run entry from which the file can be started in 
+					run or debug mode. </para>			
+			<figure>
+				<title>Run from context menu</title>
+				<graphic fileref="../images/runContextMenu.png" format="PNG"/>
+			</figure>
+			</sect2>
+			<sect2 id="MainMenu"><title>Starting from main menu</title>
+				<para>The Run main menu also offers a menu point for starting a
+					ruby application. Which file is started is determined by the 
+					active part (marked with the blue border). This can be
+					the editor or the Ruby Resource View for example. If the Ruby Resource
+					View is active, the file selected in the resource tree is started.
+					If the editor is the active part, the file in the active editor is 
+					started.</para>			
+			<figure>
+				<title>Run from main menu</title>
+				<graphic fileref="../images/runMenu.png" format="PNG"/>
+			</figure>
+			</sect2>
+			<sect2 id="Configuration">
+				<title>Run configuration</title>
+				<para>Every time a file is started from one of the described 
+					menu items, a run configuration is created. If the file is 
+					started a second time, this run configuration is used 
+					again. That allows to add parameters for the start, change 
+					the working directory or the interpreter to start with. 
+					</para>
+				<para> The following library paths are always added when the 
+					application is started (using the -I option of the ruby 
+					interpreter) and are not listed in the configuration 
+					dialog:</para>
+				<itemizedlist>
+					<listitem>
+						<para>The directory in which the started file 
+							resides</para>
+					</listitem>
+					<listitem>
+						<para>The path of the project in which the started file 
+							resides</para>
+					</listitem>
+					<listitem>
+						<para>The path of all dependent projects of the started 
+							file's project</para>
+					</listitem>
+				</itemizedlist>
+				<figure>
+					<title>Run from configuration</title>
+					<graphic fileref="../images/runConfiguration.png" 
+						format="PNG"/>
+				</figure>
+			</sect2>
+		</sect1>
 		<sect1 id="usingTheDebugger">
 			<title>Using the Debugger</title>
 			<sect2>
@@ -185,7 +408,7 @@ persons = Hash[ Person.new('Lisa') =&gt; Person.new('Marge'),
 				</sect3>
 				<sect3>
 					<title>Expressions view</title>
-					<para> Resitemizedlistts of ruby expression evaluation are 
+					<para> Results of ruby expression evaluation are 
 						displayed here. Evaluation takes place: </para>
 					<itemizedlist>
 						<listitem>
@@ -323,140 +546,7 @@ persons = Hash[ Person.new('Lisa') =&gt; Person.new('Marge'),
 					</orderedlist>
 				</sect3>
 			</sect2>
-		</sect1>
-	</chapter>
-	<chapter id="Concepts">
-		<title>Concepts</title>
-		<sect1 id="rubyProjects">
-			<title>Ruby projects</title>
-			<para>A Ruby project contains source code and related files for 
-				building a Ruby program.</para>
-			<para>A Ruby project also maintains a model of its contents. This 
-				model includes information about the type hierarchy, references 
-				and declarations of Ruby elements. This information is 
-				constantly updated as the user changes the Ruby source 
-				code.</para>
-			<para>You can organize Ruby projects in one way 
-				currently:<itemizedlist> <listitem> Using the project as the 
-				source container. This is the recommended organization for 
-				simple projects. </listitem> </itemizedlist> </para>
-		</sect1>
-		<sect1 id="RubyPerspectives">
-			<title>Ruby perspectives</title>
-			<para>The Ruby development tools contribute the following 
-				perspectives to the workbench:</para>
-			<sect2 id="RubyPerspectives_Ruby">
-				<title>Ruby</title>
-				<para>A perspective designed for working with Ruby projects. It 
-					consists of an editor area and the following views:</para>
-				<itemizedlist>
-					<listitem> Ruby Resources View </listitem>
-					<listitem>Outline </listitem>
-					<listitem>Console </listitem>
-				</itemizedlist>
-			</sect2>
-			<sect2 id="RubyPerspectives_RubyDebug">
-				<title>Debug</title>
-				<para>A perspective designed for debugging your Ruby program. 
-					It includes an editor area and the following views.</para>
-				<itemizedlist>
-					<listitem> Debug </listitem>
-					<listitem> Breakpoints </listitem>
-					<listitem> Expressions </listitem>
-					<listitem> Variables </listitem>
-					<listitem> Display </listitem>
-					<listitem> Outline </listitem>
-					<listitem> Console </listitem>
-				</itemizedlist>
-			</sect2>
-		</sect1>
-		<sect1 id="RubyResourcesView">
-			<title>Ruby Resources View</title>
-			<para>The Ruby Resources View provides the same features as the 
-				regular navigator does (e.g. optional linking between editor 
-				and Ruby Resources View, customizable Filtering, collapsing the 
-				tree, context menu). In addition to that, there is a toggle to 
-				show only ruby resources (.rb, .rbw and .cgi files).</para>
-			<para> As for the regular navigator, there can also be a filter 
-				defined for the Ruby Resources View. Per default there are two 
-				entries *.class and .* are in the filter list. This can be 
-				customized. For example if you are sick of xml files, you can 
-				add the following declaration to a plugin descriptor, e.g. to 
-				ECLIPSE_HOME/plugins/org.rubypeople.rdt.ui/plugin.xml: <code> 
-				&lt;extension point="org.eclipse.ui.ide.resourceFilters"&gt; 
-				&lt;filter selected="false" pattern="*.xml"&gt; &lt;/filter&gt; 
-				&lt;/extension&gt; </code> <figure> <title>Ruby Resources 
-				View</title> <graphic fileref="../images/rubyResources.png" 
-				format="PNG"/> </figure> </para>
-		</sect1>
-		<sect1 id="RubyEditor">
-			<title>Ruby Editor</title>
-			<para>The Ruby editor provides specialized features for editing 
-				Ruby code.</para>
-			<para>Associated with the editor is a Ruby-specific Outline view, 
-				which shows the structure of the active Ruby script. It is 
-				updated as the user edits the script.</para>
-			<para>The editor includes the following features:</para>
-			<itemizedlist>
-				<listitem>Syntax highlighting</listitem>
-				<listitem>Content/code assist</listitem>
-				<listitem>Code formatting</listitem>
-				<listitem>Integrated debugging features</listitem>
-			</itemizedlist>
-			<para>The most common way to invoke the Ruby editor is to open a 
-				Ruby file from the Navigator or Ruby Resource View using pop-up 
-				menus or by clicking the file (single or double-click depending 
-				on the user preferences). You can also open the editor by 
-				opening Ruby elements, such as types, methods, or fields, from 
-				other views.</para>
-			<sect2 id="CodeCompletion">
-				<title>Code completion</title>
-				<para> If you press Ctrl+space in the ruby editor, a list with 
-					information from the current ruby files is displayed. This 
-					information includes classes, methods and variables. In 
-					addition to that the code completion also provides classes 
-					and modules, which are defined in one of the library paths 
-					you can set in the library preferences page. Therefore a 
-					starting string must be provided, e.g. if you type S 
-					followed by ctrl+space all modules and classes starting 
-					with S are displayed.</para>
-			</sect2>
-				<sect2 id="CodeFormatting">
-					<title>Code formatting</title>
-					<para>The code formatter formats either the whole file or 
-						the current selection, if there is one. In the latter 
-						case all the lines, which are covered from the 
-						selection, are formatted. The code formatter does not 
-						insert new lines but only indents existing lines. Both
-						spaces and tabs can be used for indentation. If spaces 
-						are used, the editor also transforms entered tab 
-						characters to spaces. The default are two spaces per 
-						tab.</para>
-				</sect2>
-		</sect1>
-		<sect1 id ="ConsoleView">
-			<title>Console View</title>
-			<para>The console view contains the output of a program. If the 
-				output of a ruby program contains a stack trace, every stack 
-				frame is clickable: When you place the mouse over a line in a 
-				stack trace, the pointer changes to the hyperlink symbol and 
-				clicking the hyperlink opens the associated file and moves to 
-				the appropriate line. If the file does not exist in the 
-				workspace, the Ruby External Editor is opened, which displays 
-				the file content read-only. <figure> <title>Console stack Trace 
-				with hyperlinks</title> <graphic 
-				fileref="../images/clickableStackTrace.png" format="PNG"/> 
-				</figure> </para>
-		</sect1>
-		<sect1 id="Outline View">
-			<title>Outline View</title>
-			<para>
-			The outline view displays the structure of the currently selected editor.
-			<figure> <title>Outline View</title> 
-			<graphic fileref="../images/outline.png" format="PNG"/> 
-			</figure>
-			</para>			
-		</sect1>
+		</sect1>		
 	</chapter>
 	<chapter id="TipsNTricks">
 		<title>Tips and tricks</title>
