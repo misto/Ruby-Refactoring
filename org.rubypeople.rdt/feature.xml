@@ -2,8 +2,9 @@
 <feature
       id="org.rubypeople.rdt"
       label="Ruby Development Tools"
-      version="0.3.0"
-      provider-name="RubyPeople">
+      version="0.3.1"
+      provider-name="RubyPeople"
+      plugin="">
 
    <description>
       Ruby tools for Eclipse.
@@ -103,50 +104,49 @@ This Agreement is governed by the laws of the State of New York and the intellec
    </url>
 
    <requires>
-      <import plugin="org.eclipse.ant.core" match="compatible"/>
-      <import plugin="org.eclipse.core.runtime" match="compatible"/>
-      <import plugin="org.eclipse.core.resources" match="compatible"/>
-      <import plugin="org.apache.xerces" match="compatible"/>
-      <import plugin="org.eclipse.team.core" match="compatible"/>
-      <import plugin="org.eclipse.debug.core" match="compatible"/>
-      <import plugin="org.eclipse.debug.ui" match="compatible"/>
-      <import plugin="org.eclipse.ui" match="compatible"/>
+      <import plugin="org.eclipse.core.runtime"/>
+      <import plugin="org.eclipse.core.resources"/>
+      <import plugin="org.apache.xerces"/>
+      <import plugin="org.eclipse.team.core"/>
+      <import plugin="org.eclipse.debug.core"/>
+      <import plugin="org.eclipse.debug.ui"/>
+      <import plugin="org.eclipse.ui"/>
    </requires>
 
    <plugin
          id="org.kxml2"
          download-size="0"
          install-size="0"
-         version="0.3.0"/>
+         version="2.1.4"/>
 
    <plugin
          id="org.rubypeople.rdt.core"
          download-size="0"
          install-size="0"
-         version="0.3.0"/>
+         version="0.3.1"/>
 
    <plugin
          id="org.rubypeople.rdt.debug.core"
          download-size="0"
          install-size="0"
-         version="0.3.0"/>
+         version="0.3.1"/>
 
    <plugin
          id="org.rubypeople.rdt.debug.ui"
          download-size="0"
          install-size="0"
-         version="0.3.0"/>
+         version="0.3.1"/>
 
    <plugin
          id="org.rubypeople.rdt.launching"
          download-size="0"
          install-size="0"
-         version="0.3.0"/>
+         version="0.3.1"/>
 
    <plugin
          id="org.rubypeople.rdt.ui"
          download-size="0"
          install-size="0"
-         version="0.3.0"/>
+         version="0.3.1"/>
 
 </feature>

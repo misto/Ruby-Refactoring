@@ -3,7 +3,7 @@
 
 	<target name="init">
 		<property name="feature" value="org.rubypeople.rdt"/>
-		<property name="feature.version.suffix" value="_0.3.0"/>
+		<property name="feature.version.suffix" value="_0.3.1"/>
 		<property name="feature.full.name" value="${feature}${feature.version.suffix}"/>
 		<property name="feature.temp.folder" value="${basedir}/feature.temp.folder"/>
 		<property name="feature.destination" value="${basedir}"/>
@@ -11,7 +11,6 @@
 
 	<target name="all.plugins" depends="init">
 		<ant antfile="build.xml" dir="../org.kxml2/" target="${target}"/>
-		<ant antfile="build.xml" dir="../org.jruby/" target="${target}"/>
 		<ant antfile="build.xml" dir="../org.rubypeople.rdt.core/" target="${target}"/>
 		<ant antfile="build.xml" dir="../org.rubypeople.rdt.debug.core/" target="${target}"/>
 		<ant antfile="build.xml" dir="../org.rubypeople.rdt.ui/" target="${target}"/>

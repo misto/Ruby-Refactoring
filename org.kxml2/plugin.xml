@@ -2,7 +2,7 @@
 <plugin
    id="org.kxml2"
    name="Kxml2"
-   version="0.3.0"
+   version="2.1.4"
    provider-name="org.kxml">
 
    <runtime>

@@ -5,5 +5,5 @@
       autobuild="false"
       scrub-output="true"
       use-console="true">
-   <feature id="org.rubypeople.rdt" version="0.3.0"/>
+   <feature id="org.rubypeople.rdt" version="0.3.1"/>
 </site-build>
