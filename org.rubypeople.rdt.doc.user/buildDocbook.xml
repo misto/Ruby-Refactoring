@@ -15,8 +15,8 @@
 	</target>
 	
 	<target name="html" depends="init,clean.docbook.generated">
-	  
-      <style includes="docbook.xml" basedir="." destdir="."  extension=".done" style="${docbook.xsl.dir}/eclipse/eclipse.xsl">
+	 <!--${docbook.xsl.dir}/eclipse/eclipse.xsl -->
+      <style includes="docbook.xml" basedir="." destdir="."  extension=".done" style="customizationLayer.xsl">
         <param name="base.dir" expression="html/"/>
         <param name="manifest.in.base.dir" expression="0"/>
         <param name="eclipse.plugin.id" expression="org.rubypeople.rdt.doc.user"/>
