@@ -157,6 +157,7 @@ public class FailureTab extends TestRunTab implements IMenuListener {
 				// methodName));
 				manager.add(new Separator());
 				manager.add(new RerunAction(fRunnerViewPart, getSelectedTestId(), className, methodName, ILaunchManager.RUN_MODE));
+                manager.add(new RerunAction(fRunnerViewPart, getSelectedTestId(), className, methodName, ILaunchManager.DEBUG_MODE));
 				manager.add(new Separator());
 				//manager.add(new CopyFailureListAction(fRunnerViewPart,
 				// FailureTab.this, fClipboard));

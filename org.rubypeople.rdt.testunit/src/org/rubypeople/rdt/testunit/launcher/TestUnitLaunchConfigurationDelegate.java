@@ -2,17 +2,14 @@ package org.rubypeople.rdt.testunit.launcher;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.Status;
 import org.eclipse.debug.core.ILaunch;
 import org.eclipse.debug.core.ILaunchConfiguration;
 import org.eclipse.debug.core.model.ILaunchConfigurationDelegate;
-import org.rubypeople.rdt.internal.launching.InterpreterRunner;
-import org.rubypeople.rdt.internal.launching.RubyRuntime;
+import org.rubypeople.rdt.internal.launching.InterpreterRunnerConfiguration;
+import org.rubypeople.rdt.internal.launching.RubyApplicationLaunchConfigurationDelegate;
 import org.rubypeople.rdt.testunit.TestunitPlugin;
-import org.rubypeople.rdt.testunit.runner.TestUnitRunner;
 
-public class TestUnitLaunchConfiguration implements ILaunchConfigurationDelegate {
+public class TestUnitLaunchConfigurationDelegate extends RubyApplicationLaunchConfigurationDelegate {
 
 	public static final String PORT_ATTR = TestunitPlugin.PLUGIN_ID + ".PORT"; //$NON-NLS-1$
 	/**
@@ -30,18 +27,12 @@ public class TestUnitLaunchConfiguration implements ILaunchConfigurationDelegate
 
 	public static final String ID_TESTUNIT_APPLICATION = "org.rubypeople.rdt.testunit.launchconfig"; //$NON-NLS-1$
 
-	protected static final InterpreterRunner interpreterRunner = new TestUnitRunner();
-
-	public TestUnitLaunchConfiguration() {
+  	public TestUnitLaunchConfigurationDelegate() {
 		super();
 	}
 
-	/**
-	 * @see ILaunchConfigurationDelegate#launch(ILaunchConfiguration, String,
-	 *      ILaunch, IProgressMonitor)
-	 */
-	public void launch(ILaunchConfiguration configuration, String mode, ILaunch launch, IProgressMonitor monitor) throws CoreException {
-		if (RubyRuntime.getDefault().getSelectedInterpreter() == null) throw new CoreException(new Status(IStatus.ERROR, TestunitPlugin.PLUGIN_ID, IStatus.OK, "You must define an interpreter before running Ruby Applications.", null));
-		interpreterRunner.run(new TestUnitRunnerConfiguration(configuration), launch);
-	}
+    protected InterpreterRunnerConfiguration wrapConfiguration(ILaunchConfiguration configuration) {
+        return new TestUnitRunnerConfiguration(configuration) ;
+    }
+
 }

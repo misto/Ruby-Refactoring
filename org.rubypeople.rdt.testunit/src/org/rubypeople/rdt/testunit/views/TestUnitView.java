@@ -59,7 +59,7 @@ import org.rubypeople.rdt.internal.core.parser.ast.IRubyElement;
 import org.rubypeople.rdt.testunit.ITestRunListener;
 import org.rubypeople.rdt.testunit.TestunitPlugin;
 import org.rubypeople.rdt.testunit.launcher.SocketUtil;
-import org.rubypeople.rdt.testunit.launcher.TestUnitLaunchConfiguration;
+import org.rubypeople.rdt.testunit.launcher.TestUnitLaunchConfigurationDelegate;
 
 public class TestUnitView extends ViewPart implements ITestRunListener3 {
 
@@ -397,10 +397,10 @@ public class TestUnitView extends ViewPart implements ITestRunListener3 {
 					// fix for bug: 64838 junit view run single test does not
 					// use
 					// correct class [JUnit]
-					tmp.setAttribute(TestUnitLaunchConfiguration.TESTTYPE_ATTR, className);
+					tmp.setAttribute(TestUnitLaunchConfigurationDelegate.TESTTYPE_ATTR, className);
 					
 					if (testName != null) {
-						tmp.setAttribute(TestUnitLaunchConfiguration.TESTNAME_ATTR, testName);
+						tmp.setAttribute(TestUnitLaunchConfigurationDelegate.TESTNAME_ATTR, testName);
 					}
 					tmp.launch(launchMode, null);
 					return;
@@ -426,7 +426,7 @@ public class TestUnitView extends ViewPart implements ITestRunListener3 {
 			ILaunchConfigurationWorkingCopy tmp = launchConfiguration.copy(configName);
 			// TODO Set a new port before restarting
 			int newPort = SocketUtil.findFreePort();
-			tmp.setAttribute(TestUnitLaunchConfiguration.PORT_ATTR, newPort);
+			tmp.setAttribute(TestUnitLaunchConfigurationDelegate.PORT_ATTR, newPort);
 			// Set all the launch attributes now!
 			tmp.launch(launchMode, null);
 		} catch (CoreException e) {

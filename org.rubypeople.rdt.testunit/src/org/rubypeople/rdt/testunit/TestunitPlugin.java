@@ -29,7 +29,7 @@ import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.osgi.framework.BundleContext;
 import org.rubypeople.rdt.internal.core.RubyPlugin;
 import org.rubypeople.rdt.testunit.launcher.SocketUtil;
-import org.rubypeople.rdt.testunit.launcher.TestUnitLaunchConfiguration;
+import org.rubypeople.rdt.testunit.launcher.TestUnitLaunchConfigurationDelegate;
 import org.rubypeople.rdt.testunit.views.TestUnitView;
 
 /**
@@ -247,7 +247,7 @@ public class TestunitPlugin extends AbstractUIPlugin implements ILaunchListener 
 		if (config != null) {
 			try {
 				// test whether the launch defines the TestUnit port attribute
-				port = config.getAttribute(TestUnitLaunchConfiguration.PORT_ATTR, -1);
+				port = config.getAttribute(TestUnitLaunchConfigurationDelegate.PORT_ATTR, -1);
 			} catch (CoreException e) {
 				e.printStackTrace();
 			}
@@ -277,7 +277,7 @@ public class TestunitPlugin extends AbstractUIPlugin implements ILaunchListener 
 	 */
 	public void launchAdded(ILaunch launch) {
 		try {
-			if (launch.getLaunchConfiguration().getType().getDelegate(launch.getLaunchMode()).getClass() != TestUnitLaunchConfiguration.class) {
+			if (launch.getLaunchConfiguration().getType().getDelegate(launch.getLaunchMode()).getClass() != TestUnitLaunchConfigurationDelegate.class) {
 				return;
 			}
 			fTrackedLaunches.add(launch);

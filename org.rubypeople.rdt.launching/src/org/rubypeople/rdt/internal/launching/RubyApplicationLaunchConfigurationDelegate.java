@@ -20,12 +20,18 @@ public class RubyApplicationLaunchConfigurationDelegate implements ILaunchConfig
 	 * @see ILaunchConfigurationDelegate#launch(ILaunchConfiguration, String, ILaunch, IProgressMonitor)
 	 */
 	public void launch(ILaunchConfiguration configuration, String mode, ILaunch launch, IProgressMonitor monitor) throws CoreException {
-		if (RubyRuntime.getDefault().getSelectedInterpreter() == null)
+		if (RubyRuntime.getDefault().getSelectedInterpreter() == null) {
 			throw new CoreException(new Status(IStatus.ERROR, RdtLaunchingPlugin.PLUGIN_ID, IStatus.OK, "You must define an interpreter before running Ruby Applications.", null));
+        }
+
 		if (mode.equals("debug")) {
-			debuggerRunner.run(new InterpreterRunnerConfiguration(configuration), launch);
+			debuggerRunner.run( this.wrapConfiguration(configuration), launch);
 		} else {
-			interpreterRunner.run(new InterpreterRunnerConfiguration(configuration), launch);
+			interpreterRunner.run( this.wrapConfiguration(configuration), launch);
 		}		
 	}
+    
+    protected InterpreterRunnerConfiguration wrapConfiguration(ILaunchConfiguration configuration) {
+    	return new InterpreterRunnerConfiguration(configuration) ;
+    }
 }

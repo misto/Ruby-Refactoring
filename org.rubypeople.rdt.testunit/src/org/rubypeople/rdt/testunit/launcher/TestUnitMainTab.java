@@ -155,9 +155,9 @@ public class TestUnitMainTab extends AbstractLaunchConfigurationTab implements I
         }
 
         configuration.setAttribute(RubyLaunchConfigurationAttribute.PROJECT_NAME, projectName);
-        configuration.setAttribute(TestUnitLaunchConfiguration.LAUNCH_CONTAINER_ATTR, fileName);
-        configuration.setAttribute(TestUnitLaunchConfiguration.TESTTYPE_ATTR, type);
-        configuration.setAttribute(TestUnitLaunchConfiguration.TESTNAME_ATTR, "");
+        configuration.setAttribute(TestUnitLaunchConfigurationDelegate.LAUNCH_CONTAINER_ATTR, fileName);
+        configuration.setAttribute(TestUnitLaunchConfigurationDelegate.TESTTYPE_ATTR, type);
+        configuration.setAttribute(TestUnitLaunchConfigurationDelegate.TESTNAME_ATTR, "");
 
         // set hidden attribute
         configuration.setAttribute(ILaunchConfiguration.ATTR_SOURCE_LOCATOR_ID, "org.rubypeople.rdt.debug.ui.rubySourceLocator");
@@ -181,8 +181,8 @@ public class TestUnitMainTab extends AbstractLaunchConfigurationTab implements I
 			    projectName = project.getName();
 			}
 			projectSelector.setSelectionText(projectName);
-			fileSelector.setSelectionText(configuration.getAttribute(TestUnitLaunchConfiguration.LAUNCH_CONTAINER_ATTR, ""));
-			classSelector.setSelectionText(configuration.getAttribute(TestUnitLaunchConfiguration.TESTTYPE_ATTR, ""));
+			fileSelector.setSelectionText(configuration.getAttribute(TestUnitLaunchConfigurationDelegate.LAUNCH_CONTAINER_ATTR, ""));
+			classSelector.setSelectionText(configuration.getAttribute(TestUnitLaunchConfigurationDelegate.TESTTYPE_ATTR, ""));
 		} catch (CoreException e) {
 			TestunitPlugin.log(e);
 		}
@@ -194,8 +194,8 @@ public class TestUnitMainTab extends AbstractLaunchConfigurationTab implements I
 	 * @see org.eclipse.debug.ui.ILaunchConfigurationTab#performApply(org.eclipse.debug.core.ILaunchConfigurationWorkingCopy)
 	 */
 	public void performApply(ILaunchConfigurationWorkingCopy configuration) {
-		configuration.setAttribute(TestUnitLaunchConfiguration.TESTTYPE_ATTR, classSelector.getValidatedSelectionText());
-		configuration.setAttribute(TestUnitLaunchConfiguration.LAUNCH_CONTAINER_ATTR, fileSelector.getValidatedSelectionText());
+		configuration.setAttribute(TestUnitLaunchConfigurationDelegate.TESTTYPE_ATTR, classSelector.getValidatedSelectionText());
+		configuration.setAttribute(TestUnitLaunchConfigurationDelegate.LAUNCH_CONTAINER_ATTR, fileSelector.getValidatedSelectionText());
 	}
 
 	/*

@@ -1,6 +1,7 @@
 package org.rubypeople.rdt.internal.launching;
 
 import java.io.File;
+import java.util.Iterator;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
@@ -93,4 +94,25 @@ public class InterpreterRunnerConfiguration {
 		
 		return RubyRuntime.getDefault().getInterpreter(selectedInterpreter);
 	}
+    
+    protected void addToLoadPath(StringBuffer loadPath, IProject project) {
+
+        loadPath.append(" -I " + RdtLaunchingPlugin.osDependentPath(project.getLocation().toOSString()));
+    }
+    
+    protected String renderLoadPath() {
+        StringBuffer loadPath = new StringBuffer();
+
+        RubyProject project = this.getProject();
+        addToLoadPath(loadPath, project.getProject());
+
+        Iterator referencedProjects = project.getReferencedProjects().iterator();
+        while (referencedProjects.hasNext()) {
+            addToLoadPath(loadPath, (IProject) referencedProjects.next());
+        }
+        if (new Path(this.getFileName()).segmentCount() > 1) { ;
+            loadPath.append(" -I " + RdtLaunchingPlugin.osDependentPath(this.getAbsoluteFileDirectory())) ;
+        }
+        return loadPath.toString();
+    }
 }

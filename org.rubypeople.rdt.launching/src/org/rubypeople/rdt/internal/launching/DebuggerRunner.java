@@ -29,17 +29,14 @@ public class DebuggerRunner extends InterpreterRunner {
 	}
 
 	protected String getDebugCommandLineArgument() {
+        String debugLoadPathAddition =  RdtLaunchingPlugin.osDependentPath(DebuggerRunner.getDirectoryOfRubyDebuggerFile().replace('/', File.separatorChar));
 		if (RdtDebugCorePlugin.getDefault().isRubyDebuggerVerbose()) {
-			return " -reclipseDebugVerbose";
+			return " -reclipseDebugVerbose -I " + debugLoadPathAddition ;
 		}
-		return " -reclipseDebug";
+		return " -reclipseDebug -I "+ debugLoadPathAddition ;
 	}
 
 	public static String getDirectoryOfRubyDebuggerFile() {
 	    return RubyPlugin.getOSDirectory(RdtLaunchingPlugin.getDefault()) + "ruby" ;
-	}
-	
-	protected String renderLoadPath(InterpreterRunnerConfiguration configuration) {
-		return super.renderLoadPath(configuration) + " -I " + osDependentPath(DebuggerRunner.getDirectoryOfRubyDebuggerFile().replace('/', File.separatorChar));
 	}
 }

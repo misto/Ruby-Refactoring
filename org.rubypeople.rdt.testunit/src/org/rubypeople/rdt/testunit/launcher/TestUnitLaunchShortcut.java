@@ -138,7 +138,7 @@ public class TestUnitLaunchShortcut implements ILaunchShortcut {
 		candidateConfigs = new ArrayList(configs.length);
 		for (int i = 0; i < configs.length; i++) {
 			ILaunchConfiguration config = configs[i];
-			if ((config.getAttribute(TestUnitLaunchConfiguration.LAUNCH_CONTAINER_ATTR, "").equals(container)) && (config.getAttribute(TestUnitLaunchConfiguration.TESTTYPE_ATTR, "").equals(testClass)) && (config.getAttribute(TestUnitLaunchConfiguration.TESTNAME_ATTR, "").equals(testName)) && (config.getAttribute(RubyLaunchConfigurationAttribute.PROJECT_NAME, "").equals(rubyFile.getProject().getName()))) {
+			if ((config.getAttribute(TestUnitLaunchConfigurationDelegate.LAUNCH_CONTAINER_ATTR, "").equals(container)) && (config.getAttribute(TestUnitLaunchConfigurationDelegate.TESTTYPE_ATTR, "").equals(testClass)) && (config.getAttribute(TestUnitLaunchConfigurationDelegate.TESTNAME_ATTR, "").equals(testName)) && (config.getAttribute(RubyLaunchConfigurationAttribute.PROJECT_NAME, "").equals(rubyFile.getProject().getName()))) {
 				candidateConfigs.add(config);
 			}
 		}
@@ -215,10 +215,10 @@ public class TestUnitLaunchShortcut implements ILaunchShortcut {
 			wc.setAttribute(RubyLaunchConfigurationAttribute.FILE_NAME, pluginDir + File.separator + TEST_RUNNER_FILE);
 			wc.setAttribute(RubyLaunchConfigurationAttribute.WORKING_DIRECTORY, TestUnitLaunchShortcut.getDefaultWorkingDirectory(rubyFile.getProject()));
 			wc.setAttribute(RubyLaunchConfigurationAttribute.SELECTED_INTERPRETER, RubyRuntime.getDefault().getSelectedInterpreter().getName());
-			wc.setAttribute(TestUnitLaunchConfiguration.LAUNCH_CONTAINER_ATTR, container);
-			wc.setAttribute(TestUnitLaunchConfiguration.TESTNAME_ATTR, testName);
-			wc.setAttribute(TestUnitLaunchConfiguration.TESTTYPE_ATTR, testClass);
-			wc.setAttribute(TestUnitLaunchConfiguration.PORT_ATTR, port);
+			wc.setAttribute(TestUnitLaunchConfigurationDelegate.LAUNCH_CONTAINER_ATTR, container);
+			wc.setAttribute(TestUnitLaunchConfigurationDelegate.TESTNAME_ATTR, testName);
+			wc.setAttribute(TestUnitLaunchConfigurationDelegate.TESTTYPE_ATTR, testClass);
+			wc.setAttribute(TestUnitLaunchConfigurationDelegate.PORT_ATTR, port);
 			wc.setAttribute(ILaunchConfiguration.ATTR_SOURCE_LOCATOR_ID, "org.rubypeople.rdt.debug.ui.rubySourceLocator");
 			config = wc.doSave();
 		} catch (CoreException ce) {
@@ -228,7 +228,7 @@ public class TestUnitLaunchShortcut implements ILaunchShortcut {
 	}
 
 	protected ILaunchConfigurationType getRubyLaunchConfigType() {
-		return getLaunchManager().getLaunchConfigurationType(TestUnitLaunchConfiguration.ID_TESTUNIT_APPLICATION);
+		return getLaunchManager().getLaunchConfigurationType(TestUnitLaunchConfigurationDelegate.ID_TESTUNIT_APPLICATION);
 	}
 
 	protected ILaunchManager getLaunchManager() {

@@ -62,7 +62,7 @@
             icon="icons/full/obj16/tulaunch.gif"
             helpContextId="org.rubypeople.rdt.testunit.launch_shortcut"
             class="org.rubypeople.rdt.testunit.launcher.TestUnitLaunchShortcut"
-            modes="run"
+            modes="run,debug"
             id="org.rubypeople.rdt.testunit.testunitShortcut">
          <contextualLaunch>
             <enablement>
@@ -99,8 +99,8 @@
          point="org.eclipse.debug.core.launchConfigurationTypes">
       <launchConfigurationType
             name="%LaunchConfigurationTypeTestUnit.name"
-            delegate="org.rubypeople.rdt.testunit.launcher.TestUnitLaunchConfiguration"
-            modes="run"
+            delegate="org.rubypeople.rdt.testunit.launcher.TestUnitLaunchConfigurationDelegate"
+            modes="run,debug"
             id="org.rubypeople.rdt.testunit.launchconfig">
          <fileExtension
                default="false"
