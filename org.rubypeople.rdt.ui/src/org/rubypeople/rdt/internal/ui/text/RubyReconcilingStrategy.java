@@ -20,11 +20,11 @@ import org.eclipse.jface.text.reconciler.IReconcilingStrategyExtension;
 import org.eclipse.ui.texteditor.IDocumentProvider;
 import org.eclipse.ui.texteditor.ITextEditor;
 import org.rubypeople.rdt.internal.core.parser.RubyParser;
-import org.rubypeople.rdt.internal.core.parser.ast.RubyScript;
 import org.rubypeople.rdt.internal.ui.RdtUiPlugin;
 import org.rubypeople.rdt.internal.ui.rubyeditor.RubyDocumentProvider;
 import org.rubypeople.rdt.internal.ui.rubyeditor.outline.DocumentModelChangeEvent;
 import org.rubypeople.rdt.internal.ui.rubyeditor.outline.RubyCore;
+import org.rubypeople.rdt.internal.ui.rubyeditor.outline.RubyModel;
 
 public class RubyReconcilingStrategy implements IReconcilingStrategy, IReconcilingStrategyExtension {
 
@@ -46,10 +46,9 @@ public class RubyReconcilingStrategy implements IReconcilingStrategy, IReconcili
 			if (provider instanceof RubyDocumentProvider) {
 				RubyDocumentProvider documentProvider = (RubyDocumentProvider) provider;
 				IDocument doc = documentProvider.getDocument(fEditor.getEditorInput());
-				RubyScript model = RubyParser.parse(doc.get());
-				if (model != null) {
-					RubyCore.getDefault().notifyDocumentModelListeners(new DocumentModelChangeEvent(model));
-				}
+				RubyModel model = documentProvider.getRubyModel(fEditor.getEditorInput()) ;
+				model.setScript(RubyParser.parse(doc.get()));
+				RubyCore.getDefault().notifyDocumentModelListeners(new DocumentModelChangeEvent(model));
 			}
 		} catch (Exception e) {
 			RdtUiPlugin.log(e);

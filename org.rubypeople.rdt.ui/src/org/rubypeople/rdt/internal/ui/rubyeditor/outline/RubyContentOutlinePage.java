@@ -9,7 +9,7 @@ import org.eclipse.ui.views.contentoutline.ContentOutlinePage;
 import org.rubypeople.rdt.internal.core.RubyPlugin;
 import org.rubypeople.rdt.internal.core.parser.ParseException;
 import org.rubypeople.rdt.internal.core.parser.RubyParser;
-import org.rubypeople.rdt.internal.core.parser.ast.RubyScript;
+import org.rubypeople.rdt.internal.ui.rubyeditor.RubyDocumentProvider;
 
 public class RubyContentOutlinePage extends ContentOutlinePage {
 
@@ -17,7 +17,7 @@ public class RubyContentOutlinePage extends ContentOutlinePage {
 	private ExtendedTextEditor fTextEditor;
 	private IDocumentModelListener fListener;
 	private RubyCore fCore;
-	private RubyScript script;
+	private RubyModel model;
 
 	public RubyContentOutlinePage(IDocument document, ExtendedTextEditor textEditor) {
 		this.document = document;
@@ -31,13 +31,15 @@ public class RubyContentOutlinePage extends ContentOutlinePage {
 		tree.setContentProvider(new RubyOutlineContentProvider(fTextEditor));
 		tree.setLabelProvider(new RubyOutlineLabelProvider());
 
-		if (script == null) {
+		//if (script == null) {
 			try {
-				script = RubyParser.parse(document.get());
+				RubyDocumentProvider provider = (RubyDocumentProvider) this.fTextEditor.getDocumentProvider();
+				model = provider.getRubyModel(fTextEditor.getEditorInput()) ;
+				model.setScript(RubyParser.parse(document.get()));
 			} catch (ParseException e) {
 				RubyPlugin.log(e);
 			}
-		}
+		
 
 		if (fListener == null) {
 			fListener = createRubyModelChangeListener();
@@ -45,7 +47,7 @@ public class RubyContentOutlinePage extends ContentOutlinePage {
 		fCore = RubyCore.getDefault();
 		fCore.addDocumentModelListener(fListener);
 
-		tree.setInput(script);
+		tree.setInput(model);
 		tree.setSorter(new RubyElementSorter());
 	}
 
@@ -53,15 +55,15 @@ public class RubyContentOutlinePage extends ContentOutlinePage {
 		return new IDocumentModelListener() {
 
 			public void documentModelChanged(final DocumentModelChangeEvent event) {
-				if (/*event.getModel() == script &&*/ !getControl().isDisposed()) {
+				if (event.getModel() == model && !getControl().isDisposed()) {
 					getControl().getDisplay().asyncExec(new Runnable() {
 						public void run() {
 							Control ctrl = getControl();
 							if (ctrl != null && !ctrl.isDisposed()) {
-								script = event.getModel();
+								//model.setScript(event.getModel());
 								// TODO Just refresh, don't set input so that expansions are kept
-								getTreeViewer().setInput(script);
-								//getTreeViewer().refresh();
+								//getTreeViewer().setInput(script);
+								getTreeViewer().refresh();
 							}
 						}
 					});

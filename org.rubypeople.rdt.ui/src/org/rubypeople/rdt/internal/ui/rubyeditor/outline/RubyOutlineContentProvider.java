@@ -1,13 +1,12 @@
 package org.rubypeople.rdt.internal.ui.rubyeditor.outline;
 
 import org.eclipse.jface.text.DocumentEvent;
-import org.eclipse.jface.text.IDocumentListener;
 import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.ui.texteditor.ExtendedTextEditor;
 import org.rubypeople.rdt.internal.core.parser.ast.IRubyElement;
 
-public class RubyOutlineContentProvider implements ITreeContentProvider, IDocumentListener {
+public class RubyOutlineContentProvider implements ITreeContentProvider {
 
 	protected Viewer viewer;
 	private ExtendedTextEditor fTextEditor;

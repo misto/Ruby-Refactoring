@@ -73,7 +73,7 @@ public class RubyAbstractEditor extends ExtendedTextEditor implements IReconcili
 
 					public void run() {
 						try {
-							createMarkers(event.getModel(), getDocumentProvider().getDocument(getEditorInput()));
+							createMarkers(event.getModel().getScript(), getDocumentProvider().getDocument(getEditorInput()));
 						} catch (CoreException e) {
 							RdtUiPlugin.log(e);
 						}

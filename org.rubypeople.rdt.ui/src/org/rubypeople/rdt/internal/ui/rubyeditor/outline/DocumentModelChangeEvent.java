@@ -11,17 +11,16 @@
 
 package org.rubypeople.rdt.internal.ui.rubyeditor.outline;
 
-import org.rubypeople.rdt.internal.core.parser.ast.RubyScript;
 
 public class DocumentModelChangeEvent {
 	
-	private RubyScript fModel;
+	private RubyModel fModel;
 	
-	public DocumentModelChangeEvent(RubyScript model) {
+	public DocumentModelChangeEvent(RubyModel model) {
 		fModel= model;
 	}
 	
-	public RubyScript getModel() {
+	public RubyModel getModel() {
 		return fModel;
 	}
 	
