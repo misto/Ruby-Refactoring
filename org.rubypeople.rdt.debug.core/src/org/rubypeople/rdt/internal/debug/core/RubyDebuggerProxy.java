@@ -15,6 +15,7 @@ import org.rubypeople.rdt.internal.debug.core.model.RubyThread;
 import org.rubypeople.rdt.internal.debug.core.model.RubyVariable;
 import org.rubypeople.rdt.internal.debug.core.model.ThreadInfo;
 import org.rubypeople.rdt.internal.debug.core.parsing.FramesReader;
+import org.rubypeople.rdt.internal.debug.core.parsing.LoadResultReader;
 import org.rubypeople.rdt.internal.debug.core.parsing.MultiReaderStrategy;
 import org.rubypeople.rdt.internal.debug.core.parsing.SuspensionReader;
 import org.rubypeople.rdt.internal.debug.core.parsing.ThreadInfoReader;
@@ -274,6 +275,15 @@ public class RubyDebuggerProxy {
 		} catch (Exception e) {
 			RdtDebugCorePlugin.log(e);
 			return null;
+		}
+	}
+	
+	public LoadResultReader.LoadResult readLoadResult(String filename) {
+		try {
+			this.println("load " +filename) ;
+			return new LoadResultReader(getMultiReaderStrategy()).readLoadResult();
+		} catch (Exception e) {
+			return null ;
 		}
 	}
 
