@@ -386,18 +386,15 @@ public class RubyParser {
 	 * @param lineNum
 	 */
 	private static void findRequires(String curLine, int lineNum) {
-		int requiresIndex = curLine.indexOf("require ");
-		if (requiresIndex != -1) {
-			log("Found requires: " + curLine);
-			int start = requiresIndex + "require \"".length();
-			if (start == curLine.length()) return;
-			String name = curLine.substring(start, curLine.length() - 1);
-			RubyRequires requires = new RubyRequires(name, new Position(lineNum, start));
-			if (!script.contains(requires)) {
-				script.addRequires(requires);
-			} else {
-				script.addParseError(new ParseError("Duplicate requires statement unnecessary.", lineNum, requires.getStart().getOffset(), requires.getEnd().getOffset()));
-			}
+		char[] tokens = { '\''};
+		int start = findElement("require \'", tokens, curLine);
+		if (start == -1) return;
+		String name = getToken("require \'", tokens, curLine);
+		RubyRequires requires = new RubyRequires(name, new Position(lineNum, start));
+		if (!script.contains(requires)) {
+			script.addRequires(requires);
+		} else {
+			script.addParseError(new ParseError("Duplicate requires statement unnecessary.", lineNum, requires.getStart().getOffset(), requires.getEnd().getOffset()));
 		}
 	}
 
