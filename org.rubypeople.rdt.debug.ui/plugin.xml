@@ -41,7 +41,7 @@
    <extension
          point="org.eclipse.debug.ui.launchConfigurationTypeImages">
       <launchConfigurationTypeImage
-            icon="icons/full/ctool16/runRuby.gif"
+            icon="icons/full/ctool16/run_ruby.gif"
             configTypeID="org.rubypeople.rdt.launching.LaunchConfigurationTypeRubyApplication"
             id="org.rubypeople.rdt.debug.ui.LaunchConfigurationTypeImageRubyApplication">
       </launchConfigurationTypeImage>
@@ -58,7 +58,7 @@
          point="org.eclipse.debug.ui.launchShortcuts">
       <shortcut
             label="%LaunchShortcut.Ruby.label"
-            icon="icons/full/ctool16/runRuby.gif"
+            icon="icons/full/ctool16/run_ruby.gif"
             modes="run"
             class="org.rubypeople.rdt.internal.debug.ui.launcher.RubyApplicationShortcut"
             id="org.rubypeople.rdt.debug.ui.applicationshortcut.ruby">

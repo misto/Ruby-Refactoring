@@ -99,7 +99,7 @@
          point="org.eclipse.ui.editors">
       <editor
             name="%EditorRubyFile.name"
-            icon="icons/full/ctool16/ruby_sheet.png"
+            icon="icons/full/ctool16/ruby_page.gif"
             extensions="%EditorRubyFile.extension"
             contributorClass="org.rubypeople.rdt.internal.ui.rubyeditor.RubyEditorActionContributor"
             class="org.rubypeople.rdt.internal.ui.rubyeditor.RubyEditor"
