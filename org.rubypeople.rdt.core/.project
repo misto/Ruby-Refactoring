@@ -3,6 +3,7 @@
 	<name>org.rubypeople.rdt.core</name>
 	<comment></comment>
 	<projects>
+		<project>org.rubypeople.eclipse.shams</project>
 	</projects>
 	<buildSpec>
 		<buildCommand>
