@@ -19,7 +19,7 @@ ECLIPSE_CREATE_SOCKET = true
 # ECLIPSE_VERBOSE prints the communication between eclipse and ruby debugger
 # on stderr. If you have started a eclipse debug session (and use default preferences for
 # colors of streams), the communication will be printed in red letters to the eclipse console.
-ECLIPSE_VERBOSE = true
+ECLIPSE_VERBOSE = false
 
 
 class PrinterMultiplexer
@@ -67,7 +67,7 @@ class XmlPrinter
     if valueString =~ /^\"/ then
       valueString.slice!(1..(valueString.length)-2) 
     end
-    out("<variable name=\"%s\" value=\"%s\" type=\"%s\" hasChildren=\"%s\"/>", name, CGI.escapeHTML(valueString), value.type(), value.instance_variables.length > 0 )
+    out("<variable name=\"%s\" value=\"%s\" type=\"%s\" hasChildren=\"%s\"/>", name, CGI.escapeHTML(valueString), value.class(), value.instance_variables.length > 0 )
   end
 
   def printBreakpoint(n, debugFuncName, file, pos)
@@ -478,7 +478,6 @@ class DEBUGGER__
     
     def processInput(input)
         binding, file, line, id = @frames[0]
-        puts "readUserInput: #{file}"
     	readUserInput(binding, file, line, input)
     end
     
