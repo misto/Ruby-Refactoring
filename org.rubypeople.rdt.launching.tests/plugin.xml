@@ -3,13 +3,14 @@
 <plugin
    id="org.rubypeople.rdt.launching.tests"
    name="org.rubypeople.rdt.launching.tests"
-   version="0.3.2">
+   version="0.5.0">
 
    <runtime>
       <library name="rdtlaunchingtests.jar">
          <export name="*"/>
       </library>
    </runtime>
+
    <requires>
       <import plugin="org.eclipse.core.runtime.compatibility"/>
       <import plugin="org.eclipse.debug.core"/>
@@ -19,6 +20,5 @@
       <import plugin="org.eclipse.core.resources"/>
       <import plugin="org.rubypeople.eclipse.testutils"/>
    </requires>
-
 
 </plugin>
