@@ -7,8 +7,10 @@ import java.io.PrintWriter;
 import java.net.Socket;
 
 import junit.framework.TestCase;
+import junit.framework.TestSuite;
 
 import org.rubypeople.rdt.internal.debug.core.ExceptionSuspensionPoint;
+import org.rubypeople.rdt.internal.debug.core.RdtDebugCorePlugin;
 import org.rubypeople.rdt.internal.debug.core.StepSuspensionPoint;
 import org.rubypeople.rdt.internal.debug.core.SuspensionPoint;
 import org.rubypeople.rdt.internal.debug.core.model.RubyProcessingException;
@@ -35,12 +37,12 @@ public class TC_DebuggerCommunicationTest extends TestCase {
 		
 		//suite.addTest(new TC_DebuggerCommunicationTest("testVariablesInFrames"));
 		//suite.addTest(new TC_DebuggerCommunicationTest("testBreakpoint"));
-		suite.addTest(new TC_DebuggerCommunicationTest("testFramesWhenThreadSpawned"));
-		suite.addTest(new TC_DebuggerCommunicationTest("testThreadIdsAndResume"));
+		//suite.addTest(new TC_DebuggerCommunicationTest("testFramesWhenThreadSpawned"));
+		//suite.addTest(new TC_DebuggerCommunicationTest("testThreadIdsAndResume"));
 		//suite.addTest(new TC_DebuggerCommunicationTest("testThreadsAndFrames"));		
 		//suite.addTest(new TC_DebuggerCommunicationTest("testStepOver"));		
 		//suite.addTest(new TC_DebuggerCommunicationTest("testThreadFramesAndVariables"));
-		//suite.addTest(new TC_DebuggerCommunicationTest("testVariableNil"));
+		suite.addTest(new TC_DebuggerCommunicationTest("testVariableNil"));
 		//suite.addTest(new TC_DebuggerCommunicationTest("testVariableInstanceNested"));				
 		//suite.addTest(new TC_DebuggerCommunicationTest("testStaticVariableInstanceNested"));			
 		//suite.addTest(new TC_DebuggerCommunicationTest("testException"));
@@ -57,14 +59,10 @@ public class TC_DebuggerCommunicationTest extends TestCase {
 		//suite.addTest(new TC_DebuggerCommunicationTest("testVariableHashWithObjectKeys"));
 		//suite.addTest(new TC_DebuggerCommunicationTest("testVariableHashWithStringKeys"));
 		//suite.addTest(new TC_DebuggerCommunicationTest("testVariableWithXmlContent"));
-		  
-		
-		
-
 		return suite;
-
 	}
-*/
+	*/
+
 
 	private static String tmpDir;
 	private static String getTmpDir() {
@@ -124,7 +122,14 @@ public class TC_DebuggerCommunicationTest extends TestCase {
 	}
 
 	public void startRubyProcess() throws Exception {
-		String binDir = getClass().getResource("/").getFile();
+		String binDir ;
+		if (RdtDebugCorePlugin.getDefault() != null) {
+			// run as JUnit Plug-in Test
+			binDir = RdtDebugCorePlugin.getDefault().getBundle().getLocation().substring(15) + "/bin/" ;
+		}
+		else {
+		  binDir = getClass().getResource("/").getFile();
+		}
 		if (binDir.startsWith("/") && File.separatorChar == '\\') {
 			binDir = binDir.substring(1);
 		}
