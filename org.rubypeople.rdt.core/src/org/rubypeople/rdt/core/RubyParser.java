@@ -16,20 +16,40 @@ public class RubyParser {
 
 	public RubyParsedComponent getComponentHierarchy(IFile rubyFile) {
 		
-		StringTokenizer tokenizer = new StringTokenizer(getFileContent(rubyFile));
+		RubyParsingStringTokenizer tokenizer = new RubyParsingStringTokenizer(getFileContent(rubyFile));
 
 		RubyParsedComponent parsedComponent = new RubyParsedComponent(rubyFile.getName());
+		parsedComponent.nameOffset(0);
+		parsedComponent.nameLength(0);
+		parsedComponent.offset(0);
+		parsedComponent.length(0);
+		
 		RubyParsedComponent currentClassComponent = null;
 		while (tokenizer.hasMoreTokens()) {
 			String token = tokenizer.nextToken();
 			if (token.equals("class")) {
-				currentClassComponent = new RubyParsedComponent(tokenizer.nextToken());
+				int offset = tokenizer.currentPosition();
+				String classToken = tokenizer.nextToken();
+				currentClassComponent = new RubyParsedComponent(classToken);
+				currentClassComponent.nameOffset(offset);
+				currentClassComponent.nameLength(classToken.length());
+				currentClassComponent.offset(offset);
+				currentClassComponent.length(0);
+				
 				parsedComponent.addChild(currentClassComponent);
 			}
 			else
-				if (token.equals("def"))
-					currentClassComponent.addChild(new RubyParsedComponent(tokenizer.nextToken()));
-				
+				if (token.equals("def")) {
+					int offset = tokenizer.currentPosition();
+					String defToken = tokenizer.nextToken();
+					RubyParsedComponent defComponent = new RubyParsedComponent(defToken); 
+					defComponent.nameOffset(offset);
+					defComponent.nameLength(defToken.length());
+					defComponent.offset(offset);
+					defComponent.length(0);
+					
+					currentClassComponent.addChild(defComponent);
+				}
 		}
 
 		return parsedComponent;

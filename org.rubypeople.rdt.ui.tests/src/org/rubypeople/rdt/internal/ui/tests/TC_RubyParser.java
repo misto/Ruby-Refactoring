@@ -42,9 +42,18 @@ public class TC_RubyParser extends TestCase {
 		
 		assertTrue(parsedComponent instanceof RubyParsedComponent);
 		assertEquals("There should be one child", 1, parsedComponent.getChildren().size());
+		assertEquals("nameoffset for top level should be zero", 0, parsedComponent.nameOffset());
+		assertEquals("namelength for top level should be zero", 0, parsedComponent.nameLength());
+		assertEquals("length for top level should be zero", 0, parsedComponent.length());
+		assertEquals("offset for top level should be zero", 0, parsedComponent.offset());
 		
 		RubyParsedComponent classComponent = (RubyParsedComponent) parsedComponent.getChildren().get(0);
-		assertEquals("The first component should be the class", "Simple", classComponent.getName());
+		assertEquals("Simple", classComponent.getName());
+		assertEquals(5, classComponent.nameOffset());
+		assertEquals(6, classComponent.nameLength());
+		//assertEquals(61, classComponent.length());
+		assertEquals(5, classComponent.offset());
+		
 		
 		RubyParsedComponent firstMethodComponent = (RubyParsedComponent) classComponent.getChildren().get(0);
 		assertEquals("The first method should be named correctly", "initialize()", firstMethodComponent.getName());

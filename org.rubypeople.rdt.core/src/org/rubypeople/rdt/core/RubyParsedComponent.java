@@ -7,6 +7,10 @@ public class RubyParsedComponent {
 
 	protected String name;
 	protected List children = new ArrayList();
+	protected int nameLength;
+	protected int offset;
+	protected int length;
+	protected int nameOffset;
 	
 	public RubyParsedComponent(String name) {
 		this.name = name;
@@ -25,18 +29,34 @@ public class RubyParsedComponent {
 	}
 
 	public int nameOffset() {
-		return -1;
+		return nameOffset;
+	}
+	
+	public void nameOffset(int nameOffset) {
+		this.nameOffset = nameOffset;
 	}
 
 	public int nameLength() {
-		return -1;
+		return nameLength;
+	}
+	
+	public void nameLength(int length) {
+		nameLength = length;
 	}
 	
 	public int offset() {
-		return -1;
+		return offset;
+	}
+	
+	public void offset(int offset) {
+		this.offset = offset;
 	}
 	
 	public int length() {
-		return -1;
+		return length;
+	}
+	
+	public void length(int length) {
+		this.length = length;
 	}
 }
