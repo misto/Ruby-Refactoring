@@ -45,9 +45,15 @@ module Test
           
           # Begins the test run.
           def start
-            setup_mediator
-            attach_to_mediator
-            return start_mediator
+            begin
+              setup_mediator
+              attach_to_mediator
+              return start_mediator
+            rescue Exception
+              $stdout.puts "Launched class is not compatible with Test::Unit::TestCase"
+              output_single("%TESTC  0 v2\n")
+              finished(0)
+            end
           end
           
           private
@@ -210,46 +216,11 @@ if __FILE__ == $0
   keepAliveString = ARGV[2]
   testClass = ARGV[3]
   #testMethod = ARGV[4]
-  
-  if keepAliveString == "false"
-    keepAlive = nil
-  else
-    keepAlive = true
-  end
-  
-  session = createTcpSession('127.0.0.1', port) ;
-
+ 
+  session = createTcpSession('127.0.0.1', port)
   testSuite = eval(testClass)
   remoteTestRunner = Test::Unit::UI::Eclipse::TestRunner.new(testSuite, session)
   remoteTestRunner.start
-  
-  if (keepAlive)
-	begin
-	  while (true)
-		if (message = session.gets)			
-		  if (message[0, 7] == ">STOP   ")
-			# remoteTestRunner.stop
-			break
-		  elsif (message[0, 7] == ">RERUN  ")
-			arg = message[8, message.length - 1]
-			#format: testId className testName
-			c0 = arg.index(' ')
-			c1 = arg.index(' ', c0+1)
-			s = arg[0, c0 - 1]
-			testId = s.to_i
-			className = arg[c0+1, c1 - 1]
-			testName = arg[c1 + 1, arg.length - 1]
-			remoteTestRunner = Test::Unit::UI::Eclipse::TestRunner.new(testSuite, session)
-            remoteTestRunner.start
-		    #remoteTestRunner.addRerunRequest(RerunRequest.new(testId, className, testName))
-		  end
-	    end
-	  end
-	rescue Exception
-	  # remoteTestRunner.stop
-	end
-  end
-    
   session.close
   exit
 end
