@@ -32,4 +32,10 @@ public class RdtLaunchingPlugin extends Plugin {
 	public static void log(Throwable e) {
 		log(new Status(IStatus.ERROR, PLUGIN_ID, IStatus.ERROR, RdtLaunchingMessages.getString("RdtLaunchingPlugin.internalErrorOccurred"), e)); //$NON-NLS-1$
 	}
+	
+	public static void debug(String message) {
+		if (RdtLaunchingPlugin.getDefault().isDebugging()) {
+			System.out.println(message) ;
+		}
+	}
 }
