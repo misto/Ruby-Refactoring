@@ -8,7 +8,10 @@
    class="org.rubypeople.rdt.internal.ui.RdtUiPlugin">
 
    <runtime>
-      <library name="rdtui.jar"/>
+      <library name="rdtui.jar">
+         <export name="*"/>
+         <packages prefixes="org.rubypeople.rdt.internal.ui,org.rubypeople.rdt.ui"/>
+      </library>
    </runtime>
    <requires>
       <import plugin="org.eclipse.ui.ide"/>
@@ -19,6 +22,7 @@
       <import plugin="org.eclipse.core.runtime.compatibility"/>
       <import plugin="org.eclipse.core.resources"/>
       <import plugin="org.eclipse.ui"/>
+      <import plugin="org.eclipse.ui.console"/>
       <import plugin="org.eclipse.debug.ui"/>
       <import plugin="org.rubypeople.rdt.core"/>
       <import plugin="org.eclipse.ui.workbench"/>
@@ -133,10 +137,10 @@
          point="org.eclipse.ui.editors">
       <editor
             name="%EditorRubyFile.name"
-            extensions="%EditorRubyFile.extension"
             icon="icons/full/ctool16/ruby_page.gif"
-            class="org.rubypeople.rdt.internal.ui.rubyeditor.RubyEditor"
+            extensions="%EditorRubyFile.extension"
             contributorClass="org.rubypeople.rdt.internal.ui.rubyeditor.RubyEditorActionContributor"
+            class="org.rubypeople.rdt.internal.ui.rubyeditor.RubyEditor"
             id="org.rubypeople.rdt.ui.EditorRubyFile">
       </editor>
    </extension>
@@ -144,10 +148,10 @@
          point="org.eclipse.ui.editors">
       <editor
             name="%EditorRubyFile.name"
-            icon="icons/full/ctool16/ruby_page.gif"
             extensions="%EditorRubyFile.extension"
-            contributorClass="org.rubypeople.rdt.internal.ui.rubyeditor.RubyEditorActionContributor"
+            icon="icons/full/ctool16/ruby_page.gif"
             class="org.rubypeople.rdt.internal.ui.rubyeditor.ExternalRubyEditor"
+            contributorClass="org.rubypeople.rdt.internal.ui.rubyeditor.RubyEditorActionContributor"
             id="org.rubypeople.rdt.ui.ExternalRubyEditor">
       </editor>
    </extension>
@@ -166,8 +170,8 @@
       </scope>
       <command
             name="%ActionDefinition.format.name"
-            description="%ActionDefinition.format.description"
             category="org.rubypeople.rdt.ui.category.source"
+            description="%ActionDefinition.format.description"
             id="org.rubypeople.rdt.ui.edit.text.ruby.format">
       </command>
       <keyBinding
@@ -178,8 +182,8 @@
       </keyBinding>
       <command
             name="%ActionDefinition.comment.name"
-            description="%ActionDefinition.comment.description"
             category="org.rubypeople.rdt.ui.category.source"
+            description="%ActionDefinition.comment.description"
             id="org.rubypeople.rdt.ui.edit.text.ruby.comment">
       </command>
       <keyBinding
@@ -190,8 +194,8 @@
       </keyBinding>
       <command
             name="%ActionDefinition.uncomment.name"
-            description="%ActionDefinition.uncomment.description"
             category="org.rubypeople.rdt.ui.category.source"
+            description="%ActionDefinition.uncomment.description"
             id="org.rubypeople.rdt.ui.edit.text.ruby.uncomment">
       </command>
       <keyBinding
@@ -202,8 +206,8 @@
       </keyBinding>
       <command
             name="%ActionDefinition.contentAssist.name"
-            description="%ActionDefinition.contentAssist.description"
             category="org.rubypeople.rdt.ui.category.source"
+            description="%ActionDefinition.contentAssist.description"
             id="org.rubypeople.rdt.ui.edit.text.ruby.content.assist.proposals">
       </command>
       <keyBinding
@@ -242,15 +246,15 @@
          <action
                definitionId="org.rubypeople.rdt.ui.edit.text.ruby.uncomment"
                label="%UncommentAction.label"
-               menubarPath="org.rubypeople.rdt.ui.ruby.menu/editGroup"
                retarget="true"
+               menubarPath="org.rubypeople.rdt.ui.ruby.menu/editGroup"
                id="org.rubypeople.rdt.ui.actions.Uncomment">
          </action>
          <action
                definitionId="org.rubypeople.rdt.ui.edit.text.ruby.comment"
                label="%CommentAction.label"
-               menubarPath="org.rubypeople.rdt.ui.ruby.menu/editGroup"
                retarget="true"
+               menubarPath="org.rubypeople.rdt.ui.ruby.menu/editGroup"
                id="org.rubypeople.rdt.ui.actions.Comment">
          </action>
       </actionSet>
@@ -275,40 +279,41 @@
    <extension
          point="org.eclipse.ui.editors.annotationTypes">
       <type
-         name="org.rubypeople.rdt.ui.error"
-         super="org.eclipse.ui.workbench.texteditor.error"
-         markerType="org.rubypeople.rdt.core.problem"
-         markerSeverity="2">
+            markerType="org.rubypeople.rdt.core.problem"
+            super="org.eclipse.ui.workbench.texteditor.error"
+            name="org.rubypeople.rdt.ui.error"
+            markerSeverity="2">
       </type>
       <type
-         name="org.rubypeople.rdt.ui.warning"
-         super="org.eclipse.ui.workbench.texteditor.warning"
-         markerType="org.rubypeople.rdt.core.problem"
-         markerSeverity="1">
+            markerType="org.rubypeople.rdt.core.problem"
+            super="org.eclipse.ui.workbench.texteditor.warning"
+            name="org.rubypeople.rdt.ui.warning"
+            markerSeverity="1">
       </type>
       <type
-         name="org.rubypeople.rdt.ui.info"
-         super="org.eclipse.ui.workbench.texteditor.info"
-         markerType="org.rubypeople.rdt.core.problem"
-         markerSeverity="0">
+            markerType="org.rubypeople.rdt.core.problem"
+            super="org.eclipse.ui.workbench.texteditor.info"
+            name="org.rubypeople.rdt.ui.info"
+            markerSeverity="0">
       </type>
    </extension>
    <extension
          point="org.eclipse.ui.editors.markerAnnotationSpecification">
       <specification
-            annotationType="org.rubypeople.rdt.ui.error"
+            markerType="org.rubypeople.rdt.core.problem"
             symbolicIcon="error"
-			markerType="org.rubypeople.rdt.core.problem">
+            annotationType="org.rubypeople.rdt.ui.error">
       </specification>
       <specification
-            annotationType="org.rubypeople.rdt.ui.warning"
+            markerType="com.rubypeople.rdt.ui.problem"
             symbolicIcon="warning"
-			markerType="com.rubypeople.rdt.ui.problem">
+            annotationType="org.rubypeople.rdt.ui.warning">
       </specification>
       <specification
-            annotationType="org.rubypeople.rdt.ui.info"
+            markerType="com.rubypeople.rdt.ui.problem"
             symbolicIcon="info"
-			markerType="com.rubypeople.rdt.ui.problem">
+            annotationType="org.rubypeople.rdt.ui.info">
       </specification>
-	</extension>
+   </extension>
+
 </plugin>
