@@ -516,6 +516,13 @@ public class TC_RubyParser extends TestCase {
 		assertEquals(1, rubyClass.getElementCount() );
 	}
 	
+	public void testRecognizesSubstitutedInstanceVariableInRegex() throws Exception {
+		RubyScript script = RubyParser.parse("class Bob\ndef decode_b(str)\nstr.gsub!(/#{@var}/i) {\ndecode64(1)\n}\nend\nend");
+		assertEquals(1, script.getElementCount());
+		RubyClass rubyClass = script.getClass("Bob");
+		assertEquals(2, rubyClass.getElementCount() );
+	}
+	
 	public void testIgnoresNonSubstitutedInstanceVariableInDoubleQuotes() throws Exception {
 		RubyScript script = RubyParser.parse("class Bob\ndef decode_b(str)\nputs \"@var\"\nend\nend");
 		assertEquals(1, script.getElementCount());
@@ -537,6 +544,13 @@ public class TC_RubyParser extends TestCase {
 		assertEquals(1, rubyClass.getElementCount() );
 	}
 	
+	public void testRecognizesSubstitutedClassVariableInRegex() throws Exception {
+		RubyScript script = RubyParser.parse("class Bob\ndef decode_b(str)\nstr.gsub!(/#{@@var}/) {\ndecode64(1)\n}\nend\nend");
+		assertEquals(1, script.getElementCount());
+		RubyClass rubyClass = script.getClass("Bob");
+		assertEquals(2, rubyClass.getElementCount() );
+	}
+	
 	public void testIgnoresNonSubstitutedClassVariableInDoubleQuotes() throws Exception {
 		RubyScript script = RubyParser.parse("class Bob\ndef decode_b(str)\nputs \"@@var\"\nend\nend");
 		assertEquals(1, script.getElementCount());
@@ -549,6 +563,34 @@ public class TC_RubyParser extends TestCase {
 		assertEquals(1, script.getElementCount());
 		RubyClass rubyClass = script.getClass("Bob");
 		assertEquals(2, rubyClass.getElementCount() );
+	}
+	
+	public void testIgnoresNonSubstitutedGlobalInRegex() throws Exception {
+		RubyScript script = RubyParser.parse("class Bob\ndef decode_b(str)\nstr.gsub!(/$var/i) {\ndecode64(1)\n}\nend\nend");
+		assertEquals(1, script.getElementCount());
+		RubyClass rubyClass = script.getClass("Bob");
+		assertEquals(1, rubyClass.getElementCount() );
+	}
+	
+	public void testRecognizesSubstitutedGlobalInRegex() throws Exception {
+		RubyScript script = RubyParser.parse("class Bob\ndef decode_b(str)\nstr.gsub!(/#{$var}/) {\ndecode64(1)\n}\nend\nend");
+		assertEquals(2, script.getElementCount());
+		RubyClass rubyClass = script.getClass("Bob");
+		assertEquals(1, rubyClass.getElementCount() );
+	}
+	
+	public void testIgnoresNonSubstitutedGlobalInDoubleQuotes() throws Exception {
+		RubyScript script = RubyParser.parse("class Bob\ndef decode_b(str)\nputs \"$var\"\nend\nend");
+		assertEquals(1, script.getElementCount());
+		RubyClass rubyClass = script.getClass("Bob");
+		assertEquals(1, rubyClass.getElementCount() );
+	}
+	
+	public void testRecognizesSubstitutedGlobalInDoubleQuotes() throws Exception {
+		RubyScript script = RubyParser.parse("class Bob\ndef decode_b(str)\nputs \"#{$var}\"\nend\nend");
+		assertEquals(2, script.getElementCount());
+		RubyClass rubyClass = script.getClass("Bob");
+		assertEquals(1, rubyClass.getElementCount() );
 	}
 
 }
