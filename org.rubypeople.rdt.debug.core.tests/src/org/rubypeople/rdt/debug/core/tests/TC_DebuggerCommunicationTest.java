@@ -23,6 +23,7 @@ import org.rubypeople.rdt.internal.debug.core.parsing.MultiReaderStrategy;
 import org.rubypeople.rdt.internal.debug.core.parsing.SuspensionReader;
 import org.rubypeople.rdt.internal.debug.core.parsing.ThreadInfoReader;
 import org.rubypeople.rdt.internal.debug.core.parsing.VariableReader;
+import org.rubypeople.rdt.internal.launching.RdtLaunchingPlugin;
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserFactory;
 
@@ -76,7 +77,13 @@ public class TC_DebuggerCommunicationTest extends TestCase {
 		}
 		return tmpDir;
 	}
-	private static final String RUBY_INTERPRETER = "ruby.exe" ;
+	private static String RUBY_INTERPRETER;
+	static {
+		RUBY_INTERPRETER = System.getProperty("rdt.rubyInterpreter");
+		if (RUBY_INTERPRETER == null) {
+			RUBY_INTERPRETER = "ruby.exe";
+		}
+	}
 	private Process process;
 	private OutputRedirectorThread rubyStdoutRedirectorThread;
 	private OutputRedirectorThread rubyStderrRedirectorThread;
@@ -125,18 +132,20 @@ public class TC_DebuggerCommunicationTest extends TestCase {
 	}
 
 	public void startRubyProcess() throws Exception {
-		String binDir ;
-		if (RdtDebugCorePlugin.getDefault() != null) {
-			// run as JUnit Plug-in Test
-			binDir = RdtDebugCorePlugin.getDefault().getBundle().getLocation().substring(7) + "/bin/" ;
+		String includeDir ;
+		if (RdtLaunchingPlugin.getDefault() != null) {
+			// being run as JUnit Plug-in Test, Eclipse is running
+			includeDir = RdtLaunchingPlugin.getDefault().getBundle().getLocation().substring(7) + "/ruby/" ;
 		}
 		else {
-		  binDir = getClass().getResource("/").getFile();
+		    // being run as "pure" JUnit Test without Eclipse running 
+			includeDir = getClass().getResource("/").getFile();
+			includeDir += "../../org.rubypeople.rdt.launching/ruby" ;
 		}
-		if (binDir.startsWith("/") && File.separatorChar == '\\') {
-			binDir = binDir.substring(1);
+		if (includeDir.startsWith("/") && File.separatorChar == '\\') {
+			includeDir = includeDir.substring(1);
 		}
-		String cmd = TC_DebuggerCommunicationTest.RUBY_INTERPRETER + " -I " + binDir + "../../org.rubypeople.rdt.launching/ruby -I" + getTmpDir().replace('\\', '/') + " -reclipseDebugVerbose.rb " + getRubyTestFilename();
+		String cmd = TC_DebuggerCommunicationTest.RUBY_INTERPRETER + " -I " + includeDir +  " -I" + getTmpDir().replace('\\', '/') + " -reclipseDebugVerbose.rb " + getRubyTestFilename();
 		System.out.println("Starting: " + cmd);
 		process = Runtime.getRuntime().exec(cmd);
 		rubyStderrRedirectorThread = new OutputRedirectorThread(process.getErrorStream());
