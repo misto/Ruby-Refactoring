@@ -71,6 +71,8 @@ public class RubyBuilder extends IncrementalProjectBuilder {
 		List files = new ArrayList();
 		for (int i = 0; i < deltas.length; i++) {
 			IResourceDelta curDelta = deltas[i];
+			// Skip removals, we don't want to parse those
+			if (curDelta.getKind() == IResourceDelta.REMOVED) continue;
 			IResource resource = curDelta.getResource();
 			if (resource.getType() == IResource.FOLDER || resource.getType() == IResource.PROJECT) {
 				files.addAll(getAffectedFiles(curDelta.getAffectedChildren()));
