@@ -44,6 +44,46 @@ Variables</b> appear. If you want to disable/enable either ruby or java
 debug actions, go to<b>Window &gt; Preferences &gt; Debug &gt; Debug
 Action Groups</b> and select the appropriate debug actions. </li>
 </ol>
+<h2>Variable View</h2>
+The variable view shows instance variables, class variables and
+constants of objects. Arrays and hashes are handeled specially.
+<h3>Arrays</h3>
+Assume the following code:
+<pre>class Person<br>    def initialize(name) <br>         @name = name<br>    end	<br>    def to_s()<br>       return @name.to_s<br>    end	<br>end<br><br>persons = []<br>persons &lt;&lt; Person.new('Barney') <br>persons &lt;&lt; Person.new('Moe')<br></pre>
+After the last assignment the variable view shows the content of the
+array:<br>
+<img src="../../images/arrayInVariablesView.png"
+ title="array presentation in variable view"
+ alt="array presentation in variable view"
+ style="width: 500px; height: 235px;">
+<h4>Hashes</h4>
+In order to show how hashes are presented in the variables view, a hash
+is created:
+<pre>persons = Hash[ Person.new('Lisa') =&gt; Person.new('Marge'), <br>                     Person.new('Maggie') =&gt; Person.new('Marge')]<br></pre>
+The view shows the name of the hash with the number of elements in the
+first place. If you expand the item, there will be a line for every
+key/value pair in the hash. Expanding a key/value pair will show the
+content of the value. If you want to know more about the key, select
+"Inspect key" from the context menu:<br>
+<img src="../../images/hashInVariablesView.png"
+ title="Hash in variables view" alt="Hash in variables view"
+ style="width: 501px; height: 215px;"><br>
+<h2>Breakpoints View</h2>
+<h2>Expression View</h2>
+Results of ruby expression evaluation are displayed here. Evaluation
+takes place:
+<ul>
+  <li>If you select text in the editor and run "Inspect" from the
+context menu</li>
+  <li>If you use the display view to enter ruby expressions</li>
+  <li>If you select "inspect key" in the context menu of a hash value
+in the variable view</li>
+</ul>
+<h2>Display View</h2>
+Enter your text in the display view and run "Ruby inspect" from the
+context menu. The expression view will open and show the result of the
+expression. The expression is evalutated in the context of the selected
+stack frame in the launch view.
 <h1>Known limitations</h1>
 <p>The ruby debugger is still under development and there are some
 limitations, which must be considered when debugging your application:<br>
