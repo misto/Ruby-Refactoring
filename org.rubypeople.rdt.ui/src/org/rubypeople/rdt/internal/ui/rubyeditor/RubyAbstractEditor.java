@@ -18,7 +18,7 @@ import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.ui.IEditorInput;
-import org.eclipse.ui.texteditor.ExtendedTextEditor;
+import org.eclipse.ui.editors.text.TextEditor;
 import org.eclipse.ui.texteditor.MarkerUtilities;
 import org.eclipse.ui.texteditor.WorkbenchChainedTextFontFieldEditor;
 import org.eclipse.ui.views.contentoutline.IContentOutlinePage;
@@ -36,7 +36,7 @@ import org.rubypeople.rdt.internal.ui.text.RubySourceViewerConfiguration;
 import org.rubypeople.rdt.internal.ui.text.RubyTextTools;
 import org.rubypeople.rdt.ui.PreferenceConstants;
 
-public class RubyAbstractEditor extends ExtendedTextEditor {
+public class RubyAbstractEditor extends TextEditor {
 
 	protected RubyContentOutlinePage outlinePage;
 	protected RubyTextTools textTools;
