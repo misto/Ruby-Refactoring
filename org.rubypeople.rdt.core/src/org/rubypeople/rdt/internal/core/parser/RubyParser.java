@@ -275,8 +275,11 @@ public class RubyParser {
 	 */
 	private static String removeAfterPoundSymbol(String curLine) {
 		int poundStart = curLine.indexOf("#");
-		if ((poundStart != -1) && (!inQuotes(poundStart, curLine))) { return curLine.substring(0, poundStart); }
-		return curLine;
+		if (poundStart == -1) return curLine;
+		if (inQuotes(poundStart, curLine) || inRegex(poundStart, curLine)) { 
+			return curLine; 
+		}
+		return curLine.substring(0, poundStart);
 	}
 
 	/**
@@ -366,6 +369,7 @@ public class RubyParser {
 	private static void findGlobal(String curLine, int lineNum) {
 		int globalIndex = curLine.indexOf("$");
 		if (globalIndex == -1) return;
+		if ((inQuotes(globalIndex, curLine) || inRegex(globalIndex, curLine)) && !isSubstituted(globalIndex, curLine)) return;
 		String name = getToken("$", VARIABLE_END_CHARS, curLine);
 		RubyGlobal global = new RubyGlobal(name, new Position(lineNum, globalIndex + 1));
 		script.addElement(global);
@@ -378,7 +382,7 @@ public class RubyParser {
 	private static void findClassVariable(String curLine, int lineNum) {
 		int instanceIndex = curLine.indexOf("@@");
 		if (instanceIndex == -1) return;
-		if ((inQuotes(instanceIndex, curLine) && !isSubstituted(instanceIndex, curLine)) || inRegex(instanceIndex, curLine)) return;
+		if ((inQuotes(instanceIndex, curLine) || inRegex(instanceIndex, curLine)) && !isSubstituted(instanceIndex, curLine)) return;
 		String name = getToken("@@", VARIABLE_END_CHARS, curLine);
 		log("Found class variable: " + name);
 		RubyClassVariable variable = new RubyClassVariable(name, new Position(lineNum, instanceIndex + "@@".length()));
@@ -393,7 +397,7 @@ public class RubyParser {
 		int instanceIndex = curLine.indexOf("@");
 		if (instanceIndex == -1) return;
 		if (curLine.indexOf("@@") != -1) return;
-		if ((inQuotes(instanceIndex, curLine) && !isSubstituted(instanceIndex, curLine)) || inRegex(instanceIndex, curLine)) return;
+		if ((inQuotes(instanceIndex, curLine) || inRegex(instanceIndex, curLine)) && !isSubstituted(instanceIndex, curLine)) return;
 		String name = getToken("@", VARIABLE_END_CHARS, curLine);
 		log("Found instance variable: " + name);
 		RubyInstanceVariable variable = new RubyInstanceVariable(name, new Position(lineNum, instanceIndex + "@".length()));
@@ -417,7 +421,7 @@ public class RubyParser {
 	 * @param curLine
 	 */
 	private static boolean isSubstituted(int instanceIndex, String curLine) {
-		return curLine.substring(instanceIndex - 2, instanceIndex).equals("#{");
+		return ( (curLine.charAt(instanceIndex - 1) == '#') || (curLine.substring(instanceIndex - 2, instanceIndex).equals("#{")) );
 	}
 
 	/**
@@ -433,7 +437,7 @@ public class RubyParser {
 	private static boolean inRegex(int index, String curLine) {
 		boolean insideregex = false;
 		for (int curPosition = 0; curPosition < index; curPosition++) {
-			if (curLine.charAt(curPosition) == '\\') {
+			if (curLine.charAt(curPosition) == '/') {
 				insideregex = !insideregex;
 			}
 		}
