@@ -26,7 +26,7 @@ public class RubyContentOutlinePage extends ContentOutlinePage {
 		super.createControl(parent);
 
 		TreeViewer tree = getTreeViewer();
-		tree.setContentProvider(new RubyOutlineContentProvider(fTextEditor));
+		tree.setContentProvider(new RubyOutlineContentProvider());
 		tree.setLabelProvider(new RubyOutlineLabelProvider());
 
 		try {

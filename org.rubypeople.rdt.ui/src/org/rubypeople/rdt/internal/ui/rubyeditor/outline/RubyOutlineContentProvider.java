@@ -3,20 +3,11 @@ package org.rubypeople.rdt.internal.ui.rubyeditor.outline;
 import org.eclipse.jface.text.DocumentEvent;
 import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.viewers.Viewer;
-import org.eclipse.ui.editors.text.TextEditor;
 import org.rubypeople.rdt.internal.core.parser.ast.IRubyElement;
 
 public class RubyOutlineContentProvider implements ITreeContentProvider {
 
 	protected Viewer viewer;
-	private TextEditor fTextEditor;
-
-	/**
-	 * @param textEditor
-	 */
-	public RubyOutlineContentProvider(TextEditor textEditor) {
-		this.fTextEditor = textEditor;
-	}
 
 	public Object[] getChildren(Object parentElement) {
 		IRubyElement rubyElement = (IRubyElement) parentElement;
@@ -36,7 +27,7 @@ public class RubyOutlineContentProvider implements ITreeContentProvider {
 		IRubyElement element = (IRubyElement) inputElement;
 		return element.getElements();
 	}
-	
+
 	public void dispose() {}
 
 	public void inputChanged(Viewer viewer, Object oldInput, Object newInput) {
