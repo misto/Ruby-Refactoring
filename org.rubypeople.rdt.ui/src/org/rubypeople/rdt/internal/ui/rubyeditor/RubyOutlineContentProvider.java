@@ -47,24 +47,15 @@ public class RubyOutlineContentProvider implements ITreeContentProvider {
 	protected class ShamRubyParsedComponent extends RubyParsedComponent {
 		protected String name;
 		protected int offset, length;
-		protected List children = new ArrayList();
 
 		protected ShamRubyParsedComponent(String name, int offset, int length) {
-			this.name = name;
+			super(name);
 			this.offset = offset;
 			this.length = length;
 		}
 		
 		protected void setChildren(List children) {
 			this.children = children;
-		}
-
-		public List getChildren() {
-			return children;
-		}
-
-		public String getName() {
-			return name;
 		}
 
 		public int nameLength() {
