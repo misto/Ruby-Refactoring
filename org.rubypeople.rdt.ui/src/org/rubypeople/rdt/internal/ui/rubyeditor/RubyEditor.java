@@ -7,6 +7,12 @@ import java.util.Stack;
 
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IConfigurationElement;
+import org.eclipse.core.runtime.IExtension;
+import org.eclipse.core.runtime.IExtensionPoint;
+import org.eclipse.core.runtime.IExtensionRegistry;
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Preferences;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuManager;
@@ -49,6 +55,9 @@ import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IPageLayout;
 import org.eclipse.ui.IViewPart;
 import org.eclipse.ui.IWorkbenchPage;
+import org.eclipse.ui.SelectionEnabler;
+import org.eclipse.ui.actions.ActionContext;
+import org.eclipse.ui.actions.ActionGroup;
 import org.eclipse.ui.editors.text.EditorsUI;
 import org.eclipse.ui.texteditor.AnnotationPreference;
 import org.eclipse.ui.texteditor.ContentAssistAction;
@@ -467,7 +476,7 @@ public class RubyEditor extends RubyAbstractEditor {
 
 		if (fProjectionSupport != null) {
 			Object adapter = fProjectionSupport.getAdapter(getSourceViewer(), required);
-			if (required != null) return adapter;
+			if (adapter != null) return adapter;
 		}
 
 		return super.getAdapter(required);
@@ -484,11 +493,38 @@ public class RubyEditor extends RubyAbstractEditor {
 		if (fProjectionModelUpdater != null) fProjectionModelUpdater.initialize();
 	}
 
-	protected void editorContextMenuAboutToShow(IMenuManager menu) {
-		super.editorContextMenuAboutToShow(menu);
+    protected void editorContextMenuAboutToShow(IMenuManager menu) {
+        super.editorContextMenuAboutToShow(menu);
+        
+        IExtensionRegistry registry = Platform.getExtensionRegistry() ;
+        IExtensionPoint extensionPoint = registry.getExtensionPoint("org.rubypeople.rdt.ui.editorPopupExtender") ;
+        IExtension[] extensions = extensionPoint.getExtensions() ;
+        for (int i = 0; i < extensions.length; i++) {
+            IConfigurationElement[] elements  = extensions[i].getConfigurationElements() ;
+            for (int j = 0; j < elements.length; j++) {
+                IConfigurationElement element = elements[j];                    
+                SelectionEnabler selectionEnabler = new SelectionEnabler(element) ;
+                if (selectionEnabler.isEnabledForSelection(this.getSelectionProvider().getSelection())) {
+                    try {
+                        Object menuExtender = element.createExecutableExtension("class") ;
+                        if (!(menuExtender instanceof ActionGroup)) {
+                            String message = "The editorPopupExtender" + element.getName() + " is of type " + menuExtender.getClass().getName() + " , but should be of type ActionGroup" ;
+                            RubyPlugin.log(IStatus.ERROR, message, null) ;
+                            continue ;
+                        }
+                        ActionGroup menuExtenderActionGroup = (ActionGroup) menuExtender ;
+                        menuExtenderActionGroup.setContext(new ActionContext(this.getSelectionProvider().getSelection())) ;                        
+                        menuExtenderActionGroup.fillContextMenu(menu) ;
+                    } catch (CoreException e) {
+                        RubyPlugin.log(e) ;
+                    }
+               
+                }
+            }
+        }
 
-		actionGroup.fillContextMenu(menu);
-	}
+        actionGroup.fillContextMenu(menu);
+    }
 
 	protected void handlePreferenceStoreChanged(PropertyChangeEvent event) {
 		super.handlePreferenceStoreChanged(event);

@@ -26,11 +26,12 @@
       <import plugin="org.eclipse.debug.ui"/>
       <import plugin="org.rubypeople.rdt.core"/>
       <import plugin="org.eclipse.ui.workbench"/>
+      <import plugin="org.eclipse.core.expressions"/>
       <import plugin="org.eclipse.ui.forms"/>
       <import plugin="org.rubypeople.rdt.launching"/>
    </requires>
    <extension-point id="foldingStructureProviders" name="foldingStructureProviders" schema="schema/foldingStructureProviders.exsd"/>
-
+   <extension-point id="editorPopupExtender" name="editorPopupExtender" schema="schema/org.rubypeople.rdt.ui.editorPopupExtender.exsd"/>
    <extension
          point="org.eclipse.ui.preferencePages">
       <page
