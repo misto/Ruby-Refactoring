@@ -478,8 +478,15 @@ public class RubyScript extends Openable implements IRubyScript {
 		return super.canBufferBeRemovedFromCache(buffer);
 	}
 	
+	/**
+	 * @see Openable#hasBuffer()
+	 */
+	protected boolean hasBuffer() {
+		return true;
+	}
+	
 	/*
-	 * @see ICompilationUnit#hasResourceChanged()
+	 * @see IRubyScript#hasResourceChanged()
 	 */
 	public boolean hasResourceChanged() {
 		if (!isWorkingCopy()) return false;
@@ -508,7 +515,7 @@ public class RubyScript extends Openable implements IRubyScript {
 	}
 
 	/*
-	 * @see ICompilationUnit#discardWorkingCopy
+	 * @see IRubyScript#discardWorkingCopy
 	 */
 	public void discardWorkingCopy() throws RubyModelException {
 		// discard working copy and its children

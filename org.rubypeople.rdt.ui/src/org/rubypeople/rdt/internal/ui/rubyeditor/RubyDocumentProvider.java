@@ -18,6 +18,7 @@ import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.text.Assert;
 import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.IDocument;
+import org.eclipse.jface.text.ISynchronizable;
 import org.eclipse.jface.text.Position;
 import org.eclipse.jface.text.source.Annotation;
 import org.eclipse.jface.text.source.AnnotationModelEvent;
@@ -113,6 +114,7 @@ public class RubyDocumentProvider extends TextFileDocumentProvider {
 		if (!(info instanceof RubyScriptInfo)) return null;
 
 		RubyScriptInfo cuInfo = (RubyScriptInfo) info;
+		setUpSynchronization(cuInfo);
 
 		IProblemRequestor requestor= cuInfo.fModel instanceof IProblemRequestor ? (IProblemRequestor) cuInfo.fModel : null;
 		if (requestor instanceof IProblemRequestorExtension) {
@@ -150,7 +152,17 @@ public class RubyDocumentProvider extends TextFileDocumentProvider {
 			return;
 		super.saveDocument(monitor, element, document, overwrite);
 	}
-
+	
+    private void setUpSynchronization(RubyScriptInfo cuInfo) {
+        IDocument document= cuInfo.fTextFileBuffer.getDocument();
+        IAnnotationModel model= cuInfo.fModel;
+        
+        if (document instanceof ISynchronizable && model instanceof ISynchronizable) {
+            Object lock= ((ISynchronizable) document).getLockObject();
+            ((ISynchronizable) model).setLockObject(lock);
+        }
+    }
+	
 	/*
 	 * @see org.eclipse.ui.editors.text.TextFileDocumentProvider#disposeFileInfo(java.lang.Object,
 	 *      org.eclipse.ui.editors.text.TextFileDocumentProvider.FileInfo)
@@ -187,8 +199,8 @@ public class RubyDocumentProvider extends TextFileDocumentProvider {
 					if (info.fElement instanceof IFileEditorInput) {
 						IFile file= ((IFileEditorInput) info.fElement).getFile();
 						return computeSchedulingRule(file);
-					} else
-						return null;
+					}
+					return null;
 				}
 			};
 		}
