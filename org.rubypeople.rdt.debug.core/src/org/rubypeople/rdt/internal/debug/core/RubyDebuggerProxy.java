@@ -159,33 +159,31 @@ public class RubyDebuggerProxy {
 		}
 	}
 
-	public SuspensionPoint readStepOverEnd(RubyStackFrame stackFrame) {
+	public void readStepOverEnd(RubyStackFrame stackFrame) {
 		try {
 			this.println("next " + stackFrame.getIndex());
-			return new SuspensionReader(getMultiReaderStrategy()).readSuspension();
+
 		} catch (Exception e) {
 			RdtDebugCorePlugin.log(e);
-			return null;
+
 		}
 	}
 
-	public SuspensionPoint readStepReturnEnd(RubyStackFrame stackFrame) {
+	public void readStepReturnEnd(RubyStackFrame stackFrame) {
 		try {
 			this.println("next " + (stackFrame.getIndex() + 1));
-			return new SuspensionReader(getMultiReaderStrategy()).readSuspension();
+
 		} catch (Exception e) {
 			RdtDebugCorePlugin.log(e);
-			return null;
 		}
 	}
 
-	public SuspensionPoint readStepIntoEnd(RubyStackFrame stackFrame) {
+	public void readStepIntoEnd(RubyStackFrame stackFrame) {
 		try {
 			this.println("step " + stackFrame.getIndex());
-			return new SuspensionReader(getMultiReaderStrategy()).readSuspension();
+			/*return new SuspensionReader(getMultiReaderStrategy()).readSuspension(); */
 		} catch (Exception e) {
 			RdtDebugCorePlugin.log(e);
-			return null;
 		}
 	}
 

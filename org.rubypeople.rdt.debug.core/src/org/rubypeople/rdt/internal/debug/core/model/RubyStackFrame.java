@@ -118,46 +118,26 @@ public class RubyStackFrame implements IStackFrame {
 	}
 	
 	public void stepInto() throws DebugException {
-		thread.setSuspended(false);
-		new StepThread(this, "StepInto").start();
+		thread.prepareForResume() ;
+		this.getRubyDebuggerProxy().readStepIntoEnd(RubyStackFrame.this) ;		
 		DebugEvent ev = new DebugEvent(this.getThread(), DebugEvent.RESUME, DebugEvent.STEP_INTO);
 		DebugPlugin.getDefault().fireDebugEventSet(new DebugEvent[] { ev });
 	}
 	
 	public void stepOver() throws DebugException {
-		thread.setSuspended(false);
-		new StepThread(this, "StepOver").start();
+		thread.prepareForResume() ;
+		this.getRubyDebuggerProxy().readStepOverEnd(RubyStackFrame.this) ;
 		DebugEvent ev = new DebugEvent(this.getThread(), DebugEvent.RESUME, DebugEvent.STEP_OVER);
 		DebugPlugin.getDefault().fireDebugEventSet(new DebugEvent[] { ev });
 	}
 
-	private void suspendAfterStep(SuspensionPoint suspension) {
-		if (suspension == null) { // program has terminated
-			this.getRubyDebuggerProxy().stop();
-			return;
-		}
-		if (!suspension.isStep()) {
-			((RubyDebugTarget) this.getDebugTarget()).suspensionOccurred(suspension) ;
-			return ;
-		}
-		StepSuspensionPoint stepSuspension = (StepSuspensionPoint) suspension ;
-		if (!stepSuspension.getFile().equals(this.file) || stepSuspension.getFramesNumber() != thread.getStackFramesSize()) {
-			System.out.println("Rereading Frames after step.");
-			this.getRubyDebuggerProxy().readFrames((RubyThread) this.getThread());
-		}
-		this.lineNumber = suspension.getLine();
-		variables = null;
-		thread.setSuspended(true);
-		DebugEvent ev = new DebugEvent(this.getThread(), DebugEvent.SUSPEND, DebugEvent.STEP_END);
-		DebugPlugin.getDefault().fireDebugEventSet(new DebugEvent[] { ev });
-	} 
-	
 	public void stepReturn() throws DebugException {
-		thread.setSuspended(false);
-		new StepThread(this, "StepReturn").start();
+		thread.prepareForResume() ;
+		this.getRubyDebuggerProxy().readStepReturnEnd(RubyStackFrame.this) ;				
 		DebugEvent ev = new DebugEvent(this.getThread(), DebugEvent.RESUME, DebugEvent.STEP_RETURN);
 		DebugPlugin.getDefault().fireDebugEventSet(new DebugEvent[] { ev });		
 	}
+
 	
 	public boolean canResume() {
 		return this.getThread().canResume();
@@ -201,24 +181,5 @@ public class RubyStackFrame implements IStackFrame {
 	public RubyDebuggerProxy getRubyDebuggerProxy() {
 		return thread.getRubyDebuggerProxy();
 	}
-	
-	class StepThread extends Thread {
-		RubyStackFrame frame;
-		String mode;
-		public StepThread(RubyStackFrame frame, String mode) {
-			this.frame = frame;
-			this.mode = mode;
-		}
 
-		public void run() {
-			if (mode.equals("StepOver")) {
-				frame.suspendAfterStep(getRubyDebuggerProxy().readStepOverEnd(RubyStackFrame.this));
-			} else if (mode.equals("StepInto")) {
-				frame.suspendAfterStep(getRubyDebuggerProxy().readStepIntoEnd(frame));			
-			} else if (mode.equals("StepReturn")) {
-				frame.suspendAfterStep(getRubyDebuggerProxy().readStepReturnEnd(frame));
-			}			
-		}
-	}
-	
 }

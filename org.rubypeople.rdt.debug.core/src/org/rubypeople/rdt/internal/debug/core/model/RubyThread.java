@@ -87,12 +87,16 @@ public class RubyThread implements IThread {
 		this.isSuspended = isSuspended;
 	}
 
-	public void resume() throws DebugException {
+	protected void prepareForResume() {
 		isSuspended = false;
 		this.createName() ;
 		this.frames = null ;
 		DebugEvent ev = new DebugEvent(this, DebugEvent.RESUME, DebugEvent.CLIENT_REQUEST);
-		DebugPlugin.getDefault().fireDebugEventSet(new DebugEvent[] { ev });
+		DebugPlugin.getDefault().fireDebugEventSet(new DebugEvent[] { ev });		
+	}
+
+	public void resume() throws DebugException {
+		this.prepareForResume() ;
 		((RubyDebugTarget) this.getDebugTarget()).getRubyDebuggerProxy().resume();
 	}
 
