@@ -1,0 +1,1 @@
+rsync -vu -e "ssh" htdocs/*.php htdocs/.htaccess htdocs/*.css mbarchfe@shell.sf.net:/home/groups/r/ru/rubyeclipse/htdocs
