@@ -18,13 +18,14 @@ public class RubyPluginImages {
 		iconBaseURL= RubyPlugin.getDefault().getBundle().getEntry("/icons/full/"); //$NON-NLS-1$
 	}
 
-	protected static final ImageRegistry IMAGE_REGISTRY = new ImageRegistry();
+	private static final ImageRegistry IMAGE_REGISTRY = new ImageRegistry();
 
-	protected static final String OBJ_PREFIX = "obj16";
-	protected static final String OVR_PREFIX = "ovr16";
+	private static final String T_OBJ = "obj16"; 	//$NON-NLS-1$
+	private static final String T_OVR = "ovr16"; 	//$NON-NLS-1$
 	private static final String T_ELCL= "elcl16"; 	//$NON-NLS-1$
-	protected static final String CTOOL_PREFIX = "ctool16";
+	private static final String T_CTOOL = "ctool16"; 	//$NON-NLS-1$
 	private static final String T_WIZBAN= "wizban"; 	//$NON-NLS-1$
+	private static final String T_ETOOL= "etool16"; 	//$NON-NLS-1$
 
 	public static final String IMG_OBJS_ERROR = NAME_PREFIX + "error_obj.gif";
 	public static final String IMG_OBJS_WARNING = NAME_PREFIX + "warning_obj.gif";
@@ -51,29 +52,35 @@ public class RubyPluginImages {
 	public static final String IMG_OBJS_FIXABLE_ERROR= NAME_PREFIX + "quickfix_error_obj.gif"; //$NON-NLS-1$
 
 	public static final ImageDescriptor DESC_WIZBAN_NEWJPRJ = create(T_WIZBAN, "newrprj_wiz.gif"); 			//$NON-NLS-1$
+
+	// RI
+	public static ImageDescriptor DESC_HELP;
+	public static ImageDescriptor DESC_RUN;
+	private static final String IMG_RUN = NAME_PREFIX + "run.gif";
 	
 	static {
-		createManaged(OBJ_PREFIX, IMG_OBJS_FIXABLE_ERROR);
-		createManaged(OBJ_PREFIX, IMG_OBJS_FIXABLE_PROBLEM);
-		createManaged(OBJ_PREFIX, IMG_OBJS_ERROR);
-		createManaged(OBJ_PREFIX, IMG_OBJS_WARNING);
-		createManaged(OBJ_PREFIX, IMG_OBJS_INFO);
-		createManaged(OBJ_PREFIX, IMG_TEMPLATE_PROPOSAL);
-		createManaged(T_ELCL, IMG_OBJS_HELP);		
-		createManaged(CTOOL_PREFIX, IMG_CTOOLS_RUBY_IMPORT_CONTAINER);
-		createManaged(CTOOL_PREFIX, IMG_CTOOLS_RUBY_IMPORT);
-		createManaged(CTOOL_PREFIX, IMG_CTOOLS_RUBY_PAGE);
-		createManaged(CTOOL_PREFIX, IMG_CTOOLS_RUBY);
-		createManaged(CTOOL_PREFIX, IMG_CTOOLS_RUBY_GLOBAL);
-		createManaged(CTOOL_PREFIX, IMG_CTOOLS_RUBY_CLASS);
-		createManaged(CTOOL_PREFIX, IMG_CTOOLS_RUBY_MODULE);
-		createManaged(CTOOL_PREFIX, IMG_CTOOLS_RUBY_METHOD);
-		createManaged(CTOOL_PREFIX, IMG_CTOOLS_RUBYMETHOD_PRO);
-		createManaged(CTOOL_PREFIX, IMG_CTOOLS_RUBYMETHOD_PUB);
-		createManaged(CTOOL_PREFIX, IMG_CTOOLS_RUBY_CLASS_VAR);
-		createManaged(CTOOL_PREFIX, IMG_CTOOLS_RUBY_CONSTANT);
-		createManaged(CTOOL_PREFIX, IMG_CTOOLS_RUBY_LOCAL_VAR);
-		createManaged(CTOOL_PREFIX, IMG_CTOOLS_RUBY_INSTANCE_VAR);
+		createManaged(T_OBJ, IMG_OBJS_FIXABLE_ERROR);
+		createManaged(T_OBJ, IMG_OBJS_FIXABLE_PROBLEM);
+		createManaged(T_OBJ, IMG_OBJS_ERROR);
+		createManaged(T_OBJ, IMG_OBJS_WARNING);
+		createManaged(T_OBJ, IMG_OBJS_INFO);
+		createManaged(T_OBJ, IMG_TEMPLATE_PROPOSAL);
+		DESC_HELP = createManaged(T_ELCL, IMG_OBJS_HELP);
+		DESC_RUN = createManaged(T_ETOOL, IMG_RUN);
+		createManaged(T_CTOOL, IMG_CTOOLS_RUBY_IMPORT_CONTAINER);
+		createManaged(T_CTOOL, IMG_CTOOLS_RUBY_IMPORT);
+		createManaged(T_CTOOL, IMG_CTOOLS_RUBY_PAGE);
+		createManaged(T_CTOOL, IMG_CTOOLS_RUBY);
+		createManaged(T_CTOOL, IMG_CTOOLS_RUBY_GLOBAL);
+		createManaged(T_CTOOL, IMG_CTOOLS_RUBY_CLASS);
+		createManaged(T_CTOOL, IMG_CTOOLS_RUBY_MODULE);
+		createManaged(T_CTOOL, IMG_CTOOLS_RUBY_METHOD);
+		createManaged(T_CTOOL, IMG_CTOOLS_RUBYMETHOD_PRO);
+		createManaged(T_CTOOL, IMG_CTOOLS_RUBYMETHOD_PUB);
+		createManaged(T_CTOOL, IMG_CTOOLS_RUBY_CLASS_VAR);
+		createManaged(T_CTOOL, IMG_CTOOLS_RUBY_CONSTANT);
+		createManaged(T_CTOOL, IMG_CTOOLS_RUBY_LOCAL_VAR);
+		createManaged(T_CTOOL, IMG_CTOOLS_RUBY_INSTANCE_VAR);
 	}
 	/**
 	 * Returns the image managed under the given key in this registry.

@@ -17,6 +17,7 @@ import org.rubypeople.rdt.internal.debug.core.model.RubyStackFrame;
 import org.rubypeople.rdt.internal.launching.RubyLaunchConfigurationAttribute;
 import org.rubypeople.rdt.internal.ui.RubyPlugin;
 import org.rubypeople.rdt.internal.ui.rubyeditor.ExternalRubyFileEditorInput;
+import org.rubypeople.rdt.ui.IRubyConstants;
 
 /**
  * @author Administrator
@@ -72,7 +73,7 @@ public class RubySourceLocator implements IPersistableSourceLocator, ISourcePres
 	 */
 	public String getEditorId(IEditorInput input, Object element) {
 		SourceElement sourceElement = (SourceElement) element ;
-		return sourceElement.isExternal() ? RubyPlugin.EXTERNAL_FILES_EDITOR_ID : RubyPlugin.EDITOR_ID  ;
+		return sourceElement.isExternal() ? IRubyConstants.EXTERNAL_FILES_EDITOR_ID : IRubyConstants.EDITOR_ID  ;
 	}
 
 	/**

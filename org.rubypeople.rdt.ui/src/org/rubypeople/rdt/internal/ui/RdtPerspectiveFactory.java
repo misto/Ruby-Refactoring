@@ -6,6 +6,7 @@ import org.eclipse.ui.IPageLayout;
 import org.eclipse.ui.IPerspectiveFactory;
 import org.eclipse.ui.console.IConsoleConstants;
 import org.eclipse.ui.progress.IProgressConstants;
+import org.rubypeople.rdt.ui.IRubyConstants;
 import org.rubypeople.rdt.ui.actions.IRubyActionSetIds;
 
 public class RdtPerspectiveFactory implements IPerspectiveFactory {
@@ -18,11 +19,12 @@ public class RdtPerspectiveFactory implements IPerspectiveFactory {
 		String existingEditorArea = layout.getEditorArea();
 
 		IFolderLayout rubyResourcesArea = layout.createFolder("rubyResourcesArea", IPageLayout.LEFT, (float) 0.26, existingEditorArea);
-		rubyResourcesArea.addView(RubyPlugin.RUBY_RESOURCES_VIEW_ID);
+		rubyResourcesArea.addView(IRubyConstants.RUBY_RESOURCES_VIEW_ID);
 		rubyResourcesArea.addPlaceholder(IPageLayout.ID_RES_NAV);
 
-		IFolderLayout consoleArea = layout.createFolder("consoleArea", IPageLayout.BOTTOM, (float) 0.75, existingEditorArea);
+		IFolderLayout consoleArea = layout.createFolder("consoleArea", IPageLayout.BOTTOM, (float) 0.65, existingEditorArea);
 		consoleArea.addView(IPageLayout.ID_PROBLEM_VIEW);
+		consoleArea.addView(IRubyConstants.RI_VIEW_ID);
 		consoleArea.addPlaceholder(IConsoleConstants.ID_CONSOLE_VIEW);
 		consoleArea.addView(IPageLayout.ID_TASK_LIST);
 		consoleArea.addPlaceholder(IProgressConstants.PROGRESS_VIEW_ID);
@@ -44,12 +46,6 @@ public class RdtPerspectiveFactory implements IPerspectiveFactory {
 		layout.addShowViewShortcut(IPageLayout.ID_RES_NAV);
 				
 		// new actions - Java project creation wizard
-		layout.addNewWizardShortcut("org.eclipse.jdt.ui.wizards.NewPackageCreationWizard"); //$NON-NLS-1$
-		layout.addNewWizardShortcut("org.eclipse.jdt.ui.wizards.NewClassCreationWizard"); //$NON-NLS-1$
-		layout.addNewWizardShortcut("org.eclipse.jdt.ui.wizards.NewInterfaceCreationWizard"); //$NON-NLS-1$
-		layout.addNewWizardShortcut("org.eclipse.jdt.ui.wizards.EnumCreationWizard"); //$NON-NLS-1$
-		layout.addNewWizardShortcut("org.eclipse.jdt.ui.wizards.NewSourceFolderCreationWizard");	 //$NON-NLS-1$
-		layout.addNewWizardShortcut("org.eclipse.jdt.ui.wizards.NewSnippetFileCreationWizard"); //$NON-NLS-1$
 		layout.addNewWizardShortcut("org.eclipse.ui.wizards.new.folder");//$NON-NLS-1$
 		layout.addNewWizardShortcut("org.eclipse.ui.wizards.new.file");//$NON-NLS-1$
 	}

@@ -40,11 +40,7 @@ import org.rubypeople.rdt.ui.PreferenceConstants;
 public class RubyPlugin extends AbstractUIPlugin implements IRubyColorConstants {
 
 	protected static RubyPlugin plugin;
-
 	public static final String PLUGIN_ID = "org.rubypeople.rdt.ui"; //$NON-NLS-1$
-	public static final String RUBY_RESOURCES_VIEW_ID = PLUGIN_ID + ".ViewRubyResources"; //$NON-NLS-1$
-	public static final String EDITOR_ID = "org.rubypeople.rdt.ui.EditorRubyFile"; //$NON-NLS-1$
-	public static final String EXTERNAL_FILES_EDITOR_ID = "org.rubypeople.rdt.ui.ExternalRubyEditor"; //$NON-NLS-1$
 
 	protected RubyTextTools textTools;
 	protected RubyFileMatcher rubyFileMatcher;

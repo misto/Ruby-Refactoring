@@ -27,6 +27,7 @@
       <import plugin="org.rubypeople.rdt.core"/>
       <import plugin="org.eclipse.ui.workbench"/>
       <import plugin="org.eclipse.ui.forms"/>
+      <import plugin="org.rubypeople.rdt.launching"/>
    </requires>
    <extension-point id="foldingStructureProviders" name="foldingStructureProviders" schema="schema/foldingStructureProviders.exsd"/>
 
@@ -448,6 +449,24 @@
             extensions="rb, rbw"
             class="org.rubypeople.rdt.internal.ui.rubyeditor.RubyDocumentFactory">
       </factory>
+   </extension>
+   
+   <extension
+         point="org.eclipse.ui.views">
+      <view
+            name="RI View"
+            icon="icons/full/elcl16/help.gif"
+            category="org.rubypeople.rdt.ui.ruby"
+            class="org.rubypeople.rdt.internal.ui.infoviews.RIView"
+            id="org.rubypeople.rdt.ui.views.RIView">
+      </view>
+   </extension>
+   <extension
+         point="org.eclipse.ui.perspectiveExtensions">
+      <perspectiveExtension
+            targetID="org.rubypeople.rdt.ui.PerspectiveRuby">
+         <viewShortcut id="org.rubypeople.rdt.ui.views.RIView"/> 
+      </perspectiveExtension>
    </extension>
 
 </plugin>

@@ -11,7 +11,7 @@ import org.eclipse.jface.text.source.IVerticalRulerInfo;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.texteditor.AbstractRulerActionDelegate;
 import org.eclipse.ui.texteditor.ITextEditor;
-import org.rubypeople.rdt.internal.ui.RubyPlugin;
+import org.rubypeople.rdt.ui.IRubyConstants;
 
 public class ManageBreakpointRulerActionDelegate extends AbstractRulerActionDelegate
 {
@@ -21,7 +21,7 @@ public class ManageBreakpointRulerActionDelegate extends AbstractRulerActionDele
 		if ( targetEditor != null )
 		{
 			String id = targetEditor.getSite().getId();
-			if ( !(id.equals( RubyPlugin.EDITOR_ID) || id.equals(RubyPlugin.EXTERNAL_FILES_EDITOR_ID))) {
+			if ( !(id.equals( IRubyConstants.EDITOR_ID) || id.equals(IRubyConstants.EXTERNAL_FILES_EDITOR_ID))) {
 				targetEditor = null;
 			}
 		}
