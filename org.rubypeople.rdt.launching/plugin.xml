@@ -18,7 +18,7 @@
       <import plugin="org.eclipse.debug.core"/>
       <import plugin="org.rubypeople.rdt.core"/>
       <import plugin="org.rubypeople.rdt.debug.core"/>
-      <import plugin="org.eclipse.core.runtime.compatibility"/>
+      <import plugin="org.eclipse.core.runtime"/>
    </requires>
 
    <extension
