@@ -57,13 +57,13 @@ public class TestUnitRunnerConfiguration extends InterpreterRunnerConfiguration 
 		int port = 6789;
 		String fileName = "";
 		String testClass = "";
+		// FIXME Remove keepAlive on this end and remove looking for it on RemoteTestRunner.rb
 		boolean keepAlive = false;
 		try {
 			// Pull out the port and other unit testing variables
 			// and convert them into command line args
 			port = configuration.getAttribute(TestUnitLaunchConfiguration.PORT_ATTR, 6789);
 			fileName = configuration.getAttribute(TestUnitLaunchConfiguration.LAUNCH_CONTAINER_ATTR, "");
-			keepAlive = configuration.getAttribute(TestUnitLaunchConfiguration.ATTR_KEEPRUNNING, false);
 			testClass = configuration.getAttribute(TestUnitLaunchConfiguration.TESTTYPE_ATTR, "");
 		} catch (CoreException e) {
 			TestunitPlugin.log(e);
