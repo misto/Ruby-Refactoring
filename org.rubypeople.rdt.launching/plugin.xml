@@ -19,6 +19,7 @@
       <import plugin="org.junit"/>
       <import plugin="org.apache.xerces"/>
       <import plugin="org.rubypeople.rdt.core"/>
+      <import plugin="org.rubypeople.rdt.debug.core"/>
    </requires>
 
 
@@ -27,7 +28,7 @@
       <launchConfigurationType
             name="%LaunchConfigurationTypeRubyApplication.name"
             delegate="org.rubypeople.rdt.internal.launching.RubyApplicationLaunchConfigurationDelegate"
-            modes="run"
+            modes="run,debug"
             id="org.rubypeople.rdt.launching.LaunchConfigurationTypeRubyApplication">
          <fileExtension
                default="true"
