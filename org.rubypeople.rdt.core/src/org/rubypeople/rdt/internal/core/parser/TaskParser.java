@@ -6,7 +6,8 @@ package org.rubypeople.rdt.internal.core.parser;
 
 import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
+import java.io.Reader;
+import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -80,39 +81,45 @@ public class TaskParser {
 	 * @param contents
 	 */
 	public void parse(String contents) {
+		doParse(new StringReader(contents));
+	}
+
+	private void doParse(Reader contents) {
 		if (fTags.length <= 0) return;
+		BufferedReader reader = null;
 		try {
-			StringTokenizer tokenizer = new StringTokenizer(contents, "\n", true);
-			int line = 0;
+			reader = new BufferedReader(contents);
 			int offset = 0;
-			boolean lastWasNewLine = false;
-			while (tokenizer.hasMoreTokens()) {
-				String token = tokenizer.nextToken();
-				if (token.equals("\n")) {
-					if (lastWasNewLine) {
-						line++;
-					}
-					lastWasNewLine = true;
-					offset += token.length();
-					continue; // skip newline characters
-				}
-				lastWasNewLine = false;
-				String original = token;
-				if (!fCaseSensitive) token = token.toLowerCase();
+			int lineNum = 0;
+			String line = null;
+
+			while ((line = reader.readLine()) != null) {
+				String token = line;
+				if (!fCaseSensitive) token = line.toLowerCase();
 				for (int i = 0; i < fTags.length; i++) {
 					String tag = fTags[i];
 					int priority = fPriorities[i];
 					if (!fCaseSensitive) tag = tag.toLowerCase();
 					int index = token.indexOf(tag);
-					if (index == -1) continue;
-					String message = original.substring(index).trim();
-					createTaskTag(priority, message, line + 1, offset + index, offset + index + message.length());
+					if (index != -1) {
+						String message = line.substring(index).trim();
+						createTaskTag(priority, message, lineNum + 1, offset + index, offset + index + message.length());
+					}
 				}
-				offset += token.length();
-				line++;
+				lineNum++;
+				offset += line.length() + 2; // FIXME We're chopping off
+												// /r/n!
 			}
+		} catch (IOException e) {
+			RubyCore.log(e);
 		} catch (CoreException e) {
 			RubyCore.log(e);
+		} finally {
+			try {
+				if (reader != null) reader.close();
+			} catch (IOException e) {
+				// ignore
+			}
 		}
 	}
 
@@ -133,26 +140,8 @@ public class TaskParser {
 	 * 
 	 * @param reader
 	 */
-	public void parse(InputStreamReader reader) {
-		StringBuffer buffer = new StringBuffer();
-		BufferedReader buffered = null;
-		try {			
-			buffered = new BufferedReader(reader);
-			String line;
-			while ((line = buffered.readLine()) != null) {
-				buffer.append(line);
-				buffer.append('\n');
-			}
-			parse(buffer.toString());
-		} catch (IOException e) {
-			RubyCore.log(e);
-		} finally {
-			try {
-				if (buffered != null) buffered.close();
-			} catch (IOException e) {
-				// ignore
-			}
-		}		
+	public void parse(Reader reader) {
+		doParse(reader);
 	}
 
 	public List getTasks() {
