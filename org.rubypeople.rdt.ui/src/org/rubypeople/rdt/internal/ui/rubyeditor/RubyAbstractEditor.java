@@ -71,4 +71,13 @@ public class RubyAbstractEditor extends TextEditor {
 		return textTools.affectsTextPresentation(event);
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.eclipse.ui.texteditor.ExtendedTextEditor#isLineNumberRulerVisible()
+	 */
+	protected boolean isLineNumberRulerVisible() {
+		return true;
+	}
+
 }
