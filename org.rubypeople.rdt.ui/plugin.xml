@@ -383,5 +383,11 @@
       		translations="$nl$/templates/rdt.properties">
       </include>
    </extension>
+   <extension
+         point="org.eclipse.ui.elementFactories">
+      <factory
+            id="org.rubypeople.rdt.ui.externalRubyFileEditorInputFactory"
+            class="org.rubypeople.rdt.internal.ui.rubyeditor.RubyExternalEditorFactory"/>
+   </extension>
 
 </plugin>
