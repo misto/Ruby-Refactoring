@@ -8,8 +8,6 @@ import org.eclipse.core.runtime.Path;
 import org.eclipse.debug.core.ILaunchConfiguration;
 import org.eclipse.debug.core.ILaunchConfigurationWorkingCopy;
 import org.eclipse.debug.ui.AbstractLaunchConfigurationTab;
-import org.eclipse.jface.viewers.ISelection;
-import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
@@ -18,13 +16,12 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
-import org.eclipse.ui.IEditorInput;
-import org.eclipse.ui.IEditorPart;
-import org.eclipse.ui.IWorkbenchPage;
+import org.rubypeople.rdt.internal.core.RubyCore;
 import org.rubypeople.rdt.internal.debug.ui.RdtDebugUiMessages;
 import org.rubypeople.rdt.internal.debug.ui.RdtDebugUiPlugin;
 import org.rubypeople.rdt.internal.launching.RubyLaunchConfigurationAttribute;
 import org.rubypeople.rdt.internal.ui.RdtUiImages;
+import org.rubypeople.rdt.internal.ui.RdtUiPlugin;
 import org.rubypeople.rdt.internal.ui.utils.RubyFileSelector;
 import org.rubypeople.rdt.internal.ui.utils.RubyProjectSelector;
 
@@ -61,32 +58,19 @@ public class RubyEntryPointTab extends AbstractLaunchConfigurationTab {
 		});
 	}
 
-	protected IProject getContext() {
-		IWorkbenchPage page = RdtDebugUiPlugin.getActivePage();
-		if (page != null) {
-			ISelection selection = page.getSelection();
-			if (selection instanceof IStructuredSelection) {
-				IStructuredSelection ss = (IStructuredSelection) selection;
-				if (!ss.isEmpty()) {
-					Object obj = ss.getFirstElement();
-					if (obj instanceof IResource)
-						return ((IResource) obj).getProject();
-				}
-			}
-			IEditorPart part = page.getActiveEditor();
-			if (part != null) {
-				IEditorInput input = part.getEditorInput();
-				IResource file = (IResource) input.getAdapter(IResource.class);
-				return file.getProject();
-			}
-		}
-		return null;
-	}
+
 
 	public void setDefaults(ILaunchConfigurationWorkingCopy configuration) {
-		IProject project = getContext();
-		if (project != null)
-			configuration.setAttribute(RubyLaunchConfigurationAttribute.PROJECT_NAME, project.getName());
+		IResource selectedResource = RdtUiPlugin.getDefault().getSelectedResource() ;
+		if (!RubyCore.isRubyFile(selectedResource)) {
+			return ;
+		}
+		IProject project = selectedResource.getProject() ;
+		if (project == null || !RubyCore.isRubyProject(project)) {
+			return ;
+		}
+		configuration.setAttribute(RubyLaunchConfigurationAttribute.PROJECT_NAME, project.getName());
+		configuration.setAttribute(RubyLaunchConfigurationAttribute.FILE_NAME, selectedResource.getProjectRelativePath().toString()) ;
 	}
 
 	public void initializeFrom(ILaunchConfiguration configuration) {
@@ -98,8 +82,9 @@ public class RubyEntryPointTab extends AbstractLaunchConfigurationTab {
 		}
 
 		projectSelector.setSelectionText(originalProjectName);
-		if (!"".equals(originalFileName))
+		if (originalFileName.length() != 0) {
 			fileSelector.setSelectionText(new Path(originalFileName).toOSString());
+		}
 	}
 
 	public void performApply(ILaunchConfigurationWorkingCopy configuration) {
