@@ -1,9 +1,9 @@
 package org.rubypeople.rdt.internal.core.parser;
 
-import org.rubypeople.rdt.internal.core.parser.ast.*;
-
 import junit.framework.Test;
 import junit.framework.TestSuite;
+
+import org.rubypeople.rdt.internal.core.parser.ast.TC_RubyElement;
 
 public class TS_Parser {
 
