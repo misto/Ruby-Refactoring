@@ -4,7 +4,7 @@
    <description url="http://studio.rolemodelsoftware.com/~awilliams/updates/">
       Welcome to my update site.
    </description>
-   <feature url="features/org.rubypeople.rdt_0.3.1.jar" id="org.rubypeople.rdt" version="0.3.1">
+   <feature url="features/org.rubypeople.rdt_0.3.2.jar" id="org.rubypeople.rdt" version="0.3.2">
       <category name="RubyEclipse"/>
    </feature>
    <category-def name="RubyEclipse" label="RDT">

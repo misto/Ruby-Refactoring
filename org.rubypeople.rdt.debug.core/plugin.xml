@@ -2,7 +2,7 @@
 <plugin
    id="org.rubypeople.rdt.debug.core"
    name="%Plugin.name"
-   version="0.3.1"
+   version="0.3.2"
    provider-name="RubyPeople, Inc."
    class="org.rubypeople.rdt.internal.debug.core.RdtDebugCorePlugin">
 
@@ -18,8 +18,8 @@
       <import plugin="org.eclipse.debug.ui"/>
       <import plugin="org.rubypeople.rdt.core"/>
       <import plugin="org.kxml2"/>
-      <!-- jdt reference because of static variable filter, see JdtVariableAdapter -->
-      <import plugin="org.eclipse.jdt.debug"/>      
+<!-- jdt reference because of static variable filter, see JdtVariableAdapter -->
+      <import plugin="org.eclipse.jdt.debug"/>
    </requires>
 
 
@@ -41,4 +41,5 @@
             id="RubyLineBreakpoint">
       </breakpoint>
    </extension>
+
 </plugin>

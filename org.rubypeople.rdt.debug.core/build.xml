@@ -5,6 +5,9 @@
 	<property name="ws" value="win32"/>
 	<property name="os" value="win32"/>
 	<property name="arch" value="x86"/>
+	<property name="javacFailOnError" value="false"/>
+	<property name="javacDebugInfo" value="on"/>
+	<property name="javacVerbose" value="true"/>
 
 	<target name="init" depends="properties">
 		<property name="plugin" value="org.rubypeople.rdt.debug.core"/>
@@ -19,14 +22,14 @@
 		<property name="build.compiler" value="org.eclipse.jdt.core.JDTCompilerAdapter"/>
 	</target>
 
-	<target name="build.update.jar" depends="init">
+	<target name="build.update.jar" depends="init" description="Build the plug-in: org.rubypeople.rdt.debug.core for an update site.">
 		<delete dir="${temp.folder}"/>
 		<mkdir dir="${temp.folder}"/>
 		<antcall target="build.jars"/>
 		<antcall target="gather.bin.parts">
 			<param name="destination.temp.folder" value="${temp.folder}/"/>
 		</antcall>
-		<zip zipfile="${plugin.destination}/${full.name}.jar" basedir="${temp.folder}/${full.name}" filesonly="false"/>
+		<zip zipfile="${plugin.destination}/${full.name}.jar" basedir="${temp.folder}/${full.name}" filesonly="false" update="no"/>
 		<delete dir="${temp.folder}"/>
 	</target>
 
@@ -38,12 +41,12 @@
 		</copy>
 	</target>
 
-	<target name="rdtdebugcore.jar" depends="init" unless="rdtdebugcore.jar">
+	<target name="rdtdebugcore.jar" depends="init" unless="rdtdebugcore.jar" description="Create jar: rdtdebugcore.jar.">
 		<property name="destdir" value="${temp.folder}/rdtdebugcore.jar.bin"/>
 		<delete dir="${temp.folder}/rdtdebugcore.jar.bin"/>
 		<mkdir dir="${temp.folder}/rdtdebugcore.jar.bin"/>
 		<!-- compile the source code -->
-		<javac destdir="${temp.folder}/rdtdebugcore.jar.bin" failonerror="false" verbose="true" debug="on" includeAntRuntime="no" bootclasspath="${bootclasspath}" classpath="../org.eclipse.core.resources/resources.jar;../org.rubypeople.rdt.core/lib/jakarta-regexp-1.2.jar;../../../../apps/eclipse2.0.2/plugins/org.eclipse.jdt.debug_2.0.2/jdimodel.jar;../org.eclipse.debug.ui/dtui.jar;../org.rubypeople.rdt.core/bin;../../../../apps/eclipse2.0.2/plugins/org.eclipse.jdt.debug_2.0.2/bin;../org.kxml2/kxml2.jar;../org.eclipse.debug.core/dtcore.jar;../org.eclipse.core.boot/bin;../org.eclipse.core.runtime/bin;../org.eclipse.core.runtime/runtime.jar;../../../../apps/eclipse2.0.2/plugins/org.eclipse.jdt.debug_2.0.2/jdi.jar;../org.eclipse.debug.core/bin;../org.eclipse.core.resources/bin;../../../../apps/eclipse2.0.2/plugins/org.eclipse.jdt.debug_2.0.2/tools.jar;../org.eclipse.debug.ui/bin;../org.kxml2/bin;../org.eclipse.core.boot/boot.jar;../org.eclipse.core.resources.win32/resources.jar;../org.rubypeople.rdt.core/rdtcore.jar">
+		<javac destdir="${temp.folder}/rdtdebugcore.jar.bin" failonerror="${javacFailOnError}" verbose="${javacVerbose}" debug="${javacDebugInfo}" includeAntRuntime="no" bootclasspath="${bootclasspath}" classpath="../org.eclipse.core.boot/bin;../org.eclipse.core.boot/boot.jar;../org.eclipse.core.runtime/bin;../org.eclipse.core.runtime/runtime.jar;../org.apache.xerces/bin;../org.apache.xerces/xmlParserAPIs.jar;../org.apache.xerces/xercesImpl.jar;../org.eclipse.core.resources/bin;../org.eclipse.core.resources/resources.jar;../org.eclipse.core.resources.win32/resources.jar;../org.eclipse.debug.core/bin;../org.eclipse.debug.core/dtcore.jar;../org.eclipse.debug.ui/bin;../org.eclipse.debug.ui/dtui.jar;../org.eclipse.ui/bin;../org.eclipse.ui/ui.jar;../org.eclipse.update.core/bin;../org.eclipse.update.core/updatecore.jar;../org.eclipse.update.core.win32/updatecore.jar;../org.eclipse.help/bin;../org.eclipse.help/help.jar;../org.apache.lucene/bin;../org.apache.lucene/parser.jar;../org.apache.lucene/lucene-1.2.jar;../org.eclipse.help.appserver/bin;../org.eclipse.help.appserver/appserver.jar;../org.eclipse.swt/bin;../org.eclipse.swt/ws/${ws}/swt.jar;../org.eclipse.swt.win32/ws/${ws}/swt.jar;../org.eclipse.text/bin;../org.eclipse.text/text.jar;../org.eclipse.jface/bin;../org.eclipse.jface/jface.jar;../org.eclipse.jface.text/bin;../org.eclipse.jface.text/jfacetext.jar;../org.eclipse.ui.views/bin;../org.eclipse.ui.views/views.jar;../org.eclipse.ui.workbench/bin;../org.eclipse.ui.workbench/workbench.jar;../org.eclipse.ui.win32/workbench.jar;../org.eclipse.ui.win32/bin;../org.eclipse.ui.win32/workbenchwin32.jar;../org.eclipse.ui.workbench.texteditor/bin;../org.eclipse.ui.workbench.texteditor/texteditor.jar;../org.eclipse.ui.editors/bin;../org.eclipse.ui.editors/editors.jar;../org.rubypeople.rdt.core/bin;../org.rubypeople.rdt.core/rdtcore.jar;../org.rubypeople.rdt.core/lib/jakarta-regexp-1.2.jar;../org.eclipse.team.core/bin;../org.eclipse.team.core/team.jar;../org.kxml2/bin;../org.kxml2/kxml2.jar;../../../../apps/eclipse/plugins/org.eclipse.jdt.debug_2.1.0/bin;../../../../apps/eclipse/plugins/org.eclipse.jdt.debug_2.1.0/jdi.jar;../../../../apps/eclipse/plugins/org.eclipse.jdt.debug_2.1.0/jdimodel.jar;../../../../apps/eclipse/plugins/org.eclipse.jdt.debug_2.1.0/tools.jar;../../../../apps/eclipse/plugins/org.eclipse.jdt.core_2.1.0/bin;../../../../apps/eclipse/plugins/org.eclipse.jdt.core_2.1.0/jdtcore.jar;../../../../apps/eclipse/plugins/org.eclipse.ant.core_2.1.0/bin;../../../../apps/eclipse/plugins/org.eclipse.ant.core_2.1.0/antsupport.jar">
 			<src path="src/"/>
 		</javac>
 		<!-- copy necessary resources -->
@@ -55,14 +58,14 @@
 		<delete dir="${temp.folder}/rdtdebugcore.jar.bin"/>
 	</target>
 
-	<target name="rdtdebugcoresrc.zip" depends="init" unless="rdtdebugcoresrc.zip">
+	<target name="rdtdebugcoresrc.zip" depends="init" unless="rdtdebugcore.jar">
 		<mkdir dir="${build.result.folder}"/>
-		<zip zipfile="${build.result.folder}/rdtdebugcoresrc.zip" filesonly="false">
+		<zip zipfile="${build.result.folder}/rdtdebugcoresrc.zip" filesonly="false" update="no">
 			<fileset dir="src/" includes="**/*.java"/>
 		</zip>
 	</target>
 
-	<target name="build.jars" depends="init">
+	<target name="build.jars" depends="init" description="Build all the jars for the plug-in: org.rubypeople.rdt.debug.core.">
 		<available property="rdtdebugcore.jar" file="${build.result.folder}/rdtdebugcore.jar"/>
 		<antcall target="rdtdebugcore.jar"/>
 	</target>
@@ -85,7 +88,7 @@
 		<copy file="${temp.folder}/rdtdebugcore.jar.bin.log" todir="${destination.temp.folder}/${full.name}"/>
 	</target>
 
-	<target name="clean" depends="init">
+	<target name="clean" depends="init" description="Clean the plug-in: org.rubypeople.rdt.debug.core of all the zips, jars and logs created.">
 		<delete file="${build.result.folder}/rdtdebugcore.jar"/>
 		<delete file="${build.result.folder}/rdtdebugcoresrc.zip"/>
 		<delete file="${plugin.destination}/${full.name}.jar"/>
@@ -94,10 +97,11 @@
 	</target>
 
 	<target name="refresh" depends="init" if="eclipse.running">
-		<eclipse.refreshLocal resource="${plugin}" depth="infinite"/>
+		<eclipse.convertPath fileSystemPath="c:\projects\RDT\workspace\org.rubypeople.rdt.debug.core\" property="resourcePath"/>
+		<eclipse.refreshLocal resource="${resourcePath}" depth="infinite"/>
 	</target>
 
-	<target name="zip.plugin" depends="init">
+	<target name="zip.plugin" depends="init" description="Create a zip containing all the elements for the plug-in: org.rubypeople.rdt.debug.core.">
 		<delete dir="${temp.folder}"/>
 		<mkdir dir="${temp.folder}"/>
 		<antcall target="build.jars"/>
@@ -111,8 +115,11 @@
 		<delete>
 			<fileset dir="${temp.folder}" includes="**/*.bin.log"/>
 		</delete>
-		<zip zipfile="${plugin.destination}/${full.name}.zip" basedir="${temp.folder}" filesonly="true"/>
+		<antcall target="zip.folder"/>
 		<delete dir="${temp.folder}"/>
+	</target>
+	<target name="zip.folder" depends="init">
+		<zip zipfile="${plugin.destination}/${full.name}.zip" basedir="${temp.folder}" filesonly="true" update="no" excludes="**/*.bin.log"/>
 	</target>
 
 </project>

@@ -17,19 +17,23 @@
 		<ant antfile="build.xml" dir="../org.rubypeople.rdt.ui/" target="${target}"/>
 		<ant antfile="build.xml" dir="../org.rubypeople.rdt.launching/" target="${target}"/>
 		<ant antfile="build.xml" dir="../org.rubypeople.rdt.debug.ui/" target="${target}"/>
+		<ant antfile="build.xml" dir="../org.rubypeople.rdt.doc.user/" target="${target}"/>
+		<ant antfile="build.xml" dir="../org.kxml2/" target="${target}"/>
+		<ant antfile="build.xml" dir="../org.rubypeople.rdt.core/" target="${target}"/>
+		<ant antfile="build.xml" dir="../org.rubypeople.rdt.debug.core/" target="${target}"/>
+		<ant antfile="build.xml" dir="../org.rubypeople.rdt.ui/" target="${target}"/>
+		<ant antfile="build.xml" dir="../org.rubypeople.rdt.launching/" target="${target}"/>
+		<ant antfile="build.xml" dir="../org.rubypeople.rdt.debug.ui/" target="${target}"/>
 	</target>
 
-	<target name="all.fragments" depends="init">
-	</target>
-
-	<target name="all.children" depends="init,all.plugins,all.fragments">
+	<target name="all.children" depends="init,all.plugins">
 	</target>
 
 	<target name="children" if="include.children">
 		<antcall target="all.children"/>
 	</target>
 
-	<target name="build.jars" depends="init">
+	<target name="build.jars" depends="init" description="Build all the jars for the feature: org.rubypeople.rdt.">
 		<antcall target="all.children">
 			<param name="target" value="build.jars"/>
 		</antcall>
@@ -47,7 +51,7 @@
 		</antcall>
 	</target>
 
-	<target name="build.update.jar" depends="init">
+	<target name="build.update.jar" depends="init" description="Build the feature jar of: org.rubypeople.rdt for an update site.">
 		<antcall target="all.children">
 			<param name="target" value="build.update.jar"/>
 		</antcall>
@@ -72,14 +76,16 @@
 		</copy>
 	</target>
 
-	<target name="zip.distribution" depends="init">
+	<target name="zip.distribution" depends="init" description="Create a zip containing all the plug-ins and features for the feature: org.rubypeople.rdt.">
 		<delete dir="${feature.temp.folder}"/>
 		<mkdir dir="${feature.temp.folder}"/>
 		<antcall target="gather.bin.parts">
 			<param name="include.children" value="true"/>
 			<param name="feature.base" value="${feature.temp.folder}"/>
 		</antcall>
-		<zip zipfile="${feature.destination}/${feature.full.name}.bin.dist.zip" basedir="${feature.temp.folder}" filesonly="false"/>
+		<antcall target="zip.folder">
+			<param name="zipname" value="${feature.full.name}.bin.dist.zip"/>
+		</antcall>
 		<delete dir="${feature.temp.folder}"/>
 	</target>
 
@@ -90,7 +96,9 @@
 			<param name="destination.temp.folder" value="${feature.temp.folder}/plugins/${feature}.source${feature.version.suffix}/src"/>
 			<param name="target" value="gather.sources"/>
 		</antcall>
-		<zip zipfile="${feature.destination}/${feature.full.name}.src.zip" basedir="${feature.temp.folder}" filesonly="true"/>
+		<antcall target="zip.folder">
+			<param name="zipname" value="${feature.full.name}.src.zip"/>
+		</antcall>
 		<delete dir="${feature.temp.folder}"/>
 	</target>
 
@@ -101,11 +109,17 @@
 			<param name="destination.temp.folder" value="${feature.temp.folder}/plugins"/>
 			<param name="target" value="gather.logs"/>
 		</antcall>
-		<zip zipfile="${feature.destination}/${feature.full.name}.log.zip" basedir="${feature.temp.folder}" filesonly="true"/>
+		<antcall target="zip.folder">
+			<param name="zipname" value="${feature.full.name}.log.zip"/>
+		</antcall>
 		<delete dir="${feature.temp.folder}"/>
 	</target>
 
-	<target name="clean" depends="init">
+	<target name="zip.folder" depends="init">
+		<zip zipfile="${zipname}" basedir="${feature.temp.folder}" filesonly="true" update="yes"/>
+	</target>
+
+	<target name="clean" depends="init" description="Clean the feature: org.rubypeople.rdt of all the zips, jars and logs created.">
 		<delete file="${feature.destination}/${feature.full.name}.jar"/>
 		<delete file="${feature.destination}/${feature.full.name}.bin.dist.zip"/>
 		<delete file="${feature.destination}/${feature.full.name}.log.zip"/>
@@ -117,7 +131,8 @@
 	</target>
 
 	<target name="refresh" depends="init" if="eclipse.running">
-		<eclipse.refreshLocal resource="${feature}" depth="infinite"/>
+		<eclipse.convertPath fileSystemPath="c:\projects\RDT\workspace\org.rubypeople.rdt" property="resourcePath"/>
+		<eclipse.refreshLocal resource="${resourcePath}" depth="infinite"/>
 		<antcall target="all.children">
 			<param name="target" value="refresh"/>
 		</antcall>

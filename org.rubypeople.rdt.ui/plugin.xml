@@ -2,7 +2,7 @@
 <plugin
    id="org.rubypeople.rdt.ui"
    name="%Plugin.name"
-   version="0.3.1"
+   version="0.3.2"
    provider-name="RubyPeople, Inc."
    class="org.rubypeople.rdt.internal.ui.RdtUiPlugin">
 
@@ -186,12 +186,10 @@
                key="Ctrl+Space"
                id="org.rubypeople.rdt.ui.edit.text.ruby.content.assist.proposals">
          </accelerator>
-        
          <accelerator
                key="Ctrl+/"
                id="org.rubypeople.rdt.ui.edit.text.ruby.comment">
          </accelerator>
-         
          <accelerator
                key="Ctrl+\\"
                id="org.rubypeople.rdt.ui.edit.text.ruby.uncomment">
@@ -254,7 +252,7 @@
                retarget="true"
                menubarPath="org.rubypeople.rdt.ui.ruby.menu/editGroup"
                id="org.rubypeople.rdt.ui.actions.Format">
-         </action>         
+         </action>
 -->         
       </actionSet>
    </extension>

@@ -5,6 +5,9 @@
 	<property name="ws" value="win32"/>
 	<property name="os" value="win32"/>
 	<property name="arch" value="x86"/>
+	<property name="javacFailOnError" value="false"/>
+	<property name="javacDebugInfo" value="on"/>
+	<property name="javacVerbose" value="true"/>
 
 	<target name="init" depends="properties">
 		<property name="plugin" value="org.rubypeople.rdt.core"/>
@@ -19,14 +22,14 @@
 		<property name="build.compiler" value="org.eclipse.jdt.core.JDTCompilerAdapter"/>
 	</target>
 
-	<target name="build.update.jar" depends="init">
+	<target name="build.update.jar" depends="init" description="Build the plug-in: org.rubypeople.rdt.core for an update site.">
 		<delete dir="${temp.folder}"/>
 		<mkdir dir="${temp.folder}"/>
 		<antcall target="build.jars"/>
 		<antcall target="gather.bin.parts">
 			<param name="destination.temp.folder" value="${temp.folder}/"/>
 		</antcall>
-		<zip zipfile="${plugin.destination}/${full.name}.jar" basedir="${temp.folder}/${full.name}" filesonly="false"/>
+		<zip zipfile="${plugin.destination}/${full.name}.jar" basedir="${temp.folder}/${full.name}" filesonly="false" update="no"/>
 		<delete dir="${temp.folder}"/>
 	</target>
 
@@ -38,12 +41,12 @@
 		</copy>
 	</target>
 
-	<target name="rdtcore.jar" depends="init" unless="rdtcore.jar">
+	<target name="rdtcore.jar" depends="init" unless="rdtcore.jar" description="Create jar: rdtcore.jar.">
 		<property name="destdir" value="${temp.folder}/rdtcore.jar.bin"/>
 		<delete dir="${temp.folder}/rdtcore.jar.bin"/>
 		<mkdir dir="${temp.folder}/rdtcore.jar.bin"/>
 		<!-- compile the source code -->
-		<javac destdir="${temp.folder}/rdtcore.jar.bin" failonerror="false" verbose="true" debug="on" includeAntRuntime="no" bootclasspath="${bootclasspath}" classpath="../org.eclipse.core.resources/resources.jar;../org.apache.xerces/bin;../org.eclipse.core.boot/bin;../org.eclipse.core.runtime/bin;../org.eclipse.core.runtime/runtime.jar;../org.eclipse.core.resources/bin;../org.eclipse.team.core/bin;../org.eclipse.team.core/team.jar;../org.eclipse.core.boot/boot.jar;../org.eclipse.core.resources.win32/resources.jar;lib/jakarta-regexp-1.2.jar;../org.apache.xerces/xercesImpl.jar;../org.apache.xerces/xmlParserAPIs.jar">
+		<javac destdir="${temp.folder}/rdtcore.jar.bin" failonerror="${javacFailOnError}" verbose="${javacVerbose}" debug="${javacDebugInfo}" includeAntRuntime="no" bootclasspath="${bootclasspath}" classpath="../org.eclipse.core.boot/bin;../org.eclipse.core.boot/boot.jar;lib/jakarta-regexp-1.2.jar;../org.eclipse.core.runtime/bin;../org.eclipse.core.runtime/runtime.jar;../org.apache.xerces/bin;../org.apache.xerces/xmlParserAPIs.jar;../org.apache.xerces/xercesImpl.jar;../org.eclipse.core.resources/bin;../org.eclipse.core.resources/resources.jar;../org.eclipse.core.resources.win32/resources.jar;../org.eclipse.team.core/bin;../org.eclipse.team.core/team.jar">
 			<src path="src/"/>
 		</javac>
 		<!-- copy necessary resources -->
@@ -55,14 +58,14 @@
 		<delete dir="${temp.folder}/rdtcore.jar.bin"/>
 	</target>
 
-	<target name="rdtcoresrc.zip" depends="init" unless="rdtcoresrc.zip">
+	<target name="rdtcoresrc.zip" depends="init" unless="rdtcore.jar">
 		<mkdir dir="${build.result.folder}"/>
-		<zip zipfile="${build.result.folder}/rdtcoresrc.zip" filesonly="false">
+		<zip zipfile="${build.result.folder}/rdtcoresrc.zip" filesonly="false" update="no">
 			<fileset dir="src/" includes="**/*.java"/>
 		</zip>
 	</target>
 
-	<target name="build.jars" depends="init">
+	<target name="build.jars" depends="init" description="Build all the jars for the plug-in: org.rubypeople.rdt.core.">
 		<available property="rdtcore.jar" file="${build.result.folder}/rdtcore.jar"/>
 		<antcall target="rdtcore.jar"/>
 	</target>
@@ -85,7 +88,7 @@
 		<copy file="${temp.folder}/rdtcore.jar.bin.log" todir="${destination.temp.folder}/${full.name}"/>
 	</target>
 
-	<target name="clean" depends="init">
+	<target name="clean" depends="init" description="Clean the plug-in: org.rubypeople.rdt.core of all the zips, jars and logs created.">
 		<delete file="${build.result.folder}/rdtcore.jar"/>
 		<delete file="${build.result.folder}/rdtcoresrc.zip"/>
 		<delete file="${plugin.destination}/${full.name}.jar"/>
@@ -94,10 +97,11 @@
 	</target>
 
 	<target name="refresh" depends="init" if="eclipse.running">
-		<eclipse.refreshLocal resource="${plugin}" depth="infinite"/>
+		<eclipse.convertPath fileSystemPath="c:\projects\RDT\workspace\org.rubypeople.rdt.core\" property="resourcePath"/>
+		<eclipse.refreshLocal resource="${resourcePath}" depth="infinite"/>
 	</target>
 
-	<target name="zip.plugin" depends="init">
+	<target name="zip.plugin" depends="init" description="Create a zip containing all the elements for the plug-in: org.rubypeople.rdt.core.">
 		<delete dir="${temp.folder}"/>
 		<mkdir dir="${temp.folder}"/>
 		<antcall target="build.jars"/>
@@ -111,8 +115,11 @@
 		<delete>
 			<fileset dir="${temp.folder}" includes="**/*.bin.log"/>
 		</delete>
-		<zip zipfile="${plugin.destination}/${full.name}.zip" basedir="${temp.folder}" filesonly="true"/>
+		<antcall target="zip.folder"/>
 		<delete dir="${temp.folder}"/>
+	</target>
+	<target name="zip.folder" depends="init">
+		<zip zipfile="${plugin.destination}/${full.name}.zip" basedir="${temp.folder}" filesonly="true" update="no" excludes="**/*.bin.log"/>
 	</target>
 
 </project>
