@@ -62,7 +62,7 @@
             icon="icons/full/obj16/tulaunch.gif"
             helpContextId="org.rubypeople.rdt.testunit.launch_shortcut"
             class="org.rubypeople.rdt.testunit.launcher.TestUnitLaunchShortcut"
-            modes="run, debug"
+            modes="run"
             id="org.rubypeople.rdt.testunit.testunitShortcut">
          <contextualLaunch>
             <enablement>
