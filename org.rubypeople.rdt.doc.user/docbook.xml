@@ -22,7 +22,7 @@
 			<para> If you&#39;re not familiar with the basic workbench 
 				mechanisms, please see the Getting Started chapter of the 
 				Workbench User Guide. </para>
-			<sect2>
+			<sect2 id="importantSettings">
 				<title>Important Settings</title>
 				<orderedlist>
 					<listitem>
@@ -42,6 +42,7 @@
 							path="/usr/bin".</para>
 					</listitem>
 					<listitem>
+						<warning>Code Completion for classes in libraries is postponed to version 0.4.1</warning>
 						<para>If you want to use information from the standard 
 							ruby library for code completion, you can define 
 							the location of the standard library in the 
@@ -411,6 +412,7 @@ persons = Hash[ Person.new('Lisa') =&gt; Person.new('Marge'),
 				other views.</para>
 			<sect2 id="CodeCompletion">
 				<title>Code completion</title>
+				<warning>Code Completion for classes in libraries is postponed to version 0.4.1</warning>
 				<para> If you press Ctrl+space in the ruby editor, a list with 
 					information from the current ruby files is displayed. This 
 					information includes classes, methods and variables. In 
