@@ -10,22 +10,23 @@ public class RubyOutlineContentProvider implements ITreeContentProvider {
 	}
 
 	public Object getParent(Object element) {
-		return new Object[] {"getParent"};
+		return new Object[] {element + "Parent"};
 	}
 
 	public boolean hasChildren(Object element) {
+		if ("elementTwo".equals(element))
+			return true;
 		return false;
 	}
 
 	public Object[] getElements(Object inputElement) {
-		return new Object[] { ((FileEditorInput)inputElement).getName() };
+		return new Object[] {((FileEditorInput)inputElement).getName(), "elementTwo", "elementThree"};
 	}
 
 	public void dispose() {
 	}
 
 	public void inputChanged(Viewer viewer, Object oldInput, Object newInput) {
-		System.out.println("inputChanged called");
 	}
 
 }

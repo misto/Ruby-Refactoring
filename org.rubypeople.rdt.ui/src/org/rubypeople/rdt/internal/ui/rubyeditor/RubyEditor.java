@@ -1,12 +1,16 @@
 package org.rubypeople.rdt.internal.ui.rubyeditor;
 
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.preference.PreferenceConverter;
 import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.jface.text.ITextOperationTarget;
+import org.eclipse.jface.viewers.ISelectionChangedListener;
+import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.swt.graphics.RGB;
+import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.editors.text.TextEditor;
 import org.eclipse.ui.texteditor.ContentAssistAction;
 import org.eclipse.ui.texteditor.DefaultRangeIndicator;
@@ -24,6 +28,7 @@ import org.rubypeople.rdt.ui.actions.RubyEditorActionDefinitionIds;
 
 public class RubyEditor extends TextEditor {
 	protected RubyActionGroup actionGroup;
+	protected RubyContentOutlinePage outlinePage;
 
 	public RubyEditor() {
 		super();
@@ -86,6 +91,23 @@ public class RubyEditor extends TextEditor {
 	}
 	
 	protected Object createRubyOutlinePage() {
-		return new RubyContentOutlinePage(this.getEditorInput());	
+		outlinePage = new RubyContentOutlinePage(this.getEditorInput());
+		outlinePage.addSelectionChangedListener(new ISelectionChangedListener() {
+			public void selectionChanged(SelectionChangedEvent event) {
+				handleOutlinePageSelection(event);
+			}
+		});
+		return outlinePage;	
+	}
+
+	protected void handleOutlinePageSelection(SelectionChangedEvent event) {
+		// This is where we need to get the widget displaying the document and update the view
+		System.out.println("selection occurred in outline page");
+	}
+
+	protected void doSetInput(IEditorInput input) throws CoreException {
+		super.doSetInput(input);
+		if (outlinePage != null)
+			outlinePage.setEditorInput(input);
 	}
 }
