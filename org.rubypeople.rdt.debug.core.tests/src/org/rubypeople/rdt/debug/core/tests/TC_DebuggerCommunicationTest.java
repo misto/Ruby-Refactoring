@@ -10,13 +10,17 @@ import java.net.Socket;
 
 import junit.framework.TestCase;
 
+
+import org.rubypeople.rdt.internal.debug.core.ExceptionSuspensionPoint;
+import org.rubypeople.rdt.internal.debug.core.StepSuspensionPoint;
 import org.rubypeople.rdt.internal.debug.core.SuspensionPoint;
+import org.rubypeople.rdt.internal.debug.core.model.RubyDebugTarget;
 import org.rubypeople.rdt.internal.debug.core.model.RubyStackFrame;
 import org.rubypeople.rdt.internal.debug.core.model.RubyThread;
 import org.rubypeople.rdt.internal.debug.core.model.RubyVariable;
-import org.rubypeople.rdt.internal.debug.core.parsing.BreakpointReader;
+import org.rubypeople.rdt.internal.debug.core.parsing.SuspensionReader;
 import org.rubypeople.rdt.internal.debug.core.parsing.FramesReader;
-import org.rubypeople.rdt.internal.debug.core.parsing.StepEndReader;
+import org.rubypeople.rdt.internal.debug.core.parsing.SuspensionReader;
 import org.rubypeople.rdt.internal.debug.core.parsing.VariableReader;
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserFactory;
@@ -47,7 +51,7 @@ public class TC_DebuggerCommunicationTest extends TestCase {
 	/*
 		public static TestSuite suite() {
 			TestSuite suite = new TestSuite();
-			suite.addTest(new TC_DebuggerCommunicationTest("testVariableInstanceNested"));
+			suite.addTest(new TC_DebuggerCommunicationTest("testVariableWithXmlContent"));
 			return suite;
 		}
 		*/
@@ -130,11 +134,11 @@ public class TC_DebuggerCommunicationTest extends TestCase {
 
 	public void testNotCompilingCode() throws Exception {
 		// Breakpoint in line 1 does not work yet.
-		this.createSocket(new String[] { "puts x", "puts y" });
-		out.println("b test.rb:2");
+		this.createSocket(new String[] { "puts 'x'", "puts 'y'" });
+		out.println("b test.rb:3");
 		out.println("cont");
 		System.out.println("Waiting for breakpoint..");
-		SuspensionPoint hit = new BreakpointReader().readBreakpointHit(this.getXpp(socket));
+		SuspensionPoint hit = new SuspensionReader().readSuspension(this.getXpp(socket));
 		this.assertNull(hit);
 	}
 
@@ -144,19 +148,35 @@ public class TC_DebuggerCommunicationTest extends TestCase {
 		out.println("b test.rb:2");
 		out.println("cont");
 		System.out.println("Waiting for breakpoint..");
-		SuspensionPoint hit = new BreakpointReader().readBreakpointHit(this.getXpp(socket));
+		SuspensionPoint hit = new SuspensionReader().readSuspension(this.getXpp(socket));
 		this.assertNotNull(hit);
+		this.assertTrue(hit.isBreakpoint()) ;
 		this.assertEquals(2, hit.getLine());
 		this.assertEquals("test.rb", hit.getFile());
 		out.println("cont");
 	}
+
+	public void testException() throws Exception {
+		this.createSocket(new String[] { "puts 'a'", "raise 'message'", "puts 'c'" });
+		out.println("cont");
+		System.out.println("Waiting for exception");
+		SuspensionPoint hit = new SuspensionReader().readSuspension(this.getXpp(socket));
+		this.assertNotNull(hit);
+		this.assertEquals(2, hit.getLine());
+		this.assertEquals(this.getOSIndependent(TMP_DIR + "test.rb"), hit.getFile());
+		this.assertTrue(hit.isException()) ;		
+		this.assertEquals("message", ((ExceptionSuspensionPoint) hit).getExceptionMessage()) ;
+		this.assertEquals("RuntimeError", ((ExceptionSuspensionPoint) hit).getExceptionType()) ;
+		out.println("cont");
+	}
+
 
 	public void testBreakpointNeverReached() throws Exception {
 		this.createSocket(new String[] { "puts 'a'", "puts 'b'", "puts 'c'" });
 		out.println("b test.rb:10");
 		out.println("cont");
 		System.out.println("Waiting for breakpoint..");
-		SuspensionPoint hit = new BreakpointReader().readBreakpointHit(this.getXpp(socket));
+		SuspensionPoint hit = new SuspensionReader().readSuspension(this.getXpp(socket));
 		this.assertNull(hit);
 	}
 
@@ -164,14 +184,15 @@ public class TC_DebuggerCommunicationTest extends TestCase {
 		this.createSocket(new String[] { "puts 'a'", "puts 'b'", "puts 'c'" });
 		out.println("b test.rb:2");
 		out.println("cont");
-		new BreakpointReader().readBreakpointHit(this.getXpp(socket));
+		new SuspensionReader().readSuspension(this.getXpp(socket));
 		out.println("next");
-		SuspensionPoint info = new StepEndReader().readEndOfStep(this.getXpp(socket));
+		SuspensionPoint info = new SuspensionReader().readSuspension(this.getXpp(socket));
 		this.assertEquals(3, info.getLine());
 		this.assertEquals(this.getOSIndependent(TMP_DIR + "test.rb"), info.getFile());
-		this.assertEquals(1, info.getFramesNumber());
+		this.assertTrue(info.isStep()) ;
+		this.assertEquals(1, ((StepSuspensionPoint) info).getFramesNumber());
 		out.println("next");
-		info = new StepEndReader().readEndOfStep(this.getXpp(socket));
+		info = new SuspensionReader().readSuspension(this.getXpp(socket));
 		this.assertNull(info);
 	}
 
@@ -189,9 +210,9 @@ public class TC_DebuggerCommunicationTest extends TestCase {
 		PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
 		out.println("b test.rb:3");
 		out.println("cont");
-		new BreakpointReader().readBreakpointHit(this.getXpp(socket));
+		new SuspensionReader().readSuspension(this.getXpp(socket));
 		out.println("next");
-		SuspensionPoint info = new StepEndReader().readEndOfStep(this.getXpp(socket));
+		SuspensionPoint info = new SuspensionReader().readSuspension(this.getXpp(socket));
 		this.assertNull(info);
 
 	}
@@ -201,36 +222,67 @@ public class TC_DebuggerCommunicationTest extends TestCase {
 		this.writeFile("test2.rb", new String[] { "class Test2", "def print", "puts 'XX'", "puts 'XX'", "end", "end" });
 		this.runTo("test2.rb", 3);
 		out.println("next");
-		SuspensionPoint info = new StepEndReader().readEndOfStep(this.getXpp(socket));
+		SuspensionPoint info = new SuspensionReader().readSuspension(this.getXpp(socket));
 		this.assertEquals(4, info.getLine());
 		this.assertEquals(this.getOSIndependent(TMP_DIR + "test2.rb"), info.getFile());
-		this.assertEquals(2, info.getFramesNumber());
+		this.assertTrue(info.isStep()) ;
+		this.assertEquals(2, ((StepSuspensionPoint) info).getFramesNumber());
 		out.println("next");
-		info = new StepEndReader().readEndOfStep(this.getXpp(socket));
+		info = new SuspensionReader().readSuspension(this.getXpp(socket));
 		this.assertNull(info);
 	}
 
 	public void testStepOverInDifferentFrame() throws Exception {
 		this.createSocket(new String[] { "require 'test2.rb'", "Test2.new.print()", "puts 'a'" });
 		this.writeFile("test2.rb", new String[] { "class Test2", "def print", "puts 'XX'", "puts 'XX'", "end", "end" });
-		this.runTo("test2.rb", 3);
-		out.println("next 2");
-		SuspensionPoint info = new StepEndReader().readEndOfStep(this.getXpp(socket));
+		this.runTo("test2.rb", 4);
+		out.println("next");
+		SuspensionPoint info = new SuspensionReader().readSuspension(this.getXpp(socket));
 		this.assertEquals(3, info.getLine());
 		this.assertEquals(this.getOSIndependent(TMP_DIR + "test.rb"), info.getFile());
-		this.assertEquals(1, info.getFramesNumber());
+		this.assertTrue(info.isStep()) ;
+		this.assertEquals(1, ((StepSuspensionPoint) info).getFramesNumber());
 		out.println("cont");
 	}
+
+	public void testStepReturn() throws Exception {
+		this.createSocket(new String[] { "require 'test2.rb'", "Test2.new.print()", "puts 'a'" });
+		this.writeFile("test2.rb", new String[] { "class Test2", "def print", "puts 'XX'", "puts 'XX'", "end", "end" });
+		this.runTo("test2.rb", 4);
+		out.println("next");
+		SuspensionPoint info = new SuspensionReader().readSuspension(this.getXpp(socket));
+		this.assertEquals(3, info.getLine());
+		this.assertEquals(this.getOSIndependent(TMP_DIR + "test.rb"), info.getFile());
+		this.assertTrue(info.isStep()) ;
+		this.assertEquals(1, ((StepSuspensionPoint) info).getFramesNumber());
+		out.println("cont");
+	}
+
+
+	public void testHitBreakpointWhileSteppingOver() throws Exception {
+		this.createSocket(new String[] { "require 'test2.rb'", "Test2.new.print()", "puts 'a'" });
+		this.writeFile("test2.rb", new String[] { "class Test2", "def print", "puts 'XX'", "puts 'XX'", "end", "end" });
+		out.println("b test2.rb:4");
+		this.runTo("test.rb", 2);
+		out.println("next");
+		SuspensionPoint info = new SuspensionReader().readSuspension(this.getXpp(socket));
+		this.assertEquals(4, info.getLine());
+		this.assertEquals("test2.rb", info.getFile());
+		this.assertTrue(info.isBreakpoint()) ;
+		out.println("cont");
+	}
+
 
 	public void testStepInto() throws Exception {
 		this.createSocket(new String[] { "require 'test2.rb'", "puts 'a'", "Test2.new.print()" });
 		this.writeFile("test2.rb", new String[] { "class Test2", "def print", "puts 'XX'", "puts 'XX'", "end", "end" });
 		this.runTo("test.rb", 3);
 		out.println("step");
-		SuspensionPoint info = new StepEndReader().readEndOfStep(this.getXpp(socket));
+		SuspensionPoint info = new SuspensionReader().readSuspension(this.getXpp(socket));
 		this.assertEquals(3, info.getLine());
 		this.assertEquals(getOSIndependent(TMP_DIR + "test2.rb"), info.getFile());
-		this.assertEquals(2, info.getFramesNumber());
+		this.assertTrue(info.isStep()) ;
+		this.assertEquals(2, ((StepSuspensionPoint) info).getFramesNumber());
 		out.println("cont");
 	}
 
@@ -241,7 +293,7 @@ public class TC_DebuggerCommunicationTest extends TestCase {
 	private void runTo(String filename, int lineNumber) throws Exception {
 		out.println("b " + filename + ":" + lineNumber);
 		out.println("cont");
-		new BreakpointReader().readBreakpointHit(this.getXpp(socket));
+		new SuspensionReader().readSuspension(this.getXpp(socket));
 	}
 
 	protected RubyStackFrame createStackFrame() throws Exception {
@@ -262,6 +314,17 @@ public class TC_DebuggerCommunicationTest extends TestCase {
 		this.assertEquals(null, variables[0].getValue().getReferenceTypeName());
 		this.assertTrue(!variables[0].getValue().hasVariables());
 	}
+
+	public void testVariableWithXmlContent() throws Exception {
+		this.createSocket(new String[] { "stringA='<start test=\"\"/>'", "puts 'b'" });
+		this.runToLine(2);
+		out.println("v l");
+		RubyVariable[] variables = new VariableReader().readVariables(this.createStackFrame(), this.getXpp(socket));
+		this.assertEquals(1, variables.length);
+		this.assertEquals("stringA", variables[0].getName());
+		this.assertEquals("<start test=\"\"/>", variables[0].getValue().getValueString());
+	}
+
 
 	public void testVariableCustomObject() throws Exception {
 		this.createSocket(new String[] { "require 'test2.rb'", "customObject=Test2.new", "puts customObject" });
