@@ -50,8 +50,11 @@ class XmlPrinter
   end
 
   def printVariable(name, binding, kind)
-    value = eval(name, binding)
-    if !value then
+    printVariableValue(name, eval(name, binding), kind)
+  end
+  
+  def printVariableValue(name, value, kind)
+   if !value then
       out("<variable name=\"%s\" kind=\"%s\"/>", name, kind)
       return
     end
@@ -262,9 +265,9 @@ class DEBUGGER__
       return obj
     end
     
-    def debug_eval(str, binding, privateInstanceVars = false)
+    def debug_eval(str, binding, noPrivateInstanceVars = false)
       begin
-        if privateInstanceVars then
+        if noPrivateInstanceVars then
           val = eval(str, binding)
         else
           val = debug_eval_private(str, binding)
@@ -274,12 +277,8 @@ class DEBUGGER__
         if error.to_s =~ /private method .* called for/ then
           return debug_eval(str, binding, true)
         end
-        at = eval("caller(0)", binding)
-        stdout.printf "%s:%s\n", at.shift, $!.to_s.sub(/\(eval\):1:(in `.*?':)?/, '') #`
-        for i in at
-          stdout.printf "\tfrom %s\n", i
-        end
-        throw :debug_error
+        @printer.debug("Error in debug_eval (noPrivateInstancsVars=%s): %s", noPrivateInstanceVars, error)
+        throw error
       end
     end
 
@@ -355,6 +354,7 @@ class DEBUGGER__
         begin
           @printer.printXml("<variables>")
           obj = debug_eval($', binding)
+          @printer.debug("%s", obj)
           instanceBinding = obj.instance_eval{binding()}	      
           obj.instance_variables.each {
             | instanceVar |
@@ -372,9 +372,27 @@ class DEBUGGER__
             @printer.printVariable(constant, classBinding, 'constant')
           }
           @printer.printXml("</variables>")
-        rescue StandardError 
+        rescue StandardError => error
+          @printer.debug("%s", error)
           @printer.printXml("</variables>")
         end
+        
+      when /^\s*inspect\s*(\d+)?\s+/        
+        new_binding = getBinding($1)
+        if new_binding then
+          binding = new_binding
+        end
+        begin
+          @printer.printXml("<variables>")
+          obj = debug_eval($', binding)
+          @printer.debug("%s", obj)
+          @printer.printVariableValue("pseudoInspectResultVariable", obj, "local")          
+          @printer.printXml("</variables>")
+        rescue StandardError => error
+          @printer.printXml("</variables>")
+        end
+
+        
       end
     end
 
@@ -435,7 +453,7 @@ class DEBUGGER__
       previous_line = nil
       display_expressions(binding)
 
-      catch (:debug_error) do
+      
 
         case input
         when /^\s*tr(?:ace)?(?:\s+(on|off))?(?:\s+(all))?$/
@@ -638,7 +656,7 @@ class DEBUGGER__
           @printer.debug("Unknown input : %s", input)
         end
         
-      end
+      
       
     end
 
@@ -901,7 +919,6 @@ class DEBUGGER__
           return thread
         end
       end
-      throw :debug_error
     end 
 
     def interrupt
@@ -911,8 +928,7 @@ class DEBUGGER__
     def get_thread(num)
       th = @thread_list.index(num)
       unless th
-        @stdout.print "No thread ##{num}\n"
-        throw :debug_error
+        printer.debug("No thread ##{num}\n")
       end
       th
     end
