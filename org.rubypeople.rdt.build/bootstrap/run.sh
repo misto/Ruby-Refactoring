@@ -24,7 +24,7 @@
 
 eclipseDir=/home/markus/eclipse-3.0.1
 pdeBuildPluginVersion=3.0.1
-pluginAutomaticBuildDir=/tmp/org.rubypeople.rdt.build/bootstrap
+pluginAutomaticBuildDir=/home/markus/eclipse-3.0.1/workspace/org.rubypeople.rdt.build/bootstrap
 buildDirectory=/tmp/PlugInBuildDir
 verboseAnt=-verbose
 eclipseAutomatedTestHome=/home/markus/eclipse-testing
@@ -33,7 +33,7 @@ docbookRoot=/home/markus/docbook
 vm=java
 installmode=clean
 os=linux
-ws=gtk
+ws=motif
 arch=x86
 
 #REM reset ant command line args
@@ -53,6 +53,6 @@ ANT_CMD_LINE_ARGS=
 
 buildfile=$eclipseDir/plugins/org.eclipse.pde.build_$pdeBuildPluginVersion/scripts/build.xml
 echo Starting eclipse in $eclipseDir, $vm
-cmd="$vm -cp $eclipseDir/startup.jar org.eclipse.core.launcher.Main -application org.eclipse.ant.core.antRunner -buildfile $buildfile -data $buildDirectory/workspace -Dbasews=$ws -Dbaseos=$os -Dbasearch=$arch -Dbuilder=$pluginAutomaticBuildDir  -D$installmode=true -DjavacFailOnError=true -DbuildDirectory=/tmp/eclipseBuild -DbaseLocation=$eclipseDir $verboseAnt -DeclipseAutomatedTestHome=$eclipseAutomatedTestHome -Drdt.rubyInterpreter="$rubyInterpreter" -Drdt-tests-workspace=$buildDirectory/workspace-rdt-tests -Ddocbook.root=$docbookRoot"
+cmd="$vm -cp $eclipseDir/startup.jar org.eclipse.core.launcher.Main -application org.eclipse.ant.core.antRunner -buildfile $buildfile -data $buildDirectory/workspace -Dbasews=$ws -Dbaseos=$os -Dbasearch=$arch -Dbuilder=$pluginAutomaticBuildDir  -D$installmode=true -DjavacFailOnError=true -DbuildDirectory=$buildDirectory -DbaseLocation=$eclipseDir $verboseAnt -DeclipseAutomatedTestHome=$eclipseAutomatedTestHome -Drdt.rubyInterpreter="$rubyInterpreter" -Drdt-tests-workspace=$buildDirectory/workspace-rdt-tests -Ddocbook.root=$docbookRoot"
 echo $cmd
 `$cmd`

@@ -4,7 +4,7 @@ Automatic build and test step by step guide
 The automatic build uses an external CVS command (not the eclipse built-in CVS). Therefore
 you have to install CVS. The following CVS command must run from the command line:
 
-cvs -d :ext:anything:/cvsroot/rubyeclipse export -r HEAD org.rubypeople.rdt/ruby.png
+cvs -d :ext:cvs.sf.net:/cvsroot/rubyeclipse export -r HEAD org.rubypeople.rdt/ruby.png
 
 As you can see, username and host are not part of the CVSROOT. That allows to use the same
 map file for different users. The host and username can be hardcoded in your CVS_RSH command.
@@ -22,9 +22,18 @@ goto setArgs
 echo %CMD_LINE_ARGS% > D:/Temp/tests
 D:\bin\plink -load cvs-ssh -pw <myPW> 
 
+For this batch file you need to have a configuration for putty named "cvs-ssh".
+
+Example for a unix shell script
+#!/bin/sh
+# 1. arg: hostname from cvs root
+# 2. arg: cvs
+# 3. arg: server
+ssh -l mbarchfe $@
+
 2) Get the bootstrap files
 
-cvs -d :ext:anything:/cvsroot/rubyeclipse export -r HEAD org.rubypeople.rdt.build/bootstrap
+cvs -d :ext:cvs.sf.net:/cvsroot/rubyeclipse export -r HEAD org.rubypeople.rdt.build/bootstrap
 
 After a successful retrieval you will find the following files:
 
@@ -35,13 +44,29 @@ customTargets.xml: build file which is being called during the build process
 build.properties: property entries for the build process
 
 
-3) Java VM 
+3) Configuration
+* Java VM 
 You have probably java 1.4 installed. Set the vm variable in the run script.
 
-4) Eclipse build host
+* Eclipse build host
 If you have eclipse already installed on the computer where you intent to run the automatic
 build, you can use this installation as build host. Otherwise get an eclipse platform zip
 file and extract it. Set the eclipseDir variable in the run script appropriately.
+
+
+
+
+
+4) Run the Script run.sh or run.
+
+First the map file will be fetched. This is configured via the getMapFiles target of
+customTargets.xml.
+<buildDirectory>/fetch_org.rubypeople.rdt.xml
+
+Then the feature.xml will be fetched. It is used for the creation of build files. For
+this to work properly, there must be an appropriate entry in the map file (see also
+directory.txt)
+<buildDirectory>/org.rubypeople.rdt-feature/feature.xml
 
 
 TO BE COMPLETED
