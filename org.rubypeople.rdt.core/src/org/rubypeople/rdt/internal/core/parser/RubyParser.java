@@ -35,6 +35,7 @@ import java.util.StringTokenizer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.rubypeople.rdt.internal.core.RubyPlugin;
 import org.rubypeople.rdt.internal.core.parser.ast.RubyBegin;
 import org.rubypeople.rdt.internal.core.parser.ast.RubyCase;
 import org.rubypeople.rdt.internal.core.parser.ast.RubyClass;
@@ -57,6 +58,7 @@ public class RubyParser {
 
 	private static RubyParserStack stack = new RubyParserStack();
 	private static RubyScript script;
+	private static final char[] CLASS_AND_MODULE_END_CHARS = {' ', ';'};
 	private static final char[] VARIABLE_END_CHARS = { ' ', '.', '[', '(', ')', ']', ',', '}', '{', ';'};
 	private static boolean inDocs;
 
@@ -403,6 +405,9 @@ public class RubyParser {
 	 */
 	private static String getToken(String prefix, char[] delimiters, String line, int globalIndex) {
 		int endOfPrefix = RubyParserUtil.endIndexOf(line, prefix, globalIndex);
+		while( endOfPrefix < line.length() && Character.isWhitespace(line.charAt(endOfPrefix))) {
+			endOfPrefix++;
+		}
 		for (int i = endOfPrefix; i < line.length(); i++) {
 			if (RubyParserUtil.contains(delimiters, line.charAt(i))) { return line.substring(endOfPrefix, i); }
 		}
@@ -553,34 +558,12 @@ public class RubyParser {
 	private static void findClass(String curLine, int lineNum) {
 		Matcher classMatcher = CLASS_PATTERN.matcher(curLine);
 		if (classMatcher.find()) {
-			char[] tokens = { ' ', ';'};
-			String name = getToken("class ", tokens, curLine);
+			String name = getToken("class ", CLASS_AND_MODULE_END_CHARS, curLine);
 			if (name.trim().length() == 0) return;
-			int start = classMatcher.end();
+			int start = curLine.indexOf(name, classMatcher.end());
 			if (Character.isLowerCase(name.charAt(0))) script.addParseError(new ParseError("Class names should begin with an uppercase letter.", lineNum, start, start + name.length()));
 			pushMultiLineElement(new RubyClass(name, lineNum, start));
 		}
-	}
-
-	/**
-	 * Returns the startIndex of the element (given a tokenIdentifier prefix). -1
-	 * if the tokenIdentifier is not found, or the element has an empty name
-	 * 
-	 * @param tokenIdentifierThe
-	 *            prefix which denotes a particular token i.e "require "
-	 * @param tokens
-	 *            a character array containg characters which can mark the end
-	 *            of the element name
-	 * @param curLine
-	 *            The String we'll be checking for the element
-	 * @return
-	 */
-	private static int findElement(String tokenIdentifier, char[] tokens, String curLine) {
-		int start = RubyParserUtil.endIndexOf(curLine, tokenIdentifier);
-		if (start == -1) return -1;
-		if (getToken(tokenIdentifier, tokens, curLine).length() == 0) return -1;
-		log("Found start of element: " + curLine);
-		return start;
 	}
 
 	/**
@@ -588,10 +571,11 @@ public class RubyParser {
 	 * @param lineNum
 	 */
 	private static void findModule(String curLine, int lineNum) {
-		char[] tokens = { ' ', ';'};
-		int start = findElement("module ", tokens, curLine);
+		int start = curLine.indexOf("module ");
 		if (start == -1) return;
-		String name = getToken("module ", tokens, curLine);
+		String name = getToken("module ", CLASS_AND_MODULE_END_CHARS, curLine);
+		if (isEmpty(name)) return;
+		start = curLine.indexOf(name, start);
 		if (Character.isLowerCase(name.charAt(0))) script.addParseError(new ParseError("Module names should begin with an uppercase letter.", lineNum, start, start + name.length()));
 		pushMultiLineElement(new RubyModule(name, lineNum, start));
 	}
@@ -605,6 +589,7 @@ public class RubyParser {
 		if (start == -1) return;
 		String name = getMethodName(curLine);
 		if (isEmpty(name)) return;
+		start = curLine.indexOf(name, start);
 		pushMultiLineElement(new RubyMethod(name, lineNum, start));
 	}
 
@@ -633,10 +618,12 @@ public class RubyParser {
 	}
 
 	/**
+	 * If we are tracing the core plugin, output info the the console
 	 * @param string
 	 */
 	private static void log(String string) {
-		System.out.println(string);
-		//RubyPlugin.log(new Exception(string));
+		if ( RubyPlugin.getDefault().isDebugging() ) {
+			System.out.println(string);
+		}
 	}
 }

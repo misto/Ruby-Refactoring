@@ -745,6 +745,13 @@ public class TC_RubyParser extends TestCase {
 		assertEquals(0, script3.getElementCount() );
 	}
 	
+	public void testMultipleSpacesBeforeClassName() throws Exception {
+		RubyScript script = RubyParser.parse("class   Name");
+		assertEquals(1, script.getElementCount() );
+		assertNotNull(script.getElement("Name"));
+		assertEquals(new Position(0, 8), script.getElement("Name").getStart());
+	}
+	
 	public void testEmptyModuleName() throws Exception {
 		RubyScript script = RubyParser.parse("module ");
 		assertEquals(0, script.getElementCount() );
@@ -756,6 +763,13 @@ public class TC_RubyParser extends TestCase {
 		assertEquals(0, script3.getElementCount() );
 	}
 	
+	public void testMultipleSpacesBeforeModuleName() throws Exception {
+		RubyScript script = RubyParser.parse("module   Name");
+		assertEquals(1, script.getElementCount() );
+		assertNotNull(script.getElement("Name"));
+		assertEquals(new Position(0, 9), script.getElement("Name").getStart());
+	}
+	
 	public void testEmptyMethodName() throws Exception {
 		RubyScript script = RubyParser.parse("def ");
 		assertEquals(0, script.getElementCount() );
@@ -765,6 +779,13 @@ public class TC_RubyParser extends TestCase {
 		
 		RubyScript script3 = RubyParser.parse("def  ");
 		assertEquals(0, script3.getElementCount() );
+	}
+	
+	public void testMultipleSpacesBeforeMethodName() throws Exception {
+		RubyScript script = RubyParser.parse("def   name");
+		assertEquals(1, script.getElementCount() );
+		assertNotNull(script.getElement("name"));
+		assertEquals(new Position(0, 6), script.getElement("name").getStart());
 	}
 	
 	public void testEmptyInstanceVariableName() throws Exception {
