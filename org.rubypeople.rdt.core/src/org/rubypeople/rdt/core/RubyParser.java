@@ -1,6 +1,12 @@
 package org.rubypeople.rdt.core;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.StringTokenizer;
+
+import org.eclipse.core.resources.IFile;
+import org.eclipse.core.runtime.CoreException;
 
 public class RubyParser {
 
@@ -8,10 +14,11 @@ public class RubyParser {
 		super();
 	}
 
-	public RubyParsedComponent getComponentHierarchy(String filename, String rubySource) {
-		StringTokenizer tokenizer = new StringTokenizer(rubySource);
+	public RubyParsedComponent getComponentHierarchy(IFile rubyFile) {
+		
+		StringTokenizer tokenizer = new StringTokenizer(getFileContent(rubyFile));
 
-		RubyParsedComponent parsedComponent = new RubyParsedComponent(filename);
+		RubyParsedComponent parsedComponent = new RubyParsedComponent(rubyFile.getName());
 		RubyParsedComponent currentClassComponent = null;
 		while (tokenizer.hasMoreTokens()) {
 			String token = tokenizer.nextToken();
@@ -26,6 +33,22 @@ public class RubyParser {
 		}
 
 		return parsedComponent;
+	}
+	
+	protected String getFileContent(IFile rubyFile) {
+		StringBuffer fileContents = new StringBuffer();
+		try {
+			BufferedReader reader = new BufferedReader(new InputStreamReader(rubyFile.getContents()));
+			String line = null;
+			while ((line = reader.readLine()) != null) {
+				fileContents.append(line);
+				fileContents.append("\n");
+			}
+		} catch (CoreException e) {
+		} catch (IOException e) {
+		}
+		
+		return fileContents.toString();
 	}
 
 }
