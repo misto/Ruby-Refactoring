@@ -32,12 +32,12 @@ import java.util.List;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
-import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
 import org.rubypeople.rdt.internal.core.parser.ParseException;
 import org.rubypeople.rdt.internal.core.parser.RubyParser;
 import org.rubypeople.rdt.internal.core.parser.ast.RubyElement;
 import org.rubypeople.rdt.internal.core.parser.ast.RubyScript;
+import org.rubypeople.rdt.internal.ui.utils.RubyElementVisitor;
 
 /**
  * @author Chris
@@ -96,21 +96,23 @@ public class TestSearchEngine {
 	 * @param rubyProject
 	 */
 	public static RubyElement[] findTests(IProject rubyProject) {
-		if (rubyProject == null) return new RubyElement[0];
+		if (rubyProject == null) {
+			return new RubyElement[0];
+		}
 		try {
-			List list = new ArrayList();
-			IResource[] resources = rubyProject.members();
-			for (int i = 0; i < resources.length; i++) {
-				String name = resources[i].getName();
-				if ( name.endsWith(".rb") || name.endsWith(".rbw") || name.endsWith(".cgi")) {
-					RubyElement[] elements = TestSearchEngine.findTests((IFile) resources[i]);
-					for (int j = 0; j < elements.length; j++ ) {
-						list.add(elements[j]);
-					}
-				}
-			}
-			Object[] listArray = list.toArray();
-			RubyElement[] array = new RubyElement[list.size()];
+			List tests = new ArrayList();			
+			RubyElementVisitor visitor = new RubyElementVisitor() ;
+			rubyProject.accept(visitor) ;
+			Object[] rubyFiles = visitor.getCollectedRubyFiles() ;
+			for (int i = 0; i <  rubyFiles.length; i++) {
+				IFile rubyFile = (IFile) rubyFiles[i];
+				RubyElement[] elements = TestSearchEngine.findTests(rubyFile);
+				for (int j = 0; j < elements.length; j++ ) {
+					tests.add(elements[j]);
+				} 
+			}			
+			Object[] listArray = tests.toArray();
+			RubyElement[] array = new RubyElement[tests.size()];
 			System.arraycopy(listArray, 0, array, 0, listArray.length);
 			return array;
 		} catch (CoreException e) {

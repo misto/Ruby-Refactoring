@@ -98,9 +98,9 @@ public class TestUnitMainTab extends AbstractLaunchConfigurationTab implements I
 			}
 		});
 	
-		new Label(composite, SWT.NONE).setText(TestUnitMessages.getString("JUnitMainTab.label.test"));
+		new Label(composite, SWT.NONE).setText(TestUnitMessages.getString("LaunchConfigurationTab.RubyEntryPoint.classLabel"));
 		classSelector = new RubyClassSelector(composite, fileSelector, projectSelector);
-		classSelector.setBrowseDialogMessage(RdtDebugUiMessages.getString("LaunchConfigurationTab.RubyEntryPoint.projectSelectorMessage"));
+		classSelector.setBrowseDialogMessage(TestUnitMessages.getString("LaunchConfigurationTab.RubyEntryPoint.classSelectorMessage"));
 		classSelector.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
 		classSelector.addModifyListener(new ModifyListener() {
 

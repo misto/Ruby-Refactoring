@@ -7,13 +7,17 @@ import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IResourceVisitor;
 import org.eclipse.core.runtime.CoreException;
+import org.rubypeople.rdt.internal.ui.RdtUiPlugin;
+import org.rubypeople.rdt.internal.ui.RubyFileMatcher;
 
 public class RubyElementVisitor implements IResourceVisitor {
 
-	protected List rubyFiles = new ArrayList();
-
+	protected List rubyFiles ;
+	protected RubyFileMatcher rubyFileMatcher ;
+	
 	public RubyElementVisitor() {
-		super();
+		rubyFiles = new ArrayList() ;
+		rubyFileMatcher = RdtUiPlugin.getDefault().getRubyFileMatcher() ;
 	}
 
 	public boolean visit(IResource resource) throws CoreException {
@@ -26,16 +30,11 @@ public class RubyElementVisitor implements IResourceVisitor {
 
 		case IResource.FILE:
 			IFile fileResource = (IFile) resource;
-			String extension = fileResource.getFileExtension();
-			String name = fileResource.getName();
-			if (name != null && name.equalsIgnoreCase("rakefile")) {
-				rubyFiles.add(fileResource);
-				return true;
+			if (rubyFileMatcher.hasRubyEditorAssociation(fileResource)) {
+				this.rubyFiles.add(resource) ;
+				return true ;
 			}
-			if ("rb".equals(extension) || "rbw".equals(extension) || "cgi".equals(extension) || "gem".equals(extension) || "gemspec".equals(extension) || "rhtml".equals(extension)) {
-				rubyFiles.add(fileResource);
-				return true;
-			}
+			return false ;
 
 		default:
 			return false;

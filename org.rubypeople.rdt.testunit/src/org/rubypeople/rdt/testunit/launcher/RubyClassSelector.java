@@ -48,6 +48,7 @@ import org.rubypeople.rdt.internal.core.parser.ast.RubyElement;
 import org.rubypeople.rdt.internal.ui.rubyeditor.outline.RubyOutlineLabelProvider;
 import org.rubypeople.rdt.internal.ui.utils.RubyFileSelector;
 import org.rubypeople.rdt.internal.ui.utils.RubyProjectSelector;
+import org.rubypeople.rdt.testunit.views.TestUnitMessages;
 
 /**
  * @author Chris
@@ -96,6 +97,8 @@ public class RubyClassSelector {
 				handleBrowseSelected();
 			}
 		});
+		
+		browseDialogTitle = TestUnitMessages.getString("RubyClassSelector.Title");
 
 	}
 
