@@ -6,7 +6,6 @@
    provider-name="RubyPeople Inc.">
 
    <runtime>
-      <library name="rdtdoc.jar"/>
    </runtime>
    <requires>
       <import plugin="org.eclipse.core.resources"/>
