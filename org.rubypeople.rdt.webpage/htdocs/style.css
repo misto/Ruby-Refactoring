@@ -1,0 +1,106 @@
+@media print
+{
+  #container {  
+  }
+
+  #leftPart {
+    display: none ;
+  }
+ 
+  #mainPart {
+    min-height: 400px ;
+  }
+
+  #banner {
+    display: none ;
+  }
+
+
+}
+
+@media screen
+{
+  
+  #container {
+    width: 760px;
+    text-align: left ;
+    padding: 0px 0px 0px 0px;
+    margin: 0px 0px 0px 0px;
+    background-color: #FF6666 ;
+  }
+
+  #leftPart {
+    width: 128px;
+    float: left;   
+    height: 500px ;     
+  }
+
+  #mainPart {
+	position: relative ;
+    margin: 0px 0 0 128px ;
+    padding: 10px 0 0 0  ;
+    background-color: white ;
+    height: 500px ;
+  }
+  
+  #mainPartHeader {
+     background-color:#CC0000 ;
+     font-weight: bold ; 
+     color: #ffffff;
+     padding: 4 0 4 2 ; 
+     margin-left: 4 ;   
+  }
+
+  #banner {
+    position: relative ;
+	margin: 0 0 0 0 ;
+	padding: 0 0 0 0 ;
+ }
+
+ .menuEntry {
+	 padding: 4 0 0 0 ;
+ }
+
+
+  .menuEntry A:link {text-decoration: none; color: 000000 }
+  .menuEntry A:visited {text-decoration: none; color: 000000 }
+  .menuEntry A:hover { text-decoration: none; color: 000000 }
+
+  #sfLogo {
+  	text-align: center ;
+  	padding-top: 30px ;
+  }
+
+}
+
+BODY, TD, TH  {
+	font-family : Arial, Helvetica, sans-serif;
+	font-size : 12px;
+	font-weight : normal;
+	color : #000000;
+}
+
+body {   
+    text-align: center ; 
+    margin: 0 0 0 0;    
+}
+
+A:LINK  {
+	color : #000000;
+	text-decoration : none;
+	font-weight: bold;
+}
+A:HOVER  {
+	text-decoration : underline;
+	font-weight: bold;
+}
+
+A:VISITED  {
+	color: #000000;
+	text-decoration : none;
+	font-weight : bold;
+}
+
+
+
+
