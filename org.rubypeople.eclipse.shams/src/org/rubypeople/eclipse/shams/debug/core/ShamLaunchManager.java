@@ -13,6 +13,7 @@ import org.eclipse.debug.core.ILaunchConfigurationListener;
 import org.eclipse.debug.core.ILaunchConfigurationType;
 import org.eclipse.debug.core.ILaunchListener;
 import org.eclipse.debug.core.ILaunchManager;
+import org.eclipse.debug.core.ILaunchesListener;
 import org.eclipse.debug.core.model.IDebugTarget;
 import org.eclipse.debug.core.model.IPersistableSourceLocator;
 import org.eclipse.debug.core.model.IProcess;
@@ -101,4 +102,21 @@ public class ShamLaunchManager implements ILaunchManager {
 	public IPersistableSourceLocator newSourceLocator(String identifier) throws CoreException {
 		throw new RuntimeException("Need to implement on sham.");
 	}
+
+	public void addLaunches(ILaunch[] launches) {
+		throw new RuntimeException("Need to implement on sham.");
+	}
+
+	public void addLaunchListener(ILaunchesListener listener) {
+		throw new RuntimeException("Need to implement on sham.");
+	}
+
+	public void removeLaunches(ILaunch[] launches) {
+		throw new RuntimeException("Need to implement on sham.");
+	}
+
+	public void removeLaunchListener(ILaunchesListener listener) {
+		throw new RuntimeException("Need to implement on sham.");
+	}
+
 }

@@ -44,4 +44,8 @@ public class ShamLaunchConfigurationType implements ILaunchConfigurationType {
 		return temp;
 	}
 
+	public Object getAdapter(Class adapter) {
+		return null;
+	}
+
 }
