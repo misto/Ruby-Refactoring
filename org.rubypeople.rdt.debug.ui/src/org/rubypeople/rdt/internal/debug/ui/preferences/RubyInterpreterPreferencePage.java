@@ -132,6 +132,7 @@ public class RubyInterpreterPreferencePage extends PreferencePage implements IWo
 
 		column = new TableColumn(table, SWT.NULL);
 		column.setText(RdtDebugUiMessages.getString("RubyInterpreterPreferencePage.rubyInterpreterTable.interpreterPath")); //$NON-NLS-1$
+		column.setWidth(350);
 
 		return table;
 	}

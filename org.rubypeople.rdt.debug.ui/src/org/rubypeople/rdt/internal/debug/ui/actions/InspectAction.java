@@ -51,6 +51,7 @@ public class InspectAction extends AbstractInspectAction implements IViewActionD
         Display.getCurrent().asyncExec(new Runnable() {
             public void run() {
                 String selectedText = ((TextSelection) selection).getText().replace('\n', ';');
+				selectedText = selectedText.replace('\r', ' ');
                 try {
 					RubyVariable rubyVariable = stackFrame.getRubyDebuggerProxy().readInspectExpression(stackFrame, selectedText);
 					showExpressionView();
