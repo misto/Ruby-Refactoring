@@ -20,11 +20,23 @@ public class RubySourceViewerConfiguration extends SourceViewerConfiguration {
 	}
 
 	public IPresentationReconciler getPresentationReconciler(ISourceViewer sourceViewer) {
-		PresentationReconciler reconciler= new PresentationReconciler();
+		PresentationReconciler reconciler = new PresentationReconciler();
 
-		DefaultDamagerRepairer dr= new DefaultDamagerRepairer(getCodeScanner());
+		DefaultDamagerRepairer dr = new DefaultDamagerRepairer(getCodeScanner());
 		reconciler.setDamager(dr, IDocument.DEFAULT_CONTENT_TYPE);
 		reconciler.setRepairer(dr, IDocument.DEFAULT_CONTENT_TYPE);
+
+		dr = new DefaultDamagerRepairer(getMultilineCommentScanner());
+		reconciler.setDamager(dr, RubyPartitionScanner.MULTI_LINE_COMMENT);
+		reconciler.setRepairer(dr, RubyPartitionScanner.MULTI_LINE_COMMENT);
+
+		dr = new DefaultDamagerRepairer(getSinglelineCommentScanner());
+		reconciler.setDamager(dr, RubyPartitionScanner.SINGLE_LINE_COMMENT);
+		reconciler.setRepairer(dr, RubyPartitionScanner.SINGLE_LINE_COMMENT);
+
+		dr = new DefaultDamagerRepairer(getStringScanner());
+		reconciler.setDamager(dr, RubyPartitionScanner.STRING);
+		reconciler.setRepairer(dr, RubyPartitionScanner.STRING);
 
 		return reconciler;
 	}
@@ -33,9 +45,24 @@ public class RubySourceViewerConfiguration extends SourceViewerConfiguration {
 		return textTools.getCodeScanner();
 	}
 
+	protected ITokenScanner getMultilineCommentScanner() {
+		return textTools.getMultilineCommentScanner();
+	}
+
+	protected ITokenScanner getSinglelineCommentScanner() {
+		return textTools.getSinglelineCommentScanner();
+	}
+
+	protected ITokenScanner getStringScanner() {
+		return textTools.getStringScanner();
+	}
+
 	public String[] getConfiguredContentTypes(ISourceViewer sourceViewer) {
-		return new String[] { 
-			IDocument.DEFAULT_CONTENT_TYPE
+		return new String[] {
+			IDocument.DEFAULT_CONTENT_TYPE,
+			RubyPartitionScanner.MULTI_LINE_COMMENT,
+			RubyPartitionScanner.SINGLE_LINE_COMMENT,
+			RubyPartitionScanner.STRING
 		};
 	}
 }

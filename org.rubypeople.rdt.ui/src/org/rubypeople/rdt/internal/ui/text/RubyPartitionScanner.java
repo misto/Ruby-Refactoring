@@ -13,7 +13,10 @@ import org.eclipse.jface.text.rules.SingleLineRule;
 import org.eclipse.jface.text.rules.Token;
 
 public class RubyPartitionScanner extends RuleBasedPartitionScanner {
-	public final static String MULTI_LINE_COMMENT = "multiline_comment";
+	public final static String SKIP = "partition_scanner_ruby_skip";
+	public final static String STRING = "partition_scanner_ruby_string";
+	public final static String SINGLE_LINE_COMMENT = "partition_scanner_ruby_single_line_comment";
+	public final static String MULTI_LINE_COMMENT = "partition_scanner_ruby_multiline_comment";
 
 	public RubyPartitionScanner() {
 		super();
@@ -21,30 +24,20 @@ public class RubyPartitionScanner extends RuleBasedPartitionScanner {
 	}
 
 	protected void initialize() {
-		IToken comment = new Token(MULTI_LINE_COMMENT);
+		IToken skip= new Token(SKIP);
+		IToken string= new Token(STRING);
+		IToken multiLineComment= new Token(MULTI_LINE_COMMENT);
+		IToken singleLineComment= new Token(SINGLE_LINE_COMMENT);
 
 		List rules = new ArrayList();
 
-		rules.add(new EndOfLineRule("#", Token.UNDEFINED));
-
-		rules.add(new SingleLineRule("\"", "\"", Token.UNDEFINED, '\\'));
-		rules.add(new SingleLineRule("'", "'", Token.UNDEFINED, '\\'));
-
-		rules.add(new MultiLineRule("=begin", "=end", comment));
+		rules.add(new EndOfLineRule("#", singleLineComment));
+		rules.add(new SingleLineRule("\"", "\"", string, '\\'));
+		rules.add(new SingleLineRule("'", "'", skip, '\\'));
+		rules.add(new MultiLineRule("=begin", "=end", multiLineComment));
 
 		IPredicateRule[] result = new IPredicateRule[rules.size()];
 		rules.toArray(result);
 		setPredicateRules(result);
 	}
-
-	static class EmptyCommentDetector implements IWordDetector {
-
-		public boolean isWordStart(char c) {
-			return (c == '=');
-		}
-
-		public boolean isWordPart(char c) {
-			return (c == 'b' || c == 'e' || c == 'g' || c == 'i' || c == 'n' || c == 'd');
-		}
-	};
 }

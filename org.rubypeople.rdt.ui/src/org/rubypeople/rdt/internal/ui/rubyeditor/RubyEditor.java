@@ -18,8 +18,15 @@ public class RubyEditor extends TextEditor {
 
 	protected void configurePreferenceStore() {
 		IPreferenceStore prefs = RdtUiPlugin.getDefault().getPreferenceStore();
-		PreferenceConverter.setDefault(prefs, RubyColorConstants.RUBY_DEFAULT, new RGB(150, 150, 150));
-		PreferenceConverter.setDefault(prefs, RubyColorConstants.RUBY_KEYWORD, new RGB(200, 200, 150));
+		setPreferenceStore(prefs);
+
+		PreferenceConverter.setDefault(prefs, RubyColorConstants.RUBY_DEFAULT, new RGB(0, 0, 0));
+		PreferenceConverter.setDefault(prefs, RubyColorConstants.RUBY_KEYWORD, new RGB(164, 53, 122));
+		PreferenceConverter.setDefault(prefs, RubyColorConstants.RUBY_STRING, new RGB(15, 120, 142));
+		PreferenceConverter.setDefault(prefs, RubyColorConstants.RUBY_MULTI_LINE_COMMENT, new RGB(247, 32, 64));
+		PreferenceConverter.setDefault(prefs, RubyColorConstants.RUBY_SINGLE_LINE_COMMENT, new RGB(227, 64, 227));
+
+		prefs.setDefault(RubyColorConstants.RUBY_KEYWORD + "_bold", true);
 	}
 
 	protected void initializeEditor() {
@@ -28,6 +35,5 @@ public class RubyEditor extends TextEditor {
 		RubyTextTools textTools = RdtUiPlugin.getDefault().getTextTools();
 		setSourceViewerConfiguration(new RubySourceViewerConfiguration(textTools, this));
 		setRangeIndicator(new DefaultRangeIndicator());
-		setPreferenceStore(RdtUiPlugin.getDefault().getPreferenceStore());
 	}
 }
