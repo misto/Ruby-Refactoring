@@ -10,6 +10,7 @@
 	</target>
 
 	<target name="all.plugins" depends="init">
+		<ant antfile="build.xml" dir="../org.rubypeople.rdt.doc.user/" target="${target}"/>
 		<ant antfile="build.xml" dir="../org.kxml2/" target="${target}"/>
 		<ant antfile="build.xml" dir="../org.rubypeople.rdt.core/" target="${target}"/>
 		<ant antfile="build.xml" dir="../org.rubypeople.rdt.debug.core/" target="${target}"/>
