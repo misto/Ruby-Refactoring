@@ -1,5 +1,6 @@
 package org.rubypeople.rdt.internal.ui.rubyeditor;
 
+import org.eclipse.core.internal.events.ResourceChangeEvent;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuManager;
@@ -94,6 +95,7 @@ public class RubyEditor extends TextEditor {
 				handleOutlinePageSelection(event);
 			}
 		});
+		RdtUiPlugin.getWorkspace().addResourceChangeListener(outlinePage, ResourceChangeEvent.POST_CHANGE);
 		return outlinePage;
 	}
 

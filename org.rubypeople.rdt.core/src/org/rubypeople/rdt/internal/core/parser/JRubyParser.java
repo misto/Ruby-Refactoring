@@ -11,13 +11,16 @@ import org.jruby.ast.visitor.DefaultIteratorVisitor;
 
 public class JRubyParser {
 	public static RubyFile parse(String fileName) {
-		Ruby runtime = Ruby.getDefaultInstance();
-		INode parsedScript = runtime.parse(getReader(fileName), fileName);
+		try {
+			Ruby runtime = Ruby.getDefaultInstance();
+			INode parsedScript = runtime.parse(getReader(fileName), fileName);
+			RubyOutlineVisitor rubyOutlineVisitor = new RubyOutlineVisitor(fileName);
+			parsedScript.accept(new DefaultIteratorVisitor(rubyOutlineVisitor));
 
-		RubyOutlineVisitor rubyOutlineVisitor = new RubyOutlineVisitor(fileName);
-		parsedScript.accept(new DefaultIteratorVisitor(rubyOutlineVisitor));
-
-		return rubyOutlineVisitor.result();
+			return rubyOutlineVisitor.result();
+		} catch (RuntimeException e) {
+			return new RubyFile("Unable to parse your junky file");
+		}
 	}
 
 	protected static Reader getReader(String fileName) {
