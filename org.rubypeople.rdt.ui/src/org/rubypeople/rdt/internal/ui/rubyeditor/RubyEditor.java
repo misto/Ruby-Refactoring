@@ -71,6 +71,7 @@ public class RubyEditor extends RubyAbstractEditor {
 	}
 
 	protected void handlePreferenceStoreChanged(PropertyChangeEvent event) {
+		super.handlePreferenceStoreChanged(event) ;
 		String property = event.getProperty();
 
 		if (PreferenceConstants.FORMAT_USE_TAB.equals(property) || PreferenceConstants.FORMAT_INDENTATION.equals(property)) {
