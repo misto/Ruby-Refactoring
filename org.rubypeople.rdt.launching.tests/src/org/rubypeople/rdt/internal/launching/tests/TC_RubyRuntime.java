@@ -76,6 +76,9 @@ public class TC_RubyRuntime extends TestCase {
 	}
 	protected class RuntimeConfigurationFile implements IFile {
 		protected RuntimeConfigurationFile() {}
+
+		public void setCharset(String newCharset, IProgressMonitor monitor) throws CoreException {
+		}
 		public void appendContents(InputStream source, boolean force, boolean keepHistory, IProgressMonitor monitor) throws CoreException {}
 
 		public void appendContents(InputStream source, int updateFlags, IProgressMonitor monitor) throws CoreException {}
