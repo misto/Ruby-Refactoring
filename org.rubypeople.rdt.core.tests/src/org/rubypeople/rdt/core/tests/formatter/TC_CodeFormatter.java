@@ -84,8 +84,8 @@ public class TC_CodeFormatter extends TestCase {
 	public void doTest(String name) {
 		ArrayList partList = (ArrayList) testMap.get(name);
 		for (int i = 0; i < partList.size(); i++) {
-			TestData data = (TestData) partList.get(i);
-			String formatted = new CodeFormatter('*').formatString(data.unformattedText);
+			TestData data = (TestData) partList.get(i); 
+			String formatted = new CodeFormatter('*', true).formatString(data.unformattedText);
 			System.out.println("---------- " + data.assertionMessage + " --------") ;
 			System.out.println(data.unformattedText) ;
 			System.out.println("------------") ;

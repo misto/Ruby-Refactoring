@@ -52,18 +52,23 @@ public class CodeFormatter {
 
 	private char fillCharacter;
 	private int indentation ;
+	private boolean isDebug ;
+	
 	public CodeFormatter() {
-		this(' ');
+		this(' ', false);
 	}
 
-	public CodeFormatter(char fillCharacter) {
+	public CodeFormatter(char fillCharacter, boolean isDebug) {
 		this.fillCharacter = fillCharacter;
 		this.indentation = 2 ;
+		this.isDebug = isDebug ;
 	}
 
 	public synchronized String formatString(String unformatted) {
 		AbstractBlockMarker firstAbstractBlockMarker = this.createBlockMarkerList(unformatted);
-		firstAbstractBlockMarker.print();
+		if (this.isDebug) {
+			firstAbstractBlockMarker.print();
+		}			
 		try {
 			return this.formatString(unformatted, firstAbstractBlockMarker);
 		} catch (RESyntaxException ex) {
@@ -422,6 +427,10 @@ public class CodeFormatter {
 
 	public void setIndentation(int i) {
 		indentation = i;
+	}
+
+	public void setDebug(boolean b) {
+		isDebug = b;
 	}
 
 }
