@@ -91,7 +91,6 @@ import org.jruby.ast.YieldNode;
 import org.jruby.ast.ZArrayNode;
 import org.jruby.ast.ZSuperNode;
 import org.jruby.ast.visitor.NodeVisitor;
-import org.rubypeople.rdt.internal.core.RubyPlugin;
 
 
 public class RubyOutlineVisitor implements NodeVisitor {
@@ -106,39 +105,39 @@ public class RubyOutlineVisitor implements NodeVisitor {
 	}
 
 	public void visitAliasNode(AliasNode iVisited) {
-		RubyPlugin.log(new RuntimeException("Not implemented on RubyOutlineVisitor"));
+		//RubyPlugin.log(new RuntimeException("Not implemented on RubyOutlineVisitor"));
 	}
 
 	public void visitAndNode(AndNode iVisited) {
-		RubyPlugin.log(new RuntimeException("Not implemented on RubyOutlineVisitor"));
+		//RubyPlugin.log(new RuntimeException("Not implemented on RubyOutlineVisitor"));
 	}
 
 	public void visitArgsNode(ArgsNode iVisited) {
-		RubyPlugin.log(new RuntimeException("Not implemented on RubyOutlineVisitor"));
+		//RubyPlugin.log(new RuntimeException("Not implemented on RubyOutlineVisitor"));
 	}
 
 	public void visitArrayNode(ArrayNode iVisited) {
-		RubyPlugin.log(new RuntimeException("Not implemented on RubyOutlineVisitor"));
+		//RubyPlugin.log(new RuntimeException("Not implemented on RubyOutlineVisitor"));
 	}
 
 	public void visitAttrSetNode(AttrSetNode iVisited) {
-		RubyPlugin.log(new RuntimeException("Not implemented on RubyOutlineVisitor"));
+		//RubyPlugin.log(new RuntimeException("Not implemented on RubyOutlineVisitor"));
 	}
 
 	public void visitBackRefNode(BackRefNode iVisited) {
-		RubyPlugin.log(new RuntimeException("Not implemented on RubyOutlineVisitor"));
+		//RubyPlugin.log(new RuntimeException("Not implemented on RubyOutlineVisitor"));
 	}
 
 	public void visitBeginNode(BeginNode iVisited) {
-		RubyPlugin.log(new RuntimeException("Not implemented on RubyOutlineVisitor"));
+		//RubyPlugin.log(new RuntimeException("Not implemented on RubyOutlineVisitor"));
 	}
 
 	public void visitBignumNode(BignumNode iVisited) {
-		RubyPlugin.log(new RuntimeException("Not implemented on RubyOutlineVisitor"));
+		//RubyPlugin.log(new RuntimeException("Not implemented on RubyOutlineVisitor"));
 	}
 
 	public void visitBlockArgNode(BlockArgNode iVisited) {
-		RubyPlugin.log(new RuntimeException("Not implemented on RubyOutlineVisitor"));
+		//RubyPlugin.log(new RuntimeException("Not implemented on RubyOutlineVisitor"));
 	}
 
 	public void visitBlockNode(BlockNode iVisited) {
@@ -146,19 +145,19 @@ public class RubyOutlineVisitor implements NodeVisitor {
 	}
 
 	public void visitBlockPassNode(BlockPassNode iVisited) {
-		RubyPlugin.log(new RuntimeException("Not implemented on RubyOutlineVisitor"));
+		//RubyPlugin.log(new RuntimeException("Not implemented on RubyOutlineVisitor"));
 	}
 
 	public void visitBreakNode(BreakNode iVisited) {
-		RubyPlugin.log(new RuntimeException("Not implemented on RubyOutlineVisitor"));
+		//RubyPlugin.log(new RuntimeException("Not implemented on RubyOutlineVisitor"));
 	}
 
 	public void visitCallNode(CallNode iVisited) {
-		RubyPlugin.log(new RuntimeException("Not implemented on RubyOutlineVisitor"));
+		//RubyPlugin.log(new RuntimeException("Not implemented on RubyOutlineVisitor"));
 	}
 
 	public void visitCaseNode(CaseNode iVisited) {
-		RubyPlugin.log(new RuntimeException("Not implemented on RubyOutlineVisitor"));
+		//RubyPlugin.log(new RuntimeException("Not implemented on RubyOutlineVisitor"));
 	}
 
 	public void visitClassNode(ClassNode iVisited) {
@@ -169,7 +168,7 @@ public class RubyOutlineVisitor implements NodeVisitor {
 	}
 
 	public void visitClassVarAsgnNode(ClassVarAsgnNode iVisited) {
-		RubyPlugin.log(new RuntimeException("Not implemented on RubyOutlineVisitor"));
+		//RubyPlugin.log(new RuntimeException("Not implemented on RubyOutlineVisitor"));
 	}
 
 	public void visitClassVarDeclNode(ClassVarDeclNode iVisited) {
@@ -177,19 +176,19 @@ public class RubyOutlineVisitor implements NodeVisitor {
 	}
 
 	public void visitClassVarNode(ClassVarNode iVisited) {
-		RubyPlugin.log(new RuntimeException("Not implemented on RubyOutlineVisitor"));
+		//RubyPlugin.log(new RuntimeException("Not implemented on RubyOutlineVisitor"));
 	}
 
 	public void visitColon2Node(Colon2Node iVisited) {
-		RubyPlugin.log(new RuntimeException("Not implemented on RubyOutlineVisitor"));
+		//RubyPlugin.log(new RuntimeException("Not implemented on RubyOutlineVisitor"));
 	}
 
 	public void visitColon3Node(Colon3Node iVisited) {
-		RubyPlugin.log(new RuntimeException("Not implemented on RubyOutlineVisitor"));
+		//RubyPlugin.log(new RuntimeException("Not implemented on RubyOutlineVisitor"));
 	}
 
 	public void visitConstDeclNode(ConstDeclNode iVisited) {
-		RubyPlugin.log(new RuntimeException("Not implemented on RubyOutlineVisitor"));
+		//RubyPlugin.log(new RuntimeException("Not implemented on RubyOutlineVisitor"));
 	}
 
 	public void visitConstNode(ConstNode iVisited) {
@@ -197,11 +196,11 @@ public class RubyOutlineVisitor implements NodeVisitor {
 	}
 
 	public void visitDAsgnNode(DAsgnNode iVisited) {
-		RubyPlugin.log(new RuntimeException("Not implemented on RubyOutlineVisitor"));
+		//RubyPlugin.log(new RuntimeException("Not implemented on RubyOutlineVisitor"));
 	}
 
 	public void visitDefinedNode(DefinedNode iVisited) {
-		RubyPlugin.log(new RuntimeException("Not implemented on RubyOutlineVisitor"));
+		//RubyPlugin.log(new RuntimeException("Not implemented on RubyOutlineVisitor"));
 	}
 
 	public void visitDefnNode(DefnNode iVisited) {
@@ -210,43 +209,43 @@ public class RubyOutlineVisitor implements NodeVisitor {
 	}
 
 	public void visitDefsNode(DefsNode iVisited) {
-		RubyPlugin.log(new RuntimeException("Not implemented on RubyOutlineVisitor"));
+		//RubyPlugin.log(new RuntimeException("Not implemented on RubyOutlineVisitor"));
 	}
 
 	public void visitDotNode(DotNode iVisited) {
-		RubyPlugin.log(new RuntimeException("Not implemented on RubyOutlineVisitor"));
+		//RubyPlugin.log(new RuntimeException("Not implemented on RubyOutlineVisitor"));
 	}
 
 	public void visitDRegxNode(DRegexpNode iVisited) {
-		RubyPlugin.log(new RuntimeException("Not implemented on RubyOutlineVisitor"));
+		//RubyPlugin.log(new RuntimeException("Not implemented on RubyOutlineVisitor"));
 	}
 
 	public void visitDStrNode(DStrNode iVisited) {
-		RubyPlugin.log(new RuntimeException("Not implemented on RubyOutlineVisitor"));
+		//RubyPlugin.log(new RuntimeException("Not implemented on RubyOutlineVisitor"));
 	}
 
 	public void visitDVarNode(DVarNode iVisited) {
-		RubyPlugin.log(new RuntimeException("Not implemented on RubyOutlineVisitor"));
+		//RubyPlugin.log(new RuntimeException("Not implemented on RubyOutlineVisitor"));
 	}
 
 	public void visitDXStrNode(DXStrNode iVisited) {
-		RubyPlugin.log(new RuntimeException("Not implemented on RubyOutlineVisitor"));
+		//RubyPlugin.log(new RuntimeException("Not implemented on RubyOutlineVisitor"));
 	}
 
 	public void visitEnsureNode(EnsureNode iVisited) {
-		RubyPlugin.log(new RuntimeException("Not implemented on RubyOutlineVisitor"));
+		//RubyPlugin.log(new RuntimeException("Not implemented on RubyOutlineVisitor"));
 	}
 
 	public void visitEvStrNode(EvStrNode iVisited) {
-		RubyPlugin.log(new RuntimeException("Not implemented on RubyOutlineVisitor"));
+		//RubyPlugin.log(new RuntimeException("Not implemented on RubyOutlineVisitor"));
 	}
 
 	public void visitExpandArrayNode(ExpandArrayNode iVisited) {
-		RubyPlugin.log(new RuntimeException("Not implemented on RubyOutlineVisitor"));
+		//RubyPlugin.log(new RuntimeException("Not implemented on RubyOutlineVisitor"));
 	}
 
 	public void visitFalseNode(FalseNode iVisited) {
-		RubyPlugin.log(new RuntimeException("Not implemented on RubyOutlineVisitor"));
+		//RubyPlugin.log(new RuntimeException("Not implemented on RubyOutlineVisitor"));
 	}
 
 	public void visitFCallNode(FCallNode iVisited) {
@@ -258,31 +257,31 @@ public class RubyOutlineVisitor implements NodeVisitor {
 	}
 
 	public void visitFlipNode(FlipNode iVisited) {
-		RubyPlugin.log(new RuntimeException("Not implemented on RubyOutlineVisitor"));
+		//RubyPlugin.log(new RuntimeException("Not implemented on RubyOutlineVisitor"));
 	}
 
 	public void visitFloatNode(FloatNode iVisited) {
-		RubyPlugin.log(new RuntimeException("Not implemented on RubyOutlineVisitor"));
+		//RubyPlugin.log(new RuntimeException("Not implemented on RubyOutlineVisitor"));
 	}
 
 	public void visitForNode(ForNode iVisited) {
-		RubyPlugin.log(new RuntimeException("Not implemented on RubyOutlineVisitor"));
+		//RubyPlugin.log(new RuntimeException("Not implemented on RubyOutlineVisitor"));
 	}
 
 	public void visitGlobalAsgnNode(GlobalAsgnNode iVisited) {
-		RubyPlugin.log(new RuntimeException("Not implemented on RubyOutlineVisitor"));
+		//RubyPlugin.log(new RuntimeException("Not implemented on RubyOutlineVisitor"));
 	}
 
 	public void visitGlobalVarNode(GlobalVarNode iVisited) {
-		RubyPlugin.log(new RuntimeException("Not implemented on RubyOutlineVisitor"));
+		//RubyPlugin.log(new RuntimeException("Not implemented on RubyOutlineVisitor"));
 	}
 
 	public void visitHashNode(HashNode iVisited) {
-		RubyPlugin.log(new RuntimeException("Not implemented on RubyOutlineVisitor"));
+		//RubyPlugin.log(new RuntimeException("Not implemented on RubyOutlineVisitor"));
 	}
 
 	public void visitIfNode(IfNode iVisited) {
-		RubyPlugin.log(new RuntimeException("Not implemented on RubyOutlineVisitor"));
+		//RubyPlugin.log(new RuntimeException("Not implemented on RubyOutlineVisitor"));
 	}
 
 	public void visitInstAsgnNode(InstAsgnNode iVisited) {
@@ -291,11 +290,11 @@ public class RubyOutlineVisitor implements NodeVisitor {
 	}
 
 	public void visitInstVarNode(InstVarNode iVisited) {
-		RubyPlugin.log(new RuntimeException("Not implemented on RubyOutlineVisitor"));
+		//RubyPlugin.log(new RuntimeException("Not implemented on RubyOutlineVisitor"));
 	}
 
 	public void visitIterNode(IterNode iVisited) {
-		RubyPlugin.log(new RuntimeException("Not implemented on RubyOutlineVisitor"));
+		//RubyPlugin.log(new RuntimeException("Not implemented on RubyOutlineVisitor"));
 	}
 
 	public void visitLocalAsgnNode(LocalAsgnNode iVisited) {
@@ -303,27 +302,27 @@ public class RubyOutlineVisitor implements NodeVisitor {
 	}
 
 	public void visitLocalVarNode(LocalVarNode iVisited) {
-		RubyPlugin.log(new RuntimeException("Not implemented on RubyOutlineVisitor"));
+		//RubyPlugin.log(new RuntimeException("Not implemented on RubyOutlineVisitor"));
 	}
 
 	public void visitMatch2Node(Match2Node iVisited) {
-		RubyPlugin.log(new RuntimeException("Not implemented on RubyOutlineVisitor"));
+		//RubyPlugin.log(new RuntimeException("Not implemented on RubyOutlineVisitor"));
 	}
 
 	public void visitMatch3Node(Match3Node iVisited) {
-		RubyPlugin.log(new RuntimeException("Not implemented on RubyOutlineVisitor"));
+		//RubyPlugin.log(new RuntimeException("Not implemented on RubyOutlineVisitor"));
 	}
 
 	public void visitMatchNode(MatchNode iVisited) {
-		RubyPlugin.log(new RuntimeException("Not implemented on RubyOutlineVisitor"));
+		//RubyPlugin.log(new RuntimeException("Not implemented on RubyOutlineVisitor"));
 	}
 
 	public void visitModuleNode(ModuleNode iVisited) {
-		RubyPlugin.log(new RuntimeException("Not implemented on RubyOutlineVisitor"));
+		//RubyPlugin.log(new RuntimeException("Not implemented on RubyOutlineVisitor"));
 	}
 
 	public void visitMultipleAsgnNode(MultipleAsgnNode iVisited) {
-		RubyPlugin.log(new RuntimeException("Not implemented on RubyOutlineVisitor"));
+		//RubyPlugin.log(new RuntimeException("Not implemented on RubyOutlineVisitor"));
 	}
 
 	public void visitNewlineNode(NewlineNode iVisited) {
@@ -331,79 +330,79 @@ public class RubyOutlineVisitor implements NodeVisitor {
 	}
 
 	public void visitNextNode(NextNode iVisited) {
-		RubyPlugin.log(new RuntimeException("Not implemented on RubyOutlineVisitor"));
+		//RubyPlugin.log(new RuntimeException("Not implemented on RubyOutlineVisitor"));
 	}
 
 	public void visitNilNode(NilNode iVisited) {
-		RubyPlugin.log(new RuntimeException("Not implemented on RubyOutlineVisitor"));
+		//RubyPlugin.log(new RuntimeException("Not implemented on RubyOutlineVisitor"));
 	}
 
 	public void visitNotNode(NotNode iVisited) {
-		RubyPlugin.log(new RuntimeException("Not implemented on RubyOutlineVisitor"));
+		//RubyPlugin.log(new RuntimeException("Not implemented on RubyOutlineVisitor"));
 	}
 
 	public void visitNthRefNode(NthRefNode iVisited) {
-		RubyPlugin.log(new RuntimeException("Not implemented on RubyOutlineVisitor"));
+		//RubyPlugin.log(new RuntimeException("Not implemented on RubyOutlineVisitor"));
 	}
 
 	public void visitOpAsgnAndNode(OpAsgnAndNode iVisited) {
-		RubyPlugin.log(new RuntimeException("Not implemented on RubyOutlineVisitor"));
+		//RubyPlugin.log(new RuntimeException("Not implemented on RubyOutlineVisitor"));
 	}
 
 	public void visitOpAsgnNode(OpAsgnNode iVisited) {
-		RubyPlugin.log(new RuntimeException("Not implemented on RubyOutlineVisitor"));
+		//RubyPlugin.log(new RuntimeException("Not implemented on RubyOutlineVisitor"));
 	}
 
 	public void visitOpAsgnOrNode(OpAsgnOrNode iVisited) {
-		RubyPlugin.log(new RuntimeException("Not implemented on RubyOutlineVisitor"));
+		//RubyPlugin.log(new RuntimeException("Not implemented on RubyOutlineVisitor"));
 	}
 
 	public void visitOpElementAsgnNode(OpElementAsgnNode iVisited) {
-		RubyPlugin.log(new RuntimeException("Not implemented on RubyOutlineVisitor"));
+		//RubyPlugin.log(new RuntimeException("Not implemented on RubyOutlineVisitor"));
 	}
 
 	public void visitOptNNode(OptNNode iVisited) {
-		RubyPlugin.log(new RuntimeException("Not implemented on RubyOutlineVisitor"));
+		//RubyPlugin.log(new RuntimeException("Not implemented on RubyOutlineVisitor"));
 	}
 
 	public void visitOrNode(OrNode iVisited) {
-		RubyPlugin.log(new RuntimeException("Not implemented on RubyOutlineVisitor"));
+		//RubyPlugin.log(new RuntimeException("Not implemented on RubyOutlineVisitor"));
 	}
 
 	public void visitPostExeNode(PostExeNode iVisited) {
-		RubyPlugin.log(new RuntimeException("Not implemented on RubyOutlineVisitor"));
+		//RubyPlugin.log(new RuntimeException("Not implemented on RubyOutlineVisitor"));
 	}
 
 	public void visitRedoNode(RedoNode iVisited) {
-		RubyPlugin.log(new RuntimeException("Not implemented on RubyOutlineVisitor"));
+		//RubyPlugin.log(new RuntimeException("Not implemented on RubyOutlineVisitor"));
 	}
 
 	public void visitRegexpNode(RegexpNode iVisited) {
-		RubyPlugin.log(new RuntimeException("Not implemented on RubyOutlineVisitor"));
+		//RubyPlugin.log(new RuntimeException("Not implemented on RubyOutlineVisitor"));
 	}
 
 	public void visitRescueBodyNode(RescueBodyNode iVisited) {
-		RubyPlugin.log(new RuntimeException("Not implemented on RubyOutlineVisitor"));
+		//RubyPlugin.log(new RuntimeException("Not implemented on RubyOutlineVisitor"));
 	}
 
 	public void visitRescueNode(RescueNode iVisited) {
-		RubyPlugin.log(new RuntimeException("Not implemented on RubyOutlineVisitor"));
+		//RubyPlugin.log(new RuntimeException("Not implemented on RubyOutlineVisitor"));
 	}
 
 	public void visitRestArgsNode(RestArgsNode iVisited) {
-		RubyPlugin.log(new RuntimeException("Not implemented on RubyOutlineVisitor"));
+		//RubyPlugin.log(new RuntimeException("Not implemented on RubyOutlineVisitor"));
 	}
 
 	public void visitRetryNode(RetryNode iVisited) {
-		RubyPlugin.log(new RuntimeException("Not implemented on RubyOutlineVisitor"));
+		//RubyPlugin.log(new RuntimeException("Not implemented on RubyOutlineVisitor"));
 	}
 
 	public void visitReturnNode(ReturnNode iVisited) {
-		RubyPlugin.log(new RuntimeException("Not implemented on RubyOutlineVisitor"));
+		//RubyPlugin.log(new RuntimeException("Not implemented on RubyOutlineVisitor"));
 	}
 
 	public void visitSClassNode(SClassNode iVisited) {
-		RubyPlugin.log(new RuntimeException("Not implemented on RubyOutlineVisitor"));
+		//RubyPlugin.log(new RuntimeException("Not implemented on RubyOutlineVisitor"));
 	}
 
 	public void visitScopeNode(ScopeNode iVisited) {
@@ -411,35 +410,35 @@ public class RubyOutlineVisitor implements NodeVisitor {
 	}
 
 	public void visitSelfNode(SelfNode iVisited) {
-		RubyPlugin.log(new RuntimeException("Not implemented on RubyOutlineVisitor"));
+		//RubyPlugin.log(new RuntimeException("Not implemented on RubyOutlineVisitor"));
 	}
 
 	public void visitStrNode(StrNode iVisited) {
-		RubyPlugin.log(new RuntimeException("Not implemented on RubyOutlineVisitor"));
+		//RubyPlugin.log(new RuntimeException("Not implemented on RubyOutlineVisitor"));
 	}
 
 	public void visitSuperNode(SuperNode iVisited) {
-		RubyPlugin.log(new RuntimeException("Not implemented on RubyOutlineVisitor"));
+		//RubyPlugin.log(new RuntimeException("Not implemented on RubyOutlineVisitor"));
 	}
 
 	public void visitSymbolNode(SymbolNode iVisited) {
-		RubyPlugin.log(new RuntimeException("Not implemented on RubyOutlineVisitor"));
+		//RubyPlugin.log(new RuntimeException("Not implemented on RubyOutlineVisitor"));
 	}
 
 	public void visitTrueNode(TrueNode iVisited) {
-		RubyPlugin.log(new RuntimeException("Not implemented on RubyOutlineVisitor"));
+		//RubyPlugin.log(new RuntimeException("Not implemented on RubyOutlineVisitor"));
 	}
 
 	public void visitUndefNode(UndefNode iVisited) {
-		RubyPlugin.log(new RuntimeException("Not implemented on RubyOutlineVisitor"));
+		//RubyPlugin.log(new RuntimeException("Not implemented on RubyOutlineVisitor"));
 	}
 
 	public void visitUntilNode(UntilNode iVisited) {
-		RubyPlugin.log(new RuntimeException("Not implemented on RubyOutlineVisitor"));
+		//RubyPlugin.log(new RuntimeException("Not implemented on RubyOutlineVisitor"));
 	}
 
 	public void visitVAliasNode(VAliasNode iVisited) {
-		RubyPlugin.log(new RuntimeException("Not implemented on RubyOutlineVisitor"));
+		//RubyPlugin.log(new RuntimeException("Not implemented on RubyOutlineVisitor"));
 	}
 
 	public void visitVCallNode(VCallNode iVisited) {
@@ -447,27 +446,27 @@ public class RubyOutlineVisitor implements NodeVisitor {
 	}
 
 	public void visitWhenNode(WhenNode iVisited) {
-		RubyPlugin.log(new RuntimeException("Not implemented on RubyOutlineVisitor"));
+		//RubyPlugin.log(new RuntimeException("Not implemented on RubyOutlineVisitor"));
 	}
 
 	public void visitWhileNode(WhileNode iVisited) {
-		RubyPlugin.log(new RuntimeException("Not implemented on RubyOutlineVisitor"));
+		//RubyPlugin.log(new RuntimeException("Not implemented on RubyOutlineVisitor"));
 	}
 
 	public void visitXStrNode(XStrNode iVisited) {
-		RubyPlugin.log(new RuntimeException("Not implemented on RubyOutlineVisitor"));
+		//RubyPlugin.log(new RuntimeException("Not implemented on RubyOutlineVisitor"));
 	}
 
 	public void visitYieldNode(YieldNode iVisited) {
-		RubyPlugin.log(new RuntimeException("Not implemented on RubyOutlineVisitor"));
+		//RubyPlugin.log(new RuntimeException("Not implemented on RubyOutlineVisitor"));
 	}
 
 	public void visitZArrayNode(ZArrayNode iVisited) {
-		RubyPlugin.log(new RuntimeException("Not implemented on RubyOutlineVisitor"));
+		//RubyPlugin.log(new RuntimeException("Not implemented on RubyOutlineVisitor"));
 	}
 
 	public void visitZSuperNode(ZSuperNode iVisited) {
-		RubyPlugin.log(new RuntimeException("Not implemented on RubyOutlineVisitor"));
+		//RubyPlugin.log(new RuntimeException("Not implemented on RubyOutlineVisitor"));
 	}
 
 	public RubyFile result() {

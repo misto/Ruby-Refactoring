@@ -19,7 +19,7 @@ public class JRubyParser {
 
 			return rubyOutlineVisitor.result();
 		} catch (RuntimeException e) {
-			return new RubyFile("Unable to parse your junky file");
+			return new RubyFile("Sorry, JRuby was unable to parse " + fileName);
 		}
 	}
 

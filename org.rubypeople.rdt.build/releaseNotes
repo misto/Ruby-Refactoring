@@ -16,7 +16,7 @@
 * All Ruby keywords are highlighted.
 * Code completion works for keywords.
 * Ruby Application Shortcut for debug.
-* Limited ruby file outlining. This includes synchronizing the selection in the outline with the editor.
+* Limited ruby file outlining.
 * Fixed keyword highlighting not to highlight keywords that have text immediately adjacent.
 
 0.2.0
