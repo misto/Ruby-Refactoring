@@ -25,6 +25,7 @@
  */
 package org.rubypeople.rdt.internal.core.parser;
 
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
@@ -152,6 +153,9 @@ public class RubyElement implements IRubyElement {
 		for (Iterator iter = elements.iterator(); iter.hasNext();) {
 			RubyElement element = (RubyElement) iter.next();
 			if (element.isOutlineElement()) outlineElements.add(element);
+			else {
+				outlineElements.add(Arrays.asList(element.getElements()));
+			}
 		}
 		return outlineElements.toArray();
 	}
