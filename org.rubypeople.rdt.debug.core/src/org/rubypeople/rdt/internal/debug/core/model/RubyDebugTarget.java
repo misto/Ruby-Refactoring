@@ -124,6 +124,7 @@ public class RubyDebugTarget implements IRubyDebugTarget {
 			this.getProcess().terminate() ;
 			this.threads = new RubyThread[0] ;
 			isTerminated = true;
+			rubyDebuggerProxy.stop() ;
 		} catch (DebugException e) {
 			RdtDebugCorePlugin.debug("Exception while terminating process.", e) ;
 		}
