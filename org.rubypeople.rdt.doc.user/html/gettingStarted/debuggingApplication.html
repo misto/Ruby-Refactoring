@@ -44,14 +44,29 @@ Variables</b> appear. If you want to disable/enable either ruby or java
 debug actions, go to<b>Window &gt; Preferences &gt; Debug &gt; Debug
 Action Groups</b> and select the appropriate debug actions. </li>
 </ol>
-<h2>Variable View</h2>
-The variable view shows instance variables, class variables and
-constants of objects. Arrays and hashes are handeled specially.
+<h2>Variables view</h2>
+The Variables view shows instance variables, class variables and
+constants of objects. Use the "Show Type Names" button on the view bar
+to display/hide the names of type.<br>
+<br>
+<img src="../../images/variableViewWithTypes.png"
+ title="Variable view with type names on"
+ alt="Variable view with type names on"
+ style="width: 502px; height: 217px;"><br>
+<br>
+In the above screenshot there is a variable barney of type person. The
+object is represented by the return value of the to_s method, in this
+case "#&lt;Person:0x2ae7d20&gt;". There is one instance variable @name
+of type String and value "Barney".&nbsp; <br>
+<br>
+<br>
 <h3>Arrays</h3>
 Assume the following code:
 <pre>class Person<br>    def initialize(name) <br>         @name = name<br>    end	<br>    def to_s()<br>       return @name.to_s<br>    end	<br>end<br><br>persons = []<br>persons &lt;&lt; Person.new('Barney') <br>persons &lt;&lt; Person.new('Moe')<br></pre>
 After the last assignment the variable view shows the content of the
-array:<br>
+array. Note that the name appears as description for the object, because
+to_s is overriden.<br>
+<br>
 <img src="../../images/arrayInVariablesView.png"
  title="array presentation in variable view"
  alt="array presentation in variable view"
@@ -68,8 +83,10 @@ content of the value. If you want to know more about the key, select
 <img src="../../images/hashInVariablesView.png"
  title="Hash in variables view" alt="Hash in variables view"
  style="width: 501px; height: 215px;"><br>
-<h2>Breakpoints View</h2>
-<h2>Expression View</h2>
+<h2>Breakpoints view</h2>
+Use the Breakpoints view to remove ruby breakpoints.<br>
+<br>
+<h2>Expressions view</h2>
 Results of ruby expression evaluation are displayed here. Evaluation
 takes place:
 <ul>
@@ -79,11 +96,25 @@ context menu</li>
   <li>If you select "inspect key" in the context menu of a hash value
 in the variable view</li>
 </ul>
-<h2>Display View</h2>
-Enter your text in the display view and run "Ruby inspect" from the
-context menu. The expression view will open and show the result of the
-expression. The expression is evalutated in the context of the selected
-stack frame in the launch view.
+<h2>Display view</h2>
+Enter your text in the Display view and run "Ruby inspect" from the
+context menu. The Expression view will open and show the result of the
+expression. The expression is evaluated in the context of the selected
+stack frame in the Launch view.<br>
+<br>
+The following example shows an expression which creates a hash with all
+global variables mapped to their values (the "Content Assist" menu entry
+is only valid in the context of a java program):<br>
+<br>
+<img src="../../images/displayView.png" title="Display view"
+ alt="Display view" style="width: 501px; height: 218px;"><br>
+<br>
+The Expressions view shows the result:<br>
+<br>
+<img src="../../images/expressionViewWithGlobalVariables.png"
+ title="Global variables in Expression View"
+ alt="Global variables in Expression View"
+ style="width: 503px; height: 218px;"><br>
 <h1>Known limitations</h1>
 <p>The ruby debugger is still under development and there are some
 limitations, which must be considered when debugging your application:<br>
@@ -119,7 +150,7 @@ information (appears red, if stderr is printed red): <img
  alt="verbose debug information in console"
  style="width: 758px; height: 231px;"></li>
   <li>go to <a href="http://sourceforge.net/projects/rubyeclipse">http://sourceforge.net/projects/rubyeclipse</a>
-and add the console input to your bug report.</li>
+and add the console output to your bug report.</li>
 </ul>
 </body>
 </html>

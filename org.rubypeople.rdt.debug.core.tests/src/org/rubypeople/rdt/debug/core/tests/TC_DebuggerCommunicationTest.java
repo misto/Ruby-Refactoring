@@ -56,14 +56,16 @@ public class TC_DebuggerCommunicationTest extends TestCase {
 		//suite.addTest(new TC_DebuggerCommunicationTest("testVariableHash"));
 		//suite.addTest(new TC_DebuggerCommunicationTest("testVariableHashWithObjectKeys"));
 		//suite.addTest(new TC_DebuggerCommunicationTest("testVariableHashWithStringKeys"));
+		  suite.addTest(new TC_DebuggerCommunicationTest("testVariableWithXmlContent"));
+		  
 		
 		
 
 		return suite;
 
 	}
-	
-*/
+	*/
+
 	private static String tmpDir;
 	private static String getTmpDir() {
 		if (tmpDir == null) {
@@ -369,16 +371,21 @@ public class TC_DebuggerCommunicationTest extends TestCase {
 	}
 
 	public void testVariableWithXmlContent() throws Exception {
-		createSocket(new String[] { "stringA='<start test=\"\"/>'", "puts 'b'" });
-		runToLine(2);
+		createSocket(new String[] { "stringA='<start test=\"&\"/>'", "testHashValue=Hash[ '$&' => nil]",  "puts 'b'" });
+		runToLine(3);
 		out.println("v l");
 		RubyVariable[] variables = getVariableReader().readVariables(createStackFrame());
-		assertEquals(1, variables.length);
+		assertEquals(2, variables.length);
 		assertEquals("stringA", variables[0].getName());
-		assertEquals("<start test=\"\"/>", variables[0].getValue().getValueString());
-		assertTrue(!variables[0].isStatic()) ;
+		assertEquals("<start test=\"&\"/>", variables[0].getValue().getValueString());
 		assertTrue(variables[0].isLocal()) ;
-		assertTrue(!variables[0].isInstance()) ;						
+		// the testHashValue contains an example, where the name consists of special characters
+		out.println("v i testHashValue");
+		variables = getVariableReader().readVariables(createStackFrame());
+		assertEquals(1, variables.length);
+		assertEquals("'$&'", variables[0].getName());
+		
+						
 	}
 
 	public void testVariablesInObject() throws Exception {
