@@ -34,7 +34,7 @@ import org.rubypeople.rdt.internal.debug.ui.preferences.EditInterpreterDialog;
 import org.rubypeople.rdt.internal.launching.RubyInterpreter;
 import org.rubypeople.rdt.internal.launching.RubyLaunchConfigurationAttribute;
 import org.rubypeople.rdt.internal.launching.RubyRuntime;
-import org.rubypeople.rdt.internal.ui.RdtUiImages;
+import org.rubypeople.rdt.internal.ui.RubyPluginImages;
 
 public class RubyEnvironmentTab extends AbstractLaunchConfigurationTab {
 	protected ListViewer loadPathListViewer;
@@ -264,7 +264,7 @@ public class RubyEnvironmentTab extends AbstractLaunchConfigurationTab {
 	}
 
 	public Image getImage() {
-		return RdtUiImages.get(RdtUiImages.IMG_CTOOLS_RUBY);
+		return RubyPluginImages.get(RubyPluginImages.IMG_CTOOLS_RUBY);
 	}
 
 }

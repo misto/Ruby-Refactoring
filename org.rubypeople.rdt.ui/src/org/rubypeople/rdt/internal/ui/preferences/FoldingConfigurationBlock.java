@@ -44,7 +44,7 @@ import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.viewers.Viewer;
 
 import org.eclipse.jface.text.Assert;
-import org.rubypeople.rdt.internal.ui.RdtUiMessages;
+import org.rubypeople.rdt.internal.ui.RubyUIMessages;
 import org.rubypeople.rdt.internal.ui.RubyPlugin;
 import org.rubypeople.rdt.internal.ui.text.folding.RubyFoldingStructureProviderDescriptor;
 import org.rubypeople.rdt.internal.ui.text.folding.RubyFoldingStructureProviderRegistry;
@@ -160,7 +160,7 @@ class FoldingConfigurationBlock {
 		
 		/* check box for new editors */
 		fFoldingCheckbox= new Button(composite, SWT.CHECK);
-		fFoldingCheckbox.setText(RdtUiMessages.getString("FoldingConfigurationBlock.enable")); //$NON-NLS-1$
+		fFoldingCheckbox.setText(RubyUIMessages.getString("FoldingConfigurationBlock.enable")); //$NON-NLS-1$
 		gd= new GridData(GridData.HORIZONTAL_ALIGN_BEGINNING | GridData.VERTICAL_ALIGN_BEGINNING);
 		fFoldingCheckbox.setLayoutData(gd);
 		fFoldingCheckbox.addSelectionListener(new SelectionListener() {
@@ -188,7 +188,7 @@ class FoldingConfigurationBlock {
 		Label comboLabel= new Label(comboComp, SWT.CENTER);
 		gd= new GridData(GridData.HORIZONTAL_ALIGN_BEGINNING | GridData.VERTICAL_ALIGN_CENTER);
 		comboLabel.setLayoutData(gd);
-		comboLabel.setText(RdtUiMessages.getString("FoldingConfigurationBlock.combo_caption")); //$NON-NLS-1$
+		comboLabel.setText(RubyUIMessages.getString("FoldingConfigurationBlock.combo_caption")); //$NON-NLS-1$
 		
 		label= new Label(composite, SWT.CENTER);
 		gd= new GridData(GridData.FILL_HORIZONTAL | GridData.VERTICAL_ALIGN_BEGINNING);
@@ -277,7 +277,7 @@ class FoldingConfigurationBlock {
 		
 		if (desc == null) {
 			// safety in case there is no such descriptor
-			String message= RdtUiMessages.getString("FoldingConfigurationBlock.error.not_exist"); //$NON-NLS-1$
+			String message= RubyUIMessages.getString("FoldingConfigurationBlock.error.not_exist"); //$NON-NLS-1$
 			RubyPlugin.log(new Status(IStatus.WARNING, RubyPlugin.getPluginId(), IStatus.OK, message, null));
 			prefs= new ErrorPreferences(message);
 		} else {
@@ -297,7 +297,7 @@ class FoldingConfigurationBlock {
 		if (control == null) {
 			control= prefs.createControl(fGroup);
 			if (control == null) {
-				String message= RdtUiMessages.getString("FoldingConfigurationBlock.info.no_preferences"); //$NON-NLS-1$
+				String message= RubyUIMessages.getString("FoldingConfigurationBlock.info.no_preferences"); //$NON-NLS-1$
 				control= new ErrorPreferences(message).createControl(fGroup);
 			} else {
 				fProviderControls.put(id, control);

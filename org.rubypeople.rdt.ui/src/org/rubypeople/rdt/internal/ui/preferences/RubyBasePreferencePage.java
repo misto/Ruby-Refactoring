@@ -8,7 +8,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPreferencePage;
-import org.rubypeople.rdt.internal.ui.RdtUiMessages;
+import org.rubypeople.rdt.internal.ui.RubyUIMessages;
 import org.rubypeople.rdt.internal.ui.RubyPlugin;
 import org.rubypeople.rdt.ui.PreferenceConstants;
 
@@ -16,7 +16,7 @@ public class RubyBasePreferencePage extends RubyAbstractPreferencePage implement
 
 	public RubyBasePreferencePage() {
 		
-		setDescription(RdtUiMessages.getString("RubyBasePreferencePage.label")); //$NON-NLS-1$
+		setDescription(RubyUIMessages.getString("RubyBasePreferencePage.label")); //$NON-NLS-1$
 		setPreferenceStore(RubyPlugin.getDefault().getPreferenceStore());
 		fOverlayStore = createOverlayStore();
 	}
@@ -44,7 +44,7 @@ public class RubyBasePreferencePage extends RubyAbstractPreferencePage implement
 		composite.setLayout(layout);
 
 
-		String checkBoxlabel = RdtUiMessages.getString("RubyEditorPreferencePage.createParserAnnotations");
+		String checkBoxlabel = RubyUIMessages.getString("RubyEditorPreferencePage.createParserAnnotations");
 		this.addCheckBox(composite, checkBoxlabel, PreferenceConstants.CREATE_PARSER_ANNOTATIONS, 0);
 
 		this.initializeFields() ;

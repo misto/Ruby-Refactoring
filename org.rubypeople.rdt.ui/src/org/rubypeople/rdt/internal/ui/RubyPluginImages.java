@@ -8,7 +8,7 @@ import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.resource.ImageRegistry;
 import org.eclipse.swt.graphics.Image;
 
-public class RdtUiImages {
+public class RubyPluginImages {
 
 	protected static final String NAME_PREFIX = "org.rubypeople.rdt.ui.";
 	protected static final int NAME_PREFIX_LENGTH = NAME_PREFIX.length();

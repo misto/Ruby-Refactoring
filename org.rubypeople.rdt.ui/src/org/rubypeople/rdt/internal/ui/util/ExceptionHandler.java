@@ -10,7 +10,7 @@ import org.eclipse.jface.dialogs.ErrorDialog;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.widgets.Shell;
 import org.rubypeople.rdt.internal.ui.JDTOriginally;
-import org.rubypeople.rdt.internal.ui.RdtUiMessages;
+import org.rubypeople.rdt.internal.ui.RubyUIMessages;
 import org.rubypeople.rdt.internal.ui.RubyPlugin;
 
 public class ExceptionHandler implements JDTOriginally{
@@ -68,7 +68,7 @@ public class ExceptionHandler implements JDTOriginally{
 			msg.write("\n\n");
 		}
 		if (exceptionMessage == null || exceptionMessage.length() == 0)
-			msg.write(RdtUiMessages.getString("ExceptionDialog.seeErrorLogMessage"));
+			msg.write(RubyUIMessages.getString("ExceptionDialog.seeErrorLogMessage"));
 		else
 			msg.write(exceptionMessage);
 		MessageDialog.openError(shell, title, msg.toString());			

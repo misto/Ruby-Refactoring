@@ -19,6 +19,7 @@ import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.editors.text.EditorsUI;
 import org.eclipse.ui.editors.text.TextEditorPreferenceConstants;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
+import org.eclipse.ui.texteditor.ChainedPreferenceStore;
 import org.osgi.framework.BundleContext;
 import org.rubypeople.rdt.core.IBuffer;
 import org.rubypeople.rdt.core.IRubyScript;
@@ -30,6 +31,7 @@ import org.rubypeople.rdt.internal.ui.rubyeditor.DocumentAdapter;
 import org.rubypeople.rdt.internal.ui.rubyeditor.RubyDocumentProvider;
 import org.rubypeople.rdt.internal.ui.rubyeditor.WorkingCopyManager;
 import org.rubypeople.rdt.internal.ui.text.IRubyColorConstants;
+import org.rubypeople.rdt.internal.ui.text.PreferencesAdapter;
 import org.rubypeople.rdt.internal.ui.text.RubyTextTools;
 import org.rubypeople.rdt.internal.ui.text.folding.RubyFoldingStructureProviderRegistry;
 import org.rubypeople.rdt.ui.IWorkingCopyManager;
@@ -48,6 +50,12 @@ public class RubyPlugin extends AbstractUIPlugin implements IRubyColorConstants 
 	protected RubyFileMatcher rubyFileMatcher;
 	private IWorkingCopyManager fWorkingCopyManager;
 	private RubyDocumentProvider fDocumentProvider;
+	
+	/**
+	 * The combined preference store.
+	 * @since 3.0
+	 */
+	private IPreferenceStore fCombinedPreferenceStore;
 
 	/**
 	 * Mockup preference store for firing events and registering listeners on
@@ -162,7 +170,7 @@ public class RubyPlugin extends AbstractUIPlugin implements IRubyColorConstants 
 	}
 
 	public static void log(Throwable e) {
-		log(new Status(IStatus.ERROR, PLUGIN_ID, IStatus.ERROR, RdtUiMessages.getString("RdtUiPlugin.internalErrorOccurred"), e)); //$NON-NLS-1$
+		log(new Status(IStatus.ERROR, PLUGIN_ID, IStatus.ERROR, RubyUIMessages.getString("RdtUiPlugin.internalErrorOccurred"), e)); //$NON-NLS-1$
 	}
 
 	public static void log(int severity, String message, Throwable e) {
@@ -304,6 +312,21 @@ public class RubyPlugin extends AbstractUIPlugin implements IRubyColorConstants 
 	 */
 	public static void log(int severity, String string) {
 		log(new Status(severity, PLUGIN_ID, IStatus.OK, string, null));
+	}
+
+	/**
+	 * Returns a combined preference store, this store is read-only.
+	 * 
+	 * @return the combined preference store
+	 * 
+	 * @since 3.0
+	 */
+	public IPreferenceStore getCombinedPreferenceStore() {
+		if (fCombinedPreferenceStore == null) {
+			IPreferenceStore generalTextStore= EditorsUI.getPreferenceStore(); 
+			fCombinedPreferenceStore= new ChainedPreferenceStore(new IPreferenceStore[] { getPreferenceStore(), new PreferencesAdapter(RubyCore.getPlugin().getPluginPreferences()), generalTextStore });
+		}
+		return fCombinedPreferenceStore;
 	}
 
 }

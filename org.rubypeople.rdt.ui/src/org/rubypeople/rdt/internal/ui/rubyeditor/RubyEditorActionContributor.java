@@ -8,7 +8,7 @@ import org.eclipse.ui.IWorkbenchActionConstants;
 import org.eclipse.ui.texteditor.BasicTextEditorActionContributor;
 import org.eclipse.ui.texteditor.ITextEditor;
 import org.eclipse.ui.texteditor.RetargetTextEditorAction;
-import org.rubypeople.rdt.internal.ui.RdtUiMessages;
+import org.rubypeople.rdt.internal.ui.RubyUIMessages;
 import org.rubypeople.rdt.ui.actions.RubyActionIds;
 
 public class RubyEditorActionContributor extends BasicTextEditorActionContributor {
@@ -17,7 +17,7 @@ public class RubyEditorActionContributor extends BasicTextEditorActionContributo
 	public RubyEditorActionContributor() {
 		super();
 
-		contentAssistProposal = new RetargetTextEditorAction(RdtUiMessages.getResourceBundle(), "ContentAssistProposal.");
+		contentAssistProposal = new RetargetTextEditorAction(RubyUIMessages.getResourceBundle(), "ContentAssistProposal.");
 	}
 
 	public void contributeToMenu(IMenuManager menuManager) {

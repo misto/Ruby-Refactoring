@@ -20,7 +20,7 @@ import org.rubypeople.rdt.core.RubyCore;
 import org.rubypeople.rdt.internal.debug.ui.RdtDebugUiMessages;
 import org.rubypeople.rdt.internal.debug.ui.RdtDebugUiPlugin;
 import org.rubypeople.rdt.internal.launching.RubyLaunchConfigurationAttribute;
-import org.rubypeople.rdt.internal.ui.RdtUiImages;
+import org.rubypeople.rdt.internal.ui.RubyPluginImages;
 import org.rubypeople.rdt.internal.ui.RubyPlugin;
 import org.rubypeople.rdt.internal.ui.util.RubyFileSelector;
 import org.rubypeople.rdt.internal.ui.util.RubyProjectSelector;
@@ -138,7 +138,7 @@ public class RubyEntryPointTab extends AbstractLaunchConfigurationTab {
 	}
 
 	public Image getImage() {
-		return RdtUiImages.get(RdtUiImages.IMG_CTOOLS_RUBY_PAGE);
+		return RubyPluginImages.get(RubyPluginImages.IMG_CTOOLS_RUBY_PAGE);
 	}
 
 }

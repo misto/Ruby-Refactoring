@@ -13,7 +13,7 @@ import org.eclipse.jface.text.IDocumentPartitioner;
 import org.eclipse.jface.text.source.IAnnotationModel;
 import org.eclipse.ui.internal.editors.text.WorkspaceOperationRunner;
 import org.eclipse.ui.texteditor.AbstractDocumentProvider;
-import org.rubypeople.rdt.internal.ui.RdtUiMessages;
+import org.rubypeople.rdt.internal.ui.RubyUIMessages;
 import org.rubypeople.rdt.internal.ui.RubyPlugin;
 import org.rubypeople.rdt.internal.ui.text.RubyTextTools;
 
@@ -39,7 +39,7 @@ public class ExternalRubyDocumentProvider extends AbstractDocumentProvider {
 				fileContent.append("\n") ; //$NON-NLS-1$
 			}
 		} catch (Exception e) {
-			String message = RdtUiMessages.getFormattedString("Error while opening/reading file: ", editorInput.getFilesystemFile().getAbsolutePath()) ; //$NON-NLS-1$
+			String message = RubyUIMessages.getFormattedString("Error while opening/reading file: ", editorInput.getFilesystemFile().getAbsolutePath()) ; //$NON-NLS-1$
 			RubyPlugin.log(IStatus.ERROR, message, e) ;
 		}
 		Document document = new Document() ;

@@ -17,7 +17,7 @@ import java.util.StringTokenizer;
 
 import org.osgi.service.prefs.BackingStoreException;
 import org.rubypeople.rdt.core.RubyCore;
-import org.rubypeople.rdt.internal.ui.RdtUiImages;
+import org.rubypeople.rdt.internal.ui.RubyPluginImages;
 import org.rubypeople.rdt.internal.ui.RubyPlugin;
 import org.rubypeople.rdt.internal.ui.wizards.IStatusChangeListener;
 
@@ -424,7 +424,7 @@ public abstract class OptionsConfigurationBlock {
 	protected ImageHyperlink createHelpLink(Composite parent, final String link) {
 		ImageHyperlink info = new ImageHyperlink(parent, SWT.NULL);
 		makeScrollableCompositeAware(info);
-		Image image = RdtUiImages.get(RdtUiImages.IMG_OBJS_HELP);
+		Image image = RubyPluginImages.get(RubyPluginImages.IMG_OBJS_HELP);
 		info.setImage(image);
 		info.addHyperlinkListener(new HyperlinkAdapter() {
 			public void linkActivated(HyperlinkEvent e) {

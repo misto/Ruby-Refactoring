@@ -19,7 +19,7 @@ import org.eclipse.ui.dialogs.WizardNewProjectCreationPage;
 import org.eclipse.ui.wizards.newresource.BasicNewProjectResourceWizard;
 import org.eclipse.ui.wizards.newresource.BasicNewResourceWizard;
 import org.rubypeople.rdt.core.RubyCore;
-import org.rubypeople.rdt.internal.ui.RdtUiMessages;
+import org.rubypeople.rdt.internal.ui.RubyUIMessages;
 import org.rubypeople.rdt.internal.ui.RubyPlugin;
 
 public class NewProjectCreationWizard extends BasicNewResourceWizard implements INewWizard, IExecutableExtension {
@@ -29,7 +29,7 @@ public class NewProjectCreationWizard extends BasicNewResourceWizard implements 
 	protected String defaultProjectName = "";
 	
 	public NewProjectCreationWizard() {
-		setWindowTitle(RdtUiMessages.getString("NewProjectCreationWizard.windowTitle"));
+		setWindowTitle(RubyUIMessages.getString("NewProjectCreationWizard.windowTitle"));
 	}
 
 	public boolean performFinish() {
@@ -52,7 +52,7 @@ public class NewProjectCreationWizard extends BasicNewResourceWizard implements 
 		return new IRunnableWithProgress() {
 			public void run(IProgressMonitor monitor) throws InvocationTargetException, InterruptedException {
 				int remainingWorkUnits = 10;
-				monitor.beginTask(RdtUiMessages.getString("NewProjectCreationWizard.projectCreationMessage"), remainingWorkUnits);
+				monitor.beginTask(RubyUIMessages.getString("NewProjectCreationWizard.projectCreationMessage"), remainingWorkUnits);
 
 				IWorkspace workspace = RubyPlugin.getWorkspace();
 				newProject = projectPage.getProjectHandle();
@@ -87,9 +87,9 @@ public class NewProjectCreationWizard extends BasicNewResourceWizard implements 
 	public void addPages() {
 		super.addPages();
 
-		projectPage = new WizardNewProjectCreationPage(RdtUiMessages.getString("WizardNewProjectCreationPage.pageName"));
-		projectPage.setTitle(RdtUiMessages.getString("WizardNewProjectCreationPage.pageTitle"));
-		projectPage.setDescription(RdtUiMessages.getString("WizardNewProjectCreationPage.pageDescription"));
+		projectPage = new WizardNewProjectCreationPage(RubyUIMessages.getString("WizardNewProjectCreationPage.pageName"));
+		projectPage.setTitle(RubyUIMessages.getString("WizardNewProjectCreationPage.pageTitle"));
+		projectPage.setDescription(RubyUIMessages.getString("WizardNewProjectCreationPage.pageDescription"));
 		projectPage.setInitialProjectName(this.getDefaultProjectName()) ;
 
 		addPage(projectPage);

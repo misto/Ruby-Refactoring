@@ -8,7 +8,7 @@ import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.widgets.Composite;
 import org.rubypeople.rdt.internal.ui.JDTOriginally;
-import org.rubypeople.rdt.internal.ui.RdtUiImages;
+import org.rubypeople.rdt.internal.ui.RubyPluginImages;
 
 /**
  * A message line displaying a status.
@@ -41,11 +41,11 @@ public class MessageLine extends CLabel implements JDTOriginally {
 		if (status.isOK()) {
 			return null;
 		} else if (status.matches(IStatus.ERROR)) {
-			return RdtUiImages.get(RdtUiImages.IMG_OBJS_ERROR);
+			return RubyPluginImages.get(RubyPluginImages.IMG_OBJS_ERROR);
 		} else if (status.matches(IStatus.WARNING)) {
-			return RdtUiImages.get(RdtUiImages.IMG_OBJS_WARNING);
+			return RubyPluginImages.get(RubyPluginImages.IMG_OBJS_WARNING);
 		} else if (status.matches(IStatus.INFO)) {
-			return RdtUiImages.get(RdtUiImages.IMG_OBJS_INFO);
+			return RubyPluginImages.get(RubyPluginImages.IMG_OBJS_INFO);
 		}
 		return null;
 	}

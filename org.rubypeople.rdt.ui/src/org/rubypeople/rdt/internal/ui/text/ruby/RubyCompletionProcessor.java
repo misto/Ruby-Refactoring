@@ -25,7 +25,7 @@ import org.rubypeople.rdt.core.IParent;
 import org.rubypeople.rdt.core.IRubyElement;
 import org.rubypeople.rdt.core.IRubyScript;
 import org.rubypeople.rdt.core.RubyModelException;
-import org.rubypeople.rdt.internal.ui.RdtUiImages;
+import org.rubypeople.rdt.internal.ui.RubyPluginImages;
 import org.rubypeople.rdt.internal.ui.RubyPlugin;
 import org.rubypeople.rdt.internal.ui.rubyeditor.templates.RubyFileContextType;
 import org.rubypeople.rdt.internal.ui.rubyeditor.templates.RubyTemplateAccess;
@@ -128,7 +128,7 @@ public class RubyCompletionProcessor extends TemplateCompletionProcessor impleme
 	 * @see org.eclipse.jface.text.templates.TemplateCompletionProcessor#getImage(org.eclipse.jface.text.templates.Template)
 	 */
 	protected Image getImage(Template template) {
-		return RdtUiImages.get(RdtUiImages.IMG_TEMPLATE_PROPOSAL);
+		return RubyPluginImages.get(RubyPluginImages.IMG_TEMPLATE_PROPOSAL);
 	}
 
 	/*

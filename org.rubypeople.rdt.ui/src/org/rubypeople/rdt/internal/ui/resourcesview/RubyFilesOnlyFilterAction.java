@@ -14,7 +14,7 @@ package org.rubypeople.rdt.internal.ui.resourcesview;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.ui.views.navigator.IResourceNavigator;
 import org.eclipse.ui.views.navigator.ResourceNavigatorAction;
-import org.rubypeople.rdt.internal.ui.RdtUiMessages;
+import org.rubypeople.rdt.internal.ui.RubyUIMessages;
 import org.rubypeople.rdt.internal.ui.RubyViewerFilter;
 
 public class RubyFilesOnlyFilterAction extends ResourceNavigatorAction {
@@ -22,8 +22,8 @@ public class RubyFilesOnlyFilterAction extends ResourceNavigatorAction {
 	private RubyViewerFilter rubyViewerFilter;
 
 	public RubyFilesOnlyFilterAction(IResourceNavigator navigator, boolean sortByType) {
-		super(navigator, RdtUiMessages.getString("ToggleMenuRubyFilesOnly"));
-		this.setToolTipText(RdtUiMessages.getString("ToggleMenuRubyFilesOnly.Tooltip"));
+		super(navigator, RubyUIMessages.getString("ToggleMenuRubyFilesOnly"));
+		this.setToolTipText(RubyUIMessages.getString("ToggleMenuRubyFilesOnly.Tooltip"));
 		this.setChecked(((RubyResourcesView) this.getNavigator()).isRubyFilesOnlyFilterActivated()) ;
 
 	}

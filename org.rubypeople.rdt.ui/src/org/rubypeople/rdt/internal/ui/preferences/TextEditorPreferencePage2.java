@@ -43,7 +43,7 @@ import org.eclipse.ui.IWorkbenchPreferencePage;
 import org.eclipse.ui.editors.text.ITextEditorHelpContextIds;
 import org.eclipse.ui.help.WorkbenchHelp;
 import org.eclipse.ui.texteditor.AbstractDecoratedTextEditorPreferenceConstants;
-import org.rubypeople.rdt.internal.ui.RdtUiMessages;
+import org.rubypeople.rdt.internal.ui.RubyUIMessages;
 import org.rubypeople.rdt.internal.ui.RubyPlugin;
 import org.rubypeople.rdt.internal.ui.text.IRubyColorConstants;
 import org.rubypeople.rdt.ui.PreferenceConstants;
@@ -58,9 +58,9 @@ import org.rubypeople.rdt.ui.PreferenceConstants;
  */
 public class TextEditorPreferencePage2 extends RubyAbstractPreferencePage implements IWorkbenchPreferencePage {
 
-	private final String[][] fAppearanceColorListModel = new String[][] { { RdtUiMessages.getString("TextEditorPreferencePage.lineNumberForegroundColor"), AbstractDecoratedTextEditorPreferenceConstants.EDITOR_LINE_NUMBER_RULER_COLOR}, //$NON-NLS-1$
-			{ RdtUiMessages.getString("TextEditorPreferencePage.currentLineHighlighColor"), AbstractDecoratedTextEditorPreferenceConstants.EDITOR_CURRENT_LINE_COLOR}, //$NON-NLS-1$
-			{ RdtUiMessages.getString("TextEditorPreferencePage.printMarginColor"), AbstractDecoratedTextEditorPreferenceConstants.EDITOR_PRINT_MARGIN_COLOR}, //$NON-NLS-1$
+	private final String[][] fAppearanceColorListModel = new String[][] { { RubyUIMessages.getString("TextEditorPreferencePage.lineNumberForegroundColor"), AbstractDecoratedTextEditorPreferenceConstants.EDITOR_LINE_NUMBER_RULER_COLOR}, //$NON-NLS-1$
+			{ RubyUIMessages.getString("TextEditorPreferencePage.currentLineHighlighColor"), AbstractDecoratedTextEditorPreferenceConstants.EDITOR_CURRENT_LINE_COLOR}, //$NON-NLS-1$
+			{ RubyUIMessages.getString("TextEditorPreferencePage.printMarginColor"), AbstractDecoratedTextEditorPreferenceConstants.EDITOR_PRINT_MARGIN_COLOR}, //$NON-NLS-1$
 	};
 
 	/** Button controlling default setting of the selected reference provider. */
@@ -100,7 +100,7 @@ public class TextEditorPreferencePage2 extends RubyAbstractPreferencePage implem
 
 
 	public TextEditorPreferencePage2() {
-		setDescription(RdtUiMessages.getString("RubyEditorPreferencePage.description")); //$NON-NLS-1$
+		setDescription(RubyUIMessages.getString("RubyEditorPreferencePage.description")); //$NON-NLS-1$
 		setPreferenceStore(RubyPlugin.getDefault().getPreferenceStore());
 		fOverlayStore = createOverlayStore();
 	}
@@ -159,22 +159,22 @@ public class TextEditorPreferencePage2 extends RubyAbstractPreferencePage implem
 		layout.numColumns = 2;
 		appearanceComposite.setLayout(layout);
 
-		String label = RdtUiMessages.getString("TextEditorPreferencePage.displayedTabWidth"); //$NON-NLS-1$
+		String label = RubyUIMessages.getString("TextEditorPreferencePage.displayedTabWidth"); //$NON-NLS-1$
 		addTextField(appearanceComposite, label, AbstractDecoratedTextEditorPreferenceConstants.EDITOR_TAB_WIDTH, 3, 0, true);
 
-		label = RdtUiMessages.getString("TextEditorPreferencePage.printMarginColumn"); //$NON-NLS-1$
+		label = RubyUIMessages.getString("TextEditorPreferencePage.printMarginColumn"); //$NON-NLS-1$
 		addTextField(appearanceComposite, label, AbstractDecoratedTextEditorPreferenceConstants.EDITOR_PRINT_MARGIN_COLUMN, 3, 0, true);
 
-		label = RdtUiMessages.getString("TextEditorPreferencePage.showOverviewRuler"); //$NON-NLS-1$
+		label = RubyUIMessages.getString("TextEditorPreferencePage.showOverviewRuler"); //$NON-NLS-1$
 		addCheckBox(appearanceComposite, label, AbstractDecoratedTextEditorPreferenceConstants.EDITOR_OVERVIEW_RULER, 0);
 
-		label = RdtUiMessages.getString("TextEditorPreferencePage.showLineNumbers"); //$NON-NLS-1$
+		label = RubyUIMessages.getString("TextEditorPreferencePage.showLineNumbers"); //$NON-NLS-1$
 		addCheckBox(appearanceComposite, label, AbstractDecoratedTextEditorPreferenceConstants.EDITOR_LINE_NUMBER_RULER, 0);
 
-		label = RdtUiMessages.getString("TextEditorPreferencePage.highlightCurrentLine"); //$NON-NLS-1$
+		label = RubyUIMessages.getString("TextEditorPreferencePage.highlightCurrentLine"); //$NON-NLS-1$
 		addCheckBox(appearanceComposite, label, AbstractDecoratedTextEditorPreferenceConstants.EDITOR_CURRENT_LINE, 0);
 
-		label = RdtUiMessages.getString("TextEditorPreferencePage.showPrintMargin"); //$NON-NLS-1$
+		label = RubyUIMessages.getString("TextEditorPreferencePage.showPrintMargin"); //$NON-NLS-1$
 		addCheckBox(appearanceComposite, label, AbstractDecoratedTextEditorPreferenceConstants.EDITOR_PRINT_MARGIN, 0);
 
 		Label l = new Label(appearanceComposite, SWT.LEFT);
@@ -184,7 +184,7 @@ public class TextEditorPreferencePage2 extends RubyAbstractPreferencePage implem
 		l.setLayoutData(gd);
 
 		l = new Label(appearanceComposite, SWT.LEFT);
-		l.setText(RdtUiMessages.getString("TextEditorPreferencePage.appearanceOptions")); //$NON-NLS-1$
+		l.setText(RubyUIMessages.getString("TextEditorPreferencePage.appearanceOptions")); //$NON-NLS-1$
 		gd = new GridData(GridData.HORIZONTAL_ALIGN_FILL);
 		gd.horizontalSpan = 2;
 		l.setLayoutData(gd);
@@ -213,7 +213,7 @@ public class TextEditorPreferencePage2 extends RubyAbstractPreferencePage implem
 		stylesComposite.setLayoutData(new GridData(GridData.FILL_BOTH));
 
 		l = new Label(stylesComposite, SWT.LEFT);
-		l.setText(RdtUiMessages.getString("TextEditorPreferencePage.color")); //$NON-NLS-1$
+		l.setText(RubyUIMessages.getString("TextEditorPreferencePage.color")); //$NON-NLS-1$
 		gd = new GridData();
 		gd.horizontalAlignment = GridData.BEGINNING;
 		l.setLayoutData(gd);
@@ -258,10 +258,10 @@ public class TextEditorPreferencePage2 extends RubyAbstractPreferencePage implem
 		layout.numColumns = 2;
 		codeFormatterComposite.setLayout(layout);
 
-		String label = RdtUiMessages.getString("RubyEditorPropertyPage.indentation"); //$NON-NLS-1$
+		String label = RubyUIMessages.getString("RubyEditorPropertyPage.indentation"); //$NON-NLS-1$
 		addTextField(codeFormatterComposite, label, PreferenceConstants.FORMAT_INDENTATION, 3, 0, true);
 
-		label = RdtUiMessages.getString("RubyEditorPropertyPage.useTab"); //$NON-NLS-1$
+		label = RubyUIMessages.getString("RubyEditorPropertyPage.useTab"); //$NON-NLS-1$
 		addCheckBox(codeFormatterComposite, label, PreferenceConstants.FORMAT_USE_TAB, 0);
 
 		Label labelControl = new Label(codeFormatterComposite, SWT.WRAP);
@@ -273,7 +273,7 @@ public class TextEditorPreferencePage2 extends RubyAbstractPreferencePage implem
 
 		Point parentSize = parent.computeSize(SWT.DEFAULT, SWT.DEFAULT, true);
 		gd.widthHint = parentSize.x;
-		labelControl.setText(RdtUiMessages.getString("RubyEditorPropertyPage.tabSpaceExplanation"));
+		labelControl.setText(RubyUIMessages.getString("RubyEditorPropertyPage.tabSpaceExplanation"));
 		labelControl.getParent().layout(true);
 
 		labelControl.setSize(300, SWT.DEFAULT);
@@ -298,11 +298,11 @@ public class TextEditorPreferencePage2 extends RubyAbstractPreferencePage implem
 		folder.setLayoutData(new GridData(GridData.FILL_BOTH));
 
 		TabItem item = new TabItem(folder, SWT.NONE);
-		item.setText(RdtUiMessages.getString("TextEditorPreferencePage.general")); //$NON-NLS-1$
+		item.setText(RubyUIMessages.getString("TextEditorPreferencePage.general")); //$NON-NLS-1$
 		item.setControl(createAppearancePage(folder));
 
 		item = new TabItem(folder, SWT.NONE);
-		item.setText(RdtUiMessages.getString("RubyEditorPropertyPage.codeFormatterTabTitle"));
+		item.setText(RubyUIMessages.getString("RubyEditorPropertyPage.codeFormatterTabTitle"));
 		item.setControl(createCodeFormatterPage(folder));
 
 		item = new TabItem(folder, SWT.NONE);
@@ -310,7 +310,7 @@ public class TextEditorPreferencePage2 extends RubyAbstractPreferencePage implem
 		item.setControl(createSyntaxPage(folder));
 		
 		item= new TabItem(folder, SWT.NONE);
-		item.setText(RdtUiMessages.getString("RubyEditorPreferencePage.folding.title")); //$NON-NLS-1$
+		item.setText(RubyUIMessages.getString("RubyEditorPreferencePage.folding.title")); //$NON-NLS-1$
 		item.setControl(fFoldingConfigurationBlock.createControl(folder));
 
 		initialize();
@@ -343,21 +343,21 @@ public class TextEditorPreferencePage2 extends RubyAbstractPreferencePage implem
 		layout.marginHeight = 10;
 
 		colorComposite.setLayout(layout);
-		colorComposite.setText(RdtUiMessages.getString("RubyEditorPropertyPage.highlighting.group")); //$NON-NLS-1$
+		colorComposite.setText(RubyUIMessages.getString("RubyEditorPropertyPage.highlighting.group")); //$NON-NLS-1$
 		GridData data = new GridData(GridData.FILL_HORIZONTAL);
 		data.horizontalSpan = 2;
 		colorComposite.setLayoutData(data);
 
 		Label header = new Label(colorComposite, SWT.BOLD);
-		header.setText(RdtUiMessages.getString("RubyEditorPropertyPage.property"));
+		header.setText(RubyUIMessages.getString("RubyEditorPropertyPage.property"));
 		header = new Label(colorComposite, SWT.BOLD);
-		header.setText(RdtUiMessages.getString("RubyEditorPropertyPage.color"));
+		header.setText(RubyUIMessages.getString("RubyEditorPropertyPage.color"));
 		header.setLayoutData(new GridData(GridData.HORIZONTAL_ALIGN_CENTER));
 		header = new Label(colorComposite, SWT.BOLD);
-		header.setText(RdtUiMessages.getString("RubyEditorPropertyPage.bold"));
+		header.setText(RubyUIMessages.getString("RubyEditorPropertyPage.bold"));
 		header.setLayoutData(new GridData(GridData.HORIZONTAL_ALIGN_CENTER));
 		header = new Label(colorComposite, SWT.BOLD);
-		header.setText(RdtUiMessages.getString("RubyEditorPropertyPage.italic"));
+		header.setText(RubyUIMessages.getString("RubyEditorPropertyPage.italic"));
 		header.setLayoutData(new GridData(GridData.HORIZONTAL_ALIGN_END));
 		
 		textPropertyWidgets = new TextPropertyWidget[colorProperties.length];
@@ -470,13 +470,13 @@ public class TextEditorPreferencePage2 extends RubyAbstractPreferencePage implem
 	private IStatus validatePositiveNumber(String number) {
 		StatusInfo status = new StatusInfo();
 		if (number.length() == 0) {
-			status.setError(RdtUiMessages.getString("TextEditorPreferencePage.empty_input")); //$NON-NLS-1$
+			status.setError(RubyUIMessages.getString("TextEditorPreferencePage.empty_input")); //$NON-NLS-1$
 		} else {
 			try {
 				int value = Integer.parseInt(number);
-				if (value < 0) status.setError(RdtUiMessages.getFormattedString("TextEditorPreferencePage.invalid_input", number)); //$NON-NLS-1$
+				if (value < 0) status.setError(RubyUIMessages.getFormattedString("TextEditorPreferencePage.invalid_input", number)); //$NON-NLS-1$
 			} catch (NumberFormatException e) {
-				status.setError(RdtUiMessages.getFormattedString("TextEditorPreferencePage.invalid_input", number)); //$NON-NLS-1$
+				status.setError(RubyUIMessages.getFormattedString("TextEditorPreferencePage.invalid_input", number)); //$NON-NLS-1$
 			}
 		}
 		return status;
@@ -532,7 +532,7 @@ public class TextEditorPreferencePage2 extends RubyAbstractPreferencePage implem
 		TextPropertyWidget(Composite parent, String property) {
 			this.property = property;
 			Label label = new Label(parent, SWT.NORMAL);
-			label.setText(RdtUiMessages.getString("RubyEditorPropertyPage." + property));
+			label.setText(RubyUIMessages.getString("RubyEditorPropertyPage." + property));
 
 			Composite dummyComposite = new Composite(parent, SWT.NONE);
 			// ColorFieldEditor sets its parent composite to 2 columns,
