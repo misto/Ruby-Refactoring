@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.core.resources.IFile;
+import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.core.runtime.Status;
@@ -117,7 +118,7 @@ public class RubyApplicationShortcut implements ILaunchShortcut {
 			ILaunchConfigurationWorkingCopy wc = configType.newInstance(null, getLaunchManager().generateUniqueLaunchConfigurationNameFrom(rubyFile.getName()));
 			wc.setAttribute(RubyLaunchConfigurationAttribute.PROJECT_NAME, rubyFile.getProject().getName());
 			wc.setAttribute(RubyLaunchConfigurationAttribute.FILE_NAME, rubyFile.getProjectRelativePath().toString());
-			wc.setAttribute(RubyLaunchConfigurationAttribute.WORKING_DIRECTORY, rubyFile.getProject().getLocation().toOSString());
+			wc.setAttribute(RubyLaunchConfigurationAttribute.WORKING_DIRECTORY, RubyApplicationShortcut.getDefaultWorkingDirectory(rubyFile.getProject()));
 			wc.setAttribute(RubyLaunchConfigurationAttribute.SELECTED_INTERPRETER, RubyRuntime.getDefault().getSelectedInterpreter().getName());
 			wc.setAttribute(ILaunchConfiguration.ATTR_SOURCE_LOCATOR_ID, "org.rubypeople.rdt.debug.ui.rubySourceLocator");
 			config = wc.doSave();
@@ -147,4 +148,13 @@ public class RubyApplicationShortcut implements ILaunchShortcut {
 		MessageDialog.openInformation(RdtUiPlugin.getActiveWorkbenchShell(), RdtDebugUiMessages.getString("Dialog.launchWithoutSelectedInterpreter.title"), RdtDebugUiMessages.getString("Dialog.launchWithoutSelectedInterpreter"));
 	}	
 
+	protected static String getDefaultWorkingDirectory(IProject project) {
+		if (project != null && project.exists()) {
+			return project.getLocation().toOSString() ;
+		}
+		else {
+			// might habe been deleted
+			return RdtDebugUiPlugin.getWorkspace().getRoot().getLocation().toOSString() ;		
+		}
+	}
 }

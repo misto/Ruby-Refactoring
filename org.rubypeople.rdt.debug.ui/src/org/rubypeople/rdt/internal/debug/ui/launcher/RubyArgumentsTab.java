@@ -1,5 +1,6 @@
 package org.rubypeople.rdt.internal.debug.ui.launcher;
 
+import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.debug.core.ILaunchConfiguration;
 import org.eclipse.debug.core.ILaunchConfigurationWorkingCopy;
@@ -16,10 +17,10 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
-import org.rubypeople.rdt.debug.ui.RdtDebugUiConstants;
 import org.rubypeople.rdt.debug.ui.RdtDebugUiImages;
 import org.rubypeople.rdt.internal.debug.ui.RdtDebugUiMessages;
 import org.rubypeople.rdt.internal.debug.ui.RdtDebugUiPlugin;
+import org.rubypeople.rdt.internal.launching.InterpreterRunnerConfiguration;
 import org.rubypeople.rdt.internal.launching.RubyLaunchConfigurationAttribute;
 import org.rubypeople.rdt.internal.ui.utils.DirectorySelector;
 
@@ -27,7 +28,8 @@ public class RubyArgumentsTab extends AbstractLaunchConfigurationTab {
 	protected Text interpreterArgsText, programArgsText;
 	protected DirectorySelector workingDirectorySelector;
 	protected Button useDefaultWorkingDirectoryButton;
-
+	private IProject rubyProject ;
+	
 	public RubyArgumentsTab() {
 		super();
 	}
@@ -63,23 +65,34 @@ public class RubyArgumentsTab extends AbstractLaunchConfigurationTab {
 		new Label(composite, SWT.NONE).setText(RdtDebugUiMessages.getString("LaunchConfigurationTab.RubyArguments.interpreter_args_box_title"));
 		interpreterArgsText = new Text(composite, SWT.MULTI | SWT.V_SCROLL | SWT.BORDER);
 		interpreterArgsText.setLayoutData(new GridData(GridData.FILL_BOTH));
-
+		interpreterArgsText.addModifyListener(new ModifyListener() {
+			public void modifyText(ModifyEvent evt) {
+				updateLaunchConfigurationDialog();
+			}
+		});
+		
 		new Label(composite, SWT.NONE).setText(RdtDebugUiMessages.getString("LaunchConfigurationTab.RubyArguments.program_args_box_title"));
 		programArgsText = new Text(composite, SWT.MULTI | SWT.V_SCROLL | SWT.BORDER);
 		programArgsText.setLayoutData(new GridData(GridData.FILL_BOTH));
+		programArgsText.addModifyListener(new ModifyListener() {
+			public void modifyText(ModifyEvent evt) {
+				updateLaunchConfigurationDialog();
+			}
+		});
 	}
 
 	protected void setUseDefaultWorkingDirectory(boolean useDefault) {
 		if (useDefaultWorkingDirectoryButton.getSelection() != useDefault)
 			useDefaultWorkingDirectoryButton.setSelection(useDefault);
-		if (useDefault)
-			workingDirectorySelector.setSelectionText(RdtDebugUiConstants.DEFAULT_WORKING_DIRECTORY);
+		if (useDefault) {
+			workingDirectorySelector.setSelectionText(RubyApplicationShortcut.getDefaultWorkingDirectory(this.rubyProject));
+		}
 		workingDirectorySelector.setEnabled(!useDefault);
 	}
 
 	public void setDefaults(ILaunchConfigurationWorkingCopy configuration) {
 		configuration.setAttribute(RubyLaunchConfigurationAttribute.USE_DEFAULT_WORKING_DIRECTORY, true);
-		configuration.setAttribute(RubyLaunchConfigurationAttribute.WORKING_DIRECTORY, RdtDebugUiConstants.DEFAULT_WORKING_DIRECTORY);
+		configuration.setAttribute(RubyLaunchConfigurationAttribute.WORKING_DIRECTORY, RubyApplicationShortcut.getDefaultWorkingDirectory(this.rubyProject));
 		// set hidden attribute
 		configuration.setAttribute(ILaunchConfiguration.ATTR_SOURCE_LOCATOR_ID, "org.rubypeople.rdt.debug.ui.rubySourceLocator") ;
 	}
@@ -92,6 +105,8 @@ public class RubyArgumentsTab extends AbstractLaunchConfigurationTab {
 			interpreterArgs = configuration.getAttribute(RubyLaunchConfigurationAttribute.INTERPRETER_ARGUMENTS, "");
 			programArgs = configuration.getAttribute(RubyLaunchConfigurationAttribute.PROGRAM_ARGUMENTS, "");
 			useDefaultWorkDir = configuration.getAttribute(RubyLaunchConfigurationAttribute.USE_DEFAULT_WORKING_DIRECTORY, true);
+			InterpreterRunnerConfiguration config = new InterpreterRunnerConfiguration(configuration) ;
+			rubyProject = config.getProject().getProject() ;
 		} catch (CoreException e) {
 			log(e);
 		}

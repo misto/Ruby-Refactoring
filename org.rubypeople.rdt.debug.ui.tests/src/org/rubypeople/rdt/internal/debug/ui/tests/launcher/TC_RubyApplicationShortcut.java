@@ -74,7 +74,7 @@ public class TC_RubyApplicationShortcut extends TestCase {
 		ILaunchConfigurationWorkingCopy wc = configType.newInstance(null, pName);
 		wc.setAttribute(RubyLaunchConfigurationAttribute.PROJECT_NAME, pFile.getProject().getName());
 		wc.setAttribute(RubyLaunchConfigurationAttribute.FILE_NAME, pFile.getProjectRelativePath().toString());
-		wc.setAttribute(RubyLaunchConfigurationAttribute.WORKING_DIRECTORY, RdtDebugUiConstants.DEFAULT_WORKING_DIRECTORY);
+		wc.setAttribute(RubyLaunchConfigurationAttribute.WORKING_DIRECTORY, "");
 		wc.setAttribute(RubyLaunchConfigurationAttribute.SELECTED_INTERPRETER, RubyRuntime.getDefault().getSelectedInterpreter().getName());
 		wc.setAttribute(ILaunchConfiguration.ATTR_SOURCE_LOCATOR_ID, "org.rubypeople.rdt.debug.ui.rubySourceLocator");
 		wc.doSave();
