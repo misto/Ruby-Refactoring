@@ -710,5 +710,10 @@ public class TC_RubyParser extends TestCase {
 		assertNotNull(rubyClass.getElement("@var"));
 		assertEquals(2, rubyClass.getElementCount());
 	}
+	
+	public void testRecognizesMultipleGlobalsOnSameLine() throws Exception {
+		RubyScript script = RubyParser.parse("alias $globalOne $globalTwo");
+		assertEquals(2, script.getElementCount());
+	}
 
 }

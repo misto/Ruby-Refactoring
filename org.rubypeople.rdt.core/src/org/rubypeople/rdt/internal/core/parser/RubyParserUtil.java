@@ -61,8 +61,7 @@ public class RubyParserUtil {
 	 * @return
 	 */
 	public static int endIndexOf(String myLine, String token) {
-		if (myLine.indexOf(token) == -1) return -1;
-		return myLine.indexOf(token) + token.length();
+		return endIndexOf(myLine, token, 0);
 	}
 
 	/**
@@ -106,6 +105,17 @@ public class RubyParserUtil {
 			if (chars[i] == c) return true;
 		}
 		return false;
+	}
+
+	/**
+	 * @param line
+	 * @param prefix
+	 * @param globalIndex
+	 * @return
+	 */
+	public static int endIndexOf(String myLine, String token, int startIndex) {
+		if (myLine.indexOf(token, startIndex) == -1) return -1;
+		return myLine.indexOf(token, startIndex) + token.length();
 	}
 
 }

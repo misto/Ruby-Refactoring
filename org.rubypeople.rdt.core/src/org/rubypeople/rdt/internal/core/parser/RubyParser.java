@@ -374,11 +374,35 @@ public class RubyParser {
 	 * @param lineNum
 	 */
 	private static void findGlobal(String curLine, int lineNum) {
-		int globalIndex = curLine.indexOf("$");
-		if (globalIndex == -1) return;
-		if ((inQuotes(globalIndex, curLine) || inRegex(globalIndex, curLine)) && !isSubstituted(globalIndex, curLine)) return;
-		String name = getToken("$", VARIABLE_END_CHARS, curLine);
-		script.addElement(new RubyGlobal("$" + name, lineNum, globalIndex));
+		int location = 0;
+		while (location < curLine.length()) {
+			int globalIndex = curLine.indexOf("$", location);
+			if (globalIndex == -1) return;
+			if ((inQuotes(globalIndex, curLine) || inRegex(globalIndex, curLine)) && !isSubstituted(globalIndex, curLine)) {
+				log("Found global name inside string, not substituted.");
+				location = globalIndex + 1;
+				continue;
+			}
+			String name = getToken("$", VARIABLE_END_CHARS, curLine, globalIndex);
+			script.addElement(new RubyGlobal("$" + name, lineNum, globalIndex));
+			log("Found global:" + name);
+			location = globalIndex + name.length();
+		}
+	}
+
+	/**
+	 * @param prefix
+	 * @param delimiters
+	 * @param curLine
+	 * @param globalIndex
+	 * @return
+	 */
+	private static String getToken(String prefix, char[] delimiters, String line, int globalIndex) {
+		int endOfPrefix = RubyParserUtil.endIndexOf(line, prefix, globalIndex);
+		for (int i = endOfPrefix; i < line.length(); i++) {
+			if (RubyParserUtil.contains(delimiters, line.charAt(i))) { return line.substring(endOfPrefix, i); }
+		}
+		return line.substring(endOfPrefix);
 	}
 
 	/**
@@ -589,11 +613,7 @@ public class RubyParser {
 	 * @return
 	 */
 	private static String getToken(String prefix, char[] delimiters, String line) {
-		int endOfPrefix = RubyParserUtil.endIndexOf(line, prefix);
-		for (int i = endOfPrefix; i < line.length(); i++) {
-			if (RubyParserUtil.contains(delimiters, line.charAt(i))) { return line.substring(endOfPrefix, i); }
-		}
-		return line.substring(endOfPrefix);
+		return getToken(prefix, delimiters, line, 0);
 	}
 
 	/**
