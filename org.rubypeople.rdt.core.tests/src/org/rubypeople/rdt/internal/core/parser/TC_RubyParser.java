@@ -590,5 +590,95 @@ public class TC_RubyParser extends TestCase {
 		RubyClass rubyClass = script.getClass("Bob");
 		assertEquals(1, rubyClass.getElementCount());
 	}
+	
+	public void testDoBlockAsObject () throws Exception {
+		RubyScript script = RubyParser.parse("class Bob\ndef CGI::escape(string)\nstring.gsub(/([^ a-zA-Z0-9_.-]+)/n) do\n'%' + 1.unpack('H2' * 1.size).join('%').upcase\nend.tr(' ', '+')\nwhile true\nputs 'blah'\nend\nend\nend");
+		// expect a class
+		assertEquals(1, script.getElementCount() );
+		RubyClass rubyClass = script.getClass("Bob");
+		// expect a method
+		assertEquals(1, rubyClass.getElementCount());
+		RubyMethod method = (RubyMethod) rubyClass.getElement("CGI::escape");
+		// expect a do block and begin block
+		assertEquals(2, method.getElementCount());
+	}
+	
+	public void testIgnoresNonSubstitutedClassVariableInPercentRRegex() throws Exception {
+		RubyScript script = RubyParser.parse("class Bob\ndef decode_b(str)\nstr.gsub!(%r|@@var|) {\ndecode64(1)\n}\nend\nend");
+		assertEquals(1, script.getElementCount());
+		RubyClass rubyClass = script.getClass("Bob");
+		assertEquals(1, rubyClass.getElementCount());
+	}
+	
+	public void testRecognizesSubstitutedClassVariableInPercentRRegex() throws Exception {
+		RubyScript script = RubyParser.parse("class Bob\ndef decode_b(str)\nstr.gsub!(%r|#{@@var}|) {\ndecode64(1)\n}\nend\nend");
+		assertEquals(1, script.getElementCount());
+		RubyClass rubyClass = script.getClass("Bob");
+		assertEquals(2, rubyClass.getElementCount());
+	}
+
+	public void testIgnoresNonSubstitutedClassVariableInPercentQString() throws Exception {
+		RubyScript script = RubyParser.parse("class Bob\ndef decode_b(str)\nstr.gsub!(%q,@@var,) {\ndecode64(1)\n}\nend\nend");
+		assertEquals(1, script.getElementCount());
+		RubyClass rubyClass = script.getClass("Bob");
+		assertEquals(1, rubyClass.getElementCount());
+	}
+	
+	public void testRecognizesSubstitutedClassVariableInPercentQString() throws Exception {
+		RubyScript script = RubyParser.parse("class Bob\ndef decode_b(str)\nstr.gsub!(%q:#{@@var}:) {\ndecode64(1)\n}\nend\nend");
+		assertEquals(1, script.getElementCount());
+		RubyClass rubyClass = script.getClass("Bob");
+		assertEquals(2, rubyClass.getElementCount());
+	}
+	
+	public void testIgnoresNonSubstitutedClassVariableInPercentCapitalQString() throws Exception {
+		RubyScript script = RubyParser.parse("class Bob\ndef decode_b(str)\nstr.gsub!(%Q{@@var}) {\ndecode64(1)\n}\nend\nend");
+		assertEquals(1, script.getElementCount());
+		RubyClass rubyClass = script.getClass("Bob");
+		assertEquals(1, rubyClass.getElementCount());
+	}
+	
+	public void testClassVariable() throws Exception {
+		RubyScript script = RubyParser.parse("class Bob\ndef decode_b(str)\nstr.gsub!(@@var) {\ndecode64(1)\n}\nend\nend");
+		assertEquals(1, script.getElementCount());
+		RubyClass rubyClass = script.getClass("Bob");
+		assertEquals(2, rubyClass.getElementCount());
+	}
+	
+	public void testInPercentString() {
+		assertFalse(RubyParser.inPercentString('q', 1, "%q(blah) end"));
+		assertTrue(RubyParser.inPercentString('q', 4, "%q(blah) end"));
+		assertTrue(RubyParser.inPercentString('q', 8, "%q(bla\\)h) end"));
+		assertFalse(RubyParser.inPercentString('q', 9, "%q(blah) end"));
+		assertFalse(RubyParser.inPercentString('q', 8, "%q(blah) end"));
+	}
+	
+	public void testIsOpenBracket() {
+		assertTrue(RubyParser.isOpenBracket('('));
+		assertTrue(RubyParser.isOpenBracket('{'));
+		assertTrue(RubyParser.isOpenBracket('['));
+		assertFalse(RubyParser.isOpenBracket('1'));
+	}
+	
+	public void testGetMatchingBracket() {
+		assertEquals(']', RubyParser.getMatchingBracket('['));
+		assertEquals(')', RubyParser.getMatchingBracket('('));
+		assertEquals('}', RubyParser.getMatchingBracket('{'));
+		assertEquals('\n', RubyParser.getMatchingBracket('1'));
+	}
+	
+	public void testIgnoresNonSubstitutedClassVariableInPercentCapitalQStringWithEscapedEndChar() throws Exception {
+		RubyScript script = RubyParser.parse("class Bob\ndef decode_b(str)\nstr.gsub!(%Q(blah\\)blah@@var)) {\ndecode64(1)\n}\nend\nend");
+		assertEquals(1, script.getElementCount());
+		RubyClass rubyClass = script.getClass("Bob");
+		assertEquals(1, rubyClass.getElementCount());
+	}
+	
+	public void testRecognizesSubstitutedClassVariableInPercentCapitalQStringWithEscapedEndChar() throws Exception {
+		RubyScript script = RubyParser.parse("class Bob\ndef decode_b(str)\nstr.gsub!(%Q(blah\\)blah#{@@var})) {\ndecode64(1)\n}\nend\nend");
+		assertEquals(1, script.getElementCount());
+		RubyClass rubyClass = script.getClass("Bob");
+		assertEquals(2, rubyClass.getElementCount());
+	}
 
 }
