@@ -6,13 +6,16 @@
    provider-name="RubyPeople">
 
    <runtime>
-      <library name="rdtdebugcoretests.jar"/>
+      <library name="rdtdebugcoretests.jar">
+         <export name="*"/>
+      </library>
    </runtime>
-   
    <requires>
       <import plugin="org.junit"/>
       <import plugin="org.rubypeople.rdt.debug.core"/>
       <import plugin="org.eclipse.debug.core"/>
+      <import plugin="org.kxml2"/>
    </requires>
+
 
 </plugin>

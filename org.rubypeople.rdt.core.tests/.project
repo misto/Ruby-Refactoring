@@ -3,11 +3,11 @@
 	<name>org.rubypeople.rdt.core.tests</name>
 	<comment></comment>
 	<projects>
-		<project>org.apache.xerces</project>
 		<project>org.eclipse.core.boot</project>
 		<project>org.eclipse.core.resources</project>
 		<project>org.eclipse.core.runtime</project>
 		<project>org.junit</project>
+		<project>org.kxml2</project>
 		<project>org.rubypeople.eclipse.shams</project>
 		<project>org.rubypeople.eclipse.testutils</project>
 		<project>org.rubypeople.rdt.core</project>

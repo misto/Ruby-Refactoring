@@ -2,21 +2,15 @@ package org.rubypeople.rdt.debug.core.tests;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileOutputStream;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
-import java.util.ArrayList;
-import java.util.Vector;
 
 import junit.framework.TestCase;
-import junit.framework.TestSuite;
 
-import org.eclipse.debug.core.model.IVariable;
 import org.rubypeople.rdt.internal.debug.core.SuspensionPoint;
-import org.rubypeople.rdt.internal.debug.core.model.RubyDebugTarget;
 import org.rubypeople.rdt.internal.debug.core.model.RubyStackFrame;
 import org.rubypeople.rdt.internal.debug.core.model.RubyThread;
 import org.rubypeople.rdt.internal.debug.core.model.RubyVariable;

@@ -16,7 +16,6 @@ import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.QualifiedName;
-import org.rubypeople.eclipse.shams.runtime.ShamIPath;
 
 public class ShamFile extends ShamResource implements IFile {
 	protected String contents = "";

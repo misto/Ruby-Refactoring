@@ -1,0 +1,42 @@
+RubyEclipse - The Ruby Development Tool (RDT)
+=======================================
+Release 0.9.0
+
+Authors
+=======================================
+Adam Williams		<awilliams@rolemodelsoft.com>
+Markus Barchfeld	<Markus.Barchfeld@gmx.de>
+
+Other open source projects used
+=======================================
+kxml2
+xmlpull
+jruby??? (currently spiking with some parsing stuff)
+
+
+1.	Requirements
+
+	Please note that RDT is an Eclipse plugin. This means that your system must meet the requirements
+	of Eclipse <www.eclipse.org>.
+	
+	We have decided to maintain RDT as a plugin for Eclipse 2.0.x. This just means that we code against
+	that API. The Eclipse 2.1 release notes claim that code written for 2.0 will run on 2.1 versions.
+	
+	A ruby interpreter. We have only tested with ruby 1.6.7.
+	
+2.	Installation
+
+	Download and install Eclipse 2.0.x. Extract the contents of rubyeclipse_x.x.x.zip into the plugins
+	directory of your Eclipse installation. You must restart Eclipse to load the RDT plugins.
+	
+	Copy the files debug.rb and eclipseDebug.rb to your <ruby install>\lib\ruby\1.6.x directory. This
+	allows RDT to connect to a running ruby process for debugging. It will not prevent you from debugging
+	with the ruby command line. If you have customized your debug.rb, you'll have to merge our debug.rb
+	with yours.
+	
+3.	Use
+
+	[ HOW MUCH SHOULD WE ASSUME PEOPLE KNOW NOTHING ABOUT ECLIPSE? ]
+	[ HOW TO ENABLE COMMENTING ACCELERATORS ]
+	[ DEBUGGING ]
+	[ PRIMITIVE CUSTOMIZING OF KEYWORDS BY CHANGING path /org.rubypeople.rdt.ui/src/org/rubypeople/rdt/ui/rubyeditor/RubyEditorPreferences ]

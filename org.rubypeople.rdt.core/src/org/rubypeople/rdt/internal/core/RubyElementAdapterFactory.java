@@ -3,7 +3,6 @@ package org.rubypeople.rdt.internal.core;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.IAdapterFactory;
 import org.rubypeople.rdt.core.RubyElement;
-import org.rubypeople.rdt.core.RubyFile;
 
 public class RubyElementAdapterFactory implements IAdapterFactory {
 	

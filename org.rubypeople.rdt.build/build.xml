@@ -5,7 +5,11 @@
         <!-- plugin.build.file is relative to the target directory -->
         <property name="plugin.build.file" value="../org.rubypeople.rdt.build/build_project.xml"/>
 
-	<target name="build.all">
+	<target name="properties" if="eclipse.running">
+		<property name="build.compiler" value="org.eclipse.jdt.core.JDTCompilerAdapter"/>
+	</target>
+
+	<target name="build.all" depends="properties">
 		<antcall target="clean.all"/>
 		<antcall target="package.rdt"/>
 		<antcall target="refresh.all"/>
@@ -13,7 +17,7 @@
 	
 	<target name="clean.all">
 		<ant antfile="${plugin.build.file}" 
-		     dir="org.rubypeople.eclipse.shams" 
+		     dir="org.kxml2" 
 		     target="clean"/>
 		<ant antfile="${plugin.build.file}" 
 		     dir="org.rubypeople.rdt.core" 
@@ -35,8 +39,8 @@
 	
 	<target name="zip.plugin">
 		<ant antfile="${plugin.build.file}"
-		     dir="org.rubypeople.eclipse.shams" 
-		     target="zip.plugin"/> 
+		     dir="org.kxml2" 
+		     target="zip.plugin"/>
 		<ant antfile="${plugin.build.file}"
 		     dir="org.rubypeople.rdt.core" 
 		     target="zip.plugin"/>
@@ -56,7 +60,7 @@
 	
 	<target name="package.rdt" depends="zip.plugin">
 		<mkdir dir="${package.temp.dir}"/>
-		<unzip src="org.rubypeople.eclipse.shams/org.rubypeople.eclipse.shams_${version}.zip" dest="${package.temp.dir}"/>
+		<unzip src="org.kxml2/org.kxml2_${version}.zip" dest="${package.temp.dir}"/>
 		<unzip src="org.rubypeople.rdt.core/org.rubypeople.rdt.core_${version}.zip" dest="${package.temp.dir}"/>
 		<unzip src="org.rubypeople.rdt.debug.ui/org.rubypeople.rdt.debug.ui_${version}.zip" dest="${package.temp.dir}"/>
 		<unzip src="org.rubypeople.rdt.launching/org.rubypeople.rdt.launching_${version}.zip" dest="${package.temp.dir}"/>
@@ -69,8 +73,8 @@
 	</target>
 
 	<target name="refresh.all">
-		<ant antfile="${plugin.build.file}" 
-                     dir="org.rubypeople.eclipse.shams" 
+		<ant antfile="${plugin.build.file}"
+		     dir="org.kxml2" 
 		     target="refresh"/>
 		<ant antfile="${plugin.build.file}"
 		     dir="org.rubypeople.rdt.core" 

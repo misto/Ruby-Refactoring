@@ -1,3 +1,16 @@
-Remove dependency on d:\Temp directory in tests.
-Launch shortcuts missing. build2.1
-Provide the modified debug.rb and eclipseDebug.rb in one of the projects.
+******************
+* General UI issues
+******************
+- Fix the debugging current line highlighting.
+- Provide a model of a ruby file for the outline view.
+- Refresh the ruby file outline when the file is saved.
+- Allow customization of keywords
+
+******************
+* Website
+******************
+- Get rid of the wiki that is there.
+- Ask Matt to create a logo. I'm thinking of a ruby gem that is eclipsing the sun. Have a couple of lines that
+	represent light dispersion, something like the Eclipse logo, except they should have a rose color.
+- Decide on a general laf.
+- Come up with a content outline.

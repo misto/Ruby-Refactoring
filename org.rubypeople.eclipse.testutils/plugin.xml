@@ -5,7 +5,9 @@
    version="1.0.0">
 
    <runtime>
-      <library name="testutils.jar"/>
+      <library name="testutils.jar">
+         <export name="*"/>
+      </library>
    </runtime>
    <requires>
       <import plugin="org.eclipse.core.resources"/>

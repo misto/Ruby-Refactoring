@@ -15,7 +15,7 @@ public class RubyCore {
 
 	public static IProject[] getRubyProjects() {
 		List rubyProjectsList = new ArrayList();
-		IProject[] workspaceProjects = RubyPlugin.getDefault().getWorkspace().getRoot().getProjects();
+		IProject[] workspaceProjects = RubyPlugin.getWorkspace().getRoot().getProjects();
 
 		for (int i = 0; i < workspaceProjects.length; i++) {
 			IProject iProject = workspaceProjects[i];
@@ -28,7 +28,7 @@ public class RubyCore {
 	}
 
 	public static RubyProject getRubyProject(String name) {
-		IProject aProject = RubyPlugin.getDefault().getWorkspace().getRoot().getProject(name);
+		IProject aProject = RubyPlugin.getWorkspace().getRoot().getProject(name);
 		if (isRubyProject(aProject)) {
 			RubyProject theRubyProject = new RubyProject();
 			theRubyProject.setProject(aProject);

@@ -3,6 +3,22 @@
 # All Rights Reserved.
 #########################################
 
+0.9.0
+-----------------------------------------
+* Limited debugging capabilities. Tons of thanks to Markus Barchfeld for this! We look forward to this
+	growing over time, and plan to focus on it.
+* Configurable syntax highlighting (color, weight).
+* Ruby Perspective improvments, particularly the Ruby Resources view has a context menu and you can open
+	files for editing. The Resources view also traverses directories correctly now.
+* Commenting/Uncommenting of lines using Ctrl+/, Ctrl+\. You can see these in the Ruby menu group that
+	appears when a ruby editor is open or the ruby perspective is active. It is also in the ruby editor
+	context menu.
+* All Ruby keywords are highlighted.
+* Code completion works for keywords.
+* Ruby Application Shortcut for debug.
+* Limited ruby file outlining. This includes synchronizing the selection in the outline with the editor.
+* Fixed keyword highlighting not to highlight keywords that have text immediately adjacent.
+
 0.2.0
 -----------------------------------------
 * Added some nifty icons and made existing icons have transparent backgrounds
