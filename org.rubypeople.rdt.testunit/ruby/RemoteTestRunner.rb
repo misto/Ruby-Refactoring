@@ -50,8 +50,9 @@ module Test
               setup_mediator
               attach_to_mediator
               return start_mediator
-            rescue NoMethodError
+            rescue NoMethodError, NameError # NameError in 1.6
               $stdout.puts "Launched class is not compatible with Test::Unit::TestCase"
+              $stdout.flush
               output_single("%TESTC  0 v2\n")
               finished(0)
             end
@@ -210,6 +211,14 @@ if __FILE__ == $0
     puts "You should supply the name of a test suite file and the port to the runner"
     exit
   end
+  
+  unless defined? NoMethodError
+    # not defined in Ruby 1.6  
+    class NoMethodError < NameError
+    end
+  end
+  
+  
   # Expect args in this order:
   # 1. filename
   # 2. port
