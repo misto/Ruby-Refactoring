@@ -54,14 +54,15 @@ public class VariableReader extends XmlStreamReader {
 		if (name.equals("variable")) {
 			String varName = xpp.getAttributeValue("", "name");
 			String varValue = xpp.getAttributeValue("", "value");
+			String kind = xpp.getAttributeValue("", "kind");			
 			RubyVariable newVariable ;
 			if (varValue == null) {
-				newVariable = new RubyVariable(stackFrame, varName);
+				newVariable = new RubyVariable(stackFrame, varName, kind);
 			}
 			else {
 			String typeName = xpp.getAttributeValue("", "type") ;
 			boolean hasChildren = xpp.getAttributeValue("", "hasChildren").equals("true") ;
-				newVariable = new RubyVariable(stackFrame, varName, varValue, typeName, hasChildren);			
+				newVariable = new RubyVariable(stackFrame, varName, kind, varValue, typeName, hasChildren);			
 			}
 			newVariable.setParent(parent) ;
 			variables.add(newVariable) ;						
