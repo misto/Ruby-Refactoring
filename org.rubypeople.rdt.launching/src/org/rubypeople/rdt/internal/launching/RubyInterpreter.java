@@ -33,13 +33,9 @@ public class RubyInterpreter {
 	}
 	
 	public String getCommand() {
-		String directory = installLocation.toOSString() + File.separator;
-		if (new File(directory + "rubyw.exe").isFile())
-			return directory + "rubyw.exe";
-
-		if (new File(directory, "ruby").isFile())
-			return directory + "ruby";
-			
+		if( new File(installLocation.toOSString()).isFile() ){
+			return installLocation.toOSString();
+		}
 		return null;
 	}
 	

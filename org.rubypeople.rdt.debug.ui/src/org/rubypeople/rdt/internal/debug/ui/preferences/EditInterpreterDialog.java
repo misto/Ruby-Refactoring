@@ -18,7 +18,7 @@ import org.eclipse.swt.layout.RowLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
-import org.eclipse.swt.widgets.DirectoryDialog;
+import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
@@ -69,7 +69,7 @@ public class EditInterpreterDialog extends StatusDialog {
 		browseButton.setText(RdtDebugUiMessages.getString("EditInterpreterDialog.rubyInterpreter.path.browse.button.label")); //$NON-NLS-1$
 		browseButton.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
-				browseForInstallDir();
+				browseForInstallLocation();
 			}
 		});
 	}
@@ -96,15 +96,10 @@ public class EditInterpreterDialog extends StatusDialog {
 
 	protected IStatus validateInterpreterLocationText() {
 		File path = new File(interpreterLocationText.getText());
-		if (path.exists()) {
-			File ruby = new File(path, "ruby"); //$NON-NLS-1$ //$NON-NLS-2$
-			File rubyw = new File(path, "rubyw"); //$NON-NLS-1$ //$NON-NLS-2$
-			File rubyw_exe = new File(path, "rubyw.exe"); //$NON-NLS-1$ //$NON-NLS-2$
-			if (ruby.isFile() || rubyw.isFile() || rubyw_exe.isFile())
-				return new Status(IStatus.OK, RdtDebugUiPlugin.PLUGIN_ID, 0, "", null); //$NON-NLS-1$
-		}
-
-		return new Status(IStatus.ERROR, RdtDebugUiPlugin.PLUGIN_ID, 1, RdtDebugUiMessages.getString("EditInterpreterDialog.rubyInterpreter.path.error"), null); //$NON-NLS-1$
+	 	if(path.isFile()){
+	 		return new Status(IStatus.OK, RdtDebugUiPlugin.PLUGIN_ID, 0, "", null);
+	 	}
+		return new Status(IStatus.ERROR, RdtDebugUiPlugin.PLUGIN_ID, 1, RdtDebugUiMessages.getString("EditInterpreterDialog.rubyInterpreter.path.error"), null);
 	}
 
 	protected void createNameEntryField(Composite composite) {
@@ -135,10 +130,10 @@ public class EditInterpreterDialog extends StatusDialog {
 		return new Status(status, RdtDebugUiPlugin.PLUGIN_ID, 0, message, null);
 	}
 
-	protected void browseForInstallDir() {
-		DirectoryDialog dialog = new DirectoryDialog(getShell());
+	protected void browseForInstallLocation() {
+		FileDialog dialog = new FileDialog(getShell());
 		dialog.setFilterPath(interpreterLocationText.getText());
-		dialog.setMessage(RdtDebugUiMessages.getString("EditInterpreterDialog.rubyInterpreter.path.browse.message")); //$NON-NLS-1$
+		dialog.setText(RdtDebugUiMessages.getString("EditInterpreterDialog.rubyInterpreter.path.browse.message")); //$NON-NLS-1$
 		String newPath = dialog.open();
 		if (newPath != null)
 			interpreterLocationText.setText(newPath);
