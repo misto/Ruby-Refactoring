@@ -106,7 +106,7 @@ public class RubySourceViewerConfiguration extends SourceViewerConfiguration {
 			return new String[] { rubyEditor.getTabReplaceString(), "\t", "" }; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 		}
 		else {
-			return new String[] { "\t", rubyEditor.getTabReplaceString(), "" }; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+			return super.getIndentPrefixes(sourceViewer, contentType); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 		}
 	}    
 	
