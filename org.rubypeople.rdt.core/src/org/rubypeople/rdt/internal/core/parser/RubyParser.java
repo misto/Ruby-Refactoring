@@ -280,13 +280,18 @@ public class RubyParser {
 	}
 
 	/**
-	 * @param poundStart
-	 * @return
+	 * Returns true if the index position in curLine is inside quotes
+	 * 
+	 * @param index
+	 *            The index position to check
+	 * @param curLine
+	 *            The String to check @returntrue if the index position in
+	 *            curLine is inside quotes
 	 */
-	private static boolean inQuotes(int poundStart, String curLine) {
+	private static boolean inQuotes(int index, String curLine) {
 		List openQuotes = new ArrayList();
-		for (int index = 0; index < poundStart; index++) {
-			char c = curLine.charAt(index);
+		for (int curPosition = 0; curPosition < index; curPosition++) {
+			char c = curLine.charAt(curPosition);
 			if (isQuoteChar(c)) {
 				Character newChar = new Character(c);
 				if (!openQuotes.isEmpty()) {
@@ -373,14 +378,11 @@ public class RubyParser {
 	private static void findClassVariable(String curLine, int lineNum) {
 		int instanceIndex = curLine.indexOf("@@");
 		if (instanceIndex == -1) return;
+		if ((inQuotes(instanceIndex, curLine) && !isSubstituted(instanceIndex, curLine)) || inRegex(instanceIndex, curLine)) return;
 		String name = getToken("@@", VARIABLE_END_CHARS, curLine);
+		log("Found class variable: " + name);
 		RubyClassVariable variable = new RubyClassVariable(name, new Position(lineNum, instanceIndex + "@@".length()));
-		try {
-			RubyElement element = stack.peek();
-			element.addElement(variable);
-		} catch (StackEmptyException e) {
-			log("Tried to add a class variable to the element on top of stack, but stack is empty");
-		}
+		addVariable(variable);
 	}
 
 	/**
@@ -391,16 +393,51 @@ public class RubyParser {
 		int instanceIndex = curLine.indexOf("@");
 		if (instanceIndex == -1) return;
 		if (curLine.indexOf("@@") != -1) return;
+		if ((inQuotes(instanceIndex, curLine) && !isSubstituted(instanceIndex, curLine)) || inRegex(instanceIndex, curLine)) return;
 		String name = getToken("@", VARIABLE_END_CHARS, curLine);
 		log("Found instance variable: " + name);
 		RubyInstanceVariable variable = new RubyInstanceVariable(name, new Position(lineNum, instanceIndex + "@".length()));
+		addVariable(variable);
+	}
+
+	/**
+	 * @param variable
+	 */
+	private static void addVariable(RubyElement variable) {
 		RubyElement element = stack.findParentClassOrModule();
-		if (element != null) {
-			element.addElement(variable);
-			log("Added instance variable to open element: " + element);
-		} else {
-			script.addElement(variable);
+		if (element == null) {
+			element = script;
 		}
+		element.addElement(variable);
+		log("Added variable to open element: " + element);
+	}
+
+	/**
+	 * @param instanceIndex
+	 * @param curLine
+	 */
+	private static boolean isSubstituted(int instanceIndex, String curLine) {
+		return curLine.substring(instanceIndex - 2, instanceIndex).equals("#{");
+	}
+
+	/**
+	 * Returns true if the given index in the String curLine is inside a
+	 * regular expressions
+	 * 
+	 * @param index
+	 *            the int position to check
+	 * @param curLine
+	 *            the String to check within
+	 * @return
+	 */
+	private static boolean inRegex(int index, String curLine) {
+		boolean insideregex = false;
+		for (int curPosition = 0; curPosition < index; curPosition++) {
+			if (curLine.charAt(curPosition) == '\\') {
+				insideregex = !insideregex;
+			}
+		}
+		return insideregex;
 	}
 
 	/**
