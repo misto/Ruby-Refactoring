@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Iterator;
 
+import org.eclipse.core.boot.BootLoader;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.debug.core.DebugPlugin;
 import org.eclipse.debug.core.ILaunch;
@@ -49,7 +50,7 @@ public class InterpreterRunner {
 		buffer.append(renderLoadPath(configuration));
 		buffer.append(" " + configuration.getInterpreterArguments());
 		buffer.append(interpreter.endOfOptionsDelimeter);
-		buffer.append(configuration.getAbsoluteFileName());
+		buffer.append(osDependentPath(configuration.getAbsoluteFileName()));
 		buffer.append(" " + configuration.getProgramArguments());
 
 		return buffer.toString();
@@ -69,6 +70,14 @@ public class InterpreterRunner {
 	}
 	
 	protected void addToLoadPath(StringBuffer loadPath, IProject project) {
-		loadPath.append(" -I " + project.getLocation().toOSString());
+		
+		loadPath.append(" -I " + osDependentPath(project.getLocation().toOSString()));
+	}
+	
+	protected String osDependentPath(String aPath) {
+		if (BootLoader.getOS().equals(BootLoader.OS_WIN32))
+			aPath = "\"" + aPath + "\"";
+			
+		return aPath;
 	}
 }
