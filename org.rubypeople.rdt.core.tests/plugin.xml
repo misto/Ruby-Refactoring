@@ -15,8 +15,6 @@
       <import plugin="org.rubypeople.rdt.core"/>
       <import plugin="org.rubypeople.eclipse.shams"/>
       <import plugin="org.rubypeople.eclipse.testutils"/>
-      <import plugin="org.kxml2"/>
-      <import plugin="org.apache.xerces"/>
    </requires>
 
 
