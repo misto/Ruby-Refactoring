@@ -28,7 +28,7 @@ public class RubyViewerFilter extends ViewerFilter {
 
 	private IPropertyListener propertyListener = new IPropertyListener() {
 		public void propertyChanged(Object source, int property) { 
-			if (property == RubyFileMatcher.PROP_MATCH_CRITERIA && source instanceof RubyFileMatcher) {
+			if (property == RubyFileMatcher.PROP_MATCH_CRITERIA) {
 				rubyResourcesView.getViewer().refresh() ;
 			}
 		}
