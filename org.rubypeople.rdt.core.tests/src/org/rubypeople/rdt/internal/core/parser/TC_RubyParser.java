@@ -27,23 +27,7 @@ package org.rubypeople.rdt.internal.core.parser;
 
 import junit.framework.TestCase;
 
-import org.rubypeople.rdt.internal.core.parser.ast.RubyBegin;
-import org.rubypeople.rdt.internal.core.parser.ast.RubyCase;
-import org.rubypeople.rdt.internal.core.parser.ast.RubyClass;
-import org.rubypeople.rdt.internal.core.parser.ast.RubyClassVariable;
-import org.rubypeople.rdt.internal.core.parser.ast.RubyDo;
-import org.rubypeople.rdt.internal.core.parser.ast.RubyElement;
-import org.rubypeople.rdt.internal.core.parser.ast.RubyFor;
-import org.rubypeople.rdt.internal.core.parser.ast.RubyGlobal;
-import org.rubypeople.rdt.internal.core.parser.ast.RubyIf;
-import org.rubypeople.rdt.internal.core.parser.ast.RubyInstanceVariable;
-import org.rubypeople.rdt.internal.core.parser.ast.RubyMethod;
-import org.rubypeople.rdt.internal.core.parser.ast.RubyModule;
-import org.rubypeople.rdt.internal.core.parser.ast.RubyRequires;
-import org.rubypeople.rdt.internal.core.parser.ast.RubyScript;
-import org.rubypeople.rdt.internal.core.parser.ast.RubyUnless;
-import org.rubypeople.rdt.internal.core.parser.ast.RubyUntil;
-import org.rubypeople.rdt.internal.core.parser.ast.RubyWhile;
+import org.rubypeople.rdt.internal.core.parser.ast.*;
 
 /**
  * @author Chris
@@ -57,41 +41,34 @@ public class TC_RubyParser extends TestCase {
 		super(arg0);
 	}
 	
-	/*
-	public static TestSuite suite() {
-		TestSuite suite = new TestSuite();
-		suite.addTest(new TC_RubyParser("testRecognizesGlobalProcessNumber"));
-	    return suite ;
-	}
-	*/
-	
 	public void testRecognizesSingleRequires() throws Exception {
 		RubyScript script = RubyParser.parse("require \"tk\"\n");
-		RubyRequires requires = new RubyRequires("tk", 0, 9);
-		assertEquals(requires, script.getRequires("tk"));
-		assertEquals(new Position(0, 9), script.getRequires("tk").getStart());
-		assertEquals(new Position(0, 11), script.getRequires("tk").getEnd());
+		RubyElement requires = new RubyElement(RubyElement.REQUIRES, "tk", 0, 9);
+		assertNotNull(script.getElement("tk"));
+		assertEquals(requires, script.getElement("tk"));
+		assertEquals(new Position(0, 9), script.getElement("tk").getStart());
+		assertEquals(new Position(0, 11), script.getElement("tk").getEnd());
 		assertTrue(script.contains(requires));
-		assertFalse(script.contains(new RubyRequires("fake", 0, -987)));
+		assertFalse(script.contains(new RubyElement(RubyElement.REQUIRES, "fake", 0, -987)));
 		assertEquals(1, script.getElementCount());
 	}
 
 	public void testRecognizesRequiresInSingleQuotes() throws Exception {
 		RubyScript script = RubyParser.parse("require 'tk'\n");
-		RubyRequires requires = new RubyRequires("tk", 0, 9);
-		assertEquals(requires, script.getRequires("tk"));
-		assertEquals(new Position(0, 9), script.getRequires("tk").getStart());
-		assertEquals(new Position(0, 11), script.getRequires("tk").getEnd());
+		RubyElement requires = new RubyElement(RubyElement.REQUIRES, "tk", 0, 9);
+		assertEquals(requires, script.getElement("tk"));
+		assertEquals(new Position(0, 9), script.getElement("tk").getStart());
+		assertEquals(new Position(0, 11), script.getElement("tk").getEnd());
 		assertTrue(script.contains(requires));
-		assertFalse(script.contains(new RubyRequires("fake", 0, -987)));
+		assertFalse(script.contains(new RubyElement(RubyElement.REQUIRES, "fake", 0, -987)));
 		assertEquals(1, script.getElementCount());
 	}
 
 	public void testRecognizesTwoRequires() throws Exception {
 		RubyScript script = RubyParser.parse("require \"tk\"\nrequire \"irb\"\n");
-		assertTrue(script.contains(new RubyRequires("tk", 0, 9)));
-		assertTrue(script.contains(new RubyRequires("irb", 1, 9)));
-		assertFalse(script.contains(new RubyRequires("fake", 2, 9)));
+		assertTrue(script.contains(new RubyElement(RubyElement.REQUIRES, "tk", 0, 9)));
+		assertTrue(script.contains(new RubyElement(RubyElement.REQUIRES, "irb", 1, 9)));
+		assertFalse(script.contains(new RubyElement(RubyElement.REQUIRES, "fake", 2, 9)));
 		assertEquals(2, script.getElementCount());
 	}
 
@@ -100,65 +77,65 @@ public class TC_RubyParser extends TestCase {
 		assertTrue(script.hasParseErrors());
 		assertEquals(1, script.getErrorCount());
 		assertEquals(1, script.getElementCount());
-		assertTrue(script.contains(new RubyRequires("tk", 0, 9)));
+		assertTrue(script.contains(new RubyElement(RubyElement.REQUIRES, "tk", 0, 9)));
 	}
 
 	public void testRecognizesClass() throws Exception {
 		RubyScript script = RubyParser.parse("class Bob\nend\n");
-		assertTrue(script.contains(new RubyClass("Bob", 0, 6)));
+		assertTrue(script.contains(new RubyElement(RubyElement.CLASS, "Bob", 0, 6)));
 		assertEquals(1, script.getElementCount());
-		assertFalse(script.contains(new RubyClass("Bob", 0, 45345)));
-		assertEquals(new Position(0, 6), script.getClass("Bob").getStart());
-		assertEquals(new Position(1, 0), script.getClass("Bob").getEnd());
+		assertFalse(script.contains(new RubyElement(RubyElement.CLASS, "Bob", 0, 45345)));
+		assertEquals(new Position(0, 6), script.getElement("Bob").getStart());
+		assertEquals(new Position(1, 0), script.getElement("Bob").getEnd());
 	}
 
 	public void testRecognizesModule() throws Exception {
 		RubyScript script = RubyParser.parse("module Bob\nend\n");
 		assertEquals(1, script.getElementCount());
-		assertTrue(script.contains(new RubyModule("Bob", 0, 7)));
-		assertFalse(script.contains(new RubyModule("Bob", 0, 365632)));
-		assertEquals(new Position(0, 7), script.getModule("Bob").getStart());
-		assertEquals(new Position(1, 0), script.getModule("Bob").getEnd());
+		assertTrue(script.contains(new RubyElement(RubyElement.MODULE, "Bob", 0, 7)));
+		assertFalse(script.contains(new RubyElement(RubyElement.MODULE,"Bob", 0, 365632)));
+		assertEquals(new Position(0, 7), script.getElement("Bob").getStart());
+		assertEquals(new Position(1, 0), script.getElement("Bob").getEnd());
 	}
 
 	public void testRecognizesScriptLevelMethod() throws Exception {
 		RubyScript script = RubyParser.parse("def bob\nend\n");
 		assertEquals(1, script.getElementCount());
-		assertTrue(script.contains(new RubyMethod("bob", 0, 4)));
-		assertFalse(script.contains(new RubyMethod("bob", 0, 9453)));
-		assertEquals(new Position(0, 4), script.getMethod("bob").getStart());
-		assertEquals(new Position(1, 0), script.getMethod("bob").getEnd());
+		assertTrue(script.contains(new RubyElement(RubyElement.METHOD, "bob", 0, 4)));
+		assertFalse(script.contains(new RubyElement(RubyElement.METHOD, "bob", 0, 9453)));
+		assertEquals(new Position(0, 4), script.getElement("bob").getStart());
+		assertEquals(new Position(1, 0), script.getElement("bob").getEnd());
 	}
 
 	public void testRecognizesOneLineMethod() throws Exception {
 		RubyScript script = RubyParser.parse("def bob doSomething() end\n");
 		assertEquals(1, script.getElementCount());
-		assertNotNull(script.getMethod("bob"));
-		assertTrue(script.contains(new RubyMethod("bob", 0, 4)));
-		assertFalse(script.contains(new RubyMethod("bob", 0, 4453)));
-		assertEquals(new Position(0, 4), script.getMethod("bob").getStart());
-		assertEquals(new Position(0, 22), script.getMethod("bob").getEnd());
+		assertNotNull(script.getElement("bob"));
+		assertTrue(script.contains(new RubyElement(RubyElement.METHOD, "bob", 0, 4)));
+		assertFalse(script.contains(new RubyElement(RubyElement.METHOD, "bob", 0, 4453)));
+		assertEquals(new Position(0, 4), script.getElement("bob").getStart());
+		assertEquals(new Position(0, 22), script.getElement("bob").getEnd());
 	}
 
 	public void testRecognizesMethodWithParameters() throws Exception {
 		RubyScript script = RubyParser.parse("def bob(name) doSomething() end\n");
 		assertEquals(1, script.getElementCount());
-		assertNotNull(script.getMethod("bob"));
-		assertTrue(script.contains(new RubyMethod("bob", 0, 4)));
-		assertFalse(script.contains(new RubyMethod("bob", 0, 475)));
-		assertEquals(new Position(0, 4), script.getMethod("bob").getStart());
-		assertEquals(new Position(0, 28), script.getMethod("bob").getEnd());
+		assertNotNull(script.getElement("bob"));
+		assertTrue(script.contains(new RubyElement(RubyElement.METHOD, "bob", 0, 4)));
+		assertFalse(script.contains(new RubyElement(RubyElement.METHOD, "bob", 0, 475)));
+		assertEquals(new Position(0, 4), script.getElement("bob").getStart());
+		assertEquals(new Position(0, 28), script.getElement("bob").getEnd());
 	}
 
 	public void testRecognizesClassInstanceMethod() throws Exception {
 		RubyScript script = RubyParser.parse("class Bob\ndef bob\nend\nend\n");
 		assertEquals(1, script.getElementCount());
-		assertTrue(script.contains(new RubyClass("Bob", 0, 6)));
-		assertEquals(new Position(0, 6), script.getClass("Bob").getStart());
-		assertEquals(new Position(3, 0), script.getClass("Bob").getEnd());
-		RubyClass bob = script.getClass("Bob");
+		assertTrue(script.contains(new RubyElement(RubyElement.CLASS, "Bob", 0, 6)));
+		assertEquals(new Position(0, 6), script.getElement("Bob").getStart());
+		assertEquals(new Position(3, 0), script.getElement("Bob").getEnd());
+		RubyElement bob = script.getElement("Bob");
 		assertEquals(1, bob.getElementCount());
-		assertTrue(bob.contains(new RubyMethod("bob", 1, 4)));
+		assertTrue(bob.contains(new RubyElement(RubyElement.METHOD, "bob", 1, 4)));
 		assertNotNull(bob.getElement("bob"));
 		assertEquals(new Position(1, 4), bob.getElement("bob").getStart());
 		assertEquals(new Position(2, 0), bob.getElement("bob").getEnd());
@@ -167,41 +144,41 @@ public class TC_RubyParser extends TestCase {
 	public void testRecognizesInstanceVariable() throws Exception {
 		RubyScript script = RubyParser.parse("class Bob\n@name = \"myName\"\nend\n");
 		assertEquals(1, script.getElementCount());
-		assertTrue(script.contains(new RubyClass("Bob", 0, 6)));
-		assertEquals(new Position(0, 6), script.getClass("Bob").getStart());
-		assertEquals(new Position(2, 0), script.getClass("Bob").getEnd());
-		RubyClass bob = script.getClass("Bob");
+		assertTrue(script.contains(new RubyElement(RubyElement.CLASS, "Bob", 0, 6)));
+		assertEquals(new Position(0, 6), script.getElement("Bob").getStart());
+		assertEquals(new Position(2, 0), script.getElement("Bob").getEnd());
+		RubyElement bob = script.getElement("Bob");
 		assertEquals(1, bob.getElementCount());
-		assertTrue(bob.contains(new RubyInstanceVariable("@name", 1, 0)));
+		assertTrue(bob.contains(new RubyElement(RubyElement.INSTANCE_VAR, "@name", 1, 0)));
 		assertNotNull(bob.getElement("@name"));
 		assertEquals(new Position(1, 0), bob.getElement("@name").getStart());
-		assertEquals(new Position(1, 4), bob.getElement("@name").getEnd());
+		assertEquals(new Position(1, 5), bob.getElement("@name").getEnd());
 	}
 
 	public void testRecognizesClassVariable() throws Exception {
 		RubyScript script = RubyParser.parse("class Bob\n@@name = \"myName\"\nend\n");
 		assertEquals(1, script.getElementCount());
-		assertTrue(script.contains(new RubyClass("Bob", 0, 6)));
-		assertEquals(new Position(0, 6), script.getClass("Bob").getStart());
-		assertEquals(new Position(2, 0), script.getClass("Bob").getEnd());
-		RubyClass bob = script.getClass("Bob");
+		assertTrue(script.contains(new RubyElement(RubyElement.CLASS, "Bob", 0, 6)));
+		assertEquals(new Position(0, 6), script.getElement("Bob").getStart());
+		assertEquals(new Position(2, 0), script.getElement("Bob").getEnd());
+		RubyElement bob = script.getElement("Bob");
 		assertEquals(1, bob.getElementCount());
-		assertTrue(bob.contains(new RubyClassVariable("@@name", 1, 0)));
+		assertTrue(bob.contains(new RubyElement(RubyElement.CLASS_VAR, "@@name", 1, 0)));
 		assertNotNull(bob.getElement("@@name"));
 		assertEquals(new Position(1, 0), bob.getElement("@@name").getStart());
-		assertEquals(new Position(1, 5), bob.getElement("@@name").getEnd());
+		assertEquals(new Position(1, 6), bob.getElement("@@name").getEnd());
 	}
 
 	public void testRecognizesGlobal() throws Exception {
 		RubyScript script = RubyParser.parse("class Bob\n$name = \"myName\"\nend\n");
 		assertEquals(2, script.getElementCount());
-		assertTrue(script.contains(new RubyClass("Bob", 0, 6)));
-		assertEquals(new Position(0, 6), script.getClass("Bob").getStart());
-		assertEquals(new Position(2, 0), script.getClass("Bob").getEnd());
-		assertTrue(script.contains(new RubyGlobal("$name", 1, 0)));
+		assertTrue(script.contains(new RubyElement(RubyElement.CLASS, "Bob", 0, 6)));
+		assertEquals(new Position(0, 6), script.getElement("Bob").getStart());
+		assertEquals(new Position(2, 0), script.getElement("Bob").getEnd());
+		assertTrue(script.contains(new RubyElement(RubyElement.GLOBAL, "$name", 1, 0)));
 		assertNotNull(script.getElement("$name"));
 		assertEquals(new Position(1, 0), script.getElement("$name").getStart());
-		assertEquals(new Position(1, 4), script.getElement("$name").getEnd());
+		assertEquals(new Position(1, 5), script.getElement("$name").getEnd());
 	}
 	
 	public void testRecognizesGlobalProcessNumber() throws Exception {
@@ -213,120 +190,120 @@ public class TC_RubyParser extends TestCase {
 	public void testRecognizesIfBlock() throws Exception {
 		RubyScript script = RubyParser.parse("class Bob\ndef initialize\nif true\nputs \"Hi!\"\nelse\nputs \"Hello!\"\nend\nend\nend\n");
 		assertEquals(1, script.getElementCount());
-		assertTrue(script.contains(new RubyClass("Bob", 0, 6)));
-		assertEquals(new Position(0, 6), script.getClass("Bob").getStart());
-		assertEquals(new Position(8, 0), script.getClass("Bob").getEnd());
-		RubyClass bob = script.getClass("Bob");
+		assertTrue(script.contains(new RubyElement(RubyElement.CLASS, "Bob", 0, 6)));
+		assertEquals(new Position(0, 6), script.getElement("Bob").getStart());
+		assertEquals(new Position(8, 0), script.getElement("Bob").getEnd());
+		RubyElement bob = script.getElement("Bob");
 		assertEquals(1, bob.getElementCount());
-		assertTrue(bob.contains(new RubyMethod("initialize", 1, 4)));
+		assertTrue(bob.contains(new RubyElement(RubyElement.METHOD, "initialize", 1, 4)));
 		assertEquals(new Position(1, 4), bob.getElement("initialize").getStart());
 		assertEquals(new Position(7, 0), bob.getElement("initialize").getEnd());
-		RubyMethod method = (RubyMethod) bob.getElement("initialize");
+		RubyElement method = bob.getElement("initialize");
 		assertEquals(1, method.getElementCount());
-		assertTrue(method.contains(new RubyIf(2, 0)));
+		assertTrue(method.contains(new RubyElement(RubyElement.IF, "if", 2, 0)));
 	}
 
 	public void testIgnoresIfModifier() throws Exception {
 		RubyScript script = RubyParser.parse("class Bob\ndef initialize\nname = \"Nancy\" if true\nend\nend\n");
 		assertEquals(1, script.getElementCount());
-		assertTrue(script.contains(new RubyClass("Bob", 0, 6)));
-		assertEquals(new Position(0, 6), script.getClass("Bob").getStart());
-		assertEquals(new Position(4, 0), script.getClass("Bob").getEnd());
-		RubyClass bob = script.getClass("Bob");
+		assertTrue(script.contains(new RubyElement(RubyElement.CLASS, "Bob", 0, 6)));
+		assertEquals(new Position(0, 6), script.getElement("Bob").getStart());
+		assertEquals(new Position(4, 0), script.getElement("Bob").getEnd());
+		RubyElement bob = script.getElement("Bob");
 		assertEquals(1, bob.getElementCount());
-		assertTrue(bob.contains(new RubyMethod("initialize", 1, 4)));
+		assertTrue(bob.contains(new RubyElement(RubyElement.METHOD, "initialize", 1, 4)));
 		assertEquals(new Position(1, 4), bob.getElement("initialize").getStart());
 		assertEquals(new Position(3, 0), bob.getElement("initialize").getEnd());
-		RubyMethod method = (RubyMethod) bob.getElement("initialize");
+		RubyElement method = bob.getElement("initialize");
 		assertEquals(0, method.getElementCount());
 	}
 
 	public void testRecognizesUnlessBlock() throws Exception {
 		RubyScript script = RubyParser.parse("class Bob\ndef initialize\nunless true\nputs \"Hi!\"\nelse\nputs \"Hello!\"\nend\nend\nend\n");
 		assertEquals(1, script.getElementCount());
-		assertTrue(script.contains(new RubyClass("Bob", 0, 6)));
-		assertEquals(new Position(0, 6), script.getClass("Bob").getStart());
-		assertEquals(new Position(8, 0), script.getClass("Bob").getEnd());
-		RubyClass bob = script.getClass("Bob");
+		assertTrue(script.contains(new RubyElement(RubyElement.CLASS, "Bob", 0, 6)));
+		assertEquals(new Position(0, 6), script.getElement("Bob").getStart());
+		assertEquals(new Position(8, 0), script.getElement("Bob").getEnd());
+		RubyElement bob = script.getElement("Bob");
 		assertEquals(1, bob.getElementCount());
-		assertTrue(bob.contains(new RubyMethod("initialize", 1, 4)));
+		assertTrue(bob.contains(new RubyElement(RubyElement.METHOD, "initialize", 1, 4)));
 		assertEquals(new Position(1, 4), bob.getElement("initialize").getStart());
 		assertEquals(new Position(7, 0), bob.getElement("initialize").getEnd());
-		RubyMethod method = (RubyMethod) bob.getElement("initialize");
+		RubyElement method = bob.getElement("initialize");
 		assertEquals(1, method.getElementCount());
-		assertTrue(method.contains(new RubyUnless(2, 0)));
+		assertTrue(method.contains(new RubyElement(RubyElement.UNLESS, "unless", 2, 0)));
 	}
 
 	public void testIgnoresUnlessModifier() throws Exception {
 		RubyScript script = RubyParser.parse("class Bob\ndef initialize\nname = 34 unless true\nend\nend\n");
 		assertEquals(1, script.getElementCount());
-		assertTrue(script.contains(new RubyClass("Bob", 0, 6)));
-		assertEquals(new Position(0, 6), script.getClass("Bob").getStart());
-		assertEquals(new Position(4, 0), script.getClass("Bob").getEnd());
-		RubyClass bob = script.getClass("Bob");
+		assertTrue(script.contains(new RubyElement(RubyElement.CLASS, "Bob", 0, 6)));
+		assertEquals(new Position(0, 6), script.getElement("Bob").getStart());
+		assertEquals(new Position(4, 0), script.getElement("Bob").getEnd());
+		RubyElement bob = script.getElement("Bob");
 		assertEquals(1, bob.getElementCount());
-		assertTrue(bob.contains(new RubyMethod("initialize", 1, 4)));
+		assertTrue(bob.contains(new RubyElement(RubyElement.METHOD, "initialize", 1, 4)));
 		assertEquals(new Position(1, 4), bob.getElement("initialize").getStart());
 		assertEquals(new Position(3, 0), bob.getElement("initialize").getEnd());
-		RubyMethod method = (RubyMethod) bob.getElement("initialize");
+		RubyElement method = bob.getElement("initialize");
 		assertEquals(0, method.getElementCount());
 	}
 
 	public void testRecognizesCaseBlock() throws Exception {
 		RubyScript script = RubyParser.parse("class Bob\ndef initialize\ncase var\nwhile 34\nputs \"Hi!\"\nelse\nputs \"Hello!\"\nend\nend\nend\n");
 		assertEquals(1, script.getElementCount());
-		assertTrue(script.contains(new RubyClass("Bob", 0, 6)));
-		assertEquals(new Position(0, 6), script.getClass("Bob").getStart());
-		assertEquals(new Position(9, 0), script.getClass("Bob").getEnd());
-		RubyClass bob = script.getClass("Bob");
+		assertTrue(script.contains(new RubyElement(RubyElement.CLASS, "Bob", 0, 6)));
+		RubyElement bob = script.getElement("Bob");
 		assertEquals(1, bob.getElementCount());
-		assertTrue(bob.contains(new RubyMethod("initialize", 1, 4)));
-		assertEquals(new Position(1, 4), bob.getElement("initialize").getStart());
-		assertEquals(new Position(8, 0), bob.getElement("initialize").getEnd());
-		RubyMethod method = (RubyMethod) bob.getElement("initialize");
+		assertTrue(bob.contains(new RubyElement(RubyElement.METHOD, "initialize", 1, 4)));
+		RubyElement method = bob.getElement("initialize");
 		assertEquals(1, method.getElementCount());
-		assertTrue(method.contains(new RubyCase(2, 0)));
+		assertTrue(method.contains(new RubyElement(RubyElement.CASE, "case", 2, 0)));
+		assertEquals(new Position(8, 0), method.getEnd());
+		assertEquals(new Position(9, 0), bob.getEnd());
 	}
 
 	public void testRecognizesUntilBlock() throws Exception {
 		RubyScript script = RubyParser.parse("class Bob\ndef initialize\nuntil var == 3\nvar += 1\nputs \"Hi!\"\nend\nend\nend\n");
 		assertEquals(1, script.getElementCount());
-		assertTrue(script.contains(new RubyClass("Bob", 0, 6)));
-		assertEquals(new Position(0, 6), script.getClass("Bob").getStart());
-		assertEquals(new Position(7, 0), script.getClass("Bob").getEnd());
-		RubyClass bob = script.getClass("Bob");
+		assertTrue(script.contains(new RubyElement(RubyElement.CLASS, "Bob", 0, 6)));
+		assertEquals(new Position(0, 6), script.getElement("Bob").getStart());
+		assertEquals(new Position(7, 0), script.getElement("Bob").getEnd());
+		RubyElement bob = script.getElement("Bob");
 		assertEquals(1, bob.getElementCount());
-		assertTrue(bob.contains(new RubyMethod("initialize", 1, 4)));
+		assertTrue(bob.getElement("initialize").isType(RubyElement.METHOD));
+		assertTrue(bob.contains(new RubyElement(RubyElement.METHOD, "initialize", 1, 4)));
 		assertEquals(new Position(1, 4), bob.getElement("initialize").getStart());
 		assertEquals(new Position(6, 0), bob.getElement("initialize").getEnd());
-		RubyMethod method = (RubyMethod) bob.getElement("initialize");
+		RubyElement method = bob.getElement("initialize");
 		assertEquals(1, method.getElementCount());
-		assertTrue(method.contains(new RubyUntil(2, 0)));
+		assertTrue(method.contains(new RubyElement(RubyElement.UNTIL, "until", 2, 0)));
 	}
 
 	public void testIgnoresUntilModifier() throws Exception {
 		RubyScript script = RubyParser.parse("class Bob\ndef initialize\nputs \"Hi!\" until var++ == 3\nend\nend\n");
 		assertEquals(1, script.getElementCount());
-		assertTrue(script.contains(new RubyClass("Bob", 0, 6)));
-		assertEquals(new Position(4, 0), script.getClass("Bob").getEnd());
-		RubyClass bob = script.getClass("Bob");
+		assertTrue(script.contains(new RubyElement(RubyElement.CLASS, "Bob", 0, 6)));
+		assertEquals(new Position(4, 0), script.getElement("Bob").getEnd());
+		RubyElement bob = script.getElement("Bob");
 		assertEquals(1, bob.getElementCount());
-		assertTrue(bob.contains(new RubyMethod("initialize", 1, 4)));
+		assertTrue(bob.contains(new RubyElement(RubyElement.METHOD, "initialize", 1, 4)));
 		assertEquals(new Position(1, 4), bob.getElement("initialize").getStart());
 		assertEquals(new Position(3, 0), bob.getElement("initialize").getEnd());
-		RubyMethod method = (RubyMethod) bob.getElement("initialize");
+		RubyElement method = bob.getElement("initialize");
 		assertEquals(0, method.getElementCount());
 	}
 
 	public void testComplainsAboutLowercaseClassName() throws Exception {
 		RubyScript script = RubyParser.parse("class bob\ndef initialize\nend\nend\n");
 		assertEquals(1, script.getElementCount());
+		assertTrue(script.hasParseErrors());
 		assertEquals(1, script.getErrorCount());
-		assertTrue(script.contains(new RubyClass("bob", 0, 6)));
-		assertEquals(new Position(3, 0), script.getClass("bob").getEnd());
-		RubyClass bob = script.getClass("bob");
+		assertTrue(script.contains(new RubyElement(RubyElement.CLASS, "bob", 0, 6)));
+		assertEquals(new Position(3, 0), script.getElement("bob").getEnd());
+		RubyElement bob = script.getElement("bob");
 		assertEquals(1, bob.getElementCount());
-		assertTrue(bob.contains(new RubyMethod("initialize", 1, 4)));
+		assertTrue(bob.contains(new RubyElement(RubyElement.METHOD, "initialize", 1, 4)));
 		assertNotNull(bob.getElement("initialize"));
 		assertEquals(new Position(1, 4), bob.getElement("initialize").getStart());
 		assertEquals(new Position(2, 0), bob.getElement("initialize").getEnd());
@@ -336,16 +313,16 @@ public class TC_RubyParser extends TestCase {
 		RubyScript script = RubyParser.parse("module bob\nend\n");
 		assertEquals(1, script.getElementCount());
 		assertEquals(1, script.getErrorCount());
-		assertTrue(script.contains(new RubyModule("bob", 0, 7)));
-		assertEquals(new Position(1, 0), script.getModule("bob").getEnd());
+		assertTrue(script.contains(new RubyElement(RubyElement.MODULE, "bob", 0, 7)));
+		assertEquals(new Position(1, 0), script.getElement("bob").getEnd());
 	}
 
 	public void testIgnoresAfterComment() throws Exception {
 		RubyScript script = RubyParser.parse("module Bob\n# @count = 34\nend\n");
 		assertEquals(1, script.getElementCount());
-		assertTrue(script.contains(new RubyModule("Bob", 0, 7)));
-		assertEquals(new Position(2, 0), script.getModule("Bob").getEnd());
-		RubyModule bob = script.getModule("Bob");
+		assertTrue(script.contains(new RubyElement(RubyElement.MODULE, "Bob", 0, 7)));
+		assertEquals(new Position(2, 0), script.getElement("Bob").getEnd());
+		RubyElement bob = script.getElement("Bob");
 		assertEquals(0, bob.getElementCount());
 		assertNull(bob.getElement("@count"));
 	}
@@ -353,9 +330,9 @@ public class TC_RubyParser extends TestCase {
 	public void testPoundSymbolIgnoredInsideString() throws Exception {
 		RubyScript script = RubyParser.parse("module Bob\nputs \"# text = #{@count}\"\nend\n");
 		assertEquals(1, script.getElementCount());
-		assertTrue(script.contains(new RubyModule("Bob", 0, 7)));
-		assertEquals(new Position(2, 0), script.getModule("Bob").getEnd());
-		RubyModule bob = script.getModule("Bob");
+		assertTrue(script.contains(new RubyElement(RubyElement.MODULE, "Bob", 0, 7)));
+		assertEquals(new Position(2, 0), script.getElement("Bob").getEnd());
+		RubyElement bob = script.getElement("Bob");
 		assertEquals(1, bob.getElementCount());
 		assertNotNull(bob.getElement("@count"));
 		assertEquals(new Position(1, 17), bob.getElement("@count").getStart());
@@ -364,69 +341,70 @@ public class TC_RubyParser extends TestCase {
 	public void testRecognizesWhileBlock() throws Exception {
 		RubyScript script = RubyParser.parse("class Bob\ndef initialize\nwhile var == 3\nvar += 1\nputs \"Hi!\"\nend\nend\nend\n");
 		assertEquals(1, script.getElementCount());
-		assertTrue(script.contains(new RubyClass("Bob", 0, 6)));
-		assertEquals(new Position(7, 0), script.getClass("Bob").getEnd());
-		RubyClass bob = script.getClass("Bob");
+		assertTrue(script.contains(new RubyElement(RubyElement.CLASS, "Bob", 0, 6)));
+		assertEquals(new Position(7, 0), script.getElement("Bob").getEnd());
+		RubyElement bob = script.getElement("Bob");
 		assertEquals(1, bob.getElementCount());
 		assertEquals(new Position(6, 0), bob.getElement("initialize").getEnd());
-		RubyMethod method = (RubyMethod) bob.getElement("initialize");
+		RubyElement method = bob.getElement("initialize");
 		assertEquals(1, method.getElementCount());
-		assertTrue(method.contains(new RubyWhile(2, 0)));
+		assertTrue(method.contains(new RubyElement(RubyElement.WHILE, "while", 2, 0)));
 	}
 
 	public void testIgnoresWhileModifier() throws Exception {
 		RubyScript script = RubyParser.parse("class Bob\ndef initialize\nvar += 1 while var == 3\nend\nend\n");
 		assertEquals(1, script.getElementCount());
-		assertTrue(script.contains(new RubyClass("Bob", 0, 6)));
-		assertEquals(new Position(4, 0), script.getClass("Bob").getEnd());
-		RubyClass bob = script.getClass("Bob");
+		assertTrue(script.contains(new RubyElement(RubyElement.CLASS, "Bob", 0, 6)));
+		assertEquals(new Position(4, 0), script.getElement("Bob").getEnd());
+		RubyElement bob = script.getElement("Bob");
 		assertEquals(1, bob.getElementCount());
 		assertEquals(new Position(3, 0), bob.getElement("initialize").getEnd());
-		RubyMethod method = (RubyMethod) bob.getElement("initialize");
+		RubyElement method = bob.getElement("initialize");
 		assertEquals(0, method.getElementCount());
 	}
 
 	public void testRecognizesForBlock() throws Exception {
 		RubyScript script = RubyParser.parse("class Bob\ndef initialize\nfor var in [1, 2, 3]\nvar += 1\nputs \"Hi!\"\nend\nend\nend\n");
 		assertEquals(1, script.getElementCount());
-		assertTrue(script.contains(new RubyClass("Bob", 0, 6)));
-		assertEquals(new Position(7, 0), script.getClass("Bob").getEnd());
-		RubyClass bob = script.getClass("Bob");
-		assertEquals(new Position(6, 0), bob.getElement("initialize").getEnd());
-		RubyMethod method = (RubyMethod) bob.getElement("initialize");
+		assertTrue(script.contains(new RubyElement(RubyElement.CLASS, "Bob", 0, 6)));
+		RubyElement bob = script.getElement("Bob");
+		
+		RubyElement method = bob.getElement("initialize");
 		assertEquals(1, method.getElementCount());
-		assertTrue(method.contains(new RubyFor(2, 0)));
+		assertTrue(method.contains(new RubyElement(RubyElement.FOR, "for", 2, 0)));
+		assertEquals(new Position(6, 0), method.getEnd());
+		assertEquals(new Position(7, 0), bob.getEnd());
 	}
 
 	public void testIgnoresForInsideString() throws Exception {
 		RubyScript script = RubyParser.parse("class Bob\ndef initialize\nputs \"for var in [1, 2, 3]\"\nend\nend\n");
 		assertEquals(1, script.getElementCount());
-		assertTrue(script.contains(new RubyClass("Bob", 0, 6)));
-		assertEquals(new Position(4, 0), script.getClass("Bob").getEnd());
-		RubyClass bob = script.getClass("Bob");
+		assertTrue(script.contains(new RubyElement(RubyElement.CLASS, "Bob", 0, 6)));
+		assertEquals(new Position(4, 0), script.getElement("Bob").getEnd());
+		RubyElement bob = script.getElement("Bob");
 		assertEquals(new Position(3, 0), bob.getElement("initialize").getEnd());
-		RubyMethod method = (RubyMethod) bob.getElement("initialize");
+		RubyElement method = bob.getElement("initialize");
 		assertEquals(0, method.getElementCount());
 	}
 
 	public void testRecognizesBeginBlock() throws Exception {
 		RubyScript script = RubyParser.parse("class Bob\ndef initialize\nbegin\nvar += 1\nend\nend\nend\n");
 		assertEquals(1, script.getElementCount());
-		assertTrue(script.contains(new RubyClass("Bob", 0, 6)));
-		assertEquals(new Position(6, 0), script.getClass("Bob").getEnd());
-		RubyClass bob = script.getClass("Bob");
-		assertEquals(new Position(5, 0), bob.getElement("initialize").getEnd());
-		RubyMethod method = (RubyMethod) bob.getElement("initialize");
+		assertTrue(script.contains(new RubyElement(RubyElement.CLASS, "Bob", 0, 6)));
+		RubyElement bob = script.getElement("Bob");
+		RubyElement method = bob.getElement("initialize");
 		assertEquals(1, method.getElementCount());
-		assertTrue(method.contains(new RubyBegin(2, 0)));
+		assertTrue(method.contains(new RubyElement(RubyElement.BEGIN, "begin", 2, 0)));
+		assertEquals(new Position(5, 0), method.getEnd());
+		assertEquals(new Position(6, 0), bob.getEnd());
 	}
 
 	public void testInstanceVariablesBubblesUpToClass() throws Exception {
 		RubyScript script = RubyParser.parse("class Bob\ndef initialize\n@var = 1\nend\nend\n");
 		assertEquals(1, script.getElementCount());
-		assertTrue(script.contains(new RubyClass("Bob", 0, 6)));
-		assertEquals(new Position(4, 0), script.getClass("Bob").getEnd());
-		RubyClass bob = script.getClass("Bob");
+		assertTrue(script.contains(new RubyElement(RubyElement.CLASS, "Bob", 0, 6)));
+		assertEquals(new Position(4, 0), script.getElement("Bob").getEnd());
+		RubyElement bob = script.getElement("Bob");
 		assertEquals(2, bob.getElementCount());
 		assertNotNull(bob.getElement("@var"));
 	}
@@ -434,9 +412,9 @@ public class TC_RubyParser extends TestCase {
 	public void testInstanceVariablesBubblesUpToModule() throws Exception {
 		RubyScript script = RubyParser.parse("module Bob\ndef initialize\n@var = 1\nend\nend\n");
 		assertEquals(1, script.getElementCount());
-		assertTrue(script.contains(new RubyModule("Bob", 0, 7)));
-		assertEquals(new Position(4, 0), script.getModule("Bob").getEnd());
-		RubyModule bob = script.getModule("Bob");
+		assertTrue(script.contains(new RubyElement(RubyElement.MODULE, "Bob", 0, 7)));
+		assertEquals(new Position(4, 0), script.getElement("Bob").getEnd());
+		RubyElement bob = script.getElement("Bob");
 		assertEquals(2, bob.getElementCount());
 		assertNotNull(bob.getElement("@var"));
 	}
@@ -444,186 +422,186 @@ public class TC_RubyParser extends TestCase {
 	public void testMethodDefaultsToPublic() throws Exception {
 		RubyScript script = RubyParser.parse("module Bob\ndef myMethod\nputs \"blah\"\nend\nend\n");
 		assertEquals(1, script.getElementCount());
-		assertTrue(script.contains(new RubyModule("Bob", 0, 7)));
-		assertEquals(new Position(4, 0), script.getModule("Bob").getEnd());
-		RubyModule bob = script.getModule("Bob");
+		assertTrue(script.contains(new RubyElement(RubyElement.MODULE, "Bob", 0, 7)));
+		assertEquals(new Position(4, 0), script.getElement("Bob").getEnd());
+		RubyElement bob = script.getElement("Bob");
 		assertEquals(1, bob.getElementCount());
 		assertNotNull(bob.getElement("myMethod"));
-		RubyMethod method = (RubyMethod) bob.getElement("myMethod");
+		RubyElement method = bob.getElement("myMethod");
 		assertEquals(RubyElement.PUBLIC, method.getAccess());
 	}
 
 	public void testInstanceVariableDefaultsToPrivate() throws Exception {
 		RubyScript script = RubyParser.parse("module Bob\n@var = 1\nend\n");
 		assertEquals(1, script.getElementCount());
-		assertTrue(script.contains(new RubyModule("Bob", 0, 7)));
-		RubyModule bob = script.getModule("Bob");
+		assertTrue(script.contains(new RubyElement(RubyElement.MODULE, "Bob", 0, 7)));
+		RubyElement bob = script.getElement("Bob");
 		assertEquals(1, bob.getElementCount());
 		assertNotNull(bob.getElement("@var"));
-		RubyInstanceVariable method = (RubyInstanceVariable) bob.getElement("@var");
+		RubyElement method = bob.getElement("@var");
 		assertEquals(RubyElement.PRIVATE, method.getAccess());
 	}
 
 	public void testPrivateModifierOnOneMethod() throws Exception {
 		RubyScript script = RubyParser.parse("module Bob\ndef myMethod\nputs \"blah\"\nend\nprivate :myMethod\nend\n");
 		assertEquals(1, script.getElementCount());
-		assertTrue(script.contains(new RubyModule("Bob", 0, 7)));
-		RubyModule bob = script.getModule("Bob");
+		assertTrue(script.contains(new RubyElement(RubyElement.MODULE, "Bob", 0, 7)));
+		RubyElement bob = script.getElement("Bob");
 		assertEquals(1, bob.getElementCount());
 		assertNotNull(bob.getElement("myMethod"));
-		RubyMethod method = (RubyMethod) bob.getElement("myMethod");
+		RubyElement method = bob.getElement("myMethod");
 		assertEquals(RubyElement.PRIVATE, method.getAccess());
 	}
 
 	public void testPrivateModifierOnMultipleMethods() throws Exception {
 		RubyScript script = RubyParser.parse("module Bob\ndef myMethod\nputs \"blah\"\nend\ndef hisMethod\nvar = 3\nend\nprivate :myMethod, :hisMethod\nend\n");
 		assertEquals(1, script.getElementCount());
-		assertTrue(script.contains(new RubyModule("Bob", 0, 7)));
-		RubyModule bob = script.getModule("Bob");
+		assertTrue(script.contains(new RubyElement(RubyElement.MODULE, "Bob", 0, 7)));
+		RubyElement bob = script.getElement("Bob");
 		assertEquals(2, bob.getElementCount());
 		assertNotNull(bob.getElement("myMethod"));
-		RubyMethod method = (RubyMethod) bob.getElement("myMethod");
+		RubyElement method = bob.getElement("myMethod");
 		assertEquals(RubyElement.PRIVATE, method.getAccess());
 		assertNotNull(bob.getElement("hisMethod"));
-		RubyMethod hisMethod = (RubyMethod) bob.getElement("hisMethod");
+		RubyElement hisMethod = bob.getElement("hisMethod");
 		assertEquals(RubyElement.PRIVATE, hisMethod.getAccess());
 	}
 
 	public void testAttributeReaderOnOneVariable() throws Exception {
 		RubyScript script = RubyParser.parse("module Bob\n@var = 1\nattr_reader :var\nend\n");
 		assertEquals(1, script.getElementCount());
-		assertTrue(script.contains(new RubyModule("Bob", 0, 7)));
-		RubyModule bob = script.getModule("Bob");
+		assertTrue(script.contains(new RubyElement(RubyElement.MODULE, "Bob", 0, 7)));
+		RubyElement bob = script.getElement("Bob");
 		assertEquals(1, bob.getElementCount());
 		assertNotNull(bob.getElement("@var"));
-		RubyInstanceVariable var = (RubyInstanceVariable) bob.getElement("@var");
+		RubyElement var = bob.getElement("@var");
 		assertEquals(RubyElement.READ, var.getAccess());
 	}
 
 	public void testAttributeWriterOnOneVariable() throws Exception {
 		RubyScript script = RubyParser.parse("module Bob\n@var = 1\nattr_writer :var\nend\n");
 		assertEquals(1, script.getElementCount());
-		assertTrue(script.contains(new RubyModule("Bob", 0, 7)));
-		RubyModule bob = script.getModule("Bob");
+		assertTrue(script.contains(new RubyElement(RubyElement.MODULE, "Bob", 0, 7)));
+		RubyElement bob = script.getElement("Bob");
 		assertEquals(1, bob.getElementCount());
 		assertNotNull(bob.getElement("@var"));
-		RubyInstanceVariable var = (RubyInstanceVariable) bob.getElement("@var");
+		RubyElement var = bob.getElement("@var");
 		assertEquals(RubyElement.WRITE, var.getAccess());
 	}
 
 	public void testAttributeAccessorOnOneVariable() throws Exception {
 		RubyScript script = RubyParser.parse("module Bob\n@var = 1\nattr_accessor :var\nend\n");
 		assertEquals(1, script.getElementCount());
-		assertTrue(script.contains(new RubyModule("Bob", 0, 7)));
-		RubyModule bob = script.getModule("Bob");
+		assertTrue(script.contains(new RubyElement(RubyElement.MODULE, "Bob", 0, 7)));
+		RubyElement bob = script.getElement("Bob");
 		assertEquals(1, bob.getElementCount());
 		assertNotNull(bob.getElement("@var"));
-		RubyInstanceVariable var = (RubyInstanceVariable) bob.getElement("@var");
+		RubyElement var = bob.getElement("@var");
 		assertEquals(RubyElement.PUBLIC, var.getAccess());
 	}
 
 	public void testIgnoreMultiLineDocs() throws Exception {
 		RubyScript script = RubyParser.parse("=begin\n@docVar = 'hey'\n=end\nmodule Bob\nend\n");
 		assertEquals(1, script.getElementCount());
-		assertTrue(script.contains(new RubyModule("Bob", 3, 7)));
+		assertTrue(script.contains(new RubyElement(RubyElement.MODULE, "Bob", 3, 7)));
 	}
 
 	public void testFalsePositiveEnds() throws Exception {
 		RubyScript script = RubyParser.parse("module Bob\nreal.__send__(op, x)\n@docVar = 'blah'\nend\n");
 		assertEquals(1, script.getElementCount());
-		RubyModule module = script.getModule("Bob");
+		RubyElement module = script.getElement("Bob");
 		assertEquals(1, module.getElementCount());
 	}
 
 	public void testRecognizesDo() throws Exception {
 		RubyScript script = RubyParser.parse("module Bob\nstring.tr('+', ' ').gsub(/((?:%[0-9a-fA-F]{2})+)/n) do\n[var.delete('%')].pack('H*')\nend\n@var = 1\nend\n");
 		assertEquals(1, script.getElementCount());
-		RubyModule module = script.getModule("Bob");
+		RubyElement module = script.getElement("Bob");
 		assertEquals(2, module.getElementCount());
-		assertTrue(module.contains(new RubyDo(1, 52)));
+		assertTrue(module.contains(new RubyElement(RubyElement.DO, "do", 1, 52)));
 	}
 
 	public void testIgnoresNonSubstitutedInstanceVariableInRegex() throws Exception {
 		RubyScript script = RubyParser.parse("class Bob\ndef decode_b(str)\nstr.gsub!(/=\\?SHIFT_JIS\\?B\\?([!->@-~]+)\\?=/i) {\ndecode64(1)\n}\nend\nend");
 		assertEquals(1, script.getElementCount());
-		RubyClass rubyClass = script.getClass("Bob");
+		RubyElement rubyClass = script.getElement("Bob");
 		assertEquals(1, rubyClass.getElementCount());
 	}
 
 	public void testRecognizesSubstitutedInstanceVariableInRegex() throws Exception {
 		RubyScript script = RubyParser.parse("class Bob\ndef decode_b(str)\nstr.gsub!(/#{@var}/i) {\ndecode64(1)\n}\nend\nend");
 		assertEquals(1, script.getElementCount());
-		RubyClass rubyClass = script.getClass("Bob");
+		RubyElement rubyClass = script.getElement("Bob");
 		assertEquals(2, rubyClass.getElementCount());
 	}
 
 	public void testIgnoresNonSubstitutedInstanceVariableInDoubleQuotes() throws Exception {
 		RubyScript script = RubyParser.parse("class Bob\ndef decode_b(str)\nputs \"@var\"\nend\nend");
 		assertEquals(1, script.getElementCount());
-		RubyClass rubyClass = script.getClass("Bob");
+		RubyElement rubyClass = script.getElement("Bob");
 		assertEquals(1, rubyClass.getElementCount());
 	}
 
 	public void testRecognizesSubstitutedInstanceVariableInDoubleQuotes() throws Exception {
 		RubyScript script = RubyParser.parse("class Bob\ndef decode_b(str)\nputs \"#{@var}\"\nend\nend");
 		assertEquals(1, script.getElementCount());
-		RubyClass rubyClass = script.getClass("Bob");
+		RubyElement rubyClass = script.getElement("Bob");
 		assertEquals(2, rubyClass.getElementCount());
 	}
 
 	public void testIgnoresNonSubstitutedClassVariableInRegex() throws Exception {
 		RubyScript script = RubyParser.parse("class Bob\ndef decode_b(str)\nstr.gsub!(/=\\?SHIFT_JIS\\?B\\?([!->@@-~]+)\\?=/i) {\ndecode64(1)\n}\nend\nend");
 		assertEquals(1, script.getElementCount());
-		RubyClass rubyClass = script.getClass("Bob");
+		RubyElement rubyClass = script.getElement("Bob");
 		assertEquals(1, rubyClass.getElementCount());
 	}
 
 	public void testRecognizesSubstitutedClassVariableInRegex() throws Exception {
 		RubyScript script = RubyParser.parse("class Bob\ndef decode_b(str)\nstr.gsub!(/#{@@var}/) {\ndecode64(1)\n}\nend\nend");
 		assertEquals(1, script.getElementCount());
-		RubyClass rubyClass = script.getClass("Bob");
+		RubyElement rubyClass = script.getElement("Bob");
 		assertEquals(2, rubyClass.getElementCount());
 	}
 
 	public void testIgnoresNonSubstitutedClassVariableInDoubleQuotes() throws Exception {
 		RubyScript script = RubyParser.parse("class Bob\ndef decode_b(str)\nputs \"@@var\"\nend\nend");
 		assertEquals(1, script.getElementCount());
-		RubyClass rubyClass = script.getClass("Bob");
+		RubyElement rubyClass = script.getElement("Bob");
 		assertEquals(1, rubyClass.getElementCount());
 	}
 
 	public void testRecognizesSubstitutedClassVariableInDoubleQuotes() throws Exception {
 		RubyScript script = RubyParser.parse("class Bob\ndef decode_b(str)\nputs \"#{@@var}\"\nend\nend");
 		assertEquals(1, script.getElementCount());
-		RubyClass rubyClass = script.getClass("Bob");
+		RubyElement rubyClass = script.getElement("Bob");
 		assertEquals(2, rubyClass.getElementCount());
 	}
 
 	public void testIgnoresNonSubstitutedGlobalInRegex() throws Exception {
 		RubyScript script = RubyParser.parse("class Bob\ndef decode_b(str)\nstr.gsub!(/$var/i) {\ndecode64(1)\n}\nend\nend");
 		assertEquals(1, script.getElementCount());
-		RubyClass rubyClass = script.getClass("Bob");
+		RubyElement rubyClass = script.getElement("Bob");
 		assertEquals(1, rubyClass.getElementCount());
 	}
 
 	public void testRecognizesSubstitutedGlobalInRegex() throws Exception {
 		RubyScript script = RubyParser.parse("class Bob\ndef decode_b(str)\nstr.gsub!(/#{$var}/) {\ndecode64(1)\n}\nend\nend");
 		assertEquals(2, script.getElementCount());
-		RubyClass rubyClass = script.getClass("Bob");
+		RubyElement rubyClass = script.getElement("Bob");
 		assertEquals(1, rubyClass.getElementCount());
 	}
 
 	public void testIgnoresNonSubstitutedGlobalInDoubleQuotes() throws Exception {
 		RubyScript script = RubyParser.parse("class Bob\ndef decode_b(str)\nputs \"$var\"\nend\nend");
 		assertEquals(1, script.getElementCount());
-		RubyClass rubyClass = script.getClass("Bob");
+		RubyElement rubyClass = script.getElement("Bob");
 		assertEquals(1, rubyClass.getElementCount());
 	}
 
 	public void testRecognizesSubstitutedGlobalInDoubleQuotes() throws Exception {
 		RubyScript script = RubyParser.parse("class Bob\ndef decode_b(str)\nputs \"#{$var}\"\nend\nend");
 		assertEquals(2, script.getElementCount());
-		RubyClass rubyClass = script.getClass("Bob");
+		RubyElement rubyClass = script.getElement("Bob");
 		assertEquals(1, rubyClass.getElementCount());
 	}
 
@@ -631,67 +609,68 @@ public class TC_RubyParser extends TestCase {
 		RubyScript script = RubyParser.parse("class Bob\ndef CGI::escape(string)\nstring.gsub(/([^ a-zA-Z0-9_.-]+)/n) do\n'%' + 1.unpack('H2' * 1.size).join('%').upcase\nend.tr(' ', '+')\nwhile true\nputs 'blah'\nend\nend\nend");
 		// expect a class
 		assertEquals(1, script.getElementCount());
-		RubyClass rubyClass = script.getClass("Bob");
+		RubyElement rubyClass = script.getElement("Bob");
 		// expect a method
 		assertEquals(1, rubyClass.getElementCount());
-		RubyMethod method = (RubyMethod) rubyClass.getElement("CGI::escape");
+		RubyElement method = rubyClass.getElement("CGI::escape");
 		// expect a do block and begin block
+		assertNotNull(method);
 		assertEquals(2, method.getElementCount());
 	}
 
 	public void testIgnoresNonSubstitutedClassVariableInPercentRRegex() throws Exception {
 		RubyScript script = RubyParser.parse("class Bob\ndef decode_b(str)\nstr.gsub!(%r|@@var|) {\ndecode64(1)\n}\nend\nend");
 		assertEquals(1, script.getElementCount());
-		RubyClass rubyClass = script.getClass("Bob");
+		RubyElement rubyClass = script.getElement("Bob");
 		assertEquals(1, rubyClass.getElementCount());
 	}
 
 	public void testRecognizesSubstitutedClassVariableInPercentRRegex() throws Exception {
 		RubyScript script = RubyParser.parse("class Bob\ndef decode_b(str)\nstr.gsub!(%r|#{@@var}|) {\ndecode64(1)\n}\nend\nend");
 		assertEquals(1, script.getElementCount());
-		RubyClass rubyClass = script.getClass("Bob");
+		RubyElement rubyClass = script.getElement("Bob");
 		assertEquals(2, rubyClass.getElementCount());
 	}
 
 	public void testIgnoresNonSubstitutedClassVariableInPercentQString() throws Exception {
 		RubyScript script = RubyParser.parse("class Bob\ndef decode_b(str)\nstr.gsub!(%q,@@var,) {\ndecode64(1)\n}\nend\nend");
 		assertEquals(1, script.getElementCount());
-		RubyClass rubyClass = script.getClass("Bob");
+		RubyElement rubyClass = script.getElement("Bob");
 		assertEquals(1, rubyClass.getElementCount());
 	}
 
 	public void testRecognizesSubstitutedClassVariableInPercentQString() throws Exception {
 		RubyScript script = RubyParser.parse("class Bob\ndef decode_b(str)\nstr.gsub!(%q:#{@@var}:) {\ndecode64(1)\n}\nend\nend");
 		assertEquals(1, script.getElementCount());
-		RubyClass rubyClass = script.getClass("Bob");
+		RubyElement rubyClass = script.getElement("Bob");
 		assertEquals(2, rubyClass.getElementCount());
 	}
 
 	public void testIgnoresNonSubstitutedClassVariableInPercentCapitalQString() throws Exception {
 		RubyScript script = RubyParser.parse("class Bob\ndef decode_b(str)\nstr.gsub!(%Q{@@var}) {\ndecode64(1)\n}\nend\nend");
 		assertEquals(1, script.getElementCount());
-		RubyClass rubyClass = script.getClass("Bob");
+		RubyElement rubyClass = script.getElement("Bob");
 		assertEquals(1, rubyClass.getElementCount());
 	}
 
 	public void testClassVariable() throws Exception {
 		RubyScript script = RubyParser.parse("class Bob\ndef decode_b(str)\nstr.gsub!(@@var) {\ndecode64(1)\n}\nend\nend");
 		assertEquals(1, script.getElementCount());
-		RubyClass rubyClass = script.getClass("Bob");
+		RubyElement rubyClass = script.getElement("Bob");
 		assertEquals(2, rubyClass.getElementCount());
 	}
 
 	public void testIgnoresNonSubstitutedClassVariableInPercentCapitalQStringWithEscapedEndChar() throws Exception {
 		RubyScript script = RubyParser.parse("class Bob\ndef decode_b(str)\nstr.gsub!(%Q(blah\\)blah@@var)) {\ndecode64(1)\n}\nend\nend");
 		assertEquals(1, script.getElementCount());
-		RubyClass rubyClass = script.getClass("Bob");
+		RubyElement rubyClass = script.getElement("Bob");
 		assertEquals(1, rubyClass.getElementCount());
 	}
 
 	public void testRecognizesSubstitutedClassVariableInPercentCapitalQStringWithEscapedEndChar() throws Exception {
 		RubyScript script = RubyParser.parse("class Bob\ndef decode_b(str)\nstr.gsub!(%Q(blah\\)blah#{@@var})) {\ndecode64(1)\n}\nend\nend");
 		assertEquals(1, script.getElementCount());
-		RubyClass rubyClass = script.getClass("Bob");
+		RubyElement rubyClass = script.getElement("Bob");
 		assertEquals(2, rubyClass.getElementCount());
 	}
 
@@ -700,19 +679,21 @@ public class TC_RubyParser extends TestCase {
 		assertEquals(0, script.getElementCount());
 	}
 
-	public void testIgnoreRequireNameNotInQuotes() throws Exception {
-		RubyScript script = RubyParser.parse("require ARGV[0].gsub(/.+::/, '')");
-		assertEquals(0, script.getElementCount());
-	}
+	// TODO Get Require Names not in quotes to work
+//	public void testRequireNameNotInQuotes() throws Exception {
+//		RubyScript script = RubyParser.parse("require ARGV[0].gsub(/.+::/, '')");
+//		assertEquals(1, script.getElementCount());
+//		assertNotNull(script.getElement("ARGV[0].gsub(/.+::/, '')"));
+//	}
 
 	public void testCreatesInstanceVarIfUnknownSymbolInAttrModifier() throws Exception {
 		RubyScript script = RubyParser.parse("module Bob\nattr_reader :var\nend\n");
 		assertEquals(1, script.getElementCount());
-		assertTrue(script.contains(new RubyModule("Bob", 0, 7)));
-		RubyModule bob = script.getModule("Bob");
+		assertTrue(script.contains(new RubyElement(RubyElement.MODULE, "Bob", 0, 7)));
+		RubyElement bob = script.getElement("Bob");
 		assertEquals(1, bob.getElementCount());
 		assertNotNull(bob.getElement("@var"));
-		RubyInstanceVariable var = (RubyInstanceVariable) bob.getElement("@var");
+		RubyElement var = bob.getElement("@var");
 		assertEquals(RubyElement.READ, var.getAccess());
 	}
 
@@ -724,7 +705,7 @@ public class TC_RubyParser extends TestCase {
 	public void testRecognizesDoWithNamedLocalVariables() throws Exception {
 		RubyScript script = RubyParser.parse("class Bob\ndef xml2obj(port)\nparser.parse(port) do |type, name, data|\nend\nend\n@var\nend");
 		assertEquals(1, script.getElementCount());
-		RubyClass rubyClass = script.getClass("Bob");
+		RubyElement rubyClass = script.getElement("Bob");
 		assertNotNull(rubyClass.getElement("@var"));
 		assertEquals(2, rubyClass.getElementCount());
 	}
@@ -824,6 +805,52 @@ public class TC_RubyParser extends TestCase {
 	public void testDollarDollarGlobal() throws Exception {
 		RubyScript script = RubyParser.parse("$$");
 		assertEquals(1, script.getElementCount() );
+	}
+	
+	public void testRecognizesMultipleClassVariablesOnOneLine() throws Exception {
+		RubyScript script = RubyParser.parse("class Bob\n@@name = @@var = 0\nend\n");
+		assertEquals(1, script.getElementCount());
+		assertTrue(script.contains(new RubyElement(RubyElement.CLASS, "Bob", 0, 6)));
+		assertEquals(new Position(0, 6), script.getElement("Bob").getStart());
+		assertEquals(new Position(2, 0), script.getElement("Bob").getEnd());
+		RubyElement bob = script.getElement("Bob");
+		assertEquals(2, bob.getElementCount());
+		assertContainsSingleTokenElement(bob, RubyElement.CLASS_VAR, "@@var", 1, 9);
+		assertContainsSingleTokenElement(bob, RubyElement.CLASS_VAR, "@@name", 1, 0);
+	}
+	
+	public void testRecognizesMultipleInstanceVariablesOnOneLine() throws Exception {
+		RubyScript script = RubyParser.parse("class Bob\n@name = @var = 0\nend\n");
+		assertEquals(1, script.getElementCount());
+		assertTrue(script.contains(new RubyElement(RubyElement.CLASS, "Bob", 0, 6)));
+		assertEquals(new Position(0, 6), script.getElement("Bob").getStart());
+		assertEquals(new Position(2, 0), script.getElement("Bob").getEnd());
+		RubyElement bob = script.getElement("Bob");
+		assertEquals(2, bob.getElementCount());
+		assertContainsSingleTokenElement(bob, RubyElement.INSTANCE_VAR, "@var", 1, 8);
+		assertContainsSingleTokenElement(bob, RubyElement.INSTANCE_VAR, "@name", 1, 0);
+	}
+	
+	public void testRecognizesElementWithLineStartingWithATab() throws Exception {
+		RubyScript script = RubyParser.parse("\tclass Bob\nend");
+		assertEquals(1, script.getElementCount());
+		assertTrue(script.contains(new RubyElement(RubyElement.CLASS, "Bob", 0, 7)));
+		assertEquals(new Position(0, 7), script.getElement("Bob").getStart());
+		assertEquals(new Position(1, 0), script.getElement("Bob").getEnd());
+	}
+
+	/**
+	 * @param parent
+	 * @param type
+	 * @param name
+	 * @param lineNumber
+	 * @param offset
+	 */
+	private void assertContainsSingleTokenElement(RubyElement parent, int type, String name, int lineNumber, int offset) {
+		assertTrue(parent.contains(new RubyElement(type, name, lineNumber, offset)));
+		assertNotNull(parent.getElement(name));
+		assertEquals(new Position(lineNumber, offset), parent.getElement(name).getStart());
+		assertEquals(new Position(lineNumber, offset + name.length()), parent.getElement(name).getEnd());		
 	}
 
 }

@@ -1,27 +1,27 @@
 /*
  * Author: C.Williams
- *
- *  Copyright (c) 2004 RubyPeople. 
- *
- *  This file is part of the Ruby Development Tools (RDT) plugin for eclipse.
- *  You can get copy of the GPL along with further information about RubyPeople 
- *  and third party software bundled with RDT in the file 
- *  org.rubypeople.rdt.core_0.4.0/RDT.license or otherwise at 
- *  http://www.rubypeople.org/RDT.license.
- *
- *  RDT is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2 of the License, or
- *  (at your option) any later version.
- *
- *  RDT is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of 
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
  * 
- *  You should have received a copy of the GNU General Public License
- *  along with RDT; if not, write to the Free Software
- *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Copyright (c) 2004 RubyPeople.
+ * 
+ * This file is part of the Ruby Development Tools (RDT) plugin for eclipse.
+ * You can get copy of the GPL along with further information about RubyPeople
+ * and third party software bundled with RDT in the file
+ * org.rubypeople.rdt.core_0.4.0/RDT.license or otherwise at
+ * http://www.rubypeople.org/RDT.license.
+ * 
+ * RDT is free software; you can redistribute it and/or modify it under the
+ * terms of the GNU General Public License as published by the Free Software
+ * Foundation; either version 2 of the License, or (at your option) any later
+ * version.
+ * 
+ * RDT is distributed in the hope that it will be useful, but WITHOUT ANY
+ * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE. See the GNU General Public License for more
+ * details.
+ * 
+ * You should have received a copy of the GNU General Public License along with
+ * RDT; if not, write to the Free Software Foundation, Inc., 59 Temple Place,
+ * Suite 330, Boston, MA 02111-1307 USA
  */
 package org.rubypeople.rdt.internal.core.parser;
 
@@ -32,45 +32,17 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.StringTokenizer;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
-import org.rubypeople.rdt.internal.core.RubyPlugin;
-import org.rubypeople.rdt.internal.core.parser.ast.RubyBegin;
-import org.rubypeople.rdt.internal.core.parser.ast.RubyCase;
-import org.rubypeople.rdt.internal.core.parser.ast.RubyClass;
-import org.rubypeople.rdt.internal.core.parser.ast.RubyClassVariable;
-import org.rubypeople.rdt.internal.core.parser.ast.RubyDo;
 import org.rubypeople.rdt.internal.core.parser.ast.RubyElement;
-import org.rubypeople.rdt.internal.core.parser.ast.RubyFor;
-import org.rubypeople.rdt.internal.core.parser.ast.RubyGlobal;
-import org.rubypeople.rdt.internal.core.parser.ast.RubyIf;
-import org.rubypeople.rdt.internal.core.parser.ast.RubyInstanceVariable;
-import org.rubypeople.rdt.internal.core.parser.ast.RubyMethod;
-import org.rubypeople.rdt.internal.core.parser.ast.RubyModule;
-import org.rubypeople.rdt.internal.core.parser.ast.RubyRequires;
 import org.rubypeople.rdt.internal.core.parser.ast.RubyScript;
-import org.rubypeople.rdt.internal.core.parser.ast.RubyUnless;
-import org.rubypeople.rdt.internal.core.parser.ast.RubyUntil;
-import org.rubypeople.rdt.internal.core.parser.ast.RubyWhile;
+import org.rubypeople.rdt.internal.core.parser.rules.ParseRule;
+import org.rubypeople.rdt.internal.core.parser.rules.ParseRuleFactory;
 
 public class RubyParser {
 
 	private static RubyParserStack stack = new RubyParserStack();
 	private static RubyScript script;
-	private static final char[] CLASS_AND_MODULE_END_CHARS = {' ', ';'};
-	private static final char[] VARIABLE_END_CHARS = { ' ', '.', '[', '(', ')', ']', ',', '}', '{', ';'};
 	private static boolean inDocs;
-
-	private static final String START_OF_STATEMENT_REGEX = "^(;\\s+)?\\s*";
-	private static final Pattern WHILE_PATTERN = Pattern.compile(START_OF_STATEMENT_REGEX + "while ");
-	private static final Pattern UNLESS_PATTERN = Pattern.compile(START_OF_STATEMENT_REGEX + "unless ");
-	private static final Pattern UNTIL_PATTERN = Pattern.compile(START_OF_STATEMENT_REGEX + "until ");
-	private static final Pattern CASE_PATTERN = Pattern.compile(START_OF_STATEMENT_REGEX + "case ");
-	private static final Pattern IF_PATTERN = Pattern.compile(START_OF_STATEMENT_REGEX + "if ");
-	private static final Pattern END_PATTERN = Pattern.compile("^\\s*(.+\\s+)?end(\\..+)?(\\s+.+)?$");
-	private static final Pattern DO_PATTERN = Pattern.compile(".+\\s+do(\\s+\\|.+\\|)?\\s*$");
-	private static final Pattern CLASS_PATTERN = Pattern.compile(START_OF_STATEMENT_REGEX + "class ");
 
 	/**
 	 * @return
@@ -93,34 +65,49 @@ public class RubyParser {
 					lineNum++;
 					continue;
 				}
-
-				myLine = removeAfterPoundSymbol(myLine);
 				findMultiLineDocBeginning(myLine);
 				if (inDocs) {
 					offset = 0;
 					lineNum++;
 					continue;
 				}
-				findBegin(myLine, lineNum);
-				findIf(myLine, lineNum);
-				findCase(myLine, lineNum);
-				findUnless(myLine, lineNum);
-				findUntil(myLine, lineNum);
-				findWhile(myLine, lineNum);
-				findFor(myLine, lineNum);
-				findDo(myLine, lineNum);
-				findRequires(myLine, lineNum);
-				findModule(myLine, lineNum);
-				findClass(myLine, lineNum);
-				findMethod(myLine, lineNum);
-				findClassVariable(myLine, lineNum);
-				findInstanceVariable(myLine, lineNum);
-				findGlobal(myLine, lineNum);
+
+				RubyTokenizer tokenizer = new RubyTokenizer(curLine);
+				while (tokenizer.hasMoreTokens()) {
+					RubyToken token = tokenizer.nextRubyToken();
+					log(token.getText());
+					if (token.isBlock()) {
+						if (token.isType(RubyToken.WHILE) && parentIsBlockOfType(RubyElement.CASE)) continue;
+						pushMultiLineElement(new RubyElement(token.getType(), token.getText(), lineNum, token.getOffset()));
+						continue;
+					}
+					if (token.isDeclarationKeyword()) {
+						addElementDeclaration(token, tokenizer, lineNum);
+						continue;
+					}
+					if (token.isVariable()) {
+						addVariable(token, lineNum);
+						continue;
+					}
+					if (token.isType(RubyToken.VARIABLE_SUBSTITUTION)) {
+						String varString = getVariable(token, lineNum);
+						int type = getType(varString);
+						if (type == RubyToken.IDENTIFIER) continue; // It's a local variable (hopefully)
+						addVariable(new RubyToken(type, varString, token.getOffset() + token.getText().indexOf(varString)), lineNum);
+						continue;
+					}
+					if (token.isType(RubyToken.END)) {
+						try {
+							stack.closeLastOpenElement(lineNum, token.getOffset());
+						} catch (StackEmptyException e) {
+							log(e.getMessage());
+						}
+					}
+				}
 				findPrivateModifier(myLine, lineNum);
 				findAttributeReaderModifier(myLine, lineNum);
 				findAttributeWriterModifier(myLine, lineNum);
 				findAttributeAccessor(myLine, lineNum);
-				findEnd(myLine, lineNum);
 				offset = 0;
 				lineNum++;
 			}
@@ -134,14 +121,121 @@ public class RubyParser {
 	}
 
 	/**
-	 * @param myLine
+	 * @param varString
+	 * @return
+	 */
+	private static int getType(String varString) {
+		if (varString.startsWith("$"))
+			return  RubyToken.GLOBAL;
+		if (varString.startsWith("@@"))
+			return RubyToken.CLASS_VARIABLE;
+		if (varString.startsWith("@"))
+			return RubyToken.INSTANCE_VARIABLE;
+		return RubyToken.IDENTIFIER;
+	}
+
+	/**
+	 * @param token
+	 * @param lineNum
+	 * @return
+	 */
+	private static String getVariable(RubyToken token, int lineNum) {
+		String text = token.getText();
+		if (text.indexOf('{') == -1) { return text.substring(1); }
+		if (text.indexOf('}') == -1) {
+			script.addParseError(new ParseError("Incomplete variable substitution", lineNum, token.getOffset(), token.getOffset() + text.length()));
+			return text.substring(2);
+		}
+		return text.substring(2, text.indexOf('}'));
+	}
+
+	/**
+	 * @param token
 	 * @param lineNum
 	 */
-	private static void findDo(String myLine, int lineNum) {
-		Matcher doMatcher = DO_PATTERN.matcher(myLine);
-		if (doMatcher.find()) {
-			pushMultiLineElement(new RubyDo(lineNum, myLine.indexOf("do")));
+	private static void addVariable(RubyToken token, int lineNum) {
+		RubyElement element = new RubyElement(token.getType(), token.getText(), lineNum, token.getOffset());
+		ParseRule rule = ParseRuleFactory.getRule(element, script);
+		if (!rule.isAllowed()) {
+			log("Failed rule, adding parse error");
+			script.addParseError(rule.getError());
+			if (rule.getSeverity() == ParseRule.ERROR) return;
+			addElement(element);
+		} else {
+			log("Rule is Allowed!");
+			addElement(element);
 		}
+
+	}
+
+	private static void addElementDeclaration(RubyToken token, RubyTokenizer tokenizer, int lineNum) {
+		if (!tokenizer.hasMoreTokens()) {
+			script.addParseError(new ParseError("Incomplete " + token.getType() + " declaration.", lineNum, token.getOffset(), token.getOffset() + token.getText().length()));
+			return;
+		}
+		RubyToken elementName = tokenizer.nextRubyToken();
+		String name = elementName.getText();
+		RubyElement element = new RubyElement(token.getType(), name, lineNum, elementName.getOffset());
+		ParseRule rule = ParseRuleFactory.getRule(element, script);
+		if (!rule.isAllowed()) {
+			// TODO Add rule that checks require name is a string (in quotes or
+			// a method which produces a string)
+			log("Failed rule, adding parse error");
+			script.addParseError(rule.getError());
+			if (rule.getSeverity() == ParseRule.ERROR) return;
+			addElement(element);
+		} else {
+			log("Rule is Allowed!");
+			addElement(element);
+		}
+
+	}
+
+	/**
+	 * @param element
+	 */
+	private static void addElement(RubyElement element) {
+		if (element.isMultiLine()) {
+			pushMultiLineElement(element);
+			return;
+		}
+		element.setEnd(element.getStart().getLineNumber(), element.getStart().getOffset() + element.getName().length());
+		log("Adding element " + element);
+		getParent(element).addElement(element);
+	}
+
+	/**
+	 * @param element
+	 * @return
+	 */
+	private static RubyElement getParent(RubyElement element) {
+		if (element.isVariable()) {
+			if (element.isType(RubyElement.GLOBAL)) { return script; }
+			RubyElement parent = stack.findParentClassOrModule();
+			if (parent == null) {
+				parent = script;
+			}
+			return parent;
+		}
+		try {
+			return stack.peek();
+		} catch (StackEmptyException e) {
+			script.addParseError(new ParseError("Attempted to add element to empty stack", element.getStart().getLineNumber(), element.getStart().getOffset(), element.getEnd().getOffset()));
+			return script;
+		}
+	}
+
+	/**
+	 * @param blockType
+	 * @return
+	 */
+	private static boolean parentIsBlockOfType(int blockType) {
+		try {
+			return stack.peek().isType(blockType);
+		} catch (StackEmptyException e) {
+			log(e.getMessage());
+		}
+		return false;
 	}
 
 	/**
@@ -168,7 +262,17 @@ public class RubyParser {
 		final String token = "=end";
 		if (curLine.indexOf(token) == -1) return curLine;
 		inDocs = false;
-		return curLine.substring(RubyParserUtil.endIndexOf(curLine, token));
+		return curLine.substring(endIndexOf(curLine, token));
+	}
+
+	/**
+	 * @param curLine
+	 * @param token
+	 * @return
+	 */
+	private static int endIndexOf(String myLine, String token) {
+		if (myLine.indexOf(token, 0) == -1) return -1;
+		return myLine.indexOf(token, 0) + token.length();
 	}
 
 	/**
@@ -218,7 +322,7 @@ public class RubyParser {
 				element.setAccess(accessRightsToGrant);
 				continue;
 			} else {
-				RubyInstanceVariable var = new RubyInstanceVariable("@" + elementName, lineNum, myLine.indexOf(elementName));
+				RubyElement var = new RubyElement(RubyElement.INSTANCE_VAR, "@" + elementName, lineNum, myLine.indexOf(elementName));
 				var.setAccess(accessRightsToGrant);
 				parent.addElement(var);
 			}
@@ -241,7 +345,7 @@ public class RubyParser {
 	 * @return
 	 */
 	private static List getSymbols(String myLine, String prefix) {
-		String copy = myLine.substring(RubyParserUtil.endIndexOf(myLine, prefix));
+		String copy = myLine.substring(endIndexOf(myLine, prefix));
 		StringTokenizer tokenizer = new StringTokenizer(copy, ", ");
 		List list = new ArrayList();
 		while (tokenizer.hasMoreTokens()) {
@@ -251,379 +355,13 @@ public class RubyParser {
 	}
 
 	/**
-	 * @param lineNum
-	 * @param myLine
-	 */
-	private static void findBegin(String myLine, int lineNum) {
-		int beginIndex = myLine.indexOf("begin");
-		if (beginIndex == -1) return;
-		pushMultiLineElement(new RubyBegin(lineNum, beginIndex));
-	}
-
-	/**
-	 * @param lineNum
-	 * @param myLine
-	 */
-	private static void findFor(String myLine, int lineNum) {
-		int forIndex = myLine.indexOf("for ");
-		if ((forIndex != -1) && (!inQuotes(forIndex, myLine))) {
-			pushMultiLineElement(new RubyFor(lineNum, forIndex));
-		}
-	}
-
-	/**
-	 * @param lineNum
-	 * @param myLine
-	 */
-	private static void findWhile(String myLine, int lineNum) {
-		Matcher whileMatcher = WHILE_PATTERN.matcher(myLine);
-		if (whileMatcher.find()) {
-			try {
-				if (!(stack.peek() instanceof RubyCase)) {
-					pushMultiLineElement(new RubyWhile(lineNum, whileMatcher.end() - 6));
-				}
-			} catch (StackEmptyException e) {
-				log(e.getMessage());
-			}
-		}
-	}
-
-	/**
-	 * @param curLine
-	 * @return
-	 */
-	private static String removeAfterPoundSymbol(String curLine) {
-		int poundStart = curLine.indexOf("#");
-		if (poundStart == -1) return curLine;
-		if (inQuotes(poundStart, curLine) || inRegex(poundStart, curLine)) { return curLine; }
-		return curLine.substring(0, poundStart);
-	}
-
-	/**
-	 * Returns true if the index position in curLine is inside quotes
-	 * 
-	 * @param index
-	 *            The index position to check
-	 * @param curLine
-	 *            The String to check @returntrue if the index position in
-	 *            curLine is inside quotes
-	 */
-	private static boolean inQuotes(int index, String curLine) {
-		List openQuotes = new ArrayList();
-		for (int curPosition = 0; curPosition < index; curPosition++) {
-			char c = curLine.charAt(curPosition);
-			if (isQuoteChar(c)) {
-				Character newChar = new Character(c);
-				if (!openQuotes.isEmpty()) {
-					Character open = (Character) openQuotes.get(openQuotes.size() - 1);
-					if (newChar.equals(open)) {
-						openQuotes.remove(openQuotes.size() - 1);
-						continue;
-					}
-				}
-				openQuotes.add(newChar);
-			}
-		}
-		return !openQuotes.isEmpty() || RubyParserUtil.inPercentString('q', index, curLine) || RubyParserUtil.inPercentString('Q', index, curLine);
-	}
-
-	/**
-	 * @param curLine
-	 * @param lineNum
-	 */
-	private static void findUntil(String curLine, int lineNum) {
-		Matcher untilMatcher = UNTIL_PATTERN.matcher(curLine);
-		if (untilMatcher.find()) {
-			pushMultiLineElement(new RubyUntil(lineNum, untilMatcher.end() - 6));
-		}
-	}
-
-	/**
-	 * @param curLine
-	 * @param lineNum
-	 */
-	private static void findCase(String curLine, int lineNum) {
-		Matcher caseMatcher = CASE_PATTERN.matcher(curLine);
-		if (caseMatcher.find()) {
-			pushMultiLineElement(new RubyCase(lineNum, caseMatcher.end() - 5));
-		}
-	}
-
-	/**
-	 * @param curLine
-	 * @param lineNum
-	 */
-	private static void findUnless(String curLine, int lineNum) {
-		Matcher unlessMatcher = UNLESS_PATTERN.matcher(curLine);
-		if (unlessMatcher.find()) {
-			pushMultiLineElement(new RubyUnless(lineNum, unlessMatcher.end() - 7));
-		}
-	}
-
-	/**
-	 * @param curLine
-	 * @param lineNum
-	 */
-	private static void findIf(String curLine, int lineNum) {
-		Matcher ifMatcher = IF_PATTERN.matcher(curLine);
-		if (ifMatcher.find()) {
-			pushMultiLineElement(new RubyIf(lineNum, ifMatcher.end() - 3));
-		}
-	}
-
-	/**
-	 * @param curLine
-	 * @param lineNum
-	 */
-	private static void findGlobal(String curLine, int lineNum) {
-		int location = 0;
-		while (location < curLine.length()) {
-			int globalIndex = curLine.indexOf("$", location);
-			if (globalIndex == -1) return;
-			if ((inQuotes(globalIndex, curLine) || inRegex(globalIndex, curLine)) && !isSubstituted(globalIndex, curLine)) {
-				log("Found global name inside string, not substituted.");
-				location = globalIndex + 1;
-				continue;
-			}
-			String name = getToken("$", VARIABLE_END_CHARS, curLine, globalIndex);
-			if (isEmpty(name)) {
-				location = globalIndex + 1;
-				continue;
-			}
-			script.addElement(new RubyGlobal("$" + name, lineNum, globalIndex));
-			log("Found global:" + name);
-			location = globalIndex + name.length() + 1;
-		}
-	}
-
-	/**
-	 * @param prefix
-	 * @param delimiters
-	 * @param curLine
-	 * @param globalIndex
-	 * @return
-	 */
-	private static String getToken(String prefix, char[] delimiters, String line, int globalIndex) {
-		int endOfPrefix = RubyParserUtil.endIndexOf(line, prefix, globalIndex);
-		while( endOfPrefix < line.length() && Character.isWhitespace(line.charAt(endOfPrefix))) {
-			endOfPrefix++;
-		}
-		for (int i = endOfPrefix; i < line.length(); i++) {
-			if (RubyParserUtil.contains(delimiters, line.charAt(i))) { return line.substring(endOfPrefix, i); }
-		}
-		return line.substring(endOfPrefix);
-	}
-
-	/**
-	 * @param curLine
-	 * @param lineNum
-	 */
-	private static void findClassVariable(String curLine, int lineNum) {
-		int instanceIndex = curLine.indexOf("@@");
-		if (instanceIndex == -1) return;
-		if ((inQuotes(instanceIndex, curLine) || inRegex(instanceIndex, curLine)) && !isSubstituted(instanceIndex, curLine)) return;
-		String name = getToken("@@", VARIABLE_END_CHARS, curLine);
-		if (isEmpty(name)) return;
-		addVariable(new RubyClassVariable("@@" + name, lineNum, instanceIndex));
-	}
-
-	/**
-	 * @param curLine
-	 * @param lineNum
-	 */
-	private static void findInstanceVariable(String curLine, int lineNum) {
-		int instanceIndex = curLine.indexOf("@");
-		if (instanceIndex == -1) return;
-		if (curLine.indexOf("@@") != -1) return;
-		if ((inQuotes(instanceIndex, curLine) || inRegex(instanceIndex, curLine)) && !isSubstituted(instanceIndex, curLine)) return;
-		String name = getToken("@", VARIABLE_END_CHARS, curLine);
-		if (isEmpty(name)) return;
-		addVariable(new RubyInstanceVariable("@" + name, lineNum, instanceIndex));
-	}
-
-	/**
-	 * @param name
-	 * @return
-	 */
-	private static boolean isEmpty(String name) {
-		return name == null || name.trim().length() == 0;
-	}
-
-	/**
-	 * @param variable
-	 */
-	private static void addVariable(RubyElement variable) {
-		RubyElement element = stack.findParentClassOrModule();
-		if (element == null) {
-			element = script;
-		}
-		element.addElement(variable);
-		log("Added variable to open element: " + element);
-	}
-
-	/**
-	 * @param instanceIndex
-	 * @param curLine
-	 */
-	private static boolean isSubstituted(int instanceIndex, String curLine) {
-		return ((curLine.charAt(instanceIndex - 1) == '#') || (curLine.substring(instanceIndex - 2, instanceIndex).equals("#{")));
-	}
-
-	/**
-	 * Returns true if the given index in the String curLine is inside a
-	 * regular expression
-	 * 
-	 * @param index
-	 *            the int position to check
-	 * @param curLine
-	 *            the String to check within
-	 * @return
-	 */
-	private static boolean inRegex(int index, String curLine) {
-
-		boolean insideregex = false;
-		for (int curPosition = 0; curPosition < index; curPosition++) {
-			if (curLine.charAt(curPosition) == '/') {
-				insideregex = !insideregex;
-			}
-		}
-		return insideregex || inPercentRegex(index, curLine);
-	}
-
-	/**
-	 * @param index
-	 * @param curLine
-	 * @return
-	 */
-	private static boolean inPercentRegex(int index, String curLine) {
-		return RubyParserUtil.inPercentString('r', index, curLine);
-	}
-
-	/**
-	 * @param curLine
-	 * @param lineNum
-	 */
-	private static void findEnd(String curLine, int lineNum) {
-		Matcher match = END_PATTERN.matcher(curLine);
-		if (match.find()) {
-			log("Found end: " + curLine);
-			try {
-				stack.closeLastOpenElement(lineNum, curLine.indexOf("end"));
-			} catch (StackEmptyException e) {
-				log(e.getMessage());
-			}
-		}
-	}
-
-	/**
-	 * @param curLine
-	 * @param lineNum
-	 */
-	private static void findRequires(String curLine, int lineNum) {
-		final String token = "require ";
-		int start = RubyParserUtil.endIndexOf(curLine, token);
-		if (start == -1) return;
-		if (inQuotes(start, curLine) || inRegex(start, curLine)) return;
-		String leftOver = curLine.substring(start);
-		for (int i = 0; i < leftOver.length(); i++) {
-			char c = leftOver.charAt(i);
-			if (Character.isWhitespace(c)) continue;
-			if (!isQuoteChar(c)) return;
-			String name = getToken(token + c, new char[] { c}, curLine);
-			RubyRequires requires = new RubyRequires(name, lineNum, start + 1);
-			if (!script.contains(requires)) {
-				script.addRequires(requires);
-			} else {
-				script.addParseError(new ParseError("Duplicate require statement unnecessary.", lineNum, requires.getStart().getOffset(), requires.getEnd().getOffset()));
-			}
-			return;
-		}
-	}
-
-	/**
-	 * Returns true if the given char c is ' or "
-	 * 
-	 * @param c
-	 *            character to test
-	 * @return boolean indicating if character is a quote
-	 */
-	private static boolean isQuoteChar(char c) {
-		return (c == '\'') || (c == '"');
-	}
-
-	/**
-	 * @param curLine
-	 * @param lineNum
-	 */
-	private static void findClass(String curLine, int lineNum) {
-		Matcher classMatcher = CLASS_PATTERN.matcher(curLine);
-		if (classMatcher.find()) {
-			String name = getToken("class ", CLASS_AND_MODULE_END_CHARS, curLine);
-			if (name.trim().length() == 0) return;
-			int start = curLine.indexOf(name, classMatcher.end());
-			if (Character.isLowerCase(name.charAt(0))) script.addParseError(new ParseError("Class names should begin with an uppercase letter.", lineNum, start, start + name.length()));
-			pushMultiLineElement(new RubyClass(name, lineNum, start));
-		}
-	}
-
-	/**
-	 * @param curLine
-	 * @param lineNum
-	 */
-	private static void findModule(String curLine, int lineNum) {
-		int start = curLine.indexOf("module ");
-		if (start == -1) return;
-		String name = getToken("module ", CLASS_AND_MODULE_END_CHARS, curLine);
-		if (isEmpty(name)) return;
-		start = curLine.indexOf(name, start);
-		if (Character.isLowerCase(name.charAt(0))) script.addParseError(new ParseError("Module names should begin with an uppercase letter.", lineNum, start, start + name.length()));
-		pushMultiLineElement(new RubyModule(name, lineNum, start));
-	}
-
-	/**
-	 * @param curLine
-	 * @param lineNum
-	 */
-	private static void findMethod(String curLine, int lineNum) {
-		int start = RubyParserUtil.endIndexOf(curLine, "def ");
-		if (start == -1) return;
-		String name = getMethodName(curLine);
-		if (isEmpty(name)) return;
-		start = curLine.indexOf(name, start);
-		pushMultiLineElement(new RubyMethod(name, lineNum, start));
-	}
-
-	/**
-	 * @param curLine
-	 * @return
-	 */
-	private static String getMethodName(String curLine) {
-		char[] tokens = { '(', ' ', ';'};
-		return getToken("def ", tokens, curLine);
-	}
-
-	/**
-	 * Given a string prefix, this method returns the next token (name) of the
-	 * line delimited by any character within the delimiters array. If the next
-	 * token is not ended by a member of the delimiters array, then the rest of
-	 * the string is returned.
-	 * 
-	 * @param prefix
-	 * @param delimiters
-	 * @param line
-	 * @return
-	 */
-	private static String getToken(String prefix, char[] delimiters, String line) {
-		return getToken(prefix, delimiters, line, 0);
-	}
-
-	/**
 	 * If we are tracing the core plugin, output info the the console
+	 * 
 	 * @param string
 	 */
 	private static void log(String string) {
-		if ( RubyPlugin.getDefault().isDebugging() ) {
-			System.out.println(string);
-		}
+		//		if ( RubyPlugin.getDefault().isDebugging() ) {
+		System.out.println(string);
+		//		}
 	}
 }
