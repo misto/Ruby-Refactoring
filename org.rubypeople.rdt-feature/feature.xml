@@ -6,7 +6,7 @@
       provider-name="RubyPeople">
 
    <description>
-      Ruby tools for Eclipse.
+      Ruby Development Tools for Eclipse.
    </description>
 
    <license>
@@ -99,7 +99,7 @@ This Agreement is governed by the laws of the State of New York and the intellec
    </license>
 
    <url>
-      <update label="awilliams" url="http://studio.rolemodelsoftware.com/~awilliams/updates/"/>
+      <update label="rubyeclipse" url="http://rubyeclipse.sourceforge.net/updatesite"/>
    </url>
 
    <requires>
