@@ -7,7 +7,7 @@
 		<property name="docbook.root" value="../../docbook"/>
 		<!-- docbook.root might also be set from outside -->
 		<echo message="Using docbook.root=${docbook.root}"/>
-		<property name="featureVersion" value="0.1.0"/>
+		<property name="featureVersion" value="0.5.0"/>
 		<!-- featureVersion might also be set from outside -->
 		<echo message="Using featureVersion=${featureVersion}"/>		
         <property name="docbook.xsl.dir" value="${docbook.root}/docbook-xsl-1.64.1"/>
