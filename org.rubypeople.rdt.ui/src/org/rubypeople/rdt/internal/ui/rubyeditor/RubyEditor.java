@@ -49,7 +49,7 @@ import org.rubypeople.rdt.internal.ui.text.Symbols;
 import org.rubypeople.rdt.ui.PreferenceConstants;
 import org.rubypeople.rdt.ui.actions.FormatAction;
 import org.rubypeople.rdt.ui.actions.RubyActionGroup;
-import org.rubypeople.rdt.ui.actions.RubyEditorActionDefinitionIds;
+import org.rubypeople.rdt.ui.actions.IRubyEditorActionDefinitionIds;
 import org.rubypeople.rdt.ui.text.folding.IRubyFoldingStructureProvider;
 
 public class RubyEditor extends RubyAbstractEditor {
@@ -89,19 +89,19 @@ public class RubyEditor extends RubyAbstractEditor {
 		super.createActions();
 
 		Action action = new ContentAssistAction(RubyUIMessages.getResourceBundle(), "ContentAssistProposal.", this);
-		action.setActionDefinitionId(RubyEditorActionDefinitionIds.CONTENT_ASSIST_PROPOSALS);
+		action.setActionDefinitionId(IRubyEditorActionDefinitionIds.CONTENT_ASSIST_PROPOSALS);
 		setAction("ContentAssistProposal", action);
 
 		action = new TextOperationAction(RubyUIMessages.getResourceBundle(), "Comment.", this, ITextOperationTarget.PREFIX);
-		action.setActionDefinitionId(RubyEditorActionDefinitionIds.COMMENT);
+		action.setActionDefinitionId(IRubyEditorActionDefinitionIds.COMMENT);
 		setAction("Comment", action);
 
 		action = new TextOperationAction(RubyUIMessages.getResourceBundle(), "Uncomment.", this, ITextOperationTarget.STRIP_PREFIX);
-		action.setActionDefinitionId(RubyEditorActionDefinitionIds.UNCOMMENT);
+		action.setActionDefinitionId(IRubyEditorActionDefinitionIds.UNCOMMENT);
 		setAction("Uncomment", action);
 
 		action = new FormatAction(RubyUIMessages.getResourceBundle(), "Format.", this);
-		action.setActionDefinitionId(RubyEditorActionDefinitionIds.FORMAT);
+		action.setActionDefinitionId(IRubyEditorActionDefinitionIds.FORMAT);
 		setAction("Format", action);
 
 		actionGroup = new RubyActionGroup(this, ITextEditorActionConstants.GROUP_EDIT);

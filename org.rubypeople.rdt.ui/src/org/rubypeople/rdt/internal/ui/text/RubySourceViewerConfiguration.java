@@ -1,7 +1,10 @@
 package org.rubypeople.rdt.internal.ui.text;
 
 import org.eclipse.jface.preference.IPreferenceStore;
+import org.eclipse.jface.text.DefaultInformationControl;
 import org.eclipse.jface.text.IDocument;
+import org.eclipse.jface.text.IInformationControl;
+import org.eclipse.jface.text.IInformationControlCreator;
 import org.eclipse.jface.text.contentassist.ContentAssistant;
 import org.eclipse.jface.text.contentassist.IContentAssistant;
 import org.eclipse.jface.text.presentation.IPresentationReconciler;
@@ -12,6 +15,8 @@ import org.eclipse.jface.text.rules.ITokenScanner;
 import org.eclipse.jface.text.source.IAnnotationHover;
 import org.eclipse.jface.text.source.ISourceViewer;
 import org.eclipse.jface.text.source.SourceViewerConfiguration;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.texteditor.ITextEditor;
 import org.rubypeople.rdt.internal.ui.RubyPlugin;
 import org.rubypeople.rdt.internal.ui.rubyeditor.RubyAbstractEditor;
@@ -89,6 +94,18 @@ public class RubySourceViewerConfiguration extends SourceViewerConfiguration {
 	 */
 	public IAnnotationHover getAnnotationHover(ISourceViewer sourceViewer) {
 		return new RubyAnnotationHover(RubyAnnotationHover.VERTICAL_RULER_HOVER);
+	}
+	
+	/*
+	 * @see SourceViewerConfiguration#getInformationControlCreator(ISourceViewer)
+	 * @since 2.0
+	 */
+	public IInformationControlCreator getInformationControlCreator(ISourceViewer sourceViewer) {
+		return new IInformationControlCreator() {
+			public IInformationControl createInformationControl(Shell parent) {
+				return new DefaultInformationControl(parent, SWT.NONE, new HTMLTextPresenter(true));
+			}
+		};
 	}
 	
 	/**

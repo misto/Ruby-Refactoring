@@ -1,6 +1,8 @@
 package org.rubypeople.rdt.ui.actions;
 
-public interface RubyEditorActionDefinitionIds {
+import org.eclipse.ui.texteditor.ITextEditorActionDefinitionIds;
+
+public interface IRubyEditorActionDefinitionIds extends ITextEditorActionDefinitionIds {
 	/**
 	 * Value: org.rubypeople.rdt.ui.edit.text.ruby.comment
 	 */
@@ -17,4 +19,11 @@ public interface RubyEditorActionDefinitionIds {
 	public static final String UNCOMMENT = "org.rubypeople.rdt.ui.edit.text.ruby.uncomment";
 	
 	public static final String FORMAT = "org.rubypeople.rdt.ui.edit.text.ruby.format";
+
+	/**
+	 * Action definition ID of the edit -> show RDoc action
+	 * (value <code>"org.rubypeople.rdt.ui.edit.text.ruby.show.rdoc"</code>).
+	 */
+	public static final String SHOW_RDOC= "org.rubypeople.rdt.ui.edit.text.ruby.show.rdoc"; //$NON-NLS-1$
+
 }

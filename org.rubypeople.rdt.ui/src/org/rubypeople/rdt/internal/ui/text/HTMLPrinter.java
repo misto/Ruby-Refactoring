@@ -169,10 +169,8 @@ public class HTMLPrinter {
 	private static RGB getBgColor() {
 		if (BG_COLOR_RGB != null)
 			return BG_COLOR_RGB;
-		else
-			return new RGB(255, 255, 225); // RGB value of info bg color on
+		return new RGB(255, 255, 225); // RGB value of info bg color on
 											// WindowsXP
-
 	}
 
 	public static void addPageProlog(StringBuffer buffer) {

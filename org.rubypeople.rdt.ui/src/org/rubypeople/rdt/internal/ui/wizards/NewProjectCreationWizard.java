@@ -19,8 +19,9 @@ import org.eclipse.ui.dialogs.WizardNewProjectCreationPage;
 import org.eclipse.ui.wizards.newresource.BasicNewProjectResourceWizard;
 import org.eclipse.ui.wizards.newresource.BasicNewResourceWizard;
 import org.rubypeople.rdt.core.RubyCore;
-import org.rubypeople.rdt.internal.ui.RubyUIMessages;
 import org.rubypeople.rdt.internal.ui.RubyPlugin;
+import org.rubypeople.rdt.internal.ui.RubyPluginImages;
+import org.rubypeople.rdt.internal.ui.RubyUIMessages;
 
 public class NewProjectCreationWizard extends BasicNewResourceWizard implements INewWizard, IExecutableExtension {
 	protected WizardNewProjectCreationPage projectPage;
@@ -29,7 +30,8 @@ public class NewProjectCreationWizard extends BasicNewResourceWizard implements 
 	protected String defaultProjectName = "";
 	
 	public NewProjectCreationWizard() {
-		setWindowTitle(RubyUIMessages.getString("NewProjectCreationWizard.windowTitle"));
+		setDefaultPageImageDescriptor(RubyPluginImages.DESC_WIZBAN_NEWJPRJ);
+        setWindowTitle(RubyUIMessages.getString("NewProjectCreationWizard.windowTitle"));
 	}
 
 	public boolean performFinish() {
@@ -91,7 +93,8 @@ public class NewProjectCreationWizard extends BasicNewResourceWizard implements 
 		projectPage.setTitle(RubyUIMessages.getString("WizardNewProjectCreationPage.pageTitle"));
 		projectPage.setDescription(RubyUIMessages.getString("WizardNewProjectCreationPage.pageDescription"));
 		projectPage.setInitialProjectName(this.getDefaultProjectName()) ;
-
+		projectPage.setImageDescriptor(RubyPluginImages.DESC_WIZBAN_NEWJPRJ);
+        
 		addPage(projectPage);
 	}
 

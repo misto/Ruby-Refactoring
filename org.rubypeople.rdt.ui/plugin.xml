@@ -73,7 +73,7 @@
       </category>
       <wizard
             name="%NewWizardRubyProject.name"
-            icon="icons/full/ctool16/ruby.gif"
+            icon="icons/full/etool16/newrprj_wiz.gif"
             category="org.rubypeople.rdt.ui.NewWizardCategoryRuby"
             class="org.rubypeople.rdt.internal.ui.wizards.NewProjectCreationWizard"
             preferredPerspectives="org.rubypeople.rdt.ui.PerspectiveRuby"
@@ -283,6 +283,25 @@
          </action>
       </actionSet>
    </extension>
+   
+    <extension
+         point="org.eclipse.ui.actionSets">
+      <actionSet
+            label="%RubyElementCreationActionSet.label"
+            description="%RubyElementCreationActionSet.description"
+            visible="true"
+            id="org.rubypeople.rdt.ui.RubyElementCreationActionSet">
+          <action
+               label="%OpenProjectWizardAction.label"
+               icon="icons/full/etool16/newrprj_wiz.gif"
+               tooltip="%OpenProjectWizardAction.tooltip"
+               class="org.rubypeople.rdt.internal.ui.wizards.OpenProjectWizardAction"
+               toolbarPath="Normal/RubyWizards"
+               id="org.rubypeople.rdt.ui.actions.OpenProjectWizard">
+         </action>
+      </actionSet>
+   </extension>
+   
    <extension
          point="org.eclipse.ui.editors.markerUpdaters">
       <updater

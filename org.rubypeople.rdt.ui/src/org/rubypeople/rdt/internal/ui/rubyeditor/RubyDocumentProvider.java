@@ -254,17 +254,17 @@ public class RubyDocumentProvider extends TextFileDocumentProvider {
 			// http://bugs.eclipse.org/bugs/show_bug.cgi?id=18936
 			if (!fQuickFixImagesInitialized) {
 				// TODO Check with the correction processor (when we have one)!
-				if (isProblem() && indicateQuixFixableProblems() /*&& JavaCorrectionProcessor.hasCorrections(this)*/) { // no light bulb for tasks
-					if (!fgQuickFixImagesInitialized) {
-						fgQuickFixImage= RubyPluginImages.get(RubyPluginImages.IMG_OBJS_FIXABLE_PROBLEM);
-						fgQuickFixErrorImage= RubyPluginImages.get(RubyPluginImages.IMG_OBJS_FIXABLE_ERROR);
-						fgQuickFixImagesInitialized= true;
-					}
-					if (RubyMarkerAnnotation.ERROR_ANNOTATION_TYPE.equals(getType()))
-						fImage= fgQuickFixErrorImage;
-					else
-						fImage= fgQuickFixImage;
-				}
+//				if (isProblem() && indicateQuixFixableProblems() /*&& JavaCorrectionProcessor.hasCorrections(this)*/) { // no light bulb for tasks
+//					if (!fgQuickFixImagesInitialized) {
+//						fgQuickFixImage= RubyPluginImages.get(RubyPluginImages.IMG_OBJS_FIXABLE_PROBLEM);
+//						fgQuickFixErrorImage= RubyPluginImages.get(RubyPluginImages.IMG_OBJS_FIXABLE_ERROR);
+//						fgQuickFixImagesInitialized= true;
+//					}
+//					if (RubyMarkerAnnotation.ERROR_ANNOTATION_TYPE.equals(getType()))
+//						fImage= fgQuickFixErrorImage;
+//					else
+//						fImage= fgQuickFixImage;
+//				}
 				fQuickFixImagesInitialized= true;
 			}
 		}
