@@ -8,12 +8,14 @@ import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.preference.PreferenceConverter;
 import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.widgets.Shell;
+import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.rubypeople.rdt.internal.core.RubyPlugin;
 import org.rubypeople.rdt.internal.formatter.CodeFormatter;
 import org.rubypeople.rdt.internal.ui.text.RubyColorConstants;
 import org.rubypeople.rdt.internal.ui.text.RubyTextTools;
+import org.rubypeople.rdt.internal.ui.text.ruby.RubyProjectInformationProvider;
 import org.rubypeople.rdt.ui.PreferenceConstants;
 
 public class RdtUiPlugin extends AbstractUIPlugin implements RubyColorConstants {
@@ -36,6 +38,8 @@ public class RdtUiPlugin extends AbstractUIPlugin implements RubyColorConstants 
 		// wrong order, changes to properties in the preferences page are not immediately updated
 		// within the ruby editors.
 		textTools = new RubyTextTools();
+		// Call the method to force it to build the library model when the plugin is loaded
+		RubyProjectInformationProvider.instance().getLibraryClasses();
 	}
 
 	public static RdtUiPlugin getDefault() {
@@ -94,6 +98,18 @@ public class RdtUiPlugin extends AbstractUIPlugin implements RubyColorConstants 
 		PreferenceConverter.setDefault(store, RUBY_CONTENT_ASSISTANT_BACKGROUND, new RGB(150, 150, 0));
 		PreferenceConstants.initializeDefaultValues(store) ;
 		super.initializeDefaultPreferences(store);
+	}
+
+	/**
+	 * @return
+	 */
+	public static IWorkbenchPage getActivePage() {
+		IWorkbenchWindow window = getDefault().getWorkbench().getActiveWorkbenchWindow();
+		if(window == null)
+			return null;
+		else
+			return getDefault().getWorkbench().getActiveWorkbenchWindow().getActivePage();
+		
 	}
 
 }
