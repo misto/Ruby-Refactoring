@@ -26,25 +26,25 @@ import org.rubypeople.rdt.internal.core.parser.TaskParser;
 public class RubyScriptProblemFinder {
 
 	public static void process(RubyScript script, char[] charContents, IProblemRequestor problemRequestor, IProgressMonitor pm) {
-		try {
 			RdtWarnings warnings = new RdtWarnings();
 			RubyParser parser = new RubyParser(warnings);
 			String contents = new String(charContents);
+		try {
 			parser.parse(script.getElementName(), new StringReader(contents));
-			IEclipsePreferences preferences = RubyCore.getInstancePreferences();
-			TaskParser taskParser = new TaskParser(preferences);
-			taskParser.parse(contents);
-
-			List problems = new ArrayList();
-			problems.addAll(warnings.getWarnings());
-			problems.addAll(taskParser.getTasks());
-			for (Iterator iter = problems.iterator(); iter.hasNext();) {
-				IProblem problem = (IProblem) iter.next();
-				problemRequestor.acceptProblem(problem);
-			}
 		} catch (SyntaxException e) {
-			System.out.println("Received SyntaxException, sending to problem requestor: " + e);
 			problemRequestor.acceptProblem(new Error(e.getPosition(), e.getMessage()));
+		}
+		
+		IEclipsePreferences preferences = RubyCore.getInstancePreferences();
+		TaskParser taskParser = new TaskParser(preferences);
+		taskParser.parse(contents);
+
+		List problems = new ArrayList();
+		problems.addAll(warnings.getWarnings());
+		problems.addAll(taskParser.getTasks());
+		for (Iterator iter = problems.iterator(); iter.hasNext();) {
+			IProblem problem = (IProblem) iter.next();
+			problemRequestor.acceptProblem(problem);
 		}
 	}
 

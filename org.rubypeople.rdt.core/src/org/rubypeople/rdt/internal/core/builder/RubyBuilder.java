@@ -136,13 +136,13 @@ public class RubyBuilder extends IncrementalProjectBuilder {
 				if (DEBUG) System.out.println("About to compile " + file); //$NON-NLS-1$
 				RdtWarnings warnings = new RdtWarnings();
 				RubyParser parser = new RubyParser(warnings);
-				try {
-					MarkerUtility.removeMarkers(file);
+				MarkerUtility.removeMarkers(file);
+				try {					
 					parser.parse(units[i].getName(), new InputStreamReader(file.getContents()));
-					MarkerUtility.createProblemMarkers(file, warnings.getWarnings());
 				} catch (SyntaxException e) {
 					MarkerUtility.createSyntaxError(file, e);
 				}
+				MarkerUtility.createProblemMarkers(file, warnings.getWarnings());
 				createTasks(file);
 				monitor.worked(percentPerUnit);
 			} catch (CoreException e) {
