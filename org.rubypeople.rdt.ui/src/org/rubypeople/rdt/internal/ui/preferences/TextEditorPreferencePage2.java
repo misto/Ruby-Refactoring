@@ -714,20 +714,6 @@ public class TextEditorPreferencePage2 extends PreferencePage implements IWorkbe
 	protected void addIndentation(Composite parent) {
 		String label = RdtUiMessages.getString("RubyEditorPropertyPage.indentation"); //$NON-NLS-1$
 		addTextField(parent, label, PreferenceConstants.FORMAT_INDENTATION, 3, 0, true);
-		
-//		Label labelControl = new Label(parent, SWT.NONE);
-//		labelControl.setText(RdtUiMessages.getString("RubyEditorPropertyPage.indentation"));
-//		labelControl.setLayoutData(new GridData());
-//
-//		indentationWidget = new Text(parent, SWT.BORDER | SWT.SINGLE);
-//		indentationWidget.setData(PreferenceConstants.FORMAT_INDENTATION);
-//		indentationWidget.setLayoutData(new GridData());
-//
-//		indentationWidget.setText(getPreferenceStore().getString(PreferenceConstants.FORMAT_INDENTATION));
-//
-//		GridData data = new GridData(GridData.HORIZONTAL_ALIGN_FILL);
-//
-//		indentationWidget.setLayoutData(data);
 	}
 
 	private void initialize() {
