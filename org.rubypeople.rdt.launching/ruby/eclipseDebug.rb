@@ -16,7 +16,7 @@ ECLIPSE_LISTEN_PORT = 1098
 # to true.
 ECLIPSE_CREATE_SOCKET = true
 
-# ECLIPSE_VERBOSE prints the communication between eclipse and ruby debugger
+# ECLIPSE_VERBOSE prints tihe communication between eclipse and ruby debugger
 # on stderr. If you have started a eclipse debug session (and use default preferences for
 # colors of streams), the communication will be printed in red letters to the eclipse console.
 ECLIPSE_VERBOSE = false
@@ -57,17 +57,17 @@ class XmlPrinter
     out(s) 
   end
 
-  def printVariable(name, binding)
+  def printVariable(name, binding, kind)
     value = eval(name, binding)
     if !value then
-      out("<variable name=\"%s\"/>", name)
+      out("<variable name=\"%s\" kind=\"%s\"/>", name, kind)
       return
     end
     valueString = value.to_s
     if valueString =~ /^\"/ then
       valueString.slice!(1..(valueString.length)-2) 
     end
-    out("<variable name=\"%s\" value=\"%s\" type=\"%s\" hasChildren=\"%s\"/>", name, CGI.escapeHTML(valueString), value.class(), value.instance_variables.length > 0 )
+    out("<variable name=\"%s\" kind=\"%s\" value=\"%s\" type=\"%s\" hasChildren=\"%s\"/>", name, kind, CGI.escapeHTML(valueString), value.class(), value.instance_variables.length > 0 || value.class.class_variables.length > 0)
   end
 
   def printBreakpoint(n, debugFuncName, file, pos)
@@ -126,7 +126,7 @@ class DEBUGGER__
       # print XML only
     end
 
-    def printVariable(name, binding)
+    def printVariable(name, binding, kind)
       stdout.printf "  %s => %s\n", name, eval(name, binding).inspect
     end
 
@@ -327,8 +327,15 @@ class DEBUGGER__
       names  = str.split('.')
       obj = eval(names[0], binding)
       (1..names.length-1).each { |i|
-	obj = obj.instance_eval { eval(names[i], binding()) }
+        if names[i].length > 2 && names[i][0..1] == '@@' then
+           @printer.debug("Evaluating (class_var): %s on %s", names[i], obj )
+        	obj = obj.class.class_eval ("#{names[i]}")
+        else
+           @printer.debug("Evaluating (instance_var): %s on %s", names[i], obj )        
+        	obj = obj.instance_eval ("#{names[i]}")
+        end
       }
+      @printer.debug("Returning: %s", obj) 
       return obj
     end
     
@@ -362,11 +369,11 @@ class DEBUGGER__
       end
     end
 
-    def var_list(ary, binding)
+    def var_list(ary, binding, kind)
       ary.sort!
       @printer.printXml("<variables>")
       for v in ary
-	@printer.printVariable(v,binding)	
+	@printer.printVariable(v,binding, kind)	
       end
       @printer.printXml("</variables>")
     end
@@ -390,7 +397,7 @@ class DEBUGGER__
     def debug_variable_info(input, binding)
       case input
       when /^\s*g(?:lobal)?$/
-	var_list(global_variables, binding)
+	var_list(global_variables, binding, 'global')
 
       when /^\s*l(?:ocal)?\s*(\d+)?$/
 		new_binding = getBinding($1)
@@ -402,32 +409,44 @@ class DEBUGGER__
 	    	if eval('self.to_s', binding) !~ "main" then
 		    	localVars << "self"
 		    end
-	    	var_list(localVars, binding)
+	    	var_list(localVars, binding, 'local')
     	  rescue StandardError => bang
 		    @printer.debug("Exception while evaluating local_variables: %s", bang)
-		   	var_list([], binding) 
+		   	var_list([], binding, 'local') 
 	    end		
 
 
 
 
       when /^\s*i(?:nstance)?\s*(\d+)?\s+/        
-	new_binding = getBinding($1)
-	if new_binding then
-	  binding = new_binding
-	end
-	begin
-	  obj = debug_eval($', binding)
-	rescue StandardError 
-	end
-	var_list(obj.instance_variables, obj.instance_eval{binding()})
+        new_binding = getBinding($1)
+        if new_binding then
+          binding = new_binding
+        end
+        begin
+          @printer.printXml("<variables>")
+          obj = debug_eval($', binding)
+	      instanceBinding = obj.instance_eval{binding()}	      
+          obj.instance_variables.each {
+            | instanceVar |
+            @printer.printVariable(instanceVar, instanceBinding, 'instance')
+          }
+          classBinding = obj.class.class_eval('binding()')
+          obj.class.class_variables.each {
+            | classVar |
+            @printer.printVariable(classVar, classBinding, 'class')
+          }
+          @printer.printXml("</variables>")
+	    rescue StandardError 
+          @printer.printXml("</variables>")
+        end
 	
       when /^\s*c(?:onst(?:ant)?)?\s+/
 	obj = debug_eval($', binding)
 	unless obj.kind_of? Module
 	  stdout.print "Should be Class/Module: ", $', "\n"
 	else
-	  var_list(obj.constants, obj.module_eval{binding()})
+	  var_list(obj.constants, obj.module_eval{binding()}, 'constant')
 	end
       end
     end
