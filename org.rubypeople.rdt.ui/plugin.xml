@@ -50,7 +50,7 @@
          point="org.eclipse.ui.projectNatureImages">
       <image
             icon="icons/full/ovr16/ruby_ovr.gif"
-            natureId="rubynature"
+            natureId="org.rubypeople.rdt.rubynature"
             id="org.rubypeople.rdt.ui.ProjectNatureImageRuby">
       </image>
    </extension>
