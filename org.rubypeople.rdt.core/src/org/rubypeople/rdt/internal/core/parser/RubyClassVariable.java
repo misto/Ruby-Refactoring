@@ -41,4 +41,12 @@ public class RubyClassVariable extends RubyElement {
 		super(name, start);
 		setEnd(start + name.length());
 	}
+	
+	 
+	/* (non-Javadoc)
+	 * @see org.rubypeople.rdt.internal.core.parser.RubyElement#getName()
+	 */
+	public String getName() {
+		return "@@" + super.getName();
+	}
 }
