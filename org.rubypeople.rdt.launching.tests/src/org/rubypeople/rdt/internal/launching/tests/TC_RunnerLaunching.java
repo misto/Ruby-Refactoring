@@ -52,13 +52,14 @@ public class TC_RunnerLaunching extends TestCase {
 			commandLine.append(" -reclipseDebug");
 		}
 		commandLine.append(" -I " + quotation + project.getLocation().toOSString() + quotation);
+		commandLine.append(" -I " + quotation + project.getLocation().toOSString() + File.separator + RUBY_LIB_DIR + quotation) ;
 		if (debug) {
 			commandLine.append(
 				" -I "
 					+ quotation
 					+ DebuggerRunner.getDirectoryOfRubyDebuggerFile().replace('/', File.separatorChar)
 					+ quotation);
-		}
+		}		
 		commandLine.append(" " + INTERPRETER_ARGUMENTS + " -- ");
 		// use always forward slashes for path relative to project dir
 		commandLine.append(
