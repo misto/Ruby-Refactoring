@@ -2,14 +2,21 @@ package org.rubypeople.rdt.testunit;
 
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.AbstractSet;
+import java.util.HashSet;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
 
 import org.eclipse.core.resources.IWorkspace;
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.debug.core.DebugPlugin;
 import org.eclipse.debug.core.ILaunch;
+import org.eclipse.debug.core.ILaunchConfiguration;
+import org.eclipse.debug.core.ILaunchListener;
+import org.eclipse.debug.core.ILaunchManager;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
@@ -21,12 +28,13 @@ import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.osgi.framework.BundleContext;
 import org.rubypeople.rdt.internal.core.RubyPlugin;
+import org.rubypeople.rdt.testunit.launcher.TestUnitLaunchConfiguration;
 import org.rubypeople.rdt.testunit.views.TestUnitView;
 
 /**
  * The main plugin class to be used in the desktop.
  */
-public class TestunitPlugin extends AbstractUIPlugin {
+public class TestunitPlugin extends AbstractUIPlugin implements ILaunchListener {
 
 	public static final String PLUGIN_ID = "org.rubypeople.rdt.testunit"; //$NON-NLS-1$
 
@@ -34,6 +42,13 @@ public class TestunitPlugin extends AbstractUIPlugin {
 	private static TestunitPlugin plugin;
 	//Resource bundle.
 	private ResourceBundle resourceBundle;
+
+	/**
+	 * Use to track new launches. We need to do this so that we only attach a
+	 * TestRunner once to a launch. Once a test runner is connected it is
+	 * removed from the set.
+	 */
+	private AbstractSet fTrackedLaunches = new HashSet(20);
 
 	private static URL fgIconBaseURL;
 
@@ -75,6 +90,8 @@ public class TestunitPlugin extends AbstractUIPlugin {
 	 */
 	public void start(BundleContext context) throws Exception {
 		super.start(context);
+		ILaunchManager launchManager = DebugPlugin.getDefault().getLaunchManager();
+		launchManager.addLaunchListener(this);
 	}
 
 	/**
@@ -189,5 +206,67 @@ public class TestunitPlugin extends AbstractUIPlugin {
 		IWorkbenchPage page = getActivePage();
 		if (page == null) return null;
 		return (TestUnitView) page.findView(TestUnitView.NAME);
+	}
+
+	/**
+	 * @param string
+	 */
+	public static void log(String string) {
+		log(new Throwable(string));
+	}
+
+	/*
+	 * @see ILaunchListener#launchRemoved(ILaunch)
+	 */
+	public void launchRemoved(final ILaunch launch) {
+		fTrackedLaunches.remove(launch);
+		getDisplay().asyncExec(new Runnable() {
+
+			public void run() {
+				TestUnitView testRunnerViewPart = findTestRunnerViewPartInActivePage();
+				if (testRunnerViewPart != null && testRunnerViewPart.isCreated() && launch.equals(testRunnerViewPart.getLastLaunch())) testRunnerViewPart.reset();
+			}
+		});
+	}
+
+	private TestUnitView findTestRunnerViewPartInActivePage() {
+		IWorkbenchPage page = getActivePage();
+		if (page == null) return null;
+		return (TestUnitView) page.findView(TestUnitView.NAME);
+	}
+
+	/*
+	 * @see ILaunchListener#launchChanged(ILaunch)
+	 */
+	public void launchChanged(final ILaunch launch) {
+		if (!fTrackedLaunches.contains(launch)) return;
+
+		ILaunchConfiguration config = launch.getLaunchConfiguration();
+		int port = -1;
+		if (config != null) {
+			try {
+				// test whether the launch defines the TestUnit attributes
+				port = config.getAttribute(TestUnitLaunchConfiguration.PORT_ATTR, -1);
+			} catch (CoreException e) {
+				e.printStackTrace();
+			}
+		}
+
+		fTrackedLaunches.remove(launch);
+		final int finalPort = port;
+		getDisplay().asyncExec(new Runnable() {
+
+			public void run() {
+				connectTestRunner(launch, finalPort);
+			}
+		});
+
+	}
+
+	/*
+	 * @see ILaunchListener#launchAdded(ILaunch)
+	 */
+	public void launchAdded(ILaunch launch) {
+		fTrackedLaunches.add(launch);
 	}
 }

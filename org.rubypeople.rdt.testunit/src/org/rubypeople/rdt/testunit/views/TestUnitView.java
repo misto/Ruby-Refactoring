@@ -58,6 +58,8 @@ import org.eclipse.ui.progress.UIJob;
 import org.rubypeople.rdt.core.RubyElement;
 import org.rubypeople.rdt.testunit.ITestRunListener;
 import org.rubypeople.rdt.testunit.TestunitPlugin;
+import org.rubypeople.rdt.testunit.launcher.SocketUtil;
+import org.rubypeople.rdt.testunit.launcher.TestUnitLaunchConfiguration;
 
 public class TestUnitView extends ViewPart implements ITestRunListener {
 
@@ -374,57 +376,51 @@ public class TestUnitView extends ViewPart implements ITestRunListener {
 			// run the selected test using the previous launch configuration
 			ILaunchConfiguration launchConfiguration = fLastLaunch.getLaunchConfiguration();
 			if (launchConfiguration != null) {
+				// TODO Cleanup
+				//rerunWithNewPort(className, launchMode, launchConfiguration);
 				try {
-					// TODO Launch the test properly!
-					//ILaunchManager manager =
-					// DebugPlugin.getDefault().getLaunchManager();
-					//ILaunchConfigurationType launchConfigurationType =
-					// manager.getLaunchConfigurationType(RubyLaunchConfigurationAttribute.RUBY_LAUNCH_CONFIGURATION_TYPE);
-					//launchConfigurationType.getDelegate().launch(launchConfiguration,
-					// fLaunchMode, fLastLaunch, null);
-
-					String configName = TestUnitMessages.getFormattedString("TestRunnerViewPart.configName", className); //$NON-NLS-1$
+					String name = className;
+					if (testName != null) name += "." + testName; //$NON-NLS-1$
+					String configName = TestUnitMessages.getFormattedString("TestRunnerViewPart.configName", name); //$NON-NLS-1$
 					ILaunchConfigurationWorkingCopy tmp = launchConfiguration.copy(configName);
-
-					// Set all the launch attributes now!
+					// fix for bug: 64838 junit view run single test does not
+					// use
+					// correct class [JUnit]
+					tmp.setAttribute(TestUnitLaunchConfiguration.TESTTYPE_ATTR, className);
+					// reset the container
+					tmp.setAttribute(TestUnitLaunchConfiguration.LAUNCH_CONTAINER_ATTR, className);
+					if (testName != null) {
+						tmp.setAttribute(TestUnitLaunchConfiguration.TESTNAME_ATTR, testName);
+					}
 					tmp.launch(launchMode, null);
+					return;
 				} catch (CoreException e) {
 					ErrorDialog.openError(getSite().getShell(), TestUnitMessages.getString("TestRunnerViewPart.error.cannotrerun"), e.getMessage(), e.getStatus() //$NON-NLS-1$
 							);
 				}
-
-				//				try {
-				//					String name = className;
-				//					if (testName != null) name += "." + testName; //$NON-NLS-1$
-				//					String configName =
-				// TestUnitMessages.getFormattedString("TestRunnerViewPart.configName",
-				// name); //$NON-NLS-1$
-				//					ILaunchConfigurationWorkingCopy tmp =
-				// launchConfiguration.copy(configName);
-				//					// fix for bug: 64838 junit view run single test does not
-				//					// use correct class [JUnit]
-				//					tmp.setAttribute(RubyLaunchConfigurationAttribute.MODULE_NAME,
-				// className);
-				//					// reset the container
-				//					//
-				// tmp.setAttribute(TestUnitBaseLaunchConfiguration.LAUNCH_CONTAINER_ATTR,
-				//					// ""); //$NON-NLS-1$
-				//					// if (testName != null) {
-				//					//
-				// tmp.setAttribute(TestUnitBaseLaunchConfiguration.TESTNAME_ATTR,
-				//					// testName);
-				//					// }
-				//					tmp.launch(launchMode, null);
-				//					return;
-				//				} catch (CoreException e) {
-				//					ErrorDialog.openError(getSite().getShell(),
-				// TestUnitMessages.getString("TestRunnerViewPart.error.cannotrerun"),
-				// e.getMessage(), e.getStatus() //$NON-NLS-1$
-				//							);
-				//				}
 			}
 			MessageDialog.openInformation(getSite().getShell(), TestUnitMessages.getString("TestRunnerViewPart.cannotrerun.title"), //$NON-NLS-1$
 					TestUnitMessages.getString("TestRunnerViewPart.cannotrerurn.message") //$NON-NLS-1$
+					);
+		}
+	}
+
+	/**
+	 * @param className
+	 * @param launchMode
+	 * @param launchConfiguration
+	 */
+	private void rerunWithNewPort(String className, String launchMode, ILaunchConfiguration launchConfiguration) {
+		try {
+			String configName = TestUnitMessages.getFormattedString("TestRunnerViewPart.configName", className); //$NON-NLS-1$
+			ILaunchConfigurationWorkingCopy tmp = launchConfiguration.copy(configName);
+			// TODO Set a new port before restarting
+			int newPort = SocketUtil.findFreePort();
+			tmp.setAttribute(TestUnitLaunchConfiguration.PORT_ATTR, newPort);
+			// Set all the launch attributes now!
+			tmp.launch(launchMode, null);
+		} catch (CoreException e) {
+			ErrorDialog.openError(getSite().getShell(), TestUnitMessages.getString("TestRunnerViewPart.error.cannotrerun"), e.getMessage(), e.getStatus() //$NON-NLS-1$
 					);
 		}
 	}
@@ -964,6 +960,10 @@ public class TestUnitView extends ViewPart implements ITestRunListener {
 		public void run() {
 			rerunTestRun();
 		}
+	}
+
+	public ILaunch getLastLaunch() {
+		return fLastLaunch;
 	}
 
 }

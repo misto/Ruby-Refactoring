@@ -140,11 +140,59 @@ if __FILE__ == $0
     puts "You should supply the name of a test suite file and the port to the runner"
     exit
   end
-  require ARGV[0].gsub(/.+::/, '')
+  # Expect args in this order:
+  # 1. filename
+  # 2. port
+  # 3. keepAlive
+  # 4. test class name (optional, unused right now)
+  # 5. test name (optional, unused right now)
+  #
+  
+  filename = ARGV[0]
+  require filename.gsub(/.+::/, '')
   port = ARGV[1].to_i
-
+  keepAliveString = ARGV[2]
+  #testClass = ARGV[3]
+  #testMethod = ARGV[4]
+  
+  if keepAliveString == "false"
+    keepAlive = nil
+  else
+    keepAlive = true
+  end
+ 
   session = TCPSocket.new('localhost', port)
-  Test::Unit::UI::Eclipse::TestRunner.run(eval(ARGV[0]), session)
+  testSuite = eval(filename)
+  remoteTestRunner = Test::Unit::UI::Eclipse::TestRunner.new(testSuite, session)
+  remoteTestRunner.start
+  
+  if (keepAlive)
+	begin
+	  while (true)
+		if (message = session.gets)			
+		  if (message[0, 7] == ">STOP   ")
+			# remoteTestRunner.stop
+			break
+		  elsif (message[0, 7] == ">RERUN  ")
+			arg = message[8, message.length - 1]
+			#format: testId className testName
+			c0 = arg.index(' ')
+			c1 = arg.index(' ', c0+1)
+			s = arg[0, c0 - 1]
+			testId = s.to_i
+			className = arg[c0+1, c1 - 1]
+			testName = arg[c1 + 1, arg.length - 1]
+			remoteTestRunner = Test::Unit::UI::Eclipse::TestRunner.new(testSuite, session)
+            remoteTestRunner.start
+		    #remoteTestRunner.addRerunRequest(RerunRequest.new(testId, className, testName))
+		  end
+	    end
+	  end
+	rescue Exception
+	  # remoteTestRunner.stop
+	end
+  end
+    
   session.close
   exit
 end

@@ -20,11 +20,11 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.debug.core.DebugPlugin;
-import org.eclipse.debug.core.ILaunch;
 import org.eclipse.debug.core.ILaunchConfiguration;
 import org.eclipse.debug.core.ILaunchConfigurationType;
 import org.eclipse.debug.core.ILaunchConfigurationWorkingCopy;
 import org.eclipse.debug.core.ILaunchManager;
+import org.eclipse.debug.ui.DebugUITools;
 import org.eclipse.debug.ui.ILaunchShortcut;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.viewers.ISelection;
@@ -38,7 +38,7 @@ import org.rubypeople.rdt.testunit.TestunitPlugin;
 
 public class TestUnitLaunchShortcut implements ILaunchShortcut {
 
-	private int port = 6789;
+	private static final String TEST_RUNNER_FILE = "RemoteTestRunner.rb";
 
 	public void launch(ISelection selection, String mode) {
 		Object firstSelection = null;
@@ -50,6 +50,8 @@ public class TestUnitLaunchShortcut implements ILaunchShortcut {
 			log("Could not find selection.");
 			return;
 		}
+
+		// TODO Allow running of specific methods or classes, not just files
 		RubyElement rubyElement = null;
 		if (firstSelection instanceof IAdaptable) {
 			rubyElement = (RubyElement) ((IAdaptable) firstSelection).getAdapter(RubyElement.class);
@@ -81,20 +83,17 @@ public class TestUnitLaunchShortcut implements ILaunchShortcut {
 	 */
 	private void doLaunch(String mode, RubyElement rubyElement) {
 		try {
-			ILaunchConfiguration config = findOrCreateLaunchConfiguration(rubyElement, mode);
-			ILaunch launch = null;
+			String container = getContainer(rubyElement);
+			ILaunchConfiguration config = findOrCreateLaunchConfiguration(rubyElement, mode, container, "", "");
 			if (config != null) {
-				launch = config.launch(mode, null);
-			}
-			if (launch != null) {
-				TestunitPlugin.getDefault().connectTestRunner(launch, port);
+				DebugUITools.launch(config, mode);
 			}
 		} catch (CoreException e) {
 			log(e);
 		}
 	}
 
-	protected ILaunchConfiguration findOrCreateLaunchConfiguration(RubyElement rubyElement, String mode) throws CoreException {
+	protected ILaunchConfiguration findOrCreateLaunchConfiguration(RubyElement rubyElement, String mode, String container, String testClass, String testName) throws CoreException {
 		IFile rubyFile = (IFile) rubyElement.getUnderlyingResource();
 		ILaunchConfigurationType configType = getRubyLaunchConfigType();
 		List candidateConfigs = null;
@@ -103,18 +102,13 @@ public class TestUnitLaunchShortcut implements ILaunchShortcut {
 		candidateConfigs = new ArrayList(configs.length);
 		for (int i = 0; i < configs.length; i++) {
 			ILaunchConfiguration config = configs[i];
-			boolean projectsEqual = config.getAttribute(RubyLaunchConfigurationAttribute.PROJECT_NAME, "").equals(rubyFile.getProject().getName());
-			if (projectsEqual) {
-				boolean projectRelativeFileNamesEqual = config.getAttribute(RubyLaunchConfigurationAttribute.FILE_NAME, "").equals(rubyFile.getProjectRelativePath().toString());
-				if (projectRelativeFileNamesEqual) {
-					candidateConfigs.add(config);
-				}
+			if ((config.getAttribute(TestUnitLaunchConfiguration.LAUNCH_CONTAINER_ATTR, "").equals(container)) && (config.getAttribute(TestUnitLaunchConfiguration.TESTTYPE_ATTR, "").equals(testClass)) && (config.getAttribute(TestUnitLaunchConfiguration.TESTNAME_ATTR, "").equals(testName)) && (config.getAttribute(RubyLaunchConfigurationAttribute.PROJECT_NAME, "").equals(rubyFile.getProject().getName()))) {
+				candidateConfigs.add(config);
 			}
 		}
-
 		switch (candidateConfigs.size()) {
 		case 0:
-			return createConfiguration(rubyFile);
+			return createConfiguration(rubyFile, container, testClass, testName);
 		case 1:
 			return (ILaunchConfiguration) candidateConfigs.get(0);
 		default:
@@ -123,9 +117,20 @@ public class TestUnitLaunchShortcut implements ILaunchShortcut {
 		}
 	}
 
-	protected ILaunchConfiguration createConfiguration(IFile rubyFile) {
+	/**
+	 * @param rubyElement
+	 * @return
+	 */
+	private String getContainer(RubyElement rubyElement) {
+		IFile rubyFile = (IFile) rubyElement.getUnderlyingResource();
+		String filename = rubyFile.getProjectRelativePath().toString();
+		filename = filename.substring(0, filename.lastIndexOf('.'));
+		return filename;
+	}
+
+	protected ILaunchConfiguration createConfiguration(IFile rubyFile, String container, String testClass, String testName) {
 		if (RubyRuntime.getDefault().getSelectedInterpreter() == null) {
-			this.showNoInterpreterDialog();
+			showNoInterpreterDialog();
 			return null;
 		}
 
@@ -140,14 +145,15 @@ public class TestUnitLaunchShortcut implements ILaunchShortcut {
 			if (prefixLength == -1) { throw new RuntimeException("Location of launching bundle does not contain @: " + location); }
 			String pluginDir = location.substring(prefixLength + 1) + "ruby";
 			if (!new File(pluginDir).exists()) { throw new RuntimeException("Expected directory of RemoteTestRunner.rb does not exist: " + pluginDir); }
-			port = SocketUtil.findFreePort();
-			wc.setAttribute(RubyLaunchConfigurationAttribute.FILE_NAME, pluginDir + File.separator + "RemoteTestRunner.rb");
+			int port = SocketUtil.findFreePort();
+			wc.setAttribute(RubyLaunchConfigurationAttribute.FILE_NAME, pluginDir + File.separator + TEST_RUNNER_FILE);
 			wc.setAttribute(RubyLaunchConfigurationAttribute.WORKING_DIRECTORY, TestUnitLaunchShortcut.getDefaultWorkingDirectory(rubyFile.getProject()));
 			wc.setAttribute(RubyLaunchConfigurationAttribute.SELECTED_INTERPRETER, RubyRuntime.getDefault().getSelectedInterpreter().getName());
-
-			String filename = rubyFile.getProjectRelativePath().toString();
-			filename = filename.substring(0, filename.lastIndexOf('.'));
-			wc.setAttribute(RubyLaunchConfigurationAttribute.PROGRAM_ARGUMENTS, filename + " " + port);
+			wc.setAttribute(TestUnitLaunchConfiguration.LAUNCH_CONTAINER_ATTR, container);
+			wc.setAttribute(TestUnitLaunchConfiguration.TESTNAME_ATTR, testName);
+			wc.setAttribute(TestUnitLaunchConfiguration.TESTTYPE_ATTR, testClass);
+			wc.setAttribute(TestUnitLaunchConfiguration.PORT_ATTR, port);
+			wc.setAttribute(TestUnitLaunchConfiguration.ATTR_KEEPRUNNING, false);
 			wc.setAttribute(ILaunchConfiguration.ATTR_SOURCE_LOCATOR_ID, "org.rubypeople.rdt.debug.ui.rubySourceLocator");
 			config = wc.doSave();
 		} catch (CoreException ce) {
