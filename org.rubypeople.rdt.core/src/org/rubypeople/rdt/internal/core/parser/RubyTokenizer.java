@@ -3,9 +3,9 @@
  * 
  * Copyright (c) 2004 RubyPeople.
  * 
- * This file is part of the Ruby Development Tools (RDT) plugin for eclipse.
- * You can get copy of the GPL along with further information about RubyPeople
- * and third party software bundled with RDT in the file
+ * This file is part of the Ruby Development Tools (RDT) plugin for eclipse. You
+ * can get copy of the GPL along with further information about RubyPeople and
+ * third party software bundled with RDT in the file
  * org.rubypeople.rdt.core_0.4.0/RDT.license or otherwise at
  * http://www.rubypeople.org/RDT.license.
  * 
@@ -15,9 +15,8 @@
  * version.
  * 
  * RDT is distributed in the hope that it will be useful, but WITHOUT ANY
- * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
- * FOR A PARTICULAR PURPOSE. See the GNU General Public License for more
- * details.
+ * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
+ * A PARTICULAR PURPOSE. See the GNU General Public License for more details.
  * 
  * You should have received a copy of the GNU General Public License along with
  * RDT; if not, write to the Free Software Foundation, Inc., 59 Temple Place,
@@ -50,7 +49,7 @@ public class RubyTokenizer {
 	private static final String percentChars = "qQr";
 	private static final String delimiters = " .;('\"/\t";
 	private static final String BRACKETS = "({[";
-	
+
 	// TODO Refactor determination whetehr we're in a String into common code!
 
 	/**
@@ -65,9 +64,8 @@ public class RubyTokenizer {
 	}
 
 	/**
-	 * maxDelimChar stores the value of the delimiter character with the
-	 * highest value. It is used to optimize the detection of delimiter
-	 * characters.
+	 * maxDelimChar stores the value of the delimiter character with the highest
+	 * value. It is used to optimize the detection of delimiter characters.
 	 */
 	private char maxDelimChar;
 
@@ -225,8 +223,8 @@ public class RubyTokenizer {
 	}
 
 	/**
-	 * Returns true if the given index in the String curLine is inside a
-	 * regular expression
+	 * Returns true if the given index in the String curLine is inside a regular
+	 * expression
 	 * 
 	 * @param index
 	 *            the int position to check
@@ -256,6 +254,12 @@ public class RubyTokenizer {
 	private int getType(String text, int start) {
 		if (inString(str, start)) {
 			if (isVariableSubstitution(text)) { return RubyToken.VARIABLE_SUBSTITUTION; }
+			if (inVariableSubstitution(str, start)) {
+				if (text.startsWith("@@")) { return RubyToken.CLASS_VARIABLE; }
+				if (text.charAt(0) == INSTANCE_START) { return RubyToken.INSTANCE_VARIABLE; }
+				if (text.charAt(0) == GLOBAL_START) { return RubyToken.GLOBAL; }
+				return RubyToken.IDENTIFIER;
+			}
 			return RubyToken.STRING_TEXT;
 		}
 
@@ -294,6 +298,29 @@ public class RubyTokenizer {
 	}
 
 	/**
+	 * @param str2
+	 * @param start
+	 * @return
+	 */
+	private boolean inVariableSubstitution(String str2, int start) {
+		boolean inVarSubs = false;
+		for (int i = 0; i < start; i++) {
+			String blah = str2.substring(i, i + 2);
+			if (inVarSubs && str2.charAt(i) == '}') {
+				inVarSubs = false;
+				continue;
+			}
+			if (str2.charAt(i) == '#') {
+				if (str2.charAt(i + 1) == '@' || str2.charAt(i + 1) == '$' || str2.charAt(i + 1) == '{') {
+					inVarSubs = true;
+				}
+			}
+
+		}
+		return inVarSubs;
+	}
+
+	/**
 	 * @param text
 	 * @return
 	 */
@@ -303,6 +330,7 @@ public class RubyTokenizer {
 		if (text.charAt(1) != '{') {
 			if (text.charAt(1) == INSTANCE_START || text.charAt(1) == GLOBAL_START) return true;
 		}
+		if (text.length() < 3) return false;
 		if (text.charAt(2) == INSTANCE_START || text.charAt(2) == GLOBAL_START) return true;
 		return false;
 	}
@@ -322,9 +350,9 @@ public class RubyTokenizer {
 	}
 
 	/**
-	 * Calculates the number of times that this tokenizer's <code>nextToken</code>
-	 * method can be called before it generates an exception. The current
-	 * position is not advanced.
+	 * Calculates the number of times that this tokenizer's
+	 * <code>nextToken</code> method can be called before it generates an
+	 * exception. The current position is not advanced.
 	 * 
 	 * @return the number of tokens remaining in the string using the current
 	 *         delimiter set.
@@ -389,8 +417,8 @@ public class RubyTokenizer {
 
 	/**
 	 * Skips delimiters starting from the specified position. If retDelims is
-	 * false, returns the index of the first non-delimiter character at or
-	 * after startPos. If retDelims is true, startPos is returned.
+	 * false, returns the index of the first non-delimiter character at or after
+	 * startPos. If retDelims is true, startPos is returned.
 	 */
 	private int skipDelimiters(int startPos, boolean temp) {
 		if (delimiters == null) throw new NullPointerException();
@@ -414,7 +442,7 @@ public class RubyTokenizer {
 				if (!Character.isWhitespace(c)) break;
 				position++;
 				continue;
-			} 
+			}
 			if (!isDelimiter(c)) break;
 			position++;
 		}

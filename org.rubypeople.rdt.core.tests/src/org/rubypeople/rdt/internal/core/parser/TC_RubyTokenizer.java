@@ -156,6 +156,17 @@ public class TC_RubyTokenizer extends TestCase {
 		assertEquals("#{@@var}", tokenizer.nextRubyToken().getText());
 	}
 	
+	// TODO Handle this case!
+	public void testSpaceBetweenVariableSubstitution() {
+		RubyTokenizer tokenizer = new RubyTokenizer("%Q(blah #{ @@var })");
+		assertEquals("blah", tokenizer.nextRubyToken().getText());
+		assertEquals("#{", tokenizer.nextRubyToken().getText());
+		RubyToken token = tokenizer.nextRubyToken();
+		assertEquals("@@var", token.getText());
+		assertEquals(RubyToken.CLASS_VARIABLE, token.getType() );
+		assertEquals("}", tokenizer.nextRubyToken().getText());
+	}
+	
 	public void testWhile() {
 		RubyTokenizer tokenizer = new RubyTokenizer("while sunshine\nwork()\nend");
 		assertEquals(RubyToken.WHILE, tokenizer.nextRubyToken().getType() );
