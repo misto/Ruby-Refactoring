@@ -6,20 +6,21 @@ import org.eclipse.jface.text.contentassist.ContentAssistant;
 import org.eclipse.jface.text.contentassist.IContentAssistant;
 import org.eclipse.jface.text.presentation.IPresentationReconciler;
 import org.eclipse.jface.text.presentation.PresentationReconciler;
+import org.eclipse.jface.text.reconciler.IReconciler;
 import org.eclipse.jface.text.rules.DefaultDamagerRepairer;
 import org.eclipse.jface.text.rules.ITokenScanner;
 import org.eclipse.jface.text.source.ISourceViewer;
 import org.eclipse.jface.text.source.SourceViewerConfiguration;
-import org.eclipse.ui.texteditor.ExtendedTextEditor;
 import org.rubypeople.rdt.internal.ui.RdtUiPlugin;
+import org.rubypeople.rdt.internal.ui.rubyeditor.RubyAbstractEditor;
 import org.rubypeople.rdt.internal.ui.text.ruby.RubyCompletionProcessor;
 
 public class RubySourceViewerConfiguration extends SourceViewerConfiguration {
 
 	protected RubyTextTools textTools;
-	protected ExtendedTextEditor textEditor;
+	protected RubyAbstractEditor textEditor;
 
-	public RubySourceViewerConfiguration(RubyTextTools theTextTools, ExtendedTextEditor theTextEditor) {
+	public RubySourceViewerConfiguration(RubyTextTools theTextTools, RubyAbstractEditor theTextEditor) {
 		super();
 		textEditor = theTextEditor;
 		textTools = theTextTools;
@@ -82,4 +83,14 @@ public class RubySourceViewerConfiguration extends SourceViewerConfiguration {
 		return new String[] { "#", ""};
 	}
 
+	 /* (non-Javadoc)
+     * @see org.eclipse.jface.text.source.SourceViewerConfiguration#getReconciler(org.eclipse.jface.text.source.ISourceViewer)
+     */
+    public IReconciler getReconciler(ISourceViewer sourceViewer) {
+	    NotifyingReconciler reconciler= new NotifyingReconciler(new RubyReconcilingStrategy(textEditor), true);
+	    reconciler.setDelay(RubyReconcilingStrategy.DELAY);
+	    reconciler.addReconcilingParticipant(textEditor);
+	    return reconciler;
+    }
+	
 }
