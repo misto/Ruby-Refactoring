@@ -12,6 +12,7 @@ import junit.framework.TestSuite;
 import org.rubypeople.rdt.internal.debug.core.ExceptionSuspensionPoint;
 import org.rubypeople.rdt.internal.debug.core.StepSuspensionPoint;
 import org.rubypeople.rdt.internal.debug.core.SuspensionPoint;
+import org.rubypeople.rdt.internal.debug.core.model.RubyProcessingException;
 import org.rubypeople.rdt.internal.debug.core.model.RubyStackFrame;
 import org.rubypeople.rdt.internal.debug.core.model.RubyThread;
 import org.rubypeople.rdt.internal.debug.core.model.RubyVariable;
@@ -48,12 +49,20 @@ public class TC_DebuggerCommunicationTest extends TestCase {
 		//suite.addTest(new TC_DebuggerCommunicationTest("testStaticVariables"));		
 		//suite.addTest(new TC_DebuggerCommunicationTest("testSingletonStaticVariables"));							
 		//suite.addTest(new TC_DebuggerCommunicationTest("testVariableString"));	
-		 suite.addTest(new TC_DebuggerCommunicationTest("testInspect"));
-		 
+		// suite.addTest(new TC_DebuggerCommunicationTest("testInspect"));
+		//suite.addTest(new TC_DebuggerCommunicationTest("testInspectError"));
+		//suite.addTest(new TC_DebuggerCommunicationTest("testVariableArray"));
+		//suite.addTest(new TC_DebuggerCommunicationTest("testVariableArrayEmpty"));
+		//suite.addTest(new TC_DebuggerCommunicationTest("testVariableHash"));
+		//suite.addTest(new TC_DebuggerCommunicationTest("testVariableHashWithObjectKeys"));
+		//suite.addTest(new TC_DebuggerCommunicationTest("testVariableHashWithStringKeys"));
+		
+		
 
 		return suite;
 
 	}
+	
 */
 	private static String tmpDir;
 	private static String getTmpDir() {
@@ -497,6 +506,76 @@ public class TC_DebuggerCommunicationTest extends TestCase {
 		assertTrue(!variables[0].getValue().hasVariables());
 	}
 
+	public void testVariableArray() throws Exception {
+		createSocket(new String[] { "array = []", "array << 1", "array << 2", "puts 'a'" });		
+		runTo("test.rb", 4);
+		out.println("v local") ;
+		RubyVariable[] variables = getVariableReader().readVariables(createStackFrame());
+		assertEquals(1, variables.length);
+		assertEquals("array", variables[0].getName());
+		assertTrue("array has children", variables[0].getValue().hasVariables());
+		out.println("v i array");
+		RubyVariable[] elements = getVariableReader().readVariables(variables[0]);
+		assertEquals(2, elements.length);
+		assertEquals("[0]", elements[0].getName());
+		assertEquals("1", elements[0].getValue().getValueString());
+		assertEquals("Fixnum", elements[0].getValue().getReferenceTypeName());
+		assertEquals("array[0]", elements[0].getQualifiedName()) ;
+	}
+
+	public void testVariableHashWithStringKeys() throws Exception {
+		createSocket(new String[] { "hash = Hash['a' => 'z', 'b' => 'y']", "puts 'a'" });		
+		runTo("test.rb", 2);
+		out.println("v local") ;
+		RubyVariable[] variables = getVariableReader().readVariables(createStackFrame());
+		assertEquals(1, variables.length);
+		assertEquals("hash", variables[0].getName());
+		assertTrue("hash has children", variables[0].getValue().hasVariables());
+		out.println("v i hash");
+		RubyVariable[] elements = getVariableReader().readVariables(variables[0]);
+		assertEquals(2, elements.length);
+		assertEquals("'a'", elements[0].getName());
+		assertEquals("z", elements[0].getValue().getValueString());
+		assertEquals("String", elements[0].getValue().getReferenceTypeName());
+		assertEquals("hash['a']", elements[0].getQualifiedName()) ;
+	}
+
+	public void testVariableHashWithObjectKeys() throws Exception {
+		createSocket(new String[] { "class KeyAndValue", "def initialize(v)", "@a=v", "end", "def to_s", "return @a.to_s", "end", "end", "hash = Hash[KeyAndValue.new(55) => KeyAndValue.new(66)]", "puts 'a'" });		
+		runTo("test.rb", 10);
+		out.println("v local") ;
+		RubyVariable[] variables = getVariableReader().readVariables(createStackFrame());
+		assertEquals(1, variables.length);
+		assertEquals("hash", variables[0].getName());
+		assertTrue("hash has children", variables[0].getValue().hasVariables());
+		out.println("v i 1 " + variables[0].getObjectId());
+		RubyVariable[] elements = getVariableReader().readVariables(variables[0]);
+		assertEquals(1, elements.length); 
+		assertEquals("55", elements[0].getName());
+		//assertEquals("z", elements[0].getValue().getValueString());
+		assertEquals("KeyAndValue", elements[0].getValue().getReferenceTypeName());
+		// get the value
+		out.println("v i 1 " + elements[0].getObjectId()) ;
+		RubyVariable[] values = getVariableReader().readVariables(variables[0]);
+		assertEquals(1, values.length);
+		assertEquals("@a", values[0].getName());
+		assertEquals("Fixnum", values[0].getValue().getReferenceTypeName());
+		assertEquals("66", values[0].getValue().getValueString());
+					
+	}
+
+
+	public void testVariableArrayEmpty() throws Exception {
+		createSocket(new String[] { "emptyArray = []", "puts 'a'" });		
+		runTo("test.rb", 2);
+		out.println("v local") ;
+		RubyVariable[] variables = getVariableReader().readVariables(createStackFrame());
+		assertEquals(1, variables.length);
+		assertEquals("emptyArray", variables[0].getName());
+		assertTrue("array does not have children", !variables[0].getValue().hasVariables());
+	}
+
+
 	public void testVariableInstanceNested() throws Exception {
 		createSocket(new String[] { "class Test", "def initialize(test)", "@privateTest = test", "end", "end", "test2 = Test.new(Test.new(nil))", "puts test2" });
 		runToLine(7);
@@ -542,10 +621,20 @@ public class TC_DebuggerCommunicationTest extends TestCase {
 		variables = getVariableReader().readVariables(createStackFrame());
 		assertEquals("There is one variable returned.", 1, variables.length) ;
 		assertEquals("Result is 10", "10", variables[0].getValue().getValueString()) ;
-		// test invalid expression 		
-		out.println("v inspect 1 whatsThat?");
-		variables = getVariableReader().readVariables(createStackFrame());
-		assertEquals("There are no variables returned.", 0, variables.length) ;
+	}
+
+	public void testInspectError() throws Exception {
+		createSocket(new String[] { "puts 'test'"  });
+		runToLine(1);
+		out.println("v inspect a*2");
+		RubyVariable[] variables;
+        try {
+            variables = getVariableReader().readVariables(createStackFrame());
+        } catch (RubyProcessingException e) {
+        	assertNotNull(e.getMessage()) ;
+        	return ;
+        }
+        fail("RubyProcessingException not thrown.") ;
 	}
 
 	public void testStaticVariableInstanceNested() throws Exception {
