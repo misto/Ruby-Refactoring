@@ -1,9 +1,19 @@
 <?xml version="1.0"?>
 
-<definitions name="webServiceExample" targetNamespace="http://www.rubypeople.org/xmlns/webServiceExample" xmlns:tns="http://www.ruby-lang.org/xmlns/soap/interface/RAA/0.0.4/" xmlns="http://schemas.xmlsoap.org/wsdl/" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/" xmlns:apachesoap="http://xml.apache.org/xml-soap">
+<definitions name="webServiceExample" 
+   targetNamespace="http://www.rubypeople.org/xmlns/webServiceExample" 
+   xmlns:tns="http://www.rubypeople.org/xmlns/webServiceExample" 
+   xmlns="http://schemas.xmlsoap.org/wsdl/" 
+   xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" 
+   xmlns:xsd="http://www.w3.org/2001/XMLSchema" 
+   xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" 
+   xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/" 
+   xmlns:apachesoap="http://xml.apache.org/xml-soap">
   
   <types>
-    <schema xmlns="http://www.w3.org/2001/XMLSchema" targetNamespace="http://www.rubypeople.org/xmlns/webServiceExample/">
+    <schema 
+      xmlns="http://www.w3.org/2001/XMLSchema" 
+      targetNamespace="http://www.rubypeople.org/xmlns/webServiceExample">
 
       <complexType name="User">
   	<all>
@@ -17,7 +27,7 @@
   </types>
 
   <message name="msg_user_request">
-    <part name="user" type="tns:user"/>
+    <part name="user" type="tns:User"/>
   </message>
 
   <message name="msg_user_response">
@@ -46,7 +56,7 @@
   </binding>
 
   <service name="webServiceExampleService">
-    <port name="webServiceExamplePort" binding="tns:webServiceExamplePortBinding">
+    <port name="webServiceExamplePort" binding="tns:webServiceExampleServicePortBinding">
       <soap:address location="http://localhost/webServiceExampleService"/>
     </port>
   </service>
