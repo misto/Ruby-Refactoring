@@ -81,4 +81,8 @@ public class RubySourceViewerConfiguration extends SourceViewerConfiguration {
 		return RdtUiPlugin.getDefault().getPreferenceStore();
 	}
 
+	public String[] getDefaultPrefixes(ISourceViewer sourceViewer, String contentType) {
+		return new String[] { "#", "" };
+	}
+
 }

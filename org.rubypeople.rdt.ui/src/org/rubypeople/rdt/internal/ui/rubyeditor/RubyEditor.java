@@ -1,13 +1,16 @@
 package org.rubypeople.rdt.internal.ui.rubyeditor;
 
+import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.preference.PreferenceConverter;
 import org.eclipse.jface.resource.JFaceResources;
-import org.eclipse.jface.text.source.ISourceViewer;
+import org.eclipse.jface.text.ITextOperationTarget;
 import org.eclipse.swt.graphics.RGB;
 import org.eclipse.ui.editors.text.TextEditor;
+import org.eclipse.ui.texteditor.ContentAssistAction;
 import org.eclipse.ui.texteditor.DefaultRangeIndicator;
+import org.eclipse.ui.texteditor.ITextEditorActionConstants;
 import org.eclipse.ui.texteditor.TextOperationAction;
 import org.eclipse.ui.texteditor.WorkbenchChainedTextFontFieldEditor;
 import org.rubypeople.rdt.internal.ui.RdtUiMessages;
@@ -15,8 +18,11 @@ import org.rubypeople.rdt.internal.ui.RdtUiPlugin;
 import org.rubypeople.rdt.internal.ui.text.RubyColorConstants;
 import org.rubypeople.rdt.internal.ui.text.RubySourceViewerConfiguration;
 import org.rubypeople.rdt.internal.ui.text.RubyTextTools;
+import org.rubypeople.rdt.ui.actions.RubyActionGroup;
+import org.rubypeople.rdt.ui.actions.RubyEditorActionDefinitionIds;
 
 public class RubyEditor extends TextEditor {
+	protected RubyActionGroup actionGroup;
 
 	public RubyEditor() {
 		super();
@@ -47,11 +53,25 @@ public class RubyEditor extends TextEditor {
 	
 	protected void createActions() {
 		super.createActions();
-		setAction("ContentAssistProposal", new TextOperationAction(RdtUiMessages.getResourceBundle(), "ContentAssistProposal.", this, ISourceViewer.CONTENTASSIST_PROPOSALS));
+
+		Action action = new ContentAssistAction(RdtUiMessages.getResourceBundle(), "ContentAssistProposal.", this);
+		action.setActionDefinitionId(RubyEditorActionDefinitionIds.CONTENT_ASSIST_PROPOSALS);		
+		setAction("ContentAssistProposal", action);
+
+		action= new TextOperationAction(RdtUiMessages.getResourceBundle(), "Comment.", this, ITextOperationTarget.PREFIX);
+		action.setActionDefinitionId(RubyEditorActionDefinitionIds.COMMENT);		
+		setAction("Comment", action);
+
+		action= new TextOperationAction(RdtUiMessages.getResourceBundle(), "Uncomment.", this, ITextOperationTarget.STRIP_PREFIX);
+		action.setActionDefinitionId(RubyEditorActionDefinitionIds.UNCOMMENT);		
+		setAction("Uncomment", action);
+
+		actionGroup = new RubyActionGroup(this, ITextEditorActionConstants.GROUP_EDIT);
 	}
 
 	protected void editorContextMenuAboutToShow(IMenuManager menu) {
 		super.editorContextMenuAboutToShow(menu);
-		addAction(menu, "ContentAssistProposal");
+
+		actionGroup.fillContextMenu(menu);
 	}
 }

@@ -106,5 +106,36 @@
             id="org.rubypeople.rdt.ui.EditorRubyFile">
       </editor>
    </extension>
+   <extension
+         point="org.eclipse.ui.actionDefinitions">
+      <actionDefinition
+            id="org.rubypeople.rdt.ui.edit.text.ruby.comment">
+      </actionDefinition>
+      <actionDefinition
+            id="org.rubypeople.rdt.ui.edit.text.ruby.uncomment">
+      </actionDefinition>
+      <actionDefinition
+            id="org.rubypeople.rdt.ui.edit.text.ruby.content.assist.proposals">
+      </actionDefinition>
+   </extension>
+   <extension
+         point="org.eclipse.ui.acceleratorSets">
+      <acceleratorSet
+            scopeId="org.eclipse.ui.globalScope"
+            configurationId="org.eclipse.ui.defaultAcceleratorConfiguration">
+         <accelerator
+               key="Ctrl+Space"
+               id="org.rubypeople.rdt.ui.edit.text.ruby.content.assist.proposals">
+         </accelerator>
+         <accelerator
+               key="Ctrl+/"
+               id="org.rubypeople.rdt.ui.edit.text.ruby.comment">
+         </accelerator>
+         <accelerator
+               key="Ctrl+\"
+               id="org.rubypeople.rdt.ui.edit.text.ruby.uncomment">
+         </accelerator>
+      </acceleratorSet>
+   </extension>
 
 </plugin>
