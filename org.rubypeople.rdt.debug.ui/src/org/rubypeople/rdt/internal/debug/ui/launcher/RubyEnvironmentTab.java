@@ -2,11 +2,13 @@ package org.rubypeople.rdt.internal.debug.ui.launcher;
 
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.debug.core.ILaunchConfiguration;
 import org.eclipse.debug.core.ILaunchConfigurationWorkingCopy;
 import org.eclipse.debug.ui.AbstractLaunchConfigurationTab;
+import org.eclipse.jface.viewers.ListViewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
@@ -19,19 +21,20 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
-import org.eclipse.swt.widgets.List;
 import org.eclipse.swt.widgets.TabFolder;
 import org.eclipse.swt.widgets.TabItem;
+import org.eclipse.ui.internal.dialogs.ListContentProvider;
 import org.rubypeople.rdt.internal.core.LoadPathEntry;
 import org.rubypeople.rdt.internal.core.RubyCore;
 import org.rubypeople.rdt.internal.core.RubyProject;
 import org.rubypeople.rdt.internal.debug.ui.preferences.EditInterpreterDialog;
+import org.rubypeople.rdt.internal.launching.*;
 import org.rubypeople.rdt.launching.RubyInterpreter;
 import org.rubypeople.rdt.launching.RubyRuntime;
 import sun.security.krb5.internal.crypto.e;
 
 public class RubyEnvironmentTab extends AbstractLaunchConfigurationTab {
-	protected List loadPathList;
+	protected ListViewer loadPathListViewer;
 	protected java.util.List installedInterpretersWorkingCopy;
 	protected Combo interpreterCombo;
 	protected Button loadPathDefaultButton;
@@ -55,14 +58,15 @@ public class RubyEnvironmentTab extends AbstractLaunchConfigurationTab {
 		Composite loadPathComposite = new Composite(tabFolder, SWT.NONE);
 		loadPathComposite.setLayout(new GridLayout());
 
-		loadPathList = new List(loadPathComposite, SWT.BORDER | SWT.MULTI | SWT.V_SCROLL | SWT.H_SCROLL);
-		loadPathList.setLayoutData(new GridData(GridData.FILL_BOTH));
-		loadPathList.addSelectionListener(getLoadPathSelectionListener());
+		loadPathListViewer = new ListViewer(loadPathComposite, SWT.BORDER | SWT.MULTI | SWT.V_SCROLL | SWT.H_SCROLL);
+		loadPathListViewer.setContentProvider(new ListContentProvider());
+		loadPathListViewer.setLabelProvider(new LoadPathEntryLabelProvider());
+		loadPathListViewer.getList().setLayoutData(new GridData(GridData.FILL_BOTH));
 
 		TabItem loadPathTab = new TabItem(tabFolder, SWT.NONE, 0);
 		loadPathTab.setText("Load&path");
 		loadPathTab.setControl(loadPathComposite);
-		loadPathTab.setData(loadPathList);
+		loadPathTab.setData(loadPathListViewer);
 
 		loadPathDefaultButton = new Button(loadPathComposite, SWT.CHECK);
 		loadPathDefaultButton.setText("&Use default loadpath");
@@ -119,7 +123,7 @@ public class RubyEnvironmentTab extends AbstractLaunchConfigurationTab {
 		});
 
 		TabItem interpreterTab = new TabItem(tabFolder, SWT.NONE);
-		interpreterTab.setText("&JRE");
+		interpreterTab.setText("&Interpreter");
 		interpreterTab.setControl(interpreterComposite);
 	}
 
@@ -149,7 +153,6 @@ public class RubyEnvironmentTab extends AbstractLaunchConfigurationTab {
 
 	protected void initializeLoadPath(ILaunchConfiguration configuration) {
 		boolean useDefaultLoadPath = true;
-		this is where i need to not add the loadPaths over and over again
 		try {
 			useDefaultLoadPath = configuration.getAttribute(RubyLaunchConfigurationAttribute.USE_DEFAULT_LOAD_PATH, true);
 			setUseLoadPathDefaults(useDefaultLoadPath);
@@ -157,21 +160,17 @@ public class RubyEnvironmentTab extends AbstractLaunchConfigurationTab {
 				String projectName = configuration.getAttribute(RubyLaunchConfigurationAttribute.PROJECT_NAME, "");
 				RubyProject project = RubyCore.getRubyProject(projectName);
 				if (project != null) {
-					java.util.List loadPathEntries = project.getLoadPathEntries();
-					loadPathList.setData(loadPathEntries);
-					for (Iterator iterator = loadPathEntries.iterator(); iterator.hasNext();) {
-						LoadPathEntry entry = (LoadPathEntry) iterator.next();
-						loadPathList.add(entry.getPath().toString());
-					}
+					List loadPathEntries = project.getLoadPathEntries();
+					loadPathListViewer.setInput(loadPathEntries);
 				}
 			}
 		} catch (CoreException e) {
-			System.out.println("RubyEnvironmentTab#setLoadPath(): " + e);
+			System.out.println("RubyEnvironmentTab#initializeLoadPath(): " + e);
 		}
 	}
 
 	protected void setUseLoadPathDefaults(boolean useDefaults) {
-		loadPathList.setEnabled(!useDefaults);
+		loadPathListViewer.getList().setEnabled(!useDefaults);
 		loadPathDefaultButton.setSelection(useDefaults);
 	}
 
@@ -210,7 +209,13 @@ public class RubyEnvironmentTab extends AbstractLaunchConfigurationTab {
 		configuration.setAttribute(RubyLaunchConfigurationAttribute.USE_DEFAULT_LOAD_PATH, loadPathDefaultButton.getSelection());
 		
 		if (!loadPathDefaultButton.getSelection()) {
-			configuration.setAttribute(RubyLaunchConfigurationAttribute.CUSTOM_LOAD_PATH, (java.util.List) loadPathList.getData());
+			List loadPathEntries = (List) loadPathListViewer.getInput();
+			List loadPathStrings = new ArrayList();
+			for (Iterator iterator = loadPathEntries.iterator(); iterator.hasNext();) {
+				LoadPathEntry entry = (LoadPathEntry) iterator.next();
+				loadPathStrings.add(entry.getPath().toString());
+			}
+			configuration.setAttribute(RubyLaunchConfigurationAttribute.CUSTOM_LOAD_PATH, loadPathStrings);
 		}
 	}
 

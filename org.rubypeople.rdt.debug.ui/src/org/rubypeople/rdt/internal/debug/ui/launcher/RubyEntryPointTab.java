@@ -19,6 +19,7 @@ import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IWorkbenchPage;
 import org.rubypeople.rdt.internal.debug.ui.RdtDebugUiPlugin;
+import org.rubypeople.rdt.internal.launching.*;
 import org.rubypeople.rdt.internal.ui.utils.RubyFileSelector;
 import org.rubypeople.rdt.internal.ui.utils.RubyProjectSelector;
 
@@ -43,7 +44,7 @@ public class RubyEntryPointTab extends AbstractLaunchConfigurationTab {
 			}
 		});
 
-		new Label(composite, SWT.NONE).setText("Class:");
+		new Label(composite, SWT.NONE).setText("File:");
 		fileSelector = new RubyFileSelector(composite, projectSelector);
 		fileSelector.setBrowseDialogMessage("Choose the Ruby file that represents the application entry point:");
 		fileSelector.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));

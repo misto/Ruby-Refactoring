@@ -2,47 +2,56 @@ package org.rubypeople.rdt.launching;
 
 import java.io.File;
 
-import org.eclipse.core.resources.IFile;
-import org.eclipse.core.resources.IResource;
+import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
-import org.eclipse.core.runtime.IAdaptable;
-import org.eclipse.core.runtime.QualifiedName;
+import org.eclipse.debug.core.ILaunchConfiguration;
 import org.rubypeople.rdt.internal.core.RubyProject;
+import org.rubypeople.rdt.internal.launching.RubyLaunchConfigurationAttribute;
+import sun.security.krb5.internal.crypto.e;
 
 public class InterpreterRunnerConfiguration {
-	protected IFile rubyFile;
+	protected ILaunchConfiguration configuration;
 
-	public InterpreterRunnerConfiguration(IFile aRubyFile) {
-		rubyFile = aRubyFile;
+	public InterpreterRunnerConfiguration(ILaunchConfiguration aConfiguration) {
+		configuration = aConfiguration;
 	}
 	
 	public String getRubyFileName() {
-		return rubyFile.getName();
+		String fileName = "";
+
+		try {
+			fileName = configuration.getAttribute(RubyLaunchConfigurationAttribute.FILE_NAME, "No file specified in configuration");
+		} catch(CoreException e) {}
+
+		return fileName;
 	}
 	
 	public RubyProject getProject() {
-		IResource resource = (IResource) ((IAdaptable)rubyFile).getAdapter(IResource.class);
-		if (resource != null) {
-			RubyProject project = new RubyProject();
-			project.setProject(resource.getProject());
-			return project;
-		}
+		String projectName = "";
+		
+		try {
+			projectName = configuration.getAttribute(RubyLaunchConfigurationAttribute.PROJECT_NAME, "");
+		} catch(CoreException e) {}
 
-		return null;
+		IProject project = RdtLaunchingPlugin.getWorkspace().getRoot().getProject(projectName);
+
+		RubyProject rubyProject = new RubyProject();
+		rubyProject.setProject(project);
+		return rubyProject;
 	}
 	
 	public File getAbsoluteWorkingDirectory() {
-		return rubyFile.getParent().getLocation().toFile();
+		return getProject().getProject().getLocation().toFile();
 	}
 	
 	public ExecutionArguments getExecutionArguments() {
 		ExecutionArguments executionArguments = new ExecutionArguments();
 		try {
-			String arguments = rubyFile.getPersistentProperty(new QualifiedName("executionArguments", "interpreter"));
-			executionArguments.setInterpreterArguments(arguments != null ? arguments : "");
+			String arguments = configuration.getAttribute(RubyLaunchConfigurationAttribute.INTERPRETER_ARGUMENTS, "");
+			executionArguments.setInterpreterArguments(arguments);
 
-			arguments = rubyFile.getPersistentProperty(new QualifiedName("executionArguments", "program"));
-			executionArguments.setRubyFileArguments(arguments != null ? arguments : "");
+			arguments = configuration.getAttribute(RubyLaunchConfigurationAttribute.PROGRAM_ARGUMENTS, "");
+			executionArguments.setRubyFileArguments(arguments);
 		} catch(CoreException e) {}
 		
 		return executionArguments;

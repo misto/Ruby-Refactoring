@@ -5,6 +5,8 @@ import java.io.IOException;
 import java.util.Iterator;
 
 import org.eclipse.core.resources.IProject;
+import org.eclipse.debug.core.DebugPlugin;
+import org.eclipse.debug.core.ILaunch;
 import org.eclipse.debug.core.model.IProcess;
 import org.eclipse.debug.internal.core.RuntimeProcess;
 
@@ -12,19 +14,18 @@ public class InterpreterRunner {
 
 	public InterpreterRunner() {}
 
-	public InterpreterRunnerResult run(InterpreterRunnerConfiguration configuration) {
+	public void run(InterpreterRunnerConfiguration configuration, ILaunch launch) {
 		String commandLine = renderCommandLine(configuration);
 		File workingDirectory = configuration.getAbsoluteWorkingDirectory();
 
-		IProcess rubyProcess = null;
+		Process nativeRubyProcess = null;
 		try {
-			Process nativeRubyProcess = Runtime.getRuntime().exec(commandLine, null, workingDirectory);
-			rubyProcess = new RuntimeProcess(null, nativeRubyProcess, "Ruby Interpreter");
+			nativeRubyProcess = Runtime.getRuntime().exec(commandLine, null, workingDirectory);
 		} catch (IOException e) {
 			throw new RuntimeException("Unable to execute interpreter: " + commandLine + workingDirectory);
 		}
 
-		return new InterpreterRunnerResult(rubyProcess);
+		DebugPlugin.getDefault().newProcess(launch, nativeRubyProcess, "Ruby!!!");
 	}
 
 	public String renderCommandLine(InterpreterRunnerConfiguration configuration) {
