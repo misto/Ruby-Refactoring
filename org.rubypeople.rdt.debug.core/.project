@@ -6,9 +6,7 @@
 		<project>org.eclipse.core.resources</project>
 		<project>org.eclipse.core.runtime.compatibility</project>
 		<project>org.eclipse.debug.core</project>
-		<project>org.eclipse.debug.ui</project>
 		<project>org.eclipse.jdt.debug</project>
-		<project>org.junit</project>
 		<project>org.kxml2</project>
 		<project>org.rubypeople.rdt.core</project>
 	</projects>
