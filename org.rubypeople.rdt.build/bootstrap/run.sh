@@ -21,20 +21,21 @@
 #set ANT_CMD_LINE_ARGS=
 
 
-
-eclipseDir=/home/markus/eclipse-3.0.1
+echo using RDT_BUILD_HOME: ${RDT_BUILD_HOME:?must be set}
+eclipseDir=${RDT_BUILD_HOME}/eclipse-3.0.1
 pdeBuildPluginVersion=3.0.1
-pluginAutomaticBuildDir=/home/markus/eclipse-3.0.1/workspace/org.rubypeople.rdt.build/bootstrap
-buildDirectory=/tmp/PlugInBuildDir
+bootstrapDir=${RDT_BOOTSTRAP_DIR:-${RDT_BUILD_HOME}/org.rubypeople.rdt.build/bootstrap}
+buildDirectory=${RDT_BUILD_TARGET_DIR:-${RDT_BUILD_HOME}/tmp/PlugInBuildDir}
 verboseAnt=-verbose
-eclipseAutomatedTestHome=/home/markus/eclipse-testing
-rubyInterpreter=/usr/local/bin/ruby
-docbookRoot=/home/markus/docbook
-vm=java
+eclipseAutomatedTestHome=${RDT_BUILD_HOME}/eclipse-testing
+rubyInterpreter=${RDT_RUBY_INTERPRETER:-/usr/bin/ruby}
+docbookRoot=${RDT_BUILD_HOME}/docbook
+vm=${RDT_JAVA_INTERPRETER:-java}
 installmode=clean
-os=linux
-ws=motif
-arch=x86
+os=${RDT_OS:-linux}
+ws=${RDT_WS:-motif}
+arch=${RDT_ARCH:-x86}
+usePserver=${RDT_USE_PSERVER:+-DusePserver=true}
 
 #REM reset ant command line args
 ANT_CMD_LINE_ARGS=
@@ -53,6 +54,6 @@ ANT_CMD_LINE_ARGS=
 
 buildfile=$eclipseDir/plugins/org.eclipse.pde.build_$pdeBuildPluginVersion/scripts/build.xml
 echo Starting eclipse in $eclipseDir, $vm
-cmd="$vm -cp $eclipseDir/startup.jar org.eclipse.core.launcher.Main -application org.eclipse.ant.core.antRunner -buildfile $buildfile -data $buildDirectory/workspace -Dbasews=$ws -Dbaseos=$os -Dbasearch=$arch -Dbuilder=$pluginAutomaticBuildDir  -D$installmode=true -DjavacFailOnError=true -DbuildDirectory=$buildDirectory -DbaseLocation=$eclipseDir $verboseAnt -DeclipseAutomatedTestHome=$eclipseAutomatedTestHome -Drdt.rubyInterpreter="$rubyInterpreter" -Drdt-tests-workspace=$buildDirectory/workspace-rdt-tests -Ddocbook.root=$docbookRoot"
+cmd="$vm -cp $eclipseDir/startup.jar org.eclipse.core.launcher.Main -ws $ws -os $os -application org.eclipse.ant.core.antRunner  -buildfile $buildfile -data $buildDirectory/workspace $usePserver -Dbasews=$ws -Dbaseos=$os -Dbasearch=$arch -Dbuilder=$bootstrapDir  -D$installmode=true -DjavacFailOnError=true -DbuildDirectory=$buildDirectory -DbaseLocation=$eclipseDir $verboseAnt -DeclipseAutomatedTestHome=$eclipseAutomatedTestHome -Drdt.rubyInterpreter="$rubyInterpreter" -Drdt-tests-workspace=$buildDirectory/workspace-rdt-tests -Ddocbook.root=$docbookRoot"
 echo $cmd
 `$cmd`
