@@ -42,6 +42,12 @@
             class="org.rubypeople.rdt.internal.ui.preferences.TextEditorPreferencePage2"
             id="org.rubypeople.rdt.ui.preferences.PreferencePageRubyEditor">
       </page>
+       <page
+            name="%PreferencePage.rdtTemplatePreferences"
+            category="org.rubypeople.rdt.ui.preferences.PreferencePageRubyBase"
+            class="org.rubypeople.rdt.internal.ui.rubyeditor.templates.RubyTemplatePreferencePage"
+            id="org.rubypeople.rdt.ui.TemplatesPreferencePage">
+      </page>
    </extension>
    <extension
          point="org.eclipse.ui.perspectives">
@@ -348,6 +354,34 @@
             selected="false"
             pattern="*.xml">
       </filter>
+   </extension>
+   <extension
+         point="org.eclipse.ui.editors.templates">
+      <contextType
+            name="%rubyFile.contextType.name"
+            class="org.rubypeople.rdt.internal.ui.rubyeditor.templates.RubyFileContextType"
+            id="org.rubypeople.rdt.ui.templateContextType.rubyFile">
+      </contextType>
+      <resolver
+            name="%rdt.resolvers.src"
+            type="src"
+            icon="templates/resolver.gif"
+            description="%rdt.resolvers.src.description"
+            contextTypeId="org.rubypeople.rdt.ui.templateContextType.XML"
+            class="org.rubypeople.rdt.internal.ui.rubyeditor.templates.RubyVariableResolver">
+      </resolver>
+      <resolver
+            name="%rdt.resolvers.dst"
+            type="dst"
+            icon="templates/resolver.gif"
+            description="%rdt.resolvers.dst.description"
+            contextTypeId="org.rubypeople.rdt.ui.templateContextType.XML"
+            class="org.rubypeople.rdt.internal.ui.rubyeditor.templates.RubyVariableResolver">
+      </resolver>
+      <include
+      		file="templates/rdt.xml"
+      		translations="$nl$/templates/rdt.properties">
+      </include>
    </extension>
 
 </plugin>

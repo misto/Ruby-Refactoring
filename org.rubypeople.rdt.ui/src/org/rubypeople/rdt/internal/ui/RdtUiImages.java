@@ -33,6 +33,7 @@ public class RdtUiImages {
 	public static final String IMG_OBJS_WARNING = NAME_PREFIX + "warning_obj.gif";
 	public static final String IMG_OBJS_INFO = NAME_PREFIX + "info_obj.gif";
 	public static final String IMG_CTOOLS_RUBYIMPORT = NAME_PREFIX + "imp_obj.gif";
+	public static final String IMG_TEMPLATE_PROPOSAL = NAME_PREFIX + "template_obj.gif";
 	public static final String IMG_CTOOLS_RUBY_PAGE = NAME_PREFIX + "ruby_page.gif";
 	public static final String IMG_CTOOLS_RUBY = NAME_PREFIX + "ruby.gif";
 	public static final String IMG_CTOOLS_RUBYGLOBAL = NAME_PREFIX + "ruby_global.gif";
@@ -50,6 +51,8 @@ public class RdtUiImages {
 	public static final ImageDescriptor DESC_OBJS_ERROR = createManaged(OBJ_PREFIX, IMG_OBJS_ERROR);
 	public static final ImageDescriptor DESC_OBJS_WARNING = createManaged(OBJ_PREFIX, IMG_OBJS_WARNING);
 	public static final ImageDescriptor DESC_OBJS_INFO = createManaged(OBJ_PREFIX, IMG_OBJS_INFO);
+	public static final ImageDescriptor DESC_TEMPLATE_PROPOSAL = createManaged(OBJ_PREFIX, IMG_TEMPLATE_PROPOSAL);
+	
 	public static final ImageDescriptor DESC_CTOOL_RUBYIMPORT = createManaged(CTOOL_PREFIX, IMG_CTOOLS_RUBYIMPORT);
 	public static final ImageDescriptor DESC_CTOOL_RUBY_PAGE = createManaged(CTOOL_PREFIX, IMG_CTOOLS_RUBY_PAGE);
 	public static final ImageDescriptor DESC_CTOOL_RUBY = createManaged(CTOOL_PREFIX, IMG_CTOOLS_RUBY);

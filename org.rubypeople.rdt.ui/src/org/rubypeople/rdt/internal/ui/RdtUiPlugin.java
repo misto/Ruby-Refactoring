@@ -29,7 +29,7 @@ public class RdtUiPlugin extends AbstractUIPlugin implements RubyColorConstants 
 	public static final String EXTERNAL_FILES_EDITOR_ID = "org.rubypeople.rdt.ui.ExternalRubyEditor"; //$NON-NLS-1$
 
 	protected RubyTextTools textTools;
-	protected RubyFileMatcher rubyFileMatcher ;
+	protected RubyFileMatcher rubyFileMatcher;
 
 	public RdtUiPlugin() {
 		super();

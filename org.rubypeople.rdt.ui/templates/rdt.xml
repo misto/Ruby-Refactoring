@@ -1,0 +1,187 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates>
+
+<template 
+	context="org.rubypeople.rdt.ui.templateContextType.rubyFile" 
+	description="%forTemplate1.description" 
+	id="org.rubypeople.rdt.ui.templates.for1" 
+	name="for">for ${obj} in ${collection}
+  ${cursor}
+end</template>
+
+<template 
+	context="org.rubypeople.rdt.ui.templateContextType.rubyFile" 
+	description="%forTemplate2.description" 
+	id="org.rubypeople.rdt.ui.templates.for2" 
+	name="for">for ${i} in ${start_num}..${end_num}
+  ${cursor}
+end</template>
+
+<template 
+	context="org.rubypeople.rdt.ui.templateContextType.rubyFile" 
+	description="%defTemplate1.description" 
+	id="org.rubypeople.rdt.ui.templates.def1" 
+	name="def">def ${method_name}
+  ${cursor}
+end</template>
+
+<template 
+	context="org.rubypeople.rdt.ui.templateContextType.rubyFile" 
+	description="%whileTemplate1.description" 
+	id="org.rubypeople.rdt.ui.templates.while1" 
+	name="while">while ${condition}
+  ${cursor}
+end</template>
+
+<template 
+	context="org.rubypeople.rdt.ui.templateContextType.rubyFile" 
+	description="%whileTemplate2.description" 
+	id="org.rubypeople.rdt.ui.templates.while2" 
+	name="while">while ${condition}</template>
+
+<template 
+	context="org.rubypeople.rdt.ui.templateContextType.rubyFile" 
+	description="%classTemplate1.description" 
+	id="org.rubypeople.rdt.ui.templates.class1" 
+	name="class">class ${ClassName}
+  ${cursor}
+end</template>
+
+<template 
+	context="org.rubypeople.rdt.ui.templateContextType.rubyFile" 
+	description="%classTemplate2.description" 
+	id="org.rubypeople.rdt.ui.templates.class2" 
+	name="class">class &lt;&lt; ${obj}
+  ${cursor}
+end</template>
+
+<template 
+	context="org.rubypeople.rdt.ui.templateContextType.rubyFile" 
+	description="%moduleTemplate1.description" 
+	id="org.rubypeople.rdt.ui.templates.module1" 
+	name="module">module ${ModuleName}
+  ${cursor}
+end</template>
+
+<template 
+	context="org.rubypeople.rdt.ui.templateContextType.rubyFile" 
+	description="%doTemplate1.description" 
+	id="org.rubypeople.rdt.ui.templates.do1" 
+	name="do">do |${block_var}|
+  ${cursor}
+end</template>
+
+<template 
+	context="org.rubypeople.rdt.ui.templateContextType.rubyFile" 
+	description="%ifTemplate1.description" 
+	id="org.rubypeople.rdt.ui.templates.if1" 
+	name="if">if ${condition}
+  ${cursor}
+end</template>
+
+<template 
+	context="org.rubypeople.rdt.ui.templateContextType.rubyFile" 
+	description="%ifelseTemplate1.description" 
+	id="org.rubypeople.rdt.ui.templates.ifelse1" 
+	name="ifelse">if ${condition}
+  ${if_body}
+else
+  ${else_body}
+end</template>
+
+<template 
+	context="org.rubypeople.rdt.ui.templateContextType.rubyFile" 
+	description="%elsifTemplate1.description" 
+	id="org.rubypeople.rdt.ui.templates.elsif1" 
+	name="elsif">elsif ${condition}
+  ${cursor}
+end</template>
+
+<template 
+	context="org.rubypeople.rdt.ui.templateContextType.rubyFile" 
+	description="%caseTemplate1.description" 
+	id="org.rubypeople.rdt.ui.templates.case" 
+	name="case">case ${condition}
+  when ${comparison1}
+    ${comparison1_body}
+  when ${comparison2}
+    ${comparison2_body}
+end</template>
+
+<template 
+	context="org.rubypeople.rdt.ui.templateContextType.rubyFile" 
+	description="%elseTemplate1.description" 
+	id="org.rubypeople.rdt.ui.templates.else" 
+	name="else">else ${condition}
+  ${cursor}
+end</template>
+
+<template 
+	context="org.rubypeople.rdt.ui.templateContextType.rubyFile" 
+	description="%beginTemplate1.description" 
+	id="org.rubypeople.rdt.ui.templates.begin1" 
+	name="begin">begin
+ ${body}
+end until {$condition}</template>
+
+<template 
+	context="org.rubypeople.rdt.ui.templateContextType.rubyFile" 
+	description="%beginTemplate2.description" 
+	id="org.rubypeople.rdt.ui.templates.begin2" 
+	name="begin">begin
+ ${body}
+end while {$condition}</template>
+
+<template 
+	context="org.rubypeople.rdt.ui.templateContextType.rubyFile" 
+	description="%beginTemplate3.description" 
+	id="org.rubypeople.rdt.ui.templates.begin3" 
+	name="begin">begin
+ ${begin_body}
+rescue ${ErrorType}
+  ${rescue_body}
+end</template>
+
+<template 
+	context="org.rubypeople.rdt.ui.templateContextType.rubyFile" 
+	description="%beginTemplate4.description" 
+	id="org.rubypeople.rdt.ui.templates.begin4" 
+	name="begin">begin
+ ${begin_body}
+rescue ${ErrorType}
+  ${rescue_body}
+ensure
+  ${ensure_body}
+end</template>
+
+<template 
+	context="org.rubypeople.rdt.ui.templateContextType.rubyFile" 
+	description="%untilTemplate1.description" 
+	id="org.rubypeople.rdt.ui.templates.until1" 
+	name="until">until ${condition}
+  ${cursor}
+end</template>
+
+<template 
+	context="org.rubypeople.rdt.ui.templateContextType.rubyFile" 
+	description="%aliasTemplate1.description" 
+	id="org.rubypeople.rdt.ui.templates.alias1" 
+	name="alias">alias ${old} ${new}</template>
+
+<template 
+	context="org.rubypeople.rdt.ui.templateContextType.rubyFile" 
+	description="%rescueTemplate1.description" 
+	id="org.rubypeople.rdt.ui.templates.rescue1" 
+	name="rescue">rescue ${ErrorType}
+	${rescue_body}
+end</template>
+
+<template 
+	context="org.rubypeople.rdt.ui.templateContextType.rubyFile" 
+	description="%rescueTemplate2.description" 
+	id="org.rubypeople.rdt.ui.templates.rescue2" 
+	name="rescue">rescue ${ErrorType} =&gt; ${error_var}
+	${rescue_body}
+end</template>
+
+</templates>
