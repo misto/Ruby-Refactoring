@@ -398,8 +398,7 @@ public class TestUnitView extends ViewPart implements ITestRunListener3 {
 					// use
 					// correct class [JUnit]
 					tmp.setAttribute(TestUnitLaunchConfiguration.TESTTYPE_ATTR, className);
-					// reset the container
-					tmp.setAttribute(TestUnitLaunchConfiguration.LAUNCH_CONTAINER_ATTR, className);
+					
 					if (testName != null) {
 						tmp.setAttribute(TestUnitLaunchConfiguration.TESTNAME_ATTR, testName);
 					}
