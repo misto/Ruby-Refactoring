@@ -6,6 +6,7 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.debug.core.ILaunch;
 import org.eclipse.debug.core.model.IProcess;
+import org.rubypeople.rdt.internal.core.RubyPlugin;
 import org.rubypeople.rdt.internal.debug.core.DebuggerNotFoundException;
 import org.rubypeople.rdt.internal.debug.core.RdtDebugCorePlugin;
 import org.rubypeople.rdt.internal.debug.core.RubyDebuggerProxy;
@@ -36,17 +37,7 @@ public class DebuggerRunner extends InterpreterRunner {
 	}
 
 	public static String getDirectoryOfRubyDebuggerFile() {
-		// Lets check the new OSGI Bundles...
-		String location = RdtLaunchingPlugin.getDefault().getBundle().getLocation();
-		int prefixLength = location.indexOf('@') ;
-		if (prefixLength == -1) {
-			throw new RuntimeException("Location of launching bundle does not contain @: " + location ) ;
-		}
-		String pluginDir = location.substring(prefixLength+1)  + "ruby";
-		if (!new File(pluginDir).exists()) {
-			throw new RuntimeException("Expected directory of eclipseDebug.rb does not exist: " + pluginDir) ;
-		}
-		return pluginDir ;
+	    return RubyPlugin.getOSDirectory(RdtLaunchingPlugin.getDefault()) + "ruby" ;
 	}
 	
 	protected String renderLoadPath(InterpreterRunnerConfiguration configuration) {
