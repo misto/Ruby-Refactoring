@@ -45,8 +45,8 @@ class XmlPrinter
     debug(*params)
   end
 
-  def printXml(s)
-    out(s) 
+  def printXml(s, *params)
+    out(s, *params) 
   end
 
   def printVariable(name, binding, kind)
@@ -58,11 +58,22 @@ class XmlPrinter
       out("<variable name=\"%s\" kind=\"%s\"/>", name, kind)
       return
     end
-    valueString = value.to_s
-    if valueString =~ /^\"/ then
-      valueString.slice!(1..(valueString.length)-2) 
-    end
-    out("<variable name=\"%s\" kind=\"%s\" value=\"%s\" type=\"%s\" hasChildren=\"%s\"/>", name, kind, CGI.escapeHTML(valueString), value.class(), value.instance_variables.length > 0 || value.class.class_variables.length > 0)
+    if value.class().name == "Array" or value.class().name == "Hash" then
+      hasChildren = value.length > 0
+      if value.length == 0 then
+        valueString = "Empty " + value.class().name
+      else
+        valueString = value.class().name + " (" + value.length.to_s + " element(s))"
+      end
+    else 
+	  hasChildren = value.instance_variables.length > 0 || value.class.class_variables.length > 0
+      valueString = value.to_s
+      if valueString =~ /^\"/ then
+        valueString.slice!(1..(valueString.length)-2) 
+      end	  
+	end
+
+    out("<variable name=\"%s\" kind=\"%s\" value=\"%s\" type=\"%s\" hasChildren=\"%s\" objectId=\"%s\"/>", name, kind, CGI.escapeHTML(valueString), value.class(), hasChildren, value.id())
   end
 
   def printBreakpoint(n, debugFuncName, file, pos)
@@ -251,15 +262,21 @@ class DEBUGGER__
       # evaluates str like "var.@instance_var.@instance_var"
       # and "var.privateMethod"
       # return value might be nil
-      names  = str.split('.')
+      # the scan must detect array and hash accesses, which might
+      # themselves contain point separated expressions, e.g.
+      # array[Test.getX].y
+      names  = str.scan(/[^\[\]]*(?=\.)|.*\[.*\](?=\.)|.*$/)
+      # names can contain empty strings
       obj = eval(names[0], binding)
       (1..names.length-1).each { |i|
-        if names[i].length > 2 && names[i][0..1] == '@@' then
-          @printer.debug("Evaluating (class_var): %s on %s", names[i], obj )
-          obj = obj.class.class_eval ("#{names[i]}")
-        else
-          @printer.debug("Evaluating (instance_var): %s on %s", names[i], obj )        
-          obj = obj.instance_eval ("#{names[i]}")
+        if names[i] != "" then
+          if names[i].length > 2 && names[i][0..1] == '@@' then
+            @printer.debug("Evaluating (class_var): %s on %s", names[i], obj )
+            obj = obj.class.class_eval ("#{names[i]}")
+          else
+            @printer.debug("Evaluating (instance_var): %s on %s", names[i], obj )        
+            obj = obj.instance_eval ("#{names[i]}")
+          end
         end
       }
       return obj
@@ -278,7 +295,7 @@ class DEBUGGER__
           return debug_eval(str, binding, true)
         end
         @printer.debug("Error in debug_eval (noPrivateInstancsVars=%s): %s", noPrivateInstanceVars, error)
-        throw error
+        raise error
       end
     end
 
@@ -300,6 +317,24 @@ class DEBUGGER__
       @printer.printXml("</variables>")
     end
 
+    def printArrayElements(array)
+      index = 0 
+      array.each { |e|
+        @printer.printVariableValue('[' + index.to_s + ']', e, 'instance') 
+        index += 1 
+      }
+    end
+
+    def printHashElements(hash)
+	  hash.keys.each { | k |
+	    if k.class.name == "String"
+	      name = '\'' + k + '\''
+	    else
+	      name = k.to_s
+	    end
+        @printer.printVariableValue(name, hash[k], 'instance') 
+      }
+    end
 
 
     def getConstantsInClass(aClass) 
@@ -346,14 +381,29 @@ class DEBUGGER__
           var_list([], binding, 'local') 
         end		
 
-      when /^\s*i(?:nstance)?\s*(\d+)?\s+/        
+      when /^\s*i(?:nstance)?\s*(\d+)?\s+(\d+)?/        
         new_binding = getBinding($1)
         if new_binding then
           binding = new_binding
         end
         begin
           @printer.printXml("<variables>")
-          obj = debug_eval($', binding)
+          if $2 then
+            obj = ObjectSpace._id2ref($2.to_i)
+            if (!obj) then
+              @printer.debug("unknown object id : %s", $2)
+            end
+          else          
+            obj = debug_eval($', binding)
+          end
+          if (obj.class.name == "Array") then
+            printArrayElements(obj)
+          	return
+          end
+          if (obj.class.name == "Hash") then
+            printHashElements(obj)
+          	return
+          end          
           @printer.debug("%s", obj)
           instanceBinding = obj.instance_eval{binding()}	      
           obj.instance_variables.each {
@@ -371,26 +421,28 @@ class DEBUGGER__
             | constant |
             @printer.printVariable(constant, classBinding, 'constant')
           }
-          @printer.printXml("</variables>")
         rescue StandardError => error
-          @printer.debug("%s", error)
-          @printer.printXml("</variables>")
+          @printer.debug("%s", error)          
+        ensure
+          @printer.printXml("</variables>")  
         end
+        
         
       when /^\s*inspect\s*(\d+)?\s+/        
         new_binding = getBinding($1)
         if new_binding then
           binding = new_binding
         end
-        begin
-          @printer.printXml("<variables>")
-          obj = debug_eval($', binding)
-          @printer.debug("%s", obj)
-          @printer.printVariableValue("pseudoInspectResultVariable", obj, "local")          
-          @printer.printXml("</variables>")
-        rescue StandardError => error
-          @printer.printXml("</variables>")
-        end
+        begin          
+          obj = debug_eval($', binding, true)
+        rescue ScriptError, StandardError => error
+          @printer.printXml("<processingException type=\"%s\" message=\"%s\"/>", error.type, error.message)
+          return 
+        end          
+        @printer.debug("%s", obj)
+        @printer.printXml("<variables>")
+        @printer.printVariableValue($', obj, "local")          
+        @printer.printXml("</variables>")
 
         
       end
