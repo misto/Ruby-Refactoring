@@ -1,5 +1,4 @@
 package org.rubypeople.rdt.internal.ui;
-
 import junit.framework.TestCase;
 
 import org.eclipse.core.resources.IFile;

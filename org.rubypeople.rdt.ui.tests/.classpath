@@ -1,19 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
 	<classpathentry kind="src" path="src"/>
-	<classpathentry kind="src" path="/org.eclipse.core.runtime.compatibility"/>
-	<classpathentry kind="src" path="/org.eclipse.ui.ide"/>
-	<classpathentry kind="src" path="/org.eclipse.ui.views"/>
-	<classpathentry kind="src" path="/org.eclipse.jface.text"/>
-	<classpathentry kind="src" path="/org.eclipse.ui.workbench.texteditor"/>
-	<classpathentry kind="src" path="/org.eclipse.ui.editors"/>
+	<classpathentry kind="con" path="org.eclipse.pde.core.requiredPlugins"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry sourcepath="JUNIT_HOME/junitsrc.zip" kind="var" path="JUNIT_HOME/junit.jar"/>
 	<classpathentry kind="src" path="/org.rubypeople.rdt.ui"/>
-	<classpathentry kind="src" path="/org.rubypeople.eclipse.shams"/>
+	<classpathentry kind="src" path="/org.eclipse.swt"/>
+	<classpathentry kind="src" path="/org.eclipse.jface"/>
 	<classpathentry kind="src" path="/org.rubypeople.rdt.core"/>
-	<classpathentry kind="src" path="/org.junit"/>
-	<classpathentry kind="src" path="/org.eclipse.ui"/>
+	<classpathentry kind="src" path="/org.eclipse.core.runtime"/>
 	<classpathentry kind="src" path="/org.eclipse.core.resources"/>
 	<classpathentry kind="src" path="/org.rubypeople.eclipse.testutils"/>
-	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
