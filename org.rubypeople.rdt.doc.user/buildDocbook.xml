@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="org.rubypeople.rdt.doc.user" default="html" basedir=".">
+
+	<target name="init">
+        <property name="docbook.xsl.dir" value="../../docbook/docbook-xsl-1.64.1"/>
+        <property name="docbook.dtd.dir" value="../../docbook/dtd"/>
+	</target>
+
+	<target name="clean.docbook.generated">
+	    <delete file="toc.xml"/>
+	    <delete file="plugin.xml"/>
+	    <delete file="docbook.done"/>
+	    <delete dir="html"/>
+	</target>
+	
+	<target name="html" depends="init,clean.docbook.generated">
+	  
+      <style includes="docbook.xml" basedir="." destdir="."  extension=".done" style="${docbook.xsl.dir}/eclipse/eclipse.xsl">
+        <param name="base.dir" expression="html/"/>
+        <param name="manifest.in.base.dir" expression="0"/>
+        <param name="eclipse.plugin.id" expression="org.rubypeople.rdt.doc.user"/>
+        <param name="eclipse.plugin.name" expression="Ruby Development Documentation"/>
+        <param name="eclipse.plugin.provider" expression="RubyPeople, Inc."/>
+        <xmlcatalog id="docbook.catalog">
+     	 <dtd publicId="-//OASIS//DTD DocBook V3.1//EN" location="${docbook.dtd.dir}/docbookx.dtd"/>
+        </xmlcatalog>
+       </style>
+
+     </target>
+
+</project>
