@@ -177,6 +177,23 @@ public class RubyDebuggerProxy {
 		}
 	}
 
+	public RubyVariable readInspectExpression(RubyStackFrame frame, String expression) {
+		try {
+			this.println("th " + ((RubyThread) frame.getThread()).getId() + " ; v inspect " + frame.getIndex() + " " + expression);
+			RubyVariable[] variables = new VariableReader(getMultiReaderStrategy()).readVariables(frame);
+			if (variables.length == 0) {
+				return null ;	
+			}
+			else {
+				return variables[0] ;	
+			}			
+		} catch (IOException ioex) {
+			ioex.printStackTrace();
+			throw new RuntimeException(ioex.getMessage());
+		}
+	}
+
+
 	public void readStepOverEnd(RubyStackFrame stackFrame) {
 		try {
 			this.println("th " + ((RubyThread) stackFrame.getThread()).getId() + " ; next " + stackFrame.getIndex());
