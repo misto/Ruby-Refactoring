@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<plugin
+   id="org.rubypeople.rdt.debug.ui"
+   name="%pluginName"
+   version="0.0.1"
+   provider-name="RubyPeople, Inc."
+   class="org.rubypeople.rdt.internal.debug.ui.RdtDebugUiPlugin">
+
+<runtime>
+   <library name="rdtdebugui.jar"/>
+</runtime>
+<requires>
+   <import plugin="org.eclipse.core.runtime"/>
+   <import plugin="org.eclipse.core.resources"/>
+   <import plugin="org.eclipse.ui"/>
+   <import plugin="org.eclipse.debug.core"/>
+   <import plugin="org.eclipse.debug.ui"/>
+   <import plugin="org.rubypeople.rdt.launching"/>
+   <import plugin="org.rubypeople.rdt.ui"/>
+</requires>
+
+
+<extension
+      point="org.eclipse.ui.preferencePages">
+   <page
+         name="%RubyInterpreterPreferencePage.name"
+         category="org.rubypeople.rdt.debug.ui.preferences.RubyBasePreferencPage"
+         class="org.rubypeople.rdt.internal.debug.ui.preferences.RubyInterpreterPreferencePage"
+         id="org.rubypeople.rdt.debug.ui.preferences.RubyInterpreterPreferencePage">
+   </page>
+   <page
+         name="%RubyBasePreferencePage.name"
+         class="org.rubypeople.rdt.internal.debug.ui.preferences.RubyBasePreferencePage"
+         id="org.rubypeople.rdt.debug.ui.preferences.RubyBasePreferencPage">
+   </page>
+</extension>
+<extension
+      point="org.eclipse.debug.core.launchers">
+   <launcher
+         label="%RubyApplicationLauncher.label"
+         icon="icons/full/ctool16/runRuby.gif"
+         description="%RubyApplicationLauncher.description"
+         wizard="org.rubypeople.rdt.internal.debug.ui.RubyApplicationWizard"
+         modes="run"
+         class="org.rubypeople.rdt.internal.debug.ui.launcher.RubyApplicationLauncherDelegate"
+         id="org.rubypeople.rdt.debug.ui.launcher.RubyApplicationLauncher">
+   </launcher>
+</extension>
+<extension
+      point="org.eclipse.ui.propertyPages">
+   <page
+         objectClass="org.eclipse.core.resources.IFile"
+         name="%rubyExecutionArgumentsPage.name"
+         icon="icons/full/ctool16/ruby.gif"
+         nameFilter="*.rb"
+         class="org.rubypeople.rdt.internal.debug.ui.RubyExecutionArgumentsPage"
+         id="org.rubypeople.rdt.debug.ui.rubyExecutionArgumentsPage">
+   </page>
+</extension>
+
+</plugin>
