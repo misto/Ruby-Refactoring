@@ -40,6 +40,10 @@ public class RubyReconcilingStrategy implements IReconcilingStrategy, IReconcili
 	}
 
 	private void internalReconcile(DirtyRegion dirtyRegion) {
+	    // fEditor is null, if this reconcilir is used in the template preferences page
+	    if (fEditor == null) {
+	        return ;
+	    }
 		try {
 			IDocumentProvider provider = fEditor.getDocumentProvider();		
 			// could provider also be ExternalRubyDocumentProvider ?
