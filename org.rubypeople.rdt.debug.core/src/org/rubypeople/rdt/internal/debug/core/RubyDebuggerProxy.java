@@ -36,6 +36,18 @@ public class RubyDebuggerProxy {
 		this.debugTarget = debugTarget;
 		debugTarget.setRubyDebuggerProxy(this);
 	}
+	
+	public boolean checkConnection() {
+		try {
+			return this.getSocket().isConnected() ;
+		}
+		catch(DebuggerNotFoundException ex) {
+			return false ;
+		}
+		catch(IOException ex) {
+			return false ;
+		}
+	}
 
 	public void start() {
 		try {
@@ -50,22 +62,37 @@ public class RubyDebuggerProxy {
 		rubyLoop.interrupt();
 	}
 
-	protected Socket getSocket() throws IOException {
-		if (socket == null) {
+	
+	protected Socket acquireSocket() throws IOException {
+	
+		int tryCount = 10;
+		for (int i = 0; i < tryCount; i++) {
 			try {
-                socket = new Socket("localhost", 1098);
-            } catch (IOException e) {
-            	try {
-                    Thread.sleep(500) ;
-                } catch (InterruptedException e1) {
-                }
 				socket = new Socket("localhost", 1098);
-            }
+				return socket ;
+			} catch (IOException e) {
+				try {
+					Thread.sleep(500);
+				} catch (InterruptedException e1) {
+				}
+			}
+		}
+		return null ;
+		
+	}
+	
+	protected Socket getSocket() throws IOException, DebuggerNotFoundException {
+		
+		if (socket == null) {
+			socket = acquireSocket() ;
+			if (socket == null) {
+				throw new DebuggerNotFoundException() ;
+			}
 		}
 		return socket;
 	}
 
-	public PrintWriter getWriter() throws IOException {
+	public PrintWriter getWriter() throws IOException, DebuggerNotFoundException {
 		if (writer == null) {
 			writer = new PrintWriter(this.getSocket().getOutputStream(), true);
 		}
@@ -286,10 +313,13 @@ public class RubyDebuggerProxy {
 						}
 					}
 					.start();
-				}
+				}			
+			} catch (DebuggerNotFoundException ex) {
+				throw ex ;
 			} catch (Exception ex) {
 				RdtDebugCorePlugin.debug("Exception in socket reader loop.", ex) ;
-			} finally {
+			}
+			finally {
 				System.setProperty(DEBUGGER_ACTIVE_KEY, "false") ;
 				getDebugTarget().terminate();
 				try {
