@@ -196,7 +196,7 @@ public class RubyParser {
 				element.setAccess(accessRightsToGrant);
 				continue;
 			}
-			script.addParseError(new ParseError("Attempting to set access rights " + accessRightsToGrant + " to an unknown element " + elementName, lineNum, myLine.indexOf(elementName), elementName.length()));
+			script.addParseError(new ParseError("Attempting to set access rights " + accessRightsToGrant + " to an unknown element " + elementName, lineNum, myLine.indexOf(elementName), myLine.indexOf(elementName) + elementName.length()));
 		}
 	}
 
