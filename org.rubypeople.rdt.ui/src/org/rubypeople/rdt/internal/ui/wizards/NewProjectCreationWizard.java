@@ -19,6 +19,7 @@ import org.eclipse.ui.dialogs.WizardNewProjectCreationPage;
 import org.eclipse.ui.wizards.newresource.BasicNewProjectResourceWizard;
 import org.eclipse.ui.wizards.newresource.BasicNewResourceWizard;
 import org.rubypeople.rdt.internal.core.RubyPlugin;
+import org.rubypeople.rdt.internal.ui.RdtUiMessages;
 import org.rubypeople.rdt.internal.ui.RdtUiPlugin;
 
 public class NewProjectCreationWizard extends BasicNewResourceWizard implements INewWizard, IExecutableExtension {
@@ -27,7 +28,7 @@ public class NewProjectCreationWizard extends BasicNewResourceWizard implements 
 	protected IProject newProject;
 	
 	public NewProjectCreationWizard() {
-		setWindowTitle("New");
+		setWindowTitle(RdtUiMessages.getString("NewProjectCreationWizard.windowTitle"));
 	}
 
 	public boolean performFinish() {
@@ -54,7 +55,7 @@ public class NewProjectCreationWizard extends BasicNewResourceWizard implements 
 				}
 
 				int remainingWorkUnits = 10;
-				monitor.beginTask("Creating new Ruby Project", remainingWorkUnits);
+				monitor.beginTask(RdtUiMessages.getString("NewProjectCreationWizard.projectCreationMessage"), remainingWorkUnits);
 
 				IWorkspace workspace = ResourcesPlugin.getWorkspace();
 				newProject = projectPage.getProjectHandle();
@@ -89,9 +90,9 @@ public class NewProjectCreationWizard extends BasicNewResourceWizard implements 
 	public void addPages() {
 		super.addPages();
 
-		projectPage = new WizardNewProjectCreationPage("Create Ruby Project");
-		projectPage.setTitle("Ruby Project");
-		projectPage.setDescription("Create a new Ruby Project");
+		projectPage = new WizardNewProjectCreationPage(RdtUiMessages.getString("WizardNewProjectCreationPage.pageName"));
+		projectPage.setTitle(RdtUiMessages.getString("WizardNewProjectCreationPage.pageTitle"));
+		projectPage.setDescription(RdtUiMessages.getString("WizardNewProjectCreationPage.pageDescription"));
 
 		addPage(projectPage);
 	}
