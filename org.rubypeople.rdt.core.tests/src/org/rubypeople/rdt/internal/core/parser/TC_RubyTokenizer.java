@@ -27,9 +27,9 @@ package org.rubypeople.rdt.internal.core.parser;
 
 import java.util.NoSuchElementException;
 
-import org.rubypeople.rdt.internal.core.parser.ast.RubyElement;
-
 import junit.framework.TestCase;
+
+import org.rubypeople.rdt.internal.core.parser.ast.RubyElement;
 
 public class TC_RubyTokenizer extends TestCase {
 
@@ -37,7 +37,24 @@ public class TC_RubyTokenizer extends TestCase {
 		RubyTokenizer tokenizer = new RubyTokenizer("some token # more tokens");
 		assertEquals(2, tokenizer.countTokens());
 	}
-	
+	public void testRecognizePipeDelimiter() {
+		RubyTokenizer tokenizer = new RubyTokenizer("do|a|end");
+		assertEquals(3, tokenizer.countTokens());
+	}
+	public void testRecognizeQuotesCharsGlobal() {
+		RubyTokenizer tokenizer = new RubyTokenizer("$\"");
+		assertEquals(1, tokenizer.countTokens());
+		assertEquals("$\"", tokenizer.nextRubyToken().getText());
+		tokenizer = new RubyTokenizer("$\'");
+		assertEquals(1, tokenizer.countTokens());
+		assertEquals("$\'", tokenizer.nextRubyToken().getText());
+		tokenizer = new RubyTokenizer("$\' if");
+		assertEquals(2, tokenizer.countTokens());
+		assertEquals("$\'", tokenizer.nextRubyToken().getText());
+		RubyToken t = tokenizer.nextRubyToken();
+		assertEquals("if", t.getText());
+		assertEquals(RubyToken.IF_MODIFIER, t.getType());
+	}
 	public void testDoesCountSubsequentWhenPoundSymbolIsInString() {
 		RubyTokenizer tokenizer = new RubyTokenizer("some token \"# more\" tokens");
 		assertEquals(5, tokenizer.countTokens());
@@ -108,7 +125,7 @@ public class TC_RubyTokenizer extends TestCase {
 		assertEquals("#{@@var}", tokenizer.nextRubyToken().getText());
 		assertEquals("yeah", tokenizer.nextRubyToken().getText());
 		try {
-			tokenizer.nextRubyToken();
+			RubyToken t = tokenizer.nextRubyToken();
 			fail("Did not throw NoSuchElementException");
 		}
 		catch(NoSuchElementException e) {
@@ -172,7 +189,18 @@ public class TC_RubyTokenizer extends TestCase {
 		RubyTokenizer tokenizer = new RubyTokenizer("while sunshine\nwork()\nend");
 		assertEquals(RubyToken.WHILE, tokenizer.nextRubyToken().getType() );
 	}
-	
+	public void testClass() {
+		RubyTokenizer tokenizer = new RubyTokenizer("class foo end");
+		assertEquals(RubyToken.CLASS, tokenizer.nextRubyToken().getType() );
+		tokenizer = new RubyTokenizer("class().name");
+		assertEquals(RubyToken.IDENTIFIER, tokenizer.nextRubyToken().getType());
+	}
+	public void testModule() {
+		RubyTokenizer tokenizer = new RubyTokenizer("module foo end");
+		assertEquals(RubyToken.MODULE, tokenizer.nextRubyToken().getType() );
+		tokenizer = new RubyTokenizer("module().name");
+		assertEquals(RubyToken.IDENTIFIER, tokenizer.nextRubyToken().getType());
+	}
 	public void testWhileModifier() {
 		RubyTokenizer tokenizer = new RubyTokenizer("sleep while idle");
 		tokenizer.nextRubyToken();
@@ -227,7 +255,14 @@ public class TC_RubyTokenizer extends TestCase {
 		tokenizer.nextRubyToken();
 		assertEquals(RubyToken.IDENTIFIER, tokenizer.nextRubyToken().getType() );
 	}
-	
+	public void testVariableSubstitutionInstring() {
+		RubyTokenizer tokenizer = new RubyTokenizer("\"#{@resources[\"fw_cluster\"].name}\"");
+		assertEquals(1, tokenizer.countTokens());
+		assertEquals("#{@resources[\"fw_cluster\"].name}", tokenizer.nextRubyToken().getText());
+		tokenizer = new RubyTokenizer("\"#{@resources.name}\"");
+		assertEquals(1, tokenizer.countTokens());
+		assertEquals("#{@resources.name}", tokenizer.nextRubyToken().getText());
+	}
 	public void testCommaAtEndOfVariableIsIgnored() {
 		RubyTokenizer tokenizer = new RubyTokenizer("return [ @version, @status, @reason ]");
 		assertEquals(4, tokenizer.countTokens() );

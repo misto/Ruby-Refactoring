@@ -27,7 +27,8 @@ package org.rubypeople.rdt.internal.core.parser;
 
 import junit.framework.TestCase;
 
-import org.rubypeople.rdt.internal.core.parser.ast.*;
+import org.rubypeople.rdt.internal.core.parser.ast.RubyElement;
+import org.rubypeople.rdt.internal.core.parser.ast.RubyScript;
 
 /**
  * @author Chris
@@ -186,7 +187,7 @@ public class TC_RubyParser extends TestCase {
 		assertEquals(2, script.getElementCount());
 		assertNotNull(script.getElement("$$"));
 	}	
-
+	
 	public void testRecognizesIfBlock() throws Exception {
 		RubyScript script = RubyParser.parse("class Bob\ndef initialize\nif true\nputs \"Hi!\"\nelse\nputs \"Hello!\"\nend\nend\nend\n");
 		assertEquals(1, script.getElementCount());
@@ -201,6 +202,26 @@ public class TC_RubyParser extends TestCase {
 		RubyElement method = bob.getElement("initialize");
 		assertEquals(1, method.getElementCount());
 		assertTrue(method.contains(new RubyElement(RubyElement.IF, "if", 2, 0)));
+	}
+	public void testRecognizesIfThenElseWithPlus() throws Exception {
+		RubyScript script = RubyParser.parse("\"a\" + if $DEBUG then \" -d \" else \"\" end ");
+		assertEquals(2, script.getElementCount());
+		assertTrue(script.contains(new RubyElement(RubyElement.IF, "if", 0, 6)));
+		assertEquals(new Position(0, 6), script.getElement("if").getStart());
+		assertEquals(new Position(0, 36), script.getElement("if").getEnd());
+	}
+	public void testHandleDollarSingleQuote()throws Exception {
+		RubyScript script = RubyParser.parse("def a if f($', b) then \" -d \" else \"\" end\n def b end ");
+		assertEquals(3, script.getElementCount());
+		assertTrue(script.contains(new RubyElement(RubyElement.METHOD, "a", 0, 4)));
+		assertTrue(script.contains(new RubyElement(RubyElement.METHOD, "b", 1, 5)));
+	}
+	public void testQuotedStringInString() throws Exception {
+		RubyScript script = RubyParser.parse("def a puts(\"<thread id=\\\"%s\\\" status=\\\"%s\\\"/>\") end\n def b end");
+		assertEquals(2, script.getElementCount());
+		assertTrue(script.contains(new RubyElement(RubyElement.METHOD, "a", 0, 4)));
+		assertTrue(script.contains(new RubyElement(RubyElement.METHOD, "b", 1, 5)));
+		//assertEquals("\"<thread id=\\\"%s\\\" status=\\\"%s\\\"/>\"", tokenizer.nextRubyToken().getText());
 	}
 
 	public void testIgnoresIfModifier() throws Exception {
@@ -293,7 +314,33 @@ public class TC_RubyParser extends TestCase {
 		RubyElement method = bob.getElement("initialize");
 		assertEquals(0, method.getElementCount());
 	}
-
+	public void testIgnoresMultiLineString() throws Exception {
+		String testString  ="puts \"\n\nRun foobar depending on you shell.\n" +
+		"Or if you are fooing \n Use 'foo' account\n\" \n " + 
+		"puts \"foo\" \n " +
+		"class F\n"+
+			" def initialize\n" + 
+			"end\n" + 
+			"def g\n" +
+				"Find.find(dir) do |f|\n       " + 
+					"if f =~ /\\/SCCS\\//\n        " + 
+						" puts(\"skipping \" + f)\n" +
+						"        next\n" +
+						"       end\n"	+ 
+			    "end\n" +
+	        "end\n " + 
+			"def h\n" +
+			"end\n"	+ 
+		"\nend";
+		RubyScript script = RubyParser.parse(testString);
+		assertEquals(1, script.getElementCount());
+		assertTrue(script.contains(new RubyElement(RubyElement.CLASS, "F", 7, 7)));
+		assertEquals(new Position(7, 7), script.getElement("F").getStart());
+		assertEquals(new Position(21, 0), script.getElement("F").getEnd());
+		RubyElement F = script.getElement("F");
+		assertEquals(3, F.getElementCount());
+		assertNotNull(F.getElement("h"));
+	}
 	public void testComplainsAboutLowercaseClassName() throws Exception {
 		RubyScript script = RubyParser.parse("class bob\ndef initialize\nend\nend\n");
 		assertEquals(1, script.getElementCount());
@@ -378,6 +425,26 @@ public class TC_RubyParser extends TestCase {
 
 	public void testIgnoresForInsideString() throws Exception {
 		RubyScript script = RubyParser.parse("class Bob\ndef initialize\nputs \"for var in [1, 2, 3]\"\nend\nend\n");
+		assertEquals(1, script.getElementCount());
+		assertTrue(script.contains(new RubyElement(RubyElement.CLASS, "Bob", 0, 6)));
+		assertEquals(new Position(4, 0), script.getElement("Bob").getEnd());
+		RubyElement bob = script.getElement("Bob");
+		assertEquals(new Position(3, 0), bob.getElement("initialize").getEnd());
+		RubyElement method = bob.getElement("initialize");
+		assertEquals(0, method.getElementCount());
+	}
+	public void testIgnoresForInsideMultiLineString() throws Exception {
+		RubyScript script = RubyParser.parse("class Bob\ndef initialize\nputs \" \nfor var in [1, 2, 3]\n\n\"\n end\nend\n");
+		assertEquals(1, script.getElementCount());
+		assertTrue(script.contains(new RubyElement(RubyElement.CLASS, "Bob", 0, 6)));
+		assertEquals(new Position(7, 0), script.getElement("Bob").getEnd());
+		RubyElement bob = script.getElement("Bob");
+		assertEquals(new Position(6, 1), bob.getElement("initialize").getEnd());
+		RubyElement method = bob.getElement("initialize");
+		assertEquals(0, method.getElementCount());
+	}
+	public void testIgnoresDoInsideString() throws Exception {
+		RubyScript script = RubyParser.parse("class Bob\ndef initialize\nputs \"do var in [1, 2, 3]\"\nend\nend\n");
 		assertEquals(1, script.getElementCount());
 		assertTrue(script.contains(new RubyElement(RubyElement.CLASS, "Bob", 0, 6)));
 		assertEquals(new Position(4, 0), script.getElement("Bob").getEnd());
@@ -504,6 +571,7 @@ public class TC_RubyParser extends TestCase {
 		RubyScript script = RubyParser.parse("=begin\n@docVar = 'hey'\n=end\nmodule Bob\nend\n");
 		assertEquals(1, script.getElementCount());
 		assertTrue(script.contains(new RubyElement(RubyElement.MODULE, "Bob", 3, 7)));
+		
 	}
 
 	public void testFalsePositiveEnds() throws Exception {
@@ -547,6 +615,18 @@ public class TC_RubyParser extends TestCase {
 		assertEquals(1, script.getElementCount());
 		RubyElement rubyClass = script.getElement("Bob");
 		assertEquals(2, rubyClass.getElementCount());
+		script = RubyParser.parse("class Bob\n attr_accessor :var \ndef  decode_b(str)\nputs \"#{@var[\"b\"]}\"\nend\nend");
+		assertEquals(1, script.getElementCount());
+		rubyClass = script.getElement("Bob");
+		assertEquals(2, rubyClass.getElementCount());
+		script = RubyParser.parse("class Bob\n attr_accessor :var \ndef  decode_b(str)\nputs \"#{@var.name}\"\nend\nend");
+		assertEquals(1, script.getElementCount());
+		rubyClass = script.getElement("Bob");
+		assertEquals(2, rubyClass.getElementCount());
+		script = RubyParser.parse("class Bob\n attr_accessor :var \ndef  decode_b(str)\nputs \"#{@var}#{bar.name}\"\nend\nend");
+		assertEquals(1, script.getElementCount());
+		rubyClass = script.getElement("Bob");
+		assertEquals(2, rubyClass.getElementCount());
 	}
 
 	public void testIgnoresNonSubstitutedClassVariableInRegex() throws Exception {
@@ -575,6 +655,7 @@ public class TC_RubyParser extends TestCase {
 		assertEquals(1, script.getElementCount());
 		RubyElement rubyClass = script.getElement("Bob");
 		assertEquals(2, rubyClass.getElementCount());
+		
 	}
 
 	public void testIgnoresNonSubstitutedGlobalInRegex() throws Exception {
@@ -583,7 +664,14 @@ public class TC_RubyParser extends TestCase {
 		RubyElement rubyClass = script.getElement("Bob");
 		assertEquals(1, rubyClass.getElementCount());
 	}
+	public void testIgnoresDoubleQuoteInRegex() throws Exception {
+		RubyScript script = RubyParser.parse("def a\n if b ~= /\\\"/\n end\n  end\n def b end");
+		assertEquals(2, script.getElementCount());
+		RubyElement rubyMethod = script.getElement("a");
+		assertEquals(1, rubyMethod.getElementCount());
+	}
 
+	
 	public void testRecognizesSubstitutedGlobalInRegex() throws Exception {
 		RubyScript script = RubyParser.parse("class Bob\ndef decode_b(str)\nstr.gsub!(/#{$var}/) {\ndecode64(1)\n}\nend\nend");
 		assertEquals(2, script.getElementCount());
@@ -709,7 +797,13 @@ public class TC_RubyParser extends TestCase {
 		assertNotNull(rubyClass.getElement("@var"));
 		assertEquals(2, rubyClass.getElementCount());
 	}
-	
+	public void testRecognizesDoWithSlash() throws Exception {
+		RubyScript script = RubyParser.parse("class Bob\ndef a(port)\nDir.foreach(\"/\") do |r|\nend\nend\n@var\nend");
+		assertEquals(1, script.getElementCount());
+		RubyElement rubyClass = script.getElement("Bob");
+		assertNotNull(rubyClass.getElement("@var"));
+		assertEquals(2, rubyClass.getElementCount());
+	}
 	public void testRecognizesMultipleGlobalsOnSameLine() throws Exception {
 		RubyScript script = RubyParser.parse("alias $globalOne $globalTwo");
 		assertEquals(2, script.getElementCount());
@@ -890,7 +984,16 @@ public class TC_RubyParser extends TestCase {
 		assertTrue(script.contains(new RubyElement(RubyElement.CLASS, "Bob", 0, 6)));
 		assertEquals(new Position(0, 6), script.getElement("Bob").getStart());
 		assertEquals(new Position(2, 0), script.getElement("Bob").getEnd());
+		
 		RubyElement element = script.getElement("Bob");
+		assertEquals( 1, element.getElementCount() );
+		assertContainsSingleTokenElement(element, RubyElement.INSTANCE_VAR, "@from", 1, 14);
+		assertEquals(RubyElement.PUBLIC, element.getElement("@from").getAccess() );
+		script = RubyParser.parse("class Bob\nattr_accessor(:from)		# Owner of this client.\nend");
+		assertTrue(script.contains(new RubyElement(RubyElement.CLASS, "Bob", 0, 6)));
+		assertEquals(new Position(0, 6), script.getElement("Bob").getStart());
+		assertEquals(new Position(2, 0), script.getElement("Bob").getEnd());
+		element = script.getElement("Bob");
 		assertEquals( 1, element.getElementCount() );
 		assertContainsSingleTokenElement(element, RubyElement.INSTANCE_VAR, "@from", 1, 14);
 		assertEquals(RubyElement.PUBLIC, element.getElement("@from").getAccess() );

@@ -52,6 +52,7 @@ public class RubyParser {
 		String curLine = null;
 		int lineNum = 0;
 		int offset = 0;
+		boolean multiStringStarted = false;
 		try {
 			while ((curLine = reader.readLine()) != null) {
 				String myLine = curLine;
@@ -74,6 +75,22 @@ public class RubyParser {
 				while (tokenizer.hasMoreTokens()) {
 					RubyToken token = tokenizer.nextRubyToken();
 					//log(token.getText());
+					if (multiStringStarted &&
+							tokenizer.isInMultiString() == false) {
+						multiStringStarted = false;
+						continue;
+					}
+					if (tokenizer.isInMultiString()) {
+						multiStringStarted = true;
+						curLine = reader.readLine();
+						if (curLine == null) {
+							break;
+						}
+						offset = 0;
+						lineNum++;
+						tokenizer.setNewFeed(curLine);
+						continue;
+					}	
 					if (token.isBlock()) {
 						if (token.isType(RubyToken.WHILE) && parentIsBlockOfType(RubyElement.CASE)) continue;
 						pushMultiLineElement(new RubyElement(token.getType(), token.getText(), lineNum, token.getOffset()));
@@ -145,6 +162,11 @@ public class RubyParser {
 				}
 				// TODO Fold these into Tokenizer as well!
 				//findPrivateModifier(myLine, lineNum);
+				
+				// tried to read multiline tokens and got end of stream 
+				if (curLine == null) {
+					break;
+				}
 				offset = 0;
 				lineNum++;
 			}
@@ -199,11 +221,22 @@ public class RubyParser {
 	private static String getVariable(RubyToken token, int lineNum) {
 		// TODO Make this logic be in Tokenizer, return the variable inside as a
 		// separate token!
+		int tmpIndex = 0;
+		int closeBraceIndex;
 		String text = token.getText();
+		closeBraceIndex = text.indexOf('}');
 		if (text.indexOf('{') == -1) { return text.substring(1); }
-		if (text.indexOf('}') == -1) {
+		if (closeBraceIndex == -1) {
 			script.addParseError(new ParseError("Incomplete variable substitution", lineNum, token.getOffset(), token.getOffset() + text.length(), ParseError.ERROR));
 			return text.substring(2);
+		}
+		tmpIndex = text.indexOf('[');
+		if (tmpIndex != -1 && tmpIndex <= closeBraceIndex) {
+			return text.substring(2, tmpIndex);
+		}
+		tmpIndex = text.indexOf('.');
+		if (tmpIndex != -1 && tmpIndex <= closeBraceIndex) {
+			return text.substring(2, tmpIndex);
 		}
 		return text.substring(2, text.indexOf('}'));
 	}
@@ -243,7 +276,12 @@ public class RubyParser {
 			pushMultiLineElement(element);
 			return;
 		}
-		element.setEnd(element.getStart().getLineNumber(), element.getStart().getOffset() + element.getName().length());
+		if (element.getEnd() == null) {
+			element.setEnd(element.getStart().getLineNumber(), 
+					element.getStart().getOffset() +
+					element.getName().length()
+					);
+		}
 		log("Adding element " + element);
 		getParent(element).addElement(element);
 	}

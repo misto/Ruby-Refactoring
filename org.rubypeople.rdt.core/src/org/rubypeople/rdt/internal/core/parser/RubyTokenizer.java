@@ -44,17 +44,18 @@ public class RubyTokenizer {
 	private char endChar = 0;
 	private String str;
 	private boolean inString = false;
+	private boolean inMultiString = false;
 	private boolean tempInString = false;
 	private char tempEndChar;
 	private static final String percentChars = "qQr";
-	private static final String delimiters = " .;('\"/\t,[]";
+	private static final String delimiters = " \".;()'/\t,[]|";
 	private static final String BRACKETS = "({[";
-
 	// TODO Refactor determination whether we're in a String into common code!
 
 	/**
 	 * @param curLine
 	 */
+	
 	public RubyTokenizer(String curLine) {
 		this.str = curLine;
 		currentPosition = 0;
@@ -62,7 +63,18 @@ public class RubyTokenizer {
 
 		setMaxDelimChar();
 	}
-
+	public void setNewFeed(String curLine) {
+		this.str = curLine;
+		currentPosition = 0;
+		maxPosition = str.length();
+	}
+	
+	public boolean isInString() {
+		return inString;
+	}
+	public boolean isInMultiString() {
+		return inMultiString;
+	}
 	/**
 	 * maxDelimChar stores the value of the delimiter character with the highest
 	 * value. It is used to optimize the detection of delimiter characters.
@@ -105,26 +117,57 @@ public class RubyTokenizer {
 	 */
 	public RubyToken nextRubyToken() {
 		int start = skipDelimiters(currentPosition, false);
-
-		if (start >= maxPosition) throw new NoSuchElementException();
+		int endCharIndex = str.indexOf(endChar);
+		if (start > maxPosition) throw new NoSuchElementException();
+		if (isInMultiString() && endCharIndex == -1) {
+			String text = str.substring(currentPosition, maxPosition);
+			return new RubyToken(RubyToken.STRING_TEXT, text, start);
+		} else if (isInMultiString() && endCharIndex != -1) {
+			String text = str.substring(currentPosition, endCharIndex);
+			inMultiString = false;
+			inString = false;
+			setEndChar(true, (char) 0);
+			setEndChar(false, (char) 0);
+			
+			currentPosition = endCharIndex + 1;
+			return new RubyToken(getType(text, start), text, start);
+		}
+		if (start == maxPosition && isInString()) {
+			// multi line string 
+			String text = str.substring(currentPosition, start);
+			inMultiString = true;
+			return new RubyToken(getType(text, start), text, start);
+		}
+		if (start == maxPosition) throw new NoSuchElementException();
 		if (isStartOfComment(start)) throw new NoSuchElementException();
+		
 		currentPosition = scanToken(start, false);
+		
+		
 		String text = str.substring(start, currentPosition);
-		if (isStringBeginning(text) && !inQuotes(start, str)) {
+		if (text.charAt(0) == '$' &&  currentPosition < maxPosition &&
+				(str.charAt(currentPosition) == '\'' || 
+				 str.charAt(currentPosition) == '\"')) {
+			currentPosition++;
+			text = str.substring(start, currentPosition);
+		}
+		if (!inString && isStringBeginning(text) && !inQuotes(start, str)) {
 			inString = true;
-			int endCharIndex = getEndCharIndex(text.charAt(0));
+			endCharIndex = getEndCharIndex(text.charAt(0));
 			endChar = getMatchingBracket(text.charAt(endCharIndex));
 			if (text.length() == endCharIndex + 1) { return nextRubyToken(); }
 			text = text.substring(endCharIndex + 1);
 			start = start + endCharIndex + 1;
 		}
-		if (text.charAt(text.length() - 1) == endChar) {
+		endCharIndex = text.length() - 1;
+		if (text.charAt(endCharIndex) == endChar && text.charAt(endCharIndex -1) != '\\') {
 			endChar = 0;
 			inString = false;
 			if (text.length() == 1) return nextRubyToken();
 			text = text.substring(0, text.length() - 1);
+		} else if (inString && str.indexOf(endChar, start) == -1) {
+			inMultiString = true;
 		}
-
 		return new RubyToken(getType(text, start), text, start);
 	}
 
@@ -141,7 +184,9 @@ public class RubyTokenizer {
 		List openQuotes = new ArrayList();
 		for (int curPosition = 0; curPosition < index; curPosition++) {
 			char c = curLine.charAt(curPosition);
-			if (isQuoteChar(c)) {
+			int tmpIndex;
+			tmpIndex = curPosition > 0 ? curPosition - 1 : curPosition;
+			if (isQuoteChar(c) && curLine.charAt(tmpIndex) != '$' && curLine.charAt(tmpIndex) != '\\') {
 				Character newChar = new Character(c);
 				if (!openQuotes.isEmpty()) {
 					Character open = (Character) openQuotes.get(openQuotes.size() - 1);
@@ -233,13 +278,24 @@ public class RubyTokenizer {
 	 * @return
 	 */
 	private boolean inRegex(int index, String curLine) {
-		boolean insideregex = false;
+		int slashCount = 0;
+		boolean regExpStart = false;
+		boolean regExpStop = false;
 		for (int curPosition = 0; curPosition < index; curPosition++) {
-			if (curLine.charAt(curPosition) == '/') {
-				insideregex = !insideregex;
+			if (curLine.charAt(curPosition) == '/' && 
+					curLine.charAt(curPosition) != '\\') {
+				regExpStart = true;
+				break;
 			}
 		}
-		return insideregex || inPercentString('r', index, curLine);
+		for (int curPosition = index; regExpStart && curPosition < curLine.length(); curPosition++) {
+			if (curLine.charAt(curPosition) == '/' && 
+					curLine.charAt(curPosition) != '\\') {
+				regExpStop = true;
+				break;
+			}
+		}
+		return  (regExpStart && regExpStop) || inPercentString('r', index, curLine);
 	}
 
 	/**
@@ -267,8 +323,10 @@ public class RubyTokenizer {
 		if (text.equals("end")) { return RubyToken.END; }
 		if (text.equals("def")) { return RubyToken.METHOD; }
 		if (text.equals("require")) { return RubyToken.REQUIRES; }
-		if (text.equals("class")) { return RubyToken.CLASS; }
-		if (text.equals("module")) { return RubyToken.MODULE; }
+		if (text.equals("class") && currentPosition != maxPosition && 
+				str.charAt(currentPosition) == ' ') { return RubyToken.CLASS; }
+		if (text.equals("module") && currentPosition != maxPosition && 
+				str.charAt(currentPosition) == ' ') { return RubyToken.MODULE; }
 		if (text.equals("for")) { return RubyToken.FOR; }
 		if (text.equals("do")) { return RubyToken.DO; }
 		if (text.equals("begin")) { return RubyToken.BEGIN; }
@@ -355,6 +413,7 @@ public class RubyTokenizer {
 			char c = line.charAt(curPos);
 			if (c == ';') return true;
 			if (c == '=') return true;
+			if (c == '+') return true;
 			if (!Character.isWhitespace(c)) return false;
 		}
 		return true;
@@ -374,12 +433,18 @@ public class RubyTokenizer {
 		int currpos = currentPosition;
 		tempEndChar = endChar;
 		tempInString = inString;
+		
 		while (currpos < maxPosition) {
 			currpos = skipDelimiters(currpos, true);
 			int endPos = scanToken(currpos, true);
 			String text = str.substring(currpos, endPos);
 
-			if (currpos >= maxPosition) break;
+			if (currpos >= maxPosition) {
+				if (tempInString) {
+					count++;
+				}
+				break;
+			}
 			if (isStartOfComment(currpos)) break;
 
 			if (isStringBeginning(text) && !tempInString) {
@@ -392,6 +457,7 @@ public class RubyTokenizer {
 				}
 				text = text.substring(endCharIndex + 1);
 			}
+			
 			if (inString && text.charAt(text.length() - 1) == tempEndChar) {
 				tempEndChar = 0;
 				if (text.length() == 1) {
@@ -401,6 +467,9 @@ public class RubyTokenizer {
 				text = text.substring(0, text.length() - 1);
 			}
 			currpos = endPos;
+			count++;
+		}
+		if (count == 0 && isInMultiString()) {
 			count++;
 		}
 		return count;
@@ -436,17 +505,27 @@ public class RubyTokenizer {
 		int position = startPos;
 		while (position < maxPosition) {
 			char c = str.charAt(position);
+			int tmpIndex;
+			if (position > 0) {
+				tmpIndex = position - 1;
+			} else {
+				tmpIndex = 0;
+			}
 			if (!inString(temp) && isStringBeginning(str.substring(position))) {
-				setInString(temp, true);
-				int offset = getEndCharIndex(c);
-				setEndChar(temp, getMatchingBracket(str.charAt(position + offset)));
-				position += offset + 1;
-				continue;
+				if (str.charAt(tmpIndex) != '\\' && str.charAt(tmpIndex) != '$') {
+					setInString(temp, true);
+					int offset = getEndCharIndex(c);
+					setEndChar(temp, getMatchingBracket(str.charAt(position + offset)));
+					position += offset + 1;
+					continue;
+				}
 			}
 			if (inString(temp)) {
 				if (isUnescapedEndOfString(temp, position)) {
 					setInString(temp, false);
-					setEndChar(temp, (char) 0);
+					if (isInMultiString() == false) {
+						setEndChar(temp, (char) 0);
+					}
 					position++;
 					continue;
 				}
@@ -478,6 +557,7 @@ public class RubyTokenizer {
 		} else {
 			endChar = value;
 		}
+		
 	}
 
 	/**
@@ -507,7 +587,7 @@ public class RubyTokenizer {
 					continue;
 				}
 				if (isVariableSubstitution(str.substring(position))) break;
-				if (isUnescapedEndOfString(temp, position)) {
+				if (isUnescapedEndOfString(temp, position) && inVariableSubstitution(str, position) == false ) {
 					position++;
 					break;
 				}
@@ -525,7 +605,13 @@ public class RubyTokenizer {
 	 * @return
 	 */
 	private boolean isUnescapedEndOfString(boolean temp, int position) {
-		return str.charAt(position) == endChar(temp) && str.charAt(position - 1) != '\\';
+		int tempPosition;
+		if (position == 0) {
+			tempPosition = 0;
+		} else {
+			tempPosition = position -1;
+		}
+		return str.charAt(position) == endChar(temp) && str.charAt(tempPosition) != '\\';
 	}
 
 	/**
