@@ -174,4 +174,11 @@ public class RubyPlugin extends Plugin {
 		return new File(fileLocation.toOSString());
 	}
 
+	/**
+	 * @param string
+	 */
+	public static void log(String string) {
+		log(new Exception(string));		
+	}
+
 }
