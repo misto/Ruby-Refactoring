@@ -384,6 +384,10 @@ public class RubyParser {
 				continue;
 			}
 			String name = getToken("$", VARIABLE_END_CHARS, curLine, globalIndex);
+			if (isEmpty(name)) {
+				location = globalIndex + 1;
+				continue;
+			}
 			script.addElement(new RubyGlobal("$" + name, lineNum, globalIndex));
 			log("Found global:" + name);
 			location = globalIndex + name.length() + 1;
@@ -414,6 +418,7 @@ public class RubyParser {
 		if (instanceIndex == -1) return;
 		if ((inQuotes(instanceIndex, curLine) || inRegex(instanceIndex, curLine)) && !isSubstituted(instanceIndex, curLine)) return;
 		String name = getToken("@@", VARIABLE_END_CHARS, curLine);
+		if (isEmpty(name)) return;
 		addVariable(new RubyClassVariable("@@" + name, lineNum, instanceIndex));
 	}
 
@@ -427,7 +432,16 @@ public class RubyParser {
 		if (curLine.indexOf("@@") != -1) return;
 		if ((inQuotes(instanceIndex, curLine) || inRegex(instanceIndex, curLine)) && !isSubstituted(instanceIndex, curLine)) return;
 		String name = getToken("@", VARIABLE_END_CHARS, curLine);
+		if (isEmpty(name)) return;
 		addVariable(new RubyInstanceVariable("@" + name, lineNum, instanceIndex));
+	}
+
+	/**
+	 * @param name
+	 * @return
+	 */
+	private static boolean isEmpty(String name) {
+		return name == null || name.trim().length() == 0;
 	}
 
 	/**
@@ -590,6 +604,7 @@ public class RubyParser {
 		int start = RubyParserUtil.endIndexOf(curLine, "def ");
 		if (start == -1) return;
 		String name = getMethodName(curLine);
+		if (isEmpty(name)) return;
 		pushMultiLineElement(new RubyMethod(name, lineNum, start));
 	}
 

@@ -26,7 +26,6 @@
 package org.rubypeople.rdt.internal.core.parser;
 
 import junit.framework.TestCase;
-import junit.framework.TestSuite;
 
 import org.rubypeople.rdt.internal.core.parser.ast.RubyBegin;
 import org.rubypeople.rdt.internal.core.parser.ast.RubyCase;
@@ -744,6 +743,66 @@ public class TC_RubyParser extends TestCase {
 		
 		RubyScript script3 = RubyParser.parse("class  ");
 		assertEquals(0, script3.getElementCount() );
+	}
+	
+	public void testEmptyModuleName() throws Exception {
+		RubyScript script = RubyParser.parse("module ");
+		assertEquals(0, script.getElementCount() );
+		
+		RubyScript script2 = RubyParser.parse("module");
+		assertEquals(0, script2.getElementCount() );
+		
+		RubyScript script3 = RubyParser.parse("module  ");
+		assertEquals(0, script3.getElementCount() );
+	}
+	
+	public void testEmptyMethodName() throws Exception {
+		RubyScript script = RubyParser.parse("def ");
+		assertEquals(0, script.getElementCount() );
+		
+		RubyScript script2 = RubyParser.parse("def");
+		assertEquals(0, script2.getElementCount() );
+		
+		RubyScript script3 = RubyParser.parse("def  ");
+		assertEquals(0, script3.getElementCount() );
+	}
+	
+	public void testEmptyInstanceVariableName() throws Exception {
+		RubyScript script = RubyParser.parse("@ ");
+		assertEquals(0, script.getElementCount() );
+		
+		RubyScript script2 = RubyParser.parse("@");
+		assertEquals(0, script2.getElementCount() );
+		
+		RubyScript script3 = RubyParser.parse("@  ");
+		assertEquals(0, script3.getElementCount() );
+	}
+	
+	public void testEmptyClassVariableName() throws Exception {
+		RubyScript script = RubyParser.parse("@@ ");
+		assertEquals(0, script.getElementCount() );
+		
+		RubyScript script2 = RubyParser.parse("@@");
+		assertEquals(0, script2.getElementCount() );
+		
+		RubyScript script3 = RubyParser.parse("@@  ");
+		assertEquals(0, script3.getElementCount() );
+	}
+	
+	public void testEmptyGlobalName() throws Exception {
+		RubyScript script = RubyParser.parse("$ ");
+		assertEquals(0, script.getElementCount() );
+		
+		RubyScript script2 = RubyParser.parse("$");
+		assertEquals(0, script2.getElementCount() );
+		
+		RubyScript script3 = RubyParser.parse("$  ");
+		assertEquals(0, script3.getElementCount() );
+	}
+	
+	public void testDollarDollarGlobal() throws Exception {
+		RubyScript script = RubyParser.parse("$$");
+		assertEquals(1, script.getElementCount() );
 	}
 
 }
