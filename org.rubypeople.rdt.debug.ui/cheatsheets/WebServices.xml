@@ -102,6 +102,17 @@
 			to &quot;wsdl-gen-client&quot;, change the argument &quot;--type server&quot; to 
 			&quot;--type client&quot; and click &quot;Run&quot;. </description>
 	</item>
+	<item title="A Note on Run-Configurations" 
+		href="/org.rubypeople.rdt.doc.user/html/ch02s07.html">
+		<description> At this point you have created two run-configurations for the wsdl2ruby.rb 
+			file: wsdl-gen-server and wsdl-gen-client. These configurations will be stored in 
+			your workspace and therefore survive restarts of eclipse. You can start them via 
+			&quot;Run->Run History&quot; from the main menu or from the run configuration dialog 
+			opened with &quot;Run->Run...&quot;. But because there is more than one 
+			run-configuation for the same file, the context menu of wsdl2ruby.rb is now without 
+			function: &quot;Run->Run Ruby Application&quot; does nothing. This was just an 
+			information, use the &quot;Click to Complete&quot; button to proceed. </description>
+	</item>	
 	<item title="Check generated client files">
 		<description> Click &quot;Refresh&quot; on the MyWebservice project to display the two 
 			newly generated files: webServiceExampleDriver.rb and 
