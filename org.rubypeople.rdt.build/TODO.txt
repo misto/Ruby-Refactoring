@@ -26,5 +26,7 @@
 - Allow evaluation of ruby expressions in the display view  
 - Why are breakpoints not hit when executing runit tests ?
 - Make breakpoints persistent
+- Refresh thread list in debug view regularly (now it is only refreshed, whenever a
+  suspension (breakpoint, exception, next) occurs)
 - Allow debugging of several ruby programs concurrently (there is a socket bind exception now)
 - Introduce exception breakpoints (see TC_DebuggerCommunicationTest::testNameError)
