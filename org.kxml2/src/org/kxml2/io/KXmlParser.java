@@ -5,8 +5,8 @@
  *               D-46045 Oberhausen (Rhld.),
  *               Germany. All Rights Reserved.
  *
- * The contents of this file are subject to the "Lesser GNU Public
- * License" (LGPL); you may not use this file except in compliance
+ * The contents of this file are subject to the "Common Public
+ * License" (CPL); you may not use this file except in compliance
  * with the License.
  *
  * Software distributed under the License is distributed on an "AS IS"
@@ -92,8 +92,6 @@ public class KXmlParser implements XmlPullParser {
 
     private boolean unresolved;
     private boolean token;
-
-	private boolean lastEndElementRead = false ;
 
     public KXmlParser() {
         srcBuf =
@@ -239,12 +237,6 @@ public class KXmlParser implements XmlPullParser {
         if (reader == null)
             exception("No Input specified");
 
-		if (lastEndElementRead) {
-			depth--;
-			lastEndElementRead = false ;
-			type = END_DOCUMENT ;	
-			return ;
-		}
         if (type == END_TAG)
             depth--;
 
@@ -252,11 +244,8 @@ public class KXmlParser implements XmlPullParser {
             attributeCount = -1;
 
             if (degenerated) {
-                degenerated = false;                
+                degenerated = false;
                 type = END_TAG;
-                if (depth == 1) {
-                  	lastEndElementRead = true ;                
-                }                
                 return;
             }
 
@@ -279,10 +268,6 @@ public class KXmlParser implements XmlPullParser {
 
                 case END_TAG :
                     parseEndTag();
-                    if (depth == 1) {
-                    	lastEndElementRead = true ; 
-                    	return ;	
-                    }
                     return;
 
                 case END_DOCUMENT :
@@ -490,7 +475,7 @@ public class KXmlParser implements XmlPullParser {
             if (!name.equals(elementStack[sp + 3]))
                 exception("expected: " + elementStack[sp + 3]);
         }
-        else if (depth == 0 || !name.equalsIgnoreCase(elementStack[sp + 3]))
+        else if (depth == 0 || !name.toLowerCase().equals(elementStack[sp + 3].toLowerCase()))
             return;
 
         namespace = elementStack[sp];
@@ -667,6 +652,10 @@ public class KXmlParser implements XmlPullParser {
             int c = read();
             if (c == ';')
                 break;
+            if (relaxed && (c == '<' || c == '&' || c <= ' ')) {
+                if (c != -1) push(c);                
+                return;
+            }
             if (c == -1)
                 exception(UNEXPECTED_EOF);
             push(c);

@@ -1,7 +1,7 @@
 /* kXML2
  *
- * The contents of this file are subject to the Lesser GNU Public License
- * (LGPL, the "License"); you may not use this file except in
+ * The contents of this file are subject to the Common Public License
+ * (CPL, the "License"); you may not use this file except in
  * compliance with the License. 
  * 
  * Software distributed under the License is distributed on an "AS IS"
@@ -14,7 +14,7 @@
  * Germany. All Rights Reserved.
  *
  * Contributor(s): Paul Palaszewski, Wilhelm Fitzpatrick, 
- *                 Eric Foster-Johnson
+ *                 Eric Foster-Johnson,  Andreas Weiss
  *
  * */
 
@@ -62,14 +62,11 @@ public class Element extends Node {
 
     /** 
      * Forwards creation request to parent if any, otherwise
-     * calls super.createElement. Please note: For no
-     * namespace, please use Xml.NO_NAMESPACE, null is not a legal
-     * value. Currently, null is converted to Xml.NO_NAMESPACE, but
-     * future versions may throw an exception. */
+     * calls super.createElement. */
 
     public Element createElement(
         String namespace,
-        String name) {
+        String name) { 
 
         return (this.parent == null)
             ? super.createElement(namespace, name)
@@ -112,20 +109,19 @@ public class Element extends Node {
 	}
 
     /** 
-     * Returns the document this element is a member of. The document
-     * is determined by ascending to the parent of the root element.
-     * If the element is not contained in a document, null is
-     * returned. */
+     * Returns the root node, determined by ascending to the 
+     * all parents un of the root element. */
 
-    public Document getDocument() {
+    public Node getRoot() {
 
-        if (parent instanceof Document)
-            return (Document) parent;
-
-        if (parent instanceof Element)
-            return ((Element) parent).getDocument();
-
-        return null;
+        Element current = this;
+        
+        while (current.parent != null) {
+            if (!(current.parent instanceof Element)) return current.parent;
+            current = (Element) current.parent;
+        }
+        
+        return current;
     }
 
     /** 
@@ -182,15 +178,15 @@ public class Element extends Node {
         return parent;
     }
 
-    /** 
-     * Returns the parent element if available, null otherwise */
+    /* 
+     * Returns the parent element if available, null otherwise 
 
     public Element getParentElement() {
         return (parent instanceof Element)
             ? ((Element) parent)
             : null;
     }
-
+*/
 
     /** 
      * Builds the child elements from the given Parser. By overwriting 
@@ -229,7 +225,7 @@ public class Element extends Node {
 		}
 		
         parser.require(
-            parser.END_TAG,
+            XmlPullParser.END_TAG,
             getNamespace(),
             getName());
             
@@ -241,7 +237,27 @@ public class Element extends Node {
      * Sets the given attribute; a value of null removes the attribute */
 
 	public void setAttribute (String namespace, String name, String value) {
-		if (attributes == null) attributes = new Vector ();
+		if (attributes == null) 
+			attributes = new Vector ();
+
+		if (namespace == null) 
+			namespace = "";
+		
+        for (int i = attributes.size()-1; i >=0; i--){
+            String[] attribut = (String[]) attributes.elementAt(i);
+            if (attribut[0].equals(namespace) &&
+				attribut[1].equals(name)){
+					
+				if (value == null) {
+	                attributes.removeElementAt(i);
+				}
+				else {
+					attribut[2] = value;
+				}
+	            return; 
+			}
+        }
+
 		attributes.addElement 
 			(new String [] {namespace, name, value});
 	}
