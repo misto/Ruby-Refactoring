@@ -66,7 +66,7 @@ public class UpperCaseNameRule implements ParseRule {
 	}
 	
 	private int getSeverity() {
-		return ParseRule.WARNING;
+		return ParseRule.ERROR;
 	}
 
 	/* (non-Javadoc)

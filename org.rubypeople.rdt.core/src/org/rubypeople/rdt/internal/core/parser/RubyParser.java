@@ -40,7 +40,8 @@ public class RubyParser {
 	private static RubyParserStack stack = new RubyParserStack();
 	private static RubyScript script;
 	private static boolean inDocs;
-	private static boolean isDebugging = true ;
+	private static boolean isDebugging = true;
+	private static String currentClassName;
 
 	/**
 	 * @return
@@ -179,6 +180,16 @@ public class RubyParser {
 		return script;
 	}
 
+	private static boolean isMethodOfCurrentClassOrModule(String methodName) {
+		if (methodName.compareTo("self") == 0) {
+			return true;
+		}
+		if (currentClassName != null && methodName.compareTo(currentClassName) == 0) {
+			return true;
+		}
+		return false;
+	}
+	
 	/**
 	 * @param element
 	 * @param isDeclaration
@@ -263,7 +274,17 @@ public class RubyParser {
 			return;
 		}
 		RubyToken elementName = tokenizer.nextRubyToken();
+		while (token.getText().compareTo("def") == 0 && 
+				isMethodOfCurrentClassOrModule(elementName.getText())) {
+			elementName = tokenizer.nextRubyToken();
+		}
+		
 		String name = elementName.getText();
+		if (token.getText().compareTo("class") == 0 || 
+				token.getText().compareTo("module") == 0) {
+			currentClassName = name; 
+		}
+		
 		RubyElement element = new RubyElement(token.getType(), name, lineNum, elementName.getOffset());
 		applyRules(element);
 	}

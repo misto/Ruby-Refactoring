@@ -342,24 +342,23 @@ public class TC_RubyParser extends TestCase {
 		assertNotNull(F.getElement("h"));
 	}
 	public void testComplainsAboutLowercaseClassName() throws Exception {
-		RubyScript script = RubyParser.parse("class bob\ndef initialize\nend\nend\n");
+		RubyScript script = RubyParser.parse("class bob\nend\n");
 		assertEquals(1, script.getElementCount());
 		assertTrue(script.hasParseErrors());
 		assertEquals(1, script.getErrorCount());
+		ParseError error = (ParseError) script.getParseErrors().toArray()[0];
+		assertEquals( ParseError.ERROR, error.getSeverity().intValue());
+		
 		assertTrue(script.contains(new RubyElement(RubyElement.CLASS, "bob", 0, 6)));
-		assertEquals(new Position(3, 0), script.getElement("bob").getEnd());
-		RubyElement bob = script.getElement("bob");
-		assertEquals(1, bob.getElementCount());
-		assertTrue(bob.contains(new RubyElement(RubyElement.METHOD, "initialize", 1, 4)));
-		assertNotNull(bob.getElement("initialize"));
-		assertEquals(new Position(1, 4), bob.getElement("initialize").getStart());
-		assertEquals(new Position(2, 0), bob.getElement("initialize").getEnd());
+		assertEquals(new Position(1, 0), script.getElement("bob").getEnd());
 	}
 
 	public void testComplainsAboutLowercaseModuleName() throws Exception {
 		RubyScript script = RubyParser.parse("module bob\nend\n");
 		assertEquals(1, script.getElementCount());
 		assertEquals(1, script.getErrorCount());
+		ParseError error = (ParseError) script.getParseErrors().toArray()[0];
+		assertEquals( ParseError.ERROR, error.getSeverity().intValue());
 		assertTrue(script.contains(new RubyElement(RubyElement.MODULE, "bob", 0, 7)));
 		assertEquals(new Position(1, 0), script.getElement("bob").getEnd());
 	}
@@ -1031,7 +1030,29 @@ public class TC_RubyParser extends TestCase {
 		assertNotNull(query);
 		assertTrue(query.contains(new RubyElement(RubyElement.IF, "if", 2, 12)));
 	}
+	public void testRecognizeClassMethods() throws Exception {
+		RubyScript script = RubyParser.parse("class Bob\ndef self.method\nend\ndef Bob.method1\nend\nend");
+		assertEquals(1, script.getElementCount() );
+		RubyElement bob = script.getElement("Bob");
+		assertNotNull(bob);
+		assertEquals( 2, bob.getElementCount() );
+		RubyElement e = bob.getElement("method");
+		assertTrue(e != null);
+		e = bob.getElement("method1");
+		assertTrue(e != null);
+	}
 	
+	public void testRecognizeModuleMethods() throws Exception {
+		RubyScript script = RubyParser.parse("module Bob\ndef self.method\nend\ndef Bob.method1\nend\nend");
+		assertEquals(1, script.getElementCount() );
+		RubyElement bob = script.getElement("Bob");
+		assertNotNull(bob);
+		assertEquals( 2, bob.getElementCount() );
+		RubyElement e = bob.getElement("method");
+		assertTrue(e != null);
+		e = bob.getElement("method1");
+		assertTrue(e != null);
+	}
 	public void testDuplicateMethodDeclarationsDiscouraged() throws Exception {
 		RubyScript script = RubyParser.parse("class Bob\ndef method\nend\ndef method\nend\nend");
 		assertEquals(1, script.getElementCount() );
