@@ -54,8 +54,8 @@ class XmlPrinter
   end
   
   def printVariableValue(name, value, kind)
-   if !value then
-      out("<variable name=\"%s\" kind=\"%s\"/>", name, kind)
+    if value == nil then
+      out("<variable name=\"%s\" kind=\"%s\"/>", CGI.escapeHTML(name), kind)
       return
     end
     if value.class().name == "Array" or value.class().name == "Hash" then
@@ -72,8 +72,7 @@ class XmlPrinter
         valueString.slice!(1..(valueString.length)-2) 
       end	  
 	end
-
-    out("<variable name=\"%s\" kind=\"%s\" value=\"%s\" type=\"%s\" hasChildren=\"%s\" objectId=\"%s\"/>", name, kind, CGI.escapeHTML(valueString), value.class(), hasChildren, value.id())
+    out("<variable name=\"%s\" kind=\"%s\" value=\"%s\" type=\"%s\" hasChildren=\"%s\" objectId=\"%s\"/>", CGI.escapeHTML(name), kind, CGI.escapeHTML(valueString), value.class(), hasChildren, value.id())
   end
 
   def printBreakpoint(n, debugFuncName, file, pos)
