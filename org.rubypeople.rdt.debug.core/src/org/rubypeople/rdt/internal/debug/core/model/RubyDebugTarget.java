@@ -117,8 +117,20 @@ public class RubyDebugTarget implements IRubyDebugTarget {
 	}
 
 	public void terminate() {
-		this.threads = new RubyThread[0] ;
-		isTerminated = true;
+		if (isTerminated) {
+			return ;
+		}
+		try {
+			this.getProcess().terminate() ;
+			this.threads = new RubyThread[0] ;
+			isTerminated = true;
+		} catch (DebugException e) {
+			RdtDebugCorePlugin.debug("Exception while terminating process.", e) ;
+		}
+		
+		// launch is one of the listeners
+		DebugPlugin.getDefault().fireDebugEventSet(new DebugEvent[] {new DebugEvent(this, DebugEvent.TERMINATE)});
+
 	}
 
 	public boolean canResume() {
@@ -140,10 +152,16 @@ public class RubyDebugTarget implements IRubyDebugTarget {
 	}
 
 	public void breakpointAdded(IBreakpoint breakpoint) {
+		if (isTerminated) {
+			return ;
+		}
 		this.getRubyDebuggerProxy().addBreakpoint(breakpoint) ;
 	}
 
 	public void breakpointRemoved(IBreakpoint breakpoint, IMarkerDelta arg1) {
+		if (isTerminated) {
+			return ;
+		}		
 		this.getRubyDebuggerProxy().removeBreakpoint(breakpoint) ;		
 	}
 

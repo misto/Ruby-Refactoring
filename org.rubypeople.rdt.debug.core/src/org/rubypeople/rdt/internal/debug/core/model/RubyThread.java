@@ -153,6 +153,7 @@ public class RubyThread implements IThread {
 	}
 
 	public void terminate() throws DebugException {
+		this.getDebugTarget().terminate() ;
 		isTerminated = true;
 		this.frames = null;
 	}

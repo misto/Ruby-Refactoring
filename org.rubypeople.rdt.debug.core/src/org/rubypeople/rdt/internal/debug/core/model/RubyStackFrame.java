@@ -161,7 +161,7 @@ public class RubyStackFrame implements IStackFrame {
 	} 
 	
 	public void terminate() throws DebugException {
-
+		this.getThread().terminate() ;		
 	} 
 	
 	public Object getAdapter(Class arg0) {
