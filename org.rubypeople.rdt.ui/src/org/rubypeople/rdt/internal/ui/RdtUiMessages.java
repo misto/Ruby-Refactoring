@@ -25,5 +25,9 @@ public class RdtUiMessages {
 	
 	public static String getFormattedString(String key, String[] args) {
 		return MessageFormat.format(getString(key), args);	
-	}	
+	}
+	
+	public static ResourceBundle getResourceBundle() {
+		return resourceBundle;
+	}
 }

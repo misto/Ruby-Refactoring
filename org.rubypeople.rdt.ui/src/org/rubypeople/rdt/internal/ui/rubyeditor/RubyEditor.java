@@ -1,10 +1,14 @@
 package org.rubypeople.rdt.internal.ui.rubyeditor;
 
+import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.preference.PreferenceConverter;
+import org.eclipse.jface.text.source.ISourceViewer;
 import org.eclipse.swt.graphics.RGB;
 import org.eclipse.ui.editors.text.TextEditor;
 import org.eclipse.ui.texteditor.DefaultRangeIndicator;
+import org.eclipse.ui.texteditor.TextOperationAction;
+import org.rubypeople.rdt.internal.ui.RdtUiMessages;
 import org.rubypeople.rdt.internal.ui.RdtUiPlugin;
 import org.rubypeople.rdt.internal.ui.text.RubyColorConstants;
 import org.rubypeople.rdt.internal.ui.text.RubySourceViewerConfiguration;
@@ -35,5 +39,17 @@ public class RubyEditor extends TextEditor {
 		RubyTextTools textTools = RdtUiPlugin.getDefault().getTextTools();
 		setSourceViewerConfiguration(new RubySourceViewerConfiguration(textTools, this));
 		setRangeIndicator(new DefaultRangeIndicator());
+	}
+	
+	protected void createActions() {
+		super.createActions();
+		setAction("ContentAssistProposal", new TextOperationAction(RdtUiMessages.getResourceBundle(), "ContentAssistProposal.", this, ISourceViewer.CONTENTASSIST_PROPOSALS));
+		setAction("ContentAssistTip", new TextOperationAction(RdtUiMessages.getResourceBundle(), "ContentAssistTip.", this, ISourceViewer.CONTENTASSIST_CONTEXT_INFORMATION));
+	}
+
+	public void editorContextMenuAboutToShow(MenuManager menu) {
+		super.editorContextMenuAboutToShow(menu);
+		addAction(menu, "ContentAssistProposal");
+		addAction(menu, "ContentAssistTip");
 	}
 }
