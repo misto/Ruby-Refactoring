@@ -251,6 +251,10 @@ public class TC_RubyProject extends TestCase {
 			return false;
 		}
 
+		public int getEncoding() throws CoreException {
+			return 0;
+		}
+
 	}
 
 	public class ShamProject implements IProject {

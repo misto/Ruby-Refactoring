@@ -251,5 +251,9 @@ public class TC_RubyRuntime extends TestCase {
 			return false;
 		}
 
+		public int getEncoding() throws CoreException {
+			return 0;
+		}
+
 	}
 }
