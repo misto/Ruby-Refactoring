@@ -57,7 +57,7 @@ public class TC_DebuggerCommunicationTest extends TestCase {
 			return suite;
 		}
 		*/
-	private static final String TMP_DIR = "D:\\Temp";
+	private static final String TMP_DIR = System.getProperty("java.io.tmpdir") ;
 	private Process process;
 	private OutputRedirectorThread rubyStdoutRedirectorThread;
 	private OutputRedirectorThread rubyStderrRedirectorThread;
@@ -73,7 +73,7 @@ public class TC_DebuggerCommunicationTest extends TestCase {
 	}
 
 	private String getTestFilename() {
-		return TC_DebuggerCommunicationTest.TMP_DIR + File.separator + "test.rb";
+		return TC_DebuggerCommunicationTest.TMP_DIR + "test.rb";
 	}
 
 	private String getRubyTestFilename() {
@@ -174,7 +174,7 @@ public class TC_DebuggerCommunicationTest extends TestCase {
 		out.println("next");
 		SuspensionPoint info = new StepEndReader().readEndOfStep(this.getXpp(socket));
 		this.assertEquals(3, info.getLine());
-		this.assertEquals(this.getOSIndependent(TMP_DIR + "/test.rb"), info.getFile());
+		this.assertEquals(this.getOSIndependent(TMP_DIR + "test.rb"), info.getFile());
 		this.assertEquals(1, info.getFramesNumber());
 		out.println("next");
 		info = new StepEndReader().readEndOfStep(this.getXpp(socket));
@@ -182,7 +182,7 @@ public class TC_DebuggerCommunicationTest extends TestCase {
 	}
 
 	private void writeFile(String name, String[] content) throws Exception {
-		PrintWriter writer = new PrintWriter(new FileOutputStream(TC_DebuggerCommunicationTest.TMP_DIR + File.separator + name));
+		PrintWriter writer = new PrintWriter(new FileOutputStream(TC_DebuggerCommunicationTest.TMP_DIR + name));
 		for (int i = 0; i < content.length; i++) {
 			writer.println(content[i]);
 		}
@@ -209,7 +209,7 @@ public class TC_DebuggerCommunicationTest extends TestCase {
 		out.println("next");
 		SuspensionPoint info = new StepEndReader().readEndOfStep(this.getXpp(socket));
 		this.assertEquals(4, info.getLine());
-		this.assertEquals(this.getOSIndependent(TMP_DIR + "/test2.rb"), info.getFile());
+		this.assertEquals(this.getOSIndependent(TMP_DIR + "test2.rb"), info.getFile());
 		this.assertEquals(2, info.getFramesNumber());
 		out.println("next");
 		info = new StepEndReader().readEndOfStep(this.getXpp(socket));
@@ -223,7 +223,7 @@ public class TC_DebuggerCommunicationTest extends TestCase {
 		out.println("next 2");
 		SuspensionPoint info = new StepEndReader().readEndOfStep(this.getXpp(socket));
 		this.assertEquals(3, info.getLine());
-		this.assertEquals(this.getOSIndependent(TMP_DIR + "/test.rb"), info.getFile());
+		this.assertEquals(this.getOSIndependent(TMP_DIR + "test.rb"), info.getFile());
 		this.assertEquals(1, info.getFramesNumber());
 		out.println("cont");
 	}
@@ -235,7 +235,7 @@ public class TC_DebuggerCommunicationTest extends TestCase {
 		out.println("step");
 		SuspensionPoint info = new StepEndReader().readEndOfStep(this.getXpp(socket));
 		this.assertEquals(3, info.getLine());
-		this.assertEquals(getOSIndependent(TMP_DIR + "/test2.rb"), info.getFile());
+		this.assertEquals(getOSIndependent(TMP_DIR + "test2.rb"), info.getFile());
 		this.assertEquals(2, info.getFramesNumber());
 		out.println("cont");
 	}
@@ -394,12 +394,12 @@ public class TC_DebuggerCommunicationTest extends TestCase {
 		new FramesReader().readFrames(thread, this.getXpp(socket));
 		this.assertEquals(2, thread.getStackFrames().length);
 		RubyStackFrame frame1 = (RubyStackFrame) thread.getStackFrames()[0];
-		this.assertEquals(this.getOSIndependent(TMP_DIR + "/test2.rb"), frame1.getFileName());
+		this.assertEquals(this.getOSIndependent(TMP_DIR + "test2.rb"), frame1.getFileName());
 		this.assertEquals(1, frame1.getIndex());
 		this.assertEquals(3, frame1.getLineNumber());
 
 		RubyStackFrame frame2 = (RubyStackFrame) thread.getStackFrames()[1];
-		this.assertEquals(this.getOSIndependent(TMP_DIR + "/test.rb"), frame2.getFileName());
+		this.assertEquals(this.getOSIndependent(TMP_DIR + "test.rb"), frame2.getFileName());
 		this.assertEquals(2, frame2.getIndex());
 		this.assertEquals(2, frame2.getLineNumber());
 
