@@ -47,7 +47,7 @@ public class TC_DebuggerCommunicationTest extends TestCase {
 		//suite.addTest(new TC_DebuggerCommunicationTest("testVariableNil"));
 		//suite.addTest(new TC_DebuggerCommunicationTest("testVariableInstanceNested"));				
 		//suite.addTest(new TC_DebuggerCommunicationTest("testStaticVariableInstanceNested"));			
-		//suite.addTest(new TC_DebuggerCommunicationTest("testException"));
+		suite.addTest(new TC_DebuggerCommunicationTest("testException"));
 		//suite.addTest(new TC_DebuggerCommunicationTest("testNameError"));
 		//suite.addTest(new TC_DebuggerCommunicationTest("testVariablesInObject"));	
 		//suite.addTest(new TC_DebuggerCommunicationTest("testStaticVariables"));		
@@ -62,11 +62,12 @@ public class TC_DebuggerCommunicationTest extends TestCase {
 		//suite.addTest(new TC_DebuggerCommunicationTest("testVariableHashWithStringKeys"));
 		//suite.addTest(new TC_DebuggerCommunicationTest("testVariableWithXmlContent"));
 		//  suite.addTest(new TC_DebuggerCommunicationTest("testVariableLocal"));
-		suite.addTest(new TC_DebuggerCommunicationTest("testReloadAndInspect")) ;
-		suite.addTest(new TC_DebuggerCommunicationTest("testReloadWithException")) ;
-		suite.addTest(new TC_DebuggerCommunicationTest("testReloadAndStep")) ;
-		suite.addTest(new TC_DebuggerCommunicationTest("testReloadInRequire")) ;
-		suite.addTest(new TC_DebuggerCommunicationTest("testReloadInStackFrame")) ;
+		//suite.addTest(new TC_DebuggerCommunicationTest("testReloadAndInspect")) ;
+		//suite.addTest(new TC_DebuggerCommunicationTest("testReloadWithException")) ;
+		//suite.addTest(new TC_DebuggerCommunicationTest("testReloadAndStep")) ;
+		//suite.addTest(new TC_DebuggerCommunicationTest("testReloadInRequire")) ;
+		//suite.addTest(new TC_DebuggerCommunicationTest("testReloadInStackFrame")) ;
+        
 		return suite;
 	}
 */
@@ -248,15 +249,15 @@ public class TC_DebuggerCommunicationTest extends TestCase {
 	}
 
 	public void testException() throws Exception {
-		createSocket(new String[] { "puts 'a'", "raise 'message'", "puts 'c'" });
+		createSocket(new String[] { "puts 'a'", "raise 'message \\dir\\file: <xml/>\n<8>'", "puts 'c'" });
 		out.println("cont");
 		System.out.println("Waiting for exception");
 		SuspensionPoint hit = getSuspensionReader().readSuspension();
 		assertNotNull(hit);
-		assertEquals(2, hit.getLine());
+		assertEquals(3, hit.getLine());
 		assertEquals(getOSIndependent(getTmpDir() + "test.rb"), hit.getFile());
 		assertTrue(hit.isException());
-		assertEquals("message", ((ExceptionSuspensionPoint) hit).getExceptionMessage());
+		assertEquals("message \\dir\\file: <xml/>", ((ExceptionSuspensionPoint) hit).getExceptionMessage());
 		assertEquals("RuntimeError", ((ExceptionSuspensionPoint) hit).getExceptionType());
 		out.println("cont");
 	}
