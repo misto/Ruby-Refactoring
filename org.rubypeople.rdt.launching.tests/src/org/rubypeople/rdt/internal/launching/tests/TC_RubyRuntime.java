@@ -16,6 +16,7 @@ import org.eclipse.core.resources.IFileState;
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IProjectDescription;
+import org.eclipse.core.resources.IResourceProxyVisitor;
 import org.eclipse.core.resources.IResourceVisitor;
 import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.runtime.CoreException;
@@ -268,6 +269,10 @@ public class TC_RubyRuntime extends TestCase {
 
 		public boolean isLinked() {
 			return false;
+		}
+
+
+		public void accept(IResourceProxyVisitor arg0, int arg1) throws CoreException {
 		}
 
 	}
