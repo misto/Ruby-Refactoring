@@ -202,10 +202,9 @@ public class RubyCompletionProcessor extends TemplateCompletionProcessor impleme
 				IRubyElement child = elements[i];
 				suggestions.add(child.getElementName());
 				if(child instanceof IParent)
-				suggestions.addAll(getElements((IParent)child));
+				  suggestions.addAll(getElements((IParent)child));
 			}
 		} catch (RubyModelException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}		
 		return suggestions;

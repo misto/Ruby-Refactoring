@@ -655,7 +655,6 @@ public class RubyDocumentProvider extends TextFileDocumentProvider {
 		
 		public RubyScriptAnnotationModel(IResource resource) {
 			super(resource);
-			System.out.println("create RubyScriptAnnotationModel on: " + resource);
 		}
 		
 		public void setRubyScript(IRubyScript unit)  {
