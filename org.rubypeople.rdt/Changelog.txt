@@ -1,4 +1,20 @@
 Changes since Release of 0.5.0
+* Code folding:
+    * Ability to enable/disable
+    * Preference page allows you to choose to auto-collapse
+        * Inner types
+        * Methods
+        * RDoc (not really working yet)
+* Much more intelligent parsing
+    *  Annotations and highlights of syntax errors
+    *  Annotations and highlights of warnings created by JRuby parser
+* Auto-complete of brackets, parens, and single/double quotes
+* Task tag recognition
+    * Ability to set multiple tags
+    * Ability to set low, normal or high priorities for tags
+* Added shortcuts for inspection during debug session:
+    * Extension to the editor's pop-up menu
+    * Preference page
 * Added RI view
 * Fixed bug in Debugger which crashed Eclipse (no more handles)
 * Fixed bug [1078036]: Cursor moves to document start when formatting whole document (i.e. there is no selection)
