@@ -12,6 +12,7 @@ import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.*;
 import org.rubypeople.rdt.core.RubyElement;
+import org.rubypeople.rdt.internal.core.parser.RubyParser;
 import org.xml.sax.*;
 
 public class RubyPlugin extends Plugin {
@@ -45,6 +46,8 @@ public class RubyPlugin extends Plugin {
 		manager.registerAdapters(new ResourceAdapterFactory(), IResource.class);
 		String codeFormatterOption = Platform.getDebugOption(RubyPlugin.PLUGIN_ID + "/codeformatter") ;
 		isCodeFormatterDebugging = codeFormatterOption == null ? false : codeFormatterOption.equalsIgnoreCase("true") ;
+		String rubyParserOption = Platform.getDebugOption(RubyPlugin.PLUGIN_ID + "/rubyparser") ;
+		RubyParser.setDebugging(rubyParserOption == null ? false : rubyParserOption.equalsIgnoreCase("true")) ;
 	}
 
 	public static void log(Exception runtimeException) {

@@ -40,6 +40,7 @@ public class RubyParser {
 	private static RubyParserStack stack = new RubyParserStack();
 	private static RubyScript script;
 	private static boolean inDocs;
+	private static boolean isDebugging = true ;
 
 	/**
 	 * @return
@@ -333,8 +334,12 @@ public class RubyParser {
 	 * @param string
 	 */
 	private static void log(String string) {
-		//		if ( RubyPlugin.getDefault().isDebugging() ) {
+		if ( RubyParser.isDebugging) {
 			System.out.println(string);
-		//		}
+		}
+	}
+	
+	public static void setDebugging(boolean newValue) {
+		RubyParser.isDebugging = newValue ;	
 	}
 }
