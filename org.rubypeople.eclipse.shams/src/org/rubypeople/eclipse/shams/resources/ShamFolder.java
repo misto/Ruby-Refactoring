@@ -300,4 +300,12 @@ public class ShamFolder extends ShamResource implements IFolder {
 		// TODO Auto-generated method stub
 		
 	}
+
+	/* (non-Javadoc)
+	 * @see org.eclipse.core.resources.IContainer#getDefaultCharset(boolean)
+	 */
+	public String getDefaultCharset(boolean checkImplicit) throws CoreException {
+		// TODO Auto-generated method stub
+		return null;
+	}
 }

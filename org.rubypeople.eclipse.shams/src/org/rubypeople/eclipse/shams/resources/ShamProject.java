@@ -296,4 +296,20 @@ public class ShamProject extends ShamResource implements IProject {
 		
 	}
 
+	/* (non-Javadoc)
+	 * @see org.eclipse.core.resources.IProject#getWorkingLocation(java.lang.String)
+	 */
+	public IPath getWorkingLocation(String id) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	/* (non-Javadoc)
+	 * @see org.eclipse.core.resources.IContainer#getDefaultCharset(boolean)
+	 */
+	public String getDefaultCharset(boolean checkImplicit) throws CoreException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 }

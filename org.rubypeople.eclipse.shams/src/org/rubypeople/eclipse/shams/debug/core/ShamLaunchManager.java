@@ -14,11 +14,13 @@ import org.eclipse.debug.core.ILaunchConfigurationListener;
 import org.eclipse.debug.core.ILaunchConfigurationType;
 import org.eclipse.debug.core.ILaunchListener;
 import org.eclipse.debug.core.ILaunchManager;
+import org.eclipse.debug.core.ILaunchMode;
 import org.eclipse.debug.core.ILaunchesListener;
 import org.eclipse.debug.core.model.IDebugTarget;
 import org.eclipse.debug.core.model.IPersistableSourceLocator;
 import org.eclipse.debug.core.model.IProcess;
-import org.eclipse.debug.internal.core.sourcelookup.ISourcePathComputer;
+import org.eclipse.debug.core.sourcelookup.ISourceContainerType;
+import org.eclipse.debug.core.sourcelookup.ISourcePathComputer;
 
 public class ShamLaunchManager implements ILaunchManager {
 	protected List launches = new ArrayList();
@@ -139,8 +141,7 @@ public class ShamLaunchManager implements ILaunchManager {
 		return null;
 	}
 
-	public String[] getLaunchModes() {
-
+	public ILaunchMode[] getLaunchModes() {
 		return null;
 	}
 
@@ -154,6 +155,46 @@ public class ShamLaunchManager implements ILaunchManager {
 	 * @see org.eclipse.debug.core.ILaunchManager#getNativeEnvironment()
 	 */
 	public Map getNativeEnvironment() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	/* (non-Javadoc)
+	 * @see org.eclipse.debug.core.ILaunchManager#getLaunchMode(java.lang.String)
+	 */
+	public ILaunchMode getLaunchMode(String mode) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	/* (non-Javadoc)
+	 * @see org.eclipse.debug.core.ILaunchManager#getSourcePathComputer(org.eclipse.debug.core.ILaunchConfiguration)
+	 */
+	public ISourcePathComputer getSourcePathComputer(ILaunchConfiguration configuration) throws CoreException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	/* (non-Javadoc)
+	 * @see org.eclipse.debug.core.ILaunchManager#getSourcePathComputer(java.lang.String)
+	 */
+	public ISourcePathComputer getSourcePathComputer(String id) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	/* (non-Javadoc)
+	 * @see org.eclipse.debug.core.ILaunchManager#getSourceContainerTypes()
+	 */
+	public ISourceContainerType[] getSourceContainerTypes() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	/* (non-Javadoc)
+	 * @see org.eclipse.debug.core.ILaunchManager#getSourceContainerType(java.lang.String)
+	 */
+	public ISourceContainerType getSourceContainerType(String id) {
 		// TODO Auto-generated method stub
 		return null;
 	}

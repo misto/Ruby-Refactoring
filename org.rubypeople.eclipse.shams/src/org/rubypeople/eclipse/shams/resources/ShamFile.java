@@ -18,6 +18,7 @@ import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.QualifiedName;
+import org.eclipse.core.runtime.content.IContentDescription;
 
 public class ShamFile extends ShamResource implements IFile {
 	protected String contents = "";
@@ -279,5 +280,21 @@ public class ShamFile extends ShamResource implements IFile {
 	public void setCharset(String newCharset) throws CoreException {
 		// TODO Auto-generated method stub
 		
+	}
+
+	/* (non-Javadoc)
+	 * @see org.eclipse.core.resources.IFile#getCharset(boolean)
+	 */
+	public String getCharset(boolean checkImplicit) throws CoreException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	/* (non-Javadoc)
+	 * @see org.eclipse.core.resources.IFile#getContentDescription()
+	 */
+	public IContentDescription getContentDescription() throws CoreException {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }

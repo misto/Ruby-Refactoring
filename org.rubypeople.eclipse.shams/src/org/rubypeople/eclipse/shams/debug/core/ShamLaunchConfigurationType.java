@@ -5,7 +5,7 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.debug.core.ILaunchConfigurationType;
 import org.eclipse.debug.core.ILaunchConfigurationWorkingCopy;
 import org.eclipse.debug.core.model.ILaunchConfigurationDelegate;
-import org.eclipse.debug.internal.core.sourcelookup.ISourcePathComputer;
+import org.eclipse.debug.core.sourcelookup.ISourcePathComputer;
 
 public class ShamLaunchConfigurationType implements ILaunchConfigurationType {
 	protected boolean newInstanceCreated;
@@ -66,11 +66,11 @@ public class ShamLaunchConfigurationType implements ILaunchConfigurationType {
 		return null;
 	}
 
-	/* (non-Javadoc)
-	 * @see org.eclipse.debug.core.ILaunchConfigurationType#getSourceLocatorId()
-	 */
 	public String getSourceLocatorId() {
-		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public String getPluginIdentifier() {
 		return null;
 	}
 
