@@ -1,5 +1,6 @@
 package org.rubypeople.rdt.internal.ui.preferences;
 
+
 import org.eclipse.jface.preference.ColorFieldEditor;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.preference.PreferencePage;
@@ -11,14 +12,17 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPreferencePage;
 import org.rubypeople.rdt.internal.ui.RdtUiMessages;
 import org.rubypeople.rdt.internal.ui.RdtUiPlugin;
 import org.rubypeople.rdt.internal.ui.text.RubyColorConstants;
+import org.rubypeople.rdt.ui.PreferenceConstants;
 
 public class RubyEditorPreferencePage extends PreferencePage implements IWorkbenchPreferencePage {
 	protected TextPropertyWidget[] textPropertyWidgets;
+	protected Text indentationWidget ;
 	protected final String[] colorProperties = { RubyColorConstants.RUBY_KEYWORD, RubyColorConstants.RUBY_MULTI_LINE_COMMENT, RubyColorConstants.RUBY_SINGLE_LINE_COMMENT, RubyColorConstants.RUBY_STRING, RubyColorConstants.RUBY_DEFAULT };
 
 	protected Control createContents(Composite parent) {
@@ -27,6 +31,7 @@ public class RubyEditorPreferencePage extends PreferencePage implements IWorkben
 		composite.setLayoutData(new GridData(GridData.VERTICAL_ALIGN_FILL | GridData.HORIZONTAL_ALIGN_FILL));
 
 		GridLayout layout = new GridLayout();
+		layout.numColumns = 2 ;
 		layout.marginWidth = 0;
 		layout.marginHeight = 0;
 		layout.verticalSpacing = 10;
@@ -44,6 +49,8 @@ public class RubyEditorPreferencePage extends PreferencePage implements IWorkben
 		colorComposite.setLayout(layout);
 		colorComposite.setText(RdtUiMessages.getString("RubyEditorPropertyPage.highlighting.group")); //$NON-NLS-1$
 		GridData data = new GridData(GridData.FILL_HORIZONTAL);
+		//data.grabExcessHorizontalSpace = true ;
+		data.horizontalSpan = 2 ;
 		colorComposite.setLayoutData(data);
 
 		Label header = new Label(colorComposite, SWT.BOLD);
@@ -59,9 +66,38 @@ public class RubyEditorPreferencePage extends PreferencePage implements IWorkben
 		for (int i = 0; i < colorProperties.length; i++) {
 			textPropertyWidgets[i] = new TextPropertyWidget(colorComposite, colorProperties[i]);
 		}
-
+	
+		this.addIndentation(composite) ;
+	
 		return composite;
 	}
+
+	protected void addIndentation(Composite parent) {	
+		Label labelControl= new Label(parent, SWT.NONE);
+		labelControl.setText(RdtUiMessages.getString("RubyEditorPropertyPage.indentation"));
+		labelControl.setLayoutData(new GridData());
+				
+		indentationWidget= new Text(parent, SWT.BORDER | SWT.SINGLE);
+		indentationWidget.setData(PreferenceConstants.FORMAT_INDENTATION);
+		indentationWidget.setLayoutData(new GridData());
+			
+		indentationWidget.setText(this.doGetPreferenceStore().getString(PreferenceConstants.FORMAT_INDENTATION));
+		/*indentationWidget.addModifyListener(new ModifyListener() {
+			public void modifyText(ModifyEvent ev) {
+				ev.getSource() ;	
+			}
+		}); */
+
+		GridData data= new GridData(GridData.HORIZONTAL_ALIGN_FILL);
+		/*
+		if (widthHint != 0) {
+			data.widthHint= widthHint;
+		}
+		data.horizontalIndent= indent;
+		*/
+		indentationWidget.setLayoutData(data);
+
+	}	
 
 	protected IPreferenceStore doGetPreferenceStore() {
 		return RdtUiPlugin.getDefault().getPreferenceStore();
@@ -72,6 +108,13 @@ public class RubyEditorPreferencePage extends PreferencePage implements IWorkben
 			TextPropertyWidget widget = textPropertyWidgets[i];
 			widget.stringColorEditor.store();
 			this.doGetPreferenceStore().setValue(widget.property + RubyColorConstants.RUBY_ISBOLD_APPENDIX, widget.boldCheckBox.getSelection());
+		}
+		
+		try {
+			int indentation = Integer.parseInt(indentationWidget.getText()) ;
+			this.doGetPreferenceStore().setValue(PreferenceConstants.FORMAT_INDENTATION, indentation) ;
+		} catch (NumberFormatException e) {
+			
 		}
 		return true;
 	}
@@ -86,6 +129,7 @@ public class RubyEditorPreferencePage extends PreferencePage implements IWorkben
 			widget.stringColorEditor.loadDefault();
 			widget.boldCheckBox.setSelection(this.doGetPreferenceStore().getDefaultBoolean(widget.property + RubyColorConstants.RUBY_ISBOLD_APPENDIX));
 		}
+		indentationWidget.setText(this.doGetPreferenceStore().getString(PreferenceConstants.FORMAT_INDENTATION)) ;
 	}
 
 	class TextPropertyWidget {
