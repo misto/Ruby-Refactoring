@@ -13,7 +13,7 @@ os=${RDT_OS:-linux}
 ws=${RDT_WS:-motif}
 arch=${RDT_ARCH:-x86}
 usePserver=${RDT_USE_PSERVER:+-DusePserver=true}
-testClean=${RDT_NO_TEST_CLEAN:+-Dnoclean=true}
+testClean=${RDT_TEST_CLEAN:+-Dclean=true}
 
 #REM reset ant command line args
 ANT_CMD_LINE_ARGS=
