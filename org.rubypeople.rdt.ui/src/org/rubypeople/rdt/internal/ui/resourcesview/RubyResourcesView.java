@@ -6,6 +6,7 @@ import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.jface.action.IMenuListener;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.MenuManager;
+import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.viewers.IOpenListener;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
@@ -90,6 +91,10 @@ public class RubyResourcesView extends ViewPart implements ISetSelectionTarget, 
 
 	public void menuAboutToShow(IMenuManager manager) {
 		IStructuredSelection selection = (IStructuredSelection) viewer.getSelection();
+
+		if (manager.isEmpty())
+			manager.add(new Separator("group.new"));
+		
 		this.getMainActionGroup().setContext(new ActionContext(selection));
 		this.getMainActionGroup().fillContextMenu(manager);
 		this.getMainActionGroup().setContext(null);
