@@ -145,6 +145,8 @@ public class RubyProject implements IProjectNature {
 					libraryPathsFile.create(xmlPath, true, null);
 				else
 					libraryPathsFile.setContents(xmlPath, true, false, null);
+					
+				scratched = false;
 			} catch (CoreException e) {
 				System.out.println("RubyProject.save(): " + e);
 			}

@@ -6,18 +6,32 @@
    provider-name="RubyPeople, Inc."
    class="org.rubypeople.rdt.launching.RdtLaunchingPlugin">
 
-<runtime>
-   <library name="launching.jar"/>
-</runtime>
-<requires>
-   <import plugin="org.eclipse.core.runtime"/>
-   <import plugin="org.eclipse.core.resources"/>
-   <import plugin="org.eclipse.ui"/>
-   <import plugin="org.eclipse.debug.core"/>
-   <import plugin="org.rubypeople.rdt"/>
-   <import plugin="org.junit"/>
-   <import plugin="org.apache.xerces"/>
-</requires>
+   <runtime>
+      <library name="launching.jar"/>
+   </runtime>
+   <requires>
+      <import plugin="org.eclipse.core.runtime"/>
+      <import plugin="org.eclipse.core.resources"/>
+      <import plugin="org.eclipse.ui"/>
+      <import plugin="org.eclipse.debug.core"/>
+      <import plugin="org.rubypeople.rdt"/>
+      <import plugin="org.junit"/>
+      <import plugin="org.apache.xerces"/>
+   </requires>
 
+
+   <extension
+         point="org.eclipse.debug.core.launchConfigurationTypes">
+      <launchConfigurationType
+            name="%rubyApplication.name"
+            delegate="org.rubypeople.rdt.internal.launching.RubyApplicationLaunchConfigurationDelegate"
+            modes="run"
+            id="org.rubypeople.rdt.launching.rubyApplication">
+         <fileExtension
+               default="true"
+               extension="rb">
+         </fileExtension>
+      </launchConfigurationType>
+   </extension>
 
 </plugin>
