@@ -1,3 +1,5 @@
 bin
 org.rubypeople.rdt.doc.user_*.zip
 build.xml
+plugin.xml
+html
