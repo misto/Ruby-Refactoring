@@ -7,6 +7,7 @@ import org.eclipse.core.resources.IProject;
 import org.rubypeople.eclipse.testutils.ResourceTools;
 import org.rubypeople.rdt.internal.core.RubyCore;
 import org.rubypeople.rdt.internal.ui.RubyViewerFilter;
+import org.rubypeople.rdt.internal.ui.resourcesview.RubyResourcesView;
 
 public class TC_RubyViewerFilter extends TestCase {
 
@@ -15,7 +16,7 @@ public class TC_RubyViewerFilter extends TestCase {
 	}
 
 	public void testSelect() throws Exception {
-		RubyViewerFilter filter = new RubyViewerFilter();
+		RubyViewerFilter filter = new RubyViewerFilter(new RubyResourcesView() );
 		
 		IProject project = ResourceTools.createProject("TCRubyViewerFilter");
 		assertTrue(!filter.select(null, null, project));
