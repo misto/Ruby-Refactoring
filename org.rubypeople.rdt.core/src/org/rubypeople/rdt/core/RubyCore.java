@@ -11,7 +11,6 @@ import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
-import org.eclipse.core.runtime.IAdapterManager;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Platform;
@@ -22,8 +21,7 @@ import org.eclipse.core.runtime.preferences.IEclipsePreferences;
 import org.eclipse.core.runtime.preferences.InstanceScope;
 import org.osgi.framework.BundleContext;
 import org.rubypeople.rdt.internal.core.DefaultWorkingCopyOwner;
-import org.rubypeople.rdt.internal.core.ResourceAdapterFactory;
-import org.rubypeople.rdt.internal.core.RubyElementAdapterFactory;
+import org.rubypeople.rdt.internal.core.RubyModel;
 import org.rubypeople.rdt.internal.core.RubyModelManager;
 import org.rubypeople.rdt.internal.core.RubyProject;
 import org.rubypeople.rdt.internal.core.RubyScript;
@@ -182,9 +180,6 @@ public class RubyCore extends Plugin {
 		};
 		((IEclipsePreferences) getDefaultPreferences().parent()).addNodeChangeListener(listener);
 
-		IAdapterManager manager = Platform.getAdapterManager();
-		manager.registerAdapters(new RubyElementAdapterFactory(), IRubyElement.class);
-		manager.registerAdapters(new ResourceAdapterFactory(), IResource.class);
 		String rubyParserOption = Platform.getDebugOption(RubyCore.PLUGIN_ID + "/rubyparser");
 		RubyParser.setDebugging(rubyParserOption == null ? false : rubyParserOption.equalsIgnoreCase("true"));
 	}
@@ -300,16 +295,12 @@ public class RubyCore extends Plugin {
 		return null;
 	}
 
-	public static IRubyProject create(IProject aProject) {
-		if (aProject == null) { return null; }
-		try {
-			// TODO Do we need to check for the ruby nature?
-			if (aProject.hasNature(RubyCore.NATURE_ID)) { return new RubyProject(aProject, RubyModelManager.getRubyModelManager().getRubyModel()); }
-		} catch (CoreException e) {
-			RubyCore.log(e);
+	public static IRubyProject create(IProject project) {
+		if (project == null) {
+			return null;
 		}
-
-		return null;
+		RubyModel rubyModel = RubyModelManager.getRubyModelManager().getRubyModel();
+		return rubyModel.getRubyProject(project);
 	}
 
 	public static void addRubyNature(IProject project, IProgressMonitor monitor) throws CoreException {

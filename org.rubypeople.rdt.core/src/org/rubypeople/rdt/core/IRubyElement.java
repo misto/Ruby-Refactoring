@@ -87,6 +87,26 @@ public interface IRubyElement {
 	 * @return the element name
 	 */
 	String getElementName();
+	
+	/**
+	 * Returns the resource that corresponds directly to this element,
+	 * or <code>null</code> if there is no resource that corresponds to
+	 * this element.
+	 * <p>
+	 * For example, the corresponding resource for an <code>ICompilationUnit</code>
+	 * is its underlying <code>IFile</code>. The corresponding resource for
+	 * an <code>IPackageFragment</code> that is not contained in an archive 
+	 * is its underlying <code>IFolder</code>. An <code>IPackageFragment</code>
+	 * contained in an archive has no corresponding resource. Similarly, there
+	 * are no corresponding resources for <code>IMethods</code>,
+	 * <code>IFields</code>, etc.
+	 * <p>
+	 *
+	 * @return the corresponding resource, or <code>null</code> if none
+	 * @exception RubyModelException if this element does not exist or if an
+	 *		exception occurs while accessing its corresponding resource
+	 */
+	IResource getCorrespondingResource() throws RubyModelException;
 
 	/**
 	 * Returns the smallest underlying resource that contains this element, or

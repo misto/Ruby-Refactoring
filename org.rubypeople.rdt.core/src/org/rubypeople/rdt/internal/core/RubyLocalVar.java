@@ -26,6 +26,7 @@ package org.rubypeople.rdt.internal.core;
 
 import java.util.HashMap;
 
+import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.IProgressMonitor;
 
 /**
@@ -52,6 +53,10 @@ public class RubyLocalVar extends RubyField {
 
 	protected Object createElementInfo() {
 		// a local variable has no info
+		return null;
+	}
+	
+	public IResource getCorrespondingResource() {
 		return null;
 	}
 	

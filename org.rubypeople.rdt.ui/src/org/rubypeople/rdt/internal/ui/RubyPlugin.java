@@ -321,4 +321,8 @@ public class RubyPlugin extends AbstractUIPlugin implements IRubyColorConstants 
 		return fCombinedPreferenceStore;
 	}
 
+	public static void logErrorMessage(String message) {
+		log(new Status(IStatus.ERROR, getPluginId(), IRubyStatusConstants.INTERNAL_ERROR, message, null));
+	}
+
 }

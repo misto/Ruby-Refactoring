@@ -469,5 +469,30 @@
          <viewShortcut id="org.rubypeople.rdt.ui.views.RIView"/> 
       </perspectiveExtension>
    </extension>
+   
+   <extension point="org.eclipse.core.runtime.adapters">
+   		<factory 
+            class="org.rubypeople.rdt.internal.ui.RubyProjectAdapterFactory" 
+            adaptableType="org.rubypeople.rdt.core.IRubyProject">
+            <adapter type="org.eclipse.core.resources.IProject"/>
+		</factory>
+		
+		<factory 
+            class="org.rubypeople.rdt.internal.ui.ResourceAdapterFactory" 
+            adaptableType="org.eclipse.core.resources.IResource">
+            <adapter type="org.rubypeople.rdt.core.IRubyElement"/>
+		</factory>
+		
+		<factory 
+            class="org.eclipse.rdt.internal.ui.RubyElementAdapterFactory" 
+            adaptableType="org.eclipse.rdt.core.IRubyElement">
+            
+            <adapter type="org.eclipse.core.resources.IResource"/>
+            <adapter type="org.eclipse.ui.IContributorResourceAdapter"/>
+            <adapter type="org.eclipse.ui.IContributorResourceAdapter2"/>
+            
+            <adapter type="org.eclipse.ui.views.tasklist.ITaskListResourceAdapter"/>
+		</factory>
+	</extension>
 
 </plugin>

@@ -113,6 +113,16 @@ public abstract class Openable extends RubyElement implements IOpenable, IBuffer
 	protected BufferManager getBufferManager() {
 		return BufferManager.getDefaultBufferManager();
 	}
+	
+	/**
+	 * Return my underlying resource. Elements that may not have a
+	 * corresponding resource must override this method.
+	 *
+	 * @see IRubyElement
+	 */
+	public IResource getCorrespondingResource() throws RubyModelException {
+		return getUnderlyingResource();
+	}
 
 	/*
 	 * Returns whether this element can be removed from the Ruby model cache to

@@ -50,6 +50,17 @@ public abstract class SourceRefElement extends RubyElement implements ISourceRef
 		}
 		return null;
 	}
+	
+	/**
+	 * Elements within compilation units and class files have no
+	 * corresponding resource.
+	 *
+	 * @see IRubyElement
+	 */
+	public IResource getCorrespondingResource() throws RubyModelException {
+		if (!exists()) throw newNotPresentException();
+		return null;
+	}
 
 	/**
 	 * @see IRubyElement

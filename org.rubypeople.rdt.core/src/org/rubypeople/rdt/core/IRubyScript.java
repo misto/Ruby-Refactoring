@@ -228,7 +228,8 @@ public interface IRubyScript extends IRubyElement, ISourceReference, IParent, IO
 	 * it reflects the underlying resource), <code>discardWorkingCopy</code>
 	 * must be call as many times as <code>becomeWorkingCopy</code>.
 	 * </p>
-	 * @param requestor 
+	 * 
+	 * @param requestor
 	 * 
 	 * @param monitor
 	 *            a progress monitor used to report progress while opening this
@@ -297,5 +298,15 @@ public interface IRubyScript extends IRubyElement, ISourceReference, IParent, IO
 	 *             while accessing its corresponding resource
 	 */
 	IImportDeclaration[] getImports() throws RubyModelException;
+
+	/**
+	 * Returns the working copy owner of this working copy. Returns null if it
+	 * is not a working copy or if it has no owner.
+	 * 
+	 * @return WorkingCopyOwner the owner of this working copy or
+	 *         <code>null</code>
+	 * @since 3.0
+	 */
+	WorkingCopyOwner getOwner();
 
 }

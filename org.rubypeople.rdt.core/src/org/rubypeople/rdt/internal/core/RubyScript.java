@@ -172,6 +172,13 @@ public class RubyScript extends Openable implements IRubyScript {
 		} // else the buffer of a working copy must remain open for the
 		// lifetime of the working copy
 	}
+	
+	/*
+	 * @see IRubyScript#getOwner()
+	 */
+	public WorkingCopyOwner getOwner() {
+		return isPrimary() || !isWorkingCopy() ? null : this.owner;
+	}
 
 	/**
 	 * @see IRubyElement#getPath()
@@ -239,7 +246,7 @@ public class RubyScript extends Openable implements IRubyScript {
 			return new char[0];
 		}
 	}
-
+	
 	/*
 	 * (non-Rubydoc)
 	 * 
