@@ -72,6 +72,8 @@ public class RubyEnvironmentTab extends AbstractLaunchConfigurationTab {
 		loadPathDefaultButton.setText("&Use default loadpath");
 		loadPathDefaultButton.setLayoutData(new GridData(GridData.HORIZONTAL_ALIGN_BEGINNING));
 		loadPathDefaultButton.addSelectionListener(getLoadPathDefaultButtonSelectionListener());
+		//for now, until the load path is customizable on the configuration
+		loadPathDefaultButton.setEnabled(false);
 	}
 
 	protected SelectionListener getLoadPathSelectionListener() {
@@ -143,7 +145,6 @@ public class RubyEnvironmentTab extends AbstractLaunchConfigurationTab {
 	}
 
 	public void setDefaults(ILaunchConfigurationWorkingCopy configuration) {
-		System.out.println("RubyEnvironmentTab#setDefaults()");
 	}
 
 	public void initializeFrom(ILaunchConfiguration configuration) {
@@ -158,10 +159,12 @@ public class RubyEnvironmentTab extends AbstractLaunchConfigurationTab {
 			setUseLoadPathDefaults(useDefaultLoadPath);
 			if (useDefaultLoadPath) {
 				String projectName = configuration.getAttribute(RubyLaunchConfigurationAttribute.PROJECT_NAME, "");
-				RubyProject project = RubyCore.getRubyProject(projectName);
-				if (project != null) {
-					List loadPathEntries = project.getLoadPathEntries();
-					loadPathListViewer.setInput(loadPathEntries);
+				if (projectName != "") {
+					RubyProject project = RubyCore.getRubyProject(projectName);
+					if (project != null) {
+						List loadPathEntries = project.getLoadPathEntries();
+						loadPathListViewer.setInput(loadPathEntries);
+					}
 				}
 			}
 		} catch (CoreException e) {
@@ -202,12 +205,12 @@ public class RubyEnvironmentTab extends AbstractLaunchConfigurationTab {
 	}
 
 	public void performApply(ILaunchConfigurationWorkingCopy configuration) {
-		String selectedInterpreter = interpreterCombo.getItem(interpreterCombo.getSelectionIndex());
-		if (selectedInterpreter != null)
-			configuration.setAttribute(RubyLaunchConfigurationAttribute.SELECTED_INTERPRETER, selectedInterpreter);
-			
+		int selectionIndex = interpreterCombo.getSelectionIndex();
+		if (selectionIndex >= 0)
+			configuration.setAttribute(RubyLaunchConfigurationAttribute.SELECTED_INTERPRETER, interpreterCombo.getItem(selectionIndex));
+
 		configuration.setAttribute(RubyLaunchConfigurationAttribute.USE_DEFAULT_LOAD_PATH, loadPathDefaultButton.getSelection());
-		
+
 		if (!loadPathDefaultButton.getSelection()) {
 			List loadPathEntries = (List) loadPathListViewer.getInput();
 			List loadPathStrings = new ArrayList();

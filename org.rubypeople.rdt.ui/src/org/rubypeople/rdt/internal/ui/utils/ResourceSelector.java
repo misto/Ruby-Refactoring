@@ -59,11 +59,17 @@ public abstract class ResourceSelector {
 		browseDialogTitle = aTitle;
 	}
 
+	public void setEnabled(boolean enabled) {
+		composite.setEnabled(enabled);
+		textField.setEnabled(enabled);
+		browseButton.setEnabled(enabled);
+	}
+
 	public String getSelectionText() {
 		return textField.getText();
 	}
 
-	public void setSelectionText(String projectName) {
-		textField.setText(projectName);
+	public void setSelectionText(String newText) {
+		textField.setText(newText);
 	}
 }

@@ -8,7 +8,7 @@ import org.eclipse.core.resources.IProject;
 import org.eclipse.debug.core.DebugPlugin;
 import org.eclipse.debug.core.ILaunch;
 import org.eclipse.debug.core.model.IProcess;
-import org.eclipse.debug.internal.core.RuntimeProcess;
+import org.rubypeople.rdt.internal.core.RubyProject;
 
 public class InterpreterRunner {
 
@@ -25,32 +25,50 @@ public class InterpreterRunner {
 			throw new RuntimeException("Unable to execute interpreter: " + commandLine + workingDirectory);
 		}
 
-		DebugPlugin.getDefault().newProcess(launch, nativeRubyProcess, "Ruby!!!");
+		IProcess process = DebugPlugin.getDefault().newProcess(launch, nativeRubyProcess, renderLabel(configuration));
+		process.setAttribute(RdtLaunchingPlugin.PLUGIN_ID + ".launcher.cmdline", commandLine);
 	}
 
-	public String renderCommandLine(InterpreterRunnerConfiguration configuration) {
-		RubyInterpreter interpreter = RubyRuntime.getDefault().getSelectedInterpreter();
+	protected String renderLabel(InterpreterRunnerConfiguration configuration) {
+		StringBuffer buffer = new StringBuffer();
+		
+		RubyInterpreter interpreter = configuration.getInterpreter();
+		buffer.append("Ruby ");
+		buffer.append(interpreter.getCommand());
+		buffer.append(" : ");
+		buffer.append(configuration.getFileName());
+		
+		return buffer.toString();
+	}
+
+	protected String renderCommandLine(InterpreterRunnerConfiguration configuration) {
+		RubyInterpreter interpreter = configuration.getInterpreter();
 
 		StringBuffer buffer = new StringBuffer();
 		buffer.append(interpreter.getCommand());
-		buffer.append(getLibraryPath(configuration));
-		buffer.append(" " + configuration.getExecutionArguments().interpreterArguments);
+		buffer.append(renderLoadPath(configuration));
+		buffer.append(" " + configuration.getInterpreterArguments());
 		buffer.append(interpreter.endOfOptionsDelimeter);
-		buffer.append(configuration.getRubyFileName());
-		buffer.append(" " + configuration.getExecutionArguments().rubyFileArguments);
+		buffer.append(configuration.getAbsoluteFileName());
+		buffer.append(" " + configuration.getProgramArguments());
 
 		return buffer.toString();
 	}
 
-	protected String getLibraryPath(InterpreterRunnerConfiguration configuration) {
-		StringBuffer buffer = new StringBuffer();
-				
-		Iterator referencedProjects = configuration.getProject().getReferencedProjects().iterator();
-		while (referencedProjects.hasNext()) {
-			IProject iProject = (IProject) referencedProjects.next();
-			buffer.append(" -I " + iProject.getLocation().toOSString());
-		}
+	protected String renderLoadPath(InterpreterRunnerConfiguration configuration) {
+		StringBuffer loadPath = new StringBuffer();
+		
+		RubyProject project = configuration.getProject();
+		addToLoadPath(loadPath, project.getProject());
 
-		return buffer.toString();
+		Iterator referencedProjects = project.getReferencedProjects().iterator();
+		while (referencedProjects.hasNext())
+			addToLoadPath(loadPath, (IProject) referencedProjects.next());
+
+		return loadPath.toString();
+	}
+	
+	protected void addToLoadPath(StringBuffer loadPath, IProject project) {
+		loadPath.append(" -I " + project.getLocation().toOSString());
 	}
 }

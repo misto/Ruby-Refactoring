@@ -33,6 +33,7 @@ public class RubyRuntime {
 	protected RubyRuntime() {
 		super();
 	}
+
 	public static RubyRuntime getDefault() {
 		if (runtime == null) {
 			runtime = new RubyRuntime();
@@ -47,15 +48,27 @@ public class RubyRuntime {
 		return selectedInterpreter;
 	}
 
-	public void setSelectedInterpreter(RubyInterpreter anInterpreter) {
-		if (!anInterpreter.equals(selectedInterpreter)) {
-			selectedInterpreter = anInterpreter;
-			saveRuntimeConfiguration();
+	public RubyInterpreter getInterpreter(String name) {
+		Iterator interpreters = getInstalledInterpreters().iterator();
+		while(interpreters.hasNext()) {
+			RubyInterpreter each = (RubyInterpreter) interpreters.next();
+			if (each.getName().equals(name))
+				return each;
 		}
+		
+		return getSelectedInterpreter();
+	}
+
+	public void setSelectedInterpreter(RubyInterpreter anInterpreter) {
+		selectedInterpreter = anInterpreter;
+		saveRuntimeConfiguration();
 	}
 
 	public void addInstalledInterpreter(RubyInterpreter anInterpreter) {
 		getInstalledInterpreters().add(anInterpreter);
+		if (getInstalledInterpreters().size() == 1)
+			setSelectedInterpreter((RubyInterpreter) getInstalledInterpreters().get(0));
+
 		saveRuntimeConfiguration();
 	}
 
@@ -67,6 +80,11 @@ public class RubyRuntime {
 	
 	public void setInstalledInterpreters(List newInstalledInterpreters) {
 		installedInterpreters = newInstalledInterpreters;
+		if (installedInterpreters.size() > 0)
+			setSelectedInterpreter((RubyInterpreter)installedInterpreters.get(0));
+		else
+			setSelectedInterpreter(null);
+
 		saveRuntimeConfiguration();
 	}
 	
@@ -78,9 +96,8 @@ public class RubyRuntime {
 		try {
 			OutputStream stream = new BufferedOutputStream(new FileOutputStream(getRuntimeConfigurationFile()));
 			return new OutputStreamWriter(stream);
-		} catch (FileNotFoundException e) {
-			System.out.println("RubyRuntime.getRuntimeConfigurationWriter: " + e);
-		}
+		} catch (FileNotFoundException e) {}
+
 		return null;
 	}
 	
@@ -90,17 +107,13 @@ public class RubyRuntime {
 			XMLReader reader = SAXParserFactory.newInstance().newSAXParser().getXMLReader();
 			reader.setContentHandler(getRuntimeConfigurationContentHandler());
 			reader.parse(new InputSource(getRuntimeConfigurationReader()));
-		} catch(Exception e) {
-			System.out.println("RubyRuntime.loadRuntimeConfiguration: " + e);
-		}
+		} catch(Exception e) {}
 	}
 
 	protected Reader getRuntimeConfigurationReader() {
 		try {
 			return new FileReader(getRuntimeConfigurationFile());
-		} catch(FileNotFoundException e) {
-			System.out.println("RubyRuntime.getRuntimeConfigurationReader: " + e);
-		}
+		} catch(FileNotFoundException e) {}
 		return new StringReader("");
 	}
 	

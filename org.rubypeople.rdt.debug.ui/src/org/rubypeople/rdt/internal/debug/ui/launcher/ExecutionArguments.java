@@ -1,4 +1,4 @@
-package org.rubypeople.rdt.launching;
+package org.rubypeople.rdt.internal.debug.ui.launcher;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.CoreException;
@@ -15,7 +15,7 @@ public class ExecutionArguments {
 			String executionArgumentsPersistableFormat = rubyScriptFile.getPersistentProperty(EXECUTION_ARGUMENTS_PROPERTY);
 			ExecutionArguments executionArguments = new ExecutionArguments();
 			
-			if (executionArguments != null) {				
+			if (executionArgumentsPersistableFormat != null) {				
 				int argBreakIndex = executionArgumentsPersistableFormat.indexOf(ARGUMENT_SEPARATOR);
 				executionArguments.setInterpreterArguments(executionArgumentsPersistableFormat.substring(0, argBreakIndex));
 				executionArguments.setRubyFileArguments(executionArgumentsPersistableFormat.substring(argBreakIndex + ARGUMENT_SEPARATOR.length()));

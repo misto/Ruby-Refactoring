@@ -32,7 +32,7 @@ public class RubyInterpreter {
 	}
 	
 	public String getCommand() {
-		return installLocation.toOSString() + File.separator + "bin" + File.separator + "rubyw";
+		return installLocation.toOSString() + File.separator + "bin" + File.separator + "rubyw.exe";
 	}
 	
 	public boolean equals(Object other) {

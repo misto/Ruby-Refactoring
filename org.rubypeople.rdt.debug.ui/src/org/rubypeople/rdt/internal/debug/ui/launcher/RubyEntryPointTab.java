@@ -3,6 +3,7 @@ package org.rubypeople.rdt.internal.debug.ui.launcher;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.Path;
 import org.eclipse.debug.core.ILaunchConfiguration;
 import org.eclipse.debug.core.ILaunchConfigurationWorkingCopy;
 import org.eclipse.debug.ui.AbstractLaunchConfigurationTab;
@@ -33,7 +34,7 @@ public class RubyEntryPointTab extends AbstractLaunchConfigurationTab {
 
 	public void createControl(Composite parent) {
 		Composite composite = createPageRoot(parent);
-		
+
 		new Label(composite, SWT.NONE).setText("Project:");
 		projectSelector = new RubyProjectSelector(composite);
 		projectSelector.setBrowseDialogMessage("Choose the project containing the application entry point:");
@@ -60,11 +61,11 @@ public class RubyEntryPointTab extends AbstractLaunchConfigurationTab {
 		if (page != null) {
 			ISelection selection = page.getSelection();
 			if (selection instanceof IStructuredSelection) {
-				IStructuredSelection ss = (IStructuredSelection)selection;
+				IStructuredSelection ss = (IStructuredSelection) selection;
 				if (!ss.isEmpty()) {
 					Object obj = ss.getFirstElement();
 					if (obj instanceof IResource)
-							return ((IResource)obj).getProject();
+						return ((IResource) obj).getProject();
 				}
 			}
 			IEditorPart part = page.getActiveEditor();
@@ -89,21 +90,24 @@ public class RubyEntryPointTab extends AbstractLaunchConfigurationTab {
 		try {
 			projectName = configuration.getAttribute(RubyLaunchConfigurationAttribute.PROJECT_NAME, "");
 			fileName = configuration.getAttribute(RubyLaunchConfigurationAttribute.FILE_NAME, "");
-		} catch(CoreException e) {}
+		} catch (CoreException e) {}
 
 		projectSelector.setSelectionText(projectName);
-		fileSelector.setSelectionText(fileName);
+		if (!"".equals(fileName))
+			fileSelector.setSelectionText(new Path(fileName).toOSString());
 	}
 
 	public void performApply(ILaunchConfigurationWorkingCopy configuration) {
-		configuration.setAttribute(RubyLaunchConfigurationAttribute.PROJECT_NAME, projectSelector.getSelectionText());
-		configuration.setAttribute(RubyLaunchConfigurationAttribute.FILE_NAME, fileSelector.getSelectionText());
+		if (isValid()) {
+			configuration.setAttribute(RubyLaunchConfigurationAttribute.PROJECT_NAME, projectSelector.getSelectionText());
+			configuration.setAttribute(RubyLaunchConfigurationAttribute.FILE_NAME, fileSelector.getSelection().getProjectRelativePath().toString());
+		}
 	}
 
 	public boolean isValid() {
 		setErrorMessage(null);
 		setMessage(null);
-		
+
 		IProject project = projectSelector.getSelection();
 		if (project == null || !project.exists()) {
 			setErrorMessage("Invalid project selection.");
@@ -114,7 +118,7 @@ public class RubyEntryPointTab extends AbstractLaunchConfigurationTab {
 			setErrorMessage("Invalid Ruby file.");
 			return false;
 		}
-		
+
 		return true;
 	}
 
