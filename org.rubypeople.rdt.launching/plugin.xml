@@ -15,7 +15,6 @@
    <requires>
       <import plugin="org.eclipse.core.resources"/>
       <import plugin="org.eclipse.debug.core"/>
-      <import plugin="org.apache.xerces"/>
       <import plugin="org.rubypeople.rdt.core"/>
       <import plugin="org.rubypeople.rdt.debug.core"/>
       <import plugin="org.eclipse.core.runtime.compatibility"/>
