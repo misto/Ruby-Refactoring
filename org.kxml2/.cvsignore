@@ -2,3 +2,4 @@ bin
 kxml2.jar
 kxml2src.zip
 org.kxml2*.zip
+build.xml

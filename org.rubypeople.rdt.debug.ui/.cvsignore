@@ -2,3 +2,4 @@ bin
 rdtdebugui.jar
 org.rubypeople.rdt.debug.ui_*.zip
 rdtdebuguisrc.zip
+build.xml
