@@ -25,6 +25,8 @@
  */
 package org.rubypeople.rdt.internal.core.parser;
 
+import java.util.Iterator;
+
 import junit.framework.TestCase;
 
 /**
@@ -681,4 +683,15 @@ public class TC_RubyParser extends TestCase {
 		assertEquals(2, rubyClass.getElementCount());
 	}
 
+	public void testComplainsAboutUnknownSymbol() throws Exception {
+		RubyScript script = RubyParser.parse("class Bob\ndef method\nattr_reader :var\nend\nend");
+		assertEquals(1, script.getElementCount());
+		assertEquals(1, script.getErrorCount());
+		Iterator iter = script.getParseErrors().iterator();
+		ParseError error = (ParseError) iter.next();
+		assertEquals(2, error.getLine() );
+		assertEquals(13, error.getStart() );
+		assertEquals(16, error.getEnd() );
+	}
+	
 }
