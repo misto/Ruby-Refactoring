@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.CoreException;
@@ -145,6 +146,14 @@ public class ShamLaunchManager implements ILaunchManager {
 
 	public ISourcePathComputer newSourcePathComputer(ILaunchConfiguration configuration)
 		throws CoreException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	/* (non-Javadoc)
+	 * @see org.eclipse.debug.core.ILaunchManager#getNativeEnvironment()
+	 */
+	public Map getNativeEnvironment() {
 		// TODO Auto-generated method stub
 		return null;
 	}

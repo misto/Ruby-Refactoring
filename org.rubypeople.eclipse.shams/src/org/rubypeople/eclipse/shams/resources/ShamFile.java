@@ -272,4 +272,12 @@ public class ShamFile extends ShamResource implements IFile {
 	public boolean isLinked() {
 		return false;
 	}
+
+	/* (non-Javadoc)
+	 * @see org.eclipse.core.resources.IFile#setCharset(java.lang.String)
+	 */
+	public void setCharset(String newCharset) throws CoreException {
+		// TODO Auto-generated method stub
+		
+	}
 }

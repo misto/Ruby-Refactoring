@@ -153,4 +153,12 @@ public class ShamLaunchConfigurationWorkingCopy implements ILaunchConfigurationW
 	public Map getAttributes() throws CoreException {
 		throw new RuntimeException("Need to implement on sham.");
 	}
+
+	/* (non-Javadoc)
+	 * @see org.eclipse.debug.core.ILaunchConfiguration#launch(java.lang.String, org.eclipse.core.runtime.IProgressMonitor, boolean)
+	 */
+	public ILaunch launch(String mode, IProgressMonitor monitor, boolean build) throws CoreException {
+		// TODO Auto-generated method stub
+		return null;
+	}
 }

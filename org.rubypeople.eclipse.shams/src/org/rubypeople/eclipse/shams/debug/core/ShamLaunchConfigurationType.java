@@ -66,4 +66,12 @@ public class ShamLaunchConfigurationType implements ILaunchConfigurationType {
 		return null;
 	}
 
+	/* (non-Javadoc)
+	 * @see org.eclipse.debug.core.ILaunchConfigurationType#getSourceLocatorId()
+	 */
+	public String getSourceLocatorId() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 }

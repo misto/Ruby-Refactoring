@@ -280,4 +280,20 @@ public class ShamProject extends ShamResource implements IProject {
 		natures.add(string);
 	}
 
+	/* (non-Javadoc)
+	 * @see org.eclipse.core.resources.IContainer#getDefaultCharset()
+	 */
+	public String getDefaultCharset() throws CoreException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	/* (non-Javadoc)
+	 * @see org.eclipse.core.resources.IContainer#setDefaultCharset(java.lang.String)
+	 */
+	public void setDefaultCharset(String charset) throws CoreException {
+		// TODO Auto-generated method stub
+		
+	}
+
 }

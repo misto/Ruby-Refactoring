@@ -284,4 +284,20 @@ public class ShamFolder extends ShamResource implements IFolder {
 	public boolean isLinked() {
 		throw new RuntimeException("Need to implement on sham.");
 	}
+
+	/* (non-Javadoc)
+	 * @see org.eclipse.core.resources.IContainer#getDefaultCharset()
+	 */
+	public String getDefaultCharset() throws CoreException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	/* (non-Javadoc)
+	 * @see org.eclipse.core.resources.IContainer#setDefaultCharset(java.lang.String)
+	 */
+	public void setDefaultCharset(String charset) throws CoreException {
+		// TODO Auto-generated method stub
+		
+	}
 }
