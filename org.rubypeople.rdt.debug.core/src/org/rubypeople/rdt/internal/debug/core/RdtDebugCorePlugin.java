@@ -62,7 +62,7 @@ public class RdtDebugCorePlugin extends Plugin {
 	public static void debug(String message, Throwable e) {
 		if (RdtDebugCorePlugin.getDefault() != null) {
 			if (RdtDebugCorePlugin.getDefault().isDebugging()) {
-				System.out.println(message);
+				System.out.println(message + ", Exception: " + e.getMessage());
 				RdtDebugCorePlugin.log(e);
 			}
 
