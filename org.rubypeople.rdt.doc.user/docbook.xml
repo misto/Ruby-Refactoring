@@ -1,0 +1,248 @@
+<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook V3.1//EN" 
+  "file:///home/markus/docbook/dtd/docbookx.dtd">
+<book>
+  <title>Ruby Development Tools</title>
+  <chapter id="preparingTheWorkbench">
+    <title> Preparing the workbench </title>
+    <para> In this section, you will verify that the workbench is properly set up for Ruby 
+      development. </para>
+    <para> The following is assumed: </para>
+    <itemizedlist>
+      <listitem>
+        <para>You are starting with a new workbench installation with default settings.</para>
+      </listitem>
+      <listitem>
+        <para>You are familiar with the basic workbench mechanisms, such as views and perspectives. 
+          </para>
+      </listitem>
+    </itemizedlist>
+    <para> If you&#39;re not familiar with the basic workbench mechanisms, please see the Getting 
+      Started chapter of the Workbench User Guide. </para>
+    <sect1>
+      <title>Verifying Ruby Interpreter installation</title>
+      <orderedlist>
+        <listitem>
+          <para> Open the workbench preferences by selecting the menu item <emphasis>Window &gt; 
+            Preferences</emphasis>. </para>
+        </listitem>
+        <listitem>
+          <para> Go to the <emphasis>Installed Interpreters</emphasis> preference page by selecting 
+            <emphasis>Ruby &gt; Installed Interpreters</emphasis> in the tree pane on the left. 
+            Click the <emphasis>Add button</emphasis> to define the location of your ruby 
+            executable. </para>
+        </listitem>
+        <listitem>
+          <para> Leave the preferences by clicking on <emphasis>OK</emphasis>. </para>
+        </listitem>
+      </orderedlist>
+    </sect1>
+  </chapter>
+  <chapter id="usingTheDebugger">
+    <title>Using the Debugger</title>
+    <sect1>
+      <title>Prerequisites</title>
+      <para>If you can debug your ruby application depends on the version of the ruby interpreter 
+        you are using: </para>
+      <itemizedlist>
+        <listitem>
+          <para>Windows. Only 1.6.8 (mswin32) works. 1.6.7 (mswin32) is not sufficient. 1.8.0 is 
+            not yet supported. Other distributions than mswin32 have not been tested. </para>
+        </listitem>
+        <listitem>
+          <para>Linux. 1.6.7 and 1.6.8 have been tested and work. 1.8.0 is not yet supported. 
+            </para>
+        </listitem>
+      </itemizedlist>
+    </sect1>
+    <sect1>
+      <title>Debugging your Application</title>
+      <itemizedlist>
+        <listitem>
+          <para>Open your ruby file and set a breakpoint like you would set a breakpoint in a java 
+            file</para>
+        </listitem>
+        <listitem>
+          <para>Select <emphasis>Run &gt; Debug As &gt; Ruby Application</emphasis>. The Debug 
+            perspective will open:</para>
+          <figure>
+            <title>Debug Perspective</title>
+            <graphic fileref="../images/debug.png" format="PNG"/>
+          </figure>
+        </listitem>
+        <listitem>
+          <para>In the launch view use <emphasis> step into, step over, step return</emphasis> to 
+            step through the code. Use the <emphasis>resume button </emphasis> to resume the 
+            application. </para>
+        </listitem>
+        <listitem>
+          <para>In the variable view:</para>
+          <itemizedlist>
+            <listitem>
+              <para>Press <emphasis>Show Type Names</emphasis> to show the type of each 
+                variable</para>
+            </listitem>
+            <listitem>
+              <para>Check <emphasis>Show Constants</emphasis> to display constants, check 
+                <emphasis>Show Class Variables</emphasis> to display class variables </para>
+            </listitem>
+          </itemizedlist>
+          <para> In the screenshot above the java debug actions are disabled, so that only the ruby 
+            debug commands <emphasis>Show Constants</emphasis> and <emphasis>Show Class 
+            Variables</emphasis> appear. If you want to disable/enable either ruby or java debug 
+            actions, go to<emphasis> Window &gt; Preferences &gt; Debug &gt; Debug Action 
+            Groups</emphasis> and select the appropriate debug actions. </para>
+        </listitem>
+      </itemizedlist>
+      <sect2>
+        <title>Variables view</title>
+        <para> The Variables view shows instance variables, class variables and constants of 
+          objects. Use the "Show Type Names" button on the view bar to display/hide the names of 
+          type.</para>
+        <figure>
+          <title>Variables View with type names mode on</title>
+          <graphic fileref="../images/variableViewWithTypes.png" format="PNG"/>
+        </figure>
+        <para> In the above screenshot there is a variable barney of type person. The object is 
+          represented by the return value of the to_s method, in this case 
+          "#&lt;Person:0x2ae7d20&gt;". There is one instance variable @name of type String and 
+          value "Barney".</para>
+        <sect3>
+          <title>Arrays</title>
+          <para>Assume the following code:</para>
+          <programlisting> <![CDATA[
+class Person 
+  def initialize(name)
+   @name = name
+  end
+  
+  def to_s()
+    return @name.to_s
+  end
+end
+
+persons = [] 
+persons &lt;&lt; Person.new('Barney')
+persons &lt;&lt; Person.new('Moe')           
+]]> </programlisting>
+          <para> After the last assignment the variable view shows the content of the array. Note 
+            that the name appears as description for the object, because to_s is overriden.</para>
+          <figure>
+            <title>Array presentation in Variables View</title>
+            <graphic fileref="../images/arrayInVariablesView.png" format="PNG"/>
+          </figure>
+        </sect3>
+        <sect3>
+          <title>Hashes</title>
+          <para> In order to show how hashes are presented in the variables view, a hash is 
+            created:</para>
+          <programlisting><![CDATA[
+persons = Hash[ Person.new('Lisa') =&gt; Person.new('Marge'), 
+                            Person.new('Maggie') =&gt; Person.new('Marge')]
+]]> </programlisting>
+          <para>The view shows the name of the hash with the number of elements in the first place. 
+            If you expand the item, there will be a line for every key/value pair in the hash. 
+            Expanding a key/value pair will show the content of the value. If you want to know more 
+            about the key, select "Inspect key" from the context menu:</para>
+          <figure>
+            <title>Hash presentation in Variables View</title>
+            <graphic fileref="../images/hashInVariablesView.png" format="PNG"/>
+          </figure>
+        </sect3>
+      </sect2>
+      <sect2>
+        <title>Breakpoints view</title>
+        <para>Use the Breakpoints view to remove ruby breakpoints.</para>
+      </sect2>
+      <sect2>
+        <title>Expressions view</title>
+        <para> Resitemizedlistts of ruby expression evaluation are displayed here. Evaluation takes 
+          place: </para>
+        <itemizedlist>
+          <listitem>
+            <para>If you select text in the editor and run "Inspect" from the context menu</para>
+          </listitem>
+          <listitem>
+            <para>If you use the display view to enter ruby expressions</para>
+          </listitem>
+          <listitem>
+            <para>If you select "inspect key" in the context menu of a hash value in the variable 
+              view</para>
+          </listitem>
+        </itemizedlist>
+      </sect2>
+      <sect2>
+        <title>Display view</title>
+        <para> Enter your text in the Display view and run "Ruby inspect" from the context menu. 
+          The Expression view will open and show the resitemizedlistt of the expression. The 
+          expression is evaluated in the context of the selected stack frame in the Launch 
+          view.</para>
+        <para> The following example shows an expression which creates a hash with all global 
+          variables mapped to their values (the "Content Assist" menu entry is only valid in the 
+          context of a java program):</para>
+        <figure>
+          <title>Display View</title>
+          <graphic fileref="../images/displayView.png" format="PNG"/>
+        </figure>
+        <para>The Expressions view shows the resitemizedlistt:</para>
+        <figure>
+          <title>Global variables in Expression View</title>
+          <graphic fileref="../images/expressionViewWithGlobalVariables.png" format="PNG"/>
+        </figure>
+      </sect2>
+    </sect1>
+    <sect1>
+      <title>Known limitations</title>
+      <para>The ruby debugger is still under development and there are some limitations, which must 
+        be considered when debugging your application:</para>
+      <itemizedlist>
+        <listitem>
+          <para>In order to get the debug information about the running program, eclipse starts a 
+            ruby debugger before the execution of your application and talks to that ruby debugger 
+            via socket. Currently this socket is set to 1098 and if this socket is bound already 
+            debugging is not possible. (The java debugger searches for a free socket before; that 
+            behaviour shoitemizedlistd be implemented for the ruby debugger as well)</para>
+        </listitem>
+        <listitem>
+          <para>threads are not refreshed regitemizedlistarly, i.e. you do not see the threads your 
+            application creates before a breakpoint (or exception or end of step) is reached</para>
+        </listitem>
+        <listitem>
+          <para>Only one ruby program can be debugged concurrently (there is a socket bind 
+            exception if you try to debug more than on ruby program at the same time)</para>
+        </listitem>
+        <listitem>
+          <para>breakpoints are not saved when eclipse is closed</para>
+        </listitem>
+      </itemizedlist>
+      <sect2>
+        <title>Writing Bug Reports</title>
+        <para>In order to provide useful information in case of errors, you shoitemizedlistd turn 
+          on verbose mode for the ruby debugger:</para>
+        <orderedlist>
+          <listitem>
+            <para>open file 
+              ECLIPSE_HOME/plugins/org.rubypeople.rdt.launching/ruby/eclipseDebug.rb</para>
+          </listitem>
+          <listitem>
+            <para>set ECLIPSE_VERBOSE = true</para>
+          </listitem>
+          <listitem>
+            <para>save file</para>
+          </listitem>
+          <listitem>
+            <para>After you started debugging, the console shows additional information (appears 
+              red, if stderr is printed red): </para>
+            <figure>
+              <title>Verbose debug information in console</title>
+              <graphic fileref="../images/verboseConsole.png" format="PNG"/>
+            </figure>
+          </listitem>
+          <listitem>
+            <para>go to <ulink url="http://sourceforge.net/projects/rubyeclipse"></ulink> and add 
+              the console output to your bug report.</para>
+          </listitem>
+        </orderedlist>
+      </sect2>
+    </sect1>
+  </chapter>
+</book>
