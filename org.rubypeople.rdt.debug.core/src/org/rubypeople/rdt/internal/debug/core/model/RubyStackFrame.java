@@ -52,15 +52,15 @@ public class RubyStackFrame implements IStackFrame {
 	}
 	
 	public int getCharStart() throws DebugException {
-		// charStart = 0  and charEnd = -1 is just the way thes variables
+		// charStart = -1  and charEnd = -1 is just the way these variables
 		// have to be set in order to make the editor jump to the line, once
 		// a breakpoint has occurred. 
 		// see LaunchView::openEditorAndSetMarker
-		return 0;
+		return -1;
 	}
 	
 	public int getCharEnd() throws DebugException {
-		// charStart = 0  and charEnd = -1 is just the way thes variables
+		// charStart = -1  and charEnd = -1 is just the way thes variables
 		// have to be set in order to make the editor jump to the line, once
 		// a breakpoint has occurred. 
 		// see LaunchView::openEditorAndSetMarker		
@@ -68,7 +68,7 @@ public class RubyStackFrame implements IStackFrame {
 	}
 	
 	public String getName() {
-		return file + ":" + this.getLineNumber();
+		return file + ":" + this.getLineNumber(); //$NON-NLS-1$
 	}
 
 	public String getFileName() {
