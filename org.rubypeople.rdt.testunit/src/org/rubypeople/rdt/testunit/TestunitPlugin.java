@@ -276,6 +276,13 @@ public class TestunitPlugin extends AbstractUIPlugin implements ILaunchListener 
 	 * @see ILaunchListener#launchAdded(ILaunch)
 	 */
 	public void launchAdded(ILaunch launch) {
-		fTrackedLaunches.add(launch);
+		try {
+			if (launch.getLaunchConfiguration().getType().getDelegate(launch.getLaunchMode()).getClass() != TestUnitLaunchConfiguration.class) {
+				return;
+			}
+			fTrackedLaunches.add(launch);
+		} catch (CoreException ex) {
+			log(ex);
+		}
 	}
 }
