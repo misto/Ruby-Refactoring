@@ -301,7 +301,7 @@
             name="%cheatsheet.webservices.name"
             category="org.rubypeople.rdt.cheatsheet.category"
             contentFile="$nl$/cheatsheets/WebServices.xml"
-            id="org.rubypeople.rdt.webservices">
+            id="org.rubypeople.rdt.cheatsheets.webservices">
          <description>%cheatsheet.webservices.desc</description>
       </cheatsheet>
    </extension>
