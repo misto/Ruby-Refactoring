@@ -60,11 +60,4 @@ public class RubyMethod extends RubyElement {
 		return (getName() + getStart()).hashCode();
 	}
 
-	/**
-	 * @param string
-	 */
-	public void setAccess(String string) {
-		access = string;
-	}
-
 }

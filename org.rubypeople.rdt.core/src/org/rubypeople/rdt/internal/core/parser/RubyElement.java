@@ -46,6 +46,8 @@ public class RubyElement implements IRubyElement {
 
 	public static final String PUBLIC = "public";
 	public static final String PRIVATE = "private";
+	public static final String READ = "read";
+	public static final String WRITE = "write";
 
 	protected RubyElement(String name, int start) {
 		this.start = start;
@@ -78,6 +80,10 @@ public class RubyElement implements IRubyElement {
 	 */
 	public String getAccess() {
 		return access;
+	}
+	
+	public void setAccess(String newAccess) {
+		access = newAccess;
 	}
 
 	/*
