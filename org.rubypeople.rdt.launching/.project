@@ -11,6 +11,7 @@
 		<project>org.eclipse.ui</project>
 		<project>org.junit</project>
 		<project>org.rubypeople.rdt.core</project>
+		<project>org.rubypeople.rdt.debug.core</project>
 	</projects>
 	<buildSpec>
 		<buildCommand>
