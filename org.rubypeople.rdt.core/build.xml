@@ -1,21 +1,22 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project name="org.rubypeople.rdt.debug.core" default="build.jars">
+<project name="org.rubypeople.rdt.core" default="build.jars" basedir=".">
 
 	<property name="bootclasspath" value=""/>
 	<property name="ws" value="win32"/>
 	<property name="os" value="win32"/>
 	<property name="arch" value="x86"/>
 
-	<target name="init">
-		<property file="${basedir}/../org.rubypeople.rdt.build/build.properties"/>
-		<property file="${basedir}/build.properties"/>
-		<property name="full.name" value="${plugin}_${version}"/>
+	<target name="init" depends="properties">
+		<property name="plugin" value="org.rubypeople.rdt.core"/>
+		<property name="version.suffix" value="_0.3.0"/>
+		<property name="full.name" value="${plugin}${version.suffix}"/>
 		<property name="temp.folder" value="${basedir}/temp.folder"/>
 		<property name="plugin.destination" value="${basedir}"/>
 		<property name="build.result.folder" value="${basedir}"/>
-		<property name="jarfile" value="${plugin.name}.jar"/>
-		<property name="srcfile" value="${plugin.name}src.zip"/>
-		<property name="compile.target.dir" value="${basedir}/bin"/>
+	</target>
+
+	<target name="properties" if="eclipse.running">
+		<property name="build.compiler" value="org.eclipse.jdt.core.JDTCompilerAdapter"/>
 	</target>
 
 	<target name="build.update.jar" depends="init">
@@ -31,50 +32,52 @@
 
 	<target name="gather.bin.parts" depends="init" if="destination.temp.folder">
 		<mkdir dir="${destination.temp.folder}/${full.name}"/>
-		<copy file="${build.result.folder}/${jarfile}" todir="${destination.temp.folder}/${full.name}"/>
+		<copy file="${build.result.folder}/rdtcore.jar" todir="${destination.temp.folder}/${full.name}"/>
 		<copy todir="${destination.temp.folder}/${full.name}">
-			<fileset dir="${basedir}" includes="${bin.includes}"/>
+			<fileset dir="${basedir}" includes="plugin.xml,plugin.properties"/>
 		</copy>
 	</target>
 
-	<target name="compile" depends="init">
-		<echo>Compiling to ${compile.target.dir}.</echo>
-		<javac destdir="${compile.target.dir}" verbose="false" debug="on" includeAntRuntime="no" bootclasspath="${bootclasspath}" classpath="${plugin.classpath}">
+	<target name="rdtcore.jar" depends="init" unless="rdtcore.jar">
+		<property name="destdir" value="${temp.folder}/rdtcore.jar.bin"/>
+		<delete dir="${temp.folder}/rdtcore.jar.bin"/>
+		<mkdir dir="${temp.folder}/rdtcore.jar.bin"/>
+		<!-- compile the source code -->
+		<javac destdir="${temp.folder}/rdtcore.jar.bin" failonerror="false" verbose="true" debug="on" includeAntRuntime="no" bootclasspath="${bootclasspath}" classpath="../org.eclipse.core.resources/resources.jar;../org.apache.xerces/bin;../org.eclipse.core.boot/bin;../org.jruby/lib/gnu-regexp-1.1.4.jar;../org.eclipse.core.runtime/bin;../org.eclipse.core.runtime/runtime.jar;../org.eclipse.core.resources/bin;../org.jruby/jruby.jar;../org.eclipse.team.core/bin;../org.eclipse.team.core/team.jar;../org.jruby/bin;../org.jruby/lib/bcel.jar;../org.jruby/lib/jakarta-oro-2.0.6.jar;../org.jruby/lib/bsf.jar;../org.eclipse.core.boot/boot.jar;../org.eclipse.core.resources.win32/resources.jar;../org.apache.xerces/xercesImpl.jar;../org.apache.xerces/xmlParserAPIs.jar">
 			<src path="src/"/>
 		</javac>
-	</target>
-
-	<target name="build.jars" depends="init">
-		<property name="destdir" value="${temp.folder}/${jarfile}.bin"/>
-		<delete dir="${destdir}"/>
-		<mkdir dir="${destdir}"/>
-		<echo>Building ${jarfile}</echo>
-		<antcall target="compile">
-			<param name="compile.target.dir" value="${destdir}"/>
-		</antcall>
-             
 		<!-- copy necessary resources -->
-		<copy todir="${destdir}">
+		<copy todir="${temp.folder}/rdtcore.jar.bin">
 			<fileset dir="src/" excludes="**/*.java"/>
 		</copy>
 		<mkdir dir="${build.result.folder}"/>
-		<jar jarfile="${build.result.folder}/${jarfile}" basedir="${destdir}"/>
-		<delete dir="${destdir}"/>
+		<jar jarfile="${build.result.folder}/rdtcore.jar" basedir="${temp.folder}/rdtcore.jar.bin"/>
+		<delete dir="${temp.folder}/rdtcore.jar.bin"/>
 	</target>
 
-	<target name="build.sources" depends="init" unless="${srcfile}">
+	<target name="rdtcoresrc.zip" depends="init" unless="rdtcoresrc.zip">
 		<mkdir dir="${build.result.folder}"/>
-		<zip zipfile="${build.result.folder}/${srcfile}" filesonly="false">
+		<zip zipfile="${build.result.folder}/rdtcoresrc.zip" filesonly="false">
 			<fileset dir="src/" includes="**/*.java"/>
 		</zip>
 	</target>
 
-	<target name="build.zips" depends="init">
+	<target name="build.jars" depends="init">
+		<available property="rdtcore.jar" file="${build.result.folder}/rdtcore.jar"/>
+		<antcall target="rdtcore.jar"/>
 	</target>
+
+	<target name="build.sources" depends="init">
+		<available property="rdtcoresrc.zip" file="${build.result.folder}/rdtcoresrc.zip"/>
+		<antcall target="rdtcoresrc.zip"/>
+	</target>
+
+		<target name="build.zips" depends="init">
+		</target>
 
 	<target name="gather.sources" depends="init" if="destination.temp.folder">
 		<mkdir dir="${destination.temp.folder}/${full.name}"/>
-		<copy file="${build.result.folder}/${srcfile}" todir="${destination.temp.folder}/${full.name}"/>
+		<copy file="${build.result.folder}/rdtcoresrc.zip" todir="${destination.temp.folder}/${full.name}"/>
 	</target>
 
 	<target name="gather.logs" depends="init" if="destination.temp.folder">
@@ -83,8 +86,8 @@
 	</target>
 
 	<target name="clean" depends="init">
-		<delete file="${build.result.folder}/${jarfile}"/>
-		<delete file="${build.result.folder}/${srcfile}"/>
+		<delete file="${build.result.folder}/rdtcore.jar"/>
+		<delete file="${build.result.folder}/rdtcoresrc.zip"/>
 		<delete file="${plugin.destination}/${full.name}.jar"/>
 		<delete file="${plugin.destination}/${full.name}.zip"/>
 		<delete dir="${temp.folder}"/>

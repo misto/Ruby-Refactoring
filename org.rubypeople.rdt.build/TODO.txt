@@ -5,6 +5,8 @@
 - Provide a model of a ruby file for the outline view.
 - Refresh the ruby file outline when the file is saved.
 - Allow customization of keywords
+- Honor eclipse single-click prefs
+- Add outline view to ruby perspective
 
 ******************
 * Website

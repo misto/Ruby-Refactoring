@@ -1,106 +1,56 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project name="org.rubypeople.rdt.build" default="build.all" basedir="..">
 	<property name="package.temp.dir" value="org.rubypeople.rdt.build/temp.folder"/>
-        <property file="org.rubypeople.rdt.build/build.properties"/>
-        <!-- plugin.build.file is relative to the target directory -->
-        <property name="plugin.build.file" value="../org.rubypeople.rdt.build/build_project.xml"/>
+	<property name="version" value="0.3.0"/>
 
-	<target name="properties" if="eclipse.running">
-		<property name="build.compiler" value="org.eclipse.jdt.core.JDTCompilerAdapter"/>
-	</target>
-
-	<target name="build.all" depends="properties">
+	<target name="build.all">
 		<antcall target="clean.all"/>
 		<antcall target="package.rdt"/>
 		<antcall target="refresh.all"/>
 	</target>
 	
 	<target name="clean.all">
-		<ant antfile="${plugin.build.file}" 
-		     dir="org.kxml2" 
-		     target="clean"/>
-		<ant antfile="${plugin.build.file}" 
-		     dir="org.jruby" 
-		     target="clean"/>
-		<ant antfile="${plugin.build.file}" 
-		     dir="org.rubypeople.rdt.core" 
-		     target="clean"/>
-		<ant antfile="${plugin.build.file}" 
-		     dir="org.rubypeople.rdt.debug.ui" 
-		     target="clean"/>
-		<ant antfile="${plugin.build.file}" 
-		     dir="org.rubypeople.rdt.debug.core" 
-		     target="clean"/>
-		<ant antfile="${plugin.build.file}" 
-		     dir="org.rubypeople.rdt.launching" 
-		     target="clean"/>
-		<ant antfile="${plugin.build.file}" 
-		     dir="org.rubypeople.rdt.ui" 
-		     target="clean"/>
+		<ant dir="org.jruby" target="clean"/>
+		<ant dir="org.kxml2" target="clean"/>
+		<ant dir="org.rubypeople.rdt.core" target="clean"/>
+		<ant dir="org.rubypeople.rdt.debug.core" target="clean"/>
+		<ant dir="org.rubypeople.rdt.debug.ui" target="clean"/>
+		<ant dir="org.rubypeople.rdt.launching" target="clean"/>
+		<ant dir="org.rubypeople.rdt.ui" target="clean"/>
 		<antcall target="clean"/>
 	</target>
 	
 	<target name="zip.plugin">
-		<ant antfile="${plugin.build.file}"
-		     dir="org.kxml2" 
-		     target="zip.plugin"/>
-		<ant antfile="${plugin.build.file}"
-		     dir="org.jruby" 
-		     target="zip.plugin"/>
-		<ant antfile="${plugin.build.file}"
-		     dir="org.rubypeople.rdt.core" 
-		     target="zip.plugin"/>
-		<ant antfile="${plugin.build.file}"
-		     dir="org.rubypeople.rdt.launching" 
-		     target="zip.plugin"/>
-		<ant antfile="${plugin.build.file}"
-		     dir="org.rubypeople.rdt.ui" 
-		     target="zip.plugin"/> 
-		<ant antfile="${plugin.build.file}"
-		     dir="org.rubypeople.rdt.debug.core" 
-		     target="zip.plugin"/>
-		<ant antfile="${plugin.build.file}"
-                     dir="org.rubypeople.rdt.debug.ui" 
-                     target="zip.plugin"/> 
+		<ant dir="org.jruby" target="zip.plugin"/>
+		<ant dir="org.kxml2" target="zip.plugin"/>
+		<ant dir="org.rubypeople.rdt.core" target="zip.plugin"/>
+		<ant dir="org.rubypeople.rdt.debug.core" target="zip.plugin"/>
+		<ant dir="org.rubypeople.rdt.debug.ui" target="zip.plugin"/>
+		<ant dir="org.rubypeople.rdt.launching" target="zip.plugin"/>
+		<ant dir="org.rubypeople.rdt.ui" target="zip.plugin"/>
 	</target>
 	
 	<target name="package.rdt" depends="zip.plugin">
 		<mkdir dir="${package.temp.dir}"/>
-		<unzip src="org.kxml2/org.kxml2_${version}.zip" dest="${package.temp.dir}"/>
 		<unzip src="org.jruby/org.jruby_${version}.zip" dest="${package.temp.dir}"/>
+		<unzip src="org.kxml2/org.kxml2_${version}.zip" dest="${package.temp.dir}"/>
 		<unzip src="org.rubypeople.rdt.core/org.rubypeople.rdt.core_${version}.zip" dest="${package.temp.dir}"/>
+		<unzip src="org.rubypeople.rdt.debug.core/org.rubypeople.rdt.debug.core_${version}.zip" dest="${package.temp.dir}"/>
 		<unzip src="org.rubypeople.rdt.debug.ui/org.rubypeople.rdt.debug.ui_${version}.zip" dest="${package.temp.dir}"/>
 		<unzip src="org.rubypeople.rdt.launching/org.rubypeople.rdt.launching_${version}.zip" dest="${package.temp.dir}"/>
 		<unzip src="org.rubypeople.rdt.ui/org.rubypeople.rdt.ui_${version}.zip" dest="${package.temp.dir}"/>
-		<unzip src="org.rubypeople.rdt.debug.core/org.rubypeople.rdt.debug.core_${version}.zip" dest="${package.temp.dir}"/>
-		<copy file="org.rubypeople.rdt.build/releaseNotes" todir="${package.temp.dir}"/>
-		<copy file="org.rubypeople.rdt.build/index.html" todir="${package.temp.dir}"/>
 		<zip zipfile="org.rubypeople.rdt.build/rubyeclipse_${version}.zip" basedir="${package.temp.dir}" filesonly="true"/>
 		<delete dir="${package.temp.dir}"/>
 	</target>
 
 	<target name="refresh.all">
-		<ant antfile="${plugin.build.file}"
-		     dir="org.kxml2" 
-		     target="refresh"/>
-		<ant antfile="${plugin.build.file}"
-		     dir="org.jruby" 
-		     target="refresh"/>
-		<ant antfile="${plugin.build.file}"
-		     dir="org.rubypeople.rdt.core" 
-		     target="refresh"/>
-		<ant antfile="${plugin.build.file}" 
-		     dir="org.rubypeople.rdt.debug.ui" 
-		     target="refresh"/>
-		<ant antfile="${plugin.build.file}" 
-		     dir="org.rubypeople.rdt.debug.core" 
-		     target="refresh"/>
-		<ant antfile="${plugin.build.file}" 
-		     dir="org.rubypeople.rdt.launching" 
-		     target="refresh"/>
-		<ant antfile="${plugin.build.file}" 
-		     dir="org.rubypeople.rdt.ui" 
-		     target="refresh"/>
+		<ant dir="org.jruby" target="refresh"/>
+		<ant dir="org.kxml2" target="refresh"/>
+		<ant dir="org.rubypeople.rdt.core" target="refresh"/>
+		<ant dir="org.rubypeople.rdt.debug.core" target="refresh"/>
+		<ant dir="org.rubypeople.rdt.debug.ui" target="refresh"/>
+		<ant dir="org.rubypeople.rdt.launching" target="refresh"/>
+		<ant dir="org.rubypeople.rdt.ui" target="refresh"/>
 		<antcall target="refresh"/>
 	</target>
 
