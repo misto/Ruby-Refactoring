@@ -12,6 +12,12 @@
 	<property name="javacSource" value="1.3"/>
 	<property name="javacTarget" value="1.2"/>
 	<property name="compilerArg" value=""/>
+	<property name="featureVersion" value="0.6.0"/>
+	<!-- featureVersion might also be set from outside -->
+	<echo message="Using featureVersion=${featureVersion}"/>		
+	<property name="docbook.root" value="../../docbook"/>
+	<!-- docbook.root might also be set from outside -->
+	<echo message="Using docbook.root=${docbook.root}"/>	
 
 	<target name="init" depends="properties">
 		<condition property="pluginTemp" value="${buildTempFolder}/plugins">
@@ -37,23 +43,20 @@
 		<antcall target="gather.bin.parts">
 			<param name="destination.temp.folder" value="${temp.folder}/"/>
 		</antcall>
-		<zip zipfile="${plugin.destination}/org.rubypeople.rdt.doc.user_0.5.0.jar" basedir="${temp.folder}/org.rubypeople.rdt.doc.user_0.5.0" filesonly="false" whenempty="skip" update="false"/>
+		<zip zipfile="${plugin.destination}/org.rubypeople.rdt.doc.user_${featureVersion}.jar" basedir="${temp.folder}/org.rubypeople.rdt.doc.user_${featureVersion}" filesonly="false" whenempty="skip" update="false"/>
 		<delete dir="${temp.folder}"/>
 	</target>
 
 	<target name="build.jars" depends="init" description="Build all the jars for the plug-in: org.rubypeople.rdt.doc.user.">		
-		<!-- when this script is called from automatic build, docbook.root is probably defined
-		when this script is called. Otherwise use the default from buildDocbook.xml -->
-
-		<ant antfile="buildDocbook.xml"/>	
+		<ant antfile="buildDocbook.xml" target="html"/>	
 	</target>
 
 	<target name="build.sources" depends="init">
 	</target>
 
 	<target name="gather.bin.parts" depends="init" if="destination.temp.folder">
-		<mkdir dir="${destination.temp.folder}/org.rubypeople.rdt.doc.user_0.5.0"/>
-		<copy todir="${destination.temp.folder}/org.rubypeople.rdt.doc.user_0.5.0" failonerror="true">
+		<mkdir dir="${destination.temp.folder}/org.rubypeople.rdt.doc.user_${featureVersion}"/>
+		<copy todir="${destination.temp.folder}/org.rubypeople.rdt.doc.user_${featureVersion}" failonerror="true">
 			<fileset dir="${basedir}" includes="plugin.xml,toc.xml,html/,images/" excludes="build.xml"			/>
 		</copy>
 	</target>
@@ -62,7 +65,7 @@
 	</target>
 
 	<target name="gather.sources" depends="init" if="destination.temp.folder">
-		<copy todir="${destination.temp.folder}/org.rubypeople.rdt.doc.user_0.5.0" failonerror="false">
+		<copy todir="${destination.temp.folder}/org.rubypeople.rdt.doc.user_${featureVersion}" failonerror="false">
 			<fileset dir="${basedir}" includes="docbook.xml,plugin.xml"			/>
 		</copy>
 	</target>
@@ -71,8 +74,8 @@
 	</target>
 
 	<target name="clean" depends="init" description="Clean the plug-in: org.rubypeople.rdt.doc.user of all the zips, jars and logs created.">
-		<delete file="${plugin.destination}/org.rubypeople.rdt.doc.user_0.5.0.jar"/>
-		<delete file="${plugin.destination}/org.rubypeople.rdt.doc.user_0.5.0.zip"/>
+		<delete file="${plugin.destination}/org.rubypeople.rdt.doc.user_${featureVersion}.jar"/>
+		<delete file="${plugin.destination}/org.rubypeople.rdt.doc.user_${featureVersion}.zip"/>
 		<delete dir="${temp.folder}"/>
 	</target>
 
@@ -95,7 +98,7 @@
 		<delete>
 			<fileset dir="${temp.folder}" includes="**/*.bin.log"			/>
 		</delete>
-		<zip zipfile="${plugin.destination}/org.rubypeople.rdt.doc.user_0.5.0.zip" basedir="${temp.folder}" filesonly="true" whenempty="skip" update="false"/>
+		<zip zipfile="${plugin.destination}/org.rubypeople.rdt.doc.user_${featureVersion}.zip" basedir="${temp.folder}" filesonly="true" whenempty="skip" update="false"/>
 		<delete dir="${temp.folder}"/>
 	</target>
 

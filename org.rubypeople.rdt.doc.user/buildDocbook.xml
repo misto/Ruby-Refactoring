@@ -1,15 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project name="org.rubypeople.rdt.doc.user" default="html" basedir=".">
+<project name="org.rubypeople.rdt.doc.user" default="nodefault" basedir=".">
 	
-	
+	<target name="nodefault">		
+		<echo message="Please always call this script from build.xml"/>
+	</target>
 
 	<target name="init">
-		<property name="docbook.root" value="../../docbook"/>
-		<!-- docbook.root might also be set from outside -->
-		<echo message="Using docbook.root=${docbook.root}"/>
-		<property name="featureVersion" value="0.5.0"/>
-		<!-- featureVersion might also be set from outside -->
-		<echo message="Using featureVersion=${featureVersion}"/>		
+		<fail unless="featureVersion" message="Property featureVersion must be set. Please always call this script from build.xml"/>
+		<fail unless="featureVersion" message="Property docbook.root must be set. Please always call this script from build.xml"/>
         <property name="docbook.xsl.dir" value="${docbook.root}/docbook-xsl-1.64.1"/>
         <property name="docbook.dtd.dir" value="${docbook.root}/dtd"/>	
 		<condition property="docbook.dir.exists">
