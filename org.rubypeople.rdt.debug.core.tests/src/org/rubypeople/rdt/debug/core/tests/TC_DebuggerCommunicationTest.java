@@ -19,6 +19,7 @@ import org.rubypeople.rdt.internal.debug.core.model.RubyThread;
 import org.rubypeople.rdt.internal.debug.core.model.RubyVariable;
 import org.rubypeople.rdt.internal.debug.core.model.ThreadInfo;
 import org.rubypeople.rdt.internal.debug.core.parsing.FramesReader;
+import org.rubypeople.rdt.internal.debug.core.parsing.LoadResultReader;
 import org.rubypeople.rdt.internal.debug.core.parsing.MultiReaderStrategy;
 import org.rubypeople.rdt.internal.debug.core.parsing.SuspensionReader;
 import org.rubypeople.rdt.internal.debug.core.parsing.ThreadInfoReader;
@@ -60,11 +61,15 @@ public class TC_DebuggerCommunicationTest extends TestCase {
 		//suite.addTest(new TC_DebuggerCommunicationTest("testVariableHashWithObjectKeys"));
 		//suite.addTest(new TC_DebuggerCommunicationTest("testVariableHashWithStringKeys"));
 		//suite.addTest(new TC_DebuggerCommunicationTest("testVariableWithXmlContent"));
-		  suite.addTest(new TC_DebuggerCommunicationTest("testVariableLocal"));
-
+		//  suite.addTest(new TC_DebuggerCommunicationTest("testVariableLocal"));
+		suite.addTest(new TC_DebuggerCommunicationTest("testReloadAndInspect")) ;
+		suite.addTest(new TC_DebuggerCommunicationTest("testReloadWithException")) ;
+		suite.addTest(new TC_DebuggerCommunicationTest("testReloadAndStep")) ;
+		suite.addTest(new TC_DebuggerCommunicationTest("testReloadInRequire")) ;
+		suite.addTest(new TC_DebuggerCommunicationTest("testReloadInStackFrame")) ;
 		return suite;
 	}
-	*/
+*/
 
 
 	private static String tmpDir;
@@ -129,6 +134,10 @@ public class TC_DebuggerCommunicationTest extends TestCase {
 
 	protected ThreadInfoReader getThreadInfoReader() throws Exception {
 		return new ThreadInfoReader(multiReaderStrategy);
+	}
+	
+	protected LoadResultReader getLoadResultReader() throws Exception {
+		return new LoadResultReader(multiReaderStrategy) ;
 	}
 
 	public void startRubyProcess() throws Exception {
@@ -851,5 +860,93 @@ public class TC_DebuggerCommunicationTest extends TestCase {
 		assertEquals("x", variables[2].getName()) ;		
 		
 	}
+	
+	public void testReloadAndInspect() throws Exception {
+		String[] lines = new String[] { "class Test", "def calc(a)", "a = a*2", "return a",  "end", "end", "test=Test.new()" } ;
+		createSocket( lines );
+		runToLine(7);
+		// test variable value in stack 1 (top stack frame)
+		lines[2] = "a=a*4" ;
+		writeFile( "test.rb", lines);
+		out.println("load " + getTmpDir() + "test.rb") ;
+		LoadResultReader.LoadResult loadResult = this.getLoadResultReader().readLoadResult() ;
+		assertTrue("No Exception from load", loadResult.isOk()) ;
+		out.println("v inspect Test.new.calc(2)");
+		RubyVariable[] variables = getVariableReader().readVariables(createStackFrame());
+		assertEquals("There is one variable returned.", 1, variables.length) ;
+		assertEquals("Result is 8", "8", variables[0].getValue().getValueString()) ;
+	}
+	
+	public void testReloadAndStep() throws Exception {
+		String[] lines = new String[] { "puts 'a'", "puts 'b'", "puts 'c'" } ;
+		createSocket( lines );
+        runToLine(2) ;
+		lines = new String[] { "puts 'd'", "puts 'e'", "puts 'f'" } ;
+        writeFile("test.rb", lines) ;
+		out.println("load " + getTmpDir() + "test.rb") ;
+		LoadResultReader.LoadResult loadResult = this.getLoadResultReader().readLoadResult() ;
+		out.println("next");
+		SuspensionPoint info = getSuspensionReader().readSuspension();
+		assertEquals(3, info.getLine());		
+	}	
 
+	public void testReloadWithException() throws Exception {
+		createSocket(new String[] { "puts 'a'" }) ;
+		runToLine(1);
+		// test variable value in stack 1 (top stack frame)
+		String[] lines = new String[] { "classs A;end" } ;
+		writeFile( "test.rb", lines);
+		
+		out.println("load " + getTmpDir() + "test.rb") ;
+		LoadResultReader.LoadResult loadResult = this.getLoadResultReader().readLoadResult() ;
+		assertFalse("Exception from load", loadResult.isOk()) ;
+		assertEquals(loadResult.getExceptionType(), "SyntaxError") ;
+	}
+	
+	public void testReloadInRequire() throws Exception {
+		// Deadlock
+		String[] lines = new String[] { "def endless", "sleep 0.1", "end" } ;
+		writeFile( "content file.rb", lines);
+		createSocket(new String[] { "require 'content file'", "while true", "endless()", "end"} );
+		out.println("cont") ;		
+		// test variable value in stack 1 (top stack frame)
+		lines[1] = "exit 0" ;
+		writeFile( "content file.rb", lines);
+		out.println("load " + getTmpDir() + "content file.rb") ;
+		LoadResultReader.LoadResult loadResult = this.getLoadResultReader().readLoadResult() ;
+		assertTrue("No Exception from load", loadResult.isOk()) ;
+	}
+	
+	
+	public void testReloadInStackFrame() throws Exception {
+		String[] lines = new String[] { "class Test", "def calc(a)", "a = a*2", "return a",  "end", "end", "result = Test.new.calc(2)", "result = Test.new.calc(2)", "puts result" } ;
+		createSocket( lines );
+		runToLine(3);
+		// a has not yet been calculated ...
+		out.println("v local") ;
+		RubyVariable[] localVariables = getVariableReader().readVariables(createStackFrame());
+		assertEquals("2", localVariables[0].getValue().getValueString());
+		// now change the code ...
+		lines[2] = "a=a*4" ;
+		writeFile( "test.rb", lines);
+		out.println("load " + getTmpDir() + "test.rb") ;
+		LoadResultReader.LoadResult loadResult = this.getLoadResultReader().readLoadResult() ;
+		assertTrue("No Exception from load", loadResult.isOk()) ;
+		runToLine(4);
+		// now a is calculated and the result is 4. That means that ruby does not change the code which 
+	    // currently being executed in a stack frame, Java would have reset the instruction pointer and the
+		// result would be 8
+		out.println("v local") ;
+		localVariables = getVariableReader().readVariables(createStackFrame());
+		assertEquals("4", localVariables[0].getValue().getValueString());
+		
+		// Now check that the new code is executed with the next call to calc
+		runToLine(3) ;
+		runToLine(4) ;
+		out.println("v local") ;
+		localVariables = getVariableReader().readVariables(createStackFrame());
+		assertEquals("8", localVariables[0].getValue().getValueString());
+	}
+	
+	
 }
