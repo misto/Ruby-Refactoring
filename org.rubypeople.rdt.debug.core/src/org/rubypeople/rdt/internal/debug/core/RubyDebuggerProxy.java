@@ -5,11 +5,13 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
+import java.net.UnknownHostException;
 
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.debug.core.DebugPlugin;
 import org.eclipse.debug.core.model.IBreakpoint;
 import org.rubypeople.rdt.internal.debug.core.model.IRubyDebugTarget;
+import org.rubypeople.rdt.internal.debug.core.model.RubyProcessingException;
 import org.rubypeople.rdt.internal.debug.core.model.RubyStackFrame;
 import org.rubypeople.rdt.internal.debug.core.model.RubyThread;
 import org.rubypeople.rdt.internal.debug.core.model.RubyVariable;
@@ -24,7 +26,7 @@ import org.xmlpull.v1.XmlPullParserException;
 import org.xmlpull.v1.XmlPullParserFactory;
 
 public class RubyDebuggerProxy {
-
+	public final static String DEBUGGER_ACTIVE_KEY = "org.rubypeople.rdt.debug.ui.debuggerActive" ;
 	private Socket socket;
 	private PrintWriter writer;
 	private IRubyDebugTarget debugTarget;
@@ -52,7 +54,15 @@ public class RubyDebuggerProxy {
 
 	protected Socket getSocket() throws IOException {
 		if (socket == null) {
-			socket = new Socket("localhost", 1098);
+			try {
+                socket = new Socket("localhost", 1098);
+            } catch (IOException e) {
+            	try {
+                    Thread.sleep(500) ;
+                } catch (InterruptedException e1) {
+                }
+				socket = new Socket("localhost", 1098);
+            }
 		}
 		return socket;
 	}
@@ -161,7 +171,7 @@ public class RubyDebuggerProxy {
 		try {
 			this.println("th " + ((RubyThread) frame.getThread()).getId() + " ; v l " + frame.getIndex());
 			return new VariableReader(getMultiReaderStrategy()).readVariables(frame);
-		} catch (IOException ioex) {
+		} catch (Exception ioex) {
 			ioex.printStackTrace();
 			throw new RuntimeException(ioex.getMessage());
 		}
@@ -169,15 +179,15 @@ public class RubyDebuggerProxy {
 
 	public RubyVariable[] readInstanceVariables(RubyVariable variable) {
 		try {
-			this.println("th " + ((RubyThread) variable.getStackFrame().getThread()).getId() + " ; v i " + variable.getStackFrame().getIndex() + " " + variable.getQualifiedName());
+			this.println("th " + ((RubyThread) variable.getStackFrame().getThread()).getId() + " ; v i " + variable.getStackFrame().getIndex() + " " + variable.getObjectId());
 			return new VariableReader(getMultiReaderStrategy()).readVariables(variable);
-		} catch (IOException ioex) {
+		} catch (Exception ioex) {
 			ioex.printStackTrace();
 			throw new RuntimeException(ioex.getMessage());
 		}
 	}
 
-	public RubyVariable readInspectExpression(RubyStackFrame frame, String expression) {
+	public RubyVariable readInspectExpression(RubyStackFrame frame, String expression) throws RubyProcessingException {
 		try {
 			this.println("th " + ((RubyThread) frame.getThread()).getId() + " ; v inspect " + frame.getIndex() + " " + expression);
 			RubyVariable[] variables = new VariableReader(getMultiReaderStrategy()).readVariables(frame);
@@ -263,6 +273,7 @@ public class RubyDebuggerProxy {
 
 		public void run() {
 			try {
+				System.setProperty(DEBUGGER_ACTIVE_KEY, "true") ;
 				getDebugTarget().updateThreads();
 				println("cont");
 				System.out.println("Waiting for breakpoints.");
@@ -280,8 +291,10 @@ public class RubyDebuggerProxy {
 					.start();
 				}
 			} catch (Exception ex) {
-				ex.printStackTrace(); //RdtDebugCorePlugin.log(ex) ;
+				ex.printStackTrace();
+				RdtDebugCorePlugin.log(ex) ;
 			} finally {
+				System.setProperty(DEBUGGER_ACTIVE_KEY, "false") ;
 				getDebugTarget().terminate();
 				try {
 					closeSocket();

@@ -3,6 +3,7 @@ package org.rubypeople.rdt.internal.debug.core.parsing;
 import java.util.ArrayList;
 
 import org.rubypeople.rdt.internal.debug.core.RdtDebugCorePlugin;
+import org.rubypeople.rdt.internal.debug.core.model.RubyProcessingException;
 import org.rubypeople.rdt.internal.debug.core.model.RubyStackFrame;
 import org.rubypeople.rdt.internal.debug.core.model.RubyVariable;
 import org.xmlpull.v1.XmlPullParser;
@@ -12,7 +13,9 @@ public class VariableReader extends XmlStreamReader {
 	private RubyStackFrame stackFrame;
 	private RubyVariable parent ;
 	private ArrayList variables ;
-
+	private String exceptionMessage ;
+	private String exceptionType ;
+	
 	public VariableReader(XmlPullParser xpp) {
 		super(xpp);
 	}
@@ -21,16 +24,16 @@ public class VariableReader extends XmlStreamReader {
 		super(readStrategy);
 	}
 
-	public RubyVariable[] readVariables(RubyVariable variable) {
+	public RubyVariable[] readVariables(RubyVariable variable) throws RubyProcessingException {
 		return readVariables(variable.getStackFrame(), variable) ;
 	}
 
-	public RubyVariable[] readVariables(RubyStackFrame stackFrame) {
+	public RubyVariable[] readVariables(RubyStackFrame stackFrame) throws RubyProcessingException {
 		return readVariables(stackFrame, null) ;
 
 	}
 		
-	public RubyVariable[] readVariables(RubyStackFrame stackFrame, RubyVariable parent) {
+	public RubyVariable[] readVariables(RubyStackFrame stackFrame, RubyVariable parent) throws RubyProcessingException {
 		this.stackFrame = stackFrame ;
 		this.parent = parent ;
 		this.variables = new ArrayList() ;
@@ -39,6 +42,9 @@ public class VariableReader extends XmlStreamReader {
 		} catch (Exception ex) {
 			RdtDebugCorePlugin.log(ex) ;
 			return new RubyVariable[0] ;
+		}
+		if (exceptionMessage != null) {
+			throw new RubyProcessingException(exceptionType, exceptionMessage) ;		
 		}
 		RubyVariable[] variablesArray = new RubyVariable[variables.size()];
 		variables.toArray(variablesArray);
@@ -61,12 +67,18 @@ public class VariableReader extends XmlStreamReader {
 			}
 			else {
 			String typeName = xpp.getAttributeValue("", "type") ;
-			boolean hasChildren = xpp.getAttributeValue("", "hasChildren").equals("true") ;
-				newVariable = new RubyVariable(stackFrame, varName, kind, varValue, typeName, hasChildren);			
+			    boolean hasChildren = xpp.getAttributeValue("", "hasChildren").equals("true") ;
+			    String objectId = xpp.getAttributeValue("", "objectId") ;
+				newVariable = new RubyVariable(stackFrame, varName, kind, varValue, typeName, hasChildren, objectId);			
 			}
 			newVariable.setParent(parent) ;
 			variables.add(newVariable) ;						
 			return true ;
+		}
+		if (name.equals("processingException")) {
+			exceptionMessage = xpp.getAttributeValue("", "message") ;
+			exceptionType = xpp.getAttributeValue("", "type") ;
+			return true ;					
 		}
 		return false ;
 	}
