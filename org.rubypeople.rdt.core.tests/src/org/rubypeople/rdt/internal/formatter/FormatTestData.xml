@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <tests>
-  <test ID="simple">
-  
+  <test ID="Keywords">
+
+<part>
+<assertionMessage>Keywords</assertionMessage>  
 <unformatted>
 class xx
  def xx()
@@ -24,9 +26,35 @@ class xx
 **end
 end
 </formatted>
+</part>
 
-  </test>
-  <test ID="KeywordInComment">
+<part>
+<assertionMessage>Keyword with following delimiter</assertionMessage>  
+<unformatted>
+if(true)
+while(true)do
+if/test/=~"test" then
+puts "TEST MATCHES" ;
+elsif/test/=~"abc"
+puts "ABC MATCHES";
+end
+end
+end
+</unformatted>
+<formatted>
+if(true)
+**while(true)do
+****if/test/=~"test" then
+******puts "TEST MATCHES" ;
+****elsif/test/=~"abc"
+******puts "ABC MATCHES";
+****end
+**end
+end
+</formatted>
+</part>
+
+
 <part>
 <assertionMessage>Keyword in comment</assertionMessage>  
 <unformatted>
@@ -467,6 +495,50 @@ if
 end
 v =~ /{/
 o.m()
+</formatted>
+</part>
+
+<part>
+<assertionMessage>regular expressions with multiple lines</assertionMessage>
+<comment>
+while ruby allows regular expressions with multiple lines, the code formatter won't consider them.
+the reason is, that the simple code formatting parser cannot make a decision if a slash is for starting
+a regex or for a division
+</comment>
+<unformatted>
+if /abc
+/ =~ "\ndef" then
+puts 'matched def' ;
+end
+</unformatted>  
+<formatted>
+if /abc
+**/ =~ "\ndef" then
+**puts 'matched def' ;
+end
+</formatted>
+</part>
+
+
+<part>
+<assertionMessage>Two divisions</assertionMessage>
+<unformatted>
+def a
+if true
+1/2 
+else
+1/4
+end
+end
+</unformatted>  
+<formatted>
+def a
+**if true
+****1/2 
+**else
+****1/4
+**end
+end
 </formatted>
 </part>
 

@@ -95,11 +95,7 @@ public class TC_CodeFormatter extends TestCase {
 	}
 
 	public void testSimple() {
-		this.doTest("simple");
-	}
-
-	public void testKeywordInComment() {
-		this.doTest("KeywordInComment");
+		this.doTest("Keywords");
 	}
 
 	public void testTakeIndentationOfFirstKeyword() {

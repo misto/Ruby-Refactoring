@@ -134,9 +134,9 @@ public class CodeFormatter {
 				new RE(
 					"(^|[:space:])"
 						+ BLOCK_BEGIN_RE
-						+ "($|[:space:])|(^|[:space:])"
+						+ "($|[:space:]|" + DELIMITER_RE + ")|(^|[:space:])"
 						+ BLOCK_MID_RE
-						+ "($|[:space:])|(^|[:space:])"
+						+ "($|[:space:]|" + DELIMITER_RE + ")|(^|[:space:])"
 						+ BLOCK_END_RE
 						+ "($|[:space:])|"
 						+ LITERAL_BEGIN_RE
@@ -184,7 +184,20 @@ public class CodeFormatter {
 						pos = unformatted.indexOf(delimitChar, pos);
 					}
 				} else if (matchedLiteralBegin.startsWith("/")) {
-					pos = this.forwardString(unformatted, pos, ' ', "/", true);
+					// we do not consider reg exp over multiple lines. Therefore a reg exp over
+					// mutliple lines might get formatted. On the other hand code between
+					// two division slashes on several lines is being formatted. We could avoid that
+					// behaviour only if we could make a difference between slashes for division and
+					// slashes for regular expressions.
+					int posClosingSlash = this.forwardString(unformatted, pos, ' ', "/", true);
+					if (posClosingSlash == pos) {						
+						continue ;
+					}
+					int posNextLine = unformatted.indexOf("\n", pos) ;
+					if (posNextLine != -1 && posClosingSlash > posNextLine) {
+						continue ;
+					}
+					pos = posClosingSlash ;
 				} else if (matchedLiteralBegin.startsWith("'")) {
 					if (pos > 1 && unformatted.charAt(pos - 2) == '$') {
 						continue;
@@ -308,34 +321,19 @@ public class CodeFormatter {
 		}
 		return pos;
 	}
-	/*	
-		(defun ruby-expr-beg (&optional option)
-		  (save-excursion
-			(store-match-data nil)
-			(skip-chars-backward " \t")
-			(cond
-			 ((bolp) t)
-			 ((looking-at "\\?")
-			  (or (bolp) (forward-char -1))
-			  (not (looking-at "\\sw")))
-			 (t
-			  (forward-char -1)
-			  (or (looking-at ruby-operator-re)
-			       (looking-at "[\\[({,;]")
-			       (and (not (eq option 'modifier))
-				           (looking-at "[!?]"))
-			      (and (looking-at ruby-symbol-re)
-				     (skip-chars-backward ruby-symbol-chars)
-				   (cond
-				((or (looking-at ruby-block-beg-re)
-					 (looking-at ruby-block-op-re)
-					 (looking-at ruby-block-mid-re))
-				 (goto-char (match-end 0))
-				 (looking-at "\\>"))
-				(t
-				 (and (not (eq option 'expr-arg))
-					  (looking-at "[a-zA-Z][a-zA-z0-9_]* +/[^ \t]"))))))))))
-	*/
+	
+	/*
+	 * (defun ruby-expr-beg (&optional option) (save-excursion (store-match-data
+	 * nil) (skip-chars-backward " \t") (cond ((bolp) t) ((looking-at "\\?") (or
+	 * (bolp) (forward-char -1)) (not (looking-at "\\sw"))) (t (forward-char -1)
+	 * (or (looking-at ruby-operator-re) (looking-at "[\\[({,;]") (and (not (eq
+	 * option 'modifier)) (looking-at "[!?]")) (and (looking-at ruby-symbol-re)
+	 * (skip-chars-backward ruby-symbol-chars) (cond ((or (looking-at
+	 * ruby-block-beg-re) (looking-at ruby-block-op-re) (looking-at
+	 * ruby-block-mid-re)) (goto-char (match-end 0)) (looking-at "\\>")) (t (and
+	 * (not (eq option 'expr-arg)) (looking-at "[a-zA-Z][a-zA-z0-9_]* +/[^
+	 * \t]"))))))))))
+	 */
 
 	protected int skipCharsBackward(String unformatted, int pos) {
 		// skipCharsBackward returns the position of the first char which is not tab or space left from pos and is in the 
