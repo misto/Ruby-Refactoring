@@ -322,7 +322,7 @@ public class RubyTokenizer {
 		if (Character.isUpperCase(text.charAt(0)) && Character.isLetter(text.charAt(0))) { return RubyToken.CONSTANT; }
 		if (text.equals("end")) { return RubyToken.END; }
 		if (text.equals("def")) { return RubyToken.METHOD; }
-		if (text.equals("require")) { return RubyToken.REQUIRES; }
+		if (text.equals("require") || text.equals("load")) { return RubyToken.REQUIRES; }
 		if (text.equals("class") && currentPosition != maxPosition && 
 				str.charAt(currentPosition) == ' ') { return RubyToken.CLASS; }
 		if (text.equals("module") && currentPosition != maxPosition && 
