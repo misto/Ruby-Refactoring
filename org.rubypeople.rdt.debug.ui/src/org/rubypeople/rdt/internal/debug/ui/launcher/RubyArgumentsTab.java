@@ -80,6 +80,8 @@ public class RubyArgumentsTab extends AbstractLaunchConfigurationTab {
 	public void setDefaults(ILaunchConfigurationWorkingCopy configuration) {
 		setUseDefaultWorkingDirectory(true);
 		configuration.setAttribute(RubyLaunchConfigurationAttribute.WORKING_DIRECTORY, RdtDebugUiConstants.DEFAULT_WORKING_DIRECTORY);
+		// set hidden attribute
+		configuration.setAttribute(ILaunchConfiguration.ATTR_SOURCE_LOCATOR_ID, "org.rubypeople.rdt.debug.ui.rubySourceLocator") ;
 	}
 
 	public void initializeFrom(ILaunchConfiguration configuration) {
