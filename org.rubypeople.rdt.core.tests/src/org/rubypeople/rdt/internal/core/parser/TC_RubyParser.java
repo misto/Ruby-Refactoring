@@ -341,6 +341,19 @@ public class TC_RubyParser extends TestCase {
 		assertEquals(3, F.getElementCount());
 		assertNotNull(F.getElement("h"));
 	}
+	
+	public void testComplainsAboutUppercaseMethodName() throws Exception {
+		RubyScript script = RubyParser.parse("class Bob\ndef Method\nend\nend\n");
+		assertEquals(1, script.getElementCount());
+		assertTrue(script.hasParseErrors());
+		assertEquals(1, script.getErrorCount());
+		ParseError error = (ParseError) script.getParseErrors().toArray()[0];
+		assertEquals( ParseError.WARNING, error.getSeverity().intValue());
+		
+		assertTrue(script.contains(new RubyElement(RubyElement.CLASS, "Bob", 0, 6)));
+		assertEquals(new Position(3, 0), script.getElement("Bob").getEnd());
+	}
+	
 	public void testComplainsAboutLowercaseClassName() throws Exception {
 		RubyScript script = RubyParser.parse("class bob\nend\n");
 		assertEquals(1, script.getElementCount());
