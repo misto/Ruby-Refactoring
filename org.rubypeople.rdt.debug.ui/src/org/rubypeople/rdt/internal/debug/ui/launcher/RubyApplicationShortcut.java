@@ -14,6 +14,8 @@ import org.eclipse.debug.core.ILaunchManager;
 import org.eclipse.debug.ui.ILaunchShortcut;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
+import org.eclipse.jface.viewers.StructuredSelection;
+import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorPart;
 import org.rubypeople.rdt.internal.debug.ui.RdtDebugUiMessages;
 import org.rubypeople.rdt.internal.debug.ui.RdtDebugUiPlugin;
@@ -23,10 +25,6 @@ public class RubyApplicationShortcut implements ILaunchShortcut {
 	public RubyApplicationShortcut() {
 	}
 
-	/**
-	 * Insert the method's description here.
-	 * @see ILaunchShortcut#launch
-	 */
 	public void launch(ISelection selection, String mode)  {
 		if (selection instanceof IStructuredSelection) {
 			Object firstSelection = ((IStructuredSelection)selection).getFirstElement();
@@ -47,12 +45,10 @@ public class RubyApplicationShortcut implements ILaunchShortcut {
 		log("The resource selected is not a Ruby file.");
 	}
 
-	/**
-	 * Insert the method's description here.
-	 * @see ILaunchShortcut#launch
-	 */
 	public void launch(IEditorPart editor, String mode)  {
-		System.out.println("launch(IEditorPart editor, String mode)");
+		IEditorInput input = editor.getEditorInput();
+		ISelection selection = new StructuredSelection(input.getAdapter(IFile.class));
+		launch(selection, mode);
 	}
 
 	protected ILaunchConfiguration findLaunchConfiguration(IFile rubyFile, String mode) {
@@ -63,10 +59,8 @@ public class RubyApplicationShortcut implements ILaunchShortcut {
 			candidateConfigs = new ArrayList(configs.length);
 			for (int i = 0; i < configs.length; i++) {
 				ILaunchConfiguration config = configs[i];
-				if (config.getAttribute(RubyLaunchConfigurationAttribute.FILE_NAME, "").equals(rubyFile.getName())) {
-					//if (config.getAttribute(RubyLaunchConfigurationAttribute.PROJECT_NAME, "").equals(rubyFile.getProject().getName())) {
+				if (config.getAttribute(RubyLaunchConfigurationAttribute.FILE_NAME, "").equals(rubyFile.getFullPath().toString())) {
 						candidateConfigs.add(config);
-					//}
 				}
 			}
 		} catch (CoreException e) {
@@ -89,8 +83,7 @@ public class RubyApplicationShortcut implements ILaunchShortcut {
 		try {
 			ILaunchConfigurationType configType = getRubyLaunchConfigType();
 			ILaunchConfigurationWorkingCopy wc = configType.newInstance(null, getLaunchManager().generateUniqueLaunchConfigurationNameFrom(rubyFile.getName())); 
-			wc.setAttribute(RubyLaunchConfigurationAttribute.FILE_NAME, rubyFile.getName());
-			wc.setAttribute(RubyLaunchConfigurationAttribute.PROJECT_NAME, rubyFile.getProject().getName());
+			wc.setAttribute(RubyLaunchConfigurationAttribute.FILE_NAME, rubyFile.getFullPath().toString());
 			config = wc.doSave();		
 		} catch (CoreException ce) {
 			RdtDebugUiPlugin.getDefault().log(ce);			

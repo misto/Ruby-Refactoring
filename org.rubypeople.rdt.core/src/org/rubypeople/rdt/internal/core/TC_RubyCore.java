@@ -1,0 +1,34 @@
+package org.rubypeople.rdt.internal.core;
+
+import junit.framework.TestCase;
+
+import org.eclipse.core.resources.IFile;
+import org.eclipse.core.resources.IProject;
+import org.rubypeople.eclipse.shams.resources.ShamFile;
+import org.rubypeople.eclipse.shams.resources.ShamProject;
+import org.rubypeople.rdt.core.RubyFile;
+
+public class TC_RubyCore extends TestCase {
+
+	public TC_RubyCore(String name) {
+		super(name);
+	}
+
+	public void testCreate() {
+		RubyCore core = new RubyCore();
+		
+		ShamFile file = new ShamFile("some/folder/theFile.rb");
+		RubyFile rubyFile = core.create(file);
+		assertNotNull("The core should create a RubyFile when the resource is a file with .rb extension.", rubyFile);
+		assertEquals("The core should place the resource into the RubyFile.", file, rubyFile.getUnderlyingResource());
+
+		file = new ShamFile("some/folder/theFile.xyz");
+		assertNull("The core should not create a RubyFile when the resource is a file without the .rb extension.", core.create(file));
+		
+		ShamProject project = new ShamProject("aProject");
+		project.addNature("someOtherNature");
+		assertNull("The core should not create a RubyProject when the resource does not have the RubyProjectNature.", core.create(project));
+		project.addNature(RubyPlugin.RUBY_NATURE_ID);
+		assertNotNull("The core should create a RubyProject when the resource has the RubyProjectNature.", core.create(project));
+	}
+}

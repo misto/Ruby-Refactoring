@@ -1,10 +1,9 @@
 package org.rubypeople.rdt.internal.core;
 
-import org.eclipse.core.resources.IProject;
-import org.rubypeople.eclipse.shams.resources.ShamIProject;
-import org.rubypeople.eclipse.shams.runtime.ShamIPath;
-
 import junit.framework.TestCase;
+
+import org.eclipse.core.runtime.Path;
+import org.rubypeople.eclipse.shams.resources.ShamProject;
 
 public class TC_LoadPathEntry extends TestCase {
 
@@ -13,8 +12,7 @@ public class TC_LoadPathEntry extends TestCase {
 	}
 
 	public void testToXml() {
-		ShamIProject project = new ShamIProject("MyProject");
-		project.setFullPath("myLocation");
+		ShamProject project = new ShamProject(new Path("myLocation"), "MyProject");
 		LoadPathEntry entry = new LoadPathEntry(project);
 		
 		String expected = "<pathentry type=\"project\" path=\"myLocation\"/>";

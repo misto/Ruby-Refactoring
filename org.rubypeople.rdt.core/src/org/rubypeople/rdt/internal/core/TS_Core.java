@@ -8,6 +8,7 @@ public class TS_Core extends TestSuite {
 		TestSuite suite = new TestSuite();
 
 		suite.addTestSuite(TC_LoadPathEntry.class);
+		suite.addTestSuite(TC_RubyCore.class);
 		suite.addTestSuite(TC_RubyProject.class);
 
 		return suite;

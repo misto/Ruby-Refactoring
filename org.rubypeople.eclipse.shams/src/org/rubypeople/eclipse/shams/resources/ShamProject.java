@@ -1,74 +1,147 @@
 package org.rubypeople.eclipse.shams.resources;
 
-import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFile;
-import org.eclipse.core.resources.IFileState;
+import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IProjectDescription;
+import org.eclipse.core.resources.IProjectNature;
+import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IResourceVisitor;
 import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
+import org.eclipse.core.runtime.IPluginDescriptor;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.QualifiedName;
+import org.rubypeople.eclipse.shams.runtime.ShamIPath;
 
-public class ShamIFile implements IFile {
-	protected String fileName;
+public class ShamProject extends ShamResource implements IProject {
+	protected String projectName;
+	protected List natures = new ArrayList();
 
-	public ShamIFile(String aFileName) {
-		fileName = aFileName;
+	public ShamProject(String theProjectName) {
+		this(new Path("undefined by sham creator"), theProjectName);
 	}
 
-	public void appendContents(InputStream source, boolean force, boolean keepHistory, IProgressMonitor monitor) throws CoreException {}
+	public ShamProject(Path aPath, String theProjectName) {
+		super(aPath);
+		projectName = theProjectName;
+	}
 
-	public void appendContents(InputStream source, int updateFlags, IProgressMonitor monitor) throws CoreException {}
+	public void build(int kind, String builderName, Map args, IProgressMonitor monitor) throws CoreException {}
 
-	public void create(InputStream source, boolean force, IProgressMonitor monitor) throws CoreException {}
+	public void build(int kind, IProgressMonitor monitor) throws CoreException {}
 
-	public void create(InputStream source, int updateFlags, IProgressMonitor monitor) throws CoreException {}
+	public void close(IProgressMonitor monitor) throws CoreException {}
 
-	public void delete(boolean force, boolean keepHistory, IProgressMonitor monitor) throws CoreException {}
+	public void create(IProjectDescription description, IProgressMonitor monitor) throws CoreException {}
 
-	public InputStream getContents() throws CoreException {
+	public void create(IProgressMonitor monitor) throws CoreException {}
+
+	public void delete(boolean deleteContent, boolean force, IProgressMonitor monitor) throws CoreException {}
+
+	public IProjectDescription getDescription() throws CoreException {
 		throw new RuntimeException("Unimplemented method in sham");
 	}
 
-	public InputStream getContents(boolean force) throws CoreException {
+	public IFile getFile(String name) {
 		throw new RuntimeException("Unimplemented method in sham");
 	}
 
-	public int getEncoding() throws CoreException {
+	public IFolder getFolder(String name) {
 		throw new RuntimeException("Unimplemented method in sham");
 	}
 
-	public IPath getFullPath() {
+	public IProjectNature getNature(String natureId) throws CoreException {
 		throw new RuntimeException("Unimplemented method in sham");
 	}
 
-	public IFileState[] getHistory(IProgressMonitor monitor) throws CoreException {
+	public IPath getPluginWorkingLocation(IPluginDescriptor plugin) {
 		throw new RuntimeException("Unimplemented method in sham");
 	}
 
-	public String getName() {
-		return fileName;
-	}
-
-	public boolean isReadOnly() {
+	public IProject[] getReferencedProjects() throws CoreException {
 		throw new RuntimeException("Unimplemented method in sham");
 	}
 
-	public void move(IPath destination, boolean force, boolean keepHistory, IProgressMonitor monitor) throws CoreException {}
+	public IProject[] getReferencingProjects() {
+		throw new RuntimeException("Unimplemented method in sham");
+	}
 
-	public void setContents(InputStream source, boolean force, boolean keepHistory, IProgressMonitor monitor) throws CoreException {}
+	public boolean hasNature(String natureId) throws CoreException {
+		return natures.contains(natureId);
+	}
 
-	public void setContents(IFileState source, boolean force, boolean keepHistory, IProgressMonitor monitor) throws CoreException {}
+	public boolean isNatureEnabled(String natureId) throws CoreException {
+		throw new RuntimeException("Unimplemented method in sham");
+	}
 
-	public void setContents(InputStream source, int updateFlags, IProgressMonitor monitor) throws CoreException {}
+	public boolean isOpen() {
+		throw new RuntimeException("Unimplemented method in sham");
+	}
 
-	public void setContents(IFileState source, int updateFlags, IProgressMonitor monitor) throws CoreException {}
+	public void move(IProjectDescription description, boolean force, IProgressMonitor monitor) throws CoreException {}
+
+	public void open(IProgressMonitor monitor) throws CoreException {}
+
+	public void setDescription(IProjectDescription description, IProgressMonitor monitor) throws CoreException {}
+
+	public void setDescription(IProjectDescription description, int updateFlags, IProgressMonitor monitor) throws CoreException {}
+
+	public boolean exists(IPath path) {
+		throw new RuntimeException("Unimplemented method in sham");
+	}
+
+	public IResource findMember(String name) {
+		throw new RuntimeException("Unimplemented method in sham");
+	}
+
+	public IResource findMember(String name, boolean includePhantoms) {
+		throw new RuntimeException("Unimplemented method in sham");
+	}
+
+	public IResource findMember(IPath path) {
+		throw new RuntimeException("Unimplemented method in sham");
+	}
+
+	public IResource findMember(IPath path, boolean includePhantoms) {
+		throw new RuntimeException("Unimplemented method in sham");
+	}
+
+	public IFile getFile(IPath path) {
+		throw new RuntimeException("Unimplemented method in sham");
+	}
+
+	public IFolder getFolder(IPath path) {
+		throw new RuntimeException("Unimplemented method in sham");
+	}
+
+	public IResource[] members() throws CoreException {
+		throw new RuntimeException("Unimplemented method in sham");
+	}
+
+	public IResource[] members(boolean includePhantoms) throws CoreException {
+		throw new RuntimeException("Unimplemented method in sham");
+	}
+
+	public IResource[] members(int memberFlags) throws CoreException {
+		throw new RuntimeException("Unimplemented method in sham");
+	}
+
+	public IFile[] findDeletedMembersWithHistory(int depth, IProgressMonitor monitor) throws CoreException {
+		throw new RuntimeException("Unimplemented method in sham");
+	}
+
+	public Object getAdapter(Class adapter) {
+		throw new RuntimeException("Unimplemented method in sham");
+	}
 
 	public void accept(IResourceVisitor visitor) throws CoreException {}
 
@@ -108,10 +181,6 @@ public class ShamIFile implements IFile {
 		throw new RuntimeException("Unimplemented method in sham");
 	}
 
-	public String getFileExtension() {
-		return fileName.substring(fileName.lastIndexOf(".") + 1);
-	}
-
 	public IPath getLocation() {
 		throw new RuntimeException("Unimplemented method in sham");
 	}
@@ -121,6 +190,10 @@ public class ShamIFile implements IFile {
 	}
 
 	public long getModificationStamp() {
+		throw new RuntimeException("Unimplemented method in sham");
+	}
+
+	public String getName() {
 		throw new RuntimeException("Unimplemented method in sham");
 	}
 
@@ -164,6 +237,10 @@ public class ShamIFile implements IFile {
 		throw new RuntimeException("Unimplemented method in sham");
 	}
 
+	public boolean isReadOnly() {
+		throw new RuntimeException("Unimplemented method in sham");
+	}
+
 	public boolean isSynchronized(int depth) {
 		throw new RuntimeException("Unimplemented method in sham");
 	}
@@ -200,8 +277,8 @@ public class ShamIFile implements IFile {
 
 	public void setTeamPrivateMember(boolean isTeamPrivate) throws CoreException {}
 
-	public Object getAdapter(Class adapter) {
-		throw new RuntimeException("Unimplemented method in sham");
+	public void addNature(String string) {
+		natures.add(string);
 	}
 
 }

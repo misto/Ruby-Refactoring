@@ -1,4 +1,4 @@
-package org.rubypeople.rdt.internal.core;
+package org.rubypeople.rdt.core;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
@@ -11,11 +11,14 @@ import javax.xml.parsers.SAXParserFactory;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IProjectNature;
+import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
+import org.rubypeople.rdt.internal.core.LoadPathEntry;
+import org.rubypeople.rdt.internal.core.RubyPlugin;
 import org.xml.sax.Attributes;
 import org.xml.sax.ContentHandler;
 import org.xml.sax.InputSource;
@@ -23,7 +26,7 @@ import org.xml.sax.Locator;
 import org.xml.sax.SAXException;
 import org.xml.sax.XMLReader;
 
-public class RubyProject implements IProjectNature {
+public class RubyProject implements IProjectNature, RubyElement {
 	protected IProject project;
 	protected List loadPathEntries;
 	protected boolean scratched;
@@ -165,4 +168,8 @@ public class RubyProject implements IProjectNature {
 		buffer.append("</loadpath>");
 		return buffer.toString();
 	}
+	public IResource getUnderlyingResource() {
+		return project;
+	}
+
 }

@@ -62,13 +62,13 @@ public class NewProjectCreationWizard extends BasicNewResourceWizard implements 
 				IWorkspace workspace = ResourcesPlugin.getWorkspace();
 				newProject = projectPage.getProjectHandle();
 				
+				IProjectDescription description = workspace.newProjectDescription(newProject.getName());
 				IPath path = Platform.getLocation();
 				IPath customPath = projectPage.getLocationPath();
-				if (!path.equals(customPath))
+				if (!path.equals(customPath)) {
 					path = customPath;
-					
-				IProjectDescription description = workspace.newProjectDescription(newProject.getName());
-				description.setLocation(path);
+					description.setLocation(path);
+				}
 
 				try {
 					if (!newProject.exists()) {

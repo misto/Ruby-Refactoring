@@ -3,8 +3,11 @@ package org.rubypeople.rdt.internal.core;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
+import org.rubypeople.rdt.core.RubyFile;
+import org.rubypeople.rdt.core.RubyProject;
 
 public class RubyCore {
 
@@ -35,8 +38,30 @@ public class RubyCore {
 	public static boolean isRubyProject(IProject aProject) {
 		try {
 			return aProject.hasNature(RubyPlugin.RUBY_NATURE_ID);
-		} catch (CoreException e) {}
+		} catch (CoreException e) {
+		}
 
 		return false;
+	}
+
+	public static RubyFile create(IFile aFile) {
+		if (RubyFile.EXTENSION.equalsIgnoreCase(aFile.getFileExtension()))
+			return new RubyFile(aFile);
+
+		return null;
+	}
+
+	public static RubyProject create(IProject aProject) {
+		try {
+			if (aProject.hasNature(RubyPlugin.RUBY_NATURE_ID)) {
+				RubyProject project = new RubyProject();
+				project.setProject(aProject);
+				return project;
+			}
+		} catch (CoreException e) {
+			System.err.println("Exception occurred in RubyCore#create(IProject): " + e.toString());
+		}
+
+		return null;
 	}
 }

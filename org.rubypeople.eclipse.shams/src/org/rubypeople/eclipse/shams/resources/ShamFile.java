@@ -1,139 +1,70 @@
 package org.rubypeople.eclipse.shams.resources;
 
-import java.util.Map;
+import java.io.InputStream;
 
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFile;
-import org.eclipse.core.resources.IFolder;
+import org.eclipse.core.resources.IFileState;
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IProjectDescription;
-import org.eclipse.core.resources.IProjectNature;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IResourceVisitor;
 import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
-import org.eclipse.core.runtime.IPluginDescriptor;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.QualifiedName;
-import org.rubypeople.eclipse.shams.runtime.ShamIPath;
 
-public class ShamIProject implements IProject {
-	protected String projectName;
-	protected IPath fullPath;
-
-	public ShamIProject(String theProjectName) {
-		projectName = theProjectName;
+public class ShamFile extends ShamResource implements IFile {
+	public ShamFile(String fullPath) {
+		super(new Path(fullPath));
 	}
 
-	public void build(int kind, String builderName, Map args, IProgressMonitor monitor) throws CoreException {}
+	public ShamFile(IPath aPath) {
+		super(aPath);
+	}
 
-	public void build(int kind, IProgressMonitor monitor) throws CoreException {}
+	public void appendContents(InputStream source, boolean force, boolean keepHistory, IProgressMonitor monitor) throws CoreException {}
 
-	public void close(IProgressMonitor monitor) throws CoreException {}
+	public void appendContents(InputStream source, int updateFlags, IProgressMonitor monitor) throws CoreException {}
 
-	public void create(IProjectDescription description, IProgressMonitor monitor) throws CoreException {}
+	public void create(InputStream source, boolean force, IProgressMonitor monitor) throws CoreException {}
 
-	public void create(IProgressMonitor monitor) throws CoreException {}
+	public void create(InputStream source, int updateFlags, IProgressMonitor monitor) throws CoreException {}
 
-	public void delete(boolean deleteContent, boolean force, IProgressMonitor monitor) throws CoreException {}
+	public void delete(boolean force, boolean keepHistory, IProgressMonitor monitor) throws CoreException {}
 
-	public IProjectDescription getDescription() throws CoreException {
+	public InputStream getContents() throws CoreException {
 		throw new RuntimeException("Unimplemented method in sham");
 	}
 
-	public IFile getFile(String name) {
+	public InputStream getContents(boolean force) throws CoreException {
 		throw new RuntimeException("Unimplemented method in sham");
 	}
 
-	public IFolder getFolder(String name) {
+	public int getEncoding() throws CoreException {
 		throw new RuntimeException("Unimplemented method in sham");
 	}
 
-	public IProjectNature getNature(String natureId) throws CoreException {
+	public IFileState[] getHistory(IProgressMonitor monitor) throws CoreException {
 		throw new RuntimeException("Unimplemented method in sham");
 	}
 
-	public IPath getPluginWorkingLocation(IPluginDescriptor plugin) {
+	public boolean isReadOnly() {
 		throw new RuntimeException("Unimplemented method in sham");
 	}
 
-	public IProject[] getReferencedProjects() throws CoreException {
-		throw new RuntimeException("Unimplemented method in sham");
-	}
+	public void move(IPath destination, boolean force, boolean keepHistory, IProgressMonitor monitor) throws CoreException {}
 
-	public IProject[] getReferencingProjects() {
-		throw new RuntimeException("Unimplemented method in sham");
-	}
+	public void setContents(InputStream source, boolean force, boolean keepHistory, IProgressMonitor monitor) throws CoreException {}
 
-	public boolean hasNature(String natureId) throws CoreException {
-		throw new RuntimeException("Unimplemented method in sham");
-	}
+	public void setContents(IFileState source, boolean force, boolean keepHistory, IProgressMonitor monitor) throws CoreException {}
 
-	public boolean isNatureEnabled(String natureId) throws CoreException {
-		throw new RuntimeException("Unimplemented method in sham");
-	}
+	public void setContents(InputStream source, int updateFlags, IProgressMonitor monitor) throws CoreException {}
 
-	public boolean isOpen() {
-		throw new RuntimeException("Unimplemented method in sham");
-	}
-
-	public void move(IProjectDescription description, boolean force, IProgressMonitor monitor) throws CoreException {}
-
-	public void open(IProgressMonitor monitor) throws CoreException {}
-
-	public void setDescription(IProjectDescription description, IProgressMonitor monitor) throws CoreException {}
-
-	public void setDescription(IProjectDescription description, int updateFlags, IProgressMonitor monitor) throws CoreException {}
-
-	public boolean exists(IPath path) {
-		throw new RuntimeException("Unimplemented method in sham");
-	}
-
-	public IResource findMember(String name) {
-		throw new RuntimeException("Unimplemented method in sham");
-	}
-
-	public IResource findMember(String name, boolean includePhantoms) {
-		throw new RuntimeException("Unimplemented method in sham");
-	}
-
-	public IResource findMember(IPath path) {
-		throw new RuntimeException("Unimplemented method in sham");
-	}
-
-	public IResource findMember(IPath path, boolean includePhantoms) {
-		throw new RuntimeException("Unimplemented method in sham");
-	}
-
-	public IFile getFile(IPath path) {
-		throw new RuntimeException("Unimplemented method in sham");
-	}
-
-	public IFolder getFolder(IPath path) {
-		throw new RuntimeException("Unimplemented method in sham");
-	}
-
-	public IResource[] members() throws CoreException {
-		throw new RuntimeException("Unimplemented method in sham");
-	}
-
-	public IResource[] members(boolean includePhantoms) throws CoreException {
-		throw new RuntimeException("Unimplemented method in sham");
-	}
-
-	public IResource[] members(int memberFlags) throws CoreException {
-		throw new RuntimeException("Unimplemented method in sham");
-	}
-
-	public IFile[] findDeletedMembersWithHistory(int depth, IProgressMonitor monitor) throws CoreException {
-		throw new RuntimeException("Unimplemented method in sham");
-	}
-
-	public Object getAdapter(Class adapter) {
-		throw new RuntimeException("Unimplemented method in sham");
-	}
+	public void setContents(IFileState source, int updateFlags, IProgressMonitor monitor) throws CoreException {}
 
 	public void accept(IResourceVisitor visitor) throws CoreException {}
 
@@ -173,18 +104,6 @@ public class ShamIProject implements IProject {
 		throw new RuntimeException("Unimplemented method in sham");
 	}
 
-	public String getFileExtension() {
-		throw new RuntimeException("Unimplemented method in sham");
-	}
-
-	public IPath getFullPath() {
-		return fullPath;
-	}
-
-	public void setFullPath(String aPath) {
-		fullPath = new ShamIPath(aPath);
-	}
-
 	public IPath getLocation() {
 		throw new RuntimeException("Unimplemented method in sham");
 	}
@@ -194,10 +113,6 @@ public class ShamIProject implements IProject {
 	}
 
 	public long getModificationStamp() {
-		throw new RuntimeException("Unimplemented method in sham");
-	}
-
-	public String getName() {
 		throw new RuntimeException("Unimplemented method in sham");
 	}
 
@@ -222,7 +137,7 @@ public class ShamIProject implements IProject {
 	}
 
 	public int getType() {
-		throw new RuntimeException("Unimplemented method in sham");
+		return FILE;
 	}
 
 	public IWorkspace getWorkspace() {
@@ -238,10 +153,6 @@ public class ShamIProject implements IProject {
 	}
 
 	public boolean isPhantom() {
-		throw new RuntimeException("Unimplemented method in sham");
-	}
-
-	public boolean isReadOnly() {
 		throw new RuntimeException("Unimplemented method in sham");
 	}
 
@@ -280,5 +191,9 @@ public class ShamIProject implements IProject {
 	}
 
 	public void setTeamPrivateMember(boolean isTeamPrivate) throws CoreException {}
+
+	public Object getAdapter(Class adapter) {
+		throw new RuntimeException("Unimplemented method in sham");
+	}
 
 }

@@ -26,8 +26,8 @@ import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.ui.ISharedImages;
 import org.eclipse.ui.IWorkbench;
+import org.rubypeople.rdt.core.RubyProject;
 import org.rubypeople.rdt.internal.core.RubyPlugin;
-import org.rubypeople.rdt.internal.core.RubyProject;
 
 public class RubyProjectLibraryPage {
 	protected RubyProject workingProject;

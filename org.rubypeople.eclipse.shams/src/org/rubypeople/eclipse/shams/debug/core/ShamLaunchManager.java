@@ -1,26 +1,25 @@
 package org.rubypeople.eclipse.shams.debug.core;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 
-import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.debug.core.ILaunch;
 import org.eclipse.debug.core.ILaunchConfiguration;
 import org.eclipse.debug.core.ILaunchConfigurationListener;
 import org.eclipse.debug.core.ILaunchConfigurationType;
-import org.eclipse.debug.core.ILaunchConfigurationWorkingCopy;
 import org.eclipse.debug.core.ILaunchListener;
 import org.eclipse.debug.core.ILaunchManager;
 import org.eclipse.debug.core.model.IDebugTarget;
-import org.eclipse.debug.core.model.ILaunchConfigurationDelegate;
 import org.eclipse.debug.core.model.IPersistableSourceLocator;
 import org.eclipse.debug.core.model.IProcess;
 
 public class ShamLaunchManager implements ILaunchManager {
 	protected List launches = new ArrayList();
+	protected ILaunchConfigurationType launchConfigurationType = new ShamLaunchConfigurationType();
 
 	public ShamLaunchManager() {
 		super();
@@ -80,31 +79,7 @@ public class ShamLaunchManager implements ILaunchManager {
 	}
 
 	public ILaunchConfigurationType getLaunchConfigurationType(String id) {
-		return new ILaunchConfigurationType() {
-			public boolean supportsMode(String mode) {
-				throw new RuntimeException("Need to implement on sham.");
-			}
-
-			public String getName() {
-				throw new RuntimeException("Need to implement on sham.");
-			}
-
-			public String getIdentifier() {
-				throw new RuntimeException("Need to implement on sham.");
-			}
-
-			public boolean isPublic() {
-				throw new RuntimeException("Need to implement on sham.");
-			}
-
-			public ILaunchConfigurationWorkingCopy newInstance(IContainer container, String name) throws CoreException {
-				throw new RuntimeException("Need to implement on sham.");
-			}
-
-			public ILaunchConfigurationDelegate getDelegate() throws CoreException {
-				throw new RuntimeException("Need to implement on sham.");
-			}
-		};
+		return launchConfigurationType;
 	}
 
 	public void addLaunchConfigurationListener(ILaunchConfigurationListener listener) {
@@ -120,11 +95,10 @@ public class ShamLaunchManager implements ILaunchManager {
 	}
 
 	public String generateUniqueLaunchConfigurationNameFrom(String namePrefix) {
-		throw new RuntimeException("Need to implement on sham.");
+		return namePrefix + new Date().toString();
 	}
 
 	public IPersistableSourceLocator newSourceLocator(String identifier) throws CoreException {
 		throw new RuntimeException("Need to implement on sham.");
 	}
-
 }

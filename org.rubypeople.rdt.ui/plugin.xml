@@ -68,7 +68,7 @@
          </filter>
       </page>
       <page
-            objectClass="org.rubypeople.rdt.internal.core.RubyProject"
+            objectClass="org.rubypeople.rdt.core.RubyProject"
             name="%PropertyPageRubyProject.name"
             class="org.rubypeople.rdt.internal.ui.RubyProjectPropertyPage"
             id="org.rubypeople.rdt.ui.PropertyPageRubyProject">

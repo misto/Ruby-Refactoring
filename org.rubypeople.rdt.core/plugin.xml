@@ -27,7 +27,7 @@
          point="org.eclipse.core.resources.natures">
       <runtime>
          <run
-               class="org.rubypeople.rdt.internal.core.RubyProject">
+               class="org.rubypeople.rdt.core.RubyProject">
          </run>
       </runtime>
    </extension>

@@ -7,8 +7,7 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.debug.core.ILaunchConfiguration;
-import org.rubypeople.rdt.internal.core.RubyProject;
-import sun.security.krb5.internal.crypto.e;
+import org.rubypeople.rdt.core.RubyProject;
 
 public class InterpreterRunnerConfiguration {
 	protected ILaunchConfiguration configuration;
@@ -39,7 +38,9 @@ public class InterpreterRunnerConfiguration {
 		
 		try {
 			projectName = configuration.getAttribute(RubyLaunchConfigurationAttribute.PROJECT_NAME, "");
-		} catch(CoreException e) {}
+		} catch(CoreException e) {
+			RdtLaunchingPlugin.getDefault().log(e);
+		}
 
 		IProject project = RdtLaunchingPlugin.getWorkspace().getRoot().getProject(projectName);
 

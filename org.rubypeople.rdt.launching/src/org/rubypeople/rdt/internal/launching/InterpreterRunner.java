@@ -9,7 +9,7 @@ import org.eclipse.core.resources.IProject;
 import org.eclipse.debug.core.DebugPlugin;
 import org.eclipse.debug.core.ILaunch;
 import org.eclipse.debug.core.model.IProcess;
-import org.rubypeople.rdt.internal.core.RubyProject;
+import org.rubypeople.rdt.core.RubyProject;
 
 public class InterpreterRunner {
 
