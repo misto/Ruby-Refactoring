@@ -110,6 +110,7 @@ This Agreement is governed by the laws of the State of New York and the intellec
       <import plugin="org.eclipse.team.core"/>
       <import plugin="org.eclipse.debug.core"/>
       <import plugin="org.eclipse.debug.ui"/>
+      <import plugin="org.eclipse.jdt.debug"/>
       <import plugin="org.eclipse.ui"/>
    </requires>
 
@@ -145,6 +146,12 @@ This Agreement is governed by the laws of the State of New York and the intellec
 
    <plugin
          id="org.rubypeople.rdt.ui"
+         download-size="0"
+         install-size="0"
+         version="0.3.1"/>
+
+   <plugin
+         id="org.rubypeople.rdt.doc.user"
          download-size="0"
          install-size="0"
          version="0.3.1"/>
