@@ -7,6 +7,7 @@ import java.io.PrintWriter;
 import java.net.Socket;
 
 import junit.framework.TestCase;
+import junit.framework.TestSuite;
 
 import org.rubypeople.rdt.internal.debug.core.ExceptionSuspensionPoint;
 import org.rubypeople.rdt.internal.debug.core.StepSuspensionPoint;
@@ -35,11 +36,15 @@ public class TC_DebuggerCommunicationTest extends TestCase {
 		//suite.addTest(new TC_DebuggerCommunicationTest("testThreadIdsAndResume"));
 		//suite.addTest(new TC_DebuggerCommunicationTest("testThreadsAndFrames"));		
 		//suite.addTest(new TC_DebuggerCommunicationTest("testStepOver"));		
-		suite.addTest(new TC_DebuggerCommunicationTest("testThreadFramesAndVariables"));
-		//suite.addTest(new TC_DebuggerCommunicationTest("testVariableNil"));	
+		//suite.addTest(new TC_DebuggerCommunicationTest("testThreadFramesAndVariables"));
+		//suite.addTest(new TC_DebuggerCommunicationTest("testVariableNil"));
+		//suite.addTest(new TC_DebuggerCommunicationTest("testVariableInstanceNested"));				
+		//suite.addTest(new TC_DebuggerCommunicationTest("testStaticVariableInstanceNested"));			
 		//suite.addTest(new TC_DebuggerCommunicationTest("testException"));
 		//suite.addTest(new TC_DebuggerCommunicationTest("testNameError"));
 		//suite.addTest(new TC_DebuggerCommunicationTest("testVariablesInObject"));	
+		suite.addTest(new TC_DebuggerCommunicationTest("testStaticVariables"));		
+		//suite.addTest(new TC_DebuggerCommunicationTest("testSingletonStaticVariables"));							
 		//suite.addTest(new TC_DebuggerCommunicationTest("testVariableString"));	
 
 		return suite;
@@ -130,13 +135,14 @@ public class TC_DebuggerCommunicationTest extends TestCase {
 
 	public void tearDown() throws Exception {
 		Thread.sleep(500);
+		socket.close();
 		try {
 			if (process.exitValue() != 0) {
 				System.out.println("Ruby finished with exit value: " + process.exitValue());
 			}
 		} catch (IllegalThreadStateException ex) {
 			process.destroy();
-			System.out.println("Ruby proces had to be destroyed.");
+			System.out.println("Ruby process had to be destroyed.");
 		}
 
 		System.out.println("Waiting for stdout redirector thread..");
@@ -145,7 +151,6 @@ public class TC_DebuggerCommunicationTest extends TestCase {
 		System.out.println("Waiting for stdout redirector thread..");
 		rubyStderrRedirectorThread.join();
 		System.out.println("..done");
-		socket.close();
 	}
 
 	private void writeFile(String name, String[] content) throws Exception {
@@ -357,10 +362,13 @@ public class TC_DebuggerCommunicationTest extends TestCase {
 		assertEquals(1, variables.length);
 		assertEquals("stringA", variables[0].getName());
 		assertEquals("<start test=\"\"/>", variables[0].getValue().getValueString());
+		assertTrue(!variables[0].isStatic()) ;
+		assertTrue(variables[0].isLocal()) ;
+		assertTrue(!variables[0].isInstance()) ;						
 	}
 
 	public void testVariablesInObject() throws Exception {
-		createSocket(new String[] { "class Test", "def initialize", "@y=5", "puts y", "end", "def to_s", "'test'", "end", "end", "Test.new()" });
+		createSocket(new String[] { "class Test", "def initialize", "@y=5", "puts @y", "end", "def to_s", "'test'", "end", "end", "Test.new()" });
 		runTo("test.rb", 4);
 		// Read numerical variable
 		out.println("v l");
@@ -376,9 +384,50 @@ public class TC_DebuggerCommunicationTest extends TestCase {
 		assertEquals("@y", variables[0].getName());
 		assertEquals("5", variables[0].getValue().getValueString());
 		assertEquals("Fixnum", variables[0].getValue().getReferenceTypeName());
+		assertTrue(!variables[0].isStatic()) ;
+		assertTrue(!variables[0].isLocal()) ;
+		assertTrue(variables[0].isInstance()) ;				
 		assertTrue(!variables[0].getValue().hasVariables());
 		out.println("cont");
 	}
+
+	public void testStaticVariables() throws Exception {
+		createSocket(new String[] { "class Test", "@@staticVar=55", "def method", "puts 'a'", "end", "end", "test=Test.new()", "test.method()" });
+		runTo("test.rb", 4);
+		out.println("v l") ;
+	    RubyVariable[] variables = getVariableReader().readVariables(createStackFrame());
+		assertEquals(1, variables.length);
+		assertEquals("self", variables[0].getName());	
+		assertTrue(variables[0].getValue().hasVariables());			    
+		out.println("v i self");
+		variables = getVariableReader().readVariables(createStackFrame());
+		assertEquals(1, variables.length);
+		assertEquals("@@staticVar", variables[0].getName());
+		assertEquals("55", variables[0].getValue().getValueString());
+		assertEquals("Fixnum", variables[0].getValue().getReferenceTypeName());
+		assertTrue(variables[0].isStatic()) ;
+		assertTrue(!variables[0].isLocal()) ;
+		assertTrue(!variables[0].isInstance()) ;						
+		assertTrue(!variables[0].getValue().hasVariables());
+		out.println("cont");
+	}
+
+	public void testSingletonStaticVariables() throws Exception {
+		createSocket(new String[] { "class Test",  "def method", "puts 'a'", "end", "class << Test", "@@staticVar=55", "end", "end", "Test.new().method()" });
+		runTo("test.rb", 3);
+		out.println("v i self");
+		RubyVariable[] variables = getVariableReader().readVariables(createStackFrame());
+		assertEquals(1, variables.length);
+		assertEquals("@@staticVar", variables[0].getName());
+		assertEquals("55", variables[0].getValue().getValueString());
+		assertEquals("Fixnum", variables[0].getValue().getReferenceTypeName());
+		assertTrue(variables[0].isStatic()) ;
+		assertTrue(!variables[0].isLocal()) ;
+		assertTrue(!variables[0].isInstance()) ;				
+		assertTrue(!variables[0].getValue().hasVariables());
+		out.println("cont");
+	}
+
 
 	public void testVariableString() throws Exception {
 		createSocket(new String[] { "stringA='XX'", "puts stringA" });
@@ -408,7 +457,7 @@ public class TC_DebuggerCommunicationTest extends TestCase {
 	}
 
 	public void testVariableInstanceNested() throws Exception {
-		createSocket(new String[] { "class Test", "def initialize(test)", "@privateTest = test", "end", "end", "test2 = Test.new(Test.new(nil))", "puts test" });
+		createSocket(new String[] { "class Test", "def initialize(test)", "@privateTest = test", "end", "end", "test2 = Test.new(Test.new(nil))", "puts test2" });
 		runToLine(7);
 		out.println("v l");
 		RubyVariable[] variables = getVariableReader().readVariables(createStackFrame());
@@ -431,7 +480,23 @@ public class TC_DebuggerCommunicationTest extends TestCase {
 		assertEquals("test2.@privateTest.@privateTest", privateTestprivateTestVariable.getQualifiedName());
 		assertEquals("nil", privateTestprivateTestVariable.getValue().getValueString());
 		assertTrue(!privateTestprivateTestVariable.getValue().hasVariables());
+		out.println("cont");
 	}
+
+	public void testStaticVariableInstanceNested() throws Exception {
+		createSocket(new String[] { "class TestStatic", "def initialize(no)", "@no = no", "end", "@@staticVar=TestStatic.new(2)",  "end", "test = TestStatic.new(1)", "puts test" });
+		runToLine(8);
+		out.println("v i test.@@staticVar");
+		RubyVariable[] variables = getVariableReader().readVariables(createStackFrame());
+		assertEquals(2, variables.length) ; 
+		assertEquals("@no", variables[0].getName()) ;
+		assertEquals("2", variables[0].getValue().getValueString()) ;
+		assertEquals("@@staticVar", variables[1].getName()) ;
+		assertTrue("2", variables[1].getValue().hasVariables()) ;
+		
+		out.println("cont");
+	}
+
 
 	public void testVariablesInFrames() throws Exception {
 		createSocket(new String[] { "require 'test2.rb'", "y=5", "Test2.new().test()" });
