@@ -1,7 +1,6 @@
 package org.epic.regexp;
 
 import org.eclipse.ui.plugin.*;
-import org.eclipse.core.runtime.*;
 import org.eclipse.core.resources.*;
 import java.util.*;
 
@@ -17,8 +16,8 @@ public class RegExpPlugin extends AbstractUIPlugin {
 	/**
 	 * The constructor.
 	 */
-	public RegExpPlugin(IPluginDescriptor descriptor) {
-		super(descriptor);
+	public RegExpPlugin() {
+		super();
 		plugin = this;
 		try {
 			resourceBundle= ResourceBundle.getBundle("org.epic.regexp.RegexpPluginResources");
