@@ -42,7 +42,7 @@
 <!-- ===================================================================== -->
 <target name="getMapFiles">
 	
-	<property name="cvsRoot" value=":ext:anonymous:/cvsroot/rubyeclipse" />
+	<property name="cvsRoot" value=":ext:cvs.sf.net:/cvsroot/rubyeclipse" />
 	<property name="mapVersionTag" value="HEAD" />
 	<cvs
 		cvsroot="${cvsRoot}" 
