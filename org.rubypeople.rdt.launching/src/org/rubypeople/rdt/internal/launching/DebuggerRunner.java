@@ -28,11 +28,18 @@ public class DebuggerRunner extends InterpreterRunner {
 
 	public static String getDirectoryOfRubyDebuggerFile() {
 		// Lets check the new OSGI Bundles...
-		String pluginDir = RdtLaunchingPlugin.getDefault().getBundle().getLocation();
-		if (pluginDir.startsWith("reference:file:")) { return pluginDir.substring(15) + "/ruby"; }
-		throw new RuntimeException("Could not find directory of ruby debugger file (eclipseDebug.rb).");
+		String location = RdtLaunchingPlugin.getDefault().getBundle().getLocation();
+		int prefixLength = location.indexOf('@') ;
+		if (prefixLength == -1) {
+			throw new RuntimeException("Location of launching bundle does not contain @: " + location ) ;
+		}
+		String pluginDir = location.substring(prefixLength+1)  + "ruby";
+		if (!new File(pluginDir).exists()) {
+			throw new RuntimeException("Expected directory of eclipseDebug.rb does not exist: " + pluginDir) ;
+		}
+		return pluginDir ;
 	}
-
+	
 	protected String renderLoadPath(InterpreterRunnerConfiguration configuration) {
 		return super.renderLoadPath(configuration) + " -I " + osDependentPath(DebuggerRunner.getDirectoryOfRubyDebuggerFile().replace('/', File.separatorChar));
 	}
