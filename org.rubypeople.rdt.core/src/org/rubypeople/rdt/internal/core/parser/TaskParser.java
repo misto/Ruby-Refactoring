@@ -147,4 +147,8 @@ public class TaskParser {
 	public List getTasks() {
 		return Collections.unmodifiableList(tasks);
 	}
+
+	public void clear() {
+		tasks.clear();		
+	}
 }

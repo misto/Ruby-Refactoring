@@ -93,6 +93,7 @@ public class RubyBuilder extends IncrementalProjectBuilder {
 		workQueue.clear();
 		percentPerUnit = 0;
 		warnings.clear();
+		taskParser.clear();
 	}
 
 	/**
@@ -186,7 +187,7 @@ public class RubyBuilder extends IncrementalProjectBuilder {
 		this.compiledAllAtOnce = unitsLength <= MAX_AT_ONCE;
 		if (this.compiledAllAtOnce) {
 			// do them all now
-			doCompile(units, null);
+			doCompile(units, monitor);
 		} else {
 			int i = 0;
 			boolean compilingFirstGroup = true;
@@ -233,25 +234,27 @@ public class RubyBuilder extends IncrementalProjectBuilder {
 				String name = file.getFullPath().makeRelative().toString();
 				monitor.subTask(name + ": (" + i + " of " + grandTotal + ")");				
 				
-				MarkerUtility.removeMarkers(file);
+				removeProblemsAndTasksFor(file);
 				try {
 					parser.parse(units[i].getName(), new InputStreamReader(file.getContents()));
 				} catch (SyntaxException e) {
 					MarkerUtility.createSyntaxError(file, e);
 				}
 				MarkerUtility.createProblemMarkers(file, warnings.getWarnings());
-				warnings.clear();
 				createTasks(file);
 				monitor.worked(percentPerUnit);
 			} catch (CoreException e) {
 				RubyCore.log(e);
 			}
+			warnings.clear();
 		}
 		checkCancel(monitor);
 	}
 
 	private void createTasks(IFile file) throws CoreException {
+		taskParser.clear();
 		taskParser.parse(new InputStreamReader(file.getContents()));
 		MarkerUtility.createTasks(file, taskParser.getTasks());
+		taskParser.clear();
 	}
 }
