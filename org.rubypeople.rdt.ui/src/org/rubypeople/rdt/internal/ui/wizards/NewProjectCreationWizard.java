@@ -10,7 +10,6 @@ import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.IExecutableExtension;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.SubProgressMonitor;
 import org.eclipse.jface.operation.IRunnableWithProgress;
@@ -19,7 +18,7 @@ import org.eclipse.ui.actions.WorkspaceModifyDelegatingOperation;
 import org.eclipse.ui.dialogs.WizardNewProjectCreationPage;
 import org.eclipse.ui.wizards.newresource.BasicNewProjectResourceWizard;
 import org.eclipse.ui.wizards.newresource.BasicNewResourceWizard;
-import org.rubypeople.rdt.internal.core.RubyPlugin;
+import org.rubypeople.rdt.internal.core.RubyCore;
 import org.rubypeople.rdt.internal.ui.RdtUiMessages;
 import org.rubypeople.rdt.internal.ui.RdtUiPlugin;
 
@@ -51,10 +50,6 @@ public class NewProjectCreationWizard extends BasicNewResourceWizard implements 
 	protected IRunnableWithProgress getProjectCreationRunnable() {
 		return new IRunnableWithProgress() {
 			public void run(IProgressMonitor monitor) throws InvocationTargetException, InterruptedException {
-				if (monitor == null) {
-					monitor = new NullProgressMonitor();
-				}
-
 				int remainingWorkUnits = 10;
 				monitor.beginTask(RdtUiMessages.getString("NewProjectCreationWizard.projectCreationMessage"), remainingWorkUnits);
 
@@ -78,16 +73,7 @@ public class NewProjectCreationWizard extends BasicNewResourceWizard implements 
 						newProject.open(new SubProgressMonitor(monitor, 1));
 						remainingWorkUnits--;
 					}
-
-					description = newProject.getDescription();
-
-					String[] prevNatures = description.getNatureIds();
-					String[] newNatures = new String[prevNatures.length + 1];
-					System.arraycopy(prevNatures, 0, newNatures, 0, prevNatures.length);
-					newNatures[prevNatures.length] = RubyPlugin.RUBY_NATURE_ID;
-					description.setNatureIds(newNatures);
-
-					newProject.setDescription(description, new SubProgressMonitor(monitor, remainingWorkUnits));
+					RubyCore.addRubyNature(newProject, new SubProgressMonitor(monitor, remainingWorkUnits));
 				} catch (CoreException e) {
 					throw new InvocationTargetException(e);
 				} finally {

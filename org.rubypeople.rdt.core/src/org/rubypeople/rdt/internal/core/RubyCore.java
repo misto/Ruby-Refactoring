@@ -5,7 +5,9 @@ import java.util.List;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
+import org.eclipse.core.resources.IProjectDescription;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IProgressMonitor;
 import org.rubypeople.rdt.core.RubyFile;
 import org.rubypeople.rdt.core.RubyProject;
 
@@ -63,5 +65,17 @@ public class RubyCore {
 		}
 
 		return null;
+	}
+
+	public static void addRubyNature(IProject project, IProgressMonitor monitor) throws CoreException {
+		if (!project.hasNature(RubyPlugin.RUBY_NATURE_ID)) {
+			IProjectDescription description = project.getDescription();
+			String[] prevNatures= description.getNatureIds();
+			String[] newNatures= new String[prevNatures.length + 1];
+			System.arraycopy(prevNatures, 0, newNatures, 0, prevNatures.length);
+			newNatures[prevNatures.length]= RubyPlugin.RUBY_NATURE_ID;
+			description.setNatureIds(newNatures);
+			project.setDescription(description, monitor);
+		}
 	}
 }
