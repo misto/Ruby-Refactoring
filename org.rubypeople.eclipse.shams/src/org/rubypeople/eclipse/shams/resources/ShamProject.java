@@ -220,7 +220,7 @@ public class ShamProject extends ShamResource implements IProject {
 	}
 
 	public int getType() {
-		throw new RuntimeException("Unimplemented method in sham");
+		return IResource.PROJECT;
 	}
 
 	public IWorkspace getWorkspace() {

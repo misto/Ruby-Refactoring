@@ -11,31 +11,60 @@ import org.rubypeople.rdt.internal.ui.resourcesview.RubyResourcesView;
 
 public class TC_RubyViewerFilter extends TestCase {
 
+	private RubyViewerFilter filter;
+		
 	public TC_RubyViewerFilter(String name) {
 		super(name);
 	}
+	
+	protected void setUp() throws Exception {
+		super.setUp();
+		filter = new RubyViewerFilter(new RubyResourcesView());
+	}
 
-	public void testSelect() throws Exception {
-		RubyViewerFilter filter = new RubyViewerFilter(new RubyResourcesView() );
-		
+	public void testFilterShowsRubyProjects() throws Exception {
 		IProject project = ResourceTools.createProject("TCRubyViewerFilter");
-		assertTrue(!filter.select(null, null, project));
-		
 		RubyCore.addRubyNature(project, null);
 		assertTrue(filter.select(null, null, project));
-		
-		IFile file = project.getFile("TCRubyViewerFilterFile");
-		assertTrue(!filter.select(null, null, file));
-		
-		file = project.getFile("TCRubyViewerFilterFile.rb");
+	}
+	
+	public void testFilterShowsNonRubyProjects() throws Exception {
+		IProject project = ResourceTools.createProject("TCRubyViewerFilter");
+		assertTrue(filter.select(null, null, project));
+	}
+	
+	public void testFilterShowsRBFiles() throws Exception {
+		IProject project = ResourceTools.createProject("TCRubyViewerFilter");
+		IFile file = project.getFile("TCRubyViewerFilterFile.rb");
 		assertTrue(filter.select(null, null, file));
-		
-		file = project.getFile("TCRubyViewerFilterFile.rbw");
+	}
+	
+	public void testFilterShowsRBWFiles() throws Exception {
+		IProject project = ResourceTools.createProject("TCRubyViewerFilter");
+		IFile file = project.getFile("TCRubyViewerFilterFile.rbw");
 		assertTrue(filter.select(null, null, file));
-		
-		file = project.getFile("TCRubyViewerFilterFile.cgi");
+	}
+	
+	public void testFilterShowsCGIFiles() throws Exception {
+		IProject project = ResourceTools.createProject("TCRubyViewerFilter");
+		IFile file = project.getFile("TCRubyViewerFilterFile.cgi");
 		assertTrue(filter.select(null, null, file));
-		
+	}
+	
+	public void testFilterShowsRHTMLFiles() throws Exception {
+		IProject project = ResourceTools.createProject("TCRubyViewerFilter");
+		IFile file = project.getFile("TCRubyViewerFilterFile.rhtml");
+		assertTrue(filter.select(null, null, file));
+	}
+	
+	public void testFilterShowsYAMLFiles() throws Exception {
+		IProject project = ResourceTools.createProject("TCRubyViewerFilter");
+		IFile file = project.getFile("TCRubyViewerFilterFile.yaml");
+		assertTrue(filter.select(null, null, file));
+	}
+	
+	public void testFilterShowsFolders() throws Exception {
+		IProject project = ResourceTools.createProject("TCRubyViewerFilter");
 		IFolder folder = project.getFolder("TCRubyViewerFilterFolder");
 		assertTrue(filter.select(null, null, folder));
 	}

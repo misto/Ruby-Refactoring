@@ -3,8 +3,9 @@
 <plugin
    id="org.rubypeople.rdt.debug.core.tests"
    name="RDT Debug Core Tests"
-   version="0.5.0"
-   provider-name="RubyPeople">
+   version="0.6.0"
+   provider-name="RubyPeople"
+   class="org.rubypeople.rdt.debug.core.tests.RdtDebugTestsPlugin">
 
    <runtime>
       <library name="rdtdebugcoretests.jar">
@@ -13,13 +14,13 @@
    </runtime>
 
    <requires>
-      <import plugin="org.eclipse.core.runtime.compatibility"/>
       <import plugin="org.junit"/>
       <import plugin="org.rubypeople.rdt.debug.core"/>
       <import plugin="org.eclipse.debug.core"/>
       <import plugin="org.kxml2"/>
       <import plugin="org.eclipse.core.resources"/>
       <import plugin="org.rubypeople.rdt.launching"/>
+      <import plugin="org.eclipse.core.runtime"/>
    </requires>
 
 </plugin>

@@ -9,7 +9,6 @@ public class TS_Core {
 		TestSuite suite = new TestSuite();
 	
 		suite.addTestSuite(TC_LoadPathEntry.class);
-		suite.addTestSuite(TC_ResourceAdapterFactory.class);
 		suite.addTestSuite(TC_RubyCore.class);
 		suite.addTestSuite(TC_RubyProject.class);
 

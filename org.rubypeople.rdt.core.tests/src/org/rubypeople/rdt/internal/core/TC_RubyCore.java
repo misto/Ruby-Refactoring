@@ -26,8 +26,6 @@ public class TC_RubyCore extends TestCase {
 		assertNull("The core should not create a RubyFile when the resource is a file without the .rb extension.", RubyCore.create(file));
 
 		ShamProject project = new ShamProject("aProject");
-		project.addNature("someOtherNature");
-		assertNull("The core should not create a RubyProject when the resource does not have the RubyProjectNature.", RubyCore.create(project));
 		project.addNature(RubyCore.NATURE_ID);
 		assertNotNull("The core should create a RubyProject when the resource has the RubyProjectNature.", RubyCore.create(project));
 	}

@@ -85,7 +85,7 @@ public class TC_DebuggerCommunicationTest extends TestCase {
 	static {
 		RUBY_INTERPRETER = System.getProperty("rdt.rubyInterpreter");
 		if (RUBY_INTERPRETER == null) {
-			RUBY_INTERPRETER = "ruby.exe";
+			RUBY_INTERPRETER = "ruby";
 		}
 	}
 	private Process process;
@@ -140,10 +140,12 @@ public class TC_DebuggerCommunicationTest extends TestCase {
 	}
 
 	public void startRubyProcess() throws Exception {
-		String includeDir ;
+		String includeDir;
 		if (RdtLaunchingPlugin.getDefault() != null) {
 			// being run as JUnit Plug-in Test, Eclipse is running
-			includeDir = RdtLaunchingPlugin.getDefault().getBundle().getLocation().substring(7) + "/ruby/" ;
+			includeDir = RdtLaunchingPlugin.getDefault().getBundle().getLocation().substring(7);
+			if(!includeDir.endsWith("/")) includeDir += '/';
+			includeDir += "ruby/";
 		}
 		else {
 		    // being run as "pure" JUnit Test without Eclipse running 
@@ -153,6 +155,7 @@ public class TC_DebuggerCommunicationTest extends TestCase {
 		if (includeDir.startsWith("/") && File.separatorChar == '\\') {
 			includeDir = includeDir.substring(1);
 		}
+		includeDir = '"' + includeDir + '"';
 		String cmd = TC_DebuggerCommunicationTest.RUBY_INTERPRETER + " -I " + includeDir +  " -I" + getTmpDir().replace('\\', '/') + " -reclipseDebugVerbose.rb " + getRubyTestFilename();
 		System.out.println("Starting: " + cmd);
 		process = Runtime.getRuntime().exec(cmd);
@@ -211,7 +214,6 @@ public class TC_DebuggerCommunicationTest extends TestCase {
 	}
 
 	public void testNameError() throws Exception {
-
 		createSocket(new String[] { "puts 'x'" });
 		out.println("cont");
 		SuspensionPoint hit = getSuspensionReader().readSuspension();

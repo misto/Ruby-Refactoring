@@ -98,9 +98,9 @@ public class TC_ReadStrategyTest extends TestCase {
 	
 	public void testMultiReaderStrategyWithMultipleTags() throws Exception {
 		// make sure that a complete element gets dispatched to the reader
-		MultiReaderStrategy multiReaderStrategy = new MultiReaderStrategy(xpp) ;
+		MultiReaderStrategy multiReaderStrategy = new MultiReaderStrategy(xpp);
 		final TestXmlStreamReader testTagReader = new TestXmlStreamReader(multiReaderStrategy) ;
-		testTagReader.acceptTag("testTag") ;
+		testTagReader.acceptTag("testTag");
 		Thread testTagReaderThread = new Thread() {
 			public void run() {
 				try {
@@ -110,12 +110,12 @@ public class TC_ReadStrategyTest extends TestCase {
 				}
 			}
 		} ;
-		testTagReaderThread.start() ;
-		Thread.sleep(500) ; // wait for threads to be started
+		testTagReaderThread.start();
+		Thread.sleep(500); // wait for threads to be started
 		writer.println("<testTag><testTag/><testTag/></testTag>") ;
 		writer.flush() ;
-		testTagReaderThread.join() ;		 
-		assertEquals("testTag was read 3 times.", 3, testTagReader.getTagReadCount()) ;		
+		testTagReaderThread.join();		 
+		assertEquals("testTag was read 3 times.", 3, testTagReader.getTagReadCount());		
 	}
 
 	public void testMultiReaderStrategyDontMissTag() throws Exception {
