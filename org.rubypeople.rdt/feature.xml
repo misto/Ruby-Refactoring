@@ -104,14 +104,21 @@ This Agreement is governed by the laws of the State of New York and the intellec
    </url>
 
    <requires>
-      <import plugin="org.eclipse.core.runtime"/>
+      <import plugin="org.eclipse.core.runtime.compatibility"/>
       <import plugin="org.eclipse.core.resources"/>
-      <import plugin="org.apache.xerces"/>
-      <import plugin="org.eclipse.team.core"/>
       <import plugin="org.eclipse.debug.core"/>
-      <import plugin="org.eclipse.debug.ui"/>
       <import plugin="org.eclipse.jdt.debug"/>
       <import plugin="org.eclipse.ui"/>
+      <import plugin="org.eclipse.debug.ui"/>
+      <import plugin="org.eclipse.ui.workbench"/>
+      <import plugin="org.eclipse.ui.workbench.texteditor"/>
+      <import plugin="org.eclipse.jface.text"/>
+      <import plugin="org.eclipse.ui.editors"/>
+      <import plugin="org.eclipse.ui.ide"/>
+      <import plugin="org.apache.xerces"/>
+      <import plugin="org.eclipse.team.core"/>
+      <import plugin="org.eclipse.osgi"/>
+      <import plugin="org.eclipse.ui.views"/>
    </requires>
 
    <plugin
@@ -121,10 +128,10 @@ This Agreement is governed by the laws of the State of New York and the intellec
          version="2.1.4"/>
 
    <plugin
-         id="org.rubypeople.rdt.core"
+         id="org.rubypeople.rdt.doc.user"
          download-size="0"
          install-size="0"
-         version="0.4.0"/>
+         version="1.0"/>
 
    <plugin
          id="org.rubypeople.rdt.debug.core"
@@ -145,15 +152,15 @@ This Agreement is governed by the laws of the State of New York and the intellec
          version="0.4.0"/>
 
    <plugin
-         id="org.rubypeople.rdt.ui"
+         id="org.rubypeople.rdt.core"
          download-size="0"
          install-size="0"
          version="0.4.0"/>
 
    <plugin
-         id="org.rubypeople.rdt.doc.user"
+         id="org.rubypeople.rdt.ui"
          download-size="0"
          install-size="0"
-         version="1.0"/>
+         version="0.4.0"/>
 
 </feature>
