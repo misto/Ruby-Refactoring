@@ -2,69 +2,78 @@ package org.rubypeople.rdt.internal.ui.rubyeditor;
 
 import java.io.File;
 
-import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IStorage;
-import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.jface.resource.ImageDescriptor;
-import org.eclipse.ui.IFileEditorInput;
+import org.eclipse.ui.IMemento;
 import org.eclipse.ui.IPersistableElement;
+import org.eclipse.ui.IStorageEditorInput;
 import org.eclipse.ui.editors.text.ILocationProvider;
+import org.rubypeople.rdt.internal.ui.RdtUiPlugin;
 
 /**
  * @since 3.0
  */
-public class ExternalRubyFileEditorInput implements IFileEditorInput, ILocationProvider {
+public class ExternalRubyFileEditorInput implements IStorageEditorInput, ILocationProvider, IPersistableElement {
 
-	private File fFile;
+	private SystemFileStorage storage;
+	private static final String FACTORY_ID = RdtUiPlugin.PLUGIN_ID + ".externalRubyFileEditorInputFactory"; //$NON-NLS-1$
 
 	public ExternalRubyFileEditorInput(File file) {
-		super();
-		fFile= file;
-	}
-	/*
-	 * @see org.eclipse.ui.IEditorInput#exists()
-	 */
-	public boolean exists() {
-		return fFile.exists();
+		storage = new SystemFileStorage(file);
 	}
 
-	/*
-	 * @see org.eclipse.ui.IEditorInput#getImageDescriptor()
-	 */
+	public boolean exists() {
+		return storage.getFile().exists();
+	}
+
 	public ImageDescriptor getImageDescriptor() {
 		return null;
 	}
 
-	/*
-	 * @see org.eclipse.ui.IEditorInput#getName()
-	 */
 	public String getName() {
-		return fFile.getName();
+		return storage.getFile().getName();
+	}
+
+	public void saveState(IMemento memento) {
+		memento.putString("path", storage.getFile().getAbsolutePath()); //$NON-NLS-1$
+	}
+
+	public String getFactoryId() {
+		return FACTORY_ID;
+	}
+
+	public IStorage getStorage() {
+		return storage;
 	}
 
 	/*
 	 * @see org.eclipse.ui.IEditorInput#getPersistable()
 	 */
 	public IPersistableElement getPersistable() {
-		return null;
+		return this;
 	}
 
 	/*
 	 * @see org.eclipse.ui.IEditorInput#getToolTipText()
 	 */
 	public String getToolTipText() {
-		return fFile.getAbsolutePath();
+		return storage.getFile().getAbsolutePath();
 	}
 
 	/*
 	 * @see org.eclipse.core.runtime.IAdaptable#getAdapter(java.lang.Class)
-	 */
+	 *
 	public Object getAdapter(Class adapter) {
-		if (ILocationProvider.class.equals(adapter))
-			return this;
+		if (adapter.equals(File.class)) return storage.getFile();
+		return null;
+	}
+	*/
+	
+	public Object getAdapter(Class adapter) {
+		if (ILocationProvider.class.equals(adapter)) return this;
 		return Platform.getAdapterManager().getAdapter(this, adapter);
 	}
 
@@ -73,45 +82,24 @@ public class ExternalRubyFileEditorInput implements IFileEditorInput, ILocationP
 	 */
 	public IPath getPath(Object element) {
 		if (element instanceof ExternalRubyFileEditorInput) {
-			ExternalRubyFileEditorInput input= (ExternalRubyFileEditorInput) element;
-			return new Path(input.fFile.getAbsolutePath());
+			ExternalRubyFileEditorInput input = (ExternalRubyFileEditorInput) element;
+			return new Path(input.getFilesystemFile().getAbsolutePath());
 		}
-		return null;
-	}
-	
-	/*
-	 * @see java.lang.Object#equals(java.lang.Object)
-	 */
-	public boolean equals(Object o) {
-		if (o == this)
-			return true;
-		
-		if (o instanceof ExternalRubyFileEditorInput) {
-			ExternalRubyFileEditorInput input = (ExternalRubyFileEditorInput) o;
-			return fFile.equals(input.fFile);		
-		}
-		
-		return false;
-	}
-	
-	/*
-	 * @see java.lang.Object#hashCode()
-	 */
-	public int hashCode() {
-		return fFile.hashCode();
-	}
-	public IFile getFile() {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
-	public IStorage getStorage() throws CoreException {
-		// TODO Auto-generated method stub
-		return null;
-	}
-	
+
+
 	public File getFilesystemFile() {
-		return fFile ;
+		return this.storage.getFile();
+	}
+
+	public boolean equals(Object object) {
+		return object instanceof ExternalRubyFileEditorInput && getStorage().equals(((ExternalRubyFileEditorInput) object).getStorage());
+	}
+
+	public int hashCode() {
+		return getStorage().hashCode();
 	}
 
 }
