@@ -37,7 +37,6 @@ import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableItem;
 import org.rubypeople.rdt.testunit.ITestRunListener;
-import org.rubypeople.rdt.testunit.TestunitPlugin;
 
 /**
  * A tab presenting the failed tests in a table.

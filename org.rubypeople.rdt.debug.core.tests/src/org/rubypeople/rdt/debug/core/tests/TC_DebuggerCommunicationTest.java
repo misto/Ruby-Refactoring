@@ -7,10 +7,8 @@ import java.io.PrintWriter;
 import java.net.Socket;
 
 import junit.framework.TestCase;
-import junit.framework.TestSuite;
 
 import org.rubypeople.rdt.internal.debug.core.ExceptionSuspensionPoint;
-import org.rubypeople.rdt.internal.debug.core.RdtDebugCorePlugin;
 import org.rubypeople.rdt.internal.debug.core.StepSuspensionPoint;
 import org.rubypeople.rdt.internal.debug.core.SuspensionPoint;
 import org.rubypeople.rdt.internal.debug.core.model.RubyProcessingException;
@@ -196,7 +194,6 @@ public class TC_DebuggerCommunicationTest extends TestCase {
 	}
 
 	private void writeFile(String name, String[] content) throws Exception {
-		String fileName;
 		PrintWriter writer = new PrintWriter(new FileOutputStream(getTmpDir() + name));
 		for (int i = 0; i < content.length; i++) {
 			writer.println(content[i]);
@@ -679,9 +676,8 @@ public class TC_DebuggerCommunicationTest extends TestCase {
 		createSocket(new String[] { "puts 'test'"  });
 		runToLine(1);
 		out.println("v inspect a*2");
-		RubyVariable[] variables;
         try {
-            variables = getVariableReader().readVariables(createStackFrame());
+            getVariableReader().readVariables(createStackFrame());
         } catch (RubyProcessingException e) {
         	assertNotNull(e.getMessage()) ;
         	return ;
@@ -885,7 +881,7 @@ public class TC_DebuggerCommunicationTest extends TestCase {
 		lines = new String[] { "puts 'd'", "puts 'e'", "puts 'f'" } ;
         writeFile("test.rb", lines) ;
 		out.println("load " + getTmpDir() + "test.rb") ;
-		LoadResultReader.LoadResult loadResult = this.getLoadResultReader().readLoadResult() ;
+		this.getLoadResultReader().readLoadResult() ;
 		out.println("next");
 		SuspensionPoint info = getSuspensionReader().readSuspension();
 		assertEquals(3, info.getLine());		

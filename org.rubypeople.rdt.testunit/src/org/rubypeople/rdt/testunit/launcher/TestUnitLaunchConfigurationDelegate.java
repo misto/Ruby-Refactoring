@@ -1,10 +1,6 @@
 package org.rubypeople.rdt.testunit.launcher;
 
-import org.eclipse.core.runtime.CoreException;
-import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.debug.core.ILaunch;
 import org.eclipse.debug.core.ILaunchConfiguration;
-import org.eclipse.debug.core.model.ILaunchConfigurationDelegate;
 import org.rubypeople.rdt.internal.launching.InterpreterRunnerConfiguration;
 import org.rubypeople.rdt.internal.launching.RubyApplicationLaunchConfigurationDelegate;
 import org.rubypeople.rdt.testunit.TestunitPlugin;
