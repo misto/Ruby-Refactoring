@@ -1,8 +1,13 @@
 package org.rubypeople.rdt.internal.ui.rubyeditor;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.util.Iterator;
 import java.util.Stack;
 
+import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.Preferences;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.text.BadLocationException;
@@ -14,6 +19,7 @@ import org.eclipse.jface.text.IDocumentListener;
 import org.eclipse.jface.text.IPositionUpdater;
 import org.eclipse.jface.text.IRegion;
 import org.eclipse.jface.text.ITextOperationTarget;
+import org.eclipse.jface.text.ITextSelection;
 import org.eclipse.jface.text.ITextViewerExtension;
 import org.eclipse.jface.text.ITypedRegion;
 import org.eclipse.jface.text.Position;
@@ -25,31 +31,42 @@ import org.eclipse.jface.text.link.LinkedPosition;
 import org.eclipse.jface.text.link.LinkedPositionGroup;
 import org.eclipse.jface.text.link.LinkedModeUI.ExitFlags;
 import org.eclipse.jface.text.link.LinkedModeUI.IExitPolicy;
+import org.eclipse.jface.text.source.Annotation;
+import org.eclipse.jface.text.source.IAnnotationModel;
 import org.eclipse.jface.text.source.ISourceViewer;
 import org.eclipse.jface.text.source.IVerticalRuler;
 import org.eclipse.jface.text.source.projection.ProjectionSupport;
 import org.eclipse.jface.text.source.projection.ProjectionViewer;
 import org.eclipse.jface.util.PropertyChangeEvent;
+import org.eclipse.jface.viewers.IStructuredSelection;
+import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.swt.custom.StyledText;
 import org.eclipse.swt.custom.VerifyKeyListener;
 import org.eclipse.swt.events.VerifyEvent;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.IEditorInput;
+import org.eclipse.ui.IPageLayout;
+import org.eclipse.ui.IViewPart;
+import org.eclipse.ui.IWorkbenchPage;
+import org.eclipse.ui.editors.text.EditorsUI;
+import org.eclipse.ui.texteditor.AnnotationPreference;
 import org.eclipse.ui.texteditor.ContentAssistAction;
+import org.eclipse.ui.texteditor.IEditorStatusLine;
 import org.eclipse.ui.texteditor.ITextEditorActionConstants;
+import org.eclipse.ui.texteditor.MarkerAnnotation;
 import org.eclipse.ui.texteditor.TextOperationAction;
 import org.eclipse.ui.texteditor.link.EditorLinkedModeUI;
 import org.eclipse.ui.views.contentoutline.IContentOutlinePage;
-import org.rubypeople.rdt.internal.ui.RubyUIMessages;
 import org.rubypeople.rdt.internal.ui.RubyPlugin;
+import org.rubypeople.rdt.internal.ui.RubyUIMessages;
 import org.rubypeople.rdt.internal.ui.text.IRubyPartitions;
 import org.rubypeople.rdt.internal.ui.text.RubyHeuristicScanner;
 import org.rubypeople.rdt.internal.ui.text.Symbols;
 import org.rubypeople.rdt.ui.PreferenceConstants;
 import org.rubypeople.rdt.ui.actions.FormatAction;
-import org.rubypeople.rdt.ui.actions.RubyActionGroup;
 import org.rubypeople.rdt.ui.actions.IRubyEditorActionDefinitionIds;
+import org.rubypeople.rdt.ui.actions.RubyActionGroup;
 import org.rubypeople.rdt.ui.text.folding.IRubyFoldingStructureProvider;
 
 public class RubyEditor extends RubyAbstractEditor {
@@ -73,6 +90,17 @@ public class RubyEditor extends RubyAbstractEditor {
 	 * @since 3.0
 	 */
 	private IRubyFoldingStructureProvider fProjectionModelUpdater;
+	
+	/**
+	 * Indicates whether this editor is about to update any annotation views.
+	 * @since 3.0
+	 */
+	private boolean fIsUpdatingAnnotationViews= false;
+	/**
+	 * The marker that served as last target for a goto marker request.
+	 * @since 3.0
+	 */
+	private IMarker fLastMarkerTarget= null;
 	
 	private BracketInserter fBracketInserter = new BracketInserter();
 
@@ -140,6 +168,242 @@ public class RubyEditor extends RubyAbstractEditor {
 		if (sourceViewer instanceof ITextViewerExtension) {
 			((ITextViewerExtension) sourceViewer).prependVerifyKeyListener(fBracketInserter);
 		}
+	}
+	
+	/**
+	 * Returns the annotation overlapping with the given range or <code>null</code>.
+	 * 
+	 * @param offset the region offset
+	 * @param length the region length
+	 * @return the found annotation or <code>null</code>
+	 * @since 3.0
+	 */
+	private Annotation getAnnotation(int offset, int length) {
+		IAnnotationModel model= getDocumentProvider().getAnnotationModel(getEditorInput());
+		Iterator e= new RubyAnnotationIterator(model, true, true);
+		while (e.hasNext()) {
+			Annotation a= (Annotation) e.next();
+			if (!isNavigationTarget(a))
+				continue;
+				
+			Position p= model.getPosition(a);
+			if (p != null && p.overlapsWith(offset, length))
+				return a;
+		}
+		
+		return null;
+	}
+	
+	/**
+	 * Returns the annotation closest to the given range respecting the given
+	 * direction. If an annotation is found, the annotations current position
+	 * is copied into the provided annotation position.
+	 * 
+	 * @param offset the region offset
+	 * @param length the region length
+	 * @param forward <code>true</code> for forwards, <code>false</code> for backward
+	 * @param annotationPosition the position of the found annotation
+	 * @return the found annotation
+	 */
+	private Annotation getNextAnnotation(final int offset, final int length, boolean forward, Position annotationPosition) {
+		
+		Annotation nextAnnotation= null;
+		Position nextAnnotationPosition= null;
+		Annotation containingAnnotation= null;
+		Position containingAnnotationPosition= null;
+		boolean currentAnnotation= false;
+		
+		IDocument document= getDocumentProvider().getDocument(getEditorInput());
+		int endOfDocument= document.getLength(); 
+		int distance= Integer.MAX_VALUE;
+		
+		IAnnotationModel model= getDocumentProvider().getAnnotationModel(getEditorInput());
+		Iterator e= new RubyAnnotationIterator(model, true, true);
+		while (e.hasNext()) {
+			Annotation a= (Annotation) e.next();
+			if ((a instanceof IRubyAnnotation) && ((IRubyAnnotation)a).hasOverlay() || !isNavigationTarget(a))
+				continue;
+				
+			Position p= model.getPosition(a);
+			if (p == null)
+				continue;
+			
+			if (forward && p.offset == offset || !forward && p.offset + p.getLength() == offset + length) {// || p.includes(offset)) {
+				if (containingAnnotation == null || (forward && p.length >= containingAnnotationPosition.length || !forward && p.length >= containingAnnotationPosition.length)) { 
+					containingAnnotation= a;
+					containingAnnotationPosition= p;
+					currentAnnotation= p.length == length;
+				}
+			} else {
+				int currentDistance= 0;
+				
+				if (forward) {
+					currentDistance= p.getOffset() - offset;
+					if (currentDistance < 0)
+						currentDistance= endOfDocument + currentDistance;
+					
+					if (currentDistance < distance || currentDistance == distance && p.length < nextAnnotationPosition.length) {
+						distance= currentDistance;
+						nextAnnotation= a;
+						nextAnnotationPosition= p;
+					}
+				} else {
+					currentDistance= offset + length - (p.getOffset() + p.length);
+					if (currentDistance < 0)
+						currentDistance= endOfDocument + currentDistance;
+					
+					if (currentDistance < distance || currentDistance == distance && p.length < nextAnnotationPosition.length) {
+						distance= currentDistance;
+						nextAnnotation= a;
+						nextAnnotationPosition= p;
+					}
+				}
+			}
+		}
+		if (containingAnnotationPosition != null && (!currentAnnotation || nextAnnotation == null)) {
+			annotationPosition.setOffset(containingAnnotationPosition.getOffset());
+			annotationPosition.setLength(containingAnnotationPosition.getLength());
+			return containingAnnotation;
+		}
+		if (nextAnnotationPosition != null) {
+			annotationPosition.setOffset(nextAnnotationPosition.getOffset());
+			annotationPosition.setLength(nextAnnotationPosition.getLength());
+		}
+		
+		return nextAnnotation;
+	}
+	
+	/**
+	 * Returns whether the given annotation is configured as a target for the
+	 * "Go to Next/Previous Annotation" actions
+	 * 
+	 * @param annotation the annotation
+	 * @return <code>true</code> if this is a target, <code>false</code>
+	 *         otherwise
+	 * @since 3.0
+	 */
+	private boolean isNavigationTarget(Annotation annotation) {
+		Preferences preferences= EditorsUI.getPluginPreferences();
+		AnnotationPreference preference= getAnnotationPreferenceLookup().getAnnotationPreference(annotation);
+//		See bug 41689
+//		String key= forward ? preference.getIsGoToNextNavigationTargetKey() : preference.getIsGoToPreviousNavigationTargetKey();
+		String key= preference == null ? null : preference.getIsGoToNextNavigationTargetKey();
+		return (key != null && preferences.getBoolean(key));
+	}
+	
+	/**
+	 * Jumps to the next enabled annotation according to the given direction.
+	 * An annotation type is enabled if it is configured to be in the
+	 * Next/Previous tool bar drop down menu and if it is checked.
+	 * 
+	 * @param forward <code>true</code> if search direction is forward, <code>false</code> if backward
+	 */
+	public void gotoAnnotation(boolean forward) {
+		ITextSelection selection= (ITextSelection) getSelectionProvider().getSelection();
+		Position position= new Position(0, 0);
+		if (false /* delayed - see bug 18316 */) {
+			getNextAnnotation(selection.getOffset(), selection.getLength(), forward, position);
+			selectAndReveal(position.getOffset(), position.getLength());
+		} else /* no delay - see bug 18316 */ {
+			Annotation annotation= getNextAnnotation(selection.getOffset(), selection.getLength(), forward, position);
+			setStatusLineErrorMessage(null);
+			setStatusLineMessage(null);
+			if (annotation != null) {
+				updateAnnotationViews(annotation);
+				selectAndReveal(position.getOffset(), position.getLength());
+				setStatusLineMessage(annotation.getText());
+			}
+		}
+	}
+	
+	/**
+	 * Updates the annotation views that show the given annotation.
+	 * 
+	 * @param annotation the annotation
+	 */
+	private void updateAnnotationViews(Annotation annotation) {
+		IMarker marker= null;
+		if (annotation instanceof MarkerAnnotation)
+			marker= ((MarkerAnnotation) annotation).getMarker();
+		else if (annotation instanceof IRubyAnnotation) {
+			Iterator e= ((IRubyAnnotation) annotation).getOverlaidIterator();
+			if (e != null) {
+				while (e.hasNext()) {
+					Object o= e.next();
+					if (o instanceof MarkerAnnotation) {
+						marker= ((MarkerAnnotation) o).getMarker();
+						break;
+					}
+				}
+			}
+		}
+			
+		if (marker != null && !marker.equals(fLastMarkerTarget)) {
+			try {
+				boolean isProblem= marker.isSubtypeOf(IMarker.PROBLEM);
+				IWorkbenchPage page= getSite().getPage();
+				IViewPart view= page.findView(isProblem ? IPageLayout.ID_PROBLEM_VIEW: IPageLayout.ID_TASK_LIST); //$NON-NLS-1$  //$NON-NLS-2$
+				if (view != null) {
+					Method method= view.getClass().getMethod("setSelection", new Class[] { IStructuredSelection.class, boolean.class}); //$NON-NLS-1$
+					method.invoke(view, new Object[] {new StructuredSelection(marker), Boolean.TRUE });
+				}
+			} catch (CoreException x) {
+			} catch (NoSuchMethodException x) {
+			} catch (IllegalAccessException x) {
+			} catch (InvocationTargetException x) {
+			}
+			// ignore exceptions, don't update any of the lists, just set status line
+		}			
+	}
+	
+	/*
+	 * @see org.eclipse.ui.texteditor.AbstractTextEditor#gotoMarker(org.eclipse.core.resources.IMarker)
+	 */
+	public void gotoMarker(IMarker marker) {
+		fLastMarkerTarget= marker;
+		if (!fIsUpdatingAnnotationViews) {
+		    super.gotoMarker(marker);
+		}
+	}
+	
+	protected void updateStatusLine() {
+		ITextSelection selection= (ITextSelection) getSelectionProvider().getSelection();
+		Annotation annotation= getAnnotation(selection.getOffset(), selection.getLength());
+		setStatusLineErrorMessage(null);
+		setStatusLineMessage(null);
+		if (annotation != null) {
+			try {
+				fIsUpdatingAnnotationViews= true;
+				updateAnnotationViews(annotation);
+			} finally {
+				fIsUpdatingAnnotationViews= false;
+			}
+			if (annotation instanceof IRubyAnnotation && ((IRubyAnnotation) annotation).isProblem())
+				setStatusLineMessage(annotation.getText());
+		}
+	}
+	
+	/**
+	 * Sets the given message as error message to this editor's status line.
+	 * 
+	 * @param msg message to be set
+	 */
+	protected void setStatusLineErrorMessage(String msg) {
+		IEditorStatusLine statusLine= (IEditorStatusLine) getAdapter(IEditorStatusLine.class);
+		if (statusLine != null)
+			statusLine.setMessage(true, msg, null);	
+	}
+	
+	/**
+	 * Sets the given message as message to this editor's status line.
+	 * 
+	 * @param msg message to be set
+	 * @since 3.0
+	 */
+	protected void setStatusLineMessage(String msg) {
+		IEditorStatusLine statusLine= (IEditorStatusLine) getAdapter(IEditorStatusLine.class);
+		if (statusLine != null)
+			statusLine.setMessage(false, msg, null);	
 	}
 
 	boolean isFoldingEnabled() {
