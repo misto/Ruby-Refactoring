@@ -29,7 +29,7 @@ import org.rubypeople.rdt.internal.core.parser.ast.RubyElement;
 
 public class NoDuplicateRule implements ParseRule {
 
-	private RubyElement element;
+	protected RubyElement element;
 	private RubyElement parent;
 	private boolean addError;
 
@@ -68,7 +68,7 @@ public class NoDuplicateRule implements ParseRule {
 	 * 
 	 * @see org.rubypeople.rdt.internal.core.parser.ParseRule#getSeverity()
 	 */
-	private int getSeverity() {
+	protected int getSeverity() {
 		return ParseRule.ERROR;
 	}
 

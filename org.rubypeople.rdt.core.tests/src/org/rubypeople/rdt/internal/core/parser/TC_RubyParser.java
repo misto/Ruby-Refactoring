@@ -929,6 +929,16 @@ public class TC_RubyParser extends TestCase {
 		assertTrue(query.contains(new RubyElement(RubyElement.IF, "if", 2, 12)));
 	}
 	
+	public void testDuplicateMethodDeclarationsDiscouraged() throws Exception {
+		RubyScript script = RubyParser.parse("class Bob\ndef method\nend\ndef method\nend\nend");
+		assertEquals(1, script.getElementCount() );
+		assertEquals(1, script.getErrorCount() );
+		ParseError error = (ParseError) script.getParseErrors().toArray()[0];
+		assertEquals( ParseError.WARNING, error.getSeverity().intValue() );
+		assertEquals( 3, error.getLine() );
+		assertEquals( 4, error.getStart() );
+	}
+	
 	/**
 	 * @param parent
 	 * @param type

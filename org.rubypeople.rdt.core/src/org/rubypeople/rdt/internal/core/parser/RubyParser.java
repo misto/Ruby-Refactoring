@@ -44,7 +44,7 @@ public class RubyParser {
 	/**
 	 * @return
 	 */
-	public static RubyScript parse(String string) throws ParseException {
+	public static synchronized RubyScript parse(String string) throws ParseException {
 		script = new RubyScript();
 		stack.push(script);
 		BufferedReader reader = new BufferedReader(new StringReader(string));
@@ -72,7 +72,7 @@ public class RubyParser {
 				RubyTokenizer tokenizer = new RubyTokenizer(curLine);
 				while (tokenizer.hasMoreTokens()) {
 					RubyToken token = tokenizer.nextRubyToken();
-					log(token.getText());
+					//log(token.getText());
 					if (token.isBlock()) {
 						if (token.isType(RubyToken.WHILE) && parentIsBlockOfType(RubyElement.CASE)) continue;
 						pushMultiLineElement(new RubyElement(token.getType(), token.getText(), lineNum, token.getOffset()));
@@ -99,6 +99,7 @@ public class RubyParser {
 					if (token.isType(RubyToken.END)) {
 						try {
 							stack.closeLastOpenElement(lineNum, token.getOffset());
+							log("Closed last Element");
 						} catch (StackEmptyException e) {
 							log(e.getMessage());
 						}
@@ -136,7 +137,7 @@ public class RubyParser {
 								element.setAccess(RubyElement.PRIVATE);
 							else if (token.isType(RubyToken.PROTECTED))
 								element.setAccess(RubyElement.PROTECTED);
-							applyRules(element);
+							applyRules(element, false);
 						}
 						continue;
 					}
@@ -153,6 +154,29 @@ public class RubyParser {
 
 		stack.clear();
 		return script;
+	}
+
+	/**
+	 * @param element
+	 * @param isDeclaration
+	 */
+	private static void applyRules(RubyElement element, boolean isDeclaration) {
+		Set rules = ParseRuleFactory.getRules(element, getParent(element), isDeclaration);
+		boolean addElement = true;
+		for (Iterator iter = rules.iterator(); iter.hasNext();) {
+			ParseRule rule = (ParseRule) iter.next();
+			rule.run();
+			if (!rule.isAllowed()) {
+				log("Failed rule");
+				if (rule.addError()) {
+					log("Adding parse error");
+					script.addParseError(rule.getError());
+				}
+				if (!rule.addOnFailure()) addElement = false;
+			}
+		}
+		if (addElement) addElement(element);
+		
 	}
 
 	/**
@@ -194,24 +218,9 @@ public class RubyParser {
 
 	/**
 	 * @param element
-	 * @param script2
 	 */
 	private static void applyRules(RubyElement element) {
-		Set rules = ParseRuleFactory.getRules(element, getParent(element));
-		boolean addElement = true;
-		for (Iterator iter = rules.iterator(); iter.hasNext();) {
-			ParseRule rule = (ParseRule) iter.next();
-			rule.run();
-			if (!rule.isAllowed()) {
-				log("Failed rule");
-				if (rule.addError()) {
-					log("Adding parse error");
-					script.addParseError(rule.getError());
-				}
-				if (!rule.addOnFailure()) addElement = false;
-			}
-		}
-		if (addElement) addElement(element);
+		applyRules(element, true);
 	}
 
 	private static void addElementDeclaration(RubyToken token, RubyTokenizer tokenizer, int lineNum) {
@@ -325,7 +334,7 @@ public class RubyParser {
 	 */
 	private static void log(String string) {
 		//		if ( RubyPlugin.getDefault().isDebugging() ) {
-		System.out.println(string);
+			System.out.println(string);
 		//		}
 	}
 }

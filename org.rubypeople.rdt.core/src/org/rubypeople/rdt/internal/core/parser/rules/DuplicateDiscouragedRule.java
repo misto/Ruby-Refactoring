@@ -24,44 +24,49 @@
  */
 package org.rubypeople.rdt.internal.core.parser.rules;
 
-import java.util.HashSet;
-import java.util.Set;
-
+import org.rubypeople.rdt.internal.core.parser.ParseError;
 import org.rubypeople.rdt.internal.core.parser.ast.RubyElement;
 
-public class ParseRuleFactory {
 
-	public static Set getRules(RubyElement token, RubyElement parent, boolean isDeclaration) {
-		Set set = new HashSet();
-		if (token.isType(RubyElement.CLASS)) {
-			set.add(new UpperCaseNameRule(token));
-			return set;
-		}
-		if (token.isType(RubyElement.MODULE)) {
-			set.add(new UpperCaseNameRule(token));
-			return set;
-		}
-		if (token.isType(RubyElement.REQUIRES)) {
-			set.add(new NoDuplicateRule(token, parent, true));
-			return set;
-		}		
-		if (token.isType(RubyElement.METHOD)) {
-			if (isDeclaration) {
-			set.add(new DuplicateDiscouragedRule(token, parent));
-			}
-			else {
-				set.add(new NoDuplicateRule(token, parent, false));
-			}
-			return set;
-			
-		}
-		if (token.isVariable()) {
-			set.add(new NoDuplicateRule(token, parent, false));
-			set.add(new NoEmptyNameRule(token));
-			return set;
-		}
-		set.add(new NullRule());
-		return set;
+public class DuplicateDiscouragedRule extends NoDuplicateRule {
+
+	public DuplicateDiscouragedRule(RubyElement token, RubyElement parent) {
+		super(token, parent, true);
+	}
+
+	/* (non-Javadoc)
+	 * @see org.rubypeople.rdt.internal.core.parser.rules.ParseRule#getError()
+	 */
+	public ParseError getError() {
+		return new ParseError("Duplicate method definition", element, getSeverity());
+	}
+
+	
+	/* (non-Javadoc)
+	 * @see org.rubypeople.rdt.internal.core.parser.rules.NoDuplicateRule#addError()
+	 */
+	public boolean addError() {
+		return true;
+	}
+	
+	/* (non-Javadoc)
+	 * @see org.rubypeople.rdt.internal.core.parser.rules.NoDuplicateRule#getSeverity()
+	 */
+	protected int getSeverity() {
+		return ParseRule.WARNING;
+	}
+	
+	/* (non-Javadoc)
+	 * @see org.rubypeople.rdt.internal.core.parser.rules.ParseRule#addOnFailure()
+	 */
+	public boolean addOnFailure() {
+		return true;
+	}
+
+	/* (non-Javadoc)
+	 * @see org.rubypeople.rdt.internal.core.parser.rules.ParseRule#run()
+	 */
+	public void run() {
 	}
 
 }
