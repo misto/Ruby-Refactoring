@@ -31,7 +31,7 @@ public class RubyScript extends RubyElement {
 				currentElement.parse(currentLine);
 			}
 		} catch (IOException e) {
-			throw new RuntimeException("Unexpected exception occurred parsing script", e);
+			throw new RuntimeException("Unexpected exception occurred parsing script: "+ e.toString());
 		}
 	}
 
@@ -39,7 +39,7 @@ public class RubyScript extends RubyElement {
 		try {
 			return new RE("[a-zA-Z ]*class [a-zA-Z]");
 		} catch (RESyntaxException e) {
-			throw new RuntimeException(e);
+			throw new RuntimeException(e.toString());
 		}
 	}
 

@@ -29,7 +29,7 @@ public class RubyClass extends RubyElement {
 		try {
 			return new RE("[a-zA-Z ]*def [a-zA-Z]+ *");
 		} catch (RESyntaxException e) {
-			throw new RuntimeException(e);
+			throw new RuntimeException(e.toString());
 		}
 	}
 
