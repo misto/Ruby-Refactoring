@@ -169,5 +169,10 @@
          </action>
       </actionSet>
    </extension>
-
+   <extension point= "org.eclipse.ui.markerUpdaters"> 
+      <updater
+      	id="RubyBreakpointMarkerUpdater"
+        markerType="org.rubypeople.rdt.debug.core.RubyBreakpointMarker"
+        class="org.rubypeople.rdt.internal.ui.rubyeditor.RubyBreakpointMarkerUpdater"/>
+   </extension> 
 </plugin>
