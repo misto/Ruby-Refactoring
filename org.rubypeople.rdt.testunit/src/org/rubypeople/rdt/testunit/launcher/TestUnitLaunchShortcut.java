@@ -244,7 +244,7 @@ public class TestUnitLaunchShortcut implements ILaunchShortcut {
 	}
 
 	protected void showNoInterpreterDialog() {
-		MessageDialog.openInformation(TestunitPlugin.getActiveWorkbenchShell(), "Dialog.launchWithoutSelectedInterpreter.title", "Dialog.launchWithoutSelectedInterpreter");
+		MessageDialog.openInformation(TestunitPlugin.getActiveWorkbenchShell(), TestUnitMessages.getString("Dialog.launchWithoutSelectedInterpreter.title"), TestUnitMessages.getString("Dialog.launchWithoutSelectedInterpreter"));
 	}
 
 	protected static String getDefaultWorkingDirectory(IProject project) {
