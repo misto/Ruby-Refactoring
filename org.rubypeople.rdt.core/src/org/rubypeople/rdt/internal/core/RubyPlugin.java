@@ -8,6 +8,7 @@ import org.eclipse.core.runtime.IAdapterManager;
 import org.eclipse.core.runtime.IPluginDescriptor;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Plugin;
+import org.eclipse.core.runtime.Status;
 import org.rubypeople.rdt.core.RubyElement;
 
 public class RubyPlugin extends Plugin {
@@ -34,6 +35,10 @@ public class RubyPlugin extends Plugin {
 		IAdapterManager manager= Platform.getAdapterManager();
 		manager.registerAdapters(new RubyElementAdapterFactory(), RubyElement.class);
 		manager.registerAdapters(new ResourceAdapterFactory(), IResource.class);
+	}
+
+	public static void log(RuntimeException runtimeException) {
+		getDefault().getLog().log(new Status(Status.INFO, RubyPlugin.PLUGIN_ID, 0, "", runtimeException));
 	}
 
 }
