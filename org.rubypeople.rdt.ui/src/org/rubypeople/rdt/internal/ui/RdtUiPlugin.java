@@ -29,7 +29,6 @@ public class RdtUiPlugin extends AbstractUIPlugin implements RubyColorConstants 
 	public static final String EXTERNAL_FILES_EDITOR_ID = "org.rubypeople.rdt.ui.ExternalRubyEditor"; //$NON-NLS-1$
 
 	protected RubyTextTools textTools;
-	protected CodeFormatter codeFormatter;
 
 	public RdtUiPlugin(IPluginDescriptor descriptor) {
 		super(descriptor);
@@ -77,10 +76,9 @@ public class RdtUiPlugin extends AbstractUIPlugin implements RubyColorConstants 
 		return textTools;
 	}
 
-	public CodeFormatter getCodeFormatter() {
-		if (codeFormatter == null) {
-			codeFormatter = new CodeFormatter();
-		}
+	public CodeFormatter getCodeFormatter() {		
+		char indentChar = this.getPreferenceStore().getBoolean(PreferenceConstants.FORMAT_USE_TAB) ? '\t' : ' ' ;
+		CodeFormatter codeFormatter = new CodeFormatter(indentChar, RubyPlugin.getDefault().isCodeFormatterDebugging());		
 		codeFormatter.setIndentation(this.getPreferenceStore().getInt(PreferenceConstants.FORMAT_INDENTATION));
 		return codeFormatter;
 	}
