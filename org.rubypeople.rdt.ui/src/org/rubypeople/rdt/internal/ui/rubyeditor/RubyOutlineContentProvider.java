@@ -89,6 +89,7 @@ public class RubyOutlineContentProvider implements ITreeContentProvider, IDocume
 				int offset = doc.getLineOffset(pe.getLine());
 				MarkerUtilities.setCharStart(attributes, offset + pe.getStart());
 				MarkerUtilities.setCharEnd(attributes, offset + pe.getEnd());
+				attributes.put(IMarker.SEVERITY, new Integer(IMarker.SEVERITY_WARNING));
 				try {
 					MarkerUtilities.createMarker(resource, attributes, IMarker.PROBLEM);
 				} catch (CoreException x) {
@@ -97,6 +98,7 @@ public class RubyOutlineContentProvider implements ITreeContentProvider, IDocume
 			} catch (BadLocationException e) {
 				RubyPlugin.log(e);
 			}
+
 		}
 	}
 
