@@ -83,7 +83,7 @@
       <view
             name="%ViewRubyResources.name"
             icon="icons/full/ctool16/ruby.gif"
-            class="org.rubypeople.rdt.internal.ui.RubyResourcesView"
+            class="org.rubypeople.rdt.internal.ui.resourcesview.RubyResourcesView"
             id="org.rubypeople.rdt.ui.ViewRubyResources">
       </view>
    </extension>
