@@ -5,13 +5,7 @@ import org.eclipse.jface.viewers.ILabelProviderListener;
 import org.eclipse.swt.graphics.Image;
 import org.rubypeople.rdt.internal.core.RubyPlugin;
 import org.rubypeople.rdt.internal.core.parser.ast.IRubyElement;
-import org.rubypeople.rdt.internal.core.parser.ast.RubyClass;
-import org.rubypeople.rdt.internal.core.parser.ast.RubyClassVariable;
-import org.rubypeople.rdt.internal.core.parser.ast.RubyGlobal;
-import org.rubypeople.rdt.internal.core.parser.ast.RubyInstanceVariable;
-import org.rubypeople.rdt.internal.core.parser.ast.RubyMethod;
-import org.rubypeople.rdt.internal.core.parser.ast.RubyModule;
-import org.rubypeople.rdt.internal.core.parser.ast.RubyRequires;
+import org.rubypeople.rdt.internal.core.parser.ast.RubyElement;
 import org.rubypeople.rdt.internal.ui.RdtUiImages;
 
 public class RubyOutlineLabelProvider implements ILabelProvider {
@@ -24,32 +18,28 @@ public class RubyOutlineLabelProvider implements ILabelProvider {
 			log("Attempting to get Image for null object in outline elements");
 			return RdtUiImages.get(RdtUiImages.IMG_OBJS_ERROR);
 		}
-		if (RubyGlobal.class.equals(object.getClass())) return RdtUiImages.get(RdtUiImages.IMG_CTOOLS_RUBYGLOBAL);
 
-		if (RubyRequires.class.equals(object.getClass())) return RdtUiImages.get(RdtUiImages.IMG_CTOOLS_RUBYIMPORT);
+		if (object instanceof RubyElement) {
+			RubyElement rubyElement = (RubyElement) object;
+			if (rubyElement.isType(RubyElement.GLOBAL)) return RdtUiImages.get(RdtUiImages.IMG_CTOOLS_RUBYGLOBAL);
+			if (rubyElement.isType(RubyElement.CLASS_VAR)) return RdtUiImages.get(RdtUiImages.IMG_CTOOLS_RUBYCLASSVAR);
+			if (rubyElement.isType(RubyElement.MODULE)) return RdtUiImages.get(RdtUiImages.IMG_CTOOLS_RUBYMODULE);
+			if (rubyElement.isType(RubyElement.REQUIRES)) return RdtUiImages.get(RdtUiImages.IMG_CTOOLS_RUBYIMPORT);
+			if (rubyElement.isType(RubyElement.METHOD)) {
+				if (rubyElement.getAccess().equals(RubyElement.PUBLIC)) { return RdtUiImages.get(RdtUiImages.IMG_CTOOLS_RUBYMETHOD_PUB); }
+				if (rubyElement.getAccess().equals(RubyElement.PROTECTED)) { return RdtUiImages.get(RdtUiImages.IMG_CTOOLS_RUBYMETHOD_PRO); }
+				// assume it's private
+				return RdtUiImages.get(RdtUiImages.IMG_CTOOLS_RUBYMETHOD);
+			}
+			if (rubyElement.isType(RubyElement.INSTANCE_VAR)) {
+				if (rubyElement.getAccess().equals(RubyElement.READ)) { return RdtUiImages.get(RdtUiImages.IMG_CTOOLS_RUBYINSTVAR_READ); }
+				if (rubyElement.getAccess().equals(RubyElement.WRITE)) { return RdtUiImages.get(RdtUiImages.IMG_CTOOLS_RUBYINSTVAR_WRITE); }
+				if (rubyElement.getAccess().equals(RubyElement.PUBLIC)) { return RdtUiImages.get(RdtUiImages.IMG_CTOOLS_RUBYINSTVAR); }
+				return RdtUiImages.get(RdtUiImages.IMG_CTOOLS_RUBYINSTVAR_PRIV);
+			}
 
-		if (RubyModule.class.equals(object.getClass())) return RdtUiImages.get(RdtUiImages.IMG_CTOOLS_RUBYMODULE);
-
-		if (RubyClassVariable.class.equals(object.getClass())) return RdtUiImages.get(RdtUiImages.IMG_CTOOLS_RUBYCLASSVAR);
-
-		if (RubyInstanceVariable.class.equals(object.getClass())) {
-			RubyInstanceVariable var = (RubyInstanceVariable) object;
-			if (var.getAccess().equals(RubyInstanceVariable.READ)) { return RdtUiImages.get(RdtUiImages.IMG_CTOOLS_RUBYINSTVAR_READ); }
-			if (var.getAccess().equals(RubyInstanceVariable.WRITE)) { return RdtUiImages.get(RdtUiImages.IMG_CTOOLS_RUBYINSTVAR_WRITE); }
-			if (var.getAccess().equals(RubyInstanceVariable.PUBLIC)) { return RdtUiImages.get(RdtUiImages.IMG_CTOOLS_RUBYINSTVAR); }
-			return RdtUiImages.get(RdtUiImages.IMG_CTOOLS_RUBYINSTVAR_PRIV);
+			if (rubyElement.isType(RubyElement.CLASS)) return RdtUiImages.get(RdtUiImages.IMG_CTOOLS_RUBYCLASS);
 		}
-
-		if (RubyMethod.class.equals(object.getClass())) {
-			RubyMethod method = (RubyMethod) object;
-			if (method.getAccess().equals(RubyMethod.PUBLIC)) { return RdtUiImages.get(RdtUiImages.IMG_CTOOLS_RUBYMETHOD_PUB); }
-			if (method.getAccess().equals(RubyMethod.PROTECTED)) { return RdtUiImages.get(RdtUiImages.IMG_CTOOLS_RUBYMETHOD_PRO); }
-			// assume it's private
-			return RdtUiImages.get(RdtUiImages.IMG_CTOOLS_RUBYMETHOD);
-		}
-
-		if (RubyClass.class.equals(object.getClass())) return RdtUiImages.get(RdtUiImages.IMG_CTOOLS_RUBYCLASS);
-
 		log("Attempting to get Image for unknown object in outline elements: " + object);
 		return RdtUiImages.get(RdtUiImages.IMG_OBJS_ERROR);
 	}

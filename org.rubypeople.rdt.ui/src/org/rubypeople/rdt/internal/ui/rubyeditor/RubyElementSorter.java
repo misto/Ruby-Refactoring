@@ -7,13 +7,7 @@
 package org.rubypeople.rdt.internal.ui.rubyeditor;
 
 import org.eclipse.jface.viewers.ViewerSorter;
-import org.rubypeople.rdt.internal.core.parser.ast.RubyClass;
-import org.rubypeople.rdt.internal.core.parser.ast.RubyClassVariable;
-import org.rubypeople.rdt.internal.core.parser.ast.RubyGlobal;
-import org.rubypeople.rdt.internal.core.parser.ast.RubyInstanceVariable;
-import org.rubypeople.rdt.internal.core.parser.ast.RubyMethod;
-import org.rubypeople.rdt.internal.core.parser.ast.RubyModule;
-import org.rubypeople.rdt.internal.core.parser.ast.RubyRequires;
+import org.rubypeople.rdt.internal.core.parser.ast.RubyElement;
 
 
 /**
@@ -36,13 +30,16 @@ public class RubyElementSorter extends ViewerSorter {
 	 * @see org.eclipse.jface.viewers.ViewerSorter#category(java.lang.Object)
 	 */
 	public int category(Object element) {
-		if (element instanceof RubyRequires) return RUBY_REQUIRE;
-		if (element instanceof RubyClassVariable) return RUBY_CLASS_VARIABLE;
-		if (element instanceof RubyInstanceVariable) return RUBY_INSTANCE_VARIABLE;
-		if (element instanceof RubyMethod) return RUBY_METHOD;
-		if (element instanceof RubyModule) return RUBY_MODULE;
-		if (element instanceof RubyClass) return RUBY_CLASS;
-		if (element instanceof RubyGlobal) return RUBY_GLOBAL;
+		if (element instanceof RubyElement) {
+			RubyElement rubyElement = (RubyElement) element;
+			if (rubyElement.isType(RubyElement.INSTANCE_VAR)) return RUBY_INSTANCE_VARIABLE;
+			if (rubyElement.isType(RubyElement.GLOBAL)) return RUBY_GLOBAL;
+			if (rubyElement.isType(RubyElement.METHOD)) return RUBY_METHOD;
+			if (rubyElement.isType(RubyElement.MODULE)) return RUBY_MODULE;
+			if (rubyElement.isType(RubyElement.CLASS)) return RUBY_CLASS;
+			if (rubyElement.isType(RubyElement.REQUIRES)) return RUBY_REQUIRE;
+			if (rubyElement.isType(RubyElement.CLASS_VAR)) return RUBY_CLASS_VARIABLE;
+		}
 		return 0;
 	}
 	
