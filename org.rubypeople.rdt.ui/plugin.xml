@@ -140,9 +140,11 @@
    </extension>
    <extension
          point="org.eclipse.ui.editors">
+         <!-- external editor does not need extensions, because I don't want to have it show up in the Open context
+              menu. The external editor can only be choosen from the RubySourceLocator -->
       <editor
-            name="%EditorRubyFile.name"
-            extensions="%EditorRubyFile.extension"
+            name="%ExternalEditorRubyFile.name"
+            extensions=""
             icon="icons/full/ctool16/ruby_page.gif"
             class="org.rubypeople.rdt.internal.ui.rubyeditor.ExternalRubyEditor"
             contributorClass="org.rubypeople.rdt.internal.ui.rubyeditor.RubyEditorActionContributor"
