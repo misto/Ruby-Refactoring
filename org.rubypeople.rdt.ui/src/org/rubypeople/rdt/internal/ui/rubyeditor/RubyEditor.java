@@ -28,7 +28,8 @@ public class RubyEditor extends TextEditor {
 	protected RubyTextTools textTools ;
 	public RubyEditor() {
 		super();
-		this.setRulerContextMenuId("#rubyRulerContext") ;
+		this.setRulerContextMenuId("org.rubypeople.rdt.ui.rubyeditor.rulerContextMenu") ;
+		this.setEditorContextMenuId("org.rubypeople.rdt.ui.rubyeditor.contextMenu") ;
 	}
 
 	protected void configurePreferenceStore() {
