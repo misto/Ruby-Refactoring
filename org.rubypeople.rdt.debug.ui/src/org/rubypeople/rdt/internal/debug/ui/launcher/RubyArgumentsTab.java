@@ -70,7 +70,7 @@ public class RubyArgumentsTab extends AbstractLaunchConfigurationTab {
 	}
 
 	protected void setUseDefaultWorkingDirectory(boolean useDefault) {
-		if (!useDefaultWorkingDirectoryButton.getSelection() == useDefault)
+		if (useDefaultWorkingDirectoryButton.getSelection() != useDefault)
 			useDefaultWorkingDirectoryButton.setSelection(useDefault);
 		if (useDefault)
 			workingDirectorySelector.setSelectionText(RdtDebugUiConstants.DEFAULT_WORKING_DIRECTORY);
@@ -78,7 +78,7 @@ public class RubyArgumentsTab extends AbstractLaunchConfigurationTab {
 	}
 
 	public void setDefaults(ILaunchConfigurationWorkingCopy configuration) {
-		setUseDefaultWorkingDirectory(true);
+		configuration.setAttribute(RubyLaunchConfigurationAttribute.USE_DEFAULT_WORKING_DIRECTORY, true);
 		configuration.setAttribute(RubyLaunchConfigurationAttribute.WORKING_DIRECTORY, RdtDebugUiConstants.DEFAULT_WORKING_DIRECTORY);
 		// set hidden attribute
 		configuration.setAttribute(ILaunchConfiguration.ATTR_SOURCE_LOCATOR_ID, "org.rubypeople.rdt.debug.ui.rubySourceLocator") ;

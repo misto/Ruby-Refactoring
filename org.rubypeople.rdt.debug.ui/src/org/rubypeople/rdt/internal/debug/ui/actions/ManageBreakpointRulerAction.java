@@ -184,7 +184,7 @@ public class ManageBreakpointRulerAction extends Action implements IUpdate {
 
 	protected void addMarker() {
 		IEditorInput editorInput = getTextEditor().getEditorInput();
-		IDocument document = getDocument();
+		getDocument();
 		int rulerLine = getVerticalRulerInfo().getLineOfLastMouseButtonActivity();
 		try {
 			RubyLineBreakpoint bp = new RubyLineBreakpoint(((IFileEditorInput) editorInput).getFile(), rulerLine);
