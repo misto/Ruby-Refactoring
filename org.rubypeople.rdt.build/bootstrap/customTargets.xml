@@ -40,7 +40,6 @@
 	<!-- Replace values for cvsRoot, package and mapVersionTag as desired. -->
 	<!-- ===================================================================== -->
 	<target name="getMapFiles">
-		<property name="mapVersionTag" value="HEAD" />
 		<antcall target="getMapFilesWithExtMethod"/>
 		<antcall target="getMapFilesWithPserverMethod"/>
 	</target>
@@ -137,19 +136,22 @@
 	<!-- ===================================================================== -->
 	<!-- Steps to do after the build is done. -->
 	<!-- ===================================================================== -->
-	<target name="postBuild">
-		<antcall target="test"/>
+	<target name="postBuild">		
 		<property name="UpdateSiteStagingLocation" value="${buildDirectory}/updateSite"/>
 		<property name="sitePackagePrefix" value="org.rubypeople.updatesite"/>
 		<antcall target="generateUpdateSite"/>
+		<antcall target="test"/>
 	</target>
 	<!-- ===================================================================== -->
 	<!-- Steps to test the build results -->
 	<!-- ===================================================================== -->
 	<target name="test" unless="dontRunTests">
 		<echo message="Setting up tests in ${eclipseAutomatedTestHome}"/>
+		<delete>
+			<fileset dir="${eclipseAutomatedTestHome}" includes="**/*RDT*.zip"/>
+		</delete>
 		<copy file="${buildDirectory}/${buildLabel}/org.rubypeople.rdt-${buildId}.zip" tofile="${eclipseAutomatedTestHome}/eclipse-SDK-RDT-${buildId}.zip" />
-		<copy file="${buildDirectory}/${buildLabel}/org.rubypeople.rdt-tests-${buildId}.zip" tofile="${eclipseAutomatedTestHome}/eclipse-junit-tests-rdt-${buildId}.zip" />
+		<copy file="${buildDirectory}/${buildLabel}/org.rubypeople.rdt-tests-${buildId}.zip" tofile="${eclipseAutomatedTestHome}/eclipse-junit-tests-RDT-${buildId}.zip" />
 		<ant antfile="${eclipseAutomatedTestHome}/test.xml" target="runtests" dir="${eclipseAutomatedTestHome}">
 			<property name="os" value="${baseos}" />
 			<property name="ws" value="${basews}" />
@@ -194,7 +196,7 @@
 	<target name="createNightlyBuildSiteXml" if="isNightlyBuild">
 		<echo file="${UpdateSiteStagingLocation}/site.xml">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt; 
 			&lt;site&gt; 
-			&lt;description url=&quot;http://rubyeclipse.sourceforge.net/updatesite/nightly/&quot;&gt; The Ruby Development 
+			&lt;description url=&quot;http://rubyeclipse.sourceforge.net/nightlyBuild/updateSite/&quot;&gt; The Ruby Development 
 			Tools update site. &lt;/description&gt; 
 			&lt;feature url=&quot;features/org.rubypeople.rdt_${featureVersion}.jar&quot; id=&quot;org.rubypeople.rdt&quot; version=&quot;${featureVersion}&quot;&gt; &lt;category 
 			name=&quot;RubyEclipseNightlyBuild&quot;/&gt; &lt;/feature&gt; 
