@@ -40,5 +40,33 @@ public class Position {
 	public int getOffset() {
 		return offset;
 	}
+	
+	
+	/* (non-Javadoc)
+	 * @see java.lang.Object#equals(java.lang.Object)
+	 */
+	public boolean equals(Object obj) {
+		if (obj instanceof Position) {
+			Position pos = (Position) obj;
+			return pos.getLineNumber() == this.getLineNumber() && pos.getOffset() == this.getOffset();
+		}
+		return false;
+	}
+	
+	
+	/* (non-Javadoc)
+	 * @see java.lang.Object#hashCode()
+	 */
+	public int hashCode() {
+		return toString().hashCode();
+	}
+	
+	
+	/* (non-Javadoc)
+	 * @see java.lang.Object#toString()
+	 */
+	public String toString() {
+		return "Line #: " + getLineNumber() + ", offset: " + getOffset();
+	}
 
 }

@@ -48,7 +48,7 @@ public class RubyMethod extends RubyElement {
 	public boolean equals(Object arg0) {
 		if (arg0 instanceof RubyMethod) {
 			RubyMethod method = (RubyMethod) arg0;
-			return method.getName().equals(getName()) && (method.getStart() == getStart());
+			return method.getName().equals(getName()) && (method.getStart().equals(getStart()));
 		}
 		return false;
 	}

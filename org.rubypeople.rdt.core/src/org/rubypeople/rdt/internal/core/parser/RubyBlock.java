@@ -44,7 +44,7 @@ public class RubyBlock extends RubyElement {
 	public boolean equals(Object arg0) {
 		if (arg0 instanceof RubyBlock) {
 			RubyBlock rubyIf = (RubyBlock) arg0;
-			return rubyIf.getClass().equals(getClass()) && (rubyIf.getStart() == getStart());
+			return rubyIf.getClass().equals(getClass()) && (rubyIf.getStart().equals(getStart()));
 		}
 		return false;
 	}

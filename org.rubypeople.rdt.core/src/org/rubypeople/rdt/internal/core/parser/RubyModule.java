@@ -47,7 +47,7 @@ public class RubyModule extends RubyElement {
 	public boolean equals(Object arg0) {
 		if (arg0 instanceof RubyModule) {
 			RubyModule rubyClass = (RubyModule) arg0;
-			return (rubyClass.getName().equals(this.getName())) && (rubyClass.getStart() == this.getStart());
+			return (rubyClass.getName().equals(this.getName())) && (rubyClass.getStart().equals(this.getStart()));
 		}
 		return false;
 	}
