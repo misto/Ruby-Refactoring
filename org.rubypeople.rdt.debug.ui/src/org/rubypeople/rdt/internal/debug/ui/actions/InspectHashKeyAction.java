@@ -3,7 +3,6 @@ package org.rubypeople.rdt.internal.debug.ui.actions;
 import org.eclipse.debug.core.DebugPlugin;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.dialogs.MessageDialog;
-import org.eclipse.jface.text.TextSelection;
 import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.IViewActionDelegate;

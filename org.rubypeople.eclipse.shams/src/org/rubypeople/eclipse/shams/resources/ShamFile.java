@@ -60,7 +60,7 @@ public class ShamFile extends ShamResource implements IFile {
 			try {
 				return new FileInputStream(this.path.toString());
 			} catch (FileNotFoundException e) {
-				throw new RuntimeException(e);
+				throw new RuntimeException(e.toString());
 			}
 		}
 		return new ByteArrayInputStream(contents.getBytes());

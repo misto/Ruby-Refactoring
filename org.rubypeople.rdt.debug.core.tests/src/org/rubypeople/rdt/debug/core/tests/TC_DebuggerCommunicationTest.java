@@ -27,6 +27,7 @@ import org.xmlpull.v1.XmlPullParserFactory;
 
 public class TC_DebuggerCommunicationTest extends TestCase {
 
+/*
 	public static TestSuite suite() {
 
 		TestSuite suite = new TestSuite();
@@ -64,7 +65,7 @@ public class TC_DebuggerCommunicationTest extends TestCase {
 		return suite;
 
 	}
-
+*/
 
 	private static String tmpDir;
 	private static String getTmpDir() {

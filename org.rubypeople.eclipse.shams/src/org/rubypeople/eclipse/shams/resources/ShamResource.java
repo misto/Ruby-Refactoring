@@ -5,6 +5,7 @@ import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IProjectDescription;
 import org.eclipse.core.resources.IResource;
+import org.eclipse.core.resources.IResourceProxyVisitor;
 import org.eclipse.core.resources.IResourceVisitor;
 import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.runtime.CoreException;
@@ -219,4 +220,12 @@ public class ShamResource implements IResource {
 	public boolean isLinked() {
 		throw new RuntimeException("Need to implement on sham.");
 	}
+	/* (non-Javadoc)
+	 * @see org.eclipse.core.resources.IResource#accept(org.eclipse.core.resources.IResourceProxyVisitor, int)
+	 */
+	public void accept(IResourceProxyVisitor arg0, int arg1) throws CoreException {
+		// TODO Auto-generated method stub
+
+	}
+
 }
