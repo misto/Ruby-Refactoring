@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
-	<classpathentry kind="src" path="src"/>
-	<classpathentry exported="true" kind="lib" path="jakarta-regexp-1.2.jar"/>
+	<classpathentry excluding="**/CVS/" kind="src" path="src"/>
 	<classpathentry kind="src" path="/org.eclipse.core.runtime.compatibility"/>
 	<classpathentry kind="src" path="/org.eclipse.core.resources"/>
 	<classpathentry kind="src" path="/org.apache.xerces"/>
 	<classpathentry kind="src" path="/org.eclipse.team.core"/>
 	<classpathentry exported="true" kind="src" path="/org.eclipse.osgi"/>
+	<classpathentry kind="lib" path="lib/jakarta-regexp-1.2.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
