@@ -19,6 +19,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
@@ -30,12 +31,7 @@ import org.rubypeople.rdt.internal.core.RubyLibrary;
 import org.rubypeople.rdt.internal.core.RubyPlugin;
 import org.rubypeople.rdt.internal.core.parser.ParseException;
 import org.rubypeople.rdt.internal.core.parser.RubyParser;
-import org.rubypeople.rdt.internal.core.parser.ast.RubyClass;
-import org.rubypeople.rdt.internal.core.parser.ast.RubyClassVariable;
 import org.rubypeople.rdt.internal.core.parser.ast.RubyElement;
-import org.rubypeople.rdt.internal.core.parser.ast.RubyInstanceVariable;
-import org.rubypeople.rdt.internal.core.parser.ast.RubyMethod;
-import org.rubypeople.rdt.internal.core.parser.ast.RubyModule;
 import org.rubypeople.rdt.internal.core.parser.ast.RubyScript;
 
 /**
@@ -70,7 +66,7 @@ public class RubyProjectInformationProvider {
 			Object[] elements = script.getElements();
 			for (int i = 0; i < elements.length; i++) {
 				RubyElement element = (RubyElement) elements[i];
-				if ((element instanceof RubyClass) || (element instanceof RubyModule)) {
+				if (element.isType(RubyElement.CLASS) || element.isType(RubyElement.MODULE)) {
 					classes.add(element.getName());
 				}
 			}
@@ -130,28 +126,42 @@ public class RubyProjectInformationProvider {
 		});
 		for (int i = 0; i < kids.length; i++) {
 			File kid = kids[i];
-			try {
-				BufferedReader reader = new BufferedReader(new FileReader(kid));
-
-				StringBuffer buffer = new StringBuffer();
-				String line = null;
-				while ((line = reader.readLine()) != null) {
-					buffer.append(line);
-					buffer.append("\n");
-				}
-				// RubyScript script =
-				// RubyParser(kids[i].getName()).parse(buffer.toString());
-				RubyScript script = RubyParser.parse(buffer.toString());
-				scripts.add(script);
-			} catch (ParseException e) {
-				RubyPlugin.log(e);
-			} catch (FileNotFoundException e) {
-				RubyPlugin.log(e);
-			} catch (IOException e) {
-				RubyPlugin.log(e);
-			}
+			RubyScript script = getScript(kid);
+			if (script != null) scripts.add(script);
 		}
 		return scripts;
+	}
+
+	/**
+	 * @param kid
+	 * @return
+	 */
+	private RubyScript getScript(File kid) {
+		try {
+			BufferedReader reader = new BufferedReader(new FileReader(kid));
+
+			StringBuffer buffer = new StringBuffer();
+			String line = null;
+			while ((line = reader.readLine()) != null) {
+				buffer.append(line);
+				buffer.append("\n");
+			}
+			return RubyParser.parse(buffer.toString());
+		} catch (ParseException e) {
+			log(e);
+		} catch (FileNotFoundException e) {
+			log(e);
+		} catch (IOException e) {
+			log(e);
+		}
+		return null;
+	}
+
+	/**
+	 * @param e
+	 */
+	private void log(Exception e) {
+		log(e.toString());
 	}
 
 	public List getAllRubyElements() {
@@ -175,7 +185,7 @@ public class RubyProjectInformationProvider {
 			try {
 				scripts.addAll(getResourcesRubyElements(rubyProj.members()));
 			} catch (CoreException e) {
-				e.printStackTrace();
+				log(e);
 			}
 		}
 
@@ -206,7 +216,7 @@ public class RubyProjectInformationProvider {
 				}
 			}
 		} catch (CoreException e) {
-			e.printStackTrace();
+			log(e);
 		}
 		return elements;
 	}
@@ -222,12 +232,10 @@ public class RubyProjectInformationProvider {
 		if (reader == null) return list;
 
 		try {
-			// RubyScript script = new
-			// RubyParser(file.getName()).parse(getContents(reader));
 			RubyScript script = RubyParser.parse(getContents(reader));
 			list.addAll(getRubyElements(script.getElements()));
 		} catch (ParseException e) {
-			RubyPlugin.log(new RuntimeException(e));
+			log(e);
 		}
 
 		return list;
@@ -247,7 +255,7 @@ public class RubyProjectInformationProvider {
 			}
 			return contents.toString();
 		} catch (IOException e1) {
-			e1.printStackTrace();
+			log(e1);
 		}
 		return "";
 	}
@@ -263,7 +271,7 @@ public class RubyProjectInformationProvider {
 		try {
 			return new BufferedReader(new InputStreamReader(file.getContents()));
 		} catch (CoreException e) {
-			e.printStackTrace();
+			log(e);
 		}
 		return null;
 	}
@@ -275,15 +283,46 @@ public class RubyProjectInformationProvider {
 		List additions = new ArrayList();
 		for (int i = 0; i < elements.length; i++) {
 			RubyElement elem = (RubyElement) elements[i];
-			if (RubyMethod.class.equals(elem.getClass()) || RubyClassVariable.class.equals(elem.getClass()) || RubyInstanceVariable.class.equals(elem.getClass())) {
+			if (elem.isType(RubyElement.METHOD) || elem.isType(RubyElement.CLASS_VAR) || elem.isType(RubyElement.INSTANCE_VAR)) {
 				additions.add(elem.getName());
 			}
-			if (RubyClass.class.equals(elem.getClass()) || RubyModule.class.equals(elem.getClass())) {
+			if (elem.isType(RubyElement.CLASS) || elem.isType(RubyElement.MODULE)) {
 				additions.add(elem.getName());
 				additions.addAll(getRubyElements(elem.getElements()));
 			}
-
 		}
 		return additions;
+	}
+
+	/**
+	 * @param script
+	 * @return
+	 */
+	public List getImportedElements(RubyScript script) {
+		List importedElements = new ArrayList();
+
+		RubyLibrary theLibrary = RubyPlugin.getDefault().getSelectedLibrary();
+		if (theLibrary == null) return importedElements;
+		String libPath = theLibrary.getInstallLocation().toOSString();
+
+		Set requires = script.getElements(RubyElement.REQUIRES);
+		//requires.add(new RubyElement(RubyToken.REQUIRES, "kernel", 0, 0));
+		Iterator iterator = requires.iterator();
+		while (iterator.hasNext()) {
+			RubyElement require = (RubyElement) iterator.next();
+			String requirePath = require.getName();
+			log(libPath + File.separator + requirePath + ".rb");
+			RubyScript importedScript = getScript(new File(libPath + File.separator +requirePath + ".rb"));
+			if (importedScript != null) importedElements.addAll(getAllElements(importedScript));
+		}
+		return importedElements;
+	}
+
+	/**
+	 * @param string
+	 */
+	private void log(String string) {
+		System.out.println(string);
+		RubyPlugin.log(string);
 	}
 }

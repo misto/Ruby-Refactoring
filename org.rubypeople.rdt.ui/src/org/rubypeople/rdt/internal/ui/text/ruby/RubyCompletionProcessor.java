@@ -44,7 +44,11 @@ public class RubyCompletionProcessor implements IContentAssistProcessor {
 		// that prefix
 		if (prefix.length() > 0) {
 			completionProposals.addAll(Arrays.asList(getDefaultProposals()));
-			// completionProposals.addAll(RubyProjectInformationProvider.instance().getLibraryClassesAndModules());
+			try {
+				completionProposals.addAll(RubyProjectInformationProvider.instance().getImportedElements(RubyParser.parse(viewer.getDocument().get())));
+			} catch (ParseException e) {
+				log(e);
+			}
 		}
 
 		ArrayList possibleProposals = new ArrayList();
@@ -64,6 +68,13 @@ public class RubyCompletionProcessor implements IContentAssistProcessor {
 		ICompletionProposal[] result = new ICompletionProposal[possibleProposals.size()];
 		possibleProposals.toArray(result);
 		return result;
+	}
+
+	/**
+	 * @param e
+	 */
+	private void log(ParseException e) {
+		System.out.println(e.toString());
 	}
 
 	/**
