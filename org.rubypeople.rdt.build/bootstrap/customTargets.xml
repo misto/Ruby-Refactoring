@@ -141,7 +141,7 @@
 <!-- ===================================================================== -->
 <!-- Steps to test the build results -->
 <!-- ===================================================================== -->
-<target name="test">
+<target name="test" unless="dontRunTests">
     <echo message="Setting up tests in ${eclipseAutomatedTestHome}"/>
 	
 	<copy file="${buildDirectory}/${buildLabel}/org.rubypeople.rdt-${buildId}.zip" tofile="${eclipseAutomatedTestHome}/eclipse-SDK-RDT-${buildId}.zip" />
