@@ -505,7 +505,8 @@ public class TC_RubyParser extends TestCase {
 		RubyScript script = RubyParser.parse("module Bob\nstring.tr('+', ' ').gsub(/((?:%[0-9a-fA-F]{2})+)/n) do\n[var.delete('%')].pack('H*')\nend\n@var = 1\nend\n");
 		assertEquals(1, script.getElementCount());
 		RubyModule module = script.getModule("Bob");
-		assertEquals(1, module.getElementCount() );
+		assertEquals(2, module.getElementCount() );
+		assertTrue(module.contains(new RubyDo(new Position(1, 52))));
 	}
 
 }
