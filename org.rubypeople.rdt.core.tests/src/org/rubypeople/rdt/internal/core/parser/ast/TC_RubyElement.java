@@ -8,9 +8,6 @@ package org.rubypeople.rdt.internal.core.parser.ast;
 
 import junit.framework.TestCase;
 
-import org.rubypeople.rdt.internal.core.parser.Position;
-
-
 /**
  * @author Chris
  *
@@ -20,10 +17,10 @@ import org.rubypeople.rdt.internal.core.parser.Position;
 public class TC_RubyElement extends TestCase {
 
 	public void testGetElementsDoesntReturnLists() {
-		RubyElement element = new RubyElement("someElement", new Position(0,1));
-		RubyBlock block = new RubyBlock("block", new Position(1,1));
+		RubyElement element = new RubyElement(RubyElement.METHOD, "someElement", 0,1);
+		RubyElement block = new RubyElement(RubyElement.WHILE, "while", 1, 1);
 		element.addElement(block);
-		RubyInstanceVariable var = new RubyInstanceVariable("var", 1,1);
+		RubyElement var = new RubyElement(RubyElement.INSTANCE_VAR, "var", 1,1);
 		block.addElement(var);
 		Object[] elements = element.getElements();
 		assertEquals(var.getClass(), elements[0].getClass());
