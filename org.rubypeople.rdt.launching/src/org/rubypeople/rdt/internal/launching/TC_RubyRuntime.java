@@ -44,16 +44,16 @@ public class TC_RubyRuntime extends TestCase {
 		
 		RubyInterpreter interpreterOne = new RubyInterpreter("InterpreterOne", new Path("C:/RubyInstallRootOne"));
 		runtime.setInstalledInterpreters(Arrays.asList(new Object[] { interpreterOne }));
-		assertEquals("XML should indicate only one interpreter.", "<?xml version=\"1.0\" encoding=\"UTF-8\"?><runtimeconfig><interpreter name=\"InterpreterOne\" path=\"C:/RubyInstallRootOne\"/></runtimeconfig>", runtimeConfigurationWriter.toString());
+		assertEquals("XML should indicate only one interpreter with it being the selected.", "<?xml version=\"1.0\" encoding=\"UTF-8\"?><runtimeconfig><interpreter name=\"InterpreterOne\" path=\"C:/RubyInstallRootOne\" selected=\"true\"/></runtimeconfig>", runtimeConfigurationWriter.toString());
 		
 		runtimeConfigurationWriter = new StringWriter();
 		RubyInterpreter interpreterTwo = new RubyInterpreter("InterpreterTwo", new Path("C:/RubyInstallRootTwo"));
 		runtime.setInstalledInterpreters(Arrays.asList(new Object[] { interpreterOne, interpreterTwo }));
-		assertEquals("XML should indicate both interpreters.", "<?xml version=\"1.0\" encoding=\"UTF-8\"?><runtimeconfig><interpreter name=\"InterpreterOne\" path=\"C:/RubyInstallRootOne\"/><interpreter name=\"InterpreterTwo\" path=\"C:/RubyInstallRootTwo\"/></runtimeconfig>", runtimeConfigurationWriter.toString());
+		assertEquals("XML should indicate both interpreters with the first one being selected.", "<?xml version=\"1.0\" encoding=\"UTF-8\"?><runtimeconfig><interpreter name=\"InterpreterOne\" path=\"C:/RubyInstallRootOne\" selected=\"true\"/><interpreter name=\"InterpreterTwo\" path=\"C:/RubyInstallRootTwo\"/></runtimeconfig>", runtimeConfigurationWriter.toString());
 		
 		runtimeConfigurationWriter = new StringWriter();
-		runtime.setSelectedInterpreter(interpreterOne);
-		assertEquals("XML should indicate selected interpreter.", "<?xml version=\"1.0\" encoding=\"UTF-8\"?><runtimeconfig><interpreter name=\"InterpreterOne\" path=\"C:/RubyInstallRootOne\" selected=\"true\"/><interpreter name=\"InterpreterTwo\" path=\"C:/RubyInstallRootTwo\"/></runtimeconfig>", runtimeConfigurationWriter.toString());
+		runtime.setSelectedInterpreter(interpreterTwo);
+		assertEquals("XML should indicate selected interpreter change.", "<?xml version=\"1.0\" encoding=\"UTF-8\"?><runtimeconfig><interpreter name=\"InterpreterOne\" path=\"C:/RubyInstallRootOne\"/><interpreter name=\"InterpreterTwo\" path=\"C:/RubyInstallRootTwo\" selected=\"true\"/></runtimeconfig>", runtimeConfigurationWriter.toString());
 	}
 	protected class ShamRubyRuntime extends RubyRuntime {
 		protected ShamRubyRuntime() {

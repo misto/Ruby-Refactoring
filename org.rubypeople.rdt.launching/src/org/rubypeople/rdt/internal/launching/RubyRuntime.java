@@ -84,8 +84,6 @@ public class RubyRuntime {
 			setSelectedInterpreter((RubyInterpreter)installedInterpreters.get(0));
 		else
 			setSelectedInterpreter(null);
-
-		saveRuntimeConfiguration();
 	}
 	
 	protected void saveRuntimeConfiguration() {
