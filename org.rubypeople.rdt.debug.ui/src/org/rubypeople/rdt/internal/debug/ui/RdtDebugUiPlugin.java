@@ -1,7 +1,6 @@
 package org.rubypeople.rdt.internal.debug.ui;
 
 import org.eclipse.core.resources.IWorkspace;
-import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IAdapterManager;
 import org.eclipse.core.runtime.IPluginDescriptor;
 import org.eclipse.core.runtime.IStatus;
@@ -11,11 +10,13 @@ import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
+import org.osgi.framework.BundleContext;
 import org.rubypeople.rdt.debug.ui.RdtDebugUiConstants;
 import org.rubypeople.rdt.internal.core.RubyPlugin;
 import org.rubypeople.rdt.internal.debug.core.model.RubyVariable;
 
 public class RdtDebugUiPlugin extends AbstractUIPlugin {
+	private CodeReloader codeReloader;
 	public static final String PLUGIN_ID = "org.rubypeople.rdt.debug.ui"; //$NON-NLS-1$
 	protected static RdtDebugUiPlugin plugin;
 
@@ -57,12 +58,13 @@ public class RdtDebugUiPlugin extends AbstractUIPlugin {
 	protected String getDefaultKeywords() {
 		return "class,def,end,if,module,new,puts,require,rescue,throw,while";
 	}
-    public void startup() throws CoreException {
-
-        super.startup();
+	
+	public void start(BundleContext context) throws Exception {
+        super.start(context);
 		IAdapterManager manager= Platform.getAdapterManager();
 		ActionFilterAdapterFactory actionFilterAdapterFactory= new ActionFilterAdapterFactory();
 		manager.registerAdapters(actionFilterAdapterFactory, RubyVariable.class);
+		codeReloader = new CodeReloader() ;
     }
 
 }
