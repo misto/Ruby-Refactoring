@@ -443,13 +443,10 @@ public class RubyProject extends Openable implements IProjectNature, IRubyElemen
 	/**
 	 * @see Openable
 	 */
-	protected boolean buildStructure(OpenableElementInfo info, IProgressMonitor pm, Map newElements, IResource underlyingResource) { // TODO
-		// throws
-		// RubyModelException
+	protected boolean buildStructure(OpenableElementInfo info, IProgressMonitor pm, Map newElements, IResource underlyingResource) throws RubyModelException {
 		// check whether the ruby project can be opened
-		if (!underlyingResource.isAccessible()) { return false;
-		// TODO Uncomment when we do RubyModelExceptions
-		// throw newNotPresentException();
+		if (!underlyingResource.isAccessible()) { 
+		  throw newNotPresentException();
 		}
 
 		IWorkspace workspace = ResourcesPlugin.getWorkspace();
