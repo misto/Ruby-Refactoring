@@ -244,5 +244,12 @@ public class TC_RubyRuntime extends TestCase {
 			return null;
 		}
 
+		/**
+		 * @see IResource#isSynchronized(int)
+		 */
+		public boolean isSynchronized(int depth) {
+			return false;
+		}
+
 	}
 }

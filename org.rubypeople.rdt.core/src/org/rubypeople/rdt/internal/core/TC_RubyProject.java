@@ -244,6 +244,13 @@ public class TC_RubyProject extends TestCase {
 			return null;
 		}
 
+		/**
+		 * @see IResource#isSynchronized(int)
+		 */
+		public boolean isSynchronized(int depth) {
+			return false;
+		}
+
 	}
 
 	public class ShamProject implements IProject {
@@ -635,6 +642,13 @@ public class TC_RubyProject extends TestCase {
 		public void setTeamPrivateMember(boolean isTeamPrivate) throws CoreException {}
 
 		public void touch(IProgressMonitor monitor) throws CoreException {}
+
+		/**
+		 * @see IResource#isSynchronized(int)
+		 */
+		public boolean isSynchronized(int depth) {
+			return false;
+		}
 
 	}
 }

@@ -131,4 +131,9 @@ public class RubyEntryPointTab extends AbstractLaunchConfigurationTab {
 		setControl(composite);
 		return composite;
 	}
+
+	public String getName() {
+		return LauncherMessages.getString("RubyEntryPointTab.name");
+	}
+
 }

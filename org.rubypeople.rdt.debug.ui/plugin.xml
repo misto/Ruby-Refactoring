@@ -36,29 +36,6 @@
       </page>
    </extension>
    <extension
-         point="org.eclipse.debug.core.launchers">
-      <launcher
-            label="%RubyApplicationLauncher.label"
-            icon="icons/full/ctool16/runRuby.gif"
-            description="%RubyApplicationLauncher.description"
-            wizard="org.rubypeople.rdt.internal.debug.ui.RubyApplicationWizard"
-            modes="run"
-            class="org.rubypeople.rdt.internal.debug.ui.launcher.RubyApplicationLauncherDelegate"
-            id="org.rubypeople.rdt.debug.ui.launcher.RubyApplicationLauncher">
-      </launcher>
-   </extension>
-   <extension
-         point="org.eclipse.ui.propertyPages">
-      <page
-            objectClass="org.eclipse.core.resources.IFile"
-            name="%rubyExecutionArgumentsPage.name"
-            icon="icons/full/ctool16/ruby.gif"
-            nameFilter="*.rb"
-            class="org.rubypeople.rdt.internal.debug.ui.RubyExecutionArgumentsPage"
-            id="org.rubypeople.rdt.debug.ui.rubyExecutionArgumentsPage">
-      </page>
-   </extension>
-   <extension
          point="org.eclipse.debug.ui.launchConfigurationTypeImages">
       <launchConfigurationTypeImage
             icon="icons/full/ctool16/runRuby.gif"
@@ -67,25 +44,12 @@
       </launchConfigurationTypeImage>
    </extension>
    <extension
-         point="org.eclipse.debug.ui.launchConfigurationTabs">
-      <launchConfigurationTab
-            name="%rubyEntryPointTab.name"
+         point="org.eclipse.debug.ui.launchConfigurationTabGroups">
+      <launchConfigurationTabGroup
             type="org.rubypeople.rdt.launching.rubyApplication"
-            class="org.rubypeople.rdt.internal.debug.ui.launcher.RubyEntryPointTab"
-            id="org.rubypeople.rdt.debug.ui.launchConfigurationTab.RubyEntryPoint">
-      </launchConfigurationTab>
-      <launchConfigurationTab
-            name="%rubyArgumentsTab.name"
-            type="org.rubypeople.rdt.launching.rubyApplication"
-            class="org.rubypeople.rdt.internal.debug.ui.launcher.RubyArgumentsTab"
-            id="org.rubypeople.rdt.debug.ui.launchConfigurationTab.RubyArguments">
-      </launchConfigurationTab>
-      <launchConfigurationTab
-            name="%rubyEnvironmentTab.name"
-            type="org.rubypeople.rdt.launching.rubyApplication"
-            class="org.rubypeople.rdt.internal.debug.ui.launcher.RubyEnvironmentTab"
-            id="org.rubypeople.rdt.debug.ui.launchConfigurationTab.RubyEnvironment">
-      </launchConfigurationTab>
+            class="org.rubypeople.rdt.internal.debug.ui.launcher.LocalRubyApplicationTabGroup"
+            id="org.rubypeople.rdt.debug.ui.launchConfigurationTabGroup.localRubyApplication">
+      </launchConfigurationTabGroup>
    </extension>
 
 </plugin>

@@ -41,9 +41,9 @@ public class RubyArgumentsTab extends AbstractLaunchConfigurationTab {
 	public void createControl(Composite parent) {
 		Composite composite = createPageRoot(parent);
 
-		new Label(composite, SWT.NONE).setText("Working Directory:");
+		new Label(composite, SWT.NONE).setText(LauncherMessages.getString("RubyArgumentsTab.working_dir"));
 		workingDirectorySelector = new DirectorySelector(composite);
-		workingDirectorySelector.setBrowseDialogMessage("Select a working directory for the launch configuration");
+		workingDirectorySelector.setBrowseDialogMessage(LauncherMessages.getString("RubyArgumentsTab.working_dir_browser_message"));
 		workingDirectorySelector.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
 		workingDirectorySelector.addModifyListener(new ModifyListener() {
 			public void modifyText(ModifyEvent e) {
@@ -61,16 +61,16 @@ public class RubyArgumentsTab extends AbstractLaunchConfigurationTab {
 				setUseDefaultWorkingDirectory(((Button)e.getSource()).getSelection());
 			}
 		});
-		new Label(defaultWorkingDirectoryComposite, SWT.NONE).setText("Use default working directory");
+		new Label(defaultWorkingDirectoryComposite, SWT.NONE).setText(LauncherMessages.getString("RubyArgumentsTab.working_dir_use_default_message"));
 		defaultWorkingDirectoryComposite.pack();
 
 		Label verticalSpacer = new Label(composite, SWT.NONE);
 
-		new Label(composite, SWT.NONE).setText("Interpreter Arguments:");
+		new Label(composite, SWT.NONE).setText(LauncherMessages.getString("RubyArgumentsTab.interpreter_args_box_title"));
 		interpreterArgsText = new Text(composite, SWT.MULTI | SWT.V_SCROLL | SWT.BORDER);
 		interpreterArgsText.setLayoutData(new GridData(GridData.FILL_BOTH));
 
-		new Label(composite, SWT.NONE).setText("Program Arguments:");
+		new Label(composite, SWT.NONE).setText(LauncherMessages.getString("RubyArgumentsTab.program_args_box_title"));
 		programArgsText = new Text(composite, SWT.MULTI | SWT.V_SCROLL | SWT.BORDER);
 		programArgsText.setLayoutData(new GridData(GridData.FILL_BOTH));
 	}
@@ -133,4 +133,9 @@ public class RubyArgumentsTab extends AbstractLaunchConfigurationTab {
 		setControl(composite);
 		return composite;
 	}
+
+	public String getName() {
+		return LauncherMessages.getString("RubyArgumentsTab.name");
+	}
+
 }
