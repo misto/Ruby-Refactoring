@@ -24,13 +24,11 @@ public abstract class XmlStreamReader {
 	}
 
 	protected abstract boolean processStartElement(XmlPullParser xpp)  throws XmlStreamReaderException ;
-	protected void processEndElement(XmlPullParser xpp) {
+	protected boolean processEndElement(XmlPullParser xpp) {
+		// returns true if processing is finished, false if there are further elements expected
 		String name = xpp.getName();
-		String uri = xpp.getNamespace();
-		if ("".equals(uri))
-			RdtDebugCorePlugin.debug("End element: " + name);
-		else
-			RdtDebugCorePlugin.debug("End element:   {" + uri + "}" + name);
+		RdtDebugCorePlugin.debug("Reader " + this.getClass().getName() + " received End element: " + name) ;
+		return true ;
 	}
 
 }

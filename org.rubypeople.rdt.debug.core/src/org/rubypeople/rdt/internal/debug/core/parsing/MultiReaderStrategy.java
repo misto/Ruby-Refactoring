@@ -48,11 +48,9 @@ public class MultiReaderStrategy extends AbstractReadStrategy {
 			if (eventType == XmlPullParser.START_TAG) {
 				this.dispatchStartTag();
 			} else if (eventType == XmlPullParser.END_TAG && currentReader != null) {
-				if (xpp.getDepth() == 1) {
+				if (currentReader.processEndElement(xpp)) {
 					this.removeReader(currentReader);
 					currentReader = null;
-				} else {
-					currentReader.processEndElement(xpp);
 				}
 			}
 			eventType = xpp.next();
@@ -63,10 +61,18 @@ public class MultiReaderStrategy extends AbstractReadStrategy {
 	protected void dispatchStartTag() throws XmlPullParserException, IOException, XmlStreamReaderException {
 		RdtDebugCorePlugin.debug("Dispatching start tag " + xpp.getName());
 		if (currentReader != null) {
-			currentReader.processStartElement(xpp);
-			return;
+			// processing sub-elements, eg. <variable> from <variables>
+			if (currentReader.processStartElement(xpp)) {
+				return ;
+			}
+			else {
+				// this is an error, the currentReader must be able to process sub-elements
+				RdtDebugCorePlugin.debug("Current Reader can not process tag " + xpp.getName());
+				currentReader = null ;
+			}
 		}
 		int missed = 0 ;
+		RdtDebugCorePlugin.debug("Searching reader for start tag " + xpp.getName());
 		do {
 			for (Iterator iter = streamReaders.iterator(); iter.hasNext();) {
 				XmlStreamReader streamReader = (XmlStreamReader) iter.next();

@@ -83,5 +83,9 @@ public class VariableReader extends XmlStreamReader {
 		return false ;
 	}
 
+	protected boolean processEndElement(XmlPullParser xpp) {
+		
+		return !xpp.getName().equals("variable") ;
+	}
 
 }

@@ -39,4 +39,9 @@ public class ThreadInfoReader extends XmlStreamReader {
 		return false ;
 	}
 
+
+	protected boolean processEndElement(XmlPullParser xpp) {
+		
+		return xpp.getName().equals("threads") ;
+	}
 }
