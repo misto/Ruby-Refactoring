@@ -32,10 +32,8 @@ import org.rubypeople.rdt.internal.core.parser.TaskParser;
  */
 public class RubyBuilder extends IncrementalProjectBuilder {
 
-	private static final boolean DEBUG = true;
-	public static int MAX_AT_ONCE = 1000;
+	private static final boolean DEBUG = false;
 	private IProject currentProject;
-	protected boolean compiledAllAtOnce;
 	private int totalWork = 10000;
 
 	public RubyBuilder() {}
@@ -128,6 +126,11 @@ public class RubyBuilder extends IncrementalProjectBuilder {
 	 */
 	protected void compile(IFile[] units, IProgressMonitor monitor) {
 		int unitsLength = units.length;
+		if (unitsLength == 0) {
+			monitor.worked(totalWork);
+			return;
+		}
+		
 		int percentPerUnit = totalWork / unitsLength;
 		// do them all now
 		for (int i = 0; i < unitsLength; i++) {
