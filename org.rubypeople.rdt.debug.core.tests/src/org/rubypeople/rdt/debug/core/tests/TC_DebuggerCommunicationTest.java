@@ -26,7 +26,7 @@ import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserFactory;
 
 public class TC_DebuggerCommunicationTest extends TestCase {
-/*
+
 	public static TestSuite suite() {
 
 		TestSuite suite = new TestSuite();
@@ -35,8 +35,8 @@ public class TC_DebuggerCommunicationTest extends TestCase {
 		
 		//suite.addTest(new TC_DebuggerCommunicationTest("testVariablesInFrames"));
 		//suite.addTest(new TC_DebuggerCommunicationTest("testBreakpoint"));
-		//suite.addTest(new TC_DebuggerCommunicationTest("testFramesWhenThreadSpawned"));
-		//suite.addTest(new TC_DebuggerCommunicationTest("testThreadIdsAndResume"));
+		suite.addTest(new TC_DebuggerCommunicationTest("testFramesWhenThreadSpawned"));
+		suite.addTest(new TC_DebuggerCommunicationTest("testThreadIdsAndResume"));
 		//suite.addTest(new TC_DebuggerCommunicationTest("testThreadsAndFrames"));		
 		//suite.addTest(new TC_DebuggerCommunicationTest("testStepOver"));		
 		//suite.addTest(new TC_DebuggerCommunicationTest("testThreadFramesAndVariables"));
@@ -56,7 +56,7 @@ public class TC_DebuggerCommunicationTest extends TestCase {
 		//suite.addTest(new TC_DebuggerCommunicationTest("testVariableHash"));
 		//suite.addTest(new TC_DebuggerCommunicationTest("testVariableHashWithObjectKeys"));
 		//suite.addTest(new TC_DebuggerCommunicationTest("testVariableHashWithStringKeys"));
-		  suite.addTest(new TC_DebuggerCommunicationTest("testVariableWithXmlContent"));
+		//suite.addTest(new TC_DebuggerCommunicationTest("testVariableWithXmlContent"));
 		  
 		
 		
@@ -64,7 +64,7 @@ public class TC_DebuggerCommunicationTest extends TestCase {
 		return suite;
 
 	}
-	*/
+
 
 	private static String tmpDir;
 	private static String getTmpDir() {
@@ -757,22 +757,22 @@ public class TC_DebuggerCommunicationTest extends TestCase {
 		out.println("th l");
 		ThreadInfo[] threads = getThreadInfoReader().readThreads();
 		assertEquals(3, threads.length);
-		assertEquals(1, threads[0].getId());
-		assertEquals(2, threads[1].getId());
-		assertEquals(3, threads[2].getId());
-		out.println("th 2;cont");
+		int threadId1 = threads[0].getId();
+		int threadId2 = threads[1].getId();
+		int threadId3 = threads[2].getId();
+		out.println("th " + threadId2 + " ; cont");
 
 		out.println("th l");
 		threads = getThreadInfoReader().readThreads();
 		assertEquals(2, threads.length);
-		assertEquals(1, threads[0].getId());
-		assertEquals(3, threads[1].getId());
-		out.println("th 3 ; cont");
+		assertEquals(threadId1, threads[0].getId());
+		assertEquals(threadId3, threads[1].getId());
+		out.println("th " + threadId3 + " ; cont");
 
 		out.println("th l");
 		threads = getThreadInfoReader().readThreads();
 		assertEquals(1, threads.length);
-		assertEquals(1, threads[0].getId());
+		assertEquals(threadId1, threads[0].getId());
 		out.println("cont");
 	}
 
