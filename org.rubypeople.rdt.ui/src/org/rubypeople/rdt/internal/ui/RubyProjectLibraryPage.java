@@ -48,7 +48,7 @@ public class RubyProjectLibraryPage {
 
 		TableColumn tableColumn = new TableColumn(projectsTable, SWT.NONE);
 		tableColumn.setWidth(200);
-		tableColumn.setText("Project");
+		tableColumn.setText(RdtUiMessages.getString("RubyProjectLibraryPage.project")); //$NON-NLS-1$
 
 		CheckboxTableViewer projectsTableViewer = new CheckboxTableViewer(projectsTable);
 		projectsTableViewer.addCheckStateListener(new ICheckStateListener() {
@@ -94,7 +94,7 @@ public class RubyProjectLibraryPage {
 				if (element instanceof IProject)
 					return ((IProject) element).getName();
 
-				return "ERROR: Element not IProject";
+				return RdtUiMessages.getString("RubyProjectLibraryPage.elementNotIProject"); //$NON-NLS-1$
 			}
 
 			public void addListener(ILabelProviderListener listener) {}

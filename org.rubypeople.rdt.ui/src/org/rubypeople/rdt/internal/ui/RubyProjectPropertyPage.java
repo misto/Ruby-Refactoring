@@ -17,6 +17,8 @@ import org.eclipse.ui.IWorkbenchPropertyPage;
 import org.eclipse.ui.dialogs.PropertyPage;
 import org.rubypeople.rdt.internal.core.RubyPlugin;
 import org.rubypeople.rdt.internal.core.RubyProject;
+import org.rubypeople.rdt.internal.ui.utils.ExceptionHandler;
+
 import sun.security.krb5.internal.crypto.e;
 
 public class RubyProjectPropertyPage extends PropertyPage implements IWorkbenchPropertyPage {
@@ -86,7 +88,11 @@ public class RubyProjectPropertyPage extends PropertyPage implements IWorkbenchP
 		return tabFolder;
 	}
 	public boolean performOk() {
-		projectsPage.getWorkingProject().save();
+		try {
+			projectsPage.getWorkingProject().save();
+		} catch (CoreException e) {
+			ExceptionHandler.handle(e, "Unable to save", "Error occurred attempting to save the project properties.");
+		}
 		return super.performOk();
 	}
 

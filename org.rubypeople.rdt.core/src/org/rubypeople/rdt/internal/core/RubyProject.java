@@ -7,12 +7,15 @@ import java.util.Iterator;
 import java.util.List;
 
 import javax.xml.parsers.SAXParserFactory;
+
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IProjectNature;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
+import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Path;
+import org.eclipse.core.runtime.Status;
 import org.xml.sax.Attributes;
 import org.xml.sax.ContentHandler;
 import org.xml.sax.InputSource;
@@ -27,18 +30,14 @@ public class RubyProject implements IProjectNature {
 
 	public RubyProject() {}
 
-	public void configure() throws CoreException {
-		System.out.println("Made it to RubyProject.configure()!!!!!!!!");
-	}
+	public void configure() throws CoreException {}
 
-	public void deconfigure() throws CoreException {
-		System.out.println("Made it to RubyProject.deconfigure()!!!!!!!");
-	}
+	public void deconfigure() throws CoreException {}
 
 	public IProject getProject() {
 		return project;
 	}
-	
+
 	protected IProject getProject(String name) {
 		return RubyPlugin.getWorkspace().getRoot().getProject(name);
 	}
@@ -56,7 +55,7 @@ public class RubyProject implements IProjectNature {
 
 	public void removeLoadPathEntry(IProject anotherRubyProject) {
 		Iterator entries = getLoadPathEntries().iterator();
-		while(entries.hasNext()) {
+		while (entries.hasNext()) {
 			LoadPathEntry entry = (LoadPathEntry) entries.next();
 			if (entry.getType() == LoadPathEntry.TYPE_PROJECT && entry.getProject().getName().equals(anotherRubyProject.getName())) {
 				getLoadPathEntries().remove(entry);
@@ -139,21 +138,18 @@ public class RubyProject implements IProjectNature {
 		return project.getFile(".loadpath");
 	}
 
-	public void save() {
+	public void save() throws CoreException {
 		if (scratched) {
-			try {
-				InputStream xmlPath = new ByteArrayInputStream(getLoadPathXML().getBytes());
-				IFile loadPathsFile = getLoadPathEntriesFile();
-				if (!loadPathsFile.exists())
-					loadPathsFile.create(xmlPath, true, null);
-				else
-					loadPathsFile.setContents(xmlPath, true, false, null);
-					
-				scratched = false;
-			} catch (CoreException e) {
-				System.out.println("RubyProject.save(): " + e);
-			}
+			InputStream xmlPath = new ByteArrayInputStream(getLoadPathXML().getBytes());
+			IFile loadPathsFile = getLoadPathEntriesFile();
+			if (!loadPathsFile.exists())
+				loadPathsFile.create(xmlPath, true, null);
+			else
+				loadPathsFile.setContents(xmlPath, true, false, null);
+
+			scratched = false;
 		}
+		throw new CoreException(new Status(IStatus.ERROR, RubyPlugin.PLUGIN_ID, IStatus.ERROR, "Test", null));
 	}
 
 	protected String getLoadPathXML() {
