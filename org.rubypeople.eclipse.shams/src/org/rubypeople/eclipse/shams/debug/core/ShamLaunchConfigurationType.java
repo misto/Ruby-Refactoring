@@ -5,6 +5,7 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.debug.core.ILaunchConfigurationType;
 import org.eclipse.debug.core.ILaunchConfigurationWorkingCopy;
 import org.eclipse.debug.core.model.ILaunchConfigurationDelegate;
+import org.eclipse.debug.internal.core.sourcelookup.ISourcePathComputer;
 
 public class ShamLaunchConfigurationType implements ILaunchConfigurationType {
 	protected boolean newInstanceCreated;
@@ -15,6 +16,10 @@ public class ShamLaunchConfigurationType implements ILaunchConfigurationType {
 
 	public boolean supportsMode(String mode) {
 		return false;
+	}
+	
+	public ISourcePathComputer getSourcePathComputer() {
+		return null;
 	}
 
 	public String getName() {

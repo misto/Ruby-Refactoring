@@ -30,6 +30,10 @@ public class ShamFile extends ShamResource implements IFile {
 	public ShamFile(IPath aPath) {
 		this(aPath, false);
 	}
+	
+	public String getCharset() throws CoreException {
+		return null;
+	}
 
 	public ShamFile(String fullPath, boolean readContentFromFile) {
 		this(new Path(fullPath), readContentFromFile);
