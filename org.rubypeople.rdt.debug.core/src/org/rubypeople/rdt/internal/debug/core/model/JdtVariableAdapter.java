@@ -4,32 +4,14 @@ import org.eclipse.debug.core.DebugException;
 import org.eclipse.debug.core.ILaunch;
 import org.eclipse.debug.core.model.IDebugTarget;
 import org.eclipse.debug.core.model.IValue;
-import org.eclipse.jdt.debug.core.IJavaType;
-import org.eclipse.jdt.debug.core.IJavaVariable;
+import org.eclipse.debug.core.model.IVariable;
 
-
-
-
-public class JdtVariableAdapter implements IJavaVariable
+public class JdtVariableAdapter implements IVariable
 {
 	private RubyVariable rubyVariable ;
 	public JdtVariableAdapter(RubyVariable rubyVariable) {
 		this.rubyVariable = rubyVariable ;
 	}
-	/**
-	 * @see org.eclipse.jdt.debug.core.IJavaVariable#getJavaType()
-	 */
-	public IJavaType getJavaType() throws DebugException {
-		return null;
-	}
-
-	/**
-	 * @see org.eclipse.jdt.debug.core.IJavaVariable#getSignature()
-	 */
-	public String getSignature() throws DebugException {
-		return null;
-	}
-
 	/**
 	 * @see org.eclipse.debug.core.model.IVariable#getName()
 	 */
@@ -55,55 +37,6 @@ public class JdtVariableAdapter implements IJavaVariable
 	 * @see org.eclipse.debug.core.model.IVariable#hasValueChanged()
 	 */
 	public boolean hasValueChanged() throws DebugException {
-		return false;
-	}
-
-	/**
-	 * @see org.eclipse.jdt.debug.core.IJavaModifiers#isFinal()
-	 */
-	public boolean isFinal() throws DebugException {
-		return false;
-	}
-
-	/**
-	 * @see org.eclipse.jdt.debug.core.IJavaModifiers#isPackagePrivate()
-	 */
-	public boolean isPackagePrivate() throws DebugException {
-		return false;
-	}
-
-	/**
-	 * @see org.eclipse.jdt.debug.core.IJavaModifiers#isPrivate()
-	 */
-	public boolean isPrivate() throws DebugException {
-		return false;
-	}
-
-	/**
-	 * @see org.eclipse.jdt.debug.core.IJavaModifiers#isProtected()
-	 */
-	public boolean isProtected() throws DebugException {
-		return false;
-	}
-
-	/**
-	 * @see org.eclipse.jdt.debug.core.IJavaModifiers#isPublic()
-	 */
-	public boolean isPublic() throws DebugException {
-		return false;
-	}
-
-	/**
-	 * @see org.eclipse.jdt.debug.core.IJavaModifiers#isStatic()
-	 */
-	public boolean isStatic() throws DebugException {
-		return rubyVariable.isStatic();
-	}
-
-	/**
-	 * @see org.eclipse.jdt.debug.core.IJavaModifiers#isSynthetic()
-	 */
-	public boolean isSynthetic() throws DebugException {
 		return false;
 	}
 

@@ -17,8 +17,6 @@
       <import plugin="org.eclipse.debug.core"/>
       <import plugin="org.eclipse.debug.ui"/>
       <import plugin="org.rubypeople.rdt.core"/>
-      <!-- jdt reference because of static variable filter, see JdtVariableAdapter -->
-      <import plugin="org.eclipse.jdt.debug"/>      
       <import plugin="org.kxml2"/>
    </requires>
 

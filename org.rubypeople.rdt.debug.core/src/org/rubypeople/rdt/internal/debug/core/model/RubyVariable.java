@@ -5,8 +5,6 @@ import org.eclipse.debug.core.ILaunch;
 import org.eclipse.debug.core.model.IDebugTarget;
 import org.eclipse.debug.core.model.IValue;
 import org.eclipse.debug.core.model.IVariable;
-import org.eclipse.jdt.debug.core.IJavaVariable;
-
 
 public class RubyVariable implements IVariable {
 
@@ -126,7 +124,7 @@ public class RubyVariable implements IVariable {
 	 * @see org.eclipse.core.runtime.IAdaptable#getAdapter(Class)
 	 */
 	public Object getAdapter(Class adapter) {
-		if (adapter == IJavaVariable.class) {
+		if (adapter == IVariable.class) {
 			return new JdtVariableAdapter(this) ;	
 		}
 		return null;
