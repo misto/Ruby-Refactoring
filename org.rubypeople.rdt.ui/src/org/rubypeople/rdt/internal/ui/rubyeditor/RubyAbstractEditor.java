@@ -2,13 +2,16 @@ package org.rubypeople.rdt.internal.ui.rubyeditor;
 
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.resource.JFaceResources;
+import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.util.PropertyChangeEvent;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
+import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.ui.editors.text.TextEditor;
 import org.eclipse.ui.texteditor.DefaultRangeIndicator;
 import org.eclipse.ui.texteditor.WorkbenchChainedTextFontFieldEditor;
 import org.eclipse.ui.views.contentoutline.IContentOutlinePage;
+import org.rubypeople.rdt.internal.core.parser.RubyElement;
 import org.rubypeople.rdt.internal.ui.RdtUiPlugin;
 import org.rubypeople.rdt.internal.ui.text.RubySourceViewerConfiguration;
 import org.rubypeople.rdt.internal.ui.text.RubyTextTools;
@@ -52,7 +55,20 @@ public class RubyAbstractEditor extends TextEditor {
 	}
 
 	protected void handleOutlinePageSelection(SelectionChangedEvent event) {
-		// todo handle outline selection
+		StructuredSelection selection = (StructuredSelection) event
+		.getSelection();
+		RubyElement element = (RubyElement) selection.getFirstElement();
+
+		try {
+			if(element == null) return;
+			String name = element.getName();
+			String elementString = getSourceViewer().getDocument().get(element.getStart(), element.getEnd());
+			int location = element.getStart() + elementString.indexOf(name);
+			getSourceViewer().setSelectedRange(location, name.length());
+		}
+		catch (BadLocationException e) {
+			e.printStackTrace();
+		}
 	}
 
 	protected boolean affectsTextPresentation(PropertyChangeEvent event) {
