@@ -11,7 +11,6 @@ import org.eclipse.ui.IMemento;
 import org.eclipse.ui.IPersistableElement;
 import org.eclipse.ui.IStorageEditorInput;
 import org.eclipse.ui.editors.text.ILocationProvider;
-import org.rubypeople.rdt.internal.ui.RdtUiPlugin;
 
 /**
  * @since 3.0
@@ -19,7 +18,6 @@ import org.rubypeople.rdt.internal.ui.RdtUiPlugin;
 public class ExternalRubyFileEditorInput implements IStorageEditorInput, ILocationProvider, IPersistableElement {
 
 	private SystemFileStorage storage;
-	private static final String FACTORY_ID = RdtUiPlugin.PLUGIN_ID + ".externalRubyFileEditorInputFactory"; //$NON-NLS-1$
 
 	public ExternalRubyFileEditorInput(File file) {
 		storage = new SystemFileStorage(file);
@@ -38,11 +36,11 @@ public class ExternalRubyFileEditorInput implements IStorageEditorInput, ILocati
 	}
 
 	public void saveState(IMemento memento) {
-		memento.putString("path", storage.getFile().getAbsolutePath()); //$NON-NLS-1$
+		memento.putString(RubyExternalEditorFactory.MEMENTO_ABSOLUTE_PATH_KEY, storage.getFile().getAbsolutePath()); //$NON-NLS-1$
 	}
 
 	public String getFactoryId() {
-		return FACTORY_ID;
+		return RubyExternalEditorFactory.FACTORY_ID;
 	}
 
 	public IStorage getStorage() {
