@@ -11,6 +11,7 @@ import org.eclipse.ui.editors.text.TextEditor;
 import org.eclipse.ui.texteditor.DefaultRangeIndicator;
 import org.eclipse.ui.texteditor.WorkbenchChainedTextFontFieldEditor;
 import org.eclipse.ui.views.contentoutline.IContentOutlinePage;
+import org.rubypeople.rdt.internal.core.RubyPlugin;
 import org.rubypeople.rdt.internal.core.parser.RubyElement;
 import org.rubypeople.rdt.internal.ui.RdtUiPlugin;
 import org.rubypeople.rdt.internal.ui.text.RubySourceViewerConfiguration;
@@ -24,29 +25,29 @@ public class RubyAbstractEditor extends TextEditor {
 	protected void configurePreferenceStore() {
 		IPreferenceStore prefs = RdtUiPlugin.getDefault().getPreferenceStore();
 		setPreferenceStore(prefs);
-	
+
 		WorkbenchChainedTextFontFieldEditor.startPropagate(prefs, JFaceResources.TEXT_FONT);
-	
+
 	}
 
 	protected void initializeEditor() {
 		configurePreferenceStore();
-	
+
 		textTools = RdtUiPlugin.getDefault().getTextTools();
 		setSourceViewerConfiguration(new RubySourceViewerConfiguration(textTools, this));
 		setRangeIndicator(new DefaultRangeIndicator());
 	}
 
 	public Object getAdapter(Class adapter) {
-		if (IContentOutlinePage.class.equals(adapter))
-			return createRubyOutlinePage();
-		
+		if (IContentOutlinePage.class.equals(adapter)) return createRubyOutlinePage();
+
 		return super.getAdapter(adapter);
 	}
 
 	protected Object createRubyOutlinePage() {
 		outlinePage = new RubyContentOutlinePage(getSourceViewer().getDocument());
 		outlinePage.addSelectionChangedListener(new ISelectionChangedListener() {
+
 			public void selectionChanged(SelectionChangedEvent event) {
 				handleOutlinePageSelection(event);
 			}
@@ -55,24 +56,18 @@ public class RubyAbstractEditor extends TextEditor {
 	}
 
 	protected void handleOutlinePageSelection(SelectionChangedEvent event) {
-		StructuredSelection selection = (StructuredSelection) event
-		.getSelection();
+		StructuredSelection selection = (StructuredSelection) event.getSelection();
 		RubyElement element = (RubyElement) selection.getFirstElement();
-
 		try {
-			if(element == null) return;
-			String name = element.getName();
-			String elementString = getSourceViewer().getDocument().get(element.getStart(), element.getEnd());
-			int location = element.getStart() + elementString.indexOf(name);
-			getSourceViewer().setSelectedRange(location, name.length());
-		}
-		catch (BadLocationException e) {
-			e.printStackTrace();
+			int offset = getSourceViewer().getDocument().getLineOffset(element.getStart().getLineNumber());
+			selectAndReveal(offset + element.getStart().getOffset(), element.getName().length());
+		} catch (BadLocationException e) {
+			RubyPlugin.log(e);
 		}
 	}
 
 	protected boolean affectsTextPresentation(PropertyChangeEvent event) {
-		return textTools.affectsTextPresentation(event) ;
+		return textTools.affectsTextPresentation(event);
 	}
 
 }
