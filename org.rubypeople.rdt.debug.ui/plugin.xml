@@ -197,6 +197,37 @@
       </actionSetPartAssociation>
    </extension>
    -->
+   <!-- Context support -->
+   <extension
+         point="org.eclipse.ui.contexts">
+      <context
+            name="Debugging Ruby"
+            description="Debugging Ruby programs"
+            id="org.rubypeople.rdt.debug.ui.debugging"
+            parentId="org.eclipse.debug.ui.debugging">
+      </context>
+   </extension>
+   <extension
+         point="org.eclipse.debug.ui.debugModelContextBindings">
+      <modelContextBinding
+            contextId="org.rubypeople.rdt.debug.ui.debugging"
+            debugModelId="org.rubypeople.rdt.debug">
+      </modelContextBinding>
+   </extension>
+   <!--
+   <extension
+         point="org.eclipse.debug.ui.contextViewBindings">
+      <contextViewBinding
+            viewId="org.eclipse.jdt.debug.ui.DisplayView"
+            contextId="org.eclipse.jdt.debug.ui.debugging"
+            autoClose="false">
+      </contextViewBinding>
+      <contextViewBinding
+            viewId="org.eclipse.jdt.debug.ui.MonitorsView"
+            contextId="org.eclipse.jdt.debug.ui.debugging">
+      </contextViewBinding>
+   </extension>
+   -->
    <extension
          point="org.eclipse.ui.popupMenus">
       <viewerContribution
