@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<plugin
+   id="org.rubypeople.rdt.tests.all"
+   name="org.rubypeople.rdt.tests.all"
+   version="1.0.0">
+
+   <runtime>
+      <library name="rdttestsall.jar"/>
+   </runtime>
+
+</plugin>
