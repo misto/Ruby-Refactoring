@@ -431,19 +431,12 @@ public class TestHierarchyTab extends TestRunTab implements IMenuListener {
 				manager.add(new Separator());
 				if (testClassExists(getClassName()) && !fTestRunnerPart.lastLaunchIsKeptAlive()) {
 					manager.add(new RerunAction(fTestRunnerPart, getSelectedTestId(), getClassName(), null, ILaunchManager.RUN_MODE));
-					manager.add(new RerunAction(fTestRunnerPart, getSelectedTestId(), getClassName(), null, ILaunchManager.DEBUG_MODE));
 				}
 			} else {
 				//manager.add(new OpenTestAction(fTestRunnerPart,
 				// getClassName(), getTestMethod()));
 				manager.add(new Separator());
-				if (fTestRunnerPart.lastLaunchIsKeptAlive()) {
-					manager.add(new RerunAction(fTestRunnerPart, getSelectedTestId(), getClassName(), getTestMethod(), ILaunchManager.RUN_MODE));
-
-				} else {
-					manager.add(new RerunAction(fTestRunnerPart, getSelectedTestId(), getClassName(), getTestMethod(), ILaunchManager.RUN_MODE));
-					manager.add(new RerunAction(fTestRunnerPart, getSelectedTestId(), getClassName(), getTestMethod(), ILaunchManager.DEBUG_MODE));
-				}
+				manager.add(new RerunAction(fTestRunnerPart, getSelectedTestId(), getClassName(), getTestMethod(), ILaunchManager.RUN_MODE));
 			}
 			manager.add(new Separator());
 			manager.add(new ExpandAllAction());
