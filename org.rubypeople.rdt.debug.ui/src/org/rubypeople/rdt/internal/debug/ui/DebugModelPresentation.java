@@ -16,10 +16,11 @@ import org.eclipse.swt.graphics.Image;
 import org.eclipse.ui.IEditorInput;
 import org.rubypeople.rdt.internal.debug.core.RubyLineBreakpoint;
 import org.rubypeople.rdt.internal.debug.core.model.RubyThread;
+import org.rubypeople.rdt.internal.debug.core.model.RubyValue;
 import org.rubypeople.rdt.internal.debug.core.model.RubyVariable;
 
 public class DebugModelPresentation extends LabelProvider implements IDebugModelPresentation {
-
+	private Boolean isShowTypes  ;
 	public String getText(Object item) {
 		if (item instanceof RubyLineBreakpoint) {
 			RubyLineBreakpoint breakpoint = (RubyLineBreakpoint) item;
@@ -31,7 +32,13 @@ public class DebugModelPresentation extends LabelProvider implements IDebugModel
 			}
 		}
 		if (item instanceof RubyVariable) {
-			return ((RubyVariable) item).toString() ;	
+			RubyVariable variable = (RubyVariable) item ; 
+			if (isShowTypes == Boolean.TRUE) {				
+				return ((RubyValue) variable.getValue()).getReferenceTypeName() + " " + variable.toString() ;	
+			}
+			else {
+				return variable.toString() ;					
+			}
 		}
 		return DebugUIPlugin.getDefaultLabelProvider().getText(item) ;
 	}
@@ -45,7 +52,10 @@ public class DebugModelPresentation extends LabelProvider implements IDebugModel
 	}
 
 	public void setAttribute(String attribute, Object value) {
-		System.out.println("setAttribute.");
+		System.out.println("setAttribute");
+		if (attribute.equals(IDebugModelPresentation.DISPLAY_VARIABLE_TYPE_NAMES)) {
+			this.isShowTypes = (Boolean) value ;	
+		}
 	}
 
 	public String getEditorId(IEditorInput input, Object element) {
