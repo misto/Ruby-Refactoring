@@ -12,7 +12,7 @@
          <export name="*"/>
          <packages prefixes="org.rubypeople.rdt"/>
       </library>
-      <library name="jakarta-regexp-1.2.jar">
+      <library name="lib/jakarta-regexp-1.2.jar">
          <export name="*"/>
          <packages prefixes="org.apache.regexp"/>
       </library>
