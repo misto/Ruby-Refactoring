@@ -3,14 +3,12 @@
 <plugin
    id="org.rubypeople.rdt.ui"
    name="%Plugin.name"
-   version="0.3.2"
+   version="0.4.0"
    provider-name="RubyPeople, Inc."
    class="org.rubypeople.rdt.internal.ui.RdtUiPlugin">
 
    <runtime>
-      <library name="rdtui.jar">
-         <export name="*"/>
-      </library>
+      <library name="rdtui.jar"/>
    </runtime>
    <requires>
       <import plugin="org.eclipse.ui.ide"/>
@@ -40,6 +38,12 @@
             class="org.rubypeople.rdt.internal.ui.preferences.RubyEditorPreferencePage"
             id="org.rubypeople.rdt.ui.preferences.PreferencePageRubyEditor">
       </page>
+      <page
+            name="%PreferencePage.RubyLibrary.name"
+            category="org.rubypeople.rdt.ui.preferences.PreferencePageRubyBase"
+            class="org.rubypeople.rdt.internal.ui.preferences.RubyLibraryPreferencePage"
+            id="org.rubypeople.rdt.ui.preferences.PreferencePageRubyLibrary">
+      </page>
    </extension>
    <extension
          point="org.eclipse.ui.perspectives">
@@ -60,6 +64,7 @@
             name="%NewWizardRubyProject.name"
             icon="icons/full/ctool16/ruby.gif"
             category="org.rubypeople.rdt.ui.NewWizardCategoryRuby"
+            preferredPerspectives="org.rubypeople.rdt.ui.PerspectiveRuby"
             class="org.rubypeople.rdt.internal.ui.wizards.NewProjectCreationWizard"
             project="true"
             id="org.rubypeople.rdt.ui.wizards.NewWizardProjectCreation">
@@ -128,10 +133,10 @@
          point="org.eclipse.ui.editors">
       <editor
             name="%EditorRubyFile.name"
-            extensions="%EditorRubyFile.extension"
             icon="icons/full/ctool16/ruby_page.gif"
-            class="org.rubypeople.rdt.internal.ui.rubyeditor.RubyEditor"
+            extensions="%EditorRubyFile.extension"
             contributorClass="org.rubypeople.rdt.internal.ui.rubyeditor.RubyEditorActionContributor"
+            class="org.rubypeople.rdt.internal.ui.rubyeditor.RubyEditor"
             id="org.rubypeople.rdt.ui.EditorRubyFile">
       </editor>
    </extension>
@@ -162,8 +167,8 @@
       </scope>
       <command
             name="%ActionDefinition.format.name"
-            description="%ActionDefinition.format.description"
             category="org.rubypeople.rdt.ui.category.source"
+            description="%ActionDefinition.format.description"
             id="org.rubypeople.rdt.ui.edit.text.ruby.format">
       </command>
       <keyBinding
@@ -174,8 +179,8 @@
       </keyBinding>
       <command
             name="%ActionDefinition.comment.name"
-            description="%ActionDefinition.comment.description"
             category="org.rubypeople.rdt.ui.category.source"
+            description="%ActionDefinition.comment.description"
             id="org.rubypeople.rdt.ui.edit.text.ruby.comment">
       </command>
       <keyBinding
@@ -186,8 +191,8 @@
       </keyBinding>
       <command
             name="%ActionDefinition.uncomment.name"
-            description="%ActionDefinition.uncomment.description"
             category="org.rubypeople.rdt.ui.category.source"
+            description="%ActionDefinition.uncomment.description"
             id="org.rubypeople.rdt.ui.edit.text.ruby.uncomment">
       </command>
       <keyBinding
@@ -198,8 +203,8 @@
       </keyBinding>
       <command
             name="%ActionDefinition.contentAssist.name"
-            description="%ActionDefinition.contentAssist.description"
             category="org.rubypeople.rdt.ui.category.source"
+            description="%ActionDefinition.contentAssist.description"
             id="org.rubypeople.rdt.ui.edit.text.ruby.content.assist.proposals">
       </command>
       <keyBinding
@@ -238,15 +243,15 @@
          <action
                definitionId="org.rubypeople.rdt.ui.edit.text.ruby.uncomment"
                label="%UncommentAction.label"
-               menubarPath="org.rubypeople.rdt.ui.ruby.menu/editGroup"
                retarget="true"
+               menubarPath="org.rubypeople.rdt.ui.ruby.menu/editGroup"
                id="org.rubypeople.rdt.ui.actions.Uncomment">
          </action>
          <action
                definitionId="org.rubypeople.rdt.ui.edit.text.ruby.comment"
                label="%CommentAction.label"
-               menubarPath="org.rubypeople.rdt.ui.ruby.menu/editGroup"
                retarget="true"
+               menubarPath="org.rubypeople.rdt.ui.ruby.menu/editGroup"
                id="org.rubypeople.rdt.ui.actions.Comment">
          </action>
       </actionSet>
