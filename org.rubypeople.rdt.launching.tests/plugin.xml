@@ -18,7 +18,6 @@
       <import plugin="org.rubypeople.rdt.launching"/>
       <import plugin="org.eclipse.core.resources"/>
       <import plugin="org.rubypeople.eclipse.testutils"/>
-      <import plugin="org.apache.xerces"/>
    </requires>
 
 
