@@ -60,9 +60,12 @@
       <shortcut
             label="%LaunchShortcut.Ruby.label"
             icon="icons/full/ctool16/run_ruby.gif"
-            modes="run"
+            modes="run, debug"
             class="org.rubypeople.rdt.internal.debug.ui.launcher.RubyApplicationShortcut"
             id="org.rubypeople.rdt.debug.ui.applicationshortcut.ruby">
+         <perspective
+               id="org.eclipse.debug.ui.DebugPerspective">
+         </perspective>
       </shortcut>
    </extension>
    <extension
@@ -78,30 +81,33 @@
          </action>
       </editorContribution>
    </extension>
-   <extension 
-         point = "org.eclipse.debug.ui.debugModelPresentations"> 
-         <debugModelPresentation
-             class = "org.rubypeople.rdt.internal.debug.ui.DebugModelPresentation"
-             id = "org.rubypeople.rdt.debug">
-         </debugModelPresentation> 
+   <extension
+         point="org.eclipse.debug.ui.debugModelPresentations">
+      <debugModelPresentation
+            class="org.rubypeople.rdt.internal.debug.ui.DebugModelPresentation"
+            id="org.rubypeople.rdt.debug">
+      </debugModelPresentation>
    </extension>
-   <extension 
+   <extension
          point="org.eclipse.ui.popupMenus">
-	 <viewerContribution 
-	    id="RubyRulerPopupActions" 
-	    targetID="#rubyRulerContext">
-	    <action
-			id="ManageBreakpointRulerActionDelegate"
-			label="Add Breakpoint"
-			menubarPath="debug"
-			class="org.rubypeople.rdt.internal.debug.ui.actions.ManageBreakpointRulerActionDelegate">
-	    </action>
-	</viewerContribution>
-   </extension>	
-   <extension point = "org.eclipse.debug.core.sourceLocators">
-	<sourceLocator
-		id = "org.rubypeople.rdt.debug.ui.rubySourceLocator"
-	   	class="org.rubypeople.rdt.internal.debug.ui.RubySourceLocator"
-	   	name="RubySourceLocator"/>
+      <viewerContribution
+            targetID="#rubyRulerContext"
+            id="RubyRulerPopupActions">
+         <action
+               label="Add Breakpoint"
+               class="org.rubypeople.rdt.internal.debug.ui.actions.ManageBreakpointRulerActionDelegate"
+               menubarPath="debug"
+               id="ManageBreakpointRulerActionDelegate">
+         </action>
+      </viewerContribution>
    </extension>
+   <extension
+         point="org.eclipse.debug.core.sourceLocators">
+      <sourceLocator
+            name="RubySourceLocator"
+            class="org.rubypeople.rdt.internal.debug.ui.RubySourceLocator"
+            id="org.rubypeople.rdt.debug.ui.rubySourceLocator">
+      </sourceLocator>
+   </extension>
+
 </plugin>
