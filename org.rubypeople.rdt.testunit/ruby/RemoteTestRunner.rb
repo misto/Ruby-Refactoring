@@ -177,6 +177,19 @@ module Test
   end
 end
 
+def createTcpSession(host, port)
+
+  tryCount = 0
+  begin
+    tryCount += 1 
+    return TCPSocket.new(host, port)
+  rescue Exception
+    raise if tryCount == 6
+    sleep(0.5)
+    retry
+  end
+end
+
 if __FILE__ == $0
   require 'socket'
   if ARGV.empty?
@@ -203,8 +216,9 @@ if __FILE__ == $0
   else
     keepAlive = true
   end
- 
-  session = TCPSocket.new('localhost', port)
+  
+  session = createTcpSession('127.0.0.1', port) ;
+
   testSuite = eval(testClass)
   remoteTestRunner = Test::Unit::UI::Eclipse::TestRunner.new(testSuite, session)
   remoteTestRunner.start
