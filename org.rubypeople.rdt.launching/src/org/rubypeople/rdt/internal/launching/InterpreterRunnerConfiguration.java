@@ -42,18 +42,20 @@ public class InterpreterRunnerConfiguration {
 	}
 	
 	public RubyProject getProject() {
-		String projectName = "";
+		String projectName = "" ;
 		
 		try {
 			projectName = configuration.getAttribute(RubyLaunchConfigurationAttribute.PROJECT_NAME, "");
 		} catch(CoreException e) {
 			RdtLaunchingPlugin.log(e);
 		}
-
-		IProject project = RdtLaunchingPlugin.getWorkspace().getRoot().getProject(projectName);
-
+		
 		RubyProject rubyProject = new RubyProject();
-		rubyProject.setProject(project);
+		if (projectName.length() > 0 ) {
+			IProject project = RdtLaunchingPlugin.getWorkspace().getRoot().getProject(projectName);
+			rubyProject.setProject(project);
+		}
+		
 		return rubyProject;
 	}
 	
