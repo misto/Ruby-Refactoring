@@ -12,8 +12,9 @@ public class RubyApplicationLaunchConfigurationDelegate implements ILaunchConfig
 		super();
 	}
 
-	public ILaunch launch(ILaunchConfiguration configuration, String mode, IProgressMonitor monitor) throws CoreException {
-		return null;
-	}
+	/**
+	 * @see ILaunchConfigurationDelegate#launch(ILaunchConfiguration, String, ILaunch, IProgressMonitor)
+	 */
+	public void launch(ILaunchConfiguration configuration, String mode, ILaunch launch, IProgressMonitor monitor) throws CoreException {}
 
 }

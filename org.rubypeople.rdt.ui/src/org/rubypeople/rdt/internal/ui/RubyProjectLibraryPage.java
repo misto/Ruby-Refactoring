@@ -69,9 +69,9 @@ public class RubyProjectLibraryPage {
 	protected void projectCheckedUnchecked(CheckStateChangedEvent event) {
 		IProject checkEventProject = (IProject) event.getElement();
 		if (event.getChecked())
-			getWorkingProject().addToLibrary(checkEventProject);
+			getWorkingProject().addLoadPathEntry(checkEventProject);
 		else
-			getWorkingProject().removeFromLibrary(checkEventProject);
+			getWorkingProject().removeLoadPathEntry(checkEventProject);
 	}
 
 	protected RubyProject getWorkingProject() {

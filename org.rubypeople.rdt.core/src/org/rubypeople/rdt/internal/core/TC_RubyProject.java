@@ -34,15 +34,15 @@ public class TC_RubyProject extends TestCase {
 		rubyProject.setProject(new ShamProject("TheWorkingProject"));
 
 		IProject referencedProject = new ShamProject("TheReferencedProject");
-		rubyProject.addToLibrary(referencedProject);
-		assertEquals("XML should indicate only one referenced project.", "<?xml version=\"1.0\" encoding=\"UTF-8\"?><librarypath><pathentry type=\"project\" path=\"/TheReferencedProject\"/></librarypath>", rubyProject.getLibraryPathXML());
+		rubyProject.addLoadPathEntry(referencedProject);
+		assertEquals("XML should indicate only one referenced project.", "<?xml version=\"1.0\" encoding=\"UTF-8\"?><loadpath><pathentry type=\"project\" path=\"/TheReferencedProject\"/></loadpath>", rubyProject.getLoadPathXML());
 
 		IProject anotherReferencedProject = new ShamProject("AnotherReferencedProject");
-		rubyProject.addToLibrary(anotherReferencedProject);
-		assertEquals("XML should indicate two referenced projects.", "<?xml version=\"1.0\" encoding=\"UTF-8\"?><librarypath><pathentry type=\"project\" path=\"/TheReferencedProject\"/><pathentry type=\"project\" path=\"/AnotherReferencedProject\"/></librarypath>", rubyProject.getLibraryPathXML());
+		rubyProject.addLoadPathEntry(anotherReferencedProject);
+		assertEquals("XML should indicate two referenced projects.", "<?xml version=\"1.0\" encoding=\"UTF-8\"?><loadpath><pathentry type=\"project\" path=\"/TheReferencedProject\"/><pathentry type=\"project\" path=\"/AnotherReferencedProject\"/></loadpath>", rubyProject.getLoadPathXML());
 		
-		rubyProject.removeFromLibrary(referencedProject);
-		assertEquals("XML should indicate one referenced project after removing one.", "<?xml version=\"1.0\" encoding=\"UTF-8\"?><librarypath><pathentry type=\"project\" path=\"/AnotherReferencedProject\"/></librarypath>", rubyProject.getLibraryPathXML());
+		rubyProject.removeLoadPathEntry(referencedProject);
+		assertEquals("XML should indicate one referenced project after removing one.", "<?xml version=\"1.0\" encoding=\"UTF-8\"?><loadpath><pathentry type=\"project\" path=\"/AnotherReferencedProject\"/></loadpath>", rubyProject.getLoadPathXML());
 	}
 	
 	public void testGetReferencedProjects() {
@@ -54,7 +54,7 @@ public class TC_RubyProject extends TestCase {
 
 	public class ShamRubyProject extends RubyProject {
 		
-		protected IFile getLibraryPathsFile() {
+		protected IFile getLoadPathEntriesFile() {
 			return new LibraryPathsFile();
 		}
 		
@@ -81,7 +81,7 @@ public class TC_RubyProject extends TestCase {
 		public void delete(boolean force, boolean keepHistory, IProgressMonitor monitor) throws CoreException {}
 
 		public InputStream getContents() throws CoreException {
-			return new ByteArrayInputStream("<?xml version=\"1.0\" encoding=\"UTF-8\"?><librarypath><pathentry type=\"project\" path=\"/StoredReferencedProject\"/><pathentry type=\"project\" path=\"/AnotherStoredReferencedProject\"/></librarypath>".getBytes());
+			return new ByteArrayInputStream("<?xml version=\"1.0\" encoding=\"UTF-8\"?><loadpath><pathentry type=\"project\" path=\"/StoredReferencedProject\"/><pathentry type=\"project\" path=\"/AnotherStoredReferencedProject\"/></loadpath>".getBytes());
 		}
 
 		public InputStream getContents(boolean force) throws CoreException {

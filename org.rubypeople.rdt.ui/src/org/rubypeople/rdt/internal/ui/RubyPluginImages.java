@@ -7,8 +7,6 @@ import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.resource.ImageRegistry;
 import org.eclipse.swt.graphics.Image;
-import org.rubypeople.rdt.internal.core.RubyPlugin;
-import sun.security.krb5.internal.crypto.e;
 
 public class RubyPluginImages {
 
@@ -20,7 +18,7 @@ public class RubyPluginImages {
 	static {
 		String pathSuffix = "icons/full/";
 		try {
-			iconBaseURL = new URL(RubyPlugin.getDefault().getDescriptor().getInstallURL(), pathSuffix);
+			iconBaseURL = new URL(RdtUiPlugin.getDefault().getDescriptor().getInstallURL(), pathSuffix);
 		} catch (MalformedURLException e) {
 			System.out.println("RubyPluginImages: " + e);
 		}

@@ -19,7 +19,7 @@ public class InterpreterRunner {
 		IProcess rubyProcess = null;
 		try {
 			Process nativeRubyProcess = Runtime.getRuntime().exec(commandLine, null, workingDirectory);
-			rubyProcess = new RuntimeProcess(nativeRubyProcess, "Ruby Interpreter");
+			rubyProcess = new RuntimeProcess(null, nativeRubyProcess, "Ruby Interpreter");
 		} catch (IOException e) {
 			throw new RuntimeException("Unable to execute interpreter: " + commandLine + workingDirectory);
 		}

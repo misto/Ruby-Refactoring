@@ -1,0 +1,25 @@
+<!-- build script to create a plugin from org.rubypeople.rdt.core -->
+<project name="org.rubypeople.rdt.core" default="export" basedir="..">
+	<target name="init">
+		<tstamp/>
+		<property name="destdir" value="../../plugin-export" />
+		<property name="plugin" value="org.rubypeople.rdt.core" />
+		<property name="dest" value="${destdir}/${plugin}" />
+	</target>
+	
+	<target name="build" depends="init">
+		<eclipse.incrementalBuild project="${plugin}" kind="incr"/>
+	</target>
+	
+	<target name="export" depends="build">
+		<mkdir dir="${destdir}" />
+		<delete dir="${dest}" />
+		<mkdir dir="${dest}" />
+		<jar jarfile="${dest}/rdtcore.jar" basedir="bin"/>
+		<copy file="plugin.xml" todir="${dest}"/>
+		<copy file="plugin.properties" todir="${dest}"/>
+		<zip zipfile="${dest}/rdtcoresrc.zip">
+			<fileset dir="src" />
+		</zip>
+	</target>
+</project>

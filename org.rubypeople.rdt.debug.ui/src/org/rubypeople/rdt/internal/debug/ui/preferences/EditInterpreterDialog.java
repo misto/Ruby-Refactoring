@@ -17,6 +17,7 @@ import org.eclipse.swt.layout.RowData;
 import org.eclipse.swt.layout.RowLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.DirectoryDialog;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
@@ -24,19 +25,18 @@ import org.eclipse.swt.widgets.Text;
 import org.rubypeople.rdt.internal.debug.ui.RdtDebugUiPlugin;
 import org.rubypeople.rdt.internal.ui.dialog.StatusDialog;
 import org.rubypeople.rdt.launching.RubyInterpreter;
-import sun.security.krb5.internal.i;
 
 public class EditInterpreterDialog extends StatusDialog {
 	protected RubyInterpreter interpreterToEdit;
 	protected Text interpreterNameText, interpreterLocationText;
 	protected IStatus[] allStatus = new IStatus[2];
 
-	protected EditInterpreterDialog(Shell parentShell, String aDialogTitle) {
+	public EditInterpreterDialog(Shell parentShell, String aDialogTitle) {
 		super(parentShell);
 		setTitle(aDialogTitle);
 	}
 	
-	protected void setInterpreterToEdit(RubyInterpreter anInterpreter) {
+	public void setInterpreterToEdit(RubyInterpreter anInterpreter) {
 		interpreterToEdit = anInterpreter;
 		
 		String interpreterName = interpreterToEdit.getName();
@@ -150,15 +150,16 @@ public class EditInterpreterDialog extends StatusDialog {
 		interpreterToEdit.setInstallLocation(new Path(interpreterLocationText.getText()));
 		super.okPressed();
 	}
-	
-
-	protected void createStatusDialogAreaContents(Composite parent) {
+	protected Control createDialogArea(Composite parent) {
+		Composite composite = (Composite) super.createDialogArea(parent);
 		GridLayout layout = new GridLayout();
 		layout.numColumns = 3;
-		parent.setLayout(layout);
+		composite.setLayout(layout);
 
-		createNameEntryField(parent);
-		createLocationEntryField(parent);
+		createNameEntryField(composite);
+		createLocationEntryField(composite);
+		
+		return composite;
 	}
 
 }

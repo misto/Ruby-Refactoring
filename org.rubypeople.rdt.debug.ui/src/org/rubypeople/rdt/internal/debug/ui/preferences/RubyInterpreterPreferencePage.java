@@ -27,7 +27,6 @@ import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPreferencePage;
 import org.rubypeople.rdt.launching.RubyInterpreter;
 import org.rubypeople.rdt.launching.RubyRuntime;
-import sun.security.krb5.internal.i;
 
 public class RubyInterpreterPreferencePage extends PreferencePage implements IWorkbenchPreferencePage {
 	protected CheckboxTableViewer tableViewer;

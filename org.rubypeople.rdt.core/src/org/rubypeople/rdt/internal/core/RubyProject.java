@@ -3,10 +3,8 @@ package org.rubypeople.rdt.internal.core;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 
 import javax.xml.parsers.SAXParserFactory;
 import org.eclipse.core.resources.IFile;
@@ -21,11 +19,10 @@ import org.xml.sax.InputSource;
 import org.xml.sax.Locator;
 import org.xml.sax.SAXException;
 import org.xml.sax.XMLReader;
-import sun.security.krb5.internal.crypto.e;
 
 public class RubyProject implements IProjectNature {
 	protected IProject project;
-	protected Map libraryPaths;
+	protected List loadPathEntries;
 	protected boolean scratched;
 
 	public RubyProject() {}
@@ -50,56 +47,62 @@ public class RubyProject implements IProjectNature {
 		project = aProject;
 	}
 
-	public void addToLibrary(IProject anotherRubyProject) {
+	public void addLoadPathEntry(IProject anotherRubyProject) {
 		scratched = true;
 
-		LibraryPathEntry newEntry = new LibraryPathEntry(anotherRubyProject);
-		getLibraryPaths().put(anotherRubyProject.getName(), newEntry);
+		LoadPathEntry newEntry = new LoadPathEntry(anotherRubyProject);
+		getLoadPathEntries().add(newEntry);
 	}
 
-	public void removeFromLibrary(IProject anotherRubyProject) {
-		scratched = true;
-
-		getLibraryPaths().remove(anotherRubyProject.getName());
+	public void removeLoadPathEntry(IProject anotherRubyProject) {
+		Iterator entries = getLoadPathEntries().iterator();
+		while(entries.hasNext()) {
+			LoadPathEntry entry = (LoadPathEntry) entries.next();
+			if (entry.getType() == LoadPathEntry.TYPE_PROJECT && entry.getProject().getName().equals(anotherRubyProject.getName())) {
+				getLoadPathEntries().remove(entry);
+				scratched = true;
+				break;
+			}
+		}
 	}
 
-	protected Map getLibraryPaths() {
-		if (libraryPaths == null) {
-			loadLibraryPaths();
+	protected List getLoadPathEntries() {
+		if (loadPathEntries == null) {
+			loadLoadPathEntries();
 		}
 
-		return libraryPaths;
+		return loadPathEntries;
 	}
 
 	public List getReferencedProjects() {
 		List referencedProjects = new ArrayList();
 
-		Iterator iterator = getLibraryPaths().values().iterator();
+		Iterator iterator = getLoadPathEntries().iterator();
 		while (iterator.hasNext()) {
-			LibraryPathEntry pathEntry = (LibraryPathEntry) iterator.next();
-			if (pathEntry.getType() == LibraryPathEntry.TYPE_PROJECT)
+			LoadPathEntry pathEntry = (LoadPathEntry) iterator.next();
+			if (pathEntry.getType() == LoadPathEntry.TYPE_PROJECT)
 				referencedProjects.add(pathEntry.getProject());
 		}
 
 		return referencedProjects;
 	}
 
-	protected void loadLibraryPaths() {
-		libraryPaths = new HashMap();
+	protected void loadLoadPathEntries() {
+		loadPathEntries = new ArrayList();
 
-		IFile libraryPathsFile = getLibraryPathsFile();
+		IFile loadPathsFile = getLoadPathEntriesFile();
 
 		XMLReader reader = null;
 		try {
 			reader = SAXParserFactory.newInstance().newSAXParser().getXMLReader();
-			reader.setContentHandler(getLibraryPathsContentHandler());
-			reader.parse(new InputSource(libraryPathsFile.getContents()));
+			reader.setContentHandler(getLoadPathEntriesContentHandler());
+			reader.parse(new InputSource(loadPathsFile.getContents()));
 		} catch (Exception e) {
 			//the file is nonextant or unreadable
 		}
 	}
 
-	protected ContentHandler getLibraryPathsContentHandler() {
+	protected ContentHandler getLoadPathEntriesContentHandler() {
 		return new ContentHandler() {
 			public void characters(char[] arg0, int arg1, int arg2) throws SAXException {}
 
@@ -124,7 +127,7 @@ public class RubyProject implements IProjectNature {
 					if ("project".equals(atts.getValue("type"))) {
 						IPath referencedProjectPath = new Path(atts.getValue("path"));
 						IProject referencedProject = getProject(referencedProjectPath.lastSegment());
-						libraryPaths.put(referencedProject.getName(), new LibraryPathEntry(referencedProject));
+						loadPathEntries.add(new LoadPathEntry(referencedProject));
 					}
 			}
 
@@ -132,19 +135,19 @@ public class RubyProject implements IProjectNature {
 		};
 	}
 
-	protected IFile getLibraryPathsFile() {
-		return project.getFile(".librarypath");
+	protected IFile getLoadPathEntriesFile() {
+		return project.getFile(".loadpath");
 	}
 
 	public void save() {
 		if (scratched) {
 			try {
-				InputStream xmlPath = new ByteArrayInputStream(getLibraryPathXML().getBytes());
-				IFile libraryPathsFile = getLibraryPathsFile();
-				if (!libraryPathsFile.exists())
-					libraryPathsFile.create(xmlPath, true, null);
+				InputStream xmlPath = new ByteArrayInputStream(getLoadPathXML().getBytes());
+				IFile loadPathsFile = getLoadPathEntriesFile();
+				if (!loadPathsFile.exists())
+					loadPathsFile.create(xmlPath, true, null);
 				else
-					libraryPathsFile.setContents(xmlPath, true, false, null);
+					loadPathsFile.setContents(xmlPath, true, false, null);
 					
 				scratched = false;
 			} catch (CoreException e) {
@@ -153,18 +156,18 @@ public class RubyProject implements IProjectNature {
 		}
 	}
 
-	public String getLibraryPathXML() {
+	public String getLoadPathXML() {
 		StringBuffer buffer = new StringBuffer();
-		buffer.append("<?xml version=\"1.0\" encoding=\"UTF-8\"?><librarypath>");
+		buffer.append("<?xml version=\"1.0\" encoding=\"UTF-8\"?><loadpath>");
 
-		Iterator pathEntriesIterator = libraryPaths.values().iterator();
+		Iterator pathEntriesIterator = loadPathEntries.iterator();
 
 		while (pathEntriesIterator.hasNext()) {
-			LibraryPathEntry entry = (LibraryPathEntry) pathEntriesIterator.next();
+			LoadPathEntry entry = (LoadPathEntry) pathEntriesIterator.next();
 			buffer.append(entry.toXML());
 		}
 
-		buffer.append("</librarypath>");
+		buffer.append("</loadpath>");
 		return buffer.toString();
 	}
 }

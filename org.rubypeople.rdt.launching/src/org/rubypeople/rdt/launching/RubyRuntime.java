@@ -24,7 +24,6 @@ import org.xml.sax.InputSource;
 import org.xml.sax.Locator;
 import org.xml.sax.SAXException;
 import org.xml.sax.XMLReader;
-import sun.security.krb5.internal.crypto.e;
 
 public class RubyRuntime {
 	protected static RubyRuntime runtime;
@@ -53,6 +52,11 @@ public class RubyRuntime {
 			selectedInterpreter = anInterpreter;
 			saveRuntimeConfiguration();
 		}
+	}
+
+	public void addInstalledInterpreter(RubyInterpreter anInterpreter) {
+		getInstalledInterpreters().add(anInterpreter);
+		saveRuntimeConfiguration();
 	}
 
 	public List getInstalledInterpreters() {

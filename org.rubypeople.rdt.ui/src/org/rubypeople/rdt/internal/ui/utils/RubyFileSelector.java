@@ -11,7 +11,6 @@ import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.model.WorkbenchLabelProvider;
 import org.rubypeople.rdt.internal.ui.dialog.ElementListSelectionDialog;
-import sun.security.krb5.internal.crypto.e;
 
 public class RubyFileSelector extends ResourceSelector {
 	protected RubyProjectSelector rubyProjectSelector;
