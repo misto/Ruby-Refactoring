@@ -66,7 +66,7 @@ public class RubyCore {
 				return project;
 			}
 		} catch (CoreException e) {
-			System.err.println("Exception occurred in RubyCore#create(IProject): " + e.toString());
+			RubyPlugin.log("Exception occurred in RubyCore#create(IProject): " + e.toString());
 		}
 
 		return null;

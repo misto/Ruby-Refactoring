@@ -88,7 +88,7 @@ public class RdtUiPlugin extends AbstractUIPlugin implements RubyColorConstants 
 		store.setDefault(RUBY_DEFAULT + RUBY_ISBOLD_APPENDIX, false);
 		PreferenceConverter.setDefault(store, RUBY_KEYWORD, new RGB(164, 53, 122));
 		store.setDefault(RUBY_KEYWORD + RUBY_ISBOLD_APPENDIX, true);
-		PreferenceConverter.setDefault(store, RUBY_STRING, new RGB(15, 120, 142));
+		PreferenceConverter.setDefault(store, RUBY_STRING, new RGB(42, 0, 255));
 		store.setDefault(RUBY_STRING + RUBY_ISBOLD_APPENDIX, false);
 		PreferenceConverter.setDefault(store, RUBY_MULTI_LINE_COMMENT, new RGB(63, 127, 95));
 		store.setDefault(RUBY_MULTI_LINE_COMMENT + RUBY_ISBOLD_APPENDIX, false);

@@ -26,6 +26,7 @@ import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.DialogPage;
 import org.eclipse.jface.dialogs.IMessageProvider;
 import org.eclipse.jface.preference.ColorFieldEditor;
+import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.preference.PreferenceConverter;
 import org.eclipse.jface.preference.PreferencePage;
 import org.eclipse.swt.SWT;
@@ -173,6 +174,14 @@ public class TextEditorPreferencePage2 extends PreferencePage implements IWorkbe
 		OverlayPreferenceStore.OverlayKey[] keys = new OverlayPreferenceStore.OverlayKey[overlayKeys.size()];
 		overlayKeys.toArray(keys);
 		return new OverlayPreferenceStore(getPreferenceStore(), keys);
+	}
+	
+	
+	/* (non-Javadoc)
+	 * @see org.eclipse.jface.preference.PreferencePage#doGetPreferenceStore()
+	 */
+	protected IPreferenceStore doGetPreferenceStore() {
+		return RdtUiPlugin.getDefault().getPreferenceStore();
 	}
 
 	private String[][] createAnnotationTypeListModel(MarkerAnnotationPreferences preferences) {

@@ -9,6 +9,7 @@ import org.eclipse.core.resources.IResourceVisitor;
 import org.eclipse.core.runtime.CoreException;
 
 public class RubyElementVisitor implements IResourceVisitor {
+
 	protected List rubyFiles = new ArrayList();
 
 	public RubyElementVisitor() {
@@ -17,25 +18,30 @@ public class RubyElementVisitor implements IResourceVisitor {
 
 	public boolean visit(IResource resource) throws CoreException {
 		switch (resource.getType()) {
-			case IResource.PROJECT :
-				return true;
+		case IResource.PROJECT:
+			return true;
 
-			case IResource.FOLDER :
-				return true;
+		case IResource.FOLDER:
+			return true;
 
-			case IResource.FILE :
-				IFile fileResource = (IFile) resource;
+		case IResource.FILE:
+			IFile fileResource = (IFile) resource;
 			String extension = fileResource.getFileExtension();
-				if ( "rb".equals(extension) || "rbw".equals(extension) || "cgi".equals(extension) ) {
-					rubyFiles.add(fileResource);
-					return true;
-				}
+			String name = fileResource.getName();
+			if (name != null && name.equalsIgnoreCase("rakefile")) {
+				rubyFiles.add(fileResource);
+				return true;
+			}
+			if ("rb".equals(extension) || "rbw".equals(extension) || "cgi".equals(extension) || "gem".equals(extension) || "gemspec".equals(extension) || "rhtml".equals(extension)) {
+				rubyFiles.add(fileResource);
+				return true;
+			}
 
-			default :
-				return false;
+		default:
+			return false;
 		}
 	}
-	
+
 	public Object[] getCollectedRubyFiles() {
 		return rubyFiles.toArray();
 	}
