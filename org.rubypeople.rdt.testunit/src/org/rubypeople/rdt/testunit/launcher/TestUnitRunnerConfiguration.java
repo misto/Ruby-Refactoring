@@ -2,6 +2,7 @@ package org.rubypeople.rdt.testunit.launcher;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.Platform;
 import org.eclipse.debug.core.ILaunchConfiguration;
 import org.rubypeople.rdt.internal.launching.InterpreterRunnerConfiguration;
 import org.rubypeople.rdt.testunit.TestunitPlugin;
@@ -14,13 +15,16 @@ public class TestUnitRunnerConfiguration extends InterpreterRunnerConfiguration 
 
 	public String getAbsoluteFileName() {
 		IProject project = getProject().getProject();
-
-		// FIXME Added so that we can do absolute paths as well
-		// This works by chopping off the "C:" on windows
-		// I'm not sure what will happen on other OSes
+	
 		String filename = getFileName();
-		if (filename.indexOf(':') != -1) { return filename.substring(filename.indexOf(':') + 1); }
-		return project.getLocation().toOSString() + "/" + filename;
+		if (Platform.getOS().equals(Platform.OS_WIN32)) {
+			// just searching for a colon without consideration of the Platform
+			// could chop off linux filenames which may contain colons
+			if (filename.indexOf(':') != -1) { 
+				filename = filename.substring(filename.indexOf(':') + 1); 
+			}
+		}		
+		return filename ;
 	}
 	
 	
