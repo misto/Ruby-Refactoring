@@ -167,5 +167,11 @@ public class JdtVariableAdapter implements IJavaVariable
 	public Object getAdapter(Class arg0) {
 		return null;
 	}
-
+	
+	/**
+	 * @see org.eclipse.jdt.debug.core.IJavaVariable#isLocal()
+	 */
+	public boolean isLocal() throws DebugException {
+		return rubyVariable.isLocal();
+	}
 }

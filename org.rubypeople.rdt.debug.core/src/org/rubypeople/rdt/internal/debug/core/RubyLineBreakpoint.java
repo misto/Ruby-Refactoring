@@ -13,18 +13,16 @@ import org.eclipse.debug.core.model.LineBreakpoint;
 public class RubyLineBreakpoint extends LineBreakpoint {
 	private static final String RUBY_BREAKPOINT_MARKER = "org.rubypeople.rdt.debug.core.RubyBreakpointMarker"; //$NON-NLS-1$
 
-	public RubyLineBreakpoint(final IResource resource, final int lineNumber)
-		throws CoreException {
+	public RubyLineBreakpoint(final IResource resource, final int lineNumber) throws CoreException {
 		IWorkspaceRunnable wr = new IWorkspaceRunnable() {
 			public void run(IProgressMonitor monitor) throws CoreException {
-
 				setMarker(resource.createMarker(RUBY_BREAKPOINT_MARKER));
-				getMarker().setAttribute(IMarker.LINE_NUMBER, lineNumber+1);
-				getMarker().setAttribute(REGISTERED, false) ;
-				setRegistered(true) ;	
-				setEnabled(true) ;			
+				getMarker().setAttribute(IMarker.LINE_NUMBER, lineNumber + 1);
+				getMarker().setAttribute(REGISTERED, false);
+				setRegistered(true);
+				setEnabled(true);
 			}
-		} ;
+		};
 		try {
 			ResourcesPlugin.getWorkspace().run(wr, null);
 		} catch (CoreException e) {
@@ -34,26 +32,17 @@ public class RubyLineBreakpoint extends LineBreakpoint {
 	}
 
 	private void register() throws CoreException {
-		DebugPlugin.getDefault().getBreakpointManager().addBreakpoint(this) ;	
+		DebugPlugin.getDefault().getBreakpointManager().addBreakpoint(this);
 	}
 
-	/* (non-Javadoc)
-	 * @see org.eclipse.debug.core.model.ILineBreakpoint#getLineNumber()
-	 */
 	public int getLineNumber() throws CoreException {
 		return ensureMarker().getAttribute(IMarker.LINE_NUMBER, -1);
 	}
 
-	/* (non-Javadoc)
-	 * @see org.eclipse.debug.core.model.ILineBreakpoint#getCharStart()
-	 */
 	public int getCharStart() throws CoreException {
 		return ensureMarker().getAttribute(IMarker.CHAR_START, -1);
 	}
 
-	/* (non-Javadoc)
-	 * @see org.eclipse.debug.core.model.ILineBreakpoint#getCharEnd()
-	 */
 	public int getCharEnd() throws CoreException {
 		return ensureMarker().getAttribute(IMarker.CHAR_END, -1);
 	}
@@ -62,11 +51,9 @@ public class RubyLineBreakpoint extends LineBreakpoint {
 	 * Returns the type of marker associated with this type of breakpoints
 	 */
 	public static String getMarkerType() {
-		return RUBY_BREAKPOINT_MARKER ;
+		return RUBY_BREAKPOINT_MARKER;
 	}
-	/**
-	 * @see org.eclipse.debug.core.model.IBreakpoint#getModelIdentifier()
-	 */
+
 	public String getModelIdentifier() {
 		return "org.rubypeople.rdt.debug";
 	}
