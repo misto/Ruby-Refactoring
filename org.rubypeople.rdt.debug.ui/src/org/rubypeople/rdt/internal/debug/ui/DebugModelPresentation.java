@@ -1,5 +1,7 @@
 package org.rubypeople.rdt.internal.debug.ui;
 
+import java.util.Hashtable;
+
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.debug.core.DebugPlugin;
@@ -20,6 +22,7 @@ import org.rubypeople.rdt.internal.debug.core.model.RubyValue;
 import org.rubypeople.rdt.internal.debug.core.model.RubyVariable;
 
 public class DebugModelPresentation extends LabelProvider implements IDebugModelPresentation {
+    private static Hashtable imageCache = new Hashtable();
 	private Boolean isShowTypes  ;
 	public String getText(Object item) {
 		if (item instanceof RubyLineBreakpoint) {
@@ -64,6 +67,15 @@ public class DebugModelPresentation extends LabelProvider implements IDebugModel
 	public IEditorInput getEditorInput(Object element) {
 		return null;
 	}
+	
+	private Image getImage(ImageDescriptor imageDescriptor) {
+		Image image = (Image) imageCache.get(imageDescriptor);
+		if (image == null) {
+			image = imageDescriptor.createImage();
+			imageCache.put(imageDescriptor, image);
+		}
+	    return image ;
+	}
 
 	public Image getImage(Object item) {
 		ImageDescriptor descriptor;
@@ -81,8 +93,7 @@ public class DebugModelPresentation extends LabelProvider implements IDebugModel
 		} else {
 			descriptor = DebugUITools.getDefaultImageDescriptor(item);
 		}
-		// TODO: save image instead of creating a new one every time.
-		return descriptor.createImage();
+		return getImage(descriptor) ;
 	}
 
 }
