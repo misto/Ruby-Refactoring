@@ -41,6 +41,17 @@
             modes="run,debug"
             id="org.rubypeople.rdt.debug.ui.tests.launching.LaunchConfigurationTypeSham">
       </launchConfigurationType>
+      
    </extension>
-
+   <!-- The org.eclipse.debug.ui.launchConfigurationTabGroups extension is only used to avoid a 
+        NullPointerException if this plugin is launched in a Runtime Workspace -->
+   <extension
+         point="org.eclipse.debug.ui.launchConfigurationTabGroups">
+      <launchConfigurationTabGroup
+            type="org.rubypeople.rdt.debug.ui.tests.launching.LaunchConfigurationTypeSham"
+            class="org.rubypeople.rdt.internal.debug.ui.launcher.RubyApplicationTabGroup"
+            id="org.rubypeople.rdt.debug.ui.tests.launching.LaunchConfigurationTypeSham.TabGroup">
+         
+      </launchConfigurationTabGroup>
+   </extension>
 </plugin>
