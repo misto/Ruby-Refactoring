@@ -5,18 +5,23 @@ import java.util.List;
 
 public class RubyParsedComponent {
 
-	public RubyParsedComponent() {
-		super();
+	protected String name;
+	protected List children = new ArrayList();
+	
+	public RubyParsedComponent(String name) {
+		this.name = name;
 	}
 	
 	public List getChildren() {
-		List children = new ArrayList();
-		children.add(new Object());
 		return children;
 	}
 	
 	public String getName() {
-		return null;
+		return name;
+	}
+	
+	public void addChild(RubyParsedComponent childComponent) {
+		children.add(childComponent);
 	}
 
 }

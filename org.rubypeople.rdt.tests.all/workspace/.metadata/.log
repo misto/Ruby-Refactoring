@@ -1,0 +1,74 @@
+!SESSION Nov 21, 2002 13:25:31.641 ---------------------------------------------
+java.version=1.4.1
+java.vendor=Sun Microsystems Inc.
+BootLoader constants: OS=win32, ARCH=x86, WS=win32, NL=en_US
+Command-line arguments: -data -dev bin -consolelog -port 13865 -testpluginname org.rubypeople.rdt.tests.all -classnames org.rubypeople.rdt.tests.all.TS_RdtAllTests
+!ENTRY org.eclipse.debug.core 4 120 Nov 21, 2002 13:25:31.641
+!MESSAGE Error logged from Debug Core: 
+!STACK 0
+java.lang.NullPointerException
+	at org.eclipse.debug.internal.core.OutputStreamMonitor.read(OutputStreamMonitor.java:123)
+	at org.eclipse.debug.internal.core.OutputStreamMonitor.access$0(OutputStreamMonitor.java:115)
+	at org.eclipse.debug.internal.core.OutputStreamMonitor$1.run(OutputStreamMonitor.java:166)
+	at java.lang.Thread.run(Thread.java:536)
+!ENTRY org.eclipse.debug.core 4 120 Nov 21, 2002 13:25:31.651
+!MESSAGE Error logged from Debug Core: 
+!STACK 0
+java.lang.NullPointerException
+	at org.eclipse.debug.internal.core.OutputStreamMonitor.read(OutputStreamMonitor.java:123)
+	at org.eclipse.debug.internal.core.OutputStreamMonitor.access$0(OutputStreamMonitor.java:115)
+	at org.eclipse.debug.internal.core.OutputStreamMonitor$1.run(OutputStreamMonitor.java:166)
+	at java.lang.Thread.run(Thread.java:536)
+!ENTRY org.eclipse.debug.core 4 120 Nov 21, 2002 13:25:32.822
+!MESSAGE Error logged from Debug Core: 
+!STACK 0
+java.lang.NullPointerException
+	at org.eclipse.debug.internal.core.OutputStreamMonitor.read(OutputStreamMonitor.java:123)
+	at org.eclipse.debug.internal.core.OutputStreamMonitor.access$0(OutputStreamMonitor.java:115)
+	at org.eclipse.debug.internal.core.OutputStreamMonitor$1.run(OutputStreamMonitor.java:166)
+	at java.lang.Thread.run(Thread.java:536)
+!ENTRY org.eclipse.debug.core 4 120 Nov 21, 2002 13:25:32.832
+!MESSAGE Error logged from Debug Core: 
+!STACK 0
+java.lang.NullPointerException
+	at org.eclipse.debug.internal.core.OutputStreamMonitor.read(OutputStreamMonitor.java:123)
+	at org.eclipse.debug.internal.core.OutputStreamMonitor.access$0(OutputStreamMonitor.java:115)
+	at org.eclipse.debug.internal.core.OutputStreamMonitor$1.run(OutputStreamMonitor.java:166)
+	at java.lang.Thread.run(Thread.java:536)
+!SESSION Nov 21, 2002 13:26:53.879 ---------------------------------------------
+java.version=1.4.1
+java.vendor=Sun Microsystems Inc.
+BootLoader constants: OS=win32, ARCH=x86, WS=win32, NL=en_US
+Command-line arguments: -data -dev bin -consolelog -port 6888 -testpluginname org.rubypeople.rdt.tests.all -classnames org.rubypeople.rdt.tests.all.TS_RdtAllTests
+!ENTRY org.eclipse.debug.core 4 120 Nov 21, 2002 13:26:53.879
+!MESSAGE Error logged from Debug Core: 
+!STACK 0
+java.lang.NullPointerException
+	at org.eclipse.debug.internal.core.OutputStreamMonitor.read(OutputStreamMonitor.java:123)
+	at org.eclipse.debug.internal.core.OutputStreamMonitor.access$0(OutputStreamMonitor.java:115)
+	at org.eclipse.debug.internal.core.OutputStreamMonitor$1.run(OutputStreamMonitor.java:166)
+	at java.lang.Thread.run(Thread.java:536)
+!ENTRY org.eclipse.debug.core 4 120 Nov 21, 2002 13:26:53.879
+!MESSAGE Error logged from Debug Core: 
+!STACK 0
+java.lang.NullPointerException
+	at org.eclipse.debug.internal.core.OutputStreamMonitor.read(OutputStreamMonitor.java:123)
+	at org.eclipse.debug.internal.core.OutputStreamMonitor.access$0(OutputStreamMonitor.java:115)
+	at org.eclipse.debug.internal.core.OutputStreamMonitor$1.run(OutputStreamMonitor.java:166)
+	at java.lang.Thread.run(Thread.java:536)
+!ENTRY org.eclipse.debug.core 4 120 Nov 21, 2002 13:26:54.991
+!MESSAGE Error logged from Debug Core: 
+!STACK 0
+java.lang.NullPointerException
+	at org.eclipse.debug.internal.core.OutputStreamMonitor.read(OutputStreamMonitor.java:123)
+	at org.eclipse.debug.internal.core.OutputStreamMonitor.access$0(OutputStreamMonitor.java:115)
+	at org.eclipse.debug.internal.core.OutputStreamMonitor$1.run(OutputStreamMonitor.java:166)
+	at java.lang.Thread.run(Thread.java:536)
+!ENTRY org.eclipse.debug.core 4 120 Nov 21, 2002 13:26:54.991
+!MESSAGE Error logged from Debug Core: 
+!STACK 0
+java.lang.NullPointerException
+	at org.eclipse.debug.internal.core.OutputStreamMonitor.read(OutputStreamMonitor.java:123)
+	at org.eclipse.debug.internal.core.OutputStreamMonitor.access$0(OutputStreamMonitor.java:115)
+	at org.eclipse.debug.internal.core.OutputStreamMonitor$1.run(OutputStreamMonitor.java:166)
+	at java.lang.Thread.run(Thread.java:536)
