@@ -18,5 +18,6 @@ public class RubyActionGroup extends ActionGroup {
 
 		menu.add(editor.getAction("Comment"));
 		menu.add(editor.getAction("Uncomment"));
+		menu.add(editor.getAction("Format")) ;
 	}
 }

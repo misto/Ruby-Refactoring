@@ -15,4 +15,6 @@ public interface RubyEditorActionDefinitionIds {
 	 * Value: org.rubypeople.rdt.ui.edit.text.ruby.uncomment
 	 */
 	public static final String UNCOMMENT = "org.rubypeople.rdt.ui.edit.text.ruby.uncomment";
+	
+	public static final String FORMAT = "org.rubypeople.rdt.ui.edit.text.ruby.format";
 }
