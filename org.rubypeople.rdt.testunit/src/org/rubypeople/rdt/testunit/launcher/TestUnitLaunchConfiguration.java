@@ -7,10 +7,10 @@ import org.eclipse.core.runtime.Status;
 import org.eclipse.debug.core.ILaunch;
 import org.eclipse.debug.core.ILaunchConfiguration;
 import org.eclipse.debug.core.model.ILaunchConfigurationDelegate;
-import org.rubypeople.rdt.internal.launching.DebuggerRunner;
 import org.rubypeople.rdt.internal.launching.InterpreterRunner;
 import org.rubypeople.rdt.internal.launching.RubyRuntime;
 import org.rubypeople.rdt.testunit.TestunitPlugin;
+import org.rubypeople.rdt.testunit.runner.TestUnitRunner;
 
 public class TestUnitLaunchConfiguration implements ILaunchConfigurationDelegate {
 
@@ -23,7 +23,6 @@ public class TestUnitLaunchConfiguration implements ILaunchConfigurationDelegate
 	 * The test method, or "" iff running the whole test type.
 	 */
 	public static final String TESTNAME_ATTR = TestunitPlugin.PLUGIN_ID + ".TESTNAME"; //$NON-NLS-1$
-	public static final String ATTR_KEEPRUNNING = TestunitPlugin.PLUGIN_ID + ".KEEPRUNNING_ATTR"; //$NON-NLS-1$
 	/**
 	 * The launch container, or "" iff running a single test type.
 	 */
@@ -31,8 +30,7 @@ public class TestUnitLaunchConfiguration implements ILaunchConfigurationDelegate
 
 	public static final String ID_TESTUNIT_APPLICATION = "org.rubypeople.rdt.testunit.launchconfig"; //$NON-NLS-1$
 
-	protected static final InterpreterRunner interpreterRunner = new InterpreterRunner();
-	protected static final DebuggerRunner debuggerRunner = new DebuggerRunner();
+	protected static final InterpreterRunner interpreterRunner = new TestUnitRunner();
 
 	public TestUnitLaunchConfiguration() {
 		super();
@@ -44,10 +42,6 @@ public class TestUnitLaunchConfiguration implements ILaunchConfigurationDelegate
 	 */
 	public void launch(ILaunchConfiguration configuration, String mode, ILaunch launch, IProgressMonitor monitor) throws CoreException {
 		if (RubyRuntime.getDefault().getSelectedInterpreter() == null) throw new CoreException(new Status(IStatus.ERROR, TestunitPlugin.PLUGIN_ID, IStatus.OK, "You must define an interpreter before running Ruby Applications.", null));
-		if (mode.equals("debug")) {
-			debuggerRunner.run(new TestUnitRunnerConfiguration(configuration), launch);
-		} else {
-			interpreterRunner.run(new TestUnitRunnerConfiguration(configuration), launch);
-		}
+		interpreterRunner.run(new TestUnitRunnerConfiguration(configuration), launch);
 	}
 }
