@@ -117,6 +117,14 @@
       </provider>
    </extension>
    <extension
+         point="org.eclipse.ui.editors.documentProviders">
+      <provider
+            class="org.rubypeople.rdt.internal.ui.rubyeditor.ExternalRubyDocumentProvider"
+            inputTypes="org.rubypeople.rdt.internal.ui.rubyeditor.ExternalRubyFileEditorInput"
+            id="org.rubypeople.rdt.ui.ExternalRubyFileDocumentProvider">
+      </provider>
+   </extension>   
+   <extension
          point="org.eclipse.ui.editors">
       <editor
             name="%EditorRubyFile.name"
@@ -127,6 +135,18 @@
             id="org.rubypeople.rdt.ui.EditorRubyFile">
       </editor>
    </extension>
+   <extension
+         point="org.eclipse.ui.editors">
+      <editor
+            name="%EditorRubyFile.name"
+            extensions="%EditorRubyFile.extension"
+            icon="icons/full/ctool16/ruby_page.gif"
+            class="org.rubypeople.rdt.internal.ui.rubyeditor.ExternalRubyEditor"
+            contributorClass="org.rubypeople.rdt.internal.ui.rubyeditor.RubyEditorActionContributor"
+            id="org.rubypeople.rdt.ui.ExternalRubyEditor">
+      </editor>
+   </extension>
+   
    <extension
          point="org.eclipse.ui.commands">
       <category

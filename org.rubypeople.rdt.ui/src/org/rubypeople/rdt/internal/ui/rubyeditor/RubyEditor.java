@@ -23,33 +23,15 @@ import org.rubypeople.rdt.ui.actions.FormatAction;
 import org.rubypeople.rdt.ui.actions.RubyActionGroup;
 import org.rubypeople.rdt.ui.actions.RubyEditorActionDefinitionIds;
 
-public class RubyEditor extends TextEditor {
+public class RubyEditor extends RubyAbstractEditor {
 	protected RubyActionGroup actionGroup;
-	protected RubyContentOutlinePage outlinePage;
-	protected RubyTextTools textTools ;
 	public RubyEditor() {
 		super();
-		this.setRulerContextMenuId("org.rubypeople.rdt.ui.rubyeditor.rulerContextMenu") ;
-		this.setEditorContextMenuId("org.rubypeople.rdt.ui.rubyeditor.contextMenu") ;
+		this.setRulerContextMenuId("org.rubypeople.rdt.ui.rubyeditor.rulerContextMenu") ; //$NON-NLS-1$
+		this.setEditorContextMenuId("org.rubypeople.rdt.ui.rubyeditor.contextMenu") ; //$NON-NLS-1$
 		setKeyBindingScopes(new String[] { "org.rubypeople.rdt.ui.rubyEditorScope" });  //$NON-NLS-1$
 	}
 
-	protected void configurePreferenceStore() {
-		IPreferenceStore prefs = RdtUiPlugin.getDefault().getPreferenceStore();
-		setPreferenceStore(prefs);
-
-		WorkbenchChainedTextFontFieldEditor.startPropagate(prefs, JFaceResources.TEXT_FONT);
-
-	}
-
-	protected void initializeEditor() {
-		configurePreferenceStore();
-
-		textTools = RdtUiPlugin.getDefault().getTextTools();
-		setSourceViewerConfiguration(new RubySourceViewerConfiguration(textTools, this));
-		setRangeIndicator(new DefaultRangeIndicator());
-	}
-	
 	protected void createActions() {
 		super.createActions();
 
@@ -76,30 +58,5 @@ public class RubyEditor extends TextEditor {
 		super.editorContextMenuAboutToShow(menu);
 
 		actionGroup.fillContextMenu(menu);
-	}
-
-	public Object getAdapter(Class adapter) {
-		if (IContentOutlinePage.class.equals(adapter))
-			return createRubyOutlinePage();
-		
-		return super.getAdapter(adapter);
-	}
-	
-	protected Object createRubyOutlinePage() {
-		outlinePage = new RubyContentOutlinePage(getSourceViewer().getDocument());
-		outlinePage.addSelectionChangedListener(new ISelectionChangedListener() {
-			public void selectionChanged(SelectionChangedEvent event) {
-				handleOutlinePageSelection(event);
-			}
-		});
-		return outlinePage;
-	}
-
-	protected void handleOutlinePageSelection(SelectionChangedEvent event) {
-		// todo handle outline selection
-	}
-
-	protected boolean affectsTextPresentation(PropertyChangeEvent event) {
-		return textTools.affectsTextPresentation(event) ;
 	}
 }

@@ -21,6 +21,9 @@ public class RdtUiPlugin extends AbstractUIPlugin implements RubyColorConstants 
 	
 	public static final String PLUGIN_ID = "org.rubypeople.rdt.ui"; //$NON-NLS-1$
 	public static final String RUBY_RESOURCES_VIEW_ID = PLUGIN_ID + ".ViewRubyResources"; //$NON-NLS-1$
+	public static final String EDITOR_ID = "org.rubypeople.rdt.ui.EditorRubyFile"; //$NON-NLS-1$
+	public static final String EXTERNAL_FILES_EDITOR_ID = "org.rubypeople.rdt.ui.ExternalRubyEditor" ; //$NON-NLS-1$
+	
 
 	protected RubyTextTools textTools ;
 	protected CodeFormatter codeFormatter ;
@@ -53,6 +56,11 @@ public class RdtUiPlugin extends AbstractUIPlugin implements RubyColorConstants 
 
 	public static void log(Throwable e) {
 		log(new Status(IStatus.ERROR, PLUGIN_ID, IStatus.ERROR, RdtUiMessages.getString("RdtUiPlugin.internalErrorOccurred"), e)); //$NON-NLS-1$
+	}
+	
+	public static void log(int severity, String message, Throwable e) {
+		Status status = new Status(severity, PLUGIN_ID, IStatus.OK, message, e) ;
+		RdtUiPlugin.log(status) ;
 	}
 	
 	public static Shell getActiveWorkbenchShell() {

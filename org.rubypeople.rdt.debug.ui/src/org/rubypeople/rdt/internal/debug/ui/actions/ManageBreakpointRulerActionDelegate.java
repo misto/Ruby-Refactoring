@@ -11,18 +11,19 @@ import org.eclipse.jface.text.source.IVerticalRulerInfo;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.texteditor.AbstractRulerActionDelegate;
 import org.eclipse.ui.texteditor.ITextEditor;
+import org.rubypeople.rdt.internal.ui.RdtUiPlugin;
 
 public class ManageBreakpointRulerActionDelegate extends AbstractRulerActionDelegate
 {
-	static final private String EDITOR_ID = "org.rubypeople.rdt.ui.EditorRubyFile"; //$NON-NLS-1$
 
 	public void setActiveEditor( IAction callerAction, IEditorPart targetEditor )
 	{		
 		if ( targetEditor != null )
 		{
 			String id = targetEditor.getSite().getId();
-			if ( !id.equals( EDITOR_ID ) )
+			if ( !(id.equals( RdtUiPlugin.EDITOR_ID) || id.equals(RdtUiPlugin.EXTERNAL_FILES_EDITOR_ID))) {
 				targetEditor = null;
+			}
 		}
 		super.setActiveEditor( callerAction, targetEditor );
 	}

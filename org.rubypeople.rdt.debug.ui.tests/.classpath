@@ -18,6 +18,7 @@
 	<classpathentry kind="src" path="/org.eclipse.debug.core"/>
 	<classpathentry kind="src" path="/org.eclipse.debug.ui"/>
 	<classpathentry kind="src" path="/org.rubypeople.eclipse.testutils"/>
+	<classpathentry kind="src" path="/org.rubypeople.rdt.debug.core"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

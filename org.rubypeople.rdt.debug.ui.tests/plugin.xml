@@ -28,6 +28,7 @@
       <import plugin="org.eclipse.debug.core"/>
       <import plugin="org.eclipse.debug.ui"/>
       <import plugin="org.rubypeople.eclipse.testutils"/>
+      <import plugin="org.rubypeople.rdt.debug.core"/>
    </requires>
 
 
