@@ -35,6 +35,8 @@ import java.util.StringTokenizer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.rubypeople.rdt.internal.core.RubyPlugin;
+
 /**
  * @author Chris
  * 
@@ -46,6 +48,9 @@ public class RubyParser {
 	private static List openElements = new ArrayList();
 	private static RubyScript script;
 	private static final char[] VARIABLE_END_CHARS = { ' ', '.', '[', '(', ')', ']', ',', '}', '{'};
+	private static boolean inDocs;
+	
+	private static final Pattern endPattern = Pattern.compile("^\\s*(.+\\s+)?end(\\s+.+)?$");
 
 	/**
 	 * @return
@@ -59,7 +64,22 @@ public class RubyParser {
 		int offset = 0;
 		try {
 			while ((curLine = reader.readLine()) != null) {
-				String myLine = removeAfterPoundSymbol(curLine);
+				String myLine = curLine;
+				if (inDocs) {
+					myLine = findMultiLineDocEnd(curLine);
+					if (inDocs) {
+						offset = 0;
+						lineNum++;
+						continue;
+					}
+				}
+				myLine = removeAfterPoundSymbol(myLine);
+				findMultiLineDocBeginning(myLine);
+				if (inDocs) {
+					offset = 0;
+					lineNum++;
+					continue;
+				}
 				findBegin(myLine, lineNum);
 				findIf(myLine, lineNum);
 				findCase(myLine, lineNum);
@@ -89,6 +109,27 @@ public class RubyParser {
 
 		cleanUp();
 		return script;
+	}
+
+	/**
+	 * @param curLine
+	 */
+	private static String findMultiLineDocEnd(String curLine) {
+		final String token = "=end";
+		if (curLine.indexOf(token) != -1) {
+			inDocs = false;
+			return curLine.substring(curLine.indexOf(token) + token.length());
+		}
+		return curLine;
+	}
+
+	/**
+	 * @param myLine
+	 */
+	private static void findMultiLineDocBeginning(String myLine) {
+		if (myLine.indexOf("=begin") != -1) {
+			inDocs = true;
+		}
 	}
 
 	/**
@@ -233,7 +274,7 @@ public class RubyParser {
 		List openQuotes = new ArrayList();
 		for (int index = 0; index < poundStart; index++) {
 			char c = curLine.charAt(index);
-			if ((c == '\'') || (c == '"')) {
+			if (isQuoteChar(c)) {
 				Character newChar = new Character(c);
 				if (!openQuotes.isEmpty()) {
 					Character open = (Character) openQuotes.get(openQuotes.size() - 1);
@@ -374,10 +415,10 @@ public class RubyParser {
 	 * @param lineNum
 	 */
 	private static void findEnd(String curLine, int lineNum) {
-		int endIndex = curLine.indexOf("end");
-		if (endIndex != -1) {
+		Matcher match = endPattern.matcher(curLine);
+		if ( match.find() ) {
 			log("Found end: " + curLine);
-			closeLastOpenElement(lineNum, endIndex);
+			closeLastOpenElement(lineNum, curLine.indexOf("end"));
 		}
 	}
 
@@ -386,16 +427,32 @@ public class RubyParser {
 	 * @param lineNum
 	 */
 	private static void findRequires(String curLine, int lineNum) {
-		char[] tokens = { '\''};
-		int start = findElement("require \'", tokens, curLine);
-		if (start == -1) return;
-		String name = getToken("require \'", tokens, curLine);
-		RubyRequires requires = new RubyRequires(name, new Position(lineNum, start));
-		if (!script.contains(requires)) {
-			script.addRequires(requires);
-		} else {
-			script.addParseError(new ParseError("Duplicate requires statement unnecessary.", lineNum, requires.getStart().getOffset(), requires.getEnd().getOffset()));
+		final String token = "require ";
+		if (curLine.indexOf(token) == -1) return;
+
+		int start = curLine.indexOf(token) + token.length();
+		String leftOver = curLine.substring(start);
+		for (int i = 0; i < leftOver.length(); i++) {
+			char c = leftOver.charAt(i);
+			if (!isQuoteChar(c)) continue;
+			String name = getToken(token + c, new char[] { c}, curLine);
+			RubyRequires requires = new RubyRequires(name, new Position(lineNum, start + 1));
+			if (!script.contains(requires)) {
+				script.addRequires(requires);
+			} else {
+				script.addParseError(new ParseError("Duplicate require statement unnecessary.", lineNum, requires.getStart().getOffset(), requires.getEnd().getOffset()));
+			}
+			return;
+
 		}
+	}
+
+	/**
+	 * @param c
+	 * @return
+	 */
+	private static boolean isQuoteChar(char c) {
+		return (c == '\'') || (c == '"');
 	}
 
 	/**
@@ -518,12 +575,14 @@ public class RubyParser {
 	 */
 	private static void log(String string) {
 		System.out.println(string);
+		//RubyPlugin.log(new Exception(string));
 	}
 
 	/**
 	 *  
 	 */
 	private static void closeLastOpenElement(int endLine, int offset) {
+		if (openElements.isEmpty()) log("Attempted to close an open element, but none exist! Line #" + endLine + ", offset: " + offset);
 		RubyElement elem = (RubyElement) openElements.remove(openElements.size() - 1);
 		elem.setEnd(new Position(endLine, offset));
 		log("Closed element:" + elem);

@@ -39,7 +39,7 @@ public class RubyInstanceVariable extends RubyElement {
 	 */
 	public RubyInstanceVariable(String name, Position start) {
 		super(name, start);
-		setEnd(new Position(start.getLineNumber(), start.getOffset() + name.length()));
+		setEnd(new Position(start.getLineNumber(), start.getOffset() + name.length() - 1));
 		access = RubyElement.PRIVATE;
 	}
 	

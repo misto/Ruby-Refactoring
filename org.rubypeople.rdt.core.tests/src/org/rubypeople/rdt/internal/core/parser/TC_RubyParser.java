@@ -46,6 +46,17 @@ public class TC_RubyParser extends TestCase {
 		assertEquals(1, script.getElementCount());
 	}
 
+	public void testRecognizesRequiresInSingleQuotes() throws Exception {
+		RubyScript script = RubyParser.parse("require 'tk'\n");
+		RubyRequires requires = new RubyRequires("tk", new Position(0, 9));
+		assertEquals(requires, script.getRequires("tk"));
+		assertEquals(new Position(0, 9), script.getRequires("tk").getStart());
+		assertEquals(new Position(0, 11), script.getRequires("tk").getEnd());
+		assertTrue(script.contains(requires));
+		assertFalse(script.contains(new RubyRequires("fake", new Position(0, -987))));
+		assertEquals(1, script.getElementCount());
+	}
+
 	public void testRecognizesTwoRequires() throws Exception {
 		RubyScript script = RubyParser.parse("require \"tk\"\nrequire \"irb\"\n");
 		assertTrue(script.contains(new RubyRequires("tk", new Position(0, 9))));
@@ -57,8 +68,9 @@ public class TC_RubyParser extends TestCase {
 	public void testDuplicateRequiresAddParseException() throws Exception {
 		RubyScript script = RubyParser.parse("require \"tk\"\nrequire \"tk\"\n");
 		assertTrue(script.hasParseErrors());
-		assertEquals(1, script.getErrorCount() );
-		//assertTrue(script.getParseErrors().contains(new ParseError("Duplicate requires statement unnecessary.", 1, 9, 11)));
+		assertEquals(1, script.getErrorCount());
+		//assertTrue(script.getParseErrors().contains(new
+		// ParseError("Duplicate requires statement unnecessary.", 1, 9, 11)));
 		assertEquals(1, script.getElementCount());
 		assertTrue(script.contains(new RubyRequires("tk", new Position(0, 9))));
 	}
@@ -135,7 +147,7 @@ public class TC_RubyParser extends TestCase {
 		assertTrue(bob.contains(new RubyInstanceVariable("name", new Position(1, 1))));
 		assertNotNull(bob.getElement("@name"));
 		assertEquals(new Position(1, 1), bob.getElement("@name").getStart());
-		assertEquals(new Position(1, 5), bob.getElement("@name").getEnd());
+		assertEquals(new Position(1, 4), bob.getElement("@name").getEnd());
 	}
 
 	public void testRecognizesClassVariable() throws Exception {
@@ -149,7 +161,7 @@ public class TC_RubyParser extends TestCase {
 		assertTrue(bob.contains(new RubyClassVariable("name", new Position(1, 2))));
 		assertNotNull(bob.getElement("@@name"));
 		assertEquals(new Position(1, 2), bob.getElement("@@name").getStart());
-		assertEquals(new Position(1, 6), bob.getElement("@@name").getEnd());
+		assertEquals(new Position(1, 5), bob.getElement("@@name").getEnd());
 	}
 
 	public void testRecognizesGlobal() throws Exception {
@@ -161,7 +173,7 @@ public class TC_RubyParser extends TestCase {
 		assertTrue(script.contains(new RubyGlobal("name", new Position(1, 1))));
 		assertNotNull(script.getElement("$name"));
 		assertEquals(new Position(1, 1), script.getElement("$name").getStart());
-		assertEquals(new Position(1, 5), script.getElement("$name").getEnd());
+		assertEquals(new Position(1, 4), script.getElement("$name").getEnd());
 	}
 
 	public void testRecognizesIfBlock() throws Exception {
@@ -475,4 +487,25 @@ public class TC_RubyParser extends TestCase {
 		RubyInstanceVariable var = (RubyInstanceVariable) bob.getElement("@var");
 		assertEquals(RubyElement.PUBLIC, var.getAccess());
 	}
+
+	public void testIgnoreMultiLineDocs() throws Exception {
+		RubyScript script = RubyParser.parse("=begin\n@docVar = 'hey'\n=end\nmodule Bob\nend\n");
+		assertEquals(1, script.getElementCount());
+		assertTrue(script.contains(new RubyModule("Bob", new Position(3, 7))));
+	}
+
+	public void testFalsePositiveEnds() throws Exception {
+		RubyScript script = RubyParser.parse("module Bob\nreal.__send__(op, x)\n@docVar = 'blah'\nend\n");
+		assertEquals(1, script.getElementCount());
+		RubyModule module = script.getModule("Bob");
+		assertEquals(1, module.getElementCount() );
+	}
+	
+	public void testRecognizesDo() throws Exception {
+		RubyScript script = RubyParser.parse("module Bob\nstring.tr('+', ' ').gsub(/((?:%[0-9a-fA-F]{2})+)/n) do\n[var.delete('%')].pack('H*')\nend\n@var = 1\nend\n");
+		assertEquals(1, script.getElementCount());
+		RubyModule module = script.getModule("Bob");
+		assertEquals(1, module.getElementCount() );
+	}
+
 }
