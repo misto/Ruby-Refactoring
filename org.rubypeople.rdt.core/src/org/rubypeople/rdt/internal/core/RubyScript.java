@@ -42,6 +42,7 @@ import org.rubypeople.rdt.core.IBuffer;
 import org.rubypeople.rdt.core.IImportContainer;
 import org.rubypeople.rdt.core.IImportDeclaration;
 import org.rubypeople.rdt.core.IOpenable;
+import org.rubypeople.rdt.core.IProblemRequestor;
 import org.rubypeople.rdt.core.IRubyElement;
 import org.rubypeople.rdt.core.IRubyScript;
 import org.rubypeople.rdt.core.IRubyType;
@@ -50,8 +51,6 @@ import org.rubypeople.rdt.core.RubyCore;
 import org.rubypeople.rdt.core.RubyModelException;
 import org.rubypeople.rdt.core.WorkingCopyOwner;
 import org.rubypeople.rdt.internal.core.buffer.BufferManager;
-import org.rubypeople.rdt.internal.core.parser.MarkerUtility;
-import org.rubypeople.rdt.internal.core.parser.RdtWarnings;
 import org.rubypeople.rdt.internal.core.parser.RubyParser;
 import org.rubypeople.rdt.internal.core.parser.Util;
 
@@ -105,33 +104,15 @@ public class RubyScript extends Openable implements IRubyScript {
 		}
 		final char[] contents = buffer == null ? null : buffer.getCharacters();
 
-		try {
-			RubyCore.log("About to parse RubyScript!");
-			// FIXME Pass in a ProblemRequestor and add problems to it
-			// FIXME Have UI handle problems for working copies
-//			MarkerUtility.removeMarkers(underlyingResource);
-//			RubyCore.log("Removed markers");
+		RubyModelManager.PerWorkingCopyInfo perWorkingCopyInfo = getPerWorkingCopyInfo();
 
-			RdtWarnings warnings = new RdtWarnings();
-			RubyCore.log("Created warnings object");
-			RubyParser parser = new RubyParser(warnings);
-			RubyCore.log("Created parser");
+		try {
+			RubyParser parser = new RubyParser();
 			Node node = parser.parse(getElementName(), new StringReader(new String(contents)));
-			RubyCore.log("Parsed script");
 			RubyScriptStructureBuilder visitor = new RubyScriptStructureBuilder(this, unitInfo, newElements);
 			if (node != null) node.accept(visitor);
-			RubyCore.log("Built structure");
-
-//			MarkerUtility.createWarnings(underlyingResource, warnings.getWarnings());
-//			RubyCore.log("Created Warnings!");
-
-//			IEclipsePreferences preferences = RubyCore.getInstancePreferences();
-//			TaskParser taskParser = new TaskParser(preferences);
-//			taskParser.parse(underlyingResource, buffer.getContents());
-
 			unitInfo.setIsStructureKnown(true);
 		} catch (SyntaxException e) {
-//			MarkerUtility.createSyntaxError(underlyingResource, e);
 			unitInfo.setIsStructureKnown(false);
 		} catch (Exception e) {
 			RubyCore.log(e);
@@ -143,6 +124,11 @@ public class RubyScript extends Openable implements IRubyScript {
 			underlyingResource = getResource();
 		}
 		unitInfo.timestamp = ((IFile) underlyingResource).getModificationStamp();
+
+		// compute other problems if needed
+		perWorkingCopyInfo.beginReporting();
+		RubyScriptProblemFinder.process(this, contents, this.owner, perWorkingCopyInfo, pm);
+		perWorkingCopyInfo.endReporting();
 
 		return unitInfo.isStructureKnown();
 	}
@@ -243,6 +229,15 @@ public class RubyScript extends Openable implements IRubyScript {
 
 	public IRubyScript getRubyScript() {
 		return this;
+	}
+
+	public char[] getContents() {
+		try {
+			IBuffer buffer = this.getBuffer();
+			return buffer == null ? null : buffer.getCharacters();
+		} catch (RubyModelException e) {
+			return new char[0];
+		}
 	}
 
 	/*
@@ -353,7 +348,7 @@ public class RubyScript extends Openable implements IRubyScript {
 																						 * create
 																						 */, false/*
 					 * don't record usage
-					 */);
+					 */, null);
 	}
 
 	/**
@@ -365,14 +360,15 @@ public class RubyScript extends Openable implements IRubyScript {
 														 * non shared working
 														 * copy
 														 */
-		}, monitor);
+		}, null, monitor);
 	}
 
 	/**
 	 * @throws RubyModelException
-	 * @see IRubyScript#getWorkingCopy(WorkingCopyOwner, IProgressMonitor)
+	 * @see IRubyScript#getWorkingCopy(WorkingCopyOwner, IProblemRequestor,
+	 *      IProgressMonitor)
 	 */
-	public IRubyScript getWorkingCopy(WorkingCopyOwner workingCopyOwner, IProgressMonitor monitor) throws RubyModelException {
+	public IRubyScript getWorkingCopy(WorkingCopyOwner workingCopyOwner, IProblemRequestor problemRequestor, IProgressMonitor monitor) throws RubyModelException {
 		if (!isPrimary()) return this;
 
 		RubyModelManager manager = RubyModelManager.getRubyModelManager();
@@ -383,35 +379,33 @@ public class RubyScript extends Openable implements IRubyScript {
 																													 * create
 																													 */, true/*
 					 * record usage
-					 */);
+					 */, null);
 		if (perWorkingCopyInfo != null) { return perWorkingCopyInfo.getWorkingCopy(); // return
 		// existing
 		// handle instead of the
 		// one created above
 		}
-		BecomeWorkingCopyOperation op = new BecomeWorkingCopyOperation(workingCopy);
+		BecomeWorkingCopyOperation op = new BecomeWorkingCopyOperation(workingCopy, problemRequestor);
 		op.runOperation(monitor);
 		return workingCopy;
 	}
 
-	/*
-	 * (non-Rubydoc)
+	/**
 	 * 
-	 * @see org.rubypeople.rdt.core.IRubyScript#becomeWorkingCopy(org.eclipse.core.runtime.IProgressMonitor)
 	 */
-	public void becomeWorkingCopy(IProgressMonitor monitor) throws RubyModelException {
+	public void becomeWorkingCopy(IProblemRequestor requestor, IProgressMonitor monitor) throws RubyModelException {
 		RubyModelManager manager = RubyModelManager.getRubyModelManager();
 		RubyModelManager.PerWorkingCopyInfo perWorkingCopyInfo = manager.getPerWorkingCopyInfo(this, false/*
 																											 * don't
 																											 * create
 																											 */, true
-		/* record usage */);
+		/* record usage */, null);
 		if (perWorkingCopyInfo == null) {
 			// close cu and its children
 			close();
 			RubyCore.log(toString());
 
-			BecomeWorkingCopyOperation operation = new BecomeWorkingCopyOperation(this);
+			BecomeWorkingCopyOperation operation = new BecomeWorkingCopyOperation(this, requestor);
 			operation.runOperation(monitor);
 		}
 	}

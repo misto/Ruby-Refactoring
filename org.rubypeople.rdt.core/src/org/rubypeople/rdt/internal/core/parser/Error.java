@@ -10,17 +10,18 @@ import org.jruby.lexer.yacc.ISourcePosition;
  * @author Chris
  *
  */
-public class Warning extends DefaultProblem {
+public class Error extends DefaultProblem {
 
-	public Warning(ISourcePosition position, String message) {
+	public Error(ISourcePosition position, String message) {
 		super(position, message);
 	}
 	
-	public boolean isWarning() {
+	public boolean isError() {
 		return true;
 	}
 	
-	public boolean isError() {
+	public boolean isWarning() {
 		return false;
 	}
+
 }

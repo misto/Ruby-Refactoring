@@ -11,6 +11,7 @@
 package org.rubypeople.rdt.internal.core;
 
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.rubypeople.rdt.core.IProblemRequestor;
 import org.rubypeople.rdt.core.RubyModelException;
 
 /**
@@ -21,14 +22,16 @@ public class BecomeWorkingCopyOperation {
 
 	private RubyScript workingCopy;
 	private IProgressMonitor monitor;
+	private IProblemRequestor problemRequestor;
 
 	/*
 	 * Creates a BecomeWorkingCopyOperation for the given working copy.
 	 * perOwnerWorkingCopies map is not null if the working copy is a shared
 	 * working copy.
 	 */
-	public BecomeWorkingCopyOperation(RubyScript workingCopy) {
+	public BecomeWorkingCopyOperation(RubyScript workingCopy, IProblemRequestor problemRequestor) {
 		this.workingCopy = workingCopy;
+		this.problemRequestor = problemRequestor;
 	}
 
 	protected void executeOperation() throws RubyModelException {
@@ -41,7 +44,7 @@ public class BecomeWorkingCopyOperation {
 																						 */, true/*
 																													 * record
 																													 * usage
-																													 */);
+																													 */, problemRequestor);
 		workingCopy.openWhenClosed(workingCopy.createElementInfo(), monitor);
 	}
 

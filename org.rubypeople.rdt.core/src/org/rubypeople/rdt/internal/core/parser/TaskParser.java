@@ -7,11 +7,12 @@ package org.rubypeople.rdt.internal.core.parser;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.HashMap;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.StringTokenizer;
 
 import org.eclipse.core.resources.IMarker;
-import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.preferences.IEclipsePreferences;
 import org.rubypeople.rdt.core.RubyCore;
@@ -25,6 +26,7 @@ public class TaskParser {
 	private boolean fCaseSensitive = false;
 	private String[] fTags;
 	private int[] fPriorities;
+	private List tasks;
 
 	/**
 	 * @param preferences
@@ -36,6 +38,7 @@ public class TaskParser {
 		String priorities = preferences.get(RubyCore.COMPILER_TASK_PRIORITIES, RubyCore.DEFAULT_TASK_PRIORITIES);
 		fTags = tokenize(tags, ",");
 		fPriorities = convertPriorities(tokenize(priorities, ","));
+		tasks = new ArrayList();
 	}
 
 	/**
@@ -74,13 +77,11 @@ public class TaskParser {
 	}
 
 	/**
-	 * @param underlyingResource
 	 * @param contents
 	 */
-	public void parse(IResource resource, String contents) {
+	public void parse(String contents) {
 		if (fTags.length <= 0) return;
 		try {
-			resource.deleteMarkers(IMarker.TASK, false, 0);
 			StringTokenizer tokenizer = new StringTokenizer(contents, "\n", true);
 			int line = 0;
 			int offset = 0;
@@ -105,7 +106,7 @@ public class TaskParser {
 					int index = token.indexOf(tag);
 					if (index == -1) continue;
 					String message = original.substring(index).trim();
-					createTaskMarker(resource, priority, message, line + 1, offset + index, offset + index + message.length());
+					createTaskTag(priority, message, line + 1, offset + index, offset + index + message.length());
 				}
 				offset += token.length();
 				line++;
@@ -116,42 +117,23 @@ public class TaskParser {
 	}
 
 	/**
-	 * @param resource
+	 * @param priority
 	 * @param message
 	 * @param lineNumber
+	 * @param start
+	 * @param end
 	 * @throws CoreException
 	 */
-	private static void createTaskMarker(IResource resource, int priority, String message, int lineNumber, int start, int end) throws CoreException {
-		createMarker(resource, priority, message, lineNumber, start, end, IMarker.TASK, 1, false, false);
+	private void createTaskTag(int priority, String message, int lineNumber, int start, int end) throws CoreException {
+		TaskTag task = new TaskTag(message, priority, lineNumber, start, end);
+		tasks.add(task);
 	}
 
-	private static void createMarker(IResource resource, int priority, String message, int lineNumber, int start, int end, String markerType, int severity, boolean userEditable, boolean istransient) throws CoreException {
-		if (lineNumber <= 0) lineNumber = 1;
-		IMarker marker = markerExists(resource, message, lineNumber, markerType);
-		if (marker == null) {
-			HashMap map = new HashMap();
-			map.put(IMarker.PRIORITY, new Integer(priority));
-			map.put(IMarker.MESSAGE, message);
-			map.put(IMarker.LINE_NUMBER, new Integer(lineNumber));
-			map.put(IMarker.SEVERITY, new Integer(severity));
-			map.put(IMarker.USER_EDITABLE, new Boolean(userEditable));
-			map.put(IMarker.TRANSIENT, new Boolean(istransient));
-			map.put(IMarker.CHAR_START, new Integer(start));
-			map.put(IMarker.CHAR_END, new Integer(end));
-			marker = resource.createMarker(markerType);
-			marker.setAttributes(map);
-		}
-	}
-
-	public static IMarker markerExists(IResource resource, String message, int lineNumber, String type) throws CoreException {
-		IMarker tasks[] = resource.findMarkers(type, true, 0);
-		for (int i = 0; i < tasks.length; i++) {
-			if (tasks[i].getAttribute(IMarker.LINE_NUMBER).toString().equals(String.valueOf(lineNumber)) && tasks[i].getAttribute(IMarker.MESSAGE).equals(message)) return tasks[i];
-		}
-		return null;
-	}
-
-	public void parse(IResource file, InputStreamReader reader) {
+	/**
+	 * 
+	 * @param reader
+	 */
+	public void parse(InputStreamReader reader) {
 		StringBuffer buffer = new StringBuffer();
 		BufferedReader buffered = null;
 		try {			
@@ -161,7 +143,7 @@ public class TaskParser {
 				buffer.append(line);
 				buffer.append('\n');
 			}
-			parse(file, buffer.toString());
+			parse(buffer.toString());
 		} catch (IOException e) {
 			RubyCore.log(e);
 		} finally {
@@ -171,5 +153,9 @@ public class TaskParser {
 				// ignore
 			}
 		}		
+	}
+
+	public List getTasks() {
+		return Collections.unmodifiableList(tasks);
 	}
 }

@@ -110,17 +110,22 @@ public class RubyBuilder extends IncrementalProjectBuilder {
 				try {
 					MarkerUtility.removeMarkers(file);
 					parser.parse(units[i].getName(), new InputStreamReader(file.getContents()));
-					MarkerUtility.createWarnings(file, warnings.getWarnings());
-					IEclipsePreferences preferences = RubyCore.getInstancePreferences();
-					TaskParser taskParser = new TaskParser(preferences);
-					taskParser.parse(file, new InputStreamReader(file.getContents()));
+					MarkerUtility.createProblemMarkers(file, warnings.getWarnings());						
 				} catch (SyntaxException e) {
 					MarkerUtility.createSyntaxError(file, e);
 				}
+				createTasks(file);
 			} catch (CoreException e) {
 				RubyCore.log(e);
 			}
 		}
 
+	}
+
+	private void createTasks(IFile file) throws CoreException {
+		IEclipsePreferences preferences = RubyCore.getInstancePreferences();
+		TaskParser taskParser = new TaskParser(preferences);
+		taskParser.parse(new InputStreamReader(file.getContents()));
+		MarkerUtility.createTasks(file, taskParser.getTasks());
 	}
 }

@@ -60,7 +60,7 @@ public abstract class Openable extends RubyElement implements IOpenable, IBuffer
 	 * 
 	 * @see IOpenable
 	 */
-	public IBuffer getBuffer() {
+	public IBuffer getBuffer() throws RubyModelException {
 		if (hasBuffer()) {
 			// ensure element is open
 			// Object info = getElementInfo();

@@ -14,12 +14,14 @@ import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.preferences.IEclipsePreferences;
 import org.rubypeople.rdt.core.ILoadpathEntry;
 import org.rubypeople.rdt.core.IParent;
+import org.rubypeople.rdt.core.IProblemRequestor;
 import org.rubypeople.rdt.core.IRubyElement;
 import org.rubypeople.rdt.core.IRubyProject;
 import org.rubypeople.rdt.core.IRubyScript;
 import org.rubypeople.rdt.core.RubyCore;
 import org.rubypeople.rdt.core.RubyModelException;
 import org.rubypeople.rdt.core.WorkingCopyOwner;
+import org.rubypeople.rdt.core.parser.IProblem;
 
 /**
  * @author cawilliams
@@ -198,14 +200,15 @@ public class RubyModelManager {
 		return this.rubyModel;
 	}
 
-	public static class PerWorkingCopyInfo {
+	public static class PerWorkingCopyInfo implements IProblemRequestor {
 
 		int useCount = 0;
-
 		IRubyScript workingCopy;
+		private IProblemRequestor problemRequestor;
 
-		public PerWorkingCopyInfo(IRubyScript workingCopy) {
+		public PerWorkingCopyInfo(IRubyScript workingCopy, IProblemRequestor problemRequestor) {
 			this.workingCopy = workingCopy;
+			this.problemRequestor = problemRequestor;
 		}
 
 		public IRubyScript getWorkingCopy() {
@@ -218,7 +221,24 @@ public class RubyModelManager {
 			buffer.append(((RubyElement) this.workingCopy).toString());
 			buffer.append("\nUse count = "); //$NON-NLS-1$
 			buffer.append(this.useCount);
+			buffer.append("\nProblem requestor:\n  "); //$NON-NLS-1$
+			buffer.append(this.problemRequestor);
 			return buffer.toString();
+		}
+		public void acceptProblem(IProblem problem) {
+			if (this.problemRequestor == null) return;
+			this.problemRequestor.acceptProblem(problem);
+		}
+		public void beginReporting() {
+			if (this.problemRequestor == null) return;
+			this.problemRequestor.beginReporting();
+		}
+		public void endReporting() {
+			if (this.problemRequestor == null) return;
+			this.problemRequestor.endReporting();
+		}
+		public boolean isActive() {
+			return this.problemRequestor != null && this.problemRequestor.isActive();
 		}
 	}
 
@@ -226,10 +246,11 @@ public class RubyModelManager {
 	 * @param script
 	 * @param create
 	 * @param recordUsage
+	 * @param problemRequestor 
 	 * @param object
 	 * @return
 	 */
-	public PerWorkingCopyInfo getPerWorkingCopyInfo(RubyScript workingCopy, boolean create, boolean recordUsage) {
+	public PerWorkingCopyInfo getPerWorkingCopyInfo(RubyScript workingCopy, boolean create, boolean recordUsage, IProblemRequestor problemRequestor) {
 		synchronized (this.perWorkingCopyInfos) { // use the
 			// perWorkingCopyInfo
 			// collection as its own
@@ -243,7 +264,7 @@ public class RubyModelManager {
 
 			PerWorkingCopyInfo info = workingCopyToInfos == null ? null : (PerWorkingCopyInfo) workingCopyToInfos.get(workingCopy);
 			if (info == null && create) {
-				info = new PerWorkingCopyInfo(workingCopy);
+				info = new PerWorkingCopyInfo(workingCopy, problemRequestor);
 				workingCopyToInfos.put(workingCopy, info);
 			}
 			if (info != null && recordUsage) info.useCount++;

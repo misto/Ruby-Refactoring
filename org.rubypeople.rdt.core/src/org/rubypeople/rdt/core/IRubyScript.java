@@ -208,7 +208,7 @@ public interface IRubyScript extends IRubyElement, ISourceReference, IParent, IO
 	 *         working copy
 	 * @since 3.0
 	 */
-	IRubyScript getWorkingCopy(WorkingCopyOwner owner, IProgressMonitor monitor) throws RubyModelException;
+	IRubyScript getWorkingCopy(WorkingCopyOwner owner, IProblemRequestor requestor, IProgressMonitor monitor) throws RubyModelException;
 
 	/**
 	 * Changes this compilation unit handle into a working copy. A new
@@ -228,6 +228,7 @@ public interface IRubyScript extends IRubyElement, ISourceReference, IParent, IO
 	 * it reflects the underlying resource), <code>discardWorkingCopy</code>
 	 * must be call as many times as <code>becomeWorkingCopy</code>.
 	 * </p>
+	 * @param requestor 
 	 * 
 	 * @param monitor
 	 *            a progress monitor used to report progress while opening this
@@ -238,7 +239,7 @@ public interface IRubyScript extends IRubyElement, ISourceReference, IParent, IO
 	 * @see #discardWorkingCopy()
 	 * @since 3.0
 	 */
-	void becomeWorkingCopy(IProgressMonitor monitor) throws RubyModelException;
+	void becomeWorkingCopy(IProblemRequestor requestor, IProgressMonitor monitor) throws RubyModelException;
 
 	/**
 	 * Changes this compilation unit in working copy mode back to its original

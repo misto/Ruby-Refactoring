@@ -777,8 +777,11 @@ public class RubyScriptStructureBuilder implements NodeVisitor {
 			DStrNode dstrNode = (DStrNode) tmp;
 			tmp = dstrNode.iterator().next();
 		}
-		StrNode strNode = (StrNode) tmp;
-		return strNode.getValue();
+		if (tmp instanceof StrNode) {
+			StrNode strNode = (StrNode) tmp;
+			return strNode.getValue();
+		}
+		return null;
 	}
 
 	/*
@@ -1065,7 +1068,7 @@ public class RubyScriptStructureBuilder implements NodeVisitor {
 		String name = iVisited.getName();
 		RubyModule module = new RubyModule(modelStack.peek(), name);
 		modelStack.push(module);
-		
+
 		RubyElementInfo parentInfo = infoStack.peek();
 		parentInfo.addChild(module);
 
@@ -1074,7 +1077,7 @@ public class RubyScriptStructureBuilder implements NodeVisitor {
 		ISourcePosition pos = iVisited.getPosition();
 		setKeywordRange("module", pos, info, name);
 		// TODO Set more info!
-		infoStack.push(info);		
+		infoStack.push(info);
 
 		newElements.put(module, info);
 

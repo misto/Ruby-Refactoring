@@ -16,6 +16,7 @@ import org.jruby.lexer.yacc.ISourcePosition;
 import org.jruby.lexer.yacc.SyntaxException;
 import org.rubypeople.rdt.core.IRubyModelMarker;
 import org.rubypeople.rdt.core.RubyCore;
+import org.rubypeople.rdt.core.parser.IProblem;
 
 /**
  * @author Chris
@@ -57,35 +58,75 @@ public class MarkerUtility {
 	}
 
 	/**
-	 * @param underlyingResource
-	 * @param warnings
+	 * @param resource
+	 * @param problems
 	 */
-	public static void createWarnings(IResource underlyingResource, List warnings) {
-		for (Iterator iter = warnings.iterator(); iter.hasNext();) {
-			createWarning(underlyingResource, (Warning) iter.next());
+	public static void createProblemMarkers(IResource resource, List problems) {
+		for (Iterator iter = problems.iterator(); iter.hasNext();) {
+			createProblemMarker(resource, (DefaultProblem) iter.next());
 		}
 	}
 
 	/**
 	 * @param underlyingResource
-	 * @param warning
+	 * @param problem
 	 */
-	private static void createWarning(IResource underlyingResource, Warning warning) {
+	private static void createProblemMarker(IResource underlyingResource, IProblem problem) {
 		try {
-			// TODO Combine with createSyntaxError code!
-			ISourcePosition pos = warning.getPosition();
 			IMarker marker = underlyingResource.createMarker(IRubyModelMarker.RUBY_MODEL_PROBLEM_MARKER);
 			Map map = new HashMap();
-			map.put(IMarker.SEVERITY, new Integer(IMarker.SEVERITY_WARNING));
-			map.put(IMarker.MESSAGE, warning.getMessage());
+			int severity;
+			if(problem.isWarning()) severity = IMarker.SEVERITY_WARNING;
+			else if(problem.isError()) severity = IMarker.SEVERITY_ERROR;
+			else severity = IMarker.SEVERITY_INFO;
+			map.put(IMarker.SEVERITY, new Integer(severity));
+			map.put(IMarker.MESSAGE, problem.getMessage());
 			map.put(IMarker.USER_EDITABLE, Boolean.FALSE);
-			map.put(IMarker.LINE_NUMBER, new Integer(pos.getLine()));
-			map.put(IMarker.CHAR_START, new Integer(pos.getStartOffset()));
-			map.put(IMarker.CHAR_END, new Integer(pos.getEndOffset()));
+			map.put(IMarker.LINE_NUMBER, new Integer(problem.getSourceLineNumber()));
+			map.put(IMarker.CHAR_START, new Integer(problem.getSourceStart()));
+			map.put(IMarker.CHAR_END, new Integer(problem.getSourceEnd()));
 			marker.setAttributes(map);
 		} catch (CoreException e) {
 			RubyCore.log(e);
 		}
+	}
+
+	public static void createTasks(IResource underlyingResource, List tasks) throws CoreException {
+		for (Iterator iter = tasks.iterator(); iter.hasNext();) {
+			createTask(underlyingResource, (TaskTag) iter.next());
+		}		
+	}
+	
+	/**
+	 * @param underlyingResource
+	 * @param warning
+	 * @throws CoreException 
+	 */
+	private static void createTask(IResource resource, TaskTag warning) throws CoreException {
+		int lineNumber = warning.getLine();
+		if (lineNumber <= 0) lineNumber = 1;
+		IMarker marker = markerExists(resource, warning.getMessage(), lineNumber, IMarker.TASK);
+		if (marker == null) {
+			HashMap map = new HashMap();
+			map.put(IMarker.PRIORITY, new Integer(warning.getPriority()));
+			map.put(IMarker.MESSAGE, warning.getMessage());
+			map.put(IMarker.LINE_NUMBER, new Integer(lineNumber));
+			map.put(IMarker.SEVERITY, new Integer(IMarker.SEVERITY_INFO));
+			map.put(IMarker.USER_EDITABLE, new Boolean(false));
+			map.put(IMarker.TRANSIENT, new Boolean(false));
+			map.put(IMarker.CHAR_START, new Integer(warning.getStart()));
+			map.put(IMarker.CHAR_END, new Integer(warning.getEnd()));
+			marker = resource.createMarker(IMarker.TASK);
+			marker.setAttributes(map);
+		}
+	}
+	
+	public static IMarker markerExists(IResource resource, String message, int lineNumber, String type) throws CoreException {
+		IMarker tasks[] = resource.findMarkers(type, true, 0);
+		for (int i = 0; i < tasks.length; i++) {
+			if (tasks[i].getAttribute(IMarker.LINE_NUMBER).toString().equals(String.valueOf(lineNumber)) && tasks[i].getAttribute(IMarker.MESSAGE).equals(message)) return tasks[i];
+		}
+		return null;
 	}
 
 }
