@@ -3,10 +3,7 @@
 	<name>org.rubypeople.rdt.doc.user</name>
 	<comment></comment>
 	<projects>
-		<project>org.eclipse.core.boot</project>
-		<project>org.eclipse.core.resources</project>
-		<project>org.eclipse.core.runtime</project>
-		<project>org.eclipse.ui</project>
+		<project>org.eclipse.core.runtime.compatibility</project>
 	</projects>
 	<buildSpec>
 		<buildCommand>
