@@ -3,6 +3,7 @@ package org.rubypeople.rdt.internal.ui.rubyeditor;
 import org.eclipse.jface.viewers.ILabelProvider;
 import org.eclipse.jface.viewers.ILabelProviderListener;
 import org.eclipse.swt.graphics.Image;
+import org.rubypeople.rdt.core.RubyParsedComponent;
 import org.rubypeople.rdt.internal.ui.RdtUiImages;
 
 public class RubyOutlineLabelProvider implements ILabelProvider {
@@ -17,8 +18,8 @@ public class RubyOutlineLabelProvider implements ILabelProvider {
 	/**
 	 * @see org.eclipse.jface.viewers.ILabelProvider#getText(java.lang.Object)
 	 */
-	public String getText(Object arg0) {
-		return arg0.toString();
+	public String getText(Object obj) {
+		return ((RubyParsedComponent) obj).getName();
 	}
 
 	/**

@@ -24,4 +24,19 @@ public class RubyParsedComponent {
 		children.add(childComponent);
 	}
 
+	public int nameOffset() {
+		return -1;
+	}
+
+	public int nameLength() {
+		return -1;
+	}
+	
+	public int offset() {
+		return -1;
+	}
+	
+	public int length() {
+		return -1;
+	}
 }

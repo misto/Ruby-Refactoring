@@ -7,8 +7,11 @@ import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.preference.PreferenceConverter;
 import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.jface.text.ITextOperationTarget;
+import org.eclipse.jface.text.source.AnnotationRulerColumn;
+import org.eclipse.jface.text.source.ISourceViewer;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
+import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.swt.graphics.RGB;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.editors.text.TextEditor;
@@ -18,6 +21,7 @@ import org.eclipse.ui.texteditor.ITextEditorActionConstants;
 import org.eclipse.ui.texteditor.TextOperationAction;
 import org.eclipse.ui.texteditor.WorkbenchChainedTextFontFieldEditor;
 import org.eclipse.ui.views.contentoutline.IContentOutlinePage;
+import org.rubypeople.rdt.core.RubyParsedComponent;
 import org.rubypeople.rdt.internal.ui.RdtUiMessages;
 import org.rubypeople.rdt.internal.ui.RdtUiPlugin;
 import org.rubypeople.rdt.internal.ui.text.RubyColorConstants;
@@ -83,7 +87,6 @@ public class RubyEditor extends TextEditor {
 	}
 
 	public Object getAdapter(Class adapter) {
-		
 		if (IContentOutlinePage.class.equals(adapter))
 			return createRubyOutlinePage();
 		
@@ -97,12 +100,15 @@ public class RubyEditor extends TextEditor {
 				handleOutlinePageSelection(event);
 			}
 		});
-		return outlinePage;	
+		return outlinePage;
 	}
 
 	protected void handleOutlinePageSelection(SelectionChangedEvent event) {
-		// This is where we need to get the widget displaying the document and update the view
-		System.out.println("selection occurred in outline page");
+		StructuredSelection selection = (StructuredSelection) event.getSelection();
+		RubyParsedComponent rubySelection = (RubyParsedComponent) selection.getFirstElement();
+		ISourceViewer viewer = getSourceViewer();
+		viewer.setRangeIndication(rubySelection.offset(), rubySelection.length(), true);
+		viewer.setSelectedRange(rubySelection.nameOffset(), rubySelection.nameLength());
 	}
 
 	protected void doSetInput(IEditorInput input) throws CoreException {
