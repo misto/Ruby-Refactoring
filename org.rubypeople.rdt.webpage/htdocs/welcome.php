@@ -30,6 +30,20 @@ A regular expression plugin is also available (Thanks to the <a href="http://e-p
 
     <!-- INSERT NEW NEWS HERE!!! -->
 	<table>
+		<tr>
+      <td align="right" valign="top" width="20"><img src="images/arrow.gif" alt="->" border="0" height="16" width="16"></td>
+      <td valign="top"><font face="arial,helvetica,geneva" size="-1"><b> RDT 0.5.0 Docs Translated to Japaenese (2004-12-24)</b>
+        <br/>
+<p>Thanks to Masanori Kado our RDT Documention for release 0.5.0 has been 
+translated to Japanese and is available on the web. Seeing as how Ruby is 
+wildly popular in Japan, this is a huge contribution. Thank you! 
+<br/>
+On a side note, the 0.5.0 release is available on the update site, sorry I never updated the news when we added it.
+<br/>
+<a href="http://capsctrl.que.jp/kdmsnr/wiki/rdt/" target="_top">View the translated docs now!</a></p>
+        </font>
+      </td>
+    </tr>
     <tr>
       <td align="right" valign="top" width="20"><img src="images/arrow.gif" alt="->" border="0" height="16" width="16"></td>
       <td valign="top"><font face="arial,helvetica,geneva" size="-1"><b> RDT 0.5.0 Released (2004-11-28)</b>
