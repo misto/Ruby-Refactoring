@@ -6,7 +6,6 @@ import org.eclipse.debug.ui.IDebugView;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.text.TextSelection;
-import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.IEditorActionDelegate;
@@ -51,7 +50,7 @@ public class InspectAction extends AbstractInspectAction implements IViewActionD
         }
         Display.getCurrent().asyncExec(new Runnable() {
             public void run() {
-                String selectedText = ((TextSelection) selection).getText().replaceAll("\r\n", "");
+                String selectedText = ((TextSelection) selection).getText().replace('\n', ';');
                 try {
 					RubyVariable rubyVariable = stackFrame.getRubyDebuggerProxy().readInspectExpression(stackFrame, selectedText);
 					showExpressionView();
