@@ -48,6 +48,7 @@ public class RubyElement implements IRubyElement {
 	public static final String PRIVATE = "private";
 	public static final String READ = "read";
 	public static final String WRITE = "write";
+	public static final String PROTECTED = "protected";
 
 	protected RubyElement(String name, Position start) {
 		this.start = start;
