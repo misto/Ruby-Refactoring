@@ -44,48 +44,48 @@
          id="org.rubypeople.eclipse.shams"
          download-size="0"
          install-size="0"
-         version="0.0.0"/>
+         version="0.6.0"/>
 
    <plugin
          id="org.rubypeople.eclipse.testutils"
          download-size="0"
          install-size="0"
-         version="0.0.0"/>
+         version="0.6.0"/>
 
    <plugin
          id="org.rubypeople.rdt.core.tests"
          download-size="0"
          install-size="0"
-         version="0.0.0"/>
+         version="0.6.0"/>
 
    <plugin
          id="org.rubypeople.rdt.debug.core.tests"
          download-size="0"
          install-size="0"
-         version="0.0.0"/>
+         version="0.6.0"/>
 
    <plugin
          id="org.rubypeople.rdt.debug.ui.tests"
          download-size="0"
          install-size="0"
-         version="0.0.0"/>
+         version="0.6.0"/>
 
    <plugin
          id="org.rubypeople.rdt.launching.tests"
          download-size="0"
          install-size="0"
-         version="0.0.0"/>
+         version="0.6.0"/>
 
    <plugin
          id="org.rubypeople.rdt.tests.all"
          download-size="0"
          install-size="0"
-         version="0.0.0"/>
+         version="0.6.0"/>
 
    <plugin
          id="org.rubypeople.rdt.ui.tests"
          download-size="0"
          install-size="0"
-         version="0.0.0"/>
+         version="0.6.0"/>
 
 </feature>
