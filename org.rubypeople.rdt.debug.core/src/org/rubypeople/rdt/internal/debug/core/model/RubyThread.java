@@ -97,7 +97,7 @@ public class RubyThread implements IThread {
 
 	public void resume() throws DebugException {
 		this.prepareForResume() ;
-		((RubyDebugTarget) this.getDebugTarget()).getRubyDebuggerProxy().resume();
+		((RubyDebugTarget) this.getDebugTarget()).getRubyDebuggerProxy().resume(this);
 	}
 
 	public void doSuspend(SuspensionPoint suspensionPoint) {

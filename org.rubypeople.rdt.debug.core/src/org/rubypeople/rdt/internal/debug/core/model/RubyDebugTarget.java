@@ -5,6 +5,7 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.debug.core.DebugEvent;
 import org.eclipse.debug.core.DebugException;
 import org.eclipse.debug.core.DebugPlugin;
+import org.eclipse.debug.core.IBreakpointManager;
 import org.eclipse.debug.core.ILaunch;
 import org.eclipse.debug.core.model.IBreakpoint;
 import org.eclipse.debug.core.model.IDebugTarget;
@@ -28,6 +29,9 @@ public class RubyDebugTarget implements IRubyDebugTarget {
 		this.launch = launch;
 		this.process = process;
 		this.threads = new RubyThread[0] ;
+		IBreakpointManager manager= DebugPlugin.getDefault().getBreakpointManager();
+		manager.addBreakpointListener(this);
+
 	}
 
 	public void updateThreads() {
@@ -135,14 +139,18 @@ public class RubyDebugTarget implements IRubyDebugTarget {
 	public void suspend() throws DebugException {
 	}
 
-	public void breakpointAdded(IBreakpoint arg0) {
-		System.out.println("Added breakpoint.") ;
+	public void breakpointAdded(IBreakpoint breakpoint) {
+		this.getRubyDebuggerProxy().addBreakpoint(breakpoint) ;
 	}
 
-	public void breakpointRemoved(IBreakpoint arg0, IMarkerDelta arg1) {
+	public void breakpointRemoved(IBreakpoint breakpoint, IMarkerDelta arg1) {
+		this.getRubyDebuggerProxy().removeBreakpoint(breakpoint) ;		
 	}
 
-	public void breakpointChanged(IBreakpoint arg0, IMarkerDelta arg1) {
+	public void breakpointChanged(IBreakpoint breakpoint, IMarkerDelta arg1) {
+		// is called e.g. after a line has been inserted before a breakpoint
+		// but then the debugger is out of sync with the file anyway, so debugging
+		// should be stopped here.
 	}
 
 	public boolean canDisconnect() {
