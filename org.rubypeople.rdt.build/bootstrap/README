@@ -1,0 +1,47 @@
+Automatic build and test step by step guide
+
+1) CVS
+The automatic build uses an external CVS command (not the eclipse built-in CVS). Therefore
+you have to install CVS. The following CVS command must run from the command line:
+
+cvs -d :ext:anything:/cvsroot/rubyeclipse export -r HEAD org.rubypeople.rdt/ruby.png
+
+As you can see, username and host are not part of the CVSROOT. That allows to use the same
+map file for different users. The host and username can be hardcoded in your CVS_RSH command.
+E.g. using plink (command line part of putty) on windows, you can create a batch file like the
+following and set CVS_RSH to this batch file:
+
+@echo off
+set CMD_LINE_ARGS=
+:setArgs
+if ""%1""=="""" goto doneSetArgs
+set CMD_LINE_ARGS=%CMD_LINE_ARGS% %1
+shift
+goto setArgs
+:doneSetArgs
+echo %CMD_LINE_ARGS% > D:/Temp/tests
+D:\bin\plink -load cvs-ssh -pw <myPW> 
+
+2) Get the bootstrap files
+
+cvs -d :ext:anything:/cvsroot/rubyeclipse export -r HEAD org.rubypeople.rdt.build/bootstrap
+
+After a successful retrieval you will find the following files:
+
+README: This file
+run.bat: run script for windows
+run.sh: run script for linux
+customTargets.xml: build file which is being called during the build process
+build.properties: property entries for the build process
+
+
+3) Java VM 
+You have probably java 1.4 installed. Set the vm variable in the run script.
+
+4) Eclipse build host
+If you have eclipse already installed on the computer where you intent to run the automatic
+build, you can use this installation as build host. Otherwise get an eclipse platform zip
+file and extract it. Set the eclipseDir variable in the run script appropriately.
+
+
+TO BE COMPLETED

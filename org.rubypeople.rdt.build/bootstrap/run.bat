@@ -1,9 +1,16 @@
 @echo off
 
+REM ***********************************
+REM ************** BUILD **************
+REM ***********************************
+
 REM The eclipse directory from which eclipse will be started for building and testing. 
-REM (the eclipse build host)
+REM This eclipse instance will be the build host
 REM the AntRunner application is started within this eclipse installation
 set eclipseDir=D:\eclipse-3.0
+
+REM vm specifies the java vm which starts up the build host
+set vm=java
 
 REM The version of the PDE Build plug-in is needed to determine the script directory
 REM The version will probably be equal to the eclipse version
@@ -22,23 +29,29 @@ REM Verbose is a switch for the AntRunner application
 set verboseAnt=-verbose
 REM set verboseAnt=
 
-REM Variables for configuration of the testing process 
+REM docboook.root is the directory where you unzipped the docbook zip file
+REM (http://213.203.244.123/rdt/docbook.tar.gz). It contains to subfolders:
+REM docbook-xsl-1.64.1 and dtd
+REM It must be a URI, windows style path names are not allowed
+set docbook.root=file:///D:/Temp//docbook
+
+
+REM **********************************
+REM ************** TEST **************
+REM **********************************
+
+REM The directory to which the eclipse-Automated-Tests-xxx.zip has been unzipped. It contains files
+REM like runtests.bat and testframework.html.
+REM After unzipping you have to copy an eclipse-platform zip file to this directory (e.g. eclipse-SDK-3.0.1-win32.zip).
+REM This zip file contains the test host. During the test process this zip file will be extracted
+
 set eclipseAutomatedTestHome=D:\eclipse-testing
 
 REM The Ruby interpreter used from the Tests in org.rubypeople.rdt.debug.core.tests
 set rubyInterpreter=D:\Program Files\ruby-1.8.2\bin\ruby.exe
-set docbook.root=D:\java\docbook
 
- 
-REM default java executable
-set vm=java
-
-REM reset list of ant targets in test.xml to execute
-REM set tests=
 REM default switch to determine if eclipse should be reinstalled between running of tests
 set installmode=clean
-
-REM property file to pass to Ant scripts
 
 REM default values for os, ws and arch
 set os=win32
@@ -81,8 +94,8 @@ REM wenn ws, os und arch nicht gesetzt werden, dann fehlt in den generierten plu
 REM der richtige Classpath-Eintrag für die swt-Bibliothek
 REM Wenn man keine Fehler erlauben möchte: Wird im generierten File <buildDir>/<pluginDir>/build.xml benutzt
 REM -DjavacFailOnError=true 
-REM <property name="eclipseAutomatedTestHome" value="D:/eclipse-testing" />
-REM Nützliche Switches: -verbose
+
+
 %vm% -cp %eclipseDir%\startup.jar -Dosgi.ws=%ws% -Dosgi.os=%os% -Dosgi.arch=%arch% org.eclipse.core.launcher.Main -application org.eclipse.ant.core.antRunner -buildfile %buildfile% -data %buildDirectory%/workspace-build -Dconfigs="*,*,*" -Dbaseos=win32 -Dbasews=win32 -Dbasearch=x86 -Dbuilder=%pluginAutomaticBuildDir%  "-D%installmode%=true" -DjavacFailOnError=true -DbuildDirectory=%buildDirectory% -DbaseLocation=%eclipseDir% %verboseAnt% -DeclipseAutomatedTestHome=%eclipseAutomatedTestHome% -Drdt.rubyInterpreter="%rubyInterpreter%" -Drdt-tests-workspace=%buildDirectory%/workspace-rdt-tests -Ddocbook.root="%docbook.root%"
 goto end
 
