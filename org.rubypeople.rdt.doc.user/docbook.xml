@@ -184,8 +184,8 @@
 					formatter settings, the difference between rawly entered 
 					code and formatted code can be minimized. </para>
 				<warning>
-					<para>In the current version (0.4.1) the code formatter 
-						does not recognize regular expressions, which are 
+					<para>In the current version the code formatter 
+						does not recognize regular expressions which are 
 						spread over multiple lines. That implies that these 
 						regular expressions might be indented.</para>
 				</warning>
@@ -279,7 +279,7 @@
 				<title>Prerequisites</title>
 				<para>If you can debug your ruby application depends on the 
 					version of the ruby interpreter you are using. Ruby 1.6.8 
-					works on both Linux and Windows, 1.8.0 works also on 
+					works on both Linux and Windows, 1.8.0 and 1.8.2 works also on 
 					Windows. For further information see <ulink 
 					url="http://213.203.244.123/wiki/wiki.phtml#Prerequisites_for_the_debugger"></ulink> 
 					</para>
@@ -554,6 +554,13 @@ persons = Hash[ Person.new('Lisa') =&gt; Person.new('Marge'),
 	</chapter>
 	<chapter id="WhatsNew">
 		<title>What's new</title>
+		<para>New in RDT 0.4.2:</para>
+		<itemizedlist>			
+			<listitem> Runs with Eclipse 3.0 final</listitem>
+			<listitem> Editor: uses Workbench preferences for Quick Diff and Annotations  </listitem>
+    		<listitem> Outline: symbols updated (closer to java symbols) </listitem>
+			<listitem> Debugger: debug with 1.8.2 on windows </listitem>
+		</itemizedlist>
 		<para>New in RDT 0.4.1:</para>
 		<itemizedlist>			
 			<listitem> Clickable stack traces in console (click to open editor) </listitem>
