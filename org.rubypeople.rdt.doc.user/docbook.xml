@@ -611,6 +611,14 @@ persons = Hash[ Person.new('Lisa') =&gt; Person.new('Marge'),
 	</chapter>
 	<chapter id="WhatsNew">
 		<title>What's new</title>
+		<para>New in RDT 0.5.0:</para>
+		<itemizedlist>			
+			<listitem> <link linkend='RunningATest::UnitTest'> Test::Unit view </link> </listitem>			
+    		<listitem> RegExp view (originates from  
+				<ulink	url="http://e-p-i-c.sourceforge.net">EPIC</ulink>)</listitem>
+			<listitem> Editor: code completion with templates </listitem>
+			<listitem> Introductory Tutorial (Cheat Sheet) </listitem>
+		</itemizedlist>		
 		<para>New in RDT 0.4.2:</para>
 		<itemizedlist>			
 			<listitem> Runs with Eclipse 3.0 final</listitem>
