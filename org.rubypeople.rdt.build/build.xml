@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project name="org.rubypeople.rdt.build" default="build.all" basedir="..">
 	<property name="package.temp.dir" value="org.rubypeople.rdt.build/temp.folder"/>
-	<property name="version" value="0.3.0"/>
 
 	<target name="build.all">
 		<antcall target="clean.all"/>
@@ -10,7 +9,6 @@
 	</target>
 	
 	<target name="clean.all">
-		<ant dir="org.jruby" target="clean"/>
 		<ant dir="org.kxml2" target="clean"/>
 		<ant dir="org.rubypeople.rdt.core" target="clean"/>
 		<ant dir="org.rubypeople.rdt.debug.core" target="clean"/>
@@ -21,7 +19,6 @@
 	</target>
 	
 	<target name="zip.plugin">
-		<ant dir="org.jruby" target="zip.plugin"/>
 		<ant dir="org.kxml2" target="zip.plugin"/>
 		<ant dir="org.rubypeople.rdt.core" target="zip.plugin"/>
 		<ant dir="org.rubypeople.rdt.debug.core" target="zip.plugin"/>
@@ -32,19 +29,17 @@
 	
 	<target name="package.rdt" depends="zip.plugin">
 		<mkdir dir="${package.temp.dir}"/>
-		<unzip src="org.jruby/org.jruby_${version}.zip" dest="${package.temp.dir}"/>
-		<unzip src="org.kxml2/org.kxml2_${version}.zip" dest="${package.temp.dir}"/>
-		<unzip src="org.rubypeople.rdt.core/org.rubypeople.rdt.core_${version}.zip" dest="${package.temp.dir}"/>
-		<unzip src="org.rubypeople.rdt.debug.core/org.rubypeople.rdt.debug.core_${version}.zip" dest="${package.temp.dir}"/>
-		<unzip src="org.rubypeople.rdt.debug.ui/org.rubypeople.rdt.debug.ui_${version}.zip" dest="${package.temp.dir}"/>
-		<unzip src="org.rubypeople.rdt.launching/org.rubypeople.rdt.launching_${version}.zip" dest="${package.temp.dir}"/>
-		<unzip src="org.rubypeople.rdt.ui/org.rubypeople.rdt.ui_${version}.zip" dest="${package.temp.dir}"/>
-		<zip zipfile="org.rubypeople.rdt.build/rubyeclipse_${version}.zip" basedir="${package.temp.dir}" filesonly="true"/>
+		<unzip src="org.kxml2/org.kxml2_2.1.4.zip" dest="${package.temp.dir}"/>
+		<unzip src="org.rubypeople.rdt.core/org.rubypeople.rdt.core_0.3.1.zip" dest="${package.temp.dir}"/>
+		<unzip src="org.rubypeople.rdt.debug.core/org.rubypeople.rdt.debug.core_0.3.1.zip" dest="${package.temp.dir}"/>
+		<unzip src="org.rubypeople.rdt.debug.ui/org.rubypeople.rdt.debug.ui_0.3.1.zip" dest="${package.temp.dir}"/>
+		<unzip src="org.rubypeople.rdt.launching/org.rubypeople.rdt.launching_0.3.1.zip" dest="${package.temp.dir}"/>
+		<unzip src="org.rubypeople.rdt.ui/org.rubypeople.rdt.ui_0.3.1.zip" dest="${package.temp.dir}"/>
+		<zip zipfile="org.rubypeople.rdt.build/rubyeclipse_0.3.1.zip" basedir="${package.temp.dir}" filesonly="true"/>
 		<delete dir="${package.temp.dir}"/>
 	</target>
 
 	<target name="refresh.all">
-		<ant dir="org.jruby" target="refresh"/>
 		<ant dir="org.kxml2" target="refresh"/>
 		<ant dir="org.rubypeople.rdt.core" target="refresh"/>
 		<ant dir="org.rubypeople.rdt.debug.core" target="refresh"/>
@@ -55,7 +50,7 @@
 	</target>
 
 	<target name="clean">
-		<delete file="org.rubypeople.rdt.build/rubyeclipse_${version}.zip"/>
+		<delete file="org.rubypeople.rdt.build/rubyeclipse_0.3.1.zip"/>
 	</target>
 	
 	<target name="refresh" if="eclipse.running">
