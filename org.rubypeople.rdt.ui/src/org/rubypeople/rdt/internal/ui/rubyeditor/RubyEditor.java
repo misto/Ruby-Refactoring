@@ -9,6 +9,7 @@ import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.jface.text.ITextOperationTarget;
 import org.eclipse.jface.text.source.AnnotationRulerColumn;
 import org.eclipse.jface.text.source.ISourceViewer;
+import org.eclipse.jface.util.PropertyChangeEvent;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.StructuredSelection;
@@ -33,7 +34,7 @@ import org.rubypeople.rdt.ui.actions.RubyEditorActionDefinitionIds;
 public class RubyEditor extends TextEditor {
 	protected RubyActionGroup actionGroup;
 	protected RubyContentOutlinePage outlinePage;
-
+	protected RubyTextTools textTools ;
 	public RubyEditor() {
 		super();
 		this.setRulerContextMenuId("#rubyRulerContext") ;
@@ -43,21 +44,14 @@ public class RubyEditor extends TextEditor {
 		IPreferenceStore prefs = RdtUiPlugin.getDefault().getPreferenceStore();
 		setPreferenceStore(prefs);
 
-		PreferenceConverter.setDefault(prefs, RubyColorConstants.RUBY_DEFAULT, new RGB(0, 0, 0));
-		PreferenceConverter.setDefault(prefs, RubyColorConstants.RUBY_KEYWORD, new RGB(164, 53, 122));
-		PreferenceConverter.setDefault(prefs, RubyColorConstants.RUBY_STRING, new RGB(15, 120, 142));
-		PreferenceConverter.setDefault(prefs, RubyColorConstants.RUBY_MULTI_LINE_COMMENT, new RGB(247, 32, 64));
-		PreferenceConverter.setDefault(prefs, RubyColorConstants.RUBY_SINGLE_LINE_COMMENT, new RGB(227, 64, 227));
-		PreferenceConverter.setDefault(prefs, RubyColorConstants.RUBY_CONTENT_ASSISTANT_BACKGROUND, new RGB(150, 150, 0));
 		WorkbenchChainedTextFontFieldEditor.startPropagate(prefs, JFaceResources.TEXT_FONT);
 
-		prefs.setDefault(RubyColorConstants.RUBY_KEYWORD + "_bold", true);
 	}
 
 	protected void initializeEditor() {
 		configurePreferenceStore();
 
-		RubyTextTools textTools = RdtUiPlugin.getDefault().getTextTools();
+		textTools = RdtUiPlugin.getDefault().getTextTools();
 		setSourceViewerConfiguration(new RubySourceViewerConfiguration(textTools, this));
 		setRangeIndicator(new DefaultRangeIndicator());
 	}
@@ -116,4 +110,9 @@ public class RubyEditor extends TextEditor {
 		if (outlinePage != null)
 			outlinePage.setEditorInput(input);
 	}
+	
+	protected boolean affectsTextPresentation(PropertyChangeEvent event) {
+		return textTools.affectsTextPresentation(event) ;
+	}
+
 }
