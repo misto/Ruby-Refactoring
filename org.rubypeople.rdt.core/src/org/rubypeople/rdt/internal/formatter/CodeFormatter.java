@@ -45,7 +45,7 @@ public class CodeFormatter {
 		try {
 			MODIFIER_RE = Pattern.compile("if|unless|while|until|rescue");
 			OPERATOR_RE = Pattern.compile("[\\-,.+*/%&|\\^~=<>:]") ;
-			NON_BLOCK_DO_RE = Pattern.compile("(^|[:space:])(while|until|for|rescue)[:space:]") ;
+			NON_BLOCK_DO_RE = Pattern.compile("(^|[\\s])(while|until|for|rescue)[\\s]") ;
 		} catch (PatternSyntaxException e) {
 			System.out.println(e);
 		}
@@ -134,13 +134,13 @@ public class CodeFormatter {
 		try {
 			pat =
 				Pattern.compile(
-					"(^|[:space:])"
+					"(^|[\\s])"
 						+ BLOCK_BEGIN_RE
-						+ "($|[:space:]|" + DELIMITER_RE + ")|(^|[:space:])"
+						+ "($|[\\s]|" + DELIMITER_RE + ")|(^|[\\s])"
 						+ BLOCK_MID_RE
-						+ "($|[:space:]|" + DELIMITER_RE + ")|(^|[:space:])"
+						+ "($|[\\s]|" + DELIMITER_RE + ")|(^|[\\s])"
 						+ BLOCK_END_RE
-						+ "($|[:space:])|"
+						+ "($|[\\s])|"
 						+ LITERAL_BEGIN_RE
 						+ "|"
 						+ DELIMITER_RE);
