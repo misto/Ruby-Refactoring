@@ -42,12 +42,6 @@
             class="org.rubypeople.rdt.internal.ui.preferences.TextEditorPreferencePage2"
             id="org.rubypeople.rdt.ui.preferences.PreferencePageRubyEditor">
       </page>
-      <page
-            name="%PreferencePage.RubyLibrary.name"
-            category="org.rubypeople.rdt.ui.preferences.PreferencePageRubyBase"
-            class="org.rubypeople.rdt.internal.ui.preferences.RubyLibraryPreferencePage"
-            id="org.rubypeople.rdt.ui.preferences.PreferencePageRubyLibrary">
-      </page>
    </extension>
    <extension
          point="org.eclipse.ui.perspectives">
@@ -314,6 +308,13 @@
             symbolicIcon="info"
             annotationType="org.rubypeople.rdt.ui.info">
       </specification>
-   </extension>
+      <!-- the following specification is overruled by org.eclipse.jdt.ui
+      <specification
+            annotationType="org.eclipse.debug.core.breakpoint"
+            icon="icons/full/obj16/brkp_obj.gif"
+            annotationImageProvider="org.rubypeople.rdt.internal.ui.rubyeditor.BreakpointImageProvider">      
+      </specification>
+      -->
+  </extension>   
 
 </plugin>
