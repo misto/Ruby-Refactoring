@@ -140,14 +140,11 @@
 			<sect2 id="CodeCompletion">
 				<title>Code completion</title>
 				<para> If you press Ctrl+space in the ruby editor, a list with 
-					information from the current ruby files is displayed. This 
-					information includes classes, methods and variables. In 
-					addition to that the code completion also provides classes 
-					and modules, which are defined in one of the library paths 
-					you can set in the library preferences page. Therefore a 
-					starting string must be provided, e.g. if you type S 
-					followed by ctrl+space all modules and classes starting 
-					with S are displayed.</para>
+					information from the current ruby file is displayed. This 
+					information includes classes, methods and variables. For 
+					RDT 0.4.2 a feature is planned which extends code 
+					completion to provide also classes and modules from 
+					required ruby files. </para>
 			</sect2>
 			<sect2 id="CodeFormatting">
 				<title>Code formatting</title>
