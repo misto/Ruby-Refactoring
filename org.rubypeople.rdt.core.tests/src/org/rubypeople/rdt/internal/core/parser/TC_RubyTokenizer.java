@@ -216,29 +216,29 @@ public class TC_RubyTokenizer extends TestCase {
 		assertEquals(RubyToken.IDENTIFIER, tokenizer.nextRubyToken().getType() );
 	}
 	
-	public void testInPercentString() {
-		RubyTokenizer tokenizer = new RubyTokenizer("");
-		assertFalse(tokenizer.inPercentString('q', 1, "%q(blah) end"));
-		assertTrue(tokenizer.inPercentString('q', 4, "%q(blah) end"));
-		assertTrue(tokenizer.inPercentString('q', 8, "%q(bla\\)h) end"));
-		assertFalse(tokenizer.inPercentString('q', 9, "%q(blah) end"));
-		assertFalse(tokenizer.inPercentString('q', 8, "%q(blah) end"));
-	}
-
-	public void testIsOpenBracket() {
-		RubyTokenizer tokenizer = new RubyTokenizer("");
-		assertTrue(tokenizer.isOpenBracket('('));
-		assertTrue(tokenizer.isOpenBracket('{'));
-		assertTrue(tokenizer.isOpenBracket('['));
-		assertFalse(tokenizer.isOpenBracket('1'));
-	}
-
-	public void testGetMatchingBracket() {
-		RubyTokenizer tokenizer = new RubyTokenizer("");
-		assertEquals(']', tokenizer.getMatchingBracket('['));
-		assertEquals(')', tokenizer.getMatchingBracket('('));
-		assertEquals('}', tokenizer.getMatchingBracket('{'));
-		assertEquals('1', tokenizer.getMatchingBracket('1'));
-	}
+//	public void testInPercentString() {
+//		RubyTokenizer tokenizer = new RubyTokenizer("");
+//		assertFalse(tokenizer.inPercentString('q', 1, "%q(blah) end"));
+//		assertTrue(tokenizer.inPercentString('q', 4, "%q(blah) end"));
+//		assertTrue(tokenizer.inPercentString('q', 8, "%q(bla\\)h) end"));
+//		assertFalse(tokenizer.inPercentString('q', 9, "%q(blah) end"));
+//		assertFalse(tokenizer.inPercentString('q', 8, "%q(blah) end"));
+//	}
+//
+//	public void testIsOpenBracket() {
+//		RubyTokenizer tokenizer = new RubyTokenizer("");
+//		assertTrue(tokenizer.isOpenBracket('('));
+//		assertTrue(tokenizer.isOpenBracket('{'));
+//		assertTrue(tokenizer.isOpenBracket('['));
+//		assertFalse(tokenizer.isOpenBracket('1'));
+//	}
+//
+//	public void testGetMatchingBracket() {
+//		RubyTokenizer tokenizer = new RubyTokenizer("");
+//		assertEquals(']', tokenizer.getMatchingBracket('['));
+//		assertEquals(')', tokenizer.getMatchingBracket('('));
+//		assertEquals('}', tokenizer.getMatchingBracket('{'));
+//		assertEquals('1', tokenizer.getMatchingBracket('1'));
+//	}
 	
 }

@@ -163,7 +163,7 @@ public class RubyTokenizer {
 	 * @param curLine
 	 * @return
 	 */
-	boolean inPercentString(char type, int index, String curLine) {
+	private boolean inPercentString(char type, int index, String curLine) {
 		int end = endIndexOf(curLine, "%" + type);
 		if (end == -1) return false;
 		if (end > index) return false;
@@ -374,7 +374,7 @@ public class RubyTokenizer {
 	 * @param c
 	 * @return
 	 */
-	char getMatchingBracket(char c) {
+	private char getMatchingBracket(char c) {
 		switch (c) {
 		case '(':
 			return ')';
@@ -425,7 +425,7 @@ public class RubyTokenizer {
 	 * @param c
 	 * @return
 	 */
-	boolean isOpenBracket(char c) {
+	private boolean isOpenBracket(char c) {
 		return BRACKETS.indexOf(c) != -1;
 	}
 
@@ -520,7 +520,7 @@ public class RubyTokenizer {
 	 *            character to test
 	 * @return boolean indicating if character is a quote
 	 */
-	boolean isQuoteChar(char c) {
+	private boolean isQuoteChar(char c) {
 		return (c == '\'') || (c == '"');
 	}
 }
