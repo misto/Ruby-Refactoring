@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project name="org.rubypeople.rdt.build" default="build.all" basedir="..">
 	<property name="package.temp.dir" value="org.rubypeople.rdt.build/temp.folder"/>
+	<property name="version" value="0.2.0"/>
 
 	<target name="build.all">
 		<antcall target="clean.all"/>
