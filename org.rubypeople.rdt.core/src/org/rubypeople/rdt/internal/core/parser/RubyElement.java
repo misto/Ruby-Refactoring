@@ -1,37 +1,155 @@
+/*
+ * Author: C.Williams
+ *
+ *  Copyright (c) 2004 RubyPeople. 
+ *
+ *  This file is part of the Ruby Development Tools (RDT) plugin for eclipse.
+ *  You can get copy of the GPL along with further information about RubyPeople 
+ *  and third party software bundled with RDT in the file 
+ *  org.rubypeople.rdt.core_0.4.0/RDT.license or otherwise at 
+ *  http://www.rubypeople.org/RDT.license.
+ *
+ *  RDT is free software; you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation; either version 2 of the License, or
+ *  (at your option) any later version.
+ *
+ *  RDT is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of 
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ * 
+ *  You should have received a copy of the GNU General Public License
+ *  along with RDT; if not, write to the Free Software
+ *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ */
 package org.rubypeople.rdt.internal.core.parser;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Set;
 
-import java.util.ArrayList;
-import java.util.List;
-
+import org.rubypeople.rdt.internal.core.parser.IRubyElement;
+/**
+ * @author Chris
+ * 
+ * To change the template for this generated type comment go to Window - Preferences - Java - Code Generation - Code and Comments
+ */
 public class RubyElement implements IRubyElement {
+	
+	protected String access;
 	protected String name;
-	protected List elements = new ArrayList();
-
-	public RubyElement(String name) {
-		super();
+	protected int start;
+	protected int end;
+	protected Set elements = new HashSet();
+	
+	public static final String PUBLIC = "public";
+	public static final String PRIVATE = "private";
+	
+	protected RubyElement(String name, int start) {
+		this.start = start;
 		this.name = name;
 	}
-
+	/**
+	 * @return
+	 */
 	public String getName() {
 		return name;
 	}
-
-	public Object[] getElements() {
-		return elements.toArray();
+	/**
+	 * @return
+	 */
+	public int getStart() {
+		return start;
 	}
-
-	public boolean equals(Object obj) {
-		return (obj != null && obj instanceof IRubyElement) && this.name.equals(((IRubyElement) obj).getName());
+	/**
+	 * @return
+	 */
+	public int getEnd() {
+		return end;
 	}
-
+	/**
+	 * @return
+	 */
+	public String getAccess() {
+		return access;
+	}	
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see java.lang.Object#hashCode()
+	 */
 	public int hashCode() {
 		return name.hashCode();
 	}
-
-	protected void addElement(IRubyElement element) {
-		elements.add(element);
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see java.lang.Object#equals(java.lang.Object)
+	 */
+	public boolean equals(Object arg0) {
+		if (arg0 instanceof RubyElement) {
+			RubyElement element = (RubyElement) arg0;
+			return element.name.equals(this.name);
+		}
+		return false;
 	}
+	/**
+	 * @param end
+	 */
+	public void setEnd(int end) {
+		this.end = end;
+	}
+	/**
+	 * @return
+	 */
+	public int getElementCount() {
+		return elements.size();
+	}
+	/**
+	 * @param method
+	 */
+	public void addElement(RubyElement method) {
+		elements.add(method);
+	}
+	/**
+	 * @param element
+	 * @return
+	 */
+	public boolean contains(RubyElement element) {
+		return elements.contains(element);
+	}
+	public RubyElement getElement(String name) {
+		for (Iterator iter = elements.iterator(); iter.hasNext();) {
+			RubyElement element = (RubyElement) iter.next();
+			if (element.getName().equals(name)) {
+				return element;
+			}
+		}
+		return null;
+	}
+	
+	
+	/* (non-Javadoc)
+	 * @see org.rubypeople.rdt.internal.core.parser.IRubyElement#getElements()
+	 */
+	public Object[] getElements() {
+		return elements.toArray();
+	}
+	
+	
+	/* (non-Javadoc)
+	 * @see org.rubypeople.rdt.internal.core.parser.IRubyElement#hasElements()
+	 */
 	public boolean hasElements() {
 		return !elements.isEmpty();
+	}
+	
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see java.lang.Object#toString()
+	 */
+	public String toString() {
+		return getClass().getName() + ": " + getName() + ", [" + getStart() + "," + getEnd() + "]";
 	}
 }

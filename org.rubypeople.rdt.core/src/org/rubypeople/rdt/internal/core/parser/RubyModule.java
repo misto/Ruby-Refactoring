@@ -24,34 +24,35 @@
  *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 package org.rubypeople.rdt.internal.core.parser;
+
 /**
  * @author Chris
- * 
- * To change the template for this generated type comment go to Window - Preferences - Java - Code Generation - Code and Comments
+ *
+ * To change the template for this generated type comment go to
+ * Window - Preferences - Java - Code Generation - Code and Comments
  */
-public class RubyClass extends RubyElement {
+public class RubyModule extends RubyElement {
+
 	/**
 	 * @param string
 	 * @param i
 	 */
-	public RubyClass(String string, int i) {
+	public RubyModule(String string, int i) {
 		super(string, i);
 	}
-	/*
-	 * (non-Javadoc)
-	 * 
+	
+	/* (non-Javadoc)
 	 * @see org.rubypeople.rdt.core.tests.core.parser.TDDRubyElement#equals(java.lang.Object)
 	 */
 	public boolean equals(Object arg0) {
-		if (arg0 instanceof RubyClass) {
-			RubyClass rubyClass = (RubyClass) arg0;
+		if (arg0 instanceof RubyModule) {
+			RubyModule rubyClass = (RubyModule) arg0;
 			return (rubyClass.getName().equals(this.getName())) && (rubyClass.getStart() == this.getStart());
 		}
 		return false;
 	}
-	/*
-	 * (non-Javadoc)
-	 * 
+	
+	/* (non-Javadoc)
 	 * @see org.rubypeople.rdt.core.tests.core.parser.TDDRubyElement#hashCode()
 	 */
 	public int hashCode() {
