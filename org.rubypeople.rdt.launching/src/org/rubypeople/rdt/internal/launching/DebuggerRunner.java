@@ -26,9 +26,9 @@ public class DebuggerRunner extends InterpreterRunner {
 
 	public IProcess run(InterpreterRunnerConfiguration configuration, ILaunch launch) {
 		IProcess process = super.run(configuration, launch) ;
-		RubyDebugTarget debugTarget = new RubyDebugTarget(launch, process);				
-		launch.addDebugTarget(debugTarget);
-		new RubyDebuggerProxy(debugTarget).start() ;
+		RubyDebugTarget debugTarget = new RubyDebugTarget(launch, process);	
+		new RubyDebuggerProxy(debugTarget).start() ;			
+		launch.addDebugTarget(debugTarget);		
 		return process ;
 	}
 	
