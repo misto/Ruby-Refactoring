@@ -80,7 +80,7 @@ class XmlPrinter
   end
 
   def printException(file, pos, exception)
-    out("<exception file=\"%s\" line=\"%s\" type=\"%s\" message=\"%s\" threadId=\"%s\"/>", file, pos, exception.type, CGI.escapeHTML(exception.to_s), DEBUGGER__.get_thread_num()) 	      
+    out("<exception file=\"%s\" line=\"%s\" type=\"%s\" message=\"%s\" threadId=\"%s\"/>", file, pos, exception.class, CGI.escapeHTML(exception.to_s), DEBUGGER__.get_thread_num()) 	      
   end
 
   def printStepEnd(file, line, framesCount)
@@ -149,7 +149,7 @@ class DEBUGGER__
     end
     
     def printException(file, line, exception)
-      stdout.printf "%s:%d: `%s' (%s)\n", file, line, exception, exception.type
+      stdout.printf "%s:%d: `%s' (%s)\n", file, line, exception, exception.class
       stdout.flush
     end
 
@@ -271,10 +271,10 @@ class DEBUGGER__
         if names[i] != "" then
           if names[i].length > 2 && names[i][0..1] == '@@' then
             @printer.debug("Evaluating (class_var): %s on %s", names[i], obj )
-            obj = obj.class.class_eval ("#{names[i]}")
+            obj = obj.class.class_eval("#{names[i]}")
           else
             @printer.debug("Evaluating (instance_var): %s on %s", names[i], obj )        
-            obj = obj.instance_eval ("#{names[i]}")
+            obj = obj.instance_eval("#{names[i]}")
           end
         end
       }
@@ -373,7 +373,7 @@ class DEBUGGER__
           #@printer.debug("binding=%s", binding)
           localVars = eval("local_variables", binding)
           # v 1.8.1 dies in eval @printer.debug("HERE") 
-          if eval('self.to_s', binding) !~ /"main"/ then
+          if eval('self.to_s', binding) !~ /main/ then
             localVars << "self"
           end
           var_list(localVars, binding, 'local')
@@ -437,7 +437,7 @@ class DEBUGGER__
         begin          
           obj = debug_eval($', binding, true)
         rescue ScriptError, StandardError => error
-          @printer.printXml("<processingException type=\"%s\" message=\"%s\"/>", error.type, error.message)
+          @printer.printXml("<processingException type=\"%s\" message=\"%s\"/>", error.class, error.message)
           return 
         end          
         @printer.debug("%s", obj)
@@ -789,12 +789,12 @@ class DEBUGGER__
 
     def excn_handle(file, line, id, binding)
       
-      if $!.type <= SystemExit
-        stdout.printf "SystemExit at %s:%d: `%s' (%s)\n", file, line, $!, $!.type      
+      if $!.class <= SystemExit
+        stdout.printf "SystemExit at %s:%d: `%s' (%s)\n", file, line, $!, $!.class      
         set_trace_func nil
         exit
       end
-      if @catch and ($!.type.ancestors.find { |e| e.to_s == @catch })
+      if @catch and ($!.class.ancestors.find { |e| e.to_s == @catch })
         @printer.printException(file, line, $!)
         fs = @frames.size
         tb = caller(0)[-fs..-1]
@@ -808,7 +808,7 @@ class DEBUGGER__
         debug_command(file, line, id, binding)
 
       else
-        stdout.printf "%s:%d: `%s' (%s)\n", file, line, $!, $!.type
+        stdout.printf "%s:%d: `%s' (%s)\n", file, line, $!, $!.class
       end
     end
 
