@@ -1,5 +1,6 @@
 package org.rubypeople.rdt.internal.ui;
 
+import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.runtime.IStatus;
@@ -157,4 +158,18 @@ public class RdtUiPlugin extends AbstractUIPlugin implements RubyColorConstants 
 		IEditorInput input = part.getEditorInput();
 		return (IResource) input.getAdapter(IResource.class);
 	}
+	
+	public boolean isRubyFile(IFile file) {
+	   // TODO: this is work in progress. Once we can use the content-type
+	   // extension point, this method must be removed
+	   return this.getRubyFileMatcher().hasRubyEditorAssociation(file) ;
+	}
+	
+	public boolean isRubyFile(IResource resource) {
+	    if (resource == null || !(resource instanceof IFile)) {
+	        return false ;	        
+	    }
+	    return isRubyFile((IFile) resource) ;
+	}	
+	
 }
