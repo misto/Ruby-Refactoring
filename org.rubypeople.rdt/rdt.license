@@ -1,16 +1,16 @@
 The Ruby Development Tools (RDT) plugin for eclipse is subject to the Common Public License (CPL)
-v 1.0. All files of the RDT are copyright of RubyPeople. RubyPeople is no legal entity, but consists of 
-the people, who have contributed to the RDT. Currently these are (in alphabetical order):
+v 1.0. All files of the RDT are copyright of RubyPeople. RubyPeople is not a legal entity, but consists of 
+the following people who have contributed to the RDT. Currently these are (in alphabetical order):
 Markus Barchfeld (Markus.Barchfeld@gmx.de)
 Adam Williams ()
-Chris Williams ()
+Chris Williams (cwillia1@rochester.rr.com)
 See www.rubypeople.org for more information.
 
 The RDT is bundled with the kxml2 pull parser, which is under CPL as well.
 The file org.rubypeople.rdt.launching/ruby/eclipseDebug.rb is based on the debug.rb file, which is part
 of the ruby 1.6.8 release.
 Because of the nature of developing this plugin, many features or concepts have been copied from
-the jdt. Therefore you will find code fragements, which have been copied from the jdt. We did not 
+the jdt. Therefore you will find code fragements which have been copied from the jdt. We did not 
 add the IBM copyright with every code fragment of this kind. We think that this is in accordance with 
 the CPL and is not an intended removal of copyright.
 
