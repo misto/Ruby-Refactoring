@@ -124,7 +124,6 @@ public class TestUnitMainTab extends AbstractLaunchConfigurationTab implements I
 	 * @see org.eclipse.debug.ui.ILaunchConfigurationTab#setDefaults(org.eclipse.debug.core.ILaunchConfigurationWorkingCopy)
 	 */
 	public void setDefaults(ILaunchConfigurationWorkingCopy configuration) {
-		configuration.setAttribute(TestUnitLaunchConfiguration.ATTR_KEEPRUNNING, false);
 		configuration.setAttribute(TestUnitLaunchConfiguration.LAUNCH_CONTAINER_ATTR, "");
 		configuration.setAttribute(TestUnitLaunchConfiguration.TESTTYPE_ATTR, "");
 		configuration.setAttribute(TestUnitLaunchConfiguration.TESTNAME_ATTR, "");
@@ -159,9 +158,6 @@ public class TestUnitMainTab extends AbstractLaunchConfigurationTab implements I
 	 * @see org.eclipse.debug.ui.ILaunchConfigurationTab#performApply(org.eclipse.debug.core.ILaunchConfigurationWorkingCopy)
 	 */
 	public void performApply(ILaunchConfigurationWorkingCopy configuration) {
-		//configuration.setAttribute(TestUnitLaunchConfiguration.ATTR_KEEPRUNNING, keepRunning.getSelection());
-		// TODO We should really just remove the "keep running" attribute. It makes the Test::Unit run act weird
-		configuration.setAttribute(TestUnitLaunchConfiguration.ATTR_KEEPRUNNING, false);
 		configuration.setAttribute(TestUnitLaunchConfiguration.TESTTYPE_ATTR, classSelector.getValidatedSelectionText());
 		configuration.setAttribute(TestUnitLaunchConfiguration.LAUNCH_CONTAINER_ATTR, fileSelector.getValidatedSelectionText());
 	}
