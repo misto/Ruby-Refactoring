@@ -289,7 +289,7 @@
       <actionSet
             label="%RubyElementCreationActionSet.label"
             description="%RubyElementCreationActionSet.description"
-            visible="true"
+            visible="false"
             id="org.rubypeople.rdt.ui.RubyElementCreationActionSet">
           <action
                label="%OpenProjectWizardAction.label"
@@ -303,6 +303,28 @@
    </extension>
    
    <extension
+         point="org.eclipse.ui.actionSetPartAssociations">
+      <actionSetPartAssociation
+            targetID="org.eclipse.ui.edit.text.actionSet.annotationNavigation">
+         <part
+               id="org.rubypeople.rdt.ui.EditorRubyFile">
+         </part>
+      </actionSetPartAssociation>
+      <actionSetPartAssociation
+            targetID="org.eclipse.ui.edit.text.actionSet.presentation">
+         <part
+               id="org.rubypeople.rdt.ui.EditorRubyFile">
+         </part>
+      </actionSetPartAssociation>
+      <actionSetPartAssociation
+            targetID="org.rubypeople.rdt.ui.rubyActionSet">
+         <part
+               id="org.rubypeople.rdt.ui.EditorRubyFile">
+         </part>
+      </actionSetPartAssociation>
+   </extension>  
+   
+   <extension
          point="org.eclipse.ui.editors.markerUpdaters">
       <updater
             markerType="org.rubypeople.rdt.debug.core.RubyBreakpointMarker"
@@ -310,15 +332,7 @@
             id="RubyBreakpointMarkerUpdater">
       </updater>
    </extension>
-   <extension
-         point="org.eclipse.ui.actionSetPartAssociations">
-      <actionSetPartAssociation
-            targetID="org.rubypeople.rdt.ui.rubyActionSet">
-         <part
-               id="org.rubypeople.rdt.ui.EditorRubyFile">
-         </part>
-      </actionSetPartAssociation>
-   </extension>
+
    <extension
          point="org.eclipse.ui.editors.annotationTypes">
       <type
