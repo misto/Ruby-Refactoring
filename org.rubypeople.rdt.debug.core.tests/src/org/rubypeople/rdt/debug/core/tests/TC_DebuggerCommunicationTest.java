@@ -126,7 +126,7 @@ public class TC_DebuggerCommunicationTest extends TestCase {
 		String binDir ;
 		if (RdtDebugCorePlugin.getDefault() != null) {
 			// run as JUnit Plug-in Test
-			binDir = RdtDebugCorePlugin.getDefault().getBundle().getLocation().substring(15) + "/bin/" ;
+			binDir = RdtDebugCorePlugin.getDefault().getBundle().getLocation().substring(7) + "/bin/" ;
 		}
 		else {
 		  binDir = getClass().getResource("/").getFile();
