@@ -2,7 +2,7 @@
 <plugin
    id="org.rubypeople.rdt.debug.ui"
    name="%pluginName"
-   version="0.0.1"
+   version="0.1.0"
    provider-name="RubyPeople, Inc."
    class="org.rubypeople.rdt.internal.debug.ui.RdtDebugUiPlugin">
 
