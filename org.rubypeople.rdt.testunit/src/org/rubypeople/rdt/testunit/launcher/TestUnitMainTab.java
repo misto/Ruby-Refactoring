@@ -59,7 +59,6 @@ public class TestUnitMainTab extends AbstractLaunchConfigurationTab implements I
 	protected RubyFileSelector fileSelector;
 	private RubyClassSelector classSelector;
 	protected ElementListSelectionDialog dialog;
-	protected Button keepRunning;
 	private IProject rubyProject;
 
 	public TestUnitMainTab() {
@@ -106,20 +105,6 @@ public class TestUnitMainTab extends AbstractLaunchConfigurationTab implements I
 				updateLaunchConfigurationDialog();
 			}
 		});
-
-		Composite keepRunningComposite = new Composite(composite, SWT.NONE);
-		GridLayout layout = new GridLayout();
-		layout.numColumns = 2;
-		keepRunningComposite.setLayout(layout);
-		keepRunning = new Button(keepRunningComposite, SWT.CHECK);
-		keepRunning.addSelectionListener(new SelectionAdapter() {
-
-			public void widgetSelected(SelectionEvent e) {
-				setKeepRunning(((Button) e.getSource()).getSelection());
-			}
-		});
-		new Label(keepRunningComposite, SWT.NONE).setText(TestUnitMessages.getString("JUnitMainTab.label.keeprunning"));
-		keepRunningComposite.pack();
 	}
 
 	protected Composite createPageRoot(Composite parent) {
@@ -131,16 +116,6 @@ public class TestUnitMainTab extends AbstractLaunchConfigurationTab implements I
 
 		setControl(composite);
 		return composite;
-	}
-
-	protected void setKeepRunning(boolean keepItRunning) {
-		if (keepRunning.getSelection() != keepItRunning) keepRunning.setSelection(keepItRunning);
-		// FIXME Why does JUnit disable project selection if keepRunning is
-		// selected?
-		//		if (keepItRunning) {
-		//			projectSelector.setSelectionText("");
-		//		}
-		//		projectSelector.setEnabled(!keepItRunning);
 	}
 
 	/*
@@ -163,7 +138,6 @@ public class TestUnitMainTab extends AbstractLaunchConfigurationTab implements I
 	 * @see org.eclipse.debug.ui.ILaunchConfigurationTab#initializeFrom(org.eclipse.debug.core.ILaunchConfiguration)
 	 */
 	public void initializeFrom(ILaunchConfiguration configuration) {
-		boolean keepRunning = true;
 		try {
 			// Have to set the project selection first! Otherwise when launch
 			// container ise set it will use null for project when trying to
@@ -174,12 +148,9 @@ public class TestUnitMainTab extends AbstractLaunchConfigurationTab implements I
 			projectSelector.setSelectionText(rubyProject.getName());
 			classSelector.setSelectionText(configuration.getAttribute(TestUnitLaunchConfiguration.TESTTYPE_ATTR, ""));
 			fileSelector.setSelectionText(configuration.getAttribute(TestUnitLaunchConfiguration.LAUNCH_CONTAINER_ATTR, ""));
-			keepRunning = configuration.getAttribute(TestUnitLaunchConfiguration.ATTR_KEEPRUNNING, false);
 		} catch (CoreException e) {
 			TestunitPlugin.log(e);
 		}
-
-		setKeepRunning(keepRunning);
 	}
 
 	/*
