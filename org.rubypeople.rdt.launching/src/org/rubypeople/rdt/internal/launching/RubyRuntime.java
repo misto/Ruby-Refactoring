@@ -9,7 +9,6 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.Reader;
-import java.io.StringReader;
 import java.io.Writer;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -105,7 +104,11 @@ public class RubyRuntime {
 		try {
 			XMLReader reader = SAXParserFactory.newInstance().newSAXParser().getXMLReader();
 			reader.setContentHandler(getRuntimeConfigurationContentHandler());
-			reader.parse(new InputSource(getRuntimeConfigurationReader()));
+			Reader fileReader = this.getRuntimeConfigurationReader() ;
+			if (fileReader == null) {
+				return ;
+			}
+			reader.parse(new InputSource(fileReader)) ;
 		} catch(Exception e) {
 			RdtLaunchingPlugin.log(e);
 		}
@@ -114,8 +117,9 @@ public class RubyRuntime {
 	protected Reader getRuntimeConfigurationReader() {
 		try {
 			return new FileReader(getRuntimeConfigurationFile());
-		} catch(FileNotFoundException e) {}
-		return new StringReader("");
+		} catch(FileNotFoundException e) {			
+			return null ;
+		}
 	}
 	
 	protected void writeXML(Writer writer) {
