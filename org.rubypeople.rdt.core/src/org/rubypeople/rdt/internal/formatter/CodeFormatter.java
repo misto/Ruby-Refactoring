@@ -51,16 +51,17 @@ public class CodeFormatter {
 	}
 
 	private char fillCharacter;
-
+	private int indentation ;
 	public CodeFormatter() {
 		this(' ');
 	}
 
 	public CodeFormatter(char fillCharacter) {
 		this.fillCharacter = fillCharacter;
+		this.indentation = 2 ;
 	}
 
-	public String formatString(String unformatted) {
+	public synchronized String formatString(String unformatted) {
 		AbstractBlockMarker firstAbstractBlockMarker = this.createBlockMarkerList(unformatted);
 		firstAbstractBlockMarker.print();
 		try {
@@ -80,7 +81,7 @@ public class CodeFormatter {
 			whitespaceMatcher.match(lines[i]);
 			int leadingWhitespace = whitespaceMatcher.getParenEnd(0);
 			if (state == null) {
-				state = new IndentationState(unformatted, 2, leadingWhitespace, fillCharacter);
+				state = new IndentationState(unformatted, this.getIndentation(), leadingWhitespace, fillCharacter);
 			}
 			state.incPos(leadingWhitespace);
 			String strippedLine = lines[i].substring(leadingWhitespace);
@@ -415,4 +416,12 @@ public class CodeFormatter {
 		return this.matchREBackward(unformatted.substring(lineStart, pos), NON_BLOCK_DO_RE) ;
 	}
 	
+	public int getIndentation() {
+		return indentation;
+	}
+
+	public void setIndentation(int i) {
+		indentation = i;
+	}
+
 }
