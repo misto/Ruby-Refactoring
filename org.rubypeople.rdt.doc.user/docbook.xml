@@ -305,6 +305,17 @@ persons = Hash[ Person.new('Lisa') =&gt; Person.new('Marge'),
 	</chapter>
 	<chapter id="Concepts">
 		<title>Concepts</title>
+			<sect1 id="rubyProjects">
+				<title>Ruby projects</title>
+				<para>A Ruby project contains source code and related files for building a Ruby program.</para>
+				<para>A Ruby project also maintains a model of its contents. This model includes information about the type hierarchy, references and declarations of Ruby elements. This information is constantly updated as the user changes the Ruby source code.</para>
+				<para>You can organize Ruby projects in one way currently:<itemizedlist>
+					<listitem>
+						Using the project as the source container. This is the recommended organization for simple projects. 
+					</listitem>
+					</itemizedlist>
+				</para>
+			</sect1>
 	</chapter>
 	<chapter id="TipsNTricks">
 		<title>Tips and tricks</title>
