@@ -58,7 +58,7 @@ public class RubyElement implements IRubyElement {
 	public static final int UNTIL = RubyToken.UNTIL;
 	public static final int CLASS_VAR = RubyToken.CLASS_VARIABLE;
 	public static final int GLOBAL = RubyToken.GLOBAL;
-	public static final int SCRIPT = RubyToken.MAX_TOKEN_NUM + 1;
+	public static final int SCRIPT = -1;
 	public static final int INSTANCE_VAR = RubyToken.INSTANCE_VARIABLE;
 	public static final int REQUIRES = RubyToken.REQUIRES;
 	public static final int MODULE = RubyToken.MODULE;
@@ -255,5 +255,12 @@ public class RubyElement implements IRubyElement {
 	 */
 	public boolean isVariable() {
 		return isType(RubyElement.CLASS_VAR) || isType(RubyElement.INSTANCE_VAR) || isType(RubyElement.GLOBAL);
+	}
+
+	/**
+	 * @return
+	 */
+	public int getType() {
+		return type;
 	}
 }
