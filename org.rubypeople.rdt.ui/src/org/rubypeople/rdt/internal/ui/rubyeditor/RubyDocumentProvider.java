@@ -206,8 +206,7 @@ public class RubyDocumentProvider extends TextFileDocumentProvider {
 			AnnotationPreference preference= lookup.getAnnotationPreference(annotation);
 			if (preference != null)
 				return preference.getPresentationLayer() + 1;
-			else
-				return IAnnotationAccessExtension.DEFAULT_LAYER + 1;
+			return IAnnotationAccessExtension.DEFAULT_LAYER + 1;
 		}
 		
 		private static Image fgQuickFixImage;
@@ -254,11 +253,12 @@ public class RubyDocumentProvider extends TextFileDocumentProvider {
 			// http://bugs.eclipse.org/bugs/show_bug.cgi?id=18936
 			if (!fQuickFixImagesInitialized) {
 				// TODO Check with the correction processor (when we have one)!
-				if (isProblem() && indicateQuixFixableProblems() /*&& JavaCorrectionProcessor.hasCorrections(this)*/) { // no light bulb for tasks
+				if (isProblem() && indicateQuixFixableProblems() /*&& RubyCorrectionProcessor.hasCorrections(this)*/) { // no light bulb for tasks
 					if (!fgQuickFixImagesInitialized) {
 						fgQuickFixImage= RubyPluginImages.get(RubyPluginImages.IMG_OBJS_WARNING);
 						fgQuickFixErrorImage= RubyPluginImages.get(RubyPluginImages.IMG_OBJS_ERROR);
-//						fgQuickFixImage= RubyPluginImages.get(RubyPluginImages.IMG_OBJS_FIXABLE_PROBLEM);
+//						// FIXME Use real quick fix images when we do quick fixes!
+						fgQuickFixImage= RubyPluginImages.get(RubyPluginImages.IMG_OBJS_FIXABLE_PROBLEM);
 //						fgQuickFixErrorImage= RubyPluginImages.get(RubyPluginImages.IMG_OBJS_FIXABLE_ERROR);
 						fgQuickFixImagesInitialized= true;
 					}
