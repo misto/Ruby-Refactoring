@@ -23,5 +23,6 @@ public class RubyContentOutlinePage extends ContentOutlinePage {
 		tree.setContentProvider(new RubyOutlineContentProvider(fTextEditor));
 		tree.setLabelProvider(new RubyOutlineLabelProvider());
 		tree.setInput(document);
+		tree.setSorter(new RubyElementSorter());
 	}
 }
