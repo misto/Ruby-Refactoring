@@ -19,7 +19,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Set;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
@@ -27,7 +26,6 @@ import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
-import org.rubypeople.rdt.internal.core.RubyLibrary;
 import org.rubypeople.rdt.internal.core.RubyPlugin;
 import org.rubypeople.rdt.internal.core.parser.ParseException;
 import org.rubypeople.rdt.internal.core.parser.RubyParser;
@@ -96,11 +94,14 @@ public class RubyProjectInformationProvider {
 	}
 
 	private void createLibrary() {
+		return ;
+		/*
 		RubyLibrary theLibrary = RubyPlugin.getDefault().getSelectedLibrary();
 		if (theLibrary == null) return;
 		String libPath = theLibrary.getInstallLocation().toOSString();
 		File rubyLib = new File(libPath);
 		library = getScripts(rubyLib);
+		*/
 	}
 
 	/**
@@ -300,7 +301,8 @@ public class RubyProjectInformationProvider {
 	 */
 	public List getImportedElements(RubyScript script) {
 		List importedElements = new ArrayList();
-
+        
+        /*
 		RubyLibrary theLibrary = RubyPlugin.getDefault().getSelectedLibrary();
 		if (theLibrary == null) return importedElements;
 		String libPath = theLibrary.getInstallLocation().toOSString();
@@ -315,6 +317,7 @@ public class RubyProjectInformationProvider {
 			RubyScript importedScript = getScript(new File(libPath + File.separator +requirePath + ".rb"));
 			if (importedScript != null) importedElements.addAll(getAllElements(importedScript));
 		}
+		*/
 		return importedElements;
 	}
 
