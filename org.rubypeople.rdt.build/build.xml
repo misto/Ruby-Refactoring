@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="org.rubypeople.rdt.build" default="build.all" basedir="..">
+	<property name="package.temp.dir" value="org.rubypeople.rdt.build/temp.folder"/>
+
+	<target name="build.all">
+		<antcall target="clean.all"/>
+		<antcall target="package.rdt"/>
+		<antcall target="refresh.all"/>
+	</target>
+	
+	<target name="clean.all">
+		<ant dir="org.rubypeople.rdt.core" target="clean"/>
+		<ant dir="org.rubypeople.rdt.debug.ui" target="clean"/>
+		<ant dir="org.rubypeople.rdt.launching" target="clean"/>
+		<ant dir="org.rubypeople.rdt.ui" target="clean"/>
+		<antcall target="clean"/>
+	</target>
+	
+	<target name="zip.plugin">
+		<ant dir="org.rubypeople.rdt.core" target="zip.plugin"/>
+		<ant dir="org.rubypeople.rdt.debug.ui" target="zip.plugin"/>
+		<ant dir="org.rubypeople.rdt.launching" target="zip.plugin"/>
+		<ant dir="org.rubypeople.rdt.ui" target="zip.plugin"/>
+	</target>
+	
+	<target name="package.rdt" depends="zip.plugin">
+		<mkdir dir="${package.temp.dir}"/>
+		<unzip src="org.rubypeople.rdt.core/org.rubypeople.rdt.core_${version}.zip" dest="${package.temp.dir}"/>
+		<unzip src="org.rubypeople.rdt.debug.ui/org.rubypeople.rdt.debug.ui_${version}.zip" dest="${package.temp.dir}"/>
+		<unzip src="org.rubypeople.rdt.launching/org.rubypeople.rdt.launching_${version}.zip" dest="${package.temp.dir}"/>
+		<unzip src="org.rubypeople.rdt.ui/org.rubypeople.rdt.ui_${version}.zip" dest="${package.temp.dir}"/>
+		<copy file="org.rubypeople.rdt.build/releaseNotes" todir="${package.temp.dir}"/>
+		<copy file="org.rubypeople.rdt.build/index.html" todir="${package.temp.dir}"/>
+		<zip zipfile="org.rubypeople.rdt.build/rubyeclipse_${version}.zip" basedir="${package.temp.dir}" filesonly="true"/>
+		<delete dir="${package.temp.dir}"/>
+	</target>
+
+	<target name="refresh.all">
+		<ant dir="org.rubypeople.rdt.core" target="refresh"/>
+		<ant dir="org.rubypeople.rdt.debug.ui" target="refresh"/>
+		<ant dir="org.rubypeople.rdt.launching" target="refresh"/>
+		<ant dir="org.rubypeople.rdt.ui" target="refresh"/>
+		<antcall target="refresh"/>
+	</target>
+
+	<target name="clean">
+		<delete file="org.rubypeople.rdt.build/rubyeclipse_${version}.zip"/>
+	</target>
+	
+	<target name="refresh" if="eclipse.running">
+		<eclipse.refreshLocal resource="org.rubypeople.rdt.build" depth="infinite"/>
+	</target>
+</project>

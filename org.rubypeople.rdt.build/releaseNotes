@@ -1,0 +1,15 @@
+#########################################
+# (c) Copyright RubyPeople, Inc. 2002.
+# All Rights Reserved.
+#########################################
+
+0.2.0
+-----------------------------------------
+* Fixed Windows space in path issue
+* Editor now has soft keywords/colors
+* Improved syntax highlighting
+* Interpreters now only need to know directory of ruby/rubyw. No .exe is required.
+* Project wizard now shows under new project
+* When only one interpreter is installed, it is the selected one
+* The default working directory is now the workspace folder
+* New project wizard no longer ignores custom project loctation
