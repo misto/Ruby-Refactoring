@@ -19,6 +19,7 @@ import org.eclipse.core.resources.IProjectDescription;
 import org.eclipse.core.resources.IResourceProxyVisitor;
 import org.eclipse.core.resources.IResourceVisitor;
 import org.eclipse.core.resources.IWorkspace;
+import org.eclipse.core.resources.ResourceAttributes;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -318,6 +319,22 @@ public class TC_RubyRuntime extends TestCase {
 		public IContentDescription getContentDescription() throws CoreException {
 			// TODO Auto-generated method stub
 			return null;
+		}
+
+		/* (non-Javadoc)
+		 * @see org.eclipse.core.resources.IResource#getResourceAttributes()
+		 */
+		public ResourceAttributes getResourceAttributes() {
+			// TODO Auto-generated method stub
+			return null;
+		}
+
+		/* (non-Javadoc)
+		 * @see org.eclipse.core.resources.IResource#setResourceAttributes(org.eclipse.core.resources.ResourceAttributes)
+		 */
+		public void setResourceAttributes(ResourceAttributes attributes) throws CoreException {
+			// TODO Auto-generated method stub
+			
 		}
 
 	}

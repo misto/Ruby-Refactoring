@@ -9,9 +9,9 @@ import org.eclipse.core.runtime.Path;
 import org.eclipse.jface.action.Action;
 import org.eclipse.ui.cheatsheets.ICheatSheetAction;
 import org.eclipse.ui.cheatsheets.ICheatSheetManager;
-import org.rubypeople.rdt.internal.core.RubyPlugin;
+import org.rubypeople.rdt.core.RubyCore;
 import org.rubypeople.rdt.internal.debug.ui.RdtDebugUiPlugin;
-import org.rubypeople.rdt.internal.ui.RdtUiPlugin;
+import org.rubypeople.rdt.internal.ui.RubyPlugin;
 
 
 public class CopyContentAction extends Action implements ICheatSheetAction {
@@ -20,13 +20,13 @@ public class CopyContentAction extends Action implements ICheatSheetAction {
 	 * @see org.eclipse.ui.cheatsheets.ICheatSheetAction#run(java.lang.String[], org.eclipse.ui.cheatsheets.ICheatSheetManager)
 	 */
 	public void run(String[] params, ICheatSheetManager manager) {		
-		File sourceFile = new File(RubyPlugin.getOSDirectory(RdtDebugUiPlugin.getDefault()) + params[0]);
+		File sourceFile = new File(RubyCore.getOSDirectory(RdtDebugUiPlugin.getDefault()) + params[0]);
 		if (!sourceFile.exists()) {
 		    this.notifyResult(false);
 		    return;
 		}
 		
-		IFile dest = RdtUiPlugin.getWorkspace().getRoot().getFile(new Path(params[1]));
+		IFile dest = RubyPlugin.getWorkspace().getRoot().getFile(new Path(params[1]));
 		if (dest == null || !dest.exists()) {
 		    this.notifyResult(false);
 		    return;

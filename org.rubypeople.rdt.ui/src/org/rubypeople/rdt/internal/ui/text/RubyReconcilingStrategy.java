@@ -17,13 +17,13 @@ import org.eclipse.jface.text.IRegion;
 import org.eclipse.jface.text.reconciler.DirtyRegion;
 import org.eclipse.jface.text.reconciler.IReconcilingStrategy;
 import org.eclipse.jface.text.reconciler.IReconcilingStrategyExtension;
-import org.eclipse.ui.texteditor.IDocumentProvider;
-import org.rubypeople.rdt.internal.core.parser.RubyParser;
-import org.rubypeople.rdt.internal.ui.RdtUiPlugin;
+import org.rubypeople.rdt.core.IRubyScript;
+import org.rubypeople.rdt.core.RubyModelException;
+import org.rubypeople.rdt.internal.ui.RubyPlugin;
 import org.rubypeople.rdt.internal.ui.rubyeditor.RubyAbstractEditor;
-import org.rubypeople.rdt.internal.ui.rubyeditor.RubyDocumentProvider;
 import org.rubypeople.rdt.internal.ui.rubyeditor.outline.DocumentModelChangeEvent;
 import org.rubypeople.rdt.internal.ui.rubyeditor.outline.RubyCore;
+import org.rubypeople.rdt.ui.IWorkingCopyManager;
 
 public class RubyReconcilingStrategy implements IReconcilingStrategy, IReconcilingStrategyExtension {
 
@@ -33,28 +33,31 @@ public class RubyReconcilingStrategy implements IReconcilingStrategy, IReconcili
 	 */
 	public static final int DELAY = 500;
 
+	// FIXME Change to ITextEditor!
 	private RubyAbstractEditor fEditor;
+	private IWorkingCopyManager fManager;
 
 	public RubyReconcilingStrategy(RubyAbstractEditor editor) {
 		fEditor = editor;
+		fManager = RubyPlugin.getDefault().getWorkingCopyManager();
 	}
 
 	private void internalReconcile(DirtyRegion dirtyRegion) {
-	    // fEditor is null, if this reconcilir is used in the template preferences page
-	    if (fEditor == null) {
-	        return ;
-	    }
-		try {
-			IDocumentProvider provider = fEditor.getDocumentProvider();		
-			// could provider also be ExternalRubyDocumentProvider ?
-			if (provider instanceof RubyDocumentProvider) {
-				IDocument doc = provider.getDocument(fEditor.getEditorInput());
-				fEditor.getRubyModel().setScript(RubyParser.parse(doc.get())) ; 
-				RubyCore.getDefault().notifyDocumentModelListeners(new DocumentModelChangeEvent(fEditor.getRubyModel()));
+		// fEditor is null, if this reconciler is used in the template
+		// preferences page
+		if (fEditor == null) { return; }
+
+		IRubyScript unit = fManager.getWorkingCopy(fEditor.getEditorInput());
+		if (unit != null) {
+			try {
+				unit.reconcile();
+			} catch (RubyModelException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
 			}
-		} catch (Exception e) {
-			RdtUiPlugin.log(e);
 		}
+//		 FIXME Notify reconciling listeners!
+		RubyCore.getDefault().notifyDocumentModelListeners(new DocumentModelChangeEvent(fEditor.getRubyModel()));
 	}
 
 	/*

@@ -8,23 +8,20 @@ import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.core.runtime.Status;
-import org.eclipse.debug.core.DebugPlugin;
-import org.eclipse.debug.core.ILaunchConfiguration;
-import org.eclipse.debug.core.ILaunchConfigurationType;
-import org.eclipse.debug.core.ILaunchConfigurationWorkingCopy;
-import org.eclipse.debug.core.ILaunchManager;
+import org.eclipse.debug.core.*;
 import org.eclipse.debug.ui.ILaunchShortcut;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorPart;
-import org.rubypeople.rdt.core.RubyElement;
+import org.rubypeople.rdt.core.IRubyElement;
+import org.rubypeople.rdt.internal.core.RubyElement;
 import org.rubypeople.rdt.internal.debug.ui.RdtDebugUiMessages;
 import org.rubypeople.rdt.internal.debug.ui.RdtDebugUiPlugin;
 import org.rubypeople.rdt.internal.launching.RubyLaunchConfigurationAttribute;
 import org.rubypeople.rdt.internal.launching.RubyRuntime;
-import org.rubypeople.rdt.internal.ui.RdtUiPlugin;
+import org.rubypeople.rdt.internal.ui.RubyPlugin;
 
 public class RubyApplicationShortcut implements ILaunchShortcut {
 
@@ -39,9 +36,9 @@ public class RubyApplicationShortcut implements ILaunchShortcut {
 			log("Could not find selection.");
 			return;
 		}
-		RubyElement rubyElement = null;
+		IRubyElement rubyElement = null;
 		if (firstSelection instanceof IAdaptable) {
-			rubyElement = (RubyElement) ((IAdaptable) firstSelection).getAdapter(RubyElement.class);
+			rubyElement = (IRubyElement) ((IAdaptable) firstSelection).getAdapter(IRubyElement.class);
 		}
 		if (rubyElement == null) {
 			log("Selection is not a ruby element.");
@@ -78,7 +75,7 @@ public class RubyApplicationShortcut implements ILaunchShortcut {
 		}
 	}
 
-	protected ILaunchConfiguration findOrCreateLaunchConfiguration(RubyElement rubyElement, String mode) throws CoreException {
+	protected ILaunchConfiguration findOrCreateLaunchConfiguration(IRubyElement rubyElement, String mode) throws CoreException {
 		IFile rubyFile = (IFile) rubyElement.getUnderlyingResource();
 		ILaunchConfigurationType configType = getRubyLaunchConfigType();
 		List candidateConfigs = null;
@@ -109,8 +106,8 @@ public class RubyApplicationShortcut implements ILaunchShortcut {
 
 	protected ILaunchConfiguration createConfiguration(IFile rubyFile) {
 		if (RubyRuntime.getDefault().getSelectedInterpreter() == null) {
-			this.showNoInterpreterDialog() ;
-			return null ;
+			this.showNoInterpreterDialog();
+			return null;
 		}
 		ILaunchConfiguration config = null;
 		try {
@@ -143,18 +140,16 @@ public class RubyApplicationShortcut implements ILaunchShortcut {
 	protected void log(Throwable t) {
 		RdtDebugUiPlugin.log(t);
 	}
-	
+
 	protected void showNoInterpreterDialog() {
-		MessageDialog.openInformation(RdtUiPlugin.getActiveWorkbenchShell(), RdtDebugUiMessages.getString("Dialog.launchWithoutSelectedInterpreter.title"), RdtDebugUiMessages.getString("Dialog.launchWithoutSelectedInterpreter"));
-	}	
+		MessageDialog.openInformation(RubyPlugin.getActiveWorkbenchShell(), RdtDebugUiMessages.getString("Dialog.launchWithoutSelectedInterpreter.title"), RdtDebugUiMessages.getString("Dialog.launchWithoutSelectedInterpreter"));
+	}
 
 	protected static String getDefaultWorkingDirectory(IProject project) {
 		if (project != null && project.exists()) {
-			return project.getLocation().toOSString() ;
+			return project.getLocation().toOSString();
 		}
-		else {
-			// might habe been deleted
-			return RdtDebugUiPlugin.getWorkspace().getRoot().getLocation().toOSString() ;		
-		}
+		// might have been deleted
+		return RdtDebugUiPlugin.getWorkspace().getRoot().getLocation().toOSString();
 	}
 }

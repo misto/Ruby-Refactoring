@@ -13,7 +13,7 @@ package org.rubypeople.rdt.internal.ui.rubyeditor.templates;
 
 import org.eclipse.jface.text.DefaultInformationControl;
 import org.eclipse.swt.widgets.Shell;
-import org.rubypeople.rdt.internal.ui.RdtUiPlugin;
+import org.rubypeople.rdt.internal.ui.RubyPlugin;
 import org.rubypeople.rdt.ui.PreferenceConstants;
 
 public class RubySourceViewerInformationControl extends DefaultInformationControl {
@@ -47,8 +47,8 @@ public class RubySourceViewerInformationControl extends DefaultInformationContro
 	 */
 	public void setInformation(String content) {
 		if (content != null 
-			&& RdtUiPlugin.getDefault().getPreferenceStore().getBoolean(PreferenceConstants.TEMPLATES_USE_CODEFORMATTER)) {
-			content= RdtUiPlugin.getDefault().getCodeFormatter().formatString(content);
+			&& RubyPlugin.getDefault().getPreferenceStore().getBoolean(PreferenceConstants.TEMPLATES_USE_CODEFORMATTER)) {
+			content= RubyPlugin.getDefault().getCodeFormatter().formatString(content);
 		}
 		super.setInformation(content);
 	}

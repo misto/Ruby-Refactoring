@@ -2,19 +2,31 @@ package org.rubypeople.rdt.internal.ui.text.ruby;
 
 import java.util.List;
 
-import org.rubypeople.rdt.internal.ui.text.RubyTextTools;
+import org.eclipse.jface.preference.IPreferenceStore;
+import org.rubypeople.rdt.ui.text.IColorManager;
 
 public class SingleTokenRubyCodeScanner extends AbstractRubyScanner {
-	protected String colorKey;
 
-	public SingleTokenRubyCodeScanner(RubyTextTools theTextTools, String aColorKey) {
-		super(theTextTools);
-		colorKey = aColorKey;
+	private String[] fProperty;
+
+	public SingleTokenRubyCodeScanner(IColorManager manager, IPreferenceStore store, String property) {
+		super(manager, store);
+		fProperty = new String[] { property};
 		initialize();
 	}
 
+	/*
+	 * @see AbstractRubyScanner#getTokenProperties()
+	 */
+	protected String[] getTokenProperties() {
+		return fProperty;
+	}
+
+	/*
+	 * @see AbstractRubyScanner#createRules()
+	 */
 	protected List createRules() {
-		setDefaultReturnToken(getToken(colorKey));
+		setDefaultReturnToken(getToken(fProperty[0]));
 		return null;
 	}
 

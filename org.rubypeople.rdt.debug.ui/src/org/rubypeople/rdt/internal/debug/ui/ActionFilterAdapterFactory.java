@@ -30,9 +30,7 @@ class ActionFilterAdapterFactory implements IAdapterFactory, IActionFilter {
     	if (name.equals("isHashValue")) {    	
         	return ((RubyVariable) rubyVariable).isHashValue() ;
     	}
-    	else { 
-    		return false ;
-	    }       
+		return false;       
     }
 
 }

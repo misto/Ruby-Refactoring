@@ -8,7 +8,7 @@ import org.eclipse.ui.IActionDelegate;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.cheatsheets.ICheatSheetAction;
 import org.eclipse.ui.cheatsheets.ICheatSheetManager;
-import org.rubypeople.rdt.internal.ui.RdtUiPlugin;
+import org.rubypeople.rdt.internal.ui.RubyPlugin;
 import org.rubypeople.rdt.internal.ui.wizards.NewProjectCreationWizard;
 
 /**
@@ -38,7 +38,7 @@ public class OpenNewRubyProjectWizardAction extends Action implements ICheatShee
 			wizard.setDefaultProjectName(params[0]) ;
 		}
 		wizard.init(PlatformUI.getWorkbench(), new StructuredSelection());
-		WizardDialog dialog = new WizardDialog(RdtUiPlugin.getActiveWorkbenchShell(), wizard);
+		WizardDialog dialog = new WizardDialog(RubyPlugin.getActiveWorkbenchShell(), wizard);
 		dialog.create();
 		//SWTUtil.setDialogSize(dialog, 500, 500);
 		dialog.getShell().setText(wizard.getWindowTitle());

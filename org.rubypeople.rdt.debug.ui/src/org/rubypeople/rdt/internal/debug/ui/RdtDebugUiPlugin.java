@@ -11,8 +11,8 @@ import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.osgi.framework.BundleContext;
+import org.rubypeople.rdt.core.RubyCore;
 import org.rubypeople.rdt.debug.ui.RdtDebugUiConstants;
-import org.rubypeople.rdt.internal.core.RubyPlugin;
 import org.rubypeople.rdt.internal.debug.core.model.RubyVariable;
 
 public class RdtDebugUiPlugin extends AbstractUIPlugin {
@@ -38,7 +38,7 @@ public class RdtDebugUiPlugin extends AbstractUIPlugin {
 	}
 
 	public static IWorkspace getWorkspace() {
-		return RubyPlugin.getWorkspace();
+		return RubyCore.getWorkspace();
 	}
 
 	public static void log(IStatus status) {

@@ -1,32 +1,30 @@
 package org.rubypeople.rdt.internal.ui.rubyeditor;
 
-import java.util.HashMap;
 import java.util.Iterator;
-import java.util.Map;
-import java.util.Set;
 
-import org.eclipse.core.resources.IMarker;
-import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
-import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.jface.preference.IPreferenceStore;
-import org.eclipse.jface.text.BadLocationException;
-import org.eclipse.jface.text.IDocument;
+import org.eclipse.jface.text.TextSelection;
+import org.eclipse.jface.text.source.ISourceViewer;
 import org.eclipse.jface.util.PropertyChangeEvent;
+import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
+import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.StructuredSelection;
+import org.eclipse.swt.custom.StyledText;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.editors.text.EditorsUI;
 import org.eclipse.ui.editors.text.TextEditor;
 import org.eclipse.ui.texteditor.ChainedPreferenceStore;
-import org.eclipse.ui.texteditor.MarkerUtilities;
 import org.eclipse.ui.views.contentoutline.IContentOutlinePage;
-import org.rubypeople.rdt.internal.core.RubyPlugin;
-import org.rubypeople.rdt.internal.core.parser.ParseError;
-import org.rubypeople.rdt.internal.core.parser.ast.RubyElement;
-import org.rubypeople.rdt.internal.core.parser.ast.RubyScript;
-import org.rubypeople.rdt.internal.ui.RdtUiPlugin;
+import org.rubypeople.rdt.core.IImportDeclaration;
+import org.rubypeople.rdt.core.IMember;
+import org.rubypeople.rdt.core.IRubyScript;
+import org.rubypeople.rdt.core.ISourceRange;
+import org.rubypeople.rdt.core.ISourceReference;
+import org.rubypeople.rdt.core.RubyModelException;
+import org.rubypeople.rdt.internal.ui.RubyPlugin;
 import org.rubypeople.rdt.internal.ui.rubyeditor.outline.DocumentModelChangeEvent;
 import org.rubypeople.rdt.internal.ui.rubyeditor.outline.IDocumentModelListener;
 import org.rubypeople.rdt.internal.ui.rubyeditor.outline.RubyContentOutlinePage;
@@ -34,7 +32,7 @@ import org.rubypeople.rdt.internal.ui.rubyeditor.outline.RubyCore;
 import org.rubypeople.rdt.internal.ui.rubyeditor.outline.RubyModel;
 import org.rubypeople.rdt.internal.ui.text.RubySourceViewerConfiguration;
 import org.rubypeople.rdt.internal.ui.text.RubyTextTools;
-import org.rubypeople.rdt.ui.PreferenceConstants;
+import org.rubypeople.rdt.ui.IWorkingCopyManager;
 
 public class RubyAbstractEditor extends TextEditor {
 
@@ -43,21 +41,21 @@ public class RubyAbstractEditor extends TextEditor {
 	private IDocumentModelListener fListener;
 	private RubyCore fCore;
 	private RubyModel model;
+	private ISourceReference reference;
 
 	private IPreferenceStore createCombinedPreferenceStore() {
-		IPreferenceStore rdtStore= RdtUiPlugin.getDefault().getPreferenceStore();
-		IPreferenceStore generalTextStore= EditorsUI.getPreferenceStore(); 
-		return new ChainedPreferenceStore(new IPreferenceStore[] { rdtStore, generalTextStore });
+		IPreferenceStore rdtStore = RubyPlugin.getDefault().getPreferenceStore();
+		IPreferenceStore generalTextStore = EditorsUI.getPreferenceStore();
+		return new ChainedPreferenceStore(new IPreferenceStore[] { rdtStore, generalTextStore});
 	}
-	
+
 	protected void initializeEditor() {
 		super.initializeEditor();
 		setPreferenceStore(this.createCombinedPreferenceStore());
 
-
-		textTools = RdtUiPlugin.getDefault().getTextTools();
+		textTools = RubyPlugin.getDefault().getTextTools();
 		setSourceViewerConfiguration(new RubySourceViewerConfiguration(textTools, this));
-		
+
 		if (fListener == null) {
 			fListener = createRubyModelChangeListener();
 		}
@@ -84,17 +82,6 @@ public class RubyAbstractEditor extends TextEditor {
 		return new IDocumentModelListener() {
 
 			public void documentModelChanged(final DocumentModelChangeEvent event) {
-				/*if (model == null) {
-					try {
-						RubyDocumentProvider provider = (RubyDocumentProvider) getDocumentProvider();
-						model = RubyCore.getDefault().getRubyModel(getEditorInput()) ;
-						IDocument document = getDocumentProvider().getDocument(getEditorInput());
-						model.setScript(RubyParser.parse(document.get()));
-					} catch (ParseException e) {
-						RubyPlugin.log(e);
-					}
-				}
-				*/
 				if (event.getModel() == getRubyModel()) {
 					getSite().getShell().getDisplay().asyncExec(new Runnable() {
 
@@ -102,7 +89,7 @@ public class RubyAbstractEditor extends TextEditor {
 							try {
 								createMarkers(event.getModel().getScript());
 							} catch (CoreException e) {
-								RdtUiPlugin.log(e);
+								RubyPlugin.log(e);
 							}
 						}
 					});
@@ -111,14 +98,15 @@ public class RubyAbstractEditor extends TextEditor {
 		};
 	}
 
-	public Object getAdapter(Class adapter) {
-		if (IContentOutlinePage.class.equals(adapter)) return createRubyOutlinePage();
+	public Object getAdapter(Class required) {
+		if (IContentOutlinePage.class.equals(required)) return createRubyOutlinePage();
 
-		return super.getAdapter(adapter);
+		return super.getAdapter(required);
 	}
 
-	protected Object createRubyOutlinePage() {
+	protected RubyContentOutlinePage createRubyOutlinePage() {
 		outlinePage = new RubyContentOutlinePage(getSourceViewer().getDocument(), this);
+		setOutlinePageInput(outlinePage, getEditorInput());
 		outlinePage.addSelectionChangedListener(new ISelectionChangedListener() {
 
 			public void selectionChanged(SelectionChangedEvent event) {
@@ -128,15 +116,134 @@ public class RubyAbstractEditor extends TextEditor {
 		return outlinePage;
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.eclipse.ui.editors.text.TextEditor#doSetInput(org.eclipse.ui.IEditorInput)
+	 */
+	protected void doSetInput(IEditorInput input) throws CoreException {
+		RubyPlugin.log("In AsbtractRubyEditor#doSetInput");
+		super.doSetInput(input);
+		RubyPlugin.log("finished AsbtractRubyEditor#doSetInput");
+		setOutlinePageInput(outlinePage, input);
+		RubyPlugin.log("set Outline Page Input");
+	}
+
+	protected void setOutlinePageInput(RubyContentOutlinePage page, IEditorInput input) {
+		if (page != null) {
+			IWorkingCopyManager manager = RubyPlugin.getDefault().getWorkingCopyManager();
+			page.setInput(manager.getWorkingCopy(input));
+		}
+	}
+
 	protected void handleOutlinePageSelection(SelectionChangedEvent event) {
 		StructuredSelection selection = (StructuredSelection) event.getSelection();
-		RubyElement element = (RubyElement) selection.getFirstElement();
-		if (element == null) return;
-		try {
-			int offset = getSourceViewer().getDocument().getLineOffset(element.getStart().getLineNumber());
-			selectAndReveal(offset + element.getStart().getOffset(), element.getName().length());
-		} catch (BadLocationException e) {
-			RubyPlugin.log(e);
+		Iterator iter = ((IStructuredSelection) selection).iterator();
+		while (iter.hasNext()) {
+			Object o = iter.next();
+			if (o instanceof ISourceReference) {
+				reference = (ISourceReference) o;
+				break;
+			}
+		}
+		// FIXME Uncomment so we bring editor to top
+		// if (!isActivePart() && RubyPlugin.getActivePage() != null)
+		// RubyPlugin.getActivePage().bringToTop(this);
+
+		// setSelection(reference, !isActivePart());
+		setSelection(reference, true);
+	}
+
+	protected void setSelection(ISourceReference reference, boolean moveCursor) {
+		if (getSelectionProvider() == null) return;
+
+		ISelection selection = getSelectionProvider().getSelection();
+		if (selection instanceof TextSelection) {
+			TextSelection textSelection = (TextSelection) selection;
+			// PR 39995: [navigation] Forward history cleared after going back
+			// in navigation history:
+			// mark only in navigation history if the cursor is being moved
+			// (which it isn't if
+			// this is called from a PostSelectionEvent that should only update
+			// the magnet)
+			if (moveCursor && (textSelection.getOffset() != 0 || textSelection.getLength() != 0)) markInNavigationHistory();
+		}
+
+		if (reference != null) {
+
+			StyledText textWidget = null;
+
+			ISourceViewer sourceViewer = getSourceViewer();
+			if (sourceViewer != null) textWidget = sourceViewer.getTextWidget();
+
+			if (textWidget == null) return;
+
+			try {
+				ISourceRange range = null;
+				// if (reference instanceof ILocalVariable) {
+				// IJavaElement je= ((ILocalVariable)reference).getParent();
+				// if (je instanceof ISourceReference)
+				// range= ((ISourceReference)je).getSourceRange();
+				// } else
+				// range= reference.getSourceRange();
+				//				
+				// if (range == null)
+				// return;
+				//				
+				// int offset= range.getOffset();
+				// int length= range.getLength();
+				//				
+				// if (offset < 0 || length < 0)
+				// return;
+				//				
+				// setHighlightRange(offset, length, moveCursor);
+
+				if (!moveCursor) return;
+
+				int offset = -1;
+				int length = -1;
+
+				if (reference instanceof IMember) {
+					range = ((IMember) reference).getNameRange();
+					if (range != null) {
+						offset = range.getOffset();
+						length = range.getLength();
+					}
+					// } else if (reference instanceof ILocalVariable) {
+					// range= ((ILocalVariable)reference).getNameRange();
+					// if (range != null) {
+					// offset= range.getOffset();
+					// length= range.getLength();
+					// }
+				} else if (reference instanceof IImportDeclaration) {
+					String name = ((IImportDeclaration) reference).getElementName();
+					if (name != null && name.length() > 0) {
+						String content = reference.getSource();
+						if (content != null) {
+							offset = range.getOffset() + content.indexOf(name);
+							length = name.length();
+						}
+					}
+				}
+
+				if (offset > -1 && length > 0) {
+
+					try {
+						textWidget.setRedraw(false);
+						sourceViewer.revealRange(offset, length);
+						sourceViewer.setSelectedRange(offset, length);
+					} finally {
+						textWidget.setRedraw(true);
+					}
+
+					markInNavigationHistory();
+				}
+
+			} catch (RubyModelException x) {} catch (IllegalArgumentException x) {}
+
+		} else if (moveCursor) {
+			resetHighlightRange();
+			markInNavigationHistory();
 		}
 	}
 
@@ -148,50 +255,53 @@ public class RubyAbstractEditor extends TextEditor {
 	 * @param script
 	 * @throws CoreException
 	 */
-	private void createMarkers(RubyScript script) throws CoreException {
-		IEditorInput input = getEditorInput();
-		if (input == null) {
-			// can happen at workbench shutdown
-			return ;
-		}
-		IResource resource = (IResource) ((IAdaptable) input).getAdapter(org.eclipse.core.resources.IResource.class);
-		if (resource == null) {
-		// happens if ruby file is external
-		return; }
-		resource.deleteMarkers(IMarker.PROBLEM, true, IResource.DEPTH_ONE);
-		if (!RdtUiPlugin.getDefault().getPreferenceStore().getBoolean(PreferenceConstants.CREATE_PARSER_ANNOTATIONS)) {
-			return ;
-		}
-		IDocument doc = getDocumentProvider().getDocument(getEditorInput());
-		Set errors = script.getParseErrors();
-		for (Iterator iter = errors.iterator(); iter.hasNext();) {
-			ParseError pe = (ParseError) iter.next();
-			Map attributes = new HashMap();
-			MarkerUtilities.setMessage(attributes, pe.getError());
-			MarkerUtilities.setLineNumber(attributes, pe.getLine());
-			try {
-				int offset = doc.getLineOffset(pe.getLine());
-				MarkerUtilities.setCharStart(attributes, offset + pe.getStart());
-				MarkerUtilities.setCharEnd(attributes, offset + pe.getEnd());
-
-				attributes.put(IMarker.SEVERITY, pe.getSeverity());
-				try {
-					MarkerUtilities.createMarker(resource, attributes, IMarker.PROBLEM);
-				} catch (CoreException x) {
-					RubyPlugin.log(x);
-				}
-			} catch (BadLocationException e) {
-				RubyPlugin.log(e);
-			}
-
-		}
+	private void createMarkers(IRubyScript script) throws CoreException {
+	// FIXME Create Markers on the file
+	// IEditorInput input = getEditorInput();
+	// if (input == null) {
+	// // can happen at workbench shutdown
+	// return;
+	// }
+	// IResource resource = (IResource) ((IAdaptable)
+	// input).getAdapter(org.eclipse.core.resources.IResource.class);
+	// if (resource == null) {
+	// // happens if ruby file is external
+	// return;
+	// }
+	// resource.deleteMarkers(IMarker.PROBLEM, true, IResource.DEPTH_ONE);
+	// if
+	// (!RdtUiPlugin.getDefault().getPreferenceStore().getBoolean(PreferenceConstants.CREATE_PARSER_ANNOTATIONS))
+	// { return; }
+	// IDocument doc = getDocumentProvider().getDocument(getEditorInput());
+	// Set errors = script.getParseErrors();
+	// for (Iterator iter = errors.iterator(); iter.hasNext();) {
+	// ParseError pe = (ParseError) iter.next();
+	// Map attributes = new HashMap();
+	// MarkerUtilities.setMessage(attributes, pe.getError());
+	// MarkerUtilities.setLineNumber(attributes, pe.getLine());
+	// try {
+	// int offset = doc.getLineOffset(pe.getLine());
+	// MarkerUtilities.setCharStart(attributes, offset + pe.getStart());
+	// MarkerUtilities.setCharEnd(attributes, offset + pe.getEnd());
+	//
+	// attributes.put(IMarker.SEVERITY, pe.getSeverity());
+	// try {
+	// MarkerUtilities.createMarker(resource, attributes, IMarker.PROBLEM);
+	// } catch (CoreException x) {
+	// RubyPlugin.log(x);
+	// }
+	// } catch (BadLocationException e) {
+	// RubyPlugin.log(e);
+	// }
+	//
+	// }
 	}
-	
+
 	public RubyModel getRubyModel() {
 		if (model == null) {
-			model = new RubyModel() ;
+			model = new RubyModel();
 		}
-		return model ;
+		return model;
 	}
 
 }

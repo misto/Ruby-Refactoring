@@ -8,7 +8,7 @@ import org.eclipse.jface.text.TextSelection;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.ui.texteditor.ITextEditor;
 import org.eclipse.ui.texteditor.TextEditorAction;
-import org.rubypeople.rdt.internal.ui.RdtUiPlugin;
+import org.rubypeople.rdt.internal.ui.RubyPlugin;
 import org.rubypeople.rdt.internal.ui.rubyeditor.RubyEditor;
 
 public class FormatAction extends TextEditorAction {
@@ -26,7 +26,7 @@ public class FormatAction extends TextEditorAction {
 				TextSelection textSelection = (TextSelection) selection;
 				String text = textSelection.getText();
 				if (text == null || text.length() == 0) {
-					String allFormatted = RdtUiPlugin.getDefault().getCodeFormatter().formatString(doc.get());
+					String allFormatted = RubyPlugin.getDefault().getCodeFormatter().formatString(doc.get());
 					RubyEditor rubyEditor = (RubyEditor) this.getTextEditor();
 					RubyEditor.CaretPosition cursorPos = rubyEditor.getCaretPosition();
 					doc.set(allFormatted);
@@ -38,13 +38,13 @@ public class FormatAction extends TextEditorAction {
 					int endLine = textSelection.getEndLine();
 					int endPos = doc.getLineOffset(endLine) + doc.getLineLength(endLine);
 
-					String formatted = RdtUiPlugin.getDefault().getCodeFormatter().formatString(doc.get(startPos, endPos - startPos));
+					String formatted = RubyPlugin.getDefault().getCodeFormatter().formatString(doc.get(startPos, endPos - startPos));
 					doc.replace(startPos, endPos - startPos, formatted);
 				}
 			}
 
 		} catch (BadLocationException e) {
-			RdtUiPlugin.log(e);
+			RubyPlugin.log(e);
 		}
 
 		super.run();

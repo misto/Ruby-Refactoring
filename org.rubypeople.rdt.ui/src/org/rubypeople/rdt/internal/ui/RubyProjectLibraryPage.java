@@ -25,8 +25,8 @@ import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.ide.IDE.SharedImages;
-import org.rubypeople.rdt.core.RubyProject;
-import org.rubypeople.rdt.internal.core.RubyPlugin;
+import org.rubypeople.rdt.core.RubyCore;
+import org.rubypeople.rdt.internal.core.RubyProject;
 
 public class RubyProjectLibraryPage {
 	protected RubyProject workingProject;
@@ -78,14 +78,14 @@ public class RubyProjectLibraryPage {
 	}
 
 	protected List getWorkspaceProjects() {
-		IWorkspaceRoot root = RdtUiPlugin.getWorkspace().getRoot();
+		IWorkspaceRoot root = RubyPlugin.getWorkspace().getRoot();
 		return Arrays.asList(root.getProjects());
 	}
 
 	protected ITableLabelProvider getLabelProvider() {
 		ITableLabelProvider labelProvider = new ITableLabelProvider() {
 			public Image getColumnImage(Object element, int columnIndex) {
-				IWorkbench workbench= RdtUiPlugin.getDefault().getWorkbench();
+				IWorkbench workbench= RubyPlugin.getDefault().getWorkbench();
 				return workbench.getSharedImages().getImage(SharedImages.IMG_OBJ_PROJECT);
 			}
 
@@ -133,7 +133,7 @@ public class RubyProjectLibraryPage {
 						IProject project = (IProject) anObject;
 						if (project.getName() != workingProject.getProject().getName()) {
 							try {
-								if (project.hasNature(RubyPlugin.RUBY_NATURE_ID))
+								if (project.hasNature(RubyCore.NATURE_ID))
 									rubyProjects.add(project);
 							} catch (CoreException e) {}
 						}

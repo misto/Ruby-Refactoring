@@ -33,7 +33,6 @@ public class RubyResourcesView extends ResourceNavigator {
 		super.createPartControl(parent);
 		RubyViewerFilter filter = new RubyViewerFilter(this);
 		this.getViewer().addFilter(filter);
-
 	}
 
 	protected void makeActions() {

@@ -20,18 +20,21 @@ import org.eclipse.jface.text.templates.Template;
 import org.eclipse.jface.text.templates.TemplateCompletionProcessor;
 import org.eclipse.jface.text.templates.TemplateContextType;
 import org.eclipse.swt.graphics.Image;
-import org.rubypeople.rdt.internal.core.RubyPlugin;
-import org.rubypeople.rdt.internal.core.parser.ParseException;
-import org.rubypeople.rdt.internal.core.parser.RubyParser;
+import org.eclipse.ui.IEditorPart;
+import org.rubypeople.rdt.core.IParent;
+import org.rubypeople.rdt.core.IRubyElement;
+import org.rubypeople.rdt.core.IRubyScript;
+import org.rubypeople.rdt.core.RubyModelException;
 import org.rubypeople.rdt.internal.ui.RdtUiImages;
+import org.rubypeople.rdt.internal.ui.RubyPlugin;
 import org.rubypeople.rdt.internal.ui.rubyeditor.templates.RubyFileContextType;
 import org.rubypeople.rdt.internal.ui.rubyeditor.templates.RubyTemplateAccess;
 import org.rubypeople.rdt.internal.ui.text.RubyTextTools;
+import org.rubypeople.rdt.ui.IWorkingCopyManager;
 
 public class RubyCompletionProcessor extends TemplateCompletionProcessor implements IContentAssistProcessor {
 
 	private static String[] keywordProposals;
-	protected RubyTextTools textTools;
 	protected IContextInformationValidator contextInformationValidator = new RubyContextInformationValidator();
 
 	private static String[] preDefinedGlobals = { "$!", "$@", "$_", "$.", "$&", "$n", "$~", "$=", "$/", "$\\", "$0", "$*", "$$", "$?", "$:"};
@@ -54,10 +57,13 @@ public class RubyCompletionProcessor extends TemplateCompletionProcessor impleme
 	 * The text viewer.
 	 */
 	private ITextViewer viewer;
+	private IWorkingCopyManager fManager;
+	private IEditorPart fEditor;
 
-	public RubyCompletionProcessor(RubyTextTools theTextTools) {
+	public RubyCompletionProcessor(IEditorPart editor) {
 		super();
-		textTools = theTextTools;
+		fEditor= editor;
+		fManager= RubyPlugin.getDefault().getWorkingCopyManager();
 	}
 
 	public ICompletionProposal[] computeCompletionProposals(ITextViewer viewer, int documentOffset) {
@@ -65,12 +71,11 @@ public class RubyCompletionProcessor extends TemplateCompletionProcessor impleme
 		ITextSelection selection = (ITextSelection) viewer.getSelectionProvider().getSelection();
 		cursorPosition = selection.getOffset() + selection.getLength();
 
-
 		ICompletionProposal[] normal = determineRubyElementProposals(viewer, documentOffset);
 		ICompletionProposal[] templates = determineTemplateProposals(viewer, documentOffset);
-		
+
 		ICompletionProposal[] merged = merge(normal, templates);
-		
+
 		ICompletionProposal[] keywords = determineKeywordProposals(viewer, documentOffset);
 		ICompletionProposal[] mergedTwo = merge(merged, keywords);
 		return mergedTwo;
@@ -94,17 +99,13 @@ public class RubyCompletionProcessor extends TemplateCompletionProcessor impleme
 	 * @return
 	 */
 	private ICompletionProposal[] determineRubyElementProposals(ITextViewer viewer, int documentOffset) {
-		ArrayList completionProposals = new ArrayList(getDocumentsRubyElements(viewer));
+		ArrayList completionProposals = new ArrayList(getDocumentsRubyElements());
 
 		String prefix = getCurrentPrefix(viewer.getDocument().get(), documentOffset);
 		// following the JDT convention, if there's no text already entered,
 		// then don't suggest imported elements
 		if (prefix.length() > 0) {
-			try {
-				completionProposals.addAll(RubyProjectInformationProvider.instance().getImportedElements(RubyParser.parse(viewer.getDocument().get())));
-			} catch (ParseException e) {
-				log(e);
-			}
+			// FIXME Add elements from required/loaded files!
 		}
 
 		ArrayList possibleProposals = new ArrayList();
@@ -162,13 +163,6 @@ public class RubyCompletionProcessor extends TemplateCompletionProcessor impleme
 	}
 
 	/**
-	 * @param e
-	 */
-	private void log(ParseException e) {
-		System.out.println(e.toString());
-	}
-
-	/**
 	 * @param proposal
 	 * @return
 	 */
@@ -190,28 +184,44 @@ public class RubyCompletionProcessor extends TemplateCompletionProcessor impleme
 		return false;
 	}
 
-	private List getDocumentsRubyElements(ITextViewer viewer) {
+	private List getDocumentsRubyElements() {		
+		IRubyScript script = fManager.getWorkingCopy(fEditor.getEditorInput());
+		// FIXME Get only the elements in the current scope!
+		return getElements(script);
+	}
+
+	/**
+	 * @param script
+	 * @return
+	 */
+	private List getElements(IParent element) {
+		List suggestions = new ArrayList();
 		try {
-			RubyProjectInformationProvider projectInfo = RubyProjectInformationProvider.instance();
-			return projectInfo.getAllElements(RubyParser.parse(viewer.getDocument().get()));
-		} catch (ParseException e) {
-			RubyPlugin.log(e);
-		}
-		return new ArrayList();
+			IRubyElement[] elements = element.getChildren();
+			for (int i = 0; i < elements.length; i++) {
+				IRubyElement child = elements[i];
+				suggestions.add(child.getElementName());
+				if(child instanceof IParent)
+				suggestions.addAll(getElements((IParent)child));
+			}
+		} catch (RubyModelException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}		
+		return suggestions;
 	}
 
 	private ICompletionProposal[] determineKeywordProposals(ITextViewer viewer, int documentOffset) {
 		initKeywordProposals();
-		
+
 		String prefix = getCurrentPrefix(viewer.getDocument().get(), documentOffset);
 		// following the JDT convention, if there's no text already entered,
 		// then don't suggest keywords
-		if (prefix.length() < 1) {
-			return new ICompletionProposal[0];
-		}
+		if (prefix.length() < 1) { return new ICompletionProposal[0]; }
 		List completionProposals = Arrays.asList(keywordProposals);
 
-		// FIXME Refactor to combine the copied code in determineRubyElementProposals
+		// FIXME Refactor to combine the copied code in
+		// determineRubyElementProposals
 		List possibleProposals = new ArrayList();
 		for (int i = 0; i < completionProposals.size(); i++) {
 			String proposal = (String) completionProposals.get(i);
@@ -232,11 +242,11 @@ public class RubyCompletionProcessor extends TemplateCompletionProcessor impleme
 	}
 
 	/**
-	 * 
+	 *  
 	 */
 	private void initKeywordProposals() {
 		if (keywordProposals == null) {
-			String[] keywords = textTools.getKeyWords();
+			String[] keywords = RubyTextTools.getKeyWords();
 			keywordProposals = new String[keywords.length + preDefinedGlobals.length];
 			System.arraycopy(keywords, 0, keywordProposals, 0, keywords.length);
 			System.arraycopy(preDefinedGlobals, 0, keywordProposals, keywords.length, preDefinedGlobals.length);

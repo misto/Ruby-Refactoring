@@ -25,7 +25,7 @@ import org.eclipse.swt.widgets.Text;
 import org.rubypeople.rdt.internal.debug.ui.RdtDebugUiMessages;
 import org.rubypeople.rdt.internal.debug.ui.RdtDebugUiPlugin;
 import org.rubypeople.rdt.internal.launching.RubyInterpreter;
-import org.rubypeople.rdt.internal.ui.dialog.StatusDialog;
+import org.rubypeople.rdt.internal.ui.dialogs.StatusDialog;
 
 public class EditInterpreterDialog extends StatusDialog {
 	protected RubyInterpreter interpreterToEdit;

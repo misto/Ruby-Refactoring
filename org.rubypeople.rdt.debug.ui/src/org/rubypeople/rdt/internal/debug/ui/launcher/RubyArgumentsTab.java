@@ -22,7 +22,7 @@ import org.rubypeople.rdt.internal.debug.ui.RdtDebugUiMessages;
 import org.rubypeople.rdt.internal.debug.ui.RdtDebugUiPlugin;
 import org.rubypeople.rdt.internal.launching.InterpreterRunnerConfiguration;
 import org.rubypeople.rdt.internal.launching.RubyLaunchConfigurationAttribute;
-import org.rubypeople.rdt.internal.ui.utils.DirectorySelector;
+import org.rubypeople.rdt.internal.ui.util.DirectorySelector;
 
 public class RubyArgumentsTab extends AbstractLaunchConfigurationTab {
 	protected Text interpreterArgsText, programArgsText;

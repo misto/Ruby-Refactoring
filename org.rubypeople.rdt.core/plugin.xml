@@ -5,12 +5,14 @@
    name="%Plugin.name"
    version="0.5.0"
    provider-name="RubyPeople, Inc."
-   class="org.rubypeople.rdt.internal.core.RubyPlugin">
+   class="org.rubypeople.rdt.core.RubyCore">
 
    <runtime>
       <library name="rdtcore.jar">
          <export name="*"/>
-         <packages prefixes="org.rubypeople.rdt.core,org.rubypeople.rdt.internal.core,org.rubypeople.rdt.internal.formatter,org.rubypeople.rdt.internal.core.parser"/>
+	  </library>
+      <library name="lib/jruby.jar">
+         <export name="*"/>
       </library>
    </runtime>
 
@@ -26,7 +28,7 @@
          point="org.eclipse.core.resources.natures">
       <runtime>
          <run
-               class="org.rubypeople.rdt.core.RubyProject">
+               class="org.rubypeople.rdt.internal.core.RubyProject">
          </run>
       </runtime>
    </extension>

@@ -8,7 +8,7 @@ import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.cheatsheets.ICheatSheetAction;
 import org.eclipse.ui.cheatsheets.ICheatSheetManager;
 import org.eclipse.ui.wizards.newresource.BasicNewFileResourceWizard;
-import org.rubypeople.rdt.internal.ui.RdtUiPlugin;
+import org.rubypeople.rdt.internal.ui.RubyPlugin;
 
 
 public class CreateWsdlFileAction extends Action implements ICheatSheetAction {
@@ -20,7 +20,7 @@ public class CreateWsdlFileAction extends Action implements ICheatSheetAction {
 		
 	
 		String projectName = params.length > 0 ? params[0] : "Unbekannt" ; 
-		IProject project = RdtUiPlugin.getWorkspace().getRoot().getProject(projectName) ;
+		IProject project = RubyPlugin.getWorkspace().getRoot().getProject(projectName) ;
 		
 		if (project == null) {
 			// show error dialog
@@ -28,7 +28,7 @@ public class CreateWsdlFileAction extends Action implements ICheatSheetAction {
 		}
 
 		wizard.init(PlatformUI.getWorkbench(), new StructuredSelection(project));
-		WizardDialog dialog = new WizardDialog(RdtUiPlugin.getActiveWorkbenchShell(), wizard);
+		WizardDialog dialog = new WizardDialog(RubyPlugin.getActiveWorkbenchShell(), wizard);
 		dialog.create();
 		dialog.getShell().setText(wizard.getWindowTitle());
 		int result = dialog.open();

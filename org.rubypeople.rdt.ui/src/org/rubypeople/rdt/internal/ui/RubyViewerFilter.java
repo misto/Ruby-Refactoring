@@ -16,41 +16,43 @@ import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.viewers.ViewerFilter;
 import org.eclipse.ui.IPropertyListener;
-import org.rubypeople.rdt.core.RubyElement;
+import org.rubypeople.rdt.core.IRubyElement;
 import org.rubypeople.rdt.internal.ui.resourcesview.RubyResourcesView;
 
 /**
- * The filter can be switched on and off using rubyResourcesView.isRubyFilesOnlyFilterActivated
+ * The filter can be switched on and off using
+ * rubyResourcesView.isRubyFilesOnlyFilterActivated
  */
 public class RubyViewerFilter extends ViewerFilter {
 
-	private final RubyResourcesView rubyResourcesView ;
+	private final RubyResourcesView rubyResourcesView;
 
 	private IPropertyListener propertyListener = new IPropertyListener() {
-		public void propertyChanged(Object source, int property) { 
+
+		public void propertyChanged(Object source, int property) {
 			if (property == RubyFileMatcher.PROP_MATCH_CRITERIA) {
-				rubyResourcesView.getViewer().refresh() ;
+				rubyResourcesView.getViewer().refresh();
 			}
 		}
-	} ;
+	};
 
 	public RubyViewerFilter(RubyResourcesView rubyResourcesView) {
 		this.rubyResourcesView = rubyResourcesView;
-		RdtUiPlugin.getDefault().getRubyFileMatcher().addPropertyChangeListener(propertyListener) ;
+		RubyPlugin.getDefault().getRubyFileMatcher().addPropertyChangeListener(propertyListener);
 	}
 
-
 	public boolean select(Viewer viewer, Object parentElement, Object element) {
+		// FIXME Filter files more dynamically using plugin.xml!
 		if (!rubyResourcesView.isRubyFilesOnlyFilterActivated()) { return true; }
 		if (element instanceof IFolder) { return true; }
-		if (element instanceof IFile) {			
-			IFile file = (IFile) element ;
-			return RdtUiPlugin.getDefault().getRubyFileMatcher().hasRubyEditorAssociation(file) ;
+		if (element instanceof IFile) {
+			IFile file = (IFile) element;
+			return RubyPlugin.getDefault().getRubyFileMatcher().hasRubyEditorAssociation(file);
 		}
-		
+
 		// the rest e.g. projects
 		IAdaptable adaptable = (IAdaptable) element;
-		RubyElement rubyElement = (RubyElement) adaptable.getAdapter(RubyElement.class);
+		IRubyElement rubyElement = (IRubyElement) adaptable.getAdapter(IRubyElement.class);
 		return rubyElement != null;
 	}
 

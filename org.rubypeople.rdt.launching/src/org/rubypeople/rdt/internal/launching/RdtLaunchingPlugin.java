@@ -3,12 +3,11 @@ package org.rubypeople.rdt.internal.launching;
 import java.io.File;
 
 import org.eclipse.core.resources.IWorkspace;
-import org.eclipse.core.runtime.IPluginDescriptor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Plugin;
 import org.eclipse.core.runtime.Status;
-import org.rubypeople.rdt.internal.core.RubyPlugin;
+import org.rubypeople.rdt.core.RubyCore;
 
 public class RdtLaunchingPlugin extends Plugin {
 	public static final String PLUGIN_ID = "org.rubypeople.rdt.launching"; //$NON-NLS-1$
@@ -24,17 +23,17 @@ public class RdtLaunchingPlugin extends Plugin {
     }
 	protected static RdtLaunchingPlugin plugin;
 
-	public RdtLaunchingPlugin(IPluginDescriptor descriptor) {
-		super(descriptor);
+	public RdtLaunchingPlugin() {
+		super();
 		plugin = this;
 	}
 
-	public static RdtLaunchingPlugin getDefault() {
+	public static Plugin getDefault() {
 		return plugin;
 	}
 
 	public static IWorkspace getWorkspace() {
-		return RubyPlugin.getWorkspace();
+		return RubyCore.getWorkspace();
 	}
 
 	public static void log(IStatus status) {
@@ -46,8 +45,8 @@ public class RdtLaunchingPlugin extends Plugin {
 	}
 	
 	public static void debug(String message) {
-		if (RdtLaunchingPlugin.getDefault().isDebugging()) {
-			System.out.println(message) ;
+		if (getDefault().isDebugging()) {
+			System.out.println(message);
 		}
 	}
 }

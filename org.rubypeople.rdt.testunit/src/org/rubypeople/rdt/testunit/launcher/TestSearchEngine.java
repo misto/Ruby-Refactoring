@@ -24,101 +24,69 @@
  */
 package org.rubypeople.rdt.testunit.launcher;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
-import org.rubypeople.rdt.internal.core.parser.ParseException;
-import org.rubypeople.rdt.internal.core.parser.RubyParser;
-import org.rubypeople.rdt.internal.core.parser.ast.RubyElement;
-import org.rubypeople.rdt.internal.core.parser.ast.RubyScript;
-import org.rubypeople.rdt.internal.ui.utils.RubyElementVisitor;
+import org.rubypeople.rdt.core.IRubyElement;
+import org.rubypeople.rdt.core.IRubyScript;
+import org.rubypeople.rdt.core.RubyCore;
+import org.rubypeople.rdt.core.RubyModelException;
+import org.rubypeople.rdt.internal.core.RubyElement;
+import org.rubypeople.rdt.internal.ui.RubyPlugin;
+import org.rubypeople.rdt.internal.ui.util.RubyElementVisitor;
 
 /**
  * @author Chris
- *  
+ * 
  */
 public class TestSearchEngine {
 
-	public static RubyElement[] findTests(final IFile file) {
-		try {
-			// TODO Check each class to see if its a descendant of TestCase or TestSuite
-			String contents = readFile(file);
-			RubyScript script = RubyParser.parse(contents);
-
-			List classes = getClasses(script.getElements());
-			Object[] classesArray = classes.toArray();
-			RubyElement[] outArray = new RubyElement[classesArray.length];
-			System.arraycopy(classesArray, 0, outArray, 0, classesArray.length);
-
-			return outArray;
-		} catch (ParseException e) {} catch (CoreException e) {} catch (IOException e) {}
-		return new RubyElement[0];
-	}
-
-	/**
-	 * @param script
-	 * @return
-	 */
-	private static List getClasses(Object[] elements) {
-		List classes = new ArrayList();
-		for (int i = 0; i < elements.length; i++) {
-			RubyElement element = (RubyElement) elements[i];
-			if (element.isType(RubyElement.CLASS)) classes.add(element);
-			classes.addAll(getClasses(element.getElements()));
-		}
-		return classes;
-	}
-
-	/**
-	 * @param file
-	 * @return
-	 * @throws CoreException
-	 * @throws IOException
-	 */
-	private static String readFile(IFile file) throws CoreException, IOException {
-		BufferedReader reader = new BufferedReader(new InputStreamReader(file.getContents()));
-		StringBuffer buffer = new StringBuffer();
-		String line = null;
-		while ((line = reader.readLine()) != null) {
-			buffer.append(line);
-			buffer.append("\n");
-		}
-		return buffer.toString();
-	}
-
-	/**
-	 * @param rubyProject
-	 */
-	public static RubyElement[] findTests(IProject rubyProject) {
-		if (rubyProject == null) {
-			return new RubyElement[0];
-		}
-		try {
-			List tests = new ArrayList();			
-			RubyElementVisitor visitor = new RubyElementVisitor() ;
-			rubyProject.accept(visitor) ;
-			Object[] rubyFiles = visitor.getCollectedRubyFiles() ;
-			for (int i = 0; i <  rubyFiles.length; i++) {
-				IFile rubyFile = (IFile) rubyFiles[i];
-				RubyElement[] elements = TestSearchEngine.findTests(rubyFile);
-				for (int j = 0; j < elements.length; j++ ) {
-					tests.add(elements[j]);
-				} 
-			}			
-			Object[] listArray = tests.toArray();
-			RubyElement[] array = new RubyElement[tests.size()];
-			System.arraycopy(listArray, 0, array, 0, listArray.length);
+    public static IRubyElement[] findTests(final IFile file) {
+        IRubyScript script = RubyCore.create(file);
+        try {
+			script.reconcile();
+			IRubyElement[] children = script.getChildren();
+			List types = new ArrayList();
+			for (int i = 0; i < children.length; i++) {
+			    if (children[i].isType(IRubyElement.TYPE) ) types.add(children[i]);
+			}
+			IRubyElement[] array = new IRubyElement[types.size()];
+			System.arraycopy(types.toArray(), 0, array, 0, types.size());
 			return array;
-		} catch (CoreException e) {
-			e.printStackTrace();
+		} catch (RubyModelException e) {
+			RubyPlugin.log(e);
 		}
-		return new RubyElement[0];
-	}
+		return new IRubyElement[0];
+    }
+
+    /**
+     * @param rubyProject
+     */
+    public static IRubyElement[] findTests(IProject rubyProject) {
+        if (rubyProject == null) { return new IRubyElement[0]; }
+        try {
+            List tests = new ArrayList();
+            RubyElementVisitor visitor = new RubyElementVisitor();
+            rubyProject.accept(visitor);
+            Object[] rubyFiles = visitor.getCollectedRubyFiles();
+            for (int i = 0; i < rubyFiles.length; i++) {
+                IFile rubyFile = (IFile) rubyFiles[i];
+                IRubyElement[] elements = TestSearchEngine.findTests(rubyFile);
+                for (int j = 0; j < elements.length; j++) {
+                    tests.add(elements[j]);
+                }
+            }
+            Object[] listArray = tests.toArray();
+            IRubyElement[] array = new IRubyElement[tests.size()];
+            System.arraycopy(listArray, 0, array, 0, listArray.length);
+            return array;
+        } catch (CoreException e) {
+            e.printStackTrace();
+        }
+        return new RubyElement[0];
+    }
 
 }

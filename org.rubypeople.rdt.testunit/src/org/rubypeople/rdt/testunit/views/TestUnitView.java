@@ -55,7 +55,9 @@ import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.part.EditorActionBarContributor;
 import org.eclipse.ui.part.ViewPart;
 import org.eclipse.ui.progress.UIJob;
-import org.rubypeople.rdt.internal.core.parser.ast.IRubyElement;
+import org.rubypeople.rdt.core.IRubyElement;
+import org.rubypeople.rdt.core.IRubyProject;
+import org.rubypeople.rdt.core.IRubyType;
 import org.rubypeople.rdt.testunit.ITestRunListener;
 import org.rubypeople.rdt.testunit.TestunitPlugin;
 import org.rubypeople.rdt.testunit.launcher.SocketUtil;
@@ -154,6 +156,8 @@ public class TestUnitView extends ViewPart implements ITestRunListener3 {
 	private boolean fAutoScroll = true;
 
 	private ScrollLockAction fScrollLockAction;
+
+    private IRubyProject fTestProject;
 
 	/**
 	 * The constructor.
@@ -439,7 +443,8 @@ public class TestUnitView extends ViewPart implements ITestRunListener3 {
 		return fTestRunnerClient != null && fTestRunnerClient.isRunning() && ILaunchManager.DEBUG_MODE.equals(fLaunchMode);
 	}
 
-	public void startTestRunListening(int port, ILaunch launch) {
+	public void startTestRunListening(int port, IRubyType type, ILaunch launch) {
+	    if(type != null) fTestProject= type.getRubyProject();
 		fLaunchMode = launch.getLaunchMode();
 		aboutToLaunch();
 
@@ -454,6 +459,7 @@ public class TestUnitView extends ViewPart implements ITestRunListener3 {
 		fTestRunnerClient.startListening(listenerArray, port);
 
 		fLastLaunch = launch;
+		// TODO Uncomment now that we have the type object!
 		//		setViewPartTitle(type);
 		//		if (type instanceof IType)
 		//			setTitleToolTip(((IType)type).getFullyQualifiedName());
@@ -951,6 +957,10 @@ public class TestUnitView extends ViewPart implements ITestRunListener3 {
 		if (fLastLaunch != null && fLastLaunch.getLaunchConfiguration() != null) {
 			DebugUITools.launch(fLastLaunch.getLaunchConfiguration(), fLastLaunch.getLaunchMode());
 		}
+	}
+	
+	public IRubyProject getLaunchedProject() {
+		return fTestProject;
 	}
 
 	class UpdateUIJob extends UIJob {

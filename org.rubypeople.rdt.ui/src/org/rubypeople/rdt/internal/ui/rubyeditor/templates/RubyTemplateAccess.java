@@ -16,7 +16,7 @@ import org.eclipse.jface.text.templates.ContextTypeRegistry;
 import org.eclipse.jface.text.templates.persistence.TemplateStore;
 import org.eclipse.ui.editors.text.templates.ContributionContextTypeRegistry;
 import org.eclipse.ui.editors.text.templates.ContributionTemplateStore;
-import org.rubypeople.rdt.internal.ui.RdtUiPlugin;
+import org.rubypeople.rdt.internal.ui.RubyPlugin;
 
 
 public class RubyTemplateAccess {
@@ -53,11 +53,11 @@ public class RubyTemplateAccess {
 	 */
 	public TemplateStore getTemplateStore() {
 		if (fStore == null) {
-			fStore= new ContributionTemplateStore(getContextTypeRegistry(),RdtUiPlugin.getDefault().getPreferenceStore(), CUSTOM_TEMPLATES_KEY);
+			fStore= new ContributionTemplateStore(getContextTypeRegistry(),RubyPlugin.getDefault().getPreferenceStore(), CUSTOM_TEMPLATES_KEY);
 			try {
 				fStore.load();
 			} catch (IOException e) {
-				RdtUiPlugin.log(e);
+				RubyPlugin.log(e);
 			}
 		}
 		return fStore;
@@ -78,10 +78,10 @@ public class RubyTemplateAccess {
 	}
 
 	public IPreferenceStore getPreferenceStore() {	    
-		return RdtUiPlugin.getDefault().getPreferenceStore();
+		return RubyPlugin.getDefault().getPreferenceStore();
 	}
 
 	public void savePluginPreferences() {
-		RdtUiPlugin.getDefault().savePluginPreferences();
+		RubyPlugin.getDefault().savePluginPreferences();
 	}
 }

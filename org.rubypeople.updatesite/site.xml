@@ -17,8 +17,5 @@
       <category name="RubyEclipse"/>
    </feature>
    <category-def name="RubyEclipse" label="RDT">
-      <description>
-         The Ruby Development Tools.
-      </description>
    </category-def>
 </site>

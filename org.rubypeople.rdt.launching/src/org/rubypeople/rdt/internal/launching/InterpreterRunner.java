@@ -10,14 +10,8 @@ import org.eclipse.debug.core.ILaunch;
 import org.eclipse.debug.core.model.IProcess;
 
 public class InterpreterRunner {
-
-
-
-
-
-    
-	public InterpreterRunner() {
-	}
+   
+	public InterpreterRunner() {}
 
 	public IProcess run(InterpreterRunnerConfiguration configuration, ILaunch launch) {
 		String commandLine = renderCommandLine(configuration);

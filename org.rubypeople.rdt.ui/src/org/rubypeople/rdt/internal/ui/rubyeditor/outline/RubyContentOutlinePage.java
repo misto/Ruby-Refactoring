@@ -5,10 +5,10 @@ import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.ui.views.contentoutline.ContentOutlinePage;
-import org.rubypeople.rdt.internal.core.RubyPlugin;
-import org.rubypeople.rdt.internal.core.parser.ParseException;
-import org.rubypeople.rdt.internal.core.parser.RubyParser;
+import org.rubypeople.rdt.core.IRubyElement;
 import org.rubypeople.rdt.internal.ui.rubyeditor.RubyAbstractEditor;
+import org.rubypeople.rdt.ui.RubyElementLabelProvider;
+import org.rubypeople.rdt.ui.RubyElementSorter;
 
 public class RubyContentOutlinePage extends ContentOutlinePage {
 
@@ -16,6 +16,7 @@ public class RubyContentOutlinePage extends ContentOutlinePage {
 	private RubyAbstractEditor fTextEditor;
 	private IDocumentModelListener fListener;
 	private RubyCore fCore;
+	private IRubyElement fInput;
 
 	public RubyContentOutlinePage(IDocument document, RubyAbstractEditor textEditor) {
 		this.document = document;
@@ -27,13 +28,7 @@ public class RubyContentOutlinePage extends ContentOutlinePage {
 
 		TreeViewer tree = getTreeViewer();
 		tree.setContentProvider(new RubyOutlineContentProvider());
-		tree.setLabelProvider(new RubyOutlineLabelProvider());
-
-		try {
-			fTextEditor.getRubyModel().setScript(RubyParser.parse(document.get()));
-		} catch (ParseException e) {
-			RubyPlugin.log(e);
-		}
+		tree.setLabelProvider(new RubyElementLabelProvider());
 
 		if (fListener == null) {
 			fListener = createRubyModelChangeListener();
@@ -41,14 +36,21 @@ public class RubyContentOutlinePage extends ContentOutlinePage {
 		fCore = RubyCore.getDefault();
 		fCore.addDocumentModelListener(fListener);
 
-		tree.setInput(fTextEditor.getRubyModel());
+		tree.setInput(fInput);
 		tree.setSorter(new RubyElementSorter());
+	}
+	
+	public void setInput(IRubyElement inputElement) {
+		fInput= inputElement;
+		if (getTreeViewer() != null)
+			getTreeViewer().setInput(fInput);
 	}
 
 	private IDocumentModelListener createRubyModelChangeListener() {
 		return new IDocumentModelListener() {
 
 			public void documentModelChanged(final DocumentModelChangeEvent event) {
+				// FIXME The outline view seems to be "behind" in terms of reconciling!
 				if (event.getModel() == fTextEditor.getRubyModel() && !getControl().isDisposed()) {
 					getControl().getDisplay().asyncExec(new Runnable() {
 

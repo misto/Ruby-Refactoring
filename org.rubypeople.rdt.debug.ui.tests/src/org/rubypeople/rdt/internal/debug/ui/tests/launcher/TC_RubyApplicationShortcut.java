@@ -29,7 +29,7 @@ import org.rubypeople.rdt.internal.debug.ui.launcher.RubyApplicationShortcut;
 import org.rubypeople.rdt.internal.launching.RubyInterpreter;
 import org.rubypeople.rdt.internal.launching.RubyLaunchConfigurationAttribute;
 import org.rubypeople.rdt.internal.launching.RubyRuntime;
-import org.rubypeople.rdt.internal.ui.RdtUiPlugin;
+import org.rubypeople.rdt.internal.ui.RubyPlugin;
 
 public class TC_RubyApplicationShortcut extends TestCase {
 
@@ -188,7 +188,7 @@ public class TC_RubyApplicationShortcut extends TestCase {
 		String fullPath = RdtDebugUiPlugin.getWorkspace().getRoot().getLocation().toOSString() + File.separator + file.getFullPath().toOSString();
 		Object sourceElement = sourceLocator.getSourceElement(fullPath);
 		IEditorInput input = sourceLocator.getEditorInput(sourceElement);
-		IEditorPart rubyEditor = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage().openEditor(input, RdtUiPlugin.EDITOR_ID);
+		IEditorPart rubyEditor = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage().openEditor(input, RubyPlugin.EDITOR_ID);
 
 		shortcut.launch(rubyEditor, ILaunchManager.RUN_MODE);
 
@@ -216,7 +216,7 @@ public class TC_RubyApplicationShortcut extends TestCase {
 		Object sourceElement = sourceLocator.getSourceElement(tmpFile.getAbsolutePath());
 		IEditorInput input = sourceLocator.getEditorInput(sourceElement);
 
-		IEditorPart rubyExternalEditor = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage().openEditor(input, RdtUiPlugin.EXTERNAL_FILES_EDITOR_ID);
+		IEditorPart rubyExternalEditor = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage().openEditor(input, RubyPlugin.EXTERNAL_FILES_EDITOR_ID);
 
 		shortcut.launch(rubyExternalEditor, ILaunchManager.RUN_MODE);
 

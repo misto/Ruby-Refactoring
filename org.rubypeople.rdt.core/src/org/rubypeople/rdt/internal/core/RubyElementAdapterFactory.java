@@ -2,7 +2,9 @@ package org.rubypeople.rdt.internal.core;
 
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.IAdapterFactory;
-import org.rubypeople.rdt.core.RubyElement;
+import org.rubypeople.rdt.core.IRubyElement;
+import org.rubypeople.rdt.core.RubyModelException;
+import org.rubypeople.rdt.core.RubyCore;
 
 public class RubyElementAdapterFactory implements IAdapterFactory {
 	
@@ -15,10 +17,14 @@ public class RubyElementAdapterFactory implements IAdapterFactory {
 	}
 
 	public Object getAdapter(Object adaptableObject, Class adapterType) {
-		RubyElement rubyElement = (RubyElement) adaptableObject;
+		IRubyElement rubyElement = (IRubyElement) adaptableObject;
 		
-		if (IResource.class.equals(adapterType))
-			return getResource(rubyElement);
+		try {
+			if (IResource.class.equals(adapterType))
+				return getResource(rubyElement);
+		} catch (RubyModelException e) {
+			RubyCore.log(e);
+		}
 
 		return null;
 	}
@@ -27,7 +33,7 @@ public class RubyElementAdapterFactory implements IAdapterFactory {
 		return ADAPTERS_I_CREATE;
 	}
 
-	protected IResource getResource(RubyElement rubyElement) {
+	protected IResource getResource(IRubyElement rubyElement) throws RubyModelException {
 		return rubyElement.getUnderlyingResource();
 	}
 }

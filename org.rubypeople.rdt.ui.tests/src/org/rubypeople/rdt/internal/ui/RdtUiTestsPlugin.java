@@ -1,8 +1,8 @@
 package org.rubypeople.rdt.internal.ui;
 
-import org.eclipse.ui.plugin.*;
-import org.eclipse.core.runtime.*;
-import org.eclipse.core.resources.*;
+import org.eclipse.core.resources.IWorkspace;
+import org.eclipse.core.resources.ResourcesPlugin;
+import org.eclipse.ui.plugin.AbstractUIPlugin;
 
 /**
  * The main plugin class to be used in the desktop.
@@ -14,8 +14,8 @@ public class RdtUiTestsPlugin extends AbstractUIPlugin {
 	/**
 	 * The constructor.
 	 */
-	public RdtUiTestsPlugin(IPluginDescriptor descriptor) {
-		super(descriptor);
+	public RdtUiTestsPlugin() {
+		super();
 		plugin = this;
 	}
 

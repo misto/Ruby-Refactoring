@@ -70,6 +70,7 @@ module Test
           
           def getTestId(test)
             @tests << test
+            return test.object_id if test.respond_to? :object_id
             return test.id
           end
          
@@ -163,7 +164,12 @@ module Test
           end
           
           def test_started(name)
-            @last_test_id = get_test(name).id
+            test = get_test(name)
+            if test.respond_to? :object_id
+              @last_test_id = test.object_id
+            else
+              @last_test_id = test.id
+            end            
             @last_test_name = name
             output_single("%TESTS  #{@last_test_id},#{name}\n")
           end

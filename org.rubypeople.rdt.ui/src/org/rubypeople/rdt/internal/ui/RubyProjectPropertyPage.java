@@ -15,9 +15,9 @@ import org.eclipse.swt.widgets.TabFolder;
 import org.eclipse.swt.widgets.TabItem;
 import org.eclipse.ui.IWorkbenchPropertyPage;
 import org.eclipse.ui.dialogs.PropertyPage;
-import org.rubypeople.rdt.core.RubyProject;
-import org.rubypeople.rdt.internal.core.RubyPlugin;
-import org.rubypeople.rdt.internal.ui.utils.ExceptionHandler;
+import org.rubypeople.rdt.core.RubyCore;
+import org.rubypeople.rdt.internal.core.RubyProject;
+import org.rubypeople.rdt.internal.ui.util.ExceptionHandler;
 
 public class RubyProjectPropertyPage extends PropertyPage implements IWorkbenchPropertyPage {
 	protected RubyProjectLibraryPage projectsPage;
@@ -47,13 +47,13 @@ public class RubyProjectPropertyPage extends PropertyPage implements IWorkbenchP
 		if (selectedElement instanceof IProject) {
 			IProject simpleProject = (IProject) selectedElement;
 			try {
-				if (simpleProject.hasNature(RubyPlugin.RUBY_NATURE_ID)) {
+				if (simpleProject.hasNature(RubyCore.NATURE_ID)) {
 					RubyProject theRubyProject = new RubyProject();
 					theRubyProject.setProject(simpleProject);
 					return theRubyProject;
 				}
 			} catch(CoreException e) {
-				RdtUiPlugin.log(e);
+				RubyPlugin.log(e);
 			}
 		}
 		

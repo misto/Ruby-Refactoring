@@ -1,35 +1,38 @@
 package org.rubypeople.rdt.internal.debug.core;
 
 import org.eclipse.core.resources.IWorkspace;
-import org.eclipse.core.runtime.CoreException;
-import org.eclipse.core.runtime.IPluginDescriptor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Plugin;
 import org.eclipse.core.runtime.Status;
-import org.rubypeople.rdt.internal.core.RubyPlugin;
+import org.osgi.framework.BundleContext;
+import org.rubypeople.rdt.core.RubyCore;
 
 public class RdtDebugCorePlugin extends Plugin {
 
 	public static final String PLUGIN_ID = "org.rubypeople.rdt.debug.core"; //$NON-NLS-1$
-	private boolean isRubyDebuggerVerbose = false;
+	private static boolean isRubyDebuggerVerbose = false;
 	protected static RdtDebugCorePlugin plugin;
 
-	public RdtDebugCorePlugin(IPluginDescriptor descriptor) {
-		super(descriptor);
+	public RdtDebugCorePlugin() {
+		super();
 		plugin = this;
 	}
 
-	public static RdtDebugCorePlugin getDefault() {
+	public static Plugin getDefault() {
 		return plugin;
 	}
 
 	public static IWorkspace getWorkspace() {
-		return RubyPlugin.getWorkspace();
+		return RubyCore.getWorkspace();
 	}
 
-	public void startup() throws CoreException {
-		super.startup();
+	
+	/* (non-Javadoc)
+	 * @see org.eclipse.core.runtime.Plugin#start(org.osgi.framework.BundleContext)
+	 */
+	public void start(BundleContext context) throws Exception {
+		super.start(context);
 		String rubyDebuggerVerboseOption = Platform.getDebugOption(RdtDebugCorePlugin.PLUGIN_ID + "/rubyDebuggerVerbose");
 		isRubyDebuggerVerbose = rubyDebuggerVerboseOption == null ? false : rubyDebuggerVerboseOption.equalsIgnoreCase("true");
 	}
@@ -74,7 +77,7 @@ public class RdtDebugCorePlugin extends Plugin {
 
 	}
 
-	public boolean isRubyDebuggerVerbose() {
+	public static boolean isRubyDebuggerVerbose() {
 		return isRubyDebuggerVerbose;
 	}
 }

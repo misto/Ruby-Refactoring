@@ -19,11 +19,7 @@ import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.core.runtime.Status;
-import org.eclipse.debug.core.DebugPlugin;
-import org.eclipse.debug.core.ILaunchConfiguration;
-import org.eclipse.debug.core.ILaunchConfigurationType;
-import org.eclipse.debug.core.ILaunchConfigurationWorkingCopy;
-import org.eclipse.debug.core.ILaunchManager;
+import org.eclipse.debug.core.*;
 import org.eclipse.debug.ui.DebugUITools;
 import org.eclipse.debug.ui.IDebugModelPresentation;
 import org.eclipse.debug.ui.ILaunchShortcut;
@@ -35,12 +31,14 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.dialogs.ElementListSelectionDialog;
-import org.rubypeople.rdt.core.RubyElement;
+import org.rubypeople.rdt.core.IRubyElement;
+import org.rubypeople.rdt.core.RubyModelException;
 import org.rubypeople.rdt.internal.launching.RubyLaunchConfigurationAttribute;
 import org.rubypeople.rdt.internal.launching.RubyRuntime;
-import org.rubypeople.rdt.internal.ui.rubyeditor.outline.RubyOutlineLabelProvider;
+import org.rubypeople.rdt.internal.ui.RubyPlugin;
 import org.rubypeople.rdt.testunit.TestunitPlugin;
 import org.rubypeople.rdt.testunit.views.TestUnitMessages;
+import org.rubypeople.rdt.ui.RubyElementLabelProvider;
 
 public class TestUnitLaunchShortcut implements ILaunchShortcut {
 
@@ -58,9 +56,9 @@ public class TestUnitLaunchShortcut implements ILaunchShortcut {
 		}
 
 		// TODO Allow running of specific methods or classes, not just files
-		RubyElement rubyElement = null;
+		IRubyElement rubyElement = null;
 		if (firstSelection instanceof IAdaptable) {
-			rubyElement = (RubyElement) ((IAdaptable) firstSelection).getAdapter(RubyElement.class);
+			rubyElement = (IRubyElement) ((IAdaptable) firstSelection).getAdapter(IRubyElement.class);
 		}
 		if (rubyElement == null) {
 			log("Selection is not a ruby element.");
@@ -75,7 +73,7 @@ public class TestUnitLaunchShortcut implements ILaunchShortcut {
 			log("Could not retrieve input from editor: " + editor.getTitle());
 			return;
 		}
-		RubyElement rubyElement = (RubyElement) input.getAdapter(RubyElement.class);
+		IRubyElement rubyElement = (IRubyElement) input.getAdapter(IRubyElement.class);
 		if (rubyElement == null) {
 			log("Editor input is not a ruby file or external ruby file.");
 			return;
@@ -87,17 +85,17 @@ public class TestUnitLaunchShortcut implements ILaunchShortcut {
 	 * @param mode
 	 * @param rubyElement
 	 */
-	private void doLaunch(String mode, RubyElement rubyElement) {
+	private void doLaunch(String mode, IRubyElement rubyElement) {
 		try {
 			String container = getContainer(rubyElement);
-			org.rubypeople.rdt.internal.core.parser.ast.RubyElement[] classes = TestSearchEngine.findTests((IFile) rubyElement.getUnderlyingResource());
+			IRubyElement[] classes = TestSearchEngine.findTests((IFile) rubyElement.getUnderlyingResource());
 			String testClass = null;
 			if (classes.length == 0) {
 				MessageDialog.openInformation(getShell(), TestUnitMessages.getString("LaunchTestAction.dialog.title"), TestUnitMessages.getString("LaunchTestAction.message.notests")); //$NON-NLS-1$ //$NON-NLS-2$
 			} else if (classes.length > 1) {
 				testClass = chooseType(classes, mode);
 			} else {
-				testClass = classes[0].getName();
+				testClass = classes[0].getElementName();
 			}
 			if (testClass != null) {
 				ILaunchConfiguration config = findOrCreateLaunchConfiguration(rubyElement, mode, container, testClass, "");
@@ -115,8 +113,8 @@ public class TestUnitLaunchShortcut implements ILaunchShortcut {
 	 * 
 	 * @return the selected type or <code>null</code> if none.
 	 */
-	protected String chooseType(org.rubypeople.rdt.internal.core.parser.ast.RubyElement[] types, String mode) {
-		ElementListSelectionDialog dialog = new ElementListSelectionDialog(getShell(), new RubyOutlineLabelProvider());
+	protected String chooseType(IRubyElement[] types, String mode) {
+		ElementListSelectionDialog dialog = new ElementListSelectionDialog(getShell(), new RubyElementLabelProvider());
 		dialog.setElements(types);
 		dialog.setTitle(TestUnitMessages.getString("LaunchTestAction.dialog.title2")); //$NON-NLS-1$
 		if (mode.equals(ILaunchManager.DEBUG_MODE)) {
@@ -125,11 +123,11 @@ public class TestUnitLaunchShortcut implements ILaunchShortcut {
 			dialog.setMessage(TestUnitMessages.getString("LaunchTestAction.message.selectTestToDebug")); //$NON-NLS-1$
 		}
 		dialog.setMultipleSelection(false);
-		if (dialog.open() == Window.OK) { return ((org.rubypeople.rdt.internal.core.parser.ast.RubyElement) dialog.getFirstResult()).getName(); }
+		if (dialog.open() == Window.OK) { return ((IRubyElement) dialog.getFirstResult()).getElementName(); }
 		return null;
 	}
 
-	protected ILaunchConfiguration findOrCreateLaunchConfiguration(RubyElement rubyElement, String mode, String container, String testClass, String testName) throws CoreException {
+	protected ILaunchConfiguration findOrCreateLaunchConfiguration(IRubyElement rubyElement, String mode, String container, String testClass, String testName) throws CoreException {
 		IFile rubyFile = (IFile) rubyElement.getUnderlyingResource();
 		ILaunchConfigurationType configType = getRubyLaunchConfigType();
 		List candidateConfigs = null;
@@ -187,11 +185,14 @@ public class TestUnitLaunchShortcut implements ILaunchShortcut {
 	 * @param rubyElement
 	 * @return
 	 */
-	private String getContainer(RubyElement rubyElement) {
-		IFile rubyFile = (IFile) rubyElement.getUnderlyingResource();
-		String filename = rubyFile.getProjectRelativePath().toString();
-		//filename = filename.substring(0, filename.lastIndexOf('.'));
-		return filename;
+	private String getContainer(IRubyElement rubyElement) {
+		try {
+			IFile rubyFile = (IFile) rubyElement.getUnderlyingResource();
+			return rubyFile.getProjectRelativePath().toString();
+		} catch (RubyModelException e) {
+			RubyPlugin.log(e);
+			return rubyElement.getElementName();
+		}
 	}
 
 	protected ILaunchConfiguration createConfiguration(IFile rubyFile, String container, String testClass, String testName) {

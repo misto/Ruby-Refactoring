@@ -21,10 +21,10 @@ package org.rubypeople.rdt.internal.debug.ui.console;
 
 
 import org.eclipse.debug.ui.console.IConsole;
-import org.eclipse.debug.ui.console.IConsoleHyperlink;
 import org.eclipse.debug.ui.console.IConsoleLineTracker;
 import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.IRegion;
+import org.eclipse.ui.console.IHyperlink;
 
 /**
  * Provides links for stack traces, eg:
@@ -52,7 +52,7 @@ public class RubyConsoleTracker implements IConsoleLineTracker {
 
 	
 	private StackFrameInfo detectStackFrame(String pLine) {
-		
+		// FIXME This is hardcoded to only recognize .rb endings!
 		int startOfSuffix = pLine.indexOf(".rb:") ;
 		if (startOfSuffix == -1) {
 			return null ;
@@ -100,7 +100,7 @@ public class RubyConsoleTracker implements IConsoleLineTracker {
 				return ;
 			}
 			this.setStartPos(text, sfi) ;
-			IConsoleHyperlink link = new RubyStackTraceHyperlink(fConsole, sfi);
+			IHyperlink link = new RubyStackTraceHyperlink(fConsole, sfi);
 			fConsole.addLink(link, offset + sfi.start, sfi.end - sfi.start);			
 		} catch (BadLocationException e) {
 		}

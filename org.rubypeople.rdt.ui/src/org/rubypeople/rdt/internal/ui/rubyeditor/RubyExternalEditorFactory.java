@@ -15,12 +15,12 @@ import java.io.File;
 import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.ui.IElementFactory;
 import org.eclipse.ui.IMemento;
-import org.rubypeople.rdt.internal.ui.RdtUiPlugin;
+import org.rubypeople.rdt.internal.ui.RubyPlugin;
 
 public class RubyExternalEditorFactory implements IElementFactory {
 
     public final static String MEMENTO_ABSOLUTE_PATH_KEY = "path" ;
-	public static final String FACTORY_ID = RdtUiPlugin.PLUGIN_ID + ".externalRubyFileEditorInputFactory"; //$NON-NLS-1$
+	public static final String FACTORY_ID = RubyPlugin.PLUGIN_ID + ".externalRubyFileEditorInputFactory"; //$NON-NLS-1$
 
     /* (non-Javadoc)
      * @see org.eclipse.ui.IElementFactory#createElement(org.eclipse.ui.IMemento)

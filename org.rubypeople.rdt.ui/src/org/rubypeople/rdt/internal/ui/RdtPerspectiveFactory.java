@@ -17,10 +17,11 @@ public class RdtPerspectiveFactory implements IPerspectiveFactory {
 		String existingEditorArea = layout.getEditorArea();
 
 		IFolderLayout rubyResourcesArea = layout.createFolder("rubyResourcesArea", IPageLayout.LEFT, (float) 0.26, existingEditorArea);
-		rubyResourcesArea.addView(RdtUiPlugin.RUBY_RESOURCES_VIEW_ID);
+		rubyResourcesArea.addView(RubyPlugin.RUBY_RESOURCES_VIEW_ID);
 
 		IFolderLayout consoleArea = layout.createFolder("consoleArea", IPageLayout.BOTTOM, (float) 0.75, existingEditorArea);
 		consoleArea.addView(IConsoleConstants.ID_CONSOLE_VIEW);
+		consoleArea.addView(IPageLayout.ID_TASK_LIST);
 		consoleArea.addPlaceholder(IPageLayout.ID_PROBLEM_VIEW);
 
 		layout.addActionSet(IDebugUIConstants.LAUNCH_ACTION_SET);

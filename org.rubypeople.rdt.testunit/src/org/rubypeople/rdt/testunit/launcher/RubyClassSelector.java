@@ -43,12 +43,12 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.dialogs.ElementListSelectionDialog;
-import org.rubypeople.rdt.internal.core.RubyCore;
-import org.rubypeople.rdt.internal.core.parser.ast.RubyElement;
-import org.rubypeople.rdt.internal.ui.rubyeditor.outline.RubyOutlineLabelProvider;
-import org.rubypeople.rdt.internal.ui.utils.RubyFileSelector;
-import org.rubypeople.rdt.internal.ui.utils.RubyProjectSelector;
+import org.rubypeople.rdt.core.IRubyElement;
+import org.rubypeople.rdt.core.RubyCore;
+import org.rubypeople.rdt.internal.ui.util.RubyFileSelector;
+import org.rubypeople.rdt.internal.ui.util.RubyProjectSelector;
 import org.rubypeople.rdt.testunit.views.TestUnitMessages;
+import org.rubypeople.rdt.ui.RubyElementLabelProvider;
 
 /**
  * @author Chris
@@ -97,7 +97,7 @@ public class RubyClassSelector {
 				handleBrowseSelected();
 			}
 		});
-		
+
 		browseDialogTitle = TestUnitMessages.getString("RubyClassSelector.Title");
 
 	}
@@ -106,26 +106,26 @@ public class RubyClassSelector {
 	 *  
 	 */
 	protected void handleBrowseSelected() {
-		RubyElement[] types = getTypesInSelectedFile();
+		IRubyElement[] types = getTypesInSelectedFile();
 		if (types == null) types = getTypesInSelectedProject();
 		if (types == null) types = getAllTypes();
-		ElementListSelectionDialog dialog = new ElementListSelectionDialog(getShell(), new RubyOutlineLabelProvider());
+		ElementListSelectionDialog dialog = new ElementListSelectionDialog(getShell(), new RubyElementLabelProvider());
 		dialog.setElements(types);
 		dialog.setTitle(browseDialogTitle);
 		dialog.setMessage(browseDialogMessage);
 		dialog.setMultipleSelection(false);
 		if (dialog.open() == Window.OK) {
-			textField.setText(((org.rubypeople.rdt.internal.core.parser.ast.RubyElement) dialog.getFirstResult()).getName());
+			textField.setText(((IRubyElement) dialog.getFirstResult()).getElementName());
 		}
 	}
 
-	private RubyElement[] getTypesInSelectedProject() {
+	private IRubyElement[] getTypesInSelectedProject() {
 		IProject rubyProject = projectSelector.getSelection();
 		if (rubyProject == null) return null;
 		return TestSearchEngine.findTests(rubyProject);
 	}
 
-	private RubyElement[] getTypesInSelectedFile() {
+	private IRubyElement[] getTypesInSelectedFile() {
 		String relativeFilePath = fileSelector.getValidatedSelectionText();
 		if (relativeFilePath == null || relativeFilePath.trim().length() == 0) return null;
 		IProject rubyProject = projectSelector.getSelection();
@@ -137,14 +137,14 @@ public class RubyClassSelector {
 	/**
 	 * @return
 	 */
-	private RubyElement[] getAllTypes() {
+	private IRubyElement[] getAllTypes() {
 		List typeList = new ArrayList();
 		IProject[] projects = RubyCore.getRubyProjects();
 		for (int i = 0; i < projects.length; i++) {
-			RubyElement[] types = TestSearchEngine.findTests(projects[i]);
+			IRubyElement[] types = TestSearchEngine.findTests(projects[i]);
 			typeList.addAll(Arrays.asList(types));
 		}
-		RubyElement[] allTypes = new RubyElement[typeList.size()];
+		IRubyElement[] allTypes = new IRubyElement[typeList.size()];
 		System.arraycopy(typeList.toArray(), 0, allTypes, 0, allTypes.length);
 		return allTypes;
 	}

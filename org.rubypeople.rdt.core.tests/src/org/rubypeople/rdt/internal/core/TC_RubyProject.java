@@ -7,7 +7,6 @@ import org.eclipse.core.resources.IProject;
 import org.rubypeople.eclipse.shams.resources.ShamFile;
 import org.rubypeople.eclipse.shams.resources.ShamProject;
 import org.rubypeople.eclipse.shams.runtime.ShamIPath;
-import org.rubypeople.rdt.core.RubyProject;
 
 public class TC_RubyProject extends TestCase {
 	protected ShamFile loadPathEntriesFile;

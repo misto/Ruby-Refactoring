@@ -19,7 +19,7 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Text;
-import org.rubypeople.rdt.internal.ui.RdtUiPlugin;
+import org.rubypeople.rdt.internal.ui.RubyPlugin;
 
 /**
  * @author markus
@@ -57,7 +57,7 @@ public abstract class RubyAbstractPreferencePage extends PreferencePage {
 	}
 
 	protected IPreferenceStore doGetPreferenceStore() {
-		return RdtUiPlugin.getDefault().getPreferenceStore();
+		return RubyPlugin.getDefault().getPreferenceStore();
 	}
 
 	protected Map fTextFields = new HashMap();

@@ -5,12 +5,11 @@
    name="%Plugin.name"
    version="0.5.0"
    provider-name="RubyPeople, Inc."
-   class="org.rubypeople.rdt.internal.ui.RdtUiPlugin">
+   class="org.rubypeople.rdt.internal.ui.RubyPlugin">
 
    <runtime>
       <library name="rdtui.jar">
          <export name="*"/>
-         <packages prefixes="org.rubypeople.rdt.internal.ui,org.rubypeople.rdt.ui"/>
       </library>
    </runtime>
 
@@ -27,7 +26,9 @@
       <import plugin="org.eclipse.debug.ui"/>
       <import plugin="org.rubypeople.rdt.core"/>
       <import plugin="org.eclipse.ui.workbench"/>
+      <import plugin="org.eclipse.ui.forms"/>
    </requires>
+   <extension-point id="foldingStructureProviders" name="foldingStructureProviders" schema="schema/foldingStructureProviders.exsd"/>
 
    <extension
          point="org.eclipse.ui.preferencePages">
@@ -41,6 +42,12 @@
             category="org.rubypeople.rdt.ui.preferences.PreferencePageRubyBase"
             class="org.rubypeople.rdt.internal.ui.preferences.TextEditorPreferencePage2"
             id="org.rubypeople.rdt.ui.preferences.PreferencePageRubyEditor">
+      </page>
+      <page
+            name="%PreferencePage.rdtTaskPreferences"
+            category="org.rubypeople.rdt.ui.preferences.PreferencePageRubyBase"
+            class="org.rubypeople.rdt.internal.ui.preferences.TodoTaskPreferencePage"
+            id="org.rubypeople.rdt.ui.preferences.PreferencePageTodoTask">
       </page>
        <page
             name="%PreferencePage.rdtTemplatePreferences"
@@ -150,22 +157,6 @@
          </perspectiveShortcut>
       </perspectiveExtension>
     </extension>
-   <extension
-         point="org.eclipse.ui.editors.documentProviders">
-      <provider
-            extensions="%EditorRubyFile.extension"
-            class="org.rubypeople.rdt.internal.ui.rubyeditor.RubyDocumentProvider"
-            id="org.rubypeople.rdt.ui.DocumentProviderRubyFile">
-      </provider>
-   </extension>
-   <extension
-         point="org.eclipse.ui.editors.documentProviders">
-      <provider
-            class="org.rubypeople.rdt.internal.ui.rubyeditor.ExternalRubyDocumentProvider"
-            inputTypes="org.rubypeople.rdt.internal.ui.rubyeditor.ExternalRubyFileEditorInput"
-            id="org.rubypeople.rdt.ui.ExternalRubyFileDocumentProvider">
-      </provider>
-   </extension>
    <extension
          point="org.eclipse.ui.editors">
       <editor
@@ -333,17 +324,14 @@
    <extension
          point="org.eclipse.ui.editors.markerAnnotationSpecification">
       <specification
-            markerType="org.rubypeople.rdt.core.problem"
             symbolicIcon="error"
             annotationType="org.rubypeople.rdt.ui.error">
       </specification>
       <specification
-            markerType="com.rubypeople.rdt.ui.problem"
-            symbolicIcon="warning"
+             symbolicIcon="warning"
             annotationType="org.rubypeople.rdt.ui.warning">
       </specification>
       <specification
-            markerType="com.rubypeople.rdt.ui.problem"
             symbolicIcon="info"
             annotationType="org.rubypeople.rdt.ui.info">
       </specification>
@@ -388,6 +376,45 @@
       <factory
             id="org.rubypeople.rdt.ui.externalRubyFileEditorInputFactory"
             class="org.rubypeople.rdt.internal.ui.rubyeditor.RubyExternalEditorFactory"/>
+   </extension>
+   
+   	<extension
+		point= "org.rubypeople.rdt.ui.foldingStructureProviders">
+		<provider
+			id="org.rubypeople.rdt.ui.text.defaultFoldingProvider"
+			name= "%defaultFoldingStructureProviderName"
+			class="org.rubypeople.rdt.internal.ui.text.folding.DefaultRubyFoldingStructureProvider"
+			preferencesClass="org.rubypeople.rdt.internal.ui.text.folding.DefaultRubyFoldingPreferenceBlock">
+		</provider>
+	</extension>
+
+	<extension
+		point= "org.rubypeople.rdt.ui.foldingStructureProviders">
+		<provider
+			id="org.rubypeople.rdt.ui.text.defaultFoldingProvider"
+			name= "%defaultFoldingStructureProviderName"
+			class="org.rubypeople.rdt.internal.ui.text.folding.DefaultRubyFoldingStructureProvider"
+			preferencesClass="org.rubypeople.rdt.internal.ui.text.folding.DefaultRubyFoldingPreferenceBlock">
+		</provider>
+	</extension>
+	
+	<extension
+         id="RubyDocumentSetupParticipant"
+         name="%rubyDocumentSetupParticipant"
+         point="org.eclipse.core.filebuffers.documentSetup">
+      <participant
+            extensions="rb, rbw"
+            class="org.rubypeople.rdt.internal.ui.rubyeditor.RubyDocumentSetupParticipant">
+      </participant>
+   </extension>
+	   <extension
+         id="org.rubypeople.rdt.ui.rubyeditor.RubyDocumentFactory"
+         name="RubyDocumentFactory"
+         point="org.eclipse.core.filebuffers.documentCreation">
+      <factory
+            extensions="rb, rbw"
+            class="org.rubypeople.rdt.internal.ui.rubyeditor.RubyDocumentFactory">
+      </factory>
    </extension>
 
 </plugin>

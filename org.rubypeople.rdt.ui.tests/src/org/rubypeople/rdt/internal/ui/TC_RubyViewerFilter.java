@@ -5,7 +5,7 @@ import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
 import org.rubypeople.eclipse.testutils.ResourceTools;
-import org.rubypeople.rdt.internal.core.RubyCore;
+import org.rubypeople.rdt.core.RubyCore;
 import org.rubypeople.rdt.internal.ui.RubyViewerFilter;
 import org.rubypeople.rdt.internal.ui.resourcesview.RubyResourcesView;
 

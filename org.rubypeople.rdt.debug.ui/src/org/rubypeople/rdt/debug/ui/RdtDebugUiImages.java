@@ -16,12 +16,7 @@ public class RdtDebugUiImages {
 	protected static URL iconBaseURL;
 
 	static {
-		String pathSuffix = "icons/full/";
-		try {
-			iconBaseURL = new URL(RdtDebugUiPlugin.getDefault().getDescriptor().getInstallURL(), pathSuffix);
-		} catch (MalformedURLException e) {
-			RdtDebugUiPlugin.log(e);
-		}
+		iconBaseURL= RdtDebugUiPlugin.getDefault().getBundle().getEntry("/icons/full/"); //$NON-NLS-1$
 	}
 
 	protected static final ImageRegistry IMAGE_REGISTRY = new ImageRegistry();

@@ -1,32 +1,18 @@
 package org.rubypeople.rdt.internal.ui.rubyeditor.outline;
 
-import org.rubypeople.rdt.internal.core.parser.ast.IRubyElement;
-import org.rubypeople.rdt.internal.core.parser.ast.RubyScript;
+import org.rubypeople.rdt.core.IRubyScript;
 
-public class RubyModel implements IRubyElement {
+public class RubyModel {
 
-	private RubyScript script;
+	private IRubyScript script;
 
-	public RubyModel() {
-	}
+	public RubyModel() {}
 
-	public String getName() {
-		return script.getName();
-	}
-
-	public boolean hasElements() {
-		return script.hasElements();
-	}
-
-	public Object[] getElements() {
-		return script.getElements();
-	}
-
-	public RubyScript getScript() {
+	public IRubyScript getScript() {
 		return script;
 	}
 
-	public void setScript(RubyScript script) {
+	public void setScript(IRubyScript script) {
 		this.script = script;
 	}
 }

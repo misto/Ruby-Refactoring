@@ -224,6 +224,14 @@ public class TC_RunnerLaunching extends TestCase {
 		public ILaunch launch(String mode, IProgressMonitor monitor, boolean build) throws CoreException {
 			return null;
 		}
+
+		/* (non-Javadoc)
+		 * @see org.eclipse.debug.core.ILaunchConfiguration#launch(java.lang.String, org.eclipse.core.runtime.IProgressMonitor, boolean, boolean)
+		 */
+		public ILaunch launch(String mode, IProgressMonitor monitor, boolean build, boolean register) throws CoreException {
+			// TODO Auto-generated method stub
+			return null;
+		}
 	}
 
 	public class ShamInterpreter extends RubyInterpreter {

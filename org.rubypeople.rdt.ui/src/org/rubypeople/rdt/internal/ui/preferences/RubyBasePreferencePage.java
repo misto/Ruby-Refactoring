@@ -9,7 +9,7 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPreferencePage;
 import org.rubypeople.rdt.internal.ui.RdtUiMessages;
-import org.rubypeople.rdt.internal.ui.RdtUiPlugin;
+import org.rubypeople.rdt.internal.ui.RubyPlugin;
 import org.rubypeople.rdt.ui.PreferenceConstants;
 
 public class RubyBasePreferencePage extends RubyAbstractPreferencePage implements IWorkbenchPreferencePage {
@@ -17,7 +17,7 @@ public class RubyBasePreferencePage extends RubyAbstractPreferencePage implement
 	public RubyBasePreferencePage() {
 		
 		setDescription(RdtUiMessages.getString("RubyBasePreferencePage.label")); //$NON-NLS-1$
-		setPreferenceStore(RdtUiPlugin.getDefault().getPreferenceStore());
+		setPreferenceStore(RubyPlugin.getDefault().getPreferenceStore());
 		fOverlayStore = createOverlayStore();
 	}
 
@@ -57,7 +57,7 @@ public class RubyBasePreferencePage extends RubyAbstractPreferencePage implement
 	public boolean performOk() {
 
 		fOverlayStore.propagate();
-		RdtUiPlugin.getDefault().savePluginPreferences();
+		RubyPlugin.getDefault().savePluginPreferences();
 		return true;
 	}
 

@@ -15,7 +15,7 @@ import org.eclipse.ui.part.FileEditorInput;
 import org.rubypeople.rdt.internal.debug.core.RdtDebugCorePlugin;
 import org.rubypeople.rdt.internal.debug.core.model.RubyStackFrame;
 import org.rubypeople.rdt.internal.launching.RubyLaunchConfigurationAttribute;
-import org.rubypeople.rdt.internal.ui.RdtUiPlugin;
+import org.rubypeople.rdt.internal.ui.RubyPlugin;
 import org.rubypeople.rdt.internal.ui.rubyeditor.ExternalRubyFileEditorInput;
 
 /**
@@ -72,7 +72,7 @@ public class RubySourceLocator implements IPersistableSourceLocator, ISourcePres
 	 */
 	public String getEditorId(IEditorInput input, Object element) {
 		SourceElement sourceElement = (SourceElement) element ;
-		return sourceElement.isExternal() ? RdtUiPlugin.EXTERNAL_FILES_EDITOR_ID : RdtUiPlugin.EDITOR_ID  ;
+		return sourceElement.isExternal() ? RubyPlugin.EXTERNAL_FILES_EDITOR_ID : RubyPlugin.EDITOR_ID  ;
 	}
 
 	/**

@@ -13,9 +13,7 @@ package org.rubypeople.rdt.testunit.views;
 
 import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.io.StringReader;
-import java.io.StringWriter;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.dnd.Clipboard;
@@ -122,32 +120,25 @@ class FailureTrace implements IMenuListener {
 		return fTable.getSelection()[0].getText();
 	}				
 
-	private Action createOpenEditorAction(String traceLine) {
-		try { 
-			//TODO: works for JDK stack trace only
-			String testName= traceLine;
-			testName= testName.substring(testName.indexOf(FRAME_PREFIX)); //$NON-NLS-1$
-			testName= testName.substring(FRAME_PREFIX.length(), testName.indexOf('(')).trim();
-			testName= testName.substring(0, testName.lastIndexOf('.'));
-			int innerSeparatorIndex= testName.indexOf('$');
-			if (innerSeparatorIndex != -1)
-				testName= testName.substring(0, innerSeparatorIndex);
-			
-			String lineNumber= traceLine;
-			lineNumber= lineNumber.substring(lineNumber.indexOf(':') + 1, lineNumber.indexOf(')'));
-			int line= Integer.valueOf(lineNumber).intValue();
-			//fix for bug 37333	
-			String cuName= traceLine.substring(traceLine.indexOf('(') + 1, traceLine.indexOf(':'));
-			// TODO Uncomment and allow the action
-			//return new OpenEditorAtLineAction(fTestRunner, cuName, testName, line);
-		} catch(NumberFormatException e) {
+	private Action createOpenEditorAction(String pLine) {
+	    // FIXME This is hard-coded to only .rb extensions
+	    // FIXME This is duplicated from the ConsoleTracker code in debug.ui
+	    String file = pLine.substring(0, pLine.indexOf(".rb:") + 3);
+	    int startOfSuffix = pLine.indexOf(".rb:");
+		if (startOfSuffix == -1) {
+			return null;
 		}
-		catch(IndexOutOfBoundsException e) {	
-		}	
-		return null;
+		int startLineNumber = startOfSuffix + 4 ;
+		int endLineNumber = pLine.indexOf(":", startLineNumber);
+		if (endLineNumber == -1) {
+			endLineNumber = pLine.length();
+		}
+		
+		int line = Integer.parseInt(pLine.substring(startLineNumber, endLineNumber));		
+		return new OpenEditorAtLineAction(fTestRunner, file, line);
 	}
-	
-	private void disposeIcons(){
+
+    private void disposeIcons(){
 		if (fExceptionIcon != null && !fExceptionIcon.isDisposed()) 
 			fExceptionIcon.dispose();
 		if (fStackIcon != null && !fStackIcon.isDisposed()) 

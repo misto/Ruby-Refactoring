@@ -23,7 +23,7 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.texteditor.templates.TemplatePreferencePage;
-import org.rubypeople.rdt.internal.ui.RdtUiPlugin;
+import org.rubypeople.rdt.internal.ui.RubyPlugin;
 import org.rubypeople.rdt.internal.ui.text.RubySourceViewerConfiguration;
 import org.rubypeople.rdt.ui.PreferenceConstants;
 
@@ -33,7 +33,7 @@ import org.rubypeople.rdt.ui.PreferenceConstants;
 public class RubyTemplatePreferencePage extends TemplatePreferencePage {
 
 	public RubyTemplatePreferencePage() {
-		setPreferenceStore(RdtUiPlugin.getDefault().getPreferenceStore());
+		setPreferenceStore(RubyPlugin.getDefault().getPreferenceStore());
 		setTemplateStore(RubyTemplateAccess.getDefault().getTemplateStore());
 		setContextTypeRegistry(RubyTemplateAccess.getDefault().getContextTypeRegistry());
 	}
@@ -45,7 +45,7 @@ public class RubyTemplatePreferencePage extends TemplatePreferencePage {
 	 */
 	public boolean performOk() {
 		boolean ok = super.performOk();
-		RdtUiPlugin.getDefault().savePluginPreferences();
+		RubyPlugin.getDefault().savePluginPreferences();
 		return ok;
 	}
 
@@ -58,7 +58,7 @@ public class RubyTemplatePreferencePage extends TemplatePreferencePage {
 		SourceViewer viewer = new SourceViewer(parent, null, null, false, SWT.BORDER | SWT.V_SCROLL | SWT.H_SCROLL);
 
 		// FIXME Pass in the current editor!
-		SourceViewerConfiguration configuration = new RubySourceViewerConfiguration(RdtUiPlugin.getDefault().getTextTools(), null);
+		SourceViewerConfiguration configuration = new RubySourceViewerConfiguration(RubyPlugin.getDefault().getTextTools(), null);
 		IDocument document = new Document();
 		// FIXME Do we need this?
 		//new AntDocumentSetupParticipant().setup(document);
@@ -90,8 +90,8 @@ public class RubyTemplatePreferencePage extends TemplatePreferencePage {
 		if (selection.size() == 1 && selection.getFirstElement() instanceof TemplatePersistenceData) {
 			TemplatePersistenceData data = (TemplatePersistenceData) selection.getFirstElement();
 			Template template = data.getTemplate();
-			if (RdtUiPlugin.getDefault().getPreferenceStore().getBoolean(getFormatterPreferenceKey())) {
-				String formatted = RdtUiPlugin.getDefault().getCodeFormatter().formatString(template.getPattern());
+			if (RubyPlugin.getDefault().getPreferenceStore().getBoolean(getFormatterPreferenceKey())) {
+				String formatted = RubyPlugin.getDefault().getCodeFormatter().formatString(template.getPattern());
 				viewer.getDocument().set(formatted);
 			} else {
 				viewer.getDocument().set(template.getPattern());

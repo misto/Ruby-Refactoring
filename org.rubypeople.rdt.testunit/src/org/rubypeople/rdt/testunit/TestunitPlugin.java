@@ -27,7 +27,8 @@ import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.osgi.framework.BundleContext;
-import org.rubypeople.rdt.internal.core.RubyPlugin;
+import org.rubypeople.rdt.core.IRubyType;
+import org.rubypeople.rdt.core.RubyCore;
 import org.rubypeople.rdt.testunit.launcher.SocketUtil;
 import org.rubypeople.rdt.testunit.launcher.TestUnitLaunchConfigurationDelegate;
 import org.rubypeople.rdt.testunit.views.TestUnitView;
@@ -160,7 +161,7 @@ public class TestunitPlugin extends AbstractUIPlugin implements ILaunchListener 
 	}
 
 	public static IWorkspace getWorkspace() {
-		return RubyPlugin.getWorkspace();
+		return RubyCore.getWorkspace();
 	}
 
 	public static Display getDisplay() {
@@ -177,9 +178,9 @@ public class TestunitPlugin extends AbstractUIPlugin implements ILaunchListener 
 		return activeWorkbenchWindow.getActivePage();
 	}
 
-	public void connectTestRunner(ILaunch launch, int port) {
+	public void connectTestRunner(ILaunch launch, IRubyType finalType, int port) {
 		TestUnitView testRunnerViewPart = showTestUnitViewInActivePage(findTestUnitViewInActivePage());
-		if (testRunnerViewPart != null) testRunnerViewPart.startTestRunListening(port, launch);
+		if (testRunnerViewPart != null) testRunnerViewPart.startTestRunListening(port, finalType, launch);
 	}
 
 	private TestUnitView showTestUnitViewInActivePage(TestUnitView testRunner) {
@@ -243,11 +244,21 @@ public class TestunitPlugin extends AbstractUIPlugin implements ILaunchListener 
 		if (!fTrackedLaunches.contains(launch)) return;
 
 		ILaunchConfiguration config = launch.getLaunchConfiguration();
+		IRubyType launchedType= null;
 		int port = -1;
 		if (config != null) {
 			try {
 				// test whether the launch defines the TestUnit port attribute
 				port = config.getAttribute(TestUnitLaunchConfigurationDelegate.PORT_ATTR, -1);
+				String typeStr= launch.getAttribute(TestUnitLaunchConfigurationDelegate.TESTTYPE_ATTR);
+				//String fileName= launch.getAttribute(TestUnitLaunchConfigurationDelegate.LAUNCH_CONTAINER_ATTR);
+				
+				if (typeStr != null) {
+				    // FIXME Get the handle on the test type from the model somehow!
+//					IFile script = RubyCore.find(fileName);
+//					if (element instanceof IRubyType)
+//						launchedType= (IRubyType) element;
+				}
 			} catch (CoreException e) {
 				e.printStackTrace();
 			}
@@ -262,11 +273,13 @@ public class TestunitPlugin extends AbstractUIPlugin implements ILaunchListener 
 			log("Failed to generate a port!");
 			return;
 		}
+		
+		final IRubyType finalType= launchedType;
 		final int finalPort = port;
 		getDisplay().asyncExec(new Runnable() {
 
 			public void run() {
-				connectTestRunner(launch, finalPort);
+				connectTestRunner(launch, finalType, finalPort);
 			}
 		});
 

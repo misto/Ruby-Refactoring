@@ -15,59 +15,58 @@ public class RdtUiImages {
 	protected static URL iconBaseURL;
 
 	static {
-		String pathSuffix = "icons/full/";
-		try {
-			iconBaseURL = new URL(RdtUiPlugin.getDefault().getDescriptor().getInstallURL(), pathSuffix);
-		} catch (MalformedURLException e) {
-			RdtUiPlugin.log(e);
-		}
+		iconBaseURL= RubyPlugin.getDefault().getBundle().getEntry("/icons/full/"); //$NON-NLS-1$
 	}
 
 	protected static final ImageRegistry IMAGE_REGISTRY = new ImageRegistry();
 
 	protected static final String OBJ_PREFIX = "obj16";
 	protected static final String OVR_PREFIX = "ovr16";
+	private static final String T_ELCL= "elcl16"; 	//$NON-NLS-1$
 	protected static final String CTOOL_PREFIX = "ctool16";
 
 	public static final String IMG_OBJS_ERROR = NAME_PREFIX + "error_obj.gif";
 	public static final String IMG_OBJS_WARNING = NAME_PREFIX + "warning_obj.gif";
 	public static final String IMG_OBJS_INFO = NAME_PREFIX + "info_obj.gif";
-	public static final String IMG_CTOOLS_RUBYIMPORT = NAME_PREFIX + "imp_obj.gif";
+	public static final String IMG_OBJS_HELP= NAME_PREFIX + "help.gif"; //$NON-NLS-1$
+
+	public static final String IMG_CTOOLS_RUBY_IMPORT_CONTAINER = NAME_PREFIX + "imp_c.gif";
+	public static final String IMG_CTOOLS_RUBY_IMPORT = NAME_PREFIX + "imp_obj.gif";
 	public static final String IMG_TEMPLATE_PROPOSAL = NAME_PREFIX + "template_obj.gif";
+	public static final String IMG_CTOOLS_RUBY_LOCAL_VAR = NAME_PREFIX + "localvariable_obj.gif";
 	public static final String IMG_CTOOLS_RUBY_PAGE = NAME_PREFIX + "ruby_page.gif";
 	public static final String IMG_CTOOLS_RUBY = NAME_PREFIX + "ruby.gif";
-	public static final String IMG_CTOOLS_RUBYGLOBAL = NAME_PREFIX + "ruby_global.gif";
-	public static final String IMG_CTOOLS_RUBYCLASS = NAME_PREFIX + "ruby_class.gif";
-	public static final String IMG_CTOOLS_RUBYMODULE = NAME_PREFIX + "ruby_module.gif";
-	public static final String IMG_CTOOLS_RUBYMETHOD = NAME_PREFIX + "ruby_method.gif";
+	public static final String IMG_CTOOLS_RUBY_GLOBAL = NAME_PREFIX + "ruby_global.gif";
+	public static final String IMG_CTOOLS_RUBY_CLASS = NAME_PREFIX + "ruby_class.gif";
+	public static final String IMG_CTOOLS_RUBY_MODULE = NAME_PREFIX + "ruby_module.gif";
+	public static final String IMG_CTOOLS_RUBY_METHOD = NAME_PREFIX + "ruby_method.gif";
 	public static final String IMG_CTOOLS_RUBYMETHOD_PRO = NAME_PREFIX + "ruby_method_pro.gif";
 	public static final String IMG_CTOOLS_RUBYMETHOD_PUB = NAME_PREFIX + "ruby_method_pub.gif";
-	public static final String IMG_CTOOLS_RUBYINSTVAR = NAME_PREFIX + "ruby_inst_var.gif";
-	public static final String IMG_CTOOLS_RUBYINSTVAR_PRIV = NAME_PREFIX + "ruby_inst_var_priv.gif";
-	public static final String IMG_CTOOLS_RUBYINSTVAR_READ = NAME_PREFIX + "ruby_inst_var_read.gif";
-	public static final String IMG_CTOOLS_RUBYINSTVAR_WRITE = NAME_PREFIX + "ruby_inst_var_write.gif";
-	public static final String IMG_CTOOLS_RUBYCLASSVAR = NAME_PREFIX + "ruby_class_var.gif";
-
-	public static final ImageDescriptor DESC_OBJS_ERROR = createManaged(OBJ_PREFIX, IMG_OBJS_ERROR);
-	public static final ImageDescriptor DESC_OBJS_WARNING = createManaged(OBJ_PREFIX, IMG_OBJS_WARNING);
-	public static final ImageDescriptor DESC_OBJS_INFO = createManaged(OBJ_PREFIX, IMG_OBJS_INFO);
-	public static final ImageDescriptor DESC_TEMPLATE_PROPOSAL = createManaged(OBJ_PREFIX, IMG_TEMPLATE_PROPOSAL);
+	public static final String IMG_CTOOLS_RUBY_CLASS_VAR = NAME_PREFIX + "ruby_class_var.gif";
+	public static final String IMG_CTOOLS_RUBY_INSTANCE_VAR = NAME_PREFIX + "ruby_instance_var.gif";
+	public static final String IMG_CTOOLS_RUBY_CONSTANT = NAME_PREFIX + "ruby_constant.gif";
 	
-	public static final ImageDescriptor DESC_CTOOL_RUBYIMPORT = createManaged(CTOOL_PREFIX, IMG_CTOOLS_RUBYIMPORT);
-	public static final ImageDescriptor DESC_CTOOL_RUBY_PAGE = createManaged(CTOOL_PREFIX, IMG_CTOOLS_RUBY_PAGE);
-	public static final ImageDescriptor DESC_CTOOL_RUBY = createManaged(CTOOL_PREFIX, IMG_CTOOLS_RUBY);
-	public static final ImageDescriptor DESC_CTOOL_RUBYGLOBAL = createManaged(CTOOL_PREFIX, IMG_CTOOLS_RUBYGLOBAL);
-	public static final ImageDescriptor DESC_CTOOL_RUBYCLASS = createManaged(CTOOL_PREFIX, IMG_CTOOLS_RUBYCLASS);
-	public static final ImageDescriptor DESC_CTOOL_RUBYMODULE = createManaged(CTOOL_PREFIX, IMG_CTOOLS_RUBYMODULE);
-	public static final ImageDescriptor DESC_CTOOL_RUBYMETHOD = createManaged(CTOOL_PREFIX, IMG_CTOOLS_RUBYMETHOD);
-	public static final ImageDescriptor DESC_CTOOL_RUBYMETHOD_PRO = createManaged(CTOOL_PREFIX, IMG_CTOOLS_RUBYMETHOD_PRO);
-	public static final ImageDescriptor DESC_CTOOL_RUBYMETHOD_PUB = createManaged(CTOOL_PREFIX, IMG_CTOOLS_RUBYMETHOD_PUB);
-	public static final ImageDescriptor DESC_CTOOL_RUBYINSTVAR = createManaged(CTOOL_PREFIX, IMG_CTOOLS_RUBYINSTVAR);
-	public static final ImageDescriptor DESC_CTOOL_RUBYINSTVAR_PRIV = createManaged(CTOOL_PREFIX, IMG_CTOOLS_RUBYINSTVAR_PRIV);
-	public static final ImageDescriptor DESC_CTOOL_RUBYINSTVAR_READ = createManaged(CTOOL_PREFIX, IMG_CTOOLS_RUBYINSTVAR_READ);
-	public static final ImageDescriptor DESC_CTOOL_RUBYINSTVAR_WRITE = createManaged(CTOOL_PREFIX, IMG_CTOOLS_RUBYINSTVAR_WRITE);
-	public static final ImageDescriptor DESC_CTOOL_RUBYCLASSVAR = createManaged(CTOOL_PREFIX, IMG_CTOOLS_RUBYCLASSVAR);
-
+	static {
+		createManaged(OBJ_PREFIX, IMG_OBJS_ERROR);
+		createManaged(OBJ_PREFIX, IMG_OBJS_WARNING);
+		createManaged(OBJ_PREFIX, IMG_OBJS_INFO);
+		createManaged(OBJ_PREFIX, IMG_TEMPLATE_PROPOSAL);
+		createManaged(T_ELCL, IMG_OBJS_HELP);		
+		createManaged(CTOOL_PREFIX, IMG_CTOOLS_RUBY_IMPORT_CONTAINER);
+		createManaged(CTOOL_PREFIX, IMG_CTOOLS_RUBY_IMPORT);
+		createManaged(CTOOL_PREFIX, IMG_CTOOLS_RUBY_PAGE);
+		createManaged(CTOOL_PREFIX, IMG_CTOOLS_RUBY);
+		createManaged(CTOOL_PREFIX, IMG_CTOOLS_RUBY_GLOBAL);
+		createManaged(CTOOL_PREFIX, IMG_CTOOLS_RUBY_CLASS);
+		createManaged(CTOOL_PREFIX, IMG_CTOOLS_RUBY_MODULE);
+		createManaged(CTOOL_PREFIX, IMG_CTOOLS_RUBY_METHOD);
+		createManaged(CTOOL_PREFIX, IMG_CTOOLS_RUBYMETHOD_PRO);
+		createManaged(CTOOL_PREFIX, IMG_CTOOLS_RUBYMETHOD_PUB);
+		createManaged(CTOOL_PREFIX, IMG_CTOOLS_RUBY_CLASS_VAR);
+		createManaged(CTOOL_PREFIX, IMG_CTOOLS_RUBY_CONSTANT);
+		createManaged(CTOOL_PREFIX, IMG_CTOOLS_RUBY_LOCAL_VAR);
+		createManaged(CTOOL_PREFIX, IMG_CTOOLS_RUBY_INSTANCE_VAR);
+	}
 	/**
 	 * Returns the image managed under the given key in this registry.
 	 * 

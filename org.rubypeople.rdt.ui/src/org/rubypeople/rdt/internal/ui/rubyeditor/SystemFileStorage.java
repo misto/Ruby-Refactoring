@@ -13,7 +13,7 @@ package org.rubypeople.rdt.internal.ui.rubyeditor;
 import java.io.*;
 import org.eclipse.core.runtime.*;
 import org.eclipse.core.resources.*;
-import org.rubypeople.rdt.internal.ui.RdtUiPlugin;
+import org.rubypeople.rdt.internal.ui.RubyPlugin;
 
 
 public class SystemFileStorage extends PlatformObject implements IStorage {
@@ -33,7 +33,7 @@ public class SystemFileStorage extends PlatformObject implements IStorage {
 			return new FileInputStream(file);
 		} catch (FileNotFoundException e) {
 			IStatus status =
-				new Status(IStatus.ERROR, RdtUiPlugin.PLUGIN_ID, IStatus.OK, null, e);
+				new Status(IStatus.ERROR, RubyPlugin.PLUGIN_ID, IStatus.OK, null, e);
 			throw new CoreException(status);
 		}
 	}

@@ -8,7 +8,7 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.debug.core.ILaunchConfiguration;
-import org.rubypeople.rdt.core.RubyProject;
+import org.rubypeople.rdt.internal.core.RubyProject;
 
 public class InterpreterRunnerConfiguration {
 	protected ILaunchConfiguration configuration;

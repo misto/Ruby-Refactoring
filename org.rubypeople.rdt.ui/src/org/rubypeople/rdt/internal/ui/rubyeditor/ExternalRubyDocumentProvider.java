@@ -14,7 +14,7 @@ import org.eclipse.jface.text.source.IAnnotationModel;
 import org.eclipse.ui.internal.editors.text.WorkspaceOperationRunner;
 import org.eclipse.ui.texteditor.AbstractDocumentProvider;
 import org.rubypeople.rdt.internal.ui.RdtUiMessages;
-import org.rubypeople.rdt.internal.ui.RdtUiPlugin;
+import org.rubypeople.rdt.internal.ui.RubyPlugin;
 import org.rubypeople.rdt.internal.ui.text.RubyTextTools;
 
 public class ExternalRubyDocumentProvider extends AbstractDocumentProvider {
@@ -40,13 +40,13 @@ public class ExternalRubyDocumentProvider extends AbstractDocumentProvider {
 			}
 		} catch (Exception e) {
 			String message = RdtUiMessages.getFormattedString("Error while opening/reading file: ", editorInput.getFilesystemFile().getAbsolutePath()) ; //$NON-NLS-1$
-			RdtUiPlugin.log(IStatus.ERROR, message, e) ;
+			RubyPlugin.log(IStatus.ERROR, message, e) ;
 		}
 		Document document = new Document() ;
 		document.set(fileContent.toString()) ;
         // TODO: check if this should be inherited from RubyDocumentProvider
 		if (document != null) {
-			RubyTextTools tools = RdtUiPlugin.getDefault().getTextTools();
+			RubyTextTools tools = RubyPlugin.getDefault().getTextTools();
 			IDocumentPartitioner partitioner = tools.createDocumentPartitioner();
 			document.setDocumentPartitioner(partitioner);
 			partitioner.connect(document);

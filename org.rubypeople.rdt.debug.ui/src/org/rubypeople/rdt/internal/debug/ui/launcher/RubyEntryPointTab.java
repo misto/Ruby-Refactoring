@@ -16,14 +16,14 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
-import org.rubypeople.rdt.internal.core.RubyCore;
+import org.rubypeople.rdt.core.RubyCore;
 import org.rubypeople.rdt.internal.debug.ui.RdtDebugUiMessages;
 import org.rubypeople.rdt.internal.debug.ui.RdtDebugUiPlugin;
 import org.rubypeople.rdt.internal.launching.RubyLaunchConfigurationAttribute;
 import org.rubypeople.rdt.internal.ui.RdtUiImages;
-import org.rubypeople.rdt.internal.ui.RdtUiPlugin;
-import org.rubypeople.rdt.internal.ui.utils.RubyFileSelector;
-import org.rubypeople.rdt.internal.ui.utils.RubyProjectSelector;
+import org.rubypeople.rdt.internal.ui.RubyPlugin;
+import org.rubypeople.rdt.internal.ui.util.RubyFileSelector;
+import org.rubypeople.rdt.internal.ui.util.RubyProjectSelector;
 
 public class RubyEntryPointTab extends AbstractLaunchConfigurationTab {
 	protected String originalFileName, originalProjectName;
@@ -61,8 +61,8 @@ public class RubyEntryPointTab extends AbstractLaunchConfigurationTab {
 
 
 	public void setDefaults(ILaunchConfigurationWorkingCopy configuration) {
-		IResource selectedResource = RdtUiPlugin.getDefault().getSelectedResource() ;
-		if (!RdtUiPlugin.getDefault().isRubyFile(selectedResource)) {
+		IResource selectedResource = RubyPlugin.getDefault().getSelectedResource() ;
+		if (!RubyPlugin.getDefault().isRubyFile(selectedResource)) {
 			return ;
 		}
 		IProject project = selectedResource.getProject() ;

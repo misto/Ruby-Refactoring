@@ -1,13 +1,11 @@
 package org.rubypeople.rdt.internal.launching.tests;
 
-import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PrintWriter;
-import java.io.Reader;
 
 /*
   There is a different behaviour, when a ruby application ist

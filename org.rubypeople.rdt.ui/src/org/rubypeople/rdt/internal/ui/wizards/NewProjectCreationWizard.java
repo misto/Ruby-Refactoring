@@ -18,9 +18,9 @@ import org.eclipse.ui.actions.WorkspaceModifyDelegatingOperation;
 import org.eclipse.ui.dialogs.WizardNewProjectCreationPage;
 import org.eclipse.ui.wizards.newresource.BasicNewProjectResourceWizard;
 import org.eclipse.ui.wizards.newresource.BasicNewResourceWizard;
-import org.rubypeople.rdt.internal.core.RubyCore;
+import org.rubypeople.rdt.core.RubyCore;
 import org.rubypeople.rdt.internal.ui.RdtUiMessages;
-import org.rubypeople.rdt.internal.ui.RdtUiPlugin;
+import org.rubypeople.rdt.internal.ui.RubyPlugin;
 
 public class NewProjectCreationWizard extends BasicNewResourceWizard implements INewWizard, IExecutableExtension {
 	protected WizardNewProjectCreationPage projectPage;
@@ -38,7 +38,7 @@ public class NewProjectCreationWizard extends BasicNewResourceWizard implements 
 		try {
 			getContainer().run(false, true, projectCreationOperation);
 		} catch (Exception e) {
-			RdtUiPlugin.log(e);
+			RubyPlugin.log(e);
 			return false;
 		}
 
@@ -54,7 +54,7 @@ public class NewProjectCreationWizard extends BasicNewResourceWizard implements 
 				int remainingWorkUnits = 10;
 				monitor.beginTask(RdtUiMessages.getString("NewProjectCreationWizard.projectCreationMessage"), remainingWorkUnits);
 
-				IWorkspace workspace = RdtUiPlugin.getWorkspace();
+				IWorkspace workspace = RubyPlugin.getWorkspace();
 				newProject = projectPage.getProjectHandle();
 				
 				IProjectDescription description = workspace.newProjectDescription(newProject.getName());

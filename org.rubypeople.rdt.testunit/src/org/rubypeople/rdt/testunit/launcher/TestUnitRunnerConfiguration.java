@@ -78,8 +78,7 @@ public class TestUnitRunnerConfiguration extends InterpreterRunnerConfiguration 
 		String absoluteTestFilePath = RdtLaunchingPlugin.osDependentPath(this.getAbsoluteTestFileName());
 		if (absoluteTestFilePath.length() == 0) {
 			return super.renderLoadPath();
-		} else {
-			return super.renderLoadPath() + " -I " + absoluteTestFilePath;
 		}
+		return super.renderLoadPath() + " -I " + absoluteTestFilePath;
 	}
 }

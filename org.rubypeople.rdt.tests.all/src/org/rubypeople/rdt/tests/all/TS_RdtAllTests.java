@@ -4,7 +4,6 @@ import junit.framework.Test;
 import junit.framework.TestSuite;
 
 import org.rubypeople.rdt.internal.core.TS_Core;
-import org.rubypeople.rdt.internal.core.parser.TS_Parser;
 import org.rubypeople.rdt.internal.formatter.TC_CodeFormatter;
 import org.rubypeople.rdt.debug.core.tests.TS_Debug;
 import org.rubypeople.rdt.internal.debug.ui.tests.launcher.TS_Launcher;
@@ -18,7 +17,6 @@ public class TS_RdtAllTests {
 		//$JUnit-BEGIN$
 
 		// org.rubypeople.rdt.core.tests
-		suite.addTest(TS_Parser.suite());
 		suite.addTest(TS_Core.suite());
 		suite.addTestSuite(TC_CodeFormatter.class) ;		
 		
