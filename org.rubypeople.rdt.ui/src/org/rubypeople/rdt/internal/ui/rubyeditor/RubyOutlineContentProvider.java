@@ -5,8 +5,8 @@ import java.util.List;
 import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.ui.part.FileEditorInput;
-import org.rubypeople.rdt.core.RubyParsedComponent;
-import org.rubypeople.rdt.core.RubyParser;
+import org.rubypeople.rdt.internal.core.parser.RubyParsedComponent;
+import org.rubypeople.rdt.internal.core.parser.RubyParser;
 
 public class RubyOutlineContentProvider implements ITreeContentProvider {
 	public Object[] getChildren(Object parentElement) {

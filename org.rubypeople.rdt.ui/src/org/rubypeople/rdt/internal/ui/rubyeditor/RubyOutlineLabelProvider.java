@@ -3,7 +3,7 @@ package org.rubypeople.rdt.internal.ui.rubyeditor;
 import org.eclipse.jface.viewers.ILabelProvider;
 import org.eclipse.jface.viewers.ILabelProviderListener;
 import org.eclipse.swt.graphics.Image;
-import org.rubypeople.rdt.core.RubyParsedComponent;
+import org.rubypeople.rdt.internal.core.parser.RubyParsedComponent;
 import org.rubypeople.rdt.internal.ui.RdtUiImages;
 
 public class RubyOutlineLabelProvider implements ILabelProvider {

@@ -9,7 +9,6 @@ public class TS_UiTests {
 		TestSuite suite = new TestSuite();
 		
 		suite.addTestSuite(TC_RubyViewerFilter.class);
-		suite.addTestSuite(TC_RubyParser.class);
 		
 		return suite;
 	}

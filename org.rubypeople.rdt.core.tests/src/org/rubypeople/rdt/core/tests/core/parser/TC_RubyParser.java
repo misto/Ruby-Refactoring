@@ -1,12 +1,12 @@
-package org.rubypeople.rdt.internal.ui.tests;
+package org.rubypeople.rdt.core.tests.core.parser;
 
 import java.util.List;
 
 import junit.framework.TestCase;
 
 import org.rubypeople.eclipse.shams.resources.ShamFile;
-import org.rubypeople.rdt.core.RubyParsedComponent;
-import org.rubypeople.rdt.core.RubyParser;
+import org.rubypeople.rdt.internal.core.parser.RubyParsedComponent;
+import org.rubypeople.rdt.internal.core.parser.RubyParser;
 
 public class TC_RubyParser extends TestCase {
 	protected RubyParser parser;

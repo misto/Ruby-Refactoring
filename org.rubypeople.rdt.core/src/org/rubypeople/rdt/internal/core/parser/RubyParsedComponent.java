@@ -1,4 +1,4 @@
-package org.rubypeople.rdt.core;
+package org.rubypeople.rdt.internal.core.parser;
 
 import java.util.ArrayList;
 import java.util.List;
