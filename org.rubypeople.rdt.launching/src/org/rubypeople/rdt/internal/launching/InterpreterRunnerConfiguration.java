@@ -1,4 +1,4 @@
-package org.rubypeople.rdt.launching;
+package org.rubypeople.rdt.internal.launching;
 
 import java.io.File;
 
@@ -8,7 +8,6 @@ import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.debug.core.ILaunchConfiguration;
 import org.rubypeople.rdt.internal.core.RubyProject;
-import org.rubypeople.rdt.internal.launching.RubyLaunchConfigurationAttribute;
 import sun.security.krb5.internal.crypto.e;
 
 public class InterpreterRunnerConfiguration {
@@ -54,7 +53,7 @@ public class InterpreterRunnerConfiguration {
 		try {
 			file = configuration.getAttribute(RubyLaunchConfigurationAttribute.WORKING_DIRECTORY, "");
 		} catch(CoreException e) {
-			System.out.println("InterpreterRunnerConfiguration#getAbsoluteWorkingDirectory(): " + e);
+			RdtLaunchingPlugin.log(e);
 		}
 		return new File(file);
 	}

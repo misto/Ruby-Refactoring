@@ -1,6 +1,6 @@
 package org.rubypeople.rdt.internal.launching;
 
-import org.rubypeople.rdt.launching.RdtLaunchingPlugin;
+
 
 public interface RubyLaunchConfigurationAttribute {
 	static final String PROJECT_NAME = RdtLaunchingPlugin.PLUGIN_ID + ".PROJECT_NAME";

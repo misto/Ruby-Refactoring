@@ -1,4 +1,4 @@
-package org.rubyeclipse.rdt.internal.ui.viewsupport;
+package org.rubypeople.rdt.internal.ui.viewsupport;
 
 import java.util.ArrayList;
 

@@ -22,7 +22,7 @@ public class RubyViewerFilter extends ViewerFilter {
 				if ( ((IFile)element).getFileExtension().equals("rb") )
 					return true;
 		} catch(CoreException e) {
-			System.out.println("RubyViewerFilter.select(): " + e);
+			RdtUiPlugin.log(e);
 		}
 		return false;
 	}

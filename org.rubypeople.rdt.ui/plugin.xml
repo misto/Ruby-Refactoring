@@ -39,7 +39,7 @@
             name="%NewWizardRubyProject.name"
             icon="icons/full/ctool16/ruby.gif"
             category="org.rubypeople.rdt.ui.NewWizardCategoryRuby"
-            class="org.rubyeclipse.rdt.internal.ui.wizards.NewProjectCreationWizard"
+            class="org.rubypeople.rdt.internal.ui.wizards.NewProjectCreationWizard"
             id="org.rubypeople.rdt.ui.wizards.NewWizardProjectCreation">
          <description>
             Create a new Ruby project.

@@ -2,14 +2,10 @@ package org.rubypeople.rdt.internal.debug.ui.launcher;
 
 import java.io.File;
 
-import org.eclipse.core.resources.IProject;
-import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.debug.core.ILaunchConfiguration;
 import org.eclipse.debug.core.ILaunchConfigurationWorkingCopy;
 import org.eclipse.debug.ui.AbstractLaunchConfigurationTab;
-import org.eclipse.jface.viewers.ISelection;
-import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
@@ -21,13 +17,9 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
-import org.eclipse.ui.IEditorInput;
-import org.eclipse.ui.IEditorPart;
-import org.eclipse.ui.IWorkbenchPage;
-import org.rubypeople.rdt.internal.debug.ui.RdtDebugUiPlugin;
+import org.rubypeople.rdt.internal.debug.ui.RdtDebugUiMessages;
 import org.rubypeople.rdt.internal.launching.RubyLaunchConfigurationAttribute;
 import org.rubypeople.rdt.internal.ui.utils.DirectorySelector;
-import org.rubypeople.rdt.launching.RdtLaunchingPlugin;
 
 public class RubyArgumentsTab extends AbstractLaunchConfigurationTab {
 	protected Text interpreterArgsText, programArgsText;
@@ -41,9 +33,9 @@ public class RubyArgumentsTab extends AbstractLaunchConfigurationTab {
 	public void createControl(Composite parent) {
 		Composite composite = createPageRoot(parent);
 
-		new Label(composite, SWT.NONE).setText(LauncherMessages.getString("LaunchConfigurationTab.RubyArguments.working_dir"));
+		new Label(composite, SWT.NONE).setText(RdtDebugUiMessages.getString("LaunchConfigurationTab.RubyArguments.working_dir"));
 		workingDirectorySelector = new DirectorySelector(composite);
-		workingDirectorySelector.setBrowseDialogMessage(LauncherMessages.getString("LaunchConfigurationTab.RubyArguments.working_dir_browser_message"));
+		workingDirectorySelector.setBrowseDialogMessage(RdtDebugUiMessages.getString("LaunchConfigurationTab.RubyArguments.working_dir_browser_message"));
 		workingDirectorySelector.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
 		workingDirectorySelector.addModifyListener(new ModifyListener() {
 			public void modifyText(ModifyEvent e) {
@@ -61,16 +53,16 @@ public class RubyArgumentsTab extends AbstractLaunchConfigurationTab {
 				setUseDefaultWorkingDirectory(((Button)e.getSource()).getSelection());
 			}
 		});
-		new Label(defaultWorkingDirectoryComposite, SWT.NONE).setText(LauncherMessages.getString("LaunchConfigurationTab.RubyArguments.working_dir_use_default_message"));
+		new Label(defaultWorkingDirectoryComposite, SWT.NONE).setText(RdtDebugUiMessages.getString("LaunchConfigurationTab.RubyArguments.working_dir_use_default_message"));
 		defaultWorkingDirectoryComposite.pack();
 
 		Label verticalSpacer = new Label(composite, SWT.NONE);
 
-		new Label(composite, SWT.NONE).setText(LauncherMessages.getString("LaunchConfigurationTab.RubyArguments.interpreter_args_box_title"));
+		new Label(composite, SWT.NONE).setText(RdtDebugUiMessages.getString("LaunchConfigurationTab.RubyArguments.interpreter_args_box_title"));
 		interpreterArgsText = new Text(composite, SWT.MULTI | SWT.V_SCROLL | SWT.BORDER);
 		interpreterArgsText.setLayoutData(new GridData(GridData.FILL_BOTH));
 
-		new Label(composite, SWT.NONE).setText(LauncherMessages.getString("LaunchConfigurationTab.RubyArguments.program_args_box_title"));
+		new Label(composite, SWT.NONE).setText(RdtDebugUiMessages.getString("LaunchConfigurationTab.RubyArguments.program_args_box_title"));
 		programArgsText = new Text(composite, SWT.MULTI | SWT.V_SCROLL | SWT.BORDER);
 		programArgsText.setLayoutData(new GridData(GridData.FILL_BOTH));
 	}
@@ -135,7 +127,7 @@ public class RubyArgumentsTab extends AbstractLaunchConfigurationTab {
 	}
 
 	public String getName() {
-		return LauncherMessages.getString("LaunchConfigurationTab.RubyArguments.name");
+		return RdtDebugUiMessages.getString("LaunchConfigurationTab.RubyArguments.name");
 	}
 
 }

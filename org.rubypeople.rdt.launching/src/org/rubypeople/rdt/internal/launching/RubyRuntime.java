@@ -1,4 +1,4 @@
-package org.rubypeople.rdt.launching;
+package org.rubypeople.rdt.internal.launching;
 
 import java.io.BufferedOutputStream;
 import java.io.File;
@@ -137,7 +137,7 @@ public class RubyRuntime {
 			writer.write("</runtimeconfig>");
 			writer.flush();
 		} catch(IOException e) {
-			System.out.println("RubyRuntime.writeXML: " + e);
+			RdtLaunchingPlugin.log(e);
 		}
 	}
 

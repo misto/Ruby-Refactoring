@@ -24,15 +24,15 @@
    <extension
          point="org.eclipse.ui.preferencePages">
       <page
-            name="%PreferencePageRubyInterpreter.name"
-            category="org.rubypeople.rdt.debug.ui.preferences.PreferencPageRubyBase"
+            name="%PreferencePage.RubyInterpreter.name"
+            category="org.rubypeople.rdt.debug.ui.preferences.PreferencePageRubyBase"
             class="org.rubypeople.rdt.internal.debug.ui.preferences.RubyInterpreterPreferencePage"
             id="org.rubypeople.rdt.debug.ui.preferences.PreferencePageRubyInterpreter">
       </page>
       <page
-            name="%PreferencePageRubyBase.name"
+            name="%PreferencePage.RubyBase.name"
             class="org.rubypeople.rdt.internal.debug.ui.preferences.RubyBasePreferencePage"
-            id="org.rubypeople.rdt.debug.ui.preferences.RubyBasePreferencPage">
+            id="org.rubypeople.rdt.debug.ui.preferences.PreferencePageRubyBase">
       </page>
    </extension>
    <extension

@@ -10,6 +10,7 @@ import org.eclipse.jface.util.Assert;
 import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.model.WorkbenchLabelProvider;
+import org.rubypeople.rdt.internal.ui.RdtUiPlugin;
 import org.rubypeople.rdt.internal.ui.dialog.ElementListSelectionDialog;
 
 public class RubyFileSelector extends ResourceSelector {
@@ -32,7 +33,7 @@ public class RubyFileSelector extends ResourceSelector {
 		try {
 			rubyProject.accept(visitor);
 		} catch(CoreException e) {
-			System.out.println("RubyFileSelector.getRubyFiles(): " + e);
+			RdtUiPlugin.log(e);
 		}
 		return visitor.getCollectedRubyFiles();
 	}

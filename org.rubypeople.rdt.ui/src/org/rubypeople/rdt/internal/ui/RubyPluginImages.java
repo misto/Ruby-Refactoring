@@ -20,7 +20,7 @@ public class RubyPluginImages {
 		try {
 			iconBaseURL = new URL(RdtUiPlugin.getDefault().getDescriptor().getInstallURL(), pathSuffix);
 		} catch (MalformedURLException e) {
-			System.out.println("RubyPluginImages: " + e);
+			RdtUiPlugin.log(e);
 		}
 	}
 

@@ -149,7 +149,6 @@ public class RubyProject implements IProjectNature {
 
 			scratched = false;
 		}
-		throw new CoreException(new Status(IStatus.ERROR, RubyPlugin.PLUGIN_ID, IStatus.ERROR, "Test", null));
 	}
 
 	protected String getLoadPathXML() {

@@ -7,9 +7,6 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.debug.core.ILaunch;
 import org.eclipse.debug.core.ILaunchConfiguration;
 import org.eclipse.debug.core.model.ILaunchConfigurationDelegate;
-import org.rubypeople.rdt.launching.InterpreterRunner;
-import org.rubypeople.rdt.launching.InterpreterRunnerConfiguration;
-import org.rubypeople.rdt.launching.RdtLaunchingPlugin;
 
 public class RubyApplicationLaunchConfigurationDelegate implements ILaunchConfigurationDelegate {
 

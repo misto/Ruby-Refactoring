@@ -60,7 +60,7 @@ public class RubyExecutionArgumentsPage extends PropertyPage implements IWorkben
 			rubyFile.setPersistentProperty(new QualifiedName("executionArguments", "interpreter"), interpreterArgumentsText.getText());
 			rubyFile.setPersistentProperty(new QualifiedName("executionArguments", "program"), programArgumentsText.getText());
 		} catch(CoreException e) {
-			System.out.println("RubyExecutionArgumentsPage.performOk: " + e);
+			RdtDebugUiPlugin.log(e);
 			return false;
 		}
 		return true;

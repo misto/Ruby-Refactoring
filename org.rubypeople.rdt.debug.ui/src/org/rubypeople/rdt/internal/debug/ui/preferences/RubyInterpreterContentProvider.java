@@ -4,7 +4,7 @@ import java.util.List;
 
 import org.eclipse.jface.viewers.IStructuredContentProvider;
 import org.eclipse.jface.viewers.Viewer;
-import org.rubypeople.rdt.launching.RubyInterpreter;
+import org.rubypeople.rdt.internal.launching.RubyInterpreter;
 
 public class RubyInterpreterContentProvider implements IStructuredContentProvider {
 	protected List interpreters;

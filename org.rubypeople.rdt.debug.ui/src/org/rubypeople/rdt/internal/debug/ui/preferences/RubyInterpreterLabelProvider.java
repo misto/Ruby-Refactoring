@@ -4,7 +4,7 @@ import org.eclipse.core.runtime.IPath;
 import org.eclipse.jface.viewers.ILabelProviderListener;
 import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.swt.graphics.Image;
-import org.rubypeople.rdt.launching.RubyInterpreter;
+import org.rubypeople.rdt.internal.launching.RubyInterpreter;
 
 public class RubyInterpreterLabelProvider implements ITableLabelProvider {
 

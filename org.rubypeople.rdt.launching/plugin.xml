@@ -4,7 +4,7 @@
    name="%Plugin.name"
    version="0.1.0"
    provider-name="RubyPeople, Inc."
-   class="org.rubypeople.rdt.launching.RdtLaunchingPlugin">
+   class="org.rubypeople.rdt.internal.launching.RdtLaunchingPlugin">
 
    <runtime>
       <library name="launching.jar">

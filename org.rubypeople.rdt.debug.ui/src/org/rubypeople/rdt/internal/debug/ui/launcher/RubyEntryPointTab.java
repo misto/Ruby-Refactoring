@@ -19,8 +19,9 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IWorkbenchPage;
+import org.rubypeople.rdt.internal.debug.ui.RdtDebugUiMessages;
 import org.rubypeople.rdt.internal.debug.ui.RdtDebugUiPlugin;
-import org.rubypeople.rdt.internal.launching.*;
+import org.rubypeople.rdt.internal.launching.RubyLaunchConfigurationAttribute;
 import org.rubypeople.rdt.internal.ui.utils.RubyFileSelector;
 import org.rubypeople.rdt.internal.ui.utils.RubyProjectSelector;
 
@@ -133,7 +134,7 @@ public class RubyEntryPointTab extends AbstractLaunchConfigurationTab {
 	}
 
 	public String getName() {
-		return LauncherMessages.getString("LaunchConfigurationTab.RubyEntryPoint.name");
+		return RdtDebugUiMessages.getString("LaunchConfigurationTab.RubyEntryPoint.name");
 	}
 
 }

@@ -27,11 +27,12 @@ import org.eclipse.ui.internal.dialogs.ListContentProvider;
 import org.rubypeople.rdt.internal.core.LoadPathEntry;
 import org.rubypeople.rdt.internal.core.RubyCore;
 import org.rubypeople.rdt.internal.core.RubyProject;
+import org.rubypeople.rdt.internal.debug.ui.RdtDebugUiMessages;
+import org.rubypeople.rdt.internal.debug.ui.RdtDebugUiPlugin;
 import org.rubypeople.rdt.internal.debug.ui.preferences.EditInterpreterDialog;
-import org.rubypeople.rdt.internal.launching.*;
-import org.rubypeople.rdt.launching.RubyInterpreter;
-import org.rubypeople.rdt.launching.RubyRuntime;
-import sun.security.krb5.internal.crypto.e;
+import org.rubypeople.rdt.internal.launching.RubyInterpreter;
+import org.rubypeople.rdt.internal.launching.RubyLaunchConfigurationAttribute;
+import org.rubypeople.rdt.internal.launching.RubyRuntime;
 
 public class RubyEnvironmentTab extends AbstractLaunchConfigurationTab {
 	protected ListViewer loadPathListViewer;
@@ -168,7 +169,7 @@ public class RubyEnvironmentTab extends AbstractLaunchConfigurationTab {
 				}
 			}
 		} catch (CoreException e) {
-			System.out.println("RubyEnvironmentTab#initializeLoadPath(): " + e);
+			RdtDebugUiPlugin.log(e);
 		}
 	}
 
@@ -182,7 +183,7 @@ public class RubyEnvironmentTab extends AbstractLaunchConfigurationTab {
 		try {
 			interpreterName = configuration.getAttribute(RubyLaunchConfigurationAttribute.SELECTED_INTERPRETER, "");
 		} catch (CoreException e) {
-			System.out.println("RubyEnvironmentTab#setSelectedInterpreter(): " + e);
+			RdtDebugUiPlugin.log(e);
 		}
 		if (interpreterName != null && !interpreterName.equals(""))
 			interpreterCombo.select(interpreterCombo.indexOf(interpreterName));
@@ -240,7 +241,7 @@ public class RubyEnvironmentTab extends AbstractLaunchConfigurationTab {
 	}
 
 	public String getName() {
-		return LauncherMessages.getString("LaunchConfigurationTab.RubyEnvironment.name");
+		return RdtDebugUiMessages.getString("LaunchConfigurationTab.RubyEnvironment.name");
 	}
 
 }

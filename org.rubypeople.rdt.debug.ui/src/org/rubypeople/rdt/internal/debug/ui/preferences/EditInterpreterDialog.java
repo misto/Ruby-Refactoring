@@ -23,8 +23,8 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 import org.rubypeople.rdt.internal.debug.ui.RdtDebugUiPlugin;
+import org.rubypeople.rdt.internal.launching.RubyInterpreter;
 import org.rubypeople.rdt.internal.ui.dialog.StatusDialog;
-import org.rubypeople.rdt.launching.RubyInterpreter;
 
 public class EditInterpreterDialog extends StatusDialog {
 	protected RubyInterpreter interpreterToEdit;

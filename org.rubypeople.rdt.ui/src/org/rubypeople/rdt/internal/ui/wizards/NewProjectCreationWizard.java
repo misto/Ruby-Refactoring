@@ -1,4 +1,4 @@
-package org.rubyeclipse.rdt.internal.ui.wizards;
+package org.rubypeople.rdt.internal.ui.wizards;
 
 import java.lang.reflect.InvocationTargetException;
 
@@ -19,6 +19,7 @@ import org.eclipse.ui.dialogs.WizardNewProjectCreationPage;
 import org.eclipse.ui.wizards.newresource.BasicNewProjectResourceWizard;
 import org.eclipse.ui.wizards.newresource.BasicNewResourceWizard;
 import org.rubypeople.rdt.internal.core.RubyPlugin;
+import org.rubypeople.rdt.internal.ui.RdtUiPlugin;
 
 public class NewProjectCreationWizard extends BasicNewResourceWizard implements INewWizard, IExecutableExtension {
 	protected WizardNewProjectCreationPage projectPage;
@@ -34,11 +35,8 @@ public class NewProjectCreationWizard extends BasicNewResourceWizard implements 
 
 		try {
 			getContainer().run(false, true, projectCreationOperation);
-		} catch (InvocationTargetException e) {
-			System.out.println("InvocationTargetException executing projectCreationOperation in NewProjectCreationWizard#performFinish: " + e);
-			return false;
-		} catch (InterruptedException e) {
-			System.out.println("InterruptedException executing projectCreationOperation in NewProjectCreationWizard#performFinish: " + e);
+		} catch (Exception e) {
+			RdtUiPlugin.log(e);
 			return false;
 		}
 

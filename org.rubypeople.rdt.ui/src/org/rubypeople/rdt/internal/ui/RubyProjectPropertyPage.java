@@ -55,7 +55,7 @@ public class RubyProjectPropertyPage extends PropertyPage implements IWorkbenchP
 					return theRubyProject;
 				}
 			} catch(CoreException e) {
-				System.out.println("RubyProjectPropertyPage.getRubyProject(): " + e);
+				RdtUiPlugin.log(e);
 			}
 		}
 		
