@@ -70,7 +70,7 @@
          <action
                label="%Dummy.label"
                class="org.rubypeople.rdt.internal.debug.ui.actions.ManageBreakpointRulerActionDelegate"
-               actionID="RulerDoubleClick"
+               actionID="RulerDoubleClick" 
                id="org.rubypeople.rdt.debug.ui.EditorRubyFile.ManageBreakpointRulerAction">
          </action>
       </editorContribution>
@@ -143,7 +143,8 @@
          </action>
       </debugActionGroup>
    </extension>
-   <extension
+ 
+ <!--  <extension
          point="org.eclipse.ui.actionSets">
       <actionSet
             label="%RDTDebugActionSet.label"
@@ -170,6 +171,7 @@
          </action>
       </actionSet>
    </extension>
+   -->
    <extension
          point="org.eclipse.ui.perspectiveExtensions">
       <perspectiveExtension
@@ -179,6 +181,7 @@
          </actionSet>
       </perspectiveExtension>
    </extension>
+   <!--
    <extension
          point="org.eclipse.ui.actionSetPartAssociations">
       <actionSetPartAssociation
@@ -188,6 +191,7 @@
          </part>
       </actionSetPartAssociation>
    </extension>
+   -->
    <extension
          point="org.eclipse.ui.popupMenus">
          <viewerContribution
@@ -196,9 +200,56 @@
            <action id="org.rubypeople.rdt.debug.ui.cuPopup.Inspect" 
 			label="%Inspect.label" 
 			menubarPath="additions" 
-			class="org.rubypeople.rdt.internal.debug.ui.actions.InspectAction">
+			class="org.rubypeople.rdt.internal.debug.ui.actions.InspectAction"
+			enablesFor="+">
+			<enablement> 				
+				<systemProperty name="org.rubypeople.rdt.debug.ui.debuggerActive" value="true"/> 
+            </enablement>
+			
 			</action>
          </viewerContribution>
+
+   	<viewerContribution
+		id="org.rubypeople.rdt.debug.DisplayEvaluationActions"
+		targetID="org.eclipse.jdt.debug.ui.DisplayView">
+		<visibility>
+			<systemProperty name="org.rubypeople.rdt.debug.ui.debuggerActive" value="true"/> 
+		</visibility>
+		<action id="org.rubypeople.rdt.debug.ui.displayView.Inspect" 
+			label="%RubyInspect.label" 
+			menubarPath="evaluationGroup"
+			helpContextId="inspect_action_context"
+			class="org.rubypeople.rdt.internal.debug.ui.actions.InspectAction"
+			enablesFor="+">
+			<enablement>
+				<and>
+					<or>
+						<systemProperty name="org.rubypeople.rdt.debug.ui.debuggerActive" value="true"/> 
+					</or>
+					<objectClass name="org.eclipse.jface.text.ITextSelection"/>
+	             </and>
+            </enablement>
+		</action> 
+	</viewerContribution>
+	<viewerContribution
+		id="org.rubypeople.rdt.ui.debug.VariableViewActions"
+		targetID="org.eclipse.debug.ui.VariableView">
+		<action id="org.rubypeople.rdt.ui.variableViewActions.InspectAction"
+			label="%InspectHashKey.label"
+			menubarPath="rdtActions"
+			helpContextId="inspect_action_context"
+			class="org.rubypeople.rdt.internal.debug.ui.actions.InspectHashKeyAction"
+			enablesFor="+">
+		 <enablement>
+	       <and>
+		     <objectClass name="org.rubypeople.rdt.internal.debug.core.model.RubyVariable"/> 
+             <objectState name="isHashValue" value="true"/> 
+	       </and>
+	     </enablement>
+			
+		</action>		
+   </viewerContribution>
+	
    </extension>
 
 </plugin>

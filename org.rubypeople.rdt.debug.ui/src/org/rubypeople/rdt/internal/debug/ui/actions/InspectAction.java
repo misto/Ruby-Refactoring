@@ -13,95 +13,63 @@ import org.eclipse.ui.IEditorActionDelegate;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IViewActionDelegate;
 import org.eclipse.ui.IViewPart;
-import org.eclipse.ui.IWorkbenchPage;
-import org.eclipse.ui.IWorkbenchWindow;
-import org.eclipse.ui.IWorkbenchWindowActionDelegate;
-import org.eclipse.ui.PartInitException;
 import org.rubypeople.rdt.internal.debug.core.model.RubyExpression;
+import org.rubypeople.rdt.internal.debug.core.model.RubyProcessingException;
 import org.rubypeople.rdt.internal.debug.core.model.RubyStackFrame;
 import org.rubypeople.rdt.internal.debug.core.model.RubyVariable;
-import org.rubypeople.rdt.internal.debug.ui.RdtDebugUiPlugin;
 
-public class InspectAction implements IViewActionDelegate, IWorkbenchWindowActionDelegate, IEditorActionDelegate {
+public class InspectAction extends AbstractInspectAction implements IViewActionDelegate, IEditorActionDelegate {
 
-  protected IWorkbenchPage page;
-  protected ISelection selection;
-
-  public void init(IViewPart view) {
-
-  }
-
-  protected RubyStackFrame getRubyStackFrame() {
-    IViewPart part = page.findView(IDebugUIConstants.ID_DEBUG_VIEW);
-    if (part == null) {
-      return null;
-    }
-    IDebugView launchView = (IDebugView) part;
-    StructuredSelection selected = (StructuredSelection) launchView.getViewer().getSelection();
-    if (selected.isEmpty()) {
-      return null;
-    }
-    if (!(selected.getFirstElement() instanceof RubyStackFrame)) {
-      return null;
-    }
-    return (RubyStackFrame) selected.getFirstElement();
-
-  }
-
-  protected void showExpressionView() {
-    IViewPart part = page.findView(IDebugUIConstants.ID_EXPRESSION_VIEW);
-    if (part == null) {
-      try {
-        page.showView(IDebugUIConstants.ID_EXPRESSION_VIEW);
-      } catch (PartInitException e) {
-        RdtDebugUiPlugin.log(e);
-      }
-    } else {
-      page.bringToTop(part);
-    }
-
-  }
-
-  public void run(IAction action) {
-    final RubyStackFrame stackFrame = this.getRubyStackFrame();
-    if (stackFrame == null) {
-      return;
-    }
-    if (!(selection instanceof TextSelection)) {
-      return;
-    }
-    Display.getCurrent().asyncExec(new Runnable() {
-      public void run() {
-        String selectedText = ((TextSelection) selection).getText();
-        RubyVariable rubyVariable = stackFrame.getRubyDebuggerProxy().readInspectExpression(stackFrame, selectedText);
-        if (rubyVariable == null) {
-          MessageDialog.openInformation(page.getActivePart().getSite().getShell(), "Inspection error", "Could not inspect '" + selectedText + "'");
-          return;
+    protected RubyStackFrame getRubyStackFrame() {
+        IViewPart part = page.findView(IDebugUIConstants.ID_DEBUG_VIEW);
+        if (part == null) {
+            return null;
         }
-        showExpressionView();
-        DebugPlugin.getDefault().getExpressionManager().addExpression(new RubyExpression(selectedText, rubyVariable));
-      }
-    });
-  }
-
-  public void selectionChanged(IAction action, ISelection selection) {
-    this.selection = selection;
-
-  }
-
-  public void dispose() {
-  }
-
-  public void init(IWorkbenchWindow window) {
-  }
-
-  public void setActiveEditor(IAction action, IEditorPart targetEditor) {
-    if (targetEditor == null || targetEditor.getEditorSite() == null) {
-      this.page = null;
-    } else {
-      this.page = targetEditor.getEditorSite().getPage();
+        IDebugView launchView = (IDebugView) part;
+        StructuredSelection selected = (StructuredSelection) launchView.getViewer().getSelection();
+        if (selected.isEmpty()) {
+            return null;
+        }
+        if (!(selected.getFirstElement() instanceof RubyStackFrame)) {
+            return null;
+        }
+        return (RubyStackFrame) selected.getFirstElement();
 
     }
-  }
+
+    public void run(IAction action) {
+        final RubyStackFrame stackFrame = this.getRubyStackFrame();
+        if (stackFrame == null) {
+            MessageDialog.openInformation(
+                page.getActivePart().getSite().getShell(),
+                "No suitable stack frame",
+                "Could not inspect because there is no context (a ruby stack frame) for inspection selected.");
+            return;
+        }
+        if (!(selection instanceof TextSelection)) {
+            return;
+        }
+        Display.getCurrent().asyncExec(new Runnable() {
+            public void run() {
+                String selectedText = ((TextSelection) selection).getText();
+                try {
+					RubyVariable rubyVariable = stackFrame.getRubyDebuggerProxy().readInspectExpression(stackFrame, selectedText);
+					showExpressionView();
+					DebugPlugin.getDefault().getExpressionManager().addExpression(new RubyExpression(selectedText, rubyVariable));
+                } catch (RubyProcessingException e) {
+                    MessageDialog.openInformation(page.getActivePart().getSite().getShell(), e.getRubyExceptionType(), "Could not inspect '" + selectedText + "': " + e.getMessage());
+                }
+            }
+        });
+    }
+
+    public void setActiveEditor(IAction action, IEditorPart targetEditor) {
+        if (targetEditor == null || targetEditor.getEditorSite() == null) {
+            this.page = null;
+        } else {
+            this.page = targetEditor.getEditorSite().getPage();
+
+        }
+    }
 
 }
