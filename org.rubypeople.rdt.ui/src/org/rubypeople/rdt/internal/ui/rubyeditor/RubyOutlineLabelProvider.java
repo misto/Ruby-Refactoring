@@ -19,7 +19,10 @@ public class RubyOutlineLabelProvider implements ILabelProvider {
 	 * @see org.eclipse.jface.viewers.ILabelProvider#getText(java.lang.Object)
 	 */
 	public String getText(Object obj) {
-		return ((RubyParsedComponent) obj).getName();
+		if (obj instanceof RubyParsedComponent)
+			return ((RubyParsedComponent) obj).getName();
+		else
+			return obj.toString();
 	}
 
 	/**
