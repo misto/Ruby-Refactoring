@@ -25,7 +25,6 @@ public class RubyElementVisitor implements IResourceVisitor {
 
 			case IResource.FILE :
 				IFile fileResource = (IFile) resource;
-			// TODO Allow it to recognize .cgi and .rbw files as well
 			String extension = fileResource.getFileExtension();
 				if ( "rb".equals(extension) || "rbw".equals(extension) || "cgi".equals(extension) ) {
 					rubyFiles.add(fileResource);
