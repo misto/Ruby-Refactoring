@@ -22,10 +22,9 @@ import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.PlatformUI;
-import org.eclipse.ui.internal.AboutInfo;
+import org.eclipse.ui.internal.ide.AboutInfo;
 import org.eclipse.ui.internal.ide.dialogs.WelcomeEditorInput;
 import org.eclipse.ui.part.FileEditorInput;
-import org.rubypeople.rdt.debug.ui.RdtDebugUiConstants;
 import org.rubypeople.rdt.internal.debug.ui.RdtDebugUiPlugin;
 import org.rubypeople.rdt.internal.debug.ui.RubySourceLocator;
 import org.rubypeople.rdt.internal.debug.ui.launcher.RubyApplicationShortcut;
@@ -185,7 +184,7 @@ public class TC_RubyApplicationShortcut extends TestCase {
 	}
 
 	public void testLaunchFromEditorWithNonRubyFile() throws Exception {
-		WelcomeEditorInput input = new WelcomeEditorInput(AboutInfo.readFeatureInfo("org.eclipse.platform", "3.0.0", "org.eclipse.platform"));
+		WelcomeEditorInput input = new WelcomeEditorInput(AboutInfo.readFeatureInfo("org.eclipse.platform", "3.0.0"));
 		IEditorPart welcomeEditor = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage().openEditor(input, "org.eclipse.ui.internal.ide.dialogs.WelcomeEditor");
 
 		shortcut.launch(welcomeEditor, ILaunchManager.RUN_MODE);
