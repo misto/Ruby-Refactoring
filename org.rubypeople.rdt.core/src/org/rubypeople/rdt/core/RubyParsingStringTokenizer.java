@@ -83,12 +83,12 @@ public class RubyParsingStringTokenizer {
      * <code>"&nbsp;&#92;t&#92;n&#92;r&#92;f"</code>: the space character, 
      * the tab character, the newline character, the carriage-return character,
      * and the form-feed character. Delimiter characters themselves will 
-     * not be treated as tokens.
+     * be treated as tokens.
      *
      * @param   str   a string to be parsed.
      */
     public RubyParsingStringTokenizer(String str) {
-	this(str, " \t\n\r\f", false);
+	this(str, " \t\n\r\f", true);
     }
 
     /**
