@@ -3,17 +3,11 @@ require 'test/unit/ui/testrunnermediator'
 module Test
   module Unit
     module UI
-      
       module Eclipse # :nodoc:
         
         # Runs a Test::Unit::TestSuite on the console.
         class TestRunner
-          
-          # The class variable which tracks the ids of the tests
-          # In Java they actually use the hashcode, but I'll cheat
-          # for now
-          @@test_id = 0
-          
+                  
           # Creates a new TestRunner and runs the suite.
           def TestRunner.run(suite, io=STDOUT)
             return new(suite, io).start
@@ -46,6 +40,7 @@ module Test
             @io = io
             @already_outputted = false
             @faults = []
+            @tests = []
           end
           
           # Begins the test run.
@@ -56,6 +51,30 @@ module Test
           end
           
           private
+          def send_tree(test)
+            if(test.instance_of?(Test::Unit::TestSuite))
+			  notifyTestTreeEntry("#{getTestId(test)},#{escapeComma(test.to_s.strip)},true,#{test.size}")
+			  test.tests.each { |myTest| send_tree(myTest) }		
+		    else 
+			  notifyTestTreeEntry("#{getTestId(test)},#{escapeComma(test.name.strip)},false,#{test.size}")
+		    end
+          end
+          
+          def getTestId(test)
+            @tests << test
+            return test.id
+          end
+         
+          def escapeComma(s)
+            t = s.gsub(/\\/, "\\\\")
+            t = t.gsub(',', "\\,")
+		    return t
+          end
+          
+          def notifyTestTreeEntry(treeEntry) 
+		    output("%TSTTREE#{treeEntry}\n")
+	      end
+          
           def setup_mediator # :nodoc:
             @mediator = create_mediator(@suite)
             suite_name = @suite.to_s
@@ -83,20 +102,36 @@ module Test
           def add_fault(fault) # :nodoc:
             @faults << fault
             if (fault.instance_of?(Test::Unit::Failure))
-              fault_type = "%FAILED"
+              fault_type = "%FAILED "
+              header = "Test::Unit::AssertionFailedError: #{fault.message}"
+              stack_trace = get_location(fault.location)
             else
-              fault_type = "%ERROR"
+              fault_type = "%ERROR  "
+              header = "Exception: #{fault.exception.message}"
+              stack_trace = get_trace(fault.exception.backtrace)
             end
-            output_single("#{fault_type} #{@@test_id},#{@last_test_name}\n")
+            output_single("#{fault_type}#{@last_test_id},#{@last_test_name}\n")
             output_single("%TRACES \n")
-            output_single("#{fault.location}\n")
+            output_single("#{header}\n")
+            output_single("#{stack_trace}\n")
             output_single("%TRACEE \n")
             @already_outputted = true
+          end
+          
+          def get_location(location)
+            return location[location.index('[') + 1, location.index(']') - 1].chop
+          end
+          
+          def get_trace(backtrace)
+            str = ""
+            backtrace.each { |line| str << "#{line}\n" }
+            return str
           end
           
           def started(result)
             @result = result
             output_single("%TESTC  #{@suite.size} v2\n")
+            send_tree(@suite)
           end
           
           def finished(elapsed_time)
@@ -104,14 +139,22 @@ module Test
             output("%RUNTIME#{modified_time.to_i}\n")
           end
           
+          def get_test(name)
+            @tests.each { |test| 
+              if test.name == name
+                return test
+              end
+            }
+          end
+          
           def test_started(name)
-            @@test_id = @@test_id + 1
+            @last_test_id = get_test(name).id
             @last_test_name = name
-            output_single("%TESTS  #{@@test_id},#{name}\n")
+            output_single("%TESTS  #{@last_test_id},#{name}\n")
           end
           
           def test_finished(name)
-            output_single("%TESTE  #{@@test_id},#{name}\n")
+            output_single("%TESTE  #{@last_test_id},#{name}\n")
             @already_outputted = false
           end
           
@@ -144,7 +187,7 @@ if __FILE__ == $0
   # 1. filename
   # 2. port
   # 3. keepAlive
-  # 4. test class name (optional, unused right now)
+  # 4. test class name
   # 5. test name (optional, unused right now)
   #
   
@@ -152,7 +195,7 @@ if __FILE__ == $0
   require filename.gsub(/.+::/, '')
   port = ARGV[1].to_i
   keepAliveString = ARGV[2]
-  #testClass = ARGV[3]
+  testClass = ARGV[3]
   #testMethod = ARGV[4]
   
   if keepAliveString == "false"
@@ -162,7 +205,7 @@ if __FILE__ == $0
   end
  
   session = TCPSocket.new('localhost', port)
-  testSuite = eval(filename)
+  testSuite = eval(testClass)
   remoteTestRunner = Test::Unit::UI::Eclipse::TestRunner.new(testSuite, session)
   remoteTestRunner.start
   
