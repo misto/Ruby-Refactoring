@@ -498,6 +498,9 @@ public class TextEditorPreferencePage2 extends PreferencePage implements IWorkbe
 		GridLayout layout = new GridLayout();
 		layout.numColumns = 2;
 		composite.setLayout(layout);
+		
+		String checkBoxlabel = RdtUiMessages.getString("RubyEditorPreferencePage.createParserAnnotations"); //$NON-NLS-1$
+		addCheckBox(composite, checkBoxlabel, PreferenceConstants.CREATE_PARSER_ANNOTATIONS, 0);
 
 		Label label = new Label(composite, SWT.LEFT);
 		label.setText(TextEditorMessages.getString("TextEditorPreferencePage.annotationPresentationOptions")); //$NON-NLS-1$
