@@ -2,7 +2,7 @@
 <feature
       id="org.rubypeople.rdt-tests"
       label="Ruby Development Tools Unit Tests"
-      version="0.5.0"
+      version="0.6.0"
       provider-name="RubyPeople">
 
    <install-handler/>
