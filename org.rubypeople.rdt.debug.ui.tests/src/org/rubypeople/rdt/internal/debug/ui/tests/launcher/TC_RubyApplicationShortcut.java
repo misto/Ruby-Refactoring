@@ -105,6 +105,16 @@ public class TC_RubyApplicationShortcut extends TestCase {
 
 	}
 
+	
+	public void testNoInterpreterInstalled() throws Exception {
+		RubyRuntime.getDefault().setInstalledInterpreters(Arrays.asList(new Object[] { }));
+		ISelection selection = new StructuredSelection(rubyFile);
+		shortcut.launch(selection, ILaunchManager.RUN_MODE);
+		
+		assertTrue("A dialog has been shown.", shortcut.didShowDialog);
+
+	}
+	
 	public void testLaunchWithSelectedRubyFile() throws Exception {
 		ISelection selection = new StructuredSelection(rubyFile);
 		
@@ -232,6 +242,7 @@ public class TC_RubyApplicationShortcut extends TestCase {
 	protected class ShamRubyApplicationShortcut extends RubyApplicationShortcut {
 
 		protected boolean didLog;
+		protected boolean didShowDialog=false;
 
 		protected void log(String message) {
 			didLog = true;
@@ -247,6 +258,10 @@ public class TC_RubyApplicationShortcut extends TestCase {
 
 		protected ILaunchConfigurationType getRubyLaunchConfigType() {
 			return DebugPlugin.getDefault().getLaunchManager().getLaunchConfigurationType(SHAM_LAUNCH_CONFIG_TYPE);
+		}
+		
+		protected void showNoInterpreterDialog() {
+			didShowDialog = true ;
 		}
 	}
 

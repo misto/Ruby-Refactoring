@@ -13,6 +13,7 @@ import org.eclipse.debug.core.ILaunchConfigurationType;
 import org.eclipse.debug.core.ILaunchConfigurationWorkingCopy;
 import org.eclipse.debug.core.ILaunchManager;
 import org.eclipse.debug.ui.ILaunchShortcut;
+import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.ui.IEditorInput;
@@ -23,6 +24,7 @@ import org.rubypeople.rdt.internal.debug.ui.RdtDebugUiMessages;
 import org.rubypeople.rdt.internal.debug.ui.RdtDebugUiPlugin;
 import org.rubypeople.rdt.internal.launching.RubyLaunchConfigurationAttribute;
 import org.rubypeople.rdt.internal.launching.RubyRuntime;
+import org.rubypeople.rdt.internal.ui.RdtUiPlugin;
 
 public class RubyApplicationShortcut implements ILaunchShortcut {
 
@@ -47,7 +49,9 @@ public class RubyApplicationShortcut implements ILaunchShortcut {
 		}
 		try {
 			ILaunchConfiguration config = findOrCreateLaunchConfiguration(rubyElement, mode);
-			config.launch(mode, null);
+			if (config != null) {
+				config.launch(mode, null);
+			}
 		} catch (CoreException e) {
 			log(e);
 		}
@@ -66,7 +70,9 @@ public class RubyApplicationShortcut implements ILaunchShortcut {
 		}
 		try {
 			ILaunchConfiguration config = findOrCreateLaunchConfiguration(rubyElement, mode);
-			config.launch(mode, null);
+			if (config != null) {
+				config.launch(mode, null);
+			}
 		} catch (CoreException e) {
 			log(e);
 		}
@@ -102,6 +108,10 @@ public class RubyApplicationShortcut implements ILaunchShortcut {
 	}
 
 	protected ILaunchConfiguration createConfiguration(IFile rubyFile) {
+		if (RubyRuntime.getDefault().getSelectedInterpreter() == null) {
+			this.showNoInterpreterDialog() ;
+			return null ;
+		}
 		ILaunchConfiguration config = null;
 		try {
 			ILaunchConfigurationType configType = getRubyLaunchConfigType();
@@ -133,4 +143,9 @@ public class RubyApplicationShortcut implements ILaunchShortcut {
 	protected void log(Throwable t) {
 		RdtDebugUiPlugin.log(t);
 	}
+	
+	protected void showNoInterpreterDialog() {
+		MessageDialog.openInformation(RdtUiPlugin.getActiveWorkbenchShell(), RdtDebugUiMessages.getString("Dialog.launchWithoutSelectedInterpreter.title"), RdtDebugUiMessages.getString("Dialog.launchWithoutSelectedInterpreter"));
+	}	
+
 }
