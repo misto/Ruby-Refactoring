@@ -26,6 +26,7 @@ public class RubyEditor extends TextEditor {
 
 	public RubyEditor() {
 		super();
+		this.setRulerContextMenuId("#rubyRulerContext") ;
 	}
 
 	protected void configurePreferenceStore() {
