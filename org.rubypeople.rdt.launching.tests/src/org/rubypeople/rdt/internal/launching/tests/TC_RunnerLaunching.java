@@ -54,10 +54,14 @@ public class TC_RunnerLaunching extends TestCase {
 		commandLine.append(" -I " + quotation + project.getLocation().toOSString() + quotation);
 		commandLine.append(" -I " + quotation + project.getLocation().toOSString() + File.separator + RUBY_LIB_DIR + quotation) ;
 		if (debug) {
+			String dirOfRubyDebuggerFile = DebuggerRunner.getDirectoryOfRubyDebuggerFile().replace('/', File.separatorChar) ;
+			if (dirOfRubyDebuggerFile.startsWith("\\")) {
+				dirOfRubyDebuggerFile = dirOfRubyDebuggerFile.substring(1) ;
+			}
 			commandLine.append(
 				" -I "
 					+ quotation
-					+ DebuggerRunner.getDirectoryOfRubyDebuggerFile().replace('/', File.separatorChar)
+					+ dirOfRubyDebuggerFile
 					+ quotation);
 		}		
 		commandLine.append(" " + INTERPRETER_ARGUMENTS + " -- ");
