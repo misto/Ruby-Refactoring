@@ -18,11 +18,14 @@ public class RubyThread implements IThread {
 	private IDebugTarget target;
 	private boolean isSuspended = false;
 	private boolean isTerminated = false;
+	private boolean isStepping = false;
 	private String name ;
+	private int id ;
 	
-	public RubyThread(IDebugTarget target) {
+	public RubyThread(IDebugTarget target, int id) {
 		this.target = target;
-		this.setName("RubyThread") ;
+		this.setId(id) ;
+		this.createName() ;
 	}
 
 	public IStackFrame[] getStackFrames() throws DebugException {
@@ -72,12 +75,6 @@ public class RubyThread implements IThread {
 		return isSuspended;
 	}
 
-	public void doSuspend(SuspensionPoint suspensionPoint) {
-		this.getRubyDebuggerProxy().readFrames(this);
-		this.setName("RubyThread (" + suspensionPoint + ")") ;
-		this.suspend() ;
-	}
-
 	public boolean canSuspend() {
 		return !isSuspended;
 	}
@@ -92,13 +89,21 @@ public class RubyThread implements IThread {
 
 	public void resume() throws DebugException {
 		isSuspended = false;
-		this.setName("RubyThread") ;
+		this.createName() ;
+		this.frames = null ;
 		DebugEvent ev = new DebugEvent(this, DebugEvent.RESUME, DebugEvent.CLIENT_REQUEST);
 		DebugPlugin.getDefault().fireDebugEventSet(new DebugEvent[] { ev });
 		((RubyDebugTarget) this.getDebugTarget()).getRubyDebuggerProxy().resume();
 	}
 
+	public void doSuspend(SuspensionPoint suspensionPoint) {
+		this.getRubyDebuggerProxy().readFrames(this);
+		this.createName(suspensionPoint) ;
+		this.suspend() ;
+	}
+
 	public void suspend()  {
+		isStepping = false ;
 		isSuspended = true;
 		DebugEvent ev = new DebugEvent(this, DebugEvent.SUSPEND, DebugEvent.BREAKPOINT);
 		DebugPlugin.getDefault().fireDebugEventSet(new DebugEvent[] { ev });
@@ -117,15 +122,21 @@ public class RubyThread implements IThread {
 	}
 
 	public boolean isStepping() {
-		return false;
+		return isStepping;
 	}
 
 	public void stepInto() throws DebugException {
+		isStepping = true ;
+		this.createName() ;
+		this.frames = null ;
 		frames[0].stepInto();
 	}
 
 	public void stepOver() throws DebugException {
-		frames[0].stepOver();
+		isStepping = true ;		
+		this.createName() ;
+		this.frames = null ;		
+		frames[0].stepOver() ;
 	}
 
 	public void stepReturn() throws DebugException {
@@ -162,6 +173,25 @@ public class RubyThread implements IThread {
 
 	public void setName(String name) {
 		this.name = name;
+	}
+
+	protected void createName() {
+		this.createName(null) ;	
+	}
+	
+	protected void createName(SuspensionPoint suspensionPoint) {
+		this.name = "Ruby Thread - " + this.getId()  ;
+		if (suspensionPoint != null) { 
+			this.name += " (" + suspensionPoint + ")" ;
+		}
+	}
+
+	public int getId() {
+		return id;
+	}
+
+	public void setId(int id) {
+		this.id = id;
 	}
 
 }

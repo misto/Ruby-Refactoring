@@ -47,6 +47,22 @@ class DEBUGGER__
       stdout.flush
 	end
 
+   def printThread(num, thread)      
+      if thread == Thread.current
+		stdout.print "+"
+      else
+		stdout.print " "
+      end
+      stdout.printf "%d ", num
+      stdout.print thread.inspect, "\t"
+      file = DEBUGGER__.context(thread).instance_eval{@file}
+      if file
+		stdout.print file, ":", DEBUGGER__.context(thread).instance_eval{@line}
+      end
+      stdout.print "\n"
+    end
+
+
     def printStepEnd(file, line, framesCount)
 
     end
@@ -966,26 +982,17 @@ EOHELP
       th
     end
 
-    def thread_list(num)
-      th = get_thread(num)
-      if th == Thread.current
-	@stdout.print "+"
-      else
-	@stdout.print " "
-      end
-      @stdout.printf "%d ", num
-      @stdout.print th.inspect, "\t"
-      file = context(th).instance_eval{@file}
-      if file
-	@stdout.print file,":",context(th).instance_eval{@line}
-      end
-      @stdout.print "\n"
-    end
+	def get_thread_num(thread=Thread.current)
+		make_thread_list
+		@thread_list[thread]
+	end
 
     def thread_list_all
-      for th in @thread_list.values.sort
-	thread_list(th)
+      printer.printXml("<threads>") 
+      for num in @thread_list.values.sort
+		printer.printThread(num, get_thread(num))
       end
+      printer.printXml("</threads>") 
     end
 
     def make_thread_list
@@ -1046,11 +1053,18 @@ EOHELP
 	  thread_list(@thread_list[th])
 	  th.run
 	end
-      end
+
+
+
+	  when /^frames\s+(\d+)/
+		context(get_thread($1.to_i)).display_frames(0)
+	  end
+  	  
     end
-
-
   end
+
+  @@socket = nil
+  @@printer = nil
 
   if !ECLIPSE_DEBUG then
     stdout.printf "Debug.rb\n"
@@ -1065,8 +1079,7 @@ EOHELP
 	  @@socket = server.accept
 	  @@printer = XmlPrinter.new(@@socket)
 	else
-	  puts "eclipse mode, reading from stdin"
-	  @@socket = nil
+	  puts "eclipse mode, reading from stdin"	  
 	  @@printer = PrinterMultiplexer.new
 	  @@printer.addPrinter(XmlPrinter.new(nil))
 	  @@printer.addPrinter(CommandLinePrinter.new())

@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Vector;
 
+import org.rubypeople.rdt.internal.debug.core.RdtDebugCorePlugin;
 import org.rubypeople.rdt.internal.debug.core.SuspensionPoint;
 import org.rubypeople.rdt.internal.debug.core.model.RubyStackFrame;
 import org.rubypeople.rdt.internal.debug.core.model.RubyThread;
@@ -12,38 +13,38 @@ import org.rubypeople.rdt.internal.debug.core.model.RubyVariable;
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
 
-/**
- * @author Administrator
- *
- * To change this generated comment edit the template variable "typecomment":
- * Window>Preferences>Java>Templates.
- * To enable and disable the creation of type comments go to
- * Window>Preferences>Java>Code Generation.
- */
 public class VariableReader extends XmlStreamReader {
 
 	private RubyStackFrame stackFrame;
 	private RubyVariable parent ;
 	private ArrayList variables ;
 
-	public RubyVariable[] readVariables(RubyVariable variable, XmlPullParser xpp) {
-		return readVariables(variable.getStackFrame(), variable, xpp) ;
+	public VariableReader(XmlPullParser xpp) {
+		super(xpp);
 	}
 
-	public RubyVariable[] readVariables(RubyStackFrame stackFrame, XmlPullParser xpp) {
-		return readVariables(stackFrame, null, xpp) ;
+	public VariableReader(AbstractReadStrategy readStrategy) {
+		super(readStrategy);
+	}
+
+	public RubyVariable[] readVariables(RubyVariable variable) {
+		return readVariables(variable.getStackFrame(), variable) ;
+	}
+
+	public RubyVariable[] readVariables(RubyStackFrame stackFrame) {
+		return readVariables(stackFrame, null) ;
 
 	}
 		
-	public RubyVariable[] readVariables(RubyStackFrame stackFrame, RubyVariable parent, XmlPullParser xpp) {
+	public RubyVariable[] readVariables(RubyStackFrame stackFrame, RubyVariable parent) {
 		this.stackFrame = stackFrame ;
 		this.parent = parent ;
 		this.variables = new ArrayList() ;
-		try {
-			
-			this.readElement(xpp);
+		try {			
+			this.read();
 		} catch (Exception ex) {
-			ex.printStackTrace();
+			RdtDebugCorePlugin.log(ex) ;
+			return new RubyVariable[0] ;
 		}
 		RubyVariable[] variablesArray = new RubyVariable[variables.size()];
 		variables.toArray(variablesArray);
@@ -51,8 +52,11 @@ public class VariableReader extends XmlStreamReader {
 	}
 
 
-	protected void processStartElement(XmlPullParser xpp) {
+	protected boolean processStartElement(XmlPullParser xpp) {
 		String name = xpp.getName();
+		if (name.equals("variables")) {
+			return true ;
+		}
 		if (name.equals("variable")) {
 			String varName = xpp.getAttributeValue("", "name");
 			String varValue = xpp.getAttributeValue("", "value");
@@ -67,7 +71,9 @@ public class VariableReader extends XmlStreamReader {
 			}
 			newVariable.setParent(parent) ;
 			variables.add(newVariable) ;						
+			return true ;
 		}
+		return false ;
 	}
 
 

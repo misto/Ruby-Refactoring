@@ -9,6 +9,7 @@ import java.io.PrintWriter;
 import java.net.Socket;
 
 import junit.framework.TestCase;
+import junit.framework.TestSuite;
 
 
 import org.rubypeople.rdt.internal.debug.core.ExceptionSuspensionPoint;
@@ -18,9 +19,12 @@ import org.rubypeople.rdt.internal.debug.core.model.RubyDebugTarget;
 import org.rubypeople.rdt.internal.debug.core.model.RubyStackFrame;
 import org.rubypeople.rdt.internal.debug.core.model.RubyThread;
 import org.rubypeople.rdt.internal.debug.core.model.RubyVariable;
+import org.rubypeople.rdt.internal.debug.core.model.ThreadInfo;
+import org.rubypeople.rdt.internal.debug.core.parsing.MultiReaderStrategy;
 import org.rubypeople.rdt.internal.debug.core.parsing.SuspensionReader;
 import org.rubypeople.rdt.internal.debug.core.parsing.FramesReader;
 import org.rubypeople.rdt.internal.debug.core.parsing.SuspensionReader;
+import org.rubypeople.rdt.internal.debug.core.parsing.ThreadInfoReader;
 import org.rubypeople.rdt.internal.debug.core.parsing.VariableReader;
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserFactory;
@@ -48,19 +52,20 @@ public class TC_DebuggerCommunicationTest extends TestCase {
 			System.out.println("OutputRedirectorThread stopped.");
 		}
 	}
-	/*
+/*
 		public static TestSuite suite() {
 			TestSuite suite = new TestSuite();
-			suite.addTest(new TC_DebuggerCommunicationTest("testVariableWithXmlContent"));
+			suite.addTest(new TC_DebuggerCommunicationTest("testBreakpointNeverReached"));
 			return suite;
 		}
-		*/
+*/
 	private static final String TMP_DIR = System.getProperty("java.io.tmpdir") ;
 	private Process process;
 	private OutputRedirectorThread rubyStdoutRedirectorThread;
 	private OutputRedirectorThread rubyStderrRedirectorThread;
 	private Socket socket;
 	private PrintWriter out;
+	private MultiReaderStrategy multiReaderStrategy ;
 
 	public TC_DebuggerCommunicationTest(String arg0) {
 		super(arg0);
@@ -86,6 +91,23 @@ public class TC_DebuggerCommunicationTest extends TestCase {
 		return xpp;
 	}
 
+	protected SuspensionReader getSuspensionReader() throws Exception {
+		return new SuspensionReader(multiReaderStrategy) ;	
+	}
+
+	protected VariableReader getVariableReader() throws Exception {
+		return new VariableReader(multiReaderStrategy) ;	
+	}
+
+	protected FramesReader getFramesReader() throws Exception {
+		return new FramesReader(multiReaderStrategy) ;	
+	}
+
+	protected ThreadInfoReader getThreadInfoReader() throws Exception {
+		return new ThreadInfoReader(multiReaderStrategy) ;	
+	}
+
+
 	public void startRubyProcess() throws Exception {
 		String cmd = "rubyw -I" + TMP_DIR.replace('\\', '/') + " -reclipseDebug.rb " + this.getRubyTestFilename();
 		System.out.println("Starting: " + cmd);
@@ -101,7 +123,7 @@ public class TC_DebuggerCommunicationTest extends TestCase {
 		return path.replace('\\', '/');
 	}
 
-	public void setUp() {
+	public void setUp() throws Exception {
 		if (!new File(TMP_DIR).exists() || !new File(TMP_DIR).isDirectory()) {
 			throw new RuntimeException("Temp directory does not exist: " + TMP_DIR);
 		}
@@ -125,10 +147,19 @@ public class TC_DebuggerCommunicationTest extends TestCase {
 
 	}
 
+	private void writeFile(String name, String[] content) throws Exception {
+		PrintWriter writer = new PrintWriter(new FileOutputStream(TC_DebuggerCommunicationTest.TMP_DIR + name));
+		for (int i = 0; i < content.length; i++) {
+			writer.println(content[i]);
+		}
+		writer.close();
+	}
+
 	private void createSocket(String[] lines) throws Exception {
 		this.writeFile("test.rb", lines);
 		this.startRubyProcess();
 		socket = new Socket("localhost", 1098);
+		multiReaderStrategy = new MultiReaderStrategy(this.getXpp(socket)) ;
 		out = new PrintWriter(socket.getOutputStream(), true);
 	}
 
@@ -138,7 +169,7 @@ public class TC_DebuggerCommunicationTest extends TestCase {
 		out.println("b test.rb:3");
 		out.println("cont");
 		System.out.println("Waiting for breakpoint..");
-		SuspensionPoint hit = new SuspensionReader().readSuspension(this.getXpp(socket));
+		SuspensionPoint hit = this.getSuspensionReader().readSuspension();
 		this.assertNull(hit);
 	}
 
@@ -148,7 +179,7 @@ public class TC_DebuggerCommunicationTest extends TestCase {
 		out.println("b test.rb:2");
 		out.println("cont");
 		System.out.println("Waiting for breakpoint..");
-		SuspensionPoint hit = new SuspensionReader().readSuspension(this.getXpp(socket));
+		SuspensionPoint hit = this.getSuspensionReader().readSuspension();
 		this.assertNotNull(hit);
 		this.assertTrue(hit.isBreakpoint()) ;
 		this.assertEquals(2, hit.getLine());
@@ -160,7 +191,7 @@ public class TC_DebuggerCommunicationTest extends TestCase {
 		this.createSocket(new String[] { "puts 'a'", "raise 'message'", "puts 'c'" });
 		out.println("cont");
 		System.out.println("Waiting for exception");
-		SuspensionPoint hit = new SuspensionReader().readSuspension(this.getXpp(socket));
+		SuspensionPoint hit = this.getSuspensionReader().readSuspension();
 		this.assertNotNull(hit);
 		this.assertEquals(2, hit.getLine());
 		this.assertEquals(this.getOSIndependent(TMP_DIR + "test.rb"), hit.getFile());
@@ -176,7 +207,7 @@ public class TC_DebuggerCommunicationTest extends TestCase {
 		out.println("b test.rb:10");
 		out.println("cont");
 		System.out.println("Waiting for breakpoint..");
-		SuspensionPoint hit = new SuspensionReader().readSuspension(this.getXpp(socket));
+		SuspensionPoint hit = this.getSuspensionReader().readSuspension();
 		this.assertNull(hit);
 	}
 
@@ -184,25 +215,18 @@ public class TC_DebuggerCommunicationTest extends TestCase {
 		this.createSocket(new String[] { "puts 'a'", "puts 'b'", "puts 'c'" });
 		out.println("b test.rb:2");
 		out.println("cont");
-		new SuspensionReader().readSuspension(this.getXpp(socket));
+		this.getSuspensionReader().readSuspension();
 		out.println("next");
-		SuspensionPoint info = new SuspensionReader().readSuspension(this.getXpp(socket));
+		SuspensionPoint info = this.getSuspensionReader().readSuspension();
 		this.assertEquals(3, info.getLine());
 		this.assertEquals(this.getOSIndependent(TMP_DIR + "test.rb"), info.getFile());
 		this.assertTrue(info.isStep()) ;
 		this.assertEquals(1, ((StepSuspensionPoint) info).getFramesNumber());
 		out.println("next");
-		info = new SuspensionReader().readSuspension(this.getXpp(socket));
+		info = this.getSuspensionReader().readSuspension();
 		this.assertNull(info);
 	}
 
-	private void writeFile(String name, String[] content) throws Exception {
-		PrintWriter writer = new PrintWriter(new FileOutputStream(TC_DebuggerCommunicationTest.TMP_DIR + name));
-		for (int i = 0; i < content.length; i++) {
-			writer.println(content[i]);
-		}
-		writer.close();
-	}
 
 	public void testStepOverFrames() throws Exception {
 		this.createSocket(new String[] { "require 'test2.rb'", "puts 'a'", "Test2.new.print()" });
@@ -210,9 +234,9 @@ public class TC_DebuggerCommunicationTest extends TestCase {
 		PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
 		out.println("b test.rb:3");
 		out.println("cont");
-		new SuspensionReader().readSuspension(this.getXpp(socket));
+		this.getSuspensionReader().readSuspension();
 		out.println("next");
-		SuspensionPoint info = new SuspensionReader().readSuspension(this.getXpp(socket));
+		SuspensionPoint info = this.getSuspensionReader().readSuspension();
 		this.assertNull(info);
 
 	}
@@ -222,13 +246,13 @@ public class TC_DebuggerCommunicationTest extends TestCase {
 		this.writeFile("test2.rb", new String[] { "class Test2", "def print", "puts 'XX'", "puts 'XX'", "end", "end" });
 		this.runTo("test2.rb", 3);
 		out.println("next");
-		SuspensionPoint info = new SuspensionReader().readSuspension(this.getXpp(socket));
+		SuspensionPoint info = this.getSuspensionReader().readSuspension();
 		this.assertEquals(4, info.getLine());
 		this.assertEquals(this.getOSIndependent(TMP_DIR + "test2.rb"), info.getFile());
 		this.assertTrue(info.isStep()) ;
 		this.assertEquals(2, ((StepSuspensionPoint) info).getFramesNumber());
 		out.println("next");
-		info = new SuspensionReader().readSuspension(this.getXpp(socket));
+		info = this.getSuspensionReader().readSuspension();
 		this.assertNull(info);
 	}
 
@@ -237,7 +261,7 @@ public class TC_DebuggerCommunicationTest extends TestCase {
 		this.writeFile("test2.rb", new String[] { "class Test2", "def print", "puts 'XX'", "puts 'XX'", "end", "end" });
 		this.runTo("test2.rb", 4);
 		out.println("next");
-		SuspensionPoint info = new SuspensionReader().readSuspension(this.getXpp(socket));
+		SuspensionPoint info = this.getSuspensionReader().readSuspension();
 		this.assertEquals(3, info.getLine());
 		this.assertEquals(this.getOSIndependent(TMP_DIR + "test.rb"), info.getFile());
 		this.assertTrue(info.isStep()) ;
@@ -250,7 +274,7 @@ public class TC_DebuggerCommunicationTest extends TestCase {
 		this.writeFile("test2.rb", new String[] { "class Test2", "def print", "puts 'XX'", "puts 'XX'", "end", "end" });
 		this.runTo("test2.rb", 4);
 		out.println("next");
-		SuspensionPoint info = new SuspensionReader().readSuspension(this.getXpp(socket));
+		SuspensionPoint info = this.getSuspensionReader().readSuspension();
 		this.assertEquals(3, info.getLine());
 		this.assertEquals(this.getOSIndependent(TMP_DIR + "test.rb"), info.getFile());
 		this.assertTrue(info.isStep()) ;
@@ -265,7 +289,7 @@ public class TC_DebuggerCommunicationTest extends TestCase {
 		out.println("b test2.rb:4");
 		this.runTo("test.rb", 2);
 		out.println("next");
-		SuspensionPoint info = new SuspensionReader().readSuspension(this.getXpp(socket));
+		SuspensionPoint info = this.getSuspensionReader().readSuspension();
 		this.assertEquals(4, info.getLine());
 		this.assertEquals("test2.rb", info.getFile());
 		this.assertTrue(info.isBreakpoint()) ;
@@ -278,7 +302,7 @@ public class TC_DebuggerCommunicationTest extends TestCase {
 		this.writeFile("test2.rb", new String[] { "class Test2", "def print", "puts 'XX'", "puts 'XX'", "end", "end" });
 		this.runTo("test.rb", 3);
 		out.println("step");
-		SuspensionPoint info = new SuspensionReader().readSuspension(this.getXpp(socket));
+		SuspensionPoint info = this.getSuspensionReader().readSuspension();
 		this.assertEquals(3, info.getLine());
 		this.assertEquals(getOSIndependent(TMP_DIR + "test2.rb"), info.getFile());
 		this.assertTrue(info.isStep()) ;
@@ -293,7 +317,7 @@ public class TC_DebuggerCommunicationTest extends TestCase {
 	private void runTo(String filename, int lineNumber) throws Exception {
 		out.println("b " + filename + ":" + lineNumber);
 		out.println("cont");
-		new SuspensionReader().readSuspension(this.getXpp(socket));
+		this.getSuspensionReader().readSuspension();
 	}
 
 	protected RubyStackFrame createStackFrame() throws Exception {
@@ -307,7 +331,7 @@ public class TC_DebuggerCommunicationTest extends TestCase {
 		this.createSocket(new String[] { "puts 'a'", "puts 'b'", "stringA='XX'" });
 		this.runToLine(2);
 		out.println("v l");
-		RubyVariable[] variables = new VariableReader().readVariables(this.createStackFrame(), this.getXpp(socket));
+		RubyVariable[] variables = this.getVariableReader().readVariables(this.createStackFrame());
 		this.assertEquals(1, variables.length);
 		this.assertEquals("stringA", variables[0].getName());
 		this.assertEquals("nil", variables[0].getValue().getValueString());
@@ -319,7 +343,7 @@ public class TC_DebuggerCommunicationTest extends TestCase {
 		this.createSocket(new String[] { "stringA='<start test=\"\"/>'", "puts 'b'" });
 		this.runToLine(2);
 		out.println("v l");
-		RubyVariable[] variables = new VariableReader().readVariables(this.createStackFrame(), this.getXpp(socket));
+		RubyVariable[] variables = this.getVariableReader().readVariables(this.createStackFrame());
 		this.assertEquals(1, variables.length);
 		this.assertEquals("stringA", variables[0].getName());
 		this.assertEquals("<start test=\"\"/>", variables[0].getValue().getValueString());
@@ -333,7 +357,7 @@ public class TC_DebuggerCommunicationTest extends TestCase {
 
 		// Read numerical variable
 		out.println("v l");
-		RubyVariable[] variables = new VariableReader().readVariables(this.createStackFrame(), this.getXpp(socket));
+		RubyVariable[] variables = this.getVariableReader().readVariables(this.createStackFrame());
 		this.assertEquals(1, variables.length);
 		this.assertEquals("customObject", variables[0].getName());
 		this.assertEquals("test", variables[0].getValue().getValueString());
@@ -341,7 +365,7 @@ public class TC_DebuggerCommunicationTest extends TestCase {
 		this.assertTrue(variables[0].getValue().hasVariables());
 
 		out.println("v i customObject");
-		variables = new VariableReader().readVariables(this.createStackFrame(), this.getXpp(socket));
+		variables = this.getVariableReader().readVariables(this.createStackFrame());
 		this.assertEquals(1, variables.length);
 		this.assertEquals("@y", variables[0].getName());
 		this.assertEquals("5", variables[0].getValue().getValueString());
@@ -356,7 +380,7 @@ public class TC_DebuggerCommunicationTest extends TestCase {
 
 		// Read numerical variable
 		out.println("v l");
-		RubyVariable[] variables = new VariableReader().readVariables(this.createStackFrame(), this.getXpp(socket));
+		RubyVariable[] variables = this.getVariableReader().readVariables(this.createStackFrame());
 		this.assertEquals(1, variables.length);
 
 		this.assertEquals("stringA", variables[0].getName());
@@ -372,7 +396,7 @@ public class TC_DebuggerCommunicationTest extends TestCase {
 		this.runTo("test2.rb", 6);
 
 		out.println("v i 2 customObject");
-		RubyVariable[] variables = new VariableReader().readVariables(this.createStackFrame(), this.getXpp(socket));
+		RubyVariable[] variables = this.getVariableReader().readVariables(this.createStackFrame());
 		this.assertEquals(1, variables.length);
 
 		this.assertEquals("@y", variables[0].getName());
@@ -386,14 +410,14 @@ public class TC_DebuggerCommunicationTest extends TestCase {
 		this.runToLine(7);
 
 		out.println("v l");
-		RubyVariable[] variables = new VariableReader().readVariables(this.createStackFrame(), this.getXpp(socket));
+		RubyVariable[] variables = this.getVariableReader().readVariables(this.createStackFrame());
 		this.assertEquals(1, variables.length);
 		RubyVariable test2Variable = variables[0];
 		this.assertEquals("test2", test2Variable.getName());
 		this.assertEquals("test2", test2Variable.getQualifiedName());
 
 		out.println("v i " + test2Variable.getQualifiedName());
-		variables = new VariableReader().readVariables(test2Variable, this.getXpp(socket));
+		variables = this.getVariableReader().readVariables(test2Variable);
 		this.assertEquals(1, variables.length);
 		RubyVariable privateTestVariable = variables[0];
 		this.assertEquals("@privateTest", privateTestVariable.getName());
@@ -401,7 +425,7 @@ public class TC_DebuggerCommunicationTest extends TestCase {
 		this.assertTrue(privateTestVariable.getValue().hasVariables());
 
 		out.println("v i " + privateTestVariable.getQualifiedName());
-		variables = new VariableReader().readVariables(privateTestVariable, this.getXpp(socket));
+		variables = this.getVariableReader().readVariables(privateTestVariable);
 		this.assertEquals(1, variables.length);
 		RubyVariable privateTestprivateTestVariable = variables[0];
 		this.assertEquals("@privateTest", privateTestprivateTestVariable.getName());
@@ -417,25 +441,25 @@ public class TC_DebuggerCommunicationTest extends TestCase {
 		this.runTo("test2.rb", 4);
 
 		out.println("v l");
-		RubyVariable[] variables = new VariableReader().readVariables(this.createStackFrame(), this.getXpp(socket));
+		RubyVariable[] variables = this.getVariableReader().readVariables(this.createStackFrame());
 		this.assertEquals(1, variables.length);
 		this.assertEquals("y", variables[0].getName());
 		this.assertEquals("6", variables[0].getValue().getValueString());
 
 		out.println("v l 1");
-		variables = new VariableReader().readVariables(this.createStackFrame(), this.getXpp(socket));
+		variables = this.getVariableReader().readVariables(this.createStackFrame());
 		this.assertEquals(1, variables.length);
 		this.assertEquals("y", variables[0].getName());
 		this.assertEquals("6", variables[0].getValue().getValueString());
 
 		out.println("v l 2");
-		variables = new VariableReader().readVariables(this.createStackFrame(), this.getXpp(socket));
+		variables = this.getVariableReader().readVariables(this.createStackFrame());
 		this.assertEquals(1, variables.length);
 		this.assertEquals("y", variables[0].getName());
 		this.assertEquals("5", variables[0].getValue().getValueString());
 
 		out.println("v l 20");
-		variables = new VariableReader().readVariables(this.createStackFrame(), this.getXpp(socket));
+		variables = this.getVariableReader().readVariables(this.createStackFrame());
 		this.assertEquals(1, variables.length);
 		this.assertEquals("y", variables[0].getName());
 		this.assertEquals("6", variables[0].getValue().getValueString());
@@ -447,8 +471,8 @@ public class TC_DebuggerCommunicationTest extends TestCase {
 		this.writeFile("test2.rb", new String[] { "class Test2", "def print", "puts 'XX'", "end", "end" });
 		this.runTo("test2.rb", 3);
 		out.println("w");
-		RubyThread thread = new RubyThread(null);
-		new FramesReader().readFrames(thread, this.getXpp(socket));
+		RubyThread thread = new RubyThread(null, 0);
+		this.getFramesReader().readFrames(thread);
 		this.assertEquals(2, thread.getStackFrames().length);
 		RubyStackFrame frame1 = (RubyStackFrame) thread.getStackFrames()[0];
 		this.assertEquals(this.getOSIndependent(TMP_DIR + "test2.rb"), frame1.getFileName());
@@ -461,5 +485,96 @@ public class TC_DebuggerCommunicationTest extends TestCase {
 		this.assertEquals(2, frame2.getLineNumber());
 
 	}
+	
+	public void testThreads() throws Exception {
+		this.createSocket(new String[] { "Thread.new {", "puts 'a'", "}", "sleep 1", "puts 'b'" });
+		out.println("b test.rb:2") ;
+		out.println("b test.rb:5") ;
+		out.println("cont") ;
+		SuspensionPoint point = this.getSuspensionReader().readSuspension() ;
+		this.assertEquals(2, point.getThreadId()) ;
+		this.assertEquals(2, point.getLine()) ;
+		
+		out.println("cont") ;
+		point = this.getSuspensionReader().readSuspension() ;
+		this.assertEquals(1, point.getThreadId()) ;
+		this.assertEquals(5, point.getLine()) ;
+	}
+	
+	public void testThreadIds() throws Exception {
+		this.createSocket(new String[] { "Thread.new {", "puts 'a'", "}", "sleep 1", "Thread.new{" , "puts 'b'" , "}", "sleep 1", "puts 'c'" });
+		out.println("b test.rb:2") ;
+		out.println("b test.rb:6") ;
+		out.println("b test.rb:9") ;
+		out.println("cont") ;
+		this.getSuspensionReader().readSuspension() ;
+		// the main thread and the "puts 'a'" - thread are active
+		out.println("th l") ;
+		ThreadInfo[] threads = this.getThreadInfoReader().readThreads() ;
+		this.assertEquals(2, threads.length) ;
+		this.assertEquals(1, threads[0].getId()) ;
+		this.assertEquals(2, threads[1].getId()) ;
+		out.println("cont") ;
+		this.getSuspensionReader().readSuspension() ;
+		// the main thread and the "puts 'b'" - thread are active, the id of the "puts 'b'"-thread is 3
+		out.println("th l") ;
+		threads = this.getThreadInfoReader().readThreads() ;
+		this.assertEquals(2, threads.length) ;
+		this.assertEquals(1, threads[0].getId()) ;
+		this.assertEquals(3, threads[1].getId()) ;
+		out.println("cont") ;
+		this.getSuspensionReader().readSuspension() ;
+		// now there is only the main thread left
+		out.println("th l") ;		
+		threads = this.getThreadInfoReader().readThreads() ;
+		this.assertEquals(1, threads.length) ;		
+		this.assertEquals(1, threads[0].getId()) ;		
+	}
+	
+	public void testThreadsAndFrames() throws Exception {
+		this.createSocket(new String[] { "Thread.new {", "puts 'a'", "}", "puts 'b'" });
+		out.println("b test.rb:2") ;
+		out.println("b test.rb:4") ;
+		out.println("cont") ;
+		this.getSuspensionReader().readSuspension() ;
+		this.getSuspensionReader().readSuspension() ;		
+		// the main thread and the "puts 'a'" - thread are active
+		out.println("th l") ;
+		ThreadInfo[] threads = this.getThreadInfoReader().readThreads() ;
+		this.assertEquals(2, threads.length) ;
+		this.assertEquals(1, threads[0].getId()) ;
+		this.assertEquals(2, threads[1].getId()) ;
+		out.println("th frames 1") ;
+		RubyStackFrame[] stackFrames = this.getFramesReader().readFrames(new RubyThread(null, 1)) ;
+		this.assertEquals(1, stackFrames.length) ;
+		this.assertEquals(4, stackFrames[0].getLineNumber()) ;
+		out.println("th frames 2") ;
+		stackFrames = this.getFramesReader().readFrames(new RubyThread(null, 1)) ;
+		this.assertEquals(1, stackFrames.length) ;
+		this.assertEquals(2, stackFrames[0].getLineNumber()) ;
+		
+	}		
+
+	/*
+	public void testResumeThread() throws Exception {
+		this.createSocket(new String[] { "thread1 = Thread.new {", "puts 'a'", "puts 'b'", "}", "puts 'b'" , "thread1.join"});
+		out.println("b test.rb:2") ;
+		out.println("b test.rb:3") ;		
+		out.println("b test.rb:5") ;
+		out.println("cont") ;
+		MultiReaderStrategy multiReaderStrategy = new MultiReaderStrategy(this.getXpp(socket)) ;
+		new SuspensionReader(multiReaderStrategy).readSuspension() ;
+		new SuspensionReader(multiReaderStrategy).readSuspension() ;		
+		// the main thread and the "puts 'a'" - thread are active
+		out.println("th l") ;
+		ThreadInfo[] threads = new ThreadInfoReader(multiReaderStrategy).readThreads() ;
+		this.assertEquals(2, threads.length) ;
+		this.assertEquals("run", threads[1].getStatus()) ;
+		out.println("cont") ;
+		new SuspensionReader(multiReaderStrategy).readSuspension() ;		
+		
+	}		
+	*/
+
 
 }

@@ -1,235 +1,185 @@
 package org.rubypeople.rdt.internal.debug.core.model;
 
 import org.eclipse.core.resources.IMarkerDelta;
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.debug.core.DebugEvent;
 import org.eclipse.debug.core.DebugException;
+import org.eclipse.debug.core.DebugPlugin;
 import org.eclipse.debug.core.ILaunch;
 import org.eclipse.debug.core.model.IBreakpoint;
 import org.eclipse.debug.core.model.IDebugTarget;
 import org.eclipse.debug.core.model.IMemoryBlock;
 import org.eclipse.debug.core.model.IProcess;
 import org.eclipse.debug.core.model.IThread;
+import org.rubypeople.rdt.internal.debug.core.RdtDebugCorePlugin;
 import org.rubypeople.rdt.internal.debug.core.RubyDebuggerProxy;
+import org.rubypeople.rdt.internal.debug.core.SuspensionPoint;
 
-/**
- * @author Administrator
- *
- * To change this generated comment edit the template variable "typecomment":
- * Window>Preferences>Java>Templates.
- * To enable and disable the creation of type comments go to
- * Window>Preferences>Java>Code Generation.
- */
-public class RubyDebugTarget implements IDebugTarget {
 
-	public final static String MODEL_IDENTIFIER = "org.rubypeople.rdt.debug" ;
-	private IProcess process ;
-	private boolean isTerminated ;
-	private ILaunch launch ;
-	private IThread[] threads ;
+public class RubyDebugTarget implements IRubyDebugTarget {
+
+	private IProcess process;
+	private boolean isTerminated;
+	private ILaunch launch;
+	private RubyThread[] threads;
 	private RubyDebuggerProxy rubyDebuggerProxy;
-	
+
 	public RubyDebugTarget(ILaunch launch, IProcess process) {
-		this.launch = launch ;		
-		this.process = process ;
-		threads = new IThread[] { new RubyThread(this) };
-	}
-	/**
-	 * @see org.eclipse.debug.core.model.IDebugTarget#getThreads()
-	 */
-	public IThread[] getThreads()  {
-		return threads ;
+		this.launch = launch;
+		this.process = process;
+		this.threads = new RubyThread[0] ;
 	}
 
-	/**
-	 * @see org.eclipse.debug.core.model.IDebugTarget#hasThreads()
-	 */
+	public void updateThreads() {
+		// preconditions:
+		// 1) both threadInfos and updatedThreads are sorted by their id attribute
+		// 2) once a thread has died its id is never reused for new threads again. Instead each new 
+		//    thread gets an id which is the currently highest id + 1.
+
+		System.out.println("udpating threads");
+		ThreadInfo[] threadInfos = this.getRubyDebuggerProxy().readThreads();
+		RubyThread[] updatedThreads = new RubyThread[threadInfos.length];
+		int threadIndex = 0;
+		for (int i = 0; i < threadInfos.length; i++) {
+			while (threadIndex < threads.length && threadInfos[i].getId() != threads[threadIndex].getId()) {
+				// step over dead threads, which do not occur in threadInfos anymore
+				threadIndex += 1;
+			}
+			if (threadIndex == threads.length) {
+				updatedThreads[i] = new RubyThread(this, threadInfos[i].getId());
+			} else {
+				updatedThreads[i] = threads[threadIndex];
+			}
+		}
+		threads = updatedThreads;
+		DebugEvent ev = new DebugEvent(this, DebugEvent.CHANGE);
+		DebugPlugin.getDefault().fireDebugEventSet(new DebugEvent[] { ev });
+
+	}
+
+	protected RubyThread getThreadById(int id) {
+		for (int i = 0; i < threads.length; i++) {
+			if (threads[i].getId() == id) {
+				return threads[i];
+			}
+		}
+		return null;
+	}
+
+	public void suspensionOccurred(SuspensionPoint suspensionPoint) {
+		this.updateThreads();
+		RubyThread thread = this.getThreadById(suspensionPoint.getThreadId());
+		if (thread == null) {
+			RdtDebugCorePlugin.log(IStatus.ERROR, "Thread with id " + suspensionPoint.getThreadId() + " was not found");
+			return;
+		}
+		thread.doSuspend(suspensionPoint);
+	}
+
+	public IThread[] getThreads() {
+		return threads;
+	}
+
 	public boolean hasThreads() throws DebugException {
 		return threads.length > 0;
 	}
 
-	/**
-	 * @see org.eclipse.debug.core.model.IDebugTarget#getName()
-	 */
 	public String getName() throws DebugException {
 		return "Ruby";
 	}
 
-	/**
-	 * @see org.eclipse.debug.core.model.IDebugTarget#supportsBreakpoint(IBreakpoint)
-	 */
 	public boolean supportsBreakpoint(IBreakpoint arg0) {
 		return false;
 	}
 
-	/**
-	 * @see org.eclipse.debug.core.model.IDebugElement#getModelIdentifier()
-	 */
 	public String getModelIdentifier() {
 		return MODEL_IDENTIFIER;
 	}
 
-	/**
-	 * @see org.eclipse.debug.core.model.IDebugElement#getDebugTarget()
-	 */
 	public IDebugTarget getDebugTarget() {
 		return this;
 	}
 
-	/**
-	 * @see org.eclipse.debug.core.model.IDebugElement#getLaunch()
-	 */
 	public ILaunch getLaunch() {
 		return launch;
 	}
 
-	/**
-	 * @see org.eclipse.debug.core.model.ITerminate#canTerminate()
-	 */
 	public boolean canTerminate() {
 		return !isTerminated;
 	}
 
-	/**
-	 * @see org.eclipse.debug.core.model.ITerminate#isTerminated()
-	 */
 	public boolean isTerminated() {
 		return isTerminated;
 	}
 
-	/**
-	 * @see org.eclipse.debug.core.model.ITerminate#terminate()
-	 */
-	public void terminate(){
-		/*
-		for(int i = 0 ; i< threads.length ; i++) {
-			threads[i].terminate() ;	
-		}*/
-		threads = new IThread[0] ;
-		isTerminated = true ;		
+	public void terminate() {
+		this.threads = new RubyThread[0] ;
+		isTerminated = true;
 	}
 
-	/**
-	 * @see org.eclipse.debug.core.model.ISuspendResume#canResume()
-	 */
 	public boolean canResume() {
 		return false;
 	}
 
-	/**
-	 * @see org.eclipse.debug.core.model.ISuspendResume#canSuspend()
-	 */
 	public boolean canSuspend() {
 		return false;
 	}
 
-	/**
-	 * @see org.eclipse.debug.core.model.ISuspendResume#isSuspended()
-	 */
 	public boolean isSuspended() {
 		return false;
 	}
 
-	/**
-	 * @see org.eclipse.debug.core.model.ISuspendResume#resume()
-	 */
 	public void resume() throws DebugException {
 	}
 
-	/**
-	 * @see org.eclipse.debug.core.model.ISuspendResume#suspend()
-	 */
 	public void suspend() throws DebugException {
 	}
 
-	/**
-	 * @see org.eclipse.debug.core.IBreakpointListener#breakpointAdded(IBreakpoint)
-	 */
 	public void breakpointAdded(IBreakpoint arg0) {
+		System.out.println("Added breakpoint.") ;
 	}
 
-	/**
-	 * @see org.eclipse.debug.core.IBreakpointListener#breakpointRemoved(IBreakpoint, IMarkerDelta)
-	 */
 	public void breakpointRemoved(IBreakpoint arg0, IMarkerDelta arg1) {
 	}
 
-	/**
-	 * @see org.eclipse.debug.core.IBreakpointListener#breakpointChanged(IBreakpoint, IMarkerDelta)
-	 */
 	public void breakpointChanged(IBreakpoint arg0, IMarkerDelta arg1) {
 	}
 
-	/**
-	 * @see org.eclipse.debug.core.model.IDisconnect#canDisconnect()
-	 */
 	public boolean canDisconnect() {
 		return false;
 	}
 
-	/**
-	 * @see org.eclipse.debug.core.model.IDisconnect#disconnect()
-	 */
 	public void disconnect() throws DebugException {
 	}
 
-	/**
-	 * @see org.eclipse.debug.core.model.IDisconnect#isDisconnected()
-	 */
 	public boolean isDisconnected() {
 		return false;
 	}
 
-	/**
-	 * @see org.eclipse.debug.core.model.IMemoryBlockRetrieval#supportsStorageRetrieval()
-	 */
 	public boolean supportsStorageRetrieval() {
 		return false;
 	}
 
-	/**
-	 * @see org.eclipse.debug.core.model.IMemoryBlockRetrieval#getMemoryBlock(long, long)
-	 */
-	public IMemoryBlock getMemoryBlock(long arg0, long arg1)
-		throws DebugException {
+	public IMemoryBlock getMemoryBlock(long arg0, long arg1) throws DebugException {
 		return null;
 	}
 
-	/**
-	 * @see org.eclipse.core.runtime.IAdaptable#getAdapter(Class)
-	 */
 	public Object getAdapter(Class arg0) {
 		return null;
 	}
 
-	/**
-	 * Returns the process.
-	 * @return IProcess
-	 */
 	public IProcess getProcess() {
 		return process;
 	}
 
-	/**
-	 * Sets the process.
-	 * @param process The process to set
-	 */
 	public void setProcess(IProcess process) {
 		this.process = process;
 	}
 
-
-
-	/**
-	 * Returns the rubyDebuggerProxy.
-	 * @return RubyDebuggerProxy
-	 */
 	public RubyDebuggerProxy getRubyDebuggerProxy() {
 		return rubyDebuggerProxy;
 	}
 
-	/**
-	 * Sets the rubyDebuggerProxy.
-	 * @param rubyDebuggerProxy The rubyDebuggerProxy to set
-	 */
 	public void setRubyDebuggerProxy(RubyDebuggerProxy rubyDebuggerProxy) {
 		this.rubyDebuggerProxy = rubyDebuggerProxy;
 	}

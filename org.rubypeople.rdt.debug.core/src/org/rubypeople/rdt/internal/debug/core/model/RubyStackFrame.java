@@ -137,7 +137,7 @@ public class RubyStackFrame implements IStackFrame {
 			return;
 		}
 		if (!suspension.isStep()) {
-			((RubyThread) this.getThread()).doSuspend(suspension) ;
+			((RubyDebugTarget) this.getDebugTarget()).suspensionOccurred(suspension) ;
 			return ;
 		}
 		StepSuspensionPoint stepSuspension = (StepSuspensionPoint) suspension ;

@@ -9,24 +9,25 @@ import org.rubypeople.rdt.internal.debug.core.SuspensionPoint;
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
 
-/**
- * @author Administrator
- *
- * To change this generated comment edit the template variable "typecomment":
- * Window>Preferences>Java>Templates.
- * To enable and disable the creation of type comments go to
- * Window>Preferences>Java>Code Generation.
- */
+
 public class SuspensionReader extends XmlStreamReader {
 	private SuspensionPoint suspensionPoint;
 
-	public SuspensionPoint readSuspension(XmlPullParser xpp) throws XmlPullParserException, IOException, XmlStreamReaderException  {
-		this.readElement(xpp);
+	public SuspensionReader(XmlPullParser xpp) {
+		super(xpp);
+	}
+
+	public SuspensionReader(AbstractReadStrategy readStrategy) {
+		super(readStrategy);
+	}
+
+	public SuspensionPoint readSuspension() throws XmlPullParserException, IOException, XmlStreamReaderException  {		
+		this.read();
 		return suspensionPoint;
 	}
 
 
-	protected void processStartElement(XmlPullParser xpp) throws XmlStreamReaderException {
+	protected boolean processStartElement(XmlPullParser xpp) throws XmlStreamReaderException {
 		String name = xpp.getName();
 		if (name.equals("breakpoint")) {
 			suspensionPoint = new BreakpointSuspensionPoint();
@@ -43,10 +44,12 @@ public class SuspensionReader extends XmlStreamReader {
 			suspensionPoint = stepPoint ;	
 		}
 		else {
-			throw new XmlStreamReaderException("Error while reading suspension point. Unexpected element: " + name) ;	
+			return false ;
 		}
 		suspensionPoint.setLine(Integer.parseInt(xpp.getAttributeValue("", "line")));
 		suspensionPoint.setFile(xpp.getAttributeValue("", "file"));
+		suspensionPoint.setThreadId(Integer.parseInt(xpp.getAttributeValue("", "threadId"))) ;
+		return true ;
 	}
 
 

@@ -3,6 +3,7 @@ package org.rubypeople.rdt.internal.debug.core;
 public abstract class SuspensionPoint {
 	private String file ;
 	private int line ;
+	private int threadId ;
 	
 	public SuspensionPoint() {
 		
@@ -37,5 +38,13 @@ public abstract class SuspensionPoint {
 	public abstract boolean isException() ;
 	public abstract boolean isStep() ;
 	public abstract boolean isBreakpoint() ;
+
+	public int getThreadId() {
+		return threadId;
+	}
+
+	public void setThreadId(int threadId) {
+		this.threadId = threadId;
+	}
 
 }

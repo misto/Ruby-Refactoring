@@ -19,7 +19,7 @@ ECLIPSE_CREATE_SOCKET = true
 # ECLIPSE_VERBOSE prints the communication between eclipse and ruby debugger
 # on stderr. If you have started a eclipse debug session (and use default preferences for
 # colors of streams), the communication will be printed in red letters to the eclipse console.
-ECLIPSE_VERBOSE = false
+ECLIPSE_VERBOSE = true
 
 
 class PrinterMultiplexer
@@ -71,20 +71,24 @@ class XmlPrinter
   end
 
   def printBreakpoint(n, debugFuncName, file, pos)
-    out("<breakpoint file=\"%s\" line=\"%s\"/>", file, pos) 	      
+    out("<breakpoint file=\"%s\" line=\"%s\" threadId=\"%s\"/>", file, pos, DEBUGGER__.get_thread_num()) 	      
   end
 
   def printException(file, pos, exception)
-    out("<exception file=\"%s\" line=\"%s\" type=\"%s\" message=\"%s\"/>", file, pos, exception.type, CGI.escapeHTML(exception.to_s)) 	      
+    out("<exception file=\"%s\" line=\"%s\" type=\"%s\" message=\"%s\" threadId=\"%s\"/>", file, pos, exception.type, CGI.escapeHTML(exception.to_s), DEBUGGER__.get_thread_num()) 	      
   end
 
   def printStepEnd(file, line, framesCount)
-    out("<suspended file=\"%s\" line=\"%s\" frames=\"%s\"/>", file, line, framesCount)    
+    out("<suspended file=\"%s\" line=\"%s\" frames=\"%s\" threadId=\"%s\"/>", file, line, framesCount, DEBUGGER__.get_thread_num())    
   end
 
   def printFrame(pos, n, file, line, id)
     out("<frame no=\"%s\" file=\"%s\" line=\"%s\"/>", n, file, line)
-   end
+  end
+  
+  def printThread(num, thread)      
+      out("<thread id=\"%s\" status=\"%s\"/>", num, thread.status) ;
+  end  
   
   def debug(*params)
     if ECLIPSE_VERBOSE then
