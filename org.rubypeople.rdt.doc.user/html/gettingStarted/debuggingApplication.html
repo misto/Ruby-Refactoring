@@ -1,0 +1,85 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+  <title>Preparing the workbench</title>
+  <link rel="stylesheet" href="../book.css" charset="ISO-8859-1"
+ type="text/css">
+  <meta http-equiv="Content-Type"
+ content="text/html; charset=ISO-8859-1">
+  <meta http-equiv="Content-Style-Type" content="text/css">
+</head>
+<body>
+<h1> Prerequisites </h1>
+<p> If you can debug your ruby application depends on the version of the
+ruby interpreter you are using: </p>
+<ul>
+  <li><b>windows</b>. Only 1.6.8 (mswin32) works. 1.6.7 (mswin32) is
+not sufficient. 1.8.0 is not yet supported. Other distributions than
+mswin32 have not been tested. </li>
+  <li><b>linux</b>.1.6.7 and 1.6.8 have been tested and work. 1.8.0 is
+not yet supported. </li>
+</ul>
+<h1>Debugging your Application</h1>
+<ol>
+  <li>Open your ruby file and set a breakpoint like you would set a
+breakpoint in a java file</li>
+  <li>Select <b>Run &gt; Debug As &gt; Ruby Application.</b> The Debug
+perspective will open:<br>
+    <img src="../../images/debug.png" title="" alt="debug screenshot"
+ style="width: 788px; height: 540px;"> </li>
+  <li> In the launch view use <b>step into, step over, step return</b>
+to step through the code. Use the <span style="font-weight: bold;">resume
+button </span>to resume the application. </li>
+  <li> In the variable view:
+    <ul>
+      <li>Press <b>Show Type Names</b> to show the type of each variable</li>
+      <li>Check <span style="font-weight: bold;">Show Constants</span>
+to display constants, check <span style="font-weight: bold;">Show Class
+Variables</span> to display class variables<br>
+      </li>
+    </ul>
+In the screenshot above the java debug actions are disabled, so that
+only the ruby debug commands <b>Show Constants</b> and <b>Show Class
+Variables</b> appear. If you want to disable/enable either ruby or java
+debug actions, go to<b>Window &gt; Preferences &gt; Debug &gt; Debug
+Action Groups</b> and select the appropriate debug actions. </li>
+</ol>
+<h1>Known limitations</h1>
+<p>The ruby debugger is still under development and there are some
+limitations, which must be considered when debugging your application:<br>
+<br>
+</p>
+<ul>
+  <li>In order to get the debug information about the running program,
+eclipse starts a ruby debugger before       the execution of your
+application and talks to that ruby debugger via socket. Currently this
+socket is       set to 1098 and if this socket is bound already
+debugging is not possible. (The java debugger searches       for a free
+socket before; that behaviour should be implemented for the ruby
+debugger as well)</li>
+  <li>threads are not refreshed regularly, i.e. you do not see the
+threads your application creates before a       breakpoint (or exception
+or end of step) is reached</li>
+  <li>Only one ruby program can be debugged concurrently (there is a
+socket bind exception if you try to debug more than    on ruby program
+at the same time)</li>
+  <li>breakpoints are not saved when eclipse is closed</li>
+</ul>
+<h1>Writing Bug Reports</h1>
+<p>In order to provide useful information in case of errors, you should
+turn on verbose mode for the ruby debugger:</p>
+<ul>
+  <li>open file
+ECLIPSE_HOME/plugins/org.rubypeople.rdt.launching/ruby/eclipseDebug.rb</li>
+  <li>set ECLIPSE_VERBOSE = true</li>
+  <li>save file</li>
+  <li>After you started debugging, the console shows additional
+information (appears red, if stderr is printed red): <img
+ src="../../images/verboseConsole.png" title=""
+ alt="verbose debug information in console"
+ style="width: 758px; height: 231px;"></li>
+  <li>go to <a href="http://sourceforge.net/projects/rubyeclipse">http://sourceforge.net/projects/rubyeclipse</a>
+and add the console input to your bug report.</li>
+</ul>
+</body>
+</html>
