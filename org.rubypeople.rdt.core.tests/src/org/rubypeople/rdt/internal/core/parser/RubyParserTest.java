@@ -131,9 +131,9 @@ public class RubyParserTest extends TestCase {
 		RubyClass bob = script.getClass("Bob");
 		assertEquals(1, bob.getElementCount());
 		assertTrue(bob.contains(new RubyInstanceVariable("name", 10)));
-		assertNotNull(bob.getElement("name"));
-		assertEquals(10, bob.getElement("name").getStart());
-		assertEquals(14, bob.getElement("name").getEnd());
+		assertNotNull(bob.getElement("@name"));
+		assertEquals(10, bob.getElement("@name").getStart());
+		assertEquals(14, bob.getElement("@name").getEnd());
 	}
 
 	public void testRecognizesClassVariable() throws Exception {
@@ -145,9 +145,9 @@ public class RubyParserTest extends TestCase {
 		RubyClass bob = script.getClass("Bob");
 		assertEquals(1, bob.getElementCount());
 		assertTrue(bob.contains(new RubyClassVariable("name", 10)));
-		assertNotNull(bob.getElement("name"));
-		assertEquals(11, bob.getElement("name").getStart());
-		assertEquals(15, bob.getElement("name").getEnd());
+		assertNotNull(bob.getElement("@@name"));
+		assertEquals(11, bob.getElement("@@name").getStart());
+		assertEquals(15, bob.getElement("@@name").getEnd());
 	}
 
 	public void testRecognizesGlobal() throws Exception {
@@ -157,9 +157,9 @@ public class RubyParserTest extends TestCase {
 		assertEquals(6, script.getClass("Bob").getStart());
 		assertEquals(25, script.getClass("Bob").getEnd());
 		assertTrue(script.contains(new RubyGlobal("name", 10)));
-		assertNotNull(script.getElement("name"));
-		assertEquals(10, script.getElement("name").getStart());
-		assertEquals(14, script.getElement("name").getEnd());
+		assertNotNull(script.getElement("$name"));
+		assertEquals(10, script.getElement("$name").getStart());
+		assertEquals(14, script.getElement("$name").getEnd());
 	}
 	
 	public void testRecognizesIfBlock() throws Exception {
@@ -299,7 +299,7 @@ public class RubyParserTest extends TestCase {
 		assertEquals(23, script.getModule("Bob").getEnd());
 		RubyModule bob = script.getModule("Bob");
 		assertEquals(0, bob.getElementCount());
-		assertNull(bob.getElement("count"));
+		assertNull(bob.getElement("@count"));
 	}
 	
 	public void testPoundSymbolIgnoredInSideString() throws Exception {
@@ -309,8 +309,8 @@ public class RubyParserTest extends TestCase {
 		assertEquals(35, script.getModule("Bob").getEnd());
 		RubyModule bob = script.getModule("Bob");
 		assertEquals(1, bob.getElementCount());
-		assertNotNull(bob.getElement("count"));
-		assertEquals(28, bob.getElement("count").getStart());
+		assertNotNull(bob.getElement("@count"));
+		assertEquals(28, bob.getElement("@count").getStart());
 	}
 	
 	public void testRecognizesWhileBlock() throws Exception {
@@ -380,7 +380,7 @@ public class RubyParserTest extends TestCase {
 		assertEquals(34, script.getClass("Bob").getEnd());
 		RubyClass bob = script.getClass("Bob");
 		assertEquals(2, bob.getElementCount() );
-		assertNotNull(bob.getElement("var"));
+		assertNotNull(bob.getElement("@var"));
 	}
 	
 	public void testInstanceVariablesBubblesUpToModule() throws Exception {
@@ -390,7 +390,7 @@ public class RubyParserTest extends TestCase {
 		assertEquals(35, script.getModule("Bob").getEnd());
 		RubyModule bob = script.getModule("Bob");
 		assertEquals(2, bob.getElementCount() );
-		assertNotNull(bob.getElement("var"));
+		assertNotNull(bob.getElement("@var"));
 	}
 	
 	public void testMethodDefaultsToPublic() throws Exception {
@@ -411,8 +411,8 @@ public class RubyParserTest extends TestCase {
 		assertTrue(script.contains(new RubyModule("Bob", 7)));
 		RubyModule bob = script.getModule("Bob");
 		assertEquals(1, bob.getElementCount() );
-		assertNotNull( bob.getElement("var") );
-		RubyInstanceVariable method = (RubyInstanceVariable) bob.getElement("var");
+		assertNotNull( bob.getElement("@var") );
+		RubyInstanceVariable method = (RubyInstanceVariable) bob.getElement("@var");
 		assertEquals( RubyElement.PRIVATE, method.getAccess() );
 	}
 	
