@@ -5,6 +5,7 @@ import junit.framework.TestSuite;
 
 import org.rubypeople.rdt.core.tests.TS_CoreAllTests;
 import org.rubypeople.rdt.internal.debug.ui.tests.TS_DebugUiAllTests;
+import org.rubypeople.rdt.internal.launching.tests.TS_Launching;
 
 public class TS_RdtAllTests {
 
@@ -13,7 +14,7 @@ public class TS_RdtAllTests {
 		//$JUnit-BEGIN$
 		suite.addTest(TS_CoreAllTests.suite());
 		suite.addTest(TS_DebugUiAllTests.suite());
-//		suite.addTest(TS_LaunchingAllTests.suite());
+		suite.addTest(TS_Launching.suite());
 		//$JUnit-END$
 		return suite;
 	}

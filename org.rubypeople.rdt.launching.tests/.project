@@ -1,15 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <projectDescription>
-	<name>org.rubypeople.rdt.tests.all</name>
+	<name>org.rubypeople.rdt.launching.tests</name>
 	<comment></comment>
 	<projects>
 		<project>org.eclipse.core.boot</project>
+		<project>org.eclipse.core.resources</project>
 		<project>org.eclipse.core.runtime</project>
+		<project>org.eclipse.debug.core</project>
 		<project>org.junit</project>
-		<project>org.rubypeople.rdt.core.tests</project>
-		<project>org.rubypeople.rdt.debug.ui.tests</project>
-		<project>org.rubypeople.rdt.launching.tests</project>
-		<project>org.rubypeople.rdt.ui.tests</project>
+		<project>org.rubypeople.eclipse.shams</project>
+		<project>org.rubypeople.rdt.launching</project>
 	</projects>
 	<buildSpec>
 		<buildCommand>

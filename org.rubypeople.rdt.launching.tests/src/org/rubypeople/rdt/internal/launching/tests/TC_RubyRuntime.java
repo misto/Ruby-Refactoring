@@ -1,4 +1,4 @@
-package org.rubypeople.rdt.internal.launching;
+package org.rubypeople.rdt.internal.launching.tests;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
@@ -22,6 +22,8 @@ import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.QualifiedName;
+import org.rubypeople.rdt.internal.launching.RubyInterpreter;
+import org.rubypeople.rdt.internal.launching.RubyRuntime;
 
 public class TC_RubyRuntime extends TestCase {
 	protected StringWriter runtimeConfigurationWriter;

@@ -1,7 +1,8 @@
-package org.rubypeople.rdt.internal.launching;
+package org.rubypeople.rdt.internal.launching.tests;
 
 import junit.framework.TestCase;
 import org.eclipse.core.runtime.Path;
+import org.rubypeople.rdt.internal.launching.RubyInterpreter;
 
 public class TC_RubyInterpreter extends TestCase {
 
