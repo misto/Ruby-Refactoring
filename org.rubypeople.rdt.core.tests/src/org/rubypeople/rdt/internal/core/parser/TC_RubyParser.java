@@ -839,6 +839,18 @@ public class TC_RubyParser extends TestCase {
 		assertEquals(new Position(1, 0), script.getElement("Bob").getEnd());
 	}
 
+	public void testBug929637() throws Exception {
+		RubyScript script = RubyParser.parse("class Foo\ndef baz\n@things.each do | thing | \np thing\nend \nend\nend\n\nclass Bar\nend\n");
+	
+		assertEquals(2, script.getElementCount() );
+		assertTrue(script.contains(new RubyElement(RubyElement.CLASS, "Foo", 0, 6)));
+		assertEquals(new Position(0, 6), script.getElement("Foo").getStart());
+		assertEquals(new Position(6, 0), script.getElement("Foo").getEnd());
+		assertTrue(script.contains(new RubyElement(RubyElement.CLASS, "Bar", 8, 6)));
+		assertEquals(new Position(8, 6), script.getElement("Bar").getStart());
+		assertEquals(new Position(9, 0), script.getElement("Bar").getEnd());
+	}
+	
 	/**
 	 * @param parent
 	 * @param type
