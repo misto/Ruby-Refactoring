@@ -3,7 +3,6 @@ package org.rubypeople.rdt.internal.ui.text.ruby;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.eclipse.jface.text.rules.EndOfLineRule;
 import org.eclipse.jface.text.rules.IToken;
 import org.eclipse.jface.text.rules.SingleLineRule;
 import org.eclipse.jface.text.rules.WordRule;
@@ -27,12 +26,9 @@ public class RubyCodeScanner extends AbstractRubyScanner {
 		rules.add(new SingleLineRule("'", "'", token, '\\'));
 		rules.add(new SingleLineRule("/", "/", token, '\\'));
 		
-		token = getToken(RubyColorConstants.RUBY_SINGLE_LINE_COMMENT);
-		rules.add(new EndOfLineRule("#", token));
-		
-		token = getToken(RubyColorConstants.RUBY_DEFAULT);
-		setDefaultReturnToken(token);
-		WordRule wordRule = new WordRule(new RubyWordDetector(), token);
+		IToken defToken = getToken(RubyColorConstants.RUBY_DEFAULT);
+		setDefaultReturnToken(defToken);
+		WordRule wordRule = new WordRule(new RubyWordDetector(), defToken);
 		rules.add(wordRule);
 
 		token = getToken(RubyColorConstants.RUBY_KEYWORD);
