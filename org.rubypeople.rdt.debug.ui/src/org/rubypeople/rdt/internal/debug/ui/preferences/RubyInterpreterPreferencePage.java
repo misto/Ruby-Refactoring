@@ -122,8 +122,6 @@ public class RubyInterpreterPreferencePage extends PreferencePage implements IWo
 		Table table = new Table(composite, SWT.CHECK | SWT.BORDER | SWT.FULL_SELECTION);
 
 		GridData data = new GridData(GridData.FILL_BOTH);
-		data.widthHint = convertWidthInCharsToPixels(80);
-		data.heightHint = convertHeightInCharsToPixels(10);
 		table.setLayoutData(data);
 		table.setHeaderVisible(true);
 		table.setLinesVisible(false);
@@ -134,7 +132,6 @@ public class RubyInterpreterPreferencePage extends PreferencePage implements IWo
 
 		column = new TableColumn(table, SWT.NULL);
 		column.setText(RdtDebugUiMessages.getString("RubyInterpreterPreferencePage.rubyInterpreterTable.interpreterPath")); //$NON-NLS-1$
-		column.setWidth(350);
 
 		return table;
 	}
