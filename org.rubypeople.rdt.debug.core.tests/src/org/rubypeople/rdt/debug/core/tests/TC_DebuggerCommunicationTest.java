@@ -33,7 +33,7 @@ public class TC_DebuggerCommunicationTest extends TestCase {
 		//suite.addTest(new TC_DebuggerCommunicationTest("testConstantDefinedInBothClassAndSuperclass"));
 		
 		//suite.addTest(new TC_DebuggerCommunicationTest("testVariablesInFrames"));
-		suite.addTest(new TC_DebuggerCommunicationTest("testBreakpoint"));
+		//suite.addTest(new TC_DebuggerCommunicationTest("testBreakpoint"));
 		//suite.addTest(new TC_DebuggerCommunicationTest("testFramesWhenThreadSpawned"));
 		//suite.addTest(new TC_DebuggerCommunicationTest("testThreadIdsAndResume"));
 		//suite.addTest(new TC_DebuggerCommunicationTest("testThreadsAndFrames"));		
@@ -48,6 +48,8 @@ public class TC_DebuggerCommunicationTest extends TestCase {
 		//suite.addTest(new TC_DebuggerCommunicationTest("testStaticVariables"));		
 		//suite.addTest(new TC_DebuggerCommunicationTest("testSingletonStaticVariables"));							
 		//suite.addTest(new TC_DebuggerCommunicationTest("testVariableString"));	
+		 suite.addTest(new TC_DebuggerCommunicationTest("testInspect"));
+		 
 
 		return suite;
 
@@ -520,6 +522,30 @@ public class TC_DebuggerCommunicationTest extends TestCase {
 		assertEquals("nil", privateTestprivateTestVariable.getValue().getValueString());
 		assertTrue(!privateTestprivateTestVariable.getValue().hasVariables());
 		out.println("cont");
+	}
+	
+	public void testInspect() throws Exception {
+		createSocket(new String[] { "class Test", "def calc(a)", "a = a*2", "return a",  "end", "end", "test=Test.new()", "a=3", "test.calc(a)"  });
+		runToLine(4);
+		// test variable value in stack 1 (top stack frame)
+		out.println("v inspect 1 a*2");
+		RubyVariable[] variables = getVariableReader().readVariables(createStackFrame());
+		assertEquals("There is one variable returned.", 1, variables.length) ;
+		assertEquals("Result is 12", "12", variables[0].getValue().getValueString()) ;
+		// test variable value in stack 2 (caller stack)
+		out.println("v inspect 2 a*4");
+		variables = getVariableReader().readVariables(createStackFrame());
+		assertEquals("There is one variable returned.", 1, variables.length) ;
+		assertEquals("Result is 12", "12", variables[0].getValue().getValueString()) ;
+		// test more complex expression
+		out.println("v inspect 1 Test.new().calc(5)");
+		variables = getVariableReader().readVariables(createStackFrame());
+		assertEquals("There is one variable returned.", 1, variables.length) ;
+		assertEquals("Result is 10", "10", variables[0].getValue().getValueString()) ;
+		// test invalid expression 		
+		out.println("v inspect 1 whatsThat?");
+		variables = getVariableReader().readVariables(createStackFrame());
+		assertEquals("There are no variables returned.", 0, variables.length) ;
 	}
 
 	public void testStaticVariableInstanceNested() throws Exception {
