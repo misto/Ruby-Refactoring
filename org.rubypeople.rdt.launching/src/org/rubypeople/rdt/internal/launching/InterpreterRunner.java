@@ -24,6 +24,8 @@ public class InterpreterRunner {
 
 		Process nativeRubyProcess = null;
 		try {
+			RdtLaunchingPlugin.debug("Launching: " + commandLine) ;
+			RdtLaunchingPlugin.debug("Working Dir: " + workingDirectory) ;
 			nativeRubyProcess = configuration.getInterpreter().exec(commandLine, workingDirectory);
 		} catch (IOException e) {
 			throw new RuntimeException("Unable to execute interpreter: " + commandLine + workingDirectory);
@@ -68,9 +70,11 @@ public class InterpreterRunner {
 		addToLoadPath(loadPath, project.getProject());
 
 		Iterator referencedProjects = project.getReferencedProjects().iterator();
-		while (referencedProjects.hasNext())
+		while (referencedProjects.hasNext()) {
 			addToLoadPath(loadPath, (IProject) referencedProjects.next());
+		}
 
+		loadPath.append(" -I " + osDependentPath(configuration.getAbsoluteFileDirectory())) ;
 		return loadPath.toString();
 	}
 
