@@ -24,8 +24,6 @@ import org.eclipse.ui.texteditor.WorkbenchChainedTextFontFieldEditor;
 import org.eclipse.ui.views.contentoutline.IContentOutlinePage;
 import org.rubypeople.rdt.internal.core.RubyPlugin;
 import org.rubypeople.rdt.internal.core.parser.ParseError;
-import org.rubypeople.rdt.internal.core.parser.ParseException;
-import org.rubypeople.rdt.internal.core.parser.RubyParser;
 import org.rubypeople.rdt.internal.core.parser.ast.RubyElement;
 import org.rubypeople.rdt.internal.core.parser.ast.RubyScript;
 import org.rubypeople.rdt.internal.ui.RdtUiPlugin;
@@ -36,6 +34,7 @@ import org.rubypeople.rdt.internal.ui.rubyeditor.outline.RubyCore;
 import org.rubypeople.rdt.internal.ui.rubyeditor.outline.RubyModel;
 import org.rubypeople.rdt.internal.ui.text.RubySourceViewerConfiguration;
 import org.rubypeople.rdt.internal.ui.text.RubyTextTools;
+import org.rubypeople.rdt.ui.PreferenceConstants;
 
 public class RubyAbstractEditor extends ExtendedTextEditor {
 
@@ -84,18 +83,18 @@ public class RubyAbstractEditor extends ExtendedTextEditor {
 		return new IDocumentModelListener() {
 
 			public void documentModelChanged(final DocumentModelChangeEvent event) {
-				if (model == null) {
+				/*if (model == null) {
 					try {
 						RubyDocumentProvider provider = (RubyDocumentProvider) getDocumentProvider();
-						model = provider.getRubyModel(getEditorInput()) ;
+						model = RubyCore.getDefault().getRubyModel(getEditorInput()) ;
 						IDocument document = getDocumentProvider().getDocument(getEditorInput());
 						model.setScript(RubyParser.parse(document.get()));
 					} catch (ParseException e) {
 						RubyPlugin.log(e);
 					}
 				}
-				
-				if (event.getModel() == model) {
+				*/
+				if (event.getModel() == getRubyModel()) {
 					getSite().getShell().getDisplay().asyncExec(new Runnable() {
 
 						public void run() {
@@ -155,7 +154,9 @@ public class RubyAbstractEditor extends ExtendedTextEditor {
 		// happens if ruby file is external
 		return; }
 		resource.deleteMarkers(IMarker.PROBLEM, true, IResource.DEPTH_ONE);
-
+		if (!RdtUiPlugin.getDefault().getPreferenceStore().getBoolean(PreferenceConstants.CREATE_PARSER_ANNOTATIONS)) {
+			return ;
+		}
 		IDocument doc = getDocumentProvider().getDocument(getEditorInput());
 		Set errors = script.getParseErrors();
 		for (Iterator iter = errors.iterator(); iter.hasNext();) {
@@ -179,6 +180,13 @@ public class RubyAbstractEditor extends ExtendedTextEditor {
 			}
 
 		}
+	}
+	
+	public RubyModel getRubyModel() {
+		if (model == null) {
+			model = new RubyModel() ;
+		}
+		return model ;
 	}
 
 }
