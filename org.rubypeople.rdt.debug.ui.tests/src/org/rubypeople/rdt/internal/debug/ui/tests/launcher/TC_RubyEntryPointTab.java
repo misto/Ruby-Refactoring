@@ -1,10 +1,11 @@
-package org.rubypeople.rdt.internal.debug.ui.launcher;
+package org.rubypeople.rdt.internal.debug.ui.tests.launcher;
 
 import junit.framework.TestCase;
 
 import org.eclipse.debug.core.ILaunchConfigurationWorkingCopy;
 import org.rubypeople.eclipse.shams.debug.core.ShamLaunchConfigurationWorkingCopy;
 import org.rubypeople.rdt.internal.debug.ui.RdtDebugUiMessages;
+import org.rubypeople.rdt.internal.debug.ui.launcher.RubyEntryPointTab;
 import org.rubypeople.rdt.internal.launching.RubyLaunchConfigurationAttribute;
 
 public class TC_RubyEntryPointTab extends TestCase {

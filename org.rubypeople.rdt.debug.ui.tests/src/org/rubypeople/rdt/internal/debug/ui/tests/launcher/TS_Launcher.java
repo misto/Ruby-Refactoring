@@ -1,4 +1,4 @@
-package org.rubypeople.rdt.internal.debug.ui.launcher;
+package org.rubypeople.rdt.internal.debug.ui.tests.launcher;
 
 import junit.framework.Test;
 import junit.framework.TestSuite;

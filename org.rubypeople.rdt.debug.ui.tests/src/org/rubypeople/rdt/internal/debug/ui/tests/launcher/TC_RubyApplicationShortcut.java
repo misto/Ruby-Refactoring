@@ -1,4 +1,4 @@
-package org.rubypeople.rdt.internal.debug.ui.launcher;
+package org.rubypeople.rdt.internal.debug.ui.tests.launcher;
 
 import java.util.List;
 import java.util.Map;
@@ -20,6 +20,7 @@ import org.eclipse.jface.viewers.StructuredSelection;
 import org.rubypeople.eclipse.shams.debug.core.ShamLaunchConfigurationType;
 import org.rubypeople.eclipse.shams.debug.core.ShamLaunchManager;
 import org.rubypeople.eclipse.shams.resources.ShamFile;
+import org.rubypeople.rdt.internal.debug.ui.launcher.RubyApplicationShortcut;
 import org.rubypeople.rdt.internal.launching.RubyLaunchConfigurationAttribute;
 
 public class TC_RubyApplicationShortcut extends TestCase {

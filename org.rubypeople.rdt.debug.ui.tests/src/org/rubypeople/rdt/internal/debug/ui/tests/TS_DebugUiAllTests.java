@@ -1,6 +1,6 @@
-package org.rubypeople.rdt.debug.ui.tests.all;
+package org.rubypeople.rdt.internal.debug.ui.tests;
 
-import org.rubypeople.rdt.internal.debug.ui.launcher.TS_Launcher;
+import org.rubypeople.rdt.internal.debug.ui.tests.launcher.TS_Launcher;
 
 import junit.framework.Test;
 import junit.framework.TestSuite;

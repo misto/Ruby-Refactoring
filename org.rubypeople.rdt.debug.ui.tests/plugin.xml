@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<plugin
+   id="org.rubypeople.rdt.debug.ui.tests"
+   name="RDT Debug UI Tests"
+   version="0.2.1"
+   provider-name="RubyPeople Inc."
+   class="org.rubypeople.rdt.internal.debug.ui.tests.RdtDebugUiTestsPlugin">
+
+   <runtime>
+      <library name="rdtdebuguitests.jar"/>
+   </runtime>
+   <requires>
+      <import plugin="org.eclipse.core.resources"/>
+      <import plugin="org.eclipse.ui"/>
+      <import plugin="org.rubypeople.rdt.debug.ui"/>
+      <import plugin="org.rubypeople.rdt.launching"/>
+      <import plugin="org.rubypeople.rdt.ui"/>
+      <import plugin="org.rubypeople.rdt.core"/>
+      <import plugin="org.junit"/>
+      <import plugin="org.rubypeople.eclipse.shams"/>
+      <import plugin="org.eclipse.debug.core"/>
+      <import plugin="org.eclipse.debug.ui"/>
+   </requires>
+
+
+</plugin>
