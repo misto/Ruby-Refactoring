@@ -47,8 +47,9 @@ public class RubyOutlineContentProvider implements ITreeContentProvider, IDocume
 	}
 
 	public boolean hasChildren(Object element) {
-		IRubyElement rubyElement = (IRubyElement) element;
-		return rubyElement.hasElements();
+		if (element instanceof IRubyElement) { return ((IRubyElement) element).hasElements(); }
+		RubyPlugin.log("A non IRubyElement is being asked for children: " + element);
+		return false;
 	}
 
 	public Object[] getElements(Object inputElement) {
