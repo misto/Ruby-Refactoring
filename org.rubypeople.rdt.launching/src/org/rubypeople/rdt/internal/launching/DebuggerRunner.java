@@ -42,6 +42,6 @@ public class DebuggerRunner extends InterpreterRunner {
 	}
 
 	protected String renderLoadPath(InterpreterRunnerConfiguration configuration) {
-		return super.renderLoadPath(configuration) + " -I " + osDependentPath(this.getDirectoryOfRubyDebuggerFile().replace('/', File.separatorChar));
+		return super.renderLoadPath(configuration) + " -I " + osDependentPath(DebuggerRunner.getDirectoryOfRubyDebuggerFile().replace('/', File.separatorChar));
 	}
 }
