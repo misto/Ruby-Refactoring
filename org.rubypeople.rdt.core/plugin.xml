@@ -62,29 +62,36 @@
       </fileTypes>
    </extension>
 
-   <extension
-         id="problem"
-         name="Ruby Problem"
-         point="org.eclipse.core.resources.markers">
-      <super
-            type="org.eclipse.core.resources.problemmarker">
-      </super>
-      <super
-            type="org.eclipse.core.resources.textmarker">
-      </super>
-      <persistent
-            value="true">
-      </persistent>
-      <attribute
-            name="id">
-      </attribute>
-      <attribute
-            name="flags">
-      </attribute>
-      <attribute
-            name="arguments">
-      </attribute>
+<!-- =================================================================================== -->
+<!-- Extension: Ruby Problem                                                             -->
+<!-- =================================================================================== -->
+   <extension id="problem" point="org.eclipse.core.resources.markers" name="%rubyProblemName">
+      <super type="org.eclipse.core.resources.problemmarker" />
+      <super type="org.eclipse.core.resources.textmarker" />
+	  <persistent value="true"/>
+	  <attribute name="id"/>
+	  <attribute name="flags"/>
+	  <attribute name="arguments"/>
    </extension>
+   
+<!-- =================================================================================== -->
+<!-- Extension: Ruby Transient Problem                                                   -->
+<!-- =================================================================================== -->
+<extension id="transient_problem" point="org.eclipse.core.resources.markers" name="%transientRubyProblemName">
+	<super type="org.eclipse.core.resources.textmarker"/>
+	<persistent value="false"/>
+	<attribute name="id"/>
+	<attribute name="flags"/>
+	<attribute name="arguments"/>
+</extension>
+
+<!-- =================================================================================== -->
+<!-- Extension: Ruby Task                                                                -->
+<!-- =================================================================================== -->
+<extension id="task" name="%rubyTaskName" point="org.eclipse.core.resources.markers">
+    <super type="org.eclipse.core.resources.taskmarker"/> 
+    <persistent value="true"/>
+</extension>
 
 <!-- =================================================================================== -->
 <!-- Extension: Ruby Content Types                                                       -->

@@ -495,4 +495,22 @@
 		</factory>
 	</extension>
 
+  <extension
+         id="RubyDocumentSetupParticipant"
+         name="%rubyDocumentSetupParticipant"
+         point="org.eclipse.core.filebuffers.documentSetup">
+      <participant
+            extensions="rb,rbw"
+            class="org.rubypeople.rdt.internal.ui.rubyeditor.RubyDocumentSetupParticipant">
+      </participant>
+   </extension>
+   <extension
+         id="RubyDocumentFactory"
+         name="%rubyDocumentFactory"
+         point="org.eclipse.core.filebuffers.documentCreation">
+      <factory
+            extensions="rb,rbw"
+            class="org.rubypeople.rdt.internal.ui.rubyeditor.RubyDocumentFactory">
+      </factory>
+   </extension>
 </plugin>
