@@ -25,6 +25,10 @@ public class RubyCompletionProcessor implements IContentAssistProcessor {
 	protected RubyTextTools textTools;
 	protected IContextInformationValidator contextInformationValidator = new RubyContextInformationValidator();
 
+	private static String[] preDefinedGlobals = { "$!", "$@", "$_", "$.", "$&", "$n", "$~", "$=", "$/", "$\\", "$0", "$*", "$$", "$?", "$:"};
+	private static String[] globalContexts = { "error message", "position of an error occurrence", "latest read string by `gets'", "latest read number of line by interpreter", "latest matched string by the regexep.", "latest matched string by nth parentheses of regexp.", "data for latest matche for regexp", "whether or not case-sensitive in string matching", "input record separator", "output record separator", "the name of the ruby scpript file", "command line arguments for the ruby scpript",
+			"PID for ruby interpreter", "status of the latest executed child process", "array of paths that ruby interpreter searches for files"};
+
 	public RubyCompletionProcessor(RubyTextTools theTextTools) {
 		super();
 		textTools = theTextTools;
@@ -47,13 +51,41 @@ public class RubyCompletionProcessor implements IContentAssistProcessor {
 		for (int i = 0; i < completionProposals.size(); i++) {
 			String proposal = (String) completionProposals.get(i);
 			if (proposal.startsWith(prefix)) {
-				IContextInformation info = new ContextInformation(proposal, MessageFormat.format("{0} some context information.", new Object[] { proposal}));
+				String message;
+				if (isPredefinedGlobal(proposal)) {
+					message = "{0} " + getContext(proposal);
+				} else {
+					message = "{0}";
+				}
+				IContextInformation info = new ContextInformation(proposal, MessageFormat.format(message, new Object[] { proposal}));
 				possibleProposals.add(new CompletionProposal(proposal.substring(prefix.length(), proposal.length()), documentOffset, 0, proposal.length() - prefix.length(), null, proposal, info, MessageFormat.format("Ruby keyword: {0}", new Object[] { proposal})));
 			}
 		}
 		ICompletionProposal[] result = new ICompletionProposal[possibleProposals.size()];
 		possibleProposals.toArray(result);
 		return result;
+	}
+
+	/**
+	 * @param proposal
+	 * @return
+	 */
+	private String getContext(String proposal) {
+		for (int i = 0; i < preDefinedGlobals.length; i++) {
+			if (proposal.equals(preDefinedGlobals[i])) return globalContexts[i];
+		}
+		return "";
+	}
+
+	/**
+	 * @param proposal
+	 * @return
+	 */
+	private boolean isPredefinedGlobal(String proposal) {
+		for (int i = 0; i < preDefinedGlobals.length; i++) {
+			if (proposal.equals(preDefinedGlobals[i])) return true;
+		}
+		return false;
 	}
 
 	private List getDocumentsRubyElements(ITextViewer viewer) {
@@ -68,7 +100,10 @@ public class RubyCompletionProcessor implements IContentAssistProcessor {
 
 	protected String[] getDefaultProposals() {
 		if (proposals == null) {
-			proposals = textTools.getKeyWords();
+			String[] keywords = textTools.getKeyWords();
+			proposals = new String[keywords.length + preDefinedGlobals.length];
+			System.arraycopy(keywords, 0, proposals, 0, keywords.length);
+			System.arraycopy(preDefinedGlobals, 0, proposals, keywords.length, preDefinedGlobals.length);
 		}
 		return proposals;
 	}
