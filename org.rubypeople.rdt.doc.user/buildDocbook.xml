@@ -8,7 +8,6 @@
 
 	<target name="clean.docbook.generated">
 	    <delete file="toc.xml"/>
-	    <delete file="plugin.xml"/>
 	    <delete file="docbook.done"/>
 	    <delete dir="html"/>
 	</target>
