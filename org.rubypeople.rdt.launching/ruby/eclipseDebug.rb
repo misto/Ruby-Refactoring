@@ -39,10 +39,10 @@ class XmlPrinter
   end
 
   def out(*params)
+    debugIntern(false, *params)
     if @socket then
       @socket.printf(*params)
-    end
-    debugIntern(false, *params)
+    end    
   end
 
   def printXml(s, *params)
@@ -113,7 +113,6 @@ class XmlPrinter
       output = CGI.escapeHTML(output) if escape
       STDERR.print(output)
       STDERR.print("\n")
-      STDERR.flush
     end
   end
 end
@@ -813,7 +812,7 @@ class DEBUGGER__
     def excn_handle(file, line, id, binding)
       
       if $!.class <= SystemExit
-        stdout.printf "SystemExit at %s:%d: `%s' (%s)\n", file, line, $!, $!.class      
+        @printer.debug( "SystemExit at %s:%d: `%s' (%s)\n", file, line, $!, $!.class   )
         set_trace_func nil
         exit
       end
@@ -821,18 +820,11 @@ class DEBUGGER__
         @printer.printException(file, line, $!)
         fs = @frames.size
         tb = caller(0)[-fs..-1]
-        if tb
-          for i in tb
-            stdout.printf "\tfrom %s\n", i
-          end
-        end
         stopCurrentThread
         @frames[0] = [binding, file, line, id]
         debug_command(file, line, id, binding)
-
-      else
-        stdout.printf "%s:%d: `%s' (%s)\n", file, line, $!, $!.class
-      end
+      end     
+      
     end
 
     def trace_func(event, file, line, id, binding, klass)
@@ -1169,6 +1161,7 @@ class DEBUGGER__
   server = TCPServer.new('localhost', ECLIPSE_LISTEN_PORT)
   puts "ruby #{RUBY_VERSION} debugger listens on port #{ECLIPSE_LISTEN_PORT}"
   $stdout.flush
+  STDERR.sync = true ;
   @@socket = server.accept
   @@printer = XmlPrinter.new(@@socket)
   @@printer.debug("Socket connection established.")
