@@ -5,8 +5,7 @@
 			uses a real world scenario to show how the RDT can be leveraged in your work with ruby. 
 			As a prerequiste you need to get and install soap4r 1.5.2. Although it is included 
 			since ruby 1.8.1, you will need it because of the wsdl2ruby.rb file, which is not part 
-			of ruby 1.8.1 or later. Please note that for the debugging session on linux you need to 
-			use ruby 1.6. To start working on this cheat sheet, click the &quot;Click to 
+			of ruby 1.8.1 or later. To start working on this cheat sheet, click the &quot;Click to 
 			Begin&quot; button below. </description>
 	</intro>
 	<item href="/org.rubypeople.rdt.doc.user/html/ch01.html" title="Interpreter setup">
@@ -108,28 +107,33 @@
 			newly generated files: webServiceExampleDriver.rb and 
 			webServiceExampleServiceClient.rb. </description>
 	</item>
+	<item href="/org.rubypeople.rdt.doc.user/html/ch02s08.html" title="Check ruby version">
+		<description> Please note there are limitations in the ruby versions which are suitable for 
+			debugging. On Linux there is a restriction to ruby 1.6, on windows ruby 1.8.2 works 
+			fine but 1.8.1 does not. See help for more details. If your version of ruby 
+			does not meet these requirements, use &quot;Run->Run Ruby Application&quot; instead of 
+			&quot;Debug->Debug Ruby Application&quot; in the next step for starting the server. 
+			</description>
+	</item>	
 	<item href="/org.rubypeople.rdt.doc.user/html/ch02s08.html" title="Debug server">
-		<description> Open the editor for webServiceExampleServant.rb (by double-clicking it in the 
-			&quot;Ruby Resources&quot; view and set a breakpoint in the line which raises the 
-			NotImplementedError. A breakpoint can be set and removed either by double-clicking on 
-			the vertical bar at the left side of the editor or by using the context menu on that 
-			bar. Start the debugger with &quot;Debug->Debug Ruby Application&quot; from the context 
-			menu of webServiceExampleService.rb. Wait until you see a line similar to &quot;INFO -- 
-			app: WEBrick::HTTPServer#start: pid=2091 port=10080&quot; displayed in the console. 
+		<description>  Open the editor for 
+			webServiceExampleServant.rb (by double-clicking it in the &quot;Ruby Resources&quot; 
+			view) and set a breakpoint in the line which raises the NotImplementedError. A 
+			breakpoint can be set and removed either by double-clicking on the vertical bar at the 
+			left side of the editor or by using the context menu on that bar. Start the debugger 
+			with &quot;Debug->Debug Ruby Application&quot; from the context menu of 
+			webServiceExampleService.rb.
 			</description>
 	</item>
 	<item title="Run client" href="/org.rubypeople.rdt.doc.user/html/ch02s07.html">
 		<action pluginId="org.rubypeople.rdt.debug.ui" 
 			class="org.rubypeople.rdt.internal.debug.ui.cheatsheets.webservice.OpenRunConfigurationAction"/>
-		<description> Select webServiceExampleServiceClient.rb in the &quot;Ruby Resources&quot; 
-			view by single-clicking it or open the editor with webServiceExampleServiceClient.rb by 
-			double-clicking the file in the navigator. Use the &quot;Click to perform&quot; button 
-			or select &quot;Run->Run...&quot; from the main menu to open the run configuration 
-			dialog. Select &quot;Ruby Application&quot; and click &quot;New&quot;. Rename the newly 
-			created run configuration to &quot;run-client&quot; Because you have selected 
-			webServiceExampleServiceClient.rb before, it is automatically chosen as the file to 
-			execute. Go the Arguments Tab and add &quot;http://localhost:10080/&quot; as program 
-			argument. Click Run. </description>
+		<description> Use the &quot;Click to perform&quot; button or select &quot;Run->Run...&quot; 
+			from the main menu to open the run configuration dialog. Select &quot;Ruby 
+			Application&quot; and click &quot;New&quot;. Rename the newly created run configuration 
+			to &quot;run-client&quot; Select webServiceExampleServiceClient.rb as the file to be 
+			run with the &quot;Browse&quot; button. Go the Arguments Tab and add 
+			&quot;http://localhost:10080/&quot; as program argument. Click Run. </description>
 	</item>
 	<item href="/org.rubypeople.rdt.doc.user/html/ch02s08.html" title="Breakpoint hit">		
 		<description> After a while the clients request will trigger the breakpoint in the server 
