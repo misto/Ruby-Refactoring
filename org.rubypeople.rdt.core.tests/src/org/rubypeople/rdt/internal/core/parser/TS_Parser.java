@@ -9,7 +9,7 @@ public class TS_Parser {
 		TestSuite suite = new TestSuite("Test for org.rubypeople.rdt.core.tests.core.parser");
 		//$JUnit-BEGIN$
 		suite.addTest(new TestSuite(TC_RubyClass.class));
-		suite.addTest(new TestSuite(RubyParserTest.class));
+		suite.addTest(new TestSuite(TC_RubyParser.class));
 		//$JUnit-END$
 		return suite;
 	}
