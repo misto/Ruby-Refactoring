@@ -1,36 +1,46 @@
 package org.rubypeople.rdt.internal.ui.rubyeditor;
 
+import org.eclipse.jface.text.DocumentEvent;
+import org.eclipse.jface.text.IDocument;
+import org.eclipse.jface.text.IDocumentListener;
 import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.viewers.Viewer;
-import org.rubypeople.rdt.internal.core.parser.RubyParsedComponent;
+import org.rubypeople.rdt.internal.core.parser.RubyScript;
 
-public class RubyOutlineContentProvider implements ITreeContentProvider {
+public class RubyOutlineContentProvider implements ITreeContentProvider, IDocumentListener {
+	protected Viewer viewer;
+	
 	public Object[] getChildren(Object parentElement) {
-		return ((RubyParsedComponent)parentElement).getChildren().toArray();
+		return new Object[0];
 	}
 
 	public Object getParent(Object element) {
-		return new Object[] {element + "Parent"};
+		return null;
 	}
 
 	public boolean hasChildren(Object element) {
-		if (element instanceof RubyParsedComponent) {
-			RubyParsedComponent component = (RubyParsedComponent) element;
-			return component.getChildren().size() > 0;
-		}
-
 		return false;
 	}
 
 	public Object[] getElements(Object inputElement) {
-//		FileEditorInput input = (FileEditorInput)inputElement;
-//		RubyParsedComponent root = new RubyParser().getComponentHierarchy(input.getFile());
-		return new Object[] { "Outline" };
+		return new RubyScript(((IDocument) inputElement).get()).getElements();
 	}
 
 	public void dispose() {
 	}
 
 	public void inputChanged(Viewer viewer, Object oldInput, Object newInput) {
+		this.viewer = viewer;
+		if (oldInput != null) 
+			((IDocument)oldInput).removeDocumentListener(this);
+		if (newInput != null) 
+			((IDocument)newInput).addDocumentListener(this);
+	}
+
+	public void documentAboutToBeChanged(DocumentEvent event) {
+	}
+
+	public void documentChanged(DocumentEvent event) {
+		viewer.refresh();
 	}
 }

@@ -1,18 +1,13 @@
 package org.rubypeople.rdt.internal.ui.rubyeditor;
 
-import org.eclipse.core.internal.events.ResourceChangeEvent;
-import org.eclipse.core.runtime.CoreException;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.jface.text.ITextOperationTarget;
-import org.eclipse.jface.text.source.ISourceViewer;
 import org.eclipse.jface.util.PropertyChangeEvent;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
-import org.eclipse.jface.viewers.StructuredSelection;
-import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.editors.text.TextEditor;
 import org.eclipse.ui.texteditor.ContentAssistAction;
 import org.eclipse.ui.texteditor.DefaultRangeIndicator;
@@ -20,7 +15,6 @@ import org.eclipse.ui.texteditor.ITextEditorActionConstants;
 import org.eclipse.ui.texteditor.TextOperationAction;
 import org.eclipse.ui.texteditor.WorkbenchChainedTextFontFieldEditor;
 import org.eclipse.ui.views.contentoutline.IContentOutlinePage;
-import org.rubypeople.rdt.internal.core.parser.RubyParsedComponent;
 import org.rubypeople.rdt.internal.ui.RdtUiMessages;
 import org.rubypeople.rdt.internal.ui.RdtUiPlugin;
 import org.rubypeople.rdt.internal.ui.text.RubySourceViewerConfiguration;
@@ -85,32 +79,20 @@ public class RubyEditor extends TextEditor {
 	}
 	
 	protected Object createRubyOutlinePage() {
-		outlinePage = new RubyContentOutlinePage(this.getEditorInput());
+		outlinePage = new RubyContentOutlinePage(getSourceViewer().getDocument());
 		outlinePage.addSelectionChangedListener(new ISelectionChangedListener() {
 			public void selectionChanged(SelectionChangedEvent event) {
 				handleOutlinePageSelection(event);
 			}
 		});
-		RdtUiPlugin.getWorkspace().addResourceChangeListener(outlinePage, ResourceChangeEvent.POST_CHANGE);
 		return outlinePage;
 	}
 
 	protected void handleOutlinePageSelection(SelectionChangedEvent event) {
-		StructuredSelection selection = (StructuredSelection) event.getSelection();
-		RubyParsedComponent rubySelection = (RubyParsedComponent) selection.getFirstElement();
-		ISourceViewer viewer = getSourceViewer();
-		viewer.setRangeIndication(rubySelection.offset(), rubySelection.length(), true);
-		viewer.setSelectedRange(rubySelection.nameOffset(), rubySelection.nameLength());
+		// todo handle outline selection
 	}
 
-	protected void doSetInput(IEditorInput input) throws CoreException {
-		super.doSetInput(input);
-		if (outlinePage != null)
-			outlinePage.setEditorInput(input);
-	}
-	
 	protected boolean affectsTextPresentation(PropertyChangeEvent event) {
 		return textTools.affectsTextPresentation(event) ;
 	}
-
 }
