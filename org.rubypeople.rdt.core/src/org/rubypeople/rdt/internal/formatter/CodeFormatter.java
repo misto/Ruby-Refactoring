@@ -134,13 +134,13 @@ public class CodeFormatter {
 		try {
 			pat =
 				Pattern.compile(
-					"(^|[\\s])"
+					"(^|[\\s]|;)"
 						+ BLOCK_BEGIN_RE
 						+ "($|[\\s]|" + DELIMITER_RE + ")|(^|[\\s])"
 						+ BLOCK_MID_RE
-						+ "($|[\\s]|" + DELIMITER_RE + ")|(^|[\\s])"
+						+ "($|[\\s]|" + DELIMITER_RE + ")|(^|[\\s]|;)"
 						+ BLOCK_END_RE
-						+ "($|[\\s])|"
+						+ "($|[\\s]|;)|"
 						+ LITERAL_BEGIN_RE
 						+ "|"
 						+ DELIMITER_RE);

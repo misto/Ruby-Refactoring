@@ -262,6 +262,47 @@ test
 </formatted>
 </part>
 
+<part>
+<assertionMessage>End with following semicolon</assertionMessage>
+<unformatted>
+class A
+end;
+</unformatted>  
+<formatted>
+class A
+end;
+</formatted>
+</part>
+
+<part>
+<assertionMessage>Two ends in a row</assertionMessage>
+<unformatted>
+class A
+def a
+end;end
+class B end;
+</unformatted>  
+<formatted>
+class A
+**def a
+**end;end
+class B end;
+</formatted>
+</part>
+
+<part>
+<assertionMessage>Semicolon before start</assertionMessage>
+<unformatted>
+def a;if 0 then puts "X" 
+end; 
+end;
+</unformatted>  
+<formatted>
+def a;if 0 then puts "X" 
+**end; 
+end;
+</formatted>
+</part>
 </test>  
 
 
