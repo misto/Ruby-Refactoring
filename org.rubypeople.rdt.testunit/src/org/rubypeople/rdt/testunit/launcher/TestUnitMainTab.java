@@ -24,7 +24,9 @@
  */
 package org.rubypeople.rdt.testunit.launcher;
 
+import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
+import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.debug.core.ILaunchConfiguration;
 import org.eclipse.debug.core.ILaunchConfigurationWorkingCopy;
@@ -38,8 +40,12 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.ui.dialogs.ElementListSelectionDialog;
+import org.rubypeople.rdt.internal.core.RubyCore;
+import org.rubypeople.rdt.internal.core.parser.ast.RubyElement;
 import org.rubypeople.rdt.internal.debug.ui.RdtDebugUiMessages;
 import org.rubypeople.rdt.internal.launching.InterpreterRunnerConfiguration;
+import org.rubypeople.rdt.internal.launching.RubyLaunchConfigurationAttribute;
+import org.rubypeople.rdt.internal.ui.RdtUiPlugin;
 import org.rubypeople.rdt.internal.ui.utils.RubyFileSelector;
 import org.rubypeople.rdt.internal.ui.utils.RubyProjectSelector;
 import org.rubypeople.rdt.testunit.TestunitPlugin;
@@ -69,7 +75,6 @@ public class TestUnitMainTab extends AbstractLaunchConfigurationTab implements I
 	 * @see org.eclipse.debug.ui.ILaunchConfigurationTab#createControl(org.eclipse.swt.widgets.Composite)
 	 */
 	public void createControl(Composite parent) {
-		System.out.println("in createControl");
 		Composite composite = createPageRoot(parent);
 
 		new Label(composite, SWT.NONE).setText(RdtDebugUiMessages.getString("LaunchConfigurationTab.RubyEntryPoint.projectLabel"));
@@ -82,9 +87,7 @@ public class TestUnitMainTab extends AbstractLaunchConfigurationTab implements I
 				updateLaunchConfigurationDialog();
 				String newProject = projectSelector.getSelectionText();
 				if (!newProject.equals(lastProject)) {
-					System.out.println("Clearing file selector text.");
 					fileSelector.setSelectionText("");
-					System.out.println("Clearing class selector text.");
 					classSelector.setSelectionText("");
 				}
 				lastProject = newProject;
@@ -101,13 +104,12 @@ public class TestUnitMainTab extends AbstractLaunchConfigurationTab implements I
 				updateLaunchConfigurationDialog();
 				String newFile = fileSelector.getSelectionText();
 				if (!newFile.equals(lastFile)) {
-					System.out.println("Clearing class selector text.");
 					classSelector.setSelectionText("");
 				}
 				lastFile = newFile;
 			}
 		});
-
+	
 		new Label(composite, SWT.NONE).setText(TestUnitMessages.getString("LaunchConfigurationTab.RubyEntryPoint.classLabel"));
 		classSelector = new RubyClassSelector(composite, fileSelector, projectSelector);
 		classSelector.setBrowseDialogMessage(TestUnitMessages.getString("LaunchConfigurationTab.RubyEntryPoint.classSelectorMessage"));
@@ -138,12 +140,28 @@ public class TestUnitMainTab extends AbstractLaunchConfigurationTab implements I
 	 * @see org.eclipse.debug.ui.ILaunchConfigurationTab#setDefaults(org.eclipse.debug.core.ILaunchConfigurationWorkingCopy)
 	 */
 	public void setDefaults(ILaunchConfigurationWorkingCopy configuration) {
-		configuration.setAttribute(TestUnitLaunchConfiguration.LAUNCH_CONTAINER_ATTR, "");
-		configuration.setAttribute(TestUnitLaunchConfiguration.TESTTYPE_ATTR, "");
-		configuration.setAttribute(TestUnitLaunchConfiguration.TESTNAME_ATTR, "");
-		// set hidden attribute
-		configuration.setAttribute(ILaunchConfiguration.ATTR_SOURCE_LOCATOR_ID, "org.rubypeople.rdt.debug.ui.rubySourceLocator");
-	}
+        IResource selectedResource = RdtUiPlugin.getDefault().getSelectedResource();
+        String projectName = "";
+        String fileName = "";
+        String type = "";
+        
+        if (RubyCore.isRubyFile(selectedResource)) {
+            projectName = selectedResource.getProject().getName();
+            fileName = selectedResource.getProjectRelativePath().toString();
+            RubyElement[] types = TestSearchEngine.findTests((IFile) selectedResource);
+            if (types.length > 0) {
+                type = types[0].getName();
+            }
+        }
+
+        configuration.setAttribute(RubyLaunchConfigurationAttribute.PROJECT_NAME, projectName);
+        configuration.setAttribute(TestUnitLaunchConfiguration.LAUNCH_CONTAINER_ATTR, fileName);
+        configuration.setAttribute(TestUnitLaunchConfiguration.TESTTYPE_ATTR, type);
+        configuration.setAttribute(TestUnitLaunchConfiguration.TESTNAME_ATTR, "");
+
+        // set hidden attribute
+        configuration.setAttribute(ILaunchConfiguration.ATTR_SOURCE_LOCATOR_ID, "org.rubypeople.rdt.debug.ui.rubySourceLocator");
+    }
 
 	/*
 	 * (non-Javadoc)
@@ -157,8 +175,12 @@ public class TestUnitMainTab extends AbstractLaunchConfigurationTab implements I
 			// validate the file exists and will eventually set the launch
 			// container to ""
 			InterpreterRunnerConfiguration config = new InterpreterRunnerConfiguration(configuration);
-			rubyProject = config.getProject().getProject();
-			projectSelector.setSelectionText(rubyProject.getName());
+			String projectName = "" ;
+			IProject project = config.getProject().getProject();
+			if (project != null) {
+			    projectName = project.getName();
+			}
+			projectSelector.setSelectionText(projectName);
 			fileSelector.setSelectionText(configuration.getAttribute(TestUnitLaunchConfiguration.LAUNCH_CONTAINER_ATTR, ""));
 			classSelector.setSelectionText(configuration.getAttribute(TestUnitLaunchConfiguration.TESTTYPE_ATTR, ""));
 		} catch (CoreException e) {
@@ -172,10 +194,8 @@ public class TestUnitMainTab extends AbstractLaunchConfigurationTab implements I
 	 * @see org.eclipse.debug.ui.ILaunchConfigurationTab#performApply(org.eclipse.debug.core.ILaunchConfigurationWorkingCopy)
 	 */
 	public void performApply(ILaunchConfigurationWorkingCopy configuration) {
-		String classText = classSelector.getValidatedSelectionText();
-		String launchContainer = fileSelector.getValidatedSelectionText();
-		configuration.setAttribute(TestUnitLaunchConfiguration.TESTTYPE_ATTR, classText);
-		configuration.setAttribute(TestUnitLaunchConfiguration.LAUNCH_CONTAINER_ATTR, launchContainer);
+		configuration.setAttribute(TestUnitLaunchConfiguration.TESTTYPE_ATTR, classSelector.getValidatedSelectionText());
+		configuration.setAttribute(TestUnitLaunchConfiguration.LAUNCH_CONTAINER_ATTR, fileSelector.getValidatedSelectionText());
 	}
 
 	/*
