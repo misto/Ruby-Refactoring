@@ -27,12 +27,15 @@
     <property name="rdt-folder" 
               value="${eclipse-home}/rdt_folder"/>
     <delete dir="${rdt-folder}" quiet="true"/>
-  	
+  	<echo message="RDT-RubyInterpreter: ${rdt.rubyInterpreter}"/>
+	<echo message="rdt-folder: ${rdt-folder}"/>
     <ant target="ui-test" antfile="${library-file}" dir="${eclipse-home}">
       <property name="data-dir" value="${rdt-folder}"/>
       <property name="plugin-name" value="${plugin-name}"/>
       <property name="classname" 
                 value="org.rubypeople.rdt.tests.all.TS_RdtAllTests"/>
+	  
+      <property name="vmargs" value="-Drdt.rubyInterpreter=${rdt.rubyInterpreter}"/>
     </ant>
     
   </target>
