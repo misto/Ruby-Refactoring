@@ -22,8 +22,6 @@ import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.PlatformUI;
-import org.eclipse.ui.internal.ide.AboutInfo;
-import org.eclipse.ui.internal.ide.dialogs.WelcomeEditorInput;
 import org.eclipse.ui.part.FileEditorInput;
 import org.rubypeople.rdt.internal.debug.ui.RdtDebugUiPlugin;
 import org.rubypeople.rdt.internal.debug.ui.RubySourceLocator;
@@ -181,17 +179,6 @@ public class TC_RubyApplicationShortcut extends TestCase {
 
 		String launchedFileName = configurations[0].getAttribute(RubyLaunchConfigurationAttribute.FILE_NAME, "");
 		assertEquals("folderOne/myFile.rb", launchedFileName);
-	}
-
-	public void testLaunchFromEditorWithNonRubyFile() throws Exception {
-		WelcomeEditorInput input = new WelcomeEditorInput(AboutInfo.readFeatureInfo("org.eclipse.platform", "3.0.0"));
-		IEditorPart welcomeEditor = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage().openEditor(input, "org.eclipse.ui.internal.ide.dialogs.WelcomeEditor");
-
-		shortcut.launch(welcomeEditor, ILaunchManager.RUN_MODE);
-
-		assertEquals("No configuration has been created", 0, this.getLaunchConfigurations().length);
-		assertEquals("No launch took place.", 0, ShamApplicationLaunchConfigurationDelegate.getLaunches());
-		assertTrue("The shortcut should must have logged a message.", shortcut.didLog());
 	}
 
 	public void testLaunchFromEditorWithRubyFile() throws Exception {
