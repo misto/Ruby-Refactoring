@@ -46,6 +46,7 @@ public class ParseRuleFactory {
 			return set;
 		}		
 		if (token.isType(RubyElement.METHOD)) {
+			set.add(new LowerCaseNameRule(token));
 			if (isDeclaration) {
 			set.add(new DuplicateDiscouragedRule(token, parent));
 			}
