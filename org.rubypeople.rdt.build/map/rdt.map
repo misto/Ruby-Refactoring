@@ -1,18 +1,26 @@
 !***************  RDT CONTRIBUTION  ******************************************************** 
+!* This script defines to use the cvs ext protocol to get the plugin projects. Therefore
+!* cvs must be configured to access cvs.sf.net with appropriate username and password
+!* when called with the ext method 
+!* The reason why we can not use pserver here is the update gap between ssh and pserver
+!* access. So, if the automatic build runs immediately (up to several hours) after
+!* files have been commited via ssh cvs access, it must also use ssh access. Otherwise
+!* some of the latest updates might be lost.
+!* Example for pserver root: :pserver:anonymous@cvs.sf.net:/cvsroot/rubyeclipse
 
 
-feature@org.rubypeople.rdt=HEAD,:pserver:anonymous@cvs.sf.net:/cvsroot/rubyeclipse,,org.rubypeople.rdt-feature
-!* feature@org.rubypeople.rdt=HEAD,:ext:egal:/cvsroot/rubyeclipse,,org.rubypeople.rdt-feature
+feature@org.rubypeople.rdt=HEAD,:ext:anything:/cvsroot/rubyeclipse,,org.rubypeople.rdt-feature
 
-plugin@org.kxml2=HEAD,:pserver:anonymous@cvs.sf.net:/cvsroot/rubyeclipse,
-plugin@org.rubypeople.rdt=HEAD,:pserver:anonymous@cvs.sf.net:/cvsroot/rubyeclipse,
-plugin@org.rubypeople.rdt.core=HEAD,:pserver:anonymous@cvs.sf.net:/cvsroot/rubyeclipse,
-plugin@org.rubypeople.rdt.debug.core=HEAD,:pserver:anonymous@cvs.sf.net:/cvsroot/rubyeclipse,
-plugin@org.rubypeople.rdt.debug.ui=HEAD,:pserver:anonymous@cvs.sf.net:/cvsroot/rubyeclipse,
-plugin@org.rubypeople.rdt.ui=HEAD,:pserver:anonymous@cvs.sf.net:/cvsroot/rubyeclipse,
-plugin@org.rubypeople.rdt.launching=HEAD,:pserver:anonymous@cvs.sf.net:/cvsroot/rubyeclipse,
-plugin@org.rubypeople.rdt.testunit=HEAD,:pserver:anonymous@cvs.sf.net:/cvsroot/rubyeclipse,
-plugin@org.rubypeople.rdt.doc.user=HEAD,:pserver:anonymous@cvs.sf.net:/cvsroot/rubyeclipse,
+
+plugin@org.kxml2=HEAD,:ext:anything:/cvsroot/rubyeclipse,
+plugin@org.rubypeople.rdt=HEAD,:ext:anything:/cvsroot/rubyeclipse,
+plugin@org.rubypeople.rdt.core=HEAD,:ext:anything:/cvsroot/rubyeclipse,
+plugin@org.rubypeople.rdt.debug.core=HEAD,:ext:anything:/cvsroot/rubyeclipse,
+plugin@org.rubypeople.rdt.debug.ui=HEAD,:ext:anything:/cvsroot/rubyeclipse,
+plugin@org.rubypeople.rdt.ui=HEAD,:ext:anything:/cvsroot/rubyeclipse,
+plugin@org.rubypeople.rdt.launching=HEAD,:ext:anything:/cvsroot/rubyeclipse,
+plugin@org.rubypeople.rdt.testunit=HEAD,:ext:anything:/cvsroot/rubyeclipse,
+plugin@org.rubypeople.rdt.doc.user=HEAD,:ext:anything:/cvsroot/rubyeclipse,
 
 feature@org.rubypeople.rdt-tests=HEAD,:ext:anything:/cvsroot/rubyeclipse,,org.rubypeople.rdt-feature/unit-tests-feature
 plugin@org.rubypeople.eclipse.shams=HEAD,:ext:anything:/cvsroot/rubyeclipse,
