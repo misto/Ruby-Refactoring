@@ -11,7 +11,7 @@ ECLIPSE_LISTEN_PORT = 1098
 # ECLIPSE_VERBOSE prints tihe communication between eclipse and ruby debugger
 # on stderr. If you have started a eclipse debug session (and use default preferences for
 # colors of streams), the communication will be printed in red letters to the eclipse console.
-ECLIPSE_VERBOSE = true
+ECLIPSE_VERBOSE = false
 
 
 class PrinterMultiplexer
@@ -370,7 +370,9 @@ class DEBUGGER__
           binding = new_binding
         end
         begin
+          #@printer.debug("binding=%s", binding)
           localVars = eval("local_variables", binding)
+          # v 1.8.1 dies in eval @printer.debug("HERE") 
           if eval('self.to_s', binding) !~ "main" then
             localVars << "self"
           end
