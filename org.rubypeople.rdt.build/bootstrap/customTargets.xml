@@ -91,6 +91,19 @@
 <!-- Steps to do after fetching the build elements -->
 <!-- ===================================================================== -->
 <target name="postFetch">
+  <replace file="${buildDirectory}/features/org.rubypeople.rdt/feature.xml">
+    <replacefilter token="CLOSE_XML_COMMENT" value="--&gt;" /> 
+    <replacefilter token="START_XML_COMMENT" value="&lt;!--" /> 
+  </replace>
+  
+  <replace file="${buildDirectory}/features/org.rubypeople.rdt/build.properties">
+    <replacefilter token="#generate.feature" value="generate.feature" /> 
+  </replace>  
+  
+  <replace dir="${buildDirectory}/plugins">
+    <include name="org.rubypeople.rdt.*/plugin.xml"/>
+    <replacefilter token="${featureVersion}" value="0.5.503260628" /> 
+  </replace>
 </target>
 
 <!-- ===================================================================== -->
@@ -135,7 +148,10 @@
 <!-- Steps to do after the build is done. -->
 <!-- ===================================================================== -->
 <target name="postBuild">
-	<antcall target="test"></antcall>
+	<antcall target="test"/>
+    <property name="UpdateSiteStagingLocation" value="${buildDirectory}/updateSite"/>
+    <property name="sitePackagePrefix" value="org.rubypeople.updatesite"/>
+    <antcall target="generateUpdateSite"/>
 </target>
 
 <!-- ===================================================================== -->
@@ -155,6 +171,46 @@
 		<property name="report" value="org.rubypeople.rdt.tests.all" /> 
 	</ant>
 	
+</target>
+
+<!--======================================================-->
+<!-- UpdateSite Export target                             -->
+<!-- ==================================================== -->
+<target name="updateSiteExport">
+	<ant antfile="build.xml" dir="${buildDirectory}/features/${id}/" target="build.update.jar">
+		<property name="feature.destination" value="${UpdateSiteStagingLocation}/features"/>
+		<property name="plugin.destination" value="${UpdateSiteStagingLocation}/plugins"/>
+	</ant>
+</target>
+
+
+<target name="generateUpdateSite">
+     <!-- Create the directory structure -->
+     <mkdir dir="${UpdateSiteStagingLocation}"/>
+     <mkdir dir="${UpdateSiteStagingLocation}/features"/>
+     <mkdir dir="${UpdateSiteStagingLocation}/plugins"/>
+
+     <!-- Build the jar files -->
+     <antcall target="allElements">
+         <param name="genericTargets" value="${builder}/customTargets.xml"/>
+         <param name="target" value="updateSiteExport"/>
+     </antcall>
+
+     <!-- Grab the rest of the site out of CVS -->
+     <mkdir dir="${buildDirectory}/temp.updatesite"/>
+     <property name="cvsRoot" value=":ext:cvs.sf.net:/cvsroot/rubyeclipse" />
+     
+	 <cvs cvsRoot="${cvsRoot}"
+		package="${sitePackagePrefix}"
+		dest="${buildDirectory}/temp.updatesite"
+		tag="HEAD"/>
+		
+     <!-- Copy to staging area -->
+     <copy todir="${UpdateSiteStagingLocation}">
+     	  <fileset file="${buildDirectory}/temp.updatesite/${sitePackagePrefix}/site.xml"/>
+     </copy>
+     
+     <delete dir="${buildDirectory}/temp.updatesite"/>
 </target>
 
 <!-- ===================================================================== -->
