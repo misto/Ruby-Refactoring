@@ -41,10 +41,24 @@
 		<delete dir="${temp.folder}"/>
 	</target>
 
-	<target name="build.jars" depends="init" description="Build all the jars for the plug-in: org.rubypeople.rdt.doc.user.">
-		<ant antfile="buildDocbook.xml"/>		
+	<target name="build.jars" depends="init" description="Build all the jars for the plug-in: org.rubypeople.rdt.doc.user.">		
+		<!-- when this script is called from automatic build, docbook.root is probably defined
+		when this script is called. Otherwise use the default from buildDocbook.xml -->
+		<antcall target="buildDocBook1"/>
+		<antcall target="buildDocBook2"/>
 	</target>
 
+    <target name="buildDocBook1" if="docbook.root">
+		<ant antfile="buildDocbook.xml">	
+			<property name="docbook.root" value="${docbook.root}"/>
+		</ant>
+    </target>
+
+    <target name="buildDocBook2" unless="docbook.root">
+		<ant antfile="buildDocbook.xml"/>
+    </target>
+	
+	
 	<target name="build.sources" depends="init">
 	</target>
 
