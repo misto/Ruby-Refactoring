@@ -189,5 +189,14 @@
             id="RubyBreakpointMarkerUpdater">
       </updater>
    </extension>
+   <extension
+         point="org.eclipse.ui.actionSetPartAssociations">
+      <actionSetPartAssociation
+            targetID="org.rubypeople.rdt.ui.rubyActionSet">
+         <part
+               id="org.rubypeople.rdt.ui.EditorRubyFile">
+         </part>
+      </actionSetPartAssociation>
+   </extension>
 
 </plugin>

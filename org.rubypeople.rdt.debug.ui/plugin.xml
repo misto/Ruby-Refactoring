@@ -19,7 +19,6 @@
       <import plugin="org.eclipse.debug.ui"/>
       <import plugin="org.rubypeople.rdt.launching"/>
       <import plugin="org.rubypeople.rdt.ui"/>
-      <import plugin="org.junit"/>
       <import plugin="org.rubypeople.rdt.core"/>
       <import plugin="org.rubypeople.rdt.debug.core"/>
    </requires>
@@ -32,7 +31,7 @@
             category="org.rubypeople.rdt.ui.preferences.PreferencePageRubyBase"
             class="org.rubypeople.rdt.internal.debug.ui.preferences.RubyInterpreterPreferencePage"
             id="org.rubypeople.rdt.debug.ui.preferences.PreferencePageRubyInterpreter">
-      </page>      
+      </page>
    </extension>
    <extension
          point="org.eclipse.debug.ui.launchConfigurationTypeImages">

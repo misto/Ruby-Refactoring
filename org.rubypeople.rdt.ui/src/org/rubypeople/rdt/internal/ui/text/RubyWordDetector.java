@@ -9,11 +9,10 @@ public class RubyWordDetector implements IWordDetector {
 	}
 
 	public boolean isWordStart(char c) {
-		return Character.isLetter(c);
+		return Character.isLetter(c) || '?' == c || '_' == c;
 	}
 
 	public boolean isWordPart(char c) {
-		return Character.isLetter(c);
+		return Character.isLetter(c) || '?' == c || '_' == c;
 	}
-
 }

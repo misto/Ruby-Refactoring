@@ -6,26 +6,20 @@ import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.jface.action.IMenuListener;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.MenuManager;
-import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.viewers.IOpenListener;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.OpenEvent;
 import org.eclipse.jface.viewers.TreeViewer;
+import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.ui.IWorkbenchPartSite;
-import org.eclipse.ui.IWorkingSet;
 import org.eclipse.ui.actions.ActionContext;
-import org.eclipse.ui.actions.ActionGroup;
 import org.eclipse.ui.model.WorkbenchContentProvider;
 import org.eclipse.ui.model.WorkbenchLabelProvider;
 import org.eclipse.ui.part.ISetSelectionTarget;
 import org.eclipse.ui.part.ViewPart;
-import org.eclipse.ui.views.framelist.FrameList;
-import org.eclipse.ui.views.navigator.IResourceNavigator;
-import org.eclipse.ui.views.navigator.ResourcePatternFilter;
-import org.eclipse.ui.views.navigator.ResourceSorter;
 import org.rubypeople.rdt.internal.ui.RdtUiPlugin;
 import org.rubypeople.rdt.internal.ui.RubyViewerFilter;
 
@@ -38,7 +32,7 @@ public class RubyResourcesView extends ViewPart implements ISetSelectionTarget, 
 	}
 
 	public void createPartControl(Composite parent) {
-		this.setViewer(new TreeViewer(parent));
+		this.setViewer(new TreeViewer(parent, SWT.MULTI | SWT.H_SCROLL | SWT.V_SCROLL));
 
 		this.getViewer().addFilter(new RubyViewerFilter());
 		this.getViewer().setContentProvider(new WorkbenchContentProvider());
@@ -98,7 +92,7 @@ public class RubyResourcesView extends ViewPart implements ISetSelectionTarget, 
 		IStructuredSelection selection = (IStructuredSelection) viewer.getSelection();
 		this.getMainActionGroup().setContext(new ActionContext(selection));
 		this.getMainActionGroup().fillContextMenu(manager);
-		this.getMainActionGroup().setContext(null) ;
+		this.getMainActionGroup().setContext(null);
 	}
 
 	public MainActionGroup getMainActionGroup() {
