@@ -3,9 +3,6 @@
 	<name>org.rubypeople.eclipse.testutils</name>
 	<comment></comment>
 	<projects>
-		<project>org.eclipse.core.resources</project>
-		<project>org.eclipse.core.runtime.compatibility</project>
-		<project>org.eclipse.osgi</project>
 		<project>org.junit</project>
 	</projects>
 	<buildSpec>

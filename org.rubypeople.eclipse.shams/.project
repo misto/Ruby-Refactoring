@@ -3,11 +3,6 @@
 	<name>org.rubypeople.eclipse.shams</name>
 	<comment></comment>
 	<projects>
-		<project>org.eclipse.core.resources</project>
-		<project>org.eclipse.core.runtime.compatibility</project>
-		<project>org.eclipse.debug.core</project>
-		<project>org.eclipse.swt</project>
-		<project>org.eclipse.ui</project>
 	</projects>
 	<buildSpec>
 		<buildCommand>

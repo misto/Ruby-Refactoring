@@ -4,10 +4,6 @@
 	<comment></comment>
 	<projects>
 		<project>org.apache.xerces</project>
-		<project>org.eclipse.core.resources</project>
-		<project>org.eclipse.core.runtime.compatibility</project>
-		<project>org.eclipse.osgi</project>
-		<project>org.eclipse.team.core</project>
 	</projects>
 	<buildSpec>
 		<buildCommand>
