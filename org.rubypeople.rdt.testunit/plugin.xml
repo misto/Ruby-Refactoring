@@ -28,8 +28,8 @@
    <extension
          point="org.rubypeople.rdt.testunit.internal-testRunTabs">
       <testRunTab
-            class="org.rubypeople.rdt.testunit.views.FailureTab">
-      </testRunTab>
+            class="org.rubypeople.rdt.testunit.views.FailureTab"/>
+      <testRunTab class="org.rubypeople.rdt.testunit.views.TestHierarchyTab"/>
    </extension>
    <extension
          point="org.eclipse.ui.views">
