@@ -24,6 +24,7 @@ import org.eclipse.debug.core.ILaunchConfigurationWorkingCopy;
 import org.eclipse.debug.core.ILaunchManager;
 import org.eclipse.debug.core.Launch;
 import org.rubypeople.eclipse.testutils.ResourceTools;
+import org.rubypeople.rdt.internal.launching.DebuggerRunner;
 import org.rubypeople.rdt.internal.launching.RubyInterpreter;
 import org.rubypeople.rdt.internal.launching.RubyLaunchConfigurationAttribute;
 import org.rubypeople.rdt.internal.launching.RubyRuntime;
@@ -51,6 +52,9 @@ public class TC_RunnerLaunching extends TestCase {
 			commandLine.append(" -reclipseDebug") ;
 		}
 		commandLine.append(" -I " + quotation + project.getLocation().toOSString() + quotation) ;
+		if (debug) {
+			commandLine.append(" -I " + quotation + DebuggerRunner.getDirectoryOfRubyDebuggerFile().replace('/', File.separatorChar) + quotation) ;
+		}
 		commandLine.append(" " + INTERPRETER_ARGUMENTS + " -- ") ;
 		// use always forward slashes for path relative to project dir
 		commandLine.append(quotation + project.getLocation().toOSString() + "/" + RUBY_LIB_DIR + "/" + RUBY_FILE_NAME + quotation) ;

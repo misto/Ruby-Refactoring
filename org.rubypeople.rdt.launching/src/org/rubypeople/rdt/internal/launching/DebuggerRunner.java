@@ -22,9 +22,9 @@ public class DebuggerRunner extends InterpreterRunner {
 		return " -reclipseDebug";
 	}
 
-	protected String getDirectoryOfRubyDebuggerFile() {
+	public static String getDirectoryOfRubyDebuggerFile() {
 		// this class will usually reside in the launching.jar file ...
-		URL url = this.getClass().getResource("");
+		URL url = DebuggerRunner.class.getResource("");
 		if (url != null && url.getProtocol().equals("jar")) {
 			String jarFile = url.getFile().substring(0, url.getFile().lastIndexOf("!"));
 			String dir = jarFile.substring(0, jarFile.lastIndexOf("/"));
@@ -34,7 +34,7 @@ public class DebuggerRunner extends InterpreterRunner {
 			return dir + "/ruby";
 		}
 		// ... but in a runtime workbench the class has been loaded from bin directory
-		url = this.getClass().getResource("/");
+		url = DebuggerRunner.class.getResource("/");
 		if (url != null && url.getProtocol().equals("file")) {
 			return url.getFile() + "../ruby";
 		}
