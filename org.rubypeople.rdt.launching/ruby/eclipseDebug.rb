@@ -42,7 +42,7 @@ class XmlPrinter
     if @socket then
       @socket.printf(*params)
     end
-    debug(*params)
+    debugIntern(false, *params)
   end
 
   def printXml(s, *params)
@@ -72,7 +72,7 @@ class XmlPrinter
         valueString.slice!(1..(valueString.length)-2) 
       end	  
 	end
-    out("<variable name=\"%s\" kind=\"%s\" value=\"%s\" type=\"%s\" hasChildren=\"%s\" objectId=\"%s\"/>", CGI.escapeHTML(name), kind, CGI.escapeHTML(valueString), value.class(), hasChildren, value.id())
+    out("<variable name=\"%s\" kind=\"%s\" value=\"%s\" type=\"%s\" hasChildren=\"%s\" objectId=\"%s\"/>", CGI.escapeHTML(name), kind, CGI.escapeHTML(valueString), value.class(), hasChildren, value.respond_to?(:object_id) ? value.object_id : value.id)
   end
 
   def printBreakpoint(n, debugFuncName, file, pos)
@@ -95,9 +95,23 @@ class XmlPrinter
     out("<thread id=\"%s\" status=\"%s\"/>", num, thread.status) ;
   end  
   
+  def printLoadResult(file, exception=nil)
+    if exception then
+      out("<loadResult file=\"%s\" exceptionType=\"%s\" exceptionMessage=\"%s\"/>", file, exception.class, CGI.escapeHTML(exception.to_s)) 	      
+    else
+      out("<loadResult file=\"%s\" status=\"OK\"/>", file) 	      
+    end
+  end
+  
   def debug(*params)
+    debugIntern(true, *params)
+  end
+  
+  def debugIntern(escape, *params)
     if ECLIPSE_VERBOSE then
-      STDERR.printf(*params)
+      output = sprintf(*params)
+      output = CGI.escapeHTML(output) if escape
+      STDERR.print(output)
       STDERR.print("\n")
       STDERR.flush
     end
@@ -528,7 +542,7 @@ class DEBUGGER__
           else
             stdout.print "Trace off.\n"
           end
-
+          
         when /^\s*b(?:reak)?\s+(?:(add|remove)\s+)?((?:.*?+:)?.+)$/
           if $1 then
             mode = $1
@@ -561,12 +575,12 @@ class DEBUGGER__
               @printer.debug("Removed breakpoint : %s:%s", file, pname)
             end
           end
-
+          
           #        when /^\s*wat(?:ch)?\s+(.+)$/
           #          exp = $1
           #          break_points.push [true, 1, exp]
           #          stdout.printf "Set watchpoint %d\n", break_points.size, exp
-
+          
           #        when /^\s*b(?:reak)?$/
           #          if break_points.find{|b| b[1] == 0}
           #            n = 1
@@ -594,7 +608,7 @@ class DEBUGGER__
           #          else
           #            stdout.print "\n"
           #          end
-
+          
           #        when /^\s*del(?:ete)?(?:\s+(\d+))?$/
           #          pos = $1
           #          unless pos
@@ -612,7 +626,7 @@ class DEBUGGER__
           #              stdout.printf "Breakpoint %d is not defined\n", pos
           #            end
           #          end
-
+          
           #        when /^\s*disp(?:lay)?\s+(.+)$/
           #          exp = $1
           #          display.push [true, exp]
@@ -639,10 +653,10 @@ class DEBUGGER__
           #              stdout.printf "Display expression %d is not defined\n", pos
           #            end
           #          end
-
+          
         when /^\s*c(?:ont)?$/
           @shouldResume = true
-
+          
         when /^\s*s(?:tep)?(?:\s+(\d+))?$/
           if $1
             lev = $1.to_i
@@ -651,7 +665,7 @@ class DEBUGGER__
           end
           @stop_next = lev
           @shouldResume = true
-
+          
         when /^\s*n(?:ext)?(?:\s+(\d+))?$/
           if $1
             lev = $1.to_i
@@ -664,7 +678,7 @@ class DEBUGGER__
           
         when /^\s*w(?:here)?$/, /^\s*f(?:rame)?$/
           display_frames(frame_pos)
-
+          
           #        when /^\s*fin(?:ish)?$/
           #          if frame_pos == @frames.size
           #            stdout.print "\"finish\" not meaningful in the outermost frame.\n"
@@ -673,7 +687,7 @@ class DEBUGGER__
           #            frame_pos = 0
           #            prompt = false
           #          end
-
+          
           #        when /^\s*cat(?:ch)?(?:\s+(.+))?$/
           #          if $1
           #            excn = $1
@@ -691,19 +705,28 @@ class DEBUGGER__
           #              stdout.print "No catchpoint.\n"
           #            end
           #          end
-
-
+          
+          
         when /^\s*v(?:ar)?\s+/
           debug_variable_info($', binding)
-
+          
         when /^\s*m(?:ethod)?\s+/
           debug_method_info($', binding)
-
+          
         when /^\s*th(?:read)?\s+/
           DEBUGGER__.debug_thread_info($', binding)
-
+          
         when /^\s*p\s+/
           stdout.printf "%s\n", debug_eval($', binding).inspect
+          
+        when /^\s*load\s+/
+          @printer.debug("loading file: %s", $')
+          begin
+            load $'            
+            @printer.printLoadResult($')
+          rescue Exception => error
+            @printer.printLoadResult($', error)
+          end
 
         else
           @printer.debug("Unknown input : %s", input)
