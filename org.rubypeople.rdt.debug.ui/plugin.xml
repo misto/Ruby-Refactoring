@@ -67,11 +67,11 @@
       <editorContribution
             targetID="org.rubypeople.rdt.ui.EditorRubyFile"
             id="org.rubypeople.rdt.debug.ui.EditorRubyFile.BreakpointRulerActions">
-         <action id="org.rubypeople.rdt.debug.ui.EditorRubyFile.ManageBreakpointRulerAction"
+         <action
                label="%Dummy.label"
                class="org.rubypeople.rdt.internal.debug.ui.actions.ManageBreakpointRulerActionDelegate"
                actionID="RulerDoubleClick"
-               >
+               id="org.rubypeople.rdt.debug.ui.EditorRubyFile.ManageBreakpointRulerAction">
          </action>
       </editorContribution>
    </extension>
@@ -85,13 +85,13 @@
    <extension
          point="org.eclipse.ui.popupMenus">
       <viewerContribution
-            targetID="#rubyRulerContext"
-            id="RubyRulerPopupActions">
-         <action id="ManageBreakpointRulerActionDelegate"
+            targetID="org.rubypeople.rdt.ui.rubyeditor.rulerContextMenu"
+            id="org.rubypeople.rdt.debug.ui.RubyRulerPopupActions">
+         <action
                label="Add Breakpoint"
                class="org.rubypeople.rdt.internal.debug.ui.actions.ManageBreakpointRulerActionDelegate"
                menubarPath="debug"
-               >
+               id="ManageBreakpointRulerActionDelegate">
          </action>
       </viewerContribution>
    </extension>
@@ -103,38 +103,102 @@
             id="org.rubypeople.rdt.debug.ui.rubySourceLocator">
       </sourceLocator>
    </extension>
-   <extension point="org.eclipse.ui.viewActions">
-	<viewContribution
-		id="org.eclipse.jdt.ui.debug.VariableViewActions"
-		targetID="org.eclipse.debug.ui.VariableView">
-		<!--icon="icons/full/clcl16/static_co.gif"-->
-		<action id="org.rubypeople.rdt.ui.variableViewActions.ShowStatic"
-			label="%showStaticVariables"
-			style="toggle"
-			menubarPath="rubyActions"			
-			tooltip="showStaticAction.tooltip"
-			class="org.rubypeople.rdt.internal.debug.ui.actions.ShowStaticVariablesAction"
-			state="false">
-		</action>
-		<action id="org.rubypeople.rdt.ui.variableViewActions.ShowConstants"
-			label="%showConstants"
-			style="toggle"
-			menubarPath="rubyActions"			
-			tooltip="showConstantAction.tooltip"
-			class="org.rubypeople.rdt.internal.debug.ui.actions.ShowConstantsAction"
-			state="false">
-		</action>
-	</viewContribution>								
-  </extension>
-  <extension point = "org.eclipse.debug.ui.debugActionGroups">
-	<debugActionGroup
-		id = "org.rubypeople.rdt.debug.ui.rubyDebugActionGroup"
-	   	visible="true"
-	   	name="%RubyDebugActionGroup.name">
-	   	<action id="org.rubypeople.rdt.ui.variableViewActions.ShowStatic"/>
-	   	<action id="org.rubypeople.rdt.ui.variableViewActions.ShowConstants"/>
-	</debugActionGroup>
-  </extension>
-  
+   <extension
+         point="org.eclipse.ui.viewActions">
+      <viewContribution
+            targetID="org.eclipse.debug.ui.VariableView"
+            id="org.eclipse.jdt.ui.debug.VariableViewActions">
+<!--icon="icons/full/clcl16/static_co.gif"-->
+         <action
+               label="%showStaticVariables"
+               style="toggle"
+               tooltip="showStaticAction.tooltip"
+               state="false"
+               class="org.rubypeople.rdt.internal.debug.ui.actions.ShowStaticVariablesAction"
+               menubarPath="rubyActions"
+               id="org.rubypeople.rdt.ui.variableViewActions.ShowStatic">
+         </action>
+         <action
+               label="%showConstants"
+               style="toggle"
+               tooltip="showConstantAction.tooltip"
+               state="false"
+               class="org.rubypeople.rdt.internal.debug.ui.actions.ShowConstantsAction"
+               menubarPath="rubyActions"
+               id="org.rubypeople.rdt.ui.variableViewActions.ShowConstants">
+         </action>
+      </viewContribution>
+   </extension>
+   <extension
+         point="org.eclipse.debug.ui.debugActionGroups">
+      <debugActionGroup
+            name="%RubyDebugActionGroup.name"
+            visible="true"
+            id="org.rubypeople.rdt.debug.ui.rubyDebugActionGroup">
+         <action
+               id="org.rubypeople.rdt.ui.variableViewActions.ShowStatic">
+         </action>
+         <action
+               id="org.rubypeople.rdt.ui.variableViewActions.ShowConstants">
+         </action>
+      </debugActionGroup>
+   </extension>
+   <extension
+         point="org.eclipse.ui.actionSets">
+      <actionSet
+            label="%RDTDebugActionSet.label"
+            visible="false"
+            id="org.rubypeople.rdt.debug.ui.RDTDebugActionSet">
+         <menu
+               label="%RunMenu.label"
+               path="additions"
+               id="org.eclipse.ui.run">
+            <separator
+                  name="rdtGroup">
+            </separator>
+         </menu>
+         <action
+               id="org.rubypeople.rdt.debug.ui.Inspect"
+               hoverIcon="icons/full/ctool16/insp_sbook.gif"
+               class="org.rubypeople.rdt.internal.debug.ui.actions.InspectAction"
+               definitionId="org.rubypeople.rdt.debug.ui.inspect"
+               disabledIcon="icons/full/dtool16/insp_sbook.gif"
+               icon="icons/full/etool16/insp_sbook.gif"
+               helpContextId="inspect_action_context"
+               label="%Inspect.label"
+               menubarPath="org.eclipse.ui.run/rdtGroup">
+         </action>
+      </actionSet>
+   </extension>
+   <extension
+         point="org.eclipse.ui.perspectiveExtensions">
+      <perspectiveExtension
+            targetID="org.eclipse.debug.ui.DebugPerspective">
+         <actionSet
+               id="org.rubypeople.rdt.debug.ui.RDTDebugActionSet">
+         </actionSet>
+      </perspectiveExtension>
+   </extension>
+   <extension
+         point="org.eclipse.ui.actionSetPartAssociations">
+      <actionSetPartAssociation
+            targetID="org.rubypeople.rdt.debug.ui.RDTDebugActionSet">
+         <part
+               id="org.rubypeople.rdt.ui.EditorRubyFile">
+         </part>
+      </actionSetPartAssociation>
+   </extension>
+   <extension
+         point="org.eclipse.ui.popupMenus">
+         <viewerContribution
+         	 id="org.rubypeople.rdt.debug.ui.RubyEditorPopupActions"
+         	 targetID="org.rubypeople.rdt.ui.rubyeditor.contextMenu">
+           <action id="org.rubypeople.rdt.debug.ui.cuPopup.Inspect" 
+			label="%Inspect.label" 
+			menubarPath="additions" 
+			class="org.rubypeople.rdt.internal.debug.ui.actions.InspectAction">
+			</action>
+         </viewerContribution>
+   </extension>
 
 </plugin>
