@@ -35,14 +35,10 @@
    </extension>
    <extension
          point="org.eclipse.ui.views">
-      <category
-            name="TestUnit Category"
-            id="org.rubypeople.rdt.testunit">
-      </category>
       <view
             name="Test::Unit"
             icon="icons/full/eview16/testunit.gif"
-            category="org.rubypeople.rdt.testunit"
+            category="org.rubypeople.rdt.ui.ruby"
             class="org.rubypeople.rdt.testunit.views.TestUnitView"
             id="org.rubypeople.rdt.testunit.views.TestUnitView">
       </view>
@@ -50,7 +46,7 @@
    <extension
          point="org.eclipse.ui.perspectiveExtensions">
       <perspectiveExtension
-            targetID="org.eclipse.ui.resourcePerspective">
+            targetID="org.rubypeople.rdt.ui.PerspectiveRuby">
          <view
                ratio="0.5"
                relative="org.eclipse.ui.views.TaskList"
