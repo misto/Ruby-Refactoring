@@ -12,6 +12,7 @@ public class TS_Launcher {
 		suite.addTest(new TestSuite(TC_RubyApplicationShortcut.class));
 		suite.addTest(new TestSuite(TC_RubyEntryPointTab.class));
 		suite.addTest(new TestSuite(TC_RubyEnvironmentTab.class));
+		suite.addTest(new TestSuite(TC_RubySourceLocator.class));
 		//$JUnit-END$
 		return suite;
 	}
