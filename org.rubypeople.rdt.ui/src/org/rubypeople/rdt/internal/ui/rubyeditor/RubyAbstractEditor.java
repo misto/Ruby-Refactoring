@@ -11,7 +11,7 @@ import org.eclipse.ui.texteditor.ExtendedTextEditor;
 import org.eclipse.ui.texteditor.WorkbenchChainedTextFontFieldEditor;
 import org.eclipse.ui.views.contentoutline.IContentOutlinePage;
 import org.rubypeople.rdt.internal.core.RubyPlugin;
-import org.rubypeople.rdt.internal.core.parser.RubyElement;
+import org.rubypeople.rdt.internal.core.parser.ast.RubyElement;
 import org.rubypeople.rdt.internal.ui.RdtUiPlugin;
 import org.rubypeople.rdt.internal.ui.text.RubySourceViewerConfiguration;
 import org.rubypeople.rdt.internal.ui.text.RubyTextTools;

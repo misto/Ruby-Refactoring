@@ -7,13 +7,13 @@
 package org.rubypeople.rdt.internal.ui.rubyeditor;
 
 import org.eclipse.jface.viewers.ViewerSorter;
-import org.rubypeople.rdt.internal.core.parser.RubyClass;
-import org.rubypeople.rdt.internal.core.parser.RubyClassVariable;
-import org.rubypeople.rdt.internal.core.parser.RubyGlobal;
-import org.rubypeople.rdt.internal.core.parser.RubyInstanceVariable;
-import org.rubypeople.rdt.internal.core.parser.RubyMethod;
-import org.rubypeople.rdt.internal.core.parser.RubyModule;
-import org.rubypeople.rdt.internal.core.parser.RubyRequires;
+import org.rubypeople.rdt.internal.core.parser.ast.RubyClass;
+import org.rubypeople.rdt.internal.core.parser.ast.RubyClassVariable;
+import org.rubypeople.rdt.internal.core.parser.ast.RubyGlobal;
+import org.rubypeople.rdt.internal.core.parser.ast.RubyInstanceVariable;
+import org.rubypeople.rdt.internal.core.parser.ast.RubyMethod;
+import org.rubypeople.rdt.internal.core.parser.ast.RubyModule;
+import org.rubypeople.rdt.internal.core.parser.ast.RubyRequires;
 
 
 /**

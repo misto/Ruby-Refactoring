@@ -19,11 +19,11 @@ import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.texteditor.ExtendedTextEditor;
 import org.eclipse.ui.texteditor.MarkerUtilities;
 import org.rubypeople.rdt.internal.core.RubyPlugin;
-import org.rubypeople.rdt.internal.core.parser.IRubyElement;
 import org.rubypeople.rdt.internal.core.parser.ParseError;
 import org.rubypeople.rdt.internal.core.parser.ParseException;
 import org.rubypeople.rdt.internal.core.parser.RubyParser;
-import org.rubypeople.rdt.internal.core.parser.RubyScript;
+import org.rubypeople.rdt.internal.core.parser.ast.IRubyElement;
+import org.rubypeople.rdt.internal.core.parser.ast.RubyScript;
 
 public class RubyOutlineContentProvider implements ITreeContentProvider, IDocumentListener {
 

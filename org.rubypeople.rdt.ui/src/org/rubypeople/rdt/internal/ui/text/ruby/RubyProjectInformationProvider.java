@@ -29,14 +29,14 @@ import org.eclipse.core.runtime.CoreException;
 import org.rubypeople.rdt.internal.core.RubyLibrary;
 import org.rubypeople.rdt.internal.core.RubyPlugin;
 import org.rubypeople.rdt.internal.core.parser.ParseException;
-import org.rubypeople.rdt.internal.core.parser.RubyClass;
-import org.rubypeople.rdt.internal.core.parser.RubyClassVariable;
-import org.rubypeople.rdt.internal.core.parser.RubyElement;
-import org.rubypeople.rdt.internal.core.parser.RubyInstanceVariable;
-import org.rubypeople.rdt.internal.core.parser.RubyMethod;
-import org.rubypeople.rdt.internal.core.parser.RubyModule;
 import org.rubypeople.rdt.internal.core.parser.RubyParser;
-import org.rubypeople.rdt.internal.core.parser.RubyScript;
+import org.rubypeople.rdt.internal.core.parser.ast.RubyClass;
+import org.rubypeople.rdt.internal.core.parser.ast.RubyClassVariable;
+import org.rubypeople.rdt.internal.core.parser.ast.RubyElement;
+import org.rubypeople.rdt.internal.core.parser.ast.RubyInstanceVariable;
+import org.rubypeople.rdt.internal.core.parser.ast.RubyMethod;
+import org.rubypeople.rdt.internal.core.parser.ast.RubyModule;
+import org.rubypeople.rdt.internal.core.parser.ast.RubyScript;
 
 /**
  * RubyProjectInformationProvider

@@ -4,14 +4,14 @@ import org.eclipse.jface.viewers.ILabelProvider;
 import org.eclipse.jface.viewers.ILabelProviderListener;
 import org.eclipse.swt.graphics.Image;
 import org.rubypeople.rdt.internal.core.RubyPlugin;
-import org.rubypeople.rdt.internal.core.parser.IRubyElement;
-import org.rubypeople.rdt.internal.core.parser.RubyClass;
-import org.rubypeople.rdt.internal.core.parser.RubyClassVariable;
-import org.rubypeople.rdt.internal.core.parser.RubyGlobal;
-import org.rubypeople.rdt.internal.core.parser.RubyInstanceVariable;
-import org.rubypeople.rdt.internal.core.parser.RubyMethod;
-import org.rubypeople.rdt.internal.core.parser.RubyModule;
-import org.rubypeople.rdt.internal.core.parser.RubyRequires;
+import org.rubypeople.rdt.internal.core.parser.ast.IRubyElement;
+import org.rubypeople.rdt.internal.core.parser.ast.RubyClass;
+import org.rubypeople.rdt.internal.core.parser.ast.RubyClassVariable;
+import org.rubypeople.rdt.internal.core.parser.ast.RubyGlobal;
+import org.rubypeople.rdt.internal.core.parser.ast.RubyInstanceVariable;
+import org.rubypeople.rdt.internal.core.parser.ast.RubyMethod;
+import org.rubypeople.rdt.internal.core.parser.ast.RubyModule;
+import org.rubypeople.rdt.internal.core.parser.ast.RubyRequires;
 import org.rubypeople.rdt.internal.ui.RdtUiImages;
 
 public class RubyOutlineLabelProvider implements ILabelProvider {
