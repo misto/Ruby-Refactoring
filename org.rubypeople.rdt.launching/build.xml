@@ -1,0 +1,31 @@
+<project name="build org.rubypeople.rdt.core" default="build" basedir=".">
+	
+	<property name="projectName" value="org.rubypeople.rdt.launching" />
+	<property name="jarName" value="launching.jar" />
+	<property name="zipName" value="launchingsrc.zip" />
+
+	<property name="src" value="${basedir}/src" />
+	<property name="bin" value="${basedir}/bin" />
+	<property name="dist" value="c:\export\rdt\${projectName}" />
+	
+	<target name="build">
+		<mkdir dir="${dist}" />
+		
+		<jar jarfile="${dist}/${jarName}" basedir="${bin}" excludes="CVS/**" />
+  		<zip zipfile="${dist}/${zipName}" basedir="${src}" excludes="CVS/**" />
+ 
+	 	<copy todir="${dist}">
+	  		<fileset dir="${basedir}">
+	  			<exclude name="**/.*" />
+	  			<exclude name="**/build.xml" />
+	  			<exclude name="bin/**" />
+	  			<exclude name="src/**" />
+	  		</fileset>
+		</copy>
+		
+  	</target>
+  	
+  	<target name="clean">
+  		<delete dir="${dist}"/>
+  	</target>
+</project>
