@@ -31,8 +31,6 @@ import org.rubypeople.rdt.internal.core.parser.ast.RubyElement;
 /**
  * @author Chris
  * 
- * To change the template for this generated type comment go to Window -
- * Preferences - Java - Code Generation - Code and Comments
  */
 public class UpperCaseNameRule implements ParseRule {
 
@@ -58,7 +56,7 @@ public class UpperCaseNameRule implements ParseRule {
 		else if (element.isType(RubyElement.MODULE)) {
 			type = "Module";
 		}
-		return new ParseError(type + " names should begin with an uppercase letter.", element, getSeverity());
+		return new ParseError(type + " names must begin with an uppercase letter.", element, getSeverity());
 	}
 
 	public boolean isAllowed() {
