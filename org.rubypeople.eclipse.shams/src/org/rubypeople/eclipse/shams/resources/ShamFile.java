@@ -23,7 +23,11 @@ import org.eclipse.core.runtime.content.IContentDescription;
 public class ShamFile extends ShamResource implements IFile {
 	protected String contents = "";
 	protected boolean readContentFromFile;
-
+	
+	public void setCharset(String newCharset, IProgressMonitor monitor)
+	throws CoreException {
+	}
+	
 	public ShamFile(String fullPath) {
 		this(fullPath, false);
 	}

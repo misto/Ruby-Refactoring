@@ -25,6 +25,10 @@ public class ShamFolder extends ShamResource implements IFolder {
 		super(aPath);
 	}
 
+	public void setDefaultCharset(String charset, IProgressMonitor monitor)
+	throws CoreException {
+	}
+
 	public void create(boolean force, boolean local, IProgressMonitor monitor) throws CoreException {
 		throw new RuntimeException("Need to implement on sham.");
 	}

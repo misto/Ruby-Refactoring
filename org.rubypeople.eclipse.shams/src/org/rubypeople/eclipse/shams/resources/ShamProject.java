@@ -29,6 +29,9 @@ public class ShamProject extends ShamResource implements IProject {
 		this(new Path("undefined by sham creator"), theProjectName);
 	}
 
+	public void setDefaultCharset(String charset, IProgressMonitor monitor) throws CoreException {
+	}
+	
 	public ShamProject(IPath aPath, String theProjectName) {
 		super(aPath);
 		projectName = theProjectName;
