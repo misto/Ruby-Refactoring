@@ -221,5 +221,9 @@ public class TC_RubyApplicationShortcut extends TestCase {
 		public Map getAttributes() throws CoreException {
 			return null;
 		}
+
+		public ILaunch launch(String mode, IProgressMonitor monitor, boolean build) throws CoreException {
+			return null;
+		}
 	}
 }

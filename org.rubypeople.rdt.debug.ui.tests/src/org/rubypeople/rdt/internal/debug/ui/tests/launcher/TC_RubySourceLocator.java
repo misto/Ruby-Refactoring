@@ -179,5 +179,9 @@ public class TC_RubySourceLocator extends TestCase {
 		public Object getAdapter(Class adapter) {
 			return null;
 		}
+
+		public ILaunch launch(String mode, IProgressMonitor monitor, boolean build) throws CoreException {
+			return null;
+		}
 }
 }
