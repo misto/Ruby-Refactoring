@@ -1,7 +1,7 @@
 <!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook V3.1//EN" 
-  "file:///docbook/dtd/docbookx.dtd">
+	"file:///docbook/dtd/docbookx.dtd">
 <book>
-  <title>Ruby Development Tools</title>
+	<title>Ruby Development Tools</title>
 	<chapter id="GettingStarted">
 		<title>Getting Started</title>
 		<sect1 id="preparingTheWorkbench">
@@ -305,17 +305,70 @@ persons = Hash[ Person.new('Lisa') =&gt; Person.new('Marge'),
 	</chapter>
 	<chapter id="Concepts">
 		<title>Concepts</title>
-			<sect1 id="rubyProjects">
-				<title>Ruby projects</title>
-				<para>A Ruby project contains source code and related files for building a Ruby program.</para>
-				<para>A Ruby project also maintains a model of its contents. This model includes information about the type hierarchy, references and declarations of Ruby elements. This information is constantly updated as the user changes the Ruby source code.</para>
-				<para>You can organize Ruby projects in one way currently:<itemizedlist>
-					<listitem>
-						Using the project as the source container. This is the recommended organization for simple projects. 
-					</listitem>
-					</itemizedlist>
-				</para>
-			</sect1>
+		<sect1 id="rubyProjects">
+			<title>Ruby projects</title>
+			<para>A Ruby project contains source code and related files for 
+				building a Ruby program.</para>
+			<para>A Ruby project also maintains a model of its contents. This 
+				model includes information about the type hierarchy, references 
+				and declarations of Ruby elements. This information is 
+				constantly updated as the user changes the Ruby source 
+				code.</para>
+			<para>You can organize Ruby projects in one way 
+				currently:<itemizedlist> <listitem> Using the project as the 
+				source container. This is the recommended organization for 
+				simple projects. </listitem> </itemizedlist> </para>
+		</sect1>
+		<sect1 id="RubyPerspectives">
+			<title>Ruby perspectives</title>
+			<para>The Ruby development tools contribute the following 
+				perspectives to the workbench:</para>
+			<sect2 id="RubyPerspectives_Ruby">
+				<title>Ruby</title>
+				<para>A perspective designed for working with Ruby projects. It 
+					consists of an editor area and the following views:</para>
+				<itemizedlist>
+					<listitem> Ruby Resources View </listitem>
+					<listitem>Outline </listitem>
+					<listitem>Console </listitem>
+				</itemizedlist>
+			</sect2>
+			<sect2 id="RubyPerspectives_RubyDebug">
+				<title>Debug</title>
+				<para>A perspective designed for debugging your Ruby program. 
+					It includes an editor area and the following views.</para>
+				<itemizedlist>
+					<listitem> Debug </listitem>
+					<listitem> Breakpoints </listitem>
+					<listitem> Expressions </listitem>
+					<listitem> Variables </listitem>
+					<listitem> Display </listitem>
+					<listitem> Outline </listitem>
+					<listitem> Console </listitem>
+				</itemizedlist>
+			</sect2>
+		</sect1>
+		<sect1 id="RubyEditor">
+			<title>Ruby Editor</title>
+			<para>The Ruby editor provides specialized features for editing 
+				Ruby code.</para>
+			<para>Associated with the editor is a Ruby-specific Outline view, 
+				which shows the structure of the active Ruby script. It is 
+				updated as the user edits the script.</para>
+			<para>The editor includes the following features:</para>
+			<itemizedlist>
+				<listitem>Syntax highlighting</listitem>
+				<listitem>Content/code assist</listitem>
+				<listitem>Code formatting</listitem>
+				<listitem>Integrated debugging features</listitem>
+			</itemizedlist>
+			<para>The most common way to invoke the Ruby editor is to open a 
+				Ruby file from the Navigator or Ruby Resource View using pop-up 
+				menus or by clicking the file (single or double-click depending 
+				on the user preferences). You can also open the editor by 
+				opening Ruby elements, such as types, methods, or fields, from 
+				other views.</para>
+		</sect1>
 	</chapter>
 	<chapter id="TipsNTricks">
 		<title>Tips and tricks</title>
@@ -323,64 +376,31 @@ persons = Hash[ Person.new('Lisa') =&gt; Person.new('Marge'),
 	<chapter id="WhatsNew">
 		<title>What's new</title>
 		<para>New in RDT 0.4.0:</para>
-			<itemizedlist>
-				<listitem>
-					Runs with Eclipse 3.0 
+		<itemizedlist>
+			<listitem> Runs with Eclipse 3.0 </listitem>
+			<listitem> Code-completion </listitem>
+			<listitem> keywords </listitem>
+			<listitem> All elements of current script. </listitem>
+			<listitem> Classes and modules from library. </listitem>
+			<listitem> Outline View </listitem>
+			<listitem> Show globals </listitem>
+			<listitem> Show require statements </listitem>
+			<listitem> Show instance variables </listitem>
+			<listitem> Show class variables </listitem>
+			<listitem> Selecting an element selects the text and reveals it in 
+				the editor </listitem>
+			<listitem> Ruby Preferences </listitem>
+			<listitem> Ruby Library Page to select a directory for ruby library 
+				installation </listitem>
+			<listitem> Ruby Perspective </listitem>
+			<listitem> Shows Outline View </listitem>
+			<listitem> Offers Outline view shortcut (in show view menu) 
 				</listitem>
-				<listitem>
-					Code-completion 
-				</listitem>
-				<listitem>
-					keywords
-				</listitem>
-				<listitem>
-					All elements of current script. 
-				</listitem>
-				<listitem>
-					Classes and modules from library. 
-				</listitem>
-				<listitem>
-					Outline View  
-				</listitem>
-				<listitem>
-					Show globals  
-				</listitem>
-				<listitem>
-					Show require statements 
-				</listitem>
-				<listitem>
-					Show instance variables   
-				</listitem>
-				<listitem>
-					Show class variables  
-				</listitem>
-				<listitem>
-					Selecting an element selects the text and reveals it in the editor  
-				</listitem>
-				<listitem>
-					Ruby Preferences  
-				</listitem>
-				<listitem>
-					Ruby Library Page to select a directory for ruby library installation  
-				</listitem>
-				<listitem>
-					Ruby Perspective   
-				</listitem>
-				<listitem>
-					Shows Outline View  
-				</listitem>
-				<listitem>
-					Offers Outline view shortcut (in show view menu) 
-				</listitem>
-				<listitem>
-					Shows new ruby project, new file, new folder when clicking "New wizard" icon   
-				</listitem>
-				<listitem>
-					Ruby Resource View 
-				</listitem>
-				<listitem>
-					Offers new ruby project, new file, new folder on right click of an element 
-				</listitem>
-			</itemizedlist> 
+			<listitem> Shows new ruby project, new file, new folder when 
+				clicking "New wizard" icon </listitem>
+			<listitem> Ruby Resource View </listitem>
+			<listitem> Offers new ruby project, new file, new folder on right 
+				click of an element </listitem>
+		</itemizedlist>
 	</chapter>
 </book>
