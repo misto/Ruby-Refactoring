@@ -1,9 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project name="org.rubypeople.rdt.doc.user" default="html" basedir=".">
+	
+	<property name="docbook.root" value="../../docbook"/>
 
 	<target name="init">
-        <property name="docbook.xsl.dir" value="../../docbook/docbook-xsl-1.64.1"/>
-        <property name="docbook.dtd.dir" value="../../docbook/dtd"/>
+        <property name="docbook.xsl.dir" value="${docbook.root}/docbook-xsl-1.64.1"/>
+        <property name="docbook.dtd.dir" value="${docbook.root}/dtd"/>
 	</target>
 
 	<target name="clean.docbook.generated">
