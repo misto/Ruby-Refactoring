@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.0"?>
 <plugin
    id="org.rubypeople.rdt.ui"
    name="%Plugin.name"
@@ -12,11 +13,17 @@
       </library>
    </runtime>
    <requires>
+      <import plugin="org.eclipse.ui.ide"/>
+      <import plugin="org.eclipse.ui.views"/>
+      <import plugin="org.eclipse.jface.text"/>
+      <import plugin="org.eclipse.ui.workbench.texteditor"/>
+      <import plugin="org.eclipse.ui.editors"/>
       <import plugin="org.eclipse.core.runtime"/>
       <import plugin="org.eclipse.core.resources"/>
       <import plugin="org.eclipse.ui"/>
       <import plugin="org.eclipse.debug.ui"/>
       <import plugin="org.rubypeople.rdt.core"/>
+      <import plugin="org.eclipse.ui.workbench"/>
    </requires>
 
 
@@ -62,7 +69,7 @@
       </wizard>
    </extension>
    <extension
-         point="org.eclipse.ui.projectNatureImages">
+         point="org.eclipse.ui.ide.projectNatureImages">
       <image
             icon="icons/full/ovr16/ruby_ovr.gif"
             natureId="org.rubypeople.rdt.core.rubynature"
@@ -102,7 +109,7 @@
       </view>
    </extension>
    <extension
-         point="org.eclipse.ui.documentProviders">
+         point="org.eclipse.ui.editors.documentProviders">
       <provider
             extensions="%EditorRubyFile.extension"
             class="org.rubypeople.rdt.internal.ui.rubyeditor.RubyDocumentProvider"
@@ -113,96 +120,74 @@
          point="org.eclipse.ui.editors">
       <editor
             name="%EditorRubyFile.name"
-            icon="icons/full/ctool16/ruby_page.gif"
             extensions="%EditorRubyFile.extension"
-            contributorClass="org.rubypeople.rdt.internal.ui.rubyeditor.RubyEditorActionContributor"
+            icon="icons/full/ctool16/ruby_page.gif"
             class="org.rubypeople.rdt.internal.ui.rubyeditor.RubyEditor"
+            contributorClass="org.rubypeople.rdt.internal.ui.rubyeditor.RubyEditorActionContributor"
             id="org.rubypeople.rdt.ui.EditorRubyFile">
       </editor>
    </extension>
-   <extension point="org.eclipse.ui.commands">
-   	<category
-		name="%category.source.name"
-		description="%category.source.description"
-		id="org.rubypeople.rdt.ui.category.source">
-	</category>
-	<scope
-		name="%scope.rubyEditor.name"
-		parent="org.eclipse.ui.textEditorScope"
-		description="%scope.rubyEditor.description"
-		id="org.rubypeople.rdt.ui.rubyEditorScope">
-	</scope>	
-   	<command
-		category="org.rubypeople.rdt.ui.category.source"
-		id="org.rubypeople.rdt.ui.edit.text.ruby.format"
-		name= "%ActionDefinition.format.name"
-		description= "%ActionDefinition.format.description">
-	</command>
-	<keyBinding
-		string="Ctrl+Shift+f"
-		scope="org.rubypeople.rdt.ui.rubyEditorScope"
-		command="org.rubypeople.rdt.ui.edit.text.ruby.format"
-		configuration="org.eclipse.ui.defaultAcceleratorConfiguration">
-	</keyBinding>
-   	<command
-		category="org.rubypeople.rdt.ui.category.source"
-		id="org.rubypeople.rdt.ui.edit.text.ruby.comment"
-		name= "%ActionDefinition.comment.name"
-		description= "%ActionDefinition.comment.description">
-	</command>
-	<keyBinding
-		string="Ctrl+/"
-		scope="org.rubypeople.rdt.ui.rubyEditorScope"
-		command="org.rubypeople.rdt.ui.edit.text.ruby.comment"
-		configuration="org.eclipse.ui.defaultAcceleratorConfiguration">
-	</keyBinding>
-   	<command
-		category="org.rubypeople.rdt.ui.category.source"
-		id="org.rubypeople.rdt.ui.edit.text.ruby.uncomment"
-		name= "%ActionDefinition.uncomment.name"
-		description= "%ActionDefinition.uncomment.description">
-	</command>
-	<keyBinding
-		string="Ctrl+\"
-		scope="org.rubypeople.rdt.ui.rubyEditorScope"
-		command="org.rubypeople.rdt.ui.edit.text.ruby.uncomment"
-		configuration="org.eclipse.ui.defaultAcceleratorConfiguration">
-	</keyBinding>
-   	<command
-		category="org.rubypeople.rdt.ui.category.source"
-		id="org.rubypeople.rdt.ui.edit.text.ruby.content.assist.proposals"
-		name= "%ActionDefinition.contentAssist.name"
-		description= "%ActionDefinition.contentAssist.description">
-	</command>
-	<keyBinding
-		string="Ctrl+Space"
-		scope="org.rubypeople.rdt.ui.rubyEditorScope"
-		command="org.rubypeople.rdt.ui.edit.text.ruby.content.assist.proposals"
-		configuration="org.eclipse.ui.defaultAcceleratorConfiguration">
-	</keyBinding>
-
-<!--
-         <accelerator
-               key="Ctrl+Space"
-               id="org.rubypeople.rdt.ui.edit.text.ruby.content.assist.proposals">
-         </accelerator>
-         <accelerator
-               key="Ctrl+/"
-               id="org.rubypeople.rdt.ui.edit.text.ruby.comment">
-         </accelerator>
-         <accelerator
-               key="Ctrl+\\"
-               id="org.rubypeople.rdt.ui.edit.text.ruby.uncomment">
-         </accelerator>
-
-         <accelerator
-               key="Ctrl+f"
-               id="org.rubypeople.rdt.ui.edit.text.ruby.format">
-         </accelerator>         
--->         
-
-
-	
+   <extension
+         point="org.eclipse.ui.commands">
+      <category
+            name="%category.source.name"
+            description="%category.source.description"
+            id="org.rubypeople.rdt.ui.category.source">
+      </category>
+      <scope
+            name="%scope.rubyEditor.name"
+            parent="org.eclipse.ui.textEditorScope"
+            description="%scope.rubyEditor.description"
+            id="org.rubypeople.rdt.ui.rubyEditorScope">
+      </scope>
+      <command
+            name="%ActionDefinition.format.name"
+            description="%ActionDefinition.format.description"
+            category="org.rubypeople.rdt.ui.category.source"
+            id="org.rubypeople.rdt.ui.edit.text.ruby.format">
+      </command>
+      <keyBinding
+            string="Ctrl+Shift+f"
+            scope="org.rubypeople.rdt.ui.rubyEditorScope"
+            command="org.rubypeople.rdt.ui.edit.text.ruby.format"
+            configuration="org.eclipse.ui.defaultAcceleratorConfiguration">
+      </keyBinding>
+      <command
+            name="%ActionDefinition.comment.name"
+            description="%ActionDefinition.comment.description"
+            category="org.rubypeople.rdt.ui.category.source"
+            id="org.rubypeople.rdt.ui.edit.text.ruby.comment">
+      </command>
+      <keyBinding
+            string="Ctrl+/"
+            scope="org.rubypeople.rdt.ui.rubyEditorScope"
+            command="org.rubypeople.rdt.ui.edit.text.ruby.comment"
+            configuration="org.eclipse.ui.defaultAcceleratorConfiguration">
+      </keyBinding>
+      <command
+            name="%ActionDefinition.uncomment.name"
+            description="%ActionDefinition.uncomment.description"
+            category="org.rubypeople.rdt.ui.category.source"
+            id="org.rubypeople.rdt.ui.edit.text.ruby.uncomment">
+      </command>
+      <keyBinding
+            string="Ctrl+\"
+            scope="org.rubypeople.rdt.ui.rubyEditorScope"
+            command="org.rubypeople.rdt.ui.edit.text.ruby.uncomment"
+            configuration="org.eclipse.ui.defaultAcceleratorConfiguration">
+      </keyBinding>
+      <command
+            name="%ActionDefinition.contentAssist.name"
+            description="%ActionDefinition.contentAssist.description"
+            category="org.rubypeople.rdt.ui.category.source"
+            id="org.rubypeople.rdt.ui.edit.text.ruby.content.assist.proposals">
+      </command>
+      <keyBinding
+            string="Ctrl+Space"
+            scope="org.rubypeople.rdt.ui.rubyEditorScope"
+            command="org.rubypeople.rdt.ui.edit.text.ruby.content.assist.proposals"
+            configuration="org.eclipse.ui.defaultAcceleratorConfiguration">
+      </keyBinding>
    </extension>
    <extension
          point="org.eclipse.ui.actionDefinitions">
@@ -216,7 +201,6 @@
             id="org.rubypeople.rdt.ui.edit.text.ruby.content.assist.proposals">
       </actionDefinition>
    </extension>
-
    <extension
          point="org.eclipse.ui.actionSets">
       <actionSet
@@ -234,30 +218,21 @@
          <action
                definitionId="org.rubypeople.rdt.ui.edit.text.ruby.uncomment"
                label="%UncommentAction.label"
-               retarget="true"
                menubarPath="org.rubypeople.rdt.ui.ruby.menu/editGroup"
+               retarget="true"
                id="org.rubypeople.rdt.ui.actions.Uncomment">
          </action>
          <action
                definitionId="org.rubypeople.rdt.ui.edit.text.ruby.comment"
                label="%CommentAction.label"
-               retarget="true"
                menubarPath="org.rubypeople.rdt.ui.ruby.menu/editGroup"
+               retarget="true"
                id="org.rubypeople.rdt.ui.actions.Comment">
          </action>
-<!--         
-         <action
-               definitionId="org.rubypeople.rdt.ui.edit.text.ruby.format"
-               label="unused"
-               retarget="true"
-               menubarPath="org.rubypeople.rdt.ui.ruby.menu/editGroup"
-               id="org.rubypeople.rdt.ui.actions.Format">
-         </action>
--->         
       </actionSet>
    </extension>
    <extension
-         point="org.eclipse.ui.markerUpdaters">
+         point="org.eclipse.ui.editors.markerUpdaters">
       <updater
             markerType="org.rubypeople.rdt.debug.core.RubyBreakpointMarker"
             class="org.rubypeople.rdt.internal.ui.rubyeditor.RubyBreakpointMarkerUpdater"

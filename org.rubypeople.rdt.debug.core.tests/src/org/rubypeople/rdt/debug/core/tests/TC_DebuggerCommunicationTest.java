@@ -7,7 +7,6 @@ import java.io.PrintWriter;
 import java.net.Socket;
 
 import junit.framework.TestCase;
-import junit.framework.TestSuite;
 
 import org.rubypeople.rdt.internal.debug.core.ExceptionSuspensionPoint;
 import org.rubypeople.rdt.internal.debug.core.StepSuspensionPoint;
@@ -150,7 +149,7 @@ public class TC_DebuggerCommunicationTest extends TestCase {
 	}
 
 	public void tearDown() throws Exception {
-		Thread.sleep(500);
+		Thread.sleep(1000);
 		socket.close();
 		try {
 			if (process.exitValue() != 0) {

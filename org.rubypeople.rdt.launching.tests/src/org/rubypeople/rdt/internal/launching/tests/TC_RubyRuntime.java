@@ -24,6 +24,7 @@ import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.QualifiedName;
+import org.eclipse.core.runtime.jobs.ISchedulingRule;
 import org.rubypeople.rdt.internal.launching.RubyInterpreter;
 import org.rubypeople.rdt.internal.launching.RubyRuntime;
 
@@ -273,6 +274,26 @@ public class TC_RubyRuntime extends TestCase {
 
 
 		public void accept(IResourceProxyVisitor arg0, int arg1) throws CoreException {
+		}
+
+		public long getLocalTimeStamp() {
+		
+			return 0;
+		}
+
+		public long setLocalTimeStamp(long value) throws CoreException {
+
+			return 0;
+		}
+
+		public boolean contains(ISchedulingRule rule) {
+
+			return false;
+		}
+
+		public boolean isConflicting(ISchedulingRule rule) {
+
+			return false;
 		}
 
 	}

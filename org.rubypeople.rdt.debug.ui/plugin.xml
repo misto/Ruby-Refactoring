@@ -21,6 +21,11 @@
       <import plugin="org.rubypeople.rdt.ui"/>
       <import plugin="org.rubypeople.rdt.core"/>
       <import plugin="org.rubypeople.rdt.debug.core"/>
+      <import plugin="org.eclipse.ui.workbench"/>
+      <import plugin="org.eclipse.ui.workbench.texteditor"/>
+      <import plugin="org.eclipse.jface.text"/>
+      <import plugin="org.eclipse.ui.editors"/>
+      <import plugin="org.eclipse.ui.ide"/>
    </requires>
 
 
@@ -54,8 +59,8 @@
       <shortcut
             label="%LaunchShortcut.Ruby.label"
             icon="icons/full/ctool16/run_ruby.gif"
-            modes="run, debug"
             class="org.rubypeople.rdt.internal.debug.ui.launcher.RubyApplicationShortcut"
+            modes="run, debug"
             id="org.rubypeople.rdt.debug.ui.applicationshortcut.ruby">
          <perspective
                id="org.eclipse.debug.ui.DebugPerspective">
@@ -112,18 +117,18 @@
          <action
                label="%showStaticVariables"
                style="toggle"
-               tooltip="showStaticAction.tooltip"
-               state="false"
                class="org.rubypeople.rdt.internal.debug.ui.actions.ShowStaticVariablesAction"
+               state="false"
+               tooltip="showStaticAction.tooltip"
                menubarPath="rubyActions"
                id="org.rubypeople.rdt.ui.variableViewActions.ShowStatic">
          </action>
          <action
                label="%showConstants"
                style="toggle"
-               tooltip="showConstantAction.tooltip"
-               state="false"
                class="org.rubypeople.rdt.internal.debug.ui.actions.ShowConstantsAction"
+               state="false"
+               tooltip="showConstantAction.tooltip"
                menubarPath="rubyActions"
                id="org.rubypeople.rdt.ui.variableViewActions.ShowConstants">
          </action>
