@@ -145,6 +145,16 @@ public class MainActionGroup extends ActionGroup {
 			return rubyResourcesView.getAdapter(arg0);
 		}
 
+		public boolean isLinkingEnabled() {
+			// TODO Auto-generated method stub
+			return false;
+		}
+
+		public void setLinkingEnabled(boolean arg0) {
+			// TODO Auto-generated method stub
+
+		}
+
 	}
 
 }
