@@ -16,3 +16,15 @@
 	represent light dispersion, something like the Eclipse logo, except they should have a rose color.
 - Decide on a general laf.
 - Come up with a content outline.
+
+******************
+* Debugger
+******************
+- Update variables view:
+  - remove pointless icons from view toolbar, like "show final fields"
+  - add icon to view toolbar for showing global variables
+- Allow evaluation of ruby expressions in the display view  
+- Why are breakpoints not hit when executing runit tests ?
+- Make breakpoints persistent
+- Allow debugging of several ruby programs concurrently (there is a socket bind exception now)
+- Introduce exception breakpoints (see TC_DebuggerCommunicationTest::testNameError)
