@@ -9,8 +9,10 @@ import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.IExecutableExtension;
+import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.NullProgressMonitor;
+import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.SubProgressMonitor;
 import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.ui.INewWizard;
@@ -59,9 +61,18 @@ public class NewProjectCreationWizard extends BasicNewResourceWizard implements 
 
 				IWorkspace workspace = ResourcesPlugin.getWorkspace();
 				newProject = projectPage.getProjectHandle();
+				
+				IPath path = Platform.getLocation();
+				IPath customPath = projectPage.getLocationPath();
+				if (!path.equals(customPath))
+					path = customPath;
+					
+				IProjectDescription description = workspace.newProjectDescription(newProject.getName());
+				description.setLocation(path);
+
 				try {
 					if (!newProject.exists()) {
-						newProject.create(new SubProgressMonitor(monitor, 1));
+						newProject.create(description, new SubProgressMonitor(monitor, 1));
 						remainingWorkUnits--;
 					}
 					if (!newProject.isOpen()) {
@@ -69,7 +80,7 @@ public class NewProjectCreationWizard extends BasicNewResourceWizard implements 
 						remainingWorkUnits--;
 					}
 
-					IProjectDescription description = newProject.getDescription();
+					description = newProject.getDescription();
 
 					String[] prevNatures = description.getNatureIds();
 					String[] newNatures = new String[prevNatures.length + 1];

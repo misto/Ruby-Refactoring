@@ -16,6 +16,11 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.QualifiedName;
 
 public class ShamIFile implements IFile {
+	protected String fileName;
+
+	public ShamIFile(String aFileName) {
+		fileName = aFileName;
+	}
 
 	public void appendContents(InputStream source, boolean force, boolean keepHistory, IProgressMonitor monitor) throws CoreException {}
 
@@ -48,7 +53,7 @@ public class ShamIFile implements IFile {
 	}
 
 	public String getName() {
-		throw new RuntimeException("Unimplemented method in sham");
+		return fileName;
 	}
 
 	public boolean isReadOnly() {
@@ -104,7 +109,7 @@ public class ShamIFile implements IFile {
 	}
 
 	public String getFileExtension() {
-		throw new RuntimeException("Unimplemented method in sham");
+		return fileName.substring(fileName.lastIndexOf(".") + 1);
 	}
 
 	public IPath getLocation() {

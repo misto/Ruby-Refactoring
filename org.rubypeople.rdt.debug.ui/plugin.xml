@@ -20,6 +20,7 @@
       <import plugin="org.rubypeople.rdt.launching"/>
       <import plugin="org.rubypeople.rdt.ui"/>
       <import plugin="org.rubypeople.rdt"/>
+      <import plugin="org.junit"/>
    </requires>
 
 
@@ -52,6 +53,16 @@
             class="org.rubypeople.rdt.internal.debug.ui.launcher.RubyApplicationTabGroup"
             id="org.rubypeople.rdt.debug.ui.LaunchConfigurationTabGroupRubyApplication">
       </launchConfigurationTabGroup>
+   </extension>
+   <extension
+         point="org.eclipse.debug.ui.launchShortcuts">
+      <shortcut
+            label="%LaunchShortcut.Ruby.label"
+            icon="icons/full/ctool16/runRuby.gif"
+            modes="run"
+            class="org.rubypeople.rdt.internal.debug.ui.launcher.RubyApplicationShortcut"
+            id="org.rubypeople.rdt.debug.ui.applicationshortcut.ruby">
+      </shortcut>
    </extension>
 
 </plugin>

@@ -3,6 +3,8 @@ package org.rubypeople.rdt.internal.launching;
 
 
 public interface RubyLaunchConfigurationAttribute {
+	static final String RUBY_LAUNCH_CONFIGURATION_TYPE = "org.rubypeople.rdt.launching.LaunchConfigurationTypeRubyApplication";
+
 	static final String PROJECT_NAME = RdtLaunchingPlugin.PLUGIN_ID + ".PROJECT_NAME";
 	static final String FILE_NAME = RdtLaunchingPlugin.PLUGIN_ID + ".FILE_NAME";
 	static final String CUSTOM_LOAD_PATH = RdtLaunchingPlugin.PLUGIN_ID + ".CUSTOM_LOAD_PATH";
