@@ -149,7 +149,7 @@ public class TestUnitMainTab extends AbstractLaunchConfigurationTab implements I
 	 * @see org.eclipse.debug.ui.ILaunchConfigurationTab#setDefaults(org.eclipse.debug.core.ILaunchConfigurationWorkingCopy)
 	 */
 	public void setDefaults(ILaunchConfigurationWorkingCopy configuration) {
-		configuration.setAttribute(TestUnitLaunchConfiguration.ATTR_KEEPRUNNING, true);
+		configuration.setAttribute(TestUnitLaunchConfiguration.ATTR_KEEPRUNNING, false);
 		configuration.setAttribute(TestUnitLaunchConfiguration.LAUNCH_CONTAINER_ATTR, "");
 		configuration.setAttribute(TestUnitLaunchConfiguration.TESTTYPE_ATTR, "");
 		configuration.setAttribute(TestUnitLaunchConfiguration.TESTNAME_ATTR, "");
@@ -163,19 +163,23 @@ public class TestUnitMainTab extends AbstractLaunchConfigurationTab implements I
 	 * @see org.eclipse.debug.ui.ILaunchConfigurationTab#initializeFrom(org.eclipse.debug.core.ILaunchConfiguration)
 	 */
 	public void initializeFrom(ILaunchConfiguration configuration) {
-		boolean useDefaultWorkDir = true;
+		boolean keepRunning = true;
 		try {
-			classSelector.setSelectionText(configuration.getAttribute(TestUnitLaunchConfiguration.TESTTYPE_ATTR, ""));
-			fileSelector.setSelectionText(configuration.getAttribute(TestUnitLaunchConfiguration.LAUNCH_CONTAINER_ATTR, ""));
-			useDefaultWorkDir = configuration.getAttribute(RubyLaunchConfigurationAttribute.USE_DEFAULT_WORKING_DIRECTORY, true);
+			// Have to set the project selection first! Otherwise when launch
+			// container ise set it will use null for project when trying to
+			// validate the file exists and will eventually set the launch
+			// container to ""
 			InterpreterRunnerConfiguration config = new InterpreterRunnerConfiguration(configuration);
 			rubyProject = config.getProject().getProject();
+			projectSelector.setSelectionText(rubyProject.getName());
+			classSelector.setSelectionText(configuration.getAttribute(TestUnitLaunchConfiguration.TESTTYPE_ATTR, ""));
+			fileSelector.setSelectionText(configuration.getAttribute(TestUnitLaunchConfiguration.LAUNCH_CONTAINER_ATTR, ""));
+			keepRunning = configuration.getAttribute(TestUnitLaunchConfiguration.ATTR_KEEPRUNNING, false);
 		} catch (CoreException e) {
-			log(e);
+			TestunitPlugin.log(e);
 		}
 
-		projectSelector.setSelectionText(rubyProject.getName());
-		setKeepRunning(useDefaultWorkDir);
+		setKeepRunning(keepRunning);
 	}
 
 	/*
@@ -184,7 +188,9 @@ public class TestUnitMainTab extends AbstractLaunchConfigurationTab implements I
 	 * @see org.eclipse.debug.ui.ILaunchConfigurationTab#performApply(org.eclipse.debug.core.ILaunchConfigurationWorkingCopy)
 	 */
 	public void performApply(ILaunchConfigurationWorkingCopy configuration) {
-		configuration.setAttribute(TestUnitLaunchConfiguration.ATTR_KEEPRUNNING, keepRunning.getSelection());
+		//configuration.setAttribute(TestUnitLaunchConfiguration.ATTR_KEEPRUNNING, keepRunning.getSelection());
+		// TODO We should really just remove the "keep running" attribute. It makes the Test::Unit run act weird
+		configuration.setAttribute(TestUnitLaunchConfiguration.ATTR_KEEPRUNNING, false);
 		configuration.setAttribute(TestUnitLaunchConfiguration.TESTTYPE_ATTR, classSelector.getValidatedSelectionText());
 		configuration.setAttribute(TestUnitLaunchConfiguration.LAUNCH_CONTAINER_ATTR, fileSelector.getValidatedSelectionText());
 	}
@@ -196,10 +202,6 @@ public class TestUnitMainTab extends AbstractLaunchConfigurationTab implements I
 	 */
 	public String getName() {
 		return TestUnitMessages.getString("JUnitMainTab.tab.label"); //$NON-NLS-1$
-	}
-
-	protected void log(Throwable t) {
-		TestunitPlugin.log(t);
 	}
 
 }
