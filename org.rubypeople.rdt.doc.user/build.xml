@@ -1,7 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project name="org.rubypeople.rdt.doc.user" default="build.jars" basedir=".">
 
-	<target name="init">
+	<property name="bootclasspath" value=""/>
+	<property name="ws" value="win32"/>
+	<property name="os" value="win32"/>
+	<property name="arch" value="x86"/>
+	<property name="javacFailOnError" value="false"/>
+	<property name="javacDebugInfo" value="on"/>
+	<property name="javacVerbose" value="true"/>
+
+	<target name="init" depends="properties">
 		<property name="plugin" value="org.rubypeople.rdt.doc.user"/>
 		<property name="version.suffix" value="_0.3.2"/>
 		<property name="full.name" value="${plugin}${version.suffix}"/>
@@ -10,51 +18,55 @@
 		<property name="build.result.folder" value="${basedir}"/>
 	</target>
 
-	<target name="build.update.jar" depends="init">
+	<target name="properties" if="eclipse.running">
+		<property name="build.compiler" value="org.eclipse.jdt.core.JDTCompilerAdapter"/>
+	</target>
+
+	<target name="build.update.jar" depends="init" description="Build the plug-in: org.rubypeople.rdt.doc.user for an update site.">
 		<delete dir="${temp.folder}"/>
 		<mkdir dir="${temp.folder}"/>
 		<antcall target="build.jars"/>
 		<antcall target="gather.bin.parts">
 			<param name="destination.temp.folder" value="${temp.folder}/"/>
 		</antcall>
-		<zip zipfile="${plugin.destination}/${full.name}.jar" basedir="${temp.folder}/${full.name}" filesonly="false"/>
+		<zip zipfile="${plugin.destination}/${full.name}.jar" basedir="${temp.folder}/${full.name}" filesonly="false" update="no"/>
 		<delete dir="${temp.folder}"/>
 	</target>
 
 	<target name="gather.bin.parts" depends="init" if="destination.temp.folder">
 		<mkdir dir="${destination.temp.folder}/${full.name}"/>
-		<zip zipfile="${destination.temp.folder}/${full.name}/doc.zip"
-			basedir="${basedir}"
-			includes="html/gettingStarted/**, html/reference/**, html/tasks/** "
-		/>
 		<copy todir="${destination.temp.folder}/${full.name}">
-			<fileset dir="${basedir}" includes="*.properties,*.xml,*.zip,*.html" excludes="build.properties,build.xml"/>
+			<fileset dir="${basedir}" includes="html/gettingStarted/**,html/reference/**,html/tasks/**,images/**"/>
 		</copy>
 	</target>
 
-	<target name="build.jars" depends="init">
-	</target>
-
-	<target name="gather.sources" depends="init" if="destination.temp.folder">
+	<target name="build.jars" depends="init" description="Build all the jars for the plug-in: org.rubypeople.rdt.doc.user.">
 	</target>
 
 	<target name="build.sources" depends="init">
 	</target>
 
+		<target name="build.zips" depends="init">
+		</target>
+
+	<target name="gather.sources" depends="init" if="destination.temp.folder">
+	</target>
+
 	<target name="gather.logs" depends="init" if="destination.temp.folder">
 	</target>
 
-	<target name="clean" depends="init">
+	<target name="clean" depends="init" description="Clean the plug-in: org.rubypeople.rdt.doc.user of all the zips, jars and logs created.">
 		<delete file="${plugin.destination}/${full.name}.jar"/>
 		<delete file="${plugin.destination}/${full.name}.zip"/>
 		<delete dir="${temp.folder}"/>
 	</target>
 
 	<target name="refresh" depends="init" if="eclipse.running">
-		<eclipse.refreshLocal resource="${plugin}" depth="infinite"/>
+		<eclipse.convertPath fileSystemPath="c:\projects\RDT\workspace\org.rubypeople.rdt.doc.user\" property="resourcePath"/>
+		<eclipse.refreshLocal resource="${resourcePath}" depth="infinite"/>
 	</target>
 
-	<target name="zip.plugin" depends="init">
+	<target name="zip.plugin" depends="init" description="Create a zip containing all the elements for the plug-in: org.rubypeople.rdt.doc.user.">
 		<delete dir="${temp.folder}"/>
 		<mkdir dir="${temp.folder}"/>
 		<antcall target="build.jars"/>
@@ -68,8 +80,11 @@
 		<delete>
 			<fileset dir="${temp.folder}" includes="**/*.bin.log"/>
 		</delete>
-		<zip zipfile="${plugin.destination}/${full.name}.zip" basedir="${temp.folder}" filesonly="true"/>
+		<antcall target="zip.folder"/>
 		<delete dir="${temp.folder}"/>
+	</target>
+	<target name="zip.folder" depends="init">
+		<zip zipfile="${plugin.destination}/${full.name}.zip" basedir="${temp.folder}" filesonly="true" update="no" excludes="**/*.bin.log"/>
 	</target>
 
 </project>
