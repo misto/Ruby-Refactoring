@@ -83,7 +83,7 @@
 		
 		<description>
 			In the last step you have created the file sample.wsdl. But why is it not there? It is, 
-			but is filtered out: In the Ruby Resources views menu deselect &quot;Show Ruby Files only&quot;.
+			but is filtered out: In the Ruby Resources views menu deselect &quot;Show Ruby Files only&quot; (this can be found by clicking the down arrow in the Ruby Resources view MenuBar, in the menu of options).
 			The &quot;Click to Perform&quot; buttons copies sample content to the wsdl file. The content is copied
 			from the Sample.wsdl file which ships with RDT.
 		</description>
