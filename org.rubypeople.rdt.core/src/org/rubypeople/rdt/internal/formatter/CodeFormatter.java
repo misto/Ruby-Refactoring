@@ -1,7 +1,8 @@
 package org.rubypeople.rdt.internal.formatter;
 
-import org.apache.regexp.RE;
-import org.apache.regexp.RESyntaxException;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import java.util.regex.PatternSyntaxException;
 
 public class CodeFormatter {
 
@@ -16,18 +17,18 @@ public class CodeFormatter {
 	private final int BLOCK_END_PAREN = 8;
 	private final int LITERAL_BEGIN_PAREN = 10;
 	
-	private static RE MODIFIER_RE ;
-	private static RE OPERATOR_RE ;
-	private static RE NON_BLOCK_DO_RE ;
+	private static Pattern MODIFIER_RE ;
+	private static Pattern OPERATOR_RE ;
+	private static Pattern NON_BLOCK_DO_RE ;
 	
 	private static String LITERAL_BEGIN_RE; // automatically concatenated from LITERAL_BEGIN_LITERALS	
-	private static RE[] LITERAL_END_RES_COMPILED;
+	private static Pattern[] LITERAL_END_RES_COMPILED;
 	static {
-		LITERAL_END_RES_COMPILED = new RE[LITERAL_END_RES.length];
+		LITERAL_END_RES_COMPILED = new Pattern[LITERAL_END_RES.length];
 		for (int i = 0; i < LITERAL_END_RES.length; i++) {
 			try {
-				LITERAL_END_RES_COMPILED[i] = new RE(LITERAL_END_RES[i]);
-			} catch (RESyntaxException e) {
+				LITERAL_END_RES_COMPILED[i] = Pattern.compile(LITERAL_END_RES[i]);
+			} catch (PatternSyntaxException e) {
 				System.out.println(e);
 			}
 		}
@@ -42,10 +43,10 @@ public class CodeFormatter {
 		sb.append(")");
 		LITERAL_BEGIN_RE = sb.toString();
 		try {
-			MODIFIER_RE = new RE("if|unless|while|until|rescue");
-			OPERATOR_RE = new RE("[\\-,.+*/%&|\\^~=<>:]") ;
-			NON_BLOCK_DO_RE = new RE("(^|[:space:])(while|until|for|rescue)[:space:]") ;
-		} catch (RESyntaxException e) {
+			MODIFIER_RE = Pattern.compile("if|unless|while|until|rescue");
+			OPERATOR_RE = Pattern.compile("[\\-,.+*/%&|\\^~=<>:]") ;
+			NON_BLOCK_DO_RE = Pattern.compile("(^|[:space:])(while|until|for|rescue)[:space:]") ;
+		} catch (PatternSyntaxException e) {
 			System.out.println(e);
 		}
 	}
@@ -71,20 +72,21 @@ public class CodeFormatter {
 		}			
 		try {
 			return this.formatString(unformatted, firstAbstractBlockMarker);
-		} catch (RESyntaxException ex) {
+		} catch (PatternSyntaxException ex) {
 			return unformatted;
 		}
 	}
 
-	protected String formatString(String unformatted, AbstractBlockMarker abstractBlockMarker) throws RESyntaxException {
-		RE re = new RE("\n");
-		String[] lines = re.split(unformatted);
+	protected String formatString(String unformatted, AbstractBlockMarker abstractBlockMarker) throws PatternSyntaxException {
+		Pattern pat = Pattern.compile("\n");
+		String[] lines = pat.split(unformatted);
 		IndentationState state = null;
 		StringBuffer formatted = new StringBuffer();
-		RE whitespaceMatcher = new RE("^[\t ]*");
+		Pattern whitespacePattern = Pattern.compile("^[\t ]*");
 		for (int i = 0; i < lines.length; i++) {
-			whitespaceMatcher.match(lines[i]);
-			int leadingWhitespace = whitespaceMatcher.getParenEnd(0);
+			Matcher whitespaceMatcher = whitespacePattern.matcher(lines[i]);
+			whitespaceMatcher.find();
+			int leadingWhitespace = whitespaceMatcher.end(0);
 			if (state == null) {
 				state = new IndentationState(unformatted, this.getIndentation(), leadingWhitespace, fillCharacter);
 			}
@@ -124,14 +126,14 @@ public class CodeFormatter {
 	}
 
 	protected AbstractBlockMarker createBlockMarkerList(String unformatted) {
-		RE blockBegin = null;
-		RE blockMid = null;
-		RE blockEnd = null;
-		RE re = null;
+		Pattern blockBegin = null;
+		Pattern blockMid = null;
+		Pattern blockEnd = null;
+		Pattern pat = null;
 
 		try {
-			re =
-				new RE(
+			pat =
+				Pattern.compile(
 					"(^|[:space:])"
 						+ BLOCK_BEGIN_RE
 						+ "($|[:space:]|" + DELIMITER_RE + ")|(^|[:space:])"
@@ -142,33 +144,34 @@ public class CodeFormatter {
 						+ LITERAL_BEGIN_RE
 						+ "|"
 						+ DELIMITER_RE);
-		} catch (RESyntaxException e) {
+		} catch (PatternSyntaxException e) {
 			System.out.println(e);
 		}
 		int pos = 0;
 		AbstractBlockMarker lastBlockMarker = new NeutralMarker("start", 0);
 		AbstractBlockMarker firstBlockMarker = lastBlockMarker;
-		while (pos != -1 && re.match(unformatted, pos)) {
+		Matcher re = pat.matcher(unformatted);
+		while (pos != -1 && re.find(pos)) {
 			AbstractBlockMarker newBlockMarker = null;
-			if (re.getParen(BLOCK_BEGIN_PAREN) != null) {
-				pos = re.getParenEnd(BLOCK_BEGIN_PAREN);
-				String blockBeginStr = re.getParen(BLOCK_BEGIN_PAREN) ;				
-				if (MODIFIER_RE.match(blockBeginStr) && !this.isRubyExprBegin(unformatted, re.getParenStart(BLOCK_BEGIN_PAREN), "modifier") ) {
+			if (re.group(BLOCK_BEGIN_PAREN) != null) {
+				pos = re.end(BLOCK_BEGIN_PAREN);
+				String blockBeginStr = re.group(BLOCK_BEGIN_PAREN) ;				
+				if (MODIFIER_RE.matcher(blockBeginStr).matches() && !this.isRubyExprBegin(unformatted, re.start(BLOCK_BEGIN_PAREN), "modifier") ) {
 					continue ;
 				}
-				if (blockBeginStr.equals("do") && this.isNonBlockDo(unformatted, re.getParenStart(BLOCK_BEGIN_PAREN)) ) {
+				if (blockBeginStr.equals("do") && this.isNonBlockDo(unformatted, re.start(BLOCK_BEGIN_PAREN)) ) {
 					continue ;
 				}
-				newBlockMarker = new BeginBlockMarker(re.getParen(BLOCK_BEGIN_PAREN), re.getParenStart(BLOCK_BEGIN_PAREN));				
-			} else if (re.getParen(BLOCK_MID_PAREN) != null) {
-				pos = re.getParenEnd(BLOCK_MID_PAREN);
-				newBlockMarker = new MidBlockMarker(re.getParen(BLOCK_MID_PAREN), re.getParenStart(BLOCK_MID_PAREN));
-			} else if (re.getParen(BLOCK_END_PAREN) != null) {
-				pos = re.getParenEnd(BLOCK_END_PAREN);
-				newBlockMarker = new EndBlockMarker(re.getParen(BLOCK_END_PAREN), re.getParenStart(BLOCK_END_PAREN));
-			} else if (re.getParen(LITERAL_BEGIN_PAREN) != null) {
-				pos = re.getParenEnd(LITERAL_BEGIN_PAREN);
-				String matchedLiteralBegin = re.getParen(LITERAL_BEGIN_PAREN);
+				newBlockMarker = new BeginBlockMarker(re.group(BLOCK_BEGIN_PAREN), re.start(BLOCK_BEGIN_PAREN));				
+			} else if (re.group(BLOCK_MID_PAREN) != null) {
+				pos = re.end(BLOCK_MID_PAREN);
+				newBlockMarker = new MidBlockMarker(re.group(BLOCK_MID_PAREN), re.start(BLOCK_MID_PAREN));
+			} else if (re.group(BLOCK_END_PAREN) != null) {
+				pos = re.end(BLOCK_END_PAREN);
+				newBlockMarker = new EndBlockMarker(re.group(BLOCK_END_PAREN), re.start(BLOCK_END_PAREN));
+			} else if (re.group(LITERAL_BEGIN_PAREN) != null) {
+				pos = re.end(LITERAL_BEGIN_PAREN);
+				String matchedLiteralBegin = re.group(LITERAL_BEGIN_PAREN);
 				if (matchedLiteralBegin.startsWith("%")) {
 					int delimitChar = matchedLiteralBegin.charAt(matchedLiteralBegin.length() - 1);
 					boolean expand = matchedLiteralBegin.charAt(1) != 'q';
@@ -216,29 +219,31 @@ public class CodeFormatter {
 					}
 					String reStr = (isMinus ? "" : "\n") + matchedLiteralBegin.substring(startId, endId) ;
 					try {
-						RE idSearch = new RE(reStr) ;
-						if (idSearch.match(unformatted, pos)) {
-							pos = idSearch.getParenEnd(0) ;
+						Pattern idSearch = Pattern.compile(reStr);
+						Matcher matcher = idSearch.matcher(unformatted);
+						if (matcher.find(pos)) {
+							pos = matcher.end(0) ;
 						}
 						else {
 							pos = -1 ;
 						}
-					} catch (RESyntaxException e1) {
+					} catch (PatternSyntaxException e1) {
 						continue ;					
 					}					
 				} else {
 					for (int i = 0; i < LITERAL_BEGIN_LITERALS.length; i++) {
 						if (LITERAL_BEGIN_LITERALS[i].equals(matchedLiteralBegin)) {
-							RE matchEnd = LITERAL_END_RES_COMPILED[i];
+							Pattern matchEnd = LITERAL_END_RES_COMPILED[i];
 							pos = -1;
-							if (matchEnd.match(unformatted, re.getParenEnd(LITERAL_BEGIN_PAREN) - 1)) {
-								pos = matchEnd.getParenEnd(0);
+							Matcher tmpMatch = matchEnd.matcher(unformatted);
+							if (tmpMatch.find(re.end(LITERAL_BEGIN_PAREN) - 1)) {
+								pos = tmpMatch.end(0);
 							}
 							break;
 						}
 					}
 				}
-				newBlockMarker = new NoFormattingMarker(matchedLiteralBegin, re.getParenStart(LITERAL_BEGIN_PAREN));
+				newBlockMarker = new NoFormattingMarker(matchedLiteralBegin, re.start(LITERAL_BEGIN_PAREN));
 				if (pos != -1) {
 					lastBlockMarker.setNext(newBlockMarker);
 					lastBlockMarker = newBlockMarker;
@@ -246,20 +251,20 @@ public class CodeFormatter {
 				}
 
 			} else {
-				String delimiter = re.getParen(0);
+				String delimiter = re.group(0);
 				if (delimiter.equals("#")) {
-					pos = unformatted.indexOf("\n", re.getParenEnd(0));
+					pos = unformatted.indexOf("\n", re.end(0));
 					continue;
 				} else if (delimiter.equals("{")) {
-					newBlockMarker = new BeginBlockMarker("{", re.getParenStart(0));
+					newBlockMarker = new BeginBlockMarker("{", re.start(0));
 				} else if (delimiter.equals("}")) {
-					newBlockMarker = new EndBlockMarker("}", re.getParenStart(0));
+					newBlockMarker = new EndBlockMarker("}", re.start(0));
 				} else if (delimiter.equals("(")) {
-					newBlockMarker = new FixLengthMarker("(", re.getParenStart(0));
+					newBlockMarker = new FixLengthMarker("(", re.start(0));
 				} else if (delimiter.equals(")")) {
-					newBlockMarker = new NeutralMarker(")", re.getParenStart(0));
+					newBlockMarker = new NeutralMarker(")", re.start(0));
 				}
-				pos = re.getParenEnd(0);
+				pos = re.end(0);
 			}
 
 			if (newBlockMarker == null) {
@@ -298,23 +303,24 @@ public class CodeFormatter {
 	protected int forwardString(String unformatted, int pos, char opening, String term, boolean expand) {
 		int n = 1;
 		try {
-			RE re = new RE(expand ? "[" + term + "]|(#\\{)" : "[" + term + "]");
-			while (re.match(unformatted, pos) && n > 0) {
-				if (re.getParen(1) != null) {
-					pos = this.forwardString(unformatted, re.getParenEnd(1), '{', "\\{\\}", expand);
+			Pattern pat = Pattern.compile(expand ? "[" + term + "]|(#\\{)" : "[" + term + "]");
+			Matcher re = pat.matcher(unformatted);
+			while (re.find(pos) && n > 0) {
+				if (re.group(1) != null) {
+					pos = this.forwardString(unformatted, re.end(1), '{', "\\{\\}", expand);
 				} else {
-					pos = re.getParenEnd(0);
+					pos = re.end(0);
 					if (pos > 2 && unformatted.charAt(pos - 2) == '\\' && unformatted.charAt(pos - 3) != '\\') {
 						continue;
 					}
-					if (re.getParen(0).charAt(0) == opening) {
+					if (re.group(0).charAt(0) == opening) {
 						n += 1;
 					} else {
 						n -= 1;
 					}
 				}
 			}
-		} catch (RESyntaxException e) {
+		} catch (PatternSyntaxException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 
@@ -383,13 +389,13 @@ public class CodeFormatter {
 		return pos ;
 	}
 
-	protected boolean matchREBackward(String str, RE re) {
+	protected boolean matchREBackward(String str, Pattern re) {
 		int pos = str.length() -1 ;
 		while (pos >= 0) {
 			if (str.charAt(pos) == ';') {
 				return false ;
 			}
-			if (re.match(str, pos)) {
+			if (re.matcher(str).find(pos)) {
 				return true;
 			}			
 			pos -= 1;
@@ -408,7 +414,7 @@ public class CodeFormatter {
 			return true;
 		}
 		String c_str = "" + c ;
-		if (OPERATOR_RE.match(c_str )) {
+		if (OPERATOR_RE.matcher(c_str).matches()) {
 			return true ;		
 		}
 		return false;
