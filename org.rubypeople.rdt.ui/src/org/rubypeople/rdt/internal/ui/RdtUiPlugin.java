@@ -1,12 +1,17 @@
 package org.rubypeople.rdt.internal.ui;
 
+import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.preference.PreferenceConverter;
+import org.eclipse.jface.viewers.ISelection;
+import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.widgets.Shell;
+import org.eclipse.ui.IEditorInput;
+import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.editors.text.EditorsUI;
@@ -128,5 +133,28 @@ public class RdtUiPlugin extends AbstractUIPlugin implements RubyColorConstants 
 			rubyFileMatcher = new RubyFileMatcher() ;
 		}
 		return rubyFileMatcher ;
+	}
+	
+	public IResource getSelectedResource() {
+		IWorkbenchPage page = RdtUiPlugin.getActivePage();
+		if (page == null) {
+			return null;
+		}
+		// first try: a selection in the navigator or ruby resource view
+		ISelection selection = page.getSelection();
+		if (selection instanceof IStructuredSelection && !selection.isEmpty()) {
+			IStructuredSelection structuredSelection = (IStructuredSelection) selection;
+			Object obj = structuredSelection.getFirstElement();
+			if (obj instanceof IResource) {
+				return (IResource) obj;
+			}
+		}
+		// second try: an editor is selected
+		IEditorPart part = page.getActiveEditor();
+		if (part == null) {
+			return null;
+		}
+		IEditorInput input = part.getEditorInput();
+		return (IResource) input.getAdapter(IResource.class);
 	}
 }
