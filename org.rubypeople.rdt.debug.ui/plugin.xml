@@ -42,6 +42,15 @@
       </page>
    </extension>
    <extension
+         point="org.eclipse.ui.preferencePages">
+      <page
+            name="%PreferencePage.EvaluationExpressions.name"
+            category="org.rubypeople.rdt.ui.preferences.PreferencePageRubyBase"
+            class="org.rubypeople.rdt.internal.debug.ui.preferences.EvaluationExpressionsPreferencePage"
+            id="org.rubypeople.rdt.debug.ui.preferences.PreferencePageEvaluationExpressions">
+      </page>
+   </extension>
+   <extension
          point="org.eclipse.debug.ui.launchConfigurationTypeImages">
       <launchConfigurationTypeImage
             icon="icons/full/ctool16/run_ruby.gif"
@@ -306,6 +315,25 @@
          <description>%cheatsheet.webservices.desc</description>
       </cheatsheet>
    </extension>
+   
+   <extension
+         point="org.rubypeople.rdt.ui.editorPopupExtender">
+      <rubyEditorPopupMenuExtension class="org.rubypeople.rdt.internal.debug.ui.RubyEditorPopupMenuExtension">
+                  <enablement>
+               <systemProperty
+                     name="org.rubypeople.rdt.debug.ui.debuggerActive"
+                     value="true">
+               </systemProperty>
+            </enablement>
+            </rubyEditorPopupMenuExtension>
+   </extension>
+   <extension
+         point="org.eclipse.ui.commands">
+      <command
+            name="Inspect Template"
+            id="org.rubypeople.rdt.debug.ui.TemplateInspectCommand"/>
+   </extension>
+
 	<extension point="org.eclipse.core.runtime.preferences">
 		<initializer class="org.rubypeople.rdt.internal.debug.ui.DebugUiPreferenceInitializer"/>
 	</extension>

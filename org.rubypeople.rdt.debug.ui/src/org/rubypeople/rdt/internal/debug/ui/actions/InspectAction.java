@@ -1,3 +1,14 @@
+/*
+ * Author: Markus Barchfeld
+ * 
+ * Copyright (c) 2005 RubyPeople.
+ * 
+ * This file is part of the Ruby Development Tools (RDT) plugin for eclipse. RDT is
+ * subject to the "Common Public License (CPL) v 1.0". You may not use RDT except in 
+ * compliance with the License. For further information see org.rubypeople.rdt/rdt.license.
+ */
+
+
 package org.rubypeople.rdt.internal.debug.ui.actions;
 
 import org.eclipse.debug.core.DebugPlugin;
@@ -5,7 +16,7 @@ import org.eclipse.debug.ui.IDebugUIConstants;
 import org.eclipse.debug.ui.IDebugView;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.dialogs.MessageDialog;
-import org.eclipse.jface.text.TextSelection;
+import org.eclipse.jface.text.ITextSelection;
 import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.IEditorActionDelegate;
@@ -45,12 +56,12 @@ public class InspectAction extends AbstractInspectAction implements IViewActionD
                 "Could not inspect because there is no context (a ruby stack frame) for inspection selected.");
             return;
         }
-        if (!(selection instanceof TextSelection)) {
+        if (!(selection instanceof ITextSelection)) {
             return;
         }
         Display.getCurrent().asyncExec(new Runnable() {
             public void run() {
-                String selectedText = ((TextSelection) selection).getText().replace('\n', ';');
+                String selectedText = ((ITextSelection) selection).getText().replace('\n', ';');
 				selectedText = selectedText.replace('\r', ' ');
                 try {
 					RubyVariable rubyVariable = stackFrame.getRubyDebuggerProxy().readInspectExpression(stackFrame, selectedText);

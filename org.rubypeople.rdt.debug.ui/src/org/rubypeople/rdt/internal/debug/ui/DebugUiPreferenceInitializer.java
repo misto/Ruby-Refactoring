@@ -4,10 +4,19 @@
  */
 package org.rubypeople.rdt.internal.debug.ui;
 
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.StringBufferInputStream;
+import java.io.StringReader;
+
 import org.osgi.service.prefs.Preferences;
 import org.eclipse.core.runtime.preferences.AbstractPreferenceInitializer;
 import org.eclipse.core.runtime.preferences.DefaultScope;
 import org.rubypeople.rdt.debug.ui.RdtDebugUiConstants;
+import org.rubypeople.rdt.internal.debug.ui.evaluation.EvaluationExpressionReaderWriter;
 
 
 /**
@@ -26,6 +35,18 @@ public class DebugUiPreferenceInitializer extends AbstractPreferenceInitializer 
 	public void initializeDefaultPreferences() {
 		Preferences node = new DefaultScope().getNode(RdtDebugUiPlugin.PLUGIN_ID);
 		node.put(RdtDebugUiConstants.PREFERENCE_KEYWORDS, getDefaultKeywords());
+        
+		try {
+			BufferedReader reader = new BufferedReader(new InputStreamReader(RdtDebugUiPlugin.getDefault().getBundle().getEntry("/expressions/rdt.xml").openStream())) ;
+            StringBuffer fileContent = new StringBuffer() ;
+            while (reader.ready()) {
+              fileContent.append(reader.readLine()) ;
+            }
+			node.put(RdtDebugUiConstants.EVALUATION_EXPRESSIONS_PREFERENCE, fileContent.toString()) ;
+
+		} catch (IOException e) {
+            RdtDebugUiPlugin.log(e) ;
+		}
 	}
 
 	private String getDefaultKeywords() {
