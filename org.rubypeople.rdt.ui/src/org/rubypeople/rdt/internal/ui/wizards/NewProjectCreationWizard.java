@@ -5,7 +5,6 @@ import java.lang.reflect.InvocationTargetException;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IProjectDescription;
 import org.eclipse.core.resources.IWorkspace;
-import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.IExecutableExtension;
@@ -59,7 +58,7 @@ public class NewProjectCreationWizard extends BasicNewResourceWizard implements 
 				int remainingWorkUnits = 10;
 				monitor.beginTask(RdtUiMessages.getString("NewProjectCreationWizard.projectCreationMessage"), remainingWorkUnits);
 
-				IWorkspace workspace = ResourcesPlugin.getWorkspace();
+				IWorkspace workspace = RdtUiPlugin.getWorkspace();
 				newProject = projectPage.getProjectHandle();
 				
 				IProjectDescription description = workspace.newProjectDescription(newProject.getName());

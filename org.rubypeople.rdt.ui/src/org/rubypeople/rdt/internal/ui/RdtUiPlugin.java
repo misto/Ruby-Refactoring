@@ -1,16 +1,13 @@
 package org.rubypeople.rdt.internal.ui;
 
-import java.util.MissingResourceException;
-import java.util.ResourceBundle;
-
 import org.eclipse.core.resources.IWorkspace;
-import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.IPluginDescriptor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
+import org.rubypeople.rdt.internal.core.RubyPlugin;
 import org.rubypeople.rdt.internal.ui.text.RubyTextTools;
 
 public class RdtUiPlugin extends AbstractUIPlugin {
@@ -31,7 +28,7 @@ public class RdtUiPlugin extends AbstractUIPlugin {
 	}
 
 	public static IWorkspace getWorkspace() {
-		return ResourcesPlugin.getWorkspace();
+		return RubyPlugin.getWorkspace();
 	}
 	
 	public static IWorkbenchWindow getActiveWorkbenchWindow() {

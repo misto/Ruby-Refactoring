@@ -19,8 +19,6 @@ import org.rubypeople.rdt.core.RubyProject;
 import org.rubypeople.rdt.internal.core.RubyPlugin;
 import org.rubypeople.rdt.internal.ui.utils.ExceptionHandler;
 
-import sun.security.krb5.internal.crypto.e;
-
 public class RubyProjectPropertyPage extends PropertyPage implements IWorkbenchPropertyPage {
 	protected RubyProjectLibraryPage projectsPage;
 	protected RubyProject workingProject;

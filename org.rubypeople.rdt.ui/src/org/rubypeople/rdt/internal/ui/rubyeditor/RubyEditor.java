@@ -1,12 +1,10 @@
 package org.rubypeople.rdt.internal.ui.rubyeditor;
 
-import org.eclipse.jface.action.MenuManager;
+import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.preference.PreferenceConverter;
 import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.jface.text.source.ISourceViewer;
-import org.eclipse.swt.graphics.Font;
-import org.eclipse.swt.graphics.FontData;
 import org.eclipse.swt.graphics.RGB;
 import org.eclipse.ui.editors.text.TextEditor;
 import org.eclipse.ui.texteditor.DefaultRangeIndicator;
@@ -52,7 +50,7 @@ public class RubyEditor extends TextEditor {
 		setAction("ContentAssistProposal", new TextOperationAction(RdtUiMessages.getResourceBundle(), "ContentAssistProposal.", this, ISourceViewer.CONTENTASSIST_PROPOSALS));
 	}
 
-	public void editorContextMenuAboutToShow(MenuManager menu) {
+	protected void editorContextMenuAboutToShow(IMenuManager menu) {
 		super.editorContextMenuAboutToShow(menu);
 		addAction(menu, "ContentAssistProposal");
 	}

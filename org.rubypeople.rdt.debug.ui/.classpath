@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
     <classpathentry kind="src" path="src/"/>
-    <classpathentry exported="true" kind="lib" path="rdtdebugui.jar" sourcepath="/org.rubypeople.rdt.debug.ui/rdtdebuguisrc.zip"/>
     <classpathentry kind="src" path="/org.eclipse.core.runtime"/>
     <classpathentry kind="src" path="/org.eclipse.core.resources"/>
     <classpathentry kind="src" path="/org.eclipse.ui"/>

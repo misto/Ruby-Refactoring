@@ -7,7 +7,6 @@ import java.util.List;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IWorkspaceRoot;
-import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.jface.viewers.CheckStateChangedEvent;
 import org.eclipse.jface.viewers.CheckboxTableViewer;
@@ -79,7 +78,7 @@ public class RubyProjectLibraryPage {
 	}
 
 	protected List getWorkspaceProjects() {
-		IWorkspaceRoot root = ResourcesPlugin.getWorkspace().getRoot();
+		IWorkspaceRoot root = RdtUiPlugin.getWorkspace().getRoot();
 		return Arrays.asList(root.getProjects());
 	}
 

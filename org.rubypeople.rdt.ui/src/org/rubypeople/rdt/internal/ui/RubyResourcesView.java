@@ -2,10 +2,7 @@ package org.rubypeople.rdt.internal.ui;
 
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IResource;
-import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.IAdaptable;
-import org.eclipse.jface.util.IPropertyChangeListener;
-import org.eclipse.jface.util.PropertyChangeEvent;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.swt.widgets.Composite;
@@ -53,7 +50,7 @@ public class RubyResourcesView extends ViewPart implements ISetSelectionTarget {
 					break;
 			}
 		}
-		return ResourcesPlugin.getWorkspace().getRoot();
+		return RdtUiPlugin.getWorkspace().getRoot();
 	}
 	
 	public void setFocus() {

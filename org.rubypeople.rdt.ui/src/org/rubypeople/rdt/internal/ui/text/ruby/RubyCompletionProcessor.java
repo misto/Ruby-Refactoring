@@ -1,6 +1,7 @@
 package org.rubypeople.rdt.internal.ui.text.ruby;
 
 import java.text.MessageFormat;
+import java.util.ArrayList;
 
 import org.eclipse.jface.text.ITextViewer;
 import org.eclipse.jface.text.TextPresentation;
@@ -25,11 +26,16 @@ public class RubyCompletionProcessor implements IContentAssistProcessor {
 
 	public ICompletionProposal[] computeCompletionProposals(ITextViewer viewer, int documentOffset) {
 		String[] completionProposals = getDefaultProposals();
-		ICompletionProposal[] result = new ICompletionProposal[completionProposals.length];
+		ArrayList possibleProposals = new ArrayList();
+		String prefix = getCurrentToken(viewer.getDocument().get(), documentOffset);
 		for (int i = 0; i < completionProposals.length; i++) {
-			IContextInformation info = new ContextInformation(completionProposals[i], MessageFormat.format("{0} some context information.", new Object[] { completionProposals[i] }));
-			result[i] = new CompletionProposal(completionProposals[i], documentOffset, 0, completionProposals[i].length(), null, completionProposals[i], info, MessageFormat.format("Ruby keyword: {0}", new Object[] { completionProposals[i] }));
+			if (completionProposals[i].startsWith(prefix)) {
+				IContextInformation info = new ContextInformation(completionProposals[i],MessageFormat.format("{0} some context information.", new Object[] { completionProposals[i] }));
+				possibleProposals.add(new CompletionProposal(completionProposals[i].substring(prefix.length(), completionProposals[i].length()),documentOffset,0,completionProposals[i].length() - prefix.length(),null,completionProposals[i],info,MessageFormat.format("Ruby keyword: {0}", new Object[] { completionProposals[i] })));
+			}
 		}
+		ICompletionProposal[] result = new ICompletionProposal[possibleProposals.size()];
+		possibleProposals.toArray(result);
 		return result;
 	}
 
@@ -37,8 +43,14 @@ public class RubyCompletionProcessor implements IContentAssistProcessor {
 		if (proposals == null) {
 			proposals = textTools.getKeyWords();
 		}
-
 		return proposals;
+	}
+
+	protected String getCurrentToken(String documentString, int documentOffset) {
+		int tokenLength = 0;
+		while ((documentOffset - tokenLength > 0) && !Character.isWhitespace(documentString.charAt(documentOffset - tokenLength - 1)))
+			tokenLength++;
+		return documentString.substring((documentOffset - tokenLength), documentOffset);
 	}
 
 	public IContextInformation[] computeContextInformation(ITextViewer viewer, int documentOffset) {

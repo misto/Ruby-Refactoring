@@ -26,9 +26,8 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Tree;
-import org.rubypeople.rdt.internal.ui.viewsupport.ContainerCheckedTreeViewer;
 import org.rubypeople.rdt.internal.ui.JDTOriginally;
-import sun.security.krb5.internal.i;
+import org.rubypeople.rdt.internal.ui.viewsupport.ContainerCheckedTreeViewer;
 
 /**
  * A class to select elements out of a tree structure.

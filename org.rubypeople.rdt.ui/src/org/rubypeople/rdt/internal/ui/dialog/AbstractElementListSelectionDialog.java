@@ -17,10 +17,7 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
-import org.rubypeople.rdt.internal.ui.utils.*;
 import org.rubypeople.rdt.internal.ui.utils.FilteredList;
-import sun.security.krb5.internal.i;
-import sun.security.krb5.internal.crypto.e;
 
 /**
  * An abstract class to select elements out of a list of elements.

@@ -16,13 +16,8 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Event;
-import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableItem;
-import sun.security.krb5.internal.i;
-import sun.security.krb5.internal.l;
-import sun.security.krb5.internal.crypto.j;
-import sun.security.krb5.internal.util.k;
 
 /**
  * A composite widget which holds a list of elements for user selection.
