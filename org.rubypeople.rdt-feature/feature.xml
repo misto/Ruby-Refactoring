@@ -118,7 +118,6 @@ This Agreement is governed by the laws of the State of New York and the intellec
      In addition to that, the following line will be added to build.properties:
      generate.feature@org.rubypeople.rdt.source=org.rubypeople.rdt  -->
 <!--@@INCLUDES@@-->
-<!-- <includes id="org.rubypeople.rdt.source" version="0.0.0"/> -->
 
    <requires>
       <import plugin="org.eclipse.core.resources"/>
