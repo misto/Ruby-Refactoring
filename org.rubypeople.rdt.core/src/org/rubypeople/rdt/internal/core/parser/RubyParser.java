@@ -74,10 +74,10 @@ public class RubyParser {
 				findClassVariable(myLine, lineNum);
 				findInstanceVariable(myLine, lineNum);
 				findGlobal(myLine, lineNum);
-				findPrivateModifier(myLine);
-				findAttributeReaderModifier(myLine);
-				findAttributeWriterModifier(myLine);
-				findAttributeAccessor(myLine);
+				findPrivateModifier(myLine, lineNum);
+				findAttributeReaderModifier(myLine, lineNum);
+				findAttributeWriterModifier(myLine, lineNum);
+				findAttributeAccessor(myLine, lineNum);
 				findEnd(myLine, lineNum);
 				offset = 0;
 				lineNum++;
@@ -94,29 +94,28 @@ public class RubyParser {
 	/**
 	 * @param myLine
 	 */
-	private static void findAttributeAccessor(String myLine) {
-		findAccessModifier(myLine, RubyElement.PUBLIC, "attr_accessor ", "@");
+	private static void findAttributeAccessor(String myLine, int lineNum) {
+		findAccessModifier(myLine, RubyElement.PUBLIC, "attr_accessor ", "@", lineNum);
 	}
 
 	/**
 	 * @param myLine
 	 */
-	private static void findAttributeWriterModifier(String myLine) {
-		// TODO Auto-generated method stub
-		findAccessModifier(myLine, RubyElement.WRITE, "attr_writer ", "@");
+	private static void findAttributeWriterModifier(String myLine, int lineNum) {
+		findAccessModifier(myLine, RubyElement.WRITE, "attr_writer ", "@", lineNum);
 	}
 
 	/**
 	 * @param myLine
 	 */
-	private static void findAttributeReaderModifier(String myLine) {
-		findAccessModifier(myLine, RubyElement.READ, "attr_reader ", "@");
+	private static void findAttributeReaderModifier(String myLine, int lineNum) {
+		findAccessModifier(myLine, RubyElement.READ, "attr_reader ", "@", lineNum);
 	}
 
 	/**
 	 * @param myLine
 	 */
-	private static void findAccessModifier(String myLine, String accessRightsToGrant, String accessModifierTag, String symbolPrefix) {
+	private static void findAccessModifier(String myLine, String accessRightsToGrant, String accessModifierTag, String symbolPrefix, int lineNum) {
 		if (myLine.indexOf(accessModifierTag) == -1) return;
 
 		List tokens = getSymbols(myLine, accessModifierTag);
@@ -128,19 +127,19 @@ public class RubyParser {
 			RubyElement element = parent.getElement(symbolPrefix + elementName);
 			if (element != null) {
 				element.setAccess(accessRightsToGrant);
-			} else {
-				String error = "Attempting to set access rights " + accessRightsToGrant + " to an unknown element " + elementName;
-				log(error);
-				script.addParseError(new ParseException(error));
+				continue;
 			}
+			String error = "Attempting to set access rights " + accessRightsToGrant + " to an unknown element " + elementName;
+			log(error);
+			script.addParseError(new ParseError(error, lineNum, myLine.indexOf(elementName), elementName.length()));
 		}
 	}
 
 	/**
 	 * @param myLine
 	 */
-	private static void findPrivateModifier(String myLine) {
-		findAccessModifier(myLine, RubyElement.PRIVATE, "private ", "");
+	private static void findPrivateModifier(String myLine, int lineNum) {
+		findAccessModifier(myLine, RubyElement.PRIVATE, "private ", "", lineNum);
 	}
 
 	/**
@@ -397,7 +396,7 @@ public class RubyParser {
 			if (!script.contains(requires)) {
 				script.addRequires(requires);
 			} else {
-				script.addParseError(new ParseException("Duplicate requires statement unnecessary."));
+				script.addParseError(new ParseError("Duplicate requires statement unnecessary.", lineNum, requires.getStart().getOffset(), requires.getEnd().getOffset()));
 			}
 		}
 	}
@@ -411,7 +410,7 @@ public class RubyParser {
 		int location = findElement("class ", tokens, curLine);
 		if (location == -1) return;
 		String name = getToken("class ", tokens, curLine);
-		if (Character.isLowerCase(name.charAt(0))) script.addParseError(new ParseException("Class names should begin with an uppercase letter."));
+		if (Character.isLowerCase(name.charAt(0))) script.addParseError(new ParseError("Class names should begin with an uppercase letter.", lineNum, location, location + name.length()));
 		RubyClass rubyClass = new RubyClass(name, new Position(lineNum, location));
 		RubyElement element = peek();
 		log("Adding class to open element: " + element);
@@ -441,7 +440,7 @@ public class RubyParser {
 		int start = findElement("module ", tokens, curLine);
 		if (start == -1) return;
 		String name = getToken("module ", tokens, curLine);
-		if (Character.isLowerCase(name.charAt(0))) script.addParseError(new ParseException("Module names should begin with an uppercase letter."));
+		if (Character.isLowerCase(name.charAt(0))) script.addParseError(new ParseError("Module names should begin with an uppercase letter.", lineNum, start, start + name.length()));
 		RubyModule module = new RubyModule(name, new Position(lineNum, start));
 		script.addModule(module);
 		openElements.add(module);

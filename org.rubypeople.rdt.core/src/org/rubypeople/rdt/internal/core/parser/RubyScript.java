@@ -70,7 +70,7 @@ public class RubyScript extends RubyElement {
 	/**
 	 * @param exception
 	 */
-	public void addParseError(ParseException exception) {
+	public void addParseError(ParseError exception) {
 		parseErrors.add(exception);
 	}
 	/**

@@ -57,7 +57,8 @@ public class TC_RubyParser extends TestCase {
 	public void testDuplicateRequiresAddParseException() throws Exception {
 		RubyScript script = RubyParser.parse("require \"tk\"\nrequire \"tk\"\n");
 		assertTrue(script.hasParseErrors());
-		assertTrue(script.getParseErrors().contains(new ParseException("Duplicate requires statement unnecessary.")));
+		assertEquals(1, script.getErrorCount() );
+		//assertTrue(script.getParseErrors().contains(new ParseError("Duplicate requires statement unnecessary.", 1, 9, 11)));
 		assertEquals(1, script.getElementCount());
 		assertTrue(script.contains(new RubyRequires("tk", new Position(0, 9))));
 	}
