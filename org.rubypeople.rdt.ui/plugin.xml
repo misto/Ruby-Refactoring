@@ -19,6 +19,7 @@
       <import plugin="org.rubypeople.rdt.core"/>
    </requires>
 
+
    <extension
          point="org.eclipse.ui.preferencePages">
       <page
@@ -145,7 +146,7 @@
                id="org.rubypeople.rdt.ui.edit.text.ruby.comment">
          </accelerator>
          <accelerator
-               key="Ctrl+\"
+               key="Ctrl+\\"
                id="org.rubypeople.rdt.ui.edit.text.ruby.uncomment">
          </accelerator>
       </acceleratorSet>
@@ -166,7 +167,6 @@
          </menu>
          <action
                definitionId="org.rubypeople.rdt.ui.edit.text.ruby.uncomment"
-               accelerator="Ctrl+Shift+\\"
                label="%UncommentAction.label"
                retarget="true"
                menubarPath="org.rubypeople.rdt.ui.ruby.menu/editGroup"
@@ -174,7 +174,6 @@
          </action>
          <action
                definitionId="org.rubypeople.rdt.ui.edit.text.ruby.comment"
-               accelerator="Ctrl+Shift+/"
                label="%CommentAction.label"
                retarget="true"
                menubarPath="org.rubypeople.rdt.ui.ruby.menu/editGroup"
@@ -182,10 +181,13 @@
          </action>
       </actionSet>
    </extension>
-   <extension point= "org.eclipse.ui.markerUpdaters"> 
+   <extension
+         point="org.eclipse.ui.markerUpdaters">
       <updater
-      	id="RubyBreakpointMarkerUpdater"
-        markerType="org.rubypeople.rdt.debug.core.RubyBreakpointMarker"
-        class="org.rubypeople.rdt.internal.ui.rubyeditor.RubyBreakpointMarkerUpdater"/>
-   </extension> 
+            markerType="org.rubypeople.rdt.debug.core.RubyBreakpointMarker"
+            class="org.rubypeople.rdt.internal.ui.rubyeditor.RubyBreakpointMarkerUpdater"
+            id="RubyBreakpointMarkerUpdater">
+      </updater>
+   </extension>
+
 </plugin>
