@@ -25,16 +25,22 @@ import org.eclipse.debug.core.ILaunchConfigurationType;
 import org.eclipse.debug.core.ILaunchConfigurationWorkingCopy;
 import org.eclipse.debug.core.ILaunchManager;
 import org.eclipse.debug.ui.DebugUITools;
+import org.eclipse.debug.ui.IDebugModelPresentation;
 import org.eclipse.debug.ui.ILaunchShortcut;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
+import org.eclipse.jface.window.Window;
+import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorPart;
+import org.eclipse.ui.dialogs.ElementListSelectionDialog;
 import org.rubypeople.rdt.core.RubyElement;
 import org.rubypeople.rdt.internal.launching.RubyLaunchConfigurationAttribute;
 import org.rubypeople.rdt.internal.launching.RubyRuntime;
+import org.rubypeople.rdt.internal.ui.rubyeditor.outline.RubyOutlineLabelProvider;
 import org.rubypeople.rdt.testunit.TestunitPlugin;
+import org.rubypeople.rdt.testunit.views.TestUnitMessages;
 
 public class TestUnitLaunchShortcut implements ILaunchShortcut {
 
@@ -84,15 +90,43 @@ public class TestUnitLaunchShortcut implements ILaunchShortcut {
 	private void doLaunch(String mode, RubyElement rubyElement) {
 		try {
 			String container = getContainer(rubyElement);
-			// TODO Check number of available and allow choice if more than one
-			String testClass = TestSearchEngine.findTests((IFile) rubyElement.getUnderlyingResource())[0].getName();
-			ILaunchConfiguration config = findOrCreateLaunchConfiguration(rubyElement, mode, container, testClass, "");
-			if (config != null) {
-				DebugUITools.launch(config, mode);
+			org.rubypeople.rdt.internal.core.parser.ast.RubyElement[] classes = TestSearchEngine.findTests((IFile) rubyElement.getUnderlyingResource());
+			String testClass = null;
+			if (classes.length == 0) {
+				MessageDialog.openInformation(getShell(), TestUnitMessages.getString("LaunchTestAction.dialog.title"), TestUnitMessages.getString("LaunchTestAction.message.notests")); //$NON-NLS-1$ //$NON-NLS-2$
+			} else if (classes.length > 1) {
+				testClass = chooseType(classes, mode);
+			} else {
+				testClass = classes[0].getName();
+			}
+			if (testClass != null) {
+				ILaunchConfiguration config = findOrCreateLaunchConfiguration(rubyElement, mode, container, testClass, "");
+				if (config != null) {
+					DebugUITools.launch(config, mode);
+				}
 			}
 		} catch (CoreException e) {
 			log(e);
 		}
+	}
+
+	/**
+	 * Prompts the user to select a type
+	 * 
+	 * @return the selected type or <code>null</code> if none.
+	 */
+	protected String chooseType(org.rubypeople.rdt.internal.core.parser.ast.RubyElement[] types, String mode) {
+		ElementListSelectionDialog dialog = new ElementListSelectionDialog(getShell(), new RubyOutlineLabelProvider());
+		dialog.setElements(types);
+		dialog.setTitle(TestUnitMessages.getString("LaunchTestAction.dialog.title2")); //$NON-NLS-1$
+		if (mode.equals(ILaunchManager.DEBUG_MODE)) {
+			dialog.setMessage(TestUnitMessages.getString("LaunchTestAction.message.selectTestToRun")); //$NON-NLS-1$
+		} else {
+			dialog.setMessage(TestUnitMessages.getString("LaunchTestAction.message.selectTestToDebug")); //$NON-NLS-1$
+		}
+		dialog.setMultipleSelection(false);
+		if (dialog.open() == Window.OK) { return ((org.rubypeople.rdt.internal.core.parser.ast.RubyElement) dialog.getFirstResult()).getName(); }
+		return null;
 	}
 
 	protected ILaunchConfiguration findOrCreateLaunchConfiguration(RubyElement rubyElement, String mode, String container, String testClass, String testName) throws CoreException {
@@ -114,9 +148,39 @@ public class TestUnitLaunchShortcut implements ILaunchShortcut {
 		case 1:
 			return (ILaunchConfiguration) candidateConfigs.get(0);
 		default:
-			Status status = new Status(Status.WARNING, TestunitPlugin.PLUGIN_ID, 0, "LaunchConfigurationShortcut.Ruby.multipleConfigurationsError", null);
-			throw new CoreException(status);
+			ILaunchConfiguration config = chooseConfiguration(candidateConfigs, mode);
+			if (config != null) { return config; }
+			return null;
 		}
+	}
+
+	/**
+	 * Show a selection dialog that allows the user to choose one of the
+	 * specified launch configurations. Return the chosen config, or
+	 * <code>null</code> if the user cancelled the dialog.
+	 */
+	protected ILaunchConfiguration chooseConfiguration(List configList, String mode) {
+		IDebugModelPresentation labelProvider = DebugUITools.newDebugModelPresentation();
+		ElementListSelectionDialog dialog = new ElementListSelectionDialog(getShell(), labelProvider);
+		dialog.setElements(configList.toArray());
+		dialog.setTitle(TestUnitMessages.getString("LaunchTestAction.message.selectConfiguration")); //$NON-NLS-1$
+		if (mode.equals(ILaunchManager.DEBUG_MODE)) {
+			dialog.setMessage(TestUnitMessages.getString("LaunchTestAction.message.selectDebugConfiguration")); //$NON-NLS-1$
+		} else {
+			dialog.setMessage(TestUnitMessages.getString("LaunchTestAction.message.selectRunConfiguration")); //$NON-NLS-1$
+		}
+		dialog.setMultipleSelection(false);
+		int result = dialog.open();
+		labelProvider.dispose();
+		if (result == Window.OK) { return (ILaunchConfiguration) dialog.getFirstResult(); }
+		return null;
+	}
+
+	/**
+	 * Convenience method to get the window that owns this action's Shell.
+	 */
+	protected Shell getShell() {
+		return TestunitPlugin.getActiveWorkbenchShell();
 	}
 
 	/**
@@ -126,7 +190,7 @@ public class TestUnitLaunchShortcut implements ILaunchShortcut {
 	private String getContainer(RubyElement rubyElement) {
 		IFile rubyFile = (IFile) rubyElement.getUnderlyingResource();
 		String filename = rubyFile.getProjectRelativePath().toString();
-		filename = filename.substring(0, filename.lastIndexOf('.'));
+		//filename = filename.substring(0, filename.lastIndexOf('.'));
 		return filename;
 	}
 

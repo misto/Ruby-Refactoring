@@ -31,6 +31,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.core.resources.IFile;
+import org.eclipse.core.resources.IProject;
+import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
 import org.rubypeople.rdt.internal.core.parser.ParseException;
 import org.rubypeople.rdt.internal.core.parser.RubyParser;
@@ -88,6 +90,33 @@ public class TestSearchEngine {
 			buffer.append("\n");
 		}
 		return buffer.toString();
+	}
+
+	/**
+	 * @param rubyProject
+	 */
+	public static RubyElement[] findTests(IProject rubyProject) {
+		if (rubyProject == null) return new RubyElement[0];
+		try {
+			List list = new ArrayList();
+			IResource[] resources = rubyProject.members();
+			for (int i = 0; i < resources.length; i++) {
+				String name = resources[i].getName();
+				if ( name.endsWith(".rb") || name.endsWith(".rbw") || name.endsWith(".cgi")) {
+					RubyElement[] elements = TestSearchEngine.findTests((IFile) resources[i]);
+					for (int j = 0; j < elements.length; j++ ) {
+						list.add(elements[j]);
+					}
+				}
+			}
+			Object[] listArray = list.toArray();
+			RubyElement[] array = new RubyElement[list.size()];
+			System.arraycopy(listArray, 0, array, 0, listArray.length);
+			return array;
+		} catch (CoreException e) {
+			e.printStackTrace();
+		}
+		return new RubyElement[0];
 	}
 
 }

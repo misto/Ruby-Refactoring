@@ -191,7 +191,7 @@ if __FILE__ == $0
   # 5. test name (optional, unused right now)
   #
   
-  filename = ARGV[0]
+  filename = ARGV[0].slice(0, ARGV[0].rindex('.'))
   require filename.gsub(/.+::/, '')
   port = ARGV[1].to_i
   keepAliveString = ARGV[2]

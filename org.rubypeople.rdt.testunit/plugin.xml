@@ -21,6 +21,8 @@
       <import plugin="org.rubypeople.rdt.launching"/>
       <import plugin="org.rubypeople.rdt.core"/>
       <import plugin="org.eclipse.core.resources"/>
+      <import plugin="org.rubypeople.rdt.ui"/>
+      <import plugin="org.rubypeople.rdt.debug.ui"/>
    </requires>
 
    <extension-point id="internal-testRunTabs" name="%testRunTabs.name" schema="schema/internal-testRunTabs.exsd"/>
@@ -121,6 +123,24 @@
             configTypeID="org.rubypeople.rdt.testunit.launchconfig"
             id="org.rubypeople.rdt.debug.ui.LaunchConfigurationTypeImageTestUnit">
       </launchConfigurationTypeImage>
+   </extension>
+   <extension
+         point="org.eclipse.debug.ui.launchConfigurationTabGroups">
+      <launchConfigurationTabGroup
+            type="org.rubypeople.rdt.testunit.launchconfig"
+            helpContextId="org.rubypeople.rdt.testunit.testunit_tab_group"
+            class="org.rubypeople.rdt.testunit.launcher.TestUnitTabGroup"
+            id="org.rubypeople.rdt.testunit.launchConfigurationTabGroup.testunit">
+         <launchMode
+               perspective="org.eclipse.debug.ui.DebugPerspective"
+               description="%TestUnitTabGroupDescription.debug"
+               mode="debug">
+         </launchMode>
+         <launchMode
+               description="%TestUnitTabGroupDescription.run"
+               mode="run">
+         </launchMode>
+      </launchConfigurationTabGroup>
    </extension>
 
 </plugin>

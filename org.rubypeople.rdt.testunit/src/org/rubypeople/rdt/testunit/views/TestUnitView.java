@@ -55,7 +55,7 @@ import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.part.EditorActionBarContributor;
 import org.eclipse.ui.part.ViewPart;
 import org.eclipse.ui.progress.UIJob;
-import org.rubypeople.rdt.core.RubyElement;
+import org.rubypeople.rdt.internal.core.parser.ast.IRubyElement;
 import org.rubypeople.rdt.testunit.ITestRunListener;
 import org.rubypeople.rdt.testunit.TestunitPlugin;
 import org.rubypeople.rdt.testunit.launcher.SocketUtil;
@@ -549,7 +549,7 @@ public class TestUnitView extends ViewPart implements ITestRunListener3 {
 		firePropertyChange(IWorkbenchPart.PROP_TITLE);
 	}
 
-	private void setViewPartTitle(RubyElement type) {
+	private void setViewPartTitle(IRubyElement type) {
 		String title;
 		if (type == null)
 			title = " "; //$NON-NLS-1$
@@ -922,21 +922,21 @@ public class TestUnitView extends ViewPart implements ITestRunListener3 {
 	protected void doShowStatus() {
 		setContentDescription(fStatus);
 	}
-	
+
 	/*
 	 * @see ITestRunListener2#testTreeEntry
 	 */
-	public void testTreeEntry(final String treeEntry){
+	public void testTreeEntry(final String treeEntry) {
 		postSyncRunnable(new Runnable() {
+
 			public void run() {
-				if(isDisposed()) 
-					return;
-				for (Enumeration e= fTestRunTabs.elements(); e.hasMoreElements();) {
-					TestRunTab v= (TestRunTab) e.nextElement();
+				if (isDisposed()) return;
+				for (Enumeration e = fTestRunTabs.elements(); e.hasMoreElements();) {
+					TestRunTab v = (TestRunTab) e.nextElement();
 					v.newTreeEntry(treeEntry);
 				}
 			}
-		});	
+		});
 	}
 
 	/**
