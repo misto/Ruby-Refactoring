@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<welcomePage title="Ruby Development Tools" format="wrap">
+<intro>Ruby Development Tools aims to bring the powerful features and functionality of the JDT to the Ruby language.</intro>
+
+<item><b>Ruby Editor</b>
+The RDT offers a new editor specialized for the Ruby language.
+The ruby Editor offers Ruby syntax highlighting, code completion, syntax validation, error markers, and code formatting.</item>
+
+<item><b>Outline View</b>
+The RDT also offers a Ruby-specific Outline View.
+This outline view shows a visual mapping of the editor's current contents. Ruby elements are sorted and selecting an element slects and reveals the item in the Ruby Editor.</item>
+
+<item><b>Learn more</b>
+To learn more about the features and functionality of RDT, you can browse the <topic id="/org.rubypeople.rdt.doc.user/toc.xml">RDT Help Contents</topic></item>
+</welcomePage>
