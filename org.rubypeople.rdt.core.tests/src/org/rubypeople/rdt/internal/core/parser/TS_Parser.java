@@ -11,6 +11,7 @@ public class TS_Parser {
 		suite.addTest(new TestSuite(TC_RubyClass.class));
 		suite.addTest(new TestSuite(TC_RubyParser.class));
 		suite.addTest(new TestSuite(TC_RubyParserStack.class));
+		suite.addTest(new TestSuite(TC_RubyElement.class));
 		//$JUnit-END$
 		return suite;
 	}
