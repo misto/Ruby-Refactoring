@@ -33,17 +33,13 @@ import org.eclipse.debug.ui.ILaunchConfigurationTab;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
-import org.eclipse.swt.events.SelectionAdapter;
-import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
-import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.ui.dialogs.ElementListSelectionDialog;
 import org.rubypeople.rdt.internal.debug.ui.RdtDebugUiMessages;
 import org.rubypeople.rdt.internal.launching.InterpreterRunnerConfiguration;
-import org.rubypeople.rdt.internal.launching.RubyLaunchConfigurationAttribute;
 import org.rubypeople.rdt.internal.ui.utils.RubyFileSelector;
 import org.rubypeople.rdt.internal.ui.utils.RubyProjectSelector;
 import org.rubypeople.rdt.testunit.TestunitPlugin;
@@ -60,6 +56,8 @@ public class TestUnitMainTab extends AbstractLaunchConfigurationTab implements I
 	private RubyClassSelector classSelector;
 	protected ElementListSelectionDialog dialog;
 	private IProject rubyProject;
+	protected String lastProject = "";
+	protected String lastFile = "";
 
 	public TestUnitMainTab() {
 		super();
@@ -71,6 +69,7 @@ public class TestUnitMainTab extends AbstractLaunchConfigurationTab implements I
 	 * @see org.eclipse.debug.ui.ILaunchConfigurationTab#createControl(org.eclipse.swt.widgets.Composite)
 	 */
 	public void createControl(Composite parent) {
+		System.out.println("in createControl");
 		Composite composite = createPageRoot(parent);
 
 		new Label(composite, SWT.NONE).setText(RdtDebugUiMessages.getString("LaunchConfigurationTab.RubyEntryPoint.projectLabel"));
@@ -81,8 +80,14 @@ public class TestUnitMainTab extends AbstractLaunchConfigurationTab implements I
 
 			public void modifyText(ModifyEvent evt) {
 				updateLaunchConfigurationDialog();
-				fileSelector.setSelectionText("");
-				classSelector.setSelectionText("");
+				String newProject = projectSelector.getSelectionText();
+				if (!newProject.equals(lastProject)) {
+					System.out.println("Clearing file selector text.");
+					fileSelector.setSelectionText("");
+					System.out.println("Clearing class selector text.");
+					classSelector.setSelectionText("");
+				}
+				lastProject = newProject;
 			}
 		});
 
@@ -94,10 +99,15 @@ public class TestUnitMainTab extends AbstractLaunchConfigurationTab implements I
 
 			public void modifyText(ModifyEvent evt) {
 				updateLaunchConfigurationDialog();
-				classSelector.setSelectionText("");
+				String newFile = fileSelector.getSelectionText();
+				if (!newFile.equals(lastFile)) {
+					System.out.println("Clearing class selector text.");
+					classSelector.setSelectionText("");
+				}
+				lastFile = newFile;
 			}
 		});
-	
+
 		new Label(composite, SWT.NONE).setText(TestUnitMessages.getString("LaunchConfigurationTab.RubyEntryPoint.classLabel"));
 		classSelector = new RubyClassSelector(composite, fileSelector, projectSelector);
 		classSelector.setBrowseDialogMessage(TestUnitMessages.getString("LaunchConfigurationTab.RubyEntryPoint.classSelectorMessage"));
@@ -162,8 +172,10 @@ public class TestUnitMainTab extends AbstractLaunchConfigurationTab implements I
 	 * @see org.eclipse.debug.ui.ILaunchConfigurationTab#performApply(org.eclipse.debug.core.ILaunchConfigurationWorkingCopy)
 	 */
 	public void performApply(ILaunchConfigurationWorkingCopy configuration) {
-		configuration.setAttribute(TestUnitLaunchConfiguration.TESTTYPE_ATTR, classSelector.getValidatedSelectionText());
-		configuration.setAttribute(TestUnitLaunchConfiguration.LAUNCH_CONTAINER_ATTR, fileSelector.getValidatedSelectionText());
+		String classText = classSelector.getValidatedSelectionText();
+		String launchContainer = fileSelector.getValidatedSelectionText();
+		configuration.setAttribute(TestUnitLaunchConfiguration.TESTTYPE_ATTR, classText);
+		configuration.setAttribute(TestUnitLaunchConfiguration.LAUNCH_CONTAINER_ATTR, launchContainer);
 	}
 
 	/*
