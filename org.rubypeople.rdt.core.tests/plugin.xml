@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<plugin
+   id="org.rubypeople.rdt.core.tests"
+   name="org.rubypeople.rdt.core.tests"
+   version="1.0.0">
+
+   <runtime>
+      <library name="rdtcoretests.jar"/>
+   </runtime>
+   <requires>
+      <import plugin="org.eclipse.core.resources"/>
+      <import plugin="org.eclipse.core.runtime"/>
+      <import plugin="org.junit"/>
+      <import plugin="org.rubypeople.rdt.core"/>
+      <import plugin="org.rubypeople.eclipse.shams"/>
+   </requires>
+
+
+</plugin>

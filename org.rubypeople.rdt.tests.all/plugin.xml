@@ -7,5 +7,12 @@
    <runtime>
       <library name="rdttestsall.jar"/>
    </runtime>
+   <requires>
+      <import plugin="org.junit"/>
+      <import plugin="org.rubypeople.rdt.ui.tests"/>
+      <import plugin="org.rubypeople.rdt.debug.ui.tests"/>
+      <import plugin="org.rubypeople.rdt.core.tests"/>
+   </requires>
+
 
 </plugin>

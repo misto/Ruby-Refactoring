@@ -1,8 +1,8 @@
-package org.rubypeople.rdt.internal.core;
+package org.rubypeople.rdt.core.tests.core;
 
 import junit.framework.TestSuite;
 
-public class TS_InternalCore extends TestSuite {
+public class TS_Core extends TestSuite {
 
 	public static TestSuite suite() {
 		TestSuite suite = new TestSuite();

@@ -1,4 +1,4 @@
-package org.rubypeople.rdt.core;
+package org.rubypeople.rdt.core.tests.core;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
@@ -31,7 +31,7 @@ public class TC_RubyProject extends TestCase {
 	}
 
 	public void testGetLibraryPathXML() {
-		RubyProject rubyProject = new RubyProject();
+		ShamRubyProject rubyProject = new ShamRubyProject();
 		rubyProject.setProject(new ShamProject("TheWorkingProject"));
 
 		IProject referencedProject = new ShamProject("TheReferencedProject");
@@ -61,6 +61,10 @@ public class TC_RubyProject extends TestCase {
 		
 		protected IProject getProject(String name) {
 			return new ShamProject();
+		}
+
+		protected String getLoadPathXML() {
+			return super.getLoadPathXML();
 		}
 
 	}

@@ -1,4 +1,4 @@
-package org.rubypeople.rdt.internal.core;
+package org.rubypeople.rdt.core.tests.core;
 
 import junit.framework.TestCase;
 
@@ -7,6 +7,8 @@ import org.eclipse.core.resources.IProject;
 import org.rubypeople.eclipse.shams.resources.ShamFile;
 import org.rubypeople.eclipse.shams.resources.ShamProject;
 import org.rubypeople.rdt.core.RubyFile;
+import org.rubypeople.rdt.internal.core.RubyCore;
+import org.rubypeople.rdt.internal.core.RubyPlugin;
 
 public class TC_RubyCore extends TestCase {
 

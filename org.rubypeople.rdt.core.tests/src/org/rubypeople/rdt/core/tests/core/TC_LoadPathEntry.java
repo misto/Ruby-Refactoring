@@ -1,9 +1,10 @@
-package org.rubypeople.rdt.internal.core;
+package org.rubypeople.rdt.core.tests.core;
 
 import junit.framework.TestCase;
 
 import org.eclipse.core.runtime.Path;
 import org.rubypeople.eclipse.shams.resources.ShamProject;
+import org.rubypeople.rdt.internal.core.LoadPathEntry;
 
 public class TC_LoadPathEntry extends TestCase {
 

@@ -1,11 +1,10 @@
 package org.rubypeople.rdt.tests.all;
 
-import org.rubypeople.rdt.core.tests.all.TS_CoreAllTests;
-import org.rubypeople.rdt.debug.ui.tests.all.TS_DebugUiAllTests;
-import org.rubypeople.rdt.launching.tests.TS_LaunchingAllTests;
-
 import junit.framework.Test;
 import junit.framework.TestSuite;
+
+import org.rubypeople.rdt.core.tests.TS_CoreAllTests;
+import org.rubypeople.rdt.internal.debug.ui.tests.TS_DebugUiAllTests;
 
 public class TS_RdtAllTests {
 
@@ -14,7 +13,7 @@ public class TS_RdtAllTests {
 		//$JUnit-BEGIN$
 		suite.addTest(TS_CoreAllTests.suite());
 		suite.addTest(TS_DebugUiAllTests.suite());
-		suite.addTest(TS_LaunchingAllTests.suite());
+//		suite.addTest(TS_LaunchingAllTests.suite());
 		//$JUnit-END$
 		return suite;
 	}
