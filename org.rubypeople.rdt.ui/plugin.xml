@@ -454,7 +454,7 @@
    <extension
          point="org.eclipse.ui.views">
       <view
-            name="RI View"
+            name="RI"
             icon="icons/full/elcl16/help.gif"
             category="org.rubypeople.rdt.ui.ruby"
             class="org.rubypeople.rdt.internal.ui.infoviews.RIView"
