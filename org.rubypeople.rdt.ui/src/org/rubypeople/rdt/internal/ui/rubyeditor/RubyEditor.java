@@ -19,6 +19,7 @@ import org.rubypeople.rdt.internal.ui.RdtUiMessages;
 import org.rubypeople.rdt.internal.ui.RdtUiPlugin;
 import org.rubypeople.rdt.internal.ui.text.RubySourceViewerConfiguration;
 import org.rubypeople.rdt.internal.ui.text.RubyTextTools;
+import org.rubypeople.rdt.ui.actions.FormatAction;
 import org.rubypeople.rdt.ui.actions.RubyActionGroup;
 import org.rubypeople.rdt.ui.actions.RubyEditorActionDefinitionIds;
 
@@ -62,6 +63,10 @@ public class RubyEditor extends TextEditor {
 		action= new TextOperationAction(RdtUiMessages.getResourceBundle(), "Uncomment.", this, ITextOperationTarget.STRIP_PREFIX);
 		action.setActionDefinitionId(RubyEditorActionDefinitionIds.UNCOMMENT);		
 		setAction("Uncomment", action);
+
+		action= new FormatAction(RdtUiMessages.getResourceBundle(), "Format.", this);
+		action.setActionDefinitionId(RubyEditorActionDefinitionIds.FORMAT);		
+		setAction("Format", action);
 
 		actionGroup = new RubyActionGroup(this, ITextEditorActionConstants.GROUP_EDIT);
 	}
