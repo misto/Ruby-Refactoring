@@ -10,7 +10,7 @@ public class TS_Launching {
 	
 		suite.addTestSuite(TC_RubyInterpreter.class);
 		suite.addTestSuite(TC_RubyRuntime.class);
-	
+		suite.addTestSuite(TC_RunnerLaunching.class) ;
 		return suite;
 	}
 }
