@@ -16,7 +16,7 @@ public class RubyOutlineLabelProvider implements ILabelProvider {
 			return RdtUiImages.get(RdtUiImages.IMG_CTOOLS_RUBYGLOBAL);
 		
 		if (RubyRequires.class.equals(object.getClass()))
-			return RdtUiImages.get(RdtUiImages.IMG_OBJS_IMPORT);
+			return RdtUiImages.get(RdtUiImages.IMG_CTOOLS_RUBYIMPORT);
 		
 		if (RubyModule.class.equals(object.getClass()))
 			return RdtUiImages.get(RdtUiImages.IMG_CTOOLS_RUBYMODULE);
