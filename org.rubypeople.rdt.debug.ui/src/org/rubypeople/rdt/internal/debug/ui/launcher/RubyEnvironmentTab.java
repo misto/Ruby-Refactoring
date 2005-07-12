@@ -8,6 +8,7 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.debug.core.ILaunchConfiguration;
 import org.eclipse.debug.core.ILaunchConfigurationWorkingCopy;
 import org.eclipse.debug.ui.AbstractLaunchConfigurationTab;
+import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.ListViewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ModifyEvent;
@@ -24,7 +25,6 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.TabFolder;
 import org.eclipse.swt.widgets.TabItem;
-import org.eclipse.ui.internal.dialogs.ListContentProvider;
 import org.rubypeople.rdt.core.RubyCore;
 import org.rubypeople.rdt.internal.core.LoadPathEntry;
 import org.rubypeople.rdt.internal.core.RubyProject;
@@ -62,7 +62,7 @@ public class RubyEnvironmentTab extends AbstractLaunchConfigurationTab {
 		loadPathComposite.setLayout(new GridLayout());
 
 		loadPathListViewer = new ListViewer(loadPathComposite, SWT.BORDER | SWT.MULTI | SWT.V_SCROLL | SWT.H_SCROLL);
-		loadPathListViewer.setContentProvider(new ListContentProvider());
+		loadPathListViewer.setContentProvider(new ArrayContentProvider());
 		loadPathListViewer.setLabelProvider(new LoadPathEntryLabelProvider());
 		loadPathListViewer.getList().setLayoutData(new GridData(GridData.FILL_BOTH));
 
