@@ -678,33 +678,70 @@ public class RubyScriptStructureBuilder implements NodeVisitor {
 		return (RubyElement) element;
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.jruby.ast.visitor.NodeVisitor#visitDefsNode(org.jruby.ast.DefsNode)
-	 */
-	public void visitDefsNode(DefsNode iVisited) {
-		handleNode(iVisited);
-		RubyElement type = getCurrentType();
-		RubyMethod method = new RubyMethod(type, iVisited.getName());
-		modelStack.push(method);
 
-		RubyMethodElementInfo info = new RubyMethodElementInfo();
-		info.setArgumentNames(getArgs(iVisited.getArgsNode()));
-		// TODO Set more info!
-		infoStack.push(info);
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.jruby.ast.visitor.NodeVisitor#visitDefsNode(org.jruby.ast.DefsNode)
+     */
+    public void visitDefsNode(DefsNode iVisited) {
+        handleNode(iVisited);       
+        
+        // Get the information no the current parent of this method
+        RubyElementInfo parentInfo = infoStack.peek();
+        
+        /* Get the name of the current static method and add the name of the
+         * class or module to the beginning of it. This avoids instance method
+         * naming conflicts. e.g.: 
+         *    class A
+         *      def self.method; end
+         *      def method; end
+         *    end
+         * will give us:
+         *    A.method
+         *    method
+         * in the Outline View.
+         */ 
+        String name;
+        if( parentInfo instanceof RubyTypeElementInfo ){
+            name = new String(((RubyTypeElementInfo)parentInfo).getName())
+                + "." + iVisited.getName(); }
+        else{
+            name = iVisited.getName(); }
+        
+        // Get the visibility of the current static method 
+        Visibility visibility = currentVisibility;
+        
+        // Get the type of the current parent element
+        RubyElement type = getCurrentType();
+        RubyMethod method = new RubySingletonMethod(type, name);
+        modelStack.push(method);
+                
+        parentInfo.addChild( method );
 
-		newElements.put(method, info);
+        
+        RubyMethodElementInfo info = new RubyMethodElementInfo();
+        
+        // TODO Set more info!
+        infoStack.push(info);
+        ISourcePosition pos = iVisited.getPosition();
+        setKeywordRange("def", pos, info, name);
+        
+        info.setArgumentNames(getArgs(iVisited.getArgsNode()));
+        info.setVisibility(convertVisibility(visibility));
 
-		// FIXME Evaluate the receiver!
-		visitNode(iVisited.getReceiverNode());
-		visitNode(iVisited.getArgsNode());
-		visitNode(iVisited.getBodyNode());
+        newElements.put(method, info);
 
-		modelStack.pop();
-		infoStack.pop();
-	}
+        // FIXME Evaluate the receiver!
+        visitNode(iVisited.getReceiverNode());
+        visitNode(iVisited.getArgsNode());
+        visitNode(iVisited.getBodyNode());
+        
+        modelStack.pop();
+        infoStack.pop();
+    }
 
+    
 	/*
 	 * (non-Javadoc)
 	 * 

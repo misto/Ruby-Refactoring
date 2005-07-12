@@ -44,6 +44,9 @@ public class RubyPluginImages {
 	public static final String IMG_CTOOLS_RUBY_METHOD = NAME_PREFIX + "ruby_method.gif";
 	public static final String IMG_CTOOLS_RUBYMETHOD_PRO = NAME_PREFIX + "ruby_method_pro.gif";
 	public static final String IMG_CTOOLS_RUBYMETHOD_PUB = NAME_PREFIX + "ruby_method_pub.gif";
+    public static final String IMG_CTOOLS_RUBY_SINGLETONMETHOD = NAME_PREFIX + "ruby_singletonmethod.gif";
+	public static final String IMG_CTOOLS_RUBY_SINGLETONMETHOD_PUB = NAME_PREFIX + "ruby_singletonmethod_pub.gif";
+	public static final String IMG_CTOOLS_RUBY_SINGLETONMETHOD_PRO = NAME_PREFIX + "ruby_singletonmethod_pro.gif";
 	public static final String IMG_CTOOLS_RUBY_CLASS_VAR = NAME_PREFIX + "ruby_class_var.gif";
 	public static final String IMG_CTOOLS_RUBY_INSTANCE_VAR = NAME_PREFIX + "ruby_instance_var.gif";
 	public static final String IMG_CTOOLS_RUBY_CONSTANT = NAME_PREFIX + "ruby_constant.gif";
@@ -78,6 +81,9 @@ public class RubyPluginImages {
 		createManaged(T_CTOOL, IMG_CTOOLS_RUBY_METHOD);
 		createManaged(T_CTOOL, IMG_CTOOLS_RUBYMETHOD_PRO);
 		createManaged(T_CTOOL, IMG_CTOOLS_RUBYMETHOD_PUB);
+        createManaged(T_CTOOL, IMG_CTOOLS_RUBY_SINGLETONMETHOD );
+		createManaged(T_CTOOL, IMG_CTOOLS_RUBY_SINGLETONMETHOD_PUB );
+		createManaged(T_CTOOL, IMG_CTOOLS_RUBY_SINGLETONMETHOD_PRO );
 		createManaged(T_CTOOL, IMG_CTOOLS_RUBY_CLASS_VAR);
 		createManaged(T_CTOOL, IMG_CTOOLS_RUBY_CONSTANT);
 		createManaged(T_CTOOL, IMG_CTOOLS_RUBY_LOCAL_VAR);

@@ -29,6 +29,17 @@ public class RubyElementLabelProvider implements ILabelProvider {
 			if (rubyElement.isType(IRubyElement.CLASS_VAR)) return RubyPluginImages.get(RubyPluginImages.IMG_CTOOLS_RUBY_CLASS_VAR);
 			if (rubyElement.isType(IRubyElement.LOCAL_VAR)) return RubyPluginImages.get(RubyPluginImages.IMG_CTOOLS_RUBY_LOCAL_VAR);
 			if (rubyElement.isType(IRubyElement.IMPORT)) return RubyPluginImages.get(RubyPluginImages.IMG_CTOOLS_RUBY_IMPORT);
+			if (rubyElement.isType(IRubyElement.SINGLETON_METHOD)) {
+				IMethod method = (IMethod) rubyElement;				
+				try {
+					if (method.getVisibility() == IMethod.PUBLIC) { return RubyPluginImages.get(RubyPluginImages.IMG_CTOOLS_RUBY_SINGLETONMETHOD_PUB); }
+					if (method.getVisibility() == IMethod.PROTECTED) { return RubyPluginImages.get(RubyPluginImages.IMG_CTOOLS_RUBY_SINGLETONMETHOD_PRO); }
+				} catch (RubyModelException e) {
+					RubyPlugin.log(e);
+				}
+				// assume it's private
+				return RubyPluginImages.get(RubyPluginImages.IMG_CTOOLS_RUBY_SINGLETONMETHOD);
+			}
 			if (rubyElement.isType(IRubyElement.METHOD)) {
 				IMethod method = (IMethod) rubyElement;
 				try {
