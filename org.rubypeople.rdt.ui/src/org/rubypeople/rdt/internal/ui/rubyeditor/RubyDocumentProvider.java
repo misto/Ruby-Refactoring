@@ -318,7 +318,8 @@ public class RubyDocumentProvider extends TextFileDocumentProvider {
 	 * @param toCreateOrModify the resource to create or modify
 	 * @return the minimal scheduling rule needed to modify or create a resource
 	 */
-	private ISchedulingRule computeSchedulingRule(IResource toCreateOrModify) {
+	/* should call the inherited computeSchedulingRule now
+	protected ISchedulingRule computeSchedulingRule(IResource toCreateOrModify) {
 		IResourceRuleFactory factory= ResourcesPlugin.getWorkspace().getRuleFactory();
 		if (toCreateOrModify.exists()) {
 			return factory.modifyRule(toCreateOrModify);
@@ -331,7 +332,8 @@ public class RubyDocumentProvider extends TextFileDocumentProvider {
 		
 		return factory.createRule(toCreateOrModify);
 	}
-
+    */
+	
 	/**
 	 * @param element
 	 * @return
