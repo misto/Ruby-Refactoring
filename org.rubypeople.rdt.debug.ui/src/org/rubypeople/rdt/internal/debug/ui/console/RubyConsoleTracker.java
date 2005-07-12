@@ -23,10 +23,10 @@ package org.rubypeople.rdt.internal.debug.ui.console;
 import java.io.File;
 
 import org.eclipse.debug.ui.console.IConsole;
-import org.eclipse.debug.ui.console.IConsoleHyperlink;
 import org.eclipse.debug.ui.console.IConsoleLineTracker;
 import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.IRegion;
+import org.eclipse.ui.console.IHyperlink;
 import org.rubypeople.rdt.internal.ui.util.StackTraceLine;
 
 /**
@@ -92,7 +92,7 @@ public class RubyConsoleTracker implements IConsoleLineTracker {
 				StackTraceLine stackTraceLine = new StackTraceLine(text);
 				if (! existanceChecker.fileExists(stackTraceLine.getFilename()))
 					return;
-				IConsoleHyperlink link = new RubyStackTraceHyperlink(fConsole, stackTraceLine);
+				IHyperlink link = new RubyStackTraceHyperlink(fConsole, stackTraceLine);
 				fConsole.addLink(link, line.getOffset() + prefix + stackTraceLine.offset() , stackTraceLine.length());
 								
 				prefix = stackTraceLine.offset() + stackTraceLine.length();
