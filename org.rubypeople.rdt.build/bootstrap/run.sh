@@ -1,6 +1,6 @@
 echo using RDT_BUILD_HOME: ${RDT_BUILD_HOME:?must be set}
-eclipseDir=${RDT_BUILD_HOME}/eclipse-3.0.1
-pdeBuildPluginVersion=3.0.1
+eclipseDir=${RDT_BUILD_HOME}/eclipse-3.1
+pdeBuildPluginVersion=3.1.0
 buildDirectory=${RDT_BUILD_TARGET_DIR:-${RDT_BUILD_HOME}/tmp/PlugInBuildDir}
 bootstrapDir=${buildDirectory}/org.rubypeople.rdt.build/bootstrap
 verboseAnt=${RDT_ANT_VERBOSE:+-verbose}
