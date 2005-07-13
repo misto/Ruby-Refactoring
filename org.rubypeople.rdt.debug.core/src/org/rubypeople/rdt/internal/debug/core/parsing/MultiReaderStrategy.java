@@ -102,13 +102,7 @@ public class MultiReaderStrategy extends AbstractReadStrategy {
 	}
 
 	protected synchronized void removeReader(XmlStreamReader streamReader) {
-		
-		try {
-			((Thread) threads.get(streamReader)).interrupt();
-		} catch (RuntimeException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		((Thread) threads.get(streamReader)).interrupt();
 		threads.remove(streamReader);
 		streamReaders.remove(streamReader);
 	}
