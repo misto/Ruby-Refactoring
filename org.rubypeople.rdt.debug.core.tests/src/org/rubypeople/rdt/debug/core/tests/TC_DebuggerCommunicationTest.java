@@ -256,7 +256,7 @@ public class TC_DebuggerCommunicationTest extends TestCase {
 		assertEquals(3, hit.getLine());
 		assertEquals(getOSIndependent(getTmpDir() + "test.rb"), hit.getFile());
 		assertTrue(hit.isException());
-		assertEquals("message \\dir\\file: <xml/>", ((ExceptionSuspensionPoint) hit).getExceptionMessage());
+		assertEquals("message \\dir\\file: <xml/> <8>", ((ExceptionSuspensionPoint) hit).getExceptionMessage());
 		assertEquals("RuntimeError", ((ExceptionSuspensionPoint) hit).getExceptionType());
 		out.println("cont");
 	}
