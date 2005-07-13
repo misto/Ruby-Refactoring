@@ -14,12 +14,14 @@ import org.eclipse.core.resources.IProjectNature;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IResourceVisitor;
 import org.eclipse.core.resources.IWorkspace;
+import org.eclipse.core.resources.ResourceAttributes;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IPluginDescriptor;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.QualifiedName;
+import org.eclipse.core.runtime.content.IContentTypeMatcher;
 
 public class ShamProject extends ShamResource implements IProject {
 	protected String projectName;
@@ -316,6 +318,26 @@ public class ShamProject extends ShamResource implements IProject {
 	 */
 	public void open(int updateFlags, IProgressMonitor monitor) throws CoreException {
 		throw new RuntimeException("Need to implement on sham.");
+	}
+
+	public IContentTypeMatcher getContentTypeMatcher() throws CoreException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public ResourceAttributes getResourceAttributes() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public void revertModificationStamp(long value) throws CoreException {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public void setResourceAttributes(ResourceAttributes attributes) throws CoreException {
+		// TODO Auto-generated method stub
+		
 	}
 
 

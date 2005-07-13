@@ -201,5 +201,10 @@ public class TC_RubySourceLocator extends TestCase {
 		public ILaunch launch(String mode, IProgressMonitor monitor, boolean build) throws CoreException {
 			return null;
 		}
+
+		public ILaunch launch(String mode, IProgressMonitor monitor, boolean build, boolean register) throws CoreException {
+			// TODO Auto-generated method stub
+			return null;
+		}
 }
 }

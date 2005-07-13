@@ -8,13 +8,16 @@ import junit.framework.TestCase;
 import org.eclipse.debug.core.model.IProcess;
 import org.eclipse.debug.core.model.IStreamMonitor;
 import org.eclipse.debug.core.model.IStreamsProxy;
-import org.eclipse.debug.internal.ui.views.console.ConsoleOutputTextStore;
 import org.eclipse.debug.ui.console.IConsole;
 import org.eclipse.debug.ui.console.IConsoleHyperlink;
 import org.eclipse.jface.text.AbstractDocument;
 import org.eclipse.jface.text.DefaultLineTracker;
+import org.eclipse.jface.text.GapTextStore;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.IRegion;
+import org.eclipse.jface.text.hyperlink.IHyperlink;
+import org.eclipse.ui.console.IOConsoleOutputStream;
+import org.eclipse.ui.console.IPatternMatchListener;
 import org.rubypeople.rdt.internal.debug.ui.console.RubyConsoleTracker;
 import org.rubypeople.rdt.internal.debug.ui.console.RubyStackTraceHyperlink;
 import org.rubypeople.rdt.internal.debug.ui.console.RubyConsoleTracker.FileExistanceChecker;
@@ -114,7 +117,10 @@ public class TC_RubyConsoleTracker extends TestCase {
 			assertEquals(expectedLineNumber, metaLink.link.getLineNumber());
 		}
 				
-		public void addLink(IConsoleHyperlink pLink, int pOffset, int pLength) {
+		public void addLink(IConsoleHyperlink pLink, int pOffset, int pLength) {			
+		}
+		
+		public void addLink(org.eclipse.ui.console.IHyperlink  pLink, int pOffset, int pLength) {
 			MetaLink metaLink = new MetaLink();
 			metaLink.link = (RubyStackTraceHyperlink) pLink ;
 			metaLink.offset = pOffset ;
@@ -134,7 +140,7 @@ public class TC_RubyConsoleTracker extends TestCase {
 		public IProcess getProcess() {
 			throw new RuntimeException("Not Implemented Exception");
 		}
-		public IRegion getRegion(IConsoleHyperlink link) {
+		public IRegion getRegion(IConsole link) {
 			throw new RuntimeException("Not Implemented Exception");
 		}
 
@@ -142,11 +148,37 @@ public class TC_RubyConsoleTracker extends TestCase {
 			doc.set(pLine) ;
 			tracker.lineAppended(doc.getLineInformationOfOffset(1)) ;
 		}
+
+		public IRegion getRegion(IConsoleHyperlink link) {
+			// TODO Auto-generated method stub
+			return null;
+		}
+
+		public IRegion getRegion(org.eclipse.ui.console.IHyperlink link) {
+			// TODO Auto-generated method stub
+			return null;
+		}
+
+		public void addPatternMatchListener(IPatternMatchListener matchListener) {
+			// TODO Auto-generated method stub
+			
+		}
+
+		public void removePatternMatchListener(IPatternMatchListener matchListener) {
+			// TODO Auto-generated method stub
+			
+		}
+
+		public IOConsoleOutputStream getStream(String streamIdentifier) {
+			// TODO Auto-generated method stub
+			return null;
+		}
 	}
 
 	public class SimpleDocument extends AbstractDocument {
 		public SimpleDocument() {
-			this.setTextStore(new ConsoleOutputTextStore(1000)) ;
+			// The text store is not really necessary, but there is a not null assert in AbstractDocument 
+			this.setTextStore(new GapTextStore(1,2)) ;
 			setLineTracker(new DefaultLineTracker());
 			completeInitialization();
 		}

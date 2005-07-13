@@ -4,6 +4,7 @@ import java.io.ByteArrayInputStream;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
+import java.io.Reader;
 
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFile;
@@ -13,6 +14,7 @@ import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IProjectDescription;
 import org.eclipse.core.resources.IResourceVisitor;
 import org.eclipse.core.resources.IWorkspace;
+import org.eclipse.core.resources.ResourceAttributes;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -300,5 +302,25 @@ public class ShamFile extends ShamResource implements IFile {
 	public IContentDescription getContentDescription() throws CoreException {
 		// TODO Auto-generated method stub
 		return null;
+	}
+
+	public String getCharsetFor(Reader reader) throws CoreException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public ResourceAttributes getResourceAttributes() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public void revertModificationStamp(long value) throws CoreException {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public void setResourceAttributes(ResourceAttributes attributes) throws CoreException {
+		// TODO Auto-generated method stub
+		
 	}
 }

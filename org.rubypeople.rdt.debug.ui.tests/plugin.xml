@@ -32,6 +32,7 @@
       <import plugin="org.rubypeople.eclipse.testutils"/>
       <import plugin="org.rubypeople.rdt.debug.core"/>
       <import plugin="org.eclipse.core.runtime"/>
+      <import plugin="org.eclipse.ui.console"/>
    </requires>
 
    <extension

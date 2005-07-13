@@ -199,4 +199,9 @@ public class ShamLaunchManager implements ILaunchManager {
 		throw new RuntimeException("Need to implement on sham.");
 	}
 
+	public Map getNativeEnvironmentCasePreserved() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 }

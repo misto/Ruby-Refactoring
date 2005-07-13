@@ -8,6 +8,7 @@ import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IResourceProxyVisitor;
 import org.eclipse.core.resources.IResourceVisitor;
 import org.eclipse.core.resources.IWorkspace;
+import org.eclipse.core.resources.ResourceAttributes;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -242,6 +243,21 @@ public class ShamResource implements IResource {
 
 	public boolean isConflicting(ISchedulingRule rule) {
 		throw new RuntimeException("Need to implement on sham.");
+	}
+
+	public ResourceAttributes getResourceAttributes() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public void revertModificationStamp(long value) throws CoreException {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public void setResourceAttributes(ResourceAttributes attributes) throws CoreException {
+		// TODO Auto-generated method stub
+		
 	}
 
 }
