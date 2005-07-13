@@ -68,7 +68,7 @@ public class RubyApplicationShortcut implements ILaunchShortcut {
 			log("Could not retrieve input from editor: " + editor.getTitle());
 			return;
 		}
-		RubyElement rubyElement = (RubyElement) input.getAdapter(RubyElement.class);
+		RubyElement rubyElement = (RubyElement) input.getAdapter(IRubyElement.class);
 		if (rubyElement == null) {
 			log("Editor input is not a ruby file or external ruby file.");
 			return;
