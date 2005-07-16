@@ -12,6 +12,13 @@ Changes since Release of 0.5.0
 * Task tag recognition
     * Ability to set multiple tags
     * Ability to set low, normal or high priorities for tags
+    * Early versions from Head (no official releases) would install a TODO marker that
+      would not be removed. This bug was fixed, but if you've got "stuck Tasks" that 
+      don't match actual task tags in your source file, there are two ways to remove them.
+      1) open the file in the text editor (right-click on the file in Resource Navigator, and 
+      select Open With - Text Editor).  You can then right click on the task tag in the left margin
+      and select Remove Task
+      2) If this doesn't work, you need to basically delete the file, and create a new one in its place.
 * Added shortcuts for inspection during debug session:
     * Extension to the editor's pop-up menu
     * Preference page
