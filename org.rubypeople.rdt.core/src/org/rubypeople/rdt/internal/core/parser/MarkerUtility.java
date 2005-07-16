@@ -116,7 +116,7 @@ public class MarkerUtility {
 			map.put(IMarker.TRANSIENT, new Boolean(false));
 			map.put(IMarker.CHAR_START, new Integer(task.getSourceStart()));
 			map.put(IMarker.CHAR_END, new Integer(task.getSourceEnd()));
-			marker = resource.createMarker(IMarker.TASK);
+			marker = resource.createMarker(IRubyModelMarker.TASK_MARKER);
 			marker.setAttributes(map);
 		}
 	}
