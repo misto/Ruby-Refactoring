@@ -105,7 +105,7 @@ public class MarkerUtility {
 	private static void createTask(IResource resource, TaskTag task) throws CoreException {
 		int lineNumber = task.getSourceLineNumber();
 		if (lineNumber <= 0) lineNumber = 1;
-		IMarker marker = markerExists(resource, task.getMessage(), lineNumber, IMarker.TASK);
+		IMarker marker = markerExists(resource, task.getMessage(), lineNumber, IRubyModelMarker.TASK_MARKER);
 		if (marker == null) {
 			HashMap map = new HashMap();
 			map.put(IMarker.PRIORITY, new Integer(task.getPriority()));
