@@ -10,7 +10,6 @@
  *******************************************************************************/
 package org.rubypeople.rdt.testunit.launcher;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -45,7 +44,7 @@ import org.rubypeople.rdt.testunit.views.TestUnitMessages;
 
 public class TestUnitLaunchShortcut implements ILaunchShortcut {
 
-	private static final String TEST_RUNNER_FILE = "RemoteTestRunner.rb";
+	static final String TEST_RUNNER_FILE = "RemoteTestRunner.rb";
 
 	public void launch(ISelection selection, String mode) {
 		Object firstSelection = null;
@@ -183,18 +182,15 @@ public class TestUnitLaunchShortcut implements ILaunchShortcut {
 			ILaunchConfigurationWorkingCopy wc = configType.newInstance(null, getLaunchManager().generateUniqueLaunchConfigurationNameFrom(rubyFile.getName()));
 			wc.setAttribute(RubyLaunchConfigurationAttribute.PROJECT_NAME, rubyFile.getProject().getName());
 
-			String location = TestunitPlugin.getDefault().getBundle().getLocation();
-			int prefixLength = location.indexOf('@');
-			if (prefixLength == -1) { throw new RuntimeException("Location of launching bundle does not contain @: " + location); }
-			String pluginDir = location.substring(prefixLength + 1) + "ruby";
-			if (!new File(pluginDir).exists()) { throw new RuntimeException("Expected directory of RemoteTestRunner.rb does not exist: " + pluginDir); }
 			int port = SocketUtil.findFreePort();
-			wc.setAttribute(RubyLaunchConfigurationAttribute.FILE_NAME, pluginDir + File.separator + TEST_RUNNER_FILE);
+			// FIXME Probably shouldn't write this out.  It's now ignored at runtime
+			wc.setAttribute(RubyLaunchConfigurationAttribute.FILE_NAME, TestUnitRunnerConfiguration.getTestRunnerPath());
 			wc.setAttribute(RubyLaunchConfigurationAttribute.WORKING_DIRECTORY, TestUnitLaunchShortcut.getDefaultWorkingDirectory(rubyFile.getProject()));
 			wc.setAttribute(RubyLaunchConfigurationAttribute.SELECTED_INTERPRETER, RubyRuntime.getDefault().getSelectedInterpreter().getName());
 			wc.setAttribute(TestUnitLaunchConfigurationDelegate.LAUNCH_CONTAINER_ATTR, container);
 			wc.setAttribute(TestUnitLaunchConfigurationDelegate.TESTNAME_ATTR, testName);
 			wc.setAttribute(TestUnitLaunchConfigurationDelegate.TESTTYPE_ATTR, "");
+			// FIXME shouldn't this be determined at RUN time, not LAUNCH creation time?
 			wc.setAttribute(TestUnitLaunchConfigurationDelegate.PORT_ATTR, port);
 			wc.setAttribute(ILaunchConfiguration.ATTR_SOURCE_LOCATOR_ID, "org.rubypeople.rdt.debug.ui.rubySourceLocator");
 			config = wc.doSave();

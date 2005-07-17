@@ -1,5 +1,7 @@
 package org.rubypeople.rdt.testunit.launcher;
 
+import java.io.File;
+
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
@@ -25,6 +27,10 @@ public class TestUnitRunnerConfiguration extends InterpreterRunnerConfiguration 
 			}
 		}
 		return filename;
+	}
+	
+	public String getFileName() {
+		return getTestRunnerPath();
 	}
 
 	/*
@@ -80,5 +86,20 @@ public class TestUnitRunnerConfiguration extends InterpreterRunnerConfiguration 
 		String absoluteTestFilePath = RdtLaunchingPlugin.osDependentPath(this.getAbsoluteTestFileName());
 		if (absoluteTestFilePath.length() == 0) { return super.renderLoadPath(); }
 		return super.renderLoadPath() + " -I " + absoluteTestFilePath;
+	}
+
+	public static String getTestRunnerPath() {
+		String location = TestunitPlugin.getDefault().getBundle().getLocation();
+		int prefixLength = location.indexOf('@');
+		if (prefixLength == -1)  
+			throw new RuntimeException("Location of launching bundle does not contain @: " + location); 
+		
+		String pluginDir = location.substring(prefixLength + 1) + "ruby";
+		File pluginDirFile = new File(pluginDir);
+		
+		if (!pluginDirFile.exists()) 
+			throw new RuntimeException("Expected directory of RemoteTestRunner.rb does not exist: " + pluginDir); 
+	
+		return pluginDirFile.getAbsolutePath() + File.separator + TestUnitLaunchShortcut.TEST_RUNNER_FILE;
 	}
 }
