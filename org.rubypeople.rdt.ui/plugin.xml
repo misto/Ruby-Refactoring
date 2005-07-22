@@ -164,6 +164,7 @@
             class="org.rubypeople.rdt.internal.ui.rubyeditor.RubyEditor"
             contributorClass="org.rubypeople.rdt.internal.ui.rubyeditor.RubyEditorActionContributor"
             id="org.rubypeople.rdt.ui.EditorRubyFile">
+         <contentTypeBinding contentTypeId="org.rubypeople.rdt.core.rubySource"/>
       </editor>
       <editor
             name="%ExternalEditorRubyFile.name"
