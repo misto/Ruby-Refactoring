@@ -32,3 +32,5 @@ Changes since Release of 0.5.0
 * Fixed bug [1098315]: Incorrect formatting if semicolon are used directly attached to keywords, i.e. no separating spaces
 * Test::Unit tests can be launched in debug mode
 * Syntax highlighting (and customization) of regular expressions and commands
+* Committed patch by Khaled Agrama so Eclipse 3.1 would recognize .rb files with Ruby Editor
+* Committed patch for bug 959808. Singleton methods are now recognized correctly in the outlinew view
