@@ -140,5 +140,29 @@
          </launchMode>
       </launchConfigurationTabGroup>
    </extension>
-
+   <extension
+         point="org.eclipse.ui.commands">
+      <command
+            name="%TestUnitShortcut.description.run"
+            description="%TestUnitShortcut.description.run"
+            categoryId="org.eclipse.debug.ui.category.run"
+            id="org.rubypeople.rdt.testunit.testunitShortcut.run">
+      </command>
+      <command
+            name="%TestUnitShortcut.description.debug"
+            description="%TestUnitShortcut.description.debug"
+            categoryId="org.eclipse.debug.ui.category.run"
+            id="org.rubypeople.rdt.testunit.testunitShortcut.debug">
+      </command>
+   </extension>
+   <extension point="org.eclipse.ui.bindings">
+      <key
+            sequence="M3+M2+D U"
+            commandId="org.rubypeople.rdt.testunit.testunitShortcut.debug"
+            schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"/>
+      <key
+            sequence="M3+M2+X U"
+            commandId="org.rubypeople.rdt.testunit.testunitShortcut.run"
+            schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"/>
+   </extension>
 </plugin>

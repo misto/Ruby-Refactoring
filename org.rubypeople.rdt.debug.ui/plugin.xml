@@ -67,19 +67,6 @@
       </launchConfigurationTabGroup>
    </extension>
    <extension
-         point="org.eclipse.debug.ui.launchShortcuts">
-      <shortcut
-            label="%LaunchShortcut.Ruby.label"
-            icon="icons/full/ctool16/run_ruby.gif"
-            class="org.rubypeople.rdt.internal.debug.ui.launcher.RubyApplicationShortcut"
-            modes="run, debug"
-            id="org.rubypeople.rdt.debug.ui.applicationshortcut.ruby">
-         <perspective
-               id="org.eclipse.debug.ui.DebugPerspective">
-         </perspective>
-      </shortcut>
-   </extension>
-   <extension
          point="org.eclipse.ui.editorActions">
       <editorContribution
             targetID="org.rubypeople.rdt.ui.EditorRubyFile"
@@ -274,11 +261,11 @@
                </with>
             </enablement>
             <contextLabel
-                  label="%ContextualRunRubyApplication.label"
+                  label="%LaunchShortcut.Ruby.label"
                   mode="run">
             </contextLabel>
             <contextLabel
-                  label="%ContextualDebugRubyApplication.label"
+                  label="%LaunchShortcut.Ruby.label"
                   mode="debug">
             </contextLabel>
          </contextualLaunch>
@@ -286,7 +273,43 @@
                id="org.rubypeople.rdt.ui.PerspectiveRuby">
          </perspective>
       </shortcut>
+      <shortcut
+            label="%LaunchShortcut.Ruby.label"
+            icon="icons/full/ctool16/run_ruby.gif"
+            class="org.rubypeople.rdt.internal.debug.ui.launcher.RubyApplicationShortcut"
+            modes="run, debug"
+            id="org.rubypeople.rdt.debug.ui.applicationshortcut.ruby">
+         <perspective
+               id="org.eclipse.debug.ui.DebugPerspective">
+         </perspective>
+      </shortcut>
    </extension>
+   <extension
+         point="org.eclipse.ui.commands">
+      <command
+            name="%ContextualRunRubyApplication.label"
+            description="%ContextualRunRubyApplication.label"
+            categoryId="org.eclipse.debug.ui.category.run"
+            id="org.rubypeople.rdt.debug.ui.RubyShortcut.run">
+      </command>
+      <command
+            name="%ContextualDebugRubyApplication.label"
+            description="%ContextualDebugRubyApplication.label"
+            categoryId="org.eclipse.debug.ui.category.run"
+            id="org.rubypeople.rdt.debug.ui.RubyShortcut.debug">
+      </command>
+   </extension>
+   <extension point="org.eclipse.ui.bindings">
+      <key
+            sequence="M3+M2+D R"
+            commandId="org.rubypeople.rdt.debug.ui.RubyShortcut.debug"
+            schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"/>
+      <key
+            sequence="M3+M2+X R"
+            commandId="org.rubypeople.rdt.debug.ui.RubyShortcut.run"
+            schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"/>
+   </extension>
+   
    <extension 
    		 point="org.eclipse.ui.cheatsheets.cheatSheetContent">
      <category

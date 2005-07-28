@@ -34,3 +34,4 @@ Changes since Release of 0.5.0
 * Syntax highlighting (and customization) of regular expressions and commands
 * Committed patch by Khaled Agrama so Eclipse 3.1 would recognize .rb files with Ruby Editor
 * Committed patch for bug 959808. Singleton methods are now recognized correctly in the outlinew view
+* Create commands for launch short cuts so keys could be bound to them.  Configured default key bindings.
