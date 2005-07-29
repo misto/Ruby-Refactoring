@@ -249,8 +249,9 @@ public class RubyCore extends Plugin {
 		int prefixLength = location.indexOf('@');
 		if (prefixLength == -1) { throw new RuntimeException("Location of launching bundle does not contain @: " + location); }
 		String pluginDir = location.substring(prefixLength + 1);
-		if (!new File(pluginDir).exists()) { throw new RuntimeException("Expected directory of eclipseDebug.rb does not exist: " + pluginDir); }
-		return pluginDir;
+		File pluginDirFile = new File(pluginDir);
+		if (!pluginDirFile.exists()) { throw new RuntimeException("Expected directory of eclipseDebug.rb does not exist: " + pluginDir); }
+		return pluginDirFile.getAbsolutePath()+"/";
 	}
 
 	public static IProject[] getRubyProjects() {
