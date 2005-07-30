@@ -158,7 +158,7 @@ public class RubySourceViewerConfiguration extends SourceViewerConfiguration {
 	    if (sourceViewer instanceof RubySourceViewer) {
 	        RubySourceViewer viewer = (RubySourceViewer) sourceViewer;
 	        if (viewer.isTabReplacing()) {
-				return new String[] { viewer.getTabReplaceString(), "\t", "" }; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+				return new String[] { viewer.getIndentString(), "\t", " " }; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 			}
 	    }
 	    return super.getIndentPrefixes(sourceViewer, contentType); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$

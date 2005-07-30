@@ -8,7 +8,9 @@ package org.rubypeople.rdt.internal.ui.rubyeditor;
 
 import java.util.Arrays;
 
+import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.DocumentCommand;
+import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.source.IOverviewRuler;
 import org.eclipse.jface.text.source.IVerticalRuler;
 import org.eclipse.jface.text.source.projection.ProjectionViewer;
@@ -19,9 +21,9 @@ import org.rubypeople.rdt.ui.PreferenceConstants;
 /* Copied from Ant StatusLineSourceViewer */
 public class RubySourceViewer extends ProjectionViewer {
 
-    private String tabReplaceString;
     private boolean isTabReplacing = false;
     private boolean fIgnoreTextConverters = false;
+	private TabExpander tabExpander;
 
     public RubySourceViewer(Composite composite, IVerticalRuler verticalRuler,
             IOverviewRuler overviewRuler, boolean overviewRulerVisible, int styles) {
@@ -47,7 +49,7 @@ public class RubySourceViewer extends ProjectionViewer {
     protected void customizeDocumentCommand(DocumentCommand command) {
         super.customizeDocumentCommand(command);
         if (!fIgnoreTextConverters) {
-            convertTabs(command);
+            convertTabs(command, getDocument());
         }
         fIgnoreTextConverters = false;
     }
@@ -58,29 +60,23 @@ public class RubySourceViewer extends ProjectionViewer {
         if (this.isTabReplacing) {
             int length = RubyPlugin.getDefault().getPreferenceStore().getInt(
                     PreferenceConstants.FORMAT_INDENTATION);
-            char[] spaces = new char[length];
-            Arrays.fill(spaces, ' ');
-            tabReplaceString = new String(spaces);
+            tabExpander = new TabExpander(length);
         }
     }
 
-    protected void convertTabs(DocumentCommand command) {
-        if (!isTabReplacing) { return; }
-        if (command.text.equals("\t")) {
-            command.text = this.tabReplaceString;
-        }
+    protected void convertTabs(DocumentCommand command, IDocument document) {
+    	if (!isTabReplacing)
+    		return;
+    	
+    	if (command.text.equals("\t")) 
+    		tabExpander.expandTab(command, document);
     }
     
     public boolean isTabReplacing() {
         return isTabReplacing;
     }
-    
-    /**
-     * 
-     * @return Returns the replacement string for tab if isTabReplacing()
-     */
-    public String getTabReplaceString() {
-        return tabReplaceString;
-    }
-    
+
+	public String getIndentString() {
+		return tabExpander.getFullIndent();
+	}
 }
