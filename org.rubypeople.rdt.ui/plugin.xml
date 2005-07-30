@@ -199,7 +199,7 @@
             id="org.rubypeople.rdt.ui.edit.text.ruby.format">
       </command>
       <keyBinding
-            string="Ctrl+Shift+f"
+            keySequence="M1+M2+F"
             scope="org.rubypeople.rdt.ui.rubyEditorScope"
             command="org.rubypeople.rdt.ui.edit.text.ruby.format"
             configuration="org.eclipse.ui.defaultAcceleratorConfiguration">
@@ -211,7 +211,6 @@
             id="org.rubypeople.rdt.ui.edit.text.ruby.comment">
       </command>
       <keyBinding
-            string="Ctrl+/"
             scope="org.rubypeople.rdt.ui.rubyEditorScope"
             command="org.rubypeople.rdt.ui.edit.text.ruby.comment"
             configuration="org.eclipse.ui.defaultAcceleratorConfiguration">
@@ -223,7 +222,6 @@
             id="org.rubypeople.rdt.ui.edit.text.ruby.uncomment">
       </command>
       <keyBinding
-            string="Ctrl+\"
             scope="org.rubypeople.rdt.ui.rubyEditorScope"
             command="org.rubypeople.rdt.ui.edit.text.ruby.uncomment"
             configuration="org.eclipse.ui.defaultAcceleratorConfiguration">
@@ -235,7 +233,13 @@
             id="org.rubypeople.rdt.ui.edit.text.ruby.toggle.comment">
       </command>
       <keyBinding
-            string="Ctrl+Shift+C"
+            keySequence="M1+/"
+            scope="org.rubypeople.rdt.ui.rubyEditorScope"
+            command="org.rubypeople.rdt.ui.edit.text.ruby.toggle.comment"
+            configuration="org.eclipse.ui.defaultAcceleratorConfiguration">
+      </keyBinding>
+      <keyBinding
+            keySequence="M1+M2+C"
             scope="org.rubypeople.rdt.ui.rubyEditorScope"
             command="org.rubypeople.rdt.ui.edit.text.ruby.toggle.comment"
             configuration="org.eclipse.ui.defaultAcceleratorConfiguration">
@@ -247,7 +251,7 @@
             id="org.rubypeople.rdt.ui.edit.text.ruby.content.assist.proposals">
       </command>
       <keyBinding
-            string="Ctrl+Space"
+            keySequence="M1+SPACE"
             scope="org.rubypeople.rdt.ui.rubyEditorScope"
             command="org.rubypeople.rdt.ui.edit.text.ruby.content.assist.proposals"
             configuration="org.eclipse.ui.defaultAcceleratorConfiguration">
