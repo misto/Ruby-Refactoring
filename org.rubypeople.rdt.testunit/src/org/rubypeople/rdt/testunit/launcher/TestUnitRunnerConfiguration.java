@@ -5,7 +5,6 @@ import java.io.File;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
-import org.eclipse.core.runtime.Platform;
 import org.eclipse.debug.core.ILaunchConfiguration;
 import org.rubypeople.rdt.internal.launching.InterpreterRunnerConfiguration;
 import org.rubypeople.rdt.internal.launching.RdtLaunchingPlugin;
@@ -18,15 +17,7 @@ public class TestUnitRunnerConfiguration extends InterpreterRunnerConfiguration 
 	}
 
 	public String getAbsoluteFileName() {
-		String filename = getFileName();
-		if (Platform.getOS().equals(Platform.OS_WIN32)) {
-			// just searching for a colon without consideration of the Platform
-			// could chop off linux filenames which may contain colons
-			if (filename.indexOf(':') != -1) {
-				filename = filename.substring(filename.indexOf(':') + 1);
-			}
-		}
-		return filename;
+		return new File(getFileName()).getAbsolutePath();
 	}
 	
 	public String getFileName() {
