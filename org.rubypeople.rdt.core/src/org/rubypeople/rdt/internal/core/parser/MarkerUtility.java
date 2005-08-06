@@ -37,7 +37,7 @@ public class MarkerUtility {
 			map.put(IMarker.SEVERITY, new Integer(IMarker.SEVERITY_ERROR));
 			map.put(IMarker.MESSAGE, syntaxException.getMessage());
 			map.put(IMarker.USER_EDITABLE, Boolean.FALSE);
-			map.put(IMarker.LINE_NUMBER, new Integer(pos.getLine()));
+			map.put(IMarker.LINE_NUMBER, new Integer(pos.getStartLine()));
 			map.put(IMarker.CHAR_START, new Integer(pos.getStartOffset()));
 			map.put(IMarker.CHAR_END, new Integer(pos.getEndOffset()));
 			marker.setAttributes(map);

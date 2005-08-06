@@ -39,7 +39,7 @@ abstract class DefaultProblem implements IProblem {
 	}
 
 	public int getSourceLineNumber() {
-		return position.getLine();
+		return position.getStartLine();
 	}
 
 	public int getSourceStart() {

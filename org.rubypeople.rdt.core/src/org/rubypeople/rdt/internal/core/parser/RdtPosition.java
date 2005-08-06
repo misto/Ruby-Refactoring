@@ -11,20 +11,30 @@ import org.jruby.lexer.yacc.ISourcePosition;
  * @author Chris
  **/
 public class RdtPosition implements ISourcePosition {
+
+	private int startLine;
+	private int endLine;
 	
-	private int start;
-	private int end;
-	private int line;
+	private int startOffset;
+	private int endOffset;
+	
+	public RdtPosition( int startLine, int startOffset, int endOffset ){
+		this.startLine = startLine;
+		this.endLine = startLine;
+		this.startOffset = startOffset;
+		this.endOffset = endOffset; 		
+	}
 
 	/**
 	 * 
 	 */
-	public RdtPosition(int line, int startOffset, int endOffset) {
-		this.line = line;
-		this.start = startOffset;
-		this.end = endOffset;
-	}
-	
+	public RdtPosition( int startLine, int endLine, int startOffset, 
+			int endOffset ){
+		this.startLine = startLine;
+		this.endLine = endLine;
+		this.startOffset = startOffset;
+		this.endOffset = endOffset; }
+		
 	/* (non-Javadoc)
 	 * @see org.jruby.lexer.yacc.ISourcePosition#getFile()
 	 */
@@ -32,25 +42,19 @@ public class RdtPosition implements ISourcePosition {
 		return null;
 	}
 
-	/* (non-Javadoc)
-	 * @see org.jruby.lexer.yacc.ISourcePosition#getLine()
-	 */
-	public int getLine() {
-		return line;
-	}
 
 	/* (non-Javadoc)
 	 * @see org.jruby.lexer.yacc.ISourcePosition#getStartOffset()
 	 */
 	public int getStartOffset() {
-		return start;
+		return startOffset;
 	}
 
 	/* (non-Javadoc)
 	 * @see org.jruby.lexer.yacc.ISourcePosition#getEndOffset()
 	 */
 	public int getEndOffset() {
-		return end;
+		return endOffset;
 	}
 
 	
@@ -58,7 +62,18 @@ public class RdtPosition implements ISourcePosition {
 	 * @see java.lang.Object#toString()
 	 */
 	public String toString() {
-		return "line " + getLine() + ": (" + getStartOffset() +".." + getEndOffset() + ")";
+		return "start line: " + getStartLine() + ", end line: " + getEndLine()
+			+ ", (" + getStartOffset() + ".." + getEndOffset() + ")";
+	}
+
+	public int getStartLine() {
+		// TODO Auto-generated method stub
+		return startLine;
+	}
+
+	public int getEndLine() {
+		// TODO Auto-generated method stub
+		return endLine;
 	}
 	
 }

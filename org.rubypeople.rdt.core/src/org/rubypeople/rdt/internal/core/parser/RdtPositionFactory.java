@@ -24,13 +24,22 @@ public class RdtPositionFactory implements ISourcePositionFactory {
 	 * caching should be moved into LexerSource.
 	 */
 	public ISourcePosition getPosition(LexerSource source, ISourcePosition startPosition) {
-		int start = 0;
-//		int line = 1;
-		if(startPosition != null) {
-			start = startPosition.getEndOffset();
-//			line = startPosition.getLine();
+		int startOffset = 0;
+		
+		/* If startPosition is null then we are starting a new block/token of
+		 * ruby code. */
+		if( startPosition == null ){
+			return new RdtPosition( source.getLine(), startOffset+1, 
+					source.getOffset() ); }
+		
+		/* If startPosition isn't null then we are closing an existing
+		 * block/token of ruby code, and the source.getLine() is the line that 
+		 * the block/token of ruby code ends on.*/
+		else{
+			startOffset = startPosition.getEndOffset();
+			return new RdtPosition( startPosition.getStartLine(), 
+					source.getLine(), startOffset, source.getOffset() );
 		}
-		return new RdtPosition(source.getLine(), start, source.getOffset());
 	}
 
 	public ISourcePosition getDummyPosition() {
