@@ -37,3 +37,4 @@ Changes since Release of 0.5.0
 * Create commands for launch short cuts so keys could be bound to them.  Configured default key bindings.
 * Changed default key bindings for Comment, Uncomment and ToggleComment to be consistent with JDT.  Changed the keybinding
   category to "Ruby Source" so it doesn't clash with JDT.
+* Fixed source positioning bug for outline view.
