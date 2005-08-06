@@ -32,7 +32,7 @@ public class RubyScriptProblemFinder {
 		try {
 			parser.parse(script.getElementName(), new StringReader(contents));
 		} catch (SyntaxException e) {
-			problemRequestor.acceptProblem(new Error(e.getPosition(), e.getMessage()));
+			problemRequestor.acceptProblem(new Error(e.getPosition(), "Syntax Error"));
 		}
 
 		IEclipsePreferences preferences = RubyCore.getInstancePreferences();

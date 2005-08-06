@@ -35,7 +35,7 @@ public class MarkerUtility {
 			IMarker marker = underlyingResource.createMarker(IRubyModelMarker.RUBY_MODEL_PROBLEM_MARKER);
 			Map map = new HashMap();
 			map.put(IMarker.SEVERITY, new Integer(IMarker.SEVERITY_ERROR));
-			map.put(IMarker.MESSAGE, syntaxException.getMessage());
+			map.put(IMarker.MESSAGE, "Syntax Error");
 			map.put(IMarker.USER_EDITABLE, Boolean.FALSE);
 			map.put(IMarker.LINE_NUMBER, new Integer(pos.getStartLine()));
 			map.put(IMarker.CHAR_START, new Integer(pos.getStartOffset()));
