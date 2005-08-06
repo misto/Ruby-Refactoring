@@ -3,6 +3,8 @@
  */
 package org.rubypeople.rdt.internal.core.builder;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Date;
@@ -245,16 +247,30 @@ public class RubyBuilder extends IncrementalProjectBuilder {
 				monitor.worked(percentPerUnit);
 			} catch (CoreException e) {
 				RubyCore.log(e);
+			} catch (IOException e) {
+				RubyCore.log(e);
 			}
 			warnings.clear();
 		}
 		checkCancel(monitor);
 	}
 
-	private void createTasks(IFile file) throws CoreException {
-		taskParser.clear();
-		taskParser.parse(new InputStreamReader(file.getContents()));
-		MarkerUtility.createTasks(file, taskParser.getTasks());
-		taskParser.clear();
+	private void createTasks(IFile file) throws CoreException, IOException {
+		InputStream contents = file.getContents();
+		try {
+			taskParser.clear();
+			taskParser.parse(new InputStreamReader(contents));
+			MarkerUtility.createTasks(file, taskParser.getTasks());
+			taskParser.clear();
+		} finally {
+			closeSilently(contents);
+		}
+	}
+
+	private void closeSilently(InputStream contents) {
+		try {
+			contents.close();
+		} catch (IOException e) {
+		}
 	}
 }

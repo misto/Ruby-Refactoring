@@ -4,10 +4,8 @@
  */
 package org.rubypeople.rdt.internal.core.parser;
 
-import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.Reader;
-import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -23,15 +21,12 @@ import org.rubypeople.rdt.core.RubyCore;
  * 
  */
 public class TaskParser {
-
+// TODO fix so it only recognizes Task tags in comments
 	private boolean fCaseSensitive = false;
 	private String[] fTags;
 	private int[] fPriorities;
 	private List tasks;
 
-	/**
-	 * @param preferences
-	 */
 	public TaskParser(IEclipsePreferences preferences) {
 		String caseSensitive = preferences.get(RubyCore.COMPILER_TASK_CASE_SENSITIVE, RubyCore.ENABLED);
 		if (caseSensitive == RubyCore.ENABLED) fCaseSensitive = true;
@@ -42,10 +37,6 @@ public class TaskParser {
 		tasks = new ArrayList();
 	}
 
-	/**
-	 * @param stringPriorities
-	 * @return
-	 */
 	private int[] convertPriorities(String[] stringPriorities) {
 		int priorities[] = new int[stringPriorities.length];
 		for (int i = 0; i < stringPriorities.length; i++) {
@@ -61,11 +52,6 @@ public class TaskParser {
 		return priorities;
 	}
 
-	/**
-	 * @param tags
-	 * @param delim
-	 * @return
-	 */
 	private String[] tokenize(String tags, String delim) {
 		String[] tokens;
 		StringTokenizer tokenizer = new StringTokenizer(tags, delim);
@@ -77,71 +63,74 @@ public class TaskParser {
 		return tokens;
 	}
 
-	/**
-	 * @param contents
-	 */
-	public void parse(String contents) {
-		doParse(new StringReader(contents));
+    public void parse(Reader reader) throws IOException {
+        String loadFromReader = loadFromReader(reader);
+        parse(loadFromReader);
+    }
+
+    public void parse(String contents) {
+        try {
+            if (fTags.length <= 0)
+                return;
+            int offset = 0;
+            int lineNum = 0;
+            String line = null;
+
+            while ((line = findNextLine(contents, offset)) != null) {
+                processLine(line, offset, lineNum);
+                lineNum++;
+                offset += line.length();
+            }
+        } catch (CoreException e) {
+            RubyCore.log(e);
+        }
 	}
 
-	private void doParse(Reader contents) {
-		if (fTags.length <= 0) return;
-		BufferedReader reader = null;
-		try {
-			reader = new BufferedReader(contents);
-			int offset = 0;
-			int lineNum = 0;
-			String line = null;
+	private String findNextLine(String contents, int offset) {
+        if (offset >= contents.length())
+            return null;
+        
+        int crPos = contents.indexOf('\r', offset);
+        int nlPos = contents.indexOf('\n', offset);
+        int eolPos = crPos;
+        if (crPos == -1)
+            eolPos = nlPos;
+        if (nlPos == -1 && crPos == -1)
+            return contents.substring(offset);
+        if (crPos + 1 == nlPos && crPos >= 0) {
+                eolPos ++;
+            }
+        return contents.substring(offset, eolPos+1);
+    }
 
-			while ((line = reader.readLine()) != null) {
-				String token = line;
-				if (!fCaseSensitive) token = line.toLowerCase();
-				for (int i = 0; i < fTags.length; i++) {
-					String tag = fTags[i];
-					int priority = fPriorities[i];
-					if (!fCaseSensitive) tag = tag.toLowerCase();
-					int index = token.indexOf(tag);
-					if (index != -1) {
-						String message = line.substring(index).trim();
-						createTaskTag(priority, message, lineNum + 1, offset + index, offset + index + message.length());
-					}
-				}
-				lineNum++;
-				offset += line.length() + 2; // FIXME We're chopping off
-												// /r/n!
-			}
-		} catch (IOException e) {
-			RubyCore.log(e);
-		} catch (CoreException e) {
-			RubyCore.log(e);
-		} finally {
-			try {
-				if (reader != null) reader.close();
-			} catch (IOException e) {
-				// ignore
+	private void  processLine(String line, int offset, int lineNum) throws CoreException {
+		if (!fCaseSensitive) line = line.toLowerCase();
+		for (int i = 0; i < fTags.length; i++) {
+			String tag = fTags[i];
+			int priority = fPriorities[i];
+			if (!fCaseSensitive) tag = tag.toLowerCase();
+			int index = line.indexOf(tag);
+			if (index != -1) {
+				String message = line.substring(index).trim();
+				createTaskTag(priority, message, lineNum + 1, offset + index, offset + index + message.length());
 			}
 		}
 	}
 
-	/**
-	 * @param priority
-	 * @param message
-	 * @param lineNumber
-	 * @param start
-	 * @param end
-	 * @throws CoreException
-	 */
 	private void createTaskTag(int priority, String message, int lineNumber, int start, int end) throws CoreException {
 		TaskTag task = new TaskTag(message, priority, lineNumber, start, end);
 		tasks.add(task);
 	}
 
-	/**
-	 * 
-	 * @param reader
-	 */
-	public void parse(Reader reader) {
-		doParse(reader);
+	private String loadFromReader(Reader reader) throws IOException {
+		StringBuffer contents = new StringBuffer();
+		char[] buffer = new char[4096];
+		while (true) {
+			int bytesRead = reader.read(buffer);
+			if (bytesRead == -1)
+				return contents.toString();
+			contents.append(buffer, 0, bytesRead);
+		}
 	}
 
 	public List getTasks() {
