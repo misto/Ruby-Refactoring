@@ -1,48 +1,54 @@
 package org.rubypeople.rdt.internal.ui.infoviews;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
-import java.util.List;
+import java.util.Iterator;
 
 import org.eclipse.core.runtime.IPath;
-import org.eclipse.jface.action.Action;
-import org.eclipse.jface.action.IMenuManager;
-import org.eclipse.jface.action.IToolBarManager;
-import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.core.runtime.Path;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.browser.Browser;
 import org.eclipse.swt.events.KeyAdapter;
 import org.eclipse.swt.events.KeyEvent;
+import org.eclipse.swt.events.ModifyEvent;
+import org.eclipse.swt.events.ModifyListener;
+import org.eclipse.swt.events.MouseAdapter;
+import org.eclipse.swt.events.MouseEvent;
+import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.List;
 import org.eclipse.swt.widgets.Text;
-import org.eclipse.ui.IActionBars;
+import org.eclipse.ui.part.PageBook;
 import org.eclipse.ui.part.ViewPart;
 import org.rubypeople.rdt.internal.launching.RubyInterpreter;
 import org.rubypeople.rdt.internal.launching.RubyRuntime;
-import org.rubypeople.rdt.internal.ui.RubyPluginImages;
+import org.rubypeople.rdt.internal.ui.RubyPlugin;
+import org.rubypeople.rdt.internal.ui.util.Ri;
+import org.rubypeople.rdt.ui.PreferenceConstants;
 
 public class RIView extends ViewPart {
 
-	private Composite panel;
-	private Action actionGetDesc;
+	private boolean riFound = false;
+	private PageBook pageBook;
+    private Composite panel;
+    private Label interpreterNeededLabel, riNotFoundLabel;
 	private Text searchStr;
-	private Browser searchResult;
+	private List searchList;
+    private Browser searchResult;
 	private String riCmd = null;
-
-	/*
-	 * The content provider class is responsible for providing objects to the
-	 * view. It can wrap existing objects in adapters or simply return objects
-	 * as-is. These objects may be sensitive to the current input of the view,
-	 * or ignore it and always show the same content (like Task List, for
-	 * example).
-	 */
+    private java.util.List possibleMatches = new ArrayList();
+    private SearchValue itemToSearch = new SearchValue();
+    private DescriptionUpdater descriptionUpdater = new DescriptionUpdater();
+    private RubyRuntime.Listener runtimeListener;
 
 	/**
 	 * The constructor.
@@ -54,123 +60,276 @@ public class RIView extends ViewPart {
 	 * it.
 	 */
 	public void createPartControl(Composite parent) {
-		panel = new Composite(parent, SWT.NULL);
+		pageBook = new PageBook(parent, SWT.NONE);
+        
+        interpreterNeededLabel = new Label(pageBook, SWT.NONE);
+        interpreterNeededLabel.setText(InfoViewMessages.getString("RubyInformation.interpreter_not_selected"));
+        
+        riNotFoundLabel = new Label( pageBook, SWT.NONE );
+        riNotFoundLabel.setText( InfoViewMessages.getString( "RubyInformation.ri_not_found")  );
+        
+        // If the user changes the ri path, they can click on this label to update
+        // the ri view.
+        riNotFoundLabel.addMouseListener( new MouseAdapter(){
+			public void mouseDown(MouseEvent e) {
+				riCmd = null;
+				updatePage();			
+			}        	
+        } );
+        
+        panel = new Composite(pageBook, SWT.NONE);
+        
+        GridLayout layout = new GridLayout();
+        layout.numColumns = 2;
+        panel.setLayout(layout);
 
-		GridLayout layout = new GridLayout();
-		layout.numColumns = 1;
-		panel.setLayout(layout);
+        GridData data = new GridData(GridData.FILL_HORIZONTAL);
+        data.grabExcessHorizontalSpace = true;
+        panel.setLayoutData(data);
 
-		GridData data = new GridData(GridData.FILL_HORIZONTAL);
-		data.grabExcessHorizontalSpace = true;
-		panel.setLayoutData(data);
+        // Search String
+        searchStr = new Text(panel, SWT.BORDER);
+        data = new GridData();        
+        data.widthHint = 150;
+        data.horizontalAlignment = SWT.FILL;
+        searchStr.setLayoutData(data);
+        searchStr.addModifyListener(new ModifyListener() {        
+            public void modifyText(ModifyEvent e) {
+                filterSearchList();                
+            }        
+        });
+        searchStr.addKeyListener(new KeyAdapter() {
+            public void keyPressed(KeyEvent e) {
+                super.keyPressed(e);                                
+                if (e.keyCode == 16777218) { // sorry didn't find the SWT constant for down arrow
+                    searchList.setFocus();
+                } else if (e.keyCode == SWT.ESC) {
+                    searchStr.setText("");
+                }
+            }
+        });
+        
+        //    Match text
+        data = new GridData(GridData.FILL_HORIZONTAL | GridData.FILL_VERTICAL);
+        data.verticalSpan = 3;        
+        searchResult = new Browser(panel, SWT.BORDER);
+        searchResult.setLayoutData(data);        
 
-		final Label labelSearchString = new Label(panel, SWT.NONE);
-		labelSearchString.setText(InfoViewMessages.getString("RubyInformation.search_label"));
-		labelSearchString.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
-
-		//    Search String
-		searchStr = new Text(panel, SWT.BORDER);
-		searchStr.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
-		searchStr.addKeyListener(new KeyAdapter() {
-
-			public void keyPressed(KeyEvent e) {
-				super.keyPressed(e);
-				if (e.keyCode == 13) { // sorry didn't find the SWT constant
-					actionGetDesc.run();
-				} else if (e.keyCode == SWT.ESC) {
-					searchStr.setText("");
-				}
-			}
-		});
-		Label labelSearchResult = new Label(panel, SWT.NONE);
-		labelSearchResult.setText(InfoViewMessages.getString("RubyInformation.result_label"));
-		labelSearchResult.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
-
-		//    Match text
-		data = new GridData(GridData.FILL_HORIZONTAL | GridData.FILL_VERTICAL);
-		data.horizontalSpan = 4;
-		searchResult = new Browser(panel, SWT.BORDER);
-		searchResult.setLayoutData(data);
-
-		makeActions();
-		contributeToActionBars();
+        searchList = new List(panel, SWT.BORDER | SWT.V_SCROLL);
+        data = new GridData(GridData.FILL_VERTICAL);
+        data.widthHint = 150;
+        data.verticalSpan = 2;
+        searchList.setLayoutData(data);
+        searchList.addSelectionListener(new SelectionListener() {        
+            public void widgetDefaultSelected(SelectionEvent e) {
+                widgetSelected(e);
+            }
+        
+            public void widgetSelected(SelectionEvent e) {     
+                String[] selection = searchList.getSelection();            
+                String searchText = (selection.length > 0) ? selection[0] : "";
+                synchronized(itemToSearch) { itemToSearch.set(searchText); }
+            }        
+        });
+        runtimeListener = new RubyRuntime.Listener() {
+            public void selectedInterpreterChanged() {
+                updatePage();
+            }
+        };
+        RubyRuntime.getDefault().addListener(runtimeListener);
+        updatePage();
+        descriptionUpdater.start();
 	}
+	    
+    private void updatePage() {
+        RubyInterpreter interpreter = RubyRuntime.getDefault().getSelectedInterpreter();
+        if (interpreter != null) {            
+            initSearchList();
+            if( riFound ){
+            	pageBook.showPage(panel);
+            }
+        }
+        else {
+            pageBook.showPage(interpreterNeededLabel);
+        }
+    }
 
-	private void contributeToActionBars() {
-		IActionBars bars = getViewSite().getActionBars();
-		fillLocalPullDown(bars.getMenuManager());
-		fillLocalToolBar(bars.getToolBarManager());
-	}
+    public void dispose() {
+        descriptionUpdater.requestStop();
+        RubyRuntime.getDefault().removeListener(runtimeListener);
+        super.dispose();
+    }
+        
+	class SearchValue {
+        String value = null;
+        
+        void set(String value) {
+            this.value = value;
+            notifyAll();
+        }
+        
+        boolean isSet() {
+            return value != null;
+        }
+        
+        String get() {
+            String result = value;
+            value = null;
+            return result;            
+        }
+    }
+    
+	private void initSearchList() {        
+        RubyInvoker invoker = new RubyInvoker() {        
+            protected void handleOutput(Process process) {
+                BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
+                String line = null;
+                int numberOfMatches = 0;
+                try {
+                    while ((line = reader.readLine()) != null) {
+                        possibleMatches.add(line.trim());
+                        numberOfMatches++;
+                    }
+                    // if not matches were found display an error message
+                    if( numberOfMatches == 0 ){
+                    	pageBook.showPage( riNotFoundLabel );
+                    } else {
+                    	riFound = true;
+                    }
+                }
+                catch (IOException e) {
+                    // TODO
+                }
+            }        
+            protected String getArgString() {
+                return "--no-pager -l";
+            }
+        };
+        invoker.invoke();
+        filterSearchList();
+    }
 
-	private void fillLocalPullDown(IMenuManager manager) {
-		manager.add(actionGetDesc);
-	}
-
-	private void fillLocalToolBar(IToolBarManager manager) {
-		manager.add(actionGetDesc);
-	}
-
-	private void makeActions() {
-		actionGetDesc = new Action() {
-
-			public void run() {
-				RubyInterpreter interpreter = RubyRuntime.getDefault().getSelectedInterpreter();
-				if (interpreter == null) {
-					MessageDialog.openError(panel.getShell(), "RI View", InfoViewMessages.getString("RubyInformation.interpreter_not_selected"));
-					searchResult.setText(InfoViewMessages.getString("RubyInformation.interpreter_not_selected"));
-				} else {
-					if (riCmd == null) {
-						IPath path = interpreter.getInstallLocation();
-						path = path.uptoSegment(path.segmentCount() - 1);
-						riCmd =  path + "/ruby " + path + "/ri --no-pager -f html ";
-					}
-					String call = riCmd + searchStr.getText();
-					try {
-						searchResult.setText(InfoViewMessages.getString("RubyInformation.please_wait"));
-						final Process p = Runtime.getRuntime().exec(call);
-						// any output?
-						final StreamRedirector outputRedirect = new StreamRedirector(p.getInputStream(), "");
-						// kick them off
-						outputRedirect.start();
-						new Thread(new Runnable() {
-
-							public void run() {
-								try {
-									final int rc = p.waitFor();
-									if (rc != 0) {
-										outputRedirect.inQueue("<p>No matching results.</p>");
-									}
-									outputRedirect.done();
-								} catch (InterruptedException IGNORE) {}
-							}
-						}).start();
-					} catch (IOException e) {
-						e.printStackTrace();
-					}
-
-				}
-			}
-		};
-		actionGetDesc.setText(InfoViewMessages.getString("RubyInformation.run"));
-		actionGetDesc.setToolTipText(InfoViewMessages.getString("RubyInformation.tool_tip"));
-		actionGetDesc.setImageDescriptor(RubyPluginImages.DESC_RUN);
-	}
+    private void filterSearchList() {
+        searchList.removeAll();        
+        String text = searchStr.getText();
+        for (Iterator iter = possibleMatches.iterator(); iter.hasNext();) {
+            String possibleMatch = (String) iter.next();      
+            if (possibleMatch.indexOf(text) > -1 ) {
+                searchList.add(possibleMatch);
+            }
+        }
+        if (searchList.getItemCount() > 0) searchList.setSelection(0);
+    }
 
 	/**
 	 * Passing the focus request to the viewer's control.
 	 */
 	public void setFocus() {
 		panel.setFocus();
-	}
+	}       
+    
+    private final class DescriptionUpdater extends Thread {
+        private String searchValue;
+        private volatile boolean stopped = false;
+        
+        public DescriptionUpdater() {
+            super("RI Description Updater");            
+        }               
+    
+        private RubyInvoker invoker = new RubyInvoker() {
+            protected String getArgString() {
+                return "--no-pager -f html " + searchValue;
+            }
+    
+            protected void beforeInvoke() {
+                searchResult.setText(InfoViewMessages.getString("RubyInformation.please_wait"));
+            }
+    
+            protected void handleOutput(final Process process) {
+                // any output?
+                final StreamRedirector outputRedirect = new StreamRedirector(process.getInputStream(), "");
+                // kick them off
+                outputRedirect.start();
+                final int rc;
+                try {
+                    rc = process.waitFor();
+                    if (rc != 0) {
+                        outputRedirect.inQueue("<p>No matching results.</p>");
+                    }
+                    outputRedirect.done();                    
+                }
+                catch (InterruptedException IGNORE) {
+                }
+            }
+        };
+    
+        public void requestStop() {
+            stopped = true;
+            interrupt();
+        }
+        
+        public void run() {
+            while (!stopped) {
+                synchronized (itemToSearch) {
+                    try {
+                        while (!itemToSearch.isSet() && !stopped) { itemToSearch.wait(); }
+                        searchValue = itemToSearch.get();
+                    }
+                    catch (InterruptedException IGNORE) {                            
+                    }                    
+                }
+                if (stopped) return;
+                invoker.invoke();
+            }
+        }
+    }
+    
+    private abstract class RubyInvoker {
+        protected abstract String getArgString();
+        protected abstract void handleOutput(Process process);
+        protected void beforeInvoke(){}
+        
+        public final void invoke() {
+        	IPath rubyPath = RubyRuntime.getDefault().getSelectedInterpreter().getInstallLocation();
+        	IPath riPath = new Path( RubyPlugin.getDefault().getPreferenceStore().getString( 
+        		PreferenceConstants.RI_PATH ) );
+        	
+        	// If there is currently no user-specified preference stored
+        	// for the ri path, then attempt to find it ourselves.
+        	if( riPath.isEmpty() ){
+        		riPath = Ri.getDefaultPath();
+        		File file = new File( riPath.toOSString() );
+        		
+        		// If we can't find it ourselves then display an error to the user
+            	if( !file.exists() || !file.isFile() ){
+            		pageBook.showPage( riNotFoundLabel );
+            		riFound = false;
+            		return;
+            	}
+            }
+        	        	
+            // finish constructing our command to execute ri
+    		if (riCmd == null) {    			
+    			riCmd =  rubyPath + " " + riPath + " "; }
+    		
+    		String call = riCmd + getArgString();
+    		try {        			
+    			final Process p = Runtime.getRuntime().exec(call);
+                handleOutput(p); 
+    		} catch (IOException e) {
+    			e.printStackTrace();
+    		}        
+        }
+    }
 
-	class StreamRedirector extends Thread {
+    class StreamRedirector extends Thread {
 	    // TODO Add ability to style by CSS stylesheet!
 		// FIXME Use the HTMLPrinter from rdt.internal.ui.text!
 		InputStream is;
 		String linePrefix;
 		String line = null;
 		boolean done = false;
-		final List queue = new ArrayList();
+		final java.util.List queue = new ArrayList();
 		private StringBuffer buffer = new StringBuffer();
 		private final String HEADER = "<html><head></head><body>";
 		private final String TAIL = "</body></html>";
@@ -188,8 +347,7 @@ public class RIView extends ViewPart {
 			queue.add(msg);
 		}
 
-		void addToBuffer(int position, final String line) {
-			System.out.println(line);
+		void addToBuffer(int position, final String line) {			
 		    if (position < 0) position = 0;
 		    StringBuffer modifiedLine = new StringBuffer(line);
 		    if (!line.endsWith(">")) modifiedLine.append("<br/>");
@@ -242,5 +400,4 @@ public class RIView extends ViewPart {
             });
         }
 	}
-
 }
