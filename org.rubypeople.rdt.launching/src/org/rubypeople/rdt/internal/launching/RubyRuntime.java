@@ -30,6 +30,12 @@ public class RubyRuntime {
 	
 	protected List installedInterpreters;
 	protected RubyInterpreter selectedInterpreter;
+    private List listeners = new ArrayList();
+    
+    public static interface Listener {
+        void selectedInterpreterChanged();
+    }
+    
 	protected RubyRuntime() {
 		super();
 	}
@@ -40,6 +46,14 @@ public class RubyRuntime {
 		}
 		return runtime;
 	}
+    
+    public void addListener(Listener listener) {
+        listeners.add(listener);
+    }
+    
+    public void removeListener(Listener listener) {
+        listeners.remove(listener);
+    }
 	
 	public RubyInterpreter getSelectedInterpreter() {
 		if (selectedInterpreter == null) {
@@ -60,8 +74,13 @@ public class RubyRuntime {
 	}
 
 	public void setSelectedInterpreter(RubyInterpreter anInterpreter) {
+        if (selectedInterpreter == anInterpreter) return;
 		selectedInterpreter = anInterpreter;
 		saveRuntimeConfiguration();
+        for (Iterator iter = listeners.iterator(); iter.hasNext();) {
+            Listener listener = (Listener) iter.next();
+            listener.selectedInterpreterChanged();
+        }        
 	}
 
 	public void addInstalledInterpreter(RubyInterpreter anInterpreter) {
