@@ -6,6 +6,9 @@ import org.rubypeople.rdt.internal.ui.RubyPlugin;
 public class PreferenceConstants {
 
 	private PreferenceConstants() {}
+	
+	public static final String RI_PATH = "riDirectoryPath";
+	public static final String RDOC_PATH = "rdocDirectoryPath";	
 
 	public static final String FORMAT_INDENTATION = "formatIndentation"; //$NON-NLS-1$
 	public static final String FORMAT_USE_TAB = "formatUseTab"; //$NON-NLS-1$	
