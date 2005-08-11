@@ -38,3 +38,4 @@ Changes since Release of 0.5.0
 * Changed default key bindings for Comment, Uncomment and ToggleComment to be consistent with JDT.  Changed the keybinding
   category to "Ruby Source" so it doesn't clash with JDT.
 * Fixed source positioning bug for outline view.
+* Updated RI view w/ patch from Khaled Agrama (Aug. 7, 2005) which allows user to start typing, and matches to show as the user types
