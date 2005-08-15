@@ -7,6 +7,7 @@ import java.io.StringReader;
 import java.io.StringWriter;
 import java.io.Writer;
 import java.util.Arrays;
+import java.util.List;
 
 import junit.framework.TestCase;
 
@@ -31,7 +32,7 @@ import org.rubypeople.rdt.internal.launching.RubyInterpreter;
 import org.rubypeople.rdt.internal.launching.RubyRuntime;
 
 public class TC_RubyRuntime extends TestCase {
-	protected StringWriter runtimeConfigurationWriter;
+	protected StringWriter runtimeConfigurationWriter = new StringWriter();
 
 	public TC_RubyRuntime(String name) {
 		super(name);
@@ -46,20 +47,21 @@ public class TC_RubyRuntime extends TestCase {
 		assertTrue("interpreterTwo should be selected interpreter.", runtime.getSelectedInterpreter().equals(interpreterTwo));
 	}
 	public void testSetInstalledInterpreters() {
-		runtimeConfigurationWriter = new StringWriter();
+		
 		ShamRubyRuntime runtime = new ShamRubyRuntime();
 		
 		RubyInterpreter interpreterOne = new RubyInterpreter("InterpreterOne", new Path("C:/RubyInstallRootOne"));
 		runtime.setInstalledInterpreters(Arrays.asList(new Object[] { interpreterOne }));
+		runtime.saveRuntimeConfiguration() ;
 		assertEquals("XML should indicate only one interpreter with it being the selected.", "<?xml version=\"1.0\" encoding=\"UTF-8\"?><runtimeconfig><interpreter name=\"InterpreterOne\" path=\"C:/RubyInstallRootOne\" selected=\"true\"/></runtimeconfig>", runtimeConfigurationWriter.toString());
 		
-		runtimeConfigurationWriter = new StringWriter();
 		RubyInterpreter interpreterTwo = new RubyInterpreter("InterpreterTwo", new Path("C:/RubyInstallRootTwo"));
 		runtime.setInstalledInterpreters(Arrays.asList(new Object[] { interpreterOne, interpreterTwo }));
+		runtime.saveRuntimeConfiguration() ;
 		assertEquals("XML should indicate both interpreters with the first one being selected.", "<?xml version=\"1.0\" encoding=\"UTF-8\"?><runtimeconfig><interpreter name=\"InterpreterOne\" path=\"C:/RubyInstallRootOne\" selected=\"true\"/><interpreter name=\"InterpreterTwo\" path=\"C:/RubyInstallRootTwo\"/></runtimeconfig>", runtimeConfigurationWriter.toString());
 		
-		runtimeConfigurationWriter = new StringWriter();
 		runtime.setSelectedInterpreter(interpreterTwo);
+		runtime.saveRuntimeConfiguration() ;
 		assertEquals("XML should indicate selected interpreter change.", "<?xml version=\"1.0\" encoding=\"UTF-8\"?><runtimeconfig><interpreter name=\"InterpreterOne\" path=\"C:/RubyInstallRootOne\"/><interpreter name=\"InterpreterTwo\" path=\"C:/RubyInstallRootTwo\" selected=\"true\"/></runtimeconfig>", runtimeConfigurationWriter.toString());
 	}
 	protected class ShamRubyRuntime extends RubyRuntime {
@@ -73,7 +75,14 @@ public class TC_RubyRuntime extends TestCase {
 		protected Writer getRuntimeConfigurationWriter() {
 			return runtimeConfigurationWriter;
 		}
-
+		public void setInstalledInterpreters(List newInstalledInterpreters) {
+			super.setInstalledInterpreters(newInstalledInterpreters);
+		}
+		
+		public void saveRuntimeConfiguration() {
+			runtimeConfigurationWriter = new StringWriter();
+			super.saveRuntimeConfiguration() ;
+		}				
 	}
 	protected class RuntimeConfigurationFile implements IFile {
 		protected RuntimeConfigurationFile() {}
