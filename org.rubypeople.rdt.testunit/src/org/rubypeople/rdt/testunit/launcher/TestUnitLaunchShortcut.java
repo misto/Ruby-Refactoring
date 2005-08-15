@@ -36,67 +36,29 @@ import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.dialogs.ElementListSelectionDialog;
 import org.rubypeople.rdt.core.IRubyElement;
 import org.rubypeople.rdt.core.RubyModelException;
+import org.rubypeople.rdt.internal.debug.ui.launcher.RubyApplicationShortcut;
 import org.rubypeople.rdt.internal.launching.RubyLaunchConfigurationAttribute;
 import org.rubypeople.rdt.internal.launching.RubyRuntime;
 import org.rubypeople.rdt.internal.ui.RubyPlugin;
 import org.rubypeople.rdt.testunit.TestunitPlugin;
 import org.rubypeople.rdt.testunit.views.TestUnitMessages;
 
-public class TestUnitLaunchShortcut implements ILaunchShortcut {
+public class TestUnitLaunchShortcut extends RubyApplicationShortcut {
 
 	static final String TEST_RUNNER_FILE = "RemoteTestRunner.rb";
-
-	public void launch(ISelection selection, String mode) {
-		Object firstSelection = null;
-		if (selection instanceof IStructuredSelection) {
-			firstSelection = ((IStructuredSelection) selection).getFirstElement();
-
-		}
-		if (firstSelection == null) {
-			log("Could not find selection.");
-			return;
-		}
-
-		// TODO Allow running of specific methods or classes, not just files
-		IRubyElement rubyElement = null;
-		if (firstSelection instanceof IAdaptable) {
-			rubyElement = (IRubyElement) ((IAdaptable) firstSelection).getAdapter(IRubyElement.class);
-		}
-		if (rubyElement == null) {
-			log("Selection is not a ruby element.");
-			return;
-		}
-		doLaunch(mode, rubyElement);
-	}
-
-	public void launch(IEditorPart editor, String mode) {
-		IEditorInput input = editor.getEditorInput();
-		if (input == null) {
-			log("Could not retrieve input from editor: " + editor.getTitle());
-			return;
-		}
-		IRubyElement rubyElement = (IRubyElement) input.getAdapter(IRubyElement.class);
-		if (rubyElement == null) {
-			log("Editor input is not a ruby file or external ruby file.");
-			return;
-		}
-		doLaunch(mode, rubyElement);
-	}
-
+	
 	/**
 	 * @param mode
 	 * @param rubyElement
 	 */
-	private void doLaunch(String mode, IRubyElement rubyElement) {
-		try {
-			String container = getContainer(rubyElement);
-			ILaunchConfiguration config = findOrCreateLaunchConfiguration(rubyElement, mode, container, "", "");
-			if (config != null) 
-				config.launch(mode, null);
-			IRubyElement[] classes = TestSearchEngine.findTests((IFile) rubyElement.getUnderlyingResource());
-		} catch (CoreException e) {
-			log(e);
+	protected void doLaunch(IRubyElement rubyElement, String mode) throws CoreException {
+
+		String container = getContainer(rubyElement);
+		ILaunchConfiguration config = findOrCreateLaunchConfiguration(rubyElement, mode, container, "", "");
+		if (config != null) {
+			config.launch(mode, null);
 		}
+		IRubyElement[] classes = TestSearchEngine.findTests((IFile) rubyElement.getUnderlyingResource());
 	}
 
 	protected ILaunchConfiguration findOrCreateLaunchConfiguration(IRubyElement rubyElement, String mode, String container, String testClass, String testName) throws CoreException {

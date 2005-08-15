@@ -46,11 +46,12 @@ public class RubyApplicationShortcut implements ILaunchShortcut {
 			log("Selection is not a ruby element.");
 			return;
 		}
+		doLaunchWithErrorHandling(rubyElement, mode);
+	}
+
+	private void doLaunchWithErrorHandling(IRubyElement rubyElement, String mode) {
 		try {
-			ILaunchConfiguration config = findOrCreateLaunchConfiguration(rubyElement, mode);
-			if (config != null) {
-				config.launch(mode, null);
-			}
+			doLaunch(rubyElement, mode);
 		} catch (CoreException e) {
 			log(e);
 			IStatus status= e.getStatus();
@@ -62,25 +63,26 @@ public class RubyApplicationShortcut implements ILaunchShortcut {
 		}
 	}
 
+	protected void doLaunch(IRubyElement rubyElement, String mode) throws CoreException {
+		ILaunchConfiguration config = findOrCreateLaunchConfiguration(rubyElement, mode);
+		if (config != null) {
+			config.launch(mode, null);
+		}
+	}
+
 	public void launch(IEditorPart editor, String mode) {
 		IEditorInput input = editor.getEditorInput();
 		if (input == null) {
 			log("Could not retrieve input from editor: " + editor.getTitle());
 			return;
 		}
-		RubyElement rubyElement = (RubyElement) input.getAdapter(IRubyElement.class);
+		IRubyElement rubyElement = (IRubyElement) input.getAdapter(IRubyElement.class);
 		if (rubyElement == null) {
 			log("Editor input is not a ruby file or external ruby file.");
 			return;
 		}
-		try {
-			ILaunchConfiguration config = findOrCreateLaunchConfiguration(rubyElement, mode);
-			if (config != null) {
-				config.launch(mode, null);
-			}
-		} catch (CoreException e) {
-			log(e);
-		}
+		doLaunchWithErrorHandling(rubyElement, mode) ;
+
 	}
 
 	protected ILaunchConfiguration findOrCreateLaunchConfiguration(IRubyElement rubyElement, String mode) throws CoreException {
