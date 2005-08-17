@@ -1,6 +1,9 @@
 package org.rubypeople.rdt.ui;
 
+import org.eclipse.core.runtime.IPath;
 import org.eclipse.jface.preference.IPreferenceStore;
+import org.rubypeople.rdt.internal.launching.RubyInterpreter;
+import org.rubypeople.rdt.internal.launching.RubyRuntime;
 import org.rubypeople.rdt.internal.ui.RubyPlugin;
 
 public class PreferenceConstants {
@@ -15,6 +18,11 @@ public class PreferenceConstants {
 	public static final String CREATE_PARSER_ANNOTATIONS = "createParserAnnotations"; //$NON-NLS-1$
 	// TODO Finish implementing this option!
 	public static final String TEMPLATES_USE_CODEFORMATTER = "templatesUSeCodeFormatter";
+
+	
+	private final static String DEFAULT_RDOC_CMD = "rdoc"; //$NON-NLS-1$	
+	private final static String DEFAULT_RI_CMD = "ri"; //$NON-NLS-1$	
+
 
 	/**
 	 * A named preference that controls whether folding is enabled in the Ruby
@@ -127,8 +135,23 @@ public class PreferenceConstants {
 		store.setDefault(PreferenceConstants.EDITOR_FOLDING_METHODS, false);
 
 		store.setDefault(PreferenceConstants.EDITOR_SHOW_TEXT_HOVER_AFFORDANCE, true);
+					
+		store.setDefault( PreferenceConstants.RDOC_PATH, PreferenceConstants.getDefaultPath(PreferenceConstants.DEFAULT_RDOC_CMD)) ; 
+		store.setDefault( PreferenceConstants.RI_PATH, PreferenceConstants.getDefaultPath(PreferenceConstants.DEFAULT_RI_CMD)) ; 
 
 	}
+
+
+	private static String getDefaultPath(String programName) {		
+		RubyInterpreter interpreter = RubyRuntime.getDefault().getSelectedInterpreter();
+		if (interpreter == null) {
+			return programName ;
+		}
+		IPath path = interpreter.getInstallLocation();
+		path = path.uptoSegment(path.segmentCount() - 1).append(programName);
+		return path.toOSString();
+	}
+
 
 	/**
 	 * Returns the RDT-UI preference store.
