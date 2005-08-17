@@ -10,6 +10,7 @@ import java.util.Iterator;
 
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
+import org.eclipse.jface.util.IPropertyChangeListener;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.browser.Browser;
 import org.eclipse.swt.events.KeyAdapter;
@@ -32,7 +33,6 @@ import org.eclipse.ui.part.ViewPart;
 import org.rubypeople.rdt.internal.launching.RubyInterpreter;
 import org.rubypeople.rdt.internal.launching.RubyRuntime;
 import org.rubypeople.rdt.internal.ui.RubyPlugin;
-import org.rubypeople.rdt.internal.ui.util.Ri;
 import org.rubypeople.rdt.ui.PreferenceConstants;
 
 public class RIView extends ViewPart {
@@ -44,7 +44,6 @@ public class RIView extends ViewPart {
 	private Text searchStr;
 	private List searchList;
     private Browser searchResult;
-	private String riCmd = null;
     private java.util.List possibleMatches = new ArrayList();
     private SearchValue itemToSearch = new SearchValue();
     private DescriptionUpdater descriptionUpdater = new DescriptionUpdater();
@@ -65,18 +64,9 @@ public class RIView extends ViewPart {
         interpreterNeededLabel = new Label(pageBook, SWT.NONE);
         interpreterNeededLabel.setText(InfoViewMessages.getString("RubyInformation.interpreter_not_selected"));
         
-        riNotFoundLabel = new Label( pageBook, SWT.NONE );
+        riNotFoundLabel = new Label( pageBook, SWT.LEFT | SWT.TOP | SWT.WRAP );
         riNotFoundLabel.setText( InfoViewMessages.getString( "RubyInformation.ri_not_found")  );
-        
-        // If the user changes the ri path, they can click on this label to update
-        // the ri view.
-        riNotFoundLabel.addMouseListener( new MouseAdapter(){
-			public void mouseDown(MouseEvent e) {
-				riCmd = null;
-				updatePage();			
-			}        	
-        } );
-        
+                
         panel = new Composite(pageBook, SWT.NONE);
         
         GridLayout layout = new GridLayout();
@@ -137,6 +127,16 @@ public class RIView extends ViewPart {
             }
         };
         RubyRuntime.getDefault().addListener(runtimeListener);
+        
+        RubyPlugin.getDefault().getPreferenceStore().addPropertyChangeListener(new IPropertyChangeListener() {
+        	public void propertyChange(org.eclipse.jface.util.PropertyChangeEvent event) {
+        		if (event.getProperty().equals(PreferenceConstants.RI_PATH)) {
+        			updatePage() ;
+        		}
+        	}
+        });
+        
+                
         updatePage();
         descriptionUpdater.start();
 	}
@@ -289,29 +289,26 @@ public class RIView extends ViewPart {
         protected abstract void handleOutput(Process process);
         protected void beforeInvoke(){}
         
+        
+       
+        
         public final void invoke() {
+			riFound = false;
+			
         	IPath rubyPath = RubyRuntime.getDefault().getSelectedInterpreter().getInstallLocation();
-        	IPath riPath = new Path( RubyPlugin.getDefault().getPreferenceStore().getString( 
-        		PreferenceConstants.RI_PATH ) );
+        	IPath riPath = new Path( RubyPlugin.getDefault().getPreferenceStore().getString( PreferenceConstants.RI_PATH ) );
         	
-        	// If there is currently no user-specified preference stored
-        	// for the ri path, then attempt to find it ourselves.
-        	if( riPath.isEmpty() ){
-        		riPath = Ri.getDefaultPath();
-        		File file = new File( riPath.toOSString() );
-        		
-        		// If we can't find it ourselves then display an error to the user
-            	if( !file.exists() || !file.isFile() ){
-            		pageBook.showPage( riNotFoundLabel );
-            		riFound = false;
-            		return;
-            	}
-            }
-        	        	
-            // finish constructing our command to execute ri
-    		if (riCmd == null) {    			
-    			riCmd =  rubyPath + " " + riPath + " "; }
-    		
+        	// check the ri path for existence. It might have been unconfigured
+			// and set to the default value or the file could have been removed
+			File file = new File(riPath.toOSString());
+
+			// If we can't find it ourselves then display an error to the user
+			if (!file.exists() || !file.isFile()) {
+				pageBook.showPage(riNotFoundLabel);
+				return;
+			}
+
+    		String	riCmd =  "\"" + rubyPath + "\" \"" +  riPath.toString() + "\" ";     		
     		String call = riCmd + getArgString();
     		try {        			
     			final Process p = Runtime.getRuntime().exec(call);
