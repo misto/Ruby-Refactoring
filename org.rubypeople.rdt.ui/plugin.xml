@@ -57,6 +57,12 @@
             class="org.rubypeople.rdt.internal.ui.rubyeditor.templates.RubyTemplatePreferencePage"
             id="org.rubypeople.rdt.ui.TemplatesPreferencePage">
       </page>
+      <page
+            name="%PreferencePage.rdtRiPreferences"
+            category="org.rubypeople.rdt.ui.preferences.PreferencePageRubyBase"
+            class="org.rubypeople.rdt.internal.ui.preferences.RdocRiPreferencePage"
+            id="org.rubypeople.rdt.ui.RdocRiPreferencePage">
+      </page>      
    </extension>
    <extension
          point="org.eclipse.ui.perspectives">
