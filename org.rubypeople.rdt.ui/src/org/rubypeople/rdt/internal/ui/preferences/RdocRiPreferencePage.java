@@ -2,12 +2,9 @@ package org.rubypeople.rdt.internal.ui.preferences;
 
 import org.eclipse.jface.preference.FieldEditorPreferencePage;
 import org.eclipse.jface.preference.FileFieldEditor;
-import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPreferencePage;
 import org.rubypeople.rdt.internal.ui.RubyPlugin;
-import org.rubypeople.rdt.internal.ui.util.Rdoc;
-import org.rubypeople.rdt.internal.ui.util.Ri;
 import org.rubypeople.rdt.ui.PreferenceConstants;
 
 /**
@@ -31,18 +28,9 @@ public class RdocRiPreferencePage
 	public RdocRiPreferencePage() {
 		super(GRID);
 		setPreferenceStore(RubyPlugin.getDefault().getPreferenceStore());
-		setDefaults();
 		setDescription("Settings for Rdoc and Ri.");
 	}
-		
-	private void setDefaults(){
-		IPreferenceStore store = RubyPlugin.getDefault().getPreferenceStore();
-		store.setDefault( PreferenceConstants.RDOC_PATH, 
-			Rdoc.getDefaultPath().toOSString() );
-		store.setDefault( PreferenceConstants.RI_PATH,
-			Ri.getDefaultPath().toOSString() );
-	}
-	
+			
 	/**
 	 * Creates the field editors. Field editors are abstractions of
 	 * the common GUI blocks needed to manipulate various types
