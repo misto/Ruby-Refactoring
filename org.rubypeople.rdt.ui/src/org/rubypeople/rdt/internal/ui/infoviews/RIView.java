@@ -13,12 +13,13 @@ import org.eclipse.core.runtime.Path;
 import org.eclipse.jface.util.IPropertyChangeListener;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.browser.Browser;
+import org.eclipse.swt.custom.SashForm;
+import org.eclipse.swt.events.FocusAdapter;
+import org.eclipse.swt.events.FocusEvent;
 import org.eclipse.swt.events.KeyAdapter;
 import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
-import org.eclipse.swt.events.MouseAdapter;
-import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.layout.GridData;
@@ -39,11 +40,12 @@ public class RIView extends ViewPart {
 
 	private boolean riFound = false;
 	private PageBook pageBook;
-    private Composite panel;
+    private SashForm form;    
     private Label interpreterNeededLabel, riNotFoundLabel;
 	private Text searchStr;
 	private List searchList;
     private Browser searchResult;
+	private String riCmd = null;
     private java.util.List possibleMatches = new ArrayList();
     private SearchValue itemToSearch = new SearchValue();
     private DescriptionUpdater descriptionUpdater = new DescriptionUpdater();
@@ -66,21 +68,16 @@ public class RIView extends ViewPart {
         
         riNotFoundLabel = new Label( pageBook, SWT.LEFT | SWT.TOP | SWT.WRAP );
         riNotFoundLabel.setText( InfoViewMessages.getString( "RubyInformation.ri_not_found")  );
-                
-        panel = new Composite(pageBook, SWT.NONE);
+                       
         
-        GridLayout layout = new GridLayout();
-        layout.numColumns = 2;
-        panel.setLayout(layout);
-
-        GridData data = new GridData(GridData.FILL_HORIZONTAL);
-        data.grabExcessHorizontalSpace = true;
-        panel.setLayoutData(data);
-
+        form = new SashForm(pageBook, SWT.HORIZONTAL);        
+                       
+        Composite panel = new Composite(form, SWT.NONE);
+        panel.setLayout(new GridLayout(1, false));              
+       
         // Search String
         searchStr = new Text(panel, SWT.BORDER);
-        data = new GridData();        
-        data.widthHint = 150;
+        GridData data = new GridData();        
         data.horizontalAlignment = SWT.FILL;
         searchStr.setLayoutData(data);
         searchStr.addModifyListener(new ModifyListener() {        
@@ -91,7 +88,7 @@ public class RIView extends ViewPart {
         searchStr.addKeyListener(new KeyAdapter() {
             public void keyPressed(KeyEvent e) {
                 super.keyPressed(e);                                
-                if (e.keyCode == 16777218) { // sorry didn't find the SWT constant for down arrow
+                if (e.keyCode == 16777218 || e.keyCode == 13) { // sorry didn't find the SWT constant for down arrow
                     searchList.setFocus();
                 } else if (e.keyCode == SWT.ESC) {
                     searchStr.setText("");
@@ -99,16 +96,8 @@ public class RIView extends ViewPart {
             }
         });
         
-        //    Match text
-        data = new GridData(GridData.FILL_HORIZONTAL | GridData.FILL_VERTICAL);
-        data.verticalSpan = 3;        
-        searchResult = new Browser(panel, SWT.BORDER);
-        searchResult.setLayoutData(data);        
-
-        searchList = new List(panel, SWT.BORDER | SWT.V_SCROLL);
-        data = new GridData(GridData.FILL_VERTICAL);
-        data.widthHint = 150;
-        data.verticalSpan = 2;
+        searchList = new List(panel, SWT.BORDER | SWT.V_SCROLL | SWT.H_SCROLL);
+        data = new GridData(GridData.FILL_VERTICAL | GridData.FILL_HORIZONTAL);
         searchList.setLayoutData(data);
         searchList.addSelectionListener(new SelectionListener() {        
             public void widgetDefaultSelected(SelectionEvent e) {
@@ -116,11 +105,20 @@ public class RIView extends ViewPart {
             }
         
             public void widgetSelected(SelectionEvent e) {     
-                String[] selection = searchList.getSelection();            
-                String searchText = (selection.length > 0) ? selection[0] : "";
-                synchronized(itemToSearch) { itemToSearch.set(searchText); }
+                showSelectedItem();
+            }
+        });
+        searchStr.addFocusListener(new FocusAdapter() {        
+            public void focusGained(FocusEvent e) {
+                searchStr.selectAll();
             }        
         });
+        
+        // search result
+        searchResult = new Browser(form, SWT.BORDER);
+        
+        form.setWeights(new int[]{1, 3});
+
         runtimeListener = new RubyRuntime.Listener() {
             public void selectedInterpreterChanged() {
                 updatePage();
@@ -146,13 +144,20 @@ public class RIView extends ViewPart {
         if (interpreter != null) {            
             initSearchList();
             if( riFound ){
-            	pageBook.showPage(panel);
+            	pageBook.showPage(form);
             }
         }
         else {
             pageBook.showPage(interpreterNeededLabel);
         }
     }
+    
+    private void showSelectedItem() {
+        String[] selection = searchList.getSelection();
+        String searchText = (selection.length > 0) ? selection[0] : null;
+        synchronized(itemToSearch) { itemToSearch.set(searchText); }
+    }        
+    
 
     public void dispose() {
         descriptionUpdater.requestStop();
@@ -215,17 +220,18 @@ public class RIView extends ViewPart {
         for (Iterator iter = possibleMatches.iterator(); iter.hasNext();) {
             String possibleMatch = (String) iter.next();      
             if (possibleMatch.indexOf(text) > -1 ) {
-                searchList.add(possibleMatch);
+                searchList.add(possibleMatch);                
             }
         }
         if (searchList.getItemCount() > 0) searchList.setSelection(0);
+        showSelectedItem();
     }
 
 	/**
 	 * Passing the focus request to the viewer's control.
 	 */
 	public void setFocus() {
-		panel.setFocus();
+		form.setFocus();
 	}       
     
     private final class DescriptionUpdater extends Thread {
