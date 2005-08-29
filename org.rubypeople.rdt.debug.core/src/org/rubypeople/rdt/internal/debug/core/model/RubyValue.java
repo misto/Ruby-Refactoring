@@ -1,5 +1,6 @@
 package org.rubypeople.rdt.internal.debug.core.model;
 
+import org.eclipse.core.runtime.PlatformObject;
 import org.eclipse.debug.core.DebugException;
 import org.eclipse.debug.core.ILaunch;
 import org.eclipse.debug.core.model.IDebugTarget;
@@ -14,7 +15,10 @@ import org.eclipse.debug.core.model.IVariable;
  * To enable and disable the creation of type comments go to
  * Window>Preferences>Java>Code Generation.
  */
-public class RubyValue implements IValue {
+
+//see RubyDebugTarget for the reason why PlatformObject is being extended
+
+public class RubyValue extends PlatformObject implements IValue {
 
 	private String valueString ;
 	private String referenceTypeName ;
@@ -94,13 +98,6 @@ public class RubyValue implements IValue {
 	 */
 	public ILaunch getLaunch() {
 		return this.getDebugTarget().getLaunch();
-	}
-
-	/**
-	 * @see org.eclipse.core.runtime.IAdaptable#getAdapter(Class)
-	 */
-	public Object getAdapter(Class adapter) {
-		return null;
 	}
 	
 	public String toString() {

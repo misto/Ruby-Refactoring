@@ -1,11 +1,13 @@
 package org.rubypeople.rdt.internal.debug.core.model;
 
+import org.eclipse.core.runtime.PlatformObject;
 import org.eclipse.debug.core.ILaunch;
 import org.eclipse.debug.core.model.IDebugTarget;
 import org.eclipse.debug.core.model.IExpression;
 import org.eclipse.debug.core.model.IValue;
 
-public class RubyExpression implements IExpression {
+//see RubyDebugTarget for the reason why PlatformObject is being extended
+public class RubyExpression extends PlatformObject implements IExpression {
 
   private RubyVariable inspectionResult;
   private String expression;
@@ -37,10 +39,6 @@ public class RubyExpression implements IExpression {
 
   public ILaunch getLaunch() {
     return this.getDebugTarget().getLaunch();
-  }
-
-  public Object getAdapter(Class arg0) {
-    return null;
   }
 
 }

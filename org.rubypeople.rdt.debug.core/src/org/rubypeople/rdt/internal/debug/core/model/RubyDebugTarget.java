@@ -2,6 +2,7 @@ package org.rubypeople.rdt.internal.debug.core.model;
 
 import org.eclipse.core.resources.IMarkerDelta;
 import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.PlatformObject;
 import org.eclipse.debug.core.DebugEvent;
 import org.eclipse.debug.core.DebugException;
 import org.eclipse.debug.core.DebugPlugin;
@@ -16,8 +17,12 @@ import org.rubypeople.rdt.internal.debug.core.RdtDebugCorePlugin;
 import org.rubypeople.rdt.internal.debug.core.RubyDebuggerProxy;
 import org.rubypeople.rdt.internal.debug.core.SuspensionPoint;
 
+// RubyDebugTarget extends PlatformObject in order to benefit from the getAdapter Implementation
+// provided there. This is crucial for displaying the RubyDebugTarget in the DebugView when
+// the TreeContentManager asks for an IDeferredWorkbenchAdapter or IWorkbenchAdapter
+// This kind of Adapter is deliverd from the DebugElementAdapterFactory.
 
-public class RubyDebugTarget implements IRubyDebugTarget {
+public class RubyDebugTarget extends PlatformObject implements IRubyDebugTarget {
 
 	private IProcess process;
 	private boolean isTerminated;
@@ -188,10 +193,6 @@ public class RubyDebugTarget implements IRubyDebugTarget {
 	}
 
 	public IMemoryBlock getMemoryBlock(long arg0, long arg1) throws DebugException {
-		return null;
-	}
-
-	public Object getAdapter(Class arg0) {
 		return null;
 	}
 

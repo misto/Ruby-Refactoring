@@ -1,5 +1,6 @@
 package org.rubypeople.rdt.internal.debug.core.model;
 
+import org.eclipse.core.runtime.PlatformObject;
 import org.eclipse.debug.core.DebugEvent;
 import org.eclipse.debug.core.DebugException;
 import org.eclipse.debug.core.DebugPlugin;
@@ -11,7 +12,8 @@ import org.eclipse.debug.core.model.IThread;
 import org.rubypeople.rdt.internal.debug.core.RubyDebuggerProxy;
 import org.rubypeople.rdt.internal.debug.core.SuspensionPoint;
 
-public class RubyThread implements IThread {
+// see RubyDebugTarget for the reason why PlatformObject is being extended
+public class RubyThread extends PlatformObject implements IThread {
 	private RubyStackFrame[] frames;
 	private IDebugTarget target;
 	private boolean isSuspended = false;
@@ -27,7 +29,12 @@ public class RubyThread implements IThread {
 	}
 
 	public IStackFrame[] getStackFrames() throws DebugException {
-		return frames;
+		// Not all clients ask hasStackFrames before calling this method (DeferredThread)
+		// Therefore we must not return null
+		if (frames == null) {
+			return new RubyStackFrame[0];
+		}
+		return frames ;
 	}
 
 	public int getStackFramesSize() {
@@ -54,7 +61,8 @@ public class RubyThread implements IThread {
 
 
 	public IBreakpoint[] getBreakpoints() {
-		return null;
+		// TODO: Experimental Code
+		return new IBreakpoint[] { DebugPlugin.getDefault().getBreakpointManager().getBreakpoints(IRubyDebugTarget.MODEL_IDENTIFIER)[0] } ;
 	}
 
 	public String getModelIdentifier() {
@@ -156,10 +164,6 @@ public class RubyThread implements IThread {
 		this.getDebugTarget().terminate() ;
 		isTerminated = true;
 		this.frames = null;
-	}
-
-	public Object getAdapter(Class arg0) {
-		return null;
 	}
 
 	public RubyDebuggerProxy getRubyDebuggerProxy() {

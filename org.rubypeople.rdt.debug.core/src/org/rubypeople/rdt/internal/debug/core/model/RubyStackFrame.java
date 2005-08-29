@@ -1,5 +1,6 @@
 package org.rubypeople.rdt.internal.debug.core.model;
 
+import org.eclipse.core.runtime.PlatformObject;
 import org.eclipse.debug.core.DebugEvent;
 import org.eclipse.debug.core.DebugException;
 import org.eclipse.debug.core.DebugPlugin;
@@ -11,7 +12,8 @@ import org.eclipse.debug.core.model.IThread;
 import org.eclipse.debug.core.model.IVariable;
 import org.rubypeople.rdt.internal.debug.core.RubyDebuggerProxy;
 
-public class RubyStackFrame implements IStackFrame {
+//see RubyDebugTarget for the reason why PlatformObject is being extended
+public class RubyStackFrame extends PlatformObject implements IStackFrame {
 
 	private RubyThread thread;
 	private String file;
@@ -163,10 +165,6 @@ public class RubyStackFrame implements IStackFrame {
 	public void terminate() throws DebugException {
 		this.getThread().terminate() ;		
 	} 
-	
-	public Object getAdapter(Class arg0) {
-		return null;
-	}
 
 	public int getIndex() {
 		return index;

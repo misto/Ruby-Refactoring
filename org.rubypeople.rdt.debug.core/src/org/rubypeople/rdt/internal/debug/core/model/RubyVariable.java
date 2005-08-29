@@ -1,13 +1,15 @@
 package org.rubypeople.rdt.internal.debug.core.model;
 
 import org.eclipse.core.runtime.Platform;
+import org.eclipse.core.runtime.PlatformObject;
 import org.eclipse.debug.core.DebugException;
 import org.eclipse.debug.core.ILaunch;
 import org.eclipse.debug.core.model.IDebugTarget;
 import org.eclipse.debug.core.model.IValue;
 import org.eclipse.debug.core.model.IVariable;
 
-public class RubyVariable implements IVariable {
+//see RubyDebugTarget for the reason why PlatformObject is being extended
+public class RubyVariable extends PlatformObject implements IVariable {
 
     private boolean isStatic;
     private boolean isLocal;
@@ -118,13 +120,6 @@ public class RubyVariable implements IVariable {
      */
     public boolean verifyValue(IValue value) throws DebugException {
         return false;
-    }
-
-    /**
-     * @see org.eclipse.core.runtime.IAdaptable#getAdapter(Class)
-     */
-    public Object getAdapter(Class adapter) {
-        return Platform.getAdapterManager().getAdapter(this, adapter);
     }
 
     public String toString() {
