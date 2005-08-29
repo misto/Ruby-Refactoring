@@ -1,5 +1,6 @@
 package org.rubypeople.rdt.internal.debug.ui.launcher;
 
+import org.eclipse.core.resources.IProject;
 import org.eclipse.jface.viewers.ILabelProvider;
 import org.eclipse.jface.viewers.ILabelProviderListener;
 import org.eclipse.swt.graphics.Image;
@@ -25,8 +26,15 @@ public class LoadPathEntryLabelProvider implements ILabelProvider {
 	 * @see ILabelProvider#getText(Object)
 	 */
 	public String getText(Object element) {
-		if (element != null && element.getClass() == LoadPathEntry.class)
-			return ((LoadPathEntry) element).getProject().getLocation().toOSString();
+		if (element != null && element.getClass() == LoadPathEntry.class) {
+			IProject project = ((LoadPathEntry) element).getProject() ;			
+			if (project.isAccessible()) {
+				return project.getLocation().toOSString() ;
+			}
+			else {
+				return project.getName() + " (not accessible)" ;
+			}
+		}
 			
 		RdtDebugUiPlugin.log(new RuntimeException("Unable to render load path."));
 		return null;

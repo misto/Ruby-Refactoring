@@ -96,7 +96,9 @@ public class InterpreterRunnerConfiguration {
 	}
     
     protected void addToLoadPath(StringBuffer loadPath, IProject project) {
-
+    	if (!project.isAccessible()) {
+    		return ;
+    	}
         loadPath.append(" -I " + RdtLaunchingPlugin.osDependentPath(project.getLocation().toOSString()));
     }
     
