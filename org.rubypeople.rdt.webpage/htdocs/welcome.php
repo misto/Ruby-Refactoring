@@ -30,6 +30,50 @@ A regular expression plugin is also available (Thanks to the <a href="http://e-p
 
     <!-- INSERT NEW NEWS HERE!!! -->
 	<table>
+	    <tr>
+      <td align="right" valign="top" width="20"><img src="images/arrow.gif" alt="->" border="0" height="16" width="16"></td>
+      <td valign="top"><font face="arial,helvetica,geneva" size="-1"><b> Help needed for 0.6.0 Release (2005-09-01)</b>
+        <br/>
+Release 0.6.0 is coming soon. The main bulk of work for the integration of JRuby has been managed. 
+Now we need the comments of our users. Please check out our <a href="http://rubyeclipse.sourceforge.net/nightlyBuild">nightly builds</a> and give us your feedback in the forums or on the developers mailing list.
+
+Next to the new features we can offer with 0.6.0, the large changes behind the scenes give us also
+an excellent position for improving code searching and navigability in the next releases. The new features
+of 0.6.0 are (see also the <a href="http://rubyeclipse.sourceforge.net/nightlyBuild/Changelog.txt">Changelog</a>)
+
+<ul>
+<li><b>Code Folding</b> - Folding can be enabled for classes and methods</li>
+<li><b>Outline view</b> - more detailed, e.g. support for local variables</li>
+<li><b>RI view</b> - use Ruby's ri utility from an RDT view</li>
+<li><b>Task tags</b> - creates tasks for configurable keywords (like TODO, FIXME) in ruby comments</li>
+<li><b>Editor improvements</b> - Auto-complete of brackets, parens, and single/double quotes; better code-assist</li>
+<li><b>Inspection shortcuts</b> - Configurable shortcuts for frequently used inspections during a debug session, like showing all methods of an object, global constants and so on.</li>
+</ul>
+</p>
+        </font>
+      </td>
+    </tr>
+
+    <tr>
+      <td align="right" valign="top" width="20"><img src="images/arrow.gif" alt="->" border="0" height="16" width="16"></td>
+      <td valign="top"><font face="arial,helvetica,geneva" size="-1"><b> RDT 0.6.0 Work Continues (2005-02-15)</b>
+        <br/>
+<p>Just an update to our users to let them know, we are working hard on RDT 0.6.0.
+<ul> Planned work includes:
+<li><b>RI plugin</b> - allows users to lookup docs on Ruby classes inside an Eclipse plugin (interaces with Ruby's ri utility)</li>
+<li><b>JRuby's parser</b> - We're attempting to combin some efforts with JRuby to leverage their parser. This should improve our results markedly (as will be
+noticable in things such as the Outline view).</li>
+<li><b>Richer Core Model</b> - Anotehr lareg change unde rthe hood will be a move to a much richer internal model for Ruby code, mirroring that of JDT's.
+This should allow for significant improvements in the ability to get out richer features.</li>
+<li><b>Editor improvements</b> - Smart auto-matching of parentheses, brackets and quotes, as in JDT (Type "{" and RDT will add the closing bracket and insert th                                                                                             e cursor between them).</li>
+</ul>
+</p>
+        </font>
+      </td>
+    </tr>
+
+
+
 		<tr>
       <td align="right" valign="top" width="20"><img src="images/arrow.gif" alt="->" border="0" height="16" width="16"></td>
       <td valign="top"><font face="arial,helvetica,geneva" size="-1"><b> RDT 0.5.0 Docs Translated to Japaenese (2004-12-24)</b>
