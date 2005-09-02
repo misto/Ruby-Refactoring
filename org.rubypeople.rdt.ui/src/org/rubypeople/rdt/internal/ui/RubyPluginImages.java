@@ -58,9 +58,7 @@ public class RubyPluginImages {
 	public static final ImageDescriptor DESC_WIZBAN_NEWCLASS = create(T_WIZBAN, "newclass_wiz.gif"); 			//$NON-NLS-1$
 
 	// RI
-	public static ImageDescriptor DESC_HELP;
-	public static ImageDescriptor DESC_RUN;
-	private static final String IMG_RUN = NAME_PREFIX + "run.gif";
+	public static final ImageDescriptor TOOLBAR_REFRESH = create(T_ELCL, "refresh.png");;
 	
 	static {
 		createManaged(T_OBJ, IMG_OBJS_FIXABLE_ERROR);
@@ -69,8 +67,6 @@ public class RubyPluginImages {
 		createManaged(T_OBJ, IMG_OBJS_WARNING);
 		createManaged(T_OBJ, IMG_OBJS_INFO);
 		createManaged(T_OBJ, IMG_TEMPLATE_PROPOSAL);
-		DESC_HELP = createManaged(T_ELCL, IMG_OBJS_HELP);
-		DESC_RUN = createManaged(T_ETOOL, IMG_RUN);
 		createManaged(T_CTOOL, IMG_CTOOLS_RUBY_IMPORT_CONTAINER);
 		createManaged(T_CTOOL, IMG_CTOOLS_RUBY_IMPORT);
 		createManaged(T_CTOOL, IMG_CTOOLS_RUBY_PAGE);
