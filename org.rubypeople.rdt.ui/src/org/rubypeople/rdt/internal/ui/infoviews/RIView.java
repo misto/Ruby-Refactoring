@@ -6,11 +6,19 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Iterator;
 
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
+import org.eclipse.jface.action.Action;
+import org.eclipse.jface.action.IAction;
+import org.eclipse.jface.action.IToolBarManager;
 import org.eclipse.jface.util.IPropertyChangeListener;
+import org.eclipse.jface.viewers.IStructuredContentProvider;
+import org.eclipse.jface.viewers.IStructuredSelection;
+import org.eclipse.jface.viewers.TableViewer;
+import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.browser.Browser;
 import org.eclipse.swt.custom.SashForm;
@@ -27,13 +35,13 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
-import org.eclipse.swt.widgets.List;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.part.PageBook;
 import org.eclipse.ui.part.ViewPart;
 import org.rubypeople.rdt.internal.launching.RubyInterpreter;
 import org.rubypeople.rdt.internal.launching.RubyRuntime;
 import org.rubypeople.rdt.internal.ui.RubyPlugin;
+import org.rubypeople.rdt.internal.ui.RubyPluginImages;
 import org.rubypeople.rdt.ui.PreferenceConstants;
 
 public class RIView extends ViewPart {
@@ -43,13 +51,13 @@ public class RIView extends ViewPart {
     private SashForm form;    
     private Label interpreterNeededLabel, riNotFoundLabel;
 	private Text searchStr;
-	private List searchList;
+    private TableViewer searchListViewer;
     private Browser searchResult;
-	private String riCmd = null;
     private java.util.List possibleMatches = new ArrayList();
     private SearchValue itemToSearch = new SearchValue();
     private DescriptionUpdater descriptionUpdater = new DescriptionUpdater();
     private RubyRuntime.Listener runtimeListener;
+    private ListContentProvider contentProvider = new ListContentProvider();
 
 	/**
 	 * The constructor.
@@ -61,6 +69,9 @@ public class RIView extends ViewPart {
 	 * it.
 	 */
 	public void createPartControl(Composite parent) {
+		
+		contributeToActionBars() ;
+		
 		pageBook = new PageBook(parent, SWT.NONE);
         
         interpreterNeededLabel = new Label(pageBook, SWT.NONE);
@@ -89,17 +100,18 @@ public class RIView extends ViewPart {
             public void keyPressed(KeyEvent e) {
                 super.keyPressed(e);                                
                 if (e.keyCode == 16777218 || e.keyCode == 13) { // sorry didn't find the SWT constant for down arrow
-                    searchList.setFocus();
+                    searchListViewer.getTable().setFocus();
                 } else if (e.keyCode == SWT.ESC) {
                     searchStr.setText("");
                 }
             }
         });
         
-        searchList = new List(panel, SWT.BORDER | SWT.V_SCROLL | SWT.H_SCROLL);
+        searchListViewer = new TableViewer(panel, SWT.BORDER | SWT.V_SCROLL | SWT.H_SCROLL);
+        searchListViewer.setContentProvider(contentProvider);
         data = new GridData(GridData.FILL_VERTICAL | GridData.FILL_HORIZONTAL);
-        searchList.setLayoutData(data);
-        searchList.addSelectionListener(new SelectionListener() {        
+        searchListViewer.getTable().setLayoutData(data);
+        searchListViewer.getTable().addSelectionListener(new SelectionListener() {        
             public void widgetDefaultSelected(SelectionEvent e) {
                 widgetSelected(e);
             }
@@ -107,7 +119,7 @@ public class RIView extends ViewPart {
             public void widgetSelected(SelectionEvent e) {     
                 showSelectedItem();
             }
-        });
+        });        
         searchStr.addFocusListener(new FocusAdapter() {        
             public void focusGained(FocusEvent e) {
                 searchStr.selectAll();
@@ -139,6 +151,20 @@ public class RIView extends ViewPart {
         descriptionUpdater.start();
 	}
 	    
+	private void contributeToActionBars() {
+		IAction refreshAction = new Action() {
+			public void run() {
+				updatePage();
+			}
+		};
+		refreshAction.setText("Refresh");
+		refreshAction.setToolTipText("Refresh list of names");
+		refreshAction.setImageDescriptor(RubyPluginImages.TOOLBAR_REFRESH);
+		
+		IToolBarManager manager = getViewSite().getActionBars().getToolBarManager();
+		manager.add(refreshAction);		
+	}
+	
     private void updatePage() {
         RubyInterpreter interpreter = RubyRuntime.getDefault().getSelectedInterpreter();
         if (interpreter != null) {            
@@ -153,19 +179,17 @@ public class RIView extends ViewPart {
     }
     
     private void showSelectedItem() {
-        String[] selection = searchList.getSelection();
-        String searchText = (selection.length > 0) ? selection[0] : null;
+        String searchText = (String)((IStructuredSelection)searchListViewer.getSelection()).getFirstElement();        
         synchronized(itemToSearch) { itemToSearch.set(searchText); }
     }        
     
-
     public void dispose() {
         descriptionUpdater.requestStop();
         RubyRuntime.getDefault().removeListener(runtimeListener);
         super.dispose();
     }
         
-	class SearchValue {
+    private class SearchValue {
         String value = null;
         
         void set(String value) {
@@ -190,6 +214,7 @@ public class RIView extends ViewPart {
                 BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
                 String line = null;
                 int numberOfMatches = 0;
+                possibleMatches = new ArrayList() ;
                 try {
                     while ((line = reader.readLine()) != null) {
                         possibleMatches.add(line.trim());
@@ -214,16 +239,17 @@ public class RIView extends ViewPart {
         filterSearchList();
     }
 
-    private void filterSearchList() {
-        searchList.removeAll();        
+    private void filterSearchList() {               
+        java.util.List filteredList = new ArrayList();
         String text = searchStr.getText();
         for (Iterator iter = possibleMatches.iterator(); iter.hasNext();) {
             String possibleMatch = (String) iter.next();      
             if (possibleMatch.indexOf(text) > -1 ) {
-                searchList.add(possibleMatch);                
+                filteredList.add(possibleMatch);                
             }
         }
-        if (searchList.getItemCount() > 0) searchList.setSelection(0);
+        searchListViewer.setInput(filteredList);       
+        if (filteredList.size() > 0) searchListViewer.getTable().setSelection(0);             
         showSelectedItem();
     }
 
@@ -234,6 +260,18 @@ public class RIView extends ViewPart {
 		form.setFocus();
 	}       
     
+    private final class ListContentProvider implements IStructuredContentProvider {
+        public void inputChanged(Viewer viewer, Object oldInput, Object newInput) {                
+        }
+
+        public void dispose() {
+        }
+
+        public Object[] getElements(Object inputElement) {
+            return ((Collection)inputElement).toArray();
+        }
+    }
+
     private final class DescriptionUpdater extends Thread {
         private String searchValue;
         private volatile boolean stopped = false;
