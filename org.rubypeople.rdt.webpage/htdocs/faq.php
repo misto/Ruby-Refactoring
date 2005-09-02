@@ -45,8 +45,12 @@ That being said, we do have some ruby scripts included in RDT to help us interfa
       <td align="right" valign="top" width="20"><img src="images/arrow.gif" alt="->" border="0" height="16" width="16"></td>
       <td valign="top"><font face="arial,helvetica,geneva" size="-1"><b> Which components of Eclipse do I need?</b>
         <br/>
-<p>Generally speaking you should be able to download the Eclipse patform, without the JDT (unless you plan on doing Java development).<br/>
-The download for Eclipse which includes on the platform (minus the plugin SDK and JDT) is typically labeled "Platform Runtime Binary".
+<p>Generally speaking you should be able to download the Eclipse platform, without the JDT (unless you plan on doing Java development).<br/>
+The download for Eclipse which includes only the platform (minus the plugin SDK and JDT) is typically labeled "Platform Runtime Binary".
+This the bare minimum you need to be able to run RDT. Obviously anyone with the full version including the SDK, or a version with the
+platform plus JDT should be able to RDT as well.
+</p>
+
 </p>
         </font>
       </td>
