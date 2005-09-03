@@ -71,4 +71,6 @@ public interface IRubyProject extends IRubyElement, IParent {
 	 */
 	IType findType(String fullyQualifiedName) throws RubyModelException;
 
+    public boolean upgrade() throws CoreException;
+
 }

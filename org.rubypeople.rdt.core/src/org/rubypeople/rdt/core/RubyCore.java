@@ -188,6 +188,18 @@ public class RubyCore extends Plugin {
 		RubyParser.setDebugging(rubyParserOption == null ? false : rubyParserOption.equalsIgnoreCase("true"));
 	}
 
+    public static boolean upgradeOldProjects() throws CoreException {
+        boolean projectUpgraded = false;
+        IProject[] projects = RubyCore.getRubyProjects();
+        for (int i = 0; i < projects.length; i++) {
+            IRubyProject rubyProject = RubyModelManager.getRubyModelManager().getRubyModel().getRubyProject(projects[i]);
+            if (rubyProject.upgrade()) {
+                projectUpgraded = true;
+            }
+        }
+        return projectUpgraded;
+    }
+
 	/*
 	 * Initializes the default preferences settings for this plug-in.
 	 */

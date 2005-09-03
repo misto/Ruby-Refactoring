@@ -68,21 +68,26 @@ public class RubyProject extends Openable implements IProjectNature, IRubyElemen
 		addToBuildSpec(RubyCore.BUILDER_ID);
 	}
 	
+    public boolean upgrade() throws CoreException {
+        return addToBuildSpec(RubyCore.BUILDER_ID);
+    }
 	/**
 	 * Adds a builder to the build spec for the given project.
 	 */
-	protected void addToBuildSpec(String builderID) throws CoreException {
+	protected boolean addToBuildSpec(String builderID) throws CoreException {
 
 		IProjectDescription description = this.project.getDescription();
-		int javaCommandIndex = getRubyCommandIndex(description.getBuildSpec());
+		int commandIndex = getRubyCommandIndex(description.getBuildSpec());
 
-		if (javaCommandIndex == -1) {
+		if (commandIndex == -1) {
 
 			// Add a Java command to the build spec
 			ICommand command = description.newCommand();
 			command.setBuilderName(builderID);
 			setRubyCommand(description, command);
+            return true;
 		}
+        return false;
 	}
 	
 	/**

@@ -3,6 +3,7 @@ package org.rubypeople.rdt.internal.ui;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IWorkspace;
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Status;
@@ -18,6 +19,8 @@ import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchWindow;
+import org.eclipse.ui.PartInitException;
+import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.editors.text.EditorsUI;
 import org.eclipse.ui.editors.text.TextEditorPreferenceConstants;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
@@ -42,7 +45,8 @@ import org.rubypeople.rdt.ui.PreferenceConstants;
 
 public class RubyPlugin extends AbstractUIPlugin implements IRubyColorConstants {
 
-	protected static RubyPlugin plugin;
+	private static final String ORG_ECLIPSE_UI_VIEWS_TASK_LIST = "org.eclipse.ui.views.TaskList";
+    protected static RubyPlugin plugin;
 	public static final String PLUGIN_ID = "org.rubypeople.rdt.ui"; //$NON-NLS-1$
 
 	protected RubyTextTools textTools;
@@ -110,8 +114,43 @@ public class RubyPlugin extends AbstractUIPlugin implements IRubyColorConstants 
 				return DocumentAdapter.NULL;
 			}
 		});
-
+		
+        upgradeOldProjects();
 	}
+	
+	private void upgradeOldProjects() {
+	    try {
+            boolean projectUpgraded = RubyCore.upgradeOldProjects();
+
+            if (projectUpgraded) {
+                openTasksView();
+            }
+        } catch (CoreException e) {
+            log(IStatus.WARNING, "While upgrading RDT projects", e);
+        }
+    }
+
+    // currently a "no-op", as there are no workbench pages when this is called. :( DSC
+    private void openTasksView() {
+        try{
+            IWorkbenchWindow dw = PlatformUI.getWorkbench().getActiveWorkbenchWindow();
+            if (dw != null) {
+                IWorkbenchPage page = dw.getActivePage();
+                if (page == null) {
+                    IWorkbenchPage[] pages = dw.getPages();
+                    for (int i=0; i<pages.length; i++) {
+                        if (null != pages[i].findView(ORG_ECLIPSE_UI_VIEWS_TASK_LIST))
+                            break;
+                    }
+                    if (pages.length > 0)
+                        page = pages[0];
+                }
+                if (page != null)
+                    page.showView(ORG_ECLIPSE_UI_VIEWS_TASK_LIST);
+            }
+        }catch (PartInitException ignored){
+        }        
+    }
 
 	/*
 	 * (non-Javadoc)

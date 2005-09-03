@@ -155,6 +155,7 @@
        <viewShortcut id="org.rubypeople.rdt.ui.ViewRubyResources"/>
        <viewShortcut id="org.eclipse.ui.console.ConsoleView"/>
        <viewShortcut id="org.eclipse.ui.views.ProblemView"/>
+       <viewShortcut id="org.eclipse.ui.views.TaskList"/>
        <viewShortcut id="org.rubypeople.rdt.ui.views.RIView"/>   
        <perspectiveShortcut id="org.eclipse.ui.resourcePerspective" />
      </perspectiveExtension>
