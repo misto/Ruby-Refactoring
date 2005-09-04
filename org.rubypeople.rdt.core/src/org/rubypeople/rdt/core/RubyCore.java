@@ -192,12 +192,18 @@ public class RubyCore extends Plugin {
         boolean projectUpgraded = false;
         IProject[] projects = RubyCore.getRubyProjects();
         for (int i = 0; i < projects.length; i++) {
-            IRubyProject rubyProject = RubyModelManager.getRubyModelManager().getRubyModel().getRubyProject(projects[i]);
-            if (rubyProject.upgrade()) {
+            if (upgradeOldProject(projects[i])) {
                 projectUpgraded = true;
             }
         }
         return projectUpgraded;
+    }
+
+    public static boolean upgradeOldProject(IProject project) throws CoreException {
+        IRubyProject rubyProject = RubyModelManager.getRubyModelManager().getRubyModel().getRubyProject(project);
+        if (rubyProject != null)
+            return rubyProject.upgrade();
+        return false;
     }
 
 	/*

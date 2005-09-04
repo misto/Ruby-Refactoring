@@ -1,13 +1,20 @@
 package org.rubypeople.rdt.internal.ui;
 
+import org.eclipse.core.internal.events.ResourceChangeEvent;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IResource;
+import org.eclipse.core.resources.IResourceChangeEvent;
+import org.eclipse.core.resources.IResourceChangeListener;
+import org.eclipse.core.resources.IResourceDelta;
 import org.eclipse.core.resources.IWorkspace;
+import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.preference.PreferenceConverter;
 import org.eclipse.jface.text.templates.ContextTypeRegistry;
@@ -71,6 +78,7 @@ public class RubyPlugin extends AbstractUIPlugin implements IRubyColorConstants 
 	private MockupPreferenceStore fMockupPreferenceStore;
 
 	private RubyFoldingStructureProviderRegistry fFoldingStructureProviderRegistry;
+    private boolean taskViewAlreadyOpened;
 
 	public RubyPlugin() {
 		super();
@@ -117,31 +125,52 @@ public class RubyPlugin extends AbstractUIPlugin implements IRubyColorConstants 
 			}
 		});
 		
-        upgradeOldProjects();
+		ResourcesPlugin.getWorkspace().addResourceChangeListener(new IResourceChangeListener() {
+		    
+		    public void resourceChanged(IResourceChangeEvent event) {
+		        int eventType = event.getType();
+                if (eventType == ResourceChangeEvent.POST_CHANGE) {
+                    IResourceDelta delta = event.getDelta();
+                    int deltaKind = delta.getKind();
+                    if (deltaKind == IResourceDelta.CHANGED && event.getResource() == null && event.getDelta().getFullPath().equals(new Path("/")))
+                        upgradeOldProjects();
+                }
+		        
+		    }});
+		upgradeOldProjects();
 	}
 	
 	private void upgradeOldProjects() {
-	    try {
-            boolean projectUpgraded = RubyCore.upgradeOldProjects();
+	    Job job = new Job("Upgrade Old Ruby Projects") {
+	        
+	        protected IStatus run(IProgressMonitor monitor) {
+	            try {
+	                boolean projectUpgraded = RubyCore.upgradeOldProjects();
+	                
+	                if (projectUpgraded) {
+	                    openTasksView();
+	                }
+	            } catch (CoreException e) {
+	                log(IStatus.WARNING, "While upgrading RDT projects", e);
+	            }
+	            return Status.OK_STATUS;
+	        }};
+        job.schedule();
+	}
 
-            if (projectUpgraded) {
-                openTasksView();
-            }
-        } catch (CoreException e) {
-            log(IStatus.WARNING, "While upgrading RDT projects", e);
-        }
-    }
-
-    // currently a "no-op", as there are no workbench pages when this is called. :( DSC
     private void openTasksView() {
+        if (taskViewAlreadyOpened)
+            return;
         WorkbenchJob job = new WorkbenchJob("Show Task View") {
             public IStatus runInUIThread(IProgressMonitor monitor) {
                 try{
                     IWorkbenchWindow dw = PlatformUI.getWorkbench().getActiveWorkbenchWindow();
                     if (dw != null) {
                         IWorkbenchPage page = dw.getActivePage();
-                        if (page != null)
+                        if (page != null) {
                             page.showView(ORG_ECLIPSE_UI_VIEWS_TASK_LIST);
+                            taskViewAlreadyOpened = true;
+                        }
                     }
                 }catch (PartInitException ignored){
                 }        
