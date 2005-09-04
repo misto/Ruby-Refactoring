@@ -4,6 +4,7 @@ import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Status;
@@ -24,6 +25,7 @@ import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.editors.text.EditorsUI;
 import org.eclipse.ui.editors.text.TextEditorPreferenceConstants;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
+import org.eclipse.ui.progress.WorkbenchJob;
 import org.eclipse.ui.texteditor.ChainedPreferenceStore;
 import org.osgi.framework.BundleContext;
 import org.rubypeople.rdt.core.IBuffer;
@@ -132,24 +134,21 @@ public class RubyPlugin extends AbstractUIPlugin implements IRubyColorConstants 
 
     // currently a "no-op", as there are no workbench pages when this is called. :( DSC
     private void openTasksView() {
-        try{
-            IWorkbenchWindow dw = PlatformUI.getWorkbench().getActiveWorkbenchWindow();
-            if (dw != null) {
-                IWorkbenchPage page = dw.getActivePage();
-                if (page == null) {
-                    IWorkbenchPage[] pages = dw.getPages();
-                    for (int i=0; i<pages.length; i++) {
-                        if (null != pages[i].findView(ORG_ECLIPSE_UI_VIEWS_TASK_LIST))
-                            break;
+        WorkbenchJob job = new WorkbenchJob("Show Task View") {
+            public IStatus runInUIThread(IProgressMonitor monitor) {
+                try{
+                    IWorkbenchWindow dw = PlatformUI.getWorkbench().getActiveWorkbenchWindow();
+                    if (dw != null) {
+                        IWorkbenchPage page = dw.getActivePage();
+                        if (page != null)
+                            page.showView(ORG_ECLIPSE_UI_VIEWS_TASK_LIST);
                     }
-                    if (pages.length > 0)
-                        page = pages[0];
-                }
-                if (page != null)
-                    page.showView(ORG_ECLIPSE_UI_VIEWS_TASK_LIST);
+                }catch (PartInitException ignored){
+                }        
+                return Status.OK_STATUS;
             }
-        }catch (PartInitException ignored){
-        }        
+        };
+        job.schedule();
     }
 
 	/*
