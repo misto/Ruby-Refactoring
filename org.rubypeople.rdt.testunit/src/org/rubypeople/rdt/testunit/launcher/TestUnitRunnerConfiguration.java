@@ -6,6 +6,7 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.debug.core.ILaunchConfiguration;
+import org.rubypeople.rdt.core.RubyCore;
 import org.rubypeople.rdt.internal.launching.InterpreterRunnerConfiguration;
 import org.rubypeople.rdt.internal.launching.RdtLaunchingPlugin;
 import org.rubypeople.rdt.testunit.TestunitPlugin;
@@ -80,16 +81,11 @@ public class TestUnitRunnerConfiguration extends InterpreterRunnerConfiguration 
 	}
 
 	public static String getTestRunnerPath() {
-		String location = TestunitPlugin.getDefault().getBundle().getLocation();
-		int prefixLength = location.indexOf('@');
-		if (prefixLength == -1)  
-			throw new RuntimeException("Location of launching bundle does not contain @: " + location); 
-		
-		String pluginDir = location.substring(prefixLength + 1) + "ruby";
-		File pluginDirFile = new File(pluginDir);
+		String directory = RubyCore.getOSDirectory(TestunitPlugin.getDefault());
+		File pluginDirFile  = new File(directory, "ruby");
 		
 		if (!pluginDirFile.exists()) 
-			throw new RuntimeException("Expected directory of RemoteTestRunner.rb does not exist: " + pluginDir); 
+			throw new RuntimeException("Expected directory of RemoteTestRunner.rb does not exist: " + pluginDirFile.getAbsolutePath()); 
 	
 		return pluginDirFile.getAbsolutePath() + File.separator + TestUnitLaunchShortcut.TEST_RUNNER_FILE;
 	}

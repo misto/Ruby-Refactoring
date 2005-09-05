@@ -22,6 +22,7 @@ import org.eclipse.core.runtime.jobs.ISchedulingRule;
 import org.eclipse.core.runtime.preferences.DefaultScope;
 import org.eclipse.core.runtime.preferences.IEclipsePreferences;
 import org.eclipse.core.runtime.preferences.InstanceScope;
+import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.rubypeople.rdt.internal.core.BatchOperation;
 import org.rubypeople.rdt.internal.core.DefaultWorkingCopyOwner;
@@ -263,12 +264,22 @@ public class RubyCore extends Plugin {
 	}
 
 	public static String getOSDirectory(Plugin plugin) {
-		String location = plugin.getBundle().getLocation();
+		final Bundle bundle = plugin.getBundle();
+		String location = bundle.getLocation();
 		int prefixLength = location.indexOf('@');
 		if (prefixLength == -1) { throw new RuntimeException("Location of launching bundle does not contain @: " + location); }
 		String pluginDir = location.substring(prefixLength + 1);
 		File pluginDirFile = new File(pluginDir);
-		if (!pluginDirFile.exists()) { throw new RuntimeException("Expected directory of eclipseDebug.rb does not exist: " + pluginDir); }
+		if (!pluginDirFile.exists()) 
+		{
+			String installArea = System.getProperty("osgi.install.area");
+			if (installArea.startsWith("file:/"))
+				installArea = installArea.substring("file:/".length());
+			File installFile = new File(installArea);
+			pluginDirFile = new File(installFile, pluginDir);
+			if (!pluginDirFile.exists()) 
+				throw new RuntimeException("Unable to find (" + pluginDirFile + ") directory for " + plugin.getClass()); 
+		}
 		return pluginDirFile.getAbsolutePath()+"/";
 	}
 
