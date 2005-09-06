@@ -5,10 +5,19 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
+import org.jruby.ast.Node;
 import org.jruby.lexer.yacc.SyntaxException;
+import org.rubypeople.rdt.internal.core.DefaultWorkingCopyOwner;
+import org.rubypeople.rdt.internal.core.RubyProject;
+import org.rubypeople.rdt.internal.core.RubyScript;
+import org.rubypeople.rdt.internal.core.RubyScriptElementInfo;
+import org.rubypeople.rdt.internal.core.RubyScriptStructureBuilder;
+import org.rubypeople.rdt.internal.core.parser.RdtWarnings;
 import org.rubypeople.rdt.internal.core.parser.RubyParser;
 
 public class RubyParserCmd {
@@ -19,6 +28,7 @@ public class RubyParserCmd {
     private List okFiles = new ArrayList();
     private List syntaxErrorFiles = new ArrayList();
     private int repeat = 1;
+    private Map elements = new Hashtable()  ; 
 
     public RubyParserCmd(List args) {
         if (!parseArgs(args)){
@@ -57,7 +67,8 @@ public class RubyParserCmd {
         return true;
     }
 
-    public void run() {
+    public void run() throws FileNotFoundException {
+    	
         parseTree(root);
         if (verbose) {
             for (Iterator iter = syntaxErrorFiles.iterator(); iter.hasNext();) {
@@ -67,33 +78,53 @@ public class RubyParserCmd {
         }
         System.err.println(syntaxErrorFiles.size() + " Errors; " 
                 + okFiles.size()+" OK");
+        
+        System.err.println("NewElements: " + elements.size()) ;
     }
     
-    private void parseTree(File file) {
-        if (!file.isDirectory()) {
-            if (file.getName().endsWith(".rb")) 
-                for (int i=0; i<repeat; i++)
-                    parseOneFile(file.getAbsolutePath());
-        } else {
-            File[] files = file.listFiles();
-            for (int i=0; i<files.length; i++) {
-                parseTree(files[i]);
-            }
-        }
-        
-    }
+    private void parseTree(File file) throws FileNotFoundException {
+    	
+		if (!file.isDirectory()) {
+			if (file.getName().endsWith(".rb"))
+				for (int i = 0; i < repeat; i++) {
+					parseOneFile(file.getAbsolutePath());
+				}
+		} else {
+			File[] files = file.listFiles();
+			for (int i = 0; i < files.length; i++) {
+				parseTree(files[i]);
+			}
+		}
+
+	}
 
     private void parseOneFile(String file) {
-        RubyParser parser = new RubyParser();
+        RubyParser parser = new RubyParser(new RdtWarnings());
         try {
-            parser.parse(file, new FileReader(file));
-            okFiles.add(file);
+            Node node = parser.parse(file, new FileReader(file));
+			RubyScriptElementInfo unitInfo = new RubyScriptElementInfo() ; 
+			RubyScript script = new RubyScript(new RubyProject(), null, file, DefaultWorkingCopyOwner.PRIMARY ) ;
+			RubyScriptStructureBuilder visitor = new RubyScriptStructureBuilder(script, unitInfo, elements);
+			if (node != null) {
+				node.accept(visitor);
+			}
+			else {
+				System.out.println("Node is null for : " + file) ;
+				syntaxErrorFiles.add(file);
+				return ;
+			}
         } catch (SyntaxException e) {
             syntaxErrorFiles.add(file);
+            return ;
         } catch (Exception e) {
-            System.out.println(e.getMessage());
+            System.out.println(e.getClass().getName() + "->" + e.getMessage());
+            syntaxErrorFiles.add(file);
+            return ;
         }
+        okFiles.add(file);
     }
+    
+
     
     public static void main(String[] args) throws FileNotFoundException {
         new RubyParserCmd(Arrays.asList(args)).run();
