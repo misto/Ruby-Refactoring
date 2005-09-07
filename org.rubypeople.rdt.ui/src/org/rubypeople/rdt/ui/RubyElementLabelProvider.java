@@ -62,6 +62,9 @@ public class RubyElementLabelProvider implements ILabelProvider {
 			    return RubyPluginImages.get(RubyPluginImages.IMG_CTOOLS_RUBY_MODULE);
 			}
 		}
+		if (object instanceof SyntaxException) {
+			return RubyPluginImages.get(RubyPluginImages.IMG_OBJS_ERROR);
+		}
 		log("Attempting to get Image for unknown object: " + object);
 		return RubyPluginImages.get(RubyPluginImages.IMG_OBJS_ERROR);
 	}
