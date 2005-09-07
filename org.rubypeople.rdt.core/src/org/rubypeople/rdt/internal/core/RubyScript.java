@@ -118,6 +118,7 @@ public class RubyScript extends Openable implements IRubyScript {
 			unitInfo.setIsStructureKnown(true);
 		} catch (SyntaxException e) {
 			unitInfo.setIsStructureKnown(false);
+			unitInfo.setSyntaxException(e) ;
 		} catch (Exception e) {
 			RubyCore.log(e);
 		}

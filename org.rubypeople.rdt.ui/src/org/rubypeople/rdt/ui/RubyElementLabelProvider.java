@@ -3,6 +3,7 @@ package org.rubypeople.rdt.ui;
 import org.eclipse.jface.viewers.ILabelProvider;
 import org.eclipse.jface.viewers.ILabelProviderListener;
 import org.eclipse.swt.graphics.Image;
+import org.jruby.lexer.yacc.SyntaxException;
 import org.rubypeople.rdt.core.IRubyElement;
 import org.rubypeople.rdt.core.IMethod;
 import org.rubypeople.rdt.core.IType;
@@ -77,6 +78,15 @@ public class RubyElementLabelProvider implements ILabelProvider {
 	 */
 	public String getText(Object obj) {
 		if (obj instanceof IRubyElement) return ((IRubyElement) obj).getElementName();
+		if (obj instanceof SyntaxException) {
+			SyntaxException syntaxException = (SyntaxException) obj ;
+			StringBuffer sb = new StringBuffer() ;
+			sb.append("Line ") ;
+			sb.append(syntaxException.getPosition().getStartLine()) ;
+			sb.append(": ") ;
+			sb.append(syntaxException.getMessage()) ;
+			return sb.toString() ;
+		}
 		return "Invalid object: " + obj.getClass().getName();
 	}
 

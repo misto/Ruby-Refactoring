@@ -10,6 +10,8 @@ import org.rubypeople.rdt.core.IRubyElement;
 import org.rubypeople.rdt.core.IRubyScript;
 import org.rubypeople.rdt.core.IType;
 import org.rubypeople.rdt.core.RubyModelException;
+import org.rubypeople.rdt.internal.core.RubyScript;
+import org.rubypeople.rdt.internal.core.RubyScriptElementInfo;
 import org.rubypeople.rdt.internal.ui.RubyPlugin;
 
 public class RubyOutlineContentProvider implements ITreeContentProvider {
@@ -20,6 +22,17 @@ public class RubyOutlineContentProvider implements ITreeContentProvider {
 	private boolean fTopLevelTypeOnly = false;
 
 	public Object[] getChildren(Object parent) {
+		if (parent instanceof RubyScript) {
+			try {
+			RubyScriptElementInfo elementInfo = (RubyScriptElementInfo) ((RubyScript) parent).getElementInfo() ;
+			if (elementInfo.getSyntaxException() != null) {
+				return new Object[] { elementInfo.getSyntaxException() } ;
+			}
+			} catch (RubyModelException ex) {
+				RubyPlugin.log(ex) ;
+			}
+			
+		}
 		if (parent instanceof IParent) {
 			IParent c= (IParent) parent;
 			try {

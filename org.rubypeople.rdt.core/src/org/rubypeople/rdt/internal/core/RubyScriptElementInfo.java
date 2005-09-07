@@ -12,6 +12,7 @@ package org.rubypeople.rdt.internal.core;
 
 import java.util.HashMap;
 
+import org.jruby.lexer.yacc.SyntaxException;
 import org.rubypeople.rdt.core.IRubyElement;
 import org.rubypeople.rdt.core.ISourceRange;
 
@@ -33,6 +34,8 @@ public class RubyScriptElementInfo extends OpenableElementInfo {
 	 * map from IRubyElement to long[]
 	 */
 	public HashMap annotationPositions;
+	
+	protected SyntaxException syntaxException = null ;
 
 	public void addAnnotationPositions(IRubyElement handle, long[] positions) {
 		if (positions == null) return;
@@ -61,4 +64,14 @@ public class RubyScriptElementInfo extends OpenableElementInfo {
 	public void setSourceLength(int newSourceLength) {
 		this.sourceLength = newSourceLength;
 	}
+
+	public SyntaxException getSyntaxException() {
+		return syntaxException;
+	}
+
+	public void setSyntaxException(SyntaxException syntaxException) {
+		this.syntaxException = syntaxException;
+	}
+	
+
 }
