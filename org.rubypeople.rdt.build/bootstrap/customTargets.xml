@@ -96,6 +96,7 @@
 		<replace dir="${buildDirectory}/features">
 			<include name="org.rubypeople.*/feature.xml"/>
 			<replacefilter token="${baseFeatureVersion}" value="${featureVersion}" />
+			<replacefilter token="http://rubyeclipse.sourceforge.net/updatesite" value="http://rubyeclipse.sourceforge.net/nightlyBuild/updateSite" />						
 		</replace>
 		<replace dir="${buildDirectory}/plugins">
 			<include name="org.rubypeople.*/plugin.xml"/>
