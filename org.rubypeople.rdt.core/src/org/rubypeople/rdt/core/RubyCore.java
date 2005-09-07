@@ -187,6 +187,10 @@ public class RubyCore extends Plugin {
 
 		String rubyParserOption = Platform.getDebugOption(RubyCore.PLUGIN_ID + "/rubyparser");
 		RubyParser.setDebugging(rubyParserOption == null ? false : rubyParserOption.equalsIgnoreCase("true"));
+		
+		String modelManagerOption = Platform.getDebugOption(RubyCore.PLUGIN_ID + "/modelmanager");
+		RubyModelManager.VERBOSE = modelManagerOption == null ? false : rubyParserOption.equalsIgnoreCase("true");
+
 	}
 
     public static boolean upgradeOldProjects() throws CoreException {

@@ -4,3 +4,4 @@
 org.rubypeople.rdt.core/debug=false
 org.rubypeople.rdt.core/codeformatter=false
 org.rubypeople.rdt.core/rubyparser=false
+org.rubypeople.rdt.core/modelmanager=false
