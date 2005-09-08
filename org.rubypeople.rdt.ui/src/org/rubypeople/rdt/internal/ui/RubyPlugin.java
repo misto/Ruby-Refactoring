@@ -55,6 +55,7 @@ import org.rubypeople.rdt.ui.PreferenceConstants;
 public class RubyPlugin extends AbstractUIPlugin implements IRubyColorConstants {
 
 	private static final String ORG_ECLIPSE_UI_VIEWS_TASK_LIST = "org.eclipse.ui.views.TaskList";
+	private static final String ORG_ECLIPSE_UI_VIEWS_PROBLEM_VIEW = "org.eclipse.ui.views.ProblemView";
     protected static RubyPlugin plugin;
 	public static final String PLUGIN_ID = "org.rubypeople.rdt.ui"; //$NON-NLS-1$
 
@@ -78,7 +79,7 @@ public class RubyPlugin extends AbstractUIPlugin implements IRubyColorConstants 
 	private MockupPreferenceStore fMockupPreferenceStore;
 
 	private RubyFoldingStructureProviderRegistry fFoldingStructureProviderRegistry;
-    private boolean taskViewAlreadyOpened;
+    private boolean new060ViewsOpened;
 
 	public RubyPlugin() {
 		super();
@@ -148,7 +149,7 @@ public class RubyPlugin extends AbstractUIPlugin implements IRubyColorConstants 
 	                boolean projectUpgraded = RubyCore.upgradeOldProjects();
 	                
 	                if (projectUpgraded) {
-	                    openTasksView();
+	                    openNew060Views();
 	                }
 	            } catch (CoreException e) {
 	                log(IStatus.WARNING, "While upgrading RDT projects", e);
@@ -158,8 +159,8 @@ public class RubyPlugin extends AbstractUIPlugin implements IRubyColorConstants 
         job.schedule();
 	}
 
-    private void openTasksView() {
-        if (taskViewAlreadyOpened)
+    private void openNew060Views() {
+        if (new060ViewsOpened)
             return;
         WorkbenchJob job = new WorkbenchJob("Show Task View") {
             public IStatus runInUIThread(IProgressMonitor monitor) {
@@ -169,7 +170,8 @@ public class RubyPlugin extends AbstractUIPlugin implements IRubyColorConstants 
                         IWorkbenchPage page = dw.getActivePage();
                         if (page != null) {
                             page.showView(ORG_ECLIPSE_UI_VIEWS_TASK_LIST);
-                            taskViewAlreadyOpened = true;
+                            page.showView(ORG_ECLIPSE_UI_VIEWS_PROBLEM_VIEW);
+                            new060ViewsOpened = true;
                         }
                     }
                 }catch (PartInitException ignored){
