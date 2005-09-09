@@ -28,7 +28,7 @@ public class RdocRiPreferencePage
 	public RdocRiPreferencePage() {
 		super(GRID);
 		setPreferenceStore(RubyPlugin.getDefault().getPreferenceStore());
-		setDescription("Settings for Rdoc and Ri.");
+		setDescription(PreferencesMessages.getString("RiPreferencePage.description.label")); //$NON-NLS-1$
 	}
 			
 	/**
@@ -39,34 +39,15 @@ public class RdocRiPreferencePage
 	 */
 	public void createFieldEditors() {
 		addField( new FileFieldEditor( PreferenceConstants.RDOC_PATH,
-				"&Rdoc directoy path:", getFieldEditorParent() ) );
+				PreferencesMessages.getString("RiPreferencePage.rdocpath.label"), getFieldEditorParent() ) ); //$NON-NLS-1$
 		
 		addField( new FileFieldEditor( PreferenceConstants.RI_PATH,
-				"R&i directoy path:", getFieldEditorParent() ) );		
-//		
-//		addField(new DirectoryFieldEditor(PreferenceConstants.P_PATH, 
-//				"&Directory preference:", getFieldEditorParent()));
-//		addField(
-//			new BooleanFieldEditor(
-//				PreferenceConstants.P_BOOLEAN,
-//				"&An example of a boolean preference",
-//				getFieldEditorParent()));
-//
-//		addField(new RadioGroupFieldEditor(
-//				PreferenceConstants.P_CHOICE,
-//			"An example of a multiple-choice preference",
-//			1,
-//			new String[][] { { "&Choice 1", "choice1" }, {
-//				"C&hoice 2", "choice2" }
-//		}, getFieldEditorParent()));
-//		addField(
-//			new StringFieldEditor(PreferenceConstants.P_STRING, "A &text preference:", getFieldEditorParent()));
+				PreferencesMessages.getString("RiPreferencePage.ripath.label"), getFieldEditorParent() ) );  //$NON-NLS-1$
 	}
 
 	/* (non-Javadoc)
 	 * @see org.eclipse.ui.IWorkbenchPreferencePage#init(org.eclipse.ui.IWorkbench)
 	 */
-	public void init(IWorkbench workbench) {
-	}
+	public void init(IWorkbench workbench) {}
 	
 }
