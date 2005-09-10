@@ -246,7 +246,7 @@ public class RIView extends ViewPart {
         String text = searchStr.getText();
         for (Iterator iter = possibleMatches.iterator(); iter.hasNext();) {
             String possibleMatch = (String) iter.next();      
-            if (possibleMatch.indexOf(text) > -1 ) {
+			if (possibleMatch.toLowerCase().indexOf(text.toLowerCase()) > -1 ) {
                 filteredList.add(possibleMatch);                
             }
         }
