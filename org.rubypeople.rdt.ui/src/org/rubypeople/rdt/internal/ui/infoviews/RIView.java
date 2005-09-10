@@ -141,7 +141,7 @@ public class RIView extends ViewPart {
         RubyPlugin.getDefault().getPreferenceStore().addPropertyChangeListener(new IPropertyChangeListener() {
         	public void propertyChange(org.eclipse.jface.util.PropertyChangeEvent event) {
         		if (event.getProperty().equals(PreferenceConstants.RI_PATH)) {
-        			updatePage() ;
+        			updatePage();
         		}
         	}
         });
@@ -211,6 +211,7 @@ public class RIView extends ViewPart {
 	private void initSearchList() {        
         RubyInvoker invoker = new RubyInvoker() {        
             protected void handleOutput(Process process) {
+				riFound = false;
                 BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
                 String line = null;
                 int numberOfMatches = 0;
@@ -222,6 +223,7 @@ public class RIView extends ViewPart {
                     }
                     // if not matches were found display an error message
                     if( numberOfMatches == 0 ){
+						riFound = false;
                     	pageBook.showPage( riNotFoundLabel );
                     } else {
                     	riFound = true;
@@ -337,7 +339,6 @@ public class RIView extends ViewPart {
        
         
         public final void invoke() {
-			riFound = false;
 			
         	IPath rubyPath = RubyRuntime.getDefault().getSelectedInterpreter().getInstallLocation();
         	IPath riPath = new Path( RubyPlugin.getDefault().getPreferenceStore().getString( PreferenceConstants.RI_PATH ) );
@@ -348,6 +349,7 @@ public class RIView extends ViewPart {
 
 			// If we can't find it ourselves then display an error to the user
 			if (!file.exists() || !file.isFile()) {
+				riFound = false;
 				pageBook.showPage(riNotFoundLabel);
 				return;
 			}
