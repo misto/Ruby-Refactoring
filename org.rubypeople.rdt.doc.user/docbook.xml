@@ -2,6 +2,42 @@
 	"file:///docbook/dtd/docbookx.dtd">
 <book>
 	<title>Ruby Development Tools</title>
+	<chapter id="UpgradingTo0.6.0">
+		<title>Upgrading to 0.6.0</title>
+		<para>
+			Version 0.6.0 introduces some changes to the way projects and workspace 
+			information is represented.  The changes that the user must make, and those that
+			happen automatically are documented here.
+		</para>
+		<sect1>
+			<title>Ruby Interpreter</title>
+			<para>
+				In versions prior to 0.6.0, ruby interpreters were specified in 
+				the preferences page by specifying a the directory that contains 
+				the ruby executable.  Now interpreters are specified by providing 
+				the acutal ruby file, not the directory.  Until edit these 
+				preferences you will not be able to run or debug ruby applications 
+				and tests.
+			</para>
+		</sect1>
+		<sect1>
+			<title>Ruby Project file</title>
+			<para>
+				RDT now requires a builder in the .project file for ruby projects.
+				When RDT is loaded, (or when a project is opened, ruby projects will 
+				be automatically upgraded.
+			</para>
+		</sect1>
+		<sect1>
+			<title>Ruby Perpsective</title>
+			<para>
+				The ruby perspective now includes the standard Eclipse views for
+				Problems and Tasks.  Because these were not used by RDT in previous
+				versions, RDT will automatically show these views if a project is 
+				upgraded.
+			</para>
+		</sect1>
+	</chapter>
 	<chapter id="GettingStarted">
 		<title>Getting Started</title>
 		<sect1 id="preparingTheWorkbench">
@@ -78,6 +114,8 @@
 					<listitem> Ruby Resources View </listitem>
 					<listitem>Outline </listitem>
 					<listitem>Console </listitem>
+					<listitem>Task List</listitem>
+					<listitem>Problems View</listitem>
 				</itemizedlist>
 			</sect2>
 			<sect2 id="RubyPerspectives_RubyDebug">
@@ -146,9 +184,8 @@
 					pre-defined globals. The keywords and globals are only 
 					shown if you have already typed at least one character. If 
 					the "token" preceding the cursor does match the beginning 
-					of any suggestions you will get no suggestions. For RDT 
-					0.4.2 an extension is planned which also provides classes 
-					and modules from required ruby files. </para>
+					of any suggestions you will get no suggestions.
+				</para>
 			</sect2>
 			<sect2 id="CodeFormatting">
 				<title>Code formatting</title>
@@ -179,7 +216,9 @@
 				<para> When the second options is set to use spaces, typing a 
 					tab character in the editor inserts spaces instead of a 
 					tabs, too. The number of spaces used to replace the tab is 
-					equal to the number of characters per indentation level. By 
+					dependent on the current cursor position.  Spaces will be added
+					to move the cursor to a "tabstop", based on the number of characters
+					per indentation level. By 
 					configuring the tab replacing settings with the code 
 					formatter settings, the difference between rawly entered 
 					code and formatted code can be minimized. </para>
@@ -215,6 +254,20 @@
 				<title>Outline View</title>
 				<graphic fileref="../images/outline.png" format="PNG"/>
 			</figure>
+		</sect1>
+		<sect1 id="ProblemsView">
+			<title>Problems View</title>
+			<para> 
+				The problems view shows you warnings and errors in your ruby files. 
+				You can read more about this view in the Workbench User Guide
+			</para>
+		</sect1>
+		<sect1 id="TaskList">
+			<title>Task List</title>
+			<para> 
+				The task list shows you a list of tasks in your workspace.  
+				You can read more about this view in the Workbench User Guide
+			</para>
 		</sect1>
 		<sect1 id="RunningARubyApplication">
 			<title>Running a Ruby application</title>
