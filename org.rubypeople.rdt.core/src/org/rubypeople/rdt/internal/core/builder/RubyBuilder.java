@@ -6,6 +6,7 @@ package org.rubypeople.rdt.internal.core.builder;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.Reader;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -230,6 +231,7 @@ public class RubyBuilder extends IncrementalProjectBuilder {
 		// do them all now
 		for (int i = 0; i < unitsLength; i++) {
 			checkCancel(monitor);
+			Reader reader = null;
 			try {
 				IFile file = units[i];
 				if (DEBUG) System.out.println("About to compile " + file); //$NON-NLS-1$
@@ -237,8 +239,9 @@ public class RubyBuilder extends IncrementalProjectBuilder {
 				monitor.subTask(name + ": (" + i + " of " + grandTotal + ")");				
 				
 				removeProblemsAndTasksFor(file);
+				reader = new InputStreamReader(file.getContents());
 				try {
-					parser.parse(units[i].getName(), new InputStreamReader(file.getContents()));
+					parser.parse(units[i].getName(), reader);
 				} catch (SyntaxException e) {
 					MarkerUtility.createSyntaxError(file, e);
 				}
@@ -249,6 +252,12 @@ public class RubyBuilder extends IncrementalProjectBuilder {
 				RubyCore.log(e);
 			} catch (IOException e) {
 				RubyCore.log(e);
+			} finally {
+				try {
+					reader.close();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
 			}
 			warnings.clear();
 		}

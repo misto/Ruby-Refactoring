@@ -28,6 +28,7 @@ import java.io.BufferedReader;
 import java.io.CharArrayReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.Reader;
 import java.util.Map;
 
 import org.eclipse.core.resources.IFile;
@@ -285,21 +286,29 @@ public class RubyScript extends Openable implements IRubyScript {
 	 */
 	public String getSource() {
 		// TODO Cache the contents and only reload if the file hasn't changed!
+		BufferedReader reader = null;
+		String source = null;
 		try {
 			StringBuffer buffer = new StringBuffer();
-			BufferedReader reader = new BufferedReader(new InputStreamReader(underlyingFile.getContents()));
+			reader = new BufferedReader(new InputStreamReader(underlyingFile.getContents()));
 			String line = null;
 			while ((line = reader.readLine()) != null) {
 				buffer.append(line);
 				buffer.append("\n");
 			}
-			return buffer.toString();
+			source = buffer.toString();
 		} catch (CoreException e) {
 			e.printStackTrace();
 		} catch (IOException e) {
 			e.printStackTrace();
+		} finally {
+			try {
+				if (reader != null) reader.close();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
 		}
-		return null;
+		return source;
 	}
 
 	/**
