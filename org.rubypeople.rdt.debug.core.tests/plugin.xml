@@ -21,6 +21,7 @@
       <import plugin="org.eclipse.core.resources"/>
       <import plugin="org.rubypeople.rdt.launching"/>
       <import plugin="org.eclipse.core.runtime"/>
+      <import plugin="org.rubypeople.rdt.core"/>
    </requires>
 
 </plugin>
