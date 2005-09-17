@@ -9,7 +9,7 @@
 			information is represented.  The changes that the user must make, and those that
 			happen automatically are documented here.
 		</para>
-		<sect1>
+		<section>
 			<title>Ruby Interpreter</title>
 			<para>
 				In versions prior to 0.6.0, ruby interpreters were specified in 
@@ -19,28 +19,28 @@
 				preferences you will not be able to run or debug ruby applications 
 				and tests.
 			</para>
-		</sect1>
-		<sect1>
+		</section>
+		<section>
 			<title>Ruby Project file</title>
 			<para>
 				RDT now requires a builder in the .project file for ruby projects.
-				When RDT is loaded, (or when a project is opened, ruby projects will 
-				be automatically upgraded.
+				When RDT is loaded, (or when a project is opened), ruby projects will 
+				be automatically upgraded. TODO: What user interaction is required?
 			</para>
-		</sect1>
-		<sect1>
-			<title>Ruby Perpsective</title>
+		</section>
+		<section>
+			<title>Ruby Perspective</title>
 			<para>
 				The ruby perspective now includes the standard Eclipse views for
 				Problems and Tasks.  Because these were not used by RDT in previous
 				versions, RDT will automatically show these views if a project is 
 				upgraded.
 			</para>
-		</sect1>
+		</section>
 	</chapter>
 	<chapter id="GettingStarted">
 		<title>Getting Started</title>
-		<sect1 id="preparingTheWorkbench">
+		<section id="preparingTheWorkbench">
 			<title> Preparing the Workbench </title>
 			<para> In this section, you will verify that the workbench is 
 				properly set up for Ruby development. </para>
@@ -58,7 +58,7 @@
 			<para> If you&#39;re not familiar with the basic workbench 
 				mechanisms, please see the Getting Started chapter of the 
 				Workbench User Guide. </para>
-			<sect2 id="importantSettings">
+			<section id="importantSettings">
 				<title>Important Settings</title>
 				<orderedlist>
 					<listitem>
@@ -83,12 +83,12 @@
 							<emphasis>OK</emphasis>. </para>
 					</listitem>
 				</orderedlist>
-			</sect2>
-		</sect1>
+			</section>
+		</section>
 			</chapter>
 	<chapter id="Concepts">
 		<title>Concepts</title>
-		<sect1 id="rubyProjects">
+		<section id="rubyProjects">
 			<title>Ruby projects</title>
 			<para>A Ruby project contains source code and related files for 
 				building a Ruby program.</para>
@@ -101,12 +101,12 @@
 				currently:<itemizedlist> <listitem> Using the project as the 
 				source container. This is the recommended organization for 
 				simple projects. </listitem> </itemizedlist> </para>
-		</sect1>
-		<sect1 id="RubyPerspectives">
+		</section>
+		<section id="RubyPerspectives">
 			<title>Ruby perspectives</title>
 			<para>The Ruby development tools contribute the following 
 				perspectives to the workbench:</para>
-			<sect2 id="RubyPerspectives_Ruby">
+			<section id="RubyPerspectives_Ruby">
 				<title>Ruby</title>
 				<para>A perspective designed for working with Ruby projects. It 
 					consists of an editor area and the following views:</para>
@@ -117,8 +117,8 @@
 					<listitem>Task List</listitem>
 					<listitem>Problems View</listitem>
 				</itemizedlist>
-			</sect2>
-			<sect2 id="RubyPerspectives_RubyDebug">
+			</section>
+			<section id="RubyPerspectives_RubyDebug">
 				<title>Debug</title>
 				<para>A perspective designed for debugging your Ruby program. 
 					It includes an editor area and the following views.</para>
@@ -131,9 +131,9 @@
 					<listitem> Outline </listitem>
 					<listitem> Console </listitem>
 				</itemizedlist>
-			</sect2>
-		</sect1>
-		<sect1 id="RubyResourcesView">
+			</section>
+		</section>
+		<section id="RubyResourcesView">
 			<title>Ruby Resources View</title>
 			<para>The Ruby Resources View provides the same features as the 
 				regular navigator does (e.g. optional linking between editor 
@@ -154,8 +154,8 @@
 				<title>Ruby Resources View</title>
 				<graphic fileref="../images/rubyResources.png" format="PNG"/>
 			</figure>
-		</sect1>
-		<sect1 id="RubyEditor">
+		</section>
+		<section id="RubyEditor">
 			<title>Ruby Editor</title>
 			<para>The Ruby editor provides specialized features for editing 
 				Ruby code.</para>
@@ -175,7 +175,7 @@
 				on the user preferences). You can also open the editor by 
 				opening Ruby elements, such as types, methods, or fields, from 
 				other views.</para>
-			<sect2 id="CodeCompletion">
+			<section id="CodeCompletion">
 				<title>Code completion</title>
 				<para> If you press Ctrl+space in the ruby editor, a list with 
 					information from the current ruby file is displayed. This 
@@ -186,8 +186,8 @@
 					the "token" preceding the cursor does match the beginning 
 					of any suggestions you will get no suggestions.
 				</para>
-			</sect2>
-			<sect2 id="CodeFormatting">
+			</section>
+			<section id="CodeFormatting">
 				<title>Code formatting</title>
 				<para>The code formatter formats either the whole file or the 
 					current selection, if there is one. In the latter case all 
@@ -228,9 +228,9 @@
 						spread over multiple lines. That implies that these 
 						regular expressions might be indented.</para>
 				</warning>
-			</sect2>
-		</sect1>
-		<sect1 id ="ConsoleView">
+			</section>
+		</section>
+		<section id ="ConsoleView">
 			<title>Console View</title>
 			<para>The console view contains the output of a program. If the 
 				output of a ruby program contains a stack trace, every stack 
@@ -245,8 +245,8 @@
 				<graphic fileref="../images/clickableStackTrace.png" 
 					format="PNG"/>
 			</figure>
-		</sect1>
-		<sect1 id="OutlineView">
+		</section>
+		<section id="OutlineView">
 			<title>Outline View</title>
 			<para> The outline view displays the structure of the currently 
 				selected editor. </para>
@@ -254,24 +254,32 @@
 				<title>Outline View</title>
 				<graphic fileref="../images/outline.png" format="PNG"/>
 			</figure>
-		</sect1>
-		<sect1 id="ProblemsView">
+		</section>
+		<section id="RiView">
+			<title>RI View</title>
+			<para>
+			<!-- TODO: add figure, describe how to use the ri view when adding rdoc in a ruby file in the workbench, 
+				 external task -->
+			</para>
+		</section>		
+		<section id="ProblemsView">
 			<title>Problems View</title>
 			<para> 
 				The problems view shows you warnings and errors in your ruby files. 
 				You can read more about this view in the Workbench User Guide
 			</para>
-		</sect1>
-		<sect1 id="TaskList">
+		</section>
+		<section id="TaskList">
 			<title>Task List</title>
 			<para> 
-				The task list shows you a list of tasks in your workspace.  
+				The task list shows you a list of tasks in your workspace. 
+				<!-- TODO: add figure, how to configure, default tokens, where can the occur -->
 				You can read more about this view in the Workbench User Guide
 			</para>
-		</sect1>
-		<sect1 id="RunningARubyApplication">
+		</section>
+		<section id="RunningARubyApplication">
 			<title>Running a Ruby application</title>
-			<sect2 id="ContextMenu"><title>Starting from Ruby Resource View</title>
+			<section id="ContextMenu"><title>Starting from Ruby Resource View</title>
 				<para> The context menu of a ruby file in the Ruby Resource 
 					View has a run entry from which the file can be started in 
 					run or debug mode. </para>			
@@ -279,8 +287,8 @@
 				<title>Run from context menu</title>
 				<graphic fileref="../images/runContextMenu.png" format="PNG"/>
 			</figure>
-			</sect2>
-			<sect2 id="MainMenu"><title>Starting from main menu</title>
+			</section>
+			<section id="MainMenu"><title>Starting from main menu</title>
 				<para>The Run main menu also offers a menu point for starting a
 					ruby application. Which file is started is determined by the 
 					active part (marked with the blue border). This can be
@@ -292,8 +300,8 @@
 				<title>Run from main menu</title>
 				<graphic fileref="../images/runMenu.png" format="PNG"/>
 			</figure>
-			</sect2>
-			<sect2 id="Configuration">
+			</section>
+			<section id="Configuration">
 				<title>Run configuration</title>
 				<para>Every time a file is started from one of the described 
 					menu items, a run configuration is created. If the file is 
@@ -324,11 +332,11 @@
 					<graphic fileref="../images/runConfiguration.png" 
 						format="PNG"/>
 				</figure>
-			</sect2>
-		</sect1>
-		<sect1 id="RunningATest::UnitTest">
+			</section>
+		</section>
+		<section id="RunningATest::UnitTest">
 			<title>Running a Test::Unit Test</title>
-			<sect2 id="ContextMenu"><title>Starting from Ruby Resource View</title>
+			<section id="TestUnitContextMenu"><title>Starting from Ruby Resource View</title>
 				<para> The context menu of a ruby file in the Ruby Resource 
 					View has a Test::Unit entry from which the file can be started in 
 					run mode. </para>			
@@ -336,8 +344,8 @@
 				<title>Run Test::Unit Test from context menu</title>
 				<graphic fileref="../images/runTestContextMenu.png" format="PNG"/>
 			</figure>
-			</sect2>
-			<sect2 id="MainMenu"><title>Starting from main menu</title>
+			</section>
+			<section id="TestUnitMainMenu"><title>Starting from main menu</title>
 				<para>The Run main menu also offers a menu point for starting a
 					Test::Unit Test. Which file is started is determined by the 
 					active file (marked with the blue border). This can be
@@ -349,8 +357,8 @@
 				<title>Run Test::Unit Test from main menu</title>
 				<graphic fileref="../images/runTestMenu.png" format="PNG"/>
 			</figure>
-			</sect2>
-			<sect2 id="Test::UnitTestConfiguration">
+			</section>
+			<section id="Test::UnitTestConfiguration">
 				<title>Test::Unit Test Run Configuration</title>
 				<para>Every time a test is started from one of the described 
 					menu items, a Test::Unit run configuration is created. If the test is 
@@ -381,88 +389,97 @@
 					<graphic fileref="../images/runTestConfiguration.png" 
 						format="PNG"/>
 				</figure>
-			</sect2>
-		</sect1>
-		<sect1 id="usingTheDebugger">
-			<title>Using the Debugger</title>
-			<sect2>
+			</section>
+		</section>
+		<section id="usingTheDebugger">
+			<title>Debugger</title>
+			<section id="DebuggingPrerequisites">
 				<title>Prerequisites</title>
-				<para>If you can debug your ruby application depends on the 
-					version of the ruby interpreter you are using. Ruby 1.6.8 
-					works on both Linux and Windows, 1.8.0 and 1.8.2 works also on 
-					Windows. For further information see <ulink 
-					url="http://213.203.244.123/wiki/wiki.phtml#Prerequisites_for_the_debugger"></ulink> 
-					</para>
-										
-			</sect2>
-			<sect2 id="debuggingYourApplication">
-				<title>Debugging your Application</title>
+				<para>If you can debug your ruby application depends on the version of the
+					ruby interpreter you are using. Ruby 1.6.8 works on both Linux and
+					Windows, 1.8.0 and 1.8.2 works also on Windows. </para>
+				
+			</section>
+			<section id="startDebugSession">
+				<title>Start a debug session</title>
 				<itemizedlist>
 					<listitem>
-						<para>Open your ruby file and set a breakpoint like you 
-							would set a breakpoint in a java file</para>
+						<para>Open your ruby file and set a breakpoint like you would set a
+							breakpoint in a java file</para>
 					</listitem>
 					<listitem>
-						<para>Select <emphasis>Run &gt; Debug As &gt; Ruby 
-							Application</emphasis>. The Debug perspective will 
+						<para>Select <emphasis>Run &gt; Debug As &gt; Ruby
+							Application</emphasis>. The Debug perspective will
 							open:</para>
-						<figure>
-							<title>Debug Perspective</title>
-							<graphic fileref="../images/debug.png" 
-								format="PNG"/>
-						</figure>
+						
 					</listitem>
 					<listitem>
-						<para>In the launch view use <emphasis> step into, step 
-							over, step return</emphasis> to step through the 
-							code. Use the <emphasis>resume button </emphasis> 
-							to resume the application. </para>
-					</listitem>
-					<listitem>
-						<para>In the variable view:</para>
-						<itemizedlist>
-							<listitem>
-								<para>Press <emphasis>Show Type 
-									Names</emphasis> to show the type of each 
-									variable</para>
-							</listitem>
-							<listitem>
-								<para>Check <emphasis>Show Constants</emphasis> 
-									to display constants, check <emphasis>Show 
-									Class Variables</emphasis> to display class 
-									variables </para>
-							</listitem>
-						</itemizedlist>
-						<para> In the screenshot above the java debug actions 
-							are disabled, so that only the ruby debug commands 
-							<emphasis>Show Constants</emphasis> and 
-							<emphasis>Show Class Variables</emphasis> appear. 
-							If you want to disable/enable either ruby or java 
-							debug actions, go to<emphasis> Window &gt; 
-							Preferences &gt; Debug &gt; Debug Action 
-							Groups</emphasis> and select the appropriate debug 
-							actions. </para>
+						<para>In the launch view use <emphasis> step into, step over, step
+							return</emphasis> to step through the code. Use the
+							<emphasis>resume button </emphasis> to resume the
+							application. </para>
 					</listitem>
 				</itemizedlist>
-				<sect3>
+				<figure>
+					<title>Debug Perspective</title>
+					<graphic fileref="../images/debug.png" format="PNG"/>
+				</figure>
+			</section>
+			<section id="views">
+				<title>Debug views</title>
+				<para>The debug perspective contains the following views per default:
+					Debug, Variables, Breakpoints, Editor, Outline, Console and Tasks.
+					In addition to these there are two more view for the debug perspective:
+					the Expression and Display view. The Expression view will be opened for
+					displaying the results of inspect commands (runtime evaluation). The
+					Display view allows to enter arbitrary ruby commands for evalutaion.
+					</para>
+				
+				<section id="VariablesView">
 					<title>Variables view</title>
-					<para> The Variables view shows instance variables, class 
-						variables and constants of objects. Use the "Show Type 
-						Names" button on the view bar to display/hide the names 
-						of type.</para>
-					<figure>
-						<title>Variables View with type names mode on</title>
-						<graphic fileref="../images/variableViewWithTypes.png" 
-							format="PNG"/>
-					</figure>
-					<para> In the above screenshot there is a variable barney 
-						of type person. The object is represented by the return 
-						value of the to_s method, in this case 
-						"#&lt;Person:0x2ae7d20&gt;". There is one instance 
-						variable @name of type String and value "Barney".</para>
-					<sect4>
+					<para>The variables view shows the variables available in the stack
+						trace which is selected in the Debug view </para>
+					<section id="ShowConstantsAndClasses">
+						<title>Show Constants and Classes</title>
+						<para>Check <emphasis>Show Constants</emphasis> to display
+							constants, check <emphasis>Show Class
+							Variables</emphasis> to display class variables </para>
+						
+						<para> If you compare the default variable view with the
+							screenshot above you will notice that there are a lot more menu
+							commands available. They are for java debug targets. You can
+							customize the variable view to show ruby debug commands only:
+							Go to<emphasis> Window &gt; Preferences &gt; General &gt;
+							Capabilities</emphasis> and deselect
+							<emphasis>Development</emphasis>. It is a little
+							bewildering to switch off Development here, but it means only
+							to disable Java development and not Ruby development</para>
+						<figure>
+							<title>Variables View with type names mode on</title>
+							<graphic
+								fileref="../images/variableViewShowClassesAndConstants.png"
+								format="PNG"/>
+						</figure>
+					</section>
+					<section id="ShowTypeName">
+						<title>Show Type Names</title>
+						<figure>
+							<title>Variables View with type names mode on</title>
+							<graphic
+								fileref="../images/variableViewWithTypes.png"
+								format="PNG"/>
+						</figure>
+						<para> In the above screenshot there is a variable barney of type
+							person. The object is represented by the return value of the
+							to_s method, in this case "#&lt;Person:0x2ae7d20&gt;".
+							There is one instance variable @name of type String and value
+							"Barney".</para>
+					</section>
+					<section>
 						<title>Arrays</title>
 						<para>Assume the following code:</para>
+						
+						
 						<programlisting> <![CDATA[
 class Person 
   def initialize(name)
@@ -478,157 +495,227 @@ persons = []
 persons &lt;&lt; Person.new('Barney')
 persons &lt;&lt; Person.new('Moe')           
 ]]> </programlisting>
-						<para> After the last assignment the variable view 
-							shows the content of the array. Note that the name 
-							appears as description for the object, because to_s 
-							is overriden.</para>
+						<para> After the last assignment the variable view shows the
+							content of the array. Note that the name appears as
+							description for the object, because to_s is
+							overriden.</para>
 						<figure>
 							<title>Array presentation in Variables View</title>
-							<graphic 
-								fileref="../images/arrayInVariablesView.png" 
+							<graphic fileref="../images/arrayInVariablesView.png"
 								format="PNG"/>
 						</figure>
-					</sect4>
-					<sect4>
+					</section>
+					<section>
 						<title>Hashes</title>
-						<para> In order to show how hashes are presented in the 
-							variables view, a hash is created:</para>
+						<para> In order to show how hashes are presented in the variables
+							view, a hash is created:</para>
+						
+						
 						<programlisting><![CDATA[
 persons = Hash[ Person.new('Lisa') =&gt; Person.new('Marge'), 
                             Person.new('Maggie') =&gt; Person.new('Marge')]
 ]]> </programlisting>
-						<para>The view shows the name of the hash with the 
-							number of elements in the first place. If you 
-							expand the item, there will be a line for every 
-							key/value pair in the hash. Expanding a key/value 
-							pair will show the content of the value. If you 
-							want to know more about the key, select "Inspect 
-							key" from the context menu:</para>
+						<para>The view shows the name of the hash with the number of
+							elements in the first place. If you expand the item, there will
+							be a line for every key/value pair in the hash. Expanding a
+							key/value pair will show the content of the value. If you want
+							to know more about the key, select "Inspect key" from the
+							context menu:</para>
 						<figure>
 							<title>Hash presentation in Variables View</title>
-							<graphic 
-								fileref="../images/hashInVariablesView.png" 
+							<graphic fileref="../images/hashInVariablesView.png"
 								format="PNG"/>
 						</figure>
-					</sect4>
-				</sect3>
-				<sect3>
+					</section>
+				</section>
+				<section id="BreakpointsView">
 					<title>Breakpoints view</title>
-					<para>Use the Breakpoints view to remove ruby 
-						breakpoints.</para>
-				</sect3>
-				<sect3>
+					<para>Use the Breakpoints view to remove ruby breakpoints.</para>
+				</section>
+				<section id="ExpressionsView">
 					<title>Expressions view</title>
-					<para> Results of ruby expression evaluation are 
-						displayed here. Evaluation takes place: </para>
+					<para> Results of ruby expression evaluation are displayed here.
+						Evaluation takes place: </para>
 					<itemizedlist>
 						<listitem>
-							<para>If you select text in the editor and run 
-								"Inspect" from the context menu</para>
+							<para>If you select text in the editor, open the context menu
+								and run "Inspect" or a quick inspect expression with
+								"Inspect..."</para>
 						</listitem>
 						<listitem>
-							<para>If you use the display view to enter ruby 
+							<para>If you use the display view to enter ruby
 								expressions</para>
 						</listitem>
 						<listitem>
-							<para>If you select "inspect key" in the context 
-								menu of a hash value in the variable view</para>
+							<para>If you select "inspect key" in the context menu of a hash
+								value in the variable view</para>
 						</listitem>
 					</itemizedlist>
-				</sect3>
-				<sect3>
+					<figure id="expressionViewWithInspectResult">
+						<title>Expression view with result from quick inspect</title>
+						<graphic
+							fileref="../images/expressionViewWithInspectResult.png"
+							format="PNG"/>
+					</figure>
+				</section>
+				<section id="DisplayView">
 					<title>Display view</title>
-					<para> Enter your text in the Display view and run "Ruby 
-						inspect" from the context menu. The Expression view 
-						will open and show the resitemizedlistt of the 
-						expression. The expression is evaluated in the context 
-						of the selected stack frame in the Launch view.</para>
-					<para> The following example shows an expression which 
-						creates a hash with all global variables mapped to 
-						their values (the "Content Assist" menu entry is only 
-						valid in the context of a java program):</para>
+					<para> Enter your text in the Display view and run "Ruby inspect" from
+						the context menu. The Expression view will open and show the
+						resitemizedlistt of the expression. The expression is evaluated
+						in the context of the selected stack frame in the Launch
+						view.</para>
+					<para> The following example shows an expression which creates a hash
+						with all global variables mapped to their values (the "Content
+						Assist" menu entry is only valid in the context of a java
+						program):</para>
 					<figure>
 						<title>Display View</title>
-						<graphic fileref="../images/displayView.png" 
+						<graphic fileref="../images/displayView.png"
 							format="PNG"/>
 					</figure>
-					<para>The Expressions view shows the 
-						resitemizedlistt:</para>
+					<para>The Expressions view shows the resitemizedlistt:</para>
 					<figure>
 						<title>Global variables in Expression View</title>
-						<graphic 
-							fileref="../images/expressionViewWithGlobalVariables.png" 
+						<graphic
+							fileref="../images/expressionViewWithGlobalVariables.png"
 							format="PNG"/>
 					</figure>
-				</sect3>
-			</sect2>
-			<sect2 id="debuggingRubyLibraries">
-				<title>Debugging into ruby libraries</title>
-				<para> If there are exceptions in a ruby library file, the 
-					program halts there and the ruby file is opened read only. 
-					That is because the library file is not part of the eclipse 
-					workspace. In order to edit such a file, a ruby project can 
-					be created upon the library directory: </para>
+				</section>
+			</section>
+			<section id="codeReload">
+				<title>Automatic code reload</title>
+				<para>If there is a debug session every file you edit and save will be
+					reloaded from the interpreter. This allows to debug and change a ruby
+					application without restarting. While this is a convenient feature,
+					there are some drawbacks to consider:</para>
 				<itemizedlist>
 					<listitem>
-						<para>Select <emphasis>New &gt; Project &gt; Ruby 
+						<para>The code reload does not affect the current stack trace. The
+							current stack frame will not be reentered and will be finished
+							with the old code. So, if you change the code of a method this
+							method will be finished with old code and the next call to this
+							method will use the new code. That means that Drop to Frame
+							functionality is not available.</para>
+					</listitem>
+					<listitem>
+						<para>The interpreter reloads the file with the updated content
+							and therefore also executes the code at the main level. That
+							might turn the application in an undesirable state. </para>
+					</listitem>
+					<listitem>
+						<para>You cannot delete methods by reloading. </para>
+					</listitem>
+				</itemizedlist>
+			</section>
+			<section id="quickInspect">
+				<title>Inspection shortcuts</title>
+				
+				<para> In a debug session the display view allows to enter arbitrary
+					expressions and have them evaluated. Inspection shortcuts are a more
+					convenient way to evaluate frequently used expression. They can be
+					applied directly to a selection in the editor without using the Display
+					view. The shortcuts are defined in
+					<emphasis>Preferences->Ruby->Evaluation
+					Expressions</emphasis>. There you can create, delete and modify
+					expressions. Every expression has a name, description and ruby code.
+					The ruby code may contain the placeholder <emphasis>%s</emphasis>
+					which will be replaced with the selection before evaluation. There are
+					some examples in the following table.</para>
+				<table frame="topbot">
+					<title></title>
+					<tgroup cols="3">
+						<thead>
+							<row>
+								<entry>name</entry>
+								<entry>ruby code</entry>
+								<entry>explanation</entry>
+							</row>
+						</thead>
+						<tbody>
+							<row>
+								<entry>Global variables</entry>
+								<entry>h={}; global_variables.each { |v| h[v] =
+									eval(v) }; h</entry>
+								<entry>This is an expression without context </entry>
+								
+							</row>
+							
+							<row>
+								<entry>instance methods incl. inherited</entry>
+								<entry>
+									%s.class.instance_methods(true).sort</entry>
+								<entry>In this expression %s will be replaced with the
+									current selection in the editor</entry>
+							</row>
+						</tbody>
+					</tgroup>
+				</table>
+				
+				<para>See <xref linkend="expressionViewWithInspectResult"/> for an
+					usage example. </para>
+				
+			</section>
+			<section id="debuggingRubyLibraries">
+				<title>Debugging into ruby libraries</title>
+				<para> If there are exceptions in a ruby library file, the program halts
+					there and the ruby file is opened read only. That is because the library
+					file is not part of the eclipse workspace. In order to edit such a file, a
+					ruby project can be created upon the library directory: </para>
+				<itemizedlist>
+					<listitem>
+						<para>Select <emphasis>New &gt; Project &gt; Ruby
 							Project</emphasis></para>
 					</listitem>
 					<listitem>
 						<para>Enter project name, e.g site-ruby</para>
 					</listitem>
 					<listitem>
-						<para>In the section <emphasis>Project 
-							contents</emphasis> deselect <emphasis>Use 
-							Default</emphasis> and enter the directory, e.g 
-							/usr/local/lib/site-ruby/1.6. Note, that there must 
-							be write access to that directory, because eclipse 
+						<para>In the section <emphasis>Project contents</emphasis>
+							deselect <emphasis>Use Default</emphasis> and enter the
+							directory, e.g /usr/local/lib/site-ruby/1.6. Note, that
+							there must be write access to that directory, because eclipse
 							wants to create a .project file. </para>
 					</listitem>
 				</itemizedlist>
-			</sect2>
-			<sect2>
+			</section>				
+			<section id="DebugKnownLimitations">
 				<title>Known limitations</title>
-				<para>The ruby debugger is still under development and there 
-					are some limitations, which must be considered when 
-					debugging your application:</para>
+				<para>The ruby debugger is still under development and there are some
+					limitations, which must be considered when debugging your
+					application:</para>
 				<itemizedlist>
 					<listitem>
-						<para>In order to get the debug information about the 
-							running program, eclipse starts a ruby debugger 
-							before the execution of your application and talks 
-							to that ruby debugger via socket. Currently this 
-							socket is set to 1098 and if this socket is bound 
-							already debugging is not possible. (The java 
-							debugger searches for a free socket before; that 
-							behaviour should be implemented for the 
-							ruby debugger as well)</para>
+						<para>In order to get the debug information about the running
+							program, eclipse starts a ruby debugger before the execution
+							of your application and talks to that ruby debugger via
+							socket. Currently this socket is set to 1098 and if this socket
+							is bound already debugging is not possible. (The java
+							debugger searches for a free socket before; that behaviour
+							should be implemented for the ruby debugger as well)</para>
 					</listitem>
 					<listitem>
-						<para>Threads are not refreshed regularly, i.e. you do 
-							not see the threads your application creates before 
-							a breakpoint (or exception or end of step) is 
-							reached</para>
+						<para>Threads are not refreshed regularly, i.e. you do not see the
+							threads your application creates before a breakpoint (or
+							exception or end of step) is reached</para>
 					</listitem>
 					<listitem>
-						<para>Only one ruby program can be debugged 
-							concurrently (there is a socket bind exception if 
-							you try to debug more than on ruby program at the 
-							same time)</para>
+						<para>Only one ruby program can be debugged concurrently (there
+							is a socket bind exception if you try to debug more than on ruby
+							program at the same time)</para>
 					</listitem>
 					<listitem>
-						<para>Breakpoints are not saved when eclipse is 
-							closed</para>
+						<para>Breakpoints are not saved when eclipse is closed</para>
 					</listitem>
 				</itemizedlist>
-				<sect3>
+				<section>
 					<title>Writing Bug Reports</title>
-					<para>In order to provide useful information in case of 
-						errors, you shoitemizedlistd turn on verbose mode for 
-						the ruby debugger:</para>
+					<para>In order to provide useful information in case of errors, you
+						shoitemizedlistd turn on verbose mode for the ruby
+						debugger:</para>
 					<orderedlist>
 						<listitem>
-							<para>open file 
+							<para>open file
 								ECLIPSE_HOME/plugins/org.rubypeople.rdt.launching/ruby/eclipseDebug.rb</para>
 						</listitem>
 						<listitem>
@@ -638,26 +725,25 @@ persons = Hash[ Person.new('Lisa') =&gt; Person.new('Marge'),
 							<para>save file</para>
 						</listitem>
 						<listitem>
-							<para>After you started debugging, the console 
-								shows additional information (appears red, if 
-								stderr is printed red): </para>
+							<para>After you started debugging, the console shows
+								additional information (appears red, if stderr is
+								printed red): </para>
 							<figure>
-								<title>Verbose debug information in 
-									console</title>
-								<graphic fileref="../images/verboseConsole.png" 
+								<title>Verbose debug information in console</title>
+								<graphic fileref="../images/verboseConsole.png"
 									format="PNG"/>
 							</figure>
 						</listitem>
 						<listitem>
-							<para>go to <ulink 
-								url="http://sourceforge.net/projects/rubyeclipse"></ulink> 
-								and add the console output to your bug 
+							<para>go to <ulink
+									url="http://sourceforge.net/projects/rubyeclipse">
+								</ulink> and add the console output to your bug
 								report.</para>
 						</listitem>
 					</orderedlist>
-				</sect3>
-			</sect2>
-		</sect1>		
+				</section>
+			</section>
+		</section>
 	</chapter>
 	<chapter id="TipsNTricks">
 		<title>Tips and tricks</title>
