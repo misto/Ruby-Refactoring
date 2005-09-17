@@ -13,12 +13,12 @@
 
   <expression 
 	description="instance methods, including methods from superclasses" 
-	name="instance methods incl. inherited">%s.class.instance_methods(true)
+	name="instance methods incl. inherited">%s.class.instance_methods(true).sort
   </expression>
 
   <expression 
 	description="instance methods of the methods from superclasses" 
-	name="instance methods excl. inherited">%s.class.instance_methods(false)
+	name="instance methods excl. inherited">%s.class.instance_methods(false).sort
   </expression>
 	
   <expression 
