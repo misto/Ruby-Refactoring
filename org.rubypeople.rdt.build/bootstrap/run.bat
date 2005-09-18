@@ -7,20 +7,20 @@ REM ***********************************
 REM The eclipse directory from which eclipse will be started for building and testing. 
 REM This eclipse instance will be the build host
 REM the AntRunner application is started within this eclipse installation
-set eclipseDir=D:\eclipse\eclipse-3.0.1-noplugins
+set eclipseDir=D:\eclipse\eclipse-3.1
 
 REM vm specifies the java vm which starts up the build host
 set vm=java
 
 REM The version of the PDE Build plug-in is needed to determine the script directory
 REM The version will probably be equal to the eclipse version
-set pdeBuildPluginVersion=3.0.1
+set pdeBuildPluginVersion=3.1.0
 
 REM The pluginAutomaticBuildDir contains the necessary files provided by the plug-in
 REM itself for the build-process, e.g. build.properties, customTargets.xml.
 REM It is not bound to reside in the workspace of the eclipse and can reside on any
 REM accessible location
-set pluginAutomaticBuildDir=D:\Temp\org.rubypeople.rdt.build\bootstrap
+set pluginAutomaticBuildDir=D:\java\rdt\org.rubypeople.rdt.build\bootstrap
 
 REM Directory where the build takes place. The workspace will also be created in this directory
 set buildDirectory=D:\Temp\rdtbuild.stable
@@ -28,7 +28,8 @@ set buildDirectory=D:\Temp\rdtbuild.stable
 REM use pserver method to connect to the repository both for fetching the map files and the plug-ins
 REM comment out for using ext method
 REM set usePserver=-DusePserver=true
-set usePserver=
+REM set usePserver=
+set CVS_RSH=C:\bin\plinkToSourceForgeCvs.bat
 
 REM Verbose is a switch for the AntRunner application
 REM set verboseAnt=-verbose
@@ -39,7 +40,7 @@ REM (http://213.203.244.123/rdt/docbook.tar.gz). It contains to subfolders:
 REM docbook-xsl-1.64.1 and dtd
 REM It must be a relative path to the following directory:
 REM ${buildDirectory}/plugins/org.rubypeople.rdt.doc.user
-set docbook.root=../../../docbook
+set docbook.root=../../../Temp/docbook
 
 
 REM **********************************
@@ -47,17 +48,17 @@ REM ************** TEST **************
 REM **********************************
 
 REM set to empty value if you want to run the tests after the build has finished
-set dontRunTests=-DdontRunTests=defined
+set dontRunTests=
 
 REM The directory to which the eclipse-Automated-Tests-xxx.zip has been unzipped. It contains files
 REM like runtests.bat and testframework.html.
 REM After unzipping you have to copy an eclipse-platform zip file to this directory (e.g. eclipse-SDK-3.0.1-win32.zip).
 REM This zip file contains the test host. During the test process this zip file will be extracted
 
-set eclipseAutomatedTestHome=D:\eclipse-testing
+set eclipseAutomatedTestHome=D:\Eclipse\eclipse-testing-3.1
 
 REM The Ruby interpreter used from the Tests in org.rubypeople.rdt.debug.core.tests
-set rubyInterpreter=D:\Program Files\ruby-1.8.2\bin\ruby.exe
+set rubyInterpreter=C:\Program Files\Ruby-1.8.2\bin\ruby.exe
 
 REM default switch to determine if eclipse should be reinstalled between running of tests
 set installmode=clean
