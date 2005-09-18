@@ -15,7 +15,7 @@
 				In versions prior to 0.6.0, ruby interpreters were specified in 
 				the preferences page by specifying a the directory that contains 
 				the ruby executable.  Now interpreters are specified by providing 
-				the acutal ruby file, not the directory.  Until edit these 
+				the actual ruby file, not the directory.  Until edit these 
 				preferences you will not be able to run or debug ruby applications 
 				and tests.
 			</para>
@@ -25,7 +25,7 @@
 			<para>
 				RDT now requires a builder in the .project file for ruby projects.
 				When RDT is loaded, (or when a project is opened), ruby projects will 
-				be automatically upgraded. TODO: What user interaction is required?
+				be automatically upgraded.
 			</para>
 		</section>
 		<section>
@@ -73,10 +73,10 @@
 							Interpreters</emphasis> in the tree pane on the 
 							left. Click the <emphasis>Add button</emphasis> to 
 							define the location of your ruby executable. A 
-							dialog opens where you can specify a name and path. 
+							dialog opens where you can specify a name and the path to 
+							a ruby interpreter. 
 							Example settings are: name="ruby 1.6.7", 
-							path="/usr/bin". The name can be chosen freely. The 
-							path must contain a file "ruby" or "rubyw.exe". </para>
+							path="/usr/bin/ruby". The name can be chosen freely.</para>
 					</listitem>
 					<listitem>
 						<para> Leave the preferences by clicking on 
@@ -258,8 +258,13 @@
 		<section id="RiView">
 			<title>RI View</title>
 			<para>
-			<!-- TODO: add figure, describe how to use the ri view when adding rdoc in a ruby file in the workbench, 
-				 external task -->
+			<!-- TODO: add figure, describe how to use the ri view when adding rdoc in a ruby file in the workbench with an external build task -->
+				The RI View is a frontend for ruby's RI command. The location of the RI command can be configured in 
+				<emphasis>Preferences...->Ruby->Ri/rdoc</emphasis>.
+				<figure>
+				<title>RI View</title>
+				<graphic fileref="../images/riView.png" format="PNG"/>
+			</figure>
 			</para>
 		</section>		
 		<section id="ProblemsView">
@@ -267,15 +272,24 @@
 			<para> 
 				The problems view shows you warnings and errors in your ruby files. 
 				You can read more about this view in the Workbench User Guide
-			</para>
+				</para>
+			<figure>
+				<title>Syntax errors in the problem view</title>
+				<graphic fileref="../images/syntaxError.png" format="PNG"/>
+			</figure>
+			
 		</section>
 		<section id="TaskList">
 			<title>Task List</title>
-			<para> 
-				The task list shows you a list of tasks in your workspace. 
-				<!-- TODO: add figure, how to configure, default tokens, where can the occur -->
-				You can read more about this view in the Workbench User Guide
-			</para>
+			<para> The task list shows you a list of tasks in your workspace. Tasks can be
+				related to keywords (tags) in ruby comments. The tags which will add a task to
+				the task list can be defined in <emphasis>Preferences...->Ruby->Task
+				Tags</emphasis>. Per default TODO and FIXME are defined as task
+				tags.</para>
+			<figure>
+				<title>Tasks</title>
+				<graphic fileref="../images/tasks.png" format="PNG"/>
+			</figure>
 		</section>
 		<section id="RunningARubyApplication">
 			<title>Running a Ruby application</title>
