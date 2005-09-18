@@ -142,7 +142,7 @@ public class TC_DebuggerCommunicationTest extends TestCase {
 	}
 
 	public void startRubyProcess() throws Exception {
-		String cmd = TC_DebuggerCommunicationTest.RUBY_INTERPRETER + " -I " + createIncludeDir() +  " -I" + getTmpDir().replace('\\', '/') + " -reclipseDebugVerbose.rb " + getRubyTestFilename();
+		String cmd = TC_DebuggerCommunicationTest.RUBY_INTERPRETER + " -I" + createIncludeDir() +  " -I" + getTmpDir().replace('\\', '/') + " -reclipseDebugVerbose.rb " + getRubyTestFilename();
 		System.out.println("Starting: " + cmd);
 		process = Runtime.getRuntime().exec(cmd);
 		rubyStderrRedirectorThread = new OutputRedirectorThread(process.getErrorStream());
@@ -163,7 +163,13 @@ public class TC_DebuggerCommunicationTest extends TestCase {
 			includeDir = getClass().getResource("/").getFile();
 			includeDir += "../../org.rubypeople.rdt.launching/ruby" ;
 		}
-		return '"' + includeDir + '"';
+		// the ruby interpreter on linux does not like quotes, so we use them only if really necessary
+		if (includeDir.indexOf(" ") == -1) {
+			return includeDir ;
+		}
+		else {
+			return '"' + includeDir + '"';
+		}
 	}
 
 	protected String getOSIndependent(String path) {
