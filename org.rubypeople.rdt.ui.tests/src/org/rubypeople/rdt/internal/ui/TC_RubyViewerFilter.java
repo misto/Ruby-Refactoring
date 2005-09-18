@@ -63,6 +63,24 @@ public class TC_RubyViewerFilter extends TestCase {
 		assertTrue(filter.select(null, null, file));
 	}
 	
+	public void testFilterShowsYMLFiles() throws Exception {
+		IProject project = ResourceTools.createProject("TCRubyViewerFilter");
+		IFile file = project.getFile("TCRubyViewerFilterFile.yml");
+		assertTrue(filter.select(null, null, file));
+	}
+	
+	public void testFilterShowsRakefiles() throws Exception {
+		IProject project = ResourceTools.createProject("TCRubyViewerFilter");
+		IFile file = project.getFile("Rakefile");
+		assertTrue(filter.select(null, null, file));
+	}
+	
+	public void testFilterShowsGemFiles() throws Exception {
+		IProject project = ResourceTools.createProject("TCRubyViewerFilter");
+		IFile file = project.getFile("TCRubyViewerFilterFile.gem");
+		assertTrue(filter.select(null, null, file));
+	}
+	
 	public void testFilterShowsFolders() throws Exception {
 		IProject project = ResourceTools.createProject("TCRubyViewerFilter");
 		IFolder folder = project.getFolder("TCRubyViewerFilterFolder");
