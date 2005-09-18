@@ -112,7 +112,7 @@ public class TC_ReadStrategyTest extends TestCase {
 		} ;
 		testTagReaderThread.start();
 		Thread.sleep(500); // wait for threads to be started
-		writer.println("<testTag><testTag/><testTag/></testTag>") ;
+		writer.println("<testTag><testTag><testTag/><testTag/></testTag>") ;
 		writer.flush() ;
 		testTagReaderThread.join();		 
 		assertEquals("testTag was read 3 times.", 3, testTagReader.getTagReadCount());		
