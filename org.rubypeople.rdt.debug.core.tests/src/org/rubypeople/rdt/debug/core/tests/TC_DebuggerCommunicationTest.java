@@ -229,6 +229,10 @@ public class TC_DebuggerCommunicationTest extends TestCase {
 		} catch (IllegalThreadStateException ex) {
 			process.destroy();
 			System.out.println("Ruby process had to be destroyed.");
+			// wait so that the debugger port will be availabel for the next test			
+			// There seems to be a delay after the destroying of a process and
+			// freeing the server port
+			Thread.sleep(5000) ;
 		}
 
 		System.out.println("Waiting for stdout redirector thread..");
