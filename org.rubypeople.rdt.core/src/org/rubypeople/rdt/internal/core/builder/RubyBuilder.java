@@ -120,6 +120,7 @@ public class RubyBuilder extends IncrementalProjectBuilder {
 				continue;
 			}
 			if (resource.getType() != IResource.FILE) continue;
+			// FIXME This uses the Util class to check if teh filename looks like a ruby file, use behavior like RubyFileMatcher
 			if (!org.rubypeople.rdt.internal.core.util.Util.isRubyLikeFileName(resource.getName())) continue;
 			files.add(resource);
 		}
