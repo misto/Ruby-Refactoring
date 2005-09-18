@@ -8,6 +8,7 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.List;
 
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
@@ -42,9 +43,11 @@ import org.rubypeople.rdt.internal.launching.RubyInterpreter;
 import org.rubypeople.rdt.internal.launching.RubyRuntime;
 import org.rubypeople.rdt.internal.ui.RubyPlugin;
 import org.rubypeople.rdt.internal.ui.RubyPluginImages;
+import org.rubypeople.rdt.internal.ui.rdocexport.RDocUtility;
+import org.rubypeople.rdt.internal.ui.rdocexport.RdocListener;
 import org.rubypeople.rdt.ui.PreferenceConstants;
 
-public class RIView extends ViewPart {
+public class RIView extends ViewPart implements RdocListener {
 
 	private boolean riFound = false;
 	private PageBook pageBook;
@@ -53,7 +56,7 @@ public class RIView extends ViewPart {
 	private Text searchStr;
     private TableViewer searchListViewer;
     private Browser searchResult;
-    private java.util.List possibleMatches = new ArrayList();
+    private List possibleMatches = new ArrayList();
     private SearchValue itemToSearch = new SearchValue();
     private DescriptionUpdater descriptionUpdater = new DescriptionUpdater();
     private RubyRuntime.Listener runtimeListener;
@@ -149,6 +152,7 @@ public class RIView extends ViewPart {
                 
         updatePage();
         descriptionUpdater.start();
+		RDocUtility.addRdocListener(this);
 	}
 	    
 	private void contributeToActionBars() {
@@ -160,7 +164,7 @@ public class RIView extends ViewPart {
 		refreshAction.setText("Refresh");
 		refreshAction.setToolTipText("Refresh list of names");
 		refreshAction.setImageDescriptor(RubyPluginImages.TOOLBAR_REFRESH);
-		
+			
 		IToolBarManager manager = getViewSite().getActionBars().getToolBarManager();
 		manager.add(refreshAction);		
 	}
@@ -234,7 +238,7 @@ public class RIView extends ViewPart {
                 }
             }        
             protected String getArgString() {
-                return "--no-pager -l";
+                return "--no-pager -l ";
             }
         };
         invoker.invoke();
@@ -242,7 +246,7 @@ public class RIView extends ViewPart {
     }
 
     private void filterSearchList() {               
-        java.util.List filteredList = new ArrayList();
+        List filteredList = new ArrayList();
         String text = searchStr.getText();
         for (Iterator iter = possibleMatches.iterator(); iter.hasNext();) {
             String possibleMatch = (String) iter.next();      
@@ -442,5 +446,12 @@ public class RIView extends ViewPart {
             	}
             });
         }
+	}
+
+	/**
+	 * When teh rdoc has changed, automatically update/regenerate the view
+	 */
+	public void rdocChanged() {
+		updatePage();		
 	}
 }

@@ -263,6 +263,18 @@
             command="org.rubypeople.rdt.ui.edit.text.ruby.content.assist.proposals"
             configuration="org.eclipse.ui.defaultAcceleratorConfiguration">
       </keyBinding>
+      
+      <category
+            name="%category.project.name"
+            description="%category.project.description"
+            id="org.rubypeople.rdt.ui.category.project">
+      </category>
+      <command
+            name="%ActionDefinition.generateRdoc.name"
+            description="%ActionDefinition.generateRdoc.description"
+            category="org.eclipse.ui.category.project"
+            id="org.rubypeople.rdt.ui.generate.rdoc">
+      </command>
    </extension>
    <extension
          point="org.eclipse.ui.actionDefinitions">
@@ -274,6 +286,9 @@
       </actionDefinition>
       <actionDefinition
             id="org.rubypeople.rdt.ui.edit.text.ruby.content.assist.proposals">
+      </actionDefinition>
+      <actionDefinition
+            id="org.rubypeople.rdt.ui.generate.rdoc">
       </actionDefinition>
    </extension>
    <extension
@@ -290,6 +305,15 @@
                   name="editGroup">
             </separator>
          </menu>
+                  
+         <action
+               definitionId="org.rubypeople.rdt.ui.generate.rdoc"
+               label="%GenerateRdocAction.label"
+               helpContextId="org.rubypeople.rdt.ui.generate_rdoc_action"
+               class="org.rubypeople.rdt.internal.ui.actions.GenerateRdocAction"
+               menubarPath="project/additions"
+               id="exportRdoc">
+         </action>
          <action
                definitionId="org.rubypeople.rdt.ui.edit.text.ruby.uncomment"
                label="%UncommentAction.label"
@@ -327,6 +351,14 @@
          </action>
       </actionSet>
    </extension>
+   
+   
+         <command
+            name="%ActionDefinition.generateJavadoc.name"
+            description="%ActionDefinition.generateJavadoc.description"
+            category="org.eclipse.ui.category.project"
+            id="org.eclipse.jdt.ui.generate.javadoc">
+      </command>
    
    <extension
          point="org.eclipse.ui.actionSetPartAssociations">
