@@ -24,7 +24,8 @@ public class RubyBasePreferencePage extends RubyAbstractPreferencePage implement
 	private OverlayPreferenceStore createOverlayStore() {
 
 		ArrayList overlayKeys = new ArrayList();
-		overlayKeys.add(new OverlayPreferenceStore.OverlayKey(OverlayPreferenceStore.BOOLEAN, PreferenceConstants.CREATE_PARSER_ANNOTATIONS));
+		
+		//	overlayKeys.add(new OverlayPreferenceStore.OverlayKey(OverlayPreferenceStore.BOOLEAN, PreferenceConstants.CREATE_PARSER_ANNOTATIONS));
 
 		OverlayPreferenceStore.OverlayKey[] keys = new OverlayPreferenceStore.OverlayKey[overlayKeys.size()];
 		overlayKeys.toArray(keys);
@@ -42,10 +43,6 @@ public class RubyBasePreferencePage extends RubyAbstractPreferencePage implement
 		layout.marginHeight = 0;
 		layout.marginWidth = 0;
 		composite.setLayout(layout);
-
-
-		String checkBoxlabel = RubyUIMessages.getString("RubyEditorPreferencePage.createParserAnnotations");
-		this.addCheckBox(composite, checkBoxlabel, PreferenceConstants.CREATE_PARSER_ANNOTATIONS, 0);
 
 		this.initializeFields() ;
 		return composite;
