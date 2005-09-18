@@ -267,17 +267,26 @@
 			</figure>
 			</para>
 		</section>		
-		<section id="ProblemsView">
-			<title>Problems View</title>
-			<para> 
-				The problems view shows you warnings and errors in your ruby files. 
-				You can read more about this view in the Workbench User Guide
-				</para>
+		<section id="SyntaxErrorsAndProblemsView">
+			<title>Syntax Errors and the Problems View</title>
+			<para> After saving a ruby file it is parsed and syntax errors are displayed. The
+				errors show up in the vertical ruler on the left side of the editor and in the
+				Problems View. </para>
 			<figure>
 				<title>Syntax errors in the problem view</title>
 				<graphic fileref="../images/syntaxError.png" format="PNG"/>
 			</figure>
-			
+			<para> The error position is often not very exact, which results in long red
+				underlings of text in the editor. The underlining can be switched off in the
+				preferences: right click on the vertical ruler on the left side of the editor
+				and select <emphasis>Preferences...</emphasis>. The screenshot below
+				shows the settings for the error annotations. In the upper right part
+				deselect <emphasis>Text as squiggles</emphasis>.</para>
+			<figure>
+				<title>Configure error annotations</title>
+				<graphic fileref="../images/configureErrorAnnotations.png"
+					format="PNG"/>
+			</figure>
 		</section>
 		<section id="TaskList">
 			<title>Task List</title>
@@ -764,7 +773,7 @@ persons = Hash[ Person.new('Lisa') =&gt; Person.new('Marge'),
 		<para>New in RDT 0.6.0:</para>
 		<itemizedlist>		
 			<listitem> Code folding </listitem>	
-			<listitem> Syntax error Annotations </listitem>	
+			<listitem> Syntax error <link linkend='SyntaxErrorsAndProblemsView'>Annotations and Problems View</link></listitem>	
 			<listitem> The <link linkend='RiView'>RI View</link> is a frontend for ruby's ri command</listitem>
 			<listitem> <link linkend='TaskList'>Task tags</link> (like TODO) are recognized and displayed in the Tasks View</listitem>
 			<listitem> Auto-complete of brackets, parens, and single/double quotes </listitem> 
