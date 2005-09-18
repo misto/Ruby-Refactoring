@@ -34,11 +34,16 @@
       <property name="data-dir" value="${rdt-tests-workspace}"/>
       <property name="plugin-name" value="${plugin-name}"/>
       <property name="classname" 
-                value="org.rubypeople.rdt.tests.all.TS_RdtAllTests"/>
-	  
+                value="org.rubypeople.rdt.tests.all.TS_RdtAllUnitTests"/>	  
       <property name="vmargs" value="-Drdt.rubyInterpreter=&quot;${rdt.rubyInterpreter}&quot;"/>
     </ant>
-    
+    <ant target="ui-test" antfile="${library-file}" dir="${eclipse-home}">
+      <property name="data-dir" value="${rdt-tests-workspace}"/>
+      <property name="plugin-name" value="${plugin-name}"/>
+      <property name="classname" 
+                value="org.rubypeople.rdt.tests.all.TS_RdtAllFunctionalTests"/>	  
+      <property name="vmargs" value="-Drdt.rubyInterpreter=&quot;${rdt.rubyInterpreter}&quot;"/>
+    </ant>    
   </target>
 
   <target name="checkOS">
