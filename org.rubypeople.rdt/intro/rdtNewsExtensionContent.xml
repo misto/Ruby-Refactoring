@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <introContent>
   <!-- Extension to the SDK What's New Page. -->
-  <extensionContent alt-style="intro/css/rdt.properties" path="news/page-content/noteworthy-links/generalAnchor">
+  <extensionContent alt-style="css/rdt.properties" path="news/page-content/noteworthy-links/generalAnchor">
     <link label="Ruby Development Tools" url="http://org.eclipse.ui.intro/showHelpTopic?id=/org.rubypeople.rdt.doc.user/html/ch04.html" id="rdt-noteworthy" style-id="noteworthy-link">
       <text>News about RDT for this release</text>
     </link>
