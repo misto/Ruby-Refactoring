@@ -7,8 +7,10 @@ import java.io.PrintWriter;
 import java.net.ConnectException;
 import java.net.Socket;
 
+import junit.framework.Assert;
 import junit.framework.TestCase;
 
+import org.jruby.internal.runtime.ThreadService;
 import org.rubypeople.rdt.core.RubyCore;
 import org.rubypeople.rdt.internal.debug.core.ExceptionSuspensionPoint;
 import org.rubypeople.rdt.internal.debug.core.StepSuspensionPoint;
@@ -31,9 +33,9 @@ import org.xmlpull.v1.XmlPullParserFactory;
 public class TC_DebuggerCommunicationTest extends TestCase {
 
 /*
-	public static TestSuite suite() {
+	public static junit.framework.TestSuite suite() {
 
-		TestSuite suite = new TestSuite();
+		junit.framework.TestSuite suite = new junit.framework.TestSuite();
 		//suite.addTest(new TC_DebuggerCommunicationTest("testConstants"));
 		//suite.addTest(new TC_DebuggerCommunicationTest("testConstantDefinedInBothClassAndSuperclass"));
 		
@@ -47,8 +49,8 @@ public class TC_DebuggerCommunicationTest extends TestCase {
 		//suite.addTest(new TC_DebuggerCommunicationTest("testVariableNil"));
 		//suite.addTest(new TC_DebuggerCommunicationTest("testVariableInstanceNested"));				
 		//suite.addTest(new TC_DebuggerCommunicationTest("testStaticVariableInstanceNested"));			
-		suite.addTest(new TC_DebuggerCommunicationTest("testException"));
-		//suite.addTest(new TC_DebuggerCommunicationTest("testNameError"));
+		//suite.addTest(new TC_DebuggerCommunicationTest("testException"));
+		suite.addTest(new TC_DebuggerCommunicationTest("testNameError"));
 		//suite.addTest(new TC_DebuggerCommunicationTest("testVariablesInObject"));	
 		//suite.addTest(new TC_DebuggerCommunicationTest("testStaticVariables"));		
 		//suite.addTest(new TC_DebuggerCommunicationTest("testSingletonStaticVariables"));							
@@ -70,7 +72,8 @@ public class TC_DebuggerCommunicationTest extends TestCase {
         
 		return suite;
 	}
-*/
+	*/
+
 
 
 	private static String tmpDir;
@@ -90,12 +93,17 @@ public class TC_DebuggerCommunicationTest extends TestCase {
 			RUBY_INTERPRETER = "ruby";
 		}
 	}
+	private static long TIMEOUT_MS = 20000 ;
 	private Process process;
 	private OutputRedirectorThread rubyStdoutRedirectorThread;
 	private OutputRedirectorThread rubyStderrRedirectorThread;
 	private Socket socket;
 	private PrintWriter out;
 	private MultiReaderStrategy multiReaderStrategy;
+	
+	// for timeout handling
+	private Thread mainThread ;
+	private Thread timeoutThread ;
 
 	public TC_DebuggerCommunicationTest(String arg0) {
 		super(arg0);
@@ -160,8 +168,13 @@ public class TC_DebuggerCommunicationTest extends TestCase {
 		}
 		else {
 		    // being run as "pure" JUnit Test without Eclipse running 
+			// getResource delivers a URL, so we get slashes as Fileseparator
 			includeDir = getClass().getResource("/").getFile();
 			includeDir += "../../org.rubypeople.rdt.launching/ruby" ;
+			// if on windows, remove a leading slash
+			if (includeDir.startsWith("/") && File.separatorChar == '\\') {
+				includeDir = includeDir.substring(1);
+			}
 		}
 		// the ruby interpreter on linux does not like quotes, so we use them only if really necessary
 		if (includeDir.indexOf(" ") == -1) {
@@ -180,9 +193,28 @@ public class TC_DebuggerCommunicationTest extends TestCase {
 		if (!new File(getTmpDir()).exists() || !new File(getTmpDir()).isDirectory()) {
 			throw new RuntimeException("Temp directory does not exist: " + getTmpDir());
 		}
+		// if a reader hangs, because the expected data from the ruby process
+		// does not arrive, it gets interrupted from the timeout watchdog.
+		mainThread = Thread.currentThread() ;
+		timeoutThread = new Thread() {
+			public void run() {
+				try {
+					while (true) {
+						System.out.println("Starting timeout watchdog.");
+						Thread.sleep(TIMEOUT_MS);
+						System.out.println("Timeout reached.");
+						mainThread.interrupt();
+					}
+				} catch (InterruptedException e) {
+					System.out.println("Watchdog deactivated.");
+				} 
+			}
+		} ;
+		timeoutThread.start() ;		
 	}
 
 	public void tearDown() throws Exception {
+		timeoutThread.interrupt() ;
 		if (process == null || socket == null) {
 			// here we go it there was an error in the creation of the process (process == null)
 			// or there was an error creating the socket, e.g. ruby process has died early
@@ -202,7 +234,7 @@ public class TC_DebuggerCommunicationTest extends TestCase {
 		System.out.println("Waiting for stdout redirector thread..");
 		rubyStdoutRedirectorThread.join();
 		System.out.println("..done");
-		System.out.println("Waiting for stdout redirector thread..");
+		System.out.println("Waiting for stderr redirector thread..");
 		rubyStderrRedirectorThread.join();
 		System.out.println("..done");
 	}
@@ -238,7 +270,7 @@ public class TC_DebuggerCommunicationTest extends TestCase {
 			out.println(debuggerCommand);
 		}
 	}
-
+	
 	public void testNameError() throws Exception {
 		createSocket(new String[] { "puts 'x'" });
 		sendRuby("cont");
