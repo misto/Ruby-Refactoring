@@ -93,7 +93,7 @@ public class TC_DebuggerCommunicationTest extends TestCase {
 			RUBY_INTERPRETER = "ruby";
 		}
 	}
-	private static long TIMEOUT_MS = 20000 ;
+	private static long TIMEOUT_MS = 60000 ;
 	private Process process;
 	private OutputRedirectorThread rubyStdoutRedirectorThread;
 	private OutputRedirectorThread rubyStderrRedirectorThread;
