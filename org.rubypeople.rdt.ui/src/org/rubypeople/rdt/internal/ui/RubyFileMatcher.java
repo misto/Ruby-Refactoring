@@ -179,7 +179,7 @@ public class RubyFileMatcher {
 			String firstLine = reader.readLine();
 			if (firstLine == null)
 				return false;
-			if (firstLine.contains(SHEBANG) && firstLine.contains(RUBY))
+			if (firstLine.indexOf(SHEBANG) > -1 && firstLine.indexOf(RUBY) > -1)
 				return true;
 		} catch (CoreException e) {
 			e.printStackTrace();
