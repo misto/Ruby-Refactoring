@@ -745,11 +745,18 @@ persons = Hash[ Person.new('Lisa') =&gt; Person.new('Marge'),
 			</section>
 		</section>
 	</chapter>
-	<chapter id="TipsNTricks">
-		<title>Tips and tricks</title>
-	</chapter>
 	<chapter id="WhatsNew">
 		<title>What's new</title>
+		<para>New in RDT 0.6.0:</para>
+		<itemizedlist>		
+			<listitem> Code folding </listitem>	
+			<listitem> Syntax error Annotations </listitem>	
+			<listitem> The <link linkend='RiView'>RI View</link> is a frontend for ruby's ri command</listitem>
+			<listitem> <link linkend='TaskList'>Task tags</link> (like TODO) are recognized and displayed in the Tasks View</listitem>
+			<listitem> Auto-complete of brackets, parens, and single/double quotes </listitem> 
+			<listitem> Debugger: <link linkend='codeReload'>Code reload</link> and <link linkend='quickInspect'>inspection shortcuts</link> </listitem> 
+    		<listitem> <ulink url="http://jruby.sourceforge.net/">JRuby</ulink> does the parsing behind the scenes </listitem>
+		</itemizedlist>				
 		<para>New in RDT 0.5.0:</para>
 		<itemizedlist>			
 			<listitem> <link linkend='RunningATest::UnitTest'> Test::Unit view </link> </listitem>			
