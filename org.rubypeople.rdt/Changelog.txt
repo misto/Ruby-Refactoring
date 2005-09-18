@@ -41,3 +41,5 @@ Changes since Release of 0.5.0
 * Updated RI view w/ patch from Khaled Agrama (Aug. 7, 2005) which allows user to start typing, and matches to show as the user types
 * Updated jruby.jar (to 1.9). Includes fix for random Syntax Error issues dealing with quotes. 
 * Updated jruby.jar (1.9). Disables the "useless use of literal ... in void context" warning.
+* Widen scope of what is considered a "ruby file" for the Ruby resources view - recognize .yml, Rakefile and any file starting with '#!' and 'ruby' in the first line
+* Added "Generate Rdoc" action which will generate RI compatible rdoc for a project and auto-update the RI view
