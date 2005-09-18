@@ -6,9 +6,6 @@
  */
 package org.rubypeople.rdt.internal.ui.rubyeditor;
 
-import java.util.Arrays;
-
-import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.DocumentCommand;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.source.IOverviewRuler;

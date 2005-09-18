@@ -1,10 +1,8 @@
 package org.rubypeople.rdt.internal.debug.ui.cheatsheets.webservice;
 
 import org.eclipse.jface.action.Action;
-import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.wizard.WizardDialog;
-import org.eclipse.ui.IActionDelegate;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.cheatsheets.ICheatSheetAction;
 import org.eclipse.ui.cheatsheets.ICheatSheetManager;
@@ -14,8 +12,6 @@ import org.rubypeople.rdt.internal.ui.wizards.NewProjectCreationWizard;
 /**
  * @author markus
  *
- * TODO To change the template for this generated type comment go to
- * Window - Preferences - Java - Code Style - Code Templates
  */
 public class OpenNewRubyProjectWizardAction extends Action implements ICheatSheetAction  {
 	public OpenNewRubyProjectWizardAction() {

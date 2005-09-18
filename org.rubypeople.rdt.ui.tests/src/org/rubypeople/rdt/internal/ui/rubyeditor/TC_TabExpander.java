@@ -1,11 +1,9 @@
 package org.rubypeople.rdt.internal.ui.rubyeditor;
 
-import javax.print.SimpleDoc;
+import junit.framework.TestCase;
 
 import org.eclipse.jface.text.Document;
 import org.eclipse.jface.text.DocumentCommand;
-
-import junit.framework.TestCase;
 
 public class TC_TabExpander extends TestCase {
 
