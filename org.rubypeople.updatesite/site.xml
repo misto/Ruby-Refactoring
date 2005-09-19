@@ -16,7 +16,7 @@
    <feature url="features/org.rubypeople.rdt_0.5.0.jar" id="org.rubypeople.rdt" version="0.5.0">
       <category name="RubyEclipse"/>
    </feature>
-   <feature url="features/org.rubypeople.rdt_0.6.0.jar" id="org.rubypeople.rdt" version="0.5.0">
+   <feature url="features/org.rubypeople.rdt_0.6.0.jar" id="org.rubypeople.rdt" version="0.6.0">
       <category name="RubyEclipse"/>
    </feature>	
    <category-def name="RubyEclipse" label="RDT">
