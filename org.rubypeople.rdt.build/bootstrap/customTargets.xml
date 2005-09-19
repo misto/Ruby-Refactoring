@@ -187,7 +187,7 @@
 	<target name="copySiteXmlFromCvs" unless="isNightlyBuild">
 		<!-- Grab the rest of the site out of CVS -->
 		<mkdir dir="${buildDirectory}/temp.updatesite"/>
-		<property name="cvsRoot" value=":pserver:cvs.sf.net:/cvsroot/rubyeclipse" />
+		<property name="cvsRoot" value=":pserver:anonymous@cvs.sf.net:/cvsroot/rubyeclipse" />
 		<cvs cvsroot="${cvsRoot}" package="${sitePackagePrefix}" dest="${buildDirectory}/temp.updatesite" tag="${fetchTag}"/>
 		<!-- Copy to staging area -->
 		<copy todir="${UpdateSiteStagingLocation}">
