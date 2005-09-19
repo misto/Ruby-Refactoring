@@ -28,17 +28,21 @@ import org.rubypeople.rdt.ui.PreferenceConstants;
 public class RDocUtility {
 
 	private static Set listeners = new HashSet();
+	private static boolean isDebug = false ;	
 
 	public static void addRdocListener(RdocListener listener) {
 		listeners.add(listener);
 	}
-	
+
 	public static void removeRdocListener(RdocListener listener) {
 		listeners.remove(listener);
 	}
-
+	
+	public static void setDebugging(boolean isDebug) {
+		RDocUtility.isDebug = isDebug ;
+	}
+	
 	public static void generateDocumentation(IResource resource) {
-		RubyPlugin.log("Generating RDoc for " + resource.getName());
 		RubyInvoker invoker = new RubyInvoker(resource);
 		invoker.invoke();
 		notifyListeners();
@@ -71,8 +75,15 @@ public class RDocUtility {
 		protected String getArgString() {
 			return " -r " + resource.getLocation().toOSString();
 		}
+		
+		private void log(String message) {
+			if (RDocUtility.isDebug) {
+				System.out.println(message) ;
+			}
+		}
 
 		public final void invoke() {
+			log("Generating RDoc for " + resource.getName());
 			IPath rubyPath = RubyRuntime.getDefault().getSelectedInterpreter()
 					.getInstallLocation();
 			IPath rdocPath = new Path(RubyPlugin.getDefault()
@@ -94,15 +105,16 @@ public class RDocUtility {
 				return;
 			}
 
-			String riCmd = "\"" + rubyPath + "\" \"" + rdocPath.toString()
-					+ "\"";
+			String riCmd = "\"" + rubyPath + "\" \"" + rdocPath.toString() + "\"";
 			String call = riCmd + getArgString();
 			try {
-				final Process p = Runtime.getRuntime().exec(call);
-				RubyPlugin.log(call);
-				handleOutput(p);
+				log(call);
+				final Process p = Runtime.getRuntime().exec(call);				
+				handleOutput(p, call);
 			} catch (IOException e) {
 				RubyPlugin.log(e);
+				log(e.getMessage());
+				ErrorDialog.openError(RubyPlugin.getActiveWorkbenchShell(), "Error running Rdoc", e.getMessage(), new StatusInfo(StatusInfo.ERROR, e.getMessage()));
 			}
 		}
 
@@ -114,24 +126,36 @@ public class RDocUtility {
 		 * @param p
 		 *            The Process.
 		 */
-		private void handleOutput(Process p) {
+		private void handleOutput(Process p, String cmdLine) {
 			BufferedReader reader = null;
+			String lastLine = null ;
 			try {
-				reader = new BufferedReader(new InputStreamReader(p
-						.getErrorStream()));
+				reader = new BufferedReader(new InputStreamReader(p.getErrorStream()));
 				String line = null;
 				while ((line = reader.readLine()) != null) {
-					RubyPlugin.log(line);
+					log(line);
+					lastLine = line ;
 				}
 			} catch (Exception e) {
-				RubyPlugin.log(e);
+				log(e.getMessage());
 			}
 			try {
 				p.waitFor();
+				if (p.exitValue() != 0) {
+					String message = "Ruby running rdoc exited abnormally. A possble reason is a wrong Rdoc path. Please check the path for rdoc in the preference page.";
+					String additionalMessage = null ;
+					if (lastLine != null) {
+						additionalMessage = "The process was started with: "+ cmdLine + ". The last line of stderr of the ruby process: " + lastLine ;
+					}
+					else {
+						additionalMessage = "The process was started with: "+ cmdLine + ". The process did not write any messages to stderr." ;
+					}
+					ErrorDialog.openError( RubyPlugin.getActiveWorkbenchShell(), "Ruby process exited with value " + p.exitValue(), message, new StatusInfo(StatusInfo.ERROR, additionalMessage));
+				}
 			} catch (InterruptedException e) {
-				e.printStackTrace();
+				log("InterruptedException while waiting for rdoc process to finish." + e.getMessage()) ;
 			}
-			RubyPlugin.log("Done generating RDoc");
+			log("Done generating RDoc");
 		}
 	}
 
