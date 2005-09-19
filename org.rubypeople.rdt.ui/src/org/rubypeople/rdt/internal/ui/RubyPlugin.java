@@ -39,8 +39,10 @@ import org.rubypeople.rdt.core.IBuffer;
 import org.rubypeople.rdt.core.IRubyScript;
 import org.rubypeople.rdt.core.RubyCore;
 import org.rubypeople.rdt.core.WorkingCopyOwner;
+import org.rubypeople.rdt.internal.core.parser.RubyParser;
 import org.rubypeople.rdt.internal.formatter.CodeFormatter;
 import org.rubypeople.rdt.internal.ui.preferences.MockupPreferenceStore;
+import org.rubypeople.rdt.internal.ui.rdocexport.RDocUtility;
 import org.rubypeople.rdt.internal.ui.rubyeditor.DocumentAdapter;
 import org.rubypeople.rdt.internal.ui.rubyeditor.RubyDocumentProvider;
 import org.rubypeople.rdt.internal.ui.rubyeditor.WorkingCopyManager;
@@ -139,6 +141,8 @@ public class RubyPlugin extends AbstractUIPlugin implements IRubyColorConstants 
 		        
 		    }});
 		upgradeOldProjects();
+		String generateRdocOption = Platform.getDebugOption(RubyPlugin.PLUGIN_ID + "/generaterdoc");
+		RDocUtility.setDebugging(generateRdocOption == null ? false : generateRdocOption.equalsIgnoreCase("true"));
 	}
 	
 	private void upgradeOldProjects() {
