@@ -200,10 +200,11 @@
             id="org.rubypeople.rdt.ui.category.source">
       </category>
       <command
-            name="%ActionDefinition.format.name"
-            description="%ActionDefinition.format.description"
             category="org.rubypeople.rdt.ui.category.source"
-            id="org.rubypeople.rdt.ui.edit.text.ruby.format">
+            categoryId="org.rubypeople.rdt.ui.category.source"
+            description="%ActionDefinition.format.description"
+            id="org.rubypeople.rdt.ui.edit.text.ruby.format"
+            name="%ActionDefinition.format.name">
       </command>
       <keyBinding
             keySequence="M1+M2+F"
@@ -212,10 +213,11 @@
             configuration="org.eclipse.ui.defaultAcceleratorConfiguration">
       </keyBinding>
       <command
-            name="%ActionDefinition.comment.name"
-            description="%ActionDefinition.comment.description"
             category="org.rubypeople.rdt.ui.category.source"
-            id="org.rubypeople.rdt.ui.edit.text.ruby.comment">
+            categoryId="org.rubypeople.rdt.ui.category.source"
+            description="%ActionDefinition.comment.description"
+            id="org.rubypeople.rdt.ui.edit.text.ruby.comment"
+            name="%ActionDefinition.comment.name">
       </command>
       <keyBinding
             scope="org.rubypeople.rdt.ui.rubyEditorScope"
@@ -223,10 +225,11 @@
             configuration="org.eclipse.ui.defaultAcceleratorConfiguration">
       </keyBinding>
       <command
-            name="%ActionDefinition.uncomment.name"
-            description="%ActionDefinition.uncomment.description"
             category="org.rubypeople.rdt.ui.category.source"
-            id="org.rubypeople.rdt.ui.edit.text.ruby.uncomment">
+            categoryId="org.rubypeople.rdt.ui.category.source"
+            description="%ActionDefinition.uncomment.description"
+            id="org.rubypeople.rdt.ui.edit.text.ruby.uncomment"
+            name="%ActionDefinition.uncomment.name">
       </command>
       <keyBinding
             scope="org.rubypeople.rdt.ui.rubyEditorScope"
@@ -234,10 +237,11 @@
             configuration="org.eclipse.ui.defaultAcceleratorConfiguration">
       </keyBinding>
       <command
-            name="%ActionDefinition.toggleComment.name"
-            description="%ActionDefinition.toggleComment.description"
             category="org.rubypeople.rdt.ui.category.source"
-            id="org.rubypeople.rdt.ui.edit.text.ruby.toggle.comment">
+            categoryId="org.rubypeople.rdt.ui.category.source"
+            description="%ActionDefinition.toggleComment.description"
+            id="org.rubypeople.rdt.ui.edit.text.ruby.toggle.comment"
+            name="%ActionDefinition.toggleComment.name">
       </command>
       <keyBinding
             keySequence="M1+/"
@@ -252,10 +256,11 @@
             configuration="org.eclipse.ui.defaultAcceleratorConfiguration">
       </keyBinding>
       <command
-            name="%ActionDefinition.contentAssist.name"
-            description="%ActionDefinition.contentAssist.description"
             category="org.rubypeople.rdt.ui.category.source"
-            id="org.rubypeople.rdt.ui.edit.text.ruby.content.assist.proposals">
+            categoryId="org.rubypeople.rdt.ui.category.source"
+            description="%ActionDefinition.contentAssist.description"
+            id="org.rubypeople.rdt.ui.edit.text.ruby.content.assist.proposals"
+            name="%ActionDefinition.contentAssist.name">
       </command>
       <keyBinding
             keySequence="M1+SPACE"
@@ -270,25 +275,34 @@
             id="org.rubypeople.rdt.ui.category.project">
       </category>
       <command
-            name="%ActionDefinition.generateRdoc.name"
-            description="%ActionDefinition.generateRdoc.description"
             category="org.eclipse.ui.category.project"
-            id="org.rubypeople.rdt.ui.generate.rdoc">
+            categoryId="org.rubypeople.rdt.ui.category.project"
+            description="%ActionDefinition.generateRdoc.description"
+            id="org.rubypeople.rdt.ui.generate.rdoc"
+            name="%ActionDefinition.generateRdoc.name">
       </command>
    </extension>
    <extension
          point="org.eclipse.ui.actionDefinitions">
       <actionDefinition
-            id="org.rubypeople.rdt.ui.edit.text.ruby.comment">
+            description="%ActionDefinition.comment.description"
+            id="org.rubypeople.rdt.ui.edit.text.ruby.comment"
+            name="%ActionDefinition.comment.name">
       </actionDefinition>
       <actionDefinition
-            id="org.rubypeople.rdt.ui.edit.text.ruby.uncomment">
+            description="%ActionDefinition.uncomment.description"
+            id="org.rubypeople.rdt.ui.edit.text.ruby.uncomment"
+            name="%ActionDefinition.uncomment.name">
       </actionDefinition>
       <actionDefinition
-            id="org.rubypeople.rdt.ui.edit.text.ruby.content.assist.proposals">
+            description="%ActionDefinition.contentAssist.description"
+            id="org.rubypeople.rdt.ui.edit.text.ruby.content.assist.proposals"
+            name="%ActionDefinition.contentAssist.name">
       </actionDefinition>
       <actionDefinition
-            id="org.rubypeople.rdt.ui.generate.rdoc">
+            description="%ActionDefinition.generateRdoc.description"
+            id="org.rubypeople.rdt.ui.generate.rdoc"
+            name="%ActionDefinition.generateRdoc.name">
       </actionDefinition>
    </extension>
    <extension
@@ -351,14 +365,6 @@
          </action>
       </actionSet>
    </extension>
-   
-   
-         <command
-            name="%ActionDefinition.generateJavadoc.name"
-            description="%ActionDefinition.generateJavadoc.description"
-            category="org.eclipse.ui.category.project"
-            id="org.eclipse.jdt.ui.generate.javadoc">
-      </command>
    
    <extension
          point="org.eclipse.ui.actionSetPartAssociations">
@@ -508,8 +514,10 @@
          name="%rubyDocumentSetupParticipant"
          point="org.eclipse.core.filebuffers.documentSetup">
       <participant
+            class="org.rubypeople.rdt.internal.ui.rubyeditor.RubyDocumentSetupParticipant"
+            contentTypeId="org.rubypeople.rdt.core.rubySource"
             extensions="rb,rbw"
-            class="org.rubypeople.rdt.internal.ui.rubyeditor.RubyDocumentSetupParticipant">
+            fileNames="Rakefile">
       </participant>
    </extension>
    <extension
@@ -517,8 +525,10 @@
          name="%rubyDocumentFactory"
          point="org.eclipse.core.filebuffers.documentCreation">
       <factory
+            class="org.rubypeople.rdt.internal.ui.rubyeditor.RubyDocumentFactory"
+            contentTypeId="org.rubypeople.rdt.core.rubySource"
             extensions="rb,rbw"
-            class="org.rubypeople.rdt.internal.ui.rubyeditor.RubyDocumentFactory">
+            fileNames="Rakefile">
       </factory>
    </extension>
 </plugin>
