@@ -10,6 +10,7 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.jface.action.Action;
@@ -343,8 +344,7 @@ public class RIView extends ViewPart implements RdocListener {
        
         
         public final void invoke() {
-			
-        	IPath rubyPath = RubyRuntime.getDefault().getSelectedInterpreter().getInstallLocation();
+
         	IPath riPath = new Path( RubyPlugin.getDefault().getPreferenceStore().getString( PreferenceConstants.RI_PATH ) );
         	
         	// check the ri path for existence. It might have been unconfigured
@@ -357,15 +357,14 @@ public class RIView extends ViewPart implements RdocListener {
 				pageBook.showPage(riNotFoundLabel);
 				return;
 			}
-
-    		String	riCmd =  "\"" + rubyPath + "\" \"" +  riPath.toString() + "\" ";     		
-    		String call = riCmd + getArgString();
+			   		
     		try {        			
-    			final Process p = Runtime.getRuntime().exec(call);
+    			final Process p = RubyRuntime.getDefault().getSelectedInterpreter().exec("\"" +  riPath.toString() + "\" " + getArgString(), null);
                 handleOutput(p); 
-    		} catch (IOException e) {
-    			e.printStackTrace();
-    		}        
+    		} catch (CoreException coreException)  {
+    			// message of RuntimeException will be displayed in the RI View
+    			throw new RuntimeException(coreException.getStatus().getMessage());
+    		}      
         }
     }
 
