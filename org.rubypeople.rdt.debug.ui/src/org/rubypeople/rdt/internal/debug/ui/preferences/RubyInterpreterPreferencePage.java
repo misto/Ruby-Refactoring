@@ -150,8 +150,13 @@ public class RubyInterpreterPreferencePage extends PreferencePage implements IWo
 		EditInterpreterDialog editor = new EditInterpreterDialog(getShell(), RdtDebugUiMessages.getString("RubyInterpreterPreferencePage.EditInterpreterDialog.addInterpreter.title")); //$NON-NLS-1$
 		editor.create();
 		editor.setInterpreterToEdit(newInterpreter);
-		if (EditInterpreterDialog.OK == editor.open())
+		if (EditInterpreterDialog.OK == editor.open()) {
 			tableViewer.add(newInterpreter);
+			Object[] checked = tableViewer.getCheckedElements();
+			if(checked == null || checked.length == 0) {
+				tableViewer.setChecked(newInterpreter, true);
+			}
+		}
 	}
 
 	protected void removeInterpreter() {
