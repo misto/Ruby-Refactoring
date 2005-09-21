@@ -40,7 +40,6 @@ Export-Package: .,
  org.jruby.util.collections,
  org.rubypeople.rdt.core,
  org.rubypeople.rdt.core.parser,
- org.rubypeople.rdt.core.runtime,
  org.rubypeople.rdt.internal.core,
  org.rubypeople.rdt.internal.core.buffer,
  org.rubypeople.rdt.internal.core.builder,
@@ -50,4 +49,4 @@ Export-Package: .,
 Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.core.resources,
  org.eclipse.team.core
-Eclipse-AutoStart: true; exceptions="org.rubypeople.rdt.core.runtime"
+Eclipse-AutoStart: true
