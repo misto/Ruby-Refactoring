@@ -33,6 +33,7 @@ public class RubyReconciler extends NotifyingReconciler {
     class ResourceChangeListener implements IResourceChangeListener {
 
         private IResource getResource() {
+            if (fTextEditor == null) return null;
             IEditorInput input = fTextEditor.getEditorInput();
             if (input instanceof IFileEditorInput) {
                 IFileEditorInput fileInput = (IFileEditorInput) input;
