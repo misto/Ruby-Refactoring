@@ -184,8 +184,10 @@ public class RubyBuilder extends IncrementalProjectBuilder {
 	 * they are affected by the changes.
 	 */
 	protected void compile(IFile[] units, IProgressMonitor monitor) {
+        if (units == null) return;
 		int unitsLength = units.length;
-		grandTotal  = unitsLength;
+        grandTotal  = unitsLength;
+        if (unitsLength == 0) return;
 		percentPerUnit  = totalWork / unitsLength;
 
 		this.compiledAllAtOnce = unitsLength <= MAX_AT_ONCE;
