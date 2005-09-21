@@ -4,7 +4,10 @@ import java.io.File;
 import java.io.IOException;
 import java.text.MessageFormat;
 
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
 
 public class RubyInterpreter {
 	public final String endOfOptionsDelimeter = " -- ";
@@ -41,8 +44,24 @@ public class RubyInterpreter {
 		throw new IllegalCommandException(errorMessage) ;
 	}
 	
-	public Process exec(String arguments, File workingDirectory) throws IOException, IllegalCommandException {
-		return Runtime.getRuntime().exec(this.getCommand() + " " +  arguments, null, workingDirectory);
+	//public Process exec(String arguments, File workingDirectory) throws IOException, IllegalCommandException {
+	//	return Runtime.getRuntime().exec(this.getCommand() + " " +  arguments, null, workingDirectory);
+	//}
+	
+	public Process exec(String commandLine, File workingDirectory) throws CoreException {
+
+		try {
+			RdtLaunchingPlugin.debug("Launching: " + commandLine) ;
+			RdtLaunchingPlugin.debug("Working Dir: " + workingDirectory) ;
+			return Runtime.getRuntime().exec(this.getCommand() + " " +  commandLine, null, workingDirectory);
+		} catch (IOException e) {
+			throw new RuntimeException("Unable to execute interpreter: " + commandLine + workingDirectory);
+		}
+		catch (IllegalCommandException ex) {
+			IStatus errorStatus = new Status(IStatus.ERROR, RdtLaunchingPlugin.PLUGIN_ID, IStatus.OK, ex.getMessage(), null);
+			throw new CoreException(errorStatus) ;
+		}
+
 	}
 	
 	public boolean equals(Object other) {
