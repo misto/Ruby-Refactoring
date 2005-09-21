@@ -1,28 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?eclipse version="3.0"?>
-<plugin
-   id="org.rubypeople.rdt.core"
-   name="%Plugin.name"
-   version="0.6.0"
-   provider-name="%providerName"
-   class="org.rubypeople.rdt.core.RubyCore">
+<plugin>
 
-   <runtime>
-      <library name="rdtcore.jar">
-         <export name="*"/>
-	  </library>
-      <library name="lib/jruby.jar">
-         <export name="*"/>
-      </library>
-   </runtime>
-
-   <requires>
-      <import plugin="org.eclipse.core.runtime"/>
-      <import plugin="org.eclipse.core.resources"/>
-      <import plugin="org.eclipse.team.core"/>
-   </requires>
-
-   <extension
+     <extension
          id="rubynature"
          name="%NatureRuby.name"
          point="org.eclipse.core.resources.natures">
@@ -96,12 +76,19 @@
 <!-- =================================================================================== -->
 <!-- Extension: Ruby Content Types                                                       -->
 <!-- =================================================================================== -->
-<extension point="org.eclipse.core.runtime.contentTypes">
+<extension
+      id="org.rubypeople.rdt.core.rubySource"
+      name="RubySource"
+      point="org.eclipse.core.runtime.contentTypes">
 	<!-- declares a content type for Ruby Source files -->
-	<content-type id="rubySource" name="%rubySourceName" 
-		base-type="org.eclipse.core.runtime.text"
-		priority="high"				
-		file-extensions="rb,rbw"/>
+	<content-type
+       base-type="org.eclipse.core.runtime.text"
+       describer="org.rubypeople.rdt.core.runtime.RubyContentDescriber"
+       file-extensions="rb,rbw"
+       file-names="Rakefile"
+       id="rubySource"
+       name="%rubySourceName"
+       priority="high"/>
 </extension>
 
 </plugin>
