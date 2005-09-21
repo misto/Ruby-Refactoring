@@ -25,7 +25,7 @@ import org.rubypeople.rdt.internal.ui.RubyViewerFilter;
 public class RubyResourcesView extends ResourceNavigator {
 
 	private static String IS_RUBY_FILES_ONLY_MEMENTO_KEY = "isRubyFilesOnlyFilterActivated";
-	private boolean isRubyFilesOnlyFilterActivated = true; // default value if
+	private boolean isRubyFilesOnlyFilterActivated = false; // default value if
 														   // there is no
 														   // memento
 
