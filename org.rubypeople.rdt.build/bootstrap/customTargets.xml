@@ -102,6 +102,10 @@
 			<include name="org.rubypeople.*/plugin.xml"/>
 			<replacefilter token="${baseFeatureVersion}" value="${featureVersion}" />
 		</replace>
+		<replace dir="${buildDirectory}/plugins">
+			<include name="org.rubypeople.*/META-INF/MANIFEST.MF"/>
+			<replacefilter token="Bundle-Version: ${baseFeatureVersion}" value="Bundle-Version: ${featureVersion}" />
+		</replace>				
 	</target>
 	<!-- ===================================================================== -->
 	<!-- Steps to do before generating the build scripts. -->
