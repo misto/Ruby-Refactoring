@@ -3,6 +3,9 @@ package org.rubypeople.rdt.internal.launching;
 import java.io.File;
 import java.io.IOException;
 import java.text.MessageFormat;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
@@ -47,15 +50,24 @@ public class RubyInterpreter {
 	//public Process exec(String arguments, File workingDirectory) throws IOException, IllegalCommandException {
 	//	return Runtime.getRuntime().exec(this.getCommand() + " " +  arguments, null, workingDirectory);
 	//}
+    
+    public Process exec(String arguments, File workingDirectory) throws CoreException {
+        List argList = Arrays.asList(arguments.split("\\s+"));
+        return exec(argList, workingDirectory);
+    }
+
 	
-	public Process exec(String commandLine, File workingDirectory) throws CoreException {
+	public Process exec(List args, File workingDirectory) throws CoreException {
 
 		try {
-			RdtLaunchingPlugin.debug("Launching: " + commandLine) ;
+			RdtLaunchingPlugin.debug("Launching: " + args) ;
 			RdtLaunchingPlugin.debug("Working Dir: " + workingDirectory) ;
-			return Runtime.getRuntime().exec(this.getCommand() + " " +  commandLine, null, workingDirectory);
+            List rubyCmd = new ArrayList();
+            rubyCmd.add(this.getCommand());
+            rubyCmd.addAll(args);
+			return Runtime.getRuntime().exec((String[]) rubyCmd.toArray(new String[0]), null, workingDirectory);
 		} catch (IOException e) {
-			throw new RuntimeException("Unable to execute interpreter: " + commandLine + workingDirectory);
+			throw new RuntimeException("Unable to execute interpreter: " + args + workingDirectory);
 		}
 		catch (IllegalCommandException ex) {
 			IStatus errorStatus = new Status(IStatus.ERROR, RdtLaunchingPlugin.PLUGIN_ID, IStatus.OK, ex.getMessage(), null);

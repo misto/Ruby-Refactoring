@@ -238,8 +238,12 @@ public class RIView extends ViewPart implements RdocListener {
                     // TODO
                 }
             }        
-            protected String getArgString() {
-                return "--no-pager -l ";
+
+            protected List getArgList() {
+                List args = new ArrayList();
+                args.add("--no-pager");
+                args.add("-l");
+                return args;
             }
         };
         invoker.invoke();
@@ -288,8 +292,13 @@ public class RIView extends ViewPart implements RdocListener {
         }               
     
         private RubyInvoker invoker = new RubyInvoker() {
-            protected String getArgString() {
-                return "--no-pager -f html " + searchValue;
+            protected List getArgList() {
+                ArrayList args = new ArrayList();
+                args.add("--no-pager");
+                args.add("-f");
+                args.add("html");
+                args.add(searchValue);
+                return args;
             }
     
             protected void beforeInvoke() {
@@ -336,7 +345,7 @@ public class RIView extends ViewPart implements RdocListener {
     }
     
     private abstract class RubyInvoker {
-        protected abstract String getArgString();
+        protected abstract List getArgList();
         protected abstract void handleOutput(Process process);
         protected void beforeInvoke(){}
         
@@ -359,7 +368,9 @@ public class RIView extends ViewPart implements RdocListener {
 			}
 			   		
     		try {        			
-    			final Process p = RubyRuntime.getDefault().getSelectedInterpreter().exec("\"" +  riPath.toString() + "\" " + getArgString(), null);
+                List args = getArgList();
+                args.add(0, riPath.toString());
+    			final Process p = RubyRuntime.getDefault().getSelectedInterpreter().exec(args, null);
                 handleOutput(p); 
     		} catch (CoreException coreException)  {
     			// message of RuntimeException will be displayed in the RI View
