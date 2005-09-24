@@ -47,12 +47,8 @@ public class RubyInterpreter {
 		throw new IllegalCommandException(errorMessage) ;
 	}
 	
-	//public Process exec(String arguments, File workingDirectory) throws IOException, IllegalCommandException {
-	//	return Runtime.getRuntime().exec(this.getCommand() + " " +  arguments, null, workingDirectory);
-	//}
-    
     public Process exec(String arguments, File workingDirectory) throws CoreException {
-        List argList = Arrays.asList(arguments.split("\\s+"));
+        List argList = Arrays.asList(arguments.trim().split("\\s+"));
         return exec(argList, workingDirectory);
     }
 
