@@ -4,7 +4,6 @@ import java.io.File;
 import java.io.IOException;
 import java.text.MessageFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import org.eclipse.core.runtime.CoreException;
@@ -48,8 +47,7 @@ public class RubyInterpreter {
 	}
 	
     public Process exec(String arguments, File workingDirectory) throws CoreException {
-        List argList = Arrays.asList(arguments.trim().split("\\s+"));
-        return exec(argList, workingDirectory);
+        return exec(ArgumentSplitter.split(arguments), workingDirectory);
     }
 
 	
