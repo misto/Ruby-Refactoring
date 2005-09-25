@@ -1,6 +1,7 @@
 package org.rubypeople.rdt.testunit.launcher;
 
 import java.io.File;
+import java.util.List;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
@@ -74,10 +75,15 @@ public class TestUnitRunnerConfiguration extends InterpreterRunnerConfiguration 
 		return fileName + " " + port + " " + keepAlive + " " + testClass + " " + testMethod;
 	}
 
-	public String renderLoadPath() {
-		String absoluteTestFilePath = RdtLaunchingPlugin.osDependentPath(this.getAbsoluteTestFileName());
-		if (absoluteTestFilePath.length() == 0) { return super.renderLoadPath(); }
-		return super.renderLoadPath() + " -I " + absoluteTestFilePath;
+	public List renderLoadPath() {
+		List loadPath = super.renderLoadPath();
+		
+		String absoluteTestFileName = this.getAbsoluteTestFileName();
+		if (absoluteTestFileName.length() != 0) {
+			loadPath.add("-I");
+			loadPath.add(absoluteTestFileName);
+		}
+		return loadPath;
 	}
 
 	public static String getTestRunnerPath() {

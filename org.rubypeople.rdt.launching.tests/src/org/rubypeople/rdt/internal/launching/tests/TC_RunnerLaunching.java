@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -23,7 +24,6 @@ import org.eclipse.debug.core.ILaunchConfigurationType;
 import org.eclipse.debug.core.ILaunchConfigurationWorkingCopy;
 import org.eclipse.debug.core.ILaunchManager;
 import org.eclipse.debug.core.Launch;
-import org.eclipse.debug.internal.core.LaunchConfigurationType;
 import org.rubypeople.eclipse.shams.debug.core.ShamLaunchConfigurationType;
 import org.rubypeople.eclipse.testutils.ResourceTools;
 import org.rubypeople.rdt.internal.launching.DebuggerRunner;
@@ -35,8 +35,8 @@ public class TC_RunnerLaunching extends TestCase {
 
 	private final static String PROJECT_NAME = "Simple Project";
 	private final static String RUBY_LIB_DIR = "someRubyDir"; // dir inside project 
-	private final static String RUBY_FILE_NAME = "rubyFile.rb";
-	private final static String INTERPRETER_ARGUMENTS = "interpreterArguments";
+	private final static String RUBY_FILE_NAME = "rubyFile.rb"; 
+	private final static String INTERPRETER_ARGUMENTS = "interpreter Arguments";
 	private final static String PROGRAM_ARGUMENTS = "programArguments";
 	private final static String RUBY_COMMAND = "rubyw";
 	public TC_RunnerLaunching(String name) {
@@ -47,31 +47,29 @@ public class TC_RunnerLaunching extends TestCase {
 		return DebugPlugin.getDefault().getLaunchManager();
 	}
 
-	protected String getCommandLine(IProject project, boolean debug) {
-		String quotation = BootLoader.getOS().equals(BootLoader.OS_WIN32) ? "\"" : "";
-		StringBuffer commandLine = new StringBuffer();
+	protected List getCommandLine(IProject project, boolean debug) {
+		List commandLine = new ArrayList();
 		if (debug) {
-			commandLine.append(" -reclipseDebug");
+			commandLine.add("-reclipseDebug");
 		}
 		if (debug) {
 			String dirOfRubyDebuggerFile = DebuggerRunner.getDirectoryOfRubyDebuggerFile().replace('/', File.separatorChar) ;
 			if (dirOfRubyDebuggerFile.startsWith("\\")) {
 				dirOfRubyDebuggerFile = dirOfRubyDebuggerFile.substring(1) ;
 			}
-			commandLine.append(
-				" -I "
-					+ quotation
-					+ dirOfRubyDebuggerFile
-					+ quotation);
+			commandLine.add("-I");
+			commandLine.add(dirOfRubyDebuggerFile);
 		}		
-        commandLine.append(" -I " + quotation + project.getLocation().toOSString() + quotation);
-        commandLine.append(" -I " + quotation + project.getLocation().toOSString() + File.separator + RUBY_LIB_DIR + quotation) ;
-		commandLine.append(" " + INTERPRETER_ARGUMENTS + " -- ");
+        commandLine.add("-I");
+        commandLine.add( project.getLocation().toOSString());
+        commandLine.add("-I");
+        commandLine.add(project.getLocation().toOSString() + File.separator + RUBY_LIB_DIR) ;
+		commandLine.addAll(Arrays.asList(INTERPRETER_ARGUMENTS.split("\\s+")));
+		commandLine.add("--");
 		// use always forward slashes for path relative to project dir
-		commandLine.append(
-			quotation + project.getLocation().toOSString() + "/" + RUBY_LIB_DIR + "/" + RUBY_FILE_NAME + quotation);
-		commandLine.append(" " + PROGRAM_ARGUMENTS);
-		return commandLine.toString();
+		commandLine.add(project.getLocation().toOSString() + "/" + RUBY_LIB_DIR + "/" + RUBY_FILE_NAME);
+		commandLine.add(PROGRAM_ARGUMENTS);
+		return commandLine;
 	}
 
 	public void testDebugEnabled() throws Exception {
@@ -106,7 +104,9 @@ public class TC_RunnerLaunching extends TestCase {
 			null);
 
 		assertEquals("One process has been spawned", 1, launch.getProcesses().length);
-		assertEquals("Assembled command line.", getCommandLine(project, debug), interpreter.getArguments());
+		List expected = getCommandLine(project, debug);
+		List actual = interpreter.getArguments();
+		assertEquals("Assembled command line.", expected, actual);
 		assertEquals(
 			"Process label.",
 			"Ruby " + RUBY_COMMAND + " : " + RUBY_LIB_DIR + "/" + RUBY_FILE_NAME,
@@ -238,14 +238,14 @@ public class TC_RunnerLaunching extends TestCase {
 		public ShamInterpreter(String aName, IPath validInstallLocation) {
 			super(aName, validInstallLocation);
 		}
-		private String arguments;
-		public String getArguments() {
+		private List arguments;
+		public List  getArguments() {
 			return arguments;
 		}
 		public String getCommand() {
 			return RUBY_COMMAND;
 		}
-		public Process exec(String args, File workingDirectory) {
+		public Process exec(List args, File workingDirectory) {
 			arguments = args;
 			return new ShamProcess();
 		}

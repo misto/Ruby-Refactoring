@@ -12,7 +12,7 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 
 public class RubyInterpreter {
-	public final String endOfOptionsDelimeter = " -- ";
+	public static final String END_OF_OPTIONS_DELIMITER = "--";
 
 	protected IPath installLocation;
 	protected String name;
@@ -45,11 +45,6 @@ public class RubyInterpreter {
 		String errorMessage = MessageFormat.format(RdtLaunchingMessages.getString("RdtLaunchingPlugin.interpreterNotFound"), new Object[] {this.getName()}) ;
 		throw new IllegalCommandException(errorMessage) ;
 	}
-	
-    public Process exec(String arguments, File workingDirectory) throws CoreException {
-        return exec(ArgumentSplitter.split(arguments), workingDirectory);
-    }
-
 	
 	public Process exec(List args, File workingDirectory) throws CoreException {
 

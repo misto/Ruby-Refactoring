@@ -1,7 +1,9 @@
 package org.rubypeople.rdt.internal.launching;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
@@ -95,16 +97,20 @@ public class InterpreterRunnerConfiguration {
 		return RubyRuntime.getDefault().getInterpreter(selectedInterpreter);
 	}
     
-    protected void addToLoadPath(StringBuffer loadPath, IProject project) {
+    protected void addToLoadPath(List loadPath, IProject project) {
     	if (!project.isAccessible()) {
     		return ;
     	}
-        loadPath.append(" -I " + RdtLaunchingPlugin.osDependentPath(project.getLocation().toOSString()));
+        addToLoadPath(loadPath, project.getLocation().toOSString());
     }
-    
-    protected String renderLoadPath() {
-        StringBuffer loadPath = new StringBuffer();
 
+	private void addToLoadPath(List loadPath, String pathDirectory) {
+		loadPath.add("-I");
+        loadPath.add(RdtLaunchingPlugin.osDependentPath(pathDirectory));
+	}
+    
+    protected List renderLoadPath() {
+    	List loadPath = new ArrayList();
         RubyProject project = this.getProject();
         addToLoadPath(loadPath, project.getProject());
 
@@ -113,8 +119,8 @@ public class InterpreterRunnerConfiguration {
             addToLoadPath(loadPath, (IProject) referencedProjects.next());
         }
         if (new Path(this.getFileName()).segmentCount() > 1) { ;
-            loadPath.append(" -I " + RdtLaunchingPlugin.osDependentPath(this.getAbsoluteFileDirectory())) ;
+        	addToLoadPath(loadPath, this.getAbsoluteFileDirectory());
         }
-        return loadPath.toString();
+        return loadPath;
     }
 }

@@ -1,6 +1,7 @@
 package org.rubypeople.rdt.internal.launching;
 
 import java.io.File;
+import java.util.List;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IStatus;
@@ -29,12 +30,15 @@ public class DebuggerRunner extends InterpreterRunner {
 		return process;
 	}
 
-	protected String getDebugCommandLineArgument() {
-        String debugLoadPathAddition =  RdtLaunchingPlugin.osDependentPath(DebuggerRunner.getDirectoryOfRubyDebuggerFile().replace('/', File.separatorChar));
+	protected void addDebugCommandLineArgument(List commandLine) {
 		if (RdtDebugCorePlugin.isRubyDebuggerVerbose()) {
-			return " -reclipseDebugVerbose -I " + debugLoadPathAddition ;
+			commandLine.add("-reclipseDebugVerbose");
+		} else {
+			commandLine.add("-reclipseDebug");
 		}
-		return " -reclipseDebug -I "+ debugLoadPathAddition ;
+			
+		commandLine.add("-I");
+		commandLine.add(RdtLaunchingPlugin.osDependentPath(DebuggerRunner.getDirectoryOfRubyDebuggerFile().replace('/', File.separatorChar)));
 	}
 
 	public static String getDirectoryOfRubyDebuggerFile() {

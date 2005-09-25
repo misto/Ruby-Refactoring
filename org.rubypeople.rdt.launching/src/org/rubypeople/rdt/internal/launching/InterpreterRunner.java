@@ -1,7 +1,9 @@
 package org.rubypeople.rdt.internal.launching;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.eclipse.core.runtime.CoreException;
@@ -14,7 +16,7 @@ public class InterpreterRunner {
 	public InterpreterRunner() {}
 
 	public IProcess run(InterpreterRunnerConfiguration configuration, ILaunch launch) throws CoreException {
-		String commandLine = renderCommandLine(configuration);
+		List commandLine = renderCommandLine(configuration);
 		File workingDirectory = configuration.getAbsoluteWorkingDirectory();
 
 		RubyInterpreter interpreter = configuration.getInterpreter() ;
@@ -22,7 +24,7 @@ public class InterpreterRunner {
         Map defaultAttributes = new HashMap();
         defaultAttributes.put(IProcess.ATTR_PROCESS_TYPE, "ruby");
 		IProcess process = DebugPlugin.newProcess(launch, nativeRubyProcess, renderLabel(configuration), defaultAttributes);
-		process.setAttribute(RdtLaunchingPlugin.PLUGIN_ID + ".launcher.cmdline", commandLine);
+		process.setAttribute(RdtLaunchingPlugin.PLUGIN_ID + ".launcher.cmdline", commandLine.toString());
 		return process ;
 	}
 
@@ -44,24 +46,22 @@ public class InterpreterRunner {
 		return buffer.toString();
 	}
 
-	protected String renderCommandLine(InterpreterRunnerConfiguration configuration) {
+	private List renderCommandLine(InterpreterRunnerConfiguration configuration) {
+		List commandLine = new ArrayList();
 		RubyInterpreter interpreter = configuration.getInterpreter();
 
-		StringBuffer buffer = new StringBuffer();
-		buffer.append(this.getDebugCommandLineArgument());
-		buffer.append(configuration.renderLoadPath());
-		buffer.append(" " + configuration.getInterpreterArguments());
-		buffer.append(interpreter.endOfOptionsDelimeter);
-		buffer.append(RdtLaunchingPlugin.osDependentPath(configuration.getAbsoluteFileName()));
-		buffer.append(" " + configuration.getProgramArguments());
+		addDebugCommandLineArgument(commandLine);
+		commandLine.addAll(configuration.renderLoadPath());
+		commandLine.addAll(ArgumentSplitter.split(configuration.getInterpreterArguments()));
+		commandLine.add(RubyInterpreter.END_OF_OPTIONS_DELIMITER);
+		commandLine.add(RdtLaunchingPlugin.osDependentPath(configuration.getAbsoluteFileName()));
+		commandLine.addAll(ArgumentSplitter.split(configuration.getProgramArguments()));
 
-		return buffer.toString();
+		return commandLine;
 	}
 
 
-	
-	protected String getDebugCommandLineArgument() {
-		return "" ;	
+	protected void addDebugCommandLineArgument(List commandLine) {
 	}
 	
 }
