@@ -15,6 +15,7 @@ import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Plugin;
 import org.eclipse.core.runtime.Status;
@@ -276,10 +277,15 @@ public class RubyCore extends Plugin {
 		File pluginDirFile = new File(pluginDir);
 		if (!pluginDirFile.exists()) 
 		{
+			// pluginDirFile is a relative path, if the working directory is different from
+			// the location of the eclipse executable, we try this ...
 			String installArea = System.getProperty("osgi.install.area");
-			if (installArea.startsWith("file:/"))
-				installArea = installArea.substring("file:/".length());
-			File installFile = new File(installArea);
+			if (installArea.startsWith("file:")) {
+				installArea = installArea.substring("file:".length());
+			}
+			// Path.toOSString() removes a leading slash if on windows, e.g.
+			// /D:/Eclipse => D:/Eclipse
+			File installFile = new File(new Path(installArea).toOSString());
 			pluginDirFile = new File(installFile, pluginDir);
 			if (!pluginDirFile.exists()) 
 				throw new RuntimeException("Unable to find (" + pluginDirFile + ") directory for " + plugin.getClass()); 
