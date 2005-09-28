@@ -30,6 +30,17 @@ A regular expression plugin is also available (Thanks to the <a href="http://e-p
 
     <!-- INSERT NEW NEWS HERE!!! -->
 	<table>
+		    <tr>
+      <td align="right" valign="top" width="20"><img src="images/arrow.gif" alt="->" border="0" height="16" width="16"></td>
+      <td valign="top"><font face="arial,helvetica,geneva" size="-1"><b>0.6.0 Released (2005-09-29)</b>
+        <br/>
+Release 0.6.0 is out: read the <a href="http://sourceforge.net/forum/forum.php?forum_id=499503">news</a>, 
+check the <a href="http://rubyeclipse.sourceforge.net/userdoc/html/ch04.html">documentation</a>, <a href="http://rubyeclipse.sourceforge.net/download.rdt.html">download</a> and enjoy, 
+<a href="http://rubyeclipse.sourceforge.net/contact.rdt.html">feedback</a> very much appreciated!
+</p>
+        </font>
+      </td>
+    </tr>
 	    <tr>
       <td align="right" valign="top" width="20"><img src="images/arrow.gif" alt="->" border="0" height="16" width="16"></td>
       <td valign="top"><font face="arial,helvetica,geneva" size="-1"><b> Help needed for 0.6.0 Release (2005-09-01)</b>
