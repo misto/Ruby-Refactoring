@@ -7,7 +7,7 @@ import org.rubypeople.rdt.internal.core.TS_Core;
 import org.rubypeople.rdt.internal.formatter.TC_CodeFormatter;
 import org.rubypeople.rdt.debug.core.tests.TS_Debug;
 import org.rubypeople.rdt.internal.debug.ui.tests.launcher.TS_Launcher;
-import org.rubypeople.rdt.internal.launching.tests.TS_Launching;
+import org.rubypeople.rdt.internal.launching.TS_Launching;
 import org.rubypeople.rdt.internal.ui.TS_UiTests;
 
 public class TS_RdtAllFunctionalTests {

@@ -1,8 +1,6 @@
-package org.rubypeople.rdt.internal.launching.tests;
+package org.rubypeople.rdt.internal.launching;
 
 import java.io.File;
-import java.io.InputStream;
-import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -249,33 +247,6 @@ public class TC_RunnerLaunching extends TestCase {
 			arguments = args;
 			return new ShamProcess();
 		}
-	}
-
-	public class ShamProcess extends Process {
-
-		public void destroy() {
-		}
-
-		public int exitValue() {
-			return 0;
-		}
-
-		public InputStream getErrorStream() {
-			return null;
-		}
-
-		public InputStream getInputStream() {
-			return null;
-		}
-
-		public OutputStream getOutputStream() {
-			return null;
-		}
-
-		public int waitFor() throws InterruptedException {
-			return 0;
-		}
-
 	}
 
 }

@@ -17,12 +17,19 @@ public class RubyInterpreter {
 	protected IPath installLocation;
 	protected String name;
 
+    private final CommandExecutor commandExecutor;
+
 	public RubyInterpreter(String aName, IPath validInstallLocation) {
-		name = aName;
-		installLocation = validInstallLocation;
+        this(aName, validInstallLocation, new StandardCommandExecutor());
 	}
 
-	public IPath getInstallLocation() {
+	public RubyInterpreter(String aName, IPath validInstallLocation, CommandExecutor commandExecutor) {
+	    name = aName;
+	    installLocation = validInstallLocation;
+        this.commandExecutor = commandExecutor;
+    }
+
+    public IPath getInstallLocation() {
 		return installLocation;
 	}
 
@@ -54,12 +61,14 @@ public class RubyInterpreter {
             List rubyCmd = new ArrayList();
             rubyCmd.add(this.getCommand());
             rubyCmd.addAll(args);
-			return Runtime.getRuntime().exec((String[]) rubyCmd.toArray(new String[0]), null, workingDirectory);
+            return commandExecutor.exec((String[]) rubyCmd.toArray(new String[0]), workingDirectory);
 		} catch (IOException e) {
-			throw new RuntimeException("Unable to execute interpreter: " + args + workingDirectory);
+            IStatus errorStatus = new Status(IStatus.ERROR, RdtLaunchingPlugin.PLUGIN_ID, IStatus.OK, 
+                    "Unable to execute interpreter: " + args + workingDirectory, e);
+            throw new CoreException(errorStatus) ;
 		}
-		catch (IllegalCommandException ex) {
-			IStatus errorStatus = new Status(IStatus.ERROR, RdtLaunchingPlugin.PLUGIN_ID, IStatus.OK, ex.getMessage(), null);
+		catch (IllegalCommandException e) {
+			IStatus errorStatus = new Status(IStatus.ERROR, RdtLaunchingPlugin.PLUGIN_ID, IStatus.OK, e.getMessage(), e);
 			throw new CoreException(errorStatus) ;
 		}
 

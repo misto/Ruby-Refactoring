@@ -1,4 +1,4 @@
-package org.rubypeople.rdt.internal.launching.tests;
+package org.rubypeople.rdt.internal.launching;
 
 import java.io.BufferedReader;
 import java.io.IOException;
