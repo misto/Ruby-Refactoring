@@ -225,7 +225,11 @@ public class RubyCore extends Plugin {
 		defaultPreferences.put(COMPILER_TASK_CASE_SENSITIVE, ENABLED);
 	}
 
-	/**
+	public static void trace(String message) {
+        if (getPlugin().isDebugging()) System.out.println(message);
+    }
+
+    /**
 	 * @since 3.1
 	 */
 	public static IEclipsePreferences getDefaultPreferences() {

@@ -1,0 +1,43 @@
+/**
+ * 
+ */
+package org.rubypeople.rdt.internal.core.builder;
+
+import java.io.InputStreamReader;
+import java.io.Reader;
+
+import org.eclipse.core.resources.IFile;
+import org.eclipse.core.runtime.CoreException;
+import org.jruby.ast.Node;
+import org.jruby.lexer.yacc.SyntaxException;
+import org.rubypeople.rdt.internal.core.parser.ImmediateWarnings;
+import org.rubypeople.rdt.internal.core.parser.RubyParser;
+
+public final class RdtCompiler implements SingleFileCompiler {
+    private final IMarkerManager markerManager;
+    private RubyParser parser;
+    private final IndexUpdater indexUpdater;
+
+    public RdtCompiler(IMarkerManager markerManager) {
+        this(markerManager, new RubyParser(new ImmediateWarnings(markerManager)), new IndexUpdater(null));
+    }
+    
+    public RdtCompiler(IMarkerManager markerManager, RubyParser parser, IndexUpdater indexUpdater) {
+        this.markerManager = markerManager;
+        this.parser = parser;
+        this.indexUpdater = indexUpdater;
+    }
+
+    public void compileFile(IFile file) throws CoreException {
+        Reader reader = new InputStreamReader(file.getContents());
+        try {
+            Node rootNode = parser.parse(file, reader);
+//            indexUpdater.update(file, rootNode);
+        } catch (SyntaxException e) {
+            markerManager.createSyntaxError(file, e);
+        } finally {
+            IoUtils.closeQuietly(reader);
+        }
+    }
+
+}

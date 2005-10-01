@@ -112,7 +112,7 @@ public class RubyScript extends Openable implements IRubyScript {
 
 		try {
 			RubyParser parser = new RubyParser();
-			Node node = parser.parse(getElementName(), new CharArrayReader(contents));
+			Node node = parser.parse(underlyingFile, new CharArrayReader(contents));
 			RubyScriptStructureBuilder visitor = new RubyScriptStructureBuilder(this, unitInfo, newElements);
 			if (node != null) node.accept(visitor);
 			unitInfo.setIsStructureKnown(true);
@@ -160,7 +160,7 @@ public class RubyScript extends Openable implements IRubyScript {
 	/**
 	 * @see IRubyElement
 	 */
-	public IResource getUnderlyingResource() throws RubyModelException {
+	public IResource getUnderlyingResource() {
 		if (isWorkingCopy() && !isPrimary()) return null;
 		return underlyingFile;
 	}

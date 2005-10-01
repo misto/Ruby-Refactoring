@@ -12,6 +12,7 @@ import java.util.Map;
 
 import org.jruby.ast.Node;
 import org.jruby.lexer.yacc.SyntaxException;
+import org.rubypeople.eclipse.shams.resources.ShamFile;
 import org.rubypeople.rdt.internal.core.DefaultWorkingCopyOwner;
 import org.rubypeople.rdt.internal.core.RubyProject;
 import org.rubypeople.rdt.internal.core.RubyScript;
@@ -101,7 +102,7 @@ public class RubyParserCmd {
     private void parseOneFile(String file) {
         RubyParser parser = new RubyParser(new RdtWarnings());
         try {
-            Node node = parser.parse(file, new FileReader(file));
+            Node node = parser.parse(new ShamFile(file), new FileReader(file));
 			RubyScriptElementInfo unitInfo = new RubyScriptElementInfo() ; 
 			RubyScript script = new RubyScript(new RubyProject(), null, file, DefaultWorkingCopyOwner.PRIMARY ) ;
 			RubyScriptStructureBuilder visitor = new RubyScriptStructureBuilder(script, unitInfo, elements);

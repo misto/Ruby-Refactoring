@@ -44,6 +44,7 @@ Export-Package: .,
  org.rubypeople.rdt.internal.core.buffer,
  org.rubypeople.rdt.internal.core.builder,
  org.rubypeople.rdt.internal.core.parser,
+ org.rubypeople.rdt.internal.core.symbols,
  org.rubypeople.rdt.internal.core.util,
  org.rubypeople.rdt.internal.formatter
 Require-Bundle: org.eclipse.core.runtime,

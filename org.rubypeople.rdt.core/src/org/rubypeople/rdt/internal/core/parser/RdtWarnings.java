@@ -7,13 +7,13 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import org.jruby.common.IRubyWarnings;
+import org.eclipse.core.resources.IFile;
 import org.jruby.lexer.yacc.ISourcePosition;
 
 /**
  * @author Chris
  */
-public class RdtWarnings implements IRubyWarnings {
+public class RdtWarnings implements IRdtWarnings     {
 
 	private List warnings;
 
@@ -75,5 +75,8 @@ public class RdtWarnings implements IRubyWarnings {
 	public void clear() {
 		warnings.clear();		
 	}
+
+    public void setFile(IFile file) {
+    }
 
 }

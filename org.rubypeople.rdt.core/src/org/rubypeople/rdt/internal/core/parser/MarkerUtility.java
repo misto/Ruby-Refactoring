@@ -67,11 +67,7 @@ public class MarkerUtility {
 		}
 	}
 
-	/**
-	 * @param underlyingResource
-	 * @param problem
-	 */
-	private static void createProblemMarker(IResource underlyingResource, IProblem problem) {
+	public static void createProblemMarker(IResource underlyingResource, IProblem problem) {
 		try {
 			IMarker marker = underlyingResource.createMarker(IRubyModelMarker.RUBY_MODEL_PROBLEM_MARKER);
 			Map map = new HashMap();

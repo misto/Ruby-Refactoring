@@ -4,10 +4,9 @@
 package org.rubypeople.rdt.internal.core.parser;
 
 import java.io.Reader;
-import java.io.StringReader;
 
+import org.eclipse.core.resources.IFile;
 import org.jruby.ast.Node;
-import org.jruby.common.IRubyWarnings;
 import org.jruby.common.NullWarnings;
 import org.jruby.lexer.yacc.LexerSource;
 import org.jruby.lexer.yacc.SyntaxException;
@@ -21,54 +20,49 @@ import org.jruby.parser.RubyParserResult;
  */
 public class RubyParser {
 
-	private final RubyParserPool pool;
-	private IRubyWarnings warnings;
+    private final RubyParserPool pool;
+	private IRdtWarnings warnings;
 	private static boolean isDebug;
 
 	public RubyParser() {
-		this(new NullWarnings());
+		this(new NullRdtWarnings());
 	}
 
-	public RubyParser(IRubyWarnings warnings) {
+	public RubyParser(IRdtWarnings warnings) {
 		this.warnings = warnings;
 		this.pool = RubyParserPool.getInstance();
 	}
 
-	public Node parse(String file, String content) {
-		return parse(file, new StringReader(content));
-	}
-
-	public Node parse(String file, Reader content) {
-		return parse(file, content, new RubyParserConfiguration());
-	}
-
-	private Node parse(String file, Reader content, RubyParserConfiguration config) {
+	public Node parse(IFile file, Reader content) {
 		DefaultRubyParser parser = null;
-		RubyParserResult result = null;
-		try {
-			parser = pool.borrowParser();
-			parser.setWarnings(warnings);
-			parser.init(config);
-			LexerSource lexerSource = new LexerSource(file, content, new RdtPositionFactory());
-			result = parser.parse(lexerSource);
-		} catch (SyntaxException e) {
-			throw e;
-		} finally {
-			pool.returnParser(parser);
-		}
-		return result.getAST();
+        RubyParserResult result = null;
+        try {
+            warnings.setFile(file);
+        	parser = pool.borrowParser();
+        	parser.setWarnings(warnings);
+        	parser.init(new RubyParserConfiguration());
+        	LexerSource lexerSource = new LexerSource(file.getName(), content, new RdtPositionFactory());
+        	result = parser.parse(lexerSource);
+        } catch (SyntaxException e) {
+        	throw e;
+        } finally {
+        	pool.returnParser(parser);
+        }
+        return result.getAST();
 	}
 
-	/**
-	 * @param b
-	 */
 	public static void setDebugging(boolean b) {
 		isDebug = b;
 	}
 
 	public static boolean isDebugging() {
-		// TODO Auto-generated method stub
 		return isDebug;
 	}
+
+    private static class NullRdtWarnings extends NullWarnings implements IRdtWarnings {
+        public void setFile(IFile file) {
+        }
+    }
+
 
 }

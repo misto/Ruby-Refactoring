@@ -3,8 +3,11 @@ package org.rubypeople.eclipse.shams.resources;
 import java.io.ByteArrayInputStream;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.Reader;
+
+import junit.framework.Assert;
 
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFile;
@@ -23,11 +26,13 @@ import org.eclipse.core.runtime.QualifiedName;
 import org.eclipse.core.runtime.content.IContentDescription;
 
 public class ShamFile extends ShamResource implements IFile {
-	protected String contents = "";
+
+    protected String contents = "";
 	protected boolean readContentFromFile;
+    private InputStream inputStream;
 	
 	public void setCharset(String newCharset, IProgressMonitor monitor)
-	throws CoreException {
+	    throws CoreException {
 	}
 	
 	public ShamFile(String fullPath) {
@@ -69,15 +74,25 @@ public class ShamFile extends ShamResource implements IFile {
 	public InputStream getContents() throws CoreException {
 		if (readContentFromFile) {
 			try {
-				return new FileInputStream(this.path.toString());
+				return openStream(new FileInputStream(this.path.toString()));
 			} catch (FileNotFoundException e) {
 				throw new RuntimeException(e.toString());
 			}
 		}
-		return new ByteArrayInputStream(contents.getBytes());
+		return openStream(new ByteArrayInputStream(contents.getBytes()));
 	}
 
-	public InputStream getContents(boolean force) throws CoreException {
+	private InputStream openStream(InputStream newStream) {
+        Assert.assertNull("Unexpected second opening of stream", inputStream);
+        inputStream = new MonitoredInputStream(newStream);
+        return inputStream;
+    }
+    
+    public void assertContentStreamClosed() {
+        Assert.assertNull("Unexpected found open stream", inputStream);
+    }
+
+    public InputStream getContents(boolean force) throws CoreException {
 		return getContents();
 	}
 
@@ -323,4 +338,22 @@ public class ShamFile extends ShamResource implements IFile {
 		// TODO Auto-generated method stub
 		
 	}
+
+    private class MonitoredInputStream extends InputStream {
+
+        private final InputStream inputStream;
+
+        public MonitoredInputStream(InputStream inputStream) {
+            this.inputStream = inputStream;
+        }
+
+        public int read() throws IOException {
+            return inputStream.read();
+        }
+
+        public void close() throws IOException {
+            super.close();
+            ShamFile.this.inputStream = null;
+        }
+    }
 }
