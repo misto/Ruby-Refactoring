@@ -7,7 +7,6 @@ import org.jruby.ast.Node;
 import org.jruby.ast.visitor.NodeVisitor;
 import org.jruby.lexer.yacc.SyntaxException;
 import org.rubypeople.eclipse.shams.resources.ShamFile;
-import org.rubypeople.rdt.internal.core.symbols.SymbolIndex;
 
 public class TC_RdtCompiler extends TestCase {
 

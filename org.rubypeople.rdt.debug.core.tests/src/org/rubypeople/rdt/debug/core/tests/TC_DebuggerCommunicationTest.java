@@ -7,10 +7,8 @@ import java.io.PrintWriter;
 import java.net.ConnectException;
 import java.net.Socket;
 
-import junit.framework.Assert;
 import junit.framework.TestCase;
 
-import org.jruby.internal.runtime.ThreadService;
 import org.rubypeople.rdt.core.RubyCore;
 import org.rubypeople.rdt.internal.debug.core.ExceptionSuspensionPoint;
 import org.rubypeople.rdt.internal.debug.core.StepSuspensionPoint;

@@ -45,9 +45,7 @@ class FailureTrace implements IMenuListener {
     private final Image fStackIcon= TestUnitView.createImage("obj16/stkfrm_obj.gif"); //$NON-NLS-1$
     private final Image fExceptionIcon= TestUnitView.createImage("obj16/exc_catch.gif"); //$NON-NLS-1$
     
-    private static final String FRAME_PREFIX= "at "; //$NON-NLS-1$
 	private Table fTable;
-	private TestUnitView fTestRunner;
 	private String fInputTrace;
 	private final Clipboard fClipboard;
     private TestRunInfo fFailure;
@@ -67,7 +65,6 @@ class FailureTrace implements IMenuListener {
 		failureToolBarmanager.update(true);
 		
 		fTable= new Table(parent, SWT.SINGLE | SWT.V_SCROLL | SWT.H_SCROLL);
-		fTestRunner= testRunner;
 		fClipboard= clipboard;
 		
 		OpenStrategy handler = new OpenStrategy(fTable);
@@ -237,51 +234,10 @@ class FailureTrace implements IMenuListener {
 	}
 	
 	private String filterStack(String stackTrace) {	
-		//if (!JUnitPreferencePage.getFilterStack() || stackTrace == null) 
-			return stackTrace;
-			// TODO Filter the stack trace
-//		StringWriter stringWriter= new StringWriter();
-//		PrintWriter printWriter= new PrintWriter(stringWriter);
-//		StringReader stringReader= new StringReader(stackTrace);
-//		BufferedReader bufferedReader= new BufferedReader(stringReader);	
-//			
-//		String line;
-//		String[] patterns= JUnitPreferencePage.getFilterPatterns();
-//		try {	
-//			while ((line= bufferedReader.readLine()) != null) {
-//				if (!filterLine(patterns, line))
-//					printWriter.println(line);
-//			}
-//		} catch (IOException e) {
-//			return stackTrace; // return the stack unfiltered
-//		}
-//		return stringWriter.toString();
+	    return stackTrace;
+	    // TODO Filter the stack trace
 	}
 	
-	private boolean filterLine(String[] patterns, String line) {
-		String pattern;
-		int len;
-		for (int i= (patterns.length - 1); i >= 0; --i) {
-			pattern= patterns[i];
-			len= pattern.length() - 1;
-			if (pattern.charAt(len) == '*') {
-				//strip trailing * from a package filter
-				pattern= pattern.substring(0, len);
-			} else if (Character.isUpperCase(pattern.charAt(0))) {
-				//class in the default package
-				pattern= FRAME_PREFIX + pattern + '.';
-			} else {
-				//class names start w/ an uppercase letter after the .
-				final int lastDotIndex= pattern.lastIndexOf('.');
-				if ((lastDotIndex != -1) && (lastDotIndex != len) && Character.isUpperCase(pattern.charAt(lastDotIndex + 1)))
-					pattern += '.'; //append . to a class filter
-			}
-
-			if (line.indexOf(pattern) > 0)
-				return true;
-		}		
-		return false;
-	}
 
     public TestRunInfo getFailedTest() {
         return fFailure;

@@ -22,11 +22,9 @@ import org.rubypeople.rdt.internal.ui.rubyeditor.outline.RubyModel;
 
 public class RubyContext extends DocumentTemplateContext {
 	
-	private RubyModel fAntModel;
 	
 	public RubyContext(TemplateContextType type, IDocument document, RubyModel model, int completionOffset, int completionLength) {
 		super(type, document, completionOffset, completionLength);
-		fAntModel= model;
 	}
 	
 	/* (non-Javadoc)

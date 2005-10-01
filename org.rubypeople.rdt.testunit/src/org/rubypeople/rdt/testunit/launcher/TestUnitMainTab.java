@@ -64,7 +64,6 @@ public class TestUnitMainTab extends AbstractLaunchConfigurationTab implements I
 	protected RubyFileSelector fileSelector;
 	private RubyClassSelector classSelector;
 	protected ElementListSelectionDialog dialog;
-	private IProject rubyProject;
 	protected String lastProject = "";
 	protected String lastFile = "";
 	private Label classLabel;

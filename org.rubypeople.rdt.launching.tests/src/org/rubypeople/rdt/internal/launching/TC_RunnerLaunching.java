@@ -8,7 +8,6 @@ import java.util.Map;
 
 import junit.framework.TestCase;
 
-import org.eclipse.core.boot.BootLoader;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
@@ -24,10 +23,6 @@ import org.eclipse.debug.core.ILaunchManager;
 import org.eclipse.debug.core.Launch;
 import org.rubypeople.eclipse.shams.debug.core.ShamLaunchConfigurationType;
 import org.rubypeople.eclipse.testutils.ResourceTools;
-import org.rubypeople.rdt.internal.launching.DebuggerRunner;
-import org.rubypeople.rdt.internal.launching.RubyInterpreter;
-import org.rubypeople.rdt.internal.launching.RubyLaunchConfigurationAttribute;
-import org.rubypeople.rdt.internal.launching.RubyRuntime;
 
 public class TC_RunnerLaunching extends TestCase {
 

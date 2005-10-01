@@ -6,7 +6,6 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 
 import org.jruby.ast.Node;
-import org.jruby.ast.visitor.DefaultIteratorVisitor;
 import org.jruby.ast.visitor.NodeVisitor;
 import org.rubypeople.eclipse.shams.resources.ShamFile;
 import org.rubypeople.rdt.internal.core.parser.RubyParser;

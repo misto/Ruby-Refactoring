@@ -45,7 +45,6 @@ public class RubyProject extends Openable implements IProjectNature, IRubyElemen
 	/*
 	 * Value of project's resolved loadpath while it is being resolved
 	 */
-	private static final ILoadpathEntry[] RESOLUTION_IN_PROGRESS = new ILoadpathEntry[0];
 
 	public RubyProject() {
 		super(null);

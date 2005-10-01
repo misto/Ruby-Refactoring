@@ -15,11 +15,9 @@ import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.ui.views.navigator.IResourceNavigator;
 import org.eclipse.ui.views.navigator.ResourceNavigatorAction;
 import org.rubypeople.rdt.internal.ui.RubyUIMessages;
-import org.rubypeople.rdt.internal.ui.RubyViewerFilter;
 
 public class RubyFilesOnlyFilterAction extends ResourceNavigatorAction {
 
-	private RubyViewerFilter rubyViewerFilter;
 
 	public RubyFilesOnlyFilterAction(IResourceNavigator navigator, boolean sortByType) {
 		super(navigator, RubyUIMessages.getString("ToggleMenuRubyFilesOnly"));

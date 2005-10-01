@@ -45,7 +45,6 @@ public class FailureTab extends TestRunTab implements IMenuListener {
 
 	private Table fTable;
 	private TestUnitView fRunnerViewPart;
-	private Clipboard fClipboard;
 	private boolean fMoveSelection = false;
 
 	private final Image fErrorIcon = TestUnitView.createImage("obj16/testerr.gif"); //$NON-NLS-1$
@@ -56,7 +55,6 @@ public class FailureTab extends TestRunTab implements IMenuListener {
 
 	public void createTabControl(CTabFolder tabFolder, Clipboard clipboard, TestUnitView runner) {
 		fRunnerViewPart = runner;
-		fClipboard = clipboard;
 
 		CTabItem failureTab = new CTabItem(tabFolder, SWT.NONE);
 		failureTab.setText(getName());

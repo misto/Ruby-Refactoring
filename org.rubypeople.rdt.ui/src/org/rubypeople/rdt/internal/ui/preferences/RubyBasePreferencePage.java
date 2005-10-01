@@ -8,9 +8,8 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPreferencePage;
-import org.rubypeople.rdt.internal.ui.RubyUIMessages;
 import org.rubypeople.rdt.internal.ui.RubyPlugin;
-import org.rubypeople.rdt.ui.PreferenceConstants;
+import org.rubypeople.rdt.internal.ui.RubyUIMessages;
 
 public class RubyBasePreferencePage extends RubyAbstractPreferencePage implements IWorkbenchPreferencePage {
 

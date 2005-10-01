@@ -18,7 +18,6 @@ import org.rubypeople.rdt.testunit.TestunitPlugin;
  */
 public class CompareResultsAction extends Action {
 
-	private FailureTrace fView;
 
 	public CompareResultsAction(FailureTrace view) {
 		super(TestUnitMessages.getString("CompareResultsAction.label")); //$NON-NLS-1$
@@ -28,7 +27,6 @@ public class CompareResultsAction extends Action {
 		setDisabledImageDescriptor(TestunitPlugin.getImageDescriptor("dlcl16/compare.gif")); //$NON-NLS-1$
 		setHoverImageDescriptor(TestunitPlugin.getImageDescriptor("elcl16/compare.gif")); //$NON-NLS-1$
 		setImageDescriptor(TestunitPlugin.getImageDescriptor("elcl16/compare.gif")); //$NON-NLS-1$
-		fView = view;
 	}
 
 	/*

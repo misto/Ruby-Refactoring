@@ -7,7 +7,6 @@ import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.debug.core.DebugException;
-import org.eclipse.debug.core.DebugPlugin;
 import org.eclipse.debug.core.model.LineBreakpoint;
 
 public class RubyLineBreakpoint extends LineBreakpoint {
@@ -29,10 +28,6 @@ public class RubyLineBreakpoint extends LineBreakpoint {
 			throw new DebugException(e.getStatus());
 		}
 
-	}
-
-	private void register() throws CoreException {
-		DebugPlugin.getDefault().getBreakpointManager().addBreakpoint(this);
 	}
 
 	public int getLineNumber() throws CoreException {

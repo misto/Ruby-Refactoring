@@ -298,15 +298,12 @@ public class RubyDebuggerProxy {
 	}
 
 	class RubyLoop extends Thread {
-		private boolean shouldStop;
 
 		public RubyLoop() {
-			shouldStop = false;
 			this.setName("RubyDebuggerLoop");
 		}
 
 		public void setShouldStop() {
-			shouldStop = true;
 		}
 
 		public void run() {

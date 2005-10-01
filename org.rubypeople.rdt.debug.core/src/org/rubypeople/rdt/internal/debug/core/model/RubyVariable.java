@@ -1,6 +1,5 @@
 package org.rubypeople.rdt.internal.debug.core.model;
 
-import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.PlatformObject;
 import org.eclipse.debug.core.DebugException;
 import org.eclipse.debug.core.ILaunch;

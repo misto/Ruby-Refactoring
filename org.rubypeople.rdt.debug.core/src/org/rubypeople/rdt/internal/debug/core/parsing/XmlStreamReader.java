@@ -3,12 +3,10 @@ package org.rubypeople.rdt.internal.debug.core.parsing;
 import java.io.IOException;
 
 import org.rubypeople.rdt.internal.debug.core.RdtDebugCorePlugin;
-import org.rubypeople.rdt.internal.debug.core.SuspensionPoint;
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
 
 public abstract class XmlStreamReader {
-	private SuspensionPoint breakpointHit;
 	private AbstractReadStrategy readStrategy ;
 	
 	public XmlStreamReader(XmlPullParser xpp) {

@@ -40,7 +40,6 @@ public class ManageBreakpointRulerAction extends Action implements IUpdate {
 
 	private IVerticalRulerInfo fRuler;
 	private ITextEditor fTextEditor;
-	private String fMarkerType;
 	private List fMarkers;
 
 	private String fAddLabel;
@@ -55,7 +54,6 @@ public class ManageBreakpointRulerAction extends Action implements IUpdate {
 	public ManageBreakpointRulerAction(IVerticalRulerInfo ruler, ITextEditor editor) {
 		fRuler = ruler;
 		fTextEditor = editor;
-		fMarkerType = IBreakpoint.BREAKPOINT_MARKER;
 		fAddLabel = "Add Breakpoint";
 		fRemoveLabel = "Remove Breakpoint";
 	}

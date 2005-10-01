@@ -54,10 +54,6 @@ public class EvaluateRubyProcessOutput implements Runnable {
 		inReadThread.start();
 		errReadThread.start();
 	}
-	private void processEnded(int exitValue) {
-		// Handle process end..
-		//handler.processEnded(exitValue);
-	}
 	private void processNewInput(String input) {
 		// Handle process new input..
 		//handler.processNewInput(input);

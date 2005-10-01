@@ -27,14 +27,11 @@ public abstract class StatusDialog extends Dialog implements JDTOriginally {
 	private String fTitle;
 	private Image fImage;
 	
-	private boolean fStatusLineAboveButtons;
-	
 	/**
 	 * Creates an instane of a status dialog.
 	 */
 	public StatusDialog(Shell parent) {
 		super(parent);
-		fStatusLineAboveButtons= false;
 	}
 	
 	/**
@@ -45,7 +42,6 @@ public abstract class StatusDialog extends Dialog implements JDTOriginally {
 	 * 	<code>false</code> to the right
 	 */
 	public void setStatusLineAboveButtons(boolean aboveButtons) {
-		fStatusLineAboveButtons= aboveButtons;
 	}	
 	
 	/**

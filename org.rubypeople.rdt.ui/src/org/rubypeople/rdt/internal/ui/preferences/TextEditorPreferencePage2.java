@@ -63,7 +63,6 @@ public class TextEditorPreferencePage2 extends RubyAbstractPreferencePage implem
 			{ RubyUIMessages.getString("TextEditorPreferencePage.printMarginColor"), AbstractDecoratedTextEditorPreferenceConstants.EDITOR_PRINT_MARGIN_COLOR}, //$NON-NLS-1$
 	};
 
-	/** Button controlling default setting of the selected reference provider. */
 	private Button fSetDefaultButton;
 
 	protected TextPropertyWidget[] textPropertyWidgets;
@@ -89,12 +88,7 @@ public class TextEditorPreferencePage2 extends RubyAbstractPreferencePage implem
 	};
 
 	private List fAppearanceColorList;
-	private List fQuickDiffProviderList;
 	private ColorEditor fAppearanceColorEditor;
-	private Button fShowInTextCheckBox;
-	private Button fHighlightInTextCheckBox;
-	private Button fShowInOverviewRulerCheckBox;
-	private Button fShowInVerticalRulerCheckBox;
 
     private org.rubypeople.rdt.internal.ui.preferences.FoldingConfigurationBlock fFoldingConfigurationBlock;
 

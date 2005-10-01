@@ -9,7 +9,6 @@ import org.eclipse.core.runtime.Path;
 import org.eclipse.debug.core.ILaunchConfiguration;
 import org.rubypeople.rdt.core.RubyCore;
 import org.rubypeople.rdt.internal.launching.InterpreterRunnerConfiguration;
-import org.rubypeople.rdt.internal.launching.RdtLaunchingPlugin;
 import org.rubypeople.rdt.testunit.TestunitPlugin;
 
 public class TestUnitRunnerConfiguration extends InterpreterRunnerConfiguration {

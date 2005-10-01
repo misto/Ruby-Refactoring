@@ -21,11 +21,9 @@ public class RubyPluginImages {
 	private static final ImageRegistry IMAGE_REGISTRY = new ImageRegistry();
 
 	private static final String T_OBJ = "obj16"; 	//$NON-NLS-1$
-	private static final String T_OVR = "ovr16"; 	//$NON-NLS-1$
 	private static final String T_ELCL= "elcl16"; 	//$NON-NLS-1$
 	private static final String T_CTOOL = "ctool16"; 	//$NON-NLS-1$
 	private static final String T_WIZBAN= "wizban"; 	//$NON-NLS-1$
-	private static final String T_ETOOL= "etool16"; 	//$NON-NLS-1$
 
 	public static final String IMG_OBJS_ERROR = NAME_PREFIX + "error_obj.gif";
 	public static final String IMG_OBJS_WARNING = NAME_PREFIX + "warning_obj.gif";
