@@ -192,8 +192,7 @@
             id="org.rubypeople.rdt.ui.rubyEditorScope">
       </context>
    </extension>
-   <extension
-         point="org.eclipse.ui.commands">
+   <extension point="org.eclipse.ui.commands">
       <category
             name="%category.source.name"
             description="%category.source.description"

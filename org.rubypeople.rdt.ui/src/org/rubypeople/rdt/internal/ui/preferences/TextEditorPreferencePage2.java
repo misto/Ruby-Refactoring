@@ -63,8 +63,6 @@ public class TextEditorPreferencePage2 extends RubyAbstractPreferencePage implem
 			{ RubyUIMessages.getString("TextEditorPreferencePage.printMarginColor"), AbstractDecoratedTextEditorPreferenceConstants.EDITOR_PRINT_MARGIN_COLOR}, //$NON-NLS-1$
 	};
 
-	private Button fSetDefaultButton;
-
 	protected TextPropertyWidget[] textPropertyWidgets;
 	protected Text indentationWidget;
 	protected final String[] colorProperties = { IRubyColorConstants.RUBY_KEYWORD, IRubyColorConstants.RUBY_MULTI_LINE_COMMENT, IRubyColorConstants.RUBY_SINGLE_LINE_COMMENT, IRubyColorConstants.RUBY_STRING, IRubyColorConstants.TASK_TAG, IRubyColorConstants.RUBY_REGEXP, IRubyColorConstants.RUBY_COMMAND, IRubyColorConstants.RUBY_DEFAULT};
