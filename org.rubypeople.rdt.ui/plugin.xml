@@ -218,11 +218,6 @@
             id="org.rubypeople.rdt.ui.edit.text.ruby.comment"
             name="%ActionDefinition.comment.name">
       </command>
-      <keyBinding
-            scope="org.rubypeople.rdt.ui.rubyEditorScope"
-            command="org.rubypeople.rdt.ui.edit.text.ruby.comment"
-            configuration="org.eclipse.ui.defaultAcceleratorConfiguration">
-      </keyBinding>
       <command
             category="org.rubypeople.rdt.ui.category.source"
             categoryId="org.rubypeople.rdt.ui.category.source"
@@ -230,11 +225,6 @@
             id="org.rubypeople.rdt.ui.edit.text.ruby.uncomment"
             name="%ActionDefinition.uncomment.name">
       </command>
-      <keyBinding
-            scope="org.rubypeople.rdt.ui.rubyEditorScope"
-            command="org.rubypeople.rdt.ui.edit.text.ruby.uncomment"
-            configuration="org.eclipse.ui.defaultAcceleratorConfiguration">
-      </keyBinding>
       <command
             category="org.rubypeople.rdt.ui.category.source"
             categoryId="org.rubypeople.rdt.ui.category.source"
