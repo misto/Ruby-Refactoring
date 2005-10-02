@@ -12,8 +12,7 @@
 
    <element name="extension">
       <complexType>
-
-          <sequence>
+         <sequence>
             <element ref="rubyEditorPopupMenuExtension"/>
          </sequence>
          <attribute name="point" type="string" use="required">
@@ -41,12 +40,45 @@
    </element>
 
    <element name="rubyEditorPopupMenuExtension">
-   <complexType>
-     <sequence>
+      <complexType>
+         <sequence>
             <element ref="enablement"/>
-    </sequence>
-    <attribute name="class" type="string"/>
-    </complexType>
+         </sequence>
+         <attribute name="class" type="string">
+            <annotation>
+               <documentation>
+                  
+               </documentation>
+            </annotation>
+         </attribute>
+      </complexType>
+   </element>
+
+   <element name="enablement">
+      <complexType>
+         <sequence>
+            <element ref="systemProperty" minOccurs="0" maxOccurs="unbounded"/>
+         </sequence>
+      </complexType>
+   </element>
+
+   <element name="systemProperty">
+      <complexType>
+         <attribute name="name" type="string" use="required">
+            <annotation>
+               <documentation>
+                  
+               </documentation>
+            </annotation>
+         </attribute>
+         <attribute name="value" type="string" use="required">
+            <annotation>
+               <documentation>
+                  
+               </documentation>
+            </annotation>
+         </attribute>
+      </complexType>
    </element>
 
    <annotation>

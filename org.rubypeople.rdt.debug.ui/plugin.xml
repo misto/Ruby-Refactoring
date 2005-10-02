@@ -325,16 +325,12 @@
       </cheatsheet>
    </extension>
    
-   <extension
-         point="org.rubypeople.rdt.ui.editorPopupExtender">
+   <extension point="org.rubypeople.rdt.ui.editorPopupExtender">
       <rubyEditorPopupMenuExtension class="org.rubypeople.rdt.internal.debug.ui.RubyEditorPopupMenuExtension">
-                  <enablement>
-               <systemProperty
-                     name="org.rubypeople.rdt.debug.ui.debuggerActive"
-                     value="true">
-               </systemProperty>
-            </enablement>
-            </rubyEditorPopupMenuExtension>
+        <enablement>
+          <systemProperty name="org.rubypeople.rdt.debug.ui.debuggerActive" value="true"/>
+        </enablement>
+      </rubyEditorPopupMenuExtension>
    </extension>
    <extension
          point="org.eclipse.ui.commands">
