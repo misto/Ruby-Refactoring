@@ -68,7 +68,7 @@ public class TestUnitView extends ViewPart implements ITestRunListener3 {
 
 	static final int REFRESH_INTERVAL = 200;
 
-	public static final String ID_EXTENSION_POINT_TESTRUN_TABS = TestunitPlugin.PLUGIN_ID + "." + "internal-testRunTabs"; //$NON-NLS-1$ //$NON-NLS-2$
+	public static final String ID_EXTENSION_POINT_TESTRUN_TABS = TestunitPlugin.PLUGIN_ID + "." + "internalTestRunTabs"; //$NON-NLS-1$ //$NON-NLS-2$
 
 	//orientations
 	static final int VIEW_ORIENTATION_VERTICAL = 0;

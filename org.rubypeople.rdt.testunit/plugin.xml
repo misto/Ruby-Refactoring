@@ -27,12 +27,10 @@
       <import plugin="org.eclipse.text"/>
    </requires>
 
-   <extension-point id="internal-testRunTabs" name="%testRunTabs.name" schema="schema/internal-testRunTabs.exsd"/>
+   <extension-point id="internalTestRunTabs" name="%testRunTabs.name" schema="schema/internal-testRunTabs.exsd"/>
 
-   <extension
-         point="org.rubypeople.rdt.testunit.internal-testRunTabs">
-      <testRunTab
-            class="org.rubypeople.rdt.testunit.views.FailureTab"/>
+   <extension point="org.rubypeople.rdt.testunit.internalTestRunTabs">
+      <testRunTab class="org.rubypeople.rdt.testunit.views.FailureTab"/>
       <testRunTab class="org.rubypeople.rdt.testunit.views.TestHierarchyTab"/>
    </extension>
    <extension
