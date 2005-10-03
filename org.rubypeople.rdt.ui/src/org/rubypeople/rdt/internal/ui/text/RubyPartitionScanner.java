@@ -10,6 +10,7 @@ import org.eclipse.jface.text.rules.MultiLineRule;
 import org.eclipse.jface.text.rules.RuleBasedPartitionScanner;
 import org.eclipse.jface.text.rules.SingleLineRule;
 import org.eclipse.jface.text.rules.Token;
+import org.eclipse.jface.text.rules.WordPatternRule;
 
 public class RubyPartitionScanner extends RuleBasedPartitionScanner {
 
@@ -19,6 +20,7 @@ public class RubyPartitionScanner extends RuleBasedPartitionScanner {
 	public static final String SINGLE_LINE_COMMENT = "partition_scanner_ruby_singleline_comment";
 	public static final String REGULAR_EXPRESSION = "partition_scanner_ruby_regular_expression";
 	public static final String COMMAND = "partition_scanner_ruby_command";
+	public static final String HERE_DOC = "partition_scanner_here_doc";
 		
 	public static final String[] LEGAL_CONTENT_TYPES = {STRING, MULTI_LINE_COMMENT, SINGLE_LINE_COMMENT, REGULAR_EXPRESSION, COMMAND};
 		
@@ -33,6 +35,7 @@ public class RubyPartitionScanner extends RuleBasedPartitionScanner {
 		IToken singleLineComment = new Token(SINGLE_LINE_COMMENT);
 		IToken regexp = new Token(REGULAR_EXPRESSION);
 		IToken command = new Token(COMMAND);
+		IToken hereDoc = new Token(STRING) ;
 
 		List rules = new ArrayList();
 
@@ -56,11 +59,15 @@ public class RubyPartitionScanner extends RuleBasedPartitionScanner {
 		createGeneralDelimitedRules(rules, "%x", command, '\\');
 		
         // Single line comments
+		// ?# evaluates to the asiic value of #
+		rules.add(new WordPatternRule(new NumberSignDetector(),"?", "#", Token.UNDEFINED)) ;
 		rules.add(new EndOfLineRule("#", singleLineComment));
 		// Multiline comments
-		rules.add(new MultiLineRule("=begin", "=end", multiLineComment));
-
-		// TODO Handle Heredocs!
+		MultiLineRule multiLineCommentRule = new MultiLineRule("=begin", "=end", multiLineComment) ;
+		multiLineCommentRule.setColumnConstraint(0) ;
+		rules.add(multiLineCommentRule);
+		
+		rules.add(new HereDocPatternRule(hereDoc)) ;
 		
 		IPredicateRule[] result = new IPredicateRule[rules.size()];
 		rules.toArray(result);

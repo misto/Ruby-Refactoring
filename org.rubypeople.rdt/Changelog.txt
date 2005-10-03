@@ -1,4 +1,10 @@
-Changes since Release of 0.5.0
+Changes since 0.6.0:
+
+Changes merged from SRB 0.6.1:
+* SRB_0-6-1_1: Enable/Disable breakpoints, move breakpoints 
+* SRB_0-6-1_1: Highlighting: added here docs, fixed ?#, fixed =begin =end with keywords not starting on first column
+
+Release 0.6.0:
 * Code folding:
     * Ability to enable/disable
     * Preference page allows you to choose to auto-collapse

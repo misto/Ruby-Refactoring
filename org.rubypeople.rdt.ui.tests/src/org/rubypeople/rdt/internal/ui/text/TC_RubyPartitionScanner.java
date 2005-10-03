@@ -8,22 +8,98 @@ import junit.framework.TestCase;
 
 import org.eclipse.jface.text.Document;
 import org.eclipse.jface.text.IDocument;
-import org.eclipse.jface.text.rules.DefaultPartitioner;
+import org.eclipse.jface.text.rules.FastPartitioner;
 
 /**
  * @author Chris
  * 
  */
 public class TC_RubyPartitionScanner extends TestCase {
+	
+	private String getContentType(String content, int offset) {
+		IDocument doc = new Document(content);
+		FastPartitioner partitioner = new FastPartitioner(new RubyPartitionScanner(), RubyPartitionScanner.LEGAL_CONTENT_TYPES);
+		partitioner.connect(doc);
+		return partitioner.getContentType(offset);
+	}
+	
 
 	public void testPartitioningOfSingleLineComment() {
 		String source = "# This is a comment\n";
-		IDocument doc = new Document(source);
 		
-		DefaultPartitioner partitioner = new DefaultPartitioner(new RubyPartitionScanner(), RubyPartitionScanner.LEGAL_CONTENT_TYPES);
-		partitioner.connect(doc);
+		assertEquals(RubyPartitionScanner.SINGLE_LINE_COMMENT, this.getContentType(source, 0));
+		assertEquals(RubyPartitionScanner.SINGLE_LINE_COMMENT, this.getContentType(source, 1));
+		assertEquals(RubyPartitionScanner.SINGLE_LINE_COMMENT, this.getContentType(source, 18));
+	}
+	
+	public void testRecognizeSpecialCase() {
+		String source = "a,b=?#,'This is not a comment!'\n";
+		
+		assertEquals(IDocument.DEFAULT_CONTENT_TYPE, this.getContentType(source, 5));
+		assertEquals(IDocument.DEFAULT_CONTENT_TYPE, this.getContentType(source, 6));
+	}	
+	
+	public void testMultilineComment() {
+		String source = "=begin\nComment\n=end";
 
-		assertEquals(RubyPartitionScanner.SINGLE_LINE_COMMENT, partitioner.getContentType(3));
+		assertEquals(RubyPartitionScanner.MULTI_LINE_COMMENT, this.getContentType(source, 0));
+		assertEquals(RubyPartitionScanner.MULTI_LINE_COMMENT, this.getContentType(source, 10));
+	}		
+
+	public void testMultilineCommentNotOnFirstColumn() {
+		String source = " =begin\nComment\n=end";
+
+		assertEquals(IDocument.DEFAULT_CONTENT_TYPE, this.getContentType(source, 0));
+		assertEquals(IDocument.DEFAULT_CONTENT_TYPE, this.getContentType(source, 1));
+		assertEquals(IDocument.DEFAULT_CONTENT_TYPE, this.getContentType(source, 2));
+		assertEquals(IDocument.DEFAULT_CONTENT_TYPE, this.getContentType(source, 10));
 	}
 
+	
+	public void testHereDocOK() {
+		String source = "puts <<TEST\nMyName\nTEST";
+		assertEquals(RubyPartitionScanner.STRING, this.getContentType(source, 5));
+
+		source = "puts <<-TEST\nMyName\nTEST\nputs 'ab'";
+		assertEquals(RubyPartitionScanner.STRING, this.getContentType(source, 5));
+
+		source = "puts <<\"TEST\"\nMyName\nTEST";
+		assertEquals(RubyPartitionScanner.STRING, this.getContentType(source, 5));
+
+		source = "puts <<'TEST'\nMyName\nTEST";
+		assertEquals(RubyPartitionScanner.STRING, this.getContentType(source, 5));
+
+		source = "puts <<-'ax%&'\nMyName\nax%&";
+		assertEquals(RubyPartitionScanner.STRING, this.getContentType(source, 5));
+		
+	}
+	
+	public void testNoHereDoc() {
+		
+		// space after <<
+		String source = "puts << 'abc'";
+		
+		assertEquals(IDocument.DEFAULT_CONTENT_TYPE, this.getContentType(source, 5));
+		// normaler String
+		assertEquals(RubyPartitionScanner.STRING, this.getContentType(source, 9));
+		
+		// end not on first column
+		source = "puts <<HERE\n HERE" ;
+		assertEquals(IDocument.DEFAULT_CONTENT_TYPE, this.getContentType(source, 5));
+
+		source = "puts <<-"; // whatever that means in ruby
+		assertEquals(IDocument.DEFAULT_CONTENT_TYPE, this.getContentType(source, 5));
+		
+		// recognize keyword end although there is no matching HERE
+		// this assures that there are no tokens eaten
+		source = "puts <<HERE\nend\n" ;
+		assertEquals(IDocument.DEFAULT_CONTENT_TYPE, this.getContentType(source, 14));
+		
+		source = "puts <<'abc'\ntest" ;
+		assertEquals(IDocument.DEFAULT_CONTENT_TYPE, this.getContentType(source, 6));  
+		
+		source = "puts <<'abc'\ntest\nabd" ;
+		assertEquals(IDocument.DEFAULT_CONTENT_TYPE, this.getContentType(source, 6)); 		
+	}		
+	
 }
