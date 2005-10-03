@@ -5,7 +5,10 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
+
 import org.eclipse.core.resources.IMarker;
+import org.eclipse.core.resources.IMarkerDelta;
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.debug.core.DebugPlugin;
 import org.eclipse.debug.core.model.IBreakpoint;
 import org.rubypeople.rdt.internal.debug.core.model.IRubyDebugTarget;
@@ -137,35 +140,51 @@ public class RubyDebuggerProxy {
 	protected void setBreakPoints() throws IOException {
 		IBreakpoint[] breakpoints = DebugPlugin.getDefault().getBreakpointManager().getBreakpoints(IRubyDebugTarget.MODEL_IDENTIFIER);
 		for (int i = 0; i < breakpoints.length; i++) {
-			printBreakpoint(breakpoints[i], "add");
+			this.addBreakpoint(breakpoints[i]) ;
 		}
 	}
 
 	public void addBreakpoint(IBreakpoint breakpoint) {
 		try {
-			this.printBreakpoint(breakpoint, "add");
+			if (breakpoint.isEnabled()) {
+				this.printBreakpoint("add", breakpoint.getMarker().getResource().getName(), breakpoint.getMarker().getAttribute(IMarker.LINE_NUMBER, -1) );
+			}
 		} catch (IOException e) {
+			RdtDebugCorePlugin.log(e);
+		} catch (CoreException e) {
 			RdtDebugCorePlugin.log(e);
 		}
 	}
 
 	public void removeBreakpoint(IBreakpoint breakpoint) {
 		try {
-			this.printBreakpoint(breakpoint, "remove");
+			this.printBreakpoint("remove", breakpoint.getMarker().getResource().getName(), breakpoint.getMarker().getAttribute(IMarker.LINE_NUMBER, -1) );
 		} catch (IOException e) {
 			RdtDebugCorePlugin.log(e);
 		}
 
 	}
+	
+	public void updateBreakpoint(IBreakpoint breakpoint, IMarkerDelta markerDelta) {
+		// line might have changed or enablement/disablement
+		try { 
+			// remove is called even if it has not been added at program start
+			// (happens if enablement changed from disabled at program start to enabled)		
+			this.printBreakpoint("remove", breakpoint.getMarker().getResource().getName(),  markerDelta.getAttribute(IMarker.LINE_NUMBER, -1));
+			this.addBreakpoint(breakpoint) ;
+		} catch (IOException e) {
+			RdtDebugCorePlugin.log(e);
+		}
+	}
 
-	protected void printBreakpoint(IBreakpoint breakpoint, String mode) throws IOException {
+	protected void printBreakpoint(String mode, String file, int line) throws IOException {
 		StringBuffer setBreakPointCommand = new StringBuffer();
 		setBreakPointCommand.append("b ");
 		setBreakPointCommand.append(mode);
 		setBreakPointCommand.append(" ");
-		setBreakPointCommand.append(breakpoint.getMarker().getResource().getName());
+		setBreakPointCommand.append(file);
 		setBreakPointCommand.append(":");
-		setBreakPointCommand.append(breakpoint.getMarker().getAttribute(IMarker.LINE_NUMBER, -1));
+		setBreakPointCommand.append(line);
 		this.println(setBreakPointCommand.toString());
 	}
 

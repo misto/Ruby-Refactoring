@@ -173,8 +173,13 @@ public class RubyDebugTarget extends PlatformObject implements IRubyDebugTarget 
 
 	public void breakpointChanged(IBreakpoint breakpoint, IMarkerDelta arg1) {
 		// is called e.g. after a line has been inserted before a breakpoint
-		// but then the debugger is out of sync with the file anyway, so debugging
-		// should be stopped here.
+		// or the enablement status has changed
+		// in the first case it is essential that the debugger has reloaded the file
+		// so that the breakpoint moving is in synch with the new file
+		if (isTerminated) {
+			return ;
+		}	
+		this.getRubyDebuggerProxy().updateBreakpoint(breakpoint, arg1) ;
 	}
 
 	public boolean canDisconnect() {
