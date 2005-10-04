@@ -1,13 +1,12 @@
 package org.rubypeople.rdt.testunit.launcher;
 
+import org.eclipse.debug.core.ILaunch;
 import org.eclipse.debug.core.ILaunchConfiguration;
 import org.rubypeople.rdt.internal.launching.InterpreterRunnerConfiguration;
 import org.rubypeople.rdt.internal.launching.RubyApplicationLaunchConfigurationDelegate;
 import org.rubypeople.rdt.testunit.TestunitPlugin;
 
 public class TestUnitLaunchConfigurationDelegate extends RubyApplicationLaunchConfigurationDelegate {
-
-	public static final String PORT_ATTR = TestunitPlugin.PLUGIN_ID + ".PORT"; //$NON-NLS-1$
 	/**
 	 * The single test type, or "" iff running a launch container.
 	 */
@@ -27,8 +26,11 @@ public class TestUnitLaunchConfigurationDelegate extends RubyApplicationLaunchCo
 		super();
 	}
 
-    protected InterpreterRunnerConfiguration wrapConfiguration(ILaunchConfiguration configuration) {
-        return new TestUnitRunnerConfiguration(configuration) ;
+    protected InterpreterRunnerConfiguration wrapConfigurationAndHandleLaunch(ILaunchConfiguration configuration, ILaunch launch) {
+    	
+    	TestUnitRunnerConfiguration testRunnerConfiguration =  new TestUnitRunnerConfiguration(configuration) ;
+    	launch.setAttribute(TestunitPlugin.TESTUNIT_PORT_ATTR, Integer.toString(testRunnerConfiguration.getPort())) ;
+    	return testRunnerConfiguration ;
     }
 
 }

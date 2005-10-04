@@ -2,7 +2,10 @@ Changes since 0.6.0:
 
 Changes merged from SRB 0.6.1:
 * SRB_0-6-1_1: Enable/Disable breakpoints, move breakpoints 
-* SRB_0-6-1_1: Highlighting: added here docs, fixed ?#, fixed =begin =end with keywords not starting on first column
+* SRB_0-6-1_2: Highlighting: added here docs, fixed ?#, fixed =begin =end with keywords not starting on first column
+* SRB_0-6-1_3: Fixed Test::Unit problems with finding a free port
+               Fixed interpreter error for Test::Unit configuration created from the run configuration dialog with new 
+               (instead of Run As->Test::Unit which uses the Shortcut)
 
 Release 0.6.0:
 * Code folding:

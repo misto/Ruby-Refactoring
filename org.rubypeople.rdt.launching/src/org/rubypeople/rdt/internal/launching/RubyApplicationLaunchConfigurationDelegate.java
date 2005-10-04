@@ -25,13 +25,13 @@ public class RubyApplicationLaunchConfigurationDelegate implements ILaunchConfig
         }
 
 		if (mode.equals("debug")) {
-			debuggerRunner.run( this.wrapConfiguration(configuration), launch);
+			debuggerRunner.run( this.wrapConfigurationAndHandleLaunch(configuration, launch), launch);
 		} else {
-			interpreterRunner.run( this.wrapConfiguration(configuration), launch);
+			interpreterRunner.run( this.wrapConfigurationAndHandleLaunch(configuration, launch), launch);
 		}		
 	}
     
-    protected InterpreterRunnerConfiguration wrapConfiguration(ILaunchConfiguration configuration) {
+    protected InterpreterRunnerConfiguration wrapConfigurationAndHandleLaunch(ILaunchConfiguration configuration, ILaunch launch) {
     	return new InterpreterRunnerConfiguration(configuration) ;
     }
 }

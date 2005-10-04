@@ -138,7 +138,6 @@ public class TestUnitLaunchShortcut extends RubyApplicationShortcut {
 			ILaunchConfigurationWorkingCopy wc = configType.newInstance(null, getLaunchManager().generateUniqueLaunchConfigurationNameFrom(rubyFile.getName()));
 			wc.setAttribute(RubyLaunchConfigurationAttribute.PROJECT_NAME, rubyFile.getProject().getName());
 
-			int port = SocketUtil.findFreePort();
 			// FIXME Probably shouldn't write this out.  It's now ignored at runtime
 			wc.setAttribute(RubyLaunchConfigurationAttribute.FILE_NAME, TestUnitRunnerConfiguration.getTestRunnerPath());
 			wc.setAttribute(RubyLaunchConfigurationAttribute.WORKING_DIRECTORY, TestUnitLaunchShortcut.getDefaultWorkingDirectory(rubyFile.getProject()));
@@ -146,8 +145,6 @@ public class TestUnitLaunchShortcut extends RubyApplicationShortcut {
 			wc.setAttribute(TestUnitLaunchConfigurationDelegate.LAUNCH_CONTAINER_ATTR, container);
 			wc.setAttribute(TestUnitLaunchConfigurationDelegate.TESTNAME_ATTR, testName);
 			wc.setAttribute(TestUnitLaunchConfigurationDelegate.TESTTYPE_ATTR, "");
-			// FIXME shouldn't this be determined at RUN time, not LAUNCH creation time?
-			wc.setAttribute(TestUnitLaunchConfigurationDelegate.PORT_ATTR, port);
 			wc.setAttribute(ILaunchConfiguration.ATTR_SOURCE_LOCATOR_ID, "org.rubypeople.rdt.debug.ui.rubySourceLocator");
 			config = wc.doSave();
 		} catch (CoreException ce) {

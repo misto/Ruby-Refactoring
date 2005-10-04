@@ -12,7 +12,8 @@ import org.rubypeople.rdt.internal.launching.InterpreterRunnerConfiguration;
 import org.rubypeople.rdt.testunit.TestunitPlugin;
 
 public class TestUnitRunnerConfiguration extends InterpreterRunnerConfiguration {
-
+	private int port = -1 ;
+	
 	public TestUnitRunnerConfiguration(ILaunchConfiguration aConfiguration) {
 		super(aConfiguration);
 	}
@@ -47,13 +48,21 @@ public class TestUnitRunnerConfiguration extends InterpreterRunnerConfiguration 
 		return path.toOSString();
 	}
 
+	public int getPort() {
+		// the port is needed render the command line for the ruby interpreter call
+		// and in TestUnitPlugin::launchChanged in order to start the server on
+		// the java side
+		if (port == -1) {
+			port = SocketUtil.findFreePort();
+		}
+		return port ;
+	}
 	/*
 	 * (non-Javadoc)
 	 * 
 	 * @see org.rubypeople.rdt.internal.launching.InterpreterRunnerConfiguration#getProgramArguments()
 	 */
-	public String getProgramArguments() {
-		int port = 6789;
+	public String getProgramArguments() {		
 		String fileName = "";
 		String testClass = "";
 		String testMethod = "";
@@ -62,16 +71,16 @@ public class TestUnitRunnerConfiguration extends InterpreterRunnerConfiguration 
 		boolean keepAlive = false;
 		try {
 			// Pull out the port and other unit testing variables
-			// and convert them into command line args
-			port = configuration.getAttribute(TestUnitLaunchConfigurationDelegate.PORT_ATTR, 6789);
+			// and convert them into command line args			
 			fileName = configuration.getAttribute(TestUnitLaunchConfigurationDelegate.LAUNCH_CONTAINER_ATTR, "");
 			testClass = configuration.getAttribute(TestUnitLaunchConfigurationDelegate.TESTTYPE_ATTR, "");
 			testMethod = configuration.getAttribute(TestUnitLaunchConfigurationDelegate.TESTNAME_ATTR, "");
 		} catch (CoreException e) {
 			TestunitPlugin.log(e);
+			throw new RuntimeException("Could not get necessary attributes from the launch configuration.") ;
 		}
 
-		return fileName + " " + port + " " + keepAlive + " " + testClass + " " + testMethod;
+		return fileName + " " + this.getPort() + " " + keepAlive + " " + testClass + " " + testMethod;
 	}
 
 	public List renderLoadPath() {

@@ -69,7 +69,9 @@ public class InterpreterRunnerConfiguration {
 		} catch(CoreException e) {
 			RdtLaunchingPlugin.log(e);
 		}
-		return new File(file);
+		// it is valid not to specify a working directroy by returning null
+		// whereas new File("") would specify an invalid directory
+		return file == "" ? null : new File(file);
 	}
 	
 	public String getInterpreterArguments() {

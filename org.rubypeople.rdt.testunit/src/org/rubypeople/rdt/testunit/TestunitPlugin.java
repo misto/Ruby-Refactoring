@@ -29,7 +29,6 @@ import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.osgi.framework.BundleContext;
 import org.rubypeople.rdt.core.IType;
 import org.rubypeople.rdt.core.RubyCore;
-import org.rubypeople.rdt.testunit.launcher.SocketUtil;
 import org.rubypeople.rdt.testunit.launcher.TestUnitLaunchConfigurationDelegate;
 import org.rubypeople.rdt.testunit.views.TestUnitView;
 
@@ -39,7 +38,7 @@ import org.rubypeople.rdt.testunit.views.TestUnitView;
 public class TestunitPlugin extends AbstractUIPlugin implements ILaunchListener {
 
 	public static final String PLUGIN_ID = "org.rubypeople.rdt.testunit"; //$NON-NLS-1$
-
+	public static final String TESTUNIT_PORT_ATTR = "org.rubypeople.rdt.testunit.port"; //$NON-NLS-1$
 	//The shared instance.
 	private static TestunitPlugin plugin;
 	//Resource bundle.
@@ -245,39 +244,24 @@ public class TestunitPlugin extends AbstractUIPlugin implements ILaunchListener 
 
 		ILaunchConfiguration config = launch.getLaunchConfiguration();
 		IType launchedType= null;
-		int port = -1;
 		if (config != null) {
-			try {
-				// test whether the launch defines the TestUnit port attribute
-				port = config.getAttribute(TestUnitLaunchConfigurationDelegate.PORT_ATTR, -1);
-				String typeStr= launch.getAttribute(TestUnitLaunchConfigurationDelegate.TESTTYPE_ATTR);
-				//String fileName= launch.getAttribute(TestUnitLaunchConfigurationDelegate.LAUNCH_CONTAINER_ATTR);
-				
-				if (typeStr != null) {
-				    // FIXME Get the handle on the test type from the model somehow!
-//					IFile script = RubyCore.find(fileName);
-//					if (element instanceof IRubyType)
-//						launchedType= (IRubyType) element;
-				}
-			} catch (CoreException e) {
-				e.printStackTrace();
-			}
-		}
-		if(port == -1) {
-			log("Failed to get a port from the launch! Trying to generate a new one.");
-			port = SocketUtil.findFreePort();
-		}
 
-		fTrackedLaunches.remove(launch);
-		if (port == -1) {
-			log("Failed to generate a port!");
-			return;
+			String typeStr = launch.getAttribute(TestUnitLaunchConfigurationDelegate.TESTTYPE_ATTR);
+			// String fileName= launch.getAttribute(TestUnitLaunchConfigurationDelegate.LAUNCH_CONTAINER_ATTR);
+
+			if (typeStr != null) {
+				// FIXME Get the handle on the test type from the model somehow!
+				// IFile script = RubyCore.find(fileName);
+				// if (element instanceof IRubyType)
+				// launchedType= (IRubyType) element;
+			}
+
 		}
+		fTrackedLaunches.remove(launch);
 		
 		final IType finalType= launchedType;
-		final int finalPort = port;
+		final int finalPort = Integer.parseInt(launch.getAttribute(TESTUNIT_PORT_ATTR)) ;
 		getDisplay().asyncExec(new Runnable() {
-
 			public void run() {
 				connectTestRunner(launch, finalType, finalPort);
 			}
