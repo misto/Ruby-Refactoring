@@ -303,7 +303,7 @@
         visible="true">
 			<action
 				definitionId="org.rubypeople.rdt.debug.ui.commands.ModifyCatchpoint"
-				label="modifyCatchpoint.label"
+				label="%modifyCatchpoint.label"
 				icon="icons/full/elcl16/exc_catch.gif"
 				helpContextId="add_exception_action_context"
 				class="org.rubypeople.rdt.internal.debug.ui.actions.ModifyCatchpointAction"
