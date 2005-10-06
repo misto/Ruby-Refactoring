@@ -16,6 +16,7 @@ import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.ui.IEditorInput;
+import org.rubypeople.rdt.internal.debug.core.RubyExceptionBreakpoint;
 import org.rubypeople.rdt.internal.debug.core.RubyLineBreakpoint;
 import org.rubypeople.rdt.internal.debug.core.model.RubyThread;
 import org.rubypeople.rdt.internal.debug.core.model.RubyValue;
@@ -30,8 +31,21 @@ public class DebugModelPresentation extends LabelProvider implements IDebugModel
 			try {
 				return breakpoint.getMarker().getResource().getName() + ":" + breakpoint.getLineNumber();
 			} catch (CoreException e) {
-				e.printStackTrace();
+				DebugUIPlugin.log(e) ;
 				return "--";
+			}
+		}
+		if (item instanceof RubyExceptionBreakpoint) {
+			RubyExceptionBreakpoint exceptionBreakpoint = (RubyExceptionBreakpoint) item ;
+			try {
+				if (exceptionBreakpoint.getException() == null || exceptionBreakpoint.getException().length() ==0) {
+					return "No Catchpoint defined" ;
+				}
+				else {
+					return "Suspend on exception: " + exceptionBreakpoint.getException() ;
+				}
+			} catch (CoreException e) {
+				DebugUIPlugin.log(e) ;
 			}
 		}
 		if (item instanceof RubyVariable) {

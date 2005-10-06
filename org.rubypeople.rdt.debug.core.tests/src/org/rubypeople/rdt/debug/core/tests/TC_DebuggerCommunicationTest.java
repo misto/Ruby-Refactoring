@@ -47,8 +47,8 @@ public class TC_DebuggerCommunicationTest extends TestCase {
 		//suite.addTest(new TC_DebuggerCommunicationTest("testVariableNil"));
 		//suite.addTest(new TC_DebuggerCommunicationTest("testVariableInstanceNested"));				
 		//suite.addTest(new TC_DebuggerCommunicationTest("testStaticVariableInstanceNested"));			
-		//suite.addTest(new TC_DebuggerCommunicationTest("testException"));
-		suite.addTest(new TC_DebuggerCommunicationTest("testNameError"));
+		
+		//suite.addTest(new TC_DebuggerCommunicationTest("testNameError"));
 		//suite.addTest(new TC_DebuggerCommunicationTest("testVariablesInObject"));	
 		//suite.addTest(new TC_DebuggerCommunicationTest("testStaticVariables"));		
 		//suite.addTest(new TC_DebuggerCommunicationTest("testSingletonStaticVariables"));							
@@ -67,6 +67,9 @@ public class TC_DebuggerCommunicationTest extends TestCase {
 		//suite.addTest(new TC_DebuggerCommunicationTest("testReloadAndStep")) ;
 		//suite.addTest(new TC_DebuggerCommunicationTest("testReloadInRequire")) ;
 		//suite.addTest(new TC_DebuggerCommunicationTest("testReloadInStackFrame")) ;
+		suite.addTest(new TC_DebuggerCommunicationTest("testIgnoreException"));
+		suite.addTest(new TC_DebuggerCommunicationTest("testExceptionHierarchy"));
+		suite.addTest(new TC_DebuggerCommunicationTest("testException"));
         
 		return suite;
 	}
@@ -308,6 +311,8 @@ public class TC_DebuggerCommunicationTest extends TestCase {
 	}
 
 	public void testException() throws Exception {
+		// per default catch is set to StandardError, i.e. every raise of a subclass of StandardError
+		// will suspend
 		createSocket(new String[] { "puts 'a'", "raise 'message \\dir\\file: <xml/>\n<8>'", "puts 'c'" });
 		sendRuby("cont");
 		System.out.println("Waiting for exception");
@@ -321,6 +326,29 @@ public class TC_DebuggerCommunicationTest extends TestCase {
 		sendRuby("cont");
 	}
 
+	public void testIgnoreException() throws Exception {
+		createSocket(new String[] { "puts 'a'", "raise 'dont stop'" });
+		sendRuby("catch off");
+		sendRuby("cont");
+		System.out.println("Waiting for the program to finish without suspending at the raise command");
+		SuspensionPoint hit = getSuspensionReader().readSuspension();
+		assertNull(hit);
+	}	
+	
+	public void testExceptionHierarchy() throws Exception {
+		createSocket(new String[] { "class MyError < StandardError", "end", "begin",  "raise StandardError.new", "rescue", "end", "raise MyError.new"});
+		sendRuby("catch MyError");
+		sendRuby("cont");
+		System.out.println("Waiting for the program to finish without suspending at the raise command");
+		SuspensionPoint hit = getSuspensionReader().readSuspension();
+		assertNotNull(hit);
+		assertEquals(7, hit.getLine());
+		assertEquals("MyError", ((ExceptionSuspensionPoint) hit).getExceptionType());
+		sendRuby("cont");
+		hit = getSuspensionReader().readSuspension();
+		assertNull(hit);
+	}
+	
 	public void testBreakpointNeverReached() throws Exception {
 		createSocket(new String[] { "puts 'a'", "puts 'b'", "puts 'c'" });
 		sendRuby("b test.rb:10");

@@ -10,7 +10,7 @@ import org.eclipse.debug.core.DebugException;
 import org.eclipse.debug.core.model.LineBreakpoint;
 
 public class RubyLineBreakpoint extends LineBreakpoint {
-	private static final String RUBY_BREAKPOINT_MARKER = "org.rubypeople.rdt.debug.core.RubyBreakpointMarker"; //$NON-NLS-1$
+	protected static final String RUBY_BREAKPOINT_MARKER = "org.rubypeople.rdt.debug.core.RubyBreakpointMarker"; //$NON-NLS-1$
 
 	public RubyLineBreakpoint(final IResource resource, final int lineNumber) throws CoreException {
 		IWorkspaceRunnable wr = new IWorkspaceRunnable() {

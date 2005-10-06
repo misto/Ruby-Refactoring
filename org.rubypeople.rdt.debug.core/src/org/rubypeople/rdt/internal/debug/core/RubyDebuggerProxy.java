@@ -28,7 +28,8 @@ import org.xmlpull.v1.XmlPullParserException;
 import org.xmlpull.v1.XmlPullParserFactory;
 
 public class RubyDebuggerProxy {
-	public final static String DEBUGGER_ACTIVE_KEY = "org.rubypeople.rdt.debug.ui.debuggerActive" ;
+
+	public final static String DEBUGGER_ACTIVE_KEY = "org.rubypeople.rdt.debug.ui.debuggerActive";
 	private Socket socket;
 	private PrintWriter writer;
 	private IRubyDebugTarget debugTarget;
@@ -40,16 +41,14 @@ public class RubyDebuggerProxy {
 		this.debugTarget = debugTarget;
 		debugTarget.setRubyDebuggerProxy(this);
 	}
-	
+
 	public boolean checkConnection() {
 		try {
-			return this.getSocket().isConnected() ;
-		}
-		catch(DebuggerNotFoundException ex) {
-			return false ;
-		}
-		catch(IOException ex) {
-			return false ;
+			return this.getSocket().isConnected();
+		} catch (DebuggerNotFoundException ex) {
+			return false;
+		} catch (IOException ex) {
+			return false;
 		}
 	}
 
@@ -57,45 +56,40 @@ public class RubyDebuggerProxy {
 		try {
 			this.setBreakPoints();
 			this.startRubyLoop();
-		} catch (IOException e) {
-		}
+		} catch (IOException e) {}
 	}
 
 	public void stop() {
-        if (rubyLoop == null) {
-            // only in tests, where no real connection is established
-        	return;   
-        }
+		if (rubyLoop == null) {
+			// only in tests, where no real connection is established
+			return;
+		}
 		rubyLoop.setShouldStop();
 		rubyLoop.interrupt();
 	}
 
-	
 	protected Socket acquireSocket() throws IOException {
-	
+
 		int tryCount = 10;
 		for (int i = 0; i < tryCount; i++) {
 			try {
 				socket = new Socket("localhost", 1098);
-				return socket ;
+				return socket;
 			} catch (IOException e) {
 				try {
 					Thread.sleep(500);
-				} catch (InterruptedException e1) {
-				}
+				} catch (InterruptedException e1) {}
 			}
 		}
-		return null ;
-		
+		return null;
+
 	}
-	
+
 	protected Socket getSocket() throws IOException, DebuggerNotFoundException {
-		
+
 		if (socket == null) {
-			socket = acquireSocket() ;
-			if (socket == null) {
-				throw new DebuggerNotFoundException() ;
-			}
+			socket = acquireSocket();
+			if (socket == null) { throw new DebuggerNotFoundException(); }
 		}
 		return socket;
 	}
@@ -140,14 +134,18 @@ public class RubyDebuggerProxy {
 	protected void setBreakPoints() throws IOException {
 		IBreakpoint[] breakpoints = DebugPlugin.getDefault().getBreakpointManager().getBreakpoints(IRubyDebugTarget.MODEL_IDENTIFIER);
 		for (int i = 0; i < breakpoints.length; i++) {
-			this.addBreakpoint(breakpoints[i]) ;
+			this.addBreakpoint(breakpoints[i]);
 		}
 	}
 
 	public void addBreakpoint(IBreakpoint breakpoint) {
 		try {
 			if (breakpoint.isEnabled()) {
-				this.printBreakpoint("add", breakpoint.getMarker().getResource().getName(), breakpoint.getMarker().getAttribute(IMarker.LINE_NUMBER, -1) );
+				if (breakpoint instanceof RubyExceptionBreakpoint) {
+					this.println("catch " + ((RubyExceptionBreakpoint) breakpoint).getException());
+				} else {
+					this.printBreakpoint("add", breakpoint.getMarker().getResource().getName(), breakpoint.getMarker().getAttribute(IMarker.LINE_NUMBER, -1));
+				}
 			}
 		} catch (IOException e) {
 			RdtDebugCorePlugin.log(e);
@@ -158,20 +156,31 @@ public class RubyDebuggerProxy {
 
 	public void removeBreakpoint(IBreakpoint breakpoint) {
 		try {
-			this.printBreakpoint("remove", breakpoint.getMarker().getResource().getName(), breakpoint.getMarker().getAttribute(IMarker.LINE_NUMBER, -1) );
+			if (breakpoint instanceof RubyExceptionBreakpoint) {
+				this.println("catch off");
+			} else {
+				this.printBreakpoint("remove", breakpoint.getMarker().getResource().getName(), breakpoint.getMarker().getAttribute(IMarker.LINE_NUMBER, -1));
+			}
 		} catch (IOException e) {
 			RdtDebugCorePlugin.log(e);
 		}
 
 	}
-	
+
 	public void updateBreakpoint(IBreakpoint breakpoint, IMarkerDelta markerDelta) {
 		// line might have changed or enablement/disablement
-		try { 
-			// remove is called even if it has not been added at program start
-			// (happens if enablement changed from disabled at program start to enabled)		
-			this.printBreakpoint("remove", breakpoint.getMarker().getResource().getName(),  markerDelta.getAttribute(IMarker.LINE_NUMBER, -1));
-			this.addBreakpoint(breakpoint) ;
+		try {				
+			if (breakpoint instanceof RubyExceptionBreakpoint) {
+				// so far we allow only one catch exception
+				// catch off must be set in the case that the enablement has changed to disabled
+				this.println("catch off");
+			} else {
+				// remove is called even if it has not been added at program start
+				// (happens if enablement changed from disabled at program start to
+				// enabled)
+				this.printBreakpoint("remove", breakpoint.getMarker().getResource().getName(), markerDelta.getAttribute(IMarker.LINE_NUMBER, -1));
+			}
+			this.addBreakpoint(breakpoint);
 		} catch (IOException e) {
 			RdtDebugCorePlugin.log(e);
 		}
@@ -240,17 +249,15 @@ public class RubyDebuggerProxy {
 			this.println("th " + ((RubyThread) frame.getThread()).getId() + " ; v inspect " + frame.getIndex() + " " + expression);
 			RubyVariable[] variables = new VariableReader(getMultiReaderStrategy()).readVariables(frame);
 			if (variables.length == 0) {
-				return null ;	
+				return null;
+			} else {
+				return variables[0];
 			}
-			else {
-				return variables[0] ;	
-			}			
 		} catch (IOException ioex) {
 			ioex.printStackTrace();
 			throw new RuntimeException(ioex.getMessage());
 		}
 	}
-
 
 	public void readStepOverEnd(RubyStackFrame stackFrame) {
 		try {
@@ -274,7 +281,10 @@ public class RubyDebuggerProxy {
 	public void readStepIntoEnd(RubyStackFrame stackFrame) {
 		try {
 			this.println("th " + ((RubyThread) stackFrame.getThread()).getId() + " ; step " + stackFrame.getIndex());
-			/*return new SuspensionReader(getMultiReaderStrategy()).readSuspension(); */
+			/*
+			 * return new
+			 * SuspensionReader(getMultiReaderStrategy()).readSuspension();
+			 */
 		} catch (Exception e) {
 			RdtDebugCorePlugin.log(e);
 		}
@@ -300,13 +310,13 @@ public class RubyDebuggerProxy {
 			return null;
 		}
 	}
-	
+
 	public LoadResultReader.LoadResult readLoadResult(String filename) {
 		try {
-			this.println("load " +filename) ;
+			this.println("load " + filename);
 			return new LoadResultReader(getMultiReaderStrategy()).readLoadResult();
 		} catch (Exception e) {
-			return null ;
+			return null;
 		}
 	}
 
@@ -322,12 +332,11 @@ public class RubyDebuggerProxy {
 			this.setName("RubyDebuggerLoop");
 		}
 
-		public void setShouldStop() {
-		}
+		public void setShouldStop() {}
 
 		public void run() {
 			try {
-				System.setProperty(DEBUGGER_ACTIVE_KEY, "true") ;
+				System.setProperty(DEBUGGER_ACTIVE_KEY, "true");
 				getDebugTarget().updateThreads();
 				println("cont");
 				RdtDebugCorePlugin.debug("Waiting for breakpoints.");
@@ -338,19 +347,18 @@ public class RubyDebuggerProxy {
 					}
 					RdtDebugCorePlugin.debug(hit);
 					new Thread() {
+
 						public void run() {
 							getDebugTarget().suspensionOccurred(hit);
 						}
-					}
-					.start();
-				}			
+					}.start();
+				}
 			} catch (DebuggerNotFoundException ex) {
-				throw ex ;
+				throw ex;
 			} catch (Exception ex) {
-				RdtDebugCorePlugin.debug("Exception in socket reader loop.", ex) ;
-			}
-			finally {
-				System.setProperty(DEBUGGER_ACTIVE_KEY, "false") ;
+				RdtDebugCorePlugin.debug("Exception in socket reader loop.", ex);
+			} finally {
+				System.setProperty(DEBUGGER_ACTIVE_KEY, "false");
 				getDebugTarget().terminate();
 				try {
 					closeSocket();

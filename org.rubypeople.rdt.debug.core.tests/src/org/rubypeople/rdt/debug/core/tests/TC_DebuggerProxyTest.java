@@ -1,5 +1,7 @@
 package org.rubypeople.rdt.debug.core.tests;
 
+import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.PipedInputStream;
@@ -8,7 +10,9 @@ import java.io.PrintWriter;
 
 import junit.framework.TestCase;
 
+import org.eclipse.core.runtime.CoreException;
 import org.rubypeople.rdt.internal.debug.core.RubyDebuggerProxy;
+import org.rubypeople.rdt.internal.debug.core.RubyExceptionBreakpoint;
 import org.rubypeople.rdt.internal.debug.core.model.ThreadInfo;
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserFactory;
@@ -17,6 +21,7 @@ public class TC_DebuggerProxyTest extends TestCase {
 	private PrintWriter writer ;
 	private RubyDebuggerProxy proxy ;
 	private TestRubyDebugTarget target ;
+	private BufferedReader proxyOutputReader ;
 	
 	public TC_DebuggerProxyTest(String name) {
 		super(name);
@@ -39,10 +44,18 @@ public class TC_DebuggerProxyTest extends TestCase {
 		getPrintWriter().flush() ;
 	}
 
+	public String getLineFromDebuggerProxy() throws IOException {
+		
+		return proxyOutputReader.readLine() ;
+	}
+	
 	public void setUp() throws Exception {
 		target = new TestRubyDebugTarget() ;
 		proxy = new RubyDebuggerProxy(target) ;
-		proxy.setWriter(new PrintWriter(new OutputStreamWriter(System.out))) ;
+		PipedInputStream pipedInputStream = new PipedInputStream() ;
+		PipedOutputStream pipedOutputStream = new PipedOutputStream(pipedInputStream) ; 
+
+		proxy.setWriter(new PrintWriter(pipedOutputStream)) ;
 		XmlPullParserFactory factory = XmlPullParserFactory.newInstance("org.kxml2.io.KXmlParser,org.kxml2.io.KXmlSerializer", null);
 		XmlPullParser xpp = factory.newPullParser();
 		PipedOutputStream outputStream = new PipedOutputStream() ;
@@ -50,7 +63,8 @@ public class TC_DebuggerProxyTest extends TestCase {
 		xpp.setInput(new InputStreamReader(inputStream)) ;
 		proxy.setXpp(xpp) ;
 		proxy.startRubyLoop() ;
-		writer = new PrintWriter(new OutputStreamWriter(outputStream)) ;		
+		writer = new PrintWriter(new OutputStreamWriter(outputStream)) ;
+		proxyOutputReader = new BufferedReader(new InputStreamReader(pipedInputStream)) ;
 	}
 
 	public void testMultipleBreakpoints() throws Exception  {
@@ -77,4 +91,12 @@ public class TC_DebuggerProxyTest extends TestCase {
 		assertEquals(55, getTarget().getLastSuspensionPoint().getLine()) ;
 	}
 
+	
+	public void testExceptionBreakpoint() throws IOException, CoreException {
+		RubyExceptionBreakpoint rubyExceptionBreakpoint = new RubyExceptionBreakpoint("MyStandardError") ;
+		proxy.addBreakpoint( rubyExceptionBreakpoint ) ;
+		proxy.getWriter().flush() ;
+		assertEquals("cont", this.getLineFromDebuggerProxy()) ;
+		assertEquals("catch MyStandardError", this.getLineFromDebuggerProxy()) ;
+	}
 }

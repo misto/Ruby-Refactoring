@@ -211,7 +211,7 @@ class DEBUGGER__
       @frames = []
       @finish_pos = 0
       @trace = false
-      @catch = "StandardError"
+      @catch = nil # "StandardError"
       @suspend_next = false
       @shouldResume = false
     end
@@ -687,24 +687,16 @@ class DEBUGGER__
           #            prompt = false
           #          end
           
-          #        when /^\s*cat(?:ch)?(?:\s+(.+))?$/
-          #          if $1
-          #            excn = $1
-          #            if excn == 'off'
-          #              @catch = nil
-          #              stdout.print "Clear catchpoint.\n"
-          #            else
-          #              @catch = excn
-          #              stdout.printf "Set catchpoint %s.\n", @catch
-          #            end
-          #          else
-          #            if @catch
-          #              stdout.printf "Catchpoint %s.\n", @catch
-          #            else
-          #              stdout.print "No catchpoint.\n"
-          #            end
-          #          end
-          
+        when /^\s*cat(?:ch)?(?:\s+(.+))?$/
+          # $1 can also be nil 
+          @catch = $1
+          @catch = nil if @catch == 'off'
+          if @catch then
+            @printer.debug("Catchpoint set to #{@catch}")
+          else
+            @printer.debug("Catchpoints disabled")
+          end
+         
           
         when /^\s*v(?:ar)?\s+/
           debug_variable_info($', binding)

@@ -1,4 +1,9 @@
 Changes since 0.6.0:
+* Catchpoints:
+	* The default was to halt at every type of StandardError, the new default is *not* to halt when exceptions are raised
+	* There is a menu entry in the debug perspective and a toolbar button in the breakpoint view which starts the Catchpoint dialog
+	* The catchpoint dialog allows to add a ruby exception breakpoint
+	* There can be at most one exception breakpoint; the breakpoint can be enabled, disabled and removed in the breakpoint view
 
 Changes merged from SRB 0.6.1:
 * SRB_0-6-1_1: Enable/Disable breakpoints, move breakpoints 
