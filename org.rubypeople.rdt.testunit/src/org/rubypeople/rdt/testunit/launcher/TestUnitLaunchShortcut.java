@@ -52,7 +52,7 @@ public class TestUnitLaunchShortcut extends RubyApplicationShortcut {
 		if (config != null) {
 			config.launch(mode, null);
 		}
-		IRubyElement[] classes = TestSearchEngine.findTests((IFile) rubyElement.getUnderlyingResource());
+		TestSearchEngine.findTests((IFile) rubyElement.getUnderlyingResource());
 	}
 
 	protected ILaunchConfiguration findOrCreateLaunchConfiguration(IRubyElement rubyElement, String mode, String container, String testClass, String testName) throws CoreException {

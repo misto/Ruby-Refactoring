@@ -48,8 +48,7 @@ public class InterpreterRunner {
 
 	private List renderCommandLine(InterpreterRunnerConfiguration configuration) {
 		List commandLine = new ArrayList();
-		RubyInterpreter interpreter = configuration.getInterpreter();
-
+		
 		addDebugCommandLineArgument(commandLine);
 		commandLine.addAll(configuration.renderLoadPath());
 		commandLine.addAll(ArgumentSplitter.split(configuration.getInterpreterArguments()));
