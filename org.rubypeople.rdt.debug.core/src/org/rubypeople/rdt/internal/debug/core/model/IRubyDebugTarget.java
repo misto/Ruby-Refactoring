@@ -10,6 +10,7 @@ public interface IRubyDebugTarget extends IDebugTarget {
 	public void updateThreads() ;
 	public void terminate() ;
 	public void setRubyDebuggerProxy(RubyDebuggerProxy rubyDebuggerProxy) ;
+	public int getPort() ;
 
 
 }

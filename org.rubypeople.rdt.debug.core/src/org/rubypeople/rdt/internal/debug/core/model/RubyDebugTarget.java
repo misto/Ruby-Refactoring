@@ -1,5 +1,10 @@
 package org.rubypeople.rdt.internal.debug.core.model;
 
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.PrintWriter;
+
 import org.eclipse.core.resources.IMarkerDelta;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.PlatformObject;
@@ -13,6 +18,7 @@ import org.eclipse.debug.core.model.IDebugTarget;
 import org.eclipse.debug.core.model.IMemoryBlock;
 import org.eclipse.debug.core.model.IProcess;
 import org.eclipse.debug.core.model.IThread;
+import org.rubypeople.rdt.core.SocketUtil;
 import org.rubypeople.rdt.internal.debug.core.RdtDebugCorePlugin;
 import org.rubypeople.rdt.internal.debug.core.RubyDebuggerProxy;
 import org.rubypeople.rdt.internal.debug.core.SuspensionPoint;
@@ -23,20 +29,25 @@ import org.rubypeople.rdt.internal.debug.core.SuspensionPoint;
 // This kind of Adapter is deliverd from the DebugElementAdapterFactory.
 
 public class RubyDebugTarget extends PlatformObject implements IRubyDebugTarget {
-
+	private static int DEFAULT_PORT = 1098 ;
 	private IProcess process;
 	private boolean isTerminated;
 	private ILaunch launch;
 	private RubyThread[] threads;
 	private RubyDebuggerProxy rubyDebuggerProxy;
+	private int port = -1 ;
+	private File debugParameterFile;
 
+	public RubyDebugTarget(ILaunch launch) {
+		this(launch, null) ;
+	}
+	
 	public RubyDebugTarget(ILaunch launch, IProcess process) {
 		this.launch = launch;
 		this.process = process;
 		this.threads = new RubyThread[0] ;
 		IBreakpointManager manager= DebugPlugin.getDefault().getBreakpointManager();
 		manager.addBreakpointListener(this);
-
 	}
 
 	public void updateThreads() {
@@ -136,7 +147,14 @@ public class RubyDebugTarget extends PlatformObject implements IRubyDebugTarget 
 		
 		// launch is one of the listeners
 		DebugPlugin.getDefault().fireDebugEventSet(new DebugEvent[] {new DebugEvent(this, DebugEvent.TERMINATE)});
-
+		
+		// delete the debugParameteFile if it could be created
+		if (debugParameterFile.exists()) {
+			boolean deleted = debugParameterFile.delete() ;
+			if (!deleted) {
+				RdtDebugCorePlugin.debug("Could not delete debugParameteFile:" + debugParameterFile.toURI()) ;
+			}
+		}
 	}
 
 	public boolean canResume() {
@@ -216,5 +234,51 @@ public class RubyDebugTarget extends PlatformObject implements IRubyDebugTarget 
 	public void setRubyDebuggerProxy(RubyDebuggerProxy rubyDebuggerProxy) {
 		this.rubyDebuggerProxy = rubyDebuggerProxy;
 	}
-
+	
+	public File getDebugParameterFile() {
+		if (debugParameterFile == null) {
+			try {
+				debugParameterFile = File.createTempFile("eclipseDebug",".rb") ;
+			} catch (IOException e) {
+				RdtDebugCorePlugin.log("Could not create debugParameterFile", e) ;
+			}
+		}
+		return debugParameterFile ;
+	}
+	
+	public boolean addDebugParameter(String line) {
+		try {
+			FileWriter writer = new FileWriter(this.getDebugParameterFile());
+			new PrintWriter(writer).println(line);
+			writer.flush();
+			writer.close();
+			return true;
+		} catch (IOException ex) {
+			RdtDebugCorePlugin.log(ex);
+			return false;
+		}
+	}
+	
+	public int getPort() {
+		if (port == -1) {
+			port = SocketUtil.findFreePort() ;
+			// port can still be -1, if findFreePort fails
+			if (port != -1) {
+				// see eclipseDebug.rb for how $EclipseListenPort is used from ruby side
+				if (!addDebugParameter("$EclipseListenPort=" + port)) {
+					port = -1 ;
+				}
+			}
+			// if we couldn't find a free port a write the free port to the file, use the default
+			if (port == -1) {
+				port = DEFAULT_PORT ;
+			}
+			RdtDebugCorePlugin.debug("Using port: " + port) ;
+		}		
+		return port ;
+	}
+	
+	public boolean isUsingDefaultPort() {
+		return this.getPort() == DEFAULT_PORT ;
+	}
 }

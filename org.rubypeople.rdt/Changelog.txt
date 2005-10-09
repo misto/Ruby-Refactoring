@@ -1,4 +1,7 @@
 Changes since 0.6.0:
+* Multiple debugger session possible because a free port will be used for the debugger communication. The port is written to a
+  temporary file and conveyed to the ruby process with "-r<tmpFile>". The fixed port used in the past (1098) is still the default 
+  port in the case that a temporary file can not be created
 * Catchpoints:
 	* The default was to halt at every type of StandardError, the new default is *not* to halt when exceptions are raised
 	* There is a menu entry in the debug perspective and a toolbar button in the breakpoint view which starts the Catchpoint dialog

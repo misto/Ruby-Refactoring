@@ -39,7 +39,7 @@ public class RubyDebuggerProxy {
 
 	public RubyDebuggerProxy(IRubyDebugTarget debugTarget) {
 		this.debugTarget = debugTarget;
-		debugTarget.setRubyDebuggerProxy(this);
+		debugTarget.setRubyDebuggerProxy(this);		
 	}
 
 	public boolean checkConnection() {
@@ -73,7 +73,7 @@ public class RubyDebuggerProxy {
 		int tryCount = 10;
 		for (int i = 0; i < tryCount; i++) {
 			try {
-				socket = new Socket("localhost", 1098);
+				socket = new Socket("localhost", debugTarget.getPort());
 				return socket;
 			} catch (IOException e) {
 				try {

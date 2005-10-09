@@ -22,6 +22,7 @@
       <import plugin="org.rubypeople.rdt.launching"/>
       <import plugin="org.eclipse.core.runtime"/>
       <import plugin="org.rubypeople.rdt.core"/>
+      <import plugin="org.rubypeople.eclipse.testutils"/>
    </requires>
 
 </plugin>

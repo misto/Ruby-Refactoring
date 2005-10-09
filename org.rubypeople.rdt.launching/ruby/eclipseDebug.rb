@@ -6,7 +6,7 @@ require 'thread'
 # ECLIPSE_LISTEN_PORT is the port on which the debugger waits for commands from
 # eclipse. If you change this, you must also change the corresponding port in
 # org.rubypeople.rdt.internal.debug.core.RubyDebuggerProxy
-ECLIPSE_LISTEN_PORT = 1098
+ECLIPSE_LISTEN_PORT = (defined? $EclipseListenPort) ? $EclipseListenPort : 1098
 
 # ECLIPSE_VERBOSE prints tihe communication between eclipse and ruby debugger
 # on stderr. If you have started a eclipse debug session (and use default preferences for

@@ -15,9 +15,11 @@ import org.rubypeople.rdt.internal.debug.core.model.RubyDebugTarget;
 
 public class DebuggerRunner extends InterpreterRunner {
 
+	private RubyDebugTarget debugTarget ;
 	public IProcess run(InterpreterRunnerConfiguration configuration, ILaunch launch) throws CoreException {
+		debugTarget = new RubyDebugTarget(launch);		
 		IProcess process = super.run(configuration, launch);
-		RubyDebugTarget debugTarget = new RubyDebugTarget(launch, process);
+		debugTarget.setProcess(process) ;
 		RubyDebuggerProxy proxy = new RubyDebuggerProxy(debugTarget) ;
 		if (proxy.checkConnection()) {
 			proxy.start();
@@ -31,6 +33,10 @@ public class DebuggerRunner extends InterpreterRunner {
 	}
 
 	protected void addDebugCommandLineArgument(List commandLine) {
+		if (!debugTarget.isUsingDefaultPort()) {
+			commandLine.add("-r" + debugTarget.getDebugParameterFile().getAbsolutePath());
+		}
+		
 		if (RdtDebugCorePlugin.isRubyDebuggerVerbose()) {
 			commandLine.add("-reclipseDebugVerbose");
 		} else {

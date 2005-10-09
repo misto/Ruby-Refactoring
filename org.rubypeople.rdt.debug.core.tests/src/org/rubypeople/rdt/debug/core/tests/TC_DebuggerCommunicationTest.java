@@ -87,7 +87,7 @@ public class TC_DebuggerCommunicationTest extends TestCase {
 		}
 		return tmpDir;
 	}
-	private static String RUBY_INTERPRETER;
+	public static String RUBY_INTERPRETER;
 	static {
 		RUBY_INTERPRETER = System.getProperty("rdt.rubyInterpreter");
 		if (RUBY_INTERPRETER == null) {

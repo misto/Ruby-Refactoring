@@ -128,4 +128,9 @@ public class TestRubyDebugTarget implements IRubyDebugTarget {
 		return null;
 	}
 
+
+	public int getPort() {		
+		return -1;
+	}
+
 }

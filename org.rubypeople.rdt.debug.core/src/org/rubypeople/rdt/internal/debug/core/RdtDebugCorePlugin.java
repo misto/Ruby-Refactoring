@@ -41,6 +41,10 @@ public class RdtDebugCorePlugin extends Plugin {
 		Status status = new Status(severity, PLUGIN_ID, IStatus.OK, message, null);
 		RdtDebugCorePlugin.log(status);
 	}
+	
+	public static void log(String message, Throwable e) {
+		log(new Status(IStatus.ERROR, PLUGIN_ID, IStatus.ERROR, message, e));
+	}
 
 	public static void log(IStatus status) {
 		getDefault().getLog().log(status);

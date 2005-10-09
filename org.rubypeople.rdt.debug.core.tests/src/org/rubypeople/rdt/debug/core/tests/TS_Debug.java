@@ -10,6 +10,7 @@ public class TS_Debug {
 		suite.addTestSuite(TC_DebuggerCommunicationTest.class);
 		suite.addTestSuite(TC_DebuggerProxyTest.class) ;
 		suite.addTestSuite(TC_ReadStrategyTest.class) ;
+		suite.addTestSuite(FTC_DebuggerLaunch.class) ;
 		return suite;
 	}
 }
