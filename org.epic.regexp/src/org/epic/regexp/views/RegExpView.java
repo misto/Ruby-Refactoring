@@ -43,8 +43,6 @@ public class RegExpView extends ViewPart {
 	};
 
 	class DebugInfo {
-		private RE re;
-
 		private List subexpressions = new ArrayList();
 
 		private List bracketsInRegexp = new ArrayList();
@@ -210,8 +208,6 @@ public class RegExpView extends ViewPart {
 	private DebugInfo debugInfo = null;
 
 	private int debugPosition = 0;
-
-	private static final String SHORTCUTS_RESOURCE_BUNDLE = "org.epic.regexp.shortcuts";
 
 	/**
 	 * The constructor.

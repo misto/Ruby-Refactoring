@@ -34,7 +34,6 @@ import org.jruby.ast.AndNode;
 import org.jruby.ast.ArgsCatNode;
 import org.jruby.ast.ArgsNode;
 import org.jruby.ast.ArrayNode;
-import org.jruby.ast.AttrSetNode;
 import org.jruby.ast.BackRefNode;
 import org.jruby.ast.BeginNode;
 import org.jruby.ast.BignumNode;
@@ -126,8 +125,8 @@ import org.jruby.ast.ZSuperNode;
 import org.jruby.ast.visitor.NodeVisitor;
 import org.jruby.lexer.yacc.ISourcePosition;
 import org.jruby.runtime.Visibility;
-import org.rubypeople.rdt.core.IRubyElement;
 import org.rubypeople.rdt.core.IMethod;
+import org.rubypeople.rdt.core.IRubyElement;
 import org.rubypeople.rdt.core.IRubyScript;
 import org.rubypeople.rdt.internal.core.parser.RubyParser;
 
@@ -227,15 +226,6 @@ public class RubyScriptStructureBuilder implements NodeVisitor {
 		while (iterator.hasNext()) {
 			visitNode((Node) iterator.next());
 		}
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.jruby.ast.visitor.NodeVisitor#visitAttrSetNode(org.jruby.ast.AttrSetNode)
-	 */
-	public void visitAttrSetNode(AttrSetNode iVisited) {
-		handleNode(iVisited);
 	}
 
 	/*
@@ -447,7 +437,7 @@ public class RubyScriptStructureBuilder implements NodeVisitor {
 	 */
 	public void visitClassNode(ClassNode iVisited) {
 		handleNode(iVisited);
-		String name = iVisited.getClassName();
+		String name = iVisited.getCPath().getName();
 		RubyType handle = new RubyType(modelStack.peek(), name);
 		modelStack.push(handle);
 
@@ -1164,7 +1154,7 @@ public class RubyScriptStructureBuilder implements NodeVisitor {
 	 */
 	public void visitModuleNode(ModuleNode iVisited) {
 		handleNode(iVisited);
-		String name = iVisited.getName();
+		String name = iVisited.getCPath().getName();
 		RubyModule module = new RubyModule(modelStack.peek(), name);
 		modelStack.push(module);
 

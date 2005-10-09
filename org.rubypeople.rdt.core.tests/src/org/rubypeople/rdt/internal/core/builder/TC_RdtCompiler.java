@@ -1,5 +1,8 @@
 package org.rubypeople.rdt.internal.core.builder;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import junit.framework.TestCase;
 
 import org.eclipse.core.resources.IFile;
@@ -23,9 +26,12 @@ public class TC_RdtCompiler extends TestCase {
         file = new ShamFile(FILENAME);
         file.setContents(FILE_CONTENTS);
         
-        rootNode = new Node() {
-
+        rootNode = new Node(null) {
             public void accept(NodeVisitor visitor) {
+            }
+
+            public List childNodes() {
+                return new ArrayList();
             }
         };
         markerManager = new ShamMarkerManager();

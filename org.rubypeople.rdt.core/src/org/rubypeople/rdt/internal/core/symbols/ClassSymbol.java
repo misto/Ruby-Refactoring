@@ -19,4 +19,8 @@ public class ClassSymbol {
     public int hashCode() {
         return className.hashCode();
     }
+    
+    public String toString() {
+        return "Class [" + className + "]";
+    }
 }

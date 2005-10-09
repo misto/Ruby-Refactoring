@@ -1,15 +1,20 @@
 package org.rubypeople.rdt.internal.core.builder;
 
+import java.io.InputStreamReader;
+
 import junit.framework.TestCase;
 
 import org.eclipse.core.resources.IFile;
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.jruby.ast.ClassNode;
+import org.jruby.ast.Colon2Node;
 import org.jruby.ast.Node;
 import org.jruby.ast.TrueNode;
 import org.jruby.lexer.yacc.ISourcePosition;
 import org.rubypeople.eclipse.shams.resources.ShamFile;
 import org.rubypeople.rdt.internal.core.parser.RdtPosition;
+import org.rubypeople.rdt.internal.core.parser.RubyParser;
 import org.rubypeople.rdt.internal.core.symbols.ClassSymbol;
 import org.rubypeople.rdt.internal.core.symbols.SymbolIndex;
 
@@ -37,11 +42,55 @@ public class IndexUpdater_UT extends TestCase {
     }
 
     public void testSimple() {
-        Node node = new ClassNode(POSITION_1, TEST_CLASS_NAME, null, null);
+        Colon2Node nameNode = new Colon2Node(POSITION_1, null, TEST_CLASS_NAME);
+        Node node = new ClassNode(POSITION_1, nameNode, null, null);
         updater.update(file, node);
         
         symbolIndex.assertFlushed(file.getFullPath());
         symbolIndex.assertAdded(new ClassSymbol(TEST_CLASS_NAME), file, POSITION_1);
+    }
+    
+    public void testWithTree() throws Exception {
+        Node node = parseCode("if x\nclass Foo\nend\n end\n");
+        
+        updater.update(file,node);
+        
+        symbolIndex.assertFlushed(file.getFullPath());
+        symbolIndex.assertAdded(new ClassSymbol("Foo"), file, new RdtPosition(1, 2, 10, 18));
+    }
+
+    public void testTreeWithScopedClass() throws Exception {
+        Node node = parseCode("if x\nclass Foo::Bar\nend\n end\n");
+        
+        updater.update(file,node);
+        
+        symbolIndex.assertFlushed(file.getFullPath());
+        symbolIndex.assertAdded(new ClassSymbol("Foo::Bar"), file, new RdtPosition(1, 2, 10, 23));
+    }
+
+    public void testTreeWithDeeplyScopedClass() throws Exception {
+        Node node = parseCode("if x\nclass X::Foo::Bar\nend\n end\n");
+        
+        updater.update(file,node);
+        
+        symbolIndex.assertFlushed(file.getFullPath());
+        symbolIndex.assertAdded(new ClassSymbol("X::Foo::Bar"), file, new RdtPosition(1, 2, 10, 26));
+    }
+
+    public void testTreeWithNesting() throws Exception {
+        Node node = parseCode("if x\nmodule Foo\nclass Bar\nend\n end\nend\n");
+        
+        updater.update(file,node);
+        
+        symbolIndex.assertFlushed(file.getFullPath());
+        symbolIndex.assertAdded(new ClassSymbol("Foo::Bar"), file, new RdtPosition(2, 3, 21, 29));
+    }
+    
+
+    private Node parseCode(String code) throws CoreException {
+        file.setContents(code);
+        InputStreamReader reader = new InputStreamReader(file.getContents());
+        return new RubyParser().parse(file, reader);
     }
 
     private static class MockSymbolIndex extends SymbolIndex {

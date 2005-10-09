@@ -67,13 +67,22 @@ public class RdtPosition implements ISourcePosition {
 	}
 
 	public int getStartLine() {
-		// TODO Auto-generated method stub
 		return startLine;
 	}
 
 	public int getEndLine() {
-		// TODO Auto-generated method stub
 		return endLine;
 	}
-	
+
+    public boolean equals(Object obj) {
+        if (! (obj instanceof RdtPosition))
+            return false;
+        
+        RdtPosition that = (RdtPosition) obj;
+        return 
+            that.startLine == this.startLine
+            && that.endLine == this.endLine
+            && that.startOffset == this.startOffset
+            && that.endOffset== this.endOffset;
+    }
 }
