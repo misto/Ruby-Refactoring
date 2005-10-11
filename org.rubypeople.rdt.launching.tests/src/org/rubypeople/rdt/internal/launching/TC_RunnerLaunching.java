@@ -14,6 +14,7 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.Path;
+import org.eclipse.core.runtime.Platform;
 import org.eclipse.debug.core.DebugPlugin;
 import org.eclipse.debug.core.ILaunch;
 import org.eclipse.debug.core.ILaunchConfiguration;
@@ -45,22 +46,24 @@ public class TC_RunnerLaunching extends TestCase {
 		if (debug) {
 			commandLine.add("-reclipseDebug");
 		}
+		// The include paths and the executed ruby file is quoted on windows
+		String pathQuotation = Platform.getOS().equals(Platform.OS_WIN32) ? "\"" : "" ; 
 		if (debug) {
 			String dirOfRubyDebuggerFile = DebuggerRunner.getDirectoryOfRubyDebuggerFile().replace('/', File.separatorChar) ;
 			if (dirOfRubyDebuggerFile.startsWith("\\")) {
 				dirOfRubyDebuggerFile = dirOfRubyDebuggerFile.substring(1) ;
 			}
 			commandLine.add("-I");
-			commandLine.add(dirOfRubyDebuggerFile);
+			commandLine.add(pathQuotation + dirOfRubyDebuggerFile + pathQuotation);
 		}		
         commandLine.add("-I");
-        commandLine.add( project.getLocation().toOSString());
+        commandLine.add( pathQuotation + project.getLocation().toOSString() + pathQuotation);
         commandLine.add("-I");
-        commandLine.add(project.getLocation().toOSString() + File.separator + RUBY_LIB_DIR) ;
+        commandLine.add(pathQuotation + project.getLocation().toOSString() + File.separator + RUBY_LIB_DIR + pathQuotation) ;
 		commandLine.addAll(Arrays.asList(INTERPRETER_ARGUMENTS.split("\\s+")));
 		commandLine.add("--");
 		// use always forward slashes for path relative to project dir
-		commandLine.add(project.getLocation().toOSString() + "/" + RUBY_LIB_DIR + "/" + RUBY_FILE_NAME);
+		commandLine.add(pathQuotation + project.getLocation().toOSString() + "/" + RUBY_LIB_DIR + "/" + RUBY_FILE_NAME + pathQuotation);
 		commandLine.add(PROGRAM_ARGUMENTS);
 		return commandLine;
 	}
@@ -90,7 +93,7 @@ public class TC_RunnerLaunching extends TestCase {
 		ILaunchConfigurationType launchConfigurationType =
 			getLaunchManager().getLaunchConfigurationType(
 				RubyLaunchConfigurationAttribute.RUBY_LAUNCH_CONFIGURATION_TYPE);
-		launchConfigurationType.getDelegate().launch(
+		launchConfigurationType.getDelegate(debug ? "debug" : "run").launch(
 			configuration,
 			debug ? ILaunchManager.DEBUG_MODE : ILaunchManager.RUN_MODE,
 			launch,
@@ -99,6 +102,11 @@ public class TC_RunnerLaunching extends TestCase {
 		assertEquals("One process has been spawned", 1, launch.getProcesses().length);
 		List expected = getCommandLine(project, debug);
 		List actual = interpreter.getArguments();
+		if (debug) {
+			// we must cheat with the first argument, because it is a temporary file which
+			// contains is different for every call
+			expected.add(0, actual.get(0)) ;
+		}
 		assertEquals("Assembled command line.", expected, actual);
 		assertEquals(
 			"Process label.",
