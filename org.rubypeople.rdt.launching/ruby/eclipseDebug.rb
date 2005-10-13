@@ -1150,7 +1150,8 @@ class DEBUGGER__
     end
   end
 
-  server = TCPServer.new('localhost', ECLIPSE_LISTEN_PORT)
+  # use 127.0.0.1 instead of localhost because OSX 10.4
+  server = TCPServer.new('127.0.0.1', ECLIPSE_LISTEN_PORT)
   puts "ruby #{RUBY_VERSION} debugger listens on port #{ECLIPSE_LISTEN_PORT}"
   $stdout.flush
   STDERR.sync = true ;
