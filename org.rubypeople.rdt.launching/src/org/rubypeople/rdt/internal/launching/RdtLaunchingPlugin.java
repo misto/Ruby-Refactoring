@@ -16,7 +16,6 @@ public class RdtLaunchingPlugin extends Plugin {
             if (aPath.startsWith(File.separator)) {
                 aPath = aPath.substring(1) ;
             }
-            aPath = "\"" + aPath + "\"";
         }
 
         return aPath;

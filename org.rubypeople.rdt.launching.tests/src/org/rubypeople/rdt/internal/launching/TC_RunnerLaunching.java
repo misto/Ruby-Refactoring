@@ -14,7 +14,6 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.Path;
-import org.eclipse.core.runtime.Platform;
 import org.eclipse.debug.core.DebugPlugin;
 import org.eclipse.debug.core.ILaunch;
 import org.eclipse.debug.core.ILaunchConfiguration;
@@ -46,24 +45,23 @@ public class TC_RunnerLaunching extends TestCase {
 		if (debug) {
 			commandLine.add("-reclipseDebug");
 		}
-		// The include paths and the executed ruby file is quoted on windows
-		String pathQuotation = Platform.getOS().equals(Platform.OS_WIN32) ? "\"" : "" ; 
+		// The include paths and the executed ruby file is quoted on windows		 
 		if (debug) {
 			String dirOfRubyDebuggerFile = DebuggerRunner.getDirectoryOfRubyDebuggerFile().replace('/', File.separatorChar) ;
 			if (dirOfRubyDebuggerFile.startsWith("\\")) {
 				dirOfRubyDebuggerFile = dirOfRubyDebuggerFile.substring(1) ;
 			}
 			commandLine.add("-I");
-			commandLine.add(pathQuotation + dirOfRubyDebuggerFile + pathQuotation);
+			commandLine.add(dirOfRubyDebuggerFile);
 		}		
         commandLine.add("-I");
-        commandLine.add( pathQuotation + project.getLocation().toOSString() + pathQuotation);
+        commandLine.add(project.getLocation().toOSString());
         commandLine.add("-I");
-        commandLine.add(pathQuotation + project.getLocation().toOSString() + File.separator + RUBY_LIB_DIR + pathQuotation) ;
+        commandLine.add(project.getLocation().toOSString() + File.separator + RUBY_LIB_DIR ) ;
 		commandLine.addAll(Arrays.asList(INTERPRETER_ARGUMENTS.split("\\s+")));
 		commandLine.add("--");
 		// use always forward slashes for path relative to project dir
-		commandLine.add(pathQuotation + project.getLocation().toOSString() + "/" + RUBY_LIB_DIR + "/" + RUBY_FILE_NAME + pathQuotation);
+		commandLine.add(project.getLocation().toOSString() + "/" + RUBY_LIB_DIR + "/" + RUBY_FILE_NAME );
 		commandLine.add(PROGRAM_ARGUMENTS);
 		return commandLine;
 	}
