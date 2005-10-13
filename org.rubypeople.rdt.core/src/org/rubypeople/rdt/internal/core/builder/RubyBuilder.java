@@ -1,3 +1,14 @@
+/*
+?* Author: Chris, David Corbin
+?*
+?* Copyright (c) 2005 RubyPeople.
+?*
+?* This file is part of the Ruby Development Tools (RDT) plugin for eclipse. 
+ * RDT is subject to the "Common Public License (CPL) v 1.0". You may not use
+ * RDT except in compliance with the License. For further information see 
+ * org.rubypeople.rdt/rdt.license.
+?*/
+
 package org.rubypeople.rdt.internal.core.builder;
 
 import java.util.Date;
@@ -10,10 +21,7 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.rubypeople.rdt.core.RubyCore;
 
-/**
- * @author Chris
- * 
- */
+
 public class RubyBuilder extends IncrementalProjectBuilder {
 
     private static final int TOTAL_WORK = 10000;
