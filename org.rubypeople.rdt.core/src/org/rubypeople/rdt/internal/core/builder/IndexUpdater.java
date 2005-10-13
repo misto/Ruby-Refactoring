@@ -13,7 +13,7 @@ import org.rubypeople.rdt.internal.core.symbols.ClassSymbol;
 import org.rubypeople.rdt.internal.core.symbols.SymbolIndex;
 
 public class IndexUpdater {
-
+// TODO Build Index on startup
     private final SymbolIndex index;
     private Stack scopeStack = new Stack();
     
@@ -35,7 +35,7 @@ public class IndexUpdater {
             
             scopeStack.push(name);
             if (node instanceof ClassNode)
-                index.add(new ClassSymbol(name), file, node.getPosition());
+                index.add(new ClassSymbol(name), file, classNode.getCPath().getPosition());
         }
         
         for (Iterator iter = node.childNodes().iterator(); iter.hasNext();) {

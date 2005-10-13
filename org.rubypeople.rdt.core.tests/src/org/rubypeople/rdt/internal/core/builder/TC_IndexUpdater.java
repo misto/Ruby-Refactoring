@@ -18,7 +18,7 @@ import org.rubypeople.rdt.internal.core.parser.RubyParser;
 import org.rubypeople.rdt.internal.core.symbols.ClassSymbol;
 import org.rubypeople.rdt.internal.core.symbols.SymbolIndex;
 
-public class IndexUpdater_UT extends TestCase {
+public class TC_IndexUpdater extends TestCase {
     private static final RdtPosition POSITION_1 = new RdtPosition(1,2,3);
 
     private static final String TEST_CLASS_NAME = "TestClassName";

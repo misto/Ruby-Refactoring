@@ -25,15 +25,13 @@ public class RdtPosition implements ISourcePosition {
 		this.endOffset = endOffset; 		
 	}
 
-	/**
-	 * 
-	 */
 	public RdtPosition( int startLine, int endLine, int startOffset, 
-			int endOffset ){
+			int endOffset ) {
 		this.startLine = startLine;
 		this.endLine = endLine;
 		this.startOffset = startOffset;
-		this.endOffset = endOffset; }
+		this.endOffset = endOffset; 
+    }
 		
 	/* (non-Javadoc)
 	 * @see org.jruby.lexer.yacc.ISourcePosition#getFile()
@@ -84,5 +82,9 @@ public class RdtPosition implements ISourcePosition {
             && that.endLine == this.endLine
             && that.startOffset == this.startOffset
             && that.endOffset== this.endOffset;
+    }
+    
+    public int hashCode() {
+        return startLine * startOffset + endLine*endOffset;
     }
 }

@@ -36,6 +36,8 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableItem;
+import org.rubypeople.rdt.core.RubyCore;
+import org.rubypeople.rdt.internal.core.symbols.SymbolIndex;
 import org.rubypeople.rdt.testunit.ITestRunListener;
 
 /**
@@ -149,18 +151,23 @@ public class FailureTab extends TestRunTab implements IMenuListener {
 			System.out.println(className);
 			String methodName = getMethodName();
 			if (className != null) {
+				manager.add(new OpenClassAction(className, getSymbolIndex()));
+				manager.add(new Separator());
+				manager.add(new RerunAction(fRunnerViewPart, getSelectedTestId(), 
+                        className, methodName, ILaunchManager.RUN_MODE));
+                manager.add(new RerunAction(fRunnerViewPart, getSelectedTestId(), 
+                        className, methodName, ILaunchManager.DEBUG_MODE));
+				manager.add(new Separator());
 				// TODO Add back the actions!
-				//manager.add(new OpenTestAction(fRunnerViewPart, className,
-				// methodName));
-				manager.add(new Separator());
-				manager.add(new RerunAction(fRunnerViewPart, getSelectedTestId(), className, methodName, ILaunchManager.RUN_MODE));
-                manager.add(new RerunAction(fRunnerViewPart, getSelectedTestId(), className, methodName, ILaunchManager.DEBUG_MODE));
-				manager.add(new Separator());
 				//manager.add(new CopyFailureListAction(fRunnerViewPart,
 				// FailureTab.this, fClipboard));
 			}
 		}
 	}
+
+    private SymbolIndex getSymbolIndex() {
+        return RubyCore.getPlugin().getSymbolIndex();
+    }
 
 	private TableItem getSelectedItem() {
 		int index = fTable.getSelectionIndex();
@@ -267,9 +274,8 @@ public class FailureTab extends TestRunTab implements IMenuListener {
 	}
 
 	void handleDoubleClick(MouseEvent e) {
-	// TODO create the OpenTestAction
-	//if (fTable.getSelectionCount() > 0) new OpenTestAction(fRunnerViewPart,
-	// getClassName(), getMethodName()).run();
+	    if (fTable.getSelectionCount() > 0) 
+	        new OpenClassAction(getClassName(), getSymbolIndex()).run();
 	}
 
 	/*

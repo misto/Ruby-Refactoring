@@ -46,8 +46,7 @@ public class TC_RdtCompiler extends TestCase {
         
         parser.assertParsed(file, FILE_CONTENTS);
         file.assertContentStreamClosed();
-// DSC        
-//        indexUpdater.assertUpdated(file, rootNode);
+        indexUpdater.assertUpdated(file, rootNode);
     }
     
 

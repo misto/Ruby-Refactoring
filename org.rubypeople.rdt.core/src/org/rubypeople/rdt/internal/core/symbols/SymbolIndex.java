@@ -23,6 +23,10 @@ public class SymbolIndex {
         locations.add(location);
     }
 
+    public void add(ClassSymbol symbol, IFile file, ISourcePosition position) {
+        add(symbol, new Location(file.getFullPath(), position));
+    }
+
     public Set find(ClassSymbol symbol) {
         Set locations = (Set) index.get(symbol);
         if (locations == null) 
@@ -46,10 +50,5 @@ public class SymbolIndex {
         }
     }
 
-    // DSC DO
-    public void add(ClassSymbol symbol, IFile file, ISourcePosition position) {
-        // TODO Auto-generated method stub
-        
-    }
 
 }

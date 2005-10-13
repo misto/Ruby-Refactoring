@@ -32,10 +32,11 @@ import org.rubypeople.rdt.internal.core.RubyModelManager;
 import org.rubypeople.rdt.internal.core.RubyProject;
 import org.rubypeople.rdt.internal.core.RubyScript;
 import org.rubypeople.rdt.internal.core.parser.RubyParser;
+import org.rubypeople.rdt.internal.core.symbols.SymbolIndex;
 
 public class RubyCore extends Plugin {
 
-	private static Plugin RUBY_CORE_PLUGIN = null;
+	private static RubyCore RUBY_CORE_PLUGIN = null;
 
 	public final static String PLUGIN_ID = "org.rubypeople.rdt.core";
 	public final static String NATURE_ID = PLUGIN_ID + ".rubynature";
@@ -126,9 +127,12 @@ public class RubyCore extends Plugin {
 	 */
 	public static final String DISABLED = "disabled"; //$NON-NLS-1$
 
+    private SymbolIndex symbolIndex;
+    
 	public RubyCore() {
 		super();
 		RUBY_CORE_PLUGIN = this;
+        symbolIndex = new SymbolIndex();
 	}
 
 	/**
@@ -136,7 +140,7 @@ public class RubyCore extends Plugin {
 	 * 
 	 * @return the single instance of the Ruby core plug-in runtime class
 	 */
-	public static Plugin getPlugin() {
+	public static RubyCore getPlugin() {
 		return RUBY_CORE_PLUGIN;
 	}
 
@@ -432,5 +436,9 @@ public class RubyCore extends Plugin {
 			// use IWorkspace.run(...) to ensure that a build will be done in autobuild mode
 			workspace.run(new BatchOperation(action), rule, IWorkspace.AVOID_UPDATE, monitor);
 		}
-	}	
+	}
+
+    public SymbolIndex getSymbolIndex() {
+        return symbolIndex;
+    }	
 }
