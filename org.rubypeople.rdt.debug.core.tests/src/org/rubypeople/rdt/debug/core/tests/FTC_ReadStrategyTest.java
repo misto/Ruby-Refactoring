@@ -12,12 +12,12 @@ import org.rubypeople.rdt.internal.debug.core.parsing.MultiReaderStrategy;
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserFactory;
 
-public class TC_ReadStrategyTest extends TestCase {
+public class FTC_ReadStrategyTest extends TestCase {
 
 	protected PrintWriter writer ;
 	protected XmlPullParser xpp ;
 	
-	public TC_ReadStrategyTest(String name) {
+	public FTC_ReadStrategyTest(String name) {
 		super(name);
 	}
 	

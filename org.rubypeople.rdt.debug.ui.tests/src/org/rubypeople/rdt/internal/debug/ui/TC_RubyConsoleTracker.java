@@ -1,4 +1,4 @@
-package org.rubypeople.rdt.internal.debug.ui.tests;
+package org.rubypeople.rdt.internal.debug.ui;
 
 import java.util.ArrayList;
 import java.util.List;

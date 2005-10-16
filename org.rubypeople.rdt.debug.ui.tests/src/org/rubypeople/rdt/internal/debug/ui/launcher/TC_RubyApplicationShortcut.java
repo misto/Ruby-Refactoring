@@ -1,4 +1,4 @@
-package org.rubypeople.rdt.internal.debug.ui.tests.launcher;
+package org.rubypeople.rdt.internal.debug.ui.launcher;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
@@ -133,6 +133,7 @@ public class TC_RubyApplicationShortcut extends TestCase {
 	}
 
 	public void testLaunchWithSelectionMultipleConfigurationsExist() throws Exception {
+        shortcut.expectException();
 		this.createLaunchConfiguration("id1", rubyFile);
 		this.createLaunchConfiguration("id2", rubyFile);
 		ISelection selection = new StructuredSelection(rubyFile);
@@ -229,12 +230,19 @@ public class TC_RubyApplicationShortcut extends TestCase {
 
 		protected boolean didLog;
 		protected boolean didShowDialog=false;
+        private boolean expectingException;
 
 		protected void log(String message) {
 			didLog = true;
 		}
 
-		protected void log(Throwable t) {
+		public void expectException() {
+		    expectingException = true;
+        }
+
+        protected void log(Throwable t) {
+            if (!expectingException)
+                throw new RuntimeException("Unexpected throwable", t);
 			didLog = true;
 		}
 

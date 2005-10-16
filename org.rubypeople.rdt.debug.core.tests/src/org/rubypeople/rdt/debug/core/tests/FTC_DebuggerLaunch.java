@@ -34,7 +34,7 @@ public class FTC_DebuggerLaunch extends TestCase {
 	protected void createInterpreter() {
 		
 
-		RubyInterpreter rubyInterpreter = new RubyInterpreter("RubyInterpreter", new Path(TC_DebuggerCommunicationTest.RUBY_INTERPRETER));
+		RubyInterpreter rubyInterpreter = new RubyInterpreter("RubyInterpreter", new Path(FTC_DebuggerCommunicationTest.RUBY_INTERPRETER));
 		RubyRuntime.getDefault().addInstalledInterpreter(rubyInterpreter) ;
 	
 	}

@@ -1,4 +1,4 @@
-package org.rubypeople.rdt.internal.debug.ui.tests;
+package org.rubypeople.rdt.internal.debug.ui;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;

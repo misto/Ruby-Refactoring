@@ -35,7 +35,7 @@ public class MassIndexUpdater {
         this(indexUpdater, new RubyParser());
     }
 
-    public void update(List projects) {
+    public void updateProjects(List projects) {
         try {
             List files = findFiles(projects);
             processFiles(files);

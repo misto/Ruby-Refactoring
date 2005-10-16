@@ -1,4 +1,4 @@
-package org.rubypeople.rdt.internal.debug.ui.tests.launcher;
+package org.rubypeople.rdt.internal.debug.ui.launcher;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;

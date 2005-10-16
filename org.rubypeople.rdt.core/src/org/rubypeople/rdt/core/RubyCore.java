@@ -54,10 +54,9 @@ public class RubyCore extends Plugin {
 	public final static String PLUGIN_ID = "org.rubypeople.rdt.core";
 
     private static final String RUBY_PARSER_DEBUG_OPTION = RubyCore.PLUGIN_ID + "/rubyparser";
-
     private static final String MODEL_MANAGER_VERBOSE_OPTION = RubyCore.PLUGIN_ID + "/modelmanager";
-
     private static final String SYMBOL_INDEX_VERBOSE_OPTION = RubyCore.PLUGIN_ID + "/symbolIndex";
+    
 	public final static String NATURE_ID = PLUGIN_ID + ".rubynature";
 
 	/**
@@ -213,9 +212,11 @@ public class RubyCore extends Plugin {
         RubyModelManager.setVerbose(isDebugOptionTrue(MODEL_MANAGER_VERBOSE_OPTION));
         SymbolIndex.setVerbose(isDebugOptionTrue(SYMBOL_INDEX_VERBOSE_OPTION));
 
+        SymbolIndexResourceChangeListener.register(symbolIndex);
         IndexUpdater indexUpdater = new IndexUpdater(symbolIndex);
         MassIndexUpdater massUpdater = new MassIndexUpdater(indexUpdater);
-        massUpdater.update(Arrays.asList(getRubyProjects()));
+        massUpdater.updateProjects(Arrays.asList(getRubyProjects()));
+        
 	}
 
     private boolean isDebugOptionTrue(String option) {

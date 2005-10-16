@@ -17,13 +17,13 @@ import org.rubypeople.rdt.internal.debug.core.model.ThreadInfo;
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserFactory;
 
-public class TC_DebuggerProxyTest extends TestCase {
+public class FTC_DebuggerProxyTest extends TestCase {
 	private PrintWriter writer ;
 	private RubyDebuggerProxy proxy ;
 	private TestRubyDebugTarget target ;
 	private BufferedReader proxyOutputReader ;
 	
-	public TC_DebuggerProxyTest(String name) {
+	public FTC_DebuggerProxyTest(String name) {
 		super(name);
 	}
 

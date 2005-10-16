@@ -3,7 +3,7 @@ package org.rubypeople.rdt.tests.all;
 import junit.framework.Test;
 import junit.framework.TestSuite;
 
-import org.rubypeople.rdt.debug.core.tests.TS_Debug;
+import org.rubypeople.rdt.debug.core.tests.FTS_Debug;
 
 public class TS_RdtAllFunctionalTests {
 
@@ -12,7 +12,7 @@ public class TS_RdtAllFunctionalTests {
 		//$JUnit-BEGIN$
 		
 		// org.rubypeople.rdt.debug.core.tests
-		suite.addTest(TS_Debug.suite());
+		suite.addTest(FTS_Debug.suite());
 
 		//$JUnit-END$
 		return suite;

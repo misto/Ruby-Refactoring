@@ -28,7 +28,7 @@ import org.rubypeople.rdt.internal.launching.RdtLaunchingPlugin;
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserFactory;
 
-public class TC_DebuggerCommunicationTest extends TestCase {
+public class FTC_DebuggerCommunicationTest extends TestCase {
 
 /*
 	public static junit.framework.TestSuite suite() {
@@ -106,12 +106,12 @@ public class TC_DebuggerCommunicationTest extends TestCase {
 	private Thread mainThread ;
 	private Thread timeoutThread ;
 
-	public TC_DebuggerCommunicationTest(String arg0) {
+	public FTC_DebuggerCommunicationTest(String arg0) {
 		super(arg0);
 	}
 
 	public static void main(String[] args) {
-		junit.textui.TestRunner.run(TC_DebuggerCommunicationTest.class);
+		junit.textui.TestRunner.run(FTC_DebuggerCommunicationTest.class);
 	}
 
 	private String getTestFilename() {
@@ -151,7 +151,7 @@ public class TC_DebuggerCommunicationTest extends TestCase {
 	}
 
 	public void startRubyProcess() throws Exception {
-		String cmd = TC_DebuggerCommunicationTest.RUBY_INTERPRETER + " -I" + createIncludeDir() +  " -I" + getTmpDir().replace('\\', '/') + " -reclipseDebugVerbose.rb " + getRubyTestFilename();
+		String cmd = FTC_DebuggerCommunicationTest.RUBY_INTERPRETER + " -I" + createIncludeDir() +  " -I" + getTmpDir().replace('\\', '/') + " -reclipseDebugVerbose.rb " + getRubyTestFilename();
 		System.out.println("Starting: " + cmd);
 		process = Runtime.getRuntime().exec(cmd);
 		rubyStderrRedirectorThread = new OutputRedirectorThread(process.getErrorStream());

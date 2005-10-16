@@ -52,7 +52,7 @@ public class TC_MassIndexUpdater extends TestCase {
         projects.add(project1);
         projects.add(project2);
         
-        massUpdater.update(projects);
+        massUpdater.updateProjects(projects);
         RubySourceFileCollectingVisitor expectedVisitor = 
             new RubySourceFileCollectingVisitor(new ArrayList());
         project1.assertAcceptCalled(expectedVisitor, 0);

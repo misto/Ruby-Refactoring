@@ -1,4 +1,4 @@
-package org.rubypeople.rdt.internal.debug.ui.tests;
+package org.rubypeople.rdt.debug.ui.tests;
 
 import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.resources.ResourcesPlugin;
