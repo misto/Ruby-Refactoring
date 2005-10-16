@@ -219,7 +219,7 @@ public abstract class Openable extends RubyElement implements IOpenable, IBuffer
 
 	protected void generateInfos(Object info, HashMap newElements, IProgressMonitor monitor) throws RubyModelException {
 
-		if (RubyModelManager.VERBOSE) {
+		if (RubyModelManager.isVerbose()) {
 			String element;
 			switch (getElementType()) {
 			case PROJECT:
@@ -257,7 +257,7 @@ public abstract class Openable extends RubyElement implements IOpenable, IBuffer
 		// remove out of sync buffer for this element
 		RubyModelManager.getRubyModelManager().getElementsOutOfSynchWithBuffers().remove(this);
 
-		if (RubyModelManager.VERBOSE) {
+		if (RubyModelManager.isVerbose()) {
 			System.out.println(RubyModelManager.getRubyModelManager().cache.toStringFillingRation("-> ")); //$NON-NLS-1$
 		}
 	}

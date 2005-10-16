@@ -25,6 +25,7 @@ import org.jruby.lexer.yacc.ISourcePosition;
 public class SymbolIndex {
 
     private Map index = Collections.synchronizedMap(new HashMap());
+    private static boolean verbose;
     
     public void add(ClassSymbol symbol, Location location) {
         Set locations = (Set) index.get(symbol);
@@ -62,6 +63,14 @@ public class SymbolIndex {
                     indexIter.remove();
             }
         }
+    }
+
+    public static void setVerbose(boolean verbose) {
+        SymbolIndex.verbose = verbose;
+    }
+    
+    public static boolean isVerbose() {
+        return verbose;
     }
 
 

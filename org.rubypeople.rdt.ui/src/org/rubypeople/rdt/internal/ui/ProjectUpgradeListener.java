@@ -58,11 +58,7 @@ final class ProjectUpgradeListener implements IResourceChangeListener {
 
     private boolean isProject(IResourceDelta child) {
         Object project = child.getResource().getAdapter(IProject.class);
-        boolean isProject = project != null;
-        return isProject;
-    }
-
-    private boolean isRootPath(IResourceChangeEvent event) {
-        return event.getDelta().getFullPath().equals(new Path("/"));
+        return project != null;
     }
 }
+

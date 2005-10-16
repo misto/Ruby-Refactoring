@@ -73,7 +73,7 @@ public class RubyModelManager {
 	 */
 	protected Map perWorkingCopyInfos = new HashMap(5);
 
-	public static boolean VERBOSE = false;
+	private static boolean verbose = false;
 	public static boolean CP_RESOLVE_VERBOSE = false;
 
 	/**
@@ -447,4 +447,12 @@ public class RubyModelManager {
 			getLoadpathBeingResolved().remove(project);
 		}
 	}
+
+    public static void setVerbose(boolean verbose) {
+        RubyModelManager.verbose = verbose;
+    }
+
+    public static boolean isVerbose() {
+        return verbose;
+    }
 }

@@ -52,6 +52,12 @@ public class RubyCore extends Plugin {
 	private static RubyCore RUBY_CORE_PLUGIN = null;
 
 	public final static String PLUGIN_ID = "org.rubypeople.rdt.core";
+
+    private static final String RUBY_PARSER_DEBUG_OPTION = RubyCore.PLUGIN_ID + "/rubyparser";
+
+    private static final String MODEL_MANAGER_VERBOSE_OPTION = RubyCore.PLUGIN_ID + "/modelmanager";
+
+    private static final String SYMBOL_INDEX_VERBOSE_OPTION = RubyCore.PLUGIN_ID + "/symbolIndex";
 	public final static String NATURE_ID = PLUGIN_ID + ".rubynature";
 
 	/**
@@ -203,17 +209,20 @@ public class RubyCore extends Plugin {
 		};
 		((IEclipsePreferences) getDefaultPreferences().parent()).addNodeChangeListener(listener);
 
-		String rubyParserOption = Platform.getDebugOption(RubyCore.PLUGIN_ID + "/rubyparser");
-		RubyParser.setDebugging(rubyParserOption == null ? false : rubyParserOption.equalsIgnoreCase("true"));
-		
-		String modelManagerOption = Platform.getDebugOption(RubyCore.PLUGIN_ID + "/modelmanager");
-		RubyModelManager.VERBOSE = modelManagerOption == null 
-            ? false : rubyParserOption.equalsIgnoreCase("true");
+        RubyParser.setDebugging(isDebugOptionTrue(RUBY_PARSER_DEBUG_OPTION));
+        RubyModelManager.setVerbose(isDebugOptionTrue(MODEL_MANAGER_VERBOSE_OPTION));
+        SymbolIndex.setVerbose(isDebugOptionTrue(SYMBOL_INDEX_VERBOSE_OPTION));
 
         IndexUpdater indexUpdater = new IndexUpdater(symbolIndex);
         MassIndexUpdater massUpdater = new MassIndexUpdater(indexUpdater);
         massUpdater.update(Arrays.asList(getRubyProjects()));
 	}
+
+    private boolean isDebugOptionTrue(String option) {
+        String optionText = Platform.getDebugOption(option);
+        return optionText == null 
+            ? false : optionText.equalsIgnoreCase("true");
+    }
 
     public static boolean upgradeOldProjects() throws CoreException {
         boolean projectUpgraded = false;
