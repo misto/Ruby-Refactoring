@@ -1,7 +1,7 @@
 /*
- * Author: David Corbin
+ * Author: 
  *
- * Copyright (c) 2005 RubyPeople.
+ * Copyright (c) 2003-2005 RubyPeople.
  *
  * This file is part of the Ruby Development Tools (RDT) plugin for eclipse. 
  * RDT is subject to the "Common Public License (CPL) v 1.0". You may not use
@@ -207,7 +207,8 @@ public class RubyCore extends Plugin {
 		RubyParser.setDebugging(rubyParserOption == null ? false : rubyParserOption.equalsIgnoreCase("true"));
 		
 		String modelManagerOption = Platform.getDebugOption(RubyCore.PLUGIN_ID + "/modelmanager");
-		RubyModelManager.VERBOSE = modelManagerOption == null ? false : rubyParserOption.equalsIgnoreCase("true");
+		RubyModelManager.VERBOSE = modelManagerOption == null 
+            ? false : rubyParserOption.equalsIgnoreCase("true");
 
         IndexUpdater indexUpdater = new IndexUpdater(symbolIndex);
         MassIndexUpdater massUpdater = new MassIndexUpdater(indexUpdater);
@@ -226,7 +227,9 @@ public class RubyCore extends Plugin {
     }
 
     public static boolean upgradeOldProject(IProject project) throws CoreException {
-        IRubyProject rubyProject = RubyModelManager.getRubyModelManager().getRubyModel().getRubyProject(project);
+        RubyModelManager rubyModelManager = RubyModelManager.getRubyModelManager();
+        RubyModel rubyModel = rubyModelManager.getRubyModel();
+        IRubyProject rubyProject = rubyModel.getRubyProject(project);
         if (rubyProject != null)
             return rubyProject.upgrade();
         return false;

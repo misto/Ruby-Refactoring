@@ -1,17 +1,20 @@
+/*
+ * Copyright (c) 2003-2005 RubyPeople.
+ *
+ * This file is part of the Ruby Development Tools (RDT) plugin for eclipse. 
+ * RDT is subject to the "Common Public License (CPL) v 1.0". You may not use
+ * RDT except in compliance with the License. For further information see 
+ * org.rubypeople.rdt/rdt.license.
+ */
 package org.rubypeople.rdt.internal.ui;
 
-import org.eclipse.core.internal.events.ResourceChangeEvent;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IResource;
-import org.eclipse.core.resources.IResourceChangeEvent;
-import org.eclipse.core.resources.IResourceChangeListener;
-import org.eclipse.core.resources.IResourceDelta;
 import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
@@ -127,24 +130,17 @@ public class RubyPlugin extends AbstractUIPlugin implements IRubyColorConstants 
 			}
 		});
 		
-		ResourcesPlugin.getWorkspace().addResourceChangeListener(new IResourceChangeListener() {
-		    
-		    public void resourceChanged(IResourceChangeEvent event) {
-		        int eventType = event.getType();
-                if (eventType == ResourceChangeEvent.POST_CHANGE) {
-                    IResourceDelta delta = event.getDelta();
-                    int deltaKind = delta.getKind();
-                    if (deltaKind == IResourceDelta.CHANGED && event.getResource() == null && event.getDelta().getFullPath().equals(new Path("/")))
-                        upgradeOldProjects();
-                }
-		        
-		    }});
+		listenForNewProjects();
 		upgradeOldProjects();
 		String generateRdocOption = Platform.getDebugOption(RubyPlugin.PLUGIN_ID + "/generaterdoc");
 		RDocUtility.setDebugging(generateRdocOption == null ? false : generateRdocOption.equalsIgnoreCase("true"));
 	}
+
+    private void listenForNewProjects() {
+        ResourcesPlugin.getWorkspace().addResourceChangeListener(new ProjectUpgradeListener(this));
+    }
 	
-	private void upgradeOldProjects() {
+	void upgradeOldProjects() {
 	    Job job = new Job("Upgrade Old Ruby Projects") {
 	        
 	        protected IStatus run(IProgressMonitor monitor) {
