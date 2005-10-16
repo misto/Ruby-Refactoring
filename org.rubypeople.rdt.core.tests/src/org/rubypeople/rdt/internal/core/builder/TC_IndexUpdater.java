@@ -1,3 +1,13 @@
+/*
+ * Author: David Corbin
+ *
+ * Copyright (c) 2005 RubyPeople.
+ *
+ * This file is part of the Ruby Development Tools (RDT) plugin for eclipse. 
+ * RDT is subject to the "Common Public License (CPL) v 1.0". You may not use
+ * RDT except in compliance with the License. For further information see 
+ * org.rubypeople.rdt/rdt.license.
+ */
 package org.rubypeople.rdt.internal.core.builder;
 
 import java.io.InputStreamReader;
@@ -56,7 +66,7 @@ public class TC_IndexUpdater extends TestCase {
         updater.update(file,node);
         
         symbolIndex.assertFlushed(file.getFullPath());
-        symbolIndex.assertAdded(new ClassSymbol("Foo"), file, new RdtPosition(1, 2, 10, 18));
+        symbolIndex.assertAdded(new ClassSymbol("Foo"), file, new RdtPosition(1, 2, 14, 15));
     }
 
     public void testTreeWithScopedClass() throws Exception {
@@ -65,7 +75,7 @@ public class TC_IndexUpdater extends TestCase {
         updater.update(file,node);
         
         symbolIndex.assertFlushed(file.getFullPath());
-        symbolIndex.assertAdded(new ClassSymbol("Foo::Bar"), file, new RdtPosition(1, 2, 10, 23));
+        symbolIndex.assertAdded(new ClassSymbol("Foo::Bar"), file, new RdtPosition(1, 2, 16, 20));
     }
 
     public void testTreeWithDeeplyScopedClass() throws Exception {
@@ -74,7 +84,7 @@ public class TC_IndexUpdater extends TestCase {
         updater.update(file,node);
         
         symbolIndex.assertFlushed(file.getFullPath());
-        symbolIndex.assertAdded(new ClassSymbol("X::Foo::Bar"), file, new RdtPosition(1, 2, 10, 26));
+        symbolIndex.assertAdded(new ClassSymbol("X::Foo::Bar"), file, new RdtPosition(1, 2, 19, 23));
     }
 
     public void testTreeWithNesting() throws Exception {
@@ -83,7 +93,7 @@ public class TC_IndexUpdater extends TestCase {
         updater.update(file,node);
         
         symbolIndex.assertFlushed(file.getFullPath());
-        symbolIndex.assertAdded(new ClassSymbol("Foo::Bar"), file, new RdtPosition(2, 3, 21, 29));
+        symbolIndex.assertAdded(new ClassSymbol("Foo::Bar"), file, new RdtPosition(2, 3, 25, 26));
     }
     
 

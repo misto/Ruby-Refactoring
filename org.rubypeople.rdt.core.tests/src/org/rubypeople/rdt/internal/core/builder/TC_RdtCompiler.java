@@ -1,3 +1,13 @@
+/*
+ * Author: David Corbin
+ *
+ * Copyright (c) 2005 RubyPeople.
+ *
+ * This file is part of the Ruby Development Tools (RDT) plugin for eclipse. 
+ * RDT is subject to the "Common Public License (CPL) v 1.0". You may not use
+ * RDT except in compliance with the License. For further information see 
+ * org.rubypeople.rdt/rdt.license.
+ */
 package org.rubypeople.rdt.internal.core.builder;
 
 import java.util.ArrayList;
@@ -36,7 +46,7 @@ public class TC_RdtCompiler extends TestCase {
         };
         markerManager = new ShamMarkerManager();
         parser = new ShamRubyParser();
-        parser.setParseResult(rootNode);
+        parser.addParseResult(file, rootNode);
         indexUpdater = new MockIndexUpdater();
         compiler = new RdtCompiler(markerManager, parser, indexUpdater);
     }

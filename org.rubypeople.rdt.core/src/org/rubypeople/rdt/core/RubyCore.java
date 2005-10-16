@@ -1,7 +1,18 @@
+/*
+ * Author: David Corbin
+ *
+ * Copyright (c) 2005 RubyPeople.
+ *
+ * This file is part of the Ruby Development Tools (RDT) plugin for eclipse. 
+ * RDT is subject to the "Common Public License (CPL) v 1.0". You may not use
+ * RDT except in compliance with the License. For further information see 
+ * org.rubypeople.rdt/rdt.license.
+ */
 package org.rubypeople.rdt.core;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.eclipse.core.resources.IFile;
@@ -31,6 +42,8 @@ import org.rubypeople.rdt.internal.core.RubyModel;
 import org.rubypeople.rdt.internal.core.RubyModelManager;
 import org.rubypeople.rdt.internal.core.RubyProject;
 import org.rubypeople.rdt.internal.core.RubyScript;
+import org.rubypeople.rdt.internal.core.builder.IndexUpdater;
+import org.rubypeople.rdt.internal.core.builder.MassIndexUpdater;
 import org.rubypeople.rdt.internal.core.parser.RubyParser;
 import org.rubypeople.rdt.internal.core.symbols.SymbolIndex;
 
@@ -196,6 +209,9 @@ public class RubyCore extends Plugin {
 		String modelManagerOption = Platform.getDebugOption(RubyCore.PLUGIN_ID + "/modelmanager");
 		RubyModelManager.VERBOSE = modelManagerOption == null ? false : rubyParserOption.equalsIgnoreCase("true");
 
+        IndexUpdater indexUpdater = new IndexUpdater(symbolIndex);
+        MassIndexUpdater massUpdater = new MassIndexUpdater(indexUpdater);
+        massUpdater.update(Arrays.asList(getRubyProjects()));
 	}
 
     public static boolean upgradeOldProjects() throws CoreException {

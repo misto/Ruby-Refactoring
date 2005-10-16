@@ -1,4 +1,19 @@
+/*
+ * Author: David Corbin
+ *
+ * Copyright (c) 2005 RubyPeople.
+ *
+ * This file is part of the Ruby Development Tools (RDT) plugin for eclipse. 
+ * RDT is subject to the "Common Public License (CPL) v 1.0". You may not use
+ * RDT except in compliance with the License. For further information see 
+ * org.rubypeople.rdt/rdt.license.
+ */
 package org.rubypeople.eclipse.shams.resources;
+
+import java.util.Collection;
+import java.util.Iterator;
+
+import junit.framework.Assert;
 
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IMarker;
@@ -17,6 +32,10 @@ import org.eclipse.core.runtime.jobs.ISchedulingRule;
 
 public class ShamResource implements IResource {
 	protected IPath path;
+    private boolean acceptCalled;
+    private IResourceProxyVisitor proxyVisitorArg;
+    private int flagsArg;
+    private Collection resourcesToVisit;
 
 	public ShamResource(IPath aPath) {
 		super();
@@ -222,11 +241,26 @@ public class ShamResource implements IResource {
 	public boolean isLinked() {
 		throw new RuntimeException("Need to implement on sham.");
 	}
-	/* (non-Javadoc)
-	 * @see org.eclipse.core.resources.IResource#accept(org.eclipse.core.resources.IResourceProxyVisitor, int)
-	 */
-	public void accept(IResourceProxyVisitor arg0, int arg1) throws CoreException {
-		throw new RuntimeException("Need to implement on sham.");
+
+    public void setResourcesToVisit(Collection resourcesToVisit) {
+        this.resourcesToVisit = resourcesToVisit;
+    }
+
+    public void assertAcceptCalled(IResourceProxyVisitor expectedVisitor, int expectedFlags) {
+        Assert.assertTrue("expected call to accept", acceptCalled);
+        Assert.assertEquals("visitor", expectedVisitor, proxyVisitorArg);
+        Assert.assertEquals("flags", expectedFlags, flagsArg);
+    }
+
+    public void accept(IResourceProxyVisitor visitor, int flags) throws CoreException {
+        proxyVisitorArg = visitor;
+        flagsArg = flags;
+        for (Iterator iter = resourcesToVisit.iterator(); iter.hasNext();) {
+            IResource resource = (IResource) iter.next();
+            visitor.visit(new ShamResourceProxy(resource));
+            
+        }
+        acceptCalled = true;
 	}
 
 	public long getLocalTimeStamp() {
@@ -257,7 +291,10 @@ public class ShamResource implements IResource {
 
 	public void setResourceAttributes(ResourceAttributes attributes) throws CoreException {
 		// TODO Auto-generated method stub
-		
 	}
+    
+    public String toString() {
+        return "Resource [" + path + "]";
+    }
 
 }
