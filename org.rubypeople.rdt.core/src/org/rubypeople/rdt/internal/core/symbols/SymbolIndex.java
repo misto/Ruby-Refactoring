@@ -24,7 +24,8 @@ import org.jruby.lexer.yacc.ISourcePosition;
 
 public class SymbolIndex {
 
-    private Map index = new HashMap();
+    private Map index = Collections.synchronizedMap(new HashMap());
+    
     public void add(ClassSymbol symbol, Location location) {
         Set locations = (Set) index.get(symbol);
         if (locations == null) { 
@@ -47,17 +48,19 @@ public class SymbolIndex {
 
     public void flush(IPath foo_path) {
         // flush only relevant bits
-        for (Iterator indexIter = index.entrySet().iterator(); indexIter.hasNext();) {
-            Map.Entry entry = (Map.Entry) indexIter.next();
-            Set locations = (Set) entry.getValue();
-            
-            for (Iterator locationIter = locations.iterator(); locationIter.hasNext();) {
-                Location location = (Location) locationIter.next();
-                locationIter.remove();
+        synchronized (index) {
+            for (Iterator indexIter = index.entrySet().iterator(); indexIter.hasNext();) {
+                Map.Entry entry = (Map.Entry) indexIter.next();
+                Set locations = (Set) entry.getValue();
+                
+                for (Iterator locationIter = locations.iterator(); locationIter.hasNext();) {
+                    Location location = (Location) locationIter.next();
+                    locationIter.remove();
+                }
+                
+                if (locations.isEmpty())
+                    indexIter.remove();
             }
-            
-            if (locations.isEmpty())
-                indexIter.remove();
         }
     }
 
