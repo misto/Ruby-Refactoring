@@ -171,7 +171,28 @@ public class RubyScriptStructureBuilder implements NodeVisitor {
 	 * @see org.jruby.ast.visitor.NodeVisitor#visitAliasNode(org.jruby.ast.AliasNode)
 	 */
 	public void visitAliasNode(AliasNode iVisited) {
-		handleNode(iVisited);
+		handleNode(iVisited);		
+		
+		String name = iVisited.getNewName();
+		
+		Visibility visibility = currentVisibility;
+		if( name.equals("initialize") ) visibility = Visibility.PROTECTED;
+		
+		RubyMethod method = new RubyMethod( getCurrentType(), name );
+		modelStack.push( method );
+		
+		RubyElementInfo parentInfo = infoStack.peek();
+		parentInfo.addChild( method );
+		
+		RubyMethodElementInfo info = new RubyMethodElementInfo();
+		info.setVisibility( convertVisibility(visibility) );
+		ISourcePosition pos = iVisited.getPosition();
+		setKeywordRange( "alias", pos, info, ":" + name );
+		infoStack.push( info );
+		newElements.put( method, info );
+		
+		modelStack.pop();
+		infoStack.pop();
 	}
 
 	/*
@@ -437,6 +458,10 @@ public class RubyScriptStructureBuilder implements NodeVisitor {
 	 */
 	public void visitClassNode(ClassNode iVisited) {
 		handleNode(iVisited);
+		
+		// This resets the visibility when opening or declaring a class to public
+		currentVisibility = Visibility.PUBLIC;
+		
 		String name = iVisited.getCPath().getName();
 		RubyType handle = new RubyType(modelStack.peek(), name);
 		modelStack.push(handle);
@@ -831,7 +856,6 @@ public class RubyScriptStructureBuilder implements NodeVisitor {
 			ArrayNode node = (ArrayNode) iVisited.getArgsNode();
 			String arg = getString(node);
 			if (arg != null) {
-				RubyElementInfo parentInfo = scriptInfo;
 				ImportContainer importContainer = (ImportContainer) script.getImportContainer();
 				// create the import container and its info
 				if (this.importContainerInfo == null) {
