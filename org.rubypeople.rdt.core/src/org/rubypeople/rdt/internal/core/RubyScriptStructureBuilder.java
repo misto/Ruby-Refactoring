@@ -175,6 +175,7 @@ public class RubyScriptStructureBuilder implements NodeVisitor {
 		
 		String name = iVisited.getNewName();
 		
+		// TODO Use the visibility for the original method that this is aliasing
 		Visibility visibility = currentVisibility;
 		if( name.equals("initialize") ) visibility = Visibility.PROTECTED;
 		
