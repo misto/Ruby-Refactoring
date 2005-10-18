@@ -29,7 +29,18 @@ A regular expression plugin is also available (Thanks to the <a href="http://e-p
 
 
     <!-- INSERT NEW NEWS HERE!!! -->
+			
 	<table>
+				    <tr>
+      <td align="right" valign="top" width="20"><img src="images/arrow.gif" alt="->" border="0" height="16" width="16"></td>
+      <td valign="top"><font face="arial,helvetica,geneva" size="-1"><b>Article on developerworks (2005-10-18)</b>
+        <br/>
+Recently Neal Ford has published an article on IBM's developerWorks site. It gives a good overview of RDT:<br/>
+ <a href="http://www-128.ibm.com/developerworks/opensource/library/os-rubyeclipse/">Using the Ruby Development Tools plug-in for Eclipse</a>
+</p>
+        </font>
+      </td>
+    </tr>
 		    <tr>
       <td align="right" valign="top" width="20"><img src="images/arrow.gif" alt="->" border="0" height="16" width="16"></td>
       <td valign="top"><font face="arial,helvetica,geneva" size="-1"><b>0.6.0 Released (2005-09-29)</b>
