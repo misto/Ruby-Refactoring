@@ -14,19 +14,15 @@ import java.io.InputStreamReader;
 
 import junit.framework.TestCase;
 
-import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.CoreException;
-import org.eclipse.core.runtime.IPath;
 import org.jruby.ast.ClassNode;
 import org.jruby.ast.Colon2Node;
 import org.jruby.ast.Node;
 import org.jruby.ast.TrueNode;
-import org.jruby.lexer.yacc.ISourcePosition;
 import org.rubypeople.eclipse.shams.resources.ShamFile;
 import org.rubypeople.rdt.internal.core.parser.RdtPosition;
 import org.rubypeople.rdt.internal.core.parser.RubyParser;
 import org.rubypeople.rdt.internal.core.symbols.ClassSymbol;
-import org.rubypeople.rdt.internal.core.symbols.SymbolIndex;
 
 public class TC_IndexUpdater extends TestCase {
     private static final RdtPosition POSITION_1 = new RdtPosition(1,2,3);
@@ -35,11 +31,11 @@ public class TC_IndexUpdater extends TestCase {
     
     private IndexUpdater updater;
     private ShamFile file;
-    private MockSymbolIndex symbolIndex;
+    private ShamSymbolIndex symbolIndex;
     
     public void setUp() {
         file = new ShamFile("TestFile.rb");
-        symbolIndex = new MockSymbolIndex();
+        symbolIndex = new ShamSymbolIndex();
         updater = new IndexUpdater(symbolIndex);
     }
     
@@ -101,37 +97,5 @@ public class TC_IndexUpdater extends TestCase {
         file.setContents(code);
         InputStreamReader reader = new InputStreamReader(file.getContents());
         return new RubyParser().parse(file, reader);
-    }
-
-    private static class MockSymbolIndex extends SymbolIndex {
-
-        private IFile fileArg;
-        private ClassSymbol symbolArg;
-        private ISourcePosition positionArg;
-        private IPath flushedPathArg;
-
-        public void flush(IPath path) {
-            flushedPathArg = path;
-        }
-        public void assertFlushed(IPath expectedPath) {
-            assertEquals("Flushed path", expectedPath, flushedPathArg);
-        }
-
-        public void assertAddNotCalled() {
-            assertNull("Unexpected call to assertAddNotCalled()", fileArg);
-        }
-
-        public void assertAdded(ClassSymbol expectedSymbol, IFile expectedFile, ISourcePosition expectedPosition) {
-            assertEquals("Symbol", expectedSymbol, symbolArg);
-            assertEquals("File", expectedFile, fileArg);
-            assertEquals("Position", expectedPosition, positionArg);
-            
-        }
-        public void add(ClassSymbol symbol, IFile file, ISourcePosition position) {
-            symbolArg = symbol;
-            fileArg = file;
-            positionArg = position;
-        }
-
     }
 }

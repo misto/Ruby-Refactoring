@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <jardesc>
-<jar path="D:/java/rdt/org.rubypeople.rdt.core/lib/jruby.jar"/>
+<jar path="/home/dcorbin/eclipse/rdt-head/org.rubypeople.rdt.core/lib/jruby.jar"/>
 <options buildIfNeeded="true" compress="true" descriptionLocation="/org.rubypeople.rdt.core/generateJrubyJar.jardesc" exportErrors="true" exportWarnings="true" includeDirectoryEntries="false" overwrite="false" saveDescription="true" useSourceFolders="false"/>
 <manifest generateManifest="true" manifestLocation="" manifestVersion="1.0" reuseManifest="false" saveManifest="false" usesManifest="true">
 <sealing sealJar="false">

@@ -42,6 +42,7 @@ import org.rubypeople.rdt.internal.core.RubyModel;
 import org.rubypeople.rdt.internal.core.RubyModelManager;
 import org.rubypeople.rdt.internal.core.RubyProject;
 import org.rubypeople.rdt.internal.core.RubyScript;
+import org.rubypeople.rdt.internal.core.SymbolIndexResourceChangeListener;
 import org.rubypeople.rdt.internal.core.builder.IndexUpdater;
 import org.rubypeople.rdt.internal.core.builder.MassIndexUpdater;
 import org.rubypeople.rdt.internal.core.parser.RubyParser;

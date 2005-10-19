@@ -1,5 +1,5 @@
 /*
- * Author: David Corbin
+ * Author: 
  *
  * Copyright (c) 2005 RubyPeople.
  *
@@ -38,7 +38,7 @@ public class ShamProject extends ShamResource implements IProject {
 	protected List natures = new ArrayList();
 
 	public ShamProject(String theProjectName) {
-		this(new Path("undefined by sham creator"), theProjectName);
+		this(new Path("path to " + theProjectName), theProjectName);
 	}
 
 	public void setDefaultCharset(String charset, IProgressMonitor monitor) throws CoreException {
@@ -153,9 +153,6 @@ public class ShamProject extends ShamResource implements IProject {
 		throw new RuntimeException("Unimplemented method in sham");
 	}
 
-	public Object getAdapter(Class adapter) {
-		throw new RuntimeException("Unimplemented method in sham");
-	}
 
 	public void accept(IResourceVisitor visitor) throws CoreException {}
 

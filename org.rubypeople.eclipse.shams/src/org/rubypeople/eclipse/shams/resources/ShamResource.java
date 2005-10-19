@@ -1,5 +1,5 @@
 /*
- * Author: David Corbin
+ * Author: 
  *
  * Copyright (c) 2005 RubyPeople.
  *
@@ -231,7 +231,9 @@ public class ShamResource implements IResource {
 	}
 
 	public Object getAdapter(Class adapter) {
-		throw new RuntimeException("Need to implement on sham.");
+        if (adapter.isAssignableFrom(getClass()))
+            return this;
+        return null;
 	}
 	
 	public IPath getRawLocation() {
