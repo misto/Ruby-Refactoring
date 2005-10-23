@@ -29,6 +29,7 @@
       <import plugin="org.eclipse.core.expressions"/>
       <import plugin="org.eclipse.ui.forms"/>
       <import plugin="org.rubypeople.rdt.launching"/>
+      <import plugin="org.eclipse.search"/>
    </requires>
    <extension-point id="foldingStructureProviders" name="%foldingStructureProviders" schema="schema/foldingStructureProviders.exsd"/>
    <extension-point id="editorPopupExtender" name="%editorPopupExtender" schema="schema/org.rubypeople.rdt.ui.editorPopupExtender.exsd"/>
@@ -519,5 +520,19 @@
             extensions="rb,rbw"
             fileNames="Rakefile">
       </factory>
+   </extension>
+   <extension
+         point="org.eclipse.search.searchPages">
+      <page
+            class="org.rubypeople.rdt.internal.ui.search.RubySearchPage"
+            id="org.rubypeople.rdt.ui.RubySearchPage"
+            label="%RubySearchPage.label"/>
+   </extension>
+   <extension
+         point="org.eclipse.search.searchResultViewPages">
+      <viewPage
+            class="org.rubypeople.rdt.internal.ui.search.RubySearchResultPage"
+            id="org.rubypeople.rdt.ui.search.RubySearchResultPage"
+            searchResultClass="org.rubypeople.rdt.internal.ui.search.RubySearchResult"/>
    </extension>
 </plugin>
