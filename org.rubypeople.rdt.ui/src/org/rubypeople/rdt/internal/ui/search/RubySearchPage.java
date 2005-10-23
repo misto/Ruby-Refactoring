@@ -249,9 +249,9 @@ public class RubySearchPage extends DialogPage implements ISearchPage {
 	}
 
 	private int getLimitTo() {
-		for (int i = 0; i < fLimitTo.length; i++) {
-			if (fLimitTo[i].getSelection()) return i;
-		}
+		//for (int i = 0; i < fLimitTo.length; i++) {
+		//	if (fLimitTo[i].getSelection()) return i;
+		//}
 		return -1;
 	}
 
