@@ -27,6 +27,10 @@ public class ClassSymbol {
         return that.className.equals(this.className);
     }
     
+    public String getName() {
+    	return this.className ;
+    }
+    
     public int hashCode() {
         return className.hashCode();
     }
