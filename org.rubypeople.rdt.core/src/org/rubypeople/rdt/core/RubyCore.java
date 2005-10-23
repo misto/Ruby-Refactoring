@@ -220,7 +220,8 @@ public class RubyCore extends Plugin {
         SymbolIndexResourceChangeListener.register(symbolIndex);
         IndexUpdater indexUpdater = new IndexUpdater(symbolIndex);
         MassIndexUpdater massUpdater = new MassIndexUpdater(indexUpdater);
-        massUpdater.updateProjects(Arrays.asList(getRubyProjects()));
+        // TODO: move away from start method: long running, syntax errors can occur 
+        //massUpdater.updateProjects(Arrays.asList(getRubyProjects()));
         
 	}
 
