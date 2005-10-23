@@ -26,6 +26,7 @@ import org.rubypeople.rdt.internal.core.parser.RdtPosition;
 public class TC_SymbolIndex extends TestCase {
     private static final ClassSymbol UNKNOWN_SYMBOL = new ClassSymbol("unknown");
     private static final ClassSymbol FOO_CLASS_SYMBOL = new ClassSymbol("Foo");
+    private static final ClassSymbol OTHER_FOO_CLASS_SYMBOL = new ClassSymbol("Foo2");
     private static final Path FOO_PATH = new Path("/foo.rb");
     private static final Path OTHER_FOO_PATH = new Path("/utils/foo.rb");
     
@@ -51,8 +52,11 @@ public class TC_SymbolIndex extends TestCase {
         assertEquals(EMPTY_SET, index.find(UNKNOWN_SYMBOL));
     } 
     
-    public void testFlush() {
+    public void testFlush() {    	
+    	index.add(FOO_CLASS_SYMBOL, OTHER_FOO_CLASS_LOCATION);
         index.flush(FOO_PATH);
+        assertEquals(createSet(OTHER_FOO_CLASS_LOCATION), index.find(FOO_CLASS_SYMBOL));
+        index.flush(OTHER_FOO_PATH);
         assertEquals(EMPTY_SET, index.find(FOO_CLASS_SYMBOL));
     }
     
@@ -67,6 +71,21 @@ public class TC_SymbolIndex extends TestCase {
         index.add(FOO_CLASS_SYMBOL, OTHER_FOO_CLASS_LOCATION);
         assertEquals(createSet(OTHER_FOO_CLASS_LOCATION, FOO_CLASS_LOCATION), index.find(FOO_CLASS_SYMBOL));
     }
+    
+    public void testAddingTwice() {
+    	index.add(FOO_CLASS_SYMBOL, FOO_CLASS_LOCATION);
+    	assertEquals(createSet(FOO_CLASS_LOCATION), index.find(FOO_CLASS_SYMBOL));
+    }
+    
+    public void testRegExpFind() {
+    	index.add(OTHER_FOO_CLASS_SYMBOL, OTHER_FOO_CLASS_LOCATION);
+    	assertEquals(EMPTY_SET, index.find("^oo$"));
+    	assertEquals(createSet(new SearchResult(FOO_CLASS_SYMBOL, FOO_CLASS_LOCATION)), index.find("[o]+$"));
+    	assertEquals(createSet(new SearchResult(OTHER_FOO_CLASS_SYMBOL, OTHER_FOO_CLASS_LOCATION)), index.find("o.2"));
+    	assertEquals(createSet(new SearchResult(FOO_CLASS_SYMBOL, FOO_CLASS_LOCATION), new SearchResult(OTHER_FOO_CLASS_SYMBOL, OTHER_FOO_CLASS_LOCATION)), index.find("oo"));
+    	
+    }
+    
     private Set createSet(Object obj1) {
         Set set = new HashSet();
         set.add(obj1);
