@@ -23,7 +23,7 @@ import org.jruby.lexer.yacc.ISourcePosition;
 import org.rubypeople.eclipse.shams.resources.ShamFile;
 import org.rubypeople.rdt.internal.core.parser.RdtPosition;
 
-public class TC_SymbolIndex extends TestCase {
+public class TC_SymbolIndex extends TestCase implements ISymbolTypes {
     private static final ClassSymbol UNKNOWN_SYMBOL = new ClassSymbol("unknown");
     private static final ClassSymbol FOO_CLASS_SYMBOL = new ClassSymbol("Foo");
     private static final ClassSymbol OTHER_FOO_CLASS_SYMBOL = new ClassSymbol("Foo2");
@@ -77,13 +77,26 @@ public class TC_SymbolIndex extends TestCase {
     	assertEquals(createSet(FOO_CLASS_LOCATION), index.find(FOO_CLASS_SYMBOL));
     }
     
-    public void testRegExpFind() {
+    public void testClassRegExpFind() {
     	index.add(OTHER_FOO_CLASS_SYMBOL, OTHER_FOO_CLASS_LOCATION);
-    	assertEquals(EMPTY_SET, index.find("^oo$"));
-    	assertEquals(createSet(new SearchResult(FOO_CLASS_SYMBOL, FOO_CLASS_LOCATION)), index.find("[o]+$"));
-    	assertEquals(createSet(new SearchResult(OTHER_FOO_CLASS_SYMBOL, OTHER_FOO_CLASS_LOCATION)), index.find("o.2"));
-    	assertEquals(createSet(new SearchResult(FOO_CLASS_SYMBOL, FOO_CLASS_LOCATION), new SearchResult(OTHER_FOO_CLASS_SYMBOL, OTHER_FOO_CLASS_LOCATION)), index.find("oo"));
-    	
+    	assertEquals(EMPTY_SET, index.find("^oo$", CLASS_SYMBOL));
+    	assertEquals(createSet(new SearchResult(FOO_CLASS_SYMBOL, FOO_CLASS_LOCATION)), index.find("[o]+$", CLASS_SYMBOL));
+    	assertEquals(createSet(new SearchResult(OTHER_FOO_CLASS_SYMBOL, OTHER_FOO_CLASS_LOCATION)), index.find("o.2", CLASS_SYMBOL));
+    	assertEquals(createSet(new SearchResult(FOO_CLASS_SYMBOL, FOO_CLASS_LOCATION), new SearchResult(OTHER_FOO_CLASS_SYMBOL, OTHER_FOO_CLASS_LOCATION)), index.find("oo", CLASS_SYMBOL));    	
+    }
+    
+    public void testAddMethodWithSameNameAsClass() {
+    	MethodSymbol symbol = new MethodSymbol("Foo") ;
+    	index.add(symbol, OTHER_FOO_CLASS_LOCATION);
+    	assertEquals(createSet(OTHER_FOO_CLASS_LOCATION), index.find(symbol)) ;
+    	assertEquals(createSet(FOO_CLASS_LOCATION), index.find(FOO_CLASS_SYMBOL)) ;
+    }
+    
+    public void testMethodRegExpFind() {
+    	MethodSymbol symbol = new MethodSymbol("aMethod") ;
+    	index.add(symbol, OTHER_FOO_CLASS_LOCATION);
+    	assertEquals(createSet(new SearchResult(symbol, OTHER_FOO_CLASS_LOCATION)), index.find("^a", METHOD_SYMBOL)) ;
+    	assertEquals(EMPTY_SET, index.find("^a", CLASS_SYMBOL)) ;
     }
     
     private Set createSet(Object obj1) {

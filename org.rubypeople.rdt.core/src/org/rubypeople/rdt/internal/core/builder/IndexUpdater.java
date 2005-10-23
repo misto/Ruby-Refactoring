@@ -17,10 +17,12 @@ import java.util.Stack;
 import org.eclipse.core.resources.IFile;
 import org.jruby.ast.ClassNode;
 import org.jruby.ast.Colon2Node;
+import org.jruby.ast.DefnNode;
 import org.jruby.ast.IScopingNode;
 import org.jruby.ast.Node;
 import org.jruby.ast.types.INameNode;
 import org.rubypeople.rdt.internal.core.symbols.ClassSymbol;
+import org.rubypeople.rdt.internal.core.symbols.MethodSymbol;
 import org.rubypeople.rdt.internal.core.symbols.SymbolIndex;
 
 public class IndexUpdater {
@@ -49,10 +51,17 @@ public class IndexUpdater {
             String name = getFullyQualifiedName(classNode);
             
             scopeStack.push(classNode.getCPath().getName());
-            if (node instanceof ClassNode)
+            if (node instanceof ClassNode) {
                 index.add(new ClassSymbol(name), file, classNode.getCPath().getPosition());
+            }
         }
-        
+
+        if (node instanceof DefnNode) {
+        	DefnNode defnNode = (DefnNode) node ;
+        	String qualifiedName = this.getContext() + ((DefnNode) node).getName() ; 
+        	index.add(new MethodSymbol(qualifiedName), file, defnNode.getPosition()) ;
+        }
+
         
         for (Iterator iter = node.childNodes().iterator(); iter.hasNext();) {
             Node childNode = (Node) iter.next();

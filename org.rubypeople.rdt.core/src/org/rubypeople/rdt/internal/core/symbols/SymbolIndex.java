@@ -29,7 +29,7 @@ public class SymbolIndex {
     private Map index = Collections.synchronizedMap(new HashMap());
     private static boolean verbose;
     
-    public void add(ClassSymbol symbol, Location location) {
+    public void add(Symbol symbol, Location location) {
         Set locations = (Set) index.get(symbol);
         if (locations == null) { 
             locations = new HashSet();
@@ -38,12 +38,12 @@ public class SymbolIndex {
         locations.add(location);
     }
 
-    public void add(ClassSymbol symbol, IFile file, ISourcePosition position) {
+    public void add(Symbol symbol, IFile file, ISourcePosition position) {
     	SymbolIndex.log("Adding Symbol: " + symbol) ;
         add(symbol, new Location(file.getFullPath(), position));
     }
 
-    public Set find(ClassSymbol symbol) {
+    public Set find(Symbol symbol) {
         Set locations = (Set) index.get(symbol);
         if (locations == null) 
             return Collections.EMPTY_SET;
@@ -53,13 +53,16 @@ public class SymbolIndex {
     /*
      * returns a set of SearchResult instances as opposed to find(symbol), which returns locations
      */
-    public Set find(String regExp) throws PatternSyntaxException {
+    public Set find(String regExp, int symbolType) throws PatternSyntaxException {
 		Pattern pattern = Pattern.compile(regExp);
 		Set searchResults = new HashSet() ;
 		
         for (Iterator indexIter = index.entrySet().iterator(); indexIter.hasNext();) {
             Map.Entry entry = (Map.Entry) indexIter.next();
-            ClassSymbol symbol = (ClassSymbol) entry.getKey() ;
+            Symbol symbol = (Symbol) entry.getKey() ;
+            if (symbol.getType() != symbolType) {
+            	continue ;
+            }
             if (pattern.matcher(symbol.getName()).find()) {
             	Set foundLocations = (Set)entry.getValue() ;
             	for (Iterator locationIter = foundLocations.iterator(); locationIter.hasNext(); ) {

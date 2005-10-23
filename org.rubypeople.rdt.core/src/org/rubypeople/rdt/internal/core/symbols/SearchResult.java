@@ -14,10 +14,10 @@ package org.rubypeople.rdt.internal.core.symbols;
 
 public class SearchResult {
 	private static final int ODD_PRIME_NUMBER = 37;
-	private ClassSymbol symbol ;
+	private Symbol symbol ;
 	private Location location ;
 	
-	public SearchResult(ClassSymbol symbol, Location location) {
+	public SearchResult(Symbol symbol, Location location) {
 		this.location = location ;
 		this.symbol = symbol ;
 	}
@@ -26,7 +26,7 @@ public class SearchResult {
 		return location;
 	}
 	
-	public ClassSymbol getSymbol() {
+	public Symbol getSymbol() {
 		return symbol;
 	}
 

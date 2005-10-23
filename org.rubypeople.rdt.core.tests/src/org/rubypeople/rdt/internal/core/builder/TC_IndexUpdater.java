@@ -23,6 +23,7 @@ import org.rubypeople.eclipse.shams.resources.ShamFile;
 import org.rubypeople.rdt.internal.core.parser.RdtPosition;
 import org.rubypeople.rdt.internal.core.parser.RubyParser;
 import org.rubypeople.rdt.internal.core.symbols.ClassSymbol;
+import org.rubypeople.rdt.internal.core.symbols.MethodSymbol;
 
 public class TC_IndexUpdater extends TestCase {
     private static final RdtPosition POSITION_1 = new RdtPosition(1,2,3);
@@ -100,7 +101,24 @@ public class TC_IndexUpdater extends TestCase {
         symbolIndex.assertFlushed(file.getFullPath());
         symbolIndex.assertAdded(new ClassSymbol("Foo::Bar::InnerBar"), file, new RdtPosition(2, 3, 35, 36));
     }
+    
+    public void testMethod() throws Exception {
+    	Node node = parseCode("def method\nend") ;
+        
+        updater.update(file,node);
+                
+        symbolIndex.assertAdded(new MethodSymbol("method"), file, new RdtPosition(0, 1, 3, 12));
+    }
 
+    public void testMethodWithNesting() throws Exception {
+    	Node node = parseCode("class Foo\ndef method\nend\nend") ;
+        
+        updater.update(file,node);
+                
+        symbolIndex.assertAdded(new MethodSymbol("Foo::method"), file, new RdtPosition(1, 2, 13, 24));
+    }
+    
+    
     private Node parseCode(String code) throws CoreException {
         file.setContents(code);
         InputStreamReader reader = new InputStreamReader(file.getContents());

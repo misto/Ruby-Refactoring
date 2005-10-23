@@ -14,13 +14,13 @@ package org.rubypeople.rdt.internal.core.builder;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.IPath;
 import org.jruby.lexer.yacc.ISourcePosition;
-import org.rubypeople.rdt.internal.core.symbols.ClassSymbol;
+import org.rubypeople.rdt.internal.core.symbols.Symbol;
 import org.rubypeople.rdt.internal.core.symbols.SymbolIndex;
 
 public class ShamSymbolIndex extends SymbolIndex {
 
     private IFile fileArg;
-    private ClassSymbol symbolArg;
+    private Symbol symbolArg;
     private ISourcePosition positionArg;
     private IPath flushedPathArg;
 
@@ -35,13 +35,13 @@ public class ShamSymbolIndex extends SymbolIndex {
         TC_IndexUpdater.assertNull("Unexpected call to assertAddNotCalled()", fileArg);
     }
 
-    public void assertAdded(ClassSymbol expectedSymbol, IFile expectedFile, ISourcePosition expectedPosition) {
+    public void assertAdded(Symbol expectedSymbol, IFile expectedFile, ISourcePosition expectedPosition) {
         TC_IndexUpdater.assertEquals("Symbol", expectedSymbol, symbolArg);
         TC_IndexUpdater.assertEquals("File", expectedFile, fileArg);
         TC_IndexUpdater.assertEquals("Position", expectedPosition, positionArg);
         
     }
-    public void add(ClassSymbol symbol, IFile file, ISourcePosition position) {
+    public void add(Symbol symbol, IFile file, ISourcePosition position) {
         symbolArg = symbol;
         fileArg = file;
         positionArg = position;

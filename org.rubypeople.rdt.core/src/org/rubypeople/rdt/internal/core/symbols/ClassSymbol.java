@@ -11,31 +11,13 @@
 
 package org.rubypeople.rdt.internal.core.symbols;
 
-public class ClassSymbol {
-
-    private final String className;
+public class ClassSymbol extends Symbol {
 
     public ClassSymbol(String className) {
-        this.className = className;
+    	super(className, CLASS_SYMBOL) ;
     }
 
-    public boolean equals(Object obj) {
-        if (!(obj instanceof ClassSymbol))
-            return false;
-        
-        ClassSymbol that = (ClassSymbol) obj;
-        return that.className.equals(this.className);
-    }
-    
-    public String getName() {
-    	return this.className ;
-    }
-    
-    public int hashCode() {
-        return className.hashCode();
-    }
-    
     public String toString() {
-        return "Class [" + className + "]";
+        return "Class [" + this.getName() + "]";
     }
 }

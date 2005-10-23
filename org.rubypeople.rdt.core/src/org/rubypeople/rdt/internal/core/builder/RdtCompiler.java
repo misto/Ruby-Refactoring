@@ -45,6 +45,9 @@ public final class RdtCompiler implements SingleFileCompiler {
             indexUpdater.update(file, rootNode);
         } catch (SyntaxException e) {
             markerManager.createSyntaxError(file, e);
+        } catch (Exception ex) {
+        	// resume also on other compiler errors like ClassCastException
+        	RubyCore.log(ex) ;
         } finally {
             IoUtils.closeQuietly(reader);
         }
