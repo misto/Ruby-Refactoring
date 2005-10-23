@@ -92,6 +92,14 @@ public class TC_IndexUpdater extends TestCase {
         symbolIndex.assertAdded(new ClassSymbol("Foo::Bar"), file, new RdtPosition(2, 3, 25, 26));
     }
     
+    public void testTreeWithMoreNesting() throws Exception {
+        Node node = parseCode("module Foo\nclass Bar\nclass InnerBar\nend\nend\nend\n");
+        
+        updater.update(file,node);
+        
+        symbolIndex.assertFlushed(file.getFullPath());
+        symbolIndex.assertAdded(new ClassSymbol("Foo::Bar::InnerBar"), file, new RdtPosition(2, 3, 35, 36));
+    }
 
     private Node parseCode(String code) throws CoreException {
         file.setContents(code);
