@@ -53,4 +53,9 @@ public class Location {
     public ISourcePosition getPosition() {
         return position;
     }
+    
+    public IPath getSourcePath() 
+    {
+    	return sourcePath ;
+    }
 }
