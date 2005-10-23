@@ -17,6 +17,8 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
+import java.util.regex.Pattern;
+import java.util.regex.PatternSyntaxException;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.IPath;
@@ -37,6 +39,7 @@ public class SymbolIndex {
     }
 
     public void add(ClassSymbol symbol, IFile file, ISourcePosition position) {
+    	SymbolIndex.log("Adding Symbol: " + symbol) ;
         add(symbol, new Location(file.getFullPath(), position));
     }
 
@@ -46,9 +49,32 @@ public class SymbolIndex {
             return Collections.EMPTY_SET;
         return Collections.unmodifiableSet(locations);
     }
+    
+    /*
+     * returns a set of SearchResult instances as opposed to find(symbol), which returns locations
+     */
+    public Set find(String regExp) throws PatternSyntaxException {
+		Pattern pattern = Pattern.compile(regExp);
+		Set searchResults = new HashSet() ;
+		
+        for (Iterator indexIter = index.entrySet().iterator(); indexIter.hasNext();) {
+            Map.Entry entry = (Map.Entry) indexIter.next();
+            ClassSymbol symbol = (ClassSymbol) entry.getKey() ;
+            if (pattern.matcher(symbol.getName()).find()) {
+            	Set foundLocations = (Set)entry.getValue() ;
+            	for (Iterator locationIter = foundLocations.iterator(); locationIter.hasNext(); ) {
+            		Location location = (Location) locationIter.next() ;            		
+            		searchResults.add(new SearchResult(symbol, location)) ;
+            	}
+            }            
+        }
+		
+		return searchResults ;
+    }
 
     public void flush(IPath foo_path) {
-        // flush only relevant bits
+    	SymbolIndex.log("Flushing all Symbols with path: " + foo_path) ;
+
         synchronized (index) {
             for (Iterator indexIter = index.entrySet().iterator(); indexIter.hasNext();) {
                 Map.Entry entry = (Map.Entry) indexIter.next();
@@ -56,7 +82,9 @@ public class SymbolIndex {
                 
                 for (Iterator locationIter = locations.iterator(); locationIter.hasNext();) {
                     Location location = (Location) locationIter.next();
-                    locationIter.remove();
+                    if (location.getSourcePath() == foo_path) {
+                    	locationIter.remove();	
+                    }                    
                  }
                 
                 if (locations.isEmpty())
@@ -71,6 +99,13 @@ public class SymbolIndex {
     
     public static boolean isVerbose() {
         return verbose;
+    }
+    
+    public static void log(String message) {
+    	if (!SymbolIndex.isVerbose()) {
+    		return ;
+    	}
+    	System.out.println(message) ;
     }
 
 
