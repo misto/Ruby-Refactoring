@@ -11,6 +11,9 @@
 
 package org.rubypeople.rdt.internal.core;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IResourceChangeEvent;
@@ -20,12 +23,11 @@ import org.eclipse.core.resources.ResourcesPlugin;
 import org.rubypeople.rdt.internal.core.builder.IndexUpdater;
 import org.rubypeople.rdt.internal.core.builder.MassIndexUpdater;
 import org.rubypeople.rdt.internal.core.symbols.SymbolIndex;
-import org.rubypeople.rdt.internal.core.util.ListUtil;
 
 public final class SymbolIndexResourceChangeListener implements IResourceChangeListener {
     private final MassIndexUpdater updater;
 
-    public static void register(SymbolIndex symbolIndex) { // DSC check constructors
+    public static void register(SymbolIndex symbolIndex) { 
         IndexUpdater indexUpdater = new IndexUpdater(symbolIndex);
         MassIndexUpdater massIndexUpdater = new MassIndexUpdater(indexUpdater);
         SymbolIndexResourceChangeListener listener 
@@ -43,15 +45,18 @@ public final class SymbolIndexResourceChangeListener implements IResourceChangeL
     }
 
     private void handlePostChangeEvent(IResourceChangeEvent event) {
+        List projects = new ArrayList();
         IResourceDelta[] deltas = event.getDelta().getAffectedChildren();
         for (int i = 0; i < deltas.length; i++) {
             IResourceDelta delta = deltas[i];
             if (isDeltaOpen(delta)) {
                 IResource resource = delta.getResource();
                 if (isProject(resource))
-                    updater.updateProjects(ListUtil.create((IProject) resource.getAdapter(IProject.class)));
+                    projects.add(resource.getAdapter(IProject.class));
             }
         }
+        if (!projects.isEmpty())
+            updater.updateProjects(projects);
     }
 
     private boolean isProject(IResource resource) {

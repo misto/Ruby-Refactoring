@@ -25,6 +25,7 @@ import org.rubypeople.rdt.core.RubyCore;
 public class RubyBuilder extends IncrementalProjectBuilder {
 
     private static final int TOTAL_WORK = 10000;
+    private static boolean verbose;
 
     private IProject currentProject;
 
@@ -35,7 +36,8 @@ public class RubyBuilder extends IncrementalProjectBuilder {
 		if (currentProject == null || !currentProject.isAccessible()) 
             return returnProjects;
 		
-        RubyCore.trace("Started " + buildType(kind) + " build of " + buildDescription()); //$NON-NLS-1$
+        if (verbose)
+            RubyCore.trace("Started " + buildType(kind) + " build of " + buildDescription()); //$NON-NLS-1$
 
         MarkerManager rubyMarkerManager = new MarkerManager();
         if (!isPartialBuild(kind))
@@ -67,4 +69,9 @@ public class RubyBuilder extends IncrementalProjectBuilder {
 
     protected void doCompile(List files, IProgressMonitor monitor) {
         new RubyCompiler(TOTAL_WORK/files.size()).compile(files, monitor);
-	}}
+	}
+    
+    public static void setVerbose(boolean verbose) {
+        RubyBuilder.verbose = verbose;
+    }
+}

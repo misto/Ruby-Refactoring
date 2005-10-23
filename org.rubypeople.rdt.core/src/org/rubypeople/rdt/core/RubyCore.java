@@ -45,6 +45,7 @@ import org.rubypeople.rdt.internal.core.RubyScript;
 import org.rubypeople.rdt.internal.core.SymbolIndexResourceChangeListener;
 import org.rubypeople.rdt.internal.core.builder.IndexUpdater;
 import org.rubypeople.rdt.internal.core.builder.MassIndexUpdater;
+import org.rubypeople.rdt.internal.core.builder.RubyBuilder;
 import org.rubypeople.rdt.internal.core.parser.RubyParser;
 import org.rubypeople.rdt.internal.core.symbols.SymbolIndex;
 
@@ -57,6 +58,8 @@ public class RubyCore extends Plugin {
     private static final String RUBY_PARSER_DEBUG_OPTION = RubyCore.PLUGIN_ID + "/rubyparser";
     private static final String MODEL_MANAGER_VERBOSE_OPTION = RubyCore.PLUGIN_ID + "/modelmanager";
     private static final String SYMBOL_INDEX_VERBOSE_OPTION = RubyCore.PLUGIN_ID + "/symbolIndex";
+    private static final String BUILDER_VERBOSE_OPTION = RubyCore.PLUGIN_ID + "/rubyBuilder";
+    
     
 	public final static String NATURE_ID = PLUGIN_ID + ".rubynature";
 
@@ -212,6 +215,7 @@ public class RubyCore extends Plugin {
         RubyParser.setDebugging(isDebugOptionTrue(RUBY_PARSER_DEBUG_OPTION));
         RubyModelManager.setVerbose(isDebugOptionTrue(MODEL_MANAGER_VERBOSE_OPTION));
         SymbolIndex.setVerbose(isDebugOptionTrue(SYMBOL_INDEX_VERBOSE_OPTION));
+        RubyBuilder.setVerbose(isDebugOptionTrue(BUILDER_VERBOSE_OPTION));
 
         SymbolIndexResourceChangeListener.register(symbolIndex);
         IndexUpdater indexUpdater = new IndexUpdater(symbolIndex);

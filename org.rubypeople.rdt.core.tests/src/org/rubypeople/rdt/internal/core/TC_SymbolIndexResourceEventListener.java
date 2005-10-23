@@ -21,8 +21,6 @@ import org.rubypeople.eclipse.shams.resources.ShamResource;
 import org.rubypeople.rdt.internal.core.util.ListUtil;
 
 public class TC_SymbolIndexResourceEventListener extends TestCase {
-
-
     private ShamMassIndexUpdater massIndexUpdater;
     private SymbolIndexResourceChangeListener listener;
     private ShamProject project;
@@ -46,6 +44,19 @@ public class TC_SymbolIndexResourceEventListener extends TestCase {
         listener.resourceChanged(event);
         
         massIndexUpdater.assertProjectsUpdated(ListUtil.create(project));
+    }
+
+    public void testMultipleProjectOpen() throws Exception {
+        ShamProject project2 = new ShamProject("test2");
+        parentDelta.addChildren(createDelta(project));
+        parentDelta.addChildren(createDelta(project2));
+
+        ShamResourceChangeEvent event = 
+            new ShamResourceChangeEvent(IResourceChangeEvent.POST_CHANGE, parentDelta);
+        
+        listener.resourceChanged(event);
+        
+        massIndexUpdater.assertProjectsUpdated(ListUtil.create(project, project2));
     }
     
     public void testWithoutProject() throws Exception {
