@@ -39,14 +39,20 @@ public class IndexUpdater {
 
 
     private void processNode(IFile file, Node node) {
+    	//    	 sgml-parser, line 35: InstAsgnNode contains DStrNode which returns null as child-node
+    	if (node == null)
+    	{
+    		return ;
+    	}
         if (isScopingNode(node)) {
             IScopingNode classNode = (IScopingNode) node;
             String name = getFullyQualifiedName(classNode);
             
-            scopeStack.push(name);
+            scopeStack.push(classNode.getCPath().getName());
             if (node instanceof ClassNode)
                 index.add(new ClassSymbol(name), file, classNode.getCPath().getPosition());
         }
+        
         
         for (Iterator iter = node.childNodes().iterator(); iter.hasNext();) {
             Node childNode = (Node) iter.next();
