@@ -35,7 +35,7 @@ public class RubySearchTreeContentProvider implements ITreeContentProvider, IFil
 	private AbstractTreeViewer fTreeViewer;
 	private Map fChildrenMap;
 	
-	RubySearchTreeContentProvider(AbstractTreeViewer viewer) {
+	public RubySearchTreeContentProvider(AbstractTreeViewer viewer) {
 		fTreeViewer= viewer;
 	}
 	
@@ -54,7 +54,7 @@ public class RubySearchTreeContentProvider implements ITreeContentProvider, IFil
 	}
 	
 
-	protected synchronized void initialize(AbstractTextSearchResult result) {
+	public synchronized void initialize(AbstractTextSearchResult result) {
 		fResult= result;
 		fChildrenMap= new HashMap();
 		if (result != null) {
