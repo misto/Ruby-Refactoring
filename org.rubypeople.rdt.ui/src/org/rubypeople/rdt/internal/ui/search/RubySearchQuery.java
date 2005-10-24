@@ -24,9 +24,10 @@ import org.eclipse.search.ui.ISearchResult;
 import org.eclipse.search.ui.NewSearchUI;
 import org.eclipse.search.ui.text.Match;
 import org.rubypeople.rdt.core.RubyCore;
+import org.rubypeople.rdt.internal.core.symbols.ISymbolTypes;
 import org.rubypeople.rdt.internal.core.symbols.SearchResult;
 
-public class RubySearchQuery implements ISearchQuery {
+public class RubySearchQuery implements ISearchQuery, ISymbolTypes {
 
 	private String fSearchString;
 	private SearchScope fScope;
@@ -61,7 +62,7 @@ public class RubySearchQuery implements ISearchQuery {
 
 	public IStatus run(IProgressMonitor monitor) throws OperationCanceledException {
 
-		Set entries = RubyCore.getPlugin().getSymbolIndex().find(fSearchString);
+		Set entries = RubyCore.getPlugin().getSymbolIndex().find(fSearchString, CLASS_SYMBOL );
 
 		for (Iterator iter = entries.iterator(); iter.hasNext();) {
 			SearchResult searchResult = (SearchResult) iter.next();
