@@ -10,7 +10,7 @@
    <runtime>
       <library name="rdtdebuguitests.jar">
          <export name="*"/>
-      </library>sts
+      </library>
    </runtime>
 
    <requires>
