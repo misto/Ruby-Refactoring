@@ -41,14 +41,18 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Listener;
 import org.eclipse.ui.IWorkingSet;
 import org.eclipse.ui.IWorkingSetManager;
 import org.eclipse.ui.PlatformUI;
 import org.rubypeople.rdt.core.IRubyElement;
+import org.rubypeople.rdt.internal.core.symbols.ISymbolTypes;
+import org.rubypeople.rdt.internal.ui.RubyUIMessages;
 
-public class RubySearchPage extends DialogPage implements ISearchPage {
+public class RubySearchPage extends DialogPage implements ISearchPage, ISymbolTypes {
 
 	// Shouldn't SearchPatternData be a public class in org.eclipse.search ?
 	private static class SearchPatternData {
@@ -57,15 +61,15 @@ public class RubySearchPage extends DialogPage implements ISearchPage {
 		private int limitTo;
 		private String pattern;
 		private boolean isCaseSensitive;
-		private IRubyElement rubyElement;
+
 		private int scope;
 		private IWorkingSet[] workingSets;
 
-		public SearchPatternData(int searchFor, int limitTo, boolean isCaseSensitive, String pattern, IRubyElement element) {
-			this(searchFor, limitTo, pattern, isCaseSensitive, element, ISearchPageContainer.WORKSPACE_SCOPE, null);
+		public SearchPatternData(int searchFor, int limitTo, boolean isCaseSensitive, String pattern) {
+			this(searchFor, limitTo, pattern, isCaseSensitive, ISearchPageContainer.WORKSPACE_SCOPE, null);
 		}
 
-		public SearchPatternData(int searchFor, int limitTo, String pattern, boolean isCaseSensitive, IRubyElement element, int scope, IWorkingSet[] workingSets) {
+		public SearchPatternData(int searchFor, int limitTo, String pattern, boolean isCaseSensitive, int scope, IWorkingSet[] workingSets) {
 			this.searchFor = searchFor;
 			this.limitTo = limitTo;
 			this.pattern = pattern;
@@ -73,19 +77,10 @@ public class RubySearchPage extends DialogPage implements ISearchPage {
 			this.scope = scope;
 			this.workingSets = workingSets;
 
-			setRubyElement(element);
-		}
-
-		public void setRubyElement(IRubyElement element) {
-			this.rubyElement = element;
 		}
 
 		public boolean isCaseSensitive() {
 			return isCaseSensitive;
-		}
-
-		public IRubyElement getRubyElement() {
-			return rubyElement;
 		}
 
 		public int getLimitTo() {
@@ -157,7 +152,7 @@ public class RubySearchPage extends DialogPage implements ISearchPage {
 				boolean isCaseSensitive = settings.getBoolean("isCaseSensitive"); //$NON-NLS-1$
 				// TODO
 				IRubyElement elem = null; // settings.get("rubyElement") ;
-				return new SearchPatternData(searchFor, limitTo, pattern, isCaseSensitive, elem, scope, workingSets);
+				return new SearchPatternData(searchFor, limitTo, pattern, isCaseSensitive, scope, workingSets);
 			} catch (NumberFormatException e) {
 				return null;
 			}
@@ -176,7 +171,6 @@ public class RubySearchPage extends DialogPage implements ISearchPage {
 	private final List fPreviousSearchPatterns;
 
 	private SearchPatternData fInitialData;
-	private IRubyElement fRubyElement;
 	private boolean fFirstTime = true;
 	private IDialogSettings fDialogSettings;
 	private boolean fIsCaseSensitive;
@@ -185,18 +179,8 @@ public class RubySearchPage extends DialogPage implements ISearchPage {
 	private ISearchPageContainer fContainer;
 	private Button fCaseSensitive;
 
-	private Button[] fSearchFor;
-	// TODO: externalize strings
-	private String[] fSearchForText = { "class", "method"
-	/*
-	 * SearchMessages.SearchPage_searchFor_type,
-	 * SearchMessages.SearchPage_searchFor_method,
-	 * SearchMessages.SearchPage_searchFor_module,
-	 * SearchMessages.SearchPage_searchFor_field
-	 */};
-
 	private Button[] fLimitTo;
-	private String[] fLimitToText = { "declarations"
+	private String[] fLimitToText = { "declarations" //$NON-NLS-1$
 	/*
 	 * SearchMessages.SearchPage_limitTo_declarations,
 	 * SearchMessages.SearchPage_limitTo_implementors,
@@ -207,6 +191,7 @@ public class RubySearchPage extends DialogPage implements ISearchPage {
 	private Button fSearchJRE;
 	private static final int INDEX_REFERENCES = 2;
 	private static final int INDEX_ALL = 3;
+	private SearchForManager searchForManager = new SearchForManager();
 
 	/**
 	 * 
@@ -245,13 +230,13 @@ public class RubySearchPage extends DialogPage implements ISearchPage {
 		}
 		NewSearchUI.activateSearchResultView();
 
-		return new RubySearchQuery(scope, patternData.getPattern());
+		return new RubySearchQuery(scope, patternData.getPattern(), patternData.getSearchFor());
 	}
 
 	private int getLimitTo() {
-		//for (int i = 0; i < fLimitTo.length; i++) {
-		//	if (fLimitTo[i].getSelection()) return i;
-		//}
+		// for (int i = 0; i < fLimitTo.length; i++) {
+		// if (fLimitTo[i].getSelection()) return i;
+		// }
 		return -1;
 	}
 
@@ -284,14 +269,6 @@ public class RubySearchPage extends DialogPage implements ISearchPage {
 		return patterns;
 	}
 
-	private int getSearchFor() {
-		for (int i = 0; i < fSearchFor.length; i++) {
-			if (fSearchFor[i].getSelection()) return i;
-		}
-		Assert.isTrue(false, "shouldNeverHappen"); //$NON-NLS-1$
-		return -1;
-	}
-
 	private String getPattern() {
 		return fPattern.getText();
 	}
@@ -314,7 +291,7 @@ public class RubySearchPage extends DialogPage implements ISearchPage {
 		if (match != null) {
 			fPreviousSearchPatterns.remove(match);
 		}
-		match = new SearchPatternData(getSearchFor(), getLimitTo(), pattern, fCaseSensitive.getSelection(), fRubyElement, getContainer().getSelectedScope(), getContainer().getSelectedWorkingSets());
+		match = new SearchPatternData(searchForManager.getSelectedSymbolType(), getLimitTo(), pattern, fCaseSensitive.getSelection(), getContainer().getSelectedScope(), getContainer().getSelectedWorkingSets());
 
 		fPreviousSearchPatterns.add(0, match); // insert on top
 		return match;
@@ -365,31 +342,13 @@ public class RubySearchPage extends DialogPage implements ISearchPage {
 		data.heightHint = convertHeightInCharsToPixels(1) / 3;
 		separator.setLayoutData(data);
 
-		Control searchFor = createSearchFor(result);
+		Control searchFor = searchForManager.createSearchFor(result);
 		searchFor.setLayoutData(new GridData(GridData.FILL, GridData.FILL, true, false, 1, 1));
 
 		Control limitTo = createLimitTo(result);
 		limitTo.setLayoutData(new GridData(GridData.FILL, GridData.FILL, true, false, 1, 1));
 
 		// createParticipants(result);
-
-		SelectionAdapter javaElementInitializer = new SelectionAdapter() {
-
-			public void widgetSelected(SelectionEvent event) {
-				if (getSearchFor() == fInitialData.getSearchFor())
-					fRubyElement = fInitialData.getRubyElement();
-				else
-					fRubyElement = null;
-				setLimitTo(getSearchFor(), getLimitTo());
-				doPatternModified();
-			}
-		};
-
-		// fSearchFor[TYPE].addSelectionListener(javaElementInitializer);
-		// fSearchFor[METHOD].addSelectionListener(javaElementInitializer);
-		// fSearchFor[FIELD].addSelectionListener(javaElementInitializer);
-		// fSearchFor[CONSTRUCTOR].addSelectionListener(javaElementInitializer);
-		// fSearchFor[PACKAGE].addSelectionListener(javaElementInitializer);
 
 		setControl(result);
 
@@ -428,7 +387,7 @@ public class RubySearchPage extends DialogPage implements ISearchPage {
 		// Pattern text + info
 		Label label = new Label(result, SWT.LEFT);
 		// TODO
-		label.setText("Expression");
+		label.setText("Expression"); //$NON-NLS-1$
 		// label.setText(SearchMessages.SearchPage_expression_label);
 		label.setLayoutData(new GridData(GridData.FILL, GridData.FILL, false, false, 2, 1));
 
@@ -456,7 +415,7 @@ public class RubySearchPage extends DialogPage implements ISearchPage {
 		// Ignore case checkbox
 		fCaseSensitive = new Button(result, SWT.CHECK);
 		// TODO
-		fCaseSensitive.setText("CaseSensitive");
+		fCaseSensitive.setText("CaseSensitive"); //$NON-NLS-1$
 		fCaseSensitive.addSelectionListener(new SelectionAdapter() {
 
 			public void widgetSelected(SelectionEvent e) {
@@ -470,7 +429,6 @@ public class RubySearchPage extends DialogPage implements ISearchPage {
 
 	private boolean isValidSearchPattern() {
 		if (getPattern().length() == 0) { return false; }
-		if (fRubyElement != null) { return true; }
 		// TODO
 		return true;
 		// return SearchPattern.createPattern(getPattern(), getSearchFor(),
@@ -497,36 +455,6 @@ public class RubySearchPage extends DialogPage implements ISearchPage {
 	 * fInitialData.getJavaElement(); } else { fCaseSensitive.setEnabled(true);
 	 * fCaseSensitive.setSelection(fIsCaseSensitive); fJavaElement= null; }
 	 */
-	}
-
-	private void setSearchFor(int searchFor) {
-		for (int i = 0; i < fSearchFor.length; i++) {
-			fSearchFor[i].setSelection(searchFor == i);
-		}
-	}
-
-	private Control createSearchFor(Composite parent) {
-		Group result = new Group(parent, SWT.NONE);
-		// TODO
-		result.setText("searchfor");
-		result.setLayout(new GridLayout(2, true));
-
-		fSearchFor = new Button[fSearchForText.length];
-		for (int i = 0; i < fSearchForText.length; i++) {
-			Button button = new Button(result, SWT.RADIO);
-			button.setText(fSearchForText[i]);
-
-			button.setSelection(i == 0);
-			button.setLayoutData(new GridData());
-			fSearchFor[i] = button;
-		}
-
-		// Fill with dummy radio buttons
-		Label filler = new Label(result, SWT.NONE);
-		filler.setVisible(false);
-		filler.setLayoutData(new GridData(SWT.FILL, SWT.FILL, false, false, 1, 1));
-
-		return result;
 	}
 
 	private Control createLimitTo(Composite parent) {
@@ -563,4 +491,41 @@ public class RubySearchPage extends DialogPage implements ISearchPage {
 		return fContainer;
 	}
 
+	class SearchForManager {
+
+		private Button[] fSearchFor;
+
+		private Button createButton(Group parent, String text, int symbolType) {
+
+			Button button = new Button(parent, SWT.RADIO);
+			button.setText(text);
+			button.setData(new Integer(symbolType));
+			button.setLayoutData(new GridData());
+			return button;
+		}
+
+		private Control createSearchFor(Composite parent) {
+			Group result = new Group(parent, SWT.NONE);
+			result.setText(RubyUIMessages.getString("RubySearchPage.SearchForGroupLabel")); //$NON-NLS-1$
+			result.setLayout(new GridLayout(2, true));
+
+			fSearchFor = new Button[2];
+			fSearchFor[0] = createButton(result, RubyUIMessages.getString("RubySearch.SearchForClassSymbol"), CLASS_SYMBOL); //$NON-NLS-1$
+			fSearchFor[0].setSelection(true);
+			fSearchFor[1] = createButton(result, RubyUIMessages.getString("RubySearch.SearchForMethodSymbol"), METHOD_SYMBOL); //$NON-NLS-1$
+
+			return result;
+		}
+
+
+		public int getSelectedSymbolType() {
+			for (int i = 0; i < fSearchFor.length; i++) {
+				if (fSearchFor[i].getSelection()) { return ((Integer) fSearchFor[i].getData()).intValue(); }
+			}
+			Assert.isTrue(false, "Error in RubySearchPage: There should always be a selected symbol type to search for"); //$NON-NLS-1$
+			return CLASS_SYMBOL;
+		}
+
+
+	}
 }

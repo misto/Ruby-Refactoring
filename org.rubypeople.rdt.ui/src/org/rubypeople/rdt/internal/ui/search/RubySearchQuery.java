@@ -26,16 +26,19 @@ import org.eclipse.search.ui.text.Match;
 import org.rubypeople.rdt.core.RubyCore;
 import org.rubypeople.rdt.internal.core.symbols.ISymbolTypes;
 import org.rubypeople.rdt.internal.core.symbols.SearchResult;
+import org.rubypeople.rdt.internal.ui.RubyUIMessages;
 
 public class RubySearchQuery implements ISearchQuery, ISymbolTypes {
 
 	private String fSearchString;
 	private SearchScope fScope;
 	private RubySearchResult fResult;
+	private int fSymbolType ;
 
-	public RubySearchQuery(SearchScope scope, String searchString) {
+	public RubySearchQuery(SearchScope scope, String searchString, int symbolType) {
 		fScope = scope;
 		fSearchString = searchString;
+		fSymbolType = symbolType ;
 	}
 
 	public boolean canRerun() {
@@ -48,8 +51,7 @@ public class RubySearchQuery implements ISearchQuery, ISymbolTypes {
 	}
 
 	public String getLabel() {
-		// TODO Auto-generated method stub
-		return "RubySearchJob";
+		return toString() ;
 	}
 
 	public ISearchResult getSearchResult() {
@@ -62,7 +64,7 @@ public class RubySearchQuery implements ISearchQuery, ISymbolTypes {
 
 	public IStatus run(IProgressMonitor monitor) throws OperationCanceledException {
 
-		Set entries = RubyCore.getPlugin().getSymbolIndex().find(fSearchString, CLASS_SYMBOL );
+		Set entries = RubyCore.getPlugin().getSymbolIndex().find(fSearchString, fSymbolType );
 
 		for (Iterator iter = entries.iterator(); iter.hasNext();) {
 			SearchResult searchResult = (SearchResult) iter.next();
@@ -70,12 +72,24 @@ public class RubySearchQuery implements ISearchQuery, ISymbolTypes {
 			int length = searchResult.getLocation().getPosition().getEndOffset() - startOffset;
 			fResult.addMatch(new Match(searchResult, Match.UNIT_CHARACTER, startOffset, length));
 		}
-		MultiStatus status = new MultiStatus(NewSearchUI.PLUGIN_ID, IStatus.OK, "Alright", null);
+		MultiStatus status = new MultiStatus(NewSearchUI.PLUGIN_ID, IStatus.OK, "Alright", null); //$NON-NLS-1$
 		return status;
 	}
 
 	public String toString() {
-		return "reg exp. query for " + fSearchString;
+		String args[] = new String[2] ;
+		switch (fSymbolType) {
+		case METHOD_SYMBOL:
+			args[0] = RubyUIMessages.getString("RubySearch.SearchForMethodSymbol") ; //$NON-NLS-1$
+			break;
+		case CLASS_SYMBOL:
+			args[0] = RubyUIMessages.getString("RubySearch.SearchForClassSymbol") ; //$NON-NLS-1$
+			break;
+		default:
+			break;
+		}
+		args[1] =  fSearchString ;
+		return RubyUIMessages.getFormattedString("RubySearch.ResultLabel", args) ;  //$NON-NLS-1$ 
 	}
 
 }
