@@ -10,8 +10,8 @@
  * 
  * This file is based on  org.eclipse.search.internal.ui.text.FileTreeContentProvider
  * Copyright (c) 2000, 2005 IBM Corporation and others.
- */ 
- 
+ */
+
 package org.rubypeople.rdt.internal.ui.search;
 
 import java.util.HashMap;
@@ -24,64 +24,70 @@ import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.search.internal.ui.text.IFileSearchContentProvider;
 import org.eclipse.search.ui.text.AbstractTextSearchResult;
-import org.rubypeople.rdt.internal.core.symbols.SearchResult;
-
 
 public class RubySearchTreeContentProvider implements ITreeContentProvider, IFileSearchContentProvider {
 
-	private final Object[] EMPTY_ARR= new Object[0];
+	private final Object[] EMPTY_ARR = new Object[0];
 
 	private AbstractTextSearchResult fResult;
 	private AbstractTreeViewer fTreeViewer;
 	private Map fChildrenMap;
-	
+	private IGroupByStrategy groupByStrategy;
+
 	public RubySearchTreeContentProvider(AbstractTreeViewer viewer) {
-		fTreeViewer= viewer;
+		fTreeViewer = viewer;
+		this.setGroupByPath();
 	}
-	
+
+	public void setGroupByScope() {
+		groupByStrategy = new GroupByScopeStrategy();
+		clear() ;
+	}
+
+	public void setGroupByPath() {
+		groupByStrategy = new GroupByPathStrategy();
+		clear() ;		
+	}
+
 	public Object[] getElements(Object inputElement) {
 		return getChildren(inputElement);
 	}
-	
+
 	public void dispose() {
-		// nothing to do
+	// nothing to do
 	}
-	
+
 	public void inputChanged(Viewer viewer, Object oldInput, Object newInput) {
 		if (newInput instanceof RubySearchResult) {
 			initialize((RubySearchResult) newInput);
 		}
 	}
-	
 
 	public synchronized void initialize(AbstractTextSearchResult result) {
-		fResult= result;
-		fChildrenMap= new HashMap();
+		fResult = result;
+		fChildrenMap = new HashMap();
 		if (result != null) {
-			Object[] elements= result.getElements();
-			for (int i= 0; i < elements.length; i++) {
+			Object[] elements = result.getElements();
+			for (int i = 0; i < elements.length; i++) {
 				insert(elements[i], false);
 			}
 		}
 	}
 
 	protected void insert(Object child, boolean refreshViewer) {
-		Object parent= getParent(child);
+		Object parent = getParent(child);
 		while (parent != null) {
 			if (insertChild(parent, child)) {
-				if (refreshViewer)
-					fTreeViewer.add(parent, child);
+				if (refreshViewer) fTreeViewer.add(parent, child);
 			} else {
-				if (refreshViewer)
-					fTreeViewer.refresh(parent);
+				if (refreshViewer) fTreeViewer.refresh(parent);
 				return;
 			}
-			child= parent;
-			parent= getParent(child);
+			child = parent;
+			parent = getParent(child);
 		}
 		if (insertChild(fResult, child)) {
-			if (refreshViewer)
-				fTreeViewer.add(fResult, child);
+			if (refreshViewer) fTreeViewer.add(fResult, child);
 		}
 	}
 
@@ -93,31 +99,29 @@ public class RubySearchTreeContentProvider implements ITreeContentProvider, IFil
 	 * @return Returns <code>trye</code> if the child was added
 	 */
 	private boolean insertChild(Object parent, Object child) {
-		Set children= (Set) fChildrenMap.get(parent);
+		Set children = (Set) fChildrenMap.get(parent);
 		if (children == null) {
-			children= new HashSet();
+			children = new HashSet();
 			fChildrenMap.put(parent, children);
 		}
 		return children.add(child);
 	}
 
 	protected void remove(Object element, boolean refreshViewer) {
-		// precondition here:  fResult.getMatchCount(child) <= 0
-	
+		// precondition here: fResult.getMatchCount(child) <= 0
+
 		if (hasChildren(element)) {
-			if (refreshViewer)
-				fTreeViewer.refresh(element);
+			if (refreshViewer) fTreeViewer.refresh(element);
 		} else {
 			if (fResult.getMatchCount(element) == 0) {
 				fChildrenMap.remove(element);
-				Object parent= getParent(element);
+				Object parent = getParent(element);
 				if (parent != null) {
 					removeFromSiblings(element, parent);
 					remove(parent, refreshViewer);
 				} else {
 					removeFromSiblings(element, fResult);
-					if (refreshViewer)
-						fTreeViewer.refresh();
+					if (refreshViewer) fTreeViewer.refresh();
 				}
 			} else {
 				if (refreshViewer) {
@@ -128,16 +132,15 @@ public class RubySearchTreeContentProvider implements ITreeContentProvider, IFil
 	}
 
 	private void removeFromSiblings(Object element, Object parent) {
-		Set siblings= (Set) fChildrenMap.get(parent);
+		Set siblings = (Set) fChildrenMap.get(parent);
 		if (siblings != null) {
 			siblings.remove(element);
 		}
 	}
 
 	public Object[] getChildren(Object parentElement) {
-		Set children= (Set) fChildrenMap.get(parentElement);
-		if (children == null)
-			return EMPTY_ARR;
+		Set children = (Set) fChildrenMap.get(parentElement);
+		if (children == null) return EMPTY_ARR;
 		return children.toArray();
 	}
 
@@ -146,7 +149,7 @@ public class RubySearchTreeContentProvider implements ITreeContentProvider, IFil
 	}
 
 	public synchronized void elementsChanged(Object[] updatedElements) {
-		for (int i= 0; i < updatedElements.length; i++) {
+		for (int i = 0; i < updatedElements.length; i++) {
 			if (fResult.getMatchCount(updatedElements[i]) > 0)
 				insert(updatedElements[i], true);
 			else
@@ -161,14 +164,9 @@ public class RubySearchTreeContentProvider implements ITreeContentProvider, IFil
 
 	/*
 	 * Group search results by the containing file.
-	 *
+	 * 
 	 */
 	public Object getParent(Object element) {
-		if (element instanceof SearchResult) {
-			SearchResult result = (SearchResult) element;
-			return result.getLocation().getSourcePath();
-		}
-		return null;
+		return groupByStrategy.getParent(element) ;
 	}
 }
-

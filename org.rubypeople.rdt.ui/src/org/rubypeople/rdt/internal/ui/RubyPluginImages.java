@@ -123,11 +123,9 @@ public class RubyPluginImages {
 				action.setDisabledImageDescriptor(id);
 		} catch (MalformedURLException e) {}
 
-		try {
-			ImageDescriptor id = ImageDescriptor.createFromURL(makeIconFileURL("c" + type, relPath));
-			if (id != null)
-				action.setHoverImageDescriptor(id);
-		} catch (MalformedURLException e) {}
+		// we don't use hover images. If we set it nonetheless it would be preferred to the "normal" image descriptor
+		// see ActionContributionItem.updateImages
+		// ImageDescriptor.createFromURL(makeIconFileURL("c" + type, relPath));
 
 		action.setImageDescriptor(create("e" + type, relPath));
 	}

@@ -9,6 +9,7 @@ Changes since 0.6.0:
 	* There can be at most one exception breakpoint; the breakpoint can be enabled, disabled and removed in the breakpoint view
 * Added outline support for aliasing methods using the format 'alias :new_method :old_method'
 * Fixed bug where current visibility was never reset when opening a new class
+* Ruby Search
 
 Changes merged from SRB 0.6.1:
 * SRB_0-6-1_1: Enable/Disable breakpoints, move breakpoints 

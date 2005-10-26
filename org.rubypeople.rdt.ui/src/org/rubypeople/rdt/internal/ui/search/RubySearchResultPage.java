@@ -14,6 +14,8 @@ package org.rubypeople.rdt.internal.ui.search;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.IPath;
+import org.eclipse.jface.action.Action;
+import org.eclipse.jface.action.IToolBarManager;
 import org.eclipse.jface.viewers.DecoratingLabelProvider;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TreeViewer;
@@ -32,6 +34,8 @@ import org.rubypeople.rdt.internal.ui.RubyPlugin;
 public class RubySearchResultPage extends AbstractTextSearchViewPage {
 
 	RubySearchTreeContentProvider fContentProvider;
+	GroupByAction fGroupByPackage;
+	GroupByAction fGroupByFile;
 
 	public RubySearchResultPage() {
 
@@ -44,7 +48,7 @@ public class RubySearchResultPage extends AbstractTextSearchViewPage {
 	}
 
 	protected void clear() {
-		// TODO Auto-generated method stub
+	// TODO Auto-generated method stub
 	}
 
 	protected void configureTreeViewer(TreeViewer viewer) {
@@ -58,7 +62,7 @@ public class RubySearchResultPage extends AbstractTextSearchViewPage {
 	}
 
 	protected void configureTableViewer(TableViewer viewer) {
-		// TODO: When is a table viewer needed ?
+	// TODO: When is a table viewer needed ?
 	}
 
 	protected IEditorPart openEditor(Match match, boolean activate) {
@@ -93,4 +97,32 @@ public class RubySearchResultPage extends AbstractTextSearchViewPage {
 		}
 	}
 
+	protected void fillToolbar(IToolBarManager tbm) {
+		super.fillToolbar(tbm);
+		fGroupByFile = new GroupByAction("groupByFile", "file_mode.gif") {
+
+			public void run() {
+				fContentProvider.setGroupByPath();
+				getViewer().refresh();
+				fGroupByPackage.setChecked(false);
+				fGroupByFile.setChecked(true);
+			}
+		};
+		fGroupByFile.setChecked(true);
+
+		fGroupByPackage = new GroupByAction("groupByPackage", "package_mode.gif") {
+
+			public void run() {
+				fContentProvider.setGroupByScope();
+				getViewer().refresh();
+				fGroupByPackage.setChecked(true);
+				fGroupByFile.setChecked(false);
+			}
+		};
+		fGroupByPackage.setChecked(false);
+
+		tbm.add(fGroupByFile);
+		tbm.add(fGroupByPackage);
+
+	}
 }

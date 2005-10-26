@@ -24,6 +24,10 @@ public class RubySearchLabelProvider extends LabelProvider {
 			SearchResult searchResult = (SearchResult) element ;
 			return searchResult.getSymbol().toString() ;
 		}
+		if (element instanceof Scope) {
+			Scope scope = (Scope) element ;
+			return scope.getName() ;
+		}
 		return super.getText(element);
 	}
 

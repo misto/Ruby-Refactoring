@@ -50,5 +50,26 @@ public class TC_RubySearchTreeContentProvider extends TestCase {
 		Assert.assertTrue(mockTreeViewer.isParentAdded(path)) ;
 		
 	}
+	
+	public void testGroupByScope() {
+		// could be a MockSearchResult instead
+		RubySearchResult rubyUISearchResult = new RubySearchResult(null);
+		rubySearchTreeContentProvider.setGroupByScope() ;
+		// call initialize before the search starts
+		rubySearchTreeContentProvider.initialize(rubyUISearchResult) ;
+		// initialize does not refresh the viewer, therefore elementsChanges is called here
+		MethodSymbol methodSymbol = new MethodSymbol("myModule::myScope::myMethod") ;
+		Path path = new Path("test") ;
+		Location location = new Location(path,new RdtPosition(0,0,0,0)) ;
+		SearchResult searchResult = new SearchResult(methodSymbol, location) ;
+		rubyUISearchResult.addMatch(new Match(searchResult, Match.UNIT_CHARACTER, 0, 0));
+
+		rubySearchTreeContentProvider.elementsChanged(new Object[]{searchResult}) ;
+		Assert.assertTrue(mockTreeViewer.isParentAdded(new Scope("myModule::myScope"))) ;
+		Assert.assertTrue(mockTreeViewer.isParentAdded(new Scope("myModule"))) ;
+		Assert.assertEquals(new Scope("myModule::myScope"),mockTreeViewer.childFrom(new Scope("myModule"))) ;
+		Assert.assertEquals(searchResult,mockTreeViewer.childFrom(new Scope("myModule::myScope"))) ;
+		
+	}	
 
 }
