@@ -22,7 +22,6 @@ import org.jruby.ast.Node;
 import org.rubypeople.eclipse.shams.resources.ShamFile;
 import org.rubypeople.eclipse.shams.resources.ShamProject;
 import org.rubypeople.rdt.internal.core.parser.ShamNode;
-import org.rubypeople.rdt.internal.core.util.ListUtil;
 
 public class TC_MassIndexUpdater extends TestCase {
 
@@ -45,8 +44,9 @@ public class TC_MassIndexUpdater extends TestCase {
         parser.addParseResult(file2, rootNode2);
         parser.addParseResult(file3, rootNode3);
         
-        project1.setResourcesToVisit(ListUtil.create(file1, file2));
-        project2.setResourcesToVisit(ListUtil.create(file3));
+        project1.addResource(file1);
+        project1.addResource(file2);
+        project2.addResource(file3);
         
         List projects = new ArrayList();
         projects.add(project1);
@@ -55,8 +55,6 @@ public class TC_MassIndexUpdater extends TestCase {
         massUpdater.updateProjects(projects);
         RubySourceFileCollectingVisitor expectedVisitor = 
             new RubySourceFileCollectingVisitor(new ArrayList());
-        project1.assertAcceptCalled(expectedVisitor, 0);
-        project2.assertAcceptCalled(expectedVisitor, 0);
         
         parser.assertParsed(file1);
         parser.assertParsed(file2);

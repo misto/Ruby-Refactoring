@@ -71,7 +71,7 @@ public class RubySearchResultPage extends AbstractTextSearchViewPage {
 		IWorkbenchPage page = RubyPlugin.getDefault().getWorkbench().getActiveWorkbenchWindow().getActivePage();
 		try {
 			SearchResult result = (SearchResult) match.getElement();
-			IPath sourcePath = result.getLocation().getSourcePath();
+			IPath sourcePath = result.getLocation().getSourceFile().getFullPath();
 			IResource resource = RubyPlugin.getWorkspace().getRoot().findMember(sourcePath);
 
 			IFile file = (IFile) resource.getAdapter(org.eclipse.core.resources.IFile.class);

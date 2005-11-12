@@ -27,4 +27,14 @@ public class ListUtil {
         return list;
     }
 
+    public static List create(Object obj1, Object obj2, Object obj3) {
+        List list = create(obj1, obj2);
+        list.add(obj3);
+        return list;
+    }
+
+    public static List create() {
+        return new ArrayList();
+    }
+
 }

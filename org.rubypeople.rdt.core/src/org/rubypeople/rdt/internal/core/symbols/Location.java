@@ -11,26 +11,25 @@
 
 package org.rubypeople.rdt.internal.core.symbols;
 
-import org.eclipse.core.runtime.IPath;
-import org.eclipse.core.runtime.Path;
+import org.eclipse.core.resources.IFile;
 import org.jruby.lexer.yacc.ISourcePosition;
 
 public class Location {
 
-    private final IPath sourcePath;
     private final ISourcePosition position;
+    private final IFile sourceFile;
 
-    public Location(IPath sourcePath, ISourcePosition position) {
-        this.sourcePath = sourcePath;
+    public Location(IFile sourceFile, ISourcePosition position) {
+        this.sourceFile = sourceFile;
         this.position = position;
     }
 
     public String toString() {
-        return sourcePath+": " + position;
+        return sourceFile+": " + position;
     }
 
-    public boolean forSource(Path path) {
-        return sourcePath.equals(path);
+    public boolean forSource(IFile file) {
+        return sourceFile.equals(file);
     }
     
     public boolean equals(Object obj) {
@@ -38,24 +37,24 @@ public class Location {
             return false;
         Location that = (Location) obj;
         
-        return this.sourcePath.equals(that.sourcePath)
+        return this.sourceFile.equals(that.sourceFile)
             && this.position.equals(that.position);
     }
     
     public int hashCode() {
-        return sourcePath.hashCode() * position.hashCode();
+        return sourceFile.hashCode() * position.hashCode();
     }
 
     public String getFilename() {
-        return sourcePath.toOSString();
+        return sourceFile.getLocation().toOSString();
     }
 
     public ISourcePosition getPosition() {
         return position;
     }
     
-    public IPath getSourcePath() 
+    public IFile getSourceFile() 
     {
-    	return sourcePath ;
+    	return sourceFile;
     }
 }

@@ -12,6 +12,7 @@
 package org.rubypeople.rdt.internal.core;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import org.eclipse.core.resources.IMarkerDelta;
@@ -21,7 +22,7 @@ import org.eclipse.core.resources.IResourceDeltaVisitor;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 
-class ShamResourceDelta implements IResourceDelta {
+public class ShamResourceDelta implements IResourceDelta {
 
     private List children = new ArrayList();
     private IResource resource;
@@ -29,6 +30,12 @@ class ShamResourceDelta implements IResourceDelta {
     private int flags;
 
     public void accept(IResourceDeltaVisitor visitor) throws CoreException {
+        if (visitor.visit(this)) {
+            for (Iterator iter = children.iterator(); iter.hasNext();) {
+                IResourceDelta delta = (IResourceDelta) iter.next();
+                delta.accept(visitor);
+            }
+        }
     }
 
     public void accept(IResourceDeltaVisitor visitor, boolean includePhantoms) throws CoreException {
@@ -58,7 +65,7 @@ class ShamResourceDelta implements IResourceDelta {
     }
 
     public IPath getFullPath() {
-        return null;
+        return resource.getFullPath();
     }
 
     public int getKind() {
@@ -89,7 +96,7 @@ class ShamResourceDelta implements IResourceDelta {
         return null;
     }
 
-    public void addResource(IResource resource) {
+    public void setResource(IResource resource) {
         this.resource = resource;
     }
 

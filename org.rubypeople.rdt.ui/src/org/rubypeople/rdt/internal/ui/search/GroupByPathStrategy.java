@@ -7,6 +7,6 @@ public class GroupByPathStrategy implements IGroupByStrategy {
 	public Object getParent(Object element) {
 		if (!(element instanceof SearchResult)) { return null; }
 		SearchResult result = (SearchResult) element;
-		return result.getLocation().getSourcePath();
+		return result.getLocation().getSourceFile().getFullPath();
 	}
 }

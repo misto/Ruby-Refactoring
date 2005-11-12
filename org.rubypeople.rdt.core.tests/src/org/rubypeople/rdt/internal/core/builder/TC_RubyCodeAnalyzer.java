@@ -21,14 +21,14 @@ import org.jruby.ast.visitor.NodeVisitor;
 import org.jruby.lexer.yacc.SyntaxException;
 import org.rubypeople.eclipse.shams.resources.ShamFile;
 
-public class TC_RdtCompiler extends TestCase {
+public class TC_RubyCodeAnalyzer extends TestCase {
 
     private static final String FILE_CONTENTS = "file Contents";
     private static final String FILENAME = "testFile.rb";
     private ShamFile file;
     private ShamMarkerManager markerManager;
     private ShamRubyParser parser;
-    private RdtCompiler compiler;
+    private RubyCodeAnalyzer compiler;
     private MockIndexUpdater indexUpdater;
     private Node rootNode;
 
@@ -48,7 +48,7 @@ public class TC_RdtCompiler extends TestCase {
         parser = new ShamRubyParser();
         parser.addParseResult(file, rootNode);
         indexUpdater = new MockIndexUpdater();
-        compiler = new RdtCompiler(markerManager, parser, indexUpdater);
+        compiler = new RubyCodeAnalyzer(markerManager, parser, indexUpdater);
     }
     
     public void testParserInvocation() throws Exception {

@@ -1,13 +1,13 @@
 package org.rubypeople.rdt.internal.ui.search;
 
-import org.eclipse.core.runtime.Path;
+import junit.framework.Assert;
+import junit.framework.TestCase;
+
+import org.rubypeople.eclipse.shams.resources.ShamFile;
 import org.rubypeople.rdt.internal.core.parser.RdtPosition;
 import org.rubypeople.rdt.internal.core.symbols.Location;
 import org.rubypeople.rdt.internal.core.symbols.MethodSymbol;
 import org.rubypeople.rdt.internal.core.symbols.SearchResult;
-
-import junit.framework.Assert;
-import junit.framework.TestCase;
 
 
 public class TC_GroupByScopeStrategy extends TestCase {
@@ -31,7 +31,7 @@ public class TC_GroupByScopeStrategy extends TestCase {
 	
 	public void testSearchResult() {
 		MethodSymbol methodSymbol = new MethodSymbol("clazz::myMethod") ;
-		SearchResult searchResult = new SearchResult(methodSymbol, new Location(new Path("test"), new RdtPosition(0,0,0,0))) ;
+		SearchResult searchResult = new SearchResult(methodSymbol, new Location(new ShamFile("test"), new RdtPosition(0,0,0,0))) ;
 		Assert.assertEquals(new Scope("clazz"), groupByScopeStrategy.getParent(searchResult)) ;
 	}
 	

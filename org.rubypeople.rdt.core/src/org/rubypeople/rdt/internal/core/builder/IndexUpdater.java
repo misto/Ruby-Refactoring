@@ -35,7 +35,7 @@ public class IndexUpdater {
 
 
     public void update(IFile file, Node rootNode) {
-        index.flush(file.getFullPath());
+        index.flush(file);
         processNode(file, rootNode);
     }
 

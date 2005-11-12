@@ -27,9 +27,11 @@ import org.eclipse.core.runtime.content.IContentDescription;
 
 public class ShamFile extends ShamResource implements IFile {
 
+    public static final String WORKSPACE_ROOT = "/test/workspaceRoot";
     protected String contents = "";
 	protected boolean readContentFromFile;
     private InputStream inputStream;
+    private IProject project;
 	
 	public void setCharset(String newCharset, IProgressMonitor monitor)
 	    throws CoreException {
@@ -54,6 +56,7 @@ public class ShamFile extends ShamResource implements IFile {
 	public ShamFile(IPath aPath, boolean readContentFromFile) {
 		super(aPath);
 		this.readContentFromFile = readContentFromFile;
+        project = new ShamProject("not specified");
 	}
 
 	public void appendContents(InputStream source, boolean force, boolean keepHistory, IProgressMonitor monitor) throws CoreException {
@@ -177,7 +180,7 @@ public class ShamFile extends ShamResource implements IFile {
 	}
 
 	public IPath getLocation() {
-		throw new RuntimeException("Unimplemented method in sham");
+        return new Path(WORKSPACE_ROOT).append(getFullPath());
 	}
 
 	public IMarker getMarker(long id) {
@@ -197,7 +200,7 @@ public class ShamFile extends ShamResource implements IFile {
 	}
 
 	public IProject getProject() {
-		return new ShamProject("not specified");
+        return project;
 	}
 
 	public IPath getProjectRelativePath() {
@@ -339,6 +342,10 @@ public class ShamFile extends ShamResource implements IFile {
 		
 	}
 
+    public void setProject(IProject project) {
+        this.project = project;
+    }
+
     private class MonitoredInputStream extends InputStream {
 
         private final InputStream inputStream;
@@ -356,4 +363,5 @@ public class ShamFile extends ShamResource implements IFile {
             ShamFile.this.inputStream = null;
         }
     }
+
 }

@@ -17,25 +17,32 @@ import java.util.Set;
 
 import junit.framework.TestCase;
 
-import org.eclipse.core.resources.IFile;
-import org.eclipse.core.runtime.Path;
+import org.eclipse.core.resources.IProject;
 import org.jruby.lexer.yacc.ISourcePosition;
 import org.rubypeople.eclipse.shams.resources.ShamFile;
+import org.rubypeople.eclipse.shams.resources.ShamProject;
 import org.rubypeople.rdt.internal.core.parser.RdtPosition;
 
 public class TC_SymbolIndex extends TestCase implements ISymbolTypes {
     private static final ClassSymbol UNKNOWN_SYMBOL = new ClassSymbol("unknown");
     private static final ClassSymbol FOO_CLASS_SYMBOL = new ClassSymbol("Foo");
     private static final ClassSymbol OTHER_FOO_CLASS_SYMBOL = new ClassSymbol("Foo2");
-    private static final Path FOO_PATH = new Path("/foo.rb");
-    private static final Path OTHER_FOO_PATH = new Path("/utils/foo.rb");
+    private static final IProject PROJECT1                      = new ShamProject("project1");
+    private static final ShamFile FOO_FILE          = new ShamFile("/project1/foo.rb");
+    private static final ShamFile FOO_FILE2         = new ShamFile("/project1/foo.rb");
+    private static final ShamFile OTHER_FOO_FILE    = new ShamFile("/project1/utils/foo.rb");
+    private static final ShamFile PROJECT2_FILE     = new ShamFile("/project2/bar.rb");
     
     private static final ISourcePosition FOO_POSITION           = new RdtPosition(10, 3, 7);
     private static final ISourcePosition OTHER_FOO_POSITION     = new RdtPosition(12, 13, 17);
-    private static final Location FOO_CLASS_LOCATION            = new Location(FOO_PATH, FOO_POSITION);
-    private static final Location OTHER_FOO_CLASS_LOCATION      = new Location(OTHER_FOO_PATH, OTHER_FOO_POSITION);
-    private static final IFile OTHER_FOO_FILE                   = new ShamFile(OTHER_FOO_PATH);
+    private static final Location FOO_CLASS_LOCATION            = new Location(FOO_FILE, FOO_POSITION);
+    private static final Location OTHER_FOO_CLASS_LOCATION      = new Location(OTHER_FOO_FILE, OTHER_FOO_POSITION);
+    private static final Location PROJECT2_CLASS_LOCATION       = new Location(PROJECT2_FILE, OTHER_FOO_POSITION);
     private static final Set EMPTY_SET                          = Collections.EMPTY_SET;
+    
+    static {
+        FOO_FILE.setProject(PROJECT1);
+    }
     
     private SymbolIndex index;
 
@@ -54,9 +61,17 @@ public class TC_SymbolIndex extends TestCase implements ISymbolTypes {
     
     public void testFlush() {    	
     	index.add(FOO_CLASS_SYMBOL, OTHER_FOO_CLASS_LOCATION);
-        index.flush(FOO_PATH);
+        index.flush(FOO_FILE);
         assertEquals(createSet(OTHER_FOO_CLASS_LOCATION), index.find(FOO_CLASS_SYMBOL));
-        index.flush(OTHER_FOO_PATH);
+        index.flush(OTHER_FOO_FILE);
+        assertEquals(EMPTY_SET, index.find(FOO_CLASS_SYMBOL));
+    }
+
+    public void testFlushUsesEquals() {       
+        index.add(FOO_CLASS_SYMBOL, OTHER_FOO_CLASS_LOCATION);
+        index.flush(FOO_FILE2);
+        assertEquals(createSet(OTHER_FOO_CLASS_LOCATION), index.find(FOO_CLASS_SYMBOL));
+        index.flush(OTHER_FOO_FILE);
         assertEquals(EMPTY_SET, index.find(FOO_CLASS_SYMBOL));
     }
     
@@ -97,6 +112,15 @@ public class TC_SymbolIndex extends TestCase implements ISymbolTypes {
     	index.add(symbol, OTHER_FOO_CLASS_LOCATION);
     	assertEquals(createSet(new SearchResult(symbol, OTHER_FOO_CLASS_LOCATION)), index.find("^a", METHOD_SYMBOL)) ;
     	assertEquals(EMPTY_SET, index.find("^a", CLASS_SYMBOL)) ;
+    }
+    
+    public void testFlushByProject() {
+        index.add(FOO_CLASS_SYMBOL, FOO_CLASS_LOCATION);
+        ClassSymbol barClassSymbol = new ClassSymbol("Bar");
+        index.add(barClassSymbol, PROJECT2_CLASS_LOCATION);
+        index.flush(PROJECT1);
+        assertEquals(EMPTY_SET, index.find(FOO_CLASS_SYMBOL));
+        assertEquals(createSet(PROJECT2_CLASS_LOCATION), index.find(barClassSymbol));
     }
     
     private Set createSet(Object obj1) {

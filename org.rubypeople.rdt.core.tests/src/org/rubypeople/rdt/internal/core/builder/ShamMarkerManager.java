@@ -3,6 +3,7 @@
  */
 package org.rubypeople.rdt.internal.core.builder;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import junit.framework.Assert;
@@ -12,6 +13,7 @@ import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
 import org.jruby.lexer.yacc.SyntaxException;
 import org.rubypeople.eclipse.shams.resources.ShamFile;
+import org.rubypeople.rdt.internal.core.util.ListUtil;
 
 public class ShamMarkerManager implements IMarkerManager {
 
@@ -22,10 +24,21 @@ public class ShamMarkerManager implements IMarkerManager {
     private int startOffsetArg;
     private int endOffsetArg;
     private SyntaxException syntaxExceptionArg;
+    private List resourcesRemoved = new ArrayList();
 
     public void removeProblemsAndTasksFor(IResource resource) {
+        resourcesRemoved.add(resource);
     }
 
+    public void assertMarkersRemovedFor(IResource expectedResource) {
+        assertMarkersRemovedFor(ListUtil.create(expectedResource));
+    }
+
+
+    public void assertMarkersRemovedFor(List expectedFiles) {
+        Assert.assertEquals(expectedFiles, resourcesRemoved);
+        
+    }
     public void createSyntaxError(IFile file, SyntaxException syntaxException) {
         fileArg = file;
         syntaxExceptionArg = syntaxException;
@@ -71,5 +84,6 @@ public class ShamMarkerManager implements IMarkerManager {
         startOffsetArg = startOffset;
         endOffsetArg = endOffset;
     }
+
 
 }

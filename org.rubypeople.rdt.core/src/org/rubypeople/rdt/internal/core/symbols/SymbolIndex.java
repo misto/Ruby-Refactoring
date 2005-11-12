@@ -21,26 +21,30 @@ import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 
 import org.eclipse.core.resources.IFile;
-import org.eclipse.core.runtime.IPath;
+import org.eclipse.core.resources.IProject;
 import org.jruby.lexer.yacc.ISourcePosition;
 
 public class SymbolIndex {
+
 
     private Map index = Collections.synchronizedMap(new HashMap());
     private static boolean verbose;
     
     public void add(Symbol symbol, Location location) {
-        Set locations = (Set) index.get(symbol);
-        if (locations == null) { 
-            locations = new HashSet();
-            index.put(symbol, locations);
+        if (verbose)
+            log("Adding " + symbol + " at " + location);
+        synchronized(index) {
+            Set locations = (Set) index.get(symbol);
+            if (locations == null) { 
+                locations = new HashSet();
+                index.put(symbol, locations);
+            }
+            locations.add(location);
         }
-        locations.add(location);
     }
 
     public void add(Symbol symbol, IFile file, ISourcePosition position) {
-    	SymbolIndex.log("Adding Symbol: " + symbol) ;
-        add(symbol, new Location(file.getFullPath(), position));
+        add(symbol, new Location(file, position));
     }
 
     public Set find(Symbol symbol) {
@@ -75,9 +79,37 @@ public class SymbolIndex {
 		return searchResults ;
     }
 
-    public void flush(IPath foo_path) {
-    	SymbolIndex.log("Flushing all Symbols with path: " + foo_path) ;
+    public void flush(IFile fileToFlush) {
+        if (verbose)
+            log("Flushing all Symbols with path: " + fileToFlush) ;
 
+        flush(new PathEqualsPredicate(fileToFlush));
+    }
+
+    public static void setVerbose(boolean verbose) {
+        SymbolIndex.verbose = verbose;
+    }
+    
+    private static boolean isVerbose() {
+        return verbose;
+    }
+    
+    private static void log(String message) {
+    	if (!SymbolIndex.isVerbose()) {
+    		return ;
+    	}
+    	System.out.println(message) ;
+    }
+
+    public void flush(IProject project) {
+        if (verbose)
+            log("Flushing all Symbols for project: " + project) ;
+
+        flush(new ContainedByProject(project));
+        
+    }
+
+    private void flush(Predicate predicate) {
         synchronized (index) {
             for (Iterator indexIter = index.entrySet().iterator(); indexIter.hasNext();) {
                 Map.Entry entry = (Map.Entry) indexIter.next();
@@ -85,8 +117,11 @@ public class SymbolIndex {
                 
                 for (Iterator locationIter = locations.iterator(); locationIter.hasNext();) {
                     Location location = (Location) locationIter.next();
-                    if (location.getSourcePath() == foo_path) {
-                    	locationIter.remove();	
+                    if (predicate.evaluate(location.getSourceFile())) {
+                        locationIter.remove();  
+                        
+                        if (verbose)
+                            log("Removing " + location);
                     }                    
                  }
                 
@@ -96,20 +131,34 @@ public class SymbolIndex {
         }
     }
 
-    public static void setVerbose(boolean verbose) {
-        SymbolIndex.verbose = verbose;
-    }
-    
-    public static boolean isVerbose() {
-        return verbose;
-    }
-    
-    public static void log(String message) {
-    	if (!SymbolIndex.isVerbose()) {
-    		return ;
-    	}
-    	System.out.println(message) ;
+
+    private static class PathEqualsPredicate implements Predicate {
+        private final IFile fileToFlush;
+
+        public PathEqualsPredicate(IFile file) {
+            this.fileToFlush = file;
+        }
+
+        public boolean evaluate(Object object) {
+            return object.equals(fileToFlush);
+        }
     }
 
+    interface Predicate {
+        boolean evaluate(Object object);
+    }
 
+    private static class ContainedByProject implements Predicate {
+
+        private final IProject project;
+
+        public ContainedByProject(IProject project) {
+            this.project = project;
+        }
+
+        public boolean evaluate(Object object) {
+            IFile file = (IFile) object;
+            return file.getProject().equals(project);
+        }
+    }
 }

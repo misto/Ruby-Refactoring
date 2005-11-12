@@ -33,12 +33,11 @@ import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.QualifiedName;
 import org.eclipse.core.runtime.content.IContentTypeMatcher;
 
-public class ShamProject extends ShamResource implements IProject {
+public class ShamProject extends ShamContainer implements IProject, IContainer {
 	protected String projectName;
 	protected List natures = new ArrayList();
-
-	public ShamProject(String theProjectName) {
-		this(new Path("path to " + theProjectName), theProjectName);
+    public ShamProject(String theProjectName) {
+		this(new Path("/" + theProjectName), theProjectName);
 	}
 
 	public void setDefaultCharset(String charset, IProgressMonitor monitor) throws CoreException {
@@ -49,7 +48,7 @@ public class ShamProject extends ShamResource implements IProject {
 		projectName = theProjectName;
 	}
 
-	public void build(int kind, String builderName, Map args, IProgressMonitor monitor) throws CoreException {}
+    public void build(int kind, String builderName, Map args, IProgressMonitor monitor) throws CoreException {}
 
 	public void build(int kind, IProgressMonitor monitor) throws CoreException {}
 
@@ -138,7 +137,7 @@ public class ShamProject extends ShamResource implements IProject {
 	}
 
 	public IResource[] members() throws CoreException {
-		throw new RuntimeException("Unimplemented method in sham");
+        return (IResource[]) childResources.toArray(new IResource[0]);
 	}
 
 	public IResource[] members(boolean includePhantoms) throws CoreException {

@@ -10,11 +10,6 @@
  */
 package org.rubypeople.eclipse.shams.resources;
 
-import java.util.Collection;
-import java.util.Iterator;
-
-import junit.framework.Assert;
-
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IProject;
@@ -32,16 +27,19 @@ import org.eclipse.core.runtime.jobs.ISchedulingRule;
 
 public class ShamResource implements IResource {
 	protected IPath path;
-    private boolean acceptCalled;
-    private IResourceProxyVisitor proxyVisitorArg;
-    private int flagsArg;
-    private Collection resourcesToVisit;
 
 	public ShamResource(IPath aPath) {
-		super();
 		path = aPath;
 	}
 
+    public boolean equals(Object obj) {
+        if (obj instanceof ShamResource) {
+            ShamResource that = (ShamResource) obj;
+            return path.equals(that.path);
+        }
+        return false;
+    }
+    
 	public void accept(IResourceVisitor visitor) throws CoreException {
 		throw new RuntimeException("Need to implement on sham.");
 	}
@@ -244,25 +242,8 @@ public class ShamResource implements IResource {
 		throw new RuntimeException("Need to implement on sham.");
 	}
 
-    public void setResourcesToVisit(Collection resourcesToVisit) {
-        this.resourcesToVisit = resourcesToVisit;
-    }
-
-    public void assertAcceptCalled(IResourceProxyVisitor expectedVisitor, int expectedFlags) {
-        Assert.assertTrue("expected call to accept", acceptCalled);
-        Assert.assertEquals("visitor", expectedVisitor, proxyVisitorArg);
-        Assert.assertEquals("flags", expectedFlags, flagsArg);
-    }
-
     public void accept(IResourceProxyVisitor visitor, int flags) throws CoreException {
-        proxyVisitorArg = visitor;
-        flagsArg = flags;
-        for (Iterator iter = resourcesToVisit.iterator(); iter.hasNext();) {
-            IResource resource = (IResource) iter.next();
-            visitor.visit(new ShamResourceProxy(resource));
-            
-        }
-        acceptCalled = true;
+        throw new RuntimeException("Need to implement on sham.");
 	}
 
 	public long getLocalTimeStamp() {
@@ -282,17 +263,15 @@ public class ShamResource implements IResource {
 	}
 
 	public ResourceAttributes getResourceAttributes() {
-		// TODO Auto-generated method stub
-		return null;
+	    throw new RuntimeException("Need to implement on sham.");
 	}
 
 	public void revertModificationStamp(long value) throws CoreException {
-		// TODO Auto-generated method stub
-		
+	    throw new RuntimeException("Need to implement on sham.");
 	}
 
 	public void setResourceAttributes(ResourceAttributes attributes) throws CoreException {
-		// TODO Auto-generated method stub
+	    throw new RuntimeException("Need to implement on sham.");
 	}
     
     public String toString() {

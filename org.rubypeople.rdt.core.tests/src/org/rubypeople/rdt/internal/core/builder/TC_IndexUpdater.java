@@ -44,7 +44,7 @@ public class TC_IndexUpdater extends TestCase {
         Node node = new TrueNode(POSITION_1);
         updater.update(file, node);
         
-        symbolIndex.assertFlushed(file.getFullPath());
+        symbolIndex.assertFlushed(file);
         symbolIndex.assertAddNotCalled();
     }
 
@@ -53,7 +53,7 @@ public class TC_IndexUpdater extends TestCase {
         Node node = new ClassNode(POSITION_1, nameNode, null, null);
         updater.update(file, node);
         
-        symbolIndex.assertFlushed(file.getFullPath());
+        symbolIndex.assertFlushed(file);
         symbolIndex.assertAdded(new ClassSymbol(TEST_CLASS_NAME), file, POSITION_1);
     }
     
@@ -62,7 +62,7 @@ public class TC_IndexUpdater extends TestCase {
         
         updater.update(file,node);
         
-        symbolIndex.assertFlushed(file.getFullPath());
+        symbolIndex.assertFlushed(file);
         symbolIndex.assertAdded(new ClassSymbol("Foo"), file, new RdtPosition(1, 2, 14, 15));
     }
 
@@ -71,7 +71,7 @@ public class TC_IndexUpdater extends TestCase {
         
         updater.update(file,node);
         
-        symbolIndex.assertFlushed(file.getFullPath());
+        symbolIndex.assertFlushed(file);
         symbolIndex.assertAdded(new ClassSymbol("Foo::Bar"), file, new RdtPosition(1, 2, 16, 20));
     }
 
@@ -80,7 +80,7 @@ public class TC_IndexUpdater extends TestCase {
         
         updater.update(file,node);
         
-        symbolIndex.assertFlushed(file.getFullPath());
+        symbolIndex.assertFlushed(file);
         symbolIndex.assertAdded(new ClassSymbol("X::Foo::Bar"), file, new RdtPosition(1, 2, 19, 23));
     }
 
@@ -89,7 +89,7 @@ public class TC_IndexUpdater extends TestCase {
         
         updater.update(file,node);
         
-        symbolIndex.assertFlushed(file.getFullPath());
+        symbolIndex.assertFlushed(file);
         symbolIndex.assertAdded(new ClassSymbol("Foo::Bar"), file, new RdtPosition(2, 3, 25, 26));
     }
     
@@ -98,7 +98,7 @@ public class TC_IndexUpdater extends TestCase {
         
         updater.update(file,node);
         
-        symbolIndex.assertFlushed(file.getFullPath());
+        symbolIndex.assertFlushed(file);
         symbolIndex.assertAdded(new ClassSymbol("Foo::Bar::InnerBar"), file, new RdtPosition(2, 3, 35, 36));
     }
     

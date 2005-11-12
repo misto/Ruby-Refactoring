@@ -15,6 +15,6 @@ import java.util.List;
 
 import org.eclipse.core.runtime.CoreException;
 
-interface IFileFinder {
+interface IFileProvider {
     public List findFiles() throws CoreException;
 }

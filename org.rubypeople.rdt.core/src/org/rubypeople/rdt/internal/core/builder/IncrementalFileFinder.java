@@ -18,7 +18,7 @@ import java.util.List;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IResourceDelta;
 
-class IncrementalFileFinder implements IFileFinder {
+class IncrementalFileFinder implements IFileProvider {
     private final IResourceDelta delta;
 
     IncrementalFileFinder(IResourceDelta delta) {

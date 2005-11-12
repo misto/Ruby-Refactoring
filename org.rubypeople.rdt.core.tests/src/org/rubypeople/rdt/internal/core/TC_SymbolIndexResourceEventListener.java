@@ -109,7 +109,7 @@ public class TC_SymbolIndexResourceEventListener extends TestCase {
 
     private ShamResourceDelta createDelta(IResource resource) {
         ShamResourceDelta delta = new ShamResourceDelta();
-        delta.addResource(resource);
+        delta.setResource(resource);
         delta.setKind(IResourceDelta.CHANGED);
         delta.setFlags(IResourceDelta.OPEN | IResourceDelta.MARKERS);
         return delta;

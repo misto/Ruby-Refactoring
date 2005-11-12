@@ -19,9 +19,11 @@ public class TS_InternalCoreBuilder {
         TestSuite suite = new TestSuite();
     
         suite.addTestSuite(TC_TaskCompiler.class);
-        suite.addTestSuite(TC_RdtCompiler.class);
+        suite.addTestSuite(TC_RubyCodeAnalyzer.class);
         suite.addTestSuite(TC_MassIndexUpdater.class);
         suite.addTestSuite(TC_IndexUpdater.class);
+        suite.addTestSuite(TC_CleanRdtCompiler.class);
+        suite.addTestSuite(TC_IncrementalRdtCompiler.class);
 
         return suite;
     }
