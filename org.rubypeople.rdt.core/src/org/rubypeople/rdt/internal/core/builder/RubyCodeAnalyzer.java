@@ -42,7 +42,7 @@ public final class RubyCodeAnalyzer implements SingleFileCompiler {
         Reader reader = new InputStreamReader(file.getContents());
         try {
             Node rootNode = parser.parse(file, reader);
-            indexUpdater.update(file, rootNode);
+            indexUpdater.update(file, rootNode, true);
         } catch (SyntaxException e) {
             markerManager.createSyntaxError(file, e);
         } finally {

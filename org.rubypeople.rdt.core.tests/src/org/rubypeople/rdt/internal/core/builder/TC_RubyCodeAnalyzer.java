@@ -15,7 +15,6 @@ import java.util.List;
 
 import junit.framework.TestCase;
 
-import org.eclipse.core.resources.IFile;
 import org.jruby.ast.Node;
 import org.jruby.ast.visitor.NodeVisitor;
 import org.jruby.lexer.yacc.SyntaxException;
@@ -29,7 +28,7 @@ public class TC_RubyCodeAnalyzer extends TestCase {
     private ShamMarkerManager markerManager;
     private ShamRubyParser parser;
     private RubyCodeAnalyzer compiler;
-    private MockIndexUpdater indexUpdater;
+    private ShamIndexUpdater indexUpdater;
     private Node rootNode;
 
     public void setUp() {
@@ -47,7 +46,7 @@ public class TC_RubyCodeAnalyzer extends TestCase {
         markerManager = new ShamMarkerManager();
         parser = new ShamRubyParser();
         parser.addParseResult(file, rootNode);
-        indexUpdater = new MockIndexUpdater();
+        indexUpdater = new ShamIndexUpdater();
         compiler = new RubyCodeAnalyzer(markerManager, parser, indexUpdater);
     }
     
@@ -56,7 +55,7 @@ public class TC_RubyCodeAnalyzer extends TestCase {
         
         parser.assertParsed(file, FILE_CONTENTS);
         file.assertContentStreamClosed();
-        indexUpdater.assertUpdated(file, rootNode);
+        indexUpdater.assertUpdated(file, rootNode, true);
     }
     
 
@@ -69,25 +68,4 @@ public class TC_RubyCodeAnalyzer extends TestCase {
         file.assertContentStreamClosed();
         markerManager.assertErrorCreated(file, syntaxException);
     }
-
-    private static final class MockIndexUpdater extends IndexUpdater {
-
-        public MockIndexUpdater() {
-            super(null);
-        }
-
-        private Node rootNodeArg;
-        private IFile fileArg;
-
-        public void update(IFile file, Node rootNode) {
-            fileArg = file;
-            rootNodeArg = rootNode;
-        }
-        
-        public void assertUpdated(IFile expectedFile, Node expectedRootNode) {
-            assertEquals("File", expectedFile, fileArg);
-            assertEquals("Node", expectedRootNode, rootNodeArg);
-        }
-    }
-
 }

@@ -19,6 +19,7 @@ import junit.framework.Assert;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
 import org.jruby.lexer.yacc.ISourcePosition;
+import org.rubypeople.eclipse.shams.resources.ShamFile;
 import org.rubypeople.eclipse.shams.resources.ShamProject;
 import org.rubypeople.rdt.internal.core.symbols.Symbol;
 import org.rubypeople.rdt.internal.core.symbols.SymbolIndex;
@@ -67,6 +68,10 @@ public class ShamSymbolIndex extends SymbolIndex {
     
     public void assertFlushed(List expectedFiles) {
         Assert.assertEquals(expectedFiles, flushedFiles);
+    }
+
+    public void assertNotFlushed(ShamFile file) {
+        Assert.assertEquals(false, flushedFiles.contains(file));
     }
 
 }

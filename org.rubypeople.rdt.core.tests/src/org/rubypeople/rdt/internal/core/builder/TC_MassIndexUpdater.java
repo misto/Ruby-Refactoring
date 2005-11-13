@@ -11,14 +11,10 @@
 package org.rubypeople.rdt.internal.core.builder;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import junit.framework.TestCase;
 
-import org.eclipse.core.resources.IFile;
-import org.jruby.ast.Node;
 import org.rubypeople.eclipse.shams.resources.ShamFile;
 import org.rubypeople.eclipse.shams.resources.ShamProject;
 import org.rubypeople.rdt.internal.core.parser.ShamNode;
@@ -60,27 +56,8 @@ public class TC_MassIndexUpdater extends TestCase {
         parser.assertParsed(file2);
         parser.assertParsed(file3);
         
-        updater.assertUpdated(file1, rootNode1);
-        updater.assertUpdated(file2, rootNode2);
-        updater.assertUpdated(file3, rootNode3);
-    }
-
-    private static class ShamIndexUpdater extends IndexUpdater {
-
-        private Map updates = new HashMap();
-
-        public ShamIndexUpdater() {
-            super(null);
-        }
-
-        public void assertUpdated(ShamFile expectedFile, ShamNode expectedNode) {
-            assertTrue("Should have updated " + expectedFile,
-                    updates.containsKey(expectedFile));
-            assertEquals(expectedNode, updates.get(expectedFile));
-        }
-
-        public void update(IFile file, Node rootNode) {
-            updates.put(file, rootNode);
-        }
+        updater.assertUpdated(file1, rootNode1, false);
+        updater.assertUpdated(file2, rootNode2, false);
+        updater.assertUpdated(file3, rootNode3, false);
     }
 }

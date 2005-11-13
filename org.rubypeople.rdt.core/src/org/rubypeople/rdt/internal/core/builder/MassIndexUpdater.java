@@ -54,7 +54,7 @@ public class MassIndexUpdater {
     private void processFile(IFile file) {
         try {
             Node node = parser.parse(file);
-            updater.update(file, node);
+            updater.update(file, node, false);
         } catch (CoreException e) {
             RubyCore.log(e);
         } catch (Exception ex) {

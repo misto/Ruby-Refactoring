@@ -13,6 +13,7 @@ import org.eclipse.core.runtime.CoreException;
 import org.rubypeople.rdt.internal.core.symbols.SymbolIndex;
 import org.rubypeople.rdt.internal.core.util.Util;
 
+// DSC don't flush index files or don't do it in IndexUpdater
 public class IncrementalRdtCompiler extends AbstractRdtCompiler {
 
     private List filesToCompile;

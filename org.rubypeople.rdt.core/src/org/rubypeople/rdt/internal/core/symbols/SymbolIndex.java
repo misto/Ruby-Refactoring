@@ -81,7 +81,7 @@ public class SymbolIndex {
 
     public void flush(IFile fileToFlush) {
         if (verbose)
-            log("Flushing all Symbols with path: " + fileToFlush) ;
+            log("Flushing all Symbols with path: " + fileToFlush.getFullPath()) ;
 
         flush(new PathEqualsPredicate(fileToFlush));
     }
@@ -103,7 +103,7 @@ public class SymbolIndex {
 
     public void flush(IProject project) {
         if (verbose)
-            log("Flushing all Symbols for project: " + project) ;
+            log("Flushing all Symbols for project: " + project.getName()) ;
 
         flush(new ContainedByProject(project));
         

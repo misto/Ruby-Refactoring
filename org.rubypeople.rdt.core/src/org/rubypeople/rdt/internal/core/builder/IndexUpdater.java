@@ -34,8 +34,9 @@ public class IndexUpdater {
     }
 
 
-    public void update(IFile file, Node rootNode) {
-        index.flush(file);
+    public void update(IFile file, Node rootNode, boolean skipFlush) {
+        if (!skipFlush)
+            index.flush(file);
         processNode(file, rootNode);
     }
 

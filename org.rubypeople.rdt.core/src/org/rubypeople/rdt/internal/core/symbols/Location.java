@@ -25,7 +25,7 @@ public class Location {
     }
 
     public String toString() {
-        return sourceFile+": " + position;
+        return sourceFile.getFullPath() + ": " + position;
     }
 
     public boolean forSource(IFile file) {

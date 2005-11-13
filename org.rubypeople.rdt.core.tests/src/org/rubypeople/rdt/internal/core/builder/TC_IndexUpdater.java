@@ -42,7 +42,7 @@ public class TC_IndexUpdater extends TestCase {
     
     public void testIrrelevantNodes() {
         Node node = new TrueNode(POSITION_1);
-        updater.update(file, node);
+        updater.update(file, node, false);
         
         symbolIndex.assertFlushed(file);
         symbolIndex.assertAddNotCalled();
@@ -51,16 +51,25 @@ public class TC_IndexUpdater extends TestCase {
     public void testSimple() {
         Colon2Node nameNode = new Colon2Node(POSITION_1, null, TEST_CLASS_NAME);
         Node node = new ClassNode(POSITION_1, nameNode, null, null);
-        updater.update(file, node);
+        updater.update(file, node, false);
         
         symbolIndex.assertFlushed(file);
         symbolIndex.assertAdded(new ClassSymbol(TEST_CLASS_NAME), file, POSITION_1);
     }
     
+    public void testSkippingFlush() {
+        Colon2Node nameNode = new Colon2Node(POSITION_1, null, TEST_CLASS_NAME);
+        Node node = new ClassNode(POSITION_1, nameNode, null, null);
+        updater.update(file, node, true);
+        
+        symbolIndex.assertNotFlushed(file);
+        symbolIndex.assertAdded(new ClassSymbol(TEST_CLASS_NAME), file, POSITION_1);
+    }
+
     public void testWithTree() throws Exception {
         Node node = parseCode("if x\nclass Foo\nend\n end\n");
         
-        updater.update(file,node);
+        updater.update(file,node, false);
         
         symbolIndex.assertFlushed(file);
         symbolIndex.assertAdded(new ClassSymbol("Foo"), file, new RdtPosition(1, 2, 14, 15));
@@ -69,7 +78,7 @@ public class TC_IndexUpdater extends TestCase {
     public void testTreeWithScopedClass() throws Exception {
         Node node = parseCode("if x\nclass Foo::Bar\nend\n end\n");
         
-        updater.update(file,node);
+        updater.update(file,node, false);
         
         symbolIndex.assertFlushed(file);
         symbolIndex.assertAdded(new ClassSymbol("Foo::Bar"), file, new RdtPosition(1, 2, 16, 20));
@@ -78,7 +87,7 @@ public class TC_IndexUpdater extends TestCase {
     public void testTreeWithDeeplyScopedClass() throws Exception {
         Node node = parseCode("if x\nclass X::Foo::Bar\nend\n end\n");
         
-        updater.update(file,node);
+        updater.update(file,node, false);
         
         symbolIndex.assertFlushed(file);
         symbolIndex.assertAdded(new ClassSymbol("X::Foo::Bar"), file, new RdtPosition(1, 2, 19, 23));
@@ -87,7 +96,7 @@ public class TC_IndexUpdater extends TestCase {
     public void testTreeWithNesting() throws Exception {
         Node node = parseCode("if x\nmodule Foo\nclass Bar\nend\n end\nend\n");
         
-        updater.update(file,node);
+        updater.update(file,node, false);
         
         symbolIndex.assertFlushed(file);
         symbolIndex.assertAdded(new ClassSymbol("Foo::Bar"), file, new RdtPosition(2, 3, 25, 26));
@@ -96,7 +105,7 @@ public class TC_IndexUpdater extends TestCase {
     public void testTreeWithMoreNesting() throws Exception {
         Node node = parseCode("module Foo\nclass Bar\nclass InnerBar\nend\nend\nend\n");
         
-        updater.update(file,node);
+        updater.update(file,node, false);
         
         symbolIndex.assertFlushed(file);
         symbolIndex.assertAdded(new ClassSymbol("Foo::Bar::InnerBar"), file, new RdtPosition(2, 3, 35, 36));
@@ -105,7 +114,7 @@ public class TC_IndexUpdater extends TestCase {
     public void testMethod() throws Exception {
     	Node node = parseCode("def method\nend") ;
         
-        updater.update(file,node);
+        updater.update(file,node, false);
                 
         symbolIndex.assertAdded(new MethodSymbol("method"), file, new RdtPosition(0, 1, 3, 12));
     }
@@ -113,7 +122,7 @@ public class TC_IndexUpdater extends TestCase {
     public void testMethodWithNesting() throws Exception {
     	Node node = parseCode("class Foo\ndef method\nend\nend") ;
         
-        updater.update(file,node);
+        updater.update(file,node, false);
                 
         symbolIndex.assertAdded(new MethodSymbol("Foo::method"), file, new RdtPosition(1, 2, 13, 24));
     }
