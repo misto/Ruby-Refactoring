@@ -18,6 +18,7 @@ import org.rubypeople.rdt.internal.core.TS_InternalCore;
 import org.rubypeople.rdt.internal.core.builder.TS_InternalCoreBuilder;
 import org.rubypeople.rdt.internal.core.parser.TS_InternalCoreParser;
 import org.rubypeople.rdt.internal.core.symbols.TS_CoreSymbols;
+import org.rubypeople.rdt.internal.core.util.TS_Util;
 import org.rubypeople.rdt.internal.formatter.TS_InternalFormatter;
 
 public class TS_Core {
@@ -29,6 +30,7 @@ public class TS_Core {
 		suite.addTest(TS_CoreSymbols.suite());
 		suite.addTest(TS_InternalCore.suite());
 		suite.addTest(TS_InternalFormatter.suite());
+		suite.addTest(TS_Util.suite());
 
 		return suite;
 	}

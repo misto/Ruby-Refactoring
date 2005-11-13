@@ -22,21 +22,26 @@ import org.eclipse.core.resources.IResourceDelta;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.rubypeople.rdt.internal.core.builder.IndexUpdater;
 import org.rubypeople.rdt.internal.core.builder.MassIndexUpdater;
+import org.rubypeople.rdt.internal.core.builder.MassIndexUpdaterJob;
 import org.rubypeople.rdt.internal.core.symbols.SymbolIndex;
+import org.rubypeople.rdt.internal.core.util.EclipseJobScheduler;
+import org.rubypeople.rdt.internal.core.util.IJobScheduler;
 
 public final class SymbolIndexResourceChangeListener implements IResourceChangeListener {
     private final MassIndexUpdater updater;
+    private final IJobScheduler scheduler;
 
     public static void register(SymbolIndex symbolIndex) { 
         IndexUpdater indexUpdater = new IndexUpdater(symbolIndex);
         MassIndexUpdater massIndexUpdater = new MassIndexUpdater(indexUpdater);
         SymbolIndexResourceChangeListener listener 
-            = new SymbolIndexResourceChangeListener(massIndexUpdater);
+            = new SymbolIndexResourceChangeListener(massIndexUpdater, new EclipseJobScheduler());
         ResourcesPlugin.getWorkspace().addResourceChangeListener(listener);
     }
 
-    public SymbolIndexResourceChangeListener(MassIndexUpdater updater) {
+    public SymbolIndexResourceChangeListener(MassIndexUpdater updater, IJobScheduler scheduler) {
         this.updater = updater;
+        this.scheduler = scheduler;
     }
 
     public void resourceChanged(IResourceChangeEvent event) {
@@ -55,8 +60,7 @@ public final class SymbolIndexResourceChangeListener implements IResourceChangeL
                     projects.add(resource.getAdapter(IProject.class));
             }
         }
-        if (!projects.isEmpty())
-            updater.updateProjects(projects);
+        scheduler.schedule(new MassIndexUpdaterJob(updater, projects));
     }
 
     private boolean isProject(IResource resource) {

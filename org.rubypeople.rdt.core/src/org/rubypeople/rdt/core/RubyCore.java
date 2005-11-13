@@ -12,6 +12,7 @@ package org.rubypeople.rdt.core;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.eclipse.core.resources.IFile;
@@ -43,7 +44,7 @@ import org.rubypeople.rdt.internal.core.RubyProject;
 import org.rubypeople.rdt.internal.core.RubyScript;
 import org.rubypeople.rdt.internal.core.SymbolIndexResourceChangeListener;
 import org.rubypeople.rdt.internal.core.builder.IndexUpdater;
-import org.rubypeople.rdt.internal.core.builder.MassIndexUpdater;
+import org.rubypeople.rdt.internal.core.builder.MassIndexUpdaterJob;
 import org.rubypeople.rdt.internal.core.builder.RubyBuilder;
 import org.rubypeople.rdt.internal.core.parser.RubyParser;
 import org.rubypeople.rdt.internal.core.symbols.SymbolIndex;
@@ -218,10 +219,9 @@ public class RubyCore extends Plugin {
 
         SymbolIndexResourceChangeListener.register(symbolIndex);
         IndexUpdater indexUpdater = new IndexUpdater(symbolIndex);
-        MassIndexUpdater massUpdater = new MassIndexUpdater(indexUpdater);
-        // TODO: move away from start method: long running, syntax errors can occur 
-        //massUpdater.updateProjects(Arrays.asList(getRubyProjects()));
-        
+        List rubyProjects = Arrays.asList(getRubyProjects());
+        MassIndexUpdaterJob massUpdater = new MassIndexUpdaterJob(indexUpdater, rubyProjects);
+        massUpdater.schedule();
 	}
 
     private boolean isDebugOptionTrue(String option) {

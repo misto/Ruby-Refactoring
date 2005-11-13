@@ -72,4 +72,17 @@ public class MassIndexUpdater {
         }
         return files;
     }
+    
+    public boolean equals(Object obj) {
+        if (!(obj instanceof  MassIndexUpdater))
+            return false;
+        
+        MassIndexUpdater that = (MassIndexUpdater) obj;
+        return updater.getClass().equals(that.updater.getClass())
+            && parser.getClass().equals(that.parser);
+    }
+    
+    public int hashCode() {
+        return 0;
+    }
 }

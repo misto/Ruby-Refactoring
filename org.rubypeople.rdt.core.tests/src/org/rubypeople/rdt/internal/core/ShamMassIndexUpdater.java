@@ -38,5 +38,9 @@ public class ShamMassIndexUpdater extends MassIndexUpdater {
         Assert.assertNull("Unexpected call to updateProjects", projectsArg);
     }
     
+    public boolean equals(Object obj) {
+        return this == obj;
+    }
+    
 
 }

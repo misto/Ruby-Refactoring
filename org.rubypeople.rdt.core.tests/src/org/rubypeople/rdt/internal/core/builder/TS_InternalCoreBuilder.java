@@ -24,6 +24,7 @@ public class TS_InternalCoreBuilder {
         suite.addTestSuite(TC_IndexUpdater.class);
         suite.addTestSuite(TC_CleanRdtCompiler.class);
         suite.addTestSuite(TC_IncrementalRdtCompiler.class);
+        suite.addTestSuite(TC_MassIndexUpdaterJob.class);
 
         return suite;
     }

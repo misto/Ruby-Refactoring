@@ -10,6 +10,9 @@
  */
 package org.rubypeople.rdt.internal.core;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import junit.framework.TestCase;
 
 import org.eclipse.core.resources.IResource;
@@ -18,7 +21,9 @@ import org.eclipse.core.resources.IResourceDelta;
 import org.eclipse.core.runtime.Path;
 import org.rubypeople.eclipse.shams.resources.ShamProject;
 import org.rubypeople.eclipse.shams.resources.ShamResource;
+import org.rubypeople.rdt.internal.core.builder.MassIndexUpdaterJob;
 import org.rubypeople.rdt.internal.core.util.ListUtil;
+import org.rubypeople.rdt.internal.core.util.ShamJobScheduler;
 
 public class TC_SymbolIndexResourceEventListener extends TestCase {
     private ShamMassIndexUpdater massIndexUpdater;
@@ -26,10 +31,12 @@ public class TC_SymbolIndexResourceEventListener extends TestCase {
     private ShamProject project;
     private ShamResourceDelta parentDelta;
     private ShamResource resource;
+    private ShamJobScheduler jobScheduler;
 
     public void setUp() {
+        jobScheduler = new ShamJobScheduler();
         massIndexUpdater = new ShamMassIndexUpdater();
-        listener = new SymbolIndexResourceChangeListener(massIndexUpdater);
+        listener = new SymbolIndexResourceChangeListener(massIndexUpdater, jobScheduler);
         project = new ShamProject("test1");
         resource = new ShamResource(new Path("test1/file1"));
         parentDelta = new ShamResourceDelta();
@@ -43,7 +50,8 @@ public class TC_SymbolIndexResourceEventListener extends TestCase {
         
         listener.resourceChanged(event);
         
-        massIndexUpdater.assertProjectsUpdated(ListUtil.create(project));
+        ArrayList rubyProjects = ListUtil.create(project);
+        jobScheduler.assertScheduled(new MassIndexUpdaterJob(massIndexUpdater, rubyProjects));
     }
 
     public void testMultipleProjectOpen() throws Exception {
@@ -56,7 +64,8 @@ public class TC_SymbolIndexResourceEventListener extends TestCase {
         
         listener.resourceChanged(event);
         
-        massIndexUpdater.assertProjectsUpdated(ListUtil.create(project, project2));
+        List rubyProjects = ListUtil.create(project, project2);
+        jobScheduler.assertScheduled(new MassIndexUpdaterJob(massIndexUpdater, rubyProjects));
     }
     
     public void testWithoutProject() throws Exception {
