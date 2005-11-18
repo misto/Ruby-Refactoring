@@ -7,7 +7,11 @@ public class MethodSymbol extends Symbol {
 		super(name, METHOD_SYMBOL);
 	}
 
-	public String toString() {
+	public MethodSymbol(String className, String methodName) {
+        this(className + "::" + methodName);
+	}
+
+    public String toString() {
 	    return "Method [" + this.getName() + "]";
 	}
 

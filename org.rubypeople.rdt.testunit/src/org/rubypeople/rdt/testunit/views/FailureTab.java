@@ -53,7 +53,6 @@ public class FailureTab extends TestRunTab implements IMenuListener {
 	private final Image fErrorIcon = TestUnitView.createImage("obj16/testerr.gif"); //$NON-NLS-1$
 	private final Image fFailureIcon = TestUnitView.createImage("obj16/testfail.gif"); //$NON-NLS-1$
 	private final Image fFailureTabIcon = TestUnitView.createImage("obj16/failures.gif"); //$NON-NLS-1$
-    private Shell shell;
 
 	public FailureTab() {}
 
@@ -152,7 +151,7 @@ public class FailureTab extends TestRunTab implements IMenuListener {
 			String className = getClassName();
 			String methodName = getMethodName();
 			if (className != null) {
-                manager.add(new OpenClassAction(getShell(), className, getSymbolIndex()));
+                manager.add(OpenSymbolAction.forClass(className, getSymbolIndex(), getShell()));
 				manager.add(new Separator());
 				manager.add(new RerunAction(fRunnerViewPart, getSelectedTestId(), 
                         className, methodName, ILaunchManager.RUN_MODE));
@@ -275,9 +274,8 @@ public class FailureTab extends TestRunTab implements IMenuListener {
 	}
 
 	void handleDoubleClick(MouseEvent e) {
-        shell = getShell();
         if (fTable.getSelectionCount() > 0) 
-	        new OpenClassAction(shell, getClassName(), getSymbolIndex()).run();
+	        OpenSymbolAction.forClass(getClassName(), getSymbolIndex(), getShell()).run();
 	}
 
     private Shell getShell() {

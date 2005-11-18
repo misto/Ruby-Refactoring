@@ -21,6 +21,7 @@ import java.util.Vector;
 
 import org.eclipse.debug.core.ILaunchManager;
 import org.eclipse.jface.action.Action;
+import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.action.IMenuListener;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.MenuManager;
@@ -40,8 +41,12 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Menu;
+import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeItem;
+import org.rubypeople.rdt.core.RubyCore;
+import org.rubypeople.rdt.internal.core.symbols.ClassSymbol;
+import org.rubypeople.rdt.internal.core.symbols.SymbolIndex;
 import org.rubypeople.rdt.testunit.ITestRunListener;
 
 /*
@@ -401,23 +406,23 @@ public class TestHierarchyTab extends TestRunTab implements IMenuListener {
 	}
 
 	void handleDoubleClick(MouseEvent e) {
-	// TODO Fix and enable OpenTestAction
-	//		TestRunInfo testInfo= getTestInfo();
-	//		
-	//		if (testInfo == null)
-	//			return;
-	//			
-	//		String testLabel= testInfo.getTestName();
-	//		OpenTestAction action= null;
-	//		
-	//		if (isSuiteSelected())
-	//			action= new OpenTestAction(fTestRunnerPart, testLabel);
-	//		else
-	//			action= new OpenTestAction(fTestRunnerPart, getClassName(),
-	// getTestMethod());
-	//
-	//		if (action != null && action.isEnabled())
-	//			action.run();
+			TestRunInfo testInfo= getTestInfo();
+			
+			if (testInfo == null)
+				return;
+				
+			String testLabel= testInfo.getTestName();
+			IAction action = null;
+			
+            Shell shell = fTree.getShell();
+            SymbolIndex index = RubyCore.getPlugin().getSymbolIndex();
+			if (isSuiteSelected())
+				action= OpenSymbolAction.forClass(getClassName(), index, shell);
+			else
+			    action= OpenSymbolAction.forMethod(getClassName(), getTestMethod(), index, shell);
+	
+			if (action != null && action.isEnabled())
+				action.run();
 	}
 
 	public void menuAboutToShow(IMenuManager manager) {
@@ -425,17 +430,18 @@ public class TestHierarchyTab extends TestRunTab implements IMenuListener {
 			TreeItem treeItem = fTree.getSelection()[0];
 			TestRunInfo testInfo = (TestRunInfo) treeItem.getData();
 			String testLabel = testInfo.getTestName();
+            Shell shell = fTree.getShell();
+            SymbolIndex symbolIndex = RubyCore.getPlugin().getSymbolIndex();
 			if (isSuiteSelected()) {
-				// TODO Re-enable OpenTestAction
-				//manager.add(new OpenTestAction(fTestRunnerPart, testLabel));
+				manager.add(OpenSymbolAction.forClass(getClassName(), symbolIndex, shell));
 				manager.add(new Separator());
 				if (testClassExists(getClassName()) && !fTestRunnerPart.lastLaunchIsKeptAlive()) {
 					manager.add(new RerunAction(fTestRunnerPart, getSelectedTestId(), getClassName(), null, ILaunchManager.RUN_MODE));
                     manager.add(new RerunAction(fTestRunnerPart, getSelectedTestId(), getClassName(), null, ILaunchManager.DEBUG_MODE));
 				}
 			} else {
-				//manager.add(new OpenTestAction(fTestRunnerPart,
-				// getClassName(), getTestMethod()));
+			    manager.add(OpenSymbolAction.forMethod(getClassName(), 
+                        getTestMethod(), symbolIndex, shell));
 				manager.add(new Separator());
 				manager.add(new RerunAction(fTestRunnerPart, getSelectedTestId(), getClassName(), getTestMethod(), ILaunchManager.RUN_MODE));
                 manager.add(new RerunAction(fTestRunnerPart, getSelectedTestId(), getClassName(), getTestMethod(), ILaunchManager.DEBUG_MODE));                
@@ -446,16 +452,7 @@ public class TestHierarchyTab extends TestRunTab implements IMenuListener {
 	}
 
 	private boolean testClassExists(String className) {
-		// TODO Fix / clean up
-		//		IJavaProject project= fTestRunnerPart.getLaunchedProject();
-		//		try {
-		//			IType type= project.findType(className);
-		//			return type != null;
-		//		} catch (JavaModelException e) {
-		//			// fall through
-		//		}
-		//		return false;
-		return true;
+        return RubyCore.getPlugin().getSymbolIndex().find(new ClassSymbol(className)).size() > 0;
 	}
 
 	public void newTreeEntry(String treeEntry) {

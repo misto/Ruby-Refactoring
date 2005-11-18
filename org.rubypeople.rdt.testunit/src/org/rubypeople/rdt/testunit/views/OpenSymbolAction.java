@@ -12,28 +12,44 @@ import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Shell;
 import org.rubypeople.rdt.internal.core.symbols.ClassSymbol;
 import org.rubypeople.rdt.internal.core.symbols.Location;
+import org.rubypeople.rdt.internal.core.symbols.MethodSymbol;
+import org.rubypeople.rdt.internal.core.symbols.Symbol;
 import org.rubypeople.rdt.internal.core.symbols.SymbolIndex;
 import org.rubypeople.rdt.internal.ui.RubyPluginImages;
 import org.rubypeople.rdt.internal.ui.dialogs.ElementListSelectionDialog;
 import org.rubypeople.rdt.internal.ui.util.PositionBasedEditorOpener;
 
 
-public class OpenClassAction extends Action implements IAction {
+public class OpenSymbolAction extends Action implements IAction {
 
-
-    private final String className;
+    private final Symbol symbol;
     private final SymbolIndex index;
     private final Shell shell;
+    private String dialogTitle;
 
-    public OpenClassAction(Shell shell, String className, SymbolIndex index) {
-        super(TestUnitMessages.getString("OpenEditor.action.label"));
-        this.shell = shell;
-        this.className = className;
-        this.index = index;
+    public static IAction forClass(String className, SymbolIndex index, Shell shell) {
+        return new OpenSymbolAction(new ClassSymbol(className), index, shell, "Open Class");
     }
     
+    public static IAction forMethod(String className, String testMethod, 
+            SymbolIndex index, Shell shell) {
+        return new OpenSymbolAction(new MethodSymbol(className, testMethod), index, shell, "Open Method");
+    }
+    
+    public OpenSymbolAction(Symbol symbol, SymbolIndex index, Shell shell, String title) {
+        super(TestUnitMessages.getString("OpenEditor.action.label"));
+        this.shell = shell;
+        this.symbol = symbol;
+        this.index = index;
+        this.dialogTitle = title;
+    }
+    
+
     public void run() {
-        Set locations = index.find(new ClassSymbol(className));
+        Set locations = index.find(symbol);
+        if (locations.size() == 0)
+            return;
+        
         Location location;
         if (locations.size() == 1) {
             location = (Location) locations.iterator().next();
@@ -42,7 +58,7 @@ public class OpenClassAction extends Action implements IAction {
                 = new ElementListSelectionDialog(shell, new LocationLabel());
             selectionDialog.setElements(locations.toArray());
             selectionDialog.setMessage("Select a location");
-            selectionDialog.setTitle("Open Class");
+            selectionDialog.setTitle(dialogTitle);
             selectionDialog.open();
             if (selectionDialog.getReturnCode() == SWT.CANCEL)
                 return;
@@ -63,7 +79,7 @@ public class OpenClassAction extends Action implements IAction {
         public String getText(Object element) {
             Location location = (Location) element;
             IFile sourceFile = location.getSourceFile();
-            return sourceFile.getName() + " - " + sourceFile.getFullPath().removeLastSegments(1);
+            return sourceFile.getName() + ":" + location.getPosition().getStartLine() + " - " + sourceFile.getFullPath().removeLastSegments(1);
         }
 
         public void addListener(ILabelProviderListener listener) {
@@ -73,13 +89,12 @@ public class OpenClassAction extends Action implements IAction {
         }
 
         public boolean isLabelProperty(Object element, String property) {
-            // TODO Auto-generated method stub
             return false;
         }
 
         public void removeListener(ILabelProviderListener listener) {
-            // TODO Auto-generated method stub
-            
         }
     }
+
+
 }
