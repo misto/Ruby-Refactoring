@@ -34,6 +34,7 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Menu;
+import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableItem;
 import org.rubypeople.rdt.core.RubyCore;
@@ -52,6 +53,7 @@ public class FailureTab extends TestRunTab implements IMenuListener {
 	private final Image fErrorIcon = TestUnitView.createImage("obj16/testerr.gif"); //$NON-NLS-1$
 	private final Image fFailureIcon = TestUnitView.createImage("obj16/testfail.gif"); //$NON-NLS-1$
 	private final Image fFailureTabIcon = TestUnitView.createImage("obj16/failures.gif"); //$NON-NLS-1$
+    private Shell shell;
 
 	public FailureTab() {}
 
@@ -148,10 +150,9 @@ public class FailureTab extends TestRunTab implements IMenuListener {
 	public void menuAboutToShow(IMenuManager manager) {
 		if (fTable.getSelectionCount() > 0) {
 			String className = getClassName();
-			System.out.println(className);
 			String methodName = getMethodName();
 			if (className != null) {
-				manager.add(new OpenClassAction(className, getSymbolIndex()));
+                manager.add(new OpenClassAction(getShell(), className, getSymbolIndex()));
 				manager.add(new Separator());
 				manager.add(new RerunAction(fRunnerViewPart, getSelectedTestId(), 
                         className, methodName, ILaunchManager.RUN_MODE));
@@ -274,9 +275,14 @@ public class FailureTab extends TestRunTab implements IMenuListener {
 	}
 
 	void handleDoubleClick(MouseEvent e) {
-	    if (fTable.getSelectionCount() > 0) 
-	        new OpenClassAction(getClassName(), getSymbolIndex()).run();
+        shell = getShell();
+        if (fTable.getSelectionCount() > 0) 
+	        new OpenClassAction(shell, getClassName(), getSymbolIndex()).run();
 	}
+
+    private Shell getShell() {
+        return fTable.getShell();
+    }
 
 	/*
 	 * @see ITestRunView#testStatusChanged(TestRunInfo)
