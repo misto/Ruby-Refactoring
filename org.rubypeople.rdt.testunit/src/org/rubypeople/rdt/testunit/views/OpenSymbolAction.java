@@ -11,10 +11,10 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Shell;
 import org.rubypeople.rdt.internal.core.symbols.ClassSymbol;
+import org.rubypeople.rdt.internal.core.symbols.ISymbolFinder;
 import org.rubypeople.rdt.internal.core.symbols.Location;
 import org.rubypeople.rdt.internal.core.symbols.MethodSymbol;
 import org.rubypeople.rdt.internal.core.symbols.Symbol;
-import org.rubypeople.rdt.internal.core.symbols.SymbolIndex;
 import org.rubypeople.rdt.internal.ui.RubyPluginImages;
 import org.rubypeople.rdt.internal.ui.dialogs.ElementListSelectionDialog;
 import org.rubypeople.rdt.internal.ui.util.PositionBasedEditorOpener;
@@ -23,30 +23,30 @@ import org.rubypeople.rdt.internal.ui.util.PositionBasedEditorOpener;
 public class OpenSymbolAction extends Action implements IAction {
 
     private final Symbol symbol;
-    private final SymbolIndex index;
+    private final ISymbolFinder finder;
     private final Shell shell;
     private String dialogTitle;
 
-    public static IAction forClass(String className, SymbolIndex index, Shell shell) {
-        return new OpenSymbolAction(new ClassSymbol(className), index, shell, "Open Class");
+    public static IAction forClass(String className, ISymbolFinder finder, Shell shell) {
+        return new OpenSymbolAction(new ClassSymbol(className), finder, shell, "Open Class");
     }
     
     public static IAction forMethod(String className, String testMethod, 
-            SymbolIndex index, Shell shell) {
-        return new OpenSymbolAction(new MethodSymbol(className, testMethod), index, shell, "Open Method");
+            ISymbolFinder finder, Shell shell) {
+        return new OpenSymbolAction(new MethodSymbol(className, testMethod), finder, shell, "Open Method");
     }
     
-    public OpenSymbolAction(Symbol symbol, SymbolIndex index, Shell shell, String title) {
+    public OpenSymbolAction(Symbol symbol, ISymbolFinder finder, Shell shell, String title) {
         super(TestUnitMessages.getString("OpenEditor.action.label"));
         this.shell = shell;
         this.symbol = symbol;
-        this.index = index;
+        this.finder = finder;
         this.dialogTitle = title;
     }
     
 
     public void run() {
-        Set locations = index.find(symbol);
+        Set locations = finder.find(symbol);
         if (locations.size() == 0)
             return;
         

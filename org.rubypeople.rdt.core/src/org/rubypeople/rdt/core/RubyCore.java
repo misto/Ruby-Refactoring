@@ -47,6 +47,7 @@ import org.rubypeople.rdt.internal.core.builder.IndexUpdater;
 import org.rubypeople.rdt.internal.core.builder.MassIndexUpdaterJob;
 import org.rubypeople.rdt.internal.core.builder.RubyBuilder;
 import org.rubypeople.rdt.internal.core.parser.RubyParser;
+import org.rubypeople.rdt.internal.core.symbols.ISymbolFinder;
 import org.rubypeople.rdt.internal.core.symbols.SymbolIndex;
 
 public class RubyCore extends Plugin {
@@ -473,6 +474,10 @@ public class RubyCore extends Plugin {
 	}
 
     public SymbolIndex getSymbolIndex() {
+        return symbolIndex;
+    }
+
+    public ISymbolFinder getSymbolFinder() {
         return symbolIndex;
     }	
 }

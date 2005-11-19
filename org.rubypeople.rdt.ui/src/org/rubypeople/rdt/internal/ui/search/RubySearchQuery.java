@@ -64,7 +64,7 @@ public class RubySearchQuery implements ISearchQuery, ISymbolTypes {
 
 	public IStatus run(IProgressMonitor monitor) throws OperationCanceledException {
 
-		Set entries = RubyCore.getPlugin().getSymbolIndex().find(fSearchString, fSymbolType );
+		Set entries = RubyCore.getPlugin().getSymbolFinder().find(fSearchString, fSymbolType );
 
 		for (Iterator iter = entries.iterator(); iter.hasNext();) {
 			SearchResult searchResult = (SearchResult) iter.next();

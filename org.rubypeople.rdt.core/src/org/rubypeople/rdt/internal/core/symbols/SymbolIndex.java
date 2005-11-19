@@ -24,9 +24,7 @@ import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
 import org.jruby.lexer.yacc.ISourcePosition;
 
-public class SymbolIndex {
-
-
+public class SymbolIndex implements ISymbolFinder {
     private Map index = Collections.synchronizedMap(new HashMap());
     private static boolean verbose;
     
@@ -47,6 +45,9 @@ public class SymbolIndex {
         add(symbol, new Location(file, position));
     }
 
+    /* (non-Javadoc)
+     * @see org.rubypeople.rdt.internal.core.symbols.ISymbolFinder#find(org.rubypeople.rdt.internal.core.symbols.Symbol)
+     */
     public Set find(Symbol symbol) {
         Set locations = (Set) index.get(symbol);
         if (locations == null) 
@@ -56,6 +57,9 @@ public class SymbolIndex {
     
     /*
      * returns a set of SearchResult instances as opposed to find(symbol), which returns locations
+     */
+    /* (non-Javadoc)
+     * @see org.rubypeople.rdt.internal.core.symbols.ISymbolFinder#find(java.lang.String, int)
      */
     public Set find(String regExp, int symbolType) throws PatternSyntaxException {
 		Pattern pattern = Pattern.compile(regExp);
