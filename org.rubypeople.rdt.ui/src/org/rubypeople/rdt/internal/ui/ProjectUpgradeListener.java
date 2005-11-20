@@ -15,7 +15,6 @@ import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResourceChangeEvent;
 import org.eclipse.core.resources.IResourceChangeListener;
 import org.eclipse.core.resources.IResourceDelta;
-import org.eclipse.core.runtime.Path;
 
 final class ProjectUpgradeListener implements IResourceChangeListener {
     private final RubyPlugin plugin;

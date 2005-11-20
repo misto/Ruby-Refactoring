@@ -31,12 +31,12 @@ import org.rubypeople.rdt.internal.ui.RubyUIMessages;
 public class RubySearchQuery implements ISearchQuery, ISymbolTypes {
 
 	private String fSearchString;
-	private SearchScope fScope;
+//	private SearchScope fScope;
 	private RubySearchResult fResult;
 	private int fSymbolType ;
 
 	public RubySearchQuery(SearchScope scope, String searchString, int symbolType) {
-		fScope = scope;
+//		fScope = scope;
 		fSearchString = searchString;
 		fSymbolType = symbolType ;
 	}

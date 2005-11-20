@@ -158,37 +158,38 @@ public class RubySearchPage extends DialogPage implements ISearchPage, ISymbolTy
 
 	}
 
-	private static final int HISTORY_SIZE = 12;
+//	private static final int HISTORY_SIZE = 12;
 
 	// Dialog store id constants
-	private final static String PAGE_NAME = "JavaSearchPage"; //$NON-NLS-1$
-	private final static String STORE_CASE_SENSITIVE = "CASE_SENSITIVE"; //$NON-NLS-1$
-	private final static String STORE_HISTORY = "HISTORY"; //$NON-NLS-1$
-	private final static String STORE_HISTORY_SIZE = "HISTORY_SIZE"; //$NON-NLS-1$
+//	private final static String PAGE_NAME = "JavaSearchPage"; //$NON-NLS-1$
+//	private final static String STORE_CASE_SENSITIVE = "CASE_SENSITIVE"; //$NON-NLS-1$
+//	private final static String STORE_HISTORY = "HISTORY"; //$NON-NLS-1$
+//	private final static String STORE_HISTORY_SIZE = "HISTORY_SIZE"; //$NON-NLS-1$
 
 	private final List fPreviousSearchPatterns;
 
-	private SearchPatternData fInitialData;
+//	private SearchPatternData fInitialData;
 	private boolean fFirstTime = true;
-	private IDialogSettings fDialogSettings;
-	private boolean fIsCaseSensitive;
+//	private IDialogSettings fDialogSettings;
+//	private boolean fIsCaseSensitive;
 
 	private Combo fPattern;
 	private ISearchPageContainer fContainer;
 	private Button fCaseSensitive;
 
-	private Button[] fLimitTo;
-	private String[] fLimitToText = { "declarations" //$NON-NLS-1$
+//	private Button[] fLimitTo;
 	/*
+//	private String[] fLimitToText = { "declarations" //$NON-NLS-1$
 	 * SearchMessages.SearchPage_limitTo_declarations,
 	 * SearchMessages.SearchPage_limitTo_implementors,
 	 * SearchMessages.SearchPage_limitTo_references,
 	 * SearchMessages.SearchPage_limitTo_allOccurrences
-	 */};
+    };
+    */
 
-	private Button fSearchJRE;
-	private static final int INDEX_REFERENCES = 2;
-	private static final int INDEX_ALL = 3;
+//	private Button fSearchJRE;
+//	private static final int INDEX_REFERENCES = 2;
+//	private static final int INDEX_ALL = 3;
 	private SearchForManager searchForManager = new SearchForManager();
 
 	/**
@@ -238,8 +239,8 @@ public class RubySearchPage extends DialogPage implements ISearchPage, ISymbolTy
 		return -1;
 	}
 
-	private void setLimitTo(int searchFor, int limitTo) {
 	/*
+	private void setLimitTo(int searchFor, int limitTo) {
 	 * if (!(searchFor == TYPE || searchFor == INTERFACE) && limitTo ==
 	 * IMPLEMENTORS) { limitTo= REFERENCES; }
 	 * 
@@ -255,8 +256,8 @@ public class RubySearchPage extends DialogPage implements ISearchPage, ISymbolTy
 	 * fLimitTo[ALL_OCCURRENCES].setEnabled(true);
 	 * fLimitTo[READ_ACCESSES].setEnabled(searchFor == FIELD);
 	 * fLimitTo[WRITE_ACCESSES].setEnabled(searchFor == FIELD);
-	 */
 	}
+	*/
 
 	private String[] getPreviousSearchPatterns() {
 		// Search results are not persistent
@@ -417,7 +418,7 @@ public class RubySearchPage extends DialogPage implements ISearchPage, ISymbolTy
 		fCaseSensitive.addSelectionListener(new SelectionAdapter() {
 
 			public void widgetSelected(SelectionEvent e) {
-				fIsCaseSensitive = fCaseSensitive.getSelection();
+//				fIsCaseSensitive = fCaseSensitive.getSelection();
 			}
 		});
 		fCaseSensitive.setLayoutData(new GridData(GridData.FILL, GridData.FILL, false, false, 1, 1));
@@ -425,13 +426,13 @@ public class RubySearchPage extends DialogPage implements ISearchPage, ISymbolTy
 		return result;
 	}
 
-	private boolean isValidSearchPattern() {
-		if (getPattern().length() == 0) { return false; }
-		// TODO
-		return true;
-		// return SearchPattern.createPattern(getPattern(), getSearchFor(),
-		// getLimitTo(), SearchPattern.R_EXACT_MATCH) != null;
-	}
+//	private boolean isValidSearchPattern() {
+//		if (getPattern().length() == 0) { return false; }
+//		// TODO
+//		return true;
+//		// return SearchPattern.createPattern(getPattern(), getSearchFor(),
+//		// getLimitTo(), SearchPattern.R_EXACT_MATCH) != null;
+//	}
 
 	/*
 	 * (non-Javadoc)
