@@ -89,4 +89,5 @@ public class MassIndexUpdater {
     public int hashCode() {
         return 0;
     }
+
 }

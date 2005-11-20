@@ -29,24 +29,29 @@ import org.rubypeople.rdt.internal.core.util.IJobScheduler;
 
 public final class SymbolIndexResourceChangeListener implements IResourceChangeListener {
     private final MassIndexUpdater updater;
+    private final SymbolIndex symbolIndex;
     private final IJobScheduler scheduler;
 
     public static void register(SymbolIndex symbolIndex) { 
         IndexUpdater indexUpdater = new IndexUpdater(symbolIndex);
         MassIndexUpdater massIndexUpdater = new MassIndexUpdater(indexUpdater);
         SymbolIndexResourceChangeListener listener 
-            = new SymbolIndexResourceChangeListener(massIndexUpdater, new EclipseJobScheduler());
+            = new SymbolIndexResourceChangeListener(massIndexUpdater, symbolIndex, new EclipseJobScheduler());
         ResourcesPlugin.getWorkspace().addResourceChangeListener(listener);
     }
 
-    public SymbolIndexResourceChangeListener(MassIndexUpdater updater, IJobScheduler scheduler) {
+    public SymbolIndexResourceChangeListener(MassIndexUpdater updater, SymbolIndex symbolIndex, IJobScheduler scheduler) {
         this.updater = updater;
+        this.symbolIndex = symbolIndex;
         this.scheduler = scheduler;
     }
 
     public void resourceChanged(IResourceChangeEvent event) {
         if (event.getType() == IResourceChangeEvent.POST_CHANGE) 
             handlePostChangeEvent(event);
+        else if ( event.getType() == IResourceChangeEvent.PRE_CLOSE
+                || event.getType() == IResourceChangeEvent.PRE_DELETE)
+            symbolIndex.flush((IProject) event.getResource());
     }
 
     private void handlePostChangeEvent(IResourceChangeEvent event) {

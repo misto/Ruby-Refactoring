@@ -16,13 +16,17 @@ import java.util.List;
 
 import junit.framework.Assert;
 
+import org.eclipse.core.resources.IProject;
+import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.rubypeople.eclipse.shams.resources.ShamProject;
 import org.rubypeople.rdt.internal.core.builder.MassIndexUpdater;
 
 public class ShamMassIndexUpdater extends MassIndexUpdater {
 
     private Collection projectsArg;
     private IProgressMonitor monitorArg;
+    private IResource projectArg;
 
     public ShamMassIndexUpdater() {
         super(null);
@@ -38,6 +42,10 @@ public class ShamMassIndexUpdater extends MassIndexUpdater {
         monitorArg = monitor;
     }
 
+    public void flush(IProject project) {
+        projectArg = project;
+    }
+    
     public void assertUpdateProjectsNotCalled() {
         Assert.assertNull("Unexpected call to updateProjects", projectsArg);
     }
@@ -45,6 +53,11 @@ public class ShamMassIndexUpdater extends MassIndexUpdater {
     public boolean equals(Object obj) {
         return this == obj;
     }
+
+    public void assertFlushed(ShamProject project) {
+        Assert.assertEquals("Flushed project", project, projectArg);
+    }
+    
     
 
 }

@@ -22,6 +22,7 @@ import org.eclipse.core.runtime.Path;
 import org.rubypeople.eclipse.shams.resources.ShamProject;
 import org.rubypeople.eclipse.shams.resources.ShamResource;
 import org.rubypeople.rdt.internal.core.builder.MassIndexUpdaterJob;
+import org.rubypeople.rdt.internal.core.builder.ShamSymbolIndex;
 import org.rubypeople.rdt.internal.core.util.ListUtil;
 import org.rubypeople.rdt.internal.core.util.ShamJobScheduler;
 
@@ -32,11 +33,14 @@ public class TC_SymbolIndexResourceEventListener extends TestCase {
     private ShamResourceDelta parentDelta;
     private ShamResource resource;
     private ShamJobScheduler jobScheduler;
+    private ShamSymbolIndex symbolIndex;
 
     public void setUp() {
         jobScheduler = new ShamJobScheduler();
         massIndexUpdater = new ShamMassIndexUpdater();
-        listener = new SymbolIndexResourceChangeListener(massIndexUpdater, jobScheduler);
+        symbolIndex = new ShamSymbolIndex();
+        listener = new SymbolIndexResourceChangeListener(massIndexUpdater, 
+                symbolIndex, jobScheduler);
         project = new ShamProject("test1");
         resource = new ShamResource(new Path("test1/file1"));
         parentDelta = new ShamResourceDelta();
@@ -88,6 +92,24 @@ public class TC_SymbolIndexResourceEventListener extends TestCase {
         listener.resourceChanged(event);
         
         massIndexUpdater.assertUpdateProjectsNotCalled();
+    }
+    
+    public void testClose() {
+        ShamResourceChangeEvent event = 
+            ShamResourceChangeEvent.forClose(project);
+
+        listener.resourceChanged(event);
+        
+        symbolIndex.assertFlushed(project);
+    }
+
+    public void testDeleteProject() {
+        ShamResourceChangeEvent event = 
+            ShamResourceChangeEvent.forDelete(project);
+
+        listener.resourceChanged(event);
+        
+        symbolIndex.assertFlushed(project);
     }
 
     public void testNotADeltaChange() throws Exception {

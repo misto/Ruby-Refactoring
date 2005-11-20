@@ -108,5 +108,4 @@ public class IndexUpdater {
         
         return name + path.getName();
     }
-
 }

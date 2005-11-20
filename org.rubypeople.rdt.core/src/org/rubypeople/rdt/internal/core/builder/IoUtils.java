@@ -29,7 +29,8 @@ public class IoUtils {
 
     public static void closeQuietly(InputStream contents) {
         try {
-            contents.close();
+            if (contents != null)
+                contents.close();
         } catch (IOException e) {
             RubyCore.log(e);
         }

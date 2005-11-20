@@ -19,8 +19,6 @@ import org.rubypeople.rdt.internal.ui.RubyPluginImages;
 import org.rubypeople.rdt.internal.ui.dialogs.ElementListSelectionDialog;
 import org.rubypeople.rdt.internal.ui.util.PositionBasedEditorOpener;
 
-// DSC don't try to open resources in closed projects
-// DSC be sure close a project flushes symbolIndex
 public class OpenSymbolAction extends Action implements IAction {
 
     private final Symbol symbol;
