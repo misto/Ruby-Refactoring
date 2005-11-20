@@ -193,6 +193,27 @@
             id="org.rubypeople.rdt.ui.rubyEditorScope">
       </context>
    </extension>
+	<extension point="org.eclipse.ui.bindings">
+      <key
+            sequence="M1+M2+F"
+            commandId="org.rubypeople.rdt.ui.edit.text.ruby.format"
+            schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"/>
+      <key
+            sequence="M1+/"
+            commandId="org.rubypeople.rdt.ui.edit.text.ruby.toggle.comment"
+            schemeId="org.eclipse.ui.defaultAcceleratorConfiguration">
+      </key>
+      <key
+            sequence="M1+M2+C"
+            commandId="org.rubypeople.rdt.ui.edit.text.ruby.toggle.comment"
+            schemeId="org.eclipse.ui.defaultAcceleratorConfiguration">
+      </key>
+      <key
+            sequence="M1+SPACE"
+            commandId="org.rubypeople.rdt.ui.edit.text.ruby.content.assist.proposals"
+            schemeId="org.eclipse.ui.defaultAcceleratorConfiguration">
+      </key>
+	</extension>
    <extension point="org.eclipse.ui.commands">
       <category
             name="%category.source.name"
@@ -200,64 +221,35 @@
             id="org.rubypeople.rdt.ui.category.source">
       </category>
       <command
-            category="org.rubypeople.rdt.ui.category.source"
             categoryId="org.rubypeople.rdt.ui.category.source"
             description="%ActionDefinition.format.description"
             id="org.rubypeople.rdt.ui.edit.text.ruby.format"
             name="%ActionDefinition.format.name">
       </command>
-      <keyBinding
-            keySequence="M1+M2+F"
-            scope="org.rubypeople.rdt.ui.rubyEditorScope"
-            command="org.rubypeople.rdt.ui.edit.text.ruby.format"
-            configuration="org.eclipse.ui.defaultAcceleratorConfiguration">
-      </keyBinding>
       <command
-            category="org.rubypeople.rdt.ui.category.source"
             categoryId="org.rubypeople.rdt.ui.category.source"
             description="%ActionDefinition.comment.description"
             id="org.rubypeople.rdt.ui.edit.text.ruby.comment"
             name="%ActionDefinition.comment.name">
       </command>
       <command
-            category="org.rubypeople.rdt.ui.category.source"
             categoryId="org.rubypeople.rdt.ui.category.source"
             description="%ActionDefinition.uncomment.description"
             id="org.rubypeople.rdt.ui.edit.text.ruby.uncomment"
             name="%ActionDefinition.uncomment.name">
       </command>
       <command
-            category="org.rubypeople.rdt.ui.category.source"
             categoryId="org.rubypeople.rdt.ui.category.source"
             description="%ActionDefinition.toggleComment.description"
             id="org.rubypeople.rdt.ui.edit.text.ruby.toggle.comment"
             name="%ActionDefinition.toggleComment.name">
       </command>
-      <keyBinding
-            keySequence="M1+/"
-            scope="org.rubypeople.rdt.ui.rubyEditorScope"
-            command="org.rubypeople.rdt.ui.edit.text.ruby.toggle.comment"
-            configuration="org.eclipse.ui.defaultAcceleratorConfiguration">
-      </keyBinding>
-      <keyBinding
-            keySequence="M1+M2+C"
-            scope="org.rubypeople.rdt.ui.rubyEditorScope"
-            command="org.rubypeople.rdt.ui.edit.text.ruby.toggle.comment"
-            configuration="org.eclipse.ui.defaultAcceleratorConfiguration">
-      </keyBinding>
       <command
-            category="org.rubypeople.rdt.ui.category.source"
             categoryId="org.rubypeople.rdt.ui.category.source"
             description="%ActionDefinition.contentAssist.description"
             id="org.rubypeople.rdt.ui.edit.text.ruby.content.assist.proposals"
             name="%ActionDefinition.contentAssist.name">
       </command>
-      <keyBinding
-            keySequence="M1+SPACE"
-            scope="org.rubypeople.rdt.ui.rubyEditorScope"
-            command="org.rubypeople.rdt.ui.edit.text.ruby.content.assist.proposals"
-            configuration="org.eclipse.ui.defaultAcceleratorConfiguration">
-      </keyBinding>
       
       <category
             name="%category.project.name"
@@ -265,35 +257,36 @@
             id="org.rubypeople.rdt.ui.category.project">
       </category>
       <command
-            category="org.eclipse.ui.category.project"
             categoryId="org.rubypeople.rdt.ui.category.project"
             description="%ActionDefinition.generateRdoc.description"
             id="org.rubypeople.rdt.ui.generate.rdoc"
             name="%ActionDefinition.generateRdoc.name">
       </command>
-   </extension>
-   <extension
-         point="org.eclipse.ui.actionDefinitions">
-      <actionDefinition
+      <command
             description="%ActionDefinition.comment.description"
             id="org.rubypeople.rdt.ui.edit.text.ruby.comment"
             name="%ActionDefinition.comment.name">
-      </actionDefinition>
-      <actionDefinition
+      </command>
+      <command
+            description="%ActionDefinition.comment.description"
+            id="org.rubypeople.rdt.ui.edit.text.ruby.comment"
+            name="%ActionDefinition.comment.name">
+      </command>
+      <command
             description="%ActionDefinition.uncomment.description"
             id="org.rubypeople.rdt.ui.edit.text.ruby.uncomment"
             name="%ActionDefinition.uncomment.name">
-      </actionDefinition>
-      <actionDefinition
+      </command>
+      <command
             description="%ActionDefinition.contentAssist.description"
             id="org.rubypeople.rdt.ui.edit.text.ruby.content.assist.proposals"
             name="%ActionDefinition.contentAssist.name">
-      </actionDefinition>
-      <actionDefinition
+      </command>
+      <command
             description="%ActionDefinition.generateRdoc.description"
             id="org.rubypeople.rdt.ui.generate.rdoc"
             name="%ActionDefinition.generateRdoc.name">
-      </actionDefinition>
+      </command>
    </extension>
    <extension
          point="org.eclipse.ui.actionSets">
