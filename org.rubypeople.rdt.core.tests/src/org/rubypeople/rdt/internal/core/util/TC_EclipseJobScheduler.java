@@ -28,6 +28,13 @@ public class TC_EclipseJobScheduler extends TestCase {
         job.assertRun();
     }
 
+    public void testExecute() throws Exception {
+        TestJob job = new TestJob();
+        EclipseJobScheduler scheduler = new EclipseJobScheduler();
+        scheduler.execute(job);
+        job.assertRun();
+    }
+
     private static class TestJob extends Job {
         public TestJob() {
             super("test Job");

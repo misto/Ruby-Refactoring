@@ -42,6 +42,7 @@ import org.rubypeople.rdt.core.IBuffer;
 import org.rubypeople.rdt.core.IRubyScript;
 import org.rubypeople.rdt.core.RubyCore;
 import org.rubypeople.rdt.core.WorkingCopyOwner;
+import org.rubypeople.rdt.internal.core.util.EclipseJobScheduler;
 import org.rubypeople.rdt.internal.formatter.CodeFormatter;
 import org.rubypeople.rdt.internal.ui.preferences.MockupPreferenceStore;
 import org.rubypeople.rdt.internal.ui.rdocexport.RDocUtility;
@@ -133,7 +134,7 @@ public class RubyPlugin extends AbstractUIPlugin implements IRubyColorConstants 
         
         
         RubyCore rubyCore = RubyCore.getPlugin();
-        BlockingSymbolFinder symbolFinder = new BlockingSymbolFinder(rubyCore.getSymbolFinder());
+        BlockingSymbolFinder symbolFinder = new BlockingSymbolFinder(rubyCore.getSymbolFinder(), new EclipseJobScheduler());
         rubyCore.setSymbolFinder(symbolFinder);
 		
 		listenForNewProjects();

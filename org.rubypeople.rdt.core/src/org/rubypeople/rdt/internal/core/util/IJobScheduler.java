@@ -14,5 +14,6 @@ import org.eclipse.core.runtime.jobs.Job;
 
 public interface IJobScheduler {
     public void schedule(Job job);
+    public void execute(Job job) throws InterruptedException;
 
 }

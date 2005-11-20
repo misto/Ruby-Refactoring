@@ -12,4 +12,9 @@ public class SymbolSchedulingRule implements ISchedulingRule {
         return rule instanceof SymbolSchedulingRule;
     }
 
+    public boolean equals(Object obj) {
+        if (obj == null)
+            return false;
+        return obj.getClass().equals(getClass());
+    }
 }

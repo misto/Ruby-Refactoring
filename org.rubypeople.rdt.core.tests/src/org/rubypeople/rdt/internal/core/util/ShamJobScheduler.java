@@ -28,4 +28,11 @@ public class ShamJobScheduler implements IJobScheduler {
     public void schedule(Job job) {
         scheduledJobs.add(job);
     }
+
+    public void execute(Job job) throws InterruptedException {
+        schedule(job);
+        job.schedule();
+        job.join();
+        
+    }
 }

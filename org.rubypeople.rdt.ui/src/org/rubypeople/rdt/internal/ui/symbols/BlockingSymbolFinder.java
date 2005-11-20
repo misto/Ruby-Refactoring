@@ -11,24 +11,26 @@ import org.eclipse.core.runtime.jobs.Job;
 import org.rubypeople.rdt.internal.core.symbols.ISymbolFinder;
 import org.rubypeople.rdt.internal.core.symbols.Symbol;
 import org.rubypeople.rdt.internal.core.symbols.SymbolSchedulingRule;
+import org.rubypeople.rdt.internal.core.util.IJobScheduler;
 
-// DSC UNIT TEST
 public class BlockingSymbolFinder implements ISymbolFinder {
 
     private final ISymbolFinder delegate;
+    private final IJobScheduler scheduler;
 
-    public BlockingSymbolFinder(ISymbolFinder symbolFinder) {
+    public BlockingSymbolFinder(ISymbolFinder symbolFinder, IJobScheduler scheduler) {
         this.delegate = symbolFinder;
+        this.scheduler = scheduler;
     }
 
     public Set find(final Symbol symbol) {
         FindSymbolJob job = new FindExactSymbolJob(delegate, symbol);
-        return job.executeJob();
+        return job.executeJob(scheduler);
     }
 
     public Set find(String regExp, int symbolType) throws PatternSyntaxException {
-        FindSymbolJob job = new FindInexactSymbolJob("find " + regExp, delegate, regExp, symbolType);
-        return job.executeJob();
+        FindSymbolJob job = new FindInexactSymbolJob( delegate, regExp, symbolType);
+        return job.executeJob(scheduler);
     }
     
     private static abstract class FindSymbolJob extends Job {
@@ -45,16 +47,13 @@ public class BlockingSymbolFinder implements ISymbolFinder {
 
         protected abstract Set find() throws PatternSyntaxException;
 
-        private Set executeJob() {
-            schedule();
-            
+        private Set executeJob(IJobScheduler scheduler) {
             try {
-                join();
+                scheduler.execute(this);
+                if (exception != null)
+                    throw exception;
             } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-            if (exception != null)
-                throw exception;
+            };
             return locations;
         }
 
@@ -66,17 +65,24 @@ public class BlockingSymbolFinder implements ISymbolFinder {
             }
             return Status.OK_STATUS;
         }
+
+        protected boolean propertiesEquals(Job that) {
+            return getRule().equals(that.getRule())
+            && isSystem()== that.isSystem()
+            && isUser() == that.isUser()
+            && getPriority() == that.getPriority();
+         }
         
 
     }
 
-    private static class FindInexactSymbolJob extends FindSymbolJob {
+    public static class FindInexactSymbolJob extends FindSymbolJob {
         private final ISymbolFinder delegate;
         private final String regExp;
         private final int symbolType;
 
-        private FindInexactSymbolJob(String name, ISymbolFinder delegate, String regExp, int symbolType) {
-            super(name);
+        public FindInexactSymbolJob(ISymbolFinder delegate, String regExp, int symbolType) {
+            super("find " + regExp);
             this.delegate = delegate;
             this.regExp = regExp;
             this.symbolType = symbolType;
@@ -85,15 +91,30 @@ public class BlockingSymbolFinder implements ISymbolFinder {
         protected Set find() {
             return delegate.find(regExp, symbolType);
         }
+        
+        public boolean equals(Object obj) {
+            if (!(obj instanceof FindInexactSymbolJob))
+                return false;
+            
+            FindInexactSymbolJob that = (FindInexactSymbolJob) obj;
+            return delegate.equals(that.delegate) 
+                && regExp.equals(that.regExp)
+                && symbolType == that.symbolType
+                && propertiesEquals(that);
+        }
+        
+        public int hashCode() {
+            return 0;
+        }
     }
 
 
-    private static class FindExactSymbolJob extends FindSymbolJob {
+    public static class FindExactSymbolJob extends FindSymbolJob {
         private final ISymbolFinder delegate;
 
         private final Symbol symbol;
 
-        private FindExactSymbolJob(ISymbolFinder delegate, Symbol symbol) {
+        public FindExactSymbolJob(ISymbolFinder delegate, Symbol symbol) {
             super("find "+symbol);
             this.delegate = delegate;
             this.symbol = symbol;
@@ -102,12 +123,19 @@ public class BlockingSymbolFinder implements ISymbolFinder {
         protected Set find() {
             return delegate.find(symbol);
         }
+        
+        public boolean equals(Object obj) {
+            if (!(obj instanceof FindExactSymbolJob))
+                return false;
+            
+            FindExactSymbolJob that = (FindExactSymbolJob) obj;
+            return delegate.equals(that.delegate) 
+                && symbol.equals(that.symbol)
+                && propertiesEquals(that);
+        }
+        
+        public int hashCode() {
+            return 0;
+        }
     }
-
-
-    public Set find() {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
 }

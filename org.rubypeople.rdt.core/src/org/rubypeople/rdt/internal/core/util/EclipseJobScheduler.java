@@ -18,4 +18,9 @@ public class EclipseJobScheduler implements IJobScheduler {
         job.schedule();
     }
 
+    public void execute(Job job) throws InterruptedException {
+        schedule(job);
+        job.join();
+    }
+
 }

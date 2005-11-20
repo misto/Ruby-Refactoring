@@ -28,6 +28,7 @@
       <import plugin="org.rubypeople.eclipse.testutils"/>
       <import plugin="org.eclipse.core.runtime"/>
       <import plugin="org.eclipse.search"/>
+      <import plugin="org.rubypeople.rdt.core.tests"/>
    </requires>
 
 </plugin>
