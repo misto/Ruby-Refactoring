@@ -11,6 +11,7 @@
 package org.rubypeople.rdt.internal.core.builder;
 
 import org.rubypeople.eclipse.shams.resources.ShamProject;
+import org.rubypeople.eclipse.shams.runtime.ShamMonitor;
 import org.rubypeople.rdt.internal.core.ShamMassIndexUpdater;
 import org.rubypeople.rdt.internal.core.util.ListUtil;
 
@@ -21,6 +22,7 @@ public class TC_MassIndexUpdaterJob extends TestCase {
         ShamMassIndexUpdater massIndexUpdater = new ShamMassIndexUpdater();
         ShamProject project = new ShamProject("test1");
         MassIndexUpdaterJob job = new MassIndexUpdaterJob(massIndexUpdater, ListUtil.create(project));
+        ShamMonitor monitor = new ShamMonitor();
         job.schedule();
         job.join();
         massIndexUpdater.assertProjectsUpdated(ListUtil.create(project));

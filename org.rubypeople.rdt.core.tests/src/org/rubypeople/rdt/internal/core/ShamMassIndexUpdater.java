@@ -16,22 +16,26 @@ import java.util.List;
 
 import junit.framework.Assert;
 
+import org.eclipse.core.runtime.IProgressMonitor;
 import org.rubypeople.rdt.internal.core.builder.MassIndexUpdater;
 
 public class ShamMassIndexUpdater extends MassIndexUpdater {
 
     private Collection projectsArg;
+    private IProgressMonitor monitorArg;
 
     public ShamMassIndexUpdater() {
         super(null);
     }
 
     public void assertProjectsUpdated(Collection expectedProjects) {
-        Assert.assertEquals(expectedProjects, projectsArg);
+        Assert.assertEquals("Projects", expectedProjects, projectsArg);
+        Assert.assertNotNull("Monitor", monitorArg);
     }
     
-    public void updateProjects(List projects) {
+    public void updateProjects(List projects, IProgressMonitor monitor) {
         projectsArg = projects;
+        monitorArg = monitor;
     }
 
     public void assertUpdateProjectsNotCalled() {

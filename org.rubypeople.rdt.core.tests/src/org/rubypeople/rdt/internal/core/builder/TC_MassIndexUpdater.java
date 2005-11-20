@@ -17,7 +17,9 @@ import junit.framework.TestCase;
 
 import org.rubypeople.eclipse.shams.resources.ShamFile;
 import org.rubypeople.eclipse.shams.resources.ShamProject;
+import org.rubypeople.eclipse.shams.runtime.ShamMonitor;
 import org.rubypeople.rdt.internal.core.parser.ShamNode;
+import org.rubypeople.rdt.internal.core.util.ListUtil;
 
 public class TC_MassIndexUpdater extends TestCase {
 
@@ -48,7 +50,8 @@ public class TC_MassIndexUpdater extends TestCase {
         projects.add(project1);
         projects.add(project2);
         
-        massUpdater.updateProjects(projects);
+        ShamMonitor monitor = new ShamMonitor();
+        massUpdater.updateProjects(projects, monitor);
         RubySourceFileCollectingVisitor expectedVisitor = 
             new RubySourceFileCollectingVisitor(new ArrayList());
         
@@ -59,5 +62,9 @@ public class TC_MassIndexUpdater extends TestCase {
         updater.assertUpdated(file1, rootNode1, false);
         updater.assertUpdated(file2, rootNode2, false);
         updater.assertUpdated(file3, rootNode3, false);
+        
+        monitor.assertTaskBegun("Update symbol index", 3);
+        monitor.assertSubTasks(ListUtil.create(
+                "file1.rb", "file2.rb", "file3.rb"));
     }
 }

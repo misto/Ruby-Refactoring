@@ -17,6 +17,7 @@ import java.util.List;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IProgressMonitor;
 import org.jruby.ast.Node;
 import org.rubypeople.rdt.core.RubyCore;
 import org.rubypeople.rdt.internal.core.parser.RubyParser;
@@ -35,18 +36,21 @@ public class MassIndexUpdater {
         this(indexUpdater, new RubyParser());
     }
 
-    public void updateProjects(List projects) {
+    public void updateProjects(List projects, IProgressMonitor monitor) {
         try {
             List files = findFiles(projects);
-            processFiles(files);
+            monitor.beginTask("Update symbol index", files.size());
+            processFiles(files, monitor);
         } catch (CoreException e) {
             RubyCore.log(e);
         }
     }
 
-    private void processFiles(List files) {
+    private void processFiles(List files, IProgressMonitor monitor) {
         for (Iterator iter = files.iterator(); iter.hasNext();) {
             IFile file = (IFile) iter.next();
+            monitor.subTask(file.getFullPath().toString());
+            monitor.worked(1);
             processFile(file);
         }
     }

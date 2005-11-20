@@ -151,11 +151,12 @@ public class RubyCore extends Plugin {
 	public static final String DISABLED = "disabled"; //$NON-NLS-1$
 
     private SymbolIndex symbolIndex;
+    private ISymbolFinder symbolFinder;
     
 	public RubyCore() {
 		super();
 		RUBY_CORE_PLUGIN = this;
-        symbolIndex = new SymbolIndex();
+        symbolFinder = symbolIndex = new SymbolIndex();
 	}
 
 	/**
@@ -478,6 +479,10 @@ public class RubyCore extends Plugin {
     }
 
     public ISymbolFinder getSymbolFinder() {
-        return symbolIndex;
+        return symbolFinder;
+    }
+
+    public void setSymbolFinder(ISymbolFinder symbolFinder) {
+        this.symbolFinder = symbolFinder;
     }	
 }

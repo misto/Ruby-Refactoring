@@ -16,6 +16,7 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
+import org.rubypeople.rdt.internal.core.symbols.SymbolSchedulingRule;
 
 public class MassIndexUpdaterJob extends Job {
 
@@ -27,13 +28,17 @@ public class MassIndexUpdaterJob extends Job {
     }
 
     public MassIndexUpdaterJob(MassIndexUpdater massIndexUpdater, List rubyProjects) {
-        super("Mass Index Update");
+        super("Update Ruby Symbol Index");
         this.massIndexUpdater = massIndexUpdater;
         this.rubyProjects = rubyProjects;
+        setRule(new SymbolSchedulingRule());
+        setSystem(true);
+        setPriority(Job.LONG);
     }
 
+    
     protected IStatus run(IProgressMonitor monitor) {
-        massIndexUpdater.updateProjects(rubyProjects);
+        massIndexUpdater.updateProjects(rubyProjects, monitor);
         return Status.OK_STATUS;
     }
    

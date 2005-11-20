@@ -49,6 +49,7 @@ import org.rubypeople.rdt.internal.ui.rubyeditor.DocumentAdapter;
 import org.rubypeople.rdt.internal.ui.rubyeditor.RubyDocumentProvider;
 import org.rubypeople.rdt.internal.ui.rubyeditor.WorkingCopyManager;
 import org.rubypeople.rdt.internal.ui.rubyeditor.templates.RubyTemplateAccess;
+import org.rubypeople.rdt.internal.ui.symbols.BlockingSymbolFinder;
 import org.rubypeople.rdt.internal.ui.text.IRubyColorConstants;
 import org.rubypeople.rdt.internal.ui.text.PreferencesAdapter;
 import org.rubypeople.rdt.internal.ui.text.RubyTextTools;
@@ -129,6 +130,11 @@ public class RubyPlugin extends AbstractUIPlugin implements IRubyColorConstants 
 				return DocumentAdapter.NULL;
 			}
 		});
+        
+        
+        RubyCore rubyCore = RubyCore.getPlugin();
+        BlockingSymbolFinder symbolFinder = new BlockingSymbolFinder(rubyCore.getSymbolFinder());
+        rubyCore.setSymbolFinder(symbolFinder);
 		
 		listenForNewProjects();
 		upgradeOldProjects();
