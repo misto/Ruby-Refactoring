@@ -197,6 +197,27 @@
       <key
             sequence="M1+M2+F"
             commandId="org.rubypeople.rdt.ui.edit.text.ruby.format"
+            platform="windows"
+            schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"/>
+      <key
+            sequence="M1+M2+F"
+            commandId="org.rubypeople.rdt.ui.edit.text.ruby.format"
+            platform="motif"
+            schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"/>
+      <key
+            sequence="M1+M2+F"
+            commandId="org.rubypeople.rdt.ui.edit.text.ruby.format"
+            platform="carbon"
+            schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"/>
+      <key
+            sequence="M1+M2+F"
+            commandId="org.rubypeople.rdt.ui.edit.text.ruby.format"
+            platform="photon"
+            schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"/>
+      <key
+            sequence="ESC M1+F"
+            commandId="org.rubypeople.rdt.ui.edit.text.ruby.format"
+            platform="gtk"
             schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"/>
       <key
             sequence="M1+/"
