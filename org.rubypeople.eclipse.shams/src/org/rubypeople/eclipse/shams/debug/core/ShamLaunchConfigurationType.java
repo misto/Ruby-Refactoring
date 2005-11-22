@@ -1,5 +1,7 @@
 package org.rubypeople.eclipse.shams.debug.core;
 
+import java.util.Set;
+
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.debug.core.ILaunchConfigurationType;
@@ -71,6 +73,10 @@ public class ShamLaunchConfigurationType implements ILaunchConfigurationType {
 	}
 
 	public String getPluginIdentifier() {
+		return null;
+	}
+
+	public Set getSupportedModes() {
 		return null;
 	}
 

@@ -6,6 +6,7 @@ import java.io.Reader;
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.io.Writer;
+import java.net.URI;
 import java.util.Arrays;
 import java.util.List;
 
@@ -348,6 +349,11 @@ public class TC_RubyRuntime extends TestCase {
 		public void setResourceAttributes(ResourceAttributes attributes) throws CoreException {
 			// TODO Auto-generated method stub
 			
+		}
+
+		public URI getLocationURI() {
+			// TODO Auto-generated method stub
+			return null;
 		}
 
 

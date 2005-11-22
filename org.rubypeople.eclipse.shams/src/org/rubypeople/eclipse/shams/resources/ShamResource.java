@@ -10,6 +10,9 @@
  */
 package org.rubypeople.eclipse.shams.resources;
 
+import java.io.File;
+import java.net.URI;
+
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IProject;
@@ -277,5 +280,9 @@ public class ShamResource implements IResource {
     public String toString() {
         return "Resource [" + path + "]";
     }
+
+	public URI getLocationURI() {
+		return path.toFile().toURI();
+	}
 
 }
