@@ -3,6 +3,8 @@ package org.rubypeople.rdt.internal.ui.text.ruby;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
+import java.util.Iterator;
 import java.util.List;
 
 import org.eclipse.jface.text.IRegion;
@@ -23,318 +25,381 @@ import org.eclipse.swt.graphics.Image;
 import org.eclipse.ui.IEditorPart;
 import org.rubypeople.rdt.core.IParent;
 import org.rubypeople.rdt.core.IRubyElement;
+import org.rubypeople.rdt.core.IRubyProject;
 import org.rubypeople.rdt.core.IRubyScript;
 import org.rubypeople.rdt.core.RubyModelException;
-import org.rubypeople.rdt.internal.ui.RubyPluginImages;
 import org.rubypeople.rdt.internal.ui.RubyPlugin;
+import org.rubypeople.rdt.internal.ui.RubyPluginImages;
 import org.rubypeople.rdt.internal.ui.rubyeditor.templates.RubyFileContextType;
 import org.rubypeople.rdt.internal.ui.rubyeditor.templates.RubyTemplateAccess;
 import org.rubypeople.rdt.internal.ui.text.RubyTextTools;
 import org.rubypeople.rdt.ui.IWorkingCopyManager;
 
-public class RubyCompletionProcessor extends TemplateCompletionProcessor implements IContentAssistProcessor {
+public class RubyCompletionProcessor extends TemplateCompletionProcessor implements
+        IContentAssistProcessor {
 
-	private static String[] keywordProposals;
-	protected IContextInformationValidator contextInformationValidator = new RubyContextInformationValidator();
+    private static String[] keywordProposals;
 
-	private static String[] preDefinedGlobals = { "$!", "$@", "$_", "$.", "$&", "$n", "$~", "$=", "$/", "$\\", "$0", "$*", "$$", "$?", "$:"};
-	private static String[] globalContexts = { "error message", "position of an error occurrence", "latest read string by `gets'", "latest read number of line by interpreter", "latest matched string by the regexep.", "latest matched string by nth parentheses of regexp.", "data for latest matche for regexp", "whether or not case-sensitive in string matching", "input record separator", "output record separator", "the name of the ruby scpript file", "command line arguments for the ruby scpript",
-			"PID for ruby interpreter", "status of the latest executed child process", "array of paths that ruby interpreter searches for files"};
+    protected IContextInformationValidator contextInformationValidator = new RubyContextInformationValidator();
 
-	// FIXME This is an ugly hack, just hard-coding method names
-	// FIXME Create a model for Ruby core in our Ruby Model!
-	private static String[] KERNEL_METHODS = {"abort", "at_exit", "autoload", "binding",
-			"block_given?", "callcc", "caller", "catch", "chomp",
-			"chomp!", "chop", "chop!", "eval", "exec", "exit",
-			"exit!", "fail", "fork", "format", "gets", "global_variables",
-			"gsub", "gsub!", "iterator?", "lambda", "load", "local_variables",
-			"loop", "open", "p", "print", "printf", "proc", "putc",
-			"puts", "raise", "rand", "readline", "readlines", "require",
-			"scan", "select", "set_trace_func", "singleton_method_added", 
-			"sleep", "split", "sprintf", "srand", "sub", "sub!", "syscall",
-			"system", "test", "throw", "trace_var", "trap", "untrace_var"};
-	
-	/**
-	 * The prefix for the current content assist
-	 */
-	protected String currentPrefix = null;
+    private static String[] preDefinedGlobals = { "$!", "$@", "$_", "$.", "$&", "$n", "$~", "$=",
+            "$/", "$\\", "$0", "$*", "$$", "$?", "$:"};
 
-	/**
-	 * Cursor position, counted from the beginning of the document.
-	 * <P>
-	 * The first position has index '0'.
-	 */
-	protected int cursorPosition = -1;
+    private static String[] globalContexts = { "error message", "position of an error occurrence",
+            "latest read string by `gets'", "latest read number of line by interpreter",
+            "latest matched string by the regexep.",
+            "latest matched string by nth parentheses of regexp.",
+            "data for latest matche for regexp",
+            "whether or not case-sensitive in string matching", "input record separator",
+            "output record separator", "the name of the ruby scpript file",
+            "command line arguments for the ruby scpript", "PID for ruby interpreter",
+            "status of the latest executed child process",
+            "array of paths that ruby interpreter searches for files"};
 
-	/**
-	 * The text viewer.
-	 */
-	private ITextViewer viewer;
-	private IWorkingCopyManager fManager;
-	private IEditorPart fEditor;
+    // FIXME This is an ugly hack, just hard-coding method names
+    // FIXME Create a model for Ruby core in our Ruby Model!
+    private static String[] KERNEL_METHODS = { "abort", "at_exit", "autoload", "binding",
+            "block_given?", "callcc", "caller", "catch", "chomp", "chomp!", "chop", "chop!",
+            "eval", "exec", "exit", "exit!", "fail", "fork", "format", "gets", "global_variables",
+            "gsub", "gsub!", "iterator?", "lambda", "load", "local_variables", "loop", "open", "p",
+            "print", "printf", "proc", "putc", "puts", "raise", "rand", "readline", "readlines",
+            "require", "scan", "select", "set_trace_func", "singleton_method_added", "sleep",
+            "split", "sprintf", "srand", "sub", "sub!", "syscall", "system", "test", "throw",
+            "trace_var", "trap", "untrace_var"};
 
-	public RubyCompletionProcessor(IEditorPart editor) {
-		super();
-		fEditor= editor;
-		fManager= RubyPlugin.getDefault().getWorkingCopyManager();
-	}
+    /**
+     * The prefix for the current content assist
+     */
+    protected String currentPrefix = null;
 
-	public ICompletionProposal[] computeCompletionProposals(ITextViewer viewer, int documentOffset) {
-		this.viewer = viewer;
-		ITextSelection selection = (ITextSelection) viewer.getSelectionProvider().getSelection();
-		cursorPosition = selection.getOffset() + selection.getLength();
+    /**
+     * Cursor position, counted from the beginning of the document.
+     * <P>
+     * The first position has index '0'.
+     */
+    protected int cursorPosition = -1;
 
-		ICompletionProposal[] normal = determineRubyElementProposals(viewer, documentOffset);
-		ICompletionProposal[] templates = determineTemplateProposals(viewer, documentOffset);
+    /**
+     * The text viewer.
+     */
+    private ITextViewer viewer;
 
-		ICompletionProposal[] merged = merge(normal, templates);
+    private IWorkingCopyManager fManager;
 
-		ICompletionProposal[] keywords = determineKeywordProposals(viewer, documentOffset);
-		ICompletionProposal[] mergedTwo = merge(merged, keywords);
-		return mergedTwo;
-	}
+    private IEditorPart fEditor;
 
-	/**
-	 * @param arrayOne
-	 * @param arrayTwo
-	 * @return
-	 */
-	private ICompletionProposal[] merge(ICompletionProposal[] arrayOne, ICompletionProposal[] arrayTwo) {
-		ICompletionProposal[] merged = new ICompletionProposal[arrayOne.length + arrayTwo.length];
-		System.arraycopy(arrayOne, 0, merged, 0, arrayOne.length);
-		System.arraycopy(arrayTwo, 0, merged, arrayOne.length, arrayTwo.length);
-		return merged;
-	}
+    public RubyCompletionProcessor(IEditorPart editor) {
+        super();
+        fEditor = editor;
+        fManager = RubyPlugin.getDefault().getWorkingCopyManager();
+    }
 
-	/**
-	 * @param viewer
-	 * @param documentOffset
-	 * @return
-	 */
-	private ICompletionProposal[] determineRubyElementProposals(ITextViewer viewer, int documentOffset) {
-		ArrayList completionProposals = new ArrayList(getDocumentsRubyElements());
-		completionProposals.addAll(addKernelMethods());
-		
-		String prefix = getCurrentPrefix(viewer.getDocument().get(), documentOffset);
-		// following the JDT convention, if there's no text already entered,
-		// then don't suggest imported elements
-		if (prefix.length() > 0) {
-			// FIXME Add elements from required/loaded files!
-		}
-		
-		ArrayList possibleProposals = new ArrayList();		
-		for (int i = 0; i < completionProposals.size(); i++) {
-			String proposal = (String) completionProposals.get(i);
-			if (proposal.startsWith(prefix)) {
-				String message = "{0}";
-				IContextInformation info = new ContextInformation(proposal, MessageFormat.format(message, new Object[] { proposal}));
-				possibleProposals.add(new CompletionProposal(proposal.substring(prefix.length(), proposal.length()), documentOffset, 0, proposal.length() - prefix.length(), null, proposal, info, MessageFormat.format("Ruby keyword: {0}", new Object[] { proposal})));
-			}
-		}
-		ICompletionProposal[] result = new ICompletionProposal[possibleProposals.size()];
-		possibleProposals.toArray(result);
-		return result;
-	}
+    public ICompletionProposal[] computeCompletionProposals(ITextViewer viewer, int documentOffset) {
+        this.viewer = viewer;
+        ITextSelection selection = (ITextSelection) viewer.getSelectionProvider().getSelection();
+        cursorPosition = selection.getOffset() + selection.getLength();
 
-	private List addKernelMethods() {
-		List kernelProposals = new ArrayList();		
-		for (int i = 0; i < KERNEL_METHODS.length; i++) {
-			kernelProposals.add(KERNEL_METHODS[i]);
-		}
-		return kernelProposals;
-	}
+        ICompletionProposal[] normal = determineRubyElementProposals(viewer, documentOffset);
+        ICompletionProposal[] templates = determineTemplateProposals(viewer, documentOffset);
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.eclipse.jface.text.templates.TemplateCompletionProcessor#getImage(org.eclipse.jface.text.templates.Template)
-	 */
-	protected Image getImage(Template template) {
-		return RubyPluginImages.get(RubyPluginImages.IMG_TEMPLATE_PROPOSAL);
-	}
+        ICompletionProposal[] merged = merge(normal, templates);
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.eclipse.jface.text.templates.TemplateCompletionProcessor#getContextType(org.eclipse.jface.text.ITextViewer,
-	 *      org.eclipse.jface.text.IRegion)
-	 */
-	protected TemplateContextType getContextType(ITextViewer textViewer, IRegion region) {
-		return RubyTemplateAccess.getDefault().getContextTypeRegistry().getContextType(RubyFileContextType.RUBYFILE_CONTEXT_TYPE);
-	}
+        ICompletionProposal[] keywords = determineKeywordProposals(viewer, documentOffset);
+        ICompletionProposal[] mergedTwo = merge(merged, keywords);
+        return mergedTwo;
+    }
 
-	/**
-	 * @return
-	 */
-	private ICompletionProposal[] determineTemplateProposals(ITextViewer refViewer, int documentOffset) {
-		String prefix = getCurrentPrefix(viewer.getDocument().get(), documentOffset);
-		ICompletionProposal[] matchingTemplateProposals;
-		if (prefix.length() == 0) {
-			matchingTemplateProposals = super.computeCompletionProposals(refViewer, documentOffset);
-		} else {
-			ICompletionProposal[] templateProposals = super.computeCompletionProposals(refViewer, documentOffset);
-			List templateProposalList = new ArrayList(templateProposals.length);
-			for (int i = 0; i < templateProposals.length; i++) {
-				if (templateProposals[i].getDisplayString().toLowerCase().startsWith(prefix)) {
-					templateProposalList.add(templateProposals[i]);
-				}
-			}
-			matchingTemplateProposals = (ICompletionProposal[]) templateProposalList.toArray(new ICompletionProposal[templateProposalList.size()]);
-		}
-		return matchingTemplateProposals;
-	}
+    /**
+     * @param arrayOne
+     * @param arrayTwo
+     * @return
+     */
+    private ICompletionProposal[] merge(ICompletionProposal[] arrayOne,
+            ICompletionProposal[] arrayTwo) {
+        ICompletionProposal[] merged = new ICompletionProposal[arrayOne.length + arrayTwo.length];
+        System.arraycopy(arrayOne, 0, merged, 0, arrayOne.length);
+        System.arraycopy(arrayTwo, 0, merged, arrayOne.length, arrayTwo.length);
+        return merged;
+    }
 
-	/**
-	 * @param proposal
-	 * @return
-	 */
-	private String getContext(String proposal) {
-		for (int i = 0; i < preDefinedGlobals.length; i++) {
-			if (proposal.equals(preDefinedGlobals[i])) return globalContexts[i];
-		}
-		return "";
-	}
+    /**
+     * @param viewer
+     * @param documentOffset
+     * @return
+     */
+    private ICompletionProposal[] determineRubyElementProposals(ITextViewer viewer,
+            int documentOffset) {
+        Collection completionProposals = getDocumentsRubyElements();
+        String prefix = getCurrentPrefix(viewer.getDocument().get(), documentOffset);
+        // following the JDT convention, if there's no text already entered,
+        // then don't suggest imported elements
+        if (prefix.length() > 0) {
+            // FIXME Add elements from required/loaded files!
+        }
 
-	/**
-	 * @param proposal
-	 * @return
-	 */
-	private boolean isPredefinedGlobal(String proposal) {
-		for (int i = 0; i < preDefinedGlobals.length; i++) {
-			if (proposal.equals(preDefinedGlobals[i])) return true;
-		}
-		return false;
-	}
+        List possibleProposals = new ArrayList();
+        for (Iterator iter = completionProposals.iterator(); iter.hasNext();) {
+            String proposal = (String) iter.next();
+            if (proposal.startsWith(prefix)) {
+                String message = "{0}";
+                IContextInformation info = new ContextInformation(proposal, MessageFormat.format(
+                        message, new Object[] { proposal}));
+                possibleProposals.add(new CompletionProposal(proposal.substring(prefix.length(),
+                        proposal.length()), documentOffset, 0, proposal.length() - prefix.length(),
+                        null, proposal, info, MessageFormat.format("Ruby keyword: {0}",
+                                new Object[] { proposal})));
+            }
+        }
+        ICompletionProposal[] result = new ICompletionProposal[possibleProposals.size()];
+        possibleProposals.toArray(result);
+        return result;
+    }
 
-	private List getDocumentsRubyElements() {		
-		IRubyScript script = fManager.getWorkingCopy(fEditor.getEditorInput());
-		// FIXME Get only the elements in the current scope!
-		return getElements(script);
-	}
+    private Collection addKernelMethods() {
+        Collection kernelProposals = new ArrayList();
+        for (int i = 0; i < KERNEL_METHODS.length; i++) {
+            kernelProposals.add(KERNEL_METHODS[i]);
+        }
+        return kernelProposals;
+    }
 
-	/**
-	 * @param script
-	 * @return
-	 */
-	private List getElements(IParent element) {
-		List suggestions = new ArrayList();
-		try {
-			IRubyElement[] elements = element.getChildren();
-			for (int i = 0; i < elements.length; i++) {
-				IRubyElement child = elements[i];
-				suggestions.add(child.getElementName());
-				if(child instanceof IParent)
-				  suggestions.addAll(getElements((IParent)child));
-			}
-		} catch (RubyModelException e) {
-			e.printStackTrace();
-		}		
-		return suggestions;
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.eclipse.jface.text.templates.TemplateCompletionProcessor#getImage(org.eclipse.jface.text.templates.Template)
+     */
+    protected Image getImage(Template template) {
+        return RubyPluginImages.get(RubyPluginImages.IMG_TEMPLATE_PROPOSAL);
+    }
 
-	private ICompletionProposal[] determineKeywordProposals(ITextViewer viewer, int documentOffset) {
-		initKeywordProposals();
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.eclipse.jface.text.templates.TemplateCompletionProcessor#getContextType(org.eclipse.jface.text.ITextViewer,
+     *      org.eclipse.jface.text.IRegion)
+     */
+    protected TemplateContextType getContextType(ITextViewer textViewer, IRegion region) {
+        return RubyTemplateAccess.getDefault().getContextTypeRegistry().getContextType(
+                RubyFileContextType.RUBYFILE_CONTEXT_TYPE);
+    }
 
-		String prefix = getCurrentPrefix(viewer.getDocument().get(), documentOffset);
-		// following the JDT convention, if there's no text already entered,
-		// then don't suggest keywords
-		if (prefix.length() < 1) { return new ICompletionProposal[0]; }
-		List completionProposals = Arrays.asList(keywordProposals);
+    /**
+     * @return
+     */
+    private ICompletionProposal[] determineTemplateProposals(ITextViewer refViewer,
+            int documentOffset) {
+        String prefix = getCurrentPrefix(viewer.getDocument().get(), documentOffset);
+        ICompletionProposal[] matchingTemplateProposals;
+        if (prefix.length() == 0) {
+            matchingTemplateProposals = super.computeCompletionProposals(refViewer, documentOffset);
+        } else {
+            ICompletionProposal[] templateProposals = super.computeCompletionProposals(refViewer,
+                    documentOffset);
+            List templateProposalList = new ArrayList(templateProposals.length);
+            for (int i = 0; i < templateProposals.length; i++) {
+                if (templateProposals[i].getDisplayString().toLowerCase().startsWith(prefix)) {
+                    templateProposalList.add(templateProposals[i]);
+                }
+            }
+            matchingTemplateProposals = (ICompletionProposal[]) templateProposalList
+                    .toArray(new ICompletionProposal[templateProposalList.size()]);
+        }
+        return matchingTemplateProposals;
+    }
 
-		// FIXME Refactor to combine the copied code in
-		// determineRubyElementProposals
-		List possibleProposals = new ArrayList();
-		for (int i = 0; i < completionProposals.size(); i++) {
-			String proposal = (String) completionProposals.get(i);
-			if (proposal.startsWith(prefix)) {
-				String message;
-				if (isPredefinedGlobal(proposal)) {
-					message = "{0} " + getContext(proposal);
-				} else {
-					message = "{0}";
-				}
-				IContextInformation info = new ContextInformation(proposal, MessageFormat.format(message, new Object[] { proposal}));
-				possibleProposals.add(new CompletionProposal(proposal.substring(prefix.length(), proposal.length()), documentOffset, 0, proposal.length() - prefix.length(), null, proposal, info, MessageFormat.format("Ruby keyword: {0}", new Object[] { proposal})));
-			}
-		}
-		ICompletionProposal[] result = new ICompletionProposal[possibleProposals.size()];
-		possibleProposals.toArray(result);
-		return result;
-	}
+    /**
+     * @param proposal
+     * @return
+     */
+    private String getContext(String proposal) {
+        for (int i = 0; i < preDefinedGlobals.length; i++) {
+            if (proposal.equals(preDefinedGlobals[i])) return globalContexts[i];
+        }
+        return "";
+    }
 
-	/**
-	 *  
-	 */
-	private void initKeywordProposals() {
-		if (keywordProposals == null) {
-			String[] keywords = RubyTextTools.getKeyWords();
-			keywordProposals = new String[keywords.length + preDefinedGlobals.length];
-			System.arraycopy(keywords, 0, keywordProposals, 0, keywords.length);
-			System.arraycopy(preDefinedGlobals, 0, keywordProposals, keywords.length, preDefinedGlobals.length);
-		}
-	}
+    /**
+     * @param proposal
+     * @return
+     */
+    private boolean isPredefinedGlobal(String proposal) {
+        for (int i = 0; i < preDefinedGlobals.length; i++) {
+            if (proposal.equals(preDefinedGlobals[i])) return true;
+        }
+        return false;
+    }
 
-	protected String getCurrentPrefix(String documentString, int documentOffset) {
-		int tokenLength = 0;
-		while ((documentOffset - tokenLength > 0) && !Character.isWhitespace(documentString.charAt(documentOffset - tokenLength - 1)))
-			tokenLength++;
-		return documentString.substring((documentOffset - tokenLength), documentOffset);
-	}
+    /**
+     * Gets all the distinct elements in the current RubyScript
+     * 
+     * @return a List of the names of all the elements in the current RubyScript
+     */
+    private Collection getDocumentsRubyElements() {
+        IRubyScript script = fManager.getWorkingCopy(fEditor.getEditorInput());
+        // FIXME Get only the elements in the current scope!
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.eclipse.jface.text.templates.TemplateCompletionProcessor#getTemplates(java.lang.String)
-	 */
-	protected Template[] getTemplates(String contextTypeId) {
-		return RubyTemplateAccess.getDefault().getTemplateStore().getTemplates();
-	}
+        Collection elements = getElements(script);
+        IRubyProject project = script.getRubyProject();
+        // Add all the classes and modules in the project
+        elements.addAll(addClassesAndModulesInProject(project));
+        // Add all the classes and modules in referenced projects
+        for (Iterator iter = project.getReferencedProjects().iterator(); iter.hasNext();) {
+            elements.addAll(addClassesAndModulesInProject(((IRubyProject) iter.next())));
+        }
+        // TODO Add all the methods defined in included modules for the class
+        // TODO Add all the methods defined in superclasses for the class/module
 
-	public IContextInformation[] computeContextInformation(ITextViewer viewer, int documentOffset) {
-		return null;
-	}
+        // always add Kernel methods
+        elements.addAll(addKernelMethods());
+        return elements;
+    }
 
-	public char[] getCompletionProposalAutoActivationCharacters() {
-		return null;
-	}
+    private Collection addClassesAndModulesInProject(IRubyProject project) {
+        return getElementsOfType(project, new int[] { IRubyElement.TYPE});
+    }
 
-	public char[] getContextInformationAutoActivationCharacters() {
-		return new char[] { '#'};
-	}
+    private Collection getElementsOfType(IParent element, int[] types) {
+        Collection suggestions = new ArrayList();
+        try {
+            IRubyElement[] elements = element.getChildren();
+            if (elements == null) return suggestions;
+            for (int x = 0; x < elements.length; x++) {
+                IRubyElement child = elements[x];
+                for (int i = 0; i < types.length; i++) {
+                    if (child.getElementType() == types[i]) {
+                        suggestions.add(child.getElementName());
+                        break;
+                    }
+                }
+                if (child instanceof IParent)
+                    suggestions.addAll(getElementsOfType((IParent) child, types));
+            }
+        } catch (RubyModelException e) {
+            e.printStackTrace();
+        }
+        return suggestions;
+    }
 
-	public IContextInformationValidator getContextInformationValidator() {
-		return contextInformationValidator;
-	}
+    /**
+     * @param script
+     * @return
+     */
+    private Collection getElements(IParent element) {
+        return getElementsOfType(element, new int[] { IRubyElement.TYPE, IRubyElement.METHOD,
+                IRubyElement.GLOBAL, IRubyElement.CONSTANT, IRubyElement.CLASS_VAR,
+                IRubyElement.INSTANCE_VAR});
+    }
 
-	public String getErrorMessage() {
-		return null;
-	}
+    private ICompletionProposal[] determineKeywordProposals(ITextViewer viewer, int documentOffset) {
+        initKeywordProposals();
 
-	protected class RubyContextInformationValidator implements IContextInformationValidator, IContextInformationPresenter {
+        String prefix = getCurrentPrefix(viewer.getDocument().get(), documentOffset);
+        // following the JDT convention, if there's no text already entered,
+        // then don't suggest keywords
+        if (prefix.length() < 1) { return new ICompletionProposal[0]; }
+        List completionProposals = Arrays.asList(keywordProposals);
 
-		protected int installDocumentPosition;
+        // FIXME Refactor to combine the copied code in
+        // determineRubyElementProposals
+        List possibleProposals = new ArrayList();
+        for (int i = 0; i < completionProposals.size(); i++) {
+            String proposal = (String) completionProposals.get(i);
+            if (proposal.startsWith(prefix)) {
+                String message;
+                if (isPredefinedGlobal(proposal)) {
+                    message = "{0} " + getContext(proposal);
+                } else {
+                    message = "{0}";
+                }
+                IContextInformation info = new ContextInformation(proposal, MessageFormat.format(
+                        message, new Object[] { proposal}));
+                possibleProposals.add(new CompletionProposal(proposal.substring(prefix.length(),
+                        proposal.length()), documentOffset, 0, proposal.length() - prefix.length(),
+                        null, proposal, info, MessageFormat.format("Ruby keyword: {0}",
+                                new Object[] { proposal})));
+            }
+        }
+        ICompletionProposal[] result = new ICompletionProposal[possibleProposals.size()];
+        possibleProposals.toArray(result);
+        return result;
+    }
 
-		/**
-		 * @see org.eclipse.jface.text.contentassist.IContextInformationPresenter#install(IContextInformation,
-		 *      ITextViewer, int)
-		 */
-		public void install(IContextInformation info, ITextViewer viewer, int documentPosition) {
-			installDocumentPosition = documentPosition;
-		}
+    /**
+     * 
+     */
+    private void initKeywordProposals() {
+        if (keywordProposals == null) {
+            String[] keywords = RubyTextTools.getKeyWords();
+            keywordProposals = new String[keywords.length + preDefinedGlobals.length];
+            System.arraycopy(keywords, 0, keywordProposals, 0, keywords.length);
+            System.arraycopy(preDefinedGlobals, 0, keywordProposals, keywords.length,
+                    preDefinedGlobals.length);
+        }
+    }
 
-		/**
-		 * @see org.eclipse.jface.text.contentassist.IContextInformationValidator#isContextInformationValid(int)
-		 */
-		public boolean isContextInformationValid(int documentPosition) {
-			return Math.abs(installDocumentPosition - documentPosition) < 1;
-		}
+    protected String getCurrentPrefix(String documentString, int documentOffset) {
+        int tokenLength = 0;
+        while ((documentOffset - tokenLength > 0)
+                && !Character.isWhitespace(documentString.charAt(documentOffset - tokenLength - 1)))
+            tokenLength++;
+        return documentString.substring((documentOffset - tokenLength), documentOffset);
+    }
 
-		/**
-		 * @see org.eclipse.jface.text.contentassist.IContextInformationPresenter#updatePresentation(int,
-		 *      TextPresentation)
-		 */
-		public boolean updatePresentation(int documentPosition, TextPresentation presentation) {
-			return false;
-		}
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.eclipse.jface.text.templates.TemplateCompletionProcessor#getTemplates(java.lang.String)
+     */
+    protected Template[] getTemplates(String contextTypeId) {
+        return RubyTemplateAccess.getDefault().getTemplateStore().getTemplates();
+    }
+
+    public IContextInformation[] computeContextInformation(ITextViewer viewer, int documentOffset) {
+        return null;
+    }
+
+    public char[] getCompletionProposalAutoActivationCharacters() {
+        return null;
+    }
+
+    public char[] getContextInformationAutoActivationCharacters() {
+        return new char[] { '#'};
+    }
+
+    public IContextInformationValidator getContextInformationValidator() {
+        return contextInformationValidator;
+    }
+
+    public String getErrorMessage() {
+        return null;
+    }
+
+    protected class RubyContextInformationValidator implements IContextInformationValidator,
+            IContextInformationPresenter {
+
+        protected int installDocumentPosition;
+
+        /**
+         * @see org.eclipse.jface.text.contentassist.IContextInformationPresenter#install(IContextInformation,
+         *      ITextViewer, int)
+         */
+        public void install(IContextInformation info, ITextViewer viewer, int documentPosition) {
+            installDocumentPosition = documentPosition;
+        }
+
+        /**
+         * @see org.eclipse.jface.text.contentassist.IContextInformationValidator#isContextInformationValid(int)
+         */
+        public boolean isContextInformationValid(int documentPosition) {
+            return Math.abs(installDocumentPosition - documentPosition) < 1;
+        }
+
+        /**
+         * @see org.eclipse.jface.text.contentassist.IContextInformationPresenter#updatePresentation(int,
+         *      TextPresentation)
+         */
+        public boolean updatePresentation(int documentPosition, TextPresentation presentation) {
+            return false;
+        }
+    }
 }
