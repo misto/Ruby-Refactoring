@@ -41,6 +41,19 @@ public class RubyCompletionProcessor extends TemplateCompletionProcessor impleme
 	private static String[] globalContexts = { "error message", "position of an error occurrence", "latest read string by `gets'", "latest read number of line by interpreter", "latest matched string by the regexep.", "latest matched string by nth parentheses of regexp.", "data for latest matche for regexp", "whether or not case-sensitive in string matching", "input record separator", "output record separator", "the name of the ruby scpript file", "command line arguments for the ruby scpript",
 			"PID for ruby interpreter", "status of the latest executed child process", "array of paths that ruby interpreter searches for files"};
 
+	// FIXME This is an ugly hack, just hard-coding method names
+	// FIXME Create a model for Ruby core in our Ruby Model!
+	private static String[] KERNEL_METHODS = {"abort", "at_exit", "autoload", "binding",
+			"block_given?", "callcc", "caller", "catch", "chomp",
+			"chomp!", "chop", "chop!", "eval", "exec", "exit",
+			"exit!", "fail", "fork", "format", "gets", "global_variables",
+			"gsub", "gsub!", "iterator?", "lambda", "load", "local_variables",
+			"loop", "open", "p", "print", "printf", "proc", "putc",
+			"puts", "raise", "rand", "readline", "readlines", "require",
+			"scan", "select", "set_trace_func", "singleton_method_added", 
+			"sleep", "split", "sprintf", "srand", "sub", "sub!", "syscall",
+			"system", "test", "throw", "trace_var", "trap", "untrace_var"};
+	
 	/**
 	 * The prefix for the current content assist
 	 */
@@ -100,15 +113,16 @@ public class RubyCompletionProcessor extends TemplateCompletionProcessor impleme
 	 */
 	private ICompletionProposal[] determineRubyElementProposals(ITextViewer viewer, int documentOffset) {
 		ArrayList completionProposals = new ArrayList(getDocumentsRubyElements());
-
+		completionProposals.addAll(addKernelMethods());
+		
 		String prefix = getCurrentPrefix(viewer.getDocument().get(), documentOffset);
 		// following the JDT convention, if there's no text already entered,
 		// then don't suggest imported elements
 		if (prefix.length() > 0) {
 			// FIXME Add elements from required/loaded files!
 		}
-
-		ArrayList possibleProposals = new ArrayList();
+		
+		ArrayList possibleProposals = new ArrayList();		
 		for (int i = 0; i < completionProposals.size(); i++) {
 			String proposal = (String) completionProposals.get(i);
 			if (proposal.startsWith(prefix)) {
@@ -120,6 +134,14 @@ public class RubyCompletionProcessor extends TemplateCompletionProcessor impleme
 		ICompletionProposal[] result = new ICompletionProposal[possibleProposals.size()];
 		possibleProposals.toArray(result);
 		return result;
+	}
+
+	private List addKernelMethods() {
+		List kernelProposals = new ArrayList();		
+		for (int i = 0; i < KERNEL_METHODS.length; i++) {
+			kernelProposals.add(KERNEL_METHODS[i]);
+		}
+		return kernelProposals;
 	}
 
 	/*
