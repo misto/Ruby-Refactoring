@@ -19,7 +19,7 @@ import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
 
-final class ProjectFileFinder implements IFileProvider {
+public final class ProjectFileFinder implements IFileProvider {
     private final IProject project;
 
     public ProjectFileFinder(IProject project) {
