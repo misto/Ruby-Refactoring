@@ -474,8 +474,10 @@ public class RubyScriptStructureBuilder implements NodeVisitor {
 		info.setHandle(handle);
 		ISourcePosition pos = iVisited.getPosition();
 		setKeywordRange("class", pos, info, name);
-		
-		// TODO Set the superclass!
+
+		Node superNode = iVisited.getSuperNode();
+		String superClass = getSuperClassName(superNode);		
+		info.setSuperclassName(superClass);
 		info.setIncludedModuleNames(new String[] {"Kernel"});
 		infoStack.push(info);
 
@@ -487,6 +489,24 @@ public class RubyScriptStructureBuilder implements NodeVisitor {
 		// TODO Collect the included modules and set them here!
 		modelStack.pop();
 		infoStack.pop();
+	}
+
+	/**
+	 * Build up the fully qualified name of the super class for a class declaration
+	 * @param superNode
+	 * @return
+	 */
+	private String getSuperClassName(Node superNode) {
+		if (superNode == null) return "Object";
+		if (superNode instanceof ConstNode) {
+			ConstNode superClassNode = (ConstNode) superNode;
+			return superClassNode.getName();
+		}
+		if (superNode instanceof Colon2Node) {
+			Colon2Node superClassNode = (Colon2Node) superNode;
+			return getSuperClassName(superClassNode.getLeftNode()) + "::" + superClassNode.getName();
+		}
+		return "Object";
 	}
 
 	private void setLocalVarRange( ISourcePosition pos, MemberElementInfo info, String name ){
@@ -1190,6 +1210,7 @@ public class RubyScriptStructureBuilder implements NodeVisitor {
 		info.setHandle(module);
 		ISourcePosition pos = iVisited.getPosition();
 		setKeywordRange("module", pos, info, name);
+		info.setSuperclassName("Module");
 		// TODO Set more info!
 		infoStack.push(info);
 
