@@ -28,6 +28,7 @@ import java.io.BufferedReader;
 import java.io.CharArrayReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
 import java.util.Map;
 
 import org.eclipse.core.resources.IFile;
@@ -578,5 +579,15 @@ public class RubyScript extends Openable implements IRubyScript {
 	 */
 	public IImportContainer getImportContainer() {
 		return new ImportContainer(this);
+	}
+	
+	/**
+	 * @see ICompilationUnit#getTypes()
+	 */
+	public IType[] getTypes() throws RubyModelException {
+		ArrayList list = getChildrenOfType(TYPE);
+		IType[] array= new IType[list.size()];
+		list.toArray(array);
+		return array;
 	}
 }

@@ -32,7 +32,7 @@ import org.eclipse.core.runtime.IProgressMonitor;
  */
 public interface IRubyScript extends IRubyElement, ISourceReference, IParent, IOpenable {
 
-	public String[] EXTENSIONS = { "rb", "rbw", "rhtml"};
+	public String[] EXTENSIONS = { "rb", "rbw", "rhtml", "rjs", "rxml"};
 
 	/**
 	 * @throws RubyModelException
@@ -348,4 +348,14 @@ public interface IRubyScript extends IRubyElement, ISourceReference, IParent, IO
 	 * @since 3.0
 	 */
 	WorkingCopyOwner getOwner();
+
+	/**
+	 * Returns the top-level types declared in this compilation unit
+	 * in the order in which they appear in the source.
+	 *
+	 * @return the top-level types declared in this compilation unit
+	 * @throws RubyModelException if this element does not exist or if an
+	 *		exception occurs while accessing its corresponding resource
+	 */
+	IType[] getTypes() throws RubyModelException;
 }
