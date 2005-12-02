@@ -9,6 +9,7 @@ public interface IRubyColorConstants {
 	public static final String RUBY_COMMAND = RUBY_COLOR_PREFIX + "command";
 	public static final String RUBY_FIXNUM = RUBY_COLOR_PREFIX + "fixnum";
 	public static final String RUBY_CHARACTER = RUBY_COLOR_PREFIX + "character";
+    public static final String RUBY_SYMBOL = RUBY_COLOR_PREFIX + "symbol";
 	
 	public static final String RUBY_MULTI_LINE_COMMENT = RUBY_COLOR_PREFIX + "multiline_comment";
 	public static final String RUBY_SINGLE_LINE_COMMENT = RUBY_COLOR_PREFIX + "singleline_comment";

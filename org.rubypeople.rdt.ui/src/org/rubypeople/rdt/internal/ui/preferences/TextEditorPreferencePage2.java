@@ -73,6 +73,7 @@ public class TextEditorPreferencePage2 extends RubyAbstractPreferencePage implem
 			IRubyColorConstants.RUBY_REGEXP, IRubyColorConstants.RUBY_COMMAND,
 			IRubyColorConstants.RUBY_FIXNUM,
 			IRubyColorConstants.RUBY_CHARACTER,
+            IRubyColorConstants.RUBY_SYMBOL,
 			IRubyColorConstants.RUBY_DEFAULT };
 
 	//private final String[][] fAnnotationColorListModel;

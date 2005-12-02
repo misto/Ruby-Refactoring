@@ -19,7 +19,8 @@ public class RubyCodeScanner extends AbstractRubyScanner {
 
 	private static String[] fgTokenProperties = {
 			IRubyColorConstants.RUBY_KEYWORD, IRubyColorConstants.RUBY_DEFAULT,
-			IRubyColorConstants.RUBY_FIXNUM, IRubyColorConstants.RUBY_CHARACTER
+			IRubyColorConstants.RUBY_FIXNUM, IRubyColorConstants.RUBY_CHARACTER,
+            IRubyColorConstants.RUBY_SYMBOL
 	// TODO Add Ability to set colors for return and operators
 	// IRubyColorConstants.RUBY_METHOD_NAME,
 	// IRubyColorConstants.RUBY_KEYWORD_RETURN,
@@ -54,6 +55,9 @@ public class RubyCodeScanner extends AbstractRubyScanner {
 
 		IToken fixnumToken = getToken(IRubyColorConstants.RUBY_FIXNUM);
 		rules.add(new NumberRule(fixnumToken));
+        
+        rules.add(new SymbolRule(
+                getToken(IRubyColorConstants.RUBY_SYMBOL)));        
 
 		IWordDetector wordDetector = new RubyWordDetector();
 		IToken defToken = getToken(IRubyColorConstants.RUBY_DEFAULT);
