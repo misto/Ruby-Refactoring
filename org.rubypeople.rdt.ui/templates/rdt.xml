@@ -166,7 +166,7 @@ end</template>
 	context="org.rubypeople.rdt.ui.templateContextType.rubyFile" 
 	description="%aliasTemplate1.description" 
 	id="org.rubypeople.rdt.ui.templates.alias1" 
-	name="alias">alias ${old} ${new}</template>
+	name="alias">alias :${new_method} :${old_method}</template>
 
 <template 
 	context="org.rubypeople.rdt.ui.templateContextType.rubyFile" 
