@@ -1,16 +1,21 @@
 Changes since 0.6.0:
-* Multiple debugger session possible because a free port will be used for the debugger communication. The port is written to a
-  temporary file and conveyed to the ruby process with "-r<tmpFile>". The fixed port used in the past (1098) is still the default 
-  port in the case that a temporary file can not be created
-* Catchpoints:
-	* The default was to halt at every type of StandardError, the new default is *not* to halt when exceptions are raised
-	* There is a menu entry in the debug perspective and a toolbar button in the breakpoint view which starts the Catchpoint dialog
-	* The catchpoint dialog allows to add a ruby exception breakpoint
-	* There can be at most one exception breakpoint; the breakpoint can be enabled, disabled and removed in the breakpoint view
+* Debugger
+  * Multiple debugger session possible because a free port will be used for the debugger communication. The port is written to a
+    temporary file and conveyed to the ruby process with "-r<tmpFile>". The fixed port used in the past (1098) is still the default 
+    port in the case that a temporary file can not be created
+  * Catchpoints:
+	  * The default was to halt at every type of StandardError, the new default is *not* to halt when exceptions are raised
+	  * There is a menu entry in the debug perspective and a toolbar button in the breakpoint view which starts the Catchpoint dialog
+	  * The catchpoint dialog allows to add a ruby exception breakpoint
+	  * There can be at most one exception breakpoint; the breakpoint can be enabled, disabled and removed in the breakpoint view
 * Added outline support for aliasing methods using the format 'alias :new_method :old_method'
 * Fixed bug where current visibility was never reset when opening a new class
 * Ruby Search
-
+* Fixed arguments in alias template to refer to methods in ocrrect order (first arg is new name, second is old)
+* Syntax Highlighting
+  * Added ability to distinctly color characters
+  * Added ability to distinctly color Fixnums (numbers)
+  * Added ability to distinctly color Symbols
 Changes merged from SRB 0.6.1:
 * SRB_0-6-1_1: Enable/Disable breakpoints, move breakpoints 
 * SRB_0-6-1_2: Highlighting: added here docs, fixed ?#, fixed =begin =end with keywords not starting on first column
