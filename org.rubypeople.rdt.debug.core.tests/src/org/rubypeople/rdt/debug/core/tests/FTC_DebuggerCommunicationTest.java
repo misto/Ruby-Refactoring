@@ -314,6 +314,7 @@ public class FTC_DebuggerCommunicationTest extends TestCase {
 		// per default catch is set to StandardError, i.e. every raise of a subclass of StandardError
 		// will suspend
 		createSocket(new String[] { "puts 'a'", "raise 'message \\dir\\file: <xml/>\n<8>'", "puts 'c'" });
+		sendRuby("catch StandardError");
 		sendRuby("cont");
 		System.out.println("Waiting for exception");
 		SuspensionPoint hit = getSuspensionReader().readSuspension();
@@ -323,12 +324,21 @@ public class FTC_DebuggerCommunicationTest extends TestCase {
 		assertTrue(hit.isException());
 		assertEquals("message \\dir\\file: <xml/> <8>", ((ExceptionSuspensionPoint) hit).getExceptionMessage());
 		assertEquals("RuntimeError", ((ExceptionSuspensionPoint) hit).getExceptionType());
-		sendRuby("cont");
+		sendRuby("catch off");
+		sendRuby("cont");		
 	}
 
 	public void testIgnoreException() throws Exception {
 		createSocket(new String[] { "puts 'a'", "raise 'dont stop'" });
 		sendRuby("catch off");
+		sendRuby("cont");
+		System.out.println("Waiting for the program to finish without suspending at the raise command");
+		SuspensionPoint hit = getSuspensionReader().readSuspension();
+		assertNull(hit);
+	}	
+	
+	public void testExceptionsIgnoredByDefault() throws Exception {
+		createSocket(new String[] { "puts 'a'", "raise 'dont stop'" });
 		sendRuby("cont");
 		System.out.println("Waiting for the program to finish without suspending at the raise command");
 		SuspensionPoint hit = getSuspensionReader().readSuspension();
