@@ -32,7 +32,7 @@ public class FTC_DebuggerLaunch extends TestCase {
 	}
 	
 	protected void createInterpreter() {
-		
+		// FIXME We rely on the RUBY_INTERPRETER to be a full path to a valid ruby executable, and it's not getting set properly so this test ends up failing (on the nightly build)!
 
 		RubyInterpreter rubyInterpreter = new RubyInterpreter("RubyInterpreter", new Path(FTC_DebuggerCommunicationTest.RUBY_INTERPRETER));
 		RubyRuntime.getDefault().addInstalledInterpreter(rubyInterpreter) ;
