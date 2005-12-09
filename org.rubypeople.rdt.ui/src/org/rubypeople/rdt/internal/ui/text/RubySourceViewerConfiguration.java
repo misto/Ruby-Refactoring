@@ -5,6 +5,7 @@ import org.eclipse.jface.text.DefaultInformationControl;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.IInformationControl;
 import org.eclipse.jface.text.IInformationControlCreator;
+import org.eclipse.jface.text.ITextHover;
 import org.eclipse.jface.text.contentassist.ContentAssistant;
 import org.eclipse.jface.text.contentassist.IContentAssistant;
 import org.eclipse.jface.text.presentation.IPresentationReconciler;
@@ -23,11 +24,13 @@ import org.rubypeople.rdt.internal.ui.rubyeditor.RubyAbstractEditor;
 import org.rubypeople.rdt.internal.ui.rubyeditor.RubyEditor;
 import org.rubypeople.rdt.internal.ui.rubyeditor.RubySourceViewer;
 import org.rubypeople.rdt.internal.ui.text.ruby.RubyCompletionProcessor;
+import org.rubypeople.rdt.internal.ui.text.ruby.hover.RubyCodeTextHover;
 
 public class RubySourceViewerConfiguration extends SourceViewerConfiguration {
 
 	protected RubyTextTools textTools;
 	protected ITextEditor fTextEditor;
+	private RubyCodeTextHover fRubyTextHover;
 
 	public RubySourceViewerConfiguration(RubyTextTools theTextTools, RubyAbstractEditor theTextEditor) {
 		super();
@@ -163,5 +166,13 @@ public class RubySourceViewerConfiguration extends SourceViewerConfiguration {
 	    }
 	    return super.getIndentPrefixes(sourceViewer, contentType); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 	}    
+	
+	
+	public ITextHover getTextHover(ISourceViewer sourceViewer, String contentType) {
+		if(fRubyTextHover == null){
+			fRubyTextHover = new RubyCodeTextHover();
+		}
+		return fRubyTextHover;
+	}
 	
 }
