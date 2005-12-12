@@ -27,9 +27,9 @@ public class TC_RubyPartitionScanner extends TestCase {
 	public void testPartitioningOfSingleLineComment() {
 		String source = "# This is a comment\n";
 		
-		assertEquals(RubyPartitionScanner.SINGLE_LINE_COMMENT, this.getContentType(source, 0));
-		assertEquals(RubyPartitionScanner.SINGLE_LINE_COMMENT, this.getContentType(source, 1));
-		assertEquals(RubyPartitionScanner.SINGLE_LINE_COMMENT, this.getContentType(source, 18));
+		assertEquals(RubyPartitionScanner.RUBY_SINGLE_LINE_COMMENT, this.getContentType(source, 0));
+		assertEquals(RubyPartitionScanner.RUBY_SINGLE_LINE_COMMENT, this.getContentType(source, 1));
+		assertEquals(RubyPartitionScanner.RUBY_SINGLE_LINE_COMMENT, this.getContentType(source, 18));
 	}
 	
 	public void testRecognizeSpecialCase() {
@@ -42,8 +42,8 @@ public class TC_RubyPartitionScanner extends TestCase {
 	public void testMultilineComment() {
 		String source = "=begin\nComment\n=end";
 
-		assertEquals(RubyPartitionScanner.MULTI_LINE_COMMENT, this.getContentType(source, 0));
-		assertEquals(RubyPartitionScanner.MULTI_LINE_COMMENT, this.getContentType(source, 10));
+		assertEquals(RubyPartitionScanner.RUBY_MULTI_LINE_COMMENT, this.getContentType(source, 0));
+		assertEquals(RubyPartitionScanner.RUBY_MULTI_LINE_COMMENT, this.getContentType(source, 10));
 	}		
 
 	public void testMultilineCommentNotOnFirstColumn() {
@@ -58,19 +58,19 @@ public class TC_RubyPartitionScanner extends TestCase {
 	
 	public void testHereDocOK() {
 		String source = "puts <<TEST\nMyName\nTEST";
-		assertEquals(RubyPartitionScanner.STRING, this.getContentType(source, 5));
+		assertEquals(RubyPartitionScanner.RUBY_STRING, this.getContentType(source, 5));
 
 		source = "puts <<-TEST\nMyName\nTEST\nputs 'ab'";
-		assertEquals(RubyPartitionScanner.STRING, this.getContentType(source, 5));
+		assertEquals(RubyPartitionScanner.RUBY_STRING, this.getContentType(source, 5));
 
 		source = "puts <<\"TEST\"\nMyName\nTEST";
-		assertEquals(RubyPartitionScanner.STRING, this.getContentType(source, 5));
+		assertEquals(RubyPartitionScanner.RUBY_STRING, this.getContentType(source, 5));
 
 		source = "puts <<'TEST'\nMyName\nTEST";
-		assertEquals(RubyPartitionScanner.STRING, this.getContentType(source, 5));
+		assertEquals(RubyPartitionScanner.RUBY_STRING, this.getContentType(source, 5));
 
 		source = "puts <<-'ax%&'\nMyName\nax%&";
-		assertEquals(RubyPartitionScanner.STRING, this.getContentType(source, 5));
+		assertEquals(RubyPartitionScanner.RUBY_STRING, this.getContentType(source, 5));
 		
 	}
 	
@@ -81,7 +81,7 @@ public class TC_RubyPartitionScanner extends TestCase {
 		
 		assertEquals(IDocument.DEFAULT_CONTENT_TYPE, this.getContentType(source, 5));
 		// normaler String
-		assertEquals(RubyPartitionScanner.STRING, this.getContentType(source, 9));
+		assertEquals(RubyPartitionScanner.RUBY_STRING, this.getContentType(source, 9));
 		
 		// end not on first column
 		source = "puts <<HERE\n HERE" ;
