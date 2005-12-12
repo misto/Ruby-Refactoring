@@ -63,8 +63,11 @@
 			<!-- unfortunately one "y" in the pattern pads with 0, so 2005 will be displayed as 05 -->
 			<format property="build.tstamp" pattern="5MMddhhmm"/>
 		</tstamp>
-		<condition property="featureVersion" value="${nightlyBuildFeatureVersionPrefix}${build.tstamp}">
+		<condition property="featureVersion" value="${nightlyBuildFeatureVersionPrefix}${build.tstamp}NGT">
 			<equals arg1="${buildType}" arg2="N"/>
+		</condition>
+		<condition property="featureVersion" value="${nightlyBuildFeatureVersionPrefix}${build.tstamp}INT">
+			<equals arg1="${buildType}" arg2="I"/>
 		</condition>
 		<fail unless="featureVersion" message="Property featureVersion must be set. Either directly or in case of a nightly build with nightlyBuildFeatureVersionPrefix."/>
 		<echo message="Using featureVersion: ${featureVersion}."/>
@@ -84,7 +87,8 @@
 	<!-- Steps to do after fetching the build elements -->
 	<!-- ===================================================================== -->
 	<target name="postFetch">
-		<antcall target="replaceVersionsForNightlyBuild"/>
+
+		<antcall target="replaceVersions"/>		
 		<replace file="${buildDirectory}/features/org.rubypeople.rdt/feature.xml">
 			<replacefilter token="&lt;!--@@INCLUDES@@--&gt;" value="&lt;includes id=&quot;org.rubypeople.rdt.source&quot; version=&quot;${featureVersion}&quot;/&gt;"/>
 		</replace>
@@ -92,11 +96,19 @@
 			<replacefilter token="#generate.feature" value="generate.feature" />
 		</replace>
 	</target>
-	<target name="replaceVersionsForNightlyBuild" if="baseFeatureVersion">
+	
+	<target name="replaceVersions" if="baseFeatureVersion">
+		<condition property="updateSiteUrl" 
+				value="http://rubyeclipse.sourceforge.net/nightlyBuild/updateSite" 
+				else="http://updatesite.rubypeople.org/rdt/integration">
+			<isset property="isNightlyBuild"/>
+		</condition>
+		<echo message="Nightly or integration build: replacing version ${baseFeatureVersion} with ${featureVersion}"/>
+		<echo message="Setting update-site URL: ${updateSiteUrl}"/>
 		<replace dir="${buildDirectory}/features">
 			<include name="org.rubypeople.*/feature.xml"/>
 			<replacefilter token="${baseFeatureVersion}" value="${featureVersion}" />
-			<replacefilter token="http://rubyeclipse.sourceforge.net/updatesite" value="http://rubyeclipse.sourceforge.net/nightlyBuild/updateSite" />						
+			<replacefilter token="http://rubyeclipse.sourceforge.net/updatesite" value="${updateSiteUrl}" />						
 		</replace>
 		<replace dir="${buildDirectory}/plugins">
 			<include name="org.rubypeople.*/plugin.xml"/>
@@ -144,8 +156,9 @@
 	<target name="postBuild">		
 		<property name="UpdateSiteStagingLocation" value="${buildDirectory}/updateSite"/>
 		<property name="sitePackagePrefix" value="org.rubypeople.updatesite"/>
-		<antcall target="generateUpdateSite"/>
+		<antcall target="generateUpdateSite"/>		
 		<antcall target="test"/>
+		<antcall target="package"/>
 	</target>
 	<!-- ===================================================================== -->
 	<!-- Steps to test the build results -->
@@ -207,6 +220,44 @@
 			name=&quot;RubyEclipseNightlyBuild&quot;/&gt; &lt;/feature&gt; 
 			&lt;category-def name=&quot;RubyEclipseNightlyBuild&quot; label=&quot;RDT Nigthly Build&quot;&gt; &lt;/category-def&gt; &lt;/site&gt; 
 		</echo>
+	</target>
+	
+	<target name="package">
+		<echo message="Creating and filling ${buildResultsDirectory}" />
+		<mkdir dir="${buildResultsDirectory}"/>
+		<mkdir dir="${buildResultsDirectory}/logs"/>
+		
+		<copy todir="${buildResultsDirectory}/logs" flatten="true">
+			<fileset dir="${buildDirectory}">
+				<include name="**/*.log"/>
+    		</fileset>
+		</copy>
+		<copy todir="${buildResultsDirectory}" flatten="true">
+			<fileset dir="${buildDirectory}">
+				<include name="**/org.rubypeople.rdt-*.zip"/>
+				<include name="**/Changelog.txt"/>	
+				<!-- exclude the org.rubypeople.rdt-tests-*.zip file -->
+				<exclude name="**/*-tests-*"/>
+    		</fileset>
+			<fileset dir="${eclipseAutomatedTestHome}/results/html">				
+				<include name="*.html"/>
+    		</fileset>    		
+		</copy>
+		<copy file="${buildDirectory}/workspace-rdt-tests/.metadata/.log" tofile="${buildResultsDirectory}/logs/testsWorkspace.log"/>
+		
+		<mkdir dir="${buildResultsDirectory}/updateSite"/>
+		<copy todir="${buildResultsDirectory}/updateSite">
+			<fileset dir="${buildDirectory}/updateSite"/>
+		</copy>
+				
+		<mkdir dir="${buildResultsDirectory}/doc"/>	
+		<copy todir="${buildResultsDirectory}/doc">
+			<fileset dir="${buildDirectory}/plugins/org.rubypeople.rdt.doc.user">
+				<include name="html/**/*"/>
+				<include name="images/**/*"/>
+			</fileset>
+		</copy>
+				
 	</target>
 	<!-- ===================================================================== -->
 	<!-- Steps to do to publish the build results -->
