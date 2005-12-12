@@ -15,14 +15,14 @@ import org.eclipse.jface.text.rules.WordPatternRule;
 public class RubyPartitionScanner extends RuleBasedPartitionScanner {
 
 	
-	public final static String STRING = "partition_scanner_ruby_string";
-	public final static String MULTI_LINE_COMMENT = "partition_scanner_ruby_multiline_comment";
-	public static final String SINGLE_LINE_COMMENT = "partition_scanner_ruby_singleline_comment";
-	public static final String REGULAR_EXPRESSION = "partition_scanner_ruby_regular_expression";
-	public static final String COMMAND = "partition_scanner_ruby_command";
+	public final static String RUBY_STRING = "partition_scanner_ruby_string";
+	public final static String RUBY_MULTI_LINE_COMMENT = "partition_scanner_ruby_multiline_comment";
+	public static final String RUBY_SINGLE_LINE_COMMENT = "partition_scanner_ruby_singleline_comment";
+	public static final String RUBY_REGULAR_EXPRESSION = "partition_scanner_ruby_regular_expression";
+	public static final String RUBY_COMMAND = "partition_scanner_ruby_command";
 	public static final String HERE_DOC = "partition_scanner_here_doc";
 		
-	public static final String[] LEGAL_CONTENT_TYPES = {STRING, MULTI_LINE_COMMENT, SINGLE_LINE_COMMENT, REGULAR_EXPRESSION, COMMAND};
+	public static final String[] LEGAL_CONTENT_TYPES = {RUBY_STRING, RUBY_MULTI_LINE_COMMENT, RUBY_SINGLE_LINE_COMMENT, RUBY_REGULAR_EXPRESSION, RUBY_COMMAND};
 		
 	public RubyPartitionScanner() {
 		super();
@@ -30,12 +30,12 @@ public class RubyPartitionScanner extends RuleBasedPartitionScanner {
 	}
 
 	protected void initialize() {
-		IToken string = new Token(STRING);
-		IToken multiLineComment = new Token(MULTI_LINE_COMMENT);
-		IToken singleLineComment = new Token(SINGLE_LINE_COMMENT);
-		IToken regexp = new Token(REGULAR_EXPRESSION);
-		IToken command = new Token(COMMAND);
-		IToken hereDoc = new Token(STRING) ;
+		IToken string = new Token(RUBY_STRING);
+		IToken multiLineComment = new Token(RUBY_MULTI_LINE_COMMENT);
+		IToken singleLineComment = new Token(RUBY_SINGLE_LINE_COMMENT);
+		IToken regexp = new Token(RUBY_REGULAR_EXPRESSION);
+		IToken command = new Token(RUBY_COMMAND);
+		IToken hereDoc = new Token(RUBY_STRING) ;
 
 		List rules = new ArrayList();
 

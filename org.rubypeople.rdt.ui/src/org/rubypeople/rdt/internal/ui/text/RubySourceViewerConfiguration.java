@@ -6,6 +6,7 @@ import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.IInformationControl;
 import org.eclipse.jface.text.IInformationControlCreator;
 import org.eclipse.jface.text.ITextHover;
+import org.eclipse.jface.text.ITextDoubleClickStrategy;
 import org.eclipse.jface.text.contentassist.ContentAssistant;
 import org.eclipse.jface.text.contentassist.IContentAssistant;
 import org.eclipse.jface.text.presentation.IPresentationReconciler;
@@ -47,24 +48,24 @@ public class RubySourceViewerConfiguration extends SourceViewerConfiguration {
 		reconciler.setRepairer(dr, IDocument.DEFAULT_CONTENT_TYPE);
 
 		dr = new DefaultDamagerRepairer(getSinglelineCommentScanner());
-		reconciler.setDamager(dr, RubyPartitionScanner.SINGLE_LINE_COMMENT);
-		reconciler.setRepairer(dr, RubyPartitionScanner.SINGLE_LINE_COMMENT);
+		reconciler.setDamager(dr, RubyPartitionScanner.RUBY_SINGLE_LINE_COMMENT);
+		reconciler.setRepairer(dr, RubyPartitionScanner.RUBY_SINGLE_LINE_COMMENT);
 		
 		dr = new DefaultDamagerRepairer(getMultilineCommentScanner());
-		reconciler.setDamager(dr, RubyPartitionScanner.MULTI_LINE_COMMENT);
-		reconciler.setRepairer(dr, RubyPartitionScanner.MULTI_LINE_COMMENT);
+		reconciler.setDamager(dr, RubyPartitionScanner.RUBY_MULTI_LINE_COMMENT);
+		reconciler.setRepairer(dr, RubyPartitionScanner.RUBY_MULTI_LINE_COMMENT);
 
 		dr = new DefaultDamagerRepairer(getStringScanner());
-		reconciler.setDamager(dr, RubyPartitionScanner.STRING);
-		reconciler.setRepairer(dr, RubyPartitionScanner.STRING);
+		reconciler.setDamager(dr, RubyPartitionScanner.RUBY_STRING);
+		reconciler.setRepairer(dr, RubyPartitionScanner.RUBY_STRING);
 
 		dr = new DefaultDamagerRepairer(getRegexpScanner());
-		reconciler.setDamager(dr, RubyPartitionScanner.REGULAR_EXPRESSION);
-		reconciler.setRepairer(dr, RubyPartitionScanner.REGULAR_EXPRESSION);
+		reconciler.setDamager(dr, RubyPartitionScanner.RUBY_REGULAR_EXPRESSION);
+		reconciler.setRepairer(dr, RubyPartitionScanner.RUBY_REGULAR_EXPRESSION);
 		
 		dr = new DefaultDamagerRepairer(getCommandScanner());
-		reconciler.setDamager(dr, RubyPartitionScanner.COMMAND);
-		reconciler.setRepairer(dr, RubyPartitionScanner.COMMAND);
+		reconciler.setDamager(dr, RubyPartitionScanner.RUBY_COMMAND);
+		reconciler.setRepairer(dr, RubyPartitionScanner.RUBY_COMMAND);
 		
 		
 		return reconciler;
@@ -95,7 +96,7 @@ public class RubySourceViewerConfiguration extends SourceViewerConfiguration {
 	}
 
 	public String[] getConfiguredContentTypes(ISourceViewer sourceViewer) {
-		return new String[] { IDocument.DEFAULT_CONTENT_TYPE, RubyPartitionScanner.MULTI_LINE_COMMENT, RubyPartitionScanner.STRING, RubyPartitionScanner.SINGLE_LINE_COMMENT};
+		return new String[] { IDocument.DEFAULT_CONTENT_TYPE, RubyPartitionScanner.RUBY_MULTI_LINE_COMMENT, RubyPartitionScanner.RUBY_STRING, RubyPartitionScanner.RUBY_SINGLE_LINE_COMMENT};
 	}
 
 	public IContentAssistant getContentAssistant(ISourceViewer sourceViewer) {
@@ -166,6 +167,10 @@ public class RubySourceViewerConfiguration extends SourceViewerConfiguration {
 	    }
 	    return super.getIndentPrefixes(sourceViewer, contentType); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 	}    
+    
+    public ITextDoubleClickStrategy getDoubleClickStrategy(ISourceViewer sourceViewer, String contentType) {
+        return new RubyDoubleClickSelector();
+    }
 	
 	
 	public ITextHover getTextHover(ISourceViewer sourceViewer, String contentType) {
