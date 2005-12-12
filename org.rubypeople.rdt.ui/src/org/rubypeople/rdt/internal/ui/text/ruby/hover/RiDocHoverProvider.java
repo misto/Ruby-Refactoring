@@ -12,6 +12,7 @@ import org.eclipse.core.runtime.Path;
 import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.IRegion;
 import org.eclipse.jface.text.ITextViewer;
+import org.rubypeople.rdt.internal.launching.RubyInterpreter;
 import org.rubypeople.rdt.internal.launching.RubyRuntime;
 import org.rubypeople.rdt.internal.ui.RubyPlugin;
 import org.rubypeople.rdt.ui.PreferenceConstants;
@@ -27,7 +28,9 @@ public class RiDocHoverProvider implements ITextHoverProvider {
     	try {
 			String symbol = textViewer.getDocument().get(hoverRegion.getOffset(), hoverRegion.getLength());
 			args.add(symbol);
-			Process p = RubyRuntime.getDefault().getSelectedInterpreter().exec(args, null);
+            RubyInterpreter selectedInterpreter = RubyRuntime.getDefault().getSelectedInterpreter();
+			if (selectedInterpreter == null) return null;
+            Process p = selectedInterpreter.exec(args, null);
 			br = new BufferedReader(new InputStreamReader(p.getInputStream()));
 			// TODO: format the documentation that was fetched from RI 
 			// for now: read the first 3 lines (at most) and show them
