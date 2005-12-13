@@ -4,7 +4,7 @@ import org.eclipse.core.resources.IProject;
 import org.eclipse.jface.viewers.ILabelProvider;
 import org.eclipse.jface.viewers.ILabelProviderListener;
 import org.eclipse.swt.graphics.Image;
-import org.rubypeople.rdt.internal.core.LoadPathEntry;
+import org.rubypeople.rdt.internal.core.LoadpathEntry;
 import org.rubypeople.rdt.internal.debug.ui.RdtDebugUiPlugin;
 
 /**
@@ -26,8 +26,8 @@ public class LoadPathEntryLabelProvider implements ILabelProvider {
 	 * @see ILabelProvider#getText(Object)
 	 */
 	public String getText(Object element) {
-		if (element != null && element.getClass() == LoadPathEntry.class) {
-			IProject project = ((LoadPathEntry) element).getProject() ;			
+		if (element != null && element.getClass() == LoadpathEntry.class) {
+			IProject project = ((LoadpathEntry) element).getProject() ;			
 			if (project.isAccessible()) {
 				return project.getLocation().toOSString() ;
 			}

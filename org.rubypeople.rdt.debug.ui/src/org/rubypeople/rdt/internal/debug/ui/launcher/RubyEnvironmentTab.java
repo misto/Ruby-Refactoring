@@ -26,7 +26,7 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.TabFolder;
 import org.eclipse.swt.widgets.TabItem;
 import org.rubypeople.rdt.core.RubyCore;
-import org.rubypeople.rdt.internal.core.LoadPathEntry;
+import org.rubypeople.rdt.internal.core.LoadpathEntry;
 import org.rubypeople.rdt.internal.core.RubyProject;
 import org.rubypeople.rdt.internal.debug.ui.RdtDebugUiMessages;
 import org.rubypeople.rdt.internal.debug.ui.RdtDebugUiPlugin;
@@ -222,7 +222,7 @@ public class RubyEnvironmentTab extends AbstractLaunchConfigurationTab {
 			List loadPathEntries = (List) loadPathListViewer.getInput();
 			List loadPathStrings = new ArrayList();
 			for (Iterator iterator = loadPathEntries.iterator(); iterator.hasNext();) {
-				LoadPathEntry entry = (LoadPathEntry) iterator.next();
+				LoadpathEntry entry = (LoadpathEntry) iterator.next();
 				loadPathStrings.add(entry.getPath().toString());
 			}
 			configuration.setAttribute(RubyLaunchConfigurationAttribute.CUSTOM_LOAD_PATH, loadPathStrings);
