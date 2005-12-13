@@ -162,6 +162,7 @@ public class DefaultRubyFoldingStructureProvider implements IProjectionListener,
 			createProjection = true;
 			break;
 		case IRubyElement.METHOD:
+        case IRubyElement.SINGLETON_METHOD:
 			collapse = fAllowCollapsing && fCollapseMethods;
 			createProjection = true;
 			break;
