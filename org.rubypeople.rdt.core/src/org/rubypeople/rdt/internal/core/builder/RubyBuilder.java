@@ -24,7 +24,7 @@ import org.rubypeople.rdt.internal.core.symbols.SymbolIndex;
 
 public class RubyBuilder extends IncrementalProjectBuilder {
 
-    private static boolean verbose;
+    public static boolean DEBUG;
 
     private IProject currentProject;
 
@@ -33,13 +33,13 @@ public class RubyBuilder extends IncrementalProjectBuilder {
 		if (currentProject == null || !currentProject.isAccessible()) 
             return null;
 		
-        if (verbose)
+        if (DEBUG)
             RubyCore.trace("Started " + buildType(kind) + " build of " + buildDescription()); //$NON-NLS-1$
 
         AbstractRdtCompiler compiler = createCompiler(kind);
         compiler.compile(monitor);
 
-        if (verbose)
+        if (DEBUG)
             RubyCore.trace("Finished build of " + buildDescription()); //$NON-NLS-1$
 		return null;
 	}
@@ -64,6 +64,6 @@ public class RubyBuilder extends IncrementalProjectBuilder {
     }
     
     public static void setVerbose(boolean verbose) {
-        RubyBuilder.verbose = verbose;
+        RubyBuilder.DEBUG = verbose;
     }
 }

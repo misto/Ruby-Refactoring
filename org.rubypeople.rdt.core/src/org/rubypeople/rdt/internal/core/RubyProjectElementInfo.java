@@ -61,8 +61,8 @@ class RubyProjectElementInfo extends OpenableElementInfo {
 			ILoadpathEntry entry = classpath[i];
 			if (projectPath.equals(entry.getPath())) {
 				srcIsProject = true;
-				inclusionPatterns = ((LoadPathEntry) entry).fullInclusionPatternChars();
-				exclusionPatterns = ((LoadPathEntry) entry).fullExclusionPatternChars();
+				inclusionPatterns = ((LoadpathEntry) entry).fullInclusionPatternChars();
+				exclusionPatterns = ((LoadpathEntry) entry).fullExclusionPatternChars();
 				break;
 			}
 		}

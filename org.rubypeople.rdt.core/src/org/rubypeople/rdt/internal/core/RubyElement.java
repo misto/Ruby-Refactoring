@@ -30,6 +30,7 @@ import java.util.HashMap;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.PlatformObject;
+import org.rubypeople.rdt.core.IField;
 import org.rubypeople.rdt.core.IOpenable;
 import org.rubypeople.rdt.core.IParent;
 import org.rubypeople.rdt.core.IRubyElement;
@@ -38,6 +39,8 @@ import org.rubypeople.rdt.core.IRubyModelStatus;
 import org.rubypeople.rdt.core.IRubyModelStatusConstants;
 import org.rubypeople.rdt.core.IRubyProject;
 import org.rubypeople.rdt.core.IRubyScript;
+import org.rubypeople.rdt.core.ISourceRange;
+import org.rubypeople.rdt.core.ISourceReference;
 import org.rubypeople.rdt.core.RubyModelException;
 
 /**
@@ -126,6 +129,55 @@ public abstract class RubyElement extends PlatformObject implements IRubyElement
 	public IRubyElement getPrimaryElement(boolean checkOwner) {
 		return this;
 	}
+    
+    /**
+     * Returns the element that is located at the given source position
+     * in this element.  This is a helper method for <code>IRubyScript#getElementAt</code>,
+     * and only works on ruby scripts and types. The position given is
+     * known to be within this element's source range already, and if no finer
+     * grained element is found at the position, this element is returned.
+     */
+    protected IRubyElement getSourceElementAt(int position) throws RubyModelException {
+        if (this instanceof ISourceReference) {
+            IRubyElement[] children = getChildren();
+            for (int i = children.length-1; i >= 0; i--) {
+                IRubyElement aChild = children[i];
+                if (aChild instanceof SourceRefElement) {
+                    SourceRefElement child = (SourceRefElement) children[i];
+                    ISourceRange range = child.getSourceRange();
+                    int start = range.getOffset();
+                    int end = start + range.getLength();
+                    if (start <= position && position <= end) {
+                        if (child instanceof IField) {
+                            // check muti-declaration case (see https://bugs.eclipse.org/bugs/show_bug.cgi?id=39943)
+                            int declarationStart = start;
+                            SourceRefElement candidate = null;
+                            do {
+                                // check name range
+                                range = ((IField)child).getNameRange();
+                                if (position <= range.getOffset() + range.getLength()) {
+                                    candidate = child;
+                                } else {
+                                    return candidate == null ? child.getSourceElementAt(position) : candidate.getSourceElementAt(position);
+                                }
+                                child = --i>=0 ? (SourceRefElement) children[i] : null;
+                            } while (child != null && child.getSourceRange().getOffset() == declarationStart);
+                            // position in field's type: use first field
+                            return candidate.getSourceElementAt(position);
+                        } else if (child instanceof IParent) {
+                            return child.getSourceElementAt(position);
+                        } else {
+                            return child;
+                        }
+                    }
+                }
+            }
+        } else {
+            // should not happen
+            Assert.isTrue(false);
+        }
+        return this;
+    }
 
 	/**
 	 * @see IRubyElement

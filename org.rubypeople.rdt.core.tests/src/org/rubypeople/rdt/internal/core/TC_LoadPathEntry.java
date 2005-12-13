@@ -13,7 +13,7 @@ public class TC_LoadPathEntry extends TestCase {
 
 	public void testToXml() {
 		ShamProject project = new ShamProject(new Path("myLocation"), "MyProject");
-		LoadPathEntry entry = new LoadPathEntry(project);
+		LoadpathEntry entry = new LoadpathEntry(project);
 		
 		String expected = "<pathentry type=\"project\" path=\"myLocation\"/>";
 		assertEquals(expected, entry.toXML());

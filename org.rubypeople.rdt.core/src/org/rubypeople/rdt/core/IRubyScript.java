@@ -87,7 +87,7 @@ public interface IRubyScript extends IRubyElement, ISourceReference, IParent, IO
 	 *             </ul>
 	 * @since 3.0
 	 */
-	void reconcile(WorkingCopyOwner owner, IProgressMonitor monitor) throws RubyModelException;
+	void reconcile(boolean forceProblemDetection, WorkingCopyOwner owner, IProgressMonitor monitor) throws RubyModelException;
 
 	/**
 	 * Returns the top-level type declared in this compilation unit with the
@@ -358,4 +358,19 @@ public interface IRubyScript extends IRubyElement, ISourceReference, IParent, IO
 	 *		exception occurs while accessing its corresponding resource
 	 */
 	IType[] getTypes() throws RubyModelException;
+
+    /**
+     * Returns the smallest element within this compilation unit that 
+     * includes the given source position (that is, a method, field, etc.), or
+     * <code>null</code> if there is no element other than the compilation
+     * unit itself at the given position, or if the given position is not
+     * within the source range of this compilation unit.
+     *
+     * @param position a source position inside the compilation unit
+     * @return the innermost Ruby element enclosing a given source position or <code>null</code>
+     *  if none (excluding the compilation unit).
+     * @throws RubyModelException if the compilation unit does not exist or if an
+     *      exception occurs while accessing its corresponding resource
+     */
+    IRubyElement getElementAt(int position) throws RubyModelException;
 }

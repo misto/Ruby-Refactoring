@@ -1,8 +1,14 @@
 package org.rubypeople.rdt.internal.core;
 
+import java.io.BufferedInputStream;
 import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -15,10 +21,15 @@ import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IProjectDescription;
 import org.eclipse.core.resources.IProjectNature;
 import org.eclipse.core.resources.IResource;
+import org.eclipse.core.resources.ProjectScope;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.Path;
+import org.eclipse.core.runtime.Preferences;
+import org.eclipse.core.runtime.preferences.IEclipsePreferences;
+import org.eclipse.core.runtime.preferences.IScopeContext;
+import org.osgi.service.prefs.BackingStoreException;
 import org.rubypeople.rdt.core.ILoadpathEntry;
 import org.rubypeople.rdt.core.IParent;
 import org.rubypeople.rdt.core.IRubyElement;
@@ -39,6 +50,11 @@ public class RubyProject extends Openable implements IProjectNature, IRubyElemen
     protected IProject project;
     protected List loadPathEntries;
     protected boolean scratched;
+    
+    /**
+     * Name of file containing custom project preferences
+     */
+    private static final String PREF_FILENAME = ".rprefs";  //$NON-NLS-1$
 
     /*
      * Value of project's resolved loadpath while it is being resolved
@@ -180,6 +196,10 @@ public class RubyProject extends Openable implements IProjectNature, IRubyElemen
         return RubyModelManager.getRubyModelManager().getPerProjectInfoCheckExistence(this.project);
     }
 
+    private IPath getPluginWorkingLocation() {
+        return this.project.getWorkingLocation(RubyCore.PLUGIN_ID);
+    }   
+    
     public IProject getProject() {
         return project;
     }
@@ -206,14 +226,14 @@ public class RubyProject extends Openable implements IProjectNature, IRubyElemen
     public void addLoadPathEntry(IProject anotherRubyProject) {
         scratched = true;
 
-        LoadPathEntry newEntry = new LoadPathEntry(anotherRubyProject);
+        LoadpathEntry newEntry = new LoadpathEntry(anotherRubyProject);
         getLoadPathEntries().add(newEntry);
     }
 
     public void removeLoadPathEntry(IProject anotherRubyProject) {
         Iterator entries = getLoadPathEntries().iterator();
         while (entries.hasNext()) {
-            LoadPathEntry entry = (LoadPathEntry) entries.next();
+            LoadpathEntry entry = (LoadpathEntry) entries.next();
             if (entry.getEntryKind() == ILoadpathEntry.CPE_PROJECT
                     && entry.getProject().getName().equals(anotherRubyProject.getName())) {
                 getLoadPathEntries().remove(entry);
@@ -236,7 +256,7 @@ public class RubyProject extends Openable implements IProjectNature, IRubyElemen
 
         Iterator iterator = getLoadPathEntries().iterator();
         while (iterator.hasNext()) {
-            LoadPathEntry pathEntry = (LoadPathEntry) iterator.next();
+            LoadpathEntry pathEntry = (LoadpathEntry) iterator.next();
             if (pathEntry.getEntryKind() == ILoadpathEntry.CPE_PROJECT)
                 referencedProjects.add(pathEntry.getProject());
         }
@@ -311,7 +331,7 @@ public class RubyProject extends Openable implements IProjectNature, IRubyElemen
                 if ("pathentry".equals(qName)) if ("project".equals(atts.getValue("type"))) {
                     IPath referencedProjectPath = new Path(atts.getValue("path"));
                     IProject referencedProject = getProject(referencedProjectPath.lastSegment());
-                    loadPathEntries.add(new LoadPathEntry(referencedProject));
+                    loadPathEntries.add(new LoadpathEntry(referencedProject));
                 }
             }
 
@@ -344,7 +364,7 @@ public class RubyProject extends Openable implements IProjectNature, IRubyElemen
         Iterator pathEntriesIterator = loadPathEntries.iterator();
 
         while (pathEntriesIterator.hasNext()) {
-            LoadPathEntry entry = (LoadPathEntry) pathEntriesIterator.next();
+            LoadpathEntry entry = (LoadpathEntry) pathEntriesIterator.next();
             buffer.append(entry.toXML());
         }
 
@@ -360,6 +380,45 @@ public class RubyProject extends Openable implements IProjectNature, IRubyElemen
         return this.project;
     }
 
+    /**
+     * Returns the project custom preference pool.
+     * Project preferences may include custom encoding.
+     * @return IEclipsePreferences
+     */
+    public IEclipsePreferences getEclipsePreferences(){
+        if (!RubyProject.hasRubyNature(this.project)) return null;
+        // Get cached preferences if exist
+        RubyModelManager.PerProjectInfo perProjectInfo = RubyModelManager.getRubyModelManager().getPerProjectInfo(this.project, true);
+        if (perProjectInfo.preferences != null) return perProjectInfo.preferences;
+        // Init project preferences
+        IScopeContext context = new ProjectScope(getProject());
+        final IEclipsePreferences eclipsePreferences = context.getNode(RubyCore.PLUGIN_ID);
+        updatePreferences(eclipsePreferences);
+        perProjectInfo.preferences = eclipsePreferences;
+
+        // Listen to node removal from parent in order to reset cache (see bug 68993)
+        IEclipsePreferences.INodeChangeListener nodeListener = new IEclipsePreferences.INodeChangeListener() {
+            public void added(IEclipsePreferences.NodeChangeEvent event) {
+                // do nothing
+            }
+            public void removed(IEclipsePreferences.NodeChangeEvent event) {
+                if (event.getChild() == eclipsePreferences) {
+                    RubyModelManager.getRubyModelManager().resetProjectPreferences(RubyProject.this);
+                }
+            }
+        };
+        ((IEclipsePreferences) eclipsePreferences.parent()).addNodeChangeListener(nodeListener);
+
+        // Listen to preference changes
+        IEclipsePreferences.IPreferenceChangeListener preferenceListener = new IEclipsePreferences.IPreferenceChangeListener() {
+            public void preferenceChange(IEclipsePreferences.PreferenceChangeEvent event) {
+                RubyModelManager.getRubyModelManager().resetProjectOptions(RubyProject.this);
+            }
+        };
+        eclipsePreferences.addPreferenceChangeListener(preferenceListener);
+        return eclipsePreferences;
+    }
+    
     /*
      * (non-Rubydoc)
      * 
@@ -512,6 +571,134 @@ public class RubyProject extends Openable implements IProjectNature, IRubyElemen
         ILoadpathEntry[] dest = new ILoadpathEntry[entries.size()];
         System.arraycopy(entries.toArray(), 0, dest, 0, entries.size());
         return dest;
+    }
+    
+    /**
+     * @see org.rubypeople.rdt.core.IRubyProject#getOption(String, boolean)
+     */ 
+    public String getOption(String optionName, boolean inheritRubyCoreOptions) {
+        
+        String propertyName = optionName;
+        if (RubyModelManager.getRubyModelManager().optionNames.contains(propertyName)){
+            IEclipsePreferences projectPreferences = getEclipsePreferences();
+            String javaCoreDefault = inheritRubyCoreOptions ? RubyCore.getOption(propertyName) : null;
+            if (projectPreferences == null) return javaCoreDefault;
+            String value = projectPreferences.get(propertyName, javaCoreDefault);
+            return value == null ? null : value.trim();
+        }
+        return null;
+    }
+    
+    /**
+     * @see org.rubypeople.rdt.core.IRubyProject#getOptions(boolean)
+     */
+    public Map getOptions(boolean inheritRubyCoreOptions) {
+
+        // initialize to the defaults from RubyCore options pool
+        Map options = inheritRubyCoreOptions ? RubyCore.getOptions() : new Hashtable(5);
+
+        // Get project specific options
+        RubyModelManager.PerProjectInfo perProjectInfo = null;
+        Hashtable projectOptions = null;
+        HashSet optionNames = RubyModelManager.getRubyModelManager().optionNames;
+        try {
+            perProjectInfo = getPerProjectInfo();
+            projectOptions = perProjectInfo.options;
+            if (projectOptions == null) {
+                // get eclipse preferences
+                IEclipsePreferences projectPreferences= getEclipsePreferences();
+                if (projectPreferences == null) return options; // cannot do better (non-Ruby project)
+                // create project options
+                String[] propertyNames = projectPreferences.keys();
+                projectOptions = new Hashtable(propertyNames.length);
+                for (int i = 0; i < propertyNames.length; i++){
+                    String propertyName = propertyNames[i];
+                    String value = projectPreferences.get(propertyName, null);
+                    if (value != null && optionNames.contains(propertyName)){
+                        projectOptions.put(propertyName, value.trim());
+                    }
+                }       
+                // cache project options
+                perProjectInfo.options = projectOptions;
+            }
+        } catch (RubyModelException jme) {
+            projectOptions = new Hashtable();
+        } catch (BackingStoreException e) {
+            projectOptions = new Hashtable();
+        }
+
+        // Inherit from RubyCore options if specified
+        if (inheritRubyCoreOptions) {
+            Iterator propertyNames = projectOptions.keySet().iterator();
+            while (propertyNames.hasNext()) {
+                String propertyName = (String) propertyNames.next();
+                String propertyValue = (String) projectOptions.get(propertyName);
+                if (propertyValue != null && optionNames.contains(propertyName)){
+                    options.put(propertyName, propertyValue.trim());
+                }
+            }
+            return options;
+        }
+        return projectOptions;
+    }
+    
+    /*
+     * Update eclipse preferences from old preferences.
+     */
+     private void updatePreferences(IEclipsePreferences preferences) {
+        
+        Preferences oldPreferences = loadPreferences();
+        if (oldPreferences != null) {
+            String[] propertyNames = oldPreferences.propertyNames();
+            for (int i = 0; i < propertyNames.length; i++){
+                String propertyName = propertyNames[i];
+                String propertyValue = oldPreferences.getString(propertyName);
+                if (!"".equals(propertyValue)) { //$NON-NLS-1$
+                    preferences.put(propertyName, propertyValue);
+                }
+            }
+            try {
+                // save immediately old preferences
+                preferences.flush();
+            } catch (BackingStoreException e) {
+                // fails silently
+            }
+        }
+     }
+     
+     /**
+     * load preferences from a shareable format (VCM-wise)
+     */
+     private Preferences loadPreferences() {
+        
+        Preferences preferences = new Preferences();
+        IPath projectMetaLocation = getPluginWorkingLocation();
+        if (projectMetaLocation != null) {
+            File prefFile = projectMetaLocation.append(PREF_FILENAME).toFile();
+            if (prefFile.exists()) { // load preferences from file
+                InputStream in = null;
+                try {
+                    in = new BufferedInputStream(new FileInputStream(prefFile));
+                    preferences.load(in);
+                } catch (IOException e) { // problems loading preference store - quietly ignore
+                } finally {
+                    if (in != null) {
+                        try {
+                            in.close();
+                        } catch (IOException e) { // ignore problems with close
+                        }
+                    }
+                }
+                // one shot read, delete old preferences
+                prefFile.delete();
+                return preferences;
+            }
+        }
+        return null;
+     }
+
+    public void resetCaches() {
+        // TODO Auto-generated method stub        
     }
 
 }

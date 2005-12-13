@@ -25,6 +25,7 @@
 package org.rubypeople.rdt.core;
 
 import java.util.List;
+import java.util.Map;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
@@ -72,5 +73,34 @@ public interface IRubyProject extends IRubyElement, IParent {
 	IType findType(String fullyQualifiedName) throws RubyModelException;
 
     public boolean upgrade() throws CoreException;
+
+    /**
+     * Helper method for returning one option value only. Equivalent to <code>(String)this.getOptions(inheritRubyCoreOptions).get(optionName)</code>
+     * Note that it may answer <code>null</code> if this option does not exist, or if there is no custom value for it.
+     * <p>
+     * For a complete description of the configurable options, see <code>RubyCore#getDefaultOptions</code>.
+     * </p>
+     * 
+     * @param optionName the name of an option
+     * @param inheritRubyCoreOptions - boolean indicating whether RubyCore options should be inherited as well
+     * @return the String value of a given option
+     * @see RubyCore#getDefaultOptions()
+     */
+    String getOption(String optionName, boolean inheritRubyCoreOptions);
+    
+    /**
+     * Returns the table of the current custom options for this project. Projects remember their custom options,
+     * in other words, only the options different from the the RubyCore global options for the workspace.
+     * A boolean argument allows to directly merge the project options with global ones from <code>RubyCore</code>.
+     * <p>
+     * For a complete description of the configurable options, see <code>RubyCore#getDefaultOptions</code>.
+     * </p>
+     * 
+     * @param inheritRubyCoreOptions - boolean indicating whether RubyCore options should be inherited as well
+     * @return table of current settings of all options 
+     *   (key type: <code>String</code>; value type: <code>String</code>)
+     * @see RubyCore#getDefaultOptions()
+     */
+    Map getOptions(boolean inheritRubyCoreOptions);
 
 }

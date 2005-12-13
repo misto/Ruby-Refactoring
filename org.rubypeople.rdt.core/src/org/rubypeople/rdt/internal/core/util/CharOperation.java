@@ -668,4 +668,68 @@ public class CharOperation {
 				return i;
 		return -1;
 	}
+
+    /**
+     * Answers true if the two arrays are identical character by character, otherwise false.
+     * The equality is case sensitive.
+     * <br>
+     * <br>
+     * For example:
+     * <ol>
+     * <li><pre>
+     *    first = null
+     *    second = null
+     *    result => true
+     * </pre>
+     * </li>
+     * <li><pre>
+     *    first = { { } }
+     *    second = null
+     *    result => false
+     * </pre>
+     * </li>
+     * <li><pre>
+     *    first = { { 'a' } }
+     *    second = { { 'a' } }
+     *    result => true
+     * </pre>
+     * </li>
+     * <li><pre>
+     *    first = { { 'A' } }
+     *    second = { { 'a' } }
+     *    result => false
+     * </pre>
+     * </li>
+     * </ol>
+     * @param first the first array
+     * @param second the second array
+     * @return true if the two arrays are identical character by character, otherwise false
+     */
+    public static final boolean equals(char[][] first, char[][] second) {
+        if (first == second)
+            return true;
+        if (first == null || second == null)
+            return false;
+        if (first.length != second.length)
+            return false;
+
+        for (int i = first.length; --i >= 0;)
+            if (!equals(first[i], second[i]))
+                return false;
+        return true;
+    }
+    
+    public static final boolean equals(String[] first, String[] second) {
+        if (first == second)
+            return true;
+        if (first == null || second == null)
+            return false;
+        if (first.length != second.length)
+            return false;
+
+        for (int i = first.length; --i >= 0;)
+            if (!first[i].equals(second[i]))
+                return false;
+        return true;
+    }
 }

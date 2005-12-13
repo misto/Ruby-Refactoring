@@ -217,7 +217,7 @@ public class RubyDocumentProvider extends TextFileDocumentProvider {
 			
 			try {
 				synchronized (info.fCopy) {
-					info.fCopy.reconcile(null, subMonitor);
+					info.fCopy.reconcile(false, null, subMonitor);
 				}
 			} catch (RubyModelException ex) {
 				// Ignore: save anyway

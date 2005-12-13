@@ -10,90 +10,109 @@
  *******************************************************************************/
 package org.rubypeople.rdt.internal.core;
 
-import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.OperationCanceledException;
 import org.rubypeople.rdt.core.IProblemRequestor;
 import org.rubypeople.rdt.core.IRubyElement;
+import org.rubypeople.rdt.core.IRubyModelStatus;
+import org.rubypeople.rdt.core.IRubyModelStatusConstants;
 import org.rubypeople.rdt.core.RubyModelException;
 import org.rubypeople.rdt.core.WorkingCopyOwner;
 
 /**
  * Reconcile a working copy and signal the changes through a delta.
  */
-public class ReconcileWorkingCopyOperation { // TODO extends RubyModelOperation
+public class ReconcileWorkingCopyOperation extends RubyModelOperation {
 
-	int astLevel;
-	boolean forceProblemDetection;
-	WorkingCopyOwner workingCopyOwner;
-	private IRubyElement workingCopy;
-	private IProgressMonitor progressMonitor;
+    public static boolean PERF = false;
+    boolean createAST;
+    boolean forceProblemDetection;
+    WorkingCopyOwner workingCopyOwner;
+    RubyScript ast;
 
-	public ReconcileWorkingCopyOperation(IRubyElement workingCopy, WorkingCopyOwner workingCopyOwner) {
-		this.workingCopy = workingCopy;
-		this.workingCopyOwner = workingCopyOwner;
-	}
-	
-	/**
-	 * Returns the working copy this operation is working on.
-	 */
-	protected RubyScript getWorkingCopy() {
-		return (RubyScript)workingCopy;
-	}
+    public ReconcileWorkingCopyOperation(IRubyElement workingCopy,
+            boolean forceProblemDetection, WorkingCopyOwner workingCopyOwner) {
+        super(new IRubyElement[] { workingCopy});
+        this.forceProblemDetection = forceProblemDetection;
+        this.workingCopyOwner = workingCopyOwner;
+    }
 
-	/**
-	 * @exception RubyModelException
-	 *                if setting the source of the original compilation unit
-	 *                fails
-	 */
-	protected void executeOperation() throws RubyModelException {
-		if (this.progressMonitor != null) {
-			if (this.progressMonitor.isCanceled()) throw new OperationCanceledException();
-			this.progressMonitor.beginTask(org.rubypeople.rdt.internal.core.util.Util.bind("element.reconciling"), 2); //$NON-NLS-1$
-		}
-		RubyScript workingCopy = getWorkingCopy();
-		boolean wasConsistent = workingCopy.isConsistent();
-		try {
-			if (!wasConsistent) {
-				// TODO create the delta builder (this remembers the current
-				// content
-				// of the cu)
-				// update the element infos with the content of the working copy
-				workingCopy.makeConsistent(this.progressMonitor);
-				// deltaBuilder.buildDeltas();
+    /**
+     * @exception RubyModelException
+     *                if setting the source of the original compilation unit
+     *                fails
+     */
+    protected void executeOperation() throws RubyModelException {
+        if (this.progressMonitor != null) {
+            if (this.progressMonitor.isCanceled()) throw new OperationCanceledException();
+            this.progressMonitor.beginTask(org.rubypeople.rdt.internal.core.util.Util
+                    .bind("element.reconciling"), 2); //$NON-NLS-1$
+        }
+        RubyScript workingCopy = getWorkingCopy();
+        boolean wasConsistent = workingCopy.isConsistent();
+        try {
+            if (!wasConsistent) {
+                // create the delta builder (this remembers the current content
+                // of the cu)
+                RubyElementDeltaBuilder deltaBuilder = new RubyElementDeltaBuilder(workingCopy);
 
-				if (progressMonitor != null) progressMonitor.worked(2);
+                workingCopy.makeConsistent(this.progressMonitor);
+                deltaBuilder.buildDeltas();
 
-				// TODO register the deltas
-				// if (deltaBuilder.delta != null) {
-				// addReconcileDelta(workingCopy, deltaBuilder.delta);
-				// }
-			} else {
-//				 force problem detection? - if structure was consistent
-				if (forceProblemDetection) {
-					IProblemRequestor problemRequestor = workingCopy.getPerWorkingCopyInfo();
-					if (problemRequestor != null && problemRequestor.isActive()) {
-						problemRequestor.beginReporting();
-						RubyScriptProblemFinder.process(workingCopy, workingCopy.getContents(), problemRequestor, progressMonitor);					
-						problemRequestor.endReporting();
-						if (progressMonitor != null) progressMonitor.worked(1);
-					}
-				}
-			}
-		} finally {
-			if (progressMonitor != null) progressMonitor.done();
-		}
-	}
+                if (progressMonitor != null) progressMonitor.worked(2);
 
-	protected void runOperation(IProgressMonitor progressMonitor) throws RubyModelException {
-		this.progressMonitor = progressMonitor;
-		executeOperation();
-	}
+                // register the deltas
+                RubyElementDelta delta = deltaBuilder.delta;
+                if (delta != null) {
+                    delta.changedAST(this.ast);
+                    addReconcileDelta(workingCopy, delta);
+                }
+            } else {
+                // force problem detection? - if structure was consistent
+                if (forceProblemDetection) {
+                    IProblemRequestor problemRequestor = workingCopy.getPerWorkingCopyInfo();
+                    boolean computeProblems = RubyProject.hasRubyNature(workingCopy
+                            .getRubyProject().getProject())
+                            && problemRequestor != null && problemRequestor.isActive();
+                    if (computeProblems) {
 
-	/**
-	 * @see RubyModelOperation#isReadOnly
-	 */
-	public boolean isReadOnly() {
-		return true;
-	}
+                        char[] contents = workingCopy.getContents();
+                        problemRequestor.beginReporting();
+                        RubyScriptProblemFinder.process(workingCopy, contents, problemRequestor,
+                                progressMonitor);
+                        problemRequestor.endReporting();
+                        if (progressMonitor != null) progressMonitor.worked(1);
+                        // TODO Create AST?
+                    }
+                }
+            }
+        } finally {
+            if (progressMonitor != null) progressMonitor.done();
+        }
+    }
+
+    /**
+     * Returns the working copy this operation is working on.
+     */
+    protected RubyScript getWorkingCopy() {
+        return (RubyScript) getElementToProcess();
+    }
+
+    /**
+     * @see RubyModelOperation#isReadOnly
+     */
+    public boolean isReadOnly() {
+        return true;
+    }
+
+    protected IRubyModelStatus verify() {
+        IRubyModelStatus status = super.verify();
+        if (!status.isOK()) { return status; }
+        RubyScript workingCopy = getWorkingCopy();
+        if (!workingCopy.isWorkingCopy()) { return new RubyModelStatus(
+                IRubyModelStatusConstants.ELEMENT_DOES_NOT_EXIST, workingCopy); // was
+        // destroyed
+        }
+        return status;
+    }
 
 }

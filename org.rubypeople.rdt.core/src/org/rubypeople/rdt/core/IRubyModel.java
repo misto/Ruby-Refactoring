@@ -10,7 +10,7 @@ import org.eclipse.core.resources.IWorkspace;
  * @author cawilliams
  * 
  */
-public interface IRubyModel extends IParent {
+public interface IRubyModel extends IParent, IRubyElement, IOpenable {
 
 	/**
 	 * Returns the Ruby project with the given name. This is a handle-only

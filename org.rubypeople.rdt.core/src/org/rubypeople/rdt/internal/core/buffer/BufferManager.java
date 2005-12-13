@@ -27,7 +27,7 @@ import org.rubypeople.rdt.internal.core.Openable;
 public class BufferManager {
 
 	protected static BufferManager DEFAULT_BUFFER_MANAGER;
-	protected static boolean VERBOSE;
+	public static boolean VERBOSE;
 
 	/**
 	 * LRU cache of buffers. The key and value for an entry

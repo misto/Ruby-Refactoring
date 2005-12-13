@@ -154,6 +154,19 @@ public class RubyScript extends Openable implements IRubyScript {
 		return RubyModelStatus.VERIFIED_OK;
 	}
 
+    /**
+     * @see IRubyScript#getElementAt(int)
+     */
+    public IRubyElement getElementAt(int position) throws RubyModelException {
+
+        IRubyElement e= getSourceElementAt(position);
+        if (e == this) {
+            return null;
+        } else {
+            return e;
+        }
+    }
+    
 	public String getElementName() {
 		return this.name;
 	}
@@ -233,7 +246,7 @@ public class RubyScript extends Openable implements IRubyScript {
 	 * @see org.rubypeople.rdt.core.IRubyScript#reconcile()
 	 */
 	public void reconcile() throws RubyModelException {
-		reconcile(null, null);
+		reconcile(false, null, null);
 	}
 
 	/*
@@ -241,12 +254,12 @@ public class RubyScript extends Openable implements IRubyScript {
 	 * 
 	 * @see org.rubypeople.rdt.core.IRubyScript#reconcile()
 	 */
-	public void reconcile(WorkingCopyOwner workingCopyOwner, IProgressMonitor monitor) throws RubyModelException {
+	public void reconcile(boolean forceProblemDetection, WorkingCopyOwner workingCopyOwner, IProgressMonitor monitor) throws RubyModelException {
 		if (!isWorkingCopy()) return; // Reconciling is not supported on non
 		// working copies
 		if (workingCopyOwner == null) workingCopyOwner = DefaultWorkingCopyOwner.PRIMARY;
 
-		ReconcileWorkingCopyOperation op = new ReconcileWorkingCopyOperation(this, workingCopyOwner);
+		ReconcileWorkingCopyOperation op = new ReconcileWorkingCopyOperation(this, forceProblemDetection, workingCopyOwner);
 		op.runOperation(monitor);
 	}
 
@@ -520,10 +533,26 @@ public class RubyScript extends Openable implements IRubyScript {
 	 * @see IOpenable#makeConsistent(IProgressMonitor)
 	 */
 	public void makeConsistent(IProgressMonitor monitor) throws RubyModelException {
-		if (isConsistent()) return;
-
-		openWhenClosed(createElementInfo(), monitor);
+		makeConsistent(false, monitor);
 	}
+    
+    public RubyScript makeConsistent(boolean createAST, IProgressMonitor monitor) throws RubyModelException {
+        if (isConsistent()) return null;
+            
+        // create a new info and make it the current info
+        // (this will remove the info and its children just before storing the new infos)
+       // TODO When createAST is specified, actually do it!
+//        if (createAST) {
+//            ASTHolderCUInfo info = new ASTHolderCUInfo();
+//            openWhenClosed(info, monitor);
+//            RubyScript result = info.ast;
+//            info.ast = null;
+//            return result;
+//        } else {
+            openWhenClosed(createElementInfo(), monitor);
+            return null;
+//        }
+    }
 
 	/*
 	 * @see IRubyScript#discardWorkingCopy
