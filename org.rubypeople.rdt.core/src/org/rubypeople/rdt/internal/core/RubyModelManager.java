@@ -33,7 +33,6 @@ import org.rubypeople.rdt.core.WorkingCopyOwner;
 import org.rubypeople.rdt.core.parser.IProblem;
 import org.rubypeople.rdt.internal.core.buffer.BufferManager;
 import org.rubypeople.rdt.internal.core.builder.RubyBuilder;
-import org.rubypeople.rdt.internal.formatter.DefaultCodeFormatter;
 
 /**
  * @author cawilliams
@@ -650,10 +649,6 @@ public class RubyModelManager {
             option = Platform.getDebugOption(POST_ACTION_DEBUG);
             if (option != null)
                 RubyModelOperation.POST_ACTION_VERBOSE = option.equalsIgnoreCase("true"); //$NON-NLS-1$
-
-            option = Platform.getDebugOption(ENABLE_NEW_FORMATTER);
-            if (option != null)
-                DefaultCodeFormatter.USE_NEW_FORMATTER = option.equalsIgnoreCase("true"); //$NON-NLS-1$
 
             // configure performance options
             if (PerformanceStats.ENABLED) {
