@@ -33,7 +33,6 @@ import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.editors.text.EditorsUI;
-import org.eclipse.ui.editors.text.TextEditorPreferenceConstants;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.eclipse.ui.progress.WorkbenchJob;
 import org.eclipse.ui.texteditor.ChainedPreferenceStore;
@@ -307,7 +306,6 @@ public class RubyPlugin extends AbstractUIPlugin implements IRubyColorConstants 
 
 		PreferenceConverter.setDefault(store, RUBY_CONTENT_ASSISTANT_BACKGROUND, new RGB(150, 150, 0));
 		PreferenceConstants.initializeDefaultValues(store);
-		TextEditorPreferenceConstants.initializeDefaultValues(store);
 	}
 
 	/**
