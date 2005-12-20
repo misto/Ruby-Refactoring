@@ -93,7 +93,7 @@
 	<!-- declares a content type for Ruby Source files -->
 	<content-type
        base-type="org.eclipse.core.runtime.text"
-       file-extensions="rb,rbw,cgi,fcgi"
+       file-extensions="rb,rbw,cgi,fcgi,rake"
        file-names="Rakefile,generate,profiler,console,destroy,benchmarker,breakpointer,runner,server,rails,tracker,update,listener,breakpointer_for_gem,switchtower,switchtower_for_gem"
        id="rubySource"
        name="%rubySourceName"
