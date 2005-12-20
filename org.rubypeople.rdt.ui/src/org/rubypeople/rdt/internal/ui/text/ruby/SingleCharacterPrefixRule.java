@@ -38,7 +38,7 @@ public class SingleCharacterPrefixRule implements IRule {
             // Now read until we hit EOF, EOL or whitespace
             while (true) {
                 c = scanner.read();
-                if (c == ICharacterScanner.EOF || Character.isWhitespace((char) c)) {
+                if (!isValidCharacter(c, length)) {
                     scanner.unread();
                     if (!lengthInRange(length)) return Token.UNDEFINED;
                     return fToken;
@@ -49,6 +49,19 @@ public class SingleCharacterPrefixRule implements IRule {
 
         scanner.unread();
         return Token.UNDEFINED;
+    }
+
+    /**
+     * Determine if the current character is valid for the rule. Return false if
+     * the character is not a part of the token. This is not applied to the
+     * single character prefix.
+     * 
+     * @param c
+     * @param index 
+     * @return
+     */
+    protected boolean isValidCharacter(int c, int index) {
+        return c != ICharacterScanner.EOF && !Character.isWhitespace((char) c);
     }
 
     /**
