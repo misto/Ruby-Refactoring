@@ -54,9 +54,6 @@ build, you can use this installation as build host. Otherwise get an eclipse pla
 file and extract it. Set the eclipseDir variable in the run script appropriately.
 
 
-
-
-
 4) Run the Script run.sh or run.
 
 First the map file will be fetched. This is configured via the getMapFiles target of
