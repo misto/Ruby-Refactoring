@@ -73,8 +73,10 @@ public class RubyTemplateAccess {
 			
 			// Load extension templates
 			TemplatePersistenceData[] tempData = getExtensionTemplateData();
-			for(int i = 0; i < tempData.length; i++) {
-				fStore.add(tempData[i]);
+			if(tempData != null) {
+				for(int i = 0; i < tempData.length; i++) {
+					fStore.add(tempData[i]);
+				}
 			}
 		}
 		return fStore;
