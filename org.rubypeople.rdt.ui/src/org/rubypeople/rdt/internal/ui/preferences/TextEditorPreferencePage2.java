@@ -19,15 +19,12 @@ import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.DialogPage;
 import org.eclipse.jface.dialogs.IMessageProvider;
 import org.eclipse.jface.preference.ColorFieldEditor;
-import org.eclipse.jface.preference.PreferenceConverter;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Point;
-import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
@@ -36,7 +33,6 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Link;
-import org.eclipse.swt.widgets.List;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.TabFolder;
 import org.eclipse.swt.widgets.TabItem;
@@ -46,7 +42,6 @@ import org.eclipse.ui.IWorkbenchPreferencePage;
 import org.eclipse.ui.dialogs.PreferencesUtil;
 import org.eclipse.ui.editors.text.ITextEditorHelpContextIds;
 import org.eclipse.ui.help.WorkbenchHelp;
-import org.eclipse.ui.texteditor.AbstractDecoratedTextEditorPreferenceConstants;
 import org.rubypeople.rdt.internal.ui.RubyPlugin;
 import org.rubypeople.rdt.internal.ui.RubyUIMessages;
 import org.rubypeople.rdt.internal.ui.text.IRubyColorConstants;
@@ -62,11 +57,6 @@ import org.rubypeople.rdt.ui.PreferenceConstants;
  */
 public class TextEditorPreferencePage2 extends RubyAbstractPreferencePage implements IWorkbenchPreferencePage {
 
-	private final String[][] fAppearanceColorListModel = new String[][] { { RubyUIMessages.getString("TextEditorPreferencePage.lineNumberForegroundColor"), AbstractDecoratedTextEditorPreferenceConstants.EDITOR_LINE_NUMBER_RULER_COLOR}, //$NON-NLS-1$
-			{ RubyUIMessages.getString("TextEditorPreferencePage.currentLineHighlighColor"), AbstractDecoratedTextEditorPreferenceConstants.EDITOR_CURRENT_LINE_COLOR}, //$NON-NLS-1$
-			{ RubyUIMessages.getString("TextEditorPreferencePage.printMarginColor"), AbstractDecoratedTextEditorPreferenceConstants.EDITOR_PRINT_MARGIN_COLOR}, //$NON-NLS-1$
-	};
-
 	protected TextPropertyWidget[] textPropertyWidgets;
 	protected Text indentationWidget;
 	protected final String[] colorProperties = {
@@ -79,8 +69,6 @@ public class TextEditorPreferencePage2 extends RubyAbstractPreferencePage implem
 			IRubyColorConstants.RUBY_CHARACTER,
             IRubyColorConstants.RUBY_SYMBOL,
 			IRubyColorConstants.RUBY_DEFAULT };
-
-	//private final String[][] fAnnotationColorListModel;
 
 	private ModifyListener fTextFieldListener = new ModifyListener() {
 
@@ -98,9 +86,6 @@ public class TextEditorPreferencePage2 extends RubyAbstractPreferencePage implem
 		}
 	};
 
-	private List fAppearanceColorList;
-	private ColorEditor fAppearanceColorEditor;
-
     private org.rubypeople.rdt.internal.ui.preferences.FoldingConfigurationBlock fFoldingConfigurationBlock;
 
 
@@ -114,23 +99,8 @@ public class TextEditorPreferencePage2 extends RubyAbstractPreferencePage implem
 
 		ArrayList overlayKeys = new ArrayList();
 
-		overlayKeys.add(new OverlayPreferenceStore.OverlayKey(OverlayPreferenceStore.STRING, AbstractDecoratedTextEditorPreferenceConstants.EDITOR_CURRENT_LINE_COLOR));
-		overlayKeys.add(new OverlayPreferenceStore.OverlayKey(OverlayPreferenceStore.BOOLEAN, AbstractDecoratedTextEditorPreferenceConstants.EDITOR_CURRENT_LINE));
-
-		overlayKeys.add(new OverlayPreferenceStore.OverlayKey(OverlayPreferenceStore.INT, AbstractDecoratedTextEditorPreferenceConstants.EDITOR_TAB_WIDTH));
-
 		overlayKeys.add(new OverlayPreferenceStore.OverlayKey(OverlayPreferenceStore.INT, PreferenceConstants.FORMAT_INDENTATION));
 		overlayKeys.add(new OverlayPreferenceStore.OverlayKey(OverlayPreferenceStore.BOOLEAN, PreferenceConstants.FORMAT_USE_TAB));
-
-		overlayKeys.add(new OverlayPreferenceStore.OverlayKey(OverlayPreferenceStore.STRING, AbstractDecoratedTextEditorPreferenceConstants.EDITOR_PRINT_MARGIN_COLOR));
-		overlayKeys.add(new OverlayPreferenceStore.OverlayKey(OverlayPreferenceStore.INT, AbstractDecoratedTextEditorPreferenceConstants.EDITOR_PRINT_MARGIN_COLUMN));
-
-		overlayKeys.add(new OverlayPreferenceStore.OverlayKey(OverlayPreferenceStore.BOOLEAN, AbstractDecoratedTextEditorPreferenceConstants.EDITOR_PRINT_MARGIN));
-
-		overlayKeys.add(new OverlayPreferenceStore.OverlayKey(OverlayPreferenceStore.BOOLEAN, AbstractDecoratedTextEditorPreferenceConstants.EDITOR_OVERVIEW_RULER));
-
-		overlayKeys.add(new OverlayPreferenceStore.OverlayKey(OverlayPreferenceStore.STRING, AbstractDecoratedTextEditorPreferenceConstants.EDITOR_LINE_NUMBER_RULER_COLOR));
-		overlayKeys.add(new OverlayPreferenceStore.OverlayKey(OverlayPreferenceStore.BOOLEAN, AbstractDecoratedTextEditorPreferenceConstants.EDITOR_LINE_NUMBER_RULER));
 
 		OverlayPreferenceStore.OverlayKey[] keys = new OverlayPreferenceStore.OverlayKey[overlayKeys.size()];
 		overlayKeys.toArray(keys);
@@ -150,13 +120,6 @@ public class TextEditorPreferencePage2 extends RubyAbstractPreferencePage implem
 		WorkbenchHelp.setHelp(getControl(), ITextEditorHelpContextIds.TEXT_EDITOR_PREFERENCE_PAGE);
 	}
 
-	private void handleAppearanceColorListSelection() {
-		int i = fAppearanceColorList.getSelectionIndex();
-		String key = fAppearanceColorListModel[i][1];
-		RGB rgb = PreferenceConverter.getColor(fOverlayStore, key);
-		fAppearanceColorEditor.setColorValue(rgb);
-	}
-
 	private Control createAppearancePage(Composite parent) {
 
 		Composite appearanceComposite = new Composite(parent, SWT.NONE);
@@ -164,95 +127,6 @@ public class TextEditorPreferencePage2 extends RubyAbstractPreferencePage implem
 		layout.numColumns = 2;
 		appearanceComposite.setLayout(layout);
 
-		String label = RubyUIMessages.getString("TextEditorPreferencePage.displayedTabWidth"); //$NON-NLS-1$
-		addTextField(appearanceComposite, label, AbstractDecoratedTextEditorPreferenceConstants.EDITOR_TAB_WIDTH, 3, 0, true);
-
-		label = RubyUIMessages.getString("TextEditorPreferencePage.printMarginColumn"); //$NON-NLS-1$
-		addTextField(appearanceComposite, label, AbstractDecoratedTextEditorPreferenceConstants.EDITOR_PRINT_MARGIN_COLUMN, 3, 0, true);
-
-		label = RubyUIMessages.getString("TextEditorPreferencePage.showOverviewRuler"); //$NON-NLS-1$
-		addCheckBox(appearanceComposite, label, AbstractDecoratedTextEditorPreferenceConstants.EDITOR_OVERVIEW_RULER, 0);
-
-		label = RubyUIMessages.getString("TextEditorPreferencePage.showLineNumbers"); //$NON-NLS-1$
-		addCheckBox(appearanceComposite, label, AbstractDecoratedTextEditorPreferenceConstants.EDITOR_LINE_NUMBER_RULER, 0);
-
-		label = RubyUIMessages.getString("TextEditorPreferencePage.highlightCurrentLine"); //$NON-NLS-1$
-		addCheckBox(appearanceComposite, label, AbstractDecoratedTextEditorPreferenceConstants.EDITOR_CURRENT_LINE, 0);
-
-		label = RubyUIMessages.getString("TextEditorPreferencePage.showPrintMargin"); //$NON-NLS-1$
-		addCheckBox(appearanceComposite, label, AbstractDecoratedTextEditorPreferenceConstants.EDITOR_PRINT_MARGIN, 0);
-
-		Label l = new Label(appearanceComposite, SWT.LEFT);
-		GridData gd = new GridData(GridData.HORIZONTAL_ALIGN_FILL);
-		gd.horizontalSpan = 2;
-		gd.heightHint = convertHeightInCharsToPixels(1) / 2;
-		l.setLayoutData(gd);
-
-		l = new Label(appearanceComposite, SWT.LEFT);
-		l.setText(RubyUIMessages.getString("TextEditorPreferencePage.appearanceOptions")); //$NON-NLS-1$
-		gd = new GridData(GridData.HORIZONTAL_ALIGN_FILL);
-		gd.horizontalSpan = 2;
-		l.setLayoutData(gd);
-
-		Composite editorComposite = new Composite(appearanceComposite, SWT.NONE);
-		layout = new GridLayout();
-		layout.numColumns = 2;
-		layout.marginHeight = 0;
-		layout.marginWidth = 0;
-		editorComposite.setLayout(layout);
-		gd = new GridData(GridData.HORIZONTAL_ALIGN_FILL | GridData.FILL_VERTICAL);
-		gd.horizontalSpan = 2;
-		editorComposite.setLayoutData(gd);
-
-		fAppearanceColorList = new List(editorComposite, SWT.SINGLE | SWT.V_SCROLL | SWT.BORDER);
-		gd = new GridData(GridData.VERTICAL_ALIGN_BEGINNING | GridData.FILL_HORIZONTAL);
-		gd.heightHint = convertHeightInCharsToPixels(3);
-		fAppearanceColorList.setLayoutData(gd);
-
-		Composite stylesComposite = new Composite(editorComposite, SWT.NONE);
-		layout = new GridLayout();
-		layout.marginHeight = 0;
-		layout.marginWidth = 0;
-		layout.numColumns = 2;
-		stylesComposite.setLayout(layout);
-		stylesComposite.setLayoutData(new GridData(GridData.FILL_BOTH));
-
-		l = new Label(stylesComposite, SWT.LEFT);
-		l.setText(RubyUIMessages.getString("TextEditorPreferencePage.color")); //$NON-NLS-1$
-		gd = new GridData();
-		gd.horizontalAlignment = GridData.BEGINNING;
-		l.setLayoutData(gd);
-
-		fAppearanceColorEditor = new ColorEditor(stylesComposite);
-		Button foregroundColorButton = fAppearanceColorEditor.getButton();
-		gd = new GridData(GridData.FILL_HORIZONTAL);
-		gd.horizontalAlignment = GridData.BEGINNING;
-		foregroundColorButton.setLayoutData(gd);
-
-		fAppearanceColorList.addSelectionListener(new SelectionListener() {
-
-			public void widgetDefaultSelected(SelectionEvent e) {
-			// do nothing
-			}
-
-			public void widgetSelected(SelectionEvent e) {
-				handleAppearanceColorListSelection();
-			}
-		});
-		foregroundColorButton.addSelectionListener(new SelectionListener() {
-
-			public void widgetDefaultSelected(SelectionEvent e) {
-			// do nothing
-			}
-
-			public void widgetSelected(SelectionEvent e) {
-				int i = fAppearanceColorList.getSelectionIndex();
-				String key = fAppearanceColorListModel[i][1];
-
-				PreferenceConverter.setValue(fOverlayStore, key, fAppearanceColorEditor.getColorValue());
-			}
-		});
-		
 		final Shell shell= appearanceComposite.getShell();
 		String text= PreferencesMessages.getString("RubyEditorPreferencePage.link");
 		Link link= new Link(appearanceComposite, SWT.NONE);
@@ -387,18 +261,6 @@ public class TextEditorPreferencePage2 extends RubyAbstractPreferencePage implem
 	private void initialize() {
 
 		initializeFields();
-
-		for (int i = 0; i < fAppearanceColorListModel.length; i++)
-			fAppearanceColorList.add(fAppearanceColorListModel[i][0]);
-		fAppearanceColorList.getDisplay().asyncExec(new Runnable() {
-
-			public void run() {
-				if (fAppearanceColorList != null && !fAppearanceColorList.isDisposed()) {
-					fAppearanceColorList.select(0);
-					handleAppearanceColorListSelection();
-				}
-			}
-		});
 	
 		fFoldingConfigurationBlock.initialize();
 	}
@@ -432,7 +294,6 @@ public class TextEditorPreferencePage2 extends RubyAbstractPreferencePage implem
 			textPropertyWidgets[i].loadDefault();
 		}
 
-		handleAppearanceColorListSelection();
 		fFoldingConfigurationBlock.performDefaults();
 
 		super.performDefaults();
