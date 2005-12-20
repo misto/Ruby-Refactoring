@@ -69,7 +69,7 @@ public class FTC_DebuggerLaunch extends TestCase {
 		wc.setAttribute(RubyLaunchConfigurationAttribute.PROJECT_NAME, rubyFile.getProject().getName());
 		wc.setAttribute(RubyLaunchConfigurationAttribute.FILE_NAME, rubyFile.getProjectRelativePath().toString());
 		//wc.setAttribute(RubyLaunchConfigurationAttribute.WORKING_DIRECTORY, RubyApplicationShortcut.getDefaultWorkingDirectory(rubyFile.getProject()));
-		wc.setAttribute(RubyLaunchConfigurationAttribute.SELECTED_INTERPRETER, RubyRuntime.getDefault().getSelectedInterpreter().getName());
+		wc.setAttribute(RubyLaunchConfigurationAttribute.SELECTED_INTERPRETER, "RubyInterpreter");
 		ILaunchConfiguration lc = wc.doSave() ;
 		
 		DebugPlugin.getDefault().getBreakpointManager().addBreakpoint(new RubyLineBreakpoint(rubyFile, 1)) ;
