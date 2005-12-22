@@ -1,0 +1,86 @@
+<!-- Delegating build script, used by cruisecontrol to build MY_PROJECT_1.
+       Note that the basedir is set to the checked out project -->
+<project name="build-RDT" default="build">
+	<!--
+	basedir="/home/markus/java/cruiseControlWorkingArea/checkout/RDT"> -->
+	<target name="propertiesCCBuild">		
+		<property file="build-RDT.properties" />
+	</target>
+	
+	<target name="clean">
+		<echo message="Cleaning directory ${buildDirectory}"/>
+		<delete dir="${buildDirectory}"/>
+		<mkdir dir="${buildDirectory}"/>
+	</target>
+	
+	<target name="featureVersion">
+		<!-- use the label provided from the EclipseLableProvider -->
+		<!-- <echo message="Using feature version ${label}"/> -->
+		<echo file="${buildDirectory}/version.properties" message="featureVersion=${label}"/>
+	</target>
+	
+	<target name="build">
+
+		<java classname="org.eclipse.core.launcher.Main" fork="true" failonerror="true" jvmargs="${extraArgs}">
+			<arg value="-ws" />
+			<arg value="${ws}" />
+			<arg value="-os" />
+			<arg value="${os}" />
+			<arg value="-application" />
+			<arg value="org.eclipse.ant.core.antRunner" />
+			<arg value="-buildfile" />
+			<arg value="${buildfile}" />
+			<arg value="${buildTarget}" />
+			<arg value="-data" />
+			<arg value="${buildDirectory}/workspace" />
+			<arg value="${verboseAnt}" />
+			<jvmarg value="${usePserver}" />
+			<jvmarg value="${dontRunTests}" />
+			<jvmarg value="-Dbasews=${ws}" />
+			<jvmarg value="-Dbaseos=${os}" />
+			<jvmarg value="-Dbasearch=${arch}" />
+			<jvmarg value="-Dbuilder=${builderDirectory}" />
+			<jvmarg value="${testNoclean}"/>
+			<jvmarg value="-DjavacFailOnError=true"/>
+			<jvmarg value="-DbuildDirectory=${buildDirectory}"/>
+			<jvmarg value="-DbaseLocation=${eclipseDir}"/>
+			<jvmarg value="-DeclipseAutomatedTestHome=${eclipseAutomatedTestHome}"/>
+			<jvmarg value="-Drdt.rubyInterpreter=${rubyInterpreter}" />
+			<jvmarg value="-Drdt-tests-workspace=${buildDirectory}/workspace-rdt-tests" />
+			<jvmarg value="-Ddocbook.root=${docbookRoot}" />
+			<!--<jvmarg value="${extraArgs}"/>-->
+			<classpath>
+				<pathelement location="${eclipseDir}/startup.jar" />
+			</classpath>
+		</java>
+	</target>
+	
+
+	<target name="dist" depends="propertiesCCBuild,clean,featureVersion,build">
+	</target>
+	
+	<target name="0.7.0.RC1">
+		<property name="cvsLabel" value="R2005-12-22_0-7-0_RC1"/>
+		<property name="label" value="0.7.0.512222200RC1"/>
+		<antcall target="integration"/>
+	</target>
+
+	<target name="integration">
+		<!-- the only difference to a nightly build is the buildType which leads to setting a differnt
+		updateSiteUrl in feature.xml -->
+		<property name="buildDirectory" value="/tmp/rdt-I"/>
+		<!-- properties which should override the values of org.rubypeople.rdt/bootstrap/build.properties must be
+		specified via -D arguments for the call to eclipseRunner -->
+		<property name="extraArgs" value="-DbuildType='I' -DfetchTag=${cvsLabel}"/>
+		<property file="build-RDT.properties" />
+		<antcall target="clean"/>
+		<antcall target="featureVersion"/>		
+		<antcall target="build"/>
+	</target>
+		
+	<target name="deploy">
+		<scp todir="mbarchfe:${deployTargetPassword}@shell.sf.net:/home/bma/">
+			<fileset dir="${buildDirectory}/dist"/>
+		</scp>
+	</target>
+</project>

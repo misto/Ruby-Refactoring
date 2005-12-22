@@ -1,0 +1,47 @@
+<cruisecontrol>
+	<plugin name="labelincrementer" prefix="0.5"/>
+	<project name="RDT" buildafterfailed="true">
+		<plugin name="labelincrementer" classname="org.rubypeople.rdt.cruisecontrol.plugin.EclipsePluginLabelProvider"/>
+
+		<!-- Defines where cruise looks for changes, to decide whether to run the build --> 
+		<modificationset quietperiod="10"> 
+			<cvs cvsroot=":ext:mbarchfe@cvs.sf.net:/cvsroot/rubyeclipse" module="rdt-all"/> 
+      	</modificationset>
+
+		<!-- Configures the actual build loop, how often and which build file/target --> 
+		<schedule interval="60"> 
+            <ant antscript="/home/bma/apache-ant-1.6.5/bin/ant"
+               buildfile="build-RDT.xml"
+               target="dist"
+               uselogger="true"
+               usedebug="false"/> 
+		</schedule>
+
+		<log dir="logs/RDT">
+			<merge dir="/home/bma/rdt/eclipse-testing/results/xml"/>
+		</log>
+
+		<!-- more recent versions of CC should use the listener below, instead of 	the currentbuildstatusbootstrapper, currentbuildstatuspublisher combination.  NOTE: Must match filename in CC reporting/jsp - override.properties: user.build.status.file -->
+		<listeners>
+			<currentbuildstatuslistener file="logs/RDT/buildstatus.txt"/>		
+		</listeners>
+
+		<!-- Publishers are run *after* a build completes -->
+		<publishers> 
+			<onsuccess>		    
+    			<artifactspublisher 
+    				dir="checkout/RDT/dist"
+    				dest="artifacts/RDT"/>
+				<execute command="/home/bma/dispatchRdtBuildResultsNightly.sh"/>
+			</onsuccess>    
+			<email 
+				mailhost="mail.sf.net" 
+				returnaddress="mbarchfe@users.sf.net" 
+	   			buildresultsurl="http://213.239.199.113:8080/cruisecontrol/buildresults/RDT" 
+	   			skipusers="false" 
+	   			spamwhilebroken="false">
+				<always address="rubyeclipse-build@lists.sourceforge.net"/>
+			</email>    
+		</publishers> 
+	</project> 
+</cruisecontrol>
