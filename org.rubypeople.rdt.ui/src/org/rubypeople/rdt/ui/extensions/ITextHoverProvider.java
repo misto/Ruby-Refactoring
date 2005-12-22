@@ -11,5 +11,11 @@ import org.eclipse.jface.text.ITextViewer;
  *
  */
 public interface ITextHoverProvider {
+	/**
+	 * 
+	 * @param textViewer the ITextViewer that shows this hover
+	 * @param hoverRegion the region that was preselected by the Ruby Hover system
+	 * @return the hover text OR null if no text was found 
+	 */
 	public String getHoverInfo(ITextViewer textViewer, IRegion hoverRegion);	
 }

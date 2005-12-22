@@ -24,6 +24,11 @@ public class RiDocHoverProvider implements ITextHoverProvider {
     	IPath riPath = new Path( RubyPlugin.getDefault().getPreferenceStore().getString( PreferenceConstants.RI_PATH ) );
     	List args = new ArrayList();
     	args.add(0, riPath.toString());
+    	// these will get rid of some of the overhead formatting
+    	args.add("-f");
+    	args.add("simple");
+    	args.add("--no-pager");
+    	
     	BufferedReader br = null; 
     	try {
 			String symbol = textViewer.getDocument().get(hoverRegion.getOffset(), hoverRegion.getLength());
@@ -33,9 +38,9 @@ public class RiDocHoverProvider implements ITextHoverProvider {
             Process p = selectedInterpreter.exec(args, null);
 			br = new BufferedReader(new InputStreamReader(p.getInputStream()));
 			// TODO: format the documentation that was fetched from RI 
-			// for now: read the first 3 lines (at most) and show them
+			// for now: read the first 15 lines so 
 			StringBuffer buf = new StringBuffer();
-			for(int i = 0; i < 3; i++){
+			for(int i = 0; i < 15; i++){
 				String line = br.readLine();
 				if(line != null){
 					buf.append(line);
@@ -46,7 +51,7 @@ public class RiDocHoverProvider implements ITextHoverProvider {
 			}
 			// If ambiguous, return nothing
 			if (buf.indexOf("More than one method matched your request") > -1) return null;
-			return "RI: " + buf.toString();			
+			return "" + buf.toString();			
     	} catch (BadLocationException e) {
     		RubyPlugin.log(e);
 		} catch (CoreException e) {
