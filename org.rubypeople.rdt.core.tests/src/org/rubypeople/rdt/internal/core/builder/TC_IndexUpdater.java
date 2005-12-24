@@ -117,7 +117,7 @@ public class TC_IndexUpdater extends TestCase {
         
         updater.update(file,node, false);
                 
-        symbolIndex.assertAdded(new MethodSymbol("method"), file, createPosition(0, 1, 0, 14));
+        symbolIndex.assertAdded(new MethodSymbol("method"), file, createPosition(0, 0, 4, 10));
     }
 
     public void testMethodWithNesting() throws Exception {
@@ -125,7 +125,7 @@ public class TC_IndexUpdater extends TestCase {
         
         updater.update(file,node, false);
                 
-        symbolIndex.assertAdded(new MethodSymbol("Foo::method"), file, createPosition(1, 2, 10, 24));
+        symbolIndex.assertAdded(new MethodSymbol("Foo::method"), file, createPosition(1, 1, 14, 20));
     }
     
     

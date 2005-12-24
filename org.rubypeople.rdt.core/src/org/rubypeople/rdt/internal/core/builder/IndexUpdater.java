@@ -59,8 +59,8 @@ public class IndexUpdater {
 
         if (node instanceof DefnNode) {
         	DefnNode defnNode = (DefnNode) node ;
-        	String qualifiedName = this.getContext() + ((DefnNode) node).getName() ; 
-        	index.add(new MethodSymbol(qualifiedName), file, defnNode.getPosition()) ;
+        	String qualifiedName = this.getContext() + defnNode .getName() ;
+        	index.add(new MethodSymbol(qualifiedName), file, defnNode.getNameNode().getPosition()) ;
         }
 
         
