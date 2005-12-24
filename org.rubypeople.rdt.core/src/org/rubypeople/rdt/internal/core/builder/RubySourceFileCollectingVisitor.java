@@ -18,6 +18,7 @@ import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IResourceProxy;
 import org.eclipse.core.resources.IResourceProxyVisitor;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.content.IContentDescription;
 import org.eclipse.core.runtime.content.IContentType;
 
 public final class RubySourceFileCollectingVisitor implements IResourceProxyVisitor {
@@ -36,13 +37,18 @@ public final class RubySourceFileCollectingVisitor implements IResourceProxyVisi
             if (org.rubypeople.rdt.internal.core.util.Util.isRubyLikeFileName(proxy.getName())) {
                 if (resource == null) resource = proxy.requestResource();
                 files.add(resource);
+                return false;
             }
             // Check for Ruby Source content type
             resource = proxy.requestResource();
             IFile file = (IFile) resource;
-            IContentType type = file.getContentDescription().getContentType();
-            if (type == null) return false;
-            if (type.getId().equals(RUBY_SOURCE_CONTENT_TYPE_ID)) files.add(resource);
+            IContentDescription contentDescription = file.getContentDescription();
+            if (contentDescription != null) {
+                IContentType type = contentDescription.getContentType();
+                if (type != null)
+                    if (type.getId().equals(RUBY_SOURCE_CONTENT_TYPE_ID)) 
+                        files.add(resource);
+            }
             return false;
         }
         return true;

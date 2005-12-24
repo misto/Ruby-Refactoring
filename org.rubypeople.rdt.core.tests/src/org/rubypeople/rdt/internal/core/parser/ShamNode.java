@@ -14,6 +14,7 @@ import java.util.List;
 
 import org.jruby.ast.Node;
 import org.jruby.ast.visitor.NodeVisitor;
+import org.jruby.evaluator.Instruction;
 
 public class ShamNode extends Node {
 
@@ -21,7 +22,8 @@ public class ShamNode extends Node {
         super(null);
     }
 
-    public void accept(NodeVisitor visitor) {
+    public Instruction accept(NodeVisitor visitor) {
+        return null;
     }
 
     public List childNodes() {

@@ -151,7 +151,8 @@ public class FailureTab extends TestRunTab implements IMenuListener {
 			String className = getClassName();
 			String methodName = getMethodName();
 			if (className != null) {
-                manager.add(OpenSymbolAction.forClass(className, getSymbolFinder(), getShell()));
+                System.err.println("MethodName: " + methodName); 
+                manager.add(OpenSymbolAction.forMethod(className, methodName, getSymbolFinder(), getShell()));
 				manager.add(new Separator());
 				manager.add(new RerunAction(fRunnerViewPart, getSelectedTestId(), 
                         className, methodName, ILaunchManager.RUN_MODE));
@@ -275,7 +276,7 @@ public class FailureTab extends TestRunTab implements IMenuListener {
 
 	void handleDoubleClick(MouseEvent e) {
         if (fTable.getSelectionCount() > 0) 
-	        OpenSymbolAction.forClass(getClassName(), getSymbolFinder(), getShell()).run();
+	        OpenSymbolAction.forMethod(getClassName(), getMethodName(), getSymbolFinder(), getShell()).run();
 	}
 
     private Shell getShell() {

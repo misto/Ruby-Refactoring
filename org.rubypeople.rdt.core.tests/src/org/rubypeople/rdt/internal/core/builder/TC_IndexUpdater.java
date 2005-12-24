@@ -19,14 +19,15 @@ import org.jruby.ast.ClassNode;
 import org.jruby.ast.Colon2Node;
 import org.jruby.ast.Node;
 import org.jruby.ast.TrueNode;
+import org.jruby.lexer.yacc.ISourcePosition;
+import org.jruby.lexer.yacc.SourcePosition;
 import org.rubypeople.eclipse.shams.resources.ShamFile;
-import org.rubypeople.rdt.internal.core.parser.RdtPosition;
 import org.rubypeople.rdt.internal.core.parser.RubyParser;
 import org.rubypeople.rdt.internal.core.symbols.ClassSymbol;
 import org.rubypeople.rdt.internal.core.symbols.MethodSymbol;
 
 public class TC_IndexUpdater extends TestCase {
-    private static final RdtPosition POSITION_1 = new RdtPosition(1,2,3);
+    private static final ISourcePosition POSITION_1 = createPosition(1,1,2,3);
 
     private static final String TEST_CLASS_NAME = "TestClassName";
     
@@ -72,7 +73,7 @@ public class TC_IndexUpdater extends TestCase {
         updater.update(file,node, false);
         
         symbolIndex.assertFlushed(file);
-        symbolIndex.assertAdded(new ClassSymbol("Foo"), file, new RdtPosition(1, 2, 14, 15));
+        symbolIndex.assertAdded(new ClassSymbol("Foo"), file, createPosition(1, 1, 11, 14));
     }
 
     public void testTreeWithScopedClass() throws Exception {
@@ -81,7 +82,7 @@ public class TC_IndexUpdater extends TestCase {
         updater.update(file,node, false);
         
         symbolIndex.assertFlushed(file);
-        symbolIndex.assertAdded(new ClassSymbol("Foo::Bar"), file, new RdtPosition(1, 2, 16, 20));
+        symbolIndex.assertAdded(new ClassSymbol("Foo::Bar"), file, createPosition(1, 1, 11, 19));
     }
 
     public void testTreeWithDeeplyScopedClass() throws Exception {
@@ -90,7 +91,7 @@ public class TC_IndexUpdater extends TestCase {
         updater.update(file,node, false);
         
         symbolIndex.assertFlushed(file);
-        symbolIndex.assertAdded(new ClassSymbol("X::Foo::Bar"), file, new RdtPosition(1, 2, 19, 23));
+        symbolIndex.assertAdded(new ClassSymbol("X::Foo::Bar"), file, createPosition(1, 1, 11, 21));
     }
 
     public void testTreeWithNesting() throws Exception {
@@ -99,7 +100,7 @@ public class TC_IndexUpdater extends TestCase {
         updater.update(file,node, false);
         
         symbolIndex.assertFlushed(file);
-        symbolIndex.assertAdded(new ClassSymbol("Foo::Bar"), file, new RdtPosition(2, 3, 25, 26));
+        symbolIndex.assertAdded(new ClassSymbol("Foo::Bar"), file, createPosition(2, 2, 22, 25));
     }
     
     public void testTreeWithMoreNesting() throws Exception {
@@ -108,7 +109,7 @@ public class TC_IndexUpdater extends TestCase {
         updater.update(file,node, false);
         
         symbolIndex.assertFlushed(file);
-        symbolIndex.assertAdded(new ClassSymbol("Foo::Bar::InnerBar"), file, new RdtPosition(2, 3, 35, 36));
+        symbolIndex.assertAdded(new ClassSymbol("Foo::Bar::InnerBar"), file, createPosition(2, 2, 27, 35));
     }
     
     public void testMethod() throws Exception {
@@ -116,7 +117,7 @@ public class TC_IndexUpdater extends TestCase {
         
         updater.update(file,node, false);
                 
-        symbolIndex.assertAdded(new MethodSymbol("method"), file, new RdtPosition(0, 1, 3, 12));
+        symbolIndex.assertAdded(new MethodSymbol("method"), file, createPosition(0, 1, 0, 14));
     }
 
     public void testMethodWithNesting() throws Exception {
@@ -124,7 +125,7 @@ public class TC_IndexUpdater extends TestCase {
         
         updater.update(file,node, false);
                 
-        symbolIndex.assertAdded(new MethodSymbol("Foo::method"), file, new RdtPosition(1, 2, 13, 24));
+        symbolIndex.assertAdded(new MethodSymbol("Foo::method"), file, createPosition(1, 2, 10, 24));
     }
     
     
@@ -133,4 +134,10 @@ public class TC_IndexUpdater extends TestCase {
         InputStreamReader reader = new InputStreamReader(file.getContents());
         return new RubyParser().parse(file, reader);
     }
+    
+    private static ISourcePosition createPosition(int startLine, int endLine, int startOffset, int endOffset) {
+        return new SourcePosition("TestFile.rb", startLine, endLine, startOffset, endOffset);
+    }
+
+
 }

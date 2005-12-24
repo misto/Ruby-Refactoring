@@ -24,6 +24,7 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.QualifiedName;
 import org.eclipse.core.runtime.content.IContentDescription;
+import org.eclipse.core.runtime.content.IContentType;
 
 public class ShamFile extends ShamResource implements IFile {
 
@@ -318,8 +319,7 @@ public class ShamFile extends ShamResource implements IFile {
 	 * @see org.eclipse.core.resources.IFile#getContentDescription()
 	 */
 	public IContentDescription getContentDescription() throws CoreException {
-		// TODO Auto-generated method stub
-		return null;
+		return new ShamContentDescription();
 	}
 
 	public String getCharsetFor(Reader reader) throws CoreException {
@@ -344,6 +344,33 @@ public class ShamFile extends ShamResource implements IFile {
 
     public void setProject(IProject project) {
         this.project = project;
+    }
+
+    private final class ShamContentDescription implements IContentDescription {
+        public boolean isRequested(QualifiedName key) {
+            // TODO Auto-generated method stub
+            return false;
+        }
+
+        public String getCharset() {
+            // TODO Auto-generated method stub
+            return null;
+        }
+
+        public IContentType getContentType() {
+            // TODO Auto-generated method stub
+            return null;
+        }
+
+        public Object getProperty(QualifiedName key) {
+            // TODO Auto-generated method stub
+            return null;
+        }
+
+        public void setProperty(QualifiedName key, Object value) {
+            // TODO Auto-generated method stub
+            
+        }
     }
 
     private class MonitoredInputStream extends InputStream {

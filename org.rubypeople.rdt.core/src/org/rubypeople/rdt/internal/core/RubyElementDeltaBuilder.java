@@ -20,7 +20,6 @@ import org.rubypeople.rdt.core.IRubyElement;
 import org.rubypeople.rdt.core.IRubyElementDelta;
 import org.rubypeople.rdt.core.RubyModelException;
 import org.rubypeople.rdt.internal.core.util.CharOperation;
-import org.rubypeople.rdt.internal.core.util.Util;
 
 /**
  * A java element delta biulder creates a java element delta on a java element
@@ -136,16 +135,6 @@ public class RubyElementDeltaBuilder {
             // content changed
             this.delta.contentChanged();
         }
-    }
-
-    private boolean equals(char[][][] first, char[][][] second) {
-        if (first == second) return true;
-        if (first == null || second == null) return false;
-        if (first.length != second.length) return false;
-
-        for (int i = first.length; --i >= 0;)
-            if (!CharOperation.equals(first[i], second[i])) return false;
-        return true;
     }
 
     /**

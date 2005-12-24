@@ -17,6 +17,7 @@ import junit.framework.TestCase;
 
 import org.jruby.ast.Node;
 import org.jruby.ast.visitor.NodeVisitor;
+import org.jruby.evaluator.Instruction;
 import org.jruby.lexer.yacc.SyntaxException;
 import org.rubypeople.eclipse.shams.resources.ShamFile;
 
@@ -36,7 +37,8 @@ public class TC_RubyCodeAnalyzer extends TestCase {
         file.setContents(FILE_CONTENTS);
         
         rootNode = new Node(null) {
-            public void accept(NodeVisitor visitor) {
+            public Instruction accept(NodeVisitor visitor) {
+                return null;
             }
 
             public List childNodes() {

@@ -53,7 +53,7 @@ public class RubyParser {
         	parser = getDefaultRubyParser();
         	parser.setWarnings(warnings);
         	parser.init(new RubyParserConfiguration());
-        	LexerSource lexerSource = new LexerSource(file.getName(), content, new RdtPositionFactory());
+        	LexerSource lexerSource = new LexerSource(file.getName(), content);
         	result = parser.parse(lexerSource);
         } catch (SyntaxException e) {
         	throw e;

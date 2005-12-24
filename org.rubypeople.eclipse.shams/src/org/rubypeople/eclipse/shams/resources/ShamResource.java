@@ -10,7 +10,6 @@
  */
 package org.rubypeople.eclipse.shams.resources;
 
-import java.io.File;
 import java.net.URI;
 
 import org.eclipse.core.resources.IContainer;
