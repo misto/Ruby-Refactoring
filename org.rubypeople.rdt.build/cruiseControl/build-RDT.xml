@@ -61,14 +61,14 @@
 	
 	<target name="0.7.0.RC1">
 		<property name="cvsLabel" value="R2005-12-22_0-7-0_RC1"/>
-		<property name="label" value="0.7.0.512222200RC1"/>
+		<property name="label" value="0.7.0.512282200RC1"/>
 		<antcall target="integration"/>
 	</target>
 
 	<target name="integration">
 		<!-- the only difference to a nightly build is the buildType which leads to setting a differnt
 		updateSiteUrl in feature.xml -->
-		<property name="buildDirectory" value="/tmp/rdt-I"/>
+		<property name="buildDirectory" value="/tmp/rdt-${label}"/>
 		<!-- properties which should override the values of org.rubypeople.rdt/bootstrap/build.properties must be
 		specified via -D arguments for the call to eclipseRunner -->
 		<property name="extraArgs" value="-DbuildType='I' -DfetchTag=${cvsLabel}"/>
@@ -78,9 +78,59 @@
 		<antcall target="build"/>
 	</target>
 		
-	<target name="deploy">
-		<scp todir="mbarchfe:${deployTargetPassword}@shell.sf.net:/home/bma/">
-			<fileset dir="${buildDirectory}/dist"/>
+	<target name="updateSiteXml" if="label">
+		<property name="siteXmlFile" value="site.xml"/>
+		<property name="placeHolder" value="&lt;!--AddNewFeatureElementHere--&gt;"/>
+		<property name="featureUrl" value="features/org.rubypeople.rdt_${label}.jar"/>
+		<!-- replacevalue nested element does not support variable replacement. Therefore a two step approach:
+			1. add a feature element
+			2. add newline -->
+		<echo message="Adding feature version ${label} to ${siteXmlFile}"/>
+		<replace file="${siteXmlFile}" token="${placeHolder}" value="&lt;feature url=&quot;${featureUrl}&quot; id=&quot;org.rubypeople.rdt&quot; version=&quot;${label}&quot;&gt; &lt;category name=&quot;RubyEclipseIntegrationBuilds&quot;/&gt; &lt;/feature&gt; ${placeHolder}"/>
+		<replace file="${siteXmlFile}" token="${placeHolder}">
+			<replacevalue>
+	&lt;!--AddNewFeatureElementHere--&gt;</replacevalue>
+		</replace>
+	</target>
+
+	<target name="deploy" if="label">
+		<!-- This target is used for manually deploying integration and release builds
+		Nightly builds are deployed using cruise controls config.xml file -->
+		<property name="downloadUser" value="rubypeople"/>
+		<property name="downloadHost" value="download.rubypeople.org"/>
+		<property name="buildTypeDirectory" value="integration"/>
+		<property name="downloadDirectory" value="~/subdomains/download/httpdocs/${buildTypeDirectory}/${label}"/>
+		<property name="updateSiteDirectory" value="~/subdomains/updatesite/httpdocs/${buildTypeDirectory}"/>
+		<property name="buildDirectory" value="/tmp/rdt-${label}/dist"/>
+		<echo message="Copying ${buildDirectory} to ${downloadUser}@${downloadHost}:${downloadDirectory}"/>
+		<sshexec host="${downloadHost}"
+			username="${downloadUser}"
+			keyfile="${user.home}/.ssh/id_download"
+			command="mkdir --parents ${downloadDirectory}"/>
+		<scp todir="${downloadUser}:usekeyinsteadofpw@${downloadHost}:${downloadDirectory}"
+			keyfile="${user.home}/.ssh/id_download"
+			passphrase="">
+			<fileset dir="${buildDirectory}"/>
 		</scp>
+		<echo message="Copying files to updatesite: ${downloadUser}@${downloadHost}:${downloadDirectory}"/>
+		<property name="updateSiteScpUrl" value="${downloadUser}@${downloadHost}:${updateSiteDirectory}"/>
+		<scp todir="${updateSiteScpUrl}"
+			keyfile="${user.home}/.ssh/id_download"
+			passphrase="">
+			<fileset dir="${buildDirectory}/updateSite">
+				<exclude name="site.xml"/>
+			</fileset>
+		</scp>
+		<echo message="Updating site.xml"/>
+		<property name="siteXmlFile" value="/tmp/site.xml"/>
+		<scp file="${updateSiteScpUrl}/site.xml" 
+			localTofile="${siteXmlFile}"
+			keyfile="${user.home}/.ssh/id_download"
+			passphrase=""/>
+		<antcall target="updateSiteXml"/>
+		<scp file="${siteXmlFile}" 
+			todir="${updateSiteScpUrl}"
+			keyfile="${user.home}/.ssh/id_download"
+			passphrase=""/>
 	</target>
 </project>

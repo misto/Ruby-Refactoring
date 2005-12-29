@@ -29,10 +29,23 @@
 		<!-- Publishers are run *after* a build completes -->
 		<publishers> 
 			<onsuccess>		    
-    			<artifactspublisher 
-    				dir="checkout/RDT/dist"
-    				dest="artifacts/RDT"/>
-				<execute command="/home/bma/dispatchRdtBuildResultsNightly.sh"/>
+    				<artifactspublisher 
+    					dir="checkout/RDT/dist"
+    					dest="artifacts/RDT"/>
+				<scp 
+					sourcedir="checkout/RDT/dist"
+					file="."
+					options="-r"
+					targetuser="rubypeople"
+					targethost="download.rubypeople.org"
+					targetdir="~/subdomains/download/httpdocs/nightly"/>
+				<scp 
+					sourcedir="checkout/RDT/dist/updateSite"
+					file="."
+					options="-r"
+					targetuser="rubypeople"
+					targethost="download.rubypeople.org"
+					targetdir="~/subdomains/updatesite/httpdocs/nightly"/>
 			</onsuccess>    
 			<email 
 				mailhost="mail.sf.net" 

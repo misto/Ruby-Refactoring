@@ -194,6 +194,7 @@
 			<property name="plugin.destination" value="${UpdateSiteStagingLocation}/plugins"/>
 		</ant>
 	</target>
+
 	<target name="generateUpdateSite">
 		<!-- Create the directory structure -->
 		<mkdir dir="${UpdateSiteStagingLocation}"/>
@@ -204,28 +205,18 @@
 			<param name="genericTargets" value="${builder}/customTargets.xml"/>
 			<param name="target" value="updateSiteExport"/>
 		</antcall>
-		<antcall target="copySiteXmlFromCvs"/>
+		<!-- site.xml files for integration and release builds are handled in build-RDT.xml -->
 		<antcall target="createNightlyBuildSiteXml"/>
 		<delete dir="${buildDirectory}/temp.updatesite"/>
 	</target>
-	<target name="copySiteXmlFromCvs" unless="isNightlyBuild">
-		<!-- Grab the rest of the site out of CVS -->
-		<mkdir dir="${buildDirectory}/temp.updatesite"/>
-		<property name="cvsRoot" value=":ext:cvs.sf.net:/cvsroot/rubyeclipse" />
-		<cvs cvsroot="${cvsRoot}" package="${sitePackagePrefix}" dest="${buildDirectory}/temp.updatesite" tag="${fetchTag}"/>
-		<!-- Copy to staging area -->
-		<copy todir="${UpdateSiteStagingLocation}">
-			<fileset file="${buildDirectory}/temp.updatesite/${sitePackagePrefix}/site.xml"/>
-		</copy>
-	</target>
-	<target name="createNightlyBuildSiteXml" if="isNightlyOrIntegrationBuild">
+
+	<target name="createNightlyBuildSiteXml" if="isNightlyBuild">
 		<echo file="${UpdateSiteStagingLocation}/site.xml">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt; 
 			&lt;site&gt; 
-			&lt;description url=&quot;http://rubyeclipse.sourceforge.net/nightlyBuild/updateSite/&quot;&gt; The Ruby Development 
-			Tools update site. &lt;/description&gt; 
+			&lt;description url=&quot;http://updatesite.rubypeople.org/nightly&quot;&gt; The Ruby Development Tools nightly builds. &lt;/description&gt; 
 			&lt;feature url=&quot;features/org.rubypeople.rdt_${featureVersion}.jar&quot; id=&quot;org.rubypeople.rdt&quot; version=&quot;${featureVersion}&quot;&gt; &lt;category 
-			name=&quot;RubyEclipseNightlyBuild&quot;/&gt; &lt;/feature&gt; 
-			&lt;category-def name=&quot;RubyEclipseNightlyBuild&quot; label=&quot;RDT Nigthly Build&quot;&gt; &lt;/category-def&gt; &lt;/site&gt; 
+			name=&quot;RubyEclipseNightlyBuilds&quot;/&gt; &lt;/feature&gt; 
+			&lt;category-def name=&quot;RubyEclipseNightlyBuilds&quot; label=&quot;RDT Nightly Builds&quot;&gt; &lt;/category-def&gt; &lt;/site&gt; 
 		</echo>
 	</target>
 	
