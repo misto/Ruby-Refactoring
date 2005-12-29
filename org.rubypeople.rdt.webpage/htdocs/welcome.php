@@ -31,6 +31,22 @@ A regular expression plugin is also available (Thanks to the <a href="http://e-p
     <!-- INSERT NEW NEWS HERE!!! -->
 			
 	<table>
+	 <tr>
+      <td align="right" valign="top" width="20"><img src="images/arrow.gif" alt="->" border="0" height="16" width="16"></td>
+      <td valign="top"><font face="arial,helvetica,geneva" size="-1"><b>0.7.0 Release Candidate (2005-12-29)</b>
+        <br/>
+The development of 0.7.0 has reached a point where we can present a release candidate. New features include ruby specific searching and text hovers with ri information. Next to that there are a lot of improvements with code completion, in the editor, outline view and debugger, more details can be found in the 
+<a href="http://download.rubypeople.org/nightly/Changelog.txt">Changelog</a>. 
+Note that our update site URLs have changed. The old URLs have been redirected, but the udpate manager doesn't handle it correctly. Please read the 
+<a href="http://rubyeclipse.sourceforge.net/download.rdt.html">download information</a> if you want to use the udpate manager (this build is available in the integration stream). 
+ 
+
+ 
+The final release of 0.7.0 is scheduled for next week but the exact date is up to the feedback we will receive.</p>
+        </font>
+      </td>
+    </tr>
+	
 				    <tr>
       <td align="right" valign="top" width="20"><img src="images/arrow.gif" alt="->" border="0" height="16" width="16"></td>
       <td valign="top"><font face="arial,helvetica,geneva" size="-1"><b>Article on developerWorks (2005-10-18)</b>
@@ -61,7 +77,7 @@ Now we need the comments of our users. Please check out our <a href="http://ruby
 
 Next to the new features we can offer with 0.6.0, the large changes behind the scenes give us also
 an excellent position for improving code searching and navigability in the next releases. The new features
-of 0.6.0 are (see also the <a href="http://rubyeclipse.sourceforge.net/nightlyBuild/Changelog.txt">Changelog</a>)
+of 0.6.0 are (see also the <a href="http://download.rubypeople.org/nightly/Changelog.txt">Changelog</a>)
 
 <ul>
 <li><b>Code Folding</b> - Folding can be enabled for classes and methods</li>
