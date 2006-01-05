@@ -3,7 +3,9 @@
       id="org.rubypeople.rdt"
       label="Ruby Development Tools"
       version="0.6.0"
-      provider-name="RubyPeople">
+      provider-name="RubyPeople"
+      plugin="org.rubypeople.rdt"
+      nl="en">
 
    <description>
       Ruby Development Tools for Eclipse.
@@ -279,7 +281,8 @@ litigation.
          id="org.rubypeople.rdt.doc.user"
          download-size="0"
          install-size="0"
-         version="0.6.0"/>
+         version="0.6.0"
+         unpack="false"/>
 
    <plugin
          id="org.epic.regexp"
@@ -297,7 +300,8 @@ litigation.
          id="org.rubypeople.rdt"
          download-size="0"
          install-size="0"
-         version="0.6.0"/>
+         version="0.6.0"
+         unpack="false"/>
 
    <plugin
          id="org.rubypeople.rdt.testunit"
