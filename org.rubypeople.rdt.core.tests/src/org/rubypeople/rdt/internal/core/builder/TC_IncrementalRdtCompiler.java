@@ -21,8 +21,8 @@ public class TC_IncrementalRdtCompiler extends AbstractRdtTestCase {
         delta.addChildren(createDelta(t1, IResourceDelta.REMOVED));
         
         compiler.compile(monitor);
-        List expectedFiles = ListUtil.create(t1);
-    
+        ListUtil.create(t1); //expected files
+       
         monitor.assertTaskBegun("Building test...", 2);
         monitor.assertDone(2);
         List subTasks = ListUtil.create(EXPECTED_TASK_NAME);
