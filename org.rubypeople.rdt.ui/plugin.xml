@@ -140,12 +140,13 @@
    </extension>
    <extension point="org.eclipse.ui.editors">
       <editor
-            name="%EditorRubyFile.name"
-            extensions="%EditorRubyFile.extension"
-            icon="icons/full/ctool16/ruby_page.gif"
             class="org.rubypeople.rdt.internal.ui.rubyeditor.RubyEditor"
             contributorClass="org.rubypeople.rdt.internal.ui.rubyeditor.RubyEditorActionContributor"
-            id="org.rubypeople.rdt.ui.EditorRubyFile">
+            extensions="%EditorRubyFile.extension"
+            filenames="%EditorRubyFile.filenames"
+            icon="icons/full/ctool16/ruby_page.gif"
+            id="org.rubypeople.rdt.ui.EditorRubyFile"
+            name="%EditorRubyFile.name">
          <contentTypeBinding contentTypeId="org.rubypeople.rdt.core.rubySource"/>
       </editor>
       <editor
@@ -188,9 +189,10 @@
             schemeId="org.eclipse.ui.defaultAcceleratorConfiguration">
       </key>
       <key
-            sequence="M1+SPACE"
             commandId="org.rubypeople.rdt.ui.edit.text.ruby.content.assist.proposals"
-            schemeId="org.eclipse.ui.defaultAcceleratorConfiguration">
+            contextId="org.rubypeople.rdt.ui.rubyEditorScope"
+            schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
+            sequence="M1+SPACE">
       </key>
 	</extension>
    <extension point="org.eclipse.ui.commands">
