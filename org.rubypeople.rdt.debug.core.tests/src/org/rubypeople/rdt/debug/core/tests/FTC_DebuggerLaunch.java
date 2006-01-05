@@ -2,7 +2,6 @@ package org.rubypeople.rdt.debug.core.tests;
 
 import java.io.ByteArrayInputStream;
 
-import junit.framework.Assert;
 import junit.framework.TestCase;
 
 import org.eclipse.core.resources.IFile;
@@ -79,8 +78,10 @@ public class FTC_DebuggerLaunch extends TestCase {
 		this.log("1. launch", launch) ;
 		// getDebugTarget returns null if connection between ruby debugger and RubyDebuggerProxy (RubyLoop) could not
 		// be established
-		Assert.assertNotNull(launch.getDebugTarget()) ;
-		Assert.assertTrue(launch.getDebugTarget().getThreads()[0].isSuspended()) ;
+		assertNotNull(launch.getDebugTarget()) ;
+        assertNotNull(launch.getDebugTarget().getThreads());
+        assertTrue(launch.getDebugTarget().getThreads().length > 0);
+		assertTrue(launch.getDebugTarget().getThreads()[0].isSuspended()) ;
 		
 		// the breakpoint we have set for the first launch has disappeard at this point through
 		// a ResourceChanged Event
@@ -88,8 +89,10 @@ public class FTC_DebuggerLaunch extends TestCase {
 		ILaunch secondlaunch = lc.launch("debug", new NullProgressMonitor()) ;
 		Thread.sleep(5000)  ;
 		this.log("2. launch", secondlaunch) ;
-		Assert.assertNotNull(secondlaunch.getDebugTarget()) ;
-		Assert.assertFalse(secondlaunch.getProcesses()[0].isTerminated()) ;
-		Assert.assertTrue(secondlaunch.getDebugTarget().getThreads()[0].isSuspended()) ;
+		assertNotNull(secondlaunch.getDebugTarget()) ;
+        assertNotNull(secondlaunch.getDebugTarget().getThreads());
+        assertTrue(secondlaunch.getDebugTarget().getThreads().length > 0);
+		assertFalse(secondlaunch.getProcesses()[0].isTerminated()) ;
+		assertTrue(secondlaunch.getDebugTarget().getThreads()[0].isSuspended()) ;
 	}
 }
