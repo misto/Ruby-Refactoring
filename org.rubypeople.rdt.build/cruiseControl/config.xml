@@ -32,6 +32,7 @@
     				<artifactspublisher 
     					dir="checkout/RDT/dist"
     					dest="artifacts/RDT"/>
+				<execute command="/home/bma/cruiseControlWorkspace/purgeNightlyBuildWebSite.sh"/>
 				<scp 
 					sourcedir="checkout/RDT/dist"
 					file="."
