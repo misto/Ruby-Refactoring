@@ -242,7 +242,7 @@
 		<!-- rename the results file, so that every build result file has a unique name and 
 			browsers don't fool users with cached versions	-->
 		<copy file="${eclipseAutomatedTestHome}/results/html/org.rubypeople.rdt.tests.all_.html"
-			tofile="${buildDirectory}/org.rubypeople.rdt.tests.all_${featureVersion}.html"/>
+			tofile="${buildResultsDirectory}/org.rubypeople.rdt.tests.all_${featureVersion}.html"/>
 
 		<copy file="${buildDirectory}/workspace-rdt-tests/.metadata/.log" tofile="${buildResultsDirectory}/logs/testsWorkspace.log"/>
 		
