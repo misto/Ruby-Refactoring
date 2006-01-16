@@ -72,7 +72,7 @@ class XmlPrinter
         valueString.slice!(1..(valueString.length)-2) 
       end	  
 	end
-    out("<variable name=\"%s\" kind=\"%s\" value=\"%s\" type=\"%s\" hasChildren=\"%s\" objectId=\"%s\"/>", CGI.escapeHTML(name), kind, CGI.escapeHTML(valueString), value.class(), hasChildren, value.respond_to?(:object_id) ? value.object_id : value.id)
+    out("<variable name=\"%s\" kind=\"%s\" value=\"%s\" type=\"%s\" hasChildren=\"%s\" objectId=\"%#+x\"/>", CGI.escapeHTML(name), kind, CGI.escapeHTML(valueString), value.class(), hasChildren, value.respond_to?(:object_id) ? value.object_id : value.id)
   end
 
   def printBreakpoint(n, debugFuncName, file, pos)
@@ -395,7 +395,7 @@ class DEBUGGER__
           var_list([], binding, 'local') 
         end		
 
-      when /^\s*i(?:nstance)?\s*(\d+)?\s+(\d+)?/        
+      when /^\s*i(?:nstance)?\s*(\d+)?\s+((?:[\\+-]0x)?[\dabcdef]+)?/        
         new_binding = getBinding($1)
         if new_binding then
           binding = new_binding
@@ -403,7 +403,7 @@ class DEBUGGER__
         begin
           @printer.printXml("<variables>")
           if $2 then
-            obj = ObjectSpace._id2ref($2.to_i)
+            obj = ObjectSpace._id2ref($2.hex)
             if (!obj) then
               @printer.debug("unknown object id : %s", $2)
             end
