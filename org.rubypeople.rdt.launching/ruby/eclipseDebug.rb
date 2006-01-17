@@ -395,7 +395,7 @@ class DEBUGGER__
           var_list([], binding, 'local') 
         end		
 
-      when /^\s*i(?:nstance)?\s*(\d+)?\s+((?:[\\+-]0x)?[\dabcdef]+)?/        
+      when /^\s*i(?:nstance)?\s*(\d+)?\s+((?:[\\+-]0x)[\dabcdef]+)?/        
         new_binding = getBinding($1)
         if new_binding then
           binding = new_binding
