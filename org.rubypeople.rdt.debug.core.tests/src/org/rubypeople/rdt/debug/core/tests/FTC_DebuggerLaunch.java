@@ -31,9 +31,11 @@ public class FTC_DebuggerLaunch extends TestCase {
 	}
 	
 	protected void createInterpreter() {
-		// FIXME We rely on the RUBY_INTERPRETER to be a full path to a valid ruby executable, and it's not getting set properly so this test ends up failing (on the nightly build)!
-
-		RubyInterpreter rubyInterpreter = new RubyInterpreter("RubyInterpreter", new Path(FTC_DebuggerCommunicationTest.RUBY_INTERPRETER));
+		// We rely on the RUBY_INTERPRETER to be a full path to a valid ruby executable, therefore the property rdt.rubyInterpreter has
+		// to be set accordingly
+		String rubyInterpreterPath = FTC_DebuggerCommunicationTest.RUBY_INTERPRETER ;
+		System.out.println("Using interpreter: " + rubyInterpreterPath) ;
+		RubyInterpreter rubyInterpreter = new RubyInterpreter("RubyInterpreter", new Path(rubyInterpreterPath));
 		RubyRuntime.getDefault().addInstalledInterpreter(rubyInterpreter) ;
 	
 	}
@@ -78,10 +80,10 @@ public class FTC_DebuggerLaunch extends TestCase {
 		this.log("1. launch", launch) ;
 		// getDebugTarget returns null if connection between ruby debugger and RubyDebuggerProxy (RubyLoop) could not
 		// be established
-		assertNotNull(launch.getDebugTarget()) ;
-        assertNotNull(launch.getDebugTarget().getThreads());
-        assertTrue(launch.getDebugTarget().getThreads().length > 0);
-		assertTrue(launch.getDebugTarget().getThreads()[0].isSuspended()) ;
+		assertNotNull("1. debug target not null", launch.getDebugTarget()) ;
+        assertNotNull("1. debug target has threads", launch.getDebugTarget().getThreads());
+        assertTrue("1. debug target has at least one thread", launch.getDebugTarget().getThreads().length > 0);
+		assertTrue("1. debug target's first thread is suspended ", launch.getDebugTarget().getThreads()[0].isSuspended()) ;
 		
 		// the breakpoint we have set for the first launch has disappeard at this point through
 		// a ResourceChanged Event
@@ -89,10 +91,10 @@ public class FTC_DebuggerLaunch extends TestCase {
 		ILaunch secondlaunch = lc.launch("debug", new NullProgressMonitor()) ;
 		Thread.sleep(5000)  ;
 		this.log("2. launch", secondlaunch) ;
-		assertNotNull(secondlaunch.getDebugTarget()) ;
-        assertNotNull(secondlaunch.getDebugTarget().getThreads());
-        assertTrue(secondlaunch.getDebugTarget().getThreads().length > 0);
-		assertFalse(secondlaunch.getProcesses()[0].isTerminated()) ;
-		assertTrue(secondlaunch.getDebugTarget().getThreads()[0].isSuspended()) ;
+		assertNotNull("2. debug target not null", secondlaunch.getDebugTarget()) ;
+        assertNotNull("2. debug target has threads", secondlaunch.getDebugTarget().getThreads());
+        assertTrue("2. debug target has at least one thread", secondlaunch.getDebugTarget().getThreads().length > 0);
+		assertFalse("2. debug target's first prozess is not terminated", secondlaunch.getProcesses()[0].isTerminated()) ;
+		assertTrue("2. debug target's first thread is suspended ", secondlaunch.getDebugTarget().getThreads()[0].isSuspended()) ;
 	}
 }
