@@ -22,6 +22,9 @@ public class ImmediateWarnings implements IRdtWarnings {
 	}
 
 	public void warn(ISourcePosition position, String message) {
+		if (message.startsWith("Useless")) {
+			return ;
+		}
         markerManager.addWarning(file, message, position.getStartLine(), position.getStartOffset(), position.getEndOffset());
 	}
 

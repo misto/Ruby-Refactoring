@@ -51,6 +51,9 @@ public class RdtWarnings implements IRdtWarnings     {
 	 *      java.lang.String)
 	 */
 	public void warn(ISourcePosition position, String message) {
+		if (message.startsWith("Useless")) {
+			return ;
+		}
 		warnings.add(new Warning(position, message));
 	}
 
