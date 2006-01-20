@@ -65,13 +65,29 @@
 		<antcall target="integration"/>
 	</target>
 
+	<target name="0.7.0">
+		<property name="cvsLabel" value="R2006-01-19_0-7-0"/>
+		<property name="label" value="0.7.0.601192300PRD"/>
+		<antcall target="release"/>
+	</target>
+
+	<target name="release">
+		<property name="buildType" value="-DbuildType='S'"/>
+		<antcall target="manual-build"/>
+	</target>
+
 	<target name="integration">
+		<property name="buildType" value="-DbuildType='I'"/>
+		<antcall target="manual-build"/>
+	</target>
+
+	<target name="manual-build">
 		<!-- the only difference to a nightly build is the buildType which leads to setting a differnt
 		updateSiteUrl in feature.xml -->
 		<property name="buildDirectory" value="/tmp/rdt-${label}"/>
 		<!-- properties which should override the values of org.rubypeople.rdt/bootstrap/build.properties must be
 		specified via -D arguments for the call to eclipseRunner -->
-		<property name="extraArgs" value="-DbuildType='I' -DfetchTag=${cvsLabel}"/>
+		<property name="extraArgs" value="${buildType} -DfetchTag=${cvsLabel}"/>
 		<property file="build-RDT.properties" />
 		<antcall target="clean"/>
 		<antcall target="featureVersion"/>		

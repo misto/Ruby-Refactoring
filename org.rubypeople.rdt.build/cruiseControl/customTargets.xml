@@ -96,6 +96,7 @@
 	<target name="postFetch">
 
 		<antcall target="replaceVersions"/>		
+		<antcall target="setUpdateSiteURL"/>		
 		<replace file="${buildDirectory}/features/org.rubypeople.rdt/feature.xml">
 			<replacefilter token="&lt;!--@@INCLUDES@@--&gt;" value="&lt;includes id=&quot;org.rubypeople.rdt.source&quot; version=&quot;${featureVersion}&quot;/&gt;"/>
 		</replace>
@@ -105,17 +106,10 @@
 	</target>
 	
 	<target name="replaceVersions" if="baseFeatureVersion">
-		<condition property="updateSiteUrl" 
-				value="${nightlyBuildUpdateSiteURL}" 
-				else="${integrationBuildUpdateSiteURL}">
-			<isset property="isNightlyBuild"/>
-		</condition>
 		<echo message="Nightly or integration build: replacing version ${baseFeatureVersion} with ${featureVersion}"/>
-		<echo message="Setting update-site URL: ${updateSiteUrl}"/>
 		<replace dir="${buildDirectory}/features">
 			<include name="org.rubypeople.*/feature.xml"/>
 			<replacefilter token="${baseFeatureVersion}" value="${featureVersion}" />
-			<replacefilter token="${releaseUpdateSiteURL}" value="${updateSiteUrl}" />						
 		</replace>
 		<replace dir="${buildDirectory}/plugins">
 			<include name="org.rubypeople.*/plugin.xml"/>
@@ -126,6 +120,22 @@
 			<replacefilter token="Bundle-Version: ${baseFeatureVersion}" value="Bundle-Version: ${featureVersion}" />
 		</replace>				
 	</target>
+
+	<target name="setUpdateSiteURL" if="isNightlyOrIntegrationBuild">
+
+		<!-- do not replace the update site URL if it is a release build -->
+		<condition property="updateSiteUrl" 
+				value="${nightlyBuildUpdateSiteURL}" 
+				else="${integrationBuildUpdateSiteURL}">
+			<isset property="isNightlyBuild"/>
+		</condition>
+		<echo message="Setting update-site URL: ${updateSiteUrl}"/>
+		<replace dir="${buildDirectory}/features">
+			<include name="org.rubypeople.*/feature.xml"/>
+			<replacefilter token="${releaseUpdateSiteURL}" value="${updateSiteUrl}" />						
+		</replace>
+	</target>
+	
 	<!-- ===================================================================== -->
 	<!-- Steps to do before generating the build scripts. -->
 	<!-- ===================================================================== -->
