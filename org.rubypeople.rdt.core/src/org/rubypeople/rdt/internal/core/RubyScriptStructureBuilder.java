@@ -482,8 +482,8 @@ public class RubyScriptStructureBuilder implements NodeVisitor {
 		
 		// This resets the visibility when opening or declaring a class to public
 		currentVisibility = Visibility.PUBLIC;
-		
-		String name = iVisited.getCPath().getName();
+		       
+		String name = getFullyQualifiedName(iVisited.getCPath());
 		RubyType handle = new RubyType(modelStack.peek(), name);
 		modelStack.push(handle);
 
@@ -495,8 +495,7 @@ public class RubyScriptStructureBuilder implements NodeVisitor {
 		ISourcePosition pos = iVisited.getPosition();
 		setKeywordRange("class", pos, info, name);
 
-		Node superNode = iVisited.getSuperNode();
-		String superClass = getSuperClassName(superNode);		
+		String superClass = getSuperClassName(iVisited.getSuperNode());		
 		info.setSuperclassName(superClass);
 		info.setIncludedModuleNames(new String[] {"Kernel"});
 		infoStack.push(info);
@@ -519,17 +518,24 @@ public class RubyScriptStructureBuilder implements NodeVisitor {
 	 */
 	private String getSuperClassName(Node superNode) {
 		if (superNode == null) return "Object";
-		if (superNode instanceof ConstNode) {
-			ConstNode superClassNode = (ConstNode) superNode;
-			return superClassNode.getName();
-		}
-		if (superNode instanceof Colon2Node) {
-			Colon2Node superClassNode = (Colon2Node) superNode;
-			return getSuperClassName(superClassNode.getLeftNode()) + "::" + superClassNode.getName();
-		}
-		return "Object";
+		return getFullyQualifiedName(superNode);
 	}
 
+    private String getFullyQualifiedName(Node node) {
+        if (node == null) return "";
+        if (node instanceof ConstNode) {
+            ConstNode constNode = (ConstNode) node;
+            return constNode.getName();
+        }
+        if (node instanceof Colon2Node) {
+            Colon2Node colonNode = (Colon2Node) node;
+            String prefix = getFullyQualifiedName(colonNode.getLeftNode());
+            if (prefix.length() > 0) prefix = prefix + "::";
+            return prefix + colonNode.getName();
+        }
+        return "";
+    }
+    
 	private Instruction setLocalVarRange( ISourcePosition pos, MemberElementInfo info, String name ){
 		int start = pos.getStartOffset()  - name.length();
 		setMemberElementPosition( 

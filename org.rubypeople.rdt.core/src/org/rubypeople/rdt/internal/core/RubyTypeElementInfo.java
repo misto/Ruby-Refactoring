@@ -48,7 +48,7 @@ public class RubyTypeElementInfo extends MemberElementInfo {
 	/**
 	 * The name of the package this type is contained in.
 	 */
-	protected String packageName;
+	protected String namespaceName;
 
 	/**
 	 * The infos of the imports in this type's compilation unit
@@ -234,8 +234,8 @@ public class RubyTypeElementInfo extends MemberElementInfo {
 	/**
 	 * @see IType
 	 */
-	public String getPackageName() {
-		return this.packageName;
+	public String getNamespace() {
+		return this.namespaceName;
 	}
 
 	/**
@@ -259,8 +259,8 @@ public class RubyTypeElementInfo extends MemberElementInfo {
 	/**
 	 * Sets the name of the package this type is declared in.
 	 */
-	protected void setPackageName(String name) {
-		this.packageName = name;
+	protected void setNamespaceName(String name) {
+		this.namespaceName = name;
 	}
 
 	/**
