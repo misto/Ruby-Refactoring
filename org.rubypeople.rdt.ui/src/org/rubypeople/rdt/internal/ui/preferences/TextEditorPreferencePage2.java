@@ -68,6 +68,8 @@ public class TextEditorPreferencePage2 extends RubyAbstractPreferencePage implem
 			IRubyColorConstants.RUBY_FIXNUM,
 			IRubyColorConstants.RUBY_CHARACTER,
             IRubyColorConstants.RUBY_SYMBOL,
+            IRubyColorConstants.RUBY_INSTANCE_VARIABLE,
+            IRubyColorConstants.RUBY_GLOBAL,
 			IRubyColorConstants.RUBY_DEFAULT };
 
 	private ModifyListener fTextFieldListener = new ModifyListener() {
