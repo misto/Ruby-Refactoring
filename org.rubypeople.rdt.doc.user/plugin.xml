@@ -1,1 +1,8 @@
-<plugin provider-name="RubyPeople, Inc." version="0.6.0" id="org.rubypeople.rdt.doc.user" name="Ruby Development Documentation"><extension point="org.eclipse.help.toc"><toc primary="true" file="toc.xml"></toc></extension></plugin>
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.0"?>
+<plugin
+   id="org.rubypeople.rdt.doc.user"
+   name="%Plugin.name"
+   version="0.7.0"
+   provider-name="RubyPeople, Inc.">
+</plugin>
