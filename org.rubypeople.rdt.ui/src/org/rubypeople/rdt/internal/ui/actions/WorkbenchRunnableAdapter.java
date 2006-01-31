@@ -18,6 +18,7 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.OperationCanceledException;
+import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.ISchedulingRule;
 import org.eclipse.core.runtime.jobs.Job;
@@ -35,6 +36,7 @@ import org.rubypeople.rdt.internal.ui.RubyUIStatus;
  */
 public class WorkbenchRunnableAdapter implements IRunnableWithProgress {
 	
+    private boolean fTransfer= false;
 	private IWorkspaceRunnable fWorkspaceRunnable;
 	private ISchedulingRule fRule;
 	
@@ -52,6 +54,17 @@ public class WorkbenchRunnableAdapter implements IRunnableWithProgress {
 		fWorkspaceRunnable= runnable;
 		fRule= rule;
 	}
+    
+    /**
+     * Runs a workspace runnable with the given lock or <code>null</code> to run with no lock at all.
+     * @param transfer <code>true</code> if the rule is to be transfered 
+     *  to the model context thread. Otherwise <code>false</code>
+     */
+    public WorkbenchRunnableAdapter(IWorkspaceRunnable runnable, ISchedulingRule rule, boolean transfer) {
+        fWorkspaceRunnable= runnable;
+        fRule= rule;
+        fTransfer= transfer;
+    }
 	
 	public ISchedulingRule getSchedulingRule() {
 		return fRule;
@@ -69,6 +82,14 @@ public class WorkbenchRunnableAdapter implements IRunnableWithProgress {
 			throw new InvocationTargetException(e);
 		}
 	}
+    
+    /**
+     * {@inheritDoc}
+     */
+    public void threadChange(Thread thread) {
+        if (fTransfer)
+            Platform.getJobManager().transferRule(fRule, thread);
+    }
 	
 	public void runAsUserJob(String name, final Object jobFamiliy) {
 		Job buildJob = new Job(name){ 

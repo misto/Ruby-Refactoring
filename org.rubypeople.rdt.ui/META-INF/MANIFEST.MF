@@ -35,7 +35,8 @@ Export-Package: org.rubypeople.rdt.internal.corext,
  org.rubypeople.rdt.ui.rubyeditor,
  org.rubypeople.rdt.ui.text,
  org.rubypeople.rdt.ui.text.folding,
- org.rubypeople.rdt.ui.text.ruby.hover
+ org.rubypeople.rdt.ui.text.ruby.hover,
+ org.rubypeople.rdt.ui.wizards
 Require-Bundle: org.eclipse.ui.ide,
  org.eclipse.ui.views,
  org.eclipse.jface.text,

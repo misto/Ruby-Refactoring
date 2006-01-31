@@ -66,6 +66,17 @@
             Create a new Ruby project.
          </description>
       </wizard>
+      <wizard
+            name="%NewWizardRubyClass.name"
+            icon="icons/full/etool16/newclass_wiz.gif"
+            category="org.rubypeople.rdt.ui.NewWizardCategoryRuby"
+            class="org.rubypeople.rdt.ui.wizards.RubyNewClassWizard"
+            preferredPerspectives="org.rubypeople.rdt.ui.PerspectiveRuby"
+            id="org.rubypeople.rdt.ui.wizards.RubyNewClassWizard">
+          <description>
+            Create a new Ruby Class.
+         </description>
+      </wizard>
    </extension>
    <extension
          point="org.eclipse.ui.ide.projectNatureImages">
@@ -319,6 +330,14 @@
             description="%RubyElementCreationActionSet.description"
             visible="false"
             id="org.rubypeople.rdt.ui.RubyElementCreationActionSet">
+         <action
+               label="%NewClassWizardAction.label"
+               icon="icons/full/etool16/newclass_wiz.gif"
+               tooltip="%NewClassWizardAction.tooltip"
+               class="org.rubypeople.rdt.internal.ui.wizards.NewClassWizardAction"
+               toolbarPath="Normal/RubyWizards"
+               id="org.rubypeople.rdt.ui.actions.NewClassWizard">
+         </action>
           <action
                label="%OpenProjectWizardAction.label"
                icon="icons/full/etool16/newrprj_wiz.gif"
