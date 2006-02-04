@@ -3,7 +3,7 @@
 <plugin
    id="org.rubypeople.rdt.launching.tests"
    name="org.rubypeople.rdt.launching.tests"
-   version="0.6.0">
+   version="0.0.0">
 
    <runtime>
       <library name="rdtlaunchingtests.jar">
