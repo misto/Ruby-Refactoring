@@ -3,7 +3,7 @@
 <plugin
    id="org.rubypeople.rdt.core.tests"
    name="org.rubypeople.rdt.core.tests"
-   version="0.6.0">
+   version="0.0.0">
 
    <runtime>
       <library name="rdtcoretests.jar">
