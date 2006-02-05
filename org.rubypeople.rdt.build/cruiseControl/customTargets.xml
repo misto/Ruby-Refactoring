@@ -97,12 +97,6 @@
 
 		<antcall target="replaceVersions"/>		
 		<antcall target="setUpdateSiteURL"/>		
-		<replace file="${buildDirectory}/features/org.rubypeople.rdt/feature.xml">
-			<replacefilter token="&lt;!--@@INCLUDES@@--&gt;" value="&lt;includes id=&quot;org.rubypeople.rdt.source&quot; version=&quot;${featureVersion}&quot;/&gt;"/>
-		</replace>
-		<replace file="${buildDirectory}/features/org.rubypeople.rdt/build.properties">
-			<replacefilter token="#generate.feature" value="generate.feature" />
-		</replace>
 	</target>
 	
 	<target name="replaceVersions" if="baseFeatureVersion">
