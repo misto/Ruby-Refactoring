@@ -1,12 +1,13 @@
 <cruisecontrol>
-	<plugin name="labelincrementer" prefix="0.5"/>
-	<project name="RDT" buildafterfailed="true">
+	<project name="RDT" buildafterfailed="false">
 		<plugin name="labelincrementer" classname="org.rubypeople.rdt.cruisecontrol.plugin.EclipsePluginLabelProvider"/>
+		<labelincrementer prefix="0.7.0"/>
 
 		<!-- Defines where cruise looks for changes, to decide whether to run the build --> 
-		<modificationset quietperiod="10"> 
-			<cvs cvsroot=":ext:mbarchfe@cvs.sf.net:/cvsroot/rubyeclipse" module="rdt-all"/> 
-      	</modificationset>
+		<modificationset quietperiod="120"> 
+			<cvs cvsroot=":ext:mbarchfe@cvs.sf.net:/cvsroot/rubyeclipse" module="rdt-all"/>
+		<alwaysbuild/>
+		</modificationset>
 
 		<!-- Configures the actual build loop, how often and which build file/target --> 
 		<schedule interval="60"> 
@@ -14,7 +15,7 @@
                buildfile="build-RDT.xml"
                target="dist"
                uselogger="true"
-               usedebug="false"/> 
+               usedebug="true"/> 
 		</schedule>
 
 		<log dir="logs/RDT">
