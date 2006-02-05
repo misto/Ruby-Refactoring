@@ -227,7 +227,7 @@
 	<target name="createNightlyBuildSiteXml" if="isNightlyBuild">
 		<echo file="${UpdateSiteStagingLocation}/site.xml">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt; 
 			&lt;site&gt; 
-			&lt;description;&gt; The Ruby Development Tools nightly builds. &lt;/description&gt; 
+			&lt;description&gt; The Ruby Development Tools nightly builds. &lt;/description&gt; 
 			&lt;feature url=&quot;features/org.rubypeople.rdt_${featureVersion}.jar&quot; id=&quot;org.rubypeople.rdt&quot; version=&quot;${featureVersion}&quot;&gt; &lt;category 
 			name=&quot;RubyEclipseNightlyBuilds&quot;/&gt; &lt;/feature&gt; 
 			&lt;category-def name=&quot;RubyEclipseNightlyBuilds&quot; label=&quot;RDT Nightly Builds&quot;&gt; &lt;/category-def&gt; &lt;/site&gt; 
