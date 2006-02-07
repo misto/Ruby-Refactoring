@@ -376,9 +376,7 @@ public class RubyScriptStructureBuilder implements NodeVisitor {
 
 		RubyFieldElementInfo info = new RubyFieldElementInfo();
 		info.setTypeName(estimateValueType(iVisited.getValueNode()));
-		ISourcePosition pos = iVisited.getPosition();
-		//setTokenRange(pos, info, name);
-		setClassVarRange( pos, info, name );
+        setTokenRange( iVisited.getPosition(), info, name );
 		// TODO Add more information about the variable
 		infoStack.push(info);
 
@@ -406,9 +404,7 @@ public class RubyScriptStructureBuilder implements NodeVisitor {
 		RubyFieldElementInfo info = new RubyFieldElementInfo();
 		info.setTypeName(estimateValueType(iVisited.getValueNode()));
 		info.setTypeName(estimateValueType(iVisited.getValueNode()));
-		ISourcePosition pos = iVisited.getPosition();
-		//setTokenRange(pos, info, name);
-		setClassVarRange( pos, info, name );
+        setTokenRange( iVisited.getPosition(), info, name );
 		
 		parentInfo.addChild(var);	
 
@@ -535,69 +531,20 @@ public class RubyScriptStructureBuilder implements NodeVisitor {
         }
         return "";
     }
-    
-	private Instruction setLocalVarRange( ISourcePosition pos, MemberElementInfo info, String name ){
-		int start = pos.getStartOffset()  - name.length();
-		setMemberElementPosition( 
-			info,
-			start,
-			pos.getStartOffset() - 1,
-			start,
-			pos.getEndOffset() );	
-        return null;
-	}
-	
-	private Instruction setInstanceVarRange( ISourcePosition pos, MemberElementInfo info, String name ){
-		int start = pos.getStartOffset()  - name.length();
-		setMemberElementPosition( 
-			info,
-			start,
-			pos.getStartOffset()- 1,
-			start,
-			pos.getEndOffset() );	
-        return null;
-	}
-	
-	private Instruction setClassVarRange( ISourcePosition pos, MemberElementInfo info, String name ){
-		int start = pos.getStartOffset() - name.length();
-		setMemberElementPosition( 
-			info,
-			start,
-			pos.getStartOffset() - 1,
-			start,
-			pos.getEndOffset() - 1);
-        return null;
-	}	
-	
+    	
 	/**
 	 * @param keyword
 	 * @param pos
 	 * @param info
 	 * @param name
 	 */
-	private Instruction setKeywordRange(String keyword, ISourcePosition pos, MemberElementInfo info, String name) {
-		info.setNameSourceStart( pos.getStartOffset() + 1);
-		info.setNameSourceEnd(pos.getStartOffset() + name.length() );
-		info.setSourceRangeStart(pos.getStartOffset() + 1 );
-		info.setSourceRangeEnd( pos.getEndOffset() );	
-        return null;
-	}
-	
-	/**
-	 * Sets the position on a given MemberElementInfo object.
-	 * @param info
-	 * @param nameSourceStart
-	 * @param nameSourceEnd
-	 * @param sourceStart
-	 * @param sourceEnd
-	 */
-	private Instruction setMemberElementPosition( MemberElementInfo info, int nameSourceStart, 
-			int nameSourceEnd, int sourceStart, int sourceEnd ){
-		info.setNameSourceStart( nameSourceStart );
-		info.setNameSourceEnd( nameSourceEnd );
-		info.setSourceRangeStart( sourceStart );
-		info.setSourceRangeEnd( sourceEnd );		
-        return null;
+	private void setKeywordRange(String keyword, ISourcePosition pos, MemberElementInfo info, String name) {
+		// TODO Actually check nodes which make up the name for their position!
+        int nameStart = pos.getStartOffset() + keyword.length() + 1; // the extra 1 is for a space after the keyword
+        info.setNameSourceStart(nameStart);
+		info.setNameSourceEnd(nameStart + name.length() - 1 );
+		info.setSourceRangeStart(pos.getStartOffset());
+		info.setSourceRangeEnd(pos.getEndOffset() - 1);	
 	}
 
 	/*
@@ -1046,13 +993,12 @@ public class RubyScriptStructureBuilder implements NodeVisitor {
 	 * @param pos
 	 * @param info
 	 */
-	private Instruction setTokenRange(ISourcePosition pos, RubyFieldElementInfo info, String name) {
-		int realStart = pos.getStartOffset() - name.length();
+	private void setTokenRange(ISourcePosition pos, RubyFieldElementInfo info, String name) {
+		int realStart = pos.getStartOffset() - name.length() + 1;
 		info.setNameSourceStart(realStart);
-		info.setNameSourceEnd(pos.getStartOffset() - 1);
+		info.setNameSourceEnd(pos.getStartOffset());
 		info.setSourceRangeStart(realStart);
-		info.setSourceRangeEnd(pos.getStartOffset() - 10);
-        return null;
+		info.setSourceRangeEnd(pos.getStartOffset());
 	}
 
 	/*
@@ -1094,8 +1040,7 @@ public class RubyScriptStructureBuilder implements NodeVisitor {
 		RubyFieldElementInfo info = new RubyFieldElementInfo();
 		// TODO Add more information to the info object!
 		ISourcePosition pos = iVisited.getPosition();
-		//setTokenRange(pos, info, name);
-		setInstanceVarRange( pos, info, name );
+        setTokenRange( pos, info, name );
 		info.setTypeName(estimateValueType(iVisited.getValueNode()));
 
 		newElements.put(var, info);
@@ -1189,7 +1134,7 @@ public class RubyScriptStructureBuilder implements NodeVisitor {
 		
 		// TODO Set the info!
 		ISourcePosition pos = iVisited.getPosition();
-		setLocalVarRange( pos, info, iVisited.getName() );
+		setTokenRange( pos, info, iVisited.getName() );
 		infoStack.push(info);
 
 		newElements.put(var, info);
