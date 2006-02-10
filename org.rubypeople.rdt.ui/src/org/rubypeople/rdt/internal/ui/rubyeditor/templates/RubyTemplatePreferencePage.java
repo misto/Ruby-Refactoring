@@ -24,8 +24,8 @@ import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.texteditor.templates.TemplatePreferencePage;
 import org.rubypeople.rdt.internal.ui.RubyPlugin;
-import org.rubypeople.rdt.internal.ui.text.RubySourceViewerConfiguration;
 import org.rubypeople.rdt.ui.PreferenceConstants;
+import org.rubypeople.rdt.ui.text.RubySourceViewerConfiguration;
 
 /**
  * @see org.eclipse.jface.preference.PreferencePage
@@ -58,7 +58,7 @@ public class RubyTemplatePreferencePage extends TemplatePreferencePage {
 		SourceViewer viewer = new SourceViewer(parent, null, null, false, SWT.BORDER | SWT.V_SCROLL | SWT.H_SCROLL);
 
 		// FIXME Pass in the current editor!
-		SourceViewerConfiguration configuration = new RubySourceViewerConfiguration(RubyPlugin.getDefault().getTextTools(), null);
+		SourceViewerConfiguration configuration = new RubySourceViewerConfiguration(RubyPlugin.getDefault().getRubyTextTools(), null);
 		IDocument document = new Document();
 		// FIXME Do we need this?
 		//new AntDocumentSetupParticipant().setup(document);

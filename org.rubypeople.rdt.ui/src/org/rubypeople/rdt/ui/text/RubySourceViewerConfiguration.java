@@ -387,7 +387,9 @@ public class RubySourceViewerConfiguration extends TextSourceViewerConfiguration
         RubyReconciler reconciler = new RubyReconciler(fTextEditor, new RubyReconcilingStrategy(
                 (RubyAbstractEditor) fTextEditor), true);
         reconciler.setIsIncrementalReconciler(false);
-        reconciler.setIsAllowedToModifyDocument(false);
+        // TODO Uncomment when we move to Eclipse 3.2
+        // ECLIPSE 3.2
+        //reconciler.setIsAllowedToModifyDocument(false);
         reconciler.setProgressMonitor(new NullProgressMonitor());
         reconciler.setDelay(500);
         return reconciler;

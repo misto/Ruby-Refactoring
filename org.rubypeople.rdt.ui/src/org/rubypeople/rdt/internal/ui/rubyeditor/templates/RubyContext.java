@@ -18,7 +18,7 @@ import org.eclipse.jface.text.templates.Template;
 import org.eclipse.jface.text.templates.TemplateBuffer;
 import org.eclipse.jface.text.templates.TemplateContextType;
 import org.eclipse.jface.text.templates.TemplateException;
-import org.rubypeople.rdt.internal.ui.rubyeditor.outline.RubyModel;
+import org.rubypeople.rdt.internal.core.RubyModel;
 
 public class RubyContext extends DocumentTemplateContext {
 	
