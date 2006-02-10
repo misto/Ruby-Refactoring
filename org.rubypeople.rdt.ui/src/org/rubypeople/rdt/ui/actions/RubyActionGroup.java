@@ -17,6 +17,7 @@ public class RubyActionGroup extends ActionGroup {
 		super.fillContextMenu(menu);
 
 		menu.add(editor.getAction("ToggleComment"));
+        menu.add(editor.getAction("SurroundWithBeginRescue"));
 		menu.add(editor.getAction("Comment"));
 		menu.add(editor.getAction("Uncomment"));
 		menu.add(editor.getAction("Format"));

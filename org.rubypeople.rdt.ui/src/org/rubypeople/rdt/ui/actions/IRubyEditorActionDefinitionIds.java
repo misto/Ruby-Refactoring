@@ -33,4 +33,6 @@ public interface IRubyEditorActionDefinitionIds extends ITextEditorActionDefinit
 	 */
 	public static final String SHOW_RDOC= "org.rubypeople.rdt.ui.edit.text.ruby.show.rdoc"; //$NON-NLS-1$
 
+    public static final String SURROUND_WITH_BEGIN_RESCUE = "org.rubypeople.rdt.ui.edit.text.ruby.surround.with.begin.rescue"; //$NON-NLS-1$
+
 }
