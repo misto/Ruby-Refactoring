@@ -10,9 +10,12 @@
  *******************************************************************************/
 package org.rubypeople.rdt.internal.ui.preferences;
 
+import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.ui.help.WorkbenchHelp;
+import org.rubypeople.rdt.internal.ui.IRubyHelpContextIds;
 import org.rubypeople.rdt.internal.ui.RubyPlugin;
 
 /*
@@ -20,112 +23,128 @@ import org.rubypeople.rdt.internal.ui.RubyPlugin;
  */
 public class TodoTaskPreferencePage extends PropertyAndPreferencePage {
 
-	public static final String PREF_ID = "org.rubypeople.rdt.ui.preferences.TodoTaskPreferencePage"; //$NON-NLS-1$
-	public static final String PROP_ID = "org.rubypeople.rdt.ui.propertyPages.TodoTaskPreferencePage"; //$NON-NLS-1$
+    public static final String PREF_ID = "org.rubypeople.rdt.ui.preferences.TodoTaskPreferencePage"; //$NON-NLS-1$
+    public static final String PROP_ID = "org.rubypeople.rdt.ui.propertyPages.TodoTaskPreferencePage"; //$NON-NLS-1$
 
-	private TodoTaskConfigurationBlock fConfigurationBlock;
+    private TodoTaskConfigurationBlock fConfigurationBlock;
 
-	public TodoTaskPreferencePage() {
-		setPreferenceStore(RubyPlugin.getDefault().getPreferenceStore());
-		setDescription(PreferencesMessages.getString("TodoTaskPreferencePage.description")); //$NON-NLS-1$
+    public TodoTaskPreferencePage() {
+        setPreferenceStore(RubyPlugin.getDefault().getPreferenceStore());
+        setDescription(PreferencesMessages.TodoTaskPreferencePage_description); 
 
-		// only used when page is shown programatically
-		setTitle(PreferencesMessages.getString("TodoTaskPreferencePage.title")); //$NON-NLS-1$
-	}
+        // only used when page is shown programatically
+        setTitle(PreferencesMessages.TodoTaskPreferencePage_title); 
+    }
 
-	/*
-	 * @see org.eclipse.jface.dialogs.IDialogPage#createControl(org.eclipse.swt.widgets.Composite)
-	 */
-	public void createControl(Composite parent) {
-		fConfigurationBlock = new TodoTaskConfigurationBlock(getNewStatusChangedListener(), getProject());
+    /*
+     * @see org.eclipse.jface.dialogs.IDialogPage#createControl(org.eclipse.swt.widgets.Composite)
+     */
+    public void createControl(Composite parent) {
+        fConfigurationBlock = new TodoTaskConfigurationBlock(getNewStatusChangedListener(),
+                getProject());
 
-		super.createControl(parent);
-		// FIXME Uncomment for help context!
-		// if (isProjectPreferencePage()) {
-		// WorkbenchHelp.setHelp(getControl(),
-		// IJavaHelpContextIds.TODOTASK_PROPERTY_PAGE);
-		// } else {
-		// WorkbenchHelp.setHelp(getControl(),
-		// IJavaHelpContextIds.TODOTASK_PREFERENCE_PAGE);
-		// }
-	}
+        super.createControl(parent);
+        if (isProjectPreferencePage()) {
+            WorkbenchHelp.setHelp(getControl(), IRubyHelpContextIds.TODOTASK_PROPERTY_PAGE);
+        } else {
+            WorkbenchHelp.setHelp(getControl(), IRubyHelpContextIds.TODOTASK_PREFERENCE_PAGE);
+        }
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.eclipse.jdt.internal.ui.preferences.PropertyAndPreferencePage#createPreferenceContent(org.eclipse.swt.widgets.Composite)
-	 */
-	protected Control createPreferenceContent(Composite composite) {
-		return fConfigurationBlock.createContents(composite);
-	}
+    /*
+     * (non-Rubydoc)
+     * 
+     * @see org.eclipse.jdt.internal.ui.preferences.PropertyAndPreferencePage#getPreferencePageID()
+     */
+    protected String getPreferencePageID() {
+        return PREF_ID;
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.eclipse.jdt.internal.ui.preferences.PropertyAndPreferencePage#hasProjectSpecificOptions()
-	 */
-	protected boolean hasProjectSpecificOptions() {
-		return fConfigurationBlock.hasProjectSpecificOptions();
-	}
+    /*
+     * (non-Rubydoc)
+     * 
+     * @see org.eclipse.jdt.internal.ui.preferences.PropertyAndPreferencePage#getPropertyPageID()
+     */
+    protected String getPropertyPageID() {
+        return PROP_ID;
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.eclipse.jdt.internal.ui.preferences.PropertyAndPreferencePage#openWorkspacePreferences()
-	 */
-	protected void openWorkspacePreferences() {
-		TodoTaskPreferencePage page = new TodoTaskPreferencePage();
-		PreferencePageSupport.showPreferencePage(getShell(), PREF_ID, page);
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.eclipse.jdt.internal.ui.preferences.PropertyAndPreferencePage#createPreferenceContent(org.eclipse.swt.widgets.Composite)
+     */
+    protected Control createPreferenceContent(Composite composite) {
+        return fConfigurationBlock.createContents(composite);
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.eclipse.jdt.internal.ui.preferences.PropertyAndPreferencePage#enablePreferenceContent(boolean)
-	 */
-	protected void enablePreferenceContent(boolean enable) {
-		fConfigurationBlock.setEnabled(enable); // override default behaviour
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.eclipse.jdt.internal.ui.preferences.PropertyAndPreferencePage#hasProjectSpecificOptions()
+     */
+    protected boolean hasProjectSpecificOptions(IProject project) {
+        return fConfigurationBlock.hasProjectSpecificOptions();
+    }
 
-	/*
-	 * @see org.eclipse.jface.preference.IPreferencePage#performDefaults()
-	 */
-	protected void performDefaults() {
-		super.performDefaults();
-		if (fConfigurationBlock != null) {
-			fConfigurationBlock.performDefaults();
-		}
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.eclipse.jdt.internal.ui.preferences.PropertyAndPreferencePage#openWorkspacePreferences()
+     */
+    protected void openWorkspacePreferences() {
+        TodoTaskPreferencePage page = new TodoTaskPreferencePage();
+        PreferencePageSupport.showPreferencePage(getShell(), PREF_ID, page);
+    }
 
-	/*
-	 * @see org.eclipse.jface.preference.IPreferencePage#performOk()
-	 */
-	public boolean performOk() {
-		boolean enabled = !isProjectPreferencePage() || useProjectSettings();
-		if (fConfigurationBlock != null && !fConfigurationBlock.performOk(enabled)) { return false; }
-		return super.performOk();
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.eclipse.jdt.internal.ui.preferences.PropertyAndPreferencePage#enablePreferenceContent(boolean)
+     */
+    protected void enablePreferenceContent(boolean enable) {
+        fConfigurationBlock.setEnabled(enable); // override default behaviour
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.eclipse.jface.dialogs.DialogPage#dispose()
-	 */
-	public void dispose() {
-		if (fConfigurationBlock != null) {
-			fConfigurationBlock.dispose();
-		}
-		super.dispose();
-	}
+    /*
+     * @see org.eclipse.jface.preference.IPreferencePage#performDefaults()
+     */
+    protected void performDefaults() {
+        super.performDefaults();
+        if (fConfigurationBlock != null) {
+            fConfigurationBlock.performDefaults();
+        }
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.eclipse.jdt.internal.ui.preferences.PropertyAndPreferencePage#setElement(org.eclipse.core.runtime.IAdaptable)
-	 */
-	public void setElement(IAdaptable element) {
-		super.setElement(element);
-		setDescription(null); // no description for property page
-	}
+    /*
+     * @see org.eclipse.jface.preference.IPreferencePage#performOk()
+     */
+    public boolean performOk() {
+        boolean enabled = !isProjectPreferencePage() || useProjectSettings();
+        if (fConfigurationBlock != null && !fConfigurationBlock.performOk(enabled)) { return false; }
+        return super.performOk();
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.eclipse.jface.dialogs.DialogPage#dispose()
+     */
+    public void dispose() {
+        if (fConfigurationBlock != null) {
+            fConfigurationBlock.dispose();
+        }
+        super.dispose();
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.eclipse.jdt.internal.ui.preferences.PropertyAndPreferencePage#setElement(org.eclipse.core.runtime.IAdaptable)
+     */
+    public void setElement(IAdaptable element) {
+        super.setElement(element);
+        setDescription(null); // no description for property page
+    }
 
 }

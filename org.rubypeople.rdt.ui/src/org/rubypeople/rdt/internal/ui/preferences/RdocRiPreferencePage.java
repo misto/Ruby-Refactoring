@@ -28,7 +28,7 @@ public class RdocRiPreferencePage
 	public RdocRiPreferencePage() {
 		super(GRID);
 		setPreferenceStore(RubyPlugin.getDefault().getPreferenceStore());
-		setDescription(PreferencesMessages.getString("RiPreferencePage.description.label")); //$NON-NLS-1$
+		setDescription(PreferencesMessages.RiPreferencePage_description_label); 
 	}
 			
 	/**
@@ -39,10 +39,10 @@ public class RdocRiPreferencePage
 	 */
 	public void createFieldEditors() {
 		addField( new FileFieldEditor( PreferenceConstants.RDOC_PATH,
-				PreferencesMessages.getString("RiPreferencePage.rdocpath.label"), getFieldEditorParent() ) ); //$NON-NLS-1$
+				PreferencesMessages.RiPreferencePage_rdocpath_label, getFieldEditorParent() ) ); 
 		
 		addField( new FileFieldEditor( PreferenceConstants.RI_PATH,
-				PreferencesMessages.getString("RiPreferencePage.ripath.label"), getFieldEditorParent() ) );  //$NON-NLS-1$
+				PreferencesMessages.RiPreferencePage_ripath_label, getFieldEditorParent() ) );  
 	}
 
 	/* (non-Javadoc)

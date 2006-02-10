@@ -130,7 +130,7 @@ public class TextEditorPreferencePage2 extends RubyAbstractPreferencePage implem
 		appearanceComposite.setLayout(layout);
 
 		final Shell shell= appearanceComposite.getShell();
-		String text= PreferencesMessages.getString("RubyEditorPreferencePage.link");
+		String text= PreferencesMessages.RubyEditorPreferencePage_link;
 		Link link= new Link(appearanceComposite, SWT.NONE);
 		link.setText(text);
 		link.addSelectionListener(new SelectionAdapter() {
@@ -138,7 +138,7 @@ public class TextEditorPreferencePage2 extends RubyAbstractPreferencePage implem
 				PreferencesUtil.createPreferenceDialogOn(shell, "org.eclipse.ui.preferencePages.GeneralTextEditor", null, null); //$NON-NLS-1$
 			}
 		});
-		link.setToolTipText(PreferencesMessages.getString("RubyEditorPreferencePage.link.tooltip")); 
+		link.setToolTipText(PreferencesMessages.RubyEditorPreferencePage_link_tooltip); 
 
 		return appearanceComposite;
 	}
