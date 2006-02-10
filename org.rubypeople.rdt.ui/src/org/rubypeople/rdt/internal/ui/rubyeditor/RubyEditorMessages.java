@@ -14,38 +14,67 @@ import java.text.MessageFormat;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
 
-public class RubyEditorMessages {
+import org.eclipse.osgi.util.NLS;
 
-	private static final String RESOURCE_BUNDLE= RubyEditorMessages.class.getName();
+public class RubyEditorMessages extends NLS {
 
-	private static ResourceBundle fgResourceBundle= ResourceBundle.getBundle(RESOURCE_BUNDLE);
+    private static final String BUNDLE_NAME = RubyEditorMessages.class.getName();
 
-	private RubyEditorMessages() {
-	}
+    public static String RubyOutlinePage_Sort_label;
+    public static String RubyOutlinePage_Sort_tooltip;
+    public static String RubyOutlinePage_Sort_description;
+    public static String RubyOutlinePage_GoIntoTopLevelType_label;
+    public static String RubyOutlinePage_GoIntoTopLevelType_tooltip;
+    public static String RubyOutlinePage_GoIntoTopLevelType_description;
+    public static String RubyOutlinePage_error_NoTopLevelType;
 
-	public static String getString(String key) {
-		try {
-			return fgResourceBundle.getString(key);
-		} catch (MissingResourceException e) {
-			return '!' + key + '!';
-		}
-	}
-	
-	public static ResourceBundle getResourceBundle() {
-		return fgResourceBundle;
-	}
+    private static ResourceBundle fgResourceBundle = ResourceBundle.getBundle(BUNDLE_NAME);
 
-	/**
-	 * Gets a string from the resource bundle and formats it with arguments
-	 */	
-	public static String getFormattedString(String key, Object[] args) {
-		return MessageFormat.format(getString(key), args);
-	}
-	
-	/**
-	 * Gets a string from the resource bundle and formats it with arguments
-	 */	
-	public static String getFormattedString(String key, Object arg) {
-		return MessageFormat.format(getString(key), new Object[] { arg } );
-	}	
+    private static final String BUNDLE_FOR_CONSTRUCTED_KEYS= "org.rubypeople.rdt.internal.ui.rubyeditor.ConstructedRubyEditorMessages";//$NON-NLS-1$
+    private static ResourceBundle fgBundleForConstructedKeys= ResourceBundle.getBundle(BUNDLE_FOR_CONSTRUCTED_KEYS);
+
+    /**
+     * Returns the message bundle which contains constructed keys.
+     *
+     * @since 3.1
+     * @return the message bundle
+     */
+    public static ResourceBundle getBundleForConstructedKeys() {
+        return fgBundleForConstructedKeys;
+    }
+
+    
+    private RubyEditorMessages() {
+    }
+
+    public static String getString(String key) {
+        try {
+            return fgResourceBundle.getString(key);
+        } catch (MissingResourceException e) {
+            return '!' + key + '!';
+        }
+    }
+
+    public static ResourceBundle getResourceBundle() {
+        return fgResourceBundle;
+    }
+
+    /**
+     * Gets a string from the resource bundle and formats it with arguments
+     */
+    public static String getFormattedString(String key, Object[] args) {
+        return MessageFormat.format(getString(key), args);
+    }
+
+    /**
+     * Gets a string from the resource bundle and formats it with arguments
+     */
+    public static String getFormattedString(String key, Object arg) {
+        return MessageFormat.format(getString(key), new Object[] { arg});
+    }
+
+    static {
+        NLS.initializeMessages(BUNDLE_NAME, RubyEditorMessages.class);
+    }
+
 }
