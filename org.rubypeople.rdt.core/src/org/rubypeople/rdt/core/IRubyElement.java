@@ -41,12 +41,11 @@ public interface IRubyElement extends IAdaptable {
 	public static final int CONSTANT = 7;
 	public static final int CLASS_VAR = 8;
 	public static final int INSTANCE_VAR = 9;
-	public static final int LOCAL_VAR = 10;
+	public static final int LOCAL_VARIABLE = 10;
 	public static final int BLOCK = 11;
 	public static final int DYNAMIC_VAR = 12;
 	public static final int FIELD = 13;
 	public static final int IMPORT_CONTAINER = 14;
-	public static final int SINGLETON_METHOD = 15;
 
 	/**
 	 * Returns the first ancestor of this Ruby element that has the given type.
