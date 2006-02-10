@@ -32,7 +32,7 @@ import org.rubypeople.rdt.internal.core.RubyMethod;
  */
 public interface IType extends IRubyElement, IMember {
 
-	public RubyMethod getMethod(String name);
+	public RubyMethod getMethod(String name, String[] parameterNames);
 
 	/**
 	 * Returns the methods and constructors declared by this type. For binary
@@ -134,5 +134,7 @@ public interface IType extends IRubyElement, IMember {
 	 *         collection if none
 	 */
 	String[] getIncludedModuleNames() throws RubyModelException;
+
+    public boolean isMember() throws RubyModelException;
 
 }
