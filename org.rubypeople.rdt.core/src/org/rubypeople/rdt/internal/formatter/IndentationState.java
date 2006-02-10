@@ -1,5 +1,6 @@
 package org.rubypeople.rdt.internal.formatter;
 
+
 public class IndentationState {
 	private int lastIndentation ;
 	private int indentationLevel ;
@@ -8,14 +9,12 @@ public class IndentationState {
 	private int pos ;
 	private int indentation ;
 	private String unformattedText ;
-	private char fillCharacter ;
 	
-	public IndentationState(String unformattedText, int indentationLength, int offset, char fillCharacter) {
+	public IndentationState(String unformattedText, int indentationLength, int offset, int initialIndentLevel) {
 		this.unformattedText = unformattedText ;
 		this.indentationLength = indentationLength ;
-		this.fillCharacter = fillCharacter ;
-		this.offset = offset ;
-		indentationLevel = 0 ;		
+		this.offset = offset;
+		indentationLevel = initialIndentLevel;		
 		pos = 0 ;
 		this.calculateIndentation() ;		
 	}
@@ -35,12 +34,9 @@ public class IndentationState {
 		pos += increment ;
 	}
 	
-	public void calculateIndentation() {
+	public void calculateIndentation() {        
 		indentation = offset + indentationLength * indentationLevel ;	
 	}
-	
-
-
 
 	public int getIndentation() {
 		return indentation;
@@ -100,17 +96,5 @@ public class IndentationState {
 	public int getLastIndentation() {
 		return lastIndentation ;	
 	}
-	
-	protected String getIndentationString() {
-		if (indentation <= 0) {
-			return "";
-		}
-		char[] chars = new char[indentation];
-		for (int i = 0; i < indentation; i++) {
-			chars[i] = fillCharacter;
-		}
-		return new String(chars);
-	}
-	
 
 }

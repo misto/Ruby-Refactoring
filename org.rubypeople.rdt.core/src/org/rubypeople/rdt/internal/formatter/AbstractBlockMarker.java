@@ -1,5 +1,9 @@
 package org.rubypeople.rdt.internal.formatter;
 
+import java.util.Map;
+
+import org.rubypeople.rdt.core.formatter.Indents;
+
 public abstract class AbstractBlockMarker {
 	protected int pos;
 	private AbstractBlockMarker next;
@@ -33,9 +37,13 @@ public abstract class AbstractBlockMarker {
 		this.next = next;
 	}
 
-	public void appendIndentedLine(StringBuffer sb, IndentationState state, String originalLine, String strippedLine) {
-
-		sb.append(state.getIndentationString());
+	public void appendIndentedLine(StringBuffer sb, IndentationState state, String originalLine, String strippedLine, Map options) {
+        String spaces = "";
+        for (int i = 0; i < state.getOffset(); i++) {
+            spaces+= " ";
+        }
+        sb.append(spaces);
+        sb.append(Indents.createIndentString(state.getIndentationLevel(), options));
 		sb.append(strippedLine);
 	}
 
