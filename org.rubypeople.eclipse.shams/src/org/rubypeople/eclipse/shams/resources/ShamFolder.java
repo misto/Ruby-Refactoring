@@ -1,6 +1,8 @@
 package org.rubypeople.eclipse.shams.resources;
 
 
+import java.net.URI;
+
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.runtime.CoreException;
@@ -54,5 +56,10 @@ public class ShamFolder extends ShamContainer implements IFolder {
 
     public void move(IPath destination, boolean force, boolean keepHistory, IProgressMonitor monitor) throws CoreException {
         throw new RuntimeException("Sham needs to implement");
+    }
+
+    public void createLink(URI location, int updateFlags, IProgressMonitor monitor) throws CoreException {
+        // TODO Auto-generated method stub
+        
     }
 }

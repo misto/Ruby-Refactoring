@@ -4,12 +4,12 @@ import java.io.IOException;
 import java.io.Reader;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 
 import junit.framework.TestCase;
 
 import org.rubypeople.eclipse.shams.resources.ShamFile;
-import org.rubypeople.eclipse.shams.runtime.ShamPreferences;
 import org.rubypeople.rdt.internal.core.parser.TaskParser;
 import org.rubypeople.rdt.internal.core.parser.TaskTag;
 
@@ -26,7 +26,7 @@ public class TC_TaskCompiler extends TestCase {
         private List tasks = new ArrayList();
 
         public ShamTaskParser() {
-            super(new ShamPreferences());
+            super(new HashMap());
         }
         
         public void parse(Reader reader) throws IOException {

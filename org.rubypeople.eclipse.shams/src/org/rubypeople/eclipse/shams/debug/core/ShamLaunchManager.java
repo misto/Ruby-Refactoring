@@ -204,4 +204,9 @@ public class ShamLaunchManager implements ILaunchManager {
 		return null;
 	}
 
+    public ILaunchConfiguration[] getMigrationCandidates() throws CoreException {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
 }

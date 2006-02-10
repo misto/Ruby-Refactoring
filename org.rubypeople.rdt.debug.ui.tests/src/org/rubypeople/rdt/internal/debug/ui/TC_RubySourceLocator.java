@@ -10,6 +10,7 @@ import junit.framework.TestCase;
 import org.eclipse.core.internal.resources.Project;
 import org.eclipse.core.internal.resources.Workspace;
 import org.eclipse.core.resources.IFile;
+import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -206,5 +207,20 @@ public class TC_RubySourceLocator extends TestCase {
 			// TODO Auto-generated method stub
 			return null;
 		}
+
+        public IResource[] getMappedResources() throws CoreException {
+            // TODO Auto-generated method stub
+            return null;
+        }
+
+        public boolean isMigrationCandidate() throws CoreException {
+            // TODO Auto-generated method stub
+            return false;
+        }
+
+        public void migrate() throws CoreException {
+            // TODO Auto-generated method stub
+            
+        }
 }
 }

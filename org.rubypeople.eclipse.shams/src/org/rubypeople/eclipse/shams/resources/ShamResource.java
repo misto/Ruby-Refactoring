@@ -284,4 +284,14 @@ public class ShamResource implements IResource {
 		return path.toFile().toURI();
 	}
 
+    public URI getRawLocationURI() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    public boolean isLinked(int options) {
+        // TODO Auto-generated method stub
+        return false;
+    }
+
 }

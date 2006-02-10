@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.eclipse.core.resources.IFile;
+import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -119,4 +120,19 @@ public class ShamLaunchConfiguration implements ILaunchConfiguration {
 	public ILaunch launch(String mode, IProgressMonitor monitor, boolean build, boolean register) throws CoreException {
 		throw new RuntimeException("Need to implement on sham.");
 	}
+
+    public IResource[] getMappedResources() throws CoreException {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    public boolean isMigrationCandidate() throws CoreException {
+        // TODO Auto-generated method stub
+        return false;
+    }
+
+    public void migrate() throws CoreException {
+        // TODO Auto-generated method stub
+        
+    }
 }

@@ -356,6 +356,21 @@ public class TC_RubyRuntime extends TestCase {
 			return null;
 		}
 
+        public void createLink(URI location, int updateFlags, IProgressMonitor monitor) throws CoreException {
+            // TODO Auto-generated method stub
+            
+        }
+
+        public URI getRawLocationURI() {
+            // TODO Auto-generated method stub
+            return null;
+        }
+
+        public boolean isLinked(int options) {
+            // TODO Auto-generated method stub
+            return false;
+        }
+
 
 	}
 }

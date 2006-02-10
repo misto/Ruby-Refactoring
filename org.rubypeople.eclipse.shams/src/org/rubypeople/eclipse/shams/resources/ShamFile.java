@@ -6,6 +6,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Reader;
+import java.net.URI;
 
 import junit.framework.Assert;
 
@@ -389,6 +390,21 @@ public class ShamFile extends ShamResource implements IFile {
             super.close();
             ShamFile.this.inputStream = null;
         }
+    }
+
+    public void createLink(URI location, int updateFlags, IProgressMonitor monitor) throws CoreException {
+        // TODO Auto-generated method stub
+        
+    }
+
+    public URI getRawLocationURI() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    public boolean isLinked(int options) {
+        // TODO Auto-generated method stub
+        return false;
     }
 
 }

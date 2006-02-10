@@ -2,23 +2,24 @@ package org.rubypeople.rdt.internal.core.parser;
 
 
 import java.io.StringReader;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import junit.framework.TestCase;
 
 import org.eclipse.core.resources.IMarker;
-import org.rubypeople.eclipse.shams.runtime.ShamPreferences;
 import org.rubypeople.rdt.core.RubyCore;
 
 public class TC_TaskParser extends TestCase {
 
 	private static final String BASIC_MESSAGE      = "TASK test";
 	private static final String ALTERNATE_MESSAGE  = "CHORE test";
-    private ShamPreferences preferences;
+    private Map preferences;
     private TaskParser parser;
 
     public void setUp() {
-        preferences = new ShamPreferences();
+        preferences = new HashMap();
         preferences.put(RubyCore.COMPILER_TASK_TAGS, "TASK");
 
         parser = new TaskParser(preferences);

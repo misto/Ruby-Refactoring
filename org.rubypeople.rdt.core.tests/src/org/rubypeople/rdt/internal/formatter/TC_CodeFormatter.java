@@ -8,14 +8,13 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.FactoryConfigurationError;
 import javax.xml.parsers.ParserConfigurationException;
 
-import org.rubypeople.rdt.internal.formatter.CodeFormatter;
+import junit.framework.Assert;
+import junit.framework.TestCase;
+
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
-
-import junit.framework.Assert;
-import junit.framework.TestCase;
 
 public class TC_CodeFormatter extends TestCase {
 
@@ -83,8 +82,8 @@ public class TC_CodeFormatter extends TestCase {
 	public void doTest(String name) {
 		ArrayList partList = (ArrayList) testMap.get(name);
 		for (int i = 0; i < partList.size(); i++) {
-			TestData data = (TestData) partList.get(i); 
-			String formatted = new CodeFormatter('*', true).formatString(data.unformattedText);
+			TestData data = (TestData) partList.get(i);             
+			String formatted = new OldCodeFormatter().formatString(data.unformattedText);
 			System.out.println("---------- " + data.assertionMessage + " --------") ;
 			System.out.println(data.unformattedText) ;
 			System.out.println("------------") ;
