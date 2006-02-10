@@ -33,13 +33,12 @@ import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Plugin;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.ISchedulingRule;
-import org.eclipse.core.runtime.preferences.DefaultScope;
 import org.eclipse.core.runtime.preferences.IEclipsePreferences;
-import org.eclipse.core.runtime.preferences.InstanceScope;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.rubypeople.rdt.internal.core.BatchOperation;
 import org.rubypeople.rdt.internal.core.DefaultWorkingCopyOwner;
+import org.rubypeople.rdt.internal.core.RubyCorePreferenceInitializer;
 import org.rubypeople.rdt.internal.core.RubyModel;
 import org.rubypeople.rdt.internal.core.RubyModelManager;
 import org.rubypeople.rdt.internal.core.RubyProject;
@@ -175,6 +174,21 @@ public class RubyCore extends Plugin {
      */
     public static final String CORE_ENCODING = PLUGIN_ID + ".encoding"; //$NON-NLS-1$
 
+    /**
+     * Possible configurable option value.
+     * 
+     * @see #getDefaultOptions()
+     * @since 0.8.0
+     */
+    public static final String INSERT = "insert"; //$NON-NLS-1$
+    /**
+     * Possible configurable option value.
+     * 
+     * @see #getDefaultOptions()
+     * @since 0.8.0
+     */
+    public static final String DO_NOT_INSERT = "do not insert"; //$NON-NLS-1$
+
     private SymbolIndex symbolIndex;
     private ISymbolFinder symbolFinder;
 
@@ -204,40 +218,7 @@ public class RubyCore extends Plugin {
      */
     public void start(BundleContext context) throws Exception {
         super.start(context);
-        // init preferences
-        initializeDefaultPreferences();
-
-        // Listen to instance preferences node removal from parent in order to
-        // refresh stored one
-        IEclipsePreferences.INodeChangeListener listener = new IEclipsePreferences.INodeChangeListener() {
-
-            public void added(IEclipsePreferences.NodeChangeEvent event) {
-                // do nothing
-            }
-
-            public void removed(IEclipsePreferences.NodeChangeEvent event) {
-                if (event.getChild() == preferencesLookup[PREF_INSTANCE]) {
-                    preferencesLookup[PREF_INSTANCE] = new InstanceScope().getNode(PLUGIN_ID);
-                }
-            }
-        };
-        ((IEclipsePreferences) getInstancePreferences().parent()).addNodeChangeListener(listener);
-
-        // Listen to default preferences node removal from parent in order to
-        // refresh stored one
-        listener = new IEclipsePreferences.INodeChangeListener() {
-
-            public void added(IEclipsePreferences.NodeChangeEvent event) {
-                // do nothing
-            }
-
-            public void removed(IEclipsePreferences.NodeChangeEvent event) {
-                if (event.getChild() == preferencesLookup[PREF_DEFAULT]) {
-                    preferencesLookup[PREF_DEFAULT] = new DefaultScope().getNode(PLUGIN_ID);
-                }
-            }
-        };
-        ((IEclipsePreferences) getDefaultPreferences().parent()).addNodeChangeListener(listener);
+        RubyModelManager.getRubyModelManager().startup();
 
         RubyParser.setDebugging(isDebugOptionTrue(RUBY_PARSER_DEBUG_OPTION));
         RubyModelManager.setVerbose(isDebugOptionTrue(MODEL_MANAGER_VERBOSE_OPTION));
@@ -249,6 +230,21 @@ public class RubyCore extends Plugin {
         List rubyProjects = Arrays.asList(getRubyProjects());
         MassIndexUpdaterJob massUpdater = new MassIndexUpdaterJob(indexUpdater, rubyProjects);
         massUpdater.schedule();
+    }
+
+    /*
+     * (non-Javadoc) Shutdown the JavaCore plug-in. <p> De-registers the
+     * RubyModelManager as a resource changed listener and save participant. <p>
+     * 
+     * @see org.eclipse.core.runtime.Plugin#stop(BundleContext)
+     */
+    public void stop(BundleContext context) throws Exception {
+        try {
+            RubyModelManager.getRubyModelManager().shutdown();
+        } finally {
+            // ensure we call super.stop as the last thing
+            super.stop(context);
+        }
     }
 
     private boolean isDebugOptionTrue(String option) {
@@ -275,41 +271,8 @@ public class RubyCore extends Plugin {
         return false;
     }
 
-    /*
-     * Initializes the default preferences settings for this plug-in.
-     */
-    protected void initializeDefaultPreferences() {
-        // Init and store default and instance preferences
-        IEclipsePreferences defaultPreferences = getDefaultPreferences();
-
-        // Override some compiler defaults
-        defaultPreferences.put(COMPILER_TASK_TAGS, DEFAULT_TASK_TAGS);
-        defaultPreferences.put(COMPILER_TASK_PRIORITIES, DEFAULT_TASK_PRIORITIES);
-        defaultPreferences.put(COMPILER_TASK_CASE_SENSITIVE, ENABLED);
-    }
-
     public static void trace(String message) {
         if (getPlugin().isDebugging()) System.out.println(message);
-    }
-
-    /**
-     * @since 3.1
-     */
-    public static IEclipsePreferences getDefaultPreferences() {
-        if (preferencesLookup[PREF_DEFAULT] == null) {
-            preferencesLookup[PREF_DEFAULT] = new DefaultScope().getNode(PLUGIN_ID);
-        }
-        return preferencesLookup[PREF_DEFAULT];
-    }
-
-    /**
-     * @since 3.1
-     */
-    public static IEclipsePreferences getInstancePreferences() {
-        if (preferencesLookup[PREF_INSTANCE] == null) {
-            preferencesLookup[PREF_INSTANCE] = new InstanceScope().getNode(PLUGIN_ID);
-        }
-        return preferencesLookup[PREF_INSTANCE];
     }
 
     public static void log(Exception e) {
@@ -647,5 +610,9 @@ public class RubyCore extends Plugin {
      */
     public static RubyCore getRubyCore() {
         return (RubyCore) getPlugin();
+    }
+
+    public static boolean isRubyLikeFileName(String name) {
+        return name.endsWith(".rb") || name.endsWith(".rbw");
     }
 }
