@@ -178,6 +178,19 @@ public class RubyCommentScanner extends AbstractRubyScanner {
 
 		initialize();
 	}
+    
+    /**
+     * Initialize with the given arguments.
+     *
+     * @param manager Color manager
+     * @param store Preference store
+     * @param defaultTokenProperty Default token property
+     *
+     * @since 0.8.0
+     */
+    public RubyCommentScanner(IColorManager manager, IPreferenceStore store, String defaultTokenProperty) {
+        this(manager, store, null, defaultTokenProperty, new String[] { defaultTokenProperty, TASK_TAG });
+    }
 
 	public boolean affectsBehavior(PropertyChangeEvent event) {
 		return event.getProperty().equals(COMPILER_TASK_TAGS) || event.getProperty().equals(COMPILER_TASK_CASE_SENSITIVE) || super.affectsBehavior(event);

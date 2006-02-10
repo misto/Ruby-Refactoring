@@ -28,7 +28,7 @@ public class RubyDocumentSetupParticipant  implements IDocumentSetupParticipant 
 	 * @see org.eclipse.core.filebuffers.IDocumentSetupParticipant#setup(org.eclipse.jface.text.IDocument)
 	 */
 	public void setup(IDocument document) {
-		RubyTextTools tools= RubyPlugin.getDefault().getTextTools();
+		RubyTextTools tools= RubyPlugin.getDefault().getRubyTextTools();
 		tools.setupRubyDocumentPartitioner(document, IRubyPartitions.RUBY_PARTITIONING);
 	}
 }

@@ -46,7 +46,7 @@ public class ExternalRubyDocumentProvider extends AbstractDocumentProvider {
 		document.set(fileContent.toString()) ;
         // TODO: check if this should be inherited from RubyDocumentProvider
 		if (document != null) {
-			RubyTextTools tools = RubyPlugin.getDefault().getTextTools();
+			RubyTextTools tools = RubyPlugin.getDefault().getRubyTextTools();
 			IDocumentPartitioner partitioner = tools.createDocumentPartitioner();
 			document.setDocumentPartitioner(partitioner);
 			partitioner.connect(document);

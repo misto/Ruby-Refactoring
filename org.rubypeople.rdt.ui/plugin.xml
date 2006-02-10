@@ -21,6 +21,13 @@
             id="org.rubypeople.rdt.ui.preferences.PreferencePageRubyEditor">
       </page>
       <page
+            name="%codeFormatterPrefName"
+            category="org.rubypeople.rdt.ui.preferences.PreferencePageRubyBase"
+            class="org.rubypeople.rdt.internal.ui.preferences.CodeFormatterPreferencePage"
+            id="org.rubypeople.rdt.ui.preferences.CodeFormatterPreferencePage">
+            <keywordReference id="org.rubypeople.rdt.ui.formatter"/>
+      </page>
+      <page
             name="%PreferencePage.rdtTaskPreferences"
             category="org.rubypeople.rdt.ui.preferences.PreferencePageRubyBase"
             class="org.rubypeople.rdt.internal.ui.preferences.TodoTaskPreferencePage"
@@ -38,6 +45,13 @@
             class="org.rubypeople.rdt.internal.ui.preferences.RdocRiPreferencePage"
             id="org.rubypeople.rdt.ui.RdocRiPreferencePage">
       </page>      
+      <page
+            name="%memberSortPrefName"
+            category="org.rubypeople.rdt.ui.preferences.PreferencePageRubyBase"
+            class="org.rubypeople.rdt.internal.ui.preferences.MembersOrderPreferencePage"
+            id="org.rubypeople.rdt.ui.preferences.MembersOrderPreferencePage">
+         <keywordReference id="org.rubypeople.rdt.ui.sortorder"/>
+      </page>
    </extension>
    <extension
          point="org.eclipse.ui.perspectives">
@@ -52,15 +66,16 @@
          point="org.eclipse.ui.newWizards">
       <category
             name="%NewWizardCategory.name"
-            id="org.rubypeople.rdt.ui.NewWizardCategoryRuby">
+            id="org.rubypeople.rdt.ui">
       </category>
       <wizard
             name="%NewWizardRubyProject.name"
             icon="icons/full/etool16/newrprj_wiz.gif"
-            category="org.rubypeople.rdt.ui.NewWizardCategoryRuby"
+            category="org.rubypeople.rdt.ui"
             class="org.rubypeople.rdt.internal.ui.wizards.NewProjectCreationWizard"
             preferredPerspectives="org.rubypeople.rdt.ui.PerspectiveRuby"
             project="true"
+            finalPerspective="org.rubypeople.rdt.ui.PerspectiveRuby"
             id="org.rubypeople.rdt.ui.wizards.NewWizardProjectCreation">
          <description>
             Create a new Ruby project.
@@ -69,7 +84,7 @@
       <wizard
             name="%NewWizardRubyClass.name"
             icon="icons/full/etool16/newclass_wiz.gif"
-            category="org.rubypeople.rdt.ui.NewWizardCategoryRuby"
+            category="org.rubypeople.rdt.ui"
             class="org.rubypeople.rdt.ui.wizards.RubyNewClassWizard"
             preferredPerspectives="org.rubypeople.rdt.ui.PerspectiveRuby"
             id="org.rubypeople.rdt.ui.wizards.RubyNewClassWizard">
@@ -324,6 +339,13 @@
             menubarPath="org.rubypeople.rdt.ui.ruby.menu/editGroup"
             id="org.rubypeople.rdt.ui.actions.ToggleComment">
          </action>
+         <action
+               definitionId="org.rubypeople.rdt.ui.edit.text.ruby.surround.with.begin.rescue"
+               label="%SurroundWithBeginRescueAction.label"
+               retarget="true"
+               menubarPath="org.rubypeople.rdt.ui.ruby.menu/editGroup"
+               id="org.rubypeople.rdt.ui.actions.SurroundWithBeginRescue">
+         </action>
       </actionSet>
       <actionSet
             label="%RubyElementCreationActionSet.label"
@@ -418,9 +440,25 @@
    </extension>
    <extension
          point="org.eclipse.ui.ide.resourceFilters">
+         <filter
+            selected="true"
+            pattern=".*">
+      </filter>
       <filter
             selected="false"
             pattern="*.xml">
+      </filter>
+      <filter
+            selected="false"
+            pattern="*.yml">
+      </filter>
+      <filter
+            selected="false"
+            pattern="*.gem">
+      </filter>
+      <filter
+            selected="false"
+            pattern="*.so">
       </filter>
    </extension>
    <extension

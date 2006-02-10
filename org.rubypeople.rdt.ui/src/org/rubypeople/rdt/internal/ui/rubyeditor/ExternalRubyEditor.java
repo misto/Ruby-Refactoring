@@ -1,5 +1,7 @@
 package org.rubypeople.rdt.internal.ui.rubyeditor;
 
+import org.rubypeople.rdt.core.IRubyElement;
+
 
 public class ExternalRubyEditor extends RubyAbstractEditor {
 	
@@ -12,5 +14,13 @@ public class ExternalRubyEditor extends RubyAbstractEditor {
 	public boolean isEditable() {
 		return false;
 	}
+
+    protected IRubyElement getElementAt(int caret, boolean b) {
+        return null;
+    }
+
+    protected IRubyElement getElementAt(int offset) {
+        return null;
+    }
 
 }

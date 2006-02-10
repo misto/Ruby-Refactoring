@@ -4,30 +4,50 @@ import java.text.MessageFormat;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
 
-public class RubyUIMessages {
-	private static final String RESOURCE_BUNDLE= RubyUIMessages.class.getName();
-	private static ResourceBundle resourceBundle= ResourceBundle.getBundle(RESOURCE_BUNDLE);
+import org.eclipse.osgi.util.NLS;
 
-	private RubyUIMessages() {
-	}
+public class RubyUIMessages extends NLS {
 
-	public static String getString(String key) {
-		try {
-			return resourceBundle.getString(key);
-		} catch (MissingResourceException e) {
-			return '!' + key + '!';
-		}
-	}
-	
-	public static String getFormattedString(String key, String arg) {
-		return getFormattedString(key, new String[] { arg });
-	}
-	
-	public static String getFormattedString(String key, String[] args) {
-		return MessageFormat.format(getString(key), args);	
-	}
-	
-	public static ResourceBundle getResourceBundle() {
-		return resourceBundle;
-	}
+    private static final String BUNDLE_NAME = RubyUIMessages.class.getName();
+    private static ResourceBundle resourceBundle = ResourceBundle.getBundle(BUNDLE_NAME);
+
+    public static String StatusBarUpdater_num_elements_selected;
+    
+    public static String RubyElementLabels_default_package;
+    public static String RubyElementLabels_anonym_type;
+    public static String RubyElementLabels_anonym;
+    public static String RubyElementLabels_import_container;
+    public static String RubyElementLabels_initializer;
+    public static String RubyElementLabels_concat_string;
+    public static String RubyElementLabels_comma_string;
+    public static String RubyElementLabels_declseparator_string;
+    
+    public static String RubyImageLabelprovider_assert_wrongImage;
+
+    private RubyUIMessages() {
+    }
+
+    public static String getString(String key) {
+        try {
+            return resourceBundle.getString(key);
+        } catch (MissingResourceException e) {
+            return '!' + key + '!';
+        }
+    }
+
+    public static String getFormattedString(String key, String arg) {
+        return getFormattedString(key, new String[] { arg});
+    }
+
+    public static String getFormattedString(String key, String[] args) {
+        return MessageFormat.format(getString(key), args);
+    }
+
+    public static ResourceBundle getResourceBundle() {
+        return resourceBundle;
+    }
+
+    static {
+        NLS.initializeMessages(BUNDLE_NAME, RubyUIMessages.class);
+    }
 }

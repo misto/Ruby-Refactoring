@@ -4,11 +4,11 @@ import java.util.Iterator;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.jface.preference.IPreferenceStore;
+import org.eclipse.jface.text.ITextViewerExtension5;
 import org.eclipse.jface.text.TextSelection;
 import org.eclipse.jface.text.source.ISourceViewer;
 import org.eclipse.jface.util.PropertyChangeEvent;
 import org.eclipse.jface.viewers.ISelection;
-import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.StructuredSelection;
@@ -20,297 +20,373 @@ import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.editors.text.EditorsUI;
 import org.eclipse.ui.editors.text.TextEditor;
 import org.eclipse.ui.texteditor.ChainedPreferenceStore;
+import org.eclipse.ui.views.contentoutline.ContentOutline;
 import org.eclipse.ui.views.contentoutline.IContentOutlinePage;
+import org.rubypeople.rdt.core.IImportContainer;
 import org.rubypeople.rdt.core.IImportDeclaration;
 import org.rubypeople.rdt.core.IMember;
+import org.rubypeople.rdt.core.IRubyElement;
 import org.rubypeople.rdt.core.IRubyScript;
 import org.rubypeople.rdt.core.ISourceRange;
 import org.rubypeople.rdt.core.ISourceReference;
 import org.rubypeople.rdt.core.RubyModelException;
 import org.rubypeople.rdt.internal.ui.RubyPlugin;
-import org.rubypeople.rdt.internal.ui.rubyeditor.outline.DocumentModelChangeEvent;
-import org.rubypeople.rdt.internal.ui.rubyeditor.outline.IDocumentModelListener;
-import org.rubypeople.rdt.internal.ui.rubyeditor.outline.RubyContentOutlinePage;
-import org.rubypeople.rdt.internal.ui.rubyeditor.outline.RubyCore;
-import org.rubypeople.rdt.internal.ui.rubyeditor.outline.RubyModel;
-import org.rubypeople.rdt.internal.ui.text.RubySourceViewerConfiguration;
 import org.rubypeople.rdt.internal.ui.text.RubyTextTools;
 import org.rubypeople.rdt.ui.IWorkingCopyManager;
+import org.rubypeople.rdt.ui.text.RubySourceViewerConfiguration;
 
-public class RubyAbstractEditor extends TextEditor {
+public abstract class RubyAbstractEditor extends TextEditor {
 
-	protected RubyContentOutlinePage outlinePage;
-	protected RubyTextTools textTools;
-	private IDocumentModelListener fListener;
-	private RubyCore fCore;
-	private RubyModel model;
-	private ISourceReference reference;
+    protected RubyTextTools textTools;
+    private ISourceReference reference;
 
-	private IPreferenceStore createCombinedPreferenceStore() {
-		IPreferenceStore rdtStore = RubyPlugin.getDefault().getPreferenceStore();
-		IPreferenceStore generalTextStore = EditorsUI.getPreferenceStore();
-		return new ChainedPreferenceStore(new IPreferenceStore[] { rdtStore, generalTextStore});
-	}
+    /** Outliner context menu Id */
+    protected String fOutlinerContextMenuId;
 
-	protected void initializeEditor() {
-		super.initializeEditor();
-		setPreferenceStore(this.createCombinedPreferenceStore());
+    /** The selection changed listener */
+    protected AbstractSelectionChangedListener fOutlineSelectionChangedListener = new OutlineSelectionChangedListener();
+    private RubyOutlinePage fOutlinePage;
 
-		textTools = RubyPlugin.getDefault().getTextTools();
-		setSourceViewerConfiguration(new RubySourceViewerConfiguration(textTools, this));
+    private IPreferenceStore createCombinedPreferenceStore() {
+        IPreferenceStore rdtStore = RubyPlugin.getDefault().getPreferenceStore();
+        IPreferenceStore generalTextStore = EditorsUI.getPreferenceStore();
+        return new ChainedPreferenceStore(new IPreferenceStore[] { rdtStore, generalTextStore});
+    }
 
-		if (fListener == null) {
-			fListener = createRubyModelChangeListener();
-		}
-		fCore = RubyCore.getDefault();
-		fCore.addDocumentModelListener(fListener);
-	}
+    /**
+     * Informs the editor that its outliner has been closed.
+     */
+    public void outlinePageClosed() {
+        if (fOutlinePage != null) {
+            fOutlineSelectionChangedListener.uninstall(fOutlinePage);
+            fOutlinePage = null;
+            resetHighlightRange();
+        }
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.eclipse.ui.texteditor.ExtendedTextEditor#dispose()
-	 */
-	public void dispose() {
-		super.dispose();
-		// Remove the listener so we don't try and create markers on a closed
-		// document
-		fCore.removeDocumentModelListener(fListener);
-	}
+    /**
+     * Sets the outliner's context menu ID.
+     * 
+     * @param menuId
+     *            the menu ID
+     */
+    protected void setOutlinerContextMenuId(String menuId) {
+        fOutlinerContextMenuId = menuId;
+    }
 
-	/**
-	 * @return
-	 */
-	private IDocumentModelListener createRubyModelChangeListener() {
-		return new IDocumentModelListener() {
+    protected void initializeEditor() {
+        super.initializeEditor();
+        setPreferenceStore(this.createCombinedPreferenceStore());
 
-			public void documentModelChanged(final DocumentModelChangeEvent event) {
-				if (event.getModel() == getRubyModel()) {
-					getSite().getShell().getDisplay().asyncExec(new Runnable() {
+        textTools = RubyPlugin.getDefault().getRubyTextTools();
+        setSourceViewerConfiguration(new RubySourceViewerConfiguration(textTools, this));
+    }
 
-						public void run() {
-							try {
-								createMarkers(event.getModel().getScript());
-							} catch (CoreException e) {
-								RubyPlugin.log(e);
-							}
-						}
-					});
-				}
-			}
-		};
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.eclipse.ui.texteditor.ExtendedTextEditor#dispose()
+     */
+    public void dispose() {
+        super.dispose();
 
-	public Object getAdapter(Class required) {
-		if (IContentOutlinePage.class.equals(required)) return createRubyOutlinePage();
+    }
 
-		return super.getAdapter(required);
-	}
+    public Object getAdapter(Class required) {
+        if (IContentOutlinePage.class.equals(required)) {
+            if (fOutlinePage == null) fOutlinePage = createRubyOutlinePage();
+            return fOutlinePage;
+        }
 
-	protected RubyContentOutlinePage createRubyOutlinePage() {
-		outlinePage = new RubyContentOutlinePage(getSourceViewer().getDocument(), this);
-		setOutlinePageInput(outlinePage, getEditorInput());
-		outlinePage.addSelectionChangedListener(new ISelectionChangedListener() {
+        return super.getAdapter(required);
+    }
 
-			public void selectionChanged(SelectionChangedEvent event) {
-				handleOutlinePageSelection(event);
-			}
-		});
-		return outlinePage;
-	}
+    protected RubyOutlinePage createRubyOutlinePage() {
+        RubyOutlinePage outlinePage = new RubyOutlinePage(fOutlinerContextMenuId, this);
+        fOutlineSelectionChangedListener.install(outlinePage);
+        setOutlinePageInput(outlinePage, getEditorInput());
+        return outlinePage;
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.eclipse.ui.editors.text.TextEditor#doSetInput(org.eclipse.ui.IEditorInput)
-	 */
-	protected void doSetInput(IEditorInput input) throws CoreException {
-		super.doSetInput(input);
-		setOutlinePageInput(outlinePage, input);
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.eclipse.ui.editors.text.TextEditor#doSetInput(org.eclipse.ui.IEditorInput)
+     */
+    protected void doSetInput(IEditorInput input) throws CoreException {
+        super.doSetInput(input);
+        setOutlinePageInput(fOutlinePage, input);
+    }
 
-	protected void setOutlinePageInput(RubyContentOutlinePage page, IEditorInput input) {
-		if (page != null) {
-			IWorkingCopyManager manager = RubyPlugin.getDefault().getWorkingCopyManager();
-			page.setInput(manager.getWorkingCopy(input));
-		}
-	}
+    protected void setOutlinePageInput(RubyOutlinePage page, IEditorInput input) {
+        if (page != null) {
+            IWorkingCopyManager manager = RubyPlugin.getDefault().getWorkingCopyManager();
+            page.setInput(manager.getWorkingCopy(input));
+        }
+    }
 
-	protected void handleOutlinePageSelection(SelectionChangedEvent event) {
-		StructuredSelection selection = (StructuredSelection) event.getSelection();
-		Iterator iter = ((IStructuredSelection) selection).iterator();
-		while (iter.hasNext()) {
-			Object o = iter.next();
-			if (o instanceof ISourceReference) {
-				reference = (ISourceReference) o;
-				break;
-			}
-		}
-		// FIXME Uncomment so we bring editor to top
-		if (!isActivePart() && RubyPlugin.getActivePage() != null) RubyPlugin.getActivePage().bringToTop(this);
+    protected void handleOutlinePageSelection(SelectionChangedEvent event) {
+        StructuredSelection selection = (StructuredSelection) event.getSelection();
+        Iterator iter = ((IStructuredSelection) selection).iterator();
+        while (iter.hasNext()) {
+            Object o = iter.next();
+            if (o instanceof ISourceReference) {
+                reference = (ISourceReference) o;
+                break;
+            }
+        }
+        if (!isActivePart() && RubyPlugin.getActivePage() != null)
+            RubyPlugin.getActivePage().bringToTop(this);
 
-		// setSelection(reference, !isActivePart());
-		setSelection(reference, true);
-	}
+        // setSelection(reference, !isActivePart());
+        setSelection(reference, true);
+    }
 
-	protected boolean isActivePart() {
-		IWorkbenchPart part = getActivePart();
-		return part != null && part.equals(this);
-	}
+    protected boolean isActivePart() {
+        IWorkbenchPart part = getActivePart();
+        return part != null && part.equals(this);
+    }
 
-	private IWorkbenchPart getActivePart() {
-		IWorkbenchWindow window = getSite().getWorkbenchWindow();
-		IPartService service = window.getPartService();
-		IWorkbenchPart part = service.getActivePart();
-		return part;
-	}
+    private IWorkbenchPart getActivePart() {
+        IWorkbenchWindow window = getSite().getWorkbenchWindow();
+        IPartService service = window.getPartService();
+        IWorkbenchPart part = service.getActivePart();
+        return part;
+    }
 
-	protected void setSelection(ISourceReference reference, boolean moveCursor) {
-		if (getSelectionProvider() == null) return;
+    public void setSelection(IRubyElement element) {
 
-		ISelection selection = getSelectionProvider().getSelection();
-		if (selection instanceof TextSelection) {
-			TextSelection textSelection = (TextSelection) selection;
-			// PR 39995: [navigation] Forward history cleared after going back
-			// in navigation history:
-			// mark only in navigation history if the cursor is being moved
-			// (which it isn't if
-			// this is called from a PostSelectionEvent that should only update
-			// the magnet)
-			if (moveCursor && (textSelection.getOffset() != 0 || textSelection.getLength() != 0)) markInNavigationHistory();
-		}
+        if (element == null || element instanceof IRubyScript) {
+            /*
+             * If the element is an IRubyScript this unit is either the input of
+             * this editor or not being displayed. In both cases, nothing should
+             * happened. (http://dev.eclipse.org/bugs/show_bug.cgi?id=5128)
+             */
+            return;
+        }
 
-		if (reference != null) {
+        IRubyElement corresponding = getCorrespondingElement(element);
+        if (corresponding instanceof ISourceReference) {
+            ISourceReference reference = (ISourceReference) corresponding;
+            // set highlight range
+            setSelection(reference, true);
+            // set outliner selection
+            if (fOutlinePage != null) {
+                fOutlineSelectionChangedListener.uninstall(fOutlinePage);
+                fOutlinePage.select(reference);
+                fOutlineSelectionChangedListener.install(fOutlinePage);
+            }
+        }
+    }
 
-			StyledText textWidget = null;
+    protected IRubyElement getCorrespondingElement(IRubyElement element) {
+        // TODO: With new working copy story: original == working copy.
+        // Note that the previous code could result in a reconcile as side
+        // effect. Should check if that
+        // is still required.
+        return element;
+    }
 
-			ISourceViewer sourceViewer = getSourceViewer();
-			if (sourceViewer != null) textWidget = sourceViewer.getTextWidget();
+    /**
+     * Synchronizes the outliner selection with the given element position in
+     * the editor.
+     * 
+     * @param element
+     *            the java element to select
+     * @param checkIfOutlinePageActive
+     *            <code>true</code> if check for active outline page needs to
+     *            be done
+     */
+    protected void synchronizeOutlinePage(ISourceReference element, boolean checkIfOutlinePageActive) {
+        if (fOutlinePage != null && element != null
+                && !(checkIfOutlinePageActive && isRubyOutlinePageActive())) {
+            fOutlineSelectionChangedListener.uninstall(fOutlinePage);
+            fOutlinePage.select(element);
+            fOutlineSelectionChangedListener.install(fOutlinePage);
+        }
+    }
 
-			if (textWidget == null) return;
+    private boolean isRubyOutlinePageActive() {
+        IWorkbenchPart part = getActivePart();
+        return part instanceof ContentOutline
+                && ((ContentOutline) part).getCurrentPage() == fOutlinePage;
+    }
 
-			try {
-				ISourceRange range = null;
-//				if (reference instanceof ILocalVariable) {
-//					IRubyElement je = ((ILocalVariable) reference).getParent();
-//					if (je instanceof ISourceReference) range = ((ISourceReference) je).getSourceRange();
-//				} else
-					range = reference.getSourceRange();
+    protected void setSelection(ISourceReference reference, boolean moveCursor) {
+        if (getSelectionProvider() == null) return;
 
-				if (range == null) return;
+        ISelection selection = getSelectionProvider().getSelection();
+        if (selection instanceof TextSelection) {
+            TextSelection textSelection = (TextSelection) selection;
+            // PR 39995: [navigation] Forward history cleared after going back
+            // in navigation history:
+            // mark only in navigation history if the cursor is being moved
+            // (which it isn't if
+            // this is called from a PostSelectionEvent that should only update
+            // the magnet)
+            if (moveCursor && (textSelection.getOffset() != 0 || textSelection.getLength() != 0))
+                markInNavigationHistory();
+        }
 
-				int offset = range.getOffset();
-				int length = range.getLength();
+        if (reference != null) {
 
-				if (offset < 0 || length < 0) return;
+            StyledText textWidget = null;
 
-				setHighlightRange(offset, length, moveCursor);
+            ISourceViewer sourceViewer = getSourceViewer();
+            if (sourceViewer != null) textWidget = sourceViewer.getTextWidget();
 
-				if (!moveCursor)
-					return;
-											
-				offset= -1;
-				length= -1;
+            if (textWidget == null) return;
 
-				if (reference instanceof IMember) {
-					range = ((IMember) reference).getNameRange();
-					if (range != null) {
-						offset = range.getOffset();
-						length = range.getLength();
-					}
-					// } else if (reference instanceof ILocalVariable) {
-					// range= ((ILocalVariable)reference).getNameRange();
-					// if (range != null) {
-					// offset= range.getOffset();
-					// length= range.getLength();
-					// }
-				} else if (reference instanceof IImportDeclaration) {
-					String name = ((IImportDeclaration) reference).getElementName();
-					if (name != null && name.length() > 0) {
-						String content = reference.getSource();
-						if (content != null) {
-							offset = range.getOffset() + content.indexOf(name);
-							length = name.length();
-						}
-					}
-				}
+            try {
+                ISourceRange range = null;
+                // if (reference instanceof ILocalVariable) {
+                // IRubyElement je = ((ILocalVariable) reference).getParent();
+                // if (je instanceof ISourceReference) range =
+                // ((ISourceReference) je).getSourceRange();
+                // } else
+                range = reference.getSourceRange();
 
-				if (offset > -1 && length > 0) {
+                if (range == null) return;
 
-					try {
-						textWidget.setRedraw(false);
-						sourceViewer.revealRange(offset, length);
-						sourceViewer.setSelectedRange(offset, length);
-					} finally {
-						textWidget.setRedraw(true);
-					}
+                int offset = range.getOffset();
+                int length = range.getLength();
 
-					markInNavigationHistory();
-				}
+                if (offset < 0 || length < 0) return;
 
-			} catch (RubyModelException x) {} catch (IllegalArgumentException x) {}
+                setHighlightRange(offset, length, moveCursor);
 
-		} else if (moveCursor) {
-			resetHighlightRange();
-			markInNavigationHistory();
-		}
-	}
+                if (!moveCursor) return;
 
-	protected boolean affectsTextPresentation(PropertyChangeEvent event) {
-		return textTools.affectsTextPresentation(event);
-	}
+                offset = -1;
+                length = -1;
 
-	/**
-	 * @param script
-	 * @throws CoreException
-	 */
-	private void createMarkers(IRubyScript script) throws CoreException {
-	// FIXME Create Markers on the file
-	// IEditorInput input = getEditorInput();
-	// if (input == null) {
-	// // can happen at workbench shutdown
-	// return;
-	// }
-	// IResource resource = (IResource) ((IAdaptable)
-	// input).getAdapter(org.eclipse.core.resources.IResource.class);
-	// if (resource == null) {
-	// // happens if ruby file is external
-	// return;
-	// }
-	// resource.deleteMarkers(IMarker.PROBLEM, true, IResource.DEPTH_ONE);
-	// if
-	// (!RdtUiPlugin.getDefault().getPreferenceStore().getBoolean(PreferenceConstants.CREATE_PARSER_ANNOTATIONS))
-	// { return; }
-	// IDocument doc = getDocumentProvider().getDocument(getEditorInput());
-	// Set errors = script.getParseErrors();
-	// for (Iterator iter = errors.iterator(); iter.hasNext();) {
-	// ParseError pe = (ParseError) iter.next();
-	// Map attributes = new HashMap();
-	// MarkerUtilities.setMessage(attributes, pe.getError());
-	// MarkerUtilities.setLineNumber(attributes, pe.getLine());
-	// try {
-	// int offset = doc.getLineOffset(pe.getLine());
-	// MarkerUtilities.setCharStart(attributes, offset + pe.getStart());
-	// MarkerUtilities.setCharEnd(attributes, offset + pe.getEnd());
-	//
-	// attributes.put(IMarker.SEVERITY, pe.getSeverity());
-	// try {
-	// MarkerUtilities.createMarker(resource, attributes, IMarker.PROBLEM);
-	// } catch (CoreException x) {
-	// RubyPlugin.log(x);
-	// }
-	// } catch (BadLocationException e) {
-	// RubyPlugin.log(e);
-	// }
-	//
-	// }
-	}
+                if (reference instanceof IMember) {
+                    range = ((IMember) reference).getNameRange();
+                    if (range != null) {
+                        offset = range.getOffset();
+                        length = range.getLength();
+                    }
+                    // } else if (reference instanceof ILocalVariable) {
+                    // range= ((ILocalVariable)reference).getNameRange();
+                    // if (range != null) {
+                    // offset= range.getOffset();
+                    // length= range.getLength();
+                    // }
+                } else if (reference instanceof IImportDeclaration) {
+                    String name = ((IImportDeclaration) reference).getElementName();
+                    if (name != null && name.length() > 0) {
+                        String content = reference.getSource();
+                        if (content != null) {
+                            offset = range.getOffset() + content.indexOf(name);
+                            length = name.length();
+                        }
+                    }
+                }
 
-	public RubyModel getRubyModel() {
-		if (model == null) {
-			model = new RubyModel();
-		}
-		return model;
-	}
+                if (offset > -1 && length > 0) {
+
+                    try {
+                        textWidget.setRedraw(false);
+                        sourceViewer.revealRange(offset, length);
+                        sourceViewer.setSelectedRange(offset, length);
+                    } finally {
+                        textWidget.setRedraw(true);
+                    }
+
+                    markInNavigationHistory();
+                }
+
+            } catch (RubyModelException x) {
+            } catch (IllegalArgumentException x) {
+            }
+
+        } else if (moveCursor) {
+            resetHighlightRange();
+            markInNavigationHistory();
+        }
+    }
+
+    protected boolean affectsTextPresentation(PropertyChangeEvent event) {
+        return textTools.affectsTextPresentation(event);
+    }
+
+    protected void doSelectionChanged(SelectionChangedEvent event) {
+
+        ISourceReference reference = null;
+
+        ISelection selection = event.getSelection();
+        Iterator iter = ((IStructuredSelection) selection).iterator();
+        while (iter.hasNext()) {
+            Object o = iter.next();
+            if (o instanceof ISourceReference) {
+                reference = (ISourceReference) o;
+                break;
+            }
+        }
+        if (!isActivePart() && RubyPlugin.getActivePage() != null)
+            RubyPlugin.getActivePage().bringToTop(this);
+
+        setSelection(reference, !isActivePart());
+    }
+
+    class OutlineSelectionChangedListener extends AbstractSelectionChangedListener {
+
+        public void selectionChanged(SelectionChangedEvent event) {
+            doSelectionChanged(event);
+        }
+    }
+
+    /**
+     * Computes and returns the source reference that includes the caret and
+     * serves as provider for the outline page selection and the editor range
+     * indication.
+     *
+     * @return the computed source reference
+     * @since 3.0
+     */
+    protected ISourceReference computeHighlightRangeSourceReference() {
+        ISourceViewer sourceViewer= getSourceViewer();
+        if (sourceViewer == null)
+            return null;
+
+        StyledText styledText= sourceViewer.getTextWidget();
+        if (styledText == null)
+            return null;
+
+        int caret= 0;
+        if (sourceViewer instanceof ITextViewerExtension5) {
+            ITextViewerExtension5 extension= (ITextViewerExtension5)sourceViewer;
+            caret= extension.widgetOffset2ModelOffset(styledText.getCaretOffset());
+        } else {
+            int offset= sourceViewer.getVisibleRegion().getOffset();
+            caret= offset + styledText.getCaretOffset();
+        }
+
+        IRubyElement element= getElementAt(caret, false);
+
+        if ( !(element instanceof ISourceReference))
+            return null;
+
+        if (element.getElementType() == IRubyElement.IMPORT) {
+
+            IImportDeclaration declaration= (IImportDeclaration) element;
+            IImportContainer container= (IImportContainer) declaration.getParent();
+            ISourceRange srcRange= null;
+
+            try {
+                srcRange= container.getSourceRange();
+            } catch (RubyModelException e) {
+            }
+
+            if (srcRange != null && srcRange.getOffset() == caret)
+                return container;
+        }
+
+        return (ISourceReference) element;
+    }
+
+    protected abstract IRubyElement getElementAt(int caret, boolean b);
+
+    protected abstract IRubyElement getElementAt(int offset);
 
 }

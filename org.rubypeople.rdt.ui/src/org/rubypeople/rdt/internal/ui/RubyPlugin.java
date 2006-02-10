@@ -18,12 +18,17 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
+import org.eclipse.debug.internal.ui.ImageDescriptorRegistry;
+import org.eclipse.jface.action.GroupMarker;
+import org.eclipse.jface.action.IMenuManager;
+import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.preference.PreferenceConverter;
 import org.eclipse.jface.text.templates.ContextTypeRegistry;
 import org.eclipse.jface.text.templates.persistence.TemplateStore;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
+import org.eclipse.search.ui.IContextMenuConstants;
 import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.IEditorInput;
@@ -42,7 +47,8 @@ import org.rubypeople.rdt.core.IRubyScript;
 import org.rubypeople.rdt.core.RubyCore;
 import org.rubypeople.rdt.core.WorkingCopyOwner;
 import org.rubypeople.rdt.internal.core.util.EclipseJobScheduler;
-import org.rubypeople.rdt.internal.formatter.CodeFormatter;
+import org.rubypeople.rdt.internal.formatter.OldCodeFormatter;
+import org.rubypeople.rdt.internal.ui.preferences.MembersOrderPreferenceCache;
 import org.rubypeople.rdt.internal.ui.preferences.MockupPreferenceStore;
 import org.rubypeople.rdt.internal.ui.rdocexport.RDocUtility;
 import org.rubypeople.rdt.internal.ui.rubyeditor.DocumentAdapter;
@@ -85,6 +91,8 @@ public class RubyPlugin extends AbstractUIPlugin implements IRubyColorConstants 
 
 	private RubyFoldingStructureProviderRegistry fFoldingStructureProviderRegistry;
     private boolean new060ViewsOpened;
+    private ImageDescriptorRegistry fImageDescriptorRegistry;
+    private MembersOrderPreferenceCache fMembersOrderPreferenceCache;
 
 	public RubyPlugin() {
 		super();
@@ -130,6 +138,10 @@ public class RubyPlugin extends AbstractUIPlugin implements IRubyColorConstants 
 				return DocumentAdapter.NULL;
 			}
 		});
+        
+        IPreferenceStore store= getPreferenceStore();
+        fMembersOrderPreferenceCache= new MembersOrderPreferenceCache();
+        fMembersOrderPreferenceCache.install(store);
         
         
         RubyCore rubyCore = RubyCore.getPlugin();
@@ -207,6 +219,12 @@ public class RubyPlugin extends AbstractUIPlugin implements IRubyColorConstants 
 				textTools.dispose();
 				textTools = null;
 			}
+            
+            if (fMembersOrderPreferenceCache != null) {
+                fMembersOrderPreferenceCache.dispose();
+                fMembersOrderPreferenceCache= null;
+            }
+            
 		} finally {
 			super.stop(context);
 		}
@@ -251,18 +269,13 @@ public class RubyPlugin extends AbstractUIPlugin implements IRubyColorConstants 
 		return getActiveWorkbenchWindow().getShell();
 	}
 
-	public synchronized RubyTextTools getTextTools() {
+	public synchronized RubyTextTools getRubyTextTools() {
 		if (textTools == null) textTools = new RubyTextTools(getPreferenceStore(), RubyCore.getPlugin().getPluginPreferences());
 		return textTools;
 	}
 
-	public CodeFormatter getCodeFormatter() {
-		char indentChar = this.getPreferenceStore().getBoolean(PreferenceConstants.FORMAT_USE_TAB) ? '\t' : ' ';
-		String codeFormatterOption = Platform.getDebugOption(RubyCore.PLUGIN_ID + "/codeformatter");
-		boolean isDebug = codeFormatterOption == null ? false : codeFormatterOption.equalsIgnoreCase("true");
-		CodeFormatter codeFormatter = new CodeFormatter(indentChar, isDebug);
-		codeFormatter.setIndentation(this.getPreferenceStore().getInt(PreferenceConstants.FORMAT_INDENTATION));
-		return codeFormatter;
+	public OldCodeFormatter getCodeFormatter() {
+        return new OldCodeFormatter(RubyCore.getOptions());
 	}
 
 	protected void initializeDefaultPreferences(IPreferenceStore store) {
@@ -442,4 +455,43 @@ public class RubyPlugin extends AbstractUIPlugin implements IRubyColorConstants 
 		return RubyTemplateAccess.getDefault().getContextTypeRegistry();
 	}
 
+    public static boolean isDebug() {
+        // TODO set to true based on debugging/tracing!
+        return false;
+    }
+
+    /**
+     * Creates the Java plugin standard groups in a context menu.
+     * 
+     * @param menu the menu manager to be populated
+     */
+    public static void createStandardGroups(IMenuManager menu) {
+        if (!menu.isEmpty())
+            return;            
+        menu.add(new Separator(IContextMenuConstants.GROUP_NEW));
+        menu.add(new GroupMarker(IContextMenuConstants.GROUP_GOTO));
+        menu.add(new Separator(IContextMenuConstants.GROUP_OPEN));
+        menu.add(new GroupMarker(IContextMenuConstants.GROUP_SHOW));
+        menu.add(new Separator(IContextMenuConstants.GROUP_REORGANIZE));
+        menu.add(new Separator(IContextMenuConstants.GROUP_GENERATE));
+        menu.add(new Separator(IContextMenuConstants.GROUP_SEARCH));
+        menu.add(new Separator(IContextMenuConstants.GROUP_BUILD));
+        menu.add(new Separator(IContextMenuConstants.GROUP_ADDITIONS));
+        menu.add(new Separator(IContextMenuConstants.GROUP_VIEWER_SETUP));
+        menu.add(new Separator(IContextMenuConstants.GROUP_PROPERTIES));
+    }
+
+    public static ImageDescriptorRegistry getImageDescriptorRegistry() {
+        return getDefault().internalGetImageDescriptorRegistry();
+    }
+    private synchronized ImageDescriptorRegistry internalGetImageDescriptorRegistry() {
+        if (fImageDescriptorRegistry == null)
+            fImageDescriptorRegistry= new ImageDescriptorRegistry();
+        return fImageDescriptorRegistry;
+    }
+
+    public synchronized MembersOrderPreferenceCache getMemberOrderPreferenceCache() {
+        // initialized on startup
+        return fMembersOrderPreferenceCache;
+    }
 }
