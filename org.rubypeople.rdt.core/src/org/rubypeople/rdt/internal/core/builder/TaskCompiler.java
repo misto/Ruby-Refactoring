@@ -26,7 +26,7 @@ public final class TaskCompiler implements SingleFileCompiler {
     private final IMarkerManager markerManager;
     
     public TaskCompiler(IMarkerManager markerManager) {
-        this(markerManager, new TaskParser(RubyCore.getInstancePreferences()));
+        this(markerManager, new TaskParser(RubyCore.getOptions()));
     }
 
     public TaskCompiler(IMarkerManager markerManager, TaskParser taskParser) {

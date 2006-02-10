@@ -9,11 +9,11 @@ import java.io.Reader;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.StringTokenizer;
 
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.runtime.CoreException;
-import org.eclipse.core.runtime.preferences.IEclipsePreferences;
 import org.rubypeople.rdt.core.RubyCore;
 
 /**
@@ -27,17 +27,24 @@ public class TaskParser {
 	private int[] fPriorities;
 	private List tasks;
 
-	public TaskParser(IEclipsePreferences preferences) {
-		String caseSensitive = preferences.get(RubyCore.COMPILER_TASK_CASE_SENSITIVE, RubyCore.ENABLED);
-		if (caseSensitive == RubyCore.ENABLED) fCaseSensitive = true;
-		String tags = preferences.get(RubyCore.COMPILER_TASK_TAGS, RubyCore.DEFAULT_TASK_TAGS);
-		String priorities = preferences.get(RubyCore.COMPILER_TASK_PRIORITIES, RubyCore.DEFAULT_TASK_PRIORITIES);
+	public TaskParser(Map preferences) {
+		String caseSensitive = getString(preferences, RubyCore.COMPILER_TASK_CASE_SENSITIVE, RubyCore.ENABLED);
+		if (caseSensitive.equals(RubyCore.ENABLED)) fCaseSensitive = true;
+		String tags = getString(preferences, RubyCore.COMPILER_TASK_TAGS, RubyCore.DEFAULT_TASK_TAGS);
+		String priorities = getString(preferences, RubyCore.COMPILER_TASK_PRIORITIES, RubyCore.DEFAULT_TASK_PRIORITIES);
 		fTags = tokenize(tags, ",");
 		fPriorities = convertPriorities(tokenize(priorities, ","));
 		tasks = new ArrayList();
 	}
 
-	private int[] convertPriorities(String[] stringPriorities) {
+	private String getString(Map preferences, String key, String def) {
+        if (preferences == null) return def;
+        String answer = (String) preferences.get(key);
+        if (answer == null) return def;
+        return answer;
+    }
+
+    private int[] convertPriorities(String[] stringPriorities) {
 		int priorities[] = new int[stringPriorities.length];
 		for (int i = 0; i < stringPriorities.length; i++) {
 			String priority = stringPriorities[i];
