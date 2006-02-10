@@ -30,18 +30,14 @@ public class RubySingletonMethod extends RubyMethod {
 	/**
 	 * @param parent
 	 * @param name
+	 * @param parameterNames 
 	 */
-	public RubySingletonMethod(RubyElement parent, String name) {
-		super(parent, name);
-		// TODO Auto-generated constructor stub
+	public RubySingletonMethod(RubyElement parent, String name, String[] parameterNames) {
+		super(parent, name, parameterNames);
 	}
 	
-    /*
-     *  (non-Javadoc)
-     * @see org.rubypeople.rdt.core.IRubyElement#getElementType()
-     */
-	public int getElementType(){
-		return RubyElement.SINGLETON_METHOD;
-	}
+    public boolean isSingleton() {
+        return true;
+    }
 
 }

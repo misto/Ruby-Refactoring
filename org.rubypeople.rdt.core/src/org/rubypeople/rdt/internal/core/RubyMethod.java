@@ -24,10 +24,11 @@
  */
 package org.rubypeople.rdt.internal.core;
 
-import org.rubypeople.rdt.core.IRubyElement;
 import org.rubypeople.rdt.core.IMethod;
+import org.rubypeople.rdt.core.IRubyElement;
 import org.rubypeople.rdt.core.IType;
 import org.rubypeople.rdt.core.RubyModelException;
+import org.rubypeople.rdt.internal.core.util.Util;
 
 /**
  * @author Chris
@@ -35,11 +36,14 @@ import org.rubypeople.rdt.core.RubyModelException;
  */
 public class RubyMethod extends NamedMember implements IMethod {
 
-	/**
+	private String[] parameterNames;
+
+    /**
 	 * @param name
 	 */
-	public RubyMethod(RubyElement parent, String name) {
+	public RubyMethod(RubyElement parent, String name, String[] parameterNames) {
 		super(parent, name);
+        this.parameterNames = parameterNames;
 	}
 
 	public int getElementType() {
@@ -57,7 +61,7 @@ public class RubyMethod extends NamedMember implements IMethod {
 		IRubyElement primaryParent = this.parent.getPrimaryElement(false);
 		// FIXME We need to send more info than the method name. Number of
 		// params?
-		return ((IType) primaryParent).getMethod(this.name);
+		return ((IType) primaryParent).getMethod(this.name, parameterNames);
 	}
 
 	public boolean isConstructor() {
@@ -68,6 +72,17 @@ public class RubyMethod extends NamedMember implements IMethod {
 		if (!(o instanceof RubyMethod)) return false;
 		return super.equals(o);
 	}
+    
+    /**
+     * @see org.rubypeople.rdt.internal.core.RubyElement#hashCode()
+     */
+    public int hashCode() {
+       int hash = super.hashCode();
+        for (int i = 0, length = parameterNames.length; i < length; i++) {
+            hash = Util.combineHashCodes(hash, parameterNames[i].hashCode());
+        }
+        return hash;
+    }
 
 	/*
 	 * (non-Javadoc)
@@ -75,7 +90,8 @@ public class RubyMethod extends NamedMember implements IMethod {
 	 * @see org.rubypeople.rdt.core.IMember#getDeclaringType()
 	 */
 	public IType getDeclaringType() {
-		// TODO Auto-generated method stub
+        IRubyElement parent = getParent();
+        if (parent instanceof IType) return (IType) parent;
 		return null;
 	}
 
@@ -88,5 +104,13 @@ public class RubyMethod extends NamedMember implements IMethod {
 		RubyMethodElementInfo info = (RubyMethodElementInfo) getElementInfo();
 		return info.getVisibility();
 	}
+
+    public String[] getParameterNames() throws RubyModelException {
+       return parameterNames;
+    }
+
+    public boolean isSingleton() {
+        return false;
+    }
 
 }

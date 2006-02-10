@@ -10,10 +10,8 @@ import java.util.List;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.core.runtime.preferences.IEclipsePreferences;
 import org.jruby.lexer.yacc.SyntaxException;
 import org.rubypeople.rdt.core.IProblemRequestor;
-import org.rubypeople.rdt.core.RubyCore;
 import org.rubypeople.rdt.core.parser.IProblem;
 import org.rubypeople.rdt.internal.core.parser.Error;
 import org.rubypeople.rdt.internal.core.parser.RdtWarnings;
@@ -27,27 +25,27 @@ import org.rubypeople.rdt.internal.core.parser.TaskParser;
 public class RubyScriptProblemFinder {
 
     // DSC convert to ImmediateWarnings
-	public static void process(RubyScript script, char[] charContents, IProblemRequestor problemRequestor, IProgressMonitor pm) {
-		RdtWarnings warnings = new RdtWarnings();
-		RubyParser parser = new RubyParser(warnings);
-		String contents = new String(charContents);
-		try {
-			parser.parse((IFile) script.getUnderlyingResource(), new StringReader(contents));
-		} catch (SyntaxException e) {
-			problemRequestor.acceptProblem(new Error(e.getPosition(), "Syntax Error"));
-		}
+    public static void process(RubyScript script, char[] charContents,
+            IProblemRequestor problemRequestor, IProgressMonitor pm) {
+        RdtWarnings warnings = new RdtWarnings();
+        RubyParser parser = new RubyParser(warnings);
+        String contents = new String(charContents);
+        try {
+            parser.parse((IFile) script.getUnderlyingResource(), new StringReader(contents));
+        } catch (SyntaxException e) {
+            problemRequestor.acceptProblem(new Error(e.getPosition(), "Syntax Error"));
+        }
 
-		IEclipsePreferences preferences = RubyCore.getInstancePreferences();
-		TaskParser taskParser = new TaskParser(preferences);
-		taskParser.parse(contents);
+        TaskParser taskParser = new TaskParser(script.getRubyProject().getOptions(true));
+        taskParser.parse(contents);
 
-		List problems = new ArrayList();
-		problems.addAll(warnings.getWarnings());
-		problems.addAll(taskParser.getTasks());
-		for (Iterator iter = problems.iterator(); iter.hasNext();) {
-			IProblem problem = (IProblem) iter.next();
-			problemRequestor.acceptProblem(problem);
-		}
-	}
+        List problems = new ArrayList();
+        problems.addAll(warnings.getWarnings());
+        problems.addAll(taskParser.getTasks());
+        for (Iterator iter = problems.iterator(); iter.hasNext();) {
+            IProblem problem = (IProblem) iter.next();
+            problemRequestor.acceptProblem(problem);
+        }
+    }
 
 }

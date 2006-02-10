@@ -59,6 +59,13 @@ public class RubyType extends NamedMember implements IType {
 		RubyTypeElementInfo info = (RubyTypeElementInfo) getElementInfo();
 		return info.getIncludedModuleNames();
 	}
+    
+    /**
+     * @see IType#isMember()
+     */
+    public boolean isMember() {
+        return getDeclaringType() != null;
+    }
 
 	/*
 	 * (non-Javadoc)
@@ -86,8 +93,8 @@ public class RubyType extends NamedMember implements IType {
 		return array;
 	}
 
-	public RubyMethod getMethod(String name) {
-		return new RubyMethod(this, name);
+	public RubyMethod getMethod(String name, String[] parameterNames) {
+		return new RubyMethod(this, name, parameterNames);
 	}
 
 	/**
@@ -134,7 +141,7 @@ public class RubyType extends NamedMember implements IType {
 		case IRubyElement.INSTANCE_VAR:
 		case IRubyElement.CLASS_VAR:
 		case IRubyElement.BLOCK:
-		case IRubyElement.LOCAL_VAR:
+		case IRubyElement.LOCAL_VARIABLE:
 		case IRubyElement.METHOD:
 			return ((IMember) primaryParent).getType(this.name, this.occurrenceCount);
 		}

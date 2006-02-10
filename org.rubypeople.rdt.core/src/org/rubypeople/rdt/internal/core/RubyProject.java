@@ -187,6 +187,10 @@ public class RubyProject extends Openable implements IProjectNature, IRubyElemen
         RubyProject other = (RubyProject) o;
         return this.project.equals(other.getProject());
     }
+    
+    public int hashCode() {
+        return this.project.hashCode();
+    }
 
     public boolean exists() {
         return hasRubyNature(this.project);

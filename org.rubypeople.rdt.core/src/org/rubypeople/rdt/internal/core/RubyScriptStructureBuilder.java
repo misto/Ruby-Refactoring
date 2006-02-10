@@ -180,7 +180,9 @@ public class RubyScriptStructureBuilder implements NodeVisitor {
 		Visibility visibility = currentVisibility;
 		if( name.equals("initialize") ) visibility = Visibility.PROTECTED;
 		
-		RubyMethod method = new RubyMethod( getCurrentType(), name );
+        // TODO Find the existing method and steal it's parameter names
+        String[] parameterNames = new String[0];
+		RubyMethod method = new RubyMethod( getCurrentType(), name, parameterNames );
 		modelStack.push( method );
 		
 		RubyElementInfo parentInfo = infoStack.peek();
@@ -694,14 +696,15 @@ public class RubyScriptStructureBuilder implements NodeVisitor {
 		if (name.equals("initialize")) visibility = Visibility.PROTECTED;
 
 		RubyElement type = getCurrentType();
-		RubyMethod method = new RubyMethod(type, name);
+        String[] parameterNames = getArgs(iVisited.getArgsNode());        
+		RubyMethod method = new RubyMethod(type, name, parameterNames);
 		modelStack.push(method);
 
 		RubyElementInfo parentInfo = infoStack.peek();
 		parentInfo.addChild(method);
 
 		RubyMethodElementInfo info = new RubyMethodElementInfo();
-		info.setArgumentNames(getArgs(iVisited.getArgsNode()));
+		info.setArgumentNames(parameterNames);
 		// TODO Set more information
 		info.setVisibility(convertVisibility(visibility));
 		ISourcePosition pos = iVisited.getPosition();
@@ -791,9 +794,11 @@ public class RubyScriptStructureBuilder implements NodeVisitor {
         // Get the visibility of the current static method 
         Visibility visibility = currentVisibility;
         
+        String[] parameterNames = getArgs(iVisited.getArgsNode());
+        
         // Get the type of the current parent element
         RubyElement type = getCurrentType();
-        RubyMethod method = new RubySingletonMethod(type, name);
+        RubyMethod method = new RubySingletonMethod(type, name, parameterNames);
         modelStack.push(method);
                 
         parentInfo.addChild( method );
@@ -806,7 +811,7 @@ public class RubyScriptStructureBuilder implements NodeVisitor {
         ISourcePosition pos = iVisited.getPosition();
         setKeywordRange("def", pos, info, name);
         
-        info.setArgumentNames(getArgs(iVisited.getArgsNode()));
+        info.setArgumentNames(parameterNames);
         info.setVisibility(convertVisibility(visibility));
 
         newElements.put(method, info);
@@ -1123,7 +1128,10 @@ public class RubyScriptStructureBuilder implements NodeVisitor {
 	 */
 	public Instruction visitLocalAsgnNode(LocalAsgnNode iVisited) {
 		handleNode(iVisited);
-		RubyLocalVar var = new RubyLocalVar(modelStack.peek(), iVisited.getName());
+        
+        int start = iVisited.getPosition().getStartOffset() - iVisited.getName().length() + 1;
+        int end = start + iVisited.getName().length();
+		RubyLocalVar var = new RubyLocalVar(modelStack.peek(), iVisited.getName(), start, end);
 		modelStack.push(var);
 
 		RubyElementInfo parentInfo = infoStack.peek();
@@ -1131,10 +1139,9 @@ public class RubyScriptStructureBuilder implements NodeVisitor {
 
 		RubyFieldElementInfo info = new RubyFieldElementInfo();
 		info.setTypeName(estimateValueType(iVisited.getValueNode()));
-		
-		// TODO Set the info!
+
 		ISourcePosition pos = iVisited.getPosition();
-		setTokenRange( pos, info, iVisited.getName() );
+		setTokenRange( pos, info, iVisited.getName() );        
 		infoStack.push(info);
 
 		newElements.put(var, info);

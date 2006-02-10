@@ -19,8 +19,12 @@ import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.PerformanceStats;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Preferences;
+import org.eclipse.core.runtime.content.IContentTypeManager.ContentTypeChangeEvent;
+import org.eclipse.core.runtime.content.IContentTypeManager.IContentTypeChangeListener;
+import org.eclipse.core.runtime.preferences.DefaultScope;
 import org.eclipse.core.runtime.preferences.IEclipsePreferences;
 import org.eclipse.core.runtime.preferences.IPreferencesService;
+import org.eclipse.core.runtime.preferences.InstanceScope;
 import org.rubypeople.rdt.core.ILoadpathEntry;
 import org.rubypeople.rdt.core.IParent;
 import org.rubypeople.rdt.core.IProblemRequestor;
@@ -38,7 +42,7 @@ import org.rubypeople.rdt.internal.core.builder.RubyBuilder;
  * @author cawilliams
  * 
  */
-public class RubyModelManager {
+public class RubyModelManager implements IContentTypeChangeListener {
 
     private static final String BUFFER_MANAGER_DEBUG = RubyCore.PLUGIN_ID + "/debug/buffermanager"; //$NON-NLS-1$
     private static final String RUBYMODEL_DEBUG = RubyCore.PLUGIN_ID + "/debug/rubymodel"; //$NON-NLS-1$
@@ -114,6 +118,18 @@ public class RubyModelManager {
     static final int PREF_DEFAULT = 1;
 
     /**
+     * Update the classpath variable cache
+     */
+    public static class EclipsePreferencesListener implements IEclipsePreferences.IPreferenceChangeListener {
+        /**
+         * @see org.eclipse.core.runtime.preferences.IEclipsePreferences.IPreferenceChangeListener#preferenceChange(org.eclipse.core.runtime.preferences.IEclipsePreferences.PreferenceChangeEvent)
+         */
+        public void preferenceChange(IEclipsePreferences.PreferenceChangeEvent event) {
+            // TODO Listen for loadpath changes!
+        }
+    }
+    
+    /**
      * Constructs a new RubyModelManager
      */
     private RubyModelManager() {
@@ -126,6 +142,45 @@ public class RubyModelManager {
     public final static RubyModelManager getRubyModelManager() {
         return MANAGER;
     }
+    
+    /**
+     * Initialize preferences lookups for JavaCore plugin.
+     */
+    public void initializePreferences() {
+        
+        // Create lookups
+        preferencesLookup[PREF_INSTANCE] = new InstanceScope().getNode(RubyCore.PLUGIN_ID);
+        preferencesLookup[PREF_DEFAULT] = new DefaultScope().getNode(RubyCore.PLUGIN_ID);
+
+        // Listen to instance preferences node removal from parent in order to refresh stored one
+        IEclipsePreferences.INodeChangeListener listener = new IEclipsePreferences.INodeChangeListener() {
+            public void added(IEclipsePreferences.NodeChangeEvent event) {
+                // do nothing
+            }
+            public void removed(IEclipsePreferences.NodeChangeEvent event) {
+                if (event.getChild() == preferencesLookup[PREF_INSTANCE]) {
+                    preferencesLookup[PREF_INSTANCE] = new InstanceScope().getNode(RubyCore.PLUGIN_ID);
+                    preferencesLookup[PREF_INSTANCE].addPreferenceChangeListener(new EclipsePreferencesListener());
+                }
+            }
+        };
+        ((IEclipsePreferences) preferencesLookup[PREF_INSTANCE].parent()).addNodeChangeListener(listener);
+        preferencesLookup[PREF_INSTANCE].addPreferenceChangeListener(new EclipsePreferencesListener());
+
+        // Listen to default preferences node removal from parent in order to refresh stored one
+        listener = new IEclipsePreferences.INodeChangeListener() {
+            public void added(IEclipsePreferences.NodeChangeEvent event) {
+                // do nothing
+            }
+            public void removed(IEclipsePreferences.NodeChangeEvent event) {
+                if (event.getChild() == preferencesLookup[PREF_DEFAULT]) {
+                    preferencesLookup[PREF_DEFAULT] = new DefaultScope().getNode(RubyCore.PLUGIN_ID);
+                }
+            }
+        };
+        ((IEclipsePreferences) preferencesLookup[PREF_DEFAULT].parent()).addNodeChangeListener(listener);
+    }
+
 
     /**
      * Returns the info for the element.
@@ -580,6 +635,9 @@ public class RubyModelManager {
 
             // request state folder creation (workaround 19885)
             RubyCore.getPlugin().getStateLocation();
+            
+//          Initialize eclipse preferences
+            initializePreferences();
 
             // Listen to preference changes
             Preferences.IPropertyChangeListener propertyListener = new Preferences.IPropertyChangeListener() {
@@ -590,6 +648,9 @@ public class RubyModelManager {
             };
             RubyCore.getPlugin().getPluginPreferences().addPropertyChangeListener(propertyListener);
 
+//          Listen to content-type changes
+             Platform.getContentTypeManager().addContentTypeChangeListener(this);
+            
             final IWorkspace workspace = ResourcesPlugin.getWorkspace();
             workspace.addResourceChangeListener(this.deltaState,
             /*
@@ -657,6 +718,11 @@ public class RubyModelManager {
             }
         }
 
+    }
+
+    public void contentTypeChanged(ContentTypeChangeEvent event) {
+        // TODO Change our classes which determine if a file is "Ruby-like"
+        //Util.resetRubyLikeExtensions();        
     }
 
 }

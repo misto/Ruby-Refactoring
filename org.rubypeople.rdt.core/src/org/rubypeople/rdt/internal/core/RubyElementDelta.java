@@ -29,7 +29,7 @@ public class RubyElementDelta extends SimpleDelta implements IRubyElementDelta {
     /*
      * The AST created during the last reconcile operation. Non-null only iff: -
      * in a POST_RECONCILE event - an AST was requested during the last
-     * reconcile operation - the changed element is an ICompilationUnit in
+     * reconcile operation - the changed element is an IRubyScript in
      * working copy mode
      */
     protected RubyScript ast = null;

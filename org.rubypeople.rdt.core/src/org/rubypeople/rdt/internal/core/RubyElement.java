@@ -42,6 +42,7 @@ import org.rubypeople.rdt.core.IRubyScript;
 import org.rubypeople.rdt.core.ISourceRange;
 import org.rubypeople.rdt.core.ISourceReference;
 import org.rubypeople.rdt.core.RubyModelException;
+import org.rubypeople.rdt.internal.core.util.Util;
 
 /**
  * @author Chris
@@ -63,7 +64,7 @@ public abstract class RubyElement extends PlatformObject implements IRubyElement
 	}
 
 	/**
-	 * Returns true if this handle represents the same Java element as the given
+	 * Returns true if this handle represents the same Ruby element as the given
 	 * handle. By default, two handles represent the same element if they are
 	 * identical or if they represent the same type of element, have equal
 	 * names, parents, and occurrence counts.
@@ -236,6 +237,17 @@ public abstract class RubyElement extends PlatformObject implements IRubyElement
 		return true;
 	}
 
+    /**
+     * Returns the hash code for this Ruby element. By default,
+     * the hash code for an element is a combination of its name
+     * and parent's hash code. Elements with other requirements must
+     * override this method.
+     */
+    public int hashCode() {
+        if (this.parent == null) return super.hashCode();
+        return Util.combineHashCodes(getElementName().hashCode(), this.parent.hashCode());
+    }
+    
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -398,8 +410,7 @@ public abstract class RubyElement extends PlatformObject implements IRubyElement
 
 	/**
 	 * Returns the info for this handle. If this element is not already open, it
-	 * and all of its parents are opened. Does not return null. NOTE: BinaryType
-	 * infos are NOT rooted under RubyElementInfo.
+	 * and all of its parents are opened. Does not return null. 
 	 * 
 	 * @exception RubyModelException
 	 *                if the element is not present or not accessible

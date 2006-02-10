@@ -33,12 +33,12 @@ import org.rubypeople.rdt.internal.core.util.CharOperation;
 public class RubyElementDeltaBuilder {
 
     /**
-     * The java element handle
+     * The ruby element handle
      */
-    IRubyElement javaElement;
+    IRubyElement rubyElement;
 
     /**
-     * The maximum depth in the java element children we should look into
+     * The maximum depth in the ruby element children we should look into
      */
     int maxDepth = Integer.MAX_VALUE;
 
@@ -87,24 +87,24 @@ public class RubyElementDeltaBuilder {
     }
 
     /**
-     * Creates a java element comparator on a java element looking as deep as
+     * Creates a ruby element comparator on a ruby element looking as deep as
      * necessary.
      */
-    public RubyElementDeltaBuilder(IRubyElement javaElement) {
-        this.javaElement = javaElement;
+    public RubyElementDeltaBuilder(IRubyElement rubyElement) {
+        this.rubyElement = rubyElement;
         this.initialize();
-        this.recordElementInfo(javaElement, (RubyModel) this.javaElement.getRubyModel(), 0);
+        this.recordElementInfo(rubyElement, (RubyModel) this.rubyElement.getRubyModel(), 0);
     }
 
     /**
-     * Creates a java element comparator on a java element looking only
+     * Creates a ruby element comparator on a ruby element looking only
      * 'maxDepth' levels deep.
      */
-    public RubyElementDeltaBuilder(IRubyElement javaElement, int maxDepth) {
-        this.javaElement = javaElement;
+    public RubyElementDeltaBuilder(IRubyElement rubyElement, int maxDepth) {
+        this.rubyElement = rubyElement;
         this.maxDepth = maxDepth;
         this.initialize();
-        this.recordElementInfo(javaElement, (RubyModel) this.javaElement.getRubyModel(), 0);
+        this.recordElementInfo(rubyElement, (RubyModel) this.rubyElement.getRubyModel(), 0);
     }
 
     /**
@@ -121,14 +121,14 @@ public class RubyElementDeltaBuilder {
     }
 
     /**
-     * Builds the java element deltas between the old content of the compilation
-     * unit and its new content.
+     * Builds the ruby element deltas between the old content of the ruby script
+     * and its new content.
      */
     public void buildDeltas() {
-        this.recordNewPositions(this.javaElement, 0);
-        this.findAdditions(this.javaElement, 0);
+        this.recordNewPositions(this.rubyElement, 0);
+        this.findAdditions(this.rubyElement, 0);
         this.findDeletions();
-        this.findChangesInPositioning(this.javaElement, 0);
+        this.findChangesInPositioning(this.rubyElement, 0);
         this.trimDelta(this.delta);
         if (this.delta.getAffectedChildren().length == 0) {
             // this is a fine grained but not children affected -> mark as
@@ -270,13 +270,13 @@ public class RubyElementDeltaBuilder {
         this.infos = new HashMap(20);
         this.oldPositions = new HashMap(20);
         this.newPositions = new HashMap(20);
-        this.putOldPosition(this.javaElement, new ListItem(null, null));
-        this.putNewPosition(this.javaElement, new ListItem(null, null));
-        this.delta = new RubyElementDelta(javaElement);
+        this.putOldPosition(this.rubyElement, new ListItem(null, null));
+        this.putNewPosition(this.rubyElement, new ListItem(null, null));
+        this.delta = new RubyElementDelta(rubyElement);
 
-        // if building a delta on a compilation unit or below,
+        // if building a delta on a ruby script or below,
         // it's a fine grained delta
-        if (javaElement.getElementType() >= IRubyElement.SCRIPT) {
+        if (rubyElement.getElementType() >= IRubyElement.SCRIPT) {
             this.delta.fineGrained();
         }
 
@@ -342,7 +342,7 @@ public class RubyElementDeltaBuilder {
         if (depth >= this.maxDepth) { return; }
         RubyElementInfo info = (RubyElementInfo) RubyModelManager.getRubyModelManager().getInfo(
                 element);
-        if (info == null) // no longer in the java model.
+        if (info == null) // no longer in the ruby model.
             return;
         this.putElementInfo(element, info);
 

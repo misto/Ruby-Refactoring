@@ -28,6 +28,7 @@ import java.util.HashMap;
 
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.rubypeople.rdt.internal.core.util.Util;
 
 /**
  * @author Chris
@@ -35,10 +36,13 @@ import org.eclipse.core.runtime.IProgressMonitor;
  */
 public class RubyLocalVar extends RubyField {
 
+    private int start;
+    private int end;
+    
 	/**
 	 * @param name
 	 */
-	public RubyLocalVar(RubyElement parent, String name) {
+	public RubyLocalVar(RubyElement parent, String name, int start, int end) {
 		super(parent, name);
 	}
 
@@ -48,7 +52,7 @@ public class RubyLocalVar extends RubyField {
 	 * @see org.rubypeople.rdt.internal.core.parser.RubyElement#getElementType()
 	 */
 	public int getElementType() {
-		return RubyElement.LOCAL_VAR;
+		return RubyElement.LOCAL_VARIABLE;
 	}
 
 	protected Object createElementInfo() {
@@ -59,6 +63,19 @@ public class RubyLocalVar extends RubyField {
 	public IResource getCorrespondingResource() {
 		return null;
 	}
+    
+    public int hashCode() {
+        return Util.combineHashCodes(this.parent.hashCode(), this.start);
+    }
+    
+    public boolean equals(Object o) {
+        if (!(o instanceof RubyLocalVar)) return false;
+        RubyLocalVar other = (RubyLocalVar)o;
+        return 
+            this.start == other.start
+            && this.end == other.end
+            && super.equals(o);
+    }
 	
 	protected void generateInfos(Object info, HashMap newElements, IProgressMonitor pm) {
 	// a local variable has no info
