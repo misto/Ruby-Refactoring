@@ -37,4 +37,10 @@ public interface IMethod extends IRubyElement, IMember {
 	
 	public int getVisibility() throws RubyModelException;
 
+    public boolean isConstructor();
+
+    public String[] getParameterNames() throws RubyModelException;
+
+    public boolean isSingleton();
+
 }
