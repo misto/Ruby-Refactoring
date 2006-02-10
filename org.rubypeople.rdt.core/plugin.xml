@@ -100,4 +100,12 @@
        priority="high"/>
 </extension>
 
+<!-- =================================================================================== -->
+<!-- Extension: Eclipse preferences initializer                                          -->
+<!-- =================================================================================== -->
+<extension
+      point="org.eclipse.core.runtime.preferences">
+   <initializer class="org.rubypeople.rdt.internal.core.RubyCorePreferenceInitializer"/>
+</extension>
+
 </plugin>
