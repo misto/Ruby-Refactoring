@@ -27,6 +27,8 @@ import org.eclipse.ui.IWorkbenchWizard;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.ide.IDE;
+import org.rubypeople.rdt.core.RubyCore;
+import org.rubypeople.rdt.core.formatter.Indents;
 import org.rubypeople.rdt.internal.ui.RubyPlugin;
 import org.rubypeople.rdt.internal.ui.RubyPluginImages;
 import org.rubypeople.rdt.internal.ui.wizards.RubyNewClassWizardPage;
@@ -176,11 +178,13 @@ public class RubyNewClassWizard extends Wizard implements INewWizard {
         StringBuffer contents = new StringBuffer();
         contents.append("class ");
         contents.append(className);
-        if (superclassName != null && superclassName != "Object") {
+        if (superclassName != null && !superclassName.equals("Object")) {
           contents.append(" < ");
           contents.append(superclassName);
         }
-        contents.append("\n  \nend\n");
+        contents.append("\n");
+        contents.append(Indents.createIndentString(1, RubyCore.getOptions()));
+        contents.append("\nend\n");        
         return new ByteArrayInputStream(contents.toString().getBytes());
     }
 
