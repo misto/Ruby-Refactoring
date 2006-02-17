@@ -4,6 +4,7 @@
 package org.rubypeople.rdt.internal.corext.util;
 
 import org.rubypeople.rdt.core.IRubyScript;
+import org.rubypeople.rdt.core.RubyModelException;
 import org.rubypeople.rdt.internal.ui.RubyPlugin;
 
 /**
@@ -42,4 +43,11 @@ public final class RubyModelUtil {
 	public static boolean isPrimary(IRubyScript cu) {
 		return cu.getOwner() == null;
 	}
+
+    public static void reconcile(IRubyScript unit) throws RubyModelException {    
+        unit.reconcile(
+                false /* don't force problem detection */, 
+                null /* use primary owner */, 
+                null /* no progress monitor */);
+    }
 }
