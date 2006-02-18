@@ -1075,7 +1075,7 @@ public class RubyScriptStructureBuilder implements NodeVisitor {
 			return "Fixnum";
 
 		} else if (value instanceof BignumNode) { return "Bignum"; }
-		return null;
+		return "Object";
 	}
 
 	/*
