@@ -103,8 +103,9 @@ public class OldCodeFormatter extends CodeFormatter {
         if (isDebug()) {
             firstAbstractBlockMarker.print();
         }
+        int initialIndentLevel = Indents.measureIndentUnits(unformatted, preferences.tab_size, preferences.indentation_size);        
         try {
-            return this.formatString(unformatted, firstAbstractBlockMarker);
+            return this.formatString(unformatted, firstAbstractBlockMarker, initialIndentLevel);
         } catch (PatternSyntaxException ex) {
             return unformatted;
         }
@@ -117,22 +118,19 @@ public class OldCodeFormatter extends CodeFormatter {
         return isDebug;
     }
 
-    protected String formatString(String unformatted, AbstractBlockMarker abstractBlockMarker)
+    protected String formatString(String unformatted, AbstractBlockMarker abstractBlockMarker, int initialIndentLevel)
             throws PatternSyntaxException {
         Pattern pat = Pattern.compile("\n");
         String[] lines = pat.split(unformatted);
         IndentationState state = null;
         StringBuffer formatted = new StringBuffer();
         Pattern whitespacePattern = Pattern.compile("^[\t ]*");
-        for (int i = 0; i < lines.length; i++) {
-            String line = lines[i];
-            int initialIndentLevel = Indents.measureIndentUnits(line, preferences.tab_size, preferences.indentation_size);
-                        
+        for (int i = 0; i < lines.length; i++) {                 
             Matcher whitespaceMatcher = whitespacePattern.matcher(lines[i]);
             whitespaceMatcher.find();
             int leadingWhitespace = whitespaceMatcher.end(0);
             if (state == null) {
-                state = new IndentationState(unformatted, preferences.indentation_size,
+            	  state = new IndentationState(unformatted, preferences.indentation_size,
                         leadingWhitespace, initialIndentLevel);
             }
             state.incPos(leadingWhitespace);
@@ -454,8 +452,20 @@ public class OldCodeFormatter extends CodeFormatter {
     }
 
     public TextEdit format(int kind, String source, int offset, int length, int indentationLevel, String lineSeparator) {
-        String newText = formatString(source.substring(offset, length));
+        String newText = formatString(source.substring(offset, length), indentationLevel);
         return new ReplaceEdit(offset, length, newText);
     }
+
+	private String formatString(String unformatted, int indentationLevel) {
+		AbstractBlockMarker firstAbstractBlockMarker = this.createBlockMarkerList(unformatted);
+        if (isDebug()) {
+            firstAbstractBlockMarker.print();
+        }
+        try {
+            return this.formatString(unformatted, firstAbstractBlockMarker, indentationLevel);
+        } catch (PatternSyntaxException ex) {
+            return unformatted;
+        }
+	}
 
 }
