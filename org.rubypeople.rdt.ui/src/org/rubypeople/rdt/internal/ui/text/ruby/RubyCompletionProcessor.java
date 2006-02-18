@@ -33,11 +33,11 @@ import org.rubypeople.rdt.core.RubyModelException;
 import org.rubypeople.rdt.internal.corext.template.ruby.RubyContextType;
 import org.rubypeople.rdt.internal.ui.RubyPlugin;
 import org.rubypeople.rdt.internal.ui.RubyPluginImages;
-import org.rubypeople.rdt.internal.ui.text.RubyTextTools;
 import org.rubypeople.rdt.internal.ui.text.template.contentassist.RubyTemplateAccess;
 import org.rubypeople.rdt.internal.ui.text.template.contentassist.TemplateEngine;
 import org.rubypeople.rdt.internal.ui.text.template.contentassist.TemplateProposal;
 import org.rubypeople.rdt.ui.IWorkingCopyManager;
+import org.rubypeople.rdt.ui.text.RubyTextTools;
 import org.rubypeople.rdt.ui.text.ruby.IRubyCompletionProposal;
 
 public class RubyCompletionProcessor extends TemplateCompletionProcessor

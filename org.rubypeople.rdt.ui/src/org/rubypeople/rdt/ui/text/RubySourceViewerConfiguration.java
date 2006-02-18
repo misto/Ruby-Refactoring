@@ -41,7 +41,6 @@ import org.rubypeople.rdt.internal.ui.text.RubyContentAssistPreference;
 import org.rubypeople.rdt.internal.ui.text.RubyDoubleClickSelector;
 import org.rubypeople.rdt.internal.ui.text.RubyPartitionScanner;
 import org.rubypeople.rdt.internal.ui.text.RubyReconciler;
-import org.rubypeople.rdt.internal.ui.text.RubyTextTools;
 import org.rubypeople.rdt.internal.ui.text.comment.CommentFormattingStrategy;
 import org.rubypeople.rdt.internal.ui.text.ruby.AbstractRubyScanner;
 import org.rubypeople.rdt.internal.ui.text.ruby.RubyCodeScanner;

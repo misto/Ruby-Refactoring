@@ -15,7 +15,7 @@ import org.eclipse.ui.internal.editors.text.WorkspaceOperationRunner;
 import org.eclipse.ui.texteditor.AbstractDocumentProvider;
 import org.rubypeople.rdt.internal.ui.RubyUIMessages;
 import org.rubypeople.rdt.internal.ui.RubyPlugin;
-import org.rubypeople.rdt.internal.ui.text.RubyTextTools;
+import org.rubypeople.rdt.ui.text.RubyTextTools;
 
 public class ExternalRubyDocumentProvider extends AbstractDocumentProvider {
 	

@@ -31,9 +31,9 @@ import org.rubypeople.rdt.core.ISourceRange;
 import org.rubypeople.rdt.core.ISourceReference;
 import org.rubypeople.rdt.core.RubyModelException;
 import org.rubypeople.rdt.internal.ui.RubyPlugin;
-import org.rubypeople.rdt.internal.ui.text.RubyTextTools;
 import org.rubypeople.rdt.ui.IWorkingCopyManager;
 import org.rubypeople.rdt.ui.text.RubySourceViewerConfiguration;
+import org.rubypeople.rdt.ui.text.RubyTextTools;
 
 public abstract class RubyAbstractEditor extends TextEditor {
 

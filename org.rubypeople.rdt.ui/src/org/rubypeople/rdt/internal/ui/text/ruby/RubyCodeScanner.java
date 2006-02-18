@@ -9,9 +9,9 @@ import org.eclipse.jface.text.rules.IWordDetector;
 import org.eclipse.jface.text.rules.NumberRule;
 import org.eclipse.jface.text.rules.WordRule;
 import org.rubypeople.rdt.internal.ui.text.IRubyColorConstants;
-import org.rubypeople.rdt.internal.ui.text.RubyTextTools;
 import org.rubypeople.rdt.internal.ui.text.RubyWordDetector;
 import org.rubypeople.rdt.ui.text.IColorManager;
+import org.rubypeople.rdt.ui.text.RubyTextTools;
 
 public class RubyCodeScanner extends AbstractRubyScanner {
 

@@ -34,9 +34,9 @@ import org.rubypeople.rdt.core.formatter.DefaultCodeFormatterConstants;
 import org.rubypeople.rdt.internal.ui.RubyPlugin;
 import org.rubypeople.rdt.internal.ui.rubyeditor.RubySourceViewer;
 import org.rubypeople.rdt.internal.ui.text.IRubyPartitions;
-import org.rubypeople.rdt.internal.ui.text.RubyTextTools;
 import org.rubypeople.rdt.internal.ui.text.SimpleRubySourceViewerConfiguration;
 import org.rubypeople.rdt.ui.PreferenceConstants;
+import org.rubypeople.rdt.ui.text.RubyTextTools;
 
 public abstract class RubyPreview {
 

@@ -1,4 +1,4 @@
-package org.rubypeople.rdt.internal.ui.text;
+package org.rubypeople.rdt.ui.text;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -16,11 +16,13 @@ import org.eclipse.jface.util.IPropertyChangeListener;
 import org.eclipse.jface.util.PropertyChangeEvent;
 import org.rubypeople.rdt.internal.ui.RubyPlugin;
 import org.rubypeople.rdt.internal.ui.rubyeditor.RubyEditorPreferences;
+import org.rubypeople.rdt.internal.ui.text.IRubyColorConstants;
+import org.rubypeople.rdt.internal.ui.text.RubyColorManager;
+import org.rubypeople.rdt.internal.ui.text.RubyCommentScanner;
+import org.rubypeople.rdt.internal.ui.text.RubyPartitionScanner;
 import org.rubypeople.rdt.internal.ui.text.ruby.AbstractRubyScanner;
 import org.rubypeople.rdt.internal.ui.text.ruby.RubyCodeScanner;
 import org.rubypeople.rdt.internal.ui.text.ruby.SingleTokenRubyCodeScanner;
-import org.rubypeople.rdt.ui.text.IColorManager;
-import org.rubypeople.rdt.ui.text.RubySourceViewerConfiguration;
 
 public class RubyTextTools {
 
