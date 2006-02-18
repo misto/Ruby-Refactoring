@@ -29,7 +29,7 @@ import org.rubypeople.rdt.internal.ui.RubyPlugin;
 /**
  * Formatting strategy for ruby source code.
  *
- * @since 3.0
+ * @since 0.8.0
  */
 public class RubyFormattingStrategy extends ContextBasedFormattingStrategy {
 
@@ -39,7 +39,7 @@ public class RubyFormattingStrategy extends ContextBasedFormattingStrategy {
     private final LinkedList fPartitions= new LinkedList();
 
     /**
-     * Creates a new java formatting strategy.
+     * Creates a new ruby formatting strategy.
      */
     public RubyFormattingStrategy() {
         super();

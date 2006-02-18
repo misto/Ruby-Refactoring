@@ -2,7 +2,7 @@
 <templates>
 
 <template 
-	context="org.rubypeople.rdt.ui.templateContextType.rubyFile" 
+	context="ruby" 
 	description="%forTemplate1.description" 
 	id="org.rubypeople.rdt.ui.templates.for1" 
 	name="for">for ${obj} in ${collection}
@@ -10,7 +10,7 @@
 end</template>
 
 <template 
-	context="org.rubypeople.rdt.ui.templateContextType.rubyFile" 
+	context="ruby" 
 	description="%forTemplate2.description" 
 	id="org.rubypeople.rdt.ui.templates.for2" 
 	name="for">for ${i} in ${start_num}..${end_num}
@@ -18,7 +18,7 @@ end</template>
 end</template>
 
 <template 
-	context="org.rubypeople.rdt.ui.templateContextType.rubyFile" 
+	context="ruby" 
 	description="%defTemplate1.description" 
 	id="org.rubypeople.rdt.ui.templates.def1" 
 	name="def">def ${method_name}
@@ -26,7 +26,7 @@ end</template>
 end</template>
 
 <template 
-	context="org.rubypeople.rdt.ui.templateContextType.rubyFile" 
+	context="ruby" 
 	description="%whileTemplate1.description" 
 	id="org.rubypeople.rdt.ui.templates.while1" 
 	name="while">while ${condition}
@@ -34,13 +34,13 @@ end</template>
 end</template>
 
 <template 
-	context="org.rubypeople.rdt.ui.templateContextType.rubyFile" 
+	context="ruby" 
 	description="%whileTemplate2.description" 
 	id="org.rubypeople.rdt.ui.templates.while2" 
 	name="while">while ${condition}</template>
 
 <template 
-	context="org.rubypeople.rdt.ui.templateContextType.rubyFile" 
+	context="ruby" 
 	description="%classTemplate1.description" 
 	id="org.rubypeople.rdt.ui.templates.class1" 
 	name="class">class ${ClassName}
@@ -48,7 +48,7 @@ end</template>
 end</template>
 
 <template 
-	context="org.rubypeople.rdt.ui.templateContextType.rubyFile" 
+	context="ruby" 
 	description="%classTemplate2.description" 
 	id="org.rubypeople.rdt.ui.templates.class2" 
 	name="class">class &lt;&lt; ${obj}
@@ -56,7 +56,7 @@ end</template>
 end</template>
 
 <template 
-	context="org.rubypeople.rdt.ui.templateContextType.rubyFile" 
+	context="ruby" 
 	description="%moduleTemplate1.description" 
 	id="org.rubypeople.rdt.ui.templates.module1" 
 	name="module">module ${ModuleName}
@@ -64,7 +64,7 @@ end</template>
 end</template>
 
 <template 
-	context="org.rubypeople.rdt.ui.templateContextType.rubyFile" 
+	context="ruby" 
 	description="%doTemplate1.description" 
 	id="org.rubypeople.rdt.ui.templates.do1" 
 	name="do">do |${block_var}|
@@ -72,7 +72,7 @@ end</template>
 end</template>
 
 <template 
-	context="org.rubypeople.rdt.ui.templateContextType.rubyFile" 
+	context="ruby" 
 	description="%ifTemplate1.description" 
 	id="org.rubypeople.rdt.ui.templates.if1" 
 	name="if">if ${condition}
@@ -80,7 +80,7 @@ end</template>
 end</template>
 
 <template 
-	context="org.rubypeople.rdt.ui.templateContextType.rubyFile" 
+	context="ruby" 
 	description="%ifelseTemplate1.description" 
 	id="org.rubypeople.rdt.ui.templates.ifelse1" 
 	name="ifelse">if ${condition}
@@ -90,7 +90,7 @@ else
 end</template>
 
 <template 
-	context="org.rubypeople.rdt.ui.templateContextType.rubyFile" 
+	context="ruby" 
 	description="%elsifTemplate1.description" 
 	id="org.rubypeople.rdt.ui.templates.elsif1" 
 	name="elsif">elsif ${condition}
@@ -98,7 +98,7 @@ end</template>
 end</template>
 
 <template 
-	context="org.rubypeople.rdt.ui.templateContextType.rubyFile" 
+	context="ruby" 
 	description="%caseTemplate1.description" 
 	id="org.rubypeople.rdt.ui.templates.case" 
 	name="case">case ${condition}
@@ -109,7 +109,7 @@ end</template>
 end</template>
 
 <template 
-	context="org.rubypeople.rdt.ui.templateContextType.rubyFile" 
+	context="ruby" 
 	description="%elseTemplate1.description" 
 	id="org.rubypeople.rdt.ui.templates.else" 
 	name="else">else ${condition}
@@ -117,7 +117,7 @@ end</template>
 end</template>
 
 <template 
-	context="org.rubypeople.rdt.ui.templateContextType.rubyFile" 
+	context="ruby" 
 	description="%beginTemplate1.description" 
 	id="org.rubypeople.rdt.ui.templates.begin1" 
 	name="begin">begin
@@ -125,7 +125,7 @@ end</template>
 end until {$condition}</template>
 
 <template 
-	context="org.rubypeople.rdt.ui.templateContextType.rubyFile" 
+	context="ruby" 
 	description="%beginTemplate2.description" 
 	id="org.rubypeople.rdt.ui.templates.begin2" 
 	name="begin">begin
@@ -133,7 +133,7 @@ end until {$condition}</template>
 end while {$condition}</template>
 
 <template 
-	context="org.rubypeople.rdt.ui.templateContextType.rubyFile" 
+	context="ruby" 
 	description="%beginTemplate3.description" 
 	id="org.rubypeople.rdt.ui.templates.begin3" 
 	name="begin">begin
@@ -143,7 +143,7 @@ rescue ${ErrorType}
 end</template>
 
 <template 
-	context="org.rubypeople.rdt.ui.templateContextType.rubyFile" 
+	context="ruby" 
 	description="%beginTemplate4.description" 
 	id="org.rubypeople.rdt.ui.templates.begin4" 
 	name="begin">begin
@@ -155,7 +155,7 @@ ensure
 end</template>
 
 <template 
-	context="org.rubypeople.rdt.ui.templateContextType.rubyFile" 
+	context="ruby" 
 	description="%untilTemplate1.description" 
 	id="org.rubypeople.rdt.ui.templates.until1" 
 	name="until">until ${condition}
@@ -163,13 +163,13 @@ end</template>
 end</template>
 
 <template 
-	context="org.rubypeople.rdt.ui.templateContextType.rubyFile" 
+	context="ruby" 
 	description="%aliasTemplate1.description" 
 	id="org.rubypeople.rdt.ui.templates.alias1" 
 	name="alias">alias :${new_method} :${old_method}</template>
 
 <template 
-	context="org.rubypeople.rdt.ui.templateContextType.rubyFile" 
+	context="ruby" 
 	description="%rescueTemplate1.description" 
 	id="org.rubypeople.rdt.ui.templates.rescue1" 
 	name="rescue">rescue ${ErrorType}
@@ -177,7 +177,7 @@ end</template>
 end</template>
 
 <template 
-	context="org.rubypeople.rdt.ui.templateContextType.rubyFile" 
+	context="ruby" 
 	description="%rescueTemplate2.description" 
 	id="org.rubypeople.rdt.ui.templates.rescue2" 
 	name="rescue">rescue ${ErrorType} =&gt; ${error_var}

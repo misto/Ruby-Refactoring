@@ -99,7 +99,7 @@ public class RubyReconcilingStrategy implements IReconcilingStrategy, IReconcili
                         }
                     }
                     public void handleException(Throwable ex) {
-                        IStatus status= new Status(IStatus.ERROR, RubyUI.ID_PLUGIN, IStatus.OK, "Error in JDT Core during reconcile", ex);  //$NON-NLS-1$
+                        IStatus status= new Status(IStatus.ERROR, RubyUI.ID_PLUGIN, IStatus.OK, "Error in RDT Core during reconcile", ex);  //$NON-NLS-1$
                         RubyPlugin.getDefault().getLog().log(status);
                     }
                 });

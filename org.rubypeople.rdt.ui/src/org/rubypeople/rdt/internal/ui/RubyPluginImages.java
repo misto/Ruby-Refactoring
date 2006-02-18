@@ -55,7 +55,7 @@ public class RubyPluginImages {
 
     private static final String IMG_CTOOLS_RUBY_IMPORT_CONTAINER = NAME_PREFIX + "imp_c.gif";
     private static final String IMG_CTOOLS_RUBY_IMPORT = NAME_PREFIX + "imp_obj.gif";
-    public static final String IMG_TEMPLATE_PROPOSAL = NAME_PREFIX + "template_obj.gif";
+    public static final String IMG_OBJS_TEMPLATE = NAME_PREFIX + "template_obj.gif";
     private static final String IMG_CTOOLS_RUBY_LOCAL_VAR = NAME_PREFIX + "localvariable_obj.gif";
     public static final String IMG_CTOOLS_RUBY_PAGE = NAME_PREFIX + "ruby_page.gif";
     public static final String IMG_CTOOLS_RUBY = NAME_PREFIX + "ruby.gif";
@@ -127,7 +127,7 @@ public class RubyPluginImages {
     public static final ImageDescriptor DESC_MISC_PRIVATE= createManaged(T_OBJ, IMG_MISC_PRIVATE);
     
     public static final ImageDescriptor DESC_OBJS_UNKNOWN= createManaged(T_OBJ, IMG_OBJS_UNKNOWN);
-    
+       
     
 	static {
 		createManaged(T_OBJ, IMG_OBJS_FIXABLE_ERROR);
@@ -135,7 +135,7 @@ public class RubyPluginImages {
 		createManaged(T_OBJ, IMG_OBJS_ERROR);
 		createManaged(T_OBJ, IMG_OBJS_WARNING);
 		createManaged(T_OBJ, IMG_OBJS_INFO);
-		createManaged(T_OBJ, IMG_TEMPLATE_PROPOSAL);
+		createManaged(T_OBJ, IMG_OBJS_TEMPLATE);
 		createManaged(T_CTOOL, IMG_CTOOLS_RUBY_IMPORT_CONTAINER);
 		createManaged(T_CTOOL, IMG_CTOOLS_RUBY_IMPORT);
 		createManaged(T_CTOOL, IMG_CTOOLS_RUBY_PAGE);

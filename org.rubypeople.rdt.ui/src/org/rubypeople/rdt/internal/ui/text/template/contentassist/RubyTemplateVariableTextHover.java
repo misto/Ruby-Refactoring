@@ -9,9 +9,10 @@
  *     IBM Corporation - initial API and implementation
  *******************************************************************************/
  
-package org.rubypeople.rdt.internal.ui.rubyeditor.templates;
+package org.rubypeople.rdt.internal.ui.text.template.contentassist;
 
 import java.util.Iterator;
+
 import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.IRegion;
@@ -20,6 +21,7 @@ import org.eclipse.jface.text.ITextViewer;
 import org.eclipse.jface.text.Region;
 import org.eclipse.jface.text.templates.TemplateContextType;
 import org.eclipse.jface.text.templates.TemplateVariableResolver;
+import org.rubypeople.rdt.internal.corext.template.ruby.RubyContextType;
 
 public class RubyTemplateVariableTextHover implements ITextHover {
 
@@ -35,7 +37,7 @@ public class RubyTemplateVariableTextHover implements ITextHover {
 			int offset= subject.getOffset();
 			if (offset >= 2 && "${".equals(doc.get(offset-2, 2))) { //$NON-NLS-1$
 				String varName= doc.get(offset, subject.getLength());
-				TemplateContextType contextType= RubyTemplateAccess.getDefault().getContextTypeRegistry().getContextType(RubyFileContextType.RUBYFILE_CONTEXT_TYPE);
+				TemplateContextType contextType= RubyTemplateAccess.getDefault().getContextTypeRegistry().getContextType(RubyContextType.NAME);
 				if (contextType != null) {
 					Iterator iter= contextType.resolvers();
 					while (iter.hasNext()) {

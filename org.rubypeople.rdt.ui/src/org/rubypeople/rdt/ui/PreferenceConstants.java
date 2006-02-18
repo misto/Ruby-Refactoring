@@ -17,8 +17,7 @@ public class PreferenceConstants {
 
     public static final String FORMAT_INDENTATION = "formatIndentation"; //$NON-NLS-1$
     public static final String FORMAT_USE_TAB = "formatUseTab"; //$NON-NLS-1$	
-    // TODO Finish implementing this option!
-    public static final String TEMPLATES_USE_CODEFORMATTER = "templatesUSeCodeFormatter";
+    public static final String TEMPLATES_USE_CODEFORMATTER = "templatesUseCodeFormatter"; //$NON-NLS-1$	
 
     private final static String DEFAULT_RDOC_CMD = "rdoc"; //$NON-NLS-1$	
     private final static String DEFAULT_RI_CMD = "ri"; //$NON-NLS-1$	
@@ -226,6 +225,10 @@ public class PreferenceConstants {
 
     public static void initializeDefaultValues(IPreferenceStore store) {
         store.setDefault(PreferenceConstants.EDITOR_SHOW_SEGMENTS, false);
+        
+        // FIXME We can't enabling using code formatter yet, because it breaks on formatting templates (when inserting via content assist)
+        // FIXME Uncomment when we have an AST based formatter which spits out TextEdits (rather than one huge replace)
+        //        store.setDefault(PreferenceConstants.TEMPLATES_USE_CODEFORMATTER, true);
         
         store.setDefault(PreferenceConstants.FORMATTER_PROFILE, ProfileManager.DEFAULT_PROFILE);
 

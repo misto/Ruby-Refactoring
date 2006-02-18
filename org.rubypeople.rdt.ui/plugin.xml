@@ -36,7 +36,7 @@
        <page
             name="%PreferencePage.rdtTemplatePreferences"
             category="org.rubypeople.rdt.ui.preferences.PreferencePageRubyBase"
-            class="org.rubypeople.rdt.internal.ui.rubyeditor.templates.RubyTemplatePreferencePage"
+            class="org.rubypeople.rdt.internal.ui.preferences.RubyTemplatePreferencePage"
             id="org.rubypeople.rdt.ui.TemplatesPreferencePage">
       </page>
       <page
@@ -219,6 +219,13 @@
             contextId="org.rubypeople.rdt.ui.rubyEditorScope"
             schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
             sequence="M1+SPACE">
+      </key>
+      <key
+            commandId="org.rubypeople.rdt.ui.edit.text.ruby.content.assist.proposals"
+            contextId="org.rubypeople.rdt.ui.rubyEditorScope"
+            schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
+            sequence="CTRL+SPACE"
+            platform="carbon">
       </key>
 	</extension>
    <extension point="org.eclipse.ui.commands">
@@ -461,29 +468,16 @@
             pattern="*.so">
       </filter>
    </extension>
+<!-- =========================================================================== -->
+<!-- Templates                                                                   -->
+<!-- =========================================================================== -->
    <extension
          point="org.eclipse.ui.editors.templates">
       <contextType
             name="%rubyFile.contextType.name"
-            class="org.rubypeople.rdt.internal.ui.rubyeditor.templates.RubyFileContextType"
-            id="org.rubypeople.rdt.ui.templateContextType.rubyFile">
+            class="org.rubypeople.rdt.internal.corext.template.ruby.RubyContextType"
+            id="ruby">
       </contextType>
-      <resolver
-            name="%rdt.resolvers.src"
-            type="src"
-            icon="templates/resolver.gif"
-            description="%rdt.resolvers.src.description"
-            contextTypeId="org.rubypeople.rdt.ui.templateContextType.XML"
-            class="org.rubypeople.rdt.internal.ui.rubyeditor.templates.RubyVariableResolver">
-      </resolver>
-      <resolver
-            name="%rdt.resolvers.dst"
-            type="dst"
-            icon="templates/resolver.gif"
-            description="%rdt.resolvers.dst.description"
-            contextTypeId="org.rubypeople.rdt.ui.templateContextType.XML"
-            class="org.rubypeople.rdt.internal.ui.rubyeditor.templates.RubyVariableResolver">
-      </resolver>
       <include
       		file="templates/rdt.xml"
       		translations="$nl$/templates/rdt.properties">

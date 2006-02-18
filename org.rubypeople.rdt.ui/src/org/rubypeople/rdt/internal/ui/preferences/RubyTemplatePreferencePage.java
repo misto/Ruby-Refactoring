@@ -9,7 +9,7 @@
  * 	   John-Mason P. Shackelford - initial API and implementation
  *     IBM Corporation - bug fixes
  *******************************************************************************/
-package org.rubypeople.rdt.internal.ui.rubyeditor.templates;
+package org.rubypeople.rdt.internal.ui.preferences;
 
 import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.jface.text.Document;
@@ -24,6 +24,7 @@ import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.texteditor.templates.TemplatePreferencePage;
 import org.rubypeople.rdt.internal.ui.RubyPlugin;
+import org.rubypeople.rdt.internal.ui.text.template.contentassist.RubyTemplateAccess;
 import org.rubypeople.rdt.ui.PreferenceConstants;
 import org.rubypeople.rdt.ui.text.RubySourceViewerConfiguration;
 

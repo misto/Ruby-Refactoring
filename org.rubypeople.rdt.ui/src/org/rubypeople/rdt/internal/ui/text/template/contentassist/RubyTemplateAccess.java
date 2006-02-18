@@ -8,7 +8,7 @@
  * Contributors:
  *     IBM Corporation - initial API and implementation
  *******************************************************************************/
-package org.rubypeople.rdt.internal.ui.rubyeditor.templates;
+package org.rubypeople.rdt.internal.ui.text.template.contentassist;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -26,6 +26,7 @@ import org.eclipse.jface.text.templates.persistence.TemplatePersistenceData;
 import org.eclipse.jface.text.templates.persistence.TemplateStore;
 import org.eclipse.ui.editors.text.templates.ContributionContextTypeRegistry;
 import org.eclipse.ui.editors.text.templates.ContributionTemplateStore;
+import org.rubypeople.rdt.internal.corext.template.ruby.RubyContextType;
 import org.rubypeople.rdt.internal.ui.RubyPlugin;
 import org.rubypeople.rdt.ui.extensions.IRubyTemplateProvider;
 
@@ -41,7 +42,7 @@ public class RubyTemplateAccess {
 	private TemplateStore fStore;
 	
 	/** The context type registry. */
-	private ContributionContextTypeRegistry fRegistry;
+	private ContributionContextTypeRegistry fContextTypeRegistry;
 	
 	private RubyTemplateAccess() {}
 
@@ -146,12 +147,12 @@ public class RubyTemplateAccess {
 	 * @return the context type registry for this plug-in instance
 	 */
 	public ContextTypeRegistry getContextTypeRegistry() {
-		if (fRegistry == null) {
+		if (fContextTypeRegistry == null) {
 			// create and configure the contexts available in the template editor
-			fRegistry= new ContributionContextTypeRegistry();
-			fRegistry.addContextType(RubyFileContextType.RUBYFILE_CONTEXT_TYPE);
+			fContextTypeRegistry= new ContributionContextTypeRegistry();
+			fContextTypeRegistry.addContextType(new RubyContextType());
 		}
-		return fRegistry;
+		return fContextTypeRegistry;
 	}
 
 	public IPreferenceStore getPreferenceStore() {	    
