@@ -38,6 +38,7 @@ import org.rubypeople.rdt.core.BufferChangedEvent;
 import org.rubypeople.rdt.core.IBuffer;
 import org.rubypeople.rdt.core.IBufferChangedListener;
 import org.rubypeople.rdt.core.IOpenable;
+import org.rubypeople.rdt.core.RubyModelException;
 import org.rubypeople.rdt.internal.ui.RubyPlugin;
 
 /**
@@ -384,12 +385,11 @@ public class DocumentAdapter implements IBuffer, IDocumentListener {
     /*
      * @see IBuffer#save(IProgressMonitor, boolean)
      */
-    public void save(IProgressMonitor progress, boolean force) {
+    public void save(IProgressMonitor progress, boolean force) throws RubyModelException {
         try {
             if (fTextFileBuffer != null) fTextFileBuffer.commit(progress, force);
         } catch (CoreException e) {
-            // TODO Retrhow as RubyModelException when we have it!
-            e.printStackTrace();
+            throw new RubyModelException(e);
         }
     }
 
