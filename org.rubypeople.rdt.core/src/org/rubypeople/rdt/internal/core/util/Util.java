@@ -13,6 +13,7 @@ import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
+import org.rubypeople.rdt.core.IRubyElement;
 import org.rubypeople.rdt.core.RubyConventions;
 import org.rubypeople.rdt.core.RubyCore;
 import org.rubypeople.rdt.core.RubyModelException;
@@ -316,6 +317,30 @@ public class Util {
      */
     public static int combineHashCodes(int hashCode1, int hashCode2) {
         return hashCode1 * 17 + hashCode2;
+    }
+
+    /*
+     * Returns whether the given ruby element is exluded from its root's classpath.
+     * It doesn't check whether the root itself is on the classpath or not
+     */
+    public static final boolean isExcluded(IRubyElement element) {
+        int elementType = element.getElementType();
+        switch (elementType) {
+            case IRubyElement.RUBY_MODEL:
+            case IRubyElement.PROJECT:
+                return false;
+            case IRubyElement.SCRIPT:                
+                IResource resource = element.getResource();
+                if (resource == null) 
+                    return false;
+//                if (isExcluded(resource, root.fullInclusionPatternChars(), root.fullExclusionPatternChars()))
+//                    return true;
+                return isExcluded(element.getParent());
+                
+            default:
+                IRubyElement cu = element.getAncestor(IRubyElement.SCRIPT);
+                return cu != null && isExcluded(cu);
+        }
     }
 
 

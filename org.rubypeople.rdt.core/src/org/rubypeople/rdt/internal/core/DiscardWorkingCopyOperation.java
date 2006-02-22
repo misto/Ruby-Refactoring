@@ -10,32 +10,60 @@
  *******************************************************************************/
 package org.rubypeople.rdt.internal.core;
 
-import org.eclipse.core.runtime.IProgressMonitor;
+import org.rubypeople.rdt.core.IRubyElement;
+import org.rubypeople.rdt.core.IRubyElementDelta;
 import org.rubypeople.rdt.core.RubyModelException;
 
 /**
  * Discards a working copy (decrement its use count and remove its working copy
  * info if the use count is 0) and signal its removal through a delta.
  */
-public class DiscardWorkingCopyOperation {
+public class DiscardWorkingCopyOperation extends RubyModelOperation {
 
-	private RubyScript workingCopy;
+    public DiscardWorkingCopyOperation(RubyScript workingCopy) {
+        super(new IRubyElement[] { workingCopy});
+    }
 
-	public DiscardWorkingCopyOperation(RubyScript workingCopy) {
-		this.workingCopy = workingCopy;
-	}
+    protected void executeOperation() throws RubyModelException {
+        RubyScript workingCopy = getWorkingCopy();
 
-	protected void runOperation(IProgressMonitor monitor) throws RubyModelException {
-		int useCount = RubyModelManager.getRubyModelManager().discardPerWorkingCopyInfo(workingCopy);
-		if (useCount == 0) {
-			// TODO Create RubyElementDeltas
-		}
-	}
+        int useCount = RubyModelManager.getRubyModelManager()
+                .discardPerWorkingCopyInfo(workingCopy);
+        if (useCount == 0) {
+            if (!workingCopy.isPrimary()) {
+                // report removed java delta for a non-primary working copy
+                RubyElementDelta delta = new RubyElementDelta(this.getRubyModel());
+                delta.removed(workingCopy);
+                addDelta(delta);
+                removeReconcileDelta(workingCopy);
+            } else {
+                if (workingCopy.getResource().isAccessible()) {
+                    // report a F_PRIMARY_WORKING_COPY change delta for a
+                    // primary working copy
+                    RubyElementDelta delta = new RubyElementDelta(this.getRubyModel());
+                    delta.changed(workingCopy, IRubyElementDelta.F_PRIMARY_WORKING_COPY);
+                    addDelta(delta);
+                } else {
+                    // report a REMOVED delta
+                    RubyElementDelta delta = new RubyElementDelta(this.getRubyModel());
+                    delta.removed(workingCopy, IRubyElementDelta.F_PRIMARY_WORKING_COPY);
+                    addDelta(delta);
+                }
+            }
+        }
+    }
 
-	/**
-	 * @see RubyModelOperation#isReadOnly
-	 */
-	public boolean isReadOnly() {
-		return true;
-	}
+    /**
+     * Returns the working copy this operation is working on.
+     */
+    protected RubyScript getWorkingCopy() {
+        return (RubyScript) getElementToProcess();
+    }
+
+    /**
+     * @see RubyModelOperation#isReadOnly
+     */
+    public boolean isReadOnly() {
+        return true;
+    }
 }
