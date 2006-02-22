@@ -25,9 +25,11 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.TabFolder;
 import org.eclipse.swt.widgets.TabItem;
+import org.rubypeople.rdt.core.IRubyProject;
 import org.rubypeople.rdt.core.RubyCore;
 import org.rubypeople.rdt.internal.core.LoadpathEntry;
-import org.rubypeople.rdt.internal.core.RubyProject;
+import org.rubypeople.rdt.internal.core.RubyModel;
+import org.rubypeople.rdt.internal.core.RubyModelManager;
 import org.rubypeople.rdt.internal.debug.ui.RdtDebugUiMessages;
 import org.rubypeople.rdt.internal.debug.ui.RdtDebugUiPlugin;
 import org.rubypeople.rdt.internal.debug.ui.preferences.EditInterpreterDialog;
@@ -167,7 +169,7 @@ public class RubyEnvironmentTab extends AbstractLaunchConfigurationTab {
 			if (useDefaultLoadPath) {
 				String projectName = configuration.getAttribute(RubyLaunchConfigurationAttribute.PROJECT_NAME, "");
 				if (projectName.length() != 0) {
-					RubyProject project = RubyCore.getRubyProject(projectName);
+					IRubyProject project = RubyModelManager.getRubyModelManager().getRubyModel().getRubyProject(projectName);
 					if (project != null) {
 						List loadPathEntries = project.getLoadPathEntries();
 						loadPathListViewer.setInput(loadPathEntries);

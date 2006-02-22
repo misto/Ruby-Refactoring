@@ -338,16 +338,6 @@ public class RubyCore extends Plugin {
         return (IProject[]) rubyProjectsList.toArray(rubyProjects);
     }
 
-    public static RubyProject getRubyProject(String name) {
-        IProject aProject = RubyCore.getWorkspace().getRoot().getProject(name);
-        if (isRubyProject(aProject)) {
-            RubyProject theRubyProject = new RubyProject();
-            theRubyProject.setProject(aProject);
-            return theRubyProject;
-        }
-        return null;
-    }
-
     public static boolean isRubyProject(IProject aProject) {
         try {
             return aProject.hasNature(RubyCore.NATURE_ID);

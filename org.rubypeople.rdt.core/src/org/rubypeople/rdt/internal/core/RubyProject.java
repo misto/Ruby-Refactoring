@@ -73,7 +73,7 @@ public class RubyProject extends Openable implements IProjectNature, IRubyElemen
     }
 
     /**
-     * Configure the project with Java nature.
+     * Configure the project with Ruby nature.
      */
     public void configure() throws CoreException {
 
@@ -424,7 +424,7 @@ public class RubyProject extends Openable implements IProjectNature, IRubyElemen
     }
     
     /*
-     * (non-Rubydoc)
+     * (non-Javadoc)
      * 
      * @see org.rubypeople.rdt.core.IRubyElement#getElementName()
      */
@@ -433,7 +433,7 @@ public class RubyProject extends Openable implements IProjectNature, IRubyElemen
     }
 
     /*
-     * (non-Rubydoc)
+     * (non-Javadoc)
      * 
      * @see org.rubypeople.rdt.internal.core.parser.RubyElement#getElementType()
      */
@@ -442,7 +442,7 @@ public class RubyProject extends Openable implements IProjectNature, IRubyElemen
     }
 
     /*
-     * (non-Rubydoc)
+     * (non-Javadoc)
      * 
      * @see org.rubypeople.rdt.core.IRubyElement#hasChildren()
      */
@@ -451,16 +451,7 @@ public class RubyProject extends Openable implements IProjectNature, IRubyElemen
     }
 
     /*
-     * (non-Rubydoc)
-     * 
-     * @see org.rubypeople.rdt.core.IRubyElement#getParent()
-     */
-    public IRubyElement getParent() {
-        return null;
-    }
-
-    /*
-     * (non-Rubydoc)
+     * (non-Javadoc)
      * 
      * @see org.rubypeople.rdt.core.IRubyProject#findType(java.lang.String)
      */
