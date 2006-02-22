@@ -365,7 +365,6 @@ public class OldCodeFormatter extends CodeFormatter {
                 }
             }
         } catch (PatternSyntaxException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
 
         }
