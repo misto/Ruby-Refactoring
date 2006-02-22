@@ -81,6 +81,14 @@ end</template>
 
 <template 
 	context="ruby" 
+	description="%ifTemplate2.description" 
+	id="org.rubypeople.rdt.ui.templates.if2" 
+	name="if">if __FILE__ == $0
+    ${cursor}
+end</template>
+
+<template 
+	context="ruby" 
 	description="%ifelseTemplate1.description" 
 	id="org.rubypeople.rdt.ui.templates.ifelse1" 
 	name="ifelse">if ${condition}
