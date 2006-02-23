@@ -13,6 +13,7 @@ import org.eclipse.core.runtime.IExtensionPoint;
 import org.eclipse.core.runtime.IExtensionRegistry;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Platform;
+import org.eclipse.core.runtime.Preferences;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.action.IMenuManager;
@@ -62,7 +63,9 @@ import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.SelectionEnabler;
 import org.eclipse.ui.actions.ActionContext;
 import org.eclipse.ui.actions.ActionGroup;
+import org.eclipse.ui.editors.text.EditorsUI;
 import org.eclipse.ui.help.WorkbenchHelp;
+import org.eclipse.ui.texteditor.AnnotationPreference;
 import org.eclipse.ui.texteditor.ContentAssistAction;
 import org.eclipse.ui.texteditor.IEditorStatusLine;
 import org.eclipse.ui.texteditor.ITextEditorActionConstants;
@@ -254,6 +257,130 @@ public class RubyEditor extends RubyAbstractEditor {
 
         return null;
     }
+    
+	
+	/**
+	 * Returns the annotation closest to the given range respecting the given
+	 * direction. If an annotation is found, the annotations current position
+	 * is copied into the provided annotation position.
+	 * 
+	 * @param offset the region offset
+	 * @param length the region length
+	 * @param forward <code>true</code> for forwards, <code>false</code> for backward
+	 * @param annotationPosition the position of the found annotation
+	 * @return the found annotation
+	 */
+	private Annotation getNextAnnotation(final int offset, final int length, boolean forward, Position annotationPosition) {
+		
+		Annotation nextAnnotation= null;
+		Position nextAnnotationPosition= null;
+		Annotation containingAnnotation= null;
+		Position containingAnnotationPosition= null;
+		boolean currentAnnotation= false;
+		
+		IDocument document= getDocumentProvider().getDocument(getEditorInput());
+		int endOfDocument= document.getLength(); 
+		int distance= Integer.MAX_VALUE;
+		
+		IAnnotationModel model= getDocumentProvider().getAnnotationModel(getEditorInput());
+		Iterator e= new RubyAnnotationIterator(model, true, true);
+		while (e.hasNext()) {
+			Annotation a= (Annotation) e.next();
+			if ((a instanceof IRubyAnnotation) && ((IRubyAnnotation)a).hasOverlay() || !isNavigationTarget(a))
+				continue;
+				
+			Position p= model.getPosition(a);
+			if (p == null)
+				continue;
+			
+			if (forward && p.offset == offset || !forward && p.offset + p.getLength() == offset + length) {// || p.includes(offset)) {
+				if (containingAnnotation == null || (forward && p.length >= containingAnnotationPosition.length || !forward && p.length >= containingAnnotationPosition.length)) { 
+					containingAnnotation= a;
+					containingAnnotationPosition= p;
+					currentAnnotation= p.length == length;
+				}
+			} else {
+				int currentDistance= 0;
+				
+				if (forward) {
+					currentDistance= p.getOffset() - offset;
+					if (currentDistance < 0)
+						currentDistance= endOfDocument + currentDistance;
+					
+					if (currentDistance < distance || currentDistance == distance && p.length < nextAnnotationPosition.length) {
+						distance= currentDistance;
+						nextAnnotation= a;
+						nextAnnotationPosition= p;
+					}
+				} else {
+					currentDistance= offset + length - (p.getOffset() + p.length);
+					if (currentDistance < 0)
+						currentDistance= endOfDocument + currentDistance;
+					
+					if (currentDistance < distance || currentDistance == distance && p.length < nextAnnotationPosition.length) {
+						distance= currentDistance;
+						nextAnnotation= a;
+						nextAnnotationPosition= p;
+					}
+				}
+			}
+		}
+		if (containingAnnotationPosition != null && (!currentAnnotation || nextAnnotation == null)) {
+			annotationPosition.setOffset(containingAnnotationPosition.getOffset());
+			annotationPosition.setLength(containingAnnotationPosition.getLength());
+			return containingAnnotation;
+		}
+		if (nextAnnotationPosition != null) {
+			annotationPosition.setOffset(nextAnnotationPosition.getOffset());
+			annotationPosition.setLength(nextAnnotationPosition.getLength());
+		}
+		
+		return nextAnnotation;
+	}
+	
+	/**
+	 * Returns whether the given annotation is configured as a target for the
+	 * "Go to Next/Previous Annotation" actions
+	 * 
+	 * @param annotation the annotation
+	 * @return <code>true</code> if this is a target, <code>false</code>
+	 *         otherwise
+	 * @since 3.0
+	 */
+	private boolean isNavigationTarget(Annotation annotation) {
+		Preferences preferences= EditorsUI.getPluginPreferences();
+		AnnotationPreference preference= getAnnotationPreferenceLookup().getAnnotationPreference(annotation);
+//		See bug 41689
+//		String key= forward ? preference.getIsGoToNextNavigationTargetKey() : preference.getIsGoToPreviousNavigationTargetKey();
+		String key= preference == null ? null : preference.getIsGoToNextNavigationTargetKey();
+		return (key != null && preferences.getBoolean(key));
+	}
+	
+	/**
+	 * Jumps to the next enabled annotation according to the given direction.
+	 * An annotation type is enabled if it is configured to be in the
+	 * Next/Previous tool bar drop down menu and if it is checked.
+	 * 
+	 * @param forward <code>true</code> if search direction is forward, <code>false</code> if backward
+	 */
+	public void gotoAnnotation(boolean forward) {
+		ITextSelection selection= (ITextSelection) getSelectionProvider().getSelection();
+		Position position= new Position(0, 0);
+		if (false /* delayed - see bug 18316 */) {
+			getNextAnnotation(selection.getOffset(), selection.getLength(), forward, position);
+			selectAndReveal(position.getOffset(), position.getLength());
+		} else /* no delay - see bug 18316 */ {
+			Annotation annotation= getNextAnnotation(selection.getOffset(), selection.getLength(), forward, position);
+			setStatusLineErrorMessage(null);
+			setStatusLineMessage(null);
+			if (annotation != null) {
+				updateAnnotationViews(annotation);
+				selectAndReveal(position.getOffset(), position.getLength());
+				setStatusLineMessage(annotation.getText());
+			}
+		}
+	}
+	
 
     /**
      * Updates the annotation views that show the given annotation.
