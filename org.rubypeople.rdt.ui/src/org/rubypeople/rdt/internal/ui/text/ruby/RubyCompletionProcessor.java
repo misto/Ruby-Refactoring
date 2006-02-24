@@ -19,7 +19,6 @@ import org.eclipse.jface.text.contentassist.IContentAssistProcessor;
 import org.eclipse.jface.text.contentassist.IContextInformation;
 import org.eclipse.jface.text.contentassist.IContextInformationPresenter;
 import org.eclipse.jface.text.contentassist.IContextInformationValidator;
-import org.eclipse.jface.text.contentassist.TextContentAssistInvocationContext;
 import org.eclipse.jface.text.templates.Template;
 import org.eclipse.jface.text.templates.TemplateCompletionProcessor;
 import org.eclipse.jface.text.templates.TemplateContextType;
@@ -227,28 +226,12 @@ public class RubyCompletionProcessor extends TemplateCompletionProcessor
 	}
 
 	/**
-	 * Creates the context that is passed to the completion proposal computers.
-	 * 
-	 * @param viewer
-	 *            the viewer that content assist is invoked on
-	 * @param offset
-	 *            the content assist offset
-	 * @return the context to be passed to the computers
-	 */
-	protected TextContentAssistInvocationContext createContext(
-			ITextViewer viewer, int offset) {
-		return new TextContentAssistInvocationContext(viewer, offset);
-	}
-
-	/**
 	 * @return
 	 */
 	private List determineTemplateProposals(ITextViewer refViewer,
 			int documentOffset) {
 		TemplateEngine engine = fRubyTemplateEngine;
-		TextContentAssistInvocationContext context = createContext(viewer,
-				documentOffset);
-
+	
 		if (engine != null) {
 			IRubyScript unit = fManager
 					.getWorkingCopy(fEditor.getEditorInput());
@@ -256,7 +239,7 @@ public class RubyCompletionProcessor extends TemplateCompletionProcessor
 				return Collections.EMPTY_LIST;
 
 			engine.reset();
-			engine.complete(context.getViewer(), context.getInvocationOffset(),
+			engine.complete(refViewer, documentOffset,
 					unit);
 
 			TemplateProposal[] templateProposals = engine.getResults();
