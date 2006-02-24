@@ -227,6 +227,11 @@
             sequence="CTRL+SPACE"
             platform="carbon">
       </key>
+       <key
+            sequence="M1+M2+P"
+            contextId="org.rubypeople.rdt.ui.rubyEditorScope"
+            commandId="org.rubypeople.rdt.ui.edit.text.ruby.goto.matching.bracket"
+            schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"/>
 	</extension>
    <extension point="org.eclipse.ui.commands">
       <category
@@ -300,6 +305,12 @@
             description="%ActionDefinition.generateRdoc.description"
             id="org.rubypeople.rdt.ui.generate.rdoc"
             name="%ActionDefinition.generateRdoc.name">
+      </command>
+      <command
+            categoryId="org.eclipse.ui.category.navigate"
+            description="%ActionDefinition.gotoMatchingBracket.description"
+            id="org.rubypeople.rdt.ui.edit.text.ruby.goto.matching.bracket"
+            name="%ActionDefinition.gotoMatchingBracket.name">
       </command>
    </extension>
    <extension
