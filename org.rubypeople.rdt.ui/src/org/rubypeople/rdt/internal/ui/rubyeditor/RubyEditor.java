@@ -29,8 +29,10 @@ import org.eclipse.jface.text.IRegion;
 import org.eclipse.jface.text.ITextOperationTarget;
 import org.eclipse.jface.text.ITextSelection;
 import org.eclipse.jface.text.ITextViewerExtension;
+import org.eclipse.jface.text.ITextViewerExtension5;
 import org.eclipse.jface.text.ITypedRegion;
 import org.eclipse.jface.text.Position;
+import org.eclipse.jface.text.Region;
 import org.eclipse.jface.text.TextUtilities;
 import org.eclipse.jface.text.link.ILinkedModeListener;
 import org.eclipse.jface.text.link.LinkedModeModel;
@@ -41,6 +43,7 @@ import org.eclipse.jface.text.link.LinkedModeUI.ExitFlags;
 import org.eclipse.jface.text.link.LinkedModeUI.IExitPolicy;
 import org.eclipse.jface.text.source.Annotation;
 import org.eclipse.jface.text.source.IAnnotationModel;
+import org.eclipse.jface.text.source.ICharacterPairMatcher;
 import org.eclipse.jface.text.source.ISourceViewer;
 import org.eclipse.jface.text.source.IVerticalRuler;
 import org.eclipse.jface.text.source.SourceViewerConfiguration;
@@ -82,6 +85,7 @@ import org.rubypeople.rdt.internal.ui.RubyPlugin;
 import org.rubypeople.rdt.internal.ui.RubyUIMessages;
 import org.rubypeople.rdt.internal.ui.text.IRubyPartitions;
 import org.rubypeople.rdt.internal.ui.text.RubyHeuristicScanner;
+import org.rubypeople.rdt.internal.ui.text.RubyPairMatcher;
 import org.rubypeople.rdt.internal.ui.text.Symbols;
 import org.rubypeople.rdt.ui.IWorkingCopyManager;
 import org.rubypeople.rdt.ui.PreferenceConstants;
@@ -93,6 +97,8 @@ import org.rubypeople.rdt.ui.text.folding.IRubyFoldingStructureProvider;
 
 public class RubyEditor extends RubyAbstractEditor {
 
+    protected final static char[] BRACKETS= { '{', '}', '(', ')', '[', ']' };
+    
     protected RubyActionGroup actionGroup;
     private ProjectionSupport fProjectionSupport;
 
@@ -125,6 +131,9 @@ public class RubyEditor extends RubyAbstractEditor {
      * @since 3.0
      */
     private IMarker fLastMarkerTarget = null;
+    
+    /** The editor's bracket matcher */
+    protected RubyPairMatcher fBracketMatcher= new RubyPairMatcher(BRACKETS);
 
     private BracketInserter fBracketInserter = new BracketInserter();
 
@@ -163,6 +172,10 @@ public class RubyEditor extends RubyAbstractEditor {
         markAsStateDependentAction("ToggleComment", true); //$NON-NLS-1$
         WorkbenchHelp.setHelp(action, IRubyHelpContextIds.TOGGLE_COMMENT_ACTION);
         configureToggleCommentAction();
+        
+        action= new GotoMatchingBracketAction(this);
+        action.setActionDefinitionId(IRubyEditorActionDefinitionIds.GOTO_MATCHING_BRACKET);
+        setAction(GotoMatchingBracketAction.GOTO_MATCHING_BRACKET, action);
 
         action = new FormatAction(RubyUIMessages.getResourceBundle(), "Format.", this);
         action.setActionDefinitionId(IRubyEditorActionDefinitionIds.FORMAT);
@@ -175,7 +188,7 @@ public class RubyEditor extends RubyAbstractEditor {
         beginRescueAction.setActionDefinitionId(IRubyEditorActionDefinitionIds.SURROUND_WITH_BEGIN_RESCUE);
         beginRescueAction.update(selection);
         provider.addSelectionChangedListener(beginRescueAction);
-        setAction("SurroundWithBeginRescue", beginRescueAction); //$NON-NLS-1$
+        setAction(SurroundWithBeginRescueAction.SURROUND_WTH_BEGIN_RESCUE, beginRescueAction);
 
         actionGroup = new RubyActionGroup(this, ITextEditorActionConstants.GROUP_EDIT);
     }
@@ -1106,5 +1119,115 @@ public class RubyEditor extends RubyAbstractEditor {
      */
     protected IRubyElement getElementAt(int offset) {
         return getElementAt(offset, true);
+    }
+    
+    /**
+     * Jumps to the matching bracket.
+     */
+    public void gotoMatchingBracket() {
+
+        ISourceViewer sourceViewer= getSourceViewer();
+        IDocument document= sourceViewer.getDocument();
+        if (document == null)
+            return;
+
+        IRegion selection= getSignedSelection(sourceViewer);
+
+        int selectionLength= Math.abs(selection.getLength());
+        if (selectionLength > 1) {
+            setStatusLineErrorMessage(RubyEditorMessages.GotoMatchingBracket_error_invalidSelection);
+            sourceViewer.getTextWidget().getDisplay().beep();
+            return;
+        }
+
+        // #26314
+        int sourceCaretOffset= selection.getOffset() + selection.getLength();
+        if (isSurroundedByBrackets(document, sourceCaretOffset))
+            sourceCaretOffset -= selection.getLength();
+
+        IRegion region= fBracketMatcher.match(document, sourceCaretOffset);
+        if (region == null) {
+            setStatusLineErrorMessage(RubyEditorMessages.GotoMatchingBracket_error_noMatchingBracket);
+            sourceViewer.getTextWidget().getDisplay().beep();
+            return;
+        }
+
+        int offset= region.getOffset();
+        int length= region.getLength();
+
+        if (length < 1)
+            return;
+
+        int anchor= fBracketMatcher.getAnchor();
+        // http://dev.eclipse.org/bugs/show_bug.cgi?id=34195
+        int targetOffset= (ICharacterPairMatcher.RIGHT == anchor) ? offset + 1: offset + length;
+
+        boolean visible= false;
+        if (sourceViewer instanceof ITextViewerExtension5) {
+            ITextViewerExtension5 extension= (ITextViewerExtension5) sourceViewer;
+            visible= (extension.modelOffset2WidgetOffset(targetOffset) > -1);
+        } else {
+            IRegion visibleRegion= sourceViewer.getVisibleRegion();
+            // http://dev.eclipse.org/bugs/show_bug.cgi?id=34195
+            visible= (targetOffset >= visibleRegion.getOffset() && targetOffset <= visibleRegion.getOffset() + visibleRegion.getLength());
+        }
+
+        if (!visible) {
+            setStatusLineErrorMessage(RubyEditorMessages.GotoMatchingBracket_error_bracketOutsideSelectedElement);
+            sourceViewer.getTextWidget().getDisplay().beep();
+            return;
+        }
+
+        if (selection.getLength() < 0)
+            targetOffset -= selection.getLength();
+
+        sourceViewer.setSelectedRange(targetOffset, selection.getLength());
+        sourceViewer.revealRange(targetOffset, selection.getLength());
+    }
+    
+    /**
+     * Returns the signed current selection.
+     * The length will be negative if the resulting selection
+     * is right-to-left (RtoL).
+     * <p>
+     * The selection offset is model based.
+     * </p>
+     *
+     * @param sourceViewer the source viewer
+     * @return a region denoting the current signed selection, for a resulting RtoL selections length is < 0
+     */
+    protected IRegion getSignedSelection(ISourceViewer sourceViewer) {
+        StyledText text= sourceViewer.getTextWidget();
+        Point selection= text.getSelectionRange();
+
+        if (text.getCaretOffset() == selection.x) {
+            selection.x= selection.x + selection.y;
+            selection.y= -selection.y;
+        }
+
+        selection.x= widgetOffset2ModelOffset(sourceViewer, selection.x);
+
+        return new Region(selection.x, selection.y);
+    }
+    
+    private static boolean isSurroundedByBrackets(IDocument document, int offset) {
+        if (offset == 0 || offset == document.getLength())
+            return false;
+
+        try {
+            return
+                isBracket(document.getChar(offset - 1)) &&
+                isBracket(document.getChar(offset));
+
+        } catch (BadLocationException e) {
+            return false;
+        }
+    }
+    
+    private static boolean isBracket(char character) {
+        for (int i= 0; i != BRACKETS.length; ++i)
+            if (character == BRACKETS[i])
+                return true;
+        return false;
     }
 }
