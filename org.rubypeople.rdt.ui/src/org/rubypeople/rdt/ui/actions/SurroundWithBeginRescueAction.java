@@ -28,6 +28,7 @@ import org.rubypeople.rdt.internal.ui.util.ExceptionHandler;
 
 public class SurroundWithBeginRescueAction extends SelectionDispatchAction {
 
+    public static final String SURROUND_WTH_BEGIN_RESCUE = "SurroundWithBeginRescue";  //$NON-NLS-1$
     private RubyEditor fEditor;
 
     /**
