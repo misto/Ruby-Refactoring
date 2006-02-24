@@ -35,4 +35,13 @@ public interface IRubyEditorActionDefinitionIds extends ITextEditorActionDefinit
 
     public static final String SURROUND_WITH_BEGIN_RESCUE = "org.rubypeople.rdt.ui.edit.text.ruby.surround.with.begin.rescue"; //$NON-NLS-1$
 
+    /**
+     * Action definition ID of the edit -> go to matching bracket action
+     * (value <code>"org.rubypeople.rdt.ui.edit.text.ruby.goto.matching.bracket"</code>).
+     *
+     * @since 0.8.0
+     */
+    public static final String GOTO_MATCHING_BRACKET= "org.rubypeople.rdt.ui.edit.text.ruby.goto.matching.bracket"; //$NON-NLS-1$
+
+
 }
