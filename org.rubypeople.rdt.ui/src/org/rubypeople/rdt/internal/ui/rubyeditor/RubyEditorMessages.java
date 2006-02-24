@@ -27,6 +27,10 @@ public class RubyEditorMessages extends NLS {
     public static String RubyOutlinePage_GoIntoTopLevelType_tooltip;
     public static String RubyOutlinePage_GoIntoTopLevelType_description;
     public static String RubyOutlinePage_error_NoTopLevelType;
+    public static String GotoMatchingBracket_label;
+    public static String GotoMatchingBracket_error_bracketOutsideSelectedElement;
+    public static String GotoMatchingBracket_error_invalidSelection;
+    public static String GotoMatchingBracket_error_noMatchingBracket;
 
     private static ResourceBundle fgResourceBundle = ResourceBundle.getBundle(BUNDLE_NAME);
 
