@@ -1,0 +1,88 @@
+package org.rubypeople.rdt.internal.ui.browsing;
+
+import org.eclipse.jface.viewers.IContentProvider;
+import org.eclipse.ui.IPageLayout;
+import org.eclipse.ui.part.IShowInTargetList;
+import org.rubypeople.rdt.core.IRubyElement;
+import org.rubypeople.rdt.core.IRubyModel;
+import org.rubypeople.rdt.core.IRubyProject;
+import org.rubypeople.rdt.core.RubyCore;
+import org.rubypeople.rdt.internal.ui.RubyPlugin;
+import org.rubypeople.rdt.ui.RubyUI;
+
+public class ProjectsView extends RubyBrowsingPart {
+
+	/**
+	 * Creates the the content provider of this part.
+	 */
+	protected IContentProvider createContentProvider() {
+		return new ProjectContentProvider(this);
+	}
+
+	protected void setInitialInput() {
+		IRubyElement root = RubyCore
+				.create(RubyPlugin.getWorkspace().getRoot());
+		getViewer().setInput(root);
+		// TODO Update the title
+		// updateTitle();
+	}
+	
+	/**
+	 * Answer the property defined by key.
+	 */
+	public Object getAdapter(Class key) {
+		if (key == IShowInTargetList.class) {
+			return new IShowInTargetList() {
+				public String[] getShowInTargetIds() {
+					return new String[] { RubyUI.ID_TYPES_VIEW, IPageLayout.ID_RES_NAV  };
+				}
+
+			};
+		}
+		return super.getAdapter(key);
+	}
+
+	/**
+	 * Answers if the given <code>element</code> is a valid input for this
+	 * part.
+	 * 
+	 * @param element
+	 *            the object to test
+	 * @return <true> if the given element is a valid input
+	 */
+	protected boolean isValidInput(Object element) {
+		return element instanceof IRubyModel;
+	}
+
+	/**
+	 * Answers if the given <code>element</code> is a valid element for this
+	 * part.
+	 * 
+	 * @param element
+	 *            the object to test
+	 * @return <true> if the given element is a valid element
+	 */
+	protected boolean isValidElement(Object element) {
+		return element instanceof IRubyProject;
+	}
+
+	/**
+	 * Finds the element which has to be selected in this part.
+	 *
+	 * @param je	the Ruby element which has the focus
+	 */
+	protected IRubyElement findElementToSelect(IRubyElement je) {
+		if (je == null)
+			return null;
+
+		switch (je.getElementType()) {
+			case IRubyElement.RUBY_MODEL :
+				return null;
+			case IRubyElement.RUBY_PROJECT:
+				return je;
+			default :
+				return findElementToSelect(je.getParent());
+		}
+	}
+
+}

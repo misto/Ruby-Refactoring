@@ -223,6 +223,15 @@ public class PreferenceConstants {
      */ 
     public static final String FORMATTER_PROFILE = "formatter_profile"; //$NON-NLS-1$
 
+	/**
+	 * A named preference that controls the layout of the Ruby Browsing views vertically. Boolean value.
+	 * <p>
+	 * Value is of type <code>Boolean</code>. If <code>true<code> the views are stacked vertical.
+	 * If <code>false</code> they are stacked horizontal.
+	 * </p>
+	 */
+	public static final String BROWSING_STACK_VERTICALLY= "org.rubypeople.rdt.ui.browsing.stackVertically"; //$NON-NLS-1$
+
     public static void initializeDefaultValues(IPreferenceStore store) {
         store.setDefault(PreferenceConstants.EDITOR_SHOW_SEGMENTS, false);
         
@@ -244,6 +253,7 @@ public class PreferenceConstants {
         // AppearancePreferencePage
         store.setDefault(PreferenceConstants.APPEARANCE_COMPRESS_PACKAGE_NAMES, false);
         store.setDefault(PreferenceConstants.APPEARANCE_PKG_NAME_PATTERN_FOR_PKG_VIEW, ""); //$NON-NLS-1$
+        store.setDefault(PreferenceConstants.BROWSING_STACK_VERTICALLY, false);
 
         // TODO Expose these preferences to the user!
         store.setDefault(PreferenceConstants.EDITOR_CORRECTION_INDICATION, true);

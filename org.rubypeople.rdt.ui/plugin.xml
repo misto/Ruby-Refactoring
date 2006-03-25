@@ -62,6 +62,86 @@
             id="org.rubypeople.rdt.ui.PerspectiveRuby">
       </perspective>
    </extension>
+<!-- =========================================================================== -->
+<!-- Ruby Browsing 																 -->
+<!-- =========================================================================== -->
+   <extension
+         point="org.eclipse.ui.perspectives">
+      <perspective
+            name="%Browsing.perspectiveName"
+            icon="$nl$/icons/full/eview16/browse_persp.gif"
+            class="org.rubypeople.rdt.internal.ui.browsing.RubyBrowsingPerspectiveFactory"
+            id="org.rubypeople.rdt.ui.RubyBrowsingPerspective">
+      </perspective>
+   </extension>
+   <extension
+         point="org.eclipse.ui.perspectiveExtensions">
+      <perspectiveExtension
+            targetID="org.eclipse.ui.resourcePerspective">
+         <perspectiveShortcut
+               id="org.rubypeople.rdt.ui.RubyBrowsingPerspective">
+         </perspectiveShortcut>
+      </perspectiveExtension>
+      <perspectiveExtension
+            targetID="org.rubypeople.rdt.ui.RubyBrowsingPerspective">
+         <perspectiveShortcut
+               id="org.rubypeople.rdt.ui.RubyBrowsingPerspective">
+         </perspectiveShortcut>
+      </perspectiveExtension>
+      <perspectiveExtension
+            targetID="org.rubypeople.rdt.ui.RubyPerspective">
+         <perspectiveShortcut
+               id="org.rubypeople.rdt.ui.RubyBrowsingPerspective">
+         </perspectiveShortcut>
+      </perspectiveExtension>
+      <perspectiveExtension
+            targetID="org.rubypeople.rdt.ui.RubyBrowsingPerspective">
+         <perspectiveShortcut
+               id="org.rubypeople.rdt.ui.RubyPerspective">
+         </perspectiveShortcut>
+      </perspectiveExtension>
+      <perspectiveExtension
+            targetID="org.rubypeople.rdt.ui.RubyBrowsingPerspective">
+         <perspectiveShortcut
+               id="org.eclipse.debug.ui.DebugPerspective">
+         </perspectiveShortcut>
+      </perspectiveExtension>
+      <perspectiveExtension
+            targetID="org.eclipse.debug.ui.DebugPerspective">
+         <perspectiveShortcut
+               id="org.rubypeople.rdt.ui.RubyBrowsingPerspective">
+         </perspectiveShortcut>
+      </perspectiveExtension>
+   </extension>
+   <extension
+         point="org.eclipse.ui.views">
+      <category
+            name="%Browsing.viewCategoryName"
+            id="org.rubypeople.rdt.ui.ruby.browsing">
+      </category>
+      <view
+            name="%Browsing.projectsViewName"
+            icon="$nl$/icons/full/eview16/projects.gif"
+            category="org.rubypeople.rdt.ui.ruby.browsing"
+            class="org.rubypeople.rdt.internal.ui.browsing.ProjectsView"
+            id="org.rubypeople.rdt.ui.ProjectsView">
+      </view>
+      <view
+            name="%Browsing.typesViewName"
+            icon="$nl$/icons/full/eview16/types.gif"
+            category="org.rubypeople.rdt.ui.ruby.browsing"
+            class="org.rubypeople.rdt.internal.ui.browsing.TypesView"
+            id="org.rubypeople.rdt.ui.TypesView">
+      </view>
+      <view
+            name="%Browsing.membersViewName"
+            icon="$nl$/icons/full/eview16/members.gif"
+            category="org.rubypeople.rdt.ui.ruby.browsing"
+            class="org.rubypeople.rdt.internal.ui.browsing.MembersView"
+            id="org.rubypeople.rdt.ui.MembersView">
+      </view>
+   </extension>
+   
    <extension
          point="org.eclipse.ui.newWizards">
       <category
@@ -142,6 +222,13 @@
             category="org.rubypeople.rdt.ui.ruby"
             class="org.rubypeople.rdt.internal.ui.infoviews.RIView"
             id="org.rubypeople.rdt.ui.views.RIView">
+      </view>
+      <view
+            name="Browsing"
+            icon="icons/full/elcl16/help.gif"
+            category="org.rubypeople.rdt.ui.ruby"
+            class="org.rubypeople.rdt.internal.ui.browsing.SimpleView"
+            id="org.rubypeople.rdt.ui.views.BrowsingView">
       </view>
    </extension>
    <extension point="org.eclipse.ui.perspectiveExtensions">

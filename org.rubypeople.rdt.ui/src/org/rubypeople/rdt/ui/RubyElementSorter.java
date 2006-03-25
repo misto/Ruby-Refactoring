@@ -101,9 +101,9 @@ public class RubyElementSorter extends ViewerSorter {
                 return getMemberCategory(MembersOrderPreferenceCache.TYPE_INDEX);
             case IRubyElement.IMPORT_CONTAINER:
                 return IMPORT_CONTAINER;
-            case IRubyElement.IMPORT:
+            case IRubyElement.IMPORT_DECLARATION:
                 return IMPORT_DECLARATION;
-            case IRubyElement.PROJECT:
+            case IRubyElement.RUBY_PROJECT:
                 return PROJECTS;
             case IRubyElement.SCRIPT:
                 return RUBYSCRIPTS;

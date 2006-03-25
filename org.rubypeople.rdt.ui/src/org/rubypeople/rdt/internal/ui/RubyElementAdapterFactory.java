@@ -54,7 +54,7 @@ public class RubyElementAdapterFactory implements IAdapterFactory, IContributorR
 			return null;
 		case IRubyElement.SCRIPT:
 			return RubyModelUtil.toOriginal((IRubyScript) element).getResource();
-		case IRubyElement.PROJECT:
+		case IRubyElement.RUBY_PROJECT:
 		case IRubyElement.RUBY_MODEL:
 			return element.getResource();
 		default:

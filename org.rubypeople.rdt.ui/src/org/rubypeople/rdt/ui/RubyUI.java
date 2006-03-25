@@ -34,4 +34,37 @@ public final class RubyUI {
 	 * The id of the Ruby plugin (value <code>"org.rubypeople.rdt.ui"</code>).
 	 */
 	public static final String ID_PLUGIN = "org.rubypeople.rdt.ui"; //$NON-NLS-1$
+	public static final String ID_ACTION_SET = null;
+	
+	/**
+	 * The view part id of the Ruby Browsing Projects view
+	 * (value <code>"org.rubypeople.rdt.ui.ProjectsView"</code>).
+	 * 
+	 * @since 0.8.0
+	 */
+	public static String ID_PROJECTS_VIEW= "org.rubypeople.rdt.ui.ProjectsView"; //$NON-NLS-1$
+	
+	/**
+	 * The view part id of the Ruby Browsing Types view
+	 * (value <code>"org.rubypeople.rdt.ui.TypesView"</code>).
+	 * 
+	 * @since 0.8.0
+	 */
+	public static String ID_TYPES_VIEW= "org.rubypeople.rdt.ui.TypesView"; //$NON-NLS-1$
+	
+	/**
+	 * The view part id of the Ruby Browsing Memberss view
+	 * (value <code>"org.rubypeople.rdt.ui.MembersView"</code>).
+	 * 
+	 * @since 0.8.0
+	 */
+	public static String ID_MEMBERS_VIEW= "org.rubypeople.rdt.ui.MembersView"; //$NON-NLS-1$
+	
+	/**
+	 * The id of the Ruby Element Creation action set
+	 * (value <code>"org.rubypeople.rdt.ui.RubyElementCreationActionSet"</code>).
+	 * 
+	 * @since 0.8.0
+	 */
+	public static final String ID_ELEMENT_CREATION_ACTION_SET= "org.rubypeople.rdt.ui.RubyElementCreationActionSet"; //$NON-NLS-1$
 }

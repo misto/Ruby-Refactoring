@@ -190,7 +190,7 @@ public class RubyElementImageProvider {
             case IRubyElement.INSTANCE_VAR:
                 return RubyPluginImages.DESC_OBJS_INSTANCE_VAR;
 
-            case IRubyElement.IMPORT:
+            case IRubyElement.IMPORT_DECLARATION:
                 return RubyPluginImages.DESC_OBJS_IMPDECL;
 
             case IRubyElement.IMPORT_CONTAINER:
@@ -207,7 +207,7 @@ public class RubyElementImageProvider {
             case IRubyElement.SCRIPT:
                 return RubyPluginImages.DESC_OBJS_SCRIPT;
 
-            case IRubyElement.PROJECT:
+            case IRubyElement.RUBY_PROJECT:
                 IRubyProject jp = (IRubyProject) element;
                 if (jp.getProject().isOpen()) {
                     IProject project = jp.getProject();

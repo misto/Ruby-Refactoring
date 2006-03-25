@@ -367,7 +367,7 @@ public abstract class RubyAbstractEditor extends TextEditor {
         if ( !(element instanceof ISourceReference))
             return null;
 
-        if (element.getElementType() == IRubyElement.IMPORT) {
+        if (element.getElementType() == IRubyElement.IMPORT_DECLARATION) {
 
             IImportDeclaration declaration= (IImportDeclaration) element;
             IImportContainer container= (IImportContainer) declaration.getParent();

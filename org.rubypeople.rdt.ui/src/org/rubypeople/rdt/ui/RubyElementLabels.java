@@ -318,10 +318,10 @@ public class RubyElementLabels {
             getCompilationUnitLabel((IRubyScript) element, flags, buf);
             break;
         case IRubyElement.IMPORT_CONTAINER:
-        case IRubyElement.IMPORT:
+        case IRubyElement.IMPORT_DECLARATION:
             getDeclarationLabel(element, flags, buf);
             break;
-        case IRubyElement.PROJECT:
+        case IRubyElement.RUBY_PROJECT:
         case IRubyElement.RUBY_MODEL:
             buf.append(element.getElementName());
             break;
