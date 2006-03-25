@@ -1,4 +1,12 @@
-Changes since 0.6.0:
+Changes since 0.7.0:
+* New Ruby Browsing Perspective
+* New Class Wizard
+* Apply code formatting (indentation) to templates
+* Distinct syntax highlighting of globals
+* Distinct syntax highlighting of instance/class variables
+* Goto matching bracket action
+
+Release 0.7.0:
 * Debugger
   * Multiple debugger session possible because a free port will be used for the debugger communication. The port is written to a
     temporary file and conveyed to the ruby process with "-r<tmpFile>". The fixed port used in the past (1098) is still the default 
