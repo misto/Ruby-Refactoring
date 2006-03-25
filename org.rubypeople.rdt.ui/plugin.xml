@@ -223,13 +223,6 @@
             class="org.rubypeople.rdt.internal.ui.infoviews.RIView"
             id="org.rubypeople.rdt.ui.views.RIView">
       </view>
-      <view
-            name="Browsing"
-            icon="icons/full/elcl16/help.gif"
-            category="org.rubypeople.rdt.ui.ruby"
-            class="org.rubypeople.rdt.internal.ui.browsing.SimpleView"
-            id="org.rubypeople.rdt.ui.views.BrowsingView">
-      </view>
    </extension>
    <extension point="org.eclipse.ui.perspectiveExtensions">
    	 <perspectiveExtension targetID="org.eclipse.ui.resourcePerspective">
