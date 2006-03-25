@@ -32,12 +32,12 @@ import org.eclipse.core.runtime.IPath;
 public interface IRubyElement extends IAdaptable {
 
 	public static final int RUBY_MODEL = 0;
-	public static final int PROJECT = 1;
+	public static final int RUBY_PROJECT = 1;
 	public static final int SCRIPT = 2;
 	public static final int TYPE = 3;
 	public static final int METHOD = 4;
 	public static final int GLOBAL = 5;
-	public static final int IMPORT = 6;
+	public static final int IMPORT_DECLARATION = 6;
 	public static final int CONSTANT = 7;
 	public static final int CLASS_VAR = 8;
 	public static final int INSTANCE_VAR = 9;

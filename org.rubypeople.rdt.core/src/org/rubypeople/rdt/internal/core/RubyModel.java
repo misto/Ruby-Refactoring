@@ -111,7 +111,7 @@ public class RubyModel extends Openable implements IRubyModel {
 	 * @see IRubyModel
 	 */
 	public IRubyProject[] getRubyProjects() throws RubyModelException {
-		ArrayList list = getChildrenOfType(PROJECT);
+		ArrayList list = getChildrenOfType(RUBY_PROJECT);
 		IRubyProject[] array = new IRubyProject[list.size()];
 		list.toArray(array);
 		return array;

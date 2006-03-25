@@ -103,4 +103,8 @@ public interface IRubyProject extends IRubyElement, IParent {
      */
     Map getOptions(boolean inheritRubyCoreOptions);
 
+	public abstract IRubyScript[] getRubyScripts() throws RubyModelException;
+
+	public abstract Object[] getNonRubyResources() throws RubyModelException;
+
 }

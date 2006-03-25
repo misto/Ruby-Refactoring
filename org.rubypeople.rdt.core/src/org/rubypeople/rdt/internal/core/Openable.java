@@ -163,7 +163,7 @@ public abstract class Openable extends RubyElement implements IOpenable, IBuffer
 		// check open buffers
 		// to see if they have an child with unsaved changes
 		int elementType = getElementType();
-		if (elementType == PROJECT || elementType == RUBY_MODEL) { // fix for
+		if (elementType == RUBY_PROJECT || elementType == RUBY_MODEL) { // fix for
 			// 1FWNMHH
 			Enumeration openBuffers = getBufferManager().getOpenBuffers();
 			while (openBuffers.hasMoreElements()) {
@@ -222,7 +222,7 @@ public abstract class Openable extends RubyElement implements IOpenable, IBuffer
 		if (RubyModelManager.isVerbose()) {
 			String element;
 			switch (getElementType()) {
-			case PROJECT:
+			case RUBY_PROJECT:
 				element = "project"; //$NON-NLS-1$
 				break;
 			case SCRIPT:

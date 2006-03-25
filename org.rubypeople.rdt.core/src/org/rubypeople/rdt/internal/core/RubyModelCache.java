@@ -76,7 +76,7 @@ public class RubyModelCache {
         switch (element.getElementType()) {
         case IRubyElement.RUBY_MODEL:
             return this.modelInfo;
-        case IRubyElement.PROJECT:
+        case IRubyElement.RUBY_PROJECT:
             return this.projectCache.get(element);
         case IRubyElement.SCRIPT:
             return this.openableCache.get(element);
@@ -92,7 +92,7 @@ public class RubyModelCache {
         switch (element.getElementType()) {
         case IRubyElement.RUBY_MODEL:
             return this.modelInfo;
-        case IRubyElement.PROJECT:
+        case IRubyElement.RUBY_PROJECT:
             return this.projectCache.get(element);
         case IRubyElement.SCRIPT:
             return this.openableCache.peek(element);
@@ -109,7 +109,7 @@ public class RubyModelCache {
         case IRubyElement.RUBY_MODEL:
             this.modelInfo = (RubyModelInfo) info;
             break;
-        case IRubyElement.PROJECT:
+        case IRubyElement.RUBY_PROJECT:
             this.projectCache.put(element, info);
             break;
         case IRubyElement.SCRIPT:
@@ -128,7 +128,7 @@ public class RubyModelCache {
         case IRubyElement.RUBY_MODEL:
             this.modelInfo = null;
             break;
-        case IRubyElement.PROJECT:
+        case IRubyElement.RUBY_PROJECT:
             this.projectCache.remove(element);
             break;
         case IRubyElement.SCRIPT:

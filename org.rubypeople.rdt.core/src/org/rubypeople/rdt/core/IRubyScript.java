@@ -373,4 +373,6 @@ public interface IRubyScript extends IRubyElement, ISourceReference, IParent, IO
      *      exception occurs while accessing its corresponding resource
      */
     IRubyElement getElementAt(int position) throws RubyModelException;
+
+	IType findPrimaryType();
 }

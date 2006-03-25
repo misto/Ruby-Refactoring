@@ -389,7 +389,7 @@ public class DeltaProcessor {
                 if (!wasJavaProject && !isJavaProject) {
                     elementType = NON_RUBY_RESOURCE;
                 } else {
-                    elementType = IRubyElement.PROJECT;
+                    elementType = IRubyElement.RUBY_PROJECT;
                 }
 
                 // traverse delta
@@ -484,7 +484,7 @@ public class DeltaProcessor {
                 ((RubyModelInfo) info).nonRubyResources = null;
                 currentDelta().addResourceDelta(delta);
                 return;
-            case IRubyElement.PROJECT:
+            case IRubyElement.RUBY_PROJECT:
                 ((RubyProjectElementInfo) info).setNonRubyResources(null);
                 break;
             }
@@ -839,7 +839,7 @@ public class DeltaProcessor {
                 element = createElement(delta.getResource(), elementType);
                 if (element == null) return false;
                 contentChanged(element);
-            } else if (elementType == IRubyElement.PROJECT) {
+            } else if (elementType == IRubyElement.RUBY_PROJECT) {
                 if ((flags & IResourceDelta.OPEN) != 0) {
                     // project has been opened or closed
                     IProject res = (IProject) delta.getResource();
@@ -923,7 +923,7 @@ public class DeltaProcessor {
         IRubyElement element = null;
         switch (elementType) {
 
-        case IRubyElement.PROJECT:
+        case IRubyElement.RUBY_PROJECT:
 
             // note that non-ruby resources rooted at the project level will
             // also enter this code with
@@ -933,7 +933,7 @@ public class DeltaProcessor {
                 this.popUntilPrefixOf(path);
 
                 if (this.currentElement != null
-                        && this.currentElement.getElementType() == IRubyElement.PROJECT
+                        && this.currentElement.getElementType() == IRubyElement.RUBY_PROJECT
                         && ((IRubyProject) this.currentElement).getProject().equals(resource)) { return this.currentElement; }
                 IProject proj = (IProject) resource;
                 if (RubyProject.hasRubyNature(proj)) {
@@ -982,7 +982,7 @@ public class DeltaProcessor {
     private void elementAdded(Openable element, IResourceDelta delta) {
         int elementType = element.getElementType();
 
-        if (elementType == IRubyElement.PROJECT) {
+        if (elementType == IRubyElement.RUBY_PROJECT) {
             // project add is handled by RubyProject.configure() because
             // when a project is created, it does not yet have a java nature
             if (delta != null && RubyProject.hasRubyNature((IProject) delta.getResource())) {
@@ -1052,8 +1052,8 @@ public class DeltaProcessor {
                 this.currentElement = null;
 
                 // create the moved from element
-                Openable movedFromElement = elementType != IRubyElement.PROJECT
-                        && movedFromType == IRubyElement.PROJECT ? null : // outside
+                Openable movedFromElement = elementType != IRubyElement.RUBY_PROJECT
+                        && movedFromType == IRubyElement.RUBY_PROJECT ? null : // outside
                                                                             // classpath
                         this.createElement(movedFromRes, movedFromType);
                 if (movedFromElement == null) {
@@ -1130,8 +1130,8 @@ public class DeltaProcessor {
             this.currentElement = null;
 
             // create the moved To element
-            Openable movedToElement = elementType != IRubyElement.PROJECT
-                    && movedToType == IRubyElement.PROJECT ? null : // outside
+            Openable movedToElement = elementType != IRubyElement.RUBY_PROJECT
+                    && movedToType == IRubyElement.RUBY_PROJECT ? null : // outside
                                                                     // classpath
                     this.createElement(movedToRes, movedToType);
             if (movedToElement == null) {
@@ -1143,7 +1143,7 @@ public class DeltaProcessor {
         }
 
         switch (elementType) {
-        case IRubyElement.PROJECT:
+        case IRubyElement.RUBY_PROJECT:
 
             // refresh pkg fragment roots and caches of the project (and its
             // dependents)
@@ -1195,10 +1195,10 @@ public class DeltaProcessor {
         case IRubyElement.RUBY_MODEL:
             // case of a movedTo or movedFrom project (other cases are handled
             // in processResourceDelta(...)
-            return IRubyElement.PROJECT;
+            return IRubyElement.RUBY_PROJECT;
 
         case NON_RUBY_RESOURCE:
-        case IRubyElement.PROJECT:
+        case IRubyElement.RUBY_PROJECT:
             if (res.getType() == IResource.FOLDER) { return NON_RUBY_RESOURCE; }
             String fileName = res.getName();
             if (Util.isValidRubyScriptName(fileName)) {

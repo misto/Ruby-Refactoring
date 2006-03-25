@@ -55,7 +55,8 @@ import org.rubypeople.rdt.core.RubyModelException;
 import org.rubypeople.rdt.core.WorkingCopyOwner;
 import org.rubypeople.rdt.internal.core.buffer.BufferManager;
 import org.rubypeople.rdt.internal.core.parser.RubyParser;
-import org.rubypeople.rdt.internal.core.parser.Util;
+import org.rubypeople.rdt.internal.core.util.Util;
+
 
 /**
  * @author Chris
@@ -618,5 +619,17 @@ public class RubyScript extends Openable implements IRubyScript {
 		IType[] array= new IType[list.size()];
 		list.toArray(array);
 		return array;
+	}
+	
+	/**
+	 * @see IRubyScript#findPrimaryType()
+	 */
+	public IType findPrimaryType() {
+		String typeName = Util.getNameWithoutRubyLikeExtension(getElementName());
+		IType primaryType= getType(typeName);
+		if (primaryType.exists()) {
+			return primaryType;
+		}
+		return null;
 	}
 }

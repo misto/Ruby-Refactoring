@@ -189,6 +189,16 @@ public class RubyCore extends Plugin {
      */
     public static final String DO_NOT_INSERT = "do not insert"; //$NON-NLS-1$
 
+	/**
+	 * Value of the content-type for Ruby source files. Use this value to retrieve the Ruby content type
+	 * from the content type manager, and to add new Ruby-like extensions to this content type.
+	 * 
+	 * @see org.eclipse.core.runtime.content.IContentTypeManager#getContentType(String)
+	 * @see #getRubyLikeExtensions()
+	 * @since 0.8.0
+	 */
+	public static final String RUBY_SOURCE_CONTENT_TYPE = RubyCore.PLUGIN_ID+".rubySource" ; //$NON-NLS-1$
+
     private SymbolIndex symbolIndex;
     private ISymbolFinder symbolFinder;
 

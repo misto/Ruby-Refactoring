@@ -54,7 +54,7 @@ public class RubyImport extends SourceRefElement implements IImportDeclaration {
 	 * @see org.rubypeople.rdt.internal.core.parser.RubyElement#getElementType()
 	 */
 	public int getElementType() {
-		return IRubyElement.IMPORT;
+		return IRubyElement.IMPORT_DECLARATION;
 	}
 
 	public String getElementName() {

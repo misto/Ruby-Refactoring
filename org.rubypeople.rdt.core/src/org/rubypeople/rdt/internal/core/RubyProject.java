@@ -34,6 +34,7 @@ import org.rubypeople.rdt.core.ILoadpathEntry;
 import org.rubypeople.rdt.core.IParent;
 import org.rubypeople.rdt.core.IRubyElement;
 import org.rubypeople.rdt.core.IRubyProject;
+import org.rubypeople.rdt.core.IRubyScript;
 import org.rubypeople.rdt.core.IType;
 import org.rubypeople.rdt.core.RubyCore;
 import org.rubypeople.rdt.core.RubyModelException;
@@ -438,7 +439,7 @@ public class RubyProject extends Openable implements IProjectNature, IRubyElemen
      * @see org.rubypeople.rdt.internal.core.parser.RubyElement#getElementType()
      */
     public int getElementType() {
-        return IRubyElement.PROJECT;
+        return IRubyElement.RUBY_PROJECT;
     }
 
     /*
@@ -696,4 +697,26 @@ public class RubyProject extends Openable implements IProjectNature, IRubyElemen
         // TODO Auto-generated method stub        
     }
 
+	public IRubyScript[] getRubyScripts() throws RubyModelException {
+		Object[] children;
+		int length;
+		IRubyScript[] scripts;
+
+		System.arraycopy(
+			children = getChildren(), 
+			0, 
+			scripts = new IRubyScript[length = children.length], 
+			0, 
+			length);
+			
+		return scripts;
+	}
+
+	/**
+	 * Returns an array of non-ruby resources contained in the receiver.
+	 */
+	public Object[] getNonRubyResources() throws RubyModelException {
+		return ((RubyProjectElementInfo) getElementInfo()).getNonRubyResources(this);
+	}
+	
 }

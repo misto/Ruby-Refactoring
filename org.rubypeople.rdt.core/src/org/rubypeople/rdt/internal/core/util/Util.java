@@ -4,16 +4,25 @@
  */
 package org.rubypeople.rdt.internal.core.util;
 
+import java.io.BufferedInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.PrintStream;
 import java.util.Locale;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
 
+import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IResource;
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.core.runtime.content.IContentType;
 import org.rubypeople.rdt.core.IRubyElement;
+import org.rubypeople.rdt.core.IRubyModelStatusConstants;
 import org.rubypeople.rdt.core.RubyConventions;
 import org.rubypeople.rdt.core.RubyCore;
 import org.rubypeople.rdt.core.RubyModelException;
@@ -26,6 +35,8 @@ public class Util {
 
     /* Bundle containing messages */
     protected static ResourceBundle bundle;
+	private static boolean ENABLE_RUBY_LIKE_EXTENSIONS = true;
+	private static char[][] RUBY_LIKE_EXTENSIONS;
     private final static String bundleName = "org.rubypeople.rdt.internal.core.util.messages"; //$NON-NLS-1$
 
     private final static char[] DOUBLE_QUOTES = "''".toCharArray(); //$NON-NLS-1$
@@ -327,7 +338,7 @@ public class Util {
         int elementType = element.getElementType();
         switch (elementType) {
             case IRubyElement.RUBY_MODEL:
-            case IRubyElement.PROJECT:
+            case IRubyElement.RUBY_PROJECT:
                 return false;
             case IRubyElement.SCRIPT:                
                 IResource resource = element.getResource();
@@ -342,6 +353,193 @@ public class Util {
                 return cu != null && isExcluded(cu);
         }
     }
+    
+	/**
+	 * Returns the substring of the given file name, ending at the start of a
+	 * Ruby like extension. The entire file name is returned if it doesn't end
+	 * with a Ruby like extension.
+	 */
+	public static String getNameWithoutRubyLikeExtension(String fileName) {
+		int index = indexOfRubyLikeExtension(fileName);
+		if (index == -1)
+			return fileName;
+		return fileName.substring(0, index);
+	}
+	
+	/*
+	 * Returns the index of the Java like extension of the given file name
+	 * or -1 if it doesn't end with a known Java like extension. 
+	 * Note this is the index of the '.' even if it is not considered part of the extension.
+	 */
+	public static int indexOfRubyLikeExtension(String fileName) {
+		int fileNameLength = fileName.length();
+		char[][] javaLikeExtensions = getRubyLikeExtensions();
+		extensions: for (int i = 0, length = javaLikeExtensions.length; i < length; i++) {
+			char[] extension = javaLikeExtensions[i];
+			int extensionLength = extension.length;
+			int extensionStart = fileNameLength - extensionLength;
+			int dotIndex = extensionStart - 1;
+			if (dotIndex < 0) continue;
+			if (fileName.charAt(dotIndex) != '.') continue;
+			for (int j = 0; j < extensionLength; j++) {
+				if (fileName.charAt(extensionStart + j) != extension[j])
+					continue extensions;
+			}
+			return dotIndex;
+		}
+		return -1;
+	}
+	
+	/**
+	 * Returns the registered Ruby like extensions.
+	 */
+	public static char[][] getRubyLikeExtensions() {
+		if (RUBY_LIKE_EXTENSIONS == null) {
+			// TODO (jerome) reenable once RDT UI supports other file extensions (see https://bugs.eclipse.org/bugs/show_bug.cgi?id=71460)
+			if (!ENABLE_RUBY_LIKE_EXTENSIONS)
+				RUBY_LIKE_EXTENSIONS = new char[][] {"rb".toCharArray()};
+			else {
+				IContentType javaContentType = Platform.getContentTypeManager().getContentType(RubyCore.RUBY_SOURCE_CONTENT_TYPE);
+				String[] fileExtensions = javaContentType == null ? null : javaContentType.getFileSpecs(IContentType.FILE_EXTENSION_SPEC);
+				// note that file extensions contains "java" as it is defined in JDT Core's plugin.xml
+				int length = fileExtensions == null ? 0 : fileExtensions.length;
+				char[][] extensions = new char[length][];
+				SimpleWordSet knownExtensions = new SimpleWordSet(length); // used to ensure no duplicate extensions
+				extensions[0] = "rb".toCharArray(); // ensure that "rb" is first
+				knownExtensions.add(extensions[0]);
+				int index = 1;
+				for (int i = 0; i < length; i++) {
+					String fileExtension = fileExtensions[i];
+					char[] extension = fileExtension.toCharArray();
+					if (!knownExtensions.includes(extension)) {
+						extensions[index++] = extension;
+						knownExtensions.add(extension);
+					}
+				}
+				if (index != length)
+					System.arraycopy(extensions, 0, extensions = new char[index][], 0, index);
+				RUBY_LIKE_EXTENSIONS = extensions;
+			}
+		}
+		return RUBY_LIKE_EXTENSIONS;
+	}
 
+	private static final int DEFAULT_READING_SIZE = 8192;
+
+	/**
+	 * @param file
+	 * @return
+	 * @throws IOException
+	 * @throws CoreException
+	 */
+	public static char[] getResourceContentsAsCharArray(IFile file) throws RubyModelException {
+		// Get encoding from file
+		String encoding = null;
+		try {
+			encoding = file.getCharset();
+		} catch (CoreException ce) {
+			// do not use any encoding
+		}
+		return getResourceContentsAsCharArray(file, encoding);
+	}
+
+	public static char[] getResourceContentsAsCharArray(IFile file, String encoding) throws RubyModelException {
+		// Get resource contents
+		InputStream stream = null;
+		try {
+			stream = new BufferedInputStream(file.getContents(true));
+		} catch (CoreException e) {
+			throw new RubyModelException(e, IRubyModelStatusConstants.ELEMENT_DOES_NOT_EXIST);
+		}
+		try {
+			return Util.getInputStreamAsCharArray(stream, -1, encoding);
+		} catch (IOException e) {
+			throw new RubyModelException(e, IRubyModelStatusConstants.IO_EXCEPTION);
+		} finally {
+			try {
+				stream.close();
+			} catch (IOException e) {
+				// ignore
+			}
+		}
+	}
+
+	/**
+	 * Returns the given input stream's contents as a character array. If a
+	 * length is specified (ie. if length != -1), only length chars are
+	 * returned. Otherwise all chars in the stream are returned. Note this
+	 * doesn't close the stream.
+	 * 
+	 * @throws IOException
+	 *             if a problem occured reading the stream.
+	 */
+	public static char[] getInputStreamAsCharArray(InputStream stream, int length, String encoding) throws IOException {
+		InputStreamReader reader = null;
+		reader = encoding == null ? new InputStreamReader(stream) : new InputStreamReader(stream, encoding);
+		char[] contents;
+		if (length == -1) {
+			contents = new char[0];
+			int contentsLength = 0;
+			int amountRead = -1;
+			do {
+				int amountRequested = Math.max(stream.available(), DEFAULT_READING_SIZE); // read
+				// at
+				// least
+				// 8K
+
+				// resize contents if needed
+				if (contentsLength + amountRequested > contents.length) {
+					System.arraycopy(contents, 0, contents = new char[contentsLength + amountRequested], 0, contentsLength);
+				}
+
+				// read as many chars as possible
+				amountRead = reader.read(contents, contentsLength, amountRequested);
+
+				if (amountRead > 0) {
+					// remember length of contents
+					contentsLength += amountRead;
+				}
+			} while (amountRead != -1);
+
+			// Do not keep first character for UTF-8 BOM encoding
+			int start = 0;
+			if (contentsLength > 0 && "UTF-8".equals(encoding)) { //$NON-NLS-1$
+				if (contents[0] == 0xFEFF) { // if BOM char then skip
+					contentsLength--;
+					start = 1;
+				}
+			}
+			// resize contents if necessary
+			if (contentsLength < contents.length) {
+				System.arraycopy(contents, start, contents = new char[contentsLength], 0, contentsLength);
+			}
+		} else {
+			contents = new char[length];
+			int len = 0;
+			int readSize = 0;
+			while ((readSize != -1) && (len != length)) {
+				// See PR 1FMS89U
+				// We record first the read size. In this case len is the actual
+				// read size.
+				len += readSize;
+				readSize = reader.read(contents, len, length - len);
+			}
+			// Do not keep first character for UTF-8 BOM encoding
+			int start = 0;
+			if (length > 0 && "UTF-8".equals(encoding)) { //$NON-NLS-1$
+				if (contents[0] == 0xFEFF) { // if BOM char then skip
+					len--;
+					start = 1;
+				}
+			}
+			// See PR 1FMS89U
+			// Now we need to resize in case the default encoding used more than
+			// one byte for each
+			// character
+			if (len != length) System.arraycopy(contents, start, (contents = new char[len]), 0, len);
+		}
+
+		return contents;
+	}
 
 }

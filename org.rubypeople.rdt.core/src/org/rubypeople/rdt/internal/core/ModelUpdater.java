@@ -69,7 +69,7 @@ public class ModelUpdater {
     protected void elementAdded(Openable element) {
 
         int elementType = element.getElementType();
-        if (elementType == IRubyElement.PROJECT) {
+        if (elementType == IRubyElement.RUBY_PROJECT) {
             // project add is handled by RubyProject.configure() because
             // when a project is created, it does not yet have a java nature
             addToParentInfo(element);
@@ -126,7 +126,7 @@ public class ModelUpdater {
             // TODO Reset IndexManager when we have it integrated
             //RubyModelManager.getRubyModelManager().getIndexManager().reset();
             break;
-        case IRubyElement.PROJECT:
+        case IRubyElement.RUBY_PROJECT:
             RubyModelManager.getRubyModelManager().removePerProjectInfo((RubyProject) element);
             break;
         }
@@ -192,7 +192,7 @@ public class ModelUpdater {
 
         Openable element = (Openable) delta.getElement();
         switch (element.getElementType()) {
-        case IRubyElement.PROJECT:
+        case IRubyElement.RUBY_PROJECT:
             project = (IRubyProject) element;
             break;
         case IRubyElement.SCRIPT:

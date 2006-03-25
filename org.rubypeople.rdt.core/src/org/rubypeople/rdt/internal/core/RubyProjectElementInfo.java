@@ -116,7 +116,7 @@ class RubyProjectElementInfo extends OpenableElementInfo {
 	}
 
 	/**
-	 * Returns an array of non-java resources contained in the receiver.
+	 * Returns an array of non-ruby resources contained in the receiver.
 	 */
 	Object[] getNonRubyResources(RubyProject project) {
 
