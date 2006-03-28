@@ -65,6 +65,17 @@ public class ProjectsView extends RubyBrowsingPart {
 	protected boolean isValidElement(Object element) {
 		return element instanceof IRubyProject;
 	}
+	
+	/*
+	 * @see RubyBrowsingPart#setInput(Object)
+	 */
+	protected void setInput(Object input) {
+		// Don't allow to clear input for this view
+		if (input != null)
+			super.setInput(input);
+		else
+			getViewer().setSelection(null);
+	}
 
 	/**
 	 * Finds the element which has to be selected in this part.
