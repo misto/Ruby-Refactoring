@@ -19,20 +19,15 @@ public class SymbolRule extends SingleCharacterPrefixRule {
 	protected boolean isValidCharacter(int c, int index) {
 		if (!super.isValidCharacter(c, index))
 			return false;
-		char theChar = (char) c;
-		switch (theChar) {
-		case ':': // other than first character (prefix) symbols can't contain
-					// another colon
-		case '[': // FIXME This isn't always the case. There's special method names containing brackets that is valid (only the particular sequence)
-		case ']':
-		case '{':
-		case '}':
-		case '(':
-		case ')':
-			return false;
-
-		default:
+		
+		// Symbols can only contain word characters (a-zA-Z0-9_)
+		// TODO which special method names contain brackets?
+		String theChar = String.valueOf((char) c);
+		if(theChar.matches("\\w")) {
 			return true;
+		}
+		else {
+			return false;
 		}
 	}
 
