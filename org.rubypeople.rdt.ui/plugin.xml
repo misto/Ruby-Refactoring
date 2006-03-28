@@ -53,6 +53,9 @@
          <keywordReference id="org.rubypeople.rdt.ui.sortorder"/>
       </page>
    </extension>
+<!-- =========================================================================== -->
+<!-- Ruby Perspective 																 -->
+<!-- =========================================================================== -->
    <extension
          point="org.eclipse.ui.perspectives">
       <perspective
@@ -61,6 +64,47 @@
             class="org.rubypeople.rdt.internal.ui.RdtPerspectiveFactory"
             id="org.rubypeople.rdt.ui.PerspectiveRuby">
       </perspective>
+   </extension>
+   <extension point="org.eclipse.ui.perspectiveExtensions">
+      <perspectiveExtension
+            targetID="org.rubypeople.rdt.ui.RubyBrowsingPerspective">
+         <perspectiveShortcut
+               id="org.rubypeople.rdt.ui.PerspectiveRuby">
+         </perspectiveShortcut>
+      </perspectiveExtension>
+      <perspectiveExtension
+            targetID="org.eclipse.debug.ui.DebugPerspective">
+         <perspectiveShortcut
+               id="org.rubypeople.rdt.ui.PerspectiveRuby">
+         </perspectiveShortcut>
+      </perspectiveExtension>
+   	 <perspectiveExtension targetID="org.eclipse.ui.resourcePerspective">
+       <perspectiveShortcut id="org.rubypeople.rdt.ui.PerspectiveRuby" />
+     </perspectiveExtension>
+     <perspectiveExtension targetID="org.rubypeople.rdt.ui.PerspectiveRuby">
+       <newWizardShortcut id="org.rubypeople.rdt.ui.wizards.NewWizardProjectCreation"/>
+	   <newWizardShortcut id="org.eclipse.ui.wizards.new.folder"/>
+	   <newWizardShortcut id="org.eclipse.ui.wizards.new.file"/>
+       <viewShortcut id="org.eclipse.ui.views.ContentOutline"/>
+       <viewShortcut id="org.rubypeople.rdt.ui.ViewRubyResources"/>
+       <viewShortcut id="org.eclipse.ui.console.ConsoleView"/>
+       <viewShortcut id="org.eclipse.ui.views.ProblemView"/>
+       <viewShortcut id="org.eclipse.ui.views.TaskList"/>
+       <viewShortcut id="org.rubypeople.rdt.ui.views.RIView"/>   
+       <perspectiveShortcut
+               id="org.rubypeople.rdt.ui.RubyBrowsingPerspective">
+         </perspectiveShortcut>
+       <perspectiveShortcut
+               id="org.eclipse.debug.ui.DebugPerspective">
+         </perspectiveShortcut>
+       <perspectiveShortcut
+               id="org.rubypeople.rdt.ui.PerspectiveRuby">
+         </perspectiveShortcut>
+       <perspectiveShortcut id="org.eclipse.ui.resourcePerspective" />
+     </perspectiveExtension>
+     <perspectiveExtension targetID="org.eclipse.jdt.ui.JavaPerspective">
+       <perspectiveShortcut id="org.rubypeople.rdt.ui.PerspectiveRuby" />
+     </perspectiveExtension>
    </extension>
 <!-- =========================================================================== -->
 <!-- Ruby Browsing 																 -->
@@ -89,7 +133,7 @@
          </perspectiveShortcut>
       </perspectiveExtension>
       <perspectiveExtension
-            targetID="org.rubypeople.rdt.ui.RubyPerspective">
+            targetID="org.rubypeople.rdt.ui.PerspectiveRuby">
          <perspectiveShortcut
                id="org.rubypeople.rdt.ui.RubyBrowsingPerspective">
          </perspectiveShortcut>
@@ -97,7 +141,7 @@
       <perspectiveExtension
             targetID="org.rubypeople.rdt.ui.RubyBrowsingPerspective">
          <perspectiveShortcut
-               id="org.rubypeople.rdt.ui.RubyPerspective">
+               id="org.rubypeople.rdt.ui.PerspectiveRuby">
          </perspectiveShortcut>
       </perspectiveExtension>
       <perspectiveExtension
@@ -224,26 +268,6 @@
             id="org.rubypeople.rdt.ui.views.RIView">
       </view>
    </extension>
-   <extension point="org.eclipse.ui.perspectiveExtensions">
-   	 <perspectiveExtension targetID="org.eclipse.ui.resourcePerspective">
-       <perspectiveShortcut id="org.rubypeople.rdt.ui.PerspectiveRuby" />
-     </perspectiveExtension>
-     <perspectiveExtension targetID="org.rubypeople.rdt.ui.PerspectiveRuby">
-       <newWizardShortcut id="org.rubypeople.rdt.ui.wizards.NewWizardProjectCreation"/>
-	   <newWizardShortcut id="org.eclipse.ui.wizards.new.folder"/>
-	   <newWizardShortcut id="org.eclipse.ui.wizards.new.file"/>
-       <viewShortcut id="org.eclipse.ui.views.ContentOutline"/>
-       <viewShortcut id="org.rubypeople.rdt.ui.ViewRubyResources"/>
-       <viewShortcut id="org.eclipse.ui.console.ConsoleView"/>
-       <viewShortcut id="org.eclipse.ui.views.ProblemView"/>
-       <viewShortcut id="org.eclipse.ui.views.TaskList"/>
-       <viewShortcut id="org.rubypeople.rdt.ui.views.RIView"/>   
-       <perspectiveShortcut id="org.eclipse.ui.resourcePerspective" />
-     </perspectiveExtension>
-     <perspectiveExtension targetID="org.eclipse.jdt.ui.JavaPerspective">
-       <perspectiveShortcut id="org.rubypeople.rdt.ui.PerspectiveRuby" />
-     </perspectiveExtension>
-   </extension>
    <extension point="org.eclipse.ui.editors">
       <editor
             class="org.rubypeople.rdt.internal.ui.rubyeditor.RubyEditor"
@@ -307,10 +331,15 @@
             sequence="CTRL+SPACE"
             platform="carbon">
       </key>
-       <key
+      <key
             sequence="M1+M2+P"
             contextId="org.rubypeople.rdt.ui.rubyEditorScope"
             commandId="org.rubypeople.rdt.ui.edit.text.ruby.goto.matching.bracket"
+            schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"/>
+            
+      <key
+            sequence="F3"
+            commandId="org.rubypeople.rdt.ui.edit.text.ruby.open.editor"
             schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"/>
 	</extension>
    <extension point="org.eclipse.ui.commands">
@@ -467,6 +496,22 @@
                id="org.rubypeople.rdt.ui.actions.OpenProjectWizard">
          </action>
       </actionSet>
+      <actionSet
+            label="%OpenActionSet.label"
+            description="%OpenActionSet.description"
+            visible="false"
+            id="org.rubypeople.rdt.ui.A_OpenActionSet">
+      
+          <action
+               definitionId="org.rubypeople.rdt.ui.edit.text.ruby.open.editor"
+               label="%OpenAction.label"
+               tooltip="%OpenAction.tooltip"
+               retarget="true"
+               menubarPath="navigate/open.ext"
+               allowLabelUpdate="true"
+               id="org.rubypeople.rdt.ui.actions.Open">
+         </action>
+       </actionSet>
    </extension>
    
    <extension
@@ -487,6 +532,27 @@
             targetID="org.rubypeople.rdt.ui.rubyActionSet">
          <part
                id="org.rubypeople.rdt.ui.EditorRubyFile">
+         </part>
+      </actionSetPartAssociation>
+      <actionSetPartAssociation
+            targetID="org.rubypeople.rdt.ui.A_OpenActionSet">
+         <part
+               id="org.eclipse.search.SearchResultView">
+         </part>
+         <part
+               id="org.rubypeople.rdt.ui.ViewRubyResources">
+         </part>
+         <part
+               id="org.rubypeople.rdt.ui.EditorRubyFile">
+         </part>
+         <part
+               id="org.rubypeople.rdt.ui.ProjectsView">
+         </part>
+         <part
+               id="org.rubypeople.rdt.ui.TypesView">
+         </part>
+         <part
+               id="org.rubypeople.rdt.ui.MembersView">
          </part>
       </actionSetPartAssociation>
    </extension>  
@@ -622,8 +688,8 @@
       <participant
             class="org.rubypeople.rdt.internal.ui.rubyeditor.RubyDocumentSetupParticipant"
             contentTypeId="org.rubypeople.rdt.core.rubySource"
-            extensions="rb,rbw"
-            fileNames="Rakefile">
+            extensions="%EditorRubyFile.extension"
+            fileNames="%EditorRubyFile.filenames">
       </participant>
    </extension>
    <extension
@@ -633,8 +699,8 @@
       <factory
             class="org.rubypeople.rdt.internal.ui.rubyeditor.RubyDocumentFactory"
             contentTypeId="org.rubypeople.rdt.core.rubySource"
-            extensions="rb,rbw"
-            fileNames="Rakefile">
+            extensions="%EditorRubyFile.extension"
+            fileNames="%EditorRubyFile.filenames">
       </factory>
    </extension>
    <extension
