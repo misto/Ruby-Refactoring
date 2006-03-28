@@ -30,7 +30,7 @@ import org.eclipse.core.runtime.IProgressMonitor;
  * @author Chris
  * 
  */
-public interface IRubyScript extends IRubyElement, ISourceReference, IParent, IOpenable {
+public interface IRubyScript extends IRubyElement, ISourceReference, IParent, IOpenable, ICodeAssist {
 
 	public String[] EXTENSIONS = { "rb", "rbw", "rhtml", "rjs", "rxml"};
 

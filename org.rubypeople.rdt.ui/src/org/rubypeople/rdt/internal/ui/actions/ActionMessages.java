@@ -35,6 +35,18 @@ public final class ActionMessages extends NLS {
     public static String MemberFilterActionGroup_hide_localtypes_label;
     public static String MemberFilterActionGroup_hide_localtypes_tooltip;
     public static String MemberFilterActionGroup_hide_localtypes_description;
+	public static String OpenAction_label;
+	public static String OpenAction_tooltip;
+	public static String OpenAction_description;
+	public static String OpenAction_declaration_label;
+	public static String OpenAction_select_element;
+	public static String OpenAction_error_messageBadSelection;
+	public static String OpenAction_error_message;
+	public static String OpenAction_error_messageProblems;
+	public static String OpenAction_error_messageArgs;
+	public static String OpenAction_error_title;
+	public static String ActionUtil_notOnBuildPath_title;
+	public static String ActionUtil_notOnBuildPath_message;
 
     static {
         NLS.initializeMessages(BUNDLE_NAME, ActionMessages.class);

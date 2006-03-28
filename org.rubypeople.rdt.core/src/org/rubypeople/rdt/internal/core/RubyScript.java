@@ -40,6 +40,7 @@ import org.eclipse.core.runtime.IStatus;
 import org.jruby.ast.Node;
 import org.jruby.lexer.yacc.SyntaxException;
 import org.rubypeople.rdt.core.IBuffer;
+import org.rubypeople.rdt.core.ICodeAssist;
 import org.rubypeople.rdt.core.IImportContainer;
 import org.rubypeople.rdt.core.IImportDeclaration;
 import org.rubypeople.rdt.core.IOpenable;
@@ -631,5 +632,18 @@ public class RubyScript extends Openable implements IRubyScript {
 			return primaryType;
 		}
 		return null;
+	}
+	
+	/**
+	 * @see ICodeAssist#codeSelect(int, int)
+	 */
+	public IRubyElement[] codeSelect(int offset, int length) throws RubyModelException {
+		return codeSelect(offset, length, DefaultWorkingCopyOwner.PRIMARY);
+	}
+	/**
+	 * @see ICodeAssist#codeSelect(int, int, WorkingCopyOwner)
+	 */
+	public IRubyElement[] codeSelect(int offset, int length, WorkingCopyOwner workingCopyOwner) throws RubyModelException {
+		return super.codeSelect(this, offset, length, workingCopyOwner);
 	}
 }

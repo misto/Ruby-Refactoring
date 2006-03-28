@@ -18,7 +18,10 @@ import org.rubypeople.rdt.core.IBufferChangedListener;
 import org.rubypeople.rdt.core.IOpenable;
 import org.rubypeople.rdt.core.IRubyElement;
 import org.rubypeople.rdt.core.IRubyModelStatusConstants;
+import org.rubypeople.rdt.core.IRubyScript;
 import org.rubypeople.rdt.core.RubyModelException;
+import org.rubypeople.rdt.core.WorkingCopyOwner;
+import org.rubypeople.rdt.internal.codeassist.SelectionEngine;
 import org.rubypeople.rdt.internal.core.buffer.BufferManager;
 
 /**
@@ -340,5 +343,19 @@ public abstract class Openable extends RubyElement implements IOpenable, IBuffer
 	 */
 	public void open(IProgressMonitor pm) throws RubyModelException {
 		getElementInfo(pm);
+	}
+
+	protected IRubyElement[] codeSelect(IRubyScript cu, int offset, int length, WorkingCopyOwner owner) throws RubyModelException {
+		IBuffer buffer = getBuffer();
+		if (buffer == null) {
+			return new IRubyElement[0];
+		}
+		int end= buffer.getLength();
+		if (offset < 0 || length < 0 || offset + length > end ) {
+			throw new RubyModelException(new RubyModelStatus(IRubyModelStatusConstants.INDEX_OUT_OF_BOUNDS));
+		}
+
+		SelectionEngine engine = new SelectionEngine(this);
+		return engine.select(cu, offset, offset + length - 1);
 	}
 }
