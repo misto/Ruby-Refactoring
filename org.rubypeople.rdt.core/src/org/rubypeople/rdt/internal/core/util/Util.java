@@ -37,6 +37,7 @@ public class Util {
     protected static ResourceBundle bundle;
 	private static boolean ENABLE_RUBY_LIKE_EXTENSIONS = true;
 	private static char[][] RUBY_LIKE_EXTENSIONS;
+	private static char[][] RUBY_LIKE_FILENAMES;
     private final static String bundleName = "org.rubypeople.rdt.internal.core.util.messages"; //$NON-NLS-1$
 
     private final static char[] DOUBLE_QUOTES = "''".toCharArray(); //$NON-NLS-1$
@@ -263,9 +264,19 @@ public class Util {
         printStream.println();
     }
 
-    public static boolean isRubyLikeFileName(String name) {
-        return name.endsWith(".rb") || name.endsWith(".rbw");
-    }
+    /**
+	 * Returns true if the given name ends with one of the known ruby like extension.
+	 * (implementation is not creating extra strings)
+	 */
+	public final static boolean isRubyLikeFileName(String name) {
+		if (name == null) return false;
+		char[][] rubyFileNames = getRubyLikeFilenames();
+		for (int i = 0; i < rubyFileNames.length; i++) {
+			char[] filename = rubyFileNames[i];
+			if(name.equals(new String(filename))) return true;
+		}
+		return indexOfRubyLikeExtension(name) != -1;
+	}
 
     /**
      * Validate the given compilation unit name. A compilation unit name must
@@ -373,9 +384,9 @@ public class Util {
 	 */
 	public static int indexOfRubyLikeExtension(String fileName) {
 		int fileNameLength = fileName.length();
-		char[][] javaLikeExtensions = getRubyLikeExtensions();
-		extensions: for (int i = 0, length = javaLikeExtensions.length; i < length; i++) {
-			char[] extension = javaLikeExtensions[i];
+		char[][] rubyLikeExtensions = getRubyLikeExtensions();
+		extensions: for (int i = 0, length = rubyLikeExtensions.length; i < length; i++) {
+			char[] extension = rubyLikeExtensions[i];
 			int extensionLength = extension.length;
 			int extensionStart = fileNameLength - extensionLength;
 			int dotIndex = extensionStart - 1;
@@ -397,11 +408,11 @@ public class Util {
 		if (RUBY_LIKE_EXTENSIONS == null) {
 			// TODO (jerome) reenable once RDT UI supports other file extensions (see https://bugs.eclipse.org/bugs/show_bug.cgi?id=71460)
 			if (!ENABLE_RUBY_LIKE_EXTENSIONS)
-				RUBY_LIKE_EXTENSIONS = new char[][] {"rb".toCharArray()};
+				RUBY_LIKE_EXTENSIONS = new char[][] {"rb".toCharArray(), "rbw".toCharArray(), "rjs".toCharArray(), "rxml".toCharArray()};
 			else {
-				IContentType javaContentType = Platform.getContentTypeManager().getContentType(RubyCore.RUBY_SOURCE_CONTENT_TYPE);
-				String[] fileExtensions = javaContentType == null ? null : javaContentType.getFileSpecs(IContentType.FILE_EXTENSION_SPEC);
-				// note that file extensions contains "java" as it is defined in JDT Core's plugin.xml
+				IContentType rubyContentType = Platform.getContentTypeManager().getContentType(RubyCore.RUBY_SOURCE_CONTENT_TYPE);
+				String[] fileExtensions = rubyContentType == null ? null : rubyContentType.getFileSpecs(IContentType.FILE_EXTENSION_SPEC);
+				// note that file extensions contains "ruby" as it is defined in RDT Core's plugin.xml
 				int length = fileExtensions == null ? 0 : fileExtensions.length;
 				char[][] extensions = new char[length][];
 				SimpleWordSet knownExtensions = new SimpleWordSet(length); // used to ensure no duplicate extensions
@@ -423,8 +434,46 @@ public class Util {
 		}
 		return RUBY_LIKE_EXTENSIONS;
 	}
+	
+	/**
+	 * Returns the registered Ruby like filenames.
+	 */
+	public static char[][] getRubyLikeFilenames() {
+		if (RUBY_LIKE_FILENAMES == null) {
+			IContentType rubyContentType = Platform.getContentTypeManager()
+					.getContentType(RubyCore.RUBY_SOURCE_CONTENT_TYPE);
+			String[] filenames = rubyContentType == null ? null
+					: rubyContentType
+							.getFileSpecs(IContentType.FILE_NAME_SPEC);
+			int length = filenames == null ? 0 : filenames.length;
+			names = new char[length][];
+			SimpleWordSet knownExtensions = new SimpleWordSet(length); // used
+																		// to
+																		// ensure
+																		// no
+																		// duplicate
+																		// names
+			names[0] = "Rakefile".toCharArray(); // ensure that "Rakefile" is first
+			knownExtensions.add(names[0]);
+			int index = 1;
+			for (int i = 0; i < length; i++) {
+				String fileExtension = filenames[i];
+				char[] extension = fileExtension.toCharArray();
+				if (!knownExtensions.includes(extension)) {
+					names[index++] = extension;
+					knownExtensions.add(extension);
+				}
+			}
+			if (index != length)
+				System.arraycopy(names, 0, names = new char[index][],
+						0, index);
+			RUBY_LIKE_FILENAMES = names;
+		}
+		return RUBY_LIKE_FILENAMES;
+	}
 
 	private static final int DEFAULT_READING_SIZE = 8192;
+	private static char[][] names;
 
 	/**
 	 * @param file
