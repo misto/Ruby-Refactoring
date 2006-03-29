@@ -107,4 +107,6 @@ public interface IRubyProject extends IRubyElement, IParent {
 
 	public abstract Object[] getNonRubyResources() throws RubyModelException;
 
+	public abstract boolean isOnLoadpath(IRubyScript element);
+
 }

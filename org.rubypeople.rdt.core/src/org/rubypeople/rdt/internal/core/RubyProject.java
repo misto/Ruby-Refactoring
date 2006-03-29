@@ -718,5 +718,10 @@ public class RubyProject extends Openable implements IProjectNature, IRubyElemen
 	public Object[] getNonRubyResources() throws RubyModelException {
 		return ((RubyProjectElementInfo) getElementInfo()).getNonRubyResources(this);
 	}
+
+	public boolean isOnLoadpath(IRubyScript element) {
+		// TODO We cheat and assume all scripts are on loadpath. Thsi may not be true. We shoudl check!
+		return true;
+	}
 	
 }
