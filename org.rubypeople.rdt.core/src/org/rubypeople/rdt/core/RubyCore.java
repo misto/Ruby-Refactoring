@@ -50,6 +50,7 @@ import org.rubypeople.rdt.internal.core.builder.RubyBuilder;
 import org.rubypeople.rdt.internal.core.parser.RubyParser;
 import org.rubypeople.rdt.internal.core.symbols.ISymbolFinder;
 import org.rubypeople.rdt.internal.core.symbols.SymbolIndex;
+import org.rubypeople.rdt.internal.core.util.Util;
 
 public class RubyCore extends Plugin {
 
@@ -364,13 +365,9 @@ public class RubyCore extends Plugin {
         if (project == null) {
             project = create(file.getProject());
         }
-        // FIXME Use the associations to determine if we should create the file!
-        for (int i = 0; i < IRubyScript.EXTENSIONS.length; i++) {
-            if (IRubyScript.EXTENSIONS[i].equalsIgnoreCase(file.getFileExtension())) {
-                RubyScript script = new RubyScript((RubyProject) project, file, file.getName(),
-                        DefaultWorkingCopyOwner.PRIMARY);
-                return script;
-            }
+        if(isRubyLikeFileName(file.getName())) {
+        	return new RubyScript((RubyProject) project, file, file.getName(),
+                    DefaultWorkingCopyOwner.PRIMARY);
         }
         return null;
     }
@@ -613,6 +610,6 @@ public class RubyCore extends Plugin {
     }
 
     public static boolean isRubyLikeFileName(String name) {
-        return name.endsWith(".rb") || name.endsWith(".rbw");
+        return Util.isRubyLikeFileName(name);
     }
 }
