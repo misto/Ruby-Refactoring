@@ -355,7 +355,7 @@ public abstract class Openable extends RubyElement implements IOpenable, IBuffer
 			throw new RubyModelException(new RubyModelStatus(IRubyModelStatusConstants.INDEX_OUT_OF_BOUNDS));
 		}
 
-		SelectionEngine engine = new SelectionEngine(this);
+		SelectionEngine engine = new SelectionEngine();
 		return engine.select(cu, offset, offset + length - 1);
 	}
 }
