@@ -9,6 +9,7 @@ import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.jface.util.ListenerList;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.SubProgressMonitor;
 import org.eclipse.core.runtime.jobs.ISchedulingRule;
@@ -22,8 +23,12 @@ import org.eclipse.jface.text.source.Annotation;
 import org.eclipse.jface.text.source.AnnotationModelEvent;
 import org.eclipse.jface.text.source.IAnnotationAccessExtension;
 import org.eclipse.jface.text.source.IAnnotationModel;
+import org.eclipse.jface.text.source.IAnnotationModelListener;
+import org.eclipse.jface.text.source.IAnnotationModelListenerExtension;
 import org.eclipse.jface.text.source.IAnnotationPresentation;
 import org.eclipse.jface.text.source.ImageUtilities;
+import org.eclipse.jface.util.IPropertyChangeListener;
+import org.eclipse.jface.util.PropertyChangeEvent;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Image;
@@ -59,6 +64,46 @@ public class RubyDocumentProvider extends TextFileDocumentProvider {
 		public IRubyScript fCopy;
 	}
 
+	protected static class GlobalAnnotationModelListener implements IAnnotationModelListener, IAnnotationModelListenerExtension {
+
+		private ListenerList fListenerList;
+
+		public GlobalAnnotationModelListener() {
+			fListenerList= new ListenerList();
+		}
+
+		/**
+		 * @see IAnnotationModelListener#modelChanged(IAnnotationModel)
+		 */
+		public void modelChanged(IAnnotationModel model) {
+			Object[] listeners= fListenerList.getListeners();
+			for (int i= 0; i < listeners.length; i++) {
+				((IAnnotationModelListener) listeners[i]).modelChanged(model);
+			}
+		}
+
+		/**
+		 * @see IAnnotationModelListenerExtension#modelChanged(AnnotationModelEvent)
+		 */
+		public void modelChanged(AnnotationModelEvent event) {
+			Object[] listeners= fListenerList.getListeners();
+			for (int i= 0; i < listeners.length; i++) {
+				Object curr= listeners[i];
+				if (curr instanceof IAnnotationModelListenerExtension) {
+					((IAnnotationModelListenerExtension) curr).modelChanged(event);
+				}
+			}
+		}
+
+		public void addListener(IAnnotationModelListener listener) {
+			fListenerList.add(listener);
+		}
+
+		public void removeListener(IAnnotationModelListener listener) {
+			fListenerList.remove(listener);
+		}
+	}
+	
 	/** Preference key for temporary problems */
 	private final static String HANDLE_TEMPORARY_PROBLEMS= PreferenceConstants.EDITOR_EVALUTE_TEMPORARY_PROBLEMS;
 	
@@ -66,10 +111,23 @@ public class RubyDocumentProvider extends TextFileDocumentProvider {
 	private boolean fIsAboutToSave= false;
 	/** The save policy used by this provider */
 	private ISavePolicy fSavePolicy;
+	/** Internal property changed listener */
+	private IPropertyChangeListener fPropertyListener;
+	/** Annotation model listener added to all created CU annotation models */
+	private GlobalAnnotationModelListener fGlobalAnnotationModelListener;
 	
 	public RubyDocumentProvider() {
 		IDocumentProvider provider = new TextFileDocumentProvider();
 		setParentDocumentProvider(provider);
+		
+		fGlobalAnnotationModelListener= new GlobalAnnotationModelListener();
+		fPropertyListener= new IPropertyChangeListener() {
+			public void propertyChange(PropertyChangeEvent event) {
+				if (HANDLE_TEMPORARY_PROBLEMS.equals(event.getProperty()))
+					enableHandlingTemporaryProblems();
+			}
+		};
+		RubyPlugin.getDefault().getPreferenceStore().addPropertyChangeListener(fPropertyListener);
 	}
 
 	/*
@@ -98,6 +156,34 @@ public class RubyDocumentProvider extends TextFileDocumentProvider {
 		return new RubyScriptInfo();
 	}
 
+		/**
+		 * Switches the state of problem acceptance according to the value in the preference store.
+		 */
+		protected void enableHandlingTemporaryProblems() {
+			boolean enable= isHandlingTemporaryProblems();
+			for (Iterator iter= getFileInfosIterator(); iter.hasNext();) {
+				FileInfo info= (FileInfo) iter.next();
+				if (info.fModel instanceof IProblemRequestorExtension) {
+					IProblemRequestorExtension  extension= (IProblemRequestorExtension) info.fModel;
+					extension.setIsHandlingTemporaryProblems(enable);
+				}
+			}
+		}
+	
+	/*
+	 * @see org.eclipse.jdt.internal.ui.javaeditor.ICompilationUnitDocumentProvider#addGlobalAnnotationModelListener(org.eclipse.jface.text.source.IAnnotationModelListener)
+	 */
+	public void addGlobalAnnotationModelListener(IAnnotationModelListener listener) {
+		fGlobalAnnotationModelListener.addListener(listener);
+	}
+
+	/*
+	 * @see org.eclipse.jdt.internal.ui.javaeditor.ICompilationUnitDocumentProvider#removeGlobalAnnotationModelListener(org.eclipse.jface.text.source.IAnnotationModelListener)
+	 */
+	public void removeGlobalAnnotationModelListener(IAnnotationModelListener listener) {
+		fGlobalAnnotationModelListener.removeListener(listener);
+	}
+	
 	/*
 	 * @see org.eclipse.ui.editors.text.TextFileDocumentProvider#createFileInfo(java.lang.Object)
 	 */
@@ -121,8 +207,6 @@ public class RubyDocumentProvider extends TextFileDocumentProvider {
 			extension.setIsHandlingTemporaryProblems(isHandlingTemporaryProblems());
 		}
 		
-		// FIXME Pass in a RubyScriptAnnotationModel as an IProblemRequestor
-		// This is how the UI gets updated with the problems generated during parsing on a working copy
 		original.becomeWorkingCopy(requestor, getProgressMonitor());
 		cuInfo.fCopy = original;
 		
@@ -130,6 +214,9 @@ public class RubyDocumentProvider extends TextFileDocumentProvider {
 			RubyScriptAnnotationModel model= (RubyScriptAnnotationModel) cuInfo.fModel;
 			model.setRubyScript(cuInfo.fCopy);
 		} 
+		
+		if (cuInfo.fModel != null)
+			cuInfo.fModel.addAnnotationModelListener(fGlobalAnnotationModelListener);
 		
 		return cuInfo;
 	}
@@ -173,6 +260,8 @@ public class RubyDocumentProvider extends TextFileDocumentProvider {
 			} catch (RubyModelException x) {
 				handleCoreException(x, x.getMessage());
 			}
+			if (cuInfo.fModel != null)
+				cuInfo.fModel.removeAnnotationModelListener(fGlobalAnnotationModelListener);
 		}
 		super.disposeFileInfo(element, info);
 	}
@@ -727,7 +816,6 @@ public class RubyDocumentProvider extends TextFileDocumentProvider {
 		 * @see IProblemRequestor#acceptProblem(IProblem)
 		 */
 		public void acceptProblem(IProblem problem) {
-			System.out.println("RubyScriptAnnotationModel received problem: " + problem);
 			if (fIsHandlingTemporaryProblems) {
 				ProblemRequestorState state= (ProblemRequestorState) fProblemRequestorState.get();
 				if (state != null)
