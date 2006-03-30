@@ -38,7 +38,7 @@ import org.rubypeople.rdt.ui.PreferenceConstants;
 public class EditorUtility {
 	
 	/**
-	 * Opens a Java editor for an element (IJavaElement, IFile, IStorage...)
+	 * Opens a Ruby editor for an element (IJavaElement, IFile, IStorage...)
 	 * @return the IEditorPart or null if wrong element type or opening failed
 	 */
 	public static IEditorPart openInEditor(Object inputElement, boolean activate) throws RubyModelException, PartInitException {
@@ -55,6 +55,18 @@ public class EditorUtility {
 		if (input != null)
 			return openInEditor(input, getEditorID(input, inputElement), activate);
 
+		return null;
+	}
+	
+	private static IEditorPart openInEditor(IFile file, boolean activate) throws PartInitException {
+		if (file != null) {
+			IWorkbenchPage p= RubyPlugin.getActivePage();
+			if (p != null) {
+				IEditorPart editorPart= IDE.openEditor(p, file, activate);
+				initializeHighlightRange(editorPart);
+				return editorPart;
+			}
+		}
 		return null;
 	}
 	

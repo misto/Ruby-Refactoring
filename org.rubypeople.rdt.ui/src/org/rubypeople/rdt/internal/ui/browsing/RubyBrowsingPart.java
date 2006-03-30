@@ -9,21 +9,37 @@ import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.core.runtime.Platform;
+import org.eclipse.jface.action.IAction;
+import org.eclipse.jface.action.IMenuManager;
+import org.eclipse.jface.action.IToolBarManager;
+import org.eclipse.jface.text.ITextSelection;
 import org.eclipse.jface.util.Assert;
 import org.eclipse.jface.viewers.IContentProvider;
+import org.eclipse.jface.viewers.IOpenListener;
 import org.eclipse.jface.viewers.ISelection;
+import org.eclipse.jface.viewers.ISelectionProvider;
 import org.eclipse.jface.viewers.IStructuredSelection;
+import org.eclipse.jface.viewers.OpenEvent;
 import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.viewers.StructuredViewer;
 import org.eclipse.jface.viewers.TreeViewer;
+import org.eclipse.search.ui.IContextMenuConstants;
 import org.eclipse.search.ui.ISearchResultView;
 import org.eclipse.search.ui.ISearchResultViewPart;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.ui.IActionBars;
+import org.eclipse.ui.IEditorInput;
+import org.eclipse.ui.IEditorPart;
+import org.eclipse.ui.IFileEditorInput;
 import org.eclipse.ui.IPartListener2;
 import org.eclipse.ui.ISelectionListener;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.IWorkbenchPartReference;
+import org.eclipse.ui.IWorkbenchPartSite;
+import org.eclipse.ui.PlatformUI;
+import org.eclipse.ui.actions.ActionContext;
+import org.eclipse.ui.actions.ActionGroup;
 import org.eclipse.ui.part.IShowInSource;
 import org.eclipse.ui.part.ShowInContext;
 import org.eclipse.ui.part.ViewPart;
@@ -32,89 +48,208 @@ import org.rubypeople.rdt.core.IRubyElement;
 import org.rubypeople.rdt.core.IRubyScript;
 import org.rubypeople.rdt.core.IType;
 import org.rubypeople.rdt.core.RubyModelException;
+import org.rubypeople.rdt.internal.ui.RubyPlugin;
+import org.rubypeople.rdt.internal.ui.actions.CompositeActionGroup;
 import org.rubypeople.rdt.internal.ui.viewsupport.AppearanceAwareLabelProvider;
 import org.rubypeople.rdt.internal.ui.viewsupport.DecoratingRubyLabelProvider;
 import org.rubypeople.rdt.internal.ui.viewsupport.RubyElementImageProvider;
 import org.rubypeople.rdt.internal.ui.viewsupport.RubyUILabelProvider;
+import org.rubypeople.rdt.ui.IWorkingCopyManager;
+import org.rubypeople.rdt.ui.PreferenceConstants;
 import org.rubypeople.rdt.ui.StandardRubyElementContentProvider;
+import org.rubypeople.rdt.ui.actions.CustomFiltersActionGroup;
+import org.rubypeople.rdt.ui.actions.OpenEditorActionGroup;
 
-public abstract class RubyBrowsingPart extends ViewPart implements ISelectionListener {
+public abstract class RubyBrowsingPart extends ViewPart implements
+		ISelectionListener {
 
 	private StructuredViewer fViewer;
 	private RubyUILabelProvider fLabelProvider;
-	
 	protected IWorkbenchPart fPreviousSelectionProvider;
 	protected Object fPreviousSelectedElement;
 	
-	/*
-	 * Ensure selection changed events being processed only if
-	 * initiated by user interaction with this part.
-	 */
-	private boolean fProcessSelectionEvents= true;
-	private RubyElementTypeComparator fTypeComparator;
+	// Actions
+	private boolean fHasCustomFilter= true;
+	private OpenEditorActionGroup fOpenEditorGroup;
+	protected CompositeActionGroup fActionGroups;
 	
-	private IPartListener2 fPartListener= new IPartListener2() {
+	// Filters
+	private CustomFiltersActionGroup fCustomFiltersActionGroup;
+	
+	// Linking
+	private boolean fLinkingEnabled;
+
+	/*
+	 * Ensure selection changed events being processed only if initiated by user
+	 * interaction with this part.
+	 */
+	private boolean fProcessSelectionEvents = true;
+
+	private RubyElementTypeComparator fTypeComparator;
+
+	private IPartListener2 fPartListener = new IPartListener2() {
 		public void partActivated(IWorkbenchPartReference ref) {
 		}
+
 		public void partBroughtToTop(IWorkbenchPartReference ref) {
 		}
-	 	public void partInputChanged(IWorkbenchPartReference ref) {
-	 	}
+
+		public void partInputChanged(IWorkbenchPartReference ref) {
+		}
+
 		public void partClosed(IWorkbenchPartReference ref) {
 		}
+
 		public void partDeactivated(IWorkbenchPartReference ref) {
 		}
+
 		public void partOpened(IWorkbenchPartReference ref) {
 		}
+
 		public void partVisible(IWorkbenchPartReference ref) {
-			if (ref != null && ref.getId() == getSite().getId()){
-				fProcessSelectionEvents= true;
-				IWorkbenchPage page= getSite().getWorkbenchWindow().getActivePage();
+			if (ref != null && ref.getId() == getSite().getId()) {
+				fProcessSelectionEvents = true;
+				IWorkbenchPage page = getSite().getWorkbenchWindow()
+						.getActivePage();
 				if (page != null)
 					selectionChanged(page.getActivePart(), page.getSelection());
+			}
 		}
-		}
+
 		public void partHidden(IWorkbenchPartReference ref) {
 			if (ref != null && ref.getId() == getSite().getId())
-				fProcessSelectionEvents= false;
+				fProcessSelectionEvents = false;
 		}
 	};
+	
+	public RubyBrowsingPart() {
+		super();
+		initLinkingEnabled();
+	}
+	
+	protected void createActions() {
+		fActionGroups= new CompositeActionGroup(new ActionGroup[] {
+				fOpenEditorGroup= new OpenEditorActionGroup(this)
+				});
+
+//		 Custom filter group
+		if (fHasCustomFilter)
+			fCustomFiltersActionGroup= new CustomFiltersActionGroup(this, fViewer);
+	}
+	
+	/**
+	 * Adds additional listeners to this view.
+	 * This method can be overridden but should
+	 * call super.
+	 */
+	protected void hookViewerListeners() {
+		fViewer.addOpenListener(new IOpenListener() {
+			public void open(OpenEvent event) {
+				IAction open= fOpenEditorGroup.getOpenAction();
+				if (open.isEnabled()) {
+					open.run();
+					restoreSelection();
+				}
+			}
+		});
+	}
+	
+	void setHasCustomSetFilter(boolean state) {
+		fHasCustomFilter= state;
+	}
+	
+	protected boolean hasCustomFilter() {
+		return fHasCustomFilter;
+	}
+	
+	protected void setCustomFiltersActionGroup(CustomFiltersActionGroup customFiltersActionGroup) {
+		fCustomFiltersActionGroup= customFiltersActionGroup;
+	}
+	
+	void restoreSelection() {
+		// Default is to do nothing
+	}
+	
+	protected void setOpenEditorGroup(OpenEditorActionGroup openEditorGroup) {
+		fOpenEditorGroup= openEditorGroup;
+	}
+
+	protected OpenEditorActionGroup getOpenEditorGroup() {
+		return fOpenEditorGroup;
+	}
 
 	public void createPartControl(Composite parent) {
 		Assert.isTrue(fViewer == null);
+
+		fViewer = createViewer(parent);
 		
-		fViewer = new TreeViewer(parent);
-		
-		fTypeComparator= new RubyElementTypeComparator();
-		
-		fLabelProvider= createLabelProvider();
-		fViewer.setLabelProvider(new DecoratingRubyLabelProvider(fLabelProvider));
+
+		fTypeComparator = new RubyElementTypeComparator();
+
+		fLabelProvider = createLabelProvider();
+		fViewer
+				.setLabelProvider(new DecoratingRubyLabelProvider(
+						fLabelProvider));
 		fViewer.setUseHashlookup(true);
 
 		getSite().setSelectionProvider(fViewer);
+		
+		createActions(); // call before registering for selection changes
+		
+		hookViewerListeners();
+		
 		fViewer.setContentProvider(createContentProvider());
 		setInitialInput();
 
 		// Initialize selection
 		// TODO Use selection from editor, etc
-		//setInitialSelection();
-		
-//		 Listen to page changes
+		setInitialSelection();
+
+		// Listen to page changes
 		getViewSite().getPage().addPostSelectionListener(this);
 		getViewSite().getPage().addPartListener(fPartListener);
+		
+		fillActionBars(getViewSite().getActionBars());
 	}
 	
+	protected StructuredViewer createViewer(Composite parent) {
+		// TODO Use ProblemTreeViewer
+		return new TreeViewer(parent);
+	}
+
+	protected void fillActionBars(IActionBars actionBars) {
+		IToolBarManager toolBar= actionBars.getToolBarManager();
+		fillToolBar(toolBar);
+
+
+//		if (fHasWorkingSetFilter)
+//			fWorkingSetFilterActionGroup.fillActionBars(getViewSite().getActionBars());
+
+		actionBars.updateActionBars();
+
+		fActionGroups.fillActionBars(actionBars);
+
+		if (fHasCustomFilter)
+			fCustomFiltersActionGroup.fillActionBars(actionBars);
+
+//		IMenuManager menu= actionBars.getMenuManager();
+//		menu.add(fToggleLinkingAction);
+	}
+	
+	protected void fillToolBar(IToolBarManager tbm) {
+	}
+
 	/**
 	 * Creates the the content provider of this part.
 	 */
 	protected IContentProvider createContentProvider() {
 		return new RubyBrowsingContentProvider(true, this);
 	}
-	
+
 	protected final StructuredViewer getViewer() {
 		return fViewer;
 	}
-	
+
 	protected void setInitialInput() {
 		// Use the selection, if any
 		ISelection selection = getSite().getPage().getSelection();
@@ -127,115 +262,127 @@ public abstract class RubyBrowsingPart extends ViewPart implements ISelectionLis
 		}
 		setInput(findInputForRubyElement((IRubyElement) input));
 	}
-	
+
 	protected RubyUILabelProvider createLabelProvider() {
 		return new AppearanceAwareLabelProvider(
-						AppearanceAwareLabelProvider.DEFAULT_TEXTFLAGS,
-						AppearanceAwareLabelProvider.DEFAULT_IMAGEFLAGS | RubyElementImageProvider.SMALL_ICONS
-						);
+				AppearanceAwareLabelProvider.DEFAULT_TEXTFLAGS,
+				AppearanceAwareLabelProvider.DEFAULT_IMAGEFLAGS
+						| RubyElementImageProvider.SMALL_ICONS);
 	}
-	
+
 	protected void setInput(Object input) {
 		setViewerInput(input);
 		// TODO Update the title
-		//updateTitle();
+		// updateTitle();
 	}
-	
+
 	private void setViewerInput(Object input) {
-		fProcessSelectionEvents= false;
+		fProcessSelectionEvents = false;
 		fViewer.setInput(input);
-		fProcessSelectionEvents= true;
+		fProcessSelectionEvents = true;
 	}
 
 	private boolean isSearchResultView(IWorkbenchPart part) {
-		return isSearchPlugInActivated() && (part instanceof ISearchResultView || part instanceof ISearchResultViewPart);
+		return isSearchPlugInActivated()
+				&& (part instanceof ISearchResultView || part instanceof ISearchResultViewPart);
 	}
-	
+
 	// FIXME Move this to a ruby SearchUtil class
 	public static boolean isSearchPlugInActivated() {
 		return Platform.getBundle("org.eclipse.search").getState() == Bundle.ACTIVE; //$NON-NLS-1$
 	}
-	
-	protected boolean needsToProcessSelectionChanged(IWorkbenchPart part, ISelection selection) {
-		if (!fProcessSelectionEvents || part == this || isSearchResultView(part)){
+
+	protected boolean needsToProcessSelectionChanged(IWorkbenchPart part,
+			ISelection selection) {
+		if (!fProcessSelectionEvents || part == this
+				|| isSearchResultView(part)) {
 			if (part == this)
-				fPreviousSelectionProvider= part;
+				fPreviousSelectionProvider = part;
 			return false;
 		}
 		return true;
 	}
-	
+
 	public void selectionChanged(IWorkbenchPart part, ISelection selection) {
 		if (!needsToProcessSelectionChanged(part, selection))
 			return;
 
 		// TODO Handle editor selections
-//		if (fToggleLinkingAction.isChecked() && (part instanceof ITextEditor)) {
-//			setSelectionFromEditor(part, selection);
-//			return;
-//		}
+		// if (fToggleLinkingAction.isChecked() && (part instanceof
+		// ITextEditor)) {
+		// setSelectionFromEditor(part, selection);
+		// return;
+		// }
 
 		if (!(selection instanceof IStructuredSelection))
 			return;
 
 		// Set selection
-		Object selectedElement= getSingleElementFromSelection(selection);
+		Object selectedElement = getSingleElementFromSelection(selection);
 
-		if (selectedElement != null && (part == null || part.equals(fPreviousSelectionProvider)) && selectedElement.equals(fPreviousSelectedElement))
+		if (selectedElement != null
+				&& (part == null || part.equals(fPreviousSelectionProvider))
+				&& selectedElement.equals(fPreviousSelectedElement))
 			return;
 
-		fPreviousSelectedElement= selectedElement;
+		fPreviousSelectedElement = selectedElement;
 
-		Object currentInput= getViewer().getInput();
+		Object currentInput = getViewer().getInput();
 		if (selectedElement != null && selectedElement.equals(currentInput)) {
-			IRubyElement elementToSelect= findElementToSelect(selectedElement);
-			if (elementToSelect != null && getTypeComparator().compare(selectedElement, elementToSelect) < 0)
+			IRubyElement elementToSelect = findElementToSelect(selectedElement);
+			if (elementToSelect != null
+					&& getTypeComparator().compare(selectedElement,
+							elementToSelect) < 0)
 				setSelection(new StructuredSelection(elementToSelect), true);
 			// TODO Uncomment when we have a MembersView
-//			else if (elementToSelect == null && (this instanceof MembersView)) {
-//				setSelection(StructuredSelection.EMPTY, true);
-//				fPreviousSelectedElement= StructuredSelection.EMPTY;
-//			}
-			fPreviousSelectionProvider= part;
+			// else if (elementToSelect == null && (this instanceof
+			// MembersView)) {
+			// setSelection(StructuredSelection.EMPTY, true);
+			// fPreviousSelectedElement= StructuredSelection.EMPTY;
+			// }
+			fPreviousSelectionProvider = part;
 			return;
 		}
 
 		// Clear input if needed
-		if (part != fPreviousSelectionProvider && selectedElement != null && !selectedElement.equals(currentInput) && isInputResetBy(selectedElement, currentInput, part)) {
+		if (part != fPreviousSelectionProvider && selectedElement != null
+				&& !selectedElement.equals(currentInput)
+				&& isInputResetBy(selectedElement, currentInput, part)) {
 			if (!isAncestorOf(selectedElement, currentInput))
 				setInput(null);
-			fPreviousSelectionProvider= part;
+			fPreviousSelectionProvider = part;
 			return;
-		} else	if (selection.isEmpty() && !isInputResetBy(part)) {
-			fPreviousSelectionProvider= part;
+		} else if (selection.isEmpty() && !isInputResetBy(part)) {
+			fPreviousSelectionProvider = part;
 			return;
-		} else if (selectedElement == null && part == fPreviousSelectionProvider) {
+		} else if (selectedElement == null
+				&& part == fPreviousSelectionProvider) {
 			setInput(null);
-			fPreviousSelectionProvider= part;
+			fPreviousSelectionProvider = part;
 			return;
 		}
-		fPreviousSelectionProvider= part;
+		fPreviousSelectionProvider = part;
 
 		// Adjust input and set selection and
 		adjustInputAndSetSelection(selectedElement);
 	}
-	
+
 	void setSelection(ISelection selection, boolean reveal) {
 		if (selection != null && selection.equals(fViewer.getSelection()))
 			return;
-		fProcessSelectionEvents= false;
+		fProcessSelectionEvents = false;
 		fViewer.setSelection(selection, reveal);
-		fProcessSelectionEvents= true;
+		fProcessSelectionEvents = true;
 	}
-	
+
 	protected Object getInput() {
 		return fViewer.getInput();
 	}
-	
+
 	public void setFocus() {
 		fViewer.getControl().setFocus();
 	}
-	
+
 	/**
 	 * Answer the property defined by key.
 	 */
@@ -244,25 +391,24 @@ public abstract class RubyBrowsingPart extends ViewPart implements ISelectionLis
 			return getShowInSource();
 		}
 		// TODO Uncomment when we have RubyUIHelp
-//		if (key == IContextProvider.class)
-//			return RubyUIHelp.getHelpContextProvider(this, getHelpContextId());
+		// if (key == IContextProvider.class)
+		// return RubyUIHelp.getHelpContextProvider(this, getHelpContextId());
 
 		return super.getAdapter(key);
 	}
-	
+
 	/**
 	 * Returns the <code>IShowInSource</code> for this view.
 	 */
 	protected IShowInSource getShowInSource() {
 		return new IShowInSource() {
 			public ShowInContext getShowInContext() {
-				return new ShowInContext(
-					null,
-				getSite().getSelectionProvider().getSelection());
+				return new ShowInContext(null, getSite().getSelectionProvider()
+						.getSelection());
 			}
 		};
 	}
-	
+
 	void adjustInputAndSetSelection(Object o) {
 		if (!(o instanceof IRubyElement)) {
 			if (o == null)
@@ -271,21 +417,22 @@ public abstract class RubyBrowsingPart extends ViewPart implements ISelectionLis
 			return;
 		}
 
-		IRubyElement je= (IRubyElement)o;
-		IRubyElement elementToSelect= getSuitableRubyElement(findElementToSelect(je));
-		IRubyElement newInput= findInputForRubyElement(je);
-		IRubyElement oldInput= null;
+		IRubyElement je = (IRubyElement) o;
+		IRubyElement elementToSelect = getSuitableRubyElement(findElementToSelect(je));
+		IRubyElement newInput = findInputForRubyElement(je);
+		IRubyElement oldInput = null;
 		if (getInput() instanceof IRubyElement)
-			oldInput= (IRubyElement)getInput();
+			oldInput = (IRubyElement) getInput();
 
-		if (elementToSelect == null && !isValidInput(newInput) && (newInput == null && !isAncestorOf(je, oldInput)))
+		if (elementToSelect == null && !isValidInput(newInput)
+				&& (newInput == null && !isAncestorOf(je, oldInput)))
 			// Clear input
 			setInput(null);
 		else if (mustSetNewInput(elementToSelect, oldInput, newInput)) {
 			// Adjust input to selection
 			setInput(newInput);
 			// Recompute suitable element since it depends on the viewer's input
-			elementToSelect= getSuitableRubyElement(elementToSelect);
+			elementToSelect = getSuitableRubyElement(elementToSelect);
 		}
 
 		if (elementToSelect != null && elementToSelect.exists())
@@ -293,35 +440,36 @@ public abstract class RubyBrowsingPart extends ViewPart implements ISelectionLis
 		else
 			setSelection(StructuredSelection.EMPTY, true);
 	}
-	
+
 	/**
-	 * Converts the given Java element to one which is suitable for this
-	 * view. It takes into account whether the view shows working copies or not.
-	 *
-	 * @param	obj the Java element to be converted
-	 * @return	an element suitable for this view
+	 * Converts the given Java element to one which is suitable for this view.
+	 * It takes into account whether the view shows working copies or not.
+	 * 
+	 * @param obj
+	 *            the Java element to be converted
+	 * @return an element suitable for this view
 	 */
 	IRubyElement getSuitableRubyElement(Object obj) {
 		if (!(obj instanceof IRubyElement))
 			return null;
-		IRubyElement element= (IRubyElement)obj;
+		IRubyElement element = (IRubyElement) obj;
 		if (fTypeComparator.compare(element, IRubyElement.SCRIPT) > 0)
 			return element;
 		if (isInputAWorkingCopy()) {
-			IRubyElement wc= getWorkingCopy(element);
+			IRubyElement wc = getWorkingCopy(element);
 			if (wc != null)
-				element= wc;
+				element = wc;
 			return element;
-		}
-		else {
+		} else {
 			return element.getPrimaryElement();
 		}
 	}
-	
+
 	boolean isInputAWorkingCopy() {
-		return ((StandardRubyElementContentProvider)getViewer().getContentProvider()).getProvideWorkingCopy();
+		return ((StandardRubyElementContentProvider) getViewer()
+				.getContentProvider()).getProvideWorkingCopy();
 	}
-	
+
 	/**
 	 * Tries to find the given element in a workingcopy.
 	 */
@@ -329,23 +477,24 @@ public abstract class RubyBrowsingPart extends ViewPart implements ISelectionLis
 		// MA: with new working copy story original == working copy
 		return input;
 	}
-	
+
 	/**
 	 * Compute if a new input must be set.
-	 *
-	 * @return	<code>true</code> if the input has to be set
+	 * 
+	 * @return <code>true</code> if the input has to be set
 	 * @since 3.0
 	 */
-	private boolean mustSetNewInput(IRubyElement elementToSelect, IRubyElement oldInput, IRubyElement newInput) {
+	private boolean mustSetNewInput(IRubyElement elementToSelect,
+			IRubyElement oldInput, IRubyElement newInput) {
 		return (newInput == null || !newInput.equals(oldInput))
-			&& (elementToSelect == null
-				|| oldInput == null
-				|| (!(false
-					&& (elementToSelect.getParent().equals(oldInput.getParent()))
-					&& (!isAncestorOf(getViewPartInput(), elementToSelect)))));
+				&& (elementToSelect == null || oldInput == null || (!(false && (elementToSelect
+						.getParent().equals(oldInput.getParent())) && (!isAncestorOf(
+						getViewPartInput(), elementToSelect)))));
 	}
-	
-	/* (non-Javadoc)
+
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see org.eclipse.jdt.internal.ui.viewsupport.IViewPartInputProvider#getViewPartInput()
 	 */
 	public Object getViewPartInput() {
@@ -354,94 +503,107 @@ public abstract class RubyBrowsingPart extends ViewPart implements ISelectionLis
 		}
 		return null;
 	}
-	
+
 	/**
 	 * Gets the typeComparator.
+	 * 
 	 * @return Returns a RubyElementTypeComparator
 	 */
 	protected Comparator getTypeComparator() {
 		return fTypeComparator;
 	}
-	
-	private boolean isInputResetBy(Object newInput, Object input, IWorkbenchPart part) {
+
+	private boolean isInputResetBy(Object newInput, Object input,
+			IWorkbenchPart part) {
 		if (newInput == null)
 			return part == fPreviousSelectionProvider;
 
 		if (input instanceof IRubyElement && newInput instanceof IRubyElement)
-			return getTypeComparator().compare(newInput, input)  > 0;
+			return getTypeComparator().compare(newInput, input) > 0;
 
 		else
 			return false;
 	}
-	
+
 	private boolean isInputResetBy(IWorkbenchPart part) {
 		if (!(part instanceof RubyBrowsingPart))
 			return true;
-		Object thisInput= getViewer().getInput();
-		Object partInput= ((RubyBrowsingPart)part).getViewer().getInput();
+		Object thisInput = getViewer().getInput();
+		Object partInput = ((RubyBrowsingPart) part).getViewer().getInput();
 
-		if(thisInput instanceof Collection)
-			thisInput= ((Collection)thisInput).iterator().next();
+		if (thisInput instanceof Collection)
+			thisInput = ((Collection) thisInput).iterator().next();
 
-		if(partInput instanceof Collection)
-			partInput= ((Collection)partInput).iterator().next();
+		if (partInput instanceof Collection)
+			partInput = ((Collection) partInput).iterator().next();
 
-		if (thisInput instanceof IRubyElement && partInput instanceof IRubyElement)
+		if (thisInput instanceof IRubyElement
+				&& partInput instanceof IRubyElement)
 			return getTypeComparator().compare(partInput, thisInput) > 0;
 		else
 			return true;
 	}
-	
+
 	protected boolean isAncestorOf(Object ancestor, Object element) {
 		if (element instanceof IRubyElement && ancestor instanceof IRubyElement)
-			return !element.equals(ancestor) && internalIsAncestorOf((IRubyElement)ancestor, (IRubyElement)element);
+			return !element.equals(ancestor)
+					&& internalIsAncestorOf((IRubyElement) ancestor,
+							(IRubyElement) element);
 		return false;
 	}
 
-	private boolean internalIsAncestorOf(IRubyElement ancestor, IRubyElement element) {
+	private boolean internalIsAncestorOf(IRubyElement ancestor,
+			IRubyElement element) {
 		if (element != null)
-			return element.equals(ancestor) || internalIsAncestorOf(ancestor, element.getParent());
+			return element.equals(ancestor)
+					|| internalIsAncestorOf(ancestor, element.getParent());
 		else
 			return false;
 	}
-	
+
 	protected final IRubyElement findElementToSelect(Object obj) {
 		if (obj instanceof IRubyElement)
-			return findElementToSelect((IRubyElement)obj);
+			return findElementToSelect((IRubyElement) obj);
 		return null;
 	}
-	
+
 	/**
 	 * Finds the element which has to be selected in this part.
-	 *
-	 * @param je	the Ruby element which has the focus
+	 * 
+	 * @param je
+	 *            the Ruby element which has the focus
 	 */
 	abstract protected IRubyElement findElementToSelect(IRubyElement je);
-	
+
 	protected final Object getSingleElementFromSelection(ISelection selection) {
 		if (!(selection instanceof StructuredSelection) || selection.isEmpty())
 			return null;
 
-		Iterator iter= ((StructuredSelection)selection).iterator();
-		Object firstElement= iter.next();
+		Iterator iter = ((StructuredSelection) selection).iterator();
+		Object firstElement = iter.next();
 		if (!(firstElement instanceof IRubyElement)) {
 			if (firstElement instanceof IMarker)
-				firstElement= ((IMarker)firstElement).getResource();
+				firstElement = ((IMarker) firstElement).getResource();
 			if (firstElement instanceof IAdaptable) {
-				IRubyElement je= (IRubyElement)((IAdaptable)firstElement).getAdapter(IRubyElement.class);
+				IRubyElement je = (IRubyElement) ((IAdaptable) firstElement)
+						.getAdapter(IRubyElement.class);
 				if (je == null && firstElement instanceof IFile) {
-					IContainer parent= ((IFile)firstElement).getParent();
+					IContainer parent = ((IFile) firstElement).getParent();
 					if (parent != null)
-						return (IRubyElement)parent.getAdapter(IRubyElement.class);
-					else return null;
+						return (IRubyElement) parent
+								.getAdapter(IRubyElement.class);
+					else
+						return null;
 				} else
 					return je;
 
 			} else
 				return firstElement;
 		}
-		Object currentInput= getViewer().getInput();
-		if (currentInput == null || !currentInput.equals(findInputForRubyElement((IRubyElement)firstElement)))
+		Object currentInput = getViewer().getInput();
+		if (currentInput == null
+				|| !currentInput
+						.equals(findInputForRubyElement((IRubyElement) firstElement)))
 			if (iter.hasNext())
 				// multi-selection and view is empty
 				return null;
@@ -451,21 +613,23 @@ public abstract class RubyBrowsingPart extends ViewPart implements ISelectionLis
 
 		// be nice to multi-selection
 		while (iter.hasNext()) {
-			Object element= iter.next();
+			Object element = iter.next();
 			if (!(element instanceof IRubyElement))
 				return null;
-			if (!currentInput.equals(findInputForRubyElement((IRubyElement)element)))
+			if (!currentInput
+					.equals(findInputForRubyElement((IRubyElement) element)))
 				return null;
 		}
 		return firstElement;
 	}
-	
+
 	/**
-	 * Finds the closest Ruby element which can be used as input for
-	 * this part and has the given Ruby element as child
-	 *
-	 * @param 	je 	the Ruby element for which to search the closest input
-	 * @return	the closest Ruby element used as input for this part
+	 * Finds the closest Ruby element which can be used as input for this part
+	 * and has the given Ruby element as child
+	 * 
+	 * @param je
+	 *            the Ruby element for which to search the closest input
+	 * @return the closest Ruby element used as input for this part
 	 */
 	protected IRubyElement findInputForRubyElement(IRubyElement je) {
 		if (je == null || !je.exists())
@@ -474,39 +638,41 @@ public abstract class RubyBrowsingPart extends ViewPart implements ISelectionLis
 			return je;
 		return findInputForRubyElement(je.getParent());
 	}
-	
+
 	/**
-	 * Answers if the given <code>element</code> is a valid
-	 * input for this part.
-	 *
-	 * @param 	element	the object to test
-	 * @return	<code>true</code> if the given element is a valid input
+	 * Answers if the given <code>element</code> is a valid input for this
+	 * part.
+	 * 
+	 * @param element
+	 *            the object to test
+	 * @return <code>true</code> if the given element is a valid input
 	 */
 	abstract protected boolean isValidInput(Object element);
-	
+
 	/**
-	 * Answers if the given <code>element</code> is a valid
-	 * element for this part.
-	 *
-	 * @param 	element	the object to test
-	 * @return	<code>true</code> if the given element is a valid element
+	 * Answers if the given <code>element</code> is a valid element for this
+	 * part.
+	 * 
+	 * @param element
+	 *            the object to test
+	 * @return <code>true</code> if the given element is a valid element
 	 */
 	protected boolean isValidElement(Object element) {
 		if (element == null)
 			return false;
-		element= getSuitableRubyElement(element);
+		element = getSuitableRubyElement(element);
 		if (element == null)
 			return false;
-		Object input= getViewer().getInput();
+		Object input = getViewer().getInput();
 		if (input == null)
 			return false;
 		if (input instanceof Collection)
-			return ((Collection)input).contains(element);
+			return ((Collection) input).contains(element);
 		else
 			return input.equals(element);
 
 	}
-	
+
 	protected IType getTypeForRubyScript(IRubyScript script) {
 		script = (IRubyScript) getSuitableRubyElement(script);
 
@@ -526,14 +692,182 @@ public abstract class RubyBrowsingPart extends ViewPart implements ISelectionLis
 			return null;
 		}
 	}
-	
+
 	public void dispose() {
 		if (fViewer != null) {
 			getViewSite().getPage().removePostSelectionListener(this);
 			getViewSite().getPage().removePartListener(fPartListener);
-			fViewer= null;
+			fViewer = null;
 		}
+		if (fActionGroups != null)
+			fActionGroups.dispose();
 
 		super.dispose();
+	}
+
+	void setProcessSelectionEvents(boolean state) {
+		fProcessSelectionEvents = state;
+	}
+	
+	/**
+	 * Called when the context menu is about to open.
+	 * Override to add your own context dependent menu contributions.
+	 */
+	public void menuAboutToShow(IMenuManager menu) {
+		RubyPlugin.createStandardGroups(menu);
+
+		IStructuredSelection selection= (IStructuredSelection) fViewer.getSelection();
+		int size= selection.size();
+		Object element= selection.getFirstElement();
+
+		if (size == 1)
+			addOpenNewWindowAction(menu, element);
+		fActionGroups.setContext(new ActionContext(selection));
+		fActionGroups.fillContextMenu(menu);
+		fActionGroups.setContext(null);
+	}
+	
+	private void addOpenNewWindowAction(IMenuManager menu, Object element) {
+		if (element instanceof IRubyElement) {
+			element= ((IRubyElement)element).getResource();
+		}
+		if (!(element instanceof IContainer))
+			return;
+		menu.appendToGroup(
+			IContextMenuConstants.GROUP_OPEN,
+			new PatchedOpenInNewWindowAction(getSite().getWorkbenchWindow(), (IContainer)element));
+	}
+	
+	protected void setInitialSelection() {
+		// Use the selection, if any
+		Object input;
+		IWorkbenchPage page= getSite().getPage();
+		ISelection selection= null;
+		if (page != null)
+			selection= page.getSelection();
+		if (selection instanceof ITextSelection) {
+			Object part= PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage().getActivePart();
+			if (part instanceof IEditorPart) {
+				setSelectionFromEditor((IEditorPart)part);
+				if (fViewer.getSelection() != null)
+					return;
+			}
+		}
+
+		// Use saved selection from memento
+//		if (selection == null || selection.isEmpty())
+//			selection= restoreSelectionState(fMemento);
+
+		if (selection == null || selection.isEmpty()) {
+			// Use the input of the page
+			input= getSite().getPage().getInput();
+			if (!(input instanceof IRubyElement)) {
+				if (input instanceof IAdaptable)
+					input= ((IAdaptable)input).getAdapter(IRubyElement.class);
+				else
+					return;
+			}
+			selection= new StructuredSelection(input);
+		}
+		selectionChanged(null, selection);
+	}
+	
+	boolean isLinkingEnabled() {
+		return fLinkingEnabled;
+	}
+	
+	private void initLinkingEnabled() {
+		fLinkingEnabled= PreferenceConstants.getPreferenceStore().getBoolean(getLinkToEditorKey());
+	}
+	
+	private boolean linkBrowsingViewSelectionToEditor() {
+		return isLinkingEnabled();
+	}
+	
+	public void setLinkingEnabled(boolean enabled) {
+		fLinkingEnabled= enabled;
+		PreferenceConstants.getPreferenceStore().setValue(getLinkToEditorKey(), enabled);
+		if (enabled) {
+			IEditorPart editor = getSite().getPage().getActiveEditor();
+			if (editor != null) {
+				setSelectionFromEditor(editor);
+			}
+		}
+	}
+	
+	/**
+	 * Returns the preference key for the link to editor setting.
+	 *
+	 * @return	the string used as key into the preference store
+	 */
+	abstract protected String getLinkToEditorKey();
+	
+	void setSelectionFromEditor(IWorkbenchPart part) {
+		if (!fProcessSelectionEvents || !linkBrowsingViewSelectionToEditor() || !(part instanceof IEditorPart))
+			return;
+		
+		IWorkbenchPartSite site= part.getSite();
+		if (site == null)
+			return;
+		ISelectionProvider provider= site.getSelectionProvider();
+		if (provider != null)
+			setSelectionFromEditor(part, provider.getSelection());
+	}
+	
+	private void setSelectionFromEditor(IWorkbenchPart part, ISelection selection) {
+		if (part instanceof IEditorPart) {
+			IRubyElement element= null;
+			if (selection instanceof IStructuredSelection) {
+				Object obj= getSingleElementFromSelection(selection);
+				if (obj instanceof IRubyElement)
+					element= (IRubyElement)obj;
+			}
+			IEditorInput ei= ((IEditorPart)part).getEditorInput();
+			if (selection instanceof ITextSelection) {
+				int offset= ((ITextSelection)selection).getOffset();
+				element= getElementAt(ei, offset);
+			}
+			if (element != null) {
+				adjustInputAndSetSelection(element);
+				return;
+			}
+			if (ei instanceof IFileEditorInput) {
+				IFile file= ((IFileEditorInput)ei).getFile();
+				IRubyElement je= (IRubyElement)file.getAdapter(IRubyElement.class);
+				if (je == null) {
+					IContainer container= ((IFileEditorInput)ei).getFile().getParent();
+					if (container != null)
+						je= (IRubyElement)container.getAdapter(IRubyElement.class);
+				}
+				if (je == null) {
+					setSelection(null, false);
+					return;
+				}
+				adjustInputAndSetSelection(je);
+			}
+		}
+	}
+	
+	/**
+	 * @see org.rubypeople.rdt.internal.ui.rubyeditor.RubyEditor#getElementAt(int)
+	 */
+	protected IRubyElement getElementAt(IEditorInput input, int offset) {
+		IWorkingCopyManager manager= RubyPlugin.getDefault().getWorkingCopyManager();
+		IRubyScript unit= manager.getWorkingCopy(input);
+		if (unit != null)
+			try {
+				if (unit.isConsistent())
+					return unit.getElementAt(offset);
+				else {
+					/*
+					 * XXX: We should set the selection later when the
+					 *      CU is reconciled.
+					 *      see https://bugs.eclipse.org/bugs/show_bug.cgi?id=51290
+					 */
+				}
+			} catch (RubyModelException ex) {
+				// fall through
+			}
+		return null;
 	}
 }

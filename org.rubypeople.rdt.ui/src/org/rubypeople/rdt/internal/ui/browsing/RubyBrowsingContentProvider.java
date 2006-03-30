@@ -7,23 +7,32 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.eclipse.core.resources.IResource;
+import org.eclipse.jface.viewers.AbstractTreeViewer;
+import org.eclipse.jface.viewers.IBasicPropertyConstants;
+import org.eclipse.jface.viewers.ListViewer;
 import org.eclipse.jface.viewers.StructuredViewer;
+import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
+import org.rubypeople.rdt.core.ElementChangedEvent;
+import org.rubypeople.rdt.core.IElementChangedListener;
 import org.rubypeople.rdt.core.IImportContainer;
 import org.rubypeople.rdt.core.IParent;
 import org.rubypeople.rdt.core.IRubyElement;
+import org.rubypeople.rdt.core.IRubyElementDelta;
 import org.rubypeople.rdt.core.IRubyProject;
 import org.rubypeople.rdt.core.IRubyScript;
 import org.rubypeople.rdt.core.ISourceReference;
 import org.rubypeople.rdt.core.IType;
 import org.rubypeople.rdt.core.RubyCore;
 import org.rubypeople.rdt.core.RubyModelException;
+import org.rubypeople.rdt.internal.corext.util.RubyModelUtil;
+import org.rubypeople.rdt.internal.ui.RubyPlugin;
 import org.rubypeople.rdt.ui.StandardRubyElementContentProvider;
 
 public class RubyBrowsingContentProvider extends
-		StandardRubyElementContentProvider {
+		StandardRubyElementContentProvider implements IElementChangedListener {
 
 	private RubyBrowsingPart fBrowsingPart;
 	private StructuredViewer fViewer;
@@ -35,8 +44,7 @@ public class RubyBrowsingContentProvider extends
 		super(provideMembers);
 		fBrowsingPart = browsingPart;
 		fViewer = fBrowsingPart.getViewer();
-		// TODO Add element change listener
-		// RubyCore.addElementChangedListener(this);
+		RubyCore.addElementChangedListener(this);
 	}
 
 	public boolean hasChildren(Object element) {
@@ -157,13 +165,12 @@ public class RubyBrowsingContentProvider extends
 		fInput = newInput;
 	}
 
-	/*
-	 * (non-Javadoc) Method declared on IContentProvider.
+	/* (non-Javadoc)
+	 * Method declared on IContentProvider.
 	 */
 	public void dispose() {
 		super.dispose();
-		// TODO Listen for element changes
-		// RubyCore.removeElementChangedListener(this);
+		RubyCore.removeElementChangedListener(this);
 	}
 
 	/**
@@ -191,6 +198,252 @@ public class RubyBrowsingContentProvider extends
 			return ((IRubyElement) element).getParent();
 
 		return null;
+	}
+
+	/* (non-Javadoc)
+	 * Method declared on IElementChangedListener.
+	 */
+	public void elementChanged(final ElementChangedEvent event) {
+		try {
+			processDelta(event.getDelta());
+		} catch(RubyModelException e) {
+			RubyPlugin.log(e.getStatus());
+		}
+	}
+	
+	/**
+	 * Processes a delta recursively. When more than two children are affected the
+	 * tree is fully refreshed starting at this node. The delta is processed in the
+	 * current thread but the viewer updates are posted to the UI thread.
+	 */
+	protected void processDelta(IRubyElementDelta delta) throws RubyModelException {
+		int kind= delta.getKind();
+		int flags= delta.getFlags();
+		final IRubyElement element= delta.getElement();
+		final boolean isElementValidForView= fBrowsingPart.isValidElement(element);
+
+		if (!getProvideWorkingCopy() && element instanceof IRubyScript && ((IRubyScript)element).isWorkingCopy())
+			return;
+
+		if (element != null && element.getElementType() == IRubyElement.SCRIPT && !isOnClassPath((IRubyScript)element))
+			return;
+
+		// handle open and closing of a solution or project
+		if (((flags & IRubyElementDelta.F_CLOSED) != 0) || ((flags & IRubyElementDelta.F_OPENED) != 0)) {
+			postRefresh(null);
+			return;
+		}
+
+		if (kind == IRubyElementDelta.REMOVED) {
+			Object parent= internalGetParent(element);
+			if (isElementValidForView) {
+				if (element instanceof IRubyScript && !((IRubyScript)element).isWorkingCopy()) {
+						postRefresh(null);
+				} else if (element instanceof IRubyScript && ((IRubyScript)element).isWorkingCopy()) {
+					if (getProvideWorkingCopy())
+						postRefresh(null);
+				} else if (parent instanceof IRubyScript && getProvideWorkingCopy() && !((IRubyScript)parent).isWorkingCopy()) {
+					if (element instanceof IRubyScript && ((IRubyScript)element).isWorkingCopy()) {
+						// working copy removed from system - refresh
+						postRefresh(null);
+					}
+				} else if (element instanceof IRubyScript && ((IRubyScript)element).isWorkingCopy() && parent != null && parent.equals(fInput))
+					// closed editor - removing working copy
+					postRefresh(null);
+				else
+					postRemove(element);
+			}
+
+			if (fBrowsingPart.isAncestorOf(element, fInput)) {
+				if (element instanceof IRubyScript && ((IRubyScript)element).isWorkingCopy()) {
+					postAdjustInputAndSetSelection(RubyModelUtil.toOriginal((IRubyElement) fInput));
+				} else
+					postAdjustInputAndSetSelection(null);
+			}
+
+			if (fInput != null && fInput.equals(element))
+				postRefresh(null);
+
+
+			return;
+		}
+		if (kind == IRubyElementDelta.ADDED && delta.getMovedFromElement() != null && element instanceof IRubyScript)
+			return;
+
+		if (kind == IRubyElementDelta.ADDED) {
+			if (isElementValidForView) {
+				Object parent= internalGetParent(element);
+				if (element instanceof IRubyScript && !((IRubyScript)element).isWorkingCopy()) {
+						postAdd(parent, ((IRubyScript)element).getTypes());
+				} else if (parent instanceof IRubyScript && getProvideWorkingCopy() && !((IRubyScript)parent).isWorkingCopy()) {
+					//	do nothing
+				} else if (element instanceof IRubyScript && ((IRubyScript)element).isWorkingCopy()) {
+					// new working copy comes to live
+					postRefresh(null);
+				} else
+					postAdd(parent, element);
+			} else	if (fInput == null) {
+				IRubyElement newInput= fBrowsingPart.findInputForRubyElement(element);
+				if (newInput != null)
+					postAdjustInputAndSetSelection(element);
+			} else if (element instanceof IType && fBrowsingPart.isValidInput(element)) {
+				IRubyElement cu1= element.getAncestor(IRubyElement.SCRIPT);
+				IRubyElement cu2= ((IRubyElement)fInput).getAncestor(IRubyElement.SCRIPT);
+				if  (cu1 != null && cu2 != null && cu1.equals(cu2))
+					postAdjustInputAndSetSelection(element);
+			}
+			return;
+		}
+
+		if (kind == IRubyElementDelta.CHANGED) {
+			if (fInput != null && fInput.equals(element) && (flags & IRubyElementDelta.F_CHILDREN) != 0 && (flags & IRubyElementDelta.F_FINE_GRAINED) != 0) {
+				postRefresh(null, true);
+				return;
+			}
+			if (isElementValidForView && (flags & IRubyElementDelta.F_MODIFIERS) != 0) {
+					postUpdateIcon(element);
+			}
+		}
+
+		if (isClassPathChange(delta))
+			 // throw the towel and do a full refresh
+			postRefresh(null);
+
+
+
+		IRubyElementDelta[] affectedChildren= delta.getAffectedChildren();
+		for (int i= 0; i < affectedChildren.length; i++) {
+			processDelta(affectedChildren[i]);
+		}
+	}
+	
+	private boolean isOnClassPath(IRubyScript element) throws RubyModelException {
+		IRubyProject project= element.getRubyProject();
+		if (project == null || !project.exists())
+			return false;
+		return project.isOnLoadpath(element);
+	}
+
+	/**
+	 * Updates the package icon
+	 */
+	 private void postUpdateIcon(final IRubyElement element) {
+	 	postRunnable(new Runnable() {
+			public void run() {
+				Control ctrl= fViewer.getControl();
+				if (ctrl != null && !ctrl.isDisposed())
+					fViewer.update(element, new String[]{IBasicPropertyConstants.P_IMAGE});
+			}
+		});
+	 }
+
+	private void postRefresh(final Object root, final boolean updateLabels) {
+		postRunnable(new Runnable() {
+			public void run() {
+				Control ctrl= fViewer.getControl();
+				if (ctrl != null && !ctrl.isDisposed())
+					fViewer.refresh(root, updateLabels);
+			}
+		});
+	}
+
+	private void postRefresh(final Object root) {
+		postRefresh(root, false);
+	}
+
+	private void postAdd(final Object parent, final Object element) {
+		postAdd(parent, new Object[] {element});
+	}
+
+	private void postAdd(final Object parent, final Object[] elements) {
+		if (elements == null || elements.length <= 0)
+			return;
+
+		postRunnable(new Runnable() {
+			public void run() {
+				Control ctrl= fViewer.getControl();
+				if (ctrl != null && !ctrl.isDisposed()) {
+					Object[] newElements= getNewElements(elements);
+					if (fViewer instanceof AbstractTreeViewer) {
+						if (fViewer.testFindItem(parent) == null) {
+							Object root= ((AbstractTreeViewer)fViewer).getInput();
+							if (root != null)
+								((AbstractTreeViewer)fViewer).add(root, newElements);
+						}
+						else
+							((AbstractTreeViewer)fViewer).add(parent, newElements);
+					}
+					else if (fViewer instanceof ListViewer)
+						((ListViewer)fViewer).add(newElements);
+					else if (fViewer instanceof TableViewer)
+						((TableViewer)fViewer).add(newElements);
+					if (fViewer.testFindItem(elements[0]) != null)
+						fBrowsingPart.adjustInputAndSetSelection(elements[0]);
+				}
+			}
+		});
+	}
+	
+	private Object[] getNewElements(Object[] elements) {
+		int elementsLength= elements.length;
+		ArrayList result= new ArrayList(elementsLength);
+		for (int i= 0; i < elementsLength; i++) {
+			Object element= elements[i];
+			if (fViewer.testFindItem(element) == null)
+				result.add(element);
+		}
+		return result.toArray();
+	}
+
+	private void postRemove(final Object element) {
+		postRemove(new Object[] {element});
+	}
+
+	private void postRemove(final Object[] elements) {
+		if (elements.length <= 0)
+			return;
+
+		postRunnable(new Runnable() {
+			public void run() {
+				Control ctrl= fViewer.getControl();
+				if (ctrl != null && !ctrl.isDisposed()) {
+					if (fViewer instanceof AbstractTreeViewer)
+						((AbstractTreeViewer)fViewer).remove(elements);
+					else if (fViewer instanceof ListViewer)
+						((ListViewer)fViewer).remove(elements);
+					else if (fViewer instanceof TableViewer)
+						((TableViewer)fViewer).remove(elements);
+				}
+			}
+		});
+	}
+
+	private void postAdjustInputAndSetSelection(final Object element) {
+		postRunnable(new Runnable() {
+			public void run() {
+				Control ctrl= fViewer.getControl();
+				if (ctrl != null && !ctrl.isDisposed()) {
+					ctrl.setRedraw(false);
+					fBrowsingPart.adjustInputAndSetSelection(element);
+					ctrl.setRedraw(true);
+				}
+			}
+		});
+	}
+
+	private void postRunnable(final Runnable r) {
+		Control ctrl= fViewer.getControl();
+		if (ctrl != null && !ctrl.isDisposed()) {
+			fBrowsingPart.setProcessSelectionEvents(false);
+			try {
+				if (isDisplayThread() && fReadsInDisplayThread == 0)
+					ctrl.getDisplay().syncExec(r);
+				else
+					ctrl.getDisplay().asyncExec(r);
+			} finally {
+				fBrowsingPart.setProcessSelectionEvents(true);
+			}
+		}
 	}
 
 }

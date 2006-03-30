@@ -15,6 +15,13 @@
             id="org.rubypeople.rdt.ui.preferences.PreferencePageRubyBase">
       </page>
       <page
+            name="%appearancePrefName"
+            category="org.rubypeople.rdt.ui.preferences.PreferencePageRubyBase"
+            class="org.rubypeople.rdt.internal.ui.preferences.AppearancePreferencePage"
+            id="org.rubypeople.rdt.ui.preferences.AppearancePreferencePage">
+            <keywordReference id="org.eclipse.rdt.ui.appearance"/>
+      </page>
+      <page
             name="%PreferencePage.RubyEditor.name"
             category="org.rubypeople.rdt.ui.preferences.PreferencePageRubyBase"
             class="org.rubypeople.rdt.internal.ui.preferences.TextEditorPreferencePage2"
@@ -47,7 +54,7 @@
       </page>      
       <page
             name="%memberSortPrefName"
-            category="org.rubypeople.rdt.ui.preferences.PreferencePageRubyBase"
+            category="org.rubypeople.rdt.ui.preferences.AppearancePreferencePage"
             class="org.rubypeople.rdt.internal.ui.preferences.MembersOrderPreferencePage"
             id="org.rubypeople.rdt.ui.preferences.MembersOrderPreferencePage">
          <keywordReference id="org.rubypeople.rdt.ui.sortorder"/>
@@ -722,5 +729,29 @@
          point="org.rubypeople.rdt.ui.textHoverProvider">
          <textHoverProvider class="org.rubypeople.rdt.internal.ui.text.ruby.hover.RiDocHoverProvider" />
   </extension>
+  
+  <extension
+         point="org.eclipse.ui.popupMenus">
+      <viewerContribution
+            targetID="org.rubypeople.rdt.ui.rubyeditor.rulerContextMenu"
+            id="org.rubypeople.rdt.ui.RubyScriptEditorPopupActions">
+         <action
+               label="%AddTask.label"
+               helpContextId="org.eclipse.ui.AddTask_action_context"
+               tooltip="%AddTask.tooltip"
+               class="org.eclipse.ui.texteditor.TaskRulerAction"
+               menubarPath="add"
+               id="org.eclipse.ui.texteditor.TaskRulerAction">
+         </action>
+         <action
+               label="%AddBookmark.label"
+               helpContextId="org.eclipse.ui.bookmark_action_context"
+               tooltip="%AddBookmark.tooltip"
+               class="org.eclipse.ui.texteditor.BookmarkRulerAction"
+               menubarPath="add"
+               id="org.eclipse.ui.texteditor.BookmarkRulerAction">
+         </action>
+       </viewerContribution>
+   </extension>
      
 </plugin>

@@ -1,6 +1,10 @@
 package org.rubypeople.rdt.internal.ui.browsing;
 
+import org.eclipse.jface.viewers.DoubleClickEvent;
 import org.eclipse.jface.viewers.IContentProvider;
+import org.eclipse.jface.viewers.IDoubleClickListener;
+import org.eclipse.jface.viewers.IStructuredSelection;
+import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.ui.IPageLayout;
 import org.eclipse.ui.part.IShowInTargetList;
 import org.rubypeople.rdt.core.IRubyElement;
@@ -8,6 +12,7 @@ import org.rubypeople.rdt.core.IRubyModel;
 import org.rubypeople.rdt.core.IRubyProject;
 import org.rubypeople.rdt.core.RubyCore;
 import org.rubypeople.rdt.internal.ui.RubyPlugin;
+import org.rubypeople.rdt.ui.PreferenceConstants;
 import org.rubypeople.rdt.ui.RubyUI;
 
 public class ProjectsView extends RubyBrowsingPart {
@@ -27,6 +32,10 @@ public class ProjectsView extends RubyBrowsingPart {
 		// updateTitle();
 	}
 	
+	protected String getLinkToEditorKey() {
+		return PreferenceConstants.LINK_BROWSING_PROJECTS_TO_EDITOR;
+	}
+	
 	/**
 	 * Answer the property defined by key.
 	 */
@@ -40,6 +49,21 @@ public class ProjectsView extends RubyBrowsingPart {
 			};
 		}
 		return super.getAdapter(key);
+	}
+	
+	/**
+	 * Adds additional listeners to this view.
+	 */
+	protected void hookViewerListeners() {
+		super.hookViewerListeners();
+		getViewer().addDoubleClickListener(new IDoubleClickListener() {
+			public void doubleClick(DoubleClickEvent event) {
+				TreeViewer viewer= (TreeViewer)getViewer();
+				Object element= ((IStructuredSelection)event.getSelection()).getFirstElement();
+				if (viewer.isExpandable(element))
+					viewer.setExpandedState(element, !viewer.getExpandedState(element));
+			}
+		});
 	}
 
 	/**

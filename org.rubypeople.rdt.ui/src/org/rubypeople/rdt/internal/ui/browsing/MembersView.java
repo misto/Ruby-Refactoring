@@ -1,5 +1,14 @@
 package org.rubypeople.rdt.internal.ui.browsing;
 
+import org.eclipse.jface.action.IToolBarManager;
+import org.eclipse.jface.util.IPropertyChangeListener;
+import org.eclipse.jface.util.PropertyChangeEvent;
+import org.eclipse.jface.viewers.DoubleClickEvent;
+import org.eclipse.jface.viewers.IDoubleClickListener;
+import org.eclipse.jface.viewers.IStructuredSelection;
+import org.eclipse.jface.viewers.StructuredViewer;
+import org.eclipse.jface.viewers.TreeViewer;
+import org.eclipse.swt.widgets.Composite;
 import org.rubypeople.rdt.core.IImportContainer;
 import org.rubypeople.rdt.core.IImportDeclaration;
 import org.rubypeople.rdt.core.IMember;
@@ -7,9 +16,43 @@ import org.rubypeople.rdt.core.IRubyElement;
 import org.rubypeople.rdt.core.IRubyScript;
 import org.rubypeople.rdt.core.IType;
 import org.rubypeople.rdt.core.RubyModelException;
+import org.rubypeople.rdt.internal.ui.RubyPlugin;
+import org.rubypeople.rdt.internal.ui.actions.LexicalSortingAction;
+import org.rubypeople.rdt.internal.ui.preferences.MembersOrderPreferenceCache;
+import org.rubypeople.rdt.internal.ui.viewsupport.AppearanceAwareLabelProvider;
+import org.rubypeople.rdt.internal.ui.viewsupport.RubyUILabelProvider;
+import org.rubypeople.rdt.ui.PreferenceConstants;
+import org.rubypeople.rdt.ui.RubyElementLabels;
+import org.rubypeople.rdt.ui.RubyUI;
+import org.rubypeople.rdt.ui.actions.MemberFilterActionGroup;
 
-public class MembersView extends RubyBrowsingPart {
+public class MembersView extends RubyBrowsingPart implements IPropertyChangeListener {
 
+	private MemberFilterActionGroup fMemberFilterActionGroup;
+	
+	public MembersView() {
+//		setHasWorkingSetFilter(false);
+		setHasCustomSetFilter(true);
+		RubyPlugin.getDefault().getPreferenceStore().addPropertyChangeListener(this);
+	}
+	
+	/**
+	 * Creates and returns the label provider for this part.
+	 *
+	 * @return the label provider
+	 * @see org.eclipse.jface.viewers.ILabelProvider
+	 */
+	protected RubyUILabelProvider createLabelProvider() {
+		return new AppearanceAwareLabelProvider(
+						AppearanceAwareLabelProvider.DEFAULT_TEXTFLAGS | RubyElementLabels.M_PARAMETER_NAMES,
+						AppearanceAwareLabelProvider.DEFAULT_IMAGEFLAGS
+						);
+	}
+	
+	protected String getLinkToEditorKey() {
+		return PreferenceConstants.LINK_BROWSING_MEMBERS_TO_EDITOR;
+	}
+	
 	/**
 	 * Answers if the given <code>element</code> is a valid
 	 * input for this part.
@@ -48,6 +91,18 @@ public class MembersView extends RubyBrowsingPart {
 			}
 		}
 		return false;
+	}
+	
+	protected void hookViewerListeners() {
+		super.hookViewerListeners();
+		getViewer().addDoubleClickListener(new IDoubleClickListener() {
+			public void doubleClick(DoubleClickEvent event) {
+				TreeViewer viewer= (TreeViewer)getViewer();
+				Object element= ((IStructuredSelection)event.getSelection()).getFirstElement();
+				if (viewer.isExpandable(element))
+					viewer.setExpandedState(element, !viewer.getExpandedState(element));
+			}
+		});
 	}
 
 	/**
@@ -134,4 +189,42 @@ public class MembersView extends RubyBrowsingPart {
 		return false;
 	}
 
+	/* (non-Javadoc)
+	 * @see org.eclipse.jface.util.IPropertyChangeListener#propertyChange(org.eclipse.jface.util.PropertyChangeEvent)
+	 */
+	public void propertyChange(PropertyChangeEvent event) {
+		if (MembersOrderPreferenceCache.isMemberOrderProperty(event.getProperty())) {
+			getViewer().refresh();
+		}
+	}
+	
+	/* (non-Javadoc)
+	 * @see org.eclipse.jdt.internal.ui.browsing.JavaBrowsingPart#dispose()
+	 */
+	public void dispose() {
+		if (fMemberFilterActionGroup != null) {
+			fMemberFilterActionGroup.dispose();
+			fMemberFilterActionGroup= null;
+		}
+		super.dispose();
+		RubyPlugin.getDefault().getPreferenceStore().removePropertyChangeListener(this);
+	}
+	
+	/**
+	 * Creates the the viewer of this part.
+	 *
+	 * @param parent	the parent for the viewer
+	 */
+	protected StructuredViewer createViewer(Composite parent) {		
+		StructuredViewer viewer = super.createViewer(parent);
+		fMemberFilterActionGroup= new MemberFilterActionGroup(viewer, RubyUI.ID_MEMBERS_VIEW);
+		return viewer;
+	}
+	
+	protected void fillToolBar(IToolBarManager tbm) {
+		tbm.add(new LexicalSortingAction(getViewer(), RubyUI.ID_MEMBERS_VIEW));
+		fMemberFilterActionGroup.contributeToToolBar(tbm);
+		super.fillToolBar(tbm);
+	}
+		
 }

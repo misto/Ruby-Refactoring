@@ -232,11 +232,6 @@ public class RubyElementLabels {
      * User-readable string for ellipsis ("...").
      */
     public final static String ELLIPSIS_STRING = "..."; //$NON-NLS-1$
-    /**
-     * User-readable string for the default package name (e.g. "(default
-     * package)").
-     */
-    public final static String DEFAULT_PACKAGE = RubyUIMessages.RubyElementLabels_default_package;
 
     private final static long QUALIFIER_FLAGS = P_COMPRESSED | USE_RESOLVED;
 

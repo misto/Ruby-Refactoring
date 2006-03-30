@@ -5,6 +5,7 @@ import org.rubypeople.rdt.core.IRubyElement;
 import org.rubypeople.rdt.core.IRubyProject;
 import org.rubypeople.rdt.core.IRubyScript;
 import org.rubypeople.rdt.core.IType;
+import org.rubypeople.rdt.ui.PreferenceConstants;
 
 public class TypesView extends RubyBrowsingPart {
 
@@ -20,6 +21,10 @@ public class TypesView extends RubyBrowsingPart {
 		return element instanceof IRubyProject;
 	}
 
+	protected String getLinkToEditorKey() {
+		return PreferenceConstants.LINK_BROWSING_TYPES_TO_EDITOR;
+	}
+	
 	/**
 	 * Finds the element which has to be selected in this part.
 	 * 

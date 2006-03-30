@@ -43,5 +43,12 @@ public interface IRubyEditorActionDefinitionIds extends ITextEditorActionDefinit
      */
     public static final String GOTO_MATCHING_BRACKET= "org.rubypeople.rdt.ui.edit.text.ruby.goto.matching.bracket"; //$NON-NLS-1$
 
+	/**
+	 * Action definition ID of the navigate -> open action
+	 * (value <code>"org.rubypeople.rdt.ui.edit.text.ruby.open.editor"</code>).
+	 */
+	public static final String OPEN_EDITOR= "org.rubypeople.rdt.ui.edit.text.ruby.open.editor"; //$NON-NLS-1$
+	
+
 
 }

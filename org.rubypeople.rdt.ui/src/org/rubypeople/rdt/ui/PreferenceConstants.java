@@ -9,7 +9,7 @@ import org.rubypeople.rdt.internal.ui.preferences.formatter.ProfileManager;
 
 public class PreferenceConstants {
 
-    private PreferenceConstants() {
+	private PreferenceConstants() {
     }
 
     public static final String RI_PATH = "riDirectoryPath";
@@ -22,6 +22,24 @@ public class PreferenceConstants {
     private final static String DEFAULT_RDOC_CMD = "rdoc"; //$NON-NLS-1$	
     private final static String DEFAULT_RI_CMD = "ri"; //$NON-NLS-1$	
 
+	/**
+	 * A named preference that controls parameter names rendering of methods in the UI.
+	 * <p>
+	 * Value is of type <code>Boolean</code>: if <code>true</code> return names
+	 * are rendered
+	 * </p>
+	 * @since 0.8.0
+	 */
+	public static final String APPEARANCE_METHOD_PARAMETER_NAMES= "org.rubypeople.rdt.ui.methodparameternames";//$NON-NLS-1$
+
+	/**
+	 * A named preference that specifies whether children of a ruby script are shown in the package explorer.
+	 * <p>
+	 * Value is of type <code>Boolean</code>.
+	 * </p>
+	 */
+	public static final String SHOW_CU_CHILDREN= "org.rubypeople.rdt.ui.packages.rubyscriptchildren"; //$NON-NLS-1$
+    
     /**
      * A named preference that controls whether folding is enabled in the Ruby
      * editor.
@@ -231,6 +249,38 @@ public class PreferenceConstants {
 	 * </p>
 	 */
 	public static final String BROWSING_STACK_VERTICALLY= "org.rubypeople.rdt.ui.browsing.stackVertically"; //$NON-NLS-1$
+	
+	/**
+	 * A named preference that controls whether the projects view's selection is
+	 * linked to the active editor.
+	 * <p>
+	 * Value is of type <code>Boolean</code>.
+	 * </p>
+	 * @since 0.8.0
+	 */
+	public static final String LINK_BROWSING_PROJECTS_TO_EDITOR= "org.rubypeople.rdt.ui.browsing.projectstoeditor"; //$NON-NLS-1$
+
+	/**
+	 * A named preference that controls whether the types view's selection is
+	 * linked to the active editor.
+	 * <p>
+	 * Value is of type <code>Boolean</code>.
+	 * </p>
+	 * @since 0.8.0
+	 */
+	public static final String LINK_BROWSING_TYPES_TO_EDITOR= "org.rubypeople.rdt.ui.browsing.typestoeditor"; //$NON-NLS-1$
+
+	
+	/**
+	 * A named preference that controls whether the members view's selection is
+	 * linked to the active editor.
+	 * <p>
+	 * Value is of type <code>Boolean</code>.
+	 * </p>
+	 * @since 0.8.0
+	 */
+	public static final String LINK_BROWSING_MEMBERS_TO_EDITOR= "org.rubypeople.rdt.ui.browsing.memberstoeditor"; //$NON-NLS-1$
+	
 
     public static void initializeDefaultValues(IPreferenceStore store) {
         store.setDefault(PreferenceConstants.EDITOR_SHOW_SEGMENTS, false);
@@ -240,6 +290,10 @@ public class PreferenceConstants {
         //        store.setDefault(PreferenceConstants.TEMPLATES_USE_CODEFORMATTER, true);
         
         store.setDefault(PreferenceConstants.FORMATTER_PROFILE, ProfileManager.DEFAULT_PROFILE);
+        
+        store.setDefault(PreferenceConstants.LINK_BROWSING_PROJECTS_TO_EDITOR, true);
+		store.setDefault(PreferenceConstants.LINK_BROWSING_TYPES_TO_EDITOR, true);
+		store.setDefault(PreferenceConstants.LINK_BROWSING_MEMBERS_TO_EDITOR, true);
 
         // MembersOrderPreferencePage
         // TODO Expose to users!
