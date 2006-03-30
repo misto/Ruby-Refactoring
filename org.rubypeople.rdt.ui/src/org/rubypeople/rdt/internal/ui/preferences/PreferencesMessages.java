@@ -68,6 +68,12 @@ public final class PreferencesMessages extends NLS {
     public static String TodoTaskConfigurationBlock_needsbuild_title;
     public static String TodoTaskConfigurationBlock_needsfullbuild_message;
     public static String TodoTaskConfigurationBlock_needsprojectbuild_message;
+	public static String AppearancePreferencePage_note;
+	public static String AppearancePreferencePage_preferenceOnlyEffectiveForNewPerspectives;
+	public static String AppearancePreferencePage_methodtypeparams_label;
+	public static String AppearancePreferencePage_showMembersInPackagesView;
+	public static String AppearancePreferencePage_stackViewsVerticallyInTheRubyBrowsingPerspective;
+	public static String AppearancePreferencePage_description;
 
     static {
         NLS.initializeMessages(BUNDLE_NAME, PreferencesMessages.class);
