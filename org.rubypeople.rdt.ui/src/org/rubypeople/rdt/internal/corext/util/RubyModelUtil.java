@@ -3,6 +3,7 @@
  */
 package org.rubypeople.rdt.internal.corext.util;
 
+import org.rubypeople.rdt.core.IRubyElement;
 import org.rubypeople.rdt.core.IRubyScript;
 import org.rubypeople.rdt.core.RubyModelException;
 import org.rubypeople.rdt.internal.ui.RubyPlugin;
@@ -50,4 +51,12 @@ public final class RubyModelUtil {
                 null /* use primary owner */, 
                 null /* no progress monitor */);
     }
+
+	/**
+	 * Returns the original element if the given element is a working copy. If the cu is already
+	 * an original the input element is returned. The returned element might not exist
+	 */
+	public static IRubyElement toOriginal(IRubyElement element) {
+		return element.getPrimaryElement();
+	}
 }
