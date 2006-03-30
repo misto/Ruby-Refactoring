@@ -13,7 +13,6 @@ public class RubyUIMessages extends NLS {
 
     public static String StatusBarUpdater_num_elements_selected;
     
-    public static String RubyElementLabels_default_package;
     public static String RubyElementLabels_anonym_type;
     public static String RubyElementLabels_anonym;
     public static String RubyElementLabels_import_container;
