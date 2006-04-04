@@ -5,7 +5,11 @@ import org.rubypeople.rdt.core.IRubyElement;
 import org.rubypeople.rdt.core.IRubyProject;
 import org.rubypeople.rdt.core.IRubyScript;
 import org.rubypeople.rdt.core.IType;
+import org.rubypeople.rdt.internal.ui.viewsupport.AppearanceAwareLabelProvider;
+import org.rubypeople.rdt.internal.ui.viewsupport.RubyElementImageProvider;
+import org.rubypeople.rdt.internal.ui.viewsupport.RubyUILabelProvider;
 import org.rubypeople.rdt.ui.PreferenceConstants;
+import org.rubypeople.rdt.ui.RubyElementLabels;
 
 public class TypesView extends RubyBrowsingPart {
 
@@ -23,6 +27,13 @@ public class TypesView extends RubyBrowsingPart {
 
 	protected String getLinkToEditorKey() {
 		return PreferenceConstants.LINK_BROWSING_TYPES_TO_EDITOR;
+	}
+	
+	protected RubyUILabelProvider createLabelProvider() {
+		return new AppearanceAwareLabelProvider(
+				AppearanceAwareLabelProvider.DEFAULT_TEXTFLAGS | RubyElementLabels.T_DECLARATION_POINT,
+				AppearanceAwareLabelProvider.DEFAULT_IMAGEFLAGS
+						| RubyElementImageProvider.SMALL_ICONS);
 	}
 	
 	/**
