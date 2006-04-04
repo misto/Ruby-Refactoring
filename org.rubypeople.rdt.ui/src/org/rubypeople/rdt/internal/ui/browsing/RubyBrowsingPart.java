@@ -7,7 +7,9 @@ import java.util.Iterator;
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IMarker;
+import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.IAdaptable;
+import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.action.IMenuManager;
@@ -15,6 +17,7 @@ import org.eclipse.jface.action.IToolBarManager;
 import org.eclipse.jface.text.ITextSelection;
 import org.eclipse.jface.util.Assert;
 import org.eclipse.jface.viewers.IContentProvider;
+import org.eclipse.jface.viewers.ILabelProvider;
 import org.eclipse.jface.viewers.IOpenListener;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.ISelectionProvider;
@@ -27,22 +30,28 @@ import org.eclipse.search.ui.IContextMenuConstants;
 import org.eclipse.search.ui.ISearchResultView;
 import org.eclipse.search.ui.ISearchResultViewPart;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.IActionBars;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IFileEditorInput;
+import org.eclipse.ui.IMemento;
 import org.eclipse.ui.IPartListener2;
 import org.eclipse.ui.ISelectionListener;
+import org.eclipse.ui.IViewSite;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.IWorkbenchPartReference;
 import org.eclipse.ui.IWorkbenchPartSite;
+import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.actions.ActionContext;
 import org.eclipse.ui.actions.ActionGroup;
 import org.eclipse.ui.part.IShowInSource;
 import org.eclipse.ui.part.ShowInContext;
 import org.eclipse.ui.part.ViewPart;
+import org.eclipse.ui.texteditor.ITextEditor;
 import org.osgi.framework.Bundle;
 import org.rubypeople.rdt.core.IRubyElement;
 import org.rubypeople.rdt.core.IRubyScript;
@@ -56,6 +65,9 @@ import org.rubypeople.rdt.internal.ui.viewsupport.RubyElementImageProvider;
 import org.rubypeople.rdt.internal.ui.viewsupport.RubyUILabelProvider;
 import org.rubypeople.rdt.ui.IWorkingCopyManager;
 import org.rubypeople.rdt.ui.PreferenceConstants;
+import org.rubypeople.rdt.ui.RubyElementLabelProvider;
+import org.rubypeople.rdt.ui.RubyElementLabels;
+import org.rubypeople.rdt.ui.RubyElementSorter;
 import org.rubypeople.rdt.ui.StandardRubyElementContentProvider;
 import org.rubypeople.rdt.ui.actions.CustomFiltersActionGroup;
 import org.rubypeople.rdt.ui.actions.OpenEditorActionGroup;
@@ -64,14 +76,17 @@ public abstract class RubyBrowsingPart extends ViewPart implements
 		ISelectionListener {
 
 	private StructuredViewer fViewer;
+	private IMemento fMemento;
 	private RubyUILabelProvider fLabelProvider;
 	protected IWorkbenchPart fPreviousSelectionProvider;
 	protected Object fPreviousSelectedElement;
+	private ILabelProvider fTitleProvider;
 	
 	// Actions
 	private boolean fHasCustomFilter= true;
 	private OpenEditorActionGroup fOpenEditorGroup;
 	protected CompositeActionGroup fActionGroups;
+	private ToggleLinkingAction fToggleLinkingAction;
 	
 	// Filters
 	private CustomFiltersActionGroup fCustomFiltersActionGroup;
@@ -122,6 +137,7 @@ public abstract class RubyBrowsingPart extends ViewPart implements
 		}
 	};
 	
+	
 	public RubyBrowsingPart() {
 		super();
 		initLinkingEnabled();
@@ -135,6 +151,8 @@ public abstract class RubyBrowsingPart extends ViewPart implements
 //		 Custom filter group
 		if (fHasCustomFilter)
 			fCustomFiltersActionGroup= new CustomFiltersActionGroup(this, fViewer);
+		
+		fToggleLinkingAction= new ToggleLinkingAction(this);
 	}
 	
 	/**
@@ -190,11 +208,21 @@ public abstract class RubyBrowsingPart extends ViewPart implements
 		fViewer
 				.setLabelProvider(new DecoratingRubyLabelProvider(
 						fLabelProvider));
+		fViewer.setSorter(createRubyElementSorter());
 		fViewer.setUseHashlookup(true);
+		fTitleProvider= createTitleProvider();
 
 		getSite().setSelectionProvider(fViewer);
 		
+		if (fMemento != null) { // initialize linking state before creating the actions
+			restoreLinkingEnabled(fMemento);
+		}
 		createActions(); // call before registering for selection changes
+		
+		if (fMemento != null)
+			restoreState(fMemento);
+		
+		getSite().setSelectionProvider(fViewer);
 		
 		hookViewerListeners();
 		
@@ -210,6 +238,38 @@ public abstract class RubyBrowsingPart extends ViewPart implements
 		getViewSite().getPage().addPartListener(fPartListener);
 		
 		fillActionBars(getViewSite().getActionBars());
+	}
+	
+	protected ILabelProvider createTitleProvider() {
+		return new RubyElementLabelProvider(RubyElementLabelProvider.SHOW_BASICS | RubyElementLabelProvider.SHOW_SMALL_ICONS);
+	}
+	
+	/*
+	 * Implements method from IViewPart.
+	 */
+	public void init(IViewSite site, IMemento memento) throws PartInitException {
+		super.init(site, memento);
+		fMemento= memento;
+	}
+	
+	private void restoreLinkingEnabled(IMemento memento) {
+		Integer val= memento.getInteger(getLinkToEditorKey());
+		if (val != null) {
+			fLinkingEnabled= val.intValue() != 0;
+		}
+	}
+	
+	protected void restoreState(IMemento memento) {
+//		if (fHasWorkingSetFilter)
+//			fWorkingSetFilterActionGroup.restoreState(memento);
+		if (fHasCustomFilter)
+			fCustomFiltersActionGroup.restoreState(memento);
+
+		if (fHasCustomFilter /*|| fHasWorkingSetFilter*/) {
+			fViewer.getControl().setRedraw(false);
+			fViewer.refresh();
+			fViewer.getControl().setRedraw(true);
+		}
 	}
 	
 	protected StructuredViewer createViewer(Composite parent) {
@@ -232,8 +292,8 @@ public abstract class RubyBrowsingPart extends ViewPart implements
 		if (fHasCustomFilter)
 			fCustomFiltersActionGroup.fillActionBars(actionBars);
 
-//		IMenuManager menu= actionBars.getMenuManager();
-//		menu.add(fToggleLinkingAction);
+		IMenuManager menu= actionBars.getMenuManager();
+		menu.add(fToggleLinkingAction);
 	}
 	
 	protected void fillToolBar(IToolBarManager tbm) {
@@ -272,10 +332,43 @@ public abstract class RubyBrowsingPart extends ViewPart implements
 
 	protected void setInput(Object input) {
 		setViewerInput(input);
-		// TODO Update the title
-		// updateTitle();
+		updateTitle();
+	}
+	
+	void updateTitle() {
+		setTitleToolTip(getToolTipText(fViewer.getInput()));
+	}
+	
+	/**
+	 * Returns the tool tip text for the given element.
+	 */
+	String getToolTipText(Object element) {
+		String result;
+		if (!(element instanceof IResource)) {
+			result= RubyElementLabels.getTextLabel(element, AppearanceAwareLabelProvider.DEFAULT_TEXTFLAGS);
+		} else {
+			IPath path= ((IResource) element).getFullPath();
+			if (path.isRoot()) {
+				result= getConfigurationElement().getAttribute("name"); //$NON-NLS-1$
+			} else {
+				result= path.makeRelative().toString();
+			}
+		}
+
+//		if (fWorkingSetFilterActionGroup == null || fWorkingSetFilterActionGroup.getWorkingSet() == null)
+			return result;
+
+//		IWorkingSet ws= fWorkingSetFilterActionGroup.getWorkingSet();
+//		String wsstr= Messages.format(RubyBrowsingMessages.RubyBrowsingPart_toolTip, new String[] { ws.getLabel() });
+//		if (result.length() == 0)
+//			return wsstr;
+//		return Messages.format(RubyBrowsingMessages.RubyBrowsingPart_toolTip2, new String[] { result, ws.getLabel() });
 	}
 
+	protected final void setViewer(StructuredViewer viewer){
+		fViewer= viewer;
+	}
+	
 	private void setViewerInput(Object input) {
 		fProcessSelectionEvents = false;
 		fViewer.setInput(input);
@@ -307,12 +400,11 @@ public abstract class RubyBrowsingPart extends ViewPart implements
 		if (!needsToProcessSelectionChanged(part, selection))
 			return;
 
-		// TODO Handle editor selections
-		// if (fToggleLinkingAction.isChecked() && (part instanceof
-		// ITextEditor)) {
-		// setSelectionFromEditor(part, selection);
-		// return;
-		// }
+
+		 if (fToggleLinkingAction.isChecked() && (part instanceof ITextEditor)) {
+			setSelectionFromEditor(part, selection);
+			return;
+		}
 
 		if (!(selection instanceof IStructuredSelection))
 			return;
@@ -334,12 +426,10 @@ public abstract class RubyBrowsingPart extends ViewPart implements
 					&& getTypeComparator().compare(selectedElement,
 							elementToSelect) < 0)
 				setSelection(new StructuredSelection(elementToSelect), true);
-			// TODO Uncomment when we have a MembersView
-			// else if (elementToSelect == null && (this instanceof
-			// MembersView)) {
-			// setSelection(StructuredSelection.EMPTY, true);
-			// fPreviousSelectedElement= StructuredSelection.EMPTY;
-			// }
+			else if (elementToSelect == null && (this instanceof MembersView)) {
+				setSelection(StructuredSelection.EMPTY, true);
+				fPreviousSelectedElement = StructuredSelection.EMPTY;
+			}
 			fPreviousSelectionProvider = part;
 			return;
 		}
@@ -639,6 +729,29 @@ public abstract class RubyBrowsingPart extends ViewPart implements
 		return findInputForRubyElement(je.getParent());
 	}
 
+	protected RubyElementSorter createRubyElementSorter() {
+		return new RubyElementSorter();
+	}
+	
+	/**
+	 * Returns the shell to use for opening dialogs.
+	 * Used in this class, and in the actions.
+	 */
+	Shell getShell() {
+		return fViewer.getControl().getShell();
+	}
+
+	protected final Display getDisplay() {
+		return fViewer.getControl().getDisplay();
+	}
+
+	/**
+	 * Returns the selection provider.
+	 */
+	ISelectionProvider getSelectionProvider() {
+		return fViewer;
+	}
+	
 	/**
 	 * Answers if the given <code>element</code> is a valid input for this
 	 * part.
@@ -738,6 +851,29 @@ public abstract class RubyBrowsingPart extends ViewPart implements
 			new PatchedOpenInNewWindowAction(getSite().getWorkbenchWindow(), (IContainer)element));
 	}
 	
+	/*
+	 * Implements method from IViewPart.
+	 */
+	public void saveState(IMemento memento) {
+		if (fViewer == null) {
+			// part has not been created
+			if (fMemento != null) //Keep the old state;
+				memento.putMemento(fMemento);
+			return;
+		}
+//		if (fHasWorkingSetFilter)
+//			fWorkingSetFilterActionGroup.saveState(memento);
+		if (fHasCustomFilter)
+			fCustomFiltersActionGroup.saveState(memento);
+//		saveSelectionState(memento);
+		saveLinkingEnabled(memento);
+	}
+	
+	private void saveLinkingEnabled(IMemento memento) {
+		memento.putInteger(getLinkToEditorKey(), fLinkingEnabled ? 1 : 0);
+	}
+	
+
 	protected void setInitialSelection() {
 		// Use the selection, if any
 		Object input;

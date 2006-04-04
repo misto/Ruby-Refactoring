@@ -10,9 +10,13 @@ import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.Map;
 
+import org.eclipse.core.resources.IFile;
+import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
+import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IResourceChangeEvent;
 import org.eclipse.core.resources.IWorkspace;
+import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
@@ -37,6 +41,7 @@ import org.rubypeople.rdt.core.WorkingCopyOwner;
 import org.rubypeople.rdt.core.parser.IProblem;
 import org.rubypeople.rdt.internal.core.buffer.BufferManager;
 import org.rubypeople.rdt.internal.core.builder.RubyBuilder;
+import org.rubypeople.rdt.internal.core.util.Util;
 
 /**
  * @author cawilliams
@@ -721,8 +726,26 @@ public class RubyModelManager implements IContentTypeChangeListener {
     }
 
     public void contentTypeChanged(ContentTypeChangeEvent event) {
-        // TODO Change our classes which determine if a file is "Ruby-like"
-        //Util.resetRubyLikeExtensions();        
+        Util.resetRubyLikeExtensions();        
     }
+
+	public static IRubyElement create(IResource resource, IRubyProject project) {
+		if (resource == null) {
+			return null;
+		}
+		int type = resource.getType();
+		switch (type) {
+			case IResource.PROJECT :
+				return RubyCore.create((IProject) resource);
+			case IResource.FILE :
+				return create((IFile) resource, project);
+			case IResource.FOLDER :
+				return create((IFolder) resource, project);
+			case IResource.ROOT :
+				return RubyCore.create((IWorkspaceRoot) resource);
+			default :
+				return null;
+		}
+	}
 
 }

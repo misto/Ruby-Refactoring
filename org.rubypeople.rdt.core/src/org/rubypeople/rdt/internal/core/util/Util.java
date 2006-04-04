@@ -591,4 +591,9 @@ public class Util {
 		return contents;
 	}
 
+	public static void resetRubyLikeExtensions() {
+		RUBY_LIKE_EXTENSIONS = null;
+		RUBY_LIKE_FILENAMES = null;		
+	}
+
 }

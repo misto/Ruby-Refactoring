@@ -391,15 +391,8 @@ public class RubyCore extends Plugin {
         }
     }
 
-    public static IRubyElement create(IResource resource) {
-        switch (resource.getType()) {
-        case IResource.FILE:
-            return create((IFile) resource);
-        case IResource.PROJECT:
-            return create((IProject) resource);
-        default: // TODO Is this anywhere near correct?
-            return null;
-        }
+    public static IRubyElement create(IResource resource) {       
+    	return RubyModelManager.create(resource, null/*unknown ruby project*/);    	
     }
 
     /**
