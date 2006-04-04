@@ -33,6 +33,7 @@ import org.jruby.ast.AliasNode;
 import org.jruby.ast.AndNode;
 import org.jruby.ast.ArgsCatNode;
 import org.jruby.ast.ArgsNode;
+import org.jruby.ast.ArgumentNode;
 import org.jruby.ast.ArrayNode;
 import org.jruby.ast.BackRefNode;
 import org.jruby.ast.BeginNode;
@@ -76,6 +77,7 @@ import org.jruby.ast.IfNode;
 import org.jruby.ast.InstAsgnNode;
 import org.jruby.ast.InstVarNode;
 import org.jruby.ast.IterNode;
+import org.jruby.ast.ListNode;
 import org.jruby.ast.LocalAsgnNode;
 import org.jruby.ast.LocalVarNode;
 import org.jruby.ast.Match2Node;
@@ -138,12 +140,19 @@ import org.rubypeople.rdt.internal.core.parser.RubyParser;
 public class RubyScriptStructureBuilder implements NodeVisitor {
 
 	private InfoStack infoStack = new InfoStack();
+
 	private HandleStack modelStack = new HandleStack();
+
 	private RubyScriptElementInfo scriptInfo;
+
 	private IRubyScript script;
+
 	private Visibility currentVisibility = Visibility.PUBLIC;
+
 	private Map newElements;
+
 	private RubyElementInfo importContainerInfo;
+
 	private boolean DEBUG = false;
 
 	/**
@@ -157,7 +166,8 @@ public class RubyScriptStructureBuilder implements NodeVisitor {
 	 *            RubyModelManager. It holds elements below the level of a
 	 *            RubyScript in our hierarchy.
 	 */
-	public RubyScriptStructureBuilder(IRubyScript script, RubyScriptElementInfo info, Map newElements) {
+	public RubyScriptStructureBuilder(IRubyScript script,
+			RubyScriptElementInfo info, Map newElements) {
 		this.script = script;
 		this.scriptInfo = info;
 		this.newElements = newElements;
@@ -172,32 +182,34 @@ public class RubyScriptStructureBuilder implements NodeVisitor {
 	 * @see org.jruby.ast.visitor.NodeVisitor#visitAliasNode(org.jruby.ast.AliasNode)
 	 */
 	public Instruction visitAliasNode(AliasNode iVisited) {
-		handleNode(iVisited);		
-		
+		handleNode(iVisited);
+
 		String name = iVisited.getNewName();
-		
+
 		// TODO Use the visibility for the original method that this is aliasing
 		Visibility visibility = currentVisibility;
-		if( name.equals("initialize") ) visibility = Visibility.PROTECTED;
-		
-        // TODO Find the existing method and steal it's parameter names
-        String[] parameterNames = new String[0];
-		RubyMethod method = new RubyMethod( getCurrentType(), name, parameterNames );
-		modelStack.push( method );
-		
+		if (name.equals("initialize"))
+			visibility = Visibility.PROTECTED;
+
+		// TODO Find the existing method and steal it's parameter names
+		String[] parameterNames = new String[0];
+		RubyMethod method = new RubyMethod(getCurrentType(), name,
+				parameterNames);
+		modelStack.push(method);
+
 		RubyElementInfo parentInfo = infoStack.peek();
-		parentInfo.addChild( method );
-		
+		parentInfo.addChild(method);
+
 		RubyMethodElementInfo info = new RubyMethodElementInfo();
-		info.setVisibility( convertVisibility(visibility) );
+		info.setVisibility(convertVisibility(visibility));
 		ISourcePosition pos = iVisited.getPosition();
-		setKeywordRange( "alias", pos, info, ":" + name );
-		infoStack.push( info );
-		newElements.put( method, info );
-		
+		setKeywordRange("alias", pos, info, ":" + name);
+		infoStack.push(info);
+		newElements.put(method, info);
+
 		modelStack.pop();
 		infoStack.pop();
-        return null;
+		return null;
 	}
 
 	/*
@@ -209,7 +221,7 @@ public class RubyScriptStructureBuilder implements NodeVisitor {
 		handleNode(iVisited);
 		visitNode(iVisited.getFirstNode());
 		visitNode(iVisited.getFirstNode());
-        return null;
+		return null;
 	}
 
 	/*
@@ -223,7 +235,7 @@ public class RubyScriptStructureBuilder implements NodeVisitor {
 		if (iVisited.getOptArgs() != null) {
 			visitIter(iVisited.getOptArgs().iterator());
 		}
-        return null;
+		return null;
 	}
 
 	/*
@@ -235,7 +247,7 @@ public class RubyScriptStructureBuilder implements NodeVisitor {
 		handleNode(iVisited);
 		visitNode(iVisited.getFirstNode());
 		visitNode(iVisited.getSecondNode());
-        return null;
+		return null;
 	}
 
 	/*
@@ -246,7 +258,7 @@ public class RubyScriptStructureBuilder implements NodeVisitor {
 	public Instruction visitArrayNode(ArrayNode iVisited) {
 		handleNode(iVisited);
 		visitIter(iVisited.iterator());
-        return null;
+		return null;
 	}
 
 	/**
@@ -256,7 +268,7 @@ public class RubyScriptStructureBuilder implements NodeVisitor {
 		while (iterator.hasNext()) {
 			visitNode((Node) iterator.next());
 		}
-        return null;
+		return null;
 	}
 
 	/*
@@ -266,7 +278,7 @@ public class RubyScriptStructureBuilder implements NodeVisitor {
 	 */
 	public Instruction visitBackRefNode(BackRefNode iVisited) {
 		handleNode(iVisited);
-        return null;
+		return null;
 	}
 
 	/*
@@ -277,7 +289,7 @@ public class RubyScriptStructureBuilder implements NodeVisitor {
 	public Instruction visitBeginNode(BeginNode iVisited) {
 		handleNode(iVisited);
 		visitNode(iVisited.getBodyNode());
-        return null;
+		return null;
 	}
 
 	/*
@@ -287,7 +299,7 @@ public class RubyScriptStructureBuilder implements NodeVisitor {
 	 */
 	public Instruction visitBignumNode(BignumNode iVisited) {
 		handleNode(iVisited);
-        return null;
+		return null;
 	}
 
 	/*
@@ -297,7 +309,7 @@ public class RubyScriptStructureBuilder implements NodeVisitor {
 	 */
 	public Instruction visitBlockArgNode(BlockArgNode iVisited) {
 		handleNode(iVisited);
-        return null;
+		return null;
 	}
 
 	/*
@@ -308,7 +320,7 @@ public class RubyScriptStructureBuilder implements NodeVisitor {
 	public Instruction visitBlockNode(BlockNode iVisited) {
 		handleNode(iVisited);
 		visitIter(iVisited.iterator());
-        return null;
+		return null;
 	}
 
 	/*
@@ -321,7 +333,7 @@ public class RubyScriptStructureBuilder implements NodeVisitor {
 		visitNode(iVisited.getArgsNode());
 		visitNode(iVisited.getBodyNode());
 		visitNode(iVisited.getIterNode());
-        return null;
+		return null;
 	}
 
 	/*
@@ -332,7 +344,7 @@ public class RubyScriptStructureBuilder implements NodeVisitor {
 	public Instruction visitBreakNode(BreakNode iVisited) {
 		handleNode(iVisited);
 		visitNode(iVisited.getValueNode());
-        return null;
+		return null;
 	}
 
 	/*
@@ -358,7 +370,7 @@ public class RubyScriptStructureBuilder implements NodeVisitor {
 		visitNode(iVisited.getValueNode());
 		modelStack.pop();
 		infoStack.pop();
-        return null;
+		return null;
 	}
 
 	/*
@@ -378,7 +390,7 @@ public class RubyScriptStructureBuilder implements NodeVisitor {
 
 		RubyFieldElementInfo info = new RubyFieldElementInfo();
 		info.setTypeName(estimateValueType(iVisited.getValueNode()));
-        setTokenRange( iVisited.getPosition(), info, name );
+		setTokenRange(iVisited.getPosition(), info, name);
 		// TODO Add more information about the variable
 		infoStack.push(info);
 
@@ -388,7 +400,7 @@ public class RubyScriptStructureBuilder implements NodeVisitor {
 
 		modelStack.pop();
 		infoStack.pop();
-        return null;
+		return null;
 	}
 
 	/*
@@ -402,18 +414,18 @@ public class RubyScriptStructureBuilder implements NodeVisitor {
 		RubyElement type = getCurrentType();
 		RubyClassVar var = new RubyClassVar(type, iVisited.getName());
 
-		RubyElementInfo parentInfo = infoStack.peek();		
+		RubyElementInfo parentInfo = infoStack.peek();
 		RubyFieldElementInfo info = new RubyFieldElementInfo();
 		info.setTypeName(estimateValueType(iVisited.getValueNode()));
 		info.setTypeName(estimateValueType(iVisited.getValueNode()));
-        setTokenRange( iVisited.getPosition(), info, name );
-		
-		parentInfo.addChild(var);	
+		setTokenRange(iVisited.getPosition(), info, name);
+
+		parentInfo.addChild(var);
 
 		newElements.put(var, info);
 
 		visitNode(iVisited.getValueNode());
-        return null;
+		return null;
 	}
 
 	/*
@@ -423,7 +435,7 @@ public class RubyScriptStructureBuilder implements NodeVisitor {
 	 */
 	public Instruction visitClassVarNode(ClassVarNode iVisited) {
 		handleNode(iVisited);
-        return null;
+		return null;
 	}
 
 	/**
@@ -435,12 +447,14 @@ public class RubyScriptStructureBuilder implements NodeVisitor {
 		while (!(element instanceof RubyTypeElementInfo)) {
 			extras.add(infoStack.pop());
 			element = infoStack.peek();
-			if (element == null) break;
+			if (element == null)
+				break;
 		}
 		for (Iterator iter = extras.iterator(); iter.hasNext();) {
 			infoStack.push((RubyElementInfo) iter.next());
 		}
-		if (element == null) return scriptInfo;
+		if (element == null)
+			return scriptInfo;
 		return element;
 	}
 
@@ -452,10 +466,11 @@ public class RubyScriptStructureBuilder implements NodeVisitor {
 	public Instruction visitCallNode(CallNode iVisited) {
 		handleNode(iVisited);
 		// FIXME Evaluate the receiver and check to see if the method exists!
-		if (DEBUG) System.out.println(iVisited.getName());
+		if (DEBUG)
+			System.out.println(iVisited.getName());
 		visitNode(iVisited.getReceiverNode());
 		visitNode(iVisited.getArgsNode());
-        return null;
+		return null;
 	}
 
 	/*
@@ -467,7 +482,7 @@ public class RubyScriptStructureBuilder implements NodeVisitor {
 		handleNode(iVisited);
 		visitNode(iVisited.getCaseNode());
 		visitNode(iVisited.getFirstWhenNode());
-        return null;
+		return null;
 	}
 
 	/*
@@ -477,10 +492,11 @@ public class RubyScriptStructureBuilder implements NodeVisitor {
 	 */
 	public Instruction visitClassNode(ClassNode iVisited) {
 		handleNode(iVisited);
-		
-		// This resets the visibility when opening or declaring a class to public
+
+		// This resets the visibility when opening or declaring a class to
+		// public
 		currentVisibility = Visibility.PUBLIC;
-		       
+
 		String name = getFullyQualifiedName(iVisited.getCPath());
 		RubyType handle = new RubyType(modelStack.peek(), name);
 		modelStack.push(handle);
@@ -493,9 +509,9 @@ public class RubyScriptStructureBuilder implements NodeVisitor {
 		ISourcePosition pos = iVisited.getPosition();
 		setKeywordRange("class", pos, info, name);
 
-		String superClass = getSuperClassName(iVisited.getSuperNode());		
+		String superClass = getSuperClassName(iVisited.getSuperNode());
 		info.setSuperclassName(superClass);
-		info.setIncludedModuleNames(new String[] {"Kernel"});
+		info.setIncludedModuleNames(new String[] { "Kernel" });
 		infoStack.push(info);
 
 		newElements.put(handle, info);
@@ -506,47 +522,60 @@ public class RubyScriptStructureBuilder implements NodeVisitor {
 		// TODO Collect the included modules and set them here!
 		modelStack.pop();
 		infoStack.pop();
-        return null;
+		return null;
 	}
 
 	/**
-	 * Build up the fully qualified name of the super class for a class declaration
+	 * Build up the fully qualified name of the super class for a class
+	 * declaration
+	 * 
 	 * @param superNode
 	 * @return
 	 */
 	private String getSuperClassName(Node superNode) {
-		if (superNode == null) return "Object";
+		if (superNode == null)
+			return "Object";
 		return getFullyQualifiedName(superNode);
 	}
 
-    private String getFullyQualifiedName(Node node) {
-        if (node == null) return "";
-        if (node instanceof ConstNode) {
-            ConstNode constNode = (ConstNode) node;
-            return constNode.getName();
-        }
-        if (node instanceof Colon2Node) {
-            Colon2Node colonNode = (Colon2Node) node;
-            String prefix = getFullyQualifiedName(colonNode.getLeftNode());
-            if (prefix.length() > 0) prefix = prefix + "::";
-            return prefix + colonNode.getName();
-        }
-        return "";
-    }
-    	
+	private String getFullyQualifiedName(Node node) {
+		if (node == null)
+			return "";
+		if (node instanceof ConstNode) {
+			ConstNode constNode = (ConstNode) node;
+			return constNode.getName();
+		}
+		if (node instanceof Colon2Node) {
+			Colon2Node colonNode = (Colon2Node) node;
+			String prefix = getFullyQualifiedName(colonNode.getLeftNode());
+			if (prefix.length() > 0)
+				prefix = prefix + "::";
+			return prefix + colonNode.getName();
+		}
+		return "";
+	}
+
 	/**
 	 * @param keyword
 	 * @param pos
 	 * @param info
 	 * @param name
 	 */
-	private void setKeywordRange(String keyword, ISourcePosition pos, MemberElementInfo info, String name) {
+	private void setKeywordRange(String keyword, ISourcePosition pos,
+			MemberElementInfo info, String name) {
 		// TODO Actually check nodes which make up the name for their position!
-        int nameStart = pos.getStartOffset() + keyword.length() + 1; // the extra 1 is for a space after the keyword
-        info.setNameSourceStart(nameStart);
-		info.setNameSourceEnd(nameStart + name.length() - 1 );
+		int nameStart = pos.getStartOffset() + keyword.length() + 1; // the
+		// extra
+		// 1 is
+		// for a
+		// space
+		// after
+		// the
+		// keyword
+		info.setNameSourceStart(nameStart);
+		info.setNameSourceEnd(nameStart + name.length() - 1);
 		info.setSourceRangeStart(pos.getStartOffset());
-		info.setSourceRangeEnd(pos.getEndOffset() - 1);	
+		info.setSourceRangeEnd(pos.getEndOffset() - 1);
 	}
 
 	/*
@@ -556,9 +585,10 @@ public class RubyScriptStructureBuilder implements NodeVisitor {
 	 */
 	public Instruction visitColon2Node(Colon2Node iVisited) {
 		handleNode(iVisited);
-		if (DEBUG) System.out.println(iVisited.getName());
+		if (DEBUG)
+			System.out.println(iVisited.getName());
 		visitNode(iVisited.getLeftNode());
-        return null;
+		return null;
 	}
 
 	/*
@@ -568,7 +598,7 @@ public class RubyScriptStructureBuilder implements NodeVisitor {
 	 */
 	public Instruction visitColon3Node(Colon3Node iVisited) {
 		handleNode(iVisited);
-        return null;
+		return null;
 	}
 
 	/*
@@ -578,8 +608,9 @@ public class RubyScriptStructureBuilder implements NodeVisitor {
 	 */
 	public Instruction visitConstNode(ConstNode iVisited) {
 		handleNode(iVisited);
-		if (DEBUG) System.out.println(iVisited.getName());
-        return null;
+		if (DEBUG)
+			System.out.println(iVisited.getName());
+		return null;
 	}
 
 	/*
@@ -589,7 +620,8 @@ public class RubyScriptStructureBuilder implements NodeVisitor {
 	 */
 	public Instruction visitDAsgnNode(DAsgnNode iVisited) {
 		handleNode(iVisited);
-		RubyDynamicVar var = new RubyDynamicVar(modelStack.peek(), iVisited.getName());
+		RubyDynamicVar var = new RubyDynamicVar(modelStack.peek(), iVisited
+				.getName());
 		modelStack.push(var);
 
 		RubyFieldElementInfo info = new RubyFieldElementInfo();
@@ -598,12 +630,13 @@ public class RubyScriptStructureBuilder implements NodeVisitor {
 
 		newElements.put(var, info);
 
-		if (DEBUG) System.out.println(iVisited.getName());
+		if (DEBUG)
+			System.out.println(iVisited.getName());
 		visitNode(iVisited.getValueNode());
 
 		modelStack.pop();
 		infoStack.pop();
-        return null;
+		return null;
 	}
 
 	/*
@@ -614,7 +647,7 @@ public class RubyScriptStructureBuilder implements NodeVisitor {
 	public Instruction visitDRegxNode(DRegexpNode iVisited) {
 		handleNode(iVisited);
 		visitIter(iVisited.iterator());
-        return null;
+		return null;
 	}
 
 	/*
@@ -625,7 +658,7 @@ public class RubyScriptStructureBuilder implements NodeVisitor {
 	public Instruction visitDStrNode(DStrNode iVisited) {
 		handleNode(iVisited);
 		visitIter(iVisited.iterator());
-        return null;
+		return null;
 	}
 
 	/*
@@ -636,7 +669,7 @@ public class RubyScriptStructureBuilder implements NodeVisitor {
 	public Instruction visitDSymbolNode(DSymbolNode iVisited) {
 		handleNode(iVisited);
 		visitNode(iVisited.getNode());
-        return null;
+		return null;
 	}
 
 	/*
@@ -646,8 +679,9 @@ public class RubyScriptStructureBuilder implements NodeVisitor {
 	 */
 	public Instruction visitDVarNode(DVarNode iVisited) {
 		handleNode(iVisited);
-		if (DEBUG) System.out.println(iVisited.getName());
-        return null;
+		if (DEBUG)
+			System.out.println(iVisited.getName());
+		return null;
 	}
 
 	/*
@@ -658,7 +692,7 @@ public class RubyScriptStructureBuilder implements NodeVisitor {
 	public Instruction visitDXStrNode(DXStrNode iVisited) {
 		handleNode(iVisited);
 		visitIter(iVisited.iterator());
-        return null;
+		return null;
 	}
 
 	/*
@@ -669,7 +703,7 @@ public class RubyScriptStructureBuilder implements NodeVisitor {
 	public Instruction visitDefinedNode(DefinedNode iVisited) {
 		handleNode(iVisited);
 		visitNode(iVisited.getExpressionNode());
-        return null;
+		return null;
 	}
 
 	/*
@@ -679,24 +713,15 @@ public class RubyScriptStructureBuilder implements NodeVisitor {
 	 */
 	public Instruction visitDefnNode(DefnNode iVisited) {
 		handleNode(iVisited);
-		// ArgsNode argsNode = (ArgsNode) iVisited.getArgsNode();
-		// boolean hasRest = false;
-		// if (argsNode.getRestArg() != -1) hasRest = true;
-
-		// boolean hasBlock = false;
-		// if (argsNode.getBlockArgNode() != null) hasBlock = true;
-
-		// int optArgCount = 0;
-		// if (argsNode.getOptArgs() != null) optArgCount =
-		// argsNode.getOptArgs().size();
 
 		String name = iVisited.getName();
 
 		Visibility visibility = currentVisibility;
-		if (name.equals("initialize")) visibility = Visibility.PROTECTED;
+		if (name.equals("initialize"))
+			visibility = Visibility.PROTECTED;
 
 		RubyElement type = getCurrentType();
-        String[] parameterNames = getArgs(iVisited.getArgsNode());        
+		String[] parameterNames = getArgs(iVisited.getArgsNode());
 		RubyMethod method = new RubyMethod(type, name, parameterNames);
 		modelStack.push(method);
 
@@ -718,7 +743,7 @@ public class RubyScriptStructureBuilder implements NodeVisitor {
 
 		modelStack.pop();
 		infoStack.pop();
-        return null;
+		return null;
 	}
 
 	/**
@@ -728,8 +753,10 @@ public class RubyScriptStructureBuilder implements NodeVisitor {
 	private int convertVisibility(Visibility visibility) {
 		// FIXME What about the module function and public-protected
 		// visibilities?
-		if (visibility == Visibility.PUBLIC) return IMethod.PUBLIC;
-		if (visibility == Visibility.PROTECTED) return IMethod.PROTECTED;
+		if (visibility == Visibility.PUBLIC)
+			return IMethod.PUBLIC;
+		if (visibility == Visibility.PROTECTED)
+			return IMethod.PROTECTED;
 		return IMethod.PRIVATE;
 	}
 
@@ -738,8 +765,78 @@ public class RubyScriptStructureBuilder implements NodeVisitor {
 	 * @return
 	 */
 	private String[] getArgs(Node argsNode) {
-		// TODO Auto-generated method stub
-		return new String[0];
+		System.out.println("Got argument node: " + argsNode.toString());
+		ArgsNode args = (ArgsNode) argsNode;
+		boolean hasRest = false;
+		if (args.getRestArg() != -1)
+		hasRest = true;
+		
+		boolean hasBlock = false;
+		if (args.getBlockArgNode() != null)
+		 hasBlock = true;
+		
+		int optArgCount = 0;
+		if (args.getOptArgs() != null)
+		  optArgCount = args.getOptArgs().size();
+		List arguments = getArguments(args.getArgs());
+		if (optArgCount > 0) {
+			arguments.addAll(getArguments(args.getOptArgs()));
+		}		
+		if (hasRest)
+			arguments.add("*rest");
+		if (hasBlock)
+			arguments.add("&block");
+		return stringListToArray(arguments);
+	}
+
+	private String[] stringListToArray(List list) {
+		String[] array = new String[list.size()];
+		for (int i = 0; i < list.size(); i++) {
+			array[i] = (String) list.get(i);
+		}
+		return array;
+	}
+
+	private List getArguments(ListNode argList) {
+		List arguments = new ArrayList();
+		for (Iterator iter = argList.iterator(); iter.hasNext();) {
+			Object node = iter.next();
+			if (node instanceof ArgumentNode) {
+				arguments.add(((ArgumentNode)node).getName());
+			} else if (node instanceof LocalAsgnNode) {
+				LocalAsgnNode local = (LocalAsgnNode) node;
+				String argString = local.getName();
+				argString += " = ";
+				argString += stringRepresentation(local.getValueNode());
+				arguments.add(argString);
+			}
+			else {
+			 System.err.println("Reached argument node type we can't handle");
+			}
+		}
+		return arguments;
+	}
+
+	private String stringRepresentation(Node node) {
+		if (node instanceof HashNode) return "{}";
+		if (node instanceof ZArrayNode) return "[]";
+		if (node instanceof FixnumNode) return "" + ((FixnumNode)node).getValue();
+		if (node instanceof DStrNode) return stringRepresentation((DStrNode) node);
+		if (node instanceof StrNode) return ((StrNode) node).getValue();
+		System.err.println("Reached node type we don't know how to represent: " + node.getClass().getName());
+		return node.toString();
+	}
+	
+	private String stringRepresentation(DStrNode node) {
+		List children = node.childNodes();
+		StringBuffer buffer = new StringBuffer();
+		buffer.append("\"");
+		for (Iterator iter = children.iterator(); iter.hasNext();) {
+			Node child = (Node) iter.next();
+			buffer.append(stringRepresentation(child));
+		}
+		buffer.append("\"");
+		return buffer.toString();
 	}
 
 	/**
@@ -751,82 +848,76 @@ public class RubyScriptStructureBuilder implements NodeVisitor {
 		while (!element.isType(IRubyElement.TYPE)) {
 			extras.add(modelStack.pop());
 			element = modelStack.peek();
-			if (element == null) break;
+			if (element == null)
+				break;
 		}
 		for (Iterator iter = extras.iterator(); iter.hasNext();) {
 			modelStack.push((RubyElement) iter.next());
 		}
-		if (element == null) return (RubyScript) script;
+		if (element == null)
+			return (RubyScript) script;
 		return (RubyElement) element;
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.jruby.ast.visitor.NodeVisitor#visitDefsNode(org.jruby.ast.DefsNode)
+	 */
+	public Instruction visitDefsNode(DefsNode iVisited) {
+		handleNode(iVisited);
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.jruby.ast.visitor.NodeVisitor#visitDefsNode(org.jruby.ast.DefsNode)
-     */
-    public Instruction visitDefsNode(DefsNode iVisited) {
-        handleNode(iVisited);       
-        
-        // Get the information no the current parent of this method
-        RubyElementInfo parentInfo = infoStack.peek();
-        
-        /* Get the name of the current static method and add the name of the
-         * class or module to the beginning of it. This aInstructions instance method
-         * naming conflicts. e.g.: 
-         *    class A
-         *      def self.method; end
-         *      def method; end
-         *    end
-         * will give us:
-         *    A.method
-         *    method
-         * in the Outline View.
-         */ 
-        String name;
-        if( parentInfo instanceof RubyTypeElementInfo ){
-            name = new String(((RubyTypeElementInfo)parentInfo).getName())
-                + "." + iVisited.getName(); }
-        else{
-            name = iVisited.getName(); }
-        
-        // Get the visibility of the current static method 
-        Visibility visibility = currentVisibility;
-        
-        String[] parameterNames = getArgs(iVisited.getArgsNode());
-        
-        // Get the type of the current parent element
-        RubyElement type = getCurrentType();
-        RubyMethod method = new RubySingletonMethod(type, name, parameterNames);
-        modelStack.push(method);
-                
-        parentInfo.addChild( method );
+		// Get the information no the current parent of this method
+		RubyElementInfo parentInfo = infoStack.peek();
 
-        
-        RubyMethodElementInfo info = new RubyMethodElementInfo();
-        
-        // TODO Set more info!
-        infoStack.push(info);
-        ISourcePosition pos = iVisited.getPosition();
-        setKeywordRange("def", pos, info, name);
-        
-        info.setArgumentNames(parameterNames);
-        info.setVisibility(convertVisibility(visibility));
+		/*
+		 * Get the name of the current static method and add the name of the
+		 * class or module to the beginning of it. This aInstructions instance
+		 * method naming conflicts. e.g.: class A def self.method; end def
+		 * method; end end will give us: A.method method in the Outline View.
+		 */
+		String name;
+		if (parentInfo instanceof RubyTypeElementInfo) {
+			name = new String(((RubyTypeElementInfo) parentInfo).getName())
+					+ "." + iVisited.getName();
+		} else {
+			name = iVisited.getName();
+		}
 
-        newElements.put(method, info);
+		// Get the visibility of the current static method
+		Visibility visibility = currentVisibility;
 
-        // FIXME Evaluate the receiver!
-        visitNode(iVisited.getReceiverNode());
-        visitNode(iVisited.getArgsNode());
-        visitNode(iVisited.getBodyNode());
-        
-        modelStack.pop();
-        infoStack.pop();
-        return null;
-    }
+		String[] parameterNames = getArgs(iVisited.getArgsNode());
 
-    
+		// Get the type of the current parent element
+		RubyElement type = getCurrentType();
+		RubyMethod method = new RubySingletonMethod(type, name, parameterNames);
+		modelStack.push(method);
+
+		parentInfo.addChild(method);
+
+		RubyMethodElementInfo info = new RubyMethodElementInfo();
+
+		// TODO Set more info!
+		infoStack.push(info);
+		ISourcePosition pos = iVisited.getPosition();
+		setKeywordRange("def", pos, info, name);
+
+		info.setArgumentNames(parameterNames);
+		info.setVisibility(convertVisibility(visibility));
+
+		newElements.put(method, info);
+
+		// FIXME Evaluate the receiver!
+		visitNode(iVisited.getReceiverNode());
+		visitNode(iVisited.getArgsNode());
+		visitNode(iVisited.getBodyNode());
+
+		modelStack.pop();
+		infoStack.pop();
+		return null;
+	}
+
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -836,7 +927,7 @@ public class RubyScriptStructureBuilder implements NodeVisitor {
 		handleNode(iVisited);
 		visitNode(iVisited.getBeginNode());
 		visitNode(iVisited.getEndNode());
-        return null;
+		return null;
 	}
 
 	/*
@@ -848,7 +939,7 @@ public class RubyScriptStructureBuilder implements NodeVisitor {
 		handleNode(iVisited);
 		visitNode(iVisited.getEnsureNode());
 		visitNode(iVisited.getBodyNode());
-        return null;
+		return null;
 	}
 
 	/*
@@ -859,7 +950,7 @@ public class RubyScriptStructureBuilder implements NodeVisitor {
 	public Instruction visitEvStrNode(EvStrNode iVisited) {
 		handleNode(iVisited);
 		visitNode(iVisited.getBody());
-        return null;
+		return null;
 	}
 
 	/*
@@ -870,18 +961,21 @@ public class RubyScriptStructureBuilder implements NodeVisitor {
 	public Instruction visitFCallNode(FCallNode iVisited) {
 		handleNode(iVisited);
 		// FIXME Evaluate self and check to see if the method exists!
-		if (DEBUG) System.out.println(iVisited.getName());
+		if (DEBUG)
+			System.out.println(iVisited.getName());
 		String functionName = iVisited.getName();
 		if (functionName.equals("require") || functionName.equals("load")) {
 			ArrayNode node = (ArrayNode) iVisited.getArgsNode();
 			String arg = getString(node);
 			if (arg != null) {
-				ImportContainer importContainer = (ImportContainer) script.getImportContainer();
+				ImportContainer importContainer = (ImportContainer) script
+						.getImportContainer();
 				// create the import container and its info
 				if (this.importContainerInfo == null) {
 					this.importContainerInfo = new RubyElementInfo();
 					scriptInfo.addChild(importContainer);
-					this.newElements.put(importContainer, this.importContainerInfo);
+					this.newElements.put(importContainer,
+							this.importContainerInfo);
 				}
 				RubyImport handle = new RubyImport(importContainer, arg);
 
@@ -894,7 +988,7 @@ public class RubyScriptStructureBuilder implements NodeVisitor {
 			}
 		}
 		visitNode(iVisited.getArgsNode());
-        return null;
+		return null;
 	}
 
 	/**
@@ -921,7 +1015,7 @@ public class RubyScriptStructureBuilder implements NodeVisitor {
 	 */
 	public Instruction visitFalseNode(FalseNode iVisited) {
 		handleNode(iVisited);
-        return null;
+		return null;
 	}
 
 	/*
@@ -931,7 +1025,7 @@ public class RubyScriptStructureBuilder implements NodeVisitor {
 	 */
 	public Instruction visitFixnumNode(FixnumNode iVisited) {
 		handleNode(iVisited);
-        return null;
+		return null;
 	}
 
 	/*
@@ -943,7 +1037,7 @@ public class RubyScriptStructureBuilder implements NodeVisitor {
 		handleNode(iVisited);
 		visitNode(iVisited.getBeginNode());
 		visitNode(iVisited.getEndNode());
-        return null;
+		return null;
 	}
 
 	/*
@@ -953,7 +1047,7 @@ public class RubyScriptStructureBuilder implements NodeVisitor {
 	 */
 	public Instruction visitFloatNode(FloatNode iVisited) {
 		handleNode(iVisited);
-        return null;
+		return null;
 	}
 
 	/*
@@ -966,7 +1060,7 @@ public class RubyScriptStructureBuilder implements NodeVisitor {
 		visitNode(iVisited.getVarNode());
 		visitNode(iVisited.getIterNode());
 		visitNode(iVisited.getBodyNode());
-        return null;
+		return null;
 	}
 
 	/*
@@ -991,14 +1085,15 @@ public class RubyScriptStructureBuilder implements NodeVisitor {
 		newElements.put(global, info);
 
 		visitNode(iVisited.getValueNode());
-        return null;
+		return null;
 	}
 
 	/**
 	 * @param pos
 	 * @param info
 	 */
-	private void setTokenRange(ISourcePosition pos, RubyFieldElementInfo info, String name) {
+	private void setTokenRange(ISourcePosition pos, RubyFieldElementInfo info,
+			String name) {
 		int realStart = pos.getStartOffset() - name.length() + 1;
 		info.setNameSourceStart(realStart);
 		info.setNameSourceEnd(pos.getStartOffset());
@@ -1013,7 +1108,7 @@ public class RubyScriptStructureBuilder implements NodeVisitor {
 	 */
 	public Instruction visitGlobalVarNode(GlobalVarNode iVisited) {
 		handleNode(iVisited);
-        return null;
+		return null;
 	}
 
 	/*
@@ -1024,7 +1119,7 @@ public class RubyScriptStructureBuilder implements NodeVisitor {
 	public Instruction visitHashNode(HashNode iVisited) {
 		handleNode(iVisited);
 		visitNode(iVisited.getListNode());
-        return null;
+		return null;
 	}
 
 	/*
@@ -1045,13 +1140,13 @@ public class RubyScriptStructureBuilder implements NodeVisitor {
 		RubyFieldElementInfo info = new RubyFieldElementInfo();
 		// TODO Add more information to the info object!
 		ISourcePosition pos = iVisited.getPosition();
-        setTokenRange( pos, info, name );
+		setTokenRange(pos, info, name);
 		info.setTypeName(estimateValueType(iVisited.getValueNode()));
 
 		newElements.put(var, info);
 
 		visitNode(iVisited.getValueNode());
-        return null;
+		return null;
 	}
 
 	/**
@@ -1074,7 +1169,9 @@ public class RubyScriptStructureBuilder implements NodeVisitor {
 		} else if (value instanceof FixnumNode) {
 			return "Fixnum";
 
-		} else if (value instanceof BignumNode) { return "Bignum"; }
+		} else if (value instanceof BignumNode) {
+			return "Bignum";
+		}
 		return "Object";
 	}
 
@@ -1085,7 +1182,7 @@ public class RubyScriptStructureBuilder implements NodeVisitor {
 	 */
 	public Instruction visitInstVarNode(InstVarNode iVisited) {
 		handleNode(iVisited);
-        return null;
+		return null;
 	}
 
 	/*
@@ -1098,7 +1195,7 @@ public class RubyScriptStructureBuilder implements NodeVisitor {
 		visitNode(iVisited.getCondition());
 		visitNode(iVisited.getThenBody());
 		visitNode(iVisited.getElseBody());
-        return null;
+		return null;
 	}
 
 	/*
@@ -1115,10 +1212,11 @@ public class RubyScriptStructureBuilder implements NodeVisitor {
 		visitNode(iVisited.getIterNode());
 		visitNode(iVisited.getVarNode());
 		visitNode(iVisited.getBodyNode());
-		if (DEBUG) System.out.println("Iter Node ended");
+		if (DEBUG)
+			System.out.println("Iter Node ended");
 
 		modelStack.pop();
-        return null;
+		return null;
 	}
 
 	/*
@@ -1128,10 +1226,12 @@ public class RubyScriptStructureBuilder implements NodeVisitor {
 	 */
 	public Instruction visitLocalAsgnNode(LocalAsgnNode iVisited) {
 		handleNode(iVisited);
-        
-        int start = iVisited.getPosition().getStartOffset() - iVisited.getName().length() + 1;
-        int end = start + iVisited.getName().length();
-		RubyLocalVar var = new RubyLocalVar(modelStack.peek(), iVisited.getName(), start, end);
+
+		int start = iVisited.getPosition().getStartOffset()
+				- iVisited.getName().length() + 1;
+		int end = start + iVisited.getName().length();
+		RubyLocalVar var = new RubyLocalVar(modelStack.peek(), iVisited
+				.getName(), start, end);
 		modelStack.push(var);
 
 		RubyElementInfo parentInfo = infoStack.peek();
@@ -1141,7 +1241,7 @@ public class RubyScriptStructureBuilder implements NodeVisitor {
 		info.setTypeName(estimateValueType(iVisited.getValueNode()));
 
 		ISourcePosition pos = iVisited.getPosition();
-		setTokenRange( pos, info, iVisited.getName() );        
+		setTokenRange(pos, info, iVisited.getName());
 		infoStack.push(info);
 
 		newElements.put(var, info);
@@ -1150,7 +1250,7 @@ public class RubyScriptStructureBuilder implements NodeVisitor {
 
 		modelStack.pop();
 		infoStack.pop();
-        return null;
+		return null;
 	}
 
 	/*
@@ -1160,7 +1260,7 @@ public class RubyScriptStructureBuilder implements NodeVisitor {
 	 */
 	public Instruction visitLocalVarNode(LocalVarNode iVisited) {
 		handleNode(iVisited);
-        return null;
+		return null;
 	}
 
 	/*
@@ -1173,7 +1273,7 @@ public class RubyScriptStructureBuilder implements NodeVisitor {
 		visitNode(iVisited.getHeadNode());
 		visitNode(iVisited.getArgsNode());
 		visitNode(iVisited.getValueNode());
-        return null;
+		return null;
 	}
 
 	/*
@@ -1185,7 +1285,7 @@ public class RubyScriptStructureBuilder implements NodeVisitor {
 		handleNode(iVisited);
 		visitNode(iVisited.getReceiverNode());
 		visitNode(iVisited.getValueNode());
-        return null;
+		return null;
 	}
 
 	/*
@@ -1197,7 +1297,7 @@ public class RubyScriptStructureBuilder implements NodeVisitor {
 		handleNode(iVisited);
 		visitNode(iVisited.getReceiverNode());
 		visitNode(iVisited.getValueNode());
-        return null;
+		return null;
 	}
 
 	/*
@@ -1208,7 +1308,7 @@ public class RubyScriptStructureBuilder implements NodeVisitor {
 	public Instruction visitMatchNode(MatchNode iVisited) {
 		handleNode(iVisited);
 		visitNode(iVisited.getRegexpNode());
-        return null;
+		return null;
 	}
 
 	/*
@@ -1239,7 +1339,7 @@ public class RubyScriptStructureBuilder implements NodeVisitor {
 
 		modelStack.pop();
 		infoStack.pop();
-        return null;
+		return null;
 	}
 
 	/*
@@ -1250,7 +1350,7 @@ public class RubyScriptStructureBuilder implements NodeVisitor {
 	public Instruction visitNewlineNode(NewlineNode iVisited) {
 		handleNode(iVisited);
 		visitNode(iVisited.getNextNode());
-        return null;
+		return null;
 	}
 
 	/*
@@ -1261,7 +1361,7 @@ public class RubyScriptStructureBuilder implements NodeVisitor {
 	public Instruction visitNextNode(NextNode iVisited) {
 		handleNode(iVisited);
 		visitNode(iVisited.getValueNode());
-        return null;
+		return null;
 	}
 
 	/*
@@ -1271,7 +1371,7 @@ public class RubyScriptStructureBuilder implements NodeVisitor {
 	 */
 	public Instruction visitNilNode(NilNode iVisited) {
 		handleNode(iVisited);
-        return null;
+		return null;
 	}
 
 	/*
@@ -1282,7 +1382,7 @@ public class RubyScriptStructureBuilder implements NodeVisitor {
 	public Instruction visitNotNode(NotNode iVisited) {
 		handleNode(iVisited);
 		visitNode(iVisited.getConditionNode());
-        return null;
+		return null;
 	}
 
 	/*
@@ -1292,7 +1392,7 @@ public class RubyScriptStructureBuilder implements NodeVisitor {
 	 */
 	public Instruction visitNthRefNode(NthRefNode iVisited) {
 		handleNode(iVisited);
-        return null;
+		return null;
 	}
 
 	/*
@@ -1305,7 +1405,7 @@ public class RubyScriptStructureBuilder implements NodeVisitor {
 		visitNode(iVisited.getReceiverNode());
 		visitNode(iVisited.getArgsNode());
 		visitNode(iVisited.getValueNode());
-        return null;
+		return null;
 	}
 
 	/*
@@ -1317,7 +1417,7 @@ public class RubyScriptStructureBuilder implements NodeVisitor {
 		handleNode(iVisited);
 		visitNode(iVisited.getReceiverNode());
 		visitNode(iVisited.getValueNode());
-        return null;
+		return null;
 	}
 
 	/*
@@ -1329,7 +1429,7 @@ public class RubyScriptStructureBuilder implements NodeVisitor {
 		handleNode(iVisited);
 		visitNode(iVisited.getFirstNode());
 		visitNode(iVisited.getSecondNode());
-        return null;
+		return null;
 	}
 
 	/*
@@ -1341,7 +1441,7 @@ public class RubyScriptStructureBuilder implements NodeVisitor {
 		handleNode(iVisited);
 		visitNode(iVisited.getFirstNode());
 		visitNode(iVisited.getSecondNode());
-        return null;
+		return null;
 	}
 
 	/*
@@ -1352,7 +1452,7 @@ public class RubyScriptStructureBuilder implements NodeVisitor {
 	public Instruction visitOptNNode(OptNNode iVisited) {
 		handleNode(iVisited);
 		visitNode(iVisited.getBodyNode());
-        return null;
+		return null;
 	}
 
 	/*
@@ -1364,7 +1464,7 @@ public class RubyScriptStructureBuilder implements NodeVisitor {
 		handleNode(iVisited);
 		visitNode(iVisited.getFirstNode());
 		visitNode(iVisited.getSecondNode());
-        return null;
+		return null;
 	}
 
 	/*
@@ -1374,7 +1474,7 @@ public class RubyScriptStructureBuilder implements NodeVisitor {
 	 */
 	public Instruction visitPostExeNode(PostExeNode iVisited) {
 		handleNode(iVisited);
-        return null;
+		return null;
 	}
 
 	/*
@@ -1384,7 +1484,7 @@ public class RubyScriptStructureBuilder implements NodeVisitor {
 	 */
 	public Instruction visitRedoNode(RedoNode iVisited) {
 		handleNode(iVisited);
-        return null;
+		return null;
 	}
 
 	/*
@@ -1394,7 +1494,7 @@ public class RubyScriptStructureBuilder implements NodeVisitor {
 	 */
 	public Instruction visitRegexpNode(RegexpNode iVisited) {
 		handleNode(iVisited);
-        return null;
+		return null;
 	}
 
 	/*
@@ -1407,7 +1507,7 @@ public class RubyScriptStructureBuilder implements NodeVisitor {
 		visitNode(iVisited.getExceptionNodes());
 		visitNode(iVisited.getOptRescueNode());
 		visitNode(iVisited.getBodyNode());
-        return null;
+		return null;
 	}
 
 	/*
@@ -1420,7 +1520,7 @@ public class RubyScriptStructureBuilder implements NodeVisitor {
 		visitNode(iVisited.getRescueNode());
 		visitNode(iVisited.getBodyNode());
 		visitNode(iVisited.getElseNode());
-        return null;
+		return null;
 	}
 
 	/*
@@ -1430,7 +1530,7 @@ public class RubyScriptStructureBuilder implements NodeVisitor {
 	 */
 	public Instruction visitRetryNode(RetryNode iVisited) {
 		handleNode(iVisited);
-        return null;
+		return null;
 	}
 
 	/*
@@ -1441,7 +1541,7 @@ public class RubyScriptStructureBuilder implements NodeVisitor {
 	public Instruction visitReturnNode(ReturnNode iVisited) {
 		handleNode(iVisited);
 		visitNode(iVisited.getValueNode());
-        return null;
+		return null;
 	}
 
 	/*
@@ -1453,7 +1553,7 @@ public class RubyScriptStructureBuilder implements NodeVisitor {
 		handleNode(iVisited);
 		visitNode(iVisited.getReceiverNode());
 		visitNode(iVisited.getBodyNode());
-        return null;
+		return null;
 	}
 
 	/*
@@ -1464,7 +1564,7 @@ public class RubyScriptStructureBuilder implements NodeVisitor {
 	public Instruction visitScopeNode(ScopeNode iVisited) {
 		handleNode(iVisited);
 		visitNode(iVisited.getBodyNode());
-        return null;
+		return null;
 	}
 
 	/*
@@ -1474,7 +1574,7 @@ public class RubyScriptStructureBuilder implements NodeVisitor {
 	 */
 	public Instruction visitSelfNode(SelfNode iVisited) {
 		handleNode(iVisited);
-        return null;
+		return null;
 	}
 
 	/*
@@ -1485,7 +1585,7 @@ public class RubyScriptStructureBuilder implements NodeVisitor {
 	public Instruction visitSplatNode(SplatNode iVisited) {
 		handleNode(iVisited);
 		visitNode(iVisited.getValue());
-        return null;
+		return null;
 	}
 
 	/*
@@ -1495,7 +1595,7 @@ public class RubyScriptStructureBuilder implements NodeVisitor {
 	 */
 	public Instruction visitStrNode(StrNode iVisited) {
 		handleNode(iVisited);
-        return null;
+		return null;
 	}
 
 	/*
@@ -1506,7 +1606,7 @@ public class RubyScriptStructureBuilder implements NodeVisitor {
 	public Instruction visitSuperNode(SuperNode iVisited) {
 		handleNode(iVisited);
 		visitNode(iVisited.getArgsNode());
-        return null;
+		return null;
 	}
 
 	/*
@@ -1517,7 +1617,7 @@ public class RubyScriptStructureBuilder implements NodeVisitor {
 	public Instruction visitSValueNode(SValueNode iVisited) {
 		handleNode(iVisited);
 		visitNode(iVisited.getValue());
-        return null;
+		return null;
 	}
 
 	/*
@@ -1527,7 +1627,7 @@ public class RubyScriptStructureBuilder implements NodeVisitor {
 	 */
 	public Instruction visitSymbolNode(SymbolNode iVisited) {
 		handleNode(iVisited);
-        return null;
+		return null;
 	}
 
 	/*
@@ -1538,7 +1638,7 @@ public class RubyScriptStructureBuilder implements NodeVisitor {
 	public Instruction visitToAryNode(ToAryNode iVisited) {
 		handleNode(iVisited);
 		visitNode(iVisited.getValue());
-        return null;
+		return null;
 	}
 
 	/*
@@ -1548,7 +1648,7 @@ public class RubyScriptStructureBuilder implements NodeVisitor {
 	 */
 	public Instruction visitTrueNode(TrueNode iVisited) {
 		handleNode(iVisited);
-        return null;
+		return null;
 	}
 
 	/*
@@ -1558,7 +1658,7 @@ public class RubyScriptStructureBuilder implements NodeVisitor {
 	 */
 	public Instruction visitUndefNode(UndefNode iVisited) {
 		handleNode(iVisited);
-        return null;
+		return null;
 	}
 
 	/*
@@ -1570,8 +1670,8 @@ public class RubyScriptStructureBuilder implements NodeVisitor {
 		handleNode(iVisited);
 		visitNode(iVisited.getConditionNode());
 		visitNode(iVisited.getBodyNode());
-        return null;
-}
+		return null;
+	}
 
 	/*
 	 * (non-Javadoc)
@@ -1580,7 +1680,7 @@ public class RubyScriptStructureBuilder implements NodeVisitor {
 	 */
 	public Instruction visitVAliasNode(VAliasNode iVisited) {
 		handleNode(iVisited);
-        return null;
+		return null;
 	}
 
 	/*
@@ -1600,7 +1700,7 @@ public class RubyScriptStructureBuilder implements NodeVisitor {
 		}
 		// TODO Set the method visibility for any arguments to the above
 		// methods!
-        return null;
+		return null;
 	}
 
 	/*
@@ -1613,7 +1713,7 @@ public class RubyScriptStructureBuilder implements NodeVisitor {
 		visitNode(iVisited.getExpressionNodes());
 		visitNode(iVisited.getBodyNode());
 		visitNode(iVisited.getNextCase());
-        return null;
+		return null;
 	}
 
 	/*
@@ -1625,7 +1725,7 @@ public class RubyScriptStructureBuilder implements NodeVisitor {
 		handleNode(iVisited);
 		visitNode(iVisited.getConditionNode());
 		visitNode(iVisited.getBodyNode());
-        return null;
+		return null;
 	}
 
 	/*
@@ -1635,7 +1735,7 @@ public class RubyScriptStructureBuilder implements NodeVisitor {
 	 */
 	public Instruction visitXStrNode(XStrNode iVisited) {
 		handleNode(iVisited);
-        return null;
+		return null;
 	}
 
 	/*
@@ -1646,7 +1746,7 @@ public class RubyScriptStructureBuilder implements NodeVisitor {
 	public Instruction visitYieldNode(YieldNode iVisited) {
 		handleNode(iVisited);
 		visitNode(iVisited.getArgsNode());
-        return null;
+		return null;
 	}
 
 	/*
@@ -1656,7 +1756,7 @@ public class RubyScriptStructureBuilder implements NodeVisitor {
 	 */
 	public Instruction visitZArrayNode(ZArrayNode iVisited) {
 		handleNode(iVisited);
-        return null;
+		return null;
 	}
 
 	/*
@@ -1666,12 +1766,13 @@ public class RubyScriptStructureBuilder implements NodeVisitor {
 	 */
 	public Instruction visitZSuperNode(ZSuperNode iVisited) {
 		handleNode(iVisited);
-        return null;
+		return null;
 	}
 
 	private Instruction visitNode(Node iVisited) {
-		if (iVisited != null) iVisited.accept(this);
-        return null;
+		if (iVisited != null)
+			iVisited.accept(this);
+		return null;
 	}
 
 	/**
@@ -1679,8 +1780,10 @@ public class RubyScriptStructureBuilder implements NodeVisitor {
 	 */
 	private Instruction handleNode(Node visited) {
 		// TODO Uncomment for logging?
-		if (DEBUG ) System.out.println(visited.toString() + ", position -> " + visited.getPosition());
-        return null;
+		// if (DEBUG)
+		System.out.println(visited.toString() + ", position -> "
+				+ visited.getPosition());
+		return null;
 	}
 
 }
