@@ -26,7 +26,7 @@ import org.rubypeople.rdt.internal.ui.RubyUIMessages;
  * <code>RubyElementLabels</code> provides helper methods to render names of
  * Ruby elements.
  * 
- * @since 3.1
+ * @since 0.8.0
  */
 public class RubyElementLabels {
 
@@ -173,6 +173,8 @@ public class RubyElementLabels {
      * another project.
      */
     public final static long REFERENCED_ROOT_POST_QUALIFIED = 1L << 45;
+    
+	static public final long T_DECLARATION_POINT = 1L << 46;
 
     /**
      * Specified to use the resolved information of a IType, IMethod or IField.
@@ -514,6 +516,20 @@ public class RubyElementLabels {
             }
         }
         buf.append(typeName);
+        
+        if (getFlag(flags, T_DECLARATION_POINT)) {
+        	buf.append(" [");
+        	buf.append(type.getPath().makeRelative().toOSString());
+        	try {
+				int offset = type.getNameRange().getOffset();
+				buf.append(", offset: ");
+				buf.append(offset);
+			} catch (RubyModelException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}        
+			buf.append("] ");
+        }
 
         // post qualification
         if (getFlag(flags, T_POST_QUALIFIED)) {
