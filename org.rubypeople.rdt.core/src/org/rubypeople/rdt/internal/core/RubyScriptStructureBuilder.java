@@ -140,19 +140,12 @@ import org.rubypeople.rdt.internal.core.parser.RubyParser;
 public class RubyScriptStructureBuilder implements NodeVisitor {
 
 	private InfoStack infoStack = new InfoStack();
-
 	private HandleStack modelStack = new HandleStack();
-
 	private RubyScriptElementInfo scriptInfo;
-
 	private IRubyScript script;
-
 	private Visibility currentVisibility = Visibility.PUBLIC;
-
 	private Map newElements;
-
 	private RubyElementInfo importContainerInfo;
-
 	private boolean DEBUG = false;
 
 	/**
@@ -765,23 +758,22 @@ public class RubyScriptStructureBuilder implements NodeVisitor {
 	 * @return
 	 */
 	private String[] getArgs(Node argsNode) {
-		System.out.println("Got argument node: " + argsNode.toString());
 		ArgsNode args = (ArgsNode) argsNode;
 		boolean hasRest = false;
 		if (args.getRestArg() != -1)
-		hasRest = true;
-		
+			hasRest = true;
+
 		boolean hasBlock = false;
 		if (args.getBlockArgNode() != null)
-		 hasBlock = true;
-		
+			hasBlock = true;
+
 		int optArgCount = 0;
 		if (args.getOptArgs() != null)
-		  optArgCount = args.getOptArgs().size();
+			optArgCount = args.getOptArgs().size();
 		List arguments = getArguments(args.getArgs());
 		if (optArgCount > 0) {
 			arguments.addAll(getArguments(args.getOptArgs()));
-		}		
+		}
 		if (hasRest)
 			arguments.add("*rest");
 		if (hasBlock)
@@ -802,31 +794,38 @@ public class RubyScriptStructureBuilder implements NodeVisitor {
 		for (Iterator iter = argList.iterator(); iter.hasNext();) {
 			Object node = iter.next();
 			if (node instanceof ArgumentNode) {
-				arguments.add(((ArgumentNode)node).getName());
+				arguments.add(((ArgumentNode) node).getName());
 			} else if (node instanceof LocalAsgnNode) {
 				LocalAsgnNode local = (LocalAsgnNode) node;
 				String argString = local.getName();
 				argString += " = ";
 				argString += stringRepresentation(local.getValueNode());
 				arguments.add(argString);
-			}
-			else {
-			 System.err.println("Reached argument node type we can't handle");
+			} else {
+				if (DEBUG) 
+					System.err
+						.println("Reached argument node type we can't handle");
 			}
 		}
 		return arguments;
 	}
 
 	private String stringRepresentation(Node node) {
-		if (node instanceof HashNode) return "{}";
-		if (node instanceof ZArrayNode) return "[]";
-		if (node instanceof FixnumNode) return "" + ((FixnumNode)node).getValue();
-		if (node instanceof DStrNode) return stringRepresentation((DStrNode) node);
-		if (node instanceof StrNode) return ((StrNode) node).getValue();
-		System.err.println("Reached node type we don't know how to represent: " + node.getClass().getName());
+		if (node instanceof HashNode)
+			return "{}";
+		if (node instanceof ZArrayNode)
+			return "[]";
+		if (node instanceof FixnumNode)
+			return "" + ((FixnumNode) node).getValue();
+		if (node instanceof DStrNode)
+			return stringRepresentation((DStrNode) node);
+		if (node instanceof StrNode)
+			return ((StrNode) node).getValue();
+		if (DEBUG) System.err.println("Reached node type we don't know how to represent: "
+				+ node.getClass().getName());
 		return node.toString();
 	}
-	
+
 	private String stringRepresentation(DStrNode node) {
 		List children = node.childNodes();
 		StringBuffer buffer = new StringBuffer();
@@ -1698,8 +1697,6 @@ public class RubyScriptStructureBuilder implements NodeVisitor {
 		} else if (functionName.equals("protected")) {
 			currentVisibility = Visibility.PROTECTED;
 		}
-		// TODO Set the method visibility for any arguments to the above
-		// methods!
 		return null;
 	}
 
@@ -1779,8 +1776,8 @@ public class RubyScriptStructureBuilder implements NodeVisitor {
 	 * @param visited
 	 */
 	private Instruction handleNode(Node visited) {
-		// TODO Uncomment for logging?
-		// if (DEBUG)
+		// Uncomment for logging
+		if (DEBUG)
 		System.out.println(visited.toString() + ", position -> "
 				+ visited.getPosition());
 		return null;
