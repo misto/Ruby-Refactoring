@@ -758,6 +758,7 @@ public class RubyScriptStructureBuilder implements NodeVisitor {
 	 * @return
 	 */
 	private String[] getArgs(Node argsNode) {
+		if (argsNode == null) return new String[0];
 		ArgsNode args = (ArgsNode) argsNode;
 		boolean hasRest = false;
 		if (args.getRestArg() != -1)
@@ -790,6 +791,7 @@ public class RubyScriptStructureBuilder implements NodeVisitor {
 	}
 
 	private List getArguments(ListNode argList) {
+		if (argList == null) return new ArrayList();
 		List arguments = new ArrayList();
 		for (Iterator iter = argList.iterator(); iter.hasNext();) {
 			Object node = iter.next();
@@ -811,6 +813,7 @@ public class RubyScriptStructureBuilder implements NodeVisitor {
 	}
 
 	private String stringRepresentation(Node node) {
+		if (node == null) return "";
 		if (node instanceof HashNode)
 			return "{}";
 		if (node instanceof ZArrayNode)
