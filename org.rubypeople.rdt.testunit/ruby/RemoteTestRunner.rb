@@ -192,19 +192,24 @@ module Test
     end
         
     module RDT
+      def self.has_tests klass
+        method_names = klass.public_instance_methods(true)
+        method_names.any? {|method_name| method_name =~ /^test./}
+      end
+
       def self.buildSuite name
           suite = TestSuite.new(name)
           sub_suites = []
-          
+
           ::ObjectSpace.each_object(Class) do |klass|
-            if(Test::Unit::TestCase > klass)
+            if (Test::Unit::TestCase > klass && has_tests(klass))
               sub_suites << klass.suite
             end
           end
-          
+
           sub_suites.sort! {|a,b| a.name <=> b.name }
           sub_suites.each  {|s| suite << s}
-          
+
           suite
       end
     end
