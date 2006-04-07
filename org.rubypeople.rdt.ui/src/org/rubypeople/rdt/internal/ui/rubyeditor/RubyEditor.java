@@ -45,6 +45,7 @@ import org.eclipse.jface.text.source.Annotation;
 import org.eclipse.jface.text.source.IAnnotationModel;
 import org.eclipse.jface.text.source.ICharacterPairMatcher;
 import org.eclipse.jface.text.source.ISourceViewer;
+import org.eclipse.jface.text.source.ISourceViewerExtension2;
 import org.eclipse.jface.text.source.IVerticalRuler;
 import org.eclipse.jface.text.source.SourceViewerConfiguration;
 import org.eclipse.jface.text.source.projection.ProjectionSupport;
@@ -623,7 +624,10 @@ public class RubyEditor extends RubyAbstractEditor {
             }
             // for rereading the indentPrefixes for shift left/right from the
             // RubySourceViewerConfiguration
-            this.getSourceViewer().configure(this.getSourceViewerConfiguration());
+            if (getSourceViewer() instanceof ISourceViewerExtension2) {
+                ((ISourceViewerExtension2) getSourceViewer()).unconfigure();
+                this.getSourceViewer().configure(this.getSourceViewerConfiguration());
+            }
         }
     }
 
