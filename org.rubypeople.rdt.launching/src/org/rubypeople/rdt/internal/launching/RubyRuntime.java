@@ -18,6 +18,7 @@ import javax.xml.parsers.SAXParserFactory;
 
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
+import org.eclipse.core.runtime.Platform;
 import org.xml.sax.Attributes;
 import org.xml.sax.ContentHandler;
 import org.xml.sax.InputSource;
@@ -125,12 +126,25 @@ public class RubyRuntime {
 			reader.setContentHandler(getRuntimeConfigurationContentHandler());
 			Reader fileReader = this.getRuntimeConfigurationReader() ;
 			if (fileReader == null) {
+				autoDetectRubyInterpreter();
 				return ;
 			}
 			reader.parse(new InputSource(fileReader)) ;
 		} catch(Exception e) {
 			RdtLaunchingPlugin.log(e);
 		}
+	}
+
+	private void autoDetectRubyInterpreter() {		
+		IPath path = null;
+		if (Platform.getOS().equals(Platform.OS_WIN32)) {
+		  path = new Path("/ruby/bin/ruby.exe");
+		} else  {
+			path = new Path("/usr/local/bin/ruby");
+		}
+		RubyInterpreter interpreter = new RubyInterpreter("Default Ruby Interpreter", path);
+		installedInterpreters.add(interpreter);
+		selectedInterpreter = interpreter;
 	}
 
 	protected Reader getRuntimeConfigurationReader() {
