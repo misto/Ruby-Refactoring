@@ -39,5 +39,9 @@ public class RubySingletonMethod extends RubyMethod {
     public boolean isSingleton() {
         return true;
     }
+    
+    public String getElementName() {
+    	 return parent.getElementName() + "." + this.name;
+    }
 
 }
