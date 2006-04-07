@@ -27,6 +27,7 @@ package org.rubypeople.rdt.core;
 import java.util.List;
 import java.util.Map;
 
+import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
 
@@ -108,5 +109,7 @@ public interface IRubyProject extends IRubyElement, IParent {
 	public abstract Object[] getNonRubyResources() throws RubyModelException;
 
 	public abstract boolean isOnLoadpath(IRubyScript element);
+	
+	public IRubyScript getRubyScript(IFile file);
 
 }

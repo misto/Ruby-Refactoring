@@ -747,5 +747,30 @@ public class RubyModelManager implements IContentTypeChangeListener {
 				return null;
 		}
 	}
+	
+	public static IRubyElement create(IFile file, IRubyProject project) {
+		if (file == null) {
+			return null;
+		}
+		if (project == null) {
+			project = RubyCore.create(file.getProject());
+		}
+	
+		if (file.getFileExtension() != null) {
+			String name = file.getName();
+			if (org.rubypeople.rdt.internal.core.util.Util.isRubyLikeFileName(name))
+				return createRubyScriptFrom(file, project);
+		}
+		return null;
+	}
+
+	public static IRubyElement createRubyScriptFrom(IFile file, IRubyProject project) {
+		if (file == null) return null;
+
+		if (project == null) {
+			project = RubyCore.create(file.getProject());
+		}
+		return project.getRubyScript(file);
+	}
 
 }

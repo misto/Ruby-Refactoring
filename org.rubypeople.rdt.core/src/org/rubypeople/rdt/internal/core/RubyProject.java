@@ -724,4 +724,8 @@ public class RubyProject extends Openable implements IProjectNature, IRubyElemen
 		return true;
 	}
 	
+	public IRubyScript getRubyScript(IFile file) {
+		return new RubyScript(this, file, file.getName(), DefaultWorkingCopyOwner.PRIMARY);
+	}
+	
 }

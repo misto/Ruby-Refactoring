@@ -816,6 +816,10 @@ public class RubyScriptStructureBuilder implements NodeVisitor {
 		if (node == null) return "";
 		if (node instanceof HashNode)
 			return "{}";
+		if (node instanceof SelfNode)
+			return "self";
+		if (node instanceof ConstNode)
+			return ((ConstNode)node).getName();
 		if (node instanceof ZArrayNode)
 			return "[]";
 		if (node instanceof FixnumNode)
@@ -878,12 +882,12 @@ public class RubyScriptStructureBuilder implements NodeVisitor {
 		 * method naming conflicts. e.g.: class A def self.method; end def
 		 * method; end end will give us: A.method method in the Outline View.
 		 */
-		String name;
-		if (parentInfo instanceof RubyTypeElementInfo) {
-			name = new String(((RubyTypeElementInfo) parentInfo).getName())
-					+ "." + iVisited.getName();
+		String fullName;
+		String receiver = stringRepresentation(iVisited.getReceiverNode());
+		if (receiver != null && receiver.trim().length() > 0) {
+			fullName = receiver + "." + iVisited.getName();
 		} else {
-			name = iVisited.getName();
+			fullName = iVisited.getName();
 		}
 
 		// Get the visibility of the current static method
@@ -893,7 +897,7 @@ public class RubyScriptStructureBuilder implements NodeVisitor {
 
 		// Get the type of the current parent element
 		RubyElement type = getCurrentType();
-		RubyMethod method = new RubySingletonMethod(type, name, parameterNames);
+		RubyMethod method = new RubySingletonMethod(type, iVisited.getName(), parameterNames);
 		modelStack.push(method);
 
 		parentInfo.addChild(method);
@@ -903,7 +907,7 @@ public class RubyScriptStructureBuilder implements NodeVisitor {
 		// TODO Set more info!
 		infoStack.push(info);
 		ISourcePosition pos = iVisited.getPosition();
-		setKeywordRange("def", pos, info, name);
+		setKeywordRange("def", pos, info, fullName);
 
 		info.setArgumentNames(parameterNames);
 		info.setVisibility(convertVisibility(visibility));
