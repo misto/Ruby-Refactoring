@@ -53,7 +53,7 @@ public class RubyCodeScanner extends AbstractRubyScanner {
         rules.add(new CharacterRule(getToken(IRubyColorConstants.RUBY_CHARACTER)));
 
         IToken fixnumToken = getToken(IRubyColorConstants.RUBY_FIXNUM);
-        rules.add(new NumberRule(fixnumToken));
+        rules.add(new RubyNumberRule(fixnumToken));
 
         rules.add(new SymbolRule(getToken(IRubyColorConstants.RUBY_SYMBOL)));
 
