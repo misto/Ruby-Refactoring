@@ -356,12 +356,15 @@ public class RubyEditor extends RubyAbstractEditor {
 	 * Returns whether the given annotation is configured as a target for the
 	 * "Go to Next/Previous Annotation" actions
 	 * 
+	 * CHANGED TO WORK WITH 3.2 (Non-breaking in 3.1)
+	 * Method couldn't be restricted to private, changed to protected
+	 * 
 	 * @param annotation the annotation
 	 * @return <code>true</code> if this is a target, <code>false</code>
 	 *         otherwise
-	 * @since 3.0
+	 * @since 3.2
 	 */
-	private boolean isNavigationTarget(Annotation annotation) {
+	protected boolean isNavigationTarget(Annotation annotation) {
 		Preferences preferences= EditorsUI.getPluginPreferences();
 		AnnotationPreference preference= getAnnotationPreferenceLookup().getAnnotationPreference(annotation);
 //		See bug 41689
@@ -375,16 +378,21 @@ public class RubyEditor extends RubyAbstractEditor {
 	 * An annotation type is enabled if it is configured to be in the
 	 * Next/Previous tool bar drop down menu and if it is checked.
 	 * 
+	 * CHANGED TO WORK WITH 3.2 (Non-breaking in 3.1)
+	 * Annotation type must be returned
+	 * 
 	 * @param forward <code>true</code> if search direction is forward, <code>false</code> if backward
+	 * @since 3.2
 	 */
-	public void gotoAnnotation(boolean forward) {
+	public Annotation gotoAnnotation(boolean forward) {
+		Annotation annotation = null;
 		ITextSelection selection= (ITextSelection) getSelectionProvider().getSelection();
 		Position position= new Position(0, 0);
 		if (false /* delayed - see bug 18316 */) {
 			getNextAnnotation(selection.getOffset(), selection.getLength(), forward, position);
 			selectAndReveal(position.getOffset(), position.getLength());
 		} else /* no delay - see bug 18316 */ {
-			Annotation annotation= getNextAnnotation(selection.getOffset(), selection.getLength(), forward, position);
+			annotation= getNextAnnotation(selection.getOffset(), selection.getLength(), forward, position);
 			setStatusLineErrorMessage(null);
 			setStatusLineMessage(null);
 			if (annotation != null) {
@@ -393,6 +401,7 @@ public class RubyEditor extends RubyAbstractEditor {
 				setStatusLineMessage(annotation.getText());
 			}
 		}
+		return annotation;
 	}
 	
 
