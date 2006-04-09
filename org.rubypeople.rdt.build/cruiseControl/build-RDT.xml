@@ -59,6 +59,12 @@
 	<target name="dist" depends="propertiesCCBuild,clean,featureVersion,build">
 	</target>
 	
+	<target name="0.8.0.RC1">
+		<property name="cvsLabel" value="R2006-04-09_0-8-0_RC1"/>
+		<property name="label" value="0.8.0.604092300RC1"/>
+		<antcall target="integration"/>
+	</target>
+
 	<target name="0.7.0.RC1">
 		<property name="cvsLabel" value="R2005-12-22_0-7-0_RC1"/>
 		<property name="label" value="0.7.0.512282200RC1"/>
