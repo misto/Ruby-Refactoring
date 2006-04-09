@@ -155,4 +155,13 @@
 			keyfile="${user.home}/.ssh/id_download"
 			passphrase=""/>
 	</target>
+
+	<target name="deploy-sourceforge" if="label">
+		<property name="buildDirectory" value="/tmp/rdt-${label}/dist"/>
+		<ftp server="upload.sf.net" remotedir="incoming" userid="anonymous" password="mbarchfe@users.sf.net">
+			<fileset dir="${buildDirectory}">
+				<include name="org.rubypeople.rdt-${label}.zip"/>
+			</fileset>
+		</ftp>
+	</target>
 </project>
