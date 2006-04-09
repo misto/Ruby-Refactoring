@@ -5,6 +5,9 @@ Changes since 0.7.0:
 * Distinct syntax highlighting of globals
 * Distinct syntax highlighting of instance/class variables
 * Goto matching bracket action
+* Right-clicking on "ruler" to left of ruby file's contents now allows user to add bookmark or task
+* Attempts to set ruby interpreter to common install location if no interpreter has been set
+* A number of bugfixes (see http://rubyeclipse.mktec.com/cgi-bin/trac.py/query?status=closed&milestone=0.8.0&type=defect&order=priority)
 
 Release 0.7.0:
 * Debugger
