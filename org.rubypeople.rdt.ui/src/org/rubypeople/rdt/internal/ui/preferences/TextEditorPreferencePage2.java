@@ -14,7 +14,6 @@ package org.rubypeople.rdt.internal.ui.preferences;
 import java.util.ArrayList;
 
 import org.eclipse.core.runtime.IStatus;
-import org.eclipse.debug.internal.ui.actions.StatusInfo;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.DialogPage;
 import org.eclipse.jface.dialogs.IMessageProvider;
@@ -44,6 +43,7 @@ import org.eclipse.ui.editors.text.ITextEditorHelpContextIds;
 import org.eclipse.ui.help.WorkbenchHelp;
 import org.rubypeople.rdt.internal.ui.RubyPlugin;
 import org.rubypeople.rdt.internal.ui.RubyUIMessages;
+import org.rubypeople.rdt.internal.ui.dialogs.StatusInfo;
 import org.rubypeople.rdt.internal.ui.text.IRubyColorConstants;
 import org.rubypeople.rdt.ui.PreferenceConstants;
 
@@ -57,20 +57,8 @@ import org.rubypeople.rdt.ui.PreferenceConstants;
  */
 public class TextEditorPreferencePage2 extends RubyAbstractPreferencePage implements IWorkbenchPreferencePage {
 
-	protected TextPropertyWidget[] textPropertyWidgets;
 	protected Text indentationWidget;
-	protected final String[] colorProperties = {
-			IRubyColorConstants.RUBY_KEYWORD,
-			IRubyColorConstants.RUBY_MULTI_LINE_COMMENT,
-			IRubyColorConstants.RUBY_SINGLE_LINE_COMMENT,
-			IRubyColorConstants.RUBY_STRING, IRubyColorConstants.TASK_TAG,
-			IRubyColorConstants.RUBY_REGEXP, IRubyColorConstants.RUBY_COMMAND,
-			IRubyColorConstants.RUBY_FIXNUM,
-			IRubyColorConstants.RUBY_CHARACTER,
-            IRubyColorConstants.RUBY_SYMBOL,
-            IRubyColorConstants.RUBY_INSTANCE_VARIABLE,
-            IRubyColorConstants.RUBY_GLOBAL,
-			IRubyColorConstants.RUBY_DEFAULT };
+
 
 	private ModifyListener fTextFieldListener = new ModifyListener() {
 
@@ -196,10 +184,6 @@ public class TextEditorPreferencePage2 extends RubyAbstractPreferencePage implem
 		item = new TabItem(folder, SWT.NONE);
 		item.setText(RubyUIMessages.getString("RubyEditorPropertyPage.codeFormatterTabTitle"));
 		item.setControl(createCodeFormatterPage(folder));
-
-		item = new TabItem(folder, SWT.NONE);
-		item.setText("Syntax");
-		item.setControl(createSyntaxPage(folder));
 		
 		item= new TabItem(folder, SWT.NONE);
 		item.setText(RubyUIMessages.getString("RubyEditorPreferencePage.folding.title")); //$NON-NLS-1$
@@ -208,56 +192,6 @@ public class TextEditorPreferencePage2 extends RubyAbstractPreferencePage implem
 		initialize();
 		Dialog.applyDialogFont(folder);
 		return folder;
-	}
-
-	/**
-	 * @param folder
-	 * @return
-	 */
-	private Control createSyntaxPage(Composite parent) {
-		Composite composite = new Composite(parent, SWT.NONE);
-		composite.setLayoutData(new GridData(GridData.VERTICAL_ALIGN_FILL | GridData.HORIZONTAL_ALIGN_FILL));
-
-		GridLayout layout = new GridLayout();
-		layout.numColumns = 2;
-		layout.marginWidth = 0;
-		layout.marginHeight = 0;
-		layout.verticalSpacing = 10;
-
-		composite.setLayout(layout);
-
-		Group colorComposite = new Group(composite, SWT.NONE);
-		layout = new GridLayout();
-		layout.numColumns = 4;
-		layout.horizontalSpacing = 10;
-		layout.verticalSpacing = 8;
-		layout.marginWidth = 10;
-		layout.marginHeight = 10;
-
-		colorComposite.setLayout(layout);
-		colorComposite.setText(RubyUIMessages.getString("RubyEditorPropertyPage.highlighting.group")); //$NON-NLS-1$
-		GridData data = new GridData(GridData.FILL_HORIZONTAL);
-		data.horizontalSpan = 2;
-		colorComposite.setLayoutData(data);
-
-		Label header = new Label(colorComposite, SWT.BOLD);
-		header.setText(RubyUIMessages.getString("RubyEditorPropertyPage.property"));
-		header = new Label(colorComposite, SWT.BOLD);
-		header.setText(RubyUIMessages.getString("RubyEditorPropertyPage.color"));
-		header.setLayoutData(new GridData(GridData.HORIZONTAL_ALIGN_CENTER));
-		header = new Label(colorComposite, SWT.BOLD);
-		header.setText(RubyUIMessages.getString("RubyEditorPropertyPage.bold"));
-		header.setLayoutData(new GridData(GridData.HORIZONTAL_ALIGN_CENTER));
-		header = new Label(colorComposite, SWT.BOLD);
-		header.setText(RubyUIMessages.getString("RubyEditorPropertyPage.italic"));
-		header.setLayoutData(new GridData(GridData.HORIZONTAL_ALIGN_END));
-		
-		textPropertyWidgets = new TextPropertyWidget[colorProperties.length];
-		for (int i = 0; i < colorProperties.length; i++) {
-			textPropertyWidgets[i] = new TextPropertyWidget(colorComposite, colorProperties[i]);
-		}
-
-		return composite;
 	}
 
 	private void initialize() {
@@ -271,12 +205,6 @@ public class TextEditorPreferencePage2 extends RubyAbstractPreferencePage implem
 	 * @see PreferencePage#performOk()
 	 */
 	public boolean performOk() {
-		for (int i = 0; i < textPropertyWidgets.length; i++) {
-			TextPropertyWidget widget = textPropertyWidgets[i];
-			widget.stringColorEditor.store();
-			RubyPlugin.getDefault().getPreferenceStore().setValue(widget.property + PreferenceConstants.EDITOR_BOLD_SUFFIX, widget.boldCheckBox.getSelection());
-			RubyPlugin.getDefault().getPreferenceStore().setValue(widget.property + PreferenceConstants.EDITOR_ITALIC_SUFFIX, widget.italicCheckBox.getSelection());
-		}
 		fFoldingConfigurationBlock.performOk();
 		fOverlayStore.propagate();
 		RubyPlugin.getDefault().savePluginPreferences();
@@ -291,10 +219,6 @@ public class TextEditorPreferencePage2 extends RubyAbstractPreferencePage implem
 		fOverlayStore.loadDefaults();
 
 		initializeFields();
-
-		for (int i = 0; i < textPropertyWidgets.length; i++) {
-			textPropertyWidgets[i].loadDefault();
-		}
 
 		fFoldingConfigurationBlock.performDefaults();
 
@@ -398,40 +322,6 @@ public class TextEditorPreferencePage2 extends RubyAbstractPreferencePage implem
 			page.setMessage(null);
 			page.setErrorMessage(message);
 			break;
-		}
-	}
-
-	class TextPropertyWidget {
-
-		protected ColorFieldEditor stringColorEditor;
-		protected Button boldCheckBox;
-		protected Button italicCheckBox;
-		protected String property;
-
-		TextPropertyWidget(Composite parent, String property) {
-			this.property = property;
-			Label label = new Label(parent, SWT.NORMAL);
-			label.setText(RubyUIMessages.getString("RubyEditorPropertyPage." + property));
-
-			Composite dummyComposite = new Composite(parent, SWT.NONE);
-			// ColorFieldEditor sets its parent composite to 2 columns,
-			// therefore a dummyComposite is used here
-			stringColorEditor = new ColorFieldEditor(property, "", dummyComposite);
-			stringColorEditor.setPreferenceStore(getPreferenceStore());
-			stringColorEditor.load();
-
-			boldCheckBox = new Button(parent, SWT.CHECK);
-			boldCheckBox.setSelection(getPreferenceStore().getBoolean(property + PreferenceConstants.EDITOR_BOLD_SUFFIX));
-			boldCheckBox.setLayoutData(new GridData(GridData.HORIZONTAL_ALIGN_CENTER));
-			
-			italicCheckBox = new Button(parent, SWT.CHECK);
-			italicCheckBox.setSelection(getPreferenceStore().getBoolean(property + PreferenceConstants.EDITOR_ITALIC_SUFFIX));
-			italicCheckBox.setLayoutData(new GridData(GridData.HORIZONTAL_ALIGN_END));
-		}
-
-		public void loadDefault() {
-			stringColorEditor.loadDefault();
-			boldCheckBox.setSelection(getPreferenceStore().getBoolean(property + PreferenceConstants.EDITOR_BOLD_SUFFIX));
 		}
 	}
 }

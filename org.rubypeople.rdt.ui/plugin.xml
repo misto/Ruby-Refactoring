@@ -42,7 +42,7 @@
       </page>
        <page
             name="%PreferencePage.rdtTemplatePreferences"
-            category="org.rubypeople.rdt.ui.preferences.PreferencePageRubyBase"
+            category="org.rubypeople.rdt.ui.preferences.PreferencePageRubyEditor"
             class="org.rubypeople.rdt.internal.ui.preferences.RubyTemplatePreferencePage"
             id="org.rubypeople.rdt.ui.TemplatesPreferencePage">
       </page>
@@ -58,6 +58,13 @@
             class="org.rubypeople.rdt.internal.ui.preferences.MembersOrderPreferencePage"
             id="org.rubypeople.rdt.ui.preferences.MembersOrderPreferencePage">
          <keywordReference id="org.rubypeople.rdt.ui.sortorder"/>
+      </page>
+      <page
+            name="Syntax Coloring"
+            category="org.rubypeople.rdt.ui.preferences.PreferencePageRubyEditor"
+            class="org.rubypeople.rdt.internal.ui.preferences.RubyEditorColoringPreferencePage"
+            id="org.rubypeople.rdt.ui.preferences.RubyEditorColoringPreferencePage">
+         <keywordReference id="org.rubypeople.rdt.ui.syntaxcoloring"/>
       </page>
    </extension>
 <!-- =========================================================================== -->
@@ -283,6 +290,7 @@
             filenames="%EditorRubyFile.filenames"
             icon="icons/full/ctool16/ruby_page.gif"
             id="org.rubypeople.rdt.ui.EditorRubyFile"
+            symbolicFontName="org.rubypeople.rdt.ui.editors.textfont"
             name="%EditorRubyFile.name">
          <contentTypeBinding contentTypeId="org.rubypeople.rdt.core.rubySource"/>
       </editor>
@@ -292,6 +300,7 @@
             extensions=""
             contributorClass="org.rubypeople.rdt.internal.ui.rubyeditor.RubyEditorActionContributor"
             class="org.rubypeople.rdt.internal.ui.rubyeditor.ExternalRubyEditor"
+            symbolicFontName="org.rubypeople.rdt.ui.editors.textfont"
             id="org.rubypeople.rdt.ui.ExternalRubyEditor">
       </editor>
    </extension>
@@ -752,6 +761,20 @@
                id="org.eclipse.ui.texteditor.BookmarkRulerAction">
          </action>
        </viewerContribution>
+   </extension>
+   
+   <extension
+         point="org.eclipse.ui.themes">
+        <themeElementCategory label="%rubyPresentation.label" id="org.rubypeople.rdt.ui.presentation"/>
+      <fontDefinition
+            label="%rubyEditorFontDefiniton.label"
+            defaultsTo="org.eclipse.jface.textfont"
+            categoryId="org.rubypeople.rdt.ui.presentation"
+            id="org.rubypeople.rdt.ui.editors.textfont">
+         <description>
+            %rubyEditorFontDefintion.description
+         </description>
+      </fontDefinition>
    </extension>
      
 </plugin>

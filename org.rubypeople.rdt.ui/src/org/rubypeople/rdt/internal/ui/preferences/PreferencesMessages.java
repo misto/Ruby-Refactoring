@@ -74,6 +74,32 @@ public final class PreferencesMessages extends NLS {
 	public static String AppearancePreferencePage_showMembersInPackagesView;
 	public static String AppearancePreferencePage_stackViewsVerticallyInTheRubyBrowsingPerspective;
 	public static String AppearancePreferencePage_description;
+	public static String RubyEditorColoringConfigurationBlock_link;
+	public static String RubyEditorPreferencePage_coloring_element;
+	public static String RubyEditorPreferencePage_enable;
+	public static String RubyEditorPreferencePage_color;
+	public static String RubyEditorPreferencePage_bold;
+	public static String RubyEditorPreferencePage_italic;
+	public static String RubyEditorPreferencePage_strikethrough;
+	public static String RubyEditorPreferencePage_underline;
+	public static String RubyEditorPreferencePage_preview;
+	public static String RubyEditorPreferencePage_multiLineComment;
+	public static String RubyEditorPreferencePage_coloring_category_ruby;
+	public static String RubyEditorPreferencePage_singleLineComment;
+	public static String RubyEditorPreferencePage_rubyCommentTaskTags;
+	public static String RubyEditorPreferencePage_keywords;
+	public static String RubyEditorPreferencePage_strings;
+	public static String RubyEditorPreferencePage_characters;
+	public static String RubyEditorPreferencePage_commands;
+	public static String RubyEditorPreferencePage_fixnums;
+	public static String RubyEditorPreferencePage_globals;
+	public static String RubyEditorPreferencePage_regular_expressions;
+	public static String RubyEditorPreferencePage_symbols;
+	public static String RubyEditorPreferencePage_variables;
+	public static String RubyEditorPreferencePage_others;
+	public static String RubyEditorPreferencePage_colors;
+	public static String RubyEditorPreferencePage_empty_input;
+	public static String RubyEditorPreferencePage_invalid_input;
 
     static {
         NLS.initializeMessages(BUNDLE_NAME, PreferencesMessages.class);

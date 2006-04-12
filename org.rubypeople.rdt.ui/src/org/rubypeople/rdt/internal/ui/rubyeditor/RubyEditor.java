@@ -62,8 +62,11 @@ import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IPageLayout;
+import org.eclipse.ui.IPartListener2;
 import org.eclipse.ui.IViewPart;
 import org.eclipse.ui.IWorkbenchPage;
+import org.eclipse.ui.IWorkbenchPartReference;
+import org.eclipse.ui.IWorkbenchPartSite;
 import org.eclipse.ui.SelectionEnabler;
 import org.eclipse.ui.actions.ActionContext;
 import org.eclipse.ui.actions.ActionGroup;
@@ -132,6 +135,12 @@ public class RubyEditor extends RubyAbstractEditor {
      * @since 3.0
      */
     private IMarker fLastMarkerTarget = null;
+    
+	/**
+	 * The folding runner.
+	 * @since 0.9.0
+	 */
+	private ToggleFoldingRunner fFoldingRunner;
     
     /** The editor's bracket matcher */
     protected RubyPairMatcher fBracketMatcher= new RubyPairMatcher(BRACKETS);
@@ -638,6 +647,31 @@ public class RubyEditor extends RubyAbstractEditor {
                 this.getSourceViewer().configure(this.getSourceViewerConfiguration());
             }
         }
+        
+        ISourceViewer sourceViewer= getSourceViewer();
+		if (sourceViewer == null)
+			return;
+        
+		if (PreferenceConstants.EDITOR_FOLDING_PROVIDER.equals(property)) {
+			if (sourceViewer instanceof ProjectionViewer) {
+				ProjectionViewer projectionViewer= (ProjectionViewer) sourceViewer;
+				if (fProjectionModelUpdater != null)
+					fProjectionModelUpdater.uninstall();
+				// either freshly enabled or provider changed
+				fProjectionModelUpdater= RubyPlugin.getDefault().getFoldingStructureProviderRegistry().getCurrentFoldingProvider();
+				if (fProjectionModelUpdater != null) {
+					fProjectionModelUpdater.install(this, projectionViewer);
+				}
+			}
+			return;
+		}     
+		
+		if (PreferenceConstants.EDITOR_FOLDING_ENABLED.equals(property)) {
+			if (sourceViewer instanceof ProjectionViewer) {
+				new ToggleFoldingRunner().runWhenNextVisible();
+			}
+			return;
+		}
     }
 
     protected ISourceViewer createSourceViewer(Composite parent, IVerticalRuler ruler, int styles) {
@@ -1243,4 +1277,104 @@ public class RubyEditor extends RubyAbstractEditor {
                 return true;
         return false;
     }
+    
+    /**
+	 * Runner that will toggle folding either instantly (if the editor is
+	 * visible) or the next time it becomes visible. If a runner is started when
+	 * there is already one registered, the registered one is canceled as
+	 * toggling folding twice is a no-op.
+	 * <p>
+	 * The access to the fFoldingRunner field is not thread-safe, it is assumed
+	 * that <code>runWhenNextVisible</code> is only called from the UI thread.
+	 * </p>
+	 *
+	 * @since 0.9.0
+	 */
+	private final class ToggleFoldingRunner implements IPartListener2 {
+		/**
+		 * The workbench page we registered the part listener with, or
+		 * <code>null</code>.
+		 */
+		private IWorkbenchPage fPage;
+
+		/**
+		 * Does the actual toggling of projection.
+		 */
+		private void toggleFolding() {
+			ISourceViewer sourceViewer= getSourceViewer();
+			if (sourceViewer instanceof ProjectionViewer) {
+				ProjectionViewer pv= (ProjectionViewer) sourceViewer;
+				if (pv.isProjectionMode() != isFoldingEnabled()) {
+					if (pv.canDoOperation(ProjectionViewer.TOGGLE))
+						pv.doOperation(ProjectionViewer.TOGGLE);
+				}
+			}
+		}
+
+		/**
+		 * Makes sure that the editor's folding state is correct the next time
+		 * it becomes visible. If it already is visible, it toggles the folding
+		 * state. If not, it either registers a part listener to toggle folding
+		 * when the editor becomes visible, or cancels an already registered
+		 * runner.
+		 */
+		public void runWhenNextVisible() {
+			// if there is one already: toggling twice is the identity
+			if (fFoldingRunner != null) {
+				fFoldingRunner.cancel();
+				return;
+			}
+			IWorkbenchPartSite site= getSite();
+			if (site != null) {
+				IWorkbenchPage page= site.getPage();
+				if (!page.isPartVisible(RubyEditor.this)) {
+					// if we're not visible - defer until visible
+					fPage= page;
+					fFoldingRunner= this;
+					page.addPartListener(this);
+					return;
+				}
+			}
+			// we're visible - run now
+			toggleFolding();
+		}
+
+		/**
+		 * Remove the listener and clear the field.
+		 */
+		private void cancel() {
+			if (fPage != null) {
+				fPage.removePartListener(this);
+				fPage= null;
+			}
+			if (fFoldingRunner == this)
+				fFoldingRunner= null;
+		}
+
+		/*
+		 * @see org.eclipse.ui.IPartListener2#partVisible(org.eclipse.ui.IWorkbenchPartReference)
+		 */
+		public void partVisible(IWorkbenchPartReference partRef) {
+			if (RubyEditor.this.equals(partRef.getPart(false))) {
+				cancel();
+				toggleFolding();
+			}
+		}
+
+		/*
+		 * @see org.eclipse.ui.IPartListener2#partClosed(org.eclipse.ui.IWorkbenchPartReference)
+		 */
+		public void partClosed(IWorkbenchPartReference partRef) {
+			if (RubyEditor.this.equals(partRef.getPart(false))) {
+				cancel();
+			}
+		}
+
+		public void partActivated(IWorkbenchPartReference partRef) {}
+		public void partBroughtToTop(IWorkbenchPartReference partRef) {}
+		public void partDeactivated(IWorkbenchPartReference partRef) {}
+		public void partOpened(IWorkbenchPartReference partRef) {}
+		public void partHidden(IWorkbenchPartReference partRef) {}
+		public void partInputChanged(IWorkbenchPartReference partRef) {}
+	}
 }

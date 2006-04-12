@@ -26,6 +26,8 @@ public abstract class AbstractRubyScanner extends BufferedRuleBasedScanner {
 	private String[] fPropertyNamesColor;
 	private String[] fPropertyNamesBold;
 	private String[] fPropertyNamesItalic;
+	private String[] fPropertyNamesStrikethrough;
+	private String[] fPropertyNamesUnderline;
 	private IColorManager fColorManager;
 	private IPreferenceStore fPreferenceStore;
 	private boolean fNeedsLazyColorLoading;
@@ -91,35 +93,57 @@ public abstract class AbstractRubyScanner extends BufferedRuleBasedScanner {
 		int length = fPropertyNamesColor.length;
 		fPropertyNamesBold = new String[length];
 		fPropertyNamesItalic = new String[length];
+		fPropertyNamesStrikethrough = new String[length];
+		fPropertyNamesUnderline = new String[length];
 
+		for (int i= 0; i < length; i++) {
+			fPropertyNamesBold[i]= getBoldKey(fPropertyNamesColor[i]);
+			fPropertyNamesItalic[i]= getItalicKey(fPropertyNamesColor[i]);
+			fPropertyNamesStrikethrough[i]= getStrikethroughKey(fPropertyNamesColor[i]);
+			fPropertyNamesUnderline[i]= getUnderlineKey(fPropertyNamesColor[i]);
+		}
+		
 		fNeedsLazyColorLoading = Display.getCurrent() == null;
-
 		for (int i = 0; i < length; i++) {
-			fPropertyNamesBold[i] = fPropertyNamesColor[i] + PreferenceConstants.EDITOR_BOLD_SUFFIX;
-			fPropertyNamesItalic[i] = fPropertyNamesColor[i] + PreferenceConstants.EDITOR_ITALIC_SUFFIX;
 			if (fNeedsLazyColorLoading)
-				addTokenWithProxyAttribute(fPropertyNamesColor[i], fPropertyNamesBold[i], fPropertyNamesItalic[i]);
+				addTokenWithProxyAttribute(fPropertyNamesColor[i], fPropertyNamesBold[i], fPropertyNamesItalic[i], fPropertyNamesStrikethrough[i], fPropertyNamesUnderline[i]);
 			else
-				addToken(fPropertyNamesColor[i], fPropertyNamesBold[i], fPropertyNamesItalic[i]);
+				addToken(fPropertyNamesColor[i], fPropertyNamesBold[i], fPropertyNamesItalic[i], fPropertyNamesStrikethrough[i], fPropertyNamesUnderline[i]);
 		}
 
 		initializeRules();
 	}
+	
+	protected String getBoldKey(String colorKey) {
+		return colorKey + PreferenceConstants.EDITOR_BOLD_SUFFIX;
+	}
 
-	private void addTokenWithProxyAttribute(String colorKey, String boldKey, String italicKey) {
-		fTokenMap.put(colorKey, new Token(createTextAttribute(null, boldKey, italicKey)));
+	protected String getItalicKey(String colorKey) {
+		return colorKey + PreferenceConstants.EDITOR_ITALIC_SUFFIX;
+	}
+	
+	protected String getStrikethroughKey(String colorKey) {
+		return colorKey + PreferenceConstants.EDITOR_STRIKETHROUGH_SUFFIX;
+	}
+	
+	protected String getUnderlineKey(String colorKey) {
+		return colorKey + PreferenceConstants.EDITOR_UNDERLINE_SUFFIX;
+	}
+
+	private void addTokenWithProxyAttribute(String colorKey, String boldKey, String italicKey, String strikethroughKey, String underlineKey) {
+		fTokenMap.put(colorKey, new Token(createTextAttribute(null, boldKey, italicKey, strikethroughKey, underlineKey)));
 	}
 
 	private void resolveProxyAttributes() {
 		if (fNeedsLazyColorLoading && Display.getCurrent() != null) {
 			for (int i = 0; i < fPropertyNamesColor.length; i++) {
-				addToken(fPropertyNamesColor[i], fPropertyNamesBold[i], fPropertyNamesItalic[i]);
+				addToken(fPropertyNamesColor[i], fPropertyNamesBold[i], fPropertyNamesItalic[i], fPropertyNamesStrikethrough[i], fPropertyNamesUnderline[i]);
 			}
 			fNeedsLazyColorLoading = false;
 		}
 	}
 
-	private void addToken(String colorKey, String boldKey, String italicKey) {
+	private void addToken(String colorKey, String boldKey, String italicKey, String strikethroughKey, String underlineKey) {
 		if (fColorManager != null && colorKey != null && fColorManager.getColor(colorKey) == null) {
 			RGB rgb = PreferenceConverter.getColor(fPreferenceStore, colorKey);
 			if (fColorManager instanceof IColorManagerExtension) {
@@ -130,10 +154,10 @@ public abstract class AbstractRubyScanner extends BufferedRuleBasedScanner {
 		}
 
 		if (!fNeedsLazyColorLoading)
-			fTokenMap.put(colorKey, new Token(createTextAttribute(colorKey, boldKey, italicKey)));
+			fTokenMap.put(colorKey, new Token(createTextAttribute(colorKey, boldKey, italicKey, strikethroughKey, underlineKey)));
 		else {
 			Token token = ((Token) fTokenMap.get(colorKey));
-			if (token != null) token.setData(createTextAttribute(colorKey, boldKey, italicKey));
+			if (token != null) token.setData(createTextAttribute(colorKey, boldKey, italicKey, strikethroughKey, underlineKey));
 		}
 	}
 
@@ -152,15 +176,27 @@ public abstract class AbstractRubyScanner extends BufferedRuleBasedScanner {
 	 *            the bold preference key
 	 * @param italicKey
 	 *            the italic preference key
+	 * @param strikethroughKey
+	 *            the strikethrough preference key
+	 * @param underlineKey
+	 *            the underline preference key
 	 * @return the created text attribute
-	 * @since 3.0
+	 * @since 0.9.0
 	 */
-	private TextAttribute createTextAttribute(String colorKey, String boldKey, String italicKey) {
-		Color color = null;
-		if (colorKey != null) color = fColorManager.getColor(colorKey);
+	private TextAttribute createTextAttribute(String colorKey, String boldKey, String italicKey, String strikethroughKey, String underlineKey) {	
+		Color color= null;
+		if (colorKey != null)
+			color= fColorManager.getColor(colorKey);
 
-		int style = fPreferenceStore.getBoolean(boldKey) ? SWT.BOLD : SWT.NORMAL;
-		if (fPreferenceStore.getBoolean(italicKey)) style |= SWT.ITALIC;
+		int style= fPreferenceStore.getBoolean(boldKey) ? SWT.BOLD : SWT.NORMAL;
+		if (fPreferenceStore.getBoolean(italicKey))
+			style |= SWT.ITALIC;
+
+		if (fPreferenceStore.getBoolean(strikethroughKey))
+			style |= TextAttribute.STRIKETHROUGH;
+
+		if (fPreferenceStore.getBoolean(underlineKey))
+			style |= TextAttribute.UNDERLINE;
 
 		return new TextAttribute(color, null, style);
 	}
@@ -178,7 +214,12 @@ public abstract class AbstractRubyScanner extends BufferedRuleBasedScanner {
 			adaptToColorChange(token, event);
 		else if (fPropertyNamesBold[index].equals(p))
 			adaptToStyleChange(token, event, SWT.BOLD);
-		else if (fPropertyNamesItalic[index].equals(p)) adaptToStyleChange(token, event, SWT.ITALIC);
+		else if (fPropertyNamesItalic[index].equals(p)) 
+			adaptToStyleChange(token, event, SWT.ITALIC);
+		else if (fPropertyNamesStrikethrough[index].equals(p)) 
+			adaptToStyleChange(token, event, TextAttribute.STRIKETHROUGH);
+		else if (fPropertyNamesUnderline[index].equals(p)) 
+			adaptToStyleChange(token, event, TextAttribute.UNDERLINE);
 	}
 
 	private void adaptToStyleChange(Token token, PropertyChangeEvent event, int styleAttribute) {
@@ -230,7 +271,7 @@ public abstract class AbstractRubyScanner extends BufferedRuleBasedScanner {
 		if (property != null) {
 			int length = fPropertyNamesColor.length;
 			for (int i = 0; i < length; i++) {
-				if (property.equals(fPropertyNamesColor[i]) || property.equals(fPropertyNamesBold[i]) || property.equals(fPropertyNamesItalic[i])) return i;
+				if (property.equals(fPropertyNamesColor[i]) || property.equals(fPropertyNamesBold[i]) || property.equals(fPropertyNamesItalic[i]) || property.equals(fPropertyNamesStrikethrough[i]) || property.equals(fPropertyNamesUnderline[i])) return i;
 			}
 		}
 		return -1;

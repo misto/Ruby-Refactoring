@@ -280,7 +280,20 @@ public class PreferenceConstants {
 	 * @since 0.8.0
 	 */
 	public static final String LINK_BROWSING_MEMBERS_TO_EDITOR= "org.rubypeople.rdt.ui.browsing.memberstoeditor"; //$NON-NLS-1$
+
+	/**
+	 * Preference key suffix for strikethrough text style preference keys.
+	 * 
+	 * @since 0.9.0
+	 */
+	public static final String EDITOR_STRIKETHROUGH_SUFFIX= "_strikethrough"; //$NON-NLS-1$
 	
+	/**
+	 * Preference key suffix for underline text style preference keys.
+	 * 
+	 * @since 0.9.0
+	 */
+	public static final String EDITOR_UNDERLINE_SUFFIX= "_underline"; //$NON-NLS-1$	
 
     public static void initializeDefaultValues(IPreferenceStore store) {
         store.setDefault(PreferenceConstants.EDITOR_SHOW_SEGMENTS, false);

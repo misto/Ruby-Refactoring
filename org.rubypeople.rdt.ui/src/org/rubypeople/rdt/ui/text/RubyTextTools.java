@@ -126,9 +126,6 @@ public class RubyTextTools {
         fCorePreferenceStore = coreStore;
         if (fCorePreferenceStore != null)
             fCorePreferenceStore.addPropertyChangeListener(fPreferenceListener);
-
-        // fJavaDocScanner= new JavaDocScanner(fColorManager, store, coreStore);
-        // fPartitionScanner= new FastJavaPartitionScanner();
     }
 
     /**
@@ -149,8 +146,6 @@ public class RubyTextTools {
         if (stringScanner.affectsBehavior(event)) stringScanner.adaptToPreferenceChange(event);
         if (fRegexpScanner.affectsBehavior(event)) fRegexpScanner.adaptToPreferenceChange(event);
         if (fCommandScanner.affectsBehavior(event)) fCommandScanner.adaptToPreferenceChange(event);
-        // if (fJavaDocScanner.affectsBehavior(event))
-        // fJavaDocScanner.adaptToPreferenceChange(event);
     }
 
     public IDocumentPartitioner createDocumentPartitioner() {

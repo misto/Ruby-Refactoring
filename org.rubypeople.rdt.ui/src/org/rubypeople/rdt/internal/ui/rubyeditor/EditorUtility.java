@@ -4,6 +4,7 @@ import java.lang.reflect.InvocationTargetException;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IMarker;
+import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -27,9 +28,11 @@ import org.eclipse.ui.texteditor.ITextEditorActionDefinitionIds;
 import org.eclipse.ui.texteditor.TextEditorAction;
 import org.rubypeople.rdt.core.IMember;
 import org.rubypeople.rdt.core.IRubyElement;
+import org.rubypeople.rdt.core.IRubyProject;
 import org.rubypeople.rdt.core.IRubyScript;
 import org.rubypeople.rdt.core.ISourceRange;
 import org.rubypeople.rdt.core.ISourceReference;
+import org.rubypeople.rdt.core.RubyCore;
 import org.rubypeople.rdt.core.RubyModelException;
 import org.rubypeople.rdt.internal.corext.util.RubyModelUtil;
 import org.rubypeople.rdt.internal.ui.RubyPlugin;
@@ -233,6 +236,28 @@ public class EditorUtility {
 
 			provider.setSelection(new TextSelection(offset, length));
 		}
+	}
+	
+	/**
+	 * Returns the Ruby project for a given editor input or <code>null</code> if no corresponding
+	 * Ruby project exists.
+	 *
+	 * @param input the editor input
+	 * @return the corresponding Ruby project
+	 *
+	 * @since 0.9.0
+	 */
+	public static IRubyProject getRubyProject(IEditorInput input) {
+		IRubyProject rProject= null;
+		if (input instanceof IFileEditorInput) {
+			IProject project= ((IFileEditorInput)input).getFile().getProject();
+			if (project != null) {
+				rProject= RubyCore.create(project);
+				if (!rProject.exists())
+					rProject= null;
+			}
+		}
+		return rProject;
 	}
 
 }

@@ -110,32 +110,6 @@ public class RubySourceViewerConfiguration extends TextSourceViewerConfiguration
         fDocumentPartitioning = partitioning;
         initializeScanners();
     }
-
-    /**
-     * Creates a new Ruby source viewer configuration for viewers in the given
-     * editor using the given Ruby tools.
-     * 
-     * @param tools
-     *            the Ruby text tools to be used
-     * @param editor
-     *            the editor in which the configured viewer(s) will reside, or
-     *            <code>null</code> if none
-     * @see RubyTextTools
-     * @deprecated As of 0.8.0, replaced by
-     *             {@link RubySourceViewerConfiguration#JavaSourceViewerConfiguration(IColorManager, IPreferenceStore, ITextEditor, String)}
-     */
-    public RubySourceViewerConfiguration(RubyTextTools tools, RubyAbstractEditor editor) {
-        super(createPreferenceStore(tools));
-        textTools = tools;
-        fColorManager = tools.getColorManager();
-        fCodeScanner = (AbstractRubyScanner) textTools.getCodeScanner();
-        fMultilineCommentScanner = (AbstractRubyScanner) textTools.getMultilineCommentScanner();
-        fSinglelineCommentScanner = (AbstractRubyScanner) textTools.getSinglelineCommentScanner();
-        fStringScanner = (AbstractRubyScanner) textTools.getStringScanner();
-        fRegexpScanner = (SingleTokenRubyCodeScanner) textTools.getRegexpScanner();
-        fCommandScanner = (SingleTokenRubyCodeScanner) textTools.getCommandScanner();
-        fTextEditor = editor;
-    }
     
     /*
      * @see SourceViewerConfiguration#getContentFormatter(ISourceViewer)

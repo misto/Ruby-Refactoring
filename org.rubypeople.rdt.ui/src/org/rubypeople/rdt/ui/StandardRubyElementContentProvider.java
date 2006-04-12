@@ -15,14 +15,19 @@ import java.util.List;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
-import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
-
 import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.viewers.Viewer;
-
-import org.rubypeople.rdt.core.*;
+import org.rubypeople.rdt.core.IParent;
+import org.rubypeople.rdt.core.IRubyElement;
+import org.rubypeople.rdt.core.IRubyElementDelta;
+import org.rubypeople.rdt.core.IRubyModel;
+import org.rubypeople.rdt.core.IRubyProject;
+import org.rubypeople.rdt.core.IRubyScript;
+import org.rubypeople.rdt.core.ISourceReference;
+import org.rubypeople.rdt.core.RubyCore;
+import org.rubypeople.rdt.core.RubyModelException;
  
 /**
  * A base content provider for Ruby elements. It provides access to the
