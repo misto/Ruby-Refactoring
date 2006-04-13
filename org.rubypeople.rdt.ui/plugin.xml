@@ -60,11 +60,18 @@
          <keywordReference id="org.rubypeople.rdt.ui.sortorder"/>
       </page>
       <page
-            name="Syntax Coloring"
+            name="%editorSyntaxColoringPage"
             category="org.rubypeople.rdt.ui.preferences.PreferencePageRubyEditor"
             class="org.rubypeople.rdt.internal.ui.preferences.RubyEditorColoringPreferencePage"
             id="org.rubypeople.rdt.ui.preferences.RubyEditorColoringPreferencePage">
          <keywordReference id="org.rubypeople.rdt.ui.syntaxcoloring"/>
+      </page>
+      <page
+            name="%editorFoldingPage"
+            category="org.rubypeople.rdt.ui.preferences.PreferencePageRubyEditor"
+            class="org.rubypeople.rdt.internal.ui.preferences.FoldingPreferencePage"
+            id="org.rubypeople.rdt.ui.preferences.FoldingPreferencePage">
+         <keywordReference id="org.rubypeople.rdt.ui.folding"/>
       </page>
    </extension>
 <!-- =========================================================================== -->
@@ -436,6 +443,12 @@
             description="%ActionDefinition.gotoMatchingBracket.description"
             id="org.rubypeople.rdt.ui.edit.text.ruby.goto.matching.bracket"
             name="%ActionDefinition.gotoMatchingBracket.name">
+      </command>
+      <command
+            name="%ActionDefinition.openEditor.name"
+            description="%ActionDefinition.openEditor.description"
+            categoryId="org.eclipse.ui.category.navigate"
+            id="org.rubypeople.rdt.ui.edit.text.ruby.open.editor">
       </command>
    </extension>
    <extension

@@ -15,15 +15,6 @@ import java.util.List;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.IStatus;
-
-import org.eclipse.swt.SWT;
-import org.eclipse.swt.graphics.Font;
-import org.eclipse.swt.graphics.Image;
-import org.eclipse.swt.layout.GridData;
-import org.eclipse.swt.layout.GridLayout;
-import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Control;
-
 import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.jface.viewers.IFontProvider;
 import org.eclipse.jface.viewers.ITableLabelProvider;
@@ -31,8 +22,15 @@ import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.viewers.ViewerSorter;
 import org.eclipse.jface.window.Window;
-
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.graphics.Font;
+import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.layout.GridData;
+import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Control;
 import org.rubypeople.rdt.core.RubyCore;
+import org.rubypeople.rdt.internal.corext.util.Messages;
 import org.rubypeople.rdt.internal.ui.dialogs.StatusInfo;
 import org.rubypeople.rdt.internal.ui.wizards.IStatusChangeListener;
 import org.rubypeople.rdt.internal.ui.wizards.dialogfields.DialogField;
@@ -95,7 +93,7 @@ public class TodoTaskConfigurationBlock extends OptionsConfigurationBlock {
 			if (columnIndex == 0) {
 				String name= task.name;
 				if (isDefaultTask(task)) {
-					name=PreferencesMessages.TodoTaskConfigurationBlock_tasks_default; 
+					name=Messages.format(PreferencesMessages.TodoTaskConfigurationBlock_tasks_default, name); 
 				}
 				return name;
 			}

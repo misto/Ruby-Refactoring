@@ -153,6 +153,7 @@ public class RubyNewClassWizard extends Wizard implements INewWizard {
      * @return
      */
     private String classNameToFileName(String className) {
+    	  className = stripNamespace(className);
         StringBuffer buffer = new StringBuffer();
         for (int i = 0; i < className.length(); i++) {
             char c = className.charAt(i);
@@ -166,7 +167,15 @@ public class RubyNewClassWizard extends Wizard implements INewWizard {
         return buffer.toString();
     }
 
-    /**
+    private String stripNamespace(String className) {
+		if (className == null || className.length() == 0) return className;
+		if (className.lastIndexOf("::") != -1) {
+			return className.substring(className.lastIndexOf("::") + 2);
+		}
+		return className;
+	}
+
+	/**
      * We will initialize file contents with a sample text.
      * 
      * @param className

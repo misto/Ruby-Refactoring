@@ -17,7 +17,6 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.DialogPage;
 import org.eclipse.jface.dialogs.IMessageProvider;
-import org.eclipse.jface.preference.ColorFieldEditor;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
@@ -26,10 +25,8 @@ import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
-import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
-import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Link;
 import org.eclipse.swt.widgets.Shell;
@@ -44,7 +41,6 @@ import org.eclipse.ui.help.WorkbenchHelp;
 import org.rubypeople.rdt.internal.ui.RubyPlugin;
 import org.rubypeople.rdt.internal.ui.RubyUIMessages;
 import org.rubypeople.rdt.internal.ui.dialogs.StatusInfo;
-import org.rubypeople.rdt.internal.ui.text.IRubyColorConstants;
 import org.rubypeople.rdt.ui.PreferenceConstants;
 
 /**
@@ -75,9 +71,6 @@ public class TextEditorPreferencePage2 extends RubyAbstractPreferencePage implem
 			numberFieldChanged((Text) e.widget);
 		}
 	};
-
-    private org.rubypeople.rdt.internal.ui.preferences.FoldingConfigurationBlock fFoldingConfigurationBlock;
-
 
 	public TextEditorPreferencePage2() {
 		setDescription(RubyUIMessages.getString("RubyEditorPreferencePage.description")); //$NON-NLS-1$
@@ -166,10 +159,7 @@ public class TextEditorPreferencePage2 extends RubyAbstractPreferencePage implem
 	/*
 	 * @see PreferencePage#createContents(Composite)
 	 */
-	protected Control createContents(Composite parent) {	    
-	    
-	    fFoldingConfigurationBlock= new FoldingConfigurationBlock(fOverlayStore);
-	    
+	protected Control createContents(Composite parent) {	    	    
 	    fOverlayStore.load();
 		fOverlayStore.start();
 
@@ -184,10 +174,6 @@ public class TextEditorPreferencePage2 extends RubyAbstractPreferencePage implem
 		item = new TabItem(folder, SWT.NONE);
 		item.setText(RubyUIMessages.getString("RubyEditorPropertyPage.codeFormatterTabTitle"));
 		item.setControl(createCodeFormatterPage(folder));
-		
-		item= new TabItem(folder, SWT.NONE);
-		item.setText(RubyUIMessages.getString("RubyEditorPreferencePage.folding.title")); //$NON-NLS-1$
-		item.setControl(fFoldingConfigurationBlock.createControl(folder));
 
 		initialize();
 		Dialog.applyDialogFont(folder);
@@ -195,17 +181,13 @@ public class TextEditorPreferencePage2 extends RubyAbstractPreferencePage implem
 	}
 
 	private void initialize() {
-
 		initializeFields();
-	
-		fFoldingConfigurationBlock.initialize();
 	}
 
 	/*
 	 * @see PreferencePage#performOk()
 	 */
 	public boolean performOk() {
-		fFoldingConfigurationBlock.performOk();
 		fOverlayStore.propagate();
 		RubyPlugin.getDefault().savePluginPreferences();
 		return true;
@@ -220,17 +202,13 @@ public class TextEditorPreferencePage2 extends RubyAbstractPreferencePage implem
 
 		initializeFields();
 
-		fFoldingConfigurationBlock.performDefaults();
-
 		super.performDefaults();
 	}
 
 	/*
 	 * @see DialogPage#dispose()
 	 */
-	public void dispose() {
-	    fFoldingConfigurationBlock.dispose();
-	    
+	public void dispose() {	    
 		if (fOverlayStore != null) {
 			fOverlayStore.stop();
 			fOverlayStore = null;

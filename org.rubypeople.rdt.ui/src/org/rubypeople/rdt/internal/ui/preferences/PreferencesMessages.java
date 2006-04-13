@@ -100,6 +100,7 @@ public final class PreferencesMessages extends NLS {
 	public static String RubyEditorPreferencePage_colors;
 	public static String RubyEditorPreferencePage_empty_input;
 	public static String RubyEditorPreferencePage_invalid_input;
+	public static String RubyEditorPreferencePage_folding_title;
 
     static {
         NLS.initializeMessages(BUNDLE_NAME, PreferencesMessages.class);

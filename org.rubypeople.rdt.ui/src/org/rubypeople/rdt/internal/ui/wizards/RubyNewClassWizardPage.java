@@ -1,5 +1,7 @@
 package org.rubypeople.rdt.internal.ui.wizards;
 
+import java.util.StringTokenizer;
+
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.ResourcesPlugin;
@@ -215,6 +217,10 @@ public class RubyNewClassWizardPage extends WizardPage {
         if (className == null || className.length() == 0) return false;
         if (!Character.isLowerCase(className.charAt(0)) && !Character.isLetter(className.charAt(0)))
             return false;
+        int namespaceDelimeterIndex = className.indexOf("::");
+        if (namespaceDelimeterIndex != -1) {
+        	return isConstant(className.substring(0, namespaceDelimeterIndex)) && isConstant(className.substring(namespaceDelimeterIndex+2));
+        }
         for (int i = 0; i < className.length(); i++) {
             char c = className.charAt(i);
             if (!Character.isLetterOrDigit(c) && c != '_') return false;
