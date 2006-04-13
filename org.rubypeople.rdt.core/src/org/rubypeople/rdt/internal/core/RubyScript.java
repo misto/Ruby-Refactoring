@@ -467,6 +467,10 @@ public class RubyScript extends Openable implements IRubyScript {
 		RubyScript other = (RubyScript) obj;
 		return this.owner.equals(other.owner) && super.equals(obj);
 	}
+	
+	public int hashCode() {
+		return this.underlyingFile.hashCode();
+	}
 
 	public boolean exists() {
 		// working copy always exists in the model until it is gotten rid of
