@@ -32,7 +32,7 @@ public class RubyNumberRule extends NumberRule {
 				do {
 					c= scanner.read();
 				} while (Character.isDigit((char) c));
-				if ( Character.isLetter((char)c) ){
+				if ( Character.isLetter((char)c) || ((char)c) == '_' ){
 					scanner.unread();
 					return Token.UNDEFINED;
 				}
