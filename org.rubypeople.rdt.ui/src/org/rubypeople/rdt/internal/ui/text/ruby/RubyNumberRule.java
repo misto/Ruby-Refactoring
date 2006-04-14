@@ -20,7 +20,7 @@ public class RubyNumberRule extends NumberRule {
 			scanner.unread();
 			scanner.unread();
 			c = scanner.read();
-			if ( Character.isLetter((char)c)){
+			if ( Character.isLetter((char)c) || ((char)c) == '_'){
 				do {
 					c= scanner.read();
 				} while (Character.isDigit((char) c));
