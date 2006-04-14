@@ -1,7 +1,7 @@
 <cruisecontrol>
 	<project name="RDT" buildafterfailed="false">
 		<plugin name="labelincrementer" classname="org.rubypeople.rdt.cruisecontrol.plugin.EclipsePluginLabelProvider"/>
-		<labelincrementer prefix="0.7.0"/>
+		<labelincrementer prefix="0.8.0"/>
 
 		<!-- Defines where cruise looks for changes, to decide whether to run the build --> 
 		<modificationset quietperiod="120"> 

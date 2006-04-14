@@ -10,7 +10,7 @@ import org.jdom.Element;
 public class EclipsePluginLabelProvider implements LabelIncrementer
 {
 	private String defaultLabel = "0.1.0" ;
-	private String prefix = "0.7.0" ;
+	private String prefix = "0.8.0" ;
 	
 	public EclipsePluginLabelProvider() {
 		super() ;
