@@ -27,12 +27,9 @@ public class MembersOrderPreferenceCache implements IPropertyChangeListener {
     public static final int CONSTRUCTORS_INDEX= 1;
     public static final int METHOD_INDEX= 2;
     public static final int FIELDS_INDEX= 3;
-    public static final int INIT_INDEX= 4;
-    public static final int STATIC_FIELDS_INDEX= 5;
-    public static final int STATIC_INIT_INDEX= 6;
-    public static final int STATIC_METHODS_INDEX= 7;
-    public static final int ENUM_CONSTANTS_INDEX= 8;
-    public static final int N_CATEGORIES= ENUM_CONSTANTS_INDEX + 1;
+    public static final int STATIC_FIELDS_INDEX= 4;
+    public static final int STATIC_METHODS_INDEX= 5;
+    public static final int N_CATEGORIES= STATIC_METHODS_INDEX + 1;
     
     private static final int PUBLIC_INDEX= 0;
     private static final int PRIVATE_INDEX= 1;
@@ -105,7 +102,6 @@ public class MembersOrderPreferenceCache implements IPropertyChangeListener {
     private boolean fillCategoryOffsetsFromPreferenceString(String str, int[] offsets) {
         StringTokenizer tokenizer= new StringTokenizer(str, ","); //$NON-NLS-1$
         int i= 0;
-        offsets[ENUM_CONSTANTS_INDEX]= i++; // enum constants always on top
         
         while (tokenizer.hasMoreTokens()) {
             String token= tokenizer.nextToken().trim();
@@ -115,12 +111,8 @@ public class MembersOrderPreferenceCache implements IPropertyChangeListener {
                 offsets[METHOD_INDEX]= i++;
             } else if ("F".equals(token)) { //$NON-NLS-1$
                 offsets[FIELDS_INDEX]= i++;
-            } else if ("I".equals(token)) { //$NON-NLS-1$
-                offsets[INIT_INDEX]= i++;
             } else if ("SF".equals(token)) { //$NON-NLS-1$
                 offsets[STATIC_FIELDS_INDEX]= i++;
-            } else if ("SI".equals(token)) { //$NON-NLS-1$
-                offsets[STATIC_INIT_INDEX]= i++;
             } else if ("SM".equals(token)) { //$NON-NLS-1$
                 offsets[STATIC_METHODS_INDEX]= i++;
             } else if ("C".equals(token)) { //$NON-NLS-1$
