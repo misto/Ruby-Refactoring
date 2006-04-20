@@ -2,6 +2,8 @@ package org.rubypeople.rdt.ui;
 
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.jface.preference.IPreferenceStore;
+import org.eclipse.jface.preference.PreferenceConverter;
+import org.eclipse.swt.graphics.RGB;
 import org.rubypeople.rdt.internal.launching.RubyInterpreter;
 import org.rubypeople.rdt.internal.launching.RubyRuntime;
 import org.rubypeople.rdt.internal.ui.RubyPlugin;
@@ -295,6 +297,26 @@ public class PreferenceConstants {
 	 */
 	public static final String EDITOR_UNDERLINE_SUFFIX= "_underline"; //$NON-NLS-1$	
 
+	/**
+	 * A named preference that controls whether bracket matching highlighting is turned on or off.
+	 * <p>
+	 * Value is of type <code>Boolean</code>.
+	 * </p>
+	 */
+	public final static String EDITOR_MATCHING_BRACKETS= "matchingBrackets"; //$NON-NLS-1$
+
+	/**
+	 * A named preference that holds the color used to highlight matching brackets.
+	 * <p>
+	 * Value is of type <code>String</code>. A RGB color value encoded as a string 
+	 * using class <code>PreferenceConverter</code>
+	 * </p>
+	 * 
+	 * @see org.eclipse.jface.resource.StringConverter
+	 * @see org.eclipse.jface.preference.PreferenceConverter
+	 */
+	public final static String EDITOR_MATCHING_BRACKETS_COLOR=  "matchingBracketsColor"; //$NON-NLS-1$
+
     public static void initializeDefaultValues(IPreferenceStore store) {
         store.setDefault(PreferenceConstants.EDITOR_SHOW_SEGMENTS, false);
         
@@ -342,6 +364,11 @@ public class PreferenceConstants {
                 .getDefaultPath(PreferenceConstants.DEFAULT_RI_CMD));
 
         store.setDefault(PreferenceConstants.EDITOR_SYNC_OUTLINE_ON_CURSOR_MOVE, true);
+        
+		// RubyEditorPreferencePage
+		store.setDefault(PreferenceConstants.EDITOR_MATCHING_BRACKETS, true);
+		PreferenceConverter.setDefault(store, PreferenceConstants.EDITOR_MATCHING_BRACKETS_COLOR, new RGB(192, 192,192));
+
 
     }
 

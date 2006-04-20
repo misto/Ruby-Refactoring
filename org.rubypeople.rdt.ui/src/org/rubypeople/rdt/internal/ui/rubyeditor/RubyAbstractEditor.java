@@ -30,6 +30,7 @@ import org.eclipse.ui.editors.text.EditorsUI;
 import org.eclipse.ui.editors.text.TextEditor;
 import org.eclipse.ui.texteditor.AbstractDecoratedTextEditorPreferenceConstants;
 import org.eclipse.ui.texteditor.ChainedPreferenceStore;
+import org.eclipse.ui.texteditor.SourceViewerDecorationSupport;
 import org.eclipse.ui.views.contentoutline.ContentOutline;
 import org.eclipse.ui.views.contentoutline.IContentOutlinePage;
 import org.osgi.service.prefs.BackingStoreException;
@@ -47,7 +48,9 @@ import org.rubypeople.rdt.core.formatter.DefaultCodeFormatterConstants;
 import org.rubypeople.rdt.internal.ui.RubyPlugin;
 import org.rubypeople.rdt.internal.ui.text.IRubyPartitions;
 import org.rubypeople.rdt.internal.ui.text.PreferencesAdapter;
+import org.rubypeople.rdt.internal.ui.text.RubyPairMatcher;
 import org.rubypeople.rdt.ui.IWorkingCopyManager;
+import org.rubypeople.rdt.ui.PreferenceConstants;
 import org.rubypeople.rdt.ui.text.RubySourceViewerConfiguration;
 import org.rubypeople.rdt.ui.text.RubyTextTools;
 
@@ -62,6 +65,17 @@ public abstract class RubyAbstractEditor extends TextEditor {
     /** The selection changed listener */
     protected AbstractSelectionChangedListener fOutlineSelectionChangedListener = new OutlineSelectionChangedListener();
     private RubyOutlinePage fOutlinePage;
+    
+    
+	/** Preference key for matching brackets */
+	protected final static String MATCHING_BRACKETS=  PreferenceConstants.EDITOR_MATCHING_BRACKETS;
+	/** Preference key for matching brackets color */
+	protected final static String MATCHING_BRACKETS_COLOR=  PreferenceConstants.EDITOR_MATCHING_BRACKETS_COLOR;
+
+	protected final static char[] BRACKETS= { '{', '}', '(', ')', '[', ']', '<', '>' };
+
+	/** The editor's bracket matcher */
+	protected RubyPairMatcher fBracketMatcher= new RubyPairMatcher(BRACKETS);
     
 	/**
 	 * Creates and returns the preference store for this Ruby editor with the given input.
@@ -96,6 +110,13 @@ public abstract class RubyAbstractEditor extends TextEditor {
             resetHighlightRange();
         }
     }
+    
+	protected void configureSourceViewerDecorationSupport(SourceViewerDecorationSupport support) {
+		support.setCharacterPairMatcher(fBracketMatcher);
+		support.setMatchingCharacterPainterPreferenceKeys(MATCHING_BRACKETS, MATCHING_BRACKETS_COLOR);
+
+		super.configureSourceViewerDecorationSupport(support);
+	}
 
     /**
      * Sets the outliner's context menu ID.
