@@ -11,7 +11,11 @@ import org.eclipse.core.runtime.preferences.IScopeContext;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.text.ITextViewerExtension5;
 import org.eclipse.jface.text.TextSelection;
+import org.eclipse.jface.text.contentassist.ContentAssistant;
+import org.eclipse.jface.text.contentassist.IContentAssistant;
+import org.eclipse.jface.text.source.IOverviewRuler;
 import org.eclipse.jface.text.source.ISourceViewer;
+import org.eclipse.jface.text.source.IVerticalRuler;
 import org.eclipse.jface.util.IPropertyChangeListener;
 import org.eclipse.jface.util.ListenerList;
 import org.eclipse.jface.util.PropertyChangeEvent;
@@ -21,6 +25,7 @@ import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.swt.custom.StyledText;
 import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IPartService;
@@ -46,6 +51,7 @@ import org.rubypeople.rdt.core.RubyCore;
 import org.rubypeople.rdt.core.RubyModelException;
 import org.rubypeople.rdt.core.formatter.DefaultCodeFormatterConstants;
 import org.rubypeople.rdt.internal.ui.RubyPlugin;
+import org.rubypeople.rdt.internal.ui.text.ContentAssistPreference;
 import org.rubypeople.rdt.internal.ui.text.IRubyPartitions;
 import org.rubypeople.rdt.internal.ui.text.PreferencesAdapter;
 import org.rubypeople.rdt.internal.ui.text.RubyPairMatcher;
@@ -116,6 +122,22 @@ public abstract class RubyAbstractEditor extends TextEditor {
 		support.setMatchingCharacterPainterPreferenceKeys(MATCHING_BRACKETS, MATCHING_BRACKETS_COLOR);
 
 		super.configureSourceViewerDecorationSupport(support);
+	}
+	
+    protected ISourceViewer createSourceViewer(Composite parent, IVerticalRuler ruler, int styles) {
+        fAnnotationAccess = createAnnotationAccess();
+        fOverviewRuler = createOverviewRuler(getSharedColors());
+
+        IPreferenceStore store= getPreferenceStore();
+        ISourceViewer viewer = createRubySourceViewer(parent, ruler, getOverviewRuler(), isOverviewRulerVisible(), styles, store);
+        // ensure decoration support has been created and configured.
+        getSourceViewerDecorationSupport(viewer);
+        return viewer;
+    }
+
+	protected ISourceViewer createRubySourceViewer(Composite parent, IVerticalRuler verticalRuler, IOverviewRuler overviewRuler, boolean isOverviewRulerVisible, int styles, IPreferenceStore store) {
+		return new RubySourceViewer(parent, verticalRuler, overviewRuler,
+				isOverviewRulerVisible, styles, store);
 	}
 
     /**
@@ -208,7 +230,7 @@ public abstract class RubyAbstractEditor extends TextEditor {
 
 		try {
 
-			ISourceViewer sourceViewer= getSourceViewer();
+			AdaptedSourceViewer sourceViewer= (AdaptedSourceViewer) getSourceViewer();
 			if (sourceViewer == null)
 				return;
 
@@ -223,6 +245,11 @@ public abstract class RubyAbstractEditor extends TextEditor {
 					textWidget.setTabs(tabWidth);
 				return;
 			}
+			
+			IContentAssistant c= sourceViewer.getContentAssistant();
+			if (c instanceof ContentAssistant)
+				ContentAssistPreference.changeConfiguration((ContentAssistant) c, getPreferenceStore(), event);
+
 
 		} finally {
 			super.handlePreferenceStoreChanged(event);
@@ -802,6 +829,19 @@ public abstract class RubyAbstractEditor extends TextEditor {
 		public void setValue(String name, boolean value) {
 			throw new UnsupportedOperationException();
 		}
+	}
+	
+	class AdaptedSourceViewer extends RubySourceViewer  {
 
+		private List fTextConverters;
+		private boolean fIgnoreTextConverters= false;
+
+		public AdaptedSourceViewer(Composite parent, IVerticalRuler verticalRuler, IOverviewRuler overviewRuler, boolean showAnnotationsOverview, int styles, IPreferenceStore store) {
+			super(parent, verticalRuler, overviewRuler, showAnnotationsOverview, styles, store);
+		}
+
+		public IContentAssistant getContentAssistant() {
+			return fContentAssistant;
+		}
 	}
 }

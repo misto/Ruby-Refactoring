@@ -36,13 +36,11 @@ import org.rubypeople.rdt.ui.PreferenceConstants;
 
 public class AppearancePreferencePage extends PreferencePage implements IWorkbenchPreferencePage {
 
-	private static final String SHOW_CU_CHILDREN= PreferenceConstants.SHOW_CU_CHILDREN;
 	private static final String PREF_METHOD_PARAMETER_NAMES= PreferenceConstants.APPEARANCE_METHOD_PARAMETER_NAMES;
 	private static final String STACK_BROWSING_VIEWS_VERTICALLY= PreferenceConstants.BROWSING_STACK_VERTICALLY;
 
 
 	private SelectionButtonDialogField fStackBrowsingViewsVertically;
-	private SelectionButtonDialogField fShowMembersInPackageView;
 	private SelectionButtonDialogField fShowMethodParameterNames;
 
 	
@@ -60,10 +58,6 @@ public class AppearancePreferencePage extends PreferencePage implements IWorkben
 		fShowMethodParameterNames.setDialogFieldListener(listener);
 		fShowMethodParameterNames.setLabelText(PreferencesMessages.AppearancePreferencePage_methodtypeparams_label); 
 
-		fShowMembersInPackageView= new SelectionButtonDialogField(SWT.CHECK);
-		fShowMembersInPackageView.setDialogFieldListener(listener);
-		fShowMembersInPackageView.setLabelText(PreferencesMessages.AppearancePreferencePage_showMembersInPackagesView); 
-
 		fStackBrowsingViewsVertically= new SelectionButtonDialogField(SWT.CHECK);
 		fStackBrowsingViewsVertically.setDialogFieldListener(listener);
 		fStackBrowsingViewsVertically.setLabelText(PreferencesMessages.AppearancePreferencePage_stackViewsVerticallyInTheRubyBrowsingPerspective); 
@@ -72,7 +66,6 @@ public class AppearancePreferencePage extends PreferencePage implements IWorkben
 	private void initFields() {
 		IPreferenceStore prefs= getPreferenceStore();
 		fShowMethodParameterNames.setSelection(prefs.getBoolean(PREF_METHOD_PARAMETER_NAMES));
-		fShowMembersInPackageView.setSelection(prefs.getBoolean(SHOW_CU_CHILDREN));
 		fStackBrowsingViewsVertically.setSelection(prefs.getBoolean(STACK_BROWSING_VIEWS_VERTICALLY));
 	}
 	
@@ -100,8 +93,7 @@ public class AppearancePreferencePage extends PreferencePage implements IWorkben
 		layout.numColumns= nColumns;
 		result.setLayout(layout);
 				
-		fShowMethodParameterNames.doFillIntoGrid(result, nColumns);
-		fShowMembersInPackageView.doFillIntoGrid(result, nColumns);		
+		fShowMethodParameterNames.doFillIntoGrid(result, nColumns);	
 
 		new Separator().doFillIntoGrid(result, nColumns);
 		
@@ -145,7 +137,6 @@ public class AppearancePreferencePage extends PreferencePage implements IWorkben
 	public boolean performOk() {
 		IPreferenceStore prefs= getPreferenceStore();
 		prefs.setValue(PREF_METHOD_PARAMETER_NAMES, fShowMethodParameterNames.isSelected());
-		prefs.setValue(SHOW_CU_CHILDREN, fShowMembersInPackageView.isSelected());
 		prefs.setValue(STACK_BROWSING_VIEWS_VERTICALLY, fStackBrowsingViewsVertically.isSelected());
 		RubyPlugin.getDefault().savePluginPreferences();
 		return super.performOk();
@@ -157,7 +148,6 @@ public class AppearancePreferencePage extends PreferencePage implements IWorkben
 	protected void performDefaults() {
 		IPreferenceStore prefs= getPreferenceStore();
 		fShowMethodParameterNames.setSelection(prefs.getDefaultBoolean(PREF_METHOD_PARAMETER_NAMES));
-		fShowMembersInPackageView.setSelection(prefs.getDefaultBoolean(SHOW_CU_CHILDREN));
 		fStackBrowsingViewsVertically.setSelection(prefs.getDefaultBoolean(STACK_BROWSING_VIEWS_VERTICALLY));
 		super.performDefaults();
 	}

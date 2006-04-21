@@ -20,6 +20,7 @@ public class SingleCharacterPrefixRule implements IRule {
     protected IToken fToken;
     protected int fMinLength;
     protected int fMaxLength;
+    private StringBuffer fWord;
 
     public SingleCharacterPrefixRule(char prefix, IToken token, int minLength, int maxLength) {
         fPrefix = prefix;
@@ -34,15 +35,23 @@ public class SingleCharacterPrefixRule implements IRule {
     public IToken evaluate(ICharacterScanner scanner) {
         int c = scanner.read();
         int length = 1;
+        fWord = new StringBuffer();
         if (((char) c) == fPrefix) {
+        	fWord.append(((char) c));
             // Now read until we hit EOF, EOL or whitespace
             while (true) {
                 c = scanner.read();
                 if (!isValidCharacter(c, length)) {
-                    scanner.unread();
-                    if (!lengthInRange(length)) return Token.UNDEFINED;
+                	if (!isValidEndCharacter(c, length))
+                      scanner.unread();
+                	else {
+                		fWord.append(((char) c));
+                		length++;
+                	}
+                    if (!lengthInRange(length) || !wordValid(fWord.toString())) return Token.UNDEFINED;
                     return fToken;
                 }
+                fWord.append(((char) c));
                 length++;
             }
         }
@@ -51,7 +60,15 @@ public class SingleCharacterPrefixRule implements IRule {
         return Token.UNDEFINED;
     }
 
-    /**
+    protected boolean wordValid(String word) {
+		return true;
+	}
+
+	protected boolean isValidEndCharacter(int c, int length) {
+		return false;
+	}
+
+	/**
      * Determine if the current character is valid for the rule. Return false if
      * the character is not a part of the token. This is not applied to the
      * single character prefix.

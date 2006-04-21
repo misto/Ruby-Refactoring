@@ -22,13 +22,16 @@ public class SymbolRule extends SingleCharacterPrefixRule {
 		
 		// Symbols can only contain word characters (a-zA-Z0-9_)
 		// TODO which special method names contain brackets?
-		String theChar = String.valueOf((char) c);
-		if(theChar.matches("\\w")) {
-			return true;
-		}
-		else {
-			return false;
-		}
+		return Character.isLetterOrDigit((char) c) || c == '_';
+	}
+	
+	protected boolean isValidEndCharacter(int c, int length) {
+		return c == '?' || c == '!';
+	}
+	
+	protected boolean wordValid(String word) {
+		System.out.println(word);
+		return !Character.isDigit(word.charAt(1));
 	}
 
 }

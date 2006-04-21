@@ -44,6 +44,7 @@ import org.eclipse.jface.text.link.LinkedModeUI.IExitPolicy;
 import org.eclipse.jface.text.source.Annotation;
 import org.eclipse.jface.text.source.IAnnotationModel;
 import org.eclipse.jface.text.source.ICharacterPairMatcher;
+import org.eclipse.jface.text.source.IOverviewRuler;
 import org.eclipse.jface.text.source.ISourceViewer;
 import org.eclipse.jface.text.source.ISourceViewerExtension2;
 import org.eclipse.jface.text.source.IVerticalRuler;
@@ -674,17 +675,9 @@ public class RubyEditor extends RubyAbstractEditor {
 		}
     }
 
-    protected ISourceViewer createSourceViewer(Composite parent, IVerticalRuler ruler, int styles) {
-        fAnnotationAccess = createAnnotationAccess();
-        fOverviewRuler = createOverviewRuler(getSharedColors());
-
-        IPreferenceStore store= getPreferenceStore();
-        ISourceViewer viewer = new RubySourceViewer(parent, ruler, getOverviewRuler(),
-                isOverviewRulerVisible(), styles, store);
-        // ensure decoration support has been created and configured.
-        getSourceViewerDecorationSupport(viewer);
-        return viewer;
-    }
+	protected ISourceViewer createRubySourceViewer(Composite parent, IVerticalRuler verticalRuler, IOverviewRuler overviewRuler, boolean isOverviewRulerVisible, int styles, IPreferenceStore store) {
+		return new AdaptedSourceViewer(parent, verticalRuler, overviewRuler, isOverviewRulerVisible, styles, store);
+	}
 
     /**
      * Returns the mutex for the reconciler. See
