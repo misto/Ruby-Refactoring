@@ -266,7 +266,7 @@ public interface IRubyHelpContextIds {
 	public static final String ORGANIZE_IMPORTS_PREFERENCE_PAGE= PREFIX + "organizeimports_preference_page_context"; //$NON-NLS-1$
 	public static final String JAVA_BASE_PREFERENCE_PAGE= PREFIX + "java_base_preference_page_context"; //$NON-NLS-1$
 	public static final String REFACTORING_PREFERENCE_PAGE= PREFIX + "refactoring_preference_page_context"; //$NON-NLS-1$
-	public static final String JAVA_EDITOR_PREFERENCE_PAGE= PREFIX + "java_editor_preference_page_context"; //$NON-NLS-1$
+	public static final String RUBY_EDITOR_PREFERENCE_PAGE= PREFIX + "ruby_editor_preference_page_context"; //$NON-NLS-1$
 	public static final String COMPILER_PREFERENCE_PAGE= PREFIX + "compiler_preference_page_context"; //$NON-NLS-1$
 	public static final String TODOTASK_PREFERENCE_PAGE= PREFIX + "tasktags_preference_page_context"; //$NON-NLS-1$
 	

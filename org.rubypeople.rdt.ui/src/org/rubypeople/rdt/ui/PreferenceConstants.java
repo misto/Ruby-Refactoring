@@ -451,13 +451,42 @@ public class PreferenceConstants {
 	 */
 	public final static String CODEASSIST_PREFIX_COMPLETION= "content_assist_prefix_completion"; //$NON-NLS-1$
 	
+	/**
+	 * A named preference that controls whether the 'close strings' feature
+	 *  is   enabled.
+	 * <p>
+	 * Value is of type <code>Boolean</code>.
+	 * </p>
+	 * @since 2.1
+	 */
+	public final static String EDITOR_CLOSE_STRINGS= "closeStrings"; //$NON-NLS-1$
+	
+	/**
+	 * A named preference that controls whether the 'close brackets' feature is
+	 * enabled.
+	 * <p>
+	 * Value is of type <code>Boolean</code>.
+	 * </p>
+	 * @since 2.1
+	 */
+	public final static String EDITOR_CLOSE_BRACKETS= "closeBrackets"; //$NON-NLS-1$
+
+	/**
+	 * A named preference that controls whether the 'close braces' feature is
+	 * enabled.
+	 * <p>
+	 * Value is of type <code>Boolean</code>.
+	 * </p>
+	 * @since 2.1
+	 */
+	public final static String EDITOR_CLOSE_BRACES= "closeBraces"; //$NON-NLS-1$
 	
     public static void initializeDefaultValues(IPreferenceStore store) {
         store.setDefault(PreferenceConstants.EDITOR_SHOW_SEGMENTS, false);
         
         // FIXME We can't enabling using code formatter yet, because it breaks on formatting templates (when inserting via content assist)
         // FIXME Uncomment when we have an AST based formatter which spits out TextEdits (rather than one huge replace)
-        //        store.setDefault(PreferenceConstants.TEMPLATES_USE_CODEFORMATTER, true);
+        //store.setDefault(PreferenceConstants.TEMPLATES_USE_CODEFORMATTER, true);
         
         store.setDefault(PreferenceConstants.FORMATTER_PROFILE, ProfileManager.DEFAULT_PROFILE);
         
@@ -466,7 +495,6 @@ public class PreferenceConstants {
 		store.setDefault(PreferenceConstants.LINK_BROWSING_MEMBERS_TO_EDITOR, true);
 
         // MembersOrderPreferencePage
-        // TODO Expose to users!
         store.setDefault(PreferenceConstants.APPEARANCE_MEMBER_SORT_ORDER, "T,SF,SM,F,C,M"); //$NON-NLS-1$
         store.setDefault(PreferenceConstants.APPEARANCE_VISIBILITY_SORT_ORDER, "B,V,R"); //$NON-NLS-1$
         store.setDefault(PreferenceConstants.APPEARANCE_ENABLE_VISIBILITY_SORT_ORDER, false);
@@ -479,7 +507,6 @@ public class PreferenceConstants {
         store.setDefault(PreferenceConstants.APPEARANCE_PKG_NAME_PATTERN_FOR_PKG_VIEW, ""); //$NON-NLS-1$
         store.setDefault(PreferenceConstants.BROWSING_STACK_VERTICALLY, false);
 
-        // TODO Expose these preferences to the user!
         store.setDefault(PreferenceConstants.EDITOR_CORRECTION_INDICATION, true);
         store.setDefault(PreferenceConstants.EDITOR_EVALUTE_TEMPORARY_PROBLEMS, true);
 
@@ -519,7 +546,9 @@ public class PreferenceConstants {
 		store.setDefault(PreferenceConstants.CODEASSIST_GUESS_METHOD_ARGUMENTS, false);
 		store.setDefault(PreferenceConstants.CODEASSIST_PREFIX_COMPLETION, false);
 
-
+		store.setDefault(PreferenceConstants.EDITOR_CLOSE_STRINGS, true);
+		store.setDefault(PreferenceConstants.EDITOR_CLOSE_BRACKETS, true);
+		store.setDefault(PreferenceConstants.EDITOR_CLOSE_BRACES, true);
     }
 
     private static String getDefaultPath(String programName) {

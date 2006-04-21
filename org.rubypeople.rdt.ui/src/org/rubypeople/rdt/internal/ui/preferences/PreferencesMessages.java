@@ -71,7 +71,6 @@ public final class PreferencesMessages extends NLS {
 	public static String AppearancePreferencePage_note;
 	public static String AppearancePreferencePage_preferenceOnlyEffectiveForNewPerspectives;
 	public static String AppearancePreferencePage_methodtypeparams_label;
-	public static String AppearancePreferencePage_showMembersInPackagesView;
 	public static String AppearancePreferencePage_stackViewsVerticallyInTheRubyBrowsingPerspective;
 	public static String AppearancePreferencePage_description;
 	public static String RubyEditorColoringConfigurationBlock_link;
@@ -101,6 +100,24 @@ public final class PreferencesMessages extends NLS {
 	public static String RubyEditorPreferencePage_empty_input;
 	public static String RubyEditorPreferencePage_invalid_input;
 	public static String RubyEditorPreferencePage_folding_title;
+	public static String RubyEditorPreferencePage_matchingBracketsHighlightColor2;
+	public static String RubyEditorPreferencePage_backgroundForCompletionProposals;
+	public static String RubyEditorPreferencePage_foregroundForCompletionProposals;
+	public static String RubyEditorPreferencePage_backgroundForMethodParameters;
+	public static String RubyEditorPreferencePage_foregroundForMethodParameters;
+	public static String RubyEditorPreferencePage_backgroundForCompletionReplacement;
+	public static String RubyEditorPreferencePage_foregroundForCompletionReplacement;
+	public static String RubyEditorPreferencePage_analyseAnnotationsWhileTyping;
+	public static String SmartTypingConfigurationBlock_annotationReporting_link;
+	public static String RubyEditorPreferencePage_highlightMatchingBrackets;
+	public static String RubyEditorPreferencePage_appearanceOptions;
+	public static String RubyEditorPreferencePage_systemDefault;
+	public static String RubyEditorPreferencePage_general;
+	public static String RubyEditorPreferencePage_typing_tabTitle;
+	public static String SmartTypingConfigurationBlock_autoclose_title;
+	public static String RubyEditorPreferencePage_closeStrings;
+	public static String RubyEditorPreferencePage_closeBrackets;
+	public static String RubyEditorPreferencePage_closeBraces;
 
     static {
         NLS.initializeMessages(BUNDLE_NAME, PreferencesMessages.class);

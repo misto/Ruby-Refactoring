@@ -90,7 +90,6 @@ import org.rubypeople.rdt.internal.ui.RubyPlugin;
 import org.rubypeople.rdt.internal.ui.RubyUIMessages;
 import org.rubypeople.rdt.internal.ui.text.IRubyPartitions;
 import org.rubypeople.rdt.internal.ui.text.RubyHeuristicScanner;
-import org.rubypeople.rdt.internal.ui.text.RubyPairMatcher;
 import org.rubypeople.rdt.internal.ui.text.Symbols;
 import org.rubypeople.rdt.ui.IWorkingCopyManager;
 import org.rubypeople.rdt.ui.PreferenceConstants;
@@ -101,12 +100,15 @@ import org.rubypeople.rdt.ui.actions.SurroundWithBeginRescueAction;
 import org.rubypeople.rdt.ui.text.folding.IRubyFoldingStructureProvider;
 
 public class RubyEditor extends RubyAbstractEditor {
-
-    protected final static char[] BRACKETS= { '{', '}', '(', ')', '[', ']' };
     
     protected RubyActionGroup actionGroup;
     private ProjectionSupport fProjectionSupport;
 
+	/** Preference key for automatically closing strings */
+	private final static String CLOSE_STRINGS= PreferenceConstants.EDITOR_CLOSE_STRINGS;
+	/** Preference key for automatically closing brackets and parenthesis */
+	private final static String CLOSE_BRACKETS= PreferenceConstants.EDITOR_CLOSE_BRACKETS;
+    
     /**
      * Mutex for the reconciler. See
      * https://bugs.eclipse.org/bugs/show_bug.cgi?id=63898 for a description of
@@ -143,9 +145,6 @@ public class RubyEditor extends RubyAbstractEditor {
 	 */
 	private ToggleFoldingRunner fFoldingRunner;
     
-    /** The editor's bracket matcher */
-    protected RubyPairMatcher fBracketMatcher= new RubyPairMatcher(BRACKETS);
-
     private BracketInserter fBracketInserter = new BracketInserter();
 
     public RubyEditor() {
@@ -253,6 +252,11 @@ public class RubyEditor extends RubyAbstractEditor {
 
         ISourceViewer sourceViewer = getSourceViewer();
         if (sourceViewer instanceof ITextViewerExtension) {
+        	IPreferenceStore preferenceStore= getPreferenceStore();
+    		boolean closeBrackets= preferenceStore.getBoolean(CLOSE_BRACKETS);
+    		boolean closeStrings= preferenceStore.getBoolean(CLOSE_STRINGS);
+    		fBracketInserter.setCloseBracketsEnabled(closeBrackets);
+    		fBracketInserter.setCloseStringsEnabled(closeStrings);
             ((ITextViewerExtension) sourceViewer).prependVerifyKeyListener(fBracketInserter);
         }
     }
@@ -522,8 +526,11 @@ public class RubyEditor extends RubyAbstractEditor {
      * 
      * @see org.rubypeople.rdt.internal.ui.rubyeditor.RubyAbstractEditor#dispose()
      */
-    public void dispose() {
-        super.dispose();
+    public void dispose() {        
+        ISourceViewer sourceViewer= getSourceViewer();
+		if (sourceViewer instanceof ITextViewerExtension)
+			((ITextViewerExtension) sourceViewer).removeVerifyKeyListener(fBracketInserter);
+
 
         if (fProjectionModelUpdater != null) {
             fProjectionModelUpdater.uninstall();
@@ -534,6 +541,7 @@ public class RubyEditor extends RubyAbstractEditor {
             fProjectionSupport.dispose();
             fProjectionSupport = null;
         }
+        super.dispose();
     }
 
     /*
@@ -648,6 +656,16 @@ public class RubyEditor extends RubyAbstractEditor {
                 this.getSourceViewer().configure(this.getSourceViewerConfiguration());
             }
         }
+        
+		if (CLOSE_BRACKETS.equals(property)) {
+			fBracketInserter.setCloseBracketsEnabled(getPreferenceStore().getBoolean(property));
+			return;
+		}
+
+		if (CLOSE_STRINGS.equals(property)) {
+			fBracketInserter.setCloseStringsEnabled(getPreferenceStore().getBoolean(property));
+			return;
+		}        
         
         ISourceViewer sourceViewer= getSourceViewer();
 		if (sourceViewer == null)

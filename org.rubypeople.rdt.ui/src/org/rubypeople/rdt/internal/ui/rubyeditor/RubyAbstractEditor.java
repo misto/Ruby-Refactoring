@@ -78,7 +78,7 @@ public abstract class RubyAbstractEditor extends TextEditor {
 	/** Preference key for matching brackets color */
 	protected final static String MATCHING_BRACKETS_COLOR=  PreferenceConstants.EDITOR_MATCHING_BRACKETS_COLOR;
 
-	protected final static char[] BRACKETS= { '{', '}', '(', ')', '[', ']', '<', '>' };
+	protected final static char[] BRACKETS= { '{', '}', '(', ')', '[', ']' };
 
 	/** The editor's bracket matcher */
 	protected RubyPairMatcher fBracketMatcher= new RubyPairMatcher(BRACKETS);
