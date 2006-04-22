@@ -126,7 +126,8 @@ public class RubyRuntime {
 			reader.setContentHandler(getRuntimeConfigurationContentHandler());
 			Reader fileReader = this.getRuntimeConfigurationReader() ;
 			if (fileReader == null) {
-				autoDetectRubyInterpreter();
+				// FIXME If we get a better algorithm for auto detection we should use it, but apparently this didn't make people happy
+//				autoDetectRubyInterpreter();
 				return ;
 			}
 			reader.parse(new InputSource(fileReader)) ;
