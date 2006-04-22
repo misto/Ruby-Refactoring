@@ -21,7 +21,7 @@ public class RubyWordFinder {
      * are what break up the tokens for double-clicking and for hovers.
      */
     private static final char[] BOUNDARIES = { ' ', '\n', '\t', '\r', '.', '(', ')', '{', '}', '[',
-            ']', '=', '*', '+', '-', '"', '\'', '#'};
+            ']', '=', '*', '+', '-', '"', '\'', '#', ','};
     public static IRegion findWord(IDocument document, int offset) {
         int start = -1;
         int end = -1;

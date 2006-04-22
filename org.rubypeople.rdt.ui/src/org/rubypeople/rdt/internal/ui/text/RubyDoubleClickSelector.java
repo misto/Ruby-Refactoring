@@ -12,6 +12,5 @@ public class RubyDoubleClickSelector implements ITextDoubleClickStrategy {
 
         IRegion region = RubyWordFinder.findWord(text.getDocument(), position);
         if (region != null && region.getLength() != 0 ) text.setSelectedRange(region.getOffset(), region.getLength());
-
     }
 }
