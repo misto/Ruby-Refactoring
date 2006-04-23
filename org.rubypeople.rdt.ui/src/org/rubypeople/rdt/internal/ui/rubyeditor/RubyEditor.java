@@ -108,6 +108,8 @@ public class RubyEditor extends RubyAbstractEditor {
 	private final static String CLOSE_STRINGS= PreferenceConstants.EDITOR_CLOSE_STRINGS;
 	/** Preference key for automatically closing brackets and parenthesis */
 	private final static String CLOSE_BRACKETS= PreferenceConstants.EDITOR_CLOSE_BRACKETS;
+	/** Preference key for automatically closing braces */
+	private final static String CLOSE_BRACES= PreferenceConstants.EDITOR_CLOSE_BRACES;
     
     /**
      * Mutex for the reconciler. See
@@ -254,8 +256,10 @@ public class RubyEditor extends RubyAbstractEditor {
         if (sourceViewer instanceof ITextViewerExtension) {
         	IPreferenceStore preferenceStore= getPreferenceStore();
     		boolean closeBrackets= preferenceStore.getBoolean(CLOSE_BRACKETS);
+    		boolean closeBraces= preferenceStore.getBoolean(CLOSE_BRACES);
     		boolean closeStrings= preferenceStore.getBoolean(CLOSE_STRINGS);
     		fBracketInserter.setCloseBracketsEnabled(closeBrackets);
+    		fBracketInserter.setCloseBracesEnabled(closeBraces);
     		fBracketInserter.setCloseStringsEnabled(closeStrings);
             ((ITextViewerExtension) sourceViewer).prependVerifyKeyListener(fBracketInserter);
         }
@@ -661,6 +665,11 @@ public class RubyEditor extends RubyAbstractEditor {
 			fBracketInserter.setCloseBracketsEnabled(getPreferenceStore().getBoolean(property));
 			return;
 		}
+		
+		if (CLOSE_BRACES.equals(property)) {
+			fBracketInserter.setCloseBracesEnabled(getPreferenceStore().getBoolean(property));
+			return;
+		}
 
 		if (CLOSE_STRINGS.equals(property)) {
 			fBracketInserter.setCloseStringsEnabled(getPreferenceStore().getBoolean(property));
@@ -928,6 +937,7 @@ public class RubyEditor extends RubyAbstractEditor {
 
         private boolean fCloseBrackets = true;
         private boolean fCloseStrings = true;
+        private boolean fCloseBraces = true;
         private final String CATEGORY = toString();
         private IPositionUpdater fUpdater = new ExclusivePositionUpdater(CATEGORY);
         private Stack fBracketLevelStack = new Stack();
@@ -938,6 +948,10 @@ public class RubyEditor extends RubyAbstractEditor {
 
         public void setCloseStringsEnabled(boolean enabled) {
             fCloseStrings = enabled;
+        }
+        
+        public void setCloseBracesEnabled(boolean enabled) {
+            fCloseBraces = enabled;
         }
 
         /*
@@ -988,7 +1002,7 @@ public class RubyEditor extends RubyAbstractEditor {
                     break;
 
                 case '{':
-                    if (!fCloseBrackets || nextToken == Symbols.TokenLBRACE
+                    if (!fCloseBraces || nextToken == Symbols.TokenLBRACE
                             || nextToken == Symbols.TokenIDENT || next != null && next.length() > 1)
                         return;
                     break;
