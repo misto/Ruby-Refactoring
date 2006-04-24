@@ -30,7 +30,6 @@ public class SymbolRule extends SingleCharacterPrefixRule {
 	}
 	
 	protected boolean wordValid(String word) {
-		System.out.println(word);
 		return !Character.isDigit(word.charAt(1));
 	}
 
