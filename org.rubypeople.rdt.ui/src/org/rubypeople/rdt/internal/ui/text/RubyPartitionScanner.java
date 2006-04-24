@@ -15,9 +15,9 @@ import org.eclipse.jface.text.rules.WordPatternRule;
 public class RubyPartitionScanner extends RuleBasedPartitionScanner {
 
 	
-	public final static String RUBY_STRING = "partition_scanner_ruby_string";
-	public final static String RUBY_MULTI_LINE_COMMENT = "partition_scanner_ruby_multiline_comment";
-	public static final String RUBY_SINGLE_LINE_COMMENT = "partition_scanner_ruby_singleline_comment";
+	public final static String RUBY_STRING = IRubyPartitions.RUBY_STRING;
+	public final static String RUBY_MULTI_LINE_COMMENT = IRubyPartitions.RUBY_MULTI_LINE_COMMENT;
+	public static final String RUBY_SINGLE_LINE_COMMENT = IRubyPartitions.RUBY_SINGLE_LINE_COMMENT;
 	public static final String RUBY_REGULAR_EXPRESSION = "partition_scanner_ruby_regular_expression";
 	public static final String RUBY_COMMAND = "partition_scanner_ruby_command";
 	public static final String HERE_DOC = "partition_scanner_here_doc";

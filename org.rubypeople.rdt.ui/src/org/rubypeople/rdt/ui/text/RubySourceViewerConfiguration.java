@@ -3,6 +3,7 @@ package org.rubypeople.rdt.ui.text;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.text.DefaultInformationControl;
+import org.eclipse.jface.text.IAutoEditStrategy;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.IInformationControl;
 import org.eclipse.jface.text.IInformationControlCreator;
@@ -42,6 +43,7 @@ import org.rubypeople.rdt.internal.ui.text.RubyDoubleClickSelector;
 import org.rubypeople.rdt.internal.ui.text.RubyPartitionScanner;
 import org.rubypeople.rdt.internal.ui.text.RubyReconciler;
 import org.rubypeople.rdt.internal.ui.text.comment.CommentFormattingStrategy;
+import org.rubypeople.rdt.internal.ui.text.comment.RubyCommentAutoIndentStrategy;
 import org.rubypeople.rdt.internal.ui.text.ruby.AbstractRubyScanner;
 import org.rubypeople.rdt.internal.ui.text.ruby.RubyCodeScanner;
 import org.rubypeople.rdt.internal.ui.text.ruby.RubyCompletionProcessor;
@@ -319,6 +321,14 @@ public class RubySourceViewerConfiguration extends TextSourceViewerConfiguration
      */
     public IAnnotationHover getAnnotationHover(ISourceViewer sourceViewer) {
         return new RubyAnnotationHover(RubyAnnotationHover.VERTICAL_RULER_HOVER);
+    }
+    
+    public IAutoEditStrategy[] getAutoEditStrategies(ISourceViewer sourceViewer, String contentType) {
+    	String partitioning= getConfiguredDocumentPartitioning(sourceViewer);
+		if (IRubyPartitions.RUBY_SINGLE_LINE_COMMENT.equals(contentType))
+			return new IAutoEditStrategy[] { new RubyCommentAutoIndentStrategy(partitioning) };
+		else
+			return super.getAutoEditStrategies(sourceViewer, contentType);
     }
 
     /*
