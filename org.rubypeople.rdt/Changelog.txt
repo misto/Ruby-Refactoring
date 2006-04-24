@@ -1,12 +1,16 @@
-Changes since 0.7.0:
+Release 0.8.0:
+* Compatible with Eclipse 3.1 and 3.2
 * New Ruby Browsing Perspective
 * New Class Wizard
 * Apply code formatting (indentation) to templates
+* Auto-insertion of templates
 * Distinct syntax highlighting of globals
 * Distinct syntax highlighting of instance/class variables
 * Goto matching bracket action
 * Right-clicking on "ruler" to left of ruby file's contents now allows user to add bookmark or task
-* Attempts to set ruby interpreter to common install location if no interpreter has been set
+* Auto-extend comments under particular conditions (abov method/class/module definitions, above attr_, above alias, above constant assignment, as first lines of file)
+* Allow user to customize font used by Ruby Editor
+* Allow user to turn on/off smart auto-closing of strings, brackets and braces on new preference page (was always enabled by default before)
 * A number of bugfixes (see http://rubyeclipse.mktec.com/cgi-bin/trac.py/query?status=closed&milestone=0.8.0&type=defect&order=priority)
 
 Release 0.7.0:
