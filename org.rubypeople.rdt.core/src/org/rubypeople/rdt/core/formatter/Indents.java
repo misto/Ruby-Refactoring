@@ -117,6 +117,45 @@ public class Indents {
         return buffer.toString();
     }
     
+    public static String createFixIndentString(int fixIndentation, Map options) {
+        if (options == null || fixIndentation < 0) {
+            throw new IllegalArgumentException();
+        }
+        
+        String tabChar= getStringValue(options, DefaultCodeFormatterConstants.FORMATTER_TAB_CHAR, RubyCore.TAB);
+        
+        final int tabs, spaces;
+        if (RubyCore.SPACE.equals(tabChar)) {
+            tabs= 0;
+            spaces= fixIndentation;
+        } else if (RubyCore.TAB.equals(tabChar)) {
+        	int tabWidth= getTabWidth(options);
+        	tabs= fixIndentation / tabWidth;
+            spaces= 0;
+        } else if (DefaultCodeFormatterConstants.MIXED.equals(tabChar)){
+        	int tabWidth= getTabWidth(options);
+            if (tabWidth > 0) {
+                tabs= fixIndentation / tabWidth;
+                spaces= fixIndentation % tabWidth;
+            } else {
+                tabs= 0;
+                spaces= fixIndentation;
+            }
+        } else {
+            // new indent type not yet handled
+            Assert.isTrue(false);
+            return null;
+        }
+        
+        StringBuffer buffer= new StringBuffer(tabs + spaces);
+        for(int i= 0; i < tabs; i++)
+            buffer.append('\t');
+        for(int i= 0; i < spaces; i++)
+            buffer.append(' ');
+        return buffer.toString();
+    	
+    }
+    
     private static String getStringValue(Map options, String key, String def) {
         Object value= options.get(key);
         if (value instanceof String)

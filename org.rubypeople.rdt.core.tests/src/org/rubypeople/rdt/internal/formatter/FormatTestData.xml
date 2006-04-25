@@ -326,14 +326,16 @@ end
 <unformatted>
 
 def x(a
-b)
+b,
+  c)
 x
 end
 </unformatted>  
 <formatted>
 
 def x(a
-      b)
+      b,
+      c)
   x
 end
 </formatted>

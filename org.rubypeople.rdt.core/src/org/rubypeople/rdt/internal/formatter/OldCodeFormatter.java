@@ -130,8 +130,7 @@ public class OldCodeFormatter extends CodeFormatter {
             whitespaceMatcher.find();
             int leadingWhitespace = whitespaceMatcher.end(0);
             if (state == null) {
-            	  state = new IndentationState(unformatted, preferences.indentation_size,
-                        leadingWhitespace, initialIndentLevel);
+            	  state = new IndentationState(unformatted, leadingWhitespace, initialIndentLevel);
             }
             state.incPos(leadingWhitespace);
             String strippedLine = lines[i].substring(leadingWhitespace);
@@ -140,7 +139,6 @@ public class OldCodeFormatter extends CodeFormatter {
             if (newBlockMarker != null) {
                 newBlockMarker.indentBeforePrint(state);
                 newBlockMarker.appendIndentedLine(formatted, state, lines[i], strippedLine, options);
-                state.saveIndentation();
                 newBlockMarker.indentAfterPrint(state);
                 abstractBlockMarker = newBlockMarker;
             } else {

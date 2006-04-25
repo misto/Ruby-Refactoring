@@ -1,5 +1,7 @@
 package org.rubypeople.rdt.internal.formatter;
 
+import java.util.Map;
+
 public class NoFormattingMarker  extends AbstractBlockMarker {
 
 
@@ -24,7 +26,7 @@ public class NoFormattingMarker  extends AbstractBlockMarker {
 
 	}
 	
-	public void appendIndentedLine(StringBuffer sb, IndentationState state, String originalLine, String strippedLine) {
+	public void appendIndentedLine(StringBuffer sb, IndentationState state, String originalLine, String strippedLine, Map options) {
 			sb.append(originalLine) ;
 	}	
 

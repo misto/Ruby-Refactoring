@@ -33,7 +33,7 @@ public class FixLengthMarker extends AbstractBlockMarker {
 
 
 	protected void indentBeforePrint(IndentationState state) {
-		state.setIndentation(state.getLastIndentation() + this.getPosInLine(state)) ;
+		state.setFixIndentation(this.getPosInLine(state)) ;
 	}
 
 

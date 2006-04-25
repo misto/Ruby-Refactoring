@@ -13,7 +13,7 @@ public class NeutralMarker extends AbstractBlockMarker {
 
 
 	protected void indentBeforePrint(IndentationState state) {
-		state.calculateIndentation() ;
+		state.resetFixIndentation() ;
 	}
 
 }
