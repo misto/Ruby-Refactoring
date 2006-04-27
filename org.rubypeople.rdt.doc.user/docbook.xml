@@ -2,42 +2,6 @@
 	"file:///docbook/dtd/docbookx.dtd">
 <book>
 	<title>Ruby Development Tools</title>
-	<chapter id="UpgradingTo0.6.0">
-		<title>Upgrading to 0.6.0</title>
-		<para>
-			Version 0.6.0 introduces some changes to the way projects and workspace 
-			information is represented.  The changes that the user must make, and those that
-			happen automatically are documented here.
-		</para>
-		<section>
-			<title>Ruby Interpreter</title>
-			<para>
-				In versions prior to 0.6.0, ruby interpreters were specified in 
-				the preferences page by specifying a the directory that contains 
-				the ruby executable.  Now interpreters are specified by providing 
-				the actual ruby file, not the directory.  Until edit these 
-				preferences you will not be able to run or debug ruby applications 
-				and tests.
-			</para>
-		</section>
-		<section>
-			<title>Ruby Project file</title>
-			<para>
-				RDT now requires a builder in the .project file for ruby projects.
-				When RDT is loaded, (or when a project is opened), ruby projects will 
-				be automatically upgraded.
-			</para>
-		</section>
-		<section>
-			<title>Ruby Perspective</title>
-			<para>
-				The ruby perspective now includes the standard Eclipse views for
-				Problems and Tasks.  Because these were not used by RDT in previous
-				versions, RDT will automatically show these views if a project is 
-				upgraded.
-			</para>
-		</section>
-	</chapter>
 	<chapter id="GettingStarted">
 		<title>Getting Started</title>
 		<section id="preparingTheWorkbench">
@@ -132,6 +96,22 @@
 					<listitem> Console </listitem>
 				</itemizedlist>
 			</section>
+			<section id="RubyPerspectives_RubyBrowsing">
+				<title>Ruby Browsing</title>
+				<para>A perspective designed for browsing the classes in your workspace. 
+				     The browsing is organized with three interconnected views:
+				     </para>
+				<itemizedlist>
+					<listitem> Projects </listitem>
+					<listitem> Types </listitem>
+					<listitem> Members </listitem>
+				</itemizedlist>
+				Every view contains a tree view with a hierarchy of Ruby elements. The project view shows all
+				projects of the workspace. The selection of projects influences the content of the Types view.
+				In the same manner an element selection in the Types view shows its containing elements in the 
+				Members view.
+				Double clicking elements which are file based opens an editor and highlights the position of the element.
+			</section>			
 		</section>
 		<section id="RubyResourcesView">
 			<title>Ruby Resources View</title>
