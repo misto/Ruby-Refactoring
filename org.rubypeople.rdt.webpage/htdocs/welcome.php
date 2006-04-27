@@ -33,6 +33,25 @@ A regular expression plugin is also available (Thanks to the <a href="http://e-p
 	<table>
 	 <tr>
       <td align="right" valign="top" width="20"><img src="images/arrow.gif" alt="->" border="0" height="16" width="16"></td>
+      <td valign="top"><font face="arial,helvetica,geneva" size="-1"><b>0.8.0 Released (2005-12-29)</b>
+        <br/>
+The best news about this release is the Ruby Browsing perspective. Then there is the New Class wizard and
+improvements on template handling and syntax highlighting.
+The complete <a href="http://download.rubypeople.org/nightly/Changelog.txt">Changelog</a>. 
+
+RDT 0.8.0 runs with Eclipse 3.1 and 3.2 (tested with RC1a).
+
+You definitely should <a href="http://rubyeclipse.sourceforge.net/download.rdt.html">download and install</a>. This build is available in the integration and release stream. 
+ 
+
+ 
+
+        </font>
+      </td>
+    </tr>
+	
+	 <tr>
+      <td align="right" valign="top" width="20"><img src="images/arrow.gif" alt="->" border="0" height="16" width="16"></td>
       <td valign="top"><font face="arial,helvetica,geneva" size="-1"><b>0.7.0 Release Candidate (2005-12-29)</b>
         <br/>
 The development of 0.7.0 has reached a point where we can present a release candidate. New features include ruby specific searching and text hovers with ri information. Next to that there are a lot of improvements with code completion, in the editor, outline view and debugger, more details can be found in the 

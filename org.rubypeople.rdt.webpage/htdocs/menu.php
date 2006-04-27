@@ -22,7 +22,7 @@
 </div>
 
 <div class="menuEntry">
-      <a href="userdoc/html/index.html" target="rdtdoc"><img src="images/docs.gif" border="0" alt="Documentation"></a>
+      <a href="http://download.rubypeople.org/release/0.8.0.604272100PRD/doc/html/index.html" target="rdtdoc"><img src="images/docs.gif" border="0" alt="Documentation"></a>
 </div>
 
 <div class="menuEntry">		
