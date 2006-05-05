@@ -18,13 +18,14 @@ import org.eclipse.jface.text.source.IAnnotationModelListener;
 import org.eclipse.ui.texteditor.IDocumentProvider;
 import org.eclipse.ui.texteditor.IDocumentProviderExtension2;
 import org.eclipse.ui.texteditor.IDocumentProviderExtension3;
-import org.eclipse.ui.texteditor.IDocumentProviderExtension5;
 import org.rubypeople.rdt.core.IRubyScript;
 
 /**
  * @since 3.0
  */
-public interface IRubyScriptDocumentProvider extends IDocumentProvider, IDocumentProviderExtension2, IDocumentProviderExtension3, IDocumentProviderExtension5 {
+public interface IRubyScriptDocumentProvider extends IDocumentProvider, IDocumentProviderExtension2, IDocumentProviderExtension3 {
+// FIXME When we've got our continuous build updated to 3.2, uncomment this
+	//public interface IRubyScriptDocumentProvider extends IDocumentProvider, IDocumentProviderExtension2, IDocumentProviderExtension3, IDocumentProviderExtension5 {
 
 	/**
 	 * Shuts down this provider.
