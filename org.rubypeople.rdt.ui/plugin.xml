@@ -463,8 +463,14 @@
             <command
             name="%ActionDefinition.toggleComment.name" 
             description="%ActionDefinition.toggleComment.description"
-            categoryId="org.eubypeople.rdt.ui.category.source"
+            categoryId="org.rubypeople.rdt.ui.category.source"
             id="org.rubypeople.rdt.ui.edit.text.ruby.toggle.comment ">
+      </command>
+      <command
+            name="%ActionDefinition.surroundWith.beginRescue.name"
+            description="%ActionDefinition.surroundWith.beginRescue.description"
+            categoryId="org.rubypeople.rdt.ui.category.source"
+            id="org.rubypeople.rdt.ui.edit.text.ruby.surround.with.begin.rescue">
       </command>
    </extension>
    <extension
