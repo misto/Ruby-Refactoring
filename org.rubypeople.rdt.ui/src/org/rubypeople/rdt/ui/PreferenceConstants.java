@@ -17,8 +17,6 @@ public class PreferenceConstants {
     public static final String RI_PATH = "riDirectoryPath";
     public static final String RDOC_PATH = "rdocDirectoryPath";
 
-    public static final String FORMAT_INDENTATION = "formatIndentation"; //$NON-NLS-1$
-    public static final String FORMAT_USE_TAB = "formatUseTab"; //$NON-NLS-1$	
     public static final String TEMPLATES_USE_CODEFORMATTER = "templatesUseCodeFormatter"; //$NON-NLS-1$	
 
     private final static String DEFAULT_RDOC_CMD = "rdoc"; //$NON-NLS-1$	
@@ -498,9 +496,6 @@ public class PreferenceConstants {
         store.setDefault(PreferenceConstants.APPEARANCE_MEMBER_SORT_ORDER, "T,SF,SM,F,C,M"); //$NON-NLS-1$
         store.setDefault(PreferenceConstants.APPEARANCE_VISIBILITY_SORT_ORDER, "B,V,R"); //$NON-NLS-1$
         store.setDefault(PreferenceConstants.APPEARANCE_ENABLE_VISIBILITY_SORT_ORDER, false);
-
-        store.setDefault(PreferenceConstants.FORMAT_INDENTATION, 2);
-        store.setDefault(PreferenceConstants.FORMAT_USE_TAB, false);
 
         // AppearancePreferencePage
         store.setDefault(PreferenceConstants.APPEARANCE_COMPRESS_PACKAGE_NAMES, false);

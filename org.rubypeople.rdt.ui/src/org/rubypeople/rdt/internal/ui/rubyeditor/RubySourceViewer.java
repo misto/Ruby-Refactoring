@@ -8,8 +8,6 @@ package org.rubypeople.rdt.internal.ui.rubyeditor;
 
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.preference.PreferenceConverter;
-import org.eclipse.jface.text.DocumentCommand;
-import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.source.IOverviewRuler;
 import org.eclipse.jface.text.source.IVerticalRuler;
 import org.eclipse.jface.text.source.SourceViewerConfiguration;
@@ -23,17 +21,10 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.texteditor.AbstractDecoratedTextEditorPreferenceConstants;
 import org.eclipse.ui.texteditor.AbstractTextEditor;
-import org.rubypeople.rdt.core.RubyCore;
-import org.rubypeople.rdt.core.formatter.DefaultCodeFormatterConstants;
-import org.rubypeople.rdt.core.formatter.Indents;
-import org.rubypeople.rdt.internal.ui.RubyPlugin;
-import org.rubypeople.rdt.ui.PreferenceConstants;
 
 public class RubySourceViewer extends ProjectionViewer implements IPropertyChangeListener {
 
-    private boolean isTabReplacing = false;
     private boolean fIgnoreTextConverters = false;
-	private TabExpander tabExpander;
     
     /**
      * This viewer's foreground color.
@@ -74,7 +65,6 @@ public class RubySourceViewer extends ProjectionViewer implements IPropertyChang
             IOverviewRuler overviewRuler, boolean overviewRulerVisible, int styles, IPreferenceStore store) {
         super(composite, verticalRuler, overviewRuler, overviewRulerVisible, styles);
         setPreferenceStore(store);
-        initializeTabReplace();
     }
     
     /**
@@ -247,50 +237,6 @@ public class RubySourceViewer extends ProjectionViewer implements IPropertyChang
 
     public void doOperation(int operation) {
         if (getTextWidget() == null || !redraws()) { return; }
-
-        switch (operation) {
-        case UNDO:
-            fIgnoreTextConverters = true;
-            break;
-        case REDO:
-            fIgnoreTextConverters = true;
-            break;
-        }
-
         super.doOperation(operation);
     }
-
-    protected void customizeDocumentCommand(DocumentCommand command) {
-        super.customizeDocumentCommand(command);
-        if (!fIgnoreTextConverters) {
-            convertTabs(command, getDocument());
-        }
-        fIgnoreTextConverters = false;
-    }
-
-    void initializeTabReplace() {
-        this.isTabReplacing = !RubyPlugin.getDefault().getPreferenceStore().getBoolean(
-                PreferenceConstants.FORMAT_USE_TAB);
-        if (this.isTabReplacing) {
-            int length = Indents.getTabWidth(RubyCore.getOptions());
-            tabExpander = new TabExpander(length);
-        }
-    }
-
-    protected void convertTabs(DocumentCommand command, IDocument document) {
-    	if (!isTabReplacing)
-    		return;
-    	
-    	if (command.text.equals("\t")) 
-    		tabExpander.expandTab(command, document);
-    }
-    
-    public boolean isTabReplacing() {
-        return isTabReplacing;
-    }
-
-	public String getIndentString() {
-		return tabExpander.getFullIndent();
-	}
-
 }

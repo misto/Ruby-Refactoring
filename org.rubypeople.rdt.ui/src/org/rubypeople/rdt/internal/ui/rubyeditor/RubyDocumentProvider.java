@@ -9,14 +9,18 @@ import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.IStatus;
 import org.eclipse.jface.util.ListenerList;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.SubProgressMonitor;
+import org.eclipse.core.runtime.content.IContentType;
 import org.eclipse.core.runtime.jobs.ISchedulingRule;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.text.Assert;
 import org.eclipse.jface.text.BadLocationException;
+import org.eclipse.jface.text.DefaultLineTracker;
 import org.eclipse.jface.text.IDocument;
+import org.eclipse.jface.text.ILineTracker;
 import org.eclipse.jface.text.ISynchronizable;
 import org.eclipse.jface.text.Position;
 import org.eclipse.jface.text.source.Annotation;
@@ -42,6 +46,7 @@ import org.eclipse.ui.texteditor.AbstractMarkerAnnotationModel;
 import org.eclipse.ui.texteditor.AnnotationPreference;
 import org.eclipse.ui.texteditor.AnnotationPreferenceLookup;
 import org.eclipse.ui.texteditor.IDocumentProvider;
+import org.eclipse.ui.texteditor.IElementStateListener;
 import org.eclipse.ui.texteditor.MarkerAnnotation;
 import org.eclipse.ui.texteditor.MarkerUtilities;
 import org.eclipse.ui.texteditor.ResourceMarkerAnnotationModel;
@@ -55,7 +60,7 @@ import org.rubypeople.rdt.internal.ui.RubyPluginImages;
 import org.rubypeople.rdt.internal.ui.text.ruby.IProblemRequestorExtension;
 import org.rubypeople.rdt.ui.PreferenceConstants;
 
-public class RubyDocumentProvider extends TextFileDocumentProvider {
+public class RubyDocumentProvider extends TextFileDocumentProvider implements IRubyScriptDocumentProvider {
 	
 	/**
 	 * Bundle of all required informations to allow working copy management.
@@ -1061,6 +1066,14 @@ public class RubyDocumentProvider extends TextFileDocumentProvider {
 			super.removeAnnotation(annotation, fireModelChanged);
 		}
 	}
-	
+
+
+	public ILineTracker createLineTracker(Object element) {
+		return new DefaultLineTracker();
+	}
+
+	public void setSavePolicy(ISavePolicy savePolicy) {
+		fSavePolicy= savePolicy;		
+	}
 
 }

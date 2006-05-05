@@ -1,5 +1,7 @@
 package org.rubypeople.rdt.ui.text;
 
+import java.util.Vector;
+
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.text.DefaultInformationControl;
@@ -24,14 +26,20 @@ import org.eclipse.jface.util.Assert;
 import org.eclipse.jface.util.PropertyChangeEvent;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Shell;
+import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.editors.text.EditorsUI;
 import org.eclipse.ui.editors.text.TextSourceViewerConfiguration;
 import org.eclipse.ui.texteditor.ChainedPreferenceStore;
+import org.eclipse.ui.texteditor.IDocumentProvider;
 import org.eclipse.ui.texteditor.ITextEditor;
+import org.rubypeople.rdt.core.IRubyElement;
+import org.rubypeople.rdt.core.IRubyProject;
+import org.rubypeople.rdt.core.RubyCore;
+import org.rubypeople.rdt.core.formatter.DefaultCodeFormatterConstants;
+import org.rubypeople.rdt.internal.corext.util.CodeFormatterUtil;
 import org.rubypeople.rdt.internal.ui.RubyPlugin;
+import org.rubypeople.rdt.internal.ui.rubyeditor.IRubyScriptDocumentProvider;
 import org.rubypeople.rdt.internal.ui.rubyeditor.RubyAbstractEditor;
-import org.rubypeople.rdt.internal.ui.rubyeditor.RubyEditor;
-import org.rubypeople.rdt.internal.ui.rubyeditor.RubySourceViewer;
 import org.rubypeople.rdt.internal.ui.text.HTMLTextPresenter;
 import org.rubypeople.rdt.internal.ui.text.IRubyColorConstants;
 import org.rubypeople.rdt.internal.ui.text.IRubyPartitions;
@@ -378,17 +386,72 @@ public class RubySourceViewerConfiguration extends TextSourceViewerConfiguration
         return reconciler;
     }
 
+	private IRubyProject getProject() {
+		ITextEditor editor= getEditor();
+		if (editor == null)
+			return null;
+
+		IRubyElement element= null;
+		IEditorInput input= editor.getEditorInput();
+		IDocumentProvider provider= editor.getDocumentProvider();
+		if (provider instanceof IRubyScriptDocumentProvider) {
+			IRubyScriptDocumentProvider cudp= (IRubyScriptDocumentProvider) provider;
+			element= cudp.getWorkingCopy(input);
+		}
+
+		if (element == null)
+			return null;
+
+		return element.getRubyProject();
+	}
+    
     public String[] getIndentPrefixes(ISourceViewer sourceViewer, String contentType) {
-        if (!(fTextEditor instanceof RubyEditor)) { return super.getIndentPrefixes(sourceViewer,
-                contentType); }
-        if (sourceViewer instanceof RubySourceViewer) {
-            RubySourceViewer viewer = (RubySourceViewer) sourceViewer;
-            if (viewer.isTabReplacing()) { return new String[] { viewer.getIndentString(),
-                    "\t", " "}; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-            }
-        }
-        return super.getIndentPrefixes(sourceViewer, contentType); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+
+		Vector vector= new Vector();
+
+		// prefix[0] is either '\t' or ' ' x tabWidth, depending on useSpaces
+
+		IRubyProject project= getProject();
+		final int tabWidth= CodeFormatterUtil.getTabWidth(project);
+		final int indentWidth= CodeFormatterUtil.getIndentWidth(project);
+		int spaceEquivalents= Math.min(tabWidth, indentWidth);
+		boolean useSpaces;
+		if (project == null)
+			useSpaces= RubyCore.SPACE.equals(RubyCore.getOption(DefaultCodeFormatterConstants.FORMATTER_TAB_CHAR)) || tabWidth > indentWidth;
+		else
+			useSpaces= RubyCore.SPACE.equals(project.getOption(DefaultCodeFormatterConstants.FORMATTER_TAB_CHAR, true)) || tabWidth > indentWidth;
+
+		for (int i= 0; i <= spaceEquivalents; i++) {
+		    StringBuffer prefix= new StringBuffer();
+
+			if (useSpaces) {
+			    for (int j= 0; j + i < spaceEquivalents; j++)
+			    	prefix.append(' ');
+
+				if (i != 0)
+		    		prefix.append('\t');
+			} else {
+			    for (int j= 0; j < i; j++)
+			    	prefix.append(' ');
+
+				if (i != spaceEquivalents)
+		    		prefix.append('\t');
+			}
+
+			vector.add(prefix.toString());
+		}
+
+		vector.add(""); //$NON-NLS-1$
+
+		return (String[]) vector.toArray(new String[vector.size()]);
     }
+    
+	/*
+	 * @see SourceViewerConfiguration#getTabWidth(ISourceViewer)
+	 */
+	public int getTabWidth(ISourceViewer sourceViewer) {
+		return CodeFormatterUtil.getTabWidth(getProject());
+	}
 
     public ITextDoubleClickStrategy getDoubleClickStrategy(ISourceViewer sourceViewer,
             String contentType) {

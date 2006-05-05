@@ -10,6 +10,11 @@
  *******************************************************************************/
 package org.rubypeople.rdt.ui;
 
+import org.eclipse.jface.util.Assert;
+import org.eclipse.ui.IEditorInput;
+import org.rubypeople.rdt.core.IRubyElement;
+import org.rubypeople.rdt.internal.ui.RubyPlugin;
+
 /**
  * Central access point for the Ruby UI plug-in (id
  * <code>"org.rubypeople.rdt.ui"</code>). This class provides static methods
@@ -27,44 +32,77 @@ package org.rubypeople.rdt.ui;
 public final class RubyUI {
 
 	private RubyUI() {
-	// prevent instantiation of RubyUI.
+		// prevent instantiation of RubyUI.
 	}
 
 	/**
 	 * The id of the Ruby plugin (value <code>"org.rubypeople.rdt.ui"</code>).
 	 */
 	public static final String ID_PLUGIN = "org.rubypeople.rdt.ui"; //$NON-NLS-1$
+
 	public static final String ID_ACTION_SET = null;
-	
+
 	/**
-	 * The view part id of the Ruby Browsing Projects view
-	 * (value <code>"org.rubypeople.rdt.ui.ProjectsView"</code>).
+	 * The view part id of the Ruby Browsing Projects view (value
+	 * <code>"org.rubypeople.rdt.ui.ProjectsView"</code>).
 	 * 
 	 * @since 0.8.0
 	 */
-	public static String ID_PROJECTS_VIEW= "org.rubypeople.rdt.ui.ProjectsView"; //$NON-NLS-1$
-	
+	public static String ID_PROJECTS_VIEW = "org.rubypeople.rdt.ui.ProjectsView"; //$NON-NLS-1$
+
 	/**
-	 * The view part id of the Ruby Browsing Types view
-	 * (value <code>"org.rubypeople.rdt.ui.TypesView"</code>).
+	 * The view part id of the Ruby Browsing Types view (value
+	 * <code>"org.rubypeople.rdt.ui.TypesView"</code>).
 	 * 
 	 * @since 0.8.0
 	 */
-	public static String ID_TYPES_VIEW= "org.rubypeople.rdt.ui.TypesView"; //$NON-NLS-1$
-	
+	public static String ID_TYPES_VIEW = "org.rubypeople.rdt.ui.TypesView"; //$NON-NLS-1$
+
 	/**
-	 * The view part id of the Ruby Browsing Memberss view
-	 * (value <code>"org.rubypeople.rdt.ui.MembersView"</code>).
+	 * The view part id of the Ruby Browsing Memberss view (value
+	 * <code>"org.rubypeople.rdt.ui.MembersView"</code>).
 	 * 
 	 * @since 0.8.0
 	 */
-	public static String ID_MEMBERS_VIEW= "org.rubypeople.rdt.ui.MembersView"; //$NON-NLS-1$
-	
+	public static String ID_MEMBERS_VIEW = "org.rubypeople.rdt.ui.MembersView"; //$NON-NLS-1$
+
 	/**
-	 * The id of the Ruby Element Creation action set
-	 * (value <code>"org.rubypeople.rdt.ui.RubyElementCreationActionSet"</code>).
+	 * The id of the Ruby Element Creation action set (value
+	 * <code>"org.rubypeople.rdt.ui.RubyElementCreationActionSet"</code>).
 	 * 
 	 * @since 0.8.0
 	 */
-	public static final String ID_ELEMENT_CREATION_ACTION_SET= "org.rubypeople.rdt.ui.RubyElementCreationActionSet"; //$NON-NLS-1$
+	public static final String ID_ELEMENT_CREATION_ACTION_SET = "org.rubypeople.rdt.ui.RubyElementCreationActionSet"; //$NON-NLS-1$
+
+	/**
+	 * Returns the Ruby element wrapped by the given editor input.
+	 * 
+	 * @param editorInput
+	 *            the editor input
+	 * @return the Ruby element wrapped by <code>editorInput</code> or
+	 *         <code>null</code> if none
+	 * @since 3.2
+	 */
+	public static IRubyElement getEditorInputRubyElement(
+			IEditorInput editorInput) {
+		Assert.isNotNull(editorInput);
+		IRubyElement je = getWorkingCopyManager().getWorkingCopy(editorInput);
+		if (je != null)
+			return je;
+
+		/*
+		 * This needs works, see
+		 * https://bugs.eclipse.org/bugs/show_bug.cgi?id=120340
+		 */
+		return (IRubyElement) editorInput.getAdapter(IRubyElement.class);
+	}
+
+	/**
+	 * Returns the working copy manager for the Ruby UI plug-in.
+	 * 
+	 * @return the working copy manager for the Ruby UI plug-in
+	 */
+	public static IWorkingCopyManager getWorkingCopyManager() {
+		return RubyPlugin.getDefault().getWorkingCopyManager();
+	}
 }

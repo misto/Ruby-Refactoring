@@ -20,10 +20,12 @@ import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.BadPositionCategoryException;
+import org.eclipse.jface.text.DocumentCommand;
 import org.eclipse.jface.text.DocumentEvent;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.IDocumentExtension;
 import org.eclipse.jface.text.IDocumentListener;
+import org.eclipse.jface.text.ILineTracker;
 import org.eclipse.jface.text.IPositionUpdater;
 import org.eclipse.jface.text.IRegion;
 import org.eclipse.jface.text.ITextOperationTarget;
@@ -46,7 +48,6 @@ import org.eclipse.jface.text.source.IAnnotationModel;
 import org.eclipse.jface.text.source.ICharacterPairMatcher;
 import org.eclipse.jface.text.source.IOverviewRuler;
 import org.eclipse.jface.text.source.ISourceViewer;
-import org.eclipse.jface.text.source.ISourceViewerExtension2;
 import org.eclipse.jface.text.source.IVerticalRuler;
 import org.eclipse.jface.text.source.SourceViewerConfiguration;
 import org.eclipse.jface.text.source.projection.ProjectionSupport;
@@ -226,7 +227,7 @@ public class RubyEditor extends RubyAbstractEditor {
      */
     public void createPartControl(Composite parent) {
         super.createPartControl(parent);
-
+        
         ProjectionViewer projectionViewer = (ProjectionViewer) getSourceViewer();
 
         fProjectionSupport = new ProjectionSupport(projectionViewer, getAnnotationAccess(),
@@ -645,21 +646,6 @@ public class RubyEditor extends RubyAbstractEditor {
     protected void handlePreferenceStoreChanged(PropertyChangeEvent event) {
         super.handlePreferenceStoreChanged(event);
         String property = event.getProperty();
-
-        if (PreferenceConstants.FORMAT_USE_TAB.equals(property)
-                || PreferenceConstants.FORMAT_INDENTATION.equals(property)) {
-            // TODO Shouldn't the indent stuff really be in the source viewer
-            // configuration?
-            if (getSourceViewer() instanceof RubySourceViewer) {
-                ((RubySourceViewer) getSourceViewer()).initializeTabReplace();
-            }
-            // for rereading the indentPrefixes for shift left/right from the
-            // RubySourceViewerConfiguration
-            if (getSourceViewer() instanceof ISourceViewerExtension2) {
-                ((ISourceViewerExtension2) getSourceViewer()).unconfigure();
-                this.getSourceViewer().configure(this.getSourceViewerConfiguration());
-            }
-        }
         
 		if (CLOSE_BRACKETS.equals(property)) {
 			fBracketInserter.setCloseBracketsEnabled(getPreferenceStore().getBoolean(property));
@@ -1401,5 +1387,85 @@ public class RubyEditor extends RubyAbstractEditor {
 		public void partOpened(IWorkbenchPartReference partRef) {}
 		public void partHidden(IWorkbenchPartReference partRef) {}
 		public void partInputChanged(IWorkbenchPartReference partRef) {}
+	}
+	
+	interface ITextConverter {
+		void customizeDocumentCommand(IDocument document, DocumentCommand command);
+	}
+	
+	static class TabConverter implements ITextConverter {
+
+		private int fTabRatio;
+		private ILineTracker fLineTracker;
+
+		public TabConverter() {
+		}
+
+		public void setNumberOfSpacesPerTab(int ratio) {
+			fTabRatio= ratio;
+		}
+
+		public void setLineTracker(ILineTracker lineTracker) {
+			fLineTracker= lineTracker;
+		}
+
+		private int insertTabString(StringBuffer buffer, int offsetInLine) {
+
+			if (fTabRatio == 0)
+				return 0;
+
+			int remainder= offsetInLine % fTabRatio;
+			remainder= fTabRatio - remainder;
+			for (int i= 0; i < remainder; i++)
+				buffer.append(' ');
+			return remainder;
+		}
+
+		public void customizeDocumentCommand(IDocument document, DocumentCommand command) {
+			String text= command.text;
+			if (text == null)
+				return;
+
+			int index= text.indexOf('\t');
+			if (index > -1) {
+
+				StringBuffer buffer= new StringBuffer();
+
+				fLineTracker.set(command.text);
+				int lines= fLineTracker.getNumberOfLines();
+
+				try {
+
+						for (int i= 0; i < lines; i++) {
+
+							int offset= fLineTracker.getLineOffset(i);
+							int endOffset= offset + fLineTracker.getLineLength(i);
+							String line= text.substring(offset, endOffset);
+
+							int position= 0;
+							if (i == 0) {
+								IRegion firstLine= document.getLineInformationOfOffset(command.offset);
+								position= command.offset - firstLine.getOffset();
+							}
+
+							int length= line.length();
+							for (int j= 0; j < length; j++) {
+								char c= line.charAt(j);
+								if (c == '\t') {
+									position += insertTabString(buffer, position);
+								} else {
+									buffer.append(c);
+									++ position;
+								}
+							}
+
+						}
+
+						command.text= buffer.toString();
+
+				} catch (BadLocationException x) {
+				}
+			}
+		}
 	}
 }
