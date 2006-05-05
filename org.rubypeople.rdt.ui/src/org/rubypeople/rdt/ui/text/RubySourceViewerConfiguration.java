@@ -375,15 +375,20 @@ public class RubySourceViewerConfiguration extends TextSourceViewerConfiguration
      * @see org.eclipse.jface.text.source.SourceViewerConfiguration#getReconciler(org.eclipse.jface.text.source.ISourceViewer)
      */
     public IReconciler getReconciler(ISourceViewer sourceViewer) {
-        RubyReconciler reconciler = new RubyReconciler(fTextEditor, new RubyReconcilingStrategy(
-                (RubyAbstractEditor) fTextEditor), true);
-        reconciler.setIsIncrementalReconciler(false);
-        // TODO Uncomment when we move to Eclipse 3.2
-        // ECLIPSE 3.2
-        //reconciler.setIsAllowedToModifyDocument(false);
-        reconciler.setProgressMonitor(new NullProgressMonitor());
-        reconciler.setDelay(500);
-        return reconciler;
+    	final ITextEditor editor = getEditor();
+		if (editor != null && editor.isEditable()) {
+			RubyReconciler reconciler = new RubyReconciler(editor,
+					new RubyReconcilingStrategy(
+							(RubyAbstractEditor) fTextEditor), true);
+			reconciler.setIsIncrementalReconciler(false);
+			// TODO Uncomment when we move to Eclipse 3.2
+			// ECLIPSE 3.2
+			// reconciler.setIsAllowedToModifyDocument(false);
+			reconciler.setProgressMonitor(new NullProgressMonitor());
+			reconciler.setDelay(500);
+			return reconciler;
+		}
+		return null;
     }
 
 	private IRubyProject getProject() {
