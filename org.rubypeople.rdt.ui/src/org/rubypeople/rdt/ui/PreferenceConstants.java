@@ -96,6 +96,13 @@ public class PreferenceConstants {
     public static final String EDITOR_FOLDING_METHODS = "editor_folding_default_methods"; //$NON-NLS-1$
 
     /**
+     * Preference key suffix for background text style preference keys.
+     * 
+     * @since 2.1
+     */
+    public static final String EDITOR_BG_SUFFIX = "_background"; //$NON-NLS-1$
+    
+    /**
      * Preference key suffix for bold text style preference keys.
      * 
      * @since 2.1

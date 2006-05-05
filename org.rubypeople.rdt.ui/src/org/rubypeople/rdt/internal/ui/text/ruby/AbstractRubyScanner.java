@@ -24,6 +24,7 @@ import org.rubypeople.rdt.ui.text.IColorManagerExtension;
 public abstract class AbstractRubyScanner extends BufferedRuleBasedScanner {
 
 	private String[] fPropertyNamesColor;
+	private String[] fPropertyNamesBgColor;
 	private String[] fPropertyNamesBold;
 	private String[] fPropertyNamesItalic;
 	private String[] fPropertyNamesStrikethrough;
@@ -91,12 +92,14 @@ public abstract class AbstractRubyScanner extends BufferedRuleBasedScanner {
 	public final void initialize() {
 		fPropertyNamesColor = getTokenProperties();
 		int length = fPropertyNamesColor.length;
+		fPropertyNamesBgColor = new String[length];
 		fPropertyNamesBold = new String[length];
 		fPropertyNamesItalic = new String[length];
 		fPropertyNamesStrikethrough = new String[length];
 		fPropertyNamesUnderline = new String[length];
 
 		for (int i= 0; i < length; i++) {
+			fPropertyNamesBgColor[i]= getBGKey(fPropertyNamesColor[i]);
 			fPropertyNamesBold[i]= getBoldKey(fPropertyNamesColor[i]);
 			fPropertyNamesItalic[i]= getItalicKey(fPropertyNamesColor[i]);
 			fPropertyNamesStrikethrough[i]= getStrikethroughKey(fPropertyNamesColor[i]);
@@ -106,9 +109,9 @@ public abstract class AbstractRubyScanner extends BufferedRuleBasedScanner {
 		fNeedsLazyColorLoading = Display.getCurrent() == null;
 		for (int i = 0; i < length; i++) {
 			if (fNeedsLazyColorLoading)
-				addTokenWithProxyAttribute(fPropertyNamesColor[i], fPropertyNamesBold[i], fPropertyNamesItalic[i], fPropertyNamesStrikethrough[i], fPropertyNamesUnderline[i]);
+				addTokenWithProxyAttribute(fPropertyNamesColor[i], fPropertyNamesBgColor[i], fPropertyNamesBold[i], fPropertyNamesItalic[i], fPropertyNamesStrikethrough[i], fPropertyNamesUnderline[i]);
 			else
-				addToken(fPropertyNamesColor[i], fPropertyNamesBold[i], fPropertyNamesItalic[i], fPropertyNamesStrikethrough[i], fPropertyNamesUnderline[i]);
+				addToken(fPropertyNamesColor[i], fPropertyNamesBgColor[i], fPropertyNamesBold[i], fPropertyNamesItalic[i], fPropertyNamesStrikethrough[i], fPropertyNamesUnderline[i]);
 		}
 
 		initializeRules();
@@ -116,6 +119,10 @@ public abstract class AbstractRubyScanner extends BufferedRuleBasedScanner {
 	
 	protected String getBoldKey(String colorKey) {
 		return colorKey + PreferenceConstants.EDITOR_BOLD_SUFFIX;
+	}
+	
+	protected String getBGKey(String colorKey) {
+		return colorKey + PreferenceConstants.EDITOR_BG_SUFFIX;
 	}
 
 	protected String getItalicKey(String colorKey) {
@@ -130,34 +137,41 @@ public abstract class AbstractRubyScanner extends BufferedRuleBasedScanner {
 		return colorKey + PreferenceConstants.EDITOR_UNDERLINE_SUFFIX;
 	}
 
-	private void addTokenWithProxyAttribute(String colorKey, String boldKey, String italicKey, String strikethroughKey, String underlineKey) {
-		fTokenMap.put(colorKey, new Token(createTextAttribute(null, boldKey, italicKey, strikethroughKey, underlineKey)));
+	private void addTokenWithProxyAttribute(String colorKey, String bgColorKey, String boldKey, String italicKey, String strikethroughKey, String underlineKey) {
+		fTokenMap.put(colorKey, new Token(createTextAttribute(null, null, boldKey, italicKey, strikethroughKey, underlineKey)));
 	}
 
 	private void resolveProxyAttributes() {
 		if (fNeedsLazyColorLoading && Display.getCurrent() != null) {
 			for (int i = 0; i < fPropertyNamesColor.length; i++) {
-				addToken(fPropertyNamesColor[i], fPropertyNamesBold[i], fPropertyNamesItalic[i], fPropertyNamesStrikethrough[i], fPropertyNamesUnderline[i]);
+				addToken(fPropertyNamesColor[i], fPropertyNamesBgColor[i], fPropertyNamesBold[i], fPropertyNamesItalic[i], fPropertyNamesStrikethrough[i], fPropertyNamesUnderline[i]);
 			}
 			fNeedsLazyColorLoading = false;
 		}
 	}
 
-	private void addToken(String colorKey, String boldKey, String italicKey, String strikethroughKey, String underlineKey) {
+	private void addToken(String colorKey, String bgColorKey, String boldKey, String italicKey, String strikethroughKey, String underlineKey) {
+		bindColor(colorKey);
+		bindColor(bgColorKey);
+
+		if (!fNeedsLazyColorLoading)
+			fTokenMap.put(colorKey, new Token(createTextAttribute(colorKey, bgColorKey, boldKey, italicKey, strikethroughKey, underlineKey)));
+		else {
+			Token token = ((Token) fTokenMap.get(colorKey));
+			if (token != null) token.setData(createTextAttribute(colorKey, bgColorKey, boldKey, italicKey, strikethroughKey, underlineKey));
+		}
+	}
+
+	private void bindColor(String colorKey) {
 		if (fColorManager != null && colorKey != null && fColorManager.getColor(colorKey) == null) {
 			RGB rgb = PreferenceConverter.getColor(fPreferenceStore, colorKey);
+			if (rgb == PreferenceConverter.COLOR_DEFAULT_DEFAULT) return;
+			
 			if (fColorManager instanceof IColorManagerExtension) {
 				IColorManagerExtension ext = (IColorManagerExtension) fColorManager;
 				ext.unbindColor(colorKey);
 				ext.bindColor(colorKey, rgb);
 			}
-		}
-
-		if (!fNeedsLazyColorLoading)
-			fTokenMap.put(colorKey, new Token(createTextAttribute(colorKey, boldKey, italicKey, strikethroughKey, underlineKey)));
-		else {
-			Token token = ((Token) fTokenMap.get(colorKey));
-			if (token != null) token.setData(createTextAttribute(colorKey, boldKey, italicKey, strikethroughKey, underlineKey));
 		}
 	}
 
@@ -172,6 +186,8 @@ public abstract class AbstractRubyScanner extends BufferedRuleBasedScanner {
 	 * 
 	 * @param colorKey
 	 *            the color preference key
+	 * @param colorKey
+	 *            the color preference key
 	 * @param boldKey
 	 *            the bold preference key
 	 * @param italicKey
@@ -183,10 +199,14 @@ public abstract class AbstractRubyScanner extends BufferedRuleBasedScanner {
 	 * @return the created text attribute
 	 * @since 0.9.0
 	 */
-	private TextAttribute createTextAttribute(String colorKey, String boldKey, String italicKey, String strikethroughKey, String underlineKey) {	
+	private TextAttribute createTextAttribute(String colorKey, String bgColorKey, String boldKey, String italicKey, String strikethroughKey, String underlineKey) {	
 		Color color= null;
 		if (colorKey != null)
 			color= fColorManager.getColor(colorKey);
+		
+		Color bgColor= null;
+		if (bgColorKey != null)
+			bgColor= fColorManager.getColor(bgColorKey);
 
 		int style= fPreferenceStore.getBoolean(boldKey) ? SWT.BOLD : SWT.NORMAL;
 		if (fPreferenceStore.getBoolean(italicKey))
@@ -198,7 +218,7 @@ public abstract class AbstractRubyScanner extends BufferedRuleBasedScanner {
 		if (fPreferenceStore.getBoolean(underlineKey))
 			style |= TextAttribute.UNDERLINE;
 
-		return new TextAttribute(color, null, style);
+		return new TextAttribute(color, bgColor, style);
 	}
 
 	public boolean affectsBehavior(PropertyChangeEvent event) {
@@ -212,6 +232,8 @@ public abstract class AbstractRubyScanner extends BufferedRuleBasedScanner {
 		Token token = getToken(fPropertyNamesColor[index]);
 		if (fPropertyNamesColor[index].equals(p))
 			adaptToColorChange(token, event);
+		if (fPropertyNamesBgColor[index].equals(p))
+			adaptToBgColorChange(token, event);
 		else if (fPropertyNamesBold[index].equals(p))
 			adaptToStyleChange(token, event, SWT.BOLD);
 		else if (fPropertyNamesItalic[index].equals(p)) 
@@ -238,6 +260,14 @@ public abstract class AbstractRubyScanner extends BufferedRuleBasedScanner {
 	}
 
 	private void adaptToColorChange(Token token, PropertyChangeEvent event) {
+		adaptToSomeColorChange(token, event, true);
+	}
+	
+	private void adaptToBgColorChange(Token token, PropertyChangeEvent event) {
+		adaptToSomeColorChange(token, event, false);
+	}
+
+	private void adaptToSomeColorChange(Token token, PropertyChangeEvent event, boolean isForeground) {
 		RGB rgb = null;
 
 		Object value = event.getNewValue();
@@ -262,7 +292,16 @@ public abstract class AbstractRubyScanner extends BufferedRuleBasedScanner {
 			Object data = token.getData();
 			if (data instanceof TextAttribute) {
 				TextAttribute oldAttr = (TextAttribute) data;
-				token.setData(new TextAttribute(color, oldAttr.getBackground(), oldAttr.getStyle()));
+				Color foreGround;
+				Color backGround;
+				if (!isForeground) {
+					foreGround = oldAttr.getForeground();
+					backGround = color;
+				} else {
+					foreGround = color;
+					backGround = oldAttr.getBackground();
+				}
+				token.setData(new TextAttribute(foreGround, backGround, oldAttr.getStyle()));
 			}
 		}
 	}
@@ -271,7 +310,7 @@ public abstract class AbstractRubyScanner extends BufferedRuleBasedScanner {
 		if (property != null) {
 			int length = fPropertyNamesColor.length;
 			for (int i = 0; i < length; i++) {
-				if (property.equals(fPropertyNamesColor[i]) || property.equals(fPropertyNamesBold[i]) || property.equals(fPropertyNamesItalic[i]) || property.equals(fPropertyNamesStrikethrough[i]) || property.equals(fPropertyNamesUnderline[i])) return i;
+				if (property.equals(fPropertyNamesColor[i]) || property.equals(fPropertyNamesBgColor[i]) || property.equals(fPropertyNamesBold[i]) || property.equals(fPropertyNamesItalic[i]) || property.equals(fPropertyNamesStrikethrough[i]) || property.equals(fPropertyNamesUnderline[i])) return i;
 			}
 		}
 		return -1;

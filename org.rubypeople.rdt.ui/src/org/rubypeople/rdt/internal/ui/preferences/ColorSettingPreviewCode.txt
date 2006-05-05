@@ -2,13 +2,14 @@
  This is about ClassName.
 =end
 class ClassName < SuperClass
-	CLASS_CONSTANT = 123
+	CLASS_CONSTANT = 123	
 	$global = 'around the world'
 	# This comment may span only this line
 	@@class_variable = "some string"
 
     def initialize(value) 
       @field = value
+      @char = ?a
     end
     
 	# TASK: refactor

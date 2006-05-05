@@ -118,6 +118,7 @@ public final class PreferencesMessages extends NLS {
 	public static String RubyEditorPreferencePage_closeStrings;
 	public static String RubyEditorPreferencePage_closeBrackets;
 	public static String RubyEditorPreferencePage_closeBraces;
+	public static String RubyEditorPreferencePage_background_color;
 
     static {
         NLS.initializeMessages(BUNDLE_NAME, PreferencesMessages.class);

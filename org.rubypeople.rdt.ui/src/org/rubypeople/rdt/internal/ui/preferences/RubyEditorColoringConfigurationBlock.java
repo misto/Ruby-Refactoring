@@ -22,10 +22,8 @@ import org.eclipse.jface.preference.ColorSelector;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.preference.PreferenceConverter;
 import org.eclipse.jface.resource.JFaceResources;
-import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.Document;
 import org.eclipse.jface.text.IDocument;
-import org.eclipse.jface.util.PropertyChangeEvent;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.ITreeContentProvider;
@@ -87,6 +85,8 @@ class RubyEditorColoringConfigurationBlock extends AbstractConfigurationBlock {
 		private String fColorKey;
 		/** Bold preference key */
 		private String fBoldKey;
+		/** Background preference key */
+		private String fBackgroundKey;
 		/** Italic preference key */
 		private String fItalicKey;
 		/**
@@ -102,15 +102,17 @@ class RubyEditorColoringConfigurationBlock extends AbstractConfigurationBlock {
 		/**
 		 * Initialize the item with the given values.
 		 * @param displayName the display name
-		 * @param colorKey the color preference key
+		 * @param colorKey the color preference key\
+		 * @param bgColorKey the color preference key
 		 * @param boldKey the bold preference key
 		 * @param italicKey the italic preference key
 		 * @param strikethroughKey the strikethrough preference key
 		 * @param underlineKey the underline preference key
 		 */
-		public HighlightingColorListItem(String displayName, String colorKey, String boldKey, String italicKey, String strikethroughKey, String underlineKey) {
+		public HighlightingColorListItem(String displayName, String colorKey, String bgColorKey, String boldKey, String italicKey, String strikethroughKey, String underlineKey) {
 			fDisplayName= displayName;
 			fColorKey= colorKey;
+			fBackgroundKey = bgColorKey;
 			fBoldKey= boldKey;
 			fItalicKey= italicKey;
 			fStrikethroughKey= strikethroughKey; 
@@ -122,6 +124,13 @@ class RubyEditorColoringConfigurationBlock extends AbstractConfigurationBlock {
 		 */
 		public String getBoldKey() {
 			return fBoldKey;
+		}
+		
+		/**
+		 * @return the background preference key
+		 */
+		public String getBackgroundKey() {
+			return fBackgroundKey;
 		}
 		
 		/**
@@ -171,14 +180,15 @@ class RubyEditorColoringConfigurationBlock extends AbstractConfigurationBlock {
 		 * Initialize the item with the given values.
 		 * @param displayName the display name
 		 * @param colorKey the color preference key
+		 * @param bgColorKey the color preference key
 		 * @param boldKey the bold preference key
 		 * @param italicKey the italic preference key
 		 * @param strikethroughKey the strikethroughKey preference key
 		 * @param underlineKey the underlineKey preference key
 		 * @param enableKey the enable preference key
 		 */
-		public SemanticHighlightingColorListItem(String displayName, String colorKey, String boldKey, String italicKey, String strikethroughKey, String underlineKey, String enableKey) {
-			super(displayName, colorKey, boldKey, italicKey, strikethroughKey, underlineKey);
+		public SemanticHighlightingColorListItem(String displayName, String colorKey, String bgColorKey, String boldKey, String italicKey, String strikethroughKey, String underlineKey, String enableKey) {
+			super(displayName, colorKey, bgColorKey, boldKey, italicKey, strikethroughKey, underlineKey);
 			fEnableKey= enableKey;
 		}
 	
@@ -253,6 +263,7 @@ class RubyEditorColoringConfigurationBlock extends AbstractConfigurationBlock {
 	}
 
 	private static final String BOLD= PreferenceConstants.EDITOR_BOLD_SUFFIX;
+	private static final String BACKGROUND= PreferenceConstants.EDITOR_BG_SUFFIX;
 	/**
 	 * Preference key suffix for italic preferences.
 	 * @since 0.9.0
@@ -292,7 +303,9 @@ class RubyEditorColoringConfigurationBlock extends AbstractConfigurationBlock {
 	private final String fRubyCategory= PreferencesMessages.RubyEditorPreferencePage_coloring_category_ruby; 
 
 	private ColorSelector fSyntaxForegroundColorEditor;
+	private ColorSelector fSyntaxBackgroundColorEditor;
 	private Label fColorEditorLabel;
+	private Label fBackgroundColorEditorLabel;
 	private Button fBoldCheckBox;
 	private Button fEnableCheckbox;
 	/**
@@ -342,7 +355,7 @@ class RubyEditorColoringConfigurationBlock extends AbstractConfigurationBlock {
 		fColorManager= new RubyColorManager(false);
 		
 		for (int i= 0, n= fSyntaxColorListModel.length; i < n; i++)
-			fListModel.add(new HighlightingColorListItem (fSyntaxColorListModel[i][0], fSyntaxColorListModel[i][1], fSyntaxColorListModel[i][1] + BOLD, fSyntaxColorListModel[i][1] + ITALIC, fSyntaxColorListModel[i][1] + STRIKETHROUGH, fSyntaxColorListModel[i][1] + UNDERLINE));
+			fListModel.add(new HighlightingColorListItem (fSyntaxColorListModel[i][0], fSyntaxColorListModel[i][1], fSyntaxColorListModel[i][1] + BACKGROUND, fSyntaxColorListModel[i][1] + BOLD, fSyntaxColorListModel[i][1] + ITALIC, fSyntaxColorListModel[i][1] + STRIKETHROUGH, fSyntaxColorListModel[i][1] + UNDERLINE));
 		
 		store.addKeys(createOverlayStoreKeys());
 	}
@@ -452,6 +465,7 @@ class RubyEditorColoringConfigurationBlock extends AbstractConfigurationBlock {
 		if (item == null) {
 			fEnableCheckbox.setEnabled(false);
 			fSyntaxForegroundColorEditor.getButton().setEnabled(false);
+			fSyntaxBackgroundColorEditor.getButton().setEnabled(false);
 			fColorEditorLabel.setEnabled(false);
 			fBoldCheckBox.setEnabled(false);
 			fItalicCheckBox.setEnabled(false);
@@ -460,7 +474,10 @@ class RubyEditorColoringConfigurationBlock extends AbstractConfigurationBlock {
 			return;
 		}
 		RGB rgb= PreferenceConverter.getColor(getPreferenceStore(), item.getColorKey());
-		fSyntaxForegroundColorEditor.setColorValue(rgb);		
+		fSyntaxForegroundColorEditor.setColorValue(rgb);
+		rgb= PreferenceConverter.getColor(getPreferenceStore(), item.getBackgroundKey());
+		// TODO If we get back default color, show the default text editor bg color.
+		fSyntaxBackgroundColorEditor.setColorValue(rgb);
 		fBoldCheckBox.setSelection(getPreferenceStore().getBoolean(item.getBoldKey()));
 		fItalicCheckBox.setSelection(getPreferenceStore().getBoolean(item.getItalicKey()));
 		fStrikethroughCheckBox.setSelection(getPreferenceStore().getBoolean(item.getStrikethroughKey()));
@@ -470,6 +487,7 @@ class RubyEditorColoringConfigurationBlock extends AbstractConfigurationBlock {
 			boolean enable= getPreferenceStore().getBoolean(((SemanticHighlightingColorListItem) item).getEnableKey());
 			fEnableCheckbox.setSelection(enable);
 			fSyntaxForegroundColorEditor.getButton().setEnabled(enable);
+			fSyntaxBackgroundColorEditor.getButton().setEnabled(enable);
 			fColorEditorLabel.setEnabled(enable);
 			fBoldCheckBox.setEnabled(enable);
 			fItalicCheckBox.setEnabled(enable);
@@ -477,6 +495,7 @@ class RubyEditorColoringConfigurationBlock extends AbstractConfigurationBlock {
 			fUnderlineCheckBox.setEnabled(enable);
 		} else {
 			fSyntaxForegroundColorEditor.getButton().setEnabled(true);
+			fSyntaxBackgroundColorEditor.getButton().setEnabled(true);
 			fColorEditorLabel.setEnabled(true);
 			fBoldCheckBox.setEnabled(true);
 			fItalicCheckBox.setEnabled(true);
@@ -581,6 +600,22 @@ class RubyEditorColoringConfigurationBlock extends AbstractConfigurationBlock {
 		gd= new GridData(GridData.HORIZONTAL_ALIGN_BEGINNING);
 		foregroundColorButton.setLayoutData(gd);
 		
+		
+		// Background color
+		// TODO Create an enable/system default checkbox for background
+		fBackgroundColorEditorLabel= new Label(stylesComposite, SWT.LEFT);
+		fBackgroundColorEditorLabel.setText(PreferencesMessages.RubyEditorPreferencePage_background_color); 
+		gd= new GridData(GridData.HORIZONTAL_ALIGN_BEGINNING);
+		gd.horizontalIndent= 20;
+		fBackgroundColorEditorLabel.setLayoutData(gd);
+	
+		fSyntaxBackgroundColorEditor= new ColorSelector(stylesComposite);
+		Button backgroundColorButton= fSyntaxBackgroundColorEditor.getButton();
+		gd= new GridData(GridData.HORIZONTAL_ALIGN_BEGINNING);
+		backgroundColorButton.setLayoutData(gd);
+		
+		
+		
 		fBoldCheckBox= new Button(stylesComposite, SWT.CHECK);
 		fBoldCheckBox.setText(PreferencesMessages.RubyEditorPreferencePage_bold); 
 		gd= new GridData(GridData.HORIZONTAL_ALIGN_BEGINNING);
@@ -634,6 +669,16 @@ class RubyEditorColoringConfigurationBlock extends AbstractConfigurationBlock {
 				PreferenceConverter.setValue(getPreferenceStore(), item.getColorKey(), fSyntaxForegroundColorEditor.getColorValue());
 			}
 		});
+		
+		backgroundColorButton.addSelectionListener(new SelectionListener() {
+			public void widgetDefaultSelected(SelectionEvent e) {
+				// do nothing
+			}
+			public void widgetSelected(SelectionEvent e) {
+				HighlightingColorListItem item= getHighlightingColorListItem();
+				PreferenceConverter.setValue(getPreferenceStore(), item.getBackgroundKey(), fSyntaxBackgroundColorEditor.getColorValue());
+			}
+		});
 	
 		fBoldCheckBox.addSelectionListener(new SelectionListener() {
 			public void widgetDefaultSelected(SelectionEvent e) {
@@ -685,6 +730,7 @@ class RubyEditorColoringConfigurationBlock extends AbstractConfigurationBlock {
 					getPreferenceStore().setValue(((SemanticHighlightingColorListItem) item).getEnableKey(), enable);
 					fEnableCheckbox.setSelection(enable);
 					fSyntaxForegroundColorEditor.getButton().setEnabled(enable);
+					fSyntaxBackgroundColorEditor.getButton().setEnabled(enable);
 					fColorEditorLabel.setEnabled(enable);
 					fBoldCheckBox.setEnabled(enable);
 					fItalicCheckBox.setEnabled(enable);
