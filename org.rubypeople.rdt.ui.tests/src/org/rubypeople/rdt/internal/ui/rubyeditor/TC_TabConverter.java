@@ -4,8 +4,9 @@ import junit.framework.TestCase;
 
 import org.eclipse.jface.text.Document;
 import org.eclipse.jface.text.DocumentCommand;
+import org.rubypeople.rdt.internal.ui.rubyeditor.RubyEditor.TabConverter;
 
-public class TC_TabExpander extends TestCase {
+public class TC_TabConverter extends TestCase {
 
 	private static final String TEST_TEXT = "012345678\n123456789\n";
 
@@ -49,16 +50,17 @@ public class TC_TabExpander extends TestCase {
 	}
 
 	private void verifyTabExpansion(int spacesPerTab, int currentOffset, int expectedCountOfTabs) {
-		TabExpander expander = new TabExpander(spacesPerTab);
+		TabConverter converter = new TabConverter();
+		converter.setNumberOfSpacesPerTab(spacesPerTab);
 		TestDocumentCommand command = new TestDocumentCommand(currentOffset);
 		command.text = "\t";
 		Document document = new Document(TEST_TEXT);
 		
-		expander.expandTab(command, document);
+		converter.customizeDocumentCommand(document, command);
 
 		String message = "Offset = "+currentOffset + "; tabWidth = "+spacesPerTab;
 		assertEquals(message, "     ".substring(0,expectedCountOfTabs), command.text);
-		assertEquals("Full indent (" + spacesPerTab + ")", "     ".substring(0,spacesPerTab), expander.getFullIndent());
+//		assertEquals("Full indent (" + spacesPerTab + ")", "     ".substring(0,spacesPerTab), expander.getFullIndent());
 	}
 	
 	
