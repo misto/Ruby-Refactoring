@@ -247,8 +247,6 @@ public class RubyCompletionProcessor extends TemplateCompletionProcessor
 
 			IRubyCompletionProposal[] keyWordResults = getKeywordProposals(documentOffset);
 			if (keyWordResults.length > 0) {
-				List removals = new ArrayList();
-
 				// update relevance of template proposals that match with a
 				// keyword
 				// give those templates slightly more relevance than the keyword
@@ -269,12 +267,9 @@ public class RubyCompletionProcessor extends TemplateCompletionProcessor
 								continue outer;
 							}
 						}
-						if (isKeyword(name))
-							removals.add(curr);
+
 					}
 				}
-
-				result.removeAll(removals);
 			}
 			return result;
 		}
