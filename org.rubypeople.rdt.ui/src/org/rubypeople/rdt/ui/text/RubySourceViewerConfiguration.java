@@ -40,13 +40,13 @@ import org.rubypeople.rdt.internal.corext.util.CodeFormatterUtil;
 import org.rubypeople.rdt.internal.ui.RubyPlugin;
 import org.rubypeople.rdt.internal.ui.rubyeditor.IRubyScriptDocumentProvider;
 import org.rubypeople.rdt.internal.ui.rubyeditor.RubyAbstractEditor;
+import org.rubypeople.rdt.internal.ui.text.ContentAssistPreference;
 import org.rubypeople.rdt.internal.ui.text.HTMLTextPresenter;
 import org.rubypeople.rdt.internal.ui.text.IRubyColorConstants;
 import org.rubypeople.rdt.internal.ui.text.IRubyPartitions;
 import org.rubypeople.rdt.internal.ui.text.PreferencesAdapter;
 import org.rubypeople.rdt.internal.ui.text.RubyAnnotationHover;
 import org.rubypeople.rdt.internal.ui.text.RubyCommentScanner;
-import org.rubypeople.rdt.internal.ui.text.RubyContentAssistPreference;
 import org.rubypeople.rdt.internal.ui.text.RubyDoubleClickSelector;
 import org.rubypeople.rdt.internal.ui.text.RubyPartitionScanner;
 import org.rubypeople.rdt.internal.ui.text.RubyReconciler;
@@ -320,7 +320,7 @@ public class RubySourceViewerConfiguration extends TextSourceViewerConfiguration
         contentAssistant.setProposalPopupOrientation(ContentAssistant.PROPOSAL_OVERLAY);
         contentAssistant.setContextInformationPopupOrientation(ContentAssistant.CONTEXT_INFO_ABOVE);
 
-        RubyContentAssistPreference.configure(contentAssistant, getPreferenceStore());
+        ContentAssistPreference.configure(contentAssistant, getPreferenceStore());
         return contentAssistant;
     }
 
@@ -375,23 +375,18 @@ public class RubySourceViewerConfiguration extends TextSourceViewerConfiguration
      * @see org.eclipse.jface.text.source.SourceViewerConfiguration#getReconciler(org.eclipse.jface.text.source.ISourceViewer)
      */
     public IReconciler getReconciler(ISourceViewer sourceViewer) {
-    	final ITextEditor editor = getEditor();
-		if (editor != null && editor.isEditable()) {
-			RubyReconciler reconciler = new RubyReconciler(editor,
-					new RubyReconcilingStrategy(
-							(RubyAbstractEditor) fTextEditor), true);
-			reconciler.setIsIncrementalReconciler(false);
-			// TODO Uncomment when we move to Eclipse 3.2
-			// ECLIPSE 3.2
-			// reconciler.setIsAllowedToModifyDocument(false);
-			reconciler.setProgressMonitor(new NullProgressMonitor());
-			reconciler.setDelay(500);
-			return reconciler;
-		}
-		return null;
+        RubyReconciler reconciler = new RubyReconciler(fTextEditor, new RubyReconcilingStrategy(
+                (RubyAbstractEditor) fTextEditor), true);
+        reconciler.setIsIncrementalReconciler(false);
+        // TODO Uncomment when we move to Eclipse 3.2
+        // ECLIPSE 3.2
+        //reconciler.setIsAllowedToModifyDocument(false);
+        reconciler.setProgressMonitor(new NullProgressMonitor());
+        reconciler.setDelay(500);
+        return reconciler;
     }
-
-	private IRubyProject getProject() {
+    
+    private IRubyProject getProject() {
 		ITextEditor editor= getEditor();
 		if (editor == null)
 			return null;
@@ -409,7 +404,7 @@ public class RubySourceViewerConfiguration extends TextSourceViewerConfiguration
 
 		return element.getRubyProject();
 	}
-    
+
     public String[] getIndentPrefixes(ISourceViewer sourceViewer, String contentType) {
 
 		Vector vector= new Vector();
@@ -450,13 +445,6 @@ public class RubySourceViewerConfiguration extends TextSourceViewerConfiguration
 
 		return (String[]) vector.toArray(new String[vector.size()]);
     }
-    
-	/*
-	 * @see SourceViewerConfiguration#getTabWidth(ISourceViewer)
-	 */
-	public int getTabWidth(ISourceViewer sourceViewer) {
-		return CodeFormatterUtil.getTabWidth(getProject());
-	}
 
     public ITextDoubleClickStrategy getDoubleClickStrategy(ISourceViewer sourceViewer,
             String contentType) {
@@ -465,6 +453,13 @@ public class RubySourceViewerConfiguration extends TextSourceViewerConfiguration
         }
         return fRubyDoubleClickSelector;
     }
+    
+	/*
+	 * @see SourceViewerConfiguration#getTabWidth(ISourceViewer)
+	 */
+	public int getTabWidth(ISourceViewer sourceViewer) {
+		return CodeFormatterUtil.getTabWidth(getProject());
+	}
 
     public ITextHover getTextHover(ISourceViewer sourceViewer, String contentType) {
         if (fRubyTextHover == null) {

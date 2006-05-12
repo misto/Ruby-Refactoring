@@ -16,6 +16,10 @@ public interface IRubyPartitions {
 	 * @since 0.7.0
 	 */
 	public final static String RUBY_PARTITIONING= "___ruby_partitioning";  //$NON-NLS-1$
+
+	public static final String RUBY_REGEX = "__ruby_regular_expression"; //$NON-NLS-1$
+
+	public static final String RUBY_COMMAND = "__ruby_command"; //$NON-NLS-1$
     
     /**
      * The identifier of the single-line end comment partition content type.
