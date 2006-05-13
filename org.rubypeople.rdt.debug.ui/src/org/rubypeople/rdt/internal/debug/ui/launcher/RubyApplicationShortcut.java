@@ -14,6 +14,7 @@ import org.eclipse.debug.core.ILaunchConfiguration;
 import org.eclipse.debug.core.ILaunchConfigurationType;
 import org.eclipse.debug.core.ILaunchConfigurationWorkingCopy;
 import org.eclipse.debug.core.ILaunchManager;
+import org.eclipse.debug.ui.DebugUITools;
 import org.eclipse.debug.ui.ILaunchShortcut;
 import org.eclipse.jface.dialogs.ErrorDialog;
 import org.eclipse.jface.dialogs.MessageDialog;
@@ -69,7 +70,7 @@ public class RubyApplicationShortcut implements ILaunchShortcut {
 	protected void doLaunch(IRubyElement rubyElement, String mode) throws CoreException {
 		ILaunchConfiguration config = findOrCreateLaunchConfiguration(rubyElement, mode);
 		if (config != null) {
-			config.launch(mode, null);
+			DebugUITools.launch(config, mode);
 		}
 	}
 

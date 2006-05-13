@@ -50,7 +50,7 @@ public class TestUnitLaunchShortcut extends RubyApplicationShortcut {
 		String container = getContainer(rubyElement);
 		ILaunchConfiguration config = findOrCreateLaunchConfiguration(rubyElement, mode, container, "", "");
 		if (config != null) {
-			config.launch(mode, null);
+			DebugUITools.launch(config, mode);
 		}
 		TestSearchEngine.findTests((IFile) rubyElement.getUnderlyingResource());
 	}
