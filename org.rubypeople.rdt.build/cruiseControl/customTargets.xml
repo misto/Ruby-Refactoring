@@ -51,11 +51,11 @@
 		<antcall target="getMapFilesWithPserverMethod"/>
 	</target>
 	<target name="getMapFilesWithExtMethod" unless="usePserver">
-		<property name="cvsRoot" value=":ext:cvs.sf.net:/cvsroot/rubyeclipse" />
+		<property name="cvsRoot" value=":ext:rubyeclipse.cvs.sourceforge.net:/cvsroot/rubyeclipse" />
 		<cvs cvsroot="${cvsRoot}" dest="${buildDirectory}/maps" command="export -r ${mapVersionTag} org.rubypeople.rdt.build/map" />
 	</target>
 	<target name="getMapFilesWithPserverMethod" if="usePserver">
-		<property name="cvsRoot" value=":pserver:anonymous@cvs.sf.net:/cvsroot/rubyeclipse" />
+		<property name="cvsRoot" value=":pserver:anonymous@rubyeclipse.cvs.sourceforge.net:/cvsroot/rubyeclipse" />
 		<cvs cvsroot="${cvsRoot}" dest="${buildDirectory}/maps" command="export -r ${mapVersionTag} org.rubypeople.rdt.build/map" />
 		<replace dir="${buildDirectory}/maps" value=":pserver:anonymous@">
 			<include name="**/*.map"/>
