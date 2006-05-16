@@ -5,7 +5,7 @@
 
 		<!-- Defines where cruise looks for changes, to decide whether to run the build --> 
 		<modificationset quietperiod="120"> 
-			<cvs cvsroot=":ext:mbarchfe@cvs.sf.net:/cvsroot/rubyeclipse" module="rdt-all"/>
+			<cvs cvsroot=":ext:mbarchfe@rubyecplise.cvs.sf.net:/cvsroot/rubyeclipse" module="rdt-all"/>
 		</modificationset>
 
 		<!-- Configures the actual build loop, how often and which build file/target --> 
