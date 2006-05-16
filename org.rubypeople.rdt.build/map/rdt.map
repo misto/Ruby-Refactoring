@@ -13,28 +13,28 @@
 !* See customTargets.xml target getMapFiles
 
 
-feature@org.rubypeople.rdt=HEAD,:ext:rubyeclipse.cvs.sf.net:/cvsroot/rubyeclipse,,org.rubypeople.rdt-feature
+feature@org.rubypeople.rdt=HEAD,:ext:rubyeclipse.cvs.sourceforge.net:/cvsroot/rubyeclipse,,org.rubypeople.rdt-feature
 
-plugin@org.kxml2=HEAD,:ext:rubyeclipse.cvs.sf.net:/cvsroot/rubyeclipse,
-plugin@org.rubypeople.rdt=HEAD,:ext:rubyeclipse.cvs.sf.net:/cvsroot/rubyeclipse,
-plugin@org.rubypeople.rdt.core=HEAD,:ext:rubyeclipse.cvs.sf.net:/cvsroot/rubyeclipse,
-plugin@org.rubypeople.rdt.debug.core=HEAD,:ext:rubyeclipse.cvs.sf.net:/cvsroot/rubyeclipse,
-plugin@org.rubypeople.rdt.debug.ui=HEAD,:ext:rubyeclipse.cvs.sf.net:/cvsroot/rubyeclipse,
-plugin@org.rubypeople.rdt.ui=HEAD,:ext:rubyeclipse.cvs.sf.net:/cvsroot/rubyeclipse,
-plugin@org.rubypeople.rdt.launching=HEAD,:ext:rubyeclipse.cvs.sf.net:/cvsroot/rubyeclipse,
-plugin@org.rubypeople.rdt.testunit=HEAD,:ext:rubyeclipse.cvs.sf.net:/cvsroot/rubyeclipse,
-plugin@org.rubypeople.rdt.doc.user=HEAD,:ext:rubyeclipse.cvs.sf.net:/cvsroot/rubyeclipse,
-plugin@org.epic.regexp=HEAD,:ext:rubyeclipse.cvs.sf.net:/cvsroot/rubyeclipse,
-plugin@org.rubypeople.rdt.ri=HEAD,:ext:rubyeclipse.cvs.sf.net:/cvsroot/rubyeclipse,
+plugin@org.kxml2=HEAD,:ext:rubyeclipse.cvs.sourceforge.net:/cvsroot/rubyeclipse,
+plugin@org.rubypeople.rdt=HEAD,:ext:rubyeclipse.cvs.sourceforge.net:/cvsroot/rubyeclipse,
+plugin@org.rubypeople.rdt.core=HEAD,:ext:rubyeclipse.cvs.sourceforge.net:/cvsroot/rubyeclipse,
+plugin@org.rubypeople.rdt.debug.core=HEAD,:ext:rubyeclipse.cvs.sourceforge.net:/cvsroot/rubyeclipse,
+plugin@org.rubypeople.rdt.debug.ui=HEAD,:ext:rubyeclipse.cvs.sourceforge.net:/cvsroot/rubyeclipse,
+plugin@org.rubypeople.rdt.ui=HEAD,:ext:rubyeclipse.cvs.sourceforge.net:/cvsroot/rubyeclipse,
+plugin@org.rubypeople.rdt.launching=HEAD,:ext:rubyeclipse.cvs.sourceforge.net:/cvsroot/rubyeclipse,
+plugin@org.rubypeople.rdt.testunit=HEAD,:ext:rubyeclipse.cvs.sourceforge.net:/cvsroot/rubyeclipse,
+plugin@org.rubypeople.rdt.doc.user=HEAD,:ext:rubyeclipse.cvs.sourceforge.net:/cvsroot/rubyeclipse,
+plugin@org.epic.regexp=HEAD,:ext:rubyeclipse.cvs.sourceforge.net:/cvsroot/rubyeclipse,
+plugin@org.rubypeople.rdt.ri=HEAD,:ext:rubyeclipse.cvs.sourceforge.net:/cvsroot/rubyeclipse,
 
 
-feature@org.rubypeople.rdt-tests=HEAD,:ext:rubyeclipse.cvs.sf.net:/cvsroot/rubyeclipse,,org.rubypeople.rdt-feature/unit-tests-feature
+feature@org.rubypeople.rdt-tests=HEAD,:ext:rubyeclipse.cvs.sourceforge.net:/cvsroot/rubyeclipse,,org.rubypeople.rdt-feature/unit-tests-feature
 
-plugin@org.rubypeople.eclipse.shams=HEAD,:ext:rubyeclipse.cvs.sf.net:/cvsroot/rubyeclipse,
-plugin@org.rubypeople.eclipse.testutils=HEAD,:ext:rubyeclipse.cvs.sf.net:/cvsroot/rubyeclipse,
-plugin@org.rubypeople.rdt.core.tests=HEAD,:ext:rubyeclipse.cvs.sf.net:/cvsroot/rubyeclipse,
-plugin@org.rubypeople.rdt.ui.tests=HEAD,:ext:rubyeclipse.cvs.sf.net:/cvsroot/rubyeclipse,
-plugin@org.rubypeople.rdt.debug.core.tests=HEAD,:ext:rubyeclipse.cvs.sf.net:/cvsroot/rubyeclipse,
-plugin@org.rubypeople.rdt.debug.ui.tests=HEAD,:ext:rubyeclipse.cvs.sf.net:/cvsroot/rubyeclipse,
-plugin@org.rubypeople.rdt.launching.tests=HEAD,:ext:rubyeclipse.cvs.sf.net:/cvsroot/rubyeclipse,
-plugin@org.rubypeople.rdt.tests.all=HEAD,:ext:rubyeclipse.cvs.sf.net:/cvsroot/rubyeclipse,
+plugin@org.rubypeople.eclipse.shams=HEAD,:ext:rubyeclipse.cvs.sourceforge.net:/cvsroot/rubyeclipse,
+plugin@org.rubypeople.eclipse.testutils=HEAD,:ext:rubyeclipse.cvs.sourceforge.net:/cvsroot/rubyeclipse,
+plugin@org.rubypeople.rdt.core.tests=HEAD,:ext:rubyeclipse.cvs.sourceforge.net:/cvsroot/rubyeclipse,
+plugin@org.rubypeople.rdt.ui.tests=HEAD,:ext:rubyeclipse.cvs.sourceforge.net:/cvsroot/rubyeclipse,
+plugin@org.rubypeople.rdt.debug.core.tests=HEAD,:ext:rubyeclipse.cvs.sourceforge.net:/cvsroot/rubyeclipse,
+plugin@org.rubypeople.rdt.debug.ui.tests=HEAD,:ext:rubyeclipse.cvs.sourceforge.net:/cvsroot/rubyeclipse,
+plugin@org.rubypeople.rdt.launching.tests=HEAD,:ext:rubyeclipse.cvs.sourceforge.net:/cvsroot/rubyeclipse,
+plugin@org.rubypeople.rdt.tests.all=HEAD,:ext:rubyeclipse.cvs.sourceforge.net:/cvsroot/rubyeclipse,
