@@ -10,11 +10,13 @@ import java.util.List;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.jruby.ast.Node;
 import org.jruby.lexer.yacc.SyntaxException;
 import org.rubypeople.rdt.core.IProblemRequestor;
 import org.rubypeople.rdt.core.parser.IProblem;
 import org.rubypeople.rdt.internal.core.parser.Error;
 import org.rubypeople.rdt.internal.core.parser.RdtWarnings;
+import org.rubypeople.rdt.internal.core.parser.RubyLintVisitor;
 import org.rubypeople.rdt.internal.core.parser.RubyParser;
 import org.rubypeople.rdt.internal.core.parser.TaskParser;
 
@@ -31,7 +33,9 @@ public class RubyScriptProblemFinder {
         RubyParser parser = new RubyParser(warnings);
         String contents = new String(charContents);
         try {
-            parser.parse((IFile) script.getUnderlyingResource(), new StringReader(contents));
+            Node node = parser.parse((IFile) script.getUnderlyingResource(), new StringReader(contents));
+            RubyLintVisitor visitor = new RubyLintVisitor(problemRequestor);
+            node.accept(visitor);
         } catch (SyntaxException e) {
             problemRequestor.acceptProblem(new Error(e.getPosition(), "Syntax Error"));
         }

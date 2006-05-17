@@ -153,6 +153,22 @@ public class RubyCore extends Plugin {
     public static final String DISABLED = "disabled"; //$NON-NLS-1$
 
     /**
+	 * Possible  configurable option value.
+	 * @see #getDefaultOptions()
+	 */
+	public static final String ERROR = "error"; //$NON-NLS-1$
+	/**
+	 * Possible  configurable option value.
+	 * @see #getDefaultOptions()
+	 */
+	public static final String WARNING = "warning"; //$NON-NLS-1$
+	/**
+	 * Possible  configurable option value.
+	 * @see #getDefaultOptions()
+	 */
+	public static final String IGNORE = "ignore"; //$NON-NLS-1$
+    
+    /**
      * Possible configurable option value.
      * 
      * @see #getDefaultOptions()
@@ -199,6 +215,59 @@ public class RubyCore extends Plugin {
 	 * @since 0.8.0
 	 */
 	public static final String RUBY_SOURCE_CONTENT_TYPE = RubyCore.PLUGIN_ID+".rubySource" ; //$NON-NLS-1$
+
+	/**
+	 * Possible  configurable option ID.
+	 * @see #getDefaultOptions()
+	 * @since 0.9.0
+	 */
+	public static final String COMPILER_PB_ENSURE_BLOCK_NOT_COMPLETING = PLUGIN_ID + ".compiler.problem.ensureBlockNotCompletingNormally"; //$NON-NLS-1$
+	/**
+	 * Possible  configurable option ID.
+	 * @see #getDefaultOptions()
+	 * @since 0.90.
+	 */
+	public static final String COMPILER_PB_EMPTY_STATEMENT = PLUGIN_ID + ".compiler.problem.emptyStatement"; //$NON-NLS-1$
+	/**
+	 * Possible  configurable option ID.
+	 * @see #getDefaultOptions()
+	 */
+	public static final String COMPILER_PB_HIDDEN_RESCUE_BLOCK = PLUGIN_ID + ".compiler.problem.hiddenRescueBlock"; //$NON-NLS-1$
+	/**
+	 * Possible  configurable option ID.
+	 * @see #getDefaultOptions()
+	 * @since 0.9.0
+	 */
+	public static final String COMPILER_PB_FALLTHROUGH_CASE = PLUGIN_ID + ".compiler.problem.fallthroughCase"; //$NON-NLS-1$
+	/**
+	 * Possible  configurable option ID.
+	 * @see #getDefaultOptions()
+	 * @since 0.9.0
+	 */
+	public static final String COMPILER_PB_NULL_REFERENCE = PLUGIN_ID + ".compiler.problem.nullReference"; //$NON-NLS-1$
+	/**
+	 * Possible  configurable option ID.
+	 * @see #getDefaultOptions()
+	 */
+	public static final String COMPILER_PB_UNUSED_LOCAL = PLUGIN_ID + ".compiler.problem.unusedLocal"; //$NON-NLS-1$
+	/**
+	 * Possible  configurable option ID.
+	 * @see #getDefaultOptions()
+	 */
+	public static final String COMPILER_PB_UNUSED_PARAMETER = PLUGIN_ID + ".compiler.problem.unusedParameter"; //$NON-NLS-1$
+	/**
+	 * Possible  configurable option ID.
+	 * @see #getDefaultOptions()
+	 * @since 0.9.0
+	 */
+	public static final String COMPILER_PB_UNUSED_PRIVATE_MEMBER = PLUGIN_ID + ".compiler.problem.unusedPrivateMember"; //$NON-NLS-1$
+	/**
+	 * Possible  configurable option ID.
+	 * @see #getDefaultOptions()
+	 * @since 0.9.0
+	 */
+	public static final String COMPILER_PB_UNNECESSARY_ELSE = PLUGIN_ID + ".compiler.problem.unnecessaryElse"; //$NON-NLS-1$
+	
 
     private SymbolIndex symbolIndex;
     private ISymbolFinder symbolFinder;

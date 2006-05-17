@@ -7,6 +7,11 @@ package org.rubypeople.rdt.internal.core.util;
  * @author Chris
  */
 public class CharOperation {
+	
+	/**
+	 * Constant for an empty char array
+	 */
+	public static final char[] NO_CHAR = new char[0];
 
 	/**
 	 * Answers the first index in the array for which the corresponding
@@ -878,5 +883,61 @@ public class CharOperation {
 				hash = (hash * 31) + array[i];
 		}
 		return hash & 0x7FFFFFFF;
+	}
+	
+	/**
+	 * Answers the concatenation of the given array parts using the given separator between each part.
+	 * <br>
+	 * <br>
+	 * For example:<br>
+	 * <ol>
+	 * <li><pre>
+	 *    array = { { 'a' }, { 'b' } }
+	 *    separator = '.'
+	 *    => result = { 'a', '.', 'b' }
+	 * </pre>
+	 * </li>
+	 * <li><pre>
+	 *    array = null
+	 *    separator = '.'
+	 *    => result = { }
+	 * </pre></li>
+	 * </ol>
+	 * 
+	 * @param array the given array
+	 * @param separator the given separator
+	 * @return the concatenation of the given array parts using the given separator between each part
+	 */
+	public static final char[] concatWith(char[][] array, char separator) {
+		int length = array == null ? 0 : array.length;
+		if (length == 0)
+			return CharOperation.NO_CHAR;
+
+		int size = length - 1;
+		int index = length;
+		while (--index >= 0) {
+			if (array[index].length == 0)
+				size--;
+			else
+				size += array[index].length;
+		}
+		if (size <= 0)
+			return CharOperation.NO_CHAR;
+		char[] result = new char[size];
+		index = length;
+		while (--index >= 0) {
+			length = array[index].length;
+			if (length > 0) {
+				System.arraycopy(
+					array[index],
+					0,
+					result,
+					(size -= length),
+					length);
+				if (--size >= 0)
+					result[size] = separator;
+			}
+		}
+		return result;
 	}
 }

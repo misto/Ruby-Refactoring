@@ -21,6 +21,7 @@ import org.jruby.ast.Node;
 import org.jruby.lexer.yacc.SyntaxException;
 import org.rubypeople.rdt.core.RubyCore;
 import org.rubypeople.rdt.internal.core.parser.ImmediateWarnings;
+import org.rubypeople.rdt.internal.core.parser.RubyLintVisitor;
 import org.rubypeople.rdt.internal.core.parser.RubyParser;
 
 public final class RubyCodeAnalyzer implements SingleFileCompiler {
@@ -40,8 +41,11 @@ public final class RubyCodeAnalyzer implements SingleFileCompiler {
 
     public void compileFile(IFile file) throws CoreException {
         Reader reader = new InputStreamReader(file.getContents());
+        markerManager.removeProblemsAndTasksFor(file);
         try {
             Node rootNode = parser.parse(file, reader);
+            RubyLintVisitor visitor = new RubyLintVisitor(new ProblemRequestorMarkerManager(file, markerManager));
+            rootNode.accept(visitor);
             indexUpdater.update(file, rootNode, true);
         } catch (SyntaxException e) {
             markerManager.createSyntaxError(file, e);
