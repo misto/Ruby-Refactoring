@@ -9,8 +9,7 @@ import org.jruby.lexer.yacc.SyntaxException;
 import org.rubypeople.rdt.core.IProblemRequestor;
 import org.rubypeople.rdt.core.parser.IProblem;
 import org.rubypeople.rdt.internal.core.parser.RdtPosition;
-
-import com.sun.jmx.snmp.tasks.Task;
+import org.rubypeople.rdt.internal.core.parser.TaskTag;
 
 public class ProblemRequestorMarkerManager implements IProblemRequestor {
 
@@ -27,7 +26,7 @@ public class ProblemRequestorMarkerManager implements IProblemRequestor {
 	}
 
 	public void acceptProblem(IProblem problem) {
-		// TODO Bl;ah blah blah
+		// TODO Use active flag by calling begin and end reporting
 		// if (!isActive()) return;
 		if (problem.isWarning()) {
 			markerManager.addWarning(file, problem.getMessage());
@@ -42,12 +41,11 @@ public class ProblemRequestorMarkerManager implements IProblemRequestor {
 		}
 		if (problem.isTask()) {
 			List tasks = new ArrayList();
-			Task task = (Task) problem;
+			TaskTag task = (TaskTag) problem;
 			tasks.add(task);
 			try {
 				markerManager.createTasks(file, tasks);
 			} catch (CoreException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 			return;
@@ -63,7 +61,6 @@ public class ProblemRequestorMarkerManager implements IProblemRequestor {
 	}
 
 	public boolean isActive() {
-		// TODO Auto-generated method stub
 		return active;
 	}
 
