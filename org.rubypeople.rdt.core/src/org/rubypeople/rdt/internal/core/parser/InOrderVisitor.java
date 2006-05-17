@@ -1165,7 +1165,6 @@ public class InOrderVisitor extends AbstractVisitor {
 		return null;
 	}
 
-	@Override
 	protected Instruction visitNode(Node iVisited) {
 		// TODO Auto-generated method stub
 		return null;
