@@ -22,6 +22,9 @@ public class RubyUIMessages extends NLS {
     public static String RubyElementLabels_declseparator_string;
     
     public static String RubyImageLabelprovider_assert_wrongImage;
+	public static String CoreUtility_buildproject_taskname;
+	public static String CoreUtility_buildall_taskname;
+	public static String CoreUtility_job_title;
 
     private RubyUIMessages() {
     }

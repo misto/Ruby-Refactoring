@@ -118,6 +118,25 @@ public final class PreferencesMessages extends NLS {
 	public static String RubyEditorPreferencePage_closeStrings;
 	public static String RubyEditorPreferencePage_closeBrackets;
 	public static String RubyEditorPreferencePage_closeBraces;
+	public static String ProblemSeveritiesPreferencePage_title;
+	public static String ProblemSeveritiesConfigurationBlock_needsbuild_title;
+	public static String ProblemSeveritiesConfigurationBlock_needsfullbuild_message;
+	public static String ProblemSeveritiesConfigurationBlock_needsprojectbuild_message;
+	public static String ProblemSeveritiesConfigurationBlock_error;
+	public static String ProblemSeveritiesConfigurationBlock_warning;
+	public static String ProblemSeveritiesConfigurationBlock_ignore;
+	public static String ProblemSeveritiesConfigurationBlock_common_description;
+	public static String ProblemSeveritiesConfigurationBlock_section_unnecessary_code;
+	public static String ProblemSeveritiesConfigurationBlock_section_potential_programming_problems;
+	public static String ProblemSeveritiesConfigurationBlock_pb_ensure_block_not_completing_label;
+	public static String ProblemSeveritiesConfigurationBlock_pb_empty_statement_label;
+	public static String ProblemSeveritiesConfigurationBlock_pb_hidden_rescueblock_label;
+	public static String ProblemSeveritiesConfigurationBlock_pb_fall_through_case;
+	public static String ProblemSeveritiesConfigurationBlock_pb_null_reference;
+	public static String ProblemSeveritiesConfigurationBlock_pb_unused_local_label;
+	public static String ProblemSeveritiesConfigurationBlock_pb_unused_parameter_label;
+	public static String ProblemSeveritiesConfigurationBlock_pb_unused_private_label;
+	public static String ProblemSeveritiesConfigurationBlock_pb_unnecessary_else_label;
 	public static String RubyEditorPreferencePage_background_color;
 
     static {

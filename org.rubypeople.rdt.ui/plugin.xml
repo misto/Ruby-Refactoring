@@ -275,7 +275,66 @@
                value="org.rubypeople.rdt.core.rubynature">
          </filter>
       </page>
+      <page
+            objectClass="org.eclipse.core.resources.IProject"
+            name="%problemSeveritiesPageName"
+            class="org.rubypeople.rdt.internal.ui.preferences.ProblemSeveritiesPreferencePage"
+            category="org.rubypeople.rdt.ui.propertyPages.CompliancePreferencePage"
+            id="org.rubypeople.rdt.ui.propertyPages.ProblemSeveritiesPreferencePage">
+         <filter
+               name="nature"
+               value="org.rubypeople.rdt.core.rubynature">
+         </filter>
+         <keywordReference id="org.rubypeople.rdt.ui.severities"/>
+      </page>
    </extension>
+   
+   <extension
+   		point="org.eclipse.ui.keywords">
+      <keyword
+            label="%preferenceKeywords.general"
+            id="org.rubypeople.rdt.ui.general"/>
+      <keyword
+            label="%preferenceKeywords.appearance"
+            id="org.rubypeople.rdt.ui.appearance"/>
+      <keyword
+            label="%preferenceKeywords.sortorder"
+            id="org.rubypeople.rdt.ui.sortorder"/>
+      <keyword
+            label="%preferenceKeywords.codestyle"
+            id="org.rubypeople.rdt.ui.codestyle"/>
+      <keyword
+            label="%preferenceKeywords.codetemplates"
+            id="org.rubypeople.rdt.ui.codetemplates"/>
+      <keyword
+            label="%preferenceKeywords.formatter"
+            id="org.rubypeople.rdt.ui.formatter"/>      
+      <keyword
+            label="%preferenceKeywords.severities"
+            id="org.rubypeople.rdt.ui.severities"/>      
+      <keyword
+            label="%preferenceKeywords.todo"
+            id="org.rubypeople.rdt.ui.todo"/>            
+      <keyword
+            label="%preferenceKeywords.rubyeditor"
+            id="org.rubypeople.rdt.ui.rubyeditor"/>      
+      <keyword
+            label="%preferenceKeywords.contentassist"
+            id="org.rubypeople.rdt.ui.contentassist"/>   
+      <keyword
+            label="%preferenceKeywords.hover"
+            id="org.rubypeople.rdt.ui.hover"/>
+      <keyword
+            label="%preferenceKeywords.syntaxcoloring"
+            id="org.rubypeople.rdt.ui.syntaxcoloring"/>   
+      <keyword
+            label="%preferenceKeywords.templates"
+            id="org.rubypeople.rdt.ui.templates"/>
+      <keyword
+            label="%preferenceKeywords.folding"
+            id="org.rubypeople.rdt.ui.folding"/>
+   </extension>  
+   
    <extension point="org.eclipse.ui.views">
       <category
             name="%viewCategoryName"
