@@ -19,6 +19,12 @@ public class PercentSyntaxRule implements IRule {
 			case 'q':
 			case 'Q': // strings
 				return detectToken(scanner, IRubyPartitions.RUBY_STRING);
+			case 'w':
+			case 'W': // Array of strings
+				scanner.unread();
+				scanner.unread();
+				// FIXME Mark teh individual elements as strings
+				return Token.UNDEFINED;
 			default: // special case of string (no letter following percent)
 				scanner.unread();
 				return detectToken(scanner, IRubyPartitions.RUBY_STRING);
