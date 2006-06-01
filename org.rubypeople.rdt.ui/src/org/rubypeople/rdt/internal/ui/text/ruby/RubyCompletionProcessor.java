@@ -311,10 +311,6 @@ public class RubyCompletionProcessor extends TemplateCompletionProcessor
 		return list;
 	}
 
-	private boolean isKeyword(String name) {
-		return getKeywords().contains(name);
-	}
-
 	/**
 	 * @param proposal
 	 * @return
