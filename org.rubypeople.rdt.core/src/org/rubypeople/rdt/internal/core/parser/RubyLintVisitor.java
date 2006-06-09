@@ -115,8 +115,8 @@ public class RubyLintVisitor extends InOrderVisitor {
 	}
 
 	protected Instruction handleNode(Node visited) {
-		System.out.println(visited.toString() + ", position -> "
-				+ visited.getPosition());
+//		System.out.println(visited.toString() + ", position -> "
+//				+ visited.getPosition());
 		return super.handleNode(visited);
 	}
 
@@ -133,6 +133,8 @@ public class RubyLintVisitor extends InOrderVisitor {
 	private IProblem createProblem(String compilerOption,
 			ISourcePosition position, String message) {
 		String value = RubyCore.getOption(compilerOption);
+		if (value == null)
+			return new Error(position, message);
 		if (value.equals(RubyCore.WARNING))
 			return new Warning(position, message);
 		if (value.equals(RubyCore.ERROR))
