@@ -4,14 +4,17 @@
 package org.rubypeople.rdt.internal.ui.text.folding;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.text.Assert;
@@ -47,12 +50,13 @@ import org.rubypeople.rdt.internal.ui.rubyeditor.RubyEditor;
 import org.rubypeople.rdt.ui.IWorkingCopyManager;
 import org.rubypeople.rdt.ui.PreferenceConstants;
 import org.rubypeople.rdt.ui.text.folding.IRubyFoldingStructureProvider;
+import org.rubypeople.rdt.ui.text.folding.IRubyFoldingStructureProviderExtension;
 
 /**
  * @author cawilliams
  */
 public class DefaultRubyFoldingStructureProvider implements IProjectionListener,
-        IRubyFoldingStructureProvider {
+        IRubyFoldingStructureProvider, IRubyFoldingStructureProviderExtension {
 
     private ITextEditor fEditor;
     private ProjectionViewer fViewer;
@@ -678,4 +682,119 @@ public class DefaultRubyFoldingStructureProvider implements IProjectionListener,
         }
 
     }
+    
+	/* filters */
+    /**
+	 * Filter for annotations.
+	 * @since 0.9.0
+	 */
+	private static interface Filter {
+		boolean match(RubyProjectionAnnotation annotation);
+	}
+	
+	private static final class RubyElementSetFilter implements Filter {
+		private final Set fSet;
+		private final boolean fMatchCollapsed;
+
+		private RubyElementSetFilter(Set set, boolean matchCollapsed) {
+			fSet= set;
+			fMatchCollapsed= matchCollapsed;
+		}
+
+		public boolean match(RubyProjectionAnnotation annotation) {
+			boolean stateMatch= fMatchCollapsed == annotation.isCollapsed();
+			if (stateMatch && !annotation.isComment() && !annotation.isMarkedDeleted()) {
+				IRubyElement element= annotation.getElement();
+				if (fSet.contains(element)) {
+					return true;
+				}
+			}
+			return false;
+		}
+	}
+    /**
+	 * Member filter, matches nested members (but not top-level types).
+	 * @since 0.9.0
+	 */
+	private final Filter fMemberFilter = new Filter() {
+		public boolean match(RubyProjectionAnnotation annotation) {
+			if (!annotation.isCollapsed() && !annotation.isComment() && !annotation.isMarkedDeleted()) {
+				IRubyElement element= annotation.getElement();
+				if (element instanceof IMember) {
+					if (element.getElementType() != IRubyElement.TYPE || ((IMember) element).getDeclaringType() != null) {
+						return true;
+					}
+				}
+			}
+			return false;
+		}
+	};
+	
+	/**
+	 * Comment filter, matches comments.
+	 * @since 0.9.0
+	 */
+	private final Filter fCommentFilter = new Filter() {
+		public boolean match(RubyProjectionAnnotation annotation) {
+			if (!annotation.isCollapsed() && annotation.isComment() && !annotation.isMarkedDeleted()) {
+				return true;
+			}
+			return false;
+		}
+	};
+
+	public void collapseMembers() {
+		modifyFiltered(fMemberFilter, false);		
+	}
+
+	public void collapseComments() {
+		modifyFiltered(fCommentFilter, false);		
+	}
+
+	public void collapseElements(IRubyElement[] elements) {
+		Set set= new HashSet(Arrays.asList(elements));
+		modifyFiltered(new RubyElementSetFilter(set, false), false);
+	}
+
+	public void expandElements(IRubyElement[] elements) {
+		Set set= new HashSet(Arrays.asList(elements));
+		modifyFiltered(new RubyElementSetFilter(set, true), true);
+	}
+	
+	/**
+	 * Collapses all annotations matched by the passed filter.
+	 * 
+	 * @param filter the filter to use to select which annotations to collapse
+	 * @param expand <code>true</code> to expand the matched annotations, <code>false</code> to
+	 *        collapse them
+	 * @since 0.9.0
+	 */
+	private void modifyFiltered(Filter filter, boolean expand) {
+		if (!isInstalled())
+			return;
+
+		ProjectionAnnotationModel model= (ProjectionAnnotationModel) fEditor.getAdapter(ProjectionAnnotationModel.class);
+		if (model == null)
+			return;
+		
+		List modified= new ArrayList();
+		Iterator iter= model.getAnnotationIterator();
+		while (iter.hasNext()) {
+			Object annotation= iter.next();
+			if (annotation instanceof RubyProjectionAnnotation) {
+				RubyProjectionAnnotation java= (RubyProjectionAnnotation) annotation;
+				
+				if (filter.match(java)) {
+					if (expand)
+						java.markExpanded();
+					else
+						java.markCollapsed();
+					modified.add(java);
+				}
+
+			}
+		}
+		
+		model.modifyAnnotations(null, null, (Annotation[]) modified.toArray(new Annotation[modified.size()]));
+	}
 }

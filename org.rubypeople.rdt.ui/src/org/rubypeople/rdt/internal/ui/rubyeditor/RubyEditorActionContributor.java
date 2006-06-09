@@ -14,6 +14,7 @@ import org.eclipse.ui.texteditor.ITextEditorActionConstants;
 import org.eclipse.ui.texteditor.ITextEditorActionDefinitionIds;
 import org.eclipse.ui.texteditor.RetargetTextEditorAction;
 import org.rubypeople.rdt.internal.ui.RubyUIMessages;
+import org.rubypeople.rdt.internal.ui.actions.FoldingActionGroup;
 import org.rubypeople.rdt.ui.actions.IRubyEditorActionDefinitionIds;
 import org.rubypeople.rdt.ui.actions.RubyActionIds;
 
@@ -58,6 +59,15 @@ public class RubyEditorActionContributor extends BasicTextEditorActionContributo
         fGotoMatchingBracket.setAction(getAction(textEditor,
                 GotoMatchingBracketAction.GOTO_MATCHING_BRACKET));
 
+        
+        if (part instanceof RubyEditor) {
+        		RubyEditor javaEditor= (RubyEditor) part;
+			javaEditor.getActionGroup().fillActionBars(getActionBars());
+			FoldingActionGroup foldingActions= javaEditor.getFoldingActionGroup();
+			if (foldingActions != null)
+				foldingActions.updateActionBars();
+		}
+        
         IActionBars actionBars = getActionBars();
         actionBars.setGlobalActionHandler(RubyActionIds.COMMENT, getAction(textEditor, "Comment"));
         actionBars.setGlobalActionHandler(RubyActionIds.UNCOMMENT, getAction(textEditor,

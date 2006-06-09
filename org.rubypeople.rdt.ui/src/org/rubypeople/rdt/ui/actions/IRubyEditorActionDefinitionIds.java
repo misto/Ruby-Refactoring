@@ -48,6 +48,21 @@ public interface IRubyEditorActionDefinitionIds extends ITextEditorActionDefinit
 	 * (value <code>"org.rubypeople.rdt.ui.edit.text.ruby.open.editor"</code>).
 	 */
 	public static final String OPEN_EDITOR= "org.rubypeople.rdt.ui.edit.text.ruby.open.editor"; //$NON-NLS-1$
+
+	/**
+	 * Action definition id of the collapse members action
+	 * (value: <code>"org.rubypeople.rdt.ui.edit.text.ruby.folding.collapseMembers"</code>).
+	 * @since 0.9.0
+	 */
+	public static final String FOLDING_COLLAPSE_MEMBERS= "org.rubypeople.rdt.ui.edit.text.ruby.folding.collapseMembers"; //$NON-NLS-1$
+
+	/**
+	 * Action definition id of the collapse comments action
+	 * (value: <code>"org.rubypeople.rdt.ui.edit.text.ruby.folding.collapseComments"</code>).
+	 * @since 0.9.0
+	 */
+	public static final String FOLDING_COLLAPSE_COMMENTS= "org.rubypeople.rdt.ui.edit.text.ruby.folding.collapseComments"; //$NON-NLS-1$
+
 	
 
 

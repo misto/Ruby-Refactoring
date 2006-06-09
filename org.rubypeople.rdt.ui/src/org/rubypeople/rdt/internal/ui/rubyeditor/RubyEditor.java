@@ -17,6 +17,7 @@ import org.eclipse.core.runtime.Preferences;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.action.IMenuManager;
+import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.BadPositionCategoryException;
@@ -89,6 +90,7 @@ import org.rubypeople.rdt.internal.corext.util.RubyModelUtil;
 import org.rubypeople.rdt.internal.ui.IRubyHelpContextIds;
 import org.rubypeople.rdt.internal.ui.RubyPlugin;
 import org.rubypeople.rdt.internal.ui.RubyUIMessages;
+import org.rubypeople.rdt.internal.ui.actions.FoldingActionGroup;
 import org.rubypeople.rdt.internal.ui.text.IRubyPartitions;
 import org.rubypeople.rdt.internal.ui.text.RubyHeuristicScanner;
 import org.rubypeople.rdt.internal.ui.text.Symbols;
@@ -99,6 +101,7 @@ import org.rubypeople.rdt.ui.actions.IRubyEditorActionDefinitionIds;
 import org.rubypeople.rdt.ui.actions.RubyActionGroup;
 import org.rubypeople.rdt.ui.actions.SurroundWithBeginRescueAction;
 import org.rubypeople.rdt.ui.text.folding.IRubyFoldingStructureProvider;
+import org.rubypeople.rdt.ui.text.folding.IRubyFoldingStructureProviderExtension;
 
 public class RubyEditor extends RubyAbstractEditor {
     
@@ -147,6 +150,13 @@ public class RubyEditor extends RubyAbstractEditor {
 	 * @since 0.9.0
 	 */
 	private ToggleFoldingRunner fFoldingRunner;
+	
+	/**
+	 * The action group for folding.
+	 *
+	 * @since 0.9.0
+	 */
+	private FoldingActionGroup fFoldingGroup;
     
     private BracketInserter fBracketInserter = new BracketInserter();
 
@@ -159,6 +169,15 @@ public class RubyEditor extends RubyAbstractEditor {
         setKeyBindingScopes(new String[] { "org.rubypeople.rdt.ui.rubyEditorScope"}); //$NON-NLS-1$
         setOutlinerContextMenuId("#RubyScriptOutlinerContext"); //$NON-NLS-1$
     }
+    
+	/**
+	 * Returns the standard action group of this editor.
+	 *
+	 * @return returns this editor's standard action group
+	 */
+	protected ActionGroup getActionGroup() {
+		return actionGroup;
+	}
 
     protected void createActions() {
         super.createActions();
@@ -194,6 +213,9 @@ public class RubyEditor extends RubyAbstractEditor {
         action.setActionDefinitionId(IRubyEditorActionDefinitionIds.FORMAT);
         setAction("Format", action);
                        
+        
+        fFoldingGroup= new FoldingActionGroup(this, getViewer());
+        
         ISelectionProvider provider= getSite().getSelectionProvider();
         ISelection selection= provider.getSelection();
         
@@ -206,6 +228,10 @@ public class RubyEditor extends RubyAbstractEditor {
         actionGroup = new RubyActionGroup(this, ITextEditorActionConstants.GROUP_EDIT);
     }
 
+	public final ISourceViewer getViewer() {
+		return getSourceViewer();
+	}
+    
     /**
      * Configures the toggle comment action
      * 
@@ -265,7 +291,41 @@ public class RubyEditor extends RubyAbstractEditor {
             ((ITextViewerExtension) sourceViewer).prependVerifyKeyListener(fBracketInserter);
         }
     }
+    
+	/**
+	 * Resets the foldings structure according to the folding
+	 * preferences.
+	 * 
+	 * @since 0.9.0
+	 */
+	public void resetProjection() {
+		if (fProjectionModelUpdater != null) {
+			fProjectionModelUpdater.initialize();
+		}
+	}
 
+	/*
+	 * @see org.eclipse.ui.texteditor.AbstractTextEditor#rulerContextMenuAboutToShow(org.eclipse.jface.action.IMenuManager)
+	 */
+	protected void rulerContextMenuAboutToShow(IMenuManager menu) {
+		super.rulerContextMenuAboutToShow(menu);
+		IMenuManager foldingMenu= new MenuManager(RubyEditorMessages.Editor_FoldingMenu_name, "projection"); //$NON-NLS-1$
+		menu.appendToGroup(ITextEditorActionConstants.GROUP_RULERS, foldingMenu);
+
+		IAction action= getAction("FoldingToggle"); //$NON-NLS-1$
+		foldingMenu.add(action);
+		action= getAction("FoldingExpandAll"); //$NON-NLS-1$
+		foldingMenu.add(action);
+		action= getAction("FoldingCollapseAll"); //$NON-NLS-1$
+		foldingMenu.add(action);
+		action= getAction("FoldingRestore"); //$NON-NLS-1$
+		foldingMenu.add(action);
+		action= getAction("FoldingCollapseMembers"); //$NON-NLS-1$
+		foldingMenu.add(action);
+		action= getAction("FoldingCollapseComments"); //$NON-NLS-1$
+		foldingMenu.add(action);
+	}
+	
     /**
      * Returns the annotation overlapping with the given range or
      * <code>null</code>.
@@ -1467,5 +1527,35 @@ public class RubyEditor extends RubyAbstractEditor {
 				}
 			}
 		}
+	}
+
+	/**
+	 * Collapses all foldable members if supported by the folding
+	 * structure provider.
+	 * 
+	 * @since 0.9.0
+	 */
+	public void collapseMembers() {
+		if (fProjectionModelUpdater instanceof IRubyFoldingStructureProviderExtension) {
+			IRubyFoldingStructureProviderExtension extension= (IRubyFoldingStructureProviderExtension) fProjectionModelUpdater;
+			extension.collapseMembers();
+		}
+	}
+	
+	/**
+	 * Collapses all foldable comments if supported by the folding
+	 * structure provider.
+	 * 
+	 * @since 0.9.0
+	 */
+	public void collapseComments() {
+		if (fProjectionModelUpdater instanceof IRubyFoldingStructureProviderExtension) {
+			IRubyFoldingStructureProviderExtension extension= (IRubyFoldingStructureProviderExtension) fProjectionModelUpdater;
+			extension.collapseComments();
+		}
+	}
+
+	public FoldingActionGroup getFoldingActionGroup() {
+		return fFoldingGroup;
 	}
 }

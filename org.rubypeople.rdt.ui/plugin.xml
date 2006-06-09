@@ -524,6 +524,18 @@
             description="%ActionDefinition.toggleComment.description"
             categoryId="org.rubypeople.rdt.ui.category.source"
             id="org.rubypeople.rdt.ui.edit.text.ruby.toggle.comment ">
+      </command>      
+      <command
+            name="%ActionDefinition.foldingCollapseMembers.name"
+            description="%ActionDefinition.foldingCollapseMembers.description"
+            categoryId="org.eclipse.ui.category.textEditor"
+            id="org.rubypeople.rdt.ui.edit.text.ruby.folding.collapseMembers">
+      </command>
+      <command
+            name="%ActionDefinition.foldingCollapseComments.name"
+            description="%ActionDefinition.foldingCollapseComments.description"
+            categoryId="org.eclipse.ui.category.textEditor"
+            id="org.rubypeople.rdt.ui.edit.text.ruby.folding.collapseComments">
       </command>
       <command
             name="%ActionDefinition.surroundWith.beginRescue.name"
