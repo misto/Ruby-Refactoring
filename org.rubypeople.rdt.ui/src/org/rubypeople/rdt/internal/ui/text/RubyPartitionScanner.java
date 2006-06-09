@@ -10,6 +10,7 @@ import org.eclipse.jface.text.rules.IPartitionTokenScanner;
 import org.eclipse.jface.text.rules.IPredicateRule;
 import org.eclipse.jface.text.rules.IRule;
 import org.eclipse.jface.text.rules.IToken;
+import org.eclipse.jface.text.rules.IWordDetector;
 import org.eclipse.jface.text.rules.MultiLineRule;
 import org.eclipse.jface.text.rules.PatternRule;
 import org.eclipse.jface.text.rules.SingleLineRule;
@@ -78,6 +79,41 @@ public class RubyPartitionScanner extends BufferedRuleBasedScanner implements
 		// ?# evaluates to the ascii value of #
 		rules.add(new WordPatternRule(new NumberSignDetector(), "?", "#",
 				Token.UNDEFINED));
+		// ugly hacks to make ?" and ?' recognized as characters
+		rules.add(new WordPatternRule(new IWordDetector() {
+		
+			public boolean isWordPart(char c) {
+				return c == '"';
+			}
+		
+			public boolean isWordStart(char c) {
+				return c == '?';
+			}
+		
+		}, "?", "\"", Token.UNDEFINED));
+		rules.add(new WordPatternRule(new IWordDetector() {
+			
+			public boolean isWordPart(char c) {
+				return c == '\'';
+			}
+		
+			public boolean isWordStart(char c) {
+				return c == '?';
+			}
+		
+		}, "?", "'", Token.UNDEFINED));
+		rules.add(new WordPatternRule(new IWordDetector() {
+			
+			public boolean isWordPart(char c) {
+				return c == '/';
+			}
+		
+			public boolean isWordStart(char c) {
+				return c == '?';
+			}
+		
+		}, "?", "/", Token.UNDEFINED));
+		
 		rules.add(new EndOfLineRule("#", singleLineComment));
 		// Multiline comments
 		MultiLineRule multiLineCommentRule = new MultiLineRule("=begin",

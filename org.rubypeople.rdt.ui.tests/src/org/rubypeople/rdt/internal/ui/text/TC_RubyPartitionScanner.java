@@ -102,4 +102,32 @@ public class TC_RubyPartitionScanner extends TestCase {
 		assertEquals(IDocument.DEFAULT_CONTENT_TYPE, this.getContentType(source, 6)); 		
 	}		
 	
+	public void testRecognizeDivision() {
+		String source = "1/3 #This is a comment\n";
+		
+		assertEquals(IDocument.DEFAULT_CONTENT_TYPE, this.getContentType(source, 0));
+		assertEquals(IDocument.DEFAULT_CONTENT_TYPE, this.getContentType(source, 3));
+		assertEquals(RubyPartitionScanner.RUBY_SINGLE_LINE_COMMENT, this.getContentType(source, 5));
+	}	
+	
+	public void testRecognizeOddballCharacters() {
+		String source = "?\" #comment\n";
+		
+		assertEquals(IDocument.DEFAULT_CONTENT_TYPE, this.getContentType(source, 0));
+		assertEquals(IDocument.DEFAULT_CONTENT_TYPE, this.getContentType(source, 2));
+		assertEquals(RubyPartitionScanner.RUBY_SINGLE_LINE_COMMENT, this.getContentType(source, 5));
+		
+		source = "?' #comment\n";
+		
+		assertEquals(IDocument.DEFAULT_CONTENT_TYPE, this.getContentType(source, 0));
+		assertEquals(IDocument.DEFAULT_CONTENT_TYPE, this.getContentType(source, 2));
+		assertEquals(RubyPartitionScanner.RUBY_SINGLE_LINE_COMMENT, this.getContentType(source, 5));
+		
+		source = "?/ #comment\n";
+		
+		assertEquals(IDocument.DEFAULT_CONTENT_TYPE, this.getContentType(source, 0));
+		assertEquals(IDocument.DEFAULT_CONTENT_TYPE, this.getContentType(source, 2));
+		assertEquals(RubyPartitionScanner.RUBY_SINGLE_LINE_COMMENT, this.getContentType(source, 5));
+	}
+	
 }
