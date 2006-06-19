@@ -230,8 +230,8 @@ public class RubySearchPage extends DialogPage implements ISearchPage, ISymbolTy
          */
         case ISearchPageContainer.WORKING_SET_SCOPE:
             IWorkingSet[] workingSets = getContainer().getSelectedWorkingSets();
-            String desc = Messages.format(SearchMessages.WorkingSetScope, ScopePart
-                    .toString(workingSets));
+            //String desc = Messages.format(SearchMessages.WorkingSetScope, ScopePart
+            //        .toString(workingSets));
             // scope = SearchScope.newSearchScope(desc, workingSets);
         }
         NewSearchUI.activateSearchResultView();
