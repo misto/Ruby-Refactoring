@@ -17,6 +17,23 @@
 	<!-- Add on <ant> task for each top level element being built. -->
 	<!-- ===================================================================== -->
 	<target name="allElements">
+		<condition property="isFetch" value="true">
+			<equals arg1="${target}" arg2="fetchElement"/>
+		</condition>
+		<antcall target="delegateToGenericTargets"/>
+		<antcall target="fetchFromSubversionRepository"/>
+	</target>
+	
+
+	<target name="fetchFromSubversionRepository" if="isFetch">
+		<exec executable="${svnScript}">
+		  <arg line="${buildDirectory}"/>
+		  <arg line="${fetchTag}"/>
+		</exec>
+	</target>
+	
+	<target name="delegateToGenericTargets" unless="isFetch">
+		<echo message="Delegating ${target}"/>
 		<ant antfile="${genericTargets}" target="${target}" >
 			<property name="type" value="feature" />
 			<property name="id" value="org.rubypeople.rdt" />
@@ -26,6 +43,7 @@
 			<property name="id" value="org.rubypeople.rdt-tests" />
 		</ant>
 	</target>
+
 	<!-- ===================================================================== -->
 	<!-- Targets to assemble the built elements for particular configurations  -->
 	<!-- These generally call the generated assemble scripts (named in -->
@@ -47,20 +65,8 @@
 	<!-- Replace values for cvsRoot, package and mapVersionTag as desired. -->
 	<!-- ===================================================================== -->
 	<target name="getMapFiles">
-		<antcall target="getMapFilesWithExtMethod"/>
-		<antcall target="getMapFilesWithPserverMethod"/>
-	</target>
-	<target name="getMapFilesWithExtMethod" unless="usePserver">
-		<property name="cvsRoot" value=":ext:rubyeclipse.cvs.sourceforge.net:/cvsroot/rubyeclipse" />
-		<cvs cvsroot="${cvsRoot}" dest="${buildDirectory}/maps" command="export -r ${mapVersionTag} org.rubypeople.rdt.build/map" />
-	</target>
-	<target name="getMapFilesWithPserverMethod" if="usePserver">
-		<property name="cvsRoot" value=":pserver:anonymous@rubyeclipse.cvs.sourceforge.net:/cvsroot/rubyeclipse" />
-		<cvs cvsroot="${cvsRoot}" dest="${buildDirectory}/maps" command="export -r ${mapVersionTag} org.rubypeople.rdt.build/map" />
-		<replace dir="${buildDirectory}/maps" value=":pserver:anonymous@">
-			<include name="**/*.map"/>
-			<replacetoken>:ext:</replacetoken>
-		</replace>
+		<!-- Since we use subversion map files are not used anymore. See script
+		svn_co_rdt for more information about subversion checkout -->
 	</target>
 	<!-- ===================================================================== -->
 	<!-- Steps to do before setup -->
@@ -250,9 +256,12 @@
 		<!-- rename the results file, so that every build result file has a unique name and 
 			browsers don't fool users with cached versions	-->
 		<copy file="${eclipseAutomatedTestHome}/results/html/org.rubypeople.rdt.tests.all_.html"
-			tofile="${buildResultsDirectory}/org.rubypeople.rdt.tests.all_${featureVersion}.html"/>
+			tofile="${buildResultsDirectory}/org.rubypeople.rdt.tests.all_${featureVersion}.html"
+			failonerror="false"/>
 
-		<copy file="${buildDirectory}/workspace-rdt-tests/.metadata/.log" tofile="${buildResultsDirectory}/logs/testsWorkspace.log"/>
+		<copy file="${buildDirectory}/workspace-rdt-tests/.metadata/.log"
+			tofile="${buildResultsDirectory}/logs/testsWorkspace.log"
+			failonerror="false"/>
 		
 		<mkdir dir="${buildResultsDirectory}/updateSite"/>
 		<copy todir="${buildResultsDirectory}/updateSite">
