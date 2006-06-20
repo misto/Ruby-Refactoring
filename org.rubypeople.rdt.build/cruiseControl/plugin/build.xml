@@ -3,7 +3,7 @@
 
 	</description>
 
-	<property name="cruisecontrol.home" value="../../cruisecontrol-bin-2.5"/>
+	<property name="cruisecontrol.home" value=".."/>
 	<property name="cruisecontrol.libs" value="${cruisecontrol.home}/lib"/>
 	<property name="dest.dir" value="bin"/>
 	
