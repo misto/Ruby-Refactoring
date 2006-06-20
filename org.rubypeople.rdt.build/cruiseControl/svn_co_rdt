@@ -1,0 +1,31 @@
+#!/bin/sh
+# arg1: builddirectory
+# arg2: label
+if [ "$2" == "" ]; then
+	echo "There are two arguments required: buildDirectory and Tag"
+	exit 1
+fi
+label=$2
+if [ "$2" == "HEAD" ]; then
+  labelurl=trunk
+else
+  labelurl=tags/$2
+fi
+
+#
+# Fetch the features
+#
+featuresDir=$1/features
+# the features use mappings from project name to feature name which has been achieved with the rdt.map for CVS
+svn co https://svn.sourceforge.net/svnroot/rubyeclipse/${labelurl}/org.rubypeople.rdt-feature $feature $featuresDir/org.rubypeople.rdt
+svn co https://svn.sourceforge.net/svnroot/rubyeclipse/${labelurl}/org.rubypeople.rdt-feature/unit-tests-feature $feature $featuresDir/org.rubypeople.rdt-tests
+
+#
+# Fetch the plugins
+# 
+pluginsDir=$1/plugins
+plugins="org.epic.regexp org.rubypeople.rdt org.rubypeople.rdt.debug.core.tests org.rubypeople.rdt.launching org.rubypeople.rdt.ui org.kxml2 org.rubypeople.rdt.core org.rubypeople.rdt.debug.ui org.rubypeople.rdt.launching.tests org.rubypeople.rdt.ui.tests org.rubypeople.eclipse.shams org.rubypeople.rdt.core.tests org.rubypeople.rdt.debug.ui.tests  org.rubypeople.rdt.tests.all org.rubypeople.eclipse.testutils org.rubypeople.rdt.debug.core org.rubypeople.rdt.doc.user org.rubypeople.rdt.testunit"
+
+for plugin in $plugins; do
+	svn co https://svn.sourceforge.net/svnroot/rubyeclipse/${labelurl}/$plugin $pluginsDir/$plugin
+done
