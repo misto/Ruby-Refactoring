@@ -9,7 +9,7 @@
 	
 	<target name="clean">
 		<echo message="Cleaning directory ${buildDirectory}"/>
-		<delete dir="${buildDirectory}"/>
+		<delete dir="${buildDirectory}" verbose="false"/>
 		<mkdir dir="${buildDirectory}"/>
 	</target>
 	
