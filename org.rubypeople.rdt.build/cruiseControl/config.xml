@@ -5,12 +5,12 @@
 
 		<!-- Defines where cruise looks for changes, to decide whether to run the build --> 
 		<modificationset quietperiod="120"> 
-			<cvs cvsroot=":ext:mbarchfe@rubyeclipse.cvs.sourceforge.net:/cvsroot/rubyeclipse" module="rdt-all"/>
+			<svn RepositoryLocation="https://svn.sourceforge.net/svnroot/rubyeclipse"/>
 		</modificationset>
 
 		<!-- Configures the actual build loop, how often and which build file/target --> 
 		<schedule interval="60"> 
-            <ant antscript="/home/bma/apache-ant-1.6.5/bin/ant"
+            <ant antscript="/home/rdt/cruisecontrol-bin-2.5/apache-ant-1.6.5/bin/ant"
                buildfile="build-RDT.xml"
                target="dist"
                uselogger="true"
@@ -18,7 +18,7 @@
 		</schedule>
 
 		<log dir="logs/RDT">
-			<merge dir="/home/bma/rdt/eclipse-testing/results/xml"/>
+			<merge dir="/home/rdt/eclipse-testing/results/xml"/>
 		</log>
 
 		<!-- more recent versions of CC should use the listener below, instead of 	the currentbuildstatusbootstrapper, currentbuildstatuspublisher combination.  NOTE: Must match filename in CC reporting/jsp - override.properties: user.build.status.file -->
@@ -32,7 +32,7 @@
     				<artifactspublisher 
     					dir="checkout/RDT/dist"
     					dest="artifacts/RDT"/>
-				<execute command="/home/bma/cruiseControlWorkspace/purgeNightlyBuildWebSite.sh"/>
+				<execute command="/home/rdt/cruiseControlWorkspace/purgeNightlyBuildWebSite.sh"/>
 				<scp 
 					sourcedir="checkout/RDT/dist"
 					file="."
@@ -48,6 +48,7 @@
 					targethost="download.rubypeople.org"
 					targetdir="~/subdomains/updatesite/httpdocs/nightly"/>
 			</onsuccess>    
+			<!--
 			<email 
 				mailhost="mail.sf.net" 
 				returnaddress="mbarchfe@users.sf.net" 
@@ -56,6 +57,7 @@
 	   			spamwhilebroken="false">
 				<always address="rubyeclipse-build@lists.sourceforge.net"/>
 			</email>    
+			-->
 		</publishers> 
 	</project> 
 </cruisecontrol>
