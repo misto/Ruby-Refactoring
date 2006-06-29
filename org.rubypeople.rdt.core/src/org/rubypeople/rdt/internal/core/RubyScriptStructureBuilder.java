@@ -714,7 +714,7 @@ public class RubyScriptStructureBuilder implements NodeVisitor {
 			visibility = Visibility.PROTECTED;
 
 		RubyElement type = getCurrentType();
-		String[] parameterNames = getArgs(iVisited.getArgsNode());
+		String[] parameterNames = getArgs(iVisited.getArgsNode(), iVisited.getBodyNode());
 		RubyMethod method = new RubyMethod(type, name, parameterNames);
 		modelStack.push(method);
 
@@ -755,9 +755,10 @@ public class RubyScriptStructureBuilder implements NodeVisitor {
 
 	/**
 	 * @param argsNode
+	 * @param bodyNode 
 	 * @return
 	 */
-	private String[] getArgs(Node argsNode) {
+	private String[] getArgs(Node argsNode, ScopeNode bodyNode) {
 		if (argsNode == null) return new String[0];
 		ArgsNode args = (ArgsNode) argsNode;
 		boolean hasRest = false;
@@ -775,10 +776,11 @@ public class RubyScriptStructureBuilder implements NodeVisitor {
 		if (optArgCount > 0) {
 			arguments.addAll(getArguments(args.getOptArgs()));
 		}
-		if (hasRest)
-			arguments.add("*rest");
+		if (hasRest) {
+			arguments.add("*" + (String) bodyNode.getLocalNames().get(args.getRestArg()));
+		}
 		if (hasBlock)
-			arguments.add("&block");
+			arguments.add("&" + (String) bodyNode.getLocalNames().get(args.getBlockArgNode().getCount()));
 		return stringListToArray(arguments);
 	}
 
@@ -893,7 +895,7 @@ public class RubyScriptStructureBuilder implements NodeVisitor {
 		// Get the visibility of the current static method
 		Visibility visibility = currentVisibility;
 
-		String[] parameterNames = getArgs(iVisited.getArgsNode());
+		String[] parameterNames = getArgs(iVisited.getArgsNode(), iVisited.getBodyNode());
 
 		// Get the type of the current parent element
 		RubyElement type = getCurrentType();
