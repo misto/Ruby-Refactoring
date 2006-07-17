@@ -133,9 +133,7 @@ public class RubyLintVisitor extends InOrderVisitor {
 	private IProblem createProblem(String compilerOption,
 			ISourcePosition position, String message) {
 		String value = RubyCore.getOption(compilerOption);
-		if (value == null)
-			return new Error(position, message);
-		if (value.equals(RubyCore.WARNING))
+		if ((value == null) || value.equals(RubyCore.WARNING))
 			return new Warning(position, message);
 		if (value.equals(RubyCore.ERROR))
 			return new Error(position, message);
