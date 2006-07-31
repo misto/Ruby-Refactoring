@@ -28,18 +28,12 @@
 
 package org.rubypeople.rdt.astviewer.views;
 
-import java.io.InputStream;
-import java.net.URL;
-
-import org.eclipse.core.runtime.Path;
-import org.eclipse.core.runtime.Platform;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuListener;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.IToolBarManager;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.Separator;
-import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.text.Document;
 import org.eclipse.jface.text.source.SourceViewer;
 import org.eclipse.jface.viewers.DoubleClickEvent;
@@ -49,7 +43,6 @@ import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.SashForm;
-import org.eclipse.swt.graphics.ImageData;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
@@ -61,6 +54,7 @@ import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.part.DrillDownAdapter;
 import org.eclipse.ui.part.ViewPart;
 import org.jruby.ast.Node;
+import org.rubypeople.rdt.astviewer.Activator;
 import org.rubypeople.rdt.internal.ui.rubyeditor.RubyEditor;
 
 public class AstView extends ViewPart {
@@ -72,9 +66,6 @@ public class AstView extends ViewPart {
 	private ViewContentProvider viewContentProvider;
 	private SashForm sashForm;
 	private SourceViewer detailsViewer;
-		
-	public static final String PLUGIN_ID = "org.rubypeople.rdt.astviewer";
-	public static final String ICON_PATH = "icons/";
 
 	public void createPartControl(Composite parent) {
 		sashForm = new SashForm(parent, SWT.NONE);
@@ -186,11 +177,7 @@ public class AstView extends ViewPart {
 		
 		refreshAction.setText("Refresh the AST View");
 		refreshAction.setToolTipText("Performs a complete refresh over the whole AST.");
-		refreshAction.setImageDescriptor(ImageDescriptor.createFromURL(getImageUrl("refresh.gif")));
-	}
-	
-	private static URL getImageUrl(String relative) {
-		return Platform.find(Platform.getBundle(PLUGIN_ID), new Path(ICON_PATH + relative));
+		refreshAction.setImageDescriptor(Activator.getImageDescriptor("icons/refresh.gif"));
 	}
 	
 	private void setSelection(RubyEditor editor, Node n) {

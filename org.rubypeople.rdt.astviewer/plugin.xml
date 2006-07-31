@@ -28,5 +28,15 @@
          </view>
       </perspectiveExtension>
    </extension>
+   <extension point="org.eclipse.ui.preferencePages">
+      <page class="org.rubypeople.rdt.astviewer.preferences.AstViewerPreferencePage"
+            id="org.rubypeople.rdt.astviewer.preferences.AstViewerPreferencePage"
+            name="AST View"/>
+   </extension>
+   <extension point="org.eclipse.core.runtime.preferences">
+      <initializer class="org.rubypeople.rdt.astviewer.preferences.PreferenceInitializer"/>
+   </extension>
+   <extension point="org.eclipse.ui.preferencePages">
+   </extension>
 
 </plugin>
