@@ -15,16 +15,18 @@
 			Click on the help button if you don't know how to do that. </description>
 	</item>
 	<item title="Switch to Ruby Perspective">
+	<!--  Fix missing class  
 		<action pluginId="org.rubypeople.rdt.debug.ui"
-			class="org.rubypeople.rdt.internal.debug.ui.cheatsheets.webservice.OpenRubyPerspectiveAction"/>
+			class="org.rubypeople.rdt.internal.cheatsheets.webservice.OpenRubyPerspectiveAction"/>
+-->
 		<description> Use the &quot;Click to Perform&quot; button to open the ruby
 			perspective. This can also be done manually by choosing &quot;Window-&gt;Open
 			Perspective-&gt;Other...&quot; from the main menu and selecting
 			&quot;Ruby&quot; from the dialog which opens. </description>
 	</item>
 	<item title="Create Ruby project on soap4r">
-		<action pluginId="org.rubypeople.rdt.debug.ui" param1="soap4r"
-			class="org.rubypeople.rdt.internal.debug.ui.cheatsheets.webservice.OpenNewRubyProjectWizardAction"/>
+		<action pluginId="org.rubypeople.rdt" param1="soap4r"
+			class="org.rubypeople.rdt.internal.cheatsheets.webservice.OpenNewRubyProjectWizardAction"/>
 		<description> In order to run wsdl2ruby.rb from the soap4r package, you create a ruby
 			project called soap4r on top of the soap4r installation directory at first.
 			After clicking the &quot;Click to Perform&quot; button below, the &quot;New
@@ -34,8 +36,8 @@
 			unzipped the soap4r tar ball. </description>
 	</item>
 	<item title="Create MyWebservice project">
-		<action pluginId="org.rubypeople.rdt.debug.ui" param1="MyWebservice"
-			class="org.rubypeople.rdt.internal.debug.ui.cheatsheets.webservice.OpenNewRubyProjectWizardAction"/>
+		<action pluginId="org.rubypeople.rdt" param1="MyWebservice"
+			class="org.rubypeople.rdt.internal.cheatsheets.webservice.OpenNewRubyProjectWizardAction"/>
 		<description> In this step you create a new project within your workspace, which will
 			be used to hold the wsdl file and the generated code from this file. The project is
 			called
@@ -45,8 +47,8 @@
 			subdirectory into your workspace location. </description>
 	</item>
 	<item title="Add wsdl file to MyWebservice">
-		<action pluginId="org.rubypeople.rdt.debug.ui" param1="MyWebservice"
-			class="org.rubypeople.rdt.internal.debug.ui.cheatsheets.webservice.CreateWsdlFileAction"/>
+		<action pluginId="org.rubypeople.rdt" param1="MyWebservice"
+			class="org.rubypeople.rdt.internal.cheatsheets.webservice.CreateWsdlFileAction"/>
 		<description> Add a new file called sample.wsdl to the MyWebservice project. In the
 			dialog which &quot;Click to Perform&quot; brings up you only have to enter the
 			file name
@@ -54,9 +56,9 @@
 			container of this new resource. </description>
 	</item>
 	<item title="Add content to sample.wsdl">
-		<action pluginId="org.rubypeople.rdt.debug.ui"
+		<action pluginId="org.rubypeople.rdt"
 			param1="/cheatsheets/Sample.wsdl" param2="/MyWebservice/sample.wsdl"
-			class="org.rubypeople.rdt.internal.debug.ui.cheatsheets.webservice.CopyContentAction"/>
+			class="org.rubypeople.rdt.internal.cheatsheets.webservice.CopyContentAction"/>
 		<description> In the last step you have created the file &quot;sample.wsdl&quot;.
 			But why is it not there? It is, but is filtered out: In the Ruby Resources views menu
 			deselect
@@ -73,8 +75,8 @@
 			process. There you find the required command line options. </description>
 	</item>
 	<item title="Modify the run configuration for server generation">
-		<action pluginId="org.rubypeople.rdt.debug.ui"
-			class="org.rubypeople.rdt.internal.debug.ui.cheatsheets.webservice.OpenRunConfigurationAction"/>
+		<action pluginId="org.rubypeople.rdt"
+			class="org.rubypeople.rdt.internal.cheatsheets.webservice.OpenRunConfigurationAction"/>
 		<description> &quot;Click to Perform&quot; opens the run configuration dialog,
 			which is also available as Run As->Run... from the main menu. The running of
 			wsdl2ruby.rb in the last step has created a run-configuration named
@@ -98,8 +100,8 @@
 			</description>
 	</item>
 	<item title="Create Run-Configuration for client generation">
-		<action pluginId="org.rubypeople.rdt.debug.ui"
-			class="org.rubypeople.rdt.internal.debug.ui.cheatsheets.webservice.OpenRunConfigurationAction"/>
+		<action pluginId="org.rubypeople.rdt"
+			class="org.rubypeople.rdt.internal.cheatsheets.webservice.OpenRunConfigurationAction"/>
 		<description> &quot;Click to Perform&quot; opens the run configuration dialog
 			again. Perform &quot;Duplicate&quot; from the context menu of the
 			wsdl-gen-server run configuration. A duplicate &quot;wsdl-gen-server
@@ -138,8 +140,8 @@
 			from the toolbar or ctrl+s.</description>
 	</item>
 	<item title="Run the client">
-		<action pluginId="org.rubypeople.rdt.debug.ui"
-			class="org.rubypeople.rdt.internal.debug.ui.cheatsheets.webservice.OpenRunConfigurationAction"/>
+		<action pluginId="org.rubypeople.rdt"
+			class="org.rubypeople.rdt.internal.cheatsheets.webservice.OpenRunConfigurationAction"/>
 		<description> Use the &quot;Click to perform&quot; button or select
 			&quot;Run->Run...&quot; from the main menu to open the run configuration
 			dialog. Select &quot;Ruby Application&quot; and click &quot;New&quot;.
