@@ -39,7 +39,6 @@ import org.eclipse.ui.editors.text.EditorsUI;
 import org.eclipse.ui.editors.text.TextEditor;
 import org.eclipse.ui.texteditor.AbstractDecoratedTextEditorPreferenceConstants;
 import org.eclipse.ui.texteditor.ChainedPreferenceStore;
-import org.eclipse.ui.texteditor.IDocumentProvider;
 import org.eclipse.ui.texteditor.SourceViewerDecorationSupport;
 import org.eclipse.ui.views.contentoutline.ContentOutline;
 import org.eclipse.ui.views.contentoutline.IContentOutlinePage;
@@ -54,11 +53,8 @@ import org.rubypeople.rdt.core.ISourceRange;
 import org.rubypeople.rdt.core.ISourceReference;
 import org.rubypeople.rdt.core.RubyCore;
 import org.rubypeople.rdt.core.RubyModelException;
-import org.rubypeople.rdt.core.formatter.DefaultCodeFormatterConstants;
-import org.rubypeople.rdt.internal.corext.util.CodeFormatterUtil;
 import org.rubypeople.rdt.internal.ui.RubyPlugin;
 import org.rubypeople.rdt.internal.ui.rubyeditor.RubyEditor.ITextConverter;
-import org.rubypeople.rdt.internal.ui.rubyeditor.RubyEditor.TabConverter;
 import org.rubypeople.rdt.internal.ui.text.ContentAssistPreference;
 import org.rubypeople.rdt.internal.ui.text.IRubyPartitions;
 import org.rubypeople.rdt.internal.ui.text.PreferencesAdapter;
@@ -80,17 +76,12 @@ public abstract class RubyAbstractEditor extends TextEditor {
     /** The selection changed listener */
     protected AbstractSelectionChangedListener fOutlineSelectionChangedListener = new OutlineSelectionChangedListener();
     private RubyOutlinePage fOutlinePage;
-	/** The editor's tab converter */
-	private TabConverter fTabConverter;    
     
 	/** Preference key for matching brackets */
 	protected final static String MATCHING_BRACKETS=  PreferenceConstants.EDITOR_MATCHING_BRACKETS;
 	/** Preference key for matching brackets color */
 	protected final static String MATCHING_BRACKETS_COLOR=  PreferenceConstants.EDITOR_MATCHING_BRACKETS_COLOR;
-	/** Preference key for code formatter tab size */
-	private final static String CODE_FORMATTER_TAB_SIZE= DefaultCodeFormatterConstants.FORMATTER_TAB_SIZE;
-	/** Preference key for inserting spaces rather than tabs */
-	private final static String SPACES_FOR_TABS= DefaultCodeFormatterConstants.FORMATTER_TAB_CHAR;
+
 
 	protected final static char[] BRACKETS= { '{', '}', '(', ')', '[', ']' };
 
@@ -219,7 +210,6 @@ public abstract class RubyAbstractEditor extends TextEditor {
      */
     protected void doSetInput(IEditorInput input) throws CoreException {
         super.doSetInput(input);
-        configureTabConverter();
         setOutlinePageInput(fOutlinePage, input);
     }
 
@@ -250,21 +240,7 @@ public abstract class RubyAbstractEditor extends TextEditor {
 				return;
 
 			((RubySourceViewerConfiguration)getSourceViewerConfiguration()).handlePropertyChangeEvent(event);
-
-			if (SPACES_FOR_TABS.equals(property)) {
-				if (isTabConversionEnabled())
-					startTabConversion();
-				else
-					stopTabConversion();
-				return;
-			}
-			
-			if (CODE_FORMATTER_TAB_SIZE.equals(property)) {
-				sourceViewer.updateIndentationPrefixes();
-				if (fTabConverter != null)
-					fTabConverter.setNumberOfSpacesPerTab(getTabSize());
-			}
-			
+		
 			IContentAssistant c= sourceViewer.getContentAssistant();
 			if (c instanceof ContentAssistant)
 				ContentAssistPreference.changeConfiguration((ContentAssistant) c, getPreferenceStore(), event);
@@ -289,33 +265,7 @@ public abstract class RubyAbstractEditor extends TextEditor {
 		}
     }
     
-    private int getTabSize() {
-		IRubyElement element= getInputRubyElement();
-		IRubyProject project= element == null ? null : element.getRubyProject();
-		return CodeFormatterUtil.getTabWidth(project);
-	}
 
-	private void startTabConversion() {
-		if (fTabConverter == null) {
-			fTabConverter= new TabConverter();
-			configureTabConverter();
-			fTabConverter.setNumberOfSpacesPerTab(getTabSize());
-			AdaptedSourceViewer asv= (AdaptedSourceViewer) getSourceViewer();
-			asv.addTextConverter(fTabConverter);
-			// http://dev.eclipse.org/bugs/show_bug.cgi?id=19270
-			asv.updateIndentationPrefixes();
-		}
-	}
-	
-	private void configureTabConverter() {
-		if (fTabConverter != null) {
-			IDocumentProvider provider= getDocumentProvider();
-			if (provider instanceof IRubyScriptDocumentProvider) {
-				IRubyScriptDocumentProvider cup= (IRubyScriptDocumentProvider) provider;
-				fTabConverter.setLineTracker(cup.createLineTracker(getEditorInput()));
-			}
-		}
-	}
 	
 	/**
 	 * Returns the Ruby element wrapped by this editors input.
@@ -328,34 +278,6 @@ public abstract class RubyAbstractEditor extends TextEditor {
 		if (editorInput == null)
 			return null;
 		return RubyUI.getEditorInputRubyElement(getEditorInput());
-	}
-
-	private void stopTabConversion() {
-		if (fTabConverter != null) {
-			AdaptedSourceViewer asv= (AdaptedSourceViewer) getSourceViewer();
-			asv.removeTextConverter(fTabConverter);
-			// http://dev.eclipse.org/bugs/show_bug.cgi?id=19270
-			asv.updateIndentationPrefixes();
-			fTabConverter= null;
-		}
-	}
-	
-	public void createPartControl(Composite parent) {
-		super.createPartControl(parent);
-		
-        if (isTabConversionEnabled())
-			startTabConversion();
-	}
-
-	private boolean isTabConversionEnabled() {
-		IRubyElement element= getInputRubyElement();
-		IRubyProject project= element == null ? null : element.getRubyProject();
-		String option;
-		if (project == null)
-			option= RubyCore.getOption(SPACES_FOR_TABS);
-		else
-			option= project.getOption(SPACES_FOR_TABS, true);
-		return RubyCore.SPACE.equals(option);
 	}
 
     protected void handleOutlinePageSelection(SelectionChangedEvent event) {

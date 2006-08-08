@@ -77,6 +77,7 @@ import org.eclipse.ui.editors.text.EditorsUI;
 import org.eclipse.ui.help.WorkbenchHelp;
 import org.eclipse.ui.texteditor.AnnotationPreference;
 import org.eclipse.ui.texteditor.ContentAssistAction;
+import org.eclipse.ui.texteditor.IDocumentProvider;
 import org.eclipse.ui.texteditor.IEditorStatusLine;
 import org.eclipse.ui.texteditor.ITextEditorActionConstants;
 import org.eclipse.ui.texteditor.MarkerAnnotation;
@@ -84,8 +85,12 @@ import org.eclipse.ui.texteditor.TextOperationAction;
 import org.eclipse.ui.texteditor.link.EditorLinkedModeUI;
 import org.eclipse.ui.views.contentoutline.IContentOutlinePage;
 import org.rubypeople.rdt.core.IRubyElement;
+import org.rubypeople.rdt.core.IRubyProject;
 import org.rubypeople.rdt.core.IRubyScript;
+import org.rubypeople.rdt.core.RubyCore;
 import org.rubypeople.rdt.core.RubyModelException;
+import org.rubypeople.rdt.core.formatter.DefaultCodeFormatterConstants;
+import org.rubypeople.rdt.internal.corext.util.CodeFormatterUtil;
 import org.rubypeople.rdt.internal.corext.util.RubyModelUtil;
 import org.rubypeople.rdt.internal.ui.IRubyHelpContextIds;
 import org.rubypeople.rdt.internal.ui.RubyPlugin;
@@ -107,6 +112,9 @@ public class RubyEditor extends RubyAbstractEditor {
     
     protected RubyActionGroup actionGroup;
     private ProjectionSupport fProjectionSupport;
+    
+	/** The editor's tab converter */
+	private TabConverter fTabConverter;    
 
 	/** Preference key for automatically closing strings */
 	private final static String CLOSE_STRINGS= PreferenceConstants.EDITOR_CLOSE_STRINGS;
@@ -114,7 +122,11 @@ public class RubyEditor extends RubyAbstractEditor {
 	private final static String CLOSE_BRACKETS= PreferenceConstants.EDITOR_CLOSE_BRACKETS;
 	/** Preference key for automatically closing braces */
 	private final static String CLOSE_BRACES= PreferenceConstants.EDITOR_CLOSE_BRACES;
-    
+	/** Preference key for code formatter tab size */
+	private final static String CODE_FORMATTER_TAB_SIZE= DefaultCodeFormatterConstants.FORMATTER_TAB_SIZE;
+	/** Preference key for inserting spaces rather than tabs */
+	private final static String SPACES_FOR_TABS= DefaultCodeFormatterConstants.FORMATTER_TAB_CHAR;
+	
     /**
      * Mutex for the reconciler. See
      * https://bugs.eclipse.org/bugs/show_bug.cgi?id=63898 for a description of
@@ -279,6 +291,9 @@ public class RubyEditor extends RubyAbstractEditor {
 
         if (isFoldingEnabled()) projectionViewer.doOperation(ProjectionViewer.TOGGLE);
 
+        if (isTabConversionEnabled())
+			startTabConversion();
+        
         ISourceViewer sourceViewer = getSourceViewer();
         if (sourceViewer instanceof ITextViewerExtension) {
         	IPreferenceStore preferenceStore= getPreferenceStore();
@@ -661,7 +676,7 @@ public class RubyEditor extends RubyAbstractEditor {
      */
     protected void doSetInput(IEditorInput input) throws CoreException {
         super.doSetInput(input);
-
+        configureTabConverter();
         if (fProjectionModelUpdater != null) fProjectionModelUpdater.initialize();
     }
 
@@ -721,10 +736,24 @@ public class RubyEditor extends RubyAbstractEditor {
 			fBracketInserter.setCloseStringsEnabled(getPreferenceStore().getBoolean(property));
 			return;
 		}        
-        
-        ISourceViewer sourceViewer= getSourceViewer();
+		
+		AdaptedSourceViewer sourceViewer= (AdaptedSourceViewer) getSourceViewer();
 		if (sourceViewer == null)
 			return;
+
+		if (SPACES_FOR_TABS.equals(property)) {
+			if (isTabConversionEnabled())
+				startTabConversion();
+			else
+				stopTabConversion();
+			return;
+		}
+		
+		if (CODE_FORMATTER_TAB_SIZE.equals(property)) {
+			sourceViewer.updateIndentationPrefixes();
+			if (fTabConverter != null)
+				fTabConverter.setNumberOfSpacesPerTab(getTabSize());
+		}
         
 		if (PreferenceConstants.EDITOR_FOLDING_PROVIDER.equals(property)) {
 			if (sourceViewer instanceof ProjectionViewer) {
@@ -1557,5 +1586,55 @@ public class RubyEditor extends RubyAbstractEditor {
 
 	public FoldingActionGroup getFoldingActionGroup() {
 		return fFoldingGroup;
+	}
+	
+    private int getTabSize() {
+		IRubyElement element= getInputRubyElement();
+		IRubyProject project= element == null ? null : element.getRubyProject();
+		return CodeFormatterUtil.getTabWidth(project);
+	}
+
+	private void startTabConversion() {
+		if (fTabConverter == null) {
+			fTabConverter= new TabConverter();
+			configureTabConverter();
+			fTabConverter.setNumberOfSpacesPerTab(getTabSize());
+			AdaptedSourceViewer asv= (AdaptedSourceViewer) getSourceViewer();
+			asv.addTextConverter(fTabConverter);
+			// http://dev.eclipse.org/bugs/show_bug.cgi?id=19270
+			asv.updateIndentationPrefixes();
+		}
+	}
+	
+	private void configureTabConverter() {
+		if (fTabConverter != null) {
+			IDocumentProvider provider= getDocumentProvider();
+			if (provider instanceof IRubyScriptDocumentProvider) {
+				IRubyScriptDocumentProvider cup= (IRubyScriptDocumentProvider) provider;
+				fTabConverter.setLineTracker(cup.createLineTracker(getEditorInput()));
+			}
+		}
+	}
+	
+
+	private void stopTabConversion() {
+		if (fTabConverter != null) {
+			AdaptedSourceViewer asv= (AdaptedSourceViewer) getSourceViewer();
+			asv.removeTextConverter(fTabConverter);
+			// http://dev.eclipse.org/bugs/show_bug.cgi?id=19270
+			asv.updateIndentationPrefixes();
+			fTabConverter= null;
+		}
+	}
+	
+	private boolean isTabConversionEnabled() {
+		IRubyElement element= getInputRubyElement();
+		IRubyProject project= element == null ? null : element.getRubyProject();
+		String option;
+		if (project == null)
+			option= RubyCore.getOption(SPACES_FOR_TABS);
+		else
+			option= project.getOption(SPACES_FOR_TABS, true);
+		return RubyCore.SPACE.equals(option);
 	}
 }
