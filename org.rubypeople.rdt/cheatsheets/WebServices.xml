@@ -15,10 +15,9 @@
 			Click on the help button if you don't know how to do that. </description>
 	</item>
 	<item title="Switch to Ruby Perspective">
-	<!--  Fix missing class  
-		<action pluginId="org.rubypeople.rdt.debug.ui"
-			class="org.rubypeople.rdt.internal.cheatsheets.webservice.OpenRubyPerspectiveAction"/>
--->
+		<command
+			serialization="org.eclipse.ui.perspectives.showPerspective(org.eclipse.ui.perspectives.showPerspective.perspectiveId=org.rubypeople.rdt.ui.PerspectiveRuby)">
+		</command>
 		<description> Use the &quot;Click to Perform&quot; button to open the ruby
 			perspective. This can also be done manually by choosing &quot;Window-&gt;Open
 			Perspective-&gt;Other...&quot; from the main menu and selecting
