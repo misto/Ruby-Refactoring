@@ -266,17 +266,6 @@
 			schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"/>
 	</extension>
 	
-	<extension point="org.eclipse.ui.cheatsheets.cheatSheetContent">
-		<category name="Ruby" id="org.rubypeople.rdt.cheatsheet.category">
-		</category>
-		<cheatsheet name="%cheatsheet.webservices.name"
-			category="org.rubypeople.rdt.cheatsheet.category"
-			contentFile="$nl$/cheatsheets/WebServices.xml"
-			id="org.rubypeople.rdt.cheatsheets.webservices">
-			<description>%cheatsheet.webservices.desc</description>
-		</cheatsheet>
-	</extension>
-	
 	<extension point="org.rubypeople.rdt.ui.editorPopupExtender">
 		<rubyEditorPopupMenuExtension
 			class="org.rubypeople.rdt.internal.debug.ui.RubyEditorPopupMenuExtension">
