@@ -12,6 +12,8 @@
 
 package org.rubypeople.rdt.internal.core.builder;
 
+import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
 
@@ -41,10 +43,13 @@ public final class RubyCodeAnalyzer implements SingleFileCompiler {
 
     public void compileFile(IFile file) throws CoreException {
         Reader reader = new InputStreamReader(file.getContents());
+        // XXX Make sure readContents isn't dropping end of line characters
+        // XXX Use a StringReader for the parser since we've already read it all in once before? 
+        String contents = readContents(reader);
         markerManager.removeProblemsAndTasksFor(file);
         try {
             Node rootNode = parser.parse(file, reader);
-            RubyLintVisitor visitor = new RubyLintVisitor(new ProblemRequestorMarkerManager(file, markerManager));
+            RubyLintVisitor visitor = new RubyLintVisitor(contents, new ProblemRequestorMarkerManager(file, markerManager));
             rootNode.accept(visitor);
             indexUpdater.update(file, rootNode, true);
         } catch (SyntaxException e) {
@@ -53,5 +58,22 @@ public final class RubyCodeAnalyzer implements SingleFileCompiler {
             IoUtils.closeQuietly(reader);
         }
     }
+
+	private String readContents(Reader reader) {
+		try {
+			BufferedReader buff = new BufferedReader(reader);
+			StringBuffer str = new StringBuffer();
+			String line;
+			while((line = buff.readLine()) != null) {
+				str.append(line);
+				str.append("\n");
+			}
+			return str.toString();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return "";
+		}
+	}
 
 }

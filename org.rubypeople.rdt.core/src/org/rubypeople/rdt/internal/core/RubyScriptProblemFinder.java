@@ -3,6 +3,7 @@
  */
 package org.rubypeople.rdt.internal.core;
 
+import java.io.Reader;
 import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -34,7 +35,8 @@ public class RubyScriptProblemFinder {
         String contents = new String(charContents);
         try {
             Node node = parser.parse((IFile) script.getUnderlyingResource(), new StringReader(contents));
-            RubyLintVisitor visitor = new RubyLintVisitor(problemRequestor);
+            // FIXME We're double marking problems here. We create markers for them when we build, and then create temporary annotations when we reconcile. We need to "toss" out any duplicates generated here.
+            RubyLintVisitor visitor = new RubyLintVisitor(contents, problemRequestor);
             node.accept(visitor);
         } catch (SyntaxException e) {
             problemRequestor.acceptProblem(new Error(e.getPosition(), "Syntax Error"));

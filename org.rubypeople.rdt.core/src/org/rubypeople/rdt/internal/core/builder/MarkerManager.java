@@ -21,6 +21,7 @@ import org.rubypeople.rdt.core.IRubyModelMarker;
 import org.rubypeople.rdt.internal.core.parser.MarkerUtility;
 import org.rubypeople.rdt.internal.core.parser.RdtPosition;
 import org.rubypeople.rdt.internal.core.parser.Warning;
+import org.rubypeople.rdt.internal.core.parser.Error;
 
 class MarkerManager implements IMarkerManager {
 
@@ -50,5 +51,10 @@ class MarkerManager implements IMarkerManager {
     public void addWarning(IFile file, String message, int startLine, int startOffset, int endOffset) {
         MarkerUtility.createProblemMarker(file, new Warning(new RdtPosition(startLine, startOffset, endOffset), message));
     }
+
+	public void createError(IFile file, String message, int startLine, int startOffset, int endOffset) {
+		MarkerUtility.createProblemMarker(file, new Error(new RdtPosition(startLine, startOffset, endOffset), message));
+		
+	}
 
 }
