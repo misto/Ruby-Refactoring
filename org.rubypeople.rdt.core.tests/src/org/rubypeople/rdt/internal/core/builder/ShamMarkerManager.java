@@ -11,8 +11,10 @@ import junit.framework.Assert;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
+import org.jruby.lexer.yacc.ISourcePosition;
 import org.jruby.lexer.yacc.SyntaxException;
 import org.rubypeople.eclipse.shams.resources.ShamFile;
+import org.rubypeople.rdt.internal.core.parser.RdtPosition;
 import org.rubypeople.rdt.internal.core.util.ListUtil;
 
 public class ShamMarkerManager implements IMarkerManager {
@@ -84,6 +86,13 @@ public class ShamMarkerManager implements IMarkerManager {
         startOffsetArg = startOffset;
         endOffsetArg = endOffset;
     }
+
+	public void createError(IFile file, String message, int startLine, int startOffset, int endOffset) {
+		 fileArg = file;
+		 ISourcePosition position = new RdtPosition(startLine, startOffset, endOffset);
+		 SyntaxException e = new SyntaxException(position, message);
+	     syntaxExceptionArg = e;
+	}
 
 
 }
