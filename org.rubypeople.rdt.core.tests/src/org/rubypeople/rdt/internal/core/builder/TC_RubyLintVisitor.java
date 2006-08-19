@@ -37,14 +37,26 @@ public class TC_RubyLintVisitor extends TestCase {
 		}
 	}
 	
-	public void testBlah() throws Exception {
-		String contents = "@var = 3 unless @blah";
+	private MockProblemRequestor problemRequestor;
+	
+	public void testUnlessModififerDoesntCreateEmptyConditionalWarning() throws Exception {
+		runLint("@var = 3 unless @blah");
+		assertEquals(0, problemRequestor.problems.size());
+	}
+	
+
+	public void testUnlessConditionalDoesntCreateEmptyConditionalWarning() throws Exception {
+		runLint("unless @blah\n  @var = 3\nend");
+		System.out.println(problemRequestor.problems.get(0));
+		assertEquals(0, problemRequestor.problems.size());
+	}
+
+	private void runLint(String contents) {
 		RubyParser parser = new RubyParser();
 		Node rootNode = parser.parse(new ShamFile("fake/path.rb"), new StringReader(contents));
-		MockProblemRequestor problemRequestor = new MockProblemRequestor();
+		problemRequestor = new MockProblemRequestor();
 		RubyLintVisitor visitor = new RubyLintVisitor(contents,
 				problemRequestor);
 		rootNode.accept(visitor);
-		assertEquals(1, problemRequestor.problems.size());
 	}
 }
