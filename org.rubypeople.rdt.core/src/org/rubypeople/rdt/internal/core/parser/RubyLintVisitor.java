@@ -1,14 +1,10 @@
 package org.rubypeople.rdt.internal.core.parser;
 
-
-
 import java.io.Reader;
 
 import java.util.HashSet;
 
 import java.util.Set;
-
-
 
 import org.jruby.ast.BlockNode;
 
@@ -48,11 +44,7 @@ import org.rubypeople.rdt.core.RubyCore;
 
 import org.rubypeople.rdt.core.parser.IProblem;
 
-
-
 public class RubyLintVisitor extends InOrderVisitor {
-
-
 
 	private IProblemRequestor problemRequestor;
 
@@ -61,8 +53,6 @@ public class RubyLintVisitor extends InOrderVisitor {
 	private Set methodsCalled;
 
 	private String contents;
-
-
 
 	public RubyLintVisitor(String contents, IProblemRequestor problemRequestor) {
 
@@ -76,8 +66,6 @@ public class RubyLintVisitor extends InOrderVisitor {
 
 	}
 
-
-
 	public Instruction visitFCallNode(FCallNode iVisited) {
 
 		methodsCalled.add(iVisited.getName());
@@ -86,57 +74,29 @@ public class RubyLintVisitor extends InOrderVisitor {
 
 	}
 
-
-
 	public Instruction visitCallNode(CallNode iVisited) {
-
 		methodsCalled.add(iVisited.getName());
-
 		return super.visitCallNode(iVisited);
-
 	}
 
-
-
 	public Instruction visitIfNode(IfNode iVisited) {
-
 		Node condition = iVisited.getCondition();
-
 		if (condition instanceof TrueNode) {
-
-			problemRequestor.acceptProblem(new Warning(iVisited.getPosition(),
-
-					"Condition is always true"));
-
-		} else if ((condition instanceof FalseNode)
-
-				|| (condition instanceof NilNode)) {
-
-			problemRequestor.acceptProblem(new Warning(iVisited.getPosition(),
-
-					"Condition is always false"));
-
+			problemRequestor.acceptProblem(new Warning(iVisited.getPosition(), "Condition is always true"));
+		} else if ((condition instanceof FalseNode)	|| (condition instanceof NilNode)) {
+			problemRequestor.acceptProblem(new Warning(iVisited.getPosition(), "Condition is always false"));
 		}
 
 		String source = NodeUtil.getSource(contents, iVisited);
-
 		if (iVisited.getThenBody() == null && !source.contains("unless")) {
-
 			IProblem problem = createProblem(
+			RubyCore.COMPILER_PB_EMPTY_STATEMENT, iVisited.getPosition(), "Empty Conditional Body");
 
-					RubyCore.COMPILER_PB_EMPTY_STATEMENT, iVisited
-
-							.getPosition(), "Empty Conditional Body");
-
-			if (problem != null) problemRequestor.acceptProblem(problem);
-
+			if (problem != null)
+				problemRequestor.acceptProblem(problem);
 		}
-
 		return super.visitIfNode(iVisited);
-
 	}
-
-
 
 	public Instruction visitWhenNode(WhenNode iVisited) {
 
@@ -144,11 +104,12 @@ public class RubyLintVisitor extends InOrderVisitor {
 
 			IProblem problem = createProblem(
 
-					RubyCore.COMPILER_PB_EMPTY_STATEMENT, iVisited
+			RubyCore.COMPILER_PB_EMPTY_STATEMENT, iVisited
 
-							.getPosition(), "Empty When Body");
+			.getPosition(), "Empty When Body");
 
-			if (problem != null) problemRequestor.acceptProblem(problem);
+			if (problem != null)
+				problemRequestor.acceptProblem(problem);
 
 		}
 
@@ -156,15 +117,11 @@ public class RubyLintVisitor extends InOrderVisitor {
 
 	}
 
-
-
 	public Instruction visitBlockNode(BlockNode iVisited) {
 
 		return super.visitBlockNode(iVisited);
 
 	}
-
-
 
 	public Instruction visitIterNode(IterNode iVisited) {
 
@@ -172,19 +129,18 @@ public class RubyLintVisitor extends InOrderVisitor {
 
 			IProblem problem = createProblem(
 
-					RubyCore.COMPILER_PB_EMPTY_STATEMENT, iVisited
+			RubyCore.COMPILER_PB_EMPTY_STATEMENT, iVisited
 
-							.getPosition(), "Empty Block");
+			.getPosition(), "Empty Block");
 
-			if (problem != null) problemRequestor.acceptProblem(problem);
+			if (problem != null)
+				problemRequestor.acceptProblem(problem);
 
 		}
 
 		return super.visitIterNode(iVisited);
 
 	}
-
-
 
 	public Instruction visitDefnNode(DefnNode iVisited) {
 
@@ -198,19 +154,18 @@ public class RubyLintVisitor extends InOrderVisitor {
 
 			IProblem problem = createProblem(
 
-					RubyCore.COMPILER_PB_EMPTY_STATEMENT, iVisited
+			RubyCore.COMPILER_PB_EMPTY_STATEMENT, iVisited
 
-							.getPosition(), "Empty Method Definition");
+			.getPosition(), "Empty Method Definition");
 
-			if (problem != null) problemRequestor.acceptProblem(problem);
+			if (problem != null)
+				problemRequestor.acceptProblem(problem);
 
 		}
 
 		return super.visitDefnNode(iVisited);
 
 	}
-
-
 
 	public Instruction visitDefsNode(DefsNode iVisited) {
 
@@ -220,11 +175,12 @@ public class RubyLintVisitor extends InOrderVisitor {
 
 			IProblem problem = createProblem(
 
-					RubyCore.COMPILER_PB_EMPTY_STATEMENT, iVisited
+			RubyCore.COMPILER_PB_EMPTY_STATEMENT, iVisited
 
-							.getPosition(), "Empty Method Definition");
+			.getPosition(), "Empty Method Definition");
 
-			if (problem != null) problemRequestor.acceptProblem(problem);
+			if (problem != null)
+				problemRequestor.acceptProblem(problem);
 
 		}
 
@@ -232,19 +188,15 @@ public class RubyLintVisitor extends InOrderVisitor {
 
 	}
 
-
-
 	protected Instruction handleNode(Node visited) {
 
-//		System.out.println(visited.toString() + ", position -> "
+		// System.out.println(visited.toString() + ", position -> "
 
-//				+ visited.getPosition());
+		// + visited.getPosition());
 
 		return super.handleNode(visited);
 
 	}
-
-
 
 	public Instruction visitConstDeclNode(ConstDeclNode iVisited) {
 
@@ -254,7 +206,7 @@ public class RubyLintVisitor extends InOrderVisitor {
 
 			problemRequestor.acceptProblem(new Warning(iVisited.getPosition(),
 
-					"Reassignment of a constant"));
+			"Reassignment of a constant"));
 
 		} else
 
@@ -264,11 +216,9 @@ public class RubyLintVisitor extends InOrderVisitor {
 
 	}
 
-	
-
 	private IProblem createProblem(String compilerOption,
 
-			ISourcePosition position, String message) {
+	ISourcePosition position, String message) {
 
 		String value = RubyCore.getOption(compilerOption);
 
@@ -288,7 +238,4 @@ public class RubyLintVisitor extends InOrderVisitor {
 
 	}
 
-
-
 }
-
