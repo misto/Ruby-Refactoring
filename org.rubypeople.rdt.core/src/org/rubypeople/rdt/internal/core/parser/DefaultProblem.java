@@ -45,4 +45,8 @@ abstract class DefaultProblem implements IProblem {
 	public int getSourceStart() {
 		return position.getStartOffset();
 	}
+
+	public String toString() {
+		return position.toString() + " => " + message;
+	}
 }

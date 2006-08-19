@@ -16,6 +16,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
+import java.io.StringReader;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.CoreException;
@@ -48,7 +49,7 @@ public final class RubyCodeAnalyzer implements SingleFileCompiler {
         String contents = readContents(reader);
         markerManager.removeProblemsAndTasksFor(file);
         try {
-            Node rootNode = parser.parse(file, reader);
+            Node rootNode = parser.parse(file, new StringReader(contents));
             RubyLintVisitor visitor = new RubyLintVisitor(contents, new ProblemRequestorMarkerManager(file, markerManager));
             rootNode.accept(visitor);
             indexUpdater.update(file, rootNode, true);
