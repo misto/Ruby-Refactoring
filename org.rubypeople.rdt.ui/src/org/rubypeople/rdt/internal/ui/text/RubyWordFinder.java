@@ -50,9 +50,10 @@ public class RubyWordFinder {
             end = pos;
 
         } catch (BadLocationException x) {
+	    return null;
         }
 
-        if (start > -1 && end > -1) {
+        if (start >= -1 && end > -1) {
             if (start == offset && end == offset)
                 return new Region(offset, 0);
             else if (start == offset)
