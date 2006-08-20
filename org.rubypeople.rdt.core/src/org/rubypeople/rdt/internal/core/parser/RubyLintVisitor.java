@@ -55,7 +55,7 @@ public class RubyLintVisitor extends InOrderVisitor {
 		}
 
 		String source = NodeUtil.getSource(contents, iVisited);
-		if (iVisited.getThenBody() == null && !source.contains("unless")) {
+		if (iVisited.getThenBody() == null && source.indexOf("unless") == -1) {
 			IProblem problem = createProblem(
 			RubyCore.COMPILER_PB_EMPTY_STATEMENT, iVisited.getPosition(), "Empty Conditional Body");
 
