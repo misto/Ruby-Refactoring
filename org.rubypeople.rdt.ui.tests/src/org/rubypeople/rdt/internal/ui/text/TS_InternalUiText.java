@@ -8,6 +8,7 @@ public class TS_InternalUiText {
         TestSuite suite = new TestSuite("org.rubypeople.rdt.internal.ui.text");      
         suite.addTestSuite(TC_RubyPartitionScanner.class);
         suite.addTestSuite(RubyPartitionScannerTest.class);
+        suite.addTestSuite(TC_RubyWordFinder.class);
         return suite;
     }
 }

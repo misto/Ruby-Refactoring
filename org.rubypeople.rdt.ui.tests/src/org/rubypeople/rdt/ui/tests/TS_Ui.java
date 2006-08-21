@@ -6,6 +6,7 @@ import junit.framework.TestSuite;
 import org.rubypeople.rdt.internal.ui.TS_InternalUi;
 import org.rubypeople.rdt.internal.ui.rubyeditor.TS_InternalUiRubyEditor;
 import org.rubypeople.rdt.internal.ui.search.TS_InternalUiRubySearch;
+import org.rubypeople.rdt.internal.ui.symbols.TS_UiSymbols;
 import org.rubypeople.rdt.internal.ui.text.TS_InternalUiText;
 
 public class TS_Ui {
@@ -15,6 +16,7 @@ public class TS_Ui {
         suite.addTest(TS_InternalUiRubyEditor.suite());
         suite.addTest(TS_InternalUiText.suite());
         suite.addTest(TS_InternalUiRubySearch.suite());
+        suite.addTest(TS_UiSymbols.suite());
         return suite;
     }
 }
