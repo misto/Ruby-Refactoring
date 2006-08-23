@@ -28,7 +28,7 @@ public class PositionBasedEditorOpener extends EditorOpener {
         IDocument document = editor.getDocumentProvider().getDocument(editor.getEditorInput());
         int start = position.getStartOffset();
         int end   = position.getEndOffset();
-        editor.selectAndReveal(start, end-start);
+        editor.selectAndReveal(start, end-start+1);
     }
 
 }
