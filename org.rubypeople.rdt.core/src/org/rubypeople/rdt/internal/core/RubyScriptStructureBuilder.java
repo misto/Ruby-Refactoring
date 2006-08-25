@@ -25,7 +25,10 @@
 package org.rubypeople.rdt.internal.core;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -504,7 +507,11 @@ public class RubyScriptStructureBuilder implements NodeVisitor {
 
 		String superClass = getSuperClassName(iVisited.getSuperNode());
 		info.setSuperclassName(superClass);
-		info.setIncludedModuleNames(new String[] { "Kernel" });
+		
+		// FIXME Types do not explicitly include Kernel; if this is solely for completions, then Kernel elements are gotten elsewhere.
+		// FIXME If this must include Kernel, then completions will have to handle this differently than current. (Otherwise dupes of Kernel elements will show up when bringing together Class & its Superclass completions?)  
+//		info.setIncludedModuleNames(new String[] { "Kernel" });
+		info.setIncludedModuleNames(new String[] {});
 		infoStack.push(info);
 
 		newElements.put(handle, info);
@@ -777,10 +784,10 @@ public class RubyScriptStructureBuilder implements NodeVisitor {
 			arguments.addAll(getArguments(args.getOptArgs()));
 		}
 		if (hasRest) {
-			arguments.add("*" + (String) bodyNode.getLocalNames().get(args.getRestArg()));
+			arguments.add("*" + (String) bodyNode.getLocalNames()[args.getRestArg()]);
 		}
 		if (hasBlock)
-			arguments.add("&" + (String) bodyNode.getLocalNames().get(args.getBlockArgNode().getCount()));
+			arguments.add("&" + (String) bodyNode.getLocalNames()[args.getBlockArgNode().getCount()]);
 		return stringListToArray(arguments);
 	}
 
@@ -994,6 +1001,47 @@ public class RubyScriptStructureBuilder implements NodeVisitor {
 				this.importContainerInfo.addChild(handle);
 				this.newElements.put(handle, info);
 			}
+		}
+		
+		// Collect included mixins
+		if ( functionName.equals("include") ) {
+			List<String> mixins = new LinkedList<String>();;
+			ArrayNode arrayNode = (ArrayNode) iVisited.getArgsNode();
+			for (Iterator iter = arrayNode.iterator(); iter.hasNext();) {
+				Node mixinNameNode = (Node) iter.next();
+				if ( mixinNameNode instanceof StrNode ) {
+					mixins.add( ((StrNode)mixinNameNode).getValue() );
+				}
+				if ( mixinNameNode instanceof DStrNode ) {
+					Node next = (Node)((DStrNode)mixinNameNode).iterator().next();
+					if ( next instanceof StrNode ) {
+						mixins.add( ((StrNode)next).getValue() );
+					}
+				}
+			}
+			
+			// Push mixins into parent type, if available
+			if ( infoStack.peek() instanceof  RubyTypeElementInfo ) {
+				
+				// Get parent type
+				RubyTypeElementInfo parentType = (RubyTypeElementInfo)infoStack.peek();
+
+				// Get existing imported module names
+				String[] importedModuleNames = parentType.getIncludedModuleNames();
+				List<String> mergedModuleNames = new LinkedList<String>();
+				
+				// Merge newly found module name(s)
+				if ( importedModuleNames != null ) {
+					mergedModuleNames.addAll( (List<String>)(Arrays.asList( importedModuleNames )));
+				}
+				mergedModuleNames.addAll( mixins );
+				
+				// Apply included module names back to parent type info
+				String[] newIncludedModuleNames = mergedModuleNames.toArray(new String[]{});
+				parentType.setIncludedModuleNames( newIncludedModuleNames );
+			}
+
+			
 		}
 		visitNode(iVisited.getArgsNode());
 		return null;
@@ -1326,7 +1374,7 @@ public class RubyScriptStructureBuilder implements NodeVisitor {
 	 */
 	public Instruction visitModuleNode(ModuleNode iVisited) {
 		handleNode(iVisited);
-		String name = iVisited.getCPath().getName();
+		String name = getFullyQualifiedName(iVisited.getCPath());
 		RubyModule module = new RubyModule(modelStack.peek(), name);
 		modelStack.push(module);
 

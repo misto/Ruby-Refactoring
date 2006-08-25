@@ -51,7 +51,7 @@ public class IndexUpdater {
             IScopingNode classNode = (IScopingNode) node;
             String name = getFullyQualifiedName(classNode);
             
-            scopeStack.push(classNode.getCPath().getName());
+            scopeStack.push(assembleQualifiedName(classNode.getCPath()));
             if (node instanceof ClassNode) {
                 index.add(new ClassSymbol(name), file, classNode.getCPath().getPosition());
             }
@@ -81,7 +81,7 @@ public class IndexUpdater {
 
 
     private String getFullyQualifiedName(IScopingNode classNode) {
-        Colon2Node path = classNode.getCPath();
+        Node path = classNode.getCPath();
         return getContext() + assembleQualifiedName(path);
     }
 
@@ -97,15 +97,17 @@ public class IndexUpdater {
     }
 
 
-    private String assembleQualifiedName(INameNode path) {
+    private String assembleQualifiedName(Node path) {
         String name = "";
         if (path instanceof Colon2Node) {
             Colon2Node colon2Node = ((Colon2Node)path);
-            INameNode leftNode = (INameNode) colon2Node.getLeftNode();
+            Node leftNode = colon2Node.getLeftNode();
             if (leftNode != null)
                 name += assembleQualifiedName(leftNode) + "::";
-        }
-        
-        return name + path.getName();
+        } 
+        if (path instanceof INameNode) {
+        	name += ((INameNode) path).getName();
+        }        
+        return name;
     }
 }

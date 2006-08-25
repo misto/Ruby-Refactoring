@@ -486,6 +486,91 @@ public class PreferenceConstants {
 	 */
 	public final static String EDITOR_CLOSE_BRACES= "closeBraces"; //$NON-NLS-1$
 	
+	
+	/**
+	 * A named preference that controls whether occurrences are marked in the editor.
+	 * <p>
+	 * Value is of type <code>Boolean</code>.
+	 * </p>
+	 *
+	 * @since 0.9.0
+	 */	
+	public static final String EDITOR_MARK_OCCURRENCES= "markOccurrences"; //$NON-NLS-1$
+
+	/**
+	 * A named preference that controls whether occurrences are sticky in the editor.
+	 * <p>
+	 * Value is of type <code>Boolean</code>.
+	 * </p>
+	 *
+	 * @since 0.9.0
+	 */	
+	public static final String EDITOR_STICKY_OCCURRENCES= "stickyOccurrences"; //$NON-NLS-1$
+	
+	/**
+	 * A named preference that controls whether type occurrences are marked.
+	 * Only valid if {@link #EDITOR_MARK_OCCURRENCES} is <code>true</code>.
+	 * <p>
+	 * Value is of type <code>Boolean</code>.
+	 * </p>
+	 * 
+	 * @since 0.9.0
+	 */
+	public static final String EDITOR_MARK_TYPE_OCCURRENCES= "markTypeOccurrences"; //$NON-NLS-1$
+
+	/**
+	 * A named preference that controls whether method occurrences are marked.
+	 * Only valid if {@link #EDITOR_MARK_OCCURRENCES} is <code>true</code>.
+	 * <p>
+	 * Value is of type <code>Boolean</code>.
+	 * </p>
+	 * 
+	 * @since 0.9.0
+	 */
+	public static final String EDITOR_MARK_METHOD_OCCURRENCES= "markMethodOccurrences"; //$NON-NLS-1$
+	/**
+	 * A named preference that controls whether non-constant field occurrences are marked.
+	 * Only valid if {@link #EDITOR_MARK_OCCURRENCES} is <code>true</code>.
+	 * <p>
+	 * Value is of type <code>Boolean</code>.
+	 * </p>
+	 * 
+	 * @since 0.9.0
+	 */
+	public static final String EDITOR_MARK_FIELD_OCCURRENCES= "markFieldOccurrences"; //$NON-NLS-1$
+	/**
+	 * A named preference that controls whether constant (static final) occurrences are marked.
+	 * Only valid if {@link #EDITOR_MARK_OCCURRENCES} is <code>true</code>.
+	 * <p>
+	 * Value is of type <code>Boolean</code>.
+	 * </p>
+	 * 
+	 * @since 0.9.0
+	 */
+	public static final String EDITOR_MARK_CONSTANT_OCCURRENCES= "markConstantOccurrences"; //$NON-NLS-1$
+	
+	/**
+	 * A named preference that controls whether local variable occurrences are marked.
+	 * Only valid if {@link #EDITOR_MARK_OCCURRENCES} is <code>true</code>.
+	 * <p>
+	 * Value is of type <code>Boolean</code>.
+	 * </p>
+	 * 
+	 * @since 0.9.0
+	 */
+	public static final String EDITOR_MARK_LOCAL_VARIABLE_OCCURRENCES= "markLocalVariableOccurrences"; //$NON-NLS-1$
+
+	/**
+	 * A named preference that controls whether method exit points are marked.
+	 * Only valid if {@link #EDITOR_MARK_OCCURRENCES} is <code>true</code>.
+	 * <p>
+	 * Value is of type <code>Boolean</code>.
+	 * </p>
+	 * 
+	 * @since 0.9.0
+	 */
+	public static final String EDITOR_MARK_METHOD_EXIT_POINTS= "markMethodExitPoints"; //$NON-NLS-1$
+	
     public static void initializeDefaultValues(IPreferenceStore store) {
         store.setDefault(PreferenceConstants.EDITOR_SHOW_SEGMENTS, false);
         
@@ -551,6 +636,16 @@ public class PreferenceConstants {
 		store.setDefault(PreferenceConstants.EDITOR_CLOSE_STRINGS, true);
 		store.setDefault(PreferenceConstants.EDITOR_CLOSE_BRACKETS, true);
 		store.setDefault(PreferenceConstants.EDITOR_CLOSE_BRACES, true);
+		
+		// mark occurrences
+		store.setDefault(PreferenceConstants.EDITOR_MARK_OCCURRENCES, true);
+		store.setDefault(PreferenceConstants.EDITOR_STICKY_OCCURRENCES, true);
+		store.setDefault(PreferenceConstants.EDITOR_MARK_TYPE_OCCURRENCES, true);
+		store.setDefault(PreferenceConstants.EDITOR_MARK_METHOD_OCCURRENCES, true);
+		store.setDefault(PreferenceConstants.EDITOR_MARK_CONSTANT_OCCURRENCES, true);
+		store.setDefault(PreferenceConstants.EDITOR_MARK_FIELD_OCCURRENCES, true);
+		store.setDefault(PreferenceConstants.EDITOR_MARK_LOCAL_VARIABLE_OCCURRENCES, true);
+		store.setDefault(PreferenceConstants.EDITOR_MARK_METHOD_EXIT_POINTS, true);
     }
 
     private static String getDefaultPath(String programName) {

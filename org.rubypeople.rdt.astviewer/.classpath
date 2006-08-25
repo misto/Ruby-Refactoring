@@ -3,6 +3,6 @@
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="con" path="org.eclipse.pde.core.requiredPlugins"/>
-	<classpathentry sourcepath="/org.jruby/src" kind="lib" path="/org.rubypeople.rdt.core/lib/jruby.jar"/>
+	<classpathentry kind="lib" path="/Users/cwilliams/Documents/merge/trunk/org.jruby/lib/jruby.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

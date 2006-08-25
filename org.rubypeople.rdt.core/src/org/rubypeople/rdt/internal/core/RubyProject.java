@@ -77,7 +77,6 @@ public class RubyProject extends Openable implements IProjectNature, IRubyElemen
      * Configure the project with Ruby nature.
      */
     public void configure() throws CoreException {
-
         // register Ruby builder
         addToBuildSpec(RubyCore.BUILDER_ID);
     }
@@ -190,7 +189,11 @@ public class RubyProject extends Openable implements IProjectNature, IRubyElemen
     }
     
     public int hashCode() {
-        return this.project.hashCode();
+    	if ( this.project == null )
+    	{
+    		return super.hashCode() * 10 + 1;
+    	}
+        return this.project.hashCode() * 10 + 2;
     }
 
     public boolean exists() {
@@ -430,6 +433,10 @@ public class RubyProject extends Openable implements IProjectNature, IRubyElemen
      * @see org.rubypeople.rdt.core.IRubyElement#getElementName()
      */
     public String getElementName() {
+    	if ( project == null )
+    	{
+    		return super.getElementName();
+    	}
         return project.getName();
     }
 

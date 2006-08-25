@@ -3,6 +3,7 @@
  */
 package org.rubypeople.rdt.internal.core.util;
 
+
 /**
  * @author Chris
  */

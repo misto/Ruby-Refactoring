@@ -14,6 +14,7 @@ package org.rubypeople.rdt.internal.core.parser;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
+import java.io.StringReader;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.CoreException;
@@ -53,7 +54,9 @@ public class RubyParser {
         	parser = getDefaultRubyParser();
         	parser.setWarnings(warnings);
         	parser.init(new RubyParserConfiguration());
-        	LexerSource lexerSource = new LexerSource(file.getName(), content);
+        	String fileName = "";
+        	if (file != null) fileName = file.getName();
+        	LexerSource lexerSource = new LexerSource(fileName, content);
         	result = parser.parse(lexerSource);
         } catch (SyntaxException e) {
         	throw e;
@@ -89,6 +92,10 @@ public class RubyParser {
             IoUtils.closeQuietly(contents);
         }
     }
+
+	public Node parse(String source) {
+		return parse(null, new StringReader(source));
+	}
 
 
 }

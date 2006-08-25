@@ -44,13 +44,13 @@ public final class RubyCodeAnalyzer implements SingleFileCompiler {
 
     public void compileFile(IFile file) throws CoreException {
         Reader reader = new InputStreamReader(file.getContents());
-        // XXX Make sure readContents isn't dropping end of line characters
-        // XXX Use a StringReader for the parser since we've already read it all in once before? 
+        // XXX Make sure readContents isn't dropping end of line characters 
         String contents = readContents(reader);
         markerManager.removeProblemsAndTasksFor(file);
         try {
             Node rootNode = parser.parse(file, new StringReader(contents));
-            RubyLintVisitor visitor = new RubyLintVisitor(contents, new ProblemRequestorMarkerManager(file, markerManager));
+            if (rootNode == null) return;            
+			RubyLintVisitor visitor = new RubyLintVisitor(contents, new ProblemRequestorMarkerManager(file, markerManager));
             rootNode.accept(visitor);
             indexUpdater.update(file, rootNode, true);
         } catch (SyntaxException e) {
@@ -71,7 +71,6 @@ public final class RubyCodeAnalyzer implements SingleFileCompiler {
 			}
 			return str.toString();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 			return "";
 		}

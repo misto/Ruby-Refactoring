@@ -18,6 +18,8 @@
       <import plugin="org.rubypeople.rdt.core"/>
       <import plugin="org.rubypeople.eclipse.shams"/>
       <import plugin="org.rubypeople.eclipse.testutils"/>
+      <import plugin="org.jruby"/>
+      <import plugin="org.eclipse.jface.text"/>
    </requires>
 
 </plugin>

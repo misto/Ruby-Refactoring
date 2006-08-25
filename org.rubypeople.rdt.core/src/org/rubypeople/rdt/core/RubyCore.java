@@ -267,6 +267,13 @@ public class RubyCore extends Plugin {
 	 * @since 0.9.0
 	 */
 	public static final String COMPILER_PB_UNNECESSARY_ELSE = PLUGIN_ID + ".compiler.problem.unnecessaryElse"; //$NON-NLS-1$
+
+	/**
+	 * Possible  configurable option ID.
+	 * @see #getDefaultOptions()
+	 * @since 0.9.0
+	 */
+	public static final String CODEASSIST_CAMEL_CASE_MATCH = PLUGIN_ID + ".codeComplete.camelCaseMatch"; //$NON-NLS-1$
 	
 
     private SymbolIndex symbolIndex;

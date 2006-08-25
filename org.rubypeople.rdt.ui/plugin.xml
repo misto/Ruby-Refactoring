@@ -80,6 +80,20 @@
             id="org.rubypeople.rdt.ui.preferences.SmartTypingPreferencePage">
          <keywordReference id="org.rubypeople.rdt.ui.smarttyping"/>
       </page>
+      <page
+            name="%editorMarkOccurrencesPage"
+            category="org.rubypeople.rdt.ui.preferences.PreferencePageRubyEditor"
+            class="org.rubypeople.rdt.internal.ui.preferences.MarkOccurrencesPreferencePage"
+            id="org.rubypeople.rdt.ui.preferences.MarkOccurrencesPreferencePage">
+         <keywordReference id="org.rubypeople.rdt.ui.markoccurrences"/>
+      </page>
+      <page
+            name="%problemSeveritiesPrefName"
+            category="org.rubypeople.rdt.ui.preferences.PreferencePageRubyBase"
+            class="org.rubypeople.rdt.internal.ui.preferences.ProblemSeveritiesPreferencePage"
+            id="org.rubypeople.rdt.ui.preferences.ProblemSeveritiesPreferencePage">
+            <keywordReference id="org.rubypeople.rdt.ui.severities"/>
+      </page>
    </extension>
 <!-- =========================================================================== -->
 <!-- Ruby Perspective 																 -->
@@ -333,6 +347,9 @@
       <keyword
             label="%preferenceKeywords.folding"
             id="org.rubypeople.rdt.ui.folding"/>
+      <keyword
+            label="%preferenceKeywords.markoccurrences"
+            id="org.rubypeople.rdt.ui.markoccurrences"/>
    </extension>  
    
    <extension point="org.eclipse.ui.views">
@@ -708,6 +725,9 @@
             name="org.rubypeople.rdt.ui.info"
             markerSeverity="0">
       </type>
+      <type
+         name="org.rubypeople.rdt.ui.occurrences">
+      </type>
    </extension>
    <extension
          point="org.eclipse.ui.editors.markerAnnotationSpecification">
@@ -723,6 +743,29 @@
             symbolicIcon="info"
             annotationType="org.rubypeople.rdt.ui.info">
       </specification>
+      <specification
+            annotationType="org.rubypeople.rdt.ui.occurrences "
+            label="%OccurrenceAnnotation.label"
+            icon="$nl$/icons/full/obj16/searchm_obj.gif"
+            textPreferenceKey="occurrenceIndication"
+            textPreferenceValue="false"
+            highlightPreferenceKey="occurrenceHighlighting"
+            highlightPreferenceValue="true"
+            contributesToHeader="false"
+            overviewRulerPreferenceKey="occurrenceIndicationInOverviewRuler"
+            overviewRulerPreferenceValue="true"
+            verticalRulerPreferenceKey="occurrenceIndicationInVerticalRuler"
+            verticalRulerPreferenceValue="false"
+            colorPreferenceKey="occurrenceIndicationColor"
+            colorPreferenceValue="212,212,212"
+            presentationLayer="4"
+            showInNextPrevDropdownToolbarActionKey="showOccurrenceInNextPrevDropdownToolbarAction"
+            showInNextPrevDropdownToolbarAction="true"
+            isGoToNextNavigationTargetKey="isOccurrenceGoToNextNavigationTarget"
+            isGoToNextNavigationTarget="false"
+            isGoToPreviousNavigationTargetKey="isOccurrenceGoToPreviousNavigationTarget"
+            isGoToPreviousNavigationTarget="false">
+     </specification>
    </extension>
    <extension
          point="org.eclipse.ui.ide.resourceFilters">
@@ -794,7 +837,7 @@
 		
 		<factory 
             class="org.rubypeople.rdt.internal.ui.RubyElementAdapterFactory" 
-            adaptableType="org.eclipse.rdt.core.IRubyElement">
+            adaptableType="org.rubypeople.rdt.core.IRubyElement">
             
             <adapter type="org.eclipse.core.resources.IResource"/>
             <adapter type="org.eclipse.ui.IContributorResourceAdapter"/>

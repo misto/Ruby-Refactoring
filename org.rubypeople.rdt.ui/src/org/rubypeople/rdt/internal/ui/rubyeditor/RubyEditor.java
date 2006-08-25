@@ -172,6 +172,7 @@ public class RubyEditor extends RubyAbstractEditor {
     
     private BracketInserter fBracketInserter = new BracketInserter();
 
+	
     public RubyEditor() {
         super();
         setDocumentProvider(RubyPlugin.getDefault().getRubyDocumentProvider());
@@ -239,11 +240,7 @@ public class RubyEditor extends RubyAbstractEditor {
 
         actionGroup = new RubyActionGroup(this, ITextEditorActionConstants.GROUP_EDIT);
     }
-
-	public final ISourceViewer getViewer() {
-		return getSourceViewer();
-	}
-    
+   
     /**
      * Configures the toggle comment action
      * 
@@ -305,6 +302,7 @@ public class RubyEditor extends RubyAbstractEditor {
     		fBracketInserter.setCloseStringsEnabled(closeStrings);
             ((ITextViewerExtension) sourceViewer).prependVerifyKeyListener(fBracketInserter);
         }
+
     }
     
 	/**
@@ -621,6 +619,7 @@ public class RubyEditor extends RubyAbstractEditor {
             fProjectionSupport.dispose();
             fProjectionSupport = null;
         }
+        	
         super.dispose();
     }
 

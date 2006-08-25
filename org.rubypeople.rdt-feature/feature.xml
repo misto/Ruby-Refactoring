@@ -246,7 +246,7 @@ litigation.
    <includes
          id="org.rubypeople.rdt.source"
          version="0.0.0"/>
-         
+
    <requires>
       <import plugin="org.eclipse.core.resources"/>
       <import plugin="org.eclipse.debug.core"/>
@@ -328,5 +328,12 @@ litigation.
          download-size="0"
          install-size="0"
          version="0.0.0"/>
+
+   <plugin
+         id="org.jruby"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
 
 </feature>

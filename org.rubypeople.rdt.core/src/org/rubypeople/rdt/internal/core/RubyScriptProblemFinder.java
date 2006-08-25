@@ -3,7 +3,6 @@
  */
 package org.rubypeople.rdt.internal.core;
 
-import java.io.Reader;
 import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -33,14 +32,8 @@ public class RubyScriptProblemFinder {
         RdtWarnings warnings = new RdtWarnings();
         RubyParser parser = new RubyParser(warnings);
         String contents = new String(charContents);
-        try {
-            Node node = parser.parse((IFile) script.getUnderlyingResource(), new StringReader(contents));
-            // FIXME We're double marking problems here. We create markers for them when we build, and then create temporary annotations when we reconcile. We need to "toss" out any duplicates generated here.
-            RubyLintVisitor visitor = new RubyLintVisitor(contents, problemRequestor);
-            node.accept(visitor);
-        } catch (SyntaxException e) {
-            problemRequestor.acceptProblem(new Error(e.getPosition(), "Syntax Error"));
-        }
+
+        runLint(script, problemRequestor, parser, contents);
 
         TaskParser taskParser = new TaskParser(script.getRubyProject().getOptions(true));
         taskParser.parse(contents);
@@ -53,5 +46,16 @@ public class RubyScriptProblemFinder {
             problemRequestor.acceptProblem(problem);
         }
     }
+
+	private static void runLint(RubyScript script, IProblemRequestor problemRequestor, RubyParser parser, String contents) {
+		try {
+            Node node = parser.parse((IFile) script.getUnderlyingResource(), new StringReader(contents));
+            if (node == null) return;
+            RubyLintVisitor visitor = new RubyLintVisitor(contents, problemRequestor);
+            node.accept(visitor);
+        } catch (SyntaxException e) {
+            problemRequestor.acceptProblem(new Error(e.getPosition(), "Syntax Error"));
+        }
+	}
 
 }

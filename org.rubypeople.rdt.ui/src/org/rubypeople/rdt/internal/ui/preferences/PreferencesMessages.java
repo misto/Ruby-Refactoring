@@ -138,6 +138,15 @@ public final class PreferencesMessages extends NLS {
 	public static String ProblemSeveritiesConfigurationBlock_pb_unused_private_label;
 	public static String ProblemSeveritiesConfigurationBlock_pb_unnecessary_else_label;
 	public static String RubyEditorPreferencePage_background_color;
+	public static String MarkOccurrencesConfigurationBlock_markOccurrences;
+	public static String MarkOccurrencesConfigurationBlock_markTypeOccurrences;
+	public static String MarkOccurrencesConfigurationBlock_markMethodOccurrences;
+	public static String MarkOccurrencesConfigurationBlock_markConstantOccurrences;
+	public static String MarkOccurrencesConfigurationBlock_markFieldOccurrences;
+	public static String MarkOccurrencesConfigurationBlock_markLocalVariableOccurrences;
+	public static String MarkOccurrencesConfigurationBlock_markMethodExitPoints;
+	public static String MarkOccurrencesConfigurationBlock_stickyOccurrences;
+	public static String MarkOccurrencesConfigurationBlock_title;
 
     static {
         NLS.initializeMessages(BUNDLE_NAME, PreferencesMessages.class);

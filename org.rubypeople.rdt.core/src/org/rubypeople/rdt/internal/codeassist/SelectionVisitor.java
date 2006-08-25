@@ -60,6 +60,7 @@ import org.jruby.ast.MultipleAsgnNode;
 import org.jruby.ast.NewlineNode;
 import org.jruby.ast.NextNode;
 import org.jruby.ast.NilNode;
+import org.jruby.ast.Node;
 import org.jruby.ast.NotNode;
 import org.jruby.ast.NthRefNode;
 import org.jruby.ast.OpAsgnAndNode;
@@ -211,15 +212,27 @@ public class SelectionVisitor implements NodeVisitor {
 	public Instruction visitClassNode(ClassNode iVisited) {
 		// TODO Push type names on a stack
 		String oldTypeName = currentTypeName;
-		currentTypeName = getName(iVisited.getCPath());
+		currentTypeName = getFullyQualifiedName(iVisited.getCPath());
 		iVisited.getBodyNode().accept(this);
 		currentTypeName = oldTypeName;
 		return null;
 	}
-
-	private String getName(Colon2Node path) {
-		// TODO Get full name
-		return path.getName();
+	
+	private String getFullyQualifiedName(Node node) {
+		if (node == null)
+			return "";
+		if (node instanceof ConstNode) {
+			ConstNode constNode = (ConstNode) node;
+			return constNode.getName();
+		}
+		if (node instanceof Colon2Node) {
+			Colon2Node colonNode = (Colon2Node) node;
+			String prefix = getFullyQualifiedName(colonNode.getLeftNode());
+			if (prefix.length() > 0)
+				prefix = prefix + "::";
+			return prefix + colonNode.getName();
+		}
+		return "";
 	}
 
 	public Instruction visitColon2Node(Colon2Node iVisited) {

@@ -19,6 +19,7 @@ import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.jruby.ast.Node;
+import org.jruby.lexer.yacc.SyntaxException;
 import org.rubypeople.rdt.core.RubyCore;
 import org.rubypeople.rdt.internal.core.parser.RubyParser;
 
@@ -61,6 +62,9 @@ public class MassIndexUpdater {
             updater.update(file, node, false);
         } catch (CoreException e) {
             RubyCore.log(e);
+        } catch (SyntaxException se) {
+        	System.err.println("Explicit catch of SyntaxError in MassIndexUpdater (jpm)");
+        	RubyCore.log(se);
         } catch (Exception ex) {
         	// e.g: the parser currently throws a ClassCastExcpetion when parsing xmldecl.rb
         	RubyCore.log(ex);
