@@ -7,8 +7,7 @@ Bundle-Activator: org.jruby.Activator
 Bundle-Localization: plugin
 Require-Bundle: org.eclipse.core.runtime
 Eclipse-LazyStart: false
-Bundle-ClassPath: lib/jruby.jar,
- .
+Bundle-ClassPath: lib/jruby.jar
 Export-Package: org.ablaf.ast,
  org.ablaf.internal.ast,
  org.jruby,
