@@ -20,12 +20,13 @@ public class HereDocPatternRule extends PatternRule {
     }
 
     protected boolean endSequenceDetected(ICharacterScanner scanner) {
-
         char firstChar = (char) scanner.read();
 
         if (Character.isWhitespace(firstChar)) { return false; }
-
+        
+    	boolean indentedKeyword = false;
         if (firstChar == '-') {
+        	indentedKeyword = true;
             firstChar = (char) scanner.read();
         }
         boolean isQuoted = false;
@@ -35,7 +36,52 @@ public class HereDocPatternRule extends PatternRule {
             quote = firstChar;
             firstChar = (char) scanner.read();
         }
-        String keyword = "";
+        String keyword = readKeyword(scanner, firstChar);
+        if (keyword.length() == 0) { return false; }
+        if (isQuoted && !(keyword.charAt(keyword.length() - 1) == quote)) { return false; }
+        if (isQuoted) {
+            fEndSequence = removeEndQuote(keyword).toCharArray();
+        } else {
+            fEndSequence = keyword.toCharArray();
+        }
+        boolean result = super.endSequenceDetected(scanner);
+        if (!result) { return false; }
+        
+        if(indentedKeyword) {
+        	rewindToBeginOfLine(scanner);
+        	char lastChar;
+        	do {
+        		lastChar = (char) scanner.read();
+        	}
+        	while(Character.isWhitespace(lastChar));
+        	
+        	String newKeyword = readKeyword(scanner, lastChar);
+        	
+        	if(isQuoted)
+        		return removeEndQuote(keyword).equals(newKeyword);
+        	else
+        		return keyword.equals(newKeyword);
+        	
+        } else {
+        	return scanner.getColumn() == fEndSequence.length;
+        }
+    }
+
+	private String removeEndQuote(String keyword) {
+		return keyword.substring(0, keyword.length() - 1);
+	}
+
+	private void rewindToBeginOfLine(ICharacterScanner scanner) {
+		char readChar = 0;
+		while (readChar != '\n') {
+			scanner.unread();
+			scanner.unread();
+			readChar = (char) scanner.read();
+		}
+	}
+
+	private String readKeyword(ICharacterScanner scanner, char firstChar) {
+		String keyword = "";
         char c = firstChar;
         do {
             if ((byte) c == ICharacterScanner.EOF || Character.isWhitespace(c)) {
@@ -44,17 +90,7 @@ public class HereDocPatternRule extends PatternRule {
             keyword += c;
             c = (char) scanner.read();
         } while (true);
-        if (keyword.length() == 0) { return false; }
-        if (isQuoted && !(keyword.charAt(keyword.length() - 1) == quote)) { return false; }
-        if (isQuoted) {
-            fEndSequence = keyword.substring(0, keyword.length() - 1).toCharArray();
-        } else {
-            fEndSequence = keyword.toCharArray();
-        }
-        boolean result = super.endSequenceDetected(scanner);
-        if (!result) { return false; }
-        // the keyword must be at the beginning of the line
-        return scanner.getColumn() == fEndSequence.length;
-    }
+		return keyword;
+	}
 
 }

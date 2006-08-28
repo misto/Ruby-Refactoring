@@ -55,6 +55,16 @@ public class TC_RubyPartitionScanner extends TestCase {
 		assertEquals(IDocument.DEFAULT_CONTENT_TYPE, this.getContentType(source, 10));
 	}
 
+	public void testHereDocWithSpacesOK() {
+		String source = "puts <<-TEST\nMyName\n\tTEST\nputs 'ab'";
+		assertEquals(RubyPartitionScanner.RUBY_STRING, this.getContentType(source, 5));
+		
+		source = "puts <<-TEST\nMyName\n  TEST\nputs 'ab'";
+		assertEquals(RubyPartitionScanner.RUBY_STRING, this.getContentType(source, 5));
+
+		source = "puts <<-'ax%&'\nMyName\n   ax%&";
+		assertEquals(RubyPartitionScanner.RUBY_STRING, this.getContentType(source, 5));
+	}
 	
 	public void testHereDocOK() {
 		String source = "puts <<TEST\nMyName\nTEST";
