@@ -63,10 +63,7 @@ public class RubyElementRequestor {
 		try {
 			for (int x = 0; x < projects.length; x++) {
 				IRubyProject project = projects[x];
-				System.out.println("Checking project: "
-						+ project.getElementName());
 				IRubyScript[] scripts = project.getRubyScripts();
-				System.out.println("Got " + scripts.length + " scripts");
 				for (int i = 0; i < scripts.length; i++) {
 					IRubyScript script = scripts[i];
 					IType type = findTypeInScript(typeName, script);
@@ -83,8 +80,6 @@ public class RubyElementRequestor {
 
 	private IType findTypeInScript(String typeName, IRubyScript script)
 			throws RubyModelException {
-		System.out.println("Checking for that type inside script: "
-				+ script.getElementName());
 		IType[] types = script.getTypes();
 		for (int j = 0; j < types.length; j++) {
 			IType type = types[j];
