@@ -1018,6 +1018,9 @@ public class RubyScriptStructureBuilder implements NodeVisitor {
 						mixins.add( ((StrNode)next).getValue() );
 					}
 				}
+				if (mixinNameNode instanceof ConstNode) {
+					mixins.add( ((ConstNode)mixinNameNode).getName() );
+				}
 			}
 			
 			// Push mixins into parent type, if available
