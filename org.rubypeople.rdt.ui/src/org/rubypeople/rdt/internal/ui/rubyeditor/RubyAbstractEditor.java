@@ -320,6 +320,13 @@ public abstract class RubyAbstractEditor extends TextEditor {
 
         return super.getAdapter(required);
     }
+    
+    public void createPartControl(Composite parent) {
+    	super.createPartControl(parent);
+    	
+		if (fMarkOccurrenceAnnotations)
+			installOccurrencesFinder(false);
+    }
 
     protected RubyOutlinePage createRubyOutlinePage() {
         RubyOutlinePage outlinePage = new RubyOutlinePage(fOutlinerContextMenuId, this);
