@@ -33,10 +33,9 @@ public class ProblemRequestorMarkerManager implements IProblemRequestor {
 			return;
 		}
 		if (problem.isError()) {
-			markerManager.createSyntaxError(file, new SyntaxException(
-					new RdtPosition(problem.getSourceLineNumber(), problem
-							.getSourceStart(), problem.getSourceEnd()), problem
-							.getMessage()));
+			markerManager.createError(file, problem.getMessage(),
+					problem.getSourceLineNumber(), problem
+							.getSourceStart(), problem.getSourceEnd());
 			return;
 		}
 		if (problem.isTask()) {

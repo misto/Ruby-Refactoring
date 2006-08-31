@@ -54,7 +54,7 @@ public class RubyScriptProblemFinder {
             RubyLintVisitor visitor = new RubyLintVisitor(contents, problemRequestor);
             node.accept(visitor);
         } catch (SyntaxException e) {
-            problemRequestor.acceptProblem(new Error(e.getPosition(), "Syntax Error"));
+            problemRequestor.acceptProblem(new Error(e.getPosition(), e.getMessage()));
         }
 	}
 
