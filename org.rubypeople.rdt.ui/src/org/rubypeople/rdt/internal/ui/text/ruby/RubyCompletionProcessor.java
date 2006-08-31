@@ -95,19 +95,6 @@ public class RubyCompletionProcessor extends TemplateCompletionProcessor
 			"status of the latest executed child process",
 			"array of paths that ruby interpreter searches for files" };
 
-	// FIXME This is an ugly hack, just hard-coding method names
-	// FIXME Create a model for Ruby core in our Ruby Model!
-	private static String[] KERNEL_METHODS = { "abort", "at_exit", "autoload",
-			"binding", "block_given?", "callcc", "caller", "catch", "chomp",
-			"chomp!", "chop", "chop!", "eval", "exec", "exit", "exit!", "fail",
-			"fork", "format", "gets", "global_variables", "gsub", "gsub!",
-			"iterator?", "lambda", "load", "local_variables", "loop", "open",
-			"p", "print", "printf", "proc", "putc", "puts", "raise", "rand",
-			"readline", "readlines", "require", "scan", "select",
-			"set_trace_func", "singleton_method_added", "sleep", "split",
-			"sprintf", "srand", "sub", "sub!", "syscall", "system", "test",
-			"throw", "trace_var", "trap", "untrace_var" };
-
 	/**
 	 * The prefix for the current content assist
 	 */
@@ -224,7 +211,7 @@ public class RubyCompletionProcessor extends TemplateCompletionProcessor
 		List possibleProposals = new ArrayList();
 		for (Iterator iter = completionProposals.iterator(); iter.hasNext();) {
 			String proposal = (String) iter.next();
-			if (proposal.startsWith(prefix)) {
+			if (proposal.startsWith(prefix) && !proposal.equals(prefix)) {
 				String message = "{0}";
 				IContextInformation info = new ContextInformation(proposal,
 						MessageFormat
@@ -242,14 +229,6 @@ public class RubyCompletionProcessor extends TemplateCompletionProcessor
 				.size()];
 		possibleProposals.toArray(result);
 		return result;
-	}
-
-	private Collection addKernelMethods() {
-		Collection kernelProposals = new ArrayList();
-		for (int i = 0; i < KERNEL_METHODS.length; i++) {
-			kernelProposals.add(KERNEL_METHODS[i]);
-		}
-		return kernelProposals;
 	}
 
 	/*
@@ -391,10 +370,7 @@ public class RubyCompletionProcessor extends TemplateCompletionProcessor
 	 */
 	private Collection getDocumentsRubyElementsInScope(int offset) {
 		IRubyScript script = fManager.getWorkingCopy(fEditor.getEditorInput());
-		
-
-//		Collection elements = getElementsInScope(script, offset);
-		
+	
 		String source = "";
 		Collection elements = new ArrayList();
 		try {
@@ -452,12 +428,6 @@ public class RubyCompletionProcessor extends TemplateCompletionProcessor
 				elements.addAll(getElementsOfType( nextProject, new int[] { IRubyElement.GLOBAL }));
 				elements.addAll(addClassesAndModulesInProject( nextProject ));
 			}
-			
-
-			// always add Kernel methods
-			elements.addAll(addKernelMethods());
-			
-
 		} catch ( RubyModelException rme ) {
 			System.out.println("RubyModelException in RubyCompletionProcessor::getElementsInScope()");
 			rme.printStackTrace();
@@ -467,9 +437,6 @@ public class RubyCompletionProcessor extends TemplateCompletionProcessor
 			se.printStackTrace();
 			// Return empty 'elements'
 		}
-
-		
-
 		return elements;
 	}
 
