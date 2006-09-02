@@ -42,25 +42,21 @@ import org.jruby.ast.ModuleNode;
 import org.jruby.ast.Node;
 import org.jruby.ast.ScopeNode;
 import org.jruby.lexer.yacc.SyntaxException;
-import org.jruby.parser.RubyParserPool;
 import org.rubypeople.rdt.core.IParent;
 import org.rubypeople.rdt.core.IRubyElement;
 import org.rubypeople.rdt.core.IRubyProject;
 import org.rubypeople.rdt.core.IRubyScript;
-import org.rubypeople.rdt.core.ISourceReference;
 import org.rubypeople.rdt.core.IType;
 import org.rubypeople.rdt.core.RubyModelException;
 import org.rubypeople.rdt.internal.codeassist.RubyElementRequestor;
 import org.rubypeople.rdt.internal.core.RubyElement;
 import org.rubypeople.rdt.internal.core.RubyScript;
-import org.rubypeople.rdt.internal.core.RubyScriptStructureBuilder;
 import org.rubypeople.rdt.internal.core.RubyType;
 import org.rubypeople.rdt.internal.core.parser.RubyParser;
 import org.rubypeople.rdt.internal.corext.template.ruby.RubyContextType;
 import org.rubypeople.rdt.internal.ti.util.AttributeLocator;
 import org.rubypeople.rdt.internal.ti.util.ClosestSpanningNodeLocator;
 import org.rubypeople.rdt.internal.ti.util.INodeAcceptor;
-import org.rubypeople.rdt.internal.ti.util.MethodDefinitionLocator;
 import org.rubypeople.rdt.internal.ti.util.ScopedNodeLocator;
 import org.rubypeople.rdt.internal.ui.RubyPlugin;
 import org.rubypeople.rdt.internal.ui.RubyPluginImages;
@@ -381,6 +377,18 @@ public class RubyCompletionProcessor extends TemplateCompletionProcessor
 				source = script.getSource();
 			}
 			
+			// FIXME Ugly hacking here to handle where we have invalid syntax by invoking after a period
+			StringBuffer sourceBuff = new StringBuffer(source);
+			offset--;
+			char charAtOffset = (char) sourceBuff.charAt(offset);
+			if (charAtOffset == '.') {
+				sourceBuff.deleteCharAt(offset);
+				offset--;
+			}
+			source = sourceBuff.toString();
+			
+			// XXX Combine this code with the code in RubyScript.codeComplete() (into a new CompletionEngine class?)
+			
 			// Get all references projects
 			List<IRubyProject> projects = new ArrayList<IRubyProject>();
 			projects.add(script.getRubyProject());
@@ -422,9 +430,6 @@ public class RubyCompletionProcessor extends TemplateCompletionProcessor
 			// Add all globals, classes, and modules
 			for (Iterator iter = projects.iterator(); iter.hasNext();) {
 				IRubyProject nextProject = (IRubyProject)(iter.next());
-				
-				System.out.println("*** Adding globals/classes/modules available in project: " + nextProject.getElementName() );
-				
 				elements.addAll(getElementsOfType( nextProject, new int[] { IRubyElement.GLOBAL }));
 				elements.addAll(addClassesAndModulesInProject( nextProject ));
 			}
@@ -468,18 +473,6 @@ public class RubyCompletionProcessor extends TemplateCompletionProcessor
 		return suggestions;
 	}
 
-	/**
-	 * @param script
-	 * @return
-	 */
-	private Collection getElements(IParent element) {
-		return getElementsOfType(element, new int[] { IRubyElement.TYPE,
-				IRubyElement.METHOD, IRubyElement.GLOBAL,
-				IRubyElement.CONSTANT, IRubyElement.CLASS_VAR,
-				IRubyElement.INSTANCE_VAR });
-	}
-	
-	
 	/**
 	 * Gets the memebrs available inside a type node (ModuleNode, ClassNode):
 	 *  - Instance variables
