@@ -24,6 +24,7 @@ public class RubyScriptCompletion extends CompletionRequestor {
 	/** Tells whether this class is in debug mode. */
 	private static final boolean DEBUG= "true".equalsIgnoreCase(Platform.getDebugOption("org.rubypeople.rdt.ui/debug/ResultCollector"));  //$NON-NLS-1$//$NON-NLS-2$
 
+	private final CompletionProposalLabelProvider fLabelProvider= new CompletionProposalLabelProvider();
 	private final ImageDescriptorRegistry fRegistry= RubyPlugin.getImageDescriptorRegistry();
 
 	/** Triggers for variables. Do not modify. */
@@ -188,7 +189,7 @@ public class RubyScriptCompletion extends CompletionRequestor {
 	protected IRubyCompletionProposal createRubyCompletionProposal(CompletionProposal proposal) {
 //		switch (proposal.getKind()) {
 //			case CompletionProposal.KEYWORD:
-				return createKeywordProposal(proposal);
+//				return createKeywordProposal(proposal);
 //			case CompletionProposal.TYPE_REF:
 //				return createTypeProposal(proposal);
 //			case CompletionProposal.FIELD_REF:
@@ -205,10 +206,38 @@ public class RubyScriptCompletion extends CompletionRequestor {
 //			default:
 //				return null;
 //		}
+		switch (proposal.getKind()) {
+		case CompletionProposal.KEYWORD:
+			return createKeywordProposal(proposal);
+		case CompletionProposal.METHOD_REF:
+		case CompletionProposal.METHOD_NAME_REFERENCE:
+			return createMethodReferenceProposal(proposal);
+		default:
+			return createKeywordProposal(proposal);
+		}
 	}
 	
+	private IRubyCompletionProposal createMethodReferenceProposal(CompletionProposal proposal) {
+		String completion= proposal.getCompletion();
+		int start= proposal.getReplaceStart();
+		int length= getLength(proposal);
+		String label= proposal.getName();
+		int relevance= computeRelevance(proposal);
+		Image image = getImage(fLabelProvider.createImageDescriptor(proposal));
+		return new RubyCompletionProposal(completion, start, length, image, label, relevance);
+	}
 	
-	
+	/**
+	 * Returns the ruby script that the receiver operates on, or
+	 * <code>null</code> if the <code>IRubyProject</code> constructor was
+	 * used to create the receiver.
+	 *
+	 * @return the ruby script that the receiver operates on, or
+	 *         <code>null</code>
+	 */
+	protected final IRubyScript getRubyScript() {
+		return fRubyScript;
+	}
 	
 	/**
 	 * Returns a cached image for the given descriptor.
