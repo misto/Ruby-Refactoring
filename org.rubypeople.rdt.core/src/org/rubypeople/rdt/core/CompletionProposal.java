@@ -1,6 +1,5 @@
 package org.rubypeople.rdt.core;
 
-
 public class CompletionProposal {
 
 	public static final int FIELD_REF = 2;
@@ -85,6 +84,7 @@ public class CompletionProposal {
 	 * Defaults to null.
 	 */
 	private String name = null;
+	private int flags;
 
 	public CompletionProposal(int kind, String completion, int relevance) {
 		this.completionKind = kind;
@@ -118,6 +118,73 @@ public class CompletionProposal {
 
 	public String getName() {
 		return name;
+	}
+	
+	/**
+	 * Returns the modifier flags relevant in the context, or
+	 * <code>Flags.AccDefault</code> if none.
+	 * <p>
+	 * This field is available for the following kinds of
+	 * completion proposals:
+	 * <ul>
+	 * <li><code>ANNOTATION_ATTRIBUT_REF</code> - modifier flags
+	 * of the attribute that is referenced; 
+	 * <li><code>ANONYMOUS_CLASS_DECLARATION</code> - modifier flags
+	 * of the constructor that is referenced</li>
+	 * 	<li><code>FIELD_REF</code> - modifier flags
+	 * of the field that is referenced; 
+	 * <code>Flags.AccEnum</code> can be used to recognize
+	 * references to enum constants
+	 * </li>
+	 * 	<li><code>KEYWORD</code> - modifier flag
+	 * corrresponding to the modifier keyword</li>
+	 * 	<li><code>LOCAL_VARIABLE_REF</code> - modifier flags
+	 * of the local variable that is referenced</li>
+	 * 	<li><code>METHOD_REF</code> - modifier flags
+	 * of the method that is referenced;
+	 * <code>Flags.AccAnnotation</code> can be used to recognize
+	 * references to annotation type members
+	 * </li>
+	 * 	<li><code>METHOD_DECLARATION</code> - modifier flags
+	 * for the method that is being implemented or overridden</li>
+	 * 	<li><code>TYPE_REF</code> - modifier flags
+	 * of the type that is referenced; <code>Flags.AccInterface</code>
+	 * can be used to recognize references to interfaces, 
+	 * <code>Flags.AccEnum</code> enum types,
+	 * and <code>Flags.AccAnnotation</code> annotation types
+	 * </li>
+	 * 	<li><code>VARIABLE_DECLARATION</code> - modifier flags
+	 * for the variable being declared</li>
+	 * 	<li><code>POTENTIAL_METHOD_DECLARATION</code> - modifier flags
+	 * for the method that is being created</li>
+	 * </ul>
+	 * For other kinds of completion proposals, this method returns
+	 * <code>Flags.AccDefault</code>.
+	 * </p>
+	 * 
+	 * @return the modifier flags, or
+	 * <code>Flags.AccDefault</code> if none
+	 * @see Flags
+	 */
+	public int getFlags() {
+		return this.flags;
+	}
+	
+	/**
+	 * Sets the modifier flags relevant in the context.
+	 * <p>
+	 * If not set, defaults to none.
+	 * </p>
+	 * <p>
+	 * The completion engine creates instances of this class and sets
+	 * its properties; this method is not intended to be used by other clients.
+	 * </p>
+	 * 
+	 * @param flags the modifier flags, or
+	 * <code>Flags.AccDefault</code> if none
+	 */
+	public void setFlags(int flags) {
+		this.flags = flags;
 	}
 
 	public void setReplaceRange(int startIndex, int endIndex) {
