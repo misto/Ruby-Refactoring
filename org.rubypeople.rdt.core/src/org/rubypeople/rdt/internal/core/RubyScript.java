@@ -43,6 +43,7 @@ import org.jruby.ast.Node;
 import org.jruby.lexer.yacc.SyntaxException;
 import org.rubypeople.rdt.core.CompletionProposal;
 import org.rubypeople.rdt.core.CompletionRequestor;
+import org.rubypeople.rdt.core.Flags;
 import org.rubypeople.rdt.core.IBuffer;
 import org.rubypeople.rdt.core.ICodeAssist;
 import org.rubypeople.rdt.core.IImportContainer;
@@ -675,7 +676,6 @@ public class RubyScript extends Openable implements IRubyScript {
 			offset--;
 		}
 		charAtOffset = (char) source.charAt(offset);
-		System.out.println(charAtOffset);
 		
 		List<ITypeGuess> guesses = inferrer.infer(source.toString(), offset);
 		// TODO Grab the project and all referred projects!
@@ -684,8 +684,6 @@ public class RubyScript extends Openable implements IRubyScript {
 		RubyElementRequestor completer = new RubyElementRequestor(projects);
 		for (Iterator iter = guesses.iterator(); iter.hasNext();) {
 			ITypeGuess guess = (ITypeGuess) iter.next();
-			System.out.println("Type Inferrer thinks this is a: "
-					+ guess.getType());
 			IType type = completer.findType(guess.getType());
 			suggestMethods(requestor, replaceStart, completer, guess, type);
 		}		
@@ -712,11 +710,30 @@ public class RubyScript extends Openable implements IRubyScript {
 		if (type == null) return;
 		IMethod[] methods = type.getMethods();
 		for (int k = 0; k < methods.length; k++) {
-			String name = methods[k].getElementName();
+			IMethod method = methods[k];
+			String name = method.getElementName();
 			CompletionProposal proposal = new CompletionProposal(
 					CompletionProposal.METHOD_REF, name, confidence);
 			// TODO Handle replacement start index correctly
 			proposal.setReplaceRange(replaceStart, replaceStart + name.length());
+			int flags = Flags.AccDefault;
+			if (method.isSingleton()){
+				flags |= Flags.AccStatic;
+			}
+			switch (method.getVisibility()) {
+			case IMethod.PRIVATE:
+				flags |= Flags.AccPrivate;
+				break;
+			case IMethod.PUBLIC:
+				flags |= Flags.AccPublic;
+				break;
+			case IMethod.PROTECTED:
+				flags |= Flags.AccProtected;
+				break;
+			default:
+				break;
+			}
+			proposal.setFlags(flags);
 			requestor.accept(proposal);
 		}
 	}
