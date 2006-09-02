@@ -31,9 +31,9 @@ package org.rubypeople.rdt.core;
  */
 public interface IMethod extends IRubyElement, IMember {
 
-	public static final int PUBLIC = 0;
-	public static final int PROTECTED = 1;
-	public static final int PRIVATE = 2;
+	public static final int PUBLIC = Flags.AccPublic;
+	public static final int PROTECTED = Flags.AccProtected;
+	public static final int PRIVATE = Flags.AccPrivate;
 	
 	public int getVisibility() throws RubyModelException;
 
