@@ -4,8 +4,7 @@
       label="Ruby Development Tools"
       version="0.0.0"
       provider-name="RubyPeople"
-      plugin="org.rubypeople.rdt"
-      nl="en">
+      plugin="org.rubypeople.rdt">
 
    <description>
       Ruby Development Tools for Eclipse.
