@@ -41,7 +41,7 @@ A regular expression plugin is also available (Thanks to the <a href="http://e-p
 
 <p>We've migrated to using a Trac site for both our Wiki and bug tracking. You can find it at <a href="http://rubyeclipse.mktec.com/cgi-bin/trac.py/wiki">http://rubyeclipse.mktec.com/cgi-bin/trac.py/wiki</a></p>
 
-<p>Also, you can always subscribe to my blog, Late to the Party, for personal updates on RDT related work (among other topics like Ruby and Rails).</p>
+<p>Also, you can always subscribe to my blog, <a href="http://cwilliams.textdriven.com">Late to the Party</a>, for personal updates on RDT related work (among other topics like Ruby and Rails).</p>
 
 <p>Lastly, I'd like to make a very belated announcement here that we have two projects going on with students working on RDT. The first is ongoing 
 <a href="http://morki.ch/rubyrefactoring">work by Swiss students</a> on bringing code generation and refactoring to RDT.
