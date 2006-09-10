@@ -127,9 +127,10 @@ module Test
           end
           
           def get_location(location)
+            location= location.join("\n") if location.is_a?(Array)
             openingBracket = location.index('[')
             if openingBracket
-              return location[location.index('[') + 1, location.index(']') - 1].chop
+              return location[openingBracket + 1, location.index(']') - openingBracket].chop
             else
               # the stack trace from ruby 1.8.2 pre 3 on windows is formatted like follows:
               # file:lineNo:in 'methodName'
