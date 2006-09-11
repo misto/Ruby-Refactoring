@@ -15,9 +15,6 @@
 	<property name="featureVersion" value="0.6.0"/>
 	<!-- featureVersion might also be set from outside -->
 	<echo message="Using featureVersion=${featureVersion}"/>		
-	<property name="docbook.root" value="../../docbook"/>
-	<!-- docbook.root might also be set from outside -->
-	<echo message="Using docbook.root=${docbook.root}"/>	
 
 	<target name="init" depends="properties">
 		<condition property="pluginTemp" value="${buildTempFolder}/plugins">
@@ -74,9 +71,7 @@
 	</target>
 
 	<target name="clean" depends="init" description="Clean the plug-in: org.rubypeople.rdt.doc.user of all the zips, jars and logs created.">
-		<delete file="${plugin.destination}/org.rubypeople.rdt.doc.user_${featureVersion}.jar"/>
-		<delete file="${plugin.destination}/org.rubypeople.rdt.doc.user_${featureVersion}.zip"/>
-		<delete dir="${temp.folder}"/>
+		<ant antfile="buildDocbook.xml" target="clean"/>	
 	</target>
 
 	<target name="refresh" depends="init" if="eclipse.running" description="Refresh this folder.">

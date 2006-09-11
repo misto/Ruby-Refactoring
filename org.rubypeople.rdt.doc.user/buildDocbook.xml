@@ -5,17 +5,26 @@
 		<echo message="Please always call this script from build.xml"/>
 	</target>
 
-	<target name="init">
+    <property name="docbook.xsl.dir" value="docbook/docbook-xsl"/>
+    <property name="docbook.dtd.dir" value="docbook/dtd"/>	
+
+	<available type="dir" file="${docbook.xsl.dir}" property="is.docbook.unpacked"/>
+	
+	<target name="docbook.unpack" unless="is.docbook.unpacked">
+		<property name="docbook.xsl.version" value="1.70.1"/>
+		<unzip src="docbook/docbook-xsl-${docbook.xsl.version}.zip" dest="docbook"/>
+		<move file="docbook/docbook-xsl-${docbook.xsl.version}" tofile="${docbook.xsl.dir}" />
+		<mkdir dir="${docbook.dtd.dir}"/>
+		<unzip src="docbook/docbook-xml-4.2.zip" dest="${docbook.dtd.dir}"/>
+	</target>
+	
+	<target name="init" depends="docbook.unpack">
 		<fail unless="featureVersion" message="Property featureVersion must be set. Please always call this script from build.xml"/>
-		<fail unless="featureVersion" message="Property docbook.root must be set. Please always call this script from build.xml"/>
-        <property name="docbook.xsl.dir" value="${docbook.root}/docbook-xsl-1.64.1"/>
-        <property name="docbook.dtd.dir" value="${docbook.root}/dtd"/>	
-		<condition property="docbook.dir.exists">
-	      <available file="${docbook.root}"/>
-		</condition>	 	
+		<available type="dir" file="${docbook.xsl.dir}" property="did.unpack.work" />
+		<fail unless="did.unpack.work" message="Docbook xsl directory ${} was not created."/>
 	</target>
 
-	<target name="clean.docbook.generated">
+	<target name="clean.docbook.generated">		
 	    <delete file="toc.xml"/>
 	    <delete file="docbook.done"/>
 	    <delete>
@@ -28,7 +37,6 @@
 	   <copy file="customizationLayer.xsl" tofile="customizationLayerCopy.xsl"/>
 	   <replace file="customizationLayerCopy.xsl">	   
 	     <replacefilter token="@@VERSION@@" value="${featureVersion}"/>
-         <replacefilter token="@@DOCBOOKROOT@@" value="${docbook.root}"/>
       </replace>
 	</target>
 
@@ -38,9 +46,18 @@
       </replace>
 	</target>
 	
-	<target name="html" depends="init,clean.docbook.generated,replaceVarInCustomizationLayer" if="docbook.dir.exists">
-	 <!--${docbook.xsl.dir}/eclipse/eclipse.xsl -->
-      <style includes="docbook.xml" basedir="." destdir="."  extension=".done" style="customizationLayerCopy.xsl">
+	<target name="html" depends="init,clean.docbook.generated,replaceVarInCustomizationLayer">
+	 <!-- docbook recommends to use the saxon comiler. With jdk1.4 we could also use xalan (which ships with jdk1.4)
+	      but with the jdk1.5 built-in XSLTC we get errors related to chunks. 
+	      
+	      Please also note that the saxon_6.6.5.jar has been modified *not* to register the AElfred parser as XML parser
+	     -->
+      <style classpath="lib/saxon_6.6.5.jar"
+      		 includes="docbook.xml" 
+      		 basedir="." 
+      		 destdir="."  
+      	     extension=".done" 
+      	     style="customizationLayerCopy.xsl">
         <param name="base.dir" expression="html/"/>
         <param name="manifest.in.base.dir" expression="0"/>
         <param name="eclipse.plugin.id" expression="org.rubypeople.rdt.doc.user"/>
@@ -52,5 +69,11 @@
        </style>
        <antcall target="replaceVersionInPluginXml"/>
      </target>
+
+	 <target name="clean">
+	 	<delete dir="${docbook.xsl.dir}"/>
+	    <delete dir="${docbook.dtd.dir}"/>		
+	 	<antcall target="clean.docbook.generated"/>
+	 </target>
 
 </project>

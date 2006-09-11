@@ -7,7 +7,7 @@
      an URIResolver. But thats probably more effort than replacing
      the token @@DOCBOOKROOT@@ with ant -->
 
-<xsl:import href="@@DOCBOOKROOT@@/docbook-xsl-1.64.1/eclipse/eclipse.xsl"/> 
+<xsl:import href="./docbook/docbook-xsl/eclipse/eclipse.xsl"/> 
 
 <xsl:param name="htmlhelp.title" >ABC</xsl:param>
 
