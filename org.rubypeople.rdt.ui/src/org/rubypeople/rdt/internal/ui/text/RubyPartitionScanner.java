@@ -115,12 +115,7 @@ public class RubyPartitionScanner extends BufferedRuleBasedScanner implements
 		}, "?", "/", Token.UNDEFINED));
 		
 		rules.add(new EndOfLineRule("#", singleLineComment));
-		// Multiline comments
-		MultiLineRule multiLineCommentRule = new MultiLineRule("=begin",
-				"=end", multiLineComment);
-		multiLineCommentRule.setColumnConstraint(0);
-		rules.add(multiLineCommentRule);
-
+		rules.add(new DocumentationCommentRule(multiLineComment));
 		rules.add(new HereDocPatternRule(hereDoc));
 
 		// FIXME Create Hyrbid of RuleBasedPartitionScanner which allows IRule
