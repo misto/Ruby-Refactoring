@@ -38,14 +38,22 @@ public class TC_RubyPartitionScanner extends TestCase {
 		assertEquals(IDocument.DEFAULT_CONTENT_TYPE, this.getContentType(source, 5));
 		assertEquals(IDocument.DEFAULT_CONTENT_TYPE, this.getContentType(source, 6));
 	}	
-	
+		
 	public void testMultilineComment() {
 		String source = "=begin\nComment\n=end";
 
 		assertEquals(RubyPartitionScanner.RUBY_MULTI_LINE_COMMENT, this.getContentType(source, 0));
 		assertEquals(RubyPartitionScanner.RUBY_MULTI_LINE_COMMENT, this.getContentType(source, 10));
-	}		
-
+		
+		source = "=begin\n"+
+				 "  for multiline comments, the =begin and =end must\n" + 
+				 "  appear in the first column\n" +
+				 "=end";
+		assertEquals(RubyPartitionScanner.RUBY_MULTI_LINE_COMMENT, this.getContentType(source, 0));
+		assertEquals(RubyPartitionScanner.RUBY_MULTI_LINE_COMMENT, this.getContentType(source, source.length() / 2));
+		assertEquals(RubyPartitionScanner.RUBY_MULTI_LINE_COMMENT, this.getContentType(source, source.length() - 1));
+	}
+	
 	public void testMultilineCommentNotOnFirstColumn() {
 		String source = " =begin\nComment\n=end";
 
