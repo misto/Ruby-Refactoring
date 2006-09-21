@@ -24,31 +24,22 @@
  */
 package org.rubypeople.rdt.internal.core;
 
-import java.io.BufferedReader;
 import java.io.CharArrayReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
 import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IResource;
-import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.jruby.ast.Node;
 import org.jruby.lexer.yacc.SyntaxException;
-import org.rubypeople.rdt.core.CompletionProposal;
 import org.rubypeople.rdt.core.CompletionRequestor;
-import org.rubypeople.rdt.core.Flags;
 import org.rubypeople.rdt.core.IBuffer;
 import org.rubypeople.rdt.core.ICodeAssist;
 import org.rubypeople.rdt.core.IImportContainer;
 import org.rubypeople.rdt.core.IImportDeclaration;
-import org.rubypeople.rdt.core.IMethod;
 import org.rubypeople.rdt.core.IOpenable;
 import org.rubypeople.rdt.core.IProblemRequestor;
 import org.rubypeople.rdt.core.IRubyElement;
@@ -60,13 +51,10 @@ import org.rubypeople.rdt.core.IType;
 import org.rubypeople.rdt.core.RubyCore;
 import org.rubypeople.rdt.core.RubyModelException;
 import org.rubypeople.rdt.core.WorkingCopyOwner;
-import org.rubypeople.rdt.internal.codeassist.RubyElementRequestor;
+import org.rubypeople.rdt.internal.codeassist.CompletionEngine;
 import org.rubypeople.rdt.internal.core.buffer.BufferManager;
 import org.rubypeople.rdt.internal.core.parser.RubyParser;
 import org.rubypeople.rdt.internal.core.util.Util;
-import org.rubypeople.rdt.internal.ti.DefaultTypeInferrer;
-import org.rubypeople.rdt.internal.ti.ITypeGuess;
-import org.rubypeople.rdt.internal.ti.ITypeInferrer;
 
 
 /**
@@ -309,31 +297,10 @@ public class RubyScript extends Openable implements IRubyScript {
 	 * 
 	 * @see org.rubypeople.rdt.core.ISourceReference#getSource()
 	 */
-	public String getSource() {
-		// TODO Cache the contents and only reload if the file hasn't changed!
-		BufferedReader reader = null;
-		String source = null;
-		try {
-			StringBuffer buffer = new StringBuffer();
-			reader = new BufferedReader(new InputStreamReader(underlyingFile.getContents()));
-			String line = null;
-			while ((line = reader.readLine()) != null) {
-				buffer.append(line);
-				buffer.append("\n");
-			}
-			source = buffer.toString();
-		} catch (CoreException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
-		} finally {
-			try {
-				if (reader != null) reader.close();
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-		}
-		return source;
+	public String getSource() throws RubyModelException {
+		IBuffer buffer = getBuffer();
+		if (buffer == null) return ""; //$NON-NLS-1$
+		return buffer.getContents();
 	}
 
 	/**
@@ -664,77 +631,7 @@ public class RubyScript extends Openable implements IRubyScript {
 	}
 
 	public void codeComplete(int offset, CompletionRequestor requestor) throws RubyModelException {
-		if (offset < 0) offset = 0;
-		ITypeInferrer inferrer = new DefaultTypeInferrer();
-		
-		// FIXME Ugly hacking here to handle where we have invalid syntax by invoking after a period
-		StringBuffer source = new StringBuffer(new String(getContents()));
-		int replaceStart = offset + 1;
-		char charAtOffset = (char) source.charAt(offset);
-		if (charAtOffset == '.') {
-			source.deleteCharAt(offset);
-			offset--;
-		}
-		charAtOffset = (char) source.charAt(offset);
-		
-		List<ITypeGuess> guesses = inferrer.infer(source.toString(), offset);
-		// TODO Grab the project and all referred projects!
-		IRubyProject[] projects = new IRubyProject[1];
-		projects[0] = getRubyProject();
-		RubyElementRequestor completer = new RubyElementRequestor(projects);
-		for (Iterator iter = guesses.iterator(); iter.hasNext();) {
-			ITypeGuess guess = (ITypeGuess) iter.next();
-			IType type = completer.findType(guess.getType());
-			suggestMethods(requestor, replaceStart, completer, guess, type);
-		}		
-	}
-
-	private void suggestMethods(CompletionRequestor requestor, int replaceStart, RubyElementRequestor completer, ITypeGuess guess, IType type) throws RubyModelException {
-		if (type == null) return;
-		
-		suggestMethods(requestor, replaceStart, guess.getConfidence(), type);
-		// Now grab methods from all the included modules
-		String[] modules = type.getIncludedModuleNames();
-		for (int x = 0; x < modules.length; x++) {
-			IType tmpType = completer.findType(modules[x]);
-			suggestMethods(requestor, replaceStart, guess.getConfidence(), tmpType);
-		}
-		String superClass = type.getSuperclassName();
-//		 FIXME This shouldn't happen! Object shouldn't be a parent of itself!
-		if (type.getElementName().equals("Object") && superClass.equals("Object")) return;
-		IType parentClass = completer.findType(superClass);
-		suggestMethods(requestor, replaceStart, completer, guess, parentClass);
-	}
-
-	private void suggestMethods(CompletionRequestor requestor, int replaceStart, int confidence, IType type) throws RubyModelException {
-		if (type == null) return;
-		IMethod[] methods = type.getMethods();
-		for (int k = 0; k < methods.length; k++) {
-			IMethod method = methods[k];
-			String name = method.getElementName();
-			CompletionProposal proposal = new CompletionProposal(
-					CompletionProposal.METHOD_REF, name, confidence);
-			// TODO Handle replacement start index correctly
-			proposal.setReplaceRange(replaceStart, replaceStart + name.length());
-			int flags = Flags.AccDefault;
-			if (method.isSingleton()){
-				flags |= Flags.AccStatic;
-			}
-			switch (method.getVisibility()) {
-			case IMethod.PRIVATE:
-				flags |= Flags.AccPrivate;
-				break;
-			case IMethod.PUBLIC:
-				flags |= Flags.AccPublic;
-				break;
-			case IMethod.PROTECTED:
-				flags |= Flags.AccProtected;
-				break;
-			default:
-				break;
-			}
-			proposal.setFlags(flags);
-			requestor.accept(proposal);
-		}
+		CompletionEngine engine = new CompletionEngine(requestor);
+		engine.complete(this, offset);		
 	}
 }
