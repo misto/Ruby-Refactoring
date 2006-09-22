@@ -206,26 +206,9 @@ public class RubyScriptCompletion extends CompletionRequestor {
 //			default:
 //				return null;
 //		}
-		switch (proposal.getKind()) {
-		case CompletionProposal.KEYWORD:
-			return createKeywordProposal(proposal);
-		case CompletionProposal.METHOD_REF:
-		case CompletionProposal.METHOD_NAME_REFERENCE:
-			return createMethodReferenceProposal(proposal);
-		default:
-			return createKeywordProposal(proposal);
-		}
+		return createProposal(proposal);
 	}
 	
-	private IRubyCompletionProposal createMethodReferenceProposal(CompletionProposal proposal) {
-		String completion= proposal.getCompletion();
-		int start= proposal.getReplaceStart();
-		int length= getLength(proposal);
-		String label= proposal.getName();
-		int relevance= computeRelevance(proposal);
-		Image image = getImage(fLabelProvider.createImageDescriptor(proposal));
-		return new RubyCompletionProposal(completion, start, length, image, label, relevance);
-	}
 	
 	/**
 	 * Returns the ruby script that the receiver operates on, or
@@ -250,13 +233,14 @@ public class RubyScriptCompletion extends CompletionRequestor {
 		return (descriptor == null) ? null : fRegistry.get(descriptor);
 	}
 	
-	private IRubyCompletionProposal createKeywordProposal(CompletionProposal proposal) {
+	private IRubyCompletionProposal createProposal(CompletionProposal proposal) {
 		String completion= proposal.getCompletion();
 		int start= proposal.getReplaceStart();
 		int length= getLength(proposal);
 		String label= proposal.getName();
 		int relevance= computeRelevance(proposal);
-		return new RubyCompletionProposal(completion, start, length, null, label, relevance);
+		Image image = getImage(fLabelProvider.createImageDescriptor(proposal));
+		return new RubyCompletionProposal(completion, start, length, image, label, relevance);
 	}
 	
 	/**
