@@ -16,6 +16,7 @@ public class PreferenceConstants {
 
     public static final String RI_PATH = "riDirectoryPath";
     public static final String RDOC_PATH = "rdocDirectoryPath";
+    public static final String DEBUGGER_USE_RUBY_DEBUG = "useRubyDebug";
 
     public static final String TEMPLATES_USE_CODEFORMATTER = "templatesUseCodeFormatter"; //$NON-NLS-1$	
 
@@ -611,6 +612,8 @@ public class PreferenceConstants {
                 .getDefaultPath(PreferenceConstants.DEFAULT_RDOC_CMD));
         store.setDefault(PreferenceConstants.RI_PATH, PreferenceConstants
                 .getDefaultPath(PreferenceConstants.DEFAULT_RI_CMD));
+        
+        store.setDefault(PreferenceConstants.DEBUGGER_USE_RUBY_DEBUG, false) ;
 
         store.setDefault(PreferenceConstants.EDITOR_SYNC_OUTLINE_ON_CURSOR_MOVE, true);
         
