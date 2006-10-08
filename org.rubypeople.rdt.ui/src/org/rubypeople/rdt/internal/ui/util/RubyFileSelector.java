@@ -62,8 +62,7 @@ public class RubyFileSelector extends ResourceSelector {
 	}
 
 	protected String validateResourceSelection() {
-		return getSelectionText() ;
-//		IFile selection = getSelection();
-//		return selection == null ? EMPTY_STRING : selection.getProjectRelativePath().toString();
+		IFile selection = getSelection();
+		return selection == null ? EMPTY_STRING : selection.getProjectRelativePath().toString();
 	}
 }
