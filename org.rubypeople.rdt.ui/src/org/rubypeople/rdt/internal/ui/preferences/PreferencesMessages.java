@@ -20,6 +20,7 @@ public final class PreferencesMessages extends NLS {
     }
 
     public static String RiPreferencePage_description_label;
+    public static String DebuggerPreferencePage_description_label;
     public static String CodeFormatterPreferencePage_title;
     public static String CodeFormatterPreferencePage_description;
     public static String MembersOrderPreferencePage_category_button_up;
@@ -54,6 +55,7 @@ public final class PreferencesMessages extends NLS {
     public static String RubyEditorPreferencePage_link;
     public static String RiPreferencePage_ripath_label;
     public static String RiPreferencePage_rdocpath_label;
+    public static String DebuggerPreferencePage_useRubyDebug_label;
     public static String TodoTaskConfigurationBlock_tasks_default;
     public static String TodoTaskConfigurationBlock_markers_tasks_high_priority;
     public static String TodoTaskConfigurationBlock_markers_tasks_normal_priority;

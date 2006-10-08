@@ -90,10 +90,15 @@
       <page
             name="%problemSeveritiesPrefName"
             category="org.rubypeople.rdt.ui.preferences.PreferencePageRubyBase"
-            class="org.rubypeople.rdt.internal.ui.preferences.ProblemSeveritiesPreferencePage"
+            class="org.rubypeople.rdt.internal.ui.preferences.DebuggerPreferencePage"
             id="org.rubypeople.rdt.ui.preferences.ProblemSeveritiesPreferencePage">
             <keywordReference id="org.rubypeople.rdt.ui.severities"/>
       </page>
+      <page
+            category="org.rubypeople.rdt.ui.preferences.PreferencePageRubyBase"
+            class="org.rubypeople.rdt.internal.ui.preferences.DebuggerPreferencePage"
+            id="org.rubypeople.rdt.ui.preferences.debugger"
+            name="%PreferencePage.rdtDebuggerPreferences"/>
    </extension>
 <!-- =========================================================================== -->
 <!-- Ruby Perspective 																 -->
