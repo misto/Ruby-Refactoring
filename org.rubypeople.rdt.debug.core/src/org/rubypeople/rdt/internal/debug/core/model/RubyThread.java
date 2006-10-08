@@ -15,26 +15,48 @@ import org.rubypeople.rdt.internal.debug.core.SuspensionPoint;
 // see RubyDebugTarget for the reason why PlatformObject is being extended
 public class RubyThread extends PlatformObject implements IThread {
 	private RubyStackFrame[] frames;
+
 	private IDebugTarget target;
+
 	private boolean isSuspended = false;
+
 	private boolean isTerminated = false;
+
 	private boolean isStepping = false;
-	private String name ;
-	private int id ;
-	
+
+	private String name;
+
+	private int id;
+
 	public RubyThread(IDebugTarget target, int id) {
 		this.target = target;
-		this.setId(id) ;
-		this.createName() ;
+		this.setId(id);
+		this.createName();
 	}
 
-	public IStackFrame[] getStackFrames() throws DebugException {
-		// Not all clients ask hasStackFrames before calling this method (DeferredThread)
+	public IStackFrame[] getStackFrames() {
+		// Not all clients ask hasStackFrames before calling this method
+		// (DeferredThread)
 		// Therefore we must not return null
+		// Since 3.2: It seems as if the first method called on a thread is
+		// hasStackFrames
+		// this is done frome AsynchronousContentAdapter and therefore we have
+		// the time to
+		// send this call to the debuggger ;
 		if (frames == null) {
-			return new RubyStackFrame[0];
+			createStackFrames();
 		}
-		return frames ;
+		return frames;
+	}
+
+	private void createStackFrames() {
+		getRubyDebuggerProxy().readFrames(this);
+		for (int i = 0; i < frames.length; i++) {
+			RubyStackFrame frame = frames[i];
+			DebugEvent ev = new DebugEvent(frame, DebugEvent.CREATE);
+			DebugPlugin.getDefault().fireDebugEventSet(
+					new DebugEvent[] { ev });
+		}
 	}
 
 	public int getStackFramesSize() {
@@ -42,10 +64,7 @@ public class RubyThread extends PlatformObject implements IThread {
 	}
 
 	public boolean hasStackFrames() {
-		if (frames == null) {
-			return false;
-		}
-		return frames.length > 0;
+		return getStackFrames().length > 0;
 	}
 
 	public int getPriority() throws DebugException {
@@ -59,10 +78,11 @@ public class RubyThread extends PlatformObject implements IThread {
 		return frames[0];
 	}
 
-
 	public IBreakpoint[] getBreakpoints() {
 		// TODO: Experimental Code
-		return new IBreakpoint[] { DebugPlugin.getDefault().getBreakpointManager().getBreakpoints(IRubyDebugTarget.MODEL_IDENTIFIER)[0] } ;
+		return new IBreakpoint[] { DebugPlugin.getDefault()
+				.getBreakpointManager().getBreakpoints(
+						IRubyDebugTarget.MODEL_IDENTIFIER)[0] };
 	}
 
 	public String getModelIdentifier() {
@@ -95,27 +115,30 @@ public class RubyThread extends PlatformObject implements IThread {
 
 	protected void prepareForResume() {
 		isSuspended = false;
-		this.createName() ;
-		this.frames = null ;
-		DebugEvent ev = new DebugEvent(this, DebugEvent.RESUME, DebugEvent.CLIENT_REQUEST);
-		DebugPlugin.getDefault().fireDebugEventSet(new DebugEvent[] { ev });		
+		this.createName();
+		this.frames = null;
+		DebugEvent ev = new DebugEvent(this, DebugEvent.RESUME,
+				DebugEvent.CLIENT_REQUEST);
+		DebugPlugin.getDefault().fireDebugEventSet(new DebugEvent[] { ev });
 	}
 
 	public void resume() throws DebugException {
-		this.prepareForResume() ;
-		((RubyDebugTarget) this.getDebugTarget()).getRubyDebuggerProxy().resume(this);
+		this.prepareForResume();
+		((RubyDebugTarget) this.getDebugTarget()).getRubyDebuggerProxy()
+				.resume(this);
 	}
 
 	public void doSuspend(SuspensionPoint suspensionPoint) {
-		this.getRubyDebuggerProxy().readFrames(this);
-		this.createName(suspensionPoint) ;
-		this.suspend() ;
+		this.createStackFrames() ;
+		this.createName(suspensionPoint);
+		this.suspend();
 	}
 
-	public void suspend()  {
-		isStepping = false ;
+	public void suspend() {
+		isStepping = false;
 		isSuspended = true;
-		DebugEvent ev = new DebugEvent(this, DebugEvent.SUSPEND, DebugEvent.BREAKPOINT);
+		DebugEvent ev = new DebugEvent(this, DebugEvent.SUSPEND,
+				DebugEvent.BREAKPOINT);
 		DebugPlugin.getDefault().fireDebugEventSet(new DebugEvent[] { ev });
 	}
 
@@ -136,17 +159,17 @@ public class RubyThread extends PlatformObject implements IThread {
 	}
 
 	public void stepInto() throws DebugException {
-		isStepping = true ;
-		this.createName() ;
-		this.frames = null ;
+		isStepping = true;
+		this.createName();
+		this.frames = null;
 		frames[0].stepInto();
 	}
 
 	public void stepOver() throws DebugException {
-		isStepping = true ;		
-		this.createName() ;
-		this.frames = null ;		
-		frames[0].stepOver() ;
+		isStepping = true;
+		this.createName();
+		this.frames = null;
+		frames[0].stepOver();
 	}
 
 	public void stepReturn() throws DebugException {
@@ -161,7 +184,7 @@ public class RubyThread extends PlatformObject implements IThread {
 	}
 
 	public void terminate() throws DebugException {
-		this.getDebugTarget().terminate() ;
+		this.getDebugTarget().terminate();
 		isTerminated = true;
 		this.frames = null;
 	}
@@ -183,13 +206,13 @@ public class RubyThread extends PlatformObject implements IThread {
 	}
 
 	protected void createName() {
-		this.createName(null) ;	
+		this.createName(null);
 	}
-	
+
 	protected void createName(SuspensionPoint suspensionPoint) {
-		this.name = "Ruby Thread - " + this.getId()  ;
-		if (suspensionPoint != null) { 
-			this.name += " (" + suspensionPoint + ")" ;
+		this.name = "Ruby Thread - " + this.getId();
+		if (suspensionPoint != null) {
+			this.name += " (" + suspensionPoint + ")";
 		}
 	}
 

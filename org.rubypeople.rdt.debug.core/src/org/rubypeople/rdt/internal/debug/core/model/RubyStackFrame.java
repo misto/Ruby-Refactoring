@@ -43,10 +43,7 @@ public class RubyStackFrame extends PlatformObject implements IStackFrame {
 	}
 	
 	public boolean hasVariables() throws DebugException {
-		if (variables == null) {
-			return false;
-		}
-		return variables.length > 0;
+		return getVariables().length > 0;
 	}
 	
 	public int getLineNumber() {

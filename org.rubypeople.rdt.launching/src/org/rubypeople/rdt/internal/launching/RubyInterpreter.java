@@ -61,7 +61,7 @@ public class RubyInterpreter {
             List rubyCmd = new ArrayList();
             rubyCmd.add(this.getCommand());
             rubyCmd.addAll(args);
-            return commandExecutor.exec((String[]) rubyCmd.toArray(new String[0]), workingDirectory);
+            return commandExecutor.exec((String[]) rubyCmd.toArray(new String[] {}), workingDirectory);
 		} catch (IOException e) {
             IStatus errorStatus = new Status(IStatus.ERROR, RdtLaunchingPlugin.PLUGIN_ID, IStatus.OK, 
                     "Unable to execute interpreter: " + args + workingDirectory, e);

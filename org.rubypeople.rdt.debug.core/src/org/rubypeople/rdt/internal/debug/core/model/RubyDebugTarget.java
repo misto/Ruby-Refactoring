@@ -67,13 +67,13 @@ public class RubyDebugTarget extends PlatformObject implements IRubyDebugTarget 
 			}
 			if (threadIndex == threads.length) {
 				updatedThreads[i] = new RubyThread(this, threadInfos[i].getId());
+				DebugEvent ev = new DebugEvent(updatedThreads[i], DebugEvent.CREATE);
+				DebugPlugin.getDefault().fireDebugEventSet(new DebugEvent[] { ev });				
 			} else {
 				updatedThreads[i] = threads[threadIndex];
 			}
 		}
 		threads = updatedThreads;
-		DebugEvent ev = new DebugEvent(this, DebugEvent.CHANGE);
-		DebugPlugin.getDefault().fireDebugEventSet(new DebugEvent[] { ev });
 
 	}
 
@@ -101,6 +101,7 @@ public class RubyDebugTarget extends PlatformObject implements IRubyDebugTarget 
 	}
 
 	public boolean hasThreads() throws DebugException {
+		System.out.println("THREADS: " + threads.length) ;
 		return threads.length > 0;
 	}
 

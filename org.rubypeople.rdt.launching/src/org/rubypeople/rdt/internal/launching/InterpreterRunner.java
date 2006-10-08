@@ -19,7 +19,7 @@ public class InterpreterRunner {
 		List commandLine = renderCommandLine(configuration);
 		File workingDirectory = configuration.getAbsoluteWorkingDirectory();
 
-		RubyInterpreter interpreter = configuration.getInterpreter() ;
+		RubyInterpreter interpreter = convertInterpreter(configuration.getInterpreter()) ;
 		Process nativeRubyProcess = interpreter.exec(commandLine, workingDirectory);
         Map defaultAttributes = new HashMap();
         defaultAttributes.put(IProcess.ATTR_PROCESS_TYPE, "ruby");
@@ -27,8 +27,10 @@ public class InterpreterRunner {
 		process.setAttribute(RdtLaunchingPlugin.PLUGIN_ID + ".launcher.cmdline", commandLine.toString());
 		return process ;
 	}
-
-
+	
+	protected RubyInterpreter convertInterpreter(RubyInterpreter rubyInterpreter) {
+		return rubyInterpreter ;
+	}
 
 	protected String renderLabel(InterpreterRunnerConfiguration configuration) {
 		StringBuffer buffer = new StringBuffer();

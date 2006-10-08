@@ -144,7 +144,7 @@ public class RubyDebuggerProxy {
 				if (breakpoint instanceof RubyExceptionBreakpoint) {
 					this.println("catch " + ((RubyExceptionBreakpoint) breakpoint).getException());
 				} else {
-					this.printBreakpoint("add", breakpoint.getMarker().getResource().getName(), breakpoint.getMarker().getAttribute(IMarker.LINE_NUMBER, -1));
+					this.printBreakpoint("", breakpoint.getMarker().getResource().getName(), breakpoint.getMarker().getAttribute(IMarker.LINE_NUMBER, -1));
 				}
 			}
 		} catch (IOException e) {
@@ -292,7 +292,7 @@ public class RubyDebuggerProxy {
 
 	public RubyStackFrame[] readFrames(RubyThread thread) {
 		try {
-			this.println("th " + thread.getId() + " ; f ");
+			this.println("th " + thread.getId() + " ; w");
 			return new FramesReader(getMultiReaderStrategy()).readFrames(thread);
 		} catch (IOException e) {
 			RdtDebugCorePlugin.log(e);
