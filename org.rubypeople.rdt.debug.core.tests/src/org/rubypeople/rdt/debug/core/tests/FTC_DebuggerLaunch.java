@@ -33,7 +33,7 @@ public class FTC_DebuggerLaunch extends TestCase {
 	protected void createInterpreter() {
 		// We rely on the RUBY_INTERPRETER to be a full path to a valid ruby executable, therefore the property rdt.rubyInterpreter has
 		// to be set accordingly
-		String rubyInterpreterPath = FTC_DebuggerCommunicationTest.RUBY_INTERPRETER ;
+		String rubyInterpreterPath = FTC_ClassicDebuggerCommunicationTest.RUBY_INTERPRETER ;
 		System.out.println("Using interpreter: " + rubyInterpreterPath) ;
 		RubyInterpreter rubyInterpreter = new RubyInterpreter("RubyInterpreter", new Path(rubyInterpreterPath));
 		RubyRuntime.getDefault().addInstalledInterpreter(rubyInterpreter) ;

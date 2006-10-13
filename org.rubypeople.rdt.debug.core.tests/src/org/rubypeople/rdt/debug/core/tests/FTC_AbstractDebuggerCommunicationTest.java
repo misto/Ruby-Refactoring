@@ -9,7 +9,6 @@ import java.net.Socket;
 
 import junit.framework.TestCase;
 
-import org.rubypeople.rdt.core.RubyCore;
 import org.rubypeople.rdt.internal.debug.core.ExceptionSuspensionPoint;
 import org.rubypeople.rdt.internal.debug.core.StepSuspensionPoint;
 import org.rubypeople.rdt.internal.debug.core.SuspensionPoint;
@@ -24,61 +23,13 @@ import org.rubypeople.rdt.internal.debug.core.parsing.MultiReaderStrategy;
 import org.rubypeople.rdt.internal.debug.core.parsing.SuspensionReader;
 import org.rubypeople.rdt.internal.debug.core.parsing.ThreadInfoReader;
 import org.rubypeople.rdt.internal.debug.core.parsing.VariableReader;
-import org.rubypeople.rdt.internal.launching.RdtLaunchingPlugin;
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserFactory;
 
-public class FTC_DebuggerCommunicationTest extends TestCase {
-
-/*
-	public static junit.framework.TestSuite suite() {
-
-		junit.framework.TestSuite suite = new junit.framework.TestSuite();
-		//suite.addTest(new TC_DebuggerCommunicationTest("testConstants"));
-		//suite.addTest(new TC_DebuggerCommunicationTest("testConstantDefinedInBothClassAndSuperclass"));
-		
-		//suite.addTest(new TC_DebuggerCommunicationTest("testVariablesInFrames"));
-		//suite.addTest(new TC_DebuggerCommunicationTest("testBreakpoint"));
-		//suite.addTest(new TC_DebuggerCommunicationTest("testFramesWhenThreadSpawned"));
-		//suite.addTest(new TC_DebuggerCommunicationTest("testThreadIdsAndResume"));
-		//suite.addTest(new TC_DebuggerCommunicationTest("testThreadsAndFrames"));		
-		//suite.addTest(new TC_DebuggerCommunicationTest("testStepOver"));		
-		//suite.addTest(new TC_DebuggerCommunicationTest("testThreadFramesAndVariables"));
-		//suite.addTest(new TC_DebuggerCommunicationTest("testVariableNil"));
-		//suite.addTest(new TC_DebuggerCommunicationTest("testVariableInstanceNested"));				
-		//suite.addTest(new TC_DebuggerCommunicationTest("testStaticVariableInstanceNested"));			
-		
-		//suite.addTest(new TC_DebuggerCommunicationTest("testNameError"));
-		//suite.addTest(new TC_DebuggerCommunicationTest("testVariablesInObject"));	
-		//suite.addTest(new TC_DebuggerCommunicationTest("testStaticVariables"));		
-		//suite.addTest(new TC_DebuggerCommunicationTest("testSingletonStaticVariables"));							
-		//suite.addTest(new TC_DebuggerCommunicationTest("testVariableString"));	
-		// suite.addTest(new TC_DebuggerCommunicationTest("testInspect"));
-		//suite.addTest(new TC_DebuggerCommunicationTest("testInspectError"));
-		//suite.addTest(new TC_DebuggerCommunicationTest("testVariableArray"));
-		//suite.addTest(new TC_DebuggerCommunicationTest("testVariableArrayEmpty"));
-		//suite.addTest(new TC_DebuggerCommunicationTest("testVariableHash"));
-		//suite.addTest(new TC_DebuggerCommunicationTest("testVariableHashWithObjectKeys"));
-		//suite.addTest(new TC_DebuggerCommunicationTest("testVariableHashWithStringKeys"));
-		//suite.addTest(new TC_DebuggerCommunicationTest("testVariableWithXmlContent"));
-		//  suite.addTest(new TC_DebuggerCommunicationTest("testVariableLocal"));
-		//suite.addTest(new TC_DebuggerCommunicationTest("testReloadAndInspect")) ;
-		//suite.addTest(new TC_DebuggerCommunicationTest("testReloadWithException")) ;
-		//suite.addTest(new TC_DebuggerCommunicationTest("testReloadAndStep")) ;
-		//suite.addTest(new TC_DebuggerCommunicationTest("testReloadInRequire")) ;
-		//suite.addTest(new TC_DebuggerCommunicationTest("testReloadInStackFrame")) ;
-		suite.addTest(new TC_DebuggerCommunicationTest("testIgnoreException"));
-		suite.addTest(new TC_DebuggerCommunicationTest("testExceptionHierarchy"));
-		suite.addTest(new TC_DebuggerCommunicationTest("testException"));
-        
-		return suite;
-	}
-	*/
-
-
+public abstract class FTC_AbstractDebuggerCommunicationTest extends TestCase {
 
 	private static String tmpDir;
-	private static String getTmpDir() {
+	protected static String getTmpDir() {
 		if (tmpDir == null) {
 			tmpDir = System.getProperty("java.io.tmpdir");
 			if (tmpDir.charAt(tmpDir.length() - 1) != File.separatorChar) {
@@ -94,10 +45,10 @@ public class FTC_DebuggerCommunicationTest extends TestCase {
 			RUBY_INTERPRETER = "ruby";
 		}
 	}
-	private static long TIMEOUT_MS = 60000 ;
-	private Process process;
-	private OutputRedirectorThread rubyStdoutRedirectorThread;
-	private OutputRedirectorThread rubyStderrRedirectorThread;
+	private static long TIMEOUT_MS = 20000 ;
+	protected Process process;
+	protected OutputRedirectorThread rubyStdoutRedirectorThread;
+	protected OutputRedirectorThread rubyStderrRedirectorThread;
 	private Socket socket;
 	private PrintWriter out;
 	private MultiReaderStrategy multiReaderStrategy;
@@ -106,19 +57,19 @@ public class FTC_DebuggerCommunicationTest extends TestCase {
 	private Thread mainThread ;
 	private Thread timeoutThread ;
 
-	public FTC_DebuggerCommunicationTest(String arg0) {
+	public FTC_AbstractDebuggerCommunicationTest(String arg0) {
 		super(arg0);
 	}
 
 	public static void main(String[] args) {
-		junit.textui.TestRunner.run(FTC_DebuggerCommunicationTest.class);
+		junit.textui.TestRunner.run(FTC_ClassicDebuggerCommunicationTest.class);
 	}
 
-	private String getTestFilename() {
+	protected String getTestFilename() {
 		return getTmpDir() + "test.rb";
 	}
 
-	private String getRubyTestFilename() {
+	protected String getRubyTestFilename() {
 		return getTestFilename().replace('\\', '/');
 	}
 
@@ -148,42 +99,6 @@ public class FTC_DebuggerCommunicationTest extends TestCase {
 	
 	protected LoadResultReader getLoadResultReader() throws Exception {
 		return new LoadResultReader(multiReaderStrategy) ;
-	}
-
-	public void startRubyProcess() throws Exception {
-		String cmd = FTC_DebuggerCommunicationTest.RUBY_INTERPRETER + " -I" + createIncludeDir() +  " -I" + getTmpDir().replace('\\', '/') + " -reclipseDebugVerbose.rb " + getRubyTestFilename();
-		System.out.println("Starting: " + cmd);
-		process = Runtime.getRuntime().exec(cmd);
-		rubyStderrRedirectorThread = new OutputRedirectorThread(process.getErrorStream());
-		rubyStderrRedirectorThread.start();
-		rubyStdoutRedirectorThread = new OutputRedirectorThread(process.getInputStream());
-		rubyStdoutRedirectorThread.start();
-
-	}
-
-	private String createIncludeDir() {
-		String includeDir;
-		if (RdtLaunchingPlugin.getDefault() != null) {
-			// being run as JUnit Plug-in Test, Eclipse is running			
-			includeDir = RubyCore.getOSDirectory(RdtLaunchingPlugin.getDefault()) + "ruby" ;
-		}
-		else {
-		    // being run as "pure" JUnit Test without Eclipse running 
-			// getResource delivers a URL, so we get slashes as Fileseparator
-			includeDir = getClass().getResource("/").getFile();
-			includeDir += "../../org.rubypeople.rdt.launching/ruby" ;
-			// if on windows, remove a leading slash
-			if (includeDir.startsWith("/") && File.separatorChar == '\\') {
-				includeDir = includeDir.substring(1);
-			}
-		}
-		// the ruby interpreter on linux does not like quotes, so we use them only if really necessary
-		if (includeDir.indexOf(" ") == -1) {
-			return includeDir ;
-		}
-		else {
-			return '"' + includeDir + '"';
-		}
 	}
 
 	protected String getOSIndependent(String path) {
@@ -265,6 +180,8 @@ public class FTC_DebuggerCommunicationTest extends TestCase {
 		out = new PrintWriter(socket.getOutputStream(), true);
 	}
 	
+	protected abstract void startRubyProcess() throws Exception;
+	
 	private void sendRuby(String debuggerCommand) {
 		try {
 			process.exitValue() ;
@@ -272,6 +189,7 @@ public class FTC_DebuggerCommunicationTest extends TestCase {
 		} catch (IllegalThreadStateException ex) {
 			// not yet finished, normal behaviour
 			// why does process does not have a function like isRunning() ?
+			System.out.println("Sending: " + debuggerCommand) ;
 			out.println(debuggerCommand);
 		}
 	}
@@ -285,29 +203,34 @@ public class FTC_DebuggerCommunicationTest extends TestCase {
 		assertNull(hit);
 	}
 
-	public void testBreakpoint() throws Exception {
+	public void testBreakpointOnFirstLine() throws Exception {
 		// Breakpoint in line 1 does not work yet.
-		createSocket(new String[] { "puts 'a'", "def add", "puts 'b'", "end", "add()", "add()" });
+		createSocket(new String[] { "puts 'a'"  });
 		sendRuby("b test.rb:1");
-		sendRuby("b add test.rb:3");
 		sendRuby("cont");
 		System.out.println("Waiting for breakpoint..");
 		SuspensionPoint hit = getSuspensionReader().readSuspension();
 		assertNotNull(hit);
 		assertTrue(hit.isBreakpoint());
 		assertEquals(1, hit.getLine());
-		assertEquals("test.rb", hit.getFile());
+	}
+	
+	public void testBreakpointAddAndRemove() throws Exception {
+		// Breakpoint in line 1 does not work yet.
+		createSocket(new String[] { "puts 'a'", "puts 'a'", "puts 'a'"  });
+		sendRuby("b test.rb:2");
+		sendRuby("b test.rb:3");
 		sendRuby("cont");
-		hit = getSuspensionReader().readSuspension();
+		System.out.println("Waiting for breakpoint..");
+		SuspensionPoint hit = getSuspensionReader().readSuspension();
 		assertNotNull(hit);
 		assertTrue(hit.isBreakpoint());
-		assertEquals(3, hit.getLine());
+		assertEquals(2, hit.getLine());
 		assertEquals("test.rb", hit.getFile());
 		sendRuby("b remove test.rb:3");
 		sendRuby("cont");
 		hit = getSuspensionReader().readSuspension();
 		assertNull(hit);
-
 	}
 
 	public void testException() throws Exception {
@@ -632,7 +555,8 @@ public class FTC_DebuggerCommunicationTest extends TestCase {
 		RubyVariable[] localVariables = getVariableReader().readVariables(createStackFrame());
 		assertEquals(2, localVariables.length);
 		RubyVariable userVariable = localVariables[1] ;
-		sendRuby("v i 1 " + userVariable.getObjectId());
+		//sendRuby("v i 1 " + userVariable.getObjectId());
+		sendRuby("v i " + userVariable.getObjectId());
 		RubyVariable[] userVariables = getVariableReader().readVariables(createStackFrame());
 		assertEquals(1, userVariables.length);
 		assertEquals("@id", userVariables[0].getName());
@@ -831,10 +755,10 @@ public class FTC_DebuggerCommunicationTest extends TestCase {
 
 	public void testFrames() throws Exception {
 		createSocket(new String[] { "require 'test2.rb'", "test = Test2.new()", "test.print()", "test.print()" });
-		writeFile("test2.rb", new String[] { "class Test2", "def print", "puts 'XX'", "end", "end" });
+		writeFile("test2.rb", new String[] { "class Test2", "def print", "puts 'Test2.print'", "end", "end" });
 		runTo("test2.rb", 3);
 		sendRuby("b test.rb:4");
-		sendRuby("w");
+		sendRuby("th 1 ; w");
 		RubyThread thread = new RubyThread(null, 0);
 		getFramesReader().readFrames(thread);
 		assertEquals(2, thread.getStackFrames().length);
@@ -858,7 +782,7 @@ public class FTC_DebuggerCommunicationTest extends TestCase {
 		createSocket(new String[] { "def startThread", "Thread.new() {  a = 5  }", "end", "def calc", "5 + 5", "end", "startThread()", "calc()" });
 		runTo("test.rb", 5);
 		RubyThread thread = new RubyThread(null, 0);
-		sendRuby("w");
+		sendRuby("f");
 		getFramesReader().readFrames(thread);
 		assertEquals(2, thread.getStackFramesSize());
 	}
@@ -868,19 +792,16 @@ public class FTC_DebuggerCommunicationTest extends TestCase {
 		sendRuby("b test.rb:2");
 		sendRuby("b test.rb:5");
 		sendRuby("cont");
-		SuspensionPoint point = getSuspensionReader().readSuspension();
-		if (point.getThreadId() == 2) {
-			assertEquals(2, point.getLine());
-		} else {
-			assertEquals(5, point.getLine());
-		}
+		SuspensionPoint point1 = getSuspensionReader().readSuspension();
+		sendRuby("th l") ;
+		ThreadInfo[] threadInfos = getThreadInfoReader().readThreads() ;
+		assertEquals(2, threadInfos.length) ;
 		sendRuby("cont");
-		point = getSuspensionReader().readSuspension();
-		if (point.getThreadId() == 2) {
-			assertEquals(2, point.getLine());
-		} else {
-			assertEquals(5, point.getLine());
-		}
+		SuspensionPoint point2 = getSuspensionReader().readSuspension();
+		sendRuby("th l") ;
+		threadInfos = getThreadInfoReader().readThreads() ;
+		assertEquals(1, threadInfos.length) ;
+		assertNotSame(point1.getThreadId(), point2.getThreadId()) ;
 		sendRuby("cont");
 	}
 
