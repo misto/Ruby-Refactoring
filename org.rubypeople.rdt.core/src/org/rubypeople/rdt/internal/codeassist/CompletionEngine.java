@@ -48,12 +48,14 @@ import org.rubypeople.rdt.internal.ti.util.ScopedNodeLocator;
 
 public class CompletionEngine {
 	private CompletionRequestor requestor;
+	private String prefix;
 
 	public CompletionEngine(CompletionRequestor requestor) {
 		this.requestor = requestor;
 	}
 
 	public void complete(IRubyScript script, int offset) throws RubyModelException {
+		this.prefix = null;
 		this.requestor.beginReporting();
 		if (offset < 0)
 			offset = 0;
@@ -66,9 +68,12 @@ public class CompletionEngine {
 		// inferrer
 		// if we hit a space, use character after space?
 		// TODO We need to handle other bad syntax like invoking compeltion right after an @
+		StringBuffer prefix = new StringBuffer();
+		boolean isMethod = false;
 		for (int i = offset; i >= 0; i--) {
 			char curChar = (char) source.charAt(i);
 			if (curChar == '.') {
+				isMethod = true;
 				if (offset == i) { // if it's the first character we looked at,
 					// fix syntax
 					source.deleteCharAt(i);
@@ -76,7 +81,7 @@ public class CompletionEngine {
 					break;
 				}
 				// TODO Grab the prefix we just ate up and use it to filter
-				// responses?
+				// responses?				
 				offset = i - 1;
 				break;
 			}
@@ -84,8 +89,10 @@ public class CompletionEngine {
 				offset = i + 1;
 				break;
 			}
-		}
-
+			prefix.insert(0, curChar);
+		}		
+		this.prefix = prefix.toString();
+		
 		List<ITypeGuess> guesses = inferrer.infer(source.toString(), offset);
 		// TODO Grab the project and all referred projects!
 		IRubyProject[] projects = new IRubyProject[1];
@@ -97,7 +104,7 @@ public class CompletionEngine {
 			suggestMethods(replaceStart, completer, guess, type);
 		}
 		// FIXME Do we need to call this at all if we know it's a method call we're trying to complete?
-		getDocumentsRubyElementsInScope(script, source.toString(), offset, replaceStart);
+		if (!isMethod) getDocumentsRubyElementsInScope(script, source.toString(), offset, replaceStart);
 		this.requestor.endReporting();
 	}
 
@@ -131,6 +138,11 @@ public class CompletionEngine {
 		for (int k = 0; k < methods.length; k++) {
 			IMethod method = methods[k];
 			String name = method.getElementName();
+			
+			if (prefix != null && prefix.length() != 0) {
+				// If we have a prefix, then don't suggest non-matches
+				if (!name.startsWith(prefix)) continue;
+			}			
 			CompletionProposal proposal = new CompletionProposal(
 					CompletionProposal.METHOD_REF, name, confidence);
 			// TODO Handle replacement start index correctly
