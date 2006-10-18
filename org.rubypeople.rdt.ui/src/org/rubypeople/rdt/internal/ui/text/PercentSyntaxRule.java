@@ -23,7 +23,7 @@ public class PercentSyntaxRule implements IRule {
 			case 'W': // Array of strings
 				scanner.unread();
 				scanner.unread();
-				// FIXME Mark teh individual elements as strings
+				// FIXME Mark the individual elements as strings
 				return Token.UNDEFINED;
 			default: // special case of string (no letter following percent)
 				scanner.unread();
@@ -43,18 +43,21 @@ public class PercentSyntaxRule implements IRule {
 			c = scanner.read();
 			// FIXME This is a big hack. Expression substitution actually needs to be returned as normal ruby code (and repartitioned)
 			if ((char) c == '#') { // Try to handle expression substitution
-				char d = (char) scanner.read();
-				if (d == '{') {
+				int d = scanner.read();
+				if ((char) d == '{') {
 					// read until '}'
 					do {
-						d = (char)scanner.read();
-					} while (d != '}');
+						d = scanner.read();
+						if (d == ICharacterScanner.EOF) {
+							return new Token(tokenType);
+						}
+					} while ((char) d != '}');
 					continue;
-				} else if (d == '@' || d == '$') {
+				} else if ((char) d == '@' || (char) d == '$') {
 					// read until whitespace
 					do {
-						d = (char) scanner.read();
-					} while (d != ' ');
+						d = scanner.read();
+					} while ((char) d != ' ');
 					continue;
 				} else {// not expression subst.
 					scanner.unread();
