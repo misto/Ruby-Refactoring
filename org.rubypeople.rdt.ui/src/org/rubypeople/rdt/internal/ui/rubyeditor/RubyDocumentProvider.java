@@ -473,9 +473,9 @@ public class RubyDocumentProvider extends TextFileDocumentProvider implements IR
 		static {
 			AnnotationPreferenceLookup lookup= EditorsUI.getAnnotationPreferenceLookup();
 			TASK_LAYER= computeLayer("org.eclipse.ui.workbench.texteditor.task", lookup); //$NON-NLS-1$
-			INFO_LAYER= computeLayer("org.eclipse.jdt.ui.info", lookup); //$NON-NLS-1$
-			WARNING_LAYER= computeLayer("org.eclipse.jdt.ui.warning", lookup); //$NON-NLS-1$
-			ERROR_LAYER= computeLayer("org.eclipse.jdt.ui.error", lookup); //$NON-NLS-1$
+			INFO_LAYER= computeLayer("org.rubypeople.rdt.ui.info", lookup); //$NON-NLS-1$
+			WARNING_LAYER= computeLayer("org.rubypeople.rdt.ui.warning", lookup); //$NON-NLS-1$
+			ERROR_LAYER= computeLayer("org.rubypeople.rdt.ui.error", lookup); //$NON-NLS-1$
 		}
 		
 		private static int computeLayer(String annotationType, AnnotationPreferenceLookup lookup) {
@@ -719,8 +719,8 @@ public class RubyDocumentProvider extends TextFileDocumentProvider implements IR
 	
 	
 	/**
-	 * Annotation model dealing with java marker annotations and temporary problems.
-	 * Also acts as problem requester for its compilation unit. Initially inactive. Must explicitly be
+	 * Annotation model dealing with ruby marker annotations and temporary problems.
+	 * Also acts as problem requester for its ruby script. Initially inactive. Must explicitly be
 	 * activated.
 	 */
 	protected static class RubyScriptAnnotationModel extends ResourceMarkerAnnotationModel implements IProblemRequestor, IProblemRequestorExtension {
