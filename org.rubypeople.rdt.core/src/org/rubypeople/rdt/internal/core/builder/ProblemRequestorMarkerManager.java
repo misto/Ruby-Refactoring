@@ -5,10 +5,8 @@ import java.util.List;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.CoreException;
-import org.jruby.lexer.yacc.SyntaxException;
 import org.rubypeople.rdt.core.IProblemRequestor;
 import org.rubypeople.rdt.core.parser.IProblem;
-import org.rubypeople.rdt.internal.core.parser.RdtPosition;
 import org.rubypeople.rdt.internal.core.parser.TaskTag;
 
 public class ProblemRequestorMarkerManager implements IProblemRequestor {
@@ -29,7 +27,7 @@ public class ProblemRequestorMarkerManager implements IProblemRequestor {
 		// TODO Use active flag by calling begin and end reporting
 		// if (!isActive()) return;
 		if (problem.isWarning()) {
-			markerManager.addWarning(file, problem.getMessage());
+			markerManager.addWarning(file, problem.getMessage(), problem.getSourceLineNumber(), problem.getSourceStart(), problem.getSourceEnd());
 			return;
 		}
 		if (problem.isError()) {
