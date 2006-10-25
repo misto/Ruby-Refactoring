@@ -87,4 +87,14 @@ public class RdtPosition implements ISourcePosition {
     public int hashCode() {
         return startLine * startOffset + endLine*endOffset;
     }
+    
+    public void adjustStartOffset(int offset) {
+//    	 TODO Implement new method
+    }
+    
+    public ISourcePosition union(ISourcePosition pos) {
+    	// TODO Implement new method
+    	return null;
+    }
+    
 }

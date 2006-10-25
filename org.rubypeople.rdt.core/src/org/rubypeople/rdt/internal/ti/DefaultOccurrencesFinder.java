@@ -1,18 +1,13 @@
 package org.rubypeople.rdt.internal.ti;
 
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Set;
 
 import org.eclipse.jface.text.Position;
 import org.jruby.ast.ArgumentNode;
 import org.jruby.ast.BlockNode;
-import org.jruby.ast.CallNode;
 import org.jruby.ast.ClassNode;
 import org.jruby.ast.ClassVarAsgnNode;
 import org.jruby.ast.ClassVarDeclNode;
@@ -32,7 +27,6 @@ import org.jruby.ast.LocalVarNode;
 import org.jruby.ast.ModuleNode;
 import org.jruby.ast.Node;
 import org.jruby.ast.SymbolNode;
-import org.jruby.ast.VCallNode;
 import org.jruby.lexer.yacc.ISourcePosition;
 import org.jruby.lexer.yacc.SourcePosition;
 import org.jruby.lexer.yacc.SyntaxException;
@@ -200,15 +194,6 @@ public class DefaultOccurrencesFinder extends AbstractOccurencesFinder  {
 	 */
 	private boolean isGlobalVarRef( Node node ) {
 		return ( ( node instanceof GlobalAsgnNode ) || ( node instanceof GlobalVarNode ) );
-	}
-	
-	/**
-	 * Determines whether a given node is method reference (either definition or invocation)
-	 * @param node
-	 * @return
-	 */
-	private boolean isMethodRefNode( Node node ) {
-		return ( ( node instanceof DefnNode ) || ( node instanceof DefsNode ) || ( node instanceof CallNode ) || ( node instanceof VCallNode ) );
 	}
 	
 	/**
@@ -745,28 +730,6 @@ public class DefaultOccurrencesFinder extends AbstractOccurencesFinder  {
 //		}
 //		if ( node instanceof GlobalAsgnNode ) {
 //			return ((GlobalAsgnNode)node).getName();			
-//		}
-//		return null;
-		return getNameReflectively( node );
-	}
-	
-	/**
-	 * Gets the name of a method reference (either definition or invocation)
-	 * @param node
-	 * @return
-	 */
-	private String getMethodRefName( Node node ) {
-		if ( node instanceof VCallNode ) {
-			return ((VCallNode)node).getMethodName();
-		}
-//		if ( node instanceof DefnNode ) {
-//			return ((DefnNode)node).getName();
-//		}
-//		if ( node instanceof DefsNode ) {
-//			return ((DefsNode)node).getName();			
-//		}
-//		if ( node instanceof CallNode ) {
-//			return ((CallNode)node).getName();
 //		}
 //		return null;
 		return getNameReflectively( node );

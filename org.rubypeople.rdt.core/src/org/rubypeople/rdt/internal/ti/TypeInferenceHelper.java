@@ -20,7 +20,6 @@ import org.jruby.ast.ModuleNode;
 import org.jruby.ast.Node;
 import org.jruby.ast.VCallNode;
 import org.jruby.lexer.yacc.ISourcePosition;
-import org.rubypeople.rdt.internal.ti.util.ScopedNodeLocator;
 
 public class TypeInferenceHelper {
 
@@ -102,7 +101,7 @@ public class TypeInferenceHelper {
 	public String getCallNodeMethodName( Node node ) {
 		if ( node instanceof CallNode )  { return ((CallNode)node).getName(); }
 		if ( node instanceof FCallNode ) { return ((FCallNode)node).getName(); }
-		if ( node instanceof VCallNode ) { return ((VCallNode)node).getMethodName(); }
+		if ( node instanceof VCallNode ) { return ((VCallNode)node).getName(); }
 		return null;		
 	}
 	

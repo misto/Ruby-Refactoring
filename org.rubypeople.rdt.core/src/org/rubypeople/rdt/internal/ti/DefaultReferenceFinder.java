@@ -5,7 +5,6 @@ import java.util.List;
 
 import org.jruby.ast.ArgumentNode;
 import org.jruby.ast.BlockNode;
-import org.jruby.ast.CallNode;
 import org.jruby.ast.ClassNode;
 import org.jruby.ast.Colon2Node;
 import org.jruby.ast.ConstNode;
@@ -19,7 +18,6 @@ import org.jruby.ast.InstVarNode;
 import org.jruby.ast.LocalAsgnNode;
 import org.jruby.ast.LocalVarNode;
 import org.jruby.ast.Node;
-import org.jruby.ast.VCallNode;
 import org.jruby.lexer.yacc.ISourcePosition;
 import org.jruby.lexer.yacc.SourcePosition;
 import org.rubypeople.rdt.internal.core.parser.RdtWarnings;
@@ -181,24 +179,6 @@ public class DefaultReferenceFinder implements IReferenceFinder {
 		return null;
 	}
 	
-	private String getMethodRefName( Node node ) {
-		if ( node instanceof DefnNode ) {
-			return ((DefnNode)node).getName();
-		}
-		if ( node instanceof DefsNode ) {
-			return ((DefsNode)node).getName();			
-		}
-		if ( node instanceof CallNode ) {
-			return ((CallNode)node).getName();
-		}
-		if ( node instanceof VCallNode ) {
-			return ((VCallNode)node).getMethodName();
-		}
-		return null;
-	}
-	
-	
-	
 	private boolean isLocalVarRef( Node node ) {
 		return ( ( node instanceof LocalAsgnNode ) || ( node instanceof ArgumentNode ) || ( node instanceof LocalVarNode ) );
 	}
@@ -210,11 +190,7 @@ public class DefaultReferenceFinder implements IReferenceFinder {
 	private boolean isGlobalVarRef( Node node ) {
 		return ( ( node instanceof GlobalAsgnNode ) || ( node instanceof GlobalVarNode ) );
 	}
-	
-	private boolean isMethodRefNode( Node node ) {
-		return ( ( node instanceof DefnNode ) || ( node instanceof DefsNode ) || ( node instanceof CallNode ) || ( node instanceof VCallNode ) );
-	}
-	
+		
 	
 	private void pushLocalVarRefs( Node root, Node orig, List<ISourcePosition> references ) {
 		System.out.println("Finding references for a local variable " + orig.toString());

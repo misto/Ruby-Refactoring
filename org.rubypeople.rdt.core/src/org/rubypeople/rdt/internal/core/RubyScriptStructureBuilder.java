@@ -26,7 +26,6 @@ package org.rubypeople.rdt.internal.core;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -1153,11 +1152,11 @@ public class RubyScriptStructureBuilder implements NodeVisitor {
 	 */
 	private void setTokenRange(ISourcePosition pos, RubyFieldElementInfo info,
 			String name) {
-		int realStart = pos.getStartOffset() - name.length() + 1;
-		info.setNameSourceStart(realStart);
-		info.setNameSourceEnd(pos.getStartOffset());
-		info.setSourceRangeStart(realStart);
-		info.setSourceRangeEnd(pos.getStartOffset());
+		int realEnd = pos.getStartOffset() + name.length() - 1;
+		info.setNameSourceStart(pos.getStartOffset());
+		info.setNameSourceEnd(realEnd);
+		info.setSourceRangeStart(pos.getStartOffset());
+		info.setSourceRangeEnd(realEnd);
 	}
 
 	/*
@@ -1749,7 +1748,8 @@ public class RubyScriptStructureBuilder implements NodeVisitor {
 	 */
 	public Instruction visitVCallNode(VCallNode iVisited) {
 		handleNode(iVisited);
-		String functionName = iVisited.getMethodName();
+		// XXX If the call has arguments, we need to find the method athcing he symbols and mark their visibility differently
+		String functionName = iVisited.getName();
 		if (functionName.equals("public")) {
 			currentVisibility = Visibility.PUBLIC;
 		} else if (functionName.equals("private")) {
