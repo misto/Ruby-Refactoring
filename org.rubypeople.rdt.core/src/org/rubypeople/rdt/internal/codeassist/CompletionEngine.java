@@ -3,12 +3,9 @@ package org.rubypeople.rdt.internal.codeassist;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Set;
 
 import org.jruby.ast.ClassNode;
 import org.jruby.ast.ClassVarAsgnNode;
@@ -35,7 +32,6 @@ import org.rubypeople.rdt.core.IRubyScript;
 import org.rubypeople.rdt.core.IType;
 import org.rubypeople.rdt.core.RubyModelException;
 import org.rubypeople.rdt.internal.core.RubyElement;
-import org.rubypeople.rdt.internal.core.RubyScript;
 import org.rubypeople.rdt.internal.core.RubyType;
 import org.rubypeople.rdt.internal.core.parser.RubyParser;
 import org.rubypeople.rdt.internal.ti.DefaultTypeInferrer;
@@ -67,7 +63,7 @@ public class CompletionEngine {
 		// if we hit a period, use character before period as offset for
 		// inferrer
 		// if we hit a space, use character after space?
-		// TODO We need to handle other bad syntax like invoking compeltion right after an @
+		// TODO We need to handle other bad syntax like invoking completion right after an @
 		StringBuffer prefix = new StringBuffer();
 		boolean isMethod = false;
 		for (int i = offset; i >= 0; i--) {
@@ -79,9 +75,7 @@ public class CompletionEngine {
 					source.deleteCharAt(i);
 					offset--;
 					break;
-				}
-				// TODO Grab the prefix we just ate up and use it to filter
-				// responses?				
+				}			
 				offset = i - 1;
 				break;
 			}
@@ -92,16 +86,23 @@ public class CompletionEngine {
 			prefix.insert(0, curChar);
 		}		
 		this.prefix = prefix.toString();
+		if (this.prefix != null) replaceStart -= this.prefix.length();
 		
-		List<ITypeGuess> guesses = inferrer.infer(source.toString(), offset);
-		// TODO Grab the project and all referred projects!
-		IRubyProject[] projects = new IRubyProject[1];
-		projects[0] = script.getRubyProject();
-		RubyElementRequestor completer = new RubyElementRequestor(projects);
-		for (Iterator iter = guesses.iterator(); iter.hasNext();) {
-			ITypeGuess guess = (ITypeGuess) iter.next();
-			IType type = completer.findType(guess.getType());
-			suggestMethods(replaceStart, completer, guess, type);
+		// If the prefix looks like a constant don't bother searching for
+		// methods
+		if (!(this.prefix != null && Character.isUpperCase(this.prefix
+				.charAt(0)))) {
+			List<ITypeGuess> guesses = inferrer
+					.infer(source.toString(), offset);
+			// TODO Grab the project and all referred projects!
+			IRubyProject[] projects = new IRubyProject[1];
+			projects[0] = script.getRubyProject();
+			RubyElementRequestor completer = new RubyElementRequestor(projects);
+			for (Iterator iter = guesses.iterator(); iter.hasNext();) {
+				ITypeGuess guess = (ITypeGuess) iter.next();
+				IType type = completer.findType(guess.getType());
+				suggestMethods(replaceStart, completer, guess, type);
+			}
 		}
 		// FIXME Do we need to call this at all if we know it's a method call we're trying to complete?
 		if (!isMethod) getDocumentsRubyElementsInScope(script, source.toString(), offset, replaceStart);
@@ -137,17 +138,11 @@ public class CompletionEngine {
 		IMethod[] methods = type.getMethods();
 		for (int k = 0; k < methods.length; k++) {
 			IMethod method = methods[k];
-			String name = method.getElementName();
-			
-			if (prefix != null && prefix.length() != 0) {
-				// If we have a prefix, then don't suggest non-matches
-				if (!name.startsWith(prefix)) continue;
-			}			
+			String name = method.getElementName();			
+			if (prefix != null && !name.startsWith(prefix)) continue;	
 			CompletionProposal proposal = new CompletionProposal(
 					CompletionProposal.METHOD_REF, name, confidence);
-			// TODO Handle replacement start index correctly
-			proposal
-					.setReplaceRange(replaceStart, replaceStart + name.length());
+			proposal.setReplaceRange(replaceStart, replaceStart + name.length());
 			int flags = Flags.AccDefault;
 			if (method.isSingleton()) {
 				flags |= Flags.AccStatic;
@@ -205,11 +200,11 @@ public class CompletionEngine {
 					List locals = Arrays.asList (scopeNode.getLocalNames());
 					for (Iterator iter = locals.iterator(); iter.hasNext();) {
 						String local = (String) iter.next();
+						if (prefix != null && !local.startsWith(prefix)) continue;				
 						CompletionProposal proposal = new CompletionProposal(
 								CompletionProposal.LOCAL_VARIABLE_REF, local, 100);
-						// TODO Handle replacement start index correctly
 						proposal.setReplaceRange(replaceStart, replaceStart + local.length());
-						requestor.accept(proposal);
+						requestor.accept(proposal);						
 					}
 				}
 			}
@@ -252,15 +247,13 @@ public class CompletionEngine {
 			for (int x = 0; x < elements.length; x++) {
 				IRubyElement child = elements[x];
 				for (int i = 0; i < types.length; i++) {
-					if (child.getElementType() == types[i]) {
-						String name = child.getElementName();
-						CompletionProposal proposal = new CompletionProposal(
-								getCompletionProposalType(child), name, 100);
-						// TODO Handle replacement start index correctly
-						proposal.setReplaceRange(replaceStart, replaceStart + name.length());
-						requestor.accept(proposal);
-						break;
-					}
+					if (child.getElementType() != types[i]) continue;
+					String name = child.getElementName();
+					if (prefix != null && !name.startsWith(prefix)) continue;
+					CompletionProposal proposal = new CompletionProposal(
+							getCompletionProposalType(child), name, 100);
+					proposal.setReplaceRange(replaceStart, replaceStart + name.length());
+					requestor.accept(proposal);			
 				}
 				if (child instanceof IParent)
 					getElementsOfType((IParent) child, types, replaceStart);
@@ -355,12 +348,12 @@ public class CompletionEngine {
 			// Get the unique names of instance and class variables
 			for ( Node varNode : instanceAndClassVars ) {
 				String name = getNameReflectively(varNode);
-				if ( name != null ) {
-					CompletionProposal proposal = new CompletionProposal(CompletionProposal.FIELD_REF, name, 100);
-					// TODO Handle replacement start index correctly
-					proposal.setReplaceRange(replaceStart, replaceStart + name.length());
-					requestor.accept(proposal);
-				}
+				if ( name == null ) continue;
+				if (prefix != null && !name.startsWith(prefix)) continue;
+		
+				CompletionProposal proposal = new CompletionProposal(CompletionProposal.FIELD_REF, name, 100);
+				proposal.setReplaceRange(replaceStart, replaceStart + name.length());
+				requestor.accept(proposal);
 			}
 		}
 		
@@ -375,8 +368,8 @@ public class CompletionEngine {
 			if ( methodDefinition instanceof DefnNode ) { name =  ((DefnNode)methodDefinition).getName(); }
 			if ( methodDefinition instanceof DefsNode ) { name = ((DefsNode)methodDefinition).getName(); }
 			if (name == null) continue;
+			if (prefix != null && !name.startsWith(prefix)) continue;			
 			CompletionProposal proposal = new CompletionProposal(CompletionProposal.METHOD_REF, name, 100);
-			// TODO Handle replacement start index correctly
 			proposal.setReplaceRange(replaceStart, replaceStart + name.length());
 			requestor.accept(proposal);
 		}
@@ -385,8 +378,8 @@ public class CompletionEngine {
 		List<String> attrs = AttributeLocator.Instance().findInstanceAttributesInScope(typeNode);
 		for (Iterator iter = attrs.iterator(); iter.hasNext(); ) {
 			String attr = (String) iter.next();
+			if (prefix != null && !attr.startsWith(prefix)) continue;
 			CompletionProposal proposal = new CompletionProposal(CompletionProposal.FIELD_REF, attr, 100);
-			// TODO Handle replacement start index correctly
 			proposal.setReplaceRange(replaceStart, replaceStart + attr.length());
 			requestor.accept(proposal);
 		}
