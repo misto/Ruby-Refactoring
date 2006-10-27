@@ -41,7 +41,7 @@ public class SurroundWithBeginRescueAction extends SelectionDispatchAction {
     public SurroundWithBeginRescueAction(RubyEditor editor) {
         super(editor.getEditorSite());
 
-        setText("Surround with begin...rescue");
+        setText(ActionMessages.getString("SurroundWithBeginRescueAction.label")); //$NON-NLS-1$
         fEditor = editor;
         setEnabled((fEditor != null && SelectionConverter.getInputAsRubyScript(fEditor) != null));
         PlatformUI.getWorkbench().getHelpSystem().setHelp(this,
@@ -52,15 +52,13 @@ public class SurroundWithBeginRescueAction extends SelectionDispatchAction {
         try {
             createChange(selection, new NullProgressMonitor());
         } catch (CoreException e) {
-            // FIXME Localize! Extract into ResourceBundle
             ExceptionHandler.handle(e, getDialogTitle(),
-                    "Error occurred while surrounding code with begin..rescue block");
+            		ActionMessages.getString("SurroundWithBeginRescueAction.error")); //$NON-NLS-1$
         }
     }
 
     private static String getDialogTitle() {
-        // FIXME Localize! Extract into ResourceBundle
-        return "Surround with begin...rescue";
+    	return ActionMessages.getString("SurroundWithBeginRescueAction.dialog.title"); //$NON-NLS-1$
     }
 
     private IFile getFile() {
@@ -113,19 +111,19 @@ public class SurroundWithBeginRescueAction extends SelectionDispatchAction {
                 Indents.getIndentWidth(options));
 
         StringBuffer text = new StringBuffer();
-        text.append("begin");
+        text.append("begin");//$NON-NLS-1$
         text.append(lineDelimiter);
         text.append(Indents.createIndentString(indentationUnits + 1, options));
         text.append(originalText);
         text.append(lineDelimiter);
         text.append(Indents.createIndentString(indentationUnits, options));
-        text.append("rescue StandardError => e");
+        text.append("rescue StandardError => e");//$NON-NLS-1$
         text.append(lineDelimiter);
         text.append(Indents.createIndentString(indentationUnits + 1, options));
-        text.append("puts e");
+        text.append("puts e");//$NON-NLS-1$
         text.append(lineDelimiter);
         text.append(Indents.createIndentString(indentationUnits, options));
-        text.append("end");
+        text.append("end");//$NON-NLS-1$
         text.append(lineDelimiter);
         text.append(Indents.createIndentString(indentationUnits, options));
         return text.toString();
