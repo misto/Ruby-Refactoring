@@ -23,7 +23,7 @@
 
 		<!-- more recent versions of CC should use the listener below, instead of 	the currentbuildstatusbootstrapper, currentbuildstatuspublisher combination.  NOTE: Must match filename in CC reporting/jsp - override.properties: user.build.status.file -->
 		<listeners>
-			<currentbuildstatuslistener file="logs/RDT/buildstatus.txt"/>		
+			<currentbuildstatuslistener file="logs/RDT/status.txt"/>		
 		</listeners>
 
 		<!-- Publishers are run *after* a build completes -->
