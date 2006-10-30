@@ -23,6 +23,11 @@ public class TC_RubyPartitionScanner extends TestCase {
 		return partitioner.getContentType(offset);
 	}
 	
+	public void testUnclosedInterpolationDoesntInfinitelyLoop() {
+		String source = "%[\"#{\"]";
+	    this.getContentType(source, 0);
+	    assert(true);
+	}	
 
 	public void testPartitioningOfSingleLineComment() {
 		String source = "# This is a comment\n";
