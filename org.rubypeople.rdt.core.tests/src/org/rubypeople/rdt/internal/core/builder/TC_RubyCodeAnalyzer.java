@@ -36,7 +36,7 @@ public class TC_RubyCodeAnalyzer extends TestCase {
         file = new ShamFile(FILENAME);
         file.setContents(FILE_CONTENTS);
         
-        rootNode = new Node(null) {
+        rootNode = new Node(null, 0) {
             public Instruction accept(NodeVisitor visitor) {
                 return null;
             }

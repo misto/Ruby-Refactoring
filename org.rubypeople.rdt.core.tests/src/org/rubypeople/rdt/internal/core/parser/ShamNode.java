@@ -19,7 +19,7 @@ import org.jruby.evaluator.Instruction;
 public class ShamNode extends Node {
 
     public ShamNode() {
-        super(null);
+        super(null, 0);
     }
 
     public Instruction accept(NodeVisitor visitor) {
