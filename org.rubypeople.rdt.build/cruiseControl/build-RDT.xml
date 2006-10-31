@@ -34,7 +34,6 @@
 			<arg value="-data" />
 			<arg value="${buildDirectory}/workspace" />
 			<arg value="${verboseAnt}" />
-			<jvmarg value="${usePserver}" />
 			<jvmarg value="${dontRunTests}" />
 			<jvmarg value="-Dbasews=${ws}" />
 			<jvmarg value="-Dbaseos=${os}" />
