@@ -61,6 +61,7 @@ public class AstView extends ViewPart {
 	private TreeViewer viewer;
 	private DrillDownAdapter drillDownAdapter;
 	private Action refreshAction;
+	private Action dumpToConsoleAction;
 	private Action doubleClickAction;
 	private Action clickAction;
 	private ViewContentProvider viewContentProvider;
@@ -152,10 +153,12 @@ public class AstView extends ViewPart {
 
 	private void fillLocalPullDown(IMenuManager manager) {
 		manager.add(refreshAction);
+		manager.add(dumpToConsoleAction);
 	}
 
 	private void fillContextMenu(IMenuManager manager) {
 		manager.add(refreshAction);
+		manager.add(dumpToConsoleAction);
 		drillDownAdapter.addNavigationActions(manager);
 		// Other plug-ins can contribute there actions here
 		manager.add(new Separator(IWorkbenchActionConstants.MB_ADDITIONS));
@@ -163,10 +166,30 @@ public class AstView extends ViewPart {
 	
 	private void fillLocalToolBar(IToolBarManager manager) {
 		manager.add(refreshAction);
+		manager.add(dumpToConsoleAction);
 		drillDownAdapter.addNavigationActions(manager);
 	}
+	
 
+	
 	private void makeActions() {
+		makeRefreshAction();
+		makeDumpAction();
+	}
+
+	private void makeDumpAction() {
+		dumpToConsoleAction = new Action() {
+			public void run() {
+				AstViewConsole.print(AstUtility.nodeList(AstUtility.findAllNodes(getSelectedNode())));
+			}
+		};
+		
+		dumpToConsoleAction.setText("Dump Node");
+		dumpToConsoleAction.setToolTipText("Dumps node and all child-nodes to the console.");
+		dumpToConsoleAction.setImageDescriptor(Activator.getImageDescriptor("icons/dump.gif"));
+	}
+
+	private void makeRefreshAction() {
 		refreshAction = new Action() {
 			public void run() {
 				viewContentProvider.forceUpdateContent();
@@ -186,28 +209,11 @@ public class AstView extends ViewPart {
 		editor.selectAndReveal(n.getPosition().getStartOffset(), n.getPosition().getEndOffset() - n.getPosition().getStartOffset() + 1);
 	}
 	
-	private String formatedPosition(Node n) {
-		if(n == null)
-			return "";
-		
-		StringBuilder posString = new StringBuilder();
-		posString.append("Lines [");
-		posString.append(n.getPosition().getStartLine());
-		posString.append(":");
-		posString.append(n.getPosition().getEndLine());
-		posString.append("], Offset [");
-		posString.append(n.getPosition().getStartOffset());
-		posString.append(":");
-		posString.append(n.getPosition().getEndOffset());
-		posString.append("]");
-		return posString.toString();
-	}
-	
 	private void hookClickAction() {
 		
 		clickAction = new Action(){
 			public void run() {
-				detailsViewer.getDocument().set(formatedPosition(getSelectedNode()));
+				detailsViewer.getDocument().set(AstUtility.formatedPosition(getSelectedNode()));
 			}
 		};
 		

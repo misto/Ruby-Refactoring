@@ -118,9 +118,8 @@ class ViewContentProvider implements IStructuredContentProvider, ITreeContentPro
 			lexerSource = new LexerSource(getFile().getName(), new InputStreamReader(getFile().getContents()));
 			return parser.parse(lexerSource).getAST();
 		} catch (CoreException e) {
-			e.printStackTrace();
+			return null;
 		}
-		return null;
 	}
 
 	private void initialize() {

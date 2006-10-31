@@ -26,14 +26,53 @@
  * the terms of any one of the CPL, the GPL or the LGPL.
  ***** END LICENSE BLOCK *****/
 
-package org.rubypeople.rdt.astviewer.preferences;
+package org.rubypeople.rdt.astviewer.views;
 
-/**
- * Constant definitions for plug-in preferences
- */
-public class PreferenceConstants {
+import java.util.ArrayList;
+import java.util.Iterator;
 
-	public static final String P_SHOW_NEWLINE = "showNewline";
-	public static final String P_SHOW_SCOPE   = "showScope";
+import org.jruby.ast.Node;
 
+public class AstUtility {
+
+	public static ArrayList<Node> findAllNodes(Node rootNode) {
+		ArrayList<Node> nodes = new ArrayList<Node>();
+		if(rootNode == null)
+			return nodes;
+		nodes.add(rootNode);
+		for(Object o : rootNode.childNodes()) {
+			nodes.addAll(findAllNodes((Node) o));
+		}
+		return nodes;
+	}
+
+	public static String nodeList(ArrayList<Node> nodes) {
+		StringBuilder str = new StringBuilder();
+		Iterator it = nodes.iterator();
+		while(it.hasNext()) {
+			String name = ((Node) it.next()).getClass().getName();
+			str.append(name.substring(name.lastIndexOf(".") + 1, name.length()));
+			if(it.hasNext())
+				str.append(", ");
+		} 
+		return str.toString();
+	}
+	
+	public static String formatedPosition(Node n) {
+		if(n == null)
+			return "";
+		
+		StringBuilder posString = new StringBuilder();
+		posString.append("Lines [");
+		posString.append(n.getPosition().getStartLine());
+		posString.append(":");
+		posString.append(n.getPosition().getEndLine());
+		posString.append("], Offset [");
+		posString.append(n.getPosition().getStartOffset());
+		posString.append(":");
+		posString.append(n.getPosition().getEndOffset());
+		posString.append("]");
+		return posString.toString();
+	}
+	
 }
