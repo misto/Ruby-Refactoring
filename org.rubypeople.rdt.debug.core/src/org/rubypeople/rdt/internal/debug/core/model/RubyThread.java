@@ -223,5 +223,13 @@ public class RubyThread extends PlatformObject implements IThread {
 	public void setId(int id) {
 		this.id = id;
 	}
+	
+	public Object getAdapter(Class adapterType) {
+		// Patch from Shugo Maeda: open debug perspective on suspend
+		if (adapterType.equals(ILaunch.class)) {
+			return getLaunch();
+		}
+		return super.getAdapter(adapterType);
+	}
 
 }
