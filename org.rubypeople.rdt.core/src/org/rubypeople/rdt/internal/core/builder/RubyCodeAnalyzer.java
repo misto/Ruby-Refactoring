@@ -12,7 +12,6 @@
 
 package org.rubypeople.rdt.internal.core.builder;
 
-import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
@@ -44,7 +43,6 @@ public final class RubyCodeAnalyzer implements SingleFileCompiler {
 
     public void compileFile(IFile file) throws CoreException {
         Reader reader = new InputStreamReader(file.getContents());
-        // XXX Make sure readContents isn't dropping end of line characters 
         String contents = readContents(reader);
         markerManager.removeProblemsAndTasksFor(file);
         try {
@@ -62,12 +60,10 @@ public final class RubyCodeAnalyzer implements SingleFileCompiler {
 
 	private String readContents(Reader reader) {
 		try {
-			BufferedReader buff = new BufferedReader(reader);
+			int c = 0;
 			StringBuffer str = new StringBuffer();
-			String line;
-			while((line = buff.readLine()) != null) {
-				str.append(line);
-				str.append("\n");
+			while ((c = reader.read()) != -1) {
+				str.append((char) c);
 			}
 			return str.toString();
 		} catch (IOException e) {
