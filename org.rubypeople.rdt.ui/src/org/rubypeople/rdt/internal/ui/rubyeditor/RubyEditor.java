@@ -15,6 +15,7 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Preferences;
 import org.eclipse.jface.action.Action;
+import org.eclipse.jface.action.GroupMarker;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.MenuManager;
@@ -58,6 +59,7 @@ import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.ISelectionProvider;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.StructuredSelection;
+import org.eclipse.search.ui.IContextMenuConstants;
 import org.eclipse.swt.custom.StyledText;
 import org.eclipse.swt.custom.VerifyKeyListener;
 import org.eclipse.swt.events.VerifyEvent;
@@ -95,6 +97,7 @@ import org.rubypeople.rdt.internal.corext.util.RubyModelUtil;
 import org.rubypeople.rdt.internal.ui.IRubyHelpContextIds;
 import org.rubypeople.rdt.internal.ui.RubyPlugin;
 import org.rubypeople.rdt.internal.ui.RubyUIMessages;
+import org.rubypeople.rdt.internal.ui.actions.CompositeActionGroup;
 import org.rubypeople.rdt.internal.ui.actions.FoldingActionGroup;
 import org.rubypeople.rdt.internal.ui.text.IRubyPartitions;
 import org.rubypeople.rdt.internal.ui.text.RubyHeuristicScanner;
@@ -103,6 +106,7 @@ import org.rubypeople.rdt.ui.IWorkingCopyManager;
 import org.rubypeople.rdt.ui.PreferenceConstants;
 import org.rubypeople.rdt.ui.actions.FormatAction;
 import org.rubypeople.rdt.ui.actions.IRubyEditorActionDefinitionIds;
+import org.rubypeople.rdt.ui.actions.OpenEditorActionGroup;
 import org.rubypeople.rdt.ui.actions.RubyActionGroup;
 import org.rubypeople.rdt.ui.actions.SurroundWithBeginRescueAction;
 import org.rubypeople.rdt.ui.text.folding.IRubyFoldingStructureProvider;
@@ -110,7 +114,6 @@ import org.rubypeople.rdt.ui.text.folding.IRubyFoldingStructureProviderExtension
 
 public class RubyEditor extends RubyAbstractEditor {
     
-    protected RubyActionGroup actionGroup;
     private ProjectionSupport fProjectionSupport;
     
 	/** The editor's tab converter */
@@ -171,6 +174,8 @@ public class RubyEditor extends RubyAbstractEditor {
 	private FoldingActionGroup fFoldingGroup;
     
     private BracketInserter fBracketInserter = new BracketInserter();
+	private CompositeActionGroup fActionGroups;
+	private CompositeActionGroup fContextMenuGroup;
 
 	
     public RubyEditor() {
@@ -189,12 +194,12 @@ public class RubyEditor extends RubyAbstractEditor {
 	 * @return returns this editor's standard action group
 	 */
 	protected ActionGroup getActionGroup() {
-		return actionGroup;
+		return fActionGroups;
 	}
 
     protected void createActions() {
         super.createActions();
-
+        
         Action action = new ContentAssistAction(RubyUIMessages.getResourceBundle(),
                 "ContentAssistProposal.", this);
         action.setActionDefinitionId(IRubyEditorActionDefinitionIds.CONTENT_ASSIST_PROPOSALS);
@@ -226,6 +231,11 @@ public class RubyEditor extends RubyAbstractEditor {
         action.setActionDefinitionId(IRubyEditorActionDefinitionIds.FORMAT);
         setAction("Format", action);
                        
+        ActionGroup oeg;
+		fActionGroups= new CompositeActionGroup(new ActionGroup[] {
+			oeg= new OpenEditorActionGroup(this)
+		});
+		fContextMenuGroup= new CompositeActionGroup(new ActionGroup[] {oeg});
         
         fFoldingGroup= new FoldingActionGroup(this, getViewer());
         
@@ -237,8 +247,8 @@ public class RubyEditor extends RubyAbstractEditor {
         beginRescueAction.update(selection);
         provider.addSelectionChangedListener(beginRescueAction);
         setAction(SurroundWithBeginRescueAction.SURROUND_WTH_BEGIN_RESCUE, beginRescueAction);
-
-        actionGroup = new RubyActionGroup(this, ITextEditorActionConstants.GROUP_EDIT);
+        
+		fActionGroups.addGroup(new RubyActionGroup(this, ITextEditorActionConstants.GROUP_EDIT));
     }
    
     /**
@@ -619,6 +629,11 @@ public class RubyEditor extends RubyAbstractEditor {
             fProjectionSupport.dispose();
             fProjectionSupport = null;
         }
+        
+        if (fActionGroups != null) {
+			fActionGroups.dispose();
+			fActionGroups= null;
+		}
         	
         super.dispose();
     }
@@ -714,7 +729,18 @@ public class RubyEditor extends RubyAbstractEditor {
             }
         }
 
-        actionGroup.fillContextMenu(menu);
+        
+		menu.insertAfter(IContextMenuConstants.GROUP_OPEN, new GroupMarker(IContextMenuConstants.GROUP_SHOW));
+
+		ActionContext context= new ActionContext(getSelectionProvider().getSelection());
+		fContextMenuGroup.setContext(context);
+		fContextMenuGroup.fillContextMenu(menu);
+		fContextMenuGroup.setContext(null);
+
+		// Quick views
+		// TODO Add show outline action!
+//		IAction action= getAction(IRubyEditorActionDefinitionIds.SHOW_OUTLINE);
+//		menu.appendToGroup(IContextMenuConstants.GROUP_OPEN, action);        
     }
 
     protected void handlePreferenceStoreChanged(PropertyChangeEvent event) {
