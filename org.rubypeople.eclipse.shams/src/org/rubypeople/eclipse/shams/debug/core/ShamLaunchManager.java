@@ -15,6 +15,7 @@ import org.eclipse.debug.core.ILaunchConfigurationType;
 import org.eclipse.debug.core.ILaunchListener;
 import org.eclipse.debug.core.ILaunchManager;
 import org.eclipse.debug.core.ILaunchMode;
+import org.eclipse.debug.core.ILaunchOption;
 import org.eclipse.debug.core.ILaunchesListener;
 import org.eclipse.debug.core.model.IDebugTarget;
 import org.eclipse.debug.core.model.IPersistableSourceLocator;
@@ -200,13 +201,19 @@ public class ShamLaunchManager implements ILaunchManager {
 	}
 
 	public Map getNativeEnvironmentCasePreserved() {
-		// TODO Auto-generated method stub
-		return null;
+		throw new RuntimeException("Need to implement on sham.");
 	}
 
     public ILaunchConfiguration[] getMigrationCandidates() throws CoreException {
-        // TODO Auto-generated method stub
-        return null;
+    	throw new RuntimeException("Need to implement on sham.");
     }
+
+	public ILaunchOption getLaunchOption(String optionId) {
+		throw new RuntimeException("Need to implement on sham.");
+	}
+
+	public ILaunchOption[] getLaunchOptions() {
+		throw new RuntimeException("Need to implement on sham.");
+	}
 
 }
