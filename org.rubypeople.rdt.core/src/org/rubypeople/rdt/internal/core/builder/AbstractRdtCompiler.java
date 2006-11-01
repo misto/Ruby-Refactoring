@@ -38,13 +38,14 @@ public abstract class AbstractRdtCompiler {
     public void compile(IProgressMonitor monitor) throws CoreException {
         analyzeFiles();
         List list = getFilesToCompile();
-        monitor.beginTask("Building "+project.getName() + "...", list.size() * compilers.size() + 2);
+        int fileCount = list.size();
+        monitor.beginTask("Building "+project.getName() + "...", fileCount * (compilers.size() + 2));
         monitor.subTask("Removing Markers...");
         
         removeMarkers(markerManager);
-        monitor.worked(1);
+        monitor.worked(fileCount);
         flushIndexEntries(symbolIndex);
-        monitor.worked(1);
+        monitor.worked(fileCount);
     
         compileFiles(list, monitor);
         monitor.done();
