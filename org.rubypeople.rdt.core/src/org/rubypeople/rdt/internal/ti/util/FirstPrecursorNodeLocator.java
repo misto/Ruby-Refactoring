@@ -58,7 +58,7 @@ public class FirstPrecursorNodeLocator extends NodeLocator {
 		{
 			if ( acceptor.doesAccept( iVisited ) )
 			{
-				System.out.println("Recording accepted node: " + iVisited.getClass().getSimpleName() + "@" + iVisited.getPosition().getStartOffset() + ".." + iVisited.getPosition().getEndOffset() );
+//				System.out.println("Recording accepted node: " + iVisited.getClass().getSimpleName() + "@" + iVisited.getPosition().getStartOffset() + ".." + iVisited.getPosition().getEndOffset() );
 				locatedNode = iVisited;
 			}
 		}
