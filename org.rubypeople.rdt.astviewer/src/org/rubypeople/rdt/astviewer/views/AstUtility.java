@@ -31,6 +31,7 @@ package org.rubypeople.rdt.astviewer.views;
 import java.util.ArrayList;
 import java.util.Iterator;
 
+import org.jruby.ast.NewlineNode;
 import org.jruby.ast.Node;
 
 public class AstUtility {
@@ -74,5 +75,39 @@ public class AstUtility {
 		posString.append("]");
 		return posString.toString();
 	}
-	
+
+	public static String nodeListJRubyFormat(ArrayList<Node> nodes) {
+		StringBuilder builder = new StringBuilder();
+		builder.append("list = [\n");
+		Iterator nodeIter = nodes.iterator();
+		
+		while(nodeIter.hasNext()) {
+			
+			Node node = (Node) nodeIter.next();
+			
+			if(node instanceof NewlineNode) {
+				builder.append("nil, #");
+			}
+			
+			builder.append("['");
+			builder.append(node.getClass().getSimpleName());
+			builder.append("', ");
+			builder.append(node.getPosition().getStartLine());
+			builder.append(", ");
+			builder.append(node.getPosition().getEndLine());
+			builder.append(", ");
+			builder.append(node.getPosition().getStartOffset());
+			builder.append(", ");
+			builder.append(node.getPosition().getEndOffset());
+			builder.append("]");
+		
+			if(nodeIter.hasNext()) {
+				builder.append(",\n");
+			}
+		}
+
+		builder.append("\n]");
+		return builder.toString();
+	}
+
 }

@@ -28,6 +28,12 @@
 
 package org.rubypeople.rdt.astviewer.views;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+
+import org.eclipse.core.resources.IFile;
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuListener;
 import org.eclipse.jface.action.IMenuManager;
@@ -49,6 +55,8 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.TreeItem;
 import org.eclipse.ui.IActionBars;
+import org.eclipse.ui.IEditorInput;
+import org.eclipse.ui.IFileEditorInput;
 import org.eclipse.ui.IWorkbenchActionConstants;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.part.DrillDownAdapter;
@@ -62,6 +70,7 @@ public class AstView extends ViewPart {
 	private DrillDownAdapter drillDownAdapter;
 	private Action refreshAction;
 	private Action dumpToConsoleAction;
+	private Action dumpJRubyTestFormatAction;
 	private Action doubleClickAction;
 	private Action clickAction;
 	private ViewContentProvider viewContentProvider;
@@ -154,11 +163,13 @@ public class AstView extends ViewPart {
 	private void fillLocalPullDown(IMenuManager manager) {
 		manager.add(refreshAction);
 		manager.add(dumpToConsoleAction);
+		manager.add(dumpJRubyTestFormatAction);
 	}
 
 	private void fillContextMenu(IMenuManager manager) {
 		manager.add(refreshAction);
 		manager.add(dumpToConsoleAction);
+		//manager.add(dumpJRubyTestFormatAction);
 		drillDownAdapter.addNavigationActions(manager);
 		// Other plug-ins can contribute there actions here
 		manager.add(new Separator(IWorkbenchActionConstants.MB_ADDITIONS));
@@ -167,6 +178,7 @@ public class AstView extends ViewPart {
 	private void fillLocalToolBar(IToolBarManager manager) {
 		manager.add(refreshAction);
 		manager.add(dumpToConsoleAction);
+		manager.add(dumpJRubyTestFormatAction);
 		drillDownAdapter.addNavigationActions(manager);
 	}
 	
@@ -175,8 +187,51 @@ public class AstView extends ViewPart {
 	private void makeActions() {
 		makeRefreshAction();
 		makeDumpAction();
+		makeDumpJRubyFormatAction();
 	}
 
+	private void makeDumpJRubyFormatAction() {
+		dumpJRubyTestFormatAction = new Action() {
+			public void run() {
+
+				AstViewConsole.print(AstUtility.nodeListJRubyFormat(AstUtility.findAllNodes(getRootNode())));
+				AstViewConsole.print("test_tree(list, <<END)");
+				AstViewConsole.print(textEditorContentToString().toString().trim());
+				AstViewConsole.print("END");
+			}
+
+			private StringBuilder textEditorContentToString() {
+				IEditorInput editorInput = getEditor().getEditorInput();
+				IFile aFile = null;
+				if(editorInput instanceof IFileEditorInput){
+					aFile = ((IFileEditorInput)editorInput).getFile();
+				}
+				
+				BufferedReader br = null;
+				StringBuilder sb = new StringBuilder();
+				try {
+					br = new BufferedReader(new InputStreamReader(aFile.getContents()));
+					String line = null;
+
+					while ((line = br.readLine()) != null) {
+						sb.append(line + "\n");
+					}
+					br.close();
+
+				} catch (CoreException e) {
+					e.printStackTrace();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+				return sb;
+			}
+		};
+		
+		dumpJRubyTestFormatAction.setText("Dump in JRuby-Test");
+		dumpJRubyTestFormatAction.setToolTipText("Dumps node and all child-nodes to the console, formatted like as in JRuby's testPositions.rb");
+		dumpJRubyTestFormatAction.setImageDescriptor(Activator.getImageDescriptor("icons/dump_jruby.gif"));
+	}
+	
 	private void makeDumpAction() {
 		dumpToConsoleAction = new Action() {
 			public void run() {
@@ -229,6 +284,11 @@ public class AstView extends ViewPart {
 		if(selection.length <= 0)
 			return null;
 		return ((TreeObject) selection[0].getData()).getNode();
+	}	
+	
+	private Node getRootNode() {
+		TreeItem root = viewer.getTree().getItem(0);
+		return ((TreeObject) root.getData()).getNode();
 	}
 	
 	private RubyEditor getEditor() {

@@ -153,8 +153,9 @@ class ViewContentProvider implements IStructuredContentProvider, ITreeContentPro
 	}
 	
 	private boolean editorChanged() {
-		if(getActiveWorkbenchPage() == null)
+		if(getActiveWorkbenchPage() == null || !(getActiveWorkbenchPage().getActiveEditor() instanceof RubyEditor))
 			return false;
+		
 		return getEditor() != (RubyEditor) getActiveWorkbenchPage().getActiveEditor();
 	}
 	
