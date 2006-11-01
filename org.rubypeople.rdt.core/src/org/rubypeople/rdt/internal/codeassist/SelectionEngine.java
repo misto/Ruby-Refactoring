@@ -10,11 +10,13 @@ import org.jruby.ast.ClassVarAsgnNode;
 import org.jruby.ast.ClassVarDeclNode;
 import org.jruby.ast.ClassVarNode;
 import org.jruby.ast.ConstNode;
+import org.jruby.ast.FCallNode;
 import org.jruby.ast.InstAsgnNode;
 import org.jruby.ast.InstVarNode;
 import org.jruby.ast.LocalAsgnNode;
 import org.jruby.ast.LocalVarNode;
 import org.jruby.ast.Node;
+import org.jruby.ast.VCallNode;
 import org.jruby.ast.types.INameNode;
 import org.rubypeople.rdt.core.IParent;
 import org.rubypeople.rdt.core.IRubyElement;
@@ -64,7 +66,16 @@ public class SelectionEngine {
 					.getChildren(), IRubyElement.CLASS_VAR, getName(selected));
 			return convertToArray(possible);
 		}
+		if (isMethodCall(selected)) {
+			List<IRubyElement> possible = getChildrenWithName(script
+					.getChildren(), IRubyElement.METHOD, getName(selected));
+			return convertToArray(possible);
+		}
 		return new IRubyElement[0];
+	}
+
+	private boolean isMethodCall(Node selected) {
+		return (selected instanceof VCallNode) || (selected instanceof FCallNode);
 	}
 
 	private IRubyElement[] convertToArray(List<IRubyElement> possible) {
