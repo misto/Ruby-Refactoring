@@ -90,7 +90,7 @@
       <page
             name="%problemSeveritiesPrefName"
             category="org.rubypeople.rdt.ui.preferences.PreferencePageRubyBase"
-            class="org.rubypeople.rdt.internal.ui.preferences.DebuggerPreferencePage"
+            class="org.rubypeople.rdt.internal.ui.preferences.ProblemSeveritiesPreferencePage"
             id="org.rubypeople.rdt.ui.preferences.ProblemSeveritiesPreferencePage">
             <keywordReference id="org.rubypeople.rdt.ui.severities"/>
       </page>
