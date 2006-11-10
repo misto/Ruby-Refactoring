@@ -14,7 +14,7 @@
                buildfile="build-RDT.xml"
                target="dist"
                uselogger="true"
-               usedebug="true"/> 
+               usedebug="false"/> 
 		</schedule>
 
 		<log dir="logs/RDT">
