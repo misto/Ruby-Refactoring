@@ -47,10 +47,11 @@ public class DebuggerRunner extends InterpreterRunner {
 		if (isUseRubyDebug()) {
 			commandLine.add("--server");
 			commandLine.add("--port");
-			commandLine.add(Integer.toString(debugTarget.getPort()-1));
-			commandLine.add("--cport");
 			commandLine.add(Integer.toString(debugTarget.getPort()));
+			commandLine.add("--cport");
+			commandLine.add(Integer.toString(debugTarget.getPort()+1));
 			commandLine.add("-w");
+			commandLine.add("-d");
 			commandLine.add("-f");
 			commandLine.add("xml");
 		} else {
