@@ -21,10 +21,11 @@ public class FTC_ClassicDebuggerCommunicationTest extends
 //		suite.addTest(new FTC_ClassicDebuggerCommunicationTest("testVariableWithXmlContent"));
 //		suite.addTest(new FTC_ClassicDebuggerCommunicationTest("testThreadIdsAndResume"));
 //		suite.addTest(new FTC_ClassicDebuggerCommunicationTest("testThreadFramesAndVariables"));
-		suite.addTest(new FTC_ClassicDebuggerCommunicationTest("testFrames"));
-		suite.addTest(new FTC_ClassicDebuggerCommunicationTest("testThreads"));
+//		suite.addTest(new FTC_ClassicDebuggerCommunicationTest("testFrames"));
+//		suite.addTest(new FTC_ClassicDebuggerCommunicationTest("testThreads"));
 		
 		
+		suite.addTest(new FTC_ClassicDebuggerCommunicationTest("testVariablesInFrames"));
 		
 		
 		//suite.addTest(new TC_DebuggerCommunicationTest("testConstants"));

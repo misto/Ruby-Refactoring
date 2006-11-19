@@ -25,7 +25,7 @@ public class DebuggerRunner extends InterpreterRunner {
 		debugTarget = new RubyDebugTarget(launch);
 		IProcess process = super.run(configuration, launch);
 		debugTarget.setProcess(process);
-		RubyDebuggerProxy proxy = new RubyDebuggerProxy(debugTarget);
+		RubyDebuggerProxy proxy = new RubyDebuggerProxy(debugTarget, isUseRubyDebug());
 		if (proxy.checkConnection()) {
 			proxy.start();
 			launch.addDebugTarget(debugTarget);
@@ -47,9 +47,12 @@ public class DebuggerRunner extends InterpreterRunner {
 		if (isUseRubyDebug()) {
 			commandLine.add("--server");
 			commandLine.add("--port");
+			commandLine.add(Integer.toString(debugTarget.getPort()-1));
+			commandLine.add("--cport");
 			commandLine.add(Integer.toString(debugTarget.getPort()));
-			commandLine.add("--wait");
-			commandLine.add("--eclipse");
+			commandLine.add("-w");
+			commandLine.add("-f");
+			commandLine.add("xml");
 		} else {
 			if (!debugTarget.isUsingDefaultPort()) {
 				commandLine
@@ -85,7 +88,7 @@ public class DebuggerRunner extends InterpreterRunner {
 		if (isUseRubyDebug()) {
 			IPath rdebugLocation = rubyInterpreter.getInstallLocation()
 					.removeLastSegments(1);
-			rdebugLocation = rdebugLocation.append("rdebug.cmd");
+			rdebugLocation = rdebugLocation.append("rdebug");
 			return new RubyInterpreter("rdebug", rdebugLocation);
 		} else {
 			return rubyInterpreter;

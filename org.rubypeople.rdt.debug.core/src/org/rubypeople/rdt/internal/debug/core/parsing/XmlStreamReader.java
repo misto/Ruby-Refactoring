@@ -29,4 +29,7 @@ public abstract class XmlStreamReader {
 		return true ;
 	}
 
+	public void processContent(String text) {
+	}
+
 }

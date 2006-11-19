@@ -17,6 +17,7 @@ import org.rubypeople.rdt.internal.debug.core.model.RubyStackFrame;
 import org.rubypeople.rdt.internal.debug.core.model.RubyThread;
 import org.rubypeople.rdt.internal.debug.core.model.RubyVariable;
 import org.rubypeople.rdt.internal.debug.core.model.ThreadInfo;
+import org.rubypeople.rdt.internal.debug.core.parsing.ErrorReader;
 import org.rubypeople.rdt.internal.debug.core.parsing.FramesReader;
 import org.rubypeople.rdt.internal.debug.core.parsing.LoadResultReader;
 import org.rubypeople.rdt.internal.debug.core.parsing.MultiReaderStrategy;
@@ -36,10 +37,12 @@ public class RubyDebuggerProxy {
 	private RubyLoop rubyLoop;
 	private XmlPullParser xpp;
 	protected MultiReaderStrategy multiReaderStrategy;
+	private ICommandFactory commandFactory ;
 
-	public RubyDebuggerProxy(IRubyDebugTarget debugTarget) {
+	public RubyDebuggerProxy(IRubyDebugTarget debugTarget, boolean isRubyDebug) {
 		this.debugTarget = debugTarget;
-		debugTarget.setRubyDebuggerProxy(this);		
+		debugTarget.setRubyDebuggerProxy(this);
+		commandFactory = isRubyDebug ? new RubyDebugCommandFactory() : new ClassicDebuggerCommandFactory() ; 
 	}
 
 	public boolean checkConnection() {
@@ -124,7 +127,7 @@ public class RubyDebuggerProxy {
 		this.xpp = xpp;
 	}
 
-	protected MultiReaderStrategy getMultiReaderStrategy() {
+	protected synchronized MultiReaderStrategy getMultiReaderStrategy() {
 		if (this.multiReaderStrategy == null) {
 			this.multiReaderStrategy = new MultiReaderStrategy(this.getXpp());
 		}
@@ -142,7 +145,7 @@ public class RubyDebuggerProxy {
 		try {
 			if (breakpoint.isEnabled()) {
 				if (breakpoint instanceof RubyExceptionBreakpoint) {
-					this.println("catch " + ((RubyExceptionBreakpoint) breakpoint).getException());
+					this.println(commandFactory.createCatchOn(breakpoint));
 				} else {
 					this.printBreakpoint("", breakpoint.getMarker().getResource().getName(), breakpoint.getMarker().getAttribute(IMarker.LINE_NUMBER, -1));
 				}
@@ -157,7 +160,7 @@ public class RubyDebuggerProxy {
 	public void removeBreakpoint(IBreakpoint breakpoint) {
 		try {
 			if (breakpoint instanceof RubyExceptionBreakpoint) {
-				this.println("catch off");
+				this.println(commandFactory.createCatchOff());
 			} else {
 				this.printBreakpoint("remove", breakpoint.getMarker().getResource().getName(), breakpoint.getMarker().getAttribute(IMarker.LINE_NUMBER, -1));
 			}
@@ -173,7 +176,7 @@ public class RubyDebuggerProxy {
 			if (breakpoint instanceof RubyExceptionBreakpoint) {
 				// so far we allow only one catch exception
 				// catch off must be set in the case that the enablement has changed to disabled
-				this.println("catch off");
+				this.println(commandFactory.createCatchOff());
 			} else {
 				// remove is called even if it has not been added at program start
 				// (happens if enablement changed from disabled at program start to
@@ -187,24 +190,30 @@ public class RubyDebuggerProxy {
 	}
 
 	protected void printBreakpoint(String mode, String file, int line) throws IOException {
-		StringBuffer setBreakPointCommand = new StringBuffer();
-		setBreakPointCommand.append("b ");
-		setBreakPointCommand.append(mode);
-		setBreakPointCommand.append(" ");
-		setBreakPointCommand.append(file);
-		setBreakPointCommand.append(":");
-		setBreakPointCommand.append(line);
-		this.println(setBreakPointCommand.toString());
+		String command = commandFactory.createSetBreakpoint(mode, file, line);
+		this.println(command);
 	}
 
 	public void startRubyLoop() {
 		rubyLoop = new RubyLoop();
 		rubyLoop.start();
+		Runnable runnable = new Runnable() {
+			public void run() {
+				try {
+					while (true) {
+						new ErrorReader(getMultiReaderStrategy()).read();
+					}
+				} catch (Exception e) {
+					RdtDebugCorePlugin.log(e) ;
+				}
+			};
+		};
+		new Thread(runnable).start();
 	}
 
 	public void resume(RubyThread thread) {
 		try {
-			println("th " + thread.getId() + ";cont");
+			println(commandFactory.createResume(thread));
 		} catch (IOException e) {
 			// terminate ?
 		}
@@ -226,7 +235,7 @@ public class RubyDebuggerProxy {
 
 	public RubyVariable[] readVariables(RubyStackFrame frame) {
 		try {
-			this.println("th " + ((RubyThread) frame.getThread()).getId() + " ; v l " + frame.getIndex());
+			this.println(commandFactory.createReadLocalVariables(frame)) ;
 			return new VariableReader(getMultiReaderStrategy()).readVariables(frame);
 		} catch (Exception ioex) {
 			ioex.printStackTrace();
@@ -236,7 +245,7 @@ public class RubyDebuggerProxy {
 
 	public RubyVariable[] readInstanceVariables(RubyVariable variable) {
 		try {
-			this.println("th " + ((RubyThread) variable.getStackFrame().getThread()).getId() + " ; v i " + variable.getStackFrame().getIndex() + " " + variable.getObjectId());
+			this.println(commandFactory.createReadInstanceVariable(variable)) ;
 			return new VariableReader(getMultiReaderStrategy()).readVariables(variable);
 		} catch (Exception ioex) {
 			ioex.printStackTrace();
@@ -246,7 +255,7 @@ public class RubyDebuggerProxy {
 
 	public RubyVariable readInspectExpression(RubyStackFrame frame, String expression) throws RubyProcessingException {
 		try {
-			this.println("th " + ((RubyThread) frame.getThread()).getId() + " ; v inspect " + frame.getIndex() + " " + expression);
+			this.println(commandFactory.createInspect(frame, expression));
 			RubyVariable[] variables = new VariableReader(getMultiReaderStrategy()).readVariables(frame);
 			if (variables.length == 0) {
 				return null;
@@ -261,7 +270,7 @@ public class RubyDebuggerProxy {
 
 	public void readStepOverEnd(RubyStackFrame stackFrame) {
 		try {
-			this.println("th " + ((RubyThread) stackFrame.getThread()).getId() + " ; next " + stackFrame.getIndex());
+			this.println(commandFactory.createStepOver(stackFrame));
 
 		} catch (Exception e) {
 			RdtDebugCorePlugin.log(e);
@@ -271,7 +280,7 @@ public class RubyDebuggerProxy {
 
 	public void readStepReturnEnd(RubyStackFrame stackFrame) {
 		try {
-			this.println("th " + ((RubyThread) stackFrame.getThread()).getId() + " ; next " + (stackFrame.getIndex() + 1));
+			this.println(commandFactory.createStepReturn(stackFrame));
 
 		} catch (Exception e) {
 			RdtDebugCorePlugin.log(e);
@@ -280,7 +289,7 @@ public class RubyDebuggerProxy {
 
 	public void readStepIntoEnd(RubyStackFrame stackFrame) {
 		try {
-			this.println("th " + ((RubyThread) stackFrame.getThread()).getId() + " ; step " + stackFrame.getIndex());
+			this.println(commandFactory.createStepInto(stackFrame));
 			/*
 			 * return new
 			 * SuspensionReader(getMultiReaderStrategy()).readSuspension();
@@ -292,7 +301,7 @@ public class RubyDebuggerProxy {
 
 	public RubyStackFrame[] readFrames(RubyThread thread) {
 		try {
-			this.println("th " + thread.getId() + " ; w");
+			this.println(commandFactory.createReadFrames(thread)) ;
 			return new FramesReader(getMultiReaderStrategy()).readFrames(thread);
 		} catch (IOException e) {
 			RdtDebugCorePlugin.log(e);
@@ -303,7 +312,7 @@ public class RubyDebuggerProxy {
 
 	public ThreadInfo[] readThreads() {
 		try {
-			this.println("th l");
+			this.println(commandFactory.createReadThreads());
 			return new ThreadInfoReader(getMultiReaderStrategy()).readThreads();
 		} catch (Exception e) {
 			RdtDebugCorePlugin.log(e);
@@ -313,7 +322,7 @@ public class RubyDebuggerProxy {
 
 	public LoadResultReader.LoadResult readLoadResult(String filename) {
 		try {
-			this.println("load " + filename);
+			this.println(commandFactory.createLoad(filename));
 			return new LoadResultReader(getMultiReaderStrategy()).readLoadResult();
 		} catch (Exception e) {
 			return null;
@@ -346,6 +355,7 @@ public class RubyDebuggerProxy {
 						break;
 					}
 					RdtDebugCorePlugin.debug(hit);
+					// TODO: should this be using the JOB API?
 					new Thread() {
 
 						public void run() {

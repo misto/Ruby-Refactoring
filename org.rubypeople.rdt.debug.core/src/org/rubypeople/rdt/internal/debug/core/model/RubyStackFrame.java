@@ -118,10 +118,11 @@ public class RubyStackFrame extends PlatformObject implements IStackFrame {
 	}
 	
 	public void stepOver() throws DebugException {
-		thread.prepareForResume() ;
+		thread.setStepOver() ;
 		this.getRubyDebuggerProxy().readStepOverEnd(RubyStackFrame.this) ;
-		DebugEvent ev = new DebugEvent(this.getThread(), DebugEvent.RESUME, DebugEvent.STEP_OVER);
-		DebugPlugin.getDefault().fireDebugEventSet(new DebugEvent[] { ev });
+		// In the perl debugger tutorial the Resume event comes from the perl side as debug event
+		//DebugEvent ev = new DebugEvent(this.getThread(), DebugEvent.RESUME, DebugEvent.STEP_OVER);
+		//DebugPlugin.getDefault().fireDebugEventSet(new DebugEvent[] { ev });
 	}
 
 	public void stepReturn() throws DebugException {

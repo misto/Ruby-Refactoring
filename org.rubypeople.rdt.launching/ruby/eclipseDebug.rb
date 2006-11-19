@@ -209,6 +209,7 @@ class DEBUGGER__
       @line = nil
       @no_step = nil
       @frames = []
+      @current_frame = -1
       @finish_pos = 0
       @trace = false
       @catch = nil # "StandardError"
@@ -357,16 +358,17 @@ class DEBUGGER__
 
     def getBinding(pos)
       # returns frame info of frame pos, if pos is within bound,  nil otherwise
-      if !pos then
-        return nil
+      pos = @current_frame unless pos
+      pos = pos.to_i - 1
+      if pos < 0 then
+        @printer.debug("ERROR: illegal stack frame, using top frame.")
+        pos = 0 
       end
-      pos = pos.to_i
-      pos -= 1
-      if pos >= @frames.size || pos < 0 then
-        @printer.debug("%i must be between %i and %i.", pos+1, 1, @frames.size)
-        return nil
+      if pos >= @frames.size then
+        @printer.debug("ERROR: given stack frame number %i too high.", pos + 1)
+        pos = @frames.size - 1
       end
-      @printer.debug("Using frame %s for evaluation of variable.", pos)
+      @printer.debug("Using frame %s (1-based) for evaluation of variable.", pos + 1)
       return @frames[pos][0]
     end
 
@@ -378,6 +380,7 @@ class DEBUGGER__
         var_list(global_variables, binding, 'global')
 
       when /^\s*l(?:ocal)?\s*(\d+)?$/
+        @printer.debug("Getting binding for frame #{$1}")
         new_binding = getBinding($1)
         if new_binding then
           binding = new_binding
@@ -508,7 +511,10 @@ class DEBUGGER__
     
     def processInput(input)
       binding, file, line, id = @frames[0]
-      readUserInput(binding, file, line, input)
+      input.split(";").each { 
+        | singleCommand |
+        readUserInput(binding, file, line, singleCommand.strip)
+      }
     end
         
     def readUserInput(binding, binding_file, binding_line, input)
@@ -686,6 +692,10 @@ class DEBUGGER__
           #            frame_pos = 0
           #            prompt = false
           #          end
+        when /^\s*f(?:rame)?\s+(\d+)\s*$/
+          @printer.debug("Setting frame to #{$1}")
+          @current_frame = $1.to_i
+
           
         when /^\s*cat(?:ch)?(?:\s+(.+))?$/
           # $1 can also be nil 

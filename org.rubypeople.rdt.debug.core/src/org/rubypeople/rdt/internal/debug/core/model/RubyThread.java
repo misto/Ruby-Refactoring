@@ -121,6 +121,20 @@ public class RubyThread extends PlatformObject implements IThread {
 				DebugEvent.CLIENT_REQUEST);
 		DebugPlugin.getDefault().fireDebugEventSet(new DebugEvent[] { ev });
 	}
+	
+	protected void setStepOver() {
+		isSuspended = false;
+		isStepping = true ;
+		this.createName();
+		// keep the frames when stepping, the will be overwritten when the 
+		// step end event occurs
+		//this.frames = null;
+		// consider to let this come in as debug event
+		DebugEvent ev = new DebugEvent(this, DebugEvent.STEP_OVER,
+				DebugEvent.CLIENT_REQUEST);
+		DebugPlugin.getDefault().fireDebugEventSet(new DebugEvent[] { ev });
+	}
+	
 
 	public void resume() throws DebugException {
 		this.prepareForResume();
@@ -166,10 +180,9 @@ public class RubyThread extends PlatformObject implements IThread {
 	}
 
 	public void stepOver() throws DebugException {
-		isStepping = true;
-		this.createName();
-		this.frames = null;
-		frames[0].stepOver();
+		if (frames != null && frames.length > 0) {		
+			frames[0].stepOver();
+		}
 	}
 
 	public void stepReturn() throws DebugException {
@@ -224,12 +237,12 @@ public class RubyThread extends PlatformObject implements IThread {
 		this.id = id;
 	}
 	
+
 	public Object getAdapter(Class adapterType) {
 		// Patch from Shugo Maeda: open debug perspective on suspend
 		if (adapterType.equals(ILaunch.class)) {
-			return getLaunch();
+			return getLaunch();	
 		}
 		return super.getAdapter(adapterType);
 	}
-
 }

@@ -11,7 +11,9 @@ import org.rubypeople.rdt.core.RubyCore;
 public class RdtDebugCorePlugin extends Plugin {
 
 	public static final String PLUGIN_ID = "org.rubypeople.rdt.debug.core"; //$NON-NLS-1$
+
 	private static boolean isRubyDebuggerVerbose = false;
+
 	protected static RdtDebugCorePlugin plugin;
 
 	public RdtDebugCorePlugin() {
@@ -27,31 +29,42 @@ public class RdtDebugCorePlugin extends Plugin {
 		return RubyCore.getWorkspace();
 	}
 
-	
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see org.eclipse.core.runtime.Plugin#start(org.osgi.framework.BundleContext)
 	 */
 	public void start(BundleContext context) throws Exception {
 		super.start(context);
-		String rubyDebuggerVerboseOption = Platform.getDebugOption(RdtDebugCorePlugin.PLUGIN_ID + "/rubyDebuggerVerbose");
-		isRubyDebuggerVerbose = rubyDebuggerVerboseOption == null ? false : rubyDebuggerVerboseOption.equalsIgnoreCase("true");
+		String rubyDebuggerVerboseOption = Platform
+				.getDebugOption(RdtDebugCorePlugin.PLUGIN_ID
+						+ "/rubyDebuggerVerbose");
+		isRubyDebuggerVerbose = rubyDebuggerVerboseOption == null ? false
+				: rubyDebuggerVerboseOption.equalsIgnoreCase("true");
 	}
 
 	public static void log(int severity, String message) {
-		Status status = new Status(severity, PLUGIN_ID, IStatus.OK, message, null);
+		Status status = new Status(severity, PLUGIN_ID, IStatus.OK, message,
+				null);
 		RdtDebugCorePlugin.log(status);
 	}
-	
+
 	public static void log(String message, Throwable e) {
 		log(new Status(IStatus.ERROR, PLUGIN_ID, IStatus.ERROR, message, e));
 	}
 
 	public static void log(IStatus status) {
-		getDefault().getLog().log(status);
+		if (RdtDebugCorePlugin.getDefault() != null) {
+			getDefault().getLog().log(status);
+		} else {
+			System.out.println("Error: ");
+			System.out.println(status.getMessage());
+		}
 	}
 
 	public static void log(Throwable e) {
-		log(new Status(IStatus.ERROR, PLUGIN_ID, IStatus.ERROR, "RdtLaunchingPlugin.internalErrorOccurred", e)); //$NON-NLS-1$
+		log(new Status(IStatus.ERROR, PLUGIN_ID, IStatus.ERROR,
+				"RdtLaunchingPlugin.internalErrorOccurred", e)); //$NON-NLS-1$
 	}
 
 	public static void debug(Object message) {

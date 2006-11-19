@@ -33,6 +33,10 @@ public class MultiReaderStrategy extends AbstractReadStrategy {
 					// RdtDebugCorePlugin.log(e);
 					e.printStackTrace();
 				} finally {
+					try {
+						Thread.sleep(1000) ; // Avoid Commodfication Exceptions
+					} catch (InterruptedException e) {
+					} 
 					releaseAllReader() ;	
 				}
 				
@@ -51,6 +55,10 @@ public class MultiReaderStrategy extends AbstractReadStrategy {
 				if (currentReader.processEndElement(xpp)) {
 					this.removeReader(currentReader);
 					currentReader = null;
+				}
+			} else if (eventType == XmlPullParser.TEXT) {
+				if (currentReader != null) {
+					currentReader.processContent(xpp.getText()) ;
 				}
 			}
 			eventType = xpp.next();

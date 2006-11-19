@@ -51,7 +51,7 @@ public class FTC_DebuggerProxyTest extends TestCase {
 	
 	public void setUp() throws Exception {
 		target = new TestRubyDebugTarget() ;
-		proxy = new RubyDebuggerProxy(target) ;
+		proxy = new RubyDebuggerProxy(target, false /*useRubyDebug*/) ;
 		PipedInputStream pipedInputStream = new PipedInputStream() ;
 		PipedOutputStream pipedOutputStream = new PipedOutputStream(pipedInputStream) ; 
 

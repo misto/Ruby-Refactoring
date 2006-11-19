@@ -1,52 +1,44 @@
 package org.rubypeople.rdt.debug.core.tests;
 
+import org.rubypeople.rdt.internal.debug.core.SuspensionPoint;
+
 public class FTC_RubyDebugCommunicationTest extends
 		FTC_ClassicDebuggerCommunicationTest {
 	
 	public static junit.framework.TestSuite suite() {
 
 		junit.framework.TestSuite suite = new junit.framework.TestSuite();
-//		suite.addTest(new FTC_RubyDebugCommunicationTest("testVariableLocal"));
-//		suite.addTest(new FTC_RubyDebugCommunicationTest("testVariablesInFrames"));
-//		suite.addTest(new FTC_RubyDebugCommunicationTest("testVariableArray"));
-//		suite.addTest(new FTC_RubyDebugCommunicationTest("testVariableArrayEmpty"));
-//		suite.addTest(new FTC_RubyDebugCommunicationTest("testVariableHash"));
-//		suite.addTest(new FTC_RubyDebugCommunicationTest("testVariableHashWithObjectKeys"));
-//		suite.addTest(new FTC_RubyDebugCommunicationTest("testVariableHashWithStringKeys"));
-//		suite.addTest(new FTC_RubyDebugCommunicationTest("testVariableWithXmlContent"));
-		suite.addTest(new FTC_RubyDebugCommunicationTest("testThreads"));		
-//		suite.addTest(new FTC_RubyDebugCommunicationTest("testStepOver"));		
-//		suite.addTest(new FTC_RubyDebugCommunicationTest("testThreadFramesAndVariables"));
-//		suite.addTest(new FTC_RubyDebugCommunicationTest("testFramesWhenThreadSpawned"));
-//		suite.addTest(new FTC_RubyDebugCommunicationTest("testThreadIdsAndResume"));
-		suite.addTest(new FTC_RubyDebugCommunicationTest("testThreadFramesAndVariables"));
-//		
-//		suite.addTest(new FTC_RubyDebugCommunicationTest("testFrames"));
 		
-		//suite.addTest(new TC_DebuggerCommunicationTest("testConstants"));
-		//suite.addTest(new TC_DebuggerCommunicationTest("testConstantDefinedInBothClassAndSuperclass"));
+		suite.addTest(new FTC_RubyDebugCommunicationTest("testCommandList"));
 		
-		//suite.addTest(new FTC_RubyDebugCommunicationTest("testBreakpointOnFirstLine"));
-		//suite.addTest(new FTC_RubyDebugCommunicationTest("testBreakpointAddAndRemove"));
-		//suite.addTest(new TC_DebuggerCommunicationTest("testVariableNil"));
-		//suite.addTest(new TC_DebuggerCommunicationTest("testVariableInstanceNested"));				
-		//suite.addTest(new TC_DebuggerCommunicationTest("testStaticVariableInstanceNested"));			
+		suite.addTest(new FTC_RubyDebugCommunicationTest("testInspect"));
+		suite.addTest(new FTC_RubyDebugCommunicationTest("testFrames"));
 		
-		//suite.addTest(new TC_DebuggerCommunicationTest("testNameError"));
-		//suite.addTest(new TC_DebuggerCommunicationTest("testVariablesInObject"));	
-		//suite.addTest(new TC_DebuggerCommunicationTest("testStaticVariables"));		
-		//suite.addTest(new TC_DebuggerCommunicationTest("testSingletonStaticVariables"));							
-		//suite.addTest(new TC_DebuggerCommunicationTest("testVariableString"));	
-		// suite.addTest(new TC_DebuggerCommunicationTest("testInspect"));
-		//suite.addTest(new TC_DebuggerCommunicationTest("testInspectError"));
-		//suite.addTest(new TC_DebuggerCommunicationTest("testReloadAndInspect")) ;
-		//suite.addTest(new TC_DebuggerCommunicationTest("testReloadWithException")) ;
-		//suite.addTest(new TC_DebuggerCommunicationTest("testReloadAndStep")) ;
-		//suite.addTest(new TC_DebuggerCommunicationTest("testReloadInRequire")) ;
-		//suite.addTest(new TC_DebuggerCommunicationTest("testReloadInStackFrame")) ;
-		//suite.addTest(new TC_DebuggerCommunicationTest("testIgnoreException"));
-		//suite.addTest(new TC_DebuggerCommunicationTest("testExceptionHierarchy"));
-		//suite.addTest(new TC_DebuggerCommunicationTest("testException"));
+		suite.addTest(new FTC_RubyDebugCommunicationTest("testStepOver"));
+		suite.addTest(new FTC_RubyDebugCommunicationTest("testStepOverFrames"));
+		suite.addTest(new FTC_RubyDebugCommunicationTest("testStepOverFramesValue2"));
+		suite.addTest(new FTC_RubyDebugCommunicationTest("testStepOverInDifferentFrame"));
+		suite.addTest(new FTC_RubyDebugCommunicationTest("testStepReturn"));
+		suite.addTest(new FTC_RubyDebugCommunicationTest("testHitBreakpointWhileSteppingOver"));
+		suite.addTest(new FTC_RubyDebugCommunicationTest("testStepInto"));
+		
+		suite.addTest(new FTC_RubyDebugCommunicationTest("testVariableString"));
+		suite.addTest(new FTC_RubyDebugCommunicationTest("testVariableLocal"));
+		suite.addTest(new FTC_RubyDebugCommunicationTest("testVariableInstance"));
+		//suite.addTest(new FTC_RubyDebugCommunicationTest("testVariableInstanceNested"));
+		
+		suite.addTest(new FTC_RubyDebugCommunicationTest("testVariableNil"));
+		suite.addTest(new FTC_RubyDebugCommunicationTest("testVariableWithXmlContent"));
+		suite.addTest(new FTC_RubyDebugCommunicationTest("testVariableInObject"));
+		suite.addTest(new FTC_RubyDebugCommunicationTest("testVariableArray"));
+		suite.addTest(new FTC_RubyDebugCommunicationTest("testVariableArrayEmpty"));
+		
+		suite.addTest(new FTC_RubyDebugCommunicationTest("testVariableHashWithStringKeys"));
+		suite.addTest(new FTC_RubyDebugCommunicationTest("testVariableHashWithObjectKeys"));
+		
+		
+		
+		
         
 		return suite;
 	}
@@ -58,7 +50,7 @@ public class FTC_RubyDebugCommunicationTest extends
 	@Override
 	public void startRubyProcess() throws Exception {
 		// TODO Auto-generated method stub
-		String cmd = "C:\\Programme\\ruby-1.8.5\\bin\\rdebug.cmd -s -p 1098 -e -w -I " + getTmpDir().replace('\\', '/') + " " +  getRubyTestFilename() ;
+		String cmd = "rdebug -s -p 1097 --cport 1098 -w -f xml -I " + getTmpDir().replace('\\', '/') + " " +  getRubyTestFilename() ;
 				//"FTC_DebuggerCommunicationTest.RUBY_INTERPRETER + " -I" + createIncludeDir() +  " -I" + getTmpDir().replace('\\', '/') + " -reclipseDebugVerbose.rb " + ;
 		System.out.println("Starting: " + cmd);
 		process = Runtime.getRuntime().exec(cmd);
@@ -69,4 +61,11 @@ public class FTC_RubyDebugCommunicationTest extends
 
 	}
 
+	@Override
+	protected void readSuspensionInFirstLine() throws Exception {
+		System.out.println("Waiting for suspension in first line") ;
+		SuspensionPoint hit = getSuspensionReader().readSuspension();
+		assertEquals(1, hit.getLine()) ;
+	}
+	
 }
