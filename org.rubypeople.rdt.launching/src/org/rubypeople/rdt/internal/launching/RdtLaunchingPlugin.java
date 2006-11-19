@@ -7,6 +7,7 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Plugin;
 import org.eclipse.core.runtime.Status;
+import org.osgi.framework.BundleContext;
 import org.rubypeople.rdt.core.RubyCore;
 
 public class RdtLaunchingPlugin extends Plugin {
@@ -47,5 +48,10 @@ public class RdtLaunchingPlugin extends Plugin {
 		if (getDefault().isDebugging()) {
 			System.out.println(message);
 		}
+	}
+	@Override
+	public void stop(BundleContext arg0) throws Exception {
+		super.stop(arg0);
+		savePluginPreferences() ;
 	}
 }
