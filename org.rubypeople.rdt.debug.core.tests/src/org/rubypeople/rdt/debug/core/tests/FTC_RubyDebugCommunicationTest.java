@@ -35,10 +35,6 @@ public class FTC_RubyDebugCommunicationTest extends
 		
 		suite.addTest(new FTC_RubyDebugCommunicationTest("testVariableHashWithStringKeys"));
 		suite.addTest(new FTC_RubyDebugCommunicationTest("testVariableHashWithObjectKeys"));
-		
-		
-		
-		
         
 		return suite;
 	}
@@ -50,7 +46,7 @@ public class FTC_RubyDebugCommunicationTest extends
 	@Override
 	public void startRubyProcess() throws Exception {
 		// TODO Auto-generated method stub
-		String cmd = "rdebug -s -p 1097 --cport 1098 -w -f xml -I " + getTmpDir().replace('\\', '/') + " " +  getRubyTestFilename() ;
+		String cmd = "rdebug -s -p 1098 --cport 1099 -d -w -f xml -I " + getTmpDir().replace('\\', '/') + " " +  getRubyTestFilename() ;
 				//"FTC_DebuggerCommunicationTest.RUBY_INTERPRETER + " -I" + createIncludeDir() +  " -I" + getTmpDir().replace('\\', '/') + " -reclipseDebugVerbose.rb " + ;
 		System.out.println("Starting: " + cmd);
 		process = Runtime.getRuntime().exec(cmd);
