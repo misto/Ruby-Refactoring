@@ -31,7 +31,7 @@ public class RubyThread extends PlatformObject implements IThread {
 	public RubyThread(IDebugTarget target, int id) {
 		this.target = target;
 		this.setId(id);
-		this.createName();
+		this.updateName();
 	}
 
 	public IStackFrame[] getStackFrames() {
@@ -49,13 +49,17 @@ public class RubyThread extends PlatformObject implements IThread {
 		return frames;
 	}
 
-	private void createStackFrames() {
+	private synchronized void  createStackFrames() {
+		if (isSuspended()) {
 		getRubyDebuggerProxy().readFrames(this);
 		for (int i = 0; i < frames.length; i++) {
 			RubyStackFrame frame = frames[i];
-			DebugEvent ev = new DebugEvent(frame, DebugEvent.CREATE);
-			DebugPlugin.getDefault().fireDebugEventSet(
-					new DebugEvent[] { ev });
+//			DebugEvent ev = new DebugEvent(frame, DebugEvent.CREATE);
+//			DebugPlugin.getDefault().fireDebugEventSet(
+//					new DebugEvent[] { ev });
+		}
+		} else {
+			frames = new RubyStackFrame[] {} ;
 		}
 	}
 
@@ -64,7 +68,7 @@ public class RubyThread extends PlatformObject implements IThread {
 	}
 
 	public boolean hasStackFrames() {
-		return getStackFrames().length > 0;
+		return isSuspended ; //TODO: changegetStackFrames().length > 0;
 	}
 
 	public int getPriority() throws DebugException {
@@ -72,10 +76,8 @@ public class RubyThread extends PlatformObject implements IThread {
 	}
 
 	public IStackFrame getTopStackFrame() throws DebugException {
-		if (frames == null || frames.length == 0) {
-			return null;
-		}
-		return frames[0];
+		// TODO: check for empty
+		return getStackFrames()[0] ;
 	}
 
 	public IBreakpoint[] getBreakpoints() {
@@ -113,47 +115,50 @@ public class RubyThread extends PlatformObject implements IThread {
 		this.isSuspended = isSuspended;
 	}
 
-	protected void prepareForResume() {
+	/* 
+	 * call after user wants to resume or step
+	 */
+	protected void resume(boolean isStep) {
+		isStepping = isStep ;
 		isSuspended = false;
-		this.createName();
-		this.frames = null;
-		DebugEvent ev = new DebugEvent(this, DebugEvent.RESUME,
-				DebugEvent.CLIENT_REQUEST);
-		DebugPlugin.getDefault().fireDebugEventSet(new DebugEvent[] { ev });
-	}
-	
-	protected void setStepOver() {
-		isSuspended = false;
-		isStepping = true ;
-		this.createName();
-		// keep the frames when stepping, the will be overwritten when the 
-		// step end event occurs
-		//this.frames = null;
-		// consider to let this come in as debug event
-		DebugEvent ev = new DebugEvent(this, DebugEvent.STEP_OVER,
-				DebugEvent.CLIENT_REQUEST);
-		DebugPlugin.getDefault().fireDebugEventSet(new DebugEvent[] { ev });
+		this.updateName();
+		this.frames = new RubyStackFrame[] {} ;		
 	}
 	
 
 	public void resume() throws DebugException {
-		this.prepareForResume();
+		resume(false /* isStep*/) ;
 		((RubyDebugTarget) this.getDebugTarget()).getRubyDebuggerProxy()
 				.resume(this);
+		// TODO: resume should be sent from ruby debugger
+		DebugEvent ev = new DebugEvent(this, DebugEvent.RESUME, DebugEvent.CLIENT_REQUEST);
+		DebugPlugin.getDefault().fireDebugEventSet(new DebugEvent[] { ev });
 	}
 
+	/*
+	 * called when suspension event was sent from ruby debugger
+	 */
 	public void doSuspend(SuspensionPoint suspensionPoint) {
-		this.createStackFrames() ;
+		int suspensionReason = 0 ;
+		if (suspensionPoint.isStep()) {
+			suspensionReason = DebugEvent.STEP_END ;
+		} else {
+			suspensionReason = DebugEvent.BREAKPOINT ;
+		}
+		DebugEvent ev = new DebugEvent(this, DebugEvent.SUSPEND,
+				suspensionReason);
+		DebugPlugin.getDefault().fireDebugEventSet(new DebugEvent[] { ev });
+		frames = null ;
+		isSuspended = true;
+		isStepping = false;
 		this.createName(suspensionPoint);
-		this.suspend();
 	}
 
 	public void suspend() {
+		frames = null ;
 		isStepping = false;
 		isSuspended = true;
-		DebugEvent ev = new DebugEvent(this, DebugEvent.SUSPEND,
-				DebugEvent.BREAKPOINT);
-		DebugPlugin.getDefault().fireDebugEventSet(new DebugEvent[] { ev });
+		// TODO: send suspension command to ruby debugger
 	}
 
 	public boolean canStepInto() {
@@ -174,7 +179,7 @@ public class RubyThread extends PlatformObject implements IThread {
 
 	public void stepInto() throws DebugException {
 		isStepping = true;
-		this.createName();
+		this.updateName();
 		this.frames = null;
 		frames[0].stepInto();
 	}
@@ -218,7 +223,7 @@ public class RubyThread extends PlatformObject implements IThread {
 		this.name = name;
 	}
 
-	protected void createName() {
+	protected void updateName() {
 		this.createName(null);
 	}
 

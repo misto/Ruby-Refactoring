@@ -17,20 +17,19 @@ public class RubyDebugCommandFactory implements ICommandFactory {
 	}
 	
 	public String createReadInstanceVariable(RubyVariable variable) {
-		//((RubyThread) variable.getStackFrame().getThread()).getId()
 		return "frame " + variable.getStackFrame().getIndex() + " ; v i " + variable.getObjectId();
 	}
 
-	public String createStepOver(RubyStackFrame stackFrame) {
-		return "th " + ((RubyThread) stackFrame.getThread()).getId() + " ; next " + stackFrame.getIndex();
+	public String createStepOver(RubyStackFrame frame) {
+		return "frame " + frame.getIndex() + " ; next" ;
 	}
 
-	public String createStepReturn(RubyStackFrame stackFrame) {
-		return "th " + ((RubyThread) stackFrame.getThread()).getId() + " ; next " + (stackFrame.getIndex() + 1);
+	public String createStepReturn(RubyStackFrame frame) {
+		return  "frame " + frame.getIndex() + " ; next 1 " + (frame.getIndex() + 1)  ;
 	}
 
-	public String createStepInto(RubyStackFrame stackFrame) {
-		return "th " + ((RubyThread) stackFrame.getThread()).getId() + " ; step " + stackFrame.getIndex();
+	public String createStepInto(RubyStackFrame frame) {
+		return "frame " + frame.getIndex() + " ; step";
 	}
 
 	public String createReadThreads() {

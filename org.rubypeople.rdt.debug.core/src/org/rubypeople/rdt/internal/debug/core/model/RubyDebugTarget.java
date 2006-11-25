@@ -101,7 +101,6 @@ public class RubyDebugTarget extends PlatformObject implements IRubyDebugTarget 
 	}
 
 	public boolean hasThreads() throws DebugException {
-		System.out.println("THREADS: " + threads.length) ;
 		return threads.length > 0;
 	}
 

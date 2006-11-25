@@ -268,32 +268,26 @@ public class RubyDebuggerProxy {
 		}
 	}
 
-	public void readStepOverEnd(RubyStackFrame stackFrame) {
+	public void sendStepOverEnd(RubyStackFrame stackFrame) {
 		try {
 			this.println(commandFactory.createStepOver(stackFrame));
-
 		} catch (Exception e) {
 			RdtDebugCorePlugin.log(e);
 
 		}
 	}
 
-	public void readStepReturnEnd(RubyStackFrame stackFrame) {
+	public void sendStepReturnEnd(RubyStackFrame stackFrame) {
 		try {
 			this.println(commandFactory.createStepReturn(stackFrame));
-
 		} catch (Exception e) {
 			RdtDebugCorePlugin.log(e);
 		}
 	}
 
-	public void readStepIntoEnd(RubyStackFrame stackFrame) {
+	public void sendStepIntoEnd(RubyStackFrame stackFrame) {
 		try {
 			this.println(commandFactory.createStepInto(stackFrame));
-			/*
-			 * return new
-			 * SuspensionReader(getMultiReaderStrategy()).readSuspension();
-			 */
 		} catch (Exception e) {
 			RdtDebugCorePlugin.log(e);
 		}

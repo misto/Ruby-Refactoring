@@ -111,23 +111,25 @@ public class RubyStackFrame extends PlatformObject implements IStackFrame {
 	}
 	
 	public void stepInto() throws DebugException {
-		thread.prepareForResume() ;
-		this.getRubyDebuggerProxy().readStepIntoEnd(RubyStackFrame.this) ;		
+		thread.resume(true /*isstep*/) ;
+		this.getRubyDebuggerProxy().sendStepIntoEnd(RubyStackFrame.this) ;	
+		// TODO: resume event should be sent from ruby debugger
 		DebugEvent ev = new DebugEvent(this.getThread(), DebugEvent.RESUME, DebugEvent.STEP_INTO);
 		DebugPlugin.getDefault().fireDebugEventSet(new DebugEvent[] { ev });
 	}
 	
 	public void stepOver() throws DebugException {
-		thread.setStepOver() ;
-		this.getRubyDebuggerProxy().readStepOverEnd(RubyStackFrame.this) ;
-		// In the perl debugger tutorial the Resume event comes from the perl side as debug event
-		//DebugEvent ev = new DebugEvent(this.getThread(), DebugEvent.RESUME, DebugEvent.STEP_OVER);
-		//DebugPlugin.getDefault().fireDebugEventSet(new DebugEvent[] { ev });
+		thread.resume(true /*isstep*/) ;
+		this.getRubyDebuggerProxy().sendStepOverEnd(RubyStackFrame.this) ;
+		// TODO: resume event should be sent from ruby debugger
+		DebugEvent ev = new DebugEvent(this.getThread(), DebugEvent.RESUME, DebugEvent.STEP_OVER);
+		DebugPlugin.getDefault().fireDebugEventSet(new DebugEvent[] { ev });
 	}
 
 	public void stepReturn() throws DebugException {
-		thread.prepareForResume() ;
-		this.getRubyDebuggerProxy().readStepReturnEnd(RubyStackFrame.this) ;				
+		thread.resume(true /*isstep*/) ;
+		this.getRubyDebuggerProxy().sendStepReturnEnd(RubyStackFrame.this) ;
+		// TODO: resume event should be sent from ruby debugger
 		DebugEvent ev = new DebugEvent(this.getThread(), DebugEvent.RESUME, DebugEvent.STEP_RETURN);
 		DebugPlugin.getDefault().fireDebugEventSet(new DebugEvent[] { ev });		
 	}
@@ -170,6 +172,11 @@ public class RubyStackFrame extends PlatformObject implements IStackFrame {
 
 	public RubyDebuggerProxy getRubyDebuggerProxy() {
 		return thread.getRubyDebuggerProxy();
+	}
+	
+	@Override
+	public String toString() {
+		return getName();
 	}
 
 }
