@@ -1,3 +1,13 @@
+Since 0.8.0 Release:
+* Preliminary support for ruby-debug as the debugging backend
+* Integration of type inferrencing work done by Jason morrison for Google Summer of Code
+  * Improved code completion
+  * Initial version of Mark occurences support
+  * Preliminary Goto Declaration(F3) support
+* Integration with latest JRuby parser
+  * positioning fixes
+  * improved speed
+
 Release 0.8.0:
 * Compatible with Eclipse 3.1 and 3.2
 * New Ruby Browsing Perspective
