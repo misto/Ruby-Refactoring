@@ -5,7 +5,7 @@ import java.util.HashMap;
 import org.eclipse.core.resources.IResourceChangeEvent;
 import org.eclipse.core.resources.IResourceChangeListener;
 import org.eclipse.core.runtime.ISafeRunnable;
-import org.eclipse.core.runtime.Platform;
+import org.eclipse.core.runtime.SafeRunner;
 import org.rubypeople.rdt.core.IElementChangedListener;
 import org.rubypeople.rdt.core.IRubyProject;
 import org.rubypeople.rdt.internal.core.util.Util;
@@ -118,7 +118,7 @@ public class DeltaProcessingState implements IResourceChangeListener {
             // called when some are causing grief
             final IResourceChangeListener listener = this.preResourceChangeListeners[i];
             if ((this.preResourceChangeEventMasks[i] & event.getType()) != 0)
-                Platform.run(new ISafeRunnable() {
+            	SafeRunner.run(new ISafeRunnable() {
 
                     public void handleException(Throwable exception) {
                         Util

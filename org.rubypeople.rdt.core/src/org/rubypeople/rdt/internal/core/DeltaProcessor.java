@@ -17,7 +17,7 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.ISafeRunnable;
 import org.eclipse.core.runtime.PerformanceStats;
-import org.eclipse.core.runtime.Platform;
+import org.eclipse.core.runtime.SafeRunner;
 import org.rubypeople.rdt.core.ElementChangedEvent;
 import org.rubypeople.rdt.core.IElementChangedListener;
 import org.rubypeople.rdt.core.IRubyElement;
@@ -267,7 +267,7 @@ public class DeltaProcessor {
                 }
                 // wrap callbacks with Safe runnable for subsequent listeners to
                 // be called when some are causing grief
-                Platform.run(new ISafeRunnable() {
+                SafeRunner.run(new ISafeRunnable() {
 
                     public void handleException(Throwable exception) {
                         Util
