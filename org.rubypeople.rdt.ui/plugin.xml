@@ -275,35 +275,35 @@
    <extension
          point="org.eclipse.ui.propertyPages">
       <page
-            objectClass="org.eclipse.core.resources.IProject"
             name="%PropertyPageRubyProject.name"
             class="org.rubypeople.rdt.internal.ui.RubyProjectPropertyPage"
             id="org.rubypeople.rdt.ui.PropertyPageRubyProject">
-         <filter
-               name="nature"
-               value="org.rubypeople.rdt.core.rubynature">
-         </filter>
+        <enabledWhen>
+		  <adapt type="org.eclipse.core.resources.IProject">
+		    <test property="org.eclipse.core.resources.projectNature" value="org.rubypeople.rdt.core.rubynature"/>
+		  </adapt>         
+        </enabledWhen>
       </page>
       <page
-            objectClass="org.rubypeople.rdt.core.IRubyProject"
             name="%PropertyPageRubyProject.name"
             class="org.rubypeople.rdt.internal.ui.RubyProjectPropertyPage"
             id="org.rubypeople.rdt.ui.PropertyPageRubyProject">
-         <filter
-               name="nature"
-               value="org.rubypeople.rdt.core.rubynature">
-         </filter>
+        <enabledWhen>
+		  <adapt type="org.eclipse.core.resources.IProject">
+		    <test property="org.eclipse.core.resources.projectNature" value="org.rubypeople.rdt.core.rubynature"/>
+		  </adapt>         
+        </enabledWhen>
       </page>
       <page
-            objectClass="org.eclipse.core.resources.IProject"
             name="%problemSeveritiesPageName"
             class="org.rubypeople.rdt.internal.ui.preferences.ProblemSeveritiesPreferencePage"
             category="org.rubypeople.rdt.ui.propertyPages.CompliancePreferencePage"
             id="org.rubypeople.rdt.ui.propertyPages.ProblemSeveritiesPreferencePage">
-         <filter
-               name="nature"
-               value="org.rubypeople.rdt.core.rubynature">
-         </filter>
+        <enabledWhen>
+		  <adapt type="org.eclipse.core.resources.IProject">
+		    <test property="org.eclipse.core.resources.projectNature" value="org.rubypeople.rdt.core.rubynature"/>
+		  </adapt>         
+        </enabledWhen>
          <keywordReference id="org.rubypeople.rdt.ui.severities"/>
       </page>
    </extension>
@@ -861,17 +861,6 @@
             extensions="%EditorRubyFile.extension"
             fileNames="%EditorRubyFile.filenames">
       </participant>
-   </extension>
-   <extension
-         id="RubyDocumentFactory"
-         name="%rubyDocumentFactory"
-         point="org.eclipse.core.filebuffers.documentCreation">
-      <factory
-            class="org.rubypeople.rdt.internal.ui.rubyeditor.RubyDocumentFactory"
-            contentTypeId="org.rubypeople.rdt.core.rubySource"
-            extensions="%EditorRubyFile.extension"
-            fileNames="%EditorRubyFile.filenames">
-      </factory>
    </extension>
    <extension
          point="org.eclipse.search.searchPages">
