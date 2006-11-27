@@ -49,7 +49,7 @@ public class DebuggerPreferencePage extends FieldEditorPreferencePage implements
 
 		FontData[] fontData = getFont().getFontData();
 		if (fontData.length > 0) {
-			FontData italicFont = new FontData(fontData[0].name, fontData[0].height, SWT.ITALIC);
+			FontData italicFont = new FontData(fontData[0].getName(), fontData[0].getHeight(), SWT.ITALIC);
 			label.setFont(new Font(null, italicFont));
 		}
 		return result;
