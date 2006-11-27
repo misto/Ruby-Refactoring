@@ -1,20 +1,13 @@
 package org.rubypeople.rdt.internal.ti.util;
 
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
-import javax.xml.transform.Source;
-
-import org.jruby.ast.ArgsNode;
-import org.jruby.ast.ArgumentNode;
 import org.jruby.ast.CallNode;
 import org.jruby.ast.ClassNode;
-import org.jruby.ast.Colon2Node;
 import org.jruby.ast.FCallNode;
 import org.jruby.ast.ModuleNode;
 import org.jruby.ast.Node;
-import org.jruby.ast.VCallNode;
 import org.jruby.evaluator.Instruction;
 import org.rubypeople.rdt.internal.ti.ITypeGuess;
 import org.rubypeople.rdt.internal.ti.ITypeInferrer;

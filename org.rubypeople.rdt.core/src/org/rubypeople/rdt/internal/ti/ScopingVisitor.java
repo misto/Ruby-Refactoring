@@ -1,23 +1,16 @@
 package org.rubypeople.rdt.internal.ti;
 
-import java.util.Iterator;
-
 import org.jruby.ast.BlockNode;
 import org.jruby.ast.CallNode;
 import org.jruby.ast.ClassNode;
 import org.jruby.ast.DefnNode;
 import org.jruby.ast.DefsNode;
-import org.jruby.ast.IScopingNode;
 import org.jruby.ast.IterNode;
 import org.jruby.ast.LocalAsgnNode;
 import org.jruby.ast.ModuleNode;
 import org.jruby.ast.NewlineNode;
 import org.jruby.ast.Node;
 import org.jruby.ast.ScopeNode;
-import org.jruby.ast.visitor.AbstractVisitor;
-import org.jruby.evaluator.Instruction;
-import org.rubypeople.rdt.internal.core.symbols.ClassSymbol;
-import org.rubypeople.rdt.internal.core.symbols.MethodSymbol;
 
 /**
  * Visits an AST while retaining memory of current scope.

@@ -4,12 +4,9 @@ package org.rubypeople.rdt.internal.ti.util;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
-import org.jruby.ast.ArgsNode;
-import org.jruby.ast.ArgumentNode;
 import org.jruby.ast.ArrayNode;
 import org.jruby.ast.FCallNode;
 import org.jruby.ast.Node;

@@ -26,9 +26,7 @@ import org.rubypeople.rdt.internal.debug.core.parsing.MultiReaderStrategy;
 import org.rubypeople.rdt.internal.debug.core.parsing.SuspensionReader;
 import org.rubypeople.rdt.internal.debug.core.parsing.ThreadInfoReader;
 import org.rubypeople.rdt.internal.debug.core.parsing.VariableReader;
-import org.rubypeople.rdt.internal.debug.core.parsing.XmlStreamReaderException;
 import org.xmlpull.v1.XmlPullParser;
-import org.xmlpull.v1.XmlPullParserException;
 import org.xmlpull.v1.XmlPullParserFactory;
 
 public abstract class FTC_AbstractDebuggerCommunicationTest extends TestCase {

@@ -11,7 +11,6 @@ import org.eclipse.jface.text.rules.IPredicateRule;
 import org.eclipse.jface.text.rules.IRule;
 import org.eclipse.jface.text.rules.IToken;
 import org.eclipse.jface.text.rules.IWordDetector;
-import org.eclipse.jface.text.rules.MultiLineRule;
 import org.eclipse.jface.text.rules.PatternRule;
 import org.eclipse.jface.text.rules.SingleLineRule;
 import org.eclipse.jface.text.rules.Token;
@@ -27,15 +26,10 @@ public class RubyPartitionScanner extends BufferedRuleBasedScanner implements
 	protected int fPartitionOffset;
 
 	public final static String RUBY_STRING = IRubyPartitions.RUBY_STRING;
-
 	public final static String RUBY_MULTI_LINE_COMMENT = IRubyPartitions.RUBY_MULTI_LINE_COMMENT;
-
 	public static final String RUBY_SINGLE_LINE_COMMENT = IRubyPartitions.RUBY_SINGLE_LINE_COMMENT;
-
 	public static final String RUBY_REGULAR_EXPRESSION = IRubyPartitions.RUBY_REGEX;
-
 	public static final String RUBY_COMMAND = IRubyPartitions.RUBY_COMMAND;
-
 	public static final String HERE_DOC = "partition_scanner_here_doc";
 
 	public static final String[] LEGAL_CONTENT_TYPES = { RUBY_STRING,

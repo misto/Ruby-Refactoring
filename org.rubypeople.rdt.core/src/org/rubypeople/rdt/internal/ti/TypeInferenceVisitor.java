@@ -1,28 +1,16 @@
 package org.rubypeople.rdt.internal.ti;
 
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-
-import org.jruby.ast.BlockNode;
 import org.jruby.ast.CallNode;
 import org.jruby.ast.ClassNode;
 import org.jruby.ast.ConstNode;
-import org.jruby.ast.DStrNode;
 import org.jruby.ast.DefnNode;
 import org.jruby.ast.DefsNode;
-import org.jruby.ast.FixnumNode;
-import org.jruby.ast.IScopingNode;
 import org.jruby.ast.IterNode;
 import org.jruby.ast.LocalAsgnNode;
 import org.jruby.ast.LocalVarNode;
 import org.jruby.ast.ModuleNode;
 import org.jruby.ast.Node;
-import org.jruby.ast.StrNode;
 import org.jruby.evaluator.Instruction;
-import org.omg.CosNaming.NamingContextExtPackage.StringNameHelper;
 import org.rubypeople.rdt.internal.core.parser.InOrderVisitor;
 import org.rubypeople.rdt.internal.ti.data.ConstNodeTypeNames;
 import org.rubypeople.rdt.internal.ti.data.TypicalMethodReturnNames;

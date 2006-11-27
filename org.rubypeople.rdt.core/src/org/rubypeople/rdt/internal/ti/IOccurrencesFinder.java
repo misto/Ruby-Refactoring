@@ -15,7 +15,6 @@ import java.util.List;
 
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.Position;
-import org.jruby.ast.Node;
 import org.rubypeople.rdt.core.IRubyElement;
 
 public interface IOccurrencesFinder {
