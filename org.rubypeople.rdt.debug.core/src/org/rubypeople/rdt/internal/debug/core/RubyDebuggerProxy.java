@@ -1,8 +1,6 @@
 package org.rubypeople.rdt.internal.debug.core;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
 
@@ -113,7 +111,7 @@ public class RubyDebuggerProxy {
 			try {
 				XmlPullParserFactory factory = XmlPullParserFactory.newInstance("org.kxml2.io.KXmlParser,org.kxml2.io.KXmlSerializer", null);
 				xpp = factory.newPullParser();
-				xpp.setInput(new BufferedReader(new InputStreamReader(getSocket().getInputStream())));
+				xpp.setInput(getSocket().getInputStream(), "UTF-8");
 			} catch (XmlPullParserException e) {
 				e.printStackTrace();
 			} catch (IOException e) {
