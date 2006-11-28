@@ -4,7 +4,7 @@
 		<labelincrementer prefix="0.8.0"/>
 
 		<!-- Defines where cruise looks for changes, to decide whether to run the build --> 
-		<modificationset quietperiod="120"> 
+		<modificationset quietperiod="180"> 
 			<svn RepositoryLocation="https://svn.sourceforge.net/svnroot/rubyeclipse"/>
 		</modificationset>
 
