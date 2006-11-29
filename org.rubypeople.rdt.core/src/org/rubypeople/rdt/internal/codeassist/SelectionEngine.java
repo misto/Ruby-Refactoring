@@ -41,8 +41,19 @@ public class SelectionEngine {
 		if (selected instanceof ConstNode) {
 			ConstNode constNode = (ConstNode) selected;
 			String name = constNode.getName();
-			// TODO Find constants too (not just types)
+			// Try to find a matching constant in this script
+			IRubyElement element = findChild(name, IRubyElement.CONSTANT, script);
+			if (element != null) {
+			  return new IRubyElement[] { element };	
+			}
+			// Now search for a type in this script
+			element = findChild(name, IRubyElement.TYPE, script);
+			if (element != null) {
+			  return new IRubyElement[] { element };	
+			}
+			// TODO Search the required/loaded files first!
 			// TODO Search scopes outward!
+			// Now search across project for type
 			IRubyProject[] projects = new IRubyProject[1];
 			projects[0] = script.getRubyProject();
 			RubyElementRequestor completer = new RubyElementRequestor(projects);
@@ -50,6 +61,7 @@ public class SelectionEngine {
 			return new IRubyElement[] { type };
 		}
 		if (isLocalVarRef(selected)) {
+			// TODO Try the local namespace first!			
 			List<IRubyElement> possible = getChildrenWithName(script
 					.getChildren(), IRubyElement.LOCAL_VARIABLE,
 					getName(selected));
@@ -72,6 +84,26 @@ public class SelectionEngine {
 			return convertToArray(possible);
 		}
 		return new IRubyElement[0];
+	}
+
+	private IRubyElement findChild(String name, int type,
+			IParent parent) {
+		try {
+			IRubyElement[] children = parent.getChildren();
+			for (int j = 0; j < children.length; j++) {
+				IRubyElement child = children[j];
+				if (child.getElementName().equals(name) && child.isType(type))
+				  return child;
+			    if (child instanceof IParent) {
+			    	IRubyElement found = findChild(name, type, (IParent) child);
+			    	if (found != null) return found;
+			    }
+			}
+		} catch (RubyModelException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return null;
 	}
 
 	private boolean isMethodCall(Node selected) {
