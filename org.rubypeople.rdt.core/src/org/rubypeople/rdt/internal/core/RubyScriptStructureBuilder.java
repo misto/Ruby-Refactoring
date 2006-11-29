@@ -770,7 +770,7 @@ public class RubyScriptStructureBuilder implements NodeVisitor {
 		boolean hasRest = false;
 		if (args.getRestArg() != -1)
 			hasRest = true;
-
+		
 		boolean hasBlock = false;
 		if (args.getBlockArgNode() != null)
 			hasBlock = true;
@@ -783,7 +783,11 @@ public class RubyScriptStructureBuilder implements NodeVisitor {
 			arguments.addAll(getArguments(args.getOptArgs()));
 		}
 		if (hasRest) {
-			arguments.add("*" + (String) bodyNode.getLocalNames()[args.getRestArg()]);
+			String restName = "*";
+			if (args.getRestArg() != -2) {
+				restName += bodyNode.getLocalNames()[args.getRestArg()];
+			}
+			arguments.add(restName);
 		}
 		if (hasBlock)
 			arguments.add("&" + (String) bodyNode.getLocalNames()[args.getBlockArgNode().getCount()]);
