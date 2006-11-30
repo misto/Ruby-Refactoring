@@ -15,6 +15,7 @@ import org.eclipse.jface.text.contentassist.ContentAssistant;
 import org.eclipse.jface.text.contentassist.IContentAssistant;
 import org.eclipse.jface.text.formatter.IContentFormatter;
 import org.eclipse.jface.text.formatter.MultiPassContentFormatter;
+import org.eclipse.jface.text.hyperlink.IHyperlinkDetector;
 import org.eclipse.jface.text.presentation.IPresentationReconciler;
 import org.eclipse.jface.text.presentation.PresentationReconciler;
 import org.eclipse.jface.text.reconciler.IReconciler;
@@ -59,6 +60,7 @@ import org.rubypeople.rdt.internal.ui.text.ruby.RubyFormattingStrategy;
 import org.rubypeople.rdt.internal.ui.text.ruby.RubyReconcilingStrategy;
 import org.rubypeople.rdt.internal.ui.text.ruby.SingleTokenRubyCodeScanner;
 import org.rubypeople.rdt.internal.ui.text.ruby.hover.RubyCodeTextHover;
+import org.rubypeople.rdt.ui.text.hyperlinks.RubyHyperLinkDetector;
 
 public class RubySourceViewerConfiguration extends TextSourceViewerConfiguration {
 
@@ -134,6 +136,12 @@ public class RubySourceViewerConfiguration extends TextSourceViewerConfiguration
 
         return formatter;
     }
+    
+    @Override
+    public IHyperlinkDetector[] getHyperlinkDetectors(ISourceViewer sourceViewer) {
+    	ITextEditor editor = getEditor();
+        return new IHyperlinkDetector[]{new RubyHyperLinkDetector(editor.getEditorInput())};
+    }    
 
     /**
      * Determines whether the preference change encoded by the given event
