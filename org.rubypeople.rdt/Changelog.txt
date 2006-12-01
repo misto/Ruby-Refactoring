@@ -3,7 +3,8 @@ Since 0.8.0 Release:
 * Integration of type inferrencing work done by Jason morrison for Google Summer of Code
   * Improved code completion
   * Initial version of Mark occurences support
-  * Preliminary Goto Declaration(F3) support
+* Preliminary Goto Declaration(F3) support
+* Preliminary hyperlink navigation in source code - similar to F3 - Go To Declaration. Hold Ctrl (or Apple key on macs) and hover over source. Click a link to be taken to it's source.
 * Integration with latest JRuby parser
   * positioning fixes
   * improved speed
