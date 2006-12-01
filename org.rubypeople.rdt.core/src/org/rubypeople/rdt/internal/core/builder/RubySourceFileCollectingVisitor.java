@@ -11,6 +11,8 @@
 
 package org.rubypeople.rdt.internal.core.builder;
 
+import java.io.IOException;
+import java.util.HashSet;
 import java.util.List;
 
 import org.eclipse.core.resources.IFile;
@@ -18,6 +20,7 @@ import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IResourceProxy;
 import org.eclipse.core.resources.IResourceProxyVisitor;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.content.IContentDescription;
 import org.eclipse.core.runtime.content.IContentType;
 
@@ -25,9 +28,11 @@ public final class RubySourceFileCollectingVisitor implements IResourceProxyVisi
 
     private static final String RUBY_SOURCE_CONTENT_TYPE_ID = "org.rubypeople.rdt.core.rubySource";
     private final List files;
+	private HashSet<String> visitedLinks;
 
     public RubySourceFileCollectingVisitor(List files) {
         this.files = files;
+        this.visitedLinks = new HashSet<String>();
     }
 
     public boolean visit(IResourceProxy proxy) throws CoreException {
@@ -50,6 +55,18 @@ public final class RubySourceFileCollectingVisitor implements IResourceProxyVisi
                         files.add(resource);
             }
             return false;
+        case IResource.FOLDER:
+        	try { // Avoid recursive symlinks!
+				IPath path = proxy.requestResource().getLocation();
+				String unique = path.toFile().getCanonicalPath();
+				if (visitedLinks.contains(unique))
+					return false;
+				visitedLinks.add(unique);
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+				return false;
+			}
         }
         return true;
     }
