@@ -50,5 +50,6 @@ Require-Bundle: org.eclipse.ui.ide,
  org.eclipse.ui.forms,
  org.rubypeople.rdt.launching,
  org.eclipse.search,
- org.jruby
+ org.jruby,
+ org.eclipse.compare
 Eclipse-LazyStart: true

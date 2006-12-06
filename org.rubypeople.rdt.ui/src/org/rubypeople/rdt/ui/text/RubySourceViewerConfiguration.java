@@ -30,6 +30,7 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.editors.text.EditorsUI;
 import org.eclipse.ui.editors.text.TextSourceViewerConfiguration;
+import org.eclipse.ui.texteditor.AbstractDecoratedTextEditorPreferenceConstants;
 import org.eclipse.ui.texteditor.ChainedPreferenceStore;
 import org.eclipse.ui.texteditor.IDocumentProvider;
 import org.eclipse.ui.texteditor.ITextEditor;
@@ -138,9 +139,22 @@ public class RubySourceViewerConfiguration extends TextSourceViewerConfiguration
     }
     
     @Override
-    public IHyperlinkDetector[] getHyperlinkDetectors(ISourceViewer sourceViewer) {
-    	ITextEditor editor = getEditor();
-        return new IHyperlinkDetector[]{new RubyHyperLinkDetector(editor.getEditorInput())};
+    public IHyperlinkDetector[] getHyperlinkDetectors(ISourceViewer sourceViewer) {       
+        if (!fPreferenceStore.getBoolean(AbstractDecoratedTextEditorPreferenceConstants.EDITOR_HYPERLINKS_ENABLED))
+			return null;
+
+		IHyperlinkDetector[] inheritedDetectors= super.getHyperlinkDetectors(sourceViewer);
+
+		if (fTextEditor == null)
+			return inheritedDetectors;
+
+		int inheritedDetectorsLength= inheritedDetectors != null ? inheritedDetectors.length : 0;
+		IHyperlinkDetector[] detectors= new IHyperlinkDetector[inheritedDetectorsLength + 1];
+		detectors[0]= new RubyHyperLinkDetector(fTextEditor.getEditorInput());
+		for (int i= 0; i < inheritedDetectorsLength; i++)
+			detectors[i+1]= inheritedDetectors[i];
+
+		return detectors;
     }    
 
     /**

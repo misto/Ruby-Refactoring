@@ -6,7 +6,7 @@
    <extension-point id="foldingStructureProviders" name="%foldingStructureProviders" schema="schema/foldingStructureProviders.exsd"/>
    <extension-point id="editorPopupExtender" name="%editorPopupExtender" schema="schema/org.rubypeople.rdt.ui.editorPopupExtender.exsd"/>
    <extension-point id="rubyTemplateProvider" name="Ruby template provider" schema="schema/rubyTemplateProvider.exsd"/>
-   
+     
    <extension
          point="org.eclipse.ui.preferencePages">
       <page
@@ -919,5 +919,26 @@
          </description>
       </fontDefinition>
    </extension>
-     
+   
+   <extension
+         point="org.eclipse.compare.contentViewers">
+      <viewer
+            class="org.rubypeople.rdt.internal.ui.compare.RubyTextViewerCreator"
+            id="org.rubypeople.rdt.internal.ui.compare.RubyTextViewerCreator">
+      </viewer>
+      <contentTypeBinding
+			contentTypeId="org.rubypeople.rdt.core.rubySource"
+            contentViewerId="org.rubypeoplee.rdt.internal.ui.compare.RubyTextViewerCreator">
+	  </contentTypeBinding>
+   </extension>
+   <extension
+         point="org.eclipse.compare.contentMergeViewers">
+      <viewer
+            class="org.rubypeople.rdt.internal.ui.compare.RubyMergeViewCreator"
+            id="org.rubypeople.rdt.internal.ui.RubyMergeViewer"/>
+      <contentTypeBinding
+            contentMergeViewerId="org.rubypeople.rdt.internal.ui.RubyMergeViewer"
+            contentTypeId="org.rubypeople.rdt.core.rubySource"/>
+   </extension>
+    
 </plugin>
