@@ -63,7 +63,7 @@ public class MassIndexUpdater {
         } catch (CoreException e) {
             RubyCore.log(e);
         } catch (SyntaxException se) {
-        	System.err.println("Explicit catch of SyntaxError in MassIndexUpdater (jpm)");
+        	RubyCore.log("Explicit catch of SyntaxError in MassIndexUpdater (jpm)");
         	RubyCore.log(se);
         } catch (Exception ex) {
         	// e.g: the parser currently throws a ClassCastExcpetion when parsing xmldecl.rb
