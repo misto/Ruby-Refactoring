@@ -8,6 +8,7 @@ Since 0.8.0 Release:
 * Integration with latest JRuby parser
   * positioning fixes
   * improved speed
+* Syntax coloring of the Merge/compare view
 
 Release 0.8.0:
 * Compatible with Eclipse 3.1 and 3.2
