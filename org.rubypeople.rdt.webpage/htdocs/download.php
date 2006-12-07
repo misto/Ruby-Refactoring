@@ -27,7 +27,7 @@
       <ul>
         <li/>Choose Help<img src="images/arrow_filled.gif" alt="->" border="0">Software Updates<img src="images/arrow_filled.gif" alt="->" border="0">Find and Install
         <li/>In the dialog choose "Search for new features to install" and push next
-        <li/>Select "Add Update Site" and add one of the following URL's depending on the build stream you want to follow:
+        <li/>Select "New Remote Site" and add one of the following URL's depending on the build stream you want to follow:
         <ul>
         	<li>http://updatesite.rubypeople.org/release for release builds</li>
         	<li>http://updatesite.rubypeople.org/integration for integration builds including release builds and release candidates</li>
