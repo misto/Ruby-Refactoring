@@ -57,14 +57,16 @@ public class MassIndexUpdater {
     }
 
     private void processFile(IFile file) {
+    	if (!file.exists()) return;
         try {
             Node node = parser.parse(file);
             updater.update(file, node, false);
         } catch (CoreException e) {
             RubyCore.log(e);
         } catch (SyntaxException se) {
-        	RubyCore.log("Explicit catch of SyntaxError in MassIndexUpdater (jpm)");
-        	RubyCore.log(se);
+        	// Just eat the exception!
+//        	RubyCore.log("Explicit catch of SyntaxError in MassIndexUpdater (jpm)");
+//        	RubyCore.log(se);
         } catch (Exception ex) {
         	// e.g: the parser currently throws a ClassCastExcpetion when parsing xmldecl.rb
         	RubyCore.log(ex);
