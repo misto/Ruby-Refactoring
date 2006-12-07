@@ -81,7 +81,7 @@ public class TestUnitRunnerConfiguration extends InterpreterRunnerConfiguration 
 			throw new RuntimeException("Could not get necessary attributes from the launch configuration.") ;
 		}
 
-		return fileName + " " + this.getPort() + " " + keepAlive + " " + testClass + " " + testMethod;
+		return "\"" + fileName + "\" " + this.getPort() + " " + keepAlive + " " + testClass + " " + testMethod;
 	}
 
 	public List renderLoadPath() {
