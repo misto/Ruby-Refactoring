@@ -516,6 +516,12 @@ public abstract class FTC_AbstractDebuggerCommunicationTest extends TestCase {
 		variables = getVariableReader().readVariables(
 				createStackFrame());
 		assertEquals(0, variables.length);
+		// escaped semicolon
+		sendRuby("v inspect a=1\\;a+1");
+		variables = getVariableReader().readVariables(
+				createStackFrame());
+		assertEquals("Handled escaded semicolon", 1, variables.length);
+		assertEquals("2", variables[0].getValue().getValueString());
 		sendRuby("cont");
 	}
 
@@ -842,24 +848,69 @@ public abstract class FTC_AbstractDebuggerCommunicationTest extends TestCase {
 				"test.calc(a)" });
 		runToLine(4);
 		// test variable value in stack 1 (top stack frame)
-		sendRuby("v inspect 1 a*2");
+		sendRuby("frame 1 ; v inspect  a*2");
 		RubyVariable[] variables = getVariableReader().readVariables(
 				createStackFrame());
 		assertEquals("There is one variable returned.", 1, variables.length);
-		assertEquals("Result is 12", "12", variables[0].getValue()
+		assertEquals("Result in frame 1 is 12", "12", variables[0].getValue()
 				.getValueString());
 		// test variable value in stack 2 (caller stack)
-		sendRuby("v inspect 2 a*4");
+		sendRuby("frame 2 ; v inspect a*2");
 		variables = getVariableReader().readVariables(createStackFrame());
 		assertEquals("There is one variable returned.", 1, variables.length);
-		assertEquals("Result is 12", "12", variables[0].getValue()
+		assertEquals("Result in frame 2 is 6", "6", variables[0].getValue()
 				.getValueString());
 		// test more complex expression
-		sendRuby("v inspect 1 Test.new().calc(5)");
+		sendRuby("frame 1 ;  v inspect Test.new().calc(5)");
 		variables = getVariableReader().readVariables(createStackFrame());
 		assertEquals("There is one variable returned.", 1, variables.length);
 		assertEquals("Result is 10", "10", variables[0].getValue()
 				.getValueString());
+	}
+	
+	public void testInspectTemporaryArray() throws Exception {
+		createSocket(new String[] { "a=0", "puts a=2" });
+		runToLine(2);
+		sendRuby("v inspect  %w[a b c]");
+		// this inspection will create a new temporary arrray object
+		RubyVariable[] variables = getVariableReader().readVariables(
+				createStackFrame());
+		assertEquals("There is one variable returned which contains the array.", 1, variables.length);
+		// the following two commands starts the garbage collector. This test
+		// is somehow implementation aware. It makes sure that the objects which are
+		// created as a result of an expression are referenced so that they will not be
+		// swept away from the GC
+		// TODO: actually garbage_collect does nothing, also the GC can not be enabled with GC.enable()
+		sendRuby("v inspect ObjectSpace.garbage_collect\\;sleep(2)");
+		RubyVariable[] gcResult = getVariableReader().readVariables(
+				createStackFrame());
+		assertEquals("There is one variable returned as result of running the GC", 1, gcResult.length);
+		sendRuby("v i " + variables[0].getObjectId());
+		RubyVariable[] elements = getVariableReader().readVariables(
+				variables[0]);
+		assertEquals("The array contains 3 elements", 3, elements.length);
+		
+	}
+	
+	public void testInspectNil() throws Exception {
+		createSocket(new String[] { "puts 'dummy'", "puts 'dummy'" });
+		runToLine(2);
+		sendRuby("v inspect nil");
+		RubyVariable[] variables = getVariableReader().readVariables(
+				createStackFrame());
+		assertEquals("There is one variable returned which contains the array.", 1, variables.length);
+		assertEquals("nil", variables[0].getValue().getValueString()) ;
+		
+	}	
+	
+	public void testSendCommandWithSpecialCharacters() throws Exception {
+		// the inspect command can contain arbitrary characters 
+		// a %w for example can raise an error when it is directly given to printf
+		sendRuby("v inspect  %w[a b]");
+		RubyVariable[] variables = getVariableReader().readVariables(
+				createStackFrame());
+		assertEquals(1, variables.length) ;
+		// just do not fail
 	}
 
 	public void testInspectError() throws Exception {

@@ -9,9 +9,12 @@ public class FTC_RubyDebugCommunicationTest extends
 
 		junit.framework.TestSuite suite = new junit.framework.TestSuite();
 		
-		suite.addTest(new FTC_RubyDebugCommunicationTest("testCommandList"));
 		
+		suite.addTest(new FTC_RubyDebugCommunicationTest("testCommandList"));		
 		suite.addTest(new FTC_RubyDebugCommunicationTest("testInspect"));
+		suite.addTest(new FTC_RubyDebugCommunicationTest("testInspectTemporaryArray"));
+		suite.addTest(new FTC_RubyDebugCommunicationTest("testInspectNil"));
+		
 		suite.addTest(new FTC_RubyDebugCommunicationTest("testFrames"));
 		
 		suite.addTest(new FTC_RubyDebugCommunicationTest("testStepOver"));

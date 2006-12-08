@@ -41,7 +41,7 @@ public class RubyDebugCommandFactory implements ICommandFactory {
 	}
 
 	public String createInspect(RubyStackFrame frame, String expression) {
-		return "th " + ((RubyThread) frame.getThread()).getId() + " ; v inspect " + frame.getIndex() + " " + expression;
+		return "frame " + frame.getIndex() + " ; v inspect " + expression.replaceAll(";", "\\;");
 	}
 
 	public String createResume(RubyThread thread) {
