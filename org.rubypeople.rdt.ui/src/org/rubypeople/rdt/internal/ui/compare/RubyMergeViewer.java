@@ -61,7 +61,6 @@ public class RubyMergeViewer extends TextMergeViewer {
 		return RubyPlugin.getDefault().getRubyTextTools().createDocumentPartitioner();
 	}
 	
-	@Override
 	protected String getDocumentPartitioning() {
 		return IRubyPartitions.RUBY_PARTITIONING;
 	}
