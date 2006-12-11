@@ -830,6 +830,12 @@ public class RubyScriptStructureBuilder implements NodeVisitor {
 			return "{}";
 		if (node instanceof SelfNode)
 			return "self";
+		if (node instanceof NilNode)
+			return "nil";
+		if (node instanceof TrueNode)
+			return "true";
+		if (node instanceof FalseNode)
+			return "false";
 		if (node instanceof ConstNode)
 			return ((ConstNode)node).getName();
 		if (node instanceof ZArrayNode)
@@ -1008,9 +1014,18 @@ public class RubyScriptStructureBuilder implements NodeVisitor {
 		
 		// Collect included mixins
 		if ( functionName.equals("include") ) {
-			List<String> mixins = new LinkedList<String>();;
-			ArrayNode arrayNode = (ArrayNode) iVisited.getArgsNode();
-			for (Iterator iter = arrayNode.iterator(); iter.hasNext();) {
+			List<String> mixins = new LinkedList<String>();
+			Node argsNode = iVisited.getArgsNode();
+			Iterator iter = null;
+			if (argsNode instanceof SplatNode) {
+				SplatNode splat = (SplatNode) argsNode;
+				iter = splat.childNodes().iterator();
+			}
+			else if (argsNode instanceof ArrayNode) {
+				ArrayNode arrayNode = (ArrayNode) iVisited.getArgsNode();
+				iter = arrayNode.iterator();
+			}
+			for (; iter.hasNext();) {
 				Node mixinNameNode = (Node) iter.next();
 				if ( mixinNameNode instanceof StrNode ) {
 					mixins.add( ((StrNode)mixinNameNode).getValue() );
