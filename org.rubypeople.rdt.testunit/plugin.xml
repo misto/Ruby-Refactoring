@@ -2,11 +2,11 @@
 <?eclipse version="3.0"?>
 <plugin>
 
-     <extension-point id="internalTestRunTabs" name="%testRunTabs.name" schema="schema/internal-testRunTabs.exsd"/>
+     <extension-point id="internalTestRunTabs" name="%testRunTabs.name" schema="schema/internal_testRunTabs.exsd"/>
 
    <extension point="org.rubypeople.rdt.testunit.internalTestRunTabs">
-      <testRunTab class="org.rubypeople.rdt.testunit.views.FailureTab"/>
-      <testRunTab class="org.rubypeople.rdt.testunit.views.TestHierarchyTab"/>
+      <testRunTab class="org.rubypeople.rdt.internal.testunit.ui.FailureTab"/>
+      <testRunTab class="org.rubypeople.rdt.internal.testunit.ui.TestHierarchyTab"/>
    </extension>
    <extension
          point="org.eclipse.ui.views">
@@ -14,7 +14,7 @@
             name="Test::Unit"
             icon="icons/full/eview16/testunit.gif"
             category="org.rubypeople.rdt.ui.ruby"
-            class="org.rubypeople.rdt.testunit.views.TestUnitView"
+            class="org.rubypeople.rdt.internal.testunit.ui.TestUnitView"
             id="org.rubypeople.rdt.testunit.views.TestUnitView">
       </view>
    </extension>
@@ -100,7 +100,7 @@
       <launchConfigurationTabGroup
             type="org.rubypeople.rdt.testunit.launchconfig"
             helpContextId="org.rubypeople.rdt.testunit.testunit_tab_group"
-            class="org.rubypeople.rdt.testunit.launcher.TestUnitTabGroup"
+            class="org.rubypeople.rdt.internal.testunit.launcher.TestUnitTabGroup"
             id="org.rubypeople.rdt.testunit.launchConfigurationTabGroup.testunit">
          <launchMode
                perspective="org.eclipse.debug.ui.DebugPerspective"
@@ -137,5 +137,20 @@
             sequence="M3+M2+X U"
             commandId="org.rubypeople.rdt.testunit.testunitShortcut.run"
             schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"/>
+   </extension>
+   
+   <extension
+         point="org.eclipse.ui.newWizards">
+      <wizard
+            name="%NewWizardRubyTestCase.name"
+            icon="$nl$/icons/full/etool16/new_testcase.gif"
+            category="org.rubypeople.rdt.ui"
+            class="org.rubypeople.rdt.internal.testunit.wizards.NewTestCaseCreationWizard"
+            preferredPerspectives="org.rubypeople.rdt.ui.PerspectiveRuby"
+            id="org.rubypeople.rdt.testunit.wizards.RubyNewTestCaseWizard">
+          <description>
+            Create a new Ruby Test::Unit Test Case.
+         </description>
+      </wizard>
    </extension>
 </plugin>
