@@ -3,10 +3,6 @@
 	<name>org.rubypeople.rdt.debug.ui</name>
 	<comment></comment>
 	<projects>
-		<project>org.rubypeople.rdt.core</project>
-		<project>org.rubypeople.rdt.debug.core</project>
-		<project>org.rubypeople.rdt.launching</project>
-		<project>org.rubypeople.rdt.ui</project>
 	</projects>
 	<buildSpec>
 		<buildCommand>

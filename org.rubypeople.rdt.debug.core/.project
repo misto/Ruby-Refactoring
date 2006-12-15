@@ -3,8 +3,6 @@
 	<name>org.rubypeople.rdt.debug.core</name>
 	<comment></comment>
 	<projects>
-		<project>org.kxml2</project>
-		<project>org.rubypeople.rdt.core</project>
 	</projects>
 	<buildSpec>
 		<buildCommand>

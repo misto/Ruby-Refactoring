@@ -3,12 +3,6 @@
 	<name>org.rubypeople.rdt.tests.all</name>
 	<comment></comment>
 	<projects>
-		<project>org.junit</project>
-		<project>org.rubypeople.rdt.core.tests</project>
-		<project>org.rubypeople.rdt.debug.core.tests</project>
-		<project>org.rubypeople.rdt.debug.ui.tests</project>
-		<project>org.rubypeople.rdt.launching.tests</project>
-		<project>org.rubypeople.rdt.ui.tests</project>
 	</projects>
 	<buildSpec>
 		<buildCommand>

@@ -3,14 +3,6 @@
 	<name>org.rubypeople.rdt.debug.ui.tests</name>
 	<comment></comment>
 	<projects>
-		<project>org.junit</project>
-		<project>org.rubypeople.eclipse.shams</project>
-		<project>org.rubypeople.eclipse.testutils</project>
-		<project>org.rubypeople.rdt.core</project>
-		<project>org.rubypeople.rdt.debug.core</project>
-		<project>org.rubypeople.rdt.debug.ui</project>
-		<project>org.rubypeople.rdt.launching</project>
-		<project>org.rubypeople.rdt.ui</project>
 	</projects>
 	<buildSpec>
 		<buildCommand>
