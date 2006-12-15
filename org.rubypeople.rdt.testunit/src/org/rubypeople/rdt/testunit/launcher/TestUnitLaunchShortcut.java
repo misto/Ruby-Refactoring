@@ -33,9 +33,9 @@ import org.rubypeople.rdt.core.RubyModelException;
 import org.rubypeople.rdt.internal.debug.ui.launcher.RubyApplicationShortcut;
 import org.rubypeople.rdt.internal.launching.RubyLaunchConfigurationAttribute;
 import org.rubypeople.rdt.internal.launching.RubyRuntime;
+import org.rubypeople.rdt.internal.testunit.ui.TestUnitMessages;
+import org.rubypeople.rdt.internal.testunit.ui.TestunitPlugin;
 import org.rubypeople.rdt.internal.ui.RubyPlugin;
-import org.rubypeople.rdt.testunit.TestunitPlugin;
-import org.rubypeople.rdt.testunit.views.TestUnitMessages;
 
 public class TestUnitLaunchShortcut extends RubyApplicationShortcut {
 

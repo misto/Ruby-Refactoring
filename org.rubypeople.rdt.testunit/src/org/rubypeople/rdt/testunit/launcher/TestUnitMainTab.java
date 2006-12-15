@@ -48,11 +48,11 @@ import org.rubypeople.rdt.core.IRubyElement;
 import org.rubypeople.rdt.internal.debug.ui.RdtDebugUiMessages;
 import org.rubypeople.rdt.internal.launching.InterpreterRunnerConfiguration;
 import org.rubypeople.rdt.internal.launching.RubyLaunchConfigurationAttribute;
+import org.rubypeople.rdt.internal.testunit.ui.TestUnitMessages;
+import org.rubypeople.rdt.internal.testunit.ui.TestunitPlugin;
 import org.rubypeople.rdt.internal.ui.RubyPlugin;
 import org.rubypeople.rdt.internal.ui.util.RubyFileSelector;
 import org.rubypeople.rdt.internal.ui.util.RubyProjectSelector;
-import org.rubypeople.rdt.testunit.TestunitPlugin;
-import org.rubypeople.rdt.testunit.views.TestUnitMessages;
 
 /**
  * @author Chris

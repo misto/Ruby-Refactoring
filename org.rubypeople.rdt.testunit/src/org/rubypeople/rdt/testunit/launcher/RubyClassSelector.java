@@ -45,9 +45,9 @@ import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.dialogs.ElementListSelectionDialog;
 import org.rubypeople.rdt.core.IRubyElement;
 import org.rubypeople.rdt.core.RubyCore;
+import org.rubypeople.rdt.internal.testunit.ui.TestUnitMessages;
 import org.rubypeople.rdt.internal.ui.util.RubyFileSelector;
 import org.rubypeople.rdt.internal.ui.util.RubyProjectSelector;
-import org.rubypeople.rdt.testunit.views.TestUnitMessages;
 import org.rubypeople.rdt.ui.RubyElementLabelProvider;
 
 /**

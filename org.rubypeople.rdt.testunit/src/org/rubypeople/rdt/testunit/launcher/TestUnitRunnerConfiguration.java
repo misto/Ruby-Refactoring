@@ -10,7 +10,7 @@ import org.eclipse.debug.core.ILaunchConfiguration;
 import org.rubypeople.rdt.core.RubyCore;
 import org.rubypeople.rdt.core.SocketUtil;
 import org.rubypeople.rdt.internal.launching.InterpreterRunnerConfiguration;
-import org.rubypeople.rdt.testunit.TestunitPlugin;
+import org.rubypeople.rdt.internal.testunit.ui.TestunitPlugin;
 
 public class TestUnitRunnerConfiguration extends InterpreterRunnerConfiguration {
 	private int port = -1 ;

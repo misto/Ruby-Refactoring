@@ -4,7 +4,7 @@ import org.eclipse.debug.core.ILaunch;
 import org.eclipse.debug.core.ILaunchConfiguration;
 import org.rubypeople.rdt.internal.launching.InterpreterRunnerConfiguration;
 import org.rubypeople.rdt.internal.launching.RubyApplicationLaunchConfigurationDelegate;
-import org.rubypeople.rdt.testunit.TestunitPlugin;
+import org.rubypeople.rdt.internal.testunit.ui.TestunitPlugin;
 
 public class TestUnitLaunchConfigurationDelegate extends RubyApplicationLaunchConfigurationDelegate {
 	/**
