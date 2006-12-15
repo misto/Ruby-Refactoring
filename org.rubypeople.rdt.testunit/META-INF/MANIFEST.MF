@@ -4,10 +4,11 @@ Bundle-Name: %pluginName
 Bundle-SymbolicName: org.rubypeople.rdt.testunit; singleton:=true
 Bundle-Version: 0.0.0
 Bundle-ClassPath: testunit.jar
-Bundle-Activator: org.rubypeople.rdt.testunit.TestunitPlugin
+Bundle-Activator: org.rubypeople.rdt.internal.testunit.ui.TestunitPlugin
 Bundle-Vendor: %providerName
 Bundle-Localization: plugin
-Export-Package: org.rubypeople.rdt.testunit.views
+Export-Package: org.rubypeople.rdt.testunit.launcher,
+ org.rubypeople.rdt.testunit.wizards
 Require-Bundle: org.eclipse.ui,
  org.eclipse.core.runtime,
  org.eclipse.debug.core,
@@ -19,5 +20,6 @@ Require-Bundle: org.eclipse.ui,
  org.rubypeople.rdt.debug.ui,
  org.eclipse.ui.workbench.texteditor,
  org.eclipse.text,
- org.jruby
+ org.jruby,
+ org.eclipse.ui.ide
 Eclipse-LazyStart: true
