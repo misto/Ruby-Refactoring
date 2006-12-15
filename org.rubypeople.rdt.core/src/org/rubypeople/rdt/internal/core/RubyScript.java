@@ -511,7 +511,7 @@ public class RubyScript extends Openable implements IRubyScript {
 	 * @see IOpenable#isConsistent()
 	 */
 	public boolean isConsistent() {
-		return RubyModelManager.getRubyModelManager().getElementsOutOfSynchWithBuffers().get(this) == null;
+		return !RubyModelManager.getRubyModelManager().getElementsOutOfSynchWithBuffers().contains(this);
 	}
 
 	/**

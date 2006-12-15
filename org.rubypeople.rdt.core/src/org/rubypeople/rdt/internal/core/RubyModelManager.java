@@ -86,7 +86,7 @@ public class RubyModelManager implements IContentTypeChangeListener {
     /**
      * Set of elements which are out of sync with their buffers.
      */
-    protected Map elementsOutOfSynchWithBuffers = new HashMap(11);
+    protected HashSet elementsOutOfSynchWithBuffers = new HashSet(11);
 
     /*
      * A HashSet that contains the IJavaProject whose classpath is being
@@ -450,7 +450,7 @@ public class RubyModelManager implements IContentTypeChangeListener {
     /**
      * Returns the set of elements which are out of synch with their buffers.
      */
-    protected Map getElementsOutOfSynchWithBuffers() {
+    protected HashSet getElementsOutOfSynchWithBuffers() {
         return this.elementsOutOfSynchWithBuffers;
     }
 

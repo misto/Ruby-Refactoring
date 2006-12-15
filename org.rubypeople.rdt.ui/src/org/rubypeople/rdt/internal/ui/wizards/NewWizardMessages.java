@@ -51,6 +51,14 @@ public class NewWizardMessages extends NLS {
 	public static String NewTypeWizardPage_operationdesc;
 	public static String NewElementWizard_op_error_title;
 	public static String NewElementWizard_op_error_message;
+	public static String NewElementWizard_typecomment_deprecated_title;
+	public static String NewElementWizard_typecomment_deprecated_message;
+	public static String NewClassCreationWizard_title;
+	public static String NewClassWizardPage_title;
+	public static String NewClassWizardPage_description;
+	public static String NewClassWizardPage_methods_main;
+	public static String NewClassWizardPage_methods_constructors;
+	public static String NewClassWizardPage_methods_label;
 	
 	static {
 		NLS.initializeMessages(BUNDLE_NAME, NewWizardMessages.class);

@@ -1,14 +1,17 @@
 package org.rubypeople.rdt.ui.wizards;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.core.resources.IContainer;
+import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.SubProgressMonitor;
 import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.jface.text.ITextSelection;
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.window.Window;
 import org.eclipse.swt.SWT;
@@ -18,11 +21,13 @@ import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Text;
 import org.rubypeople.rdt.core.IBuffer;
+import org.rubypeople.rdt.core.IRubyElement;
 import org.rubypeople.rdt.core.IRubyProject;
 import org.rubypeople.rdt.core.IRubyScript;
 import org.rubypeople.rdt.core.ISourceFolder;
 import org.rubypeople.rdt.core.ISourceRange;
 import org.rubypeople.rdt.core.IType;
+import org.rubypeople.rdt.core.RubyConventions;
 import org.rubypeople.rdt.core.formatter.CodeFormatter;
 import org.rubypeople.rdt.internal.corext.codemanipulation.StubUtility;
 import org.rubypeople.rdt.internal.corext.util.CodeFormatterUtil;
@@ -367,17 +372,12 @@ public abstract class NewTypeWizardPage extends NewContainerWizardPage {
 	 * </p>
 	 * 
 	 * @param newType the new type created via <code>createType</code>
-	 * @param imports an import manager which can be used to add new imports
 	 * @param monitor a progress monitor to report progress. Must not be <code>null</code>
 	 * 
 	 * @see #createType(IProgressMonitor)
 	 */		
 	protected void createTypeMembers(IType newType, IProgressMonitor monitor) throws CoreException {
-		// default implementation does nothing
-		// example would be
-		// String mainMathod= "public void foo(Vector vec) {}"
-		// createdType.createMethod(main, null, false, null);
-		// imports.addImport("java.lang.Vector");
+
 	}
 	
 	/**
@@ -523,6 +523,21 @@ public abstract class NewTypeWizardPage extends NewContainerWizardPage {
 	    return NewWizardMessages.NewTypeWizardPage_InterfacesDialog_class_title; 
 	}
 	
+	/**
+	 * Returns the resource handle that corresponds to the compilation unit to was or
+	 * will be created or modified.
+	 * @return A resource or null if the page contains illegal values.
+	 * @since 3.0
+	 */
+	public IResource getModifiedResource() {
+		ISourceFolder pack= getSourceFolder();
+		if (pack != null) {
+			String cuName= getRubyScriptName(getTypeName());
+			return pack.getRubyScript(cuName).getResource();
+		}
+		return null;
+	}
+	
 	/*
 	 * A field on the type has changed. The fields' status and all dependent
 	 * status are updated.
@@ -606,6 +621,74 @@ public abstract class NewTypeWizardPage extends NewContainerWizardPage {
 		return status;
 	}
 	
+	/**
+	 * Initializes all fields provided by the page with a given selection.
+	 * 
+	 * @param elem the selection used to initialize this page or <code>
+	 * null</code> if no selection was available
+	 */
+	protected void initTypePage(IRubyElement elem) {
+		String initSuperclass= "Object"; //$NON-NLS-1$
+		ArrayList initSuperinterfaces= new ArrayList(5);
+
+		IRubyProject project= null;
+		ISourceFolder pack= null;
+		IType enclosingType= null;
+				
+		if (elem != null) {
+			// evaluate the enclosing type
+			project= elem.getRubyProject();
+			pack= (ISourceFolder) elem.getAncestor(IRubyElement.SOURCE_FOLDER);
+			IType typeInCU= (IType) elem.getAncestor(IRubyElement.TYPE);
+			if (typeInCU != null) {
+				if (typeInCU.getRubyScript() != null) {
+					enclosingType= typeInCU;
+				}
+			} else {
+				IRubyScript cu= (IRubyScript) elem.getAncestor(IRubyElement.SCRIPT);
+				if (cu != null) {
+					enclosingType= cu.findPrimaryType();
+				}
+			}
+			
+//			try {
+				IType type= null;
+				if (elem.getElementType() == IRubyElement.TYPE) {
+					type= (IType)elem;
+					if (type.exists()) {
+						String superName= type.getElementName();
+						if (type.isModule()) {
+							initSuperinterfaces.add(superName);
+						} else {
+							initSuperclass= superName;
+						}
+					}
+				}
+//			} catch (RubyModelException e) {
+//				RubyPlugin.log(e);
+//				// ignore this exception now
+//			}			
+		}
+		
+		String typeName= ""; //$NON-NLS-1$
+		
+		ITextSelection selection= getCurrentTextSelection();
+		if (selection != null) {
+			String text= selection.getText();
+			if (text != null && RubyConventions.validateRubyTypeName(text).isOK()) {
+				typeName= text;
+			}
+		}
+
+//		setPackageFragment(pack, true);
+		
+		setTypeName(typeName, true);
+		setSuperClass(initSuperclass, true);
+//		setSuperInterfaces(initSuperinterfaces, true);
+		
+//		setAddComments(StubUtility.doAddComments(project), true); // from project or workspace
+	}		
+	
 	private boolean isConstant(String className) {
         if (className == null || className.length() == 0) return false;
         if (!Character.isLowerCase(className.charAt(0)) && !Character.isLetter(className.charAt(0)))
@@ -620,6 +703,7 @@ public abstract class NewTypeWizardPage extends NewContainerWizardPage {
         }
         return true;
     }
+	
 
 	/**
 	 * Hook method that gets called when the list of super interface has changed. The method 
@@ -676,5 +760,16 @@ public abstract class NewTypeWizardPage extends NewContainerWizardPage {
 			return (IType) dialog.getFirstResult();
 		}
 		return null;
+	}
+	
+	/**
+	 * Returns the created type or <code>null</code> is the type has not been created yet. The method
+	 * only returns a valid type after <code>createType</code> has been called.
+	 * 
+	 * @return the created type
+	 * @see #createType(IProgressMonitor)
+	 */			
+	public IType getCreatedType() {
+		return fCreatedType;
 	}
 }

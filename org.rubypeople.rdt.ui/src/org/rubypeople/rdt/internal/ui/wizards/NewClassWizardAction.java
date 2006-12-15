@@ -4,7 +4,6 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.jface.wizard.Wizard;
 import org.eclipse.ui.PlatformUI;
 import org.rubypeople.rdt.internal.ui.IRubyHelpContextIds;
-import org.rubypeople.rdt.ui.wizards.RubyNewClassWizard;
 
 public class NewClassWizardAction extends AbstractOpenWizardAction {
 
@@ -20,7 +19,7 @@ public class NewClassWizardAction extends AbstractOpenWizardAction {
     }
     
     protected Wizard createWizard() throws CoreException {
-        return new RubyNewClassWizard();
+        return new NewClassCreationWizard();
     }
 
 }

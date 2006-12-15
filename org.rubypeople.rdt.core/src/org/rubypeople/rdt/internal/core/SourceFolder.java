@@ -111,6 +111,7 @@ public class SourceFolder extends Openable implements ISourceFolder {
 		CreateRubyScriptOperation op= new CreateRubyScriptOperation(this, name, contents, force);
 		op.runOperation(monitor);
 		IFile file = ((IContainer) getResource()).getFile(new Path(name));
+		// TODO Strip off .rb extensions?
 		return new RubyScript(this, file, name, DefaultWorkingCopyOwner.PRIMARY);
 	}
 
@@ -200,10 +201,7 @@ public class SourceFolder extends Openable implements ISourceFolder {
 		if (!org.rubypeople.rdt.internal.core.util.Util.isRubyLikeFileName(name)) {
 			throw new IllegalArgumentException(Messages.convention_unit_notJavaName); 
 		}
-		IPath path = this.getResource().getFullPath();
-		path.append(name);
-		path.addFileExtension(".rb");
-		IFile file = ((IContainer) getResource()).getFile(path);
+		IFile file = ((IContainer) getResource()).getFile(new Path(name));
 		return new RubyScript(this, file, name, DefaultWorkingCopyOwner.PRIMARY);
 	}
 

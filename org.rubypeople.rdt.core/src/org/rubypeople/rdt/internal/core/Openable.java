@@ -6,7 +6,6 @@ package org.rubypeople.rdt.internal.core;
 
 import java.util.Enumeration;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 
 import org.eclipse.core.resources.IResource;
@@ -52,7 +51,7 @@ public abstract class Openable extends RubyElement implements IOpenable, IBuffer
 			RubyModelManager.getRubyModelManager().getElementsOutOfSynchWithBuffers().remove(this);
 			getBufferManager().removeBuffer(event.getBuffer());
 		} else {
-			RubyModelManager.getRubyModelManager().getElementsOutOfSynchWithBuffers().put(this, this);
+			RubyModelManager.getRubyModelManager().getElementsOutOfSynchWithBuffers().add(this);
 		}
 	}
 
@@ -295,35 +294,7 @@ public abstract class Openable extends RubyElement implements IOpenable, IBuffer
 	 * @see IOpenable
 	 */
 	public void makeConsistent(IProgressMonitor monitor) throws RubyModelException {
-		if (isConsistent()) return;
-
-		// create a new info and make it the current info
-		// (this will remove the info and its children just before storing the
-		// new infos)
-		RubyModelManager manager = RubyModelManager.getRubyModelManager();
-		boolean hadTemporaryCache = manager.hasTemporaryCache();
-		try {
-			HashMap newElements = manager.getTemporaryCache();
-			openWhenClosed(newElements, monitor);
-			if (newElements.get(this) == null) {
-				// close any buffer that was opened for the new elements
-				Iterator iterator = newElements.keySet().iterator();
-				while (iterator.hasNext()) {
-					IRubyElement element = (IRubyElement) iterator.next();
-					if (element instanceof Openable) {
-						((Openable) element).closeBuffer();
-					}
-				}
-				throw newNotPresentException();
-			}
-			if (!hadTemporaryCache) {
-				manager.putInfos(this, newElements);
-			}
-		} finally {
-			if (!hadTemporaryCache) {
-				manager.resetTemporaryCache();
-			}
-		}
+		// only scripts can be inconsistent
 	}
 
 	/**

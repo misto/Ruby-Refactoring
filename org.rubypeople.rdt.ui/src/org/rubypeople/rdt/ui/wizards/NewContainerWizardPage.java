@@ -10,12 +10,15 @@ import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Path;
+import org.eclipse.jface.text.ITextSelection;
 import org.eclipse.jface.viewers.ILabelProvider;
+import org.eclipse.jface.viewers.ISelection;
+import org.eclipse.jface.viewers.ISelectionProvider;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.ViewerFilter;
 import org.eclipse.jface.window.Window;
-import org.eclipse.jface.wizard.WizardPage;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.dialogs.ElementTreeSelectionDialog;
 import org.eclipse.ui.views.contentoutline.ContentOutline;
@@ -28,7 +31,6 @@ import org.rubypeople.rdt.core.RubyModelException;
 import org.rubypeople.rdt.internal.corext.util.Messages;
 import org.rubypeople.rdt.internal.ui.RubyPlugin;
 import org.rubypeople.rdt.internal.ui.dialogs.StatusInfo;
-import org.rubypeople.rdt.internal.ui.dialogs.StatusUtil;
 import org.rubypeople.rdt.internal.ui.viewsupport.IViewPartInputProvider;
 import org.rubypeople.rdt.internal.ui.wizards.NewWizardMessages;
 import org.rubypeople.rdt.internal.ui.wizards.TypedElementSelectionValidator;
@@ -42,7 +44,7 @@ import org.rubypeople.rdt.ui.RubyElementLabelProvider;
 import org.rubypeople.rdt.ui.RubyElementSorter;
 import org.rubypeople.rdt.ui.StandardRubyElementContentProvider;
 
-public abstract class NewContainerWizardPage extends WizardPage {
+public abstract class NewContainerWizardPage extends NewElementWizardPage {
 	/** Id of the container field */
 	protected static final String CONTAINER= "NewContainerWizardPage.container"; //$NON-NLS-1$
 	
@@ -53,10 +55,6 @@ public abstract class NewContainerWizardPage extends WizardPage {
 	private StringButtonDialogField fContainerDialogField;
 	private IContainer fCurrContainer;	
 
-	private boolean fPageVisible;
-	private IStatus fCurrStatus;
-	
-
 	/**
 	 * Create a new <code>NewContainerWizardPage</code>
 	 * 
@@ -64,9 +62,6 @@ public abstract class NewContainerWizardPage extends WizardPage {
 	 */
 	public NewContainerWizardPage(String name) {
 		super(name);
-		// Element level
-		fPageVisible= false;
-		fCurrStatus=  new StatusInfo();
 		
 		fWorkspaceRoot= ResourcesPlugin.getWorkspace().getRoot();	
 		ContainerFieldAdapter adapter= new ContainerFieldAdapter();
@@ -81,30 +76,6 @@ public abstract class NewContainerWizardPage extends WizardPage {
 	}
 	
 	/**
-	 * Updates the status line and the OK button according to the status evaluate from
-	 * an array of status. The most severe error is taken.  In case that two status with 
-	 * the same severity exists, the status with lower index is taken.
-	 * 
-	 * @param status the array of status
-	 */
-	protected void updateStatus(IStatus[] status) {
-		updateStatus(StatusUtil.getMostSevere(status));
-	}
-	
-	/**
-	 * Updates the status line and the OK button according to the given status
-	 * 
-	 * @param status status to apply
-	 */
-	protected void updateStatus(IStatus status) {
-		fCurrStatus= status;
-		setPageComplete(!status.matches(IStatus.ERROR));
-		if (fPageVisible) {
-			StatusUtil.applyToStatusLine(this, status);
-		}
-	}
-	
-	/**
 	 * Utility method to inspect a selection to find a Ruby element. 
 	 * 
 	 * @param selection the selection to be inspected
@@ -112,7 +83,6 @@ public abstract class NewContainerWizardPage extends WizardPage {
 	 * if no Ruby element exists in the given selection
 	 */
 	protected IRubyElement getInitialRubyElement(IStructuredSelection selection) {
-		// XXX Fix this. Folders don't correspond to any RubyElement!
 		IRubyElement jelem= null;
 		if (selection != null && !selection.isEmpty()) {
 			Object selectedElement= selection.getFirstElement();
@@ -207,6 +177,27 @@ public abstract class NewContainerWizardPage extends WizardPage {
 		return NewWizardMessages.NewContainerWizardPage_container_label;
 	}
 	
+	/**
+	 * Returns the text selection of the current editor. <code>null</code> is returned
+	 * when the current editor does not have focus or does not return a text selection.
+	 * @return Returns the text selection of the current editor or <code>null</code>.
+     *
+     * @since 3.0 
+	 */
+	protected ITextSelection getCurrentTextSelection() {
+		IWorkbenchPart part= RubyPlugin.getActivePage().getActivePart();
+		if (part instanceof IEditorPart) {
+			ISelectionProvider selectionProvider= part.getSite().getSelectionProvider();
+			if (selectionProvider != null) {
+				ISelection selection= selectionProvider.getSelection();
+				if (selection instanceof ITextSelection) {
+					return (ITextSelection) selection;
+				}
+			}
+		}
+		return null;
+	}
+	
 	private void containerChangeControlPressed(DialogField field) {
 		IContainer root= chooseContainer();
 		if (root != null) {
@@ -293,7 +284,7 @@ public abstract class NewContainerWizardPage extends WizardPage {
 	
 	/**
 	 * Initializes the source folder field with a valid package fragment root.
-	 * The package fragment root is computed from the Ruby Java element.
+	 * The package fragment root is computed from the Ruby element.
 	 * 
 	 * @param elem the Ruby element used to compute the initial package
 	 *    fragment root used as the source folder
@@ -302,7 +293,12 @@ public abstract class NewContainerWizardPage extends WizardPage {
 		// TODO Take in the structured selection?
 		IContainer initRoot= null;
 		if (elem != null) {
-			initRoot = elem.getRubyProject().getProject();
+			IRubyElement folder = elem.getAncestor(IRubyElement.SOURCE_FOLDER);
+			if (folder == null) {
+				initRoot = elem.getRubyProject().getProject();
+			} else {
+				initRoot = (IContainer) folder.getResource();
+			}
 		}	
 		setContainer(initRoot, true);
 	}
@@ -373,7 +369,7 @@ public abstract class NewContainerWizardPage extends WizardPage {
 	 * @since 3.2
 	 */
 	protected IContainer chooseContainer() {
-		IContainer initElement= getIContainer();
+		IRubyElement initElement= getSourceFolder();
 		Class[] acceptedClasses= new Class[] { IRubyProject.class, ISourceFolder.class };
 		TypedElementSelectionValidator validator= new TypedElementSelectionValidator(acceptedClasses, false);
 		

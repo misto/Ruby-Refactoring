@@ -256,7 +256,7 @@
             name="%NewWizardRubyClass.name"
             icon="icons/full/etool16/newclass_wiz.gif"
             category="org.rubypeople.rdt.ui"
-            class="org.rubypeople.rdt.ui.wizards.RubyNewClassWizard"
+            class="org.rubypeople.rdt.internal.ui.wizards.NewClassCreationWizard"
             preferredPerspectives="org.rubypeople.rdt.ui.PerspectiveRuby"
             id="org.rubypeople.rdt.ui.wizards.RubyNewClassWizard">
           <description>
