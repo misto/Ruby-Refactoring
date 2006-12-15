@@ -25,6 +25,10 @@ public class RubyUIMessages extends NLS {
 	public static String CoreUtility_buildproject_taskname;
 	public static String CoreUtility_buildall_taskname;
 	public static String CoreUtility_job_title;
+	public static String MultiTypeSelectionDialog_errorTitle;
+	public static String MultiTypeSelectionDialog_errorMessage;
+	public static String TypeSelectionDialog_errorTitle;
+	public static String TypeSelectionDialog_dialogMessage;
 
     private RubyUIMessages() {
     }

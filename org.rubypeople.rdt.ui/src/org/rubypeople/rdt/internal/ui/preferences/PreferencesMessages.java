@@ -150,6 +150,13 @@ public final class PreferencesMessages extends NLS {
 	public static String MarkOccurrencesConfigurationBlock_markMethodExitPoints;
 	public static String MarkOccurrencesConfigurationBlock_stickyOccurrences;
 	public static String MarkOccurrencesConfigurationBlock_title;
+	
+	public static String PropertyAndPreferencePage_useprojectsettings_label;
+	public static String PropertyAndPreferencePage_useworkspacesettings_change;
+	public static String PropertyAndPreferencePage_showprojectspecificsettings_label;
+	public static String ProjectSelectionDialog_title;
+	public static String ProjectSelectionDialog_desciption;
+	public static String ProjectSelectionDialog_filter;
 
     static {
         NLS.initializeMessages(BUNDLE_NAME, PreferencesMessages.class);

@@ -285,19 +285,9 @@
         </enabledWhen>
       </page>
       <page
-            name="%PropertyPageRubyProject.name"
-            class="org.rubypeople.rdt.internal.ui.RubyProjectPropertyPage"
-            id="org.rubypeople.rdt.ui.PropertyPageRubyProject">
-        <enabledWhen>
-		  <adapt type="org.eclipse.core.resources.IProject">
-		    <test property="org.eclipse.core.resources.projectNature" value="org.rubypeople.rdt.core.rubynature"/>
-		  </adapt>         
-        </enabledWhen>
-      </page>
-      <page
             name="%problemSeveritiesPageName"
             class="org.rubypeople.rdt.internal.ui.preferences.ProblemSeveritiesPreferencePage"
-            category="org.rubypeople.rdt.ui.propertyPages.CompliancePreferencePage"
+            category="org.rubypeople.rdt.ui.PropertyPageRubyProject"
             id="org.rubypeople.rdt.ui.propertyPages.ProblemSeveritiesPreferencePage">
         <enabledWhen>
 		  <adapt type="org.eclipse.core.resources.IProject">

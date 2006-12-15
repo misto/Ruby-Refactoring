@@ -48,9 +48,10 @@ public class RubyPluginImages {
     private static final String IMG_OBJS_CLASS= NAME_PREFIX + "class_obj.gif";          //$NON-NLS-1$
     private static final String IMG_OBJS_INNER_CLASS= NAME_PREFIX + "innerclass_obj.gif"; //$NON-NLS-1$
     private static final String IMG_OBJS_CLASSALT= NAME_PREFIX + "classfo_obj.gif";          //$NON-NLS-1$
-    private static final String IMG_OBJS_MODULE = NAME_PREFIX + "module_obj.gif"; //$NON-NLS-1$
+    public static final String IMG_OBJS_MODULE = NAME_PREFIX + "module_obj.gif"; //$NON-NLS-1$
     private static final String IMG_OBJS_MODULEALT= NAME_PREFIX + "modulefo_obj.gif";          //$NON-NLS-1$
     private static final String IMG_OBJS_RUBY_MODEL= NAME_PREFIX + "ruby_model_obj.gif"; //$NON-NLS-1$
+    private static final String IMG_OBJS_SOURCE_FOLDER= NAME_PREFIX + "fldr_obj.gif"; //$NON-NLS-1$
     private static final String IMG_OBJS_SCRIPT= NAME_PREFIX + "rscript_obj.gif";                 //$NON-NLS-1$
     private static final String IMG_OBJS_RUBY_RESOURCE= NAME_PREFIX + "rscript_resource_obj.gif"; //$NON-NLS-1$      
     private static final String IMG_OBJS_UNKNOWN= NAME_PREFIX + "unknown_obj.gif"; //$NON-NLS-1$
@@ -107,7 +108,7 @@ public class RubyPluginImages {
     public static final ImageDescriptor DESC_OBJS_IMPCONT= createManaged(T_OBJ, IMG_CTOOLS_RUBY_IMPORT_CONTAINER);
              
     public static final ImageDescriptor DESC_OBJS_RUBY_MODEL= createManaged(T_OBJ, IMG_OBJS_RUBY_MODEL);
-        
+    public static final ImageDescriptor DESC_OBJS_SOURCE_FOLDER= createManaged(T_OBJ, IMG_OBJS_SOURCE_FOLDER);    
     public static final ImageDescriptor DESC_OBJS_LOCAL_VAR = createManaged(T_OBJ, IMG_CTOOLS_RUBY_LOCAL_VAR);
     public static final ImageDescriptor DESC_OBJS_GLOBAL = createManaged(T_OBJ, IMG_CTOOLS_RUBY_GLOBAL);
     public static final ImageDescriptor DESC_OBJS_MODULE = createManaged(T_OBJ, IMG_OBJS_MODULE);

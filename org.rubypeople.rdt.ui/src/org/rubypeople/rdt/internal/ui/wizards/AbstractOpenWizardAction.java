@@ -148,8 +148,8 @@ public abstract class AbstractOpenWizardAction extends Action implements IWorkbe
 
 			notifyResult(res == Window.OK);
 		} catch (CoreException e) {
-			String title = NewWizardMessages.getString("AbstractOpenWizardAction.createerror.title"); //$NON-NLS-1$
-			String message = NewWizardMessages.getString("AbstractOpenWizardAction.createerror.message"); //$NON-NLS-1$
+			String title = NewWizardMessages.AbstractOpenWizardAction_createerror_title;
+			String message = NewWizardMessages.AbstractOpenWizardAction_createerror_message;
 			ExceptionHandler.handle(e, shell, title, message);
 		}
 	}
@@ -191,8 +191,8 @@ public abstract class AbstractOpenWizardAction extends Action implements IWorkbe
 		IWorkspace workspace = ResourcesPlugin.getWorkspace();
 		if (workspace.getRoot().getProjects().length == 0) {
 			Shell shell = RubyPlugin.getActiveWorkbenchShell();
-			String title = NewWizardMessages.getString("AbstractOpenWizardAction.noproject.title"); //$NON-NLS-1$
-			String message = NewWizardMessages.getString("AbstractOpenWizardAction.noproject.message"); //$NON-NLS-1$
+			String title = NewWizardMessages.AbstractOpenWizardAction_noproject_title;
+			String message = NewWizardMessages.AbstractOpenWizardAction_noproject_message; 
 			if (MessageDialog.openQuestion(shell, title, message)) {
 				IWorkbenchWindow window = RubyPlugin.getActiveWorkbenchWindow();
 				(new NewProjectAction(window)).run();

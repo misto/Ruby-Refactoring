@@ -3,7 +3,6 @@
 	<name>org.rubypeople.rdt.ui</name>
 	<comment></comment>
 	<projects>
-		<project>org.rubypeople.rdt.core</project>
 	</projects>
 	<buildSpec>
 		<buildCommand>

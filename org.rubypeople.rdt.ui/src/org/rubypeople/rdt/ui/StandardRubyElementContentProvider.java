@@ -25,6 +25,7 @@ import org.rubypeople.rdt.core.IRubyElementDelta;
 import org.rubypeople.rdt.core.IRubyModel;
 import org.rubypeople.rdt.core.IRubyProject;
 import org.rubypeople.rdt.core.IRubyScript;
+import org.rubypeople.rdt.core.ISourceFolder;
 import org.rubypeople.rdt.core.ISourceReference;
 import org.rubypeople.rdt.core.RubyCore;
 import org.rubypeople.rdt.core.RubyModelException;
@@ -169,7 +170,10 @@ public class StandardRubyElementContentProvider implements ITreeContentProvider 
 				return getRubyProjects((IRubyModel)element);
 			
 			if (element instanceof IRubyProject) 
-				return getRubyScripts((IRubyProject)element);
+				return getSourceFolders((IRubyProject)element);
+			
+			if (element instanceof ISourceFolder) 
+				return getFoldersAndRubyScripts((ISourceFolder)element);
 				
 			if (element instanceof IFolder)
 				return getResources((IFolder)element);
@@ -183,9 +187,14 @@ public class StandardRubyElementContentProvider implements ITreeContentProvider 
 		return NO_CHILDREN;	
 	}
 
-	private Object[] getRubyScripts(IRubyProject project) throws RubyModelException {
-		return project.getRubyScripts();
+	private Object[] getFoldersAndRubyScripts(ISourceFolder folder) throws RubyModelException {
+		return folder.getChildren();
 	}
+
+	private Object[] getSourceFolders(IRubyProject project) throws RubyModelException {
+		return project.getSourceFolders();
+	}
+
 
 	/* (non-Rubydoc)
 	 * @see ITreeContentProvider
@@ -209,6 +218,7 @@ public class StandardRubyElementContentProvider implements ITreeContentProvider 
 				return false;
 			}	
 		}
+		// TODO check Source Folders for children
 		
 		if (element instanceof IParent) {
 			try {

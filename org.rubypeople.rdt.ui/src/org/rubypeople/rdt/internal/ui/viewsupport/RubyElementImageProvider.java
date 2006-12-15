@@ -206,6 +206,9 @@ public class RubyElementImageProvider {
 
             case IRubyElement.SCRIPT:
                 return RubyPluginImages.DESC_OBJS_SCRIPT;
+                
+            case IRubyElement.SOURCE_FOLDER:            	
+                return RubyPluginImages.DESC_OBJS_SOURCE_FOLDER;
 
             case IRubyElement.RUBY_PROJECT:
                 IRubyProject jp = (IRubyProject) element;

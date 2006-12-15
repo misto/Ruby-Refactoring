@@ -181,6 +181,13 @@ public class ListDialogField extends DialogField {
 		fDownButtonIndex= downButtonIndex;
 	}
 	
+	public void editElement(Object element) {
+		if (isOkToUse(fTableControl)) {
+			fTable.refresh(element);
+			fTable.editElement(element, 0);
+		}
+	}
+	
 	/**
 	 * Sets the viewerSorter.
 	 * @param viewerSorter The viewerSorter to set

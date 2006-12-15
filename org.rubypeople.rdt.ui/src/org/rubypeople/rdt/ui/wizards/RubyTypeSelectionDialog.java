@@ -14,8 +14,8 @@ import org.rubypeople.rdt.core.IRubyScript;
 import org.rubypeople.rdt.core.RubyCore;
 import org.rubypeople.rdt.core.RubyModelException;
 import org.rubypeople.rdt.internal.core.RubyElement;
+import org.rubypeople.rdt.internal.core.builder.RubySourceFileCollectingVisitor;
 import org.rubypeople.rdt.internal.ui.RubyPlugin;
-import org.rubypeople.rdt.internal.ui.util.RubyElementVisitor;
 import org.rubypeople.rdt.ui.RubyElementLabelProvider;
 
 public class RubyTypeSelectionDialog extends ElementListSelectionDialog {
@@ -51,6 +51,7 @@ public class RubyTypeSelectionDialog extends ElementListSelectionDialog {
 
     public static IRubyElement[] findElements(final IFile file, int elementType) {
         IRubyScript script = RubyCore.create(file);
+        if (script == null) return new IRubyElement[0];
         try {
             script.reconcile();
             IRubyElement[] children = script.getChildren();
@@ -73,13 +74,13 @@ public class RubyTypeSelectionDialog extends ElementListSelectionDialog {
      */
     public static IRubyElement[] findElements(IProject rubyProject, int elementType) {
         if (rubyProject == null) { return new IRubyElement[0]; }
-        try {
+        try {            
+            List files = new ArrayList();
+            RubySourceFileCollectingVisitor yeah = new RubySourceFileCollectingVisitor(files);
+            rubyProject.accept(yeah, 0);            
             List allElements = new ArrayList();
-            RubyElementVisitor visitor = new RubyElementVisitor();
-            rubyProject.accept(visitor);
-            Object[] rubyFiles = visitor.getCollectedRubyFiles();
-            for (int i = 0; i < rubyFiles.length; i++) {
-                IFile rubyFile = (IFile) rubyFiles[i];
+            for (int i = 0; i < files.size(); i++) {
+                IFile rubyFile = (IFile) files.get(i);
                 IRubyElement[] fileElements = findElements(rubyFile, elementType);
                 for (int j = 0; j < fileElements.length; j++) {
                     allElements.add(fileElements[j]);

@@ -14,6 +14,7 @@ import org.rubypeople.rdt.internal.ui.RubyPlugin;
  */
 public final class RubyModelUtil {
 
+	public static final String DEFAULT_SCRIPT_SUFFIX = ".rb";
 	private static boolean PRIMARY_ONLY = false;
 
 	/**
