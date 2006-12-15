@@ -16,6 +16,7 @@ import java.util.Map;
 import javax.xml.parsers.SAXParserFactory;
 
 import org.eclipse.core.resources.ICommand;
+import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IProjectDescription;
@@ -33,12 +34,16 @@ import org.osgi.service.prefs.BackingStoreException;
 import org.rubypeople.rdt.core.ILoadpathEntry;
 import org.rubypeople.rdt.core.IParent;
 import org.rubypeople.rdt.core.IRubyElement;
+import org.rubypeople.rdt.core.IRubyModelStatusConstants;
 import org.rubypeople.rdt.core.IRubyProject;
 import org.rubypeople.rdt.core.IRubyScript;
+import org.rubypeople.rdt.core.ISourceFolder;
 import org.rubypeople.rdt.core.IType;
 import org.rubypeople.rdt.core.RubyCore;
 import org.rubypeople.rdt.core.RubyModelException;
 import org.rubypeople.rdt.internal.core.builder.ProjectFileFinder;
+import org.rubypeople.rdt.internal.core.util.CharOperation;
+import org.rubypeople.rdt.internal.core.util.Util;
 import org.xml.sax.Attributes;
 import org.xml.sax.ContentHandler;
 import org.xml.sax.InputSource;
@@ -83,6 +88,13 @@ public class RubyProject extends Openable implements IProjectNature, IRubyElemen
 
     public boolean upgrade() throws CoreException {
         return addToBuildSpec(RubyCore.BUILDER_ID);
+    }
+    
+
+    public ISourceFolder createSourceFolder(String pkgName, boolean force, IProgressMonitor monitor) throws RubyModelException {
+    	CreateSourceFolderOperation op = new CreateSourceFolderOperation(this, pkgName, force);
+    	op.runOperation(monitor);
+    	return getSourceFolder(op.pkgName);
     }
 
     /**
@@ -513,20 +525,95 @@ public class RubyProject extends Openable implements IProjectNature, IRubyElemen
         return false;
     }
 
-    /**
-     * @see Openable
-     */
-    protected boolean buildStructure(OpenableElementInfo info, IProgressMonitor pm,
-            Map newElements, IResource underlyingResource) throws RubyModelException {
-        // check whether the ruby project can be opened
-        if (!underlyingResource.isAccessible()) { throw newNotPresentException(); }
+	/**
+	 * @see Openable
+	 */
+	protected boolean buildStructure(OpenableElementInfo info, IProgressMonitor pm, Map newElements, IResource underlyingResource) throws RubyModelException {
+	
+		// check whether the ruby project can be opened
+		if (!hasRubyNature((IProject) underlyingResource)) {
+			throw newNotPresentException();
+		}
+		// check whether this project can be opened
+		if (!resourceExists()) throw newNotPresentException();
 
-        // Find all the scripts in this project
-        info.setChildren(getScripts());
-        return true;
-    }
+		return computeChildren(info, newElements);
+	}
+	
+	/**
+	 * Compute the package fragment children of this package fragment root.
+	 * 
+	 * @exception JavaModelException  The resource associated with this package fragment root does not exist
+	 */
+	protected boolean computeChildren(OpenableElementInfo info, Map newElements) throws RubyModelException {
+		try {
+			// the underlying resource may be a folder or a project (in the case that the project folder
+			// is actually the source folder root)
+			IResource underlyingResource = getResource();
+			if (underlyingResource.getType() == IResource.FOLDER || underlyingResource.getType() == IResource.PROJECT) {
+				ArrayList vChildren = new ArrayList(5);
+				IContainer rootFolder = (IContainer) underlyingResource;
+				computeFolderChildren(rootFolder, CharOperation.NO_STRINGS, vChildren);
+				IRubyElement[] children = new IRubyElement[vChildren.size()];
+				vChildren.toArray(children);
+				info.setChildren(children);
+			}
+		} catch (RubyModelException e) {
+			//problem resolving children; structure remains unknown
+			info.setChildren(new IRubyElement[]{});
+			throw e;
+		}
+		return true;
+	}
+	
+	/**
+	 * Starting at this folder, create package fragments and add the fragments that are not exclused
+	 * to the collection of children.
+	 * 
+	 * @exception RubyModelException  The resource associated with this package fragment does not exist
+	 */
+	protected void computeFolderChildren(IContainer folder, String[] pkgName, ArrayList vChildren) throws RubyModelException {
+		// Don't add yourself as a child
+//		    ISourceFolder pkg = getSourceFolder(pkgName);
+//			vChildren.add(pkg);
 
-    /**
+		try {
+			RubyProject javaProject = (RubyProject)getRubyProject();
+			RubyModelManager manager = RubyModelManager.getRubyModelManager();
+			IResource[] members = folder.members();
+
+			for (int i = 0, max = members.length; i < max; i++) {
+				IResource member = members[i];
+				String memberName = member.getName();
+				
+				switch(member.getType()) {				    
+				    case IResource.FOLDER:
+							if (javaProject.contains(member)) {
+								String[] newNames = Util.arrayConcat(pkgName, manager.intern(memberName));
+//								computeFolderChildren((IFolder) member, newNames, vChildren);
+								ISourceFolder child = getSourceFolder(newNames);
+								vChildren.add(child);
+							}
+
+				    	break;
+				    case IResource.FILE:
+				        // inclusion filter may only include files, in which case we still want to include the immediate parent package (lazily)
+				        break;
+				}
+			}
+		} catch(IllegalArgumentException e){
+			throw new RubyModelException(e, IRubyModelStatusConstants.ELEMENT_DOES_NOT_EXIST); // could be thrown by ElementTree when path is not found
+		} catch (CoreException e) {
+			throw new RubyModelException(e);
+		}
+	}
+    
+    public boolean contains(IResource resource) {
+		// XXX Check the paths to see if this is true or not!
+		return true;
+	}
+
+	/**
      * @return
      */
     private IRubyElement[] getScripts() {
@@ -727,12 +814,44 @@ public class RubyProject extends Openable implements IProjectNature, IRubyElemen
 	}
 
 	public boolean isOnLoadpath(IRubyScript element) {
-		// TODO We cheat and assume all scripts are on loadpath. Thsi may not be true. We shoudl check!
+		// TODO We cheat and assume all scripts are on loadpath. This may not be true. We should check!
 		return true;
 	}
 	
 	public IRubyScript getRubyScript(IFile file) {
 		return new RubyScript(this, file, file.getName(), DefaultWorkingCopyOwner.PRIMARY);
+	}
+
+	public ISourceFolder getSourceFolder(String[] names) {
+		return new SourceFolder(this, names);
+	}
+
+	public ISourceFolder getSourceFolder(IResource resource) {
+		switch (resource.getType()) {
+		case IResource.FILE:
+				return null;
+		case IResource.FOLDER:
+			return new SourceFolder(this, resource.getProjectRelativePath().segments());
+		case IResource.PROJECT:
+			return new SourceFolder(this, resource.getProjectRelativePath().segments());
+		default:
+			return null;
+	}
+	}
+
+	public ISourceFolder[] getSourceFolders() throws RubyModelException {
+		Object[] children;
+		int length;
+		ISourceFolder[] roots;
+
+		System.arraycopy(
+			children = getChildren(), 
+			0, 
+			roots = new ISourceFolder[length = children.length], 
+			0, 
+			length);
+			
+		return roots;
 	}
 	
 }

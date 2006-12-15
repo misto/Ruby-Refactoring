@@ -8,6 +8,7 @@ import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.rubypeople.rdt.internal.core.RubyModelStatus;
+import org.rubypeople.rdt.internal.core.util.Messages;
 import org.rubypeople.rdt.internal.core.util.Util;
 
 /**
@@ -72,4 +73,33 @@ public class RubyConventions {
 		// Util.bind("convention.illegalIdentifier", id), null); //$NON-NLS-1$
 		// }
 	}
+
+	public static IStatus validateRubyTypeName(String typeName) {
+		if (typeName == null) {
+			return new Status(IStatus.ERROR, RubyCore.PLUGIN_ID, -1, Messages.convention_type_nullName, null); 
+		}
+		if (typeName.length() == 0) {
+			return new Status(IStatus.ERROR, RubyCore.PLUGIN_ID, -1, Messages.bind(Messages.convention_type_invalidName, typeName), null);
+        }
+        if (!isConstant(typeName)) {
+        	return new Status(IStatus.ERROR, RubyCore.PLUGIN_ID, -1, "Class name must be a constant. It must begin with a capital letter, and contain only letters, digits, or underscores.", null);
+        }
+        return new Status(IStatus.OK, RubyCore.PLUGIN_ID, -1, null, null);
+    
+	}
+	
+	private static boolean isConstant(String className) {
+        if (className == null || className.length() == 0) return false;
+        if (!Character.isLowerCase(className.charAt(0)) && !Character.isLetter(className.charAt(0)))
+            return false;
+        int namespaceDelimeterIndex = className.indexOf("::");
+        if (namespaceDelimeterIndex != -1) {
+        	return isConstant(className.substring(0, namespaceDelimeterIndex)) && isConstant(className.substring(namespaceDelimeterIndex+2));
+        }
+        for (int i = 0; i < className.length(); i++) {
+            char c = className.charAt(i);
+            if (!Character.isLetterOrDigit(c) && c != '_') return false;
+        }
+        return true;
+    }
 }

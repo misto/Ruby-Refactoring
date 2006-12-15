@@ -30,6 +30,7 @@ import java.util.HashMap;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.PlatformObject;
+import org.jruby.ast.Node;
 import org.rubypeople.rdt.core.IField;
 import org.rubypeople.rdt.core.IOpenable;
 import org.rubypeople.rdt.core.IParent;
@@ -523,5 +524,9 @@ public abstract class RubyElement extends PlatformObject implements IRubyElement
 	 */
 	protected void toStringName(StringBuffer buffer) {
 		buffer.append(getElementName());
+	}
+
+	public Node findNode(Node cuAST) {
+		return null; // works only inside a ruby script
 	}
 }

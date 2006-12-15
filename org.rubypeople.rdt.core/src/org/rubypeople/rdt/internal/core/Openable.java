@@ -10,6 +10,8 @@ import java.util.Iterator;
 import java.util.Map;
 
 import org.eclipse.core.resources.IResource;
+import org.eclipse.core.resources.IWorkspace;
+import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.OperationCanceledException;
 import org.rubypeople.rdt.core.BufferChangedEvent;
@@ -338,6 +340,19 @@ public abstract class Openable extends RubyElement implements IOpenable, IBuffer
 		}
 	}
 
+	/**
+	 * Returns whether the corresponding resource or associated file exists
+	 */
+	protected boolean resourceExists() {
+		IWorkspace workspace = ResourcesPlugin.getWorkspace();
+		if (workspace == null) return false; // workaround for http://bugs.eclipse.org/bugs/show_bug.cgi?id=34069
+		return 
+			RubyModel.getTarget(
+				workspace.getRoot(), 
+				this.getPath().makeRelative(), // ensure path is relative (see http://dev.eclipse.org/bugs/show_bug.cgi?id=22517)
+				true) != null;
+	}
+	
 	/**
 	 * @see IOpenable
 	 */

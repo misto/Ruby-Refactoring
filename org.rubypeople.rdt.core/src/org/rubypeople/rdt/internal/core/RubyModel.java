@@ -4,9 +4,12 @@
  */
 package org.rubypeople.rdt.internal.core;
 
+import java.io.File;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Map;
 
+import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
@@ -28,8 +31,30 @@ import org.rubypeople.rdt.core.RubyModelException;
  */
 public class RubyModel extends Openable implements IRubyModel {
 
+	/**
+	 * A set of java.io.Files used as a cache of external jars that 
+	 * are known to be existing.
+	 * Note this cache is kept for the whole session.
+	 */ 
+	public static HashSet existingExternalFiles = new HashSet();
+	
+	/**
+	 * A set of external files ({@link #existingExternalFiles}) which have
+	 * been confirmed as file (ie. which returns true to {@link java.io.File#isFile()}.
+	 * Note this cache is kept for the whole session.
+	 */ 
+	public static HashSet existingExternalConfirmedFiles = new HashSet();
+	
 	protected RubyModel() {
 		super(null);
+	}
+	
+	/**
+	 * Flushes the cache of external files known to be existing.
+	 */
+	public static void flushExternalFileCache() {
+		existingExternalFiles = new HashSet();
+		existingExternalConfirmedFiles = new HashSet();
 	}
 
 	/**
@@ -118,11 +143,7 @@ public class RubyModel extends Openable implements IRubyModel {
 
 	}
 
-	protected boolean buildStructure(OpenableElementInfo info, IProgressMonitor pm, Map newElements, IResource underlyingResource) /*
-																																	 * throws
-																																	 * RubyModelException
-																																	 */{
-
+	protected boolean buildStructure(OpenableElementInfo info, IProgressMonitor pm, Map newElements, IResource underlyingResource) {
 		// determine my children
 		IProject[] projects = ResourcesPlugin.getWorkspace().getRoot().getProjects();
 		for (int i = 0, max = projects.length; i < max; i++) {
@@ -162,5 +183,51 @@ public class RubyModel extends Openable implements IRubyModel {
 	public IRubyProject getRubyProject(String projectName) {
 		return new RubyProject(ResourcesPlugin.getWorkspace().getRoot().getProject(projectName), this);
 	}
+
+	/**
+ * Helper method - returns the targeted item (IResource if internal or java.io.File if external), 
+ * or null if unbound
+ * Internal items must be referred to using container relative paths.
+ */
+public static Object getTarget(IContainer container, IPath path, boolean checkResourceExistence) {
+
+	if (path == null) return null;
+	
+	// lookup - inside the container
+	if (path.getDevice() == null) { // container relative paths should not contain a device 
+												// (see http://dev.eclipse.org/bugs/show_bug.cgi?id=18684)
+												// (case of a workspace rooted at d:\ )
+		IResource resource = container.findMember(path);
+		if (resource != null){
+			if (!checkResourceExistence ||resource.exists()) return resource;
+			return null;
+		}
+	}
+	
+	// if path is relative, it cannot be an external path
+	// (see http://dev.eclipse.org/bugs/show_bug.cgi?id=22517)
+	if (!path.isAbsolute()) return null; 
+
+	// lookup - outside the container
+	return getTargetAsExternalFile(path, checkResourceExistence);	
+}
+private synchronized static Object getTargetAsExternalFile(IPath path, boolean checkResourceExistence) {
+	File externalFile = new File(path.toOSString());
+	if (!checkResourceExistence) {
+		return externalFile;
+	} else if (existingExternalFiles.contains(externalFile)) {
+		return externalFile;
+	} else { 
+		if (RubyModelManager.ZIP_ACCESS_VERBOSE) {
+			System.out.println("(" + Thread.currentThread() + ") [RubyModel.getTarget(...)] Checking existence of " + path.toString()); //$NON-NLS-1$ //$NON-NLS-2$
+		}
+		if (externalFile.exists()) {
+			// cache external file
+			existingExternalFiles.add(externalFile);
+			return externalFile;
+		}
+	}
+	return null;
+}
 
 }

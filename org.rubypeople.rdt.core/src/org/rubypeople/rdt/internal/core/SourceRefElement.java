@@ -9,12 +9,14 @@ import java.util.HashMap;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.jruby.ast.Node;
 import org.rubypeople.rdt.core.IBuffer;
 import org.rubypeople.rdt.core.IOpenable;
 import org.rubypeople.rdt.core.IRubyElement;
 import org.rubypeople.rdt.core.ISourceRange;
 import org.rubypeople.rdt.core.ISourceReference;
 import org.rubypeople.rdt.core.RubyModelException;
+import org.rubypeople.rdt.internal.core.util.DOMFinder;
 
 /**
  * @author cawilliams
@@ -36,6 +38,20 @@ public abstract class SourceRefElement extends RubyElement implements ISourceRef
 	 */
 	public SourceRefElement(RubyElement parent) {
 		super(parent);
+	}
+	
+	/**
+	 * Returns the <code>ASTNode</code> that corresponds to this <code>RubyElement</code>
+	 * or <code>null</code> if there is no corresponding node.
+	 */
+	public Node findNode(Node ast) {
+		DOMFinder finder = new DOMFinder(ast, this);
+		try {
+			return finder.search();
+		} catch (RubyModelException e) {
+			// receiver doesn't exist
+			return null;
+		}
 	}
 
 	/**

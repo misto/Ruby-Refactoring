@@ -309,7 +309,7 @@ public class LRUCache implements Cloneable {
 	protected void privateAddEntry (LRUCacheEntry entry, boolean shuffle) {
 		
 		if (!shuffle) {
-			fEntryTable.put (entry._fKey, entry);
+			fEntryTable.put(entry._fKey, entry);
 			fCurrentSpace += entry._fSpace;
 		}
 		

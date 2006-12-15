@@ -29,7 +29,9 @@ import java.util.Map;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
+import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IProgressMonitor;
 
 /**
  * @author Chris
@@ -111,5 +113,14 @@ public interface IRubyProject extends IRubyElement, IParent {
 	public abstract boolean isOnLoadpath(IRubyScript element);
 	
 	public IRubyScript getRubyScript(IFile file);
+
+	public abstract ISourceFolder getSourceFolder(String[] names);
+
+	public abstract ISourceFolder getSourceFolder(IResource resource);
+
+	public abstract ISourceFolder[] getSourceFolders() throws RubyModelException;
+
+	public abstract ISourceFolder createSourceFolder(String packName,
+			boolean force, IProgressMonitor monitor) throws RubyModelException;
 
 }

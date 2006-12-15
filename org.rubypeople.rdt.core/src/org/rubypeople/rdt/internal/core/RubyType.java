@@ -26,10 +26,11 @@ package org.rubypeople.rdt.internal.core;
 
 import java.util.ArrayList;
 
+import org.eclipse.core.runtime.IProgressMonitor;
 import org.rubypeople.rdt.core.IField;
 import org.rubypeople.rdt.core.IMember;
-import org.rubypeople.rdt.core.IRubyElement;
 import org.rubypeople.rdt.core.IMethod;
+import org.rubypeople.rdt.core.IRubyElement;
 import org.rubypeople.rdt.core.IRubyScript;
 import org.rubypeople.rdt.core.IType;
 import org.rubypeople.rdt.core.RubyModelException;
@@ -185,6 +186,16 @@ public class RubyType extends NamedMember implements IType {
 	 */
 	public boolean isModule() {
 		return false;
+	}
+
+	public IMethod createMethod(String contents, IRubyElement sibling,
+			boolean force, IProgressMonitor monitor) throws RubyModelException {
+		CreateMethodOperation op = new CreateMethodOperation(this, contents, force);
+		if (sibling != null) {
+			op.createBefore(sibling);
+		}
+		op.runOperation(monitor);
+		return (IMethod) op.getResultElements()[0];		
 	}
 
 }

@@ -382,7 +382,7 @@ public abstract class RubyModelOperation implements IWorkspaceRunnable, IProgres
      * or the element itself (if it is a compilation unit),
      * otherwise <code>null</code>.
      */
-    protected IRubyScript getRubyScripttFor(IRubyElement element) {
+    protected IRubyScript getRubyScriptFor(IRubyElement element) {
     
         return ((RubyElement)element).getRubyScript();
     }

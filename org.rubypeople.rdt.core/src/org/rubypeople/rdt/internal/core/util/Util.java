@@ -5,6 +5,7 @@
 package org.rubypeople.rdt.internal.core.util;
 
 import java.io.BufferedInputStream;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -594,6 +595,69 @@ public class Util {
 	public static void resetRubyLikeExtensions() {
 		RUBY_LIKE_EXTENSIONS = null;
 		RUBY_LIKE_FILENAMES = null;		
+	}
+
+	/**
+	 * Returns a new array adding the second array at the end of first array.
+	 * It answers null if the first and second are null.
+	 * If the first array is null or if it is empty, then a new array is created with second.
+	 * If the second array is null, then the first array is returned.
+	 * <br>
+	 * <br>
+	 * For example:
+	 * <ol>
+	 * <li><pre>
+	 *    first = null
+	 *    second = "a"
+	 *    => result = {"a"}
+	 * </pre>
+	 * <li><pre>
+	 *    first = {"a"}
+	 *    second = null
+	 *    => result = {"a"}
+	 * </pre>
+	 * </li>
+	 * <li><pre>
+	 *    first = {"a"}
+	 *    second = {"b"}
+	 *    => result = {"a", "b"}
+	 * </pre>
+	 * </li>
+	 * </ol>
+	 * 
+	 * @param first the first array to concatenate
+	 * @param second the array to add at the end of the first array
+	 * @return a new array adding the second array at the end of first array, or null if the two arrays are null.
+	 */
+	public static final String[] arrayConcat(String[] first, String second) {
+		if (second == null)
+			return first;
+		if (first == null)
+			return new String[] {second};
+
+		int length = first.length;
+		if (first.length == 0) {
+			return new String[] {second};
+		}
+		
+		String[] result = new String[length + 1];
+		System.arraycopy(first, 0, result, 0, length);
+		result[length] = second;
+		return result;
+	}
+
+	public static String[] getTrimmedSimpleNames(String packageName) {
+		return packageName.split(File.separator);
+	}
+
+	public static String concatWith(String[] array, char separator) {
+		StringBuffer buffer = new StringBuffer();
+		for (int i = 0, length = array.length; i < length; i++) {
+			buffer.append(array[i]);
+			if (i < length - 1)
+				buffer.append(separator);
+		}
+		return buffer.toString();
 	}
 
 }

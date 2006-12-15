@@ -42,6 +42,7 @@ import org.rubypeople.rdt.core.parser.IProblem;
 import org.rubypeople.rdt.internal.core.buffer.BufferManager;
 import org.rubypeople.rdt.internal.core.builder.RubyBuilder;
 import org.rubypeople.rdt.internal.core.util.Util;
+import org.rubypeople.rdt.internal.core.util.WeakHashSet;
 
 /**
  * @author cawilliams
@@ -113,14 +114,18 @@ public class RubyModelManager implements IContentTypeChangeListener {
 
     private static boolean verbose = false;
     public static boolean CP_RESOLVE_VERBOSE = false;
+	public static boolean ZIP_ACCESS_VERBOSE = false;
 
     // Preferences
     HashSet optionNames = new HashSet(20);
     Hashtable optionsCache;
 
     public final IEclipsePreferences[] preferencesLookup = new IEclipsePreferences[2];
+	private WeakHashSet stringSymbols = new WeakHashSet(5);
     static final int PREF_INSTANCE = 0;
     static final int PREF_DEFAULT = 1;
+    
+	public static final IRubyScript[] NO_WORKING_COPY = new IRubyScript[0];
 
     /**
      * Update the classpath variable cache
@@ -740,7 +745,9 @@ public class RubyModelManager implements IContentTypeChangeListener {
 			case IResource.FILE :
 				return create((IFile) resource, project);
 			case IResource.FOLDER :
+//				System.err.println("Tried to create a RubyElement for: " + resource.getFullPath().toOSString());
 				return create((IFolder) resource, project);
+//				return null;
 			case IResource.ROOT :
 				return RubyCore.create((IWorkspaceRoot) resource);
 			default :
@@ -748,6 +755,68 @@ public class RubyModelManager implements IContentTypeChangeListener {
 		}
 	}
 	
+	/**
+	 * Returns the package fragment or package fragment root corresponding to the given folder,
+	 * its parent or great parent being the given project. 
+	 * or <code>null</code> if unable to associate the given folder with a Java element.
+	 * <p>
+	 * Note that a package fragment root is returned rather than a default package.
+	 * <p>
+	 * Creating a Java element has the side effect of creating and opening all of the
+	 * element's parents if they are not yet open.
+	 */
+	public static IRubyElement create(IFolder folder, IRubyProject project) {
+		if (folder == null) {
+			return null;
+		}
+		IRubyElement element;
+		if (project == null) {
+			project = RubyCore.create(folder.getProject());
+			
+			element = determineIfOnLoadpath(folder, project);
+			if (element == null) {
+				// walk all projects and find one that have the given folder on the load path
+				IRubyProject[] projects;
+				try {
+					projects = RubyModelManager.getRubyModelManager().getRubyModel().getRubyProjects();
+				} catch (RubyModelException e) {
+					return null;
+				}
+				for (int i = 0, length = projects.length; i < length; i++) {
+					project = projects[i];
+					element = determineIfOnLoadpath(folder, project);
+					if (element != null)
+						break;
+				}
+			}
+		} else {
+			element = determineIfOnLoadpath(folder, project);
+		}		
+
+		return element;		
+	}
+	
+	private static IRubyElement determineIfOnLoadpath(IResource resource,
+			IRubyProject project) {
+		// TODO Actually take load paths into account
+		IPath resourcePath = resource.getFullPath();
+		IPath rootPath = project.getPath();
+		if (rootPath.equals(resourcePath)) {
+			return project.getSourceFolder(resource);
+		} else if (rootPath.isPrefixOf(resourcePath)) {
+			IPath pkgPath = resourcePath.removeFirstSegments(rootPath.segmentCount());
+			
+			if (resource.getType() == IResource.FILE) {
+				// if the resource is a file, then remove the last segment which
+				// is the file name in the package
+				pkgPath = pkgPath.removeLastSegments(1);
+			}
+			String[] pkgName = pkgPath.segments();
+			return project.getSourceFolder(pkgName);
+		}
+		return null;
+	}
+
 	public static IRubyElement create(IFile file, IRubyProject project) {
 		if (file == null) {
 			return null;
@@ -771,6 +840,58 @@ public class RubyModelManager implements IContentTypeChangeListener {
 			project = RubyCore.create(file.getProject());
 		}
 		return project.getRubyScript(file);
+	}
+	
+	/*
+	 * Returns all the working copies which have the given owner.
+	 * Adds the working copies of the primary owner if specified.
+	 * Returns null if it has none.
+	 */
+	public IRubyScript[] getWorkingCopies(WorkingCopyOwner owner, boolean addPrimary) {
+		synchronized(this.perWorkingCopyInfos) {
+			IRubyScript[] primaryWCs = addPrimary && owner != DefaultWorkingCopyOwner.PRIMARY 
+				? getWorkingCopies(DefaultWorkingCopyOwner.PRIMARY, false) 
+				: null;
+			Map workingCopyToInfos = (Map)this.perWorkingCopyInfos.get(owner);
+			if (workingCopyToInfos == null) return primaryWCs;
+			int primaryLength = primaryWCs == null ? 0 : primaryWCs.length;
+			int size = workingCopyToInfos.size(); // note size is > 0 otherwise pathToPerWorkingCopyInfos would be null
+			IRubyScript[] result = new IRubyScript[primaryLength + size];
+			int index = 0;
+			if (primaryWCs != null) {
+				for (int i = 0; i < primaryLength; i++) {
+					IRubyScript primaryWorkingCopy = primaryWCs[i];
+					IRubyScript workingCopy = new RubyScript((SourceFolder) primaryWorkingCopy.getParent(), (IFile) primaryWorkingCopy.getResource(), primaryWorkingCopy.getElementName(), owner);
+					if (!workingCopyToInfos.containsKey(workingCopy))
+						result[index++] = primaryWorkingCopy;
+				}
+				if (index != primaryLength)
+					System.arraycopy(result, 0, result = new IRubyScript[index+size], 0, index);
+			}
+			Iterator iterator = workingCopyToInfos.values().iterator();
+			while(iterator.hasNext()) {
+				result[index++] = ((RubyModelManager.PerWorkingCopyInfo)iterator.next()).getWorkingCopy();
+			}
+			return result;
+		}		
+	}
+
+	public synchronized String intern(String s) {
+		// make sure to copy the string (so that it doesn't hold on the underlying char[] that might be much bigger than necessary)
+		return (String) this.stringSymbols.add(new String(s));
+		
+		// Note1: String#intern() cannot be used as on some VMs this prevents the string from being garbage collected
+		// Note 2: Instead of using a WeakHashset, one could use a WeakHashMap with the following implementation
+		// 			   This would costs more per entry (one Entry object and one WeakReference more))
+		
+		/*
+		WeakReference reference = (WeakReference) this.symbols.get(s);
+		String existing;
+		if (reference != null && (existing = (String) reference.get()) != null)
+			return existing;
+		this.symbols.put(s, new WeakReference(s));
+		return s;
+		*/	
 	}
 
 }

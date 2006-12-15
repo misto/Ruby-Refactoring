@@ -24,6 +24,7 @@
  */
 package org.rubypeople.rdt.core;
 
+import org.eclipse.core.runtime.IProgressMonitor;
 import org.rubypeople.rdt.internal.core.RubyMethod;
 
 /**
@@ -136,5 +137,39 @@ public interface IType extends IRubyElement, IMember {
 	String[] getIncludedModuleNames() throws RubyModelException;
 
     public boolean isMember() throws RubyModelException;
+
+    /**
+	 * Creates and returns a method or constructor in this type with the
+	 * given contents.
+	 * <p>
+	 * Optionally, the new element can be positioned before the specified
+	 * sibling. If no sibling is specified, the element will be appended
+	 * to this type.
+	 *
+	 * <p>It is possible that a method with the same signature already exists in this type.
+	 * The value of the <code>force</code> parameter effects the resolution of
+	 * such a conflict:<ul>
+	 * <li> <code>true</code> - in this case the method is created with the new contents</li>
+	 * <li> <code>false</code> - in this case a <code>RubyModelException</code> is thrown</li>
+	 * </ul></p>
+	 *
+	 * @param contents the given contents
+	 * @param sibling the given sibling
+	 * @param force a flag in case the same name already exists in this type
+	 * @param monitor the given progress monitor
+	 * @exception RubyModelException if the element could not be created. Reasons include:
+	 * <ul>
+	 * <li> This Ruby element does not exist (ELEMENT_DOES_NOT_EXIST)</li>
+	 * <li> A <code>CoreException</code> occurred while updating an underlying resource
+	 * <li> The specified sibling is not a child of this type (INVALID_SIBLING)
+	 * <li> The contents could not be recognized as a method or constructor
+	 *		declaration (INVALID_CONTENTS)
+	 * <li> This type is read-only (binary) (READ_ONLY)
+	 * <li> There was a naming collision with an existing method (NAME_COLLISION)
+	 * </ul>
+	 * @return a method or constructor in this type with the given contents
+	 */
+	public IMethod createMethod(String contents, IRubyElement sibling, boolean force,
+			IProgressMonitor progress) throws RubyModelException;
 
 }

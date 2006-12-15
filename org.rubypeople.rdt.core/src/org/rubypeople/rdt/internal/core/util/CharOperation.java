@@ -13,6 +13,7 @@ public class CharOperation {
 	 * Constant for an empty char array
 	 */
 	public static final char[] NO_CHAR = new char[0];
+	public static final String[] NO_STRINGS = new String[0];
 
 	/**
 	 * Answers the first index in the array for which the corresponding

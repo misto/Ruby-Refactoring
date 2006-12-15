@@ -35,7 +35,6 @@ import org.jruby.ast.AliasNode;
 import org.jruby.ast.AndNode;
 import org.jruby.ast.ArgsCatNode;
 import org.jruby.ast.ArgsNode;
-import org.jruby.ast.ArgumentNode;
 import org.jruby.ast.ArrayNode;
 import org.jruby.ast.BackRefNode;
 import org.jruby.ast.BeginNode;
@@ -79,7 +78,6 @@ import org.jruby.ast.IfNode;
 import org.jruby.ast.InstAsgnNode;
 import org.jruby.ast.InstVarNode;
 import org.jruby.ast.IterNode;
-import org.jruby.ast.ListNode;
 import org.jruby.ast.LocalAsgnNode;
 import org.jruby.ast.LocalVarNode;
 import org.jruby.ast.Match2Node;
@@ -134,6 +132,7 @@ import org.rubypeople.rdt.core.IMethod;
 import org.rubypeople.rdt.core.IRubyElement;
 import org.rubypeople.rdt.core.IRubyScript;
 import org.rubypeople.rdt.internal.core.parser.RubyParser;
+import org.rubypeople.rdt.internal.core.util.ASTUtil;
 
 /**
  * @author Chris
@@ -215,7 +214,7 @@ public class RubyScriptStructureBuilder implements NodeVisitor {
 	public Instruction visitAndNode(AndNode iVisited) {
 		handleNode(iVisited);
 		visitNode(iVisited.getFirstNode());
-		visitNode(iVisited.getFirstNode());
+		visitNode(iVisited.getSecondNode());
 		return null;
 	}
 
@@ -720,7 +719,7 @@ public class RubyScriptStructureBuilder implements NodeVisitor {
 			visibility = Visibility.PROTECTED;
 
 		RubyElement type = getCurrentType();
-		String[] parameterNames = getArgs(iVisited.getArgsNode(), iVisited.getBodyNode());
+		String[] parameterNames = ASTUtil.getArgs(iVisited.getArgsNode(), iVisited.getBodyNode());
 		RubyMethod method = new RubyMethod(type, name, parameterNames);
 		modelStack.push(method);
 
@@ -757,110 +756,6 @@ public class RubyScriptStructureBuilder implements NodeVisitor {
 		if (visibility == Visibility.PROTECTED)
 			return IMethod.PROTECTED;
 		return IMethod.PRIVATE;
-	}
-
-	/**
-	 * @param argsNode
-	 * @param bodyNode 
-	 * @return
-	 */
-	private String[] getArgs(Node argsNode, ScopeNode bodyNode) {
-		if (argsNode == null) return new String[0];
-		ArgsNode args = (ArgsNode) argsNode;
-		boolean hasRest = false;
-		if (args.getRestArg() != -1)
-			hasRest = true;
-		
-		boolean hasBlock = false;
-		if (args.getBlockArgNode() != null)
-			hasBlock = true;
-
-		int optArgCount = 0;
-		if (args.getOptArgs() != null)
-			optArgCount = args.getOptArgs().size();
-		List arguments = getArguments(args.getArgs());
-		if (optArgCount > 0) {
-			arguments.addAll(getArguments(args.getOptArgs()));
-		}
-		if (hasRest) {
-			String restName = "*";
-			if (args.getRestArg() != -2) {
-				restName += bodyNode.getLocalNames()[args.getRestArg()];
-			}
-			arguments.add(restName);
-		}
-		if (hasBlock)
-			arguments.add("&" + (String) bodyNode.getLocalNames()[args.getBlockArgNode().getCount()]);
-		return stringListToArray(arguments);
-	}
-
-	private String[] stringListToArray(List list) {
-		String[] array = new String[list.size()];
-		for (int i = 0; i < list.size(); i++) {
-			array[i] = (String) list.get(i);
-		}
-		return array;
-	}
-
-	private List getArguments(ListNode argList) {
-		if (argList == null) return new ArrayList();
-		List arguments = new ArrayList();
-		for (Iterator iter = argList.iterator(); iter.hasNext();) {
-			Object node = iter.next();
-			if (node instanceof ArgumentNode) {
-				arguments.add(((ArgumentNode) node).getName());
-			} else if (node instanceof LocalAsgnNode) {
-				LocalAsgnNode local = (LocalAsgnNode) node;
-				String argString = local.getName();
-				argString += " = ";
-				argString += stringRepresentation(local.getValueNode());
-				arguments.add(argString);
-			} else {
-				if (DEBUG) 
-					System.err
-						.println("Reached argument node type we can't handle");
-			}
-		}
-		return arguments;
-	}
-
-	private String stringRepresentation(Node node) {
-		if (node == null) return "";
-		if (node instanceof HashNode)
-			return "{}";
-		if (node instanceof SelfNode)
-			return "self";
-		if (node instanceof NilNode)
-			return "nil";
-		if (node instanceof TrueNode)
-			return "true";
-		if (node instanceof FalseNode)
-			return "false";
-		if (node instanceof ConstNode)
-			return ((ConstNode)node).getName();
-		if (node instanceof ZArrayNode)
-			return "[]";
-		if (node instanceof FixnumNode)
-			return "" + ((FixnumNode) node).getValue();
-		if (node instanceof DStrNode)
-			return stringRepresentation((DStrNode) node);
-		if (node instanceof StrNode)
-			return ((StrNode) node).getValue();
-		if (DEBUG) System.err.println("Reached node type we don't know how to represent: "
-				+ node.getClass().getName());
-		return node.toString();
-	}
-
-	private String stringRepresentation(DStrNode node) {
-		List children = node.childNodes();
-		StringBuffer buffer = new StringBuffer();
-		buffer.append("\"");
-		for (Iterator iter = children.iterator(); iter.hasNext();) {
-			Node child = (Node) iter.next();
-			buffer.append(stringRepresentation(child));
-		}
-		buffer.append("\"");
-		return buffer.toString();
 	}
 
 	/**
@@ -901,7 +796,7 @@ public class RubyScriptStructureBuilder implements NodeVisitor {
 		 * method; end end will give us: A.method method in the Outline View.
 		 */
 		String fullName;
-		String receiver = stringRepresentation(iVisited.getReceiverNode());
+		String receiver = ASTUtil.stringRepresentation(iVisited.getReceiverNode());
 		if (receiver != null && receiver.trim().length() > 0) {
 			fullName = receiver + "." + iVisited.getName();
 		} else {
@@ -911,7 +806,7 @@ public class RubyScriptStructureBuilder implements NodeVisitor {
 		// Get the visibility of the current static method
 		Visibility visibility = currentVisibility;
 
-		String[] parameterNames = getArgs(iVisited.getArgsNode(), iVisited.getBodyNode());
+		String[] parameterNames = ASTUtil.getArgs(iVisited.getArgsNode(), iVisited.getBodyNode());
 
 		// Get the type of the current parent element
 		RubyElement type = getCurrentType();
