@@ -6,14 +6,35 @@
  */
 package org.rubypeople.rdt.internal.ui.rubyeditor;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.preference.PreferenceConverter;
+import org.eclipse.jface.text.BadLocationException;
+import org.eclipse.jface.text.BadPositionCategoryException;
+import org.eclipse.jface.text.DocumentCommand;
+import org.eclipse.jface.text.DocumentEvent;
+import org.eclipse.jface.text.IAutoEditStrategy;
+import org.eclipse.jface.text.IDocument;
+import org.eclipse.jface.text.IPositionUpdater;
+import org.eclipse.jface.text.link.ILinkedModeListener;
+import org.eclipse.jface.text.link.InclusivePositionUpdater;
+import org.eclipse.jface.text.link.LinkedModeModel;
+import org.eclipse.jface.text.link.LinkedModeUI;
+import org.eclipse.jface.text.link.LinkedPosition;
+import org.eclipse.jface.text.link.LinkedPositionGroup;
 import org.eclipse.jface.text.source.IOverviewRuler;
 import org.eclipse.jface.text.source.IVerticalRuler;
 import org.eclipse.jface.text.source.SourceViewerConfiguration;
 import org.eclipse.jface.text.source.projection.ProjectionViewer;
 import org.eclipse.jface.util.IPropertyChangeListener;
 import org.eclipse.jface.util.PropertyChangeEvent;
+import org.eclipse.jface.viewers.ISelectionChangedListener;
+import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.swt.custom.StyledText;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.RGB;
@@ -25,6 +46,9 @@ import org.eclipse.ui.texteditor.AbstractTextEditor;
 public class RubySourceViewer extends ProjectionViewer implements IPropertyChangeListener {
 
     private boolean fIgnoreTextConverters = false;
+    
+    /** The linked position list for code auto edit */
+	protected final LinkedList fPositionList = new LinkedList();
     
     /**
      * This viewer's foreground color.
@@ -60,11 +84,19 @@ public class RubySourceViewer extends ProjectionViewer implements IPropertyChang
      * @since 0.8.0
      */
     private boolean fIsConfigured;
+    
+    /** The auto edit category */
+	protected static final String CATEGORY_AUTO_EDIT = "org.rubypeople.rdt.ui.RubyEditor"
+			+ ".auto.edit." + System.currentTimeMillis(); //$NON-NLS-1$
+
+	/** The position updater for auto edit */
+	protected final IPositionUpdater fAutoEditUpdater;
 
     public RubySourceViewer(Composite composite, IVerticalRuler verticalRuler,
             IOverviewRuler overviewRuler, boolean overviewRulerVisible, int styles, IPreferenceStore store) {
         super(composite, verticalRuler, overviewRuler, overviewRulerVisible, styles);
         setPreferenceStore(store);
+        fAutoEditUpdater = new InclusivePositionUpdater(CATEGORY_AUTO_EDIT);
     }
     
     /**
@@ -239,4 +271,155 @@ public class RubySourceViewer extends ProjectionViewer implements IPropertyChang
         if (getTextWidget() == null || !redraws()) { return; }
         super.doOperation(operation);
     }
+    
+	/*
+	 * @see org.eclipse.jface.text.TextViewer#handleVisibleDocumentChanged(org.eclipse.jface.text.DocumentEvent)
+	 */
+	protected final void handleVisibleDocumentChanged(final DocumentEvent event) {
+		super.handleVisibleDocumentChanged(event);
+
+		if (!fPositionList.isEmpty()) {
+
+			try {
+
+				final IDocument document = event.getDocument();
+				final LinkedModeModel model = new LinkedModeModel();
+
+				final String category = CATEGORY_AUTO_EDIT;
+				if (!document.containsPositionCategory(category)) {
+
+					document.addPositionCategory(category);
+					document.addPositionUpdater(fAutoEditUpdater);
+
+					model.addLinkingListener(new ILinkedModeListener() {
+
+						public final void left(final LinkedModeModel dummy,
+								final int flags) {
+
+							if (document.containsPositionCategory(category)) {
+
+								try {
+									document.removePositionCategory(category);
+								} catch (BadPositionCategoryException exception) {
+									// Do nothing
+								}
+								document
+										.removePositionUpdater(fAutoEditUpdater);
+							}
+						}
+
+						public final void resume(final LinkedModeModel dummy,
+								final int flags) {
+						}
+
+						public final void suspend(final LinkedModeModel dummy) {
+						}
+					});
+				}
+
+				LinkedPosition position = null;
+				LinkedPositionGroup group = null;
+
+				for (final Iterator iterator = fPositionList.iterator(); iterator
+						.hasNext();) {
+
+					position = (LinkedPosition) iterator.next();
+
+					group = new LinkedPositionGroup();
+					group.addPosition(position);
+
+					model.addGroup(group);
+				}
+				model.forceInstall();
+
+				final LinkedModeUI handler = new LinkedModeUI(model, this);
+
+				final LinkedPosition exit = (LinkedPosition) fPositionList
+						.getFirst();
+				final LinkedPosition entry = (LinkedPosition) fPositionList
+						.getLast();
+
+				addSelectionChangedListener(new ISelectionChangedListener() {
+
+					private boolean fHandled = false;
+
+					public final void selectionChanged(
+							final SelectionChangedEvent dummy) {
+
+						if (!fHandled) {
+
+							fHandled = true;
+
+							removeSelectionChangedListener(this);
+						}
+					}
+				});
+
+				addPostSelectionChangedListener(new ISelectionChangedListener() {
+
+					private boolean fHandled = false;
+
+					public final void selectionChanged(
+							final SelectionChangedEvent dummy) {
+
+						if (!fHandled) {
+							setSelectedRange(entry.offset, entry.length);
+
+							invalidateTextPresentation(entry.offset, 0);
+
+							fHandled = true;
+
+							removePostSelectionChangedListener(this);
+						}
+					}
+				});
+
+				handler
+						.setExitPosition(this, exit.offset, 0,
+								LinkedPositionGroup.NO_STOP);
+
+				handler.enter();
+
+			} catch (BadLocationException exception) {
+				// Do nothing
+			} finally {
+				fPositionList.clear();
+			}
+		}
+	}
+	
+	protected void customizeDocumentCommand(DocumentCommand command) {
+		if (isIgnoringAutoEditStrategies())
+			return;
+
+		List strategies = (List) selectContentTypePlugin(command.offset,
+				fAutoIndentStrategies);
+		if (strategies == null)
+			return;
+
+		IDocument document = getDocument();
+		if (!strategies.isEmpty()) {
+
+			fPositionList.clear();
+			String originalCommandText = command.text;
+			
+			LinkedPosition[] result = null;
+			IAutoEditStrategy strategy = null;
+
+			for (final Iterator iterator = new ArrayList(strategies).iterator(); iterator
+					.hasNext();) {
+
+				strategy = (IAutoEditStrategy) iterator.next();
+				strategy.customizeDocumentCommand(document, command);
+
+				if ((strategy instanceof ILinkedModeEditStrategy) && originalCommandText.equals("\t")) {
+					result = ((ILinkedModeEditStrategy) strategy)
+							.getLinkedPositions();
+					if (result != null && result.length > 0)
+						fPositionList.addAll(Arrays.asList(result));
+				}
+			}
+		}
+	}
+	
 }

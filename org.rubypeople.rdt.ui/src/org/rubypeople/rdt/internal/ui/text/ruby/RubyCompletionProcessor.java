@@ -168,7 +168,7 @@ public class RubyCompletionProcessor extends TemplateCompletionProcessor
 	 * @see org.eclipse.jface.text.templates.TemplateCompletionProcessor#getContextType(org.eclipse.jface.text.ITextViewer,
 	 *      org.eclipse.jface.text.IRegion)
 	 */
-	protected TemplateContextType getContextType(ITextViewer textViewer,
+	public TemplateContextType getContextType(ITextViewer textViewer,
 			IRegion region) {
 		return RubyTemplateAccess.getDefault().getContextTypeRegistry()
 				.getContextType(RubyContextType.NAME);
@@ -356,7 +356,7 @@ public class RubyCompletionProcessor extends TemplateCompletionProcessor
 	 * 
 	 * @see org.eclipse.jface.text.templates.TemplateCompletionProcessor#getTemplates(java.lang.String)
 	 */
-	protected Template[] getTemplates(String contextTypeId) {
+	public Template[] getTemplates(String contextTypeId) {
 		return RubyTemplateAccess.getDefault().getTemplateStore()
 				.getTemplates();
 	}
