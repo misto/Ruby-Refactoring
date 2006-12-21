@@ -548,7 +548,7 @@ class DEBUGGER__
             stdout.print "Trace off.\n"
           end
           
-        when /^\s*b(?:reak)?\s+(?:(add|remove)\s+)?((?:.*?+:)?.+)$/
+        when /^\s*b(?:reak)?\s+(?:(add|remove)\s+)?((?:.*?:)?.+)$/
           if $1 then
             mode = $1
           else
