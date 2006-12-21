@@ -40,12 +40,6 @@
       </replace>
 	</target>
 
-	<target name="replaceVersionInPluginXml">
-	   <replace file="plugin.xml">	   
-	     <replacefilter token="1.0" value="${featureVersion}"/>
-      </replace>
-	</target>
-	
 	<target name="html" depends="init,clean.docbook.generated,replaceVarInCustomizationLayer">
 	 <!-- docbook recommends to use the saxon comiler. With jdk1.4 we could also use xalan (which ships with jdk1.4)
 	      but with the jdk1.5 built-in XSLTC we get errors related to chunks. 
@@ -63,11 +57,10 @@
         <param name="eclipse.plugin.id" expression="org.rubypeople.rdt.doc.user"/>
         <param name="eclipse.plugin.name" expression="Ruby Development Documentation"/>
         <param name="eclipse.plugin.provider" expression="RubyPeople, Inc."/>
-        <xmlcatalog id="docbook.catalog">
+      	<xmlcatalog id="docbook.catalog">
      	 <dtd publicId="-//OASIS//DTD DocBook V3.1//EN" location="${docbook.dtd.dir}/docbookx.dtd"/>
         </xmlcatalog>
        </style>
-       <antcall target="replaceVersionInPluginXml"/>
      </target>
 
 	 <target name="clean">
