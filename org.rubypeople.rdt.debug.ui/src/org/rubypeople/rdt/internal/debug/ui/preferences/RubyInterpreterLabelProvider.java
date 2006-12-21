@@ -4,7 +4,7 @@ import org.eclipse.core.runtime.IPath;
 import org.eclipse.jface.viewers.ILabelProviderListener;
 import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.swt.graphics.Image;
-import org.rubypeople.rdt.internal.launching.RubyInterpreter;
+import org.rubypeople.rdt.launching.IInterpreter;
 
 public class RubyInterpreterLabelProvider implements ITableLabelProvider {
 
@@ -17,7 +17,7 @@ public class RubyInterpreterLabelProvider implements ITableLabelProvider {
 	}
 
 	public String getColumnText(Object element, int columnIndex) {
-		RubyInterpreter interpreter = (RubyInterpreter) element;
+		IInterpreter interpreter = (IInterpreter) element;
 		switch (columnIndex) {
 			case 0 :
 				return interpreter.getName();

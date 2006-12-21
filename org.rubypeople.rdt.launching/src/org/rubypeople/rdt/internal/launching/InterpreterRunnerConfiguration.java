@@ -11,6 +11,7 @@ import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.debug.core.ILaunchConfiguration;
 import org.rubypeople.rdt.internal.core.RubyProject;
+import org.rubypeople.rdt.launching.IInterpreter;
 
 public class InterpreterRunnerConfiguration {
 	protected ILaunchConfiguration configuration;
@@ -90,7 +91,7 @@ public class InterpreterRunnerConfiguration {
 		return "";
 	}
 
-	public RubyInterpreter getInterpreter() {
+	public IInterpreter getInterpreter() {
 		String selectedInterpreter = null;
 		try {
 			selectedInterpreter = configuration.getAttribute(RubyLaunchConfigurationAttribute.SELECTED_INTERPRETER, "");

@@ -17,11 +17,11 @@ import org.eclipse.core.runtime.Path;
 import org.eclipse.jface.dialogs.ErrorDialog;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.rubypeople.rdt.internal.launching.RdtLaunchingMessages;
-import org.rubypeople.rdt.internal.launching.RubyInterpreter;
 import org.rubypeople.rdt.internal.launching.RubyRuntime;
 import org.rubypeople.rdt.internal.ui.RubyPlugin;
 import org.rubypeople.rdt.internal.ui.RubyUIMessages;
 import org.rubypeople.rdt.internal.ui.dialogs.StatusInfo;
+import org.rubypeople.rdt.launching.IInterpreter;
 import org.rubypeople.rdt.ui.PreferenceConstants;
 
 /**
@@ -86,7 +86,7 @@ public class RDocUtility {
 			log("Generating RDoc for " + resource.getName());
 
 			RdtLaunchingMessages.getString("RdtLaunchingPlugin.noInterpreterSelected");
-			RubyInterpreter interpreter = RubyRuntime.getDefault().getSelectedInterpreter();
+			IInterpreter interpreter = RubyRuntime.getDefault().getSelectedInterpreter();
 			if (interpreter == null) {			
 				MessageDialog.openInformation(RubyPlugin.getActiveWorkbenchShell(), RdtLaunchingMessages.getString("RdtLaunchingPlugin.noInterpreterSelectedTitle"), RdtLaunchingMessages.getString("RdtLaunchingPlugin.noInterpreterSelected"));
 				return ;

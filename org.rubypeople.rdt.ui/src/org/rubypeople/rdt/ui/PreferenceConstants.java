@@ -4,10 +4,10 @@ import org.eclipse.core.runtime.IPath;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.preference.PreferenceConverter;
 import org.eclipse.swt.graphics.RGB;
-import org.rubypeople.rdt.internal.launching.RubyInterpreter;
 import org.rubypeople.rdt.internal.launching.RubyRuntime;
 import org.rubypeople.rdt.internal.ui.RubyPlugin;
 import org.rubypeople.rdt.internal.ui.preferences.formatter.ProfileManager;
+import org.rubypeople.rdt.launching.IInterpreter;
 
 public class PreferenceConstants {
 
@@ -652,7 +652,7 @@ public class PreferenceConstants {
     }
 
     private static String getDefaultPath(String programName) {
-        RubyInterpreter interpreter = RubyRuntime.getDefault().getSelectedInterpreter();
+        IInterpreter interpreter = RubyRuntime.getDefault().getSelectedInterpreter();
         if (interpreter == null) { return programName; }
         IPath path = interpreter.getInstallLocation();
         path = path.uptoSegment(path.segmentCount() - 1).append(programName);

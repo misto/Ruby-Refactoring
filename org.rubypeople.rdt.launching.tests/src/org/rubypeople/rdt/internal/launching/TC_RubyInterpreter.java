@@ -14,6 +14,7 @@ import org.eclipse.core.runtime.Path;
 import org.rubypeople.rdt.internal.launching.CommandExecutor;
 import org.rubypeople.rdt.internal.launching.IllegalCommandException;
 import org.rubypeople.rdt.internal.launching.RubyInterpreter;
+import org.rubypeople.rdt.launching.IInterpreter;
 
 public class TC_RubyInterpreter extends TestCase {
 
@@ -21,11 +22,11 @@ public class TC_RubyInterpreter extends TestCase {
     private static final File WORKING_DIR = new File("/testDir");
 
     public void testEquals() {
-		RubyInterpreter interpreterOne = new RubyInterpreter("InterpreterOne", new Path("/InterpreterOnePath"));
-		RubyInterpreter similarInterpreterOne = new RubyInterpreter("InterpreterOne", new Path("/InterpreterOnePath"));
+		IInterpreter interpreterOne = new RubyInterpreter("InterpreterOne", new Path("/InterpreterOnePath"));
+		IInterpreter similarInterpreterOne = new RubyInterpreter("InterpreterOne", new Path("/InterpreterOnePath"));
 		assertTrue("Interpreters should be equal.", interpreterOne.equals(similarInterpreterOne));
 		
-		RubyInterpreter interpreterTwo = new RubyInterpreter("InterpreterTwo", new Path("/InterpreterTwoPath"));
+		IInterpreter interpreterTwo = new RubyInterpreter("InterpreterTwo", new Path("/InterpreterTwoPath"));
 		assertTrue("Interpreters should not be equal.", !interpreterOne.equals(interpreterTwo));
 	}
     

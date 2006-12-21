@@ -19,6 +19,7 @@ import org.rubypeople.rdt.internal.debug.core.RubyLineBreakpoint;
 import org.rubypeople.rdt.internal.launching.RubyInterpreter;
 import org.rubypeople.rdt.internal.launching.RubyLaunchConfigurationAttribute;
 import org.rubypeople.rdt.internal.launching.RubyRuntime;
+import org.rubypeople.rdt.launching.IInterpreter;
 
 /*
  * 
@@ -35,7 +36,7 @@ public class FTC_DebuggerLaunch extends TestCase {
 		// to be set accordingly
 		String rubyInterpreterPath = FTC_ClassicDebuggerCommunicationTest.RUBY_INTERPRETER ;
 		System.out.println("Using interpreter: " + rubyInterpreterPath) ;
-		RubyInterpreter rubyInterpreter = new RubyInterpreter("RubyInterpreter", new Path(rubyInterpreterPath));
+		IInterpreter rubyInterpreter = new RubyInterpreter("RubyInterpreter", new Path(rubyInterpreterPath));
 		RubyRuntime.getDefault().addInstalledInterpreter(rubyInterpreter) ;
 	
 	}

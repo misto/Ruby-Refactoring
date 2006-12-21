@@ -26,9 +26,10 @@ import org.rubypeople.rdt.internal.debug.ui.RdtDebugUiMessages;
 import org.rubypeople.rdt.internal.debug.ui.RdtDebugUiPlugin;
 import org.rubypeople.rdt.internal.launching.RubyInterpreter;
 import org.rubypeople.rdt.internal.ui.dialogs.StatusDialog;
+import org.rubypeople.rdt.launching.IInterpreter;
 
 public class EditInterpreterDialog extends StatusDialog {
-	protected RubyInterpreter interpreterToEdit;
+	protected IInterpreter interpreterToEdit;
 	protected Text interpreterNameText, interpreterLocationText;
 	protected IStatus[] allStatus = new IStatus[2];
 
@@ -37,7 +38,7 @@ public class EditInterpreterDialog extends StatusDialog {
 		setTitle(aDialogTitle);
 	}
 	
-	public void setInterpreterToEdit(RubyInterpreter anInterpreter) {
+	public void setInterpreterToEdit(IInterpreter anInterpreter) {
 		interpreterToEdit = anInterpreter;
 		
 		String interpreterName = interpreterToEdit.getName();

@@ -19,6 +19,7 @@ import javax.xml.parsers.SAXParserFactory;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Platform;
+import org.rubypeople.rdt.launching.IInterpreter;
 import org.xml.sax.Attributes;
 import org.xml.sax.ContentHandler;
 import org.xml.sax.InputSource;
@@ -27,11 +28,16 @@ import org.xml.sax.SAXException;
 import org.xml.sax.XMLReader;
 
 public class RubyRuntime {
+	private static final String TAG_INTERPRETER = "interpreter";
+	private static final String ATTR_PATH = "path";
+	private static final String ATTR_NAME = "name";
+	private static final String ATTR_SELECTED = "selected";
+
 	protected static RubyRuntime runtime;
 	
-	protected List installedInterpreters;
-	protected RubyInterpreter selectedInterpreter;
-    private List listeners = new ArrayList();
+	protected List<IInterpreter> installedInterpreters;
+	protected IInterpreter selectedInterpreter;
+    private List<Listener> listeners = new ArrayList<Listener>();
     
     public static interface Listener {
         void selectedInterpreterChanged();
@@ -56,17 +62,17 @@ public class RubyRuntime {
         listeners.remove(listener);
     }
 	
-	public RubyInterpreter getSelectedInterpreter() {
+	public IInterpreter getSelectedInterpreter() {
 		if (selectedInterpreter == null) {
 			loadRuntimeConfiguration();
 		}
 		return selectedInterpreter;
 	}
 
-	public RubyInterpreter getInterpreter(String name) {
+	public IInterpreter getInterpreter(String name) {
 		Iterator interpreters = getInstalledInterpreters().iterator();
 		while(interpreters.hasNext()) {
-			RubyInterpreter each = (RubyInterpreter) interpreters.next();
+			IInterpreter each = (IInterpreter) interpreters.next();
 			if (each.getName().equals(name))
 				return each;
 		}
@@ -74,7 +80,7 @@ public class RubyRuntime {
 		return getSelectedInterpreter();
 	}
 
-	public void setSelectedInterpreter(RubyInterpreter anInterpreter) {
+	public void setSelectedInterpreter(IInterpreter anInterpreter) {
         if (selectedInterpreter == anInterpreter) return;
 		selectedInterpreter = anInterpreter;
 		saveRuntimeConfiguration();
@@ -84,26 +90,27 @@ public class RubyRuntime {
         }        
 	}
 
-	public void addInstalledInterpreter(RubyInterpreter anInterpreter) {
+	public void addInstalledInterpreter(IInterpreter anInterpreter) {
 		getInstalledInterpreters().add(anInterpreter);
 		if (getInstalledInterpreters().size() == 1)
 			setSelectedInterpreter((RubyInterpreter) getInstalledInterpreters().get(0));
-
-		saveRuntimeConfiguration();
+		else
+			saveRuntimeConfiguration();
 	}
 
-	public List getInstalledInterpreters() {
+	public List<IInterpreter> getInstalledInterpreters() {
 		if (installedInterpreters == null)
 			loadRuntimeConfiguration();
 		return installedInterpreters;
 	}
 	
-	public void setInstalledInterpreters(List newInstalledInterpreters) {
+	public void setInstalledInterpreters(List<IInterpreter> newInstalledInterpreters) {
 		installedInterpreters = newInstalledInterpreters;
 		if (installedInterpreters.size() > 0)
-			setSelectedInterpreter((RubyInterpreter)installedInterpreters.get(0));
+			setSelectedInterpreter((IInterpreter)installedInterpreters.get(0));
 		else
 			setSelectedInterpreter(null);
+		saveRuntimeConfiguration();
 	}
 	
 	protected void saveRuntimeConfiguration() {
@@ -120,7 +127,7 @@ public class RubyRuntime {
 	}
 	
 	protected void loadRuntimeConfiguration() {
-		installedInterpreters = new ArrayList();
+		installedInterpreters = new ArrayList<IInterpreter>();
 		try {
 			XMLReader reader = SAXParserFactory.newInstance().newSAXParser().getXMLReader();
 			reader.setContentHandler(getRuntimeConfigurationContentHandler());
@@ -143,7 +150,7 @@ public class RubyRuntime {
 		} else  {
 			path = new Path("/usr/local/bin/ruby");
 		}
-		RubyInterpreter interpreter = new RubyInterpreter("Default Ruby Interpreter", path);
+		IInterpreter interpreter = new RubyInterpreter("Default Ruby Interpreter", path);
 		installedInterpreters.add(interpreter);
 		selectedInterpreter = interpreter;
 	}
@@ -161,15 +168,24 @@ public class RubyRuntime {
 			writer.write("<?xml version=\"1.0\" encoding=\"UTF-8\"?><runtimeconfig>");
 			Iterator interpretersIterator = installedInterpreters.iterator();
 			while (interpretersIterator.hasNext()) {
-				writer.write("<interpreter name=\"");
+				writer.write("<");
+				writer.write(TAG_INTERPRETER);
+				writer.write(" ");
+				writer.write(ATTR_NAME);
+				writer.write("=\"");
 				
-				RubyInterpreter entry = (RubyInterpreter) interpretersIterator.next();
+				IInterpreter entry = (IInterpreter) interpretersIterator.next();
 				writer.write(entry.getName());
-				writer.write("\" path=\"");
+				writer.write("\" ");
+				writer.write(ATTR_PATH);
+				writer.write("=\"");
 				writer.write(entry.getInstallLocation().toString());
 				writer.write("\"");
-				if (entry.equals(selectedInterpreter))
-					writer.write(" selected=\"true\"");
+				if (entry.equals(selectedInterpreter)) {
+					writer.write(" ");
+					writer.write(ATTR_SELECTED);
+					writer.write("=\"true\"");
+				}
 					
 				writer.write("/>");
 			}
@@ -188,12 +204,12 @@ public class RubyRuntime {
 			public void startPrefixMapping(String prefix, String uri) throws SAXException {}
 			public void endPrefixMapping(String prefix) throws SAXException {}
 			public void startElement(String namespaceURI, String localName, String qName, Attributes atts) throws SAXException {
-				if ("interpreter".equals(qName)) {
-					String interpreterName = atts.getValue("name");
-					IPath installLocation = new Path(atts.getValue("path"));
-					RubyInterpreter interpreter = new RubyInterpreter(interpreterName, installLocation);
+				if (TAG_INTERPRETER.equals(qName)) {
+					String interpreterName = atts.getValue(ATTR_NAME);
+					IPath installLocation = new Path(atts.getValue(ATTR_PATH));
+					IInterpreter interpreter = new RubyInterpreter(interpreterName, installLocation);
 					installedInterpreters.add(interpreter);
-					if (atts.getValue("selected") != null)
+					if (atts.getValue(ATTR_SELECTED) != null)
 						selectedInterpreter = interpreter;
 				}
 			}

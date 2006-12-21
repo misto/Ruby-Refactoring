@@ -10,8 +10,9 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
+import org.rubypeople.rdt.launching.IInterpreter;
 
-public class RubyInterpreter {
+public class RubyInterpreter implements IInterpreter {
 	public static final String END_OF_OPTIONS_DELIMITER = "--";
 
 	protected IPath installLocation;
@@ -29,18 +30,30 @@ public class RubyInterpreter {
         this.commandExecutor = commandExecutor;
     }
 
+    /* (non-Javadoc)
+	 * @see org.rubypeople.rdt.internal.launching.IInterpreter#getInstallLocation()
+	 */
     public IPath getInstallLocation() {
 		return installLocation;
 	}
 
+	/* (non-Javadoc)
+	 * @see org.rubypeople.rdt.internal.launching.IInterpreter#setInstallLocation(org.eclipse.core.runtime.IPath)
+	 */
 	public void setInstallLocation(IPath validInstallLocation) {
 		installLocation = validInstallLocation;
 	}
 	
+	/* (non-Javadoc)
+	 * @see org.rubypeople.rdt.internal.launching.IInterpreter#getName()
+	 */
 	public String getName() {
 		return name;
 	}
 	
+	/* (non-Javadoc)
+	 * @see org.rubypeople.rdt.internal.launching.IInterpreter#setName(java.lang.String)
+	 */
 	public void setName(String newName) {
 		name = newName;
 	}
@@ -54,7 +67,6 @@ public class RubyInterpreter {
 	}
 	
 	public Process exec(List args, File workingDirectory) throws CoreException {
-
 		try {
 			RdtLaunchingPlugin.debug("Launching: " + args) ;
 			RdtLaunchingPlugin.debug("Working Dir: " + workingDirectory) ;
@@ -76,7 +88,7 @@ public class RubyInterpreter {
 	
 	public boolean equals(Object other) {
 		if (other instanceof RubyInterpreter) {
-			RubyInterpreter otherInterpreter = (RubyInterpreter) other;
+			IInterpreter otherInterpreter = (IInterpreter) other;
 			if (name.equals(otherInterpreter.getName()))
 				return installLocation.equals(otherInterpreter.getInstallLocation());
 		}

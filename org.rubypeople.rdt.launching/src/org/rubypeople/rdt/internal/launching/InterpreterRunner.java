@@ -10,6 +10,7 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.debug.core.DebugPlugin;
 import org.eclipse.debug.core.ILaunch;
 import org.eclipse.debug.core.model.IProcess;
+import org.rubypeople.rdt.launching.IInterpreter;
 
 public class InterpreterRunner {
    
@@ -19,7 +20,7 @@ public class InterpreterRunner {
 		List commandLine = renderCommandLine(configuration);
 		File workingDirectory = configuration.getAbsoluteWorkingDirectory();
 
-		RubyInterpreter interpreter = convertInterpreter(configuration.getInterpreter()) ;
+		IInterpreter interpreter = convertInterpreter(configuration.getInterpreter());
 		Process nativeRubyProcess = interpreter.exec(commandLine, workingDirectory);
         Map defaultAttributes = new HashMap();
         defaultAttributes.put(IProcess.ATTR_PROCESS_TYPE, "ruby");
@@ -28,15 +29,15 @@ public class InterpreterRunner {
 		return process ;
 	}
 	
-	protected RubyInterpreter convertInterpreter(RubyInterpreter rubyInterpreter) {
-		return rubyInterpreter ;
+	protected IInterpreter convertInterpreter(IInterpreter rubyInterpreter) {
+		return rubyInterpreter;
 	}
 
 	protected String renderLabel(InterpreterRunnerConfiguration configuration) {
 		StringBuffer buffer = new StringBuffer();
 
 		try {
-			RubyInterpreter interpreter = configuration.getInterpreter();
+			IInterpreter interpreter = configuration.getInterpreter();
 			buffer.append("Ruby ");
 			buffer.append(interpreter.getCommand());
 			buffer.append(" : ");

@@ -35,6 +35,7 @@ import org.rubypeople.rdt.internal.launching.RubyInterpreter;
 import org.rubypeople.rdt.internal.launching.RubyLaunchConfigurationAttribute;
 import org.rubypeople.rdt.internal.launching.RubyRuntime;
 import org.rubypeople.rdt.internal.ui.RubyPluginImages;
+import org.rubypeople.rdt.launching.IInterpreter;
 
 public class RubyEnvironmentTab extends AbstractLaunchConfigurationTab {
 	protected ListViewer loadPathListViewer;
@@ -115,7 +116,7 @@ public class RubyEnvironmentTab extends AbstractLaunchConfigurationTab {
 		interpreterAddButton.setText(RdtDebugUiMessages.getString("LaunchConfigurationTab.RubyEnvironment.interpreterAddButton.label"));
 		interpreterAddButton.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent evt) {
-				RubyInterpreter newInterpreter = new RubyInterpreter(null, null);
+				IInterpreter newInterpreter = new RubyInterpreter(null, null);
 				EditInterpreterDialog editor = new EditInterpreterDialog(getShell(), RdtDebugUiMessages.getString("LaunchConfigurationTab.RubyEnvironment.editInterpreterDialog.title"));
 				editor.create();
 				editor.setInterpreterToEdit(newInterpreter);
@@ -148,7 +149,7 @@ public class RubyEnvironmentTab extends AbstractLaunchConfigurationTab {
 	}
 
 	public void setDefaults(ILaunchConfigurationWorkingCopy configuration) {
-		RubyInterpreter defaultInterpreter = RubyRuntime.getDefault().getSelectedInterpreter();
+		IInterpreter defaultInterpreter = RubyRuntime.getDefault().getSelectedInterpreter();
 		if (defaultInterpreter != null) {			
 			configuration.setAttribute(RubyLaunchConfigurationAttribute.SELECTED_INTERPRETER, defaultInterpreter.getName());
 		}
@@ -201,12 +202,12 @@ public class RubyEnvironmentTab extends AbstractLaunchConfigurationTab {
 
 		String[] interpreterNames = new String[installedInterpretersWorkingCopy.size()];
 		for (int interpreterIndex = 0; interpreterIndex < installedInterpretersWorkingCopy.size(); interpreterIndex++) {
-			RubyInterpreter interpreter = (RubyInterpreter) installedInterpretersWorkingCopy.get(interpreterIndex);
+			IInterpreter interpreter = (IInterpreter) installedInterpretersWorkingCopy.get(interpreterIndex);
 			interpreterNames[interpreterIndex] = interpreter.getName();
 		}
 		interpreterCombo.setItems(interpreterNames);
 
-		RubyInterpreter selectedInterpreter = RubyRuntime.getDefault().getSelectedInterpreter();
+		IInterpreter selectedInterpreter = RubyRuntime.getDefault().getSelectedInterpreter();
 		if (selectedInterpreter != null)
 			interpreterCombo.select(interpreterCombo.indexOf(selectedInterpreter.getName()));
 	}

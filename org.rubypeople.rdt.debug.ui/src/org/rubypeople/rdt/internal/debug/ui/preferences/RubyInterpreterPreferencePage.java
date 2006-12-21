@@ -28,6 +28,7 @@ import org.eclipse.ui.IWorkbenchPreferencePage;
 import org.rubypeople.rdt.internal.debug.ui.RdtDebugUiMessages;
 import org.rubypeople.rdt.internal.launching.RubyInterpreter;
 import org.rubypeople.rdt.internal.launching.RubyRuntime;
+import org.rubypeople.rdt.launching.IInterpreter;
 
 public class RubyInterpreterPreferencePage extends PreferencePage implements IWorkbenchPreferencePage {
 	protected CheckboxTableViewer tableViewer;
@@ -48,7 +49,7 @@ public class RubyInterpreterPreferencePage extends PreferencePage implements IWo
 		createButtonGroup(composite);
 
 		tableViewer.setInput(RubyRuntime.getDefault().getInstalledInterpreters());
-		RubyInterpreter selectedInterpreter = RubyRuntime.getDefault().getSelectedInterpreter();
+		IInterpreter selectedInterpreter = RubyRuntime.getDefault().getSelectedInterpreter();
 		if (selectedInterpreter != null)
 			tableViewer.setChecked(selectedInterpreter, true);
 
@@ -146,7 +147,7 @@ public class RubyInterpreterPreferencePage extends PreferencePage implements IWo
 	}
 
 	protected void addInterpreter() {
-		RubyInterpreter newInterpreter = new RubyInterpreter(null, null);
+		IInterpreter newInterpreter = new RubyInterpreter(null, null);
 		EditInterpreterDialog editor = new EditInterpreterDialog(getShell(), RdtDebugUiMessages.getString("RubyInterpreterPreferencePage.EditInterpreterDialog.addInterpreter.title")); //$NON-NLS-1$
 		editor.create();
 		editor.setInterpreterToEdit(newInterpreter);
@@ -186,15 +187,15 @@ public class RubyInterpreterPreferencePage extends PreferencePage implements IWo
 		EditInterpreterDialog editor = new EditInterpreterDialog(getShell(), RdtDebugUiMessages.getString("RubyInterpreterPreferencePage.EditInterpreterDialog.editInterpreter.title")); //$NON-NLS-1$
 		editor.create();
 		
-		RubyInterpreter anInterpreter = getSelectedInterpreter();
+		IInterpreter anInterpreter = getSelectedInterpreter();
 		editor.setInterpreterToEdit(anInterpreter);
 		if (EditInterpreterDialog.OK == editor.open())
 			tableViewer.update(anInterpreter, null);
 	}
 	
-	protected RubyInterpreter getSelectedInterpreter() {
+	protected IInterpreter getSelectedInterpreter() {
 		IStructuredSelection selection = (IStructuredSelection) tableViewer.getSelection();
-		return (RubyInterpreter) selection.getFirstElement();
+		return (IInterpreter) selection.getFirstElement();
 	}
 	
 	public boolean performOk() {
@@ -206,7 +207,7 @@ public class RubyInterpreterPreferencePage extends PreferencePage implements IWo
 
 		Object[] checkedElements = tableViewer.getCheckedElements();
 		if (checkedElements.length > 0)
-			RubyRuntime.getDefault().setSelectedInterpreter((RubyInterpreter) checkedElements[0]);
+			RubyRuntime.getDefault().setSelectedInterpreter((IInterpreter) checkedElements[0]);
 
 		return super.performOk();
 	}

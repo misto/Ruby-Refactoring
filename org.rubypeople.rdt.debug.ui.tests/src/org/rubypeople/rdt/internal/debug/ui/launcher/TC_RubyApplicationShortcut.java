@@ -29,6 +29,7 @@ import org.rubypeople.rdt.internal.debug.ui.launcher.RubyApplicationShortcut;
 import org.rubypeople.rdt.internal.launching.RubyInterpreter;
 import org.rubypeople.rdt.internal.launching.RubyLaunchConfigurationAttribute;
 import org.rubypeople.rdt.internal.launching.RubyRuntime;
+import org.rubypeople.rdt.launching.IInterpreter;
 import org.rubypeople.rdt.ui.IRubyConstants;
 
 public class TC_RubyApplicationShortcut extends TestCase {
@@ -97,14 +98,14 @@ public class TC_RubyApplicationShortcut extends TestCase {
 		Assert.assertEquals("All configurations deleted.", 0, this.getLaunchConfigurations().length);
 
 		ShamApplicationLaunchConfigurationDelegate.resetLaunches();
-		RubyInterpreter interpreterOne = new RubyInterpreter("InterpreterOne", new Path("C:/RubyInstallRootOne"));
-		RubyRuntime.getDefault().setInstalledInterpreters(Arrays.asList(new Object[] { interpreterOne}));
+		IInterpreter interpreterOne = new RubyInterpreter("InterpreterOne", new Path("C:/RubyInstallRootOne"));
+		RubyRuntime.getDefault().setInstalledInterpreters(Arrays.asList(new IInterpreter[] { interpreterOne}));
 
 	}
 
 	
 	public void testNoInterpreterInstalled() throws Exception {
-		RubyRuntime.getDefault().setInstalledInterpreters(Arrays.asList(new Object[] { }));
+		RubyRuntime.getDefault().setInstalledInterpreters(Arrays.asList(new IInterpreter[] { }));
 		ISelection selection = new StructuredSelection(rubyFile);
 		shortcut.launch(selection, ILaunchManager.RUN_MODE);
 		
