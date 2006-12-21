@@ -1,8 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?eclipse version="3.0"?>
-<plugin
-   id="org.rubypeople.rdt.doc.user"
-   name="%Plugin.name"
-   version="0.0.0"
-   provider-name="RubyPeople, Inc.">
+<plugin>
+
+<!-- ============================================================================= -->
+<!-- Define primary TOC                                                            -->
+<!-- ============================================================================= -->
+
+   <extension point="org.eclipse.help.toc"> 
+       <toc file="toc.xml" primary="true" />
+   </extension>
+
 </plugin>
