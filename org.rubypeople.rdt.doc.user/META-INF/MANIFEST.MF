@@ -3,5 +3,6 @@ Bundle-ManifestVersion: 2
 Bundle-Name: %Plugin.name
 Bundle-SymbolicName: org.rubypeople.rdt.doc.user;singleton:=true
 Bundle-Version: 0.0.0
-Bundle-Vendor: RubyPeople, Inc.
+Bundle-Vendor: %providerName
 Bundle-Localization: plugin
+Eclipse-LazyStart: true
