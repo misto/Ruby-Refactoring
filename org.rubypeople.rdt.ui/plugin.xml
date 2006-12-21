@@ -580,6 +580,14 @@
                id="exportRdoc">
          </action>
          <action
+               definitionId="org.rubypeople.rdt.ui.add.rubynature"
+               label="Add Ruby Nature"
+               helpContextId="org.rubypeople.rdt.ui.add_ruby_nature_action"
+               class="org.rubypeople.rdt.internal.ui.actions.AddRubyNatureAction"
+               menubarPath="project/additions"
+               id="addRubyNature">
+         </action>
+         <action
                definitionId="org.rubypeople.rdt.ui.edit.text.ruby.uncomment"
                label="%UncommentAction.label"
                menubarPath="org.rubypeople.rdt.ui.ruby.menu/editGroup"
