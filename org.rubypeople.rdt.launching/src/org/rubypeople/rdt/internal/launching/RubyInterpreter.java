@@ -62,7 +62,7 @@ public class RubyInterpreter implements IInterpreter {
 		if( new File(installLocation.toOSString()).isFile() ){
 			return installLocation.toOSString();
 		}
-		String errorMessage = MessageFormat.format(RdtLaunchingMessages.getString("RdtLaunchingPlugin.interpreterNotFound"), new Object[] {this.getName()}) ;
+		String errorMessage = MessageFormat.format(RdtLaunchingMessages.RdtLaunchingPlugin_interpreterNotFound, new Object[] {this.getName()}) ;
 		throw new IllegalCommandException(errorMessage) ;
 	}
 	

@@ -33,8 +33,7 @@ public class DebuggerRunner extends InterpreterRunner {
 							IStatus.ERROR,
 							RdtLaunchingPlugin.PLUGIN_ID,
 							IStatus.ERROR,
-							RdtLaunchingMessages
-									.getString("RdtLaunchingPlugin.processTerminatedBecauseNoDebuggerConnection"),
+							RdtLaunchingMessages.RdtLaunchingPlugin_processTerminatedBecauseNoDebuggerConnection,
 							null));
 			debugTarget.terminate();
 		}

@@ -1,21 +1,20 @@
 package org.rubypeople.rdt.internal.launching;
 
-import java.util.MissingResourceException;
-import java.util.ResourceBundle;
+import org.eclipse.osgi.util.NLS;
 
 public class RdtLaunchingMessages {
 
-	private static final String BUNDLE_NAME = "org.rubypeople.rdt.internal.launching.RdtLaunchingMessages"; //$NON-NLS-1$
+	private static final String BUNDLE_NAME = RdtLaunchingMessages.class.getName();
 
-	private static final ResourceBundle RESOURCE_BUNDLE = ResourceBundle.getBundle(BUNDLE_NAME);
-
+	public static String RdtLaunchingPlugin_processTerminatedBecauseNoDebuggerConnection;
+	public static String RdtLaunchingPlugin_internalErrorOccurred;
+	public static String RdtLaunchingPlugin_noInterpreterSelected;
+	public static String RdtLaunchingPlugin_interpreterNotFound;
+	public static String RdtLaunchingPlugin_noInterpreterSelectedTitle;
+	
 	private RdtLaunchingMessages() {}
 
-	public static String getString(String key) {
-		try {
-			return RESOURCE_BUNDLE.getString(key);
-		} catch (MissingResourceException e) {
-			return '!' + key + '!';
-		}
+	static {
+		NLS.initializeMessages(BUNDLE_NAME, RdtLaunchingMessages.class);
 	}
 }

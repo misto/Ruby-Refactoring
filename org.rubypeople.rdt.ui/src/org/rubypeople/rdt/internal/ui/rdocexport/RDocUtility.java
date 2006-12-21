@@ -85,10 +85,9 @@ public class RDocUtility {
 		public final void invoke() {
 			log("Generating RDoc for " + resource.getName());
 
-			RdtLaunchingMessages.getString("RdtLaunchingPlugin.noInterpreterSelected");
 			IInterpreter interpreter = RubyRuntime.getDefault().getSelectedInterpreter();
 			if (interpreter == null) {			
-				MessageDialog.openInformation(RubyPlugin.getActiveWorkbenchShell(), RdtLaunchingMessages.getString("RdtLaunchingPlugin.noInterpreterSelectedTitle"), RdtLaunchingMessages.getString("RdtLaunchingPlugin.noInterpreterSelected"));
+				MessageDialog.openInformation(RubyPlugin.getActiveWorkbenchShell(), RdtLaunchingMessages.RdtLaunchingPlugin_noInterpreterSelectedTitle, RdtLaunchingMessages.RdtLaunchingPlugin_noInterpreterSelected);
 				return ;
 			}
 
