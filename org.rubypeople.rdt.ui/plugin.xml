@@ -926,7 +926,7 @@
       </viewer>
       <contentTypeBinding
 			contentTypeId="org.rubypeople.rdt.core.rubySource"
-            contentViewerId="org.rubypeoplee.rdt.internal.ui.compare.RubyTextViewerCreator">
+            contentViewerId="org.rubypeople.rdt.internal.ui.compare.RubyTextViewerCreator">
 	  </contentTypeBinding>
    </extension>
    <extension
