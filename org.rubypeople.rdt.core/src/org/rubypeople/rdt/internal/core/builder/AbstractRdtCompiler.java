@@ -1,5 +1,6 @@
 package org.rubypeople.rdt.internal.core.builder;
 
+import java.io.IOException;
 import java.util.Iterator;
 import java.util.List;
 
@@ -7,6 +8,10 @@ import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.rubypeople.rdt.internal.core.pmd.CPD;
+import org.rubypeople.rdt.internal.core.pmd.Match;
+import org.rubypeople.rdt.internal.core.pmd.PMD;
+import org.rubypeople.rdt.internal.core.pmd.TokenEntry;
 import org.rubypeople.rdt.internal.core.symbols.SymbolIndex;
 import org.rubypeople.rdt.internal.core.util.ListUtil;
 
@@ -46,10 +51,36 @@ public abstract class AbstractRdtCompiler {
         monitor.worked(fileCount);
         flushIndexEntries(symbolIndex);
         monitor.worked(fileCount);
+        // FIXME Create warning markers for these duplicate code matches
+        // TODO Refactor out this stuff into a compiler, only visit files we've collected
+        try {
+			Iterator<Match> matches = CPD.findMatches(project);
+			StringBuffer buffer = new StringBuffer();
+			while (matches.hasNext()) {
+				Match match = matches.next();
+				renderOn(buffer, match);
+			}
+			System.out.println(buffer.toString());
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
     
         compileFiles(list, monitor);
         monitor.done();
     }
+    
+	private void renderOn(StringBuffer rpt, Match match) {		
+        rpt.append("Found a ").append(match.getLineCount()).append(" line (").append(match.getTokenCount()).append(" tokens) duplication in the following files: ").append(PMD.EOL);
+        
+        TokenEntry mark;
+        for (Iterator occurrences = match.iterator(); occurrences.hasNext();) {
+            mark = (TokenEntry) occurrences.next();
+            rpt.append("Starting at line ").append(mark.getBeginLine()).append(" of ").append(mark.getTokenSrcID()).append(PMD.EOL);
+        }        
+        rpt.append(PMD.EOL);	// add a line to separate the source from the desc above        
+        String source = match.getSourceCodeSlice();        
+        rpt.append(source).append(PMD.EOL);
+	}
 
     private void compileFiles(List list, IProgressMonitor monitor) throws CoreException {
         for (Iterator iter = list.iterator(); iter.hasNext();) {
