@@ -11,6 +11,7 @@ import org.eclipse.core.runtime.Platform;
 import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.IRegion;
 import org.eclipse.jface.text.ITextViewer;
+import org.eclipse.ui.texteditor.ITextEditor;
 import org.rubypeople.rdt.internal.ui.RubyPlugin;
 import org.rubypeople.rdt.ui.extensions.ITextHoverProvider;
 
@@ -38,7 +39,7 @@ public class RubyCodeTextHover extends AbstractRubyEditorTextHover {
 			if(extensions.size() > 0){
 				for(int i=0; i< extensions.size(); i++){
 					ITextHoverProvider currentProvider = (ITextHoverProvider) extensions.get(i);
-					String hoverText = currentProvider.getHoverInfo(textViewer, hoverRegion);
+					String hoverText = currentProvider.getHoverInfo(getEditor().getEditorInput(), textViewer, hoverRegion);
 					if(hoverText != null){
 						return hoverText;
 					}					

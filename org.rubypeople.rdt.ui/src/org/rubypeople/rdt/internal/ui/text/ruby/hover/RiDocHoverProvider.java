@@ -12,6 +12,7 @@ import org.eclipse.core.runtime.Path;
 import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.IRegion;
 import org.eclipse.jface.text.ITextViewer;
+import org.eclipse.ui.IEditorInput;
 import org.rubypeople.rdt.internal.launching.RubyRuntime;
 import org.rubypeople.rdt.internal.ui.RubyPlugin;
 import org.rubypeople.rdt.launching.IInterpreter;
@@ -20,7 +21,7 @@ import org.rubypeople.rdt.ui.extensions.ITextHoverProvider;
 
 
 public class RiDocHoverProvider implements ITextHoverProvider {
-	public String getHoverInfo(ITextViewer textViewer, IRegion hoverRegion){
+	public String getHoverInfo(IEditorInput input, ITextViewer textViewer, IRegion hoverRegion){
     	IPath riPath = new Path( RubyPlugin.getDefault().getPreferenceStore().getString( PreferenceConstants.RI_PATH ) );
     	List args = new ArrayList();
     	args.add(0, riPath.toString());

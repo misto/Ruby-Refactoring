@@ -55,6 +55,7 @@ import org.rubypeople.rdt.internal.ui.text.RubyPartitionScanner;
 import org.rubypeople.rdt.internal.ui.text.RubyReconciler;
 import org.rubypeople.rdt.internal.ui.text.comment.CommentFormattingStrategy;
 import org.rubypeople.rdt.internal.ui.text.comment.RubyCommentAutoIndentStrategy;
+import org.rubypeople.rdt.internal.ui.text.hyperlinks.RubyHyperLinkDetector;
 import org.rubypeople.rdt.internal.ui.text.ruby.AbstractRubyScanner;
 import org.rubypeople.rdt.internal.ui.text.ruby.RubyCodeScanner;
 import org.rubypeople.rdt.internal.ui.text.ruby.RubyCompletionProcessor;
@@ -62,7 +63,6 @@ import org.rubypeople.rdt.internal.ui.text.ruby.RubyFormattingStrategy;
 import org.rubypeople.rdt.internal.ui.text.ruby.RubyReconcilingStrategy;
 import org.rubypeople.rdt.internal.ui.text.ruby.SingleTokenRubyCodeScanner;
 import org.rubypeople.rdt.internal.ui.text.ruby.hover.RubyCodeTextHover;
-import org.rubypeople.rdt.ui.text.hyperlinks.RubyHyperLinkDetector;
 
 public class RubySourceViewerConfiguration extends
 		TextSourceViewerConfiguration {
@@ -540,6 +540,7 @@ public class RubySourceViewerConfiguration extends
 			String contentType) {
 		if (fRubyTextHover == null) {
 			fRubyTextHover = new RubyCodeTextHover();
+			fRubyTextHover.setEditor(getEditor());
 		}
 		return fRubyTextHover;
 	}
