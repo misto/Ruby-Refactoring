@@ -16,6 +16,7 @@
 		<move file="docbook/docbook-xsl-${docbook.xsl.version}" tofile="${docbook.xsl.dir}" />
 		<mkdir dir="${docbook.dtd.dir}"/>
 		<unzip src="docbook/docbook-xml-4.2.zip" dest="${docbook.dtd.dir}"/>
+		<copy file="docbook/modified_eclipse.xsl" tofile="${docbook.xsl.dir}/eclipse/eclipse.xsl"/>
 	</target>
 	
 	<target name="init" depends="docbook.unpack">
@@ -55,8 +56,8 @@
         <param name="base.dir" expression="html/"/>
         <param name="manifest.in.base.dir" expression="0"/>
         <param name="eclipse.plugin.id" expression="org.rubypeople.rdt.doc.user"/>
-        <param name="eclipse.plugin.name" expression="Ruby Development Documentation"/>
-        <param name="eclipse.plugin.provider" expression="RubyPeople, Inc."/>
+        <param name="eclipse.plugin.name" expression="%Plugin.name"/>
+        <param name="eclipse.plugin.provider" expression="%providerName"/>
       	<xmlcatalog id="docbook.catalog">
      	 <dtd publicId="-//OASIS//DTD DocBook V3.1//EN" location="${docbook.dtd.dir}/docbookx.dtd"/>
         </xmlcatalog>
