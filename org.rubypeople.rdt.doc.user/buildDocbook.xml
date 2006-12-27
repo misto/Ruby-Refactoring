@@ -49,8 +49,8 @@
 	     -->
       <style classpath="lib/saxon_6.6.5.jar"
       		 includes="docbook.xml" 
-      		 basedir="." 
-      		 destdir="."  
+      		 basedir="${basedir}"
+      		 destdir="${basedir}"
       	     extension=".done" 
       	     style="customizationLayerCopy.xsl">
         <param name="base.dir" expression="html/"/>
