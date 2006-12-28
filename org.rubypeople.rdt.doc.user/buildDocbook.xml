@@ -53,7 +53,8 @@
       		 basedir="${basedir}"
       		 destdir="${basedir}"
       	     extension=".done" 
-      	     style="customizationLayerCopy.xsl">
+      	     style="customizationLayerCopy.xsl"
+      	     processor="trax">
         <param name="base.dir" expression="html/"/>
         <param name="manifest.in.base.dir" expression="0"/>
         <param name="eclipse.plugin.id" expression="org.rubypeople.rdt.doc.user"/>
