@@ -45,7 +45,16 @@
 	</target>
 
 	<target name="build.jars" depends="init" description="Build all the jars for the plug-in: org.rubypeople.rdt.doc.user.">		
-		<ant antfile="buildDocbook.xml" target="html"/>	
+		<!-- start up a new VM with basedir as Working Directory (user.dir). Unfortunately this is necessary, because
+			the html documents are created relative to the working directory. Using base.dir these files can be created
+			in a subdirectory but base.dir may not be an absolute path, because then the references in toc.xml would
+			be absolute, too -->
+		<java classpath="${java.class.path}" classname="org.apache.tools.ant.launch.Launcher" dir="${basedir}" fork="true" >
+			<arg value="-DfeatureVersion=${featureVersion}"/>
+			<arg value="-f"/>
+			<arg value="buildDocbook.xml"/>
+			<arg value="html"/>
+		</java>
 	</target>
 
 	<target name="build.sources" depends="init">

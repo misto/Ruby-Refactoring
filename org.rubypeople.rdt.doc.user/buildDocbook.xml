@@ -32,6 +32,7 @@
 	      <fileset dir="html" includes="*.html"/>
 	    </delete>
 	    <delete file="customizationLayerCopy.xsl"/>
+	    <delete file="plugin.xml"/>
 	</target>
 	
 	<target name="replaceVarInCustomizationLayer">
