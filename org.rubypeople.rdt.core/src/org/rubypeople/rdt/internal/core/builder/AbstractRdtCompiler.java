@@ -44,15 +44,17 @@ public abstract class AbstractRdtCompiler {
         analyzeFiles();
         List list = getFilesToCompile();
         int fileCount = list.size();
-        monitor.beginTask("Building "+project.getName() + "...", fileCount * (compilers.size() + 2));
+        monitor.beginTask("Building "+project.getName() + "...", fileCount * (compilers.size() + 3));
         monitor.subTask("Removing Markers...");
         
         removeMarkers(markerManager);
         monitor.worked(fileCount);
+        monitor.subTask("Removing Search Indices...");
         flushIndexEntries(symbolIndex);
         monitor.worked(fileCount);
         // FIXME Create warning markers for these duplicate code matches
         // TODO Refactor out this stuff into a compiler, only visit files we've collected
+        monitor.subTask("Finding duplicate code...");
         try {
 			Iterator<Match> matches = CPD.findMatches(project);
 			StringBuffer buffer = new StringBuffer();
@@ -64,7 +66,8 @@ public abstract class AbstractRdtCompiler {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-    
+		monitor.worked(fileCount);
+		
         compileFiles(list, monitor);
         monitor.done();
     }
