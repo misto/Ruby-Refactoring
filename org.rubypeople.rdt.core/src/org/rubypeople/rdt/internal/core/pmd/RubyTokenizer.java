@@ -11,11 +11,14 @@ public class RubyTokenizer implements Tokenizer {
 
     public void tokenize(SourceCode tokens, Tokens tokenEntries) {
         List code = tokens.getCode();
+        int curLineOffset = 0;
         for (int i = 0; i < code.size(); i++) {
             String currentLine = (String) code.get(i);
             int loc = 0;
+            int startOffset = 0;
             while (loc < currentLine.length()) {
                 StringBuffer token = new StringBuffer();
+                startOffset = curLineOffset + loc;
                 loc = getTokenFromLine(currentLine, token, loc);
                 if (token.length() > 0 && !isIgnorableString(token.toString())) {
                     if (downcaseString) {
@@ -23,9 +26,10 @@ public class RubyTokenizer implements Tokenizer {
                     }
                     tokenEntries.add(new TokenEntry(token.toString(),
                             tokens.getFileName(),
-                            i + 1));
+                            i + 1, startOffset, startOffset + token.length()));
                 }
             }
+            curLineOffset += currentLine.length();
         }
         tokenEntries.add(TokenEntry.getEOF());
     }

@@ -27,10 +27,10 @@ import org.eclipse.core.runtime.content.IContentType;
 public final class RubySourceFileCollectingVisitor implements IResourceProxyVisitor {
 
     private static final String RUBY_SOURCE_CONTENT_TYPE_ID = "org.rubypeople.rdt.core.rubySource";
-    private final List files;
+    private final List<IFile> files;
 	private HashSet<String> visitedLinks;
 
-    public RubySourceFileCollectingVisitor(List files) {
+    public RubySourceFileCollectingVisitor(List<IFile> files) {
         this.files = files;
         this.visitedLinks = new HashSet<String>();
     }
@@ -41,7 +41,7 @@ public final class RubySourceFileCollectingVisitor implements IResourceProxyVisi
         case IResource.FILE:
             if (org.rubypeople.rdt.internal.core.util.Util.isRubyLikeFileName(proxy.getName())) {
                 if (resource == null) resource = proxy.requestResource();
-                files.add(resource);
+                files.add((IFile)resource);
                 return false;
             }
             // Check for Ruby Source content type
@@ -52,7 +52,7 @@ public final class RubySourceFileCollectingVisitor implements IResourceProxyVisi
                 IContentType type = contentDescription.getContentType();
                 if (type != null)
                     if (type.getId().equals(RUBY_SOURCE_CONTENT_TYPE_ID)) 
-                        files.add(resource);
+                        files.add(file);
             }
             return false;
         case IResource.FOLDER:

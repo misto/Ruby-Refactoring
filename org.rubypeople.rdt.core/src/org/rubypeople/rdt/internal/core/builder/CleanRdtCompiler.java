@@ -2,13 +2,14 @@ package org.rubypeople.rdt.internal.core.builder;
 
 import java.util.List;
 
+import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
 import org.rubypeople.rdt.internal.core.symbols.SymbolIndex;
 
 public class CleanRdtCompiler extends AbstractRdtCompiler  {
 
-    private List projectFiles;
+    private List<IFile> projectFiles;
 
     public CleanRdtCompiler(IProject project, SymbolIndex symbolIndex) {
         this(project, symbolIndex, new MarkerManager());
@@ -32,11 +33,11 @@ public class CleanRdtCompiler extends AbstractRdtCompiler  {
         markerManager.removeProblemsAndTasksFor(project);
     }
 
-    protected List getFilesToClear() {
+    protected List<IFile> getFilesToClear() {
         return projectFiles;
     }
 
-    protected List getFilesToCompile() {
+    protected List<IFile> getFilesToCompile() {
         return projectFiles;
     }
 

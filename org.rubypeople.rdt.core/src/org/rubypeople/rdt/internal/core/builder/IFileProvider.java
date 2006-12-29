@@ -13,8 +13,9 @@ package org.rubypeople.rdt.internal.core.builder;
 
 import java.util.List;
 
+import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.CoreException;
 
 interface IFileProvider {
-    public List findFiles() throws CoreException;
+    public List<IFile> findFiles() throws CoreException;
 }

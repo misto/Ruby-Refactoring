@@ -15,6 +15,7 @@ package org.rubypeople.rdt.internal.core.builder;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
@@ -26,13 +27,13 @@ public final class ProjectFileFinder implements IFileProvider {
         this.project = project;
     }
 
-    public List findFiles() throws CoreException {
-        List files = new ArrayList();
+    public List<IFile> findFiles() throws CoreException {
+        List<IFile> files = new ArrayList<IFile>();
         addAllSourceFiles(files);
         return files;
     }
 
-    protected void addAllSourceFiles(final List sourceFiles) throws CoreException {
+    protected void addAllSourceFiles(final List<IFile> sourceFiles) throws CoreException {
         project.accept(new RubySourceFileCollectingVisitor(sourceFiles), IResource.NONE);
     }
 

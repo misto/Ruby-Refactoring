@@ -15,6 +15,8 @@ public class TokenEntry implements Comparable {
     private int index;
     private int identifier;
     private int hashCode;
+	private int startOffset;
+	private int endOffset;
 
     private final static Map Tokens = new HashMap();
     private static int TokenCount = 0;
@@ -24,7 +26,7 @@ public class TokenEntry implements Comparable {
         this.tokenSrcID = "EOFMarker";
     }
 
-    public TokenEntry(String image, String tokenSrcID, int beginLine) {
+    public TokenEntry(String image, String tokenSrcID, int beginLine, int startOffset, int endOffset) {
         Integer i = (Integer) Tokens.get(image);
         if (i == null) {
             i = new Integer(Tokens.size() + 1);
@@ -33,6 +35,8 @@ public class TokenEntry implements Comparable {
         this.identifier = i.intValue();
         this.tokenSrcID = tokenSrcID;
         this.beginLine = beginLine;
+        this.startOffset = startOffset;
+        this.endOffset = endOffset;
         this.index = TokenCount++;
     }
 
@@ -46,6 +50,14 @@ public class TokenEntry implements Comparable {
         TokenCount = 0;
     }
 
+    public int getStartOffset() {
+      return startOffset;    
+    }
+    
+    public int getEndOffset() {
+    	return endOffset;
+    }
+    
     public String getTokenSrcID() {
         return tokenSrcID;
     }
