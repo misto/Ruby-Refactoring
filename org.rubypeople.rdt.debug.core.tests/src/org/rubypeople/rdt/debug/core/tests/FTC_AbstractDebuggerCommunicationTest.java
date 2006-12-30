@@ -19,7 +19,9 @@ import org.rubypeople.rdt.internal.debug.core.model.RubyStackFrame;
 import org.rubypeople.rdt.internal.debug.core.model.RubyThread;
 import org.rubypeople.rdt.internal.debug.core.model.RubyVariable;
 import org.rubypeople.rdt.internal.debug.core.model.ThreadInfo;
+import org.rubypeople.rdt.internal.debug.core.parsing.BreakpointAddedReader;
 import org.rubypeople.rdt.internal.debug.core.parsing.ErrorReader;
+import org.rubypeople.rdt.internal.debug.core.parsing.EvalReader;
 import org.rubypeople.rdt.internal.debug.core.parsing.FramesReader;
 import org.rubypeople.rdt.internal.debug.core.parsing.LoadResultReader;
 import org.rubypeople.rdt.internal.debug.core.parsing.MultiReaderStrategy;
@@ -104,6 +106,10 @@ public abstract class FTC_AbstractDebuggerCommunicationTest extends TestCase {
 		return new VariableReader(multiReaderStrategy);
 	}
 
+	protected EvalReader getEvalExceptionReader() throws Exception {
+		return new EvalReader(multiReaderStrategy);
+	}
+
 	protected FramesReader getFramesReader() throws Exception {
 		return new FramesReader(multiReaderStrategy);
 	}
@@ -115,6 +121,14 @@ public abstract class FTC_AbstractDebuggerCommunicationTest extends TestCase {
 	protected LoadResultReader getLoadResultReader() throws Exception {
 		return new LoadResultReader(multiReaderStrategy);
 	}
+	
+	protected EvalReader getEvalReader() throws Exception {
+		return new EvalReader(multiReaderStrategy);
+	}
+	
+	protected BreakpointAddedReader getBreakpointAddedReader() throws Exception {
+		return new BreakpointAddedReader(multiReaderStrategy);
+	}	
 
 	protected String getOSIndependent(String path) {
 		return path.replace('\\', '/');
@@ -211,7 +225,7 @@ public abstract class FTC_AbstractDebuggerCommunicationTest extends TestCase {
 		System.out.println("..done");
 	}
 
-	private void writeFile(String name, String[] content) throws Exception {
+	protected void writeFile(String name, String[] content) throws Exception {
 		PrintWriter writer = new PrintWriter(new FileOutputStream(getTmpDir()
 				+ name));
 		for (int i = 0; i < content.length; i++) {
@@ -220,10 +234,10 @@ public abstract class FTC_AbstractDebuggerCommunicationTest extends TestCase {
 		writer.close();
 	}
 
-	private void createSocket(String[] lines) throws Exception {
+	protected void createSocket(String[] lines) throws Exception {
 		writeFile("test.rb", lines);
 		startRubyProcess();
-		Thread.sleep(500);
+		Thread.sleep(1000);
 		try {
 			socket = new Socket("localhost", 1098);
 		} catch (ConnectException cex) {
@@ -237,7 +251,7 @@ public abstract class FTC_AbstractDebuggerCommunicationTest extends TestCase {
 			public void run() {
 				try {
 					while (true) {
-						new ErrorReader(multiReaderStrategy).read();
+						new WasteReader(multiReaderStrategy).read();
 					}
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -245,7 +259,7 @@ public abstract class FTC_AbstractDebuggerCommunicationTest extends TestCase {
 			};
 		};
 		new Thread(runnable).start();
-
+		Thread.sleep(500);
 		out = new PrintWriter(socket.getOutputStream(), true);
 		readSuspensionInFirstLine() ;
 	}
@@ -255,7 +269,7 @@ public abstract class FTC_AbstractDebuggerCommunicationTest extends TestCase {
 		
 	}
 	
-	private void sendRuby(String debuggerCommand) {
+	protected void sendRuby(String debuggerCommand) {
 		try {
 			process.exitValue();
 			throw new RuntimeException(
@@ -293,7 +307,9 @@ public abstract class FTC_AbstractDebuggerCommunicationTest extends TestCase {
 		// Breakpoint in line 1 does not work yet.
 		createSocket(new String[] { "puts 'a'", "puts 'a'", "puts 'a'" });
 		sendRuby("b test.rb:2");
+		assertEquals(1, getBreakpointAddedReader().readBreakpointNo()) ;
 		sendRuby("b test.rb:3");
+		assertEquals(2, getBreakpointAddedReader().readBreakpointNo()) ;		
 		sendRuby("cont");
 		System.out.println("Waiting for breakpoint..");
 		SuspensionPoint hit = getSuspensionReader().readSuspension();
@@ -301,7 +317,10 @@ public abstract class FTC_AbstractDebuggerCommunicationTest extends TestCase {
 		assertTrue(hit.isBreakpoint());
 		assertEquals(2, hit.getLine());
 		assertEquals("test.rb", hit.getFile());
-		sendRuby("b remove test.rb:3");
+		sendRuby("delete -1");
+		sendRuby("delete 100");
+		sendRuby("delete 1");
+		sendRuby("delete 2");
 		sendRuby("cont");
 		hit = getSuspensionReader().readSuspension();
 		assertNull(hit);
@@ -369,6 +388,7 @@ public abstract class FTC_AbstractDebuggerCommunicationTest extends TestCase {
 	public void testBreakpointNeverReached() throws Exception {
 		createSocket(new String[] { "puts 'a'", "puts 'b'", "puts 'c'" });
 		sendRuby("b test.rb:10");
+		getBreakpointAddedReader().readBreakpointNo();
 		sendRuby("cont");
 		System.out.println("Waiting for breakpoint..");
 		SuspensionPoint hit = getSuspensionReader().readSuspension();
@@ -378,6 +398,7 @@ public abstract class FTC_AbstractDebuggerCommunicationTest extends TestCase {
 	public void testStepOver() throws Exception {
 		createSocket(new String[] { "puts 'a'", "puts 'b'", "puts 'c'" });
 		sendRuby("b test.rb:2");
+		getBreakpointAddedReader().readBreakpointNo();
 		sendRuby("cont");
 		getSuspensionReader().readSuspension();
 		sendRuby("next");
@@ -397,6 +418,7 @@ public abstract class FTC_AbstractDebuggerCommunicationTest extends TestCase {
 		writeFile("test2.rb", new String[] { "class Test2", "def print",
 				"puts 'XX'", "end", "end" });
 		sendRuby("b test.rb:3");
+		getBreakpointAddedReader().readBreakpointNo();
 		sendRuby("cont");
 		getSuspensionReader().readSuspension();
 		sendRuby("next");
@@ -457,6 +479,7 @@ public abstract class FTC_AbstractDebuggerCommunicationTest extends TestCase {
 		writeFile("test2.rb", new String[] { "class Test2", "def print",
 				"puts 'XX'", "puts 'XX'", "end", "end" });
 		sendRuby("b test2.rb:4");
+		getBreakpointAddedReader().readBreakpointNo();
 		runTo("test.rb", 2);
 		sendRuby("next");
 		SuspensionPoint info = getSuspensionReader().readSuspension();
@@ -481,12 +504,13 @@ public abstract class FTC_AbstractDebuggerCommunicationTest extends TestCase {
 		sendRuby("cont");
 	}
 
-	private void runToLine(int lineNumber) throws Exception {
+	protected void runToLine(int lineNumber) throws Exception {
 		runTo("test.rb", lineNumber);
 	}
 
 	private void runTo(String filename, int lineNumber) throws Exception {
 		sendRuby("b " + filename + ":" + lineNumber);
+		getBreakpointAddedReader().readBreakpointNo() ;
 		sendRuby("cont");
 		SuspensionPoint suspension = getSuspensionReader().readSuspension();
 		if (suspension == null) {
@@ -713,7 +737,7 @@ public abstract class FTC_AbstractDebuggerCommunicationTest extends TestCase {
 		writeFile("test2.rb", new String[] { "class Test2", "def initialize",
 				"@y=5", "end", "def to_s", "'test'", "end", "end" });
 		runTo("test2.rb", 6);
-		sendRuby("v i 2 customObject");
+		sendRuby("frame 2 ; v i customObject");
 		RubyVariable[] variables = getVariableReader().readVariables(
 				createStackFrame());
 		assertEquals(1, variables.length);
@@ -778,7 +802,7 @@ public abstract class FTC_AbstractDebuggerCommunicationTest extends TestCase {
 		assertEquals(1, variables.length);
 		assertEquals("hash", variables[0].getName());
 		assertTrue("hash has children", variables[0].getValue().hasVariables());
-		sendRuby("v i 1 " + variables[0].getObjectId());
+		sendRuby("frame 1 ; v i " + variables[0].getObjectId());
 		RubyVariable[] elements = getVariableReader().readVariables(
 				variables[0]);
 		assertEquals(1, elements.length);
@@ -787,7 +811,7 @@ public abstract class FTC_AbstractDebuggerCommunicationTest extends TestCase {
 		assertEquals("KeyAndValue", elements[0].getValue()
 				.getReferenceTypeName());
 		// get the value
-		sendRuby("v i 1 " + elements[0].getObjectId());
+		sendRuby("frame 1 ; v i " + elements[0].getObjectId());
 		RubyVariable[] values = getVariableReader().readVariables(variables[0]);
 		assertEquals(1, values.length);
 		assertEquals("@a", values[0].getName());
@@ -866,6 +890,7 @@ public abstract class FTC_AbstractDebuggerCommunicationTest extends TestCase {
 		assertEquals("There is one variable returned.", 1, variables.length);
 		assertEquals("Result is 10", "10", variables[0].getValue()
 				.getValueString());
+		sendRuby("cont");
 	}
 	
 	public void testInspectTemporaryArray() throws Exception {
@@ -889,7 +914,7 @@ public abstract class FTC_AbstractDebuggerCommunicationTest extends TestCase {
 		RubyVariable[] elements = getVariableReader().readVariables(
 				variables[0]);
 		assertEquals("The array contains 3 elements", 3, elements.length);
-		
+		sendRuby("cont");
 	}
 	
 	public void testInspectNil() throws Exception {
@@ -898,9 +923,9 @@ public abstract class FTC_AbstractDebuggerCommunicationTest extends TestCase {
 		sendRuby("v inspect nil");
 		RubyVariable[] variables = getVariableReader().readVariables(
 				createStackFrame());
-		assertEquals("There is one variable returned which contains the array.", 1, variables.length);
+		assertEquals("There is one variable returned which is nil.", 1, variables.length);
 		assertEquals("nil", variables[0].getValue().getValueString()) ;
-		
+		sendRuby("cont");
 	}	
 	
 	public void testSendCommandWithSpecialCharacters() throws Exception {
@@ -910,22 +935,38 @@ public abstract class FTC_AbstractDebuggerCommunicationTest extends TestCase {
 		RubyVariable[] variables = getVariableReader().readVariables(
 				createStackFrame());
 		assertEquals(1, variables.length) ;
+		sendRuby("cont");
 		// just do not fail
 	}
 
 	public void testInspectError() throws Exception {
-		createSocket(new String[] { "puts 'test'" });
-		runToLine(1);
+		createSocket(new String[] { "puts 'test'", "puts 'test'" });
+		runToLine(2);
 		sendRuby("v inspect a*2");
 		try {
 			getVariableReader().readVariables(createStackFrame());
 		} catch (RubyProcessingException e) {
 			assertNotNull(e.getMessage());
+			sendRuby("cont");
 			return;
 		}
 		fail("RubyProcessingException not thrown.");
 	}
-
+	
+	public void testEvalError() throws Exception {
+		createSocket(new String[] { "puts 'test'", "puts 'test'" });
+		runToLine(2);	
+		sendRuby("eval unknown_") ;
+		try {
+			getEvalReader().readEvalResult() ;
+		} catch (RubyProcessingException e) {
+			assertNotNull(e.getMessage());
+			sendRuby("cont");
+			return;
+		}
+		fail("RubyProcessingException not thrown.");
+	}
+	
 	public void testStaticVariableInstanceNested() throws Exception {
 		createSocket(new String[] { "class TestStatic", "def initialize(no)",
 				"@no = no", "end", "@@staticVar=TestStatic.new(2)", "end",
@@ -981,6 +1022,7 @@ public abstract class FTC_AbstractDebuggerCommunicationTest extends TestCase {
 				"puts 'Test2.print'", "end", "end" });
 		runTo("test2.rb", 3);
 		sendRuby("b test.rb:4");
+		getBreakpointAddedReader().readBreakpointNo();
 		sendRuby("w");
 		RubyThread thread = new RubyThread(null, 0);
 		getFramesReader().readFrames(thread);
@@ -1014,62 +1056,13 @@ public abstract class FTC_AbstractDebuggerCommunicationTest extends TestCase {
 		assertEquals(2, thread.getStackFramesSize());
 	}
 
-	public void testThreads() throws Exception {
-		createSocket(new String[] { "Thread.new {", "puts 'a'", "}",
-				"Thread.pass", "puts 'b'" });
-		sendRuby("b test.rb:2");
-		sendRuby("b test.rb:5");
-		sendRuby("cont");
-		SuspensionPoint point1 = getSuspensionReader().readSuspension();
-		sendRuby("th l");
-		ThreadInfo[] threadInfos = getThreadInfoReader().readThreads();
-		assertEquals(2, threadInfos.length);
-		sendRuby("cont");
-		SuspensionPoint point2 = getSuspensionReader().readSuspension();
-		sendRuby("th l");
-		threadInfos = getThreadInfoReader().readThreads();
-		assertEquals(1, threadInfos.length);
-		assertNotSame(point1.getThreadId(), point2.getThreadId());
-	}
-
-	public void testThreadIdsAndResume() throws Exception {
-		createSocket(new String[] { "threads=[]", "threads << Thread.new {",
-				"puts 'a'", "}", "threads << Thread.new{", "puts 'b'", "}",
-				"puts 'c'", "threads.each{|t| t.join()}" });
-		sendRuby("b test.rb:3");
-		sendRuby("b test.rb:6");
-		sendRuby("b test.rb:8");
-		sendRuby("cont");
-		getSuspensionReader().readSuspension();
-		getSuspensionReader().readSuspension();
-		getSuspensionReader().readSuspension();
-
-		sendRuby("th l");
-		ThreadInfo[] threads = getThreadInfoReader().readThreads();
-		assertEquals(3, threads.length);
-		int threadId1 = threads[0].getId();
-		int threadId2 = threads[1].getId();
-		int threadId3 = threads[2].getId();
-		sendRuby("th " + threadId2 + " ; cont");
-
-		sendRuby("th l");
-		threads = getThreadInfoReader().readThreads();
-		assertEquals(2, threads.length);
-		assertEquals(threadId1, threads[0].getId());
-		assertEquals(threadId3, threads[1].getId());
-		sendRuby("th " + threadId3 + " ; cont");
-
-		sendRuby("th l");
-		threads = getThreadInfoReader().readThreads();
-		assertEquals(1, threads.length);
-		assertEquals(threadId1, threads[0].getId());
-	}
-
 	public void testThreadFramesAndVariables() throws Exception {
 		createSocket(new String[] { "Thread.new {", "a=5", "x=6", "puts 'x'",
 				"}", "b=10", "b=11" });
 		sendRuby("b test.rb:3");
+		getBreakpointAddedReader().readBreakpointNo();
 		sendRuby("b test.rb:7");
+		getBreakpointAddedReader().readBreakpointNo();
 		sendRuby("th resume 1");
 		getSuspensionReader().readSuspension();
 		getSuspensionReader().readSuspension();
@@ -1107,105 +1100,6 @@ public abstract class FTC_AbstractDebuggerCommunicationTest extends TestCase {
 		assertEquals("b", variables[1].getName());
 		assertEquals("x", variables[2].getName());
 
-	}
-
-	public void testReloadAndInspect() throws Exception {
-		String[] lines = new String[] { "class Test", "def calc(a)", "a = a*2",
-				"return a", "end", "end", "test=Test.new()" };
-		createSocket(lines);
-		runToLine(7);
-		// test variable value in stack 1 (top stack frame)
-		lines[2] = "a=a*4";
-		writeFile("test.rb", lines);
-		sendRuby("load " + getTmpDir() + "test.rb");
-		LoadResultReader.LoadResult loadResult = this.getLoadResultReader()
-				.readLoadResult();
-		assertTrue("No Exception from load", loadResult.isOk());
-		sendRuby("v inspect Test.new.calc(2)");
-		RubyVariable[] variables = getVariableReader().readVariables(
-				createStackFrame());
-		assertEquals("There is one variable returned.", 1, variables.length);
-		assertEquals("Result is 8", "8", variables[0].getValue()
-				.getValueString());
-	}
-
-	public void testReloadAndStep() throws Exception {
-		String[] lines = new String[] { "puts 'a'", "puts 'b'", "puts 'c'" };
-		createSocket(lines);
-		runToLine(2);
-		lines = new String[] { "puts 'd'", "puts 'e'", "puts 'f'" };
-		writeFile("test.rb", lines);
-		sendRuby("load " + getTmpDir() + "test.rb");
-		this.getLoadResultReader().readLoadResult();
-		sendRuby("next");
-		SuspensionPoint info = getSuspensionReader().readSuspension();
-		assertEquals(3, info.getLine());
-	}
-
-	public void testReloadWithException() throws Exception {
-		createSocket(new String[] { "puts 'a'" });
-		runToLine(1);
-		// test variable value in stack 1 (top stack frame)
-		String[] lines = new String[] { "classs A;end" };
-		writeFile("test.rb", lines);
-
-		sendRuby("load " + getTmpDir() + "test.rb");
-		LoadResultReader.LoadResult loadResult = this.getLoadResultReader()
-				.readLoadResult();
-		assertFalse("Exception from load", loadResult.isOk());
-		assertEquals(loadResult.getExceptionType(), "SyntaxError");
-	}
-
-	public void testReloadInRequire() throws Exception {
-		// Deadlock
-		String[] lines = new String[] { "def endless", "sleep 0.1", "end" };
-		writeFile("content file.rb", lines);
-		createSocket(new String[] { "require 'content file'", "while true",
-				"endless()", "end" });
-		sendRuby("cont");
-		// test variable value in stack 1 (top stack frame)
-		lines[1] = "exit 0";
-		writeFile("content file.rb", lines);
-		sendRuby("load " + getTmpDir() + "content file.rb");
-		LoadResultReader.LoadResult loadResult = this.getLoadResultReader()
-				.readLoadResult();
-		assertTrue("No Exception from load", loadResult.isOk());
-	}
-
-	public void testReloadInStackFrame() throws Exception {
-		String[] lines = new String[] { "class Test", "def calc(a)", "a = a*2",
-				"return a", "end", "end", "result = Test.new.calc(2)",
-				"result = Test.new.calc(2)", "puts result" };
-		createSocket(lines);
-		runToLine(3);
-		// a has not yet been calculated ...
-		sendRuby("v local");
-		RubyVariable[] localVariables = getVariableReader().readVariables(
-				createStackFrame());
-		assertEquals("2", localVariables[0].getValue().getValueString());
-		// now change the code ...
-		lines[2] = "a=a*4";
-		writeFile("test.rb", lines);
-		sendRuby("load " + getTmpDir() + "test.rb");
-		LoadResultReader.LoadResult loadResult = this.getLoadResultReader()
-				.readLoadResult();
-		assertTrue("No Exception from load", loadResult.isOk());
-		runToLine(4);
-		// now a is calculated and the result is 4. That means that ruby does
-		// not change the code which
-		// currently being executed in a stack frame, Java would have reset the
-		// instruction pointer and the
-		// result would be 8
-		sendRuby("v local");
-		localVariables = getVariableReader().readVariables(createStackFrame());
-		assertEquals("4", localVariables[0].getValue().getValueString());
-
-		// Now check that the new code is executed with the next call to calc
-		runToLine(3);
-		runToLine(4);
-		sendRuby("v local");
-		localVariables = getVariableReader().readVariables(createStackFrame());
-		assertEquals("8", localVariables[0].getValue().getValueString());
 	}
 
 }
