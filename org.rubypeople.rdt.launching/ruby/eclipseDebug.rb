@@ -18,11 +18,11 @@ class PrinterMultiplexer
   def initialize
     @printers = []
   end
-
+  
   def addPrinter(printer)
     @printers << printer
   end
-
+  
   def method_missing(methodName, *args)
     @printers.each { |printer|
       printer.send(methodName, *args)
@@ -33,22 +33,26 @@ end
 
 
 class XmlPrinter
-
+  
   def initialize(socket)
     @socket = socket
   end
-
+  
   def out(*params)
     debugIntern(false, *params)
     if @socket then
       @socket.printf(*params)
     end    
   end
-
+  
   def printXml(s, *params)
     out(s, *params) 
   end
-
+  
+  def printError(s, *params)
+    out("<error>" + s + "</error>", *params) 
+  end
+  
   def printVariable(name, binding, kind)
     printVariableValue(name, eval(name, binding), kind)
   end
@@ -66,27 +70,27 @@ class XmlPrinter
         valueString = value.class().name + " (" + value.length.to_s + " element(s))"
       end
     else 
-	  hasChildren = value.instance_variables.length > 0 || value.class.class_variables.length > 0
+      hasChildren = value.instance_variables.length > 0 || value.class.class_variables.length > 0
       valueString = value.to_s
       if valueString =~ /^\"/ then
         valueString.slice!(1..(valueString.length)-2) 
       end	  
-	end
+    end
     out("<variable name=\"%s\" kind=\"%s\" value=\"%s\" type=\"%s\" hasChildren=\"%s\" objectId=\"%#+x\"/>", CGI.escapeHTML(name), kind, CGI.escapeHTML(valueString), value.class(), hasChildren, value.respond_to?(:object_id) ? value.object_id : value.id)
   end
-
+  
   def printBreakpoint(n, debugFuncName, file, pos)
     out("<breakpoint file=\"%s\" line=\"%s\" threadId=\"%s\"/>", file, pos, DEBUGGER__.get_thread_num()) 	      
   end
-
+  
   def printException(file, pos, exception)
     out("<exception file=\"%s\" line=\"%s\" type=\"%s\" message=\"%s\" threadId=\"%s\"/>", file, pos, exception.class, CGI.escapeHTML(exception.to_s), DEBUGGER__.get_thread_num()) 	      
   end
-
+  
   def printStepEnd(file, line, framesCount)
     out("<suspended file=\"%s\" line=\"%s\" frames=\"%s\" threadId=\"%s\"/>", file, line, framesCount, DEBUGGER__.get_thread_num())    
   end
-
+  
   def printFrame(pos, n, file, line, id)
     out("<frame no=\"%s\" file=\"%s\" line=\"%s\"/>", n, file, line)
   end
@@ -138,16 +142,16 @@ end
 SCRIPT_LINES__ = {} unless defined? SCRIPT_LINES__
 
 class DEBUGGER__
-
+  
   class CommandLinePrinter
     def printXml(s)
       # print XML only
     end
-
+    
     def printVariable(name, binding, kind)
       stdout.printf "  %s => %s\n", name, eval(name, binding).inspect
     end
-
+    
     def printBreakpoint(n, debugFuncName, file, pos)
       stdout.printf "Breakpoint %d, %s at %s:%s\n", n, debugFuncName, file, pos
       stdout.flush
@@ -165,7 +169,7 @@ class DEBUGGER__
       stdout.printf "%s:%d: `%s' (%s)\n", file, line, exception, exception.class
       stdout.flush
     end
-
+    
     def printThread(num, thread)      
       if thread == Thread.current
         stdout.print "+"
@@ -180,23 +184,23 @@ class DEBUGGER__
       end
       stdout.print "\n"
     end
-
-
+    
+    
     def printStepEnd(file, line, framesCount)
-
+      
     end
-
+    
     def debug(*params)
-
+      
     end
-
+    
     def stdout
       DEBUGGER__.stdout
     end
   end
-
-
-
+  
+  
+  
   class Context
     attr_reader  :shouldResume
     def initialize
@@ -216,33 +220,33 @@ class DEBUGGER__
       @suspend_next = false
       @shouldResume = false
     end
-
+    
     def stop_next(n=1)
       @stop_next = n
     end
-
+    
     def set_suspend
       @suspend_next = true
     end
-
+    
     def clear_suspend
       @suspend_next = false
     end
-
+    
     def stopCurrentThread
       @printer.debug("Suspending : %s", Thread.current)
       Thread.stop()      
       @printer.debug("Resumed : %s", Thread.current)
     end
-
+    
     def trace?
       @trace
     end
-
+    
     def set_trace(arg)
       @trace = arg
     end
-
+    
     def stdout
       if @socket then
         @socket
@@ -250,27 +254,27 @@ class DEBUGGER__
         DEBUGGER__.stdout
       end
     end
-
+    
     def break_points
       DEBUGGER__.break_points
     end
-
+    
     def display
       DEBUGGER__.display
     end
-
+    
     def context(th)
       DEBUGGER__.context(th)
     end
-
+    
     def set_trace_all(arg)
       DEBUGGER__.set_trace(arg)
     end
-
+    
     def set_last_thread(th)
       DEBUGGER__.set_last_thread(th)
     end
-
+    
     def debug_eval_private(str, binding)
       # evaluates str like "var.@instance_var.@instance_var"
       # and "var.privateMethod"
@@ -281,7 +285,7 @@ class DEBUGGER__
       names  = str.scan(/[^\[\]]*(?=\.)|.*\[.*\](?=\.)|.*$/)
       # names can contain empty strings
       obj = eval(names[0], binding)
-      (1..names.length-1).each { |i|
+       (1..names.length-1).each { |i|
         if names[i] != "" then
           if names[i].length > 2 && names[i][0..1] == '@@' then
             @printer.debug("Evaluating (class_var): %s on %s", names[i], obj )
@@ -311,7 +315,7 @@ class DEBUGGER__
         raise error
       end
     end
-
+    
     def debug_silent_eval(str, binding)
       begin
         val = eval(str, binding)
@@ -320,7 +324,7 @@ class DEBUGGER__
         nil
       end
     end
-
+    
     def var_list(ary, binding, kind)
       ary.sort!
       @printer.printXml("<variables>")
@@ -329,7 +333,7 @@ class DEBUGGER__
       end
       @printer.printXml("</variables>")
     end
-
+    
     def printArrayElements(array)
       index = 0 
       array.each { |e|
@@ -337,25 +341,25 @@ class DEBUGGER__
         index += 1 
       }
     end
-
+    
     def printHashElements(hash)
-	  hash.keys.each { | k |
-	    if k.class.name == "String"
-	      name = '\'' + k + '\''
-	    else
-	      name = k.to_s
-	    end
+      hash.keys.each { | k |
+        if k.class.name == "String"
+          name = '\'' + k + '\''
+        else
+          name = k.to_s
+        end
         @printer.printVariableValue(name, hash[k], 'instance') 
       }
     end
-
-
+    
+    
     def getConstantsInClass(aClass) 
       constants = aClass.constants() - Object.constants
       return constants.delete_if { |c| ! aClass.const_defined? c }
     end
-
-
+    
+    
     def getBinding(pos)
       # returns frame info of frame pos, if pos is within bound,  nil otherwise
       pos = @current_frame unless pos
@@ -371,14 +375,14 @@ class DEBUGGER__
       @printer.debug("Using frame %s (1-based) for evaluation of variable.", pos + 1)
       return @frames[pos][0]
     end
-
-
+    
+    
     def debug_variable_info(input, binding)
-
+      
       case input
       when /^\s*g(?:lobal)?$/
         var_list(global_variables, binding, 'global')
-
+        
       when /^\s*l(?:ocal)?\s*(\d+)?$/
         @printer.debug("Getting binding for frame #{$1}")
         new_binding = getBinding($1)
@@ -397,7 +401,7 @@ class DEBUGGER__
           @printer.debug("Exception while evaluating local_variables: %s", bang)
           var_list([], binding, 'local') 
         end		
-
+        
       when /^\s*i(?:nstance)?\s*(\d+)?\s+((?:[\\+-]0x)[\dabcdef]+)?/        
         new_binding = getBinding($1)
         if new_binding then
@@ -415,11 +419,11 @@ class DEBUGGER__
           end
           if (obj.class.name == "Array") then
             printArrayElements(obj)
-          	return
+            return
           end
           if (obj.class.name == "Hash") then
             printHashElements(obj)
-          	return
+            return
           end          
           @printer.debug("%s", obj)
           instanceBinding = obj.instance_eval{binding()}	      
@@ -460,16 +464,16 @@ class DEBUGGER__
         @printer.printXml("<variables>")
         @printer.printVariableValue($', obj, "local")          
         @printer.printXml("</variables>")
-
+        
         
       end
     end
-
+    
     def debug_method_info(input, binding)
       case input
       when /^i(:?nstance)?\s+/
-        obj = debug_eval($', binding);
-
+        obj = debug_eval($', binding); # correct highlighting since RDT editor does not recognize $'
+        
         len = 0
         for v in obj.methods.sort
           len += v.size + 1
@@ -480,7 +484,7 @@ class DEBUGGER__
           stdout.print v, " "
         end
         stdout.print "\n"
-
+        
       else
         obj = debug_eval(input, binding)
         unless obj.kind_of? Module
@@ -499,7 +503,7 @@ class DEBUGGER__
         end
       end
     end
-
+    
     def thnum(thread=Thread.current)
       num = DEBUGGER__.instance_eval{@thread_list[thread]}
       unless num
@@ -516,7 +520,7 @@ class DEBUGGER__
         readUserInput(binding, file, line, singleCommand.strip)
       }
     end
-        
+    
     def readUserInput(binding, binding_file, binding_line, input)
       
       @printer.debug("Processing #{input}, binding=%s", binding)
@@ -524,221 +528,214 @@ class DEBUGGER__
       frame_pos = 0      
       previous_line = nil
       display_expressions(binding)
-
       
-
-        case input
-        when /^\s*tr(?:ace)?(?:\s+(on|off))?(?:\s+(all))?$/
-          if defined?( $2 )
-            if $1 == 'on'
-              set_trace_all true
-            else
-              set_trace_all false
-            end
-          elsif defined?( $1 )
-            if $1 == 'on'
-              set_trace true
-            else
-              set_trace false
-            end
-          end
-          if trace?
-            stdout.print "Trace on.\n"
+      
+      
+      case input
+      when /^\s*tr(?:ace)?(?:\s+(on|off))?(?:\s+(all))?$/
+        if defined?( $2 )
+          if $1 == 'on'
+            set_trace_all true
           else
-            stdout.print "Trace off.\n"
+            set_trace_all false
           end
-          
-        when /^\s*b(?:reak)?\s+(?:(add|remove)\s+)?((?:.*?:)?.+)$/
-          if $1 then
-            mode = $1
+        elsif defined?( $1 )
+          if $1 == 'on'
+            set_trace true
           else
-            mode = "add"
+            set_trace false
           end
-          pos = $2
-          if pos.index(":")
-            file, pos = pos.split(":")
-          end
-          file = File.basename(file)
-          if pos =~ /^\d+$/
-            pname = pos
-            pos = pos.to_i
-          else
-            pname = pos = pos.intern.id2name
-          end
-          if mode == "add" then
-            break_points.push [true, 0, file, pos]
-            @printer.debug("Set breakpoint %d at %s:%s\n", break_points.size, file, pname )
-          else
-            break_points_length = break_points.length
-            break_points.delete_if {
-              | b | 
-              b[2] == file && b[3] == pos	
-            }
-            if break_points_length == break_points.length then
-              @printer.debug("No such breakpoint to remove : %s:%s", file, pname)
-            else
-              @printer.debug("Removed breakpoint : %s:%s", file, pname)
-            end
-          end
-          
-          #        when /^\s*wat(?:ch)?\s+(.+)$/
-          #          exp = $1
-          #          break_points.push [true, 1, exp]
-          #          stdout.printf "Set watchpoint %d\n", break_points.size, exp
-          
-          #        when /^\s*b(?:reak)?$/
-          #          if break_points.find{|b| b[1] == 0}
-          #            n = 1
-          #            stdout.print "Breakpoints:\n"
-          #            for b in break_points
-          #              if b[0] and b[1] == 0
-          #                stdout.printf "  %d %s:%s\n", n, b[2], b[3] 
-          #              end
-          #              n += 1
-          #            end
-          #          end
-          #          if break_points.find{|b| b[1] == 1}
-          #            n = 1
-          #            stdout.print "\n"
-          #            stdout.print "Watchpoints:\n"
-          #            for b in break_points
-          #              if b[0] and b[1] == 1
-          #                stdout.printf "  %d %s\n", n, b[2]
-          #              end
-          #              n += 1
-          #            end
-          #          end
-          #          if break_points.size == 0
-          #            stdout.print "No breakpoints\n"
-          #          else
-          #            stdout.print "\n"
-          #          end
-          
-          #        when /^\s*del(?:ete)?(?:\s+(\d+))?$/
-          #          pos = $1
-          #          unless pos
-          #            input = readline("Clear all breakpoints? (y/n) ", false)
-          #            if input == "y"
-          #              for b in break_points
-          #                b[0] = false
-          #              end
-          #            end
-          #          else
-          #            pos = pos.to_i
-          #            if break_points[pos-1]
-          #              break_points[pos-1][0] = false
-          #            else
-          #              stdout.printf "Breakpoint %d is not defined\n", pos
-          #            end
-          #          end
-          
-          #        when /^\s*disp(?:lay)?\s+(.+)$/
-          #          exp = $1
-          #          display.push [true, exp]
-          #          stdout.printf "%d: ", display.size
-          #          display_expression(exp, binding)
-          #
-          #        when /^\s*disp(?:lay)?$/
-          #          display_expressions(binding)
-          #
-          #        when /^\s*undisp(?:lay)?(?:\s+(\d+))?$/
-          #          pos = $1
-          #          unless pos
-          #            input = readline("Clear all expressions? (y/n) ", false)
-          #            if input == "y"
-          #              for d in display
-          #                d[0] = false
-          #              end
-          #            end
-          #          else
-          #            pos = pos.to_i
-          #            if display[pos-1]
-          #              display[pos-1][0] = false
-          #            else
-          #              stdout.printf "Display expression %d is not defined\n", pos
-          #            end
-          #          end
-          
-        when /^\s*c(?:ont)?$/
-          @shouldResume = true
-          
-        when /^\s*s(?:tep)?(?:\s+(\d+))?$/
-          if $1
-            lev = $1.to_i
-          else
-            lev = 1
-          end
-          @stop_next = lev
-          @shouldResume = true
-          
-        when /^\s*n(?:ext)?(?:\s+(\d+))?$/
-          if $1
-            lev = $1.to_i
-          else
-            lev = 1
-          end
-          @stop_next = lev
-          @no_step = @frames.size - frame_pos
-          @shouldResume = true
-          
-        when /^\s*w(?:here)?$/, /^\s*f(?:rame)?$/
-          display_frames(frame_pos)
-          
-          #        when /^\s*fin(?:ish)?$/
-          #          if frame_pos == @frames.size
-          #            stdout.print "\"finish\" not meaningful in the outermost frame.\n"
-          #          else
-          #            @finish_pos = @frames.size - frame_pos
-          #            frame_pos = 0
-          #            prompt = false
-          #          end
-        when /^\s*f(?:rame)?\s+(\d+)\s*$/
-          @printer.debug("Setting frame to #{$1}")
-          @current_frame = $1.to_i
-
-          
-        when /^\s*cat(?:ch)?(?:\s+(.+))?$/
-          # $1 can also be nil 
-          @catch = $1
-          @catch = nil if @catch == 'off'
-          if @catch then
-            @printer.debug("Catchpoint set to #{@catch}")
-          else
-            @printer.debug("Catchpoints disabled")
-          end
-         
-          
-        when /^\s*v(?:ar)?\s+/
-          debug_variable_info($', binding)
-          
-        when /^\s*m(?:ethod)?\s+/
-          debug_method_info($', binding)
-          
-        when /^\s*th(?:read)?\s+/
-          DEBUGGER__.debug_thread_info($', binding)
-          
-        when /^\s*p\s+/
-          stdout.printf "%s\n", debug_eval($', binding).inspect
-          
-        when /^\s*load\s+/
-          @printer.debug("loading file: %s", $')
-          begin
-            load $'            
-            @printer.printLoadResult($')
-          rescue Exception => error
-            @printer.printLoadResult($', error)
-          end
-
+        end
+        if trace?
+          stdout.print "Trace on.\n"
         else
-          @printer.debug("Unknown input : %s", input)
+          stdout.print "Trace off.\n"
         end
         
+      when /^\s*b\s+((?:.*?:)?.+)$/
+        #@printer.debug("S")
+        pos = $1
+        if pos.index(":")
+          file, pos = pos.split(":")
+        end
+        file = File.basename(file)
+        if pos =~ /^\d+$/
+          pname = pos
+          pos = pos.to_i
+        else
+          pname = pos = pos.intern.id2name
+        end
+        # TODO: pname is not used
+        break_points.push [true, 0, file, pos]
+        @printer.printXml("<breakpointAdded no=\"%d\" location=\"%s:%s\"/>\n", break_points.size, file, pos)
+        
+      when /^\s*delete\s+(\d+)$/
+        pos = $1.to_i
+        if pos < 1 || pos > break_points.length
+          @printer.printError("Breakpoint number out of bounds: %d. There are currently %d breakpoints defined.", pos, break_points.length )
+        else         
+          break_points.delete_at(pos-1)
+          @printer.debug("Removed breakpoint no %d", pos)
+        end
+        
+        #        when /^\s*wat(?:ch)?\s+(.+)$/
+        #          exp = $1
+        #          break_points.push [true, 1, exp]
+        #          stdout.printf "Set watchpoint %d\n", break_points.size, exp
+        
+        #        when /^\s*b(?:reak)?$/
+        #          if break_points.find{|b| b[1] == 0}
+        #            n = 1
+        #            stdout.print "Breakpoints:\n"
+        #            for b in break_points
+        #              if b[0] and b[1] == 0
+        #                stdout.printf "  %d %s:%s\n", n, b[2], b[3] 
+        #              end
+        #              n += 1
+        #            end
+        #          end
+        #          if break_points.find{|b| b[1] == 1}
+        #            n = 1
+        #            stdout.print "\n"
+        #            stdout.print "Watchpoints:\n"
+        #            for b in break_points
+        #              if b[0] and b[1] == 1
+        #                stdout.printf "  %d %s\n", n, b[2]
+        #              end
+        #              n += 1
+        #            end
+        #          end
+        #          if break_points.size == 0
+        #            stdout.print "No breakpoints\n"
+        #          else
+        #            stdout.print "\n"
+        #          end
+        
+        #        when /^\s*del(?:ete)?(?:\s+(\d+))?$/
+        #          pos = $1
+        #          unless pos
+        #            input = readline("Clear all breakpoints? (y/n) ", false)
+        #            if input == "y"
+        #              for b in break_points
+        #                b[0] = false
+        #              end
+        #            end
+        #          else
+        #            pos = pos.to_i
+        #            if break_points[pos-1]
+        #              break_points[pos-1][0] = false
+        #            else
+        #              stdout.printf "Breakpoint %d is not defined\n", pos
+        #            end
+        #          end
+        
+        #        when /^\s*disp(?:lay)?\s+(.+)$/
+        #          exp = $1
+        #          display.push [true, exp]
+        #          stdout.printf "%d: ", display.size
+        #          display_expression(exp, binding)
+        #
+        #        when /^\s*disp(?:lay)?$/
+        #          display_expressions(binding)
+        #
+        #        when /^\s*undisp(?:lay)?(?:\s+(\d+))?$/
+        #          pos = $1
+        #          unless pos
+        #            input = readline("Clear all expressions? (y/n) ", false)
+        #            if input == "y"
+        #              for d in display
+        #                d[0] = false
+        #              end
+        #            end
+        #          else
+        #            pos = pos.to_i
+        #            if display[pos-1]
+        #              display[pos-1][0] = false
+        #            else
+        #              stdout.printf "Display expression %d is not defined\n", pos
+        #            end
+        #          end
+        
+      when /^\s*c(?:ont)?$/
+        @shouldResume = true
+        
+      when /^\s*s(?:tep)?(?:\s+(\d+))?$/
+        if $1
+          lev = $1.to_i
+        else
+          lev = 1
+        end
+        @stop_next = lev
+        @shouldResume = true
+        
+      when /^\s*n(?:ext)?(?:\s+(\d+))?$/
+        if $1
+          lev = $1.to_i
+        else
+          lev = 1
+        end
+        @stop_next = lev
+        @no_step = @frames.size - frame_pos
+        @shouldResume = true
+        
+      when /^\s*w(?:here)?$/, /^\s*f(?:rame)?$/
+        display_frames(frame_pos)
+        
+        #        when /^\s*fin(?:ish)?$/
+        #          if frame_pos == @frames.size
+        #            stdout.print "\"finish\" not meaningful in the outermost frame.\n"
+        #          else
+        #            @finish_pos = @frames.size - frame_pos
+        #            frame_pos = 0
+        #            prompt = false
+        #          end
+      when /^\s*f(?:rame)?\s+(\d+)\s*$/
+        @printer.debug("Setting frame to #{$1}")
+        @current_frame = $1.to_i
+        
+        
+      when /^\s*cat(?:ch)?(?:\s+(.+))?$/
+        # $1 can also be nil 
+        @catch = $1
+        @catch = nil if @catch == 'off'
+        if @catch then
+          @printer.debug("Catchpoint set to #{@catch}")
+        else
+          @printer.debug("Catchpoints disabled")
+        end
+        
+        
+      when /^\s*v(?:ar)?\s+/
+        debug_variable_info($', binding)
+        
+      when /^\s*m(?:ethod)?\s+/
+        debug_method_info($', binding)
+        
+      when /^\s*th(?:read)?\s+/
+        DEBUGGER__.debug_thread_info($', binding)
+        
+      when /^\s*p\s+/
+        stdout.printf "%s\n", debug_eval($', binding).inspect
+        
+      when /^\s*load\s+/
+        @printer.debug("loading file: %s", $')
+        begin
+          load $'            
+          @printer.printLoadResult($')
+        rescue Exception => error
+          @printer.printLoadResult($', error)
+        end
+        
+      else
+        @printer.debug("Unknown input : %s", input)
+      end
+      
       
       
     end
-
-
-
+    
+    
+    
     def display_expressions(binding)
       n = 1
       for d in display
@@ -749,12 +746,12 @@ class DEBUGGER__
         n += 1
       end
     end
-
+    
     def display_expression(exp, binding)
       stdout.printf "%s = %s\n", exp, debug_silent_eval(exp, binding).to_s
     end
-
-
+    
+    
     def display_frames(pos)
       pos += 1
       n = 0
@@ -767,7 +764,7 @@ class DEBUGGER__
       end
       @printer.printXml("</frames>") 
     end
-
+    
     def debug_funcname(id)
       if id.nil?
         "toplevel"
@@ -775,7 +772,7 @@ class DEBUGGER__
         id.id2name
       end
     end
-
+    
     def debug_command(file, line, id, binding)
       @printer.debug("debug_command, @stop_next=%s, @frames.size=%s", @stop_next, @frames.size)
       if @stop_next == 0 && @frames.size > 0 then
@@ -784,11 +781,11 @@ class DEBUGGER__
         @printer.printStepEnd(file, line, @frames.size)
       end
       set_last_thread(Thread.current)
-
+      
       #readUserInput(binding, file, line ) 
       #Thread.stop
     end
-
+    
     def check_break_points(file, pos, binding, id)
       return false if break_points.empty?
       file = File.basename(file)
@@ -810,7 +807,7 @@ class DEBUGGER__
       end
       return false
     end
-
+    
     def excn_handle(file, line, id, binding)
       
       if $!.class <= SystemExit
@@ -828,9 +825,9 @@ class DEBUGGER__
       end     
       
     end
-
+    
     def trace_func(event, file, line, id, binding, klass)
-
+      
       Tracer.trace_func(event, file, line, id, binding, klass) if trace?
       
       @file = file
@@ -851,7 +848,7 @@ class DEBUGGER__
         elsif @frames.size < @no_step
           @stop_next = 0		# break here before leaving...
         end
-
+        
         if @stop_next == 0 or check_break_points(file, line, binding, id)	
           if [file, line] == @last
             @stop_next = 1
@@ -862,16 +859,16 @@ class DEBUGGER__
             @last = [file, line]
           end
         end
-
+        
       when 'call'
         DEBUGGER__.printer().debug("trace call, file=%s, line=%s, method=%s", file, line, id.id2name)
         @frames.unshift [binding, file, line, id]
         if check_break_points(file, id.id2name, binding, id) or
-            check_break_points(klass.to_s, id.id2name, binding, id) then
+          check_break_points(klass.to_s, id.id2name, binding, id) then
           stopCurrentThread		
           debug_command(file, line, id, binding)
         end
-
+        
       when 'c-call'
         if @frames[0] then
           @frames[0][1] = file
@@ -879,10 +876,10 @@ class DEBUGGER__
         else
           @frames[0] = [binding, file, line, id]	
         end
-
+        
       when 'class'
         @frames.unshift [binding, file, line, id]
-
+        
       when 'return', 'end'
         DEBUGGER__.printer().debug("trace return and end, file=%s, line=%s", file, line)
         if @frames.size == @finish_pos
@@ -890,19 +887,19 @@ class DEBUGGER__
           @finish_pos = 0
         end
         @frames.shift
-
+        
       when 'end'
         DEBUGGER__.printer().debug("trace end, file=%s, line=%s", file, line)
         @frames.shift
-
+        
       when 'raise' 
         excn_handle(file, line, id, binding)
-
+        
       end
       @last_file = file
     end
   end
-
+  
   trap("INT") { DEBUGGER__.interrupt }
   @last_thread = Thread::main
   @max_thread = 1
@@ -911,28 +908,28 @@ class DEBUGGER__
   @display = []
   @waiting = []
   @stdout = STDOUT
-
+  
   class << DEBUGGER__
     def stdout
       @stdout
     end
-
+    
     def stdout=(s)
       @stdout = s
     end
-
+    
     def display
       @display
     end
-
+    
     def break_points
       @break_points
     end
-
+    
     def waiting
       @waiting
     end
-
+    
     def set_trace( arg )
       Thread.critical = true
       make_thread_list
@@ -941,11 +938,11 @@ class DEBUGGER__
       end
       Thread.critical = false
     end
-
+    
     def set_last_thread(th)
       @last_thread = th
     end
-
+    
     def suspend
       printer.debug("Suspending all")
       Thread.critical = true
@@ -958,12 +955,12 @@ class DEBUGGER__
       # Schedule other threads to suspend as soon as possible.
       Thread.pass
     end
-
+    
     def resume
       Thread.critical = true
       make_thread_list
       for th in @thread_list
-	next if th[0] == Thread.current
+        next if th[0] == Thread.current
         context(th[0]).clear_suspend
       end
       waiting.each do |th|
@@ -974,7 +971,7 @@ class DEBUGGER__
       # Schedule other threads to restart as soon as possible.
       Thread.pass
     end
-
+    
     def context(thread=Thread.current)
       c = thread[:__debugger_data__]
       unless c
@@ -982,7 +979,7 @@ class DEBUGGER__
       end
       c
     end
-
+    
     def findThread(context)
       for thread in Thread::list
         if context == thread[:__debugger_data__]
@@ -990,11 +987,11 @@ class DEBUGGER__
         end
       end
     end 
-
+    
     def interrupt
       context(@last_thread).stop_next
     end
-
+    
     def get_thread(num)
       th = @thread_list.index(num)
       unless th
@@ -1002,17 +999,17 @@ class DEBUGGER__
       end
       th
     end
-
+    
     def get_thread_num(thread=Thread.current)
       make_thread_list
       @thread_list[thread]
     end
-
+    
     def print_thread(thread) 
       num = @thread_list[thread]
       printer.printThread(num, thread)	
     end
-
+    
     def thread_list_all
       printer.printXml("<threads>") 
       for num in @thread_list.values.sort
@@ -1020,7 +1017,7 @@ class DEBUGGER__
       end
       printer.printXml("</threads>") 
     end
-
+    
     def make_thread_list
       hash = {}
       for th in Thread::list
@@ -1034,17 +1031,17 @@ class DEBUGGER__
       end
       @thread_list = hash
     end
-
+    
     def debug_thread_info(input, binding)
       case input
       when /^l(?:ist)?/
         make_thread_list
         thread_list_all
-
+        
       when /^c(?:ur(?:rent)?)?$/
         make_thread_list
         print_thread()
-
+        
       when /^(?:sw(?:itch)?\s+)?(\d+)/
         make_thread_list
         th = get_thread($1.to_i)
@@ -1056,7 +1053,7 @@ class DEBUGGER__
           th.run
           return
         end
-
+        
       when /^stop\s+(\d+)/
         make_thread_list
         th = get_thread($1.to_i)
@@ -1068,7 +1065,7 @@ class DEBUGGER__
           print_thread(th)
           context(th).suspend 
         end
-
+        
       when /^resume\s+(\d+)/
         make_thread_list
         th = get_thread($1.to_i)
@@ -1080,7 +1077,7 @@ class DEBUGGER__
           print_thread(th)
           th.run
         end
-
+        
       when /^change\s+(\d+)/
         make_thread_list
         th = get_thread($1.to_i)
@@ -1089,7 +1086,7 @@ class DEBUGGER__
       end  	  
     end
   end
-
+  
   @@socket = nil
   @@printer = nil
   @@inputReader = nil
@@ -1098,20 +1095,20 @@ class DEBUGGER__
   def DEBUGGER__.printer
     @@printer 
   end
-
+  
   def DEBUGGER__.socket
     @@socket 
   end
-
+  
   def DEBUGGER__.isStarted
     @@isStarted 
   end
-
+  
   def DEBUGGER__.setStarted
     @@isStarted = true 
   end
-
-
+  
+  
   def DEBUGGER__.inputReader
     @@inputReader 
   end
@@ -1120,12 +1117,12 @@ class DEBUGGER__
     set_trace_func @@traceProc
     Thread.critical = false ;
   end
-
+  
   def DEBUGGER__.traceOff()  
     Thread.critical = true ;	
     set_trace_func nil
   end
-
+  
   def DEBUGGER__.readCommandLoop()
     sleep(1.0) # workaround for large files with ruby 1.6.8, otherwise parse exceptions
     loop do
@@ -1152,14 +1149,14 @@ class DEBUGGER__
       end 		
       context.processInput(input)
       if context.shouldResume then
-      	  threadToResume = DEBUGGER__.findThread(context) 
+        threadToResume = DEBUGGER__.findThread(context) 
       end
       DEBUGGER__.traceOn()     		
       next unless threadToResume
       threadToResume.run()
     end
   end
-
+  
   # use 127.0.0.1 instead of localhost because OSX 10.4
   server = TCPServer.new('127.0.0.1', ECLIPSE_LISTEN_PORT)
   puts "ruby #{RUBY_VERSION} debugger listens on port #{ECLIPSE_LISTEN_PORT}"
@@ -1177,7 +1174,7 @@ class DEBUGGER__
       puts error
     end
   }
-
+  
   @@traceProc = proc { |event, file, line, id, binding, klass, *rest|
     
     #@@printer.debug("trace %s, %s:%s", event, file, line)		
@@ -1190,9 +1187,7 @@ class DEBUGGER__
     end
     DEBUGGER__.context.trace_func event, file, line, id, binding, klass    
   }
-
+  
   @@printer.debug("Setting trace func: %s", @@traceProc)
   set_trace_func @@traceProc
 end
-
-
