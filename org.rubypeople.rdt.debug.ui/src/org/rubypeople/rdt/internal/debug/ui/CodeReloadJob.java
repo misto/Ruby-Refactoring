@@ -38,7 +38,7 @@ public class CodeReloadJob extends Job {
 				if (!loadResult.isOk()) {
 					DebugUIPlugin.getStandardDisplay().syncExec(new Runnable() {
 						public void run() {
-							MessageDialog.openInformation(DebugUIPlugin.getStandardDisplay().getActiveShell(), "Error during load: " + loadResult.getExceptionType(), loadResult.getExceptionMessage());
+							MessageDialog.openInformation(DebugUIPlugin.getStandardDisplay().getActiveShell(), "Error loading " + filename +": " + loadResult.getExceptionType(), loadResult.getExceptionMessage());
 						}
 					});
 				}
