@@ -56,6 +56,7 @@ public final class PreferencesMessages extends NLS {
     public static String RiPreferencePage_ripath_label;
     public static String RiPreferencePage_rdocpath_label;
     public static String DebuggerPreferencePage_useRubyDebug_label;
+    public static String DebuggerPreferencePage_verboseDebugger_label;
     public static String DebuggerPreferencePage_useRubyDebug_comment;
     public static String TodoTaskConfigurationBlock_tasks_default;
     public static String TodoTaskConfigurationBlock_markers_tasks_high_priority;

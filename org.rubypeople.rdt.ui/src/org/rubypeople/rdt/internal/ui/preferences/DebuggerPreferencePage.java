@@ -18,7 +18,6 @@ import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPreferencePage;
 import org.rubypeople.rdt.internal.launching.RdtLaunchingPlugin;
 import org.rubypeople.rdt.internal.ui.text.PreferencesAdapter;
-import org.rubypeople.rdt.ui.PreferenceConstants;
 
 public class DebuggerPreferencePage extends FieldEditorPreferencePage implements IWorkbenchPreferencePage {
 
@@ -28,10 +27,10 @@ public class DebuggerPreferencePage extends FieldEditorPreferencePage implements
 		setPreferenceStore(new PreferencesAdapter(launchingPreferences));
 		setDescription(PreferencesMessages.DebuggerPreferencePage_description_label);
 	}
-	
 
 	public void createFieldEditors() {
-		addField(new BooleanFieldEditor(PreferenceConstants.DEBUGGER_USE_RUBY_DEBUG, PreferencesMessages.DebuggerPreferencePage_useRubyDebug_label, getFieldEditorParent()));
+		addField(new BooleanFieldEditor(org.rubypeople.rdt.internal.launching.PreferenceConstants.USE_RUBY_DEBUG, PreferencesMessages.DebuggerPreferencePage_useRubyDebug_label, getFieldEditorParent()));
+		addField(new BooleanFieldEditor(org.rubypeople.rdt.internal.launching.PreferenceConstants.VERBOSE_DEBUGGER, PreferencesMessages.DebuggerPreferencePage_verboseDebugger_label, getFieldEditorParent()));
 	}
 
 	protected Control createContents(Composite parent) {
