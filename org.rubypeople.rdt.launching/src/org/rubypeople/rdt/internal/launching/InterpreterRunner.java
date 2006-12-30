@@ -50,7 +50,7 @@ public class InterpreterRunner {
 	}
 
 	private List renderCommandLine(InterpreterRunnerConfiguration configuration) {
-		List commandLine = new ArrayList();
+		List<String> commandLine = new ArrayList<String>();
 		
 		addDebugCommandLineArgument(commandLine);
 		commandLine.addAll(configuration.renderLoadPath());
@@ -63,7 +63,7 @@ public class InterpreterRunner {
 	}
 
 
-	protected void addDebugCommandLineArgument(List commandLine) {
+	protected void addDebugCommandLineArgument(List<String> commandLine) {
 	}
 	
 }

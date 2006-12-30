@@ -13,79 +13,79 @@ import org.rubypeople.rdt.core.RubyCore;
 import org.rubypeople.rdt.internal.debug.core.RdtDebugCorePlugin;
 import org.rubypeople.rdt.internal.debug.core.RubyDebuggerProxy;
 import org.rubypeople.rdt.internal.debug.core.model.RubyDebugTarget;
+import org.rubypeople.rdt.launching.IInterpreter;
 
 public class DebuggerRunner extends InterpreterRunner {
 
 	private RubyDebugTarget debugTarget;
 
-	public IProcess run(InterpreterRunnerConfiguration configuration,
-			ILaunch launch) throws CoreException {
+	public IProcess run(InterpreterRunnerConfiguration configuration, ILaunch launch) throws CoreException {
 		debugTarget = new RubyDebugTarget(launch);
 		IProcess process = super.run(configuration, launch);
 		debugTarget.setProcess(process);
 		RubyDebuggerProxy proxy = new RubyDebuggerProxy(debugTarget, isUseRubyDebug());
 		if (proxy.checkConnection()) {
-			proxy.start();
-			launch.addDebugTarget(debugTarget);
+			try {
+				if (isUseRubyDebug()) {
+					String pathToRdebugExtension = getDirectoryOfRubyDebuggerFile() + "/rdebugExtension.rb";
+					proxy.registerRdebugExtension(pathToRdebugExtension);
+				}
+				proxy.start();
+				launch.addDebugTarget(debugTarget);
+			} catch (Exception e) {
+				RdtLaunchingPlugin.log(new Status(IStatus.ERROR, RdtLaunchingPlugin.PLUGIN_ID, IStatus.ERROR, e.getMessage(), e));
+				debugTarget.terminate();
+			}
 		} else {
-			RdtLaunchingPlugin
-					.log(new Status(
-							IStatus.ERROR,
-							RdtLaunchingPlugin.PLUGIN_ID,
-							IStatus.ERROR,
-							RdtLaunchingMessages.RdtLaunchingPlugin_processTerminatedBecauseNoDebuggerConnection,
-							null));
+			RdtLaunchingPlugin.log(new Status(IStatus.ERROR, RdtLaunchingPlugin.PLUGIN_ID, IStatus.ERROR, RdtLaunchingMessages.RdtLaunchingPlugin_processTerminatedBecauseNoDebuggerConnection, null));
 			debugTarget.terminate();
 		}
 		return process;
 	}
 
-	protected void addDebugCommandLineArgument(List commandLine) {
+	protected void addDebugCommandLineArgument(List<String> commandLine) {
 		if (isUseRubyDebug()) {
 			commandLine.add("--server");
 			commandLine.add("--port");
 			commandLine.add(Integer.toString(debugTarget.getPort()));
 			commandLine.add("--cport");
-			commandLine.add(Integer.toString(debugTarget.getPort()+1));
+			commandLine.add(Integer.toString(debugTarget.getPort() + 1));
 			commandLine.add("-w");
-			commandLine.add("-d");
+			if (isDebuggerVerbose()) {
+				commandLine.add("-d");
+			}
 			commandLine.add("-f");
 			commandLine.add("xml");
 		} else {
 			if (!debugTarget.isUsingDefaultPort()) {
-				commandLine
-						.add("-r"
-								+ debugTarget.getDebugParameterFile()
-										.getAbsolutePath());
+				commandLine.add("-r" + debugTarget.getDebugParameterFile().getAbsolutePath());
 			}
 
-			if (RdtDebugCorePlugin.isRubyDebuggerVerbose()) {
+			if (RdtDebugCorePlugin.isRubyDebuggerVerbose() || isDebuggerVerbose()) {
 				commandLine.add("-reclipseDebugVerbose");
 			} else {
 				commandLine.add("-reclipseDebug");
 			}
 			commandLine.add("-I");
-			commandLine.add(RdtLaunchingPlugin.osDependentPath(DebuggerRunner
-					.getDirectoryOfRubyDebuggerFile().replace('/',
-							File.separatorChar)));
+			commandLine.add(RdtLaunchingPlugin.osDependentPath(DebuggerRunner.getDirectoryOfRubyDebuggerFile().replace('/', File.separatorChar)));
 		}
 	}
 
 	public static String getDirectoryOfRubyDebuggerFile() {
-		return RubyCore.getOSDirectory(RdtLaunchingPlugin.getDefault())
-				+ "ruby";
+		return RubyCore.getOSDirectory(RdtLaunchingPlugin.getDefault()) + "ruby";
 	}
 
 	public boolean isUseRubyDebug() {
-		// TODO: use PrefernceConstants ?
-		return RdtLaunchingPlugin.getDefault().getPluginPreferences().getBoolean(
-				"useRubyDebug");
+		return RdtLaunchingPlugin.getDefault().getPluginPreferences().getBoolean(PreferenceConstants.USE_RUBY_DEBUG);
+	}
+	
+	public boolean isDebuggerVerbose() {
+		return RdtLaunchingPlugin.getDefault().getPluginPreferences().getBoolean(PreferenceConstants.VERBOSE_DEBUGGER);
 	}
 
-	protected RubyInterpreter convertInterpreter(RubyInterpreter rubyInterpreter) {
+	protected IInterpreter convertInterpreter(IInterpreter rubyInterpreter) {
 		if (isUseRubyDebug()) {
-			IPath rdebugLocation = rubyInterpreter.getInstallLocation()
-					.removeLastSegments(1);
+			IPath rdebugLocation = rubyInterpreter.getInstallLocation().removeLastSegments(1);
 			rdebugLocation = rdebugLocation.append("rdebug");
 			return new RubyInterpreter("rdebug", rdebugLocation);
 		} else {

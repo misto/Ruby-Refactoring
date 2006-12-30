@@ -100,20 +100,20 @@ public class InterpreterRunnerConfiguration {
 		return RubyRuntime.getDefault().getInterpreter(selectedInterpreter);
 	}
     
-    protected void addToLoadPath(List loadPath, IProject project) {
+    protected void addToLoadPath(List<String> loadPath, IProject project) {
     	if (!project.isAccessible()) {
     		return ;
     	}
         addToLoadPath(loadPath, project.getLocation().toOSString());
     }
 
-	private void addToLoadPath(List loadPath, String pathDirectory) {
+	private void addToLoadPath(List<String> loadPath, String pathDirectory) {
 		loadPath.add("-I");
         loadPath.add(RdtLaunchingPlugin.osDependentPath(pathDirectory));
 	}
     
-    protected List renderLoadPath() {
-    	List loadPath = new ArrayList();
+    protected List<String> renderLoadPath() {
+    	List<String> loadPath = new ArrayList<String>();
         RubyProject project = this.getProject();
         addToLoadPath(loadPath, project.getProject());
 
