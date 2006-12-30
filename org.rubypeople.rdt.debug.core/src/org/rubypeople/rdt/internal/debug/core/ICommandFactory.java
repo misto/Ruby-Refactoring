@@ -26,7 +26,9 @@ public interface ICommandFactory {
 
 	public String createResume(RubyThread thread);
 
-	public String createSetBreakpoint(String mode, String file, int line);
+	public String createAddBreakpoint(String file, int line);
+	
+	public String createRemoveBreakpoint(int index);
 
 	public String createCatchOff();
 

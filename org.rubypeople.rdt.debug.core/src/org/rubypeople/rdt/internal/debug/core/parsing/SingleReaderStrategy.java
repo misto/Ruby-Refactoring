@@ -35,4 +35,9 @@ public class SingleReaderStrategy extends AbstractReadStrategy {
 		} while (true);
 	}
 
+	@Override
+	public void readElement(XmlStreamReader streamReader, long maxWaitTime) throws XmlPullParserException, IOException, XmlStreamReaderException {
+		readElement(streamReader) ;
+	}
+
 }

@@ -46,6 +46,7 @@ public class RubyDebugTarget extends PlatformObject implements IRubyDebugTarget 
 		this.launch = launch;
 		this.process = process;
 		this.threads = new RubyThread[0] ;
+		this.isTerminated = false ;
 		IBreakpointManager manager= DebugPlugin.getDefault().getBreakpointManager();
 		manager.addBreakpointListener(this);
 	}

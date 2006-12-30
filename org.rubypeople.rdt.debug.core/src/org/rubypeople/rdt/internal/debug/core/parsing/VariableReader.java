@@ -38,13 +38,16 @@ public class VariableReader extends XmlStreamReader {
 		this.parent = parent ;
 		this.variables = new ArrayList() ;
 		try {			
-			this.read();
+			// TODO: timeout should be configurable
+			this.read(10000);
 		} catch (Exception ex) {
 			RdtDebugCorePlugin.log(ex) ;
 			return new RubyVariable[0] ;
 		}
 		if (exceptionMessage != null) {
 			throw new RubyProcessingException(exceptionType, exceptionMessage) ;		
+		} else  if (isWaitTimeExpired()) {
+			throw new RubyProcessingException("Timeout: Could not read result.") ;
 		}
 		RubyVariable[] variablesArray = new RubyVariable[variables.size()];
 		variables.toArray(variablesArray);

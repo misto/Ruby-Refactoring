@@ -12,12 +12,8 @@ public abstract class AbstractReadStrategy {
 		this.xpp = xpp ;
 	}
 
-
 	public abstract void readElement(XmlStreamReader streamReader) throws XmlPullParserException, IOException, XmlStreamReaderException  ;
-
-
-
 	
-	
+	public abstract void readElement(XmlStreamReader streamReader, long maxWaitTime) throws XmlPullParserException, IOException, XmlStreamReaderException  ;
 
 }

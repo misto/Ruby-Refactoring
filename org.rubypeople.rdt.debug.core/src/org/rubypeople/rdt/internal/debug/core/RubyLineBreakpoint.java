@@ -12,14 +12,17 @@ import org.eclipse.debug.core.model.LineBreakpoint;
 public class RubyLineBreakpoint extends LineBreakpoint {
 	protected static final String RUBY_BREAKPOINT_MARKER = "org.rubypeople.rdt.debug.core.RubyBreakpointMarker"; //$NON-NLS-1$
 
+	private int index = -1 ; // index of breakpoint on ruby debugger side
+	
 	public RubyLineBreakpoint(final IResource resource, final int lineNumber) throws CoreException {
 		IWorkspaceRunnable wr = new IWorkspaceRunnable() {
 			public void run(IProgressMonitor monitor) throws CoreException {
 				setMarker(resource.createMarker(RUBY_BREAKPOINT_MARKER));
 				getMarker().setAttribute(IMarker.LINE_NUMBER, lineNumber + 1);
 				getMarker().setAttribute(REGISTERED, false);
-				setRegistered(true);
+				// setEnabled must be set before calling setRegistered
 				setEnabled(true);
+				setRegistered(true);
 			}
 		};
 		try {
@@ -28,6 +31,10 @@ public class RubyLineBreakpoint extends LineBreakpoint {
 			throw new DebugException(e.getStatus());
 		}
 
+	}
+	
+	public String getFileName() throws CoreException {
+		return ensureMarker().getResource().getName();
 	}
 
 	public int getLineNumber() throws CoreException {
@@ -51,6 +58,14 @@ public class RubyLineBreakpoint extends LineBreakpoint {
 
 	public String getModelIdentifier() {
 		return "org.rubypeople.rdt.debug";
+	}
+
+	public int getIndex() {
+		return index;
+	}
+
+	public void setIndex(int index) {
+		this.index = index;
 	}
 
 }

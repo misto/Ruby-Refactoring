@@ -48,15 +48,17 @@ public class RubyDebugCommandFactory implements ICommandFactory {
 		return "cont";
 	}
 
-	public String createSetBreakpoint(String mode, String file, int line) {
+	public String createAddBreakpoint(String file, int line) {
 		StringBuffer setBreakPointCommand = new StringBuffer();
-		setBreakPointCommand.append("b ");
-		setBreakPointCommand.append(mode);
-		setBreakPointCommand.append(" ");
+		setBreakPointCommand.append("b ") ;
 		setBreakPointCommand.append(file);
 		setBreakPointCommand.append(":");
 		setBreakPointCommand.append(line);
 		return setBreakPointCommand.toString();
+	}
+	
+	public String createRemoveBreakpoint(int index) {
+		return "delete " + index ;
 	}
 
 	public String createCatchOff() {

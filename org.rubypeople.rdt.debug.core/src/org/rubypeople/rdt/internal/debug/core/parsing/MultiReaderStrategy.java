@@ -82,13 +82,7 @@ public class MultiReaderStrategy extends AbstractReadStrategy {
 		int missed = 0 ;
 		RdtDebugCorePlugin.debug("Searching reader for start tag " + xpp.getName());
 		do {
-			for (Iterator iter = streamReaders.iterator(); iter.hasNext();) {
-				XmlStreamReader streamReader = (XmlStreamReader) iter.next();
-				if (streamReader.processStartElement(xpp)) {
-					currentReader = streamReader;
-					break;
-				}
-			}
+			findReaderForTag();
 			if (currentReader == null) {
 				missed += 1 ;
 				RdtDebugCorePlugin.debug("Missed Start Tag : " + xpp.getName());
@@ -100,7 +94,17 @@ public class MultiReaderStrategy extends AbstractReadStrategy {
 		} while (currentReader == null && missed < 10);
 	}
 
-	protected void releaseAllReader() {
+	private synchronized void findReaderForTag() throws XmlStreamReaderException {
+		for (Iterator iter = streamReaders.iterator(); iter.hasNext();) {
+			XmlStreamReader streamReader = (XmlStreamReader) iter.next();
+			if (streamReader.processStartElement(xpp)) {
+				currentReader = streamReader;
+				break;
+			}
+		}
+	}
+
+	protected synchronized void releaseAllReader() {
 		for (Iterator iter = streamReaders.iterator(); iter.hasNext();) {
 			XmlStreamReader streamReader = (XmlStreamReader) iter.next();
 			((Thread) threads.get(streamReader)).interrupt();			
@@ -121,10 +125,15 @@ public class MultiReaderStrategy extends AbstractReadStrategy {
 	}
 
 	public void readElement(XmlStreamReader streamReader) {
+		readElement(streamReader, Long.MAX_VALUE) ;
+	}
+	
+	public void readElement(XmlStreamReader streamReader, long maxWaitTime) {
 		this.addReader(streamReader);
 		try {
 			RdtDebugCorePlugin.debug("Thread is waiting for input: " + Thread.currentThread());
-			Thread.sleep(Long.MAX_VALUE);
+			Thread.sleep(maxWaitTime);
+			streamReader.setWaitTimeExpired(true) ;
 		} catch (InterruptedException e) {
 			RdtDebugCorePlugin.debug("Thread has finished processing : " + Thread.currentThread());
 		}
