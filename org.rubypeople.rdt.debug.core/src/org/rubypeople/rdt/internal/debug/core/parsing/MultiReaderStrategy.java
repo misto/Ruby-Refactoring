@@ -2,9 +2,9 @@ package org.rubypeople.rdt.internal.debug.core.parsing;
 
 import java.io.IOException;
 import java.net.SocketException;
-import java.util.Hashtable;
+import java.util.HashMap;
 import java.util.Iterator;
-import java.util.Vector;
+import java.util.Map;
 
 import org.rubypeople.rdt.internal.debug.core.RdtDebugCorePlugin;
 import org.xmlpull.v1.XmlPullParser;
@@ -12,14 +12,12 @@ import org.xmlpull.v1.XmlPullParserException;
 
 public class MultiReaderStrategy extends AbstractReadStrategy {
 
-	private Vector streamReaders;
-	private Hashtable threads;
+	private Map<XmlStreamReader, Thread> threads;
 	private XmlStreamReader currentReader;
 
 	public MultiReaderStrategy(XmlPullParser xpp) {
 		super(xpp);
-		streamReaders = new Vector();
-		threads = new Hashtable();
+		threads = new HashMap<XmlStreamReader, Thread>();
 
 		new Thread("xml reader") {
 			public void run() {
@@ -37,7 +35,7 @@ public class MultiReaderStrategy extends AbstractReadStrategy {
 						Thread.sleep(1000) ; // Avoid Commodfication Exceptions
 					} catch (InterruptedException e) {
 					} 
-					releaseAllReader() ;	
+					releaseAllReaders();	
 				}
 				
 			}
@@ -93,10 +91,9 @@ public class MultiReaderStrategy extends AbstractReadStrategy {
 			}
 		} while (currentReader == null && missed < 10);
 	}
-
-	private synchronized void findReaderForTag() throws XmlStreamReaderException {
-		for (Iterator iter = streamReaders.iterator(); iter.hasNext();) {
-			XmlStreamReader streamReader = (XmlStreamReader) iter.next();
+	
+    private synchronized void findReaderForTag() throws XmlStreamReaderException {
+    	for (XmlStreamReader streamReader : threads.keySet()) { 
 			if (streamReader.processStartElement(xpp)) {
 				currentReader = streamReader;
 				break;
@@ -104,23 +101,20 @@ public class MultiReaderStrategy extends AbstractReadStrategy {
 		}
 	}
 
-	protected synchronized void releaseAllReader() {
-		for (Iterator iter = streamReaders.iterator(); iter.hasNext();) {
-			XmlStreamReader streamReader = (XmlStreamReader) iter.next();
-			((Thread) threads.get(streamReader)).interrupt();			
-			iter.remove() ;	
-		}	
-		threads.clear() ;
+	protected void releaseAllReaders() {
+		for (Iterator<Map.Entry<XmlStreamReader, Thread>> iter = threads.entrySet().iterator(); iter.hasNext();) {
+			Thread thread = iter.next().getValue();
+			thread.interrupt();
+			iter.remove();
+		}
 	}
 
 	protected synchronized void removeReader(XmlStreamReader streamReader) {
-		((Thread) threads.get(streamReader)).interrupt();
+		threads.get(streamReader).interrupt(); 
 		threads.remove(streamReader);
-		streamReaders.remove(streamReader);
 	}
 
 	protected synchronized void addReader(XmlStreamReader streamReader) {
-		streamReaders.add(streamReader);
 		threads.put(streamReader, Thread.currentThread());
 	}
 
