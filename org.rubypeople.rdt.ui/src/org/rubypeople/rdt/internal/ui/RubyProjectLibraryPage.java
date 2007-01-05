@@ -25,7 +25,9 @@ import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.ide.IDE.SharedImages;
+import org.rubypeople.rdt.core.IRubyProject;
 import org.rubypeople.rdt.core.RubyCore;
+import org.rubypeople.rdt.core.RubyModelException;
 import org.rubypeople.rdt.internal.core.RubyProject;
 
 public class RubyProjectLibraryPage {
@@ -60,24 +62,39 @@ public class RubyProjectLibraryPage {
 		projectsTableViewer.setLabelProvider(getLabelProvider());
 
 		projectsTableViewer.setInput(getWorkspaceProjects());
-		projectsTableViewer.setCheckedElements(workingProject.getReferencedProjects().toArray());
+		List<IProject> referencedProjects = new ArrayList();
+		try {
+			String[] names = workingProject.getRequiredProjectNames();
+			for (int i = 0; i < names.length; i++) {
+				List<IProject> workspaceProjects = getWorkspaceProjects();
+				for (IProject workspaceProject : workspaceProjects) {
+					if (workspaceProject.getName().equals(names[i])) referencedProjects.add(workspaceProject);
+				}
+			}
+		} catch (RubyModelException e) {
+			// ignore
+		}
+		projectsTableViewer.setCheckedElements(referencedProjects.toArray());
 
 		return composite;
 	}
 
 	protected void projectCheckedUnchecked(CheckStateChangedEvent event) {
 		IProject checkEventProject = (IProject) event.getElement();
-		if (event.getChecked())
-			getWorkingProject().addLoadPathEntry(checkEventProject);
-		else
-			getWorkingProject().removeLoadPathEntry(checkEventProject);
+		IRubyProject working = getWorkingProject();
+//		ILoadpathEntry[] entries = working.getRawLoadpath();
+// XXX Set the new loadpath properly!!!
+		//		if (event.getChecked())
+//			.addLoadPathEntry(checkEventProject);
+//		else
+//			getWorkingProject().removeLoadPathEntry(checkEventProject);
 	}
 
 	protected RubyProject getWorkingProject() {
 		return workingProject;
 	}
 
-	protected List getWorkspaceProjects() {
+	protected List<IProject> getWorkspaceProjects() {
 		IWorkspaceRoot root = RubyPlugin.getWorkspace().getRoot();
 		return Arrays.asList(root.getProjects());
 	}

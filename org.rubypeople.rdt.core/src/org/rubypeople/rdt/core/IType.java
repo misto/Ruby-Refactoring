@@ -172,4 +172,6 @@ public interface IType extends IRubyElement, IMember {
 	public IMethod createMethod(String contents, IRubyElement sibling, boolean force,
 			IProgressMonitor progress) throws RubyModelException;
 
+	public ISourceFolder getSourceFolder();
+
 }

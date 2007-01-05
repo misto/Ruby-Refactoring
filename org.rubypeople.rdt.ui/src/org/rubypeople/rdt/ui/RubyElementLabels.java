@@ -10,12 +10,17 @@
  *******************************************************************************/
 package org.rubypeople.rdt.ui;
 
+import org.eclipse.core.resources.IProject;
+import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.IAdaptable;
+import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.ui.model.IWorkbenchAdapter;
 import org.rubypeople.rdt.core.IField;
 import org.rubypeople.rdt.core.IMethod;
 import org.rubypeople.rdt.core.IRubyElement;
 import org.rubypeople.rdt.core.IRubyScript;
+import org.rubypeople.rdt.core.ISourceFolder;
+import org.rubypeople.rdt.core.ISourceFolderRoot;
 import org.rubypeople.rdt.core.IType;
 import org.rubypeople.rdt.core.RubyModelException;
 import org.rubypeople.rdt.internal.corext.util.Messages;
@@ -237,7 +242,20 @@ public class RubyElementLabels {
 
     private final static long QUALIFIER_FLAGS = P_COMPRESSED | USE_RESOLVED;
 
+	/**
+	 * User-readable string for the default package name (e.g. "(default package)").
+	 */
+	public final static String DEFAULT_PACKAGE= RubyUIMessages.RubyElementLabels_default_package; 
 
+	/*
+	 * Package name compression
+	 */
+	private static String fgPkgNamePattern= ""; //$NON-NLS-1$
+	private static String fgPkgNamePrefix;
+	private static String fgPkgNamePostfix;
+	private static int fgPkgNameChars;
+	private static int fgPkgNameLength= -1;
+	
     private RubyElementLabels() {
     }
 
@@ -318,6 +336,12 @@ public class RubyElementLabels {
         case IRubyElement.IMPORT_DECLARATION:
             getDeclarationLabel(element, flags, buf);
             break;
+		case IRubyElement.SOURCE_FOLDER: 
+			getPackageFragmentLabel((ISourceFolder) element, flags, buf);
+			break;
+		case IRubyElement.SOURCE_FOLDER_ROOT: 
+			getPackageFragmentRootLabel((ISourceFolderRoot) element, flags, buf);
+			break;
         case IRubyElement.RUBY_PROJECT:
         case IRubyElement.RUBY_MODEL:
             buf.append(element.getElementName());
@@ -476,11 +500,11 @@ public class RubyElementLabels {
      */
     public static void getTypeLabel(IType type, long flags, StringBuffer buf) {
         if (getFlag(flags, T_FULLY_QUALIFIED)) {
-//            IPackageFragment pack = type.getPackageFragment();
-//            if (!pack.isDefaultPackage()) {
-//                getPackageFragmentLabel(pack, (flags & QUALIFIER_FLAGS), buf);
-//                buf.append('.');
-//            }
+            ISourceFolder pack = type.getSourceFolder();
+            if (!pack.isDefaultPackage()) {
+                getPackageFragmentLabel(pack, (flags & QUALIFIER_FLAGS), buf);
+                buf.append('.');
+            }
         }
         if (getFlag(flags, T_FULLY_QUALIFIED | T_CONTAINER_QUALIFIED)) {
             IType declaringType = type.getDeclaringType();
@@ -545,7 +569,7 @@ public class RubyElementLabels {
                     getElementLabel(type.getParent(), 0, buf);
                 }
             } else {
-                //getPackageFragmentLabel(type.getPackageFragment(), flags & QUALIFIER_FLAGS, buf);
+                getPackageFragmentLabel(type.getSourceFolder(), flags & QUALIFIER_FLAGS, buf);
             }
         }
     }
@@ -601,18 +625,149 @@ public class RubyElementLabels {
      */
     public static void getCompilationUnitLabel(IRubyScript cu, long flags, StringBuffer buf) {
         if (getFlag(flags, CU_QUALIFIED)) {
-//            IPackageFragment pack = (IPackageFragment) cu.getParent();
-//            if (!pack.isDefaultPackage()) {
-//                getPackageFragmentLabel(pack, (flags & QUALIFIER_FLAGS), buf);
-//                buf.append('.');
-//            }
+        	ISourceFolder pack = (ISourceFolder) cu.getParent();
+            if (!pack.isDefaultPackage()) {
+                getPackageFragmentLabel(pack, (flags & QUALIFIER_FLAGS), buf);
+                buf.append('.');
+            }
         }
         buf.append(cu.getElementName());
 
         if (getFlag(flags, CU_POST_QUALIFIED)) {
             buf.append(CONCAT_STRING);
-           // getPackageFragmentLabel((IPackageFragment) cu.getParent(), flags & QUALIFIER_FLAGS, buf);
+            getPackageFragmentLabel((ISourceFolder) cu.getParent(), flags & QUALIFIER_FLAGS, buf);
         }
     }
 
+    /**
+	 * Appends the label for a package fragment to a {@link StringBuffer}. Considers the P_* flags.
+	 * 	@param pack The element to render.
+	 * @param flags The rendering flags. Flags with names starting with P_' are considered.
+	 * @param buf The buffer to append the resulting label to.
+	 */	
+	public static void getPackageFragmentLabel(ISourceFolder pack, long flags, StringBuffer buf) {
+		if (getFlag(flags, P_QUALIFIED)) {
+			getPackageFragmentRootLabel((ISourceFolderRoot) pack.getParent(), ROOT_QUALIFIED, buf);
+			buf.append('/');
+		}
+		refreshPackageNamePattern();
+		if (pack.isDefaultPackage()) {
+			buf.append(DEFAULT_PACKAGE);
+		} else if (getFlag(flags, P_COMPRESSED) && fgPkgNameLength >= 0) {
+				String name= pack.getElementName();
+				int start= 0;
+				int dot= name.indexOf('.', start);
+				while (dot > 0) {
+					if (dot - start > fgPkgNameLength-1) {
+						buf.append(fgPkgNamePrefix);
+						if (fgPkgNameChars > 0)
+							buf.append(name.substring(start, Math.min(start+ fgPkgNameChars, dot)));
+						buf.append(fgPkgNamePostfix);
+					} else
+						buf.append(name.substring(start, dot + 1));
+					start= dot + 1;
+					dot= name.indexOf('.', start);
+				}
+				buf.append(name.substring(start));
+		} else {
+			buf.append(pack.getElementName());
+		}
+		if (getFlag(flags, P_POST_QUALIFIED)) {
+			buf.append(CONCAT_STRING);
+			getPackageFragmentRootLabel((ISourceFolderRoot) pack.getParent(), ROOT_QUALIFIED, buf);
+		}
+	}
+	
+	private static void refreshPackageNamePattern() {
+		String pattern= getPkgNamePatternForPackagesView();
+		final String EMPTY_STRING= ""; //$NON-NLS-1$
+		if (pattern.equals(fgPkgNamePattern))
+			return;
+		else if (pattern.length() == 0) {
+			fgPkgNamePattern= EMPTY_STRING;
+			fgPkgNameLength= -1;
+			return;
+		}
+		fgPkgNamePattern= pattern;
+		int i= 0;
+		fgPkgNameChars= 0;
+		fgPkgNamePrefix= EMPTY_STRING;
+		fgPkgNamePostfix= EMPTY_STRING;
+		while (i < pattern.length()) {
+			char ch= pattern.charAt(i);
+			if (Character.isDigit(ch)) {
+				fgPkgNameChars= ch-48;
+				if (i > 0)
+					fgPkgNamePrefix= pattern.substring(0, i);
+				if (i >= 0)
+					fgPkgNamePostfix= pattern.substring(i+1);
+				fgPkgNameLength= fgPkgNamePrefix.length() + fgPkgNameChars + fgPkgNamePostfix.length();					
+				return;
+			}
+			i++;
+		}
+		fgPkgNamePrefix= pattern;
+		fgPkgNameLength= pattern.length();
+	}
+	
+	private static String getPkgNamePatternForPackagesView() {
+		IPreferenceStore store= PreferenceConstants.getPreferenceStore();
+		if (!store.getBoolean(PreferenceConstants.APPEARANCE_COMPRESS_PACKAGE_NAMES))
+			return ""; //$NON-NLS-1$
+		return store.getString(PreferenceConstants.APPEARANCE_PKG_NAME_PATTERN_FOR_PKG_VIEW);
+	}
+	
+	/**
+	 * Appends the label for a package fragment root to a {@link StringBuffer}. Considers the ROOT_* flags.
+	 * 	@param root The element to render.
+	 * @param flags The rendering flags. Flags with names starting with ROOT_' are considered.
+	 * @param buf The buffer to append the resulting label to.
+	 */	
+	public static void getPackageFragmentRootLabel(ISourceFolderRoot root, long flags, StringBuffer buf) {
+// TODO Uncomment to handle archives
+		//		if (root.isArchive())
+//			getArchiveLabel(root, flags, buf);
+//		else
+			getFolderLabel(root, flags, buf);
+	}
+		
+	private static void getFolderLabel(ISourceFolderRoot root, long flags, StringBuffer buf) {
+		IResource resource= root.getResource();
+		boolean rootQualified= getFlag(flags, ROOT_QUALIFIED);
+		boolean referencedQualified= getFlag(flags, REFERENCED_ROOT_POST_QUALIFIED) && isReferenced(root);
+		if (rootQualified) {
+			buf.append(root.getPath().makeRelative().toString());
+		} else {
+			if (resource != null)
+				buf.append(resource.getProjectRelativePath().toString());
+			else
+				buf.append(root.getElementName());
+			if (referencedQualified) {
+				buf.append(CONCAT_STRING);
+				buf.append(resource.getProject().getName());
+			} else if (getFlag(flags, ROOT_POST_QUALIFIED)) {
+				buf.append(CONCAT_STRING);
+				buf.append(root.getParent().getElementName());
+			}
+		}
+	}
+	
+	/**
+	 * Returns <code>true</code> if the given package fragment root is
+	 * referenced. This means it is own by a different project but is referenced
+	 * by the root's parent. Returns <code>false</code> if the given root
+	 * doesn't have an underlying resource.
+	 *
+	 * @since 3.2
+	 */
+	private static boolean isReferenced(ISourceFolderRoot root) {
+		IResource resource= root.getResource();
+		if (resource != null) {
+			IProject jarProject= resource.getProject();
+			IProject container= root.getRubyProject().getProject();
+			return !container.equals(jarProject);
+		}
+		return false;
+	}
+    
 }

@@ -87,7 +87,7 @@ public class RubyProjectPropertyPage extends PropertyPage implements IWorkbenchP
 	}
 	public boolean performOk() {
 		try {
-			projectsPage.getWorkingProject().save();
+			projectsPage.getWorkingProject().save(null, true);
 		} catch (CoreException e) {
 			ExceptionHandler.handle(e, RubyUIMessages.getString("RubyProjectPropertyPage.performOkException"), RubyUIMessages.getString("RubyProjectPropertyPage.performOkExceptionDialogMessage")); //$NON-NLS-1$ //$NON-NLS-2$
 		}

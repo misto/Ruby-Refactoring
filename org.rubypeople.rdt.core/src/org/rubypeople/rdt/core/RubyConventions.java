@@ -7,6 +7,7 @@ import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
+import org.jruby.javasupport.JavaMethod;
 import org.rubypeople.rdt.internal.core.RubyModelStatus;
 import org.rubypeople.rdt.internal.core.util.Messages;
 import org.rubypeople.rdt.internal.core.util.Util;
@@ -102,4 +103,9 @@ public class RubyConventions {
         }
         return true;
     }
+
+	public static IStatus validateSourceFolderName(String packName) {
+		// TODO Actually do some validation
+		return RubyModelStatus.VERIFIED_OK;
+	}
 }

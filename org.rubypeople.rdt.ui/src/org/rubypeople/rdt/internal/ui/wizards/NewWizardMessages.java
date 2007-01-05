@@ -30,6 +30,8 @@ public class NewWizardMessages extends NLS {
 	public static String NewContainerWizardPage_warning_NotInARubyProject;
 	public static String NewContainerWizardPage_error_NotAFolder;
 	public static String NewContainerWizardPage_error_ContainerDoesNotExist;
+	public static String NewContainerWizardPage_warning_NotOnLoadPath;
+	
 	public static String AbstractOpenWizardAction_createerror_message;
 	public static String AbstractOpenWizardAction_createerror_title;
 	public static String AbstractOpenWizardAction_noproject_title;
@@ -49,10 +51,18 @@ public class NewWizardMessages extends NLS {
 	public static String NewTypeWizardPage_InterfacesDialog_class_title;
 	public static String NewTypeWizardPage_error_EnterTypeName;
 	public static String NewTypeWizardPage_operationdesc;
+	public static String NewTypeWizardPage_default;
+	public static String NewTypeWizardPage_package_button;
+	public static String NewTypeWizardPage_package_label;
+	public static String NewTypeWizardPage_error_InvalidPackageName;
+	public static String NewTypeWizardPage_warning_DiscouragedPackageName;
+	public static String NewTypeWizardPage_ChoosePackageDialog_title;
+	public static String NewTypeWizardPage_ChoosePackageDialog_description;
+	public static String NewTypeWizardPage_ChoosePackageDialog_empty;
+	
 	public static String NewElementWizard_op_error_title;
 	public static String NewElementWizard_op_error_message;
-	public static String NewElementWizard_typecomment_deprecated_title;
-	public static String NewElementWizard_typecomment_deprecated_message;
+	
 	public static String NewClassCreationWizard_title;
 	public static String NewClassWizardPage_title;
 	public static String NewClassWizardPage_description;

@@ -14,6 +14,10 @@ public class CharOperation {
 	 */
 	public static final char[] NO_CHAR = new char[0];
 	public static final String[] NO_STRINGS = new String[0];
+	/**
+	 * Constant for an empty char array with two dimensions.
+	 */
+	public static final char[][] NO_CHAR_CHAR = new char[0][];
 
 	/**
 	 * Answers the first index in the array for which the corresponding
@@ -942,4 +946,32 @@ public class CharOperation {
 		}
 		return result;
 	}
+
+	public static final char[][] splitOn(char divider, char[] array) {
+	int length = array == null ? 0 : array.length;
+	if (length == 0)
+		return NO_CHAR_CHAR;
+
+	int wordCount = 1;
+	for (int i = 0; i < length; i++)
+		if (array[i] == divider)
+			wordCount++;
+	char[][] split = new char[wordCount][];
+	int last = 0, currentWord = 0;
+	for (int i = 0; i < length; i++) {
+		if (array[i] == divider) {
+			split[currentWord] = new char[i - last];
+			System.arraycopy(
+				array,
+				last,
+				split[currentWord++],
+				0,
+				i - last);
+			last = i + 1;
+		}
+	}
+	split[currentWord] = new char[length - last];
+	System.arraycopy(array, last, split[currentWord], 0, length - last);
+	return split;
+}
 }

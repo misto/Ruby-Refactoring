@@ -104,7 +104,7 @@ public class RubyParserCmd {
         try {
             Node node = parser.parse(new ShamFile(file), new FileReader(file));
 			RubyScriptElementInfo unitInfo = new RubyScriptElementInfo() ; 
-			RubyScript script = new RubyScript(new RubyProject(), null, file, DefaultWorkingCopyOwner.PRIMARY ) ;
+			RubyScript script = new RubyScript(new RubyProject(), file, DefaultWorkingCopyOwner.PRIMARY ) ;
 			RubyScriptStructureBuilder visitor = new RubyScriptStructureBuilder(script, unitInfo, elements);
 			if (node != null) {
 				node.accept(visitor);

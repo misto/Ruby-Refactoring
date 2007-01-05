@@ -15,6 +15,7 @@ import java.util.List;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
+import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.jface.viewers.ITreeContentProvider;
@@ -26,6 +27,7 @@ import org.rubypeople.rdt.core.IRubyModel;
 import org.rubypeople.rdt.core.IRubyProject;
 import org.rubypeople.rdt.core.IRubyScript;
 import org.rubypeople.rdt.core.ISourceFolder;
+import org.rubypeople.rdt.core.ISourceFolderRoot;
 import org.rubypeople.rdt.core.ISourceReference;
 import org.rubypeople.rdt.core.RubyCore;
 import org.rubypeople.rdt.core.RubyModelException;
@@ -43,10 +45,9 @@ import org.rubypeople.rdt.core.RubyModelException;
  * <pre>
 Ruby model (<code>IRubyModel</code>)
    Ruby project (<code>IRubyProject</code>)
-      package fragment root (<code>IPackageFragmentRoot</code>)
-         package fragment (<code>IPackageFragment</code>)
-            compilation unit (<code>ICompilationUnit</code>)
-            binary class file (<code>IClassFile</code>)
+      src folder root (<code>ISourceFolderRoot</code>)
+         src folder (<code>ISourceFolder</code>)
+            ruby script (<code>IRubyScript</code>)
  * </pre>
  * </p> 			
  * <p>
@@ -170,7 +171,10 @@ public class StandardRubyElementContentProvider implements ITreeContentProvider 
 				return getRubyProjects((IRubyModel)element);
 			
 			if (element instanceof IRubyProject) 
-				return getSourceFolders((IRubyProject)element);
+				return getSourceFolderRoots((IRubyProject)element);
+			
+			if (element instanceof ISourceFolderRoot) 
+				return getSourceFolders((ISourceFolderRoot)element);
 			
 			if (element instanceof ISourceFolder) 
 				return getFoldersAndRubyScripts((ISourceFolder)element);
@@ -187,12 +191,46 @@ public class StandardRubyElementContentProvider implements ITreeContentProvider 
 		return NO_CHILDREN;	
 	}
 
-	private Object[] getFoldersAndRubyScripts(ISourceFolder folder) throws RubyModelException {
-		return folder.getChildren();
+	private Object[] getSourceFolders(ISourceFolderRoot root) throws RubyModelException {
+		IRubyElement[] fragments= root.getChildren();
+		Object[] nonRubyResources= root.getNonRubyResources();
+		if (nonRubyResources == null)
+			return fragments;
+		return concatenate(fragments, nonRubyResources);
 	}
 
-	private Object[] getSourceFolders(IRubyProject project) throws RubyModelException {
-		return project.getSourceFolders();
+	private Object[] getSourceFolderRoots(IRubyProject project) throws RubyModelException {
+		if (!project.getProject().isOpen())
+			return NO_CHILDREN;
+			
+		ISourceFolderRoot[] roots= project.getSourceFolderRoots();
+		List list= new ArrayList(roots.length);
+		// filter out package fragments that correspond to projects and
+		// replace them with the package fragments directly
+		for (int i= 0; i < roots.length; i++) {
+			ISourceFolderRoot root= roots[i];
+			if (isProjectSourceFolderRoot(root)) {
+				Object[] children= root.getChildren();
+				for (int k= 0; k < children.length; k++) 
+					list.add(children[k]);
+			}
+			else if (hasChildren(root)) {
+				list.add(root);
+			} 
+		}
+		return concatenate(list.toArray(), project.getNonRubyResources());
+	}
+	
+	/**
+	 * Note: This method is for internal use only. Clients should not call this method.
+	 */
+	protected boolean isProjectSourceFolderRoot(ISourceFolderRoot root) {
+		IResource resource= root.getResource();
+		return (resource instanceof IProject);
+	}
+
+	private Object[] getFoldersAndRubyScripts(ISourceFolder folder) throws RubyModelException {
+		return folder.getChildren();
 	}
 
 

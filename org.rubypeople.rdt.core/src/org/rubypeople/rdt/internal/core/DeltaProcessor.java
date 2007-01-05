@@ -1,10 +1,12 @@
 package org.rubypeople.rdt.internal.core;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.Map;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
@@ -13,6 +15,7 @@ import org.eclipse.core.resources.IResourceChangeEvent;
 import org.eclipse.core.resources.IResourceDelta;
 import org.eclipse.core.resources.IResourceDeltaVisitor;
 import org.eclipse.core.resources.IWorkspace;
+import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.ISafeRunnable;
@@ -24,6 +27,7 @@ import org.rubypeople.rdt.core.IRubyElement;
 import org.rubypeople.rdt.core.IRubyElementDelta;
 import org.rubypeople.rdt.core.IRubyModel;
 import org.rubypeople.rdt.core.IRubyProject;
+import org.rubypeople.rdt.core.ISourceFolderRoot;
 import org.rubypeople.rdt.core.RubyCore;
 import org.rubypeople.rdt.core.RubyModelException;
 import org.rubypeople.rdt.internal.core.builder.RubyBuilder;
@@ -31,12 +35,83 @@ import org.rubypeople.rdt.internal.core.util.Util;
 
 public class DeltaProcessor {
 
+	static class RootInfo {
+		char[][] inclusionPatterns;
+		char[][] exclusionPatterns;
+		RubyProject project;
+		IPath rootPath;
+		int entryKind;
+		ISourceFolderRoot root;
+		RootInfo(RubyProject project, IPath rootPath, char[][] inclusionPatterns, char[][] exclusionPatterns, int entryKind) {
+			this.project = project;
+			this.rootPath = rootPath;
+			this.inclusionPatterns = inclusionPatterns;
+			this.exclusionPatterns = exclusionPatterns;
+			this.entryKind = entryKind;
+		}
+		ISourceFolderRoot getPackageFragmentRoot(IResource resource) {
+			if (this.root == null) {
+				if (resource != null) {
+					this.root = this.project.getSourceFolderRoot(resource);
+				} else {
+					Object target = RubyModel.getTarget(ResourcesPlugin.getWorkspace().getRoot(), this.rootPath, false/*don't check existence*/);
+					if (target instanceof IResource) {
+						this.root = this.project.getSourceFolderRoot((IResource)target);
+					} else {
+						this.root = this.project.getSourceFolderRoot(this.rootPath.toOSString());
+					}
+				}
+			}
+			return this.root;
+		}
+		boolean isRootOfProject(IPath path) {
+			return this.rootPath.equals(path) && this.project.getProject().getFullPath().isPrefixOf(path);
+		}
+		public String toString() {
+			StringBuffer buffer = new StringBuffer("project="); //$NON-NLS-1$
+			if (this.project == null) {
+				buffer.append("null"); //$NON-NLS-1$
+			} else {
+				buffer.append(this.project.getElementName());
+			}
+			buffer.append("\npath="); //$NON-NLS-1$
+			if (this.rootPath == null) {
+				buffer.append("null"); //$NON-NLS-1$
+			} else {
+				buffer.append(this.rootPath.toString());
+			}
+			buffer.append("\nincluding="); //$NON-NLS-1$
+			if (this.inclusionPatterns == null) {
+				buffer.append("null"); //$NON-NLS-1$
+			} else {
+				for (int i = 0, length = this.inclusionPatterns.length; i < length; i++) {
+					buffer.append(new String(this.inclusionPatterns[i]));
+					if (i < length-1) {
+						buffer.append("|"); //$NON-NLS-1$
+					}
+				}
+			}
+			buffer.append("\nexcluding="); //$NON-NLS-1$
+			if (this.exclusionPatterns == null) {
+				buffer.append("null"); //$NON-NLS-1$
+			} else {
+				for (int i = 0, length = this.exclusionPatterns.length; i < length; i++) {
+					buffer.append(new String(this.exclusionPatterns[i]));
+					if (i < length-1) {
+						buffer.append("|"); //$NON-NLS-1$
+					}
+				}
+			}
+			return buffer.toString();
+		}
+	}
+	
     public static final int DEFAULT_CHANGE_EVENT = 0; // must not collide with
     private final static int NON_RUBY_RESOURCE = -1;
     // ElementChangedEvent
     // event masks
     public static boolean DEBUG;
-    public static boolean VERBOSE;
+    public static boolean VERBOSE = false;
     public static boolean PERF = false;
 
     /*
@@ -47,6 +122,11 @@ public class DeltaProcessor {
     /* A set of IRubyProject whose caches need to be reset */
     private HashSet projectCachesToReset = new HashSet();
 
+	/* A table from IRubyProject to an array of IPackageFragmentRoot.
+	 * This table contains the pkg fragment roots of the project that are being deleted.
+	 */
+	public Map removedRoots;
+    
     /*
      * A list of IRubyElement used as a scope for external archives refresh
      * during POST_CHANGE. This is null if no refresh is needed.
@@ -85,7 +165,7 @@ public class DeltaProcessor {
      * being translated.
      */
     private RubyElementDelta currentDelta;
-
+   
     /*
      * Type of event that should be processed no matter what the real event type
      * is.
@@ -342,11 +422,32 @@ public class DeltaProcessor {
                         // this.state.elementChangedListenerCount);
                         fire(null, ElementChangedEvent.POST_CHANGE);
                     } finally {
-                        // workaround for bug 15168 circular errors not reported
-                        this.state.modelProjectsCache = null;
+						// workaround for bug 15168 circular errors not reported 
+						this.state.resetOldRubyProjectNames();
+						this.removedRoots = null;
                     }
                 }
                 return;
+                
+            case IResourceChangeEvent.PRE_BUILD :
+			    DeltaProcessingState.ProjectUpdateInfo[] updates = this.state.removeAllProjectUpdates();
+				if (updates != null) {
+				    for (int i = 0, length = updates.length; i < length; i++) {
+				        try {
+					        updates[i].updateProjectReferencesIfNecessary();
+				        } catch(RubyModelException e) {
+				            // do nothing
+				        }
+				    }
+				}
+				// this.processPostChange = false;
+				if(isAffectedBy(delta)) { // avoid populating for SYNC or MARKER deltas
+					// FIXME Update the loadpath markers
+//					updateLoadpathMarkers(delta, updates);
+//					RubyBuilder.buildStarting();
+				}
+				// does not fire any deltas
+				return;
             }
         }
     }
@@ -520,22 +621,43 @@ public class DeltaProcessor {
      * Note that the project is about to be deleted.
      */
     private void deleting(IProject project) {
+		
+		try {
+			// discard indexing jobs that belong to this project so that the project can be 
+			// deleted without interferences from the index manager
+			// FIXME Uncomment when we have a more sophisticated index manager
+//			this.manager.indexManager.discardJobs(project.getName());
 
-        try {
-            RubyProject rubyProject = (RubyProject) RubyCore.create(project);
-            rubyProject.close();
+			RubyProject rubyProject = (RubyProject)RubyCore.create(project);
+			
+			// remember roots of this project
+			if (this.removedRoots == null) {
+				this.removedRoots = new HashMap();
+			}
+			if (rubyProject.isOpen()) {
+				this.removedRoots.put(rubyProject, rubyProject.getSourceFolderRoots());
+			} else {
+				// compute roots without opening project
+				this.removedRoots.put(
+					rubyProject, 
+					rubyProject.computeSourceFolderRoots(
+						rubyProject.getResolvedLoadpath(true/*ignoreUnresolvedEntry*/, false/*don't generateMarkerOnError*/, false/*don't returnResolutionInProgress*/), 
+						false,
+						null /*no reverse map*/));
+			}
+			
+			rubyProject.close();
 
-            // workaround for bug 15168 circular errors not reported
-            if (this.state.modelProjectsCache == null) {
-                this.state.modelProjectsCache = this.manager.getRubyModel().getRubyProjects();
-            }
-            removeFromParentInfo(rubyProject);
+			// workaround for bug 15168 circular errors not reported
+			this.state.getOldRubyProjecNames(); // foce list to be computed
+			
+			this.removeFromParentInfo(rubyProject);
 
-            // remove preferences from per project info
-            this.manager.resetProjectPreferences(rubyProject);
-        } catch (RubyModelException e) {
-            // ruby project doesn't exist: ignore
-        }
+			// remove preferences from per project info
+			this.manager.resetProjectPreferences(rubyProject);	
+		} catch (RubyModelException e) {
+			// java project doesn't exist: ignore
+		}
     }
 
     /*
@@ -621,14 +743,8 @@ public class DeltaProcessor {
 
         switch (resource.getType()) {
         case IResource.ROOT:
-            // workaround for bug 15168 circular errors not reported
-            if (this.state.modelProjectsCache == null) {
-                try {
-                    this.state.modelProjectsCache = this.manager.getRubyModel().getRubyProjects();
-                } catch (RubyModelException e) {
-                    // ruby model doesn't exist: never happens
-                }
-            }
+//        	 workaround for bug 15168 circular errors not reported 
+			this.state.getOldRubyProjecNames(); // force list to be computed
             processChildren = true;
             break;
         case IResource.PROJECT:
@@ -714,6 +830,15 @@ public class DeltaProcessor {
             addForRefresh(rubyProject);
 
             break;
+        case IResource.FILE:
+        	IFile file = (IFile) resource;
+			/* loadpath file change */
+			if (file.getName().equals(RubyProject.LOADPATH_FILENAME)) {
+				this.manager.batchContainerInitializations = true;
+				reconcileLoadpathFileUpdate(delta, (RubyProject)RubyCore.create(file.getProject()));
+				this.state.rootsAreStale = true;
+			}
+			break;
         }
         if (processChildren) {
             IResourceDelta[] children = delta.getAffectedChildren();
@@ -1211,4 +1336,55 @@ public class DeltaProcessor {
             return NON_RUBY_RESOURCE;
         }
     }
+
+	/*
+	 * Answer a combination of the lastModified stamp and the size.
+	 * Used for detecting external JAR changes
+	 */
+	public static long getTimeStamp(File file) {
+		return file.lastModified() + file.length();
+	}
+	
+	/*
+	 * Update the RubyModel according to a .loadpath file change. The file can have changed as a result of a previous
+	 * call to RubyProject#setRawLoadpath or as a result of some user update (through repository)
+	 */
+	private void reconcileLoadpathFileUpdate(IResourceDelta delta, RubyProject project) {
+
+		switch (delta.getKind()) {
+			case IResourceDelta.REMOVED : // recreate one based on in-memory classpath
+//				try {
+//					JavaModelManager.PerProjectInfo info = project.getPerProjectInfo();
+//					if (info.rawClasspath != null) { // if there is an in-memory classpath
+//						project.saveClasspath(info.rawClasspath, info.outputLocation);
+//					}
+//				} catch (JavaModelException e) {
+//					if (project.getProject().isAccessible()) {
+//						Util.log(e, "Could not save classpath for "+ project.getPath());
+//					}
+//				}
+				break;
+			case IResourceDelta.CHANGED :
+				int flags = delta.getFlags();
+				if ((flags & IResourceDelta.CONTENT) == 0  // only consider content change
+					&& (flags & IResourceDelta.ENCODING) == 0 // and encoding change
+					&& (flags & IResourceDelta.MOVED_FROM) == 0) {// and also move and overide scenario (see http://dev.eclipse.org/bugs/show_bug.cgi?id=21420)
+					break;
+				}
+			// fall through
+			case IResourceDelta.ADDED :
+				try {
+					project.forceLoadpathReload(null);
+				} catch (RuntimeException e) {
+					if (VERBOSE) {
+						e.printStackTrace();
+					}
+				} catch (RubyModelException e) {	
+					if (VERBOSE) {
+						e.printStackTrace();
+					}
+				}
+		}
+	}
+
 }

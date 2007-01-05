@@ -139,7 +139,7 @@ public class NewClassWizardPage extends NewTypeWizardPage {
 		// pick & choose the wanted UI components
 		
 		createContainerControls(composite, nColumns);	
-//		createPackageControls(composite, nColumns);	
+		createPackageControls(composite, nColumns);	
 //		createEnclosingTypeControls(composite, nColumns);
 				
 		createSeparator(composite, nColumns);

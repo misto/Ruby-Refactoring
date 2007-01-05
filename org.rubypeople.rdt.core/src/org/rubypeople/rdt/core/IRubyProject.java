@@ -24,13 +24,12 @@
  */
 package org.rubypeople.rdt.core;
 
-import java.util.List;
 import java.util.Map;
 
-import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 
 /**
@@ -41,13 +40,7 @@ public interface IRubyProject extends IRubyElement, IParent {
 
 	public abstract IProject getProject();
 
-	public abstract List getLoadPathEntries();
-
-	public abstract List getReferencedProjects();
-
 	public String[] getRequiredProjectNames() throws RubyModelException;
-
-	public abstract void save() throws CoreException;
 
 	/**
 	 * Returns the first type found following this project's classpath with the
@@ -109,18 +102,33 @@ public interface IRubyProject extends IRubyElement, IParent {
 	public abstract IRubyScript[] getRubyScripts() throws RubyModelException;
 
 	public abstract Object[] getNonRubyResources() throws RubyModelException;
-
-	public abstract boolean isOnLoadpath(IRubyScript element);
 	
-	public IRubyScript getRubyScript(IFile file);
-
-	public abstract ISourceFolder getSourceFolder(String[] names);
-
-	public abstract ISourceFolder getSourceFolder(IResource resource);
-
 	public abstract ISourceFolder[] getSourceFolders() throws RubyModelException;
 
-	public abstract ISourceFolder createSourceFolder(String packName,
-			boolean force, IProgressMonitor monitor) throws RubyModelException;
+	public abstract ISourceFolderRoot getSourceFolderRoot(IResource resource);
 
+	public abstract ILoadpathEntry[] getRawLoadpath() throws RubyModelException;
+
+	public abstract ISourceFolderRoot[] getSourceFolderRoots() throws RubyModelException;
+
+	public abstract boolean isOnLoadpath(IRubyElement element);
+	
+	ILoadpathEntry[] getResolvedLoadpath(boolean ignoreUnresolvedEntry) throws RubyModelException;
+
+	public void setRawLoadpath(ILoadpathEntry[] newEntries,
+			IPath newOutputLocation,
+			IProgressMonitor monitor,
+			boolean canChangeResource,
+			ILoadpathEntry[] oldResolvedPath,
+			boolean needValidation,
+			boolean needSave)
+			throws RubyModelException;
+	
+	void setRawLoadpath(ILoadpathEntry[] entries, boolean canModifyResources, IProgressMonitor monitor) throws RubyModelException;
+
+	void setRawLoadpath(ILoadpathEntry[] entries, IProgressMonitor monitor)
+		throws RubyModelException;
+
+	void setRawLoadpath(ILoadpathEntry[] entries, IPath outputLocation, IProgressMonitor monitor)
+		throws RubyModelException;
 }

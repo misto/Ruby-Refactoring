@@ -10,6 +10,8 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.debug.core.ILaunchConfiguration;
+import org.rubypeople.rdt.core.ILoadpathEntry;
+import org.rubypeople.rdt.core.RubyModelException;
 import org.rubypeople.rdt.internal.core.RubyProject;
 import org.rubypeople.rdt.launching.IInterpreter;
 
@@ -117,10 +119,15 @@ public class InterpreterRunnerConfiguration {
         RubyProject project = this.getProject();
         addToLoadPath(loadPath, project.getProject());
 
-        Iterator referencedProjects = project.getReferencedProjects().iterator();
-        while (referencedProjects.hasNext()) {
-            addToLoadPath(loadPath, (IProject) referencedProjects.next());
-        }
+        try {
+			ILoadpathEntry[] entries = project.getResolvedLoadpath(true, false);
+			for (int i = 0; i < entries.length; i++) {
+				addToLoadPath(loadPath, entries[i].getPath().toOSString());
+			}
+		} catch (RubyModelException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
         if (new Path(this.getFileName()).segmentCount() > 1) { ;
         	addToLoadPath(loadPath, this.getAbsoluteFileDirectory());
         }

@@ -1,6 +1,5 @@
 package org.rubypeople.rdt.ui.wizards;
 
-import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IWorkspaceRoot;
@@ -25,10 +24,11 @@ import org.eclipse.ui.views.contentoutline.ContentOutline;
 import org.rubypeople.rdt.core.IRubyElement;
 import org.rubypeople.rdt.core.IRubyModel;
 import org.rubypeople.rdt.core.IRubyProject;
-import org.rubypeople.rdt.core.ISourceFolder;
+import org.rubypeople.rdt.core.ISourceFolderRoot;
 import org.rubypeople.rdt.core.RubyCore;
 import org.rubypeople.rdt.core.RubyModelException;
 import org.rubypeople.rdt.internal.corext.util.Messages;
+import org.rubypeople.rdt.internal.corext.util.RubyModelUtil;
 import org.rubypeople.rdt.internal.ui.RubyPlugin;
 import org.rubypeople.rdt.internal.ui.dialogs.StatusInfo;
 import org.rubypeople.rdt.internal.ui.viewsupport.IViewPartInputProvider;
@@ -53,7 +53,8 @@ public abstract class NewContainerWizardPage extends NewElementWizardPage {
 	
 	private IWorkspaceRoot fWorkspaceRoot;
 	private StringButtonDialogField fContainerDialogField;
-	private IContainer fCurrContainer;	
+
+	private ISourceFolderRoot fCurrRoot;	
 
 	/**
 	 * Create a new <code>NewContainerWizardPage</code>
@@ -72,7 +73,7 @@ public abstract class NewContainerWizardPage extends NewElementWizardPage {
 		fContainerDialogField.setButtonLabel(NewWizardMessages.NewContainerWizardPage_container_button); 
 		
 		fContainerStatus= new StatusInfo();
-		fCurrContainer= null;
+		fCurrRoot= null;
 	}
 	
 	/**
@@ -199,9 +200,10 @@ public abstract class NewContainerWizardPage extends NewElementWizardPage {
 	}
 	
 	private void containerChangeControlPressed(DialogField field) {
-		IContainer root= chooseContainer();
+//		 take the current rproject as init element of the dialog
+		ISourceFolderRoot root= chooseContainer();
 		if (root != null) {
-			setContainer(root, true);
+			setSourceFolderRoot(root, true);
 		}
 	}
 	
@@ -211,6 +213,15 @@ public abstract class NewContainerWizardPage extends NewElementWizardPage {
 	 * @return the text of the source folder text field
 	 */ 	
 	public String getProjectText() {
+		return fContainerDialogField.getText();
+	}
+	
+	/**
+	 * Returns the current text of source folder text field.
+	 * 
+	 * @return the text of the source folder text field
+	 */ 	
+	public String getSourceFolderRootText() {
 		return fContainerDialogField.getText();
 	}
 	
@@ -225,8 +236,8 @@ public abstract class NewContainerWizardPage extends NewElementWizardPage {
 	protected IStatus containerChanged() {
 		StatusInfo status= new StatusInfo();
 		
-		fCurrContainer= null;
-		String str= getProjectText();
+		fCurrRoot= null;
+		String str= getSourceFolderRootText();
 		if (str.length() == 0) {
 			status.setError(NewWizardMessages.NewContainerWizardPage_error_EnterContainerName); 
 			return status;
@@ -242,7 +253,7 @@ public abstract class NewContainerWizardPage extends NewElementWizardPage {
 					return status;
 				}				
 				IRubyProject jproject= RubyCore.create(proj);
-				fCurrContainer= jproject.getProject();
+				fCurrRoot= jproject.getSourceFolderRoot(res);
 				if (res.exists()) {
 					try {
 						if (!proj.hasNature(RubyCore.NATURE_ID)) {
@@ -252,7 +263,10 @@ public abstract class NewContainerWizardPage extends NewElementWizardPage {
 								status.setWarning(NewWizardMessages.NewContainerWizardPage_warning_NotInARubyProject); 
 							}
 							return status;
-						}	
+						}
+						if (!jproject.isOnLoadpath(fCurrRoot)) {
+							status.setWarning(Messages.format(NewWizardMessages.NewContainerWizardPage_warning_NotOnLoadPath, str)); 
+						}		
 					} catch (CoreException e) {
 						status.setWarning(NewWizardMessages.NewContainerWizardPage_warning_NotARubyProject); 
 					}
@@ -269,19 +283,19 @@ public abstract class NewContainerWizardPage extends NewElementWizardPage {
 	}
 	
 	/**
-	 * Sets the current source folder (model and text field) to the given 
-	 * container.
+	 * Sets the current source folder (model and text field) to the given package
+	 * fragment root.
+
 	 * @param root The new root.
 	 * @param canBeModified if <code>false</code> the source folder field can 
 	 * not be changed by the user. If <code>true</code> the field is editable
 	 */ 
-	public void setContainer(IContainer container, boolean canBeModified) {
-		fCurrContainer = container;
-		String str= (container == null) ? "" : container.getFullPath().toString(); //$NON-NLS-1$
+	public void setSourceFolderRoot(ISourceFolderRoot root, boolean canBeModified) {
+		fCurrRoot= root;
+		String str= (root == null) ? "" : root.getPath().makeRelative().toString(); //$NON-NLS-1$
 		fContainerDialogField.setText(str);
 		fContainerDialogField.setEnabled(canBeModified);
 	}	
-	
 	/**
 	 * Initializes the source folder field with a valid package fragment root.
 	 * The package fragment root is computed from the Ruby element.
@@ -290,17 +304,33 @@ public abstract class NewContainerWizardPage extends NewElementWizardPage {
 	 *    fragment root used as the source folder
 	 */
 	protected void initContainerPage(IRubyElement elem) {
-		// TODO Take in the structured selection?
-		IContainer initRoot= null;
+		ISourceFolderRoot initRoot= null;
 		if (elem != null) {
-			IRubyElement folder = elem.getAncestor(IRubyElement.SOURCE_FOLDER);
-			if (folder == null) {
-				initRoot = elem.getRubyProject().getProject();
-			} else {
-				initRoot = (IContainer) folder.getResource();
+			initRoot= RubyModelUtil.getSourceFolderRoot(elem);
+			  try {
+				if (initRoot == null) {
+					IRubyProject jproject= elem.getRubyProject();
+					if (jproject != null) {
+							initRoot= null;
+							if (jproject.exists()) {
+								ISourceFolderRoot[] roots= jproject.getSourceFolderRoots();
+								for (int i= 0; i < roots.length; i++) {
+									
+										initRoot= roots[i];
+										break;
+									
+								}							
+							}
+						if (initRoot == null) {
+							initRoot= jproject.getSourceFolderRoot(jproject.getResource());
+						}
+					}
+				}		
+			  } catch(RubyModelException e) {
+				  RubyCore.log(e);
 			}
 		}	
-		setContainer(initRoot, true);
+		setSourceFolderRoot(initRoot, true);
 	}
 	
 	private void containerDialogFieldChanged(DialogField field) {
@@ -342,22 +372,6 @@ public abstract class NewContainerWizardPage extends NewElementWizardPage {
 	}
 	
 	/**
-	 * Returns the <code>IRubyProject</code> that corresponds to the current
-	 * value of the source folder field.
-	 * 
-	 * @return the IRubyProject or <code>null</code> if the current source
-	 * folder value is not a valid package fragment root
-	 * 
-	 */ 
-	public IContainer getIContainer() {
-		return fCurrContainer;
-	}
-	
-	public ISourceFolder getSourceFolder() {
-		return getProject().getSourceFolder(getIContainer());
-	}
-	
-	/**
 	 * Opens a selection dialog that allows to select a source container. 
 	 * 
 	 * @return returns the selected package fragment root  or <code>null</code> if the dialog has been canceled.
@@ -368,12 +382,12 @@ public abstract class NewContainerWizardPage extends NewElementWizardPage {
 	 * 
 	 * @since 3.2
 	 */
-	protected IContainer chooseContainer() {
-		IRubyElement initElement= getSourceFolder();
-		Class[] acceptedClasses= new Class[] { IRubyProject.class, ISourceFolder.class };
+	protected ISourceFolderRoot chooseContainer() {
+		IRubyElement initElement= getSourceFolderRoot();
+		Class[] acceptedClasses= new Class[] { IRubyProject.class, ISourceFolderRoot.class };
 		TypedElementSelectionValidator validator= new TypedElementSelectionValidator(acceptedClasses, false);
 		
-		acceptedClasses= new Class[] { IRubyModel.class, IRubyProject.class, ISourceFolder.class };
+		acceptedClasses= new Class[] { IRubyModel.class, IRubyProject.class, ISourceFolderRoot.class };
 		ViewerFilter filter= new TypedViewerFilter(acceptedClasses);		
 
 		StandardRubyElementContentProvider provider= new StandardRubyElementContentProvider();
@@ -392,18 +406,25 @@ public abstract class NewContainerWizardPage extends NewElementWizardPage {
 			Object element= dialog.getFirstResult();
 			if (element instanceof IRubyProject) {
 				IRubyProject jproject= (IRubyProject)element;
-				return jproject.getProject();
-			}
-			if (element instanceof IContainer) {
-				return (IContainer) element;
+				return jproject.getSourceFolderRoot(jproject.getProject());
+			} else if (element instanceof ISourceFolderRoot) {
+				return (ISourceFolderRoot)element;
 			}
 			return null;
 		}
 		return null;
 	}	
 	
-	public IRubyProject getProject() {
-		return RubyCore.create(fCurrContainer.getProject());
+	/**
+	 * Returns the <code>IPackageFragmentRoot</code> that corresponds to the current
+	 * value of the source folder field.
+	 * 
+	 * @return the IPackageFragmentRoot or <code>null</code> if the current source
+	 * folder value is not a valid package fragment root
+	 * 
+	 */ 
+	public ISourceFolderRoot getSourceFolderRoot() {
+		return fCurrRoot;
 	}
 
 }

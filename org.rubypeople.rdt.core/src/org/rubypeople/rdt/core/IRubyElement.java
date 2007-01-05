@@ -37,24 +37,25 @@ public interface IRubyElement extends IAdaptable {
 	 * A Ruby element with this type can be safely cast to <code>IRubyProject</code>.
 	 */
 	public static final int RUBY_PROJECT = 1;
+	public static final int SOURCE_FOLDER_ROOT = 2;
 	/**
 	 * Constant representing a source folder
 	 * A Ruby element with this type can be safely cast to <code>ISourceFolder</code>.
 	 */
-	public static final int SOURCE_FOLDER = 2;
-	public static final int SCRIPT = 3;
-	public static final int TYPE = 4;
-	public static final int METHOD = 5;
-	public static final int GLOBAL = 6;
-	public static final int IMPORT_DECLARATION = 7;
-	public static final int CONSTANT = 8;
-	public static final int CLASS_VAR = 9;
-	public static final int INSTANCE_VAR = 10;
-	public static final int LOCAL_VARIABLE = 11;
-	public static final int BLOCK = 12;
-	public static final int DYNAMIC_VAR = 13;
-	public static final int FIELD = 14;
-	public static final int IMPORT_CONTAINER = 15;
+	public static final int SOURCE_FOLDER = 3;
+	public static final int SCRIPT = 4;
+	public static final int TYPE = 5;
+	public static final int METHOD = 6;
+	public static final int GLOBAL = 7;
+	public static final int IMPORT_DECLARATION = 8;
+	public static final int CONSTANT = 9;
+	public static final int CLASS_VAR = 10;
+	public static final int INSTANCE_VAR = 11;
+	public static final int LOCAL_VARIABLE = 12;
+	public static final int BLOCK = 13;
+	public static final int DYNAMIC_VAR = 14;
+	public static final int FIELD = 15;
+	public static final int IMPORT_CONTAINER = 16;
 
 	/**
 	 * Returns the first ancestor of this Ruby element that has the given type.

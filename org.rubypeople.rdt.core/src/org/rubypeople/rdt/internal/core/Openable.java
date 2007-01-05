@@ -8,6 +8,7 @@ import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.resources.ResourcesPlugin;
@@ -36,6 +37,35 @@ public abstract class Openable extends RubyElement implements IOpenable, IBuffer
 	 */
 	public Openable(RubyElement parent) {
 		super(parent);
+	}
+	
+	/**
+	 * Find enclosing package fragment root if any
+	 */
+	public SourceFolderRoot getSourceFolderRoot() {
+		return (SourceFolderRoot) getAncestor(IRubyElement.SOURCE_FOLDER_ROOT);
+	}
+	
+	/**
+	 * @see IRubyElement
+	 */
+	public IResource getUnderlyingResource() throws RubyModelException {
+		IResource parentResource = this.parent.getUnderlyingResource();
+		if (parentResource == null) {
+			return null;
+		}
+		int type = parentResource.getType();
+		if (type == IResource.FOLDER || type == IResource.PROJECT) {
+			IContainer folder = (IContainer) parentResource;
+			IResource resource = folder.findMember(getElementName());
+			if (resource == null) {
+				throw newNotPresentException();
+			} else {
+				return resource;
+			}
+		} else {
+			return parentResource;
+		}
 	}
 
 	/**
@@ -196,6 +226,11 @@ public abstract class Openable extends RubyElement implements IOpenable, IBuffer
 		RubyModelManager manager = RubyModelManager.getRubyModelManager();
 		if (manager.getInfo(this) != null) return true;
 		if (!parentExists()) return false;
+		SourceFolderRoot root = getSourceFolderRoot();
+		if (root != null
+				&& (root == this || !root.isArchive())) {
+			return resourceExists();
+		}
 		return super.exists();
 	}
 

@@ -13,6 +13,7 @@ package org.rubypeople.rdt.core;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.List;
 
@@ -25,7 +26,12 @@ import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.resources.IWorkspaceRunnable;
 import org.eclipse.core.resources.ResourcesPlugin;
+import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IConfigurationElement;
+import org.eclipse.core.runtime.IExtension;
+import org.eclipse.core.runtime.IExtensionPoint;
+import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Path;
@@ -37,12 +43,11 @@ import org.eclipse.core.runtime.preferences.IEclipsePreferences;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.rubypeople.rdt.internal.core.BatchOperation;
-import org.rubypeople.rdt.internal.core.DefaultWorkingCopyOwner;
+import org.rubypeople.rdt.internal.core.LoadpathEntry;
 import org.rubypeople.rdt.internal.core.RubyCorePreferenceInitializer;
 import org.rubypeople.rdt.internal.core.RubyModel;
 import org.rubypeople.rdt.internal.core.RubyModelManager;
 import org.rubypeople.rdt.internal.core.RubyProject;
-import org.rubypeople.rdt.internal.core.RubyScript;
 import org.rubypeople.rdt.internal.core.SymbolIndexResourceChangeListener;
 import org.rubypeople.rdt.internal.core.builder.IndexUpdater;
 import org.rubypeople.rdt.internal.core.builder.MassIndexUpdaterJob;
@@ -274,7 +279,34 @@ public class RubyCore extends Plugin {
 	 * @since 0.9.0
 	 */
 	public static final String CODEASSIST_CAMEL_CASE_MATCH = PLUGIN_ID + ".codeComplete.camelCaseMatch"; //$NON-NLS-1$
+
+	// FIXME Rename to CORE_INCOMPLETE_LOADPATH
+	/**
+	 * Possible  configurable option ID.
+	 * @see #getDefaultOptions()
+	 * @since 0.9.0
+	 */
+	public static final String CORE_INCOMPLETE_CLASSPATH = PLUGIN_ID + ".incompleteClasspath"; //$NON-NLS-1$
+
+	// FIXME Rename to CORE_INCOMPATIBLE_RUBY_VERSION
+	/**
+	 * Possible  configurable option ID.
+	 * @see #getDefaultOptions()
+	 * @since 3.0
+	 */
+	public static final String CORE_INCOMPATIBLE_JDK_LEVEL = PLUGIN_ID + ".incompatibleJDKLevel"; //$NON-NLS-1$
 	
+	// FIXME Rename to CORE_CIRCULAR_LOADPATH
+	/**
+	 * Possible  configurable option ID.
+	 * @see #getDefaultOptions()
+	 * @since 2.1
+	 */
+	public static final String CORE_CIRCULAR_CLASSPATH = PLUGIN_ID + ".circularClasspath"; //$NON-NLS-1$
+
+	private static final boolean VERBOSE = false;
+	
+		
 
     private SymbolIndex symbolIndex;
     private ISymbolFinder symbolFinder;
@@ -433,19 +465,8 @@ public class RubyCore extends Plugin {
         return false;
     }
 
-    public static IRubyScript create(IFile aFile) {
-        return create(aFile, null);
-    }
-
-    public static IRubyScript create(IFile file, IRubyProject project) {
-        if (project == null) {
-            project = create(file.getProject());
-        }
-        if(isRubyLikeFileName(file.getName())) {
-        	return new RubyScript((RubyProject) project, file, file.getName(),
-                    DefaultWorkingCopyOwner.PRIMARY);
-        }
-        return null;
+    public static IRubyScript create(IFile file) {
+    	return RubyModelManager.create(file, null/*unknown ruby project*/);
     }
 
     public static IRubyProject create(IProject project) {
@@ -681,4 +702,401 @@ public class RubyCore extends Plugin {
     public static boolean isRubyLikeFileName(String name) {
         return Util.isRubyLikeFileName(name);
     }
+
+	/**
+	 * Creates and returns a new classpath entry of kind <code>CPE_SOURCE</code>
+	 * for all files in the project's source folder identified by the given
+	 * absolute workspace-relative path.
+	 * <p>
+	 * The convenience method is fully equivalent to:
+	 * <pre>
+	 * newSourceEntry(path, new IPath[] {}, new IPath[] {}, null);
+	 * </pre>
+	 * </p>
+	 * 
+	 * @param path the absolute workspace-relative path of a source folder
+	 * @return a new source classpath entry
+	 * @see #newSourceEntry(IPath, IPath[], IPath[])
+	 */
+	public static ILoadpathEntry newSourceEntry(IPath path) {
+
+		return newSourceEntry(path, LoadpathEntry.INCLUDE_ALL, LoadpathEntry.EXCLUDE_NONE);
+	}
+	
+	/**
+	 * Creates and returns a new classpath entry of kind <code>CPE_SOURCE</code>
+	 * for the project's source folder identified by the given absolute 
+	 * workspace-relative path but excluding all source files with paths
+	 * matching any of the given patterns, and associated with a specific output location
+	 * (that is, ".class" files are not going to the project default output location). 
+	 * <p>
+	 * The convenience method is fully equivalent to:
+	 * <pre>
+	 * newSourceEntry(path, new IPath[] {}, exclusionPatterns);
+	 * </pre>
+	 * </p>
+	 *
+	 * @param path the absolute workspace-relative path of a source folder
+	 * @param inclusionPatterns the possibly empty list of inclusion patterns
+	 *    represented as relative paths
+	 * @param exclusionPatterns the possibly empty list of exclusion patterns
+	 *    represented as relative paths
+	 * @return a new source classpath entry
+	 * @since 3.0
+	 */
+	public static ILoadpathEntry newSourceEntry(IPath path, IPath[] inclusionPatterns, IPath[] exclusionPatterns) {
+		if (path == null) Assert.isTrue(false, "Source path cannot be null"); //$NON-NLS-1$
+		if (!path.isAbsolute()) Assert.isTrue(false, "Path for ILoadpathEntry must be absolute"); //$NON-NLS-1$
+		if (exclusionPatterns == null) Assert.isTrue(false, "Exclusion pattern set cannot be null"); //$NON-NLS-1$
+		if (inclusionPatterns == null) Assert.isTrue(false, "Inclusion pattern set cannot be null"); //$NON-NLS-1$
+
+		return new LoadpathEntry(
+			ILoadpathEntry.CPE_SOURCE,
+			path,
+			inclusionPatterns,
+			exclusionPatterns,
+			false); 
+	}
+
+	public static ILoadpathEntry newLibraryEntry(IPath path, boolean isExported) {
+				
+			if (path == null) Assert.isTrue(false, "Library path cannot be null"); //$NON-NLS-1$
+			if (!path.isAbsolute()) Assert.isTrue(false, "Path for ILoadpathEntry must be absolute"); //$NON-NLS-1$
+
+			return new LoadpathEntry(
+					ILoadpathEntry.CPE_LIBRARY,
+				RubyProject.canonicalizedPath(path),
+				LoadpathEntry.INCLUDE_ALL, // inclusion patterns
+				LoadpathEntry.EXCLUDE_NONE, // exclusion patterns
+				isExported);
+		
+	}
+
+	public static ILoadpathEntry newProjectEntry(IPath path, boolean isExported) {
+		if (!path.isAbsolute()) Assert.isTrue(false, "Path for ILoadpathEntry must be absolute"); //$NON-NLS-1$
+		
+		return new LoadpathEntry(
+			ILoadpathEntry.CPE_PROJECT,
+			path,
+			LoadpathEntry.INCLUDE_ALL, // inclusion patterns
+			LoadpathEntry.EXCLUDE_NONE, // exclusion patterns
+			isExported);
+	}
+
+	public static ILoadpathEntry newVariableEntry(IPath variablePath, boolean isExported) {
+		if (variablePath == null) Assert.isTrue(false, "Variable path cannot be null"); //$NON-NLS-1$
+		if (variablePath.segmentCount() < 1) {
+			Assert.isTrue(
+				false,
+				"Illegal loadpath variable path: \'" + variablePath.makeRelative().toString() + "\', must have at least one segment"); //$NON-NLS-1$//$NON-NLS-2$
+		}
+	
+		return new LoadpathEntry(
+			ILoadpathEntry.CPE_VARIABLE,
+			variablePath,
+			LoadpathEntry.INCLUDE_ALL, // inclusion patterns
+			LoadpathEntry.EXCLUDE_NONE, // exclusion patterns	
+			isExported);
+	}
+
+	public static ILoadpathEntry newContainerEntry(IPath containerPath,
+			boolean isExported) {
+		if (containerPath == null) {
+			Assert.isTrue(false, "Container path cannot be null"); //$NON-NLS-1$
+		} else if (containerPath.segmentCount() < 1) {
+			Assert.isTrue(
+				false,
+				"Illegal loadpath container path: \'" + containerPath.makeRelative().toString() + "\', must have at least one segment (containerID+hints)"); //$NON-NLS-1$//$NON-NLS-2$
+		}
+		return new LoadpathEntry(
+			ILoadpathEntry.CPE_CONTAINER,
+			containerPath,
+			LoadpathEntry.INCLUDE_ALL, // inclusion patterns
+			LoadpathEntry.EXCLUDE_NONE, // exclusion patterns
+			isExported);
+	}
+
+	public static ILoadpathEntry getResolvedLoadpathEntry(
+			ILoadpathEntry entry) {
+		if (entry.getEntryKind() != ILoadpathEntry.CPE_VARIABLE)
+			return entry;
+	
+		IWorkspaceRoot workspaceRoot = ResourcesPlugin.getWorkspace().getRoot();
+		IPath resolvedPath = RubyCore.getResolvedVariablePath(entry.getPath());
+		if (resolvedPath == null)
+			return null;
+	
+		Object target = RubyModel.getTarget(workspaceRoot, resolvedPath, false);
+		if (target == null)
+			return null;
+	
+		// inside the workspace
+		if (target instanceof IResource) {
+			IResource resolvedResource = (IResource) target;
+			if (resolvedResource != null) {
+				switch (resolvedResource.getType()) {
+					
+					case IResource.PROJECT :  
+						// internal project
+						return RubyCore.newProjectEntry(
+								resolvedPath,
+								entry.isExported());					
+					case IResource.FOLDER : 
+						// internal binary folder
+						return RubyCore.newLibraryEntry(
+								resolvedPath,
+								entry.isExported());
+				}
+			}
+		}
+		// outside the workspace
+		if (target instanceof File) {
+			File externalFile = RubyModel.getFile(target);
+			if (externalFile != null) {
+				return RubyCore.newLibraryEntry(resolvedPath, entry.isExported());				
+			} else { // external binary folder
+				if (resolvedPath.isAbsolute()){
+					return RubyCore.newLibraryEntry(resolvedPath, entry.isExported());
+				}
+			}
+		}
+		return null;
+	}
+
+		/**
+	 * Resolve a variable path (helper method).
+	 * 
+	 * @param variablePath the given variable path
+	 * @return the resolved variable path or <code>null</code> if none
+	 */
+	public static IPath getResolvedVariablePath(IPath variablePath) {
+	
+		if (variablePath == null)
+			return null;
+		int count = variablePath.segmentCount();
+		if (count == 0)
+			return null;
+	
+		// lookup variable	
+		String variableName = variablePath.segment(0);
+		IPath resolvedPath = RubyCore.getLoadpathVariable(variableName);
+		if (resolvedPath == null)
+			return null;
+	
+		// append path suffix
+		if (count > 1) {
+			resolvedPath = resolvedPath.append(variablePath.removeFirstSegments(1));
+		}
+		return resolvedPath; 
+	}
+	
+	/**
+	 * Returns the path held in the given classpath variable.
+	 * Returns <code>null</code> if unable to bind.
+	 * <p>
+	 * Classpath variable values are persisted locally to the workspace, and 
+	 * are preserved from session to session.
+	 * <p>
+	 * Note that classpath variables can be contributed registered initializers for,
+	 * using the extension point "org.eclipse.jdt.core.classpathVariableInitializer".
+	 * If an initializer is registered for a variable, its persisted value will be ignored:
+	 * its initializer will thus get the opportunity to rebind the variable differently on
+	 * each session.
+	 *
+	 * @param variableName the name of the classpath variable
+	 * @return the path, or <code>null</code> if none 
+	 * @see #setClasspathVariable(String, IPath)
+	 */
+	public static IPath getLoadpathVariable(final String variableName) {
+
+		RubyModelManager manager = RubyModelManager.getRubyModelManager();
+		IPath variablePath = manager.variableGet(variableName);
+		if (variablePath == RubyModelManager.VARIABLE_INITIALIZATION_IN_PROGRESS){
+		    return manager.getPreviousSessionVariable(variableName);
+		}
+		
+		if (variablePath != null) {
+			if (variablePath == RubyModelManager.CP_ENTRY_IGNORE_PATH)
+				return null;
+			return variablePath;
+		}
+
+		// even if persisted value exists, initializer is given priority, only if no initializer is found the persisted value is reused
+		final LoadpathVariableInitializer initializer = RubyCore.getLoadpathVariableInitializer(variableName);
+		if (initializer != null){
+			if (RubyModelManager.CP_RESOLVE_VERBOSE){
+				Util.verbose(
+					"CPVariable INIT - triggering initialization\n" + //$NON-NLS-1$
+					"	variable: " + variableName + '\n' + //$NON-NLS-1$
+					"	initializer: " + initializer + '\n' + //$NON-NLS-1$
+					"	invocation stack trace:"); //$NON-NLS-1$
+				new Exception("<Fake exception>").printStackTrace(System.out); //$NON-NLS-1$
+			}
+			manager.variablePut(variableName, RubyModelManager.VARIABLE_INITIALIZATION_IN_PROGRESS); // avoid initialization cycles
+			boolean ok = false;
+			try {
+				// let OperationCanceledException go through
+				// (see https://bugs.eclipse.org/bugs/show_bug.cgi?id=59363)
+				initializer.initialize(variableName);
+				
+				variablePath = manager.variableGet(variableName); // initializer should have performed side-effect
+				if (variablePath == RubyModelManager.VARIABLE_INITIALIZATION_IN_PROGRESS) return null; // break cycle (initializer did not init or reentering call)
+				if (RubyModelManager.CP_RESOLVE_VERBOSE){
+					Util.verbose(
+						"CPVariable INIT - after initialization\n" + //$NON-NLS-1$
+						"	variable: " + variableName +'\n' + //$NON-NLS-1$
+						"	variable path: " + variablePath); //$NON-NLS-1$
+				}
+				manager.variablesWithInitializer.add(variableName);
+				ok = true;
+			} catch (RuntimeException e) {
+				if (RubyModelManager.CP_RESOLVE_VERBOSE) {
+					e.printStackTrace();
+				}
+				throw e;
+			} catch (Error e) {
+				if (RubyModelManager.CP_RESOLVE_VERBOSE) {
+					e.printStackTrace();
+				}
+				throw e;
+			} finally {
+				if (!ok) RubyModelManager.getRubyModelManager().variablePut(variableName, null); // flush cache
+			}
+		} else {
+			if (RubyModelManager.CP_RESOLVE_VERBOSE){
+				Util.verbose(
+					"CPVariable INIT - no initializer found\n" + //$NON-NLS-1$
+					"	variable: " + variableName); //$NON-NLS-1$
+			}
+		}
+		return variablePath;
+	}
+
+	/**
+	 * Helper method finding the classpath variable initializer registered for a given classpath variable name 
+	 * or <code>null</code> if none was found while iterating over the contributions to extension point to
+	 * the extension point "org.eclipse.jdt.core.classpathVariableInitializer".
+	 * <p>
+ 	 * @param variable the given variable
+ 	 * @return ClasspathVariableInitializer - the registered classpath variable initializer or <code>null</code> if 
+	 * none was found.
+	 * @since 0.9.0
+ 	 */
+	public static LoadpathVariableInitializer getLoadpathVariableInitializer(String variable){
+		
+		Plugin jdtCorePlugin = RubyCore.getPlugin();
+		if (jdtCorePlugin == null) return null;
+
+		IExtensionPoint extension = Platform.getExtensionRegistry().getExtensionPoint(RubyCore.PLUGIN_ID, RubyModelManager.CPVARIABLE_INITIALIZER_EXTPOINT_ID);
+		if (extension != null) {
+			IExtension[] extensions =  extension.getExtensions();
+			for(int i = 0; i < extensions.length; i++){
+				IConfigurationElement [] configElements = extensions[i].getConfigurationElements();
+				for(int j = 0; j < configElements.length; j++){
+					try {
+						String varAttribute = configElements[j].getAttribute("variable"); //$NON-NLS-1$
+						if (variable.equals(varAttribute)) {
+							if (RubyModelManager.CP_RESOLVE_VERBOSE) {
+								Util.verbose(
+									"CPVariable INIT - found initializer\n" + //$NON-NLS-1$
+									"	variable: " + variable + '\n' + //$NON-NLS-1$
+									"	class: " + configElements[j].getAttribute("class")); //$NON-NLS-1$ //$NON-NLS-2$
+							}						
+							Object execExt = configElements[j].createExecutableExtension("class"); //$NON-NLS-1$
+							if (execExt instanceof LoadpathVariableInitializer){
+								return (LoadpathVariableInitializer)execExt;
+							}
+						}
+					} catch(CoreException e){
+						// executable extension could not be created: ignore this initializer
+						if (RubyModelManager.CP_RESOLVE_VERBOSE) {
+							Util.verbose(
+								"CPContainer INIT - failed to instanciate initializer\n" + //$NON-NLS-1$
+								"	variable: " + variable + '\n' + //$NON-NLS-1$
+								"	class: " + configElements[j].getAttribute("class"), //$NON-NLS-1$ //$NON-NLS-2$
+								System.err); 
+							e.printStackTrace();
+						}						
+					}
+				}
+			}	
+		}
+		return null;
+	}	
+	
+	public static ILoadpathContainer getLoadpathContainer(IPath containerPath, IRubyProject project) throws RubyModelException {
+
+		RubyModelManager manager = RubyModelManager.getRubyModelManager();
+		ILoadpathContainer container = manager.getLoadpathContainer(containerPath, project);
+		if (container == RubyModelManager.CONTAINER_INITIALIZATION_IN_PROGRESS) {
+		    return manager.getPreviousSessionContainer(containerPath, project);
+		}
+		return container;			
+	}
+
+	/**
+	 * Helper method finding the classpath container initializer registered for a given classpath container ID 
+	 * or <code>null</code> if none was found while iterating over the contributions to extension point to
+	 * the extension point "org.eclipse.jdt.core.classpathContainerInitializer".
+	 * <p>
+	 * A containerID is the first segment of any container path, used to identify the registered container initializer.
+	 * <p>
+	 * @param containerID - a containerID identifying a registered initializer
+	 * @return ClasspathContainerInitializer - the registered classpath container initializer or <code>null</code> if 
+	 * none was found.
+	 * @since 0.9.0
+	 */
+	public static LoadpathContainerInitializer getLoadpathContainerInitializer(String containerID) {
+		HashMap containerInitializersCache = RubyModelManager.getRubyModelManager().containerInitializersCache;
+		LoadpathContainerInitializer initializer = (LoadpathContainerInitializer) containerInitializersCache.get(containerID);
+		if (initializer == null) {
+			initializer = computeLoadpathContainerInitializer(containerID);
+			if (initializer == null)
+				return null;
+			containerInitializersCache.put(containerID, initializer);
+		}
+		return initializer;
+	}
+	
+	private static LoadpathContainerInitializer computeLoadpathContainerInitializer(String containerID) {
+		Plugin jdtCorePlugin = RubyCore.getPlugin();
+		if (jdtCorePlugin == null) return null;
+
+		IExtensionPoint extension = Platform.getExtensionRegistry().getExtensionPoint(RubyCore.PLUGIN_ID, RubyModelManager.CPCONTAINER_INITIALIZER_EXTPOINT_ID);
+		if (extension != null) {
+			IExtension[] extensions =  extension.getExtensions();
+			for(int i = 0; i < extensions.length; i++){
+				IConfigurationElement [] configElements = extensions[i].getConfigurationElements();
+				for(int j = 0; j < configElements.length; j++){
+					String initializerID = configElements[j].getAttribute("id"); //$NON-NLS-1$
+					if (initializerID != null && initializerID.equals(containerID)){
+						if (RubyModelManager.CP_RESOLVE_VERBOSE) {
+							Util.verbose(
+								"CPContainer INIT - found initializer\n" + //$NON-NLS-1$
+								"	container ID: " + containerID + '\n' + //$NON-NLS-1$
+								"	class: " + configElements[j].getAttribute("class")); //$NON-NLS-1$ //$NON-NLS-2$
+						}						
+						try {
+							Object execExt = configElements[j].createExecutableExtension("class"); //$NON-NLS-1$
+							if (execExt instanceof LoadpathContainerInitializer){
+								return (LoadpathContainerInitializer)execExt;
+							}
+						} catch(CoreException e) {
+							// executable extension could not be created: ignore this initializer
+							if (RubyModelManager.CP_RESOLVE_VERBOSE) {
+								Util.verbose(
+									"CPContainer INIT - failed to instanciate initializer\n" + //$NON-NLS-1$
+									"	container ID: " + containerID + '\n' + //$NON-NLS-1$
+									"	class: " + configElements[j].getAttribute("class"), //$NON-NLS-1$ //$NON-NLS-2$
+									System.err); 
+								e.printStackTrace();
+							}						
+						}
+					}
+				}
+			}	
+		}
+		return null;
+	}
+
 }

@@ -10,6 +10,7 @@
  *******************************************************************************/
 package org.rubypeople.rdt.internal.core;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import org.eclipse.core.resources.IContainer;
@@ -17,6 +18,10 @@ import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.rubypeople.rdt.core.ILoadpathEntry;
+import org.rubypeople.rdt.core.IRubyElement;
+import org.rubypeople.rdt.core.ISourceFolderRoot;
+import org.rubypeople.rdt.core.RubyModelException;
+import org.rubypeople.rdt.internal.core.util.HashtableOfArrayToObject;
 
 /**
  * Info for IRubyProject.
@@ -38,8 +43,35 @@ class RubyProjectElementInfo extends OpenableElementInfo {
 	 */
 	private Object[] nonRubyResources;
 
-	public Map pathToResolvedEntries;
+	public ProjectCache projectCache;
 
+	static class ProjectCache {
+		ProjectCache(ISourceFolderRoot[] allPkgFragmentRootsCache, HashtableOfArrayToObject allPkgFragmentsCache, HashtableOfArrayToObject isPackageCache, Map rootToResolvedEntries) {
+			this.allPkgFragmentRootsCache = allPkgFragmentRootsCache;
+			this.allPkgFragmentsCache = allPkgFragmentsCache;
+			this.isPackageCache = isPackageCache;
+			this.rootToResolvedEntries = rootToResolvedEntries;
+		}
+		
+		/*
+		 * A cache of all package fragment roots of this project.
+		 */
+		public ISourceFolderRoot[] allPkgFragmentRootsCache;
+		
+		/*
+		 * A cache of all package fragments in this project.
+		 * (a map from String[] (the package name) to IPackageFragmentRoot[] (the package fragment roots that contain a package fragment with this name)
+		 */
+		public HashtableOfArrayToObject allPkgFragmentsCache;
+		
+		/*
+		 * A set of package names (String[]) that are known to be packages.
+		 */
+		public HashtableOfArrayToObject isPackageCache;
+	
+		public Map rootToResolvedEntries;		
+	}
+	
 	/**
 	 * Create and initialize a new instance of the receiver
 	 */
@@ -56,15 +88,20 @@ class RubyProjectElementInfo extends OpenableElementInfo {
 		boolean srcIsProject = false;
 		char[][] inclusionPatterns = null;
 		char[][] exclusionPatterns = null;
-		ILoadpathEntry[] classpath = project.getLoadpaths();
-		for (int i = 0; i < classpath.length; i++) {
-			ILoadpathEntry entry = classpath[i];
-			if (projectPath.equals(entry.getPath())) {
-				srcIsProject = true;
-				inclusionPatterns = ((LoadpathEntry) entry).fullInclusionPatternChars();
-				exclusionPatterns = ((LoadpathEntry) entry).fullExclusionPatternChars();
-				break;
+		ILoadpathEntry[] classpath = null;
+		try {
+			classpath = project.getResolvedLoadpath(true/* ignoreUnresolvedEntry */, false/* don't generateMarkerOnError */, false/* don't returnResolutionInProgress */);
+			for (int i = 0; i < classpath.length; i++) {
+				ILoadpathEntry entry = classpath[i];
+				if (projectPath.equals(entry.getPath())) {
+					srcIsProject = true;
+					inclusionPatterns = ((LoadpathEntry) entry).fullInclusionPatternChars();
+					exclusionPatterns = ((LoadpathEntry) entry).fullExclusionPatternChars();
+					break;
+				}
 			}
+		} catch (RubyModelException e) {
+			// ignore
 		}
 
 		Object[] resources = new IResource[5];
@@ -141,7 +178,8 @@ class RubyProjectElementInfo extends OpenableElementInfo {
 	 * Reset the package fragment roots and package fragment caches
 	 */
 	void resetCaches() {
-		this.pathToResolvedEntries = null;
+		this.projectCache = null;
+//		JavaModelManager.getJavaModelManager().resetJarTypeCache();
 	}
 
 	/**
@@ -151,5 +189,74 @@ class RubyProjectElementInfo extends OpenableElementInfo {
 
 		this.nonRubyResources = resources;
 	}
+	
+	ProjectCache getProjectCache(RubyProject project) {
+		ProjectCache cache = this.projectCache;
+		if (cache == null) {
+			ISourceFolderRoot[] roots;
+			Map reverseMap = new HashMap(3);
+			try {
+				roots = project.getAllSourceFolderRoots(reverseMap);
+			} catch (RubyModelException e) {
+				// project does not exist: cannot happen since this is the info of the project
+				roots = new ISourceFolderRoot[0];
+				reverseMap.clear();
+			}
+			HashtableOfArrayToObject fragmentsCache = new HashtableOfArrayToObject();
+			HashtableOfArrayToObject isPackageCache = new HashtableOfArrayToObject();
+			for (int i = 0, length = roots.length; i < length; i++) {
+				ISourceFolderRoot root = roots[i];
+				IRubyElement[] frags = null;
+				try {
+//					if (root.isArchive() && !root.isOpen()) {
+//						JarPackageFragmentRootInfo info = new JarPackageFragmentRootInfo();
+//						((JarPackageFragmentRoot) root).computeChildren(info, new HashMap());
+//						frags = info.children;
+//					} else 
+						frags = root.getChildren();
+				} catch (RubyModelException e) {
+					// root doesn't exist: ignore
+					continue;
+				}
+				for (int j = 0, length2 = frags.length; j < length2; j++) {
+					SourceFolder fragment= (SourceFolder) frags[j];
+					String[] pkgName = fragment.names;
+					Object existing = fragmentsCache.get(pkgName);
+					if (existing == null) {
+						fragmentsCache.put(pkgName, root);
+						// cache whether each package and its including packages (see https://bugs.eclipse.org/bugs/show_bug.cgi?id=119161)
+						// are actual packages
+						addNames(pkgName, isPackageCache);
+					} else {
+						if (existing instanceof SourceFolderRoot) {
+							fragmentsCache.put(pkgName, new ISourceFolderRoot[] {(SourceFolderRoot) existing, root});
+						} else {
+							ISourceFolderRoot[] entry= (ISourceFolderRoot[]) existing;
+							ISourceFolderRoot[] copy= new ISourceFolderRoot[entry.length + 1];
+							System.arraycopy(entry, 0, copy, 0, entry.length);
+							copy[entry.length]= root;
+							fragmentsCache.put(pkgName, copy);
+						}
+					}
+				}
+			}
+			cache = new ProjectCache(roots, fragmentsCache, isPackageCache, reverseMap);
+			this.projectCache = cache;
+		}
+		return cache;
+	}
 
+	/*
+	 * Adds the given name and its super names to the given set
+	 * (e.g. for {"a", "b", "c"}, adds {"a", "b", "c"}, {"a", "b"}, and {"a"})
+	 */
+	public static void addNames(String[] name, HashtableOfArrayToObject set) {
+		set.put(name, name);
+		int length = name.length;
+		for (int i = length-1; i > 0; i--) {
+			String[] superName = new String[i];
+			System.arraycopy(name, 0, superName, 0, i);
+			set.put(superName, superName);
+		}
+	}
 }

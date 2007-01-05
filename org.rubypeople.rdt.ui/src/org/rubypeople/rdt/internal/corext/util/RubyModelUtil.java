@@ -5,6 +5,7 @@ package org.rubypeople.rdt.internal.corext.util;
 
 import org.rubypeople.rdt.core.IRubyElement;
 import org.rubypeople.rdt.core.IRubyScript;
+import org.rubypeople.rdt.core.ISourceFolderRoot;
 import org.rubypeople.rdt.core.RubyModelException;
 import org.rubypeople.rdt.internal.ui.RubyPlugin;
 
@@ -59,5 +60,13 @@ public final class RubyModelUtil {
 	 */
 	public static IRubyElement toOriginal(IRubyElement element) {
 		return element.getPrimaryElement();
+	}
+
+	/**
+	 * Returns the package fragment root of <code>IRubyElement</code>. If the given
+	 * element is already a package fragment root, the element itself is returned.
+	 */
+	public static ISourceFolderRoot getSourceFolderRoot(IRubyElement element) {
+		return (ISourceFolderRoot) element.getAncestor(IRubyElement.SOURCE_FOLDER_ROOT);
 	}
 }

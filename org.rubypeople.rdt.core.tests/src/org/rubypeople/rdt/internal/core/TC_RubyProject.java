@@ -1,59 +1,70 @@
 package org.rubypeople.rdt.internal.core;
 
-import junit.framework.TestCase;
-
-import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
-import org.rubypeople.eclipse.shams.resources.ShamFile;
-import org.rubypeople.eclipse.shams.resources.ShamProject;
-import org.rubypeople.eclipse.shams.runtime.ShamIPath;
+import org.eclipse.core.runtime.CoreException;
+import org.rubypeople.rdt.core.IRubyProject;
+import org.rubypeople.rdt.core.tests.ModifyingResourceTest;
 
-public class TC_RubyProject extends TestCase {
-	protected ShamFile loadPathEntriesFile;
+public class TC_RubyProject extends ModifyingResourceTest {
 
-	public TC_RubyProject(String name) {
-		super(name);
+//	public void testGetLibraryPathXML() {
+//		ShamRubyProject rubyProject = new ShamRubyProject();
+//		rubyProject.setProject(new ShamProject("TheWorkingProject"));
+//
+//		IProject referencedProject = new ShamProject(new ShamIPath("TheReferencedProject"), "TheReferencedProject");
+//		rubyProject.addLoadPathEntry(referencedProject);
+//		assertEquals("XML should indicate only one referenced project.", "<?xml version=\"1.0\" encoding=\"UTF-8\"?><loadpath><pathentry type=\"project\" path=\"" + referencedProject.getFullPath() + "\"/></loadpath>", rubyProject.getLoadPathXML());
+//
+//		IProject anotherReferencedProject = new ShamProject("AnotherReferencedProject");
+//		rubyProject.addLoadPathEntry(anotherReferencedProject);
+//		assertEquals("XML should indicate two referenced projects.", "<?xml version=\"1.0\" encoding=\"UTF-8\"?><loadpath><pathentry type=\"project\" path=\"" + referencedProject.getFullPath() + "\"/><pathentry type=\"project\" path=\"" + anotherReferencedProject.getFullPath() + "\"/></loadpath>", rubyProject.getLoadPathXML());
+//		
+//		rubyProject.removeLoadPathEntry(referencedProject);
+//		assertEquals("XML should indicate one referenced project after removing one.", "<?xml version=\"1.0\" encoding=\"UTF-8\"?><loadpath><pathentry type=\"project\" path=\"" + anotherReferencedProject.getFullPath() + "\"/></loadpath>", rubyProject.getLoadPathXML());
+//	}
+	
+	public void testGetRequiredProjectNames() throws CoreException {	
+		try {
+		IRubyProject p2 = createRubyProject("P2");
+		waitForAutoBuild();
+		editFile(
+			"/P2/.loadpath", 
+			"<?xml version=\"1.0\" encoding=\"UTF-8\"?><loadpath><pathentry type=\"project\" path=\"/StoredReferencedProject\"/><pathentry type=\"project\" path=\"/AnotherStoredReferencedProject\"/></loadpath>"
+		);	
+		waitForAutoBuild();
+		
+		String[] required = p2.getRequiredProjectNames();
+		assertEquals(2, required.length);
+		assertEquals("StoredReferencedProject", required[0]);
+		assertEquals("AnotherStoredReferencedProject", required[1]);
+		} finally {
+			deleteProject("P2");
+		}
 	}
 	
-	protected void setUp() {
-		loadPathEntriesFile = new ShamFile("thePath");
-	}
-
-	public void testGetLibraryPathXML() {
-		ShamRubyProject rubyProject = new ShamRubyProject();
-		rubyProject.setProject(new ShamProject("TheWorkingProject"));
-
-		IProject referencedProject = new ShamProject(new ShamIPath("TheReferencedProject"), "TheReferencedProject");
-		rubyProject.addLoadPathEntry(referencedProject);
-		assertEquals("XML should indicate only one referenced project.", "<?xml version=\"1.0\" encoding=\"UTF-8\"?><loadpath><pathentry type=\"project\" path=\"" + referencedProject.getFullPath() + "\"/></loadpath>", rubyProject.getLoadPathXML());
-
-		IProject anotherReferencedProject = new ShamProject("AnotherReferencedProject");
-		rubyProject.addLoadPathEntry(anotherReferencedProject);
-		assertEquals("XML should indicate two referenced projects.", "<?xml version=\"1.0\" encoding=\"UTF-8\"?><loadpath><pathentry type=\"project\" path=\"" + referencedProject.getFullPath() + "\"/><pathentry type=\"project\" path=\"" + anotherReferencedProject.getFullPath() + "\"/></loadpath>", rubyProject.getLoadPathXML());
-		
-		rubyProject.removeLoadPathEntry(referencedProject);
-		assertEquals("XML should indicate one referenced project after removing one.", "<?xml version=\"1.0\" encoding=\"UTF-8\"?><loadpath><pathentry type=\"project\" path=\"" + anotherReferencedProject.getFullPath() + "\"/></loadpath>", rubyProject.getLoadPathXML());
-	}
-	
-	public void testGetReferencedProjects() {
-		ShamRubyProject rubyProject = new ShamRubyProject();
-		loadPathEntriesFile.setContents("<?xml version=\"1.0\" encoding=\"UTF-8\"?><loadpath><pathentry type=\"project\" path=\"/StoredReferencedProject\"/><pathentry type=\"project\" path=\"/AnotherStoredReferencedProject\"/></loadpath>");
-		
-		IProject referencedProject = (IProject) rubyProject.getReferencedProjects().get(0);
-		assertNotNull(referencedProject);
-	}
-
-	public class ShamRubyProject extends RubyProject {
-		protected IFile getLoadPathEntriesFile() {
-			return loadPathEntriesFile;
-		}
-		
-		protected IProject getProject(String name) {
-			return new ShamProject(name);
-		}
-
-		protected String getLoadPathXML() {
-			return super.getLoadPathXML();
+	/*
+	 * Ensures that adding a project prerequisite in the loadpath updates the referenced projects
+	 */
+	public void testAddProjectPrerequisite() throws CoreException {
+		try {
+			createRubyProject("P1");
+			createRubyProject("P2");
+			waitForAutoBuild();
+			editFile(
+				"/P2/.loadpath", 
+				"<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
+				"<loadpath>\n" +
+				"    <loadpathentry kind=\"src\" path=\"/P1\"/>\n" +
+				"</loadpath>"
+			);
+			waitForAutoBuild();
+			IProject[] referencedProjects = getProject("P2").getReferencedProjects();
+			assertResourcesEqual(
+				"Unexpected project references", 
+				"/P1", 
+				referencedProjects);
+		} finally {
+			deleteProjects(new String[] {"P1", "P2"});
 		}
 	}
 }

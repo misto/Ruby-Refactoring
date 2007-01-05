@@ -177,7 +177,8 @@ public class CompletionEngine {
 			// Get all references projects
 			List<IRubyProject> projects = new ArrayList<IRubyProject>();
 			projects.add(script.getRubyProject());
-			projects.addAll(script.getRubyProject().getReferencedProjects());
+			// TODO Search the loadpaths!
+//			projects.addAll(script.getRubyProject().getReferencedProjects());
 			
 			// FIXME Try to stop all the multiple re-parsing of the source! Can we parse once and pass the root node around?
 			// Parse
@@ -455,9 +456,8 @@ public class CompletionEngine {
 		// Grab the project and all referred projects
 		List<IRubyProject> projects = new LinkedList<IRubyProject>();
 		projects.add(rootScript.getRubyProject());
-		projects.addAll(rootScript.getRubyProject().getReferencedProjects());
-
-		List<IRubyProject> refProjects = rootScript.getRubyProject().getReferencedProjects();
+		// FIXME Search the loadpaths!
+//		projects.addAll(rootScript.getRubyProject().getReferencedProjects());
 
 		// Find the named type
 		RubyElementRequestor completer = new RubyElementRequestor(projects.toArray(new IRubyProject[]{}));

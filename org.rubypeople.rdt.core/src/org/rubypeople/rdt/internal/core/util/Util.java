@@ -10,20 +10,28 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.PrintStream;
+import java.net.URI;
 import java.util.Locale;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
 
+import org.eclipse.core.filesystem.EFS;
+import org.eclipse.core.filesystem.IFileStore;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IResource;
+import org.eclipse.core.resources.ProjectScope;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
+import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.content.IContentType;
+import org.eclipse.core.runtime.preferences.IScopeContext;
+import org.eclipse.core.runtime.preferences.InstanceScope;
 import org.rubypeople.rdt.core.IRubyElement;
 import org.rubypeople.rdt.core.IRubyModelStatusConstants;
+import org.rubypeople.rdt.core.IRubyProject;
 import org.rubypeople.rdt.core.RubyConventions;
 import org.rubypeople.rdt.core.RubyCore;
 import org.rubypeople.rdt.core.RubyModelException;
@@ -52,6 +60,53 @@ public class Util {
         // cannot be instantiated
     }
 
+    public interface Comparer {
+		/**
+		 * Returns 0 if a and b are equal, >0 if a is greater than b,
+		 * or <0 if a is less than b.
+		 */
+		int compare(Object a, Object b);
+	}
+    
+	/**
+	 * Sorts an array of objects in place.
+	 * The given comparer compares pairs of items.
+	 */
+	public static void sort(Object[] objects, Comparer comparer) {
+		if (objects.length > 1)
+			quickSort(objects, 0, objects.length - 1, comparer);
+	}
+	
+	/**
+	 * Sort the objects in the given collection using the given comparer.
+	 */
+	private static void quickSort(Object[] sortedCollection, int left, int right, Comparer comparer) {
+		int original_left = left;
+		int original_right = right;
+		Object mid = sortedCollection[ (left + right) / 2];
+		do {
+			while (comparer.compare(sortedCollection[left], mid) < 0) {
+				left++;
+			}
+			while (comparer.compare(mid, sortedCollection[right]) < 0) {
+				right--;
+			}
+			if (left <= right) {
+				Object tmp = sortedCollection[left];
+				sortedCollection[left] = sortedCollection[right];
+				sortedCollection[right] = tmp;
+				left++;
+				right--;
+			}
+		} while (left <= right);
+		if (original_left < right) {
+			quickSort(sortedCollection, original_left, right, comparer);
+		}
+		if (left < original_right) {
+			quickSort(sortedCollection, left, original_right, comparer);
+		}
+	}
+    
     /**
      * Creates a NLS catalog for the given locale.
      */
@@ -476,6 +531,9 @@ public class Util {
 	private static final int DEFAULT_READING_SIZE = 8192;
 	private static char[][] names;
 
+	private static final String ARGUMENTS_DELIMITER = "#"; //$NON-NLS-1$
+	private static final String EMPTY_ARGUMENT = "   "; //$NON-NLS-1$
+	
 	/**
 	 * @param file
 	 * @return
@@ -647,7 +705,7 @@ public class Util {
 	}
 
 	public static String[] getTrimmedSimpleNames(String packageName) {
-		return packageName.split(File.separator);
+		return packageName.split("\\" + File.separator);
 	}
 
 	public static String concatWith(String[] array, char separator) {
@@ -658,6 +716,187 @@ public class Util {
 				buffer.append(separator);
 		}
 		return buffer.toString();
+	}
+
+	public static boolean isValidSourceFolderName(String name) {
+		// TODO Actually make sure there's no special characters.
+		return true;
+	}
+
+	/**
+	 * Returns the given file's contents as a byte array.
+	 */
+	public static byte[] getResourceContentsAsByteArray(IFile file) throws RubyModelException {
+		InputStream stream= null;
+		try {
+			stream = file.getContents(true);
+		} catch (CoreException e) {
+			throw new RubyModelException(e);
+		}
+		try {
+			return org.rubypeople.rdt.internal.compiler.util.Util.getInputStreamAsByteArray(stream, -1);
+		} catch (IOException e) {
+			throw new RubyModelException(e, IRubyModelStatusConstants.IO_EXCEPTION);
+		} finally {
+			try {
+				stream.close();
+			} catch (IOException e) {
+				// ignore
+			}
+		}
+	}
+
+		/*
+	 * Converts the given URI to a local file. Use the existing file if the uri is on the local file system.
+	 * Otherwise fetch it.
+	 * Returns null if unable to fetch it.
+	 */
+	public static File toLocalFile(URI uri, IProgressMonitor monitor) throws CoreException {
+		IFileStore fileStore = EFS.getStore(uri);
+		File localFile = fileStore.toLocalFile(EFS.NONE, monitor);
+		if (localFile ==null)
+			// non local file system
+			localFile= fileStore.toLocalFile(EFS.CACHE, monitor);
+		return localFile;
+	}
+
+	/**
+	 * Put all the arguments in one String.
+	 */
+	public static String getProblemArgumentsForMarker(String[] arguments){
+		StringBuffer args = new StringBuffer(10);
+		
+		args.append(arguments.length);
+		args.append(':');
+		
+			
+		for (int j = 0; j < arguments.length; j++) {
+			if(j != 0)
+				args.append(ARGUMENTS_DELIMITER);
+			
+			if(arguments[j].length() == 0) {
+				args.append(EMPTY_ARGUMENT);
+			} else {			
+				args.append(arguments[j]);
+			}
+		}
+		
+		return args.toString();
+	}
+
+	/**
+	 * Returns the line separator found in the given text.
+	 * If it is null, or not found return the line delimitor for the given project.
+	 * If the project is null, returns the line separator for the workspace.
+	 * If still null, return the system line separator.
+	 */
+	public static String getLineSeparator(String text, IRubyProject project) {
+		String lineSeparator = null;
+		
+		// line delimiter in given text
+		if (text != null && text.length() != 0) {
+			lineSeparator = findLineSeparator(text.toCharArray());
+			if (lineSeparator != null)
+				return lineSeparator;
+		}
+		
+		// line delimiter in project preference
+		IScopeContext[] scopeContext;
+		if (project != null) {
+			scopeContext= new IScopeContext[] { new ProjectScope(project.getProject()) };
+			lineSeparator= Platform.getPreferencesService().getString(Platform.PI_RUNTIME, Platform.PREF_LINE_SEPARATOR, null, scopeContext);
+			if (lineSeparator != null)
+				return lineSeparator;
+		}
+		
+		// line delimiter in workspace preference
+		scopeContext= new IScopeContext[] { new InstanceScope() };
+		lineSeparator = Platform.getPreferencesService().getString(Platform.PI_RUNTIME, Platform.PREF_LINE_SEPARATOR, null, scopeContext);
+		if (lineSeparator != null)
+			return lineSeparator;
+		
+		// system line delimiter
+		return org.rubypeople.rdt.internal.compiler.util.Util.LINE_SEPARATOR;
+	}
+	
+	/**
+	 * Finds the first line separator used by the given text.
+	 *
+	 * @return </code>"\n"</code> or </code>"\r"</code> or  </code>"\r\n"</code>,
+	 *			or <code>null</code> if none found
+	 */
+	public static String findLineSeparator(char[] text) {
+		// find the first line separator
+		int length = text.length;
+		if (length > 0) {
+			char nextChar = text[0];
+			for (int i = 0; i < length; i++) {
+				char currentChar = nextChar;
+				nextChar = i < length-1 ? text[i+1] : ' ';
+				switch (currentChar) {
+					case '\n': return "\n"; //$NON-NLS-1$
+					case '\r': return nextChar == '\n' ? "\r\n" : "\r"; //$NON-NLS-1$ //$NON-NLS-2$
+				}
+			}
+		}
+		// not found
+		return null;
+	}
+
+	/**
+	 * Sorts an array of strings in place using quicksort.
+	 */
+	public static void sort(String[] strings) {
+		if (strings.length > 1)
+			quickSort(strings, 0, strings.length - 1);
+	}
+	
+	/**
+	 * Sort the strings in the given collection.
+	 */
+	private static void quickSort(String[] sortedCollection, int left, int right) {
+		int original_left = left;
+		int original_right = right;
+		String mid = sortedCollection[ (left + right) / 2];
+		do {
+			while (sortedCollection[left].compareTo(mid) < 0) {
+				left++;
+			}
+			while (mid.compareTo(sortedCollection[right]) < 0) {
+				right--;
+			}
+			if (left <= right) {
+				String tmp = sortedCollection[left];
+				sortedCollection[left] = sortedCollection[right];
+				sortedCollection[right] = tmp;
+				left++;
+				right--;
+			}
+		} while (left <= right);
+		if (original_left < right) {
+			quickSort(sortedCollection, original_left, right);
+		}
+		if (left < original_right) {
+			quickSort(sortedCollection, left, original_right);
+		}
+	}
+
+	/**
+	 * Compares two arrays using equals() on the elements.
+	 * Neither can be null. Only the first len elements are compared.
+	 * Return false if either array is shorter than len.
+	 */
+	public static boolean equalArrays(Object[] a, Object[] b, int len) {
+		if (a == b)	return true;
+		if (a.length < len || b.length < len) return false;
+		for (int i = 0; i < len; ++i) {
+			if (a[i] == null) {
+				if (b[i] != null) return false;
+			} else {
+				if (!a[i].equals(b[i])) return false;
+			}
+		}
+		return true;
 	}
 
 }

@@ -28,11 +28,13 @@ import java.io.CharArrayReader;
 import java.util.ArrayList;
 import java.util.Map;
 
+import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Path;
 import org.jruby.ast.Node;
 import org.jruby.lexer.yacc.SyntaxException;
 import org.rubypeople.rdt.core.CompletionRequestor;
@@ -63,18 +65,16 @@ import org.rubypeople.rdt.internal.core.util.Util;
  */
 public class RubyScript extends Openable implements IRubyScript {
 
-	private IFile underlyingFile;
 	public WorkingCopyOwner owner;
 	protected String name;
 
 	/**
 	 * @param name
 	 */
-	public RubyScript(RubyElement parent, IFile file, String name, WorkingCopyOwner owner) {
+	public RubyScript(RubyElement parent, String name, WorkingCopyOwner owner) {
 		super(parent);
 		this.name = name;
 		this.owner = owner;
-		this.underlyingFile = file;
 	}
 
 	/**
@@ -113,7 +113,7 @@ public class RubyScript extends Openable implements IRubyScript {
 
 		try {
 			RubyParser parser = new RubyParser();
-			Node node = parser.parse(underlyingFile, new CharArrayReader(contents));
+			Node node = parser.parse((IFile) getResource(), new CharArrayReader(contents));
 			RubyScriptStructureBuilder visitor = new RubyScriptStructureBuilder(this, unitInfo, newElements);
 			if (node != null) node.accept(visitor);
 			unitInfo.setIsStructureKnown(true);
@@ -172,15 +172,22 @@ public class RubyScript extends Openable implements IRubyScript {
 	}
 
 	/**
+	 * @throws RubyModelException 
 	 * @see IRubyElement
 	 */
-	public IResource getUnderlyingResource() {
+	public IResource getUnderlyingResource() throws RubyModelException {
 		if (isWorkingCopy() && !isPrimary()) return null;
-		return underlyingFile;
+		return super.getUnderlyingResource();
 	}
 
 	public IResource getResource() {
-		return underlyingFile;
+		SourceFolderRoot root = getSourceFolderRoot();
+		if (root == null) return null; // working copy not in workspace
+		if (root.isArchive()) {
+			return root.getResource();
+		} else {
+			return ((IContainer) getParent().getResource()).getFile(new Path(getElementName()));
+		}
 	}
 
 	/*
@@ -228,7 +235,7 @@ public class RubyScript extends Openable implements IRubyScript {
 	 */
 	public IRubyElement getPrimaryElement(boolean checkOwner) {
 		if (checkOwner && isPrimary()) return this;
-		return new RubyScript((RubyElement) getParent(), underlyingFile, getElementName(), DefaultWorkingCopyOwner.PRIMARY);
+		return new RubyScript((RubyElement) getParent(), getElementName(), DefaultWorkingCopyOwner.PRIMARY);
 	}
 
 	/*
@@ -316,7 +323,7 @@ public class RubyScript extends Openable implements IRubyScript {
 		if (buffer.getCharacters() == null) {
 			if (isWorkingCopy) {
 				IRubyScript original;
-				if (!isPrimary() && (original = new RubyScript((RubyElement) getParent(), underlyingFile, getElementName(), DefaultWorkingCopyOwner.PRIMARY)).isOpen()) {
+				if (!isPrimary() && (original = new RubyScript((RubyElement) getParent(), getElementName(), DefaultWorkingCopyOwner.PRIMARY)).isOpen()) {
 					buffer.setContents(original.getSource());
 				} else {
 					IFile file = (IFile) getResource();
@@ -390,7 +397,7 @@ public class RubyScript extends Openable implements IRubyScript {
 
 		RubyModelManager manager = RubyModelManager.getRubyModelManager();
 
-		RubyScript workingCopy = new RubyScript((RubyElement) getParent(), underlyingFile, getElementName(), DefaultWorkingCopyOwner.PRIMARY);
+		RubyScript workingCopy = new RubyScript((RubyElement) getParent(), getElementName(), DefaultWorkingCopyOwner.PRIMARY);
 		RubyModelManager.PerWorkingCopyInfo perWorkingCopyInfo = manager.getPerWorkingCopyInfo(workingCopy, false/*
 																													 * don't
 																													 * create
@@ -443,12 +450,6 @@ public class RubyScript extends Openable implements IRubyScript {
 		if (!(obj instanceof RubyScript)) return false;
 		RubyScript other = (RubyScript) obj;
 		return this.owner.equals(other.owner) && super.equals(obj);
-	}
-	
-	public int hashCode() {
-		//fixme: is this the proper behavior if underlyingFile is null? -jpm
-		if (this.underlyingFile == null) return 0;
-		return this.underlyingFile.hashCode();
 	}
 
 	public boolean exists() {

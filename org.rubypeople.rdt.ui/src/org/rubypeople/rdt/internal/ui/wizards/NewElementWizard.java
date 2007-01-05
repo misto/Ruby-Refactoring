@@ -132,19 +132,6 @@ public abstract class NewElementWizard extends Wizard implements INewWizard {
 		return true;
 	}
 	
-	protected void warnAboutTypeCommentDeprecation() {
-		String key= IUIConstants.DIALOGSTORE_TYPECOMMENT_DEPRECATED;
-		if (OptionalMessageDialog.isDialogEnabled(key)) {
-			TemplateStore templates= RubyPlugin.getDefault().getTemplateStore();
-			boolean isOldWorkspace= templates.findTemplate("filecomment") != null && templates.findTemplate("typecomment") != null; //$NON-NLS-1$ //$NON-NLS-2$
-			if (!isOldWorkspace) {
-				OptionalMessageDialog.setDialogEnabled(key, false);
-			}
-			String title= NewWizardMessages.NewElementWizard_typecomment_deprecated_title; 
-			String message= NewWizardMessages.NewElementWizard_typecomment_deprecated_message; 
-			OptionalMessageDialog.open(key, getShell(), title, null, message, MessageDialog.INFORMATION, new String[] { IDialogConstants.OK_LABEL }, 0);
-		}
-	}
 
 	/* (non-Rubydoc)
 	 * @see org.eclipse.ui.IWorkbenchWizard#init(org.eclipse.ui.IWorkbench, org.eclipse.jface.viewers.IStructuredSelection)

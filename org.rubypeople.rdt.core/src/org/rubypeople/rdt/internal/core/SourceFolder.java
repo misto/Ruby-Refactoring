@@ -5,7 +5,6 @@ import java.util.HashSet;
 import java.util.Map;
 
 import org.eclipse.core.resources.IContainer;
-import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
@@ -24,7 +23,7 @@ import org.rubypeople.rdt.internal.core.util.Util;
 
 public class SourceFolder extends Openable implements ISourceFolder {
 
-	private String[] names;
+	String[] names;
 
 	public SourceFolder(RubyElement parent, String[] names) {
 		super(parent);
@@ -45,40 +44,40 @@ public class SourceFolder extends Openable implements ISourceFolder {
 		// check whether this folder can be opened
 		if (!underlyingResource.isAccessible()) throw newNotPresentException();
 		
+		// check that it is not excluded (https://bugs.eclipse.org/bugs/show_bug.cgi?id=138577)
+		if (Util.isExcluded(this)) 
+			throw newNotPresentException();
+
 
 		// add ruby scripts from resources
 		HashSet vChildren = new HashSet();
 		try {
+		    SourceFolderRoot root = getSourceFolderRoot();
+			char[][] inclusionPatterns = root.fullInclusionPatternChars();
+			char[][] exclusionPatterns = root.fullExclusionPatternChars();
 			IResource[] members = ((IContainer) underlyingResource).members();
 			for (int i = 0, max = members.length; i < max; i++) {
 				IResource child = members[i];
-				if (child.getType() != IResource.FOLDER) {
+				if (child.getType() != IResource.FOLDER
+						&& !Util.isExcluded(child, inclusionPatterns, exclusionPatterns)) {
 					IRubyElement childElement;
 					if (Util.isValidRubyScriptName(child.getName())) {
-						childElement = new RubyScript(this, (IFile) child, child.getName(), DefaultWorkingCopyOwner.PRIMARY);
+						childElement = new RubyScript(this, child.getName(), DefaultWorkingCopyOwner.PRIMARY);
 						vChildren.add(childElement);
 					}
-				} else {
-					// TODO Add Source Folders underneath this one
-					String[] newNames = new String[names.length + 1];
-					System.arraycopy(names, 0, newNames, 0, names.length);
-					newNames[names.length] = child.getName();
-					IRubyElement childElement = new SourceFolder(this, newNames);
-					vChildren.add(childElement);
 				}
 			}
 		} catch (CoreException e) {
 			throw new RubyModelException(e);
 		}
 		
-
-		// add primary ruby scripts
-		IRubyScript[] primaryRubyScripts = getRubyScripts(DefaultWorkingCopyOwner.PRIMARY);
-		for (int i = 0, length = primaryRubyScripts.length; i < length; i++) {
-			IRubyScript primary = primaryRubyScripts[i];
+		// add primary compilation units
+		IRubyScript[] primaryCompilationUnits = getRubyScripts(DefaultWorkingCopyOwner.PRIMARY);
+		for (int i = 0, length = primaryCompilationUnits.length; i < length; i++) {
+			IRubyScript primary = primaryCompilationUnits[i];
 			vChildren.add(primary);
 		}
-	
+		
 		
 		IRubyElement[] children = new IRubyElement[vChildren.size()];
 		vChildren.toArray(children);
@@ -110,18 +109,20 @@ public class SourceFolder extends Openable implements ISourceFolder {
 			boolean force, IProgressMonitor monitor) throws RubyModelException {
 		CreateRubyScriptOperation op= new CreateRubyScriptOperation(this, name, contents, force);
 		op.runOperation(monitor);
-		IFile file = ((IContainer) getResource()).getFile(new Path(name));
-		// TODO Strip off .rb extensions?
-		return new RubyScript(this, file, name, DefaultWorkingCopyOwner.PRIMARY);
+		return new RubyScript(this, name, DefaultWorkingCopyOwner.PRIMARY);
 	}
 
 	public Object[] getNonRubyResources() throws RubyModelException {
-//		if (this.isDefaultPackage()) {
-//			// We don't want to show non ruby resources of the default package (see PR #1G58NB8)
-//			return RubyElementInfo.NO_NON_RUBY_RESOURCES;
-//		} else {
-			return ((SourceFolderInfo) getElementInfo()).getNonRubyResources(getResource());
-//		}
+		if (this.isDefaultPackage()) {
+			// We don't want to show non ruby resources of the default package (see PR #1G58NB8)
+			return RubyElementInfo.NO_NON_RUBY_RESOURCES;
+		} else {
+			return ((SourceFolderInfo) getElementInfo()).getNonRubyResources(getResource(), getSourceFolderRoot());
+		}
+	}
+
+	public boolean isDefaultPackage() {
+		return this.names.length == 0;
 	}
 
 	public IRubyScript[] getRubyScripts() throws RubyModelException {
@@ -159,17 +160,36 @@ public class SourceFolder extends Openable implements ISourceFolder {
 		}
 		return path;
 	}
+	
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (!(o instanceof SourceFolder)) return false;
+		
+		SourceFolder other = (SourceFolder) o;		
+		return Util.equalArraysOrNull(this.names, other.names) &&
+				this.parent.equals(other.parent);
+	}
+	
+	public boolean exists() {
+		// super.exist() only checks for the parent and the resource existence
+		// so also ensure that the package is not exceluded (see https://bugs.eclipse.org/bugs/show_bug.cgi?id=138577)
+		return super.exists() && !Util.isExcluded(this); 
+	}
 
 	public IResource getResource() {
-		IRubyProject root = this.getRubyProject();
-		int length = this.names.length;
-		if (length == 0) {
+		SourceFolderRoot root = this.getSourceFolderRoot();
+		if (root.isArchive()) {
 			return root.getResource();
 		} else {
-			IPath path = new Path(this.names[0]);
-			for (int i = 1; i < length; i++)
-				path = path.append(this.names[i]);
-			return ((IContainer)root.getResource()).getFolder(path);
+			int length = this.names.length;
+			if (length == 0) {
+				return root.getResource();
+			} else {
+				IPath path = new Path(this.names[0]);
+				for (int i = 1; i < length; i++)
+					path = path.append(this.names[i]);
+				return ((IContainer)root.getResource()).getFolder(path);
+			}
 		}
 	}
 
@@ -201,8 +221,7 @@ public class SourceFolder extends Openable implements ISourceFolder {
 		if (!org.rubypeople.rdt.internal.core.util.Util.isRubyLikeFileName(name)) {
 			throw new IllegalArgumentException(Messages.convention_unit_notJavaName); 
 		}
-		IFile file = ((IContainer) getResource()).getFile(new Path(name));
-		return new RubyScript(this, file, name, DefaultWorkingCopyOwner.PRIMARY);
+		return new RubyScript(this, name, DefaultWorkingCopyOwner.PRIMARY);
 	}
 
 }

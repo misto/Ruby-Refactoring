@@ -55,8 +55,8 @@ public class CreateSourceFolderOperation extends RubyModelOperation {
  * segments. Intermediate folders are created as required for each segment.
  * If the folders already exist, this operation has no effect.
  */
-public CreateSourceFolderOperation(IRubyProject parentElement, String packageName, boolean force) {
-	super(null, new IRubyElement[]{parentElement}, force);
+public CreateSourceFolderOperation(SourceFolderRoot root, String packageName, boolean force) {
+	super(null, new IRubyElement[]{root}, force);
 	this.pkgName = packageName == null ? null : Util.getTrimmedSimpleNames(packageName);
 }
 /**
@@ -67,7 +67,7 @@ public CreateSourceFolderOperation(IRubyProject parentElement, String packageNam
  */
 protected void executeOperation() throws RubyModelException {
 	RubyElementDelta delta = null;
-	RubyProject root = (RubyProject) getParentElement();
+	SourceFolderRoot root = (SourceFolderRoot) getParentElement();
 	beginTask(Messages.operation_createPackageFragmentProgress, this.pkgName.length); 
 	IContainer parentFolder = (IContainer) root.getResource();
 	String[] sideEffectPackageName = CharOperation.NO_STRINGS; 

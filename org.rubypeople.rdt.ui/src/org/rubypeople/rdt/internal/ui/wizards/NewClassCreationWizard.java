@@ -58,7 +58,6 @@ public class NewClassCreationWizard extends NewElementWizard {
 	 * @see org.eclipse.jface.wizard.IWizard#performFinish()
 	 */
 	public boolean performFinish() {
-		warnAboutTypeCommentDeprecation();
 		boolean res= super.performFinish();
 		if (res) {
 			IResource resource= fPage.getModifiedResource();

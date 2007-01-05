@@ -23,6 +23,7 @@ import org.eclipse.swt.widgets.Text;
 import org.rubypeople.rdt.core.IRubyElement;
 import org.rubypeople.rdt.core.IRubyProject;
 import org.rubypeople.rdt.core.IRubyScript;
+import org.rubypeople.rdt.core.ISourceFolderRoot;
 import org.rubypeople.rdt.core.IType;
 import org.rubypeople.rdt.core.RubyConventions;
 import org.rubypeople.rdt.core.RubyModelException;
@@ -100,6 +101,7 @@ public class RubyNewTestCaseWizardPage extends NewTypeWizardPage {
 		container.setLayout(layout);
     	
 		createContainerControls(container, nColumns);
+		createPackageControls(container, nColumns);
 		createSeparator(container, nColumns);
 		createTypeNameControls(container, nColumns);                     
 		createSuperClassControls(container, nColumns);
@@ -236,7 +238,7 @@ public class RubyNewTestCaseWizardPage extends NewTypeWizardPage {
 	}
 	
 	private IType chooseClassToTestType() {	
-		IRubyProject root = getProject();
+		ISourceFolderRoot root= getSourceFolderRoot();
 		if (root == null) 
 			return null;
 
@@ -295,7 +297,7 @@ public class RubyNewTestCaseWizardPage extends NewTypeWizardPage {
 		
 		fClassUnderTest= null;
 		
-		IRubyProject root = getProject();
+		ISourceFolderRoot root = getSourceFolderRoot();
 		if (root == null) {
 			return status;
 		}
@@ -311,7 +313,7 @@ public class RubyNewTestCaseWizardPage extends NewTypeWizardPage {
 		}
 		
 		try {		
-			IType type= resolveClassNameToType(root, classToTestName);
+			IType type= resolveClassNameToType(root.getRubyProject(), classToTestName);
 			if (type == null) {
 				status.setError(WizardMessages.NewTestCaseWizardPage_error_class_to_test_not_exist); 
 				return status;

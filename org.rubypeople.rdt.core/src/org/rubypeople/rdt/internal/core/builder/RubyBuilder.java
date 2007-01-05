@@ -11,6 +11,7 @@
 
 package org.rubypeople.rdt.internal.core.builder;
 
+import java.io.DataOutputStream;
 import java.util.Date;
 import java.util.Map;
 
@@ -66,4 +67,8 @@ public class RubyBuilder extends IncrementalProjectBuilder {
     public static void setVerbose(boolean verbose) {
         RubyBuilder.DEBUG = verbose;
     }
+
+	public static void writeState(Object savedState, DataOutputStream out) {
+		// TODO Actually write out build state to the stream!		
+	}
 }

@@ -17,6 +17,7 @@ import java.util.Iterator;
 import org.rubypeople.rdt.core.IRubyElement;
 import org.rubypeople.rdt.core.IRubyElementDelta;
 import org.rubypeople.rdt.core.IRubyProject;
+import org.rubypeople.rdt.core.ISourceFolderRoot;
 import org.rubypeople.rdt.core.RubyModelException;
 
 /**
@@ -91,6 +92,18 @@ public class ModelUpdater {
             // and it appears empty.
             close(element);
         }
+        
+        switch (elementType) {
+		case IRubyElement.SOURCE_FOLDER_ROOT :
+			// when a root is added, and is on the classpath, the project must be updated
+			this.projectsToUpdate.add(element.getRubyProject());
+			break;
+		case IRubyElement.SOURCE_FOLDER :
+			// get rid of package fragment cache
+			RubyProject project = (RubyProject) element.getRubyProject();
+			project.resetCaches();
+			break;
+	}
     }
 
     /**
@@ -113,23 +126,32 @@ public class ModelUpdater {
      * <li>Add a REMOVED entry in the delta
      * </ul>
      */
-    protected void elementRemoved(Openable element) {
-
+    protected void elementRemoved(Openable element) {        
         if (element.isOpen()) {
-            close(element);
-        }
-        removeFromParentInfo(element);
-        int elementType = element.getElementType();
+			close(element);
+		}
+		removeFromParentInfo(element);
+		int elementType = element.getElementType();
 
-        switch (elementType) {
-        case IRubyElement.RUBY_MODEL:
-            // TODO Reset IndexManager when we have it integrated
-            //RubyModelManager.getRubyModelManager().getIndexManager().reset();
-            break;
-        case IRubyElement.RUBY_PROJECT:
-            RubyModelManager.getRubyModelManager().removePerProjectInfo((RubyProject) element);
-            break;
-        }
+		switch (elementType) {
+			case IRubyElement.RUBY_MODEL :
+//				RubyModelManager.getRubyModelManager().getIndexManager().reset();
+				break;
+			case IRubyElement.RUBY_PROJECT :
+				RubyModelManager manager = RubyModelManager.getRubyModelManager();
+				RubyProject javaProject = (RubyProject) element;
+				manager.removePerProjectInfo(javaProject);
+				manager.containerRemove(javaProject);
+				break;
+			case IRubyElement.SOURCE_FOLDER_ROOT :
+				this.projectsToUpdate.add(element.getRubyProject());
+				break;
+			case IRubyElement.SOURCE_FOLDER :
+				// get rid of package fragment cache
+				RubyProject project = (RubyProject) element.getRubyProject();
+				project.resetCaches();
+				break;
+		}
     }
 
     /**
@@ -145,19 +167,18 @@ public class ModelUpdater {
         // ["+Thread.currentThread()+":" + delta + "]:");
         // }
 
-        try {
-            this.traverseDelta(delta, null); // traverse delta
+		try {
+			this.traverseDelta(delta, null, null); // traverse delta
 
-            // update package fragment roots of projects that were affected
-            Iterator iterator = this.projectsToUpdate.iterator();
-            while (iterator.hasNext()) {
-                RubyProject project = (RubyProject) iterator.next();
-                // TODO Update package fragemnt roots for the project??
-                //project.updatePackageFragmentRoots();
-            }
-        } finally {
-            this.projectsToUpdate = new HashSet();
-        }
+			// update package fragment roots of projects that were affected
+			Iterator iterator = this.projectsToUpdate.iterator();
+			while (iterator.hasNext()) {
+				RubyProject project = (RubyProject) iterator.next();
+				project.updateSourceFolderRoots();
+			}
+		} finally {
+			this.projectsToUpdate = new HashSet();
+		}
     }
 
     /**
@@ -185,42 +206,46 @@ public class ModelUpdater {
      * on the classpath, it will be added as a non-java resource by the sender
      * of this method.
      */
-    protected void traverseDelta(IRubyElementDelta delta, 
+    protected void traverseDelta(IRubyElementDelta delta, ISourceFolderRoot root, 
             IRubyProject project) {
 
-        boolean processChildren = true;
+    	boolean processChildren = true;
 
-        Openable element = (Openable) delta.getElement();
-        switch (element.getElementType()) {
-        case IRubyElement.RUBY_PROJECT:
-            project = (IRubyProject) element;
-            break;
-        case IRubyElement.SCRIPT:
-            // filter out working copies that are not primary (we don't want to
-            // add/remove them to/from the package fragment
-            RubyScript cu = (RubyScript) element;
-            if (cu.isWorkingCopy() && !cu.isPrimary()) { return; }
-        }
+		Openable element = (Openable) delta.getElement();
+		switch (element.getElementType()) {
+			case IRubyElement.RUBY_PROJECT :
+				project = (IRubyProject) element;
+				break;
+			case IRubyElement.SOURCE_FOLDER_ROOT :
+				root = (ISourceFolderRoot) element;
+				break;
+			case IRubyElement.SCRIPT :
+				// filter out working copies that are not primary (we don't want to add/remove them to/from the package fragment
+				RubyScript cu = (RubyScript)element;
+				if (cu.isWorkingCopy() && !cu.isPrimary()) {
+					return;
+				}
+		}
 
-        switch (delta.getKind()) {
-        case IRubyElementDelta.ADDED:
-            elementAdded(element);
-            break;
-        case IRubyElementDelta.REMOVED:
-            elementRemoved(element);
-            break;
-        case IRubyElementDelta.CHANGED:
-            if ((delta.getFlags() & IRubyElementDelta.F_CONTENT) != 0) {
-                elementChanged(element);
-            }
-            break;
-        }
-        if (processChildren) {
-            IRubyElementDelta[] children = delta.getAffectedChildren();
-            for (int i = 0; i < children.length; i++) {
-                IRubyElementDelta childDelta = children[i];
-                this.traverseDelta(childDelta, project);
-            }
-        }
+		switch (delta.getKind()) {
+			case IRubyElementDelta.ADDED :
+				elementAdded(element);
+				break;
+			case IRubyElementDelta.REMOVED :
+				elementRemoved(element);
+				break;
+			case IRubyElementDelta.CHANGED :
+				if ((delta.getFlags() & IRubyElementDelta.F_CONTENT) != 0){
+					elementChanged(element);
+				}
+				break;
+		}
+		if (processChildren) {
+			IRubyElementDelta[] children = delta.getAffectedChildren();
+			for (int i = 0; i < children.length; i++) {
+				IRubyElementDelta childDelta = children[i];
+				this.traverseDelta(childDelta, root, project);
+			}
+		}
     }
 }

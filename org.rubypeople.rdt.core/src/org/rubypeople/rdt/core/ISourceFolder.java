@@ -5,6 +5,14 @@ import org.eclipse.core.runtime.IProgressMonitor;
 
 public interface ISourceFolder extends IRubyElement, IParent, IOpenable  {
 	
+	/**	
+	 * <p>
+	 * The name of package fragment for the default package (value: the empty 
+	 * string, <code>""</code>).
+	 * </p>
+ 	*/
+	public static final String DEFAULT_PACKAGE_NAME = ""; //$NON-NLS-1$
+	
 	/**
 	 * Returns whether this fragment contains at least one Ruby resource.
 	 * @return true if this fragment contains at least one Ruby resource, false otherwise
@@ -114,5 +122,6 @@ public interface ISourceFolder extends IRubyElement, IParent, IOpenable  {
 	 */
 	Object[] getNonRubyResources() throws RubyModelException;
 	IRubyScript getRubyScript(String name);
+	boolean isDefaultPackage();
 
 }

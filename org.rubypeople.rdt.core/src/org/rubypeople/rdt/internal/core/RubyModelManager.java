@@ -4,43 +4,63 @@
  */
 package org.rubypeople.rdt.internal.core;
 
+import java.io.BufferedOutputStream;
+import java.io.DataOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Set;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IResourceChangeEvent;
+import org.eclipse.core.resources.ISaveContext;
+import org.eclipse.core.resources.ISaveParticipant;
 import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.resources.IWorkspaceRoot;
+import org.eclipse.core.resources.IWorkspaceRunnable;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
+import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.MultiStatus;
+import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.PerformanceStats;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Preferences;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.content.IContentTypeManager.ContentTypeChangeEvent;
 import org.eclipse.core.runtime.content.IContentTypeManager.IContentTypeChangeListener;
 import org.eclipse.core.runtime.preferences.DefaultScope;
 import org.eclipse.core.runtime.preferences.IEclipsePreferences;
 import org.eclipse.core.runtime.preferences.IPreferencesService;
 import org.eclipse.core.runtime.preferences.InstanceScope;
+import org.rubypeople.rdt.core.ILoadpathContainer;
 import org.rubypeople.rdt.core.ILoadpathEntry;
 import org.rubypeople.rdt.core.IParent;
 import org.rubypeople.rdt.core.IProblemRequestor;
 import org.rubypeople.rdt.core.IRubyElement;
 import org.rubypeople.rdt.core.IRubyProject;
 import org.rubypeople.rdt.core.IRubyScript;
+import org.rubypeople.rdt.core.ISourceFolder;
+import org.rubypeople.rdt.core.ISourceFolderRoot;
+import org.rubypeople.rdt.core.LoadpathContainerInitializer;
 import org.rubypeople.rdt.core.RubyCore;
 import org.rubypeople.rdt.core.RubyModelException;
 import org.rubypeople.rdt.core.WorkingCopyOwner;
 import org.rubypeople.rdt.core.parser.IProblem;
 import org.rubypeople.rdt.internal.core.buffer.BufferManager;
 import org.rubypeople.rdt.internal.core.builder.RubyBuilder;
+import org.rubypeople.rdt.internal.core.util.Messages;
 import org.rubypeople.rdt.internal.core.util.Util;
 import org.rubypeople.rdt.internal.core.util.WeakHashSet;
 
@@ -48,7 +68,7 @@ import org.rubypeople.rdt.internal.core.util.WeakHashSet;
  * @author cawilliams
  * 
  */
-public class RubyModelManager implements IContentTypeChangeListener {
+public class RubyModelManager implements IContentTypeChangeListener, ISaveParticipant {
 
     private static final String BUFFER_MANAGER_DEBUG = RubyCore.PLUGIN_ID + "/debug/buffermanager"; //$NON-NLS-1$
     private static final String RUBYMODEL_DEBUG = RubyCore.PLUGIN_ID + "/debug/rubymodel"; //$NON-NLS-1$
@@ -63,6 +83,35 @@ public class RubyModelManager implements IContentTypeChangeListener {
     public static final String DELTA_LISTENER_PERF = RubyCore.PLUGIN_ID + "/perf/rubydeltalistener"; //$NON-NLS-1$
     public static final String RECONCILE_PERF = RubyCore.PLUGIN_ID + "/perf/reconcile"; //$NON-NLS-1$
 
+    
+	/**
+	 * Name of the extension point for contributing classpath variable initializers
+	 */
+	public static final String CPVARIABLE_INITIALIZER_EXTPOINT_ID = "classpathVariableInitializer" ; //$NON-NLS-1$
+
+	/**
+	 * Name of the extension point for contributing classpath container initializers
+	 */
+	public static final String CPCONTAINER_INITIALIZER_EXTPOINT_ID = "classpathContainerInitializer" ; //$NON-NLS-1$
+
+    
+    /**
+	 * Classpath variables pool
+	 */
+	public HashMap variables = new HashMap(5);
+	public HashSet variablesWithInitializer = new HashSet(5);
+	public HashMap previousSessionVariables = new HashMap(5);
+	private ThreadLocal variableInitializationInProgress = new ThreadLocal();
+		
+	/**
+	 * Classpath containers pool
+	 */
+	public HashMap containers = new HashMap(5);
+	public HashMap previousSessionContainers = new HashMap(5);
+	private ThreadLocal containerInitializationInProgress = new ThreadLocal();
+	public boolean batchContainerInitializations = false;
+	public HashMap containerInitializersCache = new HashMap(5);
+    
     /**
      * The singleton manager
      */
@@ -126,8 +175,25 @@ public class RubyModelManager implements IContentTypeChangeListener {
     static final int PREF_DEFAULT = 1;
     
 	public static final IRubyScript[] NO_WORKING_COPY = new IRubyScript[0];
-
-    /**
+	public static final boolean VERBOSE = false;
+	/**
+	 * Special value used for recognizing ongoing initialization and breaking initialization cycles
+	 */
+	public final static IPath VARIABLE_INITIALIZATION_IN_PROGRESS = new Path("Variable Initialization In Progress"); //$NON-NLS-1$
+	public final static ILoadpathContainer CONTAINER_INITIALIZATION_IN_PROGRESS = new ILoadpathContainer() {
+		public ILoadpathEntry[] getLoadpathEntries() { return null; }
+		public String getDescription() { return "Container Initialization In Progress"; } //$NON-NLS-1$
+		public int getKind() { return 0; }
+		public IPath getPath() { return null; }
+		public String toString() { return getDescription(); }
+	};
+	public final static String CP_ENTRY_IGNORE = "##<cp entry ignore>##"; //$NON-NLS-1$
+	public final static IPath CP_ENTRY_IGNORE_PATH = new Path(CP_ENTRY_IGNORE);
+	
+	public static boolean PERF_VARIABLE_INITIALIZER = false;
+	public static boolean PERF_CONTAINER_INITIALIZER = false;
+    
+	/**
      * Update the classpath variable cache
      */
     public static class EclipsePreferencesListener implements IEclipsePreferences.IPreferenceChangeListener {
@@ -499,8 +565,8 @@ public class RubyModelManager implements IContentTypeChangeListener {
         public IProject project;
         public Object savedState;
         public boolean triedRead;
-        public ILoadpathEntry[] rawClasspath;
-        public ILoadpathEntry[] resolvedClasspath;
+        public ILoadpathEntry[] rawLoadpath;
+        public ILoadpathEntry[] resolvedLoadpath;
         public Map resolvedPathToRawEntries; // reverse map from resolved
         // path to raw entries
         public IPath outputLocation;
@@ -517,10 +583,10 @@ public class RubyModelManager implements IContentTypeChangeListener {
 
         // updating raw classpath need to flush obsoleted cached information
         // about resolved entries
-        public synchronized void updateClasspathInformation(ILoadpathEntry[] newRawClasspath) {
+        public synchronized void updateLoadpathInformation(ILoadpathEntry[] newRawClasspath) {
 
-            this.rawClasspath = newRawClasspath;
-            this.resolvedClasspath = null;
+            this.rawLoadpath = newRawClasspath;
+            this.resolvedLoadpath = null;
             this.resolvedPathToRawEntries = null;
         }
 
@@ -529,17 +595,17 @@ public class RubyModelManager implements IContentTypeChangeListener {
             buffer.append("Info for "); //$NON-NLS-1$
             buffer.append(this.project.getFullPath());
             buffer.append("\nRaw classpath:\n"); //$NON-NLS-1$
-            if (this.rawClasspath == null) {
+            if (this.rawLoadpath == null) {
                 buffer.append("  <null>\n"); //$NON-NLS-1$
             } else {
-                for (int i = 0, length = this.rawClasspath.length; i < length; i++) {
+                for (int i = 0, length = this.rawLoadpath.length; i < length; i++) {
                     buffer.append("  "); //$NON-NLS-1$
-                    buffer.append(this.rawClasspath[i]);
+                    buffer.append(this.rawLoadpath[i]);
                     buffer.append('\n');
                 }
             }
             buffer.append("Resolved classpath:\n"); //$NON-NLS-1$
-            ILoadpathEntry[] resolvedCP = this.resolvedClasspath;
+            ILoadpathEntry[] resolvedCP = this.resolvedLoadpath;
             if (resolvedCP == null) {
                 buffer.append("  <null>\n"); //$NON-NLS-1$
             } else {
@@ -557,6 +623,26 @@ public class RubyModelManager implements IContentTypeChangeListener {
             }
             return buffer.toString();
         }
+
+		public void rememberExternalLibTimestamps() {
+			ILoadpathEntry[] classpath = this.resolvedLoadpath;
+			if (classpath == null) return;
+			IWorkspaceRoot wRoot = ResourcesPlugin.getWorkspace().getRoot();
+			Map externalTimeStamps = RubyModelManager.getRubyModelManager().deltaState.getExternalLibTimeStamps();
+			for (int i = 0, length = classpath.length; i < length; i++) {
+				ILoadpathEntry entry = classpath[i];
+				if (entry.getEntryKind() == ILoadpathEntry.CPE_LIBRARY) {
+					IPath path = entry.getPath();
+					if (externalTimeStamps.get(path) == null) {
+						Object target = RubyModel.getTarget(wRoot, path, true);
+						if (target instanceof java.io.File) {
+							long timestamp = DeltaProcessor.getTimeStamp((java.io.File)target);
+							externalTimeStamps.put(path, new Long(timestamp));							
+						}
+					}
+				}
+			}
+		}
     }
 
     /*
@@ -695,7 +781,139 @@ public class RubyModelManager implements IContentTypeChangeListener {
         // Note: no need to close the Java model as this just removes Java
         // element infos from the Java model cache
     }
+    
+    /**
+	 * @see ISaveParticipant
+	 */
+	public void saving(ISaveContext context) throws CoreException {
+		
+	    // save variable and container values on snapshot/full save
+		long start = -1;
+//		if (VERBOSE)
+//			start = System.currentTimeMillis();
+//		saveVariablesAndContainers();
+//		if (VERBOSE)
+//			traceVariableAndContainers("Saved", start); //$NON-NLS-1$
+		
+		if (context.getKind() == ISaveContext.FULL_SAVE) {
+			// will need delta since this save (see https://bugs.eclipse.org/bugs/show_bug.cgi?id=38658)
+			context.needDelta();
+			
+			// clean up indexes on workspace full save
+			// (see https://bugs.eclipse.org/bugs/show_bug.cgi?id=52347)
+//			IndexManager manager = this.indexManager;
+//			if (manager != null 
+//					// don't force initialization of workspace scope as we could be shutting down
+//					// (see https://bugs.eclipse.org/bugs/show_bug.cgi?id=93941)
+//					&& this.workspaceScope != null) { 
+//				manager.cleanUpIndexes();
+//			}
+		}
+	
+		IProject savedProject = context.getProject();
+		if (savedProject != null) {
+			if (!RubyProject.hasRubyNature(savedProject)) return; // ignore
+			PerProjectInfo info = getPerProjectInfo(savedProject, true /* create info */);
+			saveState(info, context);
+			info.rememberExternalLibTimestamps();
+			return;
+		}
+	
+		ArrayList vStats= null; // lazy initialized
+		ArrayList values = null;
+		synchronized(this.perProjectInfos) {
+			values = new ArrayList(this.perProjectInfos.values());
+		}
+		if (values != null) {
+			Iterator iterator = values.iterator();
+			while (iterator.hasNext()) {
+				try {
+					PerProjectInfo info = (PerProjectInfo) iterator.next();
+					saveState(info, context);
+					info.rememberExternalLibTimestamps();
+				} catch (CoreException e) {
+					if (vStats == null)
+						vStats= new ArrayList();
+					vStats.add(e.getStatus());
+				}
+			}
+		}
+		if (vStats != null) {
+			IStatus[] stats= new IStatus[vStats.size()];
+			vStats.toArray(stats);
+			throw new CoreException(new MultiStatus(RubyCore.PLUGIN_ID, IStatus.ERROR, stats, Messages.build_cannotSaveStates, null)); 
+		}
+		
+		// save external libs timestamps
+		this.deltaState.saveExternalLibTimeStamps();
+	}
 
+	private void saveState(PerProjectInfo info, ISaveContext context) throws CoreException {
+
+		// passed this point, save actions are non trivial
+		if (context.getKind() == ISaveContext.SNAPSHOT) return;
+		
+		// save built state
+		if (info.triedRead) saveBuiltState(info);
+	}
+	
+	/**
+	 * Saves the built state for the project.
+	 */
+	private void saveBuiltState(PerProjectInfo info) throws CoreException {
+		if (RubyBuilder.DEBUG)
+			System.out.println(Messages.bind(Messages.build_saveStateProgress, info.project.getName())); 
+		File file = getSerializationFile(info.project);
+		if (file == null) return;
+		long t = System.currentTimeMillis();
+		try {
+			DataOutputStream out = new DataOutputStream(new BufferedOutputStream(new FileOutputStream(file)));
+			try {
+				out.writeUTF(RubyCore.PLUGIN_ID);
+				out.writeUTF("STATE"); //$NON-NLS-1$
+				if (info.savedState == null) {
+					out.writeBoolean(false);
+				} else {
+					out.writeBoolean(true);
+					RubyBuilder.writeState(info.savedState, out);
+				}
+			} finally {
+				out.close();
+			}
+		} catch (RuntimeException e) {
+			try {
+				file.delete();
+			} catch(SecurityException se) {
+				// could not delete file: cannot do much more
+			}
+			throw new CoreException(
+				new Status(IStatus.ERROR, RubyCore.PLUGIN_ID, Platform.PLUGIN_ERROR,
+					Messages.bind(Messages.build_cannotSaveState, info.project.getName()), e)); 
+		} catch (IOException e) {
+			try {
+				file.delete();
+			} catch(SecurityException se) {
+				// could not delete file: cannot do much more
+			}
+			throw new CoreException(
+				new Status(IStatus.ERROR, RubyCore.PLUGIN_ID, Platform.PLUGIN_ERROR,
+					Messages.bind(Messages.build_cannotSaveState, info.project.getName()), e)); 
+		}
+		if (RubyBuilder.DEBUG) {
+			t = System.currentTimeMillis() - t;
+			System.out.println(Messages.bind(Messages.build_saveStateComplete, String.valueOf(t))); 
+		}
+	}
+	
+	/**
+	 * Returns the File to use for saving and restoring the last built state for the given project.
+	 */
+	private File getSerializationFile(IProject project) {
+		if (!project.exists()) return null;
+		IPath workingLocation = project.getWorkingLocation(RubyCore.PLUGIN_ID);
+		return workingLocation.append("state.dat").toFile(); //$NON-NLS-1$
+	}
+	
     /**
      * Configure the plugin with respect to option settings defined in
      * ".options" file
@@ -802,8 +1020,11 @@ public class RubyModelManager implements IContentTypeChangeListener {
 		IPath resourcePath = resource.getFullPath();
 		IPath rootPath = project.getPath();
 		if (rootPath.equals(resourcePath)) {
-			return project.getSourceFolder(resource);
+			return project.getSourceFolderRoot(resource);
 		} else if (rootPath.isPrefixOf(resourcePath)) {
+			SourceFolderRoot root =(SourceFolderRoot) ((RubyProject) project).getFolderSourceFolderRoot(rootPath);
+			if (root == null) return null;
+			
 			IPath pkgPath = resourcePath.removeFirstSegments(rootPath.segmentCount());
 			
 			if (resource.getType() == IResource.FILE) {
@@ -812,12 +1033,12 @@ public class RubyModelManager implements IContentTypeChangeListener {
 				pkgPath = pkgPath.removeLastSegments(1);
 			}
 			String[] pkgName = pkgPath.segments();
-			return project.getSourceFolder(pkgName);
+			return root.getSourceFolder(pkgName);
 		}
 		return null;
 	}
 
-	public static IRubyElement create(IFile file, IRubyProject project) {
+	public static IRubyScript create(IFile file, IRubyProject project) {
 		if (file == null) {
 			return null;
 		}
@@ -833,13 +1054,23 @@ public class RubyModelManager implements IContentTypeChangeListener {
 		return null;
 	}
 
-	public static IRubyElement createRubyScriptFrom(IFile file, IRubyProject project) {
+	public static IRubyScript createRubyScriptFrom(IFile file, IRubyProject project) {
 		if (file == null) return null;
 
 		if (project == null) {
 			project = RubyCore.create(file.getProject());
 		}
-		return project.getRubyScript(file);
+		ISourceFolder pkg = (ISourceFolder) determineIfOnLoadpath(file, project);
+		if (pkg == null) {
+			// not on classpath - make the root its folder, and a default package
+			ISourceFolderRoot root = project.getSourceFolderRoot(file.getParent());
+			pkg = root.getSourceFolder(ISourceFolder.DEFAULT_PACKAGE_NAME);
+			
+			if (VERBOSE){
+				System.out.println("WARNING : creating unit element outside classpath ("+ Thread.currentThread()+"): " + file.getFullPath()); //$NON-NLS-1$//$NON-NLS-2$
+			}
+		}
+		return pkg.getRubyScript(file.getName());
 	}
 	
 	/*
@@ -861,7 +1092,7 @@ public class RubyModelManager implements IContentTypeChangeListener {
 			if (primaryWCs != null) {
 				for (int i = 0; i < primaryLength; i++) {
 					IRubyScript primaryWorkingCopy = primaryWCs[i];
-					IRubyScript workingCopy = new RubyScript((SourceFolder) primaryWorkingCopy.getParent(), (IFile) primaryWorkingCopy.getResource(), primaryWorkingCopy.getElementName(), owner);
+					IRubyScript workingCopy = new RubyScript((SourceFolder) primaryWorkingCopy.getParent(), primaryWorkingCopy.getElementName(), owner);
 					if (!workingCopyToInfos.containsKey(workingCopy))
 						result[index++] = primaryWorkingCopy;
 				}
@@ -892,6 +1123,429 @@ public class RubyModelManager implements IContentTypeChangeListener {
 		this.symbols.put(s, new WeakReference(s));
 		return s;
 		*/	
+	}
+
+	public void doneSaving(ISaveContext context) {
+		// nothing to do		
+	}
+
+	public void prepareToSave(ISaveContext context) throws CoreException {
+		// nothing to do		
+	}
+
+	public void rollback(ISaveContext context) {
+		// nothing to do		
+	}
+
+	public synchronized IPath variableGet(String variableName){
+		// check initialization in progress first
+		HashSet initializations = variableInitializationInProgress();
+		if (initializations.contains(variableName)) {
+			return VARIABLE_INITIALIZATION_IN_PROGRESS;
+		}
+		return (IPath)this.variables.get(variableName);
+	}
+	
+	/*
+	 * Returns the set of variable names that are being initialized in the current thread.
+	 */
+	private HashSet variableInitializationInProgress() {
+		HashSet initializations = (HashSet)this.variableInitializationInProgress.get();
+		if (initializations == null) {
+			initializations = new HashSet();
+			this.variableInitializationInProgress.set(initializations);
+		}
+		return initializations;
+	}
+
+	/**
+	 * Returns a persisted container from previous session if any
+	 */
+	public IPath getPreviousSessionVariable(String variableName) {
+		IPath previousPath = (IPath)this.previousSessionVariables.get(variableName);
+		if (previousPath != null){
+			if (CP_RESOLVE_VERBOSE){
+				Util.verbose(
+					"CPVariable INIT - reentering access to variable during its initialization, will see previous value\n" + //$NON-NLS-1$
+					"	variable: "+ variableName + '\n' + //$NON-NLS-1$
+					"	previous value: " + previousPath); //$NON-NLS-1$
+				new Exception("<Fake exception>").printStackTrace(System.out); //$NON-NLS-1$
+			}
+			return previousPath;
+		}
+	    return null; // break cycle
+	}
+	
+	public synchronized void variablePut(String variableName, IPath variablePath){		
+
+		// set/unset the initialization in progress
+		HashSet initializations = variableInitializationInProgress();
+		if (variablePath == VARIABLE_INITIALIZATION_IN_PROGRESS) {
+			initializations.add(variableName);
+			
+			// do not write out intermediate initialization value
+			return;
+		} else {
+			initializations.remove(variableName);
+
+			// update cache - do not only rely on listener refresh		
+			if (variablePath == null) {
+				// if path is null, record that the variable was removed to avoid asking the initializer to initialize it again
+				// see https://bugs.eclipse.org/bugs/show_bug.cgi?id=112609
+				this.variables.put(variableName, CP_ENTRY_IGNORE_PATH);
+			} else {
+				this.variables.put(variableName, variablePath);
+			}
+			// discard obsoleted information about previous session
+			this.previousSessionVariables.remove(variableName);
+		}
+	}
+
+	public ILoadpathContainer getLoadpathContainer(IPath containerPath, IRubyProject project) throws RubyModelException {
+
+		ILoadpathContainer container = containerGet(project, containerPath);
+
+		if (container == null) {
+			if (this.batchContainerInitializations) {
+				// avoid deep recursion while initializaing container on workspace restart
+				// (see https://bugs.eclipse.org/bugs/show_bug.cgi?id=60437)
+				this.batchContainerInitializations = false;
+				return initializeAllContainers(project, containerPath);
+			}
+			return initializeContainer(project, containerPath);
+		}
+		return container;			
+	}
+	
+	ILoadpathContainer initializeContainer(IRubyProject project, IPath containerPath) throws RubyModelException {
+
+		ILoadpathContainer container = null;
+		final LoadpathContainerInitializer initializer = RubyCore.getLoadpathContainerInitializer(containerPath.segment(0));
+		if (initializer != null){
+			if (CP_RESOLVE_VERBOSE){
+				Util.verbose(
+					"CPContainer INIT - triggering initialization\n" + //$NON-NLS-1$
+					"	project: " + project.getElementName() + '\n' + //$NON-NLS-1$
+					"	container path: " + containerPath + '\n' + //$NON-NLS-1$
+					"	initializer: " + initializer + '\n' + //$NON-NLS-1$
+					"	invocation stack trace:"); //$NON-NLS-1$
+				new Exception("<Fake exception>").printStackTrace(System.out); //$NON-NLS-1$
+			}
+//			PerformanceStats stats = null;
+//			if(RubyModelManager.PERF_CONTAINER_INITIALIZER) {
+//				stats = PerformanceStats.getStats(RubyModelManager.CONTAINER_INITIALIZER_PERF, this);
+//				stats.startRun(containerPath + " of " + project.getPath()); //$NON-NLS-1$
+//			}
+			containerPut(project, containerPath, CONTAINER_INITIALIZATION_IN_PROGRESS); // avoid initialization cycles
+			boolean ok = false;
+			try {
+				// let OperationCanceledException go through
+				// (see https://bugs.eclipse.org/bugs/show_bug.cgi?id=59363)
+				initializer.initialize(containerPath, project);
+				
+				// retrieve value (if initialization was successful)
+				container = containerGet(project, containerPath);
+				if (container == CONTAINER_INITIALIZATION_IN_PROGRESS) return null; // break cycle
+				ok = true;
+			} catch (CoreException e) {
+				if (e instanceof RubyModelException) {
+					throw (RubyModelException) e;
+				} else {
+					throw new RubyModelException(e);
+				}
+			} catch (RuntimeException e) {
+				if (RubyModelManager.CP_RESOLVE_VERBOSE) {
+					e.printStackTrace();
+				}
+				throw e;
+			} catch (Error e) {
+				if (RubyModelManager.CP_RESOLVE_VERBOSE) {
+					e.printStackTrace();
+				}
+				throw e;
+			} finally {
+//				if(RubyModelManager.PERF_CONTAINER_INITIALIZER) {
+//					stats.endRun();
+//				}
+				if (!ok) {
+					// just remove initialization in progress and keep previous session container so as to avoid a full build
+					// see https://bugs.eclipse.org/bugs/show_bug.cgi?id=92588
+					containerRemoveInitializationInProgress(project, containerPath); 
+					if (CP_RESOLVE_VERBOSE) {
+						if (container == CONTAINER_INITIALIZATION_IN_PROGRESS) {
+							Util.verbose(
+								"CPContainer INIT - FAILED (initializer did not initialize container)\n" + //$NON-NLS-1$
+								"	project: " + project.getElementName() + '\n' + //$NON-NLS-1$
+								"	container path: " + containerPath + '\n' + //$NON-NLS-1$
+								"	initializer: " + initializer); //$NON-NLS-1$
+							
+						} else {
+							Util.verbose(
+								"CPContainer INIT - FAILED (see exception above)\n" + //$NON-NLS-1$
+								"	project: " + project.getElementName() + '\n' + //$NON-NLS-1$
+								"	container path: " + containerPath + '\n' + //$NON-NLS-1$
+								"	initializer: " + initializer); //$NON-NLS-1$
+						}
+					}
+				}
+			}
+			if (CP_RESOLVE_VERBOSE){
+				StringBuffer buffer = new StringBuffer();
+				buffer.append("CPContainer INIT - after resolution\n"); //$NON-NLS-1$
+				buffer.append("	project: " + project.getElementName() + '\n'); //$NON-NLS-1$
+				buffer.append("	container path: " + containerPath + '\n'); //$NON-NLS-1$
+				if (container != null){
+					buffer.append("	container: "+container.getDescription()+" {\n"); //$NON-NLS-2$//$NON-NLS-1$
+					ILoadpathEntry[] entries = container.getLoadpathEntries();
+					if (entries != null){
+						for (int i = 0; i < entries.length; i++){
+							buffer.append("		" + entries[i] + '\n'); //$NON-NLS-1$
+						}
+					}
+					buffer.append("	}");//$NON-NLS-1$
+				} else {
+					buffer.append("	container: {unbound}");//$NON-NLS-1$
+				}
+				Util.verbose(buffer.toString());
+			}
+		} else {
+			if (CP_RESOLVE_VERBOSE){
+				Util.verbose(
+					"CPContainer INIT - no initializer found\n" + //$NON-NLS-1$
+					"	project: " + project.getElementName() + '\n' + //$NON-NLS-1$
+					"	container path: " + containerPath); //$NON-NLS-1$
+			}
+		}
+		return container;
+	}
+	
+	private void containerRemoveInitializationInProgress(IRubyProject project, IPath containerPath) {
+		HashSet projectInitializations = containerInitializationInProgress(project);
+		projectInitializations.remove(containerPath);
+		if (projectInitializations.size() == 0) {
+			Map initializations = (Map)this.containerInitializationInProgress.get();
+			initializations.remove(project);
+		}
+	}
+
+	public synchronized void containerPut(IRubyProject project, IPath containerPath, ILoadpathContainer container){
+
+		// set/unset the initialization in progress
+		if (container == CONTAINER_INITIALIZATION_IN_PROGRESS) {
+			HashSet projectInitializations = containerInitializationInProgress(project);
+			projectInitializations.add(containerPath);
+			
+			// do not write out intermediate initialization value
+			return;
+		} else {
+			containerRemoveInitializationInProgress(project, containerPath);
+
+			Map projectContainers = (Map)this.containers.get(project);	
+ 			if (projectContainers == null){
+				projectContainers = new HashMap(1);
+				this.containers.put(project, projectContainers);
+			}
+	
+			if (container == null) {
+				projectContainers.remove(containerPath);
+			} else {
+  				projectContainers.put(containerPath, container);
+			}
+			// discard obsoleted information about previous session
+			Map previousContainers = (Map)this.previousSessionContainers.get(project);
+			if (previousContainers != null){
+				previousContainers.remove(containerPath);
+			}
+		}
+		// container values are persisted in preferences during save operations, see #saving(ISaveContext)
+	}
+	
+	/*
+	 * Initialize all container at the same time as the given container.
+	 * Return the container for the given path and project.
+	 */
+	private ILoadpathContainer initializeAllContainers(IRubyProject javaProjectToInit, IPath containerToInit) throws RubyModelException {
+		if (CP_RESOLVE_VERBOSE) {
+			Util.verbose(
+				"CPContainer INIT - batching containers initialization\n" + //$NON-NLS-1$
+				"	project to init: " + javaProjectToInit.getElementName() + '\n' + //$NON-NLS-1$
+				"	container path to init: " + containerToInit); //$NON-NLS-1$
+		}
+
+		// collect all container paths
+		final HashMap allContainerPaths = new HashMap();
+		IProject[] projects = ResourcesPlugin.getWorkspace().getRoot().getProjects();
+		for (int i = 0, length = projects.length; i < length; i++) {
+			IProject project = projects[i];
+			if (!RubyProject.hasRubyNature(project)) continue;
+			IRubyProject javaProject = new RubyProject(project, getRubyModel());
+			HashSet paths = null;
+			ILoadpathEntry[] rawClasspath = javaProject.getRawLoadpath();
+			for (int j = 0, length2 = rawClasspath.length; j < length2; j++) {
+				ILoadpathEntry entry = rawClasspath[j];
+				IPath path = entry.getPath();
+				if (entry.getEntryKind() == ILoadpathEntry.CPE_CONTAINER
+						&& containerGet(javaProject, path) == null) {
+					if (paths == null) {
+						paths = new HashSet();
+						allContainerPaths.put(javaProject, paths);
+					}
+					paths.add(path);
+				}
+			}
+			/* TODO (frederic) put back when JDT/UI dummy project will be thrown away...
+			 * See https://bugs.eclipse.org/bugs/show_bug.cgi?id=97524
+			 *
+			if (javaProject.equals(javaProjectToInit)) {
+				if (paths == null) {
+					paths = new HashSet();
+					allContainerPaths.put(javaProject, paths);
+				}
+				paths.add(containerToInit);
+			}
+			*/
+		}
+		// TODO (frederic) remove following block when JDT/UI dummy project will be thrown away...
+		HashSet containerPaths = (HashSet) allContainerPaths.get(javaProjectToInit);
+		if (containerPaths == null) {
+			containerPaths = new HashSet();
+			allContainerPaths.put(javaProjectToInit, containerPaths);
+		}
+		containerPaths.add(containerToInit);
+		// end block
+		
+		// mark all containers as being initialized
+		this.containerInitializationInProgress.set(allContainerPaths);
+		
+		// initialize all containers
+		boolean ok = false;
+		try {
+			// if possible run inside an IWokspaceRunnable with AVOID_UPATE to avoid unwanted builds
+			// (see https://bugs.eclipse.org/bugs/show_bug.cgi?id=118507)
+			IWorkspaceRunnable runnable = 				
+				new IWorkspaceRunnable() {
+					public void run(IProgressMonitor monitor) throws CoreException {
+						Set keys = allContainerPaths.keySet();
+						int length = keys.size();
+						IRubyProject[] javaProjects = new IRubyProject[length]; // clone as the following will have a side effect
+						keys.toArray(javaProjects);
+						for (int i = 0; i < length; i++) {
+							IRubyProject javaProject = javaProjects[i];
+							HashSet pathSet = (HashSet) allContainerPaths.get(javaProject);
+							if (pathSet == null) continue;
+							int length2 = pathSet.size();
+							IPath[] paths = new IPath[length2];
+							pathSet.toArray(paths); // clone as the following will have a side effect
+							for (int j = 0; j < length2; j++) {
+								IPath path = paths[j];
+								initializeContainer(javaProject, path);
+							}
+						}
+					}
+				};
+			IWorkspace workspace = ResourcesPlugin.getWorkspace();
+			if (workspace.isTreeLocked())
+				runnable.run(null/*no progress available*/);
+			else
+				workspace.run(
+					runnable,
+					null/*don't take any lock*/,
+					IWorkspace.AVOID_UPDATE,
+					null/*no progress available here*/);
+			ok = true;
+		} catch (CoreException e) {
+			// ignore
+			Util.log(e, "Exception while initializing all containers"); //$NON-NLS-1$
+		} finally {
+			if (!ok) { 
+				// if we're being traversed by an exception, ensure that that containers are 
+				// no longer marked as initialization in progress
+				// (see https://bugs.eclipse.org/bugs/show_bug.cgi?id=66437)
+				this.containerInitializationInProgress.set(null);
+			}
+		}
+		
+		return containerGet(javaProjectToInit, containerToInit);
+	}
+
+	
+	public synchronized ILoadpathContainer containerGet(IRubyProject project, IPath containerPath) {	
+		// check initialization in progress first
+		HashSet projectInitializations = containerInitializationInProgress(project);
+		if (projectInitializations.contains(containerPath)) {
+			return CONTAINER_INITIALIZATION_IN_PROGRESS;
+		}
+		
+		Map projectContainers = (Map)this.containers.get(project);
+		if (projectContainers == null){
+			return null;
+		}
+		ILoadpathContainer container = (ILoadpathContainer)projectContainers.get(containerPath);
+		return container;
+	}
+	
+	/*
+	 * Returns the set of container paths for the given project that are being initialized in the current thread.
+	 */
+	private HashSet containerInitializationInProgress(IRubyProject project) {
+		Map initializations = (Map)this.containerInitializationInProgress.get();
+		if (initializations == null) {
+			initializations = new HashMap();
+			this.containerInitializationInProgress.set(initializations);
+		}
+		HashSet projectInitializations = (HashSet)initializations.get(project);
+		if (projectInitializations == null) {
+			projectInitializations = new HashSet();
+			initializations.put(project, projectInitializations);
+		}
+		return projectInitializations;
+	}
+
+	/**
+	 * Returns a persisted container from previous session if any. Note that it is not the original container from previous
+	 * session (i.e. it did not get serialized) but rather a summary of its entries recreated for CP initialization purpose.
+	 * As such it should not be stored into container caches.
+	 */
+	public ILoadpathContainer getPreviousSessionContainer(IPath containerPath, IRubyProject project) {
+			Map previousContainerValues = (Map)this.previousSessionContainers.get(project);
+			if (previousContainerValues != null){
+				ILoadpathContainer previousContainer = (ILoadpathContainer)previousContainerValues.get(containerPath);
+			    if (previousContainer != null) {
+					if (RubyModelManager.CP_RESOLVE_VERBOSE){
+						StringBuffer buffer = new StringBuffer();
+						buffer.append("CPContainer INIT - reentering access to project container during its initialization, will see previous value\n"); //$NON-NLS-1$ 
+						buffer.append("	project: " + project.getElementName() + '\n'); //$NON-NLS-1$
+						buffer.append("	container path: " + containerPath + '\n'); //$NON-NLS-1$
+						buffer.append("	previous value: "); //$NON-NLS-1$
+						buffer.append(previousContainer.getDescription());
+						buffer.append(" {\n"); //$NON-NLS-1$
+						ILoadpathEntry[] entries = previousContainer.getLoadpathEntries();
+						if (entries != null){
+							for (int j = 0; j < entries.length; j++){
+								buffer.append(" 		"); //$NON-NLS-1$
+								buffer.append(entries[j]); 
+								buffer.append('\n'); 
+							}
+						}
+						buffer.append(" 	}"); //$NON-NLS-1$
+						Util.verbose(buffer.toString());
+						new Exception("<Fake exception>").printStackTrace(System.out); //$NON-NLS-1$
+					}			    
+					return previousContainer;
+			    }
+			}
+		    return null; // break cycle if none found
+	}
+
+	/*
+	 * The given project is being removed. Remove all containers for this project from the cache.
+	 */
+	public void containerRemove(IRubyProject project) {
+		Map initializations = (Map) this.containerInitializationInProgress.get();
+		if (initializations != null) {
+			initializations.remove(project);
+		}
+		this.containers.remove(project);
 	}
 
 }

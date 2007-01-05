@@ -258,7 +258,7 @@ public interface IRubyModelStatusConstants {
 	  * be read/written successfully.
 	  * @since 2.1
 	  */
-	 public static final int INVALID_CLASSPATH_FILE_FORMAT = 1000;
+	 public static final int INVALID_LOADPATH_FILE_FORMAT = 1000;
 
 	 /**
 	  * Status indicating that a project is involved in a build path cycle.

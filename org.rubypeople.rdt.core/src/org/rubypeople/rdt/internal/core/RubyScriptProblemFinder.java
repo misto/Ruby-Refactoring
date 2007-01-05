@@ -13,6 +13,7 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.jruby.ast.Node;
 import org.jruby.lexer.yacc.SyntaxException;
 import org.rubypeople.rdt.core.IProblemRequestor;
+import org.rubypeople.rdt.core.RubyModelException;
 import org.rubypeople.rdt.core.parser.IProblem;
 import org.rubypeople.rdt.internal.core.parser.Error;
 import org.rubypeople.rdt.internal.core.parser.RdtWarnings;
@@ -55,7 +56,10 @@ public class RubyScriptProblemFinder {
             node.accept(visitor);
         } catch (SyntaxException e) {
             problemRequestor.acceptProblem(new Error(e.getPosition(), e.getMessage()));
-        }
+        } catch (RubyModelException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 }
