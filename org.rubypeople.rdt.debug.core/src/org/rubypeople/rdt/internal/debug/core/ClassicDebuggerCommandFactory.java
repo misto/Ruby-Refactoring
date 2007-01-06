@@ -21,15 +21,15 @@ public class ClassicDebuggerCommandFactory implements ICommandFactory {
 	}
 
 	public String createStepOver(RubyStackFrame stackFrame) {
-		return "th " + ((RubyThread) stackFrame.getThread()).getId() + " ; next " + stackFrame.getIndex();
+		return "th " + ((RubyThread) stackFrame.getThread()).getId() + " ; next";
 	}
 
 	public String createStepReturn(RubyStackFrame stackFrame) {
-		return "th " + ((RubyThread) stackFrame.getThread()).getId() + " ; next " + (stackFrame.getIndex() + 1);
+		return "th " + ((RubyThread) stackFrame.getThread()).getId() + " ; next " + (stackFrame.getLineNumber() + 1);
 	}
 
 	public String createStepInto(RubyStackFrame stackFrame) {
-		return "th " + ((RubyThread) stackFrame.getThread()).getId() + " ; step " + stackFrame.getIndex();
+		return "th " + ((RubyThread) stackFrame.getThread()).getId() + " ; step";
 	}
 
 	public String createReadThreads() {
