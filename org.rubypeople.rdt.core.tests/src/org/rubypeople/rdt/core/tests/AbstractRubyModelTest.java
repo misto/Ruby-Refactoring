@@ -15,6 +15,7 @@ import org.eclipse.core.resources.IProjectDescription;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IStorage;
 import org.eclipse.core.resources.IWorkspace;
+import org.eclipse.core.resources.IWorkspaceDescription;
 import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.resources.IWorkspaceRunnable;
 import org.eclipse.core.resources.ResourcesPlugin;
@@ -28,7 +29,11 @@ import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.jobs.Job;
 import org.rubypeople.rdt.core.ILoadpathEntry;
 import org.rubypeople.rdt.core.IRubyProject;
+import org.rubypeople.rdt.core.IRubyScript;
+import org.rubypeople.rdt.core.ISourceFolder;
+import org.rubypeople.rdt.core.ISourceFolderRoot;
 import org.rubypeople.rdt.core.RubyCore;
+import org.rubypeople.rdt.core.RubyModelException;
 import org.rubypeople.rdt.internal.core.util.CharOperation;
 import org.rubypeople.rdt.internal.core.util.Util;
 
@@ -36,6 +41,23 @@ public class AbstractRubyModelTest extends TestCase {
 	
 	protected IRubyProject currentProject;
 	protected String endChar = ",";
+	
+	public AbstractRubyModelTest(String name) {
+		super(name);
+	}
+	
+	@Override
+	protected void setUp() throws Exception {
+		// TODO Make it so this stuff is only run once per suite, not before every method
+		super.setUp();
+		
+		// ensure autobuilding is turned off
+		IWorkspaceDescription description = getWorkspace().getDescription();
+		if (description.isAutoBuilding()) {
+			description.setAutoBuilding(false);
+			getWorkspace().setDescription(description);
+		}
+	}
 	
 	protected IRubyProject setUpRubyProject(final String projectName) throws CoreException, IOException {
 		this.currentProject = setUpRubyProject(projectName, "1.8.4");
@@ -143,8 +165,8 @@ public class AbstractRubyModelTest extends TestCase {
 			}
 		};
 		getWorkspace().run(populate, null);
-		IRubyProject javaProject = RubyCore.create(project);
-		return javaProject;
+		IRubyProject rubyProject = RubyCore.create(project);
+		return rubyProject;
 	}
 	
 	/**
@@ -526,5 +548,87 @@ public class AbstractRubyModelTest extends TestCase {
 		IProjectDescription description = project.getDescription();
 		description.setNatureIds(new String[] {RubyCore.NATURE_ID});
 		project.setDescription(description, null);
+	}
+	
+	/**
+	 * Returns the specified ruby script in the given project, root, and
+	 * source folder or <code>null</code> if it does not exist.
+	 */
+	public IRubyScript getRubyScript(String projectName, String rootPath, String packageName, String cuName) throws RubyModelException {
+		ISourceFolder pkg= getSourceFolder(projectName, rootPath, packageName);
+		if (pkg == null) {
+			return null;
+		}
+		return pkg.getRubyScript(cuName);
+	}
+	
+	/**
+	 * Returns the specified package fragment in the given project and root, or
+	 * <code>null</code> if it does not exist.
+	 * The rootPath must be specified as a project relative path. The empty
+	 * path refers to the default package fragment.
+	 */
+	public ISourceFolder getSourceFolder(String projectName, String rootPath, String packageName) throws RubyModelException {
+		ISourceFolderRoot root= getSourceFolderRoot(projectName, rootPath);
+		if (root == null) {
+			return null;
+		}
+		return root.getSourceFolder(packageName);
+	}
+	
+	/**
+	 * Returns the specified package fragment root in the given project, or
+	 * <code>null</code> if it does not exist.
+	 * If relative, the rootPath must be specified as a project relative path. 
+	 * The empty path refers to the package fragment root that is the project
+	 * folder iteslf.
+	 * If absolute, the rootPath refers to either an external jar, or a resource 
+	 * internal to the workspace
+	 */
+	public ISourceFolderRoot getSourceFolderRoot(
+		String projectName, 
+		String rootPath)
+		throws RubyModelException {
+			
+		IRubyProject project = getRubyProject(projectName);
+		if (project == null) {
+			return null;
+		}
+		IPath path = new Path(rootPath);
+		if (path.isAbsolute()) {
+			IWorkspaceRoot workspaceRoot = ResourcesPlugin.getWorkspace().getRoot();
+			IResource resource = workspaceRoot.findMember(path);
+			ISourceFolderRoot root;
+			if (resource == null) {
+				// external jar
+				root = project.getSourceFolderRoot(rootPath);
+			} else {
+				// resource in the workspace
+				root = project.getSourceFolderRoot(resource);
+			}
+			return root;
+		} else {
+			ISourceFolderRoot[] roots = project.getSourceFolderRoots();
+			if (roots == null || roots.length == 0) {
+				return null;
+			}
+			for (int i = 0; i < roots.length; i++) {
+				ISourceFolderRoot root = roots[i];
+				if (!root.isExternal()
+					&& root.getUnderlyingResource().getProjectRelativePath().equals(path)) {
+					return root;
+				}
+			}
+		}
+		return null;
+	}
+	
+	/**
+	 * Returns the Ruby Project with the given name in this test
+	 * suite's model. This is a convenience method.
+	 */
+	public IRubyProject getRubyProject(String name) {
+		IProject project = getProject(name);
+		return RubyCore.create(project);
 	}
 }

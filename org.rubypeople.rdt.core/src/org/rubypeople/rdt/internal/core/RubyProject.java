@@ -2145,5 +2145,34 @@ public class RubyProject extends Openable implements IProjectNature, IRubyElemen
 				}
 			}
 		}
+	}
+
+	public void updateLoadpathMarkers(Map preferredClasspaths, Map preferredOutputs) {
+		this.flushLoadpathProblemMarkers(false/*cycle*/, true/*format*/);
+		this.flushLoadpathProblemMarkers(false/*cycle*/, false/*format*/);
+
+		ILoadpathEntry[] classpath = this.readLoadpathFile(true/*marker*/, false/*log*/);
+			
+		// remember invalid path so as to avoid reupdating it again later on
+		if (preferredClasspaths != null) {
+			preferredClasspaths.put(this, classpath == null ? INVALID_LOADPATH : classpath);
+		}
+		if (preferredOutputs != null) {
+			preferredOutputs.put(this, null);
+		}
+		
+		 // force classpath marker refresh
+		 if (classpath != null) {
+		 	for (int i = 0; i < classpath.length; i++) {
+		 		IRubyModelStatus status = LoadpathEntry.validateLoadpathEntry(this, classpath[i], false/*src attach*/, true /*recurse in container*/);
+				if (!status.isOK()) {
+					if (status.getCode() == IRubyModelStatusConstants.INVALID_CLASSPATH && ((LoadpathEntry) classpath[i]).isOptional())
+						continue; // ignore this entry
+					this.createLoadpathProblemMarker(status);	
+				}
+			 }
+			IRubyModelStatus status = LoadpathEntry.validateLoadpath(this, classpath, null);
+			if (!status.isOK()) this.createLoadpathProblemMarker(status);
+		 }		
 	}	
 }

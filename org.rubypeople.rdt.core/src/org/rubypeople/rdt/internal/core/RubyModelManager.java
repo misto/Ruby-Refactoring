@@ -1548,4 +1548,25 @@ public class RubyModelManager implements IContentTypeChangeListener, ISavePartic
 		this.containers.remove(project);
 	}
 
+	/**
+	 * Sets the last built state for the given project, or null to reset it.
+	 */
+	public void setLastBuiltState(IProject project, Object state) {
+		if (RubyProject.hasRubyNature(project)) {
+			// should never be requested on non-Ruby projects
+			PerProjectInfo info = getPerProjectInfo(project, true /*create if missing*/);
+			info.triedRead = true; // no point trying to re-read once using setter
+			info.savedState = state;
+		}
+		if (state == null) { // delete state file to ensure a full build happens if the workspace crashes
+			try {
+				File file = getSerializationFile(project);
+				if (file != null && file.exists())
+					file.delete();
+			} catch(SecurityException se) {
+				// could not delete file: cannot do much more
+			}
+		}
+	}
+
 }

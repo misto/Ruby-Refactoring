@@ -17,23 +17,15 @@ import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
 import org.jruby.lexer.yacc.SyntaxException;
-import org.rubypeople.rdt.core.IRubyModelMarker;
+import org.rubypeople.rdt.internal.core.parser.Error;
 import org.rubypeople.rdt.internal.core.parser.MarkerUtility;
 import org.rubypeople.rdt.internal.core.parser.RdtPosition;
 import org.rubypeople.rdt.internal.core.parser.Warning;
-import org.rubypeople.rdt.internal.core.parser.Error;
 
 class MarkerManager implements IMarkerManager {
 
     public void removeProblemsAndTasksFor(IResource resource) {
-    	try {
-    		if (resource != null && resource.exists()) {
-    			resource.deleteMarkers(IRubyModelMarker.RUBY_MODEL_PROBLEM_MARKER, false, IResource.DEPTH_INFINITE);
-    			resource.deleteMarkers(IRubyModelMarker.TASK_MARKER, false, IResource.DEPTH_INFINITE);
-    		}
-    	} catch (CoreException e) {
-    		// assume there were no problems
-    	}
+    	RubyBuilder.removeProblemsAndTasksFor(resource);
     }
 
     public void createSyntaxError(IFile file, SyntaxException e) {

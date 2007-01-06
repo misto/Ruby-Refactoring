@@ -1,27 +1,32 @@
 package org.rubypeople.rdt.internal.core;
 
 import org.eclipse.core.resources.IProject;
+import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
 import org.rubypeople.rdt.core.IRubyProject;
+import org.rubypeople.rdt.core.IRubyScript;
+import org.rubypeople.rdt.core.RubyModelException;
 import org.rubypeople.rdt.core.tests.ModifyingResourceTest;
 
 public class TC_RubyProject extends ModifyingResourceTest {
-
-//	public void testGetLibraryPathXML() {
-//		ShamRubyProject rubyProject = new ShamRubyProject();
-//		rubyProject.setProject(new ShamProject("TheWorkingProject"));
-//
-//		IProject referencedProject = new ShamProject(new ShamIPath("TheReferencedProject"), "TheReferencedProject");
-//		rubyProject.addLoadPathEntry(referencedProject);
-//		assertEquals("XML should indicate only one referenced project.", "<?xml version=\"1.0\" encoding=\"UTF-8\"?><loadpath><pathentry type=\"project\" path=\"" + referencedProject.getFullPath() + "\"/></loadpath>", rubyProject.getLoadPathXML());
-//
-//		IProject anotherReferencedProject = new ShamProject("AnotherReferencedProject");
-//		rubyProject.addLoadPathEntry(anotherReferencedProject);
-//		assertEquals("XML should indicate two referenced projects.", "<?xml version=\"1.0\" encoding=\"UTF-8\"?><loadpath><pathentry type=\"project\" path=\"" + referencedProject.getFullPath() + "\"/><pathentry type=\"project\" path=\"" + anotherReferencedProject.getFullPath() + "\"/></loadpath>", rubyProject.getLoadPathXML());
-//		
-//		rubyProject.removeLoadPathEntry(referencedProject);
-//		assertEquals("XML should indicate one referenced project after removing one.", "<?xml version=\"1.0\" encoding=\"UTF-8\"?><loadpath><pathentry type=\"project\" path=\"" + anotherReferencedProject.getFullPath() + "\"/></loadpath>", rubyProject.getLoadPathXML());
-//	}
+	
+	public TC_RubyProject(String name) {
+		super(name);
+	}
+	
+	@Override
+	protected void setUp() throws Exception {
+		// TODO Only run once per suite/class, not every method
+		super.setUp();
+		setUpRubyProject("RubyProjectTests");
+	}
+	
+	@Override
+	protected void tearDown() throws Exception {
+//		 TODO Only run once per suite/class, not every method
+		deleteProject("RubyProjectTests");
+		super.tearDown();
+	}
 	
 	public void testGetRequiredProjectNames() throws CoreException {	
 		try {
@@ -54,7 +59,7 @@ public class TC_RubyProject extends ModifyingResourceTest {
 				"/P2/.loadpath", 
 				"<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
 				"<loadpath>\n" +
-				"    <loadpathentry kind=\"src\" path=\"/P1\"/>\n" +
+				"    <pathentry type=\"src\" path=\"/P1\"/>\n" +
 				"</loadpath>"
 			);
 			waitForAutoBuild();
@@ -66,5 +71,17 @@ public class TC_RubyProject extends ModifyingResourceTest {
 		} finally {
 			deleteProjects(new String[] {"P1", "P2"});
 		}
+	}
+	
+	/**
+	 * Test that a ruby script
+	 * has a corresponding resource.
+	 */
+	public void testRubyScriptCorrespondingResource() throws RubyModelException {
+		IRubyScript element= getRubyScript("RubyProjectTests", "", "q", "A.rb");
+		IResource corr= element.getCorrespondingResource();
+		IResource res= getWorkspace().getRoot().getProject("RubyProjectTests").getFolder("q").getFile("A.rb");
+		assertTrue("incorrect corresponding resource", corr.equals(res));
+		assertEquals("Project is incorrect for the ruby script", "RubyProjectTests", corr.getProject().getName());
 	}
 }

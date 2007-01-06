@@ -131,4 +131,6 @@ public interface IRubyProject extends IRubyElement, IParent {
 
 	void setRawLoadpath(ILoadpathEntry[] entries, IPath outputLocation, IProgressMonitor monitor)
 		throws RubyModelException;
+
+	public abstract ISourceFolderRoot getSourceFolderRoot(String rootPath);
 }

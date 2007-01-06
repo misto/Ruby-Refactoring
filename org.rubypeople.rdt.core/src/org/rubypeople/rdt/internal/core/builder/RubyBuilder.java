@@ -13,13 +13,18 @@ package org.rubypeople.rdt.internal.core.builder;
 
 import java.io.DataOutputStream;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.Map;
+import java.util.Set;
 
 import org.eclipse.core.resources.IProject;
+import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IncrementalProjectBuilder;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.rubypeople.rdt.core.IRubyModelMarker;
 import org.rubypeople.rdt.core.RubyCore;
+import org.rubypeople.rdt.internal.core.RubyModelManager;
 import org.rubypeople.rdt.internal.core.symbols.SymbolIndex;
 
 
@@ -70,5 +75,23 @@ public class RubyBuilder extends IncrementalProjectBuilder {
 
 	public static void writeState(Object savedState, DataOutputStream out) {
 		// TODO Actually write out build state to the stream!		
+	}
+
+	public static void removeProblemsAndTasksFor(IResource resource) {
+		try {
+			if (resource != null && resource.exists()) {
+				resource.deleteMarkers(IRubyModelMarker.RUBY_MODEL_PROBLEM_MARKER, false, IResource.DEPTH_INFINITE);
+				resource.deleteMarkers(IRubyModelMarker.TASK_MARKER, false, IResource.DEPTH_INFINITE);
+				
+				// delete managed markers
+//				Set markerTypes = RubyModelManager.getRubyModelManager().compilationParticipants.managedMarkerTypes();
+//				if (markerTypes.size() == 0) return;
+//				Iterator iterator = markerTypes.iterator();
+//				while (iterator.hasNext())
+//					resource.deleteMarkers((String) iterator.next(), false, IResource.DEPTH_INFINITE);
+			}
+		} catch (CoreException e) {
+			// assume there were no problems
+		}
 	}
 }

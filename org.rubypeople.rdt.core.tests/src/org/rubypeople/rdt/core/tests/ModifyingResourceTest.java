@@ -8,6 +8,11 @@ import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
 
 public class ModifyingResourceTest extends AbstractRubyModelTest {
+	
+	public ModifyingResourceTest(String name) {
+		super(name);
+	}
+	
 	protected IFile editFile(String path, String content) throws CoreException {
 		IFile file = this.getFile(path);
 		InputStream input = new ByteArrayInputStream(content.getBytes());

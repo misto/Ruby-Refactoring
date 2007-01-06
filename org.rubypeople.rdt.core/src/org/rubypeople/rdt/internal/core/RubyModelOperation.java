@@ -664,7 +664,7 @@ public abstract class RubyModelOperation implements IWorkspaceRunnable, IProgres
     public void run(IProgressMonitor monitor) throws CoreException {
         RubyModelManager manager = RubyModelManager.getRubyModelManager();
         DeltaProcessor deltaProcessor = manager.getDeltaProcessor();
-        int previousDeltaCount = deltaProcessor.javaModelDeltas.size();
+        int previousDeltaCount = deltaProcessor.rubyModelDeltas.size();
         try {
             progressMonitor = monitor;
             pushOperation(this);
@@ -687,8 +687,8 @@ public abstract class RubyModelOperation implements IWorkspaceRunnable, IProgres
                 deltaProcessor = manager.getDeltaProcessor();
                 
                 // update RubyModel using deltas that were recorded during this operation
-                for (int i = previousDeltaCount, size = deltaProcessor.javaModelDeltas.size(); i < size; i++) {
-                    deltaProcessor.updateRubyModel((IRubyElementDelta)deltaProcessor.javaModelDeltas.get(i));
+                for (int i = previousDeltaCount, size = deltaProcessor.rubyModelDeltas.size(); i < size; i++) {
+                    deltaProcessor.updateRubyModel((IRubyElementDelta)deltaProcessor.rubyModelDeltas.get(i));
                 }
                 
                 // close the parents of the created elements and reset their project's cache (in case we are in an 
@@ -707,7 +707,7 @@ public abstract class RubyModelOperation implements IWorkspaceRunnable, IProgres
                 // - the operation did produce some delta(s)
                 // - but the operation has not modified any resource
                 if (this.isTopLevelOperation()) {
-                    if ((deltaProcessor.javaModelDeltas.size() > previousDeltaCount || !deltaProcessor.reconcileDeltas.isEmpty()) 
+                    if ((deltaProcessor.rubyModelDeltas.size() > previousDeltaCount || !deltaProcessor.reconcileDeltas.isEmpty()) 
                             && !this.hasModifiedResource()) {
                         deltaProcessor.fire(null, DeltaProcessor.DEFAULT_CHANGE_EVENT);
                     } // else deltas are fired while processing the resource delta

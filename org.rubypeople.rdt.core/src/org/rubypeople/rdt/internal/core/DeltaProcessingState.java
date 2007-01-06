@@ -14,25 +14,25 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.Iterator;
+import java.util.Map;
 import java.util.Set;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IProjectDescription;
 import org.eclipse.core.resources.IResourceChangeEvent;
 import org.eclipse.core.resources.IResourceChangeListener;
+import org.eclipse.core.resources.IResourceDelta;
 import org.eclipse.core.resources.IWorkspaceRoot;
-import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.ISafeRunnable;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Path;
-import org.eclipse.core.runtime.QualifiedName;
 import org.eclipse.core.runtime.SafeRunner;
 import org.eclipse.core.runtime.Status;
-import org.eclipse.osgi.baseadaptor.loader.ClasspathEntry;
 import org.rubypeople.rdt.core.IElementChangedListener;
 import org.rubypeople.rdt.core.ILoadpathEntry;
+import org.rubypeople.rdt.core.IRubyElement;
 import org.rubypeople.rdt.core.IRubyModel;
 import org.rubypeople.rdt.core.IRubyProject;
 import org.rubypeople.rdt.core.RubyCore;
@@ -183,7 +183,7 @@ public class DeltaProcessingState implements IResourceChangeListener {
                     public void handleException(Throwable exception) {
                         Util
                                 .log(exception,
-                                        "Exception occurred in listener of pre Java resource change notification"); //$NON-NLS-1$
+                                        "Exception occurred in listener of pre Ruby resource change notification"); //$NON-NLS-1$
                     }
 
                     public void run() throws Exception {
@@ -501,4 +501,43 @@ public class DeltaProcessingState implements IResourceChangeListener {
 		}
 	}
 
+	
+	/*
+	 * Update the roots that are affected by the addition or the removal of the given container resource.
+	 */
+	public synchronized void updateRoots(IPath containerPath, IResourceDelta containerDelta, DeltaProcessor deltaProcessor) {
+		Map updatedRoots;
+		Map otherUpdatedRoots;
+		if (containerDelta.getKind() == IResourceDelta.REMOVED) {
+			updatedRoots = this.oldRoots;
+			otherUpdatedRoots = this.oldOtherRoots;
+		} else {
+			updatedRoots = this.roots;
+			otherUpdatedRoots = this.otherRoots;
+		}
+		Iterator iterator = updatedRoots.keySet().iterator();
+		while (iterator.hasNext()) {
+			IPath path = (IPath)iterator.next();
+			if (containerPath.isPrefixOf(path) && !containerPath.equals(path)) {
+				IResourceDelta rootDelta = containerDelta.findMember(path.removeFirstSegments(1));
+				if (rootDelta == null) continue;
+				DeltaProcessor.RootInfo rootInfo = (DeltaProcessor.RootInfo)updatedRoots.get(path);
+	
+				if (!rootInfo.project.getPath().isPrefixOf(path)) { // only consider roots that are not included in the container
+					deltaProcessor.updateCurrentDeltaAndIndex(rootDelta, IRubyElement.SOURCE_FOLDER_ROOT, rootInfo);
+				}
+				
+				ArrayList rootList = (ArrayList)otherUpdatedRoots.get(path);
+				if (rootList != null) {
+					Iterator otherProjects = rootList.iterator();
+					while (otherProjects.hasNext()) {
+						rootInfo = (DeltaProcessor.RootInfo)otherProjects.next();
+						if (!rootInfo.project.getPath().isPrefixOf(path)) { // only consider roots that are not included in the container
+							deltaProcessor.updateCurrentDeltaAndIndex(rootDelta, IRubyElement.SOURCE_FOLDER_ROOT, rootInfo);
+						}
+					}
+				}
+			}
+		}
+	}
 }
