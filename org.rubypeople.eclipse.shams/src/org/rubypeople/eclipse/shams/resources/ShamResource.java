@@ -112,7 +112,7 @@ public class ShamResource implements IResource {
 	}
 
 	public IPath getLocation() {
-		throw new RuntimeException("Need to implement on sham.");
+		return path;
 	}
 
 	public IMarker getMarker(long id) {

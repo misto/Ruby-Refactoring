@@ -15,7 +15,8 @@ import org.rubypeople.rdt.internal.core.symbols.SymbolIndex;
 import org.rubypeople.rdt.internal.core.util.ListUtil;
 
 public abstract class AbstractRdtTestCase extends TestCase {
-    static protected final String EXPECTED_TASK_NAME = "Removing Markers...";
+    static protected final String REMOVING_MARKERS_SUB_TASK = "Removing Markers...";
+    static protected final String REMOVING_INDICES_SUB_TASK = "Removing Search Indices...";
 
     protected abstract void assertMarkersRemoved(List expectedFiles);
     protected abstract void assertIndexFlushed(List expectedFiles);
@@ -69,7 +70,7 @@ public abstract class AbstractRdtTestCase extends TestCase {
         
         compiler.compile(monitor);
     
-        assertCompliationFor(ListUtil.create(), 2);
+        assertCompliationFor(ListUtil.create(), 0); // FIXME should be no work done for non-ruby file?
     }
 
     public void testCompileIncludesFolders() throws Exception {
@@ -88,12 +89,12 @@ public abstract class AbstractRdtTestCase extends TestCase {
         setFiles(ListUtil.create(t1, t2));
     
         compiler.compile(monitor);
-    
-        assertCompliationFor(ListUtil.create(t1, t2), 6);
+        int expectedWorkUnits = 8; // code analyzer, taskparser, index, markers for each file
+        assertCompliationFor(ListUtil.create(t1, t2), expectedWorkUnits);
     }
 
     public void testCancellation() throws Exception {
-        monitor.cancelAfter(4);
+        monitor.cancelAfter(6);
         project.addResource(t1);
         project.addResource(t2);
         setFiles(ListUtil.create(t1, t2));
@@ -101,9 +102,9 @@ public abstract class AbstractRdtTestCase extends TestCase {
         compiler.compile(monitor);
         List expectedFiles = ListUtil.create(t1);
     
-        monitor.assertTaskBegun("Building test...", 6);
-        monitor.assertDone(4);
-        List subTasks = ListUtil.create(EXPECTED_TASK_NAME, 
+        monitor.assertTaskBegun("Building test...", 8);
+        monitor.assertDone(6);
+        List subTasks = ListUtil.create(REMOVING_MARKERS_SUB_TASK, REMOVING_INDICES_SUB_TASK, 
                 t1.getFullPath().toString());
         monitor.assertSubTasks(subTasks);
         assertMarkersRemoved(ListUtil.create(t1,t2));
@@ -129,7 +130,7 @@ public abstract class AbstractRdtTestCase extends TestCase {
     protected void assertCompliationFor(List expectedFiles, int totalWork) {
         monitor.assertTaskBegun("Building test...", totalWork);
         monitor.assertDone(totalWork);
-        List subTasks = ListUtil.create(EXPECTED_TASK_NAME);
+        List subTasks = ListUtil.create(REMOVING_MARKERS_SUB_TASK, REMOVING_INDICES_SUB_TASK);
         for (Iterator iter = expectedFiles.iterator(); iter.hasNext();) {
             IFile file = (IFile) iter.next();
             subTasks.add(file.getFullPath().toString());

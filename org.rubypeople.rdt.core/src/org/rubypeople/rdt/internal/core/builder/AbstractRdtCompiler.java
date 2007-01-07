@@ -1,20 +1,13 @@
 package org.rubypeople.rdt.internal.core.builder;
 
-import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
-import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.core.runtime.Path;
-import org.rubypeople.rdt.core.RubyCore;
-import org.rubypeople.rdt.internal.core.pmd.CPD;
-import org.rubypeople.rdt.internal.core.pmd.Match;
-import org.rubypeople.rdt.internal.core.pmd.PMD;
-import org.rubypeople.rdt.internal.core.pmd.TokenEntry;
 import org.rubypeople.rdt.internal.core.symbols.SymbolIndex;
 import org.rubypeople.rdt.internal.core.util.ListUtil;
 
@@ -23,14 +16,21 @@ public abstract class AbstractRdtCompiler {
     protected final IProject project;
     protected final IMarkerManager markerManager;
     protected final SymbolIndex symbolIndex;
-    protected final List compilers;
+    protected final List<SingleFileCompiler> singleFileCompilers;
+    protected final List<MultipleFileCompiler> multiFileCompilers;
     
     public AbstractRdtCompiler(IProject project, SymbolIndex symbolIndex, 
-            IMarkerManager markerManager, List singleCompilers) {
+            IMarkerManager markerManager, List<SingleFileCompiler> singleCompilers, List<MultipleFileCompiler> multiFileCompilers) {
         this.project = project;
         this.symbolIndex = symbolIndex;
         this.markerManager = markerManager;
-        this.compilers = singleCompilers;
+        this.singleFileCompilers = singleCompilers;
+        this.multiFileCompilers = multiFileCompilers;
+    }
+    
+    public AbstractRdtCompiler(IProject project, SymbolIndex symbolIndex, 
+            IMarkerManager markerManager, List<SingleFileCompiler> singleCompilers) {
+        this(project, symbolIndex, markerManager, singleCompilers, new ArrayList<MultipleFileCompiler>());
     }
 
     protected abstract void removeMarkers(IMarkerManager markerManager);
@@ -47,7 +47,7 @@ public abstract class AbstractRdtCompiler {
         analyzeFiles();
         List<IFile> files = getFilesToCompile();
         int fileCount = files.size();
-        monitor.beginTask("Building "+project.getName() + "...", fileCount * (compilers.size() + 3));
+        monitor.beginTask("Building "+project.getName() + "...", fileCount * (singleFileCompilers.size() + multiFileCompilers.size() + 2));
         monitor.subTask("Removing Markers...");
         
         removeMarkers(markerManager);
@@ -55,53 +55,31 @@ public abstract class AbstractRdtCompiler {
         monitor.subTask("Removing Search Indices...");
         flushIndexEntries(symbolIndex);
         monitor.worked(fileCount);
-
-        // TODO Refactor out this stuff into a compiler, only visit files we've collected
-        monitor.subTask("Finding duplicate code...");
-        try {
-			Iterator<Match> matches = CPD.findMatches(files);
-			while (matches.hasNext()) {
-				Match match = matches.next();
-				addMarker(match);
-			}
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		monitor.worked(fileCount);
 		
         compileFiles(files, monitor);
         monitor.done();
     }
     
-	private void addMarker(Match match) {
-		StringBuffer message = new StringBuffer("Found a ");
-		message.append(match.getLineCount()).append(" line (").append(match.getTokenCount()).append(" tokens) duplication");
-        for (Iterator occurrences = match.iterator(); occurrences.hasNext();) {
-        	TokenEntry mark = (TokenEntry) occurrences.next();
-            // FIXME Make TokenEntry hold an IFile pointer to source file?
-            IFile file = RubyCore.getWorkspace().getRoot().getFileForLocation(Path.fromOSString(mark.getTokenSrcID()));
-            markerManager.addWarning(file, message.toString(), mark.getBeginLine(), mark.getStartOffset(), mark.getStartOffset() + match.getSourceCodeSlice().length());
-        }        
-	}
-
-    private void compileFiles(List list, IProgressMonitor monitor) throws CoreException {
-        for (Iterator iter = list.iterator(); iter.hasNext();) {
-            IFile file = (IFile) iter.next();
-            
-            if (monitor.isCanceled())
-                break;
+    private void compileFiles(List<IFile> list, IProgressMonitor monitor) throws CoreException {
+        for (MultipleFileCompiler compiler : multiFileCompilers) {
+        	if (monitor.isCanceled())
+                return;
+			compiler.compileFile(list, monitor);
+		}
+    	for (IFile file : list) {
+    		if (monitor.isCanceled())
+                return;
             
             monitor.subTask(file.getFullPath().toString());
             compileFile(file, monitor);
-        }
+		}
     }
 
     private void compileFile(IFile file, IProgressMonitor monitor) throws CoreException {
-        for (Iterator cIter = compilers.iterator(); cIter.hasNext();) {
+        for (Iterator cIter = singleFileCompilers.iterator(); cIter.hasNext();) {
             SingleFileCompiler fileCompiler = (SingleFileCompiler) cIter.next();
             fileCompiler.compileFile(file);
             monitor.worked(1);
         }
     }
-
 }
