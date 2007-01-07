@@ -631,4 +631,48 @@ public class AbstractRubyModelTest extends TestCase {
 		IProject project = getProject(name);
 		return RubyCore.create(project);
 	}
+	
+	/*
+	 * Asserts that the given actual source (usually coming from a file content) is equal to the expected one.
+	 * Note that 'expected' is assumed to have the '\n' line separator. 
+	 * The line separators in 'actual' are converted to '\n' before the comparison.
+	 */
+	protected void assertSourceEquals(String message, String expected, String actual) {
+		if (actual == null) {
+			assertEquals(message, expected, null);
+			return;
+		}
+		actual = org.rubypeople.rdt.core.tests.util.Util.convertToIndependantLineDelimiter(actual);
+		if (!actual.equals(expected)) {
+			System.out.print(org.rubypeople.rdt.core.tests.util.Util.displayString(actual.toString(), 2));
+			System.out.println(this.endChar);
+		}
+		assertEquals(message, expected, actual);
+	}
+	
+	protected IFolder createFolder(IPath path) throws CoreException {
+		final IFolder folder = getWorkspaceRoot().getFolder(path);
+		getWorkspace().run(new IWorkspaceRunnable() {
+			public void run(IProgressMonitor monitor) throws CoreException {
+				IContainer parent = folder.getParent();
+				if (parent instanceof IFolder && !parent.exists()) {
+					createFolder(parent.getFullPath());
+				} 
+				folder.create(true, true, null);
+			}
+		},
+		null);
+	
+		return folder;
+	}
+	
+	protected IRubyScript getRubyScript(String path) {
+		return (IRubyScript)RubyCore.create(getFile(path));
+	}
+	
+	public static void waitUntilIndexesReady() {
+		
+		// TODO Find some way to wait until the indexes are ready from SymbolIndex/build process
+		
+	}
 }

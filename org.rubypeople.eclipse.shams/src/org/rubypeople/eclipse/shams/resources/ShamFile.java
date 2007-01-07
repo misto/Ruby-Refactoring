@@ -170,7 +170,7 @@ public class ShamFile extends ShamResource implements IFile {
 	}
 
 	public boolean exists() {
-		throw new RuntimeException("Unimplemented method in sham");
+		return true;
 	}
 
 	public IMarker findMarker(long id) throws CoreException {

@@ -14,6 +14,7 @@ package org.rubypeople.rdt.core;
 import junit.framework.Test;
 import junit.framework.TestSuite;
 
+import org.rubypeople.rdt.core.tests.model.BufferTests;
 import org.rubypeople.rdt.internal.core.TS_InternalCore;
 import org.rubypeople.rdt.internal.core.builder.TS_InternalCoreBuilder;
 import org.rubypeople.rdt.internal.core.parser.TS_InternalCoreParser;
@@ -31,7 +32,7 @@ public class TS_Core {
 		suite.addTest(TS_InternalCore.suite());
 		suite.addTest(TS_InternalFormatter.suite());
 		suite.addTest(TS_Util.suite());
-
+		suite.addTestSuite(BufferTests.class);
 		return suite;
 	}
 }

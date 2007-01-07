@@ -24,6 +24,7 @@ import org.rubypeople.rdt.internal.core.util.ListUtil;
 public class TC_MassIndexUpdater extends TestCase {
 
     public void testUpdateProjects() throws Exception {
+    	// What exactly does this test?
         ShamRubyParser parser = new ShamRubyParser();
         ShamIndexUpdater updater = new ShamIndexUpdater();
         MassIndexUpdater massUpdater = new MassIndexUpdater(updater, parser);
