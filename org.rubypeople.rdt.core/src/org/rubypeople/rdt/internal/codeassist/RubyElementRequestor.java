@@ -9,7 +9,6 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
 import org.rubypeople.rdt.core.IRubyProject;
-import org.rubypeople.rdt.core.IRubyScript;
 import org.rubypeople.rdt.core.IType;
 import org.rubypeople.rdt.core.RubyCore;
 import org.rubypeople.rdt.core.RubyModelException;
@@ -63,13 +62,9 @@ public class RubyElementRequestor {
 		try {
 			for (int x = 0; x < projects.length; x++) {
 				IRubyProject project = projects[x];
-				IRubyScript[] scripts = project.getRubyScripts();
-				for (int i = 0; i < scripts.length; i++) {
-					IRubyScript script = scripts[i];
-					IType type = findTypeInScript(typeName, script);
-					if (type != null)
-						return type;
-				}
+				IType type =  project.findType(typeName);
+				if (type != null)
+					return type;				
 			}
 		} catch (RubyModelException e) {
 			// TODO Auto-generated catch block
@@ -77,17 +72,4 @@ public class RubyElementRequestor {
 		}
 		return null;
 	}
-
-	private IType findTypeInScript(String typeName, IRubyScript script)
-			throws RubyModelException {
-		IType[] types = script.getTypes();
-		for (int j = 0; j < types.length; j++) {
-			IType type = types[j];
-			if (!type.getElementName().equals(typeName))
-				continue;
-			return type;
-		}
-		return null;
-	}
-
 }

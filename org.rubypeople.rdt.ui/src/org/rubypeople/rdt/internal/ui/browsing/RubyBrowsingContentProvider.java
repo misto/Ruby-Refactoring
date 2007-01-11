@@ -23,6 +23,8 @@ import org.rubypeople.rdt.core.IRubyElement;
 import org.rubypeople.rdt.core.IRubyElementDelta;
 import org.rubypeople.rdt.core.IRubyProject;
 import org.rubypeople.rdt.core.IRubyScript;
+import org.rubypeople.rdt.core.ISourceFolder;
+import org.rubypeople.rdt.core.ISourceFolderRoot;
 import org.rubypeople.rdt.core.ISourceReference;
 import org.rubypeople.rdt.core.IType;
 import org.rubypeople.rdt.core.RubyCore;
@@ -63,31 +65,62 @@ public class RubyBrowsingContentProvider extends
 		startReadInDisplayThread();
 		try {
 			if (element instanceof Collection) {
-				Collection elements = (Collection) element;
+				Collection elements= (Collection)element;
 				if (elements.isEmpty())
 					return NO_CHILDREN;
-				Object[] result = new Object[0];
-				Iterator iter = ((Collection) element).iterator();
+				Object[] result= new Object[0];
+				Iterator iter= ((Collection)element).iterator();
 				while (iter.hasNext()) {
-					Object[] children = getChildren(iter.next());
+					Object[] children= getChildren(iter.next());
 					if (children != NO_CHILDREN)
-						result = concatenate(result, children);
+						result= concatenate(result, children);
 				}
 				return result;
 			}
+			if (element instanceof ISourceFolder)
+				return getFolderContents((ISourceFolder)element);
 			if (fProvideMembers && element instanceof IType)
-				return getChildren((IType) element);
-			if (fProvideMembers && element instanceof ISourceReference
-					&& element instanceof IParent)
+				return getChildren((IType)element);
+			if (fProvideMembers && element instanceof ISourceReference && element instanceof IParent)
 				return super.getChildren(element);
 			if (element instanceof IRubyProject)
-				return getRubyTypes((IRubyProject) element);
+				return getSourceFolderRoots((IRubyProject)element);
 			return super.getChildren(element);
 		} catch (RubyModelException e) {
 			return NO_CHILDREN;
 		} finally {
 			finishedReadInDisplayThread();
 		}
+	}
+	
+	private Object[] getFolderContents(ISourceFolder fragment) throws RubyModelException {
+		ISourceReference[] sourceRefs= fragment.getRubyScripts();
+		Object[] result= new Object[0];
+		for (int i= 0; i < sourceRefs.length; i++)
+			result= concatenate(result, getChildren(sourceRefs[i]));
+		return concatenate(result, fragment.getNonRubyResources());
+	}
+	
+	protected Object[] getSourceFolderRoots(IRubyProject project) throws RubyModelException {
+		if (!project.getProject().isOpen())
+			return NO_CHILDREN;
+
+		ISourceFolderRoot[] roots= project.getSourceFolderRoots();
+		List list= new ArrayList(roots.length);
+		// filter out package fragments that correspond to projects and
+		// replace them with the package fragments directly
+		for (int i= 0; i < roots.length; i++) {
+			ISourceFolderRoot root= roots[i];
+			if (!root.isExternal()) {
+				Object[] children= root.getChildren();
+				for (int k= 0; k < children.length; k++)
+					list.add(children[k]);
+			}
+			else if (hasChildren(root)) {
+				list.add(root);
+			}
+		}
+		return concatenate(list.toArray(), project.getNonRubyResources());
 	}
 	
 	private Object[] getChildren(IType type) throws RubyModelException{
@@ -104,28 +137,6 @@ public class RubyBrowsingContentProvider extends
 				tempResult.add(members[i]);
 		tempResult.addAll(Arrays.asList(type.getChildren()));
 		return tempResult.toArray();
-	}
-
-	private Object[] getRubyTypes(IRubyProject project)
-			throws RubyModelException {
-		Object[] scripts = getRubyScripts(project);
-		List list = new ArrayList();
-		for (int i = 0; i < scripts.length; i++) {
-			IRubyScript script = (IRubyScript) scripts[i];
-			Object[] types = script.getTypes();
-			for (int j = 0; j < types.length; j++) {
-				list.add(types[j]);
-			}
-		}
-		return concatenate(list.toArray(), new Object[] {});
-	}
-
-	protected Object[] getRubyScripts(IRubyProject project)
-			throws RubyModelException {
-		if (!project.getProject().isOpen())
-			return NO_CHILDREN;
-
-		return project.getRubyScripts();
 	}
 
 	private boolean isDisplayThread() {

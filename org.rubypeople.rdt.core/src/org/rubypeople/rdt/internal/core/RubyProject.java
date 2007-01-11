@@ -52,7 +52,6 @@ import org.rubypeople.rdt.core.IRubyModelMarker;
 import org.rubypeople.rdt.core.IRubyModelStatus;
 import org.rubypeople.rdt.core.IRubyModelStatusConstants;
 import org.rubypeople.rdt.core.IRubyProject;
-import org.rubypeople.rdt.core.IRubyScript;
 import org.rubypeople.rdt.core.ISourceFolder;
 import org.rubypeople.rdt.core.ISourceFolderRoot;
 import org.rubypeople.rdt.core.IType;
@@ -796,24 +795,15 @@ public class RubyProject extends Openable implements IProjectNature, IRubyElemen
         return null;
      }
 
-    public void resetCaches() {
-        // TODO Auto-generated method stub        
-    }
-
-	public IRubyScript[] getRubyScripts() throws RubyModelException {
-		Object[] children;
-		int length;
-		IRubyScript[] scripts;
-
-		System.arraycopy(
-			children = getChildren(), 
-			0, 
-			scripts = new IRubyScript[length = children.length], 
-			0, 
-			length);
-			
-		return scripts;
-	}
+ 	/*
+ 	 * Resets this project's caches
+ 	 */
+ 	public void resetCaches() {
+ 		RubyProjectElementInfo info = (RubyProjectElementInfo) RubyModelManager.getRubyModelManager().peekAtInfo(this);
+ 		if (info != null){
+ 			info.resetCaches();
+ 		}
+ 	}
 
 	/**
 	 * Returns an array of non-ruby resources contained in the receiver.
