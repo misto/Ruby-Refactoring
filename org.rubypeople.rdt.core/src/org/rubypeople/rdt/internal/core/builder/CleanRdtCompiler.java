@@ -22,7 +22,7 @@ public class CleanRdtCompiler extends AbstractRdtCompiler  {
 
     private CleanRdtCompiler(IProject project, SymbolIndex symbolIndex, 
             MarkerManager markerManager) {
-        this(project,symbolIndex, markerManager, compilers(markerManager));
+        this(project,symbolIndex, markerManager, singleFileCompilers(markerManager));
     }
 
     protected void flushIndexEntries(SymbolIndex symbolIndex) {

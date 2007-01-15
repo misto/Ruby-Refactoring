@@ -20,7 +20,7 @@ public class IncrementalRdtCompiler extends AbstractRdtCompiler {
     private final IResourceDelta rootDelta;
 
     public IncrementalRdtCompiler(IProject project, IResourceDelta delta, 
-            SymbolIndex symbolIndex, IMarkerManager markerManager, List singleCompilers) {
+            SymbolIndex symbolIndex, IMarkerManager markerManager, List<SingleFileCompiler> singleCompilers) {
         super(project, symbolIndex, markerManager, singleCompilers);
         this.rootDelta = delta;
     }
@@ -32,7 +32,7 @@ public class IncrementalRdtCompiler extends AbstractRdtCompiler {
 
     private IncrementalRdtCompiler(IProject project, IResourceDelta delta, 
            SymbolIndex symbolIndex, MarkerManager manager) {
-        this(project, delta, symbolIndex, manager, compilers(manager));
+        this(project, delta, symbolIndex, manager, singleFileCompilers(manager));
     }
 
     protected void removeMarkers(IMarkerManager markerManager) {
@@ -76,5 +76,10 @@ public class IncrementalRdtCompiler extends AbstractRdtCompiler {
             }});
         filesToClear.addAll(filesToCompile);
     }
+
+	@Override
+	protected List getFilesToClear() {
+		return filesToClear;
+	}
 
 }

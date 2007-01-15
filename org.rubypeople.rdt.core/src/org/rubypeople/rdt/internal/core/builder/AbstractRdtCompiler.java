@@ -38,7 +38,7 @@ public abstract class AbstractRdtCompiler {
     protected abstract List<IFile> getFilesToCompile();
     protected abstract void analyzeFiles() throws CoreException;
 
-    protected static List compilers(MarkerManager markerManager) {
+    protected static List<SingleFileCompiler> singleFileCompilers(MarkerManager markerManager) {
         return ListUtil.create(new RubyCodeAnalyzer(markerManager), 
                 new TaskCompiler(markerManager));
     }
@@ -46,21 +46,25 @@ public abstract class AbstractRdtCompiler {
     public void compile(IProgressMonitor monitor) throws CoreException {
         analyzeFiles();
         List<IFile> files = getFilesToCompile();
-        int fileCount = files.size();
-        monitor.beginTask("Building "+project.getName() + "...", fileCount * (singleFileCompilers.size() + multiFileCompilers.size() + 2));
+        int filesToClear = getFilesToClear().size();
+        int taskCount = (filesToClear * 2) +  (files.size() * (singleFileCompilers.size() + multiFileCompilers.size()));
+        
+        monitor.beginTask("Building "+project.getName() + "...", taskCount);
         monitor.subTask("Removing Markers...");
         
         removeMarkers(markerManager);
-        monitor.worked(fileCount);
+        monitor.worked(filesToClear);
         monitor.subTask("Removing Search Indices...");
         flushIndexEntries(symbolIndex);
-        monitor.worked(fileCount);
+        monitor.worked(filesToClear);
 		
         compileFiles(files, monitor);
         monitor.done();
     }
     
-    private void compileFiles(List<IFile> list, IProgressMonitor monitor) throws CoreException {
+    protected abstract List getFilesToClear();
+
+	private void compileFiles(List<IFile> list, IProgressMonitor monitor) throws CoreException {
         for (MultipleFileCompiler compiler : multiFileCompilers) {
         	if (monitor.isCanceled())
                 return;
@@ -76,8 +80,8 @@ public abstract class AbstractRdtCompiler {
     }
 
     private void compileFile(IFile file, IProgressMonitor monitor) throws CoreException {
-        for (Iterator cIter = singleFileCompilers.iterator(); cIter.hasNext();) {
-            SingleFileCompiler fileCompiler = (SingleFileCompiler) cIter.next();
+        for (Iterator<SingleFileCompiler> cIter = singleFileCompilers.iterator(); cIter.hasNext();) {
+            SingleFileCompiler fileCompiler = cIter.next();
             fileCompiler.compileFile(file);
             monitor.worked(1);
         }
