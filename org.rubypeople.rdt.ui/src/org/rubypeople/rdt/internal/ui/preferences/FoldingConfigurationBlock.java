@@ -19,7 +19,15 @@ import java.util.Map;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
-
+import org.eclipse.jface.text.Assert;
+import org.eclipse.jface.viewers.ComboViewer;
+import org.eclipse.jface.viewers.ISelectionChangedListener;
+import org.eclipse.jface.viewers.IStructuredContentProvider;
+import org.eclipse.jface.viewers.IStructuredSelection;
+import org.eclipse.jface.viewers.LabelProvider;
+import org.eclipse.jface.viewers.SelectionChangedEvent;
+import org.eclipse.jface.viewers.StructuredSelection;
+import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.StackLayout;
 import org.eclipse.swt.events.SelectionEvent;
@@ -33,19 +41,8 @@ import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
-
-import org.eclipse.jface.viewers.ComboViewer;
-import org.eclipse.jface.viewers.ISelectionChangedListener;
-import org.eclipse.jface.viewers.IStructuredContentProvider;
-import org.eclipse.jface.viewers.IStructuredSelection;
-import org.eclipse.jface.viewers.LabelProvider;
-import org.eclipse.jface.viewers.SelectionChangedEvent;
-import org.eclipse.jface.viewers.StructuredSelection;
-import org.eclipse.jface.viewers.Viewer;
-
-import org.eclipse.jface.text.Assert;
-import org.rubypeople.rdt.internal.ui.RubyUIMessages;
 import org.rubypeople.rdt.internal.ui.RubyPlugin;
+import org.rubypeople.rdt.internal.ui.RubyUIMessages;
 import org.rubypeople.rdt.internal.ui.text.folding.RubyFoldingStructureProviderDescriptor;
 import org.rubypeople.rdt.internal.ui.text.folding.RubyFoldingStructureProviderRegistry;
 import org.rubypeople.rdt.internal.ui.util.PixelConverter;
@@ -160,7 +157,7 @@ class FoldingConfigurationBlock implements IPreferenceConfigurationBlock {
 		
 		/* check box for new editors */
 		fFoldingCheckbox= new Button(composite, SWT.CHECK);
-		fFoldingCheckbox.setText(RubyUIMessages.getString("FoldingConfigurationBlock.enable")); //$NON-NLS-1$
+		fFoldingCheckbox.setText(PreferencesMessages.FoldingConfigurationBlock_enable); 
 		gd= new GridData(GridData.HORIZONTAL_ALIGN_BEGINNING | GridData.VERTICAL_ALIGN_BEGINNING);
 		fFoldingCheckbox.setLayoutData(gd);
 		fFoldingCheckbox.addSelectionListener(new SelectionListener() {
@@ -188,7 +185,7 @@ class FoldingConfigurationBlock implements IPreferenceConfigurationBlock {
 		Label comboLabel= new Label(comboComp, SWT.CENTER);
 		gd= new GridData(GridData.HORIZONTAL_ALIGN_BEGINNING | GridData.VERTICAL_ALIGN_CENTER);
 		comboLabel.setLayoutData(gd);
-		comboLabel.setText(RubyUIMessages.getString("FoldingConfigurationBlock.combo_caption")); //$NON-NLS-1$
+		comboLabel.setText(PreferencesMessages.FoldingConfigurationBlock_combo_caption);
 		
 		label= new Label(composite, SWT.CENTER);
 		gd= new GridData(GridData.FILL_HORIZONTAL | GridData.VERTICAL_ALIGN_BEGINNING);

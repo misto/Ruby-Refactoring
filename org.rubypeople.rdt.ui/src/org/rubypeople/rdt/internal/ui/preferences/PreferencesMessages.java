@@ -158,6 +158,8 @@ public final class PreferencesMessages extends NLS {
 	public static String ProjectSelectionDialog_title;
 	public static String ProjectSelectionDialog_desciption;
 	public static String ProjectSelectionDialog_filter;
+	public static String FoldingConfigurationBlock_enable;
+	public static String FoldingConfigurationBlock_combo_caption;
 
     static {
         NLS.initializeMessages(BUNDLE_NAME, PreferencesMessages.class);
