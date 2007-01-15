@@ -1,17 +1,12 @@
 package org.rubypeople.rdt.internal.debug.ui.launcher;
 
-import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.util.Arrays;
 
 import junit.framework.Assert;
-import junit.framework.TestCase;
 
 import org.eclipse.core.resources.IFile;
-import org.eclipse.core.resources.IFolder;
-import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
-import org.eclipse.core.runtime.Path;
 import org.eclipse.debug.core.DebugPlugin;
 import org.eclipse.debug.core.ILaunchConfiguration;
 import org.eclipse.debug.core.ILaunchConfigurationType;
@@ -23,6 +18,7 @@ import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.part.FileEditorInput;
+import org.rubypeople.rdt.core.tests.ModifyingResourceTest;
 import org.rubypeople.rdt.internal.debug.ui.RdtDebugUiPlugin;
 import org.rubypeople.rdt.internal.debug.ui.RubySourceLocator;
 import org.rubypeople.rdt.internal.launching.RubyInterpreter;
@@ -31,7 +27,7 @@ import org.rubypeople.rdt.internal.launching.RubyRuntime;
 import org.rubypeople.rdt.launching.IInterpreter;
 import org.rubypeople.rdt.ui.IRubyConstants;
 
-public class TC_RubyApplicationShortcut extends TestCase {
+public class TC_RubyApplicationShortcut extends ModifyingResourceTest {
 
 	protected ShamRubyApplicationShortcut shortcut;
 	protected IFile rubyFile, nonRubyFile;
@@ -41,40 +37,21 @@ public class TC_RubyApplicationShortcut extends TestCase {
 		super(name);
 	}
 
-	protected IProject getOrCreateProject(String pName) throws CoreException {
-		IProject p = RdtDebugUiPlugin.getWorkspace().getRoot().getProject(pName);
-		if (!p.exists()) {
-			p.create(null);
-			p.open(null);
+	protected ILaunchConfiguration createConfiguration(IFile pFile) {
+		ILaunchConfiguration config = null;
+		try {
+			ILaunchConfigurationType configType = DebugPlugin.getDefault().getLaunchManager().getLaunchConfigurationType(SHAM_LAUNCH_CONFIG_TYPE);
+			ILaunchConfigurationWorkingCopy wc = configType.newInstance(null, pFile.getName());
+			wc.setAttribute(RubyLaunchConfigurationAttribute.PROJECT_NAME, pFile.getProject().getName());
+			wc.setAttribute(RubyLaunchConfigurationAttribute.FILE_NAME, pFile.getProjectRelativePath().toString());
+			wc.setAttribute(RubyLaunchConfigurationAttribute.WORKING_DIRECTORY, "");
+			wc.setAttribute(RubyLaunchConfigurationAttribute.SELECTED_INTERPRETER, RubyRuntime.getDefault().getSelectedInterpreter().getName());
+			wc.setAttribute(ILaunchConfiguration.ATTR_SOURCE_LOCATOR_ID, "org.rubypeople.rdt.debug.ui.rubySourceLocator");
+			config = wc.doSave();
+		} catch (CoreException ce) {
+			//ignore
 		}
-		return p;
-	}
-
-	protected IFile getOrCreateFile(String pName) throws CoreException {
-		IFile f = RdtDebugUiPlugin.getWorkspace().getRoot().getFile(new Path(pName));
-		if (!f.exists()) {
-			f.create(new ByteArrayInputStream(new byte[0]), true, null);
-		}
-		return f;
-	}
-
-	protected IFolder getOrCreateDir(String pName) throws CoreException {
-		IFolder f = RdtDebugUiPlugin.getWorkspace().getRoot().getFolder(new Path(pName));
-		if (!f.exists()) {
-			f.create(true, true, null);
-		}
-		return f;
-	}
-
-	protected void createLaunchConfiguration(String pName, IFile pFile) throws Exception {
-		ILaunchConfigurationType configType = DebugPlugin.getDefault().getLaunchManager().getLaunchConfigurationType(SHAM_LAUNCH_CONFIG_TYPE);
-		ILaunchConfigurationWorkingCopy wc = configType.newInstance(null, pName);
-		wc.setAttribute(RubyLaunchConfigurationAttribute.PROJECT_NAME, pFile.getProject().getName());
-		wc.setAttribute(RubyLaunchConfigurationAttribute.FILE_NAME, pFile.getProjectRelativePath().toString());
-		wc.setAttribute(RubyLaunchConfigurationAttribute.WORKING_DIRECTORY, "");
-		wc.setAttribute(RubyLaunchConfigurationAttribute.SELECTED_INTERPRETER, RubyRuntime.getDefault().getSelectedInterpreter().getName());
-		wc.setAttribute(ILaunchConfiguration.ATTR_SOURCE_LOCATOR_ID, "org.rubypeople.rdt.debug.ui.rubySourceLocator");
-		wc.doSave();
+		return config;
 	}
 
 	protected ILaunchConfiguration[] getLaunchConfigurations() throws CoreException {
@@ -82,13 +59,14 @@ public class TC_RubyApplicationShortcut extends TestCase {
 		return launchManager.getLaunchConfigurations(launchManager.getLaunchConfigurationType(SHAM_LAUNCH_CONFIG_TYPE));
 	}
 
-	protected void setUp() throws CoreException {
+	protected void setUp() throws Exception {
 		shortcut = new ShamRubyApplicationShortcut();
 
-		this.getOrCreateProject("/project1");
-		this.getOrCreateDir("/project1/folderOne");
-		nonRubyFile = this.getOrCreateFile("/project1/folderOne/myFile.java");
-		rubyFile = this.getOrCreateFile("/project1/folderOne/myFile.rb");
+//		createProject("project1");
+		createRubyProject("project1");
+		createFolder("project1/folderOne");
+		nonRubyFile = createFile("project1/folderOne/myFile.java", "");
+		rubyFile = createFile("project1/folderOne/myFile.rb", "");
 
 		ILaunchConfiguration[] configs = this.getLaunchConfigurations();
 		for (int i = 0; i < configs.length; i++) {
@@ -99,7 +77,14 @@ public class TC_RubyApplicationShortcut extends TestCase {
 		ShamApplicationLaunchConfigurationDelegate.resetLaunches();
 		IInterpreter interpreterOne = new RubyInterpreter("InterpreterOne", new File("C:/RubyInstallRootOne"));
 		RubyRuntime.getDefault().setInstalledInterpreters(Arrays.asList(new IInterpreter[] { interpreterOne}));
-
+	   
+		super.setUp();
+	}
+	
+	@Override
+	protected void tearDown() throws Exception {
+		super.tearDown();
+		deleteProject("project1");
 	}
 
 	
@@ -109,14 +94,13 @@ public class TC_RubyApplicationShortcut extends TestCase {
 		shortcut.launch(selection, ILaunchManager.RUN_MODE);
 		
 		assertTrue("A dialog has been shown.", shortcut.didShowDialog);
-
 	}
 	
 	public void testLaunchWithSelectedRubyFile() throws Exception {
 		ISelection selection = new StructuredSelection(rubyFile);
 		
 		shortcut.launch(selection, ILaunchManager.RUN_MODE);
-		
+	
 		assertEquals("A configuration has been created", 1, this.getLaunchConfigurations().length);
 		assertEquals("A launch took place.", 1, ShamApplicationLaunchConfigurationDelegate.getLaunches());
 		assertTrue("The shortcut should not log a message when asked to launch the correct file type.", !shortcut.didLog());
@@ -134,8 +118,8 @@ public class TC_RubyApplicationShortcut extends TestCase {
 
 	public void testLaunchWithSelectionMultipleConfigurationsExist() throws Exception {
         shortcut.expectException();
-		this.createLaunchConfiguration("id1", rubyFile);
-		this.createLaunchConfiguration("id2", rubyFile);
+		this.createConfiguration(rubyFile);
+		this.createConfiguration(rubyFile);
 		ISelection selection = new StructuredSelection(rubyFile);
 
 		shortcut.launch(selection, ILaunchManager.RUN_MODE);
@@ -147,7 +131,7 @@ public class TC_RubyApplicationShortcut extends TestCase {
 	}
 
 	public void testLaunchWithSelectionMultipleSelections() throws Exception {
-		ISelection selection = new StructuredSelection(new Object[] { rubyFile, this.getOrCreateFile("project1/folderOne/yourFile.rb")});
+		ISelection selection = new StructuredSelection(new Object[] { rubyFile, createFile("project1/folderOne/yourFile.rb", "")});
 		shortcut.launch(selection, ILaunchManager.RUN_MODE);
 		ILaunchConfiguration[] configurations = this.getLaunchConfigurations();
 		assertEquals("A configuration has been created", 1, configurations.length);
@@ -168,7 +152,7 @@ public class TC_RubyApplicationShortcut extends TestCase {
 	}
 
 	public void testLaunchWithSelectionWhenFileNamesSameInDifferentDirectory() throws Exception {
-		IFile anotherRubyFileWithSameNameInDifferentFolder = this.getOrCreateFile("project1/myFile.rb");
+		IFile anotherRubyFileWithSameNameInDifferentFolder = createFile("project1/myFile.rb", "");
 		ISelection selection = new StructuredSelection(rubyFile);
 
 		shortcut.launch(selection, ILaunchManager.RUN_MODE);
@@ -183,8 +167,7 @@ public class TC_RubyApplicationShortcut extends TestCase {
 	}
 
 	public void testLaunchFromEditorWithRubyFile() throws Exception {
-
-		IFile file = this.getOrCreateFile("/project1/test.rb");
+		IFile file = createFile("project1/test.rb", "");
 		RubySourceLocator sourceLocator = new RubySourceLocator();
 		String fullPath = RdtDebugUiPlugin.getWorkspace().getRoot().getLocation().toOSString() + File.separator + file.getFullPath().toOSString();
 		Object sourceElement = sourceLocator.getSourceElement(fullPath);
@@ -199,8 +182,7 @@ public class TC_RubyApplicationShortcut extends TestCase {
 	}
 
 	public void testLaunchFromEditorWithTxtFile() throws Exception {
-
-		IFile file = this.getOrCreateFile("/project1/test.txt");
+		IFile file = createFile("project1/test.txt", "");
 		IEditorInput input = new FileEditorInput(file);
 		IEditorPart txtEditor = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage().openEditor(input, "org.eclipse.ui.DefaultTextEditor");
 
@@ -242,7 +224,7 @@ public class TC_RubyApplicationShortcut extends TestCase {
 
         protected void log(Throwable t) {
             if (!expectingException)
-                throw new RuntimeException("Unexpected throwable", t);
+                throw new RuntimeException("Unexpected throwable: " + t.getMessage(), t);
 			didLog = true;
 		}
 
