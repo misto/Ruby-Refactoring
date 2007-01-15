@@ -7,7 +7,6 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.rubypeople.rdt.core.IRubyProject;
 import org.rubypeople.rdt.core.IRubyScript;
-import org.rubypeople.rdt.core.RubyModelException;
 import org.rubypeople.rdt.core.tests.ModifyingResourceTest;
 
 public class TC_RubyProject extends ModifyingResourceTest {
@@ -76,10 +75,13 @@ public class TC_RubyProject extends ModifyingResourceTest {
 	}
 	
 	/**
-	 * Test that a ruby script
-	 * has a corresponding resource.
+	 * Test that a ruby script has a corresponding resource.
+	 * @throws CoreException 
 	 */
-	public void testRubyScriptCorrespondingResource() throws RubyModelException {
+	public void testRubyScriptCorrespondingResource() throws CoreException {
+		addRubyNature("RubyProjectTests");
+		createFolder("RubyProjectTests/q");
+		createFile("RubyProjectTests/q/A.rb", "");
 		IRubyScript element= getRubyScript("RubyProjectTests", "", "q", "A.rb");
 		IResource corr= element.getCorrespondingResource();
 		IResource res= getWorkspace().getRoot().getProject("RubyProjectTests").getFolder("q").getFile("A.rb");
