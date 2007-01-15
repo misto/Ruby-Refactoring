@@ -245,7 +245,7 @@ public class RubyRuntime {
 				writer.write("\" ");
 				writer.write(ATTR_PATH);
 				writer.write("=\"");
-				writer.write(entry.getInstallLocation().toString());
+				writer.write(entry.getInstallLocation().getAbsolutePath());
 				writer.write("\"");
 				if (entry.equals(selectedInterpreter)) {
 					writer.write(" ");
