@@ -7,6 +7,10 @@ import java.io.InputStream;
 
 public class Util {
 
+	public interface Displayable {
+		public String displayString(Object o);
+	}
+
 	private static final int DEFAULT_READING_SIZE = 8192;
 	public final static String UTF_8 = "UTF-8"; //$NON-NLS-1$
 	public static String LINE_SEPARATOR = System.getProperty("line.separator"); //$NON-NLS-1$
@@ -27,6 +31,19 @@ public class Util {
 		}
 	}
 
+	/**
+	 * Converts an array of Objects into String.
+	 */
+	public static String toString(Object[] objects, Displayable renderer) {
+		if (objects == null) return ""; //$NON-NLS-1$
+		StringBuffer buffer = new StringBuffer(10);
+		for (int i = 0; i < objects.length; i++){
+			if (i > 0) buffer.append(", "); //$NON-NLS-1$
+			buffer.append(renderer.displayString(objects[i]));
+		}
+		return buffer.toString();
+	}
+	
 	/**
 	 * Returns the given input stream's contents as a byte array. If a length is
 	 * specified (ie. if length != -1), only length bytes are returned.

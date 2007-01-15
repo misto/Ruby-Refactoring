@@ -8,12 +8,7 @@ import java.util.Arrays;
 import junit.framework.TestCase;
 
 import org.eclipse.core.runtime.CoreException;
-import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.Path;
-import org.rubypeople.rdt.internal.launching.CommandExecutor;
-import org.rubypeople.rdt.internal.launching.IllegalCommandException;
-import org.rubypeople.rdt.internal.launching.RubyInterpreter;
 import org.rubypeople.rdt.launching.IInterpreter;
 
 public class TC_RubyInterpreter extends TestCase {
@@ -22,17 +17,17 @@ public class TC_RubyInterpreter extends TestCase {
     private static final File WORKING_DIR = new File("/testDir");
 
     public void testEquals() {
-		IInterpreter interpreterOne = new RubyInterpreter("InterpreterOne", new Path("/InterpreterOnePath"));
-		IInterpreter similarInterpreterOne = new RubyInterpreter("InterpreterOne", new Path("/InterpreterOnePath"));
+		IInterpreter interpreterOne = new RubyInterpreter("InterpreterOne", new File("/InterpreterOnePath"));
+		IInterpreter similarInterpreterOne = new RubyInterpreter("InterpreterOne", new File("/InterpreterOnePath"));
 		assertTrue("Interpreters should be equal.", interpreterOne.equals(similarInterpreterOne));
 		
-		IInterpreter interpreterTwo = new RubyInterpreter("InterpreterTwo", new Path("/InterpreterTwoPath"));
+		IInterpreter interpreterTwo = new RubyInterpreter("InterpreterTwo", new File("/InterpreterTwoPath"));
 		assertTrue("Interpreters should not be equal.", !interpreterOne.equals(interpreterTwo));
 	}
     
     public void testExecList() throws Exception {
         ShamCommandExecutor executor = new ShamCommandExecutor();
-        RubyInterpreter interpreter = new NonValidatingInterpreter("Test", new Path("/path to ruby"), executor);
+        RubyInterpreter interpreter = new NonValidatingInterpreter("Test", new File("/path to ruby"), executor);
         ShamProcess process = new ShamProcess();
         executor.setProcessToReturn(process);
         
@@ -44,7 +39,7 @@ public class TC_RubyInterpreter extends TestCase {
 
     public void testExecutorThrows() throws Exception {
         ShamCommandExecutor executor = new ShamCommandExecutor();
-        RubyInterpreter interpreter = new NonValidatingInterpreter("Test", new Path("/path to ruby"), executor);
+        RubyInterpreter interpreter = new NonValidatingInterpreter("Test", new File("/path to ruby"), executor);
         IOException testException = new IOException("test");
         executor.setExceptionToThrow(testException);
         
@@ -58,7 +53,7 @@ public class TC_RubyInterpreter extends TestCase {
     }
     
     public void testUnknownInterperterThrows() throws Exception {
-        RubyInterpreter interpreter = new RubyInterpreter("Test", new Path("unknown ruby interpreter"), null);
+        RubyInterpreter interpreter = new RubyInterpreter("Test", new File("unknown ruby interpreter"), null);
         
         try {
             interpreter.exec(new ArrayList(), WORKING_DIR);
@@ -70,7 +65,7 @@ public class TC_RubyInterpreter extends TestCase {
     }
 
     private static final class NonValidatingInterpreter extends RubyInterpreter {
-        private NonValidatingInterpreter(String name, IPath location, CommandExecutor executor) {
+        private NonValidatingInterpreter(String name, File location, CommandExecutor executor) {
             super(name, location, executor);
         }
 

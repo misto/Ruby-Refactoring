@@ -1,6 +1,7 @@
 package org.rubypeople.rdt.internal.debug.ui.preferences;
 
-import org.eclipse.core.runtime.IPath;
+import java.io.File;
+
 import org.eclipse.jface.viewers.ILabelProviderListener;
 import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.swt.graphics.Image;
@@ -22,8 +23,8 @@ public class RubyInterpreterLabelProvider implements ITableLabelProvider {
 			case 0 :
 				return interpreter.getName();
 			case 1 :
-				IPath installLocation = interpreter.getInstallLocation();
-				return installLocation != null ? installLocation.toOSString() : "In user path";
+				File installLocation = interpreter.getInstallLocation();
+				return installLocation != null ? installLocation.getAbsolutePath() : "In user path";
 			default :
 				return "Unknown Column Index";
 		}

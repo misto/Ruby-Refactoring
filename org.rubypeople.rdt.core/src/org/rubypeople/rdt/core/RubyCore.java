@@ -48,6 +48,7 @@ import org.rubypeople.rdt.internal.core.RubyCorePreferenceInitializer;
 import org.rubypeople.rdt.internal.core.RubyModel;
 import org.rubypeople.rdt.internal.core.RubyModelManager;
 import org.rubypeople.rdt.internal.core.RubyProject;
+import org.rubypeople.rdt.internal.core.SetLoadpathOperation;
 import org.rubypeople.rdt.internal.core.SymbolIndexResourceChangeListener;
 import org.rubypeople.rdt.internal.core.builder.IndexUpdater;
 import org.rubypeople.rdt.internal.core.builder.MassIndexUpdaterJob;
@@ -1097,6 +1098,156 @@ public class RubyCore extends Plugin {
 			}	
 		}
 		return null;
+	}
+	
+	public static void setLoadpathContainer(final IPath containerPath, IRubyProject[] affectedProjects, ILoadpathContainer[] respectiveContainers, IProgressMonitor monitor) throws RubyModelException {
+
+		if (affectedProjects.length != respectiveContainers.length) Assert.isTrue(false, "Projects and containers collections should have the same size"); //$NON-NLS-1$
+	
+		if (monitor != null && monitor.isCanceled()) return;
+	
+		if (RubyModelManager.CP_RESOLVE_VERBOSE){
+			Util.verbose(
+				"CPContainer SET  - setting container\n" + //$NON-NLS-1$
+				"	container path: " + containerPath + '\n' + //$NON-NLS-1$
+				"	projects: {" +//$NON-NLS-1$
+				org.rubypeople.rdt.internal.compiler.util.Util.toString(
+					affectedProjects, 
+					new org.rubypeople.rdt.internal.compiler.util.Util.Displayable(){ 
+						public String displayString(Object o) { return ((IRubyProject) o).getElementName(); }
+					}) +
+				"}\n	values: {\n"  +//$NON-NLS-1$
+				org.rubypeople.rdt.internal.compiler.util.Util.toString(
+					respectiveContainers, 
+					new org.rubypeople.rdt.internal.compiler.util.Util.Displayable(){ 
+						public String displayString(Object o) { 
+							StringBuffer buffer = new StringBuffer("		"); //$NON-NLS-1$
+							if (o == null) {
+								buffer.append("<null>"); //$NON-NLS-1$
+								return buffer.toString();
+							}
+							ILoadpathContainer container = (ILoadpathContainer) o;
+							buffer.append(container.getDescription());
+							buffer.append(" {\n"); //$NON-NLS-1$
+							ILoadpathEntry[] entries = container.getLoadpathEntries();
+							if (entries != null){
+								for (int i = 0; i < entries.length; i++){
+									buffer.append(" 			"); //$NON-NLS-1$
+									buffer.append(entries[i]); 
+									buffer.append('\n'); 
+								}
+							}
+							buffer.append(" 		}"); //$NON-NLS-1$
+							return buffer.toString();
+						}
+					}) +
+				"\n	}\n	invocation stack trace:"); //$NON-NLS-1$
+				new Exception("<Fake exception>").printStackTrace(System.out); //$NON-NLS-1$
+		}
+		
+		RubyModelManager manager = RubyModelManager.getRubyModelManager();
+		if (manager.containerPutIfInitializingWithSameEntries(containerPath, affectedProjects, respectiveContainers))
+			return;
+
+		final int projectLength = affectedProjects.length;	
+		final IRubyProject[] modifiedProjects;
+		System.arraycopy(affectedProjects, 0, modifiedProjects = new IRubyProject[projectLength], 0, projectLength);
+		final ILoadpathEntry[][] oldResolvedPaths = new ILoadpathEntry[projectLength][];
+			
+		// filter out unmodified project containers
+		int remaining = 0;
+		for (int i = 0; i < projectLength; i++){
+	
+			if (monitor != null && monitor.isCanceled()) return;
+	
+			RubyProject affectedProject = (RubyProject) affectedProjects[i];
+			ILoadpathContainer newContainer = respectiveContainers[i];
+			if (newContainer == null) newContainer = RubyModelManager.CONTAINER_INITIALIZATION_IN_PROGRESS; // 30920 - prevent infinite loop
+			boolean found = false;
+			if (RubyProject.hasRubyNature(affectedProject.getProject())){
+				ILoadpathEntry[] rawClasspath = affectedProject.getRawLoadpath();
+				for (int j = 0, cpLength = rawClasspath.length; j <cpLength; j++) {
+					ILoadpathEntry entry = rawClasspath[j];
+					if (entry.getEntryKind() == ILoadpathEntry.CPE_CONTAINER && entry.getPath().equals(containerPath)){
+						found = true;
+						break;
+					}
+				}
+			}
+			if (!found){
+				modifiedProjects[i] = null; // filter out this project - does not reference the container path, or isnt't yet Java project
+				manager.containerPut(affectedProject, containerPath, newContainer);
+				continue;
+			}
+			ILoadpathContainer oldContainer = manager.containerGet(affectedProject, containerPath);
+			if (oldContainer == RubyModelManager.CONTAINER_INITIALIZATION_IN_PROGRESS) {
+					oldContainer = null;
+			}
+			if (oldContainer != null && oldContainer.equals(respectiveContainers[i])){
+				modifiedProjects[i] = null; // filter out this project - container did not change
+				continue;
+			}
+			remaining++; 
+			oldResolvedPaths[i] = affectedProject.getResolvedLoadpath(true/*ignoreUnresolvedEntry*/, false/*don't generateMarkerOnError*/, false/*don't returnResolutionInProgress*/);
+			manager.containerPut(affectedProject, containerPath, newContainer);
+		}
+		
+		if (remaining == 0) return;
+		
+		// trigger model refresh
+		try {
+			final boolean canChangeResources = !ResourcesPlugin.getWorkspace().isTreeLocked();
+			RubyCore.run(new IWorkspaceRunnable() {
+				public void run(IProgressMonitor progressMonitor) throws CoreException {
+					for(int i = 0; i < projectLength; i++){
+		
+						if (progressMonitor != null && progressMonitor.isCanceled()) return;
+		
+						RubyProject affectedProject = (RubyProject)modifiedProjects[i];
+						if (affectedProject == null) continue; // was filtered out
+						
+						if (RubyModelManager.CP_RESOLVE_VERBOSE){
+							Util.verbose(
+								"CPContainer SET  - updating affected project due to setting container\n" + //$NON-NLS-1$
+								"	project: " + affectedProject.getElementName() + '\n' + //$NON-NLS-1$
+								"	container path: " + containerPath); //$NON-NLS-1$
+						}
+
+						// force a refresh of the affected project (will compute deltas)
+						affectedProject.setRawLoadpath(
+								affectedProject.getRawLoadpath(),
+								SetLoadpathOperation.DO_NOT_SET_OUTPUT,
+								progressMonitor,
+								canChangeResources,
+								oldResolvedPaths[i],
+								false, // updating - no need for early validation
+								false); // updating - no need to save
+					}
+				}
+			},
+			null/*no need to lock anything*/,
+			monitor);
+		} catch(CoreException e) {
+			if (RubyModelManager.CP_RESOLVE_VERBOSE){
+				Util.verbose(
+					"CPContainer SET  - FAILED DUE TO EXCEPTION\n" + //$NON-NLS-1$
+					"	container path: " + containerPath, //$NON-NLS-1$
+					System.err);
+				e.printStackTrace();
+			}
+			if (e instanceof RubyModelException) {
+				throw (RubyModelException)e;
+			} else {
+				throw new RubyModelException(e);
+			}
+		} finally {
+			for (int i = 0; i < projectLength; i++) {
+				if (respectiveContainers[i] == null) {
+					manager.containerPut(affectedProjects[i], containerPath, null); // reset init in progress marker
+				}
+			}
+		}
+					
 	}
 
 }

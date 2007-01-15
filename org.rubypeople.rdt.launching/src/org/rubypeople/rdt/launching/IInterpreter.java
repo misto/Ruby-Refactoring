@@ -9,9 +9,9 @@ import org.rubypeople.rdt.internal.launching.IllegalCommandException;
 
 public interface IInterpreter {
 
-	public IPath getInstallLocation();
+	public File getInstallLocation();
 
-	public void setInstallLocation(IPath validInstallLocation);
+	public void setInstallLocation(File validInstallLocation);
 
 	public String getName();
 
@@ -21,4 +21,17 @@ public interface IInterpreter {
 
 	public Process exec(List commandLine, File workingDirectory) throws CoreException;
 
+	public IPath[] getLibraryLocations();
+
+	public String getId();
+
+	public IInterpreterInstallType getInterpreterInstallType();
+
+	public void setLibraryLocations(IPath[] paths);
+
+	public String[] getInterpreterArguments();
+
+	public void setInterpreterArguments(String[] vmArgs);
+	
+	public IVMRunner getInterpreterRunner(String mode);
 }

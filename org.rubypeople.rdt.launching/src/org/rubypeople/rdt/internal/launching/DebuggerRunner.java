@@ -6,6 +6,7 @@ import java.util.List;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.debug.core.ILaunch;
 import org.eclipse.debug.core.model.IProcess;
@@ -85,9 +86,9 @@ public class DebuggerRunner extends InterpreterRunner {
 
 	protected IInterpreter convertInterpreter(IInterpreter rubyInterpreter) {
 		if (isUseRubyDebug()) {
-			IPath rdebugLocation = rubyInterpreter.getInstallLocation().removeLastSegments(1);
+			IPath rdebugLocation = new Path(rubyInterpreter.getInstallLocation().getAbsolutePath()).removeLastSegments(1);
 			rdebugLocation = rdebugLocation.append("rdebug");
-			return new RubyInterpreter("rdebug", rdebugLocation);
+			return new RubyInterpreter("rdebug", rdebugLocation.toFile());
 		} else {
 			return rubyInterpreter;
 		}

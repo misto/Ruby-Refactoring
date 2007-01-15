@@ -19,6 +19,7 @@
       <import plugin="org.rubypeople.rdt.core"/>
       <import plugin="org.rubypeople.rdt.debug.core"/>
       <import plugin="org.eclipse.core.runtime"/>
+      <import plugin="org.eclipse.core.variables"/>
    </requires>
 
    <extension
@@ -29,6 +30,20 @@
             modes="run,debug"
             id="org.rubypeople.rdt.launching.LaunchConfigurationTypeRubyApplication">
       </launchConfigurationType>
+   </extension>
+      <extension
+         point="org.rubypeople.rdt.core.loadpathVariableInitializer">
+      <classpathVariableInitializer
+            variable="RUBY_LIB"
+            class="org.rubypeople.jdt.internal.launching.RubyLoadpathVariablesInitializer">
+      </classpathVariableInitializer>
+   </extension>
+   <extension
+         point="org.rubypeople.rdt.core.loadpathContainerInitializer">
+      <classpathContainerInitializer
+            class="org.rubypeople.rdt.internal.launching.RubyContainerInitializer"
+            id="org.rubypeople.rdt.launching.RUBY_CONTAINER">
+      </classpathContainerInitializer>
    </extension>
 
 </plugin>

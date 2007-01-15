@@ -11,20 +11,22 @@ import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.rubypeople.rdt.launching.IInterpreter;
+import org.rubypeople.rdt.launching.IInterpreterInstallType;
+import org.rubypeople.rdt.launching.IVMRunner;
 
 public class RubyInterpreter implements IInterpreter {
 	public static final String END_OF_OPTIONS_DELIMITER = "--";
 
-	protected IPath installLocation;
+	protected File installLocation;
 	protected String name;
 
     private final CommandExecutor commandExecutor;
 
-	public RubyInterpreter(String aName, IPath validInstallLocation) {
+	public RubyInterpreter(String aName, File validInstallLocation) {
         this(aName, validInstallLocation, new StandardCommandExecutor());
 	}
 
-	public RubyInterpreter(String aName, IPath validInstallLocation, CommandExecutor commandExecutor) {
+	public RubyInterpreter(String aName, File validInstallLocation, CommandExecutor commandExecutor) {
 	    name = aName;
 	    installLocation = validInstallLocation;
         this.commandExecutor = commandExecutor;
@@ -33,17 +35,10 @@ public class RubyInterpreter implements IInterpreter {
     /* (non-Javadoc)
 	 * @see org.rubypeople.rdt.internal.launching.IInterpreter#getInstallLocation()
 	 */
-    public IPath getInstallLocation() {
+    public File getInstallLocation() {
 		return installLocation;
 	}
 
-	/* (non-Javadoc)
-	 * @see org.rubypeople.rdt.internal.launching.IInterpreter#setInstallLocation(org.eclipse.core.runtime.IPath)
-	 */
-	public void setInstallLocation(IPath validInstallLocation) {
-		installLocation = validInstallLocation;
-	}
-	
 	/* (non-Javadoc)
 	 * @see org.rubypeople.rdt.internal.launching.IInterpreter#getName()
 	 */
@@ -59,8 +54,8 @@ public class RubyInterpreter implements IInterpreter {
 	}
 	
 	public String getCommand() throws IllegalCommandException {
-		if( new File(installLocation.toOSString()).isFile() ){
-			return installLocation.toOSString();
+		if( installLocation.isFile() ){
+			return installLocation.getAbsolutePath();
 		}
 		String errorMessage = MessageFormat.format(RdtLaunchingMessages.RdtLaunchingPlugin_interpreterNotFound, new Object[] {this.getName()}) ;
 		throw new IllegalCommandException(errorMessage) ;
@@ -94,5 +89,44 @@ public class RubyInterpreter implements IInterpreter {
 		}
 		
 		return false;
+	}
+
+	public String getId() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public String[] getInterpreterArguments() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public IInterpreterInstallType getInterpreterInstallType() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public IVMRunner getInterpreterRunner(String mode) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public IPath[] getLibraryLocations() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public void setInstallLocation(File validInstallLocation) {
+		this.installLocation = validInstallLocation;		
+	}
+
+	public void setInterpreterArguments(String[] vmArgs) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public void setLibraryLocations(IPath[] paths) {
+		// TODO Auto-generated method stub
+		
 	}
 }

@@ -1,6 +1,7 @@
 package org.rubypeople.rdt.ui;
 
-import org.eclipse.core.runtime.IPath;
+import java.io.File;
+
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.preference.PreferenceConverter;
 import org.eclipse.swt.graphics.RGB;
@@ -654,9 +655,8 @@ public class PreferenceConstants {
     private static String getDefaultPath(String programName) {
         IInterpreter interpreter = RubyRuntime.getDefault().getSelectedInterpreter();
         if (interpreter == null) { return programName; }
-        IPath path = interpreter.getInstallLocation();
-        path = path.uptoSegment(path.segmentCount() - 1).append(programName);
-        return path.toOSString();
+        File path = interpreter.getInstallLocation();
+        return path.getParent() + File.separator + programName;
     }
 
     /**

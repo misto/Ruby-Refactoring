@@ -1568,5 +1568,93 @@ public class RubyModelManager implements IContentTypeChangeListener, ISavePartic
 			}
 		}
 	}
+	
+	/*
+	 * Optimize startup case where a container for 1 project is initialized at a time with the same entries as on shutdown.
+	 */
+	public boolean containerPutIfInitializingWithSameEntries(IPath containerPath, IRubyProject[] projects, ILoadpathContainer[] respectiveContainers) {
+			int projectLength = projects.length;
+			if (projectLength != 1) 
+				return false;
+			final ILoadpathContainer container = respectiveContainers[0];
+			if (container == null)
+				return false;
+			IRubyProject project = projects[0];
+			if (!containerInitializationInProgress(project).contains(containerPath))
+				return false;
+			ILoadpathContainer previousSessionContainer = getPreviousSessionContainer(containerPath, project);
+			final ILoadpathEntry[] newEntries = container.getLoadpathEntries();
+			if (previousSessionContainer == null) 
+				if (newEntries.length == 0) {
+					containerPut(project, containerPath, container);
+					return true;
+				} else {
+					return false;
+				}
+			final ILoadpathEntry[] oldEntries = previousSessionContainer.getLoadpathEntries();
+			if (oldEntries.length != newEntries.length) 
+				return false;
+			for (int i = 0, length = newEntries.length; i < length; i++) {
+				if (!newEntries[i].equals(oldEntries[i])) {
+					if (CP_RESOLVE_VERBOSE) {
+						Util.verbose(
+							"CPContainer SET  - missbehaving container\n" + //$NON-NLS-1$
+							"	container path: " + containerPath + '\n' + //$NON-NLS-1$
+							"	projects: {" +//$NON-NLS-1$
+							org.rubypeople.rdt.internal.compiler.util.Util.toString(
+								projects, 
+								new org.rubypeople.rdt.internal.compiler.util.Util.Displayable(){ 
+									public String displayString(Object o) { return ((IRubyProject) o).getElementName(); }
+								}) +
+							"}\n	values on previous session: {\n"  +//$NON-NLS-1$
+							org.rubypeople.rdt.internal.compiler.util.Util.toString(
+								respectiveContainers, 
+								new org.rubypeople.rdt.internal.compiler.util.Util.Displayable(){ 
+									public String displayString(Object o) { 
+										StringBuffer buffer = new StringBuffer("		"); //$NON-NLS-1$
+										if (o == null) {
+											buffer.append("<null>"); //$NON-NLS-1$
+											return buffer.toString();
+										}
+										buffer.append(container.getDescription());
+										buffer.append(" {\n"); //$NON-NLS-1$
+										for (int j = 0; j < oldEntries.length; j++){
+											buffer.append(" 			"); //$NON-NLS-1$
+											buffer.append(oldEntries[j]); 
+											buffer.append('\n'); 
+										}
+										buffer.append(" 		}"); //$NON-NLS-1$
+										return buffer.toString();
+									}
+								}) +
+							"}\n	new values: {\n"  +//$NON-NLS-1$
+							org.rubypeople.rdt.internal.compiler.util.Util.toString(
+								respectiveContainers, 
+								new org.rubypeople.rdt.internal.compiler.util.Util.Displayable(){ 
+									public String displayString(Object o) { 
+										StringBuffer buffer = new StringBuffer("		"); //$NON-NLS-1$
+										if (o == null) {
+											buffer.append("<null>"); //$NON-NLS-1$
+											return buffer.toString();
+										}
+										buffer.append(container.getDescription());
+										buffer.append(" {\n"); //$NON-NLS-1$
+										for (int j = 0; j < newEntries.length; j++){
+											buffer.append(" 			"); //$NON-NLS-1$
+											buffer.append(newEntries[j]); 
+											buffer.append('\n'); 
+										}
+										buffer.append(" 		}"); //$NON-NLS-1$
+										return buffer.toString();
+									}
+								}) +
+							"\n	}"); //$NON-NLS-1$
+					}
+					return false;
+				}
+			}
+			containerPut(project, containerPath, container);
+			return true;
+		}
 
 }

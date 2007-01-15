@@ -82,7 +82,7 @@ public class TC_RunnerLaunching extends TestCase {
 
 		IProject project = ResourceTools.createProject(PROJECT_NAME);
 
-		ShamInterpreter interpreter = new ShamInterpreter("", new Path(""));
+		ShamInterpreter interpreter = new ShamInterpreter("", new File(""));
 		List installedInterpreters = new ArrayList();
 		installedInterpreters.add(interpreter);
 		RubyRuntime.getDefault().setInstalledInterpreters(installedInterpreters);
@@ -250,7 +250,7 @@ public class TC_RunnerLaunching extends TestCase {
 	}
 
 	public class ShamInterpreter extends RubyInterpreter {
-		public ShamInterpreter(String aName, IPath validInstallLocation) {
+		public ShamInterpreter(String aName, File validInstallLocation) {
 			super(aName, validInstallLocation);
 		}
 		private List arguments;

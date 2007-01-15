@@ -25,7 +25,6 @@ import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.part.FileEditorInput;
 import org.rubypeople.rdt.internal.debug.ui.RdtDebugUiPlugin;
 import org.rubypeople.rdt.internal.debug.ui.RubySourceLocator;
-import org.rubypeople.rdt.internal.debug.ui.launcher.RubyApplicationShortcut;
 import org.rubypeople.rdt.internal.launching.RubyInterpreter;
 import org.rubypeople.rdt.internal.launching.RubyLaunchConfigurationAttribute;
 import org.rubypeople.rdt.internal.launching.RubyRuntime;
@@ -98,7 +97,7 @@ public class TC_RubyApplicationShortcut extends TestCase {
 		Assert.assertEquals("All configurations deleted.", 0, this.getLaunchConfigurations().length);
 
 		ShamApplicationLaunchConfigurationDelegate.resetLaunches();
-		IInterpreter interpreterOne = new RubyInterpreter("InterpreterOne", new Path("C:/RubyInstallRootOne"));
+		IInterpreter interpreterOne = new RubyInterpreter("InterpreterOne", new File("C:/RubyInstallRootOne"));
 		RubyRuntime.getDefault().setInstalledInterpreters(Arrays.asList(new IInterpreter[] { interpreterOne}));
 
 	}

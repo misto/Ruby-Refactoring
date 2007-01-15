@@ -2,9 +2,7 @@ package org.rubypeople.rdt.internal.debug.ui.preferences;
 
 import java.io.File;
 
-import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ModifyEvent;
@@ -44,8 +42,8 @@ public class EditInterpreterDialog extends StatusDialog {
 		String interpreterName = interpreterToEdit.getName();
 		interpreterNameText.setText(interpreterName != null ? interpreterName : ""); //$NON-NLS-1$
 
-		IPath installLocation = interpreterToEdit.getInstallLocation();
-		interpreterLocationText.setText(installLocation != null ? installLocation.toOSString() : ""); //$NON-NLS-1$
+		File installLocation = interpreterToEdit.getInstallLocation();
+		interpreterLocationText.setText(installLocation != null ? installLocation.getAbsolutePath() : ""); //$NON-NLS-1$
 	}
 
 	protected void createLocationEntryField(Composite composite) {
@@ -145,7 +143,7 @@ public class EditInterpreterDialog extends StatusDialog {
 			interpreterToEdit = new RubyInterpreter(null, null);
 
 		interpreterToEdit.setName(interpreterNameText.getText());
-		interpreterToEdit.setInstallLocation(new Path(interpreterLocationText.getText()));
+		interpreterToEdit.setInstallLocation(new File(interpreterLocationText.getText()));
 		super.okPressed();
 	}
 	protected Control createDialogArea(Composite parent) {

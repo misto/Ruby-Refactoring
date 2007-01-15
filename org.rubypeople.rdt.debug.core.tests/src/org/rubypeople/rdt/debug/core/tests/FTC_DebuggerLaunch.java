@@ -1,13 +1,13 @@
 package org.rubypeople.rdt.debug.core.tests;
 
 import java.io.ByteArrayInputStream;
+import java.io.File;
 
 import junit.framework.TestCase;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.NullProgressMonitor;
-import org.eclipse.core.runtime.Path;
 import org.eclipse.debug.core.DebugPlugin;
 import org.eclipse.debug.core.ILaunch;
 import org.eclipse.debug.core.ILaunchConfiguration;
@@ -36,7 +36,7 @@ public class FTC_DebuggerLaunch extends TestCase {
 		// to be set accordingly
 		String rubyInterpreterPath = FTC_ClassicDebuggerCommunicationTest.RUBY_INTERPRETER ;
 		System.out.println("Using interpreter: " + rubyInterpreterPath) ;
-		IInterpreter rubyInterpreter = new RubyInterpreter("RubyInterpreter", new Path(rubyInterpreterPath));
+		IInterpreter rubyInterpreter = new RubyInterpreter("RubyInterpreter", new File(rubyInterpreterPath));
 		RubyRuntime.getDefault().addInstalledInterpreter(rubyInterpreter) ;
 	
 	}
