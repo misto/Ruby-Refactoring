@@ -18,6 +18,7 @@ import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.part.FileEditorInput;
+import org.rubypeople.rdt.core.IRubyElement;
 import org.rubypeople.rdt.core.tests.ModifyingResourceTest;
 import org.rubypeople.rdt.internal.debug.ui.RdtDebugUiPlugin;
 import org.rubypeople.rdt.internal.debug.ui.RubySourceLocator;
@@ -102,7 +103,7 @@ public class TC_RubyApplicationShortcut extends ModifyingResourceTest {
 		shortcut.launch(selection, ILaunchManager.RUN_MODE);
 	
 		assertEquals("A configuration has been created", 1, this.getLaunchConfigurations().length);
-		assertEquals("A launch took place.", 1, ShamApplicationLaunchConfigurationDelegate.getLaunches());
+		assertEquals("A launch took place.", 1, shortcut.launchCount());
 		assertTrue("The shortcut should not log a message when asked to launch the correct file type.", !shortcut.didLog());
 	}
 
@@ -112,22 +113,19 @@ public class TC_RubyApplicationShortcut extends ModifyingResourceTest {
 		shortcut.launch(selection, ILaunchManager.RUN_MODE);
 		
 		assertEquals("There is no configuration.", 0, this.getLaunchConfigurations().length);
-		assertEquals("There was no launch.", 0, ShamApplicationLaunchConfigurationDelegate.getLaunches());
+		assertEquals("There was no launch.", 0, shortcut.launchCount());
 		assertTrue("The shortcut should log a message when asked to launch the wrong file type.", shortcut.didLog());
 	}
 
 	public void testLaunchWithSelectionMultipleConfigurationsExist() throws Exception {
-        shortcut.expectException();
 		this.createConfiguration(rubyFile);
 		this.createConfiguration(rubyFile);
 		ISelection selection = new StructuredSelection(rubyFile);
 
 		shortcut.launch(selection, ILaunchManager.RUN_MODE);
 
-		assertEquals("A new configuration for myFile.rb should not be created when one ore more configurations already exist.", 2, this.getLaunchConfigurations().length);
-		assertEquals("The configuration for myFile.rb should not be launched when multiple configurations exist.", 0, ShamApplicationLaunchConfigurationDelegate.getLaunches());
-		assertTrue("The shortcut should log a message when asked to launch a file that has multiple configurations.", shortcut.didLog());
-
+		assertEquals("A new configuration for myFile.rb should not be created when one ore more configurations already exist.", 1, this.getLaunchConfigurations().length);
+		assertEquals("The configuration for myFile.rb should have be launched.", 1, shortcut.launchCount());
 	}
 
 	public void testLaunchWithSelectionMultipleSelections() throws Exception {
@@ -135,7 +133,7 @@ public class TC_RubyApplicationShortcut extends ModifyingResourceTest {
 		shortcut.launch(selection, ILaunchManager.RUN_MODE);
 		ILaunchConfiguration[] configurations = this.getLaunchConfigurations();
 		assertEquals("A configuration has been created", 1, configurations.length);
-		assertEquals("A launch took place.", 1, ShamApplicationLaunchConfigurationDelegate.getLaunches());
+		assertEquals("A launch took place.", 1, shortcut.launchCount());
 		assertTrue("The shortcut should not log a message when asked to launch the correct file type.", !shortcut.didLog());
 
 		String launchedFileName = configurations[0].getAttribute(RubyLaunchConfigurationAttribute.FILE_NAME, "");
@@ -147,7 +145,7 @@ public class TC_RubyApplicationShortcut extends ModifyingResourceTest {
 		shortcut.launch(selection, ILaunchManager.RUN_MODE);
 		shortcut.launch(selection, ILaunchManager.RUN_MODE);
 		assertEquals("Only one configuration has been created", 1, this.getLaunchConfigurations().length);
-		assertEquals("Two launches took place.", 2, ShamApplicationLaunchConfigurationDelegate.getLaunches());
+		assertEquals("Two launches took place.", 2, shortcut.launchCount());
 		assertTrue("The shortcut should not log a message when asked to launch the correct file type.", !shortcut.didLog());
 	}
 
@@ -159,7 +157,7 @@ public class TC_RubyApplicationShortcut extends ModifyingResourceTest {
 
 		ILaunchConfiguration[] configurations = this.getLaunchConfigurations();
 		assertEquals("A configuration has been created", 1, configurations.length);
-		assertEquals("A launch took place.", 1, ShamApplicationLaunchConfigurationDelegate.getLaunches());
+		assertEquals("A launch took place.", 1, shortcut.launchCount());
 		assertTrue("The shortcut should not log a message when asked to launch the correct file type.", !shortcut.didLog());
 
 		String launchedFileName = configurations[0].getAttribute(RubyLaunchConfigurationAttribute.FILE_NAME, "");
@@ -177,7 +175,7 @@ public class TC_RubyApplicationShortcut extends ModifyingResourceTest {
 		shortcut.launch(rubyEditor, ILaunchManager.RUN_MODE);
 
 		assertEquals("A configuration has been created", 1, this.getLaunchConfigurations().length);
-		assertEquals("A launch took place.", 1, ShamApplicationLaunchConfigurationDelegate.getLaunches());
+		assertEquals("A launch took place.", 1, shortcut.launchCount());
 		assertTrue("The shortcut should not log a message when asked to launch the correct file type.", !shortcut.didLog());
 	}
 
@@ -189,7 +187,7 @@ public class TC_RubyApplicationShortcut extends ModifyingResourceTest {
 		shortcut.launch(txtEditor, ILaunchManager.RUN_MODE);
 
 		assertEquals("No configuration has been created", 0, this.getLaunchConfigurations().length);
-		assertEquals("No launch took place.", 0, ShamApplicationLaunchConfigurationDelegate.getLaunches());
+		assertEquals("No launch took place.", 0, shortcut.launchCount());
 		assertTrue("The shortcut should must have logged a message.", shortcut.didLog());
 	}
 
@@ -204,7 +202,7 @@ public class TC_RubyApplicationShortcut extends ModifyingResourceTest {
 		shortcut.launch(rubyExternalEditor, ILaunchManager.RUN_MODE);
 
 		assertEquals("No configuration has been created", 0, this.getLaunchConfigurations().length);
-		assertEquals("No launch took place.", 0, ShamApplicationLaunchConfigurationDelegate.getLaunches());
+		assertEquals("No launch took place.", 0, shortcut.launchCount());
 		assertTrue("The shortcut should must have logged a message.", shortcut.didLog());
 	}
 
@@ -213,6 +211,7 @@ public class TC_RubyApplicationShortcut extends ModifyingResourceTest {
 		protected boolean didLog;
 		protected boolean didShowDialog=false;
         private boolean expectingException;
+		private int launches = 0;
 
 		protected void log(String message) {
 			didLog = true;
@@ -232,6 +231,17 @@ public class TC_RubyApplicationShortcut extends ModifyingResourceTest {
 			return didLog;
 		}
 
+		protected void doLaunch(IRubyElement rubyElement, String mode) throws CoreException {
+			ILaunchConfiguration config = findOrCreateLaunchConfiguration(rubyElement, mode);
+			if (config != null) {
+				launches++;
+			}
+		}
+		
+		public int launchCount() {
+			return launches;
+		}
+		
 		protected ILaunchConfigurationType getRubyLaunchConfigType() {
 			return DebugPlugin.getDefault().getLaunchManager().getLaunchConfigurationType(SHAM_LAUNCH_CONFIG_TYPE);
 		}
