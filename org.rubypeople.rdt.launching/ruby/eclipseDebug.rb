@@ -208,7 +208,6 @@ class DEBUGGER__
       @socket = DEBUGGER__.socket
       @stop_next = 0
       @last_file = nil
-      @last = [nil, nil]
       @file = nil
       @line = nil
       @no_step = nil
@@ -792,11 +791,11 @@ class DEBUGGER__
       n = 1
       for b in break_points
         @printer.debug("file=%s, pos=%s; breakpoint: %s, %s, %s, %s.\n ", file, pos, b[0], b[1], b[2], b[3])
-        if b[0]
-          if b[1] == 0 and b[2] == file and b[3] == pos
+        if b[0] # valid
+          if b[1] == 0 and b[2] == file and b[3] == pos # breakpoint
             @printer.printBreakpoint(n, debug_funcname(id), file, pos)
             return true
-          elsif b[1] == 1
+          elsif b[1] == 1 # watchpoint
             if debug_silent_eval(b[2], binding)
               stdout.printf "Watchpoint %d, %s at %s:%s\n", n, debug_funcname(id), file, pos
               return true
@@ -845,19 +844,17 @@ class DEBUGGER__
         end
         if !@no_step or @frames.size == @no_step
           @stop_next -= 1
+          @stop_next = -1 if @stop_next < 0
         elsif @frames.size < @no_step
           @stop_next = 0		# break here before leaving...
+        else
+          # nothing to do. skipped
         end
         
         if @stop_next == 0 or check_break_points(file, line, binding, id)	
-          if [file, line] == @last
-            @stop_next = 1
-          else
             @no_step = nil
             debug_command(file, line, id, binding)
             stopCurrentThread
-            @last = [file, line]
-          end
         end
         
       when 'call'
@@ -904,6 +901,8 @@ class DEBUGGER__
   @last_thread = Thread::main
   @max_thread = 1
   @thread_list = {Thread::main => 1}
+  # break_points' one entry: [valid, type, file, pos]
+  # type: 0 - breakpoint, 1 - watchpoint
   @break_points = []
   @display = []
   @waiting = []

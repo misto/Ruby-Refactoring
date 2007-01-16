@@ -16,6 +16,8 @@ public class FTC_ClassicDebuggerCommunicationTest extends
 		junit.framework.TestSuite suite = new junit.framework.TestSuite();
 		//suite.addTest(new FTC_DebuggerCommunicationTest("testBreakpointOnFirstLine"));
 		suite.addTest(new FTC_ClassicDebuggerCommunicationTest("testBreakpointAddAndRemove"));
+		suite.addTest(new FTC_ClassicDebuggerCommunicationTest("testSimpleCycleSteppingWorks"));
+		suite.addTest(new FTC_ClassicDebuggerCommunicationTest("testStoppingonOneLineTwice"));
 //		suite.addTest(new FTC_ClassicDebuggerCommunicationTest("testVariableLocal"));
 //		suite.addTest(new FTC_ClassicDebuggerCommunicationTest("testVariableArray"));
 //		suite.addTest(new FTC_ClassicDebuggerCommunicationTest("testVariableArrayEmpty"));

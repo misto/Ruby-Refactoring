@@ -20,7 +20,6 @@ import org.rubypeople.rdt.internal.debug.core.model.RubyThread;
 import org.rubypeople.rdt.internal.debug.core.model.RubyVariable;
 import org.rubypeople.rdt.internal.debug.core.model.ThreadInfo;
 import org.rubypeople.rdt.internal.debug.core.parsing.BreakpointAddedReader;
-import org.rubypeople.rdt.internal.debug.core.parsing.ErrorReader;
 import org.rubypeople.rdt.internal.debug.core.parsing.EvalReader;
 import org.rubypeople.rdt.internal.debug.core.parsing.FramesReader;
 import org.rubypeople.rdt.internal.debug.core.parsing.LoadResultReader;
@@ -33,6 +32,7 @@ import org.xmlpull.v1.XmlPullParserFactory;
 
 public abstract class FTC_AbstractDebuggerCommunicationTest extends TestCase {
 
+	private static final boolean VERBOSE = false;
 	private static String tmpDir;
 
 	protected static String getTmpDir() {
@@ -147,22 +147,22 @@ public abstract class FTC_AbstractDebuggerCommunicationTest extends TestCase {
 			public void run() {
 				try {
 					while (true) {
-						System.out.println("Starting timeout watchdog.");
+						log("Starting timeout watchdog.");
 						Thread.sleep(TIMEOUT_MS);
-						System.out.println("Timeout reached.");
+						log("Timeout reached.");
 						mainThread.interrupt();
 					}
 				} catch (InterruptedException e) {
-					System.out.println("Watchdog deactivated.");
+					log("Watchdog deactivated.");
 				}
 			}
 		};
 		timeoutThread.start();
-		System.out.println("Setup finished.") ;
+		log("Setup finished.") ;
 	}
 
 	public void tearDown() {
-		System.out.println("TearDown") ;
+		log("TearDown") ;
 		timeoutThread.interrupt();
 		if (process == null || socket == null) {
 			// here we go if there was an error in the creation of the process
@@ -179,17 +179,17 @@ public abstract class FTC_AbstractDebuggerCommunicationTest extends TestCase {
 		try {
 			socket.close();
 		} catch (IOException e) {
-			System.out.println("Exception while closing socket.") ;
+			log("Exception while closing socket.") ;
 			e.printStackTrace();
 		}
 		try {
 			if (process.exitValue() != 0) {
-				System.out.println("Ruby finished with exit value: "
+				log("Ruby finished with exit value: "
 						+ process.exitValue());
 			}
 		} catch (IllegalThreadStateException ex) {
 			process.destroy();
-			System.out.println("Ruby process had to be destroyed.");
+			log("Ruby process had to be destroyed.");
 			// wait so that the debugger port will be availabel for the next
 			// test
 			// There seems to be a delay after the destroying of a process and
@@ -197,32 +197,32 @@ public abstract class FTC_AbstractDebuggerCommunicationTest extends TestCase {
 			try {
 				Thread.sleep(5000);
 			} catch (InterruptedException e) {
-				System.out.println("Exception while sleeping after destroying the ruby process") ;
+				log("Exception while sleeping after destroying the ruby process") ;
 				// TODO: find out what causes interruption!
 				try {
 					Thread.sleep(5000);
 				} catch (InterruptedException e1) {
-					System.out.println("Exception again while sleeping after destroying the ruby process") ;
+					log("Exception again while sleeping after destroying the ruby process") ;
 				}
 			}
 		}
 
-		System.out.println("Waiting for stdout redirector thread..");
+		log("Waiting for stdout redirector thread..");
 		try {
 			rubyStdoutRedirectorThread.join();
 		} catch (InterruptedException e) {
-			System.out.println("Exception while waiting for stdout redirector") ;
+			log("Exception while waiting for stdout redirector") ;
 			e.printStackTrace();
 		}
-		System.out.println("..done");
-		System.out.println("Waiting for stderr redirector thread..");
+		log("..done");
+		log("Waiting for stderr redirector thread..");
 		try {
 			rubyStderrRedirectorThread.join();
 		} catch (InterruptedException e) {
-			System.out.println("Exception while waiting for stderr redirector") ;
+			log("Exception while waiting for stderr redirector") ;
 			e.printStackTrace();
 		}
-		System.out.println("..done");
+		log("..done");
 	}
 
 	protected void writeFile(String name, String[] content) throws Exception {
@@ -247,18 +247,18 @@ public abstract class FTC_AbstractDebuggerCommunicationTest extends TestCase {
 		}
 		multiReaderStrategy = new MultiReaderStrategy(getXpp(socket));
 
-		Runnable runnable = new Runnable() {
-			public void run() {
-				try {
-					while (true) {
-						new WasteReader(multiReaderStrategy).read();
-					}
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			};
-		};
-		new Thread(runnable).start();
+//		Runnable runnable = new Runnable() {
+//			public void run() {
+//				try {
+//					while (true) {
+//						new WasteReader(multiReaderStrategy).read();
+//					}
+//				} catch (Exception e) {
+//					e.printStackTrace();
+//				}
+//			};
+//		};
+//		new Thread(runnable).start();
 		Thread.sleep(500);
 		out = new PrintWriter(socket.getOutputStream(), true);
 		readSuspensionInFirstLine() ;
@@ -277,7 +277,7 @@ public abstract class FTC_AbstractDebuggerCommunicationTest extends TestCase {
 		} catch (IllegalThreadStateException ex) {
 			// not yet finished, normal behaviour
 			// why does process does not have a function like isRunning() ?
-			System.out.println("Sending: " + debuggerCommand);
+			log("Sending: " + debuggerCommand);
 			out.println(debuggerCommand);
 		}
 	}
@@ -296,7 +296,7 @@ public abstract class FTC_AbstractDebuggerCommunicationTest extends TestCase {
 		createSocket(new String[] { "puts 'a'" });
 		sendRuby("b test.rb:1");
 		sendRuby("cont");
-		System.out.println("Waiting for breakpoint..");
+		log("Waiting for breakpoint..");
 		SuspensionPoint hit = getSuspensionReader().readSuspension();
 		assertNotNull(hit);
 		assertTrue(hit.isBreakpoint());
@@ -304,28 +304,73 @@ public abstract class FTC_AbstractDebuggerCommunicationTest extends TestCase {
 	}
 
 	public void testBreakpointAddAndRemove() throws Exception {
-		// Breakpoint in line 1 does not work yet.
-		createSocket(new String[] { "puts 'a'", "puts 'a'", "puts 'a'" });
+		createSocket(new String[] { "1.upto(3) {", "puts 'a'", "puts 'b'", "puts 'c'", "}" });
 		sendRuby("b test.rb:2");
 		assertEquals(1, getBreakpointAddedReader().readBreakpointNo()) ;
-		sendRuby("b test.rb:3");
+		sendRuby("b test.rb:4");
 		assertEquals(2, getBreakpointAddedReader().readBreakpointNo()) ;		
-		sendRuby("cont");
-		System.out.println("Waiting for breakpoint..");
+		sendRuby("cont"); // -> 2 
+		assertBreakpoint(getSuspensionReader().readSuspension(), "test.rb", 2); 
+		sendRuby("cont"); // 2 -> 4 
+		assertBreakpoint(getSuspensionReader().readSuspension(), "test.rb", 4); 
+		sendRuby("cont"); // 4 -> 2 
+		assertBreakpoint(getSuspensionReader().readSuspension(), "test.rb", 2); 
+		sendRuby("delete -1"); // should be ignored 
+		sendRuby("delete 100"); // should be ignored 
+		sendRuby("delete 2"); 
+		sendRuby("cont"); // 2 -> 2 
+		assertBreakpoint(getSuspensionReader().readSuspension(), "test.rb", 2); 
+		sendRuby("cont"); // 2 -> finish 
 		SuspensionPoint hit = getSuspensionReader().readSuspension();
-		assertNotNull(hit);
+		assertNull("null expected, but was: " + hit, hit); 
+	} 
+	 		 
+	public void testSimpleCycleSteppingWorks() throws Exception { 
+		createSocket(new String[] { "1.upto(2) {", "puts 'a'", "}", "puts 'b'" }); 
+		sendRuby("b test.rb:2"); 
+		assertEquals(1, getBreakpointAddedReader().readBreakpointNo()); 
+		sendRuby("b test.rb:4"); 
+		assertEquals(2, getBreakpointAddedReader().readBreakpointNo()); 
+		sendRuby("cont"); // -> 2 
+		assertBreakpoint(getSuspensionReader().readSuspension(), "test.rb", 2); 
+		sendRuby("cont"); // 2 -> 2 
+		assertBreakpoint(getSuspensionReader().readSuspension(), "test.rb", 2); 
+		sendRuby("cont"); // 2 -> 2 
+		assertBreakpoint(getSuspensionReader().readSuspension(), "test.rb", 4); 
+		sendRuby("cont"); // 4 -> finish 
+		SuspensionPoint hit = getSuspensionReader().readSuspension(); 
+		assertNull("null expected, but was: " + hit, hit); 
+	} 
+	
+	public void testStoppingOnOneLineTwice() throws Exception { 
+		createSocket(new String[] { 
+				"1.upto(2) {", "if true", "puts 'a'", "end", "}", "puts 'b'" }); 
+		sendRuby("b test.rb:2"); 
+		assertEquals(1, getBreakpointAddedReader().readBreakpointNo()); 
+		sendRuby("b test.rb:6"); 
+		assertEquals(2, getBreakpointAddedReader().readBreakpointNo()); 
+		sendRuby("cont"); // -> 2 
+		assertBreakpoint(getSuspensionReader().readSuspension(), "test.rb", 2); 
+		sendRuby("cont"); // 2 -> 2 
+		assertBreakpoint(getSuspensionReader().readSuspension(), "test.rb", 2); 
+		sendRuby("cont"); // 2 -> 2 
+		assertBreakpoint(getSuspensionReader().readSuspension(), "test.rb", 2); 
+		sendRuby("cont"); // 2 -> 2 
+		assertBreakpoint(getSuspensionReader().readSuspension(), "test.rb", 2); 
+		sendRuby("cont"); // 2 -> 2 
+		assertBreakpoint(getSuspensionReader().readSuspension(), "test.rb", 6); 
+		sendRuby("cont"); // 6 -> finish 
+		SuspensionPoint hit = getSuspensionReader().readSuspension(); 
+		assertNull("null expected, but was: " + hit, hit); 
+	} 
+	
+	public void assertBreakpoint(SuspensionPoint hit, String file, int line) { 
+		assertNotNull(hit); 
 		assertTrue(hit.isBreakpoint());
-		assertEquals(2, hit.getLine());
-		assertEquals("test.rb", hit.getFile());
-		sendRuby("delete -1");
-		sendRuby("delete 100");
-		sendRuby("delete 1");
-		sendRuby("delete 2");
-		sendRuby("cont");
-		hit = getSuspensionReader().readSuspension();
-		assertNull(hit);
+		assertEquals(line, hit.getLine()); 
+		assertEquals(file, hit.getFile()); 
 	}
-
+	
 	public void testException() throws Exception {
 		// per default catch is set to StandardError, i.e. every raise of a
 		// subclass of StandardError
@@ -334,7 +379,7 @@ public abstract class FTC_AbstractDebuggerCommunicationTest extends TestCase {
 				"raise 'message \\dir\\file: <xml/>\n<8>'", "puts 'c'" });
 		sendRuby("catch StandardError");
 		sendRuby("cont");
-		System.out.println("Waiting for exception");
+		log("Waiting for exception");
 		SuspensionPoint hit = getSuspensionReader().readSuspension();
 		assertNotNull(hit);
 		assertEquals(3, hit.getLine());
@@ -390,9 +435,14 @@ public abstract class FTC_AbstractDebuggerCommunicationTest extends TestCase {
 		sendRuby("b test.rb:10");
 		getBreakpointAddedReader().readBreakpointNo();
 		sendRuby("cont");
-		System.out.println("Waiting for breakpoint..");
+		log("Waiting for breakpoint..");
 		SuspensionPoint hit = getSuspensionReader().readSuspension();
 		assertNull(hit);
+	}
+
+	private void log(String string) {
+		if (VERBOSE)
+			System.out.println(string);		
 	}
 
 	public void testStepOver() throws Exception {

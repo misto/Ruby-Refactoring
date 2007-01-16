@@ -2,7 +2,6 @@ package org.rubypeople.rdt.debug.core.tests;
 
 import org.rubypeople.rdt.core.RubyCore;
 import org.rubypeople.rdt.internal.debug.core.SuspensionPoint;
-import org.rubypeople.rdt.internal.debug.core.parsing.EvalReader;
 import org.rubypeople.rdt.internal.launching.DebuggerRunner;
 import org.rubypeople.rdt.internal.launching.RdtLaunchingPlugin;
 
