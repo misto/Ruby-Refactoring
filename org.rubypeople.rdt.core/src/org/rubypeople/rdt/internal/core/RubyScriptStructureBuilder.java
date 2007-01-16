@@ -950,7 +950,7 @@ public class RubyScriptStructureBuilder implements NodeVisitor {
 				
 				// Merge newly found module name(s)
 				if ( importedModuleNames != null ) {
-					mergedModuleNames.addAll( (List<String>)(Arrays.asList( importedModuleNames )));
+					mergedModuleNames.addAll( (Arrays.asList( importedModuleNames )));
 				}
 				mergedModuleNames.addAll( mixins );
 				

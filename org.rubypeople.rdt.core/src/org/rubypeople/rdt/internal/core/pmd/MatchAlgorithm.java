@@ -72,9 +72,9 @@ public class MatchAlgorithm {
         matches = matchCollector.getMatches();
         matchCollector = null;
         for (Iterator<Match> i = matches.iterator(); i.hasNext();) {
-            Match match = (Match) i.next();
+            Match match = i.next();
             for (Iterator<TokenEntry> occurrences = match.iterator(); occurrences.hasNext();) {
-                TokenEntry mark = (TokenEntry) occurrences.next();
+                TokenEntry mark = occurrences.next();
                 match.setLineCount(tokens.getLineCount(mark, match));
                 if (!occurrences.hasNext()) {
                     int start = mark.getBeginLine();

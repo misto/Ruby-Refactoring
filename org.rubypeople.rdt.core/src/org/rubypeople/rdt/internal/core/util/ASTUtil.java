@@ -53,7 +53,7 @@ public abstract class ASTUtil {
 			arguments.add(restName);
 		}
 		if (hasBlock)
-			arguments.add("&" + (String) bodyNode.getVariables()[args.getBlockArgNode().getCount()]);
+			arguments.add("&" + bodyNode.getVariables()[args.getBlockArgNode().getCount()]);
 		return stringListToArray(arguments);
 	}
 	

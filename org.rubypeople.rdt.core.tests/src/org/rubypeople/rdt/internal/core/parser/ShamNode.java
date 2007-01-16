@@ -18,7 +18,9 @@ import org.jruby.evaluator.Instruction;
 
 public class ShamNode extends Node {
 
-    public ShamNode() {
+	private static final long serialVersionUID = 9194640230446025694L;
+
+	public ShamNode() {
         super(null, 0);
     }
 

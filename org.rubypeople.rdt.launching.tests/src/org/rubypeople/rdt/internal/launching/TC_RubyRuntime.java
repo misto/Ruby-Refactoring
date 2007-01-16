@@ -51,11 +51,11 @@ public class TC_RubyRuntime extends TestCase {
 		
 		ShamRubyRuntime runtime = new ShamRubyRuntime();
 		
-		IInterpreter interpreterOne = new RubyInterpreter("InterpreterOne", new File("C:/RubyInstallRootOne"));
+		IInterpreter interpreterOne = new RubyInterpreter("InterpreterOne", new File("C:\\RubyInstallRootOne"));
 		runtime.setInstalledInterpreters(Arrays.asList(new IInterpreter[] { interpreterOne }));
 		assertEquals("XML should indicate only one interpreter with it being the selected.", "<?xml version=\"1.0\" encoding=\"UTF-8\"?><runtimeconfig><interpreter name=\"InterpreterOne\" path=\"C:\\RubyInstallRootOne\" selected=\"true\"/></runtimeconfig>", runtimeConfigurationWriter.toString());
 		
-		RubyInterpreter interpreterTwo = new RubyInterpreter("InterpreterTwo", new File("C:/RubyInstallRootTwo"));
+		RubyInterpreter interpreterTwo = new RubyInterpreter("InterpreterTwo", new File("C:\\RubyInstallRootTwo"));
 		runtime.setInstalledInterpreters(Arrays.asList(new IInterpreter[] { interpreterOne, interpreterTwo }));
 		assertEquals("XML should indicate both interpreters with the first one being selected.", "<?xml version=\"1.0\" encoding=\"UTF-8\"?><runtimeconfig><interpreter name=\"InterpreterOne\" path=\"C:\\RubyInstallRootOne\" selected=\"true\"/><interpreter name=\"InterpreterTwo\" path=\"C:\\RubyInstallRootTwo\"/></runtimeconfig>", runtimeConfigurationWriter.toString());
 		

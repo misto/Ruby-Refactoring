@@ -697,7 +697,7 @@ public class RubyCore extends Plugin {
      * @return the single instance of the Ruby core plug-in runtime class
      */
     public static RubyCore getRubyCore() {
-        return (RubyCore) getPlugin();
+        return getPlugin();
     }
 
     public static boolean isRubyLikeFileName(String name) {

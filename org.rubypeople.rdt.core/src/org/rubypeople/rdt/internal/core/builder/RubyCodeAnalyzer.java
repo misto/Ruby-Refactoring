@@ -32,7 +32,7 @@ public final class RubyCodeAnalyzer implements SingleFileCompiler {
     private final IndexUpdater indexUpdater;
 
     public RubyCodeAnalyzer(IMarkerManager markerManager) {
-        this(markerManager, new RubyParser(new ImmediateWarnings(markerManager)), new IndexUpdater(((RubyCore) RubyCore.getPlugin()).getSymbolIndex()));
+        this(markerManager, new RubyParser(new ImmediateWarnings(markerManager)), new IndexUpdater((RubyCore.getPlugin()).getSymbolIndex()));
     }
     
     public RubyCodeAnalyzer(IMarkerManager markerManager, RubyParser parser, IndexUpdater indexUpdater) {

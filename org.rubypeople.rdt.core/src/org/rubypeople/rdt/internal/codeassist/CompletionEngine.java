@@ -68,7 +68,7 @@ public class CompletionEngine {
 		StringBuffer prefix = new StringBuffer();
 		boolean isMethod = false;
 		for (int i = offset; i >= 0; i--) {
-			char curChar = (char) source.charAt(i);
+			char curChar = source.charAt(i);
 			if (curChar == '.') {
 				isMethod = true;
 				if (offset == i) { // if it's the first character we looked at,

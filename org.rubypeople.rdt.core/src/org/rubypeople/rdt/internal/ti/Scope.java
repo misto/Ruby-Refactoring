@@ -20,6 +20,7 @@ import org.jruby.ast.Node;
  */
 public class Scope extends LinkedList<Scope> {
 
+	private static final long serialVersionUID = -575610283102921342L;
 	private List<Variable> variables;
 	private List<Scope> childScopes;
 	private Scope parentScope;

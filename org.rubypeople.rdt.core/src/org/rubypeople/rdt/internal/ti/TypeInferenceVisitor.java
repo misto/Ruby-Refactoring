@@ -156,22 +156,6 @@ public class TypeInferenceVisitor extends InOrderVisitor {
 	}
 	
 	/**
-	 * Returns the closest Class scope. Used to insert ClassVarDeclNode
-	 * references.
-	 * 
-	 * @return closest encompassing ClassScope, or null if there is not one.
-	 */
-	private Scope getNearestClassScope()
-	{
-		Scope recursiveScope = currentScope;
-		while ( !(recursiveScope.getNode() instanceof ClassNode ) )
-		{ 
-			recursiveScope = recursiveScope.getParentScope();
-		}
-		return null;
-	}
-	
-	/**
 	 * Local assignment may provide a concrete type from the rvalue
 	 */
 	public Instruction visitLocalAsgnNode(LocalAsgnNode iVisited) {

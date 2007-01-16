@@ -37,7 +37,9 @@ public class TC_RubyCodeAnalyzer extends TestCase {
         file.setContents(FILE_CONTENTS);
         
         rootNode = new Node(null, 0) {
-            public Instruction accept(NodeVisitor visitor) {
+			private static final long serialVersionUID = 9089679642764992140L;
+
+			public Instruction accept(NodeVisitor visitor) {
                 return null;
             }
 

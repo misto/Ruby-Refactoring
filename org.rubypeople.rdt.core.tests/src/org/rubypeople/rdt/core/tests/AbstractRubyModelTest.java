@@ -667,7 +667,7 @@ public class AbstractRubyModelTest extends TestCase {
 	}
 	
 	protected IRubyScript getRubyScript(String path) {
-		return (IRubyScript)RubyCore.create(getFile(path));
+		return RubyCore.create(getFile(path));
 	}
 	
 	public static void waitUntilIndexesReady() {

@@ -159,7 +159,7 @@ public class RubyRuntime {
 	public void addInstalledInterpreter(IInterpreter anInterpreter) {
 		getInstalledInterpreters().add(anInterpreter);
 		if (getInstalledInterpreters().size() == 1)
-			setSelectedInterpreter((RubyInterpreter) getInstalledInterpreters().get(0));
+			setSelectedInterpreter(getInstalledInterpreters().get(0));
 		else
 			saveRuntimeConfiguration();
 	}
@@ -533,17 +533,17 @@ public class RubyRuntime {
 					String vmType = element.getAttribute("vmInstallType"); //$NON-NLS-1$
 					if (vmType == null) {
 						abort(MessageFormat.format("Missing required vmInstallType attribute for vmInstall contributed by {0}", //$NON-NLS-1$
-								new String[]{element.getContributor().getName()}), null);
+								(Object[]) new String[]{element.getContributor().getName()}), null);
 					}
 					String id = element.getAttribute("id"); //$NON-NLS-1$
 					if (id == null) {
 						abort(MessageFormat.format("Missing required id attribute for vmInstall contributed by {0}", //$NON-NLS-1$
-								new String[]{element.getContributor().getName()}), null);
+								(Object[]) new String[]{element.getContributor().getName()}), null);
 					}
 					IInterpreterInstallType installType = getInterpreterInstallType(vmType);
 					if (installType == null) {
 						abort(MessageFormat.format("vmInstall {0} contributed by {1} references undefined VM install type {2}", //$NON-NLS-1$
-								new String[]{id, element.getContributor().getName(), vmType}), null);
+								(Object[]) new String[]{id, element.getContributor().getName(), vmType}), null);
 					}
 					IInterpreter install = installType.findInterpreterInstall(id);
 					if (install == null) {
@@ -551,12 +551,12 @@ public class RubyRuntime {
 						String name = element.getAttribute("name"); //$NON-NLS-1$
 						if (name == null) {
 							abort(MessageFormat.format("vmInstall {0} contributed by {1} missing required attribute name", //$NON-NLS-1$
-									new String[]{id, element.getContributor().getName()}), null);
+									(Object[]) new String[]{id, element.getContributor().getName()}), null);
 						}
 						String home = element.getAttribute("home"); //$NON-NLS-1$
 						if (home == null) {
 							abort(MessageFormat.format("vmInstall {0} contributed by {1} missing required attribute home", //$NON-NLS-1$
-									new String[]{id, element.getContributor().getName()}), null);
+									(Object[]) new String[]{id, element.getContributor().getName()}), null);
 						}		
 						String vmArgs = element.getAttribute("vmArgs"); //$NON-NLS-1$
 						VMStandin standin = new VMStandin(installType, id);
@@ -574,7 +574,7 @@ public class RubyRuntime {
                         IStatus status = installType.validateInstallLocation(homeDir);
                         if (!status.isOK()) {
                         	abort(MessageFormat.format("Illegal install location {0} for vmInstall {1} contributed by {2}: {3}", //$NON-NLS-1$
-                        			new String[]{home, id, element.getContributor().getName(), status.getMessage()}), null);
+                        			(Object[]) new String[]{home, id, element.getContributor().getName(), status.getMessage()}), null);
                         }
                         standin.setInstallLocation(homeDir);
 						if (vmArgs != null) {
@@ -589,7 +589,7 @@ public class RubyRuntime {
                                 String libPathStr = library.getAttribute("path"); //$NON-NLS-1$
                                 if (libPathStr == null) {
                                     abort(MessageFormat.format("library for vmInstall {0} contributed by {1} missing required attribute libPath", //$NON-NLS-1$
-                                            new String[]{id, element.getContributor().getName()}), null);
+                                    		(Object[]) new String[]{id, element.getContributor().getName()}), null);
                                 }
 
                                 IPath homePath = new Path(home);
@@ -603,7 +603,7 @@ public class RubyRuntime {
                     fgContributedVMs.add(id);
 				} else {
 					abort(MessageFormat.format("Illegal element {0} in vmInstalls extension contributed by {1}", //$NON-NLS-1$
-							new String[]{element.getName(), element.getContributor().getName()}), null);
+							(Object[]) new String[]{element.getName(), element.getContributor().getName()}), null);
 				}
 			} catch (CoreException e) {
 				RdtLaunchingPlugin.log(e);

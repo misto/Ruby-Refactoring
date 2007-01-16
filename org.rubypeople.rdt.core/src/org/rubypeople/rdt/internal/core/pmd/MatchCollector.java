@@ -56,12 +56,12 @@ public class MatchCollector {
         Set<Match.MatchCode> matchSet = new HashSet<Match.MatchCode>();
         Match.MatchCode matchCode = new Match.MatchCode();
         for (int i = matchList.size(); i > 1; i--) {
-            Match match1 = (Match) matchList.get(i - 1);
-            TokenEntry mark1 = (TokenEntry) match1.getMarkSet().iterator().next();
+            Match match1 = matchList.get(i - 1);
+            TokenEntry mark1 = match1.getMarkSet().iterator().next();
             matchSet.clear();
             matchSet.add(match1.getMatchCode());
             for (int j = i - 1; j > 0; j--) {
-                Match match2 = (Match) matchList.get(j - 1);
+                Match match2 = matchList.get(j - 1);
                 if (match1.getTokenCount() != match2.getTokenCount()) {
                     break;
                 }
