@@ -60,6 +60,7 @@
         <param name="eclipse.plugin.id" expression="org.rubypeople.rdt.doc.user"/>
         <param name="eclipse.plugin.name" expression="%Plugin.name"/>
         <param name="eclipse.plugin.provider" expression="%providerName"/>
+      	<param name="eclipse.plugin.version" expression="${featureVersion}"/>
       	<xmlcatalog id="docbook.catalog">
      	 <dtd publicId="-//OASIS//DTD DocBook V3.1//EN" location="${docbook.dtd.dir}/docbookx.dtd"/>
         </xmlcatalog>

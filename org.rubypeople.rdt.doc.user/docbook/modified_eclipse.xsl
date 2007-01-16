@@ -180,7 +180,7 @@
 Bundle-ManifestVersion: 2
 Bundle-Name: <xsl:value-of select="$eclipse.plugin.name"/>
 Bundle-SymbolicName: <xsl:value-of select="$eclipse.plugin.id"/>;singleton:=true
-Bundle-Version: 0.0.0
+Bundle-Version: <xsl:value-of select="$eclipse.plugin.version"/>
 Bundle-Vendor: <xsl:value-of select="$eclipse.plugin.provider"/>
 Bundle-Localization: plugin
 Eclipse-LazyStart: true
