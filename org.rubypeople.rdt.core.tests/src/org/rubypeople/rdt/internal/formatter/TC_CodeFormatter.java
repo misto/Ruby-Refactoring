@@ -20,15 +20,17 @@ public class TC_CodeFormatter extends TestCase {
 
 	public class TestData {
 		public TestData(String formattedText, String unformattedText, String assertionMessage) {
-			this.formattedText = formattedText ;
-			this.unformattedText = unformattedText ;
-			this.assertionMessage = assertionMessage ;	
+			this.formattedText = formattedText;
+			this.unformattedText = unformattedText;
+			this.assertionMessage = assertionMessage;	
 		}
 		
 		public String formattedText;
 		public String unformattedText;
 		public String assertionMessage;
 	}
+
+	private static final boolean VERBOSE = false;  // set to true if you want output to command line
 
 	private Hashtable testMap;
 	public TC_CodeFormatter(String name) throws SAXException, IOException, ParserConfigurationException, FactoryConfigurationError {
@@ -84,12 +86,18 @@ public class TC_CodeFormatter extends TestCase {
 		for (int i = 0; i < partList.size(); i++) {
 			TestData data = (TestData) partList.get(i);             
 			String formatted = new OldCodeFormatter().formatString(data.unformattedText);
-			System.out.println("---------- " + data.assertionMessage + " --------") ;
-			System.out.println(data.unformattedText) ;
-			System.out.println("------------") ;
-			System.out.println(formatted) ;
+			log("---------- " + data.assertionMessage + " --------") ;
+			log(data.unformattedText) ;
+			log("------------") ;
+			log(formatted) ;
 			Assert.assertEquals(data.assertionMessage, data.formattedText, formatted);
 		}
+	}
+
+	private void log(String formatted) {
+		if (VERBOSE)
+			  System.out.println(formatted);
+		
 	}
 
 	public void testSimple() {
