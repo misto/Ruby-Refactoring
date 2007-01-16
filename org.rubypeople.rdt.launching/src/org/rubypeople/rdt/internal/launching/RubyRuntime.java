@@ -99,7 +99,7 @@ public class RubyRuntime {
     /**
      *  Set of IDs of VMs contributed via vmInstalls extension point.
      */
-    private static Set fgContributedVMs = new HashSet();
+    private static Set<String> fgContributedVMs = new HashSet<String>();
 	
 	protected List<IInterpreter> installedInterpreters;
 	protected IInterpreter selectedInterpreter;
@@ -150,8 +150,8 @@ public class RubyRuntime {
         if (selectedInterpreter == anInterpreter) return;
 		selectedInterpreter = anInterpreter;
 		saveRuntimeConfiguration();
-        for (Iterator iter = listeners.iterator(); iter.hasNext();) {
-            Listener listener = (Listener) iter.next();
+        for (Iterator<Listener> iter = listeners.iterator(); iter.hasNext();) {
+            Listener listener = iter.next();
             listener.selectedInterpreterChanged();
         }        
 	}
@@ -173,7 +173,7 @@ public class RubyRuntime {
 	public void setInstalledInterpreters(List<IInterpreter> newInstalledInterpreters) {
 		installedInterpreters = newInstalledInterpreters;
 		if (installedInterpreters.size() > 0)
-			setSelectedInterpreter((IInterpreter)installedInterpreters.get(0));
+			setSelectedInterpreter(installedInterpreters.get(0));
 		else
 			setSelectedInterpreter(null);
 		saveRuntimeConfiguration();
@@ -214,6 +214,7 @@ public class RubyRuntime {
 		if (Platform.getOS().equals(Platform.OS_WIN32)) {
 		  path = new File("/ruby/bin/ruby.exe");
 		} else  {
+			//FIXME Why not use `which ruby` or something?
 			path = new File("/usr/local/bin/ruby");
 		}
 		IInterpreter interpreter = new RubyInterpreter("Default Ruby Interpreter", path);
@@ -232,7 +233,7 @@ public class RubyRuntime {
 	protected void writeXML(Writer writer) {
 		try {
 			writer.write("<?xml version=\"1.0\" encoding=\"UTF-8\"?><runtimeconfig>");
-			Iterator interpretersIterator = installedInterpreters.iterator();
+			Iterator<IInterpreter> interpretersIterator = installedInterpreters.iterator();
 			while (interpretersIterator.hasNext()) {
 				writer.write("<");
 				writer.write(TAG_INTERPRETER);
@@ -240,12 +241,12 @@ public class RubyRuntime {
 				writer.write(ATTR_NAME);
 				writer.write("=\"");
 				
-				IInterpreter entry = (IInterpreter) interpretersIterator.next();
+				IInterpreter entry = interpretersIterator.next();
 				writer.write(entry.getName());
 				writer.write("\" ");
 				writer.write(ATTR_PATH);
 				writer.write("=\"");
-				writer.write(entry.getInstallLocation().getAbsolutePath());
+				writer.write(entry.getInstallLocation().getPath());
 				writer.write("\"");
 				if (entry.equals(selectedInterpreter)) {
 					writer.write(" ");
@@ -339,7 +340,6 @@ public class RubyRuntime {
 	private static void initializeInterpreters() {
 		VMDefinitionsContainer vmDefs = null;
 		boolean setPref = false;
-		boolean updateCompliance = false;
 		synchronized (fgVMLock) {
 			if (fgInterpreterTypes == null) {
 				try {
@@ -444,13 +444,13 @@ public class RubyRuntime {
 			//only happens on a CoreException
 			RdtLaunchingPlugin.log(status);
 			//cleanup null entries in fgVMTypes
-			List temp= new ArrayList(fgInterpreterTypes.length);
+			List<IInterpreterInstallType> temp= new ArrayList<IInterpreterInstallType>(fgInterpreterTypes.length);
 			for (int i = 0; i < fgInterpreterTypes.length; i++) {
 				if(fgInterpreterTypes[i] != null) {
 					temp.add(fgInterpreterTypes[i]);
 				}
 				fgInterpreterTypes= new IInterpreterInstallType[temp.size()];
-				fgInterpreterTypes= (IInterpreterInstallType[])temp.toArray(fgInterpreterTypes);
+				fgInterpreterTypes= temp.toArray(fgInterpreterTypes);
 			}
 		}
 	}

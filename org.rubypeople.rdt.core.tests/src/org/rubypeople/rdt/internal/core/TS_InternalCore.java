@@ -14,7 +14,7 @@ import junit.framework.TestSuite;
 public class TS_InternalCore {
 
 	public static Test suite() {
-		TestSuite suite = new TestSuite();
+		TestSuite suite = new TestSuite("Core");
 		suite.addTestSuite(TC_RubyCore.class);
 		suite.addTestSuite(TC_RubyProject.class);
 		suite.addTestSuite(TC_LoadPathEntry.class);

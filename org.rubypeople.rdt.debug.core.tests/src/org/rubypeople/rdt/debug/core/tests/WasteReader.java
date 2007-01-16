@@ -2,10 +2,8 @@ package org.rubypeople.rdt.debug.core.tests;
 
 import junit.framework.Assert;
 
-import org.rubypeople.rdt.internal.debug.core.RdtDebugCorePlugin;
 import org.rubypeople.rdt.internal.debug.core.parsing.AbstractReadStrategy;
 import org.rubypeople.rdt.internal.debug.core.parsing.XmlStreamReader;
-import org.rubypeople.rdt.internal.debug.core.parsing.XmlStreamReaderException;
 import org.xmlpull.v1.XmlPullParser;
 
 public class WasteReader extends XmlStreamReader {
@@ -20,8 +18,7 @@ public class WasteReader extends XmlStreamReader {
 	}
 
 	@Override
-	protected boolean processStartElement(XmlPullParser xpp)
-			throws XmlStreamReaderException {
+	protected boolean processStartElement(XmlPullParser xpp) {
 		name = xpp.getName() ;
 		if (name.equals("exception") ) {
 			String exceptionType = xpp.getAttributeValue("", "type") ;

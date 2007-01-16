@@ -101,7 +101,7 @@ public class TC_RubyApplicationShortcut extends ModifyingResourceTest {
 		ISelection selection = new StructuredSelection(rubyFile);
 		
 		shortcut.launch(selection, ILaunchManager.RUN_MODE);
-	
+		
 		assertEquals("A configuration has been created", 1, this.getLaunchConfigurations().length);
 		assertEquals("A launch took place.", 1, shortcut.launchCount());
 		assertTrue("The shortcut should not log a message when asked to launch the correct file type.", !shortcut.didLog());
@@ -123,7 +123,7 @@ public class TC_RubyApplicationShortcut extends ModifyingResourceTest {
 		ISelection selection = new StructuredSelection(rubyFile);
 
 		shortcut.launch(selection, ILaunchManager.RUN_MODE);
-
+		
 		assertEquals("A new configuration for myFile.rb should not be created when one ore more configurations already exist.", 1, this.getLaunchConfigurations().length);
 		assertEquals("The configuration for myFile.rb should have be launched.", 1, shortcut.launchCount());
 	}
@@ -154,7 +154,7 @@ public class TC_RubyApplicationShortcut extends ModifyingResourceTest {
 		ISelection selection = new StructuredSelection(rubyFile);
 
 		shortcut.launch(selection, ILaunchManager.RUN_MODE);
-
+		
 		ILaunchConfiguration[] configurations = this.getLaunchConfigurations();
 		assertEquals("A configuration has been created", 1, configurations.length);
 		assertEquals("A launch took place.", 1, shortcut.launchCount());
@@ -173,7 +173,7 @@ public class TC_RubyApplicationShortcut extends ModifyingResourceTest {
 		IEditorPart rubyEditor = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage().openEditor(input, IRubyConstants.EDITOR_ID);
 
 		shortcut.launch(rubyEditor, ILaunchManager.RUN_MODE);
-
+		
 		assertEquals("A configuration has been created", 1, this.getLaunchConfigurations().length);
 		assertEquals("A launch took place.", 1, shortcut.launchCount());
 		assertTrue("The shortcut should not log a message when asked to launch the correct file type.", !shortcut.didLog());

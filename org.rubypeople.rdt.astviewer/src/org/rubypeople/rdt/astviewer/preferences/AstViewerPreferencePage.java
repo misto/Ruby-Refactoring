@@ -49,14 +49,10 @@ public class AstViewerPreferencePage
 				PreferenceConstants.P_SHOW_NEWLINE,
 				"show &NewlineNodes",
 				getFieldEditorParent()));
-		
-		addField( new BooleanFieldEditor(
-				PreferenceConstants.P_SHOW_SCOPE,
-				"show &ScopeNodes",
-				getFieldEditorParent()));
 	}
 
-	public void init(IWorkbench workbench) {
+	public void init(@SuppressWarnings("unused")
+	IWorkbench workbench) {
 	}
 	
 }

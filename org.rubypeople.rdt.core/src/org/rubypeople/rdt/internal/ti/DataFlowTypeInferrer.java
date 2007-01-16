@@ -36,7 +36,7 @@ import org.rubypeople.rdt.internal.ti.util.MethodInvocationLocator;
 import org.rubypeople.rdt.internal.ti.util.OffsetNodeLocator;
 import org.rubypeople.rdt.internal.ti.util.ScopedNodeLocator;
 
-public class DataFlowTypeInferrer extends Object implements ITypeInferrer {
+public class DataFlowTypeInferrer implements ITypeInferrer {
 	private void sysout(String string) {
 		// false to suppress debug
 		if ( true ) {
@@ -48,7 +48,7 @@ public class DataFlowTypeInferrer extends Object implements ITypeInferrer {
 		sysout( "----------------------------------------\n" +
 				"Node: " + node.getClass().getSimpleName() + "\n" +
 				"Source:\n[" + node.getPosition().getStartOffset() + ".." + node.getPosition().getEndOffset() + "]\n" +
-				source.substring( node.getPosition().getStartOffset(), node.getPosition().getEndOffset() + 1 ) + "\n" + 
+				source.substring( node.getPosition().getStartOffset(), node.getPosition().getEndOffset()) + "\n" + 
 				"----------------------------------------" );
 	}
 	
@@ -227,11 +227,11 @@ public class DataFlowTypeInferrer extends Object implements ITypeInferrer {
 	}
 	
 	private List<Node> findAllSendersOfMethod( String typeName, String methodName ) {
-		return MethodInvocationLocator.Instance().findMethodInvocations( rootNode, source, typeName, methodName, new DataFlowTypeInferrer() );
+		return MethodInvocationLocator.Instance().findMethodInvocations( rootNode, typeName, methodName, new DataFlowTypeInferrer() );
 	}
 	
 	private List<Node> findAllMethodDefinitions( String typeName, String methodName ) {
-		return MethodDefinitionLocator.Instance().findMethodDefinitions( rootNode, source, typeName, methodName );
+		return MethodDefinitionLocator.Instance().findMethodDefinitions( rootNode, typeName, methodName );
 	}
 	
 	private List<Node> findRetvalExprs( Node methodNode ) {
@@ -300,7 +300,7 @@ public class DataFlowTypeInferrer extends Object implements ITypeInferrer {
 
 		//TODO: ScopedNodeLocator doesn't ensure that returned asgns are prior to the ref... relevant to algo?
 		// Are there prior assigns into this ref within the scope? 
-		final String localVarName = helper.getVarName(source, node);
+		final String localVarName = helper.getVarName(node);
 		
 		List<Node> localAssignsIntoNode = ScopedNodeLocator.Instance().findNodesInScope(enclosingScopeNode, new INodeAcceptor() {
 			public boolean doesAccept(Node acceptNode) {
@@ -407,7 +407,7 @@ public class DataFlowTypeInferrer extends Object implements ITypeInferrer {
 		Node enclosingTypeNode = findEnclosingTypeNode( node );
 		
 		// Find assignments into this variable 
-		final String instanceVarName = helper.getVarName(source, node);
+		final String instanceVarName = helper.getVarName(node);
 		List<Node> instAsgnNodes = ScopedNodeLocator.Instance().findNodesInScope(enclosingTypeNode, new INodeAcceptor() {
 			public boolean doesAccept(Node acceptNode) {
 				if ( acceptNode instanceof InstAsgnNode ) {
@@ -435,7 +435,7 @@ public class DataFlowTypeInferrer extends Object implements ITypeInferrer {
 		Node enclosingTypeNode = findEnclosingTypeNode( node );
 		
 		// Find assignments into this variable 
-		final String classVarName = helper.getVarName(source, node);
+		final String classVarName = helper.getVarName(node);
 		prettyPrint(enclosingTypeNode);
 		List<Node> classAsgnNodes = ScopedNodeLocator.Instance().findNodesInScope(enclosingTypeNode, new INodeAcceptor() {
 			public boolean doesAccept(Node acceptNode) {
@@ -473,7 +473,7 @@ public class DataFlowTypeInferrer extends Object implements ITypeInferrer {
 		List<ITypeGuess> possibleTypes = new ArrayList<ITypeGuess>(1);
 		
 		// Find assignments into this variable 
-		final String globalVarName = helper.getVarName(source, node);
+		final String globalVarName = helper.getVarName(node);
 		List<Node> globalAsgnNodes = ScopedNodeLocator.Instance().findNodesInScope(rootNode, new INodeAcceptor() {
 			public boolean doesAccept(Node acceptNode) {
 				if ( acceptNode instanceof GlobalAsgnNode ) {

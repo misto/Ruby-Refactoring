@@ -33,7 +33,7 @@ public class MarkerUtility {
 		try {
 			ISourcePosition pos = syntaxException.getPosition();
 			IMarker marker = underlyingResource.createMarker(IRubyModelMarker.RUBY_MODEL_PROBLEM_MARKER);
-			Map map = new HashMap();
+			Map<String, Comparable> map = new HashMap<String, Comparable>();
 			map.put(IMarker.SEVERITY, new Integer(IMarker.SEVERITY_ERROR));
 			map.put(IMarker.MESSAGE, "Syntax Error");
 			map.put(IMarker.USER_EDITABLE, Boolean.FALSE);
@@ -70,7 +70,7 @@ public class MarkerUtility {
 	public static void createProblemMarker(IResource underlyingResource, IProblem problem) {
 		try {
 			IMarker marker = underlyingResource.createMarker(IRubyModelMarker.RUBY_MODEL_PROBLEM_MARKER);
-			Map map = new HashMap();
+			Map<String, Comparable> map = new HashMap<String, Comparable>();
 			int severity;
 			if(problem.isWarning()) severity = IMarker.SEVERITY_WARNING;
 			else if(problem.isError()) severity = IMarker.SEVERITY_ERROR;
@@ -103,7 +103,7 @@ public class MarkerUtility {
 		if (lineNumber <= 0) lineNumber = 1;
 		IMarker marker = markerExists(resource, task.getMessage(), lineNumber, IRubyModelMarker.TASK_MARKER);
 		if (marker == null) {
-			HashMap map = new HashMap();
+			HashMap<String, Comparable> map = new HashMap<String, Comparable>();
 			map.put(IMarker.PRIORITY, new Integer(task.getPriority()));
 			map.put(IMarker.MESSAGE, task.getMessage());
 			map.put(IMarker.LINE_NUMBER, new Integer(lineNumber));

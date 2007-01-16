@@ -75,7 +75,7 @@ public class ShamResource implements IResource {
 		throw new RuntimeException("Need to implement on sham.");
 	}
 
-	public IMarker createMarker(String type) throws CoreException {
+	public IMarker createMarker(String type) {
 		throw new RuntimeException("Need to implement on sham.");
 	}
 

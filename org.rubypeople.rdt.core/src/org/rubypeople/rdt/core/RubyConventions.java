@@ -7,7 +7,6 @@ import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
-import org.jruby.javasupport.JavaMethod;
 import org.rubypeople.rdt.internal.core.RubyModelStatus;
 import org.rubypeople.rdt.internal.core.util.Messages;
 import org.rubypeople.rdt.internal.core.util.Util;

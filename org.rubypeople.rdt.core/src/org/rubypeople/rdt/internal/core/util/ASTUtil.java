@@ -15,11 +15,11 @@ import org.jruby.ast.ListNode;
 import org.jruby.ast.LocalAsgnNode;
 import org.jruby.ast.NilNode;
 import org.jruby.ast.Node;
-import org.jruby.ast.ScopeNode;
 import org.jruby.ast.SelfNode;
 import org.jruby.ast.StrNode;
 import org.jruby.ast.TrueNode;
 import org.jruby.ast.ZArrayNode;
+import org.jruby.parser.StaticScope;
 
 public abstract class ASTUtil {
 	/**
@@ -27,7 +27,7 @@ public abstract class ASTUtil {
 	 * @param bodyNode 
 	 * @return
 	 */
-	public static String[] getArgs(Node argsNode, ScopeNode bodyNode) {
+	public static String[] getArgs(Node argsNode, StaticScope bodyNode) {
 		if (argsNode == null) return new String[0];
 		ArgsNode args = (ArgsNode) argsNode;
 		boolean hasRest = false;
@@ -41,33 +41,33 @@ public abstract class ASTUtil {
 		int optArgCount = 0;
 		if (args.getOptArgs() != null)
 			optArgCount = args.getOptArgs().size();
-		List arguments = getArguments(args.getArgs());
+		List<String> arguments = getArguments(args.getArgs());
 		if (optArgCount > 0) {
 			arguments.addAll(getArguments(args.getOptArgs()));
 		}
 		if (hasRest) {
 			String restName = "*";
 			if (args.getRestArg() != -2) {
-				restName += bodyNode.getLocalNames()[args.getRestArg()];
+				restName += bodyNode.getVariables()[args.getRestArg()];
 			}
 			arguments.add(restName);
 		}
 		if (hasBlock)
-			arguments.add("&" + (String) bodyNode.getLocalNames()[args.getBlockArgNode().getCount()]);
+			arguments.add("&" + (String) bodyNode.getVariables()[args.getBlockArgNode().getCount()]);
 		return stringListToArray(arguments);
 	}
 	
-	private static String[] stringListToArray(List list) {
+	private static String[] stringListToArray(List<String> list) {
 		String[] array = new String[list.size()];
 		for (int i = 0; i < list.size(); i++) {
-			array[i] = (String) list.get(i);
+			array[i] = list.get(i);
 		}
 		return array;
 	}
 	
-	private static List getArguments(ListNode argList) {
-		if (argList == null) return new ArrayList();
-		List arguments = new ArrayList();
+	private static List<String> getArguments(ListNode argList) {
+		if (argList == null) return new ArrayList<String>();
+		List<String> arguments = new ArrayList<String>();
 		for (Iterator iter = argList.iterator(); iter.hasNext();) {
 			Object node = iter.next();
 			if (node instanceof ArgumentNode) {

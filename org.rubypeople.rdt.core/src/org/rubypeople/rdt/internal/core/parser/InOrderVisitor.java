@@ -30,7 +30,9 @@ import org.jruby.ast.AliasNode;
 import org.jruby.ast.AndNode;
 import org.jruby.ast.ArgsCatNode;
 import org.jruby.ast.ArgsNode;
+import org.jruby.ast.ArgsPushNode;
 import org.jruby.ast.ArrayNode;
+import org.jruby.ast.AttrAssignNode;
 import org.jruby.ast.BackRefNode;
 import org.jruby.ast.BeginNode;
 import org.jruby.ast.BignumNode;
@@ -99,9 +101,9 @@ import org.jruby.ast.RescueBodyNode;
 import org.jruby.ast.RescueNode;
 import org.jruby.ast.RetryNode;
 import org.jruby.ast.ReturnNode;
+import org.jruby.ast.RootNode;
 import org.jruby.ast.SClassNode;
 import org.jruby.ast.SValueNode;
-import org.jruby.ast.ScopeNode;
 import org.jruby.ast.SelfNode;
 import org.jruby.ast.SplatNode;
 import org.jruby.ast.StrNode;
@@ -961,17 +963,6 @@ public class InOrderVisitor extends AbstractVisitor {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see org.jruby.ast.visitor.NodeVisitor#visitScopeNode(org.jruby.ast.ScopeNode)
-	 */
-	public Instruction visitScopeNode(ScopeNode iVisited) {
-		handleNode(iVisited);
-		acceptNode(iVisited.getBodyNode());
-		return null;
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
 	 * @see org.jruby.ast.visitor.NodeVisitor#visitSelfNode(org.jruby.ast.SelfNode)
 	 */
 	public Instruction visitSelfNode(SelfNode iVisited) {
@@ -1163,8 +1154,39 @@ public class InOrderVisitor extends AbstractVisitor {
 
 	protected Instruction handleNode(Node visited) {
 		return null;
+	}	
+	
+	/* (non-Javadoc)
+	 * @see org.jruby.ast.visitor.AbstractVisitor#visitRootNode(org.jruby.ast.RootNode)
+	 */
+	public Instruction visitRootNode(RootNode iVisited) {
+		handleNode(iVisited);
+		acceptNode(iVisited.getBodyNode());
+		return null;
 	}
 
+
+	/* (non-Javadoc)
+	 * @see org.jruby.ast.visitor.NodeVisitor#visitArgsPushNode(org.jruby.ast.ArgsPushNode)
+	 */
+	public Instruction visitArgsPushNode(ArgsPushNode iVisited) {
+		handleNode(iVisited);
+		acceptNode(iVisited.getFirstNode());
+		acceptNode(iVisited.getSecondNode());
+		return null;
+	}
+
+	/* (non-Javadoc)
+	 * @see org.jruby.ast.visitor.NodeVisitor#visitAttrAssignNode(org.jruby.ast.AttrAssignNode)
+	 */
+	public Instruction visitAttrAssignNode(AttrAssignNode iVisited) {
+		handleNode(iVisited);
+		acceptNode(iVisited.getReceiverNode());
+		acceptNode(iVisited.getArgsNode());
+		return null;
+	}
+
+	@Override
 	protected Instruction visitNode(Node iVisited) {
 		// TODO Auto-generated method stub
 		return null;

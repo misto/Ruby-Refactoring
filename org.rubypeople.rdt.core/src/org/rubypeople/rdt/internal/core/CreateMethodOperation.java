@@ -126,7 +126,7 @@ public class CreateMethodOperation extends RubyModelOperation {
 		if (this.parameters == null) {
 			if (this.createdNode != null) {
 				DefnNode methodDeclaration = (DefnNode) this.createdNode;
-				this.parameters = ASTUtil.getArgs(methodDeclaration.getArgsNode(), methodDeclaration.getBodyNode());
+				this.parameters = ASTUtil.getArgs(methodDeclaration.getArgsNode(), methodDeclaration.getScope());
 			}
 		}
 		return this.parameters;

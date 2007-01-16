@@ -16,7 +16,7 @@ import junit.framework.TestSuite;
 public class TS_InternalCoreBuilder {
 
     public static Test suite() {
-        TestSuite suite = new TestSuite();
+        TestSuite suite = new TestSuite("Builder");
     
         suite.addTestSuite(TC_TaskCompiler.class);
         suite.addTestSuite(TC_RubyCodeAnalyzer.class);

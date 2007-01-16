@@ -1,7 +1,6 @@
 package org.rubypeople.rdt.internal.debug.core.parsing;
 
 import org.rubypeople.rdt.internal.debug.core.RdtDebugCorePlugin;
-import org.rubypeople.rdt.internal.debug.core.model.RubyProcessingException;
 import org.xmlpull.v1.XmlPullParser;
 
 public class BreakpointAddedReader extends XmlStreamReader {

@@ -33,6 +33,7 @@ import java.util.Iterator;
 
 import org.jruby.ast.NewlineNode;
 import org.jruby.ast.Node;
+import org.jruby.ast.RootNode;
 
 public class AstUtility {
 
@@ -60,7 +61,7 @@ public class AstUtility {
 	}
 	
 	public static String formatedPosition(Node n) {
-		if(n == null)
+		if(n == null || n.getPosition() == null)
 			return "";
 		
 		StringBuilder posString = new StringBuilder();
@@ -85,8 +86,9 @@ public class AstUtility {
 			
 			Node node = (Node) nodeIter.next();
 			
-			if(node instanceof NewlineNode) {
-				builder.append("nil, #");
+			if(node instanceof NewlineNode || node instanceof RootNode) {
+				builder.append("nil,\n");
+				continue;
 			}
 			
 			builder.append("['");

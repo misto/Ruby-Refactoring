@@ -17,7 +17,7 @@ import junit.framework.TestSuite;
 public class TS_CoreSymbols extends TestSuite {
 
     public static Test suite() {
-        TestSuite suite = new TestSuite();
+        TestSuite suite = new TestSuite("Symbols");
     
         suite.addTestSuite(TC_ClassSymbol.class);
         suite.addTestSuite(TC_Location.class);

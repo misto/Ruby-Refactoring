@@ -34,7 +34,6 @@ public class TC_BlockingSymbolFinder extends TestCase {
     }
 
     public void testFindInexact() throws Exception {
-        TestSymbol symbol = new TestSymbol();
         finder.find("pattern", 17);
         
         FindInexactSymbolJob  expectedJob = new FindInexactSymbolJob(index, "pattern", 17);

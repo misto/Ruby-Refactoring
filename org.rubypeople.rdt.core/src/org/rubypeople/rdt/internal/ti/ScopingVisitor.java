@@ -10,7 +10,7 @@ import org.jruby.ast.LocalAsgnNode;
 import org.jruby.ast.ModuleNode;
 import org.jruby.ast.NewlineNode;
 import org.jruby.ast.Node;
-import org.jruby.ast.ScopeNode;
+import org.jruby.parser.StaticScope;
 
 /**
  * Visits an AST while retaining memory of current scope.
@@ -104,23 +104,12 @@ public class ScopingVisitor {
 	//todo: does this functionality belong here in ScopingVisitor, or in a subclass?
 	protected void visitScopingNode(Node node)
 	{
-		ScopeNode bodyNode = null;
-		if ( node instanceof ModuleNode ) bodyNode = ((ModuleNode)node).getBodyNode();
-		if ( node instanceof ClassNode ) bodyNode = ((ClassNode)node).getBodyNode();
-		if ( node instanceof DefnNode ) bodyNode = ((DefnNode)node).getBodyNode();
-		if ( node instanceof DefsNode ) bodyNode = ((DefsNode)node).getBodyNode();
-		if ( node instanceof IterNode )
-		{
-			//todo: we sure about these IterNodes?
-			if ( ((IterNode)node).getBodyNode() instanceof ScopeNode )
-			{
-				bodyNode = (ScopeNode)(((IterNode)node).getBodyNode());
-			}
-			else
-			{
-				return;
-			}
-		}		
+		StaticScope bodyNode = null;
+		if ( node instanceof ModuleNode ) bodyNode = ((ModuleNode)node).getScope();
+		if ( node instanceof ClassNode ) bodyNode = ((ClassNode)node).getScope();
+		if ( node instanceof DefnNode ) bodyNode = ((DefnNode)node).getScope();
+		if ( node instanceof DefsNode ) bodyNode = ((DefsNode)node).getScope();
+		if ( node instanceof IterNode ) bodyNode = ((IterNode)node).getScope();
 		
 		// Extract localNames
 		Variable.insertLocalsFromScopeNode(bodyNode, currentScope);		

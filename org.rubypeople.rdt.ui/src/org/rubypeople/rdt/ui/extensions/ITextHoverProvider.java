@@ -3,7 +3,6 @@ package org.rubypeople.rdt.ui.extensions;
 import org.eclipse.jface.text.IRegion;
 import org.eclipse.jface.text.ITextViewer;
 import org.eclipse.ui.IEditorInput;
-import org.eclipse.ui.IEditorPart;
 
 
 /**

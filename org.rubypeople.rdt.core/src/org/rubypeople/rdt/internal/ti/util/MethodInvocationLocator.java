@@ -36,9 +36,6 @@ public class MethodInvocationLocator extends NodeLocator {
 	/** Name of method to search for invocations of */
 	private String methodName;
 	
-	/** Stack of names of types (Class/Module) enclosing the visitor cursor as we traverse */
-	private List<String> typeNameStack;
-	
 	/** Running total of results */
 	private List<Node> locatedNodes;
 	
@@ -57,7 +54,7 @@ public class MethodInvocationLocator extends NodeLocator {
 	 * @param inferrer Inferrer to use for resolving receiver-types
 	 * @return
 	 */
-	public List<Node> findMethodInvocations( Node rootNode, String source, String typeName, String methodName, ITypeInferrer inferrer ) {
+	public List<Node> findMethodInvocations( Node rootNode, String typeName, String methodName, ITypeInferrer inferrer ) {
 		if ( rootNode == null ) { return null; }
 		
 		this.locatedNodes = new LinkedList<Node>();
@@ -127,18 +124,6 @@ public class MethodInvocationLocator extends NodeLocator {
 		popType();
 
 		return null;
-	}
-	
-	private void pushType( String typeName ) {
-		typeNameStack.add( 0, typeName );
-	}
-	
-	private void popType() {
-		typeNameStack.remove(0);
-	}
-	
-	private String peekType() {
-		return typeNameStack.get(0);
 	}
 	
 	

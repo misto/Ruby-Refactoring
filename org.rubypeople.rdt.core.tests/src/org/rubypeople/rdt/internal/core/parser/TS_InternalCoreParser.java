@@ -6,7 +6,7 @@ import junit.framework.TestSuite;
 public class TS_InternalCoreParser {
 
     public static Test suite() {
-        TestSuite suite = new TestSuite();
+        TestSuite suite = new TestSuite("Parser");
     
         suite.addTestSuite(TC_TaskParser.class);
         suite.addTestSuite(TC_ImmediateWarnings.class);

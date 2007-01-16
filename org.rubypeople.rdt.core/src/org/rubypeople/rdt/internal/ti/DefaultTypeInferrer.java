@@ -17,7 +17,7 @@ import org.jruby.ast.InstVarNode;
 import org.jruby.ast.LocalAsgnNode;
 import org.jruby.ast.LocalVarNode;
 import org.jruby.ast.Node;
-import org.jruby.lexer.yacc.ISourcePosition;
+import org.jruby.ast.RootNode;
 import org.rubypeople.rdt.internal.core.parser.RubyParser;
 import org.rubypeople.rdt.internal.ti.data.ConstNodeTypeNames;
 import org.rubypeople.rdt.internal.ti.data.TypicalMethodReturnNames;
@@ -27,18 +27,16 @@ import org.rubypeople.rdt.internal.ti.util.OffsetNodeLocator;
 
 public class DefaultTypeInferrer implements ITypeInferrer {
 	
-	private String source;
-	private Node rootNode;
+	private RootNode rootNode;
 
 	/**
 	 * Infers type inside the source at given offset.
 	 * @return List of ITypeGuess objects.
 	 */
 	public List<ITypeGuess> infer(String source, int offset) {
-		this.source = source;
 		RubyParser parser = new RubyParser();
-		rootNode = parser.parse(source);
-		Node node = OffsetNodeLocator.Instance().getNodeAtOffset(rootNode, offset);
+		rootNode = (RootNode) parser.parse(source);
+		Node node = OffsetNodeLocator.Instance().getNodeAtOffset(rootNode.getBodyNode(), offset);
 		
 		if ( node == null )
 		{
@@ -117,9 +115,8 @@ public class DefaultTypeInferrer implements ITypeInferrer {
 	{
 		if ( node instanceof InstVarNode )
 		{
-			InstVarNode instVarNode = (InstVarNode)node;
+			final InstVarNode instVarNode = (InstVarNode)node;
 			int nodeStart = node.getPosition().getStartOffset();
-			final String instVarName = getVarName(instVarNode);
 			
 			//todo: see if there is attr_reader/attr_writer, maybe?
 			//todo: find calls to the reader/writers
@@ -135,7 +132,7 @@ public class DefaultTypeInferrer implements ITypeInferrer {
 					if ( node instanceof LocalAsgnNode )  name = ((LocalAsgnNode)node).getName();
 					if ( node instanceof InstAsgnNode )   name = ((InstAsgnNode)node).getName();
 					if ( node instanceof GlobalAsgnNode ) name = ((GlobalAsgnNode)node).getName();
-					return ( name != null && name.equals(instVarName)); /** refactor to common INodeAcceptor for instVarName,localVarName,globalVarName*/
+					return ( name != null && name.equals(instVarNode.getName())); /** refactor to common INodeAcceptor for instVarName,localVarName,globalVarName*/
 				}
 			});
 			if ( initialAssignmentNode != null )
@@ -149,9 +146,8 @@ public class DefaultTypeInferrer implements ITypeInferrer {
 	{
 		if ( node instanceof GlobalVarNode )
 		{
-			GlobalVarNode globalVarNode = (GlobalVarNode)node;
+			final GlobalVarNode globalVarNode = (GlobalVarNode)node;
 			int nodeStart = node.getPosition().getStartOffset();
-			final String globalVarName = getVarName(globalVarNode);
 			
 			//todo: for STI on GlobalVar, find references within this ClassNode to this GlobalVar... record 'em
 			//todo: p.s. globals are low-priority.
@@ -166,7 +162,7 @@ public class DefaultTypeInferrer implements ITypeInferrer {
 					if ( node instanceof LocalAsgnNode )  name = ((LocalAsgnNode)node).getName();
 					if ( node instanceof InstAsgnNode )   name = ((InstAsgnNode)node).getName();
 					if ( node instanceof GlobalAsgnNode ) name = ((GlobalAsgnNode)node).getName();
-					return ( name != null && name.equals(globalVarName)); /** refactor to common INodeAcceptor for instVarName,localVarName,globalVarName*/
+					return ( name != null && name.equals(globalVarNode.getName())); /** refactor to common INodeAcceptor for instVarName,localVarName,globalVarName*/
 				}
 			});
 			if ( initialAssignmentNode != null )
@@ -183,7 +179,7 @@ public class DefaultTypeInferrer implements ITypeInferrer {
 		{
 			LocalVarNode localVarNode = (LocalVarNode)node;
 			int nodeStart = node.getPosition().getStartOffset();
-			final String localVarName = getVarName(localVarNode);
+			final String localVarName = TypeInferenceHelper.Instance().getVarName(localVarNode);
 
 			// See if it has been assigned to, earlier [todo: in this local scope].
 			// Find first assignment to this var name that occurs before the reference
@@ -220,8 +216,8 @@ public class DefaultTypeInferrer implements ITypeInferrer {
 					public boolean doesAccept(Node node) {
 						System.out.println("Looking for enclosing method, checking: " + node.getClass().getName() + "[" + node.getPosition().getStartOffset() + ".." + node.getPosition().getEndOffset() + "]" );
 						ArgsNode argsNode = null;
-						if ( node instanceof DefnNode ) argsNode = (ArgsNode)((DefnNode)node).getArgsNode();
-						if ( node instanceof DefsNode ) argsNode = (ArgsNode)((DefsNode)node).getArgsNode();
+						if ( node instanceof DefnNode ) argsNode = ((DefnNode)node).getArgsNode();
+						if ( node instanceof DefsNode ) argsNode = ((DefsNode)node).getArgsNode();
 						return ( (argsNode != null) && (doesArgsNodeContainsVariable(argsNode, localVarName)));
 					}
 				});
@@ -266,24 +262,7 @@ public class DefaultTypeInferrer implements ITypeInferrer {
 			}
 		}
 	}
-	
-	/**
-	 * Extracts the name of a variable from a VarNode
-	 * @param node LocalVarNode, InstVarNode, or GlobalVarNode referring to a variable.
-	 * @return Name of the variable.
-	 */
-	private String getVarName(Node node)
-	{
-		ISourcePosition pos = null;
-		if ( node instanceof LocalVarNode ) pos = ((LocalVarNode)node).getPosition();
-		if ( node instanceof InstVarNode ) pos = ((InstVarNode)node).getPosition();
-		if ( node instanceof GlobalVarNode ) pos = ((GlobalVarNode)node).getPosition();
-		if ( pos != null )
-		{
-			return source.substring(pos.getStartOffset(), pos.getEndOffset()+1);
-		}
-		return null;
-	}
+
 	
 	/**
 	 * Determine whether an ArgsNode contains a particular named argument

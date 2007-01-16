@@ -2,7 +2,6 @@ package org.rubypeople.rdt.debug.core.tests;
 
 import org.rubypeople.rdt.internal.debug.core.parsing.AbstractReadStrategy;
 import org.rubypeople.rdt.internal.debug.core.parsing.XmlStreamReader;
-import org.rubypeople.rdt.internal.debug.core.parsing.XmlStreamReaderException;
 import org.xmlpull.v1.XmlPullParser;
 
 public class TestXmlStreamReader extends XmlStreamReader {
@@ -17,7 +16,7 @@ public class TestXmlStreamReader extends XmlStreamReader {
 		super(readStrategy);
 	}
 
-	protected boolean processStartElement(XmlPullParser xpp) throws XmlStreamReaderException {
+	protected boolean processStartElement(XmlPullParser xpp) {
 		System.out.println("Examining " + xpp.getName()) ;
 		if (xpp.getName().equals(tag)) {
 			tagReadCount += 1 ;

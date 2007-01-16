@@ -3,7 +3,7 @@ package org.rubypeople.rdt.internal.ti;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.jruby.ast.ScopeNode;
+import org.jruby.parser.StaticScope;
 
 /**
  * Holds a reference to a Ruby variable, unique by name and scope.
@@ -55,10 +55,10 @@ public class Variable {
 	 * @param scope Scope into which vars will be inserted
 	 */
 	//todo: this is not a cohesive place to locate this code
-	public static void insertLocalsFromScopeNode(ScopeNode node, Scope scope)
+	public static void insertLocalsFromScopeNode(StaticScope node, Scope scope)
 	{
 		int count = 0;
-		for( Object varName : node.getLocalNames() )
+		for( Object varName : node.getVariables() )
 		{
 			scope.getVariables().add( new Variable( scope, (String)varName, count ) );
 			count++;

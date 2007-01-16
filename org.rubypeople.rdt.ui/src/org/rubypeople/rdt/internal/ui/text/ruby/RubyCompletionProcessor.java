@@ -24,6 +24,7 @@ import org.eclipse.jface.text.templates.TemplateContextType;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.ui.IEditorPart;
 import org.rubypeople.rdt.core.IRubyScript;
+import org.rubypeople.rdt.core.RubyModelException;
 import org.rubypeople.rdt.internal.corext.template.ruby.RubyContextType;
 import org.rubypeople.rdt.internal.ui.RubyPlugin;
 import org.rubypeople.rdt.internal.ui.RubyPluginImages;
@@ -133,7 +134,7 @@ public class RubyCompletionProcessor extends TemplateCompletionProcessor
 			script.codeComplete(offset - 1, requestor);			
 			requestor.endReporting();
 			return requestor.getRubyCompletionProposals();
-		} catch (Exception e) {
+		} catch (RubyModelException e) {
 			// TODO Do something
 			return new ICompletionProposal[0];
 		}		

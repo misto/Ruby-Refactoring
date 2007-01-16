@@ -53,17 +53,20 @@ public class RubyParser {
             warnings.setFile(file);
         	parser = getDefaultRubyParser();
         	parser.setWarnings(warnings);
-        	parser.init(new RubyParserConfiguration());
         	String fileName = "";
         	if (file != null) fileName = file.getName();
         	LexerSource lexerSource = new LexerSource(fileName, content);
-        	result = parser.parse(lexerSource);
+        	result = parser.parse(new RubyParserConfiguration(), lexerSource);
         } catch (SyntaxException e) {
         	throw e;
         } finally {
-        	pool.returnParser(parser);
+        	returnBorrowedParser(parser);
         }
         return result.getAST();
+	}
+
+	protected void returnBorrowedParser(DefaultRubyParser parser) {
+		pool.returnParser(parser);
 	}
 
     protected DefaultRubyParser getDefaultRubyParser() {

@@ -17,7 +17,7 @@ import junit.framework.TestSuite;
 public class TS_Util extends TestSuite {
 
     public static Test suite() {
-        TestSuite suite = new TestSuite();
+        TestSuite suite = new TestSuite("Util");
     
         suite.addTestSuite(TC_EclipseJobScheduler.class);
 

@@ -47,7 +47,7 @@ class TreeParent extends TreeObject {
 		child.setParent(null);
 	}
 	public TreeObject [] getChildren() {
-		return (TreeObject [])children.toArray(new TreeObject[children.size()]);
+		return children.toArray(new TreeObject[children.size()]);
 	}
 	public boolean hasChildren() {
 		return children.size() > 0;

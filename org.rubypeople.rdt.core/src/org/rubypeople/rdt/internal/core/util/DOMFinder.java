@@ -6,7 +6,9 @@ import org.jruby.ast.AliasNode;
 import org.jruby.ast.AndNode;
 import org.jruby.ast.ArgsCatNode;
 import org.jruby.ast.ArgsNode;
+import org.jruby.ast.ArgsPushNode;
 import org.jruby.ast.ArrayNode;
+import org.jruby.ast.AttrAssignNode;
 import org.jruby.ast.BackRefNode;
 import org.jruby.ast.BeginNode;
 import org.jruby.ast.BignumNode;
@@ -75,9 +77,9 @@ import org.jruby.ast.RescueBodyNode;
 import org.jruby.ast.RescueNode;
 import org.jruby.ast.RetryNode;
 import org.jruby.ast.ReturnNode;
+import org.jruby.ast.RootNode;
 import org.jruby.ast.SClassNode;
 import org.jruby.ast.SValueNode;
-import org.jruby.ast.ScopeNode;
 import org.jruby.ast.SelfNode;
 import org.jruby.ast.SplatNode;
 import org.jruby.ast.StrNode;
@@ -554,11 +556,6 @@ public class DOMFinder implements NodeVisitor {
 		return null;
 	}
 
-	public Instruction visitScopeNode(ScopeNode arg0) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
 	public Instruction visitSelfNode(SelfNode arg0) {
 		// TODO Auto-generated method stub
 		return null;
@@ -653,6 +650,21 @@ public class DOMFinder implements NodeVisitor {
 		this.rangeLength = range.getLength();
 		this.ast.accept(this);
 		return this.foundNode;
+	}
+
+	public Instruction visitArgsPushNode(ArgsPushNode node) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public Instruction visitAttrAssignNode(AttrAssignNode iVisited) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public Instruction visitRootNode(RootNode iVisited) {
+		visitNode(iVisited.getBodyNode());
+		return null;
 	}
 
 }

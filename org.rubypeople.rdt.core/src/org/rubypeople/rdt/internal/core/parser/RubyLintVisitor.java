@@ -2,6 +2,7 @@ package org.rubypeople.rdt.internal.core.parser;
 
 import java.util.HashSet;
 import java.util.Set;
+
 import org.jruby.ast.BlockNode;
 import org.jruby.ast.CallNode;
 import org.jruby.ast.ConstDeclNode;
@@ -13,7 +14,6 @@ import org.jruby.ast.IfNode;
 import org.jruby.ast.IterNode;
 import org.jruby.ast.NilNode;
 import org.jruby.ast.Node;
-import org.jruby.ast.ScopeNode;
 import org.jruby.ast.TrueNode;
 import org.jruby.ast.WhenNode;
 import org.jruby.evaluator.Instruction;
@@ -91,8 +91,7 @@ public class RubyLintVisitor extends InOrderVisitor {
 	public Instruction visitDefnNode(DefnNode iVisited) {
 		// TODO Analyze method visibility. Create warning for uncalled private
 		// methods
-		ScopeNode scope = iVisited.getBodyNode();
-		if (scope.getBodyNode() == null) {
+		if (iVisited.getBodyNode() == null) {
 			IProblem problem = createProblem(RubyCore.COMPILER_PB_EMPTY_STATEMENT, iVisited.getPosition(), "Empty Method Definition");
 			if (problem != null)
 				problemRequestor.acceptProblem(problem);
@@ -101,8 +100,7 @@ public class RubyLintVisitor extends InOrderVisitor {
 	}
 
 	public Instruction visitDefsNode(DefsNode iVisited) {
-		ScopeNode scope = iVisited.getBodyNode();
-		if (scope.getBodyNode() == null) {
+		if (iVisited.getBodyNode() == null) {
 			IProblem problem = createProblem(RubyCore.COMPILER_PB_EMPTY_STATEMENT, iVisited.getPosition(), "Empty Method Definition");
 
 			if (problem != null)

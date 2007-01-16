@@ -169,7 +169,7 @@ public class ShamProject extends ShamContainer implements IProject, IContainer {
 
 	public void copy(IPath destination, int updateFlags, IProgressMonitor monitor) throws CoreException {}
 
-	public IMarker createMarker(String type) throws CoreException {
+	public IMarker createMarker(String type) {
 		throw new RuntimeException("Unimplemented method in sham");
 	}
 

@@ -49,7 +49,7 @@ public class TypeInferenceVisitor extends InOrderVisitor {
 	 */
 	public Instruction visitModuleNode(ModuleNode iVisited) {		
 		Scope newScope = pushScope( iVisited );
-		Variable.insertLocalsFromScopeNode(iVisited.getBodyNode(), newScope);
+		Variable.insertLocalsFromScopeNode(iVisited.getScope(), newScope);
 		return super.visitModuleNode(iVisited);
 	}
 	
@@ -59,7 +59,7 @@ public class TypeInferenceVisitor extends InOrderVisitor {
 	 */
 	public Instruction visitClassNode(ClassNode iVisited) {
 		Scope newScope = pushScope( iVisited );
-		Variable.insertLocalsFromScopeNode(iVisited.getBodyNode(), newScope);
+		Variable.insertLocalsFromScopeNode(iVisited.getScope(), newScope);
 		return super.visitClassNode(iVisited);
 	}
 	
@@ -69,7 +69,7 @@ public class TypeInferenceVisitor extends InOrderVisitor {
 	 */
 	public Instruction visitDefnNode(DefnNode iVisited) {
 		Scope newScope = pushScope( iVisited );
-		Variable.insertLocalsFromScopeNode(iVisited.getBodyNode(), newScope);
+		Variable.insertLocalsFromScopeNode(iVisited.getScope(), newScope);
 		// todo: insert from argsNodes
 		return super.visitDefnNode(iVisited);
 	}
@@ -80,7 +80,7 @@ public class TypeInferenceVisitor extends InOrderVisitor {
 	 */
 	public Instruction visitDefsNode(DefsNode iVisited) {
 		Scope newScope = pushScope( iVisited );
-		Variable.insertLocalsFromScopeNode(iVisited.getBodyNode(), newScope);
+		Variable.insertLocalsFromScopeNode(iVisited.getScope(), newScope);
 		// todo: insert from argsNodes
 		return super.visitDefsNode(iVisited);
 	}
@@ -146,7 +146,7 @@ public class TypeInferenceVisitor extends InOrderVisitor {
 		// For local variables, search current scope for the variable by count.
 		if (node instanceof LocalVarNode) {
 			LocalVarNode localVarNode = (LocalVarNode) node;
-			return currentScope.getLocalVariableByCount(localVarNode.getCount());
+			return currentScope.getLocalVariableByCount(localVarNode.getIndex());
 		}
 		// todo: InstVarNode
 		// todo: GlobalVarNode
@@ -176,7 +176,7 @@ public class TypeInferenceVisitor extends InOrderVisitor {
 	 */
 	public Instruction visitLocalAsgnNode(LocalAsgnNode iVisited) {
 //		System.out.println("Visiting LocalAsgnNode: " + stringifyNode(iVisited));
-		Variable var = currentScope.getLocalVariableByCount( iVisited.getCount() );
+		Variable var = currentScope.getLocalVariableByCount( iVisited.getIndex() );
 		if ( var == null )
 		{
 			// Local Variable cannot be found... are we in the global scope?
@@ -186,7 +186,7 @@ public class TypeInferenceVisitor extends InOrderVisitor {
 				// Yes - stick this variable into the global scope.
 				// todo: Shouldn't JRuby give a ScopeNode w/ a .getLocalNames()
 				// for the global script?
-				var = new Variable( globalScope, iVisited.getName(), iVisited.getCount() );
+				var = new Variable( globalScope, iVisited.getName(), iVisited.getIndex() );
 				currentScope.getVariables().add(var);
 			}
 		}

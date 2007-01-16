@@ -151,7 +151,7 @@ public class TC_RubyRuntime extends TestCase {
 
 		public void copy(IProjectDescription description, int updateFlags, IProgressMonitor monitor) throws CoreException {}
 
-		public IMarker createMarker(String type) throws CoreException {
+		public IMarker createMarker(String type) {
 			return null;
 		}
 

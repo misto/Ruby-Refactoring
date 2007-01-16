@@ -51,7 +51,7 @@ public class TC_IndexUpdater extends TestCase {
 
     public void testSimple() {
         Colon2Node nameNode = new Colon2Node(POSITION_1, null, TEST_CLASS_NAME);
-        Node node = new ClassNode(POSITION_1, nameNode, null, null);
+        Node node = new ClassNode(POSITION_1, nameNode, null, null, null);
         updater.update(file, node, false);
         
         symbolIndex.assertFlushed(file);
@@ -60,7 +60,7 @@ public class TC_IndexUpdater extends TestCase {
     
     public void testSkippingFlush() {
         Colon2Node nameNode = new Colon2Node(POSITION_1, null, TEST_CLASS_NAME);
-        Node node = new ClassNode(POSITION_1, nameNode, null, null);
+        Node node = new ClassNode(POSITION_1, nameNode, null, null, null);
         updater.update(file, node, true);
         
         symbolIndex.assertNotFlushed(file);

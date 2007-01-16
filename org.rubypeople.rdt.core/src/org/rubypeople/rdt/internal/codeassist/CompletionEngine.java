@@ -17,10 +17,11 @@ import org.jruby.ast.DefnNode;
 import org.jruby.ast.DefsNode;
 import org.jruby.ast.InstAsgnNode;
 import org.jruby.ast.InstVarNode;
+import org.jruby.ast.MethodDefNode;
 import org.jruby.ast.ModuleNode;
 import org.jruby.ast.Node;
-import org.jruby.ast.ScopeNode;
 import org.jruby.lexer.yacc.SyntaxException;
+import org.jruby.parser.StaticScope;
 import org.rubypeople.rdt.core.CompletionProposal;
 import org.rubypeople.rdt.core.CompletionRequestor;
 import org.rubypeople.rdt.core.Flags;
@@ -193,12 +194,11 @@ public class CompletionEngine {
 			});
 
 			// Add local vars and arguments
-			if ( enclosingMethodNode != null ) {
-				ScopeNode scopeNode = null;			
-				if ( enclosingMethodNode instanceof DefnNode ) { scopeNode = (ScopeNode)((DefnNode)enclosingMethodNode).getBodyNode(); }
-				if ( enclosingMethodNode instanceof DefsNode ) { scopeNode = (ScopeNode)((DefsNode)enclosingMethodNode).getBodyNode(); }
-				if ( scopeNode != null && scopeNode.getLocalNames().length > 0 ) {
-					List locals = Arrays.asList (scopeNode.getLocalNames());
+			// Add local vars and arguments
+			if ( enclosingMethodNode != null && enclosingMethodNode instanceof MethodDefNode) {
+				StaticScope scope = ((MethodDefNode) enclosingMethodNode).getScope();
+				if ( scope != null && scope.getVariables().length > 0 ) {
+					List locals = Arrays.asList (scope.getVariables());
 					for (Iterator iter = locals.iterator(); iter.hasNext();) {
 						String local = (String) iter.next();
 						if (prefix != null && !local.startsWith(prefix)) continue;				

@@ -4,14 +4,10 @@
 
    <extension
          point="org.eclipse.ui.views">
-      <category
-            name="Ruby"
-            id="org.rubypeople.rdt.astviewer">
-      </category>
       <view
             name="AST View"
             icon="icons/ast_view.gif"
-            category="org.rubypeople.rdt.astviewer"
+            category="org.rubypeople.rdt.ui.ruby"
             class="org.rubypeople.rdt.astviewer.views.AstView"
             id="org.rubypeople.rdt.astviewer.views.AstView">
       </view>

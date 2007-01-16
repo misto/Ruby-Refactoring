@@ -70,7 +70,7 @@ public class TC_RubyInterpreter extends TestCase {
         }
 
 
-        public String getCommand() throws IllegalCommandException {
+        public String getCommand() {
             return TEST_RUBY_CMD;
         }
     }

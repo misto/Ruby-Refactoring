@@ -53,7 +53,8 @@ class TreeObject implements IAdaptable {
 	public String toString() {
 		return getName();
 	}
-	public Object getAdapter(Class key) {
+	public Object getAdapter(@SuppressWarnings("unused")
+	Class key) {
 		return null;
 	}
 }

@@ -35,7 +35,9 @@ import org.jruby.ast.AliasNode;
 import org.jruby.ast.AndNode;
 import org.jruby.ast.ArgsCatNode;
 import org.jruby.ast.ArgsNode;
+import org.jruby.ast.ArgsPushNode;
 import org.jruby.ast.ArrayNode;
+import org.jruby.ast.AttrAssignNode;
 import org.jruby.ast.BackRefNode;
 import org.jruby.ast.BeginNode;
 import org.jruby.ast.BignumNode;
@@ -104,9 +106,9 @@ import org.jruby.ast.RescueBodyNode;
 import org.jruby.ast.RescueNode;
 import org.jruby.ast.RetryNode;
 import org.jruby.ast.ReturnNode;
+import org.jruby.ast.RootNode;
 import org.jruby.ast.SClassNode;
 import org.jruby.ast.SValueNode;
-import org.jruby.ast.ScopeNode;
 import org.jruby.ast.SelfNode;
 import org.jruby.ast.SplatNode;
 import org.jruby.ast.StrNode;
@@ -719,7 +721,7 @@ public class RubyScriptStructureBuilder implements NodeVisitor {
 			visibility = Visibility.PROTECTED;
 
 		RubyElement type = getCurrentType();
-		String[] parameterNames = ASTUtil.getArgs(iVisited.getArgsNode(), iVisited.getBodyNode());
+		String[] parameterNames = ASTUtil.getArgs(iVisited.getArgsNode(), iVisited.getScope());
 		RubyMethod method = new RubyMethod(type, name, parameterNames);
 		modelStack.push(method);
 
@@ -806,7 +808,7 @@ public class RubyScriptStructureBuilder implements NodeVisitor {
 		// Get the visibility of the current static method
 		Visibility visibility = currentVisibility;
 
-		String[] parameterNames = ASTUtil.getArgs(iVisited.getArgsNode(), iVisited.getBodyNode());
+		String[] parameterNames = ASTUtil.getArgs(iVisited.getArgsNode(), iVisited.getScope());
 
 		// Get the type of the current parent element
 		RubyElement type = getCurrentType();
@@ -1528,16 +1530,6 @@ public class RubyScriptStructureBuilder implements NodeVisitor {
 		return null;
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.jruby.ast.visitor.NodeVisitor#visitScopeNode(org.jruby.ast.ScopeNode)
-	 */
-	public Instruction visitScopeNode(ScopeNode iVisited) {
-		handleNode(iVisited);
-		visitNode(iVisited.getBodyNode());
-		return null;
-	}
 
 	/*
 	 * (non-Javadoc)
@@ -1754,6 +1746,26 @@ public class RubyScriptStructureBuilder implements NodeVisitor {
 		if (DEBUG)
 		System.out.println(visited.toString() + ", position -> "
 				+ visited.getPosition());
+		return null;
+	}
+
+	public Instruction visitArgsPushNode(ArgsPushNode iVisited) {
+		handleNode(iVisited);
+		visitNode(iVisited.getFirstNode());
+		visitNode(iVisited.getSecondNode());
+		return null;
+	}
+
+	public Instruction visitAttrAssignNode(AttrAssignNode iVisited) {
+		handleNode(iVisited);
+		visitNode(iVisited.getReceiverNode());
+		visitNode(iVisited.getArgsNode());
+		return null;
+	}
+
+	public Instruction visitRootNode(RootNode iVisited) {
+		handleNode(iVisited);
+		visitNode(iVisited.getBodyNode());
 		return null;
 	}
 

@@ -16,6 +16,7 @@ import junit.framework.TestCase;
 import org.jruby.ast.Node;
 import org.jruby.lexer.yacc.LexerSource;
 import org.jruby.parser.DefaultRubyParser;
+import org.jruby.parser.RubyParserConfiguration;
 import org.jruby.parser.RubyParserResult;
 import org.rubypeople.eclipse.shams.resources.ShamFile;
 
@@ -50,12 +51,18 @@ public class TC_RubyParser extends TestCase {
         public void setDefaultRubyParser(DefaultRubyParser defaultRubyParser) {
             this.defaultRubyParser = defaultRubyParser;
         }
+
+        // do NOT return the ShamDefaultRubyParser to the parser pool
+		@Override
+		protected void returnBorrowedParser(@SuppressWarnings("unused")
+		DefaultRubyParser parser) {
+		}
     }
 
     private static class ShamDefaultRubyParser extends DefaultRubyParser {
         private RubyParserResult result;
 
-        public RubyParserResult parse(LexerSource source) {
+        public RubyParserResult parse(RubyParserConfiguration config, LexerSource source) {
             return result;
         }
 

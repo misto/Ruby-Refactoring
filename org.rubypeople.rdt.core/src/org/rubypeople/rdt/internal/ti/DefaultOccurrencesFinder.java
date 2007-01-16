@@ -27,6 +27,7 @@ import org.jruby.ast.LocalVarNode;
 import org.jruby.ast.ModuleNode;
 import org.jruby.ast.Node;
 import org.jruby.ast.SymbolNode;
+import org.jruby.ast.types.INameNode;
 import org.jruby.lexer.yacc.ISourcePosition;
 import org.jruby.lexer.yacc.SourcePosition;
 import org.jruby.lexer.yacc.SyntaxException;
@@ -249,12 +250,12 @@ public class DefaultOccurrencesFinder extends AbstractOccurencesFinder  {
 		final Node finalSearchSpace = searchSpace; 
 
 		// Get name of local variable reference
-		final String origName = getLocalVarRefName(orig,searchSpace);
+		final String origName = getLocalVarRefName(orig);
 
 		// Find all pertinent nodes
 		List<Node> searchResults = ScopedNodeLocator.Instance().findNodesInScope(searchSpace, new INodeAcceptor() {
 			public boolean doesAccept(Node node) {
-				String name = getLocalVarRefName(node, finalSearchSpace);
+				String name = getLocalVarRefName(node);
 				return ( name != null && name.equals(origName));
 			}
 		});
@@ -316,38 +317,7 @@ public class DefaultOccurrencesFinder extends AbstractOccurencesFinder  {
 	private void pushInstVarRefs( Node root, Node orig, List<ISourcePosition> occurrences ) {
 //		System.out.println("Finding occurrences for an instance variable " + orig.toString() );
 		
-		Node searchSpace;
-		
-		// Find the name of the enclosing class
-		ClassNode enclosingClass = (ClassNode)FirstPrecursorNodeLocator.Instance().findFirstPrecursor(root, orig.getPosition().getStartOffset(), new INodeAcceptor() {
-			public boolean doesAccept(Node node) {
-				return ( node instanceof ClassNode );
-			}
-		});
-		
-		// If no enclosing class is identified, search root. 
-		if ( enclosingClass == null ) {
-			searchSpace = root;
-		}
-		// Find the search space - all ClassNodes for that name within root scope
-		else {
-			final String className = getClassNodeName(enclosingClass);
-			List<Node> classNodes = ScopedNodeLocator.Instance().findNodesInScope(root, new INodeAcceptor() {
-				public boolean doesAccept(Node node) {
-					if ( node instanceof ClassNode )
-					{
-						return getClassNodeName((ClassNode)node).equals(className);
-					}
-					return false;
-				}
-			});
-			BlockNode blockNode = new BlockNode(new SourcePosition("",0));
-			for ( Node classNode : classNodes )
-			{
-				blockNode.add( classNode );
-			}
-			searchSpace = blockNode;
-		}
+		Node searchSpace = determineSearchSpace(root, orig);
 		
 		// Finalize searchSpace because Java's scoping rules are the awesome
 		//todo: not needed?
@@ -374,18 +344,9 @@ public class DefaultOccurrencesFinder extends AbstractOccurencesFinder  {
 		}
 		
 	}
-	
-	/**
-	 * Collects all class variable occurrences
-	 * @param root 
-	 * @param orig
-	 * @param occurrences
-	 */
-	private void pushClassVarRefs( Node root, Node orig, List<ISourcePosition> occurrences ) {
-//		System.out.println("Finding occurrences for an instance variable " + orig.toString() );
-		
-		Node searchSpace;
-		
+
+	private Node determineSearchSpace(Node root, Node orig) {
+
 		// Find the name of the enclosing class
 		ClassNode enclosingClass = (ClassNode)FirstPrecursorNodeLocator.Instance().findFirstPrecursor(root, orig.getPosition().getStartOffset(), new INodeAcceptor() {
 			public boolean doesAccept(Node node) {
@@ -395,7 +356,7 @@ public class DefaultOccurrencesFinder extends AbstractOccurencesFinder  {
 		
 		// If no enclosing class is identified, search root. 
 		if ( enclosingClass == null ) {
-			searchSpace = root;
+			return root;
 		}
 		// Find the search space - all ClassNodes for that name within root scope
 		else {
@@ -414,8 +375,20 @@ public class DefaultOccurrencesFinder extends AbstractOccurencesFinder  {
 			{
 				blockNode.add( classNode );
 			}
-			searchSpace = blockNode;
+			return blockNode;
 		}
+	}
+	
+	/**
+	 * Collects all class variable occurrences
+	 * @param root 
+	 * @param orig
+	 * @param occurrences
+	 */
+	private void pushClassVarRefs( Node root, Node orig, List<ISourcePosition> occurrences ) {
+//		System.out.println("Finding occurrences for an instance variable " + orig.toString() );
+
+		Node searchSpace = determineSearchSpace(root, orig);
 		
 		// Finalize searchSpace because Java's scoping rules are the awesome
 		//todo: not needed?
@@ -580,7 +553,7 @@ public class DefaultOccurrencesFinder extends AbstractOccurencesFinder  {
 		
 		//todo: refactor the getting-of-name
 		String name = null;
-		if ( isLocalVarRef(node) )        { name = getLocalVarRefName(node, scope); }
+		if ( isLocalVarRef(node) )        { name = getLocalVarRefName(node); }
 		if ( isDVarRef(node) )            { name = getDVarRefName(node);            }
 		if ( isInstanceVarRef(node) )     { name = getInstVarRefName(node );        }
 		if ( isGlobalVarRef(node) )       { name = getGlobalVarRefName(node);       }
@@ -615,50 +588,13 @@ public class DefaultOccurrencesFinder extends AbstractOccurencesFinder  {
 	/**
 	 * Returns the name of a local var ref (LocalAsgnNode, ArgumentNode, LocalVarNode)
 	 * @param node Node to get the name of
-	 * @param scope Enclosing scope (to scrape args, etc.)
 	 * @return
 	 */
-	private String getLocalVarRefName( Node node, Node scope ) {
-		if (node instanceof LocalAsgnNode) {
-			return ((LocalAsgnNode)node).getName();
-		}
-
-		if ( node instanceof ArgumentNode ) {
-			return ((ArgumentNode)node).getName();
+	private String getLocalVarRefName( Node node ) {
+		if (node instanceof INameNode) {
+			return ((INameNode)node).getName();
 		}
 		
-		if ( node instanceof LocalVarNode ) {
-			if ( scope instanceof DefnNode ) {
-				return ((DefnNode)scope).getBodyNode().getLocalNames()[((LocalVarNode)node).getCount()];
-			}
-			if ( scope instanceof DefsNode ) {
-				return ((DefsNode)scope).getBodyNode().getLocalNames()[((LocalVarNode)node).getCount()];
-			}
-			
-			// No enclosing ScopeNode found, try searching backwards for an AsgnNode
-			final int localVarCount = ((LocalVarNode)node).getCount();
-			Node previousAssign = FirstPrecursorNodeLocator.Instance().findFirstPrecursor(scope, node.getPosition().getStartOffset(), new INodeAcceptor() {
-				public boolean doesAccept(Node node) {
-					if ( node instanceof LocalAsgnNode )
-					{
-						return ((LocalAsgnNode)node).getCount() == localVarCount;
-					}
-					return false;
-				}
-			});
-			if ( previousAssign != null )
-			{
-				return ((LocalAsgnNode)previousAssign).getName();
-			}
-			
-			throw new RuntimeException("Unhandled scope for local var ref node found: " + scope.toString());
-			//TODO: if scope instanceof Block Body? what type is this..
-		}
-		
-		if ( node instanceof DVarNode ) {
-			return ((DVarNode)node).getName();
-		}
-			
 		return null;
 	}
 	

@@ -4,6 +4,7 @@ import java.util.Iterator;
 
 import org.jruby.ast.ArgsNode;
 import org.jruby.ast.ArgumentNode;
+import org.jruby.ast.NewlineNode;
 import org.jruby.ast.Node;
 import org.jruby.evaluator.Instruction;
 
@@ -79,7 +80,8 @@ public class OffsetNodeLocator extends NodeLocator {
 	public Instruction handleNode(Node iVisited)
 	{
 //		System.out.println("Looking for node at offset, checking: " + iVisited.getClass().getName() + "[" + iVisited.getPosition().getStartOffset() + ".." + iVisited.getPosition().getEndOffset() + "]" );
-		if (nodeDoesSpanOffset(iVisited, offset)) {
+		// Skip the NewlineNode since its position is very unaccurate
+		if (!(iVisited instanceof NewlineNode) && nodeDoesSpanOffset(iVisited, offset)) {
 			//note: careful... should this be <=?  I think so; since it traverses in-order, this should find the "most specific" closest node. i.e.
 			//def foo;x;end offset at 'x' is a 1-char ScopingNode and 1-char LocalVarNode; it should identify the LocalVarNode, which <= does.
 			if (locatedNode == null || ( nodeSpanLength(iVisited) <= nodeSpanLength(locatedNode))) {

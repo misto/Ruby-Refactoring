@@ -22,10 +22,7 @@ import org.eclipse.core.runtime.OperationCanceledException;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.jobs.ISchedulingRule;
 import org.eclipse.core.runtime.jobs.Job;
-import org.eclipse.jface.dialogs.IDialogConstants;
-import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.operation.IRunnableWithProgress;
-import org.eclipse.jface.text.templates.persistence.TemplateStore;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.wizard.Wizard;
 import org.eclipse.swt.widgets.Display;
@@ -37,10 +34,8 @@ import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.ide.IDE;
 import org.eclipse.ui.wizards.newresource.BasicNewResourceWizard;
 import org.rubypeople.rdt.core.IRubyElement;
-import org.rubypeople.rdt.internal.ui.IUIConstants;
 import org.rubypeople.rdt.internal.ui.RubyPlugin;
 import org.rubypeople.rdt.internal.ui.actions.WorkbenchRunnableAdapter;
-import org.rubypeople.rdt.internal.ui.dialogs.OptionalMessageDialog;
 import org.rubypeople.rdt.internal.ui.util.ExceptionHandler;
 
 public abstract class NewElementWizard extends Wizard implements INewWizard {

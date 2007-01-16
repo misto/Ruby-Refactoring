@@ -42,7 +42,6 @@ import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.PlatformUI;
 import org.jruby.ast.NewlineNode;
 import org.jruby.ast.Node;
-import org.jruby.ast.ScopeNode;
 import org.jruby.common.NullWarnings;
 import org.jruby.lexer.yacc.LexerSource;
 import org.jruby.parser.DefaultRubyParser;
@@ -61,17 +60,17 @@ class ViewContentProvider implements IStructuredContentProvider, ITreeContentPro
 	private DefaultRubyParser parser;
 	
 	private boolean showNewline;
-	
-	private boolean showScope;
 
 	public ViewContentProvider(IViewSite viewSite) {
 		this.viewSite = viewSite;
 		parser = RubyParserPool.getInstance().borrowParser();
 		parser.setWarnings(new NullWarnings());
-		parser.init(new RubyParserConfiguration());
 	}
 
-	public void inputChanged(Viewer v, Object oldInput, Object newInput) {
+	public void inputChanged(@SuppressWarnings("unused")
+	Viewer v, @SuppressWarnings("unused")
+	Object oldInput, @SuppressWarnings("unused")
+	Object newInput) {
 	}
 
 	public void dispose() {
@@ -116,7 +115,7 @@ class ViewContentProvider implements IStructuredContentProvider, ITreeContentPro
 		LexerSource lexerSource;
 		try {
 			lexerSource = new LexerSource(getFile().getName(), new InputStreamReader(getFile().getContents()));
-			return parser.parse(lexerSource).getAST();
+			return parser.parse(new RubyParserConfiguration(), lexerSource).getAST();
 		} catch (CoreException e) {
 			return null;
 		}
@@ -133,8 +132,6 @@ class ViewContentProvider implements IStructuredContentProvider, ITreeContentPro
 
 		if(!showNewline && n instanceof NewlineNode)
 			n = ((NewlineNode) n).getNextNode();
-		else if(!showScope && n instanceof ScopeNode)
-			n = ((ScopeNode) n).getBodyNode();
 		
 		if(n.childNodes().size() <= 0) {
 			parent.addChild(new TreeObject(n));
@@ -167,7 +164,6 @@ class ViewContentProvider implements IStructuredContentProvider, ITreeContentPro
 		
 		invisibleRoot = new TreeParent(null);
 		showNewline = Activator.getDefault().getPreferenceStore().getBoolean("showNewline");
-		showScope = Activator.getDefault().getPreferenceStore().getBoolean("showScope");
 		buildTree(invisibleRoot, getRootNode());
 		
 		return true;

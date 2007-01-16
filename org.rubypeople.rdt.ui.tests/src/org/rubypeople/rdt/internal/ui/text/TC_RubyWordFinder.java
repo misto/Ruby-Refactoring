@@ -16,12 +16,12 @@ public class TC_RubyWordFinder extends TestCase {
 		return RubyWordFinder.findWord(new Document(document), offset);
 	}
 	
-	private boolean regionEquals(IRegion region, int offset, int length){
+	private boolean regionEquals(IRegion region, int length){
 		return region.getLength() == length && region.getLength() == length;
 	}
 	
 	private boolean isWordAtPosition(String word, int cursorPosition) {
-		return regionEquals(findWord(cursorPosition), document.indexOf(word), word.length());
+		return regionEquals(findWord(cursorPosition), word.length());
 	}
 
 	public void testFindFirstWord() {

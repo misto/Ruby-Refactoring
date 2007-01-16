@@ -98,17 +98,17 @@ public class RubyModelManager implements IContentTypeChangeListener, ISavePartic
     /**
 	 * Classpath variables pool
 	 */
-	public HashMap variables = new HashMap(5);
+	public HashMap<String, IPath> variables = new HashMap<String, IPath>(5);
 	public HashSet variablesWithInitializer = new HashSet(5);
 	public HashMap previousSessionVariables = new HashMap(5);
-	private ThreadLocal variableInitializationInProgress = new ThreadLocal();
+	private ThreadLocal<HashSet<String>> variableInitializationInProgress = new ThreadLocal<HashSet<String>>();
 		
 	/**
 	 * Classpath containers pool
 	 */
-	public HashMap containers = new HashMap(5);
+	public HashMap<IRubyProject, Map> containers = new HashMap<IRubyProject, Map>(5);
 	public HashMap previousSessionContainers = new HashMap(5);
-	private ThreadLocal containerInitializationInProgress = new ThreadLocal();
+	private ThreadLocal<Map> containerInitializationInProgress = new ThreadLocal<Map>();
 	public boolean batchContainerInitializations = false;
 	public HashMap containerInitializersCache = new HashMap(5);
     
@@ -130,7 +130,7 @@ public class RubyModelManager implements IContentTypeChangeListener, ISavePartic
     /*
      * Temporary cache of newly opened elements
      */
-    private ThreadLocal temporaryCache = new ThreadLocal();
+    private ThreadLocal<HashMap> temporaryCache = new ThreadLocal<HashMap>();
 
     /**
      * Set of elements which are out of sync with their buffers.
@@ -141,7 +141,7 @@ public class RubyModelManager implements IContentTypeChangeListener, ISavePartic
      * A HashSet that contains the IJavaProject whose classpath is being
      * resolved.
      */
-    private ThreadLocal classpathsBeingResolved = new ThreadLocal();
+    private ThreadLocal<HashSet<IRubyProject>> classpathsBeingResolved = new ThreadLocal<HashSet<IRubyProject>>();
 
     /**
      * Infos cache.
@@ -152,14 +152,14 @@ public class RubyModelManager implements IContentTypeChangeListener, ISavePartic
      * Table from IProject to PerProjectInfo. NOTE: this object itself is used
      * as a lock to synchronize creation/removal of per project infos
      */
-    protected Map perProjectInfos = new HashMap(5);
+    protected Map<IProject, PerProjectInfo> perProjectInfos = new HashMap<IProject, PerProjectInfo>(5);
 
     /**
      * Table from WorkingCopyOwner to a table of ICompilationUnit (working copy
      * handle) to PerWorkingCopyInfo. NOTE: this object itself is used as a lock
      * to synchronize creation/removal of per working copy infos
      */
-    protected Map perWorkingCopyInfos = new HashMap(5);
+    protected Map<WorkingCopyOwner, Map> perWorkingCopyInfos = new HashMap<WorkingCopyOwner, Map>(5);
 
     private static boolean verbose = false;
     public static boolean CP_RESOLVE_VERBOSE = false;
@@ -167,7 +167,7 @@ public class RubyModelManager implements IContentTypeChangeListener, ISavePartic
 
     // Preferences
     HashSet optionNames = new HashSet(20);
-    Hashtable optionsCache;
+    Hashtable<String, String> optionsCache;
 
     public final IEclipsePreferences[] preferencesLookup = new IEclipsePreferences[2];
 	private WeakHashSet stringSymbols = new WeakHashSet(5);
@@ -262,7 +262,7 @@ public class RubyModelManager implements IContentTypeChangeListener, ISavePartic
      * Returns the info for the element.
      */
     public synchronized Object getInfo(IRubyElement element) {
-        HashMap tempCache = (HashMap) this.temporaryCache.get();
+        HashMap tempCache = this.temporaryCache.get();
         if (tempCache != null) {
             Object result = tempCache.get(element);
             if (result != null) { return result; }
@@ -296,7 +296,7 @@ public class RubyModelManager implements IContentTypeChangeListener, ISavePartic
      * Returns the info for this element without disturbing the cache ordering.
      */
     protected synchronized Object peekAtInfo(IRubyElement element) {
-        HashMap tempCache = (HashMap) this.temporaryCache.get();
+        HashMap tempCache = this.temporaryCache.get();
         if (tempCache != null) {
             Object result = tempCache.get(element);
             if (result != null) { return result; }
@@ -339,7 +339,7 @@ public class RubyModelManager implements IContentTypeChangeListener, ISavePartic
      * thread. Creates it if not already created.
      */
     public HashMap getTemporaryCache() {
-        HashMap result = (HashMap) this.temporaryCache.get();
+        HashMap result = this.temporaryCache.get();
         if (result == null) {
             result = new HashMap();
             this.temporaryCache.set(result);
@@ -361,7 +361,7 @@ public class RubyModelManager implements IContentTypeChangeListener, ISavePartic
         synchronized (this.perProjectInfos) { // use the perProjectInfo
             // collection as its own lock
             IProject project = rubyProject.getProject();
-            PerProjectInfo info = (PerProjectInfo) this.perProjectInfos.get(project);
+            PerProjectInfo info = this.perProjectInfos.get(project);
             if (info != null) {
                 info.options = null;
             }
@@ -375,7 +375,7 @@ public class RubyModelManager implements IContentTypeChangeListener, ISavePartic
         synchronized (this.perProjectInfos) { // use the perProjectInfo
             // collection as its own lock
             IProject project = rubyProject.getProject();
-            PerProjectInfo info = (PerProjectInfo) this.perProjectInfos.get(project);
+            PerProjectInfo info = this.perProjectInfos.get(project);
             if (info != null) {
                 info.preferences = null;
             }
@@ -457,14 +457,14 @@ public class RubyModelManager implements IContentTypeChangeListener, ISavePartic
             // collection as its own
             // lock
             WorkingCopyOwner owner = workingCopy.owner;
-            Map workingCopyToInfos = (Map) this.perWorkingCopyInfos.get(owner);
+            Map<RubyScript, PerWorkingCopyInfo> workingCopyToInfos = this.perWorkingCopyInfos.get(owner);
             if (workingCopyToInfos == null && create) {
-                workingCopyToInfos = new HashMap();
+                workingCopyToInfos = new HashMap<RubyScript, PerWorkingCopyInfo>();
                 this.perWorkingCopyInfos.put(owner, workingCopyToInfos);
             }
 
             PerWorkingCopyInfo info = workingCopyToInfos == null ? null
-                    : (PerWorkingCopyInfo) workingCopyToInfos.get(workingCopy);
+                    : workingCopyToInfos.get(workingCopy);
             if (info == null && create) {
                 info = new PerWorkingCopyInfo(workingCopy, problemRequestor);
                 workingCopyToInfos.put(workingCopy, info);
@@ -489,7 +489,7 @@ public class RubyModelManager implements IContentTypeChangeListener, ISavePartic
         PerWorkingCopyInfo info = null;
         synchronized (this.perWorkingCopyInfos) {
             WorkingCopyOwner owner = workingCopy.owner;
-            Map workingCopyToInfos = (Map) this.perWorkingCopyInfos.get(owner);
+            Map workingCopyToInfos = this.perWorkingCopyInfos.get(owner);
             if (workingCopyToInfos == null) return -1;
 
             info = (PerWorkingCopyInfo) workingCopyToInfos.get(workingCopy);
@@ -527,7 +527,7 @@ public class RubyModelManager implements IContentTypeChangeListener, ISavePartic
     public PerProjectInfo getPerProjectInfo(IProject project, boolean create) {
         synchronized (this.perProjectInfos) { // use the perProjectInfo
             // collection as its own lock
-            PerProjectInfo info = (PerProjectInfo) this.perProjectInfos.get(project);
+            PerProjectInfo info = this.perProjectInfos.get(project);
             if (info == null && create) {
                 info = new PerProjectInfo(project);
                 this.perProjectInfos.put(project, info);
@@ -540,7 +540,7 @@ public class RubyModelManager implements IContentTypeChangeListener, ISavePartic
         synchronized (this.perProjectInfos) { // use the perProjectInfo
             // collection as its own lock
             IProject project = rubyProject.getProject();
-            PerProjectInfo info = (PerProjectInfo) this.perProjectInfos.get(project);
+            PerProjectInfo info = this.perProjectInfos.get(project);
             if (info != null) {
                 this.perProjectInfos.remove(project);
             }
@@ -551,10 +551,10 @@ public class RubyModelManager implements IContentTypeChangeListener, ISavePartic
         return getLoadpathBeingResolved().contains(project);
     }
 
-    private HashSet getLoadpathBeingResolved() {
-        HashSet result = (HashSet) this.classpathsBeingResolved.get();
+    private HashSet<IRubyProject> getLoadpathBeingResolved() {
+        HashSet<IRubyProject> result = this.classpathsBeingResolved.get();
         if (result == null) {
-            result = new HashSet();
+            result = new HashSet<IRubyProject>();
             this.classpathsBeingResolved.set(result);
         }
         return result;
@@ -628,7 +628,7 @@ public class RubyModelManager implements IContentTypeChangeListener, ISavePartic
 			ILoadpathEntry[] classpath = this.resolvedLoadpath;
 			if (classpath == null) return;
 			IWorkspaceRoot wRoot = ResourcesPlugin.getWorkspace().getRoot();
-			Map externalTimeStamps = RubyModelManager.getRubyModelManager().deltaState.getExternalLibTimeStamps();
+			Map<IPath, Long> externalTimeStamps = RubyModelManager.getRubyModelManager().deltaState.getExternalLibTimeStamps();
 			for (int i = 0, length = classpath.length; i < length; i++) {
 				ILoadpathEntry entry = classpath[i];
 				if (entry.getEntryKind() == ILoadpathEntry.CPE_LIBRARY) {
@@ -692,13 +692,13 @@ public class RubyModelManager implements IContentTypeChangeListener, ISavePartic
         return null;
     }
 
-    public Hashtable getOptions() {
+    public Hashtable<String, String> getOptions() {
 
         // return cached options if already computed
-        if (this.optionsCache != null) return new Hashtable(this.optionsCache);
+        if (this.optionsCache != null) return new Hashtable<String, String>(this.optionsCache);
 
         // init
-        Hashtable options = new Hashtable(10);
+        Hashtable<String, String> options = new Hashtable<String, String>(10);
         IPreferencesService service = Platform.getPreferencesService();
 
         // set options using preferences service lookup
@@ -715,7 +715,7 @@ public class RubyModelManager implements IContentTypeChangeListener, ISavePartic
         options.put(RubyCore.CORE_ENCODING, RubyCore.getEncoding());
 
         // store built map in cache
-        this.optionsCache = new Hashtable(options);
+        this.optionsCache = new Hashtable<String, String>(options);
 
         // return built map
         return options;
@@ -819,21 +819,21 @@ public class RubyModelManager implements IContentTypeChangeListener, ISavePartic
 			return;
 		}
 	
-		ArrayList vStats= null; // lazy initialized
-		ArrayList values = null;
+		ArrayList<IStatus> vStats= null; // lazy initialized
+		ArrayList<PerProjectInfo> values = null;
 		synchronized(this.perProjectInfos) {
-			values = new ArrayList(this.perProjectInfos.values());
+			values = new ArrayList<PerProjectInfo>(this.perProjectInfos.values());
 		}
 		if (values != null) {
-			Iterator iterator = values.iterator();
+			Iterator<PerProjectInfo> iterator = values.iterator();
 			while (iterator.hasNext()) {
 				try {
-					PerProjectInfo info = (PerProjectInfo) iterator.next();
+					PerProjectInfo info = iterator.next();
 					saveState(info, context);
 					info.rememberExternalLibTimestamps();
 				} catch (CoreException e) {
 					if (vStats == null)
-						vStats= new ArrayList();
+						vStats= new ArrayList<IStatus>();
 					vStats.add(e.getStatus());
 				}
 			}
@@ -1083,7 +1083,7 @@ public class RubyModelManager implements IContentTypeChangeListener, ISavePartic
 			IRubyScript[] primaryWCs = addPrimary && owner != DefaultWorkingCopyOwner.PRIMARY 
 				? getWorkingCopies(DefaultWorkingCopyOwner.PRIMARY, false) 
 				: null;
-			Map workingCopyToInfos = (Map)this.perWorkingCopyInfos.get(owner);
+			Map workingCopyToInfos = this.perWorkingCopyInfos.get(owner);
 			if (workingCopyToInfos == null) return primaryWCs;
 			int primaryLength = primaryWCs == null ? 0 : primaryWCs.length;
 			int size = workingCopyToInfos.size(); // note size is > 0 otherwise pathToPerWorkingCopyInfos would be null
@@ -1139,20 +1139,20 @@ public class RubyModelManager implements IContentTypeChangeListener, ISavePartic
 
 	public synchronized IPath variableGet(String variableName){
 		// check initialization in progress first
-		HashSet initializations = variableInitializationInProgress();
+		HashSet<String> initializations = variableInitializationInProgress();
 		if (initializations.contains(variableName)) {
 			return VARIABLE_INITIALIZATION_IN_PROGRESS;
 		}
-		return (IPath)this.variables.get(variableName);
+		return this.variables.get(variableName);
 	}
 	
 	/*
 	 * Returns the set of variable names that are being initialized in the current thread.
 	 */
-	private HashSet variableInitializationInProgress() {
-		HashSet initializations = (HashSet)this.variableInitializationInProgress.get();
+	private HashSet<String> variableInitializationInProgress() {
+		HashSet<String> initializations = this.variableInitializationInProgress.get();
 		if (initializations == null) {
-			initializations = new HashSet();
+			initializations = new HashSet<String>();
 			this.variableInitializationInProgress.set(initializations);
 		}
 		return initializations;
@@ -1179,7 +1179,7 @@ public class RubyModelManager implements IContentTypeChangeListener, ISavePartic
 	public synchronized void variablePut(String variableName, IPath variablePath){		
 
 		// set/unset the initialization in progress
-		HashSet initializations = variableInitializationInProgress();
+		HashSet<String> initializations = variableInitializationInProgress();
 		if (variablePath == VARIABLE_INITIALIZATION_IN_PROGRESS) {
 			initializations.add(variableName);
 			
@@ -1320,10 +1320,10 @@ public class RubyModelManager implements IContentTypeChangeListener, ISavePartic
 	}
 	
 	private void containerRemoveInitializationInProgress(IRubyProject project, IPath containerPath) {
-		HashSet projectInitializations = containerInitializationInProgress(project);
+		HashSet<IPath> projectInitializations = containerInitializationInProgress(project);
 		projectInitializations.remove(containerPath);
 		if (projectInitializations.size() == 0) {
-			Map initializations = (Map)this.containerInitializationInProgress.get();
+			Map initializations = this.containerInitializationInProgress.get();
 			initializations.remove(project);
 		}
 	}
@@ -1332,7 +1332,7 @@ public class RubyModelManager implements IContentTypeChangeListener, ISavePartic
 
 		// set/unset the initialization in progress
 		if (container == CONTAINER_INITIALIZATION_IN_PROGRESS) {
-			HashSet projectInitializations = containerInitializationInProgress(project);
+			HashSet<IPath> projectInitializations = containerInitializationInProgress(project);
 			projectInitializations.add(containerPath);
 			
 			// do not write out intermediate initialization value
@@ -1340,9 +1340,9 @@ public class RubyModelManager implements IContentTypeChangeListener, ISavePartic
 		} else {
 			containerRemoveInitializationInProgress(project, containerPath);
 
-			Map projectContainers = (Map)this.containers.get(project);	
+			Map<IPath, ILoadpathContainer> projectContainers = this.containers.get(project);	
  			if (projectContainers == null){
-				projectContainers = new HashMap(1);
+				projectContainers = new HashMap<IPath, ILoadpathContainer>(1);
 				this.containers.put(project, projectContainers);
 			}
 	
@@ -1373,13 +1373,13 @@ public class RubyModelManager implements IContentTypeChangeListener, ISavePartic
 		}
 
 		// collect all container paths
-		final HashMap allContainerPaths = new HashMap();
+		final HashMap<IRubyProject, HashSet<IPath>> allContainerPaths = new HashMap<IRubyProject, HashSet<IPath>>();
 		IProject[] projects = ResourcesPlugin.getWorkspace().getRoot().getProjects();
 		for (int i = 0, length = projects.length; i < length; i++) {
 			IProject project = projects[i];
 			if (!RubyProject.hasRubyNature(project)) continue;
 			IRubyProject javaProject = new RubyProject(project, getRubyModel());
-			HashSet paths = null;
+			HashSet<IPath> paths = null;
 			ILoadpathEntry[] rawClasspath = javaProject.getRawLoadpath();
 			for (int j = 0, length2 = rawClasspath.length; j < length2; j++) {
 				ILoadpathEntry entry = rawClasspath[j];
@@ -1387,7 +1387,7 @@ public class RubyModelManager implements IContentTypeChangeListener, ISavePartic
 				if (entry.getEntryKind() == ILoadpathEntry.CPE_CONTAINER
 						&& containerGet(javaProject, path) == null) {
 					if (paths == null) {
-						paths = new HashSet();
+						paths = new HashSet<IPath>();
 						allContainerPaths.put(javaProject, paths);
 					}
 					paths.add(path);
@@ -1406,9 +1406,9 @@ public class RubyModelManager implements IContentTypeChangeListener, ISavePartic
 			*/
 		}
 		// TODO (frederic) remove following block when JDT/UI dummy project will be thrown away...
-		HashSet containerPaths = (HashSet) allContainerPaths.get(javaProjectToInit);
+		HashSet<IPath> containerPaths = allContainerPaths.get(javaProjectToInit);
 		if (containerPaths == null) {
-			containerPaths = new HashSet();
+			containerPaths = new HashSet<IPath>();
 			allContainerPaths.put(javaProjectToInit, containerPaths);
 		}
 		containerPaths.add(containerToInit);
@@ -1425,13 +1425,13 @@ public class RubyModelManager implements IContentTypeChangeListener, ISavePartic
 			IWorkspaceRunnable runnable = 				
 				new IWorkspaceRunnable() {
 					public void run(IProgressMonitor monitor) throws CoreException {
-						Set keys = allContainerPaths.keySet();
+						Set<IRubyProject> keys = allContainerPaths.keySet();
 						int length = keys.size();
 						IRubyProject[] javaProjects = new IRubyProject[length]; // clone as the following will have a side effect
 						keys.toArray(javaProjects);
 						for (int i = 0; i < length; i++) {
 							IRubyProject javaProject = javaProjects[i];
-							HashSet pathSet = (HashSet) allContainerPaths.get(javaProject);
+							HashSet pathSet = allContainerPaths.get(javaProject);
 							if (pathSet == null) continue;
 							int length2 = pathSet.size();
 							IPath[] paths = new IPath[length2];
@@ -1471,12 +1471,12 @@ public class RubyModelManager implements IContentTypeChangeListener, ISavePartic
 	
 	public synchronized ILoadpathContainer containerGet(IRubyProject project, IPath containerPath) {	
 		// check initialization in progress first
-		HashSet projectInitializations = containerInitializationInProgress(project);
+		HashSet<IPath> projectInitializations = containerInitializationInProgress(project);
 		if (projectInitializations.contains(containerPath)) {
 			return CONTAINER_INITIALIZATION_IN_PROGRESS;
 		}
 		
-		Map projectContainers = (Map)this.containers.get(project);
+		Map projectContainers = this.containers.get(project);
 		if (projectContainers == null){
 			return null;
 		}
@@ -1487,15 +1487,15 @@ public class RubyModelManager implements IContentTypeChangeListener, ISavePartic
 	/*
 	 * Returns the set of container paths for the given project that are being initialized in the current thread.
 	 */
-	private HashSet containerInitializationInProgress(IRubyProject project) {
-		Map initializations = (Map)this.containerInitializationInProgress.get();
+	private HashSet<IPath> containerInitializationInProgress(IRubyProject project) {
+		Map<IRubyProject, HashSet<IPath>> initializations = this.containerInitializationInProgress.get();
 		if (initializations == null) {
-			initializations = new HashMap();
+			initializations = new HashMap<IRubyProject, HashSet<IPath>>();
 			this.containerInitializationInProgress.set(initializations);
 		}
-		HashSet projectInitializations = (HashSet)initializations.get(project);
+		HashSet<IPath> projectInitializations = initializations.get(project);
 		if (projectInitializations == null) {
-			projectInitializations = new HashSet();
+			projectInitializations = new HashSet<IPath>();
 			initializations.put(project, projectInitializations);
 		}
 		return projectInitializations;
@@ -1541,7 +1541,7 @@ public class RubyModelManager implements IContentTypeChangeListener, ISavePartic
 	 * The given project is being removed. Remove all containers for this project from the cache.
 	 */
 	public void containerRemove(IRubyProject project) {
-		Map initializations = (Map) this.containerInitializationInProgress.get();
+		Map initializations = this.containerInitializationInProgress.get();
 		if (initializations != null) {
 			initializations.remove(project);
 		}

@@ -1,5 +1,7 @@
 package org.rubypeople.rdt.internal.ti.util;
 
+import java.util.List;
+
 import org.jruby.ast.Node;
 import org.rubypeople.rdt.internal.core.parser.InOrderVisitor;
 
@@ -10,6 +12,9 @@ import org.rubypeople.rdt.internal.core.parser.InOrderVisitor;
  */
 public class NodeLocator extends InOrderVisitor {
 	
+	/** Stack of names of types (Class/Module) enclosing the visitor cursor as we traverse */
+	protected List<String> typeNameStack;
+
 	/**
 	 * Determines whether the node spans the specified source offset.
 	 * @param node Node to test.
@@ -35,6 +40,18 @@ public class NodeLocator extends InOrderVisitor {
 		{
 			return node.getPosition().getEndOffset() - node.getPosition().getStartOffset();
 		}
+	}
+
+	protected void pushType(String typeName) {
+		typeNameStack.add( 0, typeName );
+	}
+
+	protected void popType() {
+		typeNameStack.remove(0);
+	}
+
+	protected String peekType() {
+		return typeNameStack.get(0);
 	}
 
 }

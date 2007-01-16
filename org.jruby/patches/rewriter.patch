@@ -1,0 +1,5192 @@
+Index: src/org/jruby/ast/visitor/rewriter/utils/CallDepth.java
+===================================================================
+--- src/org/jruby/ast/visitor/rewriter/utils/CallDepth.java	(revision 0)
++++ src/org/jruby/ast/visitor/rewriter/utils/CallDepth.java	(revision 0)
+@@ -0,0 +1,61 @@
++/***** BEGIN LICENSE BLOCK *****
++ * Version: CPL 1.0/GPL 2.0/LGPL 2.1
++ *
++ * The contents of this file are subject to the Common Public
++ * License Version 1.0 (the "License"); you may not use this file
++ * except in compliance with the License. You may obtain a copy of
++ * the License at http://www.eclipse.org/legal/cpl-v10.html
++ *
++ * Software distributed under the License is distributed on an "AS
++ * IS" basis, WITHOUT WARRANTY OF ANY KIND, either express or
++ * implied. See the License for the specific language governing
++ * rights and limitations under the License.
++ *
++ * Copyright (C) 2006 Mirko Stocker <me@misto.ch>
++ * 
++ * Alternatively, the contents of this file may be used under the terms of
++ * either of the GNU General Public License Version 2 or later (the "GPL"),
++ * or the GNU Lesser General Public License Version 2.1 or later (the "LGPL"),
++ * in which case the provisions of the GPL or the LGPL are applicable instead
++ * of those above. If you wish to allow use of your version of this file only
++ * under the terms of either the GPL or the LGPL, and not to allow others to
++ * use your version of this file under the terms of the CPL, indicate your
++ * decision by deleting the provisions above and replace them with the notice
++ * and other provisions required by the GPL or the LGPL. If you do not delete
++ * the provisions above, a recipient may use your version of this file under
++ * the terms of any one of the CPL, the GPL or the LGPL.
++ ***** END LICENSE BLOCK *****/
++
++package org.jruby.ast.visitor.rewriter.utils;
++
++public class CallDepth {
++	private int nestedCallDepth;
++	private int savedNestedCallDepth;
++	
++	public void enterCall() {
++		nestedCallDepth++;
++	}
++
++	public void leaveCall() {
++		nestedCallDepth--;
++		if (nestedCallDepth < 0)
++			nestedCallDepth = 0;
++	}
++
++	public boolean inCall() {
++		return nestedCallDepth > 0;
++	}
++
++	/*
++	 * Those methods are used do disable the output of parantheses in arguments
++	 * of operator-calls
++	 */
++	public void disableCallDepth() {
++		savedNestedCallDepth = nestedCallDepth;
++		nestedCallDepth = 0;
++	}
++
++	public void enableCallDepth() {
++		nestedCallDepth = savedNestedCallDepth;
++	}
++}
+Index: src/org/jruby/ast/visitor/rewriter/utils/Indentor.java
+===================================================================
+--- src/org/jruby/ast/visitor/rewriter/utils/Indentor.java	(revision 0)
++++ src/org/jruby/ast/visitor/rewriter/utils/Indentor.java	(revision 0)
+@@ -0,0 +1,74 @@
++/***** BEGIN LICENSE BLOCK *****
++ * Version: CPL 1.0/GPL 2.0/LGPL 2.1
++ *
++ * The contents of this file are subject to the Common Public
++ * License Version 1.0 (the "License"); you may not use this file
++ * except in compliance with the License. You may obtain a copy of
++ * the License at http://www.eclipse.org/legal/cpl-v10.html
++ *
++ * Software distributed under the License is distributed on an "AS
++ * IS" basis, WITHOUT WARRANTY OF ANY KIND, either express or
++ * implied. See the License for the specific language governing
++ * rights and limitations under the License.
++ *
++ * Copyright (C) 2006 Mirko Stocker <me@misto.ch>
++ * 
++ * Alternatively, the contents of this file may be used under the terms of
++ * either of the GNU General Public License Version 2 or later (the "GPL"),
++ * or the GNU Lesser General Public License Version 2.1 or later (the "LGPL"),
++ * in which case the provisions of the GPL or the LGPL are applicable instead
++ * of those above. If you wish to allow use of your version of this file only
++ * under the terms of either the GPL or the LGPL, and not to allow others to
++ * use your version of this file under the terms of the CPL, indicate your
++ * decision by deleting the provisions above and replace them with the notice
++ * and other provisions required by the GPL or the LGPL. If you do not delete
++ * the provisions above, a recipient may use your version of this file under
++ * the terms of any one of the CPL, the GPL or the LGPL.
++ ***** END LICENSE BLOCK *****/
++
++package org.jruby.ast.visitor.rewriter.utils;
++
++import java.io.PrintWriter;
++
++public class Indentor {
++	
++	private int indentation;
++
++	private int indentationSteps;
++
++	private char indentationChar;
++
++	public Indentor(int indentationSteps, char indentationChar) {
++		this.indentationSteps = indentationSteps;
++		this.indentationChar = indentationChar;
++	}
++
++	public void indent() {
++		indentation += indentationSteps;
++	}
++
++	public void outdent() {
++		indentation -= indentationSteps;
++	}
++	
++	public void printIndentation(PrintWriter out) {
++		for (int i = 0; i < indentation; i++)
++			out.print(indentationChar);
++	}
++
++	public char getIndentationChar() {
++		return indentationChar;
++	}
++
++	public void setIndentationChar(char indentationChar) {
++		this.indentationChar = indentationChar;
++	}
++
++	public int getIndentationSteps() {
++		return indentationSteps;
++	}
++
++	public void setIndentationSteps(int indentationSteps) {
++		this.indentationSteps = indentationSteps;
++	}
++}
+\ No newline at end of file
+Index: src/org/jruby/ast/visitor/rewriter/utils/HereDocument.java
+===================================================================
+--- src/org/jruby/ast/visitor/rewriter/utils/HereDocument.java	(revision 0)
++++ src/org/jruby/ast/visitor/rewriter/utils/HereDocument.java	(revision 0)
+@@ -0,0 +1,54 @@
++/***** BEGIN LICENSE BLOCK *****
++ * Version: CPL 1.0/GPL 2.0/LGPL 2.1
++ *
++ * The contents of this file are subject to the Common Public
++ * License Version 1.0 (the "License"); you may not use this file
++ * except in compliance with the License. You may obtain a copy of
++ * the License at http://www.eclipse.org/legal/cpl-v10.html
++ *
++ * Software distributed under the License is distributed on an "AS
++ * IS" basis, WITHOUT WARRANTY OF ANY KIND, either express or
++ * implied. See the License for the specific language governing
++ * rights and limitations under the License.
++ *
++ * Copyright (C) 2006 Mirko Stocker <me@misto.ch>
++ * 
++ * Alternatively, the contents of this file may be used under the terms of
++ * either of the GNU General Public License Version 2 or later (the "GPL"),
++ * or the GNU Lesser General Public License Version 2.1 or later (the "LGPL"),
++ * in which case the provisions of the GPL or the LGPL are applicable instead
++ * of those above. If you wish to allow use of your version of this file only
++ * under the terms of either the GPL or the LGPL, and not to allow others to
++ * use your version of this file under the terms of the CPL, indicate your
++ * decision by deleting the provisions above and replace them with the notice
++ * and other provisions required by the GPL or the LGPL. If you do not delete
++ * the provisions above, a recipient may use your version of this file under
++ * the terms of any one of the CPL, the GPL or the LGPL.
++ ***** END LICENSE BLOCK *****/
++
++package org.jruby.ast.visitor.rewriter.utils;
++
++public class HereDocument {
++	
++	public String content;
++	private ReWriterContext config;
++
++	public HereDocument(String content, ReWriterContext config) {
++		super();
++		this.content = content;
++		this.config = config;
++	}
++
++	public String getContent() {
++		return content;
++	}
++
++	public void print() {
++		config.setSkipNextNewline(false);
++		config.getOutput().print('\n');
++		config.getOutput().print(getContent());
++		config.getIndentor().printIndentation(config.getOutput());
++		config.getOutput().print("EOF");
++	}
++	
++}
+Index: src/org/jruby/ast/visitor/rewriter/utils/LocalVariables.java
+===================================================================
+--- src/org/jruby/ast/visitor/rewriter/utils/LocalVariables.java	(revision 0)
++++ src/org/jruby/ast/visitor/rewriter/utils/LocalVariables.java	(revision 0)
+@@ -0,0 +1,52 @@
++/***** BEGIN LICENSE BLOCK *****
++ * Version: CPL 1.0/GPL 2.0/LGPL 2.1
++ *
++ * The contents of this file are subject to the Common Public
++ * License Version 1.0 (the "License"); you may not use this file
++ * except in compliance with the License. You may obtain a copy of
++ * the License at http://www.eclipse.org/legal/cpl-v10.html
++ *
++ * Software distributed under the License is distributed on an "AS
++ * IS" basis, WITHOUT WARRANTY OF ANY KIND, either express or
++ * implied. See the License for the specific language governing
++ * rights and limitations under the License.
++ *
++ * Copyright (C) 2006 Mirko Stocker <me@misto.ch>
++ * 
++ * Alternatively, the contents of this file may be used under the terms of
++ * either of the GNU General Public License Version 2 or later (the "GPL"),
++ * or the GNU Lesser General Public License Version 2.1 or later (the "LGPL"),
++ * in which case the provisions of the GPL or the LGPL are applicable instead
++ * of those above. If you wish to allow use of your version of this file only
++ * under the terms of either the GPL or the LGPL, and not to allow others to
++ * use your version of this file under the terms of the CPL, indicate your
++ * decision by deleting the provisions above and replace them with the notice
++ * and other provisions required by the GPL or the LGPL. If you do not delete
++ * the provisions above, a recipient may use your version of this file under
++ * the terms of any one of the CPL, the GPL or the LGPL.
++ ***** END LICENSE BLOCK *****/
++
++package org.jruby.ast.visitor.rewriter.utils;
++
++import java.util.HashMap;
++
++import org.jruby.parser.StaticScope;
++
++public class LocalVariables {
++	
++	private final HashMap localVariablesMap = new HashMap();
++
++	public void addLocalVariable(int count, String name) {
++		localVariablesMap.put(new Integer(count), name);
++	}
++
++	public void addLocalVariable(StaticScope scope) {
++		for (int i = 0; i < scope.getVariables().length; i++) {
++			addLocalVariable(i, scope.getVariables()[i]);
++		}
++	}
++
++	public String getLocalVariable(int index) {
++		return (String) localVariablesMap.get(new Integer(index));
++	}
++}
+Index: src/org/jruby/ast/visitor/rewriter/utils/MultipleAssignmentReWriteVisitor.java
+===================================================================
+--- src/org/jruby/ast/visitor/rewriter/utils/MultipleAssignmentReWriteVisitor.java	(revision 0)
++++ src/org/jruby/ast/visitor/rewriter/utils/MultipleAssignmentReWriteVisitor.java	(revision 0)
+@@ -0,0 +1,63 @@
++/***** BEGIN LICENSE BLOCK *****
++ * Version: CPL 1.0/GPL 2.0/LGPL 2.1
++ *
++ * The contents of this file are subject to the Common Public
++ * License Version 1.0 (the "License"); you may not use this file
++ * except in compliance with the License. You may obtain a copy of
++ * the License at http://www.eclipse.org/legal/cpl-v10.html
++ *
++ * Software distributed under the License is distributed on an "AS
++ * IS" basis, WITHOUT WARRANTY OF ANY KIND, either express or
++ * implied. See the License for the specific language governing
++ * rights and limitations under the License.
++ *
++ * Copyright (C) 2006 Mirko Stocker <me@misto.ch>
++ * 
++ * Alternatively, the contents of this file may be used under the terms of
++ * either of the GNU General Public License Version 2 or later (the "GPL"),
++ * or the GNU Lesser General Public License Version 2.1 or later (the "LGPL"),
++ * in which case the provisions of the GPL or the LGPL are applicable instead
++ * of those above. If you wish to allow use of your version of this file only
++ * under the terms of either the GPL or the LGPL, and not to allow others to
++ * use your version of this file under the terms of the CPL, indicate your
++ * decision by deleting the provisions above and replace them with the notice
++ * and other provisions required by the GPL or the LGPL. If you do not delete
++ * the provisions above, a recipient may use your version of this file under
++ * the terms of any one of the CPL, the GPL or the LGPL.
++ ***** END LICENSE BLOCK *****/
++
++package org.jruby.ast.visitor.rewriter.utils;
++
++import java.util.Iterator;
++
++import org.jruby.ast.ArgumentNode;
++import org.jruby.ast.Node;
++import org.jruby.ast.visitor.rewriter.ReWriteVisitor;
++
++public class MultipleAssignmentReWriteVisitor extends ReWriteVisitor{
++	
++	public MultipleAssignmentReWriteVisitor(ReWriterContext config){
++		super(config);
++	}
++	
++	protected void printAssignmentOperator(){
++	}
++	
++	protected boolean inMultipleAssignment() {
++		return true;
++	}
++	
++	// This might lead to a problem with comments
++	public void visitAndPrintWithSeparator(Iterator it) {
++		while (it.hasNext()) {
++			Node n = (Node) it.next();
++			if(n instanceof ArgumentNode) {
++				config.getOutput().print(((ArgumentNode) n).getName());
++			} else {
++				visitNode(n);
++			}
++			if (it.hasNext())
++				print(", ");
++		}
++	}
++}
+\ No newline at end of file
+Index: src/org/jruby/ast/visitor/rewriter/utils/ShortIfNodeReWriteVisitor.java
+===================================================================
+--- src/org/jruby/ast/visitor/rewriter/utils/ShortIfNodeReWriteVisitor.java	(revision 0)
++++ src/org/jruby/ast/visitor/rewriter/utils/ShortIfNodeReWriteVisitor.java	(revision 0)
+@@ -0,0 +1,56 @@
++/***** BEGIN LICENSE BLOCK *****
++ * Version: CPL 1.0/GPL 2.0/LGPL 2.1
++ *
++ * The contents of this file are subject to the Common Public
++ * License Version 1.0 (the "License"); you may not use this file
++ * except in compliance with the License. You may obtain a copy of
++ * the License at http://www.eclipse.org/legal/cpl-v10.html
++ *
++ * Software distributed under the License is distributed on an "AS
++ * IS" basis, WITHOUT WARRANTY OF ANY KIND, either express or
++ * implied. See the License for the specific language governing
++ * rights and limitations under the License.
++ *
++ * Copyright (C) 2006 Mirko Stocker <me@misto.ch>
++ * 
++ * Alternatively, the contents of this file may be used under the terms of
++ * either of the GNU General Public License Version 2 or later (the "GPL"),
++ * or the GNU Lesser General Public License Version 2.1 or later (the "LGPL"),
++ * in which case the provisions of the GPL or the LGPL are applicable instead
++ * of those above. If you wish to allow use of your version of this file only
++ * under the terms of either the GPL or the LGPL, and not to allow others to
++ * use your version of this file under the terms of the CPL, indicate your
++ * decision by deleting the provisions above and replace them with the notice
++ * and other provisions required by the GPL or the LGPL. If you do not delete
++ * the provisions above, a recipient may use your version of this file under
++ * the terms of any one of the CPL, the GPL or the LGPL.
++ ***** END LICENSE BLOCK *****/
++
++package org.jruby.ast.visitor.rewriter.utils;
++
++import org.jruby.ast.NewlineNode;
++import org.jruby.ast.visitor.rewriter.ReWriteVisitor;
++import org.jruby.evaluator.Instruction;
++
++public class ShortIfNodeReWriteVisitor extends ReWriteVisitor{
++	
++	public ShortIfNodeReWriteVisitor(ReWriterContext config){
++		super(config);
++	}
++	
++	protected void printNewlineAndIndentation() {
++		print("; ");
++	}
++	
++	public Instruction visitNewlineNode(NewlineNode iVisited) {
++		if (config.getSource().charAt(getEndOffset(iVisited) - 1) == ')') {
++			print('(');
++			visitNode(iVisited.getNextNode());
++			print(')');
++		} else {
++			print("; ");
++			visitNode(iVisited.getNextNode());
++		}
++		return null;
++	}
++}
+\ No newline at end of file
+Index: src/org/jruby/ast/visitor/rewriter/utils/BooleanStateStack.java
+===================================================================
+--- src/org/jruby/ast/visitor/rewriter/utils/BooleanStateStack.java	(revision 0)
++++ src/org/jruby/ast/visitor/rewriter/utils/BooleanStateStack.java	(revision 0)
+@@ -0,0 +1,60 @@
++/***** BEGIN LICENSE BLOCK *****
++ * Version: CPL 1.0/GPL 2.0/LGPL 2.1
++ *
++ * The contents of this file are subject to the Common Public
++ * License Version 1.0 (the "License"); you may not use this file
++ * except in compliance with the License. You may obtain a copy of
++ * the License at http://www.eclipse.org/legal/cpl-v10.html
++ *
++ * Software distributed under the License is distributed on an "AS
++ * IS" basis, WITHOUT WARRANTY OF ANY KIND, either express or
++ * implied. See the License for the specific language governing
++ * rights and limitations under the License.
++ *
++ * Copyright (C) 2006 Mirko Stocker <me@misto.ch>
++ * 
++ * Alternatively, the contents of this file may be used under the terms of
++ * either of the GNU General Public License Version 2 or later (the "GPL"),
++ * or the GNU Lesser General Public License Version 2.1 or later (the "LGPL"),
++ * in which case the provisions of the GPL or the LGPL are applicable instead
++ * of those above. If you wish to allow use of your version of this file only
++ * under the terms of either the GPL or the LGPL, and not to allow others to
++ * use your version of this file under the terms of the CPL, indicate your
++ * decision by deleting the provisions above and replace them with the notice
++ * and other provisions required by the GPL or the LGPL. If you do not delete
++ * the provisions above, a recipient may use your version of this file under
++ * the terms of any one of the CPL, the GPL or the LGPL.
++ ***** END LICENSE BLOCK *****/
++
++package org.jruby.ast.visitor.rewriter.utils;
++
++import java.util.EmptyStackException;
++import java.util.Stack;
++
++public class BooleanStateStack {
++	
++	private final Stack states = new Stack();
++	private final boolean defaultValue;
++	
++
++	public BooleanStateStack(boolean b, boolean defaultValue) {
++		set(b);
++		this.defaultValue = defaultValue;
++	}
++	
++	public void set(boolean b) {
++		states.push(Boolean.valueOf(b));
++	}
++	
++	public void revert() {
++		states.pop();
++	}
++	
++	public boolean isTrue() {
++		try {
++			return ((Boolean) states.peek()).booleanValue();
++		} catch (EmptyStackException e) {
++			return defaultValue;
++		}
++	}
++}
+Index: src/org/jruby/ast/visitor/rewriter/utils/ReWriterContext.java
+===================================================================
+--- src/org/jruby/ast/visitor/rewriter/utils/ReWriterContext.java	(revision 0)
++++ src/org/jruby/ast/visitor/rewriter/utils/ReWriterContext.java	(revision 0)
+@@ -0,0 +1,130 @@
++/***** BEGIN LICENSE BLOCK *****
++ * Version: CPL 1.0/GPL 2.0/LGPL 2.1
++ *
++ * The contents of this file are subject to the Common Public
++ * License Version 1.0 (the "License"); you may not use this file
++ * except in compliance with the License. You may obtain a copy of
++ * the License at http://www.eclipse.org/legal/cpl-v10.html
++ *
++ * Software distributed under the License is distributed on an "AS
++ * IS" basis, WITHOUT WARRANTY OF ANY KIND, either express or
++ * implied. See the License for the specific language governing
++ * rights and limitations under the License.
++ *
++ * Copyright (C) 2006 Mirko Stocker <me@misto.ch>
++ * 
++ * Alternatively, the contents of this file may be used under the terms of
++ * either of the GNU General Public License Version 2 or later (the "GPL"),
++ * or the GNU Lesser General Public License Version 2.1 or later (the "LGPL"),
++ * in which case the provisions of the GPL or the LGPL are applicable instead
++ * of those above. If you wish to allow use of your version of this file only
++ * under the terms of either the GPL or the LGPL, and not to allow others to
++ * use your version of this file under the terms of the CPL, indicate your
++ * decision by deleting the provisions above and replace them with the notice
++ * and other provisions required by the GPL or the LGPL. If you do not delete
++ * the provisions above, a recipient may use your version of this file under
++ * the terms of any one of the CPL, the GPL or the LGPL.
++ ***** END LICENSE BLOCK *****/
++
++package org.jruby.ast.visitor.rewriter.utils;
++
++import java.io.PrintWriter;
++import java.io.StringWriter;
++import java.util.ArrayList;
++
++import org.jruby.ast.visitor.rewriter.FormatHelper;
++import org.jruby.lexer.yacc.ISourcePosition;
++
++
++public class ReWriterContext {
++	
++	private final String source;
++	private final CallDepth callDepth = new CallDepth();
++	private final LocalVariables localVariables = new LocalVariables();
++	private final ArrayList argsNodeWithBlock = new ArrayList();
++	private final BooleanStateStack printQuotesInString = new BooleanStateStack(true, true);
++	private HereDocument hereDocument;
++	private boolean skipNextNewline = true;
++	private PrintWriter output;
++	private FormatHelper formatHelper;
++
++	private ISourcePosition lastPosition;
++	
++	public LocalVariables getLocalVariables() {
++		return localVariables;
++	}
++
++	public ReWriterContext(PrintWriter output, String source, FormatHelper formatHelper) {
++		super();
++		this.output = output;
++		this.source = source;
++		this.formatHelper = formatHelper;
++	}
++
++	public ReWriterContext(StringWriter output, String source, FormatHelper formatHelper){
++		this(new PrintWriter(output), source, formatHelper);
++	}
++	
++	public CallDepth getCallDepth() {
++		return callDepth;
++	}
++
++	public String getSource() {
++		return source;
++	}
++
++	public Indentor getIndentor() {
++		return formatHelper.getIndentor();
++	}
++
++	public ISourcePosition getLastPosition() {
++		return lastPosition;
++	}
++
++	public void setLastPosition(ISourcePosition lastPosition) {
++		this.lastPosition = lastPosition;
++	}
++	
++	public ArrayList getArgsNodeWithBlock() {
++		return argsNodeWithBlock;
++	}
++
++	public BooleanStateStack getPrintQuotesInString() {
++		return printQuotesInString;
++	}
++	
++	
++	public boolean hasHereDocument() {
++		return hereDocument != null;
++	}
++
++	public HereDocument fetchHereDocument() {
++		HereDocument hd =  hereDocument;
++		hereDocument = null;
++		return hd;
++	}
++
++	public void depositHereDocument(String hereDocument) {
++		this.hereDocument = new HereDocument(hereDocument, this);
++	}
++
++	public boolean isSkipNextNewline() {
++		return skipNextNewline;
++	}
++
++	public void setSkipNextNewline(boolean skipNextNewline) {
++		this.skipNextNewline = skipNextNewline;
++	}
++
++	public PrintWriter getOutput() {
++		return output;
++	}
++
++	public void setOutput(PrintWriter output) {
++		this.output = output;
++	}
++
++	public FormatHelper getFormatHelper() {
++		return formatHelper;
++	}
++}
+Index: src/org/jruby/ast/visitor/rewriter/utils/HereDocReWriteVisitor.java
+===================================================================
+--- src/org/jruby/ast/visitor/rewriter/utils/HereDocReWriteVisitor.java	(revision 0)
++++ src/org/jruby/ast/visitor/rewriter/utils/HereDocReWriteVisitor.java	(revision 0)
+@@ -0,0 +1,45 @@
++/***** BEGIN LICENSE BLOCK *****
++ * Version: CPL 1.0/GPL 2.0/LGPL 2.1
++ *
++ * The contents of this file are subject to the Common Public
++ * License Version 1.0 (the "License"); you may not use this file
++ * except in compliance with the License. You may obtain a copy of
++ * the License at http://www.eclipse.org/legal/cpl-v10.html
++ *
++ * Software distributed under the License is distributed on an "AS
++ * IS" basis, WITHOUT WARRANTY OF ANY KIND, either express or
++ * implied. See the License for the specific language governing
++ * rights and limitations under the License.
++ *
++ * Copyright (C) 2006 Mirko Stocker <me@misto.ch>
++ * 
++ * Alternatively, the contents of this file may be used under the terms of
++ * either of the GNU General Public License Version 2 or later (the "GPL"),
++ * or the GNU Lesser General Public License Version 2.1 or later (the "LGPL"),
++ * in which case the provisions of the GPL or the LGPL are applicable instead
++ * of those above. If you wish to allow use of your version of this file only
++ * under the terms of either the GPL or the LGPL, and not to allow others to
++ * use your version of this file under the terms of the CPL, indicate your
++ * decision by deleting the provisions above and replace them with the notice
++ * and other provisions required by the GPL or the LGPL. If you do not delete
++ * the provisions above, a recipient may use your version of this file under
++ * the terms of any one of the CPL, the GPL or the LGPL.
++ ***** END LICENSE BLOCK *****/
++
++package org.jruby.ast.visitor.rewriter.utils;
++
++import org.jruby.ast.StrNode;
++import org.jruby.ast.visitor.rewriter.ReWriteVisitor;
++import org.jruby.evaluator.Instruction;
++
++public class HereDocReWriteVisitor extends ReWriteVisitor{
++	
++	public HereDocReWriteVisitor(ReWriterContext config){
++		super(config);
++	}
++	
++	public Instruction visitStrNode(StrNode iVisited) {
++		print(iVisited.getValue());
++		return null;
++	}
++}
+\ No newline at end of file
+Index: src/org/jruby/ast/visitor/rewriter/utils/IgnoreCommentsReWriteVisitor.java
+===================================================================
+--- src/org/jruby/ast/visitor/rewriter/utils/IgnoreCommentsReWriteVisitor.java	(revision 0)
++++ src/org/jruby/ast/visitor/rewriter/utils/IgnoreCommentsReWriteVisitor.java	(revision 0)
+@@ -0,0 +1,43 @@
++/***** BEGIN LICENSE BLOCK *****
++ * Version: CPL 1.0/GPL 2.0/LGPL 2.1
++ *
++ * The contents of this file are subject to the Common Public
++ * License Version 1.0 (the "License"); you may not use this file
++ * except in compliance with the License. You may obtain a copy of
++ * the License at http://www.eclipse.org/legal/cpl-v10.html
++ *
++ * Software distributed under the License is distributed on an "AS
++ * IS" basis, WITHOUT WARRANTY OF ANY KIND, either express or
++ * implied. See the License for the specific language governing
++ * rights and limitations under the License.
++ *
++ * Copyright (C) 2006 Mirko Stocker <me@misto.ch>
++ * 
++ * Alternatively, the contents of this file may be used under the terms of
++ * either of the GNU General Public License Version 2 or later (the "GPL"),
++ * or the GNU Lesser General Public License Version 2.1 or later (the "LGPL"),
++ * in which case the provisions of the GPL or the LGPL are applicable instead
++ * of those above. If you wish to allow use of your version of this file only
++ * under the terms of either the GPL or the LGPL, and not to allow others to
++ * use your version of this file under the terms of the CPL, indicate your
++ * decision by deleting the provisions above and replace them with the notice
++ * and other provisions required by the GPL or the LGPL. If you do not delete
++ * the provisions above, a recipient may use your version of this file under
++ * the terms of any one of the CPL, the GPL or the LGPL.
++ ***** END LICENSE BLOCK *****/
++
++package org.jruby.ast.visitor.rewriter.utils;
++
++import org.jruby.ast.Node;
++import org.jruby.ast.visitor.rewriter.ReWriteVisitor;
++
++public class IgnoreCommentsReWriteVisitor extends ReWriteVisitor{
++	
++	public IgnoreCommentsReWriteVisitor(ReWriterContext config){
++		super(config);
++	}
++	
++	protected boolean printCommentsAfter(Node iVisited) {
++		return false;
++	}
++}	
+\ No newline at end of file
+Index: src/org/jruby/ast/visitor/rewriter/utils/DRegxReWriteVisitor.java
+===================================================================
+--- src/org/jruby/ast/visitor/rewriter/utils/DRegxReWriteVisitor.java	(revision 0)
++++ src/org/jruby/ast/visitor/rewriter/utils/DRegxReWriteVisitor.java	(revision 0)
+@@ -0,0 +1,43 @@
++/***** BEGIN LICENSE BLOCK *****
++ * Version: CPL 1.0/GPL 2.0/LGPL 2.1
++ *
++ * The contents of this file are subject to the Common Public
++ * License Version 1.0 (the "License"); you may not use this file
++ * except in compliance with the License. You may obtain a copy of
++ * the License at http://www.eclipse.org/legal/cpl-v10.html
++ *
++ * Software distributed under the License is distributed on an "AS
++ * IS" basis, WITHOUT WARRANTY OF ANY KIND, either express or
++ * implied. See the License for the specific language governing
++ * rights and limitations under the License.
++ *
++ * Copyright (C) 2006 Mirko Stocker <me@misto.ch>
++ * 
++ * Alternatively, the contents of this file may be used under the terms of
++ * either of the GNU General Public License Version 2 or later (the "GPL"),
++ * or the GNU Lesser General Public License Version 2.1 or later (the "LGPL"),
++ * in which case the provisions of the GPL or the LGPL are applicable instead
++ * of those above. If you wish to allow use of your version of this file only
++ * under the terms of either the GPL or the LGPL, and not to allow others to
++ * use your version of this file under the terms of the CPL, indicate your
++ * decision by deleting the provisions above and replace them with the notice
++ * and other provisions required by the GPL or the LGPL. If you do not delete
++ * the provisions above, a recipient may use your version of this file under
++ * the terms of any one of the CPL, the GPL or the LGPL.
++ ***** END LICENSE BLOCK *****/
++
++package org.jruby.ast.visitor.rewriter.utils;
++
++import org.jruby.ast.visitor.rewriter.ReWriteVisitor;
++
++
++public class DRegxReWriteVisitor extends ReWriteVisitor{
++	
++	public DRegxReWriteVisitor(ReWriterContext config){
++		super(config);
++	}
++	
++	protected boolean inDRegxNode() {
++		return true;
++	}
++}
+\ No newline at end of file
+Index: src/org/jruby/ast/visitor/rewriter/utils/Operators.java
+===================================================================
+--- src/org/jruby/ast/visitor/rewriter/utils/Operators.java	(revision 0)
++++ src/org/jruby/ast/visitor/rewriter/utils/Operators.java	(revision 0)
+@@ -0,0 +1,48 @@
++/***** BEGIN LICENSE BLOCK *****
++ * Version: CPL 1.0/GPL 2.0/LGPL 2.1
++ *
++ * The contents of this file are subject to the Common Public
++ * License Version 1.0 (the "License"); you may not use this file
++ * except in compliance with the License. You may obtain a copy of
++ * the License at http://www.eclipse.org/legal/cpl-v10.html
++ *
++ * Software distributed under the License is distributed on an "AS
++ * IS" basis, WITHOUT WARRANTY OF ANY KIND, either express or
++ * implied. See the License for the specific language governing
++ * rights and limitations under the License.
++ *
++ * Copyright (C) 2006 Mirko Stocker <me@misto.ch>
++ * 
++ * Alternatively, the contents of this file may be used under the terms of
++ * either of the GNU General Public License Version 2 or later (the "GPL"),
++ * or the GNU Lesser General Public License Version 2.1 or later (the "LGPL"),
++ * in which case the provisions of the GPL or the LGPL are applicable instead
++ * of those above. If you wish to allow use of your version of this file only
++ * under the terms of either the GPL or the LGPL, and not to allow others to
++ * use your version of this file under the terms of the CPL, indicate your
++ * decision by deleting the provisions above and replace them with the notice
++ * and other provisions required by the GPL or the LGPL. If you do not delete
++ * the provisions above, a recipient may use your version of this file under
++ * the terms of any one of the CPL, the GPL or the LGPL.
++ ***** END LICENSE BLOCK *****/
++
++package org.jruby.ast.visitor.rewriter.utils;
++
++import java.util.HashSet;
++
++public class Operators {
++	
++	private static HashSet operatorSet = new HashSet();
++	static {
++		String[] operators = new String[] { "**", "<=>", "==", "=~", "===",
++				">=", "<=", "&", "%", "/", "+", "-", "*", "<", ">", "<<",
++				">>", "|"};
++		for(int i = 0; i < operators.length; i++) {
++			operatorSet.add(operators[i]);
++		}
++	}
++	
++	public static boolean contain(String name) {
++		return operatorSet.contains(name);
++	}
++}
+\ No newline at end of file
+Index: src/org/jruby/ast/visitor/rewriter/ClassBodyWriter.java
+===================================================================
+--- src/org/jruby/ast/visitor/rewriter/ClassBodyWriter.java	(revision 0)
++++ src/org/jruby/ast/visitor/rewriter/ClassBodyWriter.java	(revision 0)
+@@ -0,0 +1,42 @@
++package org.jruby.ast.visitor.rewriter;
++
++import java.util.Iterator;
++
++import org.jruby.ast.BlockNode;
++import org.jruby.ast.NewlineNode;
++import org.jruby.ast.Node;
++import org.jruby.ast.visitor.rewriter.utils.ReWriterContext;
++
++
++public class ClassBodyWriter {
++	private ReWriteVisitor visitor;
++	private Node bodyNode;
++	private ReWriterContext context;
++
++	public ClassBodyWriter(ReWriteVisitor visitor, Node bodyNode) {
++		this.visitor = visitor;
++		this.bodyNode = bodyNode;
++		this.context = visitor.getConfig();
++	}
++	
++	public void write(){
++		if (bodyNode instanceof BlockNode) {
++			context.getIndentor().indent();
++			writeContent((BlockNode) bodyNode);
++			context.getIndentor().outdent();
++		} else if (bodyNode instanceof NewlineNode) {
++			visitor.visitNodeInIndentation(bodyNode);
++		} else {
++			visitor.visitNode(bodyNode);
++		}
++	}
++	
++	private void writeContent(BlockNode node) {
++		Iterator it = node.childNodes().iterator();
++		while(it.hasNext()) {
++			visitor.visitNode((Node) it.next());
++			if(it.hasNext())
++				context.getOutput().print(context.getFormatHelper().classBodyElementsSeparator());
++		}
++	}
++}
+Index: src/org/jruby/ast/visitor/rewriter/ReWriteVisitor.java
+===================================================================
+--- src/org/jruby/ast/visitor/rewriter/ReWriteVisitor.java	(revision 0)
++++ src/org/jruby/ast/visitor/rewriter/ReWriteVisitor.java	(revision 0)
+@@ -0,0 +1,1690 @@
++/***** BEGIN LICENSE BLOCK *****
++ * Version: CPL 1.0/GPL 2.0/LGPL 2.1
++ *
++ * The contents of this file are subject to the Common Public
++ * License Version 1.0 (the "License"); you may not use this file
++ * except in compliance with the License. You may obtain a copy of
++ * the License at http://www.eclipse.org/legal/cpl-v10.html
++ *
++ * Software distributed under the License is distributed on an "AS
++ * IS" basis, WITHOUT WARRANTY OF ANY KIND, either express or
++ * implied. See the License for the specific language governing
++ * rights and limitations under the License.
++ *
++ * Copyright (C) 2006 Mirko Stocker <me@misto.ch>
++ * 
++ * Alternatively, the contents of this file may be used under the terms of
++ * either of the GNU General Public License Version 2 or later (the "GPL"),
++ * or the GNU Lesser General Public License Version 2.1 or later (the "LGPL"),
++ * in which case the provisions of the GPL or the LGPL are applicable instead
++ * of those above. If you wish to allow use of your version of this file only
++ * under the terms of either the GPL or the LGPL, and not to allow others to
++ * use your version of this file under the terms of the CPL, indicate your
++ * decision by deleting the provisions above and replace them with the notice
++ * and other provisions required by the GPL or the LGPL. If you do not delete
++ * the provisions above, a recipient may use your version of this file under
++ * the terms of any one of the CPL, the GPL or the LGPL.
++ ***** END LICENSE BLOCK *****/
++
++package org.jruby.ast.visitor.rewriter;
++
++import java.io.OutputStream;
++import java.io.PrintWriter;
++import java.io.StringWriter;
++import java.io.Writer;
++import java.math.BigInteger;
++import java.util.ArrayList;
++import java.util.Iterator;
++import java.util.regex.Matcher;
++import java.util.regex.Pattern;
++
++import org.jruby.ast.*;
++import org.jruby.ast.types.INameNode;
++import org.jruby.ast.visitor.NodeVisitor;
++import org.jruby.ast.visitor.rewriter.utils.Operators;
++import org.jruby.ast.visitor.rewriter.utils.ReWriterContext;
++import org.jruby.evaluator.Instruction;
++import org.jruby.lexer.yacc.ISourcePosition;
++import org.jruby.parser.StaticScope;
++
++/**
++ * Visits each node and outputs the corresponding Ruby sourcecode for the nodes. 
++ * 
++ * @author Mirko Stocker
++ * 
++ */
++public class ReWriteVisitor implements NodeVisitor {
++	
++	protected final ReWriterContext config;
++	protected final ReWriterFactory factory;
++	
++	
++	public ReWriteVisitor(Writer out, String source) {
++		this(new ReWriterContext(new PrintWriter(out), source, new DefaultFormatHelper()));
++	}
++
++	public ReWriteVisitor(OutputStream out, String source) {
++		this(new ReWriterContext(new PrintWriter(out, true), source, new DefaultFormatHelper()));
++	}
++
++	public ReWriteVisitor(ReWriterContext config) {
++		this.config = config;
++		factory = new ReWriterFactory(config);
++	}
++
++	public void flushStream() {
++		config.getOutput().flush();
++	}
++	
++	protected void print(String s) {
++		config.getOutput().print(s);
++	}
++	
++	protected void print(char c) {
++		config.getOutput().print(c);
++	}
++	
++	protected void print(BigInteger i) {
++		config.getOutput().print(i);
++	}
++	
++	protected void print(int i) {
++		config.getOutput().print(i);
++	}
++	
++	protected void print(long l) {
++		config.getOutput().print(l);
++	}
++	
++	protected void print(double d) {
++		config.getOutput().print(d);
++	}
++	
++	private void enterCall() {
++		config.getCallDepth().enterCall();
++	}
++
++	private void leaveCall() {
++		config.getCallDepth().leaveCall();
++	}
++
++	private boolean inCall() {
++		return config.getCallDepth().inCall();
++	}
++
++	protected void printNewlineAndIndentation() {
++		if(config.hasHereDocument()) {
++			config.fetchHereDocument().print();
++		}
++		print('\n');
++		config.getIndentor().printIndentation(config.getOutput());
++	}
++
++	private static boolean isReceiverACallNode(CallNode n) {
++		return (n.getReceiverNode() instanceof CallNode || n.getReceiverNode() instanceof FCallNode);
++	}
++
++        private void printCommentsBefore(Node iVisited) {
++		Iterator it = iVisited.getComments().iterator();
++		while(it.hasNext()) {
++			CommentNode n = (CommentNode) it.next();
++			if(getStartLine(n) < getStartLine(iVisited)) {
++				visitNode(n);
++				printNewlineAndIndentation();
++			}
++		}
++	}
++
++	protected boolean printCommentsAfter(Node iVisited) {
++		boolean hasComment = false;
++		Iterator it = iVisited.getComments().iterator();
++		while(it.hasNext()) {
++			CommentNode n = (CommentNode) it.next();
++			if(getStartLine(n) >= getEndLine(iVisited)) {
++				print(' ');
++				visitNode(n);
++				hasComment = true;
++			}
++		}
++		return hasComment;
++	}
++	
++	public void visitNode(Node iVisited) {
++		if (iVisited != null) {
++			printCommentsBefore(iVisited);
++			if(iVisited instanceof ArgumentNode) {
++				print(((ArgumentNode) iVisited).getName());
++			} else {
++				iVisited.accept(this);
++			}
++			printCommentsAfter(iVisited);
++			config.setLastPosition(iVisited.getPosition());
++		}
++	}
++
++	public void visitIter(Iterator iterator) {
++		while (iterator.hasNext()) {
++			visitNode((Node) iterator.next());
++		}
++	}
++
++	private void visitIterAndSkipFirst(Iterator iterator) {
++		iterator.next();
++		visitIter(iterator);
++	}
++
++	private static boolean isStartOnNewLine(Node first, Node second) {
++		if(first == null || second == null)
++			return false;
++		return (getStartLine(first) < getStartLine(second));
++	}
++
++	private boolean needsParentheses(Node n) {
++		return ((n.childNodes().size() > 1 || inCall() || firstChild(n) instanceof HashNode)
++				|| firstChild(n) instanceof NewlineNode || firstChild(n) instanceof IfNode);
++	}
++
++	private void printCallArguments(Node argsNode) {
++
++		if (argsNode == null || !hasArguments(argsNode))
++			return;
++
++		if (argsNode.childNodes().size() == 1 && firstChild(argsNode) instanceof HashNode) {
++			HashNode hashNode = (HashNode) firstChild(argsNode);
++			if(hashNode.getListNode().childNodes().size() < 1) {
++				print("({})");
++			} else {
++				print(' ');
++				printHashNodeContent(hashNode);
++			}
++			return;
++		}
++
++		boolean paranthesesPrinted = needsParentheses(argsNode);
++
++		if (paranthesesPrinted)
++			print('(');
++		else
++			print(config.getFormatHelper().beforeCallArguments());
++
++		if (firstChild(argsNode) instanceof NewlineNode)
++			config.setSkipNextNewline(true);
++
++		enterCall();
++
++		if (argsNode instanceof SplatNode || argsNode instanceof BlockPassNode)
++			visitNode(argsNode);
++		else
++			visitAndPrintWithSeparator(argsNode.childNodes().iterator());
++
++		if (paranthesesPrinted && !config.getArgsNodeWithBlock().contains(argsNode))
++			print(')');
++		else
++			print(config.getFormatHelper().afterCallArguments());
++
++		leaveCall();
++	}
++
++	public void visitAndPrintWithSeparator(Iterator it) {
++		while (it.hasNext()) {
++			Node n = (Node) it.next();
++			factory.createIgnoreCommentsReWriteVisitor().visitNode(n);
++			if (it.hasNext())
++				print(config.getFormatHelper().getListSeparator());
++			if(n.hasComments()) {
++				factory.createReWriteVisitor().visitIter(n.getComments().iterator());
++				printNewlineAndIndentation();
++			}
++		}
++	}
++
++	public Instruction visitAliasNode(AliasNode iVisited) {
++		print("alias ");
++		print(iVisited.getNewName());
++		print(' ');
++		print(iVisited.getOldName());
++		printCommentsAtEnd(iVisited);
++		return null;
++	}
++
++	private boolean sourceRangeEquals(int start, int stop, String compare) {
++		return (stop <= config.getSource().length() && sourceSubStringEquals(start, stop - start, compare));
++	}
++	
++	private boolean sourceRangeContains(ISourcePosition pos, String searched) {
++		return pos.getStartOffset() < config.getSource().length() 
++			&& pos.getEndOffset() < config.getSource().length() + 1
++			&& config.getSource().substring(pos.getStartOffset(), pos.getEndOffset()).contains(searched);
++	}
++	public Instruction visitAndNode(AndNode iVisited) {
++		enterCall();
++		visitNode(iVisited.getFirstNode());
++		if (sourceRangeContains(iVisited.getPosition(), "&&"))
++			print(" && ");
++		else
++			print(" and ");
++		visitNode(iVisited.getSecondNode());
++		leaveCall();
++		return null;
++	}
++
++
++	private ArrayList collectAllArguments(ArgsNode iVisited) {
++		ArrayList arguments = new ArrayList();
++		if(iVisited.getArgs() != null)
++			arguments.addAll(iVisited.getArgs().childNodes());
++		if(iVisited.getOptArgs() != null)
++			arguments.addAll(iVisited.getOptArgs().childNodes());
++		if (iVisited.getRestArg() > 0)
++			arguments.add(new ConstNode(null, '*' + config.getLocalVariables().getLocalVariable(iVisited.getRestArg())));
++		if (iVisited.getBlockArgNode() != null)
++			arguments.add(iVisited.getBlockArgNode());
++		return arguments;
++	}
++	
++	private boolean hasNodeCommentsAtEnd(Node n) {
++		Iterator it = n.getComments().iterator();
++		while(it.hasNext()) {
++			Node comment = (Node) it.next();
++			if(getStartLine(comment) == getStartLine(n))
++				return true;
++		}
++		return false;
++	}
++	
++	private void printCommentsInArgs(Node n, boolean hasNext) {
++		if(hasNodeCommentsAtEnd(n) && hasNext)
++			print(",");
++		if (printCommentsAfter(n) && hasNext) {
++			printNewlineAndIndentation();
++		} else 	if (hasNext)
++			print(config.getFormatHelper().getListSeparator());
++	}
++	
++	public Instruction visitArgsNode(ArgsNode iVisited) {
++
++		Iterator it = collectAllArguments(iVisited).iterator();
++
++		while(it.hasNext()) {
++			Node n = (Node) it.next();
++			if (n instanceof ArgumentNode) {
++				print(((ArgumentNode) n).getName());
++				printCommentsInArgs(n, it.hasNext());
++			} else {
++				visitNode(n);
++				if (it.hasNext())
++					print(config.getFormatHelper().getListSeparator());
++			}			
++			if(!it.hasNext()) {
++				print(config.getFormatHelper().afterMethodArguments());
++			}
++		}
++			
++		return null;
++	}
++
++	public Instruction visitArgsCatNode(ArgsCatNode iVisited) {
++		print("[");
++		visitAndPrintWithSeparator(iVisited.getFirstNode().childNodes().iterator());
++		print(config.getFormatHelper().getListSeparator());
++		print("*");
++		visitNode(iVisited.getSecondNode());
++		print("]");
++		return null;
++	}
++
++	public Instruction visitArrayNode(ArrayNode iVisited) {
++		print('[');
++		enterCall();
++		visitAndPrintWithSeparator(iVisited.iterator());
++		leaveCall();
++		print(']');
++		return null;
++	}
++
++	public Instruction visitBackRefNode(BackRefNode iVisited) {
++		print('$');
++		print(iVisited.getType());
++		return null;
++	}
++
++	public Instruction visitBeginNode(BeginNode iVisited) {
++		print("begin");
++		visitNodeInIndentation(iVisited.getBodyNode());
++		printNewlineAndIndentation();
++		print("end");
++		return null;
++	}
++
++	public Instruction visitBignumNode(BignumNode iVisited) {
++		print(iVisited.getValue());
++		return null;
++	}
++
++	public Instruction visitBlockArgNode(BlockArgNode iVisited) {
++		print('&');
++		print(iVisited.getName());
++		return null;
++	}
++
++	public Instruction visitBlockNode(BlockNode iVisited) {
++		visitIter(iVisited.iterator());
++		return null;
++	}
++
++	public static int getLocalVarIndex(Node n) {
++		if (n instanceof LocalVarNode) {
++			LocalVarNode localVar = (LocalVarNode) n;
++			return localVar.getIndex();
++		}
++		return -1;
++	}
++
++	public Instruction visitBlockPassNode(BlockPassNode iVisited) {
++
++		//if there are other arguments, we can just add our block to them
++		if (iVisited.getArgsNode() instanceof ListNode) {
++			((ListNode) iVisited.getArgsNode()).add(
++					new LocalVarNode(iVisited.getPosition(), getLocalVarIndex(iVisited.getBodyNode()), '&' + ((INameNode) iVisited.getBodyNode()).getName()));
++			visitNode(iVisited.getIterNode());
++		} else if (iVisited.getArgsNode() == null) {
++			visitNode(iVisited.getIterNode());
++			print('(');
++			print('&');
++			visitNode(iVisited.getBodyNode());
++			print(')');
++		} else {
++			//we need to save the argsnode here so we can check later if we need to print a closing parentheses
++			config.getArgsNodeWithBlock().add(iVisited.getArgsNode());
++			visitNode(iVisited.getIterNode());
++			config.getArgsNodeWithBlock().remove(iVisited.getArgsNode());
++			print(config.getFormatHelper().getListSeparator());
++			print('&');
++			visitNode(iVisited.getBodyNode());
++			if (needsParentheses(iVisited.getArgsNode()))
++				print(')');
++			else
++				print(config.getFormatHelper().afterCallArguments());
++		}
++
++		return null;
++	}
++
++	public Instruction visitBreakNode(BreakNode iVisited) {
++		print("break");
++		return null;
++	}
++
++	public Instruction visitConstDeclNode(ConstDeclNode iVisited) {
++		printAsgnNode(iVisited);
++		return null;
++	}
++
++	public Instruction visitClassVarAsgnNode(ClassVarAsgnNode iVisited) {
++		printAsgnNode(iVisited);
++		return null;
++	}
++
++	public Instruction visitClassVarDeclNode(ClassVarDeclNode iVisited) {
++		printAsgnNode(iVisited);
++		return null;
++	}
++
++	public Instruction visitClassVarNode(ClassVarNode iVisited) {
++		print(iVisited.getName());
++		return null;
++	}
++
++	private boolean isNumericNode(Node n) {
++		return (n != null && (n instanceof FixnumNode || n instanceof BignumNode));
++	}
++
++	private boolean isNameAnOperator(String name) {
++		return Operators.contain(name);
++	}
++
++	private boolean printSpaceInsteadOfDot(CallNode n) {
++		return (isNameAnOperator(n.getName()) && !(n.getArgsNode().childNodes()
++				.size() > 1));
++	}
++	
++	protected void printAssignmentOperator(){
++		print(config.getFormatHelper().beforeAssignment());
++		print("=");
++		print(config.getFormatHelper().afterAssignment());
++	}
++
++	private Instruction printIndexAssignment(AttrAssignNode iVisited) {
++		enterCall();
++		visitNode(iVisited.getReceiverNode());
++		leaveCall();
++		print('[');
++		visitNode(firstChild(iVisited.getArgsNode()));
++		print("]");
++		printAssignmentOperator();
++		if (iVisited.getArgsNode().childNodes().size() > 1)
++			visitNode((Node) iVisited.getArgsNode().childNodes().get(1));
++		return null;
++	}
++
++	private Instruction printIndexAccess(CallNode visited) {
++		enterCall();
++		visitNode(visited.getReceiverNode());
++		leaveCall();
++		print('[');
++		if (visited.getArgsNode() != null)
++			visitAndPrintWithSeparator(visited.getArgsNode().childNodes().iterator());
++		print("]");
++		return null;
++	}
++	
++	private Instruction printNegativNumericNode(CallNode visited) {
++		print('-');
++		visitNode(visited.getReceiverNode());
++		return null;
++	}
++	
++	private boolean isNegativeNumericNode(CallNode visited) {
++		return isNumericNode(visited.getReceiverNode()) && visited.getName().equals("-@");
++	}
++	
++	private void printCallReceiverNode(CallNode iVisited) {
++
++		if (iVisited.getReceiverNode() instanceof HashNode)
++			print('(');
++
++		if (isReceiverACallNode(iVisited) && !printSpaceInsteadOfDot(iVisited)) {
++			enterCall();
++			visitNewlineInParentheses(iVisited.getReceiverNode());
++			leaveCall();
++		} else
++			visitNewlineInParentheses(iVisited.getReceiverNode());
++
++		if (iVisited.getReceiverNode() instanceof HashNode)
++			print(')');
++	}
++	
++	protected boolean inMultipleAssignment() {
++		return false;
++	}
++
++	public Instruction visitCallNode(CallNode iVisited) {
++		
++		if (isNegativeNumericNode(iVisited)) {
++			 return printNegativNumericNode(iVisited);
++		} else if (iVisited.getName().equals("[]")) {
++			return printIndexAccess(iVisited);
++		}
++		 
++		printCallReceiverNode(iVisited);
++
++		if (printSpaceInsteadOfDot(iVisited))
++			print(' ');
++		else
++			print('.');
++
++		if (inMultipleAssignment() && iVisited.getName().endsWith("="))
++			print(iVisited.getName().substring(0, iVisited.getName().length() - 1));
++		else
++			print(iVisited.getName());
++
++		if (isNameAnOperator(iVisited.getName())) {
++			if (firstChild(iVisited.getArgsNode()) instanceof NewlineNode)
++				print(' ');
++			config.getCallDepth().disableCallDepth();
++		}
++		printCallArguments(iVisited.getArgsNode());
++
++		if (isNameAnOperator(iVisited.getName()))
++			config.getCallDepth().enableCallDepth();
++
++		return null;
++	}
++
++	public Instruction visitCaseNode(CaseNode iVisited) {
++		print("case ");
++		visitNode(iVisited.getCaseNode());
++		visitNode(iVisited.getFirstWhenNode());
++		printNewlineAndIndentation();
++		print("end");
++		return null;
++	}
++        
++	private boolean printCommentsIn(Node iVisited) {
++		boolean hadComment = false;
++		Iterator it = iVisited.getComments().iterator();
++		while(it.hasNext()) {
++			CommentNode n = (CommentNode) it.next();
++			if(getStartLine(n) > getStartLine(iVisited) && getEndLine(n) < getEndLine(iVisited)) {
++				hadComment = true;
++				visitNode(n);
++				printNewlineAndIndentation();
++			}
++		}
++		
++		return hadComment;
++	}
++
++	public Instruction visitClassNode(ClassNode iVisited) {
++
++		print("class ");
++		visitNode(iVisited.getCPath());
++		if (iVisited.getSuperNode() != null) {
++			print(" < ");
++			visitNode(iVisited.getSuperNode());
++		}
++
++		new ClassBodyWriter(this, iVisited.getBodyNode()).write();
++		
++		printNewlineAndIndentation();		
++		printCommentsIn(iVisited);
++		
++		print("end");
++		return null;
++	}
++
++	public Instruction visitColon2Node(Colon2Node iVisited) {
++		if (iVisited.getLeftNode() != null) { 
++			visitNode(iVisited.getLeftNode());
++			print("::");
++		}
++		print(iVisited.getName());
++		return null;
++	}
++
++	public Instruction visitColon3Node(Colon3Node iVisited) {
++		print("::");
++		print(iVisited.getName());
++		return null;
++	}
++
++	public Instruction visitConstNode(ConstNode iVisited) {
++		print(iVisited.getName());
++		return null;
++	}
++
++	public Instruction visitDAsgnNode(DAsgnNode iVisited) {
++		printAsgnNode(iVisited);
++		return null;
++	}
++
++	public Instruction visitDRegxNode(DRegexpNode iVisited) {
++		config.getPrintQuotesInString().set(false);
++		print(getFirstRegexpEnclosure(iVisited));
++		factory.createDRegxReWriteVisitor().visitIter(iVisited.childNodes().iterator());
++		print(getSecondRegexpEnclosure(iVisited));
++		printRegexpOptions(iVisited.getOptions());
++		config.getPrintQuotesInString().revert();
++		return null;
++	}
++	
++	private Instruction createHereDocument(DStrNode iVisited) {
++		config.getPrintQuotesInString().set(false);
++		print("<<-EOF");
++		StringWriter writer = new StringWriter();
++		PrintWriter oldOut = config.getOutput();
++		config.setOutput(new PrintWriter(writer));
++
++		Iterator it = iVisited.childNodes().iterator();
++		while (it.hasNext()) {
++			factory.createHereDocReWriteVisitor().visitNode((Node) it.next());
++			if (it.hasNext())
++				config.setSkipNextNewline(true);
++		}
++		config.setOutput(oldOut);
++		config.depositHereDocument(writer.getBuffer().toString());
++		config.getPrintQuotesInString().revert();
++
++		return null;
++	}
++
++	public Instruction visitDStrNode(DStrNode iVisited) {
++
++		if (firstChild(iVisited) instanceof StrNode && stringIsHereDocument((StrNode) firstChild(iVisited))) {
++			return createHereDocument(iVisited);
++		}
++
++		if (config.getPrintQuotesInString().isTrue())
++			print(getSeparatorForStr(iVisited));
++		config.getPrintQuotesInString().set(false);
++		leaveCall();
++		Iterator it = iVisited.childNodes().iterator();
++		while (it.hasNext()) {
++			Node n = (Node) it.next();
++			if (n instanceof ArrayNode)
++				visitIter(((ArrayNode) n).childNodes().iterator());
++			else
++				visitNode(n);
++		}
++		enterCall();
++		config.getPrintQuotesInString().revert();
++		if (config.getPrintQuotesInString().isTrue())
++			print(getSeparatorForStr(iVisited));
++		return null;
++	}
++
++	public Instruction visitDSymbolNode(DSymbolNode iVisited) {
++		print(':');
++		visitNode(iVisited.getNode());
++		return null;
++	}
++
++	public Instruction visitDVarNode(DVarNode iVisited) {
++		print(iVisited.getName());
++		return null;
++	}
++
++	public Instruction visitDXStrNode(DXStrNode iVisited) {
++		config.getPrintQuotesInString().set(false);
++		print("%x{");
++		visitIter(iVisited.childNodes().iterator());
++		print('}');
++		config.getPrintQuotesInString().revert();
++		return null;
++	}
++
++	public Instruction visitDefinedNode(DefinedNode iVisited) {
++		print("defined? ");
++		enterCall();
++		visitNode(iVisited.getExpressionNode());
++		leaveCall();
++		return null;
++	}
++
++	private boolean hasArguments(Node n) {
++		if (n instanceof ArgsNode) {
++			ArgsNode args = (ArgsNode) n;
++			return (args.getArgs() != null || args.getOptArgs() != null
++					|| args.getBlockArgNode() != null || args.getRestArg() > 0 );
++		} else if (n instanceof ArrayNode && n.childNodes().isEmpty()) {
++			return false;
++		}
++		return true;
++	}
++        
++	protected void printCommentsAtEnd(Node n) {
++		Iterator it = n.getComments().iterator();
++		while(it.hasNext()) {
++			Node comment = (Node) it.next();
++			if(getStartLine(n) == getStartLine(comment)) {
++				print(' ');
++				visitNode(comment);
++			}
++		}
++	}
++	
++	private void printDefNode(Node parent, String name, Node args, StaticScope scope, Node bodyNode) {
++		print(name);
++		printCommentsAtEnd(parent);
++		config.getLocalVariables().addLocalVariable(scope);
++
++		if (hasArguments(args)) {
++			print(config.getFormatHelper().beforeMethodArguments());
++			visitNode(args);
++		}
++		visitNode(bodyNode);
++		config.getIndentor().outdent();
++		printNewlineAndIndentation();
++		printCommentsIn(parent);
++		print("end");
++	}
++
++	public Instruction visitDefnNode(DefnNode iVisited) {
++		config.getIndentor().indent();
++		print("def ");
++		printDefNode(iVisited, iVisited.getName(), iVisited.getArgsNode(), iVisited.getScope(), iVisited.getBodyNode());
++		return null;
++	}
++
++	public Instruction visitDefsNode(DefsNode iVisited) {
++		config.getIndentor().indent();
++		print("def ");
++		visitNode(iVisited.getReceiverNode());
++		print('.');
++		printDefNode(iVisited, iVisited.getName(), iVisited.getArgsNode(), iVisited.getScope(), iVisited.getBodyNode());
++		return null;
++	}
++
++	public Instruction visitDotNode(DotNode iVisited) {
++		enterCall();
++		visitNode(iVisited.getBeginNode());
++		print("..");
++		if (iVisited.isExclusive())
++			print('.');
++		visitNode(iVisited.getEndNode());
++		leaveCall();
++		return null;
++	}
++
++	public Instruction visitEnsureNode(EnsureNode iVisited) {
++		visitNode(iVisited.getBodyNode());
++		config.getIndentor().outdent();
++		printNewlineAndIndentation();
++		print("ensure");
++		visitNodeInIndentation(iVisited.getEnsureNode());
++		config.getIndentor().indent();
++		return null;
++	}
++
++	public Instruction visitEvStrNode(EvStrNode iVisited) {
++		print('#');
++		if (!(iVisited.getBody() instanceof NthRefNode))
++			print('{');
++		config.getPrintQuotesInString().set(true);
++		visitNode(unwrapNewlineNode(iVisited.getBody()));
++		config.getPrintQuotesInString().revert();
++		if (!(iVisited.getBody() instanceof NthRefNode))
++			print('}');
++		return null;
++	}
++	
++	private Node unwrapNewlineNode(Node node) {
++		if(node instanceof NewlineNode) {
++			return ((NewlineNode) node).getNextNode();
++		}
++		return node;
++	}
++
++	public Instruction visitFCallNode(FCallNode iVisited) {
++		print(iVisited.getName());
++		printCallArguments(iVisited.getArgsNode());
++		return null;
++	}
++
++	public Instruction visitFalseNode(FalseNode iVisited) {
++		print("false");
++		return null;
++	}
++
++	public Instruction visitFixnumNode(FixnumNode iVisited) {
++		print(iVisited.getValue());
++		return null;
++	}
++
++	public Instruction visitFlipNode(FlipNode iVisited) {
++		enterCall();
++		visitNode(iVisited.getBeginNode());
++		print(" ..");
++		if (iVisited.isExclusive())
++			print('.');
++		print(' ');
++		visitNode(iVisited.getEndNode());
++		leaveCall();
++		return null;
++	}
++
++	public Instruction visitFloatNode(FloatNode iVisited) {
++		print(iVisited.getValue());
++		return null;
++	}
++
++	public Instruction visitForNode(ForNode iVisited) {
++		print("for ");
++		visitNode(iVisited.getVarNode());
++		print(" in ");
++		visitNode(iVisited.getIterNode());
++		visitNodeInIndentation(iVisited.getBodyNode());
++		printNewlineAndIndentation();
++		print("end");
++		return null;
++	}
++
++	public Instruction visitGlobalAsgnNode(GlobalAsgnNode iVisited) {
++		printAsgnNode(iVisited);
++		return null;
++	}
++
++	public Instruction visitGlobalVarNode(GlobalVarNode iVisited) {
++		print(iVisited.getName());
++		return null;
++	}
++
++	private void printHashNodeContent(HashNode iVisited) {
++		print(config.getFormatHelper().beforeHashContent());
++		if (iVisited.getListNode() != null) {
++			Iterator it = iVisited.getListNode().childNodes().iterator();
++			while (it.hasNext()) {
++				visitNode((Node) it.next());
++				print(config.getFormatHelper().hashAssignment());
++				visitNode((Node) it.next());
++				if (it.hasNext())
++					print(config.getFormatHelper().getListSeparator());
++			}
++		}
++		print(config.getFormatHelper().afterHashContent());
++	}
++
++	public Instruction visitHashNode(HashNode iVisited) {
++		print('{');
++		printHashNodeContent(iVisited);
++		print('}');
++		return null;
++	}
++
++	private void printAsgnNode(AssignableNode n) {
++		print(((INameNode) n).getName());
++		if (n.getValueNode() == null)
++			return;
++		printAssignmentOperator();
++		visitNewlineInParentheses(n.getValueNode());
++	}
++
++	public Instruction visitInstAsgnNode(InstAsgnNode iVisited) {
++		printAsgnNode(iVisited);
++		return null;
++	}
++
++	public Instruction visitInstVarNode(InstVarNode iVisited) {
++		print(iVisited.getName());
++		return null;
++	}
++
++	/**
++	 * Elsif-conditions in the AST are represented by multiple nested if / else
++	 * combinations. This method takes a node and checks if the node is an
++	 * elsif-statement or a normal else node.
++	 * 
++	 * @param iVisited
++	 * @return Returns the last ElseNode or null.
++	 */
++	private Node printElsIfNodes(Node iVisited) {
++		if (iVisited != null && iVisited instanceof IfNode) {
++			IfNode n = (IfNode) iVisited;
++			printNewlineAndIndentation();
++			print("elsif ");
++			visitNode(n.getCondition());
++			visitNodeInIndentation(n.getThenBody());
++			return printElsIfNodes(n.getElseBody());
++		} else {
++			return ( iVisited != null ) ? iVisited : null;
++		}
++	}
++
++	private Instruction printShortIfStatement(IfNode n) {
++		if (n.getThenBody() == null) {
++			visitNode(n.getElseBody());
++			print(" unless ");
++			visitNode(n.getCondition());
++		} else {
++			enterCall();
++			factory.createShortIfNodeReWriteVisitor().visitNode(n.getCondition());
++			print(" ? ");
++			factory.createShortIfNodeReWriteVisitor().visitNode(n.getThenBody());
++			print(" : ");
++			factory.createShortIfNodeReWriteVisitor().visitNewlineInParentheses(n.getElseBody());
++			leaveCall();
++		}
++		return null;
++	}
++
++	private boolean isAssignment(Node n) {
++		return (n instanceof DAsgnNode || n instanceof GlobalAsgnNode
++				|| n instanceof InstAsgnNode || n instanceof LocalAsgnNode || n instanceof ClassVarAsgnNode);
++	}
++
++	private boolean sourceSubStringEquals(int offset, int length, String str) {
++		return config.getSource().length() >= offset + length
++			&& config.getSource().substring(offset, offset + length).equals(str);
++	}
++	
++	private boolean isShortIfStatement(IfNode iVisited) {
++		return (isOnSingleLine(iVisited.getCondition(), iVisited.getElseBody())
++				&& !(iVisited.getElseBody() instanceof IfNode)
++				&& !sourceSubStringEquals(getStartOffset(iVisited), 2, "if"));
++	}
++
++	public Instruction visitIfNode(IfNode iVisited) {
++
++		if (isShortIfStatement(iVisited)) {
++			return printShortIfStatement(iVisited);
++		}
++
++		print("if ");
++
++		if (isAssignment(iVisited.getCondition()))
++			enterCall();
++
++		// We have to skip a possible Newline here:
++		visitNewlineInParentheses(iVisited.getCondition());
++		if (isAssignment(iVisited.getCondition()))
++			leaveCall();
++
++		config.getIndentor().indent();
++		// we have to check this to generate valid code for this style: "return
++		// if true", because there is no newline
++		if (!isStartOnNewLine(iVisited.getCondition(), iVisited.getThenBody()) && iVisited.getThenBody() != null)
++			printNewlineAndIndentation();
++
++		visitNode(iVisited.getThenBody());
++		config.getIndentor().outdent();
++		Node elseNode = printElsIfNodes(iVisited.getElseBody());
++
++		if (elseNode != null) {
++			printNewlineAndIndentation();
++			print("else");
++			config.getIndentor().indent();
++			visitNode(elseNode);
++			config.getIndentor().outdent();
++		}
++		printNewlineAndIndentation();
++		print("end");
++		return null;
++	}
++
++	private boolean isOnSingleLine(Node n) {
++		return isOnSingleLine(n, n);
++	}
++
++	private boolean isOnSingleLine(Node n1, Node n2) {
++		if (n1 == null || n2 == null)
++			return false;
++		return (getStartLine(n1) == getEndLine(n2));
++	}
++
++	private boolean printIterVarNode(IterNode n) {
++		if (n.getVarNode() != null) {
++			print('|');
++			visitNode(n.getVarNode());
++			print('|');
++			return true;
++		}
++		return false;
++	}
++
++	public Instruction visitIterNode(IterNode iVisited) {
++		enterCall();
++		visitNode(iVisited.getIterNode());
++		leaveCall();
++		if (isOnSingleLine(iVisited)) {
++			print(config.getFormatHelper().beforeIterBrackets());
++			print("{");
++			print(config.getFormatHelper().beforeIterVars());
++			if(printIterVarNode(iVisited))
++				print(config.getFormatHelper().afterIterVars());
++			config.setSkipNextNewline(true);
++			visitNode(iVisited.getBodyNode());
++			print(config.getFormatHelper().beforeClosingIterBrackets());
++			print('}');
++		} else {
++			print(" do ");
++			printIterVarNode(iVisited);
++			visitNodeInIndentation(iVisited.getBodyNode());
++			printNewlineAndIndentation();
++			print("end");
++		}
++		return null;
++	}
++
++	public Instruction visitLocalAsgnNode(LocalAsgnNode iVisited) {
++		config.getLocalVariables().addLocalVariable(iVisited.getIndex(), iVisited.getName());
++		printAsgnNode(iVisited);
++		return null;
++	}
++
++	public Instruction visitLocalVarNode(LocalVarNode iVisited) {
++		print(iVisited.getName());
++		return null;
++	}
++
++	public Instruction visitMultipleAsgnNode(MultipleAsgnNode iVisited) {
++		if (iVisited.getHeadNode() != null)
++			factory.createMultipleAssignmentReWriteVisitor().visitAndPrintWithSeparator(iVisited.getHeadNode().childNodes().iterator());
++		if (iVisited.getValueNode() == null) {
++			visitNode(iVisited.getArgsNode());
++			return null;
++		}
++		print(config.getFormatHelper().beforeAssignment());
++		print("=");
++		print(config.getFormatHelper().afterAssignment());
++		enterCall();
++		if (iVisited.getValueNode() instanceof ArrayNode)
++			visitAndPrintWithSeparator(iVisited.getValueNode().childNodes().iterator());
++		else
++			visitNode(iVisited.getValueNode());
++		leaveCall();
++		return null;
++	}
++
++	public Instruction visitMatch2Node(Match2Node iVisited) {
++		visitNode(iVisited.getReceiverNode());
++		print(config.getFormatHelper().matchOperator());
++		enterCall();
++		visitNode(iVisited.getValueNode());
++		leaveCall();
++		return null;
++	}
++
++	public Instruction visitMatch3Node(Match3Node iVisited) {
++		visitNode(iVisited.getValueNode());
++		print(config.getFormatHelper().matchOperator());
++		visitNode(iVisited.getReceiverNode());
++		return null;
++	}
++
++	public Instruction visitMatchNode(MatchNode iVisited) {
++		visitNode(iVisited.getRegexpNode());
++		return null;
++	}
++
++	public Instruction visitModuleNode(ModuleNode iVisited) {
++		print("module ");
++		config.getIndentor().indent();
++		visitNode(iVisited.getCPath());
++		visitNode(iVisited.getBodyNode());
++		config.getIndentor().outdent();
++		printNewlineAndIndentation();
++		print("end");
++		return null;
++	}
++	
++	public Instruction visitNewlineNode(NewlineNode iVisited) {
++		if (config.isSkipNextNewline()) {
++			config.setSkipNextNewline(false);
++		} else {
++			printNewlineAndIndentation();
++		}
++		visitNode(iVisited.getNextNode());
++		return null;
++	}
++
++	public Instruction visitNextNode(NextNode iVisited) {
++		print("next");
++		return null;
++	}
++
++	public Instruction visitNilNode(NilNode iVisited) {
++		print("nil");
++		return null;
++	}
++
++	public Instruction visitNotNode(NotNode iVisited) {
++		if (iVisited.getConditionNode() instanceof CallNode)
++			enterCall();
++		if (sourceRangeContains(iVisited.getPosition(), "not"))
++			print("not ");
++		else
++			print("!");
++
++		visitNewlineInParentheses(iVisited.getConditionNode());
++
++		if (iVisited.getConditionNode() instanceof CallNode)
++			leaveCall();
++		return null;
++	}
++
++	public Instruction visitNthRefNode(NthRefNode iVisited) {
++		print('$');
++		print(iVisited.getMatchNumber());
++		return null;
++	}
++
++	private boolean isSimpleNode(Node n) {
++		return (n instanceof LocalVarNode || n instanceof AssignableNode
++				|| n instanceof InstVarNode || n instanceof ClassVarNode
++				|| n instanceof GlobalVarNode || n instanceof ConstDeclNode
++				|| n instanceof VCallNode || isNumericNode(n));
++	}
++
++	public Instruction visitOpElementAsgnNode(OpElementAsgnNode iVisited) {
++
++		if (!isSimpleNode(iVisited.getReceiverNode()))
++			visitNewlineInParentheses(iVisited.getReceiverNode());
++		else
++			visitNode(iVisited.getReceiverNode());
++
++		visitNode(iVisited.getArgsNode());
++		print(' ');
++		print(iVisited.getOperatorName());
++		print("=");
++		print(config.getFormatHelper().afterAssignment());
++		visitNode(iVisited.getValueNode());
++		return null;
++	}
++
++	public Instruction visitOpAsgnNode(OpAsgnNode iVisited) {
++		visitNode(iVisited.getReceiverNode());
++		print('.');
++		print(iVisited.getVariableName());
++		print(' ');
++		print(iVisited.getOperatorName());
++		print("=");
++		print(config.getFormatHelper().afterAssignment());
++		visitNode(iVisited.getValueNode());
++		return null;
++	}
++
++	private void printOpAsgnNode(Node n, String operator) {
++		enterCall();
++		
++		print(((INameNode) n).getName());
++		print(config.getFormatHelper().beforeAssignment());
++		print(operator);
++		print(config.getFormatHelper().afterAssignment());
++		visitNode(((AssignableNode) n).getValueNode());
++			
++		leaveCall();
++	}
++
++	public Instruction visitOpAsgnAndNode(OpAsgnAndNode iVisited) {
++		printOpAsgnNode(iVisited.getSecondNode(), "&&=");
++		return null;
++	}
++
++	public Instruction visitOpAsgnOrNode(OpAsgnOrNode iVisited) {
++		printOpAsgnNode(iVisited.getSecondNode(), "||=");
++		return null;
++	}
++
++	public Instruction visitOptNNode(OptNNode iVisited) {
++		// this node is never used in the parser, only here:
++		// org.jruby/src/org/jruby/Main.java
++		return null;
++	}
++
++	public Instruction visitOrNode(OrNode iVisited) {
++		enterCall();
++		visitNode(iVisited.getFirstNode());
++		leaveCall();
++		if (sourceRangeContains(iVisited.getPosition(), "||"))
++			print(" || ");
++		else
++			print(" or ");
++		enterCall();
++		visitNewlineInParentheses(iVisited.getSecondNode());
++		leaveCall();
++		return null;
++	}
++
++	public Instruction visitPostExeNode(PostExeNode iVisited) {
++		// this node contains nothing but an empty list, so we don't have to
++		// process anything
++		return null;
++	}
++
++	public Instruction visitRedoNode(RedoNode iVisited) {
++		print("redo");
++		return null;
++	}
++
++	private String getFirstRegexpEnclosure(Node n) {
++		if (isSpecialRegexNotation(n))
++			return "%r(";
++		else
++			return "/";
++	}
++
++	private String getSecondRegexpEnclosure(Node n) {
++		if (isSpecialRegexNotation(n))
++			return ")";
++		else
++			return "/";
++	}
++
++	private boolean isSpecialRegexNotation(Node n) {
++		return getStartOffset(n) >= 2
++			&& !(config.getSource().length() < getStartOffset(n))
++			&& config.getSource().charAt(getStartOffset(n) - 3) == '%';
++	}
++
++	private void printRegexpOptions(int option) {
++		if ((option & 1) == 1)
++			print('i');
++		if ((option & 2) == 2)
++			print('x');
++		if ((option & 4) == 4)
++			print('m');
++	}
++
++	public Instruction visitRegexpNode(RegexpNode iVisited) {
++		print(getFirstRegexpEnclosure(iVisited));
++		print(iVisited.getValue());
++		print(getSecondRegexpEnclosure(iVisited));
++		printRegexpOptions(iVisited.getOptions());
++		return null;
++	}
++
++	public static Node firstChild(Node n) {
++		if (n.childNodes().size() <= 0)
++			return null;
++		return (Node) n.childNodes().get(0);
++	}
++
++	public Instruction visitRescueBodyNode(RescueBodyNode iVisited) {
++		if (config.getLastPosition().getStartLine() == getEndLine(iVisited.getBodyNode())) {
++			print(" rescue ");
++		} else {
++			print("rescue");
++		}
++
++		if (iVisited.getExceptionNodes() != null) {
++			printExceptionNode(iVisited);
++		} else {
++			visitNodeInIndentation(iVisited.getBodyNode());
++		}
++		if (iVisited.getOptRescueNode() != null)
++			printNewlineAndIndentation();
++		visitNode(iVisited.getOptRescueNode());
++		return null;
++	}
++
++	private void printExceptionNode(RescueBodyNode n) {
++		if (n.getExceptionNodes() == null)
++			return;
++
++		print(' ');
++		visitNode(firstChild(n.getExceptionNodes()));
++
++		Node firstBodyNode = n.getBodyNode();
++		if (n.getBodyNode() instanceof BlockNode)
++			firstBodyNode = firstChild(n.getBodyNode());
++
++		// if the exception is assigned to a variable, we have to skip the first
++		// node in the body
++		if (firstBodyNode instanceof AssignableNode) {
++			print(config.getFormatHelper().beforeAssignment());
++			print("=>");
++			print(config.getFormatHelper().afterAssignment());
++			print(((INameNode) firstBodyNode).getName());
++			if (firstBodyNode instanceof LocalAsgnNode)
++				config.getLocalVariables().addLocalVariable(((LocalAsgnNode) firstBodyNode).getIndex(),
++						((LocalAsgnNode) firstBodyNode).getName());
++
++			config.getIndentor().indent();
++			visitIterAndSkipFirst(n.getBodyNode().childNodes().iterator());
++			config.getIndentor().outdent();
++		} else
++			visitNodeInIndentation(n.getBodyNode());
++	}
++
++	public Instruction visitRescueNode(RescueNode iVisited) {
++		visitNode(iVisited.getBodyNode());
++		config.getIndentor().outdent();
++
++		if (iVisited.getRescueNode().getBodyNode() != null
++				&& getStartLine(iVisited) != getEndLine(iVisited
++						.getRescueNode().getBodyNode()))
++			printNewlineAndIndentation();
++
++		if (iVisited.getRescueNode().getBodyNode() == null) {
++			printNewlineAndIndentation();
++			print("rescue");
++			printExceptionNode(iVisited.getRescueNode());
++		} else {
++			visitNode(iVisited.getRescueNode());
++		}
++		if (iVisited.getElseNode() != null) {
++			printNewlineAndIndentation();
++			print("else");
++			visitNodeInIndentation(iVisited.getElseNode());
++		}
++		config.getIndentor().indent();
++		return null;
++	}
++
++	public Instruction visitRetryNode(RetryNode iVisited) {
++		print("retry");
++		return null;
++	}
++
++	public static Node unwrapSingleArrayNode(Node n) {
++		if (!(n instanceof ArrayNode))
++			return n;
++		else if (((ArrayNode) n).childNodes().size() > 1)
++			return n;
++		return firstChild((ArrayNode) n);
++	}
++
++	public Instruction visitReturnNode(ReturnNode iVisited) {
++		print("return");
++		enterCall();
++		if (iVisited.getValueNode() != null) {
++			print(' ');
++			visitNode(unwrapSingleArrayNode(iVisited.getValueNode()));
++		}
++		leaveCall();
++		return null;
++	}
++
++	public Instruction visitSClassNode(SClassNode iVisited) {
++		print("class << ");
++		config.getIndentor().indent();
++		visitNode(iVisited.getReceiverNode());
++		visitNode(iVisited.getBodyNode());
++		config.getIndentor().outdent();
++		printNewlineAndIndentation();
++		print("end");
++		return null;
++	}
++	
++	public Instruction visitSelfNode(SelfNode iVisited) {
++		print("self");
++		return null;
++	}
++
++	public Instruction visitSplatNode(SplatNode iVisited) {
++		print("*");
++		visitNode(iVisited.getValue());
++		return null;
++	}
++
++	private boolean stringIsHereDocument(StrNode n) {
++		return sourceRangeEquals(getStartOffset(n) + 1, getStartOffset(n) + 3, "<<") || sourceRangeEquals(getStartOffset(n), getStartOffset(n) + 3, "<<-");
++	}
++
++	protected char getSeparatorForStr(Node n) {
++		if (config.getSource().length() >= getStartOffset(n) && config.getSource().charAt(getStartOffset(n)) == '\'') {
++			return '\'';
++		}
++		return '"';
++	}
++	
++	protected boolean inDRegxNode() {
++		return false;
++	}
++
++	public Instruction visitStrNode(StrNode iVisited) {
++		// look for a here-document:
++		if (stringIsHereDocument(iVisited)) {
++			print("<<-EOF");
++			config.depositHereDocument(iVisited.getValue());
++			return null;
++		}
++		
++		if(iVisited.getValue().equals("")) {
++			if(config.getPrintQuotesInString().isTrue()) {
++				print("\"\"");
++			}
++			return null;
++		}
++
++		// don't print quotes if we are a subpart of an other here-document
++		if (config.getPrintQuotesInString().isTrue())
++			print(getSeparatorForStr(iVisited));
++
++		if (inDRegxNode())
++			print(iVisited.getValue());
++		else {
++			Matcher matcher = Pattern.compile("([\\\\\\n\\f\\r\\t\\\"\\\'])").matcher(iVisited.getValue());
++
++			if (matcher.find()) {
++				String unescChar = unescapeChar(matcher.group(1).charAt(0));
++				print(matcher.replaceAll("\\\\" + unescChar));
++			} else {
++				print(iVisited.getValue());
++			}
++		}
++		if (config.getPrintQuotesInString().isTrue())
++			print(getSeparatorForStr(iVisited));
++
++		return null;
++	}
++
++	public static String unescapeChar(char escapedChar) {
++		switch (escapedChar) {
++		case '\n':
++			return "n";
++		case '\f':
++			return "f";
++		case '\r':
++			return "r";
++		case '\t':
++			return "t";
++		case '\"':
++			return "\"";
++		case '\'':
++			return "'";
++		case '\\':
++			return "\\\\";
++		default:
++			return null;
++		}
++	}
++
++	private boolean needsSuperNodeParentheses(SuperNode n) {
++		return n.getArgsNode().childNodes().isEmpty()
++				&& config.getSource().charAt(getEndOffset(n)) == '(';
++	}
++
++	public Instruction visitSuperNode(SuperNode iVisited) {
++		print("super");
++		if (needsSuperNodeParentheses(iVisited))
++			print('(');
++		printCallArguments(iVisited.getArgsNode());
++		if (needsSuperNodeParentheses(iVisited))
++			print(')');
++		return null;
++	}
++
++	public Instruction visitSValueNode(SValueNode iVisited) {
++		visitNode(iVisited.getValue());
++		return null;
++	}
++
++	public Instruction visitSymbolNode(SymbolNode iVisited) {
++		print(':');
++		print(iVisited.getName());
++		return null;
++	}
++
++	public Instruction visitToAryNode(ToAryNode iVisited) {
++		visitNode(iVisited.getValue());
++		return null;
++	}
++
++	public Instruction visitTrueNode(TrueNode iVisited) {
++		print("true");
++		return null;
++	}
++
++	public Instruction visitUndefNode(UndefNode iVisited) {
++		print("undef ");
++		print(iVisited.getName());
++		return null;
++	}
++
++	public Instruction visitUntilNode(UntilNode iVisited) {
++		print("until ");
++		visitNode(iVisited.getConditionNode());
++		visitNodeInIndentation(iVisited.getBodyNode());
++		printNewlineAndIndentation();
++		print("end");
++		return null;
++	}
++
++	public Instruction visitVAliasNode(VAliasNode iVisited) {
++		print("alias ");
++		print(iVisited.getNewName());
++		print(' ');
++		print(iVisited.getOldName());
++		return null;
++	}
++
++	public Instruction visitVCallNode(VCallNode iVisited) {
++		print(iVisited.getName());
++		return null;
++	}
++
++	public void visitNodeInIndentation(Node n) {
++		config.getIndentor().indent();
++		visitNode(n);
++		config.getIndentor().outdent();
++	}
++
++	public Instruction visitWhenNode(WhenNode iVisited) {
++		printNewlineAndIndentation();
++		print("when ");
++		enterCall();
++		visitAndPrintWithSeparator(iVisited.getExpressionNodes().childNodes()
++				.iterator());
++		leaveCall();
++		visitNodeInIndentation(iVisited.getBodyNode());
++		if ((iVisited.getNextCase() instanceof WhenNode || iVisited.getNextCase() == null))
++			visitNode(iVisited.getNextCase());
++		else {
++			printNewlineAndIndentation();
++			print("else");
++			visitNodeInIndentation(iVisited.getNextCase());
++		}
++		return null;
++	}
++
++	protected void visitNewlineInParentheses(Node n) {
++		if (n instanceof NewlineNode) {
++			if (((NewlineNode) n).getNextNode() instanceof SplatNode) {
++				print('[');
++				visitNode(((NewlineNode) n).getNextNode());
++				print(']');
++			} else {
++				print('(');
++				visitNode(((NewlineNode) n).getNextNode());
++				print(')');
++			}
++		} else {
++			visitNode(n);
++		}
++	}
++	
++	private void printWhileStatement(WhileNode iVisited) {
++		print("while ");
++		
++		if (isAssignment(iVisited.getConditionNode()))
++			enterCall();
++		
++		visitNewlineInParentheses(iVisited.getConditionNode());
++		
++		if (isAssignment(iVisited.getConditionNode()))
++			leaveCall();
++		
++		visitNodeInIndentation(iVisited.getBodyNode());
++		
++		printNewlineAndIndentation();
++		print("end");
++	}
++	
++	private void printDoWhileStatement(WhileNode iVisited) {
++		print("begin");
++		visitNodeInIndentation(iVisited.getBodyNode());
++		printNewlineAndIndentation();
++		print("end while ");
++		visitNode(iVisited.getConditionNode());
++	}
++
++	public Instruction visitWhileNode(WhileNode iVisited) {
++		if (iVisited.evaluateAtStart()) {
++			printWhileStatement(iVisited);
++		} else {
++			printDoWhileStatement(iVisited);
++		}
++		return null;
++	}
++
++	public Instruction visitXStrNode(XStrNode iVisited) {
++		print('`');
++		print(iVisited.getValue());
++		print('`');
++		return null;
++	}
++
++	public Instruction visitYieldNode(YieldNode iVisited) {
++		print("yield");
++		
++		if (iVisited.getArgsNode() != null) {
++			if (needsParentheses(iVisited.getArgsNode()))
++				print('(');
++			else
++				print(' ');
++
++			enterCall();
++
++			if (iVisited.getArgsNode() instanceof ArrayNode)
++				visitAndPrintWithSeparator(iVisited.getArgsNode().childNodes().iterator());
++			else
++				visitNode(iVisited.getArgsNode());
++
++			leaveCall();
++
++			if (needsParentheses(iVisited.getArgsNode()))
++				print(')');
++		}
++		return null;
++	}
++
++	public Instruction visitZArrayNode(ZArrayNode iVisited) {
++		print("[]");
++		return null;
++	}
++
++	public Instruction visitZSuperNode(ZSuperNode iVisited) {
++		print("super");
++		return null;
++	}
++
++	private static int getStartLine(Node n) {
++		return n.getPosition().getStartLine();
++	}
++
++	private static int getStartOffset(Node n) {
++		return n.getPosition().getStartOffset();
++	}
++
++	private static int getEndLine(Node n) {
++		return n.getPosition().getEndLine();
++	}
++
++	protected static int getEndOffset(Node n) {
++		return n.getPosition().getEndOffset();
++	}
++
++	public ReWriterContext getConfig() {
++		return config;
++	}
++	
++	public static String createCodeFromNode(Node node, String document){
++		return createCodeFromNode(node, document, new DefaultFormatHelper());
++	}
++	
++	public static String createCodeFromNode(Node node, String document, FormatHelper helper){
++		StringWriter writer = new StringWriter();
++		ReWriterContext ctx = new ReWriterContext(writer, document, helper);
++		ReWriteVisitor rewriter = new ReWriteVisitor(ctx);
++		rewriter.visitNode(node);
++		return writer.toString();
++	}
++
++	public Instruction visitArgsPushNode(ArgsPushNode node) {
++		assert false : "Unhandled node";
++		return null;
++	}
++
++	public Instruction visitAttrAssignNode(AttrAssignNode iVisited) {		
++		if (iVisited.getName().equals("[]=")) {
++			return printIndexAssignment(iVisited);
++		} else if (iVisited.getName().endsWith("=")) {
++			visitNode(iVisited.getReceiverNode());
++			print('.');
++			
++			printNameWithoutEqualSign(iVisited);
++			printAssignmentOperator();
++			if(iVisited.getArgsNode() != null) {
++				visitAndPrintWithSeparator(iVisited.getArgsNode().childNodes().iterator());
++			}
++
++		} else {
++			assert false : "Unhandled AttrAssignNode";
++		}
++		
++		return null;
++	}
++
++	private void printNameWithoutEqualSign(INameNode iVisited) {
++		print(iVisited.getName().substring(0, iVisited.getName().length() - 1));
++	}
++
++	public Instruction visitRootNode(RootNode iVisited) {
++		visitNode(iVisited.getBodyNode());
++		if(config.hasHereDocument()) {
++			config.fetchHereDocument().print();
++		}
++		return null;
++	}
++}
+Index: src/org/jruby/ast/visitor/rewriter/FormatHelper.java
+===================================================================
+--- src/org/jruby/ast/visitor/rewriter/FormatHelper.java	(revision 0)
++++ src/org/jruby/ast/visitor/rewriter/FormatHelper.java	(revision 0)
+@@ -0,0 +1,40 @@
++package org.jruby.ast.visitor.rewriter;
++
++import org.jruby.ast.visitor.rewriter.utils.Indentor;
++
++public interface FormatHelper {
++	
++	public abstract Indentor getIndentor();
++	
++	public abstract String getListSeparator();
++
++	public abstract String beforeCallArguments();
++
++	public abstract String afterCallArguments();
++
++	public abstract String beforeMethodArguments();
++
++	public abstract String afterMethodArguments();
++
++	public abstract String hashAssignment();
++
++	public abstract String beforeHashContent();
++
++	public abstract String afterHashContent();
++
++	public abstract String matchOperator();
++
++	public abstract String beforeAssignment();
++
++	public abstract String beforeIterBrackets();
++
++	public abstract String afterAssignment();
++
++	public abstract String beforeIterVars();
++
++	public abstract String afterIterVars();
++
++	public abstract String beforeClosingIterBrackets();
++
++	public abstract String classBodyElementsSeparator();
++}
+Index: src/org/jruby/ast/visitor/rewriter/SourceRewriterMain.java
+===================================================================
+--- src/org/jruby/ast/visitor/rewriter/SourceRewriterMain.java	(revision 0)
++++ src/org/jruby/ast/visitor/rewriter/SourceRewriterMain.java	(revision 0)
+@@ -0,0 +1,91 @@
++/***** BEGIN LICENSE BLOCK *****
++ * Version: CPL 1.0/GPL 2.0/LGPL 2.1
++ *
++ * The contents of this file are subject to the Common Public
++ * License Version 1.0 (the "License"); you may not use this file
++ * except in compliance with the License. You may obtain a copy of
++ * the License at http://www.eclipse.org/legal/cpl-v10.html
++ *
++ * Software distributed under the License is distributed on an "AS
++ * IS" basis, WITHOUT WARRANTY OF ANY KIND, either express or
++ * implied. See the License for the specific language governing
++ * rights and limitations under the License.
++ *
++ * Copyright (C) 2006 Mirko Stocker <me@misto.ch>
++ * 
++ * Alternatively, the contents of this file may be used under the terms of
++ * either of the GNU General Public License Version 2 or later (the "GPL"),
++ * or the GNU Lesser General Public License Version 2.1 or later (the "LGPL"),
++ * in which case the provisions of the GPL or the LGPL are applicable instead
++ * of those above. If you wish to allow use of your version of this file only
++ * under the terms of either the GPL or the LGPL, and not to allow others to
++ * use your version of this file under the terms of the CPL, indicate your
++ * decision by deleting the provisions above and replace them with the notice
++ * and other provisions required by the GPL or the LGPL. If you do not delete
++ * the provisions above, a recipient may use your version of this file under
++ * the terms of any one of the CPL, the GPL or the LGPL.
++ ***** END LICENSE BLOCK *****/
++
++package org.jruby.ast.visitor.rewriter;
++
++import java.io.BufferedReader;
++import java.io.FileInputStream;
++import java.io.FileNotFoundException;
++import java.io.IOException;
++import java.io.InputStreamReader;
++
++import org.jruby.ast.Node;
++import org.jruby.common.NullWarnings;
++import org.jruby.lexer.yacc.LexerSource;
++import org.jruby.parser.DefaultRubyParser;
++import org.jruby.parser.RubyParserConfiguration;
++import org.jruby.parser.RubyParserPool;
++
++public class SourceRewriterMain {
++	
++	public static void main(String[] args) {
++
++		if (args.length < 1) {
++			System.err.println("Please specify a sourcefile.");
++			return;
++		}
++
++		DefaultRubyParser parser = RubyParserPool.getInstance().borrowParser();
++		parser.setWarnings(new NullWarnings());
++
++		LexerSource lexerSource = null;
++		BufferedReader reader = null;
++		try {
++			reader = new BufferedReader(new InputStreamReader(new FileInputStream(args[0])));
++			lexerSource = new LexerSource(args[0], reader);
++		} catch (FileNotFoundException e) {
++			System.err.println("Could not find the file:");
++			System.err.println(args[0]);
++			return;
++		}
++
++		Node rootNode = parser.parse(new RubyParserConfiguration(), lexerSource).getAST();
++		if (rootNode == null) {
++			System.err.println("Source File seems to be empty.");
++			return;
++		}
++
++		StringBuffer buffer = new StringBuffer();
++		String line;
++		try {
++			reader = new BufferedReader(new InputStreamReader(
++					new FileInputStream(args[0])));
++			while ((line = reader.readLine()) != null) {
++				buffer.append(line);
++				buffer.append('\n');
++			}
++		} catch (IOException e) {
++			System.err.println("Could not read the Sourcefile.");
++		}
++		ReWriteVisitor visitor = new ReWriteVisitor(System.out, buffer.toString());
++		rootNode.accept(visitor);
++		visitor.flushStream();
++
++		System.out.println("\n");
++	}
++}
+Index: src/org/jruby/ast/visitor/rewriter/ReWriterFactory.java
+===================================================================
+--- src/org/jruby/ast/visitor/rewriter/ReWriterFactory.java	(revision 0)
++++ src/org/jruby/ast/visitor/rewriter/ReWriterFactory.java	(revision 0)
+@@ -0,0 +1,41 @@
++package org.jruby.ast.visitor.rewriter;
++
++import org.jruby.ast.visitor.rewriter.utils.DRegxReWriteVisitor;
++import org.jruby.ast.visitor.rewriter.utils.HereDocReWriteVisitor;
++import org.jruby.ast.visitor.rewriter.utils.IgnoreCommentsReWriteVisitor;
++import org.jruby.ast.visitor.rewriter.utils.MultipleAssignmentReWriteVisitor;
++import org.jruby.ast.visitor.rewriter.utils.ReWriterContext;
++import org.jruby.ast.visitor.rewriter.utils.ShortIfNodeReWriteVisitor;
++
++public class ReWriterFactory {
++	
++	private ReWriterContext config;
++
++	public ReWriterFactory(ReWriterContext config) {
++		this.config = config;
++	}
++	
++	public ReWriteVisitor createShortIfNodeReWriteVisitor() {
++		return new ShortIfNodeReWriteVisitor(config);
++	}
++	
++	public ReWriteVisitor createMultipleAssignmentReWriteVisitor() {
++		return new MultipleAssignmentReWriteVisitor(config);
++	}
++	
++	public ReWriteVisitor createDRegxReWriteVisitor() {
++		return new DRegxReWriteVisitor(config);
++	}
++	
++	public ReWriteVisitor createHereDocReWriteVisitor() {
++		return new HereDocReWriteVisitor(config);
++	}
++	
++	public ReWriteVisitor createIgnoreCommentsReWriteVisitor() {
++		return new IgnoreCommentsReWriteVisitor(config);
++	}
++	
++	public ReWriteVisitor createReWriteVisitor() {
++		return new ReWriteVisitor(config);
++	}
++}
+Index: src/org/jruby/ast/visitor/rewriter/DefaultFormatHelper.java
+===================================================================
+--- src/org/jruby/ast/visitor/rewriter/DefaultFormatHelper.java	(revision 0)
++++ src/org/jruby/ast/visitor/rewriter/DefaultFormatHelper.java	(revision 0)
+@@ -0,0 +1,106 @@
++/***** BEGIN LICENSE BLOCK *****
++ * Version: CPL 1.0/GPL 2.0/LGPL 2.1
++ *
++ * The contents of this file are subject to the Common Public
++ * License Version 1.0 (the "License"); you may not use this file
++ * except in compliance with the License. You may obtain a copy of
++ * the License at http://www.eclipse.org/legal/cpl-v10.html
++ *
++ * Software distributed under the License is distributed on an "AS
++ * IS" basis, WITHOUT WARRANTY OF ANY KIND, either express or
++ * implied. See the License for the specific language governing
++ * rights and limitations under the License.
++ *
++ * Copyright (C) 2006 Mirko Stocker <me@misto.ch>
++ * 
++ * Alternatively, the contents of this file may be used under the terms of
++ * either of the GNU General Public License Version 2 or later (the "GPL"),
++ * or the GNU Lesser General Public License Version 2.1 or later (the "LGPL"),
++ * in which case the provisions of the GPL or the LGPL are applicable instead
++ * of those above. If you wish to allow use of your version of this file only
++ * under the terms of either the GPL or the LGPL, and not to allow others to
++ * use your version of this file under the terms of the CPL, indicate your
++ * decision by deleting the provisions above and replace them with the notice
++ * and other provisions required by the GPL or the LGPL. If you do not delete
++ * the provisions above, a recipient may use your version of this file under
++ * the terms of any one of the CPL, the GPL or the LGPL.
++ ***** END LICENSE BLOCK *****/
++
++package org.jruby.ast.visitor.rewriter;
++
++import org.jruby.ast.visitor.rewriter.utils.Indentor;
++
++public class DefaultFormatHelper implements FormatHelper {
++	
++	private static final String empty = "";
++	private static final String oneSpace = " ";
++	Indentor indentor = new Indentor(2, ' ');
++
++	public String getListSeparator() {
++		return ", ";
++	}
++
++	public String beforeCallArguments() {
++		return oneSpace;
++	}
++
++	public String afterCallArguments() {
++		return empty;
++	}
++
++	public String beforeMethodArguments() {
++		return oneSpace;
++	}
++
++	public String afterMethodArguments() {
++		return empty;
++	}
++	
++	public String hashAssignment() {
++		return " => ";
++	}
++
++	public String beforeHashContent() {
++		return empty;
++	}
++
++	public String afterHashContent() {
++		return empty;
++	}
++	
++	public String matchOperator() {
++		return " =~ ";
++	}
++
++	public String beforeAssignment() {
++		return oneSpace;
++	}
++
++	public String beforeIterBrackets() {
++		return oneSpace;
++	}
++	
++	public String afterAssignment() {
++		return oneSpace;
++	}
++
++	public String beforeIterVars() {
++		return empty;
++	}
++
++	public String afterIterVars() {
++		return oneSpace;
++	}
++
++	public String beforeClosingIterBrackets() {
++		return empty;
++	}
++
++	public String classBodyElementsSeparator() {
++		return empty;
++	}
++
++	public Indentor getIndentor() {
++		return indentor;
++	}
++}
+\ No newline at end of file
+Index: test/org/jruby/ast/visitor/rewriter/utils/TestBooleanStateStack.java
+===================================================================
+--- test/org/jruby/ast/visitor/rewriter/utils/TestBooleanStateStack.java	(revision 0)
++++ test/org/jruby/ast/visitor/rewriter/utils/TestBooleanStateStack.java	(revision 0)
+@@ -0,0 +1,37 @@
++package org.jruby.ast.visitor.rewriter.utils;
++
++import junit.framework.TestCase;
++
++import org.jruby.ast.visitor.rewriter.utils.BooleanStateStack;
++
++public class TestBooleanStateStack extends TestCase {
++
++	protected void setUp() throws Exception {
++		super.setUp();
++	}
++
++	protected void tearDown() throws Exception {
++		super.tearDown();
++	}
++
++	public void testBooleanStateStack() {
++		BooleanStateStack s = new BooleanStateStack(true, true);
++		assertTrue(s.isTrue());
++		s.revert();
++		assertTrue(s.isTrue());
++		
++		s = new BooleanStateStack(false, false);
++		assertFalse(s.isTrue());
++		s.revert();
++		assertFalse(s.isTrue());
++	}
++
++	public void testSet() {
++		BooleanStateStack s = new BooleanStateStack(true, true);
++		assertTrue(s.isTrue());
++		s.set(false);
++		assertFalse(s.isTrue());
++		s.revert();
++		assertTrue(s.isTrue());
++	}
++}
+Index: test/org/jruby/ast/visitor/rewriter/utils/TestOperators.java
+===================================================================
+--- test/org/jruby/ast/visitor/rewriter/utils/TestOperators.java	(revision 0)
++++ test/org/jruby/ast/visitor/rewriter/utils/TestOperators.java	(revision 0)
+@@ -0,0 +1,21 @@
++package org.jruby.ast.visitor.rewriter.utils;
++
++import junit.framework.TestCase;
++
++import org.jruby.ast.visitor.rewriter.utils.Operators;
++
++public class TestOperators extends TestCase {
++
++	protected void setUp() throws Exception {
++		super.setUp();
++	}
++
++	protected void tearDown() throws Exception {
++		super.tearDown();
++	}
++
++	public void testCreate() {
++		new Operators();
++	}
++
++}
+Index: test/org/jruby/ast/visitor/rewriter/TestReWriteVisitorSource.txt
+===================================================================
+--- test/org/jruby/ast/visitor/rewriter/TestReWriteVisitorSource.txt	(revision 0)
++++ test/org/jruby/ast/visitor/rewriter/TestReWriteVisitorSource.txt	(revision 0)
+@@ -0,0 +1,968 @@
++##!ArgsNode 
++def test argument
++end
++
++def test arg1
++end
++
++def test arg1, arg2 = 5
++end
++
++def test arg1, *args
++end
++
++def run_tests pattern = "test/test*.rb", log_enabled = false
++end
++
++def initialize *args, &block
++end
++def test arg1, arg2
++end
++
++def format_message *args
++  @format_proc ? @format_proc.call(*args) : super(*args)
++end
++
++##!AliasNode 
++alias new_name old_name
++
++##!AndNode 
++true and true
++true && true
++
++##!ArgsCatNode 
++[angle, *args]
++
++##!ArrayNode    
++[1, 2, 3, "test", 100]
++
++class Array
++  def middle
++    if size % 2 == 0
++      [at(size / 2 - 1), at(size / 2)]
++    else
++      at size / 2
++    end
++  end
++end
++
++
++##!BackRefNode 
++"Hund, Katze und Maus".split /, | und /
++puts $&
++puts $+
++puts $`
++puts $'
++
++##!BeginNode 
++begin
++  puts "loop"
++rescue Exception => e
++  puts e
++else
++  puts "else"
++end
++
++begin
++  load fn
++rescue Exception => ex
++  puts "Error in #{fn}: #{ex.message}"
++  puts ex.backtrace
++  assert false
++end
++
++begin
++  do_something_illegal
++rescue
++ensure
++  print "ensure"
++end
++
++begin
++  do_something_illegal
++rescue Exception > e
++ensure
++  print "ensure"
++end
++
++def run_tests pattern = "test/test*.rb", log_enabled = false
++  Dir["#{pattern}"].each do |fn|
++    begin
++      load fn
++    rescue Exception => ex
++      puts ex
++    end
++  end
++end
++
++##!MethodCallOnBlock
++def test_6_slottype_proc
++  bus = FreeBASE::DataBus.new
++  slot = bus["slot"]
++  slot.set_proc {|param| assert_equals(4, param)}
++  slot.call 4
++  slot.invoke 4
++  slot.proc.call 4
++  assert_exception(RuntimeError) {slot.stack}
++end
++
++##!BignumNode 
++123456789012345678901234567890
++-123456789012345678901234567890
++
++##!BlockArgNode 
++def test arg1, &arg
++end
++def test &arg
++end
++def test &arg
++  arg.call
++end
++
++##!BlockPassNode 
++def quiet &block
++  with_verbose(false, &block)
++end
++
++##!BlockPassNode 
++def method_missing methID, args, &block
++  @gc.__send__([methID], args, &block)
++end
++
++##!BlockPassNode 
++def test_multi_invocations
++  runs = []
++  p = proc {|t| runs << t.name}
++  task({:t1 => [:t2, :t3]}, &p)
++  task({:t2 => [:t3]}, &p)
++  task(:t3, &p)
++  Task[:t1].invoke
++  assert_equal(["t1", "t2", "t3"], runs.sort)
++end
++
++##!BlockPassNode 
++def aufruf &block
++  aufruf(&block)
++end
++
++##!BlockPassNode 
++def traverse &b
++  inject({}) do |h, k, v|
++    v = (Hash === v ? v.traverse(&b) : v)
++    nk, nv = b[k, v]
++    h[nk] = nv
++    h
++  end
++end
++
++##!BlockCalled
++p = proc {puts "aa"}
++p.call
++
++##!BlockPassNode 
++def key_auto
++  leet = lambda {|hsh, key| hsh[key] = new(&leet)}
++  new(*args, &leet).order_by {|k, v| k}
++end
++
++##!BreakNode 
++while true
++  break
++end
++
++##!ConstDeclNode 
++CONST = -5
++CONST = 5
++
++##!ClassVarAsgnNode 
++class Test
++  @@classvar = 50
++  def initialize
++    @@classvar = 10
++  end
++end
++
++##!ClassVarDeclNode 
++@@classvar = 5
++@@classvar = 5.to_s
++@@classvar = []
++
++##!ClassVarNode 
++@@classvar
++
++##!CallNode 
++
++
++##!CallNode 
++@test.call
++@test.call "argument"
++@test.call(5).call
++@test.call(5, 6)
++@test.call(5, 5.to_s)
++@test.call(5, 5.to(@i))
++@test.call @t.call(5.call(5.call))
++2 * 3
++task({:t1 => [:t2, :t3]}, p)
++
++def test_task &p
++  task({:t1 => [:t2, :t3]}, &p)
++end
++
++class Object
++  def superior klass = self.class.superclass, *args, &blk
++    if self.class.ancestors.include? klass
++    else
++      raise ArgumentError
++    end
++    called = /\`([^\']+)\'/.match(caller(1).first)[1].to_sym
++    klass.instance_method(called).bind(self).call *args, &blk
++  end
++end
++
++test a.ew.+(b, 2)
++test(5, a.ew.+(b, 2))
++
++class TCHash < Test::Unit::TestCase
++  def test_has_keys?
++    assert ({:a => 1, :b => 2, :c => 3}).has_keys?(:a, :b)
++    assert !({:a => 1, :b => 2, :c => 3}).has_keys?(:a, :b, :d)
++  end
++end
++
++return (('_' * i) + self.to_s + ('_' * i)).to_sym
++
++function(Math.sqrt((@jm + @km * @km).to_f), 2)
++
++k << ((' ' * Integer(rand * 10)) + '|' + i.to_s)
++a << (i.to_s)
++
++##!CaseNode 
++case var
++when 1
++  puts "one"
++when 2
++  puts "two"
++end
++
++##!ClassNode
++class Test < A::B
++end
++
++class Test < SuperClass
++end
++
++class A::Test
++end
++
++class ::Test
++end
++
++##!Colon2Node 
++class MyWidget < Qt::Widget
++end
++
++##!Colon3Node 
++::GLOBAL_SCOPE_VAR
++
++##!ConstNode 
++5
++
++##!DAsgnNode 
++[1, 2].each_with_index do |var, index|
++  puts var
++end
++
++ivars.each do |ivar|
++  ivalue = instance_variable_get ivar
++  cvalue = case 
++  when NilClass === ivalue, Symbol === ivalue
++    ivalue
++  when ivalue.respond_to?(:deep_copy)
++    ivalue.deep_copy h
++  when ivalue.respond_to?(:dup)
++    ivalue.dup
++  else
++    ivalue
++  end
++end
++
++##!DRegxNode 
++"Hund, Katze und Maus".split /, | #{"u" + "n" + "d"} /
++"abundbc".split /, | #{"u" + "n" + "d"} /
++
++##!DStrNode 
++"#{5.to_s}"
++"#{5.to_s} and #{6.to_s}"
++
++##!DSymbolNode 
++:"sym#{5}"
++:"symbol"
++
++##!DXStrNode 
++%x{echo #{puts "555"}}
++%x{echo #{puts "5".to_s}}
++
++##!DefinedNode 
++defined? abcd
++
++##!DefnNode
++
++def initialize
++  puts 5
++end
++
++def filter filename, backup = nil, &filter
++end
++
++def onCmdPrev sender, sel, ptr
++  self.searchMode |= SEARCH_BACKWARD
++  onCmdNext(sender, sel, ptr)
++end
++
++##!DefsNode 
++class MyClass
++  def MyClass.method
++  end
++  def MyClass.method argument
++  end
++  def MyClass.method argument1, arg2
++  end
++  def MyClass.method argument1, &arg2
++  end
++end
++
++##!DotNode 
++for i in 0..100
++  puts i
++end
++
++if !a 0..self.length - 1
++else
++  index(a)..index(z)
++end
++
++
++##!EnsureNode 
++def test
++  illegal
++rescue Exception
++  return 1
++ensure
++  save_file
++end
++
++##!FCallNode 
++puts 5
++p []
++fib_up_to(1000) {|f| print f}
++
++##!FalseNode 
++false
++
++##!FixnumNode 
++5000
++-10000
++
++##!FlipNode 
++while line = gets
++  if line =~ /start/ .. line =~ /end/
++    puts line
++  end
++end
++
++while line = gets
++  if line =~ /start/ ... line =~ /end/
++    puts line
++  end
++end
++
++##!FloatNode 
++0.5
++5.0
++10.01
++
++##!ForNode 
++for i in 0..100
++  puts i
++end
++for i in 0...100
++  puts i
++end
++for i in 0..[1, 2].length
++  puts i
++end
++for i in Range.new(0, 2)
++  puts i
++end
++
++##!GlobalAsgnNode 
++$TEST = 5
++old_verbose, $VERBOSE = $VERBOSE, nil
++
++##!GlobalVarNode 
++$test
++
++##!HashNode 
++{}
++{"key" => 6, 5 => 7}
++{1 => 1}
++
++set_options :name => "mirko"
++
++##!InstAsgnNode 
++@instvar = 5
++
++@instvar = "test"
++
++##!IfNode 
++if true
++  true
++else
++  false
++end
++
++if false
++  false
++elsif false
++  true
++elsif true
++  true
++end
++
++if false
++  false
++elsif false
++  true
++else
++  true
++end
++
++if destdir = ENV["DESTDIR"]
++end
++
++if @properties["caret.line.back"]
++  set_caret_line_visible true
++  set_caret_line_back @properties["caret.line.back"]
++else
++  set_caret_line_visible false
++end
++
++if ans = @heritage.call(anc)
++end
++
++##!IfNode 
++if (a = @prompt.match(/(\d+)[>*]/))
++end
++##=
++if (a = @prompt.match /(\d+)[>*]/)
++end
++
++##!Short IfNode
++cost = song.duration > 180 ? 0.35 : 0.25
++
++def File.dir? path
++  File.directory?((path[-1, 1] == '/') ? path : path + '/')
++end
++
++module Kernel
++  def __DIR__
++    /^(.+)?:\d+/ =~ caller[0] ? File.dirname($1) : nil
++  end
++end
++
++n > 0 ? (s[0...n] = replacement) : (s[n..-1] = replacement)
++
++name = (directory.instance_of?(String)) ? path.to_s : path.basename.to_s
++
++##!IterNode 
++
++[1, 2].each do |i|
++  puts i
++end
++
++def compose other
++  proc {|a| self.call other.call(a)}
++end
++
++##!IterNode on single line
++[1, 2].each {|a| puts a}
++
++##!LocalAsgnNode 
++i = 1
++
++class Test
++  def on_exit &block
++    @exit_proc = block
++  end
++end
++
++##!MultipleAsgnNode 
++a, b = 1, 2
++a, b = [1, 2], 3
++slot["/FirstName"].data, slot["/MiddleName"].data, slot["/LastName"].data = slot["/FullName"].data.split
++array[i], @array[j] = @array[j], @array[i]
++
++##!Match2Node 
++if /^\s*$/ =~ line
++end
++
++##!Match2Node 
++next if (/CVS$/ =~ File.dirname(f))
++##=
++if (/CVS$/ =~ File.dirname(f))
++  next
++end
++
++##!Match2Node 
++next if /CVS$/ =~ File.dirname(f)
++##=
++if /CVS$/ =~ File.dirname(f)
++  next
++end
++
++##!Match3Node 
++date = "12/25/01"
++date =~ /(\d+)(\/|:)(\d+)(\/|:)(\d+)/
++
++##!MatchNode 
++if /pattern/
++  print "x"
++end
++
++##!ModuleNode 
++module NameSpace
++  class Test
++  end
++end
++
++##!NextNode 
++while true
++  next
++end
++
++##!NilNode 
++nil
++
++##!NotNode 
++if !true
++  false
++end
++
++unit = !instance_methods.include?('end_match')
++
++##!NotNode 
++return if not true
++##=
++if not true
++  return
++end
++
++
++##!NotNode
++BUILD_HTMLDOC = get_config('disable-htmldoc') != 'yes'
++##=
++BUILD_HTMLDOC = !get_config('disable-htmldoc') == 'yes'
++
++##!NthRefNode 
++"12:50am" =~ /(\d\d):(\d\d)(..)/
++"Hour is #$1, minute #$2"
++
++##!OpElementAsgnNode 
++a[4] += 5
++a[3] &&= true
++
++##!OpAsgnNode
++##!(a.scene += 1)
++
++
++##!OpAsgnAndNode
++a &&= 5
++
++##!OpAsgnOrNode 
++a ||= 5
++
++module Kernel
++  def method! s
++    (@__methods__ ||= {})[s] ||= method s
++  end
++end
++
++##!OptNNode 
++
++##!OrNode 
++if true || false
++  puts 1
++end
++
++true or false
++
++##!OrNode 
++system(cmd) || fail("Command Failed: [#{cmd}]")
++
++##!PostExeNode 
++
++##!RedoNode 
++while true
++  redo
++end
++
++##!RegexpNode 
++/^\\s*[a-z]/
++/^\\s*[a-z]/
++//i
++//x
++//m
++//ixm
++%r(([^/\\])\.[^./\\]*$)
++/.*\/.*/
++line.gsub!(/\[\/#{val}\]/, ANSINAME2CODE["reset"])
++/#{val}/ix
++%r(#{val})ix
++
++##!RescueNode 
++def test
++  illegal
++rescue ProtocolError => e
++  puts e
++rescue Exception
++  return 1
++else
++  puts "else"
++end
++
++def test
++  illegal
++rescue ProtocolError => e
++  var = "test"
++  var2 = "test2"
++  puts e
++end
++
++def test
++  illegal
++rescue Exception
++  return 1
++else
++  puts "else"
++end
++
++def test
++  illegal
++rescue Exception
++  puts "exception caught!"
++  return
++end
++
++##!Rescue nil
++task :clobber_package do
++  rm_r package_dir rescue nil
++end
++##=
++task(:clobber_package) do 
++  rm_r package_dir rescue nil
++end
++
++##!RetryNode 
++for i in 1..100
++  print "Now at #{i}. Restart? "
++  if gets =~ /^y/i
++    retry
++  end
++end
++
++##!ReturnNode 
++return
++return 5
++
++return [text.delete(CURSOR_MARKER), text.index(CURSOR_MARKER) || 0, !@template.index(SELECTION_MARKER).nil?]
++
++return !(cmp_prop("default_interpreter", @il.getItemText(@il.getCurrentItem)) and cmp_prop("cmd_line_options", @clo.text))
++
++##!ReturnNode with If
++return lines ? lines : nil
++##=
++return lines ? lines : nil
++
++##!SClassNode 
++class << s
++  def test
++  end
++end
++
++##!SelfNode 
++self
++
++##!SplatNode 
++a, b, c = *[1, 2, 3]
++
++class Array
++  def / len
++    inject([]) do |ary, x|
++      if [*ary.last].nitems % len == 0
++        ary << []
++      end
++    end
++  end
++end
++
++def []= *args
++  if Array === args.at(0)
++    idx, vals = args.at(0), args.at(1)
++    idx.each_with_index {|a, i| store(a, vals.at(i))}
++    return values_at(*idx)
++  else
++    return store(*args)
++  end
++end
++
++if [*ary.last].nitems % len == 0
++  ary << []
++end
++
++##!StrNode 
++"this is a string with \nnewline"
++"this is a string with \""
++text.gsub!(/[}]/) {|b| "\\" + b}
++assert_equal("te_____st", File.sanitize('This/te#$#@!st'))
++text['\'']
++assert_equal('#$%', :'#$%'.to_str)
++
++##!SuperNode 
++class Test
++  def initialize arg
++    super(arg1, 4)
++  end
++  def super_2 a, b
++    super
++  end
++  def super_2 a, b
++    super()
++  end
++end
++
++##!SValueNode 
++def test
++  return *[cc, *result]
++end
++
++##!SymbolNode 
++:symbol
++
++##!TrueNode 
++true
++
++##!UndefNode 
++undef method
++
++##!UntilNode 
++until i > 10
++  i = i + 1
++end
++
++##!VAliasNode 
++alias $NEWTEST $TEST
++
++##!VCallNode 
++test
++
++##!WhenNode 
++case var
++when 1
++  puts "one"
++when 2
++  puts "two"
++end
++
++case input_line
++when "debug"
++  dump_debug_info
++  dump_symbols
++when /p\s+(\w+)/
++  dump_variable $1
++when "quit", "exit"
++  exit
++else
++  print "Illegal command: #{input_line}"
++end
++
++
++##!WhileNode 
++begin
++  puts 1
++end while false
++while true
++  puts 1
++end
++
++def fib_up_to max
++  i1, i2 = 1, 1
++  while i1 <= max
++    yield i1
++    i1, i2 = i2, i1 + i2
++  end
++end
++
++while (line = str.slice! /.{#{max_size}}/)
++  all.push line
++end
++
++##!XStrNode 
++`echo backtickz`
++
++##!YieldNode 
++def test &block
++  yield
++end
++def test &block
++  yield 5
++end
++
++def block_test
++  yield("aaa", "bbb", "ccc")
++end
++
++block_test {|a, b, c| puts(a, b, c)}
++
++text.each_line do |ln|
++  new_text = new_text + yield(ln)
++end
++
++yield(var, eval(var))
++
++##!ZArrayNode 
++[]
++
++##!ZSuperNode 
++super
++
++##!Negative Number in Call
++elements = []
++elements[0] = today.year - 1
++
++##!HereDocument indented
++
++assert_equal(<<-EOF.strip, html)
++<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN
++http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
++<html xmlns="http://www.w3.org/1999/xhtml"><head profile=""><meta http-equiv="Content-Type" content="text/html; charset=utf-8" /><style type="text/css" >@import "reaptest.css";</style></head><body><ol class="xoxo"><li>test</li></ol></body></html>
++EOF
++
++module Kernel
++  def cache m = nil
++    if m
++      (Module === self ? self : (class << self; self; end)).module_eval <<-EOF
++        alias_method '__#{m}__', '#{m}'
++        def #{m}(*__a__,&__b__)
++          c = cache['#{m}']
++          k = [__a__,__b__]
++          if c.has_key? k
++            c[k]
++          else
++            c[k] = __#{m}__(*__a__,&__b__)
++          end
++        end
++    EOF
++    end
++    @cache ||= Hash.new {|h, k| h[k] = {}}
++  end
++end
++
++##!HereDocument - cattr_reader
++
++def cattr_reader *syms
++  syms.flatten.each do |sym|
++    class_eval(<<-EOF, "huhu", 10)
++      def self.#{sym}
++        @@#{sym}
++      end
++      def #{sym}
++        @@#{sym}
++      end
++  EOF
++  end
++  return syms
++end
++
++##!HereDocument
++
++class Test
++  def add_directory directory, otherNode, append = true
++    item = nil
++    begin
++      @plugin["/system/ui/fox/FXApp"].data.beginWaitCursor
++      path = directory
++      path = Pathname.new directory unless directory.instance_of? Pathname
++      name = (directory.instance_of?(String)) ? path.to_s : path.basename.to_s
++    end
++  end
++end
++
++
++##!Indentation
++
++def test
++  begin
++    do_something_illegal
++  rescue Exception
++    rescue_it
++  else
++    no_exc
++  ensure
++    true
++  end
++end
++
++def elif_test
++  if true
++    do_it
++  elsif !false
++    do_it
++  else
++    do_it
++  end
++end
++
++class Test
++  def test
++    begin
++      begin
++        begin
++          begin
++          end
++        end
++      end
++      begin
++        if true
++          begin
++          end
++        elsif false
++          begin
++          rescue Exception > e
++          ensure
++            all_is_good
++            if true
++              return
++            end
++            begin
++              again
++            rescue nil
++            end
++          end
++        else
++          begin
++            begin
++              if true
++                if true
++                  if true
++                  end
++                end
++              else
++                return
++              end
++            end
++          end
++        end
++      end
++    end
++  end
++end
+\ No newline at end of file
+Index: test/org/jruby/ast/visitor/rewriter/TestReWriteVisitor.java
+===================================================================
+--- test/org/jruby/ast/visitor/rewriter/TestReWriteVisitor.java	(revision 0)
++++ test/org/jruby/ast/visitor/rewriter/TestReWriteVisitor.java	(revision 0)
+@@ -0,0 +1,125 @@
++/***** BEGIN LICENSE BLOCK *****
++ * Version: CPL 1.0/GPL 2.0/LGPL 2.1
++ *
++ * The contents of this file are subject to the Common Public
++ * License Version 1.0 (the "License"); you may not use this file
++ * except in compliance with the License. You may obtain a copy of
++ * the License at http://www.eclipse.org/legal/cpl-v10.html
++ *
++ * Software distributed under the License is distributed on an "AS
++ * IS" basis, WITHOUT WARRANTY OF ANY KIND, either express or
++ * implied. See the License for the specific language governing
++ * rights and limitations under the License.
++ *
++ * Copyright (C) 2006 Mirko Stocker <me@misto.ch>
++ * 
++ * Alternatively, the contents of this file may be used under the terms of
++ * either of the GNU General Public License Version 2 or later (the "GPL"),
++ * or the GNU Lesser General Public License Version 2.1 or later (the "LGPL"),
++ * in which case the provisions of the GPL or the LGPL are applicable instead
++ * of those above. If you wish to allow use of your version of this file only
++ * under the terms of either the GPL or the LGPL, and not to allow others to
++ * use your version of this file under the terms of the CPL, indicate your
++ * decision by deleting the provisions above and replace them with the notice
++ * and other provisions required by the GPL or the LGPL. If you do not delete
++ * the provisions above, a recipient may use your version of this file under
++ * the terms of any one of the CPL, the GPL or the LGPL.
++ ***** END LICENSE BLOCK *****/
++
++package org.jruby.ast.visitor.rewriter;
++
++import java.io.BufferedReader;
++import java.io.FileOutputStream;
++import java.io.FileReader;
++import java.io.IOException;
++import java.io.StringWriter;
++
++import junit.framework.TestCase;
++
++import org.jruby.ast.ArgumentNode;
++import org.jruby.ast.ArrayNode;
++import org.jruby.ast.ConstNode;
++import org.jruby.ast.LocalVarNode;
++import org.jruby.ast.Node;
++import org.jruby.ast.OptNNode;
++import org.jruby.ast.PostExeNode;
++import org.jruby.ast.RegexpNode;
++import org.jruby.ast.visitor.rewriter.ReWriteVisitor;
++import org.jruby.lexer.yacc.SourcePosition;
++
++public class TestReWriteVisitor extends TestCase {
++
++	static final SourcePosition emptyPosition = new SourcePosition("", 0, 0, 0, 0);
++	
++	private String visitNode(Node n) {
++		StringWriter out = new StringWriter();
++		ReWriteVisitor visitor = new ReWriteVisitor(out, "");
++		n.accept(visitor);
++		visitor.flushStream();
++		return out.getBuffer().toString();
++	}
++	
++	public void testVisitRegexpNode() {
++		RegexpNode n = new RegexpNode(new SourcePosition("", 0, 0, 2, 4), ".*", 0);
++		assertEquals("/.*/", visitNode(n));
++	}
++	
++	public void testGetLocalVarIndex() {
++		assertEquals(ReWriteVisitor.getLocalVarIndex(new LocalVarNode(emptyPosition, 5, "")), 5);
++		assertEquals(ReWriteVisitor.getLocalVarIndex(new LocalVarNode(emptyPosition, 1, "")), 1);
++		assertEquals(ReWriteVisitor.getLocalVarIndex(null), -1);
++	}
++	
++	private ReWriteVisitor getVisitor() {
++		return new ReWriteVisitor(new StringWriter(), "");
++	}
++
++	public void testVisitOptNNode() {
++		assertNull(getVisitor().visitOptNNode(new OptNNode(emptyPosition, null)));
++	}
++
++	public void testVisitPostExeNode() {
++		assertNull(getVisitor().visitPostExeNode(new PostExeNode(emptyPosition)));
++	}
++	
++	public void testUnwrapSingleArrayNode() {
++		ArrayNode arrayNode = new ArrayNode(emptyPosition);
++		ConstNode constNode = new ConstNode(emptyPosition, "const");
++		ConstNode anotherConstNode = new ConstNode(emptyPosition, "const");
++		arrayNode.add(constNode);
++		
++		assertEquals(ReWriteVisitor.unwrapSingleArrayNode(arrayNode), constNode);
++		assertEquals(ReWriteVisitor.unwrapSingleArrayNode(constNode), constNode);
++
++		arrayNode.add(anotherConstNode);
++		assertEquals(ReWriteVisitor.unwrapSingleArrayNode(arrayNode), arrayNode);
++	}
++	
++	public void testUnescapeChar() {
++		assertEquals(ReWriteVisitor.unescapeChar('\f'), "f");
++		assertEquals(ReWriteVisitor.unescapeChar('\r'), "r");
++		assertEquals(ReWriteVisitor.unescapeChar('\t'), "t");
++		assertEquals(ReWriteVisitor.unescapeChar('n'), null);
++	}
++	
++	public void testArgumentNode() {
++		Node node = new ArgumentNode(new SourcePosition(), "name");
++		assertEquals("name", ReWriteVisitor.createCodeFromNode(node, ""));
++	}
++	
++	public void testFileOutputStream() throws IOException {
++		String fileName = "outputTest";
++		String testString = "test";
++		FileOutputStream stream = new FileOutputStream(fileName);
++		ReWriteVisitor visitor = new ReWriteVisitor(stream, "");
++		ConstNode node = new ConstNode(emptyPosition, testString);
++		node.accept(visitor);
++		visitor.flushStream();
++		stream.close();
++		BufferedReader reader = new BufferedReader(new FileReader(fileName));
++		assertEquals(reader.readLine(), testString);
++	}
++}
++
++
++
+Index: test/org/jruby/ast/visitor/rewriter/TestReWriteVisitorWithCommentsSource.txt
+===================================================================
+--- test/org/jruby/ast/visitor/rewriter/TestReWriteVisitorWithCommentsSource.txt	(revision 0)
++++ test/org/jruby/ast/visitor/rewriter/TestReWriteVisitorWithCommentsSource.txt	(revision 0)
+@@ -0,0 +1,905 @@
++##!ArgsNode 
++def test argument
++end
++
++# comment
++def test arg1 # only one argument
++end #comment
++# comment
++def test arg1, arg2 = 5 # args
++end
++# comment
++def test arg1, *args
++end
++# comment
++def run_tests pattern = "test/test*.rb", log_enabled = false
++end
++# comment
++def initialize *args, &block
++end
++def test arg1, # comm
++arg2 # comm
++end
++
++# args
++def format_message *args
++  @format_proc ? @format_proc.call(*args) : super(*args)
++end
++
++##!AliasNode 
++# comment
++alias new_name old_name
++
++##!AndNode 
++true and true
++true && true
++
++##!ArgsCatNode 
++[angle, *args]
++
++##!ArrayNode    
++[1, 2, 3, "test", 100]
++
++[[1, 3, 5, 9, 11, #kommentar
++2]]
++
++SEGMENTS = [[1, 3, #komm
++5, 9, 11, 13], #kommentar
++[2, 5, 11], #kommentar
++[1, 5, 7, 9, 13], #kommentar
++[1, 5, 7, 11, 13], #kommentar
++[3, 5, 7, 11], #kommentar
++[1, 3, 7, 11, 13], #kommentar
++[1, 3, 7, 9, 11, 13], #kommentar
++[1, 3, 5, 11], #kommentar
++[1, 3, 5, 7, 9, 11, 13], #kommentar
++[1, 3, 5, 7, 11, 13]]
++
++
++##!BackRefNode 
++"Hund, Katze und Maus".split /, | und /
++puts $&
++puts $+
++puts $`
++puts $'
++
++##!BeginNode 
++begin
++  puts "loop"
++rescue Exception => e
++  puts e
++else
++  puts "else"
++end
++
++begin
++  load fn
++rescue Exception => ex
++  puts "Error in #{fn}: #{ex.message}"
++  puts ex.backtrace
++  assert false
++end
++
++begin
++  do_something_illegal
++rescue
++ensure
++  print "ensure"
++end
++
++begin
++  do_something_illegal
++rescue Exception > e
++ensure
++  print "ensure"
++end
++
++##!MethodCallOnBlock
++def test_6_slottype_proc
++  bus = FreeBASE::DataBus.new
++  slot = bus["slot"]
++  slot.set_proc {|param| assert_equals(4, param)}
++  slot.call 4
++  slot.invoke 4
++  slot.proc.call 4
++  assert_exception(RuntimeError) {slot.stack}
++end
++
++##!BignumNode 
++123456789012345678901234567890
++-123456789012345678901234567890
++
++##!BlockArgNode 
++def test arg1, &arg
++end
++def test &arg
++end
++def test &arg
++  arg.call
++end
++
++##!BlockPassNode 
++def quiet &block
++  with_verbose(false, &block)
++end
++
++##!BlockPassNode 
++def method_missing methID, args, &block
++  @gc.__send__([methID], args, &block)
++end
++
++##!BlockPassNode 
++def test_multi_invocations
++  runs = []
++  p = proc {|t| runs << t.name}
++  task({:t1 => [:t2, :t3]}, &p)
++  task({:t2 => [:t3]}, &p)
++  task(:t3, &p)
++  Task[:t1].invoke
++  assert_equal(["t1", "t2", "t3"], runs.sort)
++end
++
++##!BlockPassNode 
++def aufruf &block
++  aufruf(&block)
++end
++
++##!BlockPassNode 
++def traverse &b
++  inject({}) do |h, k, v|
++    v = (Hash === v ? v.traverse(&b) : v)
++    nk, nv = b[k, v]
++    h[nk] = nv
++    h
++  end
++end
++
++##!BlockCalled
++p = proc {puts "aa"}
++p.call
++
++##!BlockPassNode 
++def key_auto
++  leet = lambda {|hsh, key| hsh[key] = new(&leet)}
++  new(*args, &leet).order_by {|k, v| k}
++end
++
++##!BreakNode 
++while true
++  break
++end
++
++##!ConstDeclNode 
++CONST = -5
++CONST = 5
++
++##!ClassVarAsgnNode 
++class Test
++  @@classvar = 50
++  def initialize
++    @@classvar = 10
++  end
++end
++
++##!ClassVarDeclNode 
++@@classvar = 5
++@@classvar = 5.to_s
++@@classvar = []
++
++##!ClassVarNode 
++@@classvar
++
++##!CallNode 
++
++
++##!CallNode 
++@test.call
++@test.call "argument"
++@test.call(5).call
++@test.call(5, 6)
++@test.call(5, 5.to_s)
++@test.call(5, 5.to(@i))
++@test.call @t.call(5.call(5.call))
++2 * 3
++task({:t1 => [:t2, :t3]}, p)
++
++def test_task &p
++  task({:t1 => [:t2, :t3]}, &p)
++end
++
++class Object
++  def superior klass = self.class.superclass, *args, &blk
++    if self.class.ancestors.include? klass
++    else
++      raise ArgumentError
++    end
++    called = /\`([^\']+)\'/.match(caller(1).first)[1].to_sym
++    klass.instance_method(called).bind(self).call *args, &blk
++  end
++end
++
++test a.ew.+(b, 2)
++test(5, a.ew.+(b, 2))
++
++class TCHash < Test::Unit::TestCase
++  def test_has_keys?
++    assert ({:a => 1, :b => 2, :c => 3}).has_keys?(:a, :b)
++    assert !({:a => 1, :b => 2, :c => 3}).has_keys?(:a, :b, :d)
++  end
++end
++
++return (('_' * i) + self.to_s + ('_' * i)).to_sym
++
++function(Math.sqrt((@jm + @km * @km).to_f), 2)
++
++k << ((' ' * Integer(rand * 10)) + '|' + i.to_s)
++a << (i.to_s)
++
++##!CaseNode 
++case var
++when 1
++  puts "one"
++when 2
++  puts "two"
++end
++
++##!ClassNode
++#cc
++#cc
++class Test < A::B #cc
++#cc
++#cc
++end #cc
++
++class Test < SuperClass
++end
++
++class A::Test #k
++end
++
++class ::Test #k
++end
++
++##!Colon2Node 
++class MyWidget < Qt::Widget
++end
++
++##!Colon3Node 
++::GLOBAL_SCOPE_VAR
++
++##!ConstNode 
++5
++
++##!DAsgnNode 
++[1, 2].each_with_index do |var, index|
++  puts var
++end
++
++ivars.each do |ivar|
++  ivalue = instance_variable_get ivar
++  cvalue = case 
++  when NilClass === ivalue, Symbol === ivalue
++    ivalue
++  when ivalue.respond_to?(:deep_copy)
++    ivalue.deep_copy h
++  when ivalue.respond_to?(:dup)
++    ivalue.dup
++  else
++    ivalue
++  end
++end
++
++##!DRegxNode 
++"Hund, Katze und Maus".split /, | #{"u" + "n" + "d"} /
++"abundbc".split /, | #{"u" + "n" + "d"} /
++
++##!DStrNode 
++"#{5.to_s}"
++"#{5.to_s} and #{6.to_s}"
++
++##!DSymbolNode 
++:"sym#{5}"
++:"symbol"
++
++##!DXStrNode 
++%x{echo #{puts "555"}}
++%x{echo #{puts "5".to_s}}
++
++##!DefinedNode 
++defined? abcd
++
++##!DefnNode
++
++# this method prints 5
++def initialize # no parameters
++  puts 5
++#that's it
++end # we are done
++
++def filter filename, backup = nil, &filter
++end
++
++def onCmdPrev sender, sel, ptr
++  self.searchMode |= SEARCH_BACKWARD
++  onCmdNext(sender, sel, ptr)
++#finished
++end
++
++##!DefsNode 
++class MyClass
++  def MyClass.method
++  end
++  def MyClass.method argument
++  end
++  def MyClass.method argument1, arg2
++  end
++  def MyClass.method argument1, &arg2
++  end
++end
++
++##!DotNode 
++for i in 0..100
++  puts i
++end
++
++if !a 0..self.length - 1
++else
++  index(a)..index(z)
++end
++
++
++##!EnsureNode 
++def test
++  illegal
++rescue Exception
++  return 1
++ensure
++  save_file
++end
++
++##!FCallNode 
++puts 5
++p []
++fib_up_to(1000) {|f| print f}
++
++##!FalseNode 
++false
++
++##!FixnumNode 
++5000
++-10000
++
++##!FlipNode 
++while line = gets
++  if line =~ /start/ .. line =~ /end/
++    puts line
++  end
++end
++
++while line = gets
++  if line =~ /start/ ... line =~ /end/
++    puts line
++  end
++end
++
++##!FloatNode 
++0.5
++5.0
++10.01
++
++##!ForNode 
++for i in 0..100
++  puts i
++end
++for i in 0...100
++  puts i
++end
++for i in 0..[1, 2].length
++  puts i
++end
++for i in Range.new(0, 2)
++  puts i
++end
++
++##!GlobalAsgnNode 
++$TEST = 5
++old_verbose, $VERBOSE = $VERBOSE, nil
++
++##!GlobalVarNode 
++$test
++
++##!HashNode 
++{}
++{"key" => 6, 5 => 7}
++{1 => 1}
++
++set_options :name => "mirko"
++
++##!InstAsgnNode 
++@instvar = 5
++
++@instvar = "test"
++
++##!IfNode 
++if true
++  true
++else
++  false
++end
++
++#komm
++if false
++  false
++elsif false
++  true
++elsif true
++  true
++end
++
++if false
++  false
++elsif false
++  true
++else
++  true
++end
++
++if destdir = ENV["DESTDIR"]
++end
++
++if @properties["caret.line.back"]
++  set_caret_line_visible true
++  set_caret_line_back @properties["caret.line.back"]
++else
++  set_caret_line_visible false
++end
++
++if ans = @heritage.call(anc)
++end
++
++##!IfNode 
++if (a = @prompt.match(/(\d+)[>*]/))
++end
++##=
++if (a = @prompt.match /(\d+)[>*]/)
++end
++
++##!Short IfNode
++cost = song.duration > 180 ? 0.35 : 0.25
++
++def File.dir? path
++  File.directory?((path[-1, 1] == '/') ? path : path + '/')
++end
++
++module Kernel
++  def __DIR__
++    /^(.+)?:\d+/ =~ caller[0] ? File.dirname($1) : nil
++  end
++end
++
++n > 0 ? (s[0...n] = replacement) : (s[n..-1] = replacement)
++
++name = (directory.instance_of?(String)) ? path.to_s : path.basename.to_s
++
++##!IterNode 
++
++[1, 2].each do |i|
++  puts i
++end
++
++def compose other
++  proc {|a| self.call other.call(a)}
++end
++
++##!IterNode on single line
++[1, 2].each {|a| puts a}
++
++##!LocalAsgnNode 
++i = 1
++
++class Test
++  def on_exit &block
++    @exit_proc = block
++  end
++end
++
++##!MultipleAsgnNode 
++a, b = 1, 2
++a, b = [1, 2], 3
++slot["/FirstName"].data, slot["/MiddleName"].data, slot["/LastName"].data = slot["/FullName"].data.split
++array[i], @array[j] = @array[j], @array[i]
++
++##!Match2Node 
++if /^\s*$/ =~ line
++end
++
++##!Match2Node 
++next if (/CVS$/ =~ File.dirname(f))
++##=
++if (/CVS$/ =~ File.dirname(f))
++  next
++end
++
++##!Match2Node 
++next if /CVS$/ =~ File.dirname(f)
++##=
++if /CVS$/ =~ File.dirname(f)
++  next
++end
++
++##!Match3Node 
++date = "12/25/01"
++date =~ /(\d+)(\/|:)(\d+)(\/|:)(\d+)/
++
++##!MatchNode 
++if /pattern/
++  print "x"
++end
++
++##!ModuleNode 
++module NameSpace
++  class Test
++  end
++end
++
++##!NextNode 
++while true
++  next
++end
++
++##!NilNode 
++nil
++
++##!NotNode 
++if !true
++  false
++end
++
++unit = !instance_methods.include?('end_match')
++
++##!NotNode 
++return if not true
++##=
++if not true
++  return
++end
++
++
++##!NotNode
++BUILD_HTMLDOC = get_config('disable-htmldoc') != 'yes'
++##=
++BUILD_HTMLDOC = !get_config('disable-htmldoc') == 'yes'
++
++##!NthRefNode 
++"12:50am" =~ /(\d\d):(\d\d)(..)/
++"Hour is #$1, minute #$2"
++
++##!OpElementAsgnNode 
++a[4] += 5
++a[3] &&= true
++
++##!OpAsgnNode
++##!(a.scene += 1)
++
++
++##!OpAsgnAndNode
++a &&= 5
++
++##!OpAsgnOrNode 
++a ||= 5
++
++module Kernel
++  def method! s
++    (@__methods__ ||= {})[s] ||= method s
++  end
++end
++
++##!OptNNode 
++
++##!OrNode 
++if true || false
++  puts 1
++end
++
++true or false
++
++##!OrNode 
++system(cmd) || fail("Command Failed: [#{cmd}]")
++
++##!PostExeNode 
++
++##!RedoNode 
++while true
++  redo
++end
++
++##!RegexpNode 
++/^\\s*[a-z]/
++/^\\s*[a-z]/
++//i
++//x
++//m
++//ixm
++%r(([^/\\])\.[^./\\]*$)
++/.*\/.*/
++line.gsub!(/\[\/#{val}\]/, ANSINAME2CODE["reset"])
++/#{val}/ix
++%r(#{val})ix
++
++##!RescueNode 
++def test
++  illegal
++rescue ProtocolError => e
++  puts e
++rescue Exception
++  return 1
++else
++  puts "else"
++end
++
++def test
++  illegal
++rescue ProtocolError => e
++  var = "test"
++  var2 = "test2"
++  puts e
++end
++
++def test
++  illegal
++rescue Exception
++  return 1
++else
++  puts "else"
++end
++
++def test
++  illegal
++rescue Exception
++  puts "exception caught!"
++  return
++end
++
++##!Rescue nil
++task :clobber_package do
++  rm_r package_dir rescue nil
++end
++##=
++task(:clobber_package) do 
++  rm_r package_dir rescue nil
++end
++
++##!RetryNode 
++for i in 1..100
++  print "Now at #{i}. Restart? "
++  if gets =~ /^y/i
++    retry
++  end
++end
++
++##!ReturnNode 
++return
++return 5
++
++return [text.delete(CURSOR_MARKER), text.index(CURSOR_MARKER) || 0, !@template.index(SELECTION_MARKER).nil?]
++
++return !(cmp_prop("default_interpreter", @il.getItemText(@il.getCurrentItem)) and cmp_prop("cmd_line_options", @clo.text))
++
++##!ReturnNode with If
++return lines ? lines : nil
++##=
++return lines ? lines : nil
++
++##!SClassNode 
++class << s
++  def test
++  end
++end
++
++##!SelfNode 
++self
++
++##!SplatNode 
++a, b, c = *[1, 2, 3]
++
++class Array
++  def / len
++    inject([]) do |ary, x|
++      if [*ary.last].nitems % len == 0
++        ary << []
++      end
++    end
++  end
++end
++
++def []= *args
++  if Array === args.at(0)
++    idx, vals = args.at(0), args.at(1)
++    idx.each_with_index {|a, i| store(a, vals.at(i))}
++    return values_at(*idx)
++  else
++    return store(*args)
++  end
++end
++
++if [*ary.last].nitems % len == 0
++  ary << []
++end
++
++##!StrNode 
++"this is a string with \nnewline"
++"this is a string with \""
++text.gsub!(/[}]/) {|b| "\\" + b}
++assert_equal("te_____st", File.sanitize('This/te#$#@!st'))
++text['\'']
++assert_equal('#$%', :'#$%'.to_str)
++
++##!SuperNode 
++class Test
++  def initialize arg
++    super(arg1, 4)
++  end
++  def super_2 a, b
++    super
++  end
++  def super_2 a, b
++    super()
++  end
++end
++
++##!SValueNode 
++def test
++  return *[cc, *result]
++end
++
++##!SymbolNode 
++:symbol
++
++##!TrueNode 
++true
++
++##!UndefNode 
++undef method
++
++##!UntilNode 
++until i > 10
++  i = i + 1
++end
++
++##!VAliasNode 
++alias $NEWTEST $TEST
++
++##!VCallNode 
++test
++
++##!WhenNode 
++case var
++when 1
++  puts "one"
++when 2
++  puts "two"
++end
++
++case input_line
++when "debug"
++  dump_debug_info
++  dump_symbols
++when /p\s+(\w+)/
++  dump_variable $1
++when "quit", "exit"
++  exit
++else
++  print "Illegal command: #{input_line}"
++end
++
++
++##!WhileNode 
++begin
++  puts 1
++end while false
++while true
++  puts 1
++end
++
++def fib_up_to max
++  i1, i2 = 1, 1
++  while i1 <= max
++    yield i1
++    i1, i2 = i2, i1 + i2
++  end
++end
++
++while (line = str.slice! /.{#{max_size}}/)
++  all.push line
++end
++
++##!XStrNode 
++`echo backtickz`
++
++##!YieldNode 
++def test &block
++  yield
++end
++def test &block
++  yield 5
++end
++
++def block_test
++  yield("aaa", "bbb", "ccc")
++end
++
++block_test {|a, b, c| puts(a, b, c)}
++
++text.each_line do |ln|
++  new_text = new_text + yield(ln)
++end
++
++yield(var, eval(var))
++
++##!ZArrayNode 
++[]
++
++##!ZSuperNode 
++super
++
++##!Negative Number in Call
++elements = []
++elements[0] = today.year - 1
++
++##!HereDocument indented
++
++assert_equal(<<-EOF.strip, html)
++<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN
++http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
++<html xmlns="http://www.w3.org/1999/xhtml"><head profile=""><meta http-equiv="Content-Type" content="text/html; charset=utf-8" /><style type="text/css" >@import "reaptest.css";</style></head><body><ol class="xoxo"><li>test</li></ol></body></html>
++EOF
++
++module Kernel
++  def cache m = nil
++    if m
++      (Module === self ? self : (class << self; self; end)).module_eval <<-EOF
++        alias_method '__#{m}__', '#{m}'
++        def #{m}(*__a__,&__b__)
++          c = cache['#{m}']
++          k = [__a__,__b__]
++          if c.has_key? k
++            c[k]
++          else
++            c[k] = __#{m}__(*__a__,&__b__)
++          end
++        end
++    EOF
++    end
++    @cache ||= Hash.new {|h, k| h[k] = {}}
++  end
++end
++
++##!HereDocument - cattr_reader
++
++def cattr_reader *syms
++  syms.flatten.each do |sym|
++    class_eval(<<-EOF, "huhu", 10)
++      def self.#{sym}
++        @@#{sym}
++      end
++      def #{sym}
++        @@#{sym}
++      end
++  EOF
++  end
++  return syms
++end
++
++##!HereDocument
++
++class Test
++  def add_directory directory, otherNode, append = true
++    item = nil
++    begin
++      @plugin["/system/ui/fox/FXApp"].data.beginWaitCursor
++      path = directory
++      path = Pathname.new directory unless directory.instance_of? Pathname
++      name = (directory.instance_of?(String)) ? path.to_s : path.basename.to_s
++    end
++  end
++end
+Index: test/org/jruby/ast/visitor/rewriter/VisitorTestSuite.java
+===================================================================
+--- test/org/jruby/ast/visitor/rewriter/VisitorTestSuite.java	(revision 0)
++++ test/org/jruby/ast/visitor/rewriter/VisitorTestSuite.java	(revision 0)
+@@ -0,0 +1,19 @@
++package org.jruby.ast.visitor.rewriter;
++
++import junit.framework.Test;
++import junit.framework.TestSuite;
++
++import org.jruby.ast.visitor.rewriter.utils.TestBooleanStateStack;
++import org.jruby.ast.visitor.rewriter.utils.TestOperators;
++
++public class VisitorTestSuite extends TestSuite {
++	
++	public static Test suite() throws Throwable {
++		TestSuite suite = new TestSuite();
++		suite.addTest(SourceRewriteTester.suite());
++		suite.addTest(new TestSuite(TestOperators.class));
++		suite.addTest(new TestSuite(TestBooleanStateStack.class));
++		suite.addTest(new TestSuite(TestReWriteVisitor.class));
++		return suite;
++	}
++}
+Index: test/org/jruby/ast/visitor/rewriter/SourceRewriteTester.java
+===================================================================
+--- test/org/jruby/ast/visitor/rewriter/SourceRewriteTester.java	(revision 0)
++++ test/org/jruby/ast/visitor/rewriter/SourceRewriteTester.java	(revision 0)
+@@ -0,0 +1,157 @@
++/***** BEGIN LICENSE BLOCK *****
++ * Version: CPL 1.0/GPL 2.0/LGPL 2.1
++ *
++ * The contents of this file are subject to the Common Public
++ * License Version 1.0 (the "License"); you may not use this file
++ * except in compliance with the License. You may obtain a copy of
++ * the License at http://www.eclipse.org/legal/cpl-v10.html
++ *
++ * Software distributed under the License is distributed on an "AS
++ * IS" basis, WITHOUT WARRANTY OF ANY KIND, either express or
++ * implied. See the License for the specific language governing
++ * rights and limitations under the License.
++ *
++ * Copyright (C) 2006 Mirko Stocker <me@misto.ch>
++ * 
++ * Alternatively, the contents of this file may be used under the terms of
++ * either of the GNU General Public License Version 2 or later (the "GPL"),
++ * or the GNU Lesser General Public License Version 2.1 or later (the "LGPL"),
++ * in which case the provisions of the GPL or the LGPL are applicable instead
++ * of those above. If you wish to allow use of your version of this file only
++ * under the terms of either the GPL or the LGPL, and not to allow others to
++ * use your version of this file under the terms of the CPL, indicate your
++ * decision by deleting the provisions above and replace them with the notice
++ * and other provisions required by the GPL or the LGPL. If you do not delete
++ * the provisions above, a recipient may use your version of this file under
++ * the terms of any one of the CPL, the GPL or the LGPL.
++ ***** END LICENSE BLOCK *****/
++
++package org.jruby.ast.visitor.rewriter;
++
++import java.io.BufferedReader;
++import java.io.FileNotFoundException;
++import java.io.FileReader;
++import java.io.StringReader;
++import java.io.StringWriter;
++import java.util.ArrayList;
++import java.util.Iterator;
++import java.util.regex.Matcher;
++import java.util.regex.Pattern;
++
++import junit.framework.Test;
++import junit.framework.TestSuite;
++
++import org.jruby.common.NullWarnings;
++import org.jruby.lexer.yacc.LexerSource;
++import org.jruby.parser.DefaultRubyParser;
++import org.jruby.parser.RubyParserConfiguration;
++import org.jruby.parser.RubyParserPool;
++
++public class SourceRewriteTester extends TestSuite {
++	
++	private static final String testRegexp = "^##!(.*)\\s*(\\w*)*$";
++	private static final String resultRegexp = "^##=.*$";
++	
++	// replace with an enum as soon as we can use 1.5
++	private static class MatcherState {
++		public static final int SKIP = 0;
++		public static final int IN_SOURCE = 1;
++		public static final int IN_EXPECTED_RESULT= 2;
++	}
++	
++	public static String generateSource(String original) {
++		if(original.equals(""))
++			return original;
++		DefaultRubyParser parser = RubyParserPool.getInstance().borrowParser();
++		parser.setWarnings(new NullWarnings());
++		
++		LexerSource lexerSource = new LexerSource("", new StringReader(original));
++		StringWriter outputWriter = new StringWriter();
++		ReWriteVisitor visitor = new ReWriteVisitor(outputWriter, original);
++		parser.parse(new RubyParserConfiguration(), lexerSource).getAST().accept(visitor);
++		visitor.flushStream();
++		RubyParserPool.getInstance().returnParser(parser);
++		return outputWriter.getBuffer().toString();
++	}
++	
++	private static BufferedReader createReader(String file) throws FileNotFoundException {
++		return new BufferedReader(new FileReader(file));
++	}
++	
++	public static Test suite() throws Exception {
++		
++		BufferedReader in = createReader("test/org/jruby/ast/visitor/rewriter/TestReWriteVisitorSource.txt");
++		
++		ArrayList testCases = createTests(in);
++
++		return createSuite(testCases); 
++	}
++
++	private static TestSuite createSuite(ArrayList testCases) {
++		TestSuite suite = new TestSuite();
++		Iterator it = testCases.iterator();
++		while(it.hasNext()) {
++			SourceTestCase subject = (SourceTestCase)it.next();
++			subject.setGeneratedSource(generateSource(subject.getSource()));
++			suite.addTest(subject);
++		}
++		return suite;
++	}
++
++	
++	private static boolean lineMatchesBeginOfTest(String line) {
++		return createMatcherFromString(testRegexp, line).find();
++	}
++
++	private static Matcher createMatcherFromString(String pattern, String line) {
++		return Pattern.compile(pattern).matcher(line);
++	}
++	
++	private static String getNameOfTest(String line) {
++		Matcher matcherBeginOfTest = createMatcherFromString(testRegexp, line);
++		if(matcherBeginOfTest.find())
++			return matcherBeginOfTest.group(1);
++		else
++			return "Not Named";
++	}
++	
++	private static boolean lineMatchesBeginOfResult(String line) {
++		return createMatcherFromString(resultRegexp, line).find();
++	}
++
++	private static ArrayList createTests(BufferedReader inputReader) throws Exception {
++		
++		String line;
++		SourceTestCase tc = null;
++		int matcherState = MatcherState.SKIP;
++		ArrayList testCases = new ArrayList();
++		
++		while ((line = inputReader.readLine()) != null){
++			
++			if(lineMatchesBeginOfTest(line)) {
++				matcherState = MatcherState.IN_SOURCE;
++				tc = new SourceTestCase(getNameOfTest(line), true);
++				testCases.add(tc);
++				continue;
++			}	else if (lineMatchesBeginOfResult(line)) {
++				matcherState = MatcherState.IN_EXPECTED_RESULT;
++				continue;
++			}
++			
++			switch(matcherState) {
++			case MatcherState.IN_SOURCE:
++				tc.appendLineToSource(line);
++				break;
++			case MatcherState.IN_EXPECTED_RESULT:
++				tc.appendLineToExpectedResult(line);
++				break;
++			case MatcherState.SKIP:
++				break;
++			}
++		}
++		return testCases;
++	}
++}
++
++
++
+Index: test/org/jruby/ast/visitor/rewriter/SourceTestCase.java
+===================================================================
+--- test/org/jruby/ast/visitor/rewriter/SourceTestCase.java	(revision 0)
++++ test/org/jruby/ast/visitor/rewriter/SourceTestCase.java	(revision 0)
+@@ -0,0 +1,82 @@
++/***** BEGIN LICENSE BLOCK *****
++ * Version: CPL 1.0/GPL 2.0/LGPL 2.1
++ *
++ * The contents of this file are subject to the Common Public
++ * License Version 1.0 (the "License"); you may not use this file
++ * except in compliance with the License. You may obtain a copy of
++ * the License at http://www.eclipse.org/legal/cpl-v10.html
++ *
++ * Software distributed under the License is distributed on an "AS
++ * IS" basis, WITHOUT WARRANTY OF ANY KIND, either express or
++ * implied. See the License for the specific language governing
++ * rights and limitations under the License.
++ *
++ * Copyright (C) 2006 Mirko Stocker <me@misto.ch>
++ * 
++ * Alternatively, the contents of this file may be used under the terms of
++ * either of the GNU General Public License Version 2 or later (the "GPL"),
++ * or the GNU Lesser General Public License Version 2.1 or later (the "LGPL"),
++ * in which case the provisions of the GPL or the LGPL are applicable instead
++ * of those above. If you wish to allow use of your version of this file only
++ * under the terms of either the GPL or the LGPL, and not to allow others to
++ * use your version of this file under the terms of the CPL, indicate your
++ * decision by deleting the provisions above and replace them with the notice
++ * and other provisions required by the GPL or the LGPL. If you do not delete
++ * the provisions above, a recipient may use your version of this file under
++ * the terms of any one of the CPL, the GPL or the LGPL.
++ ***** END LICENSE BLOCK *****/
++
++package org.jruby.ast.visitor.rewriter;
++
++import junit.framework.TestCase;
++
++public class SourceTestCase extends TestCase {
++	private String name;
++	private StringBuffer source = new StringBuffer();
++	private StringBuffer expectedResult  = new StringBuffer();
++	private String generatedSource;
++	private boolean ignoreEmtpyLines;
++	
++	public SourceTestCase(String name, boolean ignoreEmtpyLines) {
++		this.name = name;
++		this.ignoreEmtpyLines = ignoreEmtpyLines;
++	}
++	
++	private void appendToBuffer(StringBuffer buffer, String line) {
++		if (line.matches("\\s*") && ignoreEmtpyLines) {
++			return;
++		}
++		if(!buffer.toString().equals("")) {
++			buffer.append("\n");		
++		}
++		buffer.append(line);
++	}
++	
++	public void appendLineToSource(String line) {
++		appendToBuffer(source, line);
++	}
++	
++	public void appendLineToExpectedResult(String line) {
++		appendToBuffer(expectedResult, line);
++	}
++	
++	public String getSource() {
++		return source.toString();
++	}
++	
++	public String getName() {
++		return name;
++	}
++	
++	private String getExpectedResult() {
++		return expectedResult.toString().equals("") ? source.toString() : expectedResult.toString();
++	}
++	
++	public void setGeneratedSource(String source) {
++		generatedSource = source;
++	}
++	
++	public void runTest() {
++		assertEquals(getExpectedResult(), generatedSource);
++	}
++}

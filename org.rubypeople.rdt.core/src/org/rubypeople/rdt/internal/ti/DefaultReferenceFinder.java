@@ -18,6 +18,7 @@ import org.jruby.ast.InstVarNode;
 import org.jruby.ast.LocalAsgnNode;
 import org.jruby.ast.LocalVarNode;
 import org.jruby.ast.Node;
+import org.jruby.ast.types.INameNode;
 import org.jruby.lexer.yacc.ISourcePosition;
 import org.jruby.lexer.yacc.SourcePosition;
 import org.rubypeople.rdt.internal.core.parser.RdtWarnings;
@@ -93,47 +94,10 @@ public class DefaultReferenceFinder implements IReferenceFinder {
 	 * @return
 	 */
 	private String getLocalVarRefName( Node node, Node scope ) {
-		if (node instanceof LocalAsgnNode) {
-			return ((LocalAsgnNode)node).getName();
-		}
-
-		if ( node instanceof ArgumentNode ) {
-			return ((ArgumentNode)node).getName();
+		if (node instanceof INameNode) {
+			return ((INameNode)node).getName();
 		}
 		
-		if ( node instanceof LocalVarNode ) {
-			if ( scope instanceof DefnNode ) {
-				return ((DefnNode)scope).getBodyNode().getLocalNames()[((LocalVarNode)node).getCount()];
-			}
-			if ( scope instanceof DefsNode ) {
-				return ((DefsNode)scope).getBodyNode().getLocalNames()[((LocalVarNode)node).getCount()];
-			}
-			
-			// No enclosing ScopeNode found, try searching backwards for an AsgnNode
-			final int localVarCount = ((LocalVarNode)node).getCount();
-			Node previousAssign = FirstPrecursorNodeLocator.Instance().findFirstPrecursor(scope, node.getPosition().getStartOffset(), new INodeAcceptor() {
-				public boolean doesAccept(Node node) {
-					if ( node instanceof LocalAsgnNode )
-					{
-						return ((LocalAsgnNode)node).getCount() == localVarCount;
-					}
-					return false;
-				}
-			});
-			if ( previousAssign != null )
-			{
-				return ((LocalAsgnNode)previousAssign).getName();
-			}
-			
-			System.err.println("Unhandled scope for local var ref node found: " + scope.toString() );
-			//TODO: if scope instanceof Block Body? what type is this..
-		}
-		
-		if ( node instanceof DVarNode ) {
-			return ((DVarNode)node).getName();
-		}
-			
-//		System.err.println("Encountered unhandled node type in getLocalVarRefName: " + node.toString() + " in " + scope.toString());
 		return null;
 	}
 	

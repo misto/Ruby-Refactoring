@@ -13,10 +13,7 @@ package org.rubypeople.rdt.internal.core.builder;
 
 import java.io.DataOutputStream;
 import java.util.Date;
-import java.util.Iterator;
 import java.util.Map;
-import java.util.Set;
-
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IncrementalProjectBuilder;
@@ -24,7 +21,6 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.rubypeople.rdt.core.IRubyModelMarker;
 import org.rubypeople.rdt.core.RubyCore;
-import org.rubypeople.rdt.internal.core.RubyModelManager;
 import org.rubypeople.rdt.internal.core.symbols.SymbolIndex;
 
 

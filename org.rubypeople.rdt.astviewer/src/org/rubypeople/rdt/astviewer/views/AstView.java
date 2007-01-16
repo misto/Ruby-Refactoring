@@ -259,9 +259,9 @@ public class AstView extends ViewPart {
 	}
 	
 	private void setSelection(RubyEditor editor, Node n) {
-		if (n == null)
+		if (n == null || n.getPosition() == null)
 			return;
-		editor.selectAndReveal(n.getPosition().getStartOffset(), n.getPosition().getEndOffset() - n.getPosition().getStartOffset() + 1);
+		editor.selectAndReveal(n.getPosition().getStartOffset(), n.getPosition().getEndOffset() - n.getPosition().getStartOffset());
 	}
 	
 	private void hookClickAction() {
@@ -273,7 +273,8 @@ public class AstView extends ViewPart {
 		};
 		
 		viewer.addSelectionChangedListener(new ISelectionChangedListener() {
-			public void selectionChanged(SelectionChangedEvent event) {
+			public void selectionChanged(@SuppressWarnings("unused")
+			SelectionChangedEvent event) {
 				clickAction.run();
 			}
 		});
@@ -304,7 +305,8 @@ public class AstView extends ViewPart {
 		};
 		
 		viewer.addDoubleClickListener(new IDoubleClickListener() {
-			public void doubleClick(DoubleClickEvent event) {
+			public void doubleClick(@SuppressWarnings("unused")
+			DoubleClickEvent event) {
 				doubleClickAction.run();
 			}
 		});

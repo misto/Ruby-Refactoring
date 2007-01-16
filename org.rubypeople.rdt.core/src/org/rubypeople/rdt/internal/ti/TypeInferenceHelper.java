@@ -7,19 +7,14 @@ import org.jruby.ast.ArgumentNode;
 import org.jruby.ast.ArrayNode;
 import org.jruby.ast.CallNode;
 import org.jruby.ast.ClassNode;
-import org.jruby.ast.ClassVarNode;
 import org.jruby.ast.Colon2Node;
-import org.jruby.ast.DefnNode;
-import org.jruby.ast.DefsNode;
 import org.jruby.ast.FCallNode;
-import org.jruby.ast.GlobalVarNode;
-import org.jruby.ast.InstVarNode;
 import org.jruby.ast.ListNode;
-import org.jruby.ast.LocalVarNode;
+import org.jruby.ast.MethodDefNode;
 import org.jruby.ast.ModuleNode;
 import org.jruby.ast.Node;
 import org.jruby.ast.VCallNode;
-import org.jruby.lexer.yacc.ISourcePosition;
+import org.jruby.ast.types.INameNode;
 
 public class TypeInferenceHelper {
 
@@ -32,20 +27,13 @@ public class TypeInferenceHelper {
 
 	/**
 	 * Extracts the name of a variable from a VarNode
-	 * @param source Source that contains the node
 	 * @param node LocalVarNode, InstVarNode, or GlobalVarNode referring to a variable.
 	 * @return Name of the variable.
 	 */
-	public String getVarName(String source, Node node)
+	public String getVarName(Node node)
 	{
-		ISourcePosition pos = null;
-		if ( node instanceof InstVarNode ) pos = ((InstVarNode)node).getPosition();
-		if ( node instanceof ClassVarNode ) pos = ((ClassVarNode)node).getPosition();
-		if ( node instanceof LocalVarNode ) pos = ((LocalVarNode)node).getPosition();
-		if ( node instanceof GlobalVarNode ) pos = ((GlobalVarNode)node).getPosition();
-		if ( pos != null )
-		{
-			return source.substring(pos.getStartOffset(), pos.getEndOffset()+1);
+		if(node instanceof INameNode) {
+			return ((INameNode) node).getName();
 		}
 		return null;
 	}
@@ -68,8 +56,7 @@ public class TypeInferenceHelper {
 	}
 
 	public String getMethodDefinitionNodeName(Node methodNode) {
-		if ( methodNode instanceof DefnNode ) return ((DefnNode)methodNode).getName();
-		if ( methodNode instanceof DefsNode ) return ((DefsNode)methodNode).getName();
+		if ( methodNode instanceof MethodDefNode ) return ((MethodDefNode)methodNode).getName();
 		return null;
 	}
 	
@@ -86,8 +73,7 @@ public class TypeInferenceHelper {
 	}
 	
 	public ListNode getArgsListNode( Node node ) {
-		if ( node instanceof DefnNode ) { return ((ArgsNode)( ((DefnNode)node).getArgsNode() )).getArgs(); }
-		if ( node instanceof DefsNode ) { return ((ArgsNode)( ((DefsNode)node).getArgsNode() )).getArgs(); }
+		if ( node instanceof MethodDefNode ) { return (((MethodDefNode)node).getArgsNode() ).getArgs(); }
 		if ( node instanceof CallNode ) { return ((ArgsNode)( ((CallNode)node).getArgsNode() )).getArgs(); }
 		
 		//TODO: Is ArrayNode the proper cast?

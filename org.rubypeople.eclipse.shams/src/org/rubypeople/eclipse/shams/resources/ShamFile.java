@@ -147,7 +147,7 @@ public class ShamFile extends ShamResource implements IFile {
 	public void copy(IProjectDescription description, boolean force, IProgressMonitor monitor) throws CoreException {
 	}
 
-	public void copy(IPath destination, boolean force, IProgressMonitor monitor) throws CoreException {
+	public void copy(IPath destination, boolean force, IProgressMonitor monitor) {
 	}
 
 	public void copy(IProjectDescription description, int updateFlags, IProgressMonitor monitor) throws CoreException {
@@ -156,7 +156,7 @@ public class ShamFile extends ShamResource implements IFile {
 	public void copy(IPath destination, int updateFlags, IProgressMonitor monitor) throws CoreException {
 	}
 
-	public IMarker createMarker(String type) throws CoreException {
+	public IMarker createMarker(String type) {
 		throw new RuntimeException("Unimplemented method in sham");
 	}
 

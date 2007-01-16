@@ -66,7 +66,7 @@ public class EvaluateRubyProcessOutput implements Runnable {
 	// Run the command and return the ExecHelper wrapper object..
 
 	// Send the output string through the print writer..
-	public void sendOutput(String output) throws IOException {
+	public void sendOutput(String output) {
 		outputWriter.println(output);
 	}
 	public void run() {

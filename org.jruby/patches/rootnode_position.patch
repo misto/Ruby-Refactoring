@@ -1,0 +1,13 @@
+Index: src/org/jruby/parser/ParserSupport.java
+===================================================================
+--- src/org/jruby/parser/ParserSupport.java	(revision 1127)
++++ src/org/jruby/parser/ParserSupport.java	(working copy)
+@@ -302,7 +302,7 @@
+     public Node addRootNode(Node topOfAST) {
+         // I am not sure we need to get AST to set AST and the appendToBlock could maybe get removed.
+         // For sure once we do two pass parsing we should since this is mostly just optimzation.
+-        RootNode root = new RootNode(null, result.getScope(),
++        RootNode root = new RootNode(topOfAST != null ? topOfAST.getPosition() : null, result.getScope(),
+                 appendToBlock(result.getAST(), topOfAST));
+ 
+         // FIXME: Should add begin and end nodes
