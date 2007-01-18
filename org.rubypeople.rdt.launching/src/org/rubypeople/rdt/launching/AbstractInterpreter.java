@@ -17,7 +17,7 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
-import org.rubypeople.rdt.internal.launching.RdtLaunchingMessages;
+import org.rubypeople.rdt.internal.launching.LaunchingMessages;
 import org.rubypeople.rdt.internal.launching.LaunchingPlugin;
 /**
  * Abstract implementation of a Interpreter install.
@@ -51,9 +51,9 @@ public abstract class AbstractInterpreter implements IVMInstall, IVMInstall2 {
 	 */
 	public AbstractInterpreter(IVMInstallType type, String id) {
 		if (type == null)
-			throw new IllegalArgumentException(RdtLaunchingMessages.vmInstall_assert_typeNotNull); 
+			throw new IllegalArgumentException(LaunchingMessages.vmInstall_assert_typeNotNull); 
 		if (id == null)
-			throw new IllegalArgumentException(RdtLaunchingMessages.vmInstall_assert_idNotNull); 
+			throw new IllegalArgumentException(LaunchingMessages.vmInstall_assert_idNotNull); 
 		fType= type;
 		fId= id;
 	}

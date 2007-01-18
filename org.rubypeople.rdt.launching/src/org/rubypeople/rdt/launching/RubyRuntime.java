@@ -36,7 +36,7 @@ import org.eclipse.core.runtime.Status;
 import org.eclipse.core.variables.VariablesPlugin;
 import org.rubypeople.rdt.internal.launching.CompositeId;
 import org.rubypeople.rdt.internal.launching.ListenerList;
-import org.rubypeople.rdt.internal.launching.RdtLaunchingMessages;
+import org.rubypeople.rdt.internal.launching.LaunchingMessages;
 import org.rubypeople.rdt.internal.launching.LaunchingPlugin;
 import org.rubypeople.rdt.internal.launching.RubyInterpreter;
 import org.rubypeople.rdt.internal.launching.VMDefinitionsContainer;
@@ -409,7 +409,7 @@ public class RubyRuntime {
 	private static void initializeVMTypeExtensions() {
 		IExtensionPoint extensionPoint= Platform.getExtensionRegistry().getExtensionPoint(LaunchingPlugin.PLUGIN_ID, "vmInstallTypes"); //$NON-NLS-1$
 		IConfigurationElement[] configs= extensionPoint.getConfigurationElements(); 
-		MultiStatus status= new MultiStatus(LaunchingPlugin.getUniqueIdentifier(), IStatus.OK, RdtLaunchingMessages.RubyRuntime_exceptionOccurred, null); 
+		MultiStatus status= new MultiStatus(LaunchingPlugin.getUniqueIdentifier(), IStatus.OK, LaunchingMessages.RubyRuntime_exceptionOccurred, null); 
 		fgInterpreterTypes= new IVMInstallType[configs.length];
 
 		for (int i= 0; i < configs.length; i++) {

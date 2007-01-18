@@ -16,7 +16,7 @@ import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.jface.dialogs.ErrorDialog;
 import org.eclipse.jface.dialogs.MessageDialog;
-import org.rubypeople.rdt.internal.launching.RdtLaunchingMessages;
+import org.rubypeople.rdt.internal.launching.LaunchingMessages;
 import org.rubypeople.rdt.internal.ui.RubyPlugin;
 import org.rubypeople.rdt.internal.ui.RubyUIMessages;
 import org.rubypeople.rdt.internal.ui.dialogs.StatusInfo;
@@ -87,7 +87,7 @@ public class RDocUtility {
 
 			IVMInstall interpreter = RubyRuntime.getDefault().getSelectedInterpreter();
 			if (interpreter == null) {			
-				MessageDialog.openInformation(RubyPlugin.getActiveWorkbenchShell(), RdtLaunchingMessages.RdtLaunchingPlugin_noInterpreterSelectedTitle, RdtLaunchingMessages.RdtLaunchingPlugin_noInterpreterSelected);
+				MessageDialog.openInformation(RubyPlugin.getActiveWorkbenchShell(), LaunchingMessages.RdtLaunchingPlugin_noInterpreterSelectedTitle, LaunchingMessages.RdtLaunchingPlugin_noInterpreterSelected);
 				return ;
 			}
 

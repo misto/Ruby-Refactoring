@@ -58,7 +58,7 @@ public class LaunchingPlugin extends Plugin {
 	}
 
 	public static void log(Throwable e) {
-		log(new Status(IStatus.ERROR, PLUGIN_ID, IStatus.ERROR, RdtLaunchingMessages.RdtLaunchingPlugin_internalErrorOccurred, e));
+		log(new Status(IStatus.ERROR, PLUGIN_ID, IStatus.ERROR, LaunchingMessages.RdtLaunchingPlugin_internalErrorOccurred, e));
 	}
 	
 	public static void debug(String message) {
@@ -127,9 +127,9 @@ public class LaunchingPlugin extends Plugin {
 				fgXMLParser = DocumentBuilderFactory.newInstance().newDocumentBuilder();
 				fgXMLParser.setErrorHandler(new DefaultHandler());
 			} catch (ParserConfigurationException e) {
-				abort(RdtLaunchingMessages.LaunchingPlugin_33, e); 
+				abort(LaunchingMessages.LaunchingPlugin_33, e); 
 			} catch (FactoryConfigurationError e) {
-				abort(RdtLaunchingMessages.LaunchingPlugin_34, e); 
+				abort(LaunchingMessages.LaunchingPlugin_34, e); 
 			}
 		}
 		return fgXMLParser;

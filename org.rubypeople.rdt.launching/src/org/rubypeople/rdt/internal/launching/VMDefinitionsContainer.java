@@ -382,17 +382,17 @@ public class VMDefinitionsContainer {
 			parser.setErrorHandler(new DefaultHandler());
 			config = parser.parse(new InputSource(stream)).getDocumentElement();
 		} catch (SAXException e) {
-			throw new IOException(RdtLaunchingMessages.RubyRuntime_badFormat); 
+			throw new IOException(LaunchingMessages.RubyRuntime_badFormat); 
 		} catch (ParserConfigurationException e) {
 			stream.close();
-			throw new IOException(RdtLaunchingMessages.RubyRuntime_badFormat); 
+			throw new IOException(LaunchingMessages.RubyRuntime_badFormat); 
 		} finally {
 			stream.close();
 		}
 		
 		// If the top-level node wasn't what we expected, bail out
 		if (!config.getNodeName().equalsIgnoreCase("vmSettings")) { //$NON-NLS-1$
-			throw new IOException(RdtLaunchingMessages.RubyRuntime_badFormat); 
+			throw new IOException(LaunchingMessages.RubyRuntime_badFormat); 
 		}
 		
 		// Populate the default VM-related fields
@@ -438,7 +438,7 @@ public class VMDefinitionsContainer {
 				}
 			}
 		} else {
-			LaunchingPlugin.log(RdtLaunchingMessages.RubyRuntime_VM_type_element_with_unknown_id_1); 
+			LaunchingPlugin.log(LaunchingMessages.RubyRuntime_VM_type_element_with_unknown_id_1); 
 		}
 	}
 
@@ -490,7 +490,7 @@ public class VMDefinitionsContainer {
 				vmStandin.setVMArgs(vmArgs);
 			}
 		} else {
-			LaunchingPlugin.log(RdtLaunchingMessages.RubyRuntime_VM_element_specified_with_no_id_attribute_2); 
+			LaunchingPlugin.log(LaunchingMessages.RubyRuntime_VM_element_specified_with_no_id_attribute_2); 
 		}
 	}	
 	

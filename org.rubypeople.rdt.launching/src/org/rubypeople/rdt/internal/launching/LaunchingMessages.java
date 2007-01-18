@@ -2,9 +2,9 @@ package org.rubypeople.rdt.internal.launching;
 
 import org.eclipse.osgi.util.NLS;
 
-public class RdtLaunchingMessages {
+public class LaunchingMessages {
 
-	private static final String BUNDLE_NAME = RdtLaunchingMessages.class.getName();
+	private static final String BUNDLE_NAME = LaunchingMessages.class.getName();
 
 	public static String RdtLaunchingPlugin_processTerminatedBecauseNoDebuggerConnection;
 	public static String RdtLaunchingPlugin_internalErrorOccurred;
@@ -24,9 +24,9 @@ public class RdtLaunchingMessages {
 	public static String LaunchingPlugin_33;
 	public static String LaunchingPlugin_34;
 	
-	private RdtLaunchingMessages() {}
+	private LaunchingMessages() {}
 
 	static {
-		NLS.initializeMessages(BUNDLE_NAME, RdtLaunchingMessages.class);
+		NLS.initializeMessages(BUNDLE_NAME, LaunchingMessages.class);
 	}
 }

@@ -57,7 +57,7 @@ public class RubyInterpreter implements IVMInstall {
 		if( installLocation.isFile() ){
 			return installLocation.getAbsolutePath();
 		}
-		String errorMessage = MessageFormat.format(RdtLaunchingMessages.RdtLaunchingPlugin_interpreterNotFound, new Object[] {this.getName()}) ;
+		String errorMessage = MessageFormat.format(LaunchingMessages.RdtLaunchingPlugin_interpreterNotFound, new Object[] {this.getName()}) ;
 		throw new IllegalCommandException(errorMessage) ;
 	}
 	
