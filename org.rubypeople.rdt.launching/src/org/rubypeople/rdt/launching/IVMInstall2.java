@@ -6,6 +6,6 @@ public interface IVMInstall2 {
 	
 	public String getRubyVersion();
 	
-	public void setInterpreterArgs(String vmArgs);
+	public void setVMArgs(String vmArgs);
 	
 }

@@ -114,14 +114,14 @@ public abstract class AbstractInterpreter implements IVMInstall, IVMInstall2 {
 	 * Subclasses should not override this method.
 	 * @see IInterpreterInstall#getInterpreterInstallType()
 	 */
-	public IInterpreterInstallType getInterpreterInstallType() {
+	public IInterpreterInstallType getVMInstallType() {
 		return fType;
 	}
 
 	/* (non-Rubydoc)
 	 * @see IInterpreter#getInterpreterRunner(String)
 	 */
-	public IVMRunner getInterpreterRunner(String mode) {
+	public IVMRunner getVMRunner(String mode) {
 		return null;
 	}
 
@@ -141,11 +141,11 @@ public abstract class AbstractInterpreter implements IVMInstall, IVMInstall2 {
 		}
 		IPath[] newLocations = locations;
 		if (newLocations == null) {
-			newLocations = getInterpreterInstallType().getDefaultLibraryLocations(getInstallLocation()); 
+			newLocations = getVMInstallType().getDefaultLibraryLocations(getInstallLocation()); 
 		}
 		IPath[] prevLocations = fSystemLibraryDescriptions;
 		if (prevLocations == null) {
-			prevLocations = getInterpreterInstallType().getDefaultLibraryLocations(getInstallLocation()); 
+			prevLocations = getVMInstallType().getDefaultLibraryLocations(getInstallLocation()); 
 		}
 		
 		if (newLocations.length == prevLocations.length) {
@@ -185,7 +185,7 @@ public abstract class AbstractInterpreter implements IVMInstall, IVMInstall2 {
 	public boolean equals(Object object) {
 		if (object instanceof IVMInstall) {
 			IVMInstall vm = (IVMInstall)object;
-			return getInterpreterInstallType().equals(vm.getInterpreterInstallType()) &&
+			return getVMInstallType().equals(vm.getVMInstallType()) &&
 				getId().equals(vm.getId());
 		}
 		return false;
@@ -196,14 +196,14 @@ public abstract class AbstractInterpreter implements IVMInstall, IVMInstall2 {
 	 * @since 2.1
 	 */
 	public int hashCode() {
-		return getInterpreterInstallType().hashCode() + getId().hashCode();
+		return getVMInstallType().hashCode() + getId().hashCode();
 	}
 	
 	/* (non-Rubydoc)
 	 * @see org.rubypeople.rdt.launching.IInterpreter#getDefaultInterpreterArguments()
 	 * @since 3.0
 	 */
-	public String[] getInterpreterArguments() {
+	public String[] getVMArguments() {
 		String args = getInterpreterArgs();
 		if (args == null) {
 		    return null;
@@ -216,9 +216,9 @@ public abstract class AbstractInterpreter implements IVMInstall, IVMInstall2 {
 	 * @see org.rubypeople.rdt.launching.IInterpreter#setDefaultInterpreterArguments(java.lang.String[])
 	 * @since 3.0
 	 */
-	public void setInterpreterArguments(String[] vmArgs) {
+	public void setVMArguments(String[] vmArgs) {
 		if (vmArgs == null) {
-			setInterpreterArgs(null);
+			setVMArgs(null);
 		} else {
 		    StringBuffer buf = new StringBuffer();
 		    for (int i = 0; i < vmArgs.length; i++) {
@@ -226,7 +226,7 @@ public abstract class AbstractInterpreter implements IVMInstall, IVMInstall2 {
 	            buf.append(string);
 	            buf.append(" "); //$NON-NLS-1$
 	        }
-			setInterpreterArgs(buf.toString().trim());
+			setVMArgs(buf.toString().trim());
 		}
 	}
 	
@@ -240,7 +240,7 @@ public abstract class AbstractInterpreter implements IVMInstall, IVMInstall2 {
     /* (non-Rubydoc)
      * @see org.rubypeople.rdt.launching.IInterpreter2#setInterpreterArgs(java.lang.String)
      */
-    public void setInterpreterArgs(String vmArgs) {
+    public void setVMArgs(String vmArgs) {
         if (fInterpreterArgs == null) {
             if (vmArgs == null) {
                 // No change

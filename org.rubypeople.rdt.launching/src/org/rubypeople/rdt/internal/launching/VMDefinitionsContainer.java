@@ -107,7 +107,7 @@ public class VMDefinitionsContainer {
 	 */
 	public void addVM(IVMInstall vm) {
 		if (!fVMList.contains(vm)) {	
-			IInterpreterInstallType vmInstallType = vm.getInterpreterInstallType();
+			IInterpreterInstallType vmInstallType = vm.getVMInstallType();
 			List vmList = (List) fVMTypeToVMMap.get(vmInstallType);
 			if (vmList == null) {
 				vmList = new ArrayList(3);
@@ -313,7 +313,7 @@ public class VMDefinitionsContainer {
 				element.setAttribute("vmargs", vmArgs); //$NON-NLS-1$
 			}
 		} else {
-			String[] vmArgs = vm.getInterpreterArguments();
+			String[] vmArgs = vm.getVMArguments();
 			if (vmArgs != null && vmArgs.length > 0) {
 				StringBuffer buffer = new StringBuffer();
 				for (int i = 0; i < vmArgs.length; i++) {
@@ -532,7 +532,7 @@ public class VMDefinitionsContainer {
 	public void removeVM(IVMInstall vm) {
 		fVMList.remove(vm);
 		fInvalidVMList.remove(vm);
-		List list = (List) fVMTypeToVMMap.get(vm.getInterpreterInstallType());
+		List list = (List) fVMTypeToVMMap.get(vm.getVMInstallType());
 		if (list != null) {
 			list.remove(vm);
 		}

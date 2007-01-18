@@ -96,17 +96,17 @@ public class RubyInterpreter implements IVMInstall {
 		return null;
 	}
 
-	public String[] getInterpreterArguments() {
+	public String[] getVMArguments() {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
-	public IInterpreterInstallType getInterpreterInstallType() {
+	public IInterpreterInstallType getVMInstallType() {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
-	public IVMRunner getInterpreterRunner(String mode) {
+	public IVMRunner getVMRunner(String mode) {
 		// TODO Auto-generated method stub
 		return null;
 	}
@@ -120,7 +120,7 @@ public class RubyInterpreter implements IVMInstall {
 		this.installLocation = validInstallLocation;		
 	}
 
-	public void setInterpreterArguments(String[] vmArgs) {
+	public void setVMArguments(String[] vmArgs) {
 		// TODO Auto-generated method stub
 		
 	}

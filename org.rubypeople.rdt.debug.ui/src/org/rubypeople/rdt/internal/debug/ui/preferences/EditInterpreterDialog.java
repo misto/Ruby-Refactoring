@@ -65,7 +65,7 @@ public class EditInterpreterDialog extends StatusDialog {
 		}
 		
 		fVMTypes= vmInstallTypes;
-		fSelectedVMType= editedVM != null ? editedVM.getInterpreterInstallType() : vmInstallTypes[0];
+		fSelectedVMType= editedVM != null ? editedVM.getVMInstallType() : vmInstallTypes[0];
 		
 		fEditedVM= editedVM;
 	}
@@ -223,7 +223,7 @@ public class EditInterpreterDialog extends StatusDialog {
 					fVMArgs.setText(vmArgs);
 				}
 			} else {
-				String[] vmArgs = fEditedVM.getInterpreterArguments();
+				String[] vmArgs = fEditedVM.getVMArguments();
 				if (vmArgs != null) {
 					StringBuffer buffer = new StringBuffer();
 					int length= vmArgs.length;
@@ -326,15 +326,15 @@ public class EditInterpreterDialog extends StatusDialog {
 		if (vm instanceof IVMInstall2) {
 			IVMInstall2 vm2 = (IVMInstall2) vm;
 			if (argString != null && argString.length() >0) {
-				vm2.setInterpreterArgs(argString);			
+				vm2.setVMArgs(argString);			
 			} else {
-				vm2.setInterpreterArgs(null);
+				vm2.setVMArgs(null);
 			}
 		} else {
 			if (argString != null && argString.length() >0) {
-				vm.setInterpreterArguments(DebugPlugin.parseArguments(argString));			
+				vm.setVMArguments(DebugPlugin.parseArguments(argString));			
 			} else {
-				vm.setInterpreterArguments(null);
+				vm.setVMArguments(null);
 			}			
 		}
 		

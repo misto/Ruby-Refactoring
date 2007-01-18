@@ -493,7 +493,7 @@ public class RubyRuntime {
 		if (vm == null) {
 			return null;
 		}
-		IInterpreterInstallType vmType= vm.getInterpreterInstallType();
+		IInterpreterInstallType vmType= vm.getVMInstallType();
 		String typeID= vmType.getId();
 		CompositeId id= new CompositeId(new String[] { typeID, vm.getId() });
 		return id.toString();

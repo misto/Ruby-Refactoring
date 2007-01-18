@@ -17,21 +17,35 @@ public interface IVMInstall {
 
 	public void setName(String newName);
 
+	/**
+	 * 
+	 * @return
+	 * @throws IllegalCommandException
+	 * @deprecated 
+	 */
 	public String getCommand() throws IllegalCommandException;
 
+	/**
+	 * 
+	 * @param commandLine
+	 * @param workingDirectory
+	 * @return
+	 * @throws CoreException
+	 * @deprecated This doesn't match JDT behavior. We'll need to work on a better solution.
+	 */
 	public Process exec(List commandLine, File workingDirectory) throws CoreException;
 
 	public IPath[] getLibraryLocations();
 
 	public String getId();
 
-	public IInterpreterInstallType getInterpreterInstallType();
+	public IInterpreterInstallType getVMInstallType();
 
 	public void setLibraryLocations(IPath[] paths);
 
-	public String[] getInterpreterArguments();
+	public String[] getVMArguments();
 
-	public void setInterpreterArguments(String[] vmArgs);
+	public void setVMArguments(String[] vmArgs);
 	
-	public IVMRunner getInterpreterRunner(String mode);
+	public IVMRunner getVMRunner(String mode);
 }
