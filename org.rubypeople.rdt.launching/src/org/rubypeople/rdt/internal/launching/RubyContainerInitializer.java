@@ -18,9 +18,9 @@ public class RubyContainerInitializer extends LoadpathContainerInitializer {
 		if (size > 0) {
 			if (containerPath.segment(0).equals(RubyRuntime.RUBY_CONTAINER)) {
 				IInterpreter vm = resolveInterpreter(containerPath);
-				RubyContainer container = null;
+				RubyVMContainer container = null;
 				if (vm != null) {
-					container = new RubyContainer(vm, containerPath);
+					container = new RubyVMContainer(vm, containerPath);
 				}
 				RubyCore.setLoadpathContainer(containerPath,
 						new IRubyProject[] { project },
