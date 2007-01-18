@@ -12,6 +12,8 @@ package org.rubypeople.rdt.ui;
 
 import org.eclipse.jface.util.Assert;
 import org.eclipse.ui.IEditorInput;
+import org.eclipse.ui.ISharedImages;
+import org.eclipse.ui.internal.SharedImages;
 import org.rubypeople.rdt.core.IRubyElement;
 import org.rubypeople.rdt.internal.ui.RubyPlugin;
 
@@ -34,7 +36,9 @@ public final class RubyUI {
 	private RubyUI() {
 		// prevent instantiation of RubyUI.
 	}
-
+	
+	private static ISharedImages fgSharedImages= null;
+	
 	/**
 	 * The id of the Ruby plugin (value <code>"org.rubypeople.rdt.ui"</code>).
 	 */
@@ -97,6 +101,18 @@ public final class RubyUI {
 		return (IRubyElement) editorInput.getAdapter(IRubyElement.class);
 	}
 
+	/**
+	 * Returns the shared images for the Java UI.
+	 *
+	 * @return the shared images manager
+	 */
+	public static ISharedImages getSharedImages() {
+		if (fgSharedImages == null)
+			fgSharedImages= new SharedImages();
+			
+		return fgSharedImages;
+	}
+	
 	/**
 	 * Returns the working copy manager for the Ruby UI plug-in.
 	 * 
