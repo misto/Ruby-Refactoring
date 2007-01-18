@@ -35,6 +35,7 @@ import org.eclipse.core.runtime.Preferences;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.variables.VariablesPlugin;
 import org.rubypeople.rdt.internal.launching.CompositeId;
+import org.rubypeople.rdt.internal.launching.ListenerList;
 import org.rubypeople.rdt.internal.launching.RdtLaunchingMessages;
 import org.rubypeople.rdt.internal.launching.RdtLaunchingPlugin;
 import org.rubypeople.rdt.internal.launching.RubyInterpreter;
@@ -104,11 +105,7 @@ public class RubyRuntime {
 	
 	protected List<IInterpreter> installedInterpreters;
 	protected IInterpreter selectedInterpreter;
-    private List<Listener> listeners = new ArrayList<Listener>();
-    
-    public static interface Listener {
-        void selectedInterpreterChanged();
-    }
+    private static ListenerList fgVMListeners = new ListenerList(5);
     
 	protected RubyRuntime() {
 		super();
@@ -120,13 +117,9 @@ public class RubyRuntime {
 		}
 		return runtime;
 	}
-    
-    public void addListener(Listener listener) {
-        listeners.add(listener);
-    }
-    
-    public void removeListener(Listener listener) {
-        listeners.remove(listener);
+        
+    public static void removeInterpreterInstallChangedListener(IInterpreterInstallChangedListener listener) {
+        fgVMListeners.remove(listener);
     }
 	
 	public IInterpreter getSelectedInterpreter() {
@@ -142,19 +135,20 @@ public class RubyRuntime {
 			IInterpreter each = (IInterpreter) interpreters.next();
 			if (each.getName().equals(name))
 				return each;
-		}
-		
+		}		
 		return getSelectedInterpreter();
 	}
 
 	public void setSelectedInterpreter(IInterpreter anInterpreter) {
         if (selectedInterpreter == anInterpreter) return;
-		selectedInterpreter = anInterpreter;
-		saveRuntimeConfiguration();
-        for (Iterator<Listener> iter = listeners.iterator(); iter.hasNext();) {
-            Listener listener = iter.next();
-            listener.selectedInterpreterChanged();
-        }        
+        IInterpreter oldInterpreter = selectedInterpreter;
+		selectedInterpreter = anInterpreter;		
+		saveRuntimeConfiguration();   
+		Object[] listeners = fgVMListeners.getListeners();
+		for (int i = 0; i < listeners.length; i++) {
+			IInterpreterInstallChangedListener listener = (IInterpreterInstallChangedListener)listeners[i];
+			listener.defaultInterpreterInstallChanged(oldInterpreter, anInterpreter);
+		}		
 	}
 
 	public void addInstalledInterpreter(IInterpreter anInterpreter) {
@@ -198,29 +192,14 @@ public class RubyRuntime {
 		try {
 			XMLReader reader = SAXParserFactory.newInstance().newSAXParser().getXMLReader();
 			reader.setContentHandler(getRuntimeConfigurationContentHandler());
-			Reader fileReader = this.getRuntimeConfigurationReader() ;
+			Reader fileReader = this.getRuntimeConfigurationReader();
 			if (fileReader == null) {
-				// FIXME If we get a better algorithm for auto detection we should use it, but apparently this didn't make people happy
-//				autoDetectRubyInterpreter();
 				return ;
 			}
-			reader.parse(new InputSource(fileReader)) ;
+			reader.parse(new InputSource(fileReader));
 		} catch(Exception e) {
 			RdtLaunchingPlugin.log(e);
 		}
-	}
-
-	private void autoDetectRubyInterpreter() {		
-		File path = null;
-		if (Platform.getOS().equals(Platform.OS_WIN32)) {
-		  path = new File("/ruby/bin/ruby.exe");
-		} else  {
-			//FIXME Why not use `which ruby` or something?
-			path = new File("/usr/local/bin/ruby");
-		}
-		IInterpreter interpreter = new RubyInterpreter("Default Ruby Interpreter", path);
-		installedInterpreters.add(interpreter);
-		selectedInterpreter = interpreter;
 	}
 
 	protected Reader getRuntimeConfigurationReader() {
@@ -296,9 +275,9 @@ public class RubyRuntime {
 	}
 
 	public static void addInterpreterInstallChangedListener(IInterpreterInstallChangedListener listener) {
-		// TODO Implement and add to listeners, and replace the addListener(Listener) stuff
-		
+		fgVMListeners.add(listener);		
 	}
+	
 	/**
 	 * Returns the VM install type with the given unique id. 
 	 * @param id the VM install type unique id

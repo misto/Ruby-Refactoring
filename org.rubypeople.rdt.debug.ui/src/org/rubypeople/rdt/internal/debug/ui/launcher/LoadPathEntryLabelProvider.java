@@ -60,7 +60,7 @@ public class LoadPathEntryLabelProvider implements ILabelProvider {
 	}
 
 	/**
-	 * @see IBaseLabelProvider#removeListener(ILabelProviderListener)
+	 * @see IBaseLabelProvider#removeInterpreterInstallChangedListener(ILabelProviderListener)
 	 */
 	public void removeListener(ILabelProviderListener listener) {
 	}

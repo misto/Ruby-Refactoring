@@ -45,6 +45,8 @@ import org.rubypeople.rdt.internal.ui.RubyPluginImages;
 import org.rubypeople.rdt.internal.ui.rdocexport.RDocUtility;
 import org.rubypeople.rdt.internal.ui.rdocexport.RdocListener;
 import org.rubypeople.rdt.launching.IInterpreter;
+import org.rubypeople.rdt.launching.IInterpreterInstallChangedListener;
+import org.rubypeople.rdt.launching.PropertyChangeEvent;
 import org.rubypeople.rdt.launching.RubyRuntime;
 import org.rubypeople.rdt.ui.PreferenceConstants;
 
@@ -60,7 +62,7 @@ public class RIView extends ViewPart implements RdocListener {
     private List possibleMatches = new ArrayList();
     private SearchValue itemToSearch = new SearchValue();
     private DescriptionUpdater descriptionUpdater = new DescriptionUpdater();
-    private RubyRuntime.Listener runtimeListener;
+    private IInterpreterInstallChangedListener runtimeListener;
     private ListContentProvider contentProvider = new ListContentProvider();
 
 	/**
@@ -135,12 +137,22 @@ public class RIView extends ViewPart implements RdocListener {
         
         form.setWeights(new int[]{1, 3});
 
-        runtimeListener = new RubyRuntime.Listener() {
-            public void selectedInterpreterChanged() {
-                updatePage();
+        runtimeListener = new IInterpreterInstallChangedListener() {
+            public void defaultInterpreterInstallChanged(IInterpreter previous,
+            		IInterpreter current) {
+            	updatePage();            	
             }
+
+			public void interpreterAdded(IInterpreter newVm) {				
+			}
+
+			public void interpreterChanged(PropertyChangeEvent event) {				
+			}
+
+			public void interpreterRemoved(IInterpreter removedVm) {				
+			}
         };
-        RubyRuntime.getDefault().addListener(runtimeListener);
+        RubyRuntime.addInterpreterInstallChangedListener(runtimeListener);
         
         RubyPlugin.getDefault().getPreferenceStore().addPropertyChangeListener(new IPropertyChangeListener() {
         	public void propertyChange(org.eclipse.jface.util.PropertyChangeEvent event) {
@@ -190,7 +202,7 @@ public class RIView extends ViewPart implements RdocListener {
     
     public void dispose() {
         descriptionUpdater.requestStop();
-        RubyRuntime.getDefault().removeListener(runtimeListener);
+        RubyRuntime.removeInterpreterInstallChangedListener(runtimeListener);
         super.dispose();
     }
         
