@@ -99,7 +99,7 @@ public class InterpreterRunnerConfiguration {
 			selectedInterpreter = configuration.getAttribute(RubyLaunchConfigurationAttribute.SELECTED_INTERPRETER, "");
 		} catch(CoreException e) {}
 		
-		return RubyRuntime.getDefault().getInterpreter(selectedInterpreter);
+		return RubyRuntime.getVMFromCompositeId(selectedInterpreter);
 	}
     
     protected void addToLoadPath(List<String> loadPath, IProject project) {

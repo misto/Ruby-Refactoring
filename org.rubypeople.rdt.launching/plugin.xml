@@ -21,7 +21,18 @@
       <import plugin="org.eclipse.core.runtime"/>
       <import plugin="org.eclipse.core.variables"/>
    </requires>
-
+   
+   <!-- Extension point definitions -->
+   <extension-point id="vmInstallTypes" name="%vmInstallTypes" schema="schema/vmInstallTypes.exsd"/>
+   <extension-point id="vmInstalls" name="%vmInstalls" schema="schema/vmInstalls.exsd"/>
+   
+   <extension
+         point="org.rubypeople.rdt.launching.vmInstallTypes">
+      <vmInstallType
+            class="org.rubypeople.rdt.internal.launching.StandardVMType"
+            id="org.rubypeople.rdt.launching.StandardVMType">
+      </vmInstallType>
+   </extension>   
    <extension
          point="org.eclipse.debug.core.launchConfigurationTypes">
       <launchConfigurationType

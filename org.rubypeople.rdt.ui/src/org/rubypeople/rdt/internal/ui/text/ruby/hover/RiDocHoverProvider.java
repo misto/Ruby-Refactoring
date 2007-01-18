@@ -34,7 +34,7 @@ public class RiDocHoverProvider implements ITextHoverProvider {
     	try {
 			String symbol = textViewer.getDocument().get(hoverRegion.getOffset(), hoverRegion.getLength());
 			args.add(symbol);
-            IVMInstall selectedInterpreter = RubyRuntime.getDefault().getSelectedInterpreter();
+            IVMInstall selectedInterpreter = RubyRuntime.getDefault().getDefaultVMInstall();
 			if (selectedInterpreter == null) return null;
             Process p = selectedInterpreter.exec(args, null);
 			br = new BufferedReader(new InputStreamReader(p.getInputStream()));

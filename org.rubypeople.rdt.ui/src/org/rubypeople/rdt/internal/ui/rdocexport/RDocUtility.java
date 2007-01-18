@@ -85,7 +85,7 @@ public class RDocUtility {
 		public final void invoke() {
 			log("Generating RDoc for " + resource.getName());
 
-			IVMInstall interpreter = RubyRuntime.getDefault().getSelectedInterpreter();
+			IVMInstall interpreter = RubyRuntime.getDefault().getDefaultVMInstall();
 			if (interpreter == null) {			
 				MessageDialog.openInformation(RubyPlugin.getActiveWorkbenchShell(), LaunchingMessages.RdtLaunchingPlugin_noInterpreterSelectedTitle, LaunchingMessages.RdtLaunchingPlugin_noInterpreterSelected);
 				return ;

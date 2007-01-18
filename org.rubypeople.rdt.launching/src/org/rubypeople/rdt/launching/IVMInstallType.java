@@ -21,4 +21,8 @@ public interface IVMInstallType {
 
 	String getName();
 
+	void disposeVMInstall(String id);
+
+	IVMInstall createVMInstall(String id);
+
 }

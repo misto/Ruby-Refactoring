@@ -21,7 +21,7 @@ public class RubyApplicationLaunchConfigurationDelegate implements ILaunchConfig
 	 * @see ILaunchConfigurationDelegate#launch(ILaunchConfiguration, String, ILaunch, IProgressMonitor)
 	 */
 	public void launch(ILaunchConfiguration configuration, String mode, ILaunch launch, IProgressMonitor monitor) throws CoreException {
-		if (RubyRuntime.getDefault().getSelectedInterpreter() == null) {
+		if (RubyRuntime.getDefaultVMInstall() == null) {
 			throw new CoreException(new Status(IStatus.ERROR, LaunchingPlugin.PLUGIN_ID, IStatus.OK, LaunchingMessages.RdtLaunchingPlugin_noInterpreterSelected, null));
         }
 

@@ -23,6 +23,13 @@ public class LaunchingMessages {
 	public static String AbstractInterpreterInstall_4;
 	public static String LaunchingPlugin_33;
 	public static String LaunchingPlugin_34;
+	public static String RubyRuntime_exceptionsOccurred;
+	public static String vmInstallType_duplicateVM;
+	public static String StandardVMType_Standard_VM_3;
+	public static String StandardVMType_Standard_VM_not_supported_on_MacOS__1;
+	public static String StandardVMType_Not_a_JDK_Root__Java_executable_was_not_found_1;
+	public static String StandardVMType_ok_2;
+	public static String StandardVMType_Not_a_JDK_root__System_library_was_not_found__1;
 	
 	private LaunchingMessages() {}
 

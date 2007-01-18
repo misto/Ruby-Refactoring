@@ -33,13 +33,15 @@ import org.rubypeople.rdt.internal.core.LoadpathEntry;
 import org.rubypeople.rdt.internal.core.RubyModelManager;
 import org.rubypeople.rdt.internal.debug.ui.RdtDebugUiMessages;
 import org.rubypeople.rdt.internal.debug.ui.RdtDebugUiPlugin;
-import org.rubypeople.rdt.internal.debug.ui.preferences.EditInterpreterDialog;
+import org.rubypeople.rdt.internal.debug.ui.preferences.AddVMDialog;
 import org.rubypeople.rdt.internal.debug.ui.rubyvms.IAddVMDialogRequestor;
 import org.rubypeople.rdt.internal.debug.ui.rubyvms.RubyVMMessages;
 import org.rubypeople.rdt.internal.launching.RubyLaunchConfigurationAttribute;
 import org.rubypeople.rdt.internal.ui.RubyPluginImages;
 import org.rubypeople.rdt.launching.IVMInstall;
+import org.rubypeople.rdt.launching.IVMInstallType;
 import org.rubypeople.rdt.launching.RubyRuntime;
+import org.rubypeople.rdt.launching.VMStandin;
 
 public class RubyEnvironmentTab extends AbstractLaunchConfigurationTab {
 	protected ListViewer loadPathListViewer;
@@ -156,7 +158,7 @@ public class RubyEnvironmentTab extends AbstractLaunchConfigurationTab {
 		}
 		
 		public void widgetSelected(SelectionEvent evt) {
-			EditInterpreterDialog dialog = new EditInterpreterDialog(this,
+			AddVMDialog dialog = new AddVMDialog(this,
 					fShell, RubyRuntime.getVMInstallTypes(),
 					null);
 			dialog.setTitle(RubyVMMessages.InstalledJREsBlock_7);
@@ -166,12 +168,15 @@ public class RubyEnvironmentTab extends AbstractLaunchConfigurationTab {
 		}
 		
 		public boolean isDuplicateName(String name) {
-			// TODO Auto-generated method stub
 			return false;
 		}
 
 		public void vmAdded(IVMInstall vm) {
-			RubyRuntime.getDefault().addInstalledInterpreter(vm);
+			// FIXME Use something like JREsUpdater?
+			if (vm instanceof VMStandin) {
+				VMStandin standin = (VMStandin) vm;
+				standin.convertToRealVM();
+			}
 			fCombo.add(vm.getName());
 			fCombo.select(fCombo.indexOf(vm.getName()));
 		}
@@ -195,7 +200,7 @@ public class RubyEnvironmentTab extends AbstractLaunchConfigurationTab {
 
 	public void setDefaults(ILaunchConfigurationWorkingCopy configuration) {
 		IVMInstall defaultInterpreter = RubyRuntime.getDefault()
-				.getSelectedInterpreter();
+				.getDefaultVMInstall();
 		if (defaultInterpreter != null) {
 			configuration.setAttribute(
 					RubyLaunchConfigurationAttribute.SELECTED_INTERPRETER,
@@ -254,9 +259,18 @@ public class RubyEnvironmentTab extends AbstractLaunchConfigurationTab {
 
 	protected void initializeInterpreterCombo(Combo interpreterCombo) {
 		installedInterpretersWorkingCopy = new ArrayList();
-		installedInterpretersWorkingCopy.addAll(RubyRuntime.getDefault()
-				.getInstalledInterpreters());
-
+		List standins = new ArrayList();
+		IVMInstallType[] types = RubyRuntime.getVMInstallTypes();
+		for (int i = 0; i < types.length; i++) {
+			IVMInstallType type = types[i];
+			IVMInstall[] installs = type.getVMInstalls();
+			for (int j = 0; j < installs.length; j++) {
+				IVMInstall install = installs[j];
+				standins.add(new VMStandin(install));
+			}
+		}
+		installedInterpretersWorkingCopy.addAll(standins);	
+		
 		String[] interpreterNames = new String[installedInterpretersWorkingCopy
 				.size()];
 		for (int interpreterIndex = 0; interpreterIndex < installedInterpretersWorkingCopy
@@ -267,8 +281,7 @@ public class RubyEnvironmentTab extends AbstractLaunchConfigurationTab {
 		}
 		interpreterCombo.setItems(interpreterNames);
 
-		IVMInstall selectedInterpreter = RubyRuntime.getDefault()
-				.getSelectedInterpreter();
+		IVMInstall selectedInterpreter = RubyRuntime.getDefaultVMInstall();
 		if (selectedInterpreter != null)
 			interpreterCombo.select(interpreterCombo
 					.indexOf(selectedInterpreter.getName()));

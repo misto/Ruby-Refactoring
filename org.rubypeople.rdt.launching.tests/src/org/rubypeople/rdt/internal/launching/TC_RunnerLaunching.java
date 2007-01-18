@@ -23,7 +23,10 @@ import org.eclipse.debug.core.ILaunchManager;
 import org.eclipse.debug.core.Launch;
 import org.rubypeople.eclipse.shams.debug.core.ShamLaunchConfigurationType;
 import org.rubypeople.eclipse.testutils.ResourceTools;
+import org.rubypeople.rdt.launching.IVMInstall;
+import org.rubypeople.rdt.launching.IVMInstallType;
 import org.rubypeople.rdt.launching.RubyRuntime;
+import org.rubypeople.rdt.launching.VMStandin;
 
 public class TC_RunnerLaunching extends TestCase {
 
@@ -33,10 +36,25 @@ public class TC_RunnerLaunching extends TestCase {
 	private final static String INTERPRETER_ARGUMENTS = "interpreter Arguments";
 	private final static String PROGRAM_ARGUMENTS = "programArguments";
 	private final static String RUBY_COMMAND = "rubyw";
+	
+	private static final String VM_TYPE_ID = "org.rubypeople.rdt.launching.StandardVMType";
+	private IVMInstallType vmType;
+	
 	public TC_RunnerLaunching(String name) {
 		super(name);
 	}
 
+	@Override
+	protected void setUp() throws Exception {
+		super.setUp();
+		vmType = RubyRuntime.getVMInstallType(VM_TYPE_ID);
+		VMStandin standin = new VMStandin(vmType, "fake");
+		standin.setName("fake");
+		standin.setInstallLocation(new File("C:\ruby"));
+		IVMInstall real = standin.convertToRealVM();
+		RubyRuntime.setDefaultVMInstall(real, true);
+	}
+	
 	protected ILaunchManager getLaunchManager() {
 		return DebugPlugin.getDefault().getLaunchManager();
 	}
@@ -83,10 +101,7 @@ public class TC_RunnerLaunching extends TestCase {
 		IProject project = ResourceTools.createProject(PROJECT_NAME);
 
 		ShamInterpreter interpreter = new ShamInterpreter("", new File(""));
-		List installedInterpreters = new ArrayList();
-		installedInterpreters.add(interpreter);
-		RubyRuntime.getDefault().setInstalledInterpreters(installedInterpreters);
-		RubyRuntime.getDefault().setSelectedInterpreter(interpreter);
+
 		ILaunchConfiguration configuration = new ShamLaunchConfiguration();
 		ILaunch launch = new Launch(configuration, debug ? ILaunchManager.DEBUG_MODE : ILaunchManager.RUN_MODE, null);
 		ILaunchConfigurationType launchConfigurationType =

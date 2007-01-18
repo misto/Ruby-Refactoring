@@ -1,17 +1,9 @@
 package org.rubypeople.rdt.launching;
 
-import java.io.BufferedOutputStream;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.FileReader;
 import java.io.IOException;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
-import java.io.Reader;
-import java.io.Writer;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -20,7 +12,6 @@ import java.util.List;
 import java.util.Set;
 
 import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.parsers.SAXParserFactory;
 import javax.xml.transform.TransformerException;
 
 import org.eclipse.core.runtime.CoreException;
@@ -38,15 +29,7 @@ import org.rubypeople.rdt.internal.launching.CompositeId;
 import org.rubypeople.rdt.internal.launching.LaunchingMessages;
 import org.rubypeople.rdt.internal.launching.LaunchingPlugin;
 import org.rubypeople.rdt.internal.launching.ListenerList;
-import org.rubypeople.rdt.internal.launching.RubyInterpreter;
 import org.rubypeople.rdt.internal.launching.VMDefinitionsContainer;
-import org.rubypeople.rdt.internal.launching.VMStandin;
-import org.xml.sax.Attributes;
-import org.xml.sax.ContentHandler;
-import org.xml.sax.InputSource;
-import org.xml.sax.Locator;
-import org.xml.sax.SAXException;
-import org.xml.sax.XMLReader;
 
 public class RubyRuntime {
 	private static final String TAG_INTERPRETER = "interpreter";
@@ -97,22 +80,22 @@ public class RubyRuntime {
 	public static final String RUBYLIB_VARIABLE= "RUBY_LIB"; //$NON-NLS-1$
 
 	
-	private static IVMInstallType[] fgInterpreterTypes= null;
+	private static IVMInstallType[] fgVMTypes= null;
 
 	protected static RubyRuntime runtime;
 	private static Object fgVMLock = new Object();
 	private static boolean fgInitializingVMs;
 	private static String fgDefaultVMId;
-	private static String fgDefaultVMConnectorId;
 	
     /**
      *  Set of IDs of VMs contributed via vmInstalls extension point.
      */
     private static Set<String> fgContributedVMs = new HashSet<String>();
 	
-	protected List<IVMInstall> installedInterpreters;
-	protected IVMInstall selectedInterpreter;
+	protected static List<IVMInstall> installedInterpreters;
+	protected static IVMInstall selectedInterpreter;
     private static ListenerList fgVMListeners = new ListenerList(5);
+	private static String fgDefaultVMConnectorId;
     
 	protected RubyRuntime() {
 		super();
@@ -129,152 +112,132 @@ public class RubyRuntime {
         fgVMListeners.remove(listener);
     }
 	
-	public IVMInstall getSelectedInterpreter() {
-		if (selectedInterpreter == null) {
-			loadRuntimeConfiguration();
+	/**
+	 * Return the default VM set with <code>setDefaultVM()</code>.
+	 * @return	Returns the default VM. May return <code>null</code> when no default
+	 * 			VM was set or when the default VM has been disposed.
+	 */
+	public static IVMInstall getDefaultVMInstall() {
+		IVMInstall install= getVMFromCompositeId(getDefaultVMId());
+		if (install != null && install.getInstallLocation().exists()) {
+			return install;
 		}
-		return selectedInterpreter;
-	}
-
-	public IVMInstall getInterpreter(String name) {
-		Iterator interpreters = getInstalledInterpreters().iterator();
-		while(interpreters.hasNext()) {
-			IVMInstall each = (IVMInstall) interpreters.next();
-			if (each.getName().equals(name))
-				return each;
-		}		
-		return getSelectedInterpreter();
-	}
-
-	public void setSelectedInterpreter(IVMInstall anInterpreter) {
-        if (selectedInterpreter == anInterpreter) return;
-        IVMInstall oldInterpreter = selectedInterpreter;
-		selectedInterpreter = anInterpreter;		
-		saveRuntimeConfiguration();   
-		notifyDefaultVMChanged(oldInterpreter, anInterpreter);
-	}
-
-	public void addInstalledInterpreter(IVMInstall anInterpreter) {
-		getInstalledInterpreters().add(anInterpreter);
-		if (getInstalledInterpreters().size() == 1)
-			setSelectedInterpreter(getInstalledInterpreters().get(0));
-		else
-			saveRuntimeConfiguration();
-	}
-
-	public List<IVMInstall> getInstalledInterpreters() {
-		if (installedInterpreters == null)
-			loadRuntimeConfiguration();
-		return installedInterpreters;
+		// if the default Ruby VM goes missing, re-detect
+		if (install != null) {
+			install.getVMInstallType().disposeVMInstall(install.getId());
+		}
+		synchronized (fgVMLock) {
+			fgDefaultVMId = null;
+			fgVMTypes = null;
+			initializeVMs();
+		}
+		return getVMFromCompositeId(getDefaultVMId());
 	}
 	
-	public void setInstalledInterpreters(List<IVMInstall> newInstalledInterpreters) {
-		installedInterpreters = newInstalledInterpreters;
-		if (installedInterpreters.size() > 0)
-			setSelectedInterpreter(installedInterpreters.get(0));
-		else
-			setSelectedInterpreter(null);
-		saveRuntimeConfiguration();
-	}
-	
-	protected void saveRuntimeConfiguration() {
-		writeXML(getRuntimeConfigurationWriter());
-	}
-
-	protected Writer getRuntimeConfigurationWriter() {
-		try {
-			OutputStream stream = new BufferedOutputStream(new FileOutputStream(getRuntimeConfigurationFile()));
-			return new OutputStreamWriter(stream);
-		} catch (FileNotFoundException e) {}
-
+	/**
+	 * Return the VM corresponding to the specified composite Id.  The id uniquely
+	 * identifies a VM across all vm types.  
+	 * 
+	 * @param idString the composite id that specifies an instance of IVMInstall
+	 * 
+	 * @since 0.9.0
+	 */
+	public static IVMInstall getVMFromCompositeId(String idString) {
+		if (idString == null || idString.length() == 0) {
+			return null;
+		}
+		CompositeId id= CompositeId.fromString(idString);
+		if (id.getPartCount() == 2) {
+			IVMInstallType vmType= getVMInstallType(id.get(0));
+			if (vmType != null) {
+				return vmType.findVMInstall(id.get(1));
+			}
+		}
 		return null;
 	}
 	
-	protected void loadRuntimeConfiguration() {
-		installedInterpreters = new ArrayList<IVMInstall>();
-		try {
-			XMLReader reader = SAXParserFactory.newInstance().newSAXParser().getXMLReader();
-			reader.setContentHandler(getRuntimeConfigurationContentHandler());
-			Reader fileReader = this.getRuntimeConfigurationReader();
-			if (fileReader == null) {
-				return ;
-			}
-			reader.parse(new InputSource(fileReader));
-		} catch(Exception e) {
-			LaunchingPlugin.log(e);
-		}
+	private static String getDefaultVMId() {
+		initializeVMs();
+		return fgDefaultVMId;
 	}
 
-	protected Reader getRuntimeConfigurationReader() {
-		try {
-			return new FileReader(getRuntimeConfigurationFile());
-		} catch(FileNotFoundException e) {			
-			return null ;
+	public static void setSelectedInterpreter(IVMInstall vm) throws CoreException {
+		setDefaultVMInstall(vm, true);
+	}
+	
+	public static void setDefaultVMInstall(IVMInstall vm, boolean savePreference) throws CoreException {
+		IVMInstall previous = null;
+		if (fgDefaultVMId != null) {
+			previous = getVMFromCompositeId(fgDefaultVMId);
+		}
+		fgDefaultVMId= getCompositeIdFromVM(vm);
+		if (savePreference) {
+			saveVMConfiguration();
+		}
+		IVMInstall current = null;
+		if (fgDefaultVMId != null) {
+			current = getVMFromCompositeId(fgDefaultVMId);
+		}
+		if (previous != current) {
+			notifyDefaultVMChanged(previous, current);
 		}
 	}
 	
-	protected void writeXML(Writer writer) {
+	/**
+	 * Saves the VM configuration information to the preferences. This includes
+	 * the following information:
+	 * <ul>
+	 * <li>The list of all defined IVMInstall instances.</li>
+	 * <li>The default VM</li>
+	 * <ul>
+	 * This state will be read again upon first access to VM
+	 * configuration information.
+	 */
+	public static void saveVMConfiguration() throws CoreException {
+		if (fgVMTypes == null) {
+			// if the VM types have not been instantiated, there can be no changes.
+			return;
+		}
 		try {
-			writer.write("<?xml version=\"1.0\" encoding=\"UTF-8\"?><runtimeconfig>");
-			Iterator<IVMInstall> interpretersIterator = installedInterpreters.iterator();
-			while (interpretersIterator.hasNext()) {
-				writer.write("<");
-				writer.write(TAG_INTERPRETER);
-				writer.write(" ");
-				writer.write(ATTR_NAME);
-				writer.write("=\"");
-				
-				IVMInstall entry = interpretersIterator.next();
-				writer.write(entry.getName());
-				writer.write("\" ");
-				writer.write(ATTR_PATH);
-				writer.write("=\"");
-				writer.write(entry.getInstallLocation().getPath());
-				writer.write("\"");
-				if (entry.equals(selectedInterpreter)) {
-					writer.write(" ");
-					writer.write(ATTR_SELECTED);
-					writer.write("=\"true\"");
-				}
-					
-				writer.write("/>");
-			}
-			writer.write("</runtimeconfig>");
-			writer.flush();
-		} catch(IOException e) {
-			LaunchingPlugin.log(e);
+			String xml = getVMsAsXML();
+			getPreferences().setValue(PREF_VM_XML, xml);
+			savePreferences();
+		} catch (IOException e) {
+			throw new CoreException(new Status(IStatus.ERROR, LaunchingPlugin.getUniqueIdentifier(), IStatus.ERROR, LaunchingMessages.RubyRuntime_exceptionsOccurred, e)); 
+		} catch (ParserConfigurationException e) {
+			throw new CoreException(new Status(IStatus.ERROR, LaunchingPlugin.getUniqueIdentifier(), IStatus.ERROR, LaunchingMessages.RubyRuntime_exceptionsOccurred, e)); 
+		} catch (TransformerException e) {
+			throw new CoreException(new Status(IStatus.ERROR, LaunchingPlugin.getUniqueIdentifier(), IStatus.ERROR, LaunchingMessages.RubyRuntime_exceptionsOccurred, e)); 
 		}
 	}
-
-	protected ContentHandler getRuntimeConfigurationContentHandler() {
-		return new ContentHandler() {
-			public void setDocumentLocator(Locator locator) {}
-			public void startDocument() throws SAXException {}
-			public void endDocument() throws SAXException {}
-			public void startPrefixMapping(String prefix, String uri) throws SAXException {}
-			public void endPrefixMapping(String prefix) throws SAXException {}
-			public void startElement(String namespaceURI, String localName, String qName, Attributes atts) throws SAXException {
-				if (TAG_INTERPRETER.equals(qName)) {
-					String interpreterName = atts.getValue(ATTR_NAME);
-					File installLocation = new File(atts.getValue(ATTR_PATH));
-					IVMInstall interpreter = new RubyInterpreter(interpreterName, installLocation);
-					installedInterpreters.add(interpreter);
-					if (atts.getValue(ATTR_SELECTED) != null)
-						selectedInterpreter = interpreter;
-				}
+	
+	private static String getVMsAsXML() throws IOException, ParserConfigurationException, TransformerException {
+		VMDefinitionsContainer container = new VMDefinitionsContainer();	
+		container.setDefaultVMInstallCompositeID(getDefaultVMId());
+		container.setDefaultVMInstallConnectorTypeID(getDefaultVMConnectorId());	
+		IVMInstallType[] vmTypes= getVMInstallTypes();
+		for (int i = 0; i < vmTypes.length; ++i) {
+			IVMInstall[] vms = vmTypes[i].getVMInstalls();
+			for (int j = 0; j < vms.length; j++) {
+				IVMInstall install = vms[j];
+				container.addVM(install);
 			}
-			public void endElement(String namespaceURI, String localName, String qName) throws SAXException {}
-			public void characters(char[] ch, int start, int length) throws SAXException {}
-			public void ignorableWhitespace(char[] ch, int start, int length) throws SAXException {}
-			public void processingInstruction(String target, String data) throws SAXException {}
-			public void skippedEntity(String name) throws SAXException {}
-		};
+		}
+		return container.getAsXML();
 	}
 	
-	protected File getRuntimeConfigurationFile() {
-		IPath stateLocation = LaunchingPlugin.getDefault().getStateLocation();
-		IPath fileLocation = stateLocation.append("runtimeConfiguration.xml");
-		return new File(fileLocation.toOSString());
+	private static String getDefaultVMConnectorId() {
+		initializeVMs();
+		return fgDefaultVMConnectorId;
+	}	
+	
+	/**
+	 * Saves the preferences for the launching plug-in.
+	 * 
+	 * @since 0.9.0
+	 */
+	public static void savePreferences() {
+		LaunchingPlugin.getDefault().savePluginPreferences();
 	}
 
 	public static void addVMInstallChangedListener(IVMInstallChangedListener listener) {
@@ -314,14 +277,9 @@ public class RubyRuntime {
 	 */
 	public static IVMInstallType[] getVMInstallTypes() {
 		initializeVMs();
-		return fgInterpreterTypes; 
+		return fgVMTypes; 
 	}
 
-	public static IVMInstall getDefaultVMInstall() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-	
 	/**
 	 * Perform VM type and VM install initialization. Does not hold locks
 	 * while performing change notification.
@@ -332,7 +290,7 @@ public class RubyRuntime {
 		VMDefinitionsContainer vmDefs = null;
 		boolean setPref = false;
 		synchronized (fgVMLock) {
-			if (fgInterpreterTypes == null) {
+			if (fgVMTypes == null) {
 				try {
 					fgInitializingVMs = true;
 					// 1. load VM type extensions
@@ -421,12 +379,12 @@ public class RubyRuntime {
 		IExtensionPoint extensionPoint= Platform.getExtensionRegistry().getExtensionPoint(LaunchingPlugin.PLUGIN_ID, "vmInstallTypes"); //$NON-NLS-1$
 		IConfigurationElement[] configs= extensionPoint.getConfigurationElements(); 
 		MultiStatus status= new MultiStatus(LaunchingPlugin.getUniqueIdentifier(), IStatus.OK, LaunchingMessages.RubyRuntime_exceptionOccurred, null); 
-		fgInterpreterTypes= new IVMInstallType[configs.length];
+		fgVMTypes= new IVMInstallType[configs.length];
 
 		for (int i= 0; i < configs.length; i++) {
 			try {
 				IVMInstallType vmType= (IVMInstallType)configs[i].createExecutableExtension("class"); //$NON-NLS-1$
-				fgInterpreterTypes[i]= vmType;
+				fgVMTypes[i]= vmType;
 			} catch (CoreException e) {
 				status.add(e.getStatus());
 			}
@@ -435,13 +393,13 @@ public class RubyRuntime {
 			//only happens on a CoreException
 			LaunchingPlugin.log(status);
 			//cleanup null entries in fgVMTypes
-			List<IVMInstallType> temp= new ArrayList<IVMInstallType>(fgInterpreterTypes.length);
-			for (int i = 0; i < fgInterpreterTypes.length; i++) {
-				if(fgInterpreterTypes[i] != null) {
-					temp.add(fgInterpreterTypes[i]);
+			List<IVMInstallType> temp= new ArrayList<IVMInstallType>(fgVMTypes.length);
+			for (int i = 0; i < fgVMTypes.length; i++) {
+				if(fgVMTypes[i] != null) {
+					temp.add(fgVMTypes[i]);
 				}
-				fgInterpreterTypes= new IVMInstallType[temp.size()];
-				fgInterpreterTypes= temp.toArray(fgInterpreterTypes);
+				fgVMTypes= new IVMInstallType[temp.size()];
+				fgVMTypes= temp.toArray(fgVMTypes);
 			}
 		}
 	}
@@ -638,7 +596,7 @@ public class RubyRuntime {
 		throw new CoreException(new Status(IStatus.ERROR, LaunchingPlugin.getUniqueIdentifier(), code, message, exception));
 	}	
 	
-	private static void fireVMAdded(IVMInstall vm) {
+	static void fireVMAdded(IVMInstall vm) {
 		if (!fgInitializingVMs) {
 			Object[] listeners = fgVMListeners.getListeners();
 			for (int i = 0; i < listeners.length; i++) {

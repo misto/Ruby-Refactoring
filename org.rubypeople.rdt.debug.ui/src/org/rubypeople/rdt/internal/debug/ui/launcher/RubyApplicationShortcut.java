@@ -119,7 +119,7 @@ public class RubyApplicationShortcut implements ILaunchShortcut {
 	}
 
 	protected ILaunchConfiguration createConfiguration(IFile rubyFile) {
-		if (RubyRuntime.getDefault().getSelectedInterpreter() == null) {
+		if (RubyRuntime.getDefaultVMInstall() == null) {
 			this.showNoInterpreterDialog();
 			return null;
 		}
@@ -130,7 +130,8 @@ public class RubyApplicationShortcut implements ILaunchShortcut {
 			wc.setAttribute(RubyLaunchConfigurationAttribute.PROJECT_NAME, rubyFile.getProject().getName());
 			wc.setAttribute(RubyLaunchConfigurationAttribute.FILE_NAME, rubyFile.getProjectRelativePath().toString());
 			wc.setAttribute(RubyLaunchConfigurationAttribute.WORKING_DIRECTORY, RubyApplicationShortcut.getDefaultWorkingDirectory(rubyFile.getProject()));
-			wc.setAttribute(RubyLaunchConfigurationAttribute.SELECTED_INTERPRETER, RubyRuntime.getDefault().getSelectedInterpreter().getName());
+			wc.setAttribute(RubyLaunchConfigurationAttribute.SELECTED_INTERPRETER, RubyRuntime.getCompositeIdFromVM(RubyRuntime.getDefaultVMInstall()));
+			// FIXME generate a composite id for the interpreter, not name!
 			wc.setAttribute(ILaunchConfiguration.ATTR_SOURCE_LOCATOR_ID, "org.rubypeople.rdt.debug.ui.rubySourceLocator");
 			config = wc.doSave();
 		} catch (CoreException ce) {

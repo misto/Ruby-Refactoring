@@ -183,7 +183,7 @@ public class RIView extends ViewPart implements RdocListener {
 	}
 	
     private void updatePage() {
-        IVMInstall interpreter = RubyRuntime.getDefault().getSelectedInterpreter();
+        IVMInstall interpreter = RubyRuntime.getDefault().getDefaultVMInstall();
         if (interpreter != null) {            
             initSearchList();
             if( riFound ){
@@ -382,7 +382,7 @@ public class RIView extends ViewPart implements RdocListener {
     		try {        			
                 List args = getArgList();
                 args.add(0, riPath.toString());
-    			final Process p = RubyRuntime.getDefault().getSelectedInterpreter().exec(args, null);
+    			final Process p = RubyRuntime.getDefault().getDefaultVMInstall().exec(args, null);
                 handleOutput(p); 
     		} catch (CoreException coreException)  {
     			// message of RuntimeException will be displayed in the RI View

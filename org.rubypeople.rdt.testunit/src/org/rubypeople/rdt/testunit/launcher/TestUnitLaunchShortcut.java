@@ -127,7 +127,7 @@ public class TestUnitLaunchShortcut extends RubyApplicationShortcut {
 	}
 
 	protected ILaunchConfiguration createConfiguration(IFile rubyFile, String container, String testName) {
-		if (RubyRuntime.getDefault().getSelectedInterpreter() == null) {
+		if (RubyRuntime.getDefault().getDefaultVMInstall() == null) {
 			showNoInterpreterDialog();
 			return null;
 		}
@@ -141,7 +141,7 @@ public class TestUnitLaunchShortcut extends RubyApplicationShortcut {
 			// FIXME Probably shouldn't write this out.  It's now ignored at runtime
 			wc.setAttribute(RubyLaunchConfigurationAttribute.FILE_NAME, TestUnitRunnerConfiguration.getTestRunnerPath());
 			wc.setAttribute(RubyLaunchConfigurationAttribute.WORKING_DIRECTORY, TestUnitLaunchShortcut.getDefaultWorkingDirectory(rubyFile.getProject()));
-			wc.setAttribute(RubyLaunchConfigurationAttribute.SELECTED_INTERPRETER, RubyRuntime.getDefault().getSelectedInterpreter().getName());
+			wc.setAttribute(RubyLaunchConfigurationAttribute.SELECTED_INTERPRETER, RubyRuntime.getCompositeIdFromVM(RubyRuntime.getDefaultVMInstall()));
 			wc.setAttribute(TestUnitLaunchConfigurationDelegate.LAUNCH_CONTAINER_ATTR, container);
 			wc.setAttribute(TestUnitLaunchConfigurationDelegate.TESTNAME_ATTR, testName);
 			wc.setAttribute(TestUnitLaunchConfigurationDelegate.TESTTYPE_ATTR, "");

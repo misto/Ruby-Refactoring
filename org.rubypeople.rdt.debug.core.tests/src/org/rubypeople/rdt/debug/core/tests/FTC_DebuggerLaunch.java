@@ -16,47 +16,59 @@ import org.eclipse.debug.core.ILaunchConfigurationWorkingCopy;
 import org.eclipse.debug.core.model.IProcess;
 import org.rubypeople.eclipse.testutils.ResourceTools;
 import org.rubypeople.rdt.internal.debug.core.RubyLineBreakpoint;
-import org.rubypeople.rdt.internal.launching.RubyInterpreter;
 import org.rubypeople.rdt.internal.launching.RubyLaunchConfigurationAttribute;
-import org.rubypeople.rdt.launching.IVMInstall;
+import org.rubypeople.rdt.launching.IVMInstallType;
 import org.rubypeople.rdt.launching.RubyRuntime;
+import org.rubypeople.rdt.launching.VMStandin;
 
 /*
  * 
  */
 public class FTC_DebuggerLaunch extends TestCase {
 
+	private static final String RUBY_INTERPRETER_ID = "RubyInterpreter";
+	private static final String VM_TYPE_ID = "org.rubypeople.rdt.launching.StandardVMType";
+	private static final boolean VERBOSE = false;
+	private IVMInstallType vmType;
+
 
 	public void setUp() {
-		this.createInterpreter() ;
-	}
-	
-	protected void createInterpreter() {
+		vmType = RubyRuntime.getVMInstallType(VM_TYPE_ID);
 		// We rely on the RUBY_INTERPRETER to be a full path to a valid ruby executable, therefore the property rdt.rubyInterpreter has
 		// to be set accordingly
-		String rubyInterpreterPath = FTC_ClassicDebuggerCommunicationTest.RUBY_INTERPRETER ;
-		System.out.println("Using interpreter: " + rubyInterpreterPath) ;
-		IVMInstall rubyInterpreter = new RubyInterpreter("RubyInterpreter", new File(rubyInterpreterPath));
-		RubyRuntime.getDefault().addInstalledInterpreter(rubyInterpreter) ;
+		String rubyInterpreterPath = FTC_ClassicDebuggerCommunicationTest.RUBY_INTERPRETER;
+		log("Using interpreter: " + rubyInterpreterPath);
+		VMStandin standin = new VMStandin(vmType, RUBY_INTERPRETER_ID);
+		standin.setInstallLocation(new File(rubyInterpreterPath));
+		standin.convertToRealVM();
+	}
 	
+	@Override
+	protected void tearDown() throws Exception {
+		super.tearDown();
+		vmType.disposeVMInstall(RUBY_INTERPRETER_ID);
 	}
 	
 	protected void log(String label, ILaunch launch) throws Exception {
-		System.out.println("Infos about " + label + ":");
+		log("Infos about " + label + ":");
 		IProcess process = launch.getProcesses()[0];
 		if (process.isTerminated()) {
-			System.out.println("Process has finished with exit-value: " + process.getExitValue());
+			log("Process has finished with exit-value: " + process.getExitValue());
 		} else {
-			System.out.println("Process still running.");
+			log("Process still running.");
 		}
 		String error = process.getStreamsProxy().getErrorStreamMonitor().getContents();
 		if (error != null && error.length() > 0) {
-			System.out.println("Process stderr: " + error);
+			log("Process stderr: " + error);
 		}	
 		String stdout = process.getStreamsProxy().getOutputStreamMonitor().getContents();
 		if (stdout != null && stdout.length() > 0) {
-			System.out.println("Process stdout: " + stdout);
+			log("Process stdout: " + stdout);
 		}		
+	}
+	
+	private void log(String message) {
+		if (VERBOSE) System.out.println(message);		
 	}
 
 	
@@ -71,7 +83,7 @@ public class FTC_DebuggerLaunch extends TestCase {
 		wc.setAttribute(RubyLaunchConfigurationAttribute.PROJECT_NAME, rubyFile.getProject().getName());
 		wc.setAttribute(RubyLaunchConfigurationAttribute.FILE_NAME, rubyFile.getProjectRelativePath().toString());
 		//wc.setAttribute(RubyLaunchConfigurationAttribute.WORKING_DIRECTORY, RubyApplicationShortcut.getDefaultWorkingDirectory(rubyFile.getProject()));
-		wc.setAttribute(RubyLaunchConfigurationAttribute.SELECTED_INTERPRETER, "RubyInterpreter");
+		wc.setAttribute(RubyLaunchConfigurationAttribute.SELECTED_INTERPRETER, RUBY_INTERPRETER_ID);
 		ILaunchConfiguration lc = wc.doSave() ;
 		
 		DebugPlugin.getDefault().getBreakpointManager().addBreakpoint(new RubyLineBreakpoint(rubyFile, 1)) ;

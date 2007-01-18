@@ -7,12 +7,6 @@ import org.eclipse.swt.graphics.Image;
 import org.rubypeople.rdt.internal.core.LoadpathEntry;
 import org.rubypeople.rdt.internal.debug.ui.RdtDebugUiPlugin;
 
-/**
- * @author xp4
- *
- * To change this generated comment edit the template variable "typecomment":
- * Window>Preferences>Java>Templates.
- */
 public class LoadPathEntryLabelProvider implements ILabelProvider {
 
 	/**
@@ -27,7 +21,7 @@ public class LoadPathEntryLabelProvider implements ILabelProvider {
 	 */
 	public String getText(Object element) {
 		if (element != null && element.getClass() == LoadpathEntry.class) {
-			IProject project = ((LoadpathEntry) element).getProject() ;			
+			IProject project = ((LoadpathEntry) element).getProject();			
 			if (project.isAccessible()) {
 				return project.getLocation().toOSString() ;
 			}

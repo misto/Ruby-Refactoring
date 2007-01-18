@@ -1,7 +1,6 @@
 package org.rubypeople.rdt.internal.debug.ui.launcher;
 
 import java.io.File;
-import java.util.Arrays;
 
 import junit.framework.Assert;
 
@@ -22,14 +21,18 @@ import org.rubypeople.rdt.core.IRubyElement;
 import org.rubypeople.rdt.core.tests.ModifyingResourceTest;
 import org.rubypeople.rdt.internal.debug.ui.RdtDebugUiPlugin;
 import org.rubypeople.rdt.internal.debug.ui.RubySourceLocator;
-import org.rubypeople.rdt.internal.launching.RubyInterpreter;
 import org.rubypeople.rdt.internal.launching.RubyLaunchConfigurationAttribute;
-import org.rubypeople.rdt.launching.IVMInstall;
+import org.rubypeople.rdt.launching.IVMInstallType;
 import org.rubypeople.rdt.launching.RubyRuntime;
+import org.rubypeople.rdt.launching.VMStandin;
 import org.rubypeople.rdt.ui.IRubyConstants;
 
 public class TC_RubyApplicationShortcut extends ModifyingResourceTest {
 
+	private static final String VM_ID = "vm_id";
+
+	private static final String VM_TYPE_ID = "org.rubypeople.rdt.launching.StandardVMType";
+	
 	protected ShamRubyApplicationShortcut shortcut;
 	protected IFile rubyFile, nonRubyFile;
 	private static String SHAM_LAUNCH_CONFIG_TYPE = "org.rubypeople.rdt.debug.ui.tests.launching.LaunchConfigurationTypeSham";
@@ -46,7 +49,7 @@ public class TC_RubyApplicationShortcut extends ModifyingResourceTest {
 			wc.setAttribute(RubyLaunchConfigurationAttribute.PROJECT_NAME, pFile.getProject().getName());
 			wc.setAttribute(RubyLaunchConfigurationAttribute.FILE_NAME, pFile.getProjectRelativePath().toString());
 			wc.setAttribute(RubyLaunchConfigurationAttribute.WORKING_DIRECTORY, "");
-			wc.setAttribute(RubyLaunchConfigurationAttribute.SELECTED_INTERPRETER, RubyRuntime.getDefault().getSelectedInterpreter().getName());
+			wc.setAttribute(RubyLaunchConfigurationAttribute.SELECTED_INTERPRETER, RubyRuntime.getCompositeIdFromVM(RubyRuntime.getDefaultVMInstall()));
 			wc.setAttribute(ILaunchConfiguration.ATTR_SOURCE_LOCATOR_ID, "org.rubypeople.rdt.debug.ui.rubySourceLocator");
 			config = wc.doSave();
 		} catch (CoreException ce) {
@@ -59,6 +62,8 @@ public class TC_RubyApplicationShortcut extends ModifyingResourceTest {
 		ILaunchManager launchManager = DebugPlugin.getDefault().getLaunchManager();
 		return launchManager.getLaunchConfigurations(launchManager.getLaunchConfigurationType(SHAM_LAUNCH_CONFIG_TYPE));
 	}
+	
+	private IVMInstallType vmType;
 
 	protected void setUp() throws Exception {
 		shortcut = new ShamRubyApplicationShortcut();
@@ -76,9 +81,12 @@ public class TC_RubyApplicationShortcut extends ModifyingResourceTest {
 		Assert.assertEquals("All configurations deleted.", 0, this.getLaunchConfigurations().length);
 
 		ShamApplicationLaunchConfigurationDelegate.resetLaunches();
-		IVMInstall interpreterOne = new RubyInterpreter("InterpreterOne", new File("C:/RubyInstallRootOne"));
-		RubyRuntime.getDefault().setInstalledInterpreters(Arrays.asList(new IVMInstall[] { interpreterOne}));
-	   
+		
+		vmType = RubyRuntime.getVMInstallType(VM_TYPE_ID);
+		VMStandin standin = new VMStandin(vmType, VM_ID);
+		standin.setInstallLocation(new File("C:/RubyInstallRootOne"));
+		standin.setName("InterpreterOne");
+		standin.convertToRealVM();
 		super.setUp();
 	}
 	
@@ -90,7 +98,8 @@ public class TC_RubyApplicationShortcut extends ModifyingResourceTest {
 
 	
 	public void testNoInterpreterInstalled() throws Exception {
-		RubyRuntime.getDefault().setInstalledInterpreters(Arrays.asList(new IVMInstall[] { }));
+		vmType.disposeVMInstall(VM_ID);
+		
 		ISelection selection = new StructuredSelection(rubyFile);
 		shortcut.launch(selection, ILaunchManager.RUN_MODE);
 		
@@ -102,7 +111,7 @@ public class TC_RubyApplicationShortcut extends ModifyingResourceTest {
 		
 		shortcut.launch(selection, ILaunchManager.RUN_MODE);
 		
-		assertEquals("A configuration has been created", 1, this.getLaunchConfigurations().length);
+		assertEquals("A configuration has been created", 1, getLaunchConfigurations().length);
 		assertEquals("A launch took place.", 1, shortcut.launchCount());
 		assertTrue("The shortcut should not log a message when asked to launch the correct file type.", !shortcut.didLog());
 	}
@@ -118,8 +127,8 @@ public class TC_RubyApplicationShortcut extends ModifyingResourceTest {
 	}
 
 	public void testLaunchWithSelectionMultipleConfigurationsExist() throws Exception {
-		this.createConfiguration(rubyFile);
-		this.createConfiguration(rubyFile);
+		createConfiguration(rubyFile);
+		createConfiguration(rubyFile);
 		ISelection selection = new StructuredSelection(rubyFile);
 
 		shortcut.launch(selection, ILaunchManager.RUN_MODE);

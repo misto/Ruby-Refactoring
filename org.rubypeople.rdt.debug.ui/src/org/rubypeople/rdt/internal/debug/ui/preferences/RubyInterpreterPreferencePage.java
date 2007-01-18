@@ -14,6 +14,7 @@ import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.window.Window;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.custom.BusyIndicator;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
@@ -23,14 +24,16 @@ import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
-import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPreferencePage;
 import org.rubypeople.rdt.internal.debug.ui.RdtDebugUiMessages;
 import org.rubypeople.rdt.internal.debug.ui.rubyvms.IAddVMDialogRequestor;
 import org.rubypeople.rdt.internal.debug.ui.rubyvms.RubyVMMessages;
+import org.rubypeople.rdt.internal.debug.ui.rubyvms.RubyVMsUpdater;
 import org.rubypeople.rdt.launching.IVMInstall;
+import org.rubypeople.rdt.launching.IVMInstallType;
 import org.rubypeople.rdt.launching.RubyRuntime;
+import org.rubypeople.rdt.launching.VMStandin;
 
 public class RubyInterpreterPreferencePage extends PreferencePage implements IWorkbenchPreferencePage, IAddVMDialogRequestor {
 	
@@ -54,16 +57,46 @@ public class RubyInterpreterPreferencePage extends PreferencePage implements IWo
 		Composite composite = createPageRoot(parent);
 		Table table = createInstalledInterpretersTable(composite);
 		createInstalledInterpretersTableViewer(table);
-		createButtonGroup(composite);
+		createButtonGroup(composite);		
 
-		fVMList.setInput(RubyRuntime.getDefault().getInstalledInterpreters());
-		IVMInstall selectedInterpreter = RubyRuntime.getDefault().getSelectedInterpreter();
+		fillWithWorkspaceRubyVMs();
+		
+		IVMInstall selectedInterpreter = RubyRuntime.getDefaultVMInstall();
 		if (selectedInterpreter != null)
 			fVMList.setChecked(selectedInterpreter, true);
 
 		enableButtons();
 
 		return composite;
+	}
+	
+	private void fillWithWorkspaceRubyVMs() {
+//		 fill with Ruby VMs
+		List standins = new ArrayList();
+		IVMInstallType[] types = RubyRuntime.getVMInstallTypes();
+		for (int i = 0; i < types.length; i++) {
+			IVMInstallType type = types[i];
+			IVMInstall[] installs = type.getVMInstalls();
+			for (int j = 0; j < installs.length; j++) {
+				IVMInstall install = installs[j];
+				standins.add(new VMStandin(install));
+			}
+		}
+		setJREs((IVMInstall[])standins.toArray(new IVMInstall[standins.size()]));			
+	}
+
+	/**
+	 * Sets the JREs to be displayed in this block
+	 * 
+	 * @param vms JREs to be displayed
+	 */
+	protected void setJREs(IVMInstall[] vms) {
+		fVMs.clear();
+		for (int i = 0; i < vms.length; i++) {
+			fVMs.add(vms[i]);
+		}
+		fVMList.setInput(fVMs);
+		fVMList.refresh();
 	}
 
 	protected void createButtonGroup(Composite composite) {
@@ -155,7 +188,7 @@ public class RubyInterpreterPreferencePage extends PreferencePage implements IWo
 	}
 
 	protected void addInterpreter() {
-		EditInterpreterDialog dialog = new EditInterpreterDialog(this, getShell(), RubyRuntime.getVMInstallTypes(), null);
+		AddVMDialog dialog = new AddVMDialog(this, getShell(), RubyRuntime.getVMInstallTypes(), null);
 		dialog.setTitle(RubyVMMessages.InstalledJREsBlock_7); 
 		if (dialog.open() != Window.OK) {
 			return;
@@ -195,7 +228,7 @@ public class RubyInterpreterPreferencePage extends PreferencePage implements IWo
 //			VMDetailsDialog dialog= new VMDetailsDialog(getShell(), vm);
 //			dialog.open();
 //		} else {
-			EditInterpreterDialog dialog= new EditInterpreterDialog(this, getShell(), RubyRuntime.getVMInstallTypes(), vm);
+			AddVMDialog dialog= new AddVMDialog(this, getShell(), RubyRuntime.getVMInstallTypes(), vm);
 			dialog.setTitle(RubyVMMessages.InstalledJREsBlock_8); 
 			if (dialog.open() != Window.OK) {
 				return;
@@ -209,18 +242,46 @@ public class RubyInterpreterPreferencePage extends PreferencePage implements IWo
 		return (IVMInstall) selection.getFirstElement();
 	}
 	
-	public boolean performOk() {
-		TableItem[] tableItems = fVMList.getTable().getItems();
-		List installedInterpreters = new ArrayList(tableItems.length);
-		for (int i = 0; i < tableItems.length; i++)
-			installedInterpreters.add(tableItems[i].getData());
-		RubyRuntime.getDefault().setInstalledInterpreters(installedInterpreters);
-
-		Object[] checkedElements = fVMList.getCheckedElements();
-		if (checkedElements.length > 0)
-			RubyRuntime.getDefault().setSelectedInterpreter((IVMInstall) checkedElements[0]);
-
-		return super.performOk();
+	public boolean performOk() {	
+		final boolean[] canceled = new boolean[] {false};
+		BusyIndicator.showWhile(null, new Runnable() {
+			public void run() {
+				IVMInstall defaultVM = getCheckedRubyVM();
+				IVMInstall[] vms = getRubyVMs();
+				RubyVMsUpdater updater = new RubyVMsUpdater();
+				if (!updater.updateJRESettings(vms, defaultVM)) {
+					canceled[0] = true;
+				}
+			}
+		});
+		
+		if(canceled[0]) {
+			return false;
+		}
+		
+		return super.performOk();		
+	}
+	
+	/**
+	 * Returns the checked RubyVM or <code>null</code> if none.
+	 * 
+	 * @return the checked RubyVM or <code>null</code> if none
+	 */
+	public IVMInstall getCheckedRubyVM() {
+		Object[] objects = fVMList.getCheckedElements();
+		if (objects.length == 0) {
+			return null;
+		}
+		return (IVMInstall)objects[0];
+	}
+	
+	/**
+	 * Returns the RubyVMs currently being displayed in this block
+	 * 
+	 * @return RubyVMs currently being displayed in this block
+	 */
+	public IVMInstall[] getRubyVMs() {
+		return (IVMInstall[])fVMs.toArray(new IVMInstall[fVMs.size()]);
 	}
 
 	public boolean isDuplicateName(String name) {
