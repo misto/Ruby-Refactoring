@@ -44,19 +44,19 @@ public class RubyVMContainer implements ILoadpathContainer {
 			fgLoadpathEntries = new HashMap(10);
 			// add a listener to clear cached value when a VM changes or is removed
 			IInterpreterInstallChangedListener listener = new IInterpreterInstallChangedListener() {
-				public void defaultInterpreterInstallChanged(IVMInstall previous, IVMInstall current) {
+				public void defaultVMInstallChanged(IVMInstall previous, IVMInstall current) {
 				}
 
-				public void interpreterChanged(PropertyChangeEvent event) {
+				public void vmChanged(PropertyChangeEvent event) {
 					if (event.getSource() != null) {
 						fgLoadpathEntries.remove(event.getSource());
 					}
 				}
 
-				public void interpreterAdded(IVMInstall newVm) {
+				public void vmAdded(IVMInstall newVm) {
 				}
 
-				public void interpreterRemoved(IVMInstall removedVm) {
+				public void vmRemoved(IVMInstall removedVm) {
 					fgLoadpathEntries.remove(removedVm);
 				}
 			};

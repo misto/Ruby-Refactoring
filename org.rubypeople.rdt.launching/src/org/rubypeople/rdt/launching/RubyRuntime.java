@@ -147,7 +147,7 @@ public class RubyRuntime {
 		Object[] listeners = fgVMListeners.getListeners();
 		for (int i = 0; i < listeners.length; i++) {
 			IInterpreterInstallChangedListener listener = (IInterpreterInstallChangedListener)listeners[i];
-			listener.defaultInterpreterInstallChanged(oldInterpreter, anInterpreter);
+			listener.defaultVMInstallChanged(oldInterpreter, anInterpreter);
 		}		
 	}
 
@@ -380,7 +380,7 @@ public class RubyRuntime {
 			IInterpreterInstallType[] installTypes = getInterpreterInstallTypes();
 			for (int i = 0; i < installTypes.length; i++) {
 				IInterpreterInstallType type = installTypes[i];
-				IVMInstall[] installs = type.getInterpreterInstalls();
+				IVMInstall[] installs = type.getVMInstalls();
 				for (int j = 0; j < installs.length; j++) {
 					fireInterpreterAdded(installs[j]);
 				}
@@ -525,7 +525,7 @@ public class RubyRuntime {
 						abort(MessageFormat.format("vmInstall {0} contributed by {1} references undefined VM install type {2}", //$NON-NLS-1$
 								(Object[]) new String[]{id, element.getContributor().getName(), vmType}), null);
 					}
-					IVMInstall install = installType.findInterpreterInstall(id);
+					IVMInstall install = installType.findVMInstall(id);
 					if (install == null) {
 						// only load/create if first time we've seen this VM install
 						String name = element.getAttribute("name"); //$NON-NLS-1$

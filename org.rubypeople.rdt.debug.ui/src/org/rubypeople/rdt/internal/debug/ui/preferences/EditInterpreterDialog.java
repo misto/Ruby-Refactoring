@@ -120,7 +120,7 @@ public class EditInterpreterDialog extends StatusDialog {
 		String id= null;
 		do {
 			id= String.valueOf(System.currentTimeMillis());
-		} while (vmType.findInterpreterInstall(id) != null);
+		} while (vmType.findVMInstall(id) != null);
 		return id;
 	}
 	

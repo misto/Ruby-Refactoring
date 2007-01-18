@@ -7,15 +7,15 @@ import org.eclipse.core.runtime.IStatus;
 
 public interface IInterpreterInstallType {
 
-	IVMInstall findInterpreterInstallByName(String vmName);
+	IVMInstall findVMInstallByName(String vmName);
 
 	String getId();
 
-	IVMInstall[] getInterpreterInstalls();
+	IVMInstall[] getVMInstalls();
 
 	IStatus validateInstallLocation(File installLocation);
 
-	IVMInstall findInterpreterInstall(String id);
+	IVMInstall findVMInstall(String id);
 
 	IPath[] getDefaultLibraryLocations(File installLocation);
 

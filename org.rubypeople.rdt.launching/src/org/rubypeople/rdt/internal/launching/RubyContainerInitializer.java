@@ -44,7 +44,7 @@ public class RubyContainerInitializer extends LoadpathContainerInitializer {
 			IInterpreterInstallType vmType = RubyRuntime
 					.getInterpreterInstallType(vmTypeId);
 			if (vmType != null) {
-				vm = vmType.findInterpreterInstallByName(vmName);
+				vm = vmType.findVMInstallByName(vmName);
 			}
 		} else {
 			// workspace default Ruby VM
