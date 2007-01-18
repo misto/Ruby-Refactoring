@@ -45,7 +45,7 @@ import org.rubypeople.rdt.internal.ui.RubyPluginImages;
 import org.rubypeople.rdt.internal.ui.rdocexport.RDocUtility;
 import org.rubypeople.rdt.internal.ui.rdocexport.RdocListener;
 import org.rubypeople.rdt.launching.IVMInstall;
-import org.rubypeople.rdt.launching.IInterpreterInstallChangedListener;
+import org.rubypeople.rdt.launching.IVMInstallChangedListener;
 import org.rubypeople.rdt.launching.PropertyChangeEvent;
 import org.rubypeople.rdt.launching.RubyRuntime;
 import org.rubypeople.rdt.ui.PreferenceConstants;
@@ -62,7 +62,7 @@ public class RIView extends ViewPart implements RdocListener {
     private List possibleMatches = new ArrayList();
     private SearchValue itemToSearch = new SearchValue();
     private DescriptionUpdater descriptionUpdater = new DescriptionUpdater();
-    private IInterpreterInstallChangedListener runtimeListener;
+    private IVMInstallChangedListener runtimeListener;
     private ListContentProvider contentProvider = new ListContentProvider();
 
 	/**
@@ -137,19 +137,19 @@ public class RIView extends ViewPart implements RdocListener {
         
         form.setWeights(new int[]{1, 3});
 
-        runtimeListener = new IInterpreterInstallChangedListener() {
-            public void defaultInterpreterInstallChanged(IVMInstall previous,
+        runtimeListener = new IVMInstallChangedListener() {
+            public void defaultVMInstallChanged(IVMInstall previous,
             		IVMInstall current) {
             	updatePage();            	
             }
 
-			public void interpreterAdded(IVMInstall newVm) {				
+			public void vmAdded(IVMInstall newVm) {				
 			}
 
-			public void interpreterChanged(PropertyChangeEvent event) {				
+			public void vmChanged(PropertyChangeEvent event) {				
 			}
 
-			public void interpreterRemoved(IVMInstall removedVm) {				
+			public void vmRemoved(IVMInstall removedVm) {				
 			}
         };
         RubyRuntime.addInterpreterInstallChangedListener(runtimeListener);
