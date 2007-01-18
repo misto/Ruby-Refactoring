@@ -155,7 +155,7 @@ public class RubyInterpreterPreferencePage extends PreferencePage implements IWo
 	}
 
 	protected void addInterpreter() {
-		EditInterpreterDialog dialog = new EditInterpreterDialog(this, getShell(), RubyRuntime.getInterpreterInstallTypes(), null);
+		EditInterpreterDialog dialog = new EditInterpreterDialog(this, getShell(), RubyRuntime.getVMInstallTypes(), null);
 		dialog.setTitle(RubyVMMessages.InstalledJREsBlock_7); 
 		if (dialog.open() != Window.OK) {
 			return;
@@ -195,7 +195,7 @@ public class RubyInterpreterPreferencePage extends PreferencePage implements IWo
 //			VMDetailsDialog dialog= new VMDetailsDialog(getShell(), vm);
 //			dialog.open();
 //		} else {
-			EditInterpreterDialog dialog= new EditInterpreterDialog(this, getShell(), RubyRuntime.getInterpreterInstallTypes(), vm);
+			EditInterpreterDialog dialog= new EditInterpreterDialog(this, getShell(), RubyRuntime.getVMInstallTypes(), vm);
 			dialog.setTitle(RubyVMMessages.InstalledJREsBlock_8); 
 			if (dialog.open() != Window.OK) {
 				return;

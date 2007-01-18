@@ -157,7 +157,7 @@ public class RubyEnvironmentTab extends AbstractLaunchConfigurationTab {
 		
 		public void widgetSelected(SelectionEvent evt) {
 			EditInterpreterDialog dialog = new EditInterpreterDialog(this,
-					fShell, RubyRuntime.getInterpreterInstallTypes(),
+					fShell, RubyRuntime.getVMInstallTypes(),
 					null);
 			dialog.setTitle(RubyVMMessages.InstalledJREsBlock_7);
 			if (dialog.open() != Window.OK) {

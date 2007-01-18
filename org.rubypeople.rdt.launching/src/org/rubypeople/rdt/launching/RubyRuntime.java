@@ -125,7 +125,7 @@ public class RubyRuntime {
 		return runtime;
 	}
         
-    public static void removeInterpreterInstallChangedListener(IVMInstallChangedListener listener) {
+    public static void removeVMInstallChangedListener(IVMInstallChangedListener listener) {
         fgVMListeners.remove(listener);
     }
 	
@@ -151,11 +151,7 @@ public class RubyRuntime {
         IVMInstall oldInterpreter = selectedInterpreter;
 		selectedInterpreter = anInterpreter;		
 		saveRuntimeConfiguration();   
-		Object[] listeners = fgVMListeners.getListeners();
-		for (int i = 0; i < listeners.length; i++) {
-			IVMInstallChangedListener listener = (IVMInstallChangedListener)listeners[i];
-			listener.defaultVMInstallChanged(oldInterpreter, anInterpreter);
-		}		
+		notifyDefaultVMChanged(oldInterpreter, anInterpreter);
 	}
 
 	public void addInstalledInterpreter(IVMInstall anInterpreter) {
@@ -281,8 +277,16 @@ public class RubyRuntime {
 		return new File(fileLocation.toOSString());
 	}
 
-	public static void addInterpreterInstallChangedListener(IVMInstallChangedListener listener) {
+	public static void addVMInstallChangedListener(IVMInstallChangedListener listener) {
 		fgVMListeners.add(listener);		
+	}
+	
+	private static void notifyDefaultVMChanged(IVMInstall previous, IVMInstall current) {
+		Object[] listeners = fgVMListeners.getListeners();
+		for (int i = 0; i < listeners.length; i++) {
+			IVMInstallChangedListener listener = (IVMInstallChangedListener)listeners[i];
+			listener.defaultVMInstallChanged(previous, current);
+		}
 	}
 	
 	/**
@@ -291,8 +295,8 @@ public class RubyRuntime {
 	 * @return	The VM install type for the given id, or <code>null</code> if no
 	 * 			VM install type with the given id is registered.
 	 */
-	public static IVMInstallType getInterpreterInstallType(String id) {
-		IVMInstallType[] vmTypes= getInterpreterInstallTypes();
+	public static IVMInstallType getVMInstallType(String id) {
+		IVMInstallType[] vmTypes= getVMInstallTypes();
 			for (int i= 0; i < vmTypes.length; i++) {
 				if (vmTypes[i].getId().equals(id)) {
 					return vmTypes[i];
@@ -308,12 +312,12 @@ public class RubyRuntime {
 	 * 
 	 * @return the list of registered VM types
 	 */
-	public static IVMInstallType[] getInterpreterInstallTypes() {
-		initializeInterpreters();
+	public static IVMInstallType[] getVMInstallTypes() {
+		initializeVMs();
 		return fgInterpreterTypes; 
 	}
 
-	public static IVMInstall getDefaultInterpreterInstall() {
+	public static IVMInstall getDefaultVMInstall() {
 		// TODO Auto-generated method stub
 		return null;
 	}
@@ -322,9 +326,9 @@ public class RubyRuntime {
 	 * Perform VM type and VM install initialization. Does not hold locks
 	 * while performing change notification.
 	 * 
-	 * @since 3.2
+	 * @since 0.9.0
 	 */
-	private static void initializeInterpreters() {
+	private static void initializeVMs() {
 		VMDefinitionsContainer vmDefs = null;
 		boolean setPref = false;
 		synchronized (fgVMLock) {
@@ -384,12 +388,12 @@ public class RubyRuntime {
 		}
 		if (vmDefs != null) {
 			// notify of initial VMs for backwards compatibility
-			IVMInstallType[] installTypes = getInterpreterInstallTypes();
+			IVMInstallType[] installTypes = getVMInstallTypes();
 			for (int i = 0; i < installTypes.length; i++) {
 				IVMInstallType type = installTypes[i];
 				IVMInstall[] installs = type.getVMInstalls();
 				for (int j = 0; j < installs.length; j++) {
-					fireInterpreterAdded(installs[j]);
+					fireVMAdded(installs[j]);
 				}
 			}
 			
@@ -527,7 +531,7 @@ public class RubyRuntime {
 						abort(MessageFormat.format("Missing required id attribute for vmInstall contributed by {0}", //$NON-NLS-1$
 								(Object[]) new String[]{element.getContributor().getName()}), null);
 					}
-					IVMInstallType installType = getInterpreterInstallType(vmType);
+					IVMInstallType installType = getVMInstallType(vmType);
 					if (installType == null) {
 						abort(MessageFormat.format("vmInstall {0} contributed by {1} references undefined VM install type {2}", //$NON-NLS-1$
 								(Object[]) new String[]{id, element.getContributor().getName(), vmType}), null);
@@ -634,15 +638,37 @@ public class RubyRuntime {
 		throw new CoreException(new Status(IStatus.ERROR, LaunchingPlugin.getUniqueIdentifier(), code, message, exception));
 	}	
 	
-	private static void fireInterpreterAdded(IVMInstall interpreter) {
-		// TODO Actually notify IInterpreterInstallChangedListeners
-		
+	private static void fireVMAdded(IVMInstall vm) {
+		if (!fgInitializingVMs) {
+			Object[] listeners = fgVMListeners.getListeners();
+			for (int i = 0; i < listeners.length; i++) {
+				IVMInstallChangedListener listener = (IVMInstallChangedListener)listeners[i];
+				listener.vmAdded(vm);
+			}
+		}
 	}
 
-	public static void fireInterpreterChanged(PropertyChangeEvent event) {
-		// TODO Actually notify IInterpreterInstallChangedListeners
-		
+	public static void fireVMChanged(PropertyChangeEvent event) {
+		Object[] listeners = fgVMListeners.getListeners();
+		for (int i = 0; i < listeners.length; i++) {
+			IVMInstallChangedListener listener = (IVMInstallChangedListener)listeners[i];
+			listener.vmChanged(event);
+		}		
 	}
+	
+	/**
+	 * Notifies all VM install changed listeners of the VM removal
+	 * 
+	 * @param vm the VM that has been removed
+	 * @since 0.9.0
+	 */
+	public static void fireVMRemoved(IVMInstall vm) {
+		Object[] listeners = fgVMListeners.getListeners();
+		for (int i = 0; i < listeners.length; i++) {
+			IVMInstallChangedListener listener = (IVMInstallChangedListener)listeners[i];
+			listener.vmRemoved(vm);
+		}		
+	}		
 
 	/**
 	 * Evaluates library locations for a IVMInstall. If no library locations are set on the install, a default

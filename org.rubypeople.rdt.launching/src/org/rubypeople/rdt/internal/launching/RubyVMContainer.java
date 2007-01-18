@@ -60,7 +60,7 @@ public class RubyVMContainer implements ILoadpathContainer {
 					fgLoadpathEntries.remove(removedVm);
 				}
 			};
-			RubyRuntime.addInterpreterInstallChangedListener(listener);
+			RubyRuntime.addVMInstallChangedListener(listener);
 		}
 		ILoadpathEntry[] entries = (ILoadpathEntry[])fgLoadpathEntries.get(vm);
 		if (entries == null) {

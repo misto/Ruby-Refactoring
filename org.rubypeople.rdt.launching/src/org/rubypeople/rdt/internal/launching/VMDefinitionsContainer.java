@@ -422,7 +422,7 @@ public class VMDefinitionsContainer {
 		
 		// Retrieve the 'id' attribute and the corresponding VM type object
 		String id = vmTypeElement.getAttribute("id");         //$NON-NLS-1$
-		IVMInstallType vmType= RubyRuntime.getInterpreterInstallType(id);
+		IVMInstallType vmType= RubyRuntime.getVMInstallType(id);
 		if (vmType != null) {
 			
 			// For each VM child node, populate the container with a subordinate node

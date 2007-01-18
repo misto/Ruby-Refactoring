@@ -152,7 +152,7 @@ public class RIView extends ViewPart implements RdocListener {
 			public void vmRemoved(IVMInstall removedVm) {				
 			}
         };
-        RubyRuntime.addInterpreterInstallChangedListener(runtimeListener);
+        RubyRuntime.addVMInstallChangedListener(runtimeListener);
         
         RubyPlugin.getDefault().getPreferenceStore().addPropertyChangeListener(new IPropertyChangeListener() {
         	public void propertyChange(org.eclipse.jface.util.PropertyChangeEvent event) {
@@ -202,7 +202,7 @@ public class RIView extends ViewPart implements RdocListener {
     
     public void dispose() {
         descriptionUpdater.requestStop();
-        RubyRuntime.removeInterpreterInstallChangedListener(runtimeListener);
+        RubyRuntime.removeVMInstallChangedListener(runtimeListener);
         super.dispose();
     }
         

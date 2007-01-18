@@ -83,7 +83,7 @@ public abstract class AbstractInterpreter implements IVMInstall, IVMInstall2 {
 			PropertyChangeEvent event = new PropertyChangeEvent(this, IVMInstallChangedListener.PROPERTY_NAME, fName, name);
 			fName= name;
 			if (fNotify) {
-				RubyRuntime.fireInterpreterChanged(event);
+				RubyRuntime.fireVMChanged(event);
 			}
 		}
 	}
@@ -105,7 +105,7 @@ public abstract class AbstractInterpreter implements IVMInstall, IVMInstall2 {
 			PropertyChangeEvent event = new PropertyChangeEvent(this, IVMInstallChangedListener.PROPERTY_INSTALL_LOCATION, fInstallLocation, installLocation);
 			fInstallLocation= installLocation;
 			if (fNotify) {
-				RubyRuntime.fireInterpreterChanged(event);
+				RubyRuntime.fireVMChanged(event);
 			}
 		}
 	}
@@ -164,7 +164,7 @@ public abstract class AbstractInterpreter implements IVMInstall, IVMInstall2 {
 		PropertyChangeEvent event = new PropertyChangeEvent(this, IVMInstallChangedListener.PROPERTY_LIBRARY_LOCATIONS, prevLocations, newLocations);
 		fSystemLibraryDescriptions = locations;
 		if (fNotify) {
-			RubyRuntime.fireInterpreterChanged(event);		
+			RubyRuntime.fireVMChanged(event);		
 		}
 	}
 
@@ -253,7 +253,7 @@ public abstract class AbstractInterpreter implements IVMInstall, IVMInstall2 {
         PropertyChangeEvent event = new PropertyChangeEvent(this, IVMInstallChangedListener.PROPERTY_VM_ARGUMENTS, fInterpreterArgs, vmArgs);
         fInterpreterArgs = vmArgs;
 		if (fNotify) {
-			RubyRuntime.fireInterpreterChanged(event);		
+			RubyRuntime.fireVMChanged(event);		
 		}
     }	
     

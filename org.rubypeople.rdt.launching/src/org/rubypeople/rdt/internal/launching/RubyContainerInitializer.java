@@ -42,13 +42,13 @@ public class RubyContainerInitializer extends LoadpathContainerInitializer {
 			String vmTypeId = getInterpreterTypeId(containerPath);
 			String vmName = getInterpreterName(containerPath);
 			IVMInstallType vmType = RubyRuntime
-					.getInterpreterInstallType(vmTypeId);
+					.getVMInstallType(vmTypeId);
 			if (vmType != null) {
 				vm = vmType.findVMInstallByName(vmName);
 			}
 		} else {
 			// workspace default Ruby VM
-			vm = RubyRuntime.getDefaultInterpreterInstall();
+			vm = RubyRuntime.getDefaultVMInstall();
 		}
 		return vm;
 	}

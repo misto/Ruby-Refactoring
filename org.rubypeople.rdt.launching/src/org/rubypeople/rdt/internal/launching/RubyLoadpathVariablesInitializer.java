@@ -18,7 +18,7 @@ public class RubyLoadpathVariablesInitializer extends LoadpathVariableInitialize
 
 	@Override
 	public void initialize(String variable) {
-		IVMInstall vmInstall= RubyRuntime.getDefaultInterpreterInstall();
+		IVMInstall vmInstall= RubyRuntime.getDefaultVMInstall();
 		if (vmInstall != null) {
 			IPath newPath= null;
 			IPath[] locations= RubyRuntime.getLibraryLocations(vmInstall);
