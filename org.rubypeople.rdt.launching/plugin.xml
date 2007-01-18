@@ -33,17 +33,17 @@
    </extension>
       <extension
          point="org.rubypeople.rdt.core.loadpathVariableInitializer">
-      <classpathVariableInitializer
+      <loadpathVariableInitializer
             variable="RUBY_LIB"
-            class="org.rubypeople.jdt.internal.launching.RubyLoadpathVariablesInitializer">
-      </classpathVariableInitializer>
+            class="org.rubypeople.rdt.internal.launching.RubyLoadpathVariablesInitializer">
+      </loadpathVariableInitializer>
    </extension>
    <extension
          point="org.rubypeople.rdt.core.loadpathContainerInitializer">
-      <classpathContainerInitializer
+      <loadpathContainerInitializer
             class="org.rubypeople.rdt.internal.launching.RubyContainerInitializer"
             id="org.rubypeople.rdt.launching.RUBY_CONTAINER">
-      </classpathContainerInitializer>
+      </loadpathContainerInitializer>
    </extension>
 
 </plugin>
