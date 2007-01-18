@@ -1,9 +1,9 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <!-- Schema file written by PDE -->
-<schema targetNamespace="org.eclipse.jdt.core">
+<schema targetNamespace="org.rubypeople.jdt.core">
 <annotation>
       <appInfo>
-         <meta.schema plugin="org.eclipse.jdt.core" id="loadpathContainerInitializer" name="loadpath Container Initializers"/>
+         <meta.schema plugin="org.rubypeople.jdt.core" id="loadpathContainerInitializer" name="loadpath Container Initializers"/>
       </appInfo>
       <documentation>
          This extension point allows clients to contribute custom loadpath container initializers, 
@@ -58,9 +58,6 @@
                   the load that implements this container initializer.
          This load must implement a public subload of &lt;code&gt;org.rubypeople.rdt.core.LoadpathContainerInitializer&lt;/code&gt; with a public 0-argument constructor.
                </documentation>
-               <appInfo>
-                  <meta.attribute kind="ruby" basedOn="org.rubypeople.rdt.core.LoadpathContainerInitializer"/>
-               </appInfo>
             </annotation>
          </attribute>
       </complexType>
