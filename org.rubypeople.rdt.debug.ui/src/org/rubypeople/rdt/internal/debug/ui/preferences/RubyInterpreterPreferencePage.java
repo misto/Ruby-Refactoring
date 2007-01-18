@@ -12,6 +12,7 @@ import org.eclipse.jface.viewers.IDoubleClickListener;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
+import org.eclipse.jface.window.Window;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
@@ -26,12 +27,19 @@ import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPreferencePage;
 import org.rubypeople.rdt.internal.debug.ui.RdtDebugUiMessages;
-import org.rubypeople.rdt.internal.launching.RubyInterpreter;
+import org.rubypeople.rdt.internal.debug.ui.rubyvms.IAddVMDialogRequestor;
+import org.rubypeople.rdt.internal.debug.ui.rubyvms.RubyVMMessages;
 import org.rubypeople.rdt.launching.IInterpreter;
 import org.rubypeople.rdt.launching.RubyRuntime;
 
-public class RubyInterpreterPreferencePage extends PreferencePage implements IWorkbenchPreferencePage {
-	protected CheckboxTableViewer tableViewer;
+public class RubyInterpreterPreferencePage extends PreferencePage implements IWorkbenchPreferencePage, IAddVMDialogRequestor {
+	
+	/**
+	 * VMs being displayed
+	 */
+	private List fVMs = new ArrayList(); 
+	
+	protected CheckboxTableViewer fVMList;
 	protected Button addButton, editButton, removeButton;
 
 	public RubyInterpreterPreferencePage() {
@@ -48,10 +56,10 @@ public class RubyInterpreterPreferencePage extends PreferencePage implements IWo
 		createInstalledInterpretersTableViewer(table);
 		createButtonGroup(composite);
 
-		tableViewer.setInput(RubyRuntime.getDefault().getInstalledInterpreters());
+		fVMList.setInput(RubyRuntime.getDefault().getInstalledInterpreters());
 		IInterpreter selectedInterpreter = RubyRuntime.getDefault().getSelectedInterpreter();
 		if (selectedInterpreter != null)
-			tableViewer.setChecked(selectedInterpreter, true);
+			fVMList.setChecked(selectedInterpreter, true);
 
 		enableButtons();
 
@@ -95,24 +103,24 @@ public class RubyInterpreterPreferencePage extends PreferencePage implements IWo
 	}
 
 	protected void createInstalledInterpretersTableViewer(Table table) {
-		tableViewer = new CheckboxTableViewer(table);
+		fVMList = new CheckboxTableViewer(table);
 
-		tableViewer.setLabelProvider(new RubyInterpreterLabelProvider());
-		tableViewer.setContentProvider(new RubyInterpreterContentProvider());
+		fVMList.setLabelProvider(new RubyInterpreterLabelProvider());
+		fVMList.setContentProvider(new RubyInterpreterContentProvider());
 
-		tableViewer.addSelectionChangedListener(new ISelectionChangedListener() {
+		fVMList.addSelectionChangedListener(new ISelectionChangedListener() {
 			public void selectionChanged(SelectionChangedEvent evt) {
 				enableButtons();
 			}
 		});
 
-		tableViewer.addCheckStateListener(new ICheckStateListener() {
+		fVMList.addCheckStateListener(new ICheckStateListener() {
 			public void checkStateChanged(CheckStateChangedEvent event) {
 				updateSelectedInterpreter(event.getElement());
 			}
 		});
 		
-		tableViewer.addDoubleClickListener(new IDoubleClickListener() {
+		fVMList.addDoubleClickListener(new IDoubleClickListener() {
 			public void doubleClick(DoubleClickEvent e) {
 				editInterpreter();
 			}
@@ -147,21 +155,15 @@ public class RubyInterpreterPreferencePage extends PreferencePage implements IWo
 	}
 
 	protected void addInterpreter() {
-		IInterpreter newInterpreter = new RubyInterpreter(null, null);
-		EditInterpreterDialog editor = new EditInterpreterDialog(getShell(), RdtDebugUiMessages.getString("RubyInterpreterPreferencePage.EditInterpreterDialog.addInterpreter.title")); //$NON-NLS-1$
-		editor.create();
-		editor.setInterpreterToEdit(newInterpreter);
-		if (EditInterpreterDialog.OK == editor.open()) {
-			tableViewer.add(newInterpreter);
-			Object[] checked = tableViewer.getCheckedElements();
-			if(checked == null || checked.length == 0) {
-				tableViewer.setChecked(newInterpreter, true);
-			}
+		EditInterpreterDialog dialog = new EditInterpreterDialog(this, getShell(), RubyRuntime.getInterpreterInstallTypes(), null);
+		dialog.setTitle(RubyVMMessages.InstalledJREsBlock_7); 
+		if (dialog.open() != Window.OK) {
+			return;
 		}
 	}
 
 	protected void removeInterpreter() {
-		tableViewer.remove(getSelectedInterpreter());
+		fVMList.remove(getSelectedInterpreter());
 	}
 
 	protected void enableButtons() {
@@ -175,41 +177,65 @@ public class RubyInterpreterPreferencePage extends PreferencePage implements IWo
 	}
 
 	protected void updateSelectedInterpreter(Object interpreter) {
-		Object[] checkedElements = tableViewer.getCheckedElements();
+		Object[] checkedElements = fVMList.getCheckedElements();
 		for (int i = 0; i < checkedElements.length; i++) {
-			tableViewer.setChecked(checkedElements[i], false);
+			fVMList.setChecked(checkedElements[i], false);
 		}
 
-		tableViewer.setChecked(interpreter, true);
+		fVMList.setChecked(interpreter, true);
 	}
 
 	protected void editInterpreter() {
-		EditInterpreterDialog editor = new EditInterpreterDialog(getShell(), RdtDebugUiMessages.getString("RubyInterpreterPreferencePage.EditInterpreterDialog.editInterpreter.title")); //$NON-NLS-1$
-		editor.create();
-		
-		IInterpreter anInterpreter = getSelectedInterpreter();
-		editor.setInterpreterToEdit(anInterpreter);
-		if (EditInterpreterDialog.OK == editor.open())
-			tableViewer.update(anInterpreter, null);
+		IStructuredSelection selection= (IStructuredSelection)fVMList.getSelection();
+		IInterpreter vm= (IInterpreter)selection.getFirstElement();
+		if (vm == null) {
+			return;
+		}
+//		if (isContributed(vm)) {
+//			VMDetailsDialog dialog= new VMDetailsDialog(getShell(), vm);
+//			dialog.open();
+//		} else {
+			EditInterpreterDialog dialog= new EditInterpreterDialog(this, getShell(), RubyRuntime.getInterpreterInstallTypes(), vm);
+			dialog.setTitle(RubyVMMessages.InstalledJREsBlock_8); 
+			if (dialog.open() != Window.OK) {
+				return;
+			}
+			fVMList.refresh(vm);
+//		}
 	}
 	
 	protected IInterpreter getSelectedInterpreter() {
-		IStructuredSelection selection = (IStructuredSelection) tableViewer.getSelection();
+		IStructuredSelection selection = (IStructuredSelection) fVMList.getSelection();
 		return (IInterpreter) selection.getFirstElement();
 	}
 	
 	public boolean performOk() {
-		TableItem[] tableItems = tableViewer.getTable().getItems();
+		TableItem[] tableItems = fVMList.getTable().getItems();
 		List installedInterpreters = new ArrayList(tableItems.length);
 		for (int i = 0; i < tableItems.length; i++)
 			installedInterpreters.add(tableItems[i].getData());
 		RubyRuntime.getDefault().setInstalledInterpreters(installedInterpreters);
 
-		Object[] checkedElements = tableViewer.getCheckedElements();
+		Object[] checkedElements = fVMList.getCheckedElements();
 		if (checkedElements.length > 0)
 			RubyRuntime.getDefault().setSelectedInterpreter((IInterpreter) checkedElements[0]);
 
 		return super.performOk();
+	}
+
+	public boolean isDuplicateName(String name) {
+		for (int i= 0; i < fVMs.size(); i++) {
+			IInterpreter vm = (IInterpreter)fVMs.get(i);
+			if (vm.getName().equals(name)) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	public void vmAdded(IInterpreter vm) {
+		fVMs.add(vm);
+		fVMList.refresh();
 	}
 
 }

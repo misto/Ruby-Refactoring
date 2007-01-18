@@ -19,4 +19,6 @@ public interface IInterpreterInstallType {
 
 	IPath[] getDefaultLibraryLocations(File installLocation);
 
+	String getName();
+
 }

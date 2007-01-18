@@ -10,6 +10,7 @@ import org.eclipse.debug.core.ILaunchConfigurationWorkingCopy;
 import org.eclipse.debug.ui.AbstractLaunchConfigurationTab;
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.ListViewer;
+import org.eclipse.jface.window.Window;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
@@ -23,6 +24,7 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.TabFolder;
 import org.eclipse.swt.widgets.TabItem;
 import org.rubypeople.rdt.core.ILoadpathEntry;
@@ -32,7 +34,8 @@ import org.rubypeople.rdt.internal.core.RubyModelManager;
 import org.rubypeople.rdt.internal.debug.ui.RdtDebugUiMessages;
 import org.rubypeople.rdt.internal.debug.ui.RdtDebugUiPlugin;
 import org.rubypeople.rdt.internal.debug.ui.preferences.EditInterpreterDialog;
-import org.rubypeople.rdt.internal.launching.RubyInterpreter;
+import org.rubypeople.rdt.internal.debug.ui.rubyvms.IAddVMDialogRequestor;
+import org.rubypeople.rdt.internal.debug.ui.rubyvms.RubyVMMessages;
 import org.rubypeople.rdt.internal.launching.RubyLaunchConfigurationAttribute;
 import org.rubypeople.rdt.internal.ui.RubyPluginImages;
 import org.rubypeople.rdt.launching.IInterpreter;
@@ -40,8 +43,11 @@ import org.rubypeople.rdt.launching.RubyRuntime;
 
 public class RubyEnvironmentTab extends AbstractLaunchConfigurationTab {
 	protected ListViewer loadPathListViewer;
+
 	protected java.util.List installedInterpretersWorkingCopy;
+
 	protected Combo interpreterCombo;
+
 	protected Button loadPathDefaultButton;
 
 	public RubyEnvironmentTab() {
@@ -63,28 +69,39 @@ public class RubyEnvironmentTab extends AbstractLaunchConfigurationTab {
 		Composite loadPathComposite = new Composite(tabFolder, SWT.NONE);
 		loadPathComposite.setLayout(new GridLayout());
 
-		loadPathListViewer = new ListViewer(loadPathComposite, SWT.BORDER | SWT.MULTI | SWT.V_SCROLL | SWT.H_SCROLL);
+		loadPathListViewer = new ListViewer(loadPathComposite, SWT.BORDER
+				| SWT.MULTI | SWT.V_SCROLL | SWT.H_SCROLL);
 		loadPathListViewer.setContentProvider(new ArrayContentProvider());
 		loadPathListViewer.setLabelProvider(new LoadPathEntryLabelProvider());
-		loadPathListViewer.getList().setLayoutData(new GridData(GridData.FILL_BOTH));
+		loadPathListViewer.getList().setLayoutData(
+				new GridData(GridData.FILL_BOTH));
 
 		TabItem loadPathTab = new TabItem(tabFolder, SWT.NONE, 0);
-		loadPathTab.setText(RdtDebugUiMessages.getString("LaunchConfigurationTab.RubyEnvironment.loadPathTab.label"));
+		loadPathTab
+				.setText(RdtDebugUiMessages
+						.getString("LaunchConfigurationTab.RubyEnvironment.loadPathTab.label"));
 		loadPathTab.setControl(loadPathComposite);
 		loadPathTab.setData(loadPathListViewer);
 
 		loadPathDefaultButton = new Button(loadPathComposite, SWT.CHECK);
-		loadPathDefaultButton.setText(RdtDebugUiMessages.getString("LaunchConfigurationTab.RubyEnvironment.loadPathDefaultButton.label"));
-		loadPathDefaultButton.setLayoutData(new GridData(GridData.HORIZONTAL_ALIGN_BEGINNING));
-		loadPathDefaultButton.addSelectionListener(getLoadPathDefaultButtonSelectionListener());
-		
-		loadPathDefaultButton.setEnabled(false); //for now, until the load path is customizable on the configuration
+		loadPathDefaultButton
+				.setText(RdtDebugUiMessages
+						.getString("LaunchConfigurationTab.RubyEnvironment.loadPathDefaultButton.label"));
+		loadPathDefaultButton.setLayoutData(new GridData(
+				GridData.HORIZONTAL_ALIGN_BEGINNING));
+		loadPathDefaultButton
+				.addSelectionListener(getLoadPathDefaultButtonSelectionListener());
+
+		loadPathDefaultButton.setEnabled(false); // for now, until the load
+													// path is customizable on
+													// the configuration
 	}
 
 	protected SelectionListener getLoadPathSelectionListener() {
 		return new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
-				System.out.println("Loadpath list selection occurred: " + e.getSource());
+				System.out.println("Loadpath list selection occurred: "
+						+ e.getSource());
 			}
 		};
 	}
@@ -104,7 +121,8 @@ public class RubyEnvironmentTab extends AbstractLaunchConfigurationTab {
 		layout.marginHeight = 0;
 		layout.marginWidth = 0;
 		interpreterComposite.setLayout(layout);
-		interpreterComposite.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
+		interpreterComposite.setLayoutData(new GridData(
+				GridData.FILL_HORIZONTAL));
 
 		createVerticalSpacer(interpreterComposite, 2);
 
@@ -114,24 +132,50 @@ public class RubyEnvironmentTab extends AbstractLaunchConfigurationTab {
 		interpreterCombo.addModifyListener(getInterpreterComboModifyListener());
 
 		Button interpreterAddButton = new Button(interpreterComposite, SWT.PUSH);
-		interpreterAddButton.setText(RdtDebugUiMessages.getString("LaunchConfigurationTab.RubyEnvironment.interpreterAddButton.label"));
-		interpreterAddButton.addSelectionListener(new SelectionAdapter() {
-			public void widgetSelected(SelectionEvent evt) {
-				IInterpreter newInterpreter = new RubyInterpreter(null, null);
-				EditInterpreterDialog editor = new EditInterpreterDialog(getShell(), RdtDebugUiMessages.getString("LaunchConfigurationTab.RubyEnvironment.editInterpreterDialog.title"));
-				editor.create();
-				editor.setInterpreterToEdit(newInterpreter);
-				if (EditInterpreterDialog.OK == editor.open()) {
-					RubyRuntime.getDefault().addInstalledInterpreter(newInterpreter);
-					interpreterCombo.add(newInterpreter.getName());
-					interpreterCombo.select(interpreterCombo.indexOf(newInterpreter.getName()));
-				}
-			}
-		});
+		interpreterAddButton
+				.setText(RdtDebugUiMessages
+						.getString("LaunchConfigurationTab.RubyEnvironment.interpreterAddButton.label"));
+		interpreterAddButton.addSelectionListener(new AddInterpreterSelectionAdapter(interpreterCombo, getShell()));
 
 		TabItem interpreterTab = new TabItem(tabFolder, SWT.NONE);
-		interpreterTab.setText(RdtDebugUiMessages.getString("LaunchConfigurationTab.RubyEnvironment.interpreterTab.label"));
+		interpreterTab
+				.setText(RdtDebugUiMessages
+						.getString("LaunchConfigurationTab.RubyEnvironment.interpreterTab.label"));
 		interpreterTab.setControl(interpreterComposite);
+	}
+
+	private static class AddInterpreterSelectionAdapter extends
+			SelectionAdapter implements IAddVMDialogRequestor {
+
+		private Combo fCombo;
+		private Shell fShell;
+
+		public AddInterpreterSelectionAdapter(Combo combo, Shell shell) {
+			fCombo = combo;
+			fShell = shell;
+		}
+		
+		public void widgetSelected(SelectionEvent evt) {
+			EditInterpreterDialog dialog = new EditInterpreterDialog(this,
+					fShell, RubyRuntime.getInterpreterInstallTypes(),
+					null);
+			dialog.setTitle(RubyVMMessages.InstalledJREsBlock_7);
+			if (dialog.open() != Window.OK) {
+				return;
+			}
+		}
+		
+		public boolean isDuplicateName(String name) {
+			// TODO Auto-generated method stub
+			return false;
+		}
+
+		public void vmAdded(IInterpreter vm) {
+			RubyRuntime.getDefault().addInstalledInterpreter(vm);
+			fCombo.add(vm.getName());
+			fCombo.select(fCombo.indexOf(vm.getName()));
+		}
+
 	}
 
 	protected ModifyListener getInterpreterComboModifyListener() {
@@ -150,9 +194,12 @@ public class RubyEnvironmentTab extends AbstractLaunchConfigurationTab {
 	}
 
 	public void setDefaults(ILaunchConfigurationWorkingCopy configuration) {
-		IInterpreter defaultInterpreter = RubyRuntime.getDefault().getSelectedInterpreter();
-		if (defaultInterpreter != null) {			
-			configuration.setAttribute(RubyLaunchConfigurationAttribute.SELECTED_INTERPRETER, defaultInterpreter.getName());
+		IInterpreter defaultInterpreter = RubyRuntime.getDefault()
+				.getSelectedInterpreter();
+		if (defaultInterpreter != null) {
+			configuration.setAttribute(
+					RubyLaunchConfigurationAttribute.SELECTED_INTERPRETER,
+					defaultInterpreter.getName());
 		}
 	}
 
@@ -164,14 +211,20 @@ public class RubyEnvironmentTab extends AbstractLaunchConfigurationTab {
 	protected void initializeLoadPath(ILaunchConfiguration configuration) {
 		boolean useDefaultLoadPath = true;
 		try {
-			useDefaultLoadPath = configuration.getAttribute(RubyLaunchConfigurationAttribute.USE_DEFAULT_LOAD_PATH, true);
+			useDefaultLoadPath = configuration.getAttribute(
+					RubyLaunchConfigurationAttribute.USE_DEFAULT_LOAD_PATH,
+					true);
 			setUseLoadPathDefaults(useDefaultLoadPath);
 			if (useDefaultLoadPath) {
-				String projectName = configuration.getAttribute(RubyLaunchConfigurationAttribute.PROJECT_NAME, "");
+				String projectName = configuration.getAttribute(
+						RubyLaunchConfigurationAttribute.PROJECT_NAME, "");
 				if (projectName.length() != 0) {
-					IRubyProject project = RubyModelManager.getRubyModelManager().getRubyModel().getRubyProject(projectName);
+					IRubyProject project = RubyModelManager
+							.getRubyModelManager().getRubyModel()
+							.getRubyProject(projectName);
 					if (project != null) {
-						ILoadpathEntry[] entries = project.getResolvedLoadpath(true);
+						ILoadpathEntry[] entries = project
+								.getResolvedLoadpath(true);
 						loadPathListViewer.setInput(entries);
 					}
 				}
@@ -186,10 +239,12 @@ public class RubyEnvironmentTab extends AbstractLaunchConfigurationTab {
 		loadPathDefaultButton.setSelection(useDefaults);
 	}
 
-	protected void initializeInterpreterSelection(ILaunchConfiguration configuration) {
+	protected void initializeInterpreterSelection(
+			ILaunchConfiguration configuration) {
 		String interpreterName = null;
 		try {
-			interpreterName = configuration.getAttribute(RubyLaunchConfigurationAttribute.SELECTED_INTERPRETER, "");
+			interpreterName = configuration.getAttribute(
+					RubyLaunchConfigurationAttribute.SELECTED_INTERPRETER, "");
 		} catch (CoreException e) {
 			log(e);
 		}
@@ -199,35 +254,48 @@ public class RubyEnvironmentTab extends AbstractLaunchConfigurationTab {
 
 	protected void initializeInterpreterCombo(Combo interpreterCombo) {
 		installedInterpretersWorkingCopy = new ArrayList();
-		installedInterpretersWorkingCopy.addAll(RubyRuntime.getDefault().getInstalledInterpreters());
+		installedInterpretersWorkingCopy.addAll(RubyRuntime.getDefault()
+				.getInstalledInterpreters());
 
-		String[] interpreterNames = new String[installedInterpretersWorkingCopy.size()];
-		for (int interpreterIndex = 0; interpreterIndex < installedInterpretersWorkingCopy.size(); interpreterIndex++) {
-			IInterpreter interpreter = (IInterpreter) installedInterpretersWorkingCopy.get(interpreterIndex);
+		String[] interpreterNames = new String[installedInterpretersWorkingCopy
+				.size()];
+		for (int interpreterIndex = 0; interpreterIndex < installedInterpretersWorkingCopy
+				.size(); interpreterIndex++) {
+			IInterpreter interpreter = (IInterpreter) installedInterpretersWorkingCopy
+					.get(interpreterIndex);
 			interpreterNames[interpreterIndex] = interpreter.getName();
 		}
 		interpreterCombo.setItems(interpreterNames);
 
-		IInterpreter selectedInterpreter = RubyRuntime.getDefault().getSelectedInterpreter();
+		IInterpreter selectedInterpreter = RubyRuntime.getDefault()
+				.getSelectedInterpreter();
 		if (selectedInterpreter != null)
-			interpreterCombo.select(interpreterCombo.indexOf(selectedInterpreter.getName()));
+			interpreterCombo.select(interpreterCombo
+					.indexOf(selectedInterpreter.getName()));
 	}
 
 	public void performApply(ILaunchConfigurationWorkingCopy configuration) {
 		int selectionIndex = interpreterCombo.getSelectionIndex();
 		if (selectionIndex >= 0)
-			configuration.setAttribute(RubyLaunchConfigurationAttribute.SELECTED_INTERPRETER, interpreterCombo.getItem(selectionIndex));
+			configuration.setAttribute(
+					RubyLaunchConfigurationAttribute.SELECTED_INTERPRETER,
+					interpreterCombo.getItem(selectionIndex));
 
-		configuration.setAttribute(RubyLaunchConfigurationAttribute.USE_DEFAULT_LOAD_PATH, loadPathDefaultButton.getSelection());
+		configuration.setAttribute(
+				RubyLaunchConfigurationAttribute.USE_DEFAULT_LOAD_PATH,
+				loadPathDefaultButton.getSelection());
 
 		if (!loadPathDefaultButton.getSelection()) {
 			List loadPathEntries = (List) loadPathListViewer.getInput();
 			List loadPathStrings = new ArrayList();
-			for (Iterator iterator = loadPathEntries.iterator(); iterator.hasNext();) {
+			for (Iterator iterator = loadPathEntries.iterator(); iterator
+					.hasNext();) {
 				LoadpathEntry entry = (LoadpathEntry) iterator.next();
 				loadPathStrings.add(entry.getPath().toString());
 			}
-			configuration.setAttribute(RubyLaunchConfigurationAttribute.CUSTOM_LOAD_PATH, loadPathStrings);
+			configuration.setAttribute(
+					RubyLaunchConfigurationAttribute.CUSTOM_LOAD_PATH,
+					loadPathStrings);
 		}
 	}
 
@@ -243,24 +311,27 @@ public class RubyEnvironmentTab extends AbstractLaunchConfigurationTab {
 	}
 
 	public String getName() {
-		return RdtDebugUiMessages.getString("LaunchConfigurationTab.RubyEnvironment.name");
+		return RdtDebugUiMessages
+				.getString("LaunchConfigurationTab.RubyEnvironment.name");
 	}
 
 	public boolean isValid(ILaunchConfiguration launchConfig) {
 		try {
-			String selectedInterpreter = launchConfig.getAttribute(RubyLaunchConfigurationAttribute.SELECTED_INTERPRETER, "");
+			String selectedInterpreter = launchConfig.getAttribute(
+					RubyLaunchConfigurationAttribute.SELECTED_INTERPRETER, "");
 			if (selectedInterpreter.length() == 0) {
-				setErrorMessage(RdtDebugUiMessages.getString("LaunchConfigurationTab.RubyEnvironment.interpreter_not_selected_error_message"));
+				setErrorMessage(RdtDebugUiMessages
+						.getString("LaunchConfigurationTab.RubyEnvironment.interpreter_not_selected_error_message"));
 				return false;
 			}
 		} catch (CoreException e) {
 			log(e);
 		}
-		
+
 		setErrorMessage(null);
 		return true;
 	}
-	
+
 	protected void log(Throwable t) {
 		RdtDebugUiPlugin.log(t);
 	}
