@@ -35,9 +35,9 @@ import org.eclipse.core.runtime.Preferences;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.variables.VariablesPlugin;
 import org.rubypeople.rdt.internal.launching.CompositeId;
-import org.rubypeople.rdt.internal.launching.ListenerList;
 import org.rubypeople.rdt.internal.launching.LaunchingMessages;
 import org.rubypeople.rdt.internal.launching.LaunchingPlugin;
+import org.rubypeople.rdt.internal.launching.ListenerList;
 import org.rubypeople.rdt.internal.launching.RubyInterpreter;
 import org.rubypeople.rdt.internal.launching.VMDefinitionsContainer;
 import org.rubypeople.rdt.internal.launching.VMStandin;
@@ -89,6 +89,13 @@ public class RubyRuntime {
 	 * @since 0.9.0
 	 */
 	public static final String EXTENSION_POINT_VM_INSTALLS = "vmInstalls";	 //$NON-NLS-1$			
+
+	/**
+	 * Classpath variable name used for the default RubyVM's library
+	 * (value <code>"RUBY_LIB"</code>).
+	 */
+	public static final String RUBYLIB_VARIABLE= "RUBY_LIB"; //$NON-NLS-1$
+
 	
 	private static IVMInstallType[] fgInterpreterTypes= null;
 
@@ -635,5 +642,26 @@ public class RubyRuntime {
 	public static void fireInterpreterChanged(PropertyChangeEvent event) {
 		// TODO Actually notify IInterpreterInstallChangedListeners
 		
+	}
+
+	/**
+	 * Evaluates library locations for a IVMInstall. If no library locations are set on the install, a default
+	 * location is evaluated and checked if it exists.
+	 * @return library locations with paths that exist or are empty
+	 * @since 0.9.0
+	 */
+	public static IPath[] getLibraryLocations(IVMInstall vm)  {
+		IPath[] locations= vm.getLibraryLocations();
+		if (locations != null) return locations;
+
+		IPath[] dflts= vm.getVMInstallType().getDefaultLibraryLocations(vm.getInstallLocation());
+		IPath[] libraryPaths = new IPath[dflts.length];			
+		for (int i = 0; i < dflts.length; i++) {
+			libraryPaths[i]= dflts[i];               
+			if (!libraryPaths[i].toFile().isFile()) {
+				libraryPaths[i]= Path.EMPTY;
+			}
+		}
+		return libraryPaths;
 	}
 }

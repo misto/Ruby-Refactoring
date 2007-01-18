@@ -1250,4 +1250,66 @@ public class RubyCore extends Plugin {
 					
 	}
 
+	/**
+	 * Sets the value of the given classpath variable.
+	 * The path must not be null.
+	 * <p>
+	 * This functionality cannot be used while the resource tree is locked.
+	 * <p>
+	 * Classpath variable values are persisted locally to the workspace, and 
+	 * are preserved from session to session.
+	 * <p>
+	 * Updating a variable with the same value has no effect.
+	 *
+	 * @param variableName the name of the classpath variable
+	 * @param path the path
+	 * @param monitor a monitor to report progress
+	 * @throws RubyModelException
+	 * @see #getLoadpathVariable(String)
+	 */
+	public static void setLoadpathVariable(
+		String variableName,
+		IPath path,
+		IProgressMonitor monitor)
+		throws RubyModelException {
+
+		if (path == null) Assert.isTrue(false, "Variable path cannot be null"); //$NON-NLS-1$
+		setLoadpathVariables(new String[]{variableName}, new IPath[]{ path }, monitor);
+	}
+	
+	/**
+	 * Sets the values of all the given classpath variables at once.
+	 * Null paths can be used to request corresponding variable removal.
+	 * <p>
+	 * A combined Java element delta will be notified to describe the corresponding 
+	 * classpath changes resulting from the variables update. This operation is batched, 
+	 * and automatically eliminates unnecessary updates (new variable is same as old one). 
+	 * This operation acquires a lock on the workspace's root.
+	 * <p>
+	 * This functionality cannot be used while the workspace is locked, since
+	 * it may create/remove some resource markers.
+	 * <p>
+	 * Classpath variable values are persisted locally to the workspace, and 
+	 * are preserved from session to session.
+	 * <p>
+	 * Updating a variable with the same value has no effect.
+	 * 
+	 * @param variableNames an array of names for the updated classpath variables
+	 * @param paths an array of path updates for the modified classpath variables (null
+	 *       meaning that the corresponding value will be removed
+	 * @param monitor a monitor to report progress
+	 * @throws RubyModelException
+	 * @see #getLoadpathVariable(String)
+	 * @since 0.9.0
+	 */
+	public static void setLoadpathVariables(
+		String[] variableNames,
+		IPath[] paths,
+		IProgressMonitor monitor)
+		throws RubyModelException {
+
+		if (variableNames.length != paths.length)	Assert.isTrue(false, "Variable names and paths collections should have the same size"); //$NON-NLS-1$
+		RubyModelManager.getRubyModelManager().updateVariableValues(variableNames, paths, true/*update preferences*/, monitor);
+	}
+
 }

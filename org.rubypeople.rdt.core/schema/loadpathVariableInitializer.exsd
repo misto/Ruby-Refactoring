@@ -3,7 +3,7 @@
 <schema targetNamespace="org.rubypeople.rdt.core">
 <annotation>
       <appInfo>
-         <meta.schema plugin="org.rubypeople.rdt.core" id="loadpathVariableInitializer" name="loadpathVariableInitializer"/>
+         <meta.schema plugin="org.rubypeople.rdt.core" id="loadpathVariableInitializer" name="Loadpath Variable Initializers"/>
       </appInfo>
       <documentation>
          This extension point allows clients to contribute custom loadpath variable initializers, 
@@ -13,7 +13,8 @@
 
    <element name="extension">
       <complexType>
-         <sequence minOccurs="0" maxOccurs="unbounded">
+         <sequence>
+            <element ref="loadpathVariableInitializer" minOccurs="0" maxOccurs="unbounded"/>
          </sequence>
          <attribute name="point" type="string" use="required">
             <annotation>
@@ -58,7 +59,7 @@
 This class must implement a public subclass of &amp;lt;code&amp;gt;org.rubypeople.rdt.core.LoadpathVariableInitializer&amp;lt;/code&amp;gt; with a public 0-argument constructor.
                </documentation>
                <appInfo>
-                  <meta.attribute kind="ruby" basedOn="org.rubypeople.rdt.core.LoadpathVariableInitializer"/>
+                  <meta.attribute kind="java" basedOn="org.rubypeople.rdt.core.LoadpathVariableInitializer"/>
                </appInfo>
             </annotation>
          </attribute>

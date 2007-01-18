@@ -44,11 +44,13 @@ import org.eclipse.core.runtime.preferences.DefaultScope;
 import org.eclipse.core.runtime.preferences.IEclipsePreferences;
 import org.eclipse.core.runtime.preferences.IPreferencesService;
 import org.eclipse.core.runtime.preferences.InstanceScope;
+import org.osgi.service.prefs.BackingStoreException;
 import org.rubypeople.rdt.core.ILoadpathContainer;
 import org.rubypeople.rdt.core.ILoadpathEntry;
 import org.rubypeople.rdt.core.IParent;
 import org.rubypeople.rdt.core.IProblemRequestor;
 import org.rubypeople.rdt.core.IRubyElement;
+import org.rubypeople.rdt.core.IRubyModel;
 import org.rubypeople.rdt.core.IRubyProject;
 import org.rubypeople.rdt.core.IRubyScript;
 import org.rubypeople.rdt.core.ISourceFolder;
@@ -176,6 +178,9 @@ public class RubyModelManager implements IContentTypeChangeListener, ISavePartic
     
 	public static final IRubyScript[] NO_WORKING_COPY = new IRubyScript[0];
 	public static final boolean VERBOSE = false;
+	
+	public final static String CP_VARIABLE_PREFERENCES_PREFIX = RubyCore.PLUGIN_ID+".loadpathVariable."; //$NON-NLS-1$
+	
 	/**
 	 * Special value used for recognizing ongoing initialization and breaking initialization cycles
 	 */
@@ -1656,5 +1661,198 @@ public class RubyModelManager implements IContentTypeChangeListener, ISavePartic
 			containerPut(project, containerPath, container);
 			return true;
 		}
+
+	/*
+	 * Internal updating of a variable values (null path meaning removal), allowing to change multiple variable values at once.
+	 */
+	public void updateVariableValues(
+		String[] variableNames,
+		IPath[] variablePaths,
+		boolean updatePreferences,
+		IProgressMonitor monitor) throws RubyModelException {
+	
+		if (monitor != null && monitor.isCanceled()) return;
+		
+		if (CP_RESOLVE_VERBOSE){
+			Util.verbose(
+				"CPVariable SET  - setting variables\n" + //$NON-NLS-1$
+				"	variables: " + org.rubypeople.rdt.internal.compiler.util.Util.toString(variableNames) + '\n' +//$NON-NLS-1$
+				"	values: " + org.rubypeople.rdt.internal.compiler.util.Util.toString(variablePaths)); //$NON-NLS-1$
+		}
+		
+		if (variablePutIfInitializingWithSameValue(variableNames, variablePaths))
+			return;
+
+		int varLength = variableNames.length;
+		
+		// gather classpath information for updating
+		final HashMap affectedProjectClasspaths = new HashMap(5);
+		IRubyModel model = getRubyModel();
+	
+		// filter out unmodified variables
+		int discardCount = 0;
+		for (int i = 0; i < varLength; i++){
+			String variableName = variableNames[i];
+			IPath oldPath = this.variableGet(variableName); // if reentering will provide previous session value 
+			if (oldPath == VARIABLE_INITIALIZATION_IN_PROGRESS){
+//				IPath previousPath = (IPath)this.previousSessionVariables.get(variableName);
+//				if (previousPath != null){
+//					if (CP_RESOLVE_VERBOSE){
+//						Util.verbose(
+//							"CPVariable INIT - reentering access to variable during its initialization, will see previous value\n" +
+//							"	variable: "+ variableName + '\n' +
+//							"	previous value: " + previousPath);
+//					}
+//					this.variablePut(variableName, previousPath); // replace value so reentering calls are seeing old value
+//				}
+				oldPath = null;  //33695 - cannot filter out restored variable, must update affected project to reset cached CP
+			}
+			if (oldPath != null && oldPath.equals(variablePaths[i])){
+				variableNames[i] = null;
+				discardCount++;
+			}
+		}
+		if (discardCount > 0){
+			if (discardCount == varLength) return;
+			int changedLength = varLength - discardCount;
+			String[] changedVariableNames = new String[changedLength];
+			IPath[] changedVariablePaths = new IPath[changedLength];
+			for (int i = 0, index = 0; i < varLength; i++){
+				if (variableNames[i] != null){
+					changedVariableNames[index] = variableNames[i];
+					changedVariablePaths[index] = variablePaths[i];
+					index++;
+				}
+			}
+			variableNames = changedVariableNames;
+			variablePaths = changedVariablePaths;
+			varLength = changedLength;
+		}
+		
+		if (monitor != null && monitor.isCanceled()) return;
+
+		if (model != null) {
+			IRubyProject[] projects = model.getRubyProjects();
+			nextProject : for (int i = 0, projectLength = projects.length; i < projectLength; i++){
+				RubyProject project = (RubyProject) projects[i];
+						
+				// check to see if any of the modified variables is present on the loadpath
+				ILoadpathEntry[] classpath = project.getRawLoadpath();
+				for (int j = 0, cpLength = classpath.length; j < cpLength; j++){
+					
+					ILoadpathEntry entry = classpath[j];
+					for (int k = 0; k < varLength; k++){
+	
+						String variableName = variableNames[k];						
+						if (entry.getEntryKind() ==  ILoadpathEntry.CPE_VARIABLE){
+	
+							if (variableName.equals(entry.getPath().segment(0))){
+								affectedProjectClasspaths.put(project, project.getResolvedLoadpath(true/*ignoreUnresolvedEntry*/, false/*don't generateMarkerOnError*/, false/*don't returnResolutionInProgress*/));
+								continue nextProject;
+							}
+						}												
+					}
+				}
+			}
+		}
+		// update variables
+		for (int i = 0; i < varLength; i++){
+			variablePut(variableNames[i], variablePaths[i]);
+			if (updatePreferences)
+				variablePreferencesPut(variableNames[i], variablePaths[i]);
+		}
+		final String[] dbgVariableNames = variableNames;
+				
+		// update affected project loadpaths
+		if (!affectedProjectClasspaths.isEmpty()) {
+			try {
+				final boolean canChangeResources = !ResourcesPlugin.getWorkspace().isTreeLocked();
+				RubyCore.run(
+					new IWorkspaceRunnable() {
+						public void run(IProgressMonitor progressMonitor) throws CoreException {
+							// propagate loadpath change
+							Iterator projectsToUpdate = affectedProjectClasspaths.keySet().iterator();
+							while (projectsToUpdate.hasNext()) {
+			
+								if (progressMonitor != null && progressMonitor.isCanceled()) return;
+			
+								RubyProject affectedProject = (RubyProject) projectsToUpdate.next();
+
+								if (CP_RESOLVE_VERBOSE){
+									Util.verbose(
+										"CPVariable SET  - updating affected project due to setting variables\n" + //$NON-NLS-1$
+										"	project: " + affectedProject.getElementName() + '\n' + //$NON-NLS-1$
+										"	variables: " + org.rubypeople.rdt.internal.compiler.util.Util.toString(dbgVariableNames)); //$NON-NLS-1$
+								}
+
+								affectedProject
+									.setRawLoadpath(
+										affectedProject.getRawLoadpath(),
+										SetLoadpathOperation.DO_NOT_SET_OUTPUT,
+										null, // don't call beginTask on the monitor (see http://bugs.eclipse.org/bugs/show_bug.cgi?id=3717)
+										canChangeResources, 
+										(ILoadpathEntry[]) affectedProjectClasspaths.get(affectedProject),
+										false, // updating - no need for early validation
+										false); // updating - no need to save
+							}
+						}
+					},
+					null/*no need to lock anything*/,
+					monitor);
+			} catch (CoreException e) {
+				if (CP_RESOLVE_VERBOSE){
+					Util.verbose(
+						"CPVariable SET  - FAILED DUE TO EXCEPTION\n" + //$NON-NLS-1$
+						"	variables: " + org.rubypeople.rdt.internal.compiler.util.Util.toString(dbgVariableNames), //$NON-NLS-1$
+						System.err); 
+					e.printStackTrace();
+				}
+				if (e instanceof RubyModelException) {
+					throw (RubyModelException)e;
+				} else {
+					throw new RubyModelException(e);
+				}
+			}
+		}
+	}
+
+	private void variablePreferencesPut(String variableName, IPath variablePath) {
+		String variableKey = CP_VARIABLE_PREFERENCES_PREFIX+variableName;
+		if (variablePath == null) {
+			this.variablesWithInitializer.remove(variableName);
+			getInstancePreferences().remove(variableKey);
+		} else {
+			getInstancePreferences().put(variableKey, variablePath.toString());
+		}
+		try {
+			getInstancePreferences().flush();
+		} catch (BackingStoreException e) {
+			// ignore exception
+		}
+	}
+	
+	/**
+	 * Get workpsace eclipse preference for JavaCore plugin.
+	 */
+	public IEclipsePreferences getInstancePreferences() {
+		return preferencesLookup[PREF_INSTANCE];
+	}
+
+	/*
+	 * Optimize startup case where 1 variable is initialized at a time with the same value as on shutdown.
+	 */
+	public boolean variablePutIfInitializingWithSameValue(String[] variableNames, IPath[] variablePaths) {
+		if (variableNames.length != 1)
+			return false;
+		String variableName = variableNames[0];
+		IPath oldPath = getPreviousSessionVariable(variableName);
+		if (oldPath == null)
+			return false;
+		IPath newPath = variablePaths[0];
+		if (!oldPath.equals(newPath))
+			return false;
+		variablePut(variableName, newPath);
+		return true;
+	}
 
 }

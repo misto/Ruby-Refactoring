@@ -102,4 +102,17 @@ public class Util {
 		return contents;
 	}
 
+	/**
+	 * Converts an array of Objects into String.
+	 */
+	public static String toString(Object[] objects) {
+		return toString(objects, 
+			new Displayable(){ 
+				public String displayString(Object o) { 
+					if (o == null) return "null"; //$NON-NLS-1$
+					return o.toString(); 
+				}
+			});
+	}
+
 }
