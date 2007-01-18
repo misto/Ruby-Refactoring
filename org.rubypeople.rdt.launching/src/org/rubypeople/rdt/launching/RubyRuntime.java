@@ -118,7 +118,7 @@ public class RubyRuntime {
 		return runtime;
 	}
         
-    public static void removeInterpreterInstallChangedListener(IInterpreterInstallChangedListener listener) {
+    public static void removeInterpreterInstallChangedListener(IVMInstallChangedListener listener) {
         fgVMListeners.remove(listener);
     }
 	
@@ -146,7 +146,7 @@ public class RubyRuntime {
 		saveRuntimeConfiguration();   
 		Object[] listeners = fgVMListeners.getListeners();
 		for (int i = 0; i < listeners.length; i++) {
-			IInterpreterInstallChangedListener listener = (IInterpreterInstallChangedListener)listeners[i];
+			IVMInstallChangedListener listener = (IVMInstallChangedListener)listeners[i];
 			listener.defaultVMInstallChanged(oldInterpreter, anInterpreter);
 		}		
 	}
@@ -274,7 +274,7 @@ public class RubyRuntime {
 		return new File(fileLocation.toOSString());
 	}
 
-	public static void addInterpreterInstallChangedListener(IInterpreterInstallChangedListener listener) {
+	public static void addInterpreterInstallChangedListener(IVMInstallChangedListener listener) {
 		fgVMListeners.add(listener);		
 	}
 	

@@ -10,7 +10,7 @@ import org.rubypeople.rdt.core.ILoadpathContainer;
 import org.rubypeople.rdt.core.ILoadpathEntry;
 import org.rubypeople.rdt.core.RubyCore;
 import org.rubypeople.rdt.launching.IVMInstall;
-import org.rubypeople.rdt.launching.IInterpreterInstallChangedListener;
+import org.rubypeople.rdt.launching.IVMInstallChangedListener;
 import org.rubypeople.rdt.launching.PropertyChangeEvent;
 import org.rubypeople.rdt.launching.RubyRuntime;
 
@@ -43,7 +43,7 @@ public class RubyVMContainer implements ILoadpathContainer {
 		if (fgLoadpathEntries == null) {
 			fgLoadpathEntries = new HashMap(10);
 			// add a listener to clear cached value when a VM changes or is removed
-			IInterpreterInstallChangedListener listener = new IInterpreterInstallChangedListener() {
+			IVMInstallChangedListener listener = new IVMInstallChangedListener() {
 				public void defaultVMInstallChanged(IVMInstall previous, IVMInstall current) {
 				}
 

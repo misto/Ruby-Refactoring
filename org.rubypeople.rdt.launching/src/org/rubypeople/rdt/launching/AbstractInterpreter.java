@@ -80,7 +80,7 @@ public abstract class AbstractInterpreter implements IVMInstall, IVMInstall2 {
 	 */
 	public void setName(String name) {
 		if (!name.equals(fName)) {
-			PropertyChangeEvent event = new PropertyChangeEvent(this, IInterpreterInstallChangedListener.PROPERTY_NAME, fName, name);
+			PropertyChangeEvent event = new PropertyChangeEvent(this, IVMInstallChangedListener.PROPERTY_NAME, fName, name);
 			fName= name;
 			if (fNotify) {
 				RubyRuntime.fireInterpreterChanged(event);
@@ -102,7 +102,7 @@ public abstract class AbstractInterpreter implements IVMInstall, IVMInstall2 {
 	 */
 	public void setInstallLocation(File installLocation) {
 		if (!installLocation.equals(fInstallLocation)) {
-			PropertyChangeEvent event = new PropertyChangeEvent(this, IInterpreterInstallChangedListener.PROPERTY_INSTALL_LOCATION, fInstallLocation, installLocation);
+			PropertyChangeEvent event = new PropertyChangeEvent(this, IVMInstallChangedListener.PROPERTY_INSTALL_LOCATION, fInstallLocation, installLocation);
 			fInstallLocation= installLocation;
 			if (fNotify) {
 				RubyRuntime.fireInterpreterChanged(event);
@@ -161,7 +161,7 @@ public abstract class AbstractInterpreter implements IVMInstall, IVMInstall2 {
 			}
 		}
 
-		PropertyChangeEvent event = new PropertyChangeEvent(this, IInterpreterInstallChangedListener.PROPERTY_LIBRARY_LOCATIONS, prevLocations, newLocations);
+		PropertyChangeEvent event = new PropertyChangeEvent(this, IVMInstallChangedListener.PROPERTY_LIBRARY_LOCATIONS, prevLocations, newLocations);
 		fSystemLibraryDescriptions = locations;
 		if (fNotify) {
 			RubyRuntime.fireInterpreterChanged(event);		
@@ -250,7 +250,7 @@ public abstract class AbstractInterpreter implements IVMInstall, IVMInstall2 {
     		// No change
     		return;
     	}
-        PropertyChangeEvent event = new PropertyChangeEvent(this, IInterpreterInstallChangedListener.PROPERTY_VM_ARGUMENTS, fInterpreterArgs, vmArgs);
+        PropertyChangeEvent event = new PropertyChangeEvent(this, IVMInstallChangedListener.PROPERTY_VM_ARGUMENTS, fInterpreterArgs, vmArgs);
         fInterpreterArgs = vmArgs;
 		if (fNotify) {
 			RubyRuntime.fireInterpreterChanged(event);		
