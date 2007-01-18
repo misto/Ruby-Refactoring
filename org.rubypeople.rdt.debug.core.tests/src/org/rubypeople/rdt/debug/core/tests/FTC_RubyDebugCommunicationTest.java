@@ -3,7 +3,7 @@ package org.rubypeople.rdt.debug.core.tests;
 import org.rubypeople.rdt.core.RubyCore;
 import org.rubypeople.rdt.internal.debug.core.SuspensionPoint;
 import org.rubypeople.rdt.internal.launching.DebuggerRunner;
-import org.rubypeople.rdt.internal.launching.RdtLaunchingPlugin;
+import org.rubypeople.rdt.internal.launching.LaunchingPlugin;
 
 public class FTC_RubyDebugCommunicationTest extends FTC_ClassicDebuggerCommunicationTest {
 
@@ -86,7 +86,7 @@ public class FTC_RubyDebugCommunicationTest extends FTC_ClassicDebuggerCommunica
 		if (RubyCore.getPlugin() != null) {
 			result = DebuggerRunner.getDirectoryOfRubyDebuggerFile();
 		} else {
-			result = RdtLaunchingPlugin.class.getResource(".").getPath() + "/../../../../../../ruby";
+			result = LaunchingPlugin.class.getResource(".").getPath() + "/../../../../../../ruby";
 		}
 		return result;
 	}

@@ -16,14 +16,14 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPreferencePage;
-import org.rubypeople.rdt.internal.launching.RdtLaunchingPlugin;
+import org.rubypeople.rdt.internal.launching.LaunchingPlugin;
 import org.rubypeople.rdt.internal.ui.text.PreferencesAdapter;
 
 public class DebuggerPreferencePage extends FieldEditorPreferencePage implements IWorkbenchPreferencePage {
 
 	public DebuggerPreferencePage() {
 		super(GRID);
-		Preferences launchingPreferences = RdtLaunchingPlugin.getDefault().getPluginPreferences();
+		Preferences launchingPreferences = LaunchingPlugin.getDefault().getPluginPreferences();
 		setPreferenceStore(new PreferencesAdapter(launchingPreferences));
 		setDescription(PreferencesMessages.DebuggerPreferencePage_description_label);
 	}
@@ -36,7 +36,7 @@ public class DebuggerPreferencePage extends FieldEditorPreferencePage implements
 	protected Control createContents(Composite parent) {
 		Control result = super.createContents(parent);
 		Label label = new Label(parent, SWT.WRAP);
-		URL entry = RdtLaunchingPlugin.getDefault().getBundle().getEntry("/");
+		URL entry = LaunchingPlugin.getDefault().getBundle().getEntry("/");
 		String installLocation;
 		try {
 			installLocation = FileLocator.resolve(entry).toString();

@@ -63,19 +63,19 @@ public class RubyInterpreter implements IVMInstall {
 	
 	public Process exec(List args, File workingDirectory) throws CoreException {
 		try {
-			RdtLaunchingPlugin.debug("Launching: " + args) ;
-			RdtLaunchingPlugin.debug("Working Dir: " + workingDirectory) ;
+			LaunchingPlugin.debug("Launching: " + args) ;
+			LaunchingPlugin.debug("Working Dir: " + workingDirectory) ;
             List rubyCmd = new ArrayList();
             rubyCmd.add(this.getCommand());
             rubyCmd.addAll(args);
             return commandExecutor.exec((String[]) rubyCmd.toArray(new String[] {}), workingDirectory);
 		} catch (IOException e) {
-            IStatus errorStatus = new Status(IStatus.ERROR, RdtLaunchingPlugin.PLUGIN_ID, IStatus.OK, 
+            IStatus errorStatus = new Status(IStatus.ERROR, LaunchingPlugin.PLUGIN_ID, IStatus.OK, 
                     "Unable to execute interpreter: " + args + workingDirectory, e);
             throw new CoreException(errorStatus) ;
 		}
 		catch (IllegalCommandException e) {
-			IStatus errorStatus = new Status(IStatus.ERROR, RdtLaunchingPlugin.PLUGIN_ID, IStatus.OK, e.getMessage(), e);
+			IStatus errorStatus = new Status(IStatus.ERROR, LaunchingPlugin.PLUGIN_ID, IStatus.OK, e.getMessage(), e);
 			throw new CoreException(errorStatus) ;
 		}
 

@@ -234,7 +234,7 @@ public class VMDefinitionsContainer {
 	public String getAsXML() throws ParserConfigurationException, IOException, TransformerException {
 		
 		// Create the Document and the top-level node
-		Document doc = RdtLaunchingPlugin.getDocument();
+		Document doc = LaunchingPlugin.getDocument();
 		Element config = doc.createElement("vmSettings");    //$NON-NLS-1$
 		doc.appendChild(config);
 		
@@ -258,7 +258,7 @@ public class VMDefinitionsContainer {
 		}
 		
 		// Serialize the Document and return the resulting String
-		return RdtLaunchingPlugin.serializeDocument(doc);
+		return LaunchingPlugin.serializeDocument(doc);
 	}
 	
 	/**
@@ -438,7 +438,7 @@ public class VMDefinitionsContainer {
 				}
 			}
 		} else {
-			RdtLaunchingPlugin.log(RdtLaunchingMessages.RubyRuntime_VM_type_element_with_unknown_id_1); 
+			LaunchingPlugin.log(RdtLaunchingMessages.RubyRuntime_VM_type_element_with_unknown_id_1); 
 		}
 	}
 
@@ -490,7 +490,7 @@ public class VMDefinitionsContainer {
 				vmStandin.setVMArgs(vmArgs);
 			}
 		} else {
-			RdtLaunchingPlugin.log(RdtLaunchingMessages.RubyRuntime_VM_element_specified_with_no_id_attribute_2); 
+			LaunchingPlugin.log(RdtLaunchingMessages.RubyRuntime_VM_element_specified_with_no_id_attribute_2); 
 		}
 	}	
 	

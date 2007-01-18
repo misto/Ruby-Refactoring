@@ -37,7 +37,7 @@ import org.eclipse.core.variables.VariablesPlugin;
 import org.rubypeople.rdt.internal.launching.CompositeId;
 import org.rubypeople.rdt.internal.launching.ListenerList;
 import org.rubypeople.rdt.internal.launching.RdtLaunchingMessages;
-import org.rubypeople.rdt.internal.launching.RdtLaunchingPlugin;
+import org.rubypeople.rdt.internal.launching.LaunchingPlugin;
 import org.rubypeople.rdt.internal.launching.RubyInterpreter;
 import org.rubypeople.rdt.internal.launching.VMDefinitionsContainer;
 import org.rubypeople.rdt.internal.launching.VMStandin;
@@ -73,14 +73,14 @@ public class RubyRuntime {
 	 * </ol>
 	 * @since 0.9.0
 	 */
-	public static final String RUBY_CONTAINER = RdtLaunchingPlugin.getUniqueIdentifier() + "RUBY_CONTAINER"; //$NON-NLS-1$
+	public static final String RUBY_CONTAINER = LaunchingPlugin.getUniqueIdentifier() + "RUBY_CONTAINER"; //$NON-NLS-1$
 	
 	/**
 	 * Preference key for the String of XML that defines all installed VMs.
 	 * 
 	 * @since 0.9.0
 	 */
-	public static final String PREF_VM_XML = RdtLaunchingPlugin.getUniqueIdentifier() + ".PREF_VM_XML"; //$NON-NLS-1$
+	public static final String PREF_VM_XML = LaunchingPlugin.getUniqueIdentifier() + ".PREF_VM_XML"; //$NON-NLS-1$
 
 	/**
 	 * Simple identifier constant (value <code>"vmInstalls"</code>) for the
@@ -198,7 +198,7 @@ public class RubyRuntime {
 			}
 			reader.parse(new InputSource(fileReader));
 		} catch(Exception e) {
-			RdtLaunchingPlugin.log(e);
+			LaunchingPlugin.log(e);
 		}
 	}
 
@@ -239,7 +239,7 @@ public class RubyRuntime {
 			writer.write("</runtimeconfig>");
 			writer.flush();
 		} catch(IOException e) {
-			RdtLaunchingPlugin.log(e);
+			LaunchingPlugin.log(e);
 		}
 	}
 
@@ -269,7 +269,7 @@ public class RubyRuntime {
 	}
 	
 	protected File getRuntimeConfigurationFile() {
-		IPath stateLocation = RdtLaunchingPlugin.getDefault().getStateLocation();
+		IPath stateLocation = LaunchingPlugin.getDefault().getStateLocation();
 		IPath fileLocation = stateLocation.append("runtimeConfiguration.xml");
 		return new File(fileLocation.toOSString());
 	}
@@ -368,7 +368,7 @@ public class RubyRuntime {
 						
 
 					} catch (IOException e) {
-						RdtLaunchingPlugin.log(e);
+						LaunchingPlugin.log(e);
 					}
 				} finally {
 					fgInitializingVMs = false;
@@ -390,13 +390,13 @@ public class RubyRuntime {
 			if (setPref) {
 				try {
 					String xml = vmDefs.getAsXML();
-					RdtLaunchingPlugin.getDefault().getPluginPreferences().setValue(PREF_VM_XML, xml);
+					LaunchingPlugin.getDefault().getPluginPreferences().setValue(PREF_VM_XML, xml);
 				} catch (ParserConfigurationException e) {
-					RdtLaunchingPlugin.log(e);
+					LaunchingPlugin.log(e);
 				} catch (IOException e) {
-					RdtLaunchingPlugin.log(e);
+					LaunchingPlugin.log(e);
 				} catch (TransformerException e) {
-					RdtLaunchingPlugin.log(e);
+					LaunchingPlugin.log(e);
 				}
 				
 			}
@@ -407,9 +407,9 @@ public class RubyRuntime {
 	 * Initializes vm type extensions.
 	 */
 	private static void initializeVMTypeExtensions() {
-		IExtensionPoint extensionPoint= Platform.getExtensionRegistry().getExtensionPoint(RdtLaunchingPlugin.PLUGIN_ID, "vmInstallTypes"); //$NON-NLS-1$
+		IExtensionPoint extensionPoint= Platform.getExtensionRegistry().getExtensionPoint(LaunchingPlugin.PLUGIN_ID, "vmInstallTypes"); //$NON-NLS-1$
 		IConfigurationElement[] configs= extensionPoint.getConfigurationElements(); 
-		MultiStatus status= new MultiStatus(RdtLaunchingPlugin.getUniqueIdentifier(), IStatus.OK, RdtLaunchingMessages.RubyRuntime_exceptionOccurred, null); 
+		MultiStatus status= new MultiStatus(LaunchingPlugin.getUniqueIdentifier(), IStatus.OK, RdtLaunchingMessages.RubyRuntime_exceptionOccurred, null); 
 		fgInterpreterTypes= new IVMInstallType[configs.length];
 
 		for (int i= 0; i < configs.length; i++) {
@@ -422,7 +422,7 @@ public class RubyRuntime {
 		}
 		if (!status.isOK()) {
 			//only happens on a CoreException
-			RdtLaunchingPlugin.log(status);
+			LaunchingPlugin.log(status);
 			//cleanup null entries in fgVMTypes
 			List<IVMInstallType> temp= new ArrayList<IVMInstallType>(fgInterpreterTypes.length);
 			for (int i = 0; i < fgInterpreterTypes.length; i++) {
@@ -454,11 +454,11 @@ public class RubyRuntime {
 				VMDefinitionsContainer.parseXMLIntoContainer(inputStream, vmDefs);
 				return false;
 			} catch (IOException ioe) {
-				RdtLaunchingPlugin.log(ioe);
+				LaunchingPlugin.log(ioe);
 			}			
 		} else {			
 			// Otherwise, look for the old file that previously held the VM definitions
-			IPath stateLocation= RdtLaunchingPlugin.getDefault().getStateLocation();
+			IPath stateLocation= LaunchingPlugin.getDefault().getStateLocation();
 			IPath stateFile= stateLocation.append("vmConfiguration.xml"); //$NON-NLS-1$
 			File file = new File(stateFile.toOSString());
 			
@@ -479,7 +479,7 @@ public class RubyRuntime {
 	 * @since 0.9.0
 	 */
 	public static Preferences getPreferences() {
-		return RdtLaunchingPlugin.getDefault().getPluginPreferences();
+		return LaunchingPlugin.getDefault().getPluginPreferences();
 	}
 	
 	/** 
@@ -504,7 +504,7 @@ public class RubyRuntime {
 	 * @since 3.2
 	 */
 	private static void addVMExtensions(VMDefinitionsContainer vmDefs) {
-		IExtensionPoint extensionPoint = Platform.getExtensionRegistry().getExtensionPoint(RdtLaunchingPlugin.PLUGIN_ID, RubyRuntime.EXTENSION_POINT_VM_INSTALLS);
+		IExtensionPoint extensionPoint = Platform.getExtensionRegistry().getExtensionPoint(LaunchingPlugin.PLUGIN_ID, RubyRuntime.EXTENSION_POINT_VM_INSTALLS);
 		IConfigurationElement[] configs= extensionPoint.getConfigurationElements();
 		for (int i = 0; i < configs.length; i++) {
 			IConfigurationElement element = configs[i];
@@ -586,7 +586,7 @@ public class RubyRuntime {
 							(Object[]) new String[]{element.getName(), element.getContributor().getName()}), null);
 				}
 			} catch (CoreException e) {
-				RdtLaunchingPlugin.log(e);
+				LaunchingPlugin.log(e);
 			}
 		}
 	}
@@ -624,7 +624,7 @@ public class RubyRuntime {
 	 *  error, or <code>null</code> if none
 	 */
 	private static void abort(String message, int code, Throwable exception) throws CoreException {
-		throw new CoreException(new Status(IStatus.ERROR, RdtLaunchingPlugin.getUniqueIdentifier(), code, message, exception));
+		throw new CoreException(new Status(IStatus.ERROR, LaunchingPlugin.getUniqueIdentifier(), code, message, exception));
 	}	
 	
 	private static void fireInterpreterAdded(IVMInstall interpreter) {

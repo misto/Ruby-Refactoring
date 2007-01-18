@@ -25,7 +25,7 @@ public class InterpreterRunner {
         Map defaultAttributes = new HashMap();
         defaultAttributes.put(IProcess.ATTR_PROCESS_TYPE, "ruby");
 		IProcess process = DebugPlugin.newProcess(launch, nativeRubyProcess, renderLabel(configuration), defaultAttributes);
-		process.setAttribute(RdtLaunchingPlugin.PLUGIN_ID + ".launcher.cmdline", commandLine.toString());
+		process.setAttribute(LaunchingPlugin.PLUGIN_ID + ".launcher.cmdline", commandLine.toString());
 		return process ;
 	}
 	
@@ -56,7 +56,7 @@ public class InterpreterRunner {
 		commandLine.addAll(configuration.renderLoadPath());
 		commandLine.addAll(ArgumentSplitter.split(configuration.getInterpreterArguments()));
 		commandLine.add(RubyInterpreter.END_OF_OPTIONS_DELIMITER);
-		commandLine.add(RdtLaunchingPlugin.osDependentPath(configuration.getAbsoluteFileName()));
+		commandLine.add(LaunchingPlugin.osDependentPath(configuration.getAbsoluteFileName()));
 		commandLine.addAll(ArgumentSplitter.split(configuration.getProgramArguments()));
 
 		return commandLine;

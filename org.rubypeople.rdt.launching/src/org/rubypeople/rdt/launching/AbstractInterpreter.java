@@ -18,7 +18,7 @@ import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.rubypeople.rdt.internal.launching.RdtLaunchingMessages;
-import org.rubypeople.rdt.internal.launching.RdtLaunchingPlugin;
+import org.rubypeople.rdt.internal.launching.LaunchingPlugin;
 /**
  * Abstract implementation of a Interpreter install.
  * <p>
@@ -277,7 +277,7 @@ public abstract class AbstractInterpreter implements IVMInstall, IVMInstall2 {
 	 * @since 3.2
 	 */
 	protected void abort(String message, Throwable exception, int code) throws CoreException {
-		throw new CoreException(new Status(IStatus.ERROR, RdtLaunchingPlugin
+		throw new CoreException(new Status(IStatus.ERROR, LaunchingPlugin
 				.getUniqueIdentifier(), code, message, exception));
 	}	
     

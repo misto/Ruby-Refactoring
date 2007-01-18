@@ -34,11 +34,11 @@ public class DebuggerRunner extends InterpreterRunner {
 				proxy.start();
 				launch.addDebugTarget(debugTarget);
 			} catch (Exception e) {
-				RdtLaunchingPlugin.log(new Status(IStatus.ERROR, RdtLaunchingPlugin.PLUGIN_ID, IStatus.ERROR, e.getMessage(), e));
+				LaunchingPlugin.log(new Status(IStatus.ERROR, LaunchingPlugin.PLUGIN_ID, IStatus.ERROR, e.getMessage(), e));
 				debugTarget.terminate();
 			}
 		} else {
-			RdtLaunchingPlugin.log(new Status(IStatus.ERROR, RdtLaunchingPlugin.PLUGIN_ID, IStatus.ERROR, RdtLaunchingMessages.RdtLaunchingPlugin_processTerminatedBecauseNoDebuggerConnection, null));
+			LaunchingPlugin.log(new Status(IStatus.ERROR, LaunchingPlugin.PLUGIN_ID, IStatus.ERROR, RdtLaunchingMessages.RdtLaunchingPlugin_processTerminatedBecauseNoDebuggerConnection, null));
 			debugTarget.terminate();
 		}
 		return process;
@@ -68,20 +68,20 @@ public class DebuggerRunner extends InterpreterRunner {
 				commandLine.add("-reclipseDebug");
 			}
 			commandLine.add("-I");
-			commandLine.add(RdtLaunchingPlugin.osDependentPath(DebuggerRunner.getDirectoryOfRubyDebuggerFile().replace('/', File.separatorChar)));
+			commandLine.add(LaunchingPlugin.osDependentPath(DebuggerRunner.getDirectoryOfRubyDebuggerFile().replace('/', File.separatorChar)));
 		}
 	}
 
 	public static String getDirectoryOfRubyDebuggerFile() {
-		return RubyCore.getOSDirectory(RdtLaunchingPlugin.getDefault()) + "ruby";
+		return RubyCore.getOSDirectory(LaunchingPlugin.getDefault()) + "ruby";
 	}
 
 	public boolean isUseRubyDebug() {
-		return RdtLaunchingPlugin.getDefault().getPluginPreferences().getBoolean(PreferenceConstants.USE_RUBY_DEBUG);
+		return LaunchingPlugin.getDefault().getPluginPreferences().getBoolean(PreferenceConstants.USE_RUBY_DEBUG);
 	}
 	
 	public boolean isDebuggerVerbose() {
-		return RdtLaunchingPlugin.getDefault().getPluginPreferences().getBoolean(PreferenceConstants.VERBOSE_DEBUGGER);
+		return LaunchingPlugin.getDefault().getPluginPreferences().getBoolean(PreferenceConstants.VERBOSE_DEBUGGER);
 	}
 
 	protected IVMInstall convertInterpreter(IVMInstall rubyInterpreter) {

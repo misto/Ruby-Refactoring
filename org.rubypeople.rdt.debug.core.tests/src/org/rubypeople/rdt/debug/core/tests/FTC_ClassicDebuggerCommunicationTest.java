@@ -7,7 +7,7 @@ import org.rubypeople.rdt.internal.debug.core.SuspensionPoint;
 import org.rubypeople.rdt.internal.debug.core.model.RubyVariable;
 import org.rubypeople.rdt.internal.debug.core.model.ThreadInfo;
 import org.rubypeople.rdt.internal.debug.core.parsing.LoadResultReader;
-import org.rubypeople.rdt.internal.launching.RdtLaunchingPlugin;
+import org.rubypeople.rdt.internal.launching.LaunchingPlugin;
 
 public class FTC_ClassicDebuggerCommunicationTest extends
 		FTC_AbstractDebuggerCommunicationTest {
@@ -82,9 +82,9 @@ public class FTC_ClassicDebuggerCommunicationTest extends
 
 	private String createIncludeDir() {
 		String includeDir;
-		if (RdtLaunchingPlugin.getDefault() != null) {
+		if (LaunchingPlugin.getDefault() != null) {
 			// being run as JUnit Plug-in Test, Eclipse is running			
-			includeDir = RubyCore.getOSDirectory(RdtLaunchingPlugin.getDefault()) + "ruby" ;
+			includeDir = RubyCore.getOSDirectory(LaunchingPlugin.getDefault()) + "ruby" ;
 		}
 		else {
 		    // being run as "pure" JUnit Test without Eclipse running 

@@ -53,12 +53,12 @@ public class InterpreterRunnerConfiguration {
 		try {
 			projectName = configuration.getAttribute(RubyLaunchConfigurationAttribute.PROJECT_NAME, "");
 		} catch(CoreException e) {
-			RdtLaunchingPlugin.log(e);
+			LaunchingPlugin.log(e);
 		}
 		
 		RubyProject rubyProject = new RubyProject();
 		if (projectName.length() > 0 ) {
-			IProject project = RdtLaunchingPlugin.getWorkspace().getRoot().getProject(projectName);
+			IProject project = LaunchingPlugin.getWorkspace().getRoot().getProject(projectName);
 			rubyProject.setProject(project);
 		}
 		
@@ -70,7 +70,7 @@ public class InterpreterRunnerConfiguration {
 		try {
 			file = configuration.getAttribute(RubyLaunchConfigurationAttribute.WORKING_DIRECTORY, "");
 		} catch(CoreException e) {
-			RdtLaunchingPlugin.log(e);
+			LaunchingPlugin.log(e);
 		}
 		// it is valid not to specify a working directroy by returning null
 		// whereas new File("") would specify an invalid directory
@@ -111,7 +111,7 @@ public class InterpreterRunnerConfiguration {
 
 	private void addToLoadPath(List<String> loadPath, String pathDirectory) {
 		loadPath.add("-I");
-        loadPath.add(RdtLaunchingPlugin.osDependentPath(pathDirectory));
+        loadPath.add(LaunchingPlugin.osDependentPath(pathDirectory));
 	}
     
     protected List<String> renderLoadPath() {

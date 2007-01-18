@@ -26,7 +26,7 @@ import org.rubypeople.rdt.core.RubyCore;
 import org.w3c.dom.Document;
 import org.xml.sax.helpers.DefaultHandler;
 
-public class RdtLaunchingPlugin extends Plugin {
+public class LaunchingPlugin extends Plugin {
 	public static final String PLUGIN_ID = "org.rubypeople.rdt.launching"; //$NON-NLS-1$
     public static String osDependentPath(String aPath) {
         if (Platform.getOS().equals(Platform.OS_WIN32)) {
@@ -37,10 +37,10 @@ public class RdtLaunchingPlugin extends Plugin {
 
         return aPath;
     }
-	protected static RdtLaunchingPlugin plugin;
+	protected static LaunchingPlugin plugin;
 	private static DocumentBuilder fgXMLParser;
 
-	public RdtLaunchingPlugin() {
+	public LaunchingPlugin() {
 		super();
 		plugin = this;
 	}
@@ -143,7 +143,7 @@ public class RdtLaunchingPlugin extends Plugin {
 	 * @throws CoreException
 	 */
 	protected static void abort(String message, Throwable exception) throws CoreException {
-		IStatus status = new Status(IStatus.ERROR, RdtLaunchingPlugin.getUniqueIdentifier(), 0, message, exception);
+		IStatus status = new Status(IStatus.ERROR, LaunchingPlugin.getUniqueIdentifier(), 0, message, exception);
 		throw new CoreException(status);
 	}	
 }
