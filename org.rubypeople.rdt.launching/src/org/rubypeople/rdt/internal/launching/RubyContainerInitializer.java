@@ -8,6 +8,7 @@ import org.rubypeople.rdt.core.LoadpathContainerInitializer;
 import org.rubypeople.rdt.core.RubyCore;
 import org.rubypeople.rdt.launching.IInterpreter;
 import org.rubypeople.rdt.launching.IInterpreterInstallType;
+import org.rubypeople.rdt.launching.RubyRuntime;
 
 public class RubyContainerInitializer extends LoadpathContainerInitializer {
 

@@ -12,6 +12,7 @@ import org.rubypeople.rdt.core.RubyCore;
 import org.rubypeople.rdt.launching.IInterpreter;
 import org.rubypeople.rdt.launching.IInterpreterInstallChangedListener;
 import org.rubypeople.rdt.launching.PropertyChangeEvent;
+import org.rubypeople.rdt.launching.RubyRuntime;
 
 public class RubyVMContainer implements ILoadpathContainer {
 

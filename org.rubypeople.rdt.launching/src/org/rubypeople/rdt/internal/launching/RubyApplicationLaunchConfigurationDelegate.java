@@ -7,6 +7,7 @@ import org.eclipse.core.runtime.Status;
 import org.eclipse.debug.core.ILaunch;
 import org.eclipse.debug.core.ILaunchConfiguration;
 import org.eclipse.debug.core.model.ILaunchConfigurationDelegate;
+import org.rubypeople.rdt.launching.RubyRuntime;
 
 public class RubyApplicationLaunchConfigurationDelegate implements ILaunchConfigurationDelegate {
 	protected static final InterpreterRunner interpreterRunner = new InterpreterRunner();

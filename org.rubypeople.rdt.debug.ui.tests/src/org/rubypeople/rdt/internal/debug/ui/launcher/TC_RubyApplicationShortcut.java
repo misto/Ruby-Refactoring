@@ -24,8 +24,8 @@ import org.rubypeople.rdt.internal.debug.ui.RdtDebugUiPlugin;
 import org.rubypeople.rdt.internal.debug.ui.RubySourceLocator;
 import org.rubypeople.rdt.internal.launching.RubyInterpreter;
 import org.rubypeople.rdt.internal.launching.RubyLaunchConfigurationAttribute;
-import org.rubypeople.rdt.internal.launching.RubyRuntime;
 import org.rubypeople.rdt.launching.IInterpreter;
+import org.rubypeople.rdt.launching.RubyRuntime;
 import org.rubypeople.rdt.ui.IRubyConstants;
 
 public class TC_RubyApplicationShortcut extends ModifyingResourceTest {

@@ -19,7 +19,6 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.rubypeople.rdt.internal.launching.RdtLaunchingMessages;
 import org.rubypeople.rdt.internal.launching.RdtLaunchingPlugin;
-import org.rubypeople.rdt.internal.launching.RubyRuntime;
 /**
  * Abstract implementation of a Interpreter install.
  * <p>

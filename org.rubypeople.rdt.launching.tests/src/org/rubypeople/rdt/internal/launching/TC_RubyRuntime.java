@@ -31,6 +31,7 @@ import org.eclipse.core.runtime.QualifiedName;
 import org.eclipse.core.runtime.content.IContentDescription;
 import org.eclipse.core.runtime.jobs.ISchedulingRule;
 import org.rubypeople.rdt.launching.IInterpreter;
+import org.rubypeople.rdt.launching.RubyRuntime;
 
 public class TC_RubyRuntime extends TestCase {
 	protected StringWriter runtimeConfigurationWriter = new StringWriter();

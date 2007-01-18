@@ -5,10 +5,10 @@ import java.io.File;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.preference.PreferenceConverter;
 import org.eclipse.swt.graphics.RGB;
-import org.rubypeople.rdt.internal.launching.RubyRuntime;
 import org.rubypeople.rdt.internal.ui.RubyPlugin;
 import org.rubypeople.rdt.internal.ui.preferences.formatter.ProfileManager;
 import org.rubypeople.rdt.launching.IInterpreter;
+import org.rubypeople.rdt.launching.RubyRuntime;
 
 public class PreferenceConstants {
 

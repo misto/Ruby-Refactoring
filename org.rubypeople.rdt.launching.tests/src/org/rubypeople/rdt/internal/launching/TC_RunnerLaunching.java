@@ -23,6 +23,7 @@ import org.eclipse.debug.core.ILaunchManager;
 import org.eclipse.debug.core.Launch;
 import org.rubypeople.eclipse.shams.debug.core.ShamLaunchConfigurationType;
 import org.rubypeople.eclipse.testutils.ResourceTools;
+import org.rubypeople.rdt.launching.RubyRuntime;
 
 public class TC_RunnerLaunching extends TestCase {
 

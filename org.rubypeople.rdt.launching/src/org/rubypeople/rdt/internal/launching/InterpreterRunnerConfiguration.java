@@ -13,6 +13,7 @@ import org.rubypeople.rdt.core.ILoadpathEntry;
 import org.rubypeople.rdt.core.RubyModelException;
 import org.rubypeople.rdt.internal.core.RubyProject;
 import org.rubypeople.rdt.launching.IInterpreter;
+import org.rubypeople.rdt.launching.RubyRuntime;
 
 public class InterpreterRunnerConfiguration {
 	protected ILaunchConfiguration configuration;

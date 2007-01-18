@@ -26,8 +26,8 @@ import org.rubypeople.rdt.core.IRubyElement;
 import org.rubypeople.rdt.internal.debug.ui.RdtDebugUiMessages;
 import org.rubypeople.rdt.internal.debug.ui.RdtDebugUiPlugin;
 import org.rubypeople.rdt.internal.launching.RubyLaunchConfigurationAttribute;
-import org.rubypeople.rdt.internal.launching.RubyRuntime;
 import org.rubypeople.rdt.internal.ui.RubyPlugin;
+import org.rubypeople.rdt.launching.RubyRuntime;
 
 public class RubyApplicationShortcut implements ILaunchShortcut {
 

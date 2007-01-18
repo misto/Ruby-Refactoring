@@ -32,6 +32,7 @@ import org.eclipse.core.runtime.Path;
 import org.rubypeople.rdt.launching.IInterpreter;
 import org.rubypeople.rdt.launching.IInterpreter2;
 import org.rubypeople.rdt.launching.IInterpreterInstallType;
+import org.rubypeople.rdt.launching.RubyRuntime;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
