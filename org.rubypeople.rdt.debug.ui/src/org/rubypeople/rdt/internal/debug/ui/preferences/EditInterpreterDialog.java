@@ -33,7 +33,7 @@ import org.rubypeople.rdt.internal.ui.wizards.dialogfields.StringButtonDialogFie
 import org.rubypeople.rdt.internal.ui.wizards.dialogfields.StringDialogField;
 import org.rubypeople.rdt.launching.IVMInstall;
 import org.rubypeople.rdt.launching.IVMInstall2;
-import org.rubypeople.rdt.launching.IInterpreterInstallType;
+import org.rubypeople.rdt.launching.IVMInstallType;
 
 public class EditInterpreterDialog extends StatusDialog {
 	
@@ -45,8 +45,8 @@ public class EditInterpreterDialog extends StatusDialog {
 	
 	private StringDialogField fVMArgs;
 	
-	private IInterpreterInstallType fSelectedVMType;
-	private IInterpreterInstallType[] fVMTypes;
+	private IVMInstallType fSelectedVMType;
+	private IVMInstallType[] fVMTypes;
 	private ComboDialogField fVMTypeCombo;
 	
 	private IStatus[] fStati;
@@ -55,7 +55,7 @@ public class EditInterpreterDialog extends StatusDialog {
 
 	private IAddVMDialogRequestor fRequestor;
 
-	public EditInterpreterDialog(IAddVMDialogRequestor requestor, Shell shell, IInterpreterInstallType[] vmInstallTypes, IVMInstall editedVM) {
+	public EditInterpreterDialog(IAddVMDialogRequestor requestor, Shell shell, IVMInstallType[] vmInstallTypes, IVMInstall editedVM) {
 		super(shell);
 		setShellStyle(getShellStyle() | SWT.RESIZE);
 		fRequestor= requestor;
@@ -116,7 +116,7 @@ public class EditInterpreterDialog extends StatusDialog {
 		selectVMType();  
 	}
 	
-	private String createUniqueId(IInterpreterInstallType vmType) {
+	private String createUniqueId(IVMInstallType vmType) {
 		String id= null;
 		do {
 			id= String.valueOf(System.currentTimeMillis());

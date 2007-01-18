@@ -27,7 +27,7 @@ import org.rubypeople.rdt.internal.launching.RdtLaunchingPlugin;
  */
 public abstract class AbstractInterpreter implements IVMInstall, IVMInstall2 {
 
-	private IInterpreterInstallType fType;
+	private IVMInstallType fType;
 	private String fId;
 	private String fName;
 	private File fInstallLocation;
@@ -49,7 +49,7 @@ public abstract class AbstractInterpreter implements IVMInstall, IVMInstall2 {
 	 * @throws	IllegalArgumentException	if any of the required
 	 * 					parameters are <code>null</code>.
 	 */
-	public AbstractInterpreter(IInterpreterInstallType type, String id) {
+	public AbstractInterpreter(IVMInstallType type, String id) {
 		if (type == null)
 			throw new IllegalArgumentException(RdtLaunchingMessages.vmInstall_assert_typeNotNull); 
 		if (id == null)
@@ -114,7 +114,7 @@ public abstract class AbstractInterpreter implements IVMInstall, IVMInstall2 {
 	 * Subclasses should not override this method.
 	 * @see IInterpreterInstall#getInterpreterInstallType()
 	 */
-	public IInterpreterInstallType getVMInstallType() {
+	public IVMInstallType getVMInstallType() {
 		return fType;
 	}
 

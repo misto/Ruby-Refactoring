@@ -11,7 +11,7 @@ import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.rubypeople.rdt.launching.IVMInstall;
-import org.rubypeople.rdt.launching.IInterpreterInstallType;
+import org.rubypeople.rdt.launching.IVMInstallType;
 import org.rubypeople.rdt.launching.IVMRunner;
 
 public class RubyInterpreter implements IVMInstall {
@@ -101,7 +101,7 @@ public class RubyInterpreter implements IVMInstall {
 		return null;
 	}
 
-	public IInterpreterInstallType getVMInstallType() {
+	public IVMInstallType getVMInstallType() {
 		// TODO Auto-generated method stub
 		return null;
 	}

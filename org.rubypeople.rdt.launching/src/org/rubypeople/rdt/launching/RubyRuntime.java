@@ -90,7 +90,7 @@ public class RubyRuntime {
 	 */
 	public static final String EXTENSION_POINT_VM_INSTALLS = "vmInstalls";	 //$NON-NLS-1$			
 	
-	private static IInterpreterInstallType[] fgInterpreterTypes= null;
+	private static IVMInstallType[] fgInterpreterTypes= null;
 
 	protected static RubyRuntime runtime;
 	private static Object fgVMLock = new Object();
@@ -284,8 +284,8 @@ public class RubyRuntime {
 	 * @return	The VM install type for the given id, or <code>null</code> if no
 	 * 			VM install type with the given id is registered.
 	 */
-	public static IInterpreterInstallType getInterpreterInstallType(String id) {
-		IInterpreterInstallType[] vmTypes= getInterpreterInstallTypes();
+	public static IVMInstallType getInterpreterInstallType(String id) {
+		IVMInstallType[] vmTypes= getInterpreterInstallTypes();
 			for (int i= 0; i < vmTypes.length; i++) {
 				if (vmTypes[i].getId().equals(id)) {
 					return vmTypes[i];
@@ -301,7 +301,7 @@ public class RubyRuntime {
 	 * 
 	 * @return the list of registered VM types
 	 */
-	public static IInterpreterInstallType[] getInterpreterInstallTypes() {
+	public static IVMInstallType[] getInterpreterInstallTypes() {
 		initializeInterpreters();
 		return fgInterpreterTypes; 
 	}
@@ -377,9 +377,9 @@ public class RubyRuntime {
 		}
 		if (vmDefs != null) {
 			// notify of initial VMs for backwards compatibility
-			IInterpreterInstallType[] installTypes = getInterpreterInstallTypes();
+			IVMInstallType[] installTypes = getInterpreterInstallTypes();
 			for (int i = 0; i < installTypes.length; i++) {
-				IInterpreterInstallType type = installTypes[i];
+				IVMInstallType type = installTypes[i];
 				IVMInstall[] installs = type.getVMInstalls();
 				for (int j = 0; j < installs.length; j++) {
 					fireInterpreterAdded(installs[j]);
@@ -410,11 +410,11 @@ public class RubyRuntime {
 		IExtensionPoint extensionPoint= Platform.getExtensionRegistry().getExtensionPoint(RdtLaunchingPlugin.PLUGIN_ID, "vmInstallTypes"); //$NON-NLS-1$
 		IConfigurationElement[] configs= extensionPoint.getConfigurationElements(); 
 		MultiStatus status= new MultiStatus(RdtLaunchingPlugin.getUniqueIdentifier(), IStatus.OK, RdtLaunchingMessages.RubyRuntime_exceptionOccurred, null); 
-		fgInterpreterTypes= new IInterpreterInstallType[configs.length];
+		fgInterpreterTypes= new IVMInstallType[configs.length];
 
 		for (int i= 0; i < configs.length; i++) {
 			try {
-				IInterpreterInstallType vmType= (IInterpreterInstallType)configs[i].createExecutableExtension("class"); //$NON-NLS-1$
+				IVMInstallType vmType= (IVMInstallType)configs[i].createExecutableExtension("class"); //$NON-NLS-1$
 				fgInterpreterTypes[i]= vmType;
 			} catch (CoreException e) {
 				status.add(e.getStatus());
@@ -424,12 +424,12 @@ public class RubyRuntime {
 			//only happens on a CoreException
 			RdtLaunchingPlugin.log(status);
 			//cleanup null entries in fgVMTypes
-			List<IInterpreterInstallType> temp= new ArrayList<IInterpreterInstallType>(fgInterpreterTypes.length);
+			List<IVMInstallType> temp= new ArrayList<IVMInstallType>(fgInterpreterTypes.length);
 			for (int i = 0; i < fgInterpreterTypes.length; i++) {
 				if(fgInterpreterTypes[i] != null) {
 					temp.add(fgInterpreterTypes[i]);
 				}
-				fgInterpreterTypes= new IInterpreterInstallType[temp.size()];
+				fgInterpreterTypes= new IVMInstallType[temp.size()];
 				fgInterpreterTypes= temp.toArray(fgInterpreterTypes);
 			}
 		}
@@ -493,7 +493,7 @@ public class RubyRuntime {
 		if (vm == null) {
 			return null;
 		}
-		IInterpreterInstallType vmType= vm.getVMInstallType();
+		IVMInstallType vmType= vm.getVMInstallType();
 		String typeID= vmType.getId();
 		CompositeId id= new CompositeId(new String[] { typeID, vm.getId() });
 		return id.toString();
@@ -520,7 +520,7 @@ public class RubyRuntime {
 						abort(MessageFormat.format("Missing required id attribute for vmInstall contributed by {0}", //$NON-NLS-1$
 								(Object[]) new String[]{element.getContributor().getName()}), null);
 					}
-					IInterpreterInstallType installType = getInterpreterInstallType(vmType);
+					IVMInstallType installType = getInterpreterInstallType(vmType);
 					if (installType == null) {
 						abort(MessageFormat.format("vmInstall {0} contributed by {1} references undefined VM install type {2}", //$NON-NLS-1$
 								(Object[]) new String[]{id, element.getContributor().getName(), vmType}), null);

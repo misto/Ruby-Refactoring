@@ -39,7 +39,7 @@ public interface IVMInstall {
 
 	public String getId();
 
-	public IInterpreterInstallType getVMInstallType();
+	public IVMInstallType getVMInstallType();
 
 	public void setLibraryLocations(IPath[] paths);
 

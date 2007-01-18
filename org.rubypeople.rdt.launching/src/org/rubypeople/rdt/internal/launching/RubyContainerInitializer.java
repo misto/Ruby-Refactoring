@@ -7,7 +7,7 @@ import org.rubypeople.rdt.core.IRubyProject;
 import org.rubypeople.rdt.core.LoadpathContainerInitializer;
 import org.rubypeople.rdt.core.RubyCore;
 import org.rubypeople.rdt.launching.IVMInstall;
-import org.rubypeople.rdt.launching.IInterpreterInstallType;
+import org.rubypeople.rdt.launching.IVMInstallType;
 import org.rubypeople.rdt.launching.RubyRuntime;
 
 public class RubyContainerInitializer extends LoadpathContainerInitializer {
@@ -41,7 +41,7 @@ public class RubyContainerInitializer extends LoadpathContainerInitializer {
 			// specific Ruby VM
 			String vmTypeId = getInterpreterTypeId(containerPath);
 			String vmName = getInterpreterName(containerPath);
-			IInterpreterInstallType vmType = RubyRuntime
+			IVMInstallType vmType = RubyRuntime
 					.getInterpreterInstallType(vmTypeId);
 			if (vmType != null) {
 				vm = vmType.findVMInstallByName(vmName);

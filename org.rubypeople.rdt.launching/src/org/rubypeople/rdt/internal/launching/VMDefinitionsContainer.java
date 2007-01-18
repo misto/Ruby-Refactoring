@@ -31,7 +31,7 @@ import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
 import org.rubypeople.rdt.launching.IVMInstall;
 import org.rubypeople.rdt.launching.IVMInstall2;
-import org.rubypeople.rdt.launching.IInterpreterInstallType;
+import org.rubypeople.rdt.launching.IVMInstallType;
 import org.rubypeople.rdt.launching.RubyRuntime;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -107,7 +107,7 @@ public class VMDefinitionsContainer {
 	 */
 	public void addVM(IVMInstall vm) {
 		if (!fVMList.contains(vm)) {	
-			IInterpreterInstallType vmInstallType = vm.getVMInstallType();
+			IVMInstallType vmInstallType = vm.getVMInstallType();
 			List vmList = (List) fVMTypeToVMMap.get(vmInstallType);
 			if (vmList == null) {
 				vmList = new ArrayList(3);
@@ -252,7 +252,7 @@ public class VMDefinitionsContainer {
 		Set vmInstallTypeSet = getVMTypeToVMMap().keySet();
 		Iterator keyIterator = vmInstallTypeSet.iterator();
 		while (keyIterator.hasNext()) {
-			IInterpreterInstallType vmInstallType = (IInterpreterInstallType) keyIterator.next();
+			IVMInstallType vmInstallType = (IVMInstallType) keyIterator.next();
 			Element vmTypeElement = vmTypeAsElement(doc, vmInstallType);
 			config.appendChild(vmTypeElement);
 		}
@@ -264,7 +264,7 @@ public class VMDefinitionsContainer {
 	/**
 	 * Create and return a node for the specified VM install type in the specified Document.
 	 */
-	private Element vmTypeAsElement(Document doc, IInterpreterInstallType vmType) {
+	private Element vmTypeAsElement(Document doc, IVMInstallType vmType) {
 		
 		// Create a node for the vm type and set its 'id' attribute
 		Element element= doc.createElement("vmType");   //$NON-NLS-1$
@@ -422,7 +422,7 @@ public class VMDefinitionsContainer {
 		
 		// Retrieve the 'id' attribute and the corresponding VM type object
 		String id = vmTypeElement.getAttribute("id");         //$NON-NLS-1$
-		IInterpreterInstallType vmType= RubyRuntime.getInterpreterInstallType(id);
+		IVMInstallType vmType= RubyRuntime.getInterpreterInstallType(id);
 		if (vmType != null) {
 			
 			// For each VM child node, populate the container with a subordinate node
@@ -446,7 +446,7 @@ public class VMDefinitionsContainer {
 	 * Parse the specified VM node, create a VMStandin for it, and add this to the 
 	 * specified container.
 	 */
-	private static void populateVMForType(IInterpreterInstallType vmType, Element vmElement, VMDefinitionsContainer container) {
+	private static void populateVMForType(IVMInstallType vmType, Element vmElement, VMDefinitionsContainer container) {
 		String id= vmElement.getAttribute("id"); //$NON-NLS-1$
 		if (id != null) {
 			

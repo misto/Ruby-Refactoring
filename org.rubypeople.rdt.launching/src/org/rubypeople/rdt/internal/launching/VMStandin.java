@@ -6,12 +6,12 @@ import java.util.List;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.rubypeople.rdt.launching.IVMInstall;
-import org.rubypeople.rdt.launching.IInterpreterInstallType;
+import org.rubypeople.rdt.launching.IVMInstallType;
 import org.rubypeople.rdt.launching.IVMRunner;
 
 public class VMStandin implements IVMInstall {
 
-	public VMStandin(IInterpreterInstallType vmType, String id) {
+	public VMStandin(IVMInstallType vmType, String id) {
 		// TODO Auto-generated constructor stub
 	}
 
@@ -36,7 +36,7 @@ public class VMStandin implements IVMInstall {
 		return null;
 	}
 
-	public IInterpreterInstallType getVMInstallType() {
+	public IVMInstallType getVMInstallType() {
 		// TODO Auto-generated method stub
 		return null;
 	}
