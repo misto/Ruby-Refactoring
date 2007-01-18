@@ -14,7 +14,7 @@ import org.rubypeople.rdt.core.RubyCore;
 import org.rubypeople.rdt.internal.debug.core.RdtDebugCorePlugin;
 import org.rubypeople.rdt.internal.debug.core.RubyDebuggerProxy;
 import org.rubypeople.rdt.internal.debug.core.model.RubyDebugTarget;
-import org.rubypeople.rdt.launching.IInterpreter;
+import org.rubypeople.rdt.launching.IVMInstall;
 
 public class DebuggerRunner extends InterpreterRunner {
 
@@ -84,7 +84,7 @@ public class DebuggerRunner extends InterpreterRunner {
 		return RdtLaunchingPlugin.getDefault().getPluginPreferences().getBoolean(PreferenceConstants.VERBOSE_DEBUGGER);
 	}
 
-	protected IInterpreter convertInterpreter(IInterpreter rubyInterpreter) {
+	protected IVMInstall convertInterpreter(IVMInstall rubyInterpreter) {
 		if (isUseRubyDebug()) {
 			IPath rdebugLocation = new Path(rubyInterpreter.getInstallLocation().getAbsolutePath()).removeLastSegments(1);
 			rdebugLocation = rdebugLocation.append("rdebug");

@@ -10,7 +10,7 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.debug.core.DebugPlugin;
 import org.eclipse.debug.core.ILaunch;
 import org.eclipse.debug.core.model.IProcess;
-import org.rubypeople.rdt.launching.IInterpreter;
+import org.rubypeople.rdt.launching.IVMInstall;
 
 public class InterpreterRunner {
    
@@ -20,7 +20,7 @@ public class InterpreterRunner {
 		List commandLine = renderCommandLine(configuration);
 		File workingDirectory = configuration.getAbsoluteWorkingDirectory();
 
-		IInterpreter interpreter = convertInterpreter(configuration.getInterpreter());
+		IVMInstall interpreter = convertInterpreter(configuration.getInterpreter());
 		Process nativeRubyProcess = interpreter.exec(commandLine, workingDirectory);
         Map defaultAttributes = new HashMap();
         defaultAttributes.put(IProcess.ATTR_PROCESS_TYPE, "ruby");
@@ -29,7 +29,7 @@ public class InterpreterRunner {
 		return process ;
 	}
 	
-	protected IInterpreter convertInterpreter(IInterpreter rubyInterpreter) {
+	protected IVMInstall convertInterpreter(IVMInstall rubyInterpreter) {
 		return rubyInterpreter;
 	}
 
@@ -37,7 +37,7 @@ public class InterpreterRunner {
 		StringBuffer buffer = new StringBuffer();
 
 		try {
-			IInterpreter interpreter = configuration.getInterpreter();
+			IVMInstall interpreter = configuration.getInterpreter();
 			buffer.append("Ruby ");
 			buffer.append(interpreter.getCommand());
 			buffer.append(" : ");

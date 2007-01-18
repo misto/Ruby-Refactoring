@@ -20,7 +20,7 @@ import org.rubypeople.rdt.internal.launching.RdtLaunchingMessages;
 import org.rubypeople.rdt.internal.ui.RubyPlugin;
 import org.rubypeople.rdt.internal.ui.RubyUIMessages;
 import org.rubypeople.rdt.internal.ui.dialogs.StatusInfo;
-import org.rubypeople.rdt.launching.IInterpreter;
+import org.rubypeople.rdt.launching.IVMInstall;
 import org.rubypeople.rdt.launching.RubyRuntime;
 import org.rubypeople.rdt.ui.PreferenceConstants;
 
@@ -85,7 +85,7 @@ public class RDocUtility {
 		public final void invoke() {
 			log("Generating RDoc for " + resource.getName());
 
-			IInterpreter interpreter = RubyRuntime.getDefault().getSelectedInterpreter();
+			IVMInstall interpreter = RubyRuntime.getDefault().getSelectedInterpreter();
 			if (interpreter == null) {			
 				MessageDialog.openInformation(RubyPlugin.getActiveWorkbenchShell(), RdtLaunchingMessages.RdtLaunchingPlugin_noInterpreterSelectedTitle, RdtLaunchingMessages.RdtLaunchingPlugin_noInterpreterSelected);
 				return ;

@@ -29,7 +29,7 @@ import org.eclipse.ui.IWorkbenchPreferencePage;
 import org.rubypeople.rdt.internal.debug.ui.RdtDebugUiMessages;
 import org.rubypeople.rdt.internal.debug.ui.rubyvms.IAddVMDialogRequestor;
 import org.rubypeople.rdt.internal.debug.ui.rubyvms.RubyVMMessages;
-import org.rubypeople.rdt.launching.IInterpreter;
+import org.rubypeople.rdt.launching.IVMInstall;
 import org.rubypeople.rdt.launching.RubyRuntime;
 
 public class RubyInterpreterPreferencePage extends PreferencePage implements IWorkbenchPreferencePage, IAddVMDialogRequestor {
@@ -57,7 +57,7 @@ public class RubyInterpreterPreferencePage extends PreferencePage implements IWo
 		createButtonGroup(composite);
 
 		fVMList.setInput(RubyRuntime.getDefault().getInstalledInterpreters());
-		IInterpreter selectedInterpreter = RubyRuntime.getDefault().getSelectedInterpreter();
+		IVMInstall selectedInterpreter = RubyRuntime.getDefault().getSelectedInterpreter();
 		if (selectedInterpreter != null)
 			fVMList.setChecked(selectedInterpreter, true);
 
@@ -187,7 +187,7 @@ public class RubyInterpreterPreferencePage extends PreferencePage implements IWo
 
 	protected void editInterpreter() {
 		IStructuredSelection selection= (IStructuredSelection)fVMList.getSelection();
-		IInterpreter vm= (IInterpreter)selection.getFirstElement();
+		IVMInstall vm= (IVMInstall)selection.getFirstElement();
 		if (vm == null) {
 			return;
 		}
@@ -204,9 +204,9 @@ public class RubyInterpreterPreferencePage extends PreferencePage implements IWo
 //		}
 	}
 	
-	protected IInterpreter getSelectedInterpreter() {
+	protected IVMInstall getSelectedInterpreter() {
 		IStructuredSelection selection = (IStructuredSelection) fVMList.getSelection();
-		return (IInterpreter) selection.getFirstElement();
+		return (IVMInstall) selection.getFirstElement();
 	}
 	
 	public boolean performOk() {
@@ -218,14 +218,14 @@ public class RubyInterpreterPreferencePage extends PreferencePage implements IWo
 
 		Object[] checkedElements = fVMList.getCheckedElements();
 		if (checkedElements.length > 0)
-			RubyRuntime.getDefault().setSelectedInterpreter((IInterpreter) checkedElements[0]);
+			RubyRuntime.getDefault().setSelectedInterpreter((IVMInstall) checkedElements[0]);
 
 		return super.performOk();
 	}
 
 	public boolean isDuplicateName(String name) {
 		for (int i= 0; i < fVMs.size(); i++) {
-			IInterpreter vm = (IInterpreter)fVMs.get(i);
+			IVMInstall vm = (IVMInstall)fVMs.get(i);
 			if (vm.getName().equals(name)) {
 				return true;
 			}
@@ -233,7 +233,7 @@ public class RubyInterpreterPreferencePage extends PreferencePage implements IWo
 		return false;
 	}
 
-	public void vmAdded(IInterpreter vm) {
+	public void vmAdded(IVMInstall vm) {
 		fVMs.add(vm);
 		fVMList.refresh();
 	}

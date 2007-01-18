@@ -25,7 +25,7 @@ import org.rubypeople.rdt.internal.launching.RdtLaunchingPlugin;
  * Clients implementing Interpreter installs must subclass this class.
  * </p>
  */
-public abstract class AbstractInterpreter implements IInterpreter, IInterpreter2 {
+public abstract class AbstractInterpreter implements IVMInstall, IVMInstall2 {
 
 	private IInterpreterInstallType fType;
 	private String fId;
@@ -183,8 +183,8 @@ public abstract class AbstractInterpreter implements IInterpreter, IInterpreter2
      * @since 2.1
 	 */
 	public boolean equals(Object object) {
-		if (object instanceof IInterpreter) {
-			IInterpreter vm = (IInterpreter)object;
+		if (object instanceof IVMInstall) {
+			IVMInstall vm = (IVMInstall)object;
 			return getInterpreterInstallType().equals(vm.getInterpreterInstallType()) &&
 				getId().equals(vm.getId());
 		}

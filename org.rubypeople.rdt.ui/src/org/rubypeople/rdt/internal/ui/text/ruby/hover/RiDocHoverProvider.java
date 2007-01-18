@@ -14,7 +14,7 @@ import org.eclipse.jface.text.IRegion;
 import org.eclipse.jface.text.ITextViewer;
 import org.eclipse.ui.IEditorInput;
 import org.rubypeople.rdt.internal.ui.RubyPlugin;
-import org.rubypeople.rdt.launching.IInterpreter;
+import org.rubypeople.rdt.launching.IVMInstall;
 import org.rubypeople.rdt.launching.RubyRuntime;
 import org.rubypeople.rdt.ui.PreferenceConstants;
 import org.rubypeople.rdt.ui.extensions.ITextHoverProvider;
@@ -34,7 +34,7 @@ public class RiDocHoverProvider implements ITextHoverProvider {
     	try {
 			String symbol = textViewer.getDocument().get(hoverRegion.getOffset(), hoverRegion.getLength());
 			args.add(symbol);
-            IInterpreter selectedInterpreter = RubyRuntime.getDefault().getSelectedInterpreter();
+            IVMInstall selectedInterpreter = RubyRuntime.getDefault().getSelectedInterpreter();
 			if (selectedInterpreter == null) return null;
             Process p = selectedInterpreter.exec(args, null);
 			br = new BufferedReader(new InputStreamReader(p.getInputStream()));

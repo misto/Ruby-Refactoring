@@ -31,15 +31,15 @@ import org.rubypeople.rdt.internal.ui.wizards.dialogfields.IDialogFieldListener;
 import org.rubypeople.rdt.internal.ui.wizards.dialogfields.IStringButtonAdapter;
 import org.rubypeople.rdt.internal.ui.wizards.dialogfields.StringButtonDialogField;
 import org.rubypeople.rdt.internal.ui.wizards.dialogfields.StringDialogField;
-import org.rubypeople.rdt.launching.IInterpreter;
-import org.rubypeople.rdt.launching.IInterpreter2;
+import org.rubypeople.rdt.launching.IVMInstall;
+import org.rubypeople.rdt.launching.IVMInstall2;
 import org.rubypeople.rdt.launching.IInterpreterInstallType;
 
 public class EditInterpreterDialog extends StatusDialog {
 	
 	protected IStatus[] allStatus = new IStatus[2];
 	
-	protected IInterpreter fEditedVM;
+	protected IVMInstall fEditedVM;
 	private StringButtonDialogField fJRERoot;
 	private StringDialogField fVMName;
 	
@@ -55,7 +55,7 @@ public class EditInterpreterDialog extends StatusDialog {
 
 	private IAddVMDialogRequestor fRequestor;
 
-	public EditInterpreterDialog(IAddVMDialogRequestor requestor, Shell shell, IInterpreterInstallType[] vmInstallTypes, IInterpreter editedVM) {
+	public EditInterpreterDialog(IAddVMDialogRequestor requestor, Shell shell, IInterpreterInstallType[] vmInstallTypes, IVMInstall editedVM) {
 		super(shell);
 		setShellStyle(getShellStyle() | SWT.RESIZE);
 		fRequestor= requestor;
@@ -102,7 +102,7 @@ public class EditInterpreterDialog extends StatusDialog {
 	
 	private void doOkPressed() {
 		if (fEditedVM == null) {
-			IInterpreter vm= new VMStandin(fSelectedVMType, createUniqueId(fSelectedVMType));
+			IVMInstall vm= new VMStandin(fSelectedVMType, createUniqueId(fSelectedVMType));
 			setFieldValuesToVM(vm);
 			fRequestor.vmAdded(vm);
 		} else {
@@ -216,8 +216,8 @@ public class EditInterpreterDialog extends StatusDialog {
 			fVMName.setText(fEditedVM.getName());
 			fJRERoot.setText(fEditedVM.getInstallLocation().getAbsolutePath());
 //			fLibraryBlock.initializeFrom(fEditedVM, fSelectedVMType);
-			if (fEditedVM instanceof IInterpreter2) {
-				IInterpreter2 vm2 = (IInterpreter2) fEditedVM;
+			if (fEditedVM instanceof IVMInstall2) {
+				IVMInstall2 vm2 = (IVMInstall2) fEditedVM;
 				String vmArgs = vm2.getVMArgs();
 				if (vmArgs != null) {
 					fVMArgs.setText(vmArgs);
@@ -313,7 +313,7 @@ public class EditInterpreterDialog extends StatusDialog {
 		return names;
 	}
 	
-	protected void setFieldValuesToVM(IInterpreter vm) {
+	protected void setFieldValuesToVM(IVMInstall vm) {
 		File dir = new File(fJRERoot.getText());
 		try {
 			vm.setInstallLocation(dir.getCanonicalFile());
@@ -323,8 +323,8 @@ public class EditInterpreterDialog extends StatusDialog {
 		vm.setName(fVMName.getText());
 		
 		String argString = fVMArgs.getText().trim();
-		if (vm instanceof IInterpreter2) {
-			IInterpreter2 vm2 = (IInterpreter2) vm;
+		if (vm instanceof IVMInstall2) {
+			IVMInstall2 vm2 = (IVMInstall2) vm;
 			if (argString != null && argString.length() >0) {
 				vm2.setInterpreterArgs(argString);			
 			} else {

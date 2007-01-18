@@ -18,7 +18,7 @@ import org.rubypeople.eclipse.testutils.ResourceTools;
 import org.rubypeople.rdt.internal.debug.core.RubyLineBreakpoint;
 import org.rubypeople.rdt.internal.launching.RubyInterpreter;
 import org.rubypeople.rdt.internal.launching.RubyLaunchConfigurationAttribute;
-import org.rubypeople.rdt.launching.IInterpreter;
+import org.rubypeople.rdt.launching.IVMInstall;
 import org.rubypeople.rdt.launching.RubyRuntime;
 
 /*
@@ -36,7 +36,7 @@ public class FTC_DebuggerLaunch extends TestCase {
 		// to be set accordingly
 		String rubyInterpreterPath = FTC_ClassicDebuggerCommunicationTest.RUBY_INTERPRETER ;
 		System.out.println("Using interpreter: " + rubyInterpreterPath) ;
-		IInterpreter rubyInterpreter = new RubyInterpreter("RubyInterpreter", new File(rubyInterpreterPath));
+		IVMInstall rubyInterpreter = new RubyInterpreter("RubyInterpreter", new File(rubyInterpreterPath));
 		RubyRuntime.getDefault().addInstalledInterpreter(rubyInterpreter) ;
 	
 	}

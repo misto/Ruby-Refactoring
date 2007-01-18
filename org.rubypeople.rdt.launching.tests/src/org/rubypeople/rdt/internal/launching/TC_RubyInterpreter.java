@@ -9,7 +9,7 @@ import junit.framework.TestCase;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IStatus;
-import org.rubypeople.rdt.launching.IInterpreter;
+import org.rubypeople.rdt.launching.IVMInstall;
 
 public class TC_RubyInterpreter extends TestCase {
 
@@ -17,11 +17,11 @@ public class TC_RubyInterpreter extends TestCase {
     private static final File WORKING_DIR = new File("/testDir");
 
     public void testEquals() {
-		IInterpreter interpreterOne = new RubyInterpreter("InterpreterOne", new File("/InterpreterOnePath"));
-		IInterpreter similarInterpreterOne = new RubyInterpreter("InterpreterOne", new File("/InterpreterOnePath"));
+		IVMInstall interpreterOne = new RubyInterpreter("InterpreterOne", new File("/InterpreterOnePath"));
+		IVMInstall similarInterpreterOne = new RubyInterpreter("InterpreterOne", new File("/InterpreterOnePath"));
 		assertTrue("Interpreters should be equal.", interpreterOne.equals(similarInterpreterOne));
 		
-		IInterpreter interpreterTwo = new RubyInterpreter("InterpreterTwo", new File("/InterpreterTwoPath"));
+		IVMInstall interpreterTwo = new RubyInterpreter("InterpreterTwo", new File("/InterpreterTwoPath"));
 		assertTrue("Interpreters should not be equal.", !interpreterOne.equals(interpreterTwo));
 	}
     

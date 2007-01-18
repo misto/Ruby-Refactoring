@@ -9,7 +9,7 @@ import org.eclipse.core.runtime.IPath;
 import org.rubypeople.rdt.core.ILoadpathContainer;
 import org.rubypeople.rdt.core.ILoadpathEntry;
 import org.rubypeople.rdt.core.RubyCore;
-import org.rubypeople.rdt.launching.IInterpreter;
+import org.rubypeople.rdt.launching.IVMInstall;
 import org.rubypeople.rdt.launching.IInterpreterInstallChangedListener;
 import org.rubypeople.rdt.launching.PropertyChangeEvent;
 import org.rubypeople.rdt.launching.RubyRuntime;
@@ -17,10 +17,10 @@ import org.rubypeople.rdt.launching.RubyRuntime;
 public class RubyVMContainer implements ILoadpathContainer {
 
 	private static Map fgLoadpathEntries;
-	private IInterpreter fInterpreter;
+	private IVMInstall fInterpreter;
 	private IPath fPath;
 
-	public RubyVMContainer(IInterpreter interpreter, IPath path) {
+	public RubyVMContainer(IVMInstall interpreter, IPath path) {
 		fInterpreter = interpreter;
 		fPath = path;
 	}
@@ -39,12 +39,12 @@ public class RubyVMContainer implements ILoadpathContainer {
 	 * @param vm
 	 * @return loadpath entries
 	 */
-	private static ILoadpathEntry[] getLoadpathEntries(IInterpreter vm) {
+	private static ILoadpathEntry[] getLoadpathEntries(IVMInstall vm) {
 		if (fgLoadpathEntries == null) {
 			fgLoadpathEntries = new HashMap(10);
 			// add a listener to clear cached value when a VM changes or is removed
 			IInterpreterInstallChangedListener listener = new IInterpreterInstallChangedListener() {
-				public void defaultInterpreterInstallChanged(IInterpreter previous, IInterpreter current) {
+				public void defaultInterpreterInstallChanged(IVMInstall previous, IVMInstall current) {
 				}
 
 				public void interpreterChanged(PropertyChangeEvent event) {
@@ -53,10 +53,10 @@ public class RubyVMContainer implements ILoadpathContainer {
 					}
 				}
 
-				public void interpreterAdded(IInterpreter newVm) {
+				public void interpreterAdded(IVMInstall newVm) {
 				}
 
-				public void interpreterRemoved(IInterpreter removedVm) {
+				public void interpreterRemoved(IVMInstall removedVm) {
 					fgLoadpathEntries.remove(removedVm);
 				}
 			};
@@ -76,7 +76,7 @@ public class RubyVMContainer implements ILoadpathContainer {
 	 * @param vm
 	 * @return loadpath entries
 	 */
-	private static ILoadpathEntry[] computeLoadpathEntries(IInterpreter vm) {
+	private static ILoadpathEntry[] computeLoadpathEntries(IVMInstall vm) {
 		IPath[] libs = vm.getLibraryLocations();
 		List entries = new ArrayList(libs.length);
 		for (int i = 0; i < libs.length; i++) {

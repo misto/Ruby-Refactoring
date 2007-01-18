@@ -10,11 +10,11 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
-import org.rubypeople.rdt.launching.IInterpreter;
+import org.rubypeople.rdt.launching.IVMInstall;
 import org.rubypeople.rdt.launching.IInterpreterInstallType;
 import org.rubypeople.rdt.launching.IVMRunner;
 
-public class RubyInterpreter implements IInterpreter {
+public class RubyInterpreter implements IVMInstall {
 	public static final String END_OF_OPTIONS_DELIMITER = "--";
 
 	protected File installLocation;
@@ -83,7 +83,7 @@ public class RubyInterpreter implements IInterpreter {
 	
 	public boolean equals(Object other) {
 		if (other instanceof RubyInterpreter) {
-			IInterpreter otherInterpreter = (IInterpreter) other;
+			IVMInstall otherInterpreter = (IVMInstall) other;
 			if (name.equals(otherInterpreter.getName()))
 				return installLocation.equals(otherInterpreter.getInstallLocation());
 		}

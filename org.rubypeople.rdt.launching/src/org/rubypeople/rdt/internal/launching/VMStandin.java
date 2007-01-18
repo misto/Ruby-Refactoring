@@ -5,11 +5,11 @@ import java.util.List;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
-import org.rubypeople.rdt.launching.IInterpreter;
+import org.rubypeople.rdt.launching.IVMInstall;
 import org.rubypeople.rdt.launching.IInterpreterInstallType;
 import org.rubypeople.rdt.launching.IVMRunner;
 
-public class VMStandin implements IInterpreter {
+public class VMStandin implements IVMInstall {
 
 	public VMStandin(IInterpreterInstallType vmType, String id) {
 		// TODO Auto-generated constructor stub

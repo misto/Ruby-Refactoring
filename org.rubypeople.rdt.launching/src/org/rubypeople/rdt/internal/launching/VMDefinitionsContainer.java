@@ -29,8 +29,8 @@ import javax.xml.transform.TransformerException;
 
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
-import org.rubypeople.rdt.launching.IInterpreter;
-import org.rubypeople.rdt.launching.IInterpreter2;
+import org.rubypeople.rdt.launching.IVMInstall;
+import org.rubypeople.rdt.launching.IVMInstall2;
 import org.rubypeople.rdt.launching.IInterpreterInstallType;
 import org.rubypeople.rdt.launching.RubyRuntime;
 import org.w3c.dom.Document;
@@ -105,7 +105,7 @@ public class VMDefinitionsContainer {
 	 * 
 	 * @param vm the VM to be added to this container
 	 */
-	public void addVM(IInterpreter vm) {
+	public void addVM(IVMInstall vm) {
 		if (!fVMList.contains(vm)) {	
 			IInterpreterInstallType vmInstallType = vm.getInterpreterInstallType();
 			List vmList = (List) fVMTypeToVMMap.get(vmInstallType);
@@ -135,7 +135,7 @@ public class VMDefinitionsContainer {
 	public void addVMList(List vmList) {
 		Iterator iterator = vmList.iterator();
 		while (iterator.hasNext()) {
-			IInterpreter vm = (IInterpreter) iterator.next();
+			IVMInstall vm = (IVMInstall) iterator.next();
 			addVM(vm);
 		}
 	}
@@ -274,7 +274,7 @@ public class VMDefinitionsContainer {
 		List vmList = (List) getVMTypeToVMMap().get(vmType);
 		Iterator vmIterator = vmList.iterator();
 		while (vmIterator.hasNext()) {
-			IInterpreter vm = (IInterpreter) vmIterator.next();
+			IVMInstall vm = (IVMInstall) vmIterator.next();
 			Element vmElement = vmAsElement(doc, vm);
 			element.appendChild(vmElement);
 		}
@@ -285,7 +285,7 @@ public class VMDefinitionsContainer {
 	/**
 	 * Create and return a node for the specified VM in the specified Document.
 	 */
-	private Element vmAsElement(Document doc, IInterpreter vm) {
+	private Element vmAsElement(Document doc, IVMInstall vm) {
 		
 		// Create the node for the VM and set its 'id' & 'name' attributes
 		Element element= doc.createElement("vm");        //$NON-NLS-1$
@@ -307,8 +307,8 @@ public class VMDefinitionsContainer {
 			element.appendChild(libLocationElement);
 		}
 				
-		if (vm instanceof IInterpreter2) {
-			String vmArgs = ((IInterpreter2)vm).getVMArgs();
+		if (vm instanceof IVMInstall2) {
+			String vmArgs = ((IVMInstall2)vm).getVMArgs();
 			if (vmArgs != null && vmArgs.length() > 0) {
 				element.setAttribute("vmargs", vmArgs); //$NON-NLS-1$
 			}
@@ -507,7 +507,7 @@ public class VMDefinitionsContainer {
 	 * Set the LibraryLocations on the specified VM, by extracting the subordinate
 	 * nodes from the specified 'lirbaryLocations' node.
 	 */
-	private static void setLibraryLocations(IInterpreter vm, Element libLocationsElement) {
+	private static void setLibraryLocations(IVMInstall vm, Element libLocationsElement) {
 		NodeList list = libLocationsElement.getChildNodes();
 		int length = list.getLength();
 		List locations = new ArrayList(length);
@@ -529,7 +529,7 @@ public class VMDefinitionsContainer {
 	 * 
 	 * @param vm vm intall
 	 */
-	public void removeVM(IInterpreter vm) {
+	public void removeVM(IVMInstall vm) {
 		fVMList.remove(vm);
 		fInvalidVMList.remove(vm);
 		List list = (List) fVMTypeToVMMap.get(vm.getInterpreterInstallType());

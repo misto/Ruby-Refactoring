@@ -10,7 +10,7 @@
  *******************************************************************************/
 package org.rubypeople.rdt.internal.debug.ui.rubyvms;
 
-import org.rubypeople.rdt.launching.IInterpreter;
+import org.rubypeople.rdt.launching.IVMInstall;
 
 /**
  * This interface is implemented by clients of the <code>AddVMDialog</code>.
@@ -31,6 +31,6 @@ public interface IAddVMDialogRequestor {
 	 * 
 	 * @param vm the added vm
 	 */
-	public void vmAdded(IInterpreter vm);
+	public void vmAdded(IVMInstall vm);
 	
 }

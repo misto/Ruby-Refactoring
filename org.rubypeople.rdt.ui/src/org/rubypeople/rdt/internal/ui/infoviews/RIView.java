@@ -44,7 +44,7 @@ import org.rubypeople.rdt.internal.ui.RubyPlugin;
 import org.rubypeople.rdt.internal.ui.RubyPluginImages;
 import org.rubypeople.rdt.internal.ui.rdocexport.RDocUtility;
 import org.rubypeople.rdt.internal.ui.rdocexport.RdocListener;
-import org.rubypeople.rdt.launching.IInterpreter;
+import org.rubypeople.rdt.launching.IVMInstall;
 import org.rubypeople.rdt.launching.IInterpreterInstallChangedListener;
 import org.rubypeople.rdt.launching.PropertyChangeEvent;
 import org.rubypeople.rdt.launching.RubyRuntime;
@@ -138,18 +138,18 @@ public class RIView extends ViewPart implements RdocListener {
         form.setWeights(new int[]{1, 3});
 
         runtimeListener = new IInterpreterInstallChangedListener() {
-            public void defaultInterpreterInstallChanged(IInterpreter previous,
-            		IInterpreter current) {
+            public void defaultInterpreterInstallChanged(IVMInstall previous,
+            		IVMInstall current) {
             	updatePage();            	
             }
 
-			public void interpreterAdded(IInterpreter newVm) {				
+			public void interpreterAdded(IVMInstall newVm) {				
 			}
 
 			public void interpreterChanged(PropertyChangeEvent event) {				
 			}
 
-			public void interpreterRemoved(IInterpreter removedVm) {				
+			public void interpreterRemoved(IVMInstall removedVm) {				
 			}
         };
         RubyRuntime.addInterpreterInstallChangedListener(runtimeListener);
@@ -183,7 +183,7 @@ public class RIView extends ViewPart implements RdocListener {
 	}
 	
     private void updatePage() {
-        IInterpreter interpreter = RubyRuntime.getDefault().getSelectedInterpreter();
+        IVMInstall interpreter = RubyRuntime.getDefault().getSelectedInterpreter();
         if (interpreter != null) {            
             initSearchList();
             if( riFound ){

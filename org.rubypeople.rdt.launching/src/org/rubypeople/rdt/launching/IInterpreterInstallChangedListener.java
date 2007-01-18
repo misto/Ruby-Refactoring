@@ -32,11 +32,11 @@ public interface IInterpreterInstallChangedListener {
 	public static final String PROPERTY_VM_ARGUMENTS = RdtLaunchingPlugin.getUniqueIdentifier() + ".PROPERTY_VM_ARGUMENTS"; //$NON-NLS-1$
 
 	
-	public void defaultInterpreterInstallChanged(IInterpreter previous, IInterpreter current);
+	public void defaultInterpreterInstallChanged(IVMInstall previous, IVMInstall current);
 
 	public void interpreterChanged(PropertyChangeEvent event);
 
-	public void interpreterAdded(IInterpreter newVm);
+	public void interpreterAdded(IVMInstall newVm);
 
-	public void interpreterRemoved(IInterpreter removedVm);
+	public void interpreterRemoved(IVMInstall removedVm);
 }

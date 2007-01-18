@@ -103,8 +103,8 @@ public class RubyRuntime {
      */
     private static Set<String> fgContributedVMs = new HashSet<String>();
 	
-	protected List<IInterpreter> installedInterpreters;
-	protected IInterpreter selectedInterpreter;
+	protected List<IVMInstall> installedInterpreters;
+	protected IVMInstall selectedInterpreter;
     private static ListenerList fgVMListeners = new ListenerList(5);
     
 	protected RubyRuntime() {
@@ -122,26 +122,26 @@ public class RubyRuntime {
         fgVMListeners.remove(listener);
     }
 	
-	public IInterpreter getSelectedInterpreter() {
+	public IVMInstall getSelectedInterpreter() {
 		if (selectedInterpreter == null) {
 			loadRuntimeConfiguration();
 		}
 		return selectedInterpreter;
 	}
 
-	public IInterpreter getInterpreter(String name) {
+	public IVMInstall getInterpreter(String name) {
 		Iterator interpreters = getInstalledInterpreters().iterator();
 		while(interpreters.hasNext()) {
-			IInterpreter each = (IInterpreter) interpreters.next();
+			IVMInstall each = (IVMInstall) interpreters.next();
 			if (each.getName().equals(name))
 				return each;
 		}		
 		return getSelectedInterpreter();
 	}
 
-	public void setSelectedInterpreter(IInterpreter anInterpreter) {
+	public void setSelectedInterpreter(IVMInstall anInterpreter) {
         if (selectedInterpreter == anInterpreter) return;
-        IInterpreter oldInterpreter = selectedInterpreter;
+        IVMInstall oldInterpreter = selectedInterpreter;
 		selectedInterpreter = anInterpreter;		
 		saveRuntimeConfiguration();   
 		Object[] listeners = fgVMListeners.getListeners();
@@ -151,7 +151,7 @@ public class RubyRuntime {
 		}		
 	}
 
-	public void addInstalledInterpreter(IInterpreter anInterpreter) {
+	public void addInstalledInterpreter(IVMInstall anInterpreter) {
 		getInstalledInterpreters().add(anInterpreter);
 		if (getInstalledInterpreters().size() == 1)
 			setSelectedInterpreter(getInstalledInterpreters().get(0));
@@ -159,13 +159,13 @@ public class RubyRuntime {
 			saveRuntimeConfiguration();
 	}
 
-	public List<IInterpreter> getInstalledInterpreters() {
+	public List<IVMInstall> getInstalledInterpreters() {
 		if (installedInterpreters == null)
 			loadRuntimeConfiguration();
 		return installedInterpreters;
 	}
 	
-	public void setInstalledInterpreters(List<IInterpreter> newInstalledInterpreters) {
+	public void setInstalledInterpreters(List<IVMInstall> newInstalledInterpreters) {
 		installedInterpreters = newInstalledInterpreters;
 		if (installedInterpreters.size() > 0)
 			setSelectedInterpreter(installedInterpreters.get(0));
@@ -188,7 +188,7 @@ public class RubyRuntime {
 	}
 	
 	protected void loadRuntimeConfiguration() {
-		installedInterpreters = new ArrayList<IInterpreter>();
+		installedInterpreters = new ArrayList<IVMInstall>();
 		try {
 			XMLReader reader = SAXParserFactory.newInstance().newSAXParser().getXMLReader();
 			reader.setContentHandler(getRuntimeConfigurationContentHandler());
@@ -213,7 +213,7 @@ public class RubyRuntime {
 	protected void writeXML(Writer writer) {
 		try {
 			writer.write("<?xml version=\"1.0\" encoding=\"UTF-8\"?><runtimeconfig>");
-			Iterator<IInterpreter> interpretersIterator = installedInterpreters.iterator();
+			Iterator<IVMInstall> interpretersIterator = installedInterpreters.iterator();
 			while (interpretersIterator.hasNext()) {
 				writer.write("<");
 				writer.write(TAG_INTERPRETER);
@@ -221,7 +221,7 @@ public class RubyRuntime {
 				writer.write(ATTR_NAME);
 				writer.write("=\"");
 				
-				IInterpreter entry = interpretersIterator.next();
+				IVMInstall entry = interpretersIterator.next();
 				writer.write(entry.getName());
 				writer.write("\" ");
 				writer.write(ATTR_PATH);
@@ -254,7 +254,7 @@ public class RubyRuntime {
 				if (TAG_INTERPRETER.equals(qName)) {
 					String interpreterName = atts.getValue(ATTR_NAME);
 					File installLocation = new File(atts.getValue(ATTR_PATH));
-					IInterpreter interpreter = new RubyInterpreter(interpreterName, installLocation);
+					IVMInstall interpreter = new RubyInterpreter(interpreterName, installLocation);
 					installedInterpreters.add(interpreter);
 					if (atts.getValue(ATTR_SELECTED) != null)
 						selectedInterpreter = interpreter;
@@ -306,7 +306,7 @@ public class RubyRuntime {
 		return fgInterpreterTypes; 
 	}
 
-	public static IInterpreter getDefaultInterpreterInstall() {
+	public static IVMInstall getDefaultInterpreterInstall() {
 		// TODO Auto-generated method stub
 		return null;
 	}
@@ -339,7 +339,7 @@ public class RubyRuntime {
 						if (defId != null) {
 							Iterator iterator = vmDefs.getValidVMList().iterator();
 							while (iterator.hasNext()) {
-								IInterpreter vm = (IInterpreter) iterator.next();
+								IVMInstall vm = (IVMInstall) iterator.next();
 								if (getCompositeIdFromVM(vm).equals(defId)) {
 									validDef = true;
 									break;
@@ -351,7 +351,7 @@ public class RubyRuntime {
 							setPref = true;
 							List list = vmDefs.getValidVMList();
 							if (!list.isEmpty()) {
-								IInterpreter vm = (IInterpreter) list.get(0);
+								IVMInstall vm = (IVMInstall) list.get(0);
 								vmDefs.setDefaultVMInstallCompositeID(getCompositeIdFromVM(vm));
 							}
 						}
@@ -380,7 +380,7 @@ public class RubyRuntime {
 			IInterpreterInstallType[] installTypes = getInterpreterInstallTypes();
 			for (int i = 0; i < installTypes.length; i++) {
 				IInterpreterInstallType type = installTypes[i];
-				IInterpreter[] installs = type.getInterpreterInstalls();
+				IVMInstall[] installs = type.getInterpreterInstalls();
 				for (int j = 0; j < installs.length; j++) {
 					fireInterpreterAdded(installs[j]);
 				}
@@ -489,7 +489,7 @@ public class RubyRuntime {
 	 * 
 	 * @since 2.1
 	 */
-	public static String getCompositeIdFromVM(IInterpreter vm) {
+	public static String getCompositeIdFromVM(IVMInstall vm) {
 		if (vm == null) {
 			return null;
 		}
@@ -525,7 +525,7 @@ public class RubyRuntime {
 						abort(MessageFormat.format("vmInstall {0} contributed by {1} references undefined VM install type {2}", //$NON-NLS-1$
 								(Object[]) new String[]{id, element.getContributor().getName(), vmType}), null);
 					}
-					IInterpreter install = installType.findInterpreterInstall(id);
+					IVMInstall install = installType.findInterpreterInstall(id);
 					if (install == null) {
 						// only load/create if first time we've seen this VM install
 						String name = element.getAttribute("name"); //$NON-NLS-1$
@@ -627,7 +627,7 @@ public class RubyRuntime {
 		throw new CoreException(new Status(IStatus.ERROR, RdtLaunchingPlugin.getUniqueIdentifier(), code, message, exception));
 	}	
 	
-	private static void fireInterpreterAdded(IInterpreter interpreter) {
+	private static void fireInterpreterAdded(IVMInstall interpreter) {
 		// TODO Actually notify IInterpreterInstallChangedListeners
 		
 	}

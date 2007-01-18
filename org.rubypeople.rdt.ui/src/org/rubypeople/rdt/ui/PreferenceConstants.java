@@ -7,7 +7,7 @@ import org.eclipse.jface.preference.PreferenceConverter;
 import org.eclipse.swt.graphics.RGB;
 import org.rubypeople.rdt.internal.ui.RubyPlugin;
 import org.rubypeople.rdt.internal.ui.preferences.formatter.ProfileManager;
-import org.rubypeople.rdt.launching.IInterpreter;
+import org.rubypeople.rdt.launching.IVMInstall;
 import org.rubypeople.rdt.launching.RubyRuntime;
 
 public class PreferenceConstants {
@@ -653,7 +653,7 @@ public class PreferenceConstants {
     }
 
     private static String getDefaultPath(String programName) {
-        IInterpreter interpreter = RubyRuntime.getDefault().getSelectedInterpreter();
+        IVMInstall interpreter = RubyRuntime.getDefault().getSelectedInterpreter();
         if (interpreter == null) { return programName; }
         File path = interpreter.getInstallLocation();
         return path.getParent() + File.separator + programName;

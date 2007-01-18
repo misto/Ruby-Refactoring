@@ -38,7 +38,7 @@ import org.rubypeople.rdt.internal.debug.ui.rubyvms.IAddVMDialogRequestor;
 import org.rubypeople.rdt.internal.debug.ui.rubyvms.RubyVMMessages;
 import org.rubypeople.rdt.internal.launching.RubyLaunchConfigurationAttribute;
 import org.rubypeople.rdt.internal.ui.RubyPluginImages;
-import org.rubypeople.rdt.launching.IInterpreter;
+import org.rubypeople.rdt.launching.IVMInstall;
 import org.rubypeople.rdt.launching.RubyRuntime;
 
 public class RubyEnvironmentTab extends AbstractLaunchConfigurationTab {
@@ -170,7 +170,7 @@ public class RubyEnvironmentTab extends AbstractLaunchConfigurationTab {
 			return false;
 		}
 
-		public void vmAdded(IInterpreter vm) {
+		public void vmAdded(IVMInstall vm) {
 			RubyRuntime.getDefault().addInstalledInterpreter(vm);
 			fCombo.add(vm.getName());
 			fCombo.select(fCombo.indexOf(vm.getName()));
@@ -194,7 +194,7 @@ public class RubyEnvironmentTab extends AbstractLaunchConfigurationTab {
 	}
 
 	public void setDefaults(ILaunchConfigurationWorkingCopy configuration) {
-		IInterpreter defaultInterpreter = RubyRuntime.getDefault()
+		IVMInstall defaultInterpreter = RubyRuntime.getDefault()
 				.getSelectedInterpreter();
 		if (defaultInterpreter != null) {
 			configuration.setAttribute(
@@ -261,13 +261,13 @@ public class RubyEnvironmentTab extends AbstractLaunchConfigurationTab {
 				.size()];
 		for (int interpreterIndex = 0; interpreterIndex < installedInterpretersWorkingCopy
 				.size(); interpreterIndex++) {
-			IInterpreter interpreter = (IInterpreter) installedInterpretersWorkingCopy
+			IVMInstall interpreter = (IVMInstall) installedInterpretersWorkingCopy
 					.get(interpreterIndex);
 			interpreterNames[interpreterIndex] = interpreter.getName();
 		}
 		interpreterCombo.setItems(interpreterNames);
 
-		IInterpreter selectedInterpreter = RubyRuntime.getDefault()
+		IVMInstall selectedInterpreter = RubyRuntime.getDefault()
 				.getSelectedInterpreter();
 		if (selectedInterpreter != null)
 			interpreterCombo.select(interpreterCombo
