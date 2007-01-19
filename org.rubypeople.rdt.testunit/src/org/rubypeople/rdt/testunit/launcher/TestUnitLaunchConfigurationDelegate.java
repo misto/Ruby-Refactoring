@@ -1,12 +1,9 @@
 package org.rubypeople.rdt.testunit.launcher;
 
-import org.eclipse.debug.core.ILaunch;
-import org.eclipse.debug.core.ILaunchConfiguration;
-import org.rubypeople.rdt.internal.launching.InterpreterRunnerConfiguration;
-import org.rubypeople.rdt.internal.launching.RubyApplicationLaunchConfigurationDelegate;
 import org.rubypeople.rdt.internal.testunit.ui.TestunitPlugin;
+import org.rubypeople.rdt.launching.RubyLaunchDelegate;
 
-public class TestUnitLaunchConfigurationDelegate extends RubyApplicationLaunchConfigurationDelegate {
+public class TestUnitLaunchConfigurationDelegate extends RubyLaunchDelegate {
 	/**
 	 * The single test type, or "" iff running a launch container.
 	 */
@@ -25,12 +22,5 @@ public class TestUnitLaunchConfigurationDelegate extends RubyApplicationLaunchCo
   	public TestUnitLaunchConfigurationDelegate() {
 		super();
 	}
-
-    protected InterpreterRunnerConfiguration wrapConfigurationAndHandleLaunch(ILaunchConfiguration configuration, ILaunch launch) {
-    	
-    	TestUnitRunnerConfiguration testRunnerConfiguration =  new TestUnitRunnerConfiguration(configuration) ;
-    	launch.setAttribute(TestunitPlugin.TESTUNIT_PORT_ATTR, Integer.toString(testRunnerConfiguration.getPort())) ;
-    	return testRunnerConfiguration ;
-    }
-
+// FIXME This won't work anymore!
 }

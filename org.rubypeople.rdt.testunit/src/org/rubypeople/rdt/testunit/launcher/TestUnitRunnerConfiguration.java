@@ -9,14 +9,16 @@ import org.eclipse.core.runtime.Path;
 import org.eclipse.debug.core.ILaunchConfiguration;
 import org.rubypeople.rdt.core.RubyCore;
 import org.rubypeople.rdt.core.SocketUtil;
-import org.rubypeople.rdt.internal.launching.InterpreterRunnerConfiguration;
 import org.rubypeople.rdt.internal.testunit.ui.TestunitPlugin;
+import org.rubypeople.rdt.launching.VMRunnerConfiguration;
 
-public class TestUnitRunnerConfiguration extends InterpreterRunnerConfiguration {
+public class TestUnitRunnerConfiguration extends VMRunnerConfiguration {
 	private int port = -1 ;
+	private ILaunchConfiguration configuration;
 	
 	public TestUnitRunnerConfiguration(ILaunchConfiguration aConfiguration) {
-		super(aConfiguration);
+		super(getTestRunnerPath(), null);
+		configuration = aConfiguration;
 	}
 
 	public String getAbsoluteFileName() {
@@ -61,9 +63,9 @@ public class TestUnitRunnerConfiguration extends InterpreterRunnerConfiguration 
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see org.rubypeople.rdt.internal.launching.InterpreterRunnerConfiguration#getProgramArguments()
+	 * @see org.rubypeople.rdt.launching.VMRunnerConfiguration#getProgramArguments()
 	 */
-	public String getProgramArguments() {		
+	public String[] getProgramArguments() {		
 		String fileName = "";
 		String testClass = "";
 		String testMethod = "";
@@ -81,18 +83,17 @@ public class TestUnitRunnerConfiguration extends InterpreterRunnerConfiguration 
 			throw new RuntimeException("Could not get necessary attributes from the launch configuration.") ;
 		}
 
-		return "\"" + fileName + "\" " + this.getPort() + " " + keepAlive + " " + testClass + " " + testMethod;
+		return new String[] { fileName, Integer.toString(getPort()), Boolean.toString(keepAlive), testClass, testMethod};
 	}
 
-	public List renderLoadPath() {
-		List loadPath = super.renderLoadPath();
-		
-		String absoluteTestFileName = this.getAbsoluteTestFileName();
-		if (absoluteTestFileName.length() != 0) {
-			loadPath.add("-I");
-			loadPath.add(absoluteTestFileName);
+	public String[] getLoadPath() {
+		String[] loadPath = super.getLoadPath();
+		String[] newLoadPath = new String[loadPath.length + 1];
+		for (int i = 0; i < loadPath.length; i++) {
+			newLoadPath[i] = loadPath[i];
 		}
-		return loadPath;
+		newLoadPath[loadPath.length] = getAbsoluteTestFileName();
+		return newLoadPath;
 	}
 
 	public static String getTestRunnerPath() {
