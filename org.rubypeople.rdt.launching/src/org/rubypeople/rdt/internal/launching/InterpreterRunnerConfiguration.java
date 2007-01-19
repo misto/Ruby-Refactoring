@@ -117,15 +117,14 @@ public class InterpreterRunnerConfiguration {
     protected List<String> renderLoadPath() {
     	List<String> loadPath = new ArrayList<String>();
         RubyProject project = this.getProject();
-        addToLoadPath(loadPath, project.getProject());
+//        addToLoadPath(loadPath, project.getProject());
 
         try {
 			ILoadpathEntry[] entries = project.getResolvedLoadpath(true, false);
 			for (int i = 0; i < entries.length; i++) {
-				addToLoadPath(loadPath, entries[i].getPath().toOSString());
+				addToLoadPath(loadPath, entries[i].getPath().makeAbsolute().toFile().getAbsolutePath());
 			}
 		} catch (RubyModelException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
         if (new Path(this.getFileName()).segmentCount() > 1) { ;

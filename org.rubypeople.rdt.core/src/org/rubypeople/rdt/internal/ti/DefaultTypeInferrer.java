@@ -174,7 +174,7 @@ public class DefaultTypeInferrer implements ITypeInferrer {
 	
 	private void tryLocalVarNode(Node node, List<ITypeGuess> guesses)
 	{
-		System.out.println(node.getClass().getName());
+		//System.out.println(node.getClass().getName());
 		if ( node instanceof LocalVarNode )
 		{
 			LocalVarNode localVarNode = (LocalVarNode)node;
@@ -209,12 +209,12 @@ public class DefaultTypeInferrer implements ITypeInferrer {
 			if ( argsNode != null )
 			{
 				int argNumber = getArgumentIndex(argsNode,localVarName);
-				System.out.println("Variable " + localVarName + " is the " + argNumber + "th argument to the enclosing method ");
+				//System.out.println("Variable " + localVarName + " is the " + argNumber + "th argument to the enclosing method ");
 				
 				// Find enclosing method
 				Node defNode = FirstPrecursorNodeLocator.Instance().findFirstPrecursor(rootNode, nodeStart, new INodeAcceptor(){
 					public boolean doesAccept(Node node) {
-						System.out.println("Looking for enclosing method, checking: " + node.getClass().getName() + "[" + node.getPosition().getStartOffset() + ".." + node.getPosition().getEndOffset() + "]" );
+						//System.out.println("Looking for enclosing method, checking: " + node.getClass().getName() + "[" + node.getPosition().getStartOffset() + ".." + node.getPosition().getEndOffset() + "]" );
 						ArgsNode argsNode = null;
 						if ( node instanceof DefnNode ) argsNode = ((DefnNode)node).getArgsNode();
 						if ( node instanceof DefsNode ) argsNode = ((DefsNode)node).getArgsNode();
@@ -227,7 +227,7 @@ public class DefaultTypeInferrer implements ITypeInferrer {
 					if ( defNode instanceof DefnNode ) methodName = ((DefnNode)defNode).getName();
 					if ( defNode instanceof DefsNode ) methodName = ((DefsNode)defNode).getName();
 
-					System.out.println("Variable " + localVarName + " is the " + argNumber + "th argument to method " + methodName );
+					//System.out.println("Variable " + localVarName + " is the " + argNumber + "th argument to method " + methodName );
 					
 					// Find all invocations of the surrounding method.
 					//todo: from easiest to hardest:

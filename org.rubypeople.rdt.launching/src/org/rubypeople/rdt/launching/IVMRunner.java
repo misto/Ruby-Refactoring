@@ -14,7 +14,6 @@ package org.rubypeople.rdt.launching;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.debug.core.ILaunch;
-import org.rubypeople.rdt.internal.launching.InterpreterRunnerConfiguration;
 
 
 
@@ -36,6 +35,6 @@ public interface IVMRunner {
 	 * @param monitor progress monitor or <code>null</code>
 	 * @exception CoreException if an exception occurs while launching
 	 */
-	public void run(InterpreterRunnerConfiguration configuration, ILaunch launch, IProgressMonitor monitor) throws CoreException;	
+	public void run(VMRunnerConfiguration configuration, ILaunch launch, IProgressMonitor monitor) throws CoreException;	
 	
 }

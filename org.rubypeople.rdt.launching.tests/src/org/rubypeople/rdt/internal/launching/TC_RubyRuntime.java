@@ -65,7 +65,7 @@ public class TC_RubyRuntime extends TestCase {
 			RubyRuntime.saveVMConfiguration();
 			assertEquals(
 					"XML should indicate only one interpreter with it being the selected.",
-					"<?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n<vmSettings>\r\n<vmType id=\"org.rubypeople.rdt.launching.StandardVMType\">\r\n<vm id=\"InterpreterOne\" name=\"InterpreterOne\" path=\"C:\\RubyInstallRootOne\"/>\r\n</vmType>\r\n</vmSettings>\r\n",
+					"<?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n<vmSettings defaultVM=\"\" defaultVMConnector=\"\">\r\n<vmType id=\"org.rubypeople.rdt.launching.StandardVMType\">\r\n<vm id=\"InterpreterOne\" name=\"InterpreterOne\" path=\"C:\\RubyInstallRootOne\"/>\r\n</vmType>\r\n</vmSettings>\r\n",
 					getVMsXML());
 
 			VMStandin standin2 = new VMStandin(vmType, "InterpreterTwo");
@@ -75,13 +75,13 @@ public class TC_RubyRuntime extends TestCase {
 			RubyRuntime.saveVMConfiguration();
 			assertEquals(
 					"XML should indicate both interpreters with the first one being selected.",
-					"<?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n<vmSettings>\r\n<vmType id=\"org.rubypeople.rdt.launching.StandardVMType\">\r\n<vm id=\"InterpreterOne\" name=\"InterpreterOne\" path=\"C:\\RubyInstallRootOne\"/>\r\n<vm id=\"InterpreterTwo\" name=\"InterpreterTwo\" path=\"C:\\RubyInstallRootTwo\"/>\r\n</vmType>\r\n</vmSettings>\r\n",
+					"<?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n<vmSettings defaultVM=\"\" defaultVMConnector=\"\">\r\n<vmType id=\"org.rubypeople.rdt.launching.StandardVMType\">\r\n<vm id=\"InterpreterOne\" name=\"InterpreterOne\" path=\"C:\\RubyInstallRootOne\"/>\r\n<vm id=\"InterpreterTwo\" name=\"InterpreterTwo\" path=\"C:\\RubyInstallRootTwo\"/>\r\n</vmType>\r\n</vmSettings>\r\n",
 					getVMsXML());
 
 			RubyRuntime.setSelectedInterpreter(standin2);
 			assertEquals(
 					"XML should indicate both interpreters with the first one being selected.",
-					"<?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n<vmSettings defaultVM=\"" + RubyRuntime.getCompositeIdFromVM(standin2) + "\">\r\n<vmType id=\"org.rubypeople.rdt.launching.StandardVMType\">\r\n<vm id=\"InterpreterOne\" name=\"InterpreterOne\" path=\"C:\\RubyInstallRootOne\"/>\r\n<vm id=\"InterpreterTwo\" name=\"InterpreterTwo\" path=\"C:\\RubyInstallRootTwo\"/>\r\n</vmType>\r\n</vmSettings>\r\n",
+					"<?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n<vmSettings defaultVM=\"" + RubyRuntime.getCompositeIdFromVM(standin2) + "\" defaultVMConnector=\"\">\r\n<vmType id=\"org.rubypeople.rdt.launching.StandardVMType\">\r\n<vm id=\"InterpreterOne\" name=\"InterpreterOne\" path=\"C:\\RubyInstallRootOne\"/>\r\n<vm id=\"InterpreterTwo\" name=\"InterpreterTwo\" path=\"C:\\RubyInstallRootTwo\"/>\r\n</vmType>\r\n</vmSettings>\r\n",
 					getVMsXML());
 		} finally {
 			vmType.disposeVMInstall("InterpreterOne");

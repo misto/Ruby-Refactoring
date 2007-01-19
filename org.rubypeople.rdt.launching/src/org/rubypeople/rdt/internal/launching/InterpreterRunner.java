@@ -44,6 +44,8 @@ public class InterpreterRunner {
 			buffer.append(configuration.getFileName());
 		} catch (IllegalCommandException e) {
 			// can't happen because renderLabel assumes that a successful launch has been done
+		} catch(CoreException ce) {
+			
 		}
 
 		return buffer.toString();
@@ -62,6 +64,8 @@ public class InterpreterRunner {
 		return commandLine;
 	}
 
+	
+	
 
 	protected void addDebugCommandLineArgument(List<String> commandLine) {
 	}

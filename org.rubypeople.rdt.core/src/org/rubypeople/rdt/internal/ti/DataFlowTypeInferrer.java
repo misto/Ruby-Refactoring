@@ -37,9 +37,10 @@ import org.rubypeople.rdt.internal.ti.util.OffsetNodeLocator;
 import org.rubypeople.rdt.internal.ti.util.ScopedNodeLocator;
 
 public class DataFlowTypeInferrer implements ITypeInferrer {
+	private static final boolean VERBOSE = false;
+
 	private void sysout(String string) {
-		// false to suppress debug
-		if ( true ) {
+		if ( VERBOSE ) {
 			System.out.println(string);
 		}
 	}

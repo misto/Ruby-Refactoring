@@ -20,10 +20,10 @@ public interface IVMInstall {
 	/**
 	 * 
 	 * @return
-	 * @throws IllegalCommandException
+	 * @throws CoreException 
 	 * @deprecated 
 	 */
-	public String getCommand() throws IllegalCommandException;
+	public String getCommand() throws CoreException, IllegalCommandException;
 
 	/**
 	 * 
