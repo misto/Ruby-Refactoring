@@ -33,10 +33,10 @@ public class StandardLoadpathProvider implements IRuntimeLoadpathProvider {
 	 * @see org.eclipse.jdt.launching.IRuntimeLoadpathProvider#computeUnresolvedLoadpath(org.eclipse.debug.core.ILaunchConfiguration)
 	 */
 	public IRuntimeLoadpathEntry[] computeUnresolvedLoadpath(ILaunchConfiguration configuration) throws CoreException {
-		boolean useDefault = configuration.getAttribute(IRubyLaunchConfigurationConstants.ATTR_DEFAULT_CLASSPATH, true);
+		boolean useDefault = configuration.getAttribute(IRubyLaunchConfigurationConstants.ATTR_DEFAULT_LOADPATH, true);
 		if (useDefault) {
 			IRubyProject proj = RubyRuntime.getRubyProject(configuration);
-			IRuntimeLoadpathEntry jreEntry = RubyRuntime.computeJREEntry(configuration);
+			IRuntimeLoadpathEntry jreEntry = RubyRuntime.computeRubyVMEntry(configuration);
 			if (proj == null) {
 				//no project - use default libraries
 				if (jreEntry == null) {
@@ -46,7 +46,7 @@ public class StandardLoadpathProvider implements IRuntimeLoadpathProvider {
 			}
 			IRuntimeLoadpathEntry[] entries = RubyRuntime.computeUnresolvedRuntimeLoadpath(proj);
 			// replace project JRE with config's JRE
-			IRuntimeLoadpathEntry projEntry = RubyRuntime.computeJREEntry(proj);
+			IRuntimeLoadpathEntry projEntry = RubyRuntime.computeRubyVMEntry(proj);
 			if (jreEntry != null && projEntry != null) {
 				if (!jreEntry.equals(projEntry)) {
 					for (int i = 0; i < entries.length; i++) {
@@ -61,7 +61,7 @@ public class StandardLoadpathProvider implements IRuntimeLoadpathProvider {
 			return entries;
 		}
 		// recover persisted classpath
-		return recoverRuntimePath(configuration, IRubyLaunchConfigurationConstants.ATTR_CLASSPATH);
+		return recoverRuntimePath(configuration, IRubyLaunchConfigurationConstants.ATTR_LOADPATH);
 	}
 
 	/* (non-Rubydoc)
