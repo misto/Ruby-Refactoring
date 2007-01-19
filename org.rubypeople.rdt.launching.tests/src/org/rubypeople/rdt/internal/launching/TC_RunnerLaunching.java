@@ -23,6 +23,7 @@ import org.eclipse.debug.core.ILaunchManager;
 import org.eclipse.debug.core.Launch;
 import org.rubypeople.eclipse.shams.debug.core.ShamLaunchConfigurationType;
 import org.rubypeople.eclipse.testutils.ResourceTools;
+import org.rubypeople.rdt.core.RubyCore;
 import org.rubypeople.rdt.launching.IVMInstall;
 import org.rubypeople.rdt.launching.IVMInstallType;
 import org.rubypeople.rdt.launching.RubyRuntime;
@@ -66,7 +67,7 @@ public class TC_RunnerLaunching extends TestCase {
 		}
 		// The include paths and the executed ruby file is quoted on windows		 
 		if (debug) {
-			String dirOfRubyDebuggerFile = DebuggerRunner.getDirectoryOfRubyDebuggerFile().replace('/', File.separatorChar) ;
+			String dirOfRubyDebuggerFile = getDirectoryOfRubyDebuggerFile().replace('/', File.separatorChar) ;
 			if (dirOfRubyDebuggerFile.startsWith("\\")) {
 				dirOfRubyDebuggerFile = dirOfRubyDebuggerFile.substring(1) ;
 			}
@@ -85,6 +86,10 @@ public class TC_RunnerLaunching extends TestCase {
 		return commandLine;
 	}
 
+	private String getDirectoryOfRubyDebuggerFile() {
+		return RubyCore.getOSDirectory(LaunchingPlugin.getDefault()) + "ruby";
+	}
+
 	public void testDebugEnabled() throws Exception {
 		// check if debugging is enabled in plugin.xml
 		ILaunchConfigurationType launchConfigurationType =
@@ -100,7 +105,7 @@ public class TC_RunnerLaunching extends TestCase {
 
 		IProject project = ResourceTools.createProject(PROJECT_NAME);
 
-		ShamInterpreter interpreter = new ShamInterpreter("", new File(""));
+		IVMInstall interpreter = new VMStandin((IVMInstallType)null, "");
 
 		ILaunchConfiguration configuration = new ShamLaunchConfiguration();
 		ILaunch launch = new Launch(configuration, debug ? ILaunchManager.DEBUG_MODE : ILaunchManager.RUN_MODE, null);
@@ -115,11 +120,11 @@ public class TC_RunnerLaunching extends TestCase {
 
 		assertEquals("One process has been spawned", 1, launch.getProcesses().length);
 		List expected = getCommandLine(project, debug);
-		List actual = interpreter.getArguments();
+		String[] actual = interpreter.getVMArguments();
 		if (debug) {
 			// we must cheat with the first argument, because it is a temporary file which
 			// contains is different for every call
-			expected.add(0, actual.get(0)) ;
+			expected.add(0, actual[0]) ;
 		}
 		assertEquals("Assembled command line.", expected, actual);
 		assertEquals(
@@ -262,23 +267,6 @@ public class TC_RunnerLaunching extends TestCase {
             // TODO Auto-generated method stub
             
         }
-	}
-
-	public class ShamInterpreter extends RubyInterpreter {
-		public ShamInterpreter(String aName, File validInstallLocation) {
-			super(aName, validInstallLocation);
-		}
-		private List arguments;
-		public List  getArguments() {
-			return arguments;
-		}
-		public String getCommand() {
-			return RUBY_COMMAND;
-		}
-		public Process exec(List args, File workingDirectory) {
-			arguments = args;
-			return new ShamProcess();
-		}
 	}
 
 }

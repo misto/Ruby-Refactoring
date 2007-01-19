@@ -2,7 +2,6 @@ package org.rubypeople.rdt.debug.core.tests;
 
 import org.rubypeople.rdt.core.RubyCore;
 import org.rubypeople.rdt.internal.debug.core.SuspensionPoint;
-import org.rubypeople.rdt.internal.launching.DebuggerRunner;
 import org.rubypeople.rdt.internal.launching.LaunchingPlugin;
 
 public class FTC_RubyDebugCommunicationTest extends FTC_ClassicDebuggerCommunicationTest {
@@ -84,7 +83,7 @@ public class FTC_RubyDebugCommunicationTest extends FTC_ClassicDebuggerCommunica
 	protected String getDirectoryOfRubyDebuggerFile() {
 		String result = null;
 		if (RubyCore.getPlugin() != null) {
-			result = DebuggerRunner.getDirectoryOfRubyDebuggerFile();
+			result = RubyCore.getOSDirectory(LaunchingPlugin.getDefault()) + "ruby";
 		} else {
 			result = LaunchingPlugin.class.getResource(".").getPath() + "/../../../../../../ruby";
 		}
