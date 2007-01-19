@@ -6,14 +6,17 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.text.MessageFormat;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerException;
 
+import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.IExtensionPoint;
@@ -25,17 +28,19 @@ import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Preferences;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.variables.VariablesPlugin;
+import org.eclipse.debug.core.ILaunchConfiguration;
+import org.rubypeople.rdt.core.ILoadpathEntry;
+import org.rubypeople.rdt.core.IRubyModel;
+import org.rubypeople.rdt.core.IRubyProject;
+import org.rubypeople.rdt.core.RubyCore;
 import org.rubypeople.rdt.internal.launching.CompositeId;
 import org.rubypeople.rdt.internal.launching.LaunchingMessages;
 import org.rubypeople.rdt.internal.launching.LaunchingPlugin;
 import org.rubypeople.rdt.internal.launching.ListenerList;
+import org.rubypeople.rdt.internal.launching.RuntimeLoadpathEntryResolver;
 import org.rubypeople.rdt.internal.launching.VMDefinitionsContainer;
 
 public class RubyRuntime {
-	private static final String TAG_INTERPRETER = "interpreter";
-	private static final String ATTR_PATH = "path";
-	private static final String ATTR_NAME = "name";
-	private static final String ATTR_SELECTED = "selected";
 	
 	/**
 	 * Loadpath container used for a project's Ruby
@@ -79,6 +84,13 @@ public class RubyRuntime {
 	 */
 	public static final String RUBYLIB_VARIABLE= "RUBY_LIB"; //$NON-NLS-1$
 
+	/**
+	 * Simple identifier constant (value <code>"runtimeLoadpathEntryResolvers"</code>) for the
+	 * runtime loadpath entry resolvers extension point.
+	 * 
+	 * @since 0.9.0
+	 */
+	public static final String EXTENSION_POINT_RUNTIME_CLASSPATH_ENTRY_RESOLVERS= "runtimeLoadpathEntryResolvers";	 //$NON-NLS-1$	
 	
 	private static IVMInstallType[] fgVMTypes= null;
 
@@ -86,16 +98,21 @@ public class RubyRuntime {
 	private static Object fgVMLock = new Object();
 	private static boolean fgInitializingVMs;
 	private static String fgDefaultVMId;
+    private static ListenerList fgVMListeners = new ListenerList(5);
+	private static String fgDefaultVMConnectorId;
 	
     /**
      *  Set of IDs of VMs contributed via vmInstalls extension point.
      */
     private static Set<String> fgContributedVMs = new HashSet<String>();
-	
-	protected static List<IVMInstall> installedInterpreters;
-	protected static IVMInstall selectedInterpreter;
-    private static ListenerList fgVMListeners = new ListenerList(5);
-	private static String fgDefaultVMConnectorId;
+		
+	/**
+	 * Resolvers keyed by variable name, container id,
+	 * and runtime classpath entry id.
+	 */
+	private static Map fgVariableResolvers = null;
+	private static Map fgContainerResolvers = null;
+	private static Map fgRuntimeClasspathEntryResolvers = null;
     
 	protected RubyRuntime() {
 		super();
@@ -647,5 +664,224 @@ public class RubyRuntime {
 			}
 		}
 		return libraryPaths;
+	}
+
+	/**
+	 * Returns the VM install for the given launch configuration.
+	 * The VM install is determined in the following prioritized way:
+	 * <ol>
+	 * <li>The VM install is explicitly specified on the launch configuration
+	 *  via the <code>ATTR_JRE_CONTAINER_PATH</code> attribute (since 3.2).</li>
+	 * <li>The VM install is explicitly specified on the launch configuration
+	 * 	via the <code>ATTR_VM_INSTALL_TYPE</code> and <code>ATTR_VM_INSTALL_ID</code>
+	 *  attributes.</li>
+	 * <li>If no explicit VM install is specified, the VM install associated with
+	 * 	the launch configuration's project is returned.</li>
+	 * <li>If no project is specified, or the project does not specify a custom
+	 * 	VM install, the workspace default VM install is returned.</li>
+	 * </ol>
+	 * 
+	 * @param configuration launch configuration
+	 * @return vm install
+	 * @exception CoreException if unable to compute a vm install
+	 * @since 0.9.0
+	 */
+	public static IVMInstall computeVMInstall(ILaunchConfiguration configuration) throws CoreException {
+		String jreAttr = configuration.getAttribute(IRubyLaunchConfigurationConstants.ATTR_JRE_CONTAINER_PATH, (String)null);
+		if (jreAttr == null) {
+			String type = configuration.getAttribute(IRubyLaunchConfigurationConstants.ATTR_VM_INSTALL_TYPE, (String)null);
+			if (type == null) {
+				IRubyProject proj = getRubyProject(configuration);
+				if (proj != null) {
+					IVMInstall vm = getVMInstall(proj);
+					if (vm != null) {
+						return vm;
+					}
+				}
+			} else {
+				String name = configuration.getAttribute(IRubyLaunchConfigurationConstants.ATTR_VM_INSTALL_NAME, (String)null);
+				return resolveVM(type, name, configuration);
+			}
+		} else {
+			IPath jrePath = Path.fromPortableString(jreAttr);
+			ILoadpathEntry entry = RubyCore.newContainerEntry(jrePath);
+			IRuntimeLoadpathEntryResolver2 resolver = getVariableResolver(jrePath.segment(0));
+			if (resolver != null) {
+				return resolver.resolveVMInstall(entry);
+			} else {
+				resolver = getContainerResolver(jrePath.segment(0));
+				if (resolver != null) {
+					return resolver.resolveVMInstall(entry);
+				}
+			}
+		}
+		
+		return getDefaultVMInstall();
+	}
+	
+	/**
+	 * Returns the VM of the given type with the specified name.
+	 *  
+	 * @param type vm type identifier
+	 * @param name vm name
+	 * @return vm install
+	 * @exception CoreException if unable to resolve
+	 * @since 0.9.0
+	 */
+	private static IVMInstall resolveVM(String type, String name, ILaunchConfiguration configuration) throws CoreException {
+		IVMInstallType vt = getVMInstallType(type);
+		if (vt == null) {
+			// error type does not exist
+			abort(MessageFormat.format(LaunchingMessages.JavaRuntime_Specified_VM_install_type_does_not_exist___0__2, new String[] {type}), null); 
+		}
+		IVMInstall vm = null;
+		// look for a name
+		if (name == null) {
+			// error - type specified without a specific install (could be an old config that specified a VM ID)
+			// log the error, but choose the default VM.
+			IStatus status = new Status(IStatus.WARNING, LaunchingPlugin.getUniqueIdentifier(), IRubyLaunchConfigurationConstants.ERR_UNSPECIFIED_VM_INSTALL, MessageFormat.format(LaunchingMessages.JavaRuntime_VM_not_fully_specified_in_launch_configuration__0____missing_VM_name__Reverting_to_default_VM__1, new String[] {configuration.getName()}), null); 
+			LaunchingPlugin.log(status);
+			return getDefaultVMInstall();
+		} 
+		vm = vt.findVMInstallByName(name);
+		if (vm == null) {
+			// error - install not found
+			abort(MessageFormat.format(LaunchingMessages.JavaRuntime_Specified_VM_install_not_found__type__0___name__1__2, new String[] {vt.getName(), name}), null);					 
+		} else {
+			return vm;
+		}
+		// won't reach here
+		return null;
+	}
+	
+	/**
+	 * Returns the resolver registered for the given variable, or
+	 * <code>null</code> if none.
+	 * 
+	 * @param variableName the variable to determine the resolver for
+	 * @return the resolver registered for the given variable, or
+	 * <code>null</code> if none
+	 */
+	private static IRuntimeLoadpathEntryResolver2 getVariableResolver(String variableName) {
+		return (IRuntimeLoadpathEntryResolver2)getVariableResolvers().get(variableName);
+	}
+	
+	/**
+	 * Returns the resolver registered for the given container id, or
+	 * <code>null</code> if none.
+	 * 
+	 * @param containerId the container to determine the resolver for
+	 * @return the resolver registered for the given container id, or
+	 * <code>null</code> if none
+	 */	
+	private static IRuntimeLoadpathEntryResolver2 getContainerResolver(String containerId) {
+		return (IRuntimeLoadpathEntryResolver2)getContainerResolvers().get(containerId);
+	}
+	
+	private static Map getVariableResolvers() {
+		if (fgVariableResolvers == null) {
+			initializeResolvers();
+		}
+		return fgVariableResolvers;
+	}
+	
+	/**
+	 * Returns all registered container resolvers.
+	 */
+	private static Map getContainerResolvers() {
+		if (fgContainerResolvers == null) {
+			initializeResolvers();
+		}
+		return fgContainerResolvers;
+	}
+	
+	private static void initializeResolvers() {
+		IExtensionPoint point = Platform.getExtensionRegistry().getExtensionPoint(LaunchingPlugin.PLUGIN_ID, EXTENSION_POINT_RUNTIME_CLASSPATH_ENTRY_RESOLVERS);
+		IConfigurationElement[] extensions = point.getConfigurationElements();
+		fgVariableResolvers = new HashMap(extensions.length);
+		fgContainerResolvers = new HashMap(extensions.length);
+		fgRuntimeClasspathEntryResolvers = new HashMap(extensions.length);
+		for (int i = 0; i < extensions.length; i++) {
+			RuntimeLoadpathEntryResolver res = new RuntimeLoadpathEntryResolver(extensions[i]);
+			String variable = res.getVariableName();
+			String container = res.getContainerId();
+			String entryId = res.getRuntimeLoadpathEntryId();
+			if (variable != null) {
+				fgVariableResolvers.put(variable, res);
+			}
+			if (container != null) {
+				fgContainerResolvers.put(container, res);
+			}
+			if (entryId != null) {
+				fgRuntimeClasspathEntryResolvers.put(entryId, res);
+			}
+		}		
+	}
+	
+	/**
+	 * Returns the VM assigned to build the given Java project.
+	 * The project must exist. The VM assigned to a project is
+	 * determined from its build path.
+	 * 
+	 * @param project the project to retrieve the VM from
+	 * @return the VM instance that is assigned to build the given Java project
+	 * 		   Returns <code>null</code> if no VM is referenced on the project's build path.
+	 * @throws CoreException if unable to determine the project's VM install
+	 */
+	public static IVMInstall getVMInstall(IRubyProject project) throws CoreException {
+		// check the classpath
+		IVMInstall vm = null;
+		ILoadpathEntry[] classpath = project.getRawLoadpath();
+		IRuntimeLoadpathEntryResolver resolver = null;
+		for (int i = 0; i < classpath.length; i++) {
+			ILoadpathEntry entry = classpath[i];
+			switch (entry.getEntryKind()) {
+				case ILoadpathEntry.CPE_VARIABLE:
+					resolver = getVariableResolver(entry.getPath().segment(0));
+					if (resolver != null) {
+						vm = resolver.resolveVMInstall(entry);
+					}
+					break;
+				case ILoadpathEntry.CPE_CONTAINER:
+					resolver = getContainerResolver(entry.getPath().segment(0));
+					if (resolver != null) {
+						vm = resolver.resolveVMInstall(entry);
+					}
+					break;
+			}
+			if (vm != null) {
+				return vm;
+			}
+		}
+		return null;
+	}
+	
+	/**
+	 * Return the <code>IRubyProject</code> referenced in the specified configuration or
+	 * <code>null</code> if none.
+	 *
+	 * @exception CoreException if the referenced Ruby project does not exist
+	 * @since 0.9.0
+	 */
+	public static IRubyProject getRubyProject(ILaunchConfiguration configuration) throws CoreException {
+		String projectName = configuration.getAttribute(IRubyLaunchConfigurationConstants.ATTR_PROJECT_NAME, (String)null);
+		if ((projectName == null) || (projectName.trim().length() < 1)) {
+			return null;
+		}			
+		IRubyProject javaProject = getRubyModel().getRubyProject(projectName);
+		if (javaProject != null && javaProject.getProject().exists() && !javaProject.getProject().isOpen()) {
+			abort(MessageFormat.format(LaunchingMessages.JavaRuntime_28, new String[] {configuration.getName(), projectName}), IRubyLaunchConfigurationConstants.ERR_PROJECT_CLOSED, null); 
+		}
+		if ((javaProject == null) || !javaProject.exists()) {
+			abort(MessageFormat.format(LaunchingMessages.JavaRuntime_Launch_configuration__0__references_non_existing_project__1___1, new String[] {configuration.getName(), projectName}), IRubyLaunchConfigurationConstants.ERR_NOT_A_RUBY_PROJECT, null); 
+		}
+		return javaProject;
+	}
+	
+	/**
+	 * Convenience method to get the ruby model.
+	 */
+	private static IRubyModel getRubyModel() {
+		return RubyCore.create(ResourcesPlugin.getWorkspace().getRoot());
 	}
 }

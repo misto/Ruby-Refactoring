@@ -59,5 +59,30 @@
             id="org.rubypeople.rdt.launching.RUBY_CONTAINER">
       </loadpathContainerInitializer>
    </extension>
+   <extension
+            point="org.rubypeople.rdt.launching.runtimeLoadpathEntryResolvers">
+      <runtimeLoadpathEntryResolver
+            container="org.rubypeople.rdt.launching.JRE_CONTAINER"
+            variable="JRE_LIB"
+            class="org.rubypeople.rdt.internal.launching.JRERuntimeLoadpathEntryResolver"
+            id="org.rubypeople.rdt.launching.JRE_RESOLVER">
+      </runtimeLoadpathEntryResolver>      
+      <runtimeLoadpathEntryResolver
+      		runtimeLoadpathEntryId="org.rubypeople.rdt.launching.loadpathentry.variableLoadpathEntry"
+            class="org.rubypeople.rdt.internal.launching.VariableLoadpathResolver"
+            id="org.rubypeople.rdt.launching.variableLoadpathResolver">
+      </runtimeLoadpathEntryResolver>
+   </extension>
+   <extension
+         point="org.rubypeople.rdt.launching.runtimeLoadpathEntries">
+      <runtimeLoadpathEntry
+            id="org.rubypeople.rdt.launching.loadpathentry.defaultLoadpath"
+            class="org.rubypeople.rdt.internal.launching.DefaultProjectLoadpathEntry">
+      </runtimeLoadpathEntry>
+      <runtimeLoadpathEntry
+            id="org.rubypeople.rdt.launching.loadpathentry.variableLoadpathEntry"
+            class="org.rubypeople.rdt.internal.launching.VariableLoadpathEntry">
+      </runtimeLoadpathEntry>
+   </extension>  
 
 </plugin>

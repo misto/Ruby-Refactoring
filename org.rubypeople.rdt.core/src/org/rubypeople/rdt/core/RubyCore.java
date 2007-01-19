@@ -1312,4 +1312,20 @@ public class RubyCore extends Plugin {
 		RubyModelManager.getRubyModelManager().updateVariableValues(variableNames, paths, true/*update preferences*/, monitor);
 	}
 
+	public static ILoadpathEntry newProjectEntry(IPath fullPath) {
+		return newProjectEntry(fullPath, false);
+	}
+
+	public static ILoadpathEntry newVariableEntry(IPath path) {
+		return newVariableEntry(path, false);
+	}
+
+	public static ILoadpathEntry newContainerEntry(IPath path) {
+		return newContainerEntry(path, false);
+	}
+
+	public static ILoadpathEntry newLibraryEntry(IPath p) {
+		return newLibraryEntry(p, false);
+	}
+
 }
