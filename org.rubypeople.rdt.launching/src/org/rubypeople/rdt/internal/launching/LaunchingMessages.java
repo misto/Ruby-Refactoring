@@ -64,6 +64,9 @@ public class LaunchingMessages {
 	public static String RuntimeLoadpathEntry_Unable_to_recover_runtime_class_path_entry___missing_archive_path_5;
 	public static String RuntimeLoadpathEntry_Unable_to_recover_runtime_class_path_entry___missing_variable_name_6;
 	public static String RuntimeLoadpathEntry_An_exception_occurred_generating_runtime_classpath_memento_8;
+	public static String DefaultProjectLoadpathEntry_4;
+	public static String DefaultProjectLoadpathEntry_2;
+	public static String DefaultProjectLoadpathEntry_3;
 	
 	private LaunchingMessages() {}
 

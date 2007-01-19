@@ -910,5 +910,41 @@ public class RubyRuntime {
 	 */
 	private static IRuntimeLoadpathEntry newRuntimeLoadpathEntry(ILoadpathEntry entry) {
 		return new RuntimeLoadpathEntry(entry);
+	}
+
+	/**
+	 * Returns a runtime classpath entry for the given container path with the given
+	 * classpath property to be resolved in the context of the given Java project.
+	 * 
+	 * @param path container path
+	 * @param classpathProperty the type of entry - one of <code>USER_CLASSES</code>,
+	 * 	<code>BOOTSTRAP_CLASSES</code>, or <code>STANDARD_CLASSES</code>
+	 * @param project Java project context used for resolution, or <code>null</code>
+	 *  if to be resolved in the context of the launch configuration this entry
+	 *  is referenced in
+	 * @return runtime classpath entry
+	 * @exception CoreException if unable to construct a runtime classpath entry
+	 * @since 0.9.0
+	 */
+	public static IRuntimeLoadpathEntry newRuntimeContainerLoadpathEntry(IPath path, int classpathProperty, IRubyProject project) throws CoreException {
+		ILoadpathEntry cpe = RubyCore.newContainerEntry(path);
+		RuntimeLoadpathEntry entry = new RuntimeLoadpathEntry(cpe, classpathProperty);
+		entry.setRubyProject(project);
+		return entry;
+	}
+
+	/**
+	 * Returns a new runtime classpath entry for the classpath
+	 * variable with the given path.
+	 * 
+	 * @param path variable path; first segment is the name of the variable; 
+	 * 	trailing segments are appended to the resolved variable value
+	 * @return runtime loadpath entry
+	 * @since 0.9.0
+	 */
+	public static IRuntimeLoadpathEntry newVariableRuntimeLoadpathEntry(
+			IPath path) {
+		ILoadpathEntry cpe = RubyCore.newVariableEntry(path);
+		return newRuntimeLoadpathEntry(cpe);
 	}	
 }
