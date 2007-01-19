@@ -62,10 +62,10 @@
    <extension
             point="org.rubypeople.rdt.launching.runtimeLoadpathEntryResolvers">
       <runtimeLoadpathEntryResolver
-            container="org.rubypeople.rdt.launching.JRE_CONTAINER"
-            variable="JRE_LIB"
-            class="org.rubypeople.rdt.internal.launching.JRERuntimeLoadpathEntryResolver"
-            id="org.rubypeople.rdt.launching.JRE_RESOLVER">
+            container="org.rubypeople.rdt.launching.RUBY_CONTAINER"
+            variable="RUBY_LIB"
+            class="org.rubypeople.rdt.internal.launching.RubyVMRuntimeLoadpathEntryResolver"
+            id="org.rubypeople.rdt.launching.RUBYVM_RESOLVER">
       </runtimeLoadpathEntryResolver>      
       <runtimeLoadpathEntryResolver
       		runtimeLoadpathEntryId="org.rubypeople.rdt.launching.loadpathentry.variableLoadpathEntry"

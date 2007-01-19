@@ -37,6 +37,7 @@ import org.rubypeople.rdt.internal.launching.CompositeId;
 import org.rubypeople.rdt.internal.launching.LaunchingMessages;
 import org.rubypeople.rdt.internal.launching.LaunchingPlugin;
 import org.rubypeople.rdt.internal.launching.ListenerList;
+import org.rubypeople.rdt.internal.launching.RuntimeLoadpathEntry;
 import org.rubypeople.rdt.internal.launching.RuntimeLoadpathEntryResolver;
 import org.rubypeople.rdt.internal.launching.VMDefinitionsContainer;
 
@@ -884,4 +885,30 @@ public class RubyRuntime {
 	private static IRubyModel getRubyModel() {
 		return RubyCore.create(ResourcesPlugin.getWorkspace().getRoot());
 	}
+
+	/**
+	 * Returns a new runtime classpath entry for the given archive (possibly
+	 * external).
+	 * 
+	 * @param path absolute path to an archive
+	 * @return runtime classpath entry
+	 * @since 0.9.0
+	 */
+	public static IRuntimeLoadpathEntry newArchiveRuntimeLoadpathEntry(IPath path) {
+		ILoadpathEntry cpe = RubyCore.newLibraryEntry(path);
+		return newRuntimeLoadpathEntry(cpe);
+	}
+	
+	/**
+	 * Returns a runtime classpath entry that corresponds to the given
+	 * classpath entry. The classpath entry may not be of type <code>CPE_SOURCE</code>
+	 * or <code>CPE_CONTAINER</code>.
+	 * 
+	 * @param entry a classpath entry
+	 * @return runtime classpath entry
+	 * @since 0.9.0
+	 */
+	private static IRuntimeLoadpathEntry newRuntimeLoadpathEntry(ILoadpathEntry entry) {
+		return new RuntimeLoadpathEntry(entry);
+	}	
 }
