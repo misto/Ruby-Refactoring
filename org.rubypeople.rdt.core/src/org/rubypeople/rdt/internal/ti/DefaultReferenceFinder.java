@@ -31,6 +31,8 @@ import org.rubypeople.rdt.internal.ti.util.ScopedNodeLocator;
 public class DefaultReferenceFinder implements IReferenceFinder {
 	
 
+	private static final boolean VERBOSE = false;
+
 	public List<ISourcePosition> findReferences(String source, int offset) {
 
 		// References to return
@@ -43,7 +45,7 @@ public class DefaultReferenceFinder implements IReferenceFinder {
         // Find origiating node
         Node orig = OffsetNodeLocator.Instance().getNodeAtOffset(root, offset);
         
-        System.out.println("Origin: " + orig.getClass().getName());
+        log("Origin: " + orig.getClass().getName());
 
         if ( isLocalVarRef(orig) ) {
         	pushLocalVarRefs( root, orig, references );
@@ -157,7 +159,7 @@ public class DefaultReferenceFinder implements IReferenceFinder {
 		
 	
 	private void pushLocalVarRefs( Node root, Node orig, List<ISourcePosition> references ) {
-		System.out.println("Finding references for a local variable " + orig.toString());
+		log("Finding references for a local variable " + orig.toString());
 		
 		// Find the search space
 		Node searchSpace = FirstPrecursorNodeLocator.Instance().findFirstPrecursor(root, orig.getPosition().getStartOffset(), new INodeAcceptor() {
@@ -194,8 +196,12 @@ public class DefaultReferenceFinder implements IReferenceFinder {
 //		System.out.println("Searching search space " + searchSpace.toString() + searchSpace.getPosition().toString() );
 	}
 	
+	private void log(String string) {
+		if (VERBOSE) System.out.println(string);		
+	}
+
 	private void pushInstVarRefs( Node root, Node orig, List<ISourcePosition> references ) {
-		System.out.println("Finding references for an instance variable " + orig.toString() );
+		log("Finding references for an instance variable " + orig.toString() );
 		
 		Node searchSpace;
 		
