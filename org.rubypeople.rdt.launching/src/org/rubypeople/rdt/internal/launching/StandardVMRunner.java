@@ -31,6 +31,9 @@ import org.rubypeople.rdt.launching.IVMInstall;
 import org.rubypeople.rdt.launching.VMRunnerConfiguration;
 
 public class StandardVMRunner extends AbstractVMRunner {
+	
+	private static final String END_OF_OPTIONS_DELIMITER = "--";
+	
 	protected IVMInstall fVMInstance;
 
 	public StandardVMRunner(IVMInstall vmInstance) {
@@ -161,20 +164,13 @@ public class StandardVMRunner extends AbstractVMRunner {
 		return file.exists() && file.isFile();
 	}
 
-	protected String convertClassPath(String[] cp) {
-		int pathCount= 0;
-		StringBuffer buf= new StringBuffer();
-		if (cp.length == 0) {
-			return "";    //$NON-NLS-1$
+	protected List<String> convertLoadPath(String[] lp) {
+		List<String> strings = new ArrayList<String>();
+		for (int i= 0; i < lp.length; i++) {
+			strings.add("-I"); //$NON-NLS-1$
+			strings.add(lp[i]);
 		}
-		for (int i= 0; i < cp.length; i++) {
-			if (pathCount > 0) {
-				buf.append(File.pathSeparator);
-			}
-			buf.append(cp[i]);
-			pathCount++;
-		}
-		return buf.toString();
+		return strings;
 	}
 
 
@@ -196,17 +192,18 @@ public class StandardVMRunner extends AbstractVMRunner {
 		List arguments= new ArrayList();
 		arguments.add(program);
 				
-		// VM args are the first thing after the java program so that users can specify
+		// VM args are the first thing after the ruby program so that users can specify
 		// options like '-client' & '-server' which are required to be the first option
 		String[] allVMArgs = combineVmArgs(config, fVMInstance);
 		addArguments(allVMArgs, arguments);
 		
-		String[] cp= config.getClassPath();
-		if (cp.length > 0) {
-			arguments.add("-I"); //$NON-NLS-1$
-			arguments.add(convertClassPath(cp));
+		String[] lp= config.getLoadPath();
+		if (lp.length > 0) {
+			arguments.addAll(convertLoadPath(lp));
 		}
-		arguments.add(config.getClassToLaunch());
+		arguments.add(END_OF_OPTIONS_DELIMITER);
+		
+		arguments.add(config.getFileToLaunch());
 		
 		String[] programArgs= config.getProgramArguments();
 		addArguments(programArgs, arguments);

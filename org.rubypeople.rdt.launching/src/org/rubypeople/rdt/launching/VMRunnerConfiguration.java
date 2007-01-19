@@ -24,12 +24,11 @@ import org.rubypeople.rdt.internal.launching.LaunchingMessages;
  * </p>
  */
 public class VMRunnerConfiguration {
-	private String fClassToLaunch;
+	private String fFileToLaunch;
 	private String[] fVMArgs;
 	private String[] fProgramArgs;
 	private String[] fEnvironment;
-	private String[] fClassPath;
-	private String[] fBootClassPath;
+	private String[] fLoadPath;
 	private String fWorkingDirectory;
 	private Map fVMSpecificAttributesMap;
 	private boolean fResume = true;
@@ -38,20 +37,20 @@ public class VMRunnerConfiguration {
 	
 	/**
 	 * Creates a new configuration for launching a VM to run the given main class
-	 * using the given class path.
+	 * using the given load path.
 	 *
-	 * @param classToLaunch The fully qualified name of the class to launch. May not be null.
-	 * @param classPath 	The classpath. May not be null.
+	 * @param fileToLaunch The fully qualified name of the file to launch. May not be null.
+	 * @param loadPath 	The loadpath. May not be null.
 	 */
-	public VMRunnerConfiguration(String classToLaunch, String[] classPath) {
-		if (classToLaunch == null) {
+	public VMRunnerConfiguration(String fileToLaunch, String[] loadPath) {
+		if (fileToLaunch == null) {
 			throw new IllegalArgumentException(LaunchingMessages.vmRunnerConfig_assert_classNotNull); 
 		}
-		if (classPath == null) {
+		if (loadPath == null) {
 			throw new IllegalArgumentException(LaunchingMessages.vmRunnerConfig_assert_classPathNotNull); 
 		}
-		fClassToLaunch= classToLaunch;
-		fClassPath= classPath;
+		fFileToLaunch= fileToLaunch;
+		fLoadPath= loadPath;
 	}
 
 	/**
@@ -111,24 +110,6 @@ public class VMRunnerConfiguration {
 	}
 		
 	/**
-	 * Sets the boot classpath. Note that the boot classpath will be passed to the 
-	 * VM "as is". This means it has to be complete. Interpretation of the boot class path
-	 * is up to the VM runner this object is passed to.
-	 * <p>
-	 * In release 3.0, support has been added for appending and prepending the
-	 * boot classpath. Generally an <code>IVMRunner</code> should use the prepend,
-	 * main, and append boot classpaths provided. However, in the case that an
-	 * <code>IVMRunner</code> does not support these options, a complete bootpath
-	 * should also be specified.
-	 * </p>
-	 * @param bootClassPath The boot classpath. An empty array indicates an empty
-	 *  bootpath and <code>null</code> indicates a default bootpath.
-	 */
-	public void setBootClassPath(String[] bootClassPath) {
-		fBootClassPath= bootClassPath;
-	}
-	
-	/**
 	 * Returns the <code>Map</code> that contains String name/value pairs that represent
 	 * VM-specific attributes.
 	 * 
@@ -140,46 +121,23 @@ public class VMRunnerConfiguration {
 	}
 	
 	/**
-	 * Returns the name of the class to launch.
+	 * Returns the name of the file to launch.
 	 *
-	 * @return The fully qualified name of the class to launch. Will not be <code>null</code>.
+	 * @return The fully qualified name of the file to launch. Will not be <code>null</code>.
 	 */
-	public String getClassToLaunch() {
-		return fClassToLaunch;
+	public String getFileToLaunch() {
+		return fFileToLaunch;
 	}
 	
 	/**
-	 * Returns the classpath.
+	 * Returns the loadpath.
 	 *
-	 * @return the classpath
+	 * @return the loadpath
 	 */
-	public String[] getClassPath() {
-		return fClassPath;
+	public String[] getLoadPath() {
+		return fLoadPath;
 	}
 	
-	/**
-	 * Returns the boot classpath. An empty array indicates an empty
-	 * bootpath and <code>null</code> indicates a default bootpath.
-	 * <p>
-	 * In 3.0, support has been added for prepending and appending to the
-	 * boot classpath. The new attributes are stored in the VM specific
-	 * attributes map using the following keys defined in 
-	 * <code>IJavaLaunchConfigurationConstants</code>:
-	 * <ul>
-	 * <li>ATTR_BOOTPATH_PREPEND</li>
-	 * <li>ATTR_BOOTPATH_APPEND</li>
-	 * <li>ATTR_BOOTPATH</li>
-	 * </ul>
-	 * </p>
-	 * @return The boot classpath. An empty array indicates an empty
-	 *  bootpath and <code>null</code> indicates a default bootpath.
-	 * @see #setBootClassPath(String[])
-	 * @see IJavaLaunchConfigurationConstants
-	 */
-	public String[] getBootClassPath() {
-		return fBootClassPath;
-	}
-
 	/**
 	 * Returns the arguments to the VM itself.
 	 *
