@@ -25,6 +25,9 @@
    <!-- Extension point definitions -->
    <extension-point id="vmInstallTypes" name="%vmInstallTypes" schema="schema/vmInstallTypes.exsd"/>
    <extension-point id="vmInstalls" name="%vmInstalls" schema="schema/vmInstalls.exsd"/>
+   <extension-point id="loadpathProviders" name="%loadpathProviders" schema="schema/loadpathProviders.exsd"/>
+   <extension-point id="runtimeLoadpathEntryResolvers" name="%runtimeLoadpathEntryResolvers" schema="schema/runtimeLoadpathEntryResolvers.exsd"/>
+   <extension-point id="runtimeLoadpathEntries" name="%runtimeLoadpathEntries" schema="schema/runtimeLoadpathEntries.exsd"/>
    
    <extension
          point="org.rubypeople.rdt.launching.vmInstallTypes">
