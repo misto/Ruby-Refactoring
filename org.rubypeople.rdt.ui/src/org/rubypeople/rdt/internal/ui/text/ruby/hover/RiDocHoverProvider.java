@@ -36,7 +36,10 @@ public class RiDocHoverProvider implements ITextHoverProvider {
 			args.add(symbol);
             IVMInstall selectedInterpreter = RubyRuntime.getDefault().getDefaultVMInstall();
 			if (selectedInterpreter == null) return null;
-            Process p = selectedInterpreter.exec(args, null);
+//			 XXX How in the world do we do these quick little background launches and grab the process?
+//			Process p = selectedInterpreter.exec(args, null);
+			Process p = null;
+			if (p == null) return null;
 			br = new BufferedReader(new InputStreamReader(p.getInputStream()));
 			// TODO: format the documentation that was fetched from RI 
 			// for now: read the first 15 lines so 
@@ -55,8 +58,8 @@ public class RiDocHoverProvider implements ITextHoverProvider {
 			return "" + buf.toString();			
     	} catch (BadLocationException e) {
     		RubyPlugin.log(e);
-		} catch (CoreException e) {
-			RubyPlugin.log(e);
+//		} catch (CoreException e) {
+//			RubyPlugin.log(e);
 		} catch (IOException e) {
 			RubyPlugin.log(e);
 		} finally {

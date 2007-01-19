@@ -85,7 +85,7 @@ public class RDocUtility {
 		public final void invoke() {
 			log("Generating RDoc for " + resource.getName());
 
-			IVMInstall interpreter = RubyRuntime.getDefault().getDefaultVMInstall();
+			IVMInstall interpreter = RubyRuntime.getDefaultVMInstall();
 			if (interpreter == null) {			
 				MessageDialog.openInformation(RubyPlugin.getActiveWorkbenchShell(), LaunchingMessages.RdtLaunchingPlugin_noInterpreterSelectedTitle, LaunchingMessages.RdtLaunchingPlugin_noInterpreterSelected);
 				return ;
@@ -108,14 +108,16 @@ public class RDocUtility {
 			args.add(rdocPath.toString());
 			args.add("-r");
 			args.add(resource.getLocation().toOSString());
-			try {
-				final Process p = interpreter.exec(args, null);
+//			try {
+				// XXX How do we do quick background launches of the interpreter?
+//				final Process p = interpreter.exec(args, null);
+				final Process p = null;
 				handleOutput(p, args);
-			} catch (CoreException e) {
-				RubyPlugin.log(e);
-				log(e.getMessage());
-				ErrorDialog.openError(RubyPlugin.getActiveWorkbenchShell(), RubyUIMessages.getString("ErrorRunningRdocTitle"), e.getMessage(), new StatusInfo(StatusInfo.ERROR, e.getMessage()));
-			}
+//			} catch (CoreException e) {
+//				RubyPlugin.log(e);
+//				log(e.getMessage());
+//				ErrorDialog.openError(RubyPlugin.getActiveWorkbenchShell(), RubyUIMessages.getString("ErrorRunningRdocTitle"), e.getMessage(), new StatusInfo(StatusInfo.ERROR, e.getMessage()));
+//			}
 		}
 
 		/**

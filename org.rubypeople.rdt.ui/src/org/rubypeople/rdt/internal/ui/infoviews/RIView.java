@@ -46,6 +46,7 @@ import org.rubypeople.rdt.internal.ui.rdocexport.RDocUtility;
 import org.rubypeople.rdt.internal.ui.rdocexport.RdocListener;
 import org.rubypeople.rdt.launching.IVMInstall;
 import org.rubypeople.rdt.launching.IVMInstallChangedListener;
+import org.rubypeople.rdt.launching.IVMRunner;
 import org.rubypeople.rdt.launching.PropertyChangeEvent;
 import org.rubypeople.rdt.launching.RubyRuntime;
 import org.rubypeople.rdt.ui.PreferenceConstants;
@@ -228,6 +229,7 @@ public class RIView extends ViewPart implements RdocListener {
 	private void initSearchList() {        
         RubyInvoker invoker = new RubyInvoker() {        
             protected void handleOutput(Process process) {
+            	if (process == null) return;
 				riFound = false;
                 BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
                 String line = null;
@@ -318,6 +320,7 @@ public class RIView extends ViewPart implements RdocListener {
             }
     
             protected void handleOutput(final Process process) {
+            	if (process == null) return;
                 // any output?
                 final StreamRedirector outputRedirect = new StreamRedirector(process.getInputStream(), "");
                 // kick them off
@@ -379,15 +382,17 @@ public class RIView extends ViewPart implements RdocListener {
 				return;
 			}
 			   		
-    		try {        			
+//    		try {        			
                 List args = getArgList();
                 args.add(0, riPath.toString());
-    			final Process p = RubyRuntime.getDefault().getDefaultVMInstall().exec(args, null);
+                IVMRunner runner = RubyRuntime.getDefaultVMInstall().getVMRunner("run");
+                // XXX How in the world do we do these quick little background launches and grab the process?
+    			final Process p = null;
                 handleOutput(p); 
-    		} catch (CoreException coreException)  {
-    			// message of RuntimeException will be displayed in the RI View
-    			throw new RuntimeException(coreException.getStatus().getMessage());
-    		}      
+//    		} catch (CoreException coreException)  {
+//    			// message of RuntimeException will be displayed in the RI View
+//    			throw new RuntimeException(coreException.getStatus().getMessage());
+//    		}      
         }
     }
 
