@@ -4,6 +4,7 @@ import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.StringReader;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -13,9 +14,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerException;
 
+import org.eclipse.core.resources.IProject;
+import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IConfigurationElement;
@@ -29,17 +33,26 @@ import org.eclipse.core.runtime.Preferences;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.variables.VariablesPlugin;
 import org.eclipse.debug.core.ILaunchConfiguration;
+import org.rubypeople.rdt.core.ILoadpathContainer;
 import org.rubypeople.rdt.core.ILoadpathEntry;
 import org.rubypeople.rdt.core.IRubyModel;
 import org.rubypeople.rdt.core.IRubyProject;
 import org.rubypeople.rdt.core.RubyCore;
 import org.rubypeople.rdt.internal.launching.CompositeId;
+import org.rubypeople.rdt.internal.launching.DefaultEntryResolver;
+import org.rubypeople.rdt.internal.launching.DefaultProjectLoadpathEntry;
 import org.rubypeople.rdt.internal.launching.LaunchingMessages;
 import org.rubypeople.rdt.internal.launching.LaunchingPlugin;
 import org.rubypeople.rdt.internal.launching.ListenerList;
 import org.rubypeople.rdt.internal.launching.RuntimeLoadpathEntry;
 import org.rubypeople.rdt.internal.launching.RuntimeLoadpathEntryResolver;
+import org.rubypeople.rdt.internal.launching.RuntimeLoadpathProvider;
 import org.rubypeople.rdt.internal.launching.VMDefinitionsContainer;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
 
 public class RubyRuntime {
 	
@@ -92,6 +105,14 @@ public class RubyRuntime {
 	 * @since 0.9.0
 	 */
 	public static final String EXTENSION_POINT_RUNTIME_CLASSPATH_ENTRY_RESOLVERS= "runtimeLoadpathEntryResolvers";	 //$NON-NLS-1$	
+
+	/**
+	 * Simple identifier constant (value <code>"loadpathProviders"</code>) for the
+	 * runtime loadpath providers extension point.
+	 * 
+	 * @since 0.9.0
+	 */
+	public static final String EXTENSION_POINT_RUNTIME_CLASSPATH_PROVIDERS= "loadpathProviders";	 //$NON-NLS-1$		
 	
 	private static IVMInstallType[] fgVMTypes= null;
 
@@ -101,6 +122,24 @@ public class RubyRuntime {
 	private static String fgDefaultVMId;
     private static ListenerList fgVMListeners = new ListenerList(5);
 	private static String fgDefaultVMConnectorId;
+		
+	/**
+	 * Cache of already resolved projects in container entries. Used to avoid
+	 * cycles in project dependencies when resolving classpath container entries.
+	 * Counters used to know when entering/exiting to clear cache
+	 */
+	private static ThreadLocal fgProjects = new ThreadLocal(); // Lists
+	private static ThreadLocal fgEntryCount = new ThreadLocal(); // Integers
+	
+	/**
+	 * Default loadpath provider.
+	 */
+	private static IRuntimeLoadpathProvider fgDefaultClasspathProvider = new StandardLoadpathProvider();
+	
+	/**
+	 * Path providers keyed by id
+	 */
+	private static Map fgPathProviders = null;
 	
     /**
      *  Set of IDs of VMs contributed via vmInstalls extension point.
@@ -946,5 +985,612 @@ public class RubyRuntime {
 			IPath path) {
 		ILoadpathEntry cpe = RubyCore.newVariableEntry(path);
 		return newRuntimeLoadpathEntry(cpe);
+	}
+	
+	/**
+	 * Computes and returns the unresolved class path for the given launch configuration.
+	 * Variable and container entries are unresolved.
+	 * 
+	 * @param configuration launch configuration
+	 * @return unresolved runtime classpath entries
+	 * @throws CoreException 
+	 * @exception CoreException if unable to compute the classpath
+	 * @since 0.9.0
+	 */
+	public static IRuntimeLoadpathEntry[] computeUnresolvedRuntimeLoadpath(
+			ILaunchConfiguration configuration) throws CoreException {
+		return getLoadpathProvider(configuration).computeUnresolvedLoadpath(configuration);
+	}	
+	
+	/**
+	 * Returns the classpath provider for the given launch configuration.
+	 * 
+	 * @param configuration launch configuration
+	 * @return classpath provider
+	 * @exception CoreException if unable to resolve the path provider
+	 * @since 0.9.0
+	 */
+	public static IRuntimeLoadpathProvider getLoadpathProvider(ILaunchConfiguration configuration) throws CoreException {
+		String providerId = configuration.getAttribute(IRubyLaunchConfigurationConstants.ATTR_CLASSPATH_PROVIDER, (String)null);
+		IRuntimeLoadpathProvider provider = null;
+		if (providerId == null) {
+			provider = fgDefaultClasspathProvider;
+		} else {
+			provider = (IRuntimeLoadpathProvider)getLoadpathProviders().get(providerId);
+			if (provider == null) {
+				abort(MessageFormat.format(LaunchingMessages.JavaRuntime_26, new String[]{providerId}), null); 
+			}
+		}
+		return provider;
+	}	
+	
+	/**
+	 * Returns all registered classpath providers.
+	 */
+	private static Map getLoadpathProviders() {
+		if (fgPathProviders == null) {
+			initializeProviders();
+		}
+		return fgPathProviders;
+	}
+	
+	private static void initializeProviders() {
+		IExtensionPoint point = Platform.getExtensionRegistry().getExtensionPoint(LaunchingPlugin.PLUGIN_ID, EXTENSION_POINT_RUNTIME_CLASSPATH_PROVIDERS);
+		IConfigurationElement[] extensions = point.getConfigurationElements();
+		fgPathProviders = new HashMap(extensions.length);
+		for (int i = 0; i < extensions.length; i++) {
+			RuntimeLoadpathProvider res = new RuntimeLoadpathProvider(extensions[i]);
+			fgPathProviders.put(res.getIdentifier(), res);
+		}		
+	}
+
+	/**
+	 * Returns a runtime classpath entry constructed from the given memento.
+	 * 
+	 * @param memento a memento for a runtime classpath entry
+	 * @return runtime classpath entry
+	 * @exception CoreException if unable to construct a runtime classpath entry
+	 * @since 0.9.0
+	 */
+	public static IRuntimeLoadpathEntry newRuntimeLoadpathEntry(String memento) throws CoreException {
+		try {
+			Element root = null;
+			DocumentBuilder parser = LaunchingPlugin.getParser();
+			StringReader reader = new StringReader(memento);
+			InputSource source = new InputSource(reader);
+			root = parser.parse(source).getDocumentElement();
+												
+			String id = root.getAttribute("id"); //$NON-NLS-1$
+			if (id == null || id.length() == 0) {
+				// assume an old format
+				return new RuntimeLoadpathEntry(root);
+			}
+			// get the extension & create a new one
+			IRuntimeLoadpathEntry2 entry = LaunchingPlugin.getDefault().newRuntimeLoadpathEntry(id);
+			NodeList list = root.getChildNodes();
+			for (int i = 0; i < list.getLength(); i++) {
+				Node node = list.item(i);
+				if (node.getNodeType() == Node.ELEMENT_NODE) {
+					Element element = (Element)node;
+					if ("memento".equals(element.getNodeName())) { //$NON-NLS-1$
+						entry.initializeFrom(element);
+					}
+				}
+			}
+			return entry;
+		} catch (SAXException e) {
+			abort(LaunchingMessages.JavaRuntime_31, e); 
+		} catch (IOException e) {
+			abort(LaunchingMessages.JavaRuntime_32, e); 
+		}
+		return null;
+	}
+	
+	/**
+	 * Returns a runtime classpath entry identifying the JRE to use when launching the specified
+	 * configuration or <code>null</code> if none is specified. The entry returned represents a
+	 * either a classpath variable or classpath container that resolves to a JRE.
+	 * <p>
+	 * The entry is resolved as follows:
+	 * <ol>
+	 * <li>If the <code>ATTR_JRE_CONTAINER_PATH</code> is present, it is used to create
+	 *  a classpath container referring to a JRE.</li>
+	 * <li>Next, if the <code>ATTR_VM_INSTALL_TYPE</code> and <code>ATTR_VM_INSTALL_NAME</code>
+	 * attributes are present, they are used to create a classpath container.</li>
+	 * <li>When none of the above attributes are specified, a default entry is
+	 * created which refers to the JRE referenced by the build path of the configuration's
+	 * associated Java project. This could be a classpath variable or classpath container.</li>
+	 * <li>When there is no Java project associated with a configuration, the workspace
+	 * default JRE is used to create a container path.</li>
+	 * </ol>
+	 * </p>
+	 * @param configuration
+	 * @return classpath container path identifying a JRE or <code>null</code>
+	 * @exception org.eclipse.core.runtime.CoreException if an exception occurs retrieving
+	 *  attributes from the specified launch configuration
+	 * @since 0.9.0
+	 */
+	public static IRuntimeLoadpathEntry computeJREEntry(ILaunchConfiguration configuration) throws CoreException {
+		String jreAttr = configuration.getAttribute(IRubyLaunchConfigurationConstants.ATTR_JRE_CONTAINER_PATH, (String)null);
+		IPath containerPath = null;
+		if (jreAttr == null) {
+			String type = configuration.getAttribute(IRubyLaunchConfigurationConstants.ATTR_VM_INSTALL_TYPE, (String)null);
+			if (type == null) {
+				// default JRE for the launch configuration
+				IRubyProject proj = getRubyProject(configuration);
+				if (proj == null) {
+					containerPath = newDefaultJREContainerPath();
+				} else {
+					return computeJREEntry(proj);
+				}
+			} else {
+				String name = configuration.getAttribute(IRubyLaunchConfigurationConstants.ATTR_VM_INSTALL_NAME, (String)null);
+				if (name != null) {
+					containerPath = newDefaultJREContainerPath().append(type).append(name);
+				}
+			}
+		} else {
+			containerPath = Path.fromPortableString(jreAttr);
+		}
+		if (containerPath != null) {
+			return newRuntimeContainerLoadpathEntry(containerPath, IRuntimeLoadpathEntry.STANDARD_CLASSES);
+		}
+		return null;
+	}
+	
+	/**
+	 * Returns a runtime classpath entry identifying the JRE referenced by the specified
+	 * project, or <code>null</code> if none. The entry returned represents a either a
+	 * classpath variable or classpath container that resolves to a JRE.
+	 * 
+	 * @param project Java project
+	 * @return JRE runtime classpath entry or <code>null</code>
+	 * @exception org.eclipse.core.runtime.CoreException if an exception occurs
+	 * 	accessing the project's classpath
+	 * @since 0.9.0
+	 */
+	public static IRuntimeLoadpathEntry computeJREEntry(IRubyProject project) throws CoreException {
+		ILoadpathEntry[] rawClasspath = project.getRawLoadpath();
+		IRuntimeLoadpathEntryResolver2 resolver = null;
+		for (int i = 0; i < rawClasspath.length; i++) {
+			ILoadpathEntry entry = rawClasspath[i];
+			switch (entry.getEntryKind()) {
+				case ILoadpathEntry.CPE_VARIABLE:
+					resolver = getVariableResolver(entry.getPath().segment(0));
+					if (resolver != null) {
+						if (resolver.isVMInstallReference(entry)) {
+							return newRuntimeLoadpathEntry(entry);
+						}
+					}					
+					break;
+				case ILoadpathEntry.CPE_CONTAINER:
+					resolver = getContainerResolver(entry.getPath().segment(0));
+					if (resolver != null) {
+						if (resolver.isVMInstallReference(entry)) {
+							ILoadpathContainer container = RubyCore.getLoadpathContainer(entry.getPath(), project);
+							if (container != null) {
+								switch (container.getKind()) {
+									case ILoadpathContainer.K_APPLICATION:
+										break;
+									case ILoadpathContainer.K_DEFAULT_SYSTEM:
+										return newRuntimeContainerLoadpathEntry(entry.getPath(), IRuntimeLoadpathEntry.STANDARD_CLASSES);
+									case ILoadpathContainer.K_SYSTEM:
+										return newRuntimeContainerLoadpathEntry(entry.getPath(), IRuntimeLoadpathEntry.BOOTSTRAP_CLASSES);
+								}
+							}
+						}
+					}
+					break;
+			}
+			
+		}
+		return null;
+	}	
+	
+	/**
+	 * Returns a path for the JRE classpath container identifying the 
+	 * default VM install.
+	 * 
+	 * @return classpath container path
+	 * @since 0.9.0
+	 */	
+	public static IPath newDefaultJREContainerPath() {
+		return new Path(RUBY_CONTAINER);
+	}
+	
+	/**
+	 * Returns a runtime classpath entry for the given container path with the given
+	 * classpath property.
+	 * 
+	 * @param path container path
+	 * @param classpathProperty the type of entry - one of <code>USER_CLASSES</code>,
+	 * 	<code>BOOTSTRAP_CLASSES</code>, or <code>STANDARD_CLASSES</code>
+	 * @return runtime classpath entry
+	 * @exception CoreException if unable to construct a runtime classpath entry
+	 * @since 0.9.0
+	 */
+	public static IRuntimeLoadpathEntry newRuntimeContainerLoadpathEntry(IPath path, int classpathProperty) throws CoreException {
+		return newRuntimeContainerLoadpathEntry(path, classpathProperty, null);
+	}
+
+	/**
+	 * Computes and returns the default unresolved runtime classpath for the
+	 * given project.
+	 * 
+	 * @return runtime classpath entries
+	 * @exception CoreException if unable to compute the runtime classpath
+	 * @see IRuntimeClasspathEntry
+	 * @since 0.9.0
+	 */
+	public static IRuntimeLoadpathEntry[] computeUnresolvedRuntimeLoadpath(IRubyProject project) throws CoreException {
+		ILoadpathEntry[] entries = project.getRawLoadpath();
+		List classpathEntries = new ArrayList(3);
+		for (int i = 0; i < entries.length; i++) {
+			ILoadpathEntry entry = entries[i];
+			switch (entry.getEntryKind()) {
+				case ILoadpathEntry.CPE_CONTAINER:
+					ILoadpathContainer container = RubyCore.getLoadpathContainer(entry.getPath(), project);
+					if (container != null) {
+						switch (container.getKind()) {
+							case ILoadpathContainer.K_APPLICATION:
+								// don't look at application entries
+								break;
+							case ILoadpathContainer.K_DEFAULT_SYSTEM:
+								classpathEntries.add(newRuntimeContainerLoadpathEntry(container.getPath(), IRuntimeLoadpathEntry.STANDARD_CLASSES, project));
+								break;	
+							case ILoadpathContainer.K_SYSTEM:
+								classpathEntries.add(newRuntimeContainerLoadpathEntry(container.getPath(), IRuntimeLoadpathEntry.BOOTSTRAP_CLASSES, project));
+								break;
+						}						
+					}
+					break;
+				case ILoadpathEntry.CPE_VARIABLE:
+					if (RUBYLIB_VARIABLE.equals(entry.getPath().segment(0))) {
+						IRuntimeLoadpathEntry jre = newVariableRuntimeLoadpathEntry(entry.getPath());
+						jre.setLoadpathProperty(IRuntimeLoadpathEntry.STANDARD_CLASSES);
+						classpathEntries.add(jre);
+					}
+					break;
+				default:
+					break;
+			}
+		}
+		classpathEntries.add(newDefaultProjectLoadpathEntry(project));
+		return (IRuntimeLoadpathEntry[]) classpathEntries.toArray(new IRuntimeLoadpathEntry[classpathEntries.size()]);
+	}
+	
+	/**
+	 * Returns a new runtime classpath entry containing the default classpath
+	 * for the specified Ruby project. 
+	 * 
+	 * @param project Ruby project
+	 * @return runtime classpath entry
+	 * @since 0.9.0
+	 */
+	public static IRuntimeLoadpathEntry newDefaultProjectLoadpathEntry(IRubyProject project) {
+		return new DefaultProjectLoadpathEntry(project);
+	}
+	
+	/**
+	 * Returns resolved entries for the given entry in the context of the given
+	 * launch configuration. If the entry is of kind
+	 * <code>VARIABLE</code> or <code>CONTAINER</code>, variable and container
+	 * resolvers are consulted. If the entry is of kind <code>PROJECT</code>,
+	 * and the associated Java project specifies non-default output locations,
+	 * the corresponding output locations are returned. Otherwise, the given
+	 * entry is returned.
+	 * <p>
+	 * If the given entry is a variable entry, and a resolver is not registered,
+	 * the entry itself is returned. If the given entry is a container, and a
+	 * resolver is not registered, resolved runtime classpath entries are calculated
+	 * from the associated container classpath entries, in the context of the project
+	 * associated with the given launch configuration.
+	 * </p>
+	 * @param entry runtime classpath entry
+	 * @param configuration launch configuration
+	 * @return resolved runtime classpath entry
+	 * @exception CoreException if unable to resolve
+	 * @see IRuntimeClasspathEntryResolver
+	 * @since 2.0
+	 */
+	public static IRuntimeLoadpathEntry[] resolveRuntimeLoadpathEntry(IRuntimeLoadpathEntry entry, ILaunchConfiguration configuration) throws CoreException {
+		switch (entry.getType()) {
+			case IRuntimeLoadpathEntry.PROJECT:
+				// if the project has multiple output locations, they must be returned
+				IResource resource = entry.getResource();
+				if (resource instanceof IProject) {
+					IProject p = (IProject)resource;
+					IRubyProject project = RubyCore.create(p);
+					if (project == null || !p.isOpen() || !project.exists()) { 
+						return new IRuntimeLoadpathEntry[0];
+					}
+					IRuntimeLoadpathEntry[] entries = resolveOutputLocations(project, entry.getLoadpathProperty());
+					if (entries != null) {
+						return entries;
+					}
+				} else {
+					// could not resolve project
+					abort(MessageFormat.format(LaunchingMessages.JavaRuntime_Classpath_references_non_existant_project___0__3, new String[]{entry.getPath().lastSegment()}), null); 
+				}
+				break;
+			case IRuntimeLoadpathEntry.VARIABLE:
+				IRuntimeLoadpathEntryResolver resolver = getVariableResolver(entry.getVariableName());
+				if (resolver == null) {
+					IRuntimeLoadpathEntry[] resolved = resolveVariableEntry(entry, null, configuration);
+					if (resolved != null) { 
+						return resolved;
+					}
+					break;
+				} 
+				return resolver.resolveRuntimeLoadpathEntry(entry, configuration);				
+			case IRuntimeLoadpathEntry.CONTAINER:
+				resolver = getContainerResolver(entry.getVariableName());
+				if (resolver == null) {
+					return computeDefaultContainerEntries(entry, configuration);
+				} 
+				return resolver.resolveRuntimeLoadpathEntry(entry, configuration);
+			case IRuntimeLoadpathEntry.ARCHIVE:
+				// verify the archive exists
+				String location = entry.getLocation();
+				if (location == null) {
+					abort(MessageFormat.format(LaunchingMessages.JavaRuntime_Classpath_references_non_existant_archive___0__4, new String[]{entry.getPath().toString()}), null); 
+				}
+				File file = new File(location);
+				if (!file.exists()) {
+					abort(MessageFormat.format(LaunchingMessages.JavaRuntime_Classpath_references_non_existant_archive___0__4, new String[]{entry.getPath().toString()}), null); 
+				}
+				break;
+			case IRuntimeLoadpathEntry.OTHER:
+				resolver = getContributedResolver(((IRuntimeLoadpathEntry2)entry).getTypeId());
+				return resolver.resolveRuntimeLoadpathEntry(entry, configuration);
+			default:
+				break;
+		}
+		return new IRuntimeLoadpathEntry[] {entry};
+	}
+	
+	/**
+	 * Performs default resolution for a container entry.
+	 * Delegates to the Ruby model.
+	 */
+	private static IRuntimeLoadpathEntry[] computeDefaultContainerEntries(IRuntimeLoadpathEntry entry, ILaunchConfiguration config) throws CoreException {
+		IRubyProject project = entry.getRubyProject();
+		if (project == null) {
+			project = getRubyProject(config);
+		}
+		return computeDefaultContainerEntries(entry, project);
+	}
+	
+	/**
+	 * Performs default resolution for a container entry.
+	 * Delegates to the Java model.
+	 */
+	private static IRuntimeLoadpathEntry[] computeDefaultContainerEntries(IRuntimeLoadpathEntry entry, IRubyProject project) throws CoreException {
+		if (project == null || entry == null) {
+			// cannot resolve without entry or project context
+			return new IRuntimeLoadpathEntry[0];
+		} 
+		ILoadpathContainer container = RubyCore.getLoadpathContainer(entry.getPath(), project);
+		if (container == null) {
+			abort(MessageFormat.format(LaunchingMessages.JavaRuntime_Could_not_resolve_classpath_container___0__1, new String[]{entry.getPath().toString()}), null); 
+			// execution will not reach here - exception will be thrown
+			return null;
+		} 
+		ILoadpathEntry[] cpes = container.getLoadpathEntries();
+		int property = -1;
+		switch (container.getKind()) {
+			case ILoadpathContainer.K_APPLICATION:
+				property = IRuntimeLoadpathEntry.USER_CLASSES;
+				break;
+			case ILoadpathContainer.K_DEFAULT_SYSTEM:
+				property = IRuntimeLoadpathEntry.STANDARD_CLASSES;
+				break;	
+			case ILoadpathContainer.K_SYSTEM:
+				property = IRuntimeLoadpathEntry.BOOTSTRAP_CLASSES;
+				break;
+		}			
+		List resolved = new ArrayList(cpes.length);
+		List projects = (List) fgProjects.get();
+		Integer count = (Integer) fgEntryCount.get();
+		if (projects == null) {
+			projects = new ArrayList();
+			fgProjects.set(projects);
+			count = new Integer(0);
+		}
+		int intCount = count.intValue();
+		intCount++;
+		fgEntryCount.set(new Integer(intCount));
+		try {
+			for (int i = 0; i < cpes.length; i++) {
+				ILoadpathEntry cpe = cpes[i];
+				if (cpe.getEntryKind() == ILoadpathEntry.CPE_PROJECT) {
+					IProject p = ResourcesPlugin.getWorkspace().getRoot().getProject(cpe.getPath().segment(0));
+					IRubyProject jp = RubyCore.create(p);
+					if (!projects.contains(jp)) {
+						projects.add(jp);
+						IRuntimeLoadpathEntry classpath = newDefaultProjectLoadpathEntry(jp);
+						IRuntimeLoadpathEntry[] entries = resolveRuntimeLoadpathEntry(classpath, jp);
+						for (int j = 0; j < entries.length; j++) {
+							IRuntimeLoadpathEntry e = entries[j];
+							if (!resolved.contains(e)) {
+								resolved.add(entries[j]);
+							}
+						}
+					}
+				} else {
+					IRuntimeLoadpathEntry e = newRuntimeLoadpathEntry(cpe);
+					if (!resolved.contains(e)) {
+						resolved.add(e);
+					}
+				}
+			}
+		} finally {
+			intCount--;
+			if (intCount == 0) {
+				fgProjects.set(null);
+				fgEntryCount.set(null);
+			} else {
+				fgEntryCount.set(new Integer(intCount));
+			}
+		}
+		// set classpath property
+		IRuntimeLoadpathEntry[] result = new IRuntimeLoadpathEntry[resolved.size()];
+		for (int i = 0; i < result.length; i++) {
+			result[i] = (IRuntimeLoadpathEntry) resolved.get(i);
+			result[i].setLoadpathProperty(property);
+		}
+		return result;
+	}
+	
+	/**
+	 * Default resolution for a classpath variable - resolve to an archive. Only
+	 * one of project/configuration can be non-null.
+	 * 
+	 * @param entry
+	 * @param project the project context or <code>null</code>
+	 * @param configuration configuration context or <code>null</code>
+	 * @return IRuntimeLoadpathEntry[]
+	 * @throws CoreException
+	 */
+	private static IRuntimeLoadpathEntry[] resolveVariableEntry(IRuntimeLoadpathEntry entry, IRubyProject project, ILaunchConfiguration configuration) throws CoreException {
+		// default resolution - an archive
+		IPath archPath = RubyCore.getLoadpathVariable(entry.getVariableName());
+		if (archPath != null) {
+			if (entry.getPath().segmentCount() > 1) {
+				archPath = archPath.append(entry.getPath().removeFirstSegments(1));
+			}
+			if (archPath != null && !archPath.isEmpty()) {				
+				// now resolve the archive (recursively)
+				ILoadpathEntry archEntry = RubyCore.newLibraryEntry(archPath, entry.getLoadpathEntry().isExported());
+				IRuntimeLoadpathEntry runtimeArchEntry = newRuntimeLoadpathEntry(archEntry);
+				runtimeArchEntry.setLoadpathProperty(entry.getLoadpathProperty());
+				if (configuration == null) {
+					return resolveRuntimeLoadpathEntry(runtimeArchEntry, project);
+				} 
+				return resolveRuntimeLoadpathEntry(runtimeArchEntry, configuration);
+			}		
+		}
+		return null;
+	}
+	
+	/**
+	 * Returns resolved entries for the given entry in the context of the given
+	 * Java project. If the entry is of kind
+	 * <code>VARIABLE</code> or <code>CONTAINER</code>, variable and container
+	 * resolvers are consulted. If the entry is of kind <code>PROJECT</code>,
+	 * and the associated Java project specifies non-default output locations,
+	 * the corresponding output locations are returned. Otherwise, the given
+	 * entry is returned.
+	 * <p>
+	 * If the given entry is a variable entry, and a resolver is not registered,
+	 * the entry itself is returned. If the given entry is a container, and a
+	 * resolver is not registered, resolved runtime classpath entries are calculated
+	 * from the associated container classpath entries, in the context of the 
+	 * given project.
+	 * </p>
+	 * @param entry runtime classpath entry
+	 * @param project Java project context
+	 * @return resolved runtime classpath entry
+	 * @exception CoreException if unable to resolve
+	 * @see IRuntimeClasspathEntryResolver
+	 * @since 0.9.0
+	 */
+	public static IRuntimeLoadpathEntry[] resolveRuntimeLoadpathEntry(IRuntimeLoadpathEntry entry, IRubyProject project) throws CoreException {
+		switch (entry.getType()) {
+			case IRuntimeLoadpathEntry.PROJECT:
+				// if the project has multiple output locations, they must be returned
+				IResource resource = entry.getResource();
+				if (resource instanceof IProject) {
+					IProject p = (IProject)resource;
+					IRubyProject jp = RubyCore.create(p);
+					if (jp != null && p.isOpen() && jp.exists()) {
+						IRuntimeLoadpathEntry[] entries = resolveOutputLocations(jp, entry.getLoadpathProperty());
+						if (entries != null) {
+							return entries;
+						}
+					} else {
+						return new IRuntimeLoadpathEntry[0];
+					}
+				}
+				break;			
+			case IRuntimeLoadpathEntry.VARIABLE:
+				IRuntimeLoadpathEntryResolver resolver = getVariableResolver(entry.getVariableName());
+				if (resolver == null) {
+					IRuntimeLoadpathEntry[] resolved = resolveVariableEntry(entry, project, null);
+					if (resolved != null) { 
+						return resolved;
+					}
+					break;
+				} 
+				return resolver.resolveRuntimeLoadpathEntry(entry, project);				
+			case IRuntimeLoadpathEntry.CONTAINER:
+				resolver = getContainerResolver(entry.getVariableName());
+				if (resolver == null) {
+					return computeDefaultContainerEntries(entry, project);
+				} 
+				return resolver.resolveRuntimeLoadpathEntry(entry, project);
+			case IRuntimeLoadpathEntry.OTHER:
+				resolver = getContributedResolver(((IRuntimeLoadpathEntry2)entry).getTypeId());
+				return resolver.resolveRuntimeLoadpathEntry(entry, project);				
+			default:
+				break;
+		}
+		return new IRuntimeLoadpathEntry[] {entry};
+	}	
+	
+	/**
+	 * Returns the resolver registered for the given contributed classpath
+	 * entry type.
+	 * 
+	 * @param typeId the id of the contributed classpath entry
+	 * @return the resolver registered for the given classpath entry
+	 */	
+	private static IRuntimeLoadpathEntryResolver getContributedResolver(String typeId) {
+		IRuntimeLoadpathEntryResolver resolver = (IRuntimeLoadpathEntryResolver)getEntryResolvers().get(typeId);
+		if (resolver == null) {
+			return new DefaultEntryResolver();
+		}
+		return resolver;
+	}	
+	
+	/**
+	 * Returns runtime classpath entries corresponding to the output locations
+	 * of the given project, or null if the project only uses the default
+	 * output location.
+	 * 
+	 * @param project
+	 * @param classpathProperty the type of classpath entries to create
+	 * @return IRuntimeClasspathEntry[] or <code>null</code>
+	 * @throws CoreException
+	 */
+	private static IRuntimeLoadpathEntry[] resolveOutputLocations(IRubyProject project, int classpathProperty) throws CoreException {
+		// FIXME Investigate all calls to this and assume null gets retruned so we can drop this method!
+		return null;		
+	}
+	
+	/**
+	 * Returns all registered runtime classpath entry resolvers.
+	 */
+	private static Map getEntryResolvers() {
+		if (fgRuntimeClasspathEntryResolvers == null) {
+			initializeResolvers();
+		}
+		return fgRuntimeClasspathEntryResolvers;
+	}
+	
+	/**
+	 * Resolves the given classpath, returning the resolved classpath
+	 * in the context of the given launch configuration.
+	 *
+	 * @param entries unresolved classpath
+	 * @param configuration launch configuration
+	 * @return resolved runtime classpath entries
+	 * @throws CoreException 
+	 * @exception CoreException if unable to compute the classpath
+	 * @since 0.9.0
+	 */
+	public static IRuntimeLoadpathEntry[] resolveRuntimeLoadpath(
+			IRuntimeLoadpathEntry[] entries, ILaunchConfiguration configuration) throws CoreException {
+		return getLoadpathProvider(configuration).resolveLoadpath(entries, configuration);
 	}	
 }

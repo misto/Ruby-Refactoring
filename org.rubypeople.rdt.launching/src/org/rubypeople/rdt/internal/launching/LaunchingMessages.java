@@ -67,6 +67,13 @@ public class LaunchingMessages {
 	public static String DefaultProjectLoadpathEntry_4;
 	public static String DefaultProjectLoadpathEntry_2;
 	public static String DefaultProjectLoadpathEntry_3;
+	public static String JavaRuntime_26;
+	public static String JavaRuntime_31;
+	public static String JavaRuntime_32;
+	public static String LaunchingPlugin_32;
+	public static String JavaRuntime_Classpath_references_non_existant_archive___0__4;
+	public static String JavaRuntime_Classpath_references_non_existant_project___0__3;
+	public static String JavaRuntime_Could_not_resolve_classpath_container___0__1;
 	
 	private LaunchingMessages() {}
 

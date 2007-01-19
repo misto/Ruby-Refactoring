@@ -6,6 +6,7 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -25,6 +26,8 @@ import javax.xml.transform.stream.StreamResult;
 
 import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IConfigurationElement;
+import org.eclipse.core.runtime.IExtensionPoint;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Platform;
@@ -32,6 +35,7 @@ import org.eclipse.core.runtime.Plugin;
 import org.eclipse.core.runtime.Status;
 import org.osgi.framework.BundleContext;
 import org.rubypeople.rdt.core.RubyCore;
+import org.rubypeople.rdt.launching.IRuntimeLoadpathEntry2;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -44,6 +48,17 @@ public class LaunchingPlugin extends Plugin {
 	
 	public static final String PLUGIN_ID = "org.rubypeople.rdt.launching"; //$NON-NLS-1$
     
+	/**
+	 * Runtime classpath extensions
+	 */
+	private HashMap fClasspathEntryExtensions = null;
+	
+	/**
+	 * Identifier for 'runtimeLoadpathEntries' extension point
+	 */
+	public static final String ID_EXTENSION_POINT_RUNTIME_CLASSPATH_ENTRIES = "runtimeLoadpathEntries"; //$NON-NLS-1$
+	
+	
 	/**
 	 * Mapping of top-level VM installation directories to library info for that
 	 * VM.
@@ -67,7 +82,7 @@ public class LaunchingPlugin extends Plugin {
 		plugin = this;
 	}
 
-	public static Plugin getDefault() {
+	public static LaunchingPlugin getDefault() {
 		return plugin;
 	}
 
@@ -383,4 +398,34 @@ public class LaunchingPlugin extends Plugin {
 		}			
 		return (String[])paths.toArray(new String[paths.size()]);		
 	}
+	
+	/**
+	 * Returns a new runtime classpath entry of the specified type.
+	 * 
+	 * @param id extension type id
+	 * @return new uninitialized runtime classpath entry
+	 * @throws CoreException if unable to create an entry
+	 */
+	public IRuntimeLoadpathEntry2 newRuntimeLoadpathEntry(String id) throws CoreException {
+		if (fClasspathEntryExtensions == null) {
+			initializeRuntimeLoadpathExtensions();
+		}
+		IConfigurationElement config = (IConfigurationElement) fClasspathEntryExtensions.get(id);
+		if (config == null) {
+			abort(MessageFormat.format(LaunchingMessages.LaunchingPlugin_32, new String[]{id}), null); 
+		}
+		return (IRuntimeLoadpathEntry2) config.createExecutableExtension("class"); //$NON-NLS-1$
+	}
+	
+	/**
+	 * Loads runtime classpath extensions
+	 */
+	private void initializeRuntimeLoadpathExtensions() {
+		IExtensionPoint extensionPoint= Platform.getExtensionRegistry().getExtensionPoint(LaunchingPlugin.PLUGIN_ID, ID_EXTENSION_POINT_RUNTIME_CLASSPATH_ENTRIES);
+		IConfigurationElement[] configs= extensionPoint.getConfigurationElements(); 
+		fClasspathEntryExtensions = new HashMap(configs.length);
+		for (int i= 0; i < configs.length; i++) {
+			fClasspathEntryExtensions.put(configs[i].getAttribute("id"), configs[i]); //$NON-NLS-1$
+		}
+	}	
 }
