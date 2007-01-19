@@ -20,7 +20,6 @@ import org.eclipse.swt.widgets.Text;
 import org.rubypeople.rdt.debug.ui.RdtDebugUiImages;
 import org.rubypeople.rdt.internal.debug.ui.RdtDebugUiMessages;
 import org.rubypeople.rdt.internal.debug.ui.RdtDebugUiPlugin;
-import org.rubypeople.rdt.internal.launching.InterpreterRunnerConfiguration;
 import org.rubypeople.rdt.internal.launching.RubyLaunchConfigurationAttribute;
 import org.rubypeople.rdt.internal.ui.util.DirectorySelector;
 
@@ -85,14 +84,14 @@ public class RubyArgumentsTab extends AbstractLaunchConfigurationTab {
 		if (useDefaultWorkingDirectoryButton.getSelection() != useDefault)
 			useDefaultWorkingDirectoryButton.setSelection(useDefault);
 		if (useDefault) {
-			workingDirectorySelector.setSelectionText(RubyApplicationShortcut.getDefaultWorkingDirectory(this.rubyProject));
+			workingDirectorySelector.setSelectionText((String)null);
 		}
 		workingDirectorySelector.setEnabled(!useDefault);
 	}
 
 	public void setDefaults(ILaunchConfigurationWorkingCopy configuration) {
 		configuration.setAttribute(RubyLaunchConfigurationAttribute.USE_DEFAULT_WORKING_DIRECTORY, true);
-		configuration.setAttribute(RubyLaunchConfigurationAttribute.WORKING_DIRECTORY, RubyApplicationShortcut.getDefaultWorkingDirectory(this.rubyProject));
+		configuration.setAttribute(RubyLaunchConfigurationAttribute.WORKING_DIRECTORY, (String)null);
 		// set hidden attribute
 		configuration.setAttribute(ILaunchConfiguration.ATTR_SOURCE_LOCATOR_ID, "org.rubypeople.rdt.debug.ui.rubySourceLocator") ;
 	}
@@ -105,8 +104,6 @@ public class RubyArgumentsTab extends AbstractLaunchConfigurationTab {
 			interpreterArgs = configuration.getAttribute(RubyLaunchConfigurationAttribute.INTERPRETER_ARGUMENTS, "");
 			programArgs = configuration.getAttribute(RubyLaunchConfigurationAttribute.PROGRAM_ARGUMENTS, "");
 			useDefaultWorkDir = configuration.getAttribute(RubyLaunchConfigurationAttribute.USE_DEFAULT_WORKING_DIRECTORY, true);
-			InterpreterRunnerConfiguration config = new InterpreterRunnerConfiguration(configuration) ;
-			rubyProject = config.getProject().getProject() ;
 		} catch (CoreException e) {
 			log(e);
 		}

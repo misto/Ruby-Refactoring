@@ -25,7 +25,6 @@
 package org.rubypeople.rdt.testunit.launcher;
 
 import org.eclipse.core.resources.IFile;
-import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.debug.core.ILaunchConfiguration;
@@ -46,13 +45,13 @@ import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.dialogs.ElementListSelectionDialog;
 import org.rubypeople.rdt.core.IRubyElement;
 import org.rubypeople.rdt.internal.debug.ui.RdtDebugUiMessages;
-import org.rubypeople.rdt.internal.launching.InterpreterRunnerConfiguration;
 import org.rubypeople.rdt.internal.launching.RubyLaunchConfigurationAttribute;
 import org.rubypeople.rdt.internal.testunit.ui.TestUnitMessages;
 import org.rubypeople.rdt.internal.testunit.ui.TestunitPlugin;
 import org.rubypeople.rdt.internal.ui.RubyPlugin;
 import org.rubypeople.rdt.internal.ui.util.RubyFileSelector;
 import org.rubypeople.rdt.internal.ui.util.RubyProjectSelector;
+import org.rubypeople.rdt.launching.IRubyLaunchConfigurationConstants;
 
 /**
  * @author Chris
@@ -228,15 +227,10 @@ public class TestUnitMainTab extends AbstractLaunchConfigurationTab implements I
 	 */
 	public void initializeFrom(ILaunchConfiguration configuration) {
 		try {
-			// Have to set the project selection first! Otherwise when launch
-			// container ise set it will use null for project when trying to
-			// validate the file exists and will eventually set the launch
-			// container to ""
-			InterpreterRunnerConfiguration config = new InterpreterRunnerConfiguration(configuration);
-			String projectName = "";
-			IProject project = config.getProject().getProject();
-			if (project != null) {
-				projectName = project.getName();
+			String projectName= ""; //$NON-NLS-1$
+			try {
+				projectName = configuration.getAttribute(IRubyLaunchConfigurationConstants.ATTR_PROJECT_NAME, ""); //$NON-NLS-1$
+			} catch (CoreException ce) {
 			}
 			projectSelector.setSelectionText(projectName);
 			fileSelector.setSelectionText(configuration.getAttribute(TestUnitLaunchConfigurationDelegate.LAUNCH_CONTAINER_ATTR, ""));

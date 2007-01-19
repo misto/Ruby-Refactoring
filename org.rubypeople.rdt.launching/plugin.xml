@@ -40,7 +40,7 @@
          point="org.eclipse.debug.core.launchConfigurationTypes">
       <launchConfigurationType
             name="%LaunchConfigurationTypeRubyApplication.name"
-            delegate="org.rubypeople.rdt.internal.launching.RubyApplicationLaunchConfigurationDelegate"
+            delegate="org.rubypeople.rdt.launching.RubyLaunchDelegate"
             modes="run,debug"
             id="org.rubypeople.rdt.launching.LaunchConfigurationTypeRubyApplication">
       </launchConfigurationType>

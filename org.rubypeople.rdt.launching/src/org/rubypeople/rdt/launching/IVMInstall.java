@@ -1,11 +1,8 @@
 package org.rubypeople.rdt.launching;
 
 import java.io.File;
-import java.util.List;
 
-import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
-import org.rubypeople.rdt.internal.launching.IllegalCommandException;
 
 public interface IVMInstall {
 
@@ -16,24 +13,6 @@ public interface IVMInstall {
 	public String getName();
 
 	public void setName(String newName);
-
-	/**
-	 * 
-	 * @return
-	 * @throws CoreException 
-	 * @deprecated 
-	 */
-	public String getCommand() throws CoreException, IllegalCommandException;
-
-	/**
-	 * 
-	 * @param commandLine
-	 * @param workingDirectory
-	 * @return
-	 * @throws CoreException
-	 * @deprecated This doesn't match JDT behavior. We'll need to work on a better solution.
-	 */
-	public Process exec(List commandLine, File workingDirectory) throws CoreException;
 
 	public IPath[] getLibraryLocations();
 
