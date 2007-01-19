@@ -118,23 +118,22 @@ public class StandardVMRunner extends AbstractVMRunner {
 	}
 	
 	/**
-	 * Construct and return a String containing the full path of a java executable
-	 * command such as 'java' or 'javaw.exe'.  If the configuration specifies an
+	 * Construct and return a String containing the full path of a ruby executable
+	 * command such as 'ruby' or 'rubyw.exe'.  If the configuration specifies an
 	 * explicit executable, that is used.
 	 * 
-	 * @return full path to java executable
+	 * @return full path to ruby executable
 	 * @exception CoreException if unable to locate an executeable
 	 */
 	protected String constructProgramString(VMRunnerConfiguration config) throws CoreException {
-
-		// Look for the user-specified java executable command
+		// Look for the user-specified ruby executable command
 		String command= null;
 		Map map= config.getVMSpecificAttributesMap();
 		if (map != null) {
 			command = (String)map.get(IRubyLaunchConfigurationConstants.ATTR_RUBY_COMMAND);
 		}
 		
-		// If no java command was specified, use default executable
+		// If no ruby command was specified, use default executable
 		if (command == null) {
 			File exe = StandardVMType.findRubyExecutable(fVMInstance.getInstallLocation());
 			if (exe == null) {
