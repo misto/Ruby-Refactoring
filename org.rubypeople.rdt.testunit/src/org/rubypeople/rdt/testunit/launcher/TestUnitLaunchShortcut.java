@@ -126,7 +126,7 @@ public class TestUnitLaunchShortcut extends RubyApplicationShortcut {
 	}
 
 	protected ILaunchConfiguration createConfiguration(IFile rubyFile, String container, String testName) {
-		if (RubyRuntime.getDefault().getDefaultVMInstall() == null) {
+		if (RubyRuntime.getDefaultVMInstall() == null) {
 			showNoInterpreterDialog();
 			return null;
 		}
