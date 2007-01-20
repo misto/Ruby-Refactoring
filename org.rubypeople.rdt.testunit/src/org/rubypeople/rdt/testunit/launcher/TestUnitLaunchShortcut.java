@@ -46,7 +46,6 @@ public class TestUnitLaunchShortcut extends RubyApplicationShortcut {
 	 * @param rubyElement
 	 */
 	protected void doLaunch(IRubyElement rubyElement, String mode) throws CoreException {
-
 		String container = getContainer(rubyElement);
 		ILaunchConfiguration config = findOrCreateLaunchConfiguration(rubyElement, mode, container, "", "");
 		if (config != null) {
@@ -58,10 +57,10 @@ public class TestUnitLaunchShortcut extends RubyApplicationShortcut {
 	protected ILaunchConfiguration findOrCreateLaunchConfiguration(IRubyElement rubyElement, String mode, String container, String testClass, String testName) throws CoreException {
 		IFile rubyFile = (IFile) rubyElement.getUnderlyingResource();
 		ILaunchConfigurationType configType = getRubyLaunchConfigType();
-		List candidateConfigs = null;
+		List<ILaunchConfiguration> candidateConfigs = null;
 
 		ILaunchConfiguration[] configs = getLaunchManager().getLaunchConfigurations(configType);
-		candidateConfigs = new ArrayList(configs.length);
+		candidateConfigs = new ArrayList<ILaunchConfiguration>(configs.length);
 		for (int i = 0; i < configs.length; i++) {
 			ILaunchConfiguration config = configs[i];
 			if ((config.getAttribute(TestUnitLaunchConfigurationDelegate.LAUNCH_CONTAINER_ATTR, "").equals(container)) 
@@ -137,9 +136,7 @@ public class TestUnitLaunchShortcut extends RubyApplicationShortcut {
 			ILaunchConfigurationType configType = getRubyLaunchConfigType();
 			ILaunchConfigurationWorkingCopy wc = configType.newInstance(null, getLaunchManager().generateUniqueLaunchConfigurationNameFrom(rubyFile.getName()));
 			wc.setAttribute(RubyLaunchConfigurationAttribute.PROJECT_NAME, rubyFile.getProject().getName());
-
-			// FIXME Probably shouldn't write this out.  It's now ignored at runtime
-			wc.setAttribute(RubyLaunchConfigurationAttribute.FILE_NAME, TestUnitRunnerConfiguration.getTestRunnerPath());
+			wc.setAttribute(RubyLaunchConfigurationAttribute.FILE_NAME, TestUnitLaunchConfigurationDelegate.getTestRunnerPath());
 			wc.setAttribute(RubyLaunchConfigurationAttribute.WORKING_DIRECTORY, TestUnitLaunchShortcut.getDefaultWorkingDirectory(rubyFile.getProject()));
 			wc.setAttribute(RubyLaunchConfigurationAttribute.SELECTED_INTERPRETER, RubyRuntime.getCompositeIdFromVM(RubyRuntime.getDefaultVMInstall()));
 			wc.setAttribute(TestUnitLaunchConfigurationDelegate.LAUNCH_CONTAINER_ATTR, container);
