@@ -57,18 +57,14 @@ public class StandardVMType extends AbstractVMInstallType {
 
 	public IStatus validateInstallLocation(File rubyHome) {
 		IStatus status = null;
-		if (Platform.getOS().equals(Constants.OS_MACOSX)) {
-			status = new Status(IStatus.ERROR, LaunchingPlugin.getUniqueIdentifier(), 0, LaunchingMessages.StandardVMType_Standard_VM_not_supported_on_MacOS__1, null); 
+		File rubyExecutable = findRubyExecutable(rubyHome);
+		if (rubyExecutable == null) {
+			status = new Status(IStatus.ERROR, LaunchingPlugin.getUniqueIdentifier(), 0, LaunchingMessages.StandardVMType_Not_a_JDK_Root__Java_executable_was_not_found_1, null);						
 		} else {
-			File rubyExecutable = findRubyExecutable(rubyHome);
-			if (rubyExecutable == null) {
-				status = new Status(IStatus.ERROR, LaunchingPlugin.getUniqueIdentifier(), 0, LaunchingMessages.StandardVMType_Not_a_JDK_Root__Java_executable_was_not_found_1, null); //			
+			if (canDetectDefaultSystemLibraries(rubyHome, rubyExecutable)) {
+				status = new Status(IStatus.OK, LaunchingPlugin.getUniqueIdentifier(), 0, LaunchingMessages.StandardVMType_ok_2, null); 
 			} else {
-				if (canDetectDefaultSystemLibraries(rubyHome, rubyExecutable)) {
-					status = new Status(IStatus.OK, LaunchingPlugin.getUniqueIdentifier(), 0, LaunchingMessages.StandardVMType_ok_2, null); 
-				} else {
-					status = new Status(IStatus.ERROR, LaunchingPlugin.getUniqueIdentifier(), 0, LaunchingMessages.StandardVMType_Not_a_JDK_root__System_library_was_not_found__1, null); 
-				}
+				status = new Status(IStatus.ERROR, LaunchingPlugin.getUniqueIdentifier(), 0, LaunchingMessages.StandardVMType_Not_a_JDK_root__System_library_was_not_found__1, null); 
 			}
 		}
 		return status;		
