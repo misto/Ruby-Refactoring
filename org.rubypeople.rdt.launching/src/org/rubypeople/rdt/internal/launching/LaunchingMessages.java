@@ -74,6 +74,14 @@ public class LaunchingMessages {
 	public static String JavaRuntime_Classpath_references_non_existant_archive___0__4;
 	public static String JavaRuntime_Classpath_references_non_existant_project___0__3;
 	public static String JavaRuntime_Could_not_resolve_classpath_container___0__1;
+	public static String StandardVMDebugger_Launching_VM____1;
+	public static String StandardVMDebugger_Finding_free_socket____2;
+	public static String StandardVMDebugger_Could_not_find_a_free_socket_for_the_debugger_1;
+	public static String StandardVMDebugger_Constructing_command_line____3;
+	public static String StandardVMDebugger_Starting_virtual_machine____4;
+	public static String StandardVMDebugger_Establishing_debug_connection____5;
+	public static String StandardVMDebugger_Couldn__t_connect_to_VM_4;
+	public static String StandardVMDebugger_Couldn__t_connect_to_VM_5;
 	
 	private LaunchingMessages() {}
 

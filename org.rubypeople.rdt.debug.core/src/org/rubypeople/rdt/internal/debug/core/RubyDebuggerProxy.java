@@ -59,7 +59,7 @@ public class RubyDebuggerProxy {
 
 	public String registerRdebugExtension(String pathToRdebugExtension) throws IOException, RubyProcessingException {
 		// should be called before start
-		if (!isRubyDebug) {
+		if (!isRubyDebug) { // Should never happen
 			return "false";
 		}
 		try {
@@ -71,8 +71,7 @@ public class RubyDebuggerProxy {
 		String expression = "eval require '" + pathToRdebugExtension + "'";
 		println(expression);
 		EvalReader reader = new EvalReader(getMultiReaderStrategy());
-		return reader.readEvalResult(); // throws
-		// RubyProcessingException
+		return reader.readEvalResult(); // throws RubyProcessingException
 	}
 
 	public void start() throws RubyProcessingException {

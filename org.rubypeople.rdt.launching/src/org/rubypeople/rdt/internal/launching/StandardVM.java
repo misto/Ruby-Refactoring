@@ -18,9 +18,16 @@ public class StandardVM extends AbstractVMInstall {
 		if (ILaunchManager.RUN_MODE.equals(mode)) {
 			return new StandardVMRunner(this);
 		} else if (ILaunchManager.DEBUG_MODE.equals(mode)) {
+			if (useRDebug()) {
+				return new RDebugVMDebugger(this);
+			}
 			return new StandardVMDebugger(this);
 		}
 		return null;
+	}
+
+	private boolean useRDebug() {
+		return LaunchingPlugin.getDefault().getPluginPreferences().getBoolean(PreferenceConstants.USE_RUBY_DEBUG);
 	}
 
 	public String getRubyVersion() {

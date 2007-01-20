@@ -32,7 +32,7 @@ import org.rubypeople.rdt.launching.VMRunnerConfiguration;
 
 public class StandardVMRunner extends AbstractVMRunner {
 	
-	private static final String END_OF_OPTIONS_DELIMITER = "--";
+	protected static final String END_OF_OPTIONS_DELIMITER = "--";
 	
 	protected IVMInstall fVMInstance;
 
