@@ -10,7 +10,6 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
-import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.jface.action.Action;
@@ -46,7 +45,6 @@ import org.rubypeople.rdt.internal.ui.rdocexport.RDocUtility;
 import org.rubypeople.rdt.internal.ui.rdocexport.RdocListener;
 import org.rubypeople.rdt.launching.IVMInstall;
 import org.rubypeople.rdt.launching.IVMInstallChangedListener;
-import org.rubypeople.rdt.launching.IVMRunner;
 import org.rubypeople.rdt.launching.PropertyChangeEvent;
 import org.rubypeople.rdt.launching.RubyRuntime;
 import org.rubypeople.rdt.ui.PreferenceConstants;
@@ -360,12 +358,9 @@ public class RIView extends ViewPart implements RdocListener {
     }
     
     private abstract class RubyInvoker {
-        protected abstract List getArgList();
+        protected abstract List<String> getArgList();
         protected abstract void handleOutput(Process process);
         protected void beforeInvoke(){}
-        
-        
-       
         
         public final void invoke() {
 
@@ -382,17 +377,16 @@ public class RIView extends ViewPart implements RdocListener {
 				return;
 			}
 			   		
-//    		try {        			
-                List args = getArgList();
+   		try {        			
+                List<String> args = getArgList();
                 args.add(0, riPath.toString());
-                IVMRunner runner = RubyRuntime.getDefaultVMInstall().getVMRunner("run");
-                // XXX How in the world do we do these quick little background launches and grab the process?
-    			final Process p = null;
+                String[] argArray= (String[]) args.toArray(new String[args.size()]);
+                Process p= Runtime.getRuntime().exec(argArray);
                 handleOutput(p); 
-//    		} catch (CoreException coreException)  {
-//    			// message of RuntimeException will be displayed in the RI View
-//    			throw new RuntimeException(coreException.getStatus().getMessage());
-//    		}      
+    		} catch (IOException e)  {
+    			// message of RuntimeException will be displayed in the RI View
+    			throw new RuntimeException(e.getMessage(), e);
+    		}      
         }
     }
 

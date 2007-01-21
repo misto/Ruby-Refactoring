@@ -6,7 +6,6 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.jface.text.BadLocationException;
@@ -14,8 +13,6 @@ import org.eclipse.jface.text.IRegion;
 import org.eclipse.jface.text.ITextViewer;
 import org.eclipse.ui.IEditorInput;
 import org.rubypeople.rdt.internal.ui.RubyPlugin;
-import org.rubypeople.rdt.launching.IVMInstall;
-import org.rubypeople.rdt.launching.RubyRuntime;
 import org.rubypeople.rdt.ui.PreferenceConstants;
 import org.rubypeople.rdt.ui.extensions.ITextHoverProvider;
 
@@ -23,7 +20,7 @@ import org.rubypeople.rdt.ui.extensions.ITextHoverProvider;
 public class RiDocHoverProvider implements ITextHoverProvider {
 	public String getHoverInfo(IEditorInput input, ITextViewer textViewer, IRegion hoverRegion){
     	IPath riPath = new Path( RubyPlugin.getDefault().getPreferenceStore().getString( PreferenceConstants.RI_PATH ) );
-    	List args = new ArrayList();
+    	List<String> args = new ArrayList<String>();
     	args.add(0, riPath.toString());
     	// these will get rid of some of the overhead formatting
     	args.add("-f");
@@ -34,11 +31,8 @@ public class RiDocHoverProvider implements ITextHoverProvider {
     	try {
 			String symbol = textViewer.getDocument().get(hoverRegion.getOffset(), hoverRegion.getLength());
 			args.add(symbol);
-            IVMInstall selectedInterpreter = RubyRuntime.getDefault().getDefaultVMInstall();
-			if (selectedInterpreter == null) return null;
-//			 XXX How in the world do we do these quick little background launches and grab the process?
-//			Process p = selectedInterpreter.exec(args, null);
-			Process p = null;
+			String[] argArray= (String[]) args.toArray(new String[args.size()]);
+			Process p = Runtime.getRuntime().exec(argArray);
 			if (p == null) return null;
 			br = new BufferedReader(new InputStreamReader(p.getInputStream()));
 			// TODO: format the documentation that was fetched from RI 
@@ -58,8 +52,6 @@ public class RiDocHoverProvider implements ITextHoverProvider {
 			return "" + buf.toString();			
     	} catch (BadLocationException e) {
     		RubyPlugin.log(e);
-//		} catch (CoreException e) {
-//			RubyPlugin.log(e);
 		} catch (IOException e) {
 			RubyPlugin.log(e);
 		} finally {

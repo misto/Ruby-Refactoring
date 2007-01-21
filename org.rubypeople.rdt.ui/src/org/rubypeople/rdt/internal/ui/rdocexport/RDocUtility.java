@@ -2,6 +2,7 @@ package org.rubypeople.rdt.internal.ui.rdocexport;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -11,17 +12,13 @@ import java.util.Set;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
-import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.jface.dialogs.ErrorDialog;
 import org.eclipse.jface.dialogs.MessageDialog;
-import org.rubypeople.rdt.internal.launching.LaunchingMessages;
 import org.rubypeople.rdt.internal.ui.RubyPlugin;
 import org.rubypeople.rdt.internal.ui.RubyUIMessages;
 import org.rubypeople.rdt.internal.ui.dialogs.StatusInfo;
-import org.rubypeople.rdt.launching.IVMInstall;
-import org.rubypeople.rdt.launching.RubyRuntime;
 import org.rubypeople.rdt.ui.PreferenceConstants;
 
 /**
@@ -32,8 +29,8 @@ import org.rubypeople.rdt.ui.PreferenceConstants;
  * @author Chris
  */
 public class RDocUtility {
-
-	private static Set listeners = new HashSet();
+	
+	private static Set<RdocListener> listeners = new HashSet<RdocListener>();
 	private static boolean isDebug = false;
 
 	public static void addRdocListener(RdocListener listener) {
@@ -85,12 +82,6 @@ public class RDocUtility {
 		public final void invoke() {
 			log("Generating RDoc for " + resource.getName());
 
-			IVMInstall interpreter = RubyRuntime.getDefaultVMInstall();
-			if (interpreter == null) {			
-				MessageDialog.openInformation(RubyPlugin.getActiveWorkbenchShell(), LaunchingMessages.RdtLaunchingPlugin_noInterpreterSelectedTitle, LaunchingMessages.RdtLaunchingPlugin_noInterpreterSelected);
-				return ;
-			}
-
 			IPath rdocPath = new Path(RubyPlugin.getDefault().getPreferenceStore().getString(PreferenceConstants.RDOC_PATH));
 
 			// check the rdoc path for existence. It might have been
@@ -103,21 +94,22 @@ public class RDocUtility {
 				MessageDialog.openError(RubyPlugin.getActiveWorkbenchShell(), RubyUIMessages.getString("RDocPathErrorTitle"), RubyUIMessages.getString("RDocPathError")) ;
 				return;
 			}
-
-			List args = new ArrayList();
+			
+			List<String> args = new ArrayList<String>();
 			args.add(rdocPath.toString());
 			args.add("-r");
 			args.add(resource.getLocation().toOSString());
-//			try {
-				// XXX How do we do quick background launches of the interpreter?
-//				final Process p = interpreter.exec(args, null);
-				final Process p = null;
-				handleOutput(p, args);
-//			} catch (CoreException e) {
-//				RubyPlugin.log(e);
-//				log(e.getMessage());
-//				ErrorDialog.openError(RubyPlugin.getActiveWorkbenchShell(), RubyUIMessages.getString("ErrorRunningRdocTitle"), e.getMessage(), new StatusInfo(StatusInfo.ERROR, e.getMessage()));
-//			}
+			String[] argArray= (String[]) args.toArray(new String[args.size()]);
+			try {
+			  Process process= Runtime.getRuntime().exec(argArray);
+			  if (process != null) {
+				handleOutput(process, args);
+		   	  }
+			} catch (IOException e) {
+				RubyPlugin.log(e);
+				log(e.getMessage());
+				ErrorDialog.openError(RubyPlugin.getActiveWorkbenchShell(), RubyUIMessages.getString("ErrorRunningRdocTitle"), e.getMessage(), new StatusInfo(StatusInfo.ERROR, e.getMessage()));
+			}
 		}
 
 		/**
@@ -128,7 +120,7 @@ public class RDocUtility {
 		 * @param p
 		 *            The Process.
 		 */
-		private void handleOutput(Process p, List cmdLine) {
+		private void handleOutput(Process p, List<String> cmdLine) {
 			BufferedReader reader = null;
 			String lastLine = null;
 			try {
@@ -166,7 +158,7 @@ public class RDocUtility {
 	 * 
 	 */
 	public static void notifyListeners() {
-		for (Iterator iter = listeners.iterator(); iter.hasNext();) {
+		for (Iterator<RdocListener> iter = listeners.iterator(); iter.hasNext();) {
 			RdocListener listener = (RdocListener) iter.next();
 			listener.rdocChanged();
 		}
