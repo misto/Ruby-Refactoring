@@ -7,9 +7,7 @@ import java.util.Map;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Path;
-import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Status;
-import org.eclipse.osgi.service.environment.Constants;
 import org.rubypeople.rdt.launching.AbstractVMInstallType;
 import org.rubypeople.rdt.launching.IVMInstall;
 
@@ -40,14 +38,11 @@ public class StandardVMType extends AbstractVMInstallType {
 	}
 
 	public IPath[] getDefaultLibraryLocations(File installLocation) {
-		File rubyExecutable = findRubyExecutable(installLocation);
-		// FIXME This is a big hack and is tailored to the one click installer on windows!
-		String rubyPath = rubyExecutable.getParentFile().getAbsolutePath();
-		String stdPath = rubyPath + fgSeparator + "lib" + fgSeparator + "ruby" + fgSeparator + "1.8";
-		String sitePath = rubyPath + fgSeparator + "lib" + fgSeparator + "ruby" + fgSeparator + "site_ruby";
+		String stdPath = installLocation.getAbsolutePath() + fgSeparator + "lib" + fgSeparator + "ruby" + fgSeparator + "1.8";
+		String sitePath = installLocation.getAbsolutePath() + fgSeparator + "lib" + fgSeparator + "ruby" + fgSeparator + "site_ruby" + fgSeparator + "1.8";
 		IPath[] paths = new IPath[2];
 		paths[0] = new Path(stdPath);
-		paths[0] = new Path(sitePath);
+		paths[1] = new Path(sitePath);
 		return paths;
 	}
 

@@ -12,10 +12,9 @@ package org.rubypeople.rdt.ui;
 
 import org.eclipse.jface.util.Assert;
 import org.eclipse.ui.IEditorInput;
-import org.eclipse.ui.ISharedImages;
-import org.eclipse.ui.internal.SharedImages;
 import org.rubypeople.rdt.core.IRubyElement;
 import org.rubypeople.rdt.internal.ui.RubyPlugin;
+import org.rubypeople.rdt.internal.ui.SharedImages;
 
 /**
  * Central access point for the Ruby UI plug-in (id
@@ -102,7 +101,7 @@ public final class RubyUI {
 	}
 
 	/**
-	 * Returns the shared images for the Java UI.
+	 * Returns the shared images for the Ruby UI.
 	 *
 	 * @return the shared images manager
 	 */

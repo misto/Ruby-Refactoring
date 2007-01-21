@@ -1,7 +1,8 @@
 package org.rubypeople.rdt.internal.ui;
 
-import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.HashMap;
+import java.util.Iterator;
 
 import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.core.runtime.IPath;
@@ -16,15 +17,12 @@ public class RubyPluginImages {
 
 	protected static final String NAME_PREFIX = "org.rubypeople.rdt.ui.";
 	protected static final int NAME_PREFIX_LENGTH = NAME_PREFIX.length();
-	protected static URL iconBaseURL;
-
-	static {
-		iconBaseURL= RubyPlugin.getDefault().getBundle().getEntry("/icons/full/"); //$NON-NLS-1$
-	}
     
     public static final IPath ICONS_PATH= new Path("$nl$/icons/full"); //$NON-NLS-1$
 
-	private static final ImageRegistry IMAGE_REGISTRY = new ImageRegistry();
+	// The plug-in registry
+	private static ImageRegistry fgImageRegistry= null;
+    private static HashMap fgAvoidSWTErrorMap= null;
 
 	private static final String T_OBJ = "obj16"; 	//$NON-NLS-1$
     private static final String T_OVR= "ovr16";         //$NON-NLS-1$
@@ -39,6 +37,8 @@ public class RubyPluginImages {
     public static final String IMG_MISC_PUBLIC= NAME_PREFIX + "methpub_obj.gif";            //$NON-NLS-1$
     public static final String IMG_MISC_PROTECTED= NAME_PREFIX + "methpro_obj.gif";         //$NON-NLS-1$
     public static final String IMG_MISC_PRIVATE= NAME_PREFIX + "methpri_obj.gif";       //$NON-NLS-1$
+    
+    public static final String IMG_OBJS_EXTJAR_WSRC= NAME_PREFIX + "jar_lsrc_obj.gif";	//$NON-NLS-1$
     
     public static final String IMG_OBJS_ERROR = NAME_PREFIX + "error_obj.gif";
     public static final String IMG_OBJS_WARNING = NAME_PREFIX + "warning_obj.gif";
@@ -87,8 +87,8 @@ public class RubyPluginImages {
     
     public static final ImageDescriptor DESC_OBJ_OVERRIDES= createUnManaged(T_OBJ, "over_co.gif");                      //$NON-NLS-1$
     public static final ImageDescriptor DESC_OBJ_IMPLEMENTS= createUnManaged(T_OBJ, "implm_co.gif");                //$NON-NLS-1$
-	public static final ImageDescriptor DESC_OBJS_LIBRARY= createManaged(T_OBJ, IMG_OBJS_LIBRARY);
-	
+	public static final ImageDescriptor DESC_OBJS_LIBRARY= createManagedFromKey(T_OBJ, IMG_OBJS_LIBRARY);
+	public static final ImageDescriptor DESC_OBJS_EXTJAR_WSRC= createManagedFromKey(T_OBJ, IMG_OBJS_EXTJAR_WSRC);
     
     public static final ImageDescriptor DESC_OVR_STATIC= createUnManaged(T_OVR, "static_co.gif");                       //$NON-NLS-1$
     public static final ImageDescriptor DESC_OVR_FINAL= createUnManaged(T_OVR, "final_co.gif");                         //$NON-NLS-1$
@@ -107,59 +107,59 @@ public class RubyPluginImages {
     public static final ImageDescriptor DESC_ELCL_FILTER= createUnManaged(T_ELCL, "filter_ps.gif"); //$NON-NLS-1$
     public static final ImageDescriptor DESC_DLCL_FILTER= createUnManaged(T_DLCL, "filter_ps.gif"); //$NON-NLS-1$
 
-    public static final ImageDescriptor DESC_OBJS_GHOST= createManaged(T_OBJ, IMG_OBJS_GHOST);
-    public static final ImageDescriptor DESC_OBJS_IMPDECL= createManaged(T_OBJ, IMG_CTOOLS_RUBY_IMPORT);
-    public static final ImageDescriptor DESC_OBJS_IMPCONT= createManaged(T_OBJ, IMG_CTOOLS_RUBY_IMPORT_CONTAINER);
+    public static final ImageDescriptor DESC_OBJS_GHOST= createManagedFromKey(T_OBJ, IMG_OBJS_GHOST);
+    public static final ImageDescriptor DESC_OBJS_IMPDECL= createManagedFromKey(T_OBJ, IMG_CTOOLS_RUBY_IMPORT);
+    public static final ImageDescriptor DESC_OBJS_IMPCONT= createManagedFromKey(T_OBJ, IMG_CTOOLS_RUBY_IMPORT_CONTAINER);
              
-    public static final ImageDescriptor DESC_OBJS_RUBY_MODEL= createManaged(T_OBJ, IMG_OBJS_RUBY_MODEL);
-    public static final ImageDescriptor DESC_OBJS_SOURCE_FOLDER= createManaged(T_OBJ, IMG_OBJS_SOURCE_FOLDER);    
-    public static final ImageDescriptor DESC_OBJS_LOCAL_VAR = createManaged(T_OBJ, IMG_CTOOLS_RUBY_LOCAL_VAR);
-    public static final ImageDescriptor DESC_OBJS_GLOBAL = createManaged(T_OBJ, IMG_CTOOLS_RUBY_GLOBAL);
-    public static final ImageDescriptor DESC_OBJS_MODULE = createManaged(T_OBJ, IMG_OBJS_MODULE);
-    public static final ImageDescriptor DESC_OBJS_CLASS_VAR = createManaged(T_OBJ, IMG_CTOOLS_RUBY_CLASS_VAR);
-    public static final ImageDescriptor DESC_OBJS_INSTANCE_VAR = createManaged(T_OBJ, IMG_CTOOLS_RUBY_INSTANCE_VAR);
-    public static final ImageDescriptor DESC_OBJS_CONSTANT = createManaged(T_OBJ, IMG_CTOOLS_RUBY_CONSTANT);
+    public static final ImageDescriptor DESC_OBJS_RUBY_MODEL= createManagedFromKey(T_OBJ, IMG_OBJS_RUBY_MODEL);
+    public static final ImageDescriptor DESC_OBJS_SOURCE_FOLDER= createManagedFromKey(T_OBJ, IMG_OBJS_SOURCE_FOLDER);    
+    public static final ImageDescriptor DESC_OBJS_LOCAL_VAR = createManagedFromKey(T_OBJ, IMG_CTOOLS_RUBY_LOCAL_VAR);
+    public static final ImageDescriptor DESC_OBJS_GLOBAL = createManagedFromKey(T_OBJ, IMG_CTOOLS_RUBY_GLOBAL);
+    public static final ImageDescriptor DESC_OBJS_MODULE = createManagedFromKey(T_OBJ, IMG_OBJS_MODULE);
+    public static final ImageDescriptor DESC_OBJS_CLASS_VAR = createManagedFromKey(T_OBJ, IMG_CTOOLS_RUBY_CLASS_VAR);
+    public static final ImageDescriptor DESC_OBJS_INSTANCE_VAR = createManagedFromKey(T_OBJ, IMG_CTOOLS_RUBY_INSTANCE_VAR);
+    public static final ImageDescriptor DESC_OBJS_CONSTANT = createManagedFromKey(T_OBJ, IMG_CTOOLS_RUBY_CONSTANT);
     
-    public static final ImageDescriptor DESC_OBJS_CLASS= createManaged(T_OBJ, IMG_OBJS_CLASS);
-    public static final ImageDescriptor DESC_OBJS_CLASSALT= createManaged(T_OBJ, IMG_OBJS_CLASSALT);    
-    public static final ImageDescriptor DESC_OBJS_INNER_CLASS= createManaged(T_OBJ, IMG_OBJS_INNER_CLASS);
-    public static final ImageDescriptor DESC_OBJS_MODULEALT = createManaged(T_OBJ, IMG_OBJS_MODULEALT); 
+    public static final ImageDescriptor DESC_OBJS_CLASS= createManagedFromKey(T_OBJ, IMG_OBJS_CLASS);
+    public static final ImageDescriptor DESC_OBJS_CLASSALT= createManagedFromKey(T_OBJ, IMG_OBJS_CLASSALT);    
+    public static final ImageDescriptor DESC_OBJS_INNER_CLASS= createManagedFromKey(T_OBJ, IMG_OBJS_INNER_CLASS);
+    public static final ImageDescriptor DESC_OBJS_MODULEALT = createManagedFromKey(T_OBJ, IMG_OBJS_MODULEALT); 
     
     
-    public static final ImageDescriptor DESC_OBJS_SCRIPT= createManaged(T_OBJ, IMG_OBJS_SCRIPT);
-    public static final ImageDescriptor DESC_OBJS_RUBY_RESOURCE= createManaged(T_OBJ, IMG_OBJS_RUBY_RESOURCE);
+    public static final ImageDescriptor DESC_OBJS_SCRIPT= createManagedFromKey(T_OBJ, IMG_OBJS_SCRIPT);
+    public static final ImageDescriptor DESC_OBJS_RUBY_RESOURCE= createManagedFromKey(T_OBJ, IMG_OBJS_RUBY_RESOURCE);
     
-    public static final ImageDescriptor DESC_MISC_PUBLIC= createManaged(T_OBJ, IMG_MISC_PUBLIC);
-    public static final ImageDescriptor DESC_MISC_PROTECTED= createManaged(T_OBJ, IMG_MISC_PROTECTED);
-    public static final ImageDescriptor DESC_MISC_PRIVATE= createManaged(T_OBJ, IMG_MISC_PRIVATE);
+    public static final ImageDescriptor DESC_MISC_PUBLIC= createManagedFromKey(T_OBJ, IMG_MISC_PUBLIC);
+    public static final ImageDescriptor DESC_MISC_PROTECTED= createManagedFromKey(T_OBJ, IMG_MISC_PROTECTED);
+    public static final ImageDescriptor DESC_MISC_PRIVATE= createManagedFromKey(T_OBJ, IMG_MISC_PRIVATE);
     
-    public static final ImageDescriptor DESC_OBJS_UNKNOWN= createManaged(T_OBJ, IMG_OBJS_UNKNOWN);
+    public static final ImageDescriptor DESC_OBJS_UNKNOWN= createManagedFromKey(T_OBJ, IMG_OBJS_UNKNOWN);
        
     
 	static {
-		createManaged(T_OBJ, IMG_OBJS_FIXABLE_ERROR);
-		createManaged(T_OBJ, IMG_OBJS_FIXABLE_PROBLEM);
-		createManaged(T_OBJ, IMG_OBJS_ERROR);
-		createManaged(T_OBJ, IMG_OBJS_WARNING);
-		createManaged(T_OBJ, IMG_OBJS_INFO);
-		createManaged(T_OBJ, IMG_OBJS_TEMPLATE);
-		createManaged(T_CTOOL, IMG_CTOOLS_RUBY_IMPORT_CONTAINER);
-		createManaged(T_CTOOL, IMG_CTOOLS_RUBY_IMPORT);
-		createManaged(T_CTOOL, IMG_CTOOLS_RUBY_PAGE);
-		createManaged(T_CTOOL, IMG_CTOOLS_RUBY);
-		createManaged(T_CTOOL, IMG_CTOOLS_RUBY_GLOBAL);
-		createManaged(T_CTOOL, IMG_CTOOLS_RUBY_CLASS);
-		createManaged(T_CTOOL, IMG_OBJS_MODULE);
-		createManaged(T_CTOOL, IMG_CTOOLS_RUBY_METHOD);
-		createManaged(T_CTOOL, IMG_CTOOLS_RUBYMETHOD_PRO);
-		createManaged(T_CTOOL, IMG_CTOOLS_RUBYMETHOD_PUB);
-        createManaged(T_CTOOL, IMG_CTOOLS_RUBY_SINGLETONMETHOD );
-		createManaged(T_CTOOL, IMG_CTOOLS_RUBY_SINGLETONMETHOD_PUB );
-		createManaged(T_CTOOL, IMG_CTOOLS_RUBY_SINGLETONMETHOD_PRO );
-		createManaged(T_CTOOL, IMG_CTOOLS_RUBY_CLASS_VAR);
-		createManaged(T_CTOOL, IMG_CTOOLS_RUBY_CONSTANT);
-		createManaged(T_CTOOL, IMG_CTOOLS_RUBY_LOCAL_VAR);
-		createManaged(T_CTOOL, IMG_CTOOLS_RUBY_INSTANCE_VAR);
+		createManagedFromKey(T_OBJ, IMG_OBJS_FIXABLE_ERROR);
+		createManagedFromKey(T_OBJ, IMG_OBJS_FIXABLE_PROBLEM);
+		createManagedFromKey(T_OBJ, IMG_OBJS_ERROR);
+		createManagedFromKey(T_OBJ, IMG_OBJS_WARNING);
+		createManagedFromKey(T_OBJ, IMG_OBJS_INFO);
+		createManagedFromKey(T_OBJ, IMG_OBJS_TEMPLATE);
+		createManagedFromKey(T_CTOOL, IMG_CTOOLS_RUBY_IMPORT_CONTAINER);
+		createManagedFromKey(T_CTOOL, IMG_CTOOLS_RUBY_IMPORT);
+		createManagedFromKey(T_CTOOL, IMG_CTOOLS_RUBY_PAGE);
+		createManagedFromKey(T_CTOOL, IMG_CTOOLS_RUBY);
+		createManagedFromKey(T_CTOOL, IMG_CTOOLS_RUBY_GLOBAL);
+		createManagedFromKey(T_CTOOL, IMG_CTOOLS_RUBY_CLASS);
+		createManagedFromKey(T_CTOOL, IMG_OBJS_MODULE);
+		createManagedFromKey(T_CTOOL, IMG_CTOOLS_RUBY_METHOD);
+		createManagedFromKey(T_CTOOL, IMG_CTOOLS_RUBYMETHOD_PRO);
+		createManagedFromKey(T_CTOOL, IMG_CTOOLS_RUBYMETHOD_PUB);
+		createManagedFromKey(T_CTOOL, IMG_CTOOLS_RUBY_SINGLETONMETHOD );
+		createManagedFromKey(T_CTOOL, IMG_CTOOLS_RUBY_SINGLETONMETHOD_PUB );
+		createManagedFromKey(T_CTOOL, IMG_CTOOLS_RUBY_SINGLETONMETHOD_PRO );
+		createManagedFromKey(T_CTOOL, IMG_CTOOLS_RUBY_CLASS_VAR);
+		createManagedFromKey(T_CTOOL, IMG_CTOOLS_RUBY_CONSTANT);
+		createManagedFromKey(T_CTOOL, IMG_CTOOLS_RUBY_LOCAL_VAR);
+		createManagedFromKey(T_CTOOL, IMG_CTOOLS_RUBY_INSTANCE_VAR);
 	}
     
     
@@ -168,9 +168,9 @@ public class RubyPluginImages {
 	 * 
 	 * @param key the image's key
 	 * @return the image managed under the given key
-	 */
+	 */ 
 	public static Image get(String key) {
-		return IMAGE_REGISTRY.get(key);
+		return getImageRegistry().get(key);
 	}
 
 	/**
@@ -188,54 +188,76 @@ public class RubyPluginImages {
 	public static void setLocalImageDescriptors(IAction action, String iconName) {
 		setImageDescriptors(action, "lcl16", iconName);
 	}
-
-	public static ImageRegistry getImageRegistry() {
-		return IMAGE_REGISTRY;
+	
+	/*
+	 * Helper method to access the image registry from the JavaPlugin class.
+	 */
+	/* package */ static ImageRegistry getImageRegistry() {
+		if (fgImageRegistry == null) {
+			fgImageRegistry= new ImageRegistry();
+			for (Iterator iter= fgAvoidSWTErrorMap.keySet().iterator(); iter.hasNext();) {
+				String key= (String) iter.next();
+				fgImageRegistry.put(key, (ImageDescriptor) fgAvoidSWTErrorMap.get(key));
+			}
+			fgAvoidSWTErrorMap= null;
+		}
+		return fgImageRegistry;
+	}
+	
+	private static ImageDescriptor createManagedFromKey(String prefix, String key) {
+		return createManaged(prefix, key.substring(NAME_PREFIX_LENGTH), key);
 	}
 
 	//---- Helper methods to access icons on the file system --------------------------------------
 
-	protected static void setImageDescriptors(IAction action, String type, String relPath) {
-
-		try {
-			ImageDescriptor id = ImageDescriptor.createFromURL(makeIconFileURL("d" + type, relPath));
-			if (id != null)
-				action.setDisabledImageDescriptor(id);
-		} catch (MalformedURLException e) {}
-
-		// we don't use hover images. If we set it nonetheless it would be preferred to the "normal" image descriptor
-		// see ActionContributionItem.updateImages
-		// ImageDescriptor.createFromURL(makeIconFileURL("c" + type, relPath));
-
-		action.setImageDescriptor(createUnManaged("e" + type, relPath));
+	private static void setImageDescriptors(IAction action, String type, String relPath) {
+		ImageDescriptor id= create("d" + type, relPath, false); //$NON-NLS-1$
+		if (id != null)
+			action.setDisabledImageDescriptor(id);
+	
+		/*
+		 * id= create("c" + type, relPath, false); //$NON-NLS-1$
+		 * if (id != null)
+		 * 		action.setHoverImageDescriptor(id);
+		 */
+	
+		ImageDescriptor descriptor= create("e" + type, relPath, true); //$NON-NLS-1$
+		action.setHoverImageDescriptor(descriptor);
+		action.setImageDescriptor(descriptor); 
 	}
-
-	protected static ImageDescriptor createManaged(String prefix, String name) {
-		try {
-			ImageDescriptor result = ImageDescriptor.createFromURL(makeIconFileURL(prefix, name.substring(NAME_PREFIX_LENGTH)));
-			IMAGE_REGISTRY.put(name, result);
-			return result;
-		} catch (MalformedURLException e) {
-			return ImageDescriptor.getMissingImageDescriptor();
+	
+	private static ImageDescriptor createManaged(String prefix, String name, String key) {
+		ImageDescriptor result= create(prefix, name, true);
+		
+		if (fgAvoidSWTErrorMap == null) {
+			fgAvoidSWTErrorMap= new HashMap();
 		}
-	}
-
-	protected static ImageDescriptor createUnManaged(String prefix, String name) {
-		try {
-			return ImageDescriptor.createFromURL(makeIconFileURL(prefix, name));
-		} catch (MalformedURLException e) {
-			return ImageDescriptor.getMissingImageDescriptor();
+		fgAvoidSWTErrorMap.put(key, result);
+		if (fgImageRegistry != null) {
+			RubyPlugin.logErrorMessage("Image registry already defined"); //$NON-NLS-1$
 		}
+		return result;
 	}
-
-	protected static URL makeIconFileURL(String prefix, String name) throws MalformedURLException {
-		if (iconBaseURL == null)
-			throw new MalformedURLException();
-
-		StringBuffer buffer = new StringBuffer(prefix);
-		buffer.append('/');
-		buffer.append(name);
-		return new URL(iconBaseURL, buffer.toString());
+	
+	/*
+	 * Creates an image descriptor for the given prefix and name in the JDT UI bundle. The path can
+	 * contain variables like $NL$.
+	 * If no image could be found, <code>useMissingImageDescriptor</code> decides if either
+	 * the 'missing image descriptor' is returned or <code>null</code>.
+	 * or <code>null</code>.
+	 */
+	private static ImageDescriptor create(String prefix, String name, boolean useMissingImageDescriptor) {
+		IPath path= ICONS_PATH.append(prefix).append(name);
+		return createImageDescriptor(RubyPlugin.getDefault().getBundle(), path, useMissingImageDescriptor);
+	}
+	
+	/*
+	 * Creates an image descriptor for the given prefix and name in the JDT UI bundle. The path can
+	 * contain variables like $NL$.
+	 * If no image could be found, the 'missing image descriptor' is returned.
+	 */
+	private static ImageDescriptor createUnManaged(String prefix, String name) {
+		return create(prefix, name, true);
 	}
 
 	/*
@@ -254,5 +276,18 @@ public class RubyPluginImages {
 			return ImageDescriptor.getMissingImageDescriptor();
 		}
 		return null;
+	}
+
+	/**
+	 * Returns the image descriptor for the given key in this registry. Might be called in a non-UI thread.
+	 * 
+	 * @param key the image's key
+	 * @return the image descriptor for the given key
+	 */ 
+	public static ImageDescriptor getDescriptor(String key) {
+		if (fgImageRegistry == null) {
+			return (ImageDescriptor) fgAvoidSWTErrorMap.get(key);
+		}
+		return getImageRegistry().getDescriptor(key);
 	}
 }

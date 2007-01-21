@@ -33,7 +33,7 @@ import org.rubypeople.rdt.internal.core.LoadpathEntry;
 import org.rubypeople.rdt.internal.core.RubyModelManager;
 import org.rubypeople.rdt.internal.debug.ui.RdtDebugUiMessages;
 import org.rubypeople.rdt.internal.debug.ui.RdtDebugUiPlugin;
-import org.rubypeople.rdt.internal.debug.ui.preferences.AddVMDialog;
+import org.rubypeople.rdt.internal.debug.ui.rubyvms.AddVMDialog;
 import org.rubypeople.rdt.internal.debug.ui.rubyvms.IAddVMDialogRequestor;
 import org.rubypeople.rdt.internal.debug.ui.rubyvms.RubyVMMessages;
 import org.rubypeople.rdt.internal.launching.RubyLaunchConfigurationAttribute;

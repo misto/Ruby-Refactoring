@@ -27,6 +27,7 @@ import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPreferencePage;
 import org.rubypeople.rdt.internal.debug.ui.RdtDebugUiMessages;
+import org.rubypeople.rdt.internal.debug.ui.rubyvms.AddVMDialog;
 import org.rubypeople.rdt.internal.debug.ui.rubyvms.IAddVMDialogRequestor;
 import org.rubypeople.rdt.internal.debug.ui.rubyvms.RubyVMMessages;
 import org.rubypeople.rdt.internal.debug.ui.rubyvms.RubyVMsUpdater;
@@ -40,7 +41,7 @@ public class RubyInterpreterPreferencePage extends PreferencePage implements IWo
 	/**
 	 * VMs being displayed
 	 */
-	private List fVMs = new ArrayList(); 
+	private List<IVMInstall> fVMs = new ArrayList<IVMInstall>(); 
 	
 	protected CheckboxTableViewer fVMList;
 	protected Button addButton, editButton, removeButton;
@@ -72,7 +73,7 @@ public class RubyInterpreterPreferencePage extends PreferencePage implements IWo
 	
 	private void fillWithWorkspaceRubyVMs() {
 //		 fill with Ruby VMs
-		List standins = new ArrayList();
+		List<VMStandin> standins = new ArrayList<VMStandin>();
 		IVMInstallType[] types = RubyRuntime.getVMInstallTypes();
 		for (int i = 0; i < types.length; i++) {
 			IVMInstallType type = types[i];

@@ -699,7 +699,7 @@ public class RubyRuntime {
 		IPath[] libraryPaths = new IPath[dflts.length];			
 		for (int i = 0; i < dflts.length; i++) {
 			libraryPaths[i]= dflts[i];               
-			if (!libraryPaths[i].toFile().isFile()) {
+			if (!libraryPaths[i].toFile().isDirectory()) {
 				libraryPaths[i]= Path.EMPTY;
 			}
 		}
