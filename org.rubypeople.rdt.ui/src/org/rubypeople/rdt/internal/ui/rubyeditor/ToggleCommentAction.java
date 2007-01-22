@@ -88,7 +88,7 @@ public final class ToggleCommentAction extends TextEditorAction {
 		Shell shell= editor.getSite().getShell();
 		if (!fOperationTarget.canDoOperation(operationCode)) {
 			if (shell != null)
-				MessageDialog.openError(shell, RubyEditorMessages.getString("ToggleComment.error.title"), RubyEditorMessages.getString("ToggleComment.error.message")); //$NON-NLS-1$ //$NON-NLS-2$
+				MessageDialog.openError(shell, RubyEditorMessages.ToggleComment_error_title, RubyEditorMessages.ToggleComment_error_message);
 			return;
 		}
 		

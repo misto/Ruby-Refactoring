@@ -11,7 +11,6 @@
 package org.rubypeople.rdt.internal.ui.rubyeditor;
 
 import java.text.MessageFormat;
-import java.util.MissingResourceException;
 import java.util.ResourceBundle;
 
 import org.eclipse.osgi.util.NLS;
@@ -31,18 +30,19 @@ public class RubyEditorMessages extends NLS {
     public static String GotoMatchingBracket_error_bracketOutsideSelectedElement;
     public static String GotoMatchingBracket_error_invalidSelection;
     public static String GotoMatchingBracket_error_noMatchingBracket;
+	public static String Editor_FoldingMenu_name;
+	public static String ToggleComment_error_title;
+	public static String ToggleComment_error_message;
 
     private static ResourceBundle fgResourceBundle = ResourceBundle.getBundle(BUNDLE_NAME);
 
     private static final String BUNDLE_FOR_CONSTRUCTED_KEYS= "org.rubypeople.rdt.internal.ui.rubyeditor.ConstructedRubyEditorMessages";//$NON-NLS-1$
     private static ResourceBundle fgBundleForConstructedKeys= ResourceBundle.getBundle(BUNDLE_FOR_CONSTRUCTED_KEYS);
 
-	public static String Editor_FoldingMenu_name;
-
     /**
      * Returns the message bundle which contains constructed keys.
      *
-     * @since 3.1
+     * @since 0.8.0
      * @return the message bundle
      */
     public static ResourceBundle getBundleForConstructedKeys() {
@@ -53,13 +53,6 @@ public class RubyEditorMessages extends NLS {
     private RubyEditorMessages() {
     }
 
-    public static String getString(String key) {
-        try {
-            return fgResourceBundle.getString(key);
-        } catch (MissingResourceException e) {
-            return '!' + key + '!';
-        }
-    }
 
     public static ResourceBundle getResourceBundle() {
         return fgResourceBundle;
@@ -69,14 +62,14 @@ public class RubyEditorMessages extends NLS {
      * Gets a string from the resource bundle and formats it with arguments
      */
     public static String getFormattedString(String key, Object[] args) {
-        return MessageFormat.format(getString(key), args);
+        return MessageFormat.format(key, args);
     }
 
     /**
      * Gets a string from the resource bundle and formats it with arguments
      */
     public static String getFormattedString(String key, Object arg) {
-        return MessageFormat.format(getString(key), new Object[] { arg});
+        return MessageFormat.format(key, new Object[] { arg});
     }
 
     static {
