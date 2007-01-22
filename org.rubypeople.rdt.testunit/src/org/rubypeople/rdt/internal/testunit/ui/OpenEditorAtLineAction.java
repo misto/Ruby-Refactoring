@@ -46,7 +46,7 @@ public class OpenEditorAtLineAction extends Action {
      * Constructor for OpenEditorAtLineAction.
      */
     public OpenEditorAtLineAction(TestUnitView testRunner, String fileName, int line) {
-        super(TestUnitMessages.getString("OpenEditorAction.action.label"));
+        super(TestUnitMessages.OpenEditorAction_action_label);
         // TODO Uncomment and fix!
         // WorkbenchHelp.setHelp(this,
         // IJUnitHelpContextIds.OPENEDITORATLINE_ACTION);

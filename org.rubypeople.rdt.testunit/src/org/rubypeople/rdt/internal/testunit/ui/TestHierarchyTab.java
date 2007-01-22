@@ -103,8 +103,8 @@ public class TestHierarchyTab extends TestRunTab implements IMenuListener {
 	private class ExpandAllAction extends Action {
 
 		public ExpandAllAction() {
-			setText(TestUnitMessages.getString("ExpandAllAction.text")); //$NON-NLS-1$
-			setToolTipText(TestUnitMessages.getString("ExpandAllAction.tooltip")); //$NON-NLS-1$
+			setText(TestUnitMessages.ExpandAllAction_text);
+			setToolTipText(TestUnitMessages.ExpandAllAction_tooltip);
 		}
 
 		public void run() {
@@ -131,7 +131,7 @@ public class TestHierarchyTab extends TestRunTab implements IMenuListener {
 		testTreePanel.setLayoutData(gridData);
 
 		hierarchyTab.setControl(testTreePanel);
-		hierarchyTab.setToolTipText(TestUnitMessages.getString("HierarchyRunView.tab.tooltip")); //$NON-NLS-1$
+		hierarchyTab.setToolTipText(TestUnitMessages.HierarchyRunView_tab_tooltip);
 
 		fTree = new Tree(testTreePanel, SWT.V_SCROLL | SWT.SINGLE);
 		gridData = new GridData(GridData.FILL_BOTH | GridData.GRAB_HORIZONTAL | GridData.GRAB_VERTICAL);
@@ -189,7 +189,7 @@ public class TestHierarchyTab extends TestRunTab implements IMenuListener {
 	}
 
 	public String getName() {
-		return TestUnitMessages.getString("HierarchyRunView.tab.title"); //$NON-NLS-1$
+		return TestUnitMessages.HierarchyRunView_tab_title;
 	}
 
 	public void setSelectedTest(String testId) {

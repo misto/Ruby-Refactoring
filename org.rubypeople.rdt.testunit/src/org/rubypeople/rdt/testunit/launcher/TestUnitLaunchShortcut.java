@@ -91,11 +91,11 @@ public class TestUnitLaunchShortcut extends RubyApplicationShortcut {
 		IDebugModelPresentation labelProvider = DebugUITools.newDebugModelPresentation();
 		ElementListSelectionDialog dialog = new ElementListSelectionDialog(getShell(), labelProvider);
 		dialog.setElements(configList.toArray());
-		dialog.setTitle(TestUnitMessages.getString("LaunchTestAction.message.selectConfiguration")); //$NON-NLS-1$
+		dialog.setTitle(TestUnitMessages.LaunchTestAction_message_selectConfiguration);
 		if (mode.equals(ILaunchManager.DEBUG_MODE)) {
-			dialog.setMessage(TestUnitMessages.getString("LaunchTestAction.message.selectDebugConfiguration")); //$NON-NLS-1$
+			dialog.setMessage(TestUnitMessages.LaunchTestAction_message_selectDebugConfiguration);
 		} else {
-			dialog.setMessage(TestUnitMessages.getString("LaunchTestAction.message.selectRunConfiguration")); //$NON-NLS-1$
+			dialog.setMessage(TestUnitMessages.LaunchTestAction_message_selectRunConfiguration);
 		}
 		dialog.setMultipleSelection(false);
 		int result = dialog.open();
@@ -167,7 +167,7 @@ public class TestUnitLaunchShortcut extends RubyApplicationShortcut {
 	}
 
 	protected void showNoInterpreterDialog() {
-		MessageDialog.openInformation(TestunitPlugin.getActiveWorkbenchShell(), TestUnitMessages.getString("Dialog.launchWithoutSelectedInterpreter.title"), TestUnitMessages.getString("Dialog.launchWithoutSelectedInterpreter"));
+		MessageDialog.openInformation(TestunitPlugin.getActiveWorkbenchShell(), TestUnitMessages.Dialog_launchWithoutSelectedInterpreter_title, TestUnitMessages.Dialog_launchWithoutSelectedInterpreter);
 	}
 
 	protected static String getDefaultWorkingDirectory(IProject project) {

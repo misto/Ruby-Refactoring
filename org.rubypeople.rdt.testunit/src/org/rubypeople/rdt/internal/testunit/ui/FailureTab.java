@@ -82,7 +82,7 @@ public class FailureTab extends TestRunTab implements IMenuListener {
 		fTable.setLayoutData(gridData);
 
 		failureTab.setControl(composite);
-		failureTab.setToolTipText(TestUnitMessages.getString("FailureRunView.tab.tooltip")); //$NON-NLS-1$
+		failureTab.setToolTipText(TestUnitMessages.FailureRunView_tab_tooltip);
 
 		initMenu();
 		addListeners();
@@ -103,7 +103,7 @@ public class FailureTab extends TestRunTab implements IMenuListener {
 	}
 
 	public String getName() {
-		return TestUnitMessages.getString("FailureRunView.tab.title"); //$NON-NLS-1$
+		return TestUnitMessages.FailureRunView_tab_title;
 	}
 
 	public String getSelectedTestId() {
@@ -207,7 +207,7 @@ public class FailureTab extends TestRunTab implements IMenuListener {
 	}
 
 	private void updateTableItem(TestRunInfo testInfo, TableItem tableItem) {
-		String label = TestUnitMessages.getFormattedString("FailureRunView.labelfmt", new String[] { testInfo.getTestMethodName(), testInfo.getClassName()}); //$NON-NLS-1$
+		String label = TestUnitMessages.getFormattedString(TestUnitMessages.FailureRunView_labelfmt, new String[] { testInfo.getTestMethodName(), testInfo.getClassName()});
 		tableItem.setText(label);
 		if (testInfo.getStatus() == ITestRunListener.STATUS_FAILURE)
 			tableItem.setImage(fFailureIcon);

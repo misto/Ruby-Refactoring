@@ -29,9 +29,9 @@ public class RerunAction extends Action {
 	public RerunAction(TestUnitView runner, String testId, String className, String testName, String launchMode) {
 		super(); 
 		if (launchMode.equals(ILaunchManager.RUN_MODE))
-			setText(TestUnitMessages.getString("RerunAction.label.run")); //$NON-NLS-1$
+			setText(TestUnitMessages.RerunAction_label_run);
 		else if (launchMode.equals(ILaunchManager.DEBUG_MODE))
-			setText(TestUnitMessages.getString("RerunAction.label.debug")); //$NON-NLS-1$
+			setText(TestUnitMessages.RerunAction_label_debug);
 		// TODO Re-enable help text
 		//WorkbenchHelp.setHelp(this, ITestUnitHelpContextIds.RERUN_ACTION);
 		fTestRunner= runner;

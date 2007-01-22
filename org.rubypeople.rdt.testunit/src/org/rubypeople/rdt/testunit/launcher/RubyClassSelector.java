@@ -98,7 +98,7 @@ public class RubyClassSelector {
 			}
 		});
 
-		browseDialogTitle = TestUnitMessages.getString("RubyClassSelector.Title");
+		browseDialogTitle = TestUnitMessages.RubyClassSelector_Title;
 
 	}
 

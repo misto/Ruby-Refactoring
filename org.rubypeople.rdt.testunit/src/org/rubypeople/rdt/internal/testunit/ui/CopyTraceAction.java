@@ -38,7 +38,7 @@ public class CopyTraceAction extends Action {
 	 * Constructor for CopyTraceAction.
 	 */
 	public CopyTraceAction(FailureTrace view, Clipboard clipboard) {
-		super(TestUnitMessages.getString("CopyTrace.action.label"));  //$NON-NLS-1$
+		super(TestUnitMessages.CopyTrace_action_label);
 		Assert.isNotNull(clipboard);
 		// TODO Show help!
 		//WorkbenchHelp.setHelp(this, ITestUnitHelpContextIds.COPYTRACE_ACTION);
@@ -62,7 +62,7 @@ public class CopyTraceAction extends Action {
 		}  catch (SWTError e){
 			if (e.code != DND.ERROR_CANNOT_SET_CLIPBOARD) 
 				throw e;
-			if (MessageDialog.openQuestion(fView.getComposite().getShell(), TestUnitMessages.getString("CopyTraceAction.problem"), TestUnitMessages.getString("CopyTraceAction.clipboard_busy")))  //$NON-NLS-1$ //$NON-NLS-2$
+			if (MessageDialog.openQuestion(fView.getComposite().getShell(), TestUnitMessages.CopyTraceAction_problem, TestUnitMessages.CopyTraceAction_clipboard_busy))  
 				run();
 		}
 	}

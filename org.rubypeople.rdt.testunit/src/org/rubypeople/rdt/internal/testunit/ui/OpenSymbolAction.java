@@ -36,7 +36,7 @@ public class OpenSymbolAction extends Action implements IAction {
     }
     
     public OpenSymbolAction(Symbol symbol, ISymbolFinder finder, Shell shell, String title) {
-        super(TestUnitMessages.getString("OpenEditor.action.label"));
+        super(TestUnitMessages.OpenEditor_action_label);
         this.shell = shell;
         this.symbol = symbol;
         this.finder = finder;

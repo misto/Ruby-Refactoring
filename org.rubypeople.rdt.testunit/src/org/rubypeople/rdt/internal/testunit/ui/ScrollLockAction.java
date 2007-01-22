@@ -20,9 +20,9 @@ public class ScrollLockAction extends Action {
 	private TestUnitView fRunnerViewPart;
 
 	public ScrollLockAction(TestUnitView viewer) {
-		super(TestUnitMessages.getString("ScrollLockAction.action.label")); //$NON-NLS-1$
+		super(TestUnitMessages.ScrollLockAction_action_label);
 		fRunnerViewPart = viewer;
-		setToolTipText(TestUnitMessages.getString("ScrollLockAction.action.tooltip")); //$NON-NLS-1$
+		setToolTipText(TestUnitMessages.ScrollLockAction_action_tooltip);
 		setDisabledImageDescriptor(TestunitPlugin.getImageDescriptor("dlcl16/lock.gif")); //$NON-NLS-1$
 		setHoverImageDescriptor(TestunitPlugin.getImageDescriptor("elcl16/lock.gif")); //$NON-NLS-1$
 		setImageDescriptor(TestunitPlugin.getImageDescriptor("elcl16/lock.gif")); //$NON-NLS-1$

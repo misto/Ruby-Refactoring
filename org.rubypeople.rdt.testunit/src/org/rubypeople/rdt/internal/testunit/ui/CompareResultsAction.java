@@ -19,9 +19,9 @@ public class CompareResultsAction extends Action {
 
 
 	public CompareResultsAction(FailureTrace view) {
-		super(TestUnitMessages.getString("CompareResultsAction.label")); //$NON-NLS-1$
-		setDescription(TestUnitMessages.getString("CompareResultsAction.description")); //$NON-NLS-1$
-		setToolTipText(TestUnitMessages.getString("CompareResultsAction.tooltip")); //$NON-NLS-1$
+		super(TestUnitMessages.CompareResultsAction_label);
+		setDescription(TestUnitMessages.CompareResultsAction_description); 
+		setToolTipText(TestUnitMessages.CompareResultsAction_tooltip);
 
 		setDisabledImageDescriptor(TestunitPlugin.getImageDescriptor("dlcl16/compare.gif")); //$NON-NLS-1$
 		setHoverImageDescriptor(TestunitPlugin.getImageDescriptor("elcl16/compare.gif")); //$NON-NLS-1$

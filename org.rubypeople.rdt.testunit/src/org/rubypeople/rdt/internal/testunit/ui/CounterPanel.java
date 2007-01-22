@@ -42,9 +42,9 @@ public class CounterPanel extends Composite {
 		gridLayout.marginWidth= 0;
 		setLayout(gridLayout);
 		
-		fNumberOfRuns= createLabel(TestUnitMessages.getString("CounterPanel.label.runs"), null, " 0/0  ");  //$NON-NLS-1$ //$NON-NLS-2$
-		fNumberOfErrors= createLabel(TestUnitMessages.getString("CounterPanel.label.errors"), fErrorIcon, " 0 "); //$NON-NLS-1$ //$NON-NLS-2$
-		fNumberOfFailures= createLabel(TestUnitMessages.getString("CounterPanel.label.failures"), fFailureIcon, " 0 "); //$NON-NLS-1$ //$NON-NLS-2$
+		fNumberOfRuns= createLabel(TestUnitMessages.CounterPanel_label_runs, null, " 0/0  ");  //$NON-NLS-1$
+		fNumberOfErrors= createLabel(TestUnitMessages.CounterPanel_label_errors, fErrorIcon, " 0 "); //$NON-NLS-1$
+		fNumberOfFailures= createLabel(TestUnitMessages.CounterPanel_label_failures, fFailureIcon, " 0 "); //$NON-NLS-1$
 
 		addDisposeListener(new DisposeListener() {
 			public void widgetDisposed(DisposeEvent e) {
@@ -95,7 +95,7 @@ public class CounterPanel extends Composite {
 	}
 	
 	public void setRunValue(int value) {
-		String runString= TestUnitMessages.getFormattedString("CounterPanel.runcount", new String[] { Integer.toString(value), Integer.toString(fTotal) }); //$NON-NLS-1$
+		String runString= TestUnitMessages.getFormattedString(TestUnitMessages.CounterPanel_runcount, new String[] { Integer.toString(value), Integer.toString(fTotal) });
 		fNumberOfRuns.setText(runString);
 
 		fNumberOfRuns.redraw();

@@ -251,7 +251,7 @@ public class FailureTrace implements IMenuListener {
 		private final StackTraceLine trace;
 	
 		public OpenEditorAction(StackTraceLine trace) {
-			super(TestUnitMessages.getString("OpenEditor.action.label"));
+			super(TestUnitMessages.OpenEditor_action_label);
 			this.trace = trace;
 		}
 	

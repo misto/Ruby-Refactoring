@@ -1,39 +1,86 @@
 package org.rubypeople.rdt.internal.testunit.ui;
 
 import java.text.MessageFormat;
-import java.util.MissingResourceException;
-import java.util.ResourceBundle;
+
+import org.eclipse.osgi.util.NLS;
 
 public class TestUnitMessages {
 
 	private static final String BUNDLE_NAME= "org.rubypeople.rdt.internal.testunit.ui.TestUnitMessages"; //$NON-NLS-1$
+	
+	private TestUnitMessages() {}
+	
+	public static String LaunchConfigurationTab_RubyEntryPoint_allTestCases;
+	public static String LaunchConfigurationTab_RubyEntryPoint_classSelectorMessage;
+	public static String LaunchConfigurationTab_RubyEntryPoint_classLabel;
+	public static String CompareResultsAction_label;
+	public static String CompareResultsAction_description;
+	public static String CompareResultsAction_tooltip;
+	public static String CopyTrace_action_label;
+	public static String CopyTraceAction_problem;
+	public static String CopyTraceAction_clipboard_busy;
+	public static String CounterPanel_label_runs;
+	public static String CounterPanel_label_errors;
+	public static String CounterPanel_label_failures;
+	public static String FailureRunView_tab_tooltip;
+	public static String FailureRunView_tab_title;
+	public static String OpenEditor_action_label;
+	public static String OpenEditorAction_action_label;
+	public static String RerunAction_label_debug;
+	public static String RerunAction_label_run;
+	public static String TestRunnerViewPart_label_failure;
+	public static String TestRunnerViewPart_error_cannotrerun;
+	public static String TestRunnerViewPart_cannotrerun_title;
+	public static String TestRunnerViewPart_cannotrerurn_message;
+	public static String TestRunnerViewPart_message_launching;
+	public static String TestRunnerViewPart_message_stopped;
+	public static String TestRunnerViewPart_message_terminated;
+	public static String TestRunnerViewPart_jobName;
+	public static String TestRunnerViewPart_terminate_title;
+	public static String TestRunnerViewPart_terminate_message;
+	public static String TestRunnerViewPart_rerunaction_label;
+	public static String TestRunnerViewPart_rerunaction_tooltip;
+	public static String LaunchTestAction_message_selectConfiguration;
+	public static String LaunchTestAction_message_selectDebugConfiguration;
+	public static String LaunchTestAction_message_selectRunConfiguration;
+	public static String Dialog_launchWithoutSelectedInterpreter_title;
+	public static String Dialog_launchWithoutSelectedInterpreter;
+	public static String LaunchConfigurationTab_RubyEntryPoint_allTestMethods;
+	public static String LaunchConfigurationTab_RubyEntryPoint_methodLabel;
+	public static String JUnitMainTab_tab_label;
+	public static String ExpandAllAction_text;
+	public static String ExpandAllAction_tooltip;
+	public static String HierarchyRunView_tab_tooltip;
+	public static String HierarchyRunView_tab_title;
+	public static String ScrollLockAction_action_label;
+	public static String ScrollLockAction_action_tooltip;
+	public static String RubyClassSelector_Title;
+	public static String CounterPanel_runcount;
+	public static String FailureRunView_labelfmt;
+	public static String TestRunnerViewPart_message_error;
+	public static String TestRunnerViewPart_message_failure;
+	public static String TestRunnerViewPart_message_success;
+	public static String TestRunnerViewPart_message_finish;
+	public static String TestRunnerViewPart_message_started;
+	public static String TestRunnerViewPart_configName;
 
-	private static final ResourceBundle RESOURCE_BUNDLE= ResourceBundle.getBundle(BUNDLE_NAME);
-
-	private TestUnitMessages() {
+	static {
+		NLS.initializeMessages(BUNDLE_NAME, TestUnitMessages.class);
 	}
-
+	
 	/**
 	 * Gets a string from the resource bundle and formats it with the argument
 	 * 
 	 * @param key	the string used to get the bundle value, must not be null
 	 */
 	public static String getFormattedString(String key, Object arg) {
-		return MessageFormat.format(getString(key), new Object[] { arg });
+		return MessageFormat.format(key, new Object[] { arg });
 	}
 
 	/**
 	 * Gets a string from the resource bundle and formats it with arguments
 	 */	
 	public static String getFormattedString(String key, Object[] args) {
-		return MessageFormat.format(getString(key), args);
-	}
-
-	public static String getString(String key) {
-		try {
-			return RESOURCE_BUNDLE.getString(key);
-		} catch (MissingResourceException e) {
-			return '!' + key + '!';
-		}
+		return MessageFormat.format(key, args);
 	}
 }

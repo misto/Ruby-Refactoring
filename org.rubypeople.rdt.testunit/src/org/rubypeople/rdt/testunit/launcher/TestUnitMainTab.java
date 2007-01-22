@@ -83,9 +83,9 @@ public class TestUnitMainTab extends AbstractLaunchConfigurationTab implements I
 	public void createControl(Composite parent) {
 		Composite composite = createPageRoot(parent);
 
-		new Label(composite, SWT.NONE).setText(RdtDebugUiMessages.getString("LaunchConfigurationTab.RubyEntryPoint.projectLabel"));
+		new Label(composite, SWT.NONE).setText(RdtDebugUiMessages.LaunchConfigurationTab_RubyEntryPoint_projectLabel);
 		projectSelector = new RubyProjectSelector(composite);
-		projectSelector.setBrowseDialogMessage(RdtDebugUiMessages.getString("LaunchConfigurationTab.RubyEntryPoint.projectSelectorMessage"));
+		projectSelector.setBrowseDialogMessage(RdtDebugUiMessages.LaunchConfigurationTab_RubyEntryPoint_projectSelectorMessage);
 		projectSelector.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
 		projectSelector.addModifyListener(new ModifyListener() {
 
@@ -100,9 +100,9 @@ public class TestUnitMainTab extends AbstractLaunchConfigurationTab implements I
 			}
 		});
 
-		new Label(composite, SWT.NONE).setText(RdtDebugUiMessages.getString("LaunchConfigurationTab.RubyEntryPoint.fileLabel"));
+		new Label(composite, SWT.NONE).setText(RdtDebugUiMessages.LaunchConfigurationTab_RubyEntryPoint_fileLabel);
 		fileSelector = new RubyFileSelector(composite, projectSelector);
-		fileSelector.setBrowseDialogMessage(RdtDebugUiMessages.getString("LaunchConfigurationTab.RubyEntryPoint.fileSelectorMessage"));
+		fileSelector.setBrowseDialogMessage(RdtDebugUiMessages.LaunchConfigurationTab_RubyEntryPoint_fileSelectorMessage);
 		fileSelector.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
 		fileSelector.addModifyListener(new ModifyListener() {
 
@@ -117,7 +117,7 @@ public class TestUnitMainTab extends AbstractLaunchConfigurationTab implements I
 		});
 
 		allClassesCheckBox = new Button(composite, SWT.CHECK);
-		allClassesCheckBox.setText(TestUnitMessages.getString("LaunchConfigurationTab.RubyEntryPoint.allTestCases"));
+		allClassesCheckBox.setText(TestUnitMessages.LaunchConfigurationTab_RubyEntryPoint_allTestCases);
 		allClassesCheckBox.addSelectionListener(new SelectionListener() {
 
 			public void widgetSelected(SelectionEvent e) {
@@ -129,10 +129,10 @@ public class TestUnitMainTab extends AbstractLaunchConfigurationTab implements I
 		});
 
 		classLabel = new Label(composite, SWT.NONE);
-		classLabel.setText(TestUnitMessages.getString("LaunchConfigurationTab.RubyEntryPoint.classLabel"));
+		classLabel.setText(TestUnitMessages.LaunchConfigurationTab_RubyEntryPoint_classLabel);
 
 		classSelector = new RubyClassSelector(composite, fileSelector, projectSelector);
-		classSelector.setBrowseDialogMessage(TestUnitMessages.getString("LaunchConfigurationTab.RubyEntryPoint.classSelectorMessage"));
+		classSelector.setBrowseDialogMessage(TestUnitMessages.LaunchConfigurationTab_RubyEntryPoint_classSelectorMessage);
 		classSelector.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
 		classSelector.addModifyListener(new ModifyListener() {
 
@@ -142,7 +142,7 @@ public class TestUnitMainTab extends AbstractLaunchConfigurationTab implements I
 		});
 
 		allMethodsCheckBox = new Button(composite, SWT.CHECK);
-		allMethodsCheckBox.setText(TestUnitMessages.getString("LaunchConfigurationTab.RubyEntryPoint.allTestMethods"));
+		allMethodsCheckBox.setText(TestUnitMessages.LaunchConfigurationTab_RubyEntryPoint_allTestMethods);
 		allMethodsCheckBox.addSelectionListener(new SelectionListener() {
 
 			public void widgetSelected(SelectionEvent e) {
@@ -154,7 +154,7 @@ public class TestUnitMainTab extends AbstractLaunchConfigurationTab implements I
 		});
 
 		testLabel = new Label(composite, SWT.NONE);
-		testLabel.setText(TestUnitMessages.getString("LaunchConfigurationTab.RubyEntryPoint.methodLabel"));
+		testLabel.setText(TestUnitMessages.LaunchConfigurationTab_RubyEntryPoint_methodLabel);
 
 		testMethodEditBox = new Text(composite, SWT.BORDER | SWT.BORDER);
 		testMethodEditBox.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
@@ -274,7 +274,7 @@ public class TestUnitMainTab extends AbstractLaunchConfigurationTab implements I
 	 * @see org.eclipse.debug.ui.ILaunchConfigurationTab#getName()
 	 */
 	public String getName() {
-		return TestUnitMessages.getString("JUnitMainTab.tab.label"); //$NON-NLS-1$
+		return TestUnitMessages.JUnitMainTab_tab_label;
 	}
 
 }
