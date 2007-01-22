@@ -40,7 +40,7 @@ class EmptyRubyFoldingPreferenceBlock implements IRubyFoldingPreferenceBlock {
 		label.setLayoutData(gd);
 		
 		label= new Label(inner, SWT.CENTER);
-		label.setText(FoldingMessages.getString("EmptyRubyFoldingPreferenceBlock.emptyCaption")); //$NON-NLS-1$
+		label.setText(FoldingMessages.EmptyRubyFoldingPreferenceBlock_emptyCaption);
 		gd= new GridData(GridData.CENTER);
 		label.setLayoutData(gd);
 

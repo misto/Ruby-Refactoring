@@ -84,11 +84,11 @@ public class DefaultRubyFoldingPreferenceBlock implements IRubyFoldingPreference
 		inner.setLayout(layout);
 		
 		Label label= new Label(inner, SWT.LEFT);
-		label.setText(FoldingMessages.getString("DefaultRubyFoldingPreferenceBlock.title")); //$NON-NLS-1$
+		label.setText(FoldingMessages.DefaultRubyFoldingPreferenceBlock_title);
 		
-		addCheckBox(inner, FoldingMessages.getString("DefaultRubyFoldingPreferenceBlock.comments"), PreferenceConstants.EDITOR_FOLDING_RDOC, 0); //$NON-NLS-1$
-		addCheckBox(inner, FoldingMessages.getString("DefaultRubyFoldingPreferenceBlock.innerTypes"), PreferenceConstants.EDITOR_FOLDING_INNERTYPES, 0); //$NON-NLS-1$
-		addCheckBox(inner, FoldingMessages.getString("DefaultRubyFoldingPreferenceBlock.methods"), PreferenceConstants.EDITOR_FOLDING_METHODS, 0); //$NON-NLS-1$
+		addCheckBox(inner, FoldingMessages.DefaultRubyFoldingPreferenceBlock_comments, PreferenceConstants.EDITOR_FOLDING_RDOC, 0); //$NON-NLS-1$
+		addCheckBox(inner, FoldingMessages.DefaultRubyFoldingPreferenceBlock_innerTypes, PreferenceConstants.EDITOR_FOLDING_INNERTYPES, 0); //$NON-NLS-1$
+		addCheckBox(inner, FoldingMessages.DefaultRubyFoldingPreferenceBlock_methods, PreferenceConstants.EDITOR_FOLDING_METHODS, 0); //$NON-NLS-1$
 		
 		return inner;
 	}

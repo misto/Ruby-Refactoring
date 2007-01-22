@@ -10,26 +10,24 @@
  *******************************************************************************/
 package org.rubypeople.rdt.internal.ui.text.folding;
 
-import java.util.MissingResourceException;
-import java.util.ResourceBundle;
+import org.eclipse.osgi.util.NLS;
 
 /**
- * @since 3.0
+ * @since 0.8.0
  */
-class FoldingMessages {
+class FoldingMessages extends NLS {
 
 	private static final String BUNDLE_NAME= FoldingMessages.class.getName();
-
-	private static final ResourceBundle RESOURCE_BUNDLE= ResourceBundle.getBundle(BUNDLE_NAME);
-
 	private FoldingMessages() {
 	}
+	
+	public static String DefaultRubyFoldingPreferenceBlock_title;
+	public static String DefaultRubyFoldingPreferenceBlock_comments;
+	public static String DefaultRubyFoldingPreferenceBlock_innerTypes;
+	public static String DefaultRubyFoldingPreferenceBlock_methods;
+	public static String EmptyRubyFoldingPreferenceBlock_emptyCaption;
 
-	public static String getString(String key) {
-		try {
-			return RESOURCE_BUNDLE.getString(key);
-		} catch (MissingResourceException e) {
-			return '!' + key + '!';
-		}
+	static {
+		NLS.initializeMessages(BUNDLE_NAME, FoldingMessages.class);
 	}
 }
