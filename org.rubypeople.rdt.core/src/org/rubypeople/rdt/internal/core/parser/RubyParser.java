@@ -15,6 +15,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.io.StringReader;
+import java.io.UnsupportedEncodingException;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.CoreException;
@@ -26,6 +27,7 @@ import org.jruby.parser.DefaultRubyParser;
 import org.jruby.parser.RubyParserConfiguration;
 import org.jruby.parser.RubyParserPool;
 import org.jruby.parser.RubyParserResult;
+import org.rubypeople.rdt.core.RubyCore;
 import org.rubypeople.rdt.internal.core.builder.IoUtils;
 
 /**
@@ -90,8 +92,11 @@ public class RubyParser {
         InputStream contents = null;
         try {
             contents = file.getContents();
-            return parse(file, new InputStreamReader(contents));
-        } finally {
+            return parse(file, new InputStreamReader(contents, file.getCharset()));
+        } catch (UnsupportedEncodingException e) {
+			RubyCore.log(e);
+			return parse(file, new InputStreamReader(contents));
+		} finally {
             IoUtils.closeQuietly(contents);
         }
     }
