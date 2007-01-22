@@ -101,7 +101,7 @@ public class MultiReaderStrategy extends AbstractReadStrategy {
 		}
 	}
 
-	protected void releaseAllReaders() {
+	protected synchronized void releaseAllReaders() {
 		for (Iterator<Map.Entry<XmlStreamReader, Thread>> iter = threads.entrySet().iterator(); iter.hasNext();) {
 			Thread thread = iter.next().getValue();
 			thread.interrupt();
