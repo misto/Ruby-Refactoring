@@ -219,7 +219,7 @@ public class EvaluationExpressionsPreferencePage extends PreferencePage implemen
 	public EvaluationExpressionsPreferencePage() {
 		super();
 		fModel = new EditableExpressionModel();
-		setDescription(RdtDebugUiMessages.getString("EvaluationExpressionsPreferencePage.description"));
+		setDescription(RdtDebugUiMessages.EvaluationExpressionsPreferencePage_description);
 	}
 
 	/*
@@ -262,10 +262,10 @@ public class EvaluationExpressionsPreferencePage extends PreferencePage implemen
 		table.setLayout(tableLayout);
 
 		TableColumn column1 = new TableColumn(table, SWT.NONE);
-		column1.setText(RdtDebugUiMessages.getString("EvaluationExpressionsPreferencePage.column.name")); //$NON-NLS-1$
+		column1.setText(RdtDebugUiMessages.EvaluationExpressionsPreferencePage_column_name);
 
 		TableColumn column2 = new TableColumn(table, SWT.NONE);
-		column2.setText(RdtDebugUiMessages.getString("EvaluationExpressionsPreferencePage.column.description")); //$NON-NLS-1$
+		column2.setText(RdtDebugUiMessages.EvaluationExpressionsPreferencePage_column_description);
 
 		fTableViewer = new TableViewer(table);
 		fTableViewer.setLabelProvider(new EvaluationExpressionLabelProvider());
@@ -293,7 +293,7 @@ public class EvaluationExpressionsPreferencePage extends PreferencePage implemen
 		buttons.setLayout(layout);
 
 		fAddButton = new Button(buttons, SWT.PUSH);
-		fAddButton.setText(RdtDebugUiMessages.getString("EvaluationExpressionsPreferencePage.new")); //$NON-NLS-1$
+		fAddButton.setText(RdtDebugUiMessages.EvaluationExpressionsPreferencePage_new);
 		fAddButton.setLayoutData(getButtonGridData(fAddButton));
 		fAddButton.addListener(SWT.Selection, new Listener() {
 
@@ -303,7 +303,7 @@ public class EvaluationExpressionsPreferencePage extends PreferencePage implemen
 		});
 
 		fEditButton = new Button(buttons, SWT.PUSH);
-		fEditButton.setText(RdtDebugUiMessages.getString("EvaluationExpressionsPreferencePage.edit")); //$NON-NLS-1$
+		fEditButton.setText(RdtDebugUiMessages.EvaluationExpressionsPreferencePage_edit);
 		fEditButton.setLayoutData(getButtonGridData(fEditButton));
 		fEditButton.addListener(SWT.Selection, new Listener() {
 
@@ -313,7 +313,7 @@ public class EvaluationExpressionsPreferencePage extends PreferencePage implemen
 		});
 
 		fRemoveButton = new Button(buttons, SWT.PUSH);
-		fRemoveButton.setText(RdtDebugUiMessages.getString("EvaluationExpressionsPreferencePage.remove")); //$NON-NLS-1$
+		fRemoveButton.setText(RdtDebugUiMessages.EvaluationExpressionsPreferencePage_remove);
 		fRemoveButton.setLayoutData(getButtonGridData(fRemoveButton));
 		fRemoveButton.addListener(SWT.Selection, new Listener() {
 
@@ -325,7 +325,7 @@ public class EvaluationExpressionsPreferencePage extends PreferencePage implemen
 		createSeparator(buttons);
 
 		fImportButton = new Button(buttons, SWT.PUSH);
-		fImportButton.setText(RdtDebugUiMessages.getString("EvaluationExpressionsPreferencePage.import")); //$NON-NLS-1$
+		fImportButton.setText(RdtDebugUiMessages.EvaluationExpressionsPreferencePage_import);
 		fImportButton.setLayoutData(getButtonGridData(fImportButton));
 		fImportButton.addListener(SWT.Selection, new Listener() {
 
@@ -335,7 +335,7 @@ public class EvaluationExpressionsPreferencePage extends PreferencePage implemen
 		});
 
 		fExportButton = new Button(buttons, SWT.PUSH);
-		fExportButton.setText(RdtDebugUiMessages.getString("EvaluationExpressionsPreferencePage.export")); //$NON-NLS-1$
+		fExportButton.setText(RdtDebugUiMessages.EvaluationExpressionsPreferencePage_export);
 		fExportButton.setLayoutData(getButtonGridData(fExportButton));
 		fExportButton.addListener(SWT.Selection, new Listener() {
 
@@ -439,7 +439,7 @@ public class EvaluationExpressionsPreferencePage extends PreferencePage implemen
 	private void add() {
 
 		EvaluationExpression evalExpression = new EvaluationExpression("", "", "");
-		String title = RdtDebugUiMessages.getString("EditEvaluationExpressionDialog.add");
+		String title = RdtDebugUiMessages.EditEvaluationExpressionDialog_add;
 		Dialog dialog = new EditEvaluationExpressionDialog(getShell(), title, evalExpression);
 		if (dialog.open() == Window.OK) {
 			fModel.addExpression(evalExpression);
@@ -459,7 +459,7 @@ public class EvaluationExpressionsPreferencePage extends PreferencePage implemen
 	}
 
 	private void edit(EvaluationExpression evalExpression) {
-		String title = RdtDebugUiMessages.getString("EditEvaluationExpressionDialog.edit");
+		String title = RdtDebugUiMessages.EditEvaluationExpressionDialog_edit;
 		Dialog dialog = new EditEvaluationExpressionDialog(getShell(), title, evalExpression);
 		if (dialog.open() == Window.OK) {
 			fTableViewer.refresh();
@@ -468,8 +468,8 @@ public class EvaluationExpressionsPreferencePage extends PreferencePage implemen
 
 	private void importFile() {
 		FileDialog dialog = new FileDialog(getShell());
-		dialog.setText(RdtDebugUiMessages.getString("EvaluationExpressionsPreferencePage.import.title")); //$NON-NLS-1$
-		dialog.setFilterExtensions(new String[] { RdtDebugUiMessages.getString("EvaluationExpressionsPreferencePage.importexport.extension")}); //$NON-NLS-1$
+		dialog.setText(RdtDebugUiMessages.EvaluationExpressionsPreferencePage_import_title);
+		dialog.setFilterExtensions(new String[] { RdtDebugUiMessages.EvaluationExpressionsPreferencePage_importexport_extension});
 		String path = dialog.open();
 
 		if (path == null) return;
@@ -502,9 +502,9 @@ public class EvaluationExpressionsPreferencePage extends PreferencePage implemen
 
 	private void export(EvaluationExpression[] expressions) {
 		FileDialog dialog = new FileDialog(getShell(), SWT.SAVE);
-		dialog.setText(RdtDebugUiMessages.getFormattedString("EvaluationExpressionsPreferencePage.export.title", new Integer(expressions.length))); //$NON-NLS-1$
-		dialog.setFilterExtensions(new String[] { RdtDebugUiMessages.getString("EvaluationExpressionsPreferencePage.importexport.extension")}); //$NON-NLS-1$
-		dialog.setFileName(RdtDebugUiMessages.getString("EvaluationExpressionsPreferencePage.export.filename")); //$NON-NLS-1$
+		dialog.setText(RdtDebugUiMessages.getFormattedString(RdtDebugUiMessages.EvaluationExpressionsPreferencePage_export_title, new Integer(expressions.length)));
+		dialog.setFilterExtensions(new String[] { RdtDebugUiMessages.EvaluationExpressionsPreferencePage_importexport_extension});
+		dialog.setFileName(RdtDebugUiMessages.EvaluationExpressionsPreferencePage_export_filename);
 		String path = dialog.open();
 
 		if (path == null) return;
@@ -512,15 +512,15 @@ public class EvaluationExpressionsPreferencePage extends PreferencePage implemen
 		File file = new File(path);
 
 		if (file.isHidden()) {
-			String title = RdtDebugUiMessages.getString("EvaluationExpressionsPreferencePage.export.error.title"); //$NON-NLS-1$ 
-			String message = RdtDebugUiMessages.getFormattedString("EvaluationExpressionsPreferencePage.export.error.hidden", file.getAbsolutePath()); //$NON-NLS-1$
+			String title = RdtDebugUiMessages.EvaluationExpressionsPreferencePage_export_error_title; 
+			String message = RdtDebugUiMessages.getFormattedString(RdtDebugUiMessages.EvaluationExpressionsPreferencePage_export_error_hidden, file.getAbsolutePath());
 			MessageDialog.openError(getShell(), title, message);
 			return;
 		}
 
 		if (file.exists() && !file.canWrite()) {
-			String title = RdtDebugUiMessages.getString("EvaluationExpressionsPreferencePage.export.error.title"); //$NON-NLS-1$
-			String message = RdtDebugUiMessages.getFormattedString("EvaluationExpressionsPreferencePage.export.error.canNotWrite", file.getAbsolutePath()); //$NON-NLS-1$
+			String title = RdtDebugUiMessages.EvaluationExpressionsPreferencePage_export_error_title;
+			String message = RdtDebugUiMessages.getFormattedString(RdtDebugUiMessages.EvaluationExpressionsPreferencePage_export_error_canNotWrite, file.getAbsolutePath());
 			MessageDialog.openError(getShell(), title, message);
 			return;
 		}
@@ -536,8 +536,8 @@ public class EvaluationExpressionsPreferencePage extends PreferencePage implemen
 	}
 
 	private boolean confirmOverwrite(File file) {
-		return MessageDialog.openQuestion(getShell(), RdtDebugUiMessages.getString("EvaluationExpressionsPreferencePage.export.exists.title"), //$NON-NLS-1$
-				RdtDebugUiMessages.getFormattedString("EvaluationExpressionsPreferencePage.export.exists.message", file.getAbsolutePath())); //$NON-NLS-1$
+		return MessageDialog.openQuestion(getShell(), RdtDebugUiMessages.EvaluationExpressionsPreferencePage_export_exists_title,
+				RdtDebugUiMessages.getFormattedString(RdtDebugUiMessages.EvaluationExpressionsPreferencePage_export_exists_message, file.getAbsolutePath()));
 	}
 
 	private void remove() {
@@ -552,7 +552,7 @@ public class EvaluationExpressionsPreferencePage extends PreferencePage implemen
 
 	public void setVisible(boolean visible) {
 		super.setVisible(visible);
-		if (visible) setTitle(RdtDebugUiMessages.getString("EvaluationExpressionsPreferencePage.title")); //$NON-NLS-1$
+		if (visible) setTitle(RdtDebugUiMessages.EvaluationExpressionsPreferencePage_title);
 	}
 
 	/*

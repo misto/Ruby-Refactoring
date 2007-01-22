@@ -110,7 +110,7 @@ public class RubyInterpreterPreferencePage extends PreferencePage implements IWo
 
 		addButton = new Button(buttons, SWT.PUSH);
 		addButton.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
-		addButton.setText(RdtDebugUiMessages.getString("RubyInterpreterPreferencePage.addButton.label")); //$NON-NLS-1$
+		addButton.setText(RdtDebugUiMessages.RubyInterpreterPreferencePage_addButton_label);
 		addButton.addListener(SWT.Selection, new Listener() {
 			public void handleEvent(Event evt) {
 				addInterpreter();
@@ -119,7 +119,7 @@ public class RubyInterpreterPreferencePage extends PreferencePage implements IWo
 
 		editButton = new Button(buttons, SWT.PUSH);
 		editButton.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
-		editButton.setText(RdtDebugUiMessages.getString("RubyInterpreterPreferencePage.editButton.label")); //$NON-NLS-1$
+		editButton.setText(RdtDebugUiMessages.RubyInterpreterPreferencePage_editButton_label);
 		editButton.addListener(SWT.Selection, new Listener() {
 			public void handleEvent(Event evt) {
 				editInterpreter();
@@ -128,7 +128,7 @@ public class RubyInterpreterPreferencePage extends PreferencePage implements IWo
 
 		removeButton = new Button(buttons, SWT.PUSH);
 		removeButton.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
-		removeButton.setText(RdtDebugUiMessages.getString("RubyInterpreterPreferencePage.removeButton.label")); //$NON-NLS-1$
+		removeButton.setText(RdtDebugUiMessages.RubyInterpreterPreferencePage_removeButton_label);
 		removeButton.addListener(SWT.Selection, new Listener() {
 			public void handleEvent(Event evt) {
 				removeInterpreter();
@@ -170,11 +170,11 @@ public class RubyInterpreterPreferencePage extends PreferencePage implements IWo
 		table.setLinesVisible(false);
 
 		TableColumn column = new TableColumn(table, SWT.NULL);
-		column.setText(RdtDebugUiMessages.getString("RubyInterpreterPreferencePage.rubyInterpreterTable.interpreterName")); //$NON-NLS-1$
+		column.setText(RdtDebugUiMessages.RubyInterpreterPreferencePage_rubyInterpreterTable_interpreterName);
 		column.setWidth(125);
 
 		column = new TableColumn(table, SWT.NULL);
-		column.setText(RdtDebugUiMessages.getString("RubyInterpreterPreferencePage.rubyInterpreterTable.interpreterPath")); //$NON-NLS-1$
+		column.setText(RdtDebugUiMessages.RubyInterpreterPreferencePage_rubyInterpreterTable_interpreterPath);
 		column.setWidth(350);
 
 		return table;

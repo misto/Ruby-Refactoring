@@ -20,7 +20,6 @@ public class RubyVMMessages extends NLS {
 	public static String InstalledJREsBlock_8;
 	public static String JREsUpdater_0;
 	public static String addVMDialog_pickJRERootDialog_message;
-
 	public static String VMLibraryBlock_7;
 	public static String VMLibraryBlock_6;
 	public static String VMLibraryBlock_4;

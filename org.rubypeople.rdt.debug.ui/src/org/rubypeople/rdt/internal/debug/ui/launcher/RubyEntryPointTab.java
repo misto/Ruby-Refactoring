@@ -37,9 +37,9 @@ public class RubyEntryPointTab extends AbstractLaunchConfigurationTab {
 	public void createControl(Composite parent) {
 		Composite composite = createPageRoot(parent);
 
-		new Label(composite, SWT.NONE).setText(RdtDebugUiMessages.getString("LaunchConfigurationTab.RubyEntryPoint.projectLabel"));
+		new Label(composite, SWT.NONE).setText(RdtDebugUiMessages.LaunchConfigurationTab_RubyEntryPoint_projectLabel);
 		projectSelector = new RubyProjectSelector(composite);
-		projectSelector.setBrowseDialogMessage(RdtDebugUiMessages.getString("LaunchConfigurationTab.RubyEntryPoint.projectSelectorMessage"));
+		projectSelector.setBrowseDialogMessage(RdtDebugUiMessages.LaunchConfigurationTab_RubyEntryPoint_projectSelectorMessage);
 		projectSelector.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
 		projectSelector.addModifyListener(new ModifyListener() {
 			public void modifyText(ModifyEvent evt) {
@@ -47,9 +47,9 @@ public class RubyEntryPointTab extends AbstractLaunchConfigurationTab {
 			}
 		});
 
-		new Label(composite, SWT.NONE).setText(RdtDebugUiMessages.getString("LaunchConfigurationTab.RubyEntryPoint.fileLabel"));
+		new Label(composite, SWT.NONE).setText(RdtDebugUiMessages.LaunchConfigurationTab_RubyEntryPoint_fileLabel);
 		fileSelector = new RubyFileSelector(composite, projectSelector);
-		fileSelector.setBrowseDialogMessage(RdtDebugUiMessages.getString("LaunchConfigurationTab.RubyEntryPoint.fileSelectorMessage"));
+		fileSelector.setBrowseDialogMessage(RdtDebugUiMessages.LaunchConfigurationTab_RubyEntryPoint_fileSelectorMessage);
 		fileSelector.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
 		fileSelector.addModifyListener(new ModifyListener() {
 			public void modifyText(ModifyEvent evt) {
@@ -104,7 +104,7 @@ public class RubyEntryPointTab extends AbstractLaunchConfigurationTab {
 	}
 
 	public String getName() {
-		return RdtDebugUiMessages.getString("LaunchConfigurationTab.RubyEntryPoint.name");
+		return RdtDebugUiMessages.LaunchConfigurationTab_RubyEntryPoint_name;
 	}
 
 	public boolean isValid(ILaunchConfiguration launchConfig) {
@@ -112,13 +112,13 @@ public class RubyEntryPointTab extends AbstractLaunchConfigurationTab {
 				
 			String projectName = launchConfig.getAttribute(RubyLaunchConfigurationAttribute.PROJECT_NAME, "");
 			if (projectName.length() == 0) {
-				setErrorMessage(RdtDebugUiMessages.getString("LaunchConfigurationTab.RubyEntryPoint.invalidProjectSelectionMessage"));
+				setErrorMessage(RdtDebugUiMessages.LaunchConfigurationTab_RubyEntryPoint_invalidProjectSelectionMessage);
 				return false;
 			}
 
 			String fileName = launchConfig.getAttribute(RubyLaunchConfigurationAttribute.FILE_NAME, "");
 			if (fileName.length() == 0) {
-				setErrorMessage(RdtDebugUiMessages.getString("LaunchConfigurationTab.RubyEntryPoint.invalidFileSelectionMessage"));
+				setErrorMessage(RdtDebugUiMessages.LaunchConfigurationTab_RubyEntryPoint_invalidFileSelectionMessage);
 				return false;
 			}
 		} catch (CoreException e) {

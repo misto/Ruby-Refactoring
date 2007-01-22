@@ -80,15 +80,13 @@ public class RubyEnvironmentTab extends AbstractLaunchConfigurationTab {
 
 		TabItem loadPathTab = new TabItem(tabFolder, SWT.NONE, 0);
 		loadPathTab
-				.setText(RdtDebugUiMessages
-						.getString("LaunchConfigurationTab.RubyEnvironment.loadPathTab.label"));
+				.setText(RdtDebugUiMessages.LaunchConfigurationTab_RubyEnvironment_loadPathTab_label);
 		loadPathTab.setControl(loadPathComposite);
 		loadPathTab.setData(loadPathListViewer);
 
 		loadPathDefaultButton = new Button(loadPathComposite, SWT.CHECK);
 		loadPathDefaultButton
-				.setText(RdtDebugUiMessages
-						.getString("LaunchConfigurationTab.RubyEnvironment.loadPathDefaultButton.label"));
+				.setText(RdtDebugUiMessages.LaunchConfigurationTab_RubyEnvironment_loadPathDefaultButton_label);
 		loadPathDefaultButton.setLayoutData(new GridData(
 				GridData.HORIZONTAL_ALIGN_BEGINNING));
 		loadPathDefaultButton
@@ -135,14 +133,12 @@ public class RubyEnvironmentTab extends AbstractLaunchConfigurationTab {
 
 		Button interpreterAddButton = new Button(interpreterComposite, SWT.PUSH);
 		interpreterAddButton
-				.setText(RdtDebugUiMessages
-						.getString("LaunchConfigurationTab.RubyEnvironment.interpreterAddButton.label"));
+				.setText(RdtDebugUiMessages.LaunchConfigurationTab_RubyEnvironment_interpreterAddButton_label);
 		interpreterAddButton.addSelectionListener(new AddInterpreterSelectionAdapter(interpreterCombo, getShell()));
 
 		TabItem interpreterTab = new TabItem(tabFolder, SWT.NONE);
 		interpreterTab
-				.setText(RdtDebugUiMessages
-						.getString("LaunchConfigurationTab.RubyEnvironment.interpreterTab.label"));
+				.setText(RdtDebugUiMessages.LaunchConfigurationTab_RubyEnvironment_interpreterTab_label);
 		interpreterTab.setControl(interpreterComposite);
 	}
 
@@ -199,8 +195,7 @@ public class RubyEnvironmentTab extends AbstractLaunchConfigurationTab {
 	}
 
 	public void setDefaults(ILaunchConfigurationWorkingCopy configuration) {
-		IVMInstall defaultInterpreter = RubyRuntime.getDefault()
-				.getDefaultVMInstall();
+		IVMInstall defaultInterpreter = RubyRuntime.getDefaultVMInstall();
 		if (defaultInterpreter != null) {
 			configuration.setAttribute(
 					RubyLaunchConfigurationAttribute.SELECTED_INTERPRETER,
@@ -324,8 +319,7 @@ public class RubyEnvironmentTab extends AbstractLaunchConfigurationTab {
 	}
 
 	public String getName() {
-		return RdtDebugUiMessages
-				.getString("LaunchConfigurationTab.RubyEnvironment.name");
+		return RdtDebugUiMessages.LaunchConfigurationTab_RubyEnvironment_name;
 	}
 
 	public boolean isValid(ILaunchConfiguration launchConfig) {
@@ -333,8 +327,7 @@ public class RubyEnvironmentTab extends AbstractLaunchConfigurationTab {
 			String selectedInterpreter = launchConfig.getAttribute(
 					RubyLaunchConfigurationAttribute.SELECTED_INTERPRETER, "");
 			if (selectedInterpreter.length() == 0) {
-				setErrorMessage(RdtDebugUiMessages
-						.getString("LaunchConfigurationTab.RubyEnvironment.interpreter_not_selected_error_message"));
+				setErrorMessage(RdtDebugUiMessages.LaunchConfigurationTab_RubyEnvironment_interpreter_not_selected_error_message);
 				return false;
 			}
 		} catch (CoreException e) {

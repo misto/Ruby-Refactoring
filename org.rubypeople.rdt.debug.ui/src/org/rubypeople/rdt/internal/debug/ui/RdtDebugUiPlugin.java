@@ -51,7 +51,7 @@ public class RdtDebugUiPlugin extends AbstractUIPlugin implements RdtDebugUiCons
 	}
 
 	public static void log(Throwable e) {
-		log(new Status(IStatus.ERROR, PLUGIN_ID, IStatus.ERROR, RdtDebugUiMessages.getString("RdtDebugUiPlugin.internalErrorOccurred"), e)); //$NON-NLS-1$
+		log(new Status(IStatus.ERROR, PLUGIN_ID, IStatus.ERROR, RdtDebugUiMessages.RdtDebugUiPlugin_internalErrorOccurred, e));
 	}
 	
 	public void start(BundleContext context) throws Exception {

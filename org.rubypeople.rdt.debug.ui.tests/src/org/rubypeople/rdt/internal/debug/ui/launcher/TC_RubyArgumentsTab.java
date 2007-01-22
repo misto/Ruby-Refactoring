@@ -21,7 +21,7 @@ public class TC_RubyArgumentsTab extends TestCase {
 		String errorMessage = tab.getErrorMessage();
 		assertNull("There should be no error message.", errorMessage);
 		assertTrue("The tab is not valid when the configuration is completely empty.", !tab.isValid(configuration));
-		errorMessage = RdtDebugUiMessages.getString("LaunchConfigurationTab.RubyArguments.working_dir_error_message");
+		errorMessage = RdtDebugUiMessages.LaunchConfigurationTab_RubyArguments_working_dir_error_message;
 		assertEquals("The tab should set the error message for invalid working directory.", errorMessage, tab.getErrorMessage());
 
 		configuration.setAttribute(RubyLaunchConfigurationAttribute.WORKING_DIRECTORY, "aValidDirectory");

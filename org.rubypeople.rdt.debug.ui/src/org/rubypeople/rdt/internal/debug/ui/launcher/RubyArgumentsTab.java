@@ -36,9 +36,9 @@ public class RubyArgumentsTab extends AbstractLaunchConfigurationTab {
 	public void createControl(Composite parent) {
 		Composite composite = createPageRoot(parent);
 
-		new Label(composite, SWT.NONE).setText(RdtDebugUiMessages.getString("LaunchConfigurationTab.RubyArguments.working_dir"));
+		new Label(composite, SWT.NONE).setText(RdtDebugUiMessages.LaunchConfigurationTab_RubyArguments_working_dir);
 		workingDirectorySelector = new DirectorySelector(composite);
-		workingDirectorySelector.setBrowseDialogMessage(RdtDebugUiMessages.getString("LaunchConfigurationTab.RubyArguments.working_dir_browser_message"));
+		workingDirectorySelector.setBrowseDialogMessage(RdtDebugUiMessages.LaunchConfigurationTab_RubyArguments_working_dir_browser_message);
 		workingDirectorySelector.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
 		workingDirectorySelector.addModifyListener(new ModifyListener() {
 			public void modifyText(ModifyEvent e) {
@@ -56,12 +56,12 @@ public class RubyArgumentsTab extends AbstractLaunchConfigurationTab {
 				setUseDefaultWorkingDirectory(((Button) e.getSource()).getSelection());
 			}
 		});
-		new Label(defaultWorkingDirectoryComposite, SWT.NONE).setText(RdtDebugUiMessages.getString("LaunchConfigurationTab.RubyArguments.working_dir_use_default_message"));
+		new Label(defaultWorkingDirectoryComposite, SWT.NONE).setText(RdtDebugUiMessages.LaunchConfigurationTab_RubyArguments_working_dir_use_default_message);
 		defaultWorkingDirectoryComposite.pack();
 
 		Label verticalSpacer = new Label(composite, SWT.NONE);
 
-		new Label(composite, SWT.NONE).setText(RdtDebugUiMessages.getString("LaunchConfigurationTab.RubyArguments.interpreter_args_box_title"));
+		new Label(composite, SWT.NONE).setText(RdtDebugUiMessages.LaunchConfigurationTab_RubyArguments_interpreter_args_box_title);
 		interpreterArgsText = new Text(composite, SWT.MULTI | SWT.V_SCROLL | SWT.BORDER);
 		interpreterArgsText.setLayoutData(new GridData(GridData.FILL_BOTH));
 		interpreterArgsText.addModifyListener(new ModifyListener() {
@@ -70,7 +70,7 @@ public class RubyArgumentsTab extends AbstractLaunchConfigurationTab {
 			}
 		});
 		
-		new Label(composite, SWT.NONE).setText(RdtDebugUiMessages.getString("LaunchConfigurationTab.RubyArguments.program_args_box_title"));
+		new Label(composite, SWT.NONE).setText(RdtDebugUiMessages.LaunchConfigurationTab_RubyArguments_program_args_box_title);
 		programArgsText = new Text(composite, SWT.MULTI | SWT.V_SCROLL | SWT.BORDER);
 		programArgsText.setLayoutData(new GridData(GridData.FILL_BOTH));
 		programArgsText.addModifyListener(new ModifyListener() {
@@ -133,14 +133,14 @@ public class RubyArgumentsTab extends AbstractLaunchConfigurationTab {
 	}
 
 	public String getName() {
-		return RdtDebugUiMessages.getString("LaunchConfigurationTab.RubyArguments.name");
+		return RdtDebugUiMessages.LaunchConfigurationTab_RubyArguments_name;
 	}
 
 	public boolean isValid(ILaunchConfiguration launchConfig) {
 		try {
 			String workingDirectory = launchConfig.getAttribute(RubyLaunchConfigurationAttribute.WORKING_DIRECTORY, "");
 			if (workingDirectory.length() == 0) {
-				setErrorMessage(RdtDebugUiMessages.getString("LaunchConfigurationTab.RubyArguments.working_dir_error_message"));
+				setErrorMessage(RdtDebugUiMessages.LaunchConfigurationTab_RubyArguments_working_dir_error_message);
 				return false;
 			}
 		} catch (CoreException e) {

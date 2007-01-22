@@ -94,7 +94,7 @@ public class RubySourceLocator implements IPersistableSourceLocator, ISourcePres
 			return new ExternalRubyFileEditorInput(filesystemFile);
 		}
 		
-		RdtDebugCorePlugin.log(IStatus.INFO, RdtDebugUiMessages.getFormattedString("RdtDebugUiPlugin.couldNotOpenFile", sourceElement.getFilename())); //$NON-NLS-1$
+		RdtDebugCorePlugin.log(IStatus.INFO, RdtDebugUiMessages.getFormattedString(RdtDebugUiMessages.RdtDebugUiPlugin_couldNotOpenFile, sourceElement.getFilename()));
 		return null;
 		
 	}

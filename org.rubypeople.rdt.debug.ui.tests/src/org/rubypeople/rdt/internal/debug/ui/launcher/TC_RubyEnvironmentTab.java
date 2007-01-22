@@ -21,7 +21,7 @@ public class TC_RubyEnvironmentTab extends TestCase {
 		String errorMessage = tab.getErrorMessage();
 		assertNull("There should be no error message.", errorMessage);
 		assertTrue("The tab is not valid when the configuration is completely empty.", !tab.isValid(configuration));
-		errorMessage = RdtDebugUiMessages.getString("LaunchConfigurationTab.RubyEnvironment.interpreter_not_selected_error_message");
+		errorMessage = RdtDebugUiMessages.LaunchConfigurationTab_RubyEnvironment_interpreter_not_selected_error_message;
 		assertEquals("The tab should set the error message for no interpreter selected.", errorMessage, tab.getErrorMessage());
 
 		configuration.setAttribute(RubyLaunchConfigurationAttribute.SELECTED_INTERPRETER, "anInterpreter");

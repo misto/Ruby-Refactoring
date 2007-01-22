@@ -45,8 +45,8 @@ public class ModifyCatchpointAction implements IViewActionDelegate,
 	 */
 	public void run(IAction action) {
 		final ModifyCatchpointDialog dialog = new ModifyCatchpointDialog(RdtDebugUiPlugin.getActiveWorkbenchWindow().getShell()) ;
-		dialog.setTitle(RdtDebugUiMessages.getString("ModifyCatchpointDialog.title")); //$NON-NLS-1$
-		dialog.setMessage(RdtDebugUiMessages.getString("ModifyCatchpointDialog.message")); //$NON-NLS-1$
+		dialog.setTitle(RdtDebugUiMessages.ModifyCatchpointDialog_title); 
+		dialog.setMessage(RdtDebugUiMessages.ModifyCatchpointDialog_message);
 		int result = dialog.open();
 		
 		if (result == Window.CANCEL) {

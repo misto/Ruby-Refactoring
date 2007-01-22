@@ -59,8 +59,8 @@ public class RubyApplicationShortcut implements ILaunchShortcut {
 		} catch (CoreException e) {
 			log(e);
 			IStatus status= e.getStatus();
-			String title = RdtDebugUiMessages.getString("Dialog.launchErrorTitle") ;
-			String message = RdtDebugUiMessages.getString("Dialog.launchErrorMessage") ;
+			String title = RdtDebugUiMessages.Dialog_launchErrorTitle;
+			String message = RdtDebugUiMessages.Dialog_launchErrorMessage;
 			if (status != null) {
 				ErrorDialog.openError(RdtDebugUiPlugin.getActiveWorkbenchWindow().getShell(), title, message, status);
 			}
@@ -113,7 +113,7 @@ public class RubyApplicationShortcut implements ILaunchShortcut {
 		case 1:
 			return (ILaunchConfiguration) candidateConfigs.get(0);
 		default:
-			Status status = new Status(Status.WARNING, RdtDebugUiPlugin.PLUGIN_ID, 0, RdtDebugUiMessages.getString("LaunchConfigurationShortcut.Ruby.multipleConfigurationsError"), null);
+			Status status = new Status(Status.WARNING, RdtDebugUiPlugin.PLUGIN_ID, 0, RdtDebugUiMessages.LaunchConfigurationShortcut_Ruby_multipleConfigurationsError, null);
 			throw new CoreException(status);
 		}
 	}
@@ -157,7 +157,7 @@ public class RubyApplicationShortcut implements ILaunchShortcut {
 	}
 
 	protected void showNoInterpreterDialog() {
-		MessageDialog.openInformation(RubyPlugin.getActiveWorkbenchShell(), RdtDebugUiMessages.getString("Dialog.launchWithoutSelectedInterpreter.title"), RdtDebugUiMessages.getString("Dialog.launchWithoutSelectedInterpreter"));
+		MessageDialog.openInformation(RubyPlugin.getActiveWorkbenchShell(), RdtDebugUiMessages.Dialog_launchWithoutSelectedInterpreter_title, RdtDebugUiMessages.Dialog_launchWithoutSelectedInterpreter);
 	}
 
 	protected static String getDefaultWorkingDirectory(IProject project) {

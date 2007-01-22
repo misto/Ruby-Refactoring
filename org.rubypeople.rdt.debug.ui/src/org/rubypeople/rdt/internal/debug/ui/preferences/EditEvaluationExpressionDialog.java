@@ -50,17 +50,17 @@ public class EditEvaluationExpressionDialog extends StatusDialog {
 		composite.setLayout(layout);
         composite.setLayoutData(new GridData(GridData.FILL_BOTH)) ;
 
-        new Label(composite, SWT.NONE).setText(RdtDebugUiMessages.getString("EditEvaluationExpression.name.label")); //$NON-NLS-1$
+        new Label(composite, SWT.NONE).setText(RdtDebugUiMessages.EditEvaluationExpression_name_label);
         txtName = new Text(composite, SWT.SINGLE | SWT.BORDER);
         txtName.setLayoutData(new GridData(GridData.FILL_BOTH));   
         txtName.setText(evaluationExpression.getName());
 		
-        new Label(composite, SWT.NONE).setText(RdtDebugUiMessages.getString("EditEvaluationExpression.description.label")); //$NON-NLS-1$
+        new Label(composite, SWT.NONE).setText(RdtDebugUiMessages.EditEvaluationExpression_description_label);
         txtDescription = new Text(composite, SWT.SINGLE | SWT.BORDER);
         txtDescription.setLayoutData(new GridData(GridData.FILL_BOTH)) ;
         txtDescription.setText(evaluationExpression.getDescription()) ;
         
-        new Label(composite, SWT.NONE).setText(RdtDebugUiMessages.getString("EditEvaluationExpression.expression.label")); //$NON-NLS-1$
+        new Label(composite, SWT.NONE).setText(RdtDebugUiMessages.EditEvaluationExpression_expression_label);
         txtExpression = new Text(composite, SWT.SINGLE | SWT.BORDER);
         txtExpression.setLayoutData(new GridData(GridData.FILL_BOTH)) ;
         txtExpression.setText(evaluationExpression.getExpression()) ;
