@@ -1,6 +1,7 @@
 package org.rubypeople.rdt.internal.ui.text.ruby.hover;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
@@ -20,6 +21,9 @@ import org.rubypeople.rdt.ui.extensions.ITextHoverProvider;
 public class RiDocHoverProvider implements ITextHoverProvider {
 	public String getHoverInfo(IEditorInput input, ITextViewer textViewer, IRegion hoverRegion){
     	IPath riPath = new Path( RubyPlugin.getDefault().getPreferenceStore().getString( PreferenceConstants.RI_PATH ) );
+    	File ri = riPath.toFile();
+    	if (!ri.exists() || !ri.isFile()) return "RI executable doesn't exist at given path";
+    	
     	List<String> args = new ArrayList<String>();
     	args.add(0, riPath.toString());
     	// these will get rid of some of the overhead formatting
