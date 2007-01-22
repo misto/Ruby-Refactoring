@@ -112,7 +112,7 @@ public abstract class AbstractRubyEditorTextHover implements IRubyEditorTextHove
 			return null;
 		
 		String keySequence= sequences[0].format();
-		return RubyHoverMessages.getFormattedString("RubyTextHover.makeStickyHint", keySequence); //$NON-NLS-1$
+		return RubyHoverMessages.getFormattedString(RubyHoverMessages.RubyTextHover_makeStickyHint, keySequence);
 	}
 
 	/**
