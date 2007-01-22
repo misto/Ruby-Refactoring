@@ -202,6 +202,7 @@ public class RIView extends ViewPart implements RdocListener {
     public void dispose() {
         descriptionUpdater.requestStop();
         RubyRuntime.removeVMInstallChangedListener(runtimeListener);
+        RDocUtility.removeRdocListener(this);
         super.dispose();
     }
         
