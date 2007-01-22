@@ -62,7 +62,7 @@ public class RubyProjectPropertyPage extends PropertyPage implements IWorkbenchP
 	
 	protected Control createClosedProjectPageContents(Composite parent) {
 		Label label = new Label(parent, SWT.NONE);
-		label.setText(RubyUIMessages.getString("RubyProjectPropertyPage.rubyProjectClosed")); //$NON-NLS-1$
+		label.setText(RubyUIMessages.RubyProjectPropertyPage_rubyProjectClosed);
 		
 		return label;
 	}
@@ -79,7 +79,7 @@ public class RubyProjectPropertyPage extends PropertyPage implements IWorkbenchP
 
 		projectsPage = new RubyProjectLibraryPage(workingProject);		
 		TabItem tabItem = new TabItem(tabFolder, SWT.NONE);
-		tabItem.setText(RubyUIMessages.getString("RubyProjectLibraryPage.tabName")); //$NON-NLS-1$
+		tabItem.setText(RubyUIMessages.RubyProjectLibraryPage_tabName);
 //		tabItem.setData(projectsPage);
 		tabItem.setControl(projectsPage.getControl(tabFolder));
 
@@ -89,7 +89,7 @@ public class RubyProjectPropertyPage extends PropertyPage implements IWorkbenchP
 		try {
 			projectsPage.getWorkingProject().save(null, true);
 		} catch (CoreException e) {
-			ExceptionHandler.handle(e, RubyUIMessages.getString("RubyProjectPropertyPage.performOkException"), RubyUIMessages.getString("RubyProjectPropertyPage.performOkExceptionDialogMessage")); //$NON-NLS-1$ //$NON-NLS-2$
+			ExceptionHandler.handle(e, RubyUIMessages.RubyProjectPropertyPage_performOkException, RubyUIMessages.RubyProjectPropertyPage_performOkExceptionDialogMessage);
 		}
 		return super.performOk();
 	}

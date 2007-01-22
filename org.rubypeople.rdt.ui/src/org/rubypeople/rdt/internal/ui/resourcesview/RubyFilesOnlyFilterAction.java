@@ -20,8 +20,8 @@ public class RubyFilesOnlyFilterAction extends ResourceNavigatorAction {
 
 
 	public RubyFilesOnlyFilterAction(IResourceNavigator navigator, boolean sortByType) {
-		super(navigator, RubyUIMessages.getString("ToggleMenuRubyFilesOnly"));
-		this.setToolTipText(RubyUIMessages.getString("ToggleMenuRubyFilesOnly.Tooltip"));
+		super(navigator, RubyUIMessages.ToggleMenuRubyFilesOnly);
+		this.setToolTipText(RubyUIMessages.ToggleMenuRubyFilesOnly_Tooltip);
 		this.setChecked(((RubyResourcesView) this.getNavigator()).isRubyFilesOnlyFilterActivated()) ;
 
 	}

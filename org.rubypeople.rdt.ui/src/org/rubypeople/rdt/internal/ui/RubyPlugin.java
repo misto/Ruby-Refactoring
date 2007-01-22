@@ -257,7 +257,7 @@ public class RubyPlugin extends AbstractUIPlugin implements IRubyColorConstants 
 	}
 
 	public static void log(Throwable e) {
-		log(new Status(IStatus.ERROR, PLUGIN_ID, IStatus.ERROR, RubyUIMessages.getString("RdtUiPlugin.internalErrorOccurred"), e)); //$NON-NLS-1$
+		log(new Status(IStatus.ERROR, PLUGIN_ID, IStatus.ERROR, RubyUIMessages.RdtUiPlugin_internalErrorOccurred, e));
 	}
 
 	public static void log(int severity, String message, Throwable e) {

@@ -168,7 +168,7 @@ public class HTML2TextReader extends SubstitutionTextReader {
 			return "\t"; //$NON-NLS-1$
 		
 		if ("li".equals(html)) //$NON-NLS-1$
-			return LINE_DELIM + RubyUIMessages.getString("HTML2TextReader.listItemPrefix"); //$NON-NLS-1$ //$NON-NLS-2$
+			return LINE_DELIM + RubyUIMessages.HTML2TextReader_listItemPrefix;
 					
 		if ("/b".equals(html)) { //$NON-NLS-1$
 			stopBold();

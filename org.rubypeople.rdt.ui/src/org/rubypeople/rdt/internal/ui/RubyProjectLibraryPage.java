@@ -49,7 +49,7 @@ public class RubyProjectLibraryPage {
 
 		TableColumn tableColumn = new TableColumn(projectsTable, SWT.NONE);
 		tableColumn.setWidth(200);
-		tableColumn.setText(RubyUIMessages.getString("RubyProjectLibraryPage.project")); //$NON-NLS-1$
+		tableColumn.setText(RubyUIMessages.RubyProjectLibraryPage_project);
 
 		CheckboxTableViewer projectsTableViewer = new CheckboxTableViewer(projectsTable);
 		projectsTableViewer.addCheckStateListener(new ICheckStateListener() {
@@ -110,7 +110,7 @@ public class RubyProjectLibraryPage {
 				if (element instanceof IProject)
 					return ((IProject) element).getName();
 
-				return RubyUIMessages.getString("RubyProjectLibraryPage.elementNotIProject"); //$NON-NLS-1$
+				return RubyUIMessages.RubyProjectLibraryPage_elementNotIProject;
 			}
 
 			public void addListener(ILabelProviderListener listener) {}

@@ -91,7 +91,7 @@ public class RDocUtility {
 
 			// If we can't find it ourselves then display an error to the user
 			if (!file.exists() || !file.isFile()) {
-				MessageDialog.openError(RubyPlugin.getActiveWorkbenchShell(), RubyUIMessages.getString("RDocPathErrorTitle"), RubyUIMessages.getString("RDocPathError")) ;
+				MessageDialog.openError(RubyPlugin.getActiveWorkbenchShell(), RubyUIMessages.RDocPathErrorTitle, RubyUIMessages.RDocPathError);
 				return;
 			}
 			
@@ -108,7 +108,7 @@ public class RDocUtility {
 			} catch (IOException e) {
 				RubyPlugin.log(e);
 				log(e.getMessage());
-				ErrorDialog.openError(RubyPlugin.getActiveWorkbenchShell(), RubyUIMessages.getString("ErrorRunningRdocTitle"), e.getMessage(), new StatusInfo(StatusInfo.ERROR, e.getMessage()));
+				ErrorDialog.openError(RubyPlugin.getActiveWorkbenchShell(), RubyUIMessages.ErrorRunningRdocTitle, e.getMessage(), new StatusInfo(StatusInfo.ERROR, e.getMessage()));
 			}
 		}
 

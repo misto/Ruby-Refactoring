@@ -274,7 +274,7 @@ class FoldingConfigurationBlock implements IPreferenceConfigurationBlock {
 		
 		if (desc == null) {
 			// safety in case there is no such descriptor
-			String message= RubyUIMessages.getString("FoldingConfigurationBlock.error.not_exist"); //$NON-NLS-1$
+			String message= RubyUIMessages.FoldingConfigurationBlock_error_not_exist;
 			RubyPlugin.log(new Status(IStatus.WARNING, RubyPlugin.getPluginId(), IStatus.OK, message, null));
 			prefs= new ErrorPreferences(message);
 		} else {
@@ -294,7 +294,7 @@ class FoldingConfigurationBlock implements IPreferenceConfigurationBlock {
 		if (control == null) {
 			control= prefs.createControl(fGroup);
 			if (control == null) {
-				String message= RubyUIMessages.getString("FoldingConfigurationBlock.info.no_preferences"); //$NON-NLS-1$
+				String message= RubyUIMessages.FoldingConfigurationBlock_info_no_preferences;
 				control= new ErrorPreferences(message).createControl(fGroup);
 			} else {
 				fProviderControls.put(id, control);

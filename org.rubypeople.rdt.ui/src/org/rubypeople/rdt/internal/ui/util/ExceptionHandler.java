@@ -68,7 +68,7 @@ public class ExceptionHandler implements JDTOriginally{
 			msg.write("\n\n");
 		}
 		if (exceptionMessage == null || exceptionMessage.length() == 0)
-			msg.write(RubyUIMessages.getString("ExceptionDialog.seeErrorLogMessage"));
+			msg.write(RubyUIMessages.ExceptionDialog_seeErrorLogMessage);
 		else
 			msg.write(exceptionMessage);
 		MessageDialog.openError(shell, title, msg.toString());			

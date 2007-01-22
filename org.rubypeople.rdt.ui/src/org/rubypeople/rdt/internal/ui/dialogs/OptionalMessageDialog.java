@@ -35,7 +35,7 @@ import org.rubypeople.rdt.internal.ui.RubyUIMessages;
 public class OptionalMessageDialog extends MessageDialog {
 	
 	// String constants for widgets
-	private static final String CHECKBOX_TEXT= RubyUIMessages.getString("OptionalMessageDialog.dontShowAgain"); //$NON-NLS-1$
+	private static final String CHECKBOX_TEXT= RubyUIMessages.OptionalMessageDialog_dontShowAgain;
 
 	// Dialog store id constants
 	private static final String STORE_ID= "OptionalMessageDialog.hide."; //$NON-NLS-1$

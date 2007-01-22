@@ -86,19 +86,17 @@ public class RubySearchQuery implements ISearchQuery, ISymbolTypes {
 		String args[] = new String[2];
 		switch (fSymbolType) {
 		case METHOD_SYMBOL:
-			args[0] = RubyUIMessages
-					.getString("RubySearch.SearchForMethodSymbol"); //$NON-NLS-1$
+			args[0] = RubyUIMessages.RubySearch_SearchForMethodSymbol;
 			break;
 		case CLASS_SYMBOL:
-			args[0] = RubyUIMessages
-					.getString("RubySearch.SearchForClassSymbol"); //$NON-NLS-1$
+			args[0] = RubyUIMessages.RubySearch_SearchForClassSymbol;
 			break;
 		default:
 			break;
 		}
 		args[1] = fSearchString;
 		return RubyUIMessages
-				.getFormattedString("RubySearch.ResultLabel", args); //$NON-NLS-1$ 
+				.getFormattedString(RubyUIMessages.RubySearch_ResultLabel, args);
 	}
 
 }

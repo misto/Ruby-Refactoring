@@ -31,7 +31,7 @@ public class NewProjectCreationWizard extends BasicNewResourceWizard implements 
 	
 	public NewProjectCreationWizard() {
 		setDefaultPageImageDescriptor(RubyPluginImages.DESC_WIZBAN_NEWJPRJ);
-        setWindowTitle(RubyUIMessages.getString("NewProjectCreationWizard.windowTitle"));
+        setWindowTitle(RubyUIMessages.NewProjectCreationWizard_windowTitle);
 	}
 
 	public boolean performFinish() {
@@ -54,7 +54,7 @@ public class NewProjectCreationWizard extends BasicNewResourceWizard implements 
 		return new IRunnableWithProgress() {
 			public void run(IProgressMonitor monitor) throws InvocationTargetException, InterruptedException {
 				int remainingWorkUnits = 10;
-				monitor.beginTask(RubyUIMessages.getString("NewProjectCreationWizard.projectCreationMessage"), remainingWorkUnits);
+				monitor.beginTask(RubyUIMessages.NewProjectCreationWizard_projectCreationMessage, remainingWorkUnits);
 
 				IWorkspace workspace = RubyPlugin.getWorkspace();
 				newProject = projectPage.getProjectHandle();
@@ -89,9 +89,9 @@ public class NewProjectCreationWizard extends BasicNewResourceWizard implements 
 	public void addPages() {
 		super.addPages();
 
-		projectPage = new WizardNewProjectCreationPage(RubyUIMessages.getString("WizardNewProjectCreationPage.pageName"));
-		projectPage.setTitle(RubyUIMessages.getString("WizardNewProjectCreationPage.pageTitle"));
-		projectPage.setDescription(RubyUIMessages.getString("WizardNewProjectCreationPage.pageDescription"));
+		projectPage = new WizardNewProjectCreationPage(RubyUIMessages.WizardNewProjectCreationPage_pageName);
+		projectPage.setTitle(RubyUIMessages.WizardNewProjectCreationPage_pageTitle);
+		projectPage.setDescription(RubyUIMessages.WizardNewProjectCreationPage_pageDescription);
 		projectPage.setInitialProjectName(this.getDefaultProjectName()) ;
 		projectPage.setImageDescriptor(RubyPluginImages.DESC_WIZBAN_NEWJPRJ);
         

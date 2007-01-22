@@ -15,7 +15,7 @@ public class RubyBasePreferencePage extends RubyAbstractPreferencePage implement
 
 	public RubyBasePreferencePage() {
 		
-		setDescription(RubyUIMessages.getString("RubyBasePreferencePage.label")); //$NON-NLS-1$
+		setDescription(RubyUIMessages.RubyBasePreferencePage_label);
 		setPreferenceStore(RubyPlugin.getDefault().getPreferenceStore());
 		fOverlayStore = createOverlayStore();
 	}

@@ -513,15 +513,13 @@ public class RubySearchPage extends DialogPage implements ISearchPage, ISymbolTy
 
         private Control createSearchFor(Composite parent) {
             Group result = new Group(parent, SWT.NONE);
-            result.setText(RubyUIMessages.getString("RubySearchPage.SearchForGroupLabel")); //$NON-NLS-1$
+            result.setText(RubyUIMessages.RubySearchPage_SearchForGroupLabel);
             result.setLayout(new GridLayout(2, true));
 
             fSearchFor = new Button[2];
-            fSearchFor[0] = createButton(result, RubyUIMessages
-                    .getString("RubySearch.SearchForClassSymbol"), CLASS_SYMBOL); //$NON-NLS-1$
+            fSearchFor[0] = createButton(result, RubyUIMessages.RubySearch_SearchForClassSymbol, CLASS_SYMBOL);
             fSearchFor[0].setSelection(true);
-            fSearchFor[1] = createButton(result, RubyUIMessages
-                    .getString("RubySearch.SearchForMethodSymbol"), METHOD_SYMBOL); //$NON-NLS-1$
+            fSearchFor[1] = createButton(result, RubyUIMessages.RubySearch_SearchForMethodSymbol, METHOD_SYMBOL);
 
             return result;
         }

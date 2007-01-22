@@ -203,7 +203,7 @@ public class RubyAnnotationHover implements IAnnotationHover {
 	private String formatMultipleMessages(List messages) {
 		StringBuffer buffer = new StringBuffer();
 		HTMLPrinter.addPageProlog(buffer);
-		HTMLPrinter.addParagraph(buffer, HTMLPrinter.convertToHTMLContent(RubyUIMessages.getString("RubyAnnotationHover.multipleMarkersAtThisLine"))); //$NON-NLS-1$
+		HTMLPrinter.addParagraph(buffer, HTMLPrinter.convertToHTMLContent(RubyUIMessages.RubyAnnotationHover_multipleMarkersAtThisLine));
 
 		HTMLPrinter.startBulletList(buffer);
 		Iterator e = messages.iterator();
