@@ -15,7 +15,7 @@ package org.rubypeople.rdt.internal.core.builder;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
-import java.io.StringReader;
+import java.io.UnsupportedEncodingException;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.CoreException;
@@ -42,17 +42,24 @@ public final class RubyCodeAnalyzer implements SingleFileCompiler {
     }
 
     public void compileFile(IFile file) throws CoreException {
-        Reader reader = new InputStreamReader(file.getContents());
+        Reader reader = null;
+		try {
+			reader = new InputStreamReader(file.getContents(), file.getCharset());
+		} catch (UnsupportedEncodingException e1) {
+			RubyCore.log(e1);
+			return;
+		}
         String contents = readContents(reader);
         markerManager.removeProblemsAndTasksFor(file);
         try {
-            Node rootNode = parser.parse(file, new StringReader(contents));
+            Node rootNode = parser.parse(file, reader);
             if (rootNode == null) return;            
 			RubyLintVisitor visitor = new RubyLintVisitor(contents, new ProblemRequestorMarkerManager(file, markerManager));
             rootNode.accept(visitor);
             indexUpdater.update(file, rootNode, true);
         } catch (SyntaxException e) {
-            markerManager.createSyntaxError(file, e);
+            // Should we really put a marker here? I think the normal parsing process will create syntax markers just fine
+            //markerManager.createSyntaxError(file, e);
         } finally {
             IoUtils.closeQuietly(reader);
         }
