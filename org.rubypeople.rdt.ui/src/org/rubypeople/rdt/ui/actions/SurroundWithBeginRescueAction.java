@@ -41,7 +41,7 @@ public class SurroundWithBeginRescueAction extends SelectionDispatchAction {
     public SurroundWithBeginRescueAction(RubyEditor editor) {
         super(editor.getEditorSite());
 
-        setText(ActionMessages.getString("SurroundWithBeginRescueAction.label")); //$NON-NLS-1$
+        setText(ActionMessages.SurroundWithBeginRescueAction_label);
         fEditor = editor;
         setEnabled((fEditor != null && SelectionConverter.getInputAsRubyScript(fEditor) != null));
         PlatformUI.getWorkbench().getHelpSystem().setHelp(this,
@@ -53,12 +53,12 @@ public class SurroundWithBeginRescueAction extends SelectionDispatchAction {
             createChange(selection, new NullProgressMonitor());
         } catch (CoreException e) {
             ExceptionHandler.handle(e, getDialogTitle(),
-            		ActionMessages.getString("SurroundWithBeginRescueAction.error")); //$NON-NLS-1$
+            		ActionMessages.SurroundWithBeginRescueAction_error);
         }
     }
 
     private static String getDialogTitle() {
-    	return ActionMessages.getString("SurroundWithBeginRescueAction.dialog.title"); //$NON-NLS-1$
+    	return ActionMessages.SurroundWithBeginRescueAction_dialog_title;
     }
 
     private IFile getFile() {

@@ -1,22 +1,17 @@
 package org.rubypeople.rdt.ui.actions;
 
-import java.util.MissingResourceException;
-import java.util.ResourceBundle;
+import org.eclipse.osgi.util.NLS;
 
 public class ActionMessages {
-       private static final String BUNDLE_NAME = "org.rubypeople.rdt.ui.actions.ActionMessages"; //$NON-NLS-1$
+	private static final String BUNDLE_NAME = "org.rubypeople.rdt.ui.actions.ActionMessages"; //$NON-NLS-1$
+	
+	private ActionMessages() {}
 
-       private static final ResourceBundle RESOURCE_BUNDLE = ResourceBundle
-                       .getBundle(BUNDLE_NAME);
-
-       private ActionMessages() {
-       }
-
-       public static String getString(String key) {
-               try {
-                       return RESOURCE_BUNDLE.getString(key);
-               } catch (MissingResourceException e) {
-                       return '!' + key + '!';
-               }
-       }
+	public static String SurroundWithBeginRescueAction_label;
+	public static String SurroundWithBeginRescueAction_error;
+	public static String SurroundWithBeginRescueAction_dialog_title;
+	
+	static {
+		NLS.initializeMessages(BUNDLE_NAME, ActionMessages.class);
+	}
 }
