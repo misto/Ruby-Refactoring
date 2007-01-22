@@ -28,8 +28,6 @@ public class RubyUIMessages extends NLS {
 	public static String TypeSelectionDialog_errorTitle;
 	public static String TypeSelectionDialog_dialogMessage;
 	public static String RubyElementLabels_default_package;
-
-	
 	public static String RdtUiPlugin_internalErrorOccurred;
 	public static String RubyProjectLibraryPage_project;
 	public static String RubyProjectLibraryPage_elementNotIProject;
