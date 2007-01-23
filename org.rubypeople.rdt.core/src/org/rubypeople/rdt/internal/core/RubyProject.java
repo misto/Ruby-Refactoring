@@ -46,7 +46,6 @@ import org.eclipse.core.runtime.preferences.IScopeContext;
 import org.osgi.service.prefs.BackingStoreException;
 import org.rubypeople.rdt.core.ILoadpathContainer;
 import org.rubypeople.rdt.core.ILoadpathEntry;
-import org.rubypeople.rdt.core.IParent;
 import org.rubypeople.rdt.core.IRubyElement;
 import org.rubypeople.rdt.core.IRubyModelMarker;
 import org.rubypeople.rdt.core.IRubyModelStatus;
@@ -388,7 +387,7 @@ public class RubyProject extends Openable implements IProjectNature, IRubyElemen
 	public boolean hasChildren() {
 		return true;
 	}
-
+	
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -402,26 +401,17 @@ public class RubyProject extends Openable implements IProjectNature, IRubyElemen
 		} else {
 			className = fullyQualifiedName.substring(index + 2);
 		}
-
-		// XXX Use the imports to search the path properly, then do an
-		// exhaustive search if that fails
-		IType child = searchChildren(this, className);
-		if (child != null)
-			return child;
 		try {
-			ILoadpathEntry[] loadpaths = getResolvedLoadpath(true);
-			for (int i = 0; i < loadpaths.length; i++) {
-				ILoadpathEntry entry = loadpaths[i];
-				if (entry.getEntryKind() == ILoadpathEntry.CPE_LIBRARY) {
-					IPath path = entry.getPath();
-					SourceFolderRoot root = new ExternalSourceFolderRoot(path, this);
-					List<IRubyElement> childen = root.getChildrenOfType(IRubyElement.TYPE);
-					for (IRubyElement element : childen) {
-						if (element.isType(IRubyElement.TYPE)) {
-							IType aType = (IType) element;
-							if (aType.getElementName().equals(className)) {
-								return aType;
-							}
+			Map reverseMap = new HashMap(3);
+			ISourceFolderRoot[] roots = getAllSourceFolderRoots(reverseMap);
+			for (int i = 0; i < roots.length; i++) {
+				SourceFolderRoot root = (SourceFolderRoot) roots[i];
+				List<IRubyElement> childen = root.getChildrenOfType(IRubyElement.TYPE);
+				for (IRubyElement element : childen) {
+					if (element.isType(IRubyElement.TYPE)) {
+						IType aType = (IType) element;
+						if (aType.getElementName().equals(className)) {
+							return aType;
 						}
 					}
 				}
@@ -433,37 +423,12 @@ public class RubyProject extends Openable implements IProjectNature, IRubyElemen
 	}
 
 	/**
-	 * @param element
-	 * @param className
-	 */
-	private IType searchChildren(IRubyElement element, String className) {
-		if (element.isType(IRubyElement.TYPE)) {
-			if (element.getElementName().equals(className))
-				return (IType) element;
-		}
-		if (!(element instanceof IParent))
-			return null;
-		try {
-			IRubyElement[] children = ((IParent) element).getChildren();
-			for (int i = 0; i < children.length; i++) {
-				IRubyElement child = children[i];
-				IType type = searchChildren(child, className);
-				if (type != null)
-					return type;
-			}
-		} catch (RubyModelException e) {
-			RubyCore.log(e);
-		}
-		return null;
-	}
-
-	/**
-	 * @param project2
+	 * @param project
 	 * @return
 	 */
-	public static boolean hasRubyNature(IProject project2) {
+	public static boolean hasRubyNature(IProject project) {
 		try {
-			return project2.hasNature(RubyCore.NATURE_ID);
+			return project.hasNature(RubyCore.NATURE_ID);
 		} catch (CoreException e) {
 			// project does not exist or is not open
 		}
@@ -914,17 +879,6 @@ public class RubyProject extends Openable implements IProjectNature, IRubyElemen
 				return classpath;
 			classpath = this.readLoadpathFile(createMarkers, logProblems);
 		}
-		// extract out the output location
-		IPath outputLocation = null;
-		if (classpath != null && classpath.length > 0) {
-			ILoadpathEntry entry = classpath[classpath.length - 1];
-			// if (entry.getContentKind() == ClasspathEntry.K_OUTPUT) {
-			// outputLocation = entry.getPath();
-			// ILoadpathEntry[] copy = new ILoadpathEntry[classpath.length - 1];
-			// System.arraycopy(classpath, 0, copy, 0, copy.length);
-			// classpath = copy;
-			// }
-		}
 		if (classpath == null) {
 			return defaultLoadpath();
 		}
@@ -936,7 +890,7 @@ public class RubyProject extends Openable implements IProjectNature, IRubyElemen
 		 */
 		if (!createMarkers) {
 			perProjectInfo.rawLoadpath = classpath;
-			perProjectInfo.outputLocation = outputLocation;
+			perProjectInfo.outputLocation = null;
 		}
 		return classpath;
 	}
