@@ -18,6 +18,8 @@ import org.rubypeople.rdt.internal.core.RubyProject;
 import org.rubypeople.rdt.internal.core.RubyScript;
 import org.rubypeople.rdt.internal.core.RubyScriptElementInfo;
 import org.rubypeople.rdt.internal.core.RubyScriptStructureBuilder;
+import org.rubypeople.rdt.internal.core.SourceFolder;
+import org.rubypeople.rdt.internal.core.SourceFolderRoot;
 import org.rubypeople.rdt.internal.core.parser.RdtWarnings;
 import org.rubypeople.rdt.internal.core.parser.RubyParser;
 
@@ -104,7 +106,7 @@ public class RubyParserCmd {
         try {
             Node node = parser.parse(new ShamFile(file), new FileReader(file));
 			RubyScriptElementInfo unitInfo = new RubyScriptElementInfo() ; 
-			RubyScript script = new RubyScript(new RubyProject(), file, DefaultWorkingCopyOwner.PRIMARY ) ;
+			RubyScript script = new RubyScript(null, file, DefaultWorkingCopyOwner.PRIMARY ) ;
 			RubyScriptStructureBuilder visitor = new RubyScriptStructureBuilder(script, unitInfo, elements);
 			if (node != null) {
 				node.accept(visitor);
