@@ -1,5 +1,6 @@
 package org.rubypeople.rdt.internal.launching;
 
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -25,17 +26,30 @@ import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
 import org.eclipse.core.resources.IWorkspace;
+import org.eclipse.core.resources.IWorkspaceRunnable;
+import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.IExtensionPoint;
 import org.eclipse.core.runtime.IPath;
+import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Plugin;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.core.runtime.Preferences.IPropertyChangeListener;
+import org.eclipse.core.runtime.jobs.Job;
 import org.osgi.framework.BundleContext;
+import org.rubypeople.rdt.core.ILoadpathEntry;
+import org.rubypeople.rdt.core.IRubyProject;
 import org.rubypeople.rdt.core.RubyCore;
 import org.rubypeople.rdt.launching.IRuntimeLoadpathEntry2;
+import org.rubypeople.rdt.launching.IVMInstall;
+import org.rubypeople.rdt.launching.IVMInstallChangedListener;
+import org.rubypeople.rdt.launching.PropertyChangeEvent;
+import org.rubypeople.rdt.launching.RubyRuntime;
+import org.rubypeople.rdt.launching.VMStandin;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -44,7 +58,7 @@ import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
 
-public class LaunchingPlugin extends Plugin {
+public class LaunchingPlugin extends Plugin implements IVMInstallChangedListener, IPropertyChangeListener {
 	
 	public static final String PLUGIN_ID = "org.rubypeople.rdt.launching"; //$NON-NLS-1$
     
@@ -64,6 +78,16 @@ public class LaunchingPlugin extends Plugin {
 	 * VM.
 	 */
 	private static Map fgLibraryInfoMap = null;	
+	
+	/**
+	 * Whether changes in VM preferences are being batched. When being batched
+	 * the plug-in can ignore processing and changes.
+	 */
+	private boolean fBatchingChanges = false;
+	
+	private boolean fIgnoreVMDefPropertyChangeEvents = false;
+	private String fOldVMPrefString = EMPTY_STRING;
+	private static final String EMPTY_STRING = "";    //$NON-NLS-1$	
 	
 	public static String osDependentPath(String aPath) {
         if (Platform.getOS().equals(Platform.OS_WIN32)) {
@@ -103,16 +127,171 @@ public class LaunchingPlugin extends Plugin {
 			System.out.println(message);
 		}
 	}
+	
 	@Override
-	public void stop(BundleContext arg0) throws Exception {
-		super.stop(arg0);
-		savePluginPreferences() ;
+	public void start(BundleContext context) throws Exception {
+		super.start(context);
+		
+		RubyRuntime.addVMInstallChangedListener(this);
+	}
+	
+	@Override
+	public void stop(BundleContext context) throws Exception {
+		try {
+			RubyRuntime.removeVMInstallChangedListener(this);
+			RubyRuntime.saveVMConfiguration();
+			savePluginPreferences();
+			fgXMLParser = null;
+		} finally {
+			super.stop(context);
+		}
 	}
 
 	public static String getUniqueIdentifier() {
 		return PLUGIN_ID;
 	}
+	
+	/**
+	 * Save preferences whenever the connect timeout changes.
+	 * Process changes to the list of installed JREs.
+	 * 
+	 * @see org.eclipse.core.runtime.Preferences.IPropertyChangeListener#propertyChange(PropertyChangeEvent)
+	 */
+	public void propertyChange(org.eclipse.core.runtime.Preferences.PropertyChangeEvent event) {
+		String property = event.getProperty();
+//		if (property.equals(RubyRuntime.PREF_CONNECT_TIMEOUT)) {
+//			savePluginPreferences();
+//		} else 
+		if (property.equals(RubyRuntime.PREF_VM_XML)) {
+			if (!isIgnoreVMDefPropertyChangeEvents()) {
+				processVMPrefsChanged((String)event.getOldValue(), (String)event.getNewValue());
+			}
+		}
+	}
 
+	public void setIgnoreVMDefPropertyChangeEvents(boolean ignore) {
+		fIgnoreVMDefPropertyChangeEvents = ignore;
+	}
+
+	public boolean isIgnoreVMDefPropertyChangeEvents() {
+		return fIgnoreVMDefPropertyChangeEvents;
+	}
+	
+	/**
+	 * Check for differences between the old & new sets of installed JREs.  
+	 * Differences may include additions, deletions and changes.  Take
+	 * appropriate action for each type of difference.
+	 * 
+	 * When importing preferences, TWO propertyChange events are fired.  The first
+	 * has an old value but an empty new value.  The second has a new value, but an empty
+	 * old value.  Normal user changes to the preferences result in a single propertyChange
+	 * event, with both old and new values populated.  This method handles both types
+	 * of notification.
+	 */
+	protected void processVMPrefsChanged(String oldValue, String newValue) {
+		
+		// batch changes
+		fBatchingChanges = true;
+		VMChanges vmChanges = null;
+		try {
+
+			String oldPrefString;
+			String newPrefString;
+			
+			// If empty new value, save the old value and wait for 2nd propertyChange notification
+			if (newValue == null || newValue.equals(EMPTY_STRING)) {        
+				fOldVMPrefString = oldValue;
+				return;
+			}					
+			// An empty old value signals the second notification in the import preferences
+			// sequence.  Now that we have both old & new prefs, we can parse and compare them.
+			else if (oldValue == null || oldValue.equals(EMPTY_STRING)) {    	
+				oldPrefString = fOldVMPrefString;
+				newPrefString = newValue;
+			} 
+			// If both old & new values are present, this is a normal user change
+			else {
+				oldPrefString = oldValue;
+				newPrefString = newValue;
+			}
+			
+			vmChanges = new VMChanges();
+			RubyRuntime.addVMInstallChangedListener(vmChanges);
+			
+			// Generate the previous VMs
+			VMDefinitionsContainer oldResults = getVMDefinitions(oldPrefString);
+			
+			// Generate the current
+			VMDefinitionsContainer newResults = getVMDefinitions(newPrefString);
+			
+			// Determine the deteled VMs
+			List deleted = oldResults.getVMList();
+			List current = newResults.getValidVMList();
+			deleted.removeAll(current);
+			
+			// Dispose deleted VMs.  The 'disposeVMInstall' method fires notification of the 
+			// deletion.
+			Iterator deletedIterator = deleted.iterator();
+			while (deletedIterator.hasNext()) {
+				VMStandin deletedVMStandin = (VMStandin) deletedIterator.next();
+				deletedVMStandin.getVMInstallType().disposeVMInstall(deletedVMStandin.getId());			
+			}			
+			
+			// Fire change notification for added and changed VMs. The 'convertToRealVM'
+			// fires the appropriate notification.
+			Iterator iter = current.iterator();
+			while (iter.hasNext()) {
+				VMStandin standin = (VMStandin)iter.next();
+				standin.convertToRealVM();
+			}
+			
+			// set the new default VM install. This will fire a 'defaultVMChanged',
+			// if it in fact changed
+			String newDefaultId = newResults.getDefaultVMInstallCompositeID();
+			if (newDefaultId != null) {
+				IVMInstall newDefaultVM = RubyRuntime.getVMFromCompositeId(newDefaultId);
+				if (newDefaultVM != null) {
+					try {
+						RubyRuntime.setDefaultVMInstall(newDefaultVM, null, false);
+					} catch (CoreException ce) {
+						log(ce);
+					}			
+				}
+			}
+			
+		} finally {
+			// stop batch changes
+			fBatchingChanges = false;	
+			if (vmChanges != null) {
+				RubyRuntime.removeVMInstallChangedListener(vmChanges);
+				try {
+					vmChanges.process();
+				} catch (CoreException e) {
+					log(e);
+				}	
+			}
+		}
+	}
+	
+	/**
+	 * Parse the given xml into a VM definitions container, returning an empty
+	 * container if an exception occurs.
+	 * 
+	 * @param xml
+	 * @return VMDefinitionsContainer
+	 */
+	private VMDefinitionsContainer getVMDefinitions(String xml) {
+		if (xml.length() > 0) {
+			try {
+				ByteArrayInputStream stream = new ByteArrayInputStream(xml.getBytes("UTF8")); //$NON-NLS-1$
+				return VMDefinitionsContainer.parseXMLIntoContainer(stream);
+			} catch (IOException e) {
+				LaunchingPlugin.log(e);
+			}
+		}
+		return new VMDefinitionsContainer(); 
+	}
+	
 	/**
 	 * Returns a Document that can be used to build a DOM tree
 	 * @return the Document
@@ -427,5 +606,216 @@ public class LaunchingPlugin extends Plugin {
 		for (int i= 0; i < configs.length; i++) {
 			fClasspathEntryExtensions.put(configs[i].getAttribute("id"), configs[i]); //$NON-NLS-1$
 		}
+	}
+
+	public void defaultVMInstallChanged(IVMInstall previous, IVMInstall current) {
+		if (!fBatchingChanges) {
+			try {
+				VMChanges changes = new VMChanges();
+				changes.defaultVMInstallChanged(previous, current);
+				changes.process();
+			} catch (CoreException e) {
+				log(e);
+			}
+		}		
+	}
+
+	public void vmAdded(IVMInstall newVm) {		
+	}
+
+	public void vmChanged(PropertyChangeEvent event) {
+		if (!fBatchingChanges) {
+			try {
+				VMChanges changes = new VMChanges();
+				changes.vmChanged(event);
+				changes.process();
+			} catch (CoreException e) {
+				log(e);
+			}
+		}		
+	}
+
+	public void vmRemoved(IVMInstall vm) {
+		if (!fBatchingChanges) {
+			try {
+				VMChanges changes = new VMChanges();
+				changes.vmRemoved(vm);
+				changes.process();
+			} catch (CoreException e) {
+				log(e);
+			}
+		}		
 	}	
+	
+	/**
+	 * Stores VM changes resulting from a JRE preference change.
+	 */
+	class VMChanges implements IVMInstallChangedListener {
+		
+		// true if the default VM changes
+		private boolean fDefaultChanged = false;
+		
+		// old container ids to new
+		private HashMap fRenamedContainerIds = new HashMap();
+		
+		/**
+		 * Returns the JRE container id that the given VM would map to, or
+		 * <code>null</code> if none.
+		 * 
+		 * @param vm
+		 * @return container id or <code>null</code>
+		 */
+		private IPath getContainerId(IVMInstall vm) {
+			if (vm != null) {
+				String name = vm.getName();
+				if (name != null) {
+					IPath path = new Path(RubyRuntime.RUBY_CONTAINER);
+					path = path.append(new Path(vm.getVMInstallType().getId()));				
+					path = path.append(new Path(name));
+					return path;
+				}
+			}
+			return null;
+		}
+		
+		/**
+		 * @see org.rubypeople.rdt.launching.IVMInstallChangedListener#defaultVMInstallChanged(org.rubypeople.rdt.launching.IVMInstall, org.rubypeople.rdt.launching.IVMInstall)
+		 */
+		public void defaultVMInstallChanged(IVMInstall previous, IVMInstall current) {
+			fDefaultChanged = true;
+		}
+
+		/**
+		 * @see org.rubypeople.rdt.launching.IVMInstallChangedListener#vmAdded(org.rubypeople.rdt.launching.IVMInstall)
+		 */
+		public void vmAdded(IVMInstall vm) {
+		}
+
+		/**
+		 * @see org.rubypeople.rdt.launching.IVMInstallChangedListener#vmChanged(org.rubypeople.rdt.launching.PropertyChangeEvent)
+		 */
+		public void vmChanged(org.rubypeople.rdt.launching.PropertyChangeEvent event) {
+			String property = event.getProperty();
+			IVMInstall vm = (IVMInstall)event.getSource();
+			if (property.equals(IVMInstallChangedListener.PROPERTY_NAME)) {
+				IPath newId = getContainerId(vm);
+				IPath oldId = new Path(RubyRuntime.RUBY_CONTAINER);
+				oldId = oldId.append(vm.getVMInstallType().getId());
+				String oldName = (String)event.getOldValue();
+				// bug 33746 - if there is no old name, then this is not a re-name.
+				if (oldName != null) {
+					oldId = oldId.append(oldName);
+					fRenamedContainerIds.put(oldId, newId);					
+				}
+			}
+		}
+
+		/**
+		 * @see org.rubypeople.rdt.launching.IVMInstallChangedListener#vmRemoved(org.rubypeople.rdt.launching.IVMInstall)
+		 */
+		public void vmRemoved(IVMInstall vm) {
+		}
+	
+		/**
+		 * Re-bind loadpath variables and containers affected by the JRE
+		 * changes.
+		 */
+		public void process() throws CoreException {
+			RubyVMUpdateJob job = new RubyVMUpdateJob(this);
+			job.schedule();
+		}
+		
+		protected void doit(IProgressMonitor monitor) throws CoreException {
+			IWorkspaceRunnable runnable = new IWorkspaceRunnable() {
+				public void run(IProgressMonitor monitor1) throws CoreException {
+					IRubyProject[] projects = RubyCore.create(ResourcesPlugin.getWorkspace().getRoot()).getRubyProjects();
+					monitor1.beginTask(LaunchingMessages.LaunchingPlugin_0, projects.length + 1); 
+					rebind(monitor1, projects);
+					monitor1.done();
+				}
+			};
+			RubyCore.run(runnable, null, monitor);
+		}
+				
+		/**
+		 * Re-bind loadpath variables and containers affected by the Ruby VM
+		 * changes.
+		 * @param monitor
+		 */
+		private void rebind(IProgressMonitor monitor, IRubyProject[] projects) throws CoreException {
+			 
+			if (fDefaultChanged) {
+				// re-bind RUBYLIB if the default VM changed
+				RubyLoadpathVariablesInitializer initializer = new RubyLoadpathVariablesInitializer();
+				initializer.initialize(RubyRuntime.RUBYLIB_VARIABLE);
+			}
+			monitor.worked(1);
+														
+			// re-bind all container entries
+			for (int i = 0; i < projects.length; i++) {
+				IRubyProject project = projects[i];
+				ILoadpathEntry[] entries = project.getRawLoadpath();
+				boolean replace = false;
+				for (int j = 0; j < entries.length; j++) {
+					ILoadpathEntry entry = entries[j];
+					switch (entry.getEntryKind()) {
+						case ILoadpathEntry.CPE_CONTAINER:
+							IPath reference = entry.getPath();
+							IPath newBinding = null;
+							String firstSegment = reference.segment(0);
+							if (RubyRuntime.RUBY_CONTAINER.equals(firstSegment)) {
+								if (reference.segmentCount() > 1) {
+									IPath renamed = (IPath)fRenamedContainerIds.get(reference);
+									if (renamed != null) {
+										// The JRE was re-named. This changes the identifier of
+										// the container entry.
+										newBinding = renamed;
+									}									
+								}
+								RubyContainerInitializer initializer = new RubyContainerInitializer();
+								if (newBinding == null){
+									// rebind old path
+									initializer.initialize(reference, project);
+								} else {
+									// replace old cp entry with a new one
+									ILoadpathEntry newEntry = RubyCore.newContainerEntry(newBinding, entry.isExported());
+									entries[j] = newEntry;
+									replace = true;
+								}
+							}
+							break;
+						default:
+							break;
+					}
+				}
+				if (replace) {
+					project.setRawLoadpath(entries, null);
+				}
+				monitor.worked(1);
+			}
+		}
+	}
+	
+	class RubyVMUpdateJob extends Job {
+		private VMChanges fChanges;
+		
+		public RubyVMUpdateJob(VMChanges changes) {
+			super(LaunchingMessages.LaunchingPlugin_1); 
+			fChanges = changes;
+			setSystem(true);
+		}
+
+		/* (non-Javadoc)
+		 * @see org.eclipse.core.runtime.jobs.Job#run(org.eclipse.core.runtime.IProgressMonitor)
+		 */
+		protected IStatus run(IProgressMonitor monitor) {
+			try {
+				fChanges.doit(monitor);
+			} catch (CoreException e) {
+				return e.getStatus();
+			}
+			return Status.OK_STATUS;
+		}
+		
+	}
 }

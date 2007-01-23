@@ -218,7 +218,8 @@ public class RubyInterpreterPreferencePage extends PreferencePage implements IWo
 	}
 
 	protected void removeInterpreter() {
-		fVMList.remove(getSelectedInterpreter());
+		fVMs.remove(getSelectedInterpreter());
+		fVMList.refresh();
 	}
 
 	protected void enableButtons() {
@@ -271,7 +272,7 @@ public class RubyInterpreterPreferencePage extends PreferencePage implements IWo
 				IVMInstall defaultVM = getCheckedRubyVM();
 				IVMInstall[] vms = getRubyVMs();
 				RubyVMsUpdater updater = new RubyVMsUpdater();
-				if (!updater.updateJRESettings(vms, defaultVM)) {
+				if (!updater.updateRubyVMSettings(vms, defaultVM)) {
 					canceled[0] = true;
 				}
 			}

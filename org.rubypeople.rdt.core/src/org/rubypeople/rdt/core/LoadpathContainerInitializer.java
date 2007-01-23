@@ -22,8 +22,8 @@ import org.eclipse.core.runtime.IPath;
 
 /**
  * Abstract base implementation of all classpath container initializer.
- * Classpath variable containers are used in conjunction with the
- * "org.eclipse.jdt.core.classpathContainerInitializer" extension point.
+ * Loadpath variable containers are used in conjunction with the
+ * "org.rubypeople.rdt.core.classpathContainerInitializer" extension point.
  * <p>
  * Clients should subclass this class to implement a specific classpath
  * container initializer. The subclass must have a public 0-argument

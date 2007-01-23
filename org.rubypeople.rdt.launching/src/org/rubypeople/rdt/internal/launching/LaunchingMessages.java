@@ -80,6 +80,8 @@ public class LaunchingMessages {
 	public static String StandardVMDebugger_Establishing_debug_connection____5;
 	public static String StandardVMDebugger_Couldn__t_connect_to_VM_4;
 	public static String StandardVMDebugger_Couldn__t_connect_to_VM_5;
+	public static String LaunchingPlugin_0;
+	public static String LaunchingPlugin_1;
 	
 	private LaunchingMessages() {}
 

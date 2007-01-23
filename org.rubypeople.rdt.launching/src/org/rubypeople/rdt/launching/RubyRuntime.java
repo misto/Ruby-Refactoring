@@ -25,6 +25,7 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.IExtensionPoint;
 import org.eclipse.core.runtime.IPath;
+import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.MultiStatus;
 import org.eclipse.core.runtime.Path;
@@ -218,29 +219,7 @@ public class RubyRuntime {
 		initializeVMs();
 		return fgDefaultVMId;
 	}
-
-	public static void setSelectedInterpreter(IVMInstall vm) throws CoreException {
-		setDefaultVMInstall(vm, true);
-	}
-	
-	public static void setDefaultVMInstall(IVMInstall vm, boolean savePreference) throws CoreException {
-		IVMInstall previous = null;
-		if (fgDefaultVMId != null) {
-			previous = getVMFromCompositeId(fgDefaultVMId);
-		}
-		fgDefaultVMId= getCompositeIdFromVM(vm);
-		if (savePreference) {
-			saveVMConfiguration();
-		}
-		IVMInstall current = null;
-		if (fgDefaultVMId != null) {
-			current = getVMFromCompositeId(fgDefaultVMId);
-		}
-		if (previous != current) {
-			notifyDefaultVMChanged(previous, current);
-		}
-	}
-	
+		
 	/**
 	 * Saves the VM configuration information to the preferences. This includes
 	 * the following information:
@@ -1593,5 +1572,35 @@ public class RubyRuntime {
 	public static IRuntimeLoadpathEntry[] resolveRuntimeLoadpath(
 			IRuntimeLoadpathEntry[] entries, ILaunchConfiguration configuration) throws CoreException {
 		return getLoadpathProvider(configuration).resolveLoadpath(entries, configuration);
+	}
+
+	/**
+	 * Sets a VM as the system-wide default VM, and notifies registered VM install
+	 * change listeners of the change.
+	 * 
+	 * @param vm	The vm to make the default. May be <code>null</code> to clear 
+	 * 				the default.
+	 * @param monitor progress monitor or <code>null</code>
+	 * @param savePreference If <code>true</code>, update workbench preferences to reflect
+	 * 		   				  the new default VM.
+	 * @throws CoreException 
+	 * @since 0.9.0
+	 */
+	public static void setDefaultVMInstall(IVMInstall vm, IProgressMonitor monitor, boolean savePreference) throws CoreException {
+		IVMInstall previous = null;
+		if (fgDefaultVMId != null) {
+			previous = getVMFromCompositeId(fgDefaultVMId);
+		}
+		fgDefaultVMId = getCompositeIdFromVM(vm);
+		if (savePreference) {
+			saveVMConfiguration();
+		}
+		IVMInstall current = null;
+		if (fgDefaultVMId != null) {
+			current = getVMFromCompositeId(fgDefaultVMId);
+		}
+		if (previous != current) {
+			notifyDefaultVMChanged(previous, current);
+		}
 	}	
 }

@@ -30,7 +30,7 @@ import org.rubypeople.rdt.launching.IVMInstall;
 import org.rubypeople.rdt.launching.RubyRuntime;
 
 /**
- * Resolves for JRELIB_VARIABLE and JRE_CONTAINER
+ * Resolves for RUBYLIB_VARIABLE and RUBY_CONTAINER
  */
 public class RubyVMRuntimeLoadpathEntryResolver implements IRuntimeLoadpathEntryResolver2 {
 	
@@ -38,38 +38,38 @@ public class RubyVMRuntimeLoadpathEntryResolver implements IRuntimeLoadpathEntry
 	 * @see IRuntimeLoadpathEntryResolver#resolveRuntimeLoadpathEntry(IRuntimeLoadpathEntry, ILaunchConfiguration)
 	 */
 	public IRuntimeLoadpathEntry[] resolveRuntimeLoadpathEntry(IRuntimeLoadpathEntry entry, ILaunchConfiguration configuration) throws CoreException {
-		IVMInstall jre = null;
+		IVMInstall rubyVM = null;
 		if (entry.getType() == IRuntimeLoadpathEntry.CONTAINER && entry.getPath().segmentCount() > 1) {
 			// a specific VM
-			jre = RubyContainerInitializer.resolveInterpreter(entry.getPath()); 
+			rubyVM = RubyContainerInitializer.resolveInterpreter(entry.getPath()); 
 		} else {
 			// default VM for config
-			jre = RubyRuntime.computeVMInstall(configuration);
+			rubyVM = RubyRuntime.computeVMInstall(configuration);
 		}
-		if (jre == null) {
-			// cannot resolve JRE
+		if (rubyVM == null) {
+			// cannot resolve Ruby VM
 			return new IRuntimeLoadpathEntry[0];
 		}
-		return resolveLibraryLocations(jre, entry.getLoadpathProperty());
+		return resolveLibraryLocations(rubyVM, entry.getLoadpathProperty());
 	}
 	
 	/**
 	 * @see IRuntimeLoadpathEntryResolver#resolveRuntimeLoadpathEntry(IRuntimeLoadpathEntry, IRubyProject)
 	 */
 	public IRuntimeLoadpathEntry[] resolveRuntimeLoadpathEntry(IRuntimeLoadpathEntry entry, IRubyProject project) throws CoreException {
-		IVMInstall jre = null;
+		IVMInstall rubyVM = null;
 		if (entry.getType() == IRuntimeLoadpathEntry.CONTAINER && entry.getPath().segmentCount() > 1) {
 			// a specific VM
-			jre = RubyContainerInitializer.resolveInterpreter(entry.getPath()); 
+			rubyVM = RubyContainerInitializer.resolveInterpreter(entry.getPath()); 
 		} else {
 			// default VM for project
-			jre = RubyRuntime.getVMInstall(project);
+			rubyVM = RubyRuntime.getVMInstall(project);
 		}
-		if (jre == null) {
-			// cannot resolve JRE
+		if (rubyVM == null) {
+			// cannot resolve RubyVM
 			return new IRuntimeLoadpathEntry[0];
 		}		
-		return resolveLibraryLocations(jre, entry.getLoadpathProperty());
+		return resolveLibraryLocations(rubyVM, entry.getLoadpathProperty());
 	}
 
 	/**

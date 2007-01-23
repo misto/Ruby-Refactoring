@@ -54,22 +54,22 @@ public class RubyVMsUpdater {
 	/**
 	 * Updates VM settings and returns whether the update was successful.
 	 * 
-	 * @param jres new installed JREs
-	 * @param defaultJRE new default VM
+	 * @param rubyVMs new installed JREs
+	 * @param defaultRubyVM new default VM
 	 * @return whether the update was successful
 	 */
-	public boolean updateJRESettings(IVMInstall[] jres, IVMInstall defaultJRE) {
+	public boolean updateRubyVMSettings(IVMInstall[] rubyVMs, IVMInstall defaultRubyVM) {
 		
 		// Create a VM definition container
 		VMDefinitionsContainer vmContainer = new VMDefinitionsContainer();
 		
 		// Set the default VM Id on the container
-		String defaultVMId = RubyRuntime.getCompositeIdFromVM(defaultJRE);
+		String defaultVMId = RubyRuntime.getCompositeIdFromVM(defaultRubyVM);
 		vmContainer.setDefaultVMInstallCompositeID(defaultVMId);
 		
 		// Set the VMs on the container
-		for (int i = 0; i < jres.length; i++) {
-			vmContainer.addVM(jres[i]);
+		for (int i = 0; i < rubyVMs.length; i++) {
+			vmContainer.addVM(rubyVMs[i]);
 		}
 		
 		

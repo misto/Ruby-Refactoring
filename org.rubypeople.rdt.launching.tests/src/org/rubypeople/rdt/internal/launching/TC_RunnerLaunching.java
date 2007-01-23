@@ -53,7 +53,7 @@ public class TC_RunnerLaunching extends TestCase {
 		standin.setName("fake");
 		standin.setInstallLocation(new File("C:\ruby"));
 		IVMInstall real = standin.convertToRealVM();
-		RubyRuntime.setDefaultVMInstall(real, true);
+		RubyRuntime.setDefaultVMInstall(real, null, true);
 	}
 	
 	protected ILaunchManager getLaunchManager() {
