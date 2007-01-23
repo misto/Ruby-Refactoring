@@ -76,7 +76,7 @@ public class RubyRuntime {
 	 * </ol>
 	 * @since 0.9.0
 	 */
-	public static final String RUBY_CONTAINER = LaunchingPlugin.getUniqueIdentifier() + "RUBY_CONTAINER"; //$NON-NLS-1$
+	public static final String RUBY_CONTAINER = LaunchingPlugin.getUniqueIdentifier() + ".RUBY_CONTAINER"; //$NON-NLS-1$
 	
 	/**
 	 * Preference key for the String of XML that defines all installed VMs.

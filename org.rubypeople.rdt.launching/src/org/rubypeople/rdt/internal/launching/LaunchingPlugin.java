@@ -131,13 +131,14 @@ public class LaunchingPlugin extends Plugin implements IVMInstallChangedListener
 	@Override
 	public void start(BundleContext context) throws Exception {
 		super.start(context);
-		
+		getPluginPreferences().addPropertyChangeListener(this);
 		RubyRuntime.addVMInstallChangedListener(this);
 	}
 	
 	@Override
 	public void stop(BundleContext context) throws Exception {
 		try {
+			getPluginPreferences().removePropertyChangeListener(this);
 			RubyRuntime.removeVMInstallChangedListener(this);
 			RubyRuntime.saveVMConfiguration();
 			savePluginPreferences();

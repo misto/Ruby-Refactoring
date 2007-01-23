@@ -78,6 +78,9 @@ public class RubyVMContainer implements ILoadpathContainer {
 	 */
 	private static ILoadpathEntry[] computeLoadpathEntries(IVMInstall vm) {
 		IPath[] libs = vm.getLibraryLocations();
+		if (libs == null) {
+			libs = RubyRuntime.getLibraryLocations(vm);
+		}
 		List entries = new ArrayList(libs.length);
 		for (int i = 0; i < libs.length; i++) {
 			entries.add(RubyCore.newLibraryEntry(libs[i], false));
