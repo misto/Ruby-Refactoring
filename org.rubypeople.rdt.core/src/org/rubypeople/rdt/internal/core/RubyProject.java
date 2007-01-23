@@ -82,7 +82,7 @@ public class RubyProject extends Openable implements IProjectNature, IRubyElemen
 	 */
 	private static final ILoadpathEntry[] RESOLUTION_IN_PROGRESS = new ILoadpathEntry[0];
 	static final String LOADPATH_FILENAME = ".loadpath";
-	private static final ILoadpathEntry[] INVALID_LOADPATH = new ILoadpathEntry[0];
+	static final ILoadpathEntry[] INVALID_LOADPATH = new ILoadpathEntry[0];
 
 	/**
 	 * Whether the underlying file system is case sensitive.
@@ -2308,5 +2308,12 @@ public class RubyProject extends Openable implements IProjectNature, IRubyElemen
 			if (!status.isOK())
 				this.createLoadpathProblemMarker(status);
 		}
+	}
+
+	/**
+	 * Reads and decode an XML loadpath string
+	 */
+	public ILoadpathEntry[] decodeLoadpath(String xmlClasspath, boolean createMarker, boolean logProblems) {
+		return decodeLoadpath(xmlClasspath, createMarker, logProblems, null/*not interested in unknown elements*/);
 	}
 }

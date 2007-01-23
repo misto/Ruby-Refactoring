@@ -4,18 +4,28 @@
  */
 package org.rubypeople.rdt.internal.core;
 
+import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
+import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.StringReader;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
+import java.util.Map.Entry;
+
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
@@ -24,11 +34,15 @@ import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IResourceChangeEvent;
 import org.eclipse.core.resources.ISaveContext;
 import org.eclipse.core.resources.ISaveParticipant;
+import org.eclipse.core.resources.ISavedState;
 import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.resources.IWorkspaceRunnable;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IConfigurationElement;
+import org.eclipse.core.runtime.IExtension;
+import org.eclipse.core.runtime.IExtensionPoint;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
@@ -36,10 +50,13 @@ import org.eclipse.core.runtime.MultiStatus;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.PerformanceStats;
 import org.eclipse.core.runtime.Platform;
+import org.eclipse.core.runtime.Plugin;
 import org.eclipse.core.runtime.Preferences;
+import org.eclipse.core.runtime.QualifiedName;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.content.IContentTypeManager.ContentTypeChangeEvent;
 import org.eclipse.core.runtime.content.IContentTypeManager.IContentTypeChangeListener;
+import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.core.runtime.preferences.DefaultScope;
 import org.eclipse.core.runtime.preferences.IEclipsePreferences;
 import org.eclipse.core.runtime.preferences.IPreferencesService;
@@ -60,11 +77,17 @@ import org.rubypeople.rdt.core.RubyCore;
 import org.rubypeople.rdt.core.RubyModelException;
 import org.rubypeople.rdt.core.WorkingCopyOwner;
 import org.rubypeople.rdt.core.parser.IProblem;
+import org.rubypeople.rdt.internal.compiler.util.HashtableOfObjectToInt;
 import org.rubypeople.rdt.internal.core.buffer.BufferManager;
 import org.rubypeople.rdt.internal.core.builder.RubyBuilder;
 import org.rubypeople.rdt.internal.core.util.Messages;
 import org.rubypeople.rdt.internal.core.util.Util;
 import org.rubypeople.rdt.internal.core.util.WeakHashSet;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
 
 /**
  * @author cawilliams
@@ -89,12 +112,12 @@ public class RubyModelManager implements IContentTypeChangeListener, ISavePartic
 	/**
 	 * Name of the extension point for contributing classpath variable initializers
 	 */
-	public static final String CPVARIABLE_INITIALIZER_EXTPOINT_ID = "classpathVariableInitializer" ; //$NON-NLS-1$
+	public static final String CPVARIABLE_INITIALIZER_EXTPOINT_ID = "loadpathVariableInitializer" ; //$NON-NLS-1$
 
 	/**
 	 * Name of the extension point for contributing classpath container initializers
 	 */
-	public static final String CPCONTAINER_INITIALIZER_EXTPOINT_ID = "classpathContainerInitializer" ; //$NON-NLS-1$
+	public static final String CPCONTAINER_INITIALIZER_EXTPOINT_ID = "loadpathContainerInitializer" ; //$NON-NLS-1$
 
     
     /**
@@ -180,6 +203,7 @@ public class RubyModelManager implements IContentTypeChangeListener, ISavePartic
 	public static final boolean VERBOSE = false;
 	
 	public final static String CP_VARIABLE_PREFERENCES_PREFIX = RubyCore.PLUGIN_ID+".loadpathVariable."; //$NON-NLS-1$
+	public final static String CP_CONTAINER_PREFERENCES_PREFIX = RubyCore.PLUGIN_ID+".loadpathContainer."; //$NON-NLS-1$
 	
 	/**
 	 * Special value used for recognizing ongoing initialization and breaking initialization cycles
@@ -194,6 +218,7 @@ public class RubyModelManager implements IContentTypeChangeListener, ISavePartic
 	};
 	public final static String CP_ENTRY_IGNORE = "##<cp entry ignore>##"; //$NON-NLS-1$
 	public final static IPath CP_ENTRY_IGNORE_PATH = new Path(CP_ENTRY_IGNORE);
+	private static final int VARIABLES_AND_CONTAINERS_FILE_VERSION = 1;
 	
 	public static boolean PERF_VARIABLE_INITIALIZER = false;
 	public static boolean PERF_CONTAINER_INITIALIZER = false;
@@ -733,6 +758,9 @@ public class RubyModelManager implements IContentTypeChangeListener, ISavePartic
     public void startup() throws CoreException {
         try {
             configurePluginDebugOptions();
+            
+//          initialize Ruby model cache
+			this.cache = new RubyModelCache();
 
             // request state folder creation (workaround 19885)
             RubyCore.getPlugin().getStateLocation();
@@ -742,7 +770,6 @@ public class RubyModelManager implements IContentTypeChangeListener, ISavePartic
 
             // Listen to preference changes
             Preferences.IPropertyChangeListener propertyListener = new Preferences.IPropertyChangeListener() {
-
                 public void propertyChange(Preferences.PropertyChangeEvent event) {
                     RubyModelManager.this.optionsCache = null;
                 }
@@ -752,22 +779,346 @@ public class RubyModelManager implements IContentTypeChangeListener, ISavePartic
 //          Listen to content-type changes
              Platform.getContentTypeManager().addContentTypeChangeListener(this);
             
-            final IWorkspace workspace = ResourcesPlugin.getWorkspace();
-            workspace.addResourceChangeListener(this.deltaState,
-            /*
-             * update spec in
-             * JavaCore#addPreProcessingResourceChangedListener(...) if adding
-             * more event types
-             */
-            IResourceChangeEvent.PRE_BUILD | IResourceChangeEvent.POST_BUILD
-                    | IResourceChangeEvent.POST_CHANGE | IResourceChangeEvent.PRE_DELETE
-                    | IResourceChangeEvent.PRE_CLOSE);
+//           retrieve variable values
+ 			long start = -1;
+ 			if (VERBOSE)
+ 				start = System.currentTimeMillis();
+  			loadVariablesAndContainers();
+//  			if (VERBOSE)
+// 				traceVariableAndContainers("Loaded", start); //$NON-NLS-1$
 
+ 			final IWorkspace workspace = ResourcesPlugin.getWorkspace();
+ 			workspace.addResourceChangeListener(
+ 				this.deltaState,
+ 				/* update spec in JavaCore#addPreProcessingResourceChangedListener(...) if adding more event types */
+ 				IResourceChangeEvent.PRE_BUILD
+ 					| IResourceChangeEvent.POST_BUILD
+ 					| IResourceChangeEvent.POST_CHANGE
+ 					| IResourceChangeEvent.PRE_DELETE
+ 					| IResourceChangeEvent.PRE_CLOSE);
+
+// 			startIndexing();
+ 			
+ 			// process deltas since last activated in indexer thread so that indexes are up-to-date.
+ 			// see https://bugs.eclipse.org/bugs/show_bug.cgi?id=38658
+ 			Job processSavedState = new Job(Messages.savedState_jobName) { 
+ 				protected IStatus run(IProgressMonitor monitor) {
+ 					try {
+ 						// add save participant and process delta atomically
+ 						// see https://bugs.eclipse.org/bugs/show_bug.cgi?id=59937
+ 						workspace.run(
+ 							new IWorkspaceRunnable() {
+ 								public void run(IProgressMonitor progress) throws CoreException {
+ 									ISavedState savedState = workspace.addSaveParticipant(RubyCore.getRubyCore(), RubyModelManager.this);
+ 									if (savedState != null) {
+ 										// the event type coming from the saved state is always POST_AUTO_BUILD
+ 										// force it to be POST_CHANGE so that the delta processor can handle it
+ 										RubyModelManager.this.deltaState.getDeltaProcessor().overridenEventType = IResourceChangeEvent.POST_CHANGE;
+ 										savedState.processResourceChangeEvents(RubyModelManager.this.deltaState);
+ 									}
+ 								}
+ 							},
+ 							monitor);
+ 					} catch (CoreException e) {
+ 						return e.getStatus();
+ 					}
+ 					return Status.OK_STATUS;
+ 				}
+ 			};
+ 			processSavedState.setSystem(true);
+ 			processSavedState.setPriority(Job.SHORT); // process asap
+ 			processSavedState.schedule();
         } catch (RuntimeException e) {
             shutdown();
             throw e;
         }
     }
+    
+    public void loadVariablesAndContainers() throws CoreException {
+		// backward compatibility, consider persistent property	
+		QualifiedName qName = new QualifiedName(RubyCore.PLUGIN_ID, "variables"); //$NON-NLS-1$
+		String xmlString = ResourcesPlugin.getWorkspace().getRoot().getPersistentProperty(qName);
+		
+		try {
+			if (xmlString != null){
+				StringReader reader = new StringReader(xmlString);
+				Element cpElement;
+				try {
+					DocumentBuilder parser = DocumentBuilderFactory.newInstance().newDocumentBuilder();
+					cpElement = parser.parse(new InputSource(reader)).getDocumentElement();
+				} catch(SAXException e) {
+					return;
+				} catch(ParserConfigurationException e){
+					return;
+				} finally {
+					reader.close();
+				}
+				if (cpElement == null) return;
+				if (!cpElement.getNodeName().equalsIgnoreCase("variables")) { //$NON-NLS-1$
+					return;
+				}
+				
+				NodeList list= cpElement.getChildNodes();
+				int length= list.getLength();
+				for (int i= 0; i < length; ++i) {
+					Node node= list.item(i);
+					short type= node.getNodeType();
+					if (type == Node.ELEMENT_NODE) {
+						Element element= (Element) node;
+						if (element.getNodeName().equalsIgnoreCase("variable")) { //$NON-NLS-1$
+							variablePut( 
+								element.getAttribute("name"), //$NON-NLS-1$
+								new Path(element.getAttribute("path"))); //$NON-NLS-1$
+						}
+					}
+				}
+			}
+		} catch(IOException e){
+			// problem loading xml file: nothing we can do
+		} finally {
+			if (xmlString != null){
+				ResourcesPlugin.getWorkspace().getRoot().setPersistentProperty(qName, null); // flush old one
+			}
+		}
+
+		// backward compatibility, load variables and containers from preferences into cache
+		loadVariablesAndContainers(getDefaultPreferences());
+		loadVariablesAndContainers(getInstancePreferences());
+
+		// load variables and containers from saved file into cache
+		File file = getVariableAndContainersFile();
+		DataInputStream in = null;
+		try {
+			in = new DataInputStream(new BufferedInputStream(new FileInputStream(file)));
+			switch (in.readInt()) {
+				case 2 :
+					new VariablesAndContainersLoadHelper(in).load();
+					break;
+				case 1 : // backward compatibility, load old format
+					// variables
+					int size = in.readInt();
+					while (size-- > 0) {
+						String varName = in.readUTF();
+						String pathString = in.readUTF();
+						if (CP_ENTRY_IGNORE.equals(pathString))
+							continue;
+						IPath varPath = Path.fromPortableString(pathString);
+						this.variables.put(varName, varPath);
+						this.previousSessionVariables.put(varName, varPath);
+					}
+					
+					// containers
+					IRubyModel model = getRubyModel();
+					int projectSize = in.readInt();
+					while (projectSize-- > 0) {
+						String projectName = in.readUTF();
+						IRubyProject project = model.getRubyProject(projectName);
+						int containerSize = in.readInt();
+						while (containerSize-- > 0) {
+							IPath containerPath = Path.fromPortableString(in.readUTF());
+							int length = in.readInt();
+							byte[] containerString = new byte[length];
+							in.readFully(containerString);
+							recreatePersistedContainer(project, containerPath, new String(containerString), true/*add to container values*/);
+						}
+					}
+					break;
+			}
+		} catch (IOException e) {
+			if (file.exists())
+				Util.log(e, "Unable to read variable and containers file"); //$NON-NLS-1$
+		} catch (RuntimeException e) {
+			if (file.exists())
+				Util.log(e, "Unable to read variable and containers file (file is corrupt)"); //$NON-NLS-1$
+		} finally {
+			if (in != null) {
+				try {
+					in.close();
+				} catch (IOException e) {
+					// nothing we can do: ignore
+				}
+			}
+		}
+
+		// override persisted values for variables which have a registered initializer
+		String[] registeredVariables = getRegisteredVariableNames();
+		for (int i = 0; i < registeredVariables.length; i++) {
+			String varName = registeredVariables[i];
+			this.variables.put(varName, null); // reset variable, but leave its entry in the Map, so it will be part of variable names.
+		}
+		// override persisted values for containers which have a registered initializer
+		containersReset(getRegisteredContainerIDs());
+	}
+    
+	public static void recreatePersistedContainer(String propertyName, String containerString, boolean addToContainerValues) {
+		int containerPrefixLength = CP_CONTAINER_PREFERENCES_PREFIX.length();
+		int index = propertyName.indexOf('|', containerPrefixLength);
+		if (containerString != null) containerString = containerString.trim();
+		if (index > 0) {
+			String projectName = propertyName.substring(containerPrefixLength, index).trim();
+			IRubyProject project = getRubyModelManager().getRubyModel().getRubyProject(projectName);
+			IPath containerPath = new Path(propertyName.substring(index+1).trim());
+			recreatePersistedContainer(project, containerPath, containerString, addToContainerValues);
+		}
+	}
+    
+    private static void recreatePersistedContainer(final IRubyProject project, final IPath containerPath, String containerString, boolean addToContainerValues) {
+		if (!project.getProject().isAccessible()) return; // avoid leaking deleted project's persisted container	
+		if (containerString == null) {
+			getRubyModelManager().containerPut(project, containerPath, null);
+		} else {
+			final ILoadpathEntry[] containerEntries = ((RubyProject) project).decodeLoadpath(containerString, false, false);
+			if (containerEntries != null && containerEntries != RubyProject.INVALID_LOADPATH) {
+				ILoadpathContainer container = new ILoadpathContainer() {
+					public ILoadpathEntry[] getLoadpathEntries() {
+						return containerEntries;
+					}
+					public String getDescription() {
+						return "Persisted container ["+containerPath+" for project ["+ project.getElementName()+"]"; //$NON-NLS-1$//$NON-NLS-2$//$NON-NLS-3$
+					}
+					public int getKind() {
+						return 0; 
+					}
+					public IPath getPath() {
+						return containerPath;
+					}
+					public String toString() {
+						return getDescription();
+					}
+
+				};
+				if (addToContainerValues) {
+					getRubyModelManager().containerPut(project, containerPath, container);
+				}
+				Map projectContainers = (Map)getRubyModelManager().previousSessionContainers.get(project);
+				if (projectContainers == null){
+					projectContainers = new HashMap(1);
+					getRubyModelManager().previousSessionContainers.put(project, projectContainers);
+				}
+				projectContainers.put(containerPath, container);
+			}
+		}
+	}
+
+	private File getVariableAndContainersFile() {
+		return RubyCore.getPlugin().getStateLocation().append("variablesAndContainers.dat").toFile(); //$NON-NLS-1$
+	}
+	
+	private synchronized void containersReset(String[] containerIDs) {
+		for (int i = 0; i < containerIDs.length; i++) {
+			String containerID = containerIDs[i];
+			Iterator projectIterator = this.containers.keySet().iterator();
+			while (projectIterator.hasNext()){
+				IRubyProject project = (IRubyProject)projectIterator.next();
+				Map projectContainers = (Map)this.containers.get(project);
+				if (projectContainers != null){
+					Iterator containerIterator = projectContainers.keySet().iterator();
+					while (containerIterator.hasNext()){
+						IPath containerPath = (IPath)containerIterator.next();
+						if (containerPath.segment(0).equals(containerID)) { // registered container
+							projectContainers.put(containerPath, null); // reset container value, but leave entry in Map
+						}
+					}
+				}
+			}
+		}
+	}
+	
+	/**
+ 	 * Returns the name of the variables for which an CP variable initializer is registered through an extension point
+ 	 */
+	public static String[] getRegisteredVariableNames(){
+		
+		Plugin jdtCorePlugin = RubyCore.getPlugin();
+		if (jdtCorePlugin == null) return null;
+
+		ArrayList variableList = new ArrayList(5);
+		IExtensionPoint extension = Platform.getExtensionRegistry().getExtensionPoint(RubyCore.PLUGIN_ID, RubyModelManager.CPVARIABLE_INITIALIZER_EXTPOINT_ID);
+		if (extension != null) {
+			IExtension[] extensions =  extension.getExtensions();
+			for(int i = 0; i < extensions.length; i++){
+				IConfigurationElement [] configElements = extensions[i].getConfigurationElements();
+				for(int j = 0; j < configElements.length; j++){
+					String varAttribute = configElements[j].getAttribute("variable"); //$NON-NLS-1$
+					if (varAttribute != null) variableList.add(varAttribute);
+				}
+			}	
+		}
+		String[] variableNames = new String[variableList.size()];
+		variableList.toArray(variableNames);
+		return variableNames;
+	}	
+
+	private void loadVariablesAndContainers(IEclipsePreferences preferences) {
+		try {
+			// only get variable from preferences not set to their default
+			String[] propertyNames = preferences.keys();
+			int variablePrefixLength = CP_VARIABLE_PREFERENCES_PREFIX.length();
+			for (int i = 0; i < propertyNames.length; i++){
+				String propertyName = propertyNames[i];
+				if (propertyName.startsWith(CP_VARIABLE_PREFERENCES_PREFIX)){
+					String varName = propertyName.substring(variablePrefixLength);
+					String propertyValue = preferences.get(propertyName, null);
+					if (propertyValue != null) {
+						String pathString = propertyValue.trim();
+						
+						if (CP_ENTRY_IGNORE.equals(pathString)) {
+							// cleanup old preferences
+							preferences.remove(propertyName); 
+							continue;
+						}
+						
+						// add variable to table
+						IPath varPath = new Path(pathString);
+						this.variables.put(varName, varPath); 
+						this.previousSessionVariables.put(varName, varPath);
+					}
+				} else if (propertyName.startsWith(CP_CONTAINER_PREFERENCES_PREFIX)){
+					String propertyValue = preferences.get(propertyName, null);
+					if (propertyValue != null) {
+						// cleanup old preferences
+						preferences.remove(propertyName); 
+						
+						// recreate container
+						recreatePersistedContainer(propertyName, propertyValue, true/*add to container values*/);
+					}
+				}
+			}
+		} catch (BackingStoreException e1) {
+			// TODO (frederic) see if it's necessary to report this failure...
+		}
+	}
+    
+	/**
+	 * Get default eclipse preference for JavaCore plugin.
+	 */
+	public IEclipsePreferences getDefaultPreferences() {
+		return preferencesLookup[PREF_DEFAULT];
+	}
+	
+	/**
+ 	 * Returns the name of the container IDs for which an LP container initializer is registered through an extension point
+ 	 */
+	public static String[] getRegisteredContainerIDs(){
+		Plugin jdtCorePlugin = RubyCore.getPlugin();
+		if (jdtCorePlugin == null) return null;
+
+		ArrayList containerIDList = new ArrayList(5);
+		IExtensionPoint extension = Platform.getExtensionRegistry().getExtensionPoint(RubyCore.PLUGIN_ID, RubyModelManager.CPCONTAINER_INITIALIZER_EXTPOINT_ID);
+		if (extension != null) {
+			IExtension[] extensions =  extension.getExtensions();
+			for(int i = 0; i < extensions.length; i++){
+				IConfigurationElement [] configElements = extensions[i].getConfigurationElements();
+				for(int j = 0; j < configElements.length; j++){
+					String idAttribute = configElements[j].getAttribute("id"); //$NON-NLS-1$
+					if (idAttribute != null) containerIDList.add(idAttribute);
+				}
+			}	
+		}
+		String[] containerIDs = new String[containerIDList.size()];
+		containerIDList.toArray(containerIDs);
+		return containerIDs;
+	}	
 
     public void shutdown() {
         RubyCore javaCore = RubyCore.getRubyCore();
@@ -796,7 +1147,7 @@ public class RubyModelManager implements IContentTypeChangeListener, ISavePartic
 		long start = -1;
 //		if (VERBOSE)
 //			start = System.currentTimeMillis();
-//		saveVariablesAndContainers();
+		saveVariablesAndContainers();
 //		if (VERBOSE)
 //			traceVariableAndContainers("Saved", start); //$NON-NLS-1$
 		
@@ -851,6 +1202,27 @@ public class RubyModelManager implements IContentTypeChangeListener, ISavePartic
 		
 		// save external libs timestamps
 		this.deltaState.saveExternalLibTimeStamps();
+	}
+
+	private void saveVariablesAndContainers() throws CoreException {
+		File file = getVariableAndContainersFile();
+		DataOutputStream out = null;
+		try {
+			out = new DataOutputStream(new BufferedOutputStream(new FileOutputStream(file)));
+			out.writeInt(VARIABLES_AND_CONTAINERS_FILE_VERSION);
+			new VariablesAndContainersSaveHelper(out).save();
+		} catch (IOException e) {
+			IStatus status = new Status(IStatus.ERROR, RubyCore.PLUGIN_ID, IStatus.ERROR, "Problems while saving variables and containers", e); //$NON-NLS-1$
+			throw new CoreException(status);
+		} finally {
+			if (out != null) {
+				try {
+					out.close();
+				} catch (IOException e) {
+					// nothing we can do: ignore
+				}
+			}
+		}
 	}
 
 	private void saveState(PerProjectInfo info, ISaveContext context) throws CoreException {
@@ -1853,6 +2225,394 @@ public class RubyModelManager implements IContentTypeChangeListener, ISavePartic
 			return false;
 		variablePut(variableName, newPath);
 		return true;
+	}
+	
+	private final class VariablesAndContainersLoadHelper {
+
+		private static final int ARRAY_INCREMENT = 200;
+
+		private ILoadpathEntry[] allLoadpathEntries;
+		private int allLoadpathEntryCount;
+
+		private final Map allPaths; // String -> IPath
+
+		private String[] allStrings;
+		private int allStringsCount;
+
+		private final DataInputStream in;
+
+		VariablesAndContainersLoadHelper(DataInputStream in) {
+			super();
+			this.allLoadpathEntries = null;
+			this.allLoadpathEntryCount = 0;
+			this.allPaths = new HashMap();
+			this.allStrings = null;
+			this.allStringsCount = 0;
+			this.in = in;
+		}
+
+		void load() throws IOException {
+			loadProjects(RubyModelManager.this.getRubyModel());
+			loadVariables();
+		}
+
+		private boolean loadBoolean() throws IOException {
+			return this.in.readBoolean();
+		}
+
+		private ILoadpathEntry[] loadLoadpathEntries() throws IOException {
+			int count = loadInt();
+			ILoadpathEntry[] entries = new ILoadpathEntry[count];
+
+			for (int i = 0; i < count; ++i)
+				entries[i] = loadLoadpathEntry();
+
+			return entries;
+		}
+
+		private ILoadpathEntry loadLoadpathEntry() throws IOException {
+			int id = loadInt();
+
+			if (id < 0 || id > this.allLoadpathEntryCount)
+				throw new IOException("Unexpected loadpathentry id"); //$NON-NLS-1$
+
+			if (id < this.allLoadpathEntryCount)
+				return this.allLoadpathEntries[id];
+
+			int entryKind = loadInt();
+			IPath path = loadPath();
+			IPath[] inclusionPatterns = loadPaths();
+			IPath[] exclusionPatterns = loadPaths();
+			boolean isExported = loadBoolean();
+
+			ILoadpathEntry entry = new LoadpathEntry(entryKind,
+					path, inclusionPatterns, exclusionPatterns, isExported);
+
+			ILoadpathEntry[] array = this.allLoadpathEntries;
+
+			if (array == null || id == array.length) {
+				array = new ILoadpathEntry[id + ARRAY_INCREMENT];
+
+				if (id != 0)
+					System.arraycopy(this.allLoadpathEntries, 0, array, 0, id);
+
+				this.allLoadpathEntries = array;
+			}
+
+			array[id] = entry;
+			this.allLoadpathEntryCount = id + 1;
+
+			return entry;
+		}
+
+		private void loadContainers(IRubyProject project) throws IOException {
+			boolean projectIsAccessible = project.getProject().isAccessible();
+			int count = loadInt();
+			for (int i = 0; i < count; ++i) {
+				IPath path = loadPath();
+				ILoadpathEntry[] entries = loadLoadpathEntries();
+				
+				if (!projectIsAccessible) 
+					// avoid leaking deleted project's persisted container,
+					// but still read the container as it is is part of the file format
+					continue; 
+
+				ILoadpathContainer container = new PersistedLoadpathContainer(project, path, entries);
+
+				RubyModelManager.this.containerPut(project, path, container);
+
+				Map oldContainers = (Map) RubyModelManager.this.previousSessionContainers.get(project);
+
+				if (oldContainers == null) {
+					oldContainers = new HashMap();
+					RubyModelManager.this.previousSessionContainers.put(project, oldContainers);
+				}
+
+				oldContainers.put(path, container);
+			}
+		}
+
+		private int loadInt() throws IOException {
+			return this.in.readInt();
+		}
+
+		private IPath loadPath() throws IOException {
+			if (loadBoolean())
+				return null;
+
+			String portableString = loadString();
+			IPath path = (IPath) this.allPaths.get(portableString);
+
+			if (path == null) {
+				path = Path.fromPortableString(portableString);
+				this.allPaths.put(portableString, path);
+			}
+
+			return path;
+		}
+
+		private IPath[] loadPaths() throws IOException {
+			int count = loadInt();
+			IPath[] pathArray = new IPath[count];
+
+			for (int i = 0; i < count; ++i)
+				pathArray[i] = loadPath();
+
+			return pathArray;
+		}
+
+		private void loadProjects(IRubyModel model) throws IOException {
+			int count = loadInt();
+
+			for (int i = 0; i < count; ++i) {
+				String projectName = loadString();
+
+				loadContainers(model.getRubyProject(projectName));
+			}
+		}
+
+		private String loadString() throws IOException {
+			int id = loadInt();
+
+			if (id < 0 || id > this.allStringsCount)
+				throw new IOException("Unexpected string id"); //$NON-NLS-1$
+
+			if (id < this.allStringsCount)
+				return this.allStrings[id];
+
+			String string = this.in.readUTF();
+			String[] array = this.allStrings;
+
+			if (array == null || id == array.length) {
+				array = new String[id + ARRAY_INCREMENT];
+
+				if (id != 0)
+					System.arraycopy(this.allStrings, 0, array, 0, id);
+
+				this.allStrings = array;
+			}
+
+			array[id] = string;
+			this.allStringsCount = id + 1;
+
+			return string;
+		}
+
+		private void loadVariables() throws IOException {
+			int size = loadInt();
+			Map loadedVars = new HashMap(size);
+
+			for (int i = 0; i < size; ++i) {
+				String varName = loadString();
+				IPath varPath = loadPath();
+
+				if (varPath != null)
+					loadedVars.put(varName, varPath);
+			}
+
+			RubyModelManager.this.previousSessionVariables.putAll(loadedVars);
+			RubyModelManager.this.variables.putAll(loadedVars);
+		}
+	}
+	
+	private static final class PersistedLoadpathContainer implements ILoadpathContainer {
+
+		private final IPath containerPath;
+		private final ILoadpathEntry[] entries;
+		private final IRubyProject project;
+
+		PersistedLoadpathContainer(IRubyProject project, IPath containerPath, ILoadpathEntry[] entries) {
+			super();
+			this.containerPath = containerPath;
+			this.entries = entries;
+			this.project = project;
+		}
+
+		public ILoadpathEntry[] getLoadpathEntries() {
+			return entries;
+		}
+
+		public String getDescription() {
+			return "Persisted container [" + containerPath //$NON-NLS-1$
+					+ " for project [" + project.getElementName() //$NON-NLS-1$
+					+ "]]"; //$NON-NLS-1$  
+		}
+
+		public int getKind() {
+			return 0;
+		}
+
+		public IPath getPath() {
+			return containerPath;
+		}
+
+		public String toString() {
+			return getDescription();
+		}
+	}
+	
+	private final class VariablesAndContainersSaveHelper {
+
+		private final HashtableOfObjectToInt loadpathEntryIds; // ILoadpathEntry -> int
+		private final DataOutputStream out;
+		private final HashtableOfObjectToInt stringIds; // Strings -> int
+
+		VariablesAndContainersSaveHelper(DataOutputStream out) {
+			super();
+			this.loadpathEntryIds = new HashtableOfObjectToInt();
+			this.out = out;
+			this.stringIds = new HashtableOfObjectToInt();
+		}
+
+		void save() throws IOException, RubyModelException {
+			saveProjects(RubyModelManager.this.getRubyModel().getRubyProjects());
+			
+			// remove variables that should not be saved
+			HashMap varsToSave = null;
+			Iterator iterator = RubyModelManager.this.variables.entrySet().iterator();
+			IEclipsePreferences defaultPreferences = getDefaultPreferences();
+			while (iterator.hasNext()) {
+				Map.Entry entry = (Map.Entry) iterator.next();
+				String varName = (String) entry.getKey();
+				if (defaultPreferences.get(CP_VARIABLE_PREFERENCES_PREFIX + varName, null) != null // don't save classpath variables from the default preferences as there is no delta if they are removed
+					|| CP_ENTRY_IGNORE_PATH.equals(entry.getValue())) {
+					
+					if (varsToSave == null)
+						varsToSave = new HashMap(RubyModelManager.this.variables);
+					varsToSave.remove(varName);
+				}
+					
+			}
+			
+			saveVariables(varsToSave != null ? varsToSave : RubyModelManager.this.variables);
+		}
+
+		private void saveLoadpathEntries(ILoadpathEntry[] entries)
+				throws IOException {
+			int count = entries == null ? 0 : entries.length;
+
+			saveInt(count);
+			for (int i = 0; i < count; ++i)
+				saveLoadpathEntry(entries[i]);
+		}
+
+		private void saveLoadpathEntry(ILoadpathEntry entry)
+				throws IOException {
+			if (saveNewId(entry, this.loadpathEntryIds)) {
+				saveInt(entry.getEntryKind());
+				savePath(entry.getPath());
+				savePaths(entry.getInclusionPatterns());
+				savePaths(entry.getExclusionPatterns());
+				this.out.writeBoolean(entry.isExported());
+			}
+		}
+
+		private void saveContainers(IRubyProject project, Map containerMap)
+				throws IOException {
+			saveInt(containerMap.size());
+
+			for (Iterator i = containerMap.entrySet().iterator(); i.hasNext();) {
+				Entry entry = (Entry) i.next();
+				IPath path = (IPath) entry.getKey();
+				ILoadpathContainer container = (ILoadpathContainer) entry.getValue();
+				ILoadpathEntry[] cpEntries = null;
+
+				if (container == null) {
+					// container has not been initialized yet, use previous
+					// session value
+					// (see https://bugs.eclipse.org/bugs/show_bug.cgi?id=73969)
+					container = RubyModelManager.this.getPreviousSessionContainer(path, project);
+				}
+
+				if (container != null)
+					cpEntries = container.getLoadpathEntries();
+
+				savePath(path);
+				saveLoadpathEntries(cpEntries);
+			}
+		}
+
+		private void saveInt(int value) throws IOException {
+			this.out.writeInt(value);
+		}
+
+		private boolean saveNewId(Object key, HashtableOfObjectToInt map) throws IOException {
+			int id = map.get(key);
+
+			if (id == -1) {
+				int newId = map.size();
+
+				map.put(key, newId);
+
+				saveInt(newId);
+
+				return true;
+			} else {
+				saveInt(id);
+
+				return false;
+			}
+		}
+
+		private void savePath(IPath path) throws IOException {
+			if (path == null) {
+				this.out.writeBoolean(true);
+			} else {
+				this.out.writeBoolean(false);
+				saveString(path.toPortableString());
+			}
+		}
+
+		private void savePaths(IPath[] paths) throws IOException {
+			int count = paths == null ? 0 : paths.length;
+
+			saveInt(count);
+			for (int i = 0; i < count; ++i)
+				savePath(paths[i]);
+		}
+
+		private void saveProjects(IRubyProject[] projects) throws IOException,
+				RubyModelException {
+			int count = projects.length;
+
+			saveInt(count);
+
+			for (int i = 0; i < count; ++i) {
+				IRubyProject project = projects[i];
+
+				saveString(project.getElementName());
+
+				Map containerMap = (Map) RubyModelManager.this.containers.get(project);
+
+				if (containerMap == null) {
+					containerMap = Collections.EMPTY_MAP;
+				} else {
+					// clone while iterating
+					// (see https://bugs.eclipse.org/bugs/show_bug.cgi?id=59638)
+					containerMap = new HashMap(containerMap);
+				}
+
+				saveContainers(project, containerMap);
+			}
+		}
+
+		private void saveString(String string) throws IOException {
+			if (saveNewId(string, this.stringIds))
+				this.out.writeUTF(string);
+		}
+
+		private void saveVariables(Map map) throws IOException {
+			saveInt(map.size());
+
+			for (Iterator i = map.entrySet().iterator(); i.hasNext();) {
+				Entry entry = (Entry) i.next();
+				String varName = (String) entry.getKey();
+				IPath varPath = (IPath) entry.getValue();
+
+				saveString(varName);
+				savePath(varPath);
+			}
+		}
 	}
 
 }
