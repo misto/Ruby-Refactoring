@@ -160,6 +160,9 @@ public final class PreferencesMessages extends NLS {
 	public static String ProjectSelectionDialog_filter;
 	public static String FoldingConfigurationBlock_enable;
 	public static String FoldingConfigurationBlock_combo_caption;
+	public static String NewJavaProjectPreferencePage_error_decode;
+	public static String NewJavaProjectPreferencePage_jre_variable_description;
+	public static String NewJavaProjectPreferencePage_jre_container_description;
 
     static {
         NLS.initializeMessages(BUNDLE_NAME, PreferencesMessages.class);

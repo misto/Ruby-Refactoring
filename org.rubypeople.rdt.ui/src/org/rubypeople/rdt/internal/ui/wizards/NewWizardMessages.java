@@ -69,6 +69,7 @@ public class NewWizardMessages extends NLS {
 	public static String NewClassWizardPage_methods_main;
 	public static String NewClassWizardPage_methods_constructors;
 	public static String NewClassWizardPage_methods_label;
+	public static String BuildPathsBlock_operationdesc_java;
 	
 	static {
 		NLS.initializeMessages(BUNDLE_NAME, NewWizardMessages.class);

@@ -1668,7 +1668,7 @@ public class RubyProject extends Openable implements IProjectNature, IRubyElemen
 
 	public ILoadpathEntry[] getResolvedLoadpath(boolean ignoreUnresolvedEntry) throws RubyModelException {
 		return getResolvedLoadpath(ignoreUnresolvedEntry, false, // don't
-																	// generateMarkerOnError
+				// generateMarkerOnError
 				true // returnResolutionInProgress
 		);
 	}
@@ -1676,9 +1676,9 @@ public class RubyProject extends Openable implements IProjectNature, IRubyElemen
 	public ISourceFolderRoot[] computeSourceFolderRoots(ILoadpathEntry resolvedEntry) {
 		try {
 			return computeSourceFolderRoots(new ILoadpathEntry[] { resolvedEntry }, false, // don't
-																							// retrieve
-																							// exported
-																							// roots
+					// retrieve
+					// exported
+					// roots
 					null /* no reverse map */
 			);
 		} catch (RubyModelException e) {

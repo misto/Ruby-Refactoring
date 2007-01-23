@@ -96,6 +96,7 @@ public class RubyRuntime {
 	 * Classpath variable name used for the default RubyVM's library
 	 * (value <code>"RUBY_LIB"</code>).
 	 */
+//	 FIXME We need to define more library variables! RUBY_CORE, RUBY_STD_LIB, RUBY_SITE_LIB
 	public static final String RUBYLIB_VARIABLE= "RUBY_LIB"; //$NON-NLS-1$
 
 	/**
