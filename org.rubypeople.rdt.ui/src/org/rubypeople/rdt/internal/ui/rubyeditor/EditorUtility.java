@@ -34,6 +34,7 @@ import org.rubypeople.rdt.core.ISourceRange;
 import org.rubypeople.rdt.core.ISourceReference;
 import org.rubypeople.rdt.core.RubyCore;
 import org.rubypeople.rdt.core.RubyModelException;
+import org.rubypeople.rdt.internal.core.ExternalRubyScript;
 import org.rubypeople.rdt.internal.corext.util.RubyModelUtil;
 import org.rubypeople.rdt.internal.ui.RubyPlugin;
 import org.rubypeople.rdt.ui.PreferenceConstants;
@@ -141,7 +142,8 @@ public class EditorUtility {
 					if (resource instanceof IFile)
 						return new FileEditorInput((IFile) resource);
 			}
-
+			if (element instanceof ExternalRubyScript)
+				return new ExternalRubyFileEditorInput(((ExternalRubyScript) element).getFile());
 			element= element.getParent();
 		}
 

@@ -40,6 +40,15 @@ public class ExternalSourceFolderRoot extends SourceFolderRoot implements ISourc
 				IRubyElement[] children = new IRubyElement[vChildren.size()];
 				vChildren.toArray(children);
 				info.setChildren(children);
+				
+				// Now go through every SourceFolder and set it's children!
+				for (int i = 0; i < children.length; i++) {
+					ExternalSourceFolder packFrag = (ExternalSourceFolder) children[i];
+				    ExternalSourceFolderInfo fragInfo = new ExternalSourceFolderInfo();
+				    packFrag.computeChildren(fragInfo);
+					newElements.put(packFrag, fragInfo);
+				}
+				
 			}
 		} catch (RubyModelException e) {
 			// problem resolving children; structure remains unknown
@@ -148,6 +157,7 @@ public class ExternalSourceFolderRoot extends SourceFolderRoot implements ISourc
 		if (this.resource == null) {
 			this.resource = RubyModel.getTarget(ResourcesPlugin.getWorkspace().getRoot(), this.folderPath, false);
 		}
+		// FIXME We need to turn this File into an IResource somehow!
 		if (this.resource instanceof IResource) {
 			return super.getResource();
 		}

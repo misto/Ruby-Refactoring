@@ -13,7 +13,6 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.Path;
 import org.rubypeople.rdt.core.IParent;
 import org.rubypeople.rdt.core.IRubyElement;
-import org.rubypeople.rdt.core.IRubyProject;
 import org.rubypeople.rdt.core.IRubyScript;
 import org.rubypeople.rdt.core.ISourceFolder;
 import org.rubypeople.rdt.core.RubyModelException;
@@ -152,7 +151,8 @@ public class SourceFolder extends Openable implements ISourceFolder {
 	}
 
 	public IPath getPath() {
-		IRubyProject root = this.getRubyProject();
+		SourceFolderRoot root = this.getSourceFolderRoot();
+
 		IPath path = root.getPath();
 		for (int i = 0, length = this.names.length; i < length; i++) {
 			String name = this.names[i];
@@ -180,17 +180,15 @@ public class SourceFolder extends Openable implements ISourceFolder {
 		SourceFolderRoot root = this.getSourceFolderRoot();
 		if (root.isArchive()) {
 			return root.getResource();
-		} else {
-			int length = this.names.length;
-			if (length == 0) {
-				return root.getResource();
-			} else {
-				IPath path = new Path(this.names[0]);
-				for (int i = 1; i < length; i++)
-					path = path.append(this.names[i]);
-				return ((IContainer)root.getResource()).getFolder(path);
-			}
 		}
+		int length = this.names.length;
+		if (length == 0) {
+			return root.getResource();
+		}
+		IPath path = new Path(this.names[0]);
+		for (int i = 1; i < length; i++)
+			path = path.append(this.names[i]);
+		return ((IContainer) root.getResource()).getFolder(path);
 	}
 
 	public IResource getUnderlyingResource() throws RubyModelException {

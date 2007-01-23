@@ -22,6 +22,8 @@ import org.jruby.ast.ZArrayNode;
 import org.jruby.parser.StaticScope;
 
 public abstract class ASTUtil {
+	private static final boolean VERBOSE = false;
+
 	/**
 	 * @param argsNode
 	 * @param bodyNode 
@@ -108,9 +110,13 @@ public abstract class ASTUtil {
 			return stringRepresentation((DStrNode) node);
 		if (node instanceof StrNode)
 			return ((StrNode) node).getValue();
-		System.err.println("Reached node type we don't know how to represent: "
+		log("Reached node type we don't know how to represent: "
 				+ node.getClass().getName());
 		return node.toString();
+	}
+
+	private static void log(String string) {
+		if (VERBOSE) System.out.println(string);		
 	}
 
 	private static String stringRepresentation(DStrNode node) {

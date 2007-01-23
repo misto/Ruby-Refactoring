@@ -71,7 +71,7 @@ public class RubyScript extends Openable implements IRubyScript {
 	/**
 	 * @param name
 	 */
-	public RubyScript(RubyElement parent, String name, WorkingCopyOwner owner) {
+	public RubyScript(SourceFolder parent, String name, WorkingCopyOwner owner) {
 		super(parent);
 		this.name = name;
 		this.owner = owner;
@@ -235,7 +235,7 @@ public class RubyScript extends Openable implements IRubyScript {
 	 */
 	public IRubyElement getPrimaryElement(boolean checkOwner) {
 		if (checkOwner && isPrimary()) return this;
-		return new RubyScript((RubyElement) getParent(), getElementName(), DefaultWorkingCopyOwner.PRIMARY);
+		return new RubyScript((SourceFolder) getParent(), getElementName(), DefaultWorkingCopyOwner.PRIMARY);
 	}
 
 	/*
@@ -323,7 +323,7 @@ public class RubyScript extends Openable implements IRubyScript {
 		if (buffer.getCharacters() == null) {
 			if (isWorkingCopy) {
 				IRubyScript original;
-				if (!isPrimary() && (original = new RubyScript((RubyElement) getParent(), getElementName(), DefaultWorkingCopyOwner.PRIMARY)).isOpen()) {
+				if (!isPrimary() && (original = new RubyScript((SourceFolder) getParent(), getElementName(), DefaultWorkingCopyOwner.PRIMARY)).isOpen()) {
 					buffer.setContents(original.getSource());
 				} else {
 					IFile file = (IFile) getResource();
@@ -397,7 +397,7 @@ public class RubyScript extends Openable implements IRubyScript {
 
 		RubyModelManager manager = RubyModelManager.getRubyModelManager();
 
-		RubyScript workingCopy = new RubyScript((RubyElement) getParent(), getElementName(), DefaultWorkingCopyOwner.PRIMARY);
+		RubyScript workingCopy = new RubyScript((SourceFolder) getParent(), getElementName(), DefaultWorkingCopyOwner.PRIMARY);
 		RubyModelManager.PerWorkingCopyInfo perWorkingCopyInfo = manager.getPerWorkingCopyInfo(workingCopy, false/*
 																													 * don't
 																													 * create

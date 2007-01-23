@@ -51,6 +51,7 @@ import org.rubypeople.rdt.core.IRubyModelMarker;
 import org.rubypeople.rdt.core.IRubyModelStatus;
 import org.rubypeople.rdt.core.IRubyModelStatusConstants;
 import org.rubypeople.rdt.core.IRubyProject;
+import org.rubypeople.rdt.core.IRubyScript;
 import org.rubypeople.rdt.core.ISourceFolder;
 import org.rubypeople.rdt.core.ISourceFolderRoot;
 import org.rubypeople.rdt.core.IType;
@@ -422,6 +423,10 @@ public class RubyProject extends Openable implements IProjectNature, IRubyElemen
 			if (child.isType(IRubyElement.SOURCE_FOLDER)) {
 				ISourceFolder folder = (ISourceFolder) child;
 				IType type = getType(folder, className);
+				if (type != null) return type;
+			} else if(child.isType(IRubyElement.SCRIPT)) {
+				IRubyScript script = (IRubyScript) child;
+				IType type = getType(script, className);
 				if (type != null) return type;
 			} else if(child.isType(IRubyElement.TYPE)) {
 				IType type = (IType) child;
