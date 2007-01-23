@@ -16,7 +16,6 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 
 import javax.xml.parsers.DocumentBuilder;
@@ -46,6 +45,7 @@ import org.eclipse.core.runtime.preferences.IScopeContext;
 import org.osgi.service.prefs.BackingStoreException;
 import org.rubypeople.rdt.core.ILoadpathContainer;
 import org.rubypeople.rdt.core.ILoadpathEntry;
+import org.rubypeople.rdt.core.IParent;
 import org.rubypeople.rdt.core.IRubyElement;
 import org.rubypeople.rdt.core.IRubyModelMarker;
 import org.rubypeople.rdt.core.IRubyModelStatus;
@@ -406,18 +406,27 @@ public class RubyProject extends Openable implements IProjectNature, IRubyElemen
 			ISourceFolderRoot[] roots = getAllSourceFolderRoots(reverseMap);
 			for (int i = 0; i < roots.length; i++) {
 				SourceFolderRoot root = (SourceFolderRoot) roots[i];
-				List<IRubyElement> childen = root.getChildrenOfType(IRubyElement.TYPE);
-				for (IRubyElement element : childen) {
-					if (element.isType(IRubyElement.TYPE)) {
-						IType aType = (IType) element;
-						if (aType.getElementName().equals(className)) {
-							return aType;
-						}
-					}
-				}
+				IType type = getType(root, className);
+				if (type != null) return type;
 			}
 		} catch (RubyModelException e) {
 			e.printStackTrace();
+		}
+		return null;
+	}
+
+	private IType getType(IParent parent, String className) throws RubyModelException {
+		IRubyElement[] children = parent.getChildren();
+		for (int j = 0; j < children.length; j++) {
+			IRubyElement child = children[j];
+			if (child.isType(IRubyElement.SOURCE_FOLDER)) {
+				ISourceFolder folder = (ISourceFolder) child;
+				IType type = getType(folder, className);
+				if (type != null) return type;
+			} else if(child.isType(IRubyElement.TYPE)) {
+				IType type = (IType) child;
+				if (type.getElementName().equals(className)) return type;
+			}
 		}
 		return null;
 	}
@@ -591,7 +600,7 @@ public class RubyProject extends Openable implements IProjectNature, IRubyElemen
 					root = getSourceFolderRoot((IResource) target);
 				} else {
 					// external target
-					if (RubyModel.isFile(target)) {
+					if (RubyModel.isFolder(target)) {
 						root = new ExternalSourceFolderRoot(entryPath, this);
 					}
 				}

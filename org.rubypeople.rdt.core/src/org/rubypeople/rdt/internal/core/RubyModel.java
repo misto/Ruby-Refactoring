@@ -43,7 +43,7 @@ public class RubyModel extends Openable implements IRubyModel {
 	 * been confirmed as file (ie. which returns true to {@link java.io.File#isFile()}.
 	 * Note this cache is kept for the whole session.
 	 */ 
-	public static HashSet existingExternalConfirmedFiles = new HashSet();
+	public static HashSet existingExternalConfirmedFolders = new HashSet();
 	
 	protected RubyModel() {
 		super(null);
@@ -54,7 +54,7 @@ public class RubyModel extends Openable implements IRubyModel {
 	 */
 	public static void flushExternalFileCache() {
 		existingExternalFiles = new HashSet();
-		existingExternalConfirmedFiles = new HashSet();
+		existingExternalConfirmedFolders = new HashSet();
 	}
 
 	/**
@@ -231,23 +231,23 @@ private synchronized static Object getTargetAsExternalFile(IPath path, boolean c
 }
 
 /**
- * Helper method - returns whether an object is afile (ie. which returns true to {@link java.io.File#isFile()}.
+ * Helper method - returns whether an object is a file (ie. which returns true to {@link java.io.File#isFile()}.
  */
-public static boolean isFile(Object target) {
-	return getFile(target) != null;
+public static boolean isFolder(Object target) {
+	return getFolder(target) != null;
 }
 
 /**
  * Helper method - returns the file item (ie. which returns true to {@link java.io.File#isFile()},
  * or null if unbound
  */
-public static synchronized File getFile(Object target) {
-	if (existingExternalConfirmedFiles.contains(target))
+public static synchronized File getFolder(Object target) {
+	if (existingExternalConfirmedFolders.contains(target))
 		return (File) target;
 	if (target instanceof File) {
 		File f = (File) target;
-		if (f.isFile()) {
-			existingExternalConfirmedFiles.add(f);
+		if (f.isDirectory()) {
+			existingExternalConfirmedFolders.add(f);
 			return f;
 		}
 	}

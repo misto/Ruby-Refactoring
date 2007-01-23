@@ -852,7 +852,7 @@ public class RubyCore extends Plugin {
 		}
 		// outside the workspace
 		if (target instanceof File) {
-			File externalFile = RubyModel.getFile(target);
+			File externalFile = RubyModel.getFolder(target);
 			if (externalFile != null) {
 				return RubyCore.newLibraryEntry(resolvedPath, entry.isExported());				
 			} else { // external binary folder
