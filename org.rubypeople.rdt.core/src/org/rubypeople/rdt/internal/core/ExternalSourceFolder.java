@@ -20,6 +20,7 @@ public class ExternalSourceFolder extends SourceFolder {
 		if (!openableParent.isOpen()) {
 			openableParent.generateInfos(openableParent.createElementInfo(), newElements, pm);
 		}
+		// XXX We need to modify ExtenralSourceFolerRoot's computeChildren method. None of the source folders' children are getting set!
 	}
 	
 	public boolean isReadOnly() {
