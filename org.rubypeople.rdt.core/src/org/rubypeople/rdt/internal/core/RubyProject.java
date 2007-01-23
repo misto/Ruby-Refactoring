@@ -70,7 +70,6 @@ import org.xml.sax.SAXException;
 public class RubyProject extends Openable implements IProjectNature, IRubyElement, IRubyProject {
 
     protected IProject project;
-    protected List loadPathEntries;
     protected boolean scratched;
     
     /**
@@ -379,17 +378,36 @@ public class RubyProject extends Openable implements IProjectNature, IRubyElemen
      */
     public IType findType(String fullyQualifiedName) {
         int index = fullyQualifiedName.lastIndexOf("::");
-        String className = null, packageName = null;
+        String className = null;
         if (index == -1) {
-            packageName = "";
             className = fullyQualifiedName;
         } else {
-            packageName = fullyQualifiedName.substring(0, index);
             className = fullyQualifiedName.substring(index + 2);
         }
 
-        // FIXME Handle the namespaces properly. we ignore them so far!
-        return searchChildren(this, className);
+        // XXX Use the imports to search the path properly, then do an exhaustive search if that fails
+        IType child = searchChildren(this, className);
+        if (child != null) return child;
+        try {
+			ILoadpathEntry[] loadpaths = getResolvedLoadpath(true);
+			for (int i = 0; i < loadpaths.length; i++) {
+				ILoadpathEntry entry = loadpaths[i];
+				IPath path = entry.getPath();
+				SourceFolderRoot root = new ExternalSourceFolderRoot(path, this);
+				List<IRubyElement> childen = root.getChildrenOfType(IRubyElement.TYPE);
+				for (IRubyElement element : childen) {
+					if (element.isType(IRubyElement.TYPE)) {
+						IType aType = (IType) element;
+						if (aType.getElementName().equals(className)) {
+							return aType;
+						}
+					}
+				}
+			}
+		} catch (RubyModelException e) {
+			e.printStackTrace();
+		}
+		return null;
     }
 
     /**
@@ -578,7 +596,7 @@ public class RubyProject extends Openable implements IProjectNature, IRubyElemen
 					} else {
 						// external target
 						if (RubyModel.isFile(target)) {
-							root = new ExternalPackageFragmentRoot(entryPath, this);
+							root = new ExternalSourceFolderRoot(entryPath, this);
 						}
 					}
 				} else {
@@ -2045,7 +2063,7 @@ public class RubyProject extends Openable implements IProjectNature, IRubyElemen
 	}
 
 	private ISourceFolderRoot getPackageFragmentRoot0(IPath path) {
-		return new ExternalPackageFragmentRoot(path, this);
+		return new ExternalSourceFolderRoot(path, this);
 	}
 
 	/*

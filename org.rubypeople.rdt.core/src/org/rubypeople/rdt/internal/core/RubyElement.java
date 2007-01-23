@@ -26,6 +26,7 @@ package org.rubypeople.rdt.internal.core;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
@@ -211,10 +212,10 @@ public abstract class RubyElement extends PlatformObject implements IRubyElement
 	 *
 	 * @param type - one of the type constants defined by RubyElement
 	 */
-	public ArrayList getChildrenOfType(int type) throws RubyModelException {
+	public ArrayList<IRubyElement> getChildrenOfType(int type) throws RubyModelException {
 		IRubyElement[] children = getChildren();
 		int size = children.length;
-		ArrayList list = new ArrayList(size);
+		ArrayList<IRubyElement> list = new ArrayList<IRubyElement>(size);
 		for (int i = 0; i < size; ++i) {
 			RubyElement elt = (RubyElement)children[i];
 			if (elt.getElementType() == type) {
