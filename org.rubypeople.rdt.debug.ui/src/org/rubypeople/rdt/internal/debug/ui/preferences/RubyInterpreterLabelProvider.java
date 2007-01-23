@@ -6,6 +6,7 @@ import org.eclipse.jface.viewers.ILabelProviderListener;
 import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.swt.graphics.Image;
 import org.rubypeople.rdt.launching.IVMInstall;
+import org.rubypeople.rdt.launching.IVMInstallType;
 
 public class RubyInterpreterLabelProvider implements ITableLabelProvider {
 
@@ -25,6 +26,9 @@ public class RubyInterpreterLabelProvider implements ITableLabelProvider {
 			case 1 :
 				File installLocation = interpreter.getInstallLocation();
 				return installLocation != null ? installLocation.getAbsolutePath() : "In user path";
+			case 2 :
+				IVMInstallType installType = interpreter.getVMInstallType();
+				return installType != null ? installType.getName() : "Unknown";
 			default :
 				return "Unknown Column Index";
 		}

@@ -15,12 +15,14 @@ import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.window.Window;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.BusyIndicator;
+import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Event;
+import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
@@ -37,17 +39,21 @@ import org.rubypeople.rdt.launching.RubyRuntime;
 import org.rubypeople.rdt.launching.VMStandin;
 
 public class RubyInterpreterPreferencePage extends PreferencePage implements IWorkbenchPreferencePage, IAddVMDialogRequestor {
-	
+
 	/**
 	 * VMs being displayed
 	 */
-	private List<IVMInstall> fVMs = new ArrayList<IVMInstall>(); 
-	
+	private List<IVMInstall> fVMs = new ArrayList<IVMInstall>();
+
 	protected CheckboxTableViewer fVMList;
 	protected Button addButton, editButton, removeButton;
 
 	public RubyInterpreterPreferencePage() {
 		super();
+		// only used when page is shown programatically
+		setTitle(RubyVMMessages.JREsPreferencePage_1);
+
+		setDescription(RubyVMMessages.JREsPreferencePage_2);
 	}
 
 	public void init(IWorkbench workbench) {}
@@ -56,12 +62,22 @@ public class RubyInterpreterPreferencePage extends PreferencePage implements IWo
 		noDefaultAndApplyButton();
 
 		Composite composite = createPageRoot(parent);
+		
+		Label tableLabel = new Label(composite, SWT.NONE);
+		tableLabel.setText(RubyVMMessages.InstalledJREsBlock_15); 
+		GridData data = new GridData();
+		data.horizontalSpan = 2;
+		tableLabel.setLayoutData(data);
+		Font font = parent.getFont();
+		composite.setFont(font);	
+		tableLabel.setFont(font);
+		
 		Table table = createInstalledInterpretersTable(composite);
 		createInstalledInterpretersTableViewer(table);
-		createButtonGroup(composite);		
+		createButtonGroup(composite);
 
 		fillWithWorkspaceRubyVMs();
-		
+
 		IVMInstall selectedInterpreter = RubyRuntime.getDefaultVMInstall();
 		if (selectedInterpreter != null)
 			fVMList.setChecked(selectedInterpreter, true);
@@ -70,9 +86,9 @@ public class RubyInterpreterPreferencePage extends PreferencePage implements IWo
 
 		return composite;
 	}
-	
+
 	private void fillWithWorkspaceRubyVMs() {
-//		 fill with Ruby VMs
+		// fill with Ruby VMs
 		List<VMStandin> standins = new ArrayList<VMStandin>();
 		IVMInstallType[] types = RubyRuntime.getVMInstallTypes();
 		for (int i = 0; i < types.length; i++) {
@@ -83,13 +99,14 @@ public class RubyInterpreterPreferencePage extends PreferencePage implements IWo
 				standins.add(new VMStandin(install));
 			}
 		}
-		setJREs((IVMInstall[])standins.toArray(new IVMInstall[standins.size()]));			
+		setJREs((IVMInstall[]) standins.toArray(new IVMInstall[standins.size()]));
 	}
 
 	/**
 	 * Sets the JREs to be displayed in this block
 	 * 
-	 * @param vms JREs to be displayed
+	 * @param vms
+	 *            JREs to be displayed
 	 */
 	protected void setJREs(IVMInstall[] vms) {
 		fVMs.clear();
@@ -153,7 +170,7 @@ public class RubyInterpreterPreferencePage extends PreferencePage implements IWo
 				updateSelectedInterpreter(event.getElement());
 			}
 		});
-		
+
 		fVMList.addDoubleClickListener(new IDoubleClickListener() {
 			public void doubleClick(DoubleClickEvent e) {
 				editInterpreter();
@@ -175,7 +192,11 @@ public class RubyInterpreterPreferencePage extends PreferencePage implements IWo
 
 		column = new TableColumn(table, SWT.NULL);
 		column.setText(RdtDebugUiMessages.RubyInterpreterPreferencePage_rubyInterpreterTable_interpreterPath);
-		column.setWidth(350);
+		column.setWidth(250);
+		
+		column = new TableColumn(table, SWT.NULL);
+		column.setText(RdtDebugUiMessages.RubyInterpreterPreferencePage_rubyInterpreterTable_interpreterType);
+		column.setWidth(125);
 
 		return table;
 	}
@@ -190,7 +211,7 @@ public class RubyInterpreterPreferencePage extends PreferencePage implements IWo
 
 	protected void addInterpreter() {
 		AddVMDialog dialog = new AddVMDialog(this, getShell(), RubyRuntime.getVMInstallTypes(), null);
-		dialog.setTitle(RubyVMMessages.InstalledJREsBlock_7); 
+		dialog.setTitle(RubyVMMessages.InstalledJREsBlock_7);
 		if (dialog.open() != Window.OK) {
 			return;
 		}
@@ -220,31 +241,31 @@ public class RubyInterpreterPreferencePage extends PreferencePage implements IWo
 	}
 
 	protected void editInterpreter() {
-		IStructuredSelection selection= (IStructuredSelection)fVMList.getSelection();
-		IVMInstall vm= (IVMInstall)selection.getFirstElement();
+		IStructuredSelection selection = (IStructuredSelection) fVMList.getSelection();
+		IVMInstall vm = (IVMInstall) selection.getFirstElement();
 		if (vm == null) {
 			return;
 		}
-//		if (isContributed(vm)) {
-//			VMDetailsDialog dialog= new VMDetailsDialog(getShell(), vm);
-//			dialog.open();
-//		} else {
-			AddVMDialog dialog= new AddVMDialog(this, getShell(), RubyRuntime.getVMInstallTypes(), vm);
-			dialog.setTitle(RubyVMMessages.InstalledJREsBlock_8); 
-			if (dialog.open() != Window.OK) {
-				return;
-			}
-			fVMList.refresh(vm);
-//		}
+		// if (isContributed(vm)) {
+		// VMDetailsDialog dialog= new VMDetailsDialog(getShell(), vm);
+		// dialog.open();
+		// } else {
+		AddVMDialog dialog = new AddVMDialog(this, getShell(), RubyRuntime.getVMInstallTypes(), vm);
+		dialog.setTitle(RubyVMMessages.InstalledJREsBlock_8);
+		if (dialog.open() != Window.OK) {
+			return;
+		}
+		fVMList.refresh(vm);
+		// }
 	}
-	
+
 	protected IVMInstall getSelectedInterpreter() {
 		IStructuredSelection selection = (IStructuredSelection) fVMList.getSelection();
 		return (IVMInstall) selection.getFirstElement();
 	}
-	
-	public boolean performOk() {	
-		final boolean[] canceled = new boolean[] {false};
+
+	public boolean performOk() {
+		final boolean[] canceled = new boolean[] { false };
 		BusyIndicator.showWhile(null, new Runnable() {
 			public void run() {
 				IVMInstall defaultVM = getCheckedRubyVM();
@@ -255,14 +276,14 @@ public class RubyInterpreterPreferencePage extends PreferencePage implements IWo
 				}
 			}
 		});
-		
-		if(canceled[0]) {
+
+		if (canceled[0]) {
 			return false;
 		}
-		
-		return super.performOk();		
+
+		return super.performOk();
 	}
-	
+
 	/**
 	 * Returns the checked RubyVM or <code>null</code> if none.
 	 * 
@@ -273,21 +294,21 @@ public class RubyInterpreterPreferencePage extends PreferencePage implements IWo
 		if (objects.length == 0) {
 			return null;
 		}
-		return (IVMInstall)objects[0];
+		return (IVMInstall) objects[0];
 	}
-	
+
 	/**
 	 * Returns the RubyVMs currently being displayed in this block
 	 * 
 	 * @return RubyVMs currently being displayed in this block
 	 */
 	public IVMInstall[] getRubyVMs() {
-		return (IVMInstall[])fVMs.toArray(new IVMInstall[fVMs.size()]);
+		return (IVMInstall[]) fVMs.toArray(new IVMInstall[fVMs.size()]);
 	}
 
 	public boolean isDuplicateName(String name) {
-		for (int i= 0; i < fVMs.size(); i++) {
-			IVMInstall vm = (IVMInstall)fVMs.get(i);
+		for (int i = 0; i < fVMs.size(); i++) {
+			IVMInstall vm = (IVMInstall) fVMs.get(i);
 			if (vm.getName().equals(name)) {
 				return true;
 			}

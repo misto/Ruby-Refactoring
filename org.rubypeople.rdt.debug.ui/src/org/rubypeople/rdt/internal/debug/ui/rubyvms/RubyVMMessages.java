@@ -28,6 +28,9 @@ public class RubyVMMessages extends NLS {
 	public static String VMLibraryBlock_Libraries_cannot_be_empty__1;
 	public static String VMLibraryBlock_10;
 	public static String LibraryStandin_0;
+	public static String InstalledJREsBlock_15;
+	public static String JREsPreferencePage_2;
+	public static String JREsPreferencePage_1;
 
 	static {
 		// load message values from bundle file

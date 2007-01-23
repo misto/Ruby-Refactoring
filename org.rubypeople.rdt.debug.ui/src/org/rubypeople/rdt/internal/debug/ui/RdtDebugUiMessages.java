@@ -69,6 +69,7 @@ public class RdtDebugUiMessages {
 	public static String RubyInterpreterPreferencePage_rubyInterpreterTable_interpreterName;
 	public static String RubyInterpreterPreferencePage_rubyInterpreterTable_interpreterPath;
 	public static String RdtDebugUiPlugin_couldNotOpenFile;
+	public static String RubyInterpreterPreferencePage_rubyInterpreterTable_interpreterType;
 	
 	static {
 		// load message values from bundle file
