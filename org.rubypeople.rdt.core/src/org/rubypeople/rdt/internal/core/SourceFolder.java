@@ -25,7 +25,7 @@ public class SourceFolder extends Openable implements ISourceFolder {
 
 	String[] names;
 
-	public SourceFolder(RubyElement parent, String[] names) {
+	public SourceFolder(SourceFolderRoot parent, String[] names) {
 		super(parent);
 		this.names = names;
 	}

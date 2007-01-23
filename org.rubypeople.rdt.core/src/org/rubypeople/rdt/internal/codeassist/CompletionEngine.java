@@ -91,7 +91,7 @@ public class CompletionEngine {
 		
 		// If the prefix looks like a constant don't bother searching for
 		// methods
-		if (!(this.prefix != null && Character.isUpperCase(this.prefix
+		if (!(this.prefix != null && this.prefix.length() > 0 && Character.isUpperCase(this.prefix
 				.charAt(0)))) {
 			List<ITypeGuess> guesses = inferrer
 					.infer(source.toString(), offset);
