@@ -22,6 +22,10 @@ public class LoadPathEntryLabelProvider implements ILabelProvider {
 	public String getText(Object element) {
 		if (element != null && element.getClass() == LoadpathEntry.class) {
 			IProject project = ((LoadpathEntry) element).getProject();			
+			// TODO: quick fix
+			if (project == null) {
+				return "Project is null" ;
+			}
 			if (project.isAccessible()) {
 				return project.getLocation().toOSString() ;
 			}

@@ -84,7 +84,7 @@ public class RubyArgumentsTab extends AbstractLaunchConfigurationTab {
 		if (useDefaultWorkingDirectoryButton.getSelection() != useDefault)
 			useDefaultWorkingDirectoryButton.setSelection(useDefault);
 		if (useDefault) {
-			workingDirectorySelector.setSelectionText((String)null);
+			workingDirectorySelector.setSelectionText((String)"");
 		}
 		workingDirectorySelector.setEnabled(!useDefault);
 	}

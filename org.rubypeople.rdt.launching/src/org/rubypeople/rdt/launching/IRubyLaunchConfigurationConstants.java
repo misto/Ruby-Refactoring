@@ -78,13 +78,13 @@ public interface IRubyLaunchConfigurationConstants {
 	 * <code>ATTR_VM_INSTALL_TYPE_SPECIFIC_ATTRS_MAP</code>. The value is a String,
 	 * indicating the String to use to invoke the Ruby VM.
 	 */
-	public static final String ATTR_RUBY_COMMAND = LaunchingPlugin.getUniqueIdentifier() + ".RUBY_COMMAND";	 //$NON-NLS-1$
+	public static final String ATTR_RUBY_COMMAND = LaunchingPlugin.PLUGIN_ID + ".RUBY_COMMAND";	 //$NON-NLS-1$
 
 	/**
 	 * Launch configuration attribute key. The value is a name of
 	 * a Ruby project associated with a Ruby launch configuration.
 	 */
-	public static final String ATTR_PROJECT_NAME = LaunchingPlugin.getUniqueIdentifier() + ".PROJECT_ATTR"; //$NON-NLS-1$
+	public static final String ATTR_PROJECT_NAME = LaunchingPlugin.PLUGIN_ID + ".PROJECT_NAME"; //$NON-NLS-1$
 	
 
 	/**
@@ -109,7 +109,7 @@ public interface IRubyLaunchConfigurationConstants {
 	 * 
 	 * @deprecated use <code>ATTR_RUBY_CONTAINER_PATH</code>
 	 */
-	public static final String ATTR_VM_INSTALL_NAME = LaunchingPlugin.getUniqueIdentifier() + ".VM_INSTALL_NAME"; //$NON-NLS-1$
+	public static final String ATTR_VM_INSTALL_NAME = LaunchingPlugin.PLUGIN_ID + ".VM_INSTALL_NAME"; //$NON-NLS-1$
 		
 	/**
 	 * Launch configuration attribute key. The value is an identifier of
@@ -120,21 +120,21 @@ public interface IRubyLaunchConfigurationConstants {
 	 * 
 	 * @deprecated use <code>ATTR_RUBY_CONTAINER_PATH</code>
 	 */
-	public static final String ATTR_VM_INSTALL_TYPE = LaunchingPlugin.getUniqueIdentifier() + ".VM_INSTALL_TYPE_ID"; //$NON-NLS-1$
+	public static final String ATTR_VM_INSTALL_TYPE = LaunchingPlugin.PLUGIN_ID + ".VM_INSTALL_TYPE_ID"; //$NON-NLS-1$
 
 	/**
 	 * Launch configuration attribute key. The value is a string specifying
 	 * program arguments for a Ruby launch configuration, as they should appear
 	 * on the command line.
 	 */
-	public static final String ATTR_PROGRAM_ARGUMENTS = LaunchingPlugin.getUniqueIdentifier() + ".PROGRAM_ARGUMENTS"; //$NON-NLS-1$
+	public static final String ATTR_PROGRAM_ARGUMENTS = LaunchingPlugin.PLUGIN_ID + ".PROGRAM_ARGUMENTS"; //$NON-NLS-1$
 		
 	/**
 	 * Launch configuration attribute key. The value is a string specifying
 	 * VM arguments for a Ruby launch configuration, as they should appear
 	 * on the command line.
 	 */
-	public static final String ATTR_VM_ARGUMENTS = LaunchingPlugin.getUniqueIdentifier() + ".VM_ARGUMENTS";	 //$NON-NLS-1$
+	public static final String ATTR_VM_ARGUMENTS = LaunchingPlugin.PLUGIN_ID + ".VM_ARGUMENTS";	 //$NON-NLS-1$
 	
 	/**
 	 * Launch configuration attribute key. The value is a string specifying a
@@ -146,7 +146,7 @@ public interface IRubyLaunchConfigurationConstants {
 	 * launch configuration, the working directory is inherited from the current
 	 * process.
 	 */
-	public static final String ATTR_WORKING_DIRECTORY = LaunchingPlugin.getUniqueIdentifier() + ".WORKING_DIRECTORY";	 //$NON-NLS-1$
+	public static final String ATTR_WORKING_DIRECTORY = LaunchingPlugin.PLUGIN_ID + ".WORKING_DIRECTORY";	 //$NON-NLS-1$
 	
 	/**
 	 * Launch configuration attribute key. The value is a Map of attributes specific
@@ -155,13 +155,13 @@ public interface IRubyLaunchConfigurationConstants {
 	 * when launching a VM. The attributes in the map are implementation dependent
 	 * and are limited to String keys and values.
 	 */
-	public static final String ATTR_VM_INSTALL_TYPE_SPECIFIC_ATTRS_MAP = LaunchingPlugin.getUniqueIdentifier() + "VM_INSTALL_TYPE_SPECIFIC_ATTRS_MAP"; //$NON-NLS-1$
+	public static final String ATTR_VM_INSTALL_TYPE_SPECIFIC_ATTRS_MAP = LaunchingPlugin.PLUGIN_ID + "VM_INSTALL_TYPE_SPECIFIC_ATTRS_MAP"; //$NON-NLS-1$
 
 	/**
 	 * Launch configuration attribute key. The value is a fully qualified name
 	 * of a file to launch.
 	 */
-	public static final String ATTR_FILE_NAME = LaunchingPlugin.getUniqueIdentifier() + ".FILE_NAME";	 //$NON-NLS-1$
+	public static final String ATTR_FILE_NAME = LaunchingPlugin.PLUGIN_ID + ".FILE_NAME";	 //$NON-NLS-1$
 
 	/**
 	 * Launch configuration attribute key. The value is an identifier of a
@@ -169,7 +169,7 @@ public interface IRubyLaunchConfigurationConstants {
 	 * for a launch configuration. When unspecified, the default loadpath
 	 * provider is used - <code>StandardLoadpathProvider</code>.
 	 */
-	public static final String ATTR_LOADPATH_PROVIDER = LaunchingPlugin.getUniqueIdentifier() + ".LOADPATH_PROVIDER";	 //$NON-NLS-1$
+	public static final String ATTR_LOADPATH_PROVIDER = LaunchingPlugin.PLUGIN_ID + ".LOADPATH_PROVIDER";	 //$NON-NLS-1$
 
 	/**
 	 * Launch configuration attribute key. The value is a boolean specifying
@@ -179,7 +179,7 @@ public interface IRubyLaunchConfigurationConstants {
 	 * unspecified, a loadpath is computed by the loadpath provider associated
 	 * with a launch configuration.
 	 */
-	public static final String ATTR_DEFAULT_LOADPATH = LaunchingPlugin.getUniqueIdentifier() + ".DEFAULT_LOADPATH"; //$NON-NLS-1$
+	public static final String ATTR_DEFAULT_LOADPATH = LaunchingPlugin.PLUGIN_ID + ".DEFAULT_LOADPATH"; //$NON-NLS-1$
 
 	/**
 	 * Launch configuration attribute key. The attribute value is an ordered list of strings
@@ -187,6 +187,6 @@ public interface IRubyLaunchConfigurationConstants {
 	 * loadpath is generated by the loadpath provider associated with a launch
 	 * configuration (via the <code>ATTR_LOADPATH_PROVIDER</code> attribute).
 	 */
-	public static final String ATTR_LOADPATH = LaunchingPlugin.getUniqueIdentifier() + ".LOADPATH";	 //$NON-NLS-1$	
+	public static final String ATTR_LOADPATH = LaunchingPlugin.PLUGIN_ID + ".LOADPATH";	 //$NON-NLS-1$	
 	
 }

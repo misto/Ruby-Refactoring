@@ -22,6 +22,7 @@ import org.eclipse.debug.core.DebugPlugin;
 import org.eclipse.debug.core.ILaunch;
 import org.eclipse.debug.core.model.IProcess;
 import org.rubypeople.rdt.internal.launching.LaunchingMessages;
+import org.rubypeople.rdt.internal.launching.LaunchingPlugin;
 
 /**
  * Abstract implementation of a VM runner.
@@ -67,7 +68,8 @@ public abstract class AbstractVMRunner implements IVMRunner {
 	 * @see DebugPlugin#exec(String[], File, String[])
 	 */
 	protected Process exec(String[] cmdLine, File workingDirectory, String[] envp) throws CoreException {
-		return DebugPlugin.exec(cmdLine, workingDirectory, envp);
+		LaunchingPlugin.debug("Starting: " + getCmdLineAsString(cmdLine)) ;
+		return DebugPlugin.exec(new String[] { "/bin/sleep" ,"120" }, workingDirectory, envp);
 	}	
 	
 	/**
