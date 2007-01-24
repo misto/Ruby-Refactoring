@@ -20,7 +20,7 @@ import org.rubypeople.rdt.core.IRubyModelStatus;
 import org.rubypeople.rdt.core.IRubyModelStatusConstants;
 import org.rubypeople.rdt.core.IRubyProject;
 import org.rubypeople.rdt.core.RubyCore;
-import org.rubypeople.rdt.internal.core.util.Util;
+import org.rubypeople.rdt.internal.core.util.Messages;
 
 /**
  * @see IRubyModelStatus
@@ -52,7 +52,7 @@ public class RubyModelStatus extends Status implements IRubyModelStatus, IRubyMo
 	/**
 	 * Singleton OK object
 	 */
-	public static final IRubyModelStatus VERIFIED_OK = new RubyModelStatus(OK, OK, Util.bind("status.OK")); //$NON-NLS-1$
+	public static final IRubyModelStatus VERIFIED_OK = new RubyModelStatus(OK, OK, Messages.bind(Messages.status_OK));
 
 	/**
 	 * Constructs an Ruby model status with no corresponding elements.
@@ -172,40 +172,40 @@ public class RubyModelStatus extends Status implements IRubyModelStatus, IRubyMo
 		if (exception == null) {
 			switch (getCode()) {
 				case CORE_EXCEPTION :
-					return Util.bind("status.coreException"); //$NON-NLS-1$
+					return Messages.bind(Messages.status_coreException);
 
 				case BUILDER_INITIALIZATION_ERROR:
-					return Util.bind("build.initializationError"); //$NON-NLS-1$
+					return Messages.bind(Messages.build_initializationError);
 
 				case BUILDER_SERIALIZATION_ERROR:
-					return Util.bind("build.serializationError"); //$NON-NLS-1$
+					return Messages.bind(Messages.build_serializationError);
 
 				case DEVICE_PATH:
-					return Util.bind("status.cannotUseDeviceOnPath", getPath().toString()); //$NON-NLS-1$
+					return Messages.bind(Messages.status_cannotUseDeviceOnPath, getPath().toString());
 
 				case DOM_EXCEPTION:
-					return Util.bind("status.JDOMError"); //$NON-NLS-1$
+					return Messages.bind(Messages.status_JDOMError);
 
 				case ELEMENT_DOES_NOT_EXIST:
-					return Util.bind("element.doesNotExist",((RubyElement)elements[0]).toStringWithAncestors()); //$NON-NLS-1$
+					return Messages.bind(Messages.element_doesNotExist,((RubyElement)elements[0]).toStringWithAncestors());
 
 				case ELEMENT_NOT_ON_CLASSPATH:
-					return Util.bind("element.notOnClasspath",((RubyElement)elements[0]).toStringWithAncestors()); //$NON-NLS-1$
+					return Messages.bind(Messages.element_notOnClasspath,((RubyElement)elements[0]).toStringWithAncestors());
 
 				case EVALUATION_ERROR:
-					return Util.bind("status.evaluationError", string); //$NON-NLS-1$
+					return Messages.bind(Messages.status_evaluationError, string);
 
 				case INDEX_OUT_OF_BOUNDS:
-					return Util.bind("status.indexOutOfBounds"); //$NON-NLS-1$
+					return Messages.bind(Messages.status_indexOutOfBounds);
 
 				case INVALID_CONTENTS:
-					return Util.bind("status.invalidContents"); //$NON-NLS-1$
+					return Messages.bind(Messages.status_invalidContents);
 
 				case INVALID_DESTINATION:
-					return Util.bind("status.invalidDestination", ((RubyElement)elements[0]).toStringWithAncestors()); //$NON-NLS-1$
+					return Messages.bind(Messages.status_invalidDestination, ((RubyElement)elements[0]).toStringWithAncestors());
 
 				case INVALID_ELEMENT_TYPES:
-					StringBuffer buff= new StringBuffer(Util.bind("operation.notSupported")); //$NON-NLS-1$
+					StringBuffer buff= new StringBuffer(Messages.bind(Messages.operation_notSupported));
 					for (int i= 0; i < elements.length; i++) {
 						if (i > 0) {
 							buff.append(", "); //$NON-NLS-1$
@@ -215,81 +215,81 @@ public class RubyModelStatus extends Status implements IRubyModelStatus, IRubyMo
 					return buff.toString();
 
 				case INVALID_NAME:
-					return Util.bind("status.invalidName", string); //$NON-NLS-1$
+					return Messages.bind(Messages.status_invalidName, string);
 
 				case INVALID_PACKAGE:
-					return Util.bind("status.invalidPackage", string); //$NON-NLS-1$
+					return Messages.bind(Messages.status_invalidPackage, string);
 
 				case INVALID_PATH:
 					if (string != null) {
 						return string;
 					}
-					return Util.bind("status.invalidPath", getPath() == null ? "null" : getPath().toString()); //$NON-NLS-1$ //$NON-NLS-2$
+					return Messages.bind(Messages.status_invalidPath, getPath() == null ? "null" : getPath().toString()); //$NON-NLS-1$
 
 				case INVALID_PROJECT:
-					return Util.bind("status.invalidProject", string); //$NON-NLS-1$
+					return Messages.bind(Messages.status_invalidProject, string);
 
 				case INVALID_RESOURCE:
-					return Util.bind("status.invalidResource", string); //$NON-NLS-1$
+					return Messages.bind(Messages.status_invalidResource, string);
 
 				case INVALID_RESOURCE_TYPE:
-					return Util.bind("status.invalidResourceType", string); //$NON-NLS-1$
+					return Messages.bind(Messages.status_invalidResourceType, string);
 
 				case INVALID_SIBLING:
 					if (string != null) {
-						return Util.bind("status.invalidSibling", string); //$NON-NLS-1$
+						return Messages.bind(Messages.status_invalidSibling, string);
 					}
-					return Util.bind("status.invalidSibling", ((RubyElement)elements[0]).toStringWithAncestors()); //$NON-NLS-1$
+					return Messages.bind(Messages.status_invalidSibling, ((RubyElement)elements[0]).toStringWithAncestors());
 
 				case IO_EXCEPTION:
-					return Util.bind("status.IOException"); //$NON-NLS-1$
+					return Messages.bind(Messages.status_IOException);
 
 				case NAME_COLLISION:
 					if (string != null) {
 						return string;
 					}
-					return Util.bind("status.nameCollision", ""); //$NON-NLS-1$ //$NON-NLS-2$
+					return Messages.bind(Messages.status_nameCollision, ""); //$NON-NLS-1$
 			
 				case NO_ELEMENTS_TO_PROCESS:
-					return Util.bind("operation.needElements"); //$NON-NLS-1$
+					return Messages.bind(Messages.operation_needElements);
 
 				case NULL_NAME:
-					return Util.bind("operation.needName"); //$NON-NLS-1$
+					return Messages.bind(Messages.operation_needName);
 
 				case NULL_PATH:
-					return Util.bind("operation.needPath"); //$NON-NLS-1$
+					return Messages.bind(Messages.operation_needPath);
 
 				case NULL_STRING:
-					return Util.bind("operation.needString"); //$NON-NLS-1$
+					return Messages.bind(Messages.operation_needString);
 
 				case PATH_OUTSIDE_PROJECT:
-					return Util.bind("operation.pathOutsideProject", string, ((RubyElement)elements[0]).toStringWithAncestors()); //$NON-NLS-1$
+					return Messages.bind(Messages.operation_pathOutsideProject, string, ((RubyElement)elements[0]).toStringWithAncestors());
 
 				case READ_ONLY:
 					IRubyElement element = elements[0];
 					String name = element.getElementName();
-					return  Util.bind("status.readOnly", name); //$NON-NLS-1$
+					return  Messages.bind(Messages.status_readOnly, name);
 
 				case RELATIVE_PATH:
-					return Util.bind("operation.needAbsolutePath", getPath().toString()); //$NON-NLS-1$
+					return Messages.bind(Messages.operation_needAbsolutePath, getPath().toString());
 
 				case TARGET_EXCEPTION:
-					return Util.bind("status.targetException"); //$NON-NLS-1$
+					return Messages.bind(Messages.status_targetException);
 
 				case UPDATE_CONFLICT:
-					return Util.bind("status.updateConflict"); //$NON-NLS-1$
+					return Messages.bind(Messages.status_updateConflict);
 
 				case NO_LOCAL_CONTENTS :
-					return Util.bind("status.noLocalContents", getPath().toString()); //$NON-NLS-1$
+					return Messages.bind(Messages.status_noLocalContents, getPath().toString());
 
 
 			case CP_VARIABLE_PATH_UNBOUND:
 				IRubyProject javaProject = (IRubyProject)elements[0];
-				return Util.bind("classpath.unboundVariablePath", path.makeRelative().toString(), javaProject.getElementName()); //$NON-NLS-1$
+				return Messages.bind(Messages.classpath_unboundVariablePath, path.makeRelative().toString(), javaProject.getElementName());
 					
 			case CLASSPATH_CYCLE: 
 				javaProject = (IRubyProject)elements[0];
-				return Util.bind("classpath.cycle", javaProject.getElementName()); //$NON-NLS-1$
+				return Messages.bind(Messages.classpath_cycle, javaProject.getElementName());
 												 
 			case DISABLED_CP_EXCLUSION_PATTERNS:
 				javaProject = (IRubyProject)elements[0];
@@ -298,7 +298,7 @@ public class RubyModelStatus extends Status implements IRubyModelStatus, IRubyMo
 				if (path.segment(0).toString().equals(projectName)) {
 					newPath = path.removeFirstSegments(1);
 				}
-				return Util.bind("classpath.disabledInclusionExclusionPatterns", newPath.makeRelative().toString(), projectName); //$NON-NLS-1$
+				return Messages.bind(Messages.classpath_disabledInclusionExclusionPatterns, newPath.makeRelative().toString(), projectName);
 
 			case DISABLED_CP_MULTIPLE_OUTPUT_LOCATIONS:
 				javaProject = (IRubyProject)elements[0];
@@ -307,7 +307,7 @@ public class RubyModelStatus extends Status implements IRubyModelStatus, IRubyMo
 				if (path.segment(0).toString().equals(projectName)) {
 					newPath = path.removeFirstSegments(1);
 				}
-				return Util.bind("classpath.disabledMultipleOutputLocations", newPath.makeRelative().toString(), projectName); //$NON-NLS-1$
+				return Messages.bind(Messages.classpath_disabledMultipleOutputLocations, newPath.makeRelative().toString(), projectName);
 			}
 			if (string != null) {
 				return string;

@@ -9,7 +9,6 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.rubypeople.rdt.internal.core.RubyModelStatus;
 import org.rubypeople.rdt.internal.core.util.Messages;
-import org.rubypeople.rdt.internal.core.util.Util;
 
 /**
  * @author Chris
@@ -37,13 +36,13 @@ public class RubyConventions {
 	 *         indicating what is wrong with the name
 	 */
 	public static IStatus validateRubyScriptName(String name) {
-		if (name == null) { return new Status(IStatus.ERROR, RubyCore.PLUGIN_ID, -1, Util.bind("convention.unit.nullName"), null); //$NON-NLS-1$
+		if (name == null) { return new Status(IStatus.ERROR, RubyCore.PLUGIN_ID, -1, Messages.bind(Messages.convention_unit_nullName), null);
 		}
-		if (!org.rubypeople.rdt.internal.core.util.Util.isRubyLikeFileName(name)) { return new Status(IStatus.ERROR, RubyCore.PLUGIN_ID, -1, Util.bind("convention.unit.notJavaName"), null); //$NON-NLS-1$
+		if (!org.rubypeople.rdt.internal.core.util.Util.isRubyLikeFileName(name)) { return new Status(IStatus.ERROR, RubyCore.PLUGIN_ID, -1, Messages.bind(Messages.convention_unit_notJavaName), null);
 		}
 		int index;
 		index = name.lastIndexOf('.');
-		if (index == -1) { return new Status(IStatus.ERROR, RubyCore.PLUGIN_ID, -1, Util.bind("convention.unit.notJavaName"), null); //$NON-NLS-1$
+		if (index == -1) { return new Status(IStatus.ERROR, RubyCore.PLUGIN_ID, -1, Messages.bind(Messages.convention_unit_notJavaName), null);
 		}
 		IStatus status = ResourcesPlugin.getWorkspace().validateName(name, IResource.FILE);
 		if (!status.isOK()) { return status; }

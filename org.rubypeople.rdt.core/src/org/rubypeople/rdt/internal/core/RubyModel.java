@@ -24,6 +24,7 @@ import org.rubypeople.rdt.core.IRubyElement;
 import org.rubypeople.rdt.core.IRubyModel;
 import org.rubypeople.rdt.core.IRubyProject;
 import org.rubypeople.rdt.core.RubyModelException;
+import org.rubypeople.rdt.internal.core.util.Messages;
 
 /**
  * @author Chris
@@ -173,7 +174,7 @@ public class RubyModel extends Openable implements IRubyModel {
 		case IResource.PROJECT:
 			return new RubyProject((IProject) resource, this);
 		default:
-			throw new IllegalArgumentException(org.rubypeople.rdt.internal.core.util.Util.bind("element.invalidResourceForProject")); //$NON-NLS-1$
+			throw new IllegalArgumentException(Messages.bind(Messages.element_invalidResourceForProject));
 		}
 	}
 

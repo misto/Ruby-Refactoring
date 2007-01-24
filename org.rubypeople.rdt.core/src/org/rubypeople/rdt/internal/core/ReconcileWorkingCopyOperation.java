@@ -17,6 +17,7 @@ import org.rubypeople.rdt.core.IRubyModelStatus;
 import org.rubypeople.rdt.core.IRubyModelStatusConstants;
 import org.rubypeople.rdt.core.RubyModelException;
 import org.rubypeople.rdt.core.WorkingCopyOwner;
+import org.rubypeople.rdt.internal.core.util.Messages;
 
 /**
  * Reconcile a working copy and signal the changes through a delta.
@@ -44,8 +45,7 @@ public class ReconcileWorkingCopyOperation extends RubyModelOperation {
     protected void executeOperation() throws RubyModelException {
         if (this.progressMonitor != null) {
             if (this.progressMonitor.isCanceled()) throw new OperationCanceledException();
-            this.progressMonitor.beginTask(org.rubypeople.rdt.internal.core.util.Util
-                    .bind("element.reconciling"), 2); //$NON-NLS-1$
+            this.progressMonitor.beginTask(Messages.bind(Messages.element_reconciling), 2);
         }
         RubyScript workingCopy = getWorkingCopy();
         boolean wasConsistent = workingCopy.isConsistent();
