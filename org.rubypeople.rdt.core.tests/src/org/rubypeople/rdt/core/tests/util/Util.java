@@ -429,4 +429,109 @@ public class Util {
 		buffer.append("\"");
 		return buffer.toString();
 	}
+
+	/**
+	 * Delete a file or directory and insure that the file is no longer present
+	 * on file system. In case of directory, delete all the hierarchy underneath.
+	 * 
+	 * @param file The file or directory to delete
+	 * @return true iff the file was really delete, false otherwise
+	 */
+	public static boolean delete(File file) {
+		// flush all directory content
+		if (file.isDirectory()) {
+			flushDirectoryContent(file);
+		}
+		// remove file
+		file.delete();
+		if (isFileDeleted(file)) {
+			return true;
+		}
+		return waitUntilFileDeleted(file);
+	}
+	
+	/**
+	 * Flush content of a given directory (leaving it empty),
+	 * no-op if not a directory.
+	 */
+	public static void flushDirectoryContent(File dir) {
+		File[] files = dir.listFiles();
+		if (files == null) return;
+		for (int i = 0, max = files.length; i < max; i++) {
+			delete(files[i]);
+		}
+	}
+	
+	/**
+	 * Wait until the file is _really_ deleted on file system.
+	 * 
+	 * @param file Deleted file
+	 * @return true if the file was finally deleted, false otherwise
+	 */
+	private static boolean waitUntilFileDeleted(File file) {
+		if (DELETE_DEBUG) {
+			System.out.println();
+			System.out.println("WARNING in test: "+getTestName());
+			System.out.println("	- problems occured while deleting "+file);
+			printRdtCoreStackTrace(null, 1);
+			printFileInfo(file.getParentFile(), 1, -1); // display parent with its children
+			System.out.print("	- wait for ("+DELETE_MAX_WAIT+"ms max): ");
+		}
+		int count = 0;
+		int delay = 10; // ms
+		int maxRetry = DELETE_MAX_WAIT / delay;
+		int time = 0;
+		while (count < maxRetry) {
+			try {
+				count++;
+				Thread.sleep(delay);
+				time += delay;
+				if (time > DELETE_MAX_TIME) DELETE_MAX_TIME = time;
+				if (DELETE_DEBUG) System.out.print('.');
+				if (file.exists()) {
+					if (file.delete()) {
+						// SUCCESS
+						if (DELETE_DEBUG) {
+							System.out.println();
+							System.out.println("	=> file really removed after "+time+"ms (max="+DELETE_MAX_TIME+"ms)");
+							System.out.println();
+						}
+						return true;
+					}
+				}
+				if (isFileDeleted(file)) {
+					// SUCCESS
+					if (DELETE_DEBUG) {
+						System.out.println();
+						System.out.println("	=> file disappeared after "+time+"ms (max="+DELETE_MAX_TIME+"ms)");
+						System.out.println();
+					}
+					return true;
+				}
+				// Increment waiting delay exponentially
+				if (count >= 10 && delay <= 100) {
+					count = 1;
+					delay *= 10;
+					maxRetry = DELETE_MAX_WAIT / delay;
+					if ((DELETE_MAX_WAIT%delay) != 0) {
+						maxRetry++;
+					}
+				}
+			}
+			catch (InterruptedException ie) {
+				break; // end loop
+			}
+		}
+		if (!DELETE_DEBUG) {
+			System.out.println();
+			System.out.println("WARNING in test: "+getTestName());
+			System.out.println("	- problems occured while deleting "+file);
+			printRdtCoreStackTrace(null, 1);
+			printFileInfo(file.getParentFile(), 1, -1); // display parent with its children
+		}
+		System.out.println();
+		System.out.println("	!!! ERROR: "+file+" was never deleted even after having waited "+DELETE_MAX_TIME+"ms!!!");
+		System.out.println();
+		return false;
+	}
 }

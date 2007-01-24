@@ -267,7 +267,7 @@ public class AbstractRubyModelTest extends TestCase {
 	
 	
 	protected IRubyProject createRubyProject(String projectName) throws CoreException {
-		return this.createRubyProject(projectName, new String[] {""}, new String[] {"JCL_LIB"});
+		return this.createRubyProject(projectName, new String[] {""}, new String[] {"RUBY_LIB"});
 	}
 	
 	/*
@@ -674,5 +674,21 @@ public class AbstractRubyModelTest extends TestCase {
 		
 		// TODO Find some way to wait until the indexes are ready from SymbolIndex/build process
 		
+	}
+	
+	public void deleteFile(File file) {
+		int retryCount = 0;
+		while (++retryCount <= 60) { // wait 1 minute at most
+			if (org.rubypeople.rdt.core.tests.util.Util.delete(file)) {
+				break;
+			}
+		}
+	}
+	protected void deleteFolder(IPath folderPath) throws CoreException {
+		deleteResource(getFolder(folderPath));
+	}
+	
+	protected IFolder getFolder(IPath path) {
+		return getWorkspaceRoot().getFolder(path);
 	}
 }

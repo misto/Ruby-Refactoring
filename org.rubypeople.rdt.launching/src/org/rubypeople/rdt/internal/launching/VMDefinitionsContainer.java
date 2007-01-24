@@ -83,11 +83,6 @@ public class VMDefinitionsContainer {
 	private String fDefaultVMInstallCompositeID;
 	
 	/**
-	 * The identifier of the connector to use for the default VM.
-	 */
-	private String fDefaultVMInstallConnectorTypeID;
-	
-	/**
 	 * Constructs an empty VM container 
 	 */
 	public VMDefinitionsContainer() {
@@ -202,24 +197,6 @@ public class VMDefinitionsContainer {
 	}
 	
 	/**
-	 * Return the default VM's connector type ID.
-	 * 
-	 * @return String the current value of the default VM's connector type ID
-	 */
-	public String getDefaultVMInstallConnectorTypeID() {
-		return fDefaultVMInstallConnectorTypeID;
-	}
-	
-	/**
-	 * Set the default VM's connector type ID.
-	 * 
-	 * @param id the new value of the default VM's connector type ID
-	 */
-	public void  setDefaultVMInstallConnectorTypeID(String id){
-		fDefaultVMInstallConnectorTypeID = id;
-	}
-	
-	/**
 	 * Return the VM definitions contained in this object as a String of XML.  The String
 	 * is suitable for storing in the workbench preferences.
 	 * <p>
@@ -243,12 +220,7 @@ public class VMDefinitionsContainer {
 		if (getDefaultVMInstallCompositeID() != null) {
 			config.setAttribute("defaultVM", getDefaultVMInstallCompositeID()); //$NON-NLS-1$
 		}
-		
-		// Set the defaultVMConnector attribute on the top-level node
-		if (getDefaultVMInstallConnectorTypeID() != null) {
-			config.setAttribute("defaultVMConnector", getDefaultVMInstallConnectorTypeID()); //$NON-NLS-1$
-		}
-				
+			
 		// Create a node for each install type represented in this container
 		Set vmInstallTypeSet = getVMTypeToVMMap().keySet();
 		Iterator keyIterator = vmInstallTypeSet.iterator();
@@ -398,7 +370,6 @@ public class VMDefinitionsContainer {
 		
 		// Populate the default VM-related fields
 		container.setDefaultVMInstallCompositeID(config.getAttribute("defaultVM")); //$NON-NLS-1$
-		container.setDefaultVMInstallConnectorTypeID(config.getAttribute("defaultVMConnector")); //$NON-NLS-1$
 		
 		// Traverse the parsed structure and populate the VMType to VM Map
 		NodeList list = config.getChildNodes();

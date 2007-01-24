@@ -123,7 +123,6 @@ public class RubyRuntime {
 	private static boolean fgInitializingVMs;
 	private static String fgDefaultVMId;
     private static ListenerList fgVMListeners = new ListenerList(5);
-	private static String fgDefaultVMConnectorId;
 		
 	/**
 	 * Cache of already resolved projects in container entries. Used to avoid
@@ -250,8 +249,7 @@ public class RubyRuntime {
 	
 	private static String getVMsAsXML() throws IOException, ParserConfigurationException, TransformerException {
 		VMDefinitionsContainer container = new VMDefinitionsContainer();	
-		container.setDefaultVMInstallCompositeID(getDefaultVMId());
-		container.setDefaultVMInstallConnectorTypeID(getDefaultVMConnectorId());	
+		container.setDefaultVMInstallCompositeID(getDefaultVMId());	
 		IVMInstallType[] vmTypes= getVMInstallTypes();
 		for (int i = 0; i < vmTypes.length; ++i) {
 			IVMInstall[] vms = vmTypes[i].getVMInstalls();
@@ -262,11 +260,6 @@ public class RubyRuntime {
 		}
 		return container.getAsXML();
 	}
-	
-	private static String getDefaultVMConnectorId() {
-		initializeVMs();
-		return fgDefaultVMConnectorId;
-	}	
 	
 	/**
 	 * Saves the preferences for the launching plug-in.
@@ -362,7 +355,6 @@ public class RubyRuntime {
 							}
 						}
 						fgDefaultVMId = vmDefs.getDefaultVMInstallCompositeID();
-						fgDefaultVMConnectorId = vmDefs.getDefaultVMInstallConnectorTypeID();
 						
 						// Create the underlying VMs for each valid VM
 						List vmList = vmDefs.getValidVMList();
