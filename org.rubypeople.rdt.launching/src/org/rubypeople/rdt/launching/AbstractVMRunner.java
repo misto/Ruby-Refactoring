@@ -30,7 +30,7 @@ import org.rubypeople.rdt.internal.launching.LaunchingPlugin;
  * Clients implementing VM runners should subclass this class.
  * </p>
  * @see IVMRunner
- * @since 2.0
+ * @since 0.9.0
  */
 public abstract class AbstractVMRunner implements IVMRunner {
 
@@ -64,12 +64,12 @@ public abstract class AbstractVMRunner implements IVMRunner {
 	}
 	
 	/**
-	 * @since 3.0
+	 * @since 0.9.0
 	 * @see DebugPlugin#exec(String[], File, String[])
 	 */
 	protected Process exec(String[] cmdLine, File workingDirectory, String[] envp) throws CoreException {
 		LaunchingPlugin.debug("Starting: " + getCmdLineAsString(cmdLine)) ;
-		return DebugPlugin.exec(new String[] { "/bin/sleep" ,"120" }, workingDirectory, envp);
+		return DebugPlugin.exec(cmdLine, workingDirectory, envp);
 	}	
 	
 	/**
@@ -106,7 +106,7 @@ public abstract class AbstractVMRunner implements IVMRunner {
 	 * @param attributes values for the attribute map
 	 * @return the new process
 	 * @throws CoreException problems occurred creating the process
-	 * @since 3.0
+	 * @since 0.9.0
 	 */
 	protected IProcess newProcess(ILaunch launch, Process p, String label, Map attributes) throws CoreException {
 		IProcess process= DebugPlugin.newProcess(launch, p, label, attributes);

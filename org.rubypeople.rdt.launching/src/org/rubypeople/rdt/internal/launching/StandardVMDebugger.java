@@ -134,19 +134,18 @@ public class StandardVMDebugger extends StandardVMRunner implements IVMRunner {
 				launch.addDebugTarget(debugTarget);
 			} catch (IOException e) {
 				abort(LaunchingMessages.StandardVMDebugger_Couldn__t_connect_to_VM_4, e, IRubyLaunchConfigurationConstants.ERR_CONNECTION_FAILED);
+				debugTarget.terminate();
 			} catch (RubyProcessingException e) {
 				abort(LaunchingMessages.StandardVMDebugger_Couldn__t_connect_to_VM_5, e, IRubyLaunchConfigurationConstants.ERR_CONNECTION_FAILED);
-			} finally {
-				// FIXME Should this always terminate, or just on exceptions?
 				debugTarget.terminate();
 			}
 		} else {
 			LaunchingPlugin.log(new Status(IStatus.ERROR, LaunchingPlugin.PLUGIN_ID, IStatus.ERROR, LaunchingMessages.RdtLaunchingPlugin_processTerminatedBecauseNoDebuggerConnection, null));
 			debugTarget.terminate();
 		}
-		if (p != null) {
-			p.destroy();
-		}
+//		if (p != null) {
+//			p.destroy();
+//		}
 	}
 
 	/**
