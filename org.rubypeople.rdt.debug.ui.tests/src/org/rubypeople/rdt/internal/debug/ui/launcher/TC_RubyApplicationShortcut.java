@@ -1,6 +1,8 @@
 package org.rubypeople.rdt.internal.debug.ui.launcher;
 
 import java.io.File;
+import java.util.HashSet;
+import java.util.Set;
 
 import junit.framework.Assert;
 
@@ -22,6 +24,7 @@ import org.rubypeople.rdt.core.tests.ModifyingResourceTest;
 import org.rubypeople.rdt.internal.debug.ui.RdtDebugUiPlugin;
 import org.rubypeople.rdt.internal.debug.ui.RubySourceLocator;
 import org.rubypeople.rdt.internal.launching.RubyLaunchConfigurationAttribute;
+import org.rubypeople.rdt.launching.IVMInstall;
 import org.rubypeople.rdt.launching.IVMInstallType;
 import org.rubypeople.rdt.launching.RubyRuntime;
 import org.rubypeople.rdt.launching.VMStandin;
@@ -36,7 +39,8 @@ public class TC_RubyApplicationShortcut extends ModifyingResourceTest {
 	protected ShamRubyApplicationShortcut shortcut;
 	protected IFile rubyFile, nonRubyFile;
 	private static String SHAM_LAUNCH_CONFIG_TYPE = "org.rubypeople.rdt.debug.ui.tests.launching.LaunchConfigurationTypeSham";
-
+	private Set configurations = new HashSet();	
+	
 	public TC_RubyApplicationShortcut(String name) {
 		super(name);
 	}
@@ -59,8 +63,7 @@ public class TC_RubyApplicationShortcut extends ModifyingResourceTest {
 	}
 
 	protected ILaunchConfiguration[] getLaunchConfigurations() throws CoreException {
-		ILaunchManager launchManager = DebugPlugin.getDefault().getLaunchManager();
-		return launchManager.getLaunchConfigurations(launchManager.getLaunchConfigurationType(SHAM_LAUNCH_CONFIG_TYPE));
+		return (ILaunchConfiguration[]) configurations.toArray(new ILaunchConfiguration[configurations.size()]);
 	}
 	
 	private IVMInstallType vmType;
@@ -86,7 +89,8 @@ public class TC_RubyApplicationShortcut extends ModifyingResourceTest {
 		VMStandin standin = new VMStandin(vmType, VM_ID);
 		standin.setInstallLocation(new File("C:/RubyInstallRootOne"));
 		standin.setName("InterpreterOne");
-		standin.convertToRealVM();
+		IVMInstall vm = standin.convertToRealVM();
+		RubyRuntime.setDefaultVMInstall(vm, null, true);
 		super.setUp();
 	}
 	
@@ -94,6 +98,7 @@ public class TC_RubyApplicationShortcut extends ModifyingResourceTest {
 	protected void tearDown() throws Exception {
 		super.tearDown();
 		deleteProject("project1");
+		configurations.clear();
 	}
 
 	
@@ -243,6 +248,7 @@ public class TC_RubyApplicationShortcut extends ModifyingResourceTest {
 		protected void doLaunch(IRubyElement rubyElement, String mode) throws CoreException {
 			ILaunchConfiguration config = findOrCreateLaunchConfiguration(rubyElement, mode);
 			if (config != null) {
+				configurations.add(config);
 				launches++;
 			}
 		}
