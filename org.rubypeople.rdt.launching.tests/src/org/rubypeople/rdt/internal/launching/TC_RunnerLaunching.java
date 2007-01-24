@@ -6,8 +6,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
-import junit.framework.TestCase;
-
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
@@ -22,14 +20,15 @@ import org.eclipse.debug.core.ILaunchConfigurationWorkingCopy;
 import org.eclipse.debug.core.ILaunchManager;
 import org.eclipse.debug.core.Launch;
 import org.rubypeople.eclipse.shams.debug.core.ShamLaunchConfigurationType;
-import org.rubypeople.eclipse.testutils.ResourceTools;
+import org.rubypeople.rdt.core.IRubyProject;
 import org.rubypeople.rdt.core.RubyCore;
+import org.rubypeople.rdt.core.tests.ModifyingResourceTest;
 import org.rubypeople.rdt.launching.IVMInstall;
 import org.rubypeople.rdt.launching.IVMInstallType;
 import org.rubypeople.rdt.launching.RubyRuntime;
 import org.rubypeople.rdt.launching.VMStandin;
 
-public class TC_RunnerLaunching extends TestCase {
+public class TC_RunnerLaunching extends ModifyingResourceTest {
 
 	private final static String PROJECT_NAME = "Simple Project";
 	private final static String RUBY_LIB_DIR = "someRubyDir"; // dir inside project 
@@ -40,6 +39,7 @@ public class TC_RunnerLaunching extends TestCase {
 	
 	private static final String VM_TYPE_ID = "org.rubypeople.rdt.launching.StandardVMType";
 	private IVMInstallType vmType;
+	private IRubyProject project;
 	
 	public TC_RunnerLaunching(String name) {
 		super(name);
@@ -54,6 +54,13 @@ public class TC_RunnerLaunching extends TestCase {
 		standin.setInstallLocation(new File("C:\ruby"));
 		IVMInstall real = standin.convertToRealVM();
 		RubyRuntime.setDefaultVMInstall(real, null, true);
+		project = createRubyProject(PROJECT_NAME);
+	}
+	
+	@Override
+	protected void tearDown() throws Exception {
+		super.tearDown();
+		deleteProject(PROJECT_NAME);
 	}
 	
 	protected ILaunchManager getLaunchManager() {
@@ -102,10 +109,7 @@ public class TC_RunnerLaunching extends TestCase {
 	}
 
 	public void launch(boolean debug) throws Exception {
-
-		IProject project = ResourceTools.createProject(PROJECT_NAME);
-
-		IVMInstall interpreter = new VMStandin((IVMInstallType)null, "");
+		IVMInstall interpreter = new VMStandin(vmType, "");
 
 		ILaunchConfiguration configuration = new ShamLaunchConfiguration();
 		ILaunch launch = new Launch(configuration, debug ? ILaunchManager.DEBUG_MODE : ILaunchManager.RUN_MODE, null);
@@ -119,7 +123,7 @@ public class TC_RunnerLaunching extends TestCase {
 			null);
 
 		assertEquals("One process has been spawned", 1, launch.getProcesses().length);
-		List expected = getCommandLine(project, debug);
+		List expected = getCommandLine(project.getProject(), debug);
 		String[] actual = interpreter.getVMArguments();
 		if (debug) {
 			// we must cheat with the first argument, because it is a temporary file which

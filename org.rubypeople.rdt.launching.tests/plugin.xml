@@ -20,6 +20,7 @@
       <import plugin="org.eclipse.core.resources"/>
       <import plugin="org.rubypeople.eclipse.testutils"/>
       <import plugin="org.rubypeople.rdt.core"/>
+      <import plugin="org.rubypeople.rdt.core.tests"/>
    </requires>
 
 </plugin>
