@@ -62,11 +62,8 @@ public class StandardVMDebugger extends StandardVMRunner implements IVMRunner {
 		subMonitor.subTask(LaunchingMessages.StandardVMDebugger_Constructing_command_line____3);
 
 		RubyDebugTarget debugTarget = new RubyDebugTarget(launch, port);
-
 		String program = constructProgramString(config);
-
 		List<String> arguments = new ArrayList<String>(12);
-
 		arguments.add(program);
 
 		// VM args are the first thing after the ruby program so that users can

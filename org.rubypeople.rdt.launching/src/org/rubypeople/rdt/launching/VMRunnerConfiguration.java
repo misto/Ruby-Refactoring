@@ -97,13 +97,13 @@ public class VMRunnerConfiguration {
 	}
 	
 	/**
-	 * Sets the environment for the Java program. The Java VM will be
+	 * Sets the environment for the Ruby program. The Ruby VM will be
 	 * launched in the given environment.
 	 * 
-	 * @param environment the environment for the Java program specified as an array
+	 * @param environment the environment for the Ruby program specified as an array
 	 *  of strings, each element specifying an environment variable setting in the
 	 *  format <i>name</i>=<i>value</i>
-	 * @since 3.0
+	 * @since 0.9.0
 	 */
 	public void setEnvironment(String[] environment) {
 		fEnvironment= environment;
@@ -165,10 +165,10 @@ public class VMRunnerConfiguration {
 	}
 	
 	/**
-	 * Returns the environment for the Java program or <code>null</code>
+	 * Returns the environment for the Ruby program or <code>null</code>
 	 * 
-	 * @return The Java program environment. Default is <code>null</code>
-	 * @since 3.0
+	 * @return The Ruby program environment. Default is <code>null</code>
+	 * @since 0.9.0
 	 */
 	public String[] getEnvironment() {
 		return fEnvironment;
@@ -181,7 +181,7 @@ public class VMRunnerConfiguration {
 	 *  to be used by a launched VM, or <code>null</code> if
 	 *  the default working directory is to be inherited from the
 	 *  current process
-	 * @since 2.0
+	 * @since 0.9.0
 	 */
 	public void setWorkingDirectory(String path) {
 		fWorkingDirectory = path;
