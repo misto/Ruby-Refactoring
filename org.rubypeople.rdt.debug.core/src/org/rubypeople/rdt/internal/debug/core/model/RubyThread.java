@@ -14,18 +14,13 @@ import org.rubypeople.rdt.internal.debug.core.SuspensionPoint;
 
 // see RubyDebugTarget for the reason why PlatformObject is being extended
 public class RubyThread extends PlatformObject implements IThread {
+	
 	private RubyStackFrame[] frames;
-
 	private IDebugTarget target;
-
 	private boolean isSuspended = false;
-
 	private boolean isTerminated = false;
-
 	private boolean isStepping = false;
-
 	private String name;
-
 	private int id;
 
 	public RubyThread(IDebugTarget target, int id) {
@@ -180,8 +175,9 @@ public class RubyThread extends PlatformObject implements IThread {
 	public void stepInto() throws DebugException {
 		isStepping = true;
 		this.updateName();
-		this.frames = null;
-		frames[0].stepInto();
+		if (frames != null && frames.length > 0) {
+			frames[0].stepInto();
+		}
 	}
 
 	public void stepOver() throws DebugException {
