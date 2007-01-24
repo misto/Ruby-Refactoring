@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.Reader;
 import java.net.URI;
+import java.nio.charset.Charset;
 
 import junit.framework.Assert;
 
@@ -48,7 +49,7 @@ public class ShamFile extends ShamResource implements IFile {
 	}
 	
 	public String getCharset() throws CoreException {
-		return null;
+		return Charset.defaultCharset().name();
 	}
 
 	public ShamFile(String fullPath, boolean readContentFromFile) {
@@ -312,8 +313,7 @@ public class ShamFile extends ShamResource implements IFile {
 	 * @see org.eclipse.core.resources.IFile#getCharset(boolean)
 	 */
 	public String getCharset(boolean checkImplicit) throws CoreException {
-		// TODO Auto-generated method stub
-		return null;
+		return getCharset();
 	}
 
 	/* (non-Javadoc)
