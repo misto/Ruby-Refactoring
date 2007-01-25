@@ -67,7 +67,9 @@ public class DefaultTypeInferrer implements ITypeInferrer {
 		tryGlobalVarNode(node, guesses);
 
 		tryWellKnownMethodCalls(node, guesses);
-
+		if (node instanceof ConstNode) { // if this is a constant, it may be the type name!
+			guesses.add(new BasicTypeGuess(((ConstNode)node).getName(), 100));
+		}
 		return guesses;
 	}
 

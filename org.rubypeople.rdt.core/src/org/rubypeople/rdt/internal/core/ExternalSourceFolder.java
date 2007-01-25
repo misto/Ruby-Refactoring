@@ -6,7 +6,9 @@ import java.util.HashMap;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.rubypeople.rdt.core.IRubyElement;
+import org.rubypeople.rdt.core.IRubyScript;
 import org.rubypeople.rdt.core.RubyModelException;
+import org.rubypeople.rdt.internal.core.util.Messages;
 import org.rubypeople.rdt.internal.core.util.Util;
 
 public class ExternalSourceFolder extends SourceFolder {
@@ -48,5 +50,12 @@ public class ExternalSourceFolder extends SourceFolder {
 		vChildren.toArray(children);
 		info.setChildren(children);
 		return true;		
+	}
+	
+	public IRubyScript getRubyScript(String name) {
+		if (!org.rubypeople.rdt.internal.core.util.Util.isRubyLikeFileName(name)) {
+			throw new IllegalArgumentException(Messages.convention_unit_notJavaName); 
+		}
+		return new ExternalRubyScript(this, name, DefaultWorkingCopyOwner.PRIMARY);
 	}
 }

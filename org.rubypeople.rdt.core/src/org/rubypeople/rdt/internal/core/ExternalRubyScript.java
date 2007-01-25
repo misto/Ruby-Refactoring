@@ -52,7 +52,7 @@ public class ExternalRubyScript extends RubyScript {
 	
 	@Override
 	public boolean exists() {
-		return ((Openable)getOpenable()).exists();
+		return getFile().exists();
 	}
 	
 	/**

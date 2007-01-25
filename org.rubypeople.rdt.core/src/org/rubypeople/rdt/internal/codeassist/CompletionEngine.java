@@ -6,7 +6,7 @@ import java.util.Arrays;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Set;
+import java.util.StringTokenizer;
 
 import org.jruby.ast.ClassNode;
 import org.jruby.ast.ClassVarAsgnNode;
@@ -32,17 +32,14 @@ import org.rubypeople.rdt.core.IParent;
 import org.rubypeople.rdt.core.IRubyElement;
 import org.rubypeople.rdt.core.IRubyProject;
 import org.rubypeople.rdt.core.IRubyScript;
+import org.rubypeople.rdt.core.ISourceFolder;
 import org.rubypeople.rdt.core.ISourceFolderRoot;
 import org.rubypeople.rdt.core.IType;
-import org.rubypeople.rdt.core.RubyCore;
 import org.rubypeople.rdt.core.RubyModelException;
 import org.rubypeople.rdt.internal.core.RubyElement;
 import org.rubypeople.rdt.internal.core.RubyType;
 import org.rubypeople.rdt.internal.core.parser.RubyParser;
 import org.rubypeople.rdt.internal.core.search.ExperimentalIndex;
-import org.rubypeople.rdt.internal.core.symbols.ISymbolFinder;
-import org.rubypeople.rdt.internal.core.symbols.ISymbolTypes;
-import org.rubypeople.rdt.internal.core.symbols.SearchResult;
 import org.rubypeople.rdt.internal.ti.DefaultTypeInferrer;
 import org.rubypeople.rdt.internal.ti.ITypeGuess;
 import org.rubypeople.rdt.internal.ti.ITypeInferrer;
@@ -70,8 +67,9 @@ public class CompletionEngine {
 		// if we hit a period, use character before period as offset for
 		// inferrer
 		// if we hit a space, use character after space?
-		// TODO We need to handle other bad syntax like invoking completion right after an @
-		StringBuffer prefix = new StringBuffer();
+		// TODO We need to handle other bad syntax like invoking completion
+		// right after an @
+		StringBuffer tmpPrefix = new StringBuffer();
 		boolean isMethod = false;
 		for (int i = offset; i >= 0; i--) {
 			char curChar = source.charAt(i);
@@ -82,7 +80,7 @@ public class CompletionEngine {
 					source.deleteCharAt(i);
 					offset--;
 					break;
-				}			
+				}
 				offset = i - 1;
 				break;
 			}
@@ -90,91 +88,154 @@ public class CompletionEngine {
 				offset = i + 1;
 				break;
 			}
-			prefix.insert(0, curChar);
-		}		
-		this.prefix = prefix.toString();
-		if (this.prefix != null) replaceStart -= this.prefix.length();
-		
+			tmpPrefix.insert(0, curChar);
+		}
+		this.prefix = tmpPrefix.toString();
+		if (this.prefix != null)
+			replaceStart -= this.prefix.length();
+
 		if (isConstant()) { // type or constant
-			suggestTypeNames(replaceStart);			
-			suggestConstantNames(replaceStart);	
+			suggestTypeNames(replaceStart);
+			suggestConstantNames(replaceStart);
 		} else { // method or variable
 			ITypeInferrer inferrer = new DefaultTypeInferrer();
-			List<ITypeGuess> guesses = inferrer
-					.infer(source.toString(), offset);
-			RubyElementRequestor completer = new RubyElementRequestor(script.getRubyProject());
-			for (Iterator iter = guesses.iterator(); iter.hasNext();) {
-				ITypeGuess guess = (ITypeGuess) iter.next();
-				IType type = completer.findType(guess.getType());
-				suggestMethods(replaceStart, completer, guess, type);
+			List<ITypeGuess> guesses = inferrer.infer(source.toString(), offset);
+
+			IRubyProject rubyProject = script.getRubyProject();
+			ISourceFolderRoot[] roots = rubyProject.getSourceFolderRoots();
+			// ILoadpathEntry[] loadpaths =
+			// rubyProject.getResolvedLoadpath(true);
+			for (int i = 0; i < roots.length; i++) {
+				ISourceFolderRoot root = roots[i];
+				IImportDeclaration[] imports = script.getImports();
+				for (int j = 0; j < imports.length; j++) {
+					String path = imports[j].getElementName();
+					StringTokenizer tokenizer = new StringTokenizer(path, "\\/");
+					List<String> tokens = new ArrayList<String>();
+					while(tokenizer.hasMoreTokens()) {
+						tokens.add(tokenizer.nextToken());
+					}					
+					String name = tokens.remove(tokens.size() - 1) + ".rb";
+					String[] pckgs =  (String[]) tokens.toArray(new String[tokens.size()]);
+					ISourceFolder folder = root.getSourceFolder(pckgs);
+					if (!folder.exists()) continue;
+					IRubyScript otherScript = folder.getRubyScript(name);
+					if (!otherScript.exists()) continue;
+					List<IType> types = getTypes(otherScript);
+					for (IType type : types) {
+						for (ITypeGuess guess : guesses) {
+							if (guess.getType().equals(type.getElementName())) {
+								IMethod[] methods = type.getMethods();
+								for(int x = 0; x < methods.length; x++) {
+									addProposal(replaceStart, CompletionProposal.METHOD_REF, methods[x].getElementName());
+								}
+							}
+						}
+					}
+				}
 			}
-			if (!isMethod) getDocumentsRubyElementsInScope(script, source.toString(), offset, replaceStart);
+//			bruteForceMethodSuggestion(script, replaceStart, guesses);
+			if (!isMethod)
+				getDocumentsRubyElementsInScope(script, source.toString(), offset, replaceStart);
 		}
 		this.requestor.endReporting();
+	}
+
+	private List<IType> getTypes(IParent script) {
+		List<IType> types = new ArrayList<IType>();
+		try {
+			IRubyElement[] children = script.getChildren();
+			for (int i = 0; i < children.length; i++) {
+				if (children[i].isType(IRubyElement.TYPE)) {
+					types.add((IType) children[i]);
+				}
+				if (children[i] instanceof IParent) {
+					types.addAll(getTypes((IParent) children[i]));
+				}
+			}
+		} catch (RubyModelException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return types;
+	}
+
+	private void bruteForceMethodSuggestion(IRubyScript script, int replaceStart, List<ITypeGuess> guesses) throws RubyModelException {
+		RubyElementRequestor completer = new RubyElementRequestor(script.getRubyProject());
+		// TODO Search the loadpath + imports!
+		for (Iterator iter = guesses.iterator(); iter.hasNext();) {
+			ITypeGuess guess = (ITypeGuess) iter.next();
+			IType type = completer.findType(guess.getType());
+			suggestMethods(replaceStart, completer, guess, type);
+		}
 	}
 
 	private void suggestTypeNames(int replaceStart) {
 		List<String> types = ExperimentalIndex.getTypes();
 		// TODO Remove duplicates? Sort?
 		for (String name : types) {
-			if (this.prefix != null && !name.startsWith(this.prefix)) continue;
-			CompletionProposal proposal = new CompletionProposal(
-					CompletionProposal.TYPE_REF, name, 100);
-			proposal.setReplaceRange(replaceStart, replaceStart + name.length());
-			requestor.accept(proposal);		
+			if (this.prefix != null && !name.startsWith(this.prefix))
+				continue;
+			addProposal(replaceStart, CompletionProposal.TYPE_REF, name);
 		}
 	}
-	
+
+	private CompletionProposal addProposal(int replaceStart, int type, String name) {
+		CompletionProposal proposal = new CompletionProposal(type, name, 100);
+		proposal.setReplaceRange(replaceStart, replaceStart + name.length());
+		requestor.accept(proposal);
+		return proposal;
+	}
+
 	private void suggestConstantNames(int replaceStart) {
 		List<String> types = ExperimentalIndex.getConstants();
 		// TODO Remove duplicates? Sort?
 		for (String name : types) {
-			if (this.prefix != null && !name.startsWith(this.prefix)) continue;
-			CompletionProposal proposal = new CompletionProposal(
-					CompletionProposal.FIELD_REF, name, 100);
+			if (this.prefix != null && !name.startsWith(this.prefix))
+				continue;
+			CompletionProposal proposal = new CompletionProposal(CompletionProposal.FIELD_REF, name, 100);
 			proposal.setReplaceRange(replaceStart, replaceStart + name.length());
-			requestor.accept(proposal);		
+			requestor.accept(proposal);
 		}
 	}
 
 	private boolean isConstant() {
-		return this.prefix != null && this.prefix.length() > 0 && Character.isUpperCase(this.prefix
-				.charAt(0));
+		return this.prefix != null && this.prefix.length() > 0 && Character.isUpperCase(this.prefix.charAt(0));
 	}
 
-	private void suggestMethods(int replaceStart, RubyElementRequestor completer, ITypeGuess guess,
-			IType type) throws RubyModelException {
+	private void suggestMethods(int replaceStart, RubyElementRequestor completer, ITypeGuess guess, IType type) throws RubyModelException {
 		if (type == null)
 			return;
 
 		suggestMethods(replaceStart, guess.getConfidence(), type);
 		// Now grab methods from all the included modules
 		String[] modules = type.getIncludedModuleNames();
-		for (int x = 0; x < modules.length; x++) {
-			IType tmpType = completer.findType(modules[x]);
-			suggestMethods(replaceStart, guess.getConfidence(),
-					tmpType);
+		if (modules != null) {
+			for (int x = 0; x < modules.length; x++) {
+				IType tmpType = completer.findType(modules[x]);
+				suggestMethods(replaceStart, guess.getConfidence(), tmpType);
+			}
 		}
 		String superClass = type.getSuperclassName();
+		if (superClass == null)
+			return;
 		// FIXME This shouldn't happen! Object shouldn't be a parent of itself!
-		if (type.getElementName().equals("Object")
-				&& superClass.equals("Object"))
+		if (type.getElementName().equals("Object") && superClass.equals("Object"))
 			return;
 		IType parentClass = completer.findType(superClass);
 		suggestMethods(replaceStart, completer, guess, parentClass);
 	}
 
-	private void suggestMethods(int replaceStart, int confidence, IType type)
-			throws RubyModelException {
+	private void suggestMethods(int replaceStart, int confidence, IType type) throws RubyModelException {
 		if (type == null)
 			return;
 		IMethod[] methods = type.getMethods();
 		for (int k = 0; k < methods.length; k++) {
 			IMethod method = methods[k];
-			String name = method.getElementName();			
-			if (prefix != null && !name.startsWith(prefix)) continue;	
-			CompletionProposal proposal = new CompletionProposal(
-					CompletionProposal.METHOD_REF, name, confidence);
+			String name = method.getElementName();
+			if (prefix != null && !name.startsWith(prefix))
+				continue;
+			CompletionProposal proposal = new CompletionProposal(CompletionProposal.METHOD_REF, name, confidence);
 			proposal.setReplaceRange(replaceStart, replaceStart + name.length());
 			int flags = Flags.AccDefault;
 			if (method.isSingleton()) {
@@ -197,69 +258,74 @@ public class CompletionEngine {
 			requestor.accept(proposal);
 		}
 	}
-	
+
 	/**
 	 * Gets all the distinct elements in the current RubyScript
-	 * @param offset 
-	 * @param replaceStart 
+	 * 
+	 * @param offset
+	 * @param replaceStart
 	 * 
 	 * @return a List of the names of all the elements in the current RubyScript
 	 */
-	private void getDocumentsRubyElementsInScope(IRubyScript script, String source, int offset, int replaceStart) {		
-		try {	
-			// FIXME Try to stop all the multiple re-parsing of the source! Can we parse once and pass the root node around?
+	private void getDocumentsRubyElementsInScope(IRubyScript script, String source, int offset, int replaceStart) {
+		try {
+			// FIXME Try to stop all the multiple re-parsing of the source! Can
+			// we parse once and pass the root node around?
 			// Parse
 			Node rootNode = (new RubyParser()).parse(source);
-			if ( rootNode == null ) { return; }
+			if (rootNode == null) {
+				return;
+			}
 
 			// Find the enclosing method to get locals and args
 			Node enclosingMethodNode = ClosestSpanningNodeLocator.Instance().findClosestSpanner(rootNode, offset, new INodeAcceptor() {
 				public boolean doesAccept(Node node) {
-					return ( node instanceof DefnNode || node instanceof DefsNode );
+					return (node instanceof DefnNode || node instanceof DefsNode);
 				}
 			});
 
 			// Add local vars and arguments
 			// Add local vars and arguments
-			if ( enclosingMethodNode != null && enclosingMethodNode instanceof MethodDefNode) {
+			if (enclosingMethodNode != null && enclosingMethodNode instanceof MethodDefNode) {
 				StaticScope scope = ((MethodDefNode) enclosingMethodNode).getScope();
-				if ( scope != null && scope.getVariables().length > 0 ) {
-					List locals = Arrays.asList (scope.getVariables());
+				if (scope != null && scope.getVariables().length > 0) {
+					List locals = Arrays.asList(scope.getVariables());
 					for (Iterator iter = locals.iterator(); iter.hasNext();) {
 						String local = (String) iter.next();
-						if (prefix != null && !local.startsWith(prefix)) continue;				
-						CompletionProposal proposal = new CompletionProposal(
-								CompletionProposal.LOCAL_VARIABLE_REF, local, 100);
+						if (prefix != null && !local.startsWith(prefix))
+							continue;
+						CompletionProposal proposal = new CompletionProposal(CompletionProposal.LOCAL_VARIABLE_REF, local, 100);
 						proposal.setReplaceRange(replaceStart, replaceStart + local.length());
-						requestor.accept(proposal);						
+						requestor.accept(proposal);
 					}
 				}
 			}
 
-			// Find the enclosing type (class or module) to get instance and classvars from
+			// Find the enclosing type (class or module) to get instance and
+			// classvars from
 			Node enclosingTypeNode = ClosestSpanningNodeLocator.Instance().findClosestSpanner(rootNode, offset, new INodeAcceptor() {
 				public boolean doesAccept(Node node) {
-					return ( node instanceof ClassNode || node instanceof ModuleNode );
+					return (node instanceof ClassNode || node instanceof ModuleNode);
 				}
 			});
 
 			// Add members from enclosing type
-			if ( enclosingTypeNode != null ) {
-				getMembersAvailableInsideType( enclosingTypeNode, script, replaceStart );				
+			if (enclosingTypeNode != null) {
+				getMembersAvailableInsideType(enclosingTypeNode, script, replaceStart);
 			}
 
 			// Add all globals, classes, and modules
-			getElementsOfType( script.getRubyProject(), new int[] { IRubyElement.GLOBAL }, replaceStart);
-			addClassesAndModulesInProject( script.getRubyProject(), replaceStart );
-		} catch ( RubyModelException rme ) {
+			getElementsOfType(script.getRubyProject(), new int[] { IRubyElement.GLOBAL }, replaceStart);
+			addClassesAndModulesInProject(script.getRubyProject(), replaceStart);
+		} catch (RubyModelException rme) {
 			System.out.println("RubyModelException in CompletionEngine::getElementsInScope()");
 			rme.printStackTrace();
-		} catch ( SyntaxException se ) {
+		} catch (SyntaxException se) {
 			System.out.println("SyntaxError in CompletionEngine::getElementsInScope()");
 			se.printStackTrace();
 		}
 	}
-	
+
 	private void addClassesAndModulesInProject(IRubyProject project, int replaceStart) {
 		getElementsOfType(project, new int[] { IRubyElement.TYPE }, replaceStart);
 	}
@@ -267,17 +333,19 @@ public class CompletionEngine {
 	private void getElementsOfType(IParent element, int[] types, int replaceStart) {
 		try {
 			IRubyElement[] elements = element.getChildren();
-			if (elements == null) return;
+			if (elements == null)
+				return;
 			for (int x = 0; x < elements.length; x++) {
 				IRubyElement child = elements[x];
 				for (int i = 0; i < types.length; i++) {
-					if (child.getElementType() != types[i]) continue;
+					if (child.getElementType() != types[i])
+						continue;
 					String name = child.getElementName();
-					if (prefix != null && !name.startsWith(prefix)) continue;
-					CompletionProposal proposal = new CompletionProposal(
-							getCompletionProposalType(child), name, 100);
+					if (prefix != null && !name.startsWith(prefix))
+						continue;
+					CompletionProposal proposal = new CompletionProposal(getCompletionProposalType(child), name, 100);
 					proposal.setReplaceRange(replaceStart, replaceStart + name.length());
-					requestor.accept(proposal);			
+					requestor.accept(proposal);
 				}
 				if (child instanceof IParent)
 					getElementsOfType((IParent) child, types, replaceStart);
@@ -286,7 +354,7 @@ public class CompletionEngine {
 			e.printStackTrace();
 		}
 	}
-	
+
 	private int getCompletionProposalType(IRubyElement child) {
 		switch (child.getElementType()) {
 		case IRubyElement.DYNAMIC_VAR:
@@ -305,194 +373,208 @@ public class CompletionEngine {
 	}
 
 	/**
-	 * Gets the members available inside a type node (ModuleNode, ClassNode):
-	 *  - Instance variables
-	 *  - Class variables
-	 *  - Methods
+	 * Gets the members available inside a type node (ModuleNode, ClassNode): -
+	 * Instance variables - Class variables - Methods
 	 * 
 	 * @param typeNode
 	 * @return
 	 */
 	private void getMembersAvailableInsideType(Node typeNode, IRubyScript script, int replaceStart) throws RubyModelException {
-		if ( typeNode == null ) { return; }
-		
+		if (typeNode == null) {
+			return;
+		}
+
 		// Get type name
 		String typeName = null;
-		if ( typeNode instanceof ClassNode )  { typeName =  ((Colon2Node)((ClassNode)typeNode).getCPath()).getName(); }
-		if ( typeNode instanceof ModuleNode ) { typeName = ((Colon2Node)((ModuleNode)typeNode).getCPath()).getName(); }
-		if ( typeName == null ) { return; }
-			
-		// XXX rubyType may not be in script, but rather be defined in another script
-//			IType rubyType = new RubyType( (RubyElement)script, typeName );
-		//Better method:
-		// Find the named type
-//		IType rubyType = findTypeFromAllProjects(typeName, script);
-
-//		System.out.println(" -- Located RubyType info.");
-//		System.out.println(" -- Superclass: " + rubyType.getSuperclassName() );
-
-//		if ( rubyType != null ) {
-//			String[] includedModuleNames = rubyType.getIncludedModuleNames();
-//			if ( includedModuleNames != null ) {
-//				for ( String moduleName : rubyType.getIncludedModuleNames() ) {
-//					System.out.println(" -- Includes module: " + moduleName);
-//				}
-//			}
-//		}			
-		
-		
-		
-		// Get superclass and add its public members
-		List<Node> superclassNodes = getSuperclassNodes( typeNode, script );		
-		for ( Node superclassNode : superclassNodes ) {
-			getMembersAvailableInsideType( superclassNode, script, replaceStart );
+		if (typeNode instanceof ClassNode) {
+			typeName = ((Colon2Node) ((ClassNode) typeNode).getCPath()).getName();
 		}
-		
+		if (typeNode instanceof ModuleNode) {
+			typeName = ((Colon2Node) ((ModuleNode) typeNode).getCPath()).getName();
+		}
+		if (typeName == null) {
+			return;
+		}
+
+		// XXX rubyType may not be in script, but rather be defined in another
+		// script
+		// IType rubyType = new RubyType( (RubyElement)script, typeName );
+		// Better method:
+		// Find the named type
+		// IType rubyType = findTypeFromAllProjects(typeName, script);
+
+		// System.out.println(" -- Located RubyType info.");
+		// System.out.println(" -- Superclass: " + rubyType.getSuperclassName()
+		// );
+
+		// if ( rubyType != null ) {
+		// String[] includedModuleNames = rubyType.getIncludedModuleNames();
+		// if ( includedModuleNames != null ) {
+		// for ( String moduleName : rubyType.getIncludedModuleNames() ) {
+		// System.out.println(" -- Includes module: " + moduleName);
+		// }
+		// }
+		// }
+
+		// Get superclass and add its public members
+		List<Node> superclassNodes = getSuperclassNodes(typeNode, script);
+		for (Node superclassNode : superclassNodes) {
+			getMembersAvailableInsideType(superclassNode, script, replaceStart);
+		}
+
 		// Get public members of mixins
-		List<String> mixinNames = getIncludedMixinNames( typeName, script );
-		for ( String mixinName : mixinNames ) {
-			List<Node> mixinDeclarations = getTypeDeclarationNodes( mixinName, script );
-			for ( Node mixinDeclaration : mixinDeclarations ) {
-				getMembersAvailableInsideType( mixinDeclaration, script, replaceStart );
+		List<String> mixinNames = getIncludedMixinNames(typeName, script);
+		for (String mixinName : mixinNames) {
+			List<Node> mixinDeclarations = getTypeDeclarationNodes(mixinName, script);
+			for (Node mixinDeclaration : mixinDeclarations) {
+				getMembersAvailableInsideType(mixinDeclaration, script, replaceStart);
 			}
 		}
-		
+
 		// Get instance and class variables available in the enclosing type
 		List<Node> instanceAndClassVars = ScopedNodeLocator.Instance().findNodesInScope(typeNode, new INodeAcceptor() {
 			public boolean doesAccept(Node node) {
-				return ( node instanceof InstVarNode ||
-						 node instanceof InstAsgnNode ||
-						 node instanceof ClassVarNode ||
-						 node instanceof ClassVarDeclNode ||
-						 node instanceof ClassVarAsgnNode );
+				return (node instanceof InstVarNode || node instanceof InstAsgnNode || node instanceof ClassVarNode || node instanceof ClassVarDeclNode || node instanceof ClassVarAsgnNode);
 			}
 		});
-		
-		if ( instanceAndClassVars != null ) {
+
+		if (instanceAndClassVars != null) {
 			// Get the unique names of instance and class variables
-			for ( Node varNode : instanceAndClassVars ) {
+			for (Node varNode : instanceAndClassVars) {
 				String name = getNameReflectively(varNode);
-				if ( name == null ) continue;
-				if (prefix != null && !name.startsWith(prefix)) continue;
-		
+				if (name == null)
+					continue;
+				if (prefix != null && !name.startsWith(prefix))
+					continue;
+
 				CompletionProposal proposal = new CompletionProposal(CompletionProposal.FIELD_REF, name, 100);
 				proposal.setReplaceRange(replaceStart, replaceStart + name.length());
 				requestor.accept(proposal);
 			}
 		}
-		
+
 		// Get method names defined by DefnNodes and DefsNodes
 		List<Node> methodDefinitions = ScopedNodeLocator.Instance().findNodesInScope(typeNode, new INodeAcceptor() {
 			public boolean doesAccept(Node node) {
-				return ( node instanceof DefnNode ) || ( node instanceof DefsNode );
+				return (node instanceof DefnNode) || (node instanceof DefsNode);
 			}
 		});
-		for ( Node methodDefinition : methodDefinitions ) {
+		for (Node methodDefinition : methodDefinitions) {
 			String name = null;
-			if ( methodDefinition instanceof DefnNode ) { name =  ((DefnNode)methodDefinition).getName(); }
-			if ( methodDefinition instanceof DefsNode ) { name = ((DefsNode)methodDefinition).getName(); }
-			if (name == null) continue;
-			if (prefix != null && !name.startsWith(prefix)) continue;			
+			if (methodDefinition instanceof DefnNode) {
+				name = ((DefnNode) methodDefinition).getName();
+			}
+			if (methodDefinition instanceof DefsNode) {
+				name = ((DefsNode) methodDefinition).getName();
+			}
+			if (name == null)
+				continue;
+			if (prefix != null && !name.startsWith(prefix))
+				continue;
 			CompletionProposal proposal = new CompletionProposal(CompletionProposal.METHOD_REF, name, 100);
 			proposal.setReplaceRange(replaceStart, replaceStart + name.length());
 			requestor.accept(proposal);
 		}
-		
+
 		// Get instance and class vars defined by [c]attr_* calls
 		List<String> attrs = AttributeLocator.Instance().findInstanceAttributesInScope(typeNode);
-		for (Iterator iter = attrs.iterator(); iter.hasNext(); ) {
+		for (Iterator iter = attrs.iterator(); iter.hasNext();) {
 			String attr = (String) iter.next();
-			if (prefix != null && !attr.startsWith(prefix)) continue;
+			if (prefix != null && !attr.startsWith(prefix))
+				continue;
 			CompletionProposal proposal = new CompletionProposal(CompletionProposal.FIELD_REF, attr, 100);
 			proposal.setReplaceRange(replaceStart, replaceStart + attr.length());
 			requestor.accept(proposal);
 		}
 
 	}
-	
+
 	/**
-	 * Finds all nodes that declare a type that is a superclass of the specified node.  Example:
+	 * Finds all nodes that declare a type that is a superclass of the specified
+	 * node. Example:
 	 * 
-	 * """
-	 * class Klass;def meth_1;1;end;end
-	 * class Klass;def meth_2;2;end;end
+	 * """ class Klass;def meth_1;1;end;end class Klass;def meth_2;2;end;end
 	 * 
-	 * class SubKlass < Klass;end
-	 * """
+	 * class SubKlass < Klass;end """
 	 * 
-	 * Issuing getSuperClassNodes() on the ClassNode declaring SubKlass would return two ClassNodes;
-	 * one for each definition of Klass.
+	 * Issuing getSuperClassNodes() on the ClassNode declaring SubKlass would
+	 * return two ClassNodes; one for each definition of Klass.
 	 * 
-	 * @param typeNode Node to find superclass nodes of
+	 * @param typeNode
+	 *            Node to find superclass nodes of
 	 * @return List of ClassNode or ModuleNode
 	 */
-	private List<Node> getSuperclassNodes( Node typeNode, IRubyScript script ) {
-		if ( typeNode instanceof ClassNode ) {
-			Node superNode = ((ClassNode)typeNode).getSuperNode();
-			if ( superNode instanceof ConstNode ) {
-				String superclassName = ((ConstNode)superNode).getName();
-				return getTypeDeclarationNodes( superclassName, script );
+	private List<Node> getSuperclassNodes(Node typeNode, IRubyScript script) {
+		if (typeNode instanceof ClassNode) {
+			Node superNode = ((ClassNode) typeNode).getSuperNode();
+			if (superNode instanceof ConstNode) {
+				String superclassName = ((ConstNode) superNode).getName();
+				return getTypeDeclarationNodes(superclassName, script);
 			}
-		}		
+		}
 		return new ArrayList<Node>();
 	}
-	
+
 	/** Lookup type declaration nodes */
-	private List<Node> getTypeDeclarationNodes( String typeName, IRubyScript script ) {
-		System.out.println("Being asked for the type decl node for " + typeName );
-		
+	private List<Node> getTypeDeclarationNodes(String typeName, IRubyScript script) {
+		System.out.println("Being asked for the type decl node for " + typeName);
+
 		// Find the named type
 		IType type = findTypeFromAllProjects(typeName, script);
-		
-		try {
-			if ( type instanceof RubyType ) {
 
-				// FIXME This feels a little hacky and backwards - RubyType.getSource() and then parse... consider reworking the clients to this method to accept RubyTypes or something similar?				
+		try {
+			if (type instanceof RubyType) {
+
+				// FIXME This feels a little hacky and backwards -
+				// RubyType.getSource() and then parse... consider reworking the
+				// clients to this method to accept RubyTypes or something
+				// similar?
 				// Find source and parse
-				RubyType rubyType = (RubyType)type;
+				RubyType rubyType = (RubyType) type;
 				String source = rubyType.getSource();
-				
+
 				// FIXME Why does the parser balk on \r chars?
 				source = source.replace('\r', ' ');
-				Node rootNode = (new RubyParser()).parse( source );
-				
-				// Bail if the parse fails
-				if ( rootNode == null ) { return new ArrayList(); }
+				Node rootNode = (new RubyParser()).parse(source);
 
-				// Return any type declaration nodes in included source 
+				// Bail if the parse fails
+				if (rootNode == null) {
+					return new ArrayList();
+				}
+
+				// Return any type declaration nodes in included source
 				return ScopedNodeLocator.Instance().findNodesInScope(rootNode, new INodeAcceptor() {
 					public boolean doesAccept(Node node) {
-						return ( node instanceof ClassNode ) ||
-						       ( node instanceof ModuleNode );
+						return (node instanceof ClassNode) || (node instanceof ModuleNode);
 					}
 				});
 			}
-			
-		} catch ( RubyModelException rme ) {
+
+		} catch (RubyModelException rme) {
 			rme.printStackTrace();
 		}
-		
+
 		return new ArrayList<Node>(0);
-	}	
+	}
 
 	private IType findTypeFromAllProjects(String typeName, IRubyScript rootScript) {
 		// Grab the project and all referred projects
 		List<IRubyProject> projects = new LinkedList<IRubyProject>();
 		projects.add(rootScript.getRubyProject());
 		// FIXME Search the loadpaths!
-//		projects.addAll(rootScript.getRubyProject().getReferencedProjects());
+		// projects.addAll(rootScript.getRubyProject().getReferencedProjects());
 
 		// Find the named type
-		RubyElementRequestor completer = new RubyElementRequestor(projects.toArray(new IRubyProject[]{}));
+		RubyElementRequestor completer = new RubyElementRequestor(projects.toArray(new IRubyProject[] {}));
 		return completer.findType(typeName);
 	}
-	
-	private List<String> getIncludedMixinNames( String typeName, IRubyScript script ) {
-		IType rubyType = new RubyType( (RubyElement)script, typeName );
-		
+
+	private List<String> getIncludedMixinNames(String typeName, IRubyScript script) {
+		IType rubyType = new RubyType((RubyElement) script, typeName);
+
 		try {
 			String[] includedModuleNames = rubyType.getIncludedModuleNames();
-			if ( includedModuleNames != null ) {
+			if (includedModuleNames != null) {
 				return Arrays.asList(rubyType.getIncludedModuleNames());
 			} else {
 				return new ArrayList<String>(0);
@@ -501,22 +583,24 @@ public class CompletionEngine {
 			return new ArrayList<String>(0);
 		}
 	}
-	
+
 	/**
 	 * Gets the name of a node by reflectively invoking "getName()" on it;
 	 * helper method just to cut many "instanceof/cast" pairs.
+	 * 
 	 * @param node
 	 * @return name or null
 	 */
-	// TODO Copy/pasted from DefaultOccurrencesFinder, refactor these two methods to a common location.
-	private String getNameReflectively( Node node ) {
+	// TODO Copy/pasted from DefaultOccurrencesFinder, refactor these two
+	// methods to a common location.
+	private String getNameReflectively(Node node) {
 		try {
-			Method getNameMethod = node.getClass().getMethod("getName", new Class[]{});
-			Object name = getNameMethod.invoke( node, new Object[0] );
-			return (String)name;
+			Method getNameMethod = node.getClass().getMethod("getName", new Class[] {});
+			Object name = getNameMethod.invoke(node, new Object[0]);
+			return (String) name;
 		} catch (Exception e) {
 			return null;
 		}
-	}	
+	}
 
 }
