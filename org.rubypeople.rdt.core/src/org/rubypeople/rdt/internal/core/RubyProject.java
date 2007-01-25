@@ -2316,4 +2316,36 @@ public class RubyProject extends Openable implements IProjectNature, IRubyElemen
 	public ILoadpathEntry[] decodeLoadpath(String xmlClasspath, boolean createMarker, boolean logProblems) {
 		return decodeLoadpath(xmlClasspath, createMarker, logProblems, null/*not interested in unknown elements*/);
 	}
+
+	public ISourceFolderRoot findSourceFolderRoot(IPath path) throws RubyModelException {
+		return findSourceFolderRoot0(RubyProject.canonicalizedPath(path));
+	}
+	
+	/*
+	 * no path canonicalization 
+	 */
+	public ISourceFolderRoot findSourceFolderRoot0(IPath path)
+		throws RubyModelException {
+
+		ISourceFolderRoot[] allRoots = this.getAllSourceFolderRoots();
+		if (!path.isAbsolute()) {
+			throw new IllegalArgumentException(Messages.path_mustBeAbsolute); 
+		}
+		for (int i= 0; i < allRoots.length; i++) {
+			ISourceFolderRoot classpathRoot= allRoots[i];
+			if (classpathRoot.getPath().equals(path)) {
+				return classpathRoot;
+			}
+		}
+		return null;
+	}
+	
+	/**
+	 * @see IRubyProject
+	 */
+	public ISourceFolderRoot[] getAllSourceFolderRoots()
+		throws RubyModelException {
+
+		return getAllSourceFolderRoots(null /*no reverse map*/);
+	}
 }

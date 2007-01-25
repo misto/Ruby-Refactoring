@@ -25,7 +25,7 @@ import org.rubypeople.rdt.internal.ui.dialogs.StatusUtil;
  * Clients may subclass.
  * </p>
  * 
- * @since 2.0
+ * @since 0.9.0
  */
 public abstract class NewElementWizardPage extends WizardPage {
 

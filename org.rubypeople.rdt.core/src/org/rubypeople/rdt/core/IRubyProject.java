@@ -98,6 +98,17 @@ public interface IRubyProject extends IRubyElement, IParent {
      * @see RubyCore#getDefaultOptions()
      */
     Map getOptions(boolean inheritRubyCoreOptions);
+    
+    /**
+	 * Returns all of the existing source folder roots that exist
+	 * on the loadpath, in the order they are defined by the loadpath.
+	 *
+	 * @return all of the existing source folder roots that exist
+	 * on the loadpath
+	 * @exception RubyModelException if this element does not exist or if an
+	 *		exception occurs while accessing its corresponding resource
+	 */
+    ISourceFolderRoot[] getAllSourceFolderRoots() throws RubyModelException;
 
 	public abstract Object[] getNonRubyResources() throws RubyModelException;
 	
@@ -131,4 +142,6 @@ public interface IRubyProject extends IRubyElement, IParent {
 		throws RubyModelException;
 
 	public abstract ISourceFolderRoot getSourceFolderRoot(String rootPath);
+
+	public abstract ISourceFolderRoot findSourceFolderRoot(IPath path) throws RubyModelException;
 }

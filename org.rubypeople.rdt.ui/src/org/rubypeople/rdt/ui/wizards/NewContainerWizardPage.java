@@ -14,6 +14,7 @@ import org.eclipse.jface.viewers.ILabelProvider;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.ISelectionProvider;
 import org.eclipse.jface.viewers.IStructuredSelection;
+import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.viewers.ViewerFilter;
 import org.eclipse.jface.window.Window;
 import org.eclipse.swt.widgets.Composite;
@@ -252,8 +253,8 @@ public abstract class NewContainerWizardPage extends NewElementWizardPage {
 					status.setError(Messages.format(NewWizardMessages.NewContainerWizardPage_error_ProjectClosed, proj.getFullPath().toString())); 
 					return status;
 				}				
-				IRubyProject jproject= RubyCore.create(proj);
-				fCurrRoot= jproject.getSourceFolderRoot(res);
+				IRubyProject rproject= RubyCore.create(proj);
+				fCurrRoot= rproject.getSourceFolderRoot(res);
 				if (res.exists()) {
 					try {
 						if (!proj.hasNature(RubyCore.NATURE_ID)) {
@@ -264,7 +265,7 @@ public abstract class NewContainerWizardPage extends NewElementWizardPage {
 							}
 							return status;
 						}
-						if (!jproject.isOnLoadpath(fCurrRoot)) {
+						if (!rproject.isOnLoadpath(fCurrRoot)) {
 							status.setWarning(Messages.format(NewWizardMessages.NewContainerWizardPage_warning_NotOnLoadPath, str)); 
 						}		
 					} catch (CoreException e) {
@@ -308,21 +309,21 @@ public abstract class NewContainerWizardPage extends NewElementWizardPage {
 		if (elem != null) {
 			initRoot= RubyModelUtil.getSourceFolderRoot(elem);
 			  try {
-				if (initRoot == null) {
-					IRubyProject jproject= elem.getRubyProject();
-					if (jproject != null) {
+				if (initRoot == null || initRoot.isExternal()) {
+					IRubyProject rproject= elem.getRubyProject();
+					if (rproject != null) {
 							initRoot= null;
-							if (jproject.exists()) {
-								ISourceFolderRoot[] roots= jproject.getSourceFolderRoots();
+							if (rproject.exists()) {
+								ISourceFolderRoot[] roots= rproject.getSourceFolderRoots();
 								for (int i= 0; i < roots.length; i++) {
-									
+									if (!roots[i].isExternal()) {
 										initRoot= roots[i];
 										break;
-									
+									}
 								}							
 							}
 						if (initRoot == null) {
-							initRoot= jproject.getSourceFolderRoot(jproject.getResource());
+							initRoot= rproject.getSourceFolderRoot(rproject.getResource());
 						}
 					}
 				}		
@@ -385,10 +386,33 @@ public abstract class NewContainerWizardPage extends NewElementWizardPage {
 	protected ISourceFolderRoot chooseContainer() {
 		IRubyElement initElement= getSourceFolderRoot();
 		Class[] acceptedClasses= new Class[] { IRubyProject.class, ISourceFolderRoot.class };
-		TypedElementSelectionValidator validator= new TypedElementSelectionValidator(acceptedClasses, false);
+		TypedElementSelectionValidator validator= new TypedElementSelectionValidator(acceptedClasses, false) {
+			public boolean isSelectedValid(Object element) {
+				try {
+					if (element instanceof IRubyProject) {
+						IRubyProject jproject= (IRubyProject)element;
+						IPath path= jproject.getProject().getFullPath();
+						return (jproject.findSourceFolderRoot(path) != null);
+					} else if (element instanceof ISourceFolderRoot) {
+						return (!((ISourceFolderRoot)element).isExternal());
+					}
+					return true;
+				} catch (RubyModelException e) {
+					RubyPlugin.log(e.getStatus()); // just log, no UI in validation
+				}
+				return false;
+			}
+		};
 		
-		acceptedClasses= new Class[] { IRubyModel.class, IRubyProject.class, ISourceFolderRoot.class };
-		ViewerFilter filter= new TypedViewerFilter(acceptedClasses);		
+		acceptedClasses= new Class[] { IRubyModel.class, ISourceFolderRoot.class, IRubyProject.class };
+		ViewerFilter filter= new TypedViewerFilter(acceptedClasses) {
+			public boolean select(Viewer viewer, Object parent, Object element) {
+				if (element instanceof ISourceFolderRoot) {
+					return (!((ISourceFolderRoot)element).isExternal());					
+				}
+				return super.select(viewer, parent, element);
+			}
+		};		
 
 		StandardRubyElementContentProvider provider= new StandardRubyElementContentProvider();
 		ILabelProvider labelProvider= new RubyElementLabelProvider(RubyElementLabelProvider.SHOW_DEFAULT); 
