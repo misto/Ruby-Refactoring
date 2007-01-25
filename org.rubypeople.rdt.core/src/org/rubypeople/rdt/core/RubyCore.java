@@ -54,6 +54,7 @@ import org.rubypeople.rdt.internal.core.builder.IndexUpdater;
 import org.rubypeople.rdt.internal.core.builder.MassIndexUpdaterJob;
 import org.rubypeople.rdt.internal.core.builder.RubyBuilder;
 import org.rubypeople.rdt.internal.core.parser.RubyParser;
+import org.rubypeople.rdt.internal.core.search.ExperimentalIndex;
 import org.rubypeople.rdt.internal.core.symbols.ISymbolFinder;
 import org.rubypeople.rdt.internal.core.symbols.SymbolIndex;
 import org.rubypeople.rdt.internal.core.util.Util;
@@ -350,6 +351,8 @@ public class RubyCore extends Plugin {
         List rubyProjects = Arrays.asList(getRubyProjects());
         MassIndexUpdaterJob massUpdater = new MassIndexUpdaterJob(indexUpdater, rubyProjects);
         massUpdater.schedule();
+        addElementChangedListener(ExperimentalIndex.instance());
+        ExperimentalIndex.start();
     }
 
     /*
@@ -361,6 +364,7 @@ public class RubyCore extends Plugin {
     public void stop(BundleContext context) throws Exception {
         try {
             RubyModelManager.getRubyModelManager().shutdown();
+            removeElementChangedListener(ExperimentalIndex.instance());
         } finally {
             // ensure we call super.stop as the last thing
             super.stop(context);

@@ -6,6 +6,7 @@ import java.util.Arrays;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 
 import org.jruby.ast.ClassNode;
 import org.jruby.ast.ClassVarAsgnNode;
@@ -25,16 +26,23 @@ import org.jruby.parser.StaticScope;
 import org.rubypeople.rdt.core.CompletionProposal;
 import org.rubypeople.rdt.core.CompletionRequestor;
 import org.rubypeople.rdt.core.Flags;
+import org.rubypeople.rdt.core.IImportDeclaration;
 import org.rubypeople.rdt.core.IMethod;
 import org.rubypeople.rdt.core.IParent;
 import org.rubypeople.rdt.core.IRubyElement;
 import org.rubypeople.rdt.core.IRubyProject;
 import org.rubypeople.rdt.core.IRubyScript;
+import org.rubypeople.rdt.core.ISourceFolderRoot;
 import org.rubypeople.rdt.core.IType;
+import org.rubypeople.rdt.core.RubyCore;
 import org.rubypeople.rdt.core.RubyModelException;
 import org.rubypeople.rdt.internal.core.RubyElement;
 import org.rubypeople.rdt.internal.core.RubyType;
 import org.rubypeople.rdt.internal.core.parser.RubyParser;
+import org.rubypeople.rdt.internal.core.search.ExperimentalIndex;
+import org.rubypeople.rdt.internal.core.symbols.ISymbolFinder;
+import org.rubypeople.rdt.internal.core.symbols.ISymbolTypes;
+import org.rubypeople.rdt.internal.core.symbols.SearchResult;
 import org.rubypeople.rdt.internal.ti.DefaultTypeInferrer;
 import org.rubypeople.rdt.internal.ti.ITypeGuess;
 import org.rubypeople.rdt.internal.ti.ITypeInferrer;
@@ -56,8 +64,6 @@ public class CompletionEngine {
 		this.requestor.beginReporting();
 		if (offset < 0)
 			offset = 0;
-		ITypeInferrer inferrer = new DefaultTypeInferrer();
-
 		StringBuffer source = new StringBuffer(script.getSource());
 		int replaceStart = offset + 1;
 		// Read from offset back until we hit a: space, period
@@ -89,25 +95,34 @@ public class CompletionEngine {
 		this.prefix = prefix.toString();
 		if (this.prefix != null) replaceStart -= this.prefix.length();
 		
-		// If the prefix looks like a constant don't bother searching for
-		// methods
-		if (!(this.prefix != null && this.prefix.length() > 0 && Character.isUpperCase(this.prefix
-				.charAt(0)))) {
+		if (isConstant()) { // type or constant
+			List<String> types = ExperimentalIndex.getTypes();
+			// TODO Remove duplicates? Sort?
+			for (String name : types) {
+				if (this.prefix != null && !name.startsWith(this.prefix)) continue;
+				CompletionProposal proposal = new CompletionProposal(
+						CompletionProposal.TYPE_REF, name, 100);
+				proposal.setReplaceRange(replaceStart, replaceStart + name.length());
+				requestor.accept(proposal);		
+			}			
+		} else { // method or variable
+			ITypeInferrer inferrer = new DefaultTypeInferrer();
 			List<ITypeGuess> guesses = inferrer
 					.infer(source.toString(), offset);
-			// TODO Grab the project and all referred projects!
-			IRubyProject[] projects = new IRubyProject[1];
-			projects[0] = script.getRubyProject();
-			RubyElementRequestor completer = new RubyElementRequestor(projects);
+			RubyElementRequestor completer = new RubyElementRequestor(script.getRubyProject());
 			for (Iterator iter = guesses.iterator(); iter.hasNext();) {
 				ITypeGuess guess = (ITypeGuess) iter.next();
 				IType type = completer.findType(guess.getType());
 				suggestMethods(replaceStart, completer, guess, type);
 			}
+			if (!isMethod) getDocumentsRubyElementsInScope(script, source.toString(), offset, replaceStart);
 		}
-		// FIXME Do we need to call this at all if we know it's a method call we're trying to complete?
-		if (!isMethod) getDocumentsRubyElementsInScope(script, source.toString(), offset, replaceStart);
 		this.requestor.endReporting();
+	}
+
+	private boolean isConstant() {
+		return this.prefix != null && this.prefix.length() > 0 && Character.isUpperCase(this.prefix
+				.charAt(0));
 	}
 
 	private void suggestMethods(int replaceStart, RubyElementRequestor completer, ITypeGuess guess,
@@ -174,13 +189,7 @@ public class CompletionEngine {
 	 * @return a List of the names of all the elements in the current RubyScript
 	 */
 	private void getDocumentsRubyElementsInScope(IRubyScript script, String source, int offset, int replaceStart) {		
-		try {
-			// Get all references projects
-			List<IRubyProject> projects = new ArrayList<IRubyProject>();
-			projects.add(script.getRubyProject());
-			// TODO Search the loadpaths!
-//			projects.addAll(script.getRubyProject().getReferencedProjects());
-			
+		try {	
 			// FIXME Try to stop all the multiple re-parsing of the source! Can we parse once and pass the root node around?
 			// Parse
 			Node rootNode = (new RubyParser()).parse(source);
@@ -223,11 +232,8 @@ public class CompletionEngine {
 			}
 
 			// Add all globals, classes, and modules
-			for (Iterator iter = projects.iterator(); iter.hasNext();) {
-				IRubyProject nextProject = (IRubyProject)(iter.next());
-				getElementsOfType( nextProject, new int[] { IRubyElement.GLOBAL }, replaceStart);
-				addClassesAndModulesInProject( nextProject, replaceStart );
-			}
+			getElementsOfType( script.getRubyProject(), new int[] { IRubyElement.GLOBAL }, replaceStart);
+			addClassesAndModulesInProject( script.getRubyProject(), replaceStart );
 		} catch ( RubyModelException rme ) {
 			System.out.println("RubyModelException in CompletionEngine::getElementsInScope()");
 			rme.printStackTrace();
