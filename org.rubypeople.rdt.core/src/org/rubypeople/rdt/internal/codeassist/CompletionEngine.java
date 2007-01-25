@@ -96,15 +96,8 @@ public class CompletionEngine {
 		if (this.prefix != null) replaceStart -= this.prefix.length();
 		
 		if (isConstant()) { // type or constant
-			List<String> types = ExperimentalIndex.getTypes();
-			// TODO Remove duplicates? Sort?
-			for (String name : types) {
-				if (this.prefix != null && !name.startsWith(this.prefix)) continue;
-				CompletionProposal proposal = new CompletionProposal(
-						CompletionProposal.TYPE_REF, name, 100);
-				proposal.setReplaceRange(replaceStart, replaceStart + name.length());
-				requestor.accept(proposal);		
-			}			
+			suggestTypeNames(replaceStart);			
+			suggestConstantNames(replaceStart);	
 		} else { // method or variable
 			ITypeInferrer inferrer = new DefaultTypeInferrer();
 			List<ITypeGuess> guesses = inferrer
@@ -118,6 +111,30 @@ public class CompletionEngine {
 			if (!isMethod) getDocumentsRubyElementsInScope(script, source.toString(), offset, replaceStart);
 		}
 		this.requestor.endReporting();
+	}
+
+	private void suggestTypeNames(int replaceStart) {
+		List<String> types = ExperimentalIndex.getTypes();
+		// TODO Remove duplicates? Sort?
+		for (String name : types) {
+			if (this.prefix != null && !name.startsWith(this.prefix)) continue;
+			CompletionProposal proposal = new CompletionProposal(
+					CompletionProposal.TYPE_REF, name, 100);
+			proposal.setReplaceRange(replaceStart, replaceStart + name.length());
+			requestor.accept(proposal);		
+		}
+	}
+	
+	private void suggestConstantNames(int replaceStart) {
+		List<String> types = ExperimentalIndex.getConstants();
+		// TODO Remove duplicates? Sort?
+		for (String name : types) {
+			if (this.prefix != null && !name.startsWith(this.prefix)) continue;
+			CompletionProposal proposal = new CompletionProposal(
+					CompletionProposal.FIELD_REF, name, 100);
+			proposal.setReplaceRange(replaceStart, replaceStart + name.length());
+			requestor.accept(proposal);		
+		}
 	}
 
 	private boolean isConstant() {

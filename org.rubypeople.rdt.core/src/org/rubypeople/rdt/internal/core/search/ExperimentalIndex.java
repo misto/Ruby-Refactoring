@@ -18,12 +18,14 @@ import org.rubypeople.rdt.core.RubyModelException;
 import org.rubypeople.rdt.internal.core.RubyModelManager;
 
 public class ExperimentalIndex implements IElementChangedListener {
-
-	private static List<String> fgTypes = new ArrayList<String>();
+	
 	private static ExperimentalIndex fgInstance;
-
+	private static List<String> fgConstants;
+	private static List<String> fgTypes;
+	
 	private ExperimentalIndex() {
-		
+		fgTypes = new ArrayList<String>();
+		fgConstants = new ArrayList<String>();
 	}
 	
 	public void elementChanged(ElementChangedEvent event) {
@@ -31,7 +33,13 @@ public class ExperimentalIndex implements IElementChangedListener {
 	}
 
 	public static List<String> getTypes() {
+		// XXX We need to handle case where this gets invoked while index is updating (and we get a concurrent modification exception)!
 		return Collections.unmodifiableList(fgTypes);
+	}
+	
+	public static List<String> getConstants() {
+//		 XXX We need to handle case where this gets invoked while index is updating (and we get a concurrent modification exception)!
+		return Collections.unmodifiableList(fgConstants);
 	}
 
 	private void processDelta(IRubyElementDelta delta) {
@@ -45,14 +53,21 @@ public class ExperimentalIndex implements IElementChangedListener {
 			}
 			break;
 		case IRubyElementDelta.REMOVED:			
-			switch (element.getElementType()) {
-			case IRubyElement.TYPE:
-				fgTypes.remove(element.getElementName());
-				break;
-			}
+			removeElement(element);
 			break;
 		case IRubyElementDelta.ADDED:
 			addElement(element);
+			break;
+		}
+	}
+
+	void removeElement(IRubyElement element) {
+		switch (element.getElementType()) {
+		case IRubyElement.TYPE:
+			fgTypes.remove(element.getElementName());
+			break;
+		case IRubyElement.CONSTANT:
+			fgConstants.remove(element.getElementName());
 			break;
 		}
 	}
@@ -61,6 +76,9 @@ public class ExperimentalIndex implements IElementChangedListener {
 		switch (element.getElementType()) {
 		case IRubyElement.TYPE:
 			fgTypes.add(element.getElementName());
+			break;
+		case IRubyElement.CONSTANT:
+			fgConstants.add(element.getElementName());
 			break;
 		}
 	}
