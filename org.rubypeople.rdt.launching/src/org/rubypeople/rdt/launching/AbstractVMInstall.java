@@ -133,7 +133,7 @@ public abstract class AbstractVMInstall implements IVMInstall, IVMInstall2 {
 	}
 
 	/* (non-Javadoc)
-	 * @see org.eclipse.jdt.launching.IVMInstall#setLibraryLocations(org.eclipse.jdt.launching.LibraryLocation[])
+	 * @see org.rubypeople.rdt.launching.IVMInstall#setLibraryLocations(org.eclipse.core.runtime.IPath[])
 	 */
 	public void setLibraryLocations(IPath[] locations) {
 		if (locations == fSystemLibraryDescriptions) {
