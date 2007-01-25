@@ -4,9 +4,7 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.List;
-import java.util.StringTokenizer;
 
 import org.jruby.ast.ClassNode;
 import org.jruby.ast.ClassVarAsgnNode;
@@ -26,15 +24,13 @@ import org.jruby.parser.StaticScope;
 import org.rubypeople.rdt.core.CompletionProposal;
 import org.rubypeople.rdt.core.CompletionRequestor;
 import org.rubypeople.rdt.core.Flags;
-import org.rubypeople.rdt.core.IImportDeclaration;
 import org.rubypeople.rdt.core.IMethod;
 import org.rubypeople.rdt.core.IParent;
 import org.rubypeople.rdt.core.IRubyElement;
 import org.rubypeople.rdt.core.IRubyProject;
 import org.rubypeople.rdt.core.IRubyScript;
-import org.rubypeople.rdt.core.ISourceFolder;
-import org.rubypeople.rdt.core.ISourceFolderRoot;
 import org.rubypeople.rdt.core.IType;
+import org.rubypeople.rdt.core.RubyCore;
 import org.rubypeople.rdt.core.RubyModelException;
 import org.rubypeople.rdt.internal.core.RubyElement;
 import org.rubypeople.rdt.internal.core.RubyType;
@@ -100,74 +96,19 @@ public class CompletionEngine {
 		} else { // method or variable
 			ITypeInferrer inferrer = new DefaultTypeInferrer();
 			List<ITypeGuess> guesses = inferrer.infer(source.toString(), offset);
-
-			IRubyProject rubyProject = script.getRubyProject();
-			ISourceFolderRoot[] roots = rubyProject.getSourceFolderRoots();
-			// ILoadpathEntry[] loadpaths =
-			// rubyProject.getResolvedLoadpath(true);
-			for (int i = 0; i < roots.length; i++) {
-				ISourceFolderRoot root = roots[i];
-				IImportDeclaration[] imports = script.getImports();
-				for (int j = 0; j < imports.length; j++) {
-					String path = imports[j].getElementName();
-					StringTokenizer tokenizer = new StringTokenizer(path, "\\/");
-					List<String> tokens = new ArrayList<String>();
-					while(tokenizer.hasMoreTokens()) {
-						tokens.add(tokenizer.nextToken());
-					}					
-					String name = tokens.remove(tokens.size() - 1) + ".rb";
-					String[] pckgs =  (String[]) tokens.toArray(new String[tokens.size()]);
-					ISourceFolder folder = root.getSourceFolder(pckgs);
-					if (!folder.exists()) continue;
-					IRubyScript otherScript = folder.getRubyScript(name);
-					if (!otherScript.exists()) continue;
-					List<IType> types = getTypes(otherScript);
-					for (IType type : types) {
-						for (ITypeGuess guess : guesses) {
-							if (guess.getType().equals(type.getElementName())) {
-								IMethod[] methods = type.getMethods();
-								for(int x = 0; x < methods.length; x++) {
-									addProposal(replaceStart, CompletionProposal.METHOD_REF, methods[x].getElementName());
-								}
-							}
-						}
-					}
+			RubyElementRequestor requestor = new RubyElementRequestor(script);
+			for (ITypeGuess guess : guesses) {
+				String name = guess.getType();
+				IType[] types = requestor.findType(name);
+				for (int i = 0; i < types.length; i++) {
+					suggestMethods(replaceStart, guess.getConfidence(), types[i]);
 				}
 			}
-//			bruteForceMethodSuggestion(script, replaceStart, guesses);
+			// FIXME Traverse the IRubyElement model, not nodes (and don't reparse!)
 			if (!isMethod)
 				getDocumentsRubyElementsInScope(script, source.toString(), offset, replaceStart);
 		}
 		this.requestor.endReporting();
-	}
-
-	private List<IType> getTypes(IParent script) {
-		List<IType> types = new ArrayList<IType>();
-		try {
-			IRubyElement[] children = script.getChildren();
-			for (int i = 0; i < children.length; i++) {
-				if (children[i].isType(IRubyElement.TYPE)) {
-					types.add((IType) children[i]);
-				}
-				if (children[i] instanceof IParent) {
-					types.addAll(getTypes((IParent) children[i]));
-				}
-			}
-		} catch (RubyModelException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		return types;
-	}
-
-	private void bruteForceMethodSuggestion(IRubyScript script, int replaceStart, List<ITypeGuess> guesses) throws RubyModelException {
-		RubyElementRequestor completer = new RubyElementRequestor(script.getRubyProject());
-		// TODO Search the loadpath + imports!
-		for (Iterator iter = guesses.iterator(); iter.hasNext();) {
-			ITypeGuess guess = (ITypeGuess) iter.next();
-			IType type = completer.findType(guess.getType());
-			suggestMethods(replaceStart, completer, guess, type);
-		}
 	}
 
 	private void suggestTypeNames(int replaceStart) {
@@ -201,29 +142,6 @@ public class CompletionEngine {
 
 	private boolean isConstant() {
 		return this.prefix != null && this.prefix.length() > 0 && Character.isUpperCase(this.prefix.charAt(0));
-	}
-
-	private void suggestMethods(int replaceStart, RubyElementRequestor completer, ITypeGuess guess, IType type) throws RubyModelException {
-		if (type == null)
-			return;
-
-		suggestMethods(replaceStart, guess.getConfidence(), type);
-		// Now grab methods from all the included modules
-		String[] modules = type.getIncludedModuleNames();
-		if (modules != null) {
-			for (int x = 0; x < modules.length; x++) {
-				IType tmpType = completer.findType(modules[x]);
-				suggestMethods(replaceStart, guess.getConfidence(), tmpType);
-			}
-		}
-		String superClass = type.getSuperclassName();
-		if (superClass == null)
-			return;
-		// FIXME This shouldn't happen! Object shouldn't be a parent of itself!
-		if (type.getElementName().equals("Object") && superClass.equals("Object"))
-			return;
-		IType parentClass = completer.findType(superClass);
-		suggestMethods(replaceStart, completer, guess, parentClass);
 	}
 
 	private void suggestMethods(int replaceStart, int confidence, IType type) throws RubyModelException {
@@ -318,11 +236,11 @@ public class CompletionEngine {
 			getElementsOfType(script.getRubyProject(), new int[] { IRubyElement.GLOBAL }, replaceStart);
 			addClassesAndModulesInProject(script.getRubyProject(), replaceStart);
 		} catch (RubyModelException rme) {
-			System.out.println("RubyModelException in CompletionEngine::getElementsInScope()");
-			rme.printStackTrace();
+			RubyCore.log(rme);
+			RubyCore.log("RubyModelException in CompletionEngine::getElementsInScope()");
 		} catch (SyntaxException se) {
-			System.out.println("SyntaxError in CompletionEngine::getElementsInScope()");
-			se.printStackTrace();
+			RubyCore.log(se);
+			RubyCore.log("SyntaxError in CompletionEngine::getElementsInScope()");
 		}
 	}
 
@@ -520,7 +438,9 @@ public class CompletionEngine {
 		System.out.println("Being asked for the type decl node for " + typeName);
 
 		// Find the named type
-		IType type = findTypeFromAllProjects(typeName, script);
+		RubyElementRequestor requestor = new RubyElementRequestor(script);
+		IType[] types = requestor.findType(typeName);
+		IType type = types[0];
 
 		try {
 			if (type instanceof RubyType) {
@@ -557,18 +477,6 @@ public class CompletionEngine {
 		return new ArrayList<Node>(0);
 	}
 
-	private IType findTypeFromAllProjects(String typeName, IRubyScript rootScript) {
-		// Grab the project and all referred projects
-		List<IRubyProject> projects = new LinkedList<IRubyProject>();
-		projects.add(rootScript.getRubyProject());
-		// FIXME Search the loadpaths!
-		// projects.addAll(rootScript.getRubyProject().getReferencedProjects());
-
-		// Find the named type
-		RubyElementRequestor completer = new RubyElementRequestor(projects.toArray(new IRubyProject[] {}));
-		return completer.findType(typeName);
-	}
-
 	private List<String> getIncludedMixinNames(String typeName, IRubyScript script) {
 		IType rubyType = new RubyType((RubyElement) script, typeName);
 
@@ -576,9 +484,8 @@ public class CompletionEngine {
 			String[] includedModuleNames = rubyType.getIncludedModuleNames();
 			if (includedModuleNames != null) {
 				return Arrays.asList(rubyType.getIncludedModuleNames());
-			} else {
-				return new ArrayList<String>(0);
-			}
+			} 
+			return new ArrayList<String>(0);
 		} catch (RubyModelException e) {
 			return new ArrayList<String>(0);
 		}

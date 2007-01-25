@@ -29,7 +29,6 @@ import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.texteditor.IDocumentProvider;
 import org.eclipse.ui.texteditor.ITextEditor;
-import org.rubypeople.rdt.core.IRubyElement;
 import org.rubypeople.rdt.core.IRubyProject;
 import org.rubypeople.rdt.internal.debug.ui.RubySourceLocator;
 
@@ -127,10 +126,6 @@ public class OpenEditorAtLineAction extends Action {
                 // marker refers to invalid text position -> do nothing
             }
         }
-    }
-
-    protected IRubyElement findElement(IRubyProject project, String className) throws CoreException {
-        return project.findType(className);
     }
 
     public boolean isEnabled() {

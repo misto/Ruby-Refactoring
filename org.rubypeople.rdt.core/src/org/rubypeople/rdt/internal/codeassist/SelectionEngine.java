@@ -51,14 +51,8 @@ public class SelectionEngine {
 			if (element != null) {
 			  return new IRubyElement[] { element };	
 			}
-			// TODO Search the required/loaded files first!
-			// TODO Search scopes outward!
-			// Now search across project for type
-			IRubyProject[] projects = new IRubyProject[1];
-			projects[0] = script.getRubyProject();
-			RubyElementRequestor completer = new RubyElementRequestor(projects);
-			IType type = completer.findType(name);
-			return new IRubyElement[] { type };
+			RubyElementRequestor completer = new RubyElementRequestor(script);
+			return completer.findType(name);
 		}
 		if (isLocalVarRef(selected)) {
 			// TODO Try the local namespace first!			

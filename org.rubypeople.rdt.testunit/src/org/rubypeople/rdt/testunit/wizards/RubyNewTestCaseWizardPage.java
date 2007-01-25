@@ -336,11 +336,6 @@ public class RubyNewTestCaseWizardPage extends NewTypeWizardPage {
 		}
 		
 		IType type= rproject.findType(classToTestName);
-		
-		// search in java.lang
-//		if (type == null) {
-//			type= jproject.findType("java.lang", classToTestName); //$NON-NLS-1$
-//		}
 		return type;
 	}
 	
