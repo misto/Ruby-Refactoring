@@ -1,13 +1,24 @@
 package org.rubypeople.rdt.internal.launching;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.IOException;
+import java.io.StringReader;
+import java.text.MessageFormat;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.debug.core.DebugPlugin;
+import org.eclipse.debug.core.ILaunchManager;
+import org.eclipse.debug.core.Launch;
+import org.eclipse.debug.core.model.IProcess;
+import org.eclipse.debug.core.model.IStreamsProxy;
 import org.rubypeople.rdt.launching.AbstractVMInstallType;
 import org.rubypeople.rdt.launching.IVMInstall;
 
@@ -37,12 +48,19 @@ public class StandardVMType extends AbstractVMInstallType {
 		return new StandardVM(this, id);
 	}
 
-	public IPath[] getDefaultLibraryLocations(File installLocation) {
-		String stdPath = installLocation.getAbsolutePath() + fgSeparator + "lib" + fgSeparator + "ruby" + fgSeparator + "1.8";
-		String sitePath = installLocation.getAbsolutePath() + fgSeparator + "lib" + fgSeparator + "ruby" + fgSeparator + "site_ruby" + fgSeparator + "1.8";
-		IPath[] paths = new IPath[2];
-		paths[0] = new Path(stdPath);
-		paths[1] = new Path(sitePath);
+	public IPath[] getDefaultLibraryLocations(File installLocation) {		
+		File rubyExecutable = findRubyExecutable(installLocation);
+		LibraryInfo info = getLibraryInfo(installLocation, rubyExecutable);
+		String[] loadpath = info.getBootpath();
+		IPath[] paths = new IPath[loadpath.length];
+		for (int i = 0; i < loadpath.length; i++) {
+			paths[i] = new Path(loadpath[i]);
+		}
+//		String stdPath = installLocation.getAbsolutePath() + fgSeparator + "lib" + fgSeparator + "ruby" + fgSeparator + "1.8";
+//		String sitePath = installLocation.getAbsolutePath() + fgSeparator + "lib" + fgSeparator + "ruby" + fgSeparator + "site_ruby" + fgSeparator + "1.8";
+//		IPath[] paths = new IPath[2];
+//		paths[0] = new Path(stdPath);
+//		paths[1] = new Path(sitePath);
 		return paths;
 	}
 
@@ -103,8 +121,7 @@ public class StandardVMType extends AbstractVMInstallType {
 	 * location. If the info does not exist, create it using the given Java
 	 * executable.
 	 */
-	protected synchronized LibraryInfo getLibraryInfo(File rubyHome, File rubyExecutable) {
-		
+	protected synchronized LibraryInfo getLibraryInfo(File rubyHome, File rubyExecutable) {		
 		// See if we already know the info for the requested VM.  If not, generate it.
 		String installPath = rubyHome.getAbsolutePath();
 		LibraryInfo info = LaunchingPlugin.getLibraryInfo(installPath);
@@ -124,9 +141,70 @@ public class StandardVMType extends AbstractVMInstallType {
 		return info;
 	}	
 	
-	private LibraryInfo generateLibraryInfo(
-			File javaHome, File javaExecutable) {
-		// TODO Auto-generated method stub
+	private LibraryInfo generateLibraryInfo(File rubyHome, File rubyExecutable) {
+		LibraryInfo info = null;		
+		//locate the script to grab us our loadpaths
+		File file = LaunchingPlugin.getFileInPlugin(new Path("ruby/loadpath.rb")); //$NON-NLS-1$
+		if (file.exists()) {	
+			String javaExecutablePath = rubyExecutable.getAbsolutePath();
+			String[] cmdLine = new String[] {javaExecutablePath, file.getAbsolutePath()};  //$NON-NLS-1$
+			Process p = null;
+			try {
+				p = Runtime.getRuntime().exec(cmdLine);
+				IProcess process = DebugPlugin.newProcess(new Launch(null, ILaunchManager.RUN_MODE, null), p, "Library Detection"); //$NON-NLS-1$
+				for (int i= 0; i < 200; i++) {
+					// Wait no more than 10 seconds (200 * 50 mils)
+					if (process.isTerminated()) {
+						break;
+					}
+					try {
+						Thread.sleep(50);
+					} catch (InterruptedException e) {
+					}
+				}
+				info = parseLibraryInfo(process);
+			} catch (IOException ioe) {
+				LaunchingPlugin.log(ioe);
+			} finally {
+				if (p != null) {
+					p.destroy();
+				}
+			}
+		}
+		if (info == null) {
+		    // log error that we were unable to generate library info - see bug 70011
+		    LaunchingPlugin.log(MessageFormat.format("Failed to retrieve default libraries for {0}", new String[]{rubyHome.getAbsolutePath()})); //$NON-NLS-1$
+		}
+		return info;
+	}
+	
+	/**
+	 * Parses the output from 'LibraryDetector'.
+	 */
+	protected LibraryInfo parseLibraryInfo(IProcess process) {
+		IStreamsProxy streamsProxy = process.getStreamsProxy();
+		String text = null;
+		if (streamsProxy != null) {
+			text = streamsProxy.getOutputStreamMonitor().getContents();
+		}
+		BufferedReader reader = new BufferedReader(new StringReader(text));
+		List<String> lines = new ArrayList<String>();
+		try {
+			String line = null;
+			while ((line = reader.readLine()) != null) {
+				lines.add(line);
+			}
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		if (lines.size() > 0) {
+			String version = lines.remove(0);
+		    if (lines.size() > 0) {
+		    	String[] loadpath = (String[]) lines.toArray(new String[lines.size()]);
+		    	return new LibraryInfo(version, loadpath);		
+		    }
+		}
 		return null;
 	}
 
@@ -138,21 +216,7 @@ public class StandardVMType extends AbstractVMInstallType {
 	 */
 	protected LibraryInfo getDefaultLibraryInfo(File installLocation) {
 		IPath rtjar = getDefaultSystemLibrary(installLocation);
-		File extDir = null;
-		File endDir = null;
-		String[] dirs = null;
-		if (extDir == null) {
-			dirs = new String[0];
-		} else {
-			dirs = new String[] {extDir.getAbsolutePath()};
-		}
-		String[] endDirs = null;
-		if (endDir == null) {
-			endDirs = new String[0]; 
-		} else {
-			endDirs = new String[] {endDir.getAbsolutePath()};
-		}
-		return new LibraryInfo("1.8.4", new String[] {rtjar.toOSString()}, dirs, endDirs);		 //$NON-NLS-1$
+		return new LibraryInfo("1.8.4", new String[] {rtjar.toOSString()});		 //$NON-NLS-1$
 	}
 	
 	/**

@@ -13,9 +13,7 @@ package org.rubypeople.rdt.internal.launching;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
@@ -94,20 +92,13 @@ public class RubyVMRuntimeLoadpathEntryResolver implements IRuntimeLoadpathEntry
 				if (libraryInfo != null) {
 					// only return endorsed and bootstrap classpath entries if we have the info
 					// libs in the ext dirs are not loaded by the boot class loader
-					String[] extensionDirsArray = libraryInfo.getExtensionDirs();
-					Set extensionDirsSet = new HashSet();
-					for (int i = 0; i < extensionDirsArray.length; i++) {
-						extensionDirsSet.add(extensionDirsArray[i]);
-					}
+					
 					List resolvedEntries = new ArrayList(libs.length);
 					for (int i = 0; i < libs.length; i++) {
 						IPath location = libs[i];
 						IPath libraryPath = location;
 						String dir = libraryPath.toFile().getParent();
-						// exclude extension directory entries
-						if (!extensionDirsSet.contains(dir)) {
-							resolvedEntries.add(resolveLibraryLocation(vm, location, kind, overrideRubydoc));
-						}
+						resolvedEntries.add(resolveLibraryLocation(vm, location, kind, overrideRubydoc));
 					}
 					return (IRuntimeLoadpathEntry[]) resolvedEntries.toArray(new IRuntimeLoadpathEntry[resolvedEntries.size()]);
 				}

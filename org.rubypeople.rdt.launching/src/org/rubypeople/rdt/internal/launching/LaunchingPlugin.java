@@ -7,6 +7,7 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URL;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -29,6 +30,7 @@ import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.resources.IWorkspaceRunnable;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.IExtensionPoint;
 import org.eclipse.core.runtime.IPath;
@@ -456,8 +458,6 @@ public class LaunchingPlugin extends Plugin implements IVMInstallChangedListener
 		Element libraryElement = doc.createElement("libraryInfo"); //$NON-NLS-1$
 		libraryElement.setAttribute("version", info.getVersion()); //$NON-NLS-1$
 		appendPathElements(doc, "bootpath", libraryElement, info.getBootpath()); //$NON-NLS-1$
-		appendPathElements(doc, "extensionDirs", libraryElement, info.getExtensionDirs()); //$NON-NLS-1$
-		appendPathElements(doc, "endorsedDirs", libraryElement, info.getEndorsedDirs()); //$NON-NLS-1$
 		return libraryElement;
 	}
 	
@@ -527,10 +527,8 @@ public class LaunchingPlugin extends Plugin implements IVMInstallChangedListener
 							String version = element.getAttribute("version"); //$NON-NLS-1$
 							String location = element.getAttribute("home"); //$NON-NLS-1$
 							String[] bootpath = getPathsFromXML(element, "bootpath"); //$NON-NLS-1$
-							String[] extDirs = getPathsFromXML(element, "extensionDirs"); //$NON-NLS-1$
-							String[] endDirs = getPathsFromXML(element, "endorsedDirs"); //$NON-NLS-1$
 							if (location != null) {
-								LibraryInfo info = new LibraryInfo(version, bootpath, extDirs, endDirs);
+								LibraryInfo info = new LibraryInfo(version, bootpath);
 								fgLibraryInfoMap.put(location, info);										
 							}
 						}
@@ -818,5 +816,20 @@ public class LaunchingPlugin extends Plugin implements IVMInstallChangedListener
 			return Status.OK_STATUS;
 		}
 		
+	}
+
+	/**
+	 * Return a <code>java.io.File</code> object that corresponds to the specified
+	 * <code>IPath</code> in the plugin directory.
+	 */
+	public static File getFileInPlugin(IPath path) {
+		try {
+			URL installURL =
+				new URL(getDefault().getBundle().getEntry("/"), path.toString()); //$NON-NLS-1$
+			URL localURL = FileLocator.toFileURL(installURL);
+			return new File(localURL.getFile());
+		} catch (IOException ioe) {
+			return null;
+		}
 	}
 }
