@@ -20,8 +20,8 @@ import org.rubypeople.rdt.internal.core.RubyModelManager;
 public class ExperimentalIndex implements IElementChangedListener {
 	
 	private static ExperimentalIndex fgInstance;
-	private static List<String> fgConstants;
-	private static List<String> fgTypes;
+	private static ArrayList<String> fgConstants;
+	private static ArrayList<String> fgTypes;
 	
 	private ExperimentalIndex() {
 		fgTypes = new ArrayList<String>();
@@ -33,13 +33,11 @@ public class ExperimentalIndex implements IElementChangedListener {
 	}
 
 	public static List<String> getTypes() {
-		// XXX We need to handle case where this gets invoked while index is updating (and we get a concurrent modification exception)!
-		return Collections.unmodifiableList(fgTypes);
+		return Collections.unmodifiableList((ArrayList<String>)fgTypes.clone()); // clone to avoid concurrent modification when iterating
 	}
 	
 	public static List<String> getConstants() {
-//		 XXX We need to handle case where this gets invoked while index is updating (and we get a concurrent modification exception)!
-		return Collections.unmodifiableList(fgConstants);
+		return Collections.unmodifiableList((ArrayList<String>)fgConstants.clone()); // clone to avoid concurrent modification when iterating
 	}
 
 	private void processDelta(IRubyElementDelta delta) {
