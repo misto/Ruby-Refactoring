@@ -48,8 +48,10 @@ import org.rubypeople.rdt.core.IRubyElement;
 import org.rubypeople.rdt.core.IRubyModelStatusConstants;
 import org.rubypeople.rdt.core.IRubyProject;
 import org.rubypeople.rdt.core.IRubyScript;
+import org.rubypeople.rdt.core.ISourceFolderRoot;
 import org.rubypeople.rdt.core.ISourceRange;
 import org.rubypeople.rdt.core.IType;
+import org.rubypeople.rdt.core.RubyConventions;
 import org.rubypeople.rdt.core.RubyCore;
 import org.rubypeople.rdt.core.RubyModelException;
 import org.rubypeople.rdt.core.WorkingCopyOwner;
@@ -150,21 +152,28 @@ public class RubyScript extends Openable implements IRubyScript {
 	}
 
 	protected IStatus validateRubyScript(IResource resource) {
-		// FIXME Validate the file and name!
-		return RubyModelStatus.VERIFIED_OK;
+		ISourceFolderRoot root = getSourceFolderRoot();
+		// root never null as validation is not done for working copies
+		if (resource != null) {
+			char[][] inclusionPatterns = ((SourceFolderRoot)root).fullInclusionPatternChars();
+			char[][] exclusionPatterns = ((SourceFolderRoot)root).fullExclusionPatternChars();
+			if (Util.isExcluded(resource, inclusionPatterns, exclusionPatterns)) 
+				return new RubyModelStatus(IRubyModelStatusConstants.ELEMENT_NOT_ON_CLASSPATH, this);
+			if (!resource.isAccessible())
+				return new RubyModelStatus(IRubyModelStatusConstants.ELEMENT_DOES_NOT_EXIST, this);
+		}
+		return RubyConventions.validateRubyScriptName(getElementName());
 	}
 
     /**
      * @see IRubyScript#getElementAt(int)
      */
     public IRubyElement getElementAt(int position) throws RubyModelException {
-
         IRubyElement e= getSourceElementAt(position);
         if (e == this) {
             return null;
-        } else {
-            return e;
         }
+        return e;
     }
     
 	public String getElementName() {
