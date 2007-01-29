@@ -1,3 +1,0 @@
-class RegexpError < StandardError
-
-end

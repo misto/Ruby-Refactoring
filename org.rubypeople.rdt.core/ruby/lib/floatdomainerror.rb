@@ -1,3 +1,0 @@
-class FloatDomainError < RangeError
-
-end

@@ -1,3 +1,0 @@
-class ThreadError < StandardError
-
-end

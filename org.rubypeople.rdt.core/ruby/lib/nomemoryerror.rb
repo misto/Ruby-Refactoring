@@ -1,3 +1,0 @@
-class NoMemoryError < Exception
-
-end

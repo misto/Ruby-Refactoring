@@ -1,3 +1,0 @@
-class LoadError < ScriptError
-
-end

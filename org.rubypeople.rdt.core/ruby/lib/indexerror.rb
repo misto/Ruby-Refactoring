@@ -1,3 +1,0 @@
-class IndexError < StandardError
-
-end

@@ -1,3 +1,0 @@
-class SystemStackError < StandardError
-
-end

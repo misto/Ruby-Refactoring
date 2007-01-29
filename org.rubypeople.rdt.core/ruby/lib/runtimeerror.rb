@@ -1,3 +1,0 @@
-class RuntimeError < StandardError
-
-end

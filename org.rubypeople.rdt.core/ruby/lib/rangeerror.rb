@@ -1,3 +1,0 @@
-class RangeError < StandardError
-
-end

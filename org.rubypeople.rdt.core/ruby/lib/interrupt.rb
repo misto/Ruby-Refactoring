@@ -1,3 +1,0 @@
-class Interrupt < SignalException
-
-end

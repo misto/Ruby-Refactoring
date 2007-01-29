@@ -1,3 +1,0 @@
-class SyntaxError < ScriptError
-
-end

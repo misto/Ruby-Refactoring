@@ -1,3 +1,0 @@
-class SecurityError < StandardError
-
-end

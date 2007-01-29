@@ -1,3 +1,0 @@
-class ScriptError < Exception
-
-end
