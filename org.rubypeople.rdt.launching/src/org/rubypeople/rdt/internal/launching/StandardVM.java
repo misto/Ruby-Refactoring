@@ -1,13 +1,24 @@
 package org.rubypeople.rdt.internal.launching;
 
 import java.io.File;
+import java.io.IOException;
 
+import org.eclipse.core.runtime.IPath;
+import org.eclipse.core.runtime.Path;
+import org.eclipse.debug.core.DebugPlugin;
 import org.eclipse.debug.core.ILaunchManager;
+import org.eclipse.debug.core.Launch;
+import org.eclipse.debug.core.model.IProcess;
 import org.rubypeople.rdt.launching.AbstractVMInstall;
+import org.rubypeople.rdt.launching.IVMInstallChangedListener;
 import org.rubypeople.rdt.launching.IVMInstallType;
 import org.rubypeople.rdt.launching.IVMRunner;
+import org.rubypeople.rdt.launching.PropertyChangeEvent;
+import org.rubypeople.rdt.launching.RubyRuntime;
 
 public class StandardVM extends AbstractVMInstall {
+
+	private String fgSeparator;
 
 	public StandardVM(IVMInstallType type, String id) {
 		super(type, id);
@@ -55,4 +66,90 @@ public class StandardVM extends AbstractVMInstall {
 	        return null;
 	}
 
+	@Override
+	public void setLibraryLocations(IPath[] locations) {
+		if (locations == fSystemLibraryDescriptions) {
+			return;
+		}
+		IPath[] newLocations = locations;
+		if (newLocations == null) {
+			newLocations = getDefaultLibraryLocations(); 
+		}
+		IPath[] prevLocations = fSystemLibraryDescriptions;
+		if (prevLocations == null) {
+			prevLocations = getDefaultLibraryLocations(); 
+		}
+		
+		if (newLocations.length == prevLocations.length) {
+			int i = 0;
+			boolean equal = true;
+			while (i < newLocations.length && equal) {
+				equal = newLocations[i].equals(prevLocations[i]);
+				i++;
+			}
+			if (equal) {
+				// no change
+				return;
+			}
+		}
+
+		PropertyChangeEvent event = new PropertyChangeEvent(this, IVMInstallChangedListener.PROPERTY_LIBRARY_LOCATIONS, prevLocations, newLocations);
+		fSystemLibraryDescriptions = locations;
+		if (fNotify) {
+			RubyRuntime.fireVMChanged(event);		
+		}
+	}
+
+	private IPath[] getDefaultLibraryLocations() {
+		 IPath[] dflts = getVMInstallType().getDefaultLibraryLocations(getInstallLocation());
+		 IPath[] paths = new IPath[dflts.length + 1];
+		 for (int i = 0; i < dflts.length; i++) {
+			 paths[i] = dflts[i];
+		 }
+		 // FIXME Handle possible null pointer being returned by findRubyExecutable
+		 paths[dflts.length] = generateCoreStubs(StandardVMType.findRubyExecutable(getInstallLocation()));
+		 return dflts;
+	}
+	
+	/**
+	 * Launch a ruby script to generate core class stubs for use in RDT internally (since Ruby core 
+	 * stuff is not in any scripts, they're built into the VM in C code).
+	 * @param rubyExecutable
+	 * @return an IPath pointing to the directory containing the core library stubs
+	 */
+	private IPath generateCoreStubs(File rubyExecutable) {
+		//locate the script to generate our core stubs
+		File file = LaunchingPlugin.getFileInPlugin(new Path("ruby" + fgSeparator + "core_stubber.rb")); //$NON-NLS-1$
+		IPath path = new Path(file.getParentFile().getAbsolutePath() + fgSeparator + getId() + fgSeparator + "lib"); //$NON-NLS-1$
+		if (path.toFile().exists()) {
+			return path; // we've already created the stubs for this VM
+		}
+		path.toFile().mkdirs(); // Make the directory structure to throw the files into
+		if (file.exists()) {	
+			String rubyExecutablePath = rubyExecutable.getAbsolutePath();
+			String[] cmdLine = new String[] {rubyExecutablePath, file.getAbsolutePath(), path.toOSString()};
+			Process p = null;
+			try {
+				p = Runtime.getRuntime().exec(cmdLine);
+				IProcess process = DebugPlugin.newProcess(new Launch(null, ILaunchManager.RUN_MODE, null), p, "Core Classes Stub Generation"); //$NON-NLS-1$
+				for (int i= 0; i < 200; i++) {
+					// Wait no more than 10 seconds (200 * 50 mils)
+					if (process.isTerminated()) {
+						break;
+					}
+					try {
+						Thread.sleep(50);
+					} catch (InterruptedException e) {
+					}
+				}				
+			} catch (IOException ioe) {
+				LaunchingPlugin.log(ioe);
+			} finally {
+				if (p != null) {
+					p.destroy();
+				}
+			}
+		}
+		return path;
+	}
 }

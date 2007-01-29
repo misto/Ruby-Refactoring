@@ -1,4 +1,4 @@
-OUTPUT_PATH = "ruby/lib/"
+OUTPUT_PATH = ARGV.first + "/"
 
 def file_name(klass)
   file_name = OUTPUT_PATH + klass.to_s.downcase

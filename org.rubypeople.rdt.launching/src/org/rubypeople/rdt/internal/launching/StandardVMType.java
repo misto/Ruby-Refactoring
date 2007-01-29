@@ -28,7 +28,7 @@ public class StandardVMType extends AbstractVMInstallType {
 	 * Map of the install path for which we were unable to generate
 	 * the library info during this session.
 	 */
-	private static Map fgFailedInstallPath= new HashMap();
+	private static Map<String, LibraryInfo> fgFailedInstallPath= new HashMap<String, LibraryInfo>();
 	
 	/**
 	 * Convenience handle to the system-specific file separator character
@@ -56,11 +56,6 @@ public class StandardVMType extends AbstractVMInstallType {
 		for (int i = 0; i < loadpath.length; i++) {
 			paths[i] = new Path(loadpath[i]);
 		}
-//		String stdPath = installLocation.getAbsolutePath() + fgSeparator + "lib" + fgSeparator + "ruby" + fgSeparator + "1.8";
-//		String sitePath = installLocation.getAbsolutePath() + fgSeparator + "lib" + fgSeparator + "ruby" + fgSeparator + "site_ruby" + fgSeparator + "1.8";
-//		IPath[] paths = new IPath[2];
-//		paths[0] = new Path(stdPath);
-//		paths[1] = new Path(sitePath);
 		return paths;
 	}
 
@@ -90,12 +85,12 @@ public class StandardVMType extends AbstractVMInstallType {
 	 */
 	public static File findRubyExecutable(File vmInstallLocation) {
 		// Try each candidate in order.  The first one found wins.  Thus, the order
-		// of fgCandidateJavaLocations and fgCandidateJavaFiles is significant.
+		// of fgCandidateRubyLocations and fgCandidateRubyFiles is significant.
 		for (int i = 0; i < fgCandidateRubyFiles.length; i++) {
 			for (int j = 0; j < fgCandidateRubyLocations.length; j++) {
-				File javaFile = new File(vmInstallLocation, fgCandidateRubyLocations[j] + fgCandidateRubyFiles[i]);
-				if (javaFile.isFile()) {
-					return javaFile;
+				File rubyFile = new File(vmInstallLocation, fgCandidateRubyLocations[j] + fgCandidateRubyFiles[i]);
+				if (rubyFile.isFile()) {
+					return rubyFile;
 				}				
 			}
 		}		
@@ -133,7 +128,6 @@ public class StandardVMType extends AbstractVMInstallType {
 					info = getDefaultLibraryInfo(rubyHome);
 					fgFailedInstallPath.put(installPath, info);
 				} else {
-				    // only persist if we were able to generate info - see bug 70011
 				    LaunchingPlugin.setLibraryInfo(installPath, info);
 				}
 			}
@@ -144,10 +138,10 @@ public class StandardVMType extends AbstractVMInstallType {
 	private LibraryInfo generateLibraryInfo(File rubyHome, File rubyExecutable) {
 		LibraryInfo info = null;		
 		//locate the script to grab us our loadpaths
-		File file = LaunchingPlugin.getFileInPlugin(new Path("ruby/loadpath.rb")); //$NON-NLS-1$
+		File file = LaunchingPlugin.getFileInPlugin(new Path("ruby" + fgSeparator + "loadpath.rb")); //$NON-NLS-1$
 		if (file.exists()) {	
-			String javaExecutablePath = rubyExecutable.getAbsolutePath();
-			String[] cmdLine = new String[] {javaExecutablePath, file.getAbsolutePath()};  //$NON-NLS-1$
+			String rubyExecutablePath = rubyExecutable.getAbsolutePath();
+			String[] cmdLine = new String[] {rubyExecutablePath, file.getAbsolutePath()};  //$NON-NLS-1$
 			Process p = null;
 			try {
 				p = Runtime.getRuntime().exec(cmdLine);
@@ -195,8 +189,7 @@ public class StandardVMType extends AbstractVMInstallType {
 				lines.add(line);
 			}
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			LaunchingPlugin.log(e);
 		}
 		if (lines.size() > 0) {
 			String version = lines.remove(0);
@@ -215,16 +208,25 @@ public class StandardVMType extends AbstractVMInstallType {
 	 * @return LibraryInfo
 	 */
 	protected LibraryInfo getDefaultLibraryInfo(File installLocation) {
-		IPath rtjar = getDefaultSystemLibrary(installLocation);
-		return new LibraryInfo("1.8.4", new String[] {rtjar.toOSString()});		 //$NON-NLS-1$
+		IPath[] dflts = getDefaultSystemLibrary(installLocation);
+		String[] strings = new String[dflts.length];
+		for (int i = 0; i < dflts.length; i++) {
+			strings[i] = dflts[i].toOSString();
+		}
+		return new LibraryInfo("1.8.4", strings);		 //$NON-NLS-1$
 	}
 	
 	/**
 	 * Return an <code>IPath</code> corresponding to the single library file containing the
 	 * standard Ruby classes for VMs version 1.8.x.
 	 */
-	protected IPath getDefaultSystemLibrary(File rubyHome) {
-		return new Path(rubyHome.getPath()).append("lib").append("ruby").append("1.8"); //$NON-NLS-2$ //$NON-NLS-1$ //$NON-NLS-3$
+	protected IPath[] getDefaultSystemLibrary(File rubyHome) {
+		String stdPath = rubyHome.getAbsolutePath() + fgSeparator + "lib" + fgSeparator + "ruby" + fgSeparator + "1.8";
+		String sitePath = rubyHome.getAbsolutePath() + fgSeparator + "lib" + fgSeparator + "ruby" + fgSeparator + "site_ruby" + fgSeparator + "1.8";
+		IPath[] paths = new IPath[2];		
+		paths[0] = new Path(sitePath);
+		paths[1] = new Path(stdPath);
+		return paths;
 	}
 
 }

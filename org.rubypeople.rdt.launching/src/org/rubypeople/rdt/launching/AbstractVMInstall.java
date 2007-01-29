@@ -31,13 +31,13 @@ public abstract class AbstractVMInstall implements IVMInstall, IVMInstall2 {
 	private String fId;
 	private String fName;
 	private File fInstallLocation;
-	private IPath[] fSystemLibraryDescriptions;
+	protected IPath[] fSystemLibraryDescriptions;
 	private String fVMArgs;
 	// system properties are cached in user preferences prefixed with this key, followed
 	// by vm type, vm id, and system property name
 	private static final String PREF_VM_INSTALL_SYSTEM_PROPERTY = "PREF_VM_INSTALL_SYSTEM_PROPERTY"; //$NON-NLS-1$
 	// whether change events should be fired
-	private boolean fNotify = true;
+	protected boolean fNotify = true;
 	
 	/**
 	 * Constructs a new VM install.
