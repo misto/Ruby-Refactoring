@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.StringTokenizer;
 
+import org.eclipse.core.runtime.IPath;
 import org.rubypeople.rdt.core.IImportDeclaration;
 import org.rubypeople.rdt.core.IParent;
 import org.rubypeople.rdt.core.IRubyElement;
@@ -29,9 +30,10 @@ public class RubyElementRequestor {
 		List<IType> types = new ArrayList<IType>();
 		IRubyProject rubyProject = script.getRubyProject();
 		try {
+			// FIXME Search the roots in a particular order? Return first match?
 			ISourceFolderRoot[] roots = rubyProject.getSourceFolderRoots();
 			for (int i = 0; i < roots.length; i++) {
-				types.addAll(getTypeInSourceFolderRoot(roots[i]));
+				types.addAll(getTypeInSourceFolderRoot(roots[i], typeName));
 			}
 		} catch (RubyModelException e) {
 			RubyCore.log(e);
@@ -43,20 +45,34 @@ public class RubyElementRequestor {
 		return (IType[]) types.toArray(new IType[matches.size()]);
 	}
 
-	private List<IType> getTypeInSourceFolderRoot(ISourceFolderRoot root) {
+	private List<IType> getTypeInSourceFolderRoot(ISourceFolderRoot root, String typeName) {
 		List<IType> types = new ArrayList<IType>();
 		try {
-			IImportDeclaration[] imports = script.getImports();
-			for (int j = 0; j < imports.length; j++) {
-				types.addAll(getTypeInImport(root, imports[j]));		
+			IPath rootPath = root.getPath();
+//	FIXME this is an ugly hack to search the core library in a special way (no need to look at imports)
+			if (rootPath.toString().contains("org.rubypeople.rdt.launching")) {
+				types.addAll(getTypeInImport(root, typeName.toLowerCase()));
+			} else {			
+				IImportDeclaration[] imports = script.getImports();
+				for (int j = 0; j < imports.length; j++) {
+					String path = imports[j].getElementName();
+					types.addAll(getTypeInImport(root, path));		
+				}
 			}
 		} catch (RubyModelException e) {
 			RubyCore.log(e);
 		}
 		return types;
 	}
-	private List<IType> getTypeInImport(ISourceFolderRoot root, IImportDeclaration importDecl) {
-		String path = importDecl.getElementName();
+	
+	/**
+	 * Searches the root for the path given (and appends the typical ".rb" extension). 
+	 * If we find a match, grab the types inside the script.
+	 * @param root The ISourceFolderRoot to search
+	 * @param path The internal path to search.
+	 * @return a List of ITypes which seem to be a match
+	 */
+	private List<IType> getTypeInImport(ISourceFolderRoot root, String path) {
 		StringTokenizer tokenizer = new StringTokenizer(path, SEPARATOR_CHARS);
 		List<String> tokens = new ArrayList<String>();
 		while(tokenizer.hasMoreTokens()) {

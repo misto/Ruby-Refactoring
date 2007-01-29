@@ -90,15 +90,11 @@ public class CompletionEngine {
 		if (this.prefix != null)
 			replaceStart -= this.prefix.length();
 
-		// TODO Refactor out common code here...
-		if (this.prefix != null && this.prefix.length() == 0) { // empty prefix
+		if (isConstant() || (emptyPrefix() && !isMethod)) { // type, constant, or empty prefix (with no preceding period)
 			suggestTypeNames(replaceStart);
 			suggestConstantNames(replaceStart);
-			getDocumentsRubyElementsInScope(script, source.toString(), offset, replaceStart);
-		} else if (isConstant()) { // type or constant
-			suggestTypeNames(replaceStart);
-			suggestConstantNames(replaceStart);
-		} else { // method or variable
+		} 
+		if (isMethod) { // method
 			ITypeInferrer inferrer = new DefaultTypeInferrer();
 			List<ITypeGuess> guesses = inferrer.infer(source.toString(), offset);
 			RubyElementRequestor requestor = new RubyElementRequestor(script);
@@ -109,11 +105,15 @@ public class CompletionEngine {
 					suggestMethods(replaceStart, guess.getConfidence(), types[i]);
 				}
 			}
-			// FIXME Traverse the IRubyElement model, not nodes (and don't reparse!)
-			if (!isMethod)
-				getDocumentsRubyElementsInScope(script, source.toString(), offset, replaceStart);
 		}
+		// FIXME Traverse the IRubyElement model, not nodes (and don't reparse!)
+		if (!isMethod)
+			getDocumentsRubyElementsInScope(script, source.toString(), offset, replaceStart);
 		this.requestor.endReporting();
+	}
+
+	private boolean emptyPrefix() {
+		return this.prefix != null && this.prefix.length() == 0;
 	}
 
 	private void suggestTypeNames(int replaceStart) {
@@ -146,7 +146,7 @@ public class CompletionEngine {
 	}
 
 	private boolean isConstant() {
-		return this.prefix != null && this.prefix.length() > 0 && Character.isUpperCase(this.prefix.charAt(0));
+		return prefix != null && prefix.length() > 0 && Character.isUpperCase(prefix.charAt(0));
 	}
 
 	private void suggestMethods(int replaceStart, int confidence, IType type) throws RubyModelException {

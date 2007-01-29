@@ -18,7 +18,10 @@ import org.rubypeople.rdt.launching.RubyRuntime;
 
 public class StandardVM extends AbstractVMInstall {
 
-	private String fgSeparator;
+	/**
+	 * Convenience handle to the system-specific file separator character
+	 */															
+	private static final char fgSeparator = File.separatorChar;
 
 	public StandardVM(IVMInstallType type, String id) {
 		super(type, id);
@@ -65,6 +68,13 @@ public class StandardVM extends AbstractVMInstall {
 	        }
 	        return null;
 	}
+	
+	@Override
+	public IPath[] getLibraryLocations() {
+		IPath[] paths =  super.getLibraryLocations();
+		if (paths != null) return paths;
+		return getDefaultLibraryLocations();
+	}
 
 	@Override
 	public void setLibraryLocations(IPath[] locations) {
@@ -102,13 +112,16 @@ public class StandardVM extends AbstractVMInstall {
 
 	private IPath[] getDefaultLibraryLocations() {
 		 IPath[] dflts = getVMInstallType().getDefaultLibraryLocations(getInstallLocation());
+		 IPath coreStubsPath = generateCoreStubs(StandardVMType.findRubyExecutable(getInstallLocation()));
+		 if (coreStubsPath == null) {
+			 return dflts;
+		 }
 		 IPath[] paths = new IPath[dflts.length + 1];
 		 for (int i = 0; i < dflts.length; i++) {
 			 paths[i] = dflts[i];
 		 }
-		 // FIXME Handle possible null pointer being returned by findRubyExecutable
-		 paths[dflts.length] = generateCoreStubs(StandardVMType.findRubyExecutable(getInstallLocation()));
-		 return dflts;
+		 paths[dflts.length] = coreStubsPath;		 
+		 return paths;
 	}
 	
 	/**
@@ -118,14 +131,15 @@ public class StandardVM extends AbstractVMInstall {
 	 * @return an IPath pointing to the directory containing the core library stubs
 	 */
 	private IPath generateCoreStubs(File rubyExecutable) {
+		if (rubyExecutable == null) return null;
 		//locate the script to generate our core stubs
-		File file = LaunchingPlugin.getFileInPlugin(new Path("ruby" + fgSeparator + "core_stubber.rb")); //$NON-NLS-1$
-		IPath path = new Path(file.getParentFile().getAbsolutePath() + fgSeparator + getId() + fgSeparator + "lib"); //$NON-NLS-1$
-		if (path.toFile().exists()) {
-			return path; // we've already created the stubs for this VM
-		}
-		path.toFile().mkdirs(); // Make the directory structure to throw the files into
+		File file = LaunchingPlugin.getFileInPlugin(new Path("ruby/core_stubber.rb")); //$NON-NLS-1$
 		if (file.exists()) {	
+			IPath path = new Path(file.getParentFile().getAbsolutePath() + fgSeparator + getId() + fgSeparator + "lib"); //$NON-NLS-1$
+			if (path.toFile().exists()) {
+				return path; // we've already created the stubs for this VM
+			}
+			path.toFile().mkdirs(); // Make the directory structure to throw the files into
 			String rubyExecutablePath = rubyExecutable.getAbsolutePath();
 			String[] cmdLine = new String[] {rubyExecutablePath, file.getAbsolutePath(), path.toOSString()};
 			Process p = null;
@@ -141,7 +155,8 @@ public class StandardVM extends AbstractVMInstall {
 						Thread.sleep(50);
 					} catch (InterruptedException e) {
 					}
-				}				
+				}
+				return path;
 			} catch (IOException ioe) {
 				LaunchingPlugin.log(ioe);
 			} finally {
@@ -150,6 +165,6 @@ public class StandardVM extends AbstractVMInstall {
 				}
 			}
 		}
-		return path;
+		return null;
 	}
 }

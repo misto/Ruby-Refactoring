@@ -556,7 +556,7 @@ public class RubyProject extends Openable implements IProjectNature, IRubyElemen
 	 *            boolean
 	 * @param retrieveExportedRoots
 	 *            boolean
-	 * @throws JavaModelException
+	 * @throws RubyModelException
 	 */
 	public void computeSourceFolderRoots(ILoadpathEntry resolvedEntry, ObjectVector accumulatedRoots, HashSet rootIDs, ILoadpathEntry referringEntry, boolean checkExistency, boolean retrieveExportedRoots, Map rootToResolvedEntries) throws RubyModelException {
 
