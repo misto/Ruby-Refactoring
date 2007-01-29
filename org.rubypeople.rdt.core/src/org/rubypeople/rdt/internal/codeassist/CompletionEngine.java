@@ -90,7 +90,12 @@ public class CompletionEngine {
 		if (this.prefix != null)
 			replaceStart -= this.prefix.length();
 
-		if (isConstant()) { // type or constant
+		// TODO Refactor out common code here...
+		if (this.prefix != null && this.prefix.length() == 0) { // empty prefix
+			suggestTypeNames(replaceStart);
+			suggestConstantNames(replaceStart);
+			getDocumentsRubyElementsInScope(script, source.toString(), offset, replaceStart);
+		} else if (isConstant()) { // type or constant
 			suggestTypeNames(replaceStart);
 			suggestConstantNames(replaceStart);
 		} else { // method or variable
