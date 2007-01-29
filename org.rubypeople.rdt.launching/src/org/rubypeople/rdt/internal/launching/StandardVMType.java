@@ -13,12 +13,14 @@ import java.util.Map;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Path;
+import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.debug.core.DebugPlugin;
 import org.eclipse.debug.core.ILaunchManager;
 import org.eclipse.debug.core.Launch;
 import org.eclipse.debug.core.model.IProcess;
 import org.eclipse.debug.core.model.IStreamsProxy;
+import org.eclipse.osgi.service.environment.Constants;
 import org.rubypeople.rdt.launching.AbstractVMInstallType;
 import org.rubypeople.rdt.launching.IVMInstall;
 
@@ -229,4 +231,79 @@ public class StandardVMType extends AbstractVMInstallType {
 		return paths;
 	}
 
+	/* (non-Javadoc)
+	 * @see org.eclipse.jdt.launching.IVMInstallType#detectInstallLocation()
+	 */
+	public File detectInstallLocation() {
+		// do not detect on Windows
+		if (Platform.getOS().equals(Constants.OS_WIN32)) {
+			return null;
+		}		
+		
+		String[] cmdLine = new String[] { "which", "ruby" }; //$NON-NLS-1$ //$NON-NLS-2$
+		Process p = null;
+		File rubyExecutable = null;
+		try {
+			p = Runtime.getRuntime().exec(cmdLine);
+			IProcess process = DebugPlugin.newProcess(new Launch(null, ILaunchManager.RUN_MODE, null), p, "Standard Ruby VM Install Detection"); //$NON-NLS-1$
+			for (int i = 0; i < 200; i++) {
+				// Wait no more than 10 seconds (200 * 50 mils)
+				if (process.isTerminated()) {
+					break;
+				}
+				try {
+					Thread.sleep(50);
+				} catch (InterruptedException e) {}
+			}
+			rubyExecutable = parseRubyExecutableLocation(process);
+		} catch (IOException ioe) {
+			LaunchingPlugin.log(ioe);
+		} finally {
+			if (p != null) {
+				p.destroy();
+			}
+		} 
+		
+		if (rubyExecutable == null) {
+			return null;
+		}
+
+		File bin= new File(rubyExecutable.getParent());
+		if (!bin.exists()) return null;
+		File rubyHome = bin.getParentFile();
+		if (!rubyHome.exists()) return null;
+		if (!canDetectDefaultSystemLibraries(rubyHome, rubyExecutable)) {
+			return null;
+		}	
+	
+		return rubyHome;
+	}
+
+	/**
+	 * Parses the output from 'Standard Ruby VM Install Detector'.
+	 */
+	protected File parseRubyExecutableLocation(IProcess process) {
+		IStreamsProxy streamsProxy = process.getStreamsProxy();
+		String text = null;
+		if (streamsProxy != null) {
+			text = streamsProxy.getOutputStreamMonitor().getContents();
+		}
+		BufferedReader reader = new BufferedReader(new StringReader(text));
+		List<String> lines = new ArrayList<String>();
+		try {
+			String line = null;
+			while ((line = reader.readLine()) != null) {
+				lines.add(line);
+			}
+		} catch (IOException e) {
+			LaunchingPlugin.log(e);
+		}
+		if (lines.size() > 0) {
+			String location = lines.remove(0);
+		    File executable = new File(location);
+		    if (executable.isFile() && executable.exists()) return executable;
+		}
+		return null;
+	}
+	
 }

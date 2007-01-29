@@ -49,6 +49,7 @@ import org.rubypeople.rdt.internal.launching.RuntimeLoadpathEntry;
 import org.rubypeople.rdt.internal.launching.RuntimeLoadpathEntryResolver;
 import org.rubypeople.rdt.internal.launching.RuntimeLoadpathProvider;
 import org.rubypeople.rdt.internal.launching.VMDefinitionsContainer;
+import org.rubypeople.rdt.internal.launching.VMListener;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -329,10 +330,30 @@ public class RubyRuntime {
 						vmDefs = new VMDefinitionsContainer();
 						// 2. add persisted VMs
 						setPref = addPersistedVMs(vmDefs);
-						
-						// 3. load contributed VM installs
+//						 3. if there are none, detect the eclipse runtime
+						if (vmDefs.getValidVMList().isEmpty()) {
+							// calling out to detectDefaultVMs() could allow clients to change
+							// VM settings (i.e. call back into change VM settings).
+							VMListener listener = new VMListener();
+							addVMInstallChangedListener(listener);
+							setPref = true;
+							VMStandin runtime = detectDefaultVMs();
+							removeVMInstallChangedListener(listener);
+							if (!listener.isChanged()) {
+								if (runtime != null) {
+									vmDefs.addVM(runtime);
+									vmDefs.setDefaultVMInstallCompositeID(getCompositeIdFromVM(runtime));
+								}
+							} else {
+								// VMs were changed - reflect current settings
+								addPersistedVMs(vmDefs);
+								vmDefs.setDefaultVMInstallCompositeID(fgDefaultVMId);
+
+							}
+						}
+						// 4. load contributed VM installs
 						addVMExtensions(vmDefs);
-						// 4. verify default VM is valid
+						// 5. verify default VM is valid
 						String defId = vmDefs.getDefaultVMInstallCompositeID();
 						boolean validDef = false;
 						if (defId != null) {
@@ -399,6 +420,45 @@ public class RubyRuntime {
 				
 			}
 		}
+	}
+	
+	/**
+	 * Detect the VM that is used by the system by default.
+	 * 
+	 * @return a VM standin representing the VM that Eclipse is running on, or
+	 * <code>null</code> if unable to detect the runtime VM
+	 */
+	private static VMStandin detectDefaultVMs() {
+		VMStandin detectedVMStandin = null;
+		// Try to detect a VM for each declared VM type
+		IVMInstallType[] vmTypes= getVMInstallTypes();
+		for (int i = 0; i < vmTypes.length; i++) {
+			
+			File detectedLocation= vmTypes[i].detectInstallLocation();
+			if (detectedLocation != null && detectedVMStandin == null) {
+				
+				// Make sure the VM id is unique
+				long unique = System.currentTimeMillis();	
+				IVMInstallType vmType = vmTypes[i];
+				while (vmType.findVMInstall(String.valueOf(unique)) != null) {
+					unique++;
+				}
+
+				// Create a standin for the detected VM and add it to the result collector
+				String vmID = String.valueOf(unique);
+				detectedVMStandin = new VMStandin(vmType, vmID);
+				detectedVMStandin.setInstallLocation(detectedLocation);
+				detectedVMStandin.setName(generateDetectedVMName(detectedVMStandin));
+			}				
+		}
+		return detectedVMStandin;
+	}
+	
+	/**
+	 * Make the name of a detected VM stand out.
+	 */
+	private static String generateDetectedVMName(IVMInstall vm) {
+		return vm.getInstallLocation().getName();
 	}
 	
 	/**
@@ -485,7 +545,7 @@ public class RubyRuntime {
 	 * 
 	 * @param vm the instance of IVMInstallType to be identified
 	 * 
-	 * @since 2.1
+	 * @since 0.9.0
 	 */
 	public static String getCompositeIdFromVM(IVMInstall vm) {
 		if (vm == null) {
@@ -499,7 +559,7 @@ public class RubyRuntime {
 
 	/**
 	 * Loads contributed VM installs
-	 * @since 3.2
+	 * @since 0.9.0
 	 */
 	private static void addVMExtensions(VMDefinitionsContainer vmDefs) {
 		IExtensionPoint extensionPoint = Platform.getExtensionRegistry().getExtensionPoint(LaunchingPlugin.PLUGIN_ID, RubyRuntime.EXTENSION_POINT_VM_INSTALLS);
