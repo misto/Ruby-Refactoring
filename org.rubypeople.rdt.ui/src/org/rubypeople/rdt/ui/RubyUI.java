@@ -78,13 +78,19 @@ public final class RubyUI {
 	public static final String ID_ELEMENT_CREATION_ACTION_SET = "org.rubypeople.rdt.ui.RubyElementCreationActionSet"; //$NON-NLS-1$
 
 	/**
+	 * The id of the Ruby perspective
+	 * (value <code>"org.rubypeople.rdt.ui.PerspectiveRuby"</code>).
+	 */	
+	public static final String ID_PERSPECTIVE= 		"org.rubypeople.rdt.ui.PerspectiveRuby"; //$NON-NLS-1$
+		
+	/**
 	 * Returns the Ruby element wrapped by the given editor input.
 	 * 
 	 * @param editorInput
 	 *            the editor input
 	 * @return the Ruby element wrapped by <code>editorInput</code> or
 	 *         <code>null</code> if none
-	 * @since 3.2
+	 * @since 0.9.0
 	 */
 	public static IRubyElement getEditorInputRubyElement(
 			IEditorInput editorInput) {
