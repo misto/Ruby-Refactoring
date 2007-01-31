@@ -571,10 +571,10 @@ class DEBUGGER__
       when /^\s*delete\s+(\d+)$/
         pos = $1.to_i
         if pos < 1 || pos > break_points.length
-          @printer.printError("Breakpoint number out of bounds: %d. There are currently %d breakpoints defined.", pos, break_points.length )
+          @printer.printXml("<error>Breakpoint number out of bounds: %d. There are currently %d breakpoints defined.</error>", pos, break_points.length )
         else         
           break_points.delete_at(pos-1)
-          @printer.debug("Removed breakpoint no %d", pos)
+          @printer.printXml("<breakpointDeleted no=\"%d\"/>\n", pos)
         end
         
         #        when /^\s*wat(?:ch)?\s+(.+)$/
