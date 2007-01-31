@@ -37,13 +37,12 @@ import org.rubypeople.rdt.internal.ui.wizards.dialogfields.SelectionButtonDialog
  * To implement a different kind of a new class wizard page, extend <code>NewTypeWizardPage</code>.
  * </p>
  * 
- * @since 2.0
+ * @since 0.9.0
  */
 public class NewClassWizardPage extends NewTypeWizardPage {
 	
 	private final static String PAGE_NAME= "NewClassWizardPage"; //$NON-NLS-1$
 	
-	private final static String SETTINGS_CREATEMAIN= "create_main"; //$NON-NLS-1$
 	private final static String SETTINGS_CREATECONSTR= "create_constructor"; //$NON-NLS-1$
 	
 	private SelectionButtonDialogFieldGroup fMethodStubsButtons;
@@ -58,7 +57,7 @@ public class NewClassWizardPage extends NewTypeWizardPage {
 		setDescription(NewWizardMessages.NewClassWizardPage_description); 
 		
 		String[] buttonNames3= new String[] {
-			NewWizardMessages.NewClassWizardPage_methods_main, NewWizardMessages.NewClassWizardPage_methods_constructors
+			NewWizardMessages.NewClassWizardPage_methods_constructors
 		};		
 		fMethodStubsButtons= new SelectionButtonDialogFieldGroup(SWT.CHECK, buttonNames3, 1);
 		fMethodStubsButtons.setLabelText(NewWizardMessages.NewClassWizardPage_methods_label);		 
@@ -79,19 +78,17 @@ public class NewClassWizardPage extends NewTypeWizardPage {
 		initTypePage(jelem);
 		doStatusUpdate();
 		
-		boolean createMain= false;
 		boolean createConstructors= false;
 		boolean createUnimplemented= true;
 		IDialogSettings dialogSettings= getDialogSettings();
 		if (dialogSettings != null) {
 			IDialogSettings section= dialogSettings.getSection(PAGE_NAME);
 			if (section != null) {
-				createMain= section.getBoolean(SETTINGS_CREATEMAIN);
 				createConstructors= section.getBoolean(SETTINGS_CREATECONSTR);
 			}
 		}
 		
-		setMethodStubSelection(createMain, createConstructors, true);
+		setMethodStubSelection(createConstructors, true);
 	}
 	
 	// ------ validation --------
@@ -175,7 +172,6 @@ public class NewClassWizardPage extends NewTypeWizardPage {
 				if (section == null) {
 					section= dialogSettings.addNewSection(PAGE_NAME);
 				}
-				section.put(SETTINGS_CREATEMAIN, isCreateMain());
 				section.put(SETTINGS_CREATECONSTR, isCreateConstructors());
 			}
 		}
@@ -192,21 +188,12 @@ public class NewClassWizardPage extends NewTypeWizardPage {
 	}
 	
 	/**
-	 * Returns the current selection state of the 'Create Main' checkbox.
-	 * 
-	 * @return the selection state of the 'Create Main' checkbox
-	 */
-	public boolean isCreateMain() {
-		return fMethodStubsButtons.isSelected(0);
-	}
-
-	/**
 	 * Returns the current selection state of the 'Create Constructors' checkbox.
 	 * 
 	 * @return the selection state of the 'Create Constructors' checkbox
 	 */
 	public boolean isCreateConstructors() {
-		return fMethodStubsButtons.isSelected(1);
+		return fMethodStubsButtons.isSelected(0);
 	}
 	
 	/**
@@ -217,9 +204,8 @@ public class NewClassWizardPage extends NewTypeWizardPage {
 	 * @param canBeModified if <code>true</code> the method stub checkboxes can be changed by 
 	 * the user. If <code>false</code> the buttons are "read-only"
 	 */
-	public void setMethodStubSelection(boolean createMain, boolean createConstructors, boolean canBeModified) {
-		fMethodStubsButtons.setSelection(0, createMain);
-		fMethodStubsButtons.setSelection(1, createConstructors);
+	public void setMethodStubSelection(boolean createConstructors, boolean canBeModified) {
+		fMethodStubsButtons.setSelection(0, createConstructors);
 		
 		fMethodStubsButtons.setEnabled(canBeModified);
 	}	
@@ -230,8 +216,6 @@ public class NewClassWizardPage extends NewTypeWizardPage {
 	 * @see NewTypeWizardPage#createTypeMembers
 	 */
 	protected void createTypeMembers(IType type, IProgressMonitor monitor) throws CoreException {
-//		boolean doMain= isCreateMain();
-		// TODO Create a main method?!
 		boolean doConstr= isCreateConstructors();
 
 		if (doConstr) {

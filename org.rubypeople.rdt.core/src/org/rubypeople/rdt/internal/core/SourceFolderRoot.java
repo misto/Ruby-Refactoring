@@ -144,9 +144,9 @@ public class SourceFolderRoot extends Openable implements ISourceFolderRoot {
 	}		
 	
 	/**
-	 * Compute the package fragment children of this package fragment root.
+	 * Compute the source folder children of this source folder root.
 	 * 
-	 * @exception JavaModelException  The resource associated with this package fragment root does not exist
+	 * @exception RubyModelException  The resource associated with this source folder root does not exist
 	 */
 	protected boolean computeChildren(OpenableElementInfo info, Map newElements) throws RubyModelException {
 		try {
@@ -193,10 +193,10 @@ public class SourceFolderRoot extends Openable implements ISourceFolderRoot {
 	 */
 	protected void computeFolderChildren(IContainer folder, String[] pkgName, ArrayList vChildren) throws RubyModelException {
 		    ISourceFolder pkg = getSourceFolder(pkgName);
-			vChildren.add(pkg);
+			vChildren.add(pkg); // add ourself
 
 		try {
-			RubyProject javaProject = (RubyProject)getRubyProject();
+			RubyProject rubyProject = (RubyProject)getRubyProject();
 			RubyModelManager manager = RubyModelManager.getRubyModelManager();
 			IResource[] members = folder.members();
 
@@ -206,13 +206,10 @@ public class SourceFolderRoot extends Openable implements ISourceFolderRoot {
 				
 				switch(member.getType()) {				    
 				    case IResource.FOLDER:
-							if (javaProject.contains(member)) {
+							if (rubyProject.contains(member)) {
 								String[] newNames = Util.arrayConcat(pkgName, manager.intern(memberName));
 								computeFolderChildren((IFolder) member, newNames, vChildren);
-								ISourceFolder child = getSourceFolder(newNames);
-								vChildren.add(child);
 							}
-
 				    	break;
 				    case IResource.FILE:
 				        // inclusion filter may only include files, in which case we still want to include the immediate parent package (lazily)

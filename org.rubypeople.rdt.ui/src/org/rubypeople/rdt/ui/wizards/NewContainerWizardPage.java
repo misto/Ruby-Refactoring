@@ -284,9 +284,8 @@ public abstract class NewContainerWizardPage extends NewElementWizardPage {
 	}
 	
 	/**
-	 * Sets the current source folder (model and text field) to the given package
-	 * fragment root.
-
+	 * Sets the current source folder (model and text field) to the given source folder
+	 * root.
 	 * @param root The new root.
 	 * @param canBeModified if <code>false</code> the source folder field can 
 	 * not be changed by the user. If <code>true</code> the field is editable
@@ -381,7 +380,7 @@ public abstract class NewContainerWizardPage extends NewElementWizardPage {
 	 * Clients can override this method if they want to offer a different dialog.
 	 * </p>
 	 * 
-	 * @since 3.2
+	 * @since 0.9.0
 	 */
 	protected ISourceFolderRoot chooseContainer() {
 		IRubyElement initElement= getSourceFolderRoot();

@@ -435,7 +435,7 @@ public abstract class NewTypeWizardPage extends NewContainerWizardPage {
 	 * Clients can override this method if they want to offer a different dialog.
 	 * </p>
 	 * 
-	 * @since 3.2
+	 * @since 0.9.0
 	 */
 	protected ISourceFolder chooseSourceFolder() {
 		ISourceFolderRoot froot= getSourceFolderRoot();
@@ -539,10 +539,10 @@ public abstract class NewTypeWizardPage extends NewContainerWizardPage {
 	}
 	
 	/**
-	 * Sets the package fragment to the given value. The method updates the model 
+	 * Sets the source folder to the given value. The method updates the model 
 	 * and the text of the control.
 	 * 
-	 * @param pack the package fragment to be set
+	 * @param pack the source folder to be set
 	 * @param canBeModified if <code>true</code> the package fragment is
 	 * editable; otherwise it is read-only.
 	 */

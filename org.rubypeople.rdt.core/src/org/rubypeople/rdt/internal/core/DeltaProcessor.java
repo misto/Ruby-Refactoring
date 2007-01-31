@@ -656,9 +656,9 @@ public class DeltaProcessor {
                 RootInfo rootInfo = null;
                 int elementType;
                 IProject proj = (IProject) res;
-                boolean wasJavaProject = this.state.findRubyProject(proj.getName()) != null;
-                boolean isJavaProject = RubyProject.hasRubyNature(proj);
-                if (!wasJavaProject && !isJavaProject) {
+                boolean wasRubyProject = this.state.findRubyProject(proj.getName()) != null;
+                boolean isRubyProject = RubyProject.hasRubyNature(proj);
+                if (!wasRubyProject && !isRubyProject) {
                     elementType = NON_RUBY_RESOURCE;
                 } else {
                 	rootInfo = this.enclosingRootInfo(res.getFullPath(), delta.getKind());
@@ -673,7 +673,7 @@ public class DeltaProcessor {
                 this.traverseDelta(delta, elementType, rootInfo);
 
                 if (elementType == NON_RUBY_RESOURCE
-                        || (wasJavaProject != isJavaProject && (delta.getKind()) == IResourceDelta.CHANGED)) { // project
+                        || (wasRubyProject != isRubyProject && (delta.getKind()) == IResourceDelta.CHANGED)) { // project
                     // has
                     // changed
                     // nature
@@ -1160,17 +1160,109 @@ public class DeltaProcessor {
         // process children if needed
         if (processChildren) {
             IResourceDelta[] children = delta.getAffectedChildren();
-            boolean oneChildOnClasspath = false;
+            boolean oneChildOnLoadpath = false;
             int length = children.length;
             IResourceDelta[] orphanChildren = null;
             Openable parent = null;
             boolean isValidParent = true;
-            if (orphanChildren != null && (oneChildOnClasspath // orphan
+            
+            
+			for (int i = 0; i < length; i++) {
+				IResourceDelta child = children[i];
+				IResource childRes = child.getResource();
+				
+				// find out whether the child is a source folder root of the current project
+				IPath childPath = childRes.getFullPath();
+				int childKind = child.getKind();
+				RootInfo childRootInfo = this.rootInfo(childPath, childKind);
+				if (childRootInfo != null && !childRootInfo.isRootOfProject(childPath)) {
+					// package fragment root of another project (dealt with later)
+					childRootInfo = null;
+				}
+				
+				// compute child type
+				int childType = 
+					this.elementType(
+						childRes, 
+						childKind,
+						elementType, 
+						rootInfo == null ? childRootInfo : rootInfo
+					);
+						
+				// is childRes in the output folder and is it filtered out ?
+				boolean isResFilteredFromOutput = false;
+
+				boolean isNestedRoot = rootInfo != null && childRootInfo != null;
+				if (!isResFilteredFromOutput 
+						&& !isNestedRoot) { // do not treat as non-ruby rsc if nested root
+
+					this.traverseDelta(child, childType, rootInfo == null ? childRootInfo : rootInfo); // traverse delta for child in the same project
+
+					if (childType == NON_RUBY_RESOURCE) {
+						if (rootInfo != null) { // if inside a source folder root
+							if (!isValidParent) continue; 
+							if (parent == null) {
+								// find the parent of the non-ruby resource to attach to
+								if (this.currentElement == null
+										|| !rootInfo.project.equals(this.currentElement.getRubyProject())) { // note if currentElement is the IRubyModel, getJavaProject() is null
+									// force the currentProject to be used
+									this.currentElement = rootInfo.project;
+								}
+								if (elementType == IRubyElement.RUBY_PROJECT
+									|| (elementType == IRubyElement.SOURCE_FOLDER_ROOT 
+										&& res instanceof IProject)) { 
+									// NB: attach non-ruby resource to project (not to its package fragment root)
+									parent = rootInfo.project;
+								} else {
+									parent = this.createElement(res, elementType, rootInfo);
+								}
+								if (parent == null) {
+									isValidParent = false;
+									continue;
+								}
+							}
+							// add child as non ruby resource
+							try {
+								nonRubyResourcesChanged(parent, child);
+							} catch (RubyModelException e) {
+								// ignore
+							}
+						} else {
+							// the non-ruby resource (or its parent folder) will be attached to the ruby project
+							if (orphanChildren == null) orphanChildren = new IResourceDelta[length];
+							orphanChildren[i] = child;
+						}
+					} else {
+						oneChildOnLoadpath = true;
+					}
+				} else {
+					oneChildOnLoadpath = true; // to avoid reporting child delta as non-ruby resource delta
+				}
+								
+				// if child is a nested root 
+				// or if it is not a package fragment root of the current project
+				// but it is a package fragment root of another project, traverse delta too
+				if (isNestedRoot 
+						|| (childRootInfo == null && (childRootInfo = this.rootInfo(childPath, childKind)) != null)) {
+					this.traverseDelta(child, IRubyElement.SOURCE_FOLDER_ROOT, childRootInfo); // binary output of childRootInfo.project cannot be this root
+				}
+	
+				// if the child is a package fragment root of one or several other projects
+				ArrayList rootList;
+				if ((rootList = this.otherRootsInfo(childPath, childKind)) != null) {
+					Iterator iterator = rootList.iterator();
+					while (iterator.hasNext()) {
+						childRootInfo = (RootInfo) iterator.next();
+						this.traverseDelta(child, IRubyElement.SOURCE_FOLDER_ROOT, childRootInfo); // binary output of childRootInfo.project cannot be this root
+					}
+				}
+			}            
+            if (orphanChildren != null && (oneChildOnLoadpath // orphan
                     // children are
                     // siblings of a
                     // package
                     // fragment root
-                    || res instanceof IProject)) { // non-java resource
+                    || res instanceof IProject)) { // non-ruby resource
                 // directly under a project
 
                 // attach orphan children
@@ -1195,7 +1287,17 @@ public class DeltaProcessor {
         } // else resource delta will be added by parent
     }
 
-    /*
+	/*
+	 * Returns the other root infos for the given path. Look in the old other roots table if kind is REMOVED.
+	 */
+	private ArrayList otherRootsInfo(IPath path, int kind) {
+		if (kind == IResourceDelta.REMOVED) {
+			return (ArrayList)this.state.oldOtherRoots.get(path);
+		}
+		return (ArrayList)this.state.otherRoots.get(path);
+	}	
+
+	/*
      * Update the current delta (ie. add/remove/change the given element) and
      * update the correponding index. Returns whether the children of the given
      * delta must be processed. @throws a RubyModelException if the delta
@@ -1490,8 +1592,9 @@ public class DeltaProcessor {
                 }
 
                 // find the element type of the moved from element
+                RootInfo movedFromInfo = this.enclosingRootInfo(movedFromPath, IResourceDelta.REMOVED);
                 int movedFromType = this.elementType(movedFromRes, IResourceDelta.REMOVED, element
-                        .getParent().getElementType());
+                        .getParent().getElementType(), movedFromInfo);
 
                 // reset current element as it might be inside a nested root
                 // (popUntilPrefixOf() may use the outer root)
@@ -1586,8 +1689,9 @@ public class DeltaProcessor {
             }
 
             // find the element type of the moved from element
+			RootInfo movedToInfo = this.enclosingRootInfo(movedToPath, IResourceDelta.ADDED);
             int movedToType = this.elementType(movedToRes, IResourceDelta.ADDED, element
-                    .getParent().getElementType());
+                    .getParent().getElementType(), movedToInfo);
 
             // reset current element as it might be inside a nested root
             // (popUntilPrefixOf() may use the outer root)
@@ -1672,27 +1776,58 @@ public class DeltaProcessor {
      * NON_RUBY_RESOURCE if unknown (e.g. a non-ruby resource or excluded .rb
      * file)
      */
-    private int elementType(IResource res, int kind, int parentType) {
-        switch (parentType) {
-        case IRubyElement.RUBY_MODEL:
-            // case of a movedTo or movedFrom project (other cases are handled
-            // in processResourceDelta(...)
-            return IRubyElement.RUBY_PROJECT;
+	private int elementType(IResource res, int kind, int parentType, RootInfo rootInfo) {
+		switch (parentType) {
+			case IRubyElement.RUBY_MODEL:
+				// case of a movedTo or movedFrom project (other cases are handled in processResourceDelta(...)
+				return IRubyElement.RUBY_PROJECT;
+			
+			case NON_RUBY_RESOURCE:
+			case IRubyElement.RUBY_PROJECT:
+				if (rootInfo == null) {
+					rootInfo = this.enclosingRootInfo(res.getFullPath(), kind);
+				}
+				if (rootInfo != null && rootInfo.isRootOfProject(res.getFullPath())) {
+					return IRubyElement.SOURCE_FOLDER_ROOT;
+				} 
+				// not yet in a source folder root or root of another project
+				// or source folder to be included (see below)
+				// -> let it go through
 
-        case NON_RUBY_RESOURCE:
-        case IRubyElement.RUBY_PROJECT:
-            if (res.getType() == IResource.FOLDER) { return NON_RUBY_RESOURCE; }
-            String fileName = res.getName();
-            if (Util.isValidRubyScriptName(fileName)) {
-                return IRubyElement.SCRIPT;
-            } else {
-                return NON_RUBY_RESOURCE;
-            }
-
-        default:
-            return NON_RUBY_RESOURCE;
-        }
-    }
+			case IRubyElement.SOURCE_FOLDER_ROOT:
+			case IRubyElement.SOURCE_FOLDER:
+				if (rootInfo == null) {
+					rootInfo = this.enclosingRootInfo(res.getFullPath(), kind);
+				}
+				if (rootInfo == null) {
+					return NON_RUBY_RESOURCE;
+				}
+				if (Util.isExcluded(res, rootInfo.inclusionPatterns, rootInfo.exclusionPatterns)) {
+					return NON_RUBY_RESOURCE;
+				}
+				if (res.getType() == IResource.FOLDER) {
+					if (parentType == NON_RUBY_RESOURCE && !Util.isExcluded(res.getParent(), rootInfo.inclusionPatterns, rootInfo.exclusionPatterns))
+						// parent is a non-Ruby resource because it doesn't have a valid package name (see https://bugs.eclipse.org/bugs/show_bug.cgi?id=130982)
+						return NON_RUBY_RESOURCE;
+//					if (Util.isValidFolderNameForPackage(res.getName())) {
+						return IRubyElement.SOURCE_FOLDER;
+//					}
+//					return NON_RUBY_RESOURCE;
+				}
+				String fileName = res.getName();
+				if (Util.isValidRubyScriptName(fileName)) {
+					return IRubyElement.SCRIPT;
+				} else if (this.rootInfo(res.getFullPath(), kind) != null) {
+					// case of proj=src=bin and resource is a jar file on the classpath
+					return IRubyElement.SOURCE_FOLDER_ROOT;
+				} else {
+					return NON_RUBY_RESOURCE;
+				}
+				
+			default:
+				return NON_RUBY_RESOURCE;
+		}
+	}
 
 	/*
 	 * Answer a combination of the lastModified stamp and the size.
