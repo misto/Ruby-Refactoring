@@ -1,86 +1,55 @@
 package org.rubypeople.rdt.internal.debug.core;
 
 import java.io.IOException;
-import java.io.PrintWriter;
-import java.net.Socket;
 
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IMarkerDelta;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.debug.core.DebugPlugin;
 import org.eclipse.debug.core.model.IBreakpoint;
+import org.rubypeople.rdt.internal.debug.core.commands.AbstractDebuggerConnection;
+import org.rubypeople.rdt.internal.debug.core.commands.BreakpointCommand;
+import org.rubypeople.rdt.internal.debug.core.commands.ClassicDebuggerConnection;
+import org.rubypeople.rdt.internal.debug.core.commands.GenericCommand;
+import org.rubypeople.rdt.internal.debug.core.commands.RubyDebugConnection;
 import org.rubypeople.rdt.internal.debug.core.model.IRubyDebugTarget;
 import org.rubypeople.rdt.internal.debug.core.model.RubyProcessingException;
 import org.rubypeople.rdt.internal.debug.core.model.RubyStackFrame;
 import org.rubypeople.rdt.internal.debug.core.model.RubyThread;
 import org.rubypeople.rdt.internal.debug.core.model.RubyVariable;
 import org.rubypeople.rdt.internal.debug.core.model.ThreadInfo;
-import org.rubypeople.rdt.internal.debug.core.parsing.BreakpointAddedReader;
+import org.rubypeople.rdt.internal.debug.core.parsing.AbstractReadStrategy;
 import org.rubypeople.rdt.internal.debug.core.parsing.ErrorReader;
-import org.rubypeople.rdt.internal.debug.core.parsing.EvalReader;
 import org.rubypeople.rdt.internal.debug.core.parsing.FramesReader;
 import org.rubypeople.rdt.internal.debug.core.parsing.LoadResultReader;
-import org.rubypeople.rdt.internal.debug.core.parsing.MultiReaderStrategy;
 import org.rubypeople.rdt.internal.debug.core.parsing.SuspensionReader;
 import org.rubypeople.rdt.internal.debug.core.parsing.ThreadInfoReader;
 import org.rubypeople.rdt.internal.debug.core.parsing.VariableReader;
-import org.xmlpull.v1.XmlPullParser;
-import org.xmlpull.v1.XmlPullParserException;
-import org.xmlpull.v1.XmlPullParserFactory;
 
 public class RubyDebuggerProxy {
 
 	public final static String DEBUGGER_ACTIVE_KEY = "org.rubypeople.rdt.debug.ui.debuggerActive";
-	private Socket socket;
-	private PrintWriter writer;
+	private AbstractDebuggerConnection debuggerConnection;
 	private IRubyDebugTarget debugTarget;
 	private RubyLoop rubyLoop;
-	private XmlPullParser xpp;
-	protected MultiReaderStrategy multiReaderStrategy;
 	private ICommandFactory commandFactory;
-	private final boolean isRubyDebug;
 
-	public RubyDebuggerProxy(IRubyDebugTarget debugTarget, boolean isRubyDebug) {
+	public RubyDebuggerProxy(IRubyDebugTarget debugTarget, String rubyFileDirectory, boolean isRubyDebug) {
 		this.debugTarget = debugTarget;
-		this.isRubyDebug = isRubyDebug;
 		debugTarget.setRubyDebuggerProxy(this);
 		commandFactory = isRubyDebug ? new RubyDebugCommandFactory() : new ClassicDebuggerCommandFactory();
+		debuggerConnection = isRubyDebug ? new RubyDebugConnection(rubyFileDirectory, debugTarget.getPort()) : new ClassicDebuggerConnection(debugTarget.getPort());
 	}
 
 	public boolean checkConnection() {
-		try {
-			return this.getSocket().isConnected();
-		} catch (DebuggerNotFoundException ex) {
-			return false;
-		} catch (IOException ex) {
-			return false;
-		}
+		return debuggerConnection.isCommandPortConnected();
 	}
 
-	public String registerRdebugExtension(String pathToRdebugExtension) throws IOException, RubyProcessingException {
-		// should be called before start
-		if (!isRubyDebug) { // Should never happen
-			return "false";
-		}
-		try {
-			// TODO: do not let the debugger stop on the first line
-			new SuspensionReader(getMultiReaderStrategy()).readSuspension();
-		} catch (Exception e) {
-			RdtDebugCorePlugin.log(e);
-		}
-		String expression = "eval require '" + pathToRdebugExtension + "'";
-		println(expression);
-		EvalReader reader = new EvalReader(getMultiReaderStrategy());
-		return reader.readEvalResult(); // throws RubyProcessingException
-	}
-
-	public void start() throws RubyProcessingException {
-		try {
+	public void start() throws RubyProcessingException, IOException {
+		
+			debuggerConnection.connect();
 			this.setBreakPoints();
 			this.startRubyLoop();
-		} catch (Exception e) {
-			RdtDebugCorePlugin.log(e);
-		}
 	}
 
 	public void stop() {
@@ -90,71 +59,6 @@ public class RubyDebuggerProxy {
 		}
 		rubyLoop.setShouldStop();
 		rubyLoop.interrupt();
-	}
-
-	protected Socket acquireSocket() throws IOException {
-
-		int tryCount = 10;
-		for (int i = 0; i < tryCount; i++) {
-			try {
-				socket = new Socket("localhost", debugTarget.getPort());
-				return socket;
-			} catch (IOException e) {
-				try {
-					Thread.sleep(500);
-				} catch (InterruptedException e1) {}
-			}
-		}
-		return null;
-
-	}
-
-	protected Socket getSocket() throws IOException, DebuggerNotFoundException {
-
-		if (socket == null) {
-			socket = acquireSocket();
-			if (socket == null) {
-				throw new DebuggerNotFoundException();
-			}
-		}
-		return socket;
-	}
-
-	public PrintWriter getWriter() throws IOException, DebuggerNotFoundException {
-		if (writer == null) {
-			writer = new PrintWriter(this.getSocket().getOutputStream(), true);
-		}
-		return writer;
-	}
-
-	public void setWriter(PrintWriter writer) {
-		this.writer = writer;
-	}
-
-	public XmlPullParser getXpp() {
-		if (xpp == null) {
-			try {
-				XmlPullParserFactory factory = XmlPullParserFactory.newInstance("org.kxml2.io.KXmlParser,org.kxml2.io.KXmlSerializer", null);
-				xpp = factory.newPullParser();
-				xpp.setInput(getSocket().getInputStream(), "UTF-8");
-			} catch (XmlPullParserException e) {
-				e.printStackTrace();
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-		}
-		return xpp;
-	}
-
-	public void setXpp(XmlPullParser xpp) {
-		this.xpp = xpp;
-	}
-
-	protected synchronized MultiReaderStrategy getMultiReaderStrategy() {
-		if (this.multiReaderStrategy == null) {
-			this.multiReaderStrategy = new MultiReaderStrategy(this.getXpp());
-		}
-		return multiReaderStrategy;
 	}
 
 	protected void setBreakPoints() throws IOException {
@@ -168,12 +72,13 @@ public class RubyDebuggerProxy {
 		try {
 			if (breakpoint.isEnabled()) {
 				if (breakpoint instanceof RubyExceptionBreakpoint) {
-					this.println(commandFactory.createCatchOn(breakpoint));
+					// TODO: check result
+					String command = commandFactory.createCatchOn(breakpoint) ;
+					new BreakpointCommand(command).execute(debuggerConnection) ;
 				} else if (breakpoint instanceof RubyLineBreakpoint) {
 					RubyLineBreakpoint rubyLineBreakpoint = (RubyLineBreakpoint) breakpoint;
 					String command = commandFactory.createAddBreakpoint(rubyLineBreakpoint.getFileName(), rubyLineBreakpoint.getLineNumber());
-					this.println(command);
-					int index = readBreakpointIndex();
+					int index = new BreakpointCommand(command).executeWithResult(debuggerConnection);
 					rubyLineBreakpoint.setIndex(index);
 				}
 			}
@@ -190,12 +95,14 @@ public class RubyDebuggerProxy {
 				// so far we allow only one catch exception
 				// catch off must be set in the case that the enablement has
 				// changed to disabled
-				this.println(commandFactory.createCatchOff());
+				String command = commandFactory.createCatchOff();
+				new BreakpointCommand(command).execute(debuggerConnection) ;
 			} else if (breakpoint instanceof RubyLineBreakpoint) {
 				RubyLineBreakpoint rubyLineBreakpoint = (RubyLineBreakpoint) breakpoint;
 				if (rubyLineBreakpoint.getIndex() != -1) {
 					String command = commandFactory.createRemoveBreakpoint(rubyLineBreakpoint.getIndex());
-					this.println(command);
+					// TODO: check for errors
+					int deletedIndex = new BreakpointCommand(command).executeWithResult(debuggerConnection);
 					rubyLineBreakpoint.setIndex(-1);
 				}
 			}
@@ -218,14 +125,15 @@ public class RubyDebuggerProxy {
 		}
 	}
 
-	public void startRubyLoop() {
+	public void startRubyLoop() throws DebuggerNotFoundException, IOException {
+		debuggerConnection.start();
 		rubyLoop = new RubyLoop();
 		rubyLoop.start();
 		Runnable runnable = new Runnable() {
 			public void run() {
 				try {
 					while (true) {
-						new ErrorReader(getMultiReaderStrategy()).read();
+						new ErrorReader(debuggerConnection.getCommandReadStrategy()).read();
 					}
 				} catch (Exception e) {
 					RdtDebugCorePlugin.log(e);
@@ -244,9 +152,9 @@ public class RubyDebuggerProxy {
 	}
 
 	protected void println(String s) throws IOException {
-		RdtDebugCorePlugin.debug("Sending debugger: " + s);
 		try {
-			this.getWriter().println(s);
+			// TOOD: GenericCommand is only temporary solution
+			new GenericCommand(s, false /* isControl */).execute(debuggerConnection);
 		} catch (IOException e) {
 			RdtDebugCorePlugin.debug("Could not send to debugger. Exception occured.", e);
 			throw e;
@@ -255,15 +163,6 @@ public class RubyDebuggerProxy {
 
 	protected IRubyDebugTarget getDebugTarget() {
 		return debugTarget;
-	}
-
-	public int readBreakpointIndex() {
-		try {
-			return new BreakpointAddedReader(getMultiReaderStrategy()).readBreakpointNo();
-		} catch (Exception ioex) {
-			ioex.printStackTrace();
-			throw new RuntimeException(ioex.getMessage());
-		}
 	}
 
 	public RubyVariable[] readVariables(RubyStackFrame frame) {
@@ -356,10 +255,12 @@ public class RubyDebuggerProxy {
 		}
 	}
 
-	public void closeSocket() throws IOException {
-		if (socket != null) {
-			socket.close();
-		}
+	public void closeConnection() throws IOException {
+		debuggerConnection.exit();
+	}
+
+	private AbstractReadStrategy getMultiReaderStrategy() {
+		return debuggerConnection.getCommandReadStrategy();
 	}
 
 	class RubyLoop extends Thread {
@@ -373,8 +274,9 @@ public class RubyDebuggerProxy {
 		public void run() {
 			try {
 				System.setProperty(DEBUGGER_ACTIVE_KEY, "true");
-				getDebugTarget().updateThreads();
-				println("cont");
+				
+				// TODO
+				//getDebugTarget().updateThreads();
 				RdtDebugCorePlugin.debug("Waiting for breakpoints.");
 				while (true) {
 					final SuspensionPoint hit = new SuspensionReader(getMultiReaderStrategy()).readSuspension();
@@ -398,7 +300,7 @@ public class RubyDebuggerProxy {
 				System.setProperty(DEBUGGER_ACTIVE_KEY, "false");
 				getDebugTarget().terminate();
 				try {
-					closeSocket();
+					closeConnection();
 				} catch (IOException e) {
 					RdtDebugCorePlugin.log(e);
 				}
@@ -406,4 +308,6 @@ public class RubyDebuggerProxy {
 			}
 		}
 	}
+
+
 }
