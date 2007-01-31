@@ -44,11 +44,12 @@ public class RDebugVMDebugger extends StandardVMDebugger {
 	protected List<String> debugSpecificVMArgs(RubyDebugTarget debugTarget) {
 		List<String> arguments = new ArrayList<String>();
 		arguments.add("--server");
+		arguments.add("-w"); // wait for client to connect on command port
+		arguments.add("-n"); // do not halt when client connects
 		arguments.add("--port");
 		arguments.add(Integer.toString(debugTarget.getPort()));
 		arguments.add("--cport");
 		arguments.add(Integer.toString(debugTarget.getPort() + 1));
-		arguments.add("-w");
 		if (isDebuggerVerbose()) {
 			arguments.add("-d");
 		}
@@ -57,8 +58,4 @@ public class RDebugVMDebugger extends StandardVMDebugger {
 		return arguments;
 	}
 	
-	protected void updateProxy(RubyDebuggerProxy proxy) throws IOException, RubyProcessingException {
-		proxy.registerRdebugExtension(getDirectoryOfRubyDebuggerFile() + File.separator + "rdebugExtension.rb");
-	}
-
 }

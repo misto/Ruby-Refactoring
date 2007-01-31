@@ -122,37 +122,20 @@ public class StandardVMDebugger extends StandardVMRunner implements IVMRunner {
 		subMonitor.subTask(LaunchingMessages.StandardVMDebugger_Establishing_debug_connection____5);
 
 		debugTarget.setProcess(process);
-		RubyDebuggerProxy proxy = new RubyDebuggerProxy(debugTarget, true);
-
-		if (proxy.checkConnection()) {
-			try {
-				updateProxy(proxy);
-				proxy.start();
-				launch.addDebugTarget(debugTarget);
-			} catch (IOException e) {
-				abort(LaunchingMessages.StandardVMDebugger_Couldn__t_connect_to_VM_4, e, IRubyLaunchConfigurationConstants.ERR_CONNECTION_FAILED);
-				debugTarget.terminate();
-			} catch (RubyProcessingException e) {
-				abort(LaunchingMessages.StandardVMDebugger_Couldn__t_connect_to_VM_5, e, IRubyLaunchConfigurationConstants.ERR_CONNECTION_FAILED);
-				debugTarget.terminate();
-			}
-		} else {
+		RubyDebuggerProxy proxy = new RubyDebuggerProxy(debugTarget, RDebugVMDebugger.getDirectoryOfRubyDebuggerFile(), true);
+		try {
+			proxy.start();
+			launch.addDebugTarget(debugTarget);
+		} catch (IOException iox) {
 			LaunchingPlugin.log(new Status(IStatus.ERROR, LaunchingPlugin.PLUGIN_ID, IStatus.ERROR, LaunchingMessages.RdtLaunchingPlugin_processTerminatedBecauseNoDebuggerConnection, null));
 			debugTarget.terminate();
+		} catch (RubyProcessingException e) {
+			abort(LaunchingMessages.StandardVMDebugger_Couldn__t_connect_to_VM_5, e, IRubyLaunchConfigurationConstants.ERR_CONNECTION_FAILED);
+			debugTarget.terminate();
 		}
-//		if (p != null) {
-//			p.destroy();
-//		}
-	}
-
-	/**
-	 * A method to set up the RubyDebuggerProxy prior to launching
-	 * @param proxy
-	 * @throws IOException
-	 * @throws RubyProcessingException
-	 */
-	protected void updateProxy(RubyDebuggerProxy proxy) throws IOException, RubyProcessingException {
-		// do nothing, needed for rdebug
+		// if (p != null) {
+		// p.destroy();
+		// }
 	}
 
 	protected List<String> debugSpecificVMArgs(RubyDebugTarget debugTarget) {
@@ -176,7 +159,7 @@ public class StandardVMDebugger extends StandardVMRunner implements IVMRunner {
 		return LaunchingPlugin.getDefault().getPluginPreferences().getBoolean(PreferenceConstants.VERBOSE_DEBUGGER);
 	}
 
-	protected static String getDirectoryOfRubyDebuggerFile() {
+	public static String getDirectoryOfRubyDebuggerFile() {
 		return RubyCore.getOSDirectory(LaunchingPlugin.getDefault()) + "ruby";
 	}
 

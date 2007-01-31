@@ -51,17 +51,18 @@ public class FTC_DebuggerProxyTest extends TestCase {
 	
 	public void setUp() throws Exception {
 		target = new TestRubyDebugTarget() ;
-		proxy = new RubyDebuggerProxy(target, false /*useRubyDebug*/) ;
+		//TODO: get proper directory
+		String rubyFileDirectory ="launching/ruby " ;
+		proxy = new RubyDebuggerProxy(target, rubyFileDirectory, false /*useRubyDebug*/) ;
 		PipedInputStream pipedInputStream = new PipedInputStream() ;
 		PipedOutputStream pipedOutputStream = new PipedOutputStream(pipedInputStream) ; 
 
-		proxy.setWriter(new PrintWriter(pipedOutputStream)) ;
 		XmlPullParserFactory factory = XmlPullParserFactory.newInstance("org.kxml2.io.KXmlParser,org.kxml2.io.KXmlSerializer", null);
 		XmlPullParser xpp = factory.newPullParser();
+		// tODO: connect streams to DebuggerConnection
 		PipedOutputStream outputStream = new PipedOutputStream() ;
 		PipedInputStream inputStream = new PipedInputStream(outputStream) ;
 		xpp.setInput(new InputStreamReader(inputStream)) ;
-		proxy.setXpp(xpp) ;
 		proxy.startRubyLoop() ;
 		writer = new PrintWriter(new OutputStreamWriter(outputStream)) ;
 		proxyOutputReader = new BufferedReader(new InputStreamReader(pipedInputStream)) ;
@@ -95,7 +96,6 @@ public class FTC_DebuggerProxyTest extends TestCase {
 	public void testExceptionBreakpoint() throws IOException, CoreException {
 		RubyExceptionBreakpoint rubyExceptionBreakpoint = new RubyExceptionBreakpoint("MyStandardError") ;
 		proxy.addBreakpoint( rubyExceptionBreakpoint ) ;
-		proxy.getWriter().flush() ;
 		assertEquals("cont", this.getLineFromDebuggerProxy()) ;
 		assertEquals("catch MyStandardError", this.getLineFromDebuggerProxy()) ;
 	}

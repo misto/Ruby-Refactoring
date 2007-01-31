@@ -4,6 +4,8 @@ import java.io.File;
 
 import org.rubypeople.rdt.core.RubyCore;
 import org.rubypeople.rdt.internal.debug.core.SuspensionPoint;
+import org.rubypeople.rdt.internal.debug.core.commands.AbstractDebuggerConnection;
+import org.rubypeople.rdt.internal.debug.core.commands.ClassicDebuggerConnection;
 import org.rubypeople.rdt.internal.debug.core.model.RubyVariable;
 import org.rubypeople.rdt.internal.debug.core.model.ThreadInfo;
 import org.rubypeople.rdt.internal.debug.core.parsing.LoadResultReader;
@@ -28,7 +30,7 @@ public class FTC_ClassicDebuggerCommunicationTest extends
 //		suite.addTest(new FTC_ClassicDebuggerCommunicationTest("testThreadIdsAndResume"));
 //		suite.addTest(new FTC_ClassicDebuggerCommunicationTest("testThreadFramesAndVariables"));
 //		suite.addTest(new FTC_ClassicDebuggerCommunicationTest("testFrames"));
-//		suite.addTest(new FTC_ClassicDebuggerCommunicationTest("testThreads"));
+		suite.addTest(new FTC_ClassicDebuggerCommunicationTest("testThreads"));
 		
 		
 //		suite.addTest(new FTC_ClassicDebuggerCommunicationTest("testVariablesInFrames"));
@@ -39,7 +41,7 @@ public class FTC_ClassicDebuggerCommunicationTest extends
 		
 		//suite.addTest(new TC_DebuggerCommunicationTest("testVariablesInFrames"));
 		//suite.addTest(new TC_DebuggerCommunicationTest("testFramesWhenThreadSpawned"));
-		//suite.addTest(new TC_DebuggerCommunicationTest("testThreadIdsAndResume"));
+		suite.addTest(new FTC_ClassicDebuggerCommunicationTest("testThreadIdsAndResume"));
 		//suite.addTest(new TC_DebuggerCommunicationTest("testThreadsAndFrames"));		
 		//suite.addTest(new TC_DebuggerCommunicationTest("testStepOver"));		
 		//suite.addTest(new TC_DebuggerCommunicationTest("testVariableNil"));
@@ -53,11 +55,11 @@ public class FTC_ClassicDebuggerCommunicationTest extends
 		//suite.addTest(new TC_DebuggerCommunicationTest("testVariableString"));	
 		// suite.addTest(new TC_DebuggerCommunicationTest("testInspect"));
 		//suite.addTest(new TC_DebuggerCommunicationTest("testInspectError"));
-		//suite.addTest(new TC_DebuggerCommunicationTest("testReloadAndInspect")) ;
-		//suite.addTest(new TC_DebuggerCommunicationTest("testReloadWithException")) ;
-		//suite.addTest(new TC_DebuggerCommunicationTest("testReloadAndStep")) ;
-		//suite.addTest(new TC_DebuggerCommunicationTest("testReloadInRequire")) ;
-		//suite.addTest(new TC_DebuggerCommunicationTest("testReloadInStackFrame")) ;
+		suite.addTest(new FTC_ClassicDebuggerCommunicationTest("testReloadAndInspect")) ;
+		suite.addTest(new FTC_ClassicDebuggerCommunicationTest("testReloadWithException")) ;
+		suite.addTest(new FTC_ClassicDebuggerCommunicationTest("testReloadAndStep")) ;
+		suite.addTest(new FTC_ClassicDebuggerCommunicationTest("testReloadInRequire")) ;
+		suite.addTest(new FTC_ClassicDebuggerCommunicationTest("testReloadInStackFrame")) ;
 //		suite.addTest(new TC_DebuggerCommunicationTest("testIgnoreException"));
 //		suite.addTest(new TC_DebuggerCommunicationTest("testExceptionHierarchy"));
 //		suite.addTest(new TC_DebuggerCommunicationTest("testException"));
@@ -253,6 +255,11 @@ public class FTC_ClassicDebuggerCommunicationTest extends
 		sendRuby("v local");
 		localVariables = getVariableReader().readVariables(createStackFrame());
 		assertEquals("8", localVariables[0].getValue().getValueString());
+	}
+
+	@Override
+	protected AbstractDebuggerConnection createDebuggerConnection() {
+		return new ClassicDebuggerConnection(1098) ;
 	}
 
 }

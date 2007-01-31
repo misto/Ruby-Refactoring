@@ -1,7 +1,17 @@
 package org.rubypeople.rdt.debug.core.tests;
 
+import java.io.PrintWriter;
+import java.net.ConnectException;
+import java.net.Socket;
+
 import org.rubypeople.rdt.core.RubyCore;
 import org.rubypeople.rdt.internal.debug.core.SuspensionPoint;
+import org.rubypeople.rdt.internal.debug.core.commands.AbstractDebuggerConnection;
+import org.rubypeople.rdt.internal.debug.core.commands.EvalCommand;
+import org.rubypeople.rdt.internal.debug.core.commands.RubyDebugConnection;
+import org.rubypeople.rdt.internal.debug.core.parsing.AbstractReadStrategy;
+import org.rubypeople.rdt.internal.debug.core.parsing.EvalReader;
+import org.rubypeople.rdt.internal.debug.core.parsing.MultiReaderStrategy;
 import org.rubypeople.rdt.internal.launching.LaunchingPlugin;
 
 public class FTC_RubyDebugCommunicationTest extends FTC_ClassicDebuggerCommunicationTest {
@@ -12,13 +22,11 @@ public class FTC_RubyDebugCommunicationTest extends FTC_ClassicDebuggerCommunica
 
 		suite.addTest(new FTC_RubyDebugCommunicationTest("testCommandList"));
 
-		// breakpoint on first line is not yet implemented for ruby-debug
-		//suite.addTest(new FTC_RubyDebugCommunicationTest("testBreakpointOnFirstLine"));
+		suite.addTest(new FTC_RubyDebugCommunicationTest("testBreakpointOnFirstLine"));
 		suite.addTest(new FTC_RubyDebugCommunicationTest("testBreakpointAddAndRemove"));
 		suite.addTest(new FTC_RubyDebugCommunicationTest("testBreakpointNeverReached"));
 		
 		suite.addTest(new FTC_RubyDebugCommunicationTest("testException"));
-		suite.addTest(new FTC_RubyDebugCommunicationTest("testIgnoreException"));
 		suite.addTest(new FTC_RubyDebugCommunicationTest("testExceptionsIgnoredByDefault"));
 		suite.addTest(new FTC_RubyDebugCommunicationTest("testExceptionHierarchy"));
 		
@@ -33,7 +41,6 @@ public class FTC_RubyDebugCommunicationTest extends FTC_ClassicDebuggerCommunica
 
 		suite.addTest(new FTC_RubyDebugCommunicationTest("testStepOver"));
 		suite.addTest(new FTC_RubyDebugCommunicationTest("testStepOverFrames"));
-		suite.addTest(new FTC_RubyDebugCommunicationTest("testStepOverFramesValue2"));
 		suite.addTest(new FTC_RubyDebugCommunicationTest("testStepOverInDifferentFrame"));
 		suite.addTest(new FTC_RubyDebugCommunicationTest("testStepReturn"));
 		suite.addTest(new FTC_RubyDebugCommunicationTest("testHitBreakpointWhileSteppingOver"));
@@ -60,6 +67,7 @@ public class FTC_RubyDebugCommunicationTest extends FTC_ClassicDebuggerCommunica
 		return suite;
 	}
 
+
 	public FTC_RubyDebugCommunicationTest(String arg0) {
 		super(arg0);
 	}
@@ -67,7 +75,7 @@ public class FTC_RubyDebugCommunicationTest extends FTC_ClassicDebuggerCommunica
 	@Override
 	public void startRubyProcess() throws Exception {
 		// TODO Auto-generated method stub
-		String cmd = "rdebug -s -p 1098 --cport 1099 -d -w -f xml -I " + getTmpDir().replace('\\', '/') + " " + getRubyTestFilename();
+		String cmd = "rdebug -s -w -n -p 1098 --cport 1099 -d -f xml -I " + getTmpDir().replace('\\', '/') + " " + getRubyTestFilename();
 		// "FTC_DebuggerCommunicationTest.RUBY_INTERPRETER + " -I" +
 		// createIncludeDir() + " -I" + getTmpDir().replace('\\', '/') + "
 		// -reclipseDebugVerbose.rb " + ;
@@ -89,18 +97,40 @@ public class FTC_RubyDebugCommunicationTest extends FTC_ClassicDebuggerCommunica
 		}
 		return result;
 	}
+	
+//	@Override
+//	protected void createControlSocket() throws Exception {
+//			try {
+//				controlSocket = new Socket("localhost", 1099);
+//			} catch (ConnectException cex) {
+//				throw new RuntimeException(
+//						"Ruby process finished prematurely. Last line in stderr: "
+//								+ rubyStderrRedirectorThread.getLastLine(), cex);
+//			}
+//			controlReaderStrategy = new MultiReaderStrategy(getXpp(controlSocket));
+//
+//			Runnable runnable = new Runnable() {
+//				public void run() {
+//					try {
+//						while (true) {
+//							new WasteReader(controlReaderStrategy).read();
+//						}
+//					} catch (Exception e) {
+//						e.printStackTrace();
+//					}
+//				};
+//			};
+//			new Thread(runnable).start();
+//			Thread.sleep(500) ;
+//			controlWriter = new PrintWriter(controlSocket.getOutputStream(), true);
+//			registerRubyDebugExtensions() ;
+//	}
 
 	@Override
-	protected void readSuspensionInFirstLine() throws Exception {
-
-		System.out.println("Waiting for suspension in first line");
-		SuspensionPoint hit = getSuspensionReader().readSuspension();
-		assertEquals(1, hit.getLine());
-
-		String expression = "eval require '" + getDirectoryOfRubyDebuggerFile() + "/rdebugExtension.rb'";
-		sendRuby(expression);
-		String evalResult = getEvalReader().readEvalResult();
-		assertEquals("true", evalResult);
+	protected AbstractDebuggerConnection createDebuggerConnection() {
+		return new RubyDebugConnection(getDirectoryOfRubyDebuggerFile(), 1098);
 	}
+	
+
 
 }
