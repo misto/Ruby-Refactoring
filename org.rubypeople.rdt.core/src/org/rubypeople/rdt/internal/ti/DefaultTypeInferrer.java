@@ -308,6 +308,8 @@ public class DefaultTypeInferrer implements ITypeInferrer {
 	 * @return
 	 */
 	private boolean doesArgsNodeContainsVariable(ArgsNode argsNode, String argName) {
+		if (argsNode == null) return false;
+		if (argName == null) return false;
 		return getArgumentIndex(argsNode, argName) >= 0;
 	}
 
