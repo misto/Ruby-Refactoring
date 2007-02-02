@@ -406,7 +406,7 @@ public class RubyScript extends Openable implements IRubyScript {
 
 		RubyModelManager manager = RubyModelManager.getRubyModelManager();
 
-		RubyScript workingCopy = new RubyScript((SourceFolder) getParent(), getElementName(), DefaultWorkingCopyOwner.PRIMARY);
+		RubyScript workingCopy = new RubyScript((SourceFolder) getParent(), getElementName(), workingCopyOwner);
 		RubyModelManager.PerWorkingCopyInfo perWorkingCopyInfo = manager.getPerWorkingCopyInfo(workingCopy, false/*
 																													 * don't
 																													 * create
