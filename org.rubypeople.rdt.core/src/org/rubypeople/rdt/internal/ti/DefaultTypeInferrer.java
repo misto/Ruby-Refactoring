@@ -14,6 +14,7 @@ import org.jruby.ast.GlobalAsgnNode;
 import org.jruby.ast.GlobalVarNode;
 import org.jruby.ast.InstAsgnNode;
 import org.jruby.ast.InstVarNode;
+import org.jruby.ast.ListNode;
 import org.jruby.ast.LocalAsgnNode;
 import org.jruby.ast.LocalVarNode;
 import org.jruby.ast.Node;
@@ -325,8 +326,11 @@ public class DefaultTypeInferrer implements ITypeInferrer {
 	 */
 	private int getArgumentIndex(ArgsNode argsNode, String argName) {
 		int argNumber = 0;
-		for (Iterator iter = argsNode.getArgs().iterator(); iter.hasNext();) {
-			if (((ArgumentNode) iter.next()).getName().equals(argName)) {
+		ListNode args = argsNode.getArgs();
+		if (args == null) return -1; // no args. Maybe we should check arity instead?
+		for (Iterator iter = args.iterator(); iter.hasNext();) {
+			ArgumentNode arg = (ArgumentNode) iter.next();
+			if (arg.getName().equals(argName)) {
 				break;
 			}
 			argNumber++;
