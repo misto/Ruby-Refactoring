@@ -102,17 +102,17 @@ public interface IRubyScript extends IRubyElement, ISourceReference, IParent, IO
 	IType getType(String name);
 
 	/**
-	 * Returns the primary compilation unit (whose owner is the primary owner)
-	 * this working copy was created from, or this compilation unit if this a
-	 * primary compilation unit.
+	 * Returns the primary ruby script (whose owner is the primary owner)
+	 * this working copy was created from, or this ruby script if this a
+	 * primary ruby script.
 	 * <p>
-	 * Note that the returned primary compilation unit can be in working copy
+	 * Note that the returned primary ruby script can be in working copy
 	 * mode.
 	 * </p>
 	 * 
-	 * @return the primary compilation unit this working copy was created from,
-	 *         or this compilation unit if it is primary
-	 * @since 3.0
+	 * @return the primary ruby script this working copy was created from,
+	 *         or this ruby script if it is primary
+	 * @since 0.8.0
 	 */
 	IRubyScript getPrimary();
 
@@ -120,7 +120,7 @@ public interface IRubyScript extends IRubyElement, ISourceReference, IParent, IO
 	 * Returns whether this element is a working copy.
 	 * 
 	 * @return true if this element is a working copy, false otherwise
-	 * @since 3.0
+	 * @since 0.8.0
 	 */
 	boolean isWorkingCopy();
 
@@ -156,7 +156,7 @@ public interface IRubyScript extends IRubyElement, ISourceReference, IParent, IO
 	 * @return a new working copy of this element if this element is not a
 	 *         working copy, or this element if this element is already a
 	 *         working copy
-	 * @since 3.0
+	 * @since 0.8.0
 	 */
 	IRubyScript getWorkingCopy(IProgressMonitor monitor) throws RubyModelException;
 
