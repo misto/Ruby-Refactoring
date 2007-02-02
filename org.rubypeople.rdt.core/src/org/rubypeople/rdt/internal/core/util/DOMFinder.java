@@ -180,7 +180,6 @@ public class DOMFinder implements NodeVisitor {
 	public Instruction visitBlockPassNode(BlockPassNode iVisited) {
 		visitNode(iVisited.getArgsNode());
 		visitNode(iVisited.getBodyNode());
-		visitNode(iVisited.getIterNode());
 		return null;
 	}
 
@@ -192,6 +191,7 @@ public class DOMFinder implements NodeVisitor {
 	public Instruction visitCallNode(CallNode iVisited) {
 		visitNode(iVisited.getReceiverNode());
 		visitNode(iVisited.getArgsNode());
+		visitNode(iVisited.getIterNode());
 		return null;
 	}
 

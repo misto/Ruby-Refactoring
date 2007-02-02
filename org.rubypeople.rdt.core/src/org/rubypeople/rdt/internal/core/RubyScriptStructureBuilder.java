@@ -328,7 +328,6 @@ public class RubyScriptStructureBuilder implements NodeVisitor {
 		handleNode(iVisited);
 		visitNode(iVisited.getArgsNode());
 		visitNode(iVisited.getBodyNode());
-		visitNode(iVisited.getIterNode());
 		return null;
 	}
 
@@ -466,6 +465,7 @@ public class RubyScriptStructureBuilder implements NodeVisitor {
 			System.out.println(iVisited.getName());
 		visitNode(iVisited.getReceiverNode());
 		visitNode(iVisited.getArgsNode());
+		visitNode(iVisited.getIterNode());
 		return null;
 	}
 
@@ -962,6 +962,7 @@ public class RubyScriptStructureBuilder implements NodeVisitor {
 			
 		}
 		visitNode(iVisited.getArgsNode());
+		visitNode(iVisited.getIterNode());
 		return null;
 	}
 
@@ -1183,7 +1184,6 @@ public class RubyScriptStructureBuilder implements NodeVisitor {
 		RubyBlock block = new RubyBlock(modelStack.peek());
 		modelStack.push(block);
 
-		visitNode(iVisited.getIterNode());
 		visitNode(iVisited.getVarNode());
 		visitNode(iVisited.getBodyNode());
 		if (DEBUG)

@@ -260,7 +260,6 @@ public class InOrderVisitor extends AbstractVisitor {
 		handleNode(iVisited);
 		acceptNode(iVisited.getArgsNode());
 		acceptNode(iVisited.getBodyNode());
-		acceptNode(iVisited.getIterNode());
 		return null;
 	}
 
@@ -327,6 +326,7 @@ public class InOrderVisitor extends AbstractVisitor {
 		handleNode(iVisited);
 		acceptNode(iVisited.getReceiverNode());
 		acceptNode(iVisited.getArgsNode());
+		acceptNode(iVisited.getIterNode());
 		return null;
 	}
 
@@ -529,6 +529,7 @@ public class InOrderVisitor extends AbstractVisitor {
 	public Instruction visitFCallNode(FCallNode iVisited) {
 		handleNode(iVisited);
 		acceptNode(iVisited.getArgsNode());
+		acceptNode(iVisited.getIterNode());
 		return null;
 	}
 
@@ -660,7 +661,6 @@ public class InOrderVisitor extends AbstractVisitor {
 	 */
 	public Instruction visitIterNode(IterNode iVisited) {
 		handleNode(iVisited);
-		acceptNode(iVisited.getIterNode());
 		acceptNode(iVisited.getVarNode());
 		acceptNode(iVisited.getBodyNode());
 		return null;
