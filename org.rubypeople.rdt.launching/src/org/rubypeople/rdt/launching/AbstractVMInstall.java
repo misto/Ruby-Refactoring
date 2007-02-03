@@ -261,7 +261,7 @@ public abstract class AbstractVMInstall implements IVMInstall, IVMInstall2 {
      * Subclasses should override.
      * @see org.eclipse.jdt.launching.IVMInstall2#getJavaVersion()
      */
-    public String getJavaVersion() {
+    public String getRubyVersion() {
         return null;
     }
     
