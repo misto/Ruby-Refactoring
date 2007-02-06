@@ -275,9 +275,14 @@ public class AccessorsGenerator extends EditAndTreeContentProvider implements II
 
 			public int compareTo(Object arg0) {
 				String thisStr = classNode.getName() + name;
-				TreeAttribute otherAttr = (TreeAttribute) arg0;
-				ClassNodeWrapper otherClassNode = otherAttr.getTreeClass().getClassNode();
-				String otherStr = otherClassNode.getName() + otherAttr.toString();
+				String otherStr;
+				if (arg0 instanceof String) {
+					otherStr = (String) arg0;
+				} else {
+				  TreeAttribute otherAttr = (TreeAttribute) arg0;
+				  ClassNodeWrapper otherClassNode = otherAttr.getTreeClass().getClassNode();
+				  otherStr = otherClassNode.getName() + otherAttr.toString();
+				}
 				return thisStr.compareTo(otherStr);
 			}
 			
