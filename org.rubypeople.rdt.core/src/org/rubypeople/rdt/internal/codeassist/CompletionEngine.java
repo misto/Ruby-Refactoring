@@ -152,19 +152,22 @@ public class CompletionEngine {
 
 	private void suggestMethods(int replaceStart, int confidence, IType type) throws RubyModelException {
 		if (type == null)
-			return;
+			return;		
 		IMethod[] methods = type.getMethods();
 		for (int k = 0; k < methods.length; k++) {
 			IMethod method = methods[k];
 			int start = replaceStart;
 			String name = method.getElementName();
-			if (prefix != null && !name.startsWith(prefix))
-				continue;
 			int flags = Flags.AccDefault;
 			if (method.isSingleton()) {
 				flags |= Flags.AccStatic;
-				start -= type.getElementName().length() + 1;
+				name = name.substring(type.getElementName().length() + 1);
+			} else {
+//				 FIXME Don't show instance methods if the thing we're working on is a constant (class name)!
 			}
+			if (prefix != null && !name.startsWith(prefix))
+				continue;
+			
 			switch (method.getVisibility()) {
 			case IMethod.PRIVATE:
 				flags |= Flags.AccPrivate;
