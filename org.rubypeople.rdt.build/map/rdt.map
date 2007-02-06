@@ -26,6 +26,7 @@ plugin@org.rubypeople.rdt.testunit=HEAD,:ext:rubyeclipse.cvs.sourceforge.net:/cv
 plugin@org.rubypeople.rdt.doc.user=HEAD,:ext:rubyeclipse.cvs.sourceforge.net:/cvsroot/rubyeclipse,
 plugin@org.epic.regexp=HEAD,:ext:rubyeclipse.cvs.sourceforge.net:/cvsroot/rubyeclipse,
 plugin@org.rubypeople.rdt.ri=HEAD,:ext:rubyeclipse.cvs.sourceforge.net:/cvsroot/rubyeclipse,
+plugin@org.rubypeople.rdt.refactoring=HEAD,:ext:rubyeclipse.cvs.sourceforge.net:/cvsroot/rubyeclipse,
 
 
 feature@org.rubypeople.rdt-tests=HEAD,:ext:rubyeclipse.cvs.sourceforge.net:/cvsroot/rubyeclipse,,org.rubypeople.rdt-feature/unit-tests-feature

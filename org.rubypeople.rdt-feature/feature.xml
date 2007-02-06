@@ -27,7 +27,7 @@ Chris Williams. See www.rubypeople.org for more information.
 The RDT feature contains the following plug-ins and libraries
 from external providers:
 RegExp plug-in, http://e-p-i-c.sourceforge.net 
-JRuby, http://jruby.sourceforge.net
+JRuby, http://jruby.codehaus.org/
 kxml2, http://kxml.sourceforge.net
 The file org.rubypeople.rdt.launching/ruby/eclipseDebug.rb
 is based on the debug.rb file, which is part of the ruby 1.6.8
@@ -337,6 +337,13 @@ litigation.
          download-size="0"
          install-size="0"
          version="0.9.2.2944"
+         unpack="false"/>
+
+   <plugin
+         id="org.rubypeople.rdt.refactoring"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
          unpack="false"/>
 
 </feature>
