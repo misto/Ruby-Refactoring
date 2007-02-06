@@ -1,0 +1,197 @@
+/***** BEGIN LICENSE BLOCK *****
+ * Version: CPL 1.0/GPL 2.0/LGPL 2.1
+ *
+ * The contents of this file are subject to the Common Public
+ * License Version 1.0 (the "License"); you may not use this file
+ * except in compliance with the License. You may obtain a copy of
+ * the License at http://www.eclipse.org/legal/cpl-v10.html
+ *
+ * Software distributed under the License is distributed on an "AS
+ * IS" basis, WITHOUT WARRANTY OF ANY KIND, either express or
+ * implied. See the License for the specific language governing
+ * rights and limitations under the License.
+ *
+ * Copyright (C) 2006 Lukas Felber <lfelber@hsr.ch>
+ * Copyright (C) 2006 Mirko Stocker <me@misto.ch>
+ * Copyright (C) 2006 Thomas Corbat <tcorbat@hsr.ch>
+ * 
+ * Alternatively, the contents of this file may be used under the terms of
+ * either of the GNU General Public License Version 2 or later (the "GPL"),
+ * or the GNU Lesser General Public License Version 2.1 or later (the "LGPL"),
+ * in which case the provisions of the GPL or the LGPL are applicable instead
+ * of those above. If you wish to allow use of your version of this file only
+ * under the terms of either the GPL or the LGPL, and not to allow others to
+ * use your version of this file under the terms of the CPL, indicate your
+ * decision by deleting the provisions above and replace them with the notice
+ * and other provisions required by the GPL or the LGPL. If you do not delete
+ * the provisions above, a recipient may use your version of this file under
+ * the terms of any one of the CPL, the GPL or the LGPL.
+ ***** END LICENSE BLOCK *****/
+
+package org.rubypeople.rdt.refactoring.core.renamemethod;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
+
+import org.jruby.ast.MethodDefNode;
+import org.jruby.ast.Node;
+import org.jruby.ast.SymbolNode;
+import org.rubypeople.rdt.refactoring.classnodeprovider.ClassNodeProvider;
+import org.rubypeople.rdt.refactoring.core.NodeProvider;
+import org.rubypeople.rdt.refactoring.core.RefactoringConditionChecker;
+import org.rubypeople.rdt.refactoring.core.SelectionNodeProvider;
+import org.rubypeople.rdt.refactoring.documentprovider.DocumentWithIncluding;
+import org.rubypeople.rdt.refactoring.exception.NoClassNodeException;
+import org.rubypeople.rdt.refactoring.nodewrapper.ArgsNodeWrapper;
+import org.rubypeople.rdt.refactoring.nodewrapper.ClassNodeWrapper;
+import org.rubypeople.rdt.refactoring.nodewrapper.MethodCallNodeWrapper;
+import org.rubypeople.rdt.refactoring.nodewrapper.MethodNodeWrapper;
+import org.rubypeople.rdt.refactoring.nodewrapper.PartialClassNodeWrapper;
+
+public class RenameMethodConditionChecker extends RefactoringConditionChecker{
+
+	private RenameMethodConfig config;
+	
+	public RenameMethodConditionChecker(RenameMethodConfig config) {
+		super(config.getDocProvider(), config);
+	}
+	
+
+	@Override
+	protected void init(Object configObj) {
+		this.config = (RenameMethodConfig)configObj;
+		config.setDocProvider(new DocumentWithIncluding(config.getDocProvider()));
+		
+		Node rootNode = config.getDocProvider().getRootNode();
+		try {
+			this.config.setClassNode(SelectionNodeProvider.getSelectedClassNode(rootNode, this.config.getCaretPosition()));
+		} catch (NoClassNodeException e) {/* ClassNode stays null */}
+		setSelectedMethodNode(rootNode);
+		if(config.getTargetMethod() != null) {
+			this.config.setPossibleCalls(getAllCallCandidates());
+		}
+	}
+
+
+	private void setSelectedMethodNode(Node rootNode) {
+ 
+		MethodDefNode methodNode = (MethodDefNode) SelectionNodeProvider.getSelectedNodeOfType(rootNode, this.config.getCaretPosition(), MethodDefNode.class);
+		if(methodNode == null) {
+			SymbolNode selectedSymbolNode = (SymbolNode) SelectionNodeProvider.getSelectedNodeOfType(rootNode, config.getCaretPosition(), SymbolNode.class);
+			if(selectedSymbolNode != null && config.getSelectedClass() != null) {
+				methodNode = config.getSelectedClass().getMethod(selectedSymbolNode.getName()).getWrappedNode();
+			}
+		}
+		this.config.setTargetMethod(new MethodDefinitionWrapper(methodNode));
+	}
+
+	private Collection<MethodCallNodeWrapper> getAllCallCandidates() {
+
+		Collection<Node> allNodes = config.getDocProvider().getAllNodes();
+		ArrayList<MethodCallNodeWrapper> possibleCalls = new ArrayList<MethodCallNodeWrapper>();
+
+		for(Node currentNode : allNodes){
+			if(isPossibleCall(currentNode)){
+				possibleCalls.add(new MethodCallNodeWrapper(currentNode));
+			}
+		}
+		return possibleCalls;
+	}
+
+	private boolean isPossibleCall(Node candidateNode) {
+		MethodCallNodeWrapper callNode = new MethodCallNodeWrapper(candidateNode);
+		if(config.getTargetMethod().isClassMethod() != callNode.isCallToClassMethod()){
+			return false;			
+		}
+		
+		if(callNode.getType() == MethodCallNodeWrapper.INVALID_TYPE){
+			return false;
+		}
+		
+		if(callNode.getName().equals(config.getTargetMethod().getName())){
+			ArgsNodeWrapper targetNodeArgs = config.getTargetMethod().getArgsNode();
+			if(targetNodeArgs.argsCountMatches(callNode)){
+				return true;
+			}
+		}
+		return false;
+	}
+	
+	@Override
+	protected void checkFinalConditions() {
+		if(getAlreadyUsedNames().contains(config.getNewName())){
+			addError("Method name already exists.");
+		}
+	}
+
+
+	private boolean checkMethodIsBeyondClasses(MethodDefNode currentMethod, ClassNodeProvider classes) {
+		
+		String methodFile = currentMethod.getPosition().getFile();
+		int methodStart = currentMethod.getPosition().getStartOffset();
+		int methodEnd = currentMethod.getPosition().getEndOffset();
+		
+		for(ClassNodeWrapper currentClass : classes.getAllClassNodes()){
+			for(PartialClassNodeWrapper currentPart : currentClass.getPartialClassNodes()){
+				if(checkIsInClassPart(methodFile, methodStart, methodEnd, currentPart)){
+					return false;
+				} 
+			}
+		}
+		return true;
+	}
+
+
+	private boolean checkIsInClassPart(String methodFile, int methodStart, int methodEnd, PartialClassNodeWrapper currentPart) {
+		String partFile = currentPart.getWrappedNode().getPosition().getFile();
+		int partStart = currentPart.getWrappedNode().getPosition().getStartOffset();
+		int partEnd = currentPart.getWrappedNode().getPosition().getEndOffset();
+		
+		if(methodFile.equals(partFile) && (methodStart > partStart) && (methodEnd < partEnd)){
+			return true;
+		}
+		return false;
+	}
+
+
+	@Override
+	protected void checkInitialConditions() {
+		Node methodNode = config.getTargetMethod().getWrappedNode();
+		if(methodNode == null){
+			addError("Please select the method you want to rename first.");
+		}
+	}
+
+
+	public Collection<String> getAlreadyUsedNames() {
+		HashSet<String> usedNames = new HashSet<String>();
+		
+		try {
+			Collection<MethodNodeWrapper> methods = config.getAllMethodsInClass();
+			
+			for (MethodNodeWrapper currentMethod : methods){
+				if(isSameTypeAsSelectedMethod(currentMethod)){
+					usedNames.add(currentMethod.getName());
+				}
+			}
+		} catch (NoClassNodeException e) {
+			
+			Node rootNode = config.getDocProvider().getRootNode();
+			Collection<MethodDefNode> methods = NodeProvider.getMethodNodes(rootNode);
+			ClassNodeProvider classes = new ClassNodeProvider(config.getDocProvider());
+			
+			for(MethodDefNode currentMethod : methods){
+				if(checkMethodIsBeyondClasses(currentMethod, classes))
+					usedNames.add(currentMethod.getName());
+			}
+		}
+		
+		return usedNames;
+	}
+
+
+	private boolean isSameTypeAsSelectedMethod(MethodNodeWrapper currentMethod) {
+		return currentMethod.isClassMethod() == config.getTargetMethod().isClassMethod();
+	}
+}

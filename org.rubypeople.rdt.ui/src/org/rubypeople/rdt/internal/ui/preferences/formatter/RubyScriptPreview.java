@@ -28,7 +28,7 @@ import org.rubypeople.rdt.internal.ui.text.comment.CommentFormattingContext;
 
 public class RubyScriptPreview extends RubyPreview {
 
-    private String fPreviewText;
+    protected String fPreviewText;
 
     /**
      * @param workingValues

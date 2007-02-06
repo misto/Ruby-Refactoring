@@ -872,22 +872,33 @@ public class RubyEditor extends RubyAbstractEditor {
 
     public class CaretPosition {
 
-        protected CaretPosition(int line, int column) {
+        public CaretPosition(int line, int column) {
             this.line = line;
             this.column = column;
         }
 
-        protected int getColumn() {
+        public CaretPosition(int line, int column, int offset) {
+    		this(line, column);
+    		this.offset = offset;
+    	}
+
+    	public int getColumn() {
             return column;
         }
 
-        protected int getLine() {
+        public int getLine() {
             return line;
+        }
+            
+        public int getOffset() {
+            return offset;
         }
 
         private int line;
 
         private int column;
+            
+        private int offset;
 
     }
 
@@ -1248,7 +1259,7 @@ public class RubyEditor extends RubyAbstractEditor {
         try {
             int line = document.getLineOfOffset(caret);
             int lineOffset = document.getLineOffset(line);
-            return new CaretPosition(line, caret - lineOffset);
+            return new CaretPosition(line, caret - lineOffset, caret);
         } catch (BadLocationException e) {
             return new CaretPosition(0, 0);
         }

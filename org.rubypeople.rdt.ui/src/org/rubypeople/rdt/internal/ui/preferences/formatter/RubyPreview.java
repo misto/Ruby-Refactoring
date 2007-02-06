@@ -138,6 +138,10 @@ public abstract class RubyPreview {
 	public Control getControl() {
 		return fSourceViewer.getControl();
 	}
+	
+	public StyledText getTextWidget() {
+		return fSourceViewer.getTextWidget();
+	}
 
 	public void update() {
 		if (fWorkingValues == null) {
