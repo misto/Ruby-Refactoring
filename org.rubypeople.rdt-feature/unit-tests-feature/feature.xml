@@ -4,7 +4,6 @@
       label="Ruby Development Tools Unit Tests"
       version="0.0.0"
       provider-name="RubyPeople">
-
    <install-handler/>
 
    <description url="[Enter Feature URL here.]">
@@ -87,5 +86,12 @@
          download-size="0"
          install-size="0"
          version="0.0.0"/>
+
+   <plugin
+         id="org.rubypeople.rdt.refactoring.tests"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
 
 </feature>
