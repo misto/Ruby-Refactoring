@@ -78,7 +78,7 @@ public class RubyElementRequestor {
 			RubyCore.log(e);
 		}
 		
-		return types;
+		return filterToMatches(typeName, types);
 	}
 	
 	/**
