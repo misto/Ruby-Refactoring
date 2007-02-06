@@ -1,8 +1,9 @@
 package org.rubypeople.rdt.internal.core.search;
 
-import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
@@ -10,34 +11,56 @@ import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
 import org.rubypeople.rdt.core.ElementChangedEvent;
 import org.rubypeople.rdt.core.IElementChangedListener;
+import org.rubypeople.rdt.core.IField;
 import org.rubypeople.rdt.core.IParent;
 import org.rubypeople.rdt.core.IRubyElement;
 import org.rubypeople.rdt.core.IRubyElementDelta;
 import org.rubypeople.rdt.core.IRubyModel;
+import org.rubypeople.rdt.core.IType;
 import org.rubypeople.rdt.core.RubyModelException;
 import org.rubypeople.rdt.internal.core.RubyModelManager;
 
 public class ExperimentalIndex implements IElementChangedListener {
 	
 	private static ExperimentalIndex fgInstance;
-	private static ArrayList<String> fgConstants;
-	private static ArrayList<String> fgTypes;
+	private static HashSet<IField> fgConstants;
+	private static HashSet<IType> fgTypes;
 	
 	private ExperimentalIndex() {
-		fgTypes = new ArrayList<String>();
-		fgConstants = new ArrayList<String>();
+		fgTypes = new HashSet<IType>();
+		fgConstants = new HashSet<IField>();
 	}
 	
 	public void elementChanged(ElementChangedEvent event) {
 		processDelta(event.getDelta());
 	}
 
-	public static List<String> getTypes() {
-		return Collections.unmodifiableList((ArrayList<String>)fgTypes.clone()); // clone to avoid concurrent modification when iterating
+	public static Set<String> getTypeNames() {
+		Set<IType> types = Collections.unmodifiableSet((HashSet<IType>)fgTypes.clone()); // clone to avoid concurrent modification when iterating
+	    Set<String> names = new HashSet<String>();
+		for (IType type : types) {
+			names.add(type.getElementName());
+		}
+		return names;
 	}
 	
-	public static List<String> getConstants() {
-		return Collections.unmodifiableList((ArrayList<String>)fgConstants.clone()); // clone to avoid concurrent modification when iterating
+	public static Set<String> getConstantNames() {
+		Set<IField> types = Collections.unmodifiableSet((HashSet<IField>)fgConstants.clone()); // clone to avoid concurrent modification when iterating
+	    Set<String> names = new HashSet<String>();
+		for (IField type : types) {
+			names.add(type.getElementName());
+		}
+		return names;
+	}
+	
+	public static Set<IType> findType(String name) {
+		Set<IType> types = Collections.unmodifiableSet((HashSet<IType>)fgTypes.clone()); // clone to avoid concurrent modification when iterating
+	    Set<IType> matches = new HashSet<IType>();
+		for (IType type : types) {
+			if (type.getElementName().equals(name))
+			  matches.add(type);
+		}
+		return matches;
 	}
 
 	private void processDelta(IRubyElementDelta delta) {
@@ -62,10 +85,10 @@ public class ExperimentalIndex implements IElementChangedListener {
 	void removeElement(IRubyElement element) {
 		switch (element.getElementType()) {
 		case IRubyElement.TYPE:
-			fgTypes.remove(element.getElementName());
+			fgTypes.remove(element);
 			break;
 		case IRubyElement.CONSTANT:
-			fgConstants.remove(element.getElementName());
+			fgConstants.remove(element);
 			break;
 		}
 	}
@@ -73,10 +96,10 @@ public class ExperimentalIndex implements IElementChangedListener {
 	void addElement(IRubyElement element) {
 		switch (element.getElementType()) {
 		case IRubyElement.TYPE:
-			fgTypes.add(element.getElementName());
+			fgTypes.add((IType)element);
 			break;
 		case IRubyElement.CONSTANT:
-			fgConstants.add(element.getElementName());
+			fgConstants.add((IField)element);
 			break;
 		}
 	}

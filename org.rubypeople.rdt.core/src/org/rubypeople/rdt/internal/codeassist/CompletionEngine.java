@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 
 import org.jruby.ast.ClassNode;
 import org.jruby.ast.ClassVarAsgnNode;
@@ -117,7 +118,7 @@ public class CompletionEngine {
 	}
 
 	private void suggestTypeNames(int replaceStart) {
-		List<String> types = ExperimentalIndex.getTypes();
+		Set<String> types = ExperimentalIndex.getTypeNames();
 		// TODO Remove duplicates? Sort?
 		for (String name : types) {
 			if (this.prefix != null && !name.startsWith(this.prefix))
@@ -134,7 +135,7 @@ public class CompletionEngine {
 	}
 
 	private void suggestConstantNames(int replaceStart) {
-		List<String> types = ExperimentalIndex.getConstants();
+		Set<String> types = ExperimentalIndex.getConstantNames();
 		// TODO Remove duplicates? Sort?
 		for (String name : types) {
 			if (this.prefix != null && !name.startsWith(this.prefix))
@@ -155,14 +156,14 @@ public class CompletionEngine {
 		IMethod[] methods = type.getMethods();
 		for (int k = 0; k < methods.length; k++) {
 			IMethod method = methods[k];
+			int start = replaceStart;
 			String name = method.getElementName();
 			if (prefix != null && !name.startsWith(prefix))
 				continue;
-			CompletionProposal proposal = new CompletionProposal(CompletionProposal.METHOD_REF, name, confidence);
-			proposal.setReplaceRange(replaceStart, replaceStart + name.length());
 			int flags = Flags.AccDefault;
 			if (method.isSingleton()) {
 				flags |= Flags.AccStatic;
+				start -= type.getElementName().length() + 1;
 			}
 			switch (method.getVisibility()) {
 			case IMethod.PRIVATE:
@@ -177,6 +178,8 @@ public class CompletionEngine {
 			default:
 				break;
 			}
+			CompletionProposal proposal = new CompletionProposal(CompletionProposal.METHOD_REF, name, confidence);
+			proposal.setReplaceRange(start, start + name.length());
 			proposal.setFlags(flags);
 			requestor.accept(proposal);
 		}

@@ -606,7 +606,7 @@ public class RubyScript extends Openable implements IRubyScript {
 	}
 	
 	/**
-	 * @see ICompilationUnit#getTypes()
+	 * @see ICompilationUnit#getTypeNames()
 	 */
 	public IType[] getTypes() throws RubyModelException {
 		ArrayList list = getChildrenOfType(TYPE);

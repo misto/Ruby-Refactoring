@@ -1,6 +1,7 @@
 package org.rubypeople.rdt.internal.codeassist;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.StringTokenizer;
 
@@ -15,6 +16,7 @@ import org.rubypeople.rdt.core.ISourceFolderRoot;
 import org.rubypeople.rdt.core.IType;
 import org.rubypeople.rdt.core.RubyCore;
 import org.rubypeople.rdt.core.RubyModelException;
+import org.rubypeople.rdt.internal.core.search.ExperimentalIndex;
 
 public class RubyElementRequestor {
 
@@ -33,35 +35,49 @@ public class RubyElementRequestor {
 			// FIXME Search the roots in a particular order? Return first match?
 			ISourceFolderRoot[] roots = rubyProject.getSourceFolderRoots();
 			for (int i = 0; i < roots.length; i++) {
-				types.addAll(getTypeInSourceFolderRoot(roots[i], typeName));
+				types.addAll(getImportedTypesInSourceFolderRoot(roots[i], typeName));
+			}
+			if (types.size() == 0) { // Couldn't find any!
+				// Do a full search
+				types.addAll(ExperimentalIndex.findType(typeName));
 			}
 		} catch (RubyModelException e) {
 			RubyCore.log(e);
 		}
+		return (IType[]) types.toArray(new IType[types.size()]);
+	}
+
+	private List<IType> filterToMatches(String typeName, List<IType> types) {
 		List<IType> matches = new ArrayList<IType>();
 		for (IType type : types) {
 			if (type.getElementName().equals(typeName)) matches.add(type);
 		}
-		return (IType[]) types.toArray(new IType[matches.size()]);
+		return matches;
 	}
 
-	private List<IType> getTypeInSourceFolderRoot(ISourceFolderRoot root, String typeName) {
+	private List<IType> getTypesInSourceFolderRoot(ISourceFolderRoot root, String typeName) {
+		List<IType> types = getTypes(root);
+		return filterToMatches(typeName, types);
+	}
+
+	private List<IType> getImportedTypesInSourceFolderRoot(ISourceFolderRoot root, String typeName) {
 		List<IType> types = new ArrayList<IType>();
 		try {
 			IPath rootPath = root.getPath();
 //	FIXME this is an ugly hack to search the core library in a special way (no need to look at imports)
 			if (rootPath.toString().contains("org.rubypeople.rdt.launching")) {
-				types.addAll(getTypeInImport(root, typeName.toLowerCase()));
+				types.addAll(getTypesInImport(root, typeName.toLowerCase()));
 			} else {			
 				IImportDeclaration[] imports = script.getImports();
 				for (int j = 0; j < imports.length; j++) {
 					String path = imports[j].getElementName();
-					types.addAll(getTypeInImport(root, path));		
+					types.addAll(getTypesInImport(root, path));		
 				}
 			}
 		} catch (RubyModelException e) {
 			RubyCore.log(e);
 		}
+		
 		return types;
 	}
 	
@@ -72,7 +88,7 @@ public class RubyElementRequestor {
 	 * @param path The internal path to search.
 	 * @return a List of ITypes which seem to be a match
 	 */
-	private List<IType> getTypeInImport(ISourceFolderRoot root, String path) {
+	private List<IType> getTypesInImport(ISourceFolderRoot root, String path) {
 		StringTokenizer tokenizer = new StringTokenizer(path, SEPARATOR_CHARS);
 		List<String> tokens = new ArrayList<String>();
 		while(tokenizer.hasMoreTokens()) {
