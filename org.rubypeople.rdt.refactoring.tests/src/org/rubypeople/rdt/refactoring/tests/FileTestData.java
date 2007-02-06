@@ -35,7 +35,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 
-import org.rubypeople.rdt.refactoring.util.FileHelper;
+import org.rubypeople.rdt.refactoring.tests.util.FileHelper;
 
 public class FileTestData extends FilePropertyData { 
 

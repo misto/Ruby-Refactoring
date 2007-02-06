@@ -37,7 +37,7 @@ import java.util.Collection;
 import java.util.Properties;
 
 import org.rubypeople.rdt.refactoring.documentprovider.DocumentProvider;
-import org.rubypeople.rdt.refactoring.util.FileHelper;
+import org.rubypeople.rdt.refactoring.tests.util.FileHelper;
 
 public abstract class FilePropertyData extends DocumentProvider {
 

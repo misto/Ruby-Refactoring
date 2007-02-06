@@ -30,7 +30,7 @@ package org.rubypeople.rdt.refactoring.tests;
 
 import org.jruby.ast.RootNode;
 import org.rubypeople.rdt.refactoring.core.NodeProvider;
-import org.rubypeople.rdt.refactoring.util.FileHelper;
+import org.rubypeople.rdt.refactoring.tests.util.FileHelper;
 
 public abstract class FileTestCase extends RefactoringTestCase
 {

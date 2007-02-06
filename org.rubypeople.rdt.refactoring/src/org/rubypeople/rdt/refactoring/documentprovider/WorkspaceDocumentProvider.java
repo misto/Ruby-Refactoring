@@ -40,7 +40,7 @@ import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.Path;
-import org.rubypeople.rdt.refactoring.util.FileHelper;
+import org.rubypeople.rdt.internal.core.util.Util;
 
 public class WorkspaceDocumentProvider extends DocumentProvider {
 
@@ -105,7 +105,7 @@ public class WorkspaceDocumentProvider extends DocumentProvider {
 	public String getFileContent(String fileName) {
 		IFile currentFile = getIFile(fileName);
 		try {
-			return FileHelper.getStreamContent(currentFile.getContents());
+			return new String(Util.getResourceContentsAsCharArray(currentFile));
 		} catch (CoreException e) {
 			e.printStackTrace();
 		}

@@ -38,7 +38,7 @@ import java.util.Collection;
 import java.util.StringTokenizer;
 
 import org.jruby.ast.Node;
-import org.rubypeople.rdt.refactoring.util.FileHelper;
+import org.rubypeople.rdt.refactoring.tests.util.FileHelper;
 
 public class MultiFileTestData extends FilePropertyData {
 
