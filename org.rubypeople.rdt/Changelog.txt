@@ -1,4 +1,11 @@
 Since 0.8.0 Release:
+* Initial Refactoring support
+  * Adds an initial catalog of refactorings
+  * Also adds some basic source manipulation
+    * Generate accessors
+    * Generate constructor
+* Better integration with Ruby interpreters
+  * Now "links" the standard and core libraries of ruby interpreters into new ruby projects - so they are used in code completion
 * Preliminary support for ruby-debug as the debugging backend
 * Integration of type inferrencing work done by Jason morrison for Google Summer of Code
   * Improved code completion
