@@ -56,9 +56,7 @@ public class RubyLintVisitor extends InOrderVisitor {
 
 		String source = NodeUtil.getSource(contents, iVisited);
 		if (iVisited.getThenBody() == null && source.indexOf("unless") == -1) {
-			IProblem problem = createProblem(
-			RubyCore.COMPILER_PB_EMPTY_STATEMENT, iVisited.getPosition(), "Empty Conditional Body");
-
+			IProblem problem = createProblem(RubyCore.COMPILER_PB_EMPTY_STATEMENT, iVisited.getPosition(), "Empty Conditional Body");
 			if (problem != null)
 				problemRequestor.acceptProblem(problem);
 		}
@@ -81,7 +79,6 @@ public class RubyLintVisitor extends InOrderVisitor {
 	public Instruction visitIterNode(IterNode iVisited) {
 		if (iVisited.getBodyNode() == null) {
 			IProblem problem = createProblem(RubyCore.COMPILER_PB_EMPTY_STATEMENT, iVisited.getPosition(), "Empty Block");
-
 			if (problem != null)
 				problemRequestor.acceptProblem(problem);
 		}
@@ -102,7 +99,6 @@ public class RubyLintVisitor extends InOrderVisitor {
 	public Instruction visitDefsNode(DefsNode iVisited) {
 		if (iVisited.getBodyNode() == null) {
 			IProblem problem = createProblem(RubyCore.COMPILER_PB_EMPTY_STATEMENT, iVisited.getPosition(), "Empty Method Definition");
-
 			if (problem != null)
 				problemRequestor.acceptProblem(problem);
 		}
@@ -123,6 +119,8 @@ public class RubyLintVisitor extends InOrderVisitor {
 		String value = RubyCore.getOption(compilerOption);			
 		if (value != null && value.equals(RubyCore.ERROR))
 			return new Error(position, message);
+		if (value != null && value.equals(RubyCore.IGNORE))
+			return null;
 		return new Warning(position, message);
 	}
 

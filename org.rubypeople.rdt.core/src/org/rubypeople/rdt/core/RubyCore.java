@@ -232,7 +232,7 @@ public class RubyCore extends Plugin {
 	/**
 	 * Possible  configurable option ID.
 	 * @see #getDefaultOptions()
-	 * @since 0.90.
+	 * @since 0.9.0
 	 */
 	public static final String COMPILER_PB_EMPTY_STATEMENT = PLUGIN_ID + ".compiler.problem.emptyStatement"; //$NON-NLS-1$
 	/**

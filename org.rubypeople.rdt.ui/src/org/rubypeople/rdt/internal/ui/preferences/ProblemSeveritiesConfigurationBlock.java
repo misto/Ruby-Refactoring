@@ -33,15 +33,16 @@ public class ProblemSeveritiesConfigurationBlock extends OptionsConfigurationBlo
 	private static final String SETTINGS_SECTION_NAME= null; //"ProblemSeveritiesConfigurationBlock"; 
 	
 	// Preference store keys, see RubyCore.getOptions
-	private static final Key PREF_PB_ENSURE_BLOCK_NOT_COMPLETING = getJDTCoreKey(RubyCore.COMPILER_PB_ENSURE_BLOCK_NOT_COMPLETING);
-	private static final Key PREF_PB_EMPTY_STATEMENT = getJDTCoreKey(RubyCore.COMPILER_PB_EMPTY_STATEMENT);
-	private static final Key PREF_PB_HIDDEN_RESCUE_BLOCK = getJDTCoreKey(RubyCore.COMPILER_PB_HIDDEN_RESCUE_BLOCK);
-	private static final Key PREF_PB_FALLTHROUGH_CASE = getJDTCoreKey(RubyCore.COMPILER_PB_FALLTHROUGH_CASE);
-	private static final Key PREF_PB_NULL_REFERENCE = getJDTCoreKey(RubyCore.COMPILER_PB_NULL_REFERENCE);
-	private static final Key PREF_PB_UNUSED_LOCAL = getJDTCoreKey(RubyCore.COMPILER_PB_UNUSED_LOCAL);
-	private static final Key PREF_PB_UNUSED_PARAMETER = getJDTCoreKey(RubyCore.COMPILER_PB_UNUSED_PARAMETER);
-	private static final Key PREF_PB_UNUSED_PRIVATE = getJDTCoreKey(RubyCore.COMPILER_PB_UNUSED_PRIVATE_MEMBER);
-	private static final Key PREF_PB_UNNECESSARY_ELSE = getJDTCoreKey(RubyCore.COMPILER_PB_UNNECESSARY_ELSE);	
+	// TODO Actually implement checking for these things in the builders!
+	private static final Key PREF_PB_ENSURE_BLOCK_NOT_COMPLETING = getRDTCoreKey(RubyCore.COMPILER_PB_ENSURE_BLOCK_NOT_COMPLETING);
+	private static final Key PREF_PB_EMPTY_STATEMENT = getRDTCoreKey(RubyCore.COMPILER_PB_EMPTY_STATEMENT);
+	private static final Key PREF_PB_HIDDEN_RESCUE_BLOCK = getRDTCoreKey(RubyCore.COMPILER_PB_HIDDEN_RESCUE_BLOCK);
+	private static final Key PREF_PB_FALLTHROUGH_CASE = getRDTCoreKey(RubyCore.COMPILER_PB_FALLTHROUGH_CASE);
+	private static final Key PREF_PB_NULL_REFERENCE = getRDTCoreKey(RubyCore.COMPILER_PB_NULL_REFERENCE);
+	private static final Key PREF_PB_UNUSED_LOCAL = getRDTCoreKey(RubyCore.COMPILER_PB_UNUSED_LOCAL);
+	private static final Key PREF_PB_UNUSED_PARAMETER = getRDTCoreKey(RubyCore.COMPILER_PB_UNUSED_PARAMETER);
+	private static final Key PREF_PB_UNUSED_PRIVATE = getRDTCoreKey(RubyCore.COMPILER_PB_UNUSED_PRIVATE_MEMBER);
+	private static final Key PREF_PB_UNNECESSARY_ELSE = getRDTCoreKey(RubyCore.COMPILER_PB_UNNECESSARY_ELSE);	
 	// values
 	private static final String ERROR= RubyCore.ERROR;
 	private static final String WARNING= RubyCore.WARNING;
@@ -60,9 +61,11 @@ public class ProblemSeveritiesConfigurationBlock extends OptionsConfigurationBlo
 	
 	private static Key[] getKeys() {
 		return new Key[] {
-				PREF_PB_ENSURE_BLOCK_NOT_COMPLETING, PREF_PB_EMPTY_STATEMENT, PREF_PB_HIDDEN_RESCUE_BLOCK,
-				PREF_PB_FALLTHROUGH_CASE, PREF_PB_NULL_REFERENCE, PREF_PB_UNUSED_LOCAL,
-				PREF_PB_UNUSED_PARAMETER, PREF_PB_UNUSED_PRIVATE, PREF_PB_UNNECESSARY_ELSE
+//				PREF_PB_ENSURE_BLOCK_NOT_COMPLETING, 
+				PREF_PB_EMPTY_STATEMENT, 
+//				PREF_PB_HIDDEN_RESCUE_BLOCK,
+//				PREF_PB_FALLTHROUGH_CASE, PREF_PB_NULL_REFERENCE, PREF_PB_UNUSED_LOCAL,
+//				PREF_PB_UNUSED_PARAMETER, PREF_PB_UNUSED_PRIVATE, PREF_PB_UNNECESSARY_ELSE
 			};
 	}
 	
@@ -134,42 +137,42 @@ public class ProblemSeveritiesConfigurationBlock extends OptionsConfigurationBlo
 		inner.setLayout(new GridLayout(nColumns, false));
 		excomposite.setClient(inner);
 
-		label= PreferencesMessages.ProblemSeveritiesConfigurationBlock_pb_ensure_block_not_completing_label; 
-		addComboBox(inner, label, PREF_PB_ENSURE_BLOCK_NOT_COMPLETING, errorWarningIgnore, errorWarningIgnoreLabels, defaultIndent);
+//		label= PreferencesMessages.ProblemSeveritiesConfigurationBlock_pb_ensure_block_not_completing_label; 
+//		addComboBox(inner, label, PREF_PB_ENSURE_BLOCK_NOT_COMPLETING, errorWarningIgnore, errorWarningIgnoreLabels, defaultIndent);
 
 		label= PreferencesMessages.ProblemSeveritiesConfigurationBlock_pb_empty_statement_label; 
 		addComboBox(inner, label, PREF_PB_EMPTY_STATEMENT, errorWarningIgnore, errorWarningIgnoreLabels, defaultIndent);
 
-		label= PreferencesMessages.ProblemSeveritiesConfigurationBlock_pb_hidden_rescueblock_label; 
-		addComboBox(inner, label, PREF_PB_HIDDEN_RESCUE_BLOCK, errorWarningIgnore, errorWarningIgnoreLabels, defaultIndent);
-
-		label= PreferencesMessages.ProblemSeveritiesConfigurationBlock_pb_fall_through_case;
-		addComboBox(inner, label, PREF_PB_FALLTHROUGH_CASE, errorWarningIgnore, errorWarningIgnoreLabels, defaultIndent);
-		
-		label= PreferencesMessages.ProblemSeveritiesConfigurationBlock_pb_null_reference;
-		addComboBox(inner, label, PREF_PB_NULL_REFERENCE, errorWarningIgnore, errorWarningIgnoreLabels, defaultIndent);
+//		label= PreferencesMessages.ProblemSeveritiesConfigurationBlock_pb_hidden_rescueblock_label; 
+//		addComboBox(inner, label, PREF_PB_HIDDEN_RESCUE_BLOCK, errorWarningIgnore, errorWarningIgnoreLabels, defaultIndent);
+//
+//		label= PreferencesMessages.ProblemSeveritiesConfigurationBlock_pb_fall_through_case;
+//		addComboBox(inner, label, PREF_PB_FALLTHROUGH_CASE, errorWarningIgnore, errorWarningIgnoreLabels, defaultIndent);
+//		
+//		label= PreferencesMessages.ProblemSeveritiesConfigurationBlock_pb_null_reference;
+//		addComboBox(inner, label, PREF_PB_NULL_REFERENCE, errorWarningIgnore, errorWarningIgnoreLabels, defaultIndent);
 
 		// --- unnecessary_code
 		
-		label= PreferencesMessages.ProblemSeveritiesConfigurationBlock_section_unnecessary_code; 
-		excomposite= createStyleSection(composite, label, nColumns);
-	
-		inner= new Composite(excomposite, SWT.NONE);
-		inner.setFont(composite.getFont());
-		inner.setLayout(new GridLayout(nColumns, false));
-		excomposite.setClient(inner);
+//		label= PreferencesMessages.ProblemSeveritiesConfigurationBlock_section_unnecessary_code; 
+//		excomposite= createStyleSection(composite, label, nColumns);
+//	
+//		inner= new Composite(excomposite, SWT.NONE);
+//		inner.setFont(composite.getFont());
+//		inner.setLayout(new GridLayout(nColumns, false));
+//		excomposite.setClient(inner);
 		
-		label= PreferencesMessages.ProblemSeveritiesConfigurationBlock_pb_unused_local_label; 
-		addComboBox(inner, label, PREF_PB_UNUSED_LOCAL, errorWarningIgnore, errorWarningIgnoreLabels, defaultIndent);
-
-		label= PreferencesMessages.ProblemSeveritiesConfigurationBlock_pb_unused_parameter_label; 
-		addComboBox(inner, label, PREF_PB_UNUSED_PARAMETER, errorWarningIgnore, errorWarningIgnoreLabels, defaultIndent);
-		
-		label= PreferencesMessages.ProblemSeveritiesConfigurationBlock_pb_unused_private_label; 
-		addComboBox(inner, label, PREF_PB_UNUSED_PRIVATE, errorWarningIgnore, errorWarningIgnoreLabels, defaultIndent);
-		
-		label= PreferencesMessages.ProblemSeveritiesConfigurationBlock_pb_unnecessary_else_label; 
-		addComboBox(inner, label, PREF_PB_UNNECESSARY_ELSE, errorWarningIgnore, errorWarningIgnoreLabels, defaultIndent);
+//		label= PreferencesMessages.ProblemSeveritiesConfigurationBlock_pb_unused_local_label; 
+//		addComboBox(inner, label, PREF_PB_UNUSED_LOCAL, errorWarningIgnore, errorWarningIgnoreLabels, defaultIndent);
+//
+//		label= PreferencesMessages.ProblemSeveritiesConfigurationBlock_pb_unused_parameter_label; 
+//		addComboBox(inner, label, PREF_PB_UNUSED_PARAMETER, errorWarningIgnore, errorWarningIgnoreLabels, defaultIndent);
+//		
+//		label= PreferencesMessages.ProblemSeveritiesConfigurationBlock_pb_unused_private_label; 
+//		addComboBox(inner, label, PREF_PB_UNUSED_PRIVATE, errorWarningIgnore, errorWarningIgnoreLabels, defaultIndent);
+//		
+//		label= PreferencesMessages.ProblemSeveritiesConfigurationBlock_pb_unnecessary_else_label; 
+//		addComboBox(inner, label, PREF_PB_UNNECESSARY_ELSE, errorWarningIgnore, errorWarningIgnoreLabels, defaultIndent);
 			
 		IDialogSettings section= RubyPlugin.getDefault().getDialogSettings().getSection(SETTINGS_SECTION_NAME);
 		restoreSectionExpansionStates(section);

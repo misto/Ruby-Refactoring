@@ -1,6 +1,5 @@
 package org.rubypeople.rdt.internal.core;
 
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
@@ -10,15 +9,17 @@ import org.eclipse.core.runtime.preferences.DefaultScope;
 import org.eclipse.core.runtime.preferences.IEclipsePreferences;
 import org.rubypeople.rdt.core.RubyCore;
 import org.rubypeople.rdt.core.formatter.DefaultCodeFormatterConstants;
+import org.rubypeople.rdt.internal.compiler.CompilerOptions;
 
 public class RubyCorePreferenceInitializer extends AbstractPreferenceInitializer {
 
     public void initializeDefaultPreferences() {
         // Get options names set
         HashSet optionNames = RubyModelManager.getRubyModelManager().optionNames;
-
+		
+		// Compiler settings
+		Map defaultOptionsMap = new CompilerOptions().getMap(); // compiler defaults
        
-        Map defaultOptionsMap = new HashMap();
         // Override some compiler defaults
         defaultOptionsMap.put(RubyCore.COMPILER_TASK_TAGS, RubyCore.DEFAULT_TASK_TAGS);
         defaultOptionsMap.put(RubyCore.COMPILER_TASK_PRIORITIES, RubyCore.DEFAULT_TASK_PRIORITIES);

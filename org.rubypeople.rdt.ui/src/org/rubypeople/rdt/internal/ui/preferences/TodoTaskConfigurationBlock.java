@@ -45,10 +45,10 @@ import org.rubypeople.rdt.internal.ui.wizards.dialogfields.SelectionButtonDialog
   */
 public class TodoTaskConfigurationBlock extends OptionsConfigurationBlock {
 
-	private static final Key PREF_COMPILER_TASK_TAGS= getJDTCoreKey(RubyCore.COMPILER_TASK_TAGS);
-	private static final Key PREF_COMPILER_TASK_PRIORITIES= getJDTCoreKey(RubyCore.COMPILER_TASK_PRIORITIES);
+	private static final Key PREF_COMPILER_TASK_TAGS= getRDTCoreKey(RubyCore.COMPILER_TASK_TAGS);
+	private static final Key PREF_COMPILER_TASK_PRIORITIES= getRDTCoreKey(RubyCore.COMPILER_TASK_PRIORITIES);
 	
-	private static final Key PREF_COMPILER_TASK_CASE_SENSITIVE= getJDTCoreKey(RubyCore.COMPILER_TASK_CASE_SENSITIVE);	
+	private static final Key PREF_COMPILER_TASK_CASE_SENSITIVE= getRDTCoreKey(RubyCore.COMPILER_TASK_CASE_SENSITIVE);	
 	
 	private static final String PRIORITY_HIGH= RubyCore.COMPILER_TASK_PRIORITY_HIGH;
 	private static final String PRIORITY_NORMAL= RubyCore.COMPILER_TASK_PRIORITY_NORMAL;

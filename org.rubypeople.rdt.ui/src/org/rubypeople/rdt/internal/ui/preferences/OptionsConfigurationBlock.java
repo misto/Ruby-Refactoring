@@ -60,7 +60,7 @@ import org.rubypeople.rdt.ui.RubyUI;
  * Abstract options configuration block providing a general implementation for setting up
  * an options configuration page.
  * 
- * @since 2.1
+ * @since 0.8.0
  */
 public abstract class OptionsConfigurationBlock {
 	
@@ -238,11 +238,11 @@ public abstract class OptionsConfigurationBlock {
 		return new Key(plugin, key);
 	}
 	
-	protected final static Key getJDTCoreKey(String key) {
+	protected final static Key getRDTCoreKey(String key) {
 		return getKey(RubyCore.PLUGIN_ID, key);
 	}
 	
-	protected final static Key getJDTUIKey(String key) {
+	protected final static Key getRDTUIKey(String key) {
 		return getKey(RubyUI.ID_PLUGIN, key);
 	}
 	
