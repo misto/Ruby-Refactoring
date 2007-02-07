@@ -15,15 +15,16 @@ RDT is a set of plugins for Eclipse which makes the platform a Ruby-aware IDE. R
    <copyright>
       The Ruby Development Tools (RDT) plugin for eclipse is subject
 to the Common Public License (CPL) v 1.0. All files of the RDT
-except 
-for the external plug-ins and libraries named below are copyright
-of RubyPeople. 
-RubyPeople is not a legal entity, but consists of the following
-people 
-who have contributed to the RDT. Currently these are (in alphabetical
-order):
-Markus Barchfeld, David Corbin, Zach Dennis, Adam Williams and
-Chris Williams. See www.rubypeople.org for more information.
+except for the external plug-ins and libraries named below are 
+copyright of RubyPeople. RubyPeople is not a legal entity, but 
+consists of the following people who have contributed to the 
+RDT. Currently these are (in alphabetical order):
+
+Markus Barchfeld, Thomas Corbat, David Corbin, Zach Dennis, 
+Lukas Felber, Mirko Stocker, Adam Williams and Chris Williams. 
+
+See www.rubypeople.org for more information.
+
 The RDT feature contains the following plug-ins and libraries
 from external providers:
 RegExp plug-in, http://e-p-i-c.sourceforge.net 
@@ -32,9 +33,9 @@ kxml2, http://kxml.sourceforge.net
 The file org.rubypeople.rdt.launching/ruby/eclipseDebug.rb
 is based on the debug.rb file, which is part of the ruby 1.6.8
 release. Because of the nature of developing this plugin, many
-features or concepts have been copied from the jdt. Therefore
+features or concepts have been copied from the JDT. Therefore
 you will find code fragements which have been copied from the
-jdt. We did not add the IBM copyright with every code fragment
+JDT. We did not add the IBM copyright with every code fragment
 of this kind. We think that this is in accordance with the CPL
 and is not an intended removal of copyright.
    </copyright>
