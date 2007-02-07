@@ -12,6 +12,7 @@
 package org.rubypeople.rdt.internal.core.builder;
 
 import java.util.Iterator;
+import java.util.List;
 import java.util.Stack;
 
 import org.eclipse.core.resources.IFile;
@@ -43,8 +44,7 @@ public class IndexUpdater {
 
     private void processNode(IFile file, Node node) {
     	//    	 sgml-parser, line 35: InstAsgnNode contains DStrNode which returns null as child-node
-    	if (node == null)
-    	{
+    	if (node == null) {
     		return ;
     	}
         if (isScopingNode(node)) {
@@ -62,11 +62,12 @@ public class IndexUpdater {
         	String qualifiedName = this.getContext() + defnNode .getName() ;
         	index.add(new MethodSymbol(qualifiedName), file, defnNode.getNameNode().getPosition()) ;
         }
-
-        
-        for (Iterator iter = node.childNodes().iterator(); iter.hasNext();) {
-            Node childNode = (Node) iter.next();
-            processNode(file, childNode);
+        List childNodes = node.childNodes();
+        if (childNodes != null) {
+        	for (Iterator iter = childNodes.iterator(); iter.hasNext();) {
+        		Node childNode = (Node) iter.next();
+        		processNode(file, childNode);
+        	}
         }
         
         if (isScopingNode(node)) {
