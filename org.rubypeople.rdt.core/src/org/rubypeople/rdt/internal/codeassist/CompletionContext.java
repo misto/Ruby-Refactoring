@@ -27,9 +27,6 @@ public class CompletionContext {
 		// Read from offset back until we hit a: space, period
 		// if we hit a period, use character before period as offset for
 		// inferrer
-		// if we hit a space, use character after space?
-		// TODO We need to handle other bad syntax like invoking completion
-		// right after an @
 		StringBuffer tmpPrefix = new StringBuffer();
 		for (int i = offset; i >= 0; i--) {
 			char curChar = source.charAt(i);
@@ -38,6 +35,7 @@ public class CompletionContext {
 				case '.': // if it breaks syntax, lets fix it
 				case '$':
 				case '@':
+					// TODO What if there is a valid character after this, so syntax isn't broken?
 					source.deleteCharAt(i);
 					break;
 				}
