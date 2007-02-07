@@ -133,6 +133,8 @@ import org.jruby.runtime.Visibility;
 import org.rubypeople.rdt.core.IMethod;
 import org.rubypeople.rdt.core.IRubyElement;
 import org.rubypeople.rdt.core.IRubyScript;
+import org.rubypeople.rdt.core.RubyCore;
+import org.rubypeople.rdt.core.RubyModelException;
 import org.rubypeople.rdt.internal.core.parser.RubyParser;
 import org.rubypeople.rdt.internal.core.util.ASTUtil;
 
@@ -495,6 +497,12 @@ public class RubyScriptStructureBuilder implements NodeVisitor {
 
 		String name = getFullyQualifiedName(iVisited.getCPath());
 		RubyType handle = new RubyType(modelStack.peek(), name);
+		RubyElement parent = modelStack.peek();
+		RubyType existing = (RubyType) findChild(parent, IRubyElement.TYPE, name);
+		if (existing != null) {
+		// FIXME Should we just increment the occurence count like I do here, or should we conglomerate the types into one LogicalType?
+			handle.occurrenceCount = existing.occurrenceCount + 1;
+		}
 		modelStack.push(handle);
 
 		RubyElementInfo parentInfo = infoStack.peek();
@@ -508,9 +516,6 @@ public class RubyScriptStructureBuilder implements NodeVisitor {
 		String superClass = getSuperClassName(iVisited.getSuperNode());
 		info.setSuperclassName(superClass);
 		
-		// FIXME Types do not explicitly include Kernel; if this is solely for completions, then Kernel elements are gotten elsewhere.
-		// FIXME If this must include Kernel, then completions will have to handle this differently than current. (Otherwise dupes of Kernel elements will show up when bringing together Class & its Superclass completions?)  
-//		info.setIncludedModuleNames(new String[] { "Kernel" });
 		info.setIncludedModuleNames(new String[] {});
 		infoStack.push(info);
 
@@ -522,6 +527,18 @@ public class RubyScriptStructureBuilder implements NodeVisitor {
 		// TODO Collect the included modules and set them here!
 		modelStack.pop();
 		infoStack.pop();
+		return null;
+	}
+
+	private RubyType findChild(RubyElement parent, int type, String name) {
+		try {
+			ArrayList<IRubyElement> children = parent.getChildrenOfType(type);
+			for (IRubyElement element : children) {
+				if (element.getElementName().equals(name)) return (RubyType) element;
+			}
+		} catch (RubyModelException e) {
+			RubyCore.log(e);
+		}
 		return null;
 	}
 
