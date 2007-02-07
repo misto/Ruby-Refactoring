@@ -2,7 +2,6 @@ package org.rubypeople.rdt.internal.core.search;
 
 import java.util.Collections;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -17,6 +16,7 @@ import org.rubypeople.rdt.core.IRubyElement;
 import org.rubypeople.rdt.core.IRubyElementDelta;
 import org.rubypeople.rdt.core.IRubyModel;
 import org.rubypeople.rdt.core.IType;
+import org.rubypeople.rdt.core.RubyCore;
 import org.rubypeople.rdt.core.RubyModelException;
 import org.rubypeople.rdt.internal.core.RubyModelManager;
 
@@ -25,10 +25,12 @@ public class ExperimentalIndex implements IElementChangedListener {
 	private static ExperimentalIndex fgInstance;
 	private static HashSet<IField> fgConstants;
 	private static HashSet<IType> fgTypes;
+	private static HashSet<IField> fgGlobals;
 	
 	private ExperimentalIndex() {
 		fgTypes = new HashSet<IType>();
 		fgConstants = new HashSet<IField>();
+		fgGlobals = new HashSet<IField>();
 	}
 	
 	public void elementChanged(ElementChangedEvent event) {
@@ -62,6 +64,15 @@ public class ExperimentalIndex implements IElementChangedListener {
 		}
 		return matches;
 	}
+	
+	public static Set<String> getGlobalNames() {
+		Set<IField> types = Collections.unmodifiableSet((HashSet<IField>)fgGlobals.clone()); // clone to avoid concurrent modification when iterating
+	    Set<String> names = new HashSet<String>();
+		for (IField type : types) {
+			names.add(type.getElementName());
+		}
+		return names;
+	}
 
 	private void processDelta(IRubyElementDelta delta) {
 		IRubyElement element = delta.getElement();
@@ -90,6 +101,9 @@ public class ExperimentalIndex implements IElementChangedListener {
 		case IRubyElement.CONSTANT:
 			fgConstants.remove(element);
 			break;
+		case IRubyElement.GLOBAL:
+			fgGlobals.remove(element);
+			break;
 		}
 	}
 
@@ -100,6 +114,9 @@ public class ExperimentalIndex implements IElementChangedListener {
 			break;
 		case IRubyElement.CONSTANT:
 			fgConstants.add((IField)element);
+			break;
+		case IRubyElement.GLOBAL:
+			fgGlobals.add((IField)element);
 			break;
 		}
 	}
@@ -142,8 +159,7 @@ public class ExperimentalIndex implements IElementChangedListener {
 					}
 				}
 			} catch (RubyModelException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				RubyCore.log(e);
 			}			
 		}
 		
