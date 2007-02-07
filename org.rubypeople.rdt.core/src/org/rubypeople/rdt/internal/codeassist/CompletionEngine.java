@@ -95,7 +95,8 @@ public class CompletionEngine {
 		for (String name : globals) {
 			if (!context.prefixStartsWith(name))
 				continue;
-			addProposal(context.getReplaceStart(), CompletionProposal.FIELD_REF, name);
+			CompletionProposal proposal = createProposal(context.getReplaceStart(), CompletionProposal.FIELD_REF, name);
+			requestor.accept(proposal);
 		}
 	}
 
@@ -105,14 +106,15 @@ public class CompletionEngine {
 		for (String name : types) {
 			if (!context.prefixStartsWith(name))
 				continue;
-			addProposal(context.getReplaceStart(), CompletionProposal.TYPE_REF, name);
+			CompletionProposal proposal = createProposal(context.getReplaceStart(), CompletionProposal.TYPE_REF, name);
+			proposal.setType(name);
+			requestor.accept(proposal);
 		}
 	}
 
-	private CompletionProposal addProposal(int replaceStart, int type, String name) {
+	private CompletionProposal createProposal(int replaceStart, int type, String name) {
 		CompletionProposal proposal = new CompletionProposal(type, name, 100);
 		proposal.setReplaceRange(replaceStart, replaceStart + name.length());
-		requestor.accept(proposal);
 		return proposal;
 	}
 
@@ -122,7 +124,8 @@ public class CompletionEngine {
 		for (String name : types) {
 			if (!context.prefixStartsWith(name))
 				continue;
-			addProposal(context.getReplaceStart(), CompletionProposal.FIELD_REF, name);
+			CompletionProposal proposal = createProposal(context.getReplaceStart(), CompletionProposal.FIELD_REF, name);
+			requestor.accept(proposal);
 		}
 	}
 
@@ -160,6 +163,8 @@ public class CompletionEngine {
 			CompletionProposal proposal = new CompletionProposal(CompletionProposal.METHOD_REF, name, confidence);
 			proposal.setReplaceRange(start, start + name.length());
 			proposal.setFlags(flags);
+			proposal.setName(name);
+			proposal.setDeclaringType(type.getElementName());
 			requestor.accept(proposal);
 		}
 	}

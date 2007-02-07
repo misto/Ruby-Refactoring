@@ -237,7 +237,7 @@ public class RubyScriptCompletion extends CompletionRequestor {
 		String completion= proposal.getCompletion();
 		int start= proposal.getReplaceStart();
 		int length= getLength(proposal);
-		String label= proposal.getName();
+		String label= fLabelProvider.createLabel(proposal);
 		int relevance= computeRelevance(proposal);
 		Image image = getImage(fLabelProvider.createImageDescriptor(proposal));
 		return new RubyCompletionProposal(completion, start, length, image, label, relevance);

@@ -85,6 +85,8 @@ public class CompletionProposal {
 	 */
 	private String name = null;
 	private int flags;
+	private String type;
+	private String declaringType;
 
 	public CompletionProposal(int kind, String completion, int relevance) {
 		this.completionKind = kind;
@@ -193,5 +195,32 @@ public class CompletionProposal {
 		}
 		this.replaceStart = startIndex;
 		this.replaceEnd = endIndex;		
+	}
+
+	public String[] getParameterNames() {
+		// TODO Auto-generated method stub
+		return parameterNames;
+	}
+
+	public String getType() {
+		if (type != null) return type;
+		return "";
+	}
+
+	public String getDeclaringType() {
+		if (declaringType != null) return declaringType;
+		return "";
+	}
+
+	public void setType(String name) {
+		this.type = name;		
+	}
+
+	public void setDeclaringType(String elementName) {
+		this.declaringType = elementName;		
+	}
+	
+	public void setName(String newName) {
+		this.name = newName;
 	}
 }

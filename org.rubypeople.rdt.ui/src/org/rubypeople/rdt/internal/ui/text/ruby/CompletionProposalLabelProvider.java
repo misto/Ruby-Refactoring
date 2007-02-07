@@ -18,6 +18,7 @@ import org.rubypeople.rdt.core.Flags;
 import org.rubypeople.rdt.internal.ui.RubyPluginImages;
 import org.rubypeople.rdt.internal.ui.viewsupport.RubyElementImageProvider;
 import org.rubypeople.rdt.ui.RubyElementImageDescriptor;
+import org.rubypeople.rdt.ui.RubyElementLabels;
 
 /**
  * Provides labels for ruby content assist proposals. The functionality is
@@ -25,7 +26,7 @@ import org.rubypeople.rdt.ui.RubyElementImageDescriptor;
  * but based on signatures and {@link CompletionProposal}s.
  * 
  * @see Signature
- * @since 3.1
+ * @since 0.8.0
  */
 public class CompletionProposalLabelProvider {
 	/**
@@ -91,6 +92,141 @@ public class CompletionProposalLabelProvider {
 				adornments |= RubyElementImageDescriptor.STATIC;
 
 		return new RubyElementImageDescriptor(descriptor, adornments, RubyElementImageProvider.SMALL_SIZE);
+	}
+
+	public String createLabel(CompletionProposal proposal) {
+		switch (proposal.getKind()) {
+		case CompletionProposal.METHOD_NAME_REFERENCE:
+		case CompletionProposal.METHOD_REF:
+		case CompletionProposal.POTENTIAL_METHOD_DECLARATION:
+			return createMethodProposalLabel(proposal);
+//		case CompletionProposal.METHOD_DECLARATION:
+//			return createOverrideMethodProposalLabel(proposal);
+		case CompletionProposal.TYPE_REF:
+			return createTypeProposalLabel(proposal);
+		case CompletionProposal.FIELD_REF:
+		case CompletionProposal.LOCAL_VARIABLE_REF:
+		case CompletionProposal.VARIABLE_DECLARATION:
+		case CompletionProposal.METHOD_DECLARATION:
+			return createSimpleLabelWithType(proposal);
+		case CompletionProposal.KEYWORD:
+			return createSimpleLabel(proposal);
+		default:
+			Assert.isTrue(false);
+			return null;
+		}
+	}
+	
+	/**
+	 * Creates a display label for a given type proposal. The display label
+	 * consists of:
+	 * <ul>
+	 *   <li>the simple type name (erased when the context is in javadoc)</li>
+	 *   <li>the package name</li>
+	 * </ul>
+	 * <p>
+	 * Examples:
+	 * A proposal for the generic type <code>java.util.List&lt;E&gt;</code>, the display label
+	 * is: <code>List<E> - java.util</code>.
+	 * </p>
+	 *
+	 * @param typeProposal the method proposal to display
+	 * @return the display label for the given type proposal
+	 */
+	String createTypeProposalLabel(CompletionProposal typeProposal) {
+		String typeName= typeProposal.getType();
+		return createTypeProposalLabel(typeName);
+	}
+	
+	/**
+	 * Creates a display label for the given method proposal. The display label
+	 * consists of:
+	 * <ul>
+	 *   <li>the method name</li>
+	 *   <li>the parameter list (see {@link #createParameterList(CompletionProposal)})</li>
+	 *   <li>the upper bound of the return type (see {@link SignatureUtil#getUpperBound(String)})</li>
+	 *   <li>the raw simple name of the declaring type</li>
+	 * </ul>
+	 * <p>
+	 * Examples:
+	 * For the <code>get(int)</code> method of a variable of type <code>List<? extends Number></code>, the following
+	 * display name is returned: <code>get(int index)  Number - List</code>.<br>
+	 * For the <code>add(E)</code> method of a variable of type <code>List<? super Number></code>, the following
+	 * display name is returned: <code>add(Number o)  void - List</code>.<br>
+	 * </p>
+	 *
+	 * @param methodProposal the method proposal to display
+	 * @return the display label for the given method proposal
+	 */
+	String createMethodProposalLabel(CompletionProposal methodProposal) {
+		StringBuffer nameBuffer= new StringBuffer();
+
+		// method name
+		nameBuffer.append(methodProposal.getName());
+
+		// parameters		
+		appendUnboundedParameterList(nameBuffer, methodProposal);
+
+		// declaring type
+		nameBuffer.append(RubyElementLabels.CONCAT_STRING);
+		String declaringType= methodProposal.getDeclaringType();
+		nameBuffer.append(declaringType);
+
+		return nameBuffer.toString();
+	}
+	
+	private final StringBuffer appendUnboundedParameterList(StringBuffer buffer, CompletionProposal methodProposal) {
+		String[] names = methodProposal.getParameterNames();
+		if (names == null) return buffer;
+		if (names.length > 0) {
+			buffer.append('(');
+		}
+		for (int i = 0; i < names.length; i++) {
+			if (i > 0) {
+				buffer.append(',');
+				buffer.append(' ');
+			}
+			buffer.append(names[i]);
+		}
+		if (names.length > 0) {
+			buffer.append(')');
+		}
+		return buffer;		
+	}
+
+	String createSimpleLabel(CompletionProposal proposal) {
+		return String.valueOf(proposal.getCompletion());
+	}
+	
+	String createSimpleLabelWithType(CompletionProposal proposal) {
+		StringBuffer buf= new StringBuffer();
+		buf.append(proposal.getCompletion());
+		String typeName= proposal.getType();
+		if (typeName.length() > 0) {
+			buf.append("    "); //$NON-NLS-1$
+			buf.append(typeName);
+		}
+		return buf.toString();
+	}
+	
+	String createTypeProposalLabel(String fullName) {
+		// only display innermost type name as type name, using any
+		// enclosing types as qualification
+		int qIndex= findSimpleNameStart(fullName);
+
+		StringBuffer buf= new StringBuffer();
+		buf.append(fullName, qIndex, fullName.length() - qIndex);
+		if (qIndex > 0) {
+			buf.append(RubyElementLabels.CONCAT_STRING);
+			buf.append(fullName, 0, qIndex - 1);
+		}
+		return buf.toString();
+	}
+
+	private int findSimpleNameStart(String fullName) {
+		int index = fullName.lastIndexOf("::");
+		if (index == -1) return 0;
+		return index;
 	}
 
 }

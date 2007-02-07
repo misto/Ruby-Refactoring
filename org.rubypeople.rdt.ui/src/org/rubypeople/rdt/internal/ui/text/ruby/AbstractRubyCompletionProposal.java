@@ -69,7 +69,7 @@ import org.rubypeople.rdt.ui.text.ruby.IRubyCompletionProposal;
 
 /**
  * 
- * @since 3.2
+ * @since 0.8.0
  */
 public abstract class AbstractRubyCompletionProposal implements IRubyCompletionProposal, ICompletionProposalExtension, ICompletionProposalExtension2, ICompletionProposalExtension3, ICompletionProposalExtension5 {
 	/**
