@@ -62,3 +62,4 @@ Require-Bundle: org.eclipse.core.resources,
  org.jruby
 Eclipse-LazyStart: true
 Bundle-Vendor: %rubyRefactoring.providerName
+Bundle-ClassPath: refactoring.jar
