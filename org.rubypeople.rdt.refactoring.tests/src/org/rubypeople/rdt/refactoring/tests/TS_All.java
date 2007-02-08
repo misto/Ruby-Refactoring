@@ -48,6 +48,7 @@ import org.rubypeople.rdt.refactoring.tests.core.movefield.TS_MoveField;
 import org.rubypeople.rdt.refactoring.tests.core.movemethod.TS_MoveMethod;
 import org.rubypeople.rdt.refactoring.tests.core.overridemethod.TS_OverrideMethod;
 import org.rubypeople.rdt.refactoring.tests.core.pushdown.TS_PushDown;
+import org.rubypeople.rdt.refactoring.tests.core.rename.TS_Rename;
 import org.rubypeople.rdt.refactoring.tests.core.renameclass.TS_RenameClass;
 import org.rubypeople.rdt.refactoring.tests.core.renamefield.TS_RenameField;
 import org.rubypeople.rdt.refactoring.tests.core.renamelocalvariable.TS_RenameLocalVariable;
@@ -84,6 +85,7 @@ public class TS_All
 		suite.addTest(TS_InlineClass.suite());
 		suite.addTest(TS_MoveMethod.suite());
 		suite.addTest(TS_MoveField.suite());
+		suite.addTest(TS_Rename.suite());
 
 		return suite;
 	}

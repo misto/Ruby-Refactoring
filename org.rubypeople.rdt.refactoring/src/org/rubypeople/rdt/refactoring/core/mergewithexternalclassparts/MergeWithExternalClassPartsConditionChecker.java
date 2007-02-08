@@ -60,5 +60,4 @@ public class MergeWithExternalClassPartsConditionChecker extends RefactoringCond
 			addError("There is no class in the current file that has external parts to merge.");
 		}
 	}
-
 }

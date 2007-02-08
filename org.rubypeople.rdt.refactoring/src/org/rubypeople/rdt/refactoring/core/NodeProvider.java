@@ -62,9 +62,13 @@ import org.jruby.ast.WhileNode;
 import org.jruby.ast.types.INameNode;
 import org.jruby.common.NullWarnings;
 import org.jruby.lexer.yacc.LexerSource;
+import org.jruby.lexer.yacc.SourcePosition;
+import org.jruby.lexer.yacc.SyntaxException;
 import org.jruby.parser.DefaultRubyParser;
+import org.jruby.parser.LocalStaticScope;
 import org.jruby.parser.RubyParserConfiguration;
 import org.jruby.parser.RubyParserPool;
+import org.jruby.runtime.DynamicScope;
 import org.rubypeople.rdt.refactoring.nodewrapper.AttrAccessorNodeWrapper;
 import org.rubypeople.rdt.refactoring.nodewrapper.FieldNodeWrapper;
 import org.rubypeople.rdt.refactoring.nodewrapper.MethodCallNodeWrapper;
@@ -86,18 +90,36 @@ public class NodeProvider {
 			children.add((Node) it.next());
 		return children;
 	}
-
-	public static RootNode getRootNode(String fileName, String fileContent) {
-		if(fileContent == null) {
-			return null;
+	
+	public static boolean hasSyntaxErrors(String fileName, String fileContent) {
+		try {
+			parseFile(fileName, fileContent);
+			return false;
+		} catch(SyntaxException e) {
+			return true;
 		}
+	}
+	
+	private static RootNode parseFile(String fileName, String fileContent) {
 		Reader reader = new InputStreamReader(new ByteArrayInputStream(fileContent.getBytes()));
 		DefaultRubyParser parser;
 		parser = RubyParserPool.getInstance().borrowParser();
 		parser.setWarnings(new NullWarnings());
 		LexerSource lexerSource = new LexerSource(fileName, reader);
-		RootNode rootNode = (RootNode) parser.parse(new RubyParserConfiguration(), lexerSource).getAST();
-		return rootNode;
+		return (RootNode) parser.parse(new RubyParserConfiguration(), lexerSource).getAST();
+	}
+
+	public static RootNode getRootNode(String fileName, String fileContent) {
+		if(fileContent == null) {
+			return null;
+		}
+
+		try {
+			return parseFile(fileName, fileContent);
+		} catch(SyntaxException e) {
+//			treat files with syntax errors as empty
+			return new RootNode(new SourcePosition(), new DynamicScope(new LocalStaticScope(null), null), null);
+		}
 	}
 
 	public static Collection<Node> getAttributeNodes(Node parent) {

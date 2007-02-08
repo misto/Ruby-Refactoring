@@ -35,6 +35,7 @@ import java.util.HashSet;
 import org.jruby.ast.FCallNode;
 import org.jruby.ast.Node;
 import org.jruby.ast.StrNode;
+import org.jruby.lexer.yacc.SyntaxException;
 import org.rubypeople.rdt.refactoring.classnodeprovider.ClassNodeProvider;
 import org.rubypeople.rdt.refactoring.core.NodeProvider;
 import org.rubypeople.rdt.refactoring.nodewrapper.ClassNodeWrapper;
@@ -128,7 +129,11 @@ public class DocumentWithIncluding extends StringDocumentProvider {
 	}
 
 	private Collection<FCallNode> getRequires(DocumentProvider doc) {
-		return NodeProvider.getLoadAndRequireNodes(doc.getRootNode());
+		try {
+			return NodeProvider.getLoadAndRequireNodes(doc.getRootNode());
+		} catch(SyntaxException e) {
+			return new ArrayList<FCallNode>();
+		} 
 	}
 
 	private boolean fileIsInResultSet(String fileName) {

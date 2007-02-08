@@ -56,10 +56,6 @@ public class RenameClassConditionChecker extends RefactoringConditionChecker {
 	}
 
 	@Override
-	protected void checkFinalConditions() {
-	}
-
-	@Override
 	protected void checkInitialConditions() {
 		if (config.getSelectedNode() == null) {
 			addError("Please select the name of a class declaration.");

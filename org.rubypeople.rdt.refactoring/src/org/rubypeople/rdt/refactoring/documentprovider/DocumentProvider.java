@@ -57,11 +57,7 @@ public abstract class DocumentProvider implements IDocumentProvider {
 	public RootNode getRootNode() {
 		return NodeProvider.getRootNode(getActiveFileName(), getActiveFileContent());
 	}
-//	
-//	public ScopeNode getRootNodeWithEnclosingScopeNode() {
-//		return NodeProvider.getRootNodeWithEnclosingScopeNode(getActiveFileName(), getActiveFileContent());
-//	}
-	
+
 	public Collection<Node> getAllNodes() {
 		return NodeProvider.getAllNodes(getRootNode());
 	}

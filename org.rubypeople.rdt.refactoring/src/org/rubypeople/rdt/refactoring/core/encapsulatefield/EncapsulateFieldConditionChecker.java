@@ -71,8 +71,7 @@ public class EncapsulateFieldConditionChecker extends RefactoringConditionChecke
 	}
 	
 	private INameNode findSelectedInstNode(int caretPosition) {
-		Node instNode = SelectionNodeProvider.getSelectedNodeOfType(rootNode, caretPosition, InstVarNode.class, InstAsgnNode.class, SymbolNode.class);
-		return (INameNode) instNode;
+		return (INameNode) SelectionNodeProvider.getSelectedNodeOfType(rootNode, caretPosition, InstVarNode.class, InstAsgnNode.class, SymbolNode.class);
 	}
 	
 	public void checkFinalConditions() {
