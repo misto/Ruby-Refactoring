@@ -134,8 +134,7 @@ public class CompletionProposalLabelProvider {
 	 * @return the display label for the given type proposal
 	 */
 	String createTypeProposalLabel(CompletionProposal typeProposal) {
-		String typeName= typeProposal.getType();
-		return createTypeProposalLabel(typeName);
+		return typeProposal.getType();
 	}
 	
 	/**
@@ -207,26 +206,6 @@ public class CompletionProposalLabelProvider {
 			buf.append(typeName);
 		}
 		return buf.toString();
-	}
-	
-	String createTypeProposalLabel(String fullName) {
-		// only display innermost type name as type name, using any
-		// enclosing types as qualification
-		int qIndex= findSimpleNameStart(fullName);
-
-		StringBuffer buf= new StringBuffer();
-		buf.append(fullName, qIndex, fullName.length() - qIndex);
-		if (qIndex > 0) {
-			buf.append(RubyElementLabels.CONCAT_STRING);
-			buf.append(fullName, 0, qIndex - 1);
-		}
-		return buf.toString();
-	}
-
-	private int findSimpleNameStart(String fullName) {
-		int index = fullName.lastIndexOf("::");
-		if (index == -1) return 0;
-		return index;
 	}
 
 }
