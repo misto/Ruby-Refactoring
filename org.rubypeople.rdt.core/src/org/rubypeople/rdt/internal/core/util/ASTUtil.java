@@ -13,12 +13,14 @@ import org.jruby.ast.FixnumNode;
 import org.jruby.ast.HashNode;
 import org.jruby.ast.ListNode;
 import org.jruby.ast.LocalAsgnNode;
+import org.jruby.ast.LocalVarNode;
 import org.jruby.ast.NilNode;
 import org.jruby.ast.Node;
 import org.jruby.ast.SelfNode;
 import org.jruby.ast.StrNode;
 import org.jruby.ast.TrueNode;
 import org.jruby.ast.ZArrayNode;
+import org.jruby.ast.types.INameNode;
 import org.jruby.parser.StaticScope;
 
 public abstract class ASTUtil {
@@ -100,8 +102,8 @@ public abstract class ASTUtil {
 			return "true";
 		if (node instanceof FalseNode)
 			return "false";
-		if (node instanceof ConstNode)
-			return ((ConstNode)node).getName();
+		if (node instanceof INameNode)
+			return ((INameNode)node).getName();
 		if (node instanceof ZArrayNode)
 			return "[]";
 		if (node instanceof FixnumNode)
