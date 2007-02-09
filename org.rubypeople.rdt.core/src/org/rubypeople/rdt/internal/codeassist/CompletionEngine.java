@@ -43,6 +43,7 @@ import org.rubypeople.rdt.internal.core.RubyElement;
 import org.rubypeople.rdt.internal.core.RubyType;
 import org.rubypeople.rdt.internal.core.parser.RubyParser;
 import org.rubypeople.rdt.internal.core.search.ExperimentalIndex;
+import org.rubypeople.rdt.internal.core.util.ASTUtil;
 import org.rubypeople.rdt.internal.ti.DefaultTypeInferrer;
 import org.rubypeople.rdt.internal.ti.ITypeGuess;
 import org.rubypeople.rdt.internal.ti.ITypeInferrer;
@@ -351,7 +352,7 @@ public class CompletionEngine {
 		if (instanceAndClassVars != null) {
 			// Get the unique names of instance and class variables
 			for (Node varNode : instanceAndClassVars) {
-				String name = getNameReflectively(varNode);
+				String name = ASTUtil.getNameReflectively(varNode);
 				if (!context.prefixStartsWith(name))
 					continue;
 				fields.add(name);
@@ -455,26 +456,6 @@ public class CompletionEngine {
 			return new ArrayList<String>(0);
 		}
 	}
-
-	/**
-	 * Gets the name of a node by reflectively invoking "getName()" on it;
-	 * helper method just to cut many "instanceof/cast" pairs.
-	 * 
-	 * @param node
-	 * @return name or null
-	 */
-	// TODO Copy/pasted from DefaultOccurrencesFinder, refactor these two
-	// methods to a common location.
-	private String getNameReflectively(Node node) {
-		try {
-			Method getNameMethod = node.getClass().getMethod("getName", new Class[] {});
-			Object name = getNameMethod.invoke(node, new Object[0]);
-			return (String) name;
-		} catch (Exception e) {
-			return null;
-		}
-	}
-
 	
 	private class NodeMethod implements IMethod {
 

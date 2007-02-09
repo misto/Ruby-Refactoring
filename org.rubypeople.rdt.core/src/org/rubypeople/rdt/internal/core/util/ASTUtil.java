@@ -1,5 +1,6 @@
 package org.rubypeople.rdt.internal.core.util;
 
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -131,6 +132,26 @@ public abstract class ASTUtil {
 		}
 		buffer.append("\"");
 		return buffer.toString();
+	}
+
+	/**
+	 * Gets the name of a node by reflectively invoking "getName()" on it;
+	 * helper method just to cut many "instanceof/cast" pairs.
+	 * 
+	 * @param node
+	 * @return name or null
+	 */
+	public static String getNameReflectively(Node node) {
+		if (node instanceof INameNode) {
+			return ((INameNode)node).getName();
+		}
+		try {
+			Method getNameMethod = node.getClass().getMethod("getName", new Class[] {});
+			Object name = getNameMethod.invoke(node, new Object[0]);
+			return (String) name;
+		} catch (Exception e) {
+			return null;
+		}
 	}
 
 }
