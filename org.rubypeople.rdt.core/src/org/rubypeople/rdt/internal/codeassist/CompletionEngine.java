@@ -8,6 +8,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
+import org.eclipse.core.resources.IResource;
+import org.eclipse.core.runtime.IPath;
 import org.jruby.ast.ClassNode;
 import org.jruby.ast.ClassVarAsgnNode;
 import org.jruby.ast.ClassVarDeclNode;
@@ -21,15 +23,19 @@ import org.jruby.ast.InstVarNode;
 import org.jruby.ast.MethodDefNode;
 import org.jruby.ast.ModuleNode;
 import org.jruby.ast.Node;
+import org.jruby.ast.types.INameNode;
 import org.jruby.lexer.yacc.SyntaxException;
 import org.jruby.parser.StaticScope;
 import org.rubypeople.rdt.core.CompletionProposal;
 import org.rubypeople.rdt.core.CompletionRequestor;
 import org.rubypeople.rdt.core.Flags;
 import org.rubypeople.rdt.core.IMethod;
-import org.rubypeople.rdt.core.IParent;
+import org.rubypeople.rdt.core.IOpenable;
 import org.rubypeople.rdt.core.IRubyElement;
+import org.rubypeople.rdt.core.IRubyModel;
+import org.rubypeople.rdt.core.IRubyProject;
 import org.rubypeople.rdt.core.IRubyScript;
+import org.rubypeople.rdt.core.ISourceRange;
 import org.rubypeople.rdt.core.IType;
 import org.rubypeople.rdt.core.RubyCore;
 import org.rubypeople.rdt.core.RubyModelException;
@@ -74,7 +80,7 @@ public class CompletionEngine {
 					String name = guess.getType();
 					IType[] types = requestor.findType(name);
 					for (int i = 0; i < types.length; i++) {
-						suggestMethods(context, guess.getConfidence(), types[i]);
+						suggestMethods(guess.getConfidence(), types[i]);
 					}
 				}
 			} else {
@@ -129,24 +135,29 @@ public class CompletionEngine {
 		}
 	}
 
-	private void suggestMethods(CompletionContext context, int confidence, IType type) throws RubyModelException {
+	private void suggestMethods(int confidence, IType type) throws RubyModelException {
 		if (type == null)
 			return;		
 		IMethod[] methods = type.getMethods();
 		for (int k = 0; k < methods.length; k++) {
-			IMethod method = methods[k];
-			int start = context.getReplaceStart();
-			String name = method.getElementName();
-			int flags = Flags.AccDefault;
-			if (method.isSingleton()) {
-				flags |= Flags.AccStatic;
-				name = name.substring(type.getElementName().length() + 1);
-			} else {
-//				 FIXME Don't show instance methods if the thing we're working on is a constant (class name)!
-			}
-			if (!context.prefixStartsWith(name))
-				continue;
-			
+			suggestMethod(methods[k], type.getElementName(), confidence);
+		}
+	}
+
+	private void suggestMethod(IMethod method, String typeName, int confidence) {
+		int start = context.getReplaceStart();
+		String name = method.getElementName();
+		int flags = Flags.AccDefault;
+		if (method.isSingleton()) {
+			flags |= Flags.AccStatic;
+			name = name.substring(typeName.length() + 1);
+		} else {
+//			 FIXME Don't show instance methods if the thing we're working on is a constant (class name)!
+		}
+		if (!context.prefixStartsWith(name))
+			return;
+		
+		try {
 			switch (method.getVisibility()) {
 			case IMethod.PRIVATE:
 				flags |= Flags.AccPrivate;
@@ -160,13 +171,17 @@ public class CompletionEngine {
 			default:
 				break;
 			}
-			CompletionProposal proposal = new CompletionProposal(CompletionProposal.METHOD_REF, name, confidence);
-			proposal.setReplaceRange(start, start + name.length());
-			proposal.setFlags(flags);
-			proposal.setName(name);
-			proposal.setDeclaringType(type.getElementName());
-			requestor.accept(proposal);
+		} catch (RubyModelException e) {
+			RubyCore.log(e);
+			flags |= Flags.AccPublic;
 		}
+		CompletionProposal proposal = new CompletionProposal(CompletionProposal.METHOD_REF, name, confidence);
+		proposal.setReplaceRange(start, start + name.length());
+		proposal.setFlags(flags);
+		proposal.setName(name);
+		proposal.setDeclaringType(typeName);
+		requestor.accept(proposal);
+		
 	}
 
 	/**
@@ -239,48 +254,6 @@ public class CompletionEngine {
 		}
 	}
 
-	private void getElementsOfType(IParent element, int[] types) {
-		try {
-			IRubyElement[] elements = element.getChildren();
-			if (elements == null)
-				return;
-			for (int x = 0; x < elements.length; x++) {
-				IRubyElement child = elements[x];
-				for (int i = 0; i < types.length; i++) {
-					if (child.getElementType() != types[i])
-						continue;
-					String name = child.getElementName();
-					if (!context.prefixStartsWith(name))
-						continue;
-					CompletionProposal proposal = new CompletionProposal(getCompletionProposalType(child), name, 100);
-					proposal.setReplaceRange(context.getReplaceStart(), context.getReplaceStart() + name.length());
-					requestor.accept(proposal);
-				}
-				if (child instanceof IParent)
-					getElementsOfType((IParent) child, types);
-			}
-		} catch (RubyModelException e) {
-			e.printStackTrace();
-		}
-	}
-
-	private int getCompletionProposalType(IRubyElement child) {
-		switch (child.getElementType()) {
-		case IRubyElement.DYNAMIC_VAR:
-		case IRubyElement.LOCAL_VARIABLE:
-			return CompletionProposal.LOCAL_VARIABLE_REF;
-		case IRubyElement.METHOD:
-			return CompletionProposal.METHOD_REF;
-		case IRubyElement.TYPE:
-			return CompletionProposal.TYPE_REF;
-		case IRubyElement.INSTANCE_VAR:
-		case IRubyElement.CLASS_VAR:
-			return CompletionProposal.FIELD_REF;
-		default:
-			return CompletionProposal.KEYWORD;
-		}
-	}
-
 	/**
 	 * Gets the members available inside a type node (ModuleNode, ClassNode): -
 	 * Instance variables - Class variables - Methods
@@ -349,11 +322,9 @@ public class CompletionEngine {
 			}
 			if (!context.prefixStartsWith(name))
 				continue;
-			CompletionProposal proposal = new CompletionProposal(CompletionProposal.METHOD_REF, name, 100);
-			proposal.setReplaceRange(context.getReplaceStart(), context.getReplaceStart() + name.length());
-			requestor.accept(proposal);
+			NodeMethod method = new NodeMethod(methodDefinition);
+			suggestMethod(method, typeName, 100);
 		}
-
 		addTypesVariables(typeNode);
 	}
 
@@ -504,4 +475,161 @@ public class CompletionEngine {
 		}
 	}
 
+	
+	private class NodeMethod implements IMethod {
+
+		private Node node;
+
+		public NodeMethod(Node methodDefinition) {
+			this.node = methodDefinition;
+		}
+
+		public String[] getParameterNames() throws RubyModelException {
+			// TODO Auto-generated method stub
+			return null;
+		}
+
+		public int getVisibility() throws RubyModelException {
+			// TODO Auto-generated method stub
+			return IMethod.PUBLIC;
+		}
+
+		public boolean isConstructor() {
+			if (node instanceof DefnNode) {
+				return ((DefnNode)node).getName().equals("initialize");
+			}
+			return false;
+		}
+
+		public boolean isSingleton() {
+			return node instanceof DefsNode;
+		}
+
+		public boolean exists() {
+			// TODO Auto-generated method stub
+			return false;
+		}
+
+		public IRubyElement getAncestor(int ancestorType) {
+			// TODO Auto-generated method stub
+			return null;
+		}
+
+		public IResource getCorrespondingResource() throws RubyModelException {
+			// TODO Auto-generated method stub
+			return null;
+		}
+
+		public String getElementName() {
+			// TODO Auto-generated method stub
+			if (node instanceof INameNode) {
+				return ((INameNode)node).getName();
+			}
+			return null;
+		}
+
+		public int getElementType() {
+			return IRubyElement.METHOD;
+		}
+
+		public IOpenable getOpenable() {
+			// TODO Auto-generated method stub
+			return null;
+		}
+
+		public IRubyElement getParent() {
+			// TODO Auto-generated method stub
+			return null;
+		}
+
+		public IPath getPath() {
+			// TODO Auto-generated method stub
+			return null;
+		}
+
+		public IRubyElement getPrimaryElement() {
+			// TODO Auto-generated method stub
+			return null;
+		}
+
+		public IResource getResource() {
+			// TODO Auto-generated method stub
+			return null;
+		}
+
+		public IRubyModel getRubyModel() {
+			// TODO Auto-generated method stub
+			return null;
+		}
+
+		public IRubyProject getRubyProject() {
+			// TODO Auto-generated method stub
+			return null;
+		}
+
+		public IResource getUnderlyingResource() throws RubyModelException {
+			// TODO Auto-generated method stub
+			return null;
+		}
+
+		public boolean isReadOnly() {
+			// TODO Auto-generated method stub
+			return false;
+		}
+
+		public boolean isStructureKnown() throws RubyModelException {
+			// TODO Auto-generated method stub
+			return false;
+		}
+
+		public boolean isType(int type) {
+			return type == IRubyElement.METHOD;
+		}
+
+		public Object getAdapter(Class adapter) {
+			// TODO Auto-generated method stub
+			return null;
+		}
+
+		public IType getDeclaringType() {
+			// TODO Auto-generated method stub
+			return null;
+		}
+
+		public ISourceRange getNameRange() throws RubyModelException {
+			// TODO Auto-generated method stub
+			return null;
+		}
+
+		public IRubyScript getRubyScript() {
+			// TODO Auto-generated method stub
+			return null;
+		}
+
+		public IType getType(String name, int occurrenceCount) {
+			// TODO Auto-generated method stub
+			return null;
+		}
+
+		public String getSource() throws RubyModelException {
+			// TODO Auto-generated method stub
+			return null;
+		}
+
+		public ISourceRange getSourceRange() throws RubyModelException {
+			// TODO Auto-generated method stub
+			return null;
+		}
+
+		public IRubyElement[] getChildren() throws RubyModelException {
+			// TODO Auto-generated method stub
+			return null;
+		}
+
+		public boolean hasChildren() throws RubyModelException {
+			// TODO Auto-generated method stub
+			return false;
+		}
+
+	}
 }
