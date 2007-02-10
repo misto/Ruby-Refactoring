@@ -150,9 +150,14 @@ public class CompletionEngine {
 		int flags = Flags.AccDefault;
 		if (method.isSingleton()) {
 			flags |= Flags.AccStatic;
-			name = name.substring(typeName.length() + 1);
+			if (method.isConstructor())
+				name = "new";
+			else
+				name = name.substring(typeName.length() + 1);
 		} else {
-//			 FIXME Don't show instance methods if the thing we're working on is a constant (class name)!
+			// Don't show instance methods if the thing we're working on is a class' name!
+			// FIXME We do want to show if it is a constant, but not a class name
+			if (context.fullPrefixIsConstant()) return;
 		}
 		if (!context.prefixStartsWith(name))
 			return;

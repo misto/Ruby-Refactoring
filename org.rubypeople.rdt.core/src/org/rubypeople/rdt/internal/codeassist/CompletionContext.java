@@ -124,4 +124,8 @@ public class CompletionContext {
 		return !emptyPrefix() && !isMethodInvokation() && getPartialPrefix().startsWith("$");
 	}
 
+	public boolean fullPrefixIsConstant() {
+		return Character.isUpperCase(getFullPrefix().charAt(0));
+	}
+
 }

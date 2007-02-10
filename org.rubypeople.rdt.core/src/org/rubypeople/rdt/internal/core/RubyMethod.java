@@ -101,6 +101,7 @@ public class RubyMethod extends NamedMember implements IMethod {
 	 * @see org.rubypeople.rdt.core.IRubyMethod#getVisibility()
 	 */
 	public int getVisibility() throws RubyModelException {
+		if (isConstructor()) return IMethod.PUBLIC;
 		RubyMethodElementInfo info = (RubyMethodElementInfo) getElementInfo();
 		return info.getVisibility();
 	}
@@ -110,7 +111,7 @@ public class RubyMethod extends NamedMember implements IMethod {
     }
 
     public boolean isSingleton() {
-        return false;
+        return isConstructor();
     }
 
 }
