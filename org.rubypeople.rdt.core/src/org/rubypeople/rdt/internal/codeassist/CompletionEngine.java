@@ -327,7 +327,7 @@ public class CompletionEngine {
 			}
 			if (!context.prefixStartsWith(name))
 				continue;
-			NodeMethod method = new NodeMethod(methodDefinition);
+			NodeMethod method = new NodeMethod((MethodDefNode)methodDefinition);
 			suggestMethod(method, typeName, 100);
 		}
 		addTypesVariables(typeNode);
@@ -463,15 +463,14 @@ public class CompletionEngine {
 	
 	private class NodeMethod implements IMethod {
 
-		private Node node;
+		private MethodDefNode node;
 
-		public NodeMethod(Node methodDefinition) {
+		public NodeMethod(MethodDefNode methodDefinition) {
 			this.node = methodDefinition;
 		}
 
 		public String[] getParameterNames() throws RubyModelException {
-			// TODO Auto-generated method stub
-			return null;
+			return ASTUtil.getArgs(node.getArgsNode(), node.getScope());
 		}
 
 		public int getVisibility() throws RubyModelException {
@@ -480,14 +479,11 @@ public class CompletionEngine {
 		}
 
 		public boolean isConstructor() {
-			if (node instanceof DefnNode) {
-				return ((DefnNode)node).getName().equals("initialize");
-			}
-			return false;
+			return node.getName().equals("initialize");
 		}
 
 		public boolean isSingleton() {
-			return node instanceof DefsNode;
+			return isConstructor() || node instanceof DefsNode;
 		}
 
 		public boolean exists() {
