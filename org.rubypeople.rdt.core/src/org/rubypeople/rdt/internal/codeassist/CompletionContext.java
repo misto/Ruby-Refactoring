@@ -45,7 +45,8 @@ public class CompletionContext {
 				offset = i - 1;
 				if (partialPrefix == null) this.partialPrefix = tmpPrefix.toString();
 			}
-			if (Character.isWhitespace(curChar)) {
+			// FIXME This logic is very much like RubyWordDetector in the UI!
+			if (Character.isWhitespace(curChar) || curChar == ',' || curChar == '(' || curChar == '[' || curChar == '{') {
 				offset = i + 1;
 				break;
 			}

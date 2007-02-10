@@ -1,6 +1,5 @@
 package org.rubypeople.rdt.internal.codeassist;
 
-import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
@@ -75,11 +74,11 @@ public class CompletionEngine {
 			} 
 			if (context.isMethodInvokation()) {
 				ITypeInferrer inferrer = new DefaultTypeInferrer();
-				List<ITypeGuess> guesses = inferrer.infer(context.getSource(), context.getOffset());
+				List<ITypeGuess> guesses = inferrer.infer(context.getCorrectedSource(), context.getOffset());
 				RubyElementRequestor requestor = new RubyElementRequestor(script);
 				for (ITypeGuess guess : guesses) {
 					String name = guess.getType();
-					IType[] types = requestor.findType(name);
+					IType[] types = requestor.findType(name);  // FIXME When syntax is broken, grabbing type that is defined in same script like this just doesn't work!
 					for (int i = 0; i < types.length; i++) {
 						suggestMethods(guess.getConfidence(), types[i]);
 					}
