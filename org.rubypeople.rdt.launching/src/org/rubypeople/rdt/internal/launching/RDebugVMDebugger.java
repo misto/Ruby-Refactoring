@@ -1,7 +1,5 @@
 package org.rubypeople.rdt.internal.launching;
 
-import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -12,7 +10,6 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.debug.core.ILaunch;
 import org.rubypeople.rdt.internal.debug.core.RubyDebuggerProxy;
 import org.rubypeople.rdt.internal.debug.core.model.RubyDebugTarget;
-import org.rubypeople.rdt.internal.debug.core.model.RubyProcessingException;
 import org.rubypeople.rdt.launching.IRubyLaunchConfigurationConstants;
 import org.rubypeople.rdt.launching.IVMInstall;
 import org.rubypeople.rdt.launching.VMRunnerConfiguration;
@@ -56,6 +53,10 @@ public class RDebugVMDebugger extends StandardVMDebugger {
 		arguments.add("-f");
 		arguments.add("xml");
 		return arguments;
+	}
+	
+	protected RubyDebuggerProxy getDebugProxy(RubyDebugTarget debugTarget) {
+		return new RubyDebuggerProxy(debugTarget, RDebugVMDebugger.getDirectoryOfRubyDebuggerFile(), true);
 	}
 	
 }

@@ -122,7 +122,7 @@ public class StandardVMDebugger extends StandardVMRunner implements IVMRunner {
 		subMonitor.subTask(LaunchingMessages.StandardVMDebugger_Establishing_debug_connection____5);
 
 		debugTarget.setProcess(process);
-		RubyDebuggerProxy proxy = new RubyDebuggerProxy(debugTarget, RDebugVMDebugger.getDirectoryOfRubyDebuggerFile(), true);
+		RubyDebuggerProxy proxy = getDebugProxy(debugTarget);
 		try {
 			proxy.start();
 			launch.addDebugTarget(debugTarget);
@@ -136,6 +136,10 @@ public class StandardVMDebugger extends StandardVMRunner implements IVMRunner {
 		// if (p != null) {
 		// p.destroy();
 		// }
+	}
+
+	protected RubyDebuggerProxy getDebugProxy(RubyDebugTarget debugTarget) {
+		return new RubyDebuggerProxy(debugTarget, RDebugVMDebugger.getDirectoryOfRubyDebuggerFile(), false);
 	}
 
 	protected List<String> debugSpecificVMArgs(RubyDebugTarget debugTarget) {
