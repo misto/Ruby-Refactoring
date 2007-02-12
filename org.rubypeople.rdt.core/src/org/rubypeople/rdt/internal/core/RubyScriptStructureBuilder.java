@@ -532,6 +532,8 @@ public class RubyScriptStructureBuilder implements NodeVisitor {
 
 	private RubyType findChild(RubyElement parent, int type, String name) {
 		try {
+			// FIXME What shoudl we do when resource doesn't "exist" (is external?)
+			if (!parent.exists()) return null;
 			ArrayList<IRubyElement> children = parent.getChildrenOfType(type);
 			for (IRubyElement element : children) {
 				if (element.getElementName().equals(name)) return (RubyType) element;
