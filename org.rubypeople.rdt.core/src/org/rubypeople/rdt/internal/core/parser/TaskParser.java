@@ -116,8 +116,8 @@ public class TaskParser {
 			String tag = fTags[i];
 			int priority = fPriorities[i];
 			if (!fCaseSensitive) tag = tag.toLowerCase();
-			int index = line.indexOf(tag);
-			if (index != -1) {
+			if (line.matches(".*#.*" + tag + ".*[\\n\\r]*")) {
+				int index = line.indexOf(tag);
 				String message = line.substring(index).trim();
 				createTaskTag(priority, message, lineNum + 1, offset + index, offset + index + message.length());
 			}
