@@ -25,7 +25,7 @@
 		</schedule>
 
 		<log dir="logs/RDT">
-			<merge dir="/home/rdt/eclipse-testing/results/xml"/>
+			<merge dir="/home/rdt/ccbuild/results/testresults/xml"/>
 		</log>
 
 		<!-- more recent versions of CC should use the listener below, instead of 	the currentbuildstatusbootstrapper, currentbuildstatuspublisher combination.  NOTE: Must match filename in CC reporting/jsp - override.properties: user.build.status.file -->
