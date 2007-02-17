@@ -2,6 +2,10 @@
 	<project name="RDT" buildafterfailed="false">
 		<plugin name="labelincrementer" classname="org.rubypeople.rdt.cruisecontrol.plugin.EclipsePluginLabelProvider"/>
 		<labelincrementer prefix="0.8.0"/>
+		
+		<bootstrappers>
+			<svnbootstrapper localworkingcopy="../pluginbuilder"/>
+		</bootstrappers>
 
 		<!-- Defines where cruise looks for changes, to decide whether to run the build --> 
 		<modificationset quietperiod="180"> 
@@ -11,10 +15,13 @@
 		<!-- Configures the actual build loop, how often and which build file/target --> 
 		<schedule interval="60"> 
             <ant antscript="/home/rdt/cruisecontrol-bin-2.5/apache-ant-1.6.5/bin/ant"
-               buildfile="build-RDT.xml"
-               target="dist"
+               antWorkingDir="../pluginbuilder"
+               buildfile="build.xml"
+               target="dist-cc"
                uselogger="true"
-               usedebug="false"/> 
+            	usedebug="false">
+            	<property name="version.prefix" value="0.8.0"/> 
+            </ant> 
 		</schedule>
 
 		<log dir="logs/RDT">
