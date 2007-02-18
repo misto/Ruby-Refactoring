@@ -72,6 +72,17 @@
 
 			<property name="vmargs" value="-Dautotest.debug=${autotestsuite.trace} -Dautotestsuite.plugin.inclusions=${autotestsuite.plugin.inclusions} -Dautotestsuite.plugin.exclusions=${autotestsuite.plugin.exclusions} -Dautotestsuite.class.inclusions=${autotestsuite.class.inclusions} -Dautotestsuite.class.exclusions=${autotestsuite.class.exclusions}  -Dnet.sourceforge.cobertura.datafile=${cobertura.ser}" />
 		</ant>
+
+		<ant target="ui-test" antfile="${test.library.xml}" dir="${test.eclipse.host}">
+			<!-- use -clean because plug-ins have been unzipped into the eclipse folder -->
+			<property name="data-dir" value="${test.workspace} -clean" />
+			<property name="test-output" value="refactoring.xml" />
+			<property name="plugin-name" value="org.rubypeople.rdt.refactoring.tests" />
+			<property name="classname" value="org.rubypeople.rdt.refactoring.tests.TS_All" />
+			<property name="eclipse-home" value="${test.eclipse.host}" />
+
+		</ant>
+		
 	</target>
 
 	<target name="run" depends="-init,runAllTestSuite" description="Run all tests and create a report.">
