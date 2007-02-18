@@ -28,19 +28,21 @@
 		<fileset dir="${eclipseDir}/plugins" includes="org.eclipse.pde.build_*/scripts/build.xml" id="pde.plugin.path" />
 		<pathconvert property="buildfile" refid="pde.plugin.path" />
 		<fail message="Could not find org.eclipse.pde.build_*/scripts/build.xml in ${eclipseDir}/plugins. PDE not installed?" unless="buildfile"/>
-		<condition property="is.buildTarget.main.or.fetch">
+		
+		<!-- set defaults -->
+		<property name="buildTarget" value="main"/>
+		<property name="verboseAnt" value="-Ddummy=true"/>
+		
+		<!-- check if clean should be called -->
+		<condition property="is.clean">
 			<or>
 				<equals arg1="main" arg2="${buildTarget}" trim="true"/>
 		   		<equals arg1="fetch" arg2="${buildTarget}" trim="true"/>
 			</or>
 		</condition>
-		
-		<!-- set defaults -->
-		<property name="buildTarget" value="main"/>
-		<property name="verboseAnt" value="-Ddummy=true"/>
 	</target>
 	
-	<target name="-clean" if="is.buildTarget.main.or.fetch">
+	<target name="-clean" if="is.clean">
 		<echo level="info" message="Cleaning directory ${buildDirectory}"/>
 		<delete dir="${buildDirectory}" verbose="false"/>
 		<mkdir dir="${buildDirectory}"/>
@@ -82,10 +84,10 @@
 		</java>
 	</target>
 	
-	<target name="dist-cc"
+	<target name="main-cc"
 			description="This target is suited to be run from cruisecontrol. The property 'label' is expected to be set from cruisecontrol.">
 		<property name="version.full" value="${label}"/> 
-		<!-- TODO: extract qualifier from label -->
+		<!-- TODO: extract qualifier correctly from label -->
 		<property name="version.qualifier" value="${label}"/>		
 		<antcall target="-build"/>
 	</target>

@@ -141,6 +141,10 @@
 	<target name="postBuild" depends="-prepareBuildResultsDirectory">
 		<antcall target="runTests"/>
 		<antcall target="package"/>
+		<condition property="is.External.Postbuild">
+			<available file="${buildHome}/build-files/postBuild.xml"/>
+		</condition>
+		<antcall target="callExternalPostBuild"/>
 	</target>
 	<!-- ===================================================================== -->
 	<!-- Run tests. -->
@@ -151,12 +155,10 @@
 
 		<ant antfile="${automatedTestsHome}/run-tests.xml" target="run" dir="${automatedTestsHome}">
 			<property name="test.result.dir" value="${buildResultsDirectory}/testresults"/>
-			<!-- important inherited properties: testResultDir and  cobertura.result.dir -->
 		</ant>
-
-	</target>
+	</target>	
 	<!--======================================================-->
-	<!-- Preparing build results                                                                                                           -->
+	<!-- Gather build results  -->
 	<!-- ==================================================== -->
 	<target name="-prepareBuildResultsDirectory">
 		<echo message="Creating ${buildResultsDirectory}" />
@@ -164,12 +166,17 @@
 	</target>
 	<target name="package">
 		<copy todir="${buildResultsDirectory}" flatten="true">
-			<fileset dir="${buildDirectory}/${buildLabel}">
-				<include name="*.zip" />
-			</fileset>
+			<fileset dir="${buildDirectory}" includes="${buildType}-**/*.zip" />
 		</copy>
 	</target>
 
+	<!--======================================================-->
+	<!-- Call External post build file if available -->
+	<!-- ==================================================== -->
+	<target name="callExternalPostBuild" if="is.External.Postbuild">
+		<ant antfile="${buildHome}/build-files/postBuild.xml"/>
+	</target>
+	
 	<target name="noDefault">
 		<echo message="You must specify a target when invoking this file" />
 	</target>
