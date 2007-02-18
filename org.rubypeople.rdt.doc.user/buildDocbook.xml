@@ -20,7 +20,7 @@
 	</target>
 	
 	<target name="init" depends="docbook.unpack">
-		<fail unless="featureVersion" message="Property featureVersion must be set. Please always call this script from build.xml"/>
+		<fail unless="version" message="Property version must be set. Please always call this script from build.xml"/>
 		<available type="dir" file="${docbook.xsl.dir}" property="did.unpack.work" />
 		<fail unless="did.unpack.work" message="Docbook xsl directory ${} was not created."/>
 	</target>
@@ -38,7 +38,7 @@
 	<target name="replaceVarInCustomizationLayer">
 	   <copy file="customizationLayer.xsl" tofile="customizationLayerCopy.xsl"/>
 	   <replace file="customizationLayerCopy.xsl">	   
-	     <replacefilter token="@@VERSION@@" value="${featureVersion}"/>
+	     <replacefilter token="@@VERSION@@" value="${version}"/>
       </replace>
 	</target>
 
@@ -60,7 +60,6 @@
         <param name="eclipse.plugin.id" expression="org.rubypeople.rdt.doc.user"/>
         <param name="eclipse.plugin.name" expression="%Plugin.name"/>
         <param name="eclipse.plugin.provider" expression="%providerName"/>
-      	<param name="eclipse.plugin.version" expression="${featureVersion}"/>
       	<xmlcatalog id="docbook.catalog">
      	 <dtd publicId="-//OASIS//DTD DocBook V3.1//EN" location="${docbook.dtd.dir}/docbookx.dtd"/>
         </xmlcatalog>
