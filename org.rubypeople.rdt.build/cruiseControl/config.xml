@@ -37,9 +37,9 @@
 		<!-- Publishers are run *after* a build completes -->
 		<publishers> 
 			<onsuccess>		    
-    				<artifactspublisher 
-    					dir="checkout/RDT/dist"
-    					dest="artifacts/RDT"/>
+    			<artifactspublisher 
+    				dir="${buildDirectory}/results"
+    				dest="artifacts/RDT"/>
 				<execute command="/home/rdt/cruiseControlWorkspace/purgeNightlyBuildWebSite.sh"/>
 				<scp 
 					sourcedir="${buildDirectory}/results"
