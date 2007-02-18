@@ -5,6 +5,7 @@
 		<property name="buildDirectory" value="/home/rdt/build-cc"/>     		
 		<bootstrappers>
 			<svnbootstrapper localworkingcopy="../pluginbuilder"/>
+			<svnbootstrapper localworkingcopy="."/>
 		</bootstrappers>
 
 		<!-- Defines where cruise looks for changes, to decide whether to run the build --> 
