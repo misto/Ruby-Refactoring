@@ -33,7 +33,6 @@ import org.rubypeople.rdt.core.ILoadpathEntry;
 import org.rubypeople.rdt.core.IRubyProject;
 import org.rubypeople.rdt.core.LoadpathContainerInitializer;
 import org.rubypeople.rdt.core.RubyCore;
-import org.rubypeople.rdt.core.RubyModelException;
 import org.rubypeople.rdt.launching.IRubyLaunchConfigurationConstants;
 import org.rubypeople.rdt.launching.IRuntimeLoadpathEntry;
 import org.rubypeople.rdt.launching.RubyRuntime;
@@ -41,11 +40,11 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
 /**
- * An entry on the runtime classpath that the user can manipulate
+ * An entry on the runtime loadpath that the user can manipulate
  * and share in a launch configuration.
  * 
- * @see org.eclipse.jdt.launching.IRuntimeLoadpathEntry
- * @since 2.0
+ * @see org.rubypeople.rdt.launching.IRuntimeLoadpathEntry
+ * @since 0.9.0
  */
 public class RuntimeLoadpathEntry implements IRuntimeLoadpathEntry {
 
@@ -55,7 +54,7 @@ public class RuntimeLoadpathEntry implements IRuntimeLoadpathEntry {
 	private int fType = -1;
 	
 	/**
-	 * This entry's classpath property.
+	 * This entry's loadpath property.
 	 */
 	private int fLoadpathProperty = -1;
 	
