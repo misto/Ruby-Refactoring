@@ -43,10 +43,6 @@ public class DefaultTypeInferrer implements ITypeInferrer {
 		if (node == null) {
 			return null;
 		}
-
-		// System.out.println("offset: " + offset + ": " +
-		// node.getClass().getName());
-
 		return infer(node);
 	}
 
@@ -62,7 +58,7 @@ public class DefaultTypeInferrer implements ITypeInferrer {
 		tryConstantNode(node, guesses);
 		tryAsgnNode(node, guesses);
 
-		// todo: refactor these 3 by common features into 1 (or 1+3) method(s)
+		// TODO refactor these 3 by common features into 1 (or 1+3) method(s)
 		tryLocalVarNode(node, guesses);
 		tryInstVarNode(node, guesses);
 		tryGlobalVarNode(node, guesses);
@@ -70,6 +66,12 @@ public class DefaultTypeInferrer implements ITypeInferrer {
 		tryWellKnownMethodCalls(node, guesses);
 		if (node instanceof ConstNode) { // if this is a constant, it may be the type name!
 			guesses.add(new BasicTypeGuess(((ConstNode)node).getName(), 100));
+		}
+		if (guesses.isEmpty()) { // if we have no guesses..
+			if (node instanceof CallNode) { // and it's a method call, try inferring receiver type
+				CallNode call = (CallNode) node;
+				return infer(call.getReceiverNode());
+			}
 		}
 		return guesses;
 	}
