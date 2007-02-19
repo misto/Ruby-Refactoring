@@ -44,6 +44,7 @@ import org.jruby.ast.ClassVarAsgnNode;
 import org.jruby.ast.ClassVarNode;
 import org.jruby.ast.Colon2Node;
 import org.jruby.ast.CommentNode;
+import org.jruby.ast.ConstDeclNode;
 import org.jruby.ast.ConstNode;
 import org.jruby.ast.DVarNode;
 import org.jruby.ast.DefnNode;
@@ -362,5 +363,9 @@ public class NodeFactory {
 
 	public static Node createLocalVarNode(String argName) {
 		return new LocalVarNode(pos, 0, argName);
+	}
+
+	public static Node createConstDeclNode(String name, Node valueNode) {
+		return new ConstDeclNode(pos, null, name, valueNode);
 	}
 }

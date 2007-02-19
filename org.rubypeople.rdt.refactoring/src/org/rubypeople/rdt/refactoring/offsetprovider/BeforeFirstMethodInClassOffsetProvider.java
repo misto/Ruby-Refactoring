@@ -31,6 +31,7 @@
 package org.rubypeople.rdt.refactoring.offsetprovider;
 
 import org.jruby.ast.DefnNode;
+import org.jruby.ast.ModuleNode;
 import org.jruby.ast.Node;
 import org.rubypeople.rdt.refactoring.core.NodeProvider;
 import org.rubypeople.rdt.refactoring.nodewrapper.ClassNodeWrapper;
@@ -38,28 +39,36 @@ import org.rubypeople.rdt.refactoring.nodewrapper.PartialClassNodeWrapper;
 
 public class BeforeFirstMethodInClassOffsetProvider extends OffsetProvider {
 
-	private PartialClassNodeWrapper classPart;
-
+    private Node bodyNode;
+    private Node declEndNode;
+	
 	public BeforeFirstMethodInClassOffsetProvider(ClassNodeWrapper classNode, String document) {
 		this(classNode.getFirstPartialClassNode(), document);
 	}
 	
 	public BeforeFirstMethodInClassOffsetProvider(PartialClassNodeWrapper classPart, String document){
 		super(document);
-		this.classPart = classPart;
+		this.bodyNode = classPart.getClassBodyNode();
+		this.declEndNode = classPart.getDeclarationEndNode();
+	}
+	
+	public BeforeFirstMethodInClassOffsetProvider(ModuleNode classNode, String document){
+		super(document);
+		this.bodyNode = classNode.getBodyNode();
+		this.declEndNode = classNode.getCPath();
 	}
 
 	@Override
 	public Node getInsertAfterNode() {
-		if (NodeProvider.hasChildNode(classPart.getClassBodyNode(), DefnNode.class)) {
-			Node contentNode = classPart.getClassBodyNode();
+		if (NodeProvider.hasChildNode(bodyNode, DefnNode.class)) {
+			Node contentNode = bodyNode;
 			Node firstMethodNode = NodeProvider.getFirstChildNode(contentNode, DefnNode.class);
 			if (NodeProvider.hasNodeBefore(contentNode, firstMethodNode)) {
 				return NodeProvider.getNodeBefore(contentNode, firstMethodNode);
 			}
-			return classPart.getDeclarationEndNode();
+			return declEndNode;
 		}
-		return classPart.getClassBodyNode();
+		return bodyNode;
 	}
 
 }

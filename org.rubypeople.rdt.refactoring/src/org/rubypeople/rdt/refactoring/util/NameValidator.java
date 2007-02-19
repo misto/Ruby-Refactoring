@@ -57,4 +57,9 @@ public class NameValidator {
 		return valid && Keyword.getKeyword(stringToValidate, stringToValidate.length()) == null;
 	}
 
+	public static boolean isValidConstantName(String newName) {
+		// FIXME Check for valid constant name
+		return isValidClassName(newName);
+	}
+
 }

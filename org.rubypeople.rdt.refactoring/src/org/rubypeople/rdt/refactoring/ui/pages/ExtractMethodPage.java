@@ -33,6 +33,7 @@ import java.util.HashMap;
 import java.util.Observable;
 import java.util.Observer;
 
+import org.eclipse.jface.dialogs.IMessageProvider;
 import org.eclipse.ltk.ui.refactoring.UserInputWizardPage;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Button;
@@ -196,7 +197,7 @@ public class ExtractMethodPage extends UserInputWizardPage implements IValidatio
 	private HashMap<Object, Boolean> completedValidators = new HashMap<Object, Boolean>();
 
 	public void setError(String message) {
-		setMessage(message, ConvertTempToFieldPage.ERROR);
+		setMessage(message, IMessageProvider.ERROR);
 	}
 
 	public void setComplete(Object source, boolean complete) {
