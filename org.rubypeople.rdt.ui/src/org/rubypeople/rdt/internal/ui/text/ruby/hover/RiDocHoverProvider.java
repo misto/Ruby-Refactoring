@@ -22,7 +22,7 @@ public class RiDocHoverProvider implements ITextHoverProvider {
 	public String getHoverInfo(IEditorInput input, ITextViewer textViewer, IRegion hoverRegion){
     	IPath riPath = new Path( RubyPlugin.getDefault().getPreferenceStore().getString( PreferenceConstants.RI_PATH ) );
     	File ri = riPath.toFile();
-    	if (!ri.exists() || !ri.isFile()) return "RI executable doesn't exist at given path";
+    	if (!ri.exists() || !ri.isFile()) return null;
     	
     	List<String> args = new ArrayList<String>();
     	args.add(0, riPath.toString());
