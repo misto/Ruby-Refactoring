@@ -22,6 +22,8 @@ public class NodeLocator extends InOrderVisitor {
 	 * @return Wthether the node spans the specified offset.
 	 */
 	protected boolean nodeDoesSpanOffset(Node node, int offset) {
+		if (node == null) return false;
+		if (node.getPosition() == null) return false;
 		return (node.getPosition().getStartOffset() <= offset)
 				&& (node.getPosition().getEndOffset() >= offset);
 	}
