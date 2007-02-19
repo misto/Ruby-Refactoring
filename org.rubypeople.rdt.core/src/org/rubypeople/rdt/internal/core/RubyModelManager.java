@@ -611,11 +611,11 @@ public class RubyModelManager implements IContentTypeChangeListener, ISavePartic
             this.project = project;
         }
 
-        // updating raw classpath need to flush obsoleted cached information
+        // updating raw loadpath need to flush obsoleted cached information
         // about resolved entries
-        public synchronized void updateLoadpathInformation(ILoadpathEntry[] newRawClasspath) {
+        public synchronized void updateLoadpathInformation(ILoadpathEntry[] newRawLoadpath) {
 
-            this.rawLoadpath = newRawClasspath;
+            this.rawLoadpath = newRawLoadpath;
             this.resolvedLoadpath = null;
             this.resolvedPathToRawEntries = null;
         }

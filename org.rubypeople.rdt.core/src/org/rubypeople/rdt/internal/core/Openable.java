@@ -228,7 +228,7 @@ public abstract class Openable extends RubyElement implements IOpenable, IBuffer
 		if (!parentExists()) return false;
 		SourceFolderRoot root = getSourceFolderRoot();
 		if (root != null
-				&& (root == this || !root.isArchive())) {
+				&& (root == this || !root.isExternal())) {
 			return resourceExists();
 		}
 		return super.exists();
