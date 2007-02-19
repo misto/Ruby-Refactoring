@@ -1,7 +1,6 @@
 package org.rubypeople.rdt.internal.codeassist;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import java.util.StringTokenizer;
 
@@ -53,11 +52,6 @@ public class RubyElementRequestor {
 			if (type.getElementName().equals(typeName)) matches.add(type);
 		}
 		return matches;
-	}
-
-	private List<IType> getTypesInSourceFolderRoot(ISourceFolderRoot root, String typeName) {
-		List<IType> types = getTypes(root);
-		return filterToMatches(typeName, types);
 	}
 
 	private List<IType> getImportedTypesInSourceFolderRoot(ISourceFolderRoot root, String typeName) {
