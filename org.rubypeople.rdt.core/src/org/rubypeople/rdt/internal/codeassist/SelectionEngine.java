@@ -81,6 +81,7 @@ public class SelectionEngine {
 			ITypeInferrer inferrer = new DefaultTypeInferrer();
 			List<ITypeGuess> guesses = inferrer.infer(source, start);
 			RubyElementRequestor requestor = new RubyElementRequestor(script);
+			String methodName = getName(selected);
 			for (ITypeGuess guess : guesses) {
 				String name = guess.getType();
 				IType[] types = requestor.findType(name);
@@ -88,8 +89,9 @@ public class SelectionEngine {
 					IType type = types[i];
 					IMethod[] methods = type.getMethods();
 					for (int j = 0; i < methods.length; j++) {
-					  if (methods[j].getElementName().equals(getName(selected))) {
+					  if (methods[j].getElementName().equals(methodName)) {
 						  possible.add(methods[j]);
+						  break;
 					  }
 					}
 				}
