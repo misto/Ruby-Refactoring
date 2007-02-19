@@ -6,6 +6,7 @@ import java.util.List;
 
 import org.eclipse.core.resources.IFile;
 import org.jruby.ast.ArgumentNode;
+import org.jruby.ast.CallNode;
 import org.jruby.ast.ClassVarAsgnNode;
 import org.jruby.ast.ClassVarDeclNode;
 import org.jruby.ast.ClassVarNode;
@@ -18,13 +19,16 @@ import org.jruby.ast.LocalVarNode;
 import org.jruby.ast.Node;
 import org.jruby.ast.VCallNode;
 import org.jruby.ast.types.INameNode;
+import org.rubypeople.rdt.core.IMethod;
 import org.rubypeople.rdt.core.IParent;
 import org.rubypeople.rdt.core.IRubyElement;
-import org.rubypeople.rdt.core.IRubyProject;
 import org.rubypeople.rdt.core.IRubyScript;
 import org.rubypeople.rdt.core.IType;
 import org.rubypeople.rdt.core.RubyModelException;
 import org.rubypeople.rdt.internal.core.parser.RubyParser;
+import org.rubypeople.rdt.internal.ti.DefaultTypeInferrer;
+import org.rubypeople.rdt.internal.ti.ITypeGuess;
+import org.rubypeople.rdt.internal.ti.ITypeInferrer;
 import org.rubypeople.rdt.internal.ti.util.OffsetNodeLocator;
 
 public class SelectionEngine {
@@ -73,8 +77,23 @@ public class SelectionEngine {
 			return convertToArray(possible);
 		}
 		if (isMethodCall(selected)) {
-			List<IRubyElement> possible = getChildrenWithName(script
-					.getChildren(), IRubyElement.METHOD, getName(selected));
+			List<IRubyElement> possible = new ArrayList<IRubyElement>();
+			ITypeInferrer inferrer = new DefaultTypeInferrer();
+			List<ITypeGuess> guesses = inferrer.infer(source, start);
+			RubyElementRequestor requestor = new RubyElementRequestor(script);
+			for (ITypeGuess guess : guesses) {
+				String name = guess.getType();
+				IType[] types = requestor.findType(name);
+				for (int i = 0; i < types.length; i++) {
+					IType type = types[i];
+					IMethod[] methods = type.getMethods();
+					for (int j = 0; i < methods.length; j++) {
+					  if (methods[j].getElementName().equals(getName(selected))) {
+						  possible.add(methods[j]);
+					  }
+					}
+				}
+			}
 			return convertToArray(possible);
 		}
 		return new IRubyElement[0];
@@ -101,7 +120,7 @@ public class SelectionEngine {
 	}
 
 	private boolean isMethodCall(Node selected) {
-		return (selected instanceof VCallNode) || (selected instanceof FCallNode);
+		return (selected instanceof VCallNode) || (selected instanceof FCallNode) || (selected instanceof CallNode);
 	}
 
 	private IRubyElement[] convertToArray(List<IRubyElement> possible) {
