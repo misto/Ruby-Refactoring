@@ -47,7 +47,7 @@ public class SetLoadpathOperation extends RubyModelOperation {
 	ILoadpathEntry[] oldResolvedPath, newResolvedPath;
 	ILoadpathEntry[] newRawPath;
 	boolean canChangeResources;
-	boolean classpathWasSaved;
+	boolean loadpathWasSaved;
 	boolean needCycleCheck;
 	boolean needValidation;
 	boolean needSave;
@@ -237,12 +237,12 @@ public class SetLoadpathOperation extends RubyModelOperation {
 		// project reference updated - may throw an exception if unable to write .project file
 		updateProjectReferencesIfNecessary();
 
-		// classpath file updated - may throw an exception if unable to write .classpath file
+		// loadpath file updated - may throw an exception if unable to write .loadpath file
 		saveLoadpathIfNecessary();
 		
-		// perform classpath and output location updates, if exception occurs in classpath update,
+		// perform classpath and output location updates, if exception occurs in loadpath update,
 		// make sure the output location is updated before surfacing the exception (in case the output
-		// location update also throws an exception, give priority to the classpath update one).
+		// location update also throws an exception, give priority to the loadpath update one).
 		RubyModelException originalException = null;
 
 		try {
@@ -291,7 +291,7 @@ public class SetLoadpathOperation extends RubyModelOperation {
 		boolean needToUpdateDependents = false;
 		RubyElementDelta delta = new RubyElementDelta(getRubyModel());
 		boolean hasDelta = false;
-		if (this.classpathWasSaved) {
+		if (this.loadpathWasSaved) {
 			delta.changed(this.project, IRubyElementDelta.F_CLASSPATH_CHANGED);
 			hasDelta = true;
 		}
@@ -514,15 +514,15 @@ public class SetLoadpathOperation extends RubyModelOperation {
 		
 		if (!this.canChangeResources || !this.needSave) return;
 				
-		ILoadpathEntry[] classpathForSave;
+		ILoadpathEntry[] loadpathForSave;
 		if (this.newRawPath == DO_NOT_SET_ENTRIES || this.newRawPath == DO_NOT_UPDATE_PROJECT_REFS){
-			classpathForSave = project.getRawLoadpath();
+			loadpathForSave = project.getRawLoadpath();
 		} else {
-			classpathForSave = this.newRawPath;
+			loadpathForSave = this.newRawPath;
 		}
-		// if read-only .classpath, then the classpath setting will never been performed completely
-		if (project.saveLoadpath(classpathForSave, null)) {
-			this.classpathWasSaved = true;
+		// if read-only .loadpath, then the loadpath setting will never been performed completely
+		if (project.saveLoadpath(loadpathForSave, null)) {
+			this.loadpathWasSaved = true;
 			this.setAttribute(HAS_MODIFIED_RESOURCE_ATTR, TRUE); 
 		}
 	}
@@ -554,7 +554,7 @@ public class SetLoadpathOperation extends RubyModelOperation {
 
 		beginTask(Messages.bind(Messages.classpath_settingProgress, project.getElementName()), 2); 
 
-		// SIDE-EFFECT: from thereon, the classpath got modified
+		// SIDE-EFFECT: from thereon, the loadpath got modified
 		project.getPerProjectInfo().updateLoadpathInformation(this.newRawPath);
 
 		// resolve new path (asking for marker creation if problems)
