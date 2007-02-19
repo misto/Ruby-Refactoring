@@ -37,17 +37,17 @@ import org.eclipse.core.runtime.IPath;
  * In case multiple container initializers collide on the same container ID, the first
  * registered one will be invoked.
  * 
- * @see IClasspathEntry
- * @see IClasspathContainer
- * @since 2.0
+ * @see ILoadpathEntry
+ * @see ILoadpathContainer
+ * @since 0.9.0
  */
 public abstract class LoadpathContainerInitializer {
 	
    /**
-     * Creates a new classpath container initializer.
+     * Creates a new loadpath container initializer.
      */
     public LoadpathContainerInitializer() {
-    	// a classpath container initializer must have a public 0-argument constructor
+    	// a loadpath container initializer must have a public 0-argument constructor
     }
 
     /**
@@ -119,9 +119,9 @@ public abstract class LoadpathContainerInitializer {
      * @return returns <code>true</code> if the container can be updated
      * @since 2.1
      */
-    public boolean canUpdateClasspathContainer(IPath containerPath, IRubyProject project) {
+    public boolean canUpdateLoadpathContainer(IPath containerPath, IRubyProject project) {
     	
-		// By default, classpath container initializers do not accept updating containers
+		// By default, loadpath container initializers do not accept updating containers
     	return false; 
     }
 
@@ -144,12 +144,12 @@ public abstract class LoadpathContainerInitializer {
 	 * @param containerSuggestion a suggestion to update the corresponding container definition
 	 * @throws CoreException when <code>JavaCore#setClasspathContainer</code> would throw any.
 	 * @see JavaCore#setClasspathContainer(IPath, IJavaProject[], IClasspathContainer[], org.eclipse.core.runtime.IProgressMonitor)
-	 * @see ClasspathContainerInitializer#canUpdateClasspathContainer(IPath, IJavaProject)
-	 * @since 2.1
+	 * @see ClasspathContainerInitializer#canUpdateLoadpathContainer(IPath, IJavaProject)
+	 * @since 0.9.0
 	 */
-    public void requestClasspathContainerUpdate(IPath containerPath, IRubyProject project, ILoadpathContainer containerSuggestion) throws CoreException {
+    public void requestLoadpathContainerUpdate(IPath containerPath, IRubyProject project, ILoadpathContainer containerSuggestion) throws CoreException {
 
-		// By default, classpath container initializers do not accept updating containers
+		// By default, loadpath container initializers do not accept updating containers
     }
 
 	/**
