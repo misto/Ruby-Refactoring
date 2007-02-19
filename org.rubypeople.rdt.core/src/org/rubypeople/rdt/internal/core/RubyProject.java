@@ -949,7 +949,7 @@ public class RubyProject extends Openable implements IProjectNature, IRubyElemen
 			}
 			if (logProblems) {
 				Util.log(e, "Exception while retrieving " + this.getPath() //$NON-NLS-1$
-						+ "/.classpath, will revert to default classpath"); //$NON-NLS-1$
+						+ "/.loadpath, will revert to default loadpath"); //$NON-NLS-1$
 			}
 		}
 		return null;
@@ -1991,7 +1991,7 @@ public class RubyProject extends Openable implements IProjectNature, IRubyElemen
 		}
 	}
 
-	public boolean saveLoadpath(ILoadpathEntry[] newClasspath, IPath newOutputLocation) throws RubyModelException {
+	public boolean saveLoadpath(ILoadpathEntry[] newLoadpath, IPath newOutputLocation) throws RubyModelException {
 		if (!this.project.isAccessible())
 			return false;
 
@@ -2004,14 +2004,14 @@ public class RubyProject extends Openable implements IProjectNature, IRubyElemen
 																								 * log
 																								 * problems
 																								 */, unknownElements);
-		if (fileEntries != null && isLoadpathEqualsTo(newClasspath, newOutputLocation, fileEntries)) {
+		if (fileEntries != null && isLoadpathEqualsTo(newLoadpath, newOutputLocation, fileEntries)) {
 			// no need to save it, it is the same
 			return false;
 		}
 
 		// actual file saving
 		try {
-			setSharedProperty(LOADPATH_FILENAME, encodeLoadpath(newClasspath, newOutputLocation, true, unknownElements));
+			setSharedProperty(LOADPATH_FILENAME, encodeLoadpath(newLoadpath, newOutputLocation, true, unknownElements));
 			return true;
 		} catch (CoreException e) {
 			throw new RubyModelException(e);
