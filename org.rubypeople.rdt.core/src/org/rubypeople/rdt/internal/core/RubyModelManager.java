@@ -891,37 +891,8 @@ public class RubyModelManager implements IContentTypeChangeListener, ISavePartic
 		try {
 			in = new DataInputStream(new BufferedInputStream(new FileInputStream(file)));
 			switch (in.readInt()) {
-				case 2 :
+				case VARIABLES_AND_CONTAINERS_FILE_VERSION :
 					new VariablesAndContainersLoadHelper(in).load();
-					break;
-				case 1 : // backward compatibility, load old format
-					// variables
-					int size = in.readInt();
-					while (size-- > 0) {
-						String varName = in.readUTF();
-						String pathString = in.readUTF();
-						if (CP_ENTRY_IGNORE.equals(pathString))
-							continue;
-						IPath varPath = Path.fromPortableString(pathString);
-						this.variables.put(varName, varPath);
-						this.previousSessionVariables.put(varName, varPath);
-					}
-					
-					// containers
-					IRubyModel model = getRubyModel();
-					int projectSize = in.readInt();
-					while (projectSize-- > 0) {
-						String projectName = in.readUTF();
-						IRubyProject project = model.getRubyProject(projectName);
-						int containerSize = in.readInt();
-						while (containerSize-- > 0) {
-							IPath containerPath = Path.fromPortableString(in.readUTF());
-							int length = in.readInt();
-							byte[] containerString = new byte[length];
-							in.readFully(containerString);
-							recreatePersistedContainer(project, containerPath, new String(containerString), true/*add to container values*/);
-						}
-					}
 					break;
 			}
 		} catch (IOException e) {
