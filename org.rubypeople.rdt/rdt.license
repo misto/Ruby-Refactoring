@@ -7,7 +7,7 @@ Chris Williams (cwillia1@rochester.rr.com)
 See www.rubypeople.org for more information.
 
 The RDT is bundled with the kxml2 pull parser, which is under CPL as well.
-The file org.rubypeople.rdt.launching/ruby/eclipseDebug.rb is based on the debug.rb file, which is part
+The file org.rubypeople.rdt.launching/ruby/classic-debug.rb is based on the debug.rb file, which is part
 of the ruby 1.6.8 release.
 Because of the nature of developing this plugin, many features or concepts have been copied from
 the jdt. Therefore you will find code fragements which have been copied from the jdt. We did not 

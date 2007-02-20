@@ -149,9 +149,9 @@ public class StandardVMDebugger extends StandardVMRunner implements IVMRunner {
 		}
 
 		if (RdtDebugCorePlugin.isRubyDebuggerVerbose() || isDebuggerVerbose()) {
-			arguments.add("-reclipseDebugVerbose");
+			arguments.add("-rclassic-debug-verbose");
 		} else {
-			arguments.add("-reclipseDebug");
+			arguments.add("-rclassic-debug");
 		}
 		// FIXME Somehow hook this into the loadpath stuff?
 		arguments.add("-I");

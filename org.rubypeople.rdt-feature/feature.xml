@@ -30,7 +30,7 @@ from external providers:
 RegExp plug-in, http://e-p-i-c.sourceforge.net 
 JRuby, http://jruby.codehaus.org/
 kxml2, http://kxml.sourceforge.net
-The file org.rubypeople.rdt.launching/ruby/eclipseDebug.rb
+The file org.rubypeople.rdt.launching/ruby/classic-debug.rb
 is based on the debug.rb file, which is part of the ruby 1.6.8
 release. Because of the nature of developing this plugin, many
 features or concepts have been copied from the JDT. Therefore

@@ -70,7 +70,7 @@ public class TC_RunnerLaunching extends ModifyingResourceTest {
 	protected List getCommandLine(IProject project, boolean debug) {
 		List commandLine = new ArrayList();
 		if (debug) {
-			commandLine.add("-reclipseDebug");
+			commandLine.add("-rclassic-debug");
 		}
 		// The include paths and the executed ruby file is quoted on windows		 
 		if (debug) {

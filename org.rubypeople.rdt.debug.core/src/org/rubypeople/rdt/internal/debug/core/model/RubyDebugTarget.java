@@ -53,7 +53,7 @@ public class RubyDebugTarget extends PlatformObject implements IRubyDebugTarget 
 		this.isTerminated = false ;
 		IBreakpointManager manager= DebugPlugin.getDefault().getBreakpointManager();
 		manager.addBreakpointListener(this);
-		addDebugParameter("$EclipseListenPort=" + port);
+		addDebugParameter("$RemoteDebugPort=" + port);
 	}
 
 	public RubyDebugTarget(ILaunch launch, int port) {
@@ -247,7 +247,7 @@ public class RubyDebugTarget extends PlatformObject implements IRubyDebugTarget 
 	public File getDebugParameterFile() {
 		if (debugParameterFile == null) {
 			try {
-				debugParameterFile = File.createTempFile("eclipseDebug",".rb") ;
+				debugParameterFile = File.createTempFile("classic-debug",".rb") ;
 			} catch (IOException e) {
 				RdtDebugCorePlugin.log("Could not create debugParameterFile", e) ;
 			}

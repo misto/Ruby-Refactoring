@@ -78,7 +78,7 @@ public class FTC_RubyDebugCommunicationTest extends FTC_ClassicDebuggerCommunica
 		String cmd = "rdebug -s -w -n -p 1098 --cport 1099 -d -f xml -I " + getTmpDir().replace('\\', '/') + " " + getRubyTestFilename();
 		// "FTC_DebuggerCommunicationTest.RUBY_INTERPRETER + " -I" +
 		// createIncludeDir() + " -I" + getTmpDir().replace('\\', '/') + "
-		// -reclipseDebugVerbose.rb " + ;
+		// -rclassic-debug-verbose.rb " + ;
 		System.out.println("Starting: " + cmd);
 		process = Runtime.getRuntime().exec(cmd);
 		rubyStderrRedirectorThread = new OutputRedirectorThread(process.getErrorStream());

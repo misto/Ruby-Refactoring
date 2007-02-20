@@ -719,7 +719,7 @@ persons = Hash[ Person.new('Lisa') =&gt; Person.new('Marge'),
 					<orderedlist>
 						<listitem>
 							<para>open file
-								ECLIPSE_HOME/plugins/org.rubypeople.rdt.launching/ruby/eclipseDebug.rb</para>
+								ECLIPSE_HOME/plugins/org.rubypeople.rdt.launching/ruby/classic-debug.rb</para>
 						</listitem>
 						<listitem>
 							<para>set ECLIPSE_VERBOSE = true</para>
