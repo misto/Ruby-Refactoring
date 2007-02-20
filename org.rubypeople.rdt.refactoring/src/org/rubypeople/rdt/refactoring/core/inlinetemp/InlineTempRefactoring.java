@@ -31,6 +31,7 @@
 package org.rubypeople.rdt.refactoring.core.inlinetemp;
 
 import org.rubypeople.rdt.refactoring.core.RubyRefactoring;
+import org.rubypeople.rdt.refactoring.core.TextSelectionProvider;
 import org.rubypeople.rdt.refactoring.ui.pages.InlineTempPage;
 
 public class InlineTempRefactoring extends RubyRefactoring {
@@ -39,10 +40,10 @@ public class InlineTempRefactoring extends RubyRefactoring {
 
 	private TempInliner tempInliner;
 
-	public InlineTempRefactoring() {
+	public InlineTempRefactoring(TextSelectionProvider selectionProvider) {
 		super(NAME);
 		
-		InlineTempConfig config = new InlineTempConfig(getDocumentProvider(), getCarretPosition());
+		InlineTempConfig config = new InlineTempConfig(getDocumentProvider(), selectionProvider.getCarretPosition());
 		InlineTempConditionChecker checker = new InlineTempConditionChecker(config);
 		setRefactoringConditionChecker(checker);
 

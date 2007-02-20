@@ -1,5 +1,7 @@
 package org.rubypeople.rdt.refactoring.core.rename;
 
+import org.jruby.ast.ArgsNode;
+import org.jruby.ast.ArgumentNode;
 import org.jruby.ast.ClassNode;
 import org.jruby.ast.ConstNode;
 import org.jruby.ast.InstAsgnNode;
@@ -42,10 +44,12 @@ public class RenameConditionChecker extends RefactoringConditionChecker {
 		selectedClassNode = (ClassNode) SelectionNodeProvider.getSelectedNodeOfType(rootNode, offset, ClassNode.class);
 		selectedMethodNode = SelectionNodeProvider.getSelectedNodeOfType(rootNode, offset, MethodDefNode.class);
 		selectedFieldNode = SelectionNodeProvider.getSelectedNodeOfType(rootNode, offset, InstAsgnNode.class, InstVarNode.class);
-		selectedLocalNode = SelectionNodeProvider.getSelectedNodeOfType(rootNode, offset, LocalNodeWrapper.LOCAL_NODES_CLASSES());
+		selectedLocalNode = SelectionNodeProvider.getSelectedNodeOfType(rootNode, offset, LocalNodeWrapper.getLocalNodeClasses());
 		ConstNode selectedConstNode = (ConstNode) SelectionNodeProvider.getSelectedNodeOfType(rootNode, offset, ConstNode.class);
 		SymbolNode selectedSymbolNode = (SymbolNode) SelectionNodeProvider.getSelectedNodeOfType(rootNode, offset, SymbolNode.class);
-	
+		if(selectedLocalNode == null && SelectionNodeProvider.getSelectedNodeOfType(rootNode, offset, ArgsNode.class) != null) {
+			selectedLocalNode = SelectionNodeProvider.getSelectedNodeOfType(rootNode, offset, ArgumentNode.class);
+		}
 		initPreferedNode(selectedConstNode, selectedSymbolNode);
 	}
 

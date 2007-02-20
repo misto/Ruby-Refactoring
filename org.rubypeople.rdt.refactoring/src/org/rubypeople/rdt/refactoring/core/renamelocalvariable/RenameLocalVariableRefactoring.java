@@ -29,6 +29,7 @@
 package org.rubypeople.rdt.refactoring.core.renamelocalvariable;
 
 import org.rubypeople.rdt.refactoring.core.RubyRefactoring;
+import org.rubypeople.rdt.refactoring.core.TextSelectionProvider;
 import org.rubypeople.rdt.refactoring.documentprovider.DocumentProvider;
 import org.rubypeople.rdt.refactoring.ui.pages.RenamePage;
 
@@ -36,11 +37,11 @@ public class RenameLocalVariableRefactoring extends RubyRefactoring {
 
 	public static final String NAME = "Rename Local Variable";
 
-	public RenameLocalVariableRefactoring() {
+	public RenameLocalVariableRefactoring(TextSelectionProvider selectionProvider) {
 		super(NAME);
 		
 		DocumentProvider docProvider = getDocumentProvider();
-		RenameConfig config = new RenameConfig(docProvider, getCarretPosition());
+		RenameConfig config = new RenameConfig(docProvider, selectionProvider.getCarretPosition());
 		RenameConditionChecker checker = new RenameConditionChecker(config);
 		setRefactoringConditionChecker(checker);
 		

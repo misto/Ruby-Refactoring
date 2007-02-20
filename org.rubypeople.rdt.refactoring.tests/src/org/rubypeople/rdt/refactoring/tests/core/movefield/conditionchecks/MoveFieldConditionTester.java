@@ -50,7 +50,7 @@ public class MoveFieldConditionTester extends RefactoringConditionTestCase {
 
 	@Override
 	public void runTest() throws FileNotFoundException, IOException {
-		testData = new FileTestData(getName(), ".test_source", ".test_source", getClass());
+		testData = new FileTestData(getName(), ".test_source", ".test_source");
 		int caretPosition = testData.getIntProperty("cursorPosition");
 		config = new MoveFieldConfig(new DocumentWithIncluding(testData), caretPosition);
 		MoveFieldConditionChecker checker = new MoveFieldConditionChecker(config);

@@ -78,7 +78,7 @@ public class TC_ClassInstanciationFinder extends TestCase {
 	}
 
 	private IDocumentProvider getDoc(String testFile) throws FileNotFoundException, IOException {
-		return new DocumentWithIncluding(new MultiFileTestData("", "", "", testFile + ".test_properties", this.getClass()));
+		return new DocumentWithIncluding(new MultiFileTestData("", "", "", testFile + ".test_properties"));
 	}
 
 }

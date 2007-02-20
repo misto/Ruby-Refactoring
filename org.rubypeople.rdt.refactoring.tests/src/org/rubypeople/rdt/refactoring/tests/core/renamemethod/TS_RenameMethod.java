@@ -38,7 +38,7 @@ import org.rubypeople.rdt.refactoring.tests.core.renamemethod.selection.TS_Renam
 public class TS_RenameMethod extends FileTestSuite {
 	
 	public static Test suite() {
-		TestSuite suite = createSuite("Rename Method", "rename_method_.*\\.test_properties", MethodRenamerTester.class);
+		TestSuite suite = createSuite("Rename Method", "rename_method_test_*.test_properties", MethodRenamerTester.class);
 		suite.addTest(TS_RenameMethodChecks.suite());
 		suite.addTest(TS_RenameMethodSelection.suite());
 		return suite;

@@ -71,8 +71,10 @@ public class InlineMethodConditionChecker extends RefactoringConditionChecker {
 		StaticScope parent = NodeUtil.getScope(SelectionNodeProvider.getEnclosingScope(doc.getRootNode(), config.getSelectedCall().getNode()));
 		
 		ArrayList<String> localNames = new ArrayList<String>();
-		for(String name : parent.getVariables()) {
-			localNames.add(name);
+		if(parent.getVariables() != null) {
+			for(String name : parent.getVariables()) {
+				localNames.add(name);
+			}
 		}
 		
 		if(resultIsAssigned()) {

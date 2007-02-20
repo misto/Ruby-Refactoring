@@ -38,7 +38,7 @@ public class TS_MoveMethod extends FileTestSuite {
 	
 	public static Test suite() {
 
-		TestSuite suite = createSuite("MoveMethod", "move_method_test_.*\\.test_properties", MoveMethodTester.class);
+		TestSuite suite = createSuite("MoveMethod", "move_method_test_*.test_properties", MoveMethodTester.class);
 		suite.addTest(TS_MoveMethodChecks.suite());
 		return suite;
 	}

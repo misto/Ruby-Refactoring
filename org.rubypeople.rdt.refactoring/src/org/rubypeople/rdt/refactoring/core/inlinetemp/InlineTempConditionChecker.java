@@ -34,6 +34,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 import org.jruby.ast.ClassNode;
+import org.jruby.ast.IterNode;
 import org.jruby.ast.MethodDefNode;
 import org.jruby.ast.MultipleAsgnNode;
 import org.jruby.ast.Node;
@@ -49,6 +50,7 @@ import org.rubypeople.rdt.refactoring.util.NodeUtil;
 public class InlineTempConditionChecker extends RefactoringConditionChecker {
 
 	private InlineTempConfig config;
+	private RootNode rootNode;
 
 	public InlineTempConditionChecker(InlineTempConfig config) {
 		super(config.getDocProvider(), config);
@@ -56,13 +58,13 @@ public class InlineTempConditionChecker extends RefactoringConditionChecker {
 	
 	public void init(Object configObj) {
 		this.config = (InlineTempConfig) configObj;
-		Node rootNode = config.getDocProvider().getRootNode();
+		rootNode = config.getDocProvider().getRootNode();
 		int caretPosition = config.getCaretPosition();
-		config.setEnclosingMethod(SelectionNodeProvider.getSelectedNodeOfType(rootNode, caretPosition, MethodDefNode.class));
+		config.setEnclosingMethod((MethodDefNode) SelectionNodeProvider.getSelectedNodeOfType(rootNode, caretPosition, MethodDefNode.class));
 		
-		config.setEnclosingNode(SelectionNodeProvider.getEnclosingScope(rootNode, caretPosition));
+		config.setEnclosingScopeNode(SelectionNodeProvider.getEnclosingScope(rootNode, caretPosition));
 		
-		Node locVarNode = SelectionNodeProvider.getSelectedNodeOfType(rootNode, caretPosition, InlineTempConfig.LOCAL_VAR_NODE_CLASSES);
+		Node locVarNode = SelectionNodeProvider.getSelectedNodeOfType(rootNode, caretPosition, LocalNodeWrapper.getLocalNodeClasses());
 		if (locVarNode == null) {
 			return;
 		}
@@ -107,6 +109,8 @@ public class InlineTempConditionChecker extends RefactoringConditionChecker {
 			addError("There is no local variable at the current carret position.");
 		} else if (isTempParameter()) {
 			addError("Cannot inline method parameters.");
+		} else if (isBlockArgument()) {
+			addError("Cannot inline block argument");
 		} else if (isTempMultiassigned()) {
 			addError("Cannot inline a multi assigned local variable.");
 		} else if (defintiontionContainsItself()) {
@@ -116,16 +120,25 @@ public class InlineTempConditionChecker extends RefactoringConditionChecker {
 		}
 	}
 	
+	private boolean isBlockArgument() {
+		IterNode enclosingIterNode = (IterNode) SelectionNodeProvider.getSelectedNodeOfType(rootNode, config.getCaretPosition(), IterNode.class);
+		if(enclosingIterNode == null) {
+			return false;
+		}
+		Node varNode = enclosingIterNode.getVarNode();
+		return config.getSelectedItem().getWrappedNode().equals(varNode);
+	}
+
 	private boolean isMultipleAsgnNode() {
 		Node enclosingMultipleAssignmentNode = SelectionNodeProvider.getSelectedNodeOfType(config.getEnclosingScopeNode(), config.getCaretPosition(), MultipleAsgnNode.class);
 		return enclosingMultipleAssignmentNode != null;
 	}
 
 	private boolean isTempParameter() {
-		if (config.getEnclosingMethod() == null) {
+		if (config.getEnclosingMethod() == null || !config.getSelectedItem().hasValidId()) {
 			return false;
 		}
-		return JRubyRefactoringUtils.isParameter(config.getSelectedItem(), (MethodDefNode) config.getEnclosingMethod());
+		return JRubyRefactoringUtils.isParameter(config.getSelectedItem(), config.getEnclosingMethod());
 	}
 
 	private boolean isNewMethodNameUnique() {

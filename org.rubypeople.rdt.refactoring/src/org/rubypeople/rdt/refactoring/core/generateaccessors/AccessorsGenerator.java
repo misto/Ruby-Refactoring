@@ -287,7 +287,7 @@ public class AccessorsGenerator extends EditAndTreeContentProvider implements II
 			}
 			
 			public boolean equals(Object o) {
-				return o != null && compareTo(o) == 0;
+				return o != null && o instanceof TreeAttribute && compareTo(o) == 0;
 			}
 
 			@Override

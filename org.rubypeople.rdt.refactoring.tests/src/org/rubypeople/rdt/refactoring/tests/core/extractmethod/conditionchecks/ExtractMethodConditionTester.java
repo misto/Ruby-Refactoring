@@ -52,7 +52,7 @@ public class ExtractMethodConditionTester extends RefactoringConditionTestCase {
 
 	@Override
 	public void runTest() throws FileNotFoundException, IOException {
-		testData = new FileTestData(getName(), ".test_source", ".test_source", getClass());
+		testData = new FileTestData(getName(), ".test_source", ".test_source");
 		
 		SelectionInformation selection = new SelectionInformation(testData.getIntProperty("start"), testData.getIntProperty("end"), "");
 		config = new ExtractMethodConfig(testData , selection);

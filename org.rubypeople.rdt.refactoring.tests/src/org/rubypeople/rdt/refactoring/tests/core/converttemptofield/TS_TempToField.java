@@ -39,7 +39,7 @@ import org.rubypeople.rdt.refactoring.tests.core.converttemptofield.conditionche
 public class TS_TempToField extends FileTestSuite
 {
 	public static Test suite() {
-		TestSuite suite =  createSuite("TempToField", "temp_to_field_test.*test_source", TempToFieldTester.class);
+		TestSuite suite =  createSuite("TempToField", "temp_to_field_test*test_source", TempToFieldTester.class);
 		suite.addTest(TS_TempToFieldChecks.suite());
 		return suite;
 	}

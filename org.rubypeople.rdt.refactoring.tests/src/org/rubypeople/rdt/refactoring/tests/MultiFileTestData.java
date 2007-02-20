@@ -38,30 +38,28 @@ import java.util.Collection;
 import java.util.StringTokenizer;
 
 import org.jruby.ast.Node;
-import org.rubypeople.rdt.refactoring.tests.util.FileHelper;
+import org.rubypeople.rdt.refactoring.util.FileHelper;
 
 public class MultiFileTestData extends FilePropertyData {
 
 	private String testName;
-	private Class<?> resourceProvider;
 	private String sourceSuffix;
 	private String resultSuffix;
 	
-	public MultiFileTestData(String testName, Class<?> resourceProvider) throws FileNotFoundException, IOException{
-		this(testName + "." , ".source", ".result", testName + ".test_properties", resourceProvider);
+	public MultiFileTestData(String testName) throws FileNotFoundException, IOException{
+		this(testName + "." , ".source", ".result", testName + ".test_properties");
 	}	
 	
-	public MultiFileTestData(String testName, String sourceSuffix, String resultSuffix, String propertyFile, Class<?> resourceProvider) throws FileNotFoundException, IOException{
-		super(propertyFile, resourceProvider);
+	public MultiFileTestData(String testName, String sourceSuffix, String resultSuffix, String propertyFile) throws FileNotFoundException, IOException{
+		super(propertyFile);
 		this.testName = testName;
-		this.resourceProvider = resourceProvider;
 		this.sourceSuffix = sourceSuffix;
 		this.resultSuffix = resultSuffix;
 	}
 
 	public String getFileContent(String fileName){
 		String sourceName = getSourceName(fileName);
-		return FileHelper.getFileContent(sourceName, resourceProvider);
+		return FileHelper.getFileContent(TestsPlugin.getFile(sourceName));
 	}
 	
 	public String getSource(String fileName) {
@@ -74,7 +72,7 @@ public class MultiFileTestData extends FilePropertyData {
 	}
 	
 	public String getResult(String fileName) {
-		return FileHelper.getFileContent(getResultName(fileName), resourceProvider);
+		return FileHelper.getFileContent(TestsPlugin.getFile(getResultName(fileName)));
 	}
 	
 	public String getResultName(String fileName) {

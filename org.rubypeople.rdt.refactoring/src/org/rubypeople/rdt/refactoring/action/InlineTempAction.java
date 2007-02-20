@@ -30,13 +30,12 @@
 
 package org.rubypeople.rdt.refactoring.action;
 
-import org.eclipse.jface.action.IAction;
 import org.rubypeople.rdt.refactoring.core.inlinetemp.InlineTempRefactoring;
 
 public class InlineTempAction extends WorkbenchWindowActionDelegate {
 
 	@Override
-	public void run(IAction action) {
+	public void run() {
 		run(InlineTempRefactoring.class, InlineTempRefactoring.NAME);
 	}
 

@@ -42,6 +42,7 @@ public class TS_Util extends TestSuite
 		suite.addTestSuite(TC_StringHelper.class);
 		suite.addTestSuite(TC_NameHelper.class);
 		suite.addTestSuite(TC_NodeUtil.class);
+		suite.addTestSuite(TC_FileHelper.class);
 		return suite;
 	}
 }

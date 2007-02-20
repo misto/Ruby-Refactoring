@@ -48,7 +48,7 @@ public class TC_SplittedVariableRenamer extends TestCase {
 	
 	private SingleLocalVariableEdit[] getEdits(String name, int pos) throws FileNotFoundException, IOException {
 		LocalVarFinder finder = new LocalVarFinder();
-		Collection<LocalVarUsage> variables = finder.findLocalUsages(new FileTestData(name, "", "", this.getClass()), pos);
+		Collection<LocalVarUsage> variables = finder.findLocalUsages(new FileTestData(name, "", ""), pos);
 		SplittedVariableRenamer variableRenamer = new SplittedVariableRenamer(finder.getScopeNode());
 		return variableRenamer.rename(variables).toArray(new SingleLocalVariableEdit[0]);
 	}

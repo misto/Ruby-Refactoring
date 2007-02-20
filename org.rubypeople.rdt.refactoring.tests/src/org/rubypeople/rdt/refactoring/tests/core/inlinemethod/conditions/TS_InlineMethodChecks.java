@@ -36,6 +36,6 @@ import org.rubypeople.rdt.refactoring.tests.FileTestSuite;
 public class TS_InlineMethodChecks extends FileTestSuite {
 
 	public static Test suite() {
-		return createSuite("Inline Method Condition Checks", "inline_method_checker_test_.*test_source.rb", InlineMethodConditionTester.class);
+		return createSuite("Inline Method Condition Checks", "inline_method_checker_test_*test_source.rb", InlineMethodConditionTester.class);
 	}
 }

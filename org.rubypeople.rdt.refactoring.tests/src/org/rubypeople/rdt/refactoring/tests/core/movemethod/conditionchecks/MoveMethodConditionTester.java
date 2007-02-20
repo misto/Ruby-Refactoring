@@ -51,7 +51,7 @@ public class MoveMethodConditionTester extends RefactoringConditionTestCase {
 
 	@Override
 	public void runTest() throws FileNotFoundException, IOException {
-		testData = new FileTestData(getName(), ".test_source", ".test_source", getClass());
+		testData = new FileTestData(getName(), ".test_source", ".test_source");
 		int caretPosition = testData.getIntProperty("cursorPosition");
 		config = new MoveMethodConfig(testData, caretPosition);
 		MoveMethodConditionChecker checker = new MoveMethodConditionChecker(config);

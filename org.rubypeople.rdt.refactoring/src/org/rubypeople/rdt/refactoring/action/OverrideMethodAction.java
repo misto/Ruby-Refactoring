@@ -28,13 +28,12 @@
 
 package org.rubypeople.rdt.refactoring.action;
 
-import org.eclipse.jface.action.IAction;
 import org.rubypeople.rdt.refactoring.core.overridemethod.OverrideMethodRefactoring;
 
 public class OverrideMethodAction extends WorkbenchWindowActionDelegate {
 
 	@Override
-	public void run(IAction action) {
+	public void run() {
 		run(OverrideMethodRefactoring.class, OverrideMethodRefactoring.NAME);
 	}
 }

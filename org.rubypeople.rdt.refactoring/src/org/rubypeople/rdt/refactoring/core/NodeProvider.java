@@ -68,6 +68,7 @@ import org.jruby.parser.DefaultRubyParser;
 import org.jruby.parser.LocalStaticScope;
 import org.jruby.parser.RubyParserConfiguration;
 import org.jruby.parser.RubyParserPool;
+import org.jruby.parser.RubyParserResult;
 import org.jruby.runtime.DynamicScope;
 import org.rubypeople.rdt.refactoring.nodewrapper.AttrAccessorNodeWrapper;
 import org.rubypeople.rdt.refactoring.nodewrapper.FieldNodeWrapper;
@@ -106,7 +107,8 @@ public class NodeProvider {
 		parser = RubyParserPool.getInstance().borrowParser();
 		parser.setWarnings(new NullWarnings());
 		LexerSource lexerSource = new LexerSource(fileName, reader);
-		return (RootNode) parser.parse(new RubyParserConfiguration(), lexerSource).getAST();
+		RubyParserResult result = parser.parse(new RubyParserConfiguration(), lexerSource);
+		return (RootNode) result.getAST();
 	}
 
 	public static RootNode getRootNode(String fileName, String fileContent) {

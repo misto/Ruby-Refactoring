@@ -49,7 +49,7 @@ public class RenameClassConditionTester extends RefactoringConditionTestCase {
 
 	@Override
 	public void runTest() throws FileNotFoundException, IOException {
-		testData = new FileTestData(getName(), ".test_source", ".test_source", getClass());
+		testData = new FileTestData(getName(), ".test_source", ".test_source");
 		renameClassConfig = new RenameClassConfig(testData, testData.getIntProperty("caretPosition"));
 		RenameClassConditionChecker checker = new RenameClassConditionChecker(renameClassConfig);
 			

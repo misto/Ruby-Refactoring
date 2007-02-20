@@ -28,11 +28,10 @@
 
 package org.rubypeople.rdt.refactoring.action;
 
-import org.eclipse.jface.action.IAction;
 import org.rubypeople.rdt.refactoring.core.generateaccessors.GenerateAccessorsRefactoring;
 
 public class GenerateAccessorsAction extends WorkbenchWindowActionDelegate {
-	public void run(IAction action) {
+	public void run() {
 		run(GenerateAccessorsRefactoring.class, GenerateAccessorsRefactoring.NAME);
 	}
 }

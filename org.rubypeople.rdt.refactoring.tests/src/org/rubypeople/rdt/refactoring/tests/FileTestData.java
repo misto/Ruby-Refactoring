@@ -35,23 +35,21 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 
-import org.rubypeople.rdt.refactoring.tests.util.FileHelper;
+import org.rubypeople.rdt.refactoring.util.FileHelper;
 
 public class FileTestData extends FilePropertyData { 
 
 	private String fileName;
 	private String source;
 	private String expectedResult;
-	private Class<?> resourceProvider;
 	private final String sourceSuffix;
 	private final String resultSuffix;
 
-	public FileTestData(String fileName, String sourceSuffix, String resultSuffix, Class<?> resourceProvider) throws FileNotFoundException, IOException {
-		super(fileName + ".test_properties", resourceProvider);
+	public FileTestData(String fileName, String sourceSuffix, String resultSuffix) throws FileNotFoundException, IOException {
+		super(fileName + ".test_properties");
 		this.fileName = fileName;
 		this.sourceSuffix = sourceSuffix;
 		this.resultSuffix = resultSuffix;
-		this.resourceProvider = resourceProvider;
 		source = initSourceFile();
 		expectedResult = initExpectedFile();
 	}
@@ -61,15 +59,15 @@ public class FileTestData extends FilePropertyData {
 	}
 
 	public FileTestData(String fileName, Class<?> resourceProvier) throws FileNotFoundException, IOException {
-		this(fileName, ".test_source", ".test_result", resourceProvier);
+		this(fileName, ".test_source", ".test_result");
 	}
 
 	private String initSourceFile() {
-		return FileHelper.getFileContent(fileName + sourceSuffix, resourceProvider);
+		return FileHelper.getFileContent(TestsPlugin.getFile(fileName + sourceSuffix));
 	}
 	
 	private String initExpectedFile() {
-		return FileHelper.getFileContent(fileName + resultSuffix, resourceProvider);
+		return FileHelper.getFileContent(TestsPlugin.getFile(fileName + resultSuffix));
 	}
 
 	public String getSource() {
@@ -89,7 +87,7 @@ public class FileTestData extends FilePropertyData {
 	}
 
 	public String getFileContent(String currentFileName) {
-		return FileHelper.getFileContent(currentFileName, resourceProvider);
+		return FileHelper.getFileContent(TestsPlugin.getFile(currentFileName));
 	}
 
 	public Collection<String> getFileNames() {

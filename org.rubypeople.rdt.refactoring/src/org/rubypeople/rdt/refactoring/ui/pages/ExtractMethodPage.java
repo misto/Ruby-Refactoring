@@ -118,8 +118,8 @@ public class ExtractMethodPage extends UserInputWizardPage implements IValidatio
 	private void setupSelectionPreview() {
 		extractComposite.getCodeViewer().setPreviewText(selectionInformation.getSource());
 
-		int start = extractedMethod.getPositionOfFirstChild().getStartOffset();
-		int length = extractedMethod.getPositionOfLastChild().getEndOffset() - start;
+		int start = extractedMethod.getSelectedNodes().getPosition().getStartOffset();
+		int length = extractedMethod.getSelectedNodes().getPosition().getEndOffset() - start;
 		extractComposite.getCodeViewer().setBackgroundColor(start, length, SWT.COLOR_GRAY);
 
 		extractComposite.getCodeViewer().setBackgroundColor(selectionInformation.getStartOfSelection(),

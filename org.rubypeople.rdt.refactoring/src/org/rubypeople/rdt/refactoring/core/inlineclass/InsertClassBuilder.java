@@ -96,9 +96,9 @@ public class InsertClassBuilder {
 			int methodPos = currentMethod.getWrappedNode().getPosition().getStartOffset();
 			
 			RenameMethodConfig config = new RenameMethodConfig(inlinedClassDocumentProvider, methodPos);
-			config.setNewName(currentMethodName);
 			
 			new RenameMethodConditionChecker(config);
+			config.setNewName(currentMethodName);
 			MethodRenamer renamer = new MethodRenamer(config);
 
 			fillTextEdits(inlinedClassDocumentProvider, edits, renamer);
@@ -199,7 +199,7 @@ public class InsertClassBuilder {
 	private StringDocumentProvider getDocumentProviderForClassPart(PartialClassNodeWrapper inlinedClassPart) {
 		ISourcePosition classPartPosition = inlinedClassPart.getWrappedNode().getPosition();
 		String activeFileContent = config.getDocProvider().getActiveFileContent();
-		String inlinedClassDocument = activeFileContent.substring(classPartPosition.getStartOffset(), classPartPosition.getEndOffset() + 1);
+		String inlinedClassDocument = activeFileContent.substring(classPartPosition.getStartOffset(), classPartPosition.getEndOffset());
 		StringDocumentProvider inlinedClassDocumentProvider = new StringDocumentProvider(inlinedClassDocument);
 		return inlinedClassDocumentProvider;
 	}

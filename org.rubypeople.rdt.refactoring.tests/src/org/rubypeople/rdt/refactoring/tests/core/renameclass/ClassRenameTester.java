@@ -47,7 +47,7 @@ public class ClassRenameTester extends FileTestCase {
 	@Override
 	public void runTest() throws FileNotFoundException, IOException, BadLocationException {
 		
-		MultiFileTestData testData = new MultiFileTestData(getName(), this.getClass());
+		MultiFileTestData testData = new MultiFileTestData(getName());
 		
 		int caretPosition = testData.getIntProperty("pos");
 		

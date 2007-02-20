@@ -48,7 +48,7 @@ public class InlineMethodTester extends FileTestCase {
 	@Override
 	public void runTest() throws FileNotFoundException, IOException, BadLocationException {
 		
-		FileTestData testData = new FileTestData(getName(), ".source.rb", ".result.rb", this.getClass());
+		FileTestData testData = new FileTestData(getName(), ".source.rb", ".result.rb");
 	
 		int caretPosition = testData.getIntProperty("pos");	
 	

@@ -56,7 +56,7 @@ public class RenameTester extends RefactoringTestCase {
 
 	@Override
 	public void runTest() throws FileNotFoundException, IOException {
-		FileTestData testData = new FileTestData(getName(), ".source.rb", ".source.rb", getClass());
+		FileTestData testData = new FileTestData(getName(), ".source.rb", ".source.rb");
 		RenameConfig config = new RenameConfig(testData, testData.getIntProperty("cursorPosition"));
 		RenameConditionChecker checker = new RenameConditionChecker(config);
 		

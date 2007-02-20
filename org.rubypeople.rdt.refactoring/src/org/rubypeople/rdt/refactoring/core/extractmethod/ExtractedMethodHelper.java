@@ -32,10 +32,7 @@ package org.rubypeople.rdt.refactoring.core.extractmethod;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Observable;
 
@@ -45,7 +42,6 @@ import org.jruby.ast.DVarNode;
 import org.jruby.ast.DefsNode;
 import org.jruby.ast.LocalAsgnNode;
 import org.jruby.ast.Node;
-import org.jruby.lexer.yacc.ISourcePosition;
 import org.rubypeople.rdt.refactoring.core.NodeFactory;
 import org.rubypeople.rdt.refactoring.core.NodeProvider;
 import org.rubypeople.rdt.refactoring.nodewrapper.LocalNodeWrapper;
@@ -89,18 +85,11 @@ public class ExtractedMethodHelper extends Observable {
 		}
 		return VisibilityNodeWrapper.METHOD_VISIBILITY.NONE;
 	}
-	
-	public ISourcePosition getPositionOfFirstChild() {
-		List children = selectedNodes.childNodes();
-		Node firstSelectedNode = (Node) children.get(0);
-		firstSelectedNode = NodeProvider.unwrap(firstSelectedNode);
-		return firstSelectedNode.getPosition();
-	}
 
 	private void initAfterSelectionNodes(Node enclosingScopeNode) {
 		Collection<Node> allNodes = NodeProvider.getAllNodes(enclosingScopeNode);
 		afterSelectionNodes = new LinkedHashMap<Integer, LocalNodeWrapper>();
-		int endPostOfLastSelectedNode = this.getPositionOfLastChild().getEndOffset();
+		int endPostOfLastSelectedNode = selectedNodes.getPosition().getEndOffset();
 		boolean isWrongScopeNode = false;
 		int endOfOtherScope = 0;
 
@@ -125,11 +114,13 @@ public class ExtractedMethodHelper extends Observable {
 					afterSelectionNodes.put(localNode.getId(), localNode);
 				}
 			}
-
 		}
 	}
 
 	private boolean containsSameNodes(Node selectionScopeNode, Node aktScopeNode) {
+		if(selectionScopeNode.childNodes().isEmpty()) {
+			return false;
+		}
 		Object nodeToFind = selectionScopeNode.childNodes().toArray()[0];
 		for (Object aktNode : NodeProvider.getAllNodes(aktScopeNode)) {
 			if (aktNode.equals(nodeToFind)) {
@@ -140,7 +131,7 @@ public class ExtractedMethodHelper extends Observable {
 	}
 
 	private boolean isLocalNodeOfEnclosingScope(boolean isWrongScopeNode, Node aktNode) {
-		return !isWrongScopeNode && (NodeProvider.nodeAssignableFrom(aktNode, LocalNodeWrapper.LOCAL_NODES_CLASSES()));
+		return !isWrongScopeNode && (NodeProvider.nodeAssignableFrom(aktNode, LocalNodeWrapper.getLocalNodeClasses()));
 	}
 
 	private void initNeededLocalNodes() {
@@ -184,18 +175,6 @@ public class ExtractedMethodHelper extends Observable {
 
 	private boolean localNodeNeededAfterSelectedNodes(LocalNodeWrapper localNode) {
 		return afterSelectionNodes.containsKey(localNode.getId());
-	}
-
-	@SuppressWarnings("unchecked")
-	public ISourcePosition getPositionOfLastChild() {
-		List<Node> children = selectedNodes.childNodes();
-		
-		Collections.sort(children, new Comparator<Node>(){
-			public int compare(Node left, Node right) {
-				return left.getPosition().getEndOffset() < right.getPosition().getEndOffset() ? -1 : 1;
-			}});
-		
-		return NodeProvider.unwrap(children.get(children.size() - 1)).getPosition();
 	}
 	
 	public Node getMethodNode(boolean needsNewLineAtBeginOfBlock, boolean needsNewLineAtEndOfBlock) {

@@ -29,6 +29,7 @@
 package org.rubypeople.rdt.refactoring.core.movefield;
 
 import org.rubypeople.rdt.refactoring.core.RubyRefactoring;
+import org.rubypeople.rdt.refactoring.core.TextSelectionProvider;
 import org.rubypeople.rdt.refactoring.documentprovider.DocumentWithIncluding;
 import org.rubypeople.rdt.refactoring.ui.pages.MoveFieldPage;
 
@@ -36,10 +37,10 @@ public class MoveFieldRefactoring extends RubyRefactoring {
 
 	public static final String NAME = "Move Field";
 	
-	public MoveFieldRefactoring() {
+	public MoveFieldRefactoring(TextSelectionProvider selectionProvider) {
 		super(NAME);
 
-		MoveFieldConfig config = new MoveFieldConfig(new DocumentWithIncluding(getDocumentProvider()), getCarretPosition());
+		MoveFieldConfig config = new MoveFieldConfig(new DocumentWithIncluding(getDocumentProvider()), selectionProvider.getCarretPosition());
 		MoveFieldConditionChecker checker = new MoveFieldConditionChecker(config);
 
 		setRefactoringConditionChecker(checker);

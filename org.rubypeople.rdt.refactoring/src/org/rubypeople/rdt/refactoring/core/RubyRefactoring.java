@@ -78,7 +78,7 @@ public abstract class RubyRefactoring extends Refactoring {
 	}
 
 	protected IFile getActiveFile() {
-		return ((IFileEditorInput) getEditor().getEditorInput()).getFile();
+		return ((IFileEditorInput) editor.getEditorInput()).getFile();
 	}
 
 	protected void setEditProvider(IEditProvider editProvider) {
@@ -185,11 +185,11 @@ public abstract class RubyRefactoring extends Refactoring {
 		return multiFileEditProvider;
 	}
 	
-	protected RubyEditor getEditor() {
-		return editor;
-	}
-	
-	protected int getCarretPosition() {
-		return getEditor().getCaretPosition().getOffset();
-	}
+//	protected RubyEditor getEditor() {
+//		return editor;
+//	}
+//	
+//	protected int getCarretPosition() {
+//		return getEditor().getCaretPosition().getOffset();
+//	}
 }

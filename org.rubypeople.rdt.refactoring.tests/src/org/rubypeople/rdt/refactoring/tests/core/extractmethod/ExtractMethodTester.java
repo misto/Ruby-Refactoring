@@ -68,7 +68,7 @@ public class ExtractMethodTester extends FileTestCase {
 	@Override
 	public void runTest() throws FileNotFoundException, IOException, BadLocationException {
 		
-		FileTestData testData = new FileTestData(getName(), ".source.rb", ".result.rb", this.getClass());
+		FileTestData testData = new FileTestData(getName(), ".source.rb", ".result.rb");
 
 		SelectionInformation selection = new SelectionInformation(testData.getIntProperty("start"), testData.getIntProperty("end"), "");
 		ExtractMethodConfig config = new ExtractMethodConfig(testData , selection);

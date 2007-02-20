@@ -51,7 +51,7 @@ public class MergeInFileConditionTester extends RefactoringConditionTestCase {
 	
 	@Override
 	public void runTest() throws FileNotFoundException, IOException {
-		FilePropertyData testData = new FileTestData(getName(), ".test_source", ".test_source", getClass());
+		FilePropertyData testData = new FileTestData(getName(), ".test_source", ".test_source");
 		config = new MergeClassPartInFileConfig(testData);
 		RefactoringConditionChecker checker = new MergeClassPartsInFileConditionChecker(config);
 		checkConditions(checker, testData);

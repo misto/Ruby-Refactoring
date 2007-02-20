@@ -28,27 +28,40 @@
 
 package org.rubypeople.rdt.refactoring.action;
 
+import java.lang.reflect.Constructor;
+
 import org.eclipse.jface.action.Action;
 import org.eclipse.ltk.ui.refactoring.RefactoringWizardOpenOperation;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.PlatformUI;
 import org.rubypeople.rdt.refactoring.core.RubyRefactoring;
+import org.rubypeople.rdt.refactoring.core.TextSelectionProvider;
 import org.rubypeople.rdt.refactoring.ui.RubyRefactoringWizard;
 
 public class RefactoringAction extends Action {
 
-	private Class refactoringClass;
 
-	public RefactoringAction(Class<? extends RubyRefactoring> refactoringClass, String name) {
-		setText(name + "...");
+	private Class<? extends RubyRefactoring> refactoringClass;
+	private TextSelectionProvider selectionProvider;
+
+	public RefactoringAction(Class<? extends RubyRefactoring> refactoringClass, String refactoringName, TextSelectionProvider selectionProvider) {
+		setText(refactoringName + "...");
 		this.refactoringClass = refactoringClass;
+		this.selectionProvider = selectionProvider;
 	}
 
 	public void run() {
 		Shell shell = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell();
 		try {
 			if (PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage().saveAllEditors(true)) {
-				RubyRefactoring refactoring = (RubyRefactoring) refactoringClass.getConstructors()[0].newInstance(new Object[] {});
+				Constructor constructor = refactoringClass.getConstructors()[0];
+				Object[] args;
+				if(constructor.getParameterTypes().length == 1) {
+					args = new Object[] {selectionProvider};
+				} else {
+					args = new Object[0];
+				}
+				RubyRefactoring refactoring = (RubyRefactoring) constructor.newInstance(args);
 				RubyRefactoringWizard wizard = new RubyRefactoringWizard(refactoring);
 				wizard.setWindowTitle(refactoring.getName());
 				RefactoringWizardOpenOperation op = new RefactoringWizardOpenOperation(wizard);

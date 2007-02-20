@@ -38,7 +38,7 @@ public class TS_PushDown extends FileTestSuite {
 
 	public static Test suite()
 	{
-		TestSuite suite = createSuite("PushDown", "push_down_test_.*test_source", PushDownTester.class);
+		TestSuite suite = createSuite("PushDown", "push_down_test_*test_source", PushDownTester.class);
 		suite.addTestSuite(TC_MethodDownPusherTreeTest.class);
 		return suite;
 	}

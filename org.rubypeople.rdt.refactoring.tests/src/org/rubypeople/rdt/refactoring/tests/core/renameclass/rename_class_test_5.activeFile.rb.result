@@ -1,6 +1,0 @@
-require 'dependantFile.rb'
-
-class NewName
-  def methode
-  end
-end

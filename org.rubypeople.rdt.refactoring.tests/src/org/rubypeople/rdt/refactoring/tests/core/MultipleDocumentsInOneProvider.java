@@ -47,7 +47,7 @@ public class MultipleDocumentsInOneProvider extends DocumentProvider {
 		FileTestData doc = null;
 		
 		try {
-			doc = new FileTestData(baseFile, "", "", resource);
+			doc = new FileTestData(baseFile, "", "");
 		} catch (FileNotFoundException e) {
 			assert false : "File not found! " + e;
 			return; 

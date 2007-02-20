@@ -58,7 +58,7 @@ public class MergeWithExternalClassPartsTester extends RefactoringTestCase{
 	@Override
 	public void runTest() throws FileNotFoundException, IOException, BadLocationException
 	{
-		MultiFileTestData testData = new MultiFileTestData(testName, getClass());
+		MultiFileTestData testData = new MultiFileTestData(testName);
 		MergeWithExternalClassPartConfig config = new MergeWithExternalClassPartConfig(testData);
 		MergeWithExternalClassPartsConditionChecker checker = new MergeWithExternalClassPartsConditionChecker(config);
 		

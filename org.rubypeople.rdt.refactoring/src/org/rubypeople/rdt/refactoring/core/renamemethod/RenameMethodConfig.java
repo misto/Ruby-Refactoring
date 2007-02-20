@@ -66,7 +66,6 @@ public class RenameMethodConfig implements INewNameReceiver, NodeSelector {
 	public RenameMethodConfig(DocumentProvider docProvider, int caretPosition) {
 		this.docProvider = docProvider;
 		this.caretPosition = caretPosition;
-		this.newName = null;
 		this.renamedCalls = new ArrayList<INodeWrapper>();
 		this.possibleCalls = new ArrayList<INodeWrapper>();
 	}

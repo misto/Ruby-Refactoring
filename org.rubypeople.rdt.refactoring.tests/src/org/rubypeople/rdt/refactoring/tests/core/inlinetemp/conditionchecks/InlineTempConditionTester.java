@@ -50,7 +50,7 @@ public class InlineTempConditionTester extends RefactoringConditionTestCase {
 
 	@Override
 	public void runTest() throws FileNotFoundException, IOException {
-		testData = new FileTestData(getName(), ".test_source", ".test_source", getClass());
+		testData = new FileTestData(getName(), ".test_source", ".test_source");
 		
 		config = new InlineTempConfig(testData, testData.getIntProperty("cursorPosition"));
 		InlineTempConditionChecker checker = new InlineTempConditionChecker(config);

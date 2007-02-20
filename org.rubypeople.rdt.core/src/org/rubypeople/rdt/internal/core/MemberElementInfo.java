@@ -13,7 +13,7 @@ package org.rubypeople.rdt.internal.core;
 /** 
  *Element info for IMember elements. 
  */
-/* package */ abstract class MemberElementInfo extends SourceRefElementInfo {
+ public abstract class MemberElementInfo extends SourceRefElementInfo {
 
 	/**
 	 * The start position of this member's name in the its

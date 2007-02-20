@@ -52,7 +52,7 @@ public class MoveMethodTester extends RefactoringTestCase {
 	@Override
 	public void runTest() throws FileNotFoundException, IOException, BadLocationException
 	{
-		MultiFileTestData testData = new MultiFileTestData(testName, getClass());
+		MultiFileTestData testData = new MultiFileTestData(testName);
 		MoveMethodConfig config = new MoveMethodConfig(testData, testData.getIntProperty("caretPosition"));
 		MoveMethodConditionChecker checker = new MoveMethodConditionChecker(config);
 		

@@ -37,7 +37,7 @@ import org.rubypeople.rdt.refactoring.tests.FileTestSuite;
 public class TS_Rename extends FileTestSuite {
 
 	public static Test suite() {
-		return createSuite("RenameTest", "rename_test_.*source.rb", RenameTester.class);
+		return createSuite("RenameTest", "rename_test_*source.rb", RenameTester.class);
 	}
 
 }

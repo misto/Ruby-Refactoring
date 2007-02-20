@@ -35,6 +35,6 @@ import org.rubypeople.rdt.refactoring.tests.FileTestSuite;
 public class TS_RenameMethodSelection extends FileTestSuite {
 	
 	public static Test suite() {
-		return createSuite("Rename Method Selection", "rename_method_.*\\.test_properties", RenameMethodSelectionTester.class);
+		return createSuite("Rename Method Selection", "rename_method_selection_test*.test_properties", RenameMethodSelectionTester.class);
 	}
 }

@@ -1,6 +1,0 @@
-class A
-  def m (arg1, arg2)
-    @i = 5
-    @i = arg1 + arg2
-  end
-end

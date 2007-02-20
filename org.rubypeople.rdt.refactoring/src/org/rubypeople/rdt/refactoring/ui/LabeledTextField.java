@@ -40,6 +40,7 @@ import org.eclipse.swt.widgets.Text;
 public class LabeledTextField extends Composite {
 
 	private Text textField;
+	private Label label;
 
 	public LabeledTextField(Composite parent, String labelName, String textContent) {
 		super(parent, SWT.None);
@@ -48,7 +49,7 @@ public class LabeledTextField extends Composite {
 		layout.numColumns = 2;
 		setLayout(layout);
 
-		Label label = new Label(this, SWT.NONE);
+		label = new Label(this, SWT.NONE);
 		label.setText(labelName);
 		label.setLayoutData(new GridData());
 
@@ -68,4 +69,9 @@ public class LabeledTextField extends Composite {
 		return textField;
 	}
 
+	@Override
+	public void setEnabled(boolean enabled) {
+		label.setEnabled(enabled);
+		textField.setEnabled(enabled);
+	}
 }

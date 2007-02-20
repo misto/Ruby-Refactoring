@@ -37,7 +37,7 @@ import org.rubypeople.rdt.refactoring.tests.core.inlineclass.conditionchecks.TS_
 public class TS_InlineClass extends FileTestSuite {
 	
 	public static Test suite() {
-		TestSuite suite = createSuite("Inline Class", "inline_class_.*\\.test_properties", ClassInlinerTester.class);
+		TestSuite suite = createSuite("Inline Class", "inline_class_test_*.test_properties", ClassInlinerTester.class);
 		
 		suite.addTest(TS_InlineClassChecks.suite());
 		

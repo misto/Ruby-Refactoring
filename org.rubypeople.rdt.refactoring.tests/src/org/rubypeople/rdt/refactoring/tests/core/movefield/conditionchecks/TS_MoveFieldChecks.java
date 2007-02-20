@@ -35,6 +35,6 @@ import org.rubypeople.rdt.refactoring.tests.FileTestSuite;
 public class TS_MoveFieldChecks extends FileTestSuite {
 
 	public static Test suite() {
-		return createSuite("Move Field Condition Checks", "move_field_checker_test_.*test_source", MoveFieldConditionTester.class);
+		return createSuite("Move Field Condition Checks", "move_field_checker_test_*test_source", MoveFieldConditionTester.class);
 	}
 }

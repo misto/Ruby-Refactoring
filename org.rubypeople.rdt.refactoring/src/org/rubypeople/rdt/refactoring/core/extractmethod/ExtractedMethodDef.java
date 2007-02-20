@@ -34,7 +34,6 @@ import org.jruby.ast.BlockNode;
 import org.jruby.ast.MethodDefNode;
 import org.jruby.ast.Node;
 import org.rubypeople.rdt.refactoring.core.NodeProvider;
-import org.rubypeople.rdt.refactoring.core.SelectionInformation;
 import org.rubypeople.rdt.refactoring.core.SelectionNodeProvider;
 import org.rubypeople.rdt.refactoring.editprovider.InsertEditProvider;
 import org.rubypeople.rdt.refactoring.offsetprovider.AfterNodeOffsetProvider;
@@ -48,21 +47,20 @@ public class ExtractedMethodDef extends InsertEditProvider {
 	public ExtractedMethodDef(ExtractMethodConfig config) {
 		super(true);
 		extractedMethodHelper = config.getHelper();
-		insertAfterNode = initInsertAfterNode(config.getRootNode(), config.getSelection());
+		insertAfterNode = initInsertAfterNode(config);
 		if (insertAfterNode == null) {
 			setInsertType(INSERT_AT_BEGIN_OF_LINE);
 		}
 	}
 
-	private Node initInsertAfterNode(Node rootNode, SelectionInformation selection) {
-		Node enclosingMethodNode = SelectionNodeProvider.getEnclosingNode(rootNode, selection, MethodDefNode.class);
+	private Node initInsertAfterNode(ExtractMethodConfig config) {
+		Node enclosingMethodNode = SelectionNodeProvider.getEnclosingNode(config.getRootNode(), config.getSelection(), MethodDefNode.class);
 		if (enclosingMethodNode != null) {
 			return enclosingMethodNode;
 		}
-		Node selectedNodes = SelectionNodeProvider.getSelectedNodes(rootNode, selection);
-		Node enclosingBlockNode = SelectionNodeProvider.getEnclosingNode(rootNode, selection, BlockNode.class);
+		Node enclosingBlockNode = SelectionNodeProvider.getEnclosingNode(config.getRootNode(), config.getSelection(), BlockNode.class);
 		if (enclosingBlockNode != null) {
-			Node firstSelectedNode = (Node) selectedNodes.childNodes().toArray()[0];
+			Node firstSelectedNode = (Node) config.getSelectedNodes().childNodes().toArray()[0];
 			return NodeProvider.getNodeBefore(enclosingBlockNode, firstSelectedNode);
 		}
 		return null;

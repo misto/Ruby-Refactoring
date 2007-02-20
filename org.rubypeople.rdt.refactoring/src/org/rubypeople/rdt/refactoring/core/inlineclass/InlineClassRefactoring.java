@@ -31,16 +31,17 @@
 package org.rubypeople.rdt.refactoring.core.inlineclass;
 
 import org.rubypeople.rdt.refactoring.core.RubyRefactoring;
+import org.rubypeople.rdt.refactoring.core.TextSelectionProvider;
 import org.rubypeople.rdt.refactoring.ui.pages.InlineClassPage;
 
 public class InlineClassRefactoring extends RubyRefactoring{
 
 	public final static String NAME = "Inline Class";
 	
-	public InlineClassRefactoring() {
+	public InlineClassRefactoring(TextSelectionProvider selectionProvider) {
 		super(NAME);
 		
-		InlineClassConfig config = new InlineClassConfig(getDocumentProvider(), getCarretPosition());
+		InlineClassConfig config = new InlineClassConfig(getDocumentProvider(), selectionProvider.getCarretPosition());
 		InlineClassConditionChecker checker = new InlineClassConditionChecker(config);
 		setRefactoringConditionChecker(checker);
 		

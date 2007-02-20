@@ -47,7 +47,7 @@ public class RenameLocalConditionChecker extends RefactoringConditionTestCase {
 
 	@Override
 	public void runTest() throws FileNotFoundException, IOException {
-		FilePropertyData testData = new FileTestData(getName(), ".test_source.rb", ".test_source.rb", getClass());
+		FilePropertyData testData = new FileTestData(getName(), ".test_source.rb", ".test_source.rb");
 		RenameConfig config = new RenameConfig(testData, testData.getIntProperty("cursorPosition"));
 		RenameConditionChecker checker = new RenameConditionChecker(config);
 		

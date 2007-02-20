@@ -37,7 +37,7 @@ public class TS_OverrideMethod extends FileTestSuite {
 
 	public static Test suite()
 	{
-		TestSuite suite = createSuite("OverrideMethod", "override_method_test_.*test_source", OverrideMethodTester.class);
+		TestSuite suite = createSuite("OverrideMethod", "override_method_test_*test_source", OverrideMethodTester.class);
 		suite.addTestSuite(TC_MethodOverriderTreeTest.class);
 		return suite;
 	}

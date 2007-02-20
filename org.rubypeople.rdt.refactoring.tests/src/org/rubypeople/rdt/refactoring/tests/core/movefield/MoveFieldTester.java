@@ -49,7 +49,7 @@ public class MoveFieldTester extends RefactoringTestCase {
 	
 	@Override
 	public void runTest() throws FileNotFoundException, IOException, BadLocationException {
-		MultiFileTestData testData = new MultiFileTestData(testName + ".", ".source.rb", ".result.rb", testName + ".test_properties", getClass());
+		MultiFileTestData testData = new MultiFileTestData(testName + ".", ".source.rb", ".result.rb", testName + ".test_properties");
 		
 		MoveFieldConfig config = new MoveFieldConfig(new DocumentWithIncluding(testData), testData.getIntProperty("caretPosition"));
 		new MoveFieldConditionChecker(config);

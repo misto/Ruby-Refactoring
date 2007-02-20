@@ -31,6 +31,7 @@
 package org.rubypeople.rdt.refactoring.nodewrapper;
 
 import org.jruby.ast.ClassVarAsgnNode;
+import org.jruby.ast.ClassVarDeclNode;
 import org.jruby.ast.ClassVarNode;
 import org.jruby.ast.InstAsgnNode;
 import org.jruby.ast.InstVarNode;
@@ -47,9 +48,10 @@ public class FieldNodeWrapper implements INodeWrapper {
 	public static final int CLASS_VAR_ASGN_NODE = 3;
 	public static final int CLASS_VAR_NODE = 4;
 	public static final int SYMBOL_NODE = 5;
+	public static final int CLASS_VAR_DECL_NODE = 6;
 	
-	final static Class[] FIELD_NODE_CLASSES = { InstAsgnNode.class, InstVarNode.class, ClassVarAsgnNode.class, ClassVarNode.class, SymbolNode.class };
-	static final Class[] FIELD_NODE_CLASSES_WITHOUT_SYMBOL_NODE = { InstAsgnNode.class, InstVarNode.class, ClassVarAsgnNode.class, ClassVarNode.class };
+	final static Class[] FIELD_NODE_CLASSES = { InstAsgnNode.class, InstVarNode.class, ClassVarAsgnNode.class, ClassVarNode.class, ClassVarDeclNode.class, SymbolNode.class };
+	static final Class[] FIELD_NODE_CLASSES_WITHOUT_SYMBOL_NODE = { InstAsgnNode.class, InstVarNode.class, ClassVarAsgnNode.class, ClassVarNode.class, ClassVarDeclNode.class };
 
 	public static final String ATTR_NAME = "attr";
 	
@@ -81,6 +83,10 @@ public class FieldNodeWrapper implements INodeWrapper {
 			SymbolNode symbolNode = (SymbolNode) node;
 			name = symbolNode.getName();
 			nodeType = SYMBOL_NODE;
+		} else if (NodeProvider.nodeAssignableFrom(node, ClassVarDeclNode.class)) {
+			ClassVarDeclNode classVarDeclNode = (ClassVarDeclNode) node;
+			name = classVarDeclNode.getName();
+			nodeType = CLASS_VAR_DECL_NODE;
 		}
 
 		wrappedNode = node;
@@ -107,11 +113,11 @@ public class FieldNodeWrapper implements INodeWrapper {
 	}
 
 	public boolean isClassVar() {
-		return (nodeType == CLASS_VAR_ASGN_NODE || nodeType == CLASS_VAR_NODE);
+		return (nodeType == CLASS_VAR_ASGN_NODE || nodeType == CLASS_VAR_NODE || nodeType == CLASS_VAR_DECL_NODE);
 	}
 
 	public boolean isAsgnNode() {
-		return nodeType == INST_ASGN_NODE || nodeType == CLASS_VAR_ASGN_NODE;
+		return nodeType == INST_ASGN_NODE || nodeType == CLASS_VAR_ASGN_NODE || nodeType == CLASS_VAR_DECL_NODE;
 	}
 	
 	public ISourcePosition getPosition() {

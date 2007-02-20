@@ -31,12 +31,9 @@ package org.rubypeople.rdt.refactoring.core.movefield;
 import java.util.Collection;
 import java.util.TreeSet;
 
-import org.jruby.ast.InstAsgnNode;
-import org.jruby.ast.InstVarNode;
+import org.rubypeople.rdt.refactoring.classnodeprovider.AllFilesClassNodeProvider;
 import org.rubypeople.rdt.refactoring.core.RefactoringConditionChecker;
 import org.rubypeople.rdt.refactoring.core.SelectionNodeProvider;
-import org.rubypeople.rdt.refactoring.documentprovider.IDocumentProvider;
-import org.rubypeople.rdt.refactoring.documentprovider.StringDocumentProvider;
 import org.rubypeople.rdt.refactoring.exception.NoClassNodeException;
 import org.rubypeople.rdt.refactoring.nodewrapper.ClassNodeWrapper;
 import org.rubypeople.rdt.refactoring.nodewrapper.FieldNodeWrapper;
@@ -45,6 +42,7 @@ public class MoveFieldConditionChecker extends RefactoringConditionChecker {
 
 	private ClassNodeWrapper selectedClassNode;
 	private FieldNodeWrapper selectedField;
+	private MoveFieldConfig config;
 
 	public MoveFieldConditionChecker(MoveFieldConfig config) {
 		super(config.getDoc(), config);
@@ -52,7 +50,7 @@ public class MoveFieldConditionChecker extends RefactoringConditionChecker {
 
 	@Override
 	protected void init(Object configObj) {
-		MoveFieldConfig config = (MoveFieldConfig) configObj;
+		config = (MoveFieldConfig) configObj;
 	
 		try {
 			selectedClassNode = SelectionNodeProvider.getSelectedClassNode(config.getDoc().getRootNode(), config.getPos());
@@ -66,15 +64,15 @@ public class MoveFieldConditionChecker extends RefactoringConditionChecker {
 		if(selectedField == null) {
 			return;
 		}
-		config.setTargetClassCandidates(getAllClassNames(config.getDoc()));
-		config.setReferenceCandidates(getAllFieldNames(selectedClassNode.getFields()));
+		config.setTargetClassCandidates(getPossibleTargetClassNames(selectedClassNode.getName()));
+		config.setReferenceCandidates(getPossibleFieldNames(selectedClassNode.getFields(), selectedField.getNameWithoutAts()));
 	}
 
-	private static Collection<String> getAllFieldNames(Collection<FieldNodeWrapper> fields) {
+	private static Collection<String> getPossibleFieldNames(Collection<FieldNodeWrapper> fields, String selectedFieldName) {
 		Collection<String> names = new TreeSet<String>();
 		for (FieldNodeWrapper field : fields) {
-			if(field.getWrappedNode() instanceof InstVarNode || field.getWrappedNode() instanceof InstAsgnNode ) {
-				names.add(field.getName());
+			if(field.isInstVar() && !field.getNameWithoutAts().equals(selectedFieldName)) {
+				names.add("@" + field.getNameWithoutAts());
 			}
 		}
 		return names;
@@ -95,14 +93,11 @@ public class MoveFieldConditionChecker extends RefactoringConditionChecker {
 			&& fieldNode.getWrappedNode().getPosition().getEndOffset() >= pos;
 	}
 
-	private static Collection<String> getAllClassNames(IDocumentProvider doc) {
+	private Collection<String> getPossibleTargetClassNames(String selectedClassName) {
 		Collection<String> allClasses = new TreeSet<String>();
-		
-		for(String fileName : doc.getFileNames()) {
-			StringDocumentProvider stringDocumentProvider = new StringDocumentProvider(doc.getFileContent(fileName));
-			for(ClassNodeWrapper classNode : stringDocumentProvider.getIncludedClassNodeProvider().getAllClassNodes()) {
-				allClasses.add(classNode.getName());
-			}
+		for(ClassNodeWrapper classNode : new AllFilesClassNodeProvider(config.getDoc()).getAllClassNodes()) {
+			if(!classNode.getName().equals(selectedClassName))
+			allClasses.add(classNode.getName());
 		}
 		return allClasses;
 	}
@@ -113,6 +108,10 @@ public class MoveFieldConditionChecker extends RefactoringConditionChecker {
 			addError("Please select an instance variable inside a class.");
 		} else if (selectedField == null) {
 			addError("Please select a field");
+		} else if(config.getReferenceCandidates().isEmpty()) {
+			addError("At least one other field is required through which the moved field can be accessed.");
+		} else if (config.getTargetClassCandidates().isEmpty()) {
+			addError("There is no destination class.");
 		}
 	}
 

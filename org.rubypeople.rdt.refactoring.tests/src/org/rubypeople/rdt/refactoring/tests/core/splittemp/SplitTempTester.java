@@ -47,7 +47,7 @@ public class SplitTempTester extends FileTestCase {
 	@Override
 	public void runTest() throws FileNotFoundException, IOException, BadLocationException {
 		
-		FileTestData testData = new FileTestData(getName(), ".source.rb", ".result.rb", this.getClass());
+		FileTestData testData = new FileTestData(getName(), ".source.rb", ".result.rb");
 
 		SplitTempConfig config = new SplitTempConfig(testData, testData.getIntProperty("pos"));
 		SplitTempConditionChecker checker = new SplitTempConditionChecker(config);

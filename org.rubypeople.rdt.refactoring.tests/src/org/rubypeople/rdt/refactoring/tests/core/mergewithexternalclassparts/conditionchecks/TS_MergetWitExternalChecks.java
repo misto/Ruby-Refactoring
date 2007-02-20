@@ -37,6 +37,6 @@ import org.rubypeople.rdt.refactoring.tests.FileTestSuite;
 public class TS_MergetWitExternalChecks extends FileTestSuite {
 	
 	public static Test suite() {
-		return createSuite("MergeWitExternalConditionChecks", "merge_with_external_checker_test_.*\\.test_properties", MergeWithExternalConditionTester.class);
+		return createSuite("MergeWitExternalConditionChecks", "merge_with_external_checker_test_*.test_properties", MergeWithExternalConditionTester.class);
 	}
 }

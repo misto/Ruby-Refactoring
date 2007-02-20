@@ -49,7 +49,7 @@ public class MergeWithExternalConditionTester extends RefactoringConditionTestCa
 	
 	@Override
 	public void runTest() throws FileNotFoundException, IOException {
-		MultiFileTestData testData = new MultiFileTestData(getName(), getClass());
+		MultiFileTestData testData = new MultiFileTestData(getName());
 		config = new MergeWithExternalClassPartConfig(testData);
 		MergeWithExternalClassPartsConditionChecker checker = new MergeWithExternalClassPartsConditionChecker(config);
 		checkConditions(checker, testData);

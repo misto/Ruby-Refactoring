@@ -30,39 +30,39 @@
 
 package org.rubypeople.rdt.refactoring.core.extractmethod;
 
-import org.eclipse.jface.text.ITextSelection;
 import org.eclipse.ltk.ui.refactoring.UserInputWizardPage;
 import org.rubypeople.rdt.refactoring.core.RubyRefactoring;
-import org.rubypeople.rdt.refactoring.core.SelectionInformation;
+import org.rubypeople.rdt.refactoring.core.TextSelectionProvider;
 import org.rubypeople.rdt.refactoring.ui.pages.ExtractMethodPage;
 
 public class ExtractMethodRefactoring extends RubyRefactoring {
 
 	public static final String NAME = "Extract Method";
 
-	private SelectionInformation selectionInformation;
+//	private SelectionInformation selectionInformation;
 
-	public ExtractMethodRefactoring() {
+	public ExtractMethodRefactoring(TextSelectionProvider selectionProvider) {
 		super(NAME);
-		initPositions((ITextSelection) getEditor().getSelectionProvider().getSelection());
-		ExtractMethodConfig config = new ExtractMethodConfig(getDocumentProvider(), selectionInformation);
+		
+//		initPositions((ITextSelection) getEditor().getSelectionProvider().getSelection());
+		ExtractMethodConfig config = new ExtractMethodConfig(getDocumentProvider(), selectionProvider.getSelectionInformation());
 		ExtractMethodConditionChecker checker = new ExtractMethodConditionChecker(config);
 		
 		setRefactoringConditionChecker(checker);
 		if(checker.shouldPerform()) {
 			MethodExtractor methodExtractor = new MethodExtractor(config);
 			setEditProvider(methodExtractor);
-			UserInputWizardPage page = new ExtractMethodPage(methodExtractor, selectionInformation);
+			UserInputWizardPage page = new ExtractMethodPage(methodExtractor, selectionProvider.getSelectionInformation());
 			pages.add(page);
 		}
 	}
 
-	private void initPositions(ITextSelection selection) {
-		int startOffset = selection.getOffset();
-		int endOffset = startOffset + selection.getLength();
-		if (endOffset > startOffset) {
-			endOffset--;
-		}
-		selectionInformation = new SelectionInformation(startOffset, endOffset, getEditor().getViewer().getDocument().get());
-	}
+//	private void initPositions(ITextSelection selection) {
+//		int startOffset = selection.getOffset();
+//		int endOffset = startOffset + selection.getLength();
+//		if (endOffset > startOffset) {
+//			endOffset--;
+//		}
+//		selectionInformation = new SelectionInformation(startOffset, endOffset, getEditor().getViewer().getDocument().get());
+//	}
 }

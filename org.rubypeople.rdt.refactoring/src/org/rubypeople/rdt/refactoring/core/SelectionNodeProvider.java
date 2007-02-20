@@ -34,11 +34,9 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Vector;
 
-import org.jruby.ast.ArrayNode;
 import org.jruby.ast.AttrAssignNode;
 import org.jruby.ast.BlockNode;
 import org.jruby.ast.CallNode;
-import org.jruby.ast.CaseNode;
 import org.jruby.ast.ClassNode;
 import org.jruby.ast.ClassVarAsgnNode;
 import org.jruby.ast.ClassVarNode;
@@ -57,7 +55,6 @@ import org.jruby.ast.NewlineNode;
 import org.jruby.ast.Node;
 import org.jruby.ast.RootNode;
 import org.jruby.ast.SClassNode;
-import org.jruby.ast.WhenNode;
 import org.jruby.ast.types.INameNode;
 import org.jruby.lexer.yacc.ISourcePosition;
 import org.rubypeople.rdt.refactoring.exception.NoClassNodeException;
@@ -80,16 +77,6 @@ public class SelectionNodeProvider {
 
 		if (enclosingNode == null)
 			return null;
-		if (NodeProvider.nodeAssignableFrom(enclosingNode, WhenNode.class)) {
-			enclosingNode = getEnclosingNode(rootNode, selection, CaseNode.class);
-		}
-		if(NodeProvider.nodeAssignableFrom(enclosingNode, ArrayNode.class)) {
-			Node node = getEnclosingNode(rootNode, selection, WhenNode.class);
-			WhenNode enclosingWhen = (WhenNode) node;
-			if(enclosingWhen != null && nodeEnclosesNode(enclosingWhen.getExpressionNodes(), enclosingNode)) {
-				enclosingNode = getEnclosingNode(rootNode, selection, CaseNode.class);
-			}
-		}
 
 		BlockNode enclosingBlockNode = (BlockNode) getEnclosingNode(rootNode, selection, BlockNode.class);
 		if (enclosingBlockNode == null) {
@@ -147,7 +134,7 @@ public class SelectionNodeProvider {
 		return null;
 	}
 
-	private static boolean nodeEnclosesNode(Node enclosingNode, Node enclosedNode) {
+	public static boolean nodeEnclosesNode(Node enclosingNode, Node enclosedNode) {
 		ISourcePosition enclosingPos = enclosingNode.getPosition();
 		ISourcePosition enclosedPos = enclosedNode.getPosition();
 		return (enclosingPos.getStartOffset() <= enclosedPos.getStartOffset() && enclosingPos.getEndOffset() >= enclosedPos.getEndOffset());

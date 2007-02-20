@@ -35,7 +35,7 @@ import org.rubypeople.rdt.refactoring.tests.core.renameclass.conditionchecker.TS
 
 public class TS_RenameClass extends FileTestSuite {
 	public static TestSuite suite() {
-		TestSuite suite = createSuite("Rename Class", "rename_class_test_.*active.*source", ClassRenameTester.class);	
+		TestSuite suite = createSuite("Rename Class", "rename_class_test_*active*source", ClassRenameTester.class);	
 
 		suite.addTestSuite(TC_ClassFinder.class);
 		suite.addTestSuite(TC_ClassInstanciationFinder.class);

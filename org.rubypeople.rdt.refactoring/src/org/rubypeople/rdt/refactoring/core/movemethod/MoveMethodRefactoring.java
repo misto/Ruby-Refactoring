@@ -31,6 +31,7 @@
 package org.rubypeople.rdt.refactoring.core.movemethod;
 
 import org.rubypeople.rdt.refactoring.core.RubyRefactoring;
+import org.rubypeople.rdt.refactoring.core.TextSelectionProvider;
 import org.rubypeople.rdt.refactoring.documentprovider.DocumentWithIncluding;
 import org.rubypeople.rdt.refactoring.ui.pages.movemethod.FirstMoveMethodPage;
 import org.rubypeople.rdt.refactoring.ui.pages.movemethod.SecondMoveMethodPage;
@@ -39,10 +40,10 @@ public class MoveMethodRefactoring extends RubyRefactoring {
 
 	public static final String NAME = "Move Method";
 	
-	public MoveMethodRefactoring() {
+	public MoveMethodRefactoring(TextSelectionProvider selectionProvider) {
 		super(NAME);
 		
-		MoveMethodConfig config = new MoveMethodConfig(new DocumentWithIncluding(getDocumentProvider()), getCarretPosition());
+		MoveMethodConfig config = new MoveMethodConfig(new DocumentWithIncluding(getDocumentProvider()), selectionProvider.getCarretPosition());
 		MoveMethodConditionChecker checker = new MoveMethodConditionChecker(config);
 
 		setRefactoringConditionChecker(checker);

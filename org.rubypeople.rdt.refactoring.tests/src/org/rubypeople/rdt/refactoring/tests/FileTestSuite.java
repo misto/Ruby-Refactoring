@@ -29,7 +29,7 @@
 package org.rubypeople.rdt.refactoring.tests;
 
 import java.io.File;
-import java.io.FileFilter;
+import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 
@@ -43,35 +43,28 @@ public class FileTestSuite extends TestSuite {
 
 	protected static TestSuite createSuite(String name, String pattern, Class<? extends RefactoringTestCase> klass) {
 		TestSuite suite = new TestSuite(name);
-		for(File file : getFiles(klass, pattern)) {		
-			try {
-				Constructor<? extends RefactoringTestCase> constructor = klass.getConstructor(new Class[]{String.class});
-				suite.addTest(constructor.newInstance(getTestName(file)));
-			} catch (SecurityException e) {
-				e.printStackTrace();
-			} catch (NoSuchMethodException e) {
-				e.printStackTrace();
-			} catch (IllegalArgumentException e) {
-				e.printStackTrace();
-			} catch (InstantiationException e) {
-				e.printStackTrace();
-			} catch (IllegalAccessException e) {
-				e.printStackTrace();
-			} catch (InvocationTargetException e) {
-				e.printStackTrace();
+		try {
+			for(File file : TestsPlugin.getFiles(pattern)) {		
+				try {
+					Constructor<? extends RefactoringTestCase> constructor = klass.getConstructor(new Class[]{String.class});
+					suite.addTest(constructor.newInstance(getTestName(file)));
+				} catch (SecurityException e) {
+					e.printStackTrace();
+				} catch (NoSuchMethodException e) {
+					e.printStackTrace();
+				} catch (IllegalArgumentException e) {
+					e.printStackTrace();
+				} catch (InstantiationException e) {
+					e.printStackTrace();
+				} catch (IllegalAccessException e) {
+					e.printStackTrace();
+				} catch (InvocationTargetException e) {
+					e.printStackTrace();
+				}
 			}
+		} catch (IOException e) {
+			e.printStackTrace();
 		}
 		return suite;
-	}
-	
-	protected static File[] getFiles(Class<? extends RefactoringTestCase> owner, final String filter) {
-		File thisPath = new File(owner.getResource(".").getFile());
-		File[] files = thisPath.listFiles(new FileFilter(){
-	
-			public boolean accept(File pathname) {
-				return pathname.getName().matches(filter);
-			}});
-		
-		return files;
 	}
 }

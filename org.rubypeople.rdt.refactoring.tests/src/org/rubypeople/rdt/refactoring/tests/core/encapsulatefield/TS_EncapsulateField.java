@@ -41,7 +41,7 @@ public class TS_EncapsulateField extends FileTestSuite {
 
 	public static Test suite()
 	{
-		TestSuite suite = createSuite("EncapsulateField", "encapsulate_field_test_.*test_source", EncapsulateFieldTester.class);
+		TestSuite suite = createSuite("EncapsulateField", "encapsulate_field_test_*test_source", EncapsulateFieldTester.class);
 		suite.addTest(TS_EncapsulateFieldChecks.suite());
 		return suite;
 	}

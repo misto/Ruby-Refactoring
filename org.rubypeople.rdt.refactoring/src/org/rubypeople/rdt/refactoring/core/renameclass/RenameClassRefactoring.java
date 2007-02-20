@@ -31,6 +31,7 @@ package org.rubypeople.rdt.refactoring.core.renameclass;
 import java.util.ArrayList;
 
 import org.rubypeople.rdt.refactoring.core.RubyRefactoring;
+import org.rubypeople.rdt.refactoring.core.TextSelectionProvider;
 import org.rubypeople.rdt.refactoring.ui.IValidator;
 import org.rubypeople.rdt.refactoring.ui.NewNameListener;
 import org.rubypeople.rdt.refactoring.ui.pages.RenamePage;
@@ -46,9 +47,9 @@ public class RenameClassRefactoring extends RubyRefactoring {
 
 	public static final String NAME = "Rename Class";
 
-	public RenameClassRefactoring() {
+	public RenameClassRefactoring(TextSelectionProvider selectionProvider) {
 		super(NAME);
-		RenameClassConfig renameClassConfig = new RenameClassConfig(getDocumentProvider(), getCarretPosition());
+		RenameClassConfig renameClassConfig = new RenameClassConfig(getDocumentProvider(), selectionProvider.getCarretPosition());
 		RenameClassConditionChecker conditionChecker = new RenameClassConditionChecker(renameClassConfig);
 		setRefactoringConditionChecker(conditionChecker);
 		if(conditionChecker.shouldPerform()) {

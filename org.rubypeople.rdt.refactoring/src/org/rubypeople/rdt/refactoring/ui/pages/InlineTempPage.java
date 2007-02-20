@@ -45,6 +45,7 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 import org.rubypeople.rdt.refactoring.core.inlinetemp.InlineTempConfig;
 import org.rubypeople.rdt.refactoring.core.inlinetemp.InlineTempRefactoring;
+import org.rubypeople.rdt.refactoring.ui.LabeledTextField;
 import org.rubypeople.rdt.refactoring.util.NameValidator;
 
 public class InlineTempPage extends UserInputWizardPage {
@@ -88,13 +89,13 @@ public class InlineTempPage extends UserInputWizardPage {
 		checkQuery.setText("Replace Temp with Query");
 		checkQuery.setEnabled(true);
 
-		final Text newMethodName = new Text(queryGroup, SWT.BORDER | SWT.SINGLE);
+		final LabeledTextField newMethodName = new LabeledTextField(queryGroup, "New Method Name: ");
 		newMethodName.setEnabled(checkQuery.getSelection());
 		GridData textData = new GridData(GridData.FILL_HORIZONTAL);
 		newMethodName.setLayoutData(textData);
 
 		createSelectionListener(checkQuery, newMethodName);
-		createModifyListener(newMethodName);
+		createModifyListener(newMethodName.getText());
 	}
 
 	private void createModifyListener(final Text newMethodName) {
@@ -121,7 +122,7 @@ public class InlineTempPage extends UserInputWizardPage {
 		});
 	}
 
-	private void createSelectionListener(final Button checkQuery, final Text newMethodName) {
+	private void createSelectionListener(final Button checkQuery, final LabeledTextField newMethodName) {
 		checkQuery.addSelectionListener(new SelectionListener() {
 
 			public void widgetDefaultSelected(SelectionEvent e) {

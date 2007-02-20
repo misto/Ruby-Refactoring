@@ -32,6 +32,7 @@ import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.Separator;
 import org.eclipse.ui.actions.ActionGroup;
+import org.rubypeople.rdt.refactoring.core.TextSelectionProvider;
 import org.rubypeople.rdt.refactoring.core.converttemptofield.ConvertTempToFieldRefactoring;
 import org.rubypeople.rdt.refactoring.core.encapsulatefield.EncapsulateFieldRefactoring;
 import org.rubypeople.rdt.refactoring.core.extractmethod.ExtractMethodRefactoring;
@@ -54,35 +55,36 @@ public class RefactoringActionGroup extends ActionGroup {
 	private static final String INSERT_AFTER_GROUP_NAME = "group.edit";
 
 	public void fillContextMenu(IMenuManager menu) {
+		TextSelectionProvider selectionProvider = new TextSelectionProvider(null);
 		menu.insertAfter(INSERT_AFTER_GROUP_NAME, new Separator());
-		menu.insertAfter(INSERT_AFTER_GROUP_NAME, getSourceMenu());
-		menu.insertAfter(INSERT_AFTER_GROUP_NAME, getRefactorMenu());
+		menu.insertAfter(INSERT_AFTER_GROUP_NAME, getSourceMenu(selectionProvider));
+		menu.insertAfter(INSERT_AFTER_GROUP_NAME, getRefactorMenu(selectionProvider));
 		menu.insertAfter(INSERT_AFTER_GROUP_NAME, new Separator());
 	}
 
-	private IMenuManager getRefactorMenu() {
+	private IMenuManager getRefactorMenu(TextSelectionProvider selectionProvider) {
 		IMenuManager submenu = new MenuManager("Refactor");
-		submenu.add(new RefactoringAction(ConvertTempToFieldRefactoring.class, ConvertTempToFieldRefactoring.NAME));
-		submenu.add(new RefactoringAction(EncapsulateFieldRefactoring.class, EncapsulateFieldRefactoring.NAME));
-		submenu.add(new RefactoringAction(ExtractMethodRefactoring.class, ExtractMethodRefactoring.NAME));
-		submenu.add(new RefactoringAction(InlineClassRefactoring.class, InlineClassRefactoring.NAME));
-		submenu.add(new RefactoringAction(InlineTempRefactoring.class, InlineTempRefactoring.NAME));
-		submenu.add(new RefactoringAction(InlineMethodRefactoring.class, InlineMethodRefactoring.NAME));
-		submenu.add(new RefactoringAction(MergeClassPartsInFileRefactoring.class, MergeClassPartsInFileRefactoring.NAME));
-		submenu.add(new RefactoringAction(MergeWithExternalClassPartsRefactoring.class, MergeWithExternalClassPartsRefactoring.NAME));
-		submenu.add(new RefactoringAction(MoveFieldRefactoring.class, MoveFieldRefactoring.NAME));
-		submenu.add(new RefactoringAction(MoveMethodRefactoring.class, MoveMethodRefactoring.NAME));
-		submenu.add(new RefactoringAction(PushDownRefactoring.class, PushDownRefactoring.NAME));
-		submenu.add(new RefactoringAction(RenameRefactoring.class, RenameRefactoring.NAME));
-		submenu.add(new RefactoringAction(SplitTempRefactoring.class, SplitTempRefactoring.NAME));
+		submenu.add(new RefactoringAction(ConvertTempToFieldRefactoring.class, ConvertTempToFieldRefactoring.NAME, selectionProvider));
+		submenu.add(new RefactoringAction(EncapsulateFieldRefactoring.class, EncapsulateFieldRefactoring.NAME, selectionProvider));
+		submenu.add(new RefactoringAction(ExtractMethodRefactoring.class, ExtractMethodRefactoring.NAME, selectionProvider));
+		submenu.add(new RefactoringAction(InlineClassRefactoring.class, InlineClassRefactoring.NAME, selectionProvider));
+		submenu.add(new RefactoringAction(InlineTempRefactoring.class, InlineTempRefactoring.NAME, selectionProvider));
+		submenu.add(new RefactoringAction(InlineMethodRefactoring.class, InlineMethodRefactoring.NAME, selectionProvider));
+		submenu.add(new RefactoringAction(MergeClassPartsInFileRefactoring.class, MergeClassPartsInFileRefactoring.NAME, selectionProvider));
+		submenu.add(new RefactoringAction(MergeWithExternalClassPartsRefactoring.class, MergeWithExternalClassPartsRefactoring.NAME, selectionProvider));
+		submenu.add(new RefactoringAction(MoveFieldRefactoring.class, MoveFieldRefactoring.NAME, selectionProvider));
+		submenu.add(new RefactoringAction(MoveMethodRefactoring.class, MoveMethodRefactoring.NAME, selectionProvider));
+		submenu.add(new RefactoringAction(PushDownRefactoring.class, PushDownRefactoring.NAME, selectionProvider));
+		submenu.add(new RefactoringAction(RenameRefactoring.class, RenameRefactoring.NAME, selectionProvider));
+		submenu.add(new RefactoringAction(SplitTempRefactoring.class, SplitTempRefactoring.NAME, selectionProvider));
 		return submenu;
 	}
 	
-	private IMenuManager getSourceMenu() {
+	private IMenuManager getSourceMenu(TextSelectionProvider selectionProvider) {
 		IMenuManager submenu = new MenuManager("Source");
-		submenu.add(new RefactoringAction(GenerateAccessorsRefactoring.class, GenerateAccessorsRefactoring.NAME));
-		submenu.add(new RefactoringAction(GenerateConstructorRefactoring.class, GenerateConstructorRefactoring.NAME));
-		submenu.add(new RefactoringAction(OverrideMethodRefactoring.class, OverrideMethodRefactoring.NAME));
+		submenu.add(new RefactoringAction(GenerateAccessorsRefactoring.class, GenerateAccessorsRefactoring.NAME, selectionProvider));
+		submenu.add(new RefactoringAction(GenerateConstructorRefactoring.class, GenerateConstructorRefactoring.NAME, selectionProvider));
+		submenu.add(new RefactoringAction(OverrideMethodRefactoring.class, OverrideMethodRefactoring.NAME, selectionProvider));
 		return submenu;
 	}
 }

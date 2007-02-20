@@ -37,7 +37,7 @@ import org.rubypeople.rdt.refactoring.tests.FileTestSuite;
 public class TS_ExtractMethodChecks extends FileTestSuite {
 
 	public static Test suite() {
-		return createSuite("ExtractMethodConditionChecks", "extract_method_checker_test_.*test_source", ExtractMethodConditionTester.class);
+		return createSuite("ExtractMethodConditionChecks", "extract_method_checker_test_*test_source", ExtractMethodConditionTester.class);
 	}
 
 }

@@ -35,7 +35,7 @@ import org.rubypeople.rdt.refactoring.tests.FileTestSuite;
 public class TS_SplitTempChecks extends FileTestSuite {
 
 	public static Test suite() {
-		return createSuite("SplitTempConditionChecks", "split_temp_checker_test_.*test_source", SplitTempConditionTester.class);
+		return createSuite("SplitTempConditionChecks", "split_temp_checker_test_*test_source", SplitTempConditionTester.class);
 	}
 
 }

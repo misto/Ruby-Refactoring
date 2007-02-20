@@ -58,7 +58,7 @@ public class InlineClassConditionTester extends RefactoringConditionTestCase {
 	@Override
 	public void runTest() throws FileNotFoundException, IOException {
 
-		testData = new FileTestData(getName(), ".test_source", ".test_source", getClass());
+		testData = new FileTestData(getName(), ".test_source", ".test_source");
 		config = new InlineClassConfig(testData, testData.getIntProperty("caretPosition"));
 		InlineClassConditionChecker checker = new InlineClassConditionChecker(config);
 		checkConditions(checker, testData);

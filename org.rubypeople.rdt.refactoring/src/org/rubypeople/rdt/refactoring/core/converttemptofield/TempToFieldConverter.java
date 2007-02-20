@@ -97,7 +97,7 @@ public class TempToFieldConverter extends MultiEditProvider {
 
 		for (Object o : baseNode.childNodes()) {
 			Node n = (Node) o;
-			if (NodeProvider.nodeAssignableFrom(n, LocalNodeWrapper.LOCAL_NODES_CLASSES())) {
+			if (NodeProvider.nodeAssignableFrom(n, LocalNodeWrapper.getLocalNodeClasses())) {
 				candidates.add(n);
 			}
 			if (!NodeProvider.nodeAssignableFrom(n, DAsgnNode.class, LocalAsgnNode.class)) {

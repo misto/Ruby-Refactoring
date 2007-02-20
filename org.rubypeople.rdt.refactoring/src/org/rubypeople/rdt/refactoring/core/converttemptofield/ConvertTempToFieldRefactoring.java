@@ -29,6 +29,7 @@
 package org.rubypeople.rdt.refactoring.core.converttemptofield;
 
 import org.rubypeople.rdt.refactoring.core.RubyRefactoring;
+import org.rubypeople.rdt.refactoring.core.TextSelectionProvider;
 import org.rubypeople.rdt.refactoring.ui.pages.ConvertTempToFieldPage;
 import org.rubypeople.rdt.refactoring.ui.pages.ConverterPageParameters;
 
@@ -36,10 +37,10 @@ public class ConvertTempToFieldRefactoring extends RubyRefactoring {
 
 	public static final String NAME = "Convert Local Variable to Field";
 
-	public ConvertTempToFieldRefactoring() {
+	public ConvertTempToFieldRefactoring(TextSelectionProvider selectionProvider) {
 		super(NAME);
 
-		TempToFieldConfig config = new TempToFieldConfig(getDocumentProvider(), getCarretPosition());
+		TempToFieldConfig config = new TempToFieldConfig(getDocumentProvider(), selectionProvider.getCarretPosition());
 		TempToFieldConditionChecker checker = new TempToFieldConditionChecker(config);
 
 		setRefactoringConditionChecker(checker);

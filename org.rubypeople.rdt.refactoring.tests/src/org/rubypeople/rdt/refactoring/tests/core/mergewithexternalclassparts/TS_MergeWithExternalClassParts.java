@@ -38,7 +38,7 @@ public class TS_MergeWithExternalClassParts extends FileTestSuite {
 	
 	public static Test suite() {
 
-		TestSuite suite = createSuite("MergeWithExternalClassParts", "merge_with_external_class_parts_.*\\.test_properties", MergeWithExternalClassPartsTester.class);
+		TestSuite suite = createSuite("MergeWithExternalClassParts", "merge_with_external_class_parts_*.test_properties", MergeWithExternalClassPartsTester.class);
 		suite.addTest(TS_MergetWitExternalChecks.suite());
 		return suite;
 	}

@@ -37,7 +37,7 @@ public class TS_GenerateConstructor extends FileTestSuite {
 
 	public static Test suite()
 	{
-		TestSuite suite = createSuite("GenerateConstructor", "generate_constructor_.*test_source", ConstructorGeneratorTester.class);
+		TestSuite suite = createSuite("GenerateConstructor", "generate_constructor_*test_source", ConstructorGeneratorTester.class);
 		suite.addTestSuite(TC_ConstructorGeneratorTreeTest.class);
 		return suite;
 	}

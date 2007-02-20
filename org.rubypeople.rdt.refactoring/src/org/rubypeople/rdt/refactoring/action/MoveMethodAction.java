@@ -30,13 +30,12 @@
 
 package org.rubypeople.rdt.refactoring.action;
 
-import org.eclipse.jface.action.IAction;
 import org.rubypeople.rdt.refactoring.core.movemethod.MoveMethodRefactoring;
 
 public class MoveMethodAction extends WorkbenchWindowActionDelegate {
 
 	@Override
-	public void run(IAction action) {
+	public void run() {
 		run(MoveMethodRefactoring.class, MoveMethodRefactoring.NAME);
 	}
 }

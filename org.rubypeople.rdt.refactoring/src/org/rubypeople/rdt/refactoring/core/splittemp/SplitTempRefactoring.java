@@ -29,16 +29,17 @@
 package org.rubypeople.rdt.refactoring.core.splittemp;
 
 import org.rubypeople.rdt.refactoring.core.RubyRefactoring;
+import org.rubypeople.rdt.refactoring.core.TextSelectionProvider;
 import org.rubypeople.rdt.refactoring.ui.pages.SplitTempPage;
 
 public class SplitTempRefactoring extends RubyRefactoring {
 
 	public static final String NAME = "Split Local Variable";
 
-	public SplitTempRefactoring() {
+	public SplitTempRefactoring(TextSelectionProvider selectionProvider) {
 		super(NAME);
 
-		SplitTempConfig config = new SplitTempConfig(getDocumentProvider(), getCarretPosition());
+		SplitTempConfig config = new SplitTempConfig(getDocumentProvider(), selectionProvider.getCarretPosition());
 		SplitTempConditionChecker checker = new SplitTempConditionChecker(config);
 		setRefactoringConditionChecker(checker);
 		

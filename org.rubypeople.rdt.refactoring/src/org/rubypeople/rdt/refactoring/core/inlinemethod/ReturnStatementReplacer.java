@@ -35,6 +35,7 @@ import org.jruby.ast.visitor.rewriter.ReWriteVisitor;
 import org.rubypeople.rdt.refactoring.core.NodeProvider;
 import org.rubypeople.rdt.refactoring.documentprovider.StringDocumentProvider;
 import org.rubypeople.rdt.refactoring.documentprovider.DocumentProvider;
+import org.rubypeople.rdt.refactoring.util.FileHelper;
 
 public class ReturnStatementReplacer implements IReturnStatementReplacer {
 
@@ -50,7 +51,7 @@ public class ReturnStatementReplacer implements IReturnStatementReplacer {
 	}
 	
 	private boolean returnIsOnLastLine(ReturnNode node, DocumentProvider doc) {
-		return node.getPosition().getStartLine() == doc.getActiveFileContent().split("\\n").length - 1;
+		return node.getPosition().getStartLine() == doc.getActiveFileContent().split("(\\r)?\\n").length - 1;
 	}
 
 	private int countReturnNodes(DocumentProvider doc) {
@@ -93,11 +94,13 @@ public class ReturnStatementReplacer implements IReturnStatementReplacer {
 	}
 
 	private void insertLastLineToAssignment(DocumentProvider doc, AssignableNode target, StringBuilder result) {
-		String[] lines = doc.getActiveFileContent().split("\\n");
+		String[] lines = doc.getActiveFileContent().split("(\\r)?\\n");
 		target.setValueNode(NodeProvider.getRootNode("", lines[lines.length - 1]).getBodyNode());
+		String lineDelimiter = FileHelper.getLineDelimiter(doc.getActiveFileContent());
+		
 		for(int i = 0; i < lines.length - 1; i++) {
 			result.append(lines[i]);
-			result.append('\n');
+			result.append(lineDelimiter);
 		}
 	}
 

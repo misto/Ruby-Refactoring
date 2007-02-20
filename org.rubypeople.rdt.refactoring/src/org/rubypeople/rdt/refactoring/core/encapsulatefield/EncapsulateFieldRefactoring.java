@@ -31,16 +31,17 @@
 package org.rubypeople.rdt.refactoring.core.encapsulatefield;
 
 import org.rubypeople.rdt.refactoring.core.RubyRefactoring;
+import org.rubypeople.rdt.refactoring.core.TextSelectionProvider;
 import org.rubypeople.rdt.refactoring.ui.pages.EncapsulateFieldPage;
 
 public class EncapsulateFieldRefactoring extends RubyRefactoring {
 
 	public static final String NAME = "Encapsulate Field";
 
-	public EncapsulateFieldRefactoring() {
+	public EncapsulateFieldRefactoring(TextSelectionProvider selectionProvider) {
 		super(NAME);
 
-		EncapsulateFieldConfig config = new EncapsulateFieldConfig(getDocumentProvider(), getCarretPosition());
+		EncapsulateFieldConfig config = new EncapsulateFieldConfig(getDocumentProvider(), selectionProvider.getCarretPosition());
 		EncapsulateFieldConditionChecker checker = new EncapsulateFieldConditionChecker(config);
 		setRefactoringConditionChecker(checker);
 		

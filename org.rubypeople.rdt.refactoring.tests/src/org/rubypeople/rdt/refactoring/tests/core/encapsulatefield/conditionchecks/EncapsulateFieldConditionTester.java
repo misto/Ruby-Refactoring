@@ -51,7 +51,7 @@ public class EncapsulateFieldConditionTester extends RefactoringConditionTestCas
 
 	@Override
 	public void runTest() throws FileNotFoundException, IOException {
-		FilePropertyData testData = new FileTestData(getName(), ".test_source", ".test_source", getClass());
+		FilePropertyData testData = new FileTestData(getName(), ".test_source", ".test_source");
 		config = new EncapsulateFieldConfig(testData, testData.getIntProperty("cursorPosition"));
 		EncapsulateFieldConditionChecker checker = new EncapsulateFieldConditionChecker(config);
 		checkConditions(checker, testData);

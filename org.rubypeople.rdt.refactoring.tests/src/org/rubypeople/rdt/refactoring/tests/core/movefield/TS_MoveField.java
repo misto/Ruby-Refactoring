@@ -35,7 +35,7 @@ import org.rubypeople.rdt.refactoring.tests.core.movefield.conditionchecks.TS_Mo
 
 public class TS_MoveField extends FileTestSuite {
 	public static TestSuite suite() {
-		TestSuite suite = createSuite("Move Field", "move_field_test_.*\\.test_properties", MoveFieldTester.class);
+		TestSuite suite = createSuite("Move Field", "move_field_test_*.test_properties", MoveFieldTester.class);
 		suite.addTest(TS_MoveFieldChecks.suite());
 		return suite;
 	}

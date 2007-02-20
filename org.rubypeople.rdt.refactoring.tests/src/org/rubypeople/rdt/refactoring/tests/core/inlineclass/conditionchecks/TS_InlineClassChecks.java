@@ -38,6 +38,6 @@ import org.rubypeople.rdt.refactoring.tests.FileTestSuite;
 public class TS_InlineClassChecks extends FileTestSuite {
 
 	public static Test suite() {
-		return createSuite("InlineClassConditionChecks", "inline_class_checker_test_.*test_source", InlineClassConditionTester.class);
+		return createSuite("InlineClassConditionChecks", "inline_class_checker_test_*test_source", InlineClassConditionTester.class);
 	}
 }

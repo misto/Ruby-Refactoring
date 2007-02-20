@@ -52,7 +52,7 @@ public class TC_ClassFinder extends TestCase {
 	}
 
 	private IDocumentProvider getDoc(String testFile) throws FileNotFoundException, IOException {
-		return new DocumentWithIncluding(new MultiFileTestData("", "", "", testFile + ".test_properties", this.getClass()));
+		return new DocumentWithIncluding(new MultiFileTestData("", "", "", testFile + ".test_properties"));
 	}
 	
 	public void testFindAll2() throws FileNotFoundException, IOException {

@@ -71,7 +71,7 @@ public class TC_SelectionNodeProvider extends FileTestCase {
 	
 	@Override
 	protected void runTest() throws Throwable {
-		FileTestData data = new FileTestData(getName(), ".rb", ".rb", this.getClass());
+		FileTestData data = new FileTestData(getName(), ".rb", ".rb");
 		SelectionInformation selection = new SelectionInformation(data.getIntProperty("begin"), data.getIntProperty("end"), "");
 		assertLists(getEnclosingNodeClasses(getName(), selection), data.getCommaSeparatedStringArray("expected"));
 	}

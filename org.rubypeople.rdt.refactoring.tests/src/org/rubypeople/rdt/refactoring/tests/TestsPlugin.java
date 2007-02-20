@@ -28,15 +28,23 @@
 
 package org.rubypeople.rdt.refactoring.tests;
 
-import org.eclipse.ui.plugin.*;
+import java.io.File;
+import java.io.IOException;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Enumeration;
+import java.util.HashMap;
+
+import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.jface.resource.ImageDescriptor;
+import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.osgi.framework.BundleContext;
 
 /**
  * The main plugin class to be used in the desktop.
  */
-public class TestsPlugin extends AbstractUIPlugin
-{
+public class TestsPlugin extends AbstractUIPlugin {
 
 	// The shared instance.
 	private static TestsPlugin plugin;
@@ -44,8 +52,7 @@ public class TestsPlugin extends AbstractUIPlugin
 	/**
 	 * The constructor.
 	 */
-	public TestsPlugin()
-	{
+	public TestsPlugin() {
 		plugin = this;
 	}
 
@@ -69,9 +76,49 @@ public class TestsPlugin extends AbstractUIPlugin
 	/**
 	 * Returns the shared instance.
 	 */
-	public static TestsPlugin getDefault()
-	{
+	public static TestsPlugin getDefault() {
 		return plugin;
+	}
+	
+	private static HashMap<String, String> files;
+	
+	private static void initializeFiles() {
+		files = new HashMap<String, String>();
+		
+		Enumeration enumeration = getDefault().getBundle().findEntries("/resources", null, true);
+		while(enumeration != null && enumeration.hasMoreElements()) {
+			URL file = (URL) enumeration.nextElement();
+			if(file.getFile().matches(".*\\.svn.*")) {
+				continue;
+			}
+			String[] segments = file.getPath().split("[/|\\\\]");
+			String fileName = segments[segments.length - 1];
+			try {
+				files.put(fileName, FileLocator.resolve(file).getFile());
+			} catch (IOException e) {
+				e.printStackTrace();
+				continue;
+			}
+		}
+	}
+	
+	public static String getFile(String name) {
+		if(files == null) {
+			initializeFiles();
+		}
+		return files.get(name);
+	}
+	
+	protected static Collection<File> getFiles(final String filter) throws IOException {
+		ArrayList<File> files = new ArrayList<File>();
+
+		Enumeration enumeration = TestsPlugin.getDefault().getBundle().findEntries("/resources", filter, true);
+		while(enumeration.hasMoreElements()) {
+			URL url = FileLocator.resolve((URL) enumeration.nextElement());
+			files.add(new File( url.getFile()));
+		}
+
+		return files;
 	}
 
 	/**
@@ -82,9 +129,7 @@ public class TestsPlugin extends AbstractUIPlugin
 	 *            the path
 	 * @return the image descriptor
 	 */
-	public static ImageDescriptor getImageDescriptor(String path)
-	{
-		return AbstractUIPlugin.imageDescriptorFromPlugin(
-				"org.rubypeople.rdt.refactoring.tests", path);
+	public static ImageDescriptor getImageDescriptor(String path) {
+		return AbstractUIPlugin.imageDescriptorFromPlugin("org.rubypeople.rdt.refactoring.tests", path);
 	}
 }

@@ -37,7 +37,7 @@ public class TS_SplitTemp extends FileTestSuite {
 
 	public static TestSuite suite() {
 	
-		TestSuite suite = createSuite("Split Temp", "split_temp_test_.*source\\.rb", SplitTempTester.class);
+		TestSuite suite = createSuite("Split Temp", "split_temp_test_*source.rb", SplitTempTester.class);
 		suite.addTestSuite(TC_LocalVarFinder.class);
 		suite.addTestSuite(TC_SplittedVariableRenamer.class);
 		suite.addTest(TS_SplitTempChecks.suite());

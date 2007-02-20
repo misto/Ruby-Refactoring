@@ -30,6 +30,7 @@
 
 package org.rubypeople.rdt.refactoring.tests;
 
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -37,16 +38,27 @@ import java.util.Collection;
 import java.util.Properties;
 
 import org.rubypeople.rdt.refactoring.documentprovider.DocumentProvider;
-import org.rubypeople.rdt.refactoring.tests.util.FileHelper;
 
 public abstract class FilePropertyData extends DocumentProvider {
 
 	protected Properties properties;
 	
-	public FilePropertyData(String fileName, Class<?> resourceProvider) throws FileNotFoundException, IOException {
-		if(resourceProvider.getResource(fileName) != null) {
-			properties = FileHelper.initProperties(fileName, resourceProvider);
+	public FilePropertyData(String fileName) throws FileNotFoundException, IOException {
+		if(TestsPlugin.getFile(fileName) != null) {
+			properties = initProperties(fileName);
 		}
+	}
+	
+	public static Properties initProperties(String propertyFileName) throws FileNotFoundException, IOException {
+		Properties properties = new Properties();
+		FileInputStream fileInputStream = null;
+		try {
+			fileInputStream = new FileInputStream(TestsPlugin.getFile(propertyFileName));
+			properties.load(fileInputStream);
+		} finally {
+			if(fileInputStream != null)	fileInputStream.close();
+		}
+		return properties;
 	}
 
 	public static boolean getBoolValue(String value) {
@@ -70,7 +82,6 @@ public abstract class FilePropertyData extends DocumentProvider {
 	}
 
 	public int getIntProperty(String propertyName) {
-		
 		if(hasProperty(propertyName)){
 			return Integer.parseInt(properties.getProperty(propertyName));
 		}

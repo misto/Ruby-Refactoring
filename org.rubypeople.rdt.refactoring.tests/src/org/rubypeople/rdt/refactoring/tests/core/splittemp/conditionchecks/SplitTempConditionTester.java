@@ -49,7 +49,7 @@ public class SplitTempConditionTester extends RefactoringConditionTestCase {
 	
 	@Override
 	public void runTest() throws FileNotFoundException, IOException {
-		testData = new FileTestData(getName(), ".test_source", ".test_source", getClass());
+		testData = new FileTestData(getName(), ".test_source", ".test_source");
 		int caretPosition = testData.getIntProperty("cursorPosition");
 		config = new SplitTempConfig(testData, caretPosition);
 		SplitTempConditionChecker checker = new SplitTempConditionChecker(config);

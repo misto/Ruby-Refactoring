@@ -53,7 +53,7 @@ public class LocalNodeWrapper implements INodeWrapper {
 
 	public static final int D_ASGN_NODE = 4;
 
-	static final Class[] LOCAL_NODES_CLASSES = { LocalAsgnNode.class, LocalVarNode.class, DVarNode.class, DAsgnNode.class };
+	private static final Class[] LOCAL_NODES_CLASSES = { LocalAsgnNode.class, LocalVarNode.class, DVarNode.class, DAsgnNode.class };
 
 	private Node wrappedNode;
 
@@ -201,7 +201,7 @@ public class LocalNodeWrapper implements INodeWrapper {
 		return false;
 	}
 
-	public static Class[] LOCAL_NODES_CLASSES() {
+	public static Class[] getLocalNodeClasses() {
 		return LOCAL_NODES_CLASSES.clone();
 	}
 }

@@ -83,7 +83,11 @@ public class RenameMethodConditionChecker extends RefactoringConditionChecker{
 				methodNode = config.getSelectedClass().getMethod(selectedSymbolNode.getName()).getWrappedNode();
 			}
 		}
-		this.config.setTargetMethod(new MethodDefinitionWrapper(methodNode));
+		MethodDefinitionWrapper targetMethod = new MethodDefinitionWrapper(methodNode);
+		this.config.setTargetMethod(targetMethod);
+		if(methodNode != null && config.getNewName() == null) {
+			this.config.setNewName(targetMethod.getName());
+		}
 	}
 
 	private Collection<MethodCallNodeWrapper> getAllCallCandidates() {
@@ -120,7 +124,9 @@ public class RenameMethodConditionChecker extends RefactoringConditionChecker{
 	
 	@Override
 	protected void checkFinalConditions() {
-		if(getAlreadyUsedNames().contains(config.getNewName())){
+		if(config.getNewName().equals(config.getTargetMethod().getName())) {
+			addWarning("Nothing to do. Method name stays the same.");
+		} else if(getAlreadyUsedNames().contains(config.getNewName())){
 			addError("Method name already exists.");
 		}
 	}

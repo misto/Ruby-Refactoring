@@ -28,12 +28,11 @@
 
 package org.rubypeople.rdt.refactoring.action;
 
-import org.eclipse.jface.action.IAction;
 import org.rubypeople.rdt.refactoring.core.pushdown.PushDownRefactoring;
 
 public class PushDownAction extends WorkbenchWindowActionDelegate {
 
-	public void run(IAction action) {
+	public void run() {
 		run(PushDownRefactoring.class, PushDownRefactoring.NAME);
 	}
 }

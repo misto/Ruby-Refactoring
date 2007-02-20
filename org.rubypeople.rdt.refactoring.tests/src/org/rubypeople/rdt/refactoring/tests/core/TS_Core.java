@@ -37,7 +37,7 @@ import org.rubypeople.rdt.refactoring.tests.core.nodewrapper.TS_NodeWrapper;
 public class TS_Core extends FileTestSuite {
 	
 	public static Test suite() {
-		TestSuite suite = createSuite("Core", "enclosing_nodes_test.*rb", TC_SelectionNodeProvider.class);
+		TestSuite suite = createSuite("Core", "enclosing_nodes_test*rb", TC_SelectionNodeProvider.class);
 		suite.addTestSuite(TC_NodeProvider.class);
 		suite.addTest(TS_NodeWrapper.suite());
 		suite.addTestSuite(TC_RefactoringConditionChecker.class);

@@ -53,7 +53,7 @@ public class FieldRenamerTester extends RefactoringTestCase {
 
 	@Override
 	public void runTest() throws FileNotFoundException, IOException, BadLocationException {
-		testData = new MultiFileTestData(fileName, getClass());
+		testData = new MultiFileTestData(fileName);
 		int caretPosition = testData.getIntProperty("caretPosition");
 
 		RenameFieldConfig config = new RenameFieldConfig(testData, caretPosition);

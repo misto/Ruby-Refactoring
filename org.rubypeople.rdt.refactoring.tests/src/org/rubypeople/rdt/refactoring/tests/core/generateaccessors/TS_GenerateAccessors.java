@@ -35,7 +35,7 @@ import org.rubypeople.rdt.refactoring.tests.FileTestSuite;
 
 public class TS_GenerateAccessors extends FileTestSuite {
 	public static Test suite() {
-		TestSuite suite = createSuite("GenerateAccessors", "generate_accesssor_.*test_source", GenerateAccessorTester.class);
+		TestSuite suite = createSuite("GenerateAccessors", "generate_accesssor_*test_source", GenerateAccessorTester.class);
 		suite.addTestSuite(TC_AccessorsGeneratorTreeTest.class);
 		return suite;
 	}

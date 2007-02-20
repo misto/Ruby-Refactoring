@@ -12,6 +12,7 @@
  * rights and limitations under the License.
  *
  * Copyright (C) 2006 Mirko Stocker <me@misto.ch>
+ * Copyright (C) 2007 Thomas Corbat <tcorbat@hsr.ch>
  * 
  * Alternatively, the contents of this file may be used under the terms of
  * either of the GNU General Public License Version 2 or later (the "GPL"),
@@ -45,6 +46,7 @@ import org.rubypeople.rdt.refactoring.core.renamelocalvariable.LocalVariableRena
 import org.rubypeople.rdt.refactoring.documentprovider.DocumentProvider;
 import org.rubypeople.rdt.refactoring.documentprovider.IDocumentProvider;
 import org.rubypeople.rdt.refactoring.documentprovider.StringDocumentProvider;
+import org.rubypeople.rdt.refactoring.util.FileHelper;
 
 public class ParameterReplacer implements IParameterReplacer {
 
@@ -76,7 +78,8 @@ public class ParameterReplacer implements IParameterReplacer {
 		StringBuffer insert = new StringBuffer();
 		
 		if(headList.size() > 0) {
-			createAssignments(headList, tailList, insert);
+			String lineDelimiter = FileHelper.getLineDelimiter(strDoc.getActiveFileContent());
+			createAssignments(headList, tailList, insert, lineDelimiter);
 		}
 		
 		MethodDefNode newDefinition = (MethodDefNode) ((NewlineNode) strDoc.getRootNode().getBodyNode()).getNextNode();
@@ -87,11 +90,11 @@ public class ParameterReplacer implements IParameterReplacer {
 		return new StringDocumentProvider(insert.toString());
 	}
 
-	private void createAssignments(ArrayNode headList, ArrayNode tailList, StringBuffer insert) {
+	private void createAssignments(ArrayNode headList, ArrayNode tailList, StringBuffer insert, String lineDelimiter) {
 		MultipleAsgnNode multipleAsgnNode = new MultipleAsgnNode(new SourcePosition(), headList, null);
 		multipleAsgnNode.setValueNode(tailList);
 		insert.append(ReWriteVisitor.createCodeFromNode(multipleAsgnNode, ""));
-		insert.append('\n');
+		insert.append(lineDelimiter);
 	}
 
 	private DocumentProvider processArguments(DocumentProvider StringDocumentProvider, ArrayNode headList, ArrayNode tailList, Node node, ArgumentNode arg) {

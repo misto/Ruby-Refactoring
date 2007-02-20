@@ -38,6 +38,6 @@ import org.rubypeople.rdt.refactoring.tests.FileTestSuite;
 public class TS_RenameFieldChecks extends FileTestSuite {
 
 	public static Test suite() {
-		return createSuite("RenameFieldConditionChecks", "rename_field_checker_test_.*test_source", RenameFieldConditionTester.class);
+		return createSuite("RenameFieldConditionChecks", "rename_field_checker_test_*test_source", RenameFieldConditionTester.class);
 	}
 }

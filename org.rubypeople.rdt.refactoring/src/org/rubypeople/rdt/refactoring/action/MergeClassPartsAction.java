@@ -30,13 +30,12 @@
 
 package org.rubypeople.rdt.refactoring.action;
 
-import org.eclipse.jface.action.IAction;
 import org.rubypeople.rdt.refactoring.core.mergewithexternalclassparts.MergeWithExternalClassPartsRefactoring;
 
 public class MergeClassPartsAction extends WorkbenchWindowActionDelegate {
 
 	@Override
-	public void run(IAction action) {
+	public void run() {
 		run(MergeWithExternalClassPartsRefactoring.class, MergeWithExternalClassPartsRefactoring.NAME);
 	}
 }

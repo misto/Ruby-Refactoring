@@ -30,7 +30,7 @@ package org.rubypeople.rdt.refactoring.tests;
 
 import org.jruby.ast.RootNode;
 import org.rubypeople.rdt.refactoring.core.NodeProvider;
-import org.rubypeople.rdt.refactoring.tests.util.FileHelper;
+import org.rubypeople.rdt.refactoring.util.FileHelper;
 
 public abstract class FileTestCase extends RefactoringTestCase
 {
@@ -39,14 +39,10 @@ public abstract class FileTestCase extends RefactoringTestCase
 	}
 
 	protected String getSource(String file){
-		return FileHelper.getFileContent(file, getClass());
+		return FileHelper.getFileContent(TestsPlugin.getFile(file));
 	}
 
 	protected RootNode getRootNode(String fileName) {
-		return NodeProvider.getRootNode("testFile", FileHelper.getFileContent(fileName, getClass()));
-	}
-	
-	protected String getRealFileName(String name) {
-		return getClass().getResource(name).getFile();
+		return NodeProvider.getRootNode("testFile", FileHelper.getFileContent(TestsPlugin.getFile(fileName)));
 	}
 }

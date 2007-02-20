@@ -32,16 +32,13 @@ package org.rubypeople.rdt.refactoring.core.inlinetemp;
 
 import java.util.Collection;
 
-import org.jruby.ast.LocalAsgnNode;
-import org.jruby.ast.LocalVarNode;
+import org.jruby.ast.MethodDefNode;
 import org.jruby.ast.Node;
 import org.rubypeople.rdt.refactoring.documentprovider.DocumentProvider;
 import org.rubypeople.rdt.refactoring.nodewrapper.LocalNodeWrapper;
 
 public class InlineTempConfig {
 
-	static final Class[] LOCAL_VAR_NODE_CLASSES = new Class[] { LocalVarNode.class, LocalAsgnNode.class };
-	
 	private boolean replaceTempWithQuery;
 
 	private String newMethodName = "extractedMethod";
@@ -50,7 +47,7 @@ public class InlineTempConfig {
 
 	private int caretPosition;
 
-	private Node enclosingMethod;
+	private MethodDefNode enclosingMethod;
 
 	private Node enclosingScopeNode;
 
@@ -100,7 +97,7 @@ public class InlineTempConfig {
 		return definitionNode;
 	}
 
-	public Node getEnclosingMethod() {
+	public MethodDefNode getEnclosingMethod() {
 		return enclosingMethod;
 	}
 
@@ -136,11 +133,11 @@ public class InlineTempConfig {
 		this.selectedItem = selectedItem;
 	}
 
-	public void setEnclosingNode(Node enclosingScopeNode) {
+	public void setEnclosingScopeNode(Node enclosingScopeNode) {
 		this.enclosingScopeNode = enclosingScopeNode;
 	}
 
-	public void setEnclosingMethod(Node enclosingMethod) {
+	public void setEnclosingMethod(MethodDefNode enclosingMethod) {
 		this.enclosingMethod = enclosingMethod;
 	}
 }

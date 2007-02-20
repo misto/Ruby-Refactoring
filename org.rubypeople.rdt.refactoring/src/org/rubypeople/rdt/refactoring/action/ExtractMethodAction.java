@@ -30,13 +30,12 @@
 
 package org.rubypeople.rdt.refactoring.action;
 
-import org.eclipse.jface.action.IAction;
 import org.rubypeople.rdt.refactoring.core.extractmethod.ExtractMethodRefactoring;
 
 public class ExtractMethodAction extends WorkbenchWindowActionDelegate {
 
 	@Override
-	public void run(IAction action) {
+	public void run() {
 		run(ExtractMethodRefactoring.class, ExtractMethodRefactoring.NAME);
 	}
 

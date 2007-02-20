@@ -29,6 +29,7 @@
 package org.rubypeople.rdt.refactoring.core.inlinemethod;
 
 import org.rubypeople.rdt.refactoring.core.RubyRefactoring;
+import org.rubypeople.rdt.refactoring.core.TextSelectionProvider;
 import org.rubypeople.rdt.refactoring.ui.pages.InlineMethodPage;
 import org.rubypeople.rdt.refactoring.ui.pages.inlinemethod.TargetClassFinderUI;
 
@@ -36,10 +37,10 @@ public class InlineMethodRefactoring extends RubyRefactoring {
 
 	public static final String NAME = "Inline Method";
 
-	public InlineMethodRefactoring() {
+	public InlineMethodRefactoring(TextSelectionProvider selectionProvider) {
 		super(NAME);
 		
-		InlineMethodConfig config = new InlineMethodConfig(getDocumentProvider(), getCarretPosition(), new TargetClassFinderUI());
+		InlineMethodConfig config = new InlineMethodConfig(getDocumentProvider(), selectionProvider.getCarretPosition(), new TargetClassFinderUI());
 		InlineMethodConditionChecker checker = new InlineMethodConditionChecker(config);
 		setRefactoringConditionChecker(checker);
 		

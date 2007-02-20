@@ -31,6 +31,7 @@
 package org.rubypeople.rdt.refactoring.core.renamemethod;
 
 import org.rubypeople.rdt.refactoring.core.RubyRefactoring;
+import org.rubypeople.rdt.refactoring.core.TextSelectionProvider;
 import org.rubypeople.rdt.refactoring.ui.IValidator;
 import org.rubypeople.rdt.refactoring.ui.NewNameListener;
 import org.rubypeople.rdt.refactoring.ui.pages.CallReplaceSelectionPage;
@@ -47,10 +48,10 @@ public class RenameMethodRefactoring extends RubyRefactoring {
 
 	public static final String NAME = "Rename Method";
 
-	public RenameMethodRefactoring() {
+	public RenameMethodRefactoring(TextSelectionProvider selectionProvider) {
 		super(NAME);
 		
-		RenameMethodConfig config = new RenameMethodConfig(getDocumentProvider(), getCarretPosition());
+		RenameMethodConfig config = new RenameMethodConfig(getDocumentProvider(), selectionProvider.getCarretPosition());
 		RenameMethodConditionChecker checker = new RenameMethodConditionChecker(config);
 		setRefactoringConditionChecker(checker);
 		

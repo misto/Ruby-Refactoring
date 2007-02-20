@@ -35,10 +35,18 @@ import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.IWorkbenchWindowActionDelegate;
 import org.rubypeople.rdt.refactoring.core.RubyRefactoring;
+import org.rubypeople.rdt.refactoring.core.TextSelectionProvider;
 
 public abstract class WorkbenchWindowActionDelegate implements IWorkbenchWindowActionDelegate, IEditorActionDelegate {
 
-	public abstract void run(IAction action);
+	private TextSelectionProvider selectionProvider;
+
+	abstract void run();
+
+	public void run(IAction action) {
+		selectionProvider = new TextSelectionProvider(action);
+		run();
+	}
 
 	public void dispose() {
 	}
@@ -50,7 +58,7 @@ public abstract class WorkbenchWindowActionDelegate implements IWorkbenchWindowA
 	}
 
 	protected void run(Class<? extends RubyRefactoring> refactoringClass, String refactoringName) {
-		RefactoringAction delegateAction = new RefactoringAction(refactoringClass, refactoringName);
+		RefactoringAction delegateAction = new RefactoringAction(refactoringClass, refactoringName, selectionProvider);
 		delegateAction.run();
 	}
 

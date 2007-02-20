@@ -50,7 +50,7 @@ public class TC_ParameterReplacer extends FinderTestsBase {
 	@Override
 	public void runTest() throws FileNotFoundException, IOException {
 		
-		FileTestData testData = new FileTestData(getName(), ".source.rb", ".result.rb", this.getClass());
+		FileTestData testData = new FileTestData(getName(), ".source.rb", ".result.rb");
 		int caretPosition = testData.getIntProperty("pos");
 		
 		SelectedCallFinder finder = new SelectedCallFinder();

@@ -31,6 +31,7 @@
 package org.rubypeople.rdt.refactoring.core.renamefield;
 
 import org.rubypeople.rdt.refactoring.core.RubyRefactoring;
+import org.rubypeople.rdt.refactoring.core.TextSelectionProvider;
 import org.rubypeople.rdt.refactoring.documentprovider.DocumentWithIncluding;
 import org.rubypeople.rdt.refactoring.ui.IValidator;
 import org.rubypeople.rdt.refactoring.ui.NewNameListener;
@@ -54,10 +55,10 @@ public class RenameFieldRefactoring extends RubyRefactoring {
 	private RenameFieldPage pageOne;
 	private CallReplaceSelectionPage page;
 
-	public RenameFieldRefactoring() {
+	public RenameFieldRefactoring(TextSelectionProvider selectionProvider) {
 		super(NAME);
 		
-		config = new RenameFieldConfig(new DocumentWithIncluding(getDocumentProvider()), getCarretPosition());
+		config = new RenameFieldConfig(new DocumentWithIncluding(getDocumentProvider()), selectionProvider.getCarretPosition());
 		checker = new RenameFieldConditionChecker(config);
 		setRefactoringConditionChecker(checker);
 		

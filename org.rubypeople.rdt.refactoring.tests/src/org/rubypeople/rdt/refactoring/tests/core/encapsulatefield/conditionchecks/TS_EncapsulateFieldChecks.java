@@ -38,6 +38,6 @@ import org.rubypeople.rdt.refactoring.tests.FileTestSuite;
 public class TS_EncapsulateFieldChecks extends FileTestSuite {
 
 	public static Test suite() {
-		return createSuite("EncapsulateFieldConditionChecks", "encapsulate_field_checker_test_.*test_source", EncapsulateFieldConditionTester.class);
+		return createSuite("EncapsulateFieldConditionChecks", "encapsulate_field_checker_test_*test_source", EncapsulateFieldConditionTester.class);
 	}
 }

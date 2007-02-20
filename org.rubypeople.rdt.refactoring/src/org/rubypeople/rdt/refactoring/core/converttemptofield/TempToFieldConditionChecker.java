@@ -39,17 +39,20 @@ import org.jruby.ast.LocalAsgnNode;
 import org.jruby.ast.LocalVarNode;
 import org.jruby.ast.MethodDefNode;
 import org.jruby.ast.Node;
+import org.jruby.ast.RootNode;
 import org.rubypeople.rdt.refactoring.JRubyRefactoringUtils;
 import org.rubypeople.rdt.refactoring.core.NodeProvider;
 import org.rubypeople.rdt.refactoring.core.RefactoringConditionChecker;
 import org.rubypeople.rdt.refactoring.core.SelectionNodeProvider;
 import org.rubypeople.rdt.refactoring.exception.NoClassNodeException;
 import org.rubypeople.rdt.refactoring.nodewrapper.ClassNodeWrapper;
+import org.rubypeople.rdt.refactoring.nodewrapper.FieldNodeWrapper;
 import org.rubypeople.rdt.refactoring.nodewrapper.LocalNodeWrapper;
 
 public class TempToFieldConditionChecker extends RefactoringConditionChecker {
 
 	private TempToFieldConfig config;
+	private RootNode rootNode;
 
 	public TempToFieldConditionChecker(TempToFieldConfig config) {
 		super(config.getDocProvider(), config);
@@ -57,6 +60,7 @@ public class TempToFieldConditionChecker extends RefactoringConditionChecker {
 	
 	public void init(Object configObj) {
 		config = (TempToFieldConfig) configObj;
+		rootNode = config.getDocProvider().getRootNode();
 		Node selectedNode = findSelectedNode(LocalAsgnNode.class, LocalVarNode.class, DVarNode.class, DAsgnNode.class);
 		if (selectedNode != null) {
 			config.setSelectedNode(new LocalNodeWrapper(selectedNode));
@@ -66,12 +70,12 @@ public class TempToFieldConditionChecker extends RefactoringConditionChecker {
 	}
 
 	private Node findSelectedNode(Class<?>... filterNodes) {
-		return SelectionNodeProvider.getSelectedNodeOfType(config.getDocProvider().getRootNode().getBodyNode(), config.getCaretPosition(), filterNodes);
+		return SelectionNodeProvider.getSelectedNodeOfType(rootNode.getBodyNode(), config.getCaretPosition(), filterNodes);
 	}
 	
 	private ClassNodeWrapper getClassNode() {
 		try {
-			return SelectionNodeProvider.getSelectedClassNode(config.getDocProvider().getRootNode(), config.getCaretPosition());
+			return SelectionNodeProvider.getSelectedClassNode(rootNode, config.getCaretPosition());
 		} catch (NoClassNodeException e) {
 			return null;
 		}
@@ -79,34 +83,20 @@ public class TempToFieldConditionChecker extends RefactoringConditionChecker {
 
 	@Override
 	public void checkFinalConditions() {
-
-		Node rootNode = config.getDocProvider().getRootNode();
-
-		if (config.isClassField()) {
-			checkUniqueClassFieldName(config.getNewName(), rootNode);
-		} else {
-			checkUniqueInstVarName(config.getNewName(), rootNode);
-		}
-	}
-
-	private void checkUniqueInstVarName(String newName, Node rootNode) {
-		InstVarNameProvider nameProvider = new InstVarNameProvider();
-		checkFieldName(newName, nameProvider.getInstVarNames(rootNode), "@", "Instance");
-	}
-
-	private void checkUniqueClassFieldName(String newName, Node rootNode) {
-		ClassVarNameProvider nameProvider = new ClassVarNameProvider();
-		checkFieldName(newName, nameProvider.getClassVarNames(rootNode), "@@", "Class");
-	}
-
-	private void checkFieldName(String newName, Collection<String> classVarNames, String namePrefix, String fieldTypeName) {
-		String intendedClassFieldName = namePrefix.concat(newName);
-		for (String currentName : classVarNames) {
-			if (intendedClassFieldName.equals(currentName)) {
-				addError(fieldTypeName + " field with name '" + newName + "' already exists.");
-				break;
+		String fieldTypeName = (config.isClassField()) ? "Class" : "Instance";
+		for(FieldNodeWrapper aktField : config.getEnclosingClassNode().getFields()) {
+			if(checkFieldName(config.getNewName(), aktField.getNameWithoutAts(), fieldTypeName)) {
+				return;
 			}
 		}
+	}
+
+	private boolean checkFieldName(String newName, String aktNodeName, String fieldTypeName) {
+		if (newName.equals(aktNodeName)) {
+			addError(fieldTypeName + " field with name '" + newName + "' already exists.");
+			return true;
+		}
+		return false;
 	}
 
 	@Override

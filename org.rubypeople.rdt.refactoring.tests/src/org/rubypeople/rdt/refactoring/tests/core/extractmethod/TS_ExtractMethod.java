@@ -37,7 +37,7 @@ import org.rubypeople.rdt.refactoring.tests.core.extractmethod.conditionchecks.T
 public class TS_ExtractMethod extends FileTestSuite {
 
 	public static Test suite() {
-		TestSuite suite = createSuite("ExtractMethod", "extract_method_test_.*source\\.rb", ExtractMethodTester.class);
+		TestSuite suite = createSuite("ExtractMethod", "extract_method_test_*source\\.rb", ExtractMethodTester.class);
 		suite.addTest(TS_ExtractMethodChecks.suite());
 		return suite;
 	}

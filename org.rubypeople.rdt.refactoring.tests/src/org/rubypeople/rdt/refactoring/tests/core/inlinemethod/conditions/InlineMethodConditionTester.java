@@ -46,7 +46,7 @@ public class InlineMethodConditionTester extends RefactoringConditionTestCase {
 
 	@Override
 	public void runTest() throws FileNotFoundException, IOException {
-		FilePropertyData testData = new FileTestData(getName(), ".test_source.rb", ".test_source.rb", getClass());
+		FilePropertyData testData = new FileTestData(getName(), ".test_source.rb", ".test_source.rb");
 		InlineMethodConfig methodContext = new InlineMethodConfig(testData, testData.getIntProperty("cursorPosition"), new TargetClassFinder());
 		
 		InlineMethodConditionChecker checker = new InlineMethodConditionChecker(methodContext);

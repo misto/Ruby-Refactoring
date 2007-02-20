@@ -38,7 +38,7 @@ import org.rubypeople.rdt.refactoring.tests.core.mergeclasspartsinfile.condition
 public class TS_MergeClassPartsInFile extends FileTestSuite {
 	
 	public static Test suite() {
-		TestSuite suite = createSuite("MergeClassPartsInFile", "merge_class_parts_in_file_test_.*\\.test_properties", ClassPartSelectorTester.class);
+		TestSuite suite = createSuite("MergeClassPartsInFile", "merge_class_parts_in_file_test_*.test_properties", ClassPartSelectorTester.class);
 		suite.addTest(TS_MergeClassPartsInFileChecks.suite());
 		return suite;
 	}

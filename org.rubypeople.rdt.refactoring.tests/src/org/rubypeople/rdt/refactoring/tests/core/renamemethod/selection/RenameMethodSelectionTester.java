@@ -55,7 +55,7 @@ public class RenameMethodSelectionTester extends RefactoringTestCase{
 	 
 	@Override
 	public void runTest() throws FileNotFoundException, IOException, BadLocationException {
-			testData = new MultiFileTestData(fileName, getClass());
+			testData = new MultiFileTestData(fileName);
 			int caretPosition = testData.getIntProperty("caretPosition");		
 			
 			RenameMethodConfig config = new RenameMethodConfig(testData, caretPosition);

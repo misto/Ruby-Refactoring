@@ -36,8 +36,8 @@ import org.rubypeople.rdt.refactoring.tests.core.inlinemethod.conditions.TS_Inli
 public class TS_InlineMethod extends FileTestSuite {
 	public static TestSuite suite() {
 		
-		TestSuite suite = createSuite("Inline Method", "inline_method_test_.*source\\.rb", InlineMethodTester.class);	
-		suite.addTest(createSuite("Inline Method - Parameter Replacer", "parameter_replaces_test_.*source\\.rb", TC_ParameterReplacer.class));
+		TestSuite suite = createSuite("Inline Method", "inline_method_test_*source.rb", InlineMethodTester.class);	
+		suite.addTest(createSuite("Inline Method - Parameter Replacer", "parameter_replaces_test_*source.rb", TC_ParameterReplacer.class));
 	
 		suite.addTestSuite(TC_SelectedCallFinder.class);
 		suite.addTestSuite(TC_TargetClassFinder.class);

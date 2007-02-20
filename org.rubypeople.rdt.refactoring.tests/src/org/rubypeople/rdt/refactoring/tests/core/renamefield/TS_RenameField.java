@@ -37,7 +37,7 @@ import org.rubypeople.rdt.refactoring.tests.core.renamefield.conditionchecks.TS_
 public class TS_RenameField extends FileTestSuite {
 	
 	public static Test suite() {
-		TestSuite suite = createSuite("Rename Field", "rename_field_.*\\.test_properties", FieldRenamerTester.class);
+		TestSuite suite = createSuite("Rename Field", "rename_field_test_*.test_properties", FieldRenamerTester.class);
 		suite.addTest(TS_RenameFieldChecks.suite());
 		return suite;
 		

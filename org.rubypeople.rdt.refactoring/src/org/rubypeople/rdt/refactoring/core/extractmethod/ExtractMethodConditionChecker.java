@@ -32,20 +32,27 @@ package org.rubypeople.rdt.refactoring.core.extractmethod;
 
 import java.util.Collection;
 
+import org.jruby.ast.ArgsNode;
+import org.jruby.ast.ArgumentNode;
+import org.jruby.ast.ArrayNode;
+import org.jruby.ast.CaseNode;
 import org.jruby.ast.ClassNode;
 import org.jruby.ast.DefnNode;
 import org.jruby.ast.MethodDefNode;
 import org.jruby.ast.ModuleNode;
+import org.jruby.ast.MultipleAsgnNode;
 import org.jruby.ast.Node;
 import org.jruby.ast.RootNode;
 import org.jruby.ast.SClassNode;
 import org.jruby.ast.SuperNode;
+import org.jruby.ast.WhenNode;
 import org.jruby.ast.YieldNode;
 import org.jruby.ast.ZSuperNode;
 import org.rubypeople.rdt.refactoring.core.NodeProvider;
 import org.rubypeople.rdt.refactoring.core.RefactoringConditionChecker;
 import org.rubypeople.rdt.refactoring.core.SelectionNodeProvider;
 import org.rubypeople.rdt.refactoring.exception.NoClassNodeException;
+import org.rubypeople.rdt.refactoring.nodewrapper.MethodCallNodeWrapper;
 import org.rubypeople.rdt.refactoring.nodewrapper.PartialClassNodeWrapper;
 import org.rubypeople.rdt.refactoring.util.NodeUtil;
 
@@ -70,7 +77,7 @@ public class ExtractMethodConditionChecker extends RefactoringConditionChecker {
 		config.setRootNode(rootNode);
 		config.setEnclosingScopeNode(SelectionNodeProvider.getEnclosingScope(rootNode, config.getSelection().getStartOfSelection()));
 		config.setEnclosingMethodNode((MethodDefNode) SelectionNodeProvider.getEnclosingNode(rootNode, config.getSelection(), MethodDefNode.class));
-		config.setSelectedNodes(SelectionNodeProvider.getSelectedNodes(rootNode, config.getSelection()));
+		config.setSelectedNodes(getSelectedNodes(rootNode));
 		
 		Node classNode = SelectionNodeProvider.getEnclosingNode(rootNode, config.getSelection(), ClassNode.class, SClassNode.class);
 		try {
@@ -78,6 +85,71 @@ public class ExtractMethodConditionChecker extends RefactoringConditionChecker {
 		} catch (NoClassNodeException e) {
 			/*don't care*/
 		}
+	}
+
+	private Node getSelectedNodes(RootNode rootNode) {
+		Node selectedNode = SelectionNodeProvider.getSelectedNodes(rootNode, config.getSelection());
+		
+		//If selected node is an WhenNode, take the enclosing CaseNode as selectedNode.
+		if (NodeProvider.nodeAssignableFrom(selectedNode, WhenNode.class)) {
+			selectedNode = SelectionNodeProvider.getEnclosingNode(rootNode, config.getSelection(), CaseNode.class);
+		}
+		if(NodeProvider.nodeAssignableFrom(selectedNode, ArrayNode.class)) {
+			WhenNode enclosingWhen = (WhenNode) SelectionNodeProvider.getEnclosingNode(rootNode, config.getSelection(), WhenNode.class);
+			if(enclosingWhen != null && SelectionNodeProvider.nodeEnclosesNode(enclosingWhen.getExpressionNodes(), selectedNode)) {
+				selectedNode = SelectionNodeProvider.getEnclosingNode(rootNode, config.getSelection(), CaseNode.class);
+			}
+		}
+		
+		//Check if content of an ArgsNode is selected
+		ArgsNode enclosingArgsNode = (ArgsNode) SelectionNodeProvider.getEnclosingNode(rootNode, config.getSelection(), ArgsNode.class);
+		if(enclosingArgsNode != null) {
+			return SelectionNodeProvider.getEnclosingNode(rootNode, config.getSelection(), MethodDefNode.class);
+		}
+		
+		//Check if the selected Node is an argumentNode
+		if(NodeProvider.nodeAssignableFrom(selectedNode, ArgumentNode.class)) {
+			selectedNode = config.getEnclosingMethodNode();
+		}
+		
+		//check if the selected Nodes are contained in an enclosing arrayNode
+		//if not the fowllowing checks arent necessary anymore.
+		ArrayNode enclosingArrayNode = (ArrayNode) SelectionNodeProvider.getEnclosingNode(rootNode, config.getSelection(), ArrayNode.class);
+		if(!sectedNodesInArrayNode(enclosingArrayNode, selectedNode)) {
+			return selectedNode;
+		}
+		
+		//Check if enclosingArrayNode is the argsNode of a MethodCallNode.
+		Node enclosingMethodCallNode = SelectionNodeProvider.getEnclosingNode(rootNode, config.getSelection(), MethodCallNodeWrapper.METHOD_CALL_NODE_CLASSES());
+		MethodCallNodeWrapper enclosingMethodCall = new MethodCallNodeWrapper(enclosingMethodCallNode);
+		if(NodeProvider.nodeAssignableFrom(enclosingMethodCall.getArgsNode(), ArrayNode.class)) {
+			ArrayNode enclosingMethodCallArgs = (ArrayNode) enclosingMethodCall.getArgsNode();
+			if(enclosingArrayNode == enclosingMethodCallArgs)
+				return enclosingMethodCallNode;
+		}
+		
+		//Check if enclosingArrayNode is the receiver node of a multiAsgnNode
+		MultipleAsgnNode asgnNode = (MultipleAsgnNode) SelectionNodeProvider.getEnclosingNode(rootNode, config.getSelection(), MultipleAsgnNode.class);
+		if(asgnNode != null && NodeProvider.nodeAssignableFrom(asgnNode.getHeadNode(), ArrayNode.class)) {
+//			ArrayNode multiAsgnHeadNode = (ArrayNode) asgnNode.getHeadNode();
+//			if(enclosingArrayNode == multiAsgnHeadNode) {
+//				return asgnNode;
+//			}
+		}
+		return selectedNode;
+	}
+
+	private boolean sectedNodesInArrayNode(ArrayNode arrayNode, Node selectedNode) {
+		if(arrayNode == null) {
+			return false;
+		}
+		Collection<Node> arrayChilds = NodeProvider.getAllNodes(arrayNode);
+		for(Object actSelectedNode : selectedNode.childNodes()) {
+			if(!arrayChilds.contains(actSelectedNode)) {
+				return false;
+			}
+		}
+		return true;
 	}
 
 	@Override
