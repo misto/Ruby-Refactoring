@@ -48,7 +48,7 @@ import org.rubypeople.rdt.refactoring.documentprovider.DocumentProvider;
 import org.rubypeople.rdt.refactoring.nodewrapper.INodeWrapper;
 import org.rubypeople.rdt.refactoring.ui.RdtCodeViewer;
 
-public class CallReplaceSelectionPage extends UserInputWizardPage {
+public class OccurenceReplaceSelectionPage extends UserInputWizardPage {
 
 	public static final String NAME = "Select Calls...";
 	private final static RGB highlightColor = new RGB(173, 193, 217);
@@ -58,7 +58,7 @@ public class CallReplaceSelectionPage extends UserInputWizardPage {
 	private DocumentProvider docProvider;
 	
 	
-	public CallReplaceSelectionPage(NodeSelector selector, DocumentProvider docProvider) {
+	public OccurenceReplaceSelectionPage(NodeSelector selector, DocumentProvider docProvider) {
 		super(NAME);
 		this.selector = selector;
 		this.docProvider = docProvider;
@@ -87,14 +87,14 @@ public class CallReplaceSelectionPage extends UserInputWizardPage {
 			public void widgetSelected(SelectionEvent e) {
 				INodeWrapper currentCall = (INodeWrapper) e.item.getData();
 				ISourcePosition pos = currentCall.getWrappedNode().getPosition();
-				int length = pos.getEndOffset() - pos.getStartOffset();
 				String file = docProvider.getFileContent(currentCall.getWrappedNode().getPosition().getFile());
-				updateCodeViewer(viewer, pos, length, file);
+				updateCodeViewer(viewer, pos, file);
 				
 				updateChecks();
 			}
 
-			private void updateCodeViewer(final RdtCodeViewer viewer, ISourcePosition pos, int length, String content) {
+			private void updateCodeViewer(final RdtCodeViewer viewer, ISourcePosition pos, String content) {
+				int length = pos.getEndOffset() - pos.getStartOffset();
 				viewer.setPreviewText(content);
 				viewer.setBackgroundColor(pos.getStartOffset(), length, highlightColor);
 				viewer.getTextWidget().setSelection(pos.getStartOffset());

@@ -71,7 +71,7 @@ public class RdtCodeViewer extends RubyScriptPreview {
 	public void setBackgroundColor(int start, int length, Color color) {
 		StyleRange styleRangeNode = new StyleRange();
 		styleRangeNode.start = start;
-		styleRangeNode.length = length + 1;
+		styleRangeNode.length = length;
 		styleRangeNode.background = color;
 		getTextWidget().setStyleRange(styleRangeNode);
 	}

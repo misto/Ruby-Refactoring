@@ -35,7 +35,7 @@ import org.rubypeople.rdt.refactoring.core.TextSelectionProvider;
 import org.rubypeople.rdt.refactoring.documentprovider.DocumentWithIncluding;
 import org.rubypeople.rdt.refactoring.ui.IValidator;
 import org.rubypeople.rdt.refactoring.ui.NewNameListener;
-import org.rubypeople.rdt.refactoring.ui.pages.CallReplaceSelectionPage;
+import org.rubypeople.rdt.refactoring.ui.pages.OccurenceReplaceSelectionPage;
 import org.rubypeople.rdt.refactoring.ui.pages.RenameFieldPage;
 import org.rubypeople.rdt.refactoring.util.NameValidator;
 
@@ -53,7 +53,7 @@ public class RenameFieldRefactoring extends RubyRefactoring {
 	private FieldRenamer renamer;
 	private NewNameListener nameListener;
 	private RenameFieldPage pageOne;
-	private CallReplaceSelectionPage page;
+	private OccurenceReplaceSelectionPage page;
 
 	public RenameFieldRefactoring(TextSelectionProvider selectionProvider) {
 		super(NAME);
@@ -70,7 +70,7 @@ public class RenameFieldRefactoring extends RubyRefactoring {
 			
 			pageOne = new RenameFieldPage(config.getSelectedName().replaceAll("@", ""), nameListener, config);
 			pages.add(pageOne);
-			page = new CallReplaceSelectionPage(config, config.getDocProvider());
+			page = new OccurenceReplaceSelectionPage(config, config.getDocProvider());
 			pages.add(page);
 		}
 	}

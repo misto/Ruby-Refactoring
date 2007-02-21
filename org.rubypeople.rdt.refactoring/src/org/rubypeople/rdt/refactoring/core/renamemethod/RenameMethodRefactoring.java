@@ -34,7 +34,7 @@ import org.rubypeople.rdt.refactoring.core.RubyRefactoring;
 import org.rubypeople.rdt.refactoring.core.TextSelectionProvider;
 import org.rubypeople.rdt.refactoring.ui.IValidator;
 import org.rubypeople.rdt.refactoring.ui.NewNameListener;
-import org.rubypeople.rdt.refactoring.ui.pages.CallReplaceSelectionPage;
+import org.rubypeople.rdt.refactoring.ui.pages.OccurenceReplaceSelectionPage;
 import org.rubypeople.rdt.refactoring.ui.pages.RenamePage;
 import org.rubypeople.rdt.refactoring.util.NameValidator;
 
@@ -64,7 +64,7 @@ public class RenameMethodRefactoring extends RubyRefactoring {
 			RenamePage page = new RenamePage(NAME + "...", config.getTargetMethod().getName(), nameListener);
 			pages.add(page);
 			if(!config.getPossibleCalls().isEmpty()){
-				pages.add(new CallReplaceSelectionPage(config, config.getDocProvider()));
+				pages.add(new OccurenceReplaceSelectionPage(config, config.getDocProvider()));
 			}
 		}
 	}
