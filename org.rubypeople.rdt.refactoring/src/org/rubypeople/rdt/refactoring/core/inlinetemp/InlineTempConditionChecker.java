@@ -117,9 +117,15 @@ public class InlineTempConditionChecker extends RefactoringConditionChecker {
 			addError("Cannot inline a local variable that uses its own value in the assignment.");
 		} else if (isMultipleAsgnNode()) {
 			addError("Inline in multiple assignments not jet supported.");
+		} else if (!hasTarget())	{
+			addError("No target found to inline the selected variable.");
 		}
 	}
 	
+	private boolean hasTarget() {
+		return !config.getLocalOccurrences().isEmpty();
+	}
+
 	private boolean isBlockArgument() {
 		IterNode enclosingIterNode = (IterNode) SelectionNodeProvider.getSelectedNodeOfType(rootNode, config.getCaretPosition(), IterNode.class);
 		if(enclosingIterNode == null) {
