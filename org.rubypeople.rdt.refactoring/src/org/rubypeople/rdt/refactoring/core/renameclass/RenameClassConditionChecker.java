@@ -50,6 +50,11 @@ public class RenameClassConditionChecker extends RefactoringConditionChecker {
 		ClassNodeWrapper classNode = null;
 		try {
 			classNode = SelectionNodeProvider.getSelectedClassNode(config.getDocProvider().getRootNode(), config.getOffset());
+			int nameStart = ((ClassNode) classNode.getWrappedNode()).getCPath().getPosition().getStartOffset();
+			int nameEnd = ((ClassNode) classNode.getWrappedNode()).getCPath().getPosition().getEndOffset();
+			if(config.getOffset() < nameStart || config.getOffset() > nameEnd) {
+				return;
+			}
 		} catch (NoClassNodeException e) {return;}
 		config.setModulePrefix(classNode.getFirstPartialClassNode().getModulePrefix());
 		config.setSelectedNode((ClassNode) classNode.getFirstPartialClassNode().getWrappedNode());

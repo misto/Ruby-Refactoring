@@ -31,6 +31,7 @@ package org.rubypeople.rdt.refactoring.core.renamelocalvariable;
 import java.util.Collection;
 
 import org.jruby.ast.ArgumentNode;
+import org.jruby.ast.AssignableNode;
 import org.jruby.ast.BlockArgNode;
 import org.jruby.ast.DAsgnNode;
 import org.jruby.ast.DVarNode;
@@ -39,6 +40,7 @@ import org.jruby.ast.LocalVarNode;
 import org.jruby.ast.MethodDefNode;
 import org.jruby.ast.Node;
 import org.jruby.ast.RootNode;
+import org.jruby.ast.types.INameNode;
 import org.rubypeople.rdt.refactoring.core.NodeProvider;
 import org.rubypeople.rdt.refactoring.core.RefactoringConditionChecker;
 import org.rubypeople.rdt.refactoring.core.SelectionNodeProvider;
@@ -68,6 +70,13 @@ public class RenameConditionChecker extends RefactoringConditionChecker {
 		config = (RenameConfig) configObj;
 		RootNode rootNode = config.getDocumentProvider().getRootNode();
 		Node selectedNode = SelectionNodeProvider.getSelectedNodeOfType(rootNode, config.getCaretPosition(), SELECTED_NODE_TYPES);
+		if(selectedNode instanceof AssignableNode) {
+			int start = selectedNode.getPosition().getStartOffset();
+			int end = start + ((INameNode) selectedNode).getName().length();
+			if(config.getCaretPosition() < start || config.getCaretPosition() > end) {
+				return;
+			}
+		}
 		
 		config.setSelectedNode(selectedNode);
 		if(selectedNode == null) {
