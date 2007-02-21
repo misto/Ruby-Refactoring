@@ -47,8 +47,9 @@ public class RenameConditionChecker extends RefactoringConditionChecker {
 		selectedLocalNode = SelectionNodeProvider.getSelectedNodeOfType(rootNode, offset, LocalNodeWrapper.getLocalNodeClasses());
 		ConstNode selectedConstNode = (ConstNode) SelectionNodeProvider.getSelectedNodeOfType(rootNode, offset, ConstNode.class);
 		SymbolNode selectedSymbolNode = (SymbolNode) SelectionNodeProvider.getSelectedNodeOfType(rootNode, offset, SymbolNode.class);
-		if(selectedLocalNode == null && SelectionNodeProvider.getSelectedNodeOfType(rootNode, offset, ArgsNode.class) != null) {
-			selectedLocalNode = SelectionNodeProvider.getSelectedNodeOfType(rootNode, offset, ArgumentNode.class);
+		ArgsNode argsNode = (ArgsNode) SelectionNodeProvider.getSelectedNodeOfType(rootNode, offset, ArgsNode.class);
+		if(selectedLocalNode == null && argsNode != null) {
+			selectedLocalNode = SelectionNodeProvider.getSelectedNodeOfType(argsNode, offset, ArgumentNode.class);
 		}
 		initPreferedNode(selectedConstNode, selectedSymbolNode);
 	}
