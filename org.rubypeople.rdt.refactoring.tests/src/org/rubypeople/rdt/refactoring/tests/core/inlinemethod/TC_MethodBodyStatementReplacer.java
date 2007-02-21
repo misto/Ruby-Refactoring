@@ -28,6 +28,8 @@
 
 package org.rubypeople.rdt.refactoring.tests.core.inlinemethod;
 
+import java.util.ArrayList;
+
 import org.rubypeople.rdt.refactoring.core.inlinemethod.MethodBodyStatementReplacer;
 import org.rubypeople.rdt.refactoring.documentprovider.IDocumentProvider;
 import org.rubypeople.rdt.refactoring.tests.core.MultipleDocumentsInOneProvider;
@@ -49,9 +51,13 @@ public class TC_MethodBodyStatementReplacer extends FinderTestsBase {
 	public void testReturnStatement() {
 		replaceReturn("test4", "result4");
 	}
-	
+
 	public void testReturnStatementFac() {
 		replaceReturn("test5", "result5");
+	}
+	
+	public void testReturnCallToMember() {
+		replaceCallToMember("test6", "result6", "a");
 	}
 
 	private void replace(String testName, String newName, String resultName) {
@@ -61,6 +67,11 @@ public class TC_MethodBodyStatementReplacer extends FinderTestsBase {
 
 	private void replaceReturn(String testName, String resultName) {
 		IDocumentProvider result = new MethodBodyStatementReplacer().removeReturnStatements(doc.setActive(testName));
+		compareResults(resultName, result);
+	}
+
+	private void replaceCallToMember(String testName, String resultName, String objName) {
+		IDocumentProvider result = new MethodBodyStatementReplacer().replaceVarsWithAccessor(doc.setActive(testName), objName, new ArrayList<String>());
 		compareResults(resultName, result);
 	}
 

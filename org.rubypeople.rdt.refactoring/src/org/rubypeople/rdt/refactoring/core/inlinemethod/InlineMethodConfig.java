@@ -28,6 +28,8 @@
 
 package org.rubypeople.rdt.refactoring.core.inlinemethod;
 
+import java.util.Collection;
+
 import org.jruby.ast.MethodDefNode;
 import org.jruby.ast.Node;
 import org.rubypeople.rdt.refactoring.core.NodeProvider;
@@ -43,6 +45,7 @@ public class InlineMethodConfig {
 	private final DocumentProvider originalDocument;
 	private int pos;
 	private ITargetClassFinder targetClassFinder;
+	private Collection<String> usedMembers;
 
 	public InlineMethodConfig(DocumentProvider doc, int pos, ITargetClassFinder targetClassFinder) {
 		
@@ -105,5 +108,13 @@ public class InlineMethodConfig {
 
 	public void setMethodDefinitionNode(MethodDefNode methodDefinitionNode) {
 		this.methodDefinitionNode = methodDefinitionNode;
+	}
+
+	public void setUsedMembers(Collection<String> usedMembers) {
+		this.usedMembers = usedMembers;
+	}
+
+	public Collection<String> getUsedMembers() {
+		return usedMembers;
 	}
 }

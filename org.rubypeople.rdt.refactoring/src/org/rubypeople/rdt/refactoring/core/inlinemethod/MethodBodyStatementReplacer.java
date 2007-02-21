@@ -32,14 +32,17 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 import org.jruby.ast.FCallNode;
+import org.jruby.ast.InstAsgnNode;
+import org.jruby.ast.InstVarNode;
 import org.jruby.ast.Node;
 import org.jruby.ast.ReturnNode;
 import org.jruby.ast.SelfNode;
 import org.jruby.ast.VCallNode;
+import org.jruby.ast.types.INameNode;
 import org.rubypeople.rdt.refactoring.classnodeprovider.IncludedClassesProvider;
 import org.rubypeople.rdt.refactoring.core.NodeProvider;
-import org.rubypeople.rdt.refactoring.documentprovider.StringDocumentProvider;
 import org.rubypeople.rdt.refactoring.documentprovider.DocumentProvider;
+import org.rubypeople.rdt.refactoring.documentprovider.StringDocumentProvider;
 import org.rubypeople.rdt.refactoring.nodewrapper.MethodNodeWrapper;
 
 public class MethodBodyStatementReplacer implements IMethodBodyStatementReplacer {
@@ -63,7 +66,31 @@ public class MethodBodyStatementReplacer implements IMethodBodyStatementReplacer
 		
 		return result;
 	}
+	
+	public DocumentProvider replaceVarsWithAccessor(DocumentProvider doc, String object, Collection<String> usedMembers)  {
 
+		DocumentProvider result = new StringDocumentProvider(doc);
+		Collection<Node> varNodes = null;
+		do {
+			varNodes = NodeProvider.gatherNodesOfTypeInAktScopeNode(result.getRootNode().getBodyNode(), InstVarNode.class, InstAsgnNode.class);
+
+			if(varNodes.isEmpty()) {
+				continue;
+			}
+			final Node varNode = varNodes.iterator().next();
+			String name = ((INameNode) varNode).getName();
+			usedMembers.add(name);
+			StringBuilder src = new StringBuilder(result.getActiveFileContent());
+			src.replace(varNode.getPosition().getStartOffset(), 
+					varNode.getPosition().getStartOffset() + name.length(), 
+					object + '.' + name.substring(1));
+			result = new StringDocumentProvider(src.toString());
+			
+		} while(!varNodes.isEmpty());
+		
+		return result;
+	}
+	
 	public DocumentProvider prefixCallsWithObject(DocumentProvider doc, IncludedClassesProvider provider, String className, String object) {
 		
 		DocumentProvider result = new StringDocumentProvider(doc);
@@ -78,7 +105,6 @@ public class MethodBodyStatementReplacer implements IMethodBodyStatementReplacer
 		return result;
 	}
 	
-
 	private IMethodCallNode findCallToMethodInClass(DocumentProvider doc, IncludedClassesProvider provider, String className) {
 		Collection<MethodNodeWrapper> definedMethods = provider.getAllMethodsFor(className); 
 

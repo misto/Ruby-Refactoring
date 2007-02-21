@@ -42,6 +42,7 @@ public class RenameDuplicatedVariables implements IRenameDuplicatedVariables {
 		DocumentProvider result = new StringDocumentProvider(doc.getActiveFileContent());
 		
 		for (String name : NameHelper.findDuplicates(rootNode.getStaticScope().getVariables(), localNames)) {
+			if("$~".equals(name) || "$_".equals(name)) continue;
 			result = new LocalVariableRenamer(result, name, NameHelper.createName(name)).rename();
 		}		
 		return result;

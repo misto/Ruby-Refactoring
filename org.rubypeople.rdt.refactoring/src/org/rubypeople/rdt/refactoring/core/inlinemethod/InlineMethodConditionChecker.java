@@ -29,6 +29,8 @@
 package org.rubypeople.rdt.refactoring.core.inlinemethod;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
 
 import org.jruby.ast.AssignableNode;
 import org.jruby.ast.ListNode;
@@ -113,8 +115,12 @@ public class InlineMethodConditionChecker extends RefactoringConditionChecker {
 	private void createInlinedMethodBody(DocumentProvider doc) {
 		MethodBodyStatementReplacer bodyReplacer = new MethodBodyStatementReplacer();
 		if(config.getSelectedCall().getReceiver() != null) {
-			config.setMethodDefDoc(bodyReplacer.replaceSelfWithObject(config.getMethodDefDoc(), ((INameNode)config.getSelectedCall().getReceiver()).getName()));
-			config.setMethodDefDoc(bodyReplacer.prefixCallsWithObject(config.getMethodDefDoc(),  new IncludedClassesProvider(doc), config.getClassName(), ((INameNode)config.getSelectedCall().getReceiver()).getName()));
+			final String name = ((INameNode)config.getSelectedCall().getReceiver()).getName();
+			config.setMethodDefDoc(bodyReplacer.replaceSelfWithObject(config.getMethodDefDoc(), name));
+			config.setMethodDefDoc(bodyReplacer.prefixCallsWithObject(config.getMethodDefDoc(),  new IncludedClassesProvider(doc), config.getClassName(), name));
+			Collection<String> usedMembers = new HashSet<String>();
+			config.setMethodDefDoc(bodyReplacer.replaceVarsWithAccessor(config.getMethodDefDoc(), name, usedMembers));
+			config.setUsedMembers(usedMembers);
 		}
 		config.setMethodDefDoc(bodyReplacer.removeReturnStatements(config.getMethodDefDoc()));
 	}

@@ -31,6 +31,7 @@ package org.rubypeople.rdt.refactoring.core.inlinemethod;
 import java.util.ArrayList;
 import java.util.Collection;
 
+import org.rubypeople.rdt.refactoring.core.movefield.GenerateAccessorsAtTarget;
 import org.rubypeople.rdt.refactoring.editprovider.DeleteEditProvider;
 import org.rubypeople.rdt.refactoring.editprovider.EditProvider;
 import org.rubypeople.rdt.refactoring.editprovider.MultiEditProvider;
@@ -50,6 +51,11 @@ public class InlineAndRemoveEditProvider extends MultiEditProvider implements IR
 		editProviders.add(new InlineMethodEditProvider(config));
 		if(remove) {
 			editProviders.add(new DeleteEditProvider(config.getMethodDefinitionNode()));
+		}
+		if(config.getUsedMembers() != null && !config.getUsedMembers().isEmpty()) {
+			for(String member : config.getUsedMembers()) {
+				editProviders.add(new GenerateAccessorsAtTarget(config.getDocumentProvider(), config.getClassName(), member.substring(1)).getEditProvider());
+			}
 		}
 		return editProviders;
 	}

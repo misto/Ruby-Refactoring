@@ -43,7 +43,10 @@ public class GenerateAccessorsAtTarget {
 		
 		for(String fileName : doc.getFileNames()) {
 			StringDocumentProvider stringDocumentProvider = new StringDocumentProvider(fileName, doc.getFileContent(fileName));
-			targetClass = stringDocumentProvider.getIncludedClassNodeProvider().getClassNode(className);
+			ClassNodeWrapper classNodeWrapper = stringDocumentProvider.getIncludedClassNodeProvider().getClassNode(className);
+			if(classNodeWrapper != null) {
+				targetClass = classNodeWrapper;
+			}
 		}
 
 		generatedAccessor = new GeneratedAccessor("attr_accessor", accessorName, GeneratedAccessor.TYPE_SIMPLE_ACCESSOR, targetClass);

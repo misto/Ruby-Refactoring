@@ -32,3 +32,9 @@ return fac
 ##!result5
 fac = (1..10).inject(1) { |i, j| i * j }
 fac
+##!test6
+@x = 5
+puts @x
+##!result6
+a.x = 5
+puts a.x
