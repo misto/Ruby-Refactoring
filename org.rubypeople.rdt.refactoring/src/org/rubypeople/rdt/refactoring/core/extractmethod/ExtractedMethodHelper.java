@@ -237,9 +237,9 @@ public class ExtractedMethodHelper extends Observable {
 
 		ArrayList<String> local = new ArrayList<String>();
 
-		for (String name : NodeUtil.getScope(selectedNodes).getVariables()) {
-			if (!arguments.contains(name)) {
-				local.add(name);
+		for(LocalNodeWrapper varNode : LocalNodeWrapper.gatherLocalNodes(getMethodCallNode())) {
+			if (!arguments.contains(varNode.getName())) {
+				local.add(varNode.getName());
 			}
 		}
 
