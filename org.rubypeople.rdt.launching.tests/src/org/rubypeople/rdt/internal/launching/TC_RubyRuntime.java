@@ -4,6 +4,8 @@ import java.io.File;
 
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IPath;
+import org.eclipse.core.runtime.Path;
 import org.rubypeople.rdt.core.tests.ModifyingResourceTest;
 import org.rubypeople.rdt.launching.IVMInstall;
 import org.rubypeople.rdt.launching.IVMInstallType;
@@ -72,39 +74,86 @@ public class TC_RubyRuntime extends ModifyingResourceTest {
 	}
 
 	public void testSetInstalledInterpreters() throws CoreException {
+		String vmOneName = "InterpreterOne";
+		String vmOneId = vmOneName;
+		String vmTwoName = "InterpreterTwo";
+		String vmTwoId = vmTwoName;
 		try {
-			VMStandin standin = new VMStandin(vmType, "InterpreterOne");
+			VMStandin standin = new VMStandin(vmType, vmOneId);
 			standin.setInstallLocation(folderOne.getLocation().toFile());
-			standin.setName("InterpreterOne");
+			standin.setName(vmOneName);
 			IVMInstall one = standin.convertToRealVM();
 			RubyRuntime.setDefaultVMInstall(one, null,true);
+			IPath vmOneLocation = folderOne.getLocation();
 			assertEquals(
 					"XML should indicate only one interpreter with it being the selected.",
-					"<?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n<vmSettings defaultVM=\"43,org.rubypeople.rdt.launching.StandardVMType14,InterpreterOne\">\r\n<vmType id=\"org.rubypeople.rdt.launching.StandardVMType\">\r\n<vm id=\"InterpreterOne\" name=\"InterpreterOne\" path=\"" + folderOne.getLocation().toOSString() +  "\"/>\r\n</vmType>\r\n</vmSettings>\r\n",
-					getVMsXML());
-
-			VMStandin standin2 = new VMStandin(vmType, "InterpreterTwo");
-			standin2.setInstallLocation(folderTwo.getLocation().toFile());
-			standin2.setName("InterpreterTwo");
+					"<?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n" +
+					"<vmSettings defaultVM=\"43,org.rubypeople.rdt.launching.StandardVMType14," + vmOneId + "\">\r\n" +
+					"<vmType id=\"org.rubypeople.rdt.launching.StandardVMType\">\r\n" +
+					vmToXML(vmOneId, vmOneName, vmOneLocation) +
+					"</vmType>\r\n" +
+					"</vmSettings>\r\n",
+					getVMsXML());			
+			IPath vmTwoLocation = folderTwo.getLocation();
+			VMStandin standin2 = new VMStandin(vmType, vmTwoId);
+			standin2.setInstallLocation(vmTwoLocation.toFile());
+			standin2.setName(vmTwoName);
 			IVMInstall two = standin2.convertToRealVM();
 			RubyRuntime.saveVMConfiguration();
 			assertEquals(
 					"XML should indicate both interpreters with the first one being selected.",
-					"<?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n<vmSettings defaultVM=\"43,org.rubypeople.rdt.launching.StandardVMType14,InterpreterOne\">\r\n<vmType id=\"org.rubypeople.rdt.launching.StandardVMType\">\r\n<vm id=\"InterpreterOne\" name=\"InterpreterOne\" path=\"" + folderOne.getLocation().toOSString() +  "\"/>\r\n<vm id=\"InterpreterTwo\" name=\"InterpreterTwo\" path=\"" + folderTwo.getLocation().toOSString() +  "\"/>\r\n</vmType>\r\n</vmSettings>\r\n",
+					"<?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n" +
+					"<vmSettings defaultVM=\"43,org.rubypeople.rdt.launching.StandardVMType14," + vmOneId + "\">\r\n" +
+					"<vmType id=\"org.rubypeople.rdt.launching.StandardVMType\">\r\n" +
+					vmToXML(vmOneId, vmOneName, vmOneLocation) +
+					vmToXML(vmTwoId, vmTwoName, vmTwoLocation) +
+					"</vmType>\r\n" +
+					"</vmSettings>\r\n",
 					getVMsXML());
 
 			RubyRuntime.setDefaultVMInstall(two, null,true);
 			assertEquals(
-					"XML should indicate both interpreters with the first one being selected.",
-					"<?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n<vmSettings defaultVM=\"" + RubyRuntime.getCompositeIdFromVM(standin2) + "\">\r\n<vmType id=\"org.rubypeople.rdt.launching.StandardVMType\">\r\n<vm id=\"InterpreterOne\" name=\"InterpreterOne\" path=\"" + folderOne.getLocation().toOSString() +  "\"/>\r\n<vm id=\"InterpreterTwo\" name=\"InterpreterTwo\" path=\"" + folderTwo.getLocation().toOSString() +  "\"/>\r\n</vmType>\r\n</vmSettings>\r\n",
+					"XML should indicate both interpreters with the second one being selected.",
+					"<?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n" +
+					"<vmSettings defaultVM=\"" + RubyRuntime.getCompositeIdFromVM(standin2) + "\">\r\n" +
+					"<vmType id=\"org.rubypeople.rdt.launching.StandardVMType\">\r\n" +
+					vmToXML(vmOneId, vmOneName, vmOneLocation) +
+					vmToXML(vmTwoId, vmTwoName, vmTwoLocation) +
+					"</vmType>\r\n" +
+					"</vmSettings>\r\n",
 					getVMsXML());
 		} finally {
-			vmType.disposeVMInstall("InterpreterOne");
-			vmType.disposeVMInstall("InterpreterTwo");
+			vmType.disposeVMInstall(vmOneId);
+			vmType.disposeVMInstall(vmTwoId);
 		}
 	}
 
 	private String getVMsXML() {
 		return RubyRuntime.getPreferences().getString(RubyRuntime.PREF_VM_XML);
+	}
+	
+	private String vmToXML(String id, String name, IPath location) {
+		StringBuffer xml = new StringBuffer();
+		xml.append("<vm id=\"");
+		xml.append(id);
+		xml.append("\" name=\"");
+		xml.append(name);
+		xml.append("\" path=\"");
+		xml.append(location.toOSString());
+		xml.append("\">\r\n");
+		xml.append("<libraryLocations>\r\n");
+		xml.append("<libraryLocation src=\"");
+		xml.append(location.toPortableString());
+		xml.append("/lib/ruby/site_ruby/1.8\"/>\r\n");
+		xml.append("<libraryLocation src=\"");
+		xml.append(location.toPortableString());
+		xml.append("/lib/ruby/1.8\"/>\r\n");
+		File file = LaunchingPlugin.getFileInPlugin(new Path("ruby/" + id + "/lib"));
+		xml.append("<libraryLocation src=\"");
+		xml.append(Path.fromOSString(file.toString()).toPortableString());
+		xml.append("\"/>\r\n");
+		xml.append("</libraryLocations>\r\n");
+		xml.append("</vm>\r\n");
+		return xml.toString();
 	}
 }
