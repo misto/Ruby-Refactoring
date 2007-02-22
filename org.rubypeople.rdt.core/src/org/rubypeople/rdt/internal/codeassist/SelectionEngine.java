@@ -46,7 +46,6 @@ public class SelectionEngine {
 				start);
 
 		if (selected instanceof Colon2Node) {
-//			 FIXME What if we have a constant with multiple parts (i.e. TMail::Mail)?
 			String simpleName = ((Colon2Node)selected).getName();
 			String fullyQualifiedName = ASTUtil.getFullyQualifiedName((Colon2Node) selected);
 			IRubyElement element = findChild(simpleName, IRubyElement.TYPE, script);
@@ -65,6 +64,7 @@ public class SelectionEngine {
 			ConstNode constNode = (ConstNode) selected;
 			String name = constNode.getName();
 			// Try to find a matching constant in this script
+			// TODO Use convention of all caps versus camelcase to decided which to search for first?
 			IRubyElement element = findChild(name, IRubyElement.CONSTANT, script);
 			if (element != null) {
 			  return new IRubyElement[] { element };	
