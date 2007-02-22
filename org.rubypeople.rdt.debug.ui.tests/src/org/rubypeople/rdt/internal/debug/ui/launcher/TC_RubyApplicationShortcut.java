@@ -7,6 +7,7 @@ import java.util.Set;
 import junit.framework.Assert;
 
 import org.eclipse.core.resources.IFile;
+import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.debug.core.DebugPlugin;
 import org.eclipse.debug.core.ILaunchConfiguration;
@@ -31,8 +32,6 @@ import org.rubypeople.rdt.launching.VMStandin;
 import org.rubypeople.rdt.ui.IRubyConstants;
 
 public class TC_RubyApplicationShortcut extends ModifyingResourceTest {
-
-	private static final String VM_ID = "vm_id";
 
 	private static final String VM_TYPE_ID = "org.rubypeople.rdt.launching.StandardVMType";
 	
@@ -67,15 +66,16 @@ public class TC_RubyApplicationShortcut extends ModifyingResourceTest {
 	}
 	
 	private IVMInstallType vmType;
+	private IVMInstall vm;
 
 	protected void setUp() throws Exception {
+		super.setUp();
 		shortcut = new ShamRubyApplicationShortcut();
 
-//		createProject("project1");
-		createRubyProject("project1");
-		createFolder("project1/folderOne");
-		nonRubyFile = createFile("project1/folderOne/myFile.java", "");
-		rubyFile = createFile("project1/folderOne/myFile.rb", "");
+		createRubyProject("/project1");
+		createFolder("/project1/folderOne");
+		nonRubyFile = createFile("/project1/folderOne/myFile.java", "");
+		rubyFile = createFile("/project1/folderOne/myFile.rb", "");
 
 		ILaunchConfiguration[] configs = this.getLaunchConfigurations();
 		for (int i = 0; i < configs.length; i++) {
@@ -85,30 +85,36 @@ public class TC_RubyApplicationShortcut extends ModifyingResourceTest {
 
 		ShamApplicationLaunchConfigurationDelegate.resetLaunches();
 		
+		// TODO Refcator out this common code which is in a few tests now - setting up a fake default vm install
 		vmType = RubyRuntime.getVMInstallType(VM_TYPE_ID);
-		VMStandin standin = new VMStandin(vmType, VM_ID);
-		standin.setInstallLocation(new File("C:/RubyInstallRootOne"));
+		VMStandin standin = new VMStandin(vmType, "fake");
+		IFolder location = createFolder("/project1/interpreterOne");
+		createFolder("/project1/interpreterOne/lib");
+		createFolder("/project1/interpreterOne/bin");
+		createFile("/project1/interpreterOne/bin/ruby", "");
+		standin.setInstallLocation(location.getLocation().toFile());
 		standin.setName("InterpreterOne");
-		IVMInstall vm = standin.convertToRealVM();
+		vm = standin.convertToRealVM();
 		RubyRuntime.setDefaultVMInstall(vm, null, true);
-		super.setUp();
 	}
 	
 	@Override
 	protected void tearDown() throws Exception {
 		super.tearDown();
-		deleteProject("project1");
+		vmType.disposeVMInstall(vm.getId());
+		deleteProject("/project1");
 		configurations.clear();
 	}
 
 	
 	public void testNoInterpreterInstalled() throws Exception {
-		vmType.disposeVMInstall(VM_ID);
+		vmType.disposeVMInstall(vm.getId());
+		RubyRuntime.setDefaultVMInstall(null, null, true);
 		
 		ISelection selection = new StructuredSelection(rubyFile);
 		shortcut.launch(selection, ILaunchManager.RUN_MODE);
 		
-		assertTrue("A dialog has been shown.", shortcut.didShowDialog);
+		assertTrue("The 'no interpreter selected' dialog should have been shown.", shortcut.didShowDialog);
 	}
 	
 	public void testLaunchWithSelectedRubyFile() throws Exception {
@@ -116,8 +122,8 @@ public class TC_RubyApplicationShortcut extends ModifyingResourceTest {
 		
 		shortcut.launch(selection, ILaunchManager.RUN_MODE);
 		
-		assertEquals("A configuration has been created", 1, getLaunchConfigurations().length);
-		assertEquals("A launch took place.", 1, shortcut.launchCount());
+		assertEquals("One configuration should have been created.", 1, getLaunchConfigurations().length);
+		assertEquals("One launch should have taken place.", 1, shortcut.launchCount());
 		assertTrue("The shortcut should not log a message when asked to launch the correct file type.", !shortcut.didLog());
 	}
 
@@ -260,6 +266,7 @@ public class TC_RubyApplicationShortcut extends ModifyingResourceTest {
 		protected ILaunchConfigurationType getRubyLaunchConfigType() {
 			return DebugPlugin.getDefault().getLaunchManager().getLaunchConfigurationType(SHAM_LAUNCH_CONFIG_TYPE);
 		}
+		
 		
 		protected void showNoInterpreterDialog() {
 			didShowDialog = true ;
