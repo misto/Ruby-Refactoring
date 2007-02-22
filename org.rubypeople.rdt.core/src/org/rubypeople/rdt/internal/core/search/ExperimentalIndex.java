@@ -137,12 +137,15 @@ public class ExperimentalIndex implements IElementChangedListener {
 		private ExperimentalIndex index;
 
 		public ExperimentalIndexJob(ExperimentalIndex index) {
-			super("Experimental Index Job");
+			super("Search Index Job");
 			this.index = index;
 		}
 
 		@Override
 		protected IStatus run(IProgressMonitor monitor) {
+			// TODO Load up saved data if there is any, rather than starting over
+			// TODO Clear saved state if user cleans a project
+			// TODO Save state after a run
 			IRubyModel model = RubyModelManager.getRubyModelManager().getRubyModel();
 			addChildren(model);			
 			return Status.OK_STATUS;
