@@ -330,22 +330,20 @@ public class RubyElementLabels {
             getTypeLabel((IType) element, flags, buf);
             break;
         case IRubyElement.SCRIPT:
-            getCompilationUnitLabel((IRubyScript) element, flags, buf);
+            getRubyScriptLabel((IRubyScript) element, flags, buf);
             break;
         case IRubyElement.IMPORT_CONTAINER:
         case IRubyElement.IMPORT_DECLARATION:
             getDeclarationLabel(element, flags, buf);
             break;
 		case IRubyElement.SOURCE_FOLDER: 
-			getPackageFragmentLabel((ISourceFolder) element, flags, buf);
+			getSourceFolderLabel((ISourceFolder) element, flags, buf);
 			break;
 		case IRubyElement.SOURCE_FOLDER_ROOT: 
-			getPackageFragmentRootLabel((ISourceFolderRoot) element, flags, buf);
+			getSourceFolderRootLabel((ISourceFolderRoot) element, flags, buf);
 			break;
         case IRubyElement.RUBY_PROJECT:
         case IRubyElement.RUBY_MODEL:
-            buf.append(element.getElementName());
-            break;
         default:
             buf.append(element.getElementName());
         }
@@ -500,17 +498,19 @@ public class RubyElementLabels {
      */
     public static void getTypeLabel(IType type, long flags, StringBuffer buf) {
         if (getFlag(flags, T_FULLY_QUALIFIED)) {
-            ISourceFolder pack = type.getSourceFolder();
-            if (!pack.isDefaultPackage()) {
-                getPackageFragmentLabel(pack, (flags & QUALIFIER_FLAGS), buf);
-                buf.append('.');
+            ISourceFolder folder = type.getSourceFolder();
+            if (!folder.isDefaultPackage()) {
+                getSourceFolderLabel(folder, (flags & QUALIFIER_FLAGS), buf);
+                buf.append('/');
             }
+            getRubyScriptLabel(type.getRubyScript(), (flags & QUALIFIER_FLAGS), buf);
+            buf.append(':');
         }
         if (getFlag(flags, T_FULLY_QUALIFIED | T_CONTAINER_QUALIFIED)) {
             IType declaringType = type.getDeclaringType();
             if (declaringType != null) {
                 getTypeLabel(declaringType, T_CONTAINER_QUALIFIED | (flags & QUALIFIER_FLAGS), buf);
-                buf.append('.');
+                buf.append("::");
             }
             int parentType = type.getParent().getElementType();
             if (parentType == IRubyElement.METHOD || parentType == IRubyElement.FIELD) { // anonymous
@@ -569,7 +569,11 @@ public class RubyElementLabels {
                     getElementLabel(type.getParent(), 0, buf);
                 }
             } else {
-                getPackageFragmentLabel(type.getSourceFolder(), flags & QUALIFIER_FLAGS, buf);
+            	ISourceFolder folder = type.getSourceFolder();
+            	if (!folder.isDefaultPackage()) {
+                  getSourceFolderLabel(type.getSourceFolder(), flags & QUALIFIER_FLAGS, buf);
+            	}
+                getRubyScriptLabel(type.getRubyScript(), (flags & QUALIFIER_FLAGS), buf);
             }
         }
     }
@@ -623,11 +627,11 @@ public class RubyElementLabels {
      * @param buf
      *            The buffer to append the resulting label to.
      */
-    public static void getCompilationUnitLabel(IRubyScript cu, long flags, StringBuffer buf) {
+    public static void getRubyScriptLabel(IRubyScript cu, long flags, StringBuffer buf) {
         if (getFlag(flags, CU_QUALIFIED)) {
         	ISourceFolder pack = (ISourceFolder) cu.getParent();
             if (!pack.isDefaultPackage()) {
-                getPackageFragmentLabel(pack, (flags & QUALIFIER_FLAGS), buf);
+                getSourceFolderLabel(pack, (flags & QUALIFIER_FLAGS), buf);
                 buf.append('.');
             }
         }
@@ -635,7 +639,7 @@ public class RubyElementLabels {
 
         if (getFlag(flags, CU_POST_QUALIFIED)) {
             buf.append(CONCAT_STRING);
-            getPackageFragmentLabel((ISourceFolder) cu.getParent(), flags & QUALIFIER_FLAGS, buf);
+            getSourceFolderLabel((ISourceFolder) cu.getParent(), flags & QUALIFIER_FLAGS, buf);
         }
     }
 
@@ -645,9 +649,9 @@ public class RubyElementLabels {
 	 * @param flags The rendering flags. Flags with names starting with P_' are considered.
 	 * @param buf The buffer to append the resulting label to.
 	 */	
-	public static void getPackageFragmentLabel(ISourceFolder pack, long flags, StringBuffer buf) {
+	public static void getSourceFolderLabel(ISourceFolder pack, long flags, StringBuffer buf) {
 		if (getFlag(flags, P_QUALIFIED)) {
-			getPackageFragmentRootLabel((ISourceFolderRoot) pack.getParent(), ROOT_QUALIFIED, buf);
+			getSourceFolderRootLabel((ISourceFolderRoot) pack.getParent(), ROOT_QUALIFIED, buf);
 			buf.append('/');
 		}
 		refreshPackageNamePattern();
@@ -674,7 +678,7 @@ public class RubyElementLabels {
 		}
 		if (getFlag(flags, P_POST_QUALIFIED)) {
 			buf.append(CONCAT_STRING);
-			getPackageFragmentRootLabel((ISourceFolderRoot) pack.getParent(), ROOT_QUALIFIED, buf);
+			getSourceFolderRootLabel((ISourceFolderRoot) pack.getParent(), ROOT_QUALIFIED, buf);
 		}
 	}
 	
@@ -723,7 +727,7 @@ public class RubyElementLabels {
 	 * @param flags The rendering flags. Flags with names starting with ROOT_' are considered.
 	 * @param buf The buffer to append the resulting label to.
 	 */	
-	public static void getPackageFragmentRootLabel(ISourceFolderRoot root, long flags, StringBuffer buf) {
+	public static void getSourceFolderRootLabel(ISourceFolderRoot root, long flags, StringBuffer buf) {
 // TODO Uncomment to handle archives
 		//		if (root.isArchive())
 //			getArchiveLabel(root, flags, buf);

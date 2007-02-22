@@ -36,7 +36,7 @@ public class OpenActionUtil {
 			return elements[0];
 		
 		int flags= RubyElementLabelProvider.SHOW_DEFAULT
-						| RubyElementLabelProvider.SHOW_QUALIFIED
+						| RubyElementLabelProvider.SHOW_POST_QUALIFIED
 						| RubyElementLabelProvider.SHOW_ROOT;
 						
 		ElementListSelectionDialog dialog= new ElementListSelectionDialog(shell, new RubyElementLabelProvider(flags));
