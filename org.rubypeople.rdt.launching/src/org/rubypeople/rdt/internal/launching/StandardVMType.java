@@ -52,7 +52,12 @@ public class StandardVMType extends AbstractVMInstallType {
 
 	public IPath[] getDefaultLibraryLocations(File installLocation) {		
 		File rubyExecutable = findRubyExecutable(installLocation);
-		LibraryInfo info = getLibraryInfo(installLocation, rubyExecutable);
+		LibraryInfo info;
+		if (rubyExecutable == null) {
+			info = getDefaultLibraryInfo(installLocation);
+		} else {
+			info = getLibraryInfo(installLocation, rubyExecutable);
+		}
 		String[] loadpath = info.getBootpath();
 		IPath[] paths = new IPath[loadpath.length];
 		for (int i = 0; i < loadpath.length; i++) {

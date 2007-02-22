@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.eclipse.core.resources.IFile;
+import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
@@ -23,6 +24,7 @@ import org.rubypeople.eclipse.shams.debug.core.ShamLaunchConfigurationType;
 import org.rubypeople.rdt.core.IRubyProject;
 import org.rubypeople.rdt.core.RubyCore;
 import org.rubypeople.rdt.core.tests.ModifyingResourceTest;
+import org.rubypeople.rdt.launching.IRubyLaunchConfigurationConstants;
 import org.rubypeople.rdt.launching.IVMInstall;
 import org.rubypeople.rdt.launching.IVMInstallType;
 import org.rubypeople.rdt.launching.RubyRuntime;
@@ -39,7 +41,10 @@ public class TC_RunnerLaunching extends ModifyingResourceTest {
 	
 	private static final String VM_TYPE_ID = "org.rubypeople.rdt.launching.StandardVMType";
 	private IVMInstallType vmType;
+	private IVMInstall interpreter;
 	private IRubyProject project;
+	
+	// XXX This test class desperately needs to be rewritten...
 	
 	public TC_RunnerLaunching(String name) {
 		super(name);
@@ -48,19 +53,25 @@ public class TC_RunnerLaunching extends ModifyingResourceTest {
 	@Override
 	protected void setUp() throws Exception {
 		super.setUp();
+		project = createRubyProject('/' + PROJECT_NAME);
+		IFolder location = createFolder('/' + PROJECT_NAME + "/interpreterOne");
+		createFolder('/' + PROJECT_NAME +"/interpreterOne/lib");
+		createFolder('/' + PROJECT_NAME +"/interpreterOne/bin");
+		createFile('/' + PROJECT_NAME +"/interpreterOne/bin/ruby", "");
+		
 		vmType = RubyRuntime.getVMInstallType(VM_TYPE_ID);
 		VMStandin standin = new VMStandin(vmType, "fake");
 		standin.setName("fake");
-		standin.setInstallLocation(new File("C:\ruby"));
-		IVMInstall real = standin.convertToRealVM();
-		RubyRuntime.setDefaultVMInstall(real, null, true);
-		project = createRubyProject(PROJECT_NAME);
+		standin.setInstallLocation(location.getLocation().toFile());
+		interpreter = standin.convertToRealVM();
+		RubyRuntime.setDefaultVMInstall(interpreter, null, true);		
 	}
 	
 	@Override
 	protected void tearDown() throws Exception {
 		super.tearDown();
-		deleteProject(PROJECT_NAME);
+		deleteProject('/' + PROJECT_NAME);
+		vmType.disposeVMInstall(interpreter.getId());
 	}
 	
 	protected ILaunchManager getLaunchManager() {
@@ -109,8 +120,6 @@ public class TC_RunnerLaunching extends ModifyingResourceTest {
 	}
 
 	public void launch(boolean debug) throws Exception {
-		IVMInstall interpreter = new VMStandin(vmType, "");
-
 		ILaunchConfiguration configuration = new ShamLaunchConfiguration();
 		ILaunch launch = new Launch(configuration, debug ? ILaunchManager.DEBUG_MODE : ILaunchManager.RUN_MODE, null);
 		ILaunchConfigurationType launchConfigurationType =
@@ -162,19 +171,19 @@ public class TC_RunnerLaunching extends ModifyingResourceTest {
 		}
 
 		public boolean getAttribute(String attributeName, boolean defaultValue) throws CoreException {
-			return false;
+			return defaultValue;
 		}
 
 		public int getAttribute(String attributeName, int defaultValue) throws CoreException {
-			return 0;
+			return defaultValue;
 		}
 
 		public List getAttribute(String attributeName, List defaultValue) throws CoreException {
-			return null;
+			return defaultValue;
 		}
 
 		public Map getAttribute(String attributeName, Map defaultValue) throws CoreException {
-			return null;
+			return defaultValue;
 		}
 
 		public String getAttribute(String attributeName, String defaultValue) throws CoreException {
@@ -183,14 +192,16 @@ public class TC_RunnerLaunching extends ModifyingResourceTest {
 			} else if (attributeName.equals(RubyLaunchConfigurationAttribute.FILE_NAME)) {
 				return RUBY_LIB_DIR + File.separator + RUBY_FILE_NAME;
 			} else if (attributeName.equals(RubyLaunchConfigurationAttribute.WORKING_DIRECTORY)) {
-				return "C:\\Working Dir";
+				return '/' + PROJECT_NAME;
 			} else if (attributeName.equals(RubyLaunchConfigurationAttribute.INTERPRETER_ARGUMENTS)) {
 				return INTERPRETER_ARGUMENTS;
 			} else if (attributeName.equals(RubyLaunchConfigurationAttribute.PROGRAM_ARGUMENTS)) {
 				return PROGRAM_ARGUMENTS;
+			} else if (attributeName.equals(IRubyLaunchConfigurationConstants.ATTR_VM_ARGUMENTS)) {
+				return "";
 			}
 
-			return null;
+			return defaultValue;
 		}
 
 		public IFile getFile() {

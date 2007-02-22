@@ -759,8 +759,8 @@ public class RubyRuntime {
 	 * @since 0.9.0
 	 */
 	public static IVMInstall computeVMInstall(ILaunchConfiguration configuration) throws CoreException {
-		String jreAttr = configuration.getAttribute(IRubyLaunchConfigurationConstants.ATTR_RUBY_CONTAINER_PATH, (String)null);
-		if (jreAttr == null) {
+		String rubyVmAttr = configuration.getAttribute(IRubyLaunchConfigurationConstants.ATTR_RUBY_CONTAINER_PATH, (String)null);
+		if (rubyVmAttr == null) {
 			String type = configuration.getAttribute(IRubyLaunchConfigurationConstants.ATTR_VM_INSTALL_TYPE, (String)null);
 			if (type == null) {
 				IRubyProject proj = getRubyProject(configuration);
@@ -775,13 +775,13 @@ public class RubyRuntime {
 				return resolveVM(type, name, configuration);
 			}
 		} else {
-			IPath jrePath = Path.fromPortableString(jreAttr);
-			ILoadpathEntry entry = RubyCore.newContainerEntry(jrePath);
-			IRuntimeLoadpathEntryResolver2 resolver = getVariableResolver(jrePath.segment(0));
+			IPath rubyVmPath = Path.fromPortableString(rubyVmAttr);
+			ILoadpathEntry entry = RubyCore.newContainerEntry(rubyVmPath);
+			IRuntimeLoadpathEntryResolver2 resolver = getVariableResolver(rubyVmPath.segment(0));
 			if (resolver != null) {
 				return resolver.resolveVMInstall(entry);
 			} else {
-				resolver = getContainerResolver(jrePath.segment(0));
+				resolver = getContainerResolver(rubyVmPath.segment(0));
 				if (resolver != null) {
 					return resolver.resolveVMInstall(entry);
 				}
