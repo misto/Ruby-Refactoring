@@ -52,7 +52,7 @@ public class InlineMethodEditProvider extends EditProvider {
 		if(parent instanceof AssignableNode) {
 			this.node = parent;
 		} else {
-			this.node = config.getSelectedCall().getNode();
+			this.node = config.getSelectedCall().getWrappedNode();
 		}
 	}
 	

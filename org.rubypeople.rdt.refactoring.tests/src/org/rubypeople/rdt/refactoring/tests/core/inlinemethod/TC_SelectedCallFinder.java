@@ -28,49 +28,41 @@
 
 package org.rubypeople.rdt.refactoring.tests.core.inlinemethod;
 
-import org.jruby.ast.ArgumentNode;
-import org.rubypeople.rdt.refactoring.core.inlinemethod.IMethodCallNode;
-import org.rubypeople.rdt.refactoring.core.inlinemethod.MethodCallNodeFactory;
-import org.rubypeople.rdt.refactoring.core.inlinemethod.MethodFCallNode;
-import org.rubypeople.rdt.refactoring.core.inlinemethod.MethodVCallNode;
+import org.rubypeople.rdt.refactoring.nodewrapper.MethodCallNodeWrapper;
 import org.rubypeople.rdt.refactoring.tests.core.MultipleDocumentsInOneProvider;
 
 public class TC_SelectedCallFinder extends FinderTestsBase {
 
 	public void testFindSelectedCall4() {
-		MethodFCallNode node = (MethodFCallNode) findSelected(2, "test4");
+		MethodCallNodeWrapper node = findSelected(2, "test4");
 		assertEquals("call", node.getName());
-		assertNotNull(node.getArguments());
-		assertNotNull(node.getNode());
-		assertNull(node.getReceiver());
+		assertNotNull(node.getArgsNode());
+		assertNotNull(node.getWrappedNode());
+		assertNull(node.getReceiverNode());
 	}
 
 	public void testFindSelectedCall3() {
-		MethodVCallNode node = (MethodVCallNode) findSelected(4, "test3");
+		MethodCallNodeWrapper node = findSelected(4, "test3");
 		assertEquals("call", node.getName());
-		assertNull(node.getArguments());
-		assertNotNull(node.getNode());
-		assertNull(node.getReceiver());
+		assertNull(node.getArgsNode());
+		assertNotNull(node.getWrappedNode());
+		assertNull(node.getReceiverNode());
 	}
 
 	public void testFindSelectedCall2() {
-		IMethodCallNode node = findSelected(9, "test2");
+		MethodCallNodeWrapper node = findSelected(9, "test2");
 		assertEquals("method", node.getName());
-		assertNull(node.getArguments());
-		assertNotNull(node.getNode());
-		assertNotNull(node.getReceiver());
+		assertNull(node.getArgsNode());
+		assertNotNull(node.getWrappedNode());
+		assertNotNull(node.getReceiverNode());
 	}
 	
 	public void testFindSelectedCall1() {
-		IMethodCallNode node = findSelected(8, "test1");
+		MethodCallNodeWrapper node = findSelected(8, "test1");
 		assertEquals("method", node.getName());
-		assertNotNull(node.getArguments());
-		assertNotNull(node.getNode());
-		assertNotNull(node.getReceiver());
-	}
-	
-	public void testMethodCallNodeFactory() {
-		assertNull(MethodCallNodeFactory.create(new ArgumentNode(null, "")));
+		assertNotNull(node.getArgsNode());
+		assertNotNull(node.getWrappedNode());
+		assertNotNull(node.getReceiverNode());
 	}
 
 	@Override

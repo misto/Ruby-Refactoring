@@ -90,13 +90,13 @@ public class FieldProvider {
 
 	private void initClassFields(ClassNodeWrapper classWrapper) {
 		
-		Collection<Node> allOccurances = classWrapper
+		Collection<Node> allOccurences = classWrapper
 				.getClassFieldOccurences();
 
-		for (Node currentAttr : allOccurances) {
+		for (Node currentAttr : allOccurences) {
 			if (currentAttr instanceof ClassVarNode) {
 				ClassVarNode classVar = (ClassVarNode) currentAttr;
-				if (!isVarSubNodeOfAsgn(classVar, allOccurances, ClassVarAsgnNode.class)) {
+				if (!isVarSubNodeOfAsgn(classVar, allOccurences, ClassVarAsgnNode.class)) {
 					addClassVar(classVar);
 				}
 			} else if (currentAttr instanceof ClassVarAsgnNode) {

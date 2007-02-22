@@ -34,11 +34,12 @@ import org.jruby.ast.MethodDefNode;
 import org.jruby.ast.Node;
 import org.rubypeople.rdt.refactoring.core.NodeProvider;
 import org.rubypeople.rdt.refactoring.documentprovider.DocumentProvider;
+import org.rubypeople.rdt.refactoring.nodewrapper.MethodCallNodeWrapper;
 
 public class InlineMethodConfig {
 	
 	private Boolean singleReturnStatement;
-	private IMethodCallNode selectedCall;
+	private MethodCallNodeWrapper selectedCall;
 	private String className;
 	private MethodDefNode methodDefinitionNode;
 	private DocumentProvider methodDefDoc;
@@ -55,7 +56,7 @@ public class InlineMethodConfig {
 	}
 
 	public Node getCallParent() {
-		return NodeProvider.findParentNode(originalDocument.getRootNode(), selectedCall.getNode());
+		return NodeProvider.findParentNode(originalDocument.getRootNode(), selectedCall.getWrappedNode());
 	}
 
 	public String getClassName() {
@@ -70,7 +71,7 @@ public class InlineMethodConfig {
 		return methodDefinitionNode;
 	}
 
-	public IMethodCallNode getSelectedCall() {
+	public MethodCallNodeWrapper getSelectedCall() {
 		return selectedCall;
 	}
 
@@ -94,7 +95,7 @@ public class InlineMethodConfig {
 		this.methodDefDoc = methodDefDoc;
 	}
 
-	public void setSelectedCall(IMethodCallNode selectedCall) {
+	public void setSelectedCall(MethodCallNodeWrapper selectedCall) {
 		this.selectedCall = selectedCall;
 	}
 

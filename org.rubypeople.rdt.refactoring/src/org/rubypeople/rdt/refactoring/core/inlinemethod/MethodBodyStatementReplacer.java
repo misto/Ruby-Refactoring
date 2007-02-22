@@ -43,6 +43,7 @@ import org.rubypeople.rdt.refactoring.classnodeprovider.IncludedClassesProvider;
 import org.rubypeople.rdt.refactoring.core.NodeProvider;
 import org.rubypeople.rdt.refactoring.documentprovider.DocumentProvider;
 import org.rubypeople.rdt.refactoring.documentprovider.StringDocumentProvider;
+import org.rubypeople.rdt.refactoring.nodewrapper.MethodCallNodeWrapper;
 import org.rubypeople.rdt.refactoring.nodewrapper.MethodNodeWrapper;
 
 public class MethodBodyStatementReplacer implements IMethodBodyStatementReplacer {
@@ -95,20 +96,20 @@ public class MethodBodyStatementReplacer implements IMethodBodyStatementReplacer
 		
 		DocumentProvider result = new StringDocumentProvider(doc);
 		
-		IMethodCallNode call = null;
+		MethodCallNodeWrapper call = null;
 		while((call = findCallToMethodInClass(result, provider, className)) != null) {
 			StringBuilder src = new StringBuilder(result.getActiveFileContent());
-			src.insert(call.getNode().getPosition().getStartOffset(), object + '.');
+			src.insert(call.getWrappedNode().getPosition().getStartOffset(), object + '.');
 			result = new StringDocumentProvider(src.toString());
 		}
 		
 		return result;
 	}
 	
-	private IMethodCallNode findCallToMethodInClass(DocumentProvider doc, IncludedClassesProvider provider, String className) {
+	private MethodCallNodeWrapper findCallToMethodInClass(DocumentProvider doc, IncludedClassesProvider provider, String className) {
 		Collection<MethodNodeWrapper> definedMethods = provider.getAllMethodsFor(className); 
 
-		for (IMethodCallNode node : findFAndVCalls(doc)) {
+		for (MethodCallNodeWrapper node : findFAndVCalls(doc)) {
 			for (MethodNodeWrapper methods : definedMethods) {
 				if(methods.getName().equals(node.getName())) {
 					return node;
@@ -118,10 +119,10 @@ public class MethodBodyStatementReplacer implements IMethodBodyStatementReplacer
 		return null;
 	}
 
-	private Collection<IMethodCallNode> findFAndVCalls(DocumentProvider doc) {
-		Collection<IMethodCallNode> methodCalls = new ArrayList<IMethodCallNode>();
+	private Collection<MethodCallNodeWrapper> findFAndVCalls(DocumentProvider doc) {
+		Collection<MethodCallNodeWrapper> methodCalls = new ArrayList<MethodCallNodeWrapper>();
 		for (Node node : NodeProvider.gatherNodesOfTypeInAktScopeNode(doc.getRootNode().getBodyNode(), VCallNode.class, FCallNode.class)) {
-			methodCalls.add(MethodCallNodeFactory.create(node));
+			methodCalls.add(new MethodCallNodeWrapper(node));
 		}
 		return methodCalls;
 	}

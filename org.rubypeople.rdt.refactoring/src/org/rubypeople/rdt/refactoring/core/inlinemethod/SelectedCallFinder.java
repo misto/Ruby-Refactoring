@@ -34,14 +34,14 @@ import org.jruby.ast.Node;
 import org.jruby.ast.VCallNode;
 import org.rubypeople.rdt.refactoring.core.SelectionNodeProvider;
 import org.rubypeople.rdt.refactoring.documentprovider.DocumentProvider;
+import org.rubypeople.rdt.refactoring.nodewrapper.MethodCallNodeWrapper;
 
 public class SelectedCallFinder implements ISelectedCallFinder {
 
-	public IMethodCallNode findSelectedCall(final int pos, final DocumentProvider doc) {
+	public MethodCallNodeWrapper findSelectedCall(final int pos, final DocumentProvider doc) {
 
 		final Node selectedNode = SelectionNodeProvider.getSelectedNodeOfType(doc.getAllNodes(), pos, CallNode.class, FCallNode.class, VCallNode.class);
 
-		return MethodCallNodeFactory.create(selectedNode);
+		return selectedNode != null ? new MethodCallNodeWrapper(selectedNode) : null;
 	}
-
 }

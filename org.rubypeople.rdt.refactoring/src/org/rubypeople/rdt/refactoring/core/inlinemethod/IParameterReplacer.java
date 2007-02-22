@@ -31,6 +31,7 @@ package org.rubypeople.rdt.refactoring.core.inlinemethod;
 import org.jruby.ast.MethodDefNode;
 import org.rubypeople.rdt.refactoring.documentprovider.DocumentProvider;
 import org.rubypeople.rdt.refactoring.documentprovider.IDocumentProvider;
+import org.rubypeople.rdt.refactoring.nodewrapper.MethodCallNodeWrapper;
 
 
 /**
@@ -40,5 +41,5 @@ import org.rubypeople.rdt.refactoring.documentprovider.IDocumentProvider;
  * The return value contains the method body and, if necessary, the assigments for the method parameters. 
  */
 public interface IParameterReplacer {
-	DocumentProvider replace(IDocumentProvider doc, IMethodCallNode call, MethodDefNode definition);
+	DocumentProvider replace(IDocumentProvider doc, MethodCallNodeWrapper call, MethodDefNode definition);
 }

@@ -46,11 +46,12 @@ import org.rubypeople.rdt.refactoring.core.renamelocalvariable.LocalVariableRena
 import org.rubypeople.rdt.refactoring.documentprovider.DocumentProvider;
 import org.rubypeople.rdt.refactoring.documentprovider.IDocumentProvider;
 import org.rubypeople.rdt.refactoring.documentprovider.StringDocumentProvider;
+import org.rubypeople.rdt.refactoring.nodewrapper.MethodCallNodeWrapper;
 import org.rubypeople.rdt.refactoring.util.FileHelper;
 
 public class ParameterReplacer implements IParameterReplacer {
 
-	public DocumentProvider replace(IDocumentProvider doc, IMethodCallNode call, MethodDefNode definition) {
+	public DocumentProvider replace(IDocumentProvider doc, MethodCallNodeWrapper call, MethodDefNode definition) {
 		
 		DocumentProvider strDoc = new StringDocumentProvider(doc.getActiveFileContent().substring(definition.getPosition().getStartOffset(), definition.getPosition().getEndOffset() + 1));
 		
@@ -58,9 +59,9 @@ public class ParameterReplacer implements IParameterReplacer {
 		ArrayNode tailList = new ArrayNode(new SourcePosition());
 		
 		
-		if(definition.getArgsNode().getArgs() != null && call.getArguments() != null) {
+		if(definition.getArgsNode().getArgs() != null && call.getArgsNode() != null) {
 			Object[] defnArguments = definition.getArgsNode().getArgs().childNodes().toArray();
-			Object[] arguments = call.getArguments().childNodes().toArray();
+			Object[] arguments = call.getArgsNode().childNodes().toArray();
 			
 			for(int i = 0; i < defnArguments.length; i++) {
 				strDoc = processArguments(strDoc, headList, tailList, (Node) arguments[i], (ArgumentNode) defnArguments[i]);

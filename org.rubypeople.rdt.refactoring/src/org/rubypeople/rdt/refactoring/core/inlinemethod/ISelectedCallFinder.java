@@ -29,7 +29,8 @@
 package org.rubypeople.rdt.refactoring.core.inlinemethod;
 
 import org.rubypeople.rdt.refactoring.documentprovider.DocumentProvider;
+import org.rubypeople.rdt.refactoring.nodewrapper.MethodCallNodeWrapper;
 
 public interface ISelectedCallFinder {
-	IMethodCallNode findSelectedCall(int pos, DocumentProvider doc);
+	MethodCallNodeWrapper findSelectedCall(int pos, DocumentProvider doc);
 }

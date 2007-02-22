@@ -117,12 +117,12 @@ public class TC_TargetClassFinder extends FinderTestsBase {
 	
 	private LocalAsgnNode findLocalAsgnNode(int pos, String file) {
 		TargetClassFinder finder = new TargetClassFinder();
-		return finder.localAsgnFromLocalVar( (LocalVarNode) ((CallNode) findSelected(pos, file).getNode()).getReceiverNode(), doc);
+		return finder.localAsgnFromLocalVar( (LocalVarNode) ((CallNode) findSelected(pos, file).getWrappedNode()).getReceiverNode(), doc);
 	}
 	
 	private InstAsgnNode findInstAsgnNode(int pos, String file) {
 		TargetClassFinder finder = new TargetClassFinder();
-		return finder.instVarFromCall( (InstVarNode) ((CallNode) findSelected(pos, file).getNode()).getReceiverNode(), doc);
+		return finder.instVarFromCall( (InstVarNode) ((CallNode) findSelected(pos, file).getWrappedNode()).getReceiverNode(), doc);
 	}
 	
 	private String findTargetClass(int pos, String file) {

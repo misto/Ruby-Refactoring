@@ -29,10 +29,10 @@
 package org.rubypeople.rdt.refactoring.tests.core.inlinemethod;
 
 import org.jruby.ast.MethodDefNode;
-import org.rubypeople.rdt.refactoring.core.inlinemethod.IMethodCallNode;
 import org.rubypeople.rdt.refactoring.core.inlinemethod.MethodFinder;
 import org.rubypeople.rdt.refactoring.core.inlinemethod.SelectedCallFinder;
 import org.rubypeople.rdt.refactoring.core.inlinemethod.TargetClassFinder;
+import org.rubypeople.rdt.refactoring.nodewrapper.MethodCallNodeWrapper;
 import org.rubypeople.rdt.refactoring.tests.FileTestCase;
 import org.rubypeople.rdt.refactoring.tests.core.MultipleDocumentsInOneProvider;
 
@@ -48,18 +48,18 @@ public abstract class FinderTestsBase extends FileTestCase {
 		super(fileName);
 	}
 
-	protected IMethodCallNode findSelected(int pos, String file) {
+	protected MethodCallNodeWrapper findSelected(int pos, String file) {
 		SelectedCallFinder finder = new SelectedCallFinder();
 		doc.setActive(file);
 		return finder.findSelectedCall(pos, doc);
 	}
 
 	protected MethodDefNode findDefinition(int pos, String file) {
-		IMethodCallNode methodCallNode = findSelected(pos, file);
+		MethodCallNodeWrapper methodCallNode = findSelected(pos, file);
 		return findDefinition(methodCallNode);
 	}
 
-	protected MethodDefNode findDefinition(IMethodCallNode methodCallNode) {
+	protected MethodDefNode findDefinition(MethodCallNodeWrapper methodCallNode) {
 		String className = new TargetClassFinder().findTargetClass(methodCallNode, doc);
 		return new MethodFinder().find(className, methodCallNode.getName(), doc);
 	}

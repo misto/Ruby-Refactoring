@@ -32,12 +32,12 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 
 import org.jruby.ast.MethodDefNode;
-import org.rubypeople.rdt.refactoring.core.inlinemethod.IMethodCallNode;
 import org.rubypeople.rdt.refactoring.core.inlinemethod.MethodFinder;
 import org.rubypeople.rdt.refactoring.core.inlinemethod.ParameterReplacer;
 import org.rubypeople.rdt.refactoring.core.inlinemethod.SelectedCallFinder;
 import org.rubypeople.rdt.refactoring.core.inlinemethod.TargetClassFinder;
 import org.rubypeople.rdt.refactoring.documentprovider.IDocumentProvider;
+import org.rubypeople.rdt.refactoring.nodewrapper.MethodCallNodeWrapper;
 import org.rubypeople.rdt.refactoring.tests.FileTestData;
 
 
@@ -54,7 +54,7 @@ public class TC_ParameterReplacer extends FinderTestsBase {
 		int caretPosition = testData.getIntProperty("pos");
 		
 		SelectedCallFinder finder = new SelectedCallFinder();
-		IMethodCallNode node =  finder.findSelectedCall(caretPosition, testData);
+		MethodCallNodeWrapper node =  finder.findSelectedCall(caretPosition, testData);
 
 		String className = new TargetClassFinder().findTargetClass(node, testData);
 		MethodDefNode definitionNode = new MethodFinder().find(className, node.getName(), testData);

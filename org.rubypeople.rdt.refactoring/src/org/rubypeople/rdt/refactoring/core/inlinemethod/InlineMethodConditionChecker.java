@@ -70,7 +70,7 @@ public class InlineMethodConditionChecker extends RefactoringConditionChecker {
 	}
 	
 	private void renameDuplicates(DocumentProvider doc) {
-		StaticScope parent = NodeUtil.getScope(SelectionNodeProvider.getEnclosingScope(doc.getRootNode(), config.getSelectedCall().getNode()));
+		StaticScope parent = NodeUtil.getScope(SelectionNodeProvider.getEnclosingScope(doc.getRootNode(), config.getSelectedCall().getWrappedNode()));
 		
 		ArrayList<String> localNames = new ArrayList<String>();
 		if(parent.getVariables() != null) {
@@ -114,8 +114,8 @@ public class InlineMethodConditionChecker extends RefactoringConditionChecker {
 
 	private void createInlinedMethodBody(DocumentProvider doc) {
 		MethodBodyStatementReplacer bodyReplacer = new MethodBodyStatementReplacer();
-		if(config.getSelectedCall().getReceiver() != null) {
-			final String name = ((INameNode)config.getSelectedCall().getReceiver()).getName();
+		if(config.getSelectedCall().getReceiverNode() != null) {
+			final String name = ((INameNode)config.getSelectedCall().getReceiverNode()).getName();
 			config.setMethodDefDoc(bodyReplacer.replaceSelfWithObject(config.getMethodDefDoc(), name));
 			config.setMethodDefDoc(bodyReplacer.prefixCallsWithObject(config.getMethodDefDoc(),  new IncludedClassesProvider(doc), config.getClassName(), name));
 			Collection<String> usedMembers = new HashSet<String>();

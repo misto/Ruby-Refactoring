@@ -47,16 +47,17 @@ import org.rubypeople.rdt.refactoring.documentprovider.DocumentProvider;
 import org.rubypeople.rdt.refactoring.exception.NoClassNodeException;
 import org.rubypeople.rdt.refactoring.nodewrapper.ClassNodeWrapper;
 import org.rubypeople.rdt.refactoring.nodewrapper.FieldNodeWrapper;
+import org.rubypeople.rdt.refactoring.nodewrapper.MethodCallNodeWrapper;
 import org.rubypeople.rdt.refactoring.util.NameHelper;
 import org.rubypeople.rdt.refactoring.util.NodeUtil;
 
 public class TargetClassFinder implements ITargetClassFinder {
 	
-	public String findTargetClass(final IMethodCallNode call, final DocumentProvider doc) {
+	public String findTargetClass(final MethodCallNodeWrapper call, final DocumentProvider doc) {
 		
 		String name = "";
 		
-		if(call.getReceiver() == null) {
+		if(call.getReceiverNode() == null) {
 			name = getSurroundingClass(call, doc);
 		}
 		
@@ -70,21 +71,21 @@ public class TargetClassFinder implements ITargetClassFinder {
 		return name;
 	}
 	
-	private String getSurroundingClass(final IMethodCallNode call, final DocumentProvider doc) {
-		ClassNode classNode = ((ClassNode) NodeProvider.getEnclosingNodeOfType(doc.getRootNode(), call.getNode(), new Class<?>[]{ClassNode.class}));
+	private String getSurroundingClass(final MethodCallNodeWrapper call, final DocumentProvider doc) {
+		ClassNode classNode = ((ClassNode) NodeProvider.getEnclosingNodeOfType(doc.getRootNode(), call.getWrappedNode(), new Class<?>[]{ClassNode.class}));
 		if(classNode != null) {
 			return classNode.getCPath().getName();
 		}
 		return "";
 	}
 
-	private AssignableNode getAssignableNode(final IMethodCallNode call, final DocumentProvider doc) {
+	private AssignableNode getAssignableNode(final MethodCallNodeWrapper call, final DocumentProvider doc) {
 		AssignableNode receiverType = null;
 		
-		if(call.getReceiver() instanceof LocalVarNode) {
-			receiverType = localAsgnFromLocalVar((LocalVarNode) call.getReceiver(), doc);
-		} else if(call.getReceiver() instanceof InstVarNode) {
-			receiverType = instVarFromCall((InstVarNode) call.getReceiver(), doc);
+		if(call.getReceiverNode() instanceof LocalVarNode) {
+			receiverType = localAsgnFromLocalVar((LocalVarNode) call.getReceiverNode(), doc);
+		} else if(call.getReceiverNode() instanceof InstVarNode) {
+			receiverType = instVarFromCall((InstVarNode) call.getReceiverNode(), doc);
 		}
 		return receiverType;
 	}

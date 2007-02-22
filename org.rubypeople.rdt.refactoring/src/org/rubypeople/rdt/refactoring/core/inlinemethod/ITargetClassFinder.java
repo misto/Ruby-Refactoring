@@ -29,11 +29,12 @@
 package org.rubypeople.rdt.refactoring.core.inlinemethod;
 
 import org.rubypeople.rdt.refactoring.documentprovider.DocumentProvider;
+import org.rubypeople.rdt.refactoring.nodewrapper.MethodCallNodeWrapper;
 
 
 public interface ITargetClassFinder {
 	/**
 	 * Try to find the receiver's type from a call.
 	 */
-	String findTargetClass(IMethodCallNode call, DocumentProvider doc);
+	String findTargetClass(MethodCallNodeWrapper call, DocumentProvider doc);
 }
