@@ -11,15 +11,18 @@ import java.util.List;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.jruby.ast.Node;
+import org.jruby.ast.visitor.NodeVisitor;
 import org.jruby.lexer.yacc.SyntaxException;
 import org.rubypeople.rdt.core.IProblemRequestor;
 import org.rubypeople.rdt.core.RubyModelException;
 import org.rubypeople.rdt.core.parser.IProblem;
+import org.rubypeople.rdt.internal.core.builder.ProblemRequestorMarkerManager;
 import org.rubypeople.rdt.internal.core.parser.Error;
 import org.rubypeople.rdt.internal.core.parser.RdtWarnings;
-import org.rubypeople.rdt.internal.core.parser.RubyLintVisitor;
 import org.rubypeople.rdt.internal.core.parser.RubyParser;
 import org.rubypeople.rdt.internal.core.parser.TaskParser;
+import org.rubypeople.rdt.internal.core.parser.warnings.DelegatingVisitor;
+import org.rubypeople.rdt.internal.core.parser.warnings.RubyLintVisitor;
 
 /**
  * @author Chris
@@ -52,7 +55,8 @@ public class RubyScriptProblemFinder {
 		try {
             Node node = parser.parse((IFile) script.getUnderlyingResource(), new StringReader(contents));
             if (node == null) return;
-            RubyLintVisitor visitor = new RubyLintVisitor(contents, problemRequestor);
+            List<RubyLintVisitor> visitors = DelegatingVisitor.createVisitors(contents, problemRequestor);
+			NodeVisitor visitor = new DelegatingVisitor(visitors);
             node.accept(visitor);
         } catch (SyntaxException e) {
         	// Eat the exception

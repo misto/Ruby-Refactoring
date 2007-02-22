@@ -17,15 +17,18 @@ import java.io.InputStreamReader;
 import java.io.Reader;
 import java.io.StringReader;
 import java.io.UnsupportedEncodingException;
+import java.util.List;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.CoreException;
 import org.jruby.ast.Node;
+import org.jruby.ast.visitor.NodeVisitor;
 import org.jruby.lexer.yacc.SyntaxException;
 import org.rubypeople.rdt.core.RubyCore;
 import org.rubypeople.rdt.internal.core.parser.ImmediateWarnings;
-import org.rubypeople.rdt.internal.core.parser.RubyLintVisitor;
 import org.rubypeople.rdt.internal.core.parser.RubyParser;
+import org.rubypeople.rdt.internal.core.parser.warnings.DelegatingVisitor;
+import org.rubypeople.rdt.internal.core.parser.warnings.RubyLintVisitor;
 
 public final class RubyCodeAnalyzer implements SingleFileCompiler {
     private final IMarkerManager markerManager;
@@ -54,8 +57,9 @@ public final class RubyCodeAnalyzer implements SingleFileCompiler {
         markerManager.removeProblemsAndTasksFor(file);
         try {
             Node rootNode = parser.parse(file, new StringReader(contents));
-            if (rootNode == null) return;            
-			RubyLintVisitor visitor = new RubyLintVisitor(contents, new ProblemRequestorMarkerManager(file, markerManager));
+            if (rootNode == null) return;         
+            List<RubyLintVisitor> visitors = DelegatingVisitor.createVisitors(contents, new ProblemRequestorMarkerManager(file, markerManager));
+			NodeVisitor visitor = new DelegatingVisitor(visitors);
             rootNode.accept(visitor);
             indexUpdater.update(file, rootNode, true);
         } catch (SyntaxException e) {

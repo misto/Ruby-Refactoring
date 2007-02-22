@@ -7,11 +7,13 @@ import java.util.List;
 import junit.framework.TestCase;
 
 import org.jruby.ast.Node;
+import org.jruby.ast.visitor.NodeVisitor;
 import org.rubypeople.eclipse.shams.resources.ShamFile;
 import org.rubypeople.rdt.core.IProblemRequestor;
 import org.rubypeople.rdt.core.parser.IProblem;
-import org.rubypeople.rdt.internal.core.parser.RubyLintVisitor;
 import org.rubypeople.rdt.internal.core.parser.RubyParser;
+import org.rubypeople.rdt.internal.core.parser.warnings.DelegatingVisitor;
+import org.rubypeople.rdt.internal.core.parser.warnings.RubyLintVisitor;
 
 public class TC_RubyLintVisitor extends TestCase {
 
@@ -47,7 +49,6 @@ public class TC_RubyLintVisitor extends TestCase {
 
 	public void testUnlessConditionalDoesntCreateEmptyConditionalWarning() throws Exception {
 		runLint("unless @blah\n  @var = 3\nend");
-		System.out.println(problemRequestor.problems.get(0));
 		assertEquals(0, problemRequestor.problems.size());
 	}
 
@@ -55,8 +56,8 @@ public class TC_RubyLintVisitor extends TestCase {
 		RubyParser parser = new RubyParser();
 		Node rootNode = parser.parse(new ShamFile("fake/path.rb"), new StringReader(contents));
 		problemRequestor = new MockProblemRequestor();
-		RubyLintVisitor visitor = new RubyLintVisitor(contents,
-				problemRequestor);
+		List<RubyLintVisitor> visitors = DelegatingVisitor.createVisitors(contents, problemRequestor);
+		NodeVisitor visitor = new DelegatingVisitor(visitors);
 		rootNode.accept(visitor);
 	}
 }
