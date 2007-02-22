@@ -10,6 +10,7 @@ import org.jruby.ast.CallNode;
 import org.jruby.ast.ClassVarAsgnNode;
 import org.jruby.ast.ClassVarDeclNode;
 import org.jruby.ast.ClassVarNode;
+import org.jruby.ast.Colon2Node;
 import org.jruby.ast.ConstNode;
 import org.jruby.ast.FCallNode;
 import org.jruby.ast.InstAsgnNode;
@@ -26,6 +27,8 @@ import org.rubypeople.rdt.core.IRubyScript;
 import org.rubypeople.rdt.core.IType;
 import org.rubypeople.rdt.core.RubyModelException;
 import org.rubypeople.rdt.internal.core.parser.RubyParser;
+import org.rubypeople.rdt.internal.core.util.ASTUtil;
+import org.rubypeople.rdt.internal.core.util.Util;
 import org.rubypeople.rdt.internal.ti.DefaultTypeInferrer;
 import org.rubypeople.rdt.internal.ti.ITypeGuess;
 import org.rubypeople.rdt.internal.ti.ITypeInferrer;
@@ -42,7 +45,23 @@ public class SelectionEngine {
 		Node selected = OffsetNodeLocator.Instance().getNodeAtOffset(root,
 				start);
 
-		if (selected instanceof ConstNode) {
+		if (selected instanceof Colon2Node) {
+//			 FIXME What if we have a constant with multiple parts (i.e. TMail::Mail)?
+			String simpleName = ((Colon2Node)selected).getName();
+			String fullyQualifiedName = ASTUtil.getFullyQualifiedName((Colon2Node) selected);
+			IRubyElement element = findChild(simpleName, IRubyElement.TYPE, script);
+			if (element != null && parentsMatch((IType)element, fullyQualifiedName)) {
+			  return new IRubyElement[] { element };	
+			}
+			RubyElementRequestor completer = new RubyElementRequestor(script);
+			IType[] types = completer.findType(simpleName);
+			List<IType> matches = new ArrayList<IType>();
+			for (int i = 0; i < types.length; i++) {
+				if (parentsMatch(types[i], fullyQualifiedName)) matches.add(types[i]);
+			}
+			return matches.toArray(new IType[matches.size()]);
+		} 
+		if (selected instanceof ConstNode) {			
 			ConstNode constNode = (ConstNode) selected;
 			String name = constNode.getName();
 			// Try to find a matching constant in this script
@@ -99,6 +118,22 @@ public class SelectionEngine {
 			return convertToArray(possible);
 		}
 		return new IRubyElement[0];
+	}
+
+	private boolean parentsMatch(IType type, String fullyQualifiedName) {
+		String[] names = getTrimmedSimpleNames(fullyQualifiedName);
+		for (int i = names.length - 2; i >= 0; i--) { // Start at second last name piece, go all the way to first
+			IType parent = type.getDeclaringType();
+			if (parent == null || !names[i].equals(parent.getElementName())) {
+				return false;
+			}
+			type = parent;
+		}
+		return true;
+	}
+
+	private String[] getTrimmedSimpleNames(String fullyQualifiedName) {
+		return fullyQualifiedName.split("::");
 	}
 
 	private IRubyElement findChild(String name, int type,

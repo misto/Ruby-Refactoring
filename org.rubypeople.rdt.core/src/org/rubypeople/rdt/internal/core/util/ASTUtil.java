@@ -7,6 +7,7 @@ import java.util.List;
 
 import org.jruby.ast.ArgsNode;
 import org.jruby.ast.ArgumentNode;
+import org.jruby.ast.Colon2Node;
 import org.jruby.ast.ConstNode;
 import org.jruby.ast.DStrNode;
 import org.jruby.ast.FalseNode;
@@ -14,7 +15,6 @@ import org.jruby.ast.FixnumNode;
 import org.jruby.ast.HashNode;
 import org.jruby.ast.ListNode;
 import org.jruby.ast.LocalAsgnNode;
-import org.jruby.ast.LocalVarNode;
 import org.jruby.ast.NilNode;
 import org.jruby.ast.Node;
 import org.jruby.ast.SelfNode;
@@ -152,6 +152,19 @@ public abstract class ASTUtil {
 		} catch (Exception e) {
 			return null;
 		}
+	}
+
+	public static String getFullyQualifiedName(Colon2Node node) {
+		StringBuffer name = new StringBuffer();
+		Node left = node.getLeftNode();
+		if (left instanceof Colon2Node) {
+			name.append(getFullyQualifiedName((Colon2Node)left));
+		} else if (left instanceof ConstNode) {
+			name.append(((ConstNode)left).getName());
+		}
+		name.append("::");
+		name.append(node.getName());
+		return name.toString();
 	}
 
 }
