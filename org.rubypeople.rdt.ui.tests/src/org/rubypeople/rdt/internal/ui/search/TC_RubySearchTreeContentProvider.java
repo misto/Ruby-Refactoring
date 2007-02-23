@@ -34,7 +34,7 @@ public class TC_RubySearchTreeContentProvider extends TestCase {
 		
 	}
 	
-	public void testGroupByFIle() {
+	public void testGroupByPath() {
 		// could be a MockSearchResult instead
 		RubySearchResult rubyUISearchResult = new RubySearchResult(null);
 		// call initialize before the search starts
@@ -47,7 +47,7 @@ public class TC_RubySearchTreeContentProvider extends TestCase {
 		rubyUISearchResult.addMatch(new Match(searchResult, Match.UNIT_CHARACTER, 0, 0));
 
 		rubySearchTreeContentProvider.elementsChanged(new Object[]{searchResult}) ;
-		Assert.assertTrue(mockTreeViewer.isParentAdded(file)) ;
+		Assert.assertTrue(mockTreeViewer.isParentAdded(searchResult.getLocation().getSourceFile().getFullPath())) ;
 		
 	}
 	
