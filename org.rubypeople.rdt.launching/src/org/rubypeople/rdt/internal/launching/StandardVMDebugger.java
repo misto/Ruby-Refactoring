@@ -139,11 +139,14 @@ public class StandardVMDebugger extends StandardVMRunner implements IVMRunner {
 	}
 
 	protected RubyDebuggerProxy getDebugProxy(RubyDebugTarget debugTarget) {
-		return new RubyDebuggerProxy(debugTarget, RDebugVMDebugger.getDirectoryOfRubyDebuggerFile(), false);
+		return new RubyDebuggerProxy(debugTarget, getDirectoryOfRubyDebuggerFile(), false);
 	}
 
 	protected List<String> debugSpecificVMArgs(RubyDebugTarget debugTarget) {
 		List<String> arguments = new ArrayList<String>();
+//		 FIXME Somehow hook this into the loadpath stuff?		
+		arguments.add("-I");
+		arguments.add(LaunchingPlugin.osDependentPath(getDirectoryOfRubyDebuggerFile().replace('/', File.separatorChar)));
 		if (!debugTarget.isUsingDefaultPort()) {
 			arguments.add("-r" + debugTarget.getDebugParameterFile().getAbsolutePath());
 		}
@@ -153,9 +156,6 @@ public class StandardVMDebugger extends StandardVMRunner implements IVMRunner {
 		} else {
 			arguments.add("-rclassic-debug");
 		}
-		// FIXME Somehow hook this into the loadpath stuff?
-		arguments.add("-I");
-		arguments.add(LaunchingPlugin.osDependentPath(getDirectoryOfRubyDebuggerFile().replace('/', File.separatorChar)));
 		return arguments;
 	}
 

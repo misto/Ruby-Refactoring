@@ -40,7 +40,7 @@ public class StandardVM extends AbstractVMInstall {
 		return null;
 	}
 
-	private boolean useRDebug() {
+	protected boolean useRDebug() {
 		return LaunchingPlugin.getDefault().getPluginPreferences().getBoolean(PreferenceConstants.USE_RUBY_DEBUG);
 	}
 

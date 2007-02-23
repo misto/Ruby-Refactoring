@@ -21,6 +21,15 @@
       <import plugin="org.rubypeople.eclipse.testutils"/>
       <import plugin="org.rubypeople.rdt.core"/>
       <import plugin="org.rubypeople.rdt.core.tests"/>
+      <import plugin="org.rubypeople.rdt.debug.core"/>
    </requires>
+   
+   <extension
+         point="org.rubypeople.rdt.launching.vmInstallTypes">
+      <vmInstallType
+            class="org.rubypeople.rdt.internal.launching.TestVMType"
+            id="org.rubypeople.rdt.launching.TestVMType">
+      </vmInstallType>
+   </extension> 
 
 </plugin>

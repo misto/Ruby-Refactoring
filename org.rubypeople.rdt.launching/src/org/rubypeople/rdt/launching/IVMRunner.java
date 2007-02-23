@@ -26,7 +26,7 @@ import org.eclipse.debug.core.ILaunch;
 public interface IVMRunner {
 		
 	/**
-	 * Launches a Java VM as specified in the given configuration,
+	 * Launches a Ruby VM as specified in the given configuration,
 	 * contributing results (debug targets and processes), to the
 	 * given launch.
 	 *
