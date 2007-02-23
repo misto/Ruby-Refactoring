@@ -144,6 +144,13 @@ import org.rubypeople.rdt.internal.core.util.ASTUtil;
  */
 public class RubyScriptStructureBuilder implements NodeVisitor {
 
+	private static final String MODULE = "Module";
+	private static final String MODULE_KEYWORD = "module";
+	private static final String METHOD_KEYWORD = "def";
+	private static final String CONSTRUCTOR_NAME = "initialize";
+	private static final String NAMESPACE_DELIMETER = "::";
+	private static final String CLASS_KEYWORD = "class";
+	private static final String OBJECT = "Object";
 	private InfoStack infoStack = new InfoStack();
 	private HandleStack modelStack = new HandleStack();
 	private RubyScriptElementInfo scriptInfo;
@@ -186,7 +193,7 @@ public class RubyScriptStructureBuilder implements NodeVisitor {
 
 		// TODO Use the visibility for the original method that this is aliasing
 		Visibility visibility = currentVisibility;
-		if (name.equals("initialize"))
+		if (name.equals(CONSTRUCTOR_NAME))
 			visibility = Visibility.PROTECTED;
 
 		// TODO Find the existing method and steal it's parameter names
@@ -511,11 +518,13 @@ public class RubyScriptStructureBuilder implements NodeVisitor {
 		RubyTypeElementInfo info = new RubyTypeElementInfo();
 		info.setHandle(handle);
 		ISourcePosition pos = iVisited.getPosition();
-		setKeywordRange("class", pos, info, name);
+		setKeywordRange(CLASS_KEYWORD, pos, info, name);
 
-		String superClass = getSuperClassName(iVisited.getSuperNode());
-		info.setSuperclassName(superClass);
-		
+		if (!name.equals(OBJECT)) {
+		  String superClass = getSuperClassName(iVisited.getSuperNode());
+		  info.setSuperclassName(superClass);
+		}
+//		 TODO Collect the included modules and set them here!
 		info.setIncludedModuleNames(new String[] {});
 		infoStack.push(info);
 
@@ -524,7 +533,7 @@ public class RubyScriptStructureBuilder implements NodeVisitor {
 		visitNode(iVisited.getSuperNode());
 		visitNode(iVisited.getBodyNode());
 
-		// TODO Collect the included modules and set them here!
+		
 		modelStack.pop();
 		infoStack.pop();
 		return null;
@@ -553,7 +562,7 @@ public class RubyScriptStructureBuilder implements NodeVisitor {
 	 */
 	private String getSuperClassName(Node superNode) {
 		if (superNode == null)
-			return "Object";
+			return OBJECT;
 		return getFullyQualifiedName(superNode);
 	}
 
@@ -568,7 +577,7 @@ public class RubyScriptStructureBuilder implements NodeVisitor {
 			Colon2Node colonNode = (Colon2Node) node;
 			String prefix = getFullyQualifiedName(colonNode.getLeftNode());
 			if (prefix.length() > 0)
-				prefix = prefix + "::";
+				prefix = prefix + NAMESPACE_DELIMETER;
 			return prefix + colonNode.getName();
 		}
 		return "";
@@ -736,7 +745,7 @@ public class RubyScriptStructureBuilder implements NodeVisitor {
 		String name = iVisited.getName();
 
 		Visibility visibility = currentVisibility;
-		if (name.equals("initialize"))
+		if (name.equals(CONSTRUCTOR_NAME))
 			visibility = Visibility.PROTECTED;
 
 		RubyElement type = getCurrentType();
@@ -752,7 +761,7 @@ public class RubyScriptStructureBuilder implements NodeVisitor {
 		// TODO Set more information
 		info.setVisibility(convertVisibility(visibility));
 		ISourcePosition pos = iVisited.getPosition();
-		setKeywordRange("def", pos, info, name);
+		setKeywordRange(METHOD_KEYWORD, pos, info, name);
 		infoStack.push(info);
 
 		newElements.put(method, info);
@@ -841,7 +850,7 @@ public class RubyScriptStructureBuilder implements NodeVisitor {
 		// TODO Set more info!
 		infoStack.push(info);
 		ISourcePosition pos = iVisited.getPosition();
-		setKeywordRange("def", pos, info, fullName);
+		setKeywordRange(METHOD_KEYWORD, pos, info, fullName);
 
 		info.setArgumentNames(parameterNames);
 		info.setVisibility(convertVisibility(visibility));
@@ -1166,7 +1175,7 @@ public class RubyScriptStructureBuilder implements NodeVisitor {
 		} else if (value instanceof BignumNode) {
 			return "Bignum";
 		}
-		return "Object";
+		return OBJECT;
 	}
 
 	/*
@@ -1327,9 +1336,9 @@ public class RubyScriptStructureBuilder implements NodeVisitor {
 		RubyTypeElementInfo info = new RubyTypeElementInfo();
 		info.setHandle(module);
 		ISourcePosition pos = iVisited.getPosition();
-		setKeywordRange("module", pos, info, name);
-		info.setSuperclassName("Module");
-		// TODO Set more info!
+		setKeywordRange(MODULE_KEYWORD, pos, info, name);
+		// TODO Set super module better! set Module if null, set nothing if name is Module.
+		info.setSuperclassName(MODULE);
 		infoStack.push(info);
 
 		newElements.put(module, info);

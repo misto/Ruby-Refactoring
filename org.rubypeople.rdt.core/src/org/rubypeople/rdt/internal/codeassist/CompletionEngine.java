@@ -52,6 +52,7 @@ import org.rubypeople.rdt.internal.ti.util.INodeAcceptor;
 import org.rubypeople.rdt.internal.ti.util.ScopedNodeLocator;
 
 public class CompletionEngine {
+	private static final String CONSTRUCTOR_INVOKE_NAME = "new";
 	private CompletionRequestor requestor;
 	private CompletionContext context;
 
@@ -142,6 +143,15 @@ public class CompletionEngine {
 		for (int k = 0; k < methods.length; k++) {
 			suggestMethod(methods[k], type.getElementName(), confidence);
 		}
+		// FIXME If a method name matches an existing suggestion (i.e. its overriden in the subclass), don't suggest it again!
+		String superClass = type.getSuperclassName();
+		if (superClass == null) return;
+		RubyElementRequestor requestor = new RubyElementRequestor(type.getRubyScript());
+		IType[] supers = requestor.findType(superClass);
+		for (int i = 0; i < supers.length; i++) {
+			IType superType = supers[i];
+			suggestMethods(confidence, superType);
+		}
 	}
 
 	private void suggestMethod(IMethod method, String typeName, int confidence) {
@@ -151,7 +161,7 @@ public class CompletionEngine {
 		if (method.isSingleton()) {
 			flags |= Flags.AccStatic;
 			if (method.isConstructor())
-				name = "new";
+				name = CONSTRUCTOR_INVOKE_NAME;
 			else
 				name = name.substring(typeName.length() + 1);
 		} else {
@@ -184,7 +194,11 @@ public class CompletionEngine {
 		proposal.setReplaceRange(start, start + name.length());
 		proposal.setFlags(flags);
 		proposal.setName(name);
-		proposal.setDeclaringType(typeName);
+		IType declaringType = method.getDeclaringType();
+		String declaringName = typeName;
+		if (declaringType != null)
+			declaringName = declaringType.getElementName();
+		proposal.setDeclaringType(declaringName);
 		requestor.accept(proposal);
 		
 	}
