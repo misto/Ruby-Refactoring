@@ -12,6 +12,7 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.Path;
+import org.eclipse.core.runtime.Platform;
 import org.eclipse.debug.core.DebugPlugin;
 import org.eclipse.debug.core.ILaunch;
 import org.eclipse.debug.core.ILaunchConfiguration;
@@ -34,7 +35,7 @@ public class TC_RunnerLaunching extends ModifyingResourceTest {
 
 	private final static String PROJECT_NAME = "Simple Project";
 	private final static String RUBY_LIB_DIR = "someRubyDir"; // dir inside
-																// project
+	// project
 	private final static String RUBY_FILE_NAME = "rubyFile.rb";
 	private final static String INTERPRETER_ARGUMENTS = "interpreter Arguments";
 	private final static String PROGRAM_ARGUMENTS = "programArguments";
@@ -86,12 +87,15 @@ public class TC_RunnerLaunching extends ModifyingResourceTest {
 		buffer.append(project.getLocation().toOSString());
 		buffer.append("\"");
 		if (debug) {
-			buffer.append(" -I \"");
+			buffer.append(" -I ");
+			if (Platform.getOS().equals(Platform.OS_WIN32))
+				buffer.append("\"");
 			buffer.append(new Path(StandardVMDebugger.getDirectoryOfRubyDebuggerFile()).toOSString());
-			buffer.append("\"");
+			if (Platform.getOS().equals(Platform.OS_WIN32))
+				buffer.append("\"");
 			buffer.append(" -r");
 			buffer.append(debugFile);
-			buffer.append(" -rclassic-debug");			
+			buffer.append(" -rclassic-debug");
 		}
 		buffer.append(" -- ");
 		buffer.append(RUBY_LIB_DIR);
