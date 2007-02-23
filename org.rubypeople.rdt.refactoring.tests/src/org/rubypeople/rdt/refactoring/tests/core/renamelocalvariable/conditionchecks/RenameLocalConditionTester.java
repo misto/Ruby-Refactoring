@@ -33,23 +33,23 @@ package org.rubypeople.rdt.refactoring.tests.core.renamelocalvariable.conditionc
 import java.io.FileNotFoundException;
 import java.io.IOException;
 
-import org.rubypeople.rdt.refactoring.core.renamelocalvariable.RenameConditionChecker;
-import org.rubypeople.rdt.refactoring.core.renamelocalvariable.RenameConfig;
+import org.rubypeople.rdt.refactoring.core.renamelocalvariable.RenameLocalConditionChecker;
+import org.rubypeople.rdt.refactoring.core.renamelocalvariable.RenameLocalConfig;
 import org.rubypeople.rdt.refactoring.tests.FilePropertyData;
 import org.rubypeople.rdt.refactoring.tests.FileTestData;
 import org.rubypeople.rdt.refactoring.tests.RefactoringConditionTestCase;
 
-public class RenameLocalConditionChecker extends RefactoringConditionTestCase {
+public class RenameLocalConditionTester extends RefactoringConditionTestCase {
 	
-	public RenameLocalConditionChecker(String fileName) {
+	public RenameLocalConditionTester(String fileName) {
 		super(fileName);
 	}
 
 	@Override
 	public void runTest() throws FileNotFoundException, IOException {
 		FilePropertyData testData = new FileTestData(getName(), ".test_source.rb", ".test_source.rb");
-		RenameConfig config = new RenameConfig(testData, testData.getIntProperty("cursorPosition"));
-		RenameConditionChecker checker = new RenameConditionChecker(config);
+		RenameLocalConfig config = new RenameLocalConfig(testData, testData.getIntProperty("cursorPosition"));
+		RenameLocalConditionChecker checker = new RenameLocalConditionChecker(config);
 		
 		checkConditions(checker, testData);
 	}

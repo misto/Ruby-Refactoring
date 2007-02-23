@@ -37,6 +37,6 @@ import org.rubypeople.rdt.refactoring.tests.FileTestSuite;
 public class TS_RenameLocalCondition extends FileTestSuite {
 
 	public static Test suite() {
-		return createSuite("Rename Local Condition Checks", "rename_local_condition_test_*test_source.rb", RenameLocalConditionChecker.class);
+		return createSuite("Rename Local Condition Checks", "rename_local_condition_test_*test_source.rb", RenameLocalConditionTester.class);
 	}
 }

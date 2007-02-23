@@ -33,14 +33,14 @@ import java.io.IOException;
 
 import org.eclipse.jface.text.BadLocationException;
 import org.rubypeople.rdt.refactoring.core.renamelocalvariable.LocalVariablesEditProvider;
-import org.rubypeople.rdt.refactoring.core.renamelocalvariable.RenameConditionChecker;
-import org.rubypeople.rdt.refactoring.core.renamelocalvariable.RenameConfig;
+import org.rubypeople.rdt.refactoring.core.renamelocalvariable.RenameLocalConditionChecker;
+import org.rubypeople.rdt.refactoring.core.renamelocalvariable.RenameLocalConfig;
 import org.rubypeople.rdt.refactoring.tests.FileTestCase;
 import org.rubypeople.rdt.refactoring.tests.FileTestData;
 
-public class RenameTester extends FileTestCase {
+public class RenameLocalTester extends FileTestCase {
 	
-	public RenameTester(String fileName) {
+	public RenameLocalTester(String fileName) {
 		super(fileName);
 	}
 	
@@ -51,8 +51,8 @@ public class RenameTester extends FileTestCase {
 	
 		int caretPosition = testData.getIntProperty("pos");
 		
-		RenameConfig config = new RenameConfig(testData, caretPosition);
-		RenameConditionChecker checker = new RenameConditionChecker(config);
+		RenameLocalConfig config = new RenameLocalConfig(testData, caretPosition);
+		RenameLocalConditionChecker checker = new RenameLocalConditionChecker(config);
 		if(!checker.shouldPerform()) {
 			fail();
 		}

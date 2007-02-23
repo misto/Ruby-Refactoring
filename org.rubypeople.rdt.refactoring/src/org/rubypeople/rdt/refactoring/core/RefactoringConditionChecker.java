@@ -131,6 +131,10 @@ public abstract class RefactoringConditionChecker implements IRefactoringConditi
 	protected void addWarning(String message) {
 		messages.get(IRefactoringConditionChecker.WARNING).add(message);
 	}
+	
+	protected boolean hasErrors() {
+		return !messages.get(IRefactoringConditionChecker.ERRORS).isEmpty();
+	}
 
 	protected abstract void checkInitialConditions();
 

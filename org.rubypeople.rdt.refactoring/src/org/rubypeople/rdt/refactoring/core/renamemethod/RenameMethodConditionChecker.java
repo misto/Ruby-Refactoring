@@ -48,9 +48,11 @@ import org.rubypeople.rdt.refactoring.nodewrapper.ClassNodeWrapper;
 import org.rubypeople.rdt.refactoring.nodewrapper.MethodCallNodeWrapper;
 import org.rubypeople.rdt.refactoring.nodewrapper.MethodNodeWrapper;
 import org.rubypeople.rdt.refactoring.nodewrapper.PartialClassNodeWrapper;
+import org.rubypeople.rdt.refactoring.util.NodeUtil;
 
 public class RenameMethodConditionChecker extends RefactoringConditionChecker{
 
+	public static final String DEFAULT_ERROR = "Please select the name of the method you want to rename first.";
 	private RenameMethodConfig config;
 	
 	public RenameMethodConditionChecker(RenameMethodConfig config) {
@@ -68,7 +70,7 @@ public class RenameMethodConditionChecker extends RefactoringConditionChecker{
 			this.config.setClassNode(SelectionNodeProvider.getSelectedClassNode(rootNode, this.config.getCaretPosition()));
 		} catch (NoClassNodeException e) {/* ClassNode stays null */}
 		setSelectedMethodNode(rootNode);
-		if(config.getTargetMethod() != null) {
+		if(config.getTargetMethod().getWrappedNode() != null) {
 			this.config.setPossibleCalls(getAllCallCandidates());
 		}
 	}
@@ -80,7 +82,10 @@ public class RenameMethodConditionChecker extends RefactoringConditionChecker{
 		if(methodNode == null) {
 			SymbolNode selectedSymbolNode = (SymbolNode) SelectionNodeProvider.getSelectedNodeOfType(rootNode, config.getCaretPosition(), SymbolNode.class);
 			if(selectedSymbolNode != null && config.getSelectedClass() != null) {
-				methodNode = config.getSelectedClass().getMethod(selectedSymbolNode.getName()).getWrappedNode();
+				MethodNodeWrapper method = config.getSelectedClass().getMethod(selectedSymbolNode.getName());
+				if(method != null) {
+					methodNode = method.getWrappedNode();
+				}
 			}
 		}
 		MethodDefinitionWrapper targetMethod = new MethodDefinitionWrapper(methodNode);
@@ -164,9 +169,14 @@ public class RenameMethodConditionChecker extends RefactoringConditionChecker{
 	@Override
 	protected void checkInitialConditions() {
 		Node methodNode = config.getTargetMethod().getWrappedNode();
-		if(methodNode == null){
-			addError("Please select the method you want to rename first.");
+		if(methodNode == null || !isSelectionInMethodName()){
+			addError(DEFAULT_ERROR);
 		}
+	}
+
+
+	private boolean isSelectionInMethodName() {
+		return SelectionNodeProvider.nodeContainsPosition(config.getTargetMethod().getWrappedNode().getNameNode(), config.getCaretPosition());
 	}
 
 

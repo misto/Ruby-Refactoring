@@ -1,29 +1,32 @@
 package org.rubypeople.rdt.refactoring.core.rename;
 
-import org.jruby.ast.ArgsNode;
-import org.jruby.ast.ArgumentNode;
-import org.jruby.ast.ClassNode;
-import org.jruby.ast.ConstNode;
-import org.jruby.ast.InstAsgnNode;
-import org.jruby.ast.InstVarNode;
-import org.jruby.ast.MethodDefNode;
-import org.jruby.ast.Node;
-import org.jruby.ast.SymbolNode;
+import org.rubypeople.rdt.refactoring.core.IRefactoringConditionChecker;
 import org.rubypeople.rdt.refactoring.core.RefactoringConditionChecker;
-import org.rubypeople.rdt.refactoring.core.SelectionNodeProvider;
-import org.rubypeople.rdt.refactoring.exception.NoClassNodeException;
-import org.rubypeople.rdt.refactoring.nodewrapper.ClassNodeWrapper;
-import org.rubypeople.rdt.refactoring.nodewrapper.LocalNodeWrapper;
+import org.rubypeople.rdt.refactoring.core.renameclass.RenameClassConditionChecker;
+import org.rubypeople.rdt.refactoring.core.renameclass.RenameClassConfig;
+import org.rubypeople.rdt.refactoring.core.renamefield.RenameFieldConditionChecker;
+import org.rubypeople.rdt.refactoring.core.renamefield.RenameFieldConfig;
+import org.rubypeople.rdt.refactoring.core.renamelocalvariable.RenameLocalConditionChecker;
+import org.rubypeople.rdt.refactoring.core.renamelocalvariable.RenameLocalConfig;
+import org.rubypeople.rdt.refactoring.core.renamemethod.RenameMethodConditionChecker;
+import org.rubypeople.rdt.refactoring.core.renamemethod.RenameMethodConfig;
+import org.rubypeople.rdt.refactoring.documentprovider.DocumentProvider;
 
 public class RenameConditionChecker extends RefactoringConditionChecker {
 
-	private ClassNode selectedClassNode;
-	private Node selectedMethodNode;
-	private Node selectedFieldNode;
-	private Node selectedLocalNode;
-	private Node preferedNode;
-	private Node rootNode;
-	private int offset;
+	private enum RenameType {
+		INVALID, LOCAL, FIELD, METHOD, CLASS
+	};
+
+	private RenameType selectedType;
+
+	private RenameLocalConditionChecker localConditionChecker;
+
+	private RefactoringConditionChecker fieldConditionChecker;
+
+	private RefactoringConditionChecker methodConditionChecker;
+
+	private RefactoringConditionChecker classConditionChecker;
 
 	public RenameConditionChecker(RenameConfig config) {
 		super(config.getDocumentProvider(), config);
@@ -31,91 +34,65 @@ public class RenameConditionChecker extends RefactoringConditionChecker {
 
 	@Override
 	protected void checkInitialConditions() {
-		if(preferedNode == null) {
+		if (selectedType == RenameType.INVALID) {
+			addErrorMessage();
+		}
+	}
+
+	private void addErrorMessage() {
+		addErrorIfNotDefaultError(localConditionChecker, RenameLocalConditionChecker.DEFAULT_ERROR);
+		addErrorIfNotDefaultError(fieldConditionChecker, RenameFieldConditionChecker.DEFAULT_ERROR);
+		addErrorIfNotDefaultError(methodConditionChecker, RenameMethodConditionChecker.DEFAULT_ERROR);
+		addErrorIfNotDefaultError(classConditionChecker, RenameClassConditionChecker.DEFAULT_ERROR);
+		if (!hasErrors()) {
+
 			addError("Nothing selected to rename.");
+
+		}
+	}
+
+	private void addErrorIfNotDefaultError(RefactoringConditionChecker checker, String defaultError) {
+		String firstError = checker.getInitialMessages().get(IRefactoringConditionChecker.ERRORS).toArray(new String[0])[0];
+		if (!firstError.equals(defaultError)) {
+			addError(firstError);
 		}
 	}
 
 	@Override
 	protected void init(Object configObj) {
 		RenameConfig config = (RenameConfig) configObj;
-		rootNode = config.getDocumentProvider().getRootNode();
-		offset = config.getOffset();
-		selectedClassNode = (ClassNode) SelectionNodeProvider.getSelectedNodeOfType(rootNode, offset, ClassNode.class);
-		selectedMethodNode = SelectionNodeProvider.getSelectedNodeOfType(rootNode, offset, MethodDefNode.class);
-		selectedFieldNode = SelectionNodeProvider.getSelectedNodeOfType(rootNode, offset, InstAsgnNode.class, InstVarNode.class);
-		selectedLocalNode = SelectionNodeProvider.getSelectedNodeOfType(rootNode, offset, LocalNodeWrapper.getLocalNodeClasses());
-		ConstNode selectedConstNode = (ConstNode) SelectionNodeProvider.getSelectedNodeOfType(rootNode, offset, ConstNode.class);
-		SymbolNode selectedSymbolNode = (SymbolNode) SelectionNodeProvider.getSelectedNodeOfType(rootNode, offset, SymbolNode.class);
-		ArgsNode argsNode = (ArgsNode) SelectionNodeProvider.getSelectedNodeOfType(rootNode, offset, ArgsNode.class);
-		if(selectedLocalNode == null && argsNode != null) {
-			selectedLocalNode = SelectionNodeProvider.getSelectedNodeOfType(argsNode, offset, ArgumentNode.class);
-		}
-		initPreferedNode(selectedConstNode, selectedSymbolNode);
-	}
-
-	private void initPreferedNode(ConstNode selectedConstNode, SymbolNode selectedSymbolNode) {
-		if(selectedLocalNode != null) {
-			if(selectedFieldNode != null) {
-				preferedNode = (SelectionNodeProvider.isNodeContainedInNode(selectedFieldNode, selectedLocalNode)) ? selectedFieldNode : selectedLocalNode;
-			} else {
-				preferedNode = selectedLocalNode;
-			}
-		} else if(selectedFieldNode != null) {
-			preferedNode = selectedFieldNode;
-		} else if(selectedMethodNode != null) {
-			preferedNode = selectedMethodNode;
-		} else if(selectedClassNode != null) {
-			preferedNode = selectedClassNode;
-			if(selectedConstNode != null) {
-				considerConstNode(selectedConstNode.getName());
-			}
-			if(selectedSymbolNode != null) {
-				considerSymbolNode(selectedSymbolNode);
-			}
-		}
-	}
-
-	private void considerSymbolNode(SymbolNode selectedSymbolNode) {
-		try {
-			ClassNodeWrapper classNode = SelectionNodeProvider.getSelectedClassNode(rootNode, offset);
-		String symbolName = selectedSymbolNode.getName();
-		if(classNode.containsField(symbolName)) {
-			selectedFieldNode = selectedSymbolNode;
-			preferedNode = selectedFieldNode;
-		} else if(classNode.containsMethod(symbolName)) {
-			selectedMethodNode = selectedSymbolNode;
-			preferedNode = selectedSymbolNode;
-		}
-		} catch (NoClassNodeException e) {/*do nothing*/}
-	}
-
-	private void considerConstNode(String constName) {
-		if(selectedClassNode != null && constName.equals(selectedClassNode.getCPath().getName())) {
-			preferedNode = selectedClassNode;
+		int offset = config.getOffset();
+		DocumentProvider docProvider = config.getDocumentProvider();
+		localConditionChecker = new RenameLocalConditionChecker(new RenameLocalConfig(docProvider, offset));
+		fieldConditionChecker = new RenameFieldConditionChecker(new RenameFieldConfig(docProvider, offset));
+		methodConditionChecker = new RenameMethodConditionChecker(new RenameMethodConfig(docProvider, offset));
+		classConditionChecker = new RenameClassConditionChecker(new RenameClassConfig(docProvider, offset));
+		if (localConditionChecker.shouldPerform()) {
+			selectedType = RenameType.LOCAL;
+		} else if (fieldConditionChecker.shouldPerform()) {
+			selectedType = RenameType.FIELD;
+		} else if (methodConditionChecker.shouldPerform()) {
+			selectedType = RenameType.METHOD;
+		} else if (classConditionChecker.shouldPerform()) {
+			selectedType = RenameType.CLASS;
+		} else {
+			selectedType = RenameType.INVALID;
 		}
 	}
 
 	public boolean shouldRenameLocal() {
-		return testShould(selectedLocalNode);
-	}
-	
-	private boolean testShould(Node nodeToTest) {
-		if(preferedNode == null) {
-			return false;
-		}
-		return preferedNode.equals(nodeToTest);
+		return selectedType == RenameType.LOCAL;
 	}
 
 	public boolean shouldRenameField() {
-		return testShould(selectedFieldNode);
+		return selectedType == RenameType.FIELD;
 	}
-	
+
 	public boolean shouldRenameMethod() {
-		return testShould(selectedMethodNode);
+		return selectedType == RenameType.METHOD;
 	}
-	
+
 	public boolean shouldRenameClass() {
-		return testShould(selectedClassNode);
+		return selectedType == RenameType.CLASS;
 	}
 }

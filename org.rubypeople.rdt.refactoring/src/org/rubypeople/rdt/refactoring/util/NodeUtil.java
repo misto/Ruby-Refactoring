@@ -61,4 +61,16 @@ public class NodeUtil {
 		}
 		return null;
 	}
+
+	public static boolean nodeAssignableFrom(Node n, Class<?>... klasses) {
+		if(n == null) {
+			return false;
+		}
+		for (Class<?> klass : klasses) {
+			if (klass.isAssignableFrom(n.getClass())) {
+				return true;
+			}
+		}
+		return false;
+	}
 }

@@ -1,18 +1,18 @@
 package org.rubypeople.rdt.refactoring.core.rename;
 
-import org.rubypeople.rdt.refactoring.documentprovider.IDocumentProvider;
+import org.rubypeople.rdt.refactoring.documentprovider.DocumentProvider;
 
 public class RenameConfig {
 
-	private IDocumentProvider documentProvider;
+	private DocumentProvider documentProvider;
 	private int offset;
 
-	public RenameConfig(IDocumentProvider documentProvider, int offset) {
+	public RenameConfig(DocumentProvider documentProvider, int offset) {
 		this.documentProvider = documentProvider;
 		this.offset = offset;
 	}
 
-	public IDocumentProvider getDocumentProvider() {
+	public DocumentProvider getDocumentProvider() {
 		return documentProvider;
 	}
 

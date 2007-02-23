@@ -37,7 +37,7 @@ import org.rubypeople.rdt.refactoring.tests.core.renamelocalvariable.conditionch
 public class TS_RenameLocalVariable extends FileTestSuite {
 	public static Test suite() {
 
-		TestSuite suite = createSuite("RenameLocalVariable", "rename_local_test_*source.rb", RenameTester.class);
+		TestSuite suite = createSuite("RenameLocalVariable", "rename_local_test_*source.rb", RenameLocalTester.class);
 		suite.addTest(TS_RenameLocalCondition.suite());
 		return suite;
 	}

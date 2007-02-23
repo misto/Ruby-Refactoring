@@ -45,7 +45,6 @@ import org.jruby.ast.MultipleAsgnNode;
 import org.jruby.ast.Node;
 import org.jruby.ast.StrNode;
 import org.jruby.ast.VCallNode;
-import org.rubypeople.rdt.refactoring.core.NodeProvider;
 import org.rubypeople.rdt.refactoring.core.SelectionNodeProvider;
 import org.rubypeople.rdt.refactoring.editprovider.DeleteEditProvider;
 import org.rubypeople.rdt.refactoring.editprovider.EditProvider;
@@ -97,10 +96,10 @@ public class TempToFieldConverter extends MultiEditProvider {
 
 		for (Object o : baseNode.childNodes()) {
 			Node n = (Node) o;
-			if (NodeProvider.nodeAssignableFrom(n, LocalNodeWrapper.getLocalNodeClasses())) {
+			if (NodeUtil.nodeAssignableFrom(n, LocalNodeWrapper.LOCAL_NODES_CLASSES)) {
 				candidates.add(n);
 			}
-			if (!NodeProvider.nodeAssignableFrom(n, DAsgnNode.class, LocalAsgnNode.class)) {
+			if (!NodeUtil.nodeAssignableFrom(n, DAsgnNode.class, LocalAsgnNode.class)) {
 				candidates.addAll(gatherLocalNodes(n));
 			}
 		}

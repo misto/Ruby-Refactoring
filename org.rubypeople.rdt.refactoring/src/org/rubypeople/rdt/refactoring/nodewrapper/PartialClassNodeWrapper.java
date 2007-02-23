@@ -47,6 +47,7 @@ import org.jruby.ast.VCallNode;
 import org.rubypeople.rdt.refactoring.core.NodeProvider;
 import org.rubypeople.rdt.refactoring.exception.NoClassNodeException;
 import org.rubypeople.rdt.refactoring.nodewrapper.VisibilityNodeWrapper.METHOD_VISIBILITY;
+import org.rubypeople.rdt.refactoring.util.NodeUtil;
 
 public abstract class PartialClassNodeWrapper implements INodeWrapper {
 	
@@ -54,31 +55,35 @@ public abstract class PartialClassNodeWrapper implements INodeWrapper {
 
 	private Collection<ModuleNode> enclosingModules;
 
-	private ArrayList<MethodNodeWrapper> methods;
+	private Collection<MethodNodeWrapper> methods;
 
-	private ArrayList<FieldNodeWrapper> fields;
+	private Collection<FieldNodeWrapper> fields;
 
-	private ArrayList<Node> attributes;
+	private Collection<Node> attributes;
 
 	public PartialClassNodeWrapper(Node node) {
 		wrappedNode = node;
 	}
-
+	
 	public Collection<FieldNodeWrapper> getFields() {
 		if(fields == null) {
-			fields = new ArrayList<FieldNodeWrapper>();
+			fields = getFieldsFromNode(wrappedNode);
+		}
+		return fields;
+	}
+
+	public static Collection<FieldNodeWrapper> getFieldsFromNode(Node wrappedNode) {
+			Collection<FieldNodeWrapper> fields = new ArrayList<FieldNodeWrapper>();
 			Collection<Node> fieldNodes = NodeProvider.getSubNodes(wrappedNode, FieldNodeWrapper.FIELD_NODE_CLASSES_WITHOUT_SYMBOL_NODE);
 
 			for (Node currentField : fieldNodes) {
 				fields.add(new FieldNodeWrapper(currentField));
 			}
-			addSymbolNodeFields(fields);
-		}
-
-		return fields;
+			addSymbolNodeFields(fields, wrappedNode);
+			return fields;
 	}
 
-	private void addSymbolNodeFields(Collection<FieldNodeWrapper> fields) {
+	private static void addSymbolNodeFields(Collection<FieldNodeWrapper> fields, Node wrappedNode) {
 		Collection<AttrAccessorNodeWrapper> accessors = NodeProvider.getAccessorNodes(wrappedNode);
 		for(AttrAccessorNodeWrapper aktAcessor : accessors) {
 			fields.add(new FieldNodeWrapper(aktAcessor.getSymbolNode()));
@@ -91,11 +96,11 @@ public abstract class PartialClassNodeWrapper implements INodeWrapper {
 		}
 	}
 
-	private void addAttrNodeFields(FCallNode callNode, Collection<FieldNodeWrapper> fields) {
-		if (NodeProvider.nodeAssignableFrom(callNode.getArgsNode(), ArrayNode.class)) {
+	private static void addAttrNodeFields(FCallNode callNode, Collection<FieldNodeWrapper> fields) {
+		if (NodeUtil.nodeAssignableFrom(callNode.getArgsNode(), ArrayNode.class)) {
 			for (Object o : callNode.getArgsNode().childNodes()) {
 				Node aktNode = (Node) o;
-				if (NodeProvider.nodeAssignableFrom(aktNode, SymbolNode.class)) {
+				if (NodeUtil.nodeAssignableFrom(aktNode, SymbolNode.class)) {
 					SymbolNode symbolNode = ((SymbolNode) aktNode);
 					fields.add(new FieldNodeWrapper(symbolNode));
 				}

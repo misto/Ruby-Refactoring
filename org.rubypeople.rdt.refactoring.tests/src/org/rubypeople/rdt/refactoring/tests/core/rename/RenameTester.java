@@ -46,7 +46,7 @@ public class RenameTester extends RefactoringTestCase {
 
 	private static final String RENAME_METHOD = "renameMethod";
 
-	private static final String RENME_FIELD = "renameField";
+	private static final String RENAME_FIELD = "renameField";
 
 	private static final String RENAME_LOCAL = "renameLocal";
 
@@ -63,18 +63,29 @@ public class RenameTester extends RefactoringTestCase {
 		String delegateRenameRefactoring = testData.getProperty("delegateRenameRefactoring");
 		
 		assertTrue(isValidParam(delegateRenameRefactoring));
-		assertFalse(delegateRenameRefactoring.equals(NONE) && checker.shouldPerform());
-		assertFalse(checker.shouldRenameClass() && !delegateRenameRefactoring.equals(RENAME_CLASS));
-		assertFalse(checker.shouldRenameMethod() && !delegateRenameRefactoring.equals(RENAME_METHOD));
-		assertFalse(checker.shouldRenameField() && !delegateRenameRefactoring.equals(RENME_FIELD));
-		assertFalse(checker.shouldRenameLocal() && !delegateRenameRefactoring.equals(RENAME_LOCAL));
+//		assertFalse(delegateRenameRefactoring.equals(NONE) && checker.shouldPerform());
+		check(!checker.shouldPerform(), delegateRenameRefactoring.equals(NONE));
+		check(checker.shouldRenameClass(), delegateRenameRefactoring.equals(RENAME_CLASS));
+		check(checker.shouldRenameMethod(), delegateRenameRefactoring.equals(RENAME_METHOD));
+		check(checker.shouldRenameField(), delegateRenameRefactoring.equals(RENAME_FIELD));
+		check(checker.shouldRenameLocal(), delegateRenameRefactoring.equals(RENAME_LOCAL));
+//		assertFalse(checker.shouldRenameClass() && !delegateRenameRefactoring.equals(RENAME_CLASS));
+//		assertFalse(checker.shouldRenameMethod() && !delegateRenameRefactoring.equals(RENAME_METHOD));
+//		assertFalse(checker.shouldRenameField() && !delegateRenameRefactoring.equals(RENAME_FIELD));
+//		assertFalse(checker.shouldRenameLocal() && !delegateRenameRefactoring.equals(RENAME_LOCAL));
+	}
+
+	private void check(boolean shouldPerform, boolean isRightRefactoring) {
+		if(isRightRefactoring) {
+			assertTrue(shouldPerform);
+		}
 	}
 
 	private boolean isValidParam(String paramName) {
 		return paramName.equals(NONE)
 				|| paramName.equals(RENAME_CLASS)
 				|| paramName.equals(RENAME_METHOD)
-				|| paramName.equals(RENME_FIELD)
+				|| paramName.equals(RENAME_FIELD)
 				|| paramName.equals(RENAME_LOCAL);
 	}
 

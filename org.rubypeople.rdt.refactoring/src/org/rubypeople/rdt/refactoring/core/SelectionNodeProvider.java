@@ -60,7 +60,10 @@ import org.jruby.lexer.yacc.ISourcePosition;
 import org.rubypeople.rdt.refactoring.exception.NoClassNodeException;
 import org.rubypeople.rdt.refactoring.nodewrapper.AttrAccessorNodeWrapper;
 import org.rubypeople.rdt.refactoring.nodewrapper.ClassNodeWrapper;
+import org.rubypeople.rdt.refactoring.nodewrapper.FieldNodeWrapper;
+import org.rubypeople.rdt.refactoring.nodewrapper.INodeWrapper;
 import org.rubypeople.rdt.refactoring.nodewrapper.PartialClassNodeWrapper;
+import org.rubypeople.rdt.refactoring.util.NodeUtil;
 
 public class SelectionNodeProvider {
 
@@ -165,16 +168,16 @@ public class SelectionNodeProvider {
 		Class[] classes = { LocalAsgnNode.class, LocalVarNode.class, DAsgnNode.class, DVarNode.class, InstAsgnNode.class, InstVarNode.class,
 				ClassVarAsgnNode.class, ClassVarNode.class, GlobalAsgnNode.class, GlobalVarNode.class};
 		boolean sameStart = firstNode.getPosition().getStartOffset() == secondNode.getPosition().getStartOffset();
-		boolean isFirstNodeVarNode = NodeProvider.nodeAssignableFrom(firstNode, classes);
-		boolean isSecondNodeVarNode = NodeProvider.nodeAssignableFrom(secondNode, classes);
+		boolean isFirstNodeVarNode = NodeUtil.nodeAssignableFrom(firstNode, classes);
+		boolean isSecondNodeVarNode = NodeUtil.nodeAssignableFrom(secondNode, classes);
 		return sameStart && isFirstNodeVarNode && isSecondNodeVarNode;
 	}
 
 	private static boolean hasSamePosAndIsSelfAsignment(Node probablyCallNode, Node probablyAsgnNode) {
 		boolean sameStart = probablyCallNode.getPosition().getStartOffset() == probablyAsgnNode.getPosition().getStartOffset();
 		boolean sameEnd = probablyCallNode.getPosition().getEndOffset() == probablyAsgnNode.getPosition().getEndOffset();
-		boolean isAsgnNode = NodeProvider.nodeAssignableFrom(probablyAsgnNode, LocalAsgnNode.class, DAsgnNode.class, InstAsgnNode.class, ClassVarAsgnNode.class);
-		boolean isCallNode = NodeProvider.nodeAssignableFrom(probablyCallNode, CallNode.class, AttrAssignNode.class);
+		boolean isAsgnNode = NodeUtil.nodeAssignableFrom(probablyAsgnNode, LocalAsgnNode.class, DAsgnNode.class, InstAsgnNode.class, ClassVarAsgnNode.class);
+		boolean isCallNode = NodeUtil.nodeAssignableFrom(probablyCallNode, CallNode.class, AttrAssignNode.class);
 		return sameStart && sameEnd && isCallNode && isAsgnNode;
 	}
 
@@ -219,7 +222,7 @@ public class SelectionNodeProvider {
 	public static Collection<Node> getSelectedNodesOfType(Collection<? extends Node> nodes, int position, Class<?>... klasses) {
 		ArrayList<Node> candidates = new ArrayList<Node>();
 		for (Node n : nodes) {
-			if (nodeContainsPosition(n, position) && !(n instanceof NewlineNode) && NodeProvider.nodeAssignableFrom(n, klasses)) {
+			if (nodeContainsPosition(n, position) && !(n instanceof NewlineNode) && NodeUtil.nodeAssignableFrom(n, klasses)) {
 				candidates.add(n);
 			}
 		}
@@ -289,5 +292,25 @@ public class SelectionNodeProvider {
 			}
 		}
 		return selectedAccessor;
+	}
+
+	public static <T extends INodeWrapper> T getSelectedWrappedNode(Collection<T> candidates, int caretPosition) {
+		T selected = null;
+		for(T aktNode : candidates) {
+			if(nodeContainsPosition(aktNode.getWrappedNode(), caretPosition)) {
+				selected = getBestCandidate(selected, aktNode);
+			}
+		}
+		return selected;
+	}
+
+	private static <T extends INodeWrapper> T getBestCandidate(T oldNode, T newNode) {
+		if(oldNode == null) {
+			return newNode;
+		}
+		if(nodeEnclosesNode(newNode.getWrappedNode(), oldNode.getWrappedNode())) {
+			return oldNode;
+		}
+		return newNode;
 	}
 }

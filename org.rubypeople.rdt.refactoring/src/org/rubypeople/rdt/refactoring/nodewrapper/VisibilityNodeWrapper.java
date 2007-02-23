@@ -37,7 +37,7 @@ import org.jruby.ast.ArrayNode;
 import org.jruby.ast.FCallNode;
 import org.jruby.ast.SymbolNode;
 import org.jruby.lexer.yacc.ISourcePosition;
-import org.rubypeople.rdt.refactoring.core.NodeProvider;
+import org.rubypeople.rdt.refactoring.util.NodeUtil;
 
 public class VisibilityNodeWrapper implements INodeWrapper {
 
@@ -69,7 +69,7 @@ public class VisibilityNodeWrapper implements INodeWrapper {
 	public Collection<String> getMethodNames() {
 
 		Collection<String> methods = new ArrayList<String>();
-		if(NodeProvider.nodeAssignableFrom(wrappedNode.getArgsNode(), ArrayNode.class)) {
+		if(NodeUtil.nodeAssignableFrom(wrappedNode.getArgsNode(), ArrayNode.class)) {
 			ArrayNode arrayNode = (ArrayNode) wrappedNode.getArgsNode();
 			for(Object aktObj : arrayNode.childNodes()) {
 				if (aktObj instanceof SymbolNode) {

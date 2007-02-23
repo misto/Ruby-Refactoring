@@ -43,6 +43,7 @@ import org.jruby.lexer.yacc.SourcePosition;
 import org.rubypeople.rdt.refactoring.core.NodeProvider;
 import org.rubypeople.rdt.refactoring.core.SelectionNodeProvider;
 import org.rubypeople.rdt.refactoring.tests.FileTestCase;
+import org.rubypeople.rdt.refactoring.util.NodeUtil;
 
 public class TC_NodeProvider extends FileTestCase {
 	
@@ -56,11 +57,11 @@ public class TC_NodeProvider extends FileTestCase {
 		
 		assertEquals(21, allNodes.length);
 
-		assertTrue(NodeProvider.nodeAssignableFrom(allNodes[1], BlockNode.class));
-		assertTrue(NodeProvider.nodeAssignableFrom(allNodes[2], NewlineNode.class));
-		assertTrue(NodeProvider.nodeAssignableFrom(allNodes[3], ClassNode.class));
-		assertTrue(NodeProvider.nodeAssignableFrom(allNodes[4], Colon2Node.class));
-		assertTrue(NodeProvider.nodeAssignableFrom(allNodes[20], ConstNode.class));
+		assertTrue(NodeUtil.nodeAssignableFrom(allNodes[1], BlockNode.class));
+		assertTrue(NodeUtil.nodeAssignableFrom(allNodes[2], NewlineNode.class));
+		assertTrue(NodeUtil.nodeAssignableFrom(allNodes[3], ClassNode.class));
+		assertTrue(NodeUtil.nodeAssignableFrom(allNodes[4], Colon2Node.class));
+		assertTrue(NodeUtil.nodeAssignableFrom(allNodes[20], ConstNode.class));
 	}
 
 	public void testGetSelectedNodeOfType() {
@@ -80,8 +81,8 @@ public class TC_NodeProvider extends FileTestCase {
 	}
 	
 	public void testNodeAssignableFrom() {
-		assertTrue(NodeProvider.nodeAssignableFrom(new DefnNode(null, null, null, null, null, null), DefnNode.class));	
-		assertTrue(NodeProvider.nodeAssignableFrom(new LocalVarNode(null, 0, ""), LocalVarNode.class));
+		assertTrue(NodeUtil.nodeAssignableFrom(new DefnNode(null, null, null, null, null, null), DefnNode.class));	
+		assertTrue(NodeUtil.nodeAssignableFrom(new LocalVarNode(null, 0, ""), LocalVarNode.class));
 	}
 	
 	public void testNodeContainsCaretPosition() {

@@ -47,8 +47,8 @@ public class LocalVariableRenamer {
 	}
 	
 	public TextEdit getEdit() {
-		RenameConfig config = new RenameConfig(doc, 0);
-		new RenameConditionChecker(config);
+		RenameLocalConfig config = new RenameLocalConfig(doc, 0);
+		new RenameLocalConditionChecker(config);
 		LocalVariablesEditProvider editProvider = new LocalVariablesEditProvider(config);
 		
 		editProvider.setSelectedVariableName(from);

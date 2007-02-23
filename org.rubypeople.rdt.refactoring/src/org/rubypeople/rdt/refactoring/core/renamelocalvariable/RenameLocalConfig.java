@@ -32,7 +32,7 @@ import org.jruby.ast.Node;
 import org.jruby.ast.types.INameNode;
 import org.rubypeople.rdt.refactoring.documentprovider.DocumentProvider;
 
-public class RenameConfig implements IRenameConfig {
+public class RenameLocalConfig implements IRenameConfig {
 
 	private DocumentProvider docProvider;
 	private int caretPosition;
@@ -41,7 +41,7 @@ public class RenameConfig implements IRenameConfig {
 	private String[] localNames;
 	private LocalVariablesEditProvider editProvider;
 
-	public RenameConfig(DocumentProvider docProvider, int caretPosition) {
+	public RenameLocalConfig(DocumentProvider docProvider, int caretPosition) {
 		this.docProvider = docProvider;
 		this.caretPosition = caretPosition;
 	}
@@ -99,6 +99,10 @@ public class RenameConfig implements IRenameConfig {
 
 	public void setLocalNames(String[] localNames) {
 		this.localNames = localNames.clone();
+	}
+
+	public boolean hasSelectedNode() {
+		return selectedNode != null;
 	}
 
 }

@@ -131,7 +131,7 @@ public class ExtractedMethodHelper extends Observable {
 	}
 
 	private boolean isLocalNodeOfEnclosingScope(boolean isWrongScopeNode, Node aktNode) {
-		return !isWrongScopeNode && (NodeProvider.nodeAssignableFrom(aktNode, LocalNodeWrapper.getLocalNodeClasses()));
+		return !isWrongScopeNode && (NodeUtil.nodeAssignableFrom(aktNode, LocalNodeWrapper.LOCAL_NODES_CLASSES));
 	}
 
 	private void initNeededLocalNodes() {

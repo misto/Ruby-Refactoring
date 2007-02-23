@@ -38,7 +38,7 @@ import org.jruby.ast.InstVarNode;
 import org.jruby.ast.Node;
 import org.jruby.ast.SymbolNode;
 import org.jruby.lexer.yacc.ISourcePosition;
-import org.rubypeople.rdt.refactoring.core.NodeProvider;
+import org.rubypeople.rdt.refactoring.util.NodeUtil;
 
 public class FieldNodeWrapper implements INodeWrapper {
 
@@ -63,27 +63,27 @@ public class FieldNodeWrapper implements INodeWrapper {
 
 		nodeType = INVALID_TYPE;
 
-		if (NodeProvider.nodeAssignableFrom(node, InstAsgnNode.class)) {
+		if (NodeUtil.nodeAssignableFrom(node, InstAsgnNode.class)) {
 			nodeType = INST_ASGN_NODE;
 			InstAsgnNode instAsgnNode = (InstAsgnNode) node;
 			name = instAsgnNode.getName();
-		} else if (NodeProvider.nodeAssignableFrom(node, InstVarNode.class)) {
+		} else if (NodeUtil.nodeAssignableFrom(node, InstVarNode.class)) {
 			InstVarNode instVarNode = (InstVarNode) node;
 			name = instVarNode.getName();
 			nodeType = INST_VAR_NODE;
-		} else if (NodeProvider.nodeAssignableFrom(node, ClassVarAsgnNode.class)) {
+		} else if (NodeUtil.nodeAssignableFrom(node, ClassVarAsgnNode.class)) {
 			ClassVarAsgnNode classVarAsgnNode = (ClassVarAsgnNode) node;
 			name = classVarAsgnNode.getName();
 			nodeType = CLASS_VAR_ASGN_NODE;
-		} else if (NodeProvider.nodeAssignableFrom(node, ClassVarNode.class)) {
+		} else if (NodeUtil.nodeAssignableFrom(node, ClassVarNode.class)) {
 			ClassVarNode classVarNode = (ClassVarNode) node;
 			name = classVarNode.getName();
 			nodeType = CLASS_VAR_NODE;
-		} else if (NodeProvider.nodeAssignableFrom(node, SymbolNode.class)) {
+		} else if (NodeUtil.nodeAssignableFrom(node, SymbolNode.class)) {
 			SymbolNode symbolNode = (SymbolNode) node;
 			name = symbolNode.getName();
 			nodeType = SYMBOL_NODE;
-		} else if (NodeProvider.nodeAssignableFrom(node, ClassVarDeclNode.class)) {
+		} else if (NodeUtil.nodeAssignableFrom(node, ClassVarDeclNode.class)) {
 			ClassVarDeclNode classVarDeclNode = (ClassVarDeclNode) node;
 			name = classVarDeclNode.getName();
 			nodeType = CLASS_VAR_DECL_NODE;

@@ -91,10 +91,10 @@ public class ExtractMethodConditionChecker extends RefactoringConditionChecker {
 		Node selectedNode = SelectionNodeProvider.getSelectedNodes(rootNode, config.getSelection());
 		
 		//If selected node is an WhenNode, take the enclosing CaseNode as selectedNode.
-		if (NodeProvider.nodeAssignableFrom(selectedNode, WhenNode.class)) {
+		if (NodeUtil.nodeAssignableFrom(selectedNode, WhenNode.class)) {
 			selectedNode = SelectionNodeProvider.getEnclosingNode(rootNode, config.getSelection(), CaseNode.class);
 		}
-		if(NodeProvider.nodeAssignableFrom(selectedNode, ArrayNode.class)) {
+		if(NodeUtil.nodeAssignableFrom(selectedNode, ArrayNode.class)) {
 			WhenNode enclosingWhen = (WhenNode) SelectionNodeProvider.getEnclosingNode(rootNode, config.getSelection(), WhenNode.class);
 			if(enclosingWhen != null && SelectionNodeProvider.nodeEnclosesNode(enclosingWhen.getExpressionNodes(), selectedNode)) {
 				selectedNode = SelectionNodeProvider.getEnclosingNode(rootNode, config.getSelection(), CaseNode.class);
@@ -108,7 +108,7 @@ public class ExtractMethodConditionChecker extends RefactoringConditionChecker {
 		}
 		
 		//Check if the selected Node is an argumentNode
-		if(NodeProvider.nodeAssignableFrom(selectedNode, ArgumentNode.class)) {
+		if(NodeUtil.nodeAssignableFrom(selectedNode, ArgumentNode.class)) {
 			selectedNode = config.getEnclosingMethodNode();
 		}
 		
@@ -122,7 +122,7 @@ public class ExtractMethodConditionChecker extends RefactoringConditionChecker {
 		//Check if enclosingArrayNode is the argsNode of a MethodCallNode.
 		Node enclosingMethodCallNode = SelectionNodeProvider.getEnclosingNode(rootNode, config.getSelection(), MethodCallNodeWrapper.METHOD_CALL_NODE_CLASSES());
 		MethodCallNodeWrapper enclosingMethodCall = new MethodCallNodeWrapper(enclosingMethodCallNode);
-		if(NodeProvider.nodeAssignableFrom(enclosingMethodCall.getArgsNode(), ArrayNode.class)) {
+		if(NodeUtil.nodeAssignableFrom(enclosingMethodCall.getArgsNode(), ArrayNode.class)) {
 			ArrayNode enclosingMethodCallArgs = (ArrayNode) enclosingMethodCall.getArgsNode();
 			if(enclosingArrayNode == enclosingMethodCallArgs)
 				return enclosingMethodCallNode;
@@ -130,7 +130,7 @@ public class ExtractMethodConditionChecker extends RefactoringConditionChecker {
 		
 		//Check if enclosingArrayNode is the receiver node of a multiAsgnNode
 		MultipleAsgnNode asgnNode = (MultipleAsgnNode) SelectionNodeProvider.getEnclosingNode(rootNode, config.getSelection(), MultipleAsgnNode.class);
-		if(asgnNode != null && NodeProvider.nodeAssignableFrom(asgnNode.getHeadNode(), ArrayNode.class)) {
+		if(asgnNode != null && NodeUtil.nodeAssignableFrom(asgnNode.getHeadNode(), ArrayNode.class)) {
 //			ArrayNode multiAsgnHeadNode = (ArrayNode) asgnNode.getHeadNode();
 //			if(enclosingArrayNode == multiAsgnHeadNode) {
 //				return asgnNode;

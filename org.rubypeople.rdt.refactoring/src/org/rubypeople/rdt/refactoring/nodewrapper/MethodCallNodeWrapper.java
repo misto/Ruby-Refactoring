@@ -38,7 +38,7 @@ import org.jruby.ast.Node;
 import org.jruby.ast.VCallNode;
 import org.jruby.ast.types.INameNode;
 import org.jruby.lexer.yacc.ISourcePosition;
-import org.rubypeople.rdt.refactoring.core.NodeProvider;
+import org.rubypeople.rdt.refactoring.util.NodeUtil;
 
 public class MethodCallNodeWrapper implements INodeWrapper {
 
@@ -64,22 +64,22 @@ public class MethodCallNodeWrapper implements INodeWrapper {
 
 	public MethodCallNodeWrapper(Node node) {
 		this.wrappedNode = node;
-		if (NodeProvider.nodeAssignableFrom(node, CallNode.class)) {
+		if (NodeUtil.nodeAssignableFrom(node, CallNode.class)) {
 			CallNode callNode = (CallNode) node;
 			nodeType = CALL_NODE;
 			receiverNode = callNode.getReceiverNode();
 			argsNode = callNode.getArgsNode();
 			name = callNode.getName();
-		} else if (NodeProvider.nodeAssignableFrom(node, AttrAssignNode.class)) {
+		} else if (NodeUtil.nodeAssignableFrom(node, AttrAssignNode.class)) {
 			AttrAssignNode callNode = (AttrAssignNode) node;
 			nodeType = CALL_NODE;
 			receiverNode = callNode.getReceiverNode();
 			argsNode = callNode.getArgsNode();
 			name = callNode.getName();
-		} else if (NodeProvider.nodeAssignableFrom(node, VCallNode.class)) {
+		} else if (NodeUtil.nodeAssignableFrom(node, VCallNode.class)) {
 			nodeType = V_CALL_NODE;
 			name = ((VCallNode) node).getName();
-		} else if (NodeProvider.nodeAssignableFrom(node, FCallNode.class)) {
+		} else if (NodeUtil.nodeAssignableFrom(node, FCallNode.class)) {
 			FCallNode fCallNode = (FCallNode) node;
 			nodeType = F_CALL_NODE;
 			name = fCallNode.getName();
@@ -126,7 +126,7 @@ public class MethodCallNodeWrapper implements INodeWrapper {
 	}
 
 	public boolean isCallToClassMethod() {
-		return NodeProvider.nodeAssignableFrom(receiverNode, ConstNode.class);
+		return NodeUtil.nodeAssignableFrom(receiverNode, ConstNode.class);
 	}
 
 	public Node getWrappedNode() {

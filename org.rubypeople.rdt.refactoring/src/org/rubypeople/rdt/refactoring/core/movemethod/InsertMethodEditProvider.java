@@ -55,6 +55,7 @@ import org.rubypeople.rdt.refactoring.nodewrapper.PartialClassNodeWrapper;
 import org.rubypeople.rdt.refactoring.nodewrapper.VisibilityNodeWrapper.METHOD_VISIBILITY;
 import org.rubypeople.rdt.refactoring.offsetprovider.AfterLastMethodInClassOffsetProvider;
 import org.rubypeople.rdt.refactoring.offsetprovider.IOffsetProvider;
+import org.rubypeople.rdt.refactoring.util.NodeUtil;
 
 public class InsertMethodEditProvider extends InsertEditProvider {
 
@@ -147,7 +148,7 @@ public class InsertMethodEditProvider extends InsertEditProvider {
 		String insertText = config.getFieldInDestinationClassOfTypeSourceClass() + ".";
 		if (aktCallNode.isCallNode()) {
 			Node receiverNode = aktCallNode.getReceiverNode();
-			if (NodeProvider.nodeAssignableFrom(receiverNode, SelfNode.class) && !isCallToMovingMethod(aktCallNode.getName())) {
+			if (NodeUtil.nodeAssignableFrom(receiverNode, SelfNode.class) && !isCallToMovingMethod(aktCallNode.getName())) {
 				int length = receiverNode.getPosition().getEndOffset() - insertPos;
 				multiEdit.addChild(new ReplaceEdit(insertPos, length, config.getFieldInDestinationClassOfTypeSourceClass()));
 			}

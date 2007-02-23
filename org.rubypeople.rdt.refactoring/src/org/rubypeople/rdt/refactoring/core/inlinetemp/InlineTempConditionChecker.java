@@ -64,7 +64,7 @@ public class InlineTempConditionChecker extends RefactoringConditionChecker {
 		
 		config.setEnclosingScopeNode(SelectionNodeProvider.getEnclosingScope(rootNode, caretPosition));
 		
-		Node locVarNode = SelectionNodeProvider.getSelectedNodeOfType(rootNode, caretPosition, LocalNodeWrapper.getLocalNodeClasses());
+		Node locVarNode = SelectionNodeProvider.getSelectedNodeOfType(rootNode, caretPosition, LocalNodeWrapper.LOCAL_NODES_CLASSES);
 		if (locVarNode == null) {
 			return;
 		}

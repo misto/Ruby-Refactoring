@@ -60,6 +60,7 @@ import org.rubypeople.rdt.refactoring.nodewrapper.PartialClassNodeWrapper;
 import org.rubypeople.rdt.refactoring.nodewrapper.VisibilityNodeWrapper;
 import org.rubypeople.rdt.refactoring.nodewrapper.VisibilityNodeWrapper.METHOD_VISIBILITY;
 import org.rubypeople.rdt.refactoring.util.NameHelper;
+import org.rubypeople.rdt.refactoring.util.NodeUtil;
 
 public class MethodMover implements IMultiFileEditProvider, Observer {
 
@@ -125,7 +126,7 @@ public class MethodMover implements IMultiFileEditProvider, Observer {
 		if(callNode.isCallToClassMethod()) {
 			return false;
 		}
-		boolean isReceiverSelf = callNode.isCallNode() && NodeProvider.nodeAssignableFrom(callNode.getReceiverNode(), SelfNode.class);
+		boolean isReceiverSelf = callNode.isCallNode() && NodeUtil.nodeAssignableFrom(callNode.getReceiverNode(), SelfNode.class);
 		boolean isNotCallNode = !callNode.isCallNode();
 		boolean hasExistingMethodName = config.getSourceClassNode().containsMethod(callNode.getName());
 		return (isReceiverSelf || isNotCallNode) && hasExistingMethodName;
@@ -330,7 +331,7 @@ public class MethodMover implements IMultiFileEditProvider, Observer {
 		boolean sameName = methodCall.getName().equals(selectedMethodName);
 		boolean notInMovingMethod = !SelectionNodeProvider.isNodeContainedInNode(methodCall.getWrappedNode(), config.getMethodNode().getWrappedNode());
 		boolean isNotCallNode = !methodCall.isCallNode();
-		boolean isSelfNode = methodCall.isCallNode() && NodeProvider.nodeAssignableFrom(methodCall.getReceiverNode(), SelfNode.class);
+		boolean isSelfNode = methodCall.isCallNode() && NodeUtil.nodeAssignableFrom(methodCall.getReceiverNode(), SelfNode.class);
 		boolean sameType = config.getMethodNode().isClassMethod() == methodCall.isCallToClassMethod();
 		return sameName && sameType && notInMovingMethod && (isNotCallNode || isSelfNode || methodCall.isCallToClassMethod());
 	}

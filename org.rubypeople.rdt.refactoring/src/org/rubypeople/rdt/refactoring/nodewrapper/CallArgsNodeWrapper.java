@@ -38,7 +38,7 @@ import org.jruby.ast.ArrayNode;
 import org.jruby.ast.Node;
 import org.jruby.ast.SplatNode;
 import org.rubypeople.rdt.refactoring.core.NodeFactory;
-import org.rubypeople.rdt.refactoring.core.NodeProvider;
+import org.rubypeople.rdt.refactoring.util.NodeUtil;
 
 public class CallArgsNodeWrapper implements INodeWrapper {
 
@@ -49,13 +49,13 @@ public class CallArgsNodeWrapper implements INodeWrapper {
 	public CallArgsNodeWrapper(Node node) {
 		
 		wrappedNode = node;
-		if(NodeProvider.nodeAssignableFrom(node, ArrayNode.class)) {
+		if(NodeUtil.nodeAssignableFrom(node, ArrayNode.class)) {
 			arrayNode = (ArrayNode) node;
 			
-		} else if(NodeProvider.nodeAssignableFrom(node, SplatNode.class)) {
+		} else if(NodeUtil.nodeAssignableFrom(node, SplatNode.class)) {
 			splatNode = (SplatNode) node;
 			
-		} else if(NodeProvider.nodeAssignableFrom(node, ArgsCatNode.class)) {
+		} else if(NodeUtil.nodeAssignableFrom(node, ArgsCatNode.class)) {
 			ArgsCatNode argsCatNode = (ArgsCatNode) node;
 			arrayNode = (ArrayNode) argsCatNode.getFirstNode();
 			splatNode = (SplatNode) argsCatNode.getSecondNode();

@@ -65,7 +65,7 @@ public class LocalVariablesEditProvider extends MultiEditProvider implements Obs
 
 	private final Node selectedNode;
 
-	public LocalVariablesEditProvider(RenameConfig config) {
+	public LocalVariablesEditProvider(RenameLocalConfig config) {
 		rootNode = config.getSelectedMethod();
 		selectedNode = config.getSelectedNode();
 		localNames = config.getLocalNames();

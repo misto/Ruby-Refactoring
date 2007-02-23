@@ -45,77 +45,79 @@ import org.rubypeople.rdt.refactoring.core.renamefield.fielditems.FieldItem;
 import org.rubypeople.rdt.refactoring.documentprovider.DocumentWithIncluding;
 import org.rubypeople.rdt.refactoring.exception.NoClassNodeException;
 import org.rubypeople.rdt.refactoring.nodewrapper.ClassNodeWrapper;
+import org.rubypeople.rdt.refactoring.nodewrapper.FieldNodeWrapper;
+import org.rubypeople.rdt.refactoring.nodewrapper.PartialClassNodeWrapper;
 
 public class RenameFieldConditionChecker extends RefactoringConditionChecker {
-	
+
+	public static final String DEFAULT_ERROR = "There is no field at the caret position.";
+
 	private RenameFieldConfig config;
 
 	public RenameFieldConditionChecker(RenameFieldConfig config) {
 		super(config.getDocProvider(), config);
 	}
-	
+
 	public void init(Object configObj) {
 		this.config = (RenameFieldConfig) configObj;
-		
+
 		config.setDocProvider(new DocumentWithIncluding(config.getDocProvider()));
 		Node rootNode = config.getDocProvider().getRootNode();
-		
+
 		try {
 			ClassNodeWrapper enclosingClassNode = SelectionNodeProvider.getSelectedClassNode(rootNode, config.getCaretPosition());
 			ClassNodeProvider classNodeProvider = new IncludedClassesProvider(config.getDocProvider());
 			config.setWholeClassNode(classNodeProvider.getClassNode(enclosingClassNode.getName()));
 			config.setFieldProvider(new FieldProvider(config.getWholeClassNode(), config.getDocProvider()));
-			config.setSelectedItem(config.getFieldProvider().getNameAtPosition(config.getCaretPosition(), config.getDocProvider().getActiveFileName()));
-			if(config.hasSelectedItem()){
+			config.setSelectedItem(config.getFieldProvider()
+					.getNameAtPosition(config.getCaretPosition(), config.getDocProvider().getActiveFileName()));
+			if (config.hasSelectedItem()) {
 				config.setSelectedName(config.getSelectedItem().getFieldName());
 			}
 
-			
 		} catch (NoClassNodeException e) {
-			/*don't care*/
-		}	
+			/* don't care */
+		}
 
-		if(config.hasSelectedName()){
+		if (config.hasSelectedName()) {
 			setSelection();
 		}
 	}
 
-	private void setSelection() {	
+	private void setSelection() {
 		String fieldName = config.getSelectedName();
 		boolean concernsClassField = config.concernsClassField();
 		Collection<FieldItem> selectedItems = config.getFieldProvider().getFieldItems(fieldName, concernsClassField);
 		config.setSelectedCalls(selectedItems);
-		
+
 		Collection<FieldItem> possibleItems = new ArrayList<FieldItem>();
 		possibleItems.addAll(selectedItems);
-				
-		if(!concernsClassField){
+
+		if (!concernsClassField) {
 			possibleItems.addAll(getInstVarAccesses());
 		}
-		
+
 		config.setPossibleCalls(possibleItems);
 	}
 
 	private Collection<FieldItem> getInstVarAccesses() {
 		ArrayList<FieldItem> fieldCallNodes = new ArrayList<FieldItem>();
-		
 
 		Collection<Node> allNodes = config.getDocProvider().getAllNodes();
-		for(Node currentNode : allNodes){
-			if(isPossibleCall(currentNode)){
-				fieldCallNodes.add(new FieldCallItem((CallNode)currentNode));
+		for (Node currentNode : allNodes) {
+			if (isPossibleCall(currentNode)) {
+				fieldCallNodes.add(new FieldCallItem((CallNode) currentNode));
 			}
 		}
-		
+
 		return fieldCallNodes;
 	}
 
-
 	private boolean isPossibleCall(Node candidateNode) {
-		if((candidateNode instanceof CallNode)){
-			
+		if ((candidateNode instanceof CallNode)) {
+
 			CallNode callNode = (CallNode) candidateNode;
-			if(callNode.getName().replaceAll("=", "").equals(config.getSelectedName())){
+			if (callNode.getName().replaceAll("=", "").equals(config.getSelectedName())) {
 				String fileName = callNode.getPosition().getFile();
 				Node rootNode = NodeProvider.getRootNode(fileName, config.getDocProvider().getFileContent(fileName));
 				try {
@@ -127,32 +129,41 @@ public class RenameFieldConditionChecker extends RefactoringConditionChecker {
 		}
 		return false;
 	}
-	
 
 	@Override
 	protected void checkFinalConditions() {
 		String newName = config.getNewName();
 		String selectedName = config.getSelectedName();
-		
-		if(newName == null || selectedName.equals(newName)){
+
+		if (newName == null || selectedName.equals(newName)) {
 			addError("The name has to be changed to perform the refactoring.");
 			return;
 		}
-		
-		for ( String currentName : config.getFieldNames()){
-			if(currentName.equals(newName)){
+
+		for (String currentName : config.getFieldNames()) {
+			if (currentName.equals(newName)) {
 				addError("Field name already exists.");
 				return;
 			}
-		}	
+		}
 	}
 
 	@Override
 	protected void checkInitialConditions() {
-		if(!config.hasSelectedName()){
-			addError("There is no field at the caret position.");
-		} else if(!config.hasWholeClassNode()) {
-			addError("The selected field is not inside of a class.");
+		Collection<FieldNodeWrapper> fields = PartialClassNodeWrapper.getFieldsFromNode(config.getDocProvider().getRootNode());
+		FieldNodeWrapper selectedFieldNode = SelectionNodeProvider.getSelectedWrappedNode(fields, config.getCaretPosition());
+		if (config.getWholeClassNode() == null) {
+			if (selectedFieldNode != null) {
+				addError("Cannot rename the selected field. There was no surrounding class found.");
+				return;
+			}
 		}
+		if (!config.hasSelectedName() || !isSelectionInFieldName(selectedFieldNode)) {
+			addError(DEFAULT_ERROR);
+		}
+	}
+
+	private boolean isSelectionInFieldName(FieldNodeWrapper node) {
+		return config.getCaretPosition() <= node.getPosition().getStartOffset() + node.getName().length();
 	}
 }

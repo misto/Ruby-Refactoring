@@ -166,10 +166,10 @@ public class NodeProvider {
 	}
 
 	private static void addAccessorNodes(Collection<AttrAccessorNodeWrapper> accessorNodes, FCallNode callNode) {
-		if (nodeAssignableFrom(callNode.getArgsNode(), ArrayNode.class)) {
+		if (NodeUtil.nodeAssignableFrom(callNode.getArgsNode(), ArrayNode.class)) {
 			for (Object o : callNode.getArgsNode().childNodes()) {
 				Node aktNode = (Node) o;
-				if (nodeAssignableFrom(aktNode, SymbolNode.class)) {
+				if (NodeUtil.nodeAssignableFrom(aktNode, SymbolNode.class)) {
 					SymbolNode symbolNode = ((SymbolNode) aktNode);
 					accessorNodes.add(new AttrAccessorNodeWrapper(callNode, symbolNode));
 				}
@@ -181,11 +181,11 @@ public class NodeProvider {
 		if (!hasAccessorName(fCallNode)) {
 			return false;
 		}
-		if (NodeProvider.nodeAssignableFrom(fCallNode.getArgsNode(), ArrayNode.class)) {
+		if (NodeUtil.nodeAssignableFrom(fCallNode.getArgsNode(), ArrayNode.class)) {
 			ArrayNode arrayNode = (ArrayNode) fCallNode.getArgsNode();
 			for (Object o : arrayNode.childNodes()) {
 				Node aktNode = (Node) o;
-				if (!NodeProvider.nodeAssignableFrom(aktNode, SymbolNode.class)) {
+				if (!NodeUtil.nodeAssignableFrom(aktNode, SymbolNode.class)) {
 					return false;
 				}
 			}
@@ -356,7 +356,7 @@ public class NodeProvider {
 
 	public static Collection<Node> gatherNodesOfTypeInAktScopeNode(Node baseNode, Class... klasses) {
 		ArrayList<Node> candidates = new ArrayList<Node>();
-		if (nodeAssignableFrom(baseNode, klasses)) {
+		if (NodeUtil.nodeAssignableFrom(baseNode, klasses)) {
 			candidates.add(baseNode);
 		}
 		if (baseNode != null && !NodeUtil.hasScope(baseNode)) {
@@ -373,7 +373,7 @@ public class NodeProvider {
 		Collection<Node> allNodes = getAllNodes(baseNode);
 		Collection<Node> resultNodes = new ArrayList<Node>();
 		for (Node aktNode : allNodes) {
-			if (nodeAssignableFrom(aktNode, klasses)) {
+			if (NodeUtil.nodeAssignableFrom(aktNode, klasses)) {
 				resultNodes.add(aktNode);
 			}
 		}
@@ -382,18 +382,6 @@ public class NodeProvider {
 
 	public static boolean hasSubNodes(Node baseNode, Class<?>... klasses) {
 		return !getSubNodes(baseNode, klasses).isEmpty();
-	}
-
-	public static boolean nodeAssignableFrom(Node n, Class<?>... klasses) {
-		if(n == null) {
-			return false;
-		}
-		for (Class<?> klass : klasses) {
-			if (klass.isAssignableFrom(n.getClass())) {
-				return true;
-			}
-		}
-		return false;
 	}
 
 	public static Node getEnclosingNodeOfType(Node baseNode, Node enclosedNode, Class<? extends Object>... klasses) {
@@ -421,7 +409,7 @@ public class NodeProvider {
 		if(node == null) {
 			return true;
 		}
-		if(!nodeAssignableFrom(node, EMPTY_NODES)) {
+		if(!NodeUtil.nodeAssignableFrom(node, EMPTY_NODES)) {
 			return false;
 		}
 		for(Object o : node.childNodes()) {

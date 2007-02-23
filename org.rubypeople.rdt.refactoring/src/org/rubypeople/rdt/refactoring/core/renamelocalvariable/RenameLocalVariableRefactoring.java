@@ -41,8 +41,8 @@ public class RenameLocalVariableRefactoring extends RubyRefactoring {
 		super(NAME);
 		
 		DocumentProvider docProvider = getDocumentProvider();
-		RenameConfig config = new RenameConfig(docProvider, selectionProvider.getCarretPosition());
-		RenameConditionChecker checker = new RenameConditionChecker(config);
+		RenameLocalConfig config = new RenameLocalConfig(docProvider, selectionProvider.getCarretPosition());
+		RenameLocalConditionChecker checker = new RenameLocalConditionChecker(config);
 		setRefactoringConditionChecker(checker);
 		
 		if(checker.shouldPerform()) {

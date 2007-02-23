@@ -44,10 +44,11 @@ import org.jruby.ast.types.INameNode;
 import org.rubypeople.rdt.refactoring.core.NodeProvider;
 import org.rubypeople.rdt.refactoring.core.RefactoringConditionChecker;
 import org.rubypeople.rdt.refactoring.core.SelectionNodeProvider;
+import org.rubypeople.rdt.refactoring.nodewrapper.LocalNodeWrapper;
 import org.rubypeople.rdt.refactoring.util.NameValidator;
 import org.rubypeople.rdt.refactoring.util.NodeUtil;
 
-public class RenameConditionChecker extends RefactoringConditionChecker {
+public class RenameLocalConditionChecker extends RefactoringConditionChecker {
 
 	private static final String ALREADY_EXISTS = "The chosen variable name already exists! Please go back and change it.";
 
@@ -59,15 +60,17 @@ public class RenameConditionChecker extends RefactoringConditionChecker {
 
 	private static final Class[] SELECTED_NODE_TYPES = {LocalVarNode.class, LocalAsgnNode.class, ArgumentNode.class,
 		BlockArgNode.class, DVarNode.class, DAsgnNode.class};
-	
-	private RenameConfig config;
 
-	public RenameConditionChecker(RenameConfig config) {
+	public static final String DEFAULT_ERROR = NO_LOCAL_VARIABLES;
+	
+	private RenameLocalConfig config;
+
+	public RenameLocalConditionChecker(RenameLocalConfig config) {
 		super(config.getDocumentProvider(), config);
 	}
 	
 	public void init(Object configObj) {
-		config = (RenameConfig) configObj;
+		config = (RenameLocalConfig) configObj;
 		RootNode rootNode = config.getDocumentProvider().getRootNode();
 		Node selectedNode = SelectionNodeProvider.getSelectedNodeOfType(rootNode, config.getCaretPosition(), SELECTED_NODE_TYPES);
 		if(selectedNode instanceof AssignableNode) {
@@ -81,7 +84,7 @@ public class RenameConditionChecker extends RefactoringConditionChecker {
 		config.setSelectedNode(selectedNode);
 		if(selectedNode == null) {
 			config.setLocalNames(NodeUtil.getScope(rootNode).getVariables());
-			Collection<MethodDefNode> methodNodes = NodeProvider.getMethodNodes(config.getDocumentProvider().getRootNode());
+			Collection<MethodDefNode> methodNodes = NodeProvider.getMethodNodes(rootNode);
 			config.setSelectedMethod(SelectionNodeProvider.getSelectedNodeOfType(methodNodes, config.getCaretPosition(), MethodDefNode.class));
 			return;
 		}
@@ -91,10 +94,21 @@ public class RenameConditionChecker extends RefactoringConditionChecker {
 	
 	@Override
 	protected void checkInitialConditions() {
-		if ((!config.hasSelectedMethod() || !config.hasLocalNames())
-				&& !NodeProvider.nodeAssignableFrom(config.getSelectedNode(), DVarNode.class, DAsgnNode.class)) {
+		if (!config.hasSelectedNode() || !isSelectedNodeLocalVar()) {
 			addError(NO_LOCAL_VARIABLES);
 		}
+	}
+
+	private boolean isSelectedNodeLocalVar() {
+		Node selected = config.getSelectedNode();
+		if(NodeUtil.nodeAssignableFrom(selected, LocalNodeWrapper.LOCAL_NODES_CLASSES)){
+			return true;
+		}
+		if(NodeUtil.nodeAssignableFrom(selected, ArgumentNode.class, BlockArgNode.class) && NodeUtil.nodeAssignableFrom(config.getSelectedMethod(), MethodDefNode.class)) {
+			MethodDefNode methodNode = (MethodDefNode) config.getSelectedMethod();
+			return methodNode.getNameNode() != selected;
+		}
+		return false;
 	}
 
 	@Override

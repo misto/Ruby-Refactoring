@@ -39,6 +39,7 @@ import org.jruby.ast.LocalAsgnNode;
 import org.jruby.ast.LocalVarNode;
 import org.jruby.ast.Node;
 import org.rubypeople.rdt.refactoring.core.NodeProvider;
+import org.rubypeople.rdt.refactoring.util.NodeUtil;
 
 public class LocalNodeWrapper implements INodeWrapper {
 
@@ -53,7 +54,7 @@ public class LocalNodeWrapper implements INodeWrapper {
 
 	public static final int D_ASGN_NODE = 4;
 
-	private static final Class[] LOCAL_NODES_CLASSES = { LocalAsgnNode.class, LocalVarNode.class, DVarNode.class, DAsgnNode.class };
+	public static final Class[] LOCAL_NODES_CLASSES = { LocalAsgnNode.class, LocalVarNode.class, DVarNode.class, DAsgnNode.class };
 
 	private Node wrappedNode;
 
@@ -67,22 +68,22 @@ public class LocalNodeWrapper implements INodeWrapper {
 
 	public LocalNodeWrapper(Node node) {
 		id = INVALID_ID;
-		if (NodeProvider.nodeAssignableFrom(node, LocalVarNode.class)) {
+		if (NodeUtil.nodeAssignableFrom(node, LocalVarNode.class)) {
 			id = ((LocalVarNode) node).getIndex();
 			name = ((LocalVarNode) node).getName();
 			nodeType = LOCAL_VAR_NODE;
-		} else if (NodeProvider.nodeAssignableFrom(node, LocalAsgnNode.class)) {
+		} else if (NodeUtil.nodeAssignableFrom(node, LocalAsgnNode.class)) {
 			LocalAsgnNode localAsgnNode = (LocalAsgnNode) node;
 			id = localAsgnNode.getIndex();
 			name = localAsgnNode.getName();
 			nodeType = LOCAL_ASGN_VAR_NODE;
 			valueNode = localAsgnNode.getValueNode();
-		} else if (NodeProvider.nodeAssignableFrom(node, DAsgnNode.class)) {
+		} else if (NodeUtil.nodeAssignableFrom(node, DAsgnNode.class)) {
 			DAsgnNode dAsgnNode = (DAsgnNode) node;
 			name = dAsgnNode.getName();
 			nodeType = D_ASGN_NODE;
 			valueNode = dAsgnNode.getValueNode();
-		} else if (NodeProvider.nodeAssignableFrom(node, DVarNode.class)) {
+		} else if (NodeUtil.nodeAssignableFrom(node, DVarNode.class)) {
 			DVarNode dVarNode = (DVarNode) node;
 			name = dVarNode.getName();
 			nodeType = D_VAR_NODE;
@@ -134,16 +135,16 @@ public class LocalNodeWrapper implements INodeWrapper {
 		if (nodeType != LOCAL_VAR_NODE) {
 			this.name = name;
 		}
-		if (NodeProvider.nodeAssignableFrom(wrappedNode, LocalVarNode.class)) {
+		if (NodeUtil.nodeAssignableFrom(wrappedNode, LocalVarNode.class)) {
 			LocalVarNode localVarNode = (LocalVarNode) wrappedNode;
 			localVarNode.setName(name);
-		} else if (NodeProvider.nodeAssignableFrom(wrappedNode, LocalAsgnNode.class)) {
+		} else if (NodeUtil.nodeAssignableFrom(wrappedNode, LocalAsgnNode.class)) {
 			LocalAsgnNode localAsgnNode = (LocalAsgnNode) wrappedNode;
 			localAsgnNode.setName(name);
-		} else if (NodeProvider.nodeAssignableFrom(wrappedNode, DAsgnNode.class)) {
+		} else if (NodeUtil.nodeAssignableFrom(wrappedNode, DAsgnNode.class)) {
 			DAsgnNode dAsgnNode = (DAsgnNode) wrappedNode;
 			dAsgnNode.setName(name);
-		} else if (NodeProvider.nodeAssignableFrom(wrappedNode, DVarNode.class)) {
+		} else if (NodeUtil.nodeAssignableFrom(wrappedNode, DVarNode.class)) {
 			DVarNode dVarNode = (DVarNode) wrappedNode;
 			dVarNode.setName(name);
 		}
@@ -177,7 +178,7 @@ public class LocalNodeWrapper implements INodeWrapper {
 
 		Collection<LocalNodeWrapper> localNodes = new ArrayList<LocalNodeWrapper>();
 		for (Node aktNode : nodes) {
-			if (NodeProvider.nodeAssignableFrom(aktNode, LOCAL_NODES_CLASSES)) {
+			if (NodeUtil.nodeAssignableFrom(aktNode, LOCAL_NODES_CLASSES)) {
 				localNodes.add(new LocalNodeWrapper(aktNode));
 			}
 		}
@@ -199,9 +200,5 @@ public class LocalNodeWrapper implements INodeWrapper {
 			return localNode.getWrappedNode().equals(getWrappedNode());
 		}
 		return false;
-	}
-
-	public static Class[] getLocalNodeClasses() {
-		return LOCAL_NODES_CLASSES.clone();
 	}
 }
