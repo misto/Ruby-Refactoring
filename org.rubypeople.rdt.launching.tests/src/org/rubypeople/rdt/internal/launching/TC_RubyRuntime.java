@@ -51,25 +51,29 @@ public class TC_RubyRuntime extends ModifyingResourceTest {
 	}
 
 	public void testGetInstalledInterpreters() {
+		String vmOneName = "InterpreterOne";
+		String vmOneId = vmOneName;
+		String vmTwoName = "InterpreterTwo";
+		String vmTwoId = vmTwoName;
 		try {
-			VMStandin standin = new VMStandin(vmType, "InterpreterOne");
+			VMStandin standin = new VMStandin(vmType, vmOneId);
 			standin.setInstallLocation(new File("C:/RubyInstallRootOne"));
-			standin.setName("InterpreterOne");
+			standin.setName(vmOneName);
 			standin.convertToRealVM();
 
-			VMStandin standin2 = new VMStandin(vmType, "InterpreterTwo");
+			VMStandin standin2 = new VMStandin(vmType, vmTwoId);
 			standin2.setInstallLocation(new File("C:/RubyInstallRootTwo"));
-			standin2.setName("InterpreterTwo");
+			standin2.setName(vmTwoName);
 			standin2.convertToRealVM();
 
 			IVMInstallType myType = RubyRuntime.getVMInstallType(VM_TYPE_ID);
 			IVMInstall[] installs = myType.getVMInstalls();
 			assertEquals(2, installs.length);
-			assertEquals("InterpreterOne", installs[0].getName());
-			assertEquals("InterpreterTwo", installs[1].getName());
+			assertEquals(vmOneName, installs[0].getName());
+			assertEquals(vmTwoName, installs[1].getName());
 		} finally {
-			vmType.disposeVMInstall("InterpreterOne");
-			vmType.disposeVMInstall("InterpreterTwo");
+			vmType.disposeVMInstall(vmOneId);
+			vmType.disposeVMInstall(vmTwoId);
 		}
 	}
 
@@ -86,7 +90,7 @@ public class TC_RubyRuntime extends ModifyingResourceTest {
 			RubyRuntime.setDefaultVMInstall(one, null,true);
 			IPath vmOneLocation = folderOne.getLocation();
 			assertEquals(
-					"XML should indicate only one interpreter with it being the selected.",
+					"XML should indicate only one interpreter with it being the one selected.",
 					"<?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n" +
 					"<vmSettings defaultVM=\"43,org.rubypeople.rdt.launching.StandardVMType14," + vmOneId + "\">\r\n" +
 					"<vmType id=\"org.rubypeople.rdt.launching.StandardVMType\">\r\n" +

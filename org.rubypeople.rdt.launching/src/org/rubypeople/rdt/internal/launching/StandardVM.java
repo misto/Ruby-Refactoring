@@ -133,15 +133,15 @@ public class StandardVM extends AbstractVMInstall {
 	private IPath generateCoreStubs(File rubyExecutable) {
 		if (rubyExecutable == null) return null;
 		//locate the script to generate our core stubs
-		File file = LaunchingPlugin.getFileInPlugin(new Path("ruby/core_stubber.rb")); //$NON-NLS-1$
-		if (file.exists()) {	
-			IPath path = new Path(file.getParentFile().getAbsolutePath() + fgSeparator + getId() + fgSeparator + "lib"); //$NON-NLS-1$
-			if (path.toFile().exists()) {
-				return path; // we've already created the stubs for this VM
+		File coreStubber = LaunchingPlugin.getFileInPlugin(new Path("ruby" + fgSeparator + "core_stubber.rb")); //$NON-NLS-1$ //$NON-NLS-2$
+		if (coreStubber.exists()) {	
+			IPath stubFolder = new Path(coreStubber.getParentFile().getAbsolutePath() + fgSeparator + getId() + fgSeparator + "lib"); //$NON-NLS-1$
+			if (stubFolder.toFile().exists()) {
+				return stubFolder; // we've already created the stubs for this VM
 			}
-			path.toFile().mkdirs(); // Make the directory structure to throw the files into
+			stubFolder.toFile().mkdirs(); // Make the directory structure to throw the files into
 			String rubyExecutablePath = rubyExecutable.getAbsolutePath();
-			String[] cmdLine = new String[] {rubyExecutablePath, file.getAbsolutePath(), path.toOSString()};
+			String[] cmdLine = new String[] {rubyExecutablePath, coreStubber.getAbsolutePath(), stubFolder.toOSString()};
 			Process p = null;
 			try {
 				p = Runtime.getRuntime().exec(cmdLine);
@@ -156,7 +156,7 @@ public class StandardVM extends AbstractVMInstall {
 					} catch (InterruptedException e) {
 					}
 				}
-				return path;
+				return stubFolder;
 			} catch (IOException ioe) {
 				LaunchingPlugin.log(ioe);
 			} finally {
