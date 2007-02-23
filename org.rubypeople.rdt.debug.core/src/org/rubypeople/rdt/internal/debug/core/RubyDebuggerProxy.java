@@ -275,7 +275,7 @@ public class RubyDebuggerProxy {
 			try {
 				System.setProperty(DEBUGGER_ACTIVE_KEY, "true");
 				
-				// TODO
+				// TODO Update threads?
 				//getDebugTarget().updateThreads();
 				RdtDebugCorePlugin.debug("Waiting for breakpoints.");
 				while (true) {

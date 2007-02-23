@@ -248,7 +248,7 @@ public class RIView extends ViewPart implements RdocListener {
                     }
                 }
                 catch (IOException e) {
-                    // TODO
+                    RubyPlugin.log(e);
                 }
             }        
 

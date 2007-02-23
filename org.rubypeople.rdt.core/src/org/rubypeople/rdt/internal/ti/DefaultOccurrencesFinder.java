@@ -253,11 +253,7 @@ public class DefaultOccurrencesFinder extends AbstractOccurencesFinder {
 		// Find the search space
 		Node searchSpace = FirstPrecursorNodeLocator.Instance().findFirstPrecursor(root, orig.getPosition().getStartOffset(), new INodeAcceptor() {
 			public boolean doesAccept(Node node) {
-				return ((node instanceof DefnNode) || (node instanceof DefsNode) /*
-																					 * TODO:
-																					 * Block
-																					 * Body?
-																					 */);
+				return ((node instanceof DefnNode) || (node instanceof DefsNode) ); // TODO: Block Body?
 			}
 		});
 
@@ -302,11 +298,7 @@ public class DefaultOccurrencesFinder extends AbstractOccurencesFinder {
 		// Find the search space
 		Node searchSpace = FirstPrecursorNodeLocator.Instance().findFirstPrecursor(root, orig.getPosition().getStartOffset(), new INodeAcceptor() {
 			public boolean doesAccept(Node node) {
-				return ((node instanceof DefnNode) || (node instanceof DefsNode) /*
-																					 * TODO:
-																					 * Block
-																					 * Body?
-																					 */);
+				return ((node instanceof DefnNode) || (node instanceof DefsNode) ); // TODO: Block Body?
 			}
 		});
 

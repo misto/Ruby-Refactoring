@@ -103,7 +103,7 @@ public class RubySearchPage extends DialogPage implements ISearchPage, ISymbolTy
             settings.put("scope", scope); //$NON-NLS-1$
             settings.put("pattern", pattern); //$NON-NLS-1$
             settings.put("limitTo", limitTo); //$NON-NLS-1$
-            // TODO
+            // TODO set "rubyElement"
             // settings.put("rubyElement", rubyElement != null ?
             // rubyElement.getHandleIdentifier() : ""); //$NON-NLS-1$
             // //$NON-NLS-2$
@@ -146,7 +146,7 @@ public class RubySearchPage extends DialogPage implements ISearchPage, ISymbolTy
                 int scope = settings.getInt("scope"); //$NON-NLS-1$
                 int limitTo = settings.getInt("limitTo"); //$NON-NLS-1$
                 boolean isCaseSensitive = settings.getBoolean("isCaseSensitive"); //$NON-NLS-1$
-                // TODO
+                // TODO Get "rubyElement" setting
                 IRubyElement elem = null; // settings.get("rubyElement") ;
                 return new SearchPatternData(searchFor, limitTo, pattern, isCaseSensitive, scope,
                         workingSets);
@@ -391,7 +391,7 @@ public class RubySearchPage extends DialogPage implements ISearchPage, ISymbolTy
 
         // Pattern text + info
         Label label = new Label(result, SWT.LEFT);
-        // TODO
+        // TODO Use translated string
         label.setText("Expression"); //$NON-NLS-1$
         // label.setText(SearchMessages.SearchPage_expression_label);
         label.setLayoutData(new GridData(GridData.FILL, GridData.FILL, false, false, 2, 1));
@@ -419,11 +419,12 @@ public class RubySearchPage extends DialogPage implements ISearchPage, ISymbolTy
 
         // Ignore case checkbox
         fCaseSensitive = new Button(result, SWT.CHECK);
-        // TODO
+        // TODO Use translated string
         fCaseSensitive.setText("CaseSensitive"); //$NON-NLS-1$
         fCaseSensitive.addSelectionListener(new SelectionAdapter() {
 
             public void widgetSelected(SelectionEvent e) {
+            	// TODO Care about case sensitivity option
                 // fIsCaseSensitive = fCaseSensitive.getSelection();
             }
         });
@@ -435,7 +436,7 @@ public class RubySearchPage extends DialogPage implements ISearchPage, ISymbolTy
 
     // private boolean isValidSearchPattern() {
     // if (getPattern().length() == 0) { return false; }
-    // // TODO
+    // // TODO Validate search patterns
     // return true;
     // // return SearchPattern.createPattern(getPattern(), getSearchFor(),
     // // getLimitTo(), SearchPattern.R_EXACT_MATCH) != null;
