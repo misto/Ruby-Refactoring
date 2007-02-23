@@ -178,8 +178,6 @@ public class RubyElementLabels {
      * another project.
      */
     public final static long REFERENCED_ROOT_POST_QUALIFIED = 1L << 45;
-    
-	static public final long T_DECLARATION_POINT = 1L << 46;
 
     /**
      * Specified to use the resolved information of a IType, IMethod or IField.
@@ -540,20 +538,6 @@ public class RubyElementLabels {
             }
         }
         buf.append(typeName);
-        
-        if (getFlag(flags, T_DECLARATION_POINT)) {
-        	buf.append(" [");
-        	buf.append(type.getPath().makeRelative().toOSString());
-        	try {
-				int offset = type.getNameRange().getOffset();
-				buf.append(", offset: ");
-				buf.append(offset);
-			} catch (RubyModelException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}        
-			buf.append("] ");
-        }
 
         // post qualification
         if (getFlag(flags, T_POST_QUALIFIED)) {
@@ -574,6 +558,13 @@ public class RubyElementLabels {
                   getSourceFolderLabel(type.getSourceFolder(), flags & QUALIFIER_FLAGS, buf);
             	}
                 getRubyScriptLabel(type.getRubyScript(), (flags & QUALIFIER_FLAGS), buf);
+                try {
+    				int offset = type.getNameRange().getOffset();
+    				buf.append(", offset: ");
+    				buf.append(offset);
+    			} catch (RubyModelException e) {
+    				RubyPlugin.log(e);
+    			}        
             }
         }
     }

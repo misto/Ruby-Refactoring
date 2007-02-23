@@ -9,7 +9,6 @@ import org.rubypeople.rdt.internal.ui.viewsupport.AppearanceAwareLabelProvider;
 import org.rubypeople.rdt.internal.ui.viewsupport.RubyElementImageProvider;
 import org.rubypeople.rdt.internal.ui.viewsupport.RubyUILabelProvider;
 import org.rubypeople.rdt.ui.PreferenceConstants;
-import org.rubypeople.rdt.ui.RubyElementLabels;
 
 public class TypesView extends RubyBrowsingPart {
 
@@ -31,7 +30,7 @@ public class TypesView extends RubyBrowsingPart {
 	
 	protected RubyUILabelProvider createLabelProvider() {
 		return new AppearanceAwareLabelProvider(
-				AppearanceAwareLabelProvider.DEFAULT_TEXTFLAGS | RubyElementLabels.T_DECLARATION_POINT,
+				AppearanceAwareLabelProvider.DEFAULT_TEXTFLAGS,
 				AppearanceAwareLabelProvider.DEFAULT_IMAGEFLAGS
 						| RubyElementImageProvider.SMALL_ICONS);
 	}

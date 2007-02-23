@@ -23,7 +23,7 @@ import org.rubypeople.rdt.ui.RubyElementLabels;
  */
 public class AppearanceAwareLabelProvider extends RubyUILabelProvider implements IPropertyChangeListener {
 
-    public final static long DEFAULT_TEXTFLAGS= RubyElementLabels.M_PARAMETER_NAMES | RubyElementLabels.ROOT_VARIABLE | RubyElementLabels.REFERENCED_ROOT_POST_QUALIFIED;
+    public final static long DEFAULT_TEXTFLAGS= RubyElementLabels.M_PARAMETER_NAMES | RubyElementLabels.T_POST_QUALIFIED | RubyElementLabels.ROOT_VARIABLE | RubyElementLabels.REFERENCED_ROOT_POST_QUALIFIED;
     public final static int DEFAULT_IMAGEFLAGS= RubyElementImageProvider.OVERLAY_ICONS;
     
     private long fTextFlagMask;
