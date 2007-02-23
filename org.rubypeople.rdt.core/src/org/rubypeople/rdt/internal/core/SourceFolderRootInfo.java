@@ -149,24 +149,24 @@ public class SourceFolderRootInfo extends OpenableElementInfo {
 	 * Returns an array of non-java resources contained in the receiver.
 	 */
 	synchronized Object[] getNonRubyResources(IRubyProject project, IResource underlyingResource, SourceFolderRoot handle) {
-		Object[] nonJavaResources = this.fNonRubyResources;
-		if (nonJavaResources == null) {
-			nonJavaResources = this.computeNonRubyResources(project, underlyingResource, handle);
-			this.fNonRubyResources = nonJavaResources;
+		Object[] nonRubyResources = this.fNonRubyResources;
+		if (nonRubyResources == null) {
+			nonRubyResources = this.computeNonRubyResources(project, underlyingResource, handle);
+			this.fNonRubyResources = nonRubyResources;
 		}
-		return nonJavaResources;
+		return nonRubyResources;
 	}
 
-	/**
- * Compute the non-package resources of this package fragment root.
+/**
+ * Compute the non-ruby resources of this source folder root.
  */
 private Object[] computeNonRubyResources(IRubyProject project, IResource underlyingResource, SourceFolderRoot handle) {
-	Object[] nonJavaResources = NO_NON_RUBY_RESOURCES;
+	Object[] nonRubyResources = NO_NON_RUBY_RESOURCES;
 	try {
 		// the underlying resource may be a folder or a project (in the case that the project folder
-		// is actually the package fragment root)
+		// is actually the source folder root)
 		if (underlyingResource.getType() == IResource.FOLDER || underlyingResource.getType() == IResource.PROJECT) {
-			nonJavaResources = 
+			nonRubyResources = 
 				computeFolderNonRubyResources(
 					(RubyProject)project, 
 					(IContainer) underlyingResource,  
@@ -176,6 +176,6 @@ private Object[] computeNonRubyResources(IRubyProject project, IResource underly
 	} catch (RubyModelException e) {
 		// ignore
 	}
-	return nonJavaResources;
+	return nonRubyResources;
 }
 }

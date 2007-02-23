@@ -178,6 +178,12 @@ public class SourceFolderRoot extends Openable implements ISourceFolderRoot {
 	public int getElementType() {
 		return IRubyElement.SOURCE_FOLDER_ROOT;
 	}
+	
+	public String getElementName() {
+		if (this.resource instanceof IFolder)
+			return ((IFolder) this.resource).getName();
+		return ""; //$NON-NLS-1$
+	}
 
     public ISourceFolder createSourceFolder(String names, boolean force, IProgressMonitor monitor) throws RubyModelException {
     	CreateSourceFolderOperation op = new CreateSourceFolderOperation(this, names, force);

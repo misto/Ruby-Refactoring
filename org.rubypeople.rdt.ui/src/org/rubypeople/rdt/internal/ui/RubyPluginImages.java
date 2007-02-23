@@ -38,8 +38,6 @@ public class RubyPluginImages {
     public static final String IMG_MISC_PROTECTED= NAME_PREFIX + "methpro_obj.gif";         //$NON-NLS-1$
     public static final String IMG_MISC_PRIVATE= NAME_PREFIX + "methpri_obj.gif";       //$NON-NLS-1$
     
-    public static final String IMG_OBJS_EXTJAR_WSRC= NAME_PREFIX + "jar_lsrc_obj.gif";	//$NON-NLS-1$
-    
     public static final String IMG_OBJS_ERROR = NAME_PREFIX + "error_obj.gif";
     public static final String IMG_OBJS_WARNING = NAME_PREFIX + "warning_obj.gif";
     public static final String IMG_OBJS_INFO = NAME_PREFIX + "info_obj.gif";
@@ -52,6 +50,7 @@ public class RubyPluginImages {
     private static final String IMG_OBJS_MODULEALT= NAME_PREFIX + "modulefo_obj.gif";          //$NON-NLS-1$
     private static final String IMG_OBJS_RUBY_MODEL= NAME_PREFIX + "ruby_model_obj.gif"; //$NON-NLS-1$
     private static final String IMG_OBJS_SOURCE_FOLDER= NAME_PREFIX + "fldr_obj.gif"; //$NON-NLS-1$
+    private static final String IMG_OBJS_SOURCE_FOLDER_ROOT= NAME_PREFIX + "fldr_root_obj.gif"; //$NON-NLS-1$
     private static final String IMG_OBJS_SCRIPT= NAME_PREFIX + "rscript_obj.gif";                 //$NON-NLS-1$
     private static final String IMG_OBJS_RUBY_RESOURCE= NAME_PREFIX + "rscript_resource_obj.gif"; //$NON-NLS-1$      
     private static final String IMG_OBJS_UNKNOWN= NAME_PREFIX + "unknown_obj.gif"; //$NON-NLS-1$
@@ -88,8 +87,7 @@ public class RubyPluginImages {
     public static final ImageDescriptor DESC_OBJ_OVERRIDES= createUnManaged(T_OBJ, "over_co.gif");                      //$NON-NLS-1$
     public static final ImageDescriptor DESC_OBJ_IMPLEMENTS= createUnManaged(T_OBJ, "implm_co.gif");                //$NON-NLS-1$
 	public static final ImageDescriptor DESC_OBJS_LIBRARY= createManagedFromKey(T_OBJ, IMG_OBJS_LIBRARY);
-	public static final ImageDescriptor DESC_OBJS_EXTJAR_WSRC= createManagedFromKey(T_OBJ, IMG_OBJS_EXTJAR_WSRC);
-    
+
     public static final ImageDescriptor DESC_OVR_STATIC= createUnManaged(T_OVR, "static_co.gif");                       //$NON-NLS-1$
     public static final ImageDescriptor DESC_OVR_FINAL= createUnManaged(T_OVR, "final_co.gif");                         //$NON-NLS-1$
     public static final ImageDescriptor DESC_OVR_ABSTRACT= createUnManaged(T_OVR, "abstract_co.gif");                   //$NON-NLS-1$
@@ -113,6 +111,7 @@ public class RubyPluginImages {
              
     public static final ImageDescriptor DESC_OBJS_RUBY_MODEL= createManagedFromKey(T_OBJ, IMG_OBJS_RUBY_MODEL);
     public static final ImageDescriptor DESC_OBJS_SOURCE_FOLDER= createManagedFromKey(T_OBJ, IMG_OBJS_SOURCE_FOLDER);    
+    public static final ImageDescriptor DESC_OBJS_SOURCE_FOLDER_ROOT= createManagedFromKey(T_OBJ, IMG_OBJS_SOURCE_FOLDER_ROOT);    
     public static final ImageDescriptor DESC_OBJS_LOCAL_VAR = createManagedFromKey(T_OBJ, IMG_CTOOLS_RUBY_LOCAL_VAR);
     public static final ImageDescriptor DESC_OBJS_GLOBAL = createManagedFromKey(T_OBJ, IMG_CTOOLS_RUBY_GLOBAL);
     public static final ImageDescriptor DESC_OBJS_MODULE = createManagedFromKey(T_OBJ, IMG_OBJS_MODULE);

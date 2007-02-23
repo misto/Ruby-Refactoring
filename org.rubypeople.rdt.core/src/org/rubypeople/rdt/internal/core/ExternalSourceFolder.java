@@ -31,6 +31,10 @@ public class ExternalSourceFolder extends SourceFolder {
 	public boolean isReadOnly() {
 		return true;
 	}
+	
+	protected Object[] storedNonRubyResources() throws RubyModelException {
+		return ((ExternalSourceFolderInfo) getElementInfo()).getNonRubyResources();
+	}
 
 	protected boolean computeChildren(OpenableElementInfo info) {
 		ArrayList<IRubyElement> vChildren = new ArrayList<IRubyElement>();

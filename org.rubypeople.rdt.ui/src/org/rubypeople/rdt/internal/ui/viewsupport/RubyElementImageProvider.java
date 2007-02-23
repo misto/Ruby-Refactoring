@@ -26,6 +26,7 @@ import org.rubypeople.rdt.core.IMember;
 import org.rubypeople.rdt.core.IMethod;
 import org.rubypeople.rdt.core.IRubyElement;
 import org.rubypeople.rdt.core.IRubyProject;
+import org.rubypeople.rdt.core.ISourceFolderRoot;
 import org.rubypeople.rdt.core.IType;
 import org.rubypeople.rdt.core.RubyCore;
 import org.rubypeople.rdt.core.RubyModelException;
@@ -209,6 +210,15 @@ public class RubyElementImageProvider {
                 
             case IRubyElement.SOURCE_FOLDER:            	
                 return RubyPluginImages.DESC_OBJS_SOURCE_FOLDER;
+                
+            case IRubyElement.SOURCE_FOLDER_ROOT:            	
+				ISourceFolderRoot root= (ISourceFolderRoot) element;
+				if (root.isExternal()) {
+					return RubyPluginImages.DESC_OBJS_LIBRARY;
+				} else {
+					return RubyPluginImages.DESC_OBJS_SOURCE_FOLDER_ROOT;
+				}             
+                
 
             case IRubyElement.RUBY_PROJECT:
                 IRubyProject jp = (IRubyProject) element;

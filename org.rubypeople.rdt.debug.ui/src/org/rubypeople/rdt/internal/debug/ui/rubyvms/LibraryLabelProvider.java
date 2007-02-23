@@ -29,7 +29,7 @@ public class LibraryLabelProvider extends LabelProvider {
 	public Image getImage(Object element) {
 		if (element instanceof LibraryStandin) {
 			LibraryStandin library= (LibraryStandin) element;
-			String key = ISharedImages.IMG_OBJS_EXTERNAL_ARCHIVE;
+			String key = ISharedImages.IMG_OBJS_LIBRARY;
 			IStatus status = library.validate();
 			if (!status.isOK()) {
 				ImageDescriptor base = RubyUI.getSharedImages().getImageDescriptor(key);

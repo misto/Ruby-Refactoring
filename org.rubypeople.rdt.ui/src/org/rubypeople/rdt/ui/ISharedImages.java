@@ -11,12 +11,6 @@ public interface ISharedImages {
 	 */
 	public static final String IMG_OBJS_LIBRARY= RubyPluginImages.IMG_OBJS_LIBRARY;
 	
-	/** 
-	 * Key to access the shared image or image descriptor for external archives with source.
-	 * @since 0.9.0
-	 */
-	public static final String IMG_OBJS_EXTERNAL_ARCHIVE= RubyPluginImages.IMG_OBJS_EXTJAR_WSRC;
-
 	Image getImage(String key);
 
 	ImageDescriptor getImageDescriptor(String key);

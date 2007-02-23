@@ -26,6 +26,18 @@ public class ExternalSourceFolderRoot extends SourceFolderRoot implements ISourc
 		super(null, project);
 		this.folderPath = resource;
 	}
+	
+	public String getElementName() {
+		return this.folderPath.toPortableString();
+	}
+	
+	/**
+	 * Returns an array of non-ruby resources contained in the receiver.
+	 */
+	public Object[] getNonRubyResources() throws RubyModelException {
+		// We want to show non ruby resources of the default src folder at the root (see PR #1G58NB8)
+		return ((ExternalSourceFolder) getSourceFolder(CharOperation.NO_STRINGS)).storedNonRubyResources();
+	}
 
 	@Override
 	protected boolean computeChildren(OpenableElementInfo info, Map newElements) throws RubyModelException {
