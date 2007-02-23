@@ -1518,7 +1518,7 @@ public class RubyEditor extends RubyAbstractEditor {
 		void customizeDocumentCommand(IDocument document, DocumentCommand command);
 	}
 	
-	static class TabConverter implements ITextConverter {
+	public static class TabConverter implements ITextConverter {
 
 		private int fTabRatio;
 		private ILineTracker fLineTracker;

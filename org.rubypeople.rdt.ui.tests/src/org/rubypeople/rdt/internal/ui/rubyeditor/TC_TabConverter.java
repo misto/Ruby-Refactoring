@@ -2,6 +2,7 @@ package org.rubypeople.rdt.internal.ui.rubyeditor;
 
 import junit.framework.TestCase;
 
+import org.eclipse.jface.text.DefaultLineTracker;
 import org.eclipse.jface.text.Document;
 import org.eclipse.jface.text.DocumentCommand;
 import org.rubypeople.rdt.internal.ui.rubyeditor.RubyEditor.TabConverter;
@@ -55,11 +56,16 @@ public class TC_TabConverter extends TestCase {
 		TestDocumentCommand command = new TestDocumentCommand(currentOffset);
 		command.text = "\t";
 		Document document = new Document(TEST_TEXT);
+		DefaultLineTracker tracker = new DefaultLineTracker();
+		converter.setLineTracker(tracker);
 		
 		converter.customizeDocumentCommand(document, command);
 
 		String message = "Offset = "+currentOffset + "; tabWidth = "+spacesPerTab;
-		assertEquals(message, "     ".substring(0,expectedCountOfTabs), command.text);
+		if (spacesPerTab == 0)
+			assertEquals(message, "", command.text);
+		else
+			assertEquals(message, "     ".substring(0,expectedCountOfTabs), command.text);
 //		assertEquals("Full indent (" + spacesPerTab + ")", "     ".substring(0,spacesPerTab), expander.getFullIndent());
 	}
 	
