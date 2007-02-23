@@ -46,8 +46,7 @@ public class MockTreeViewer extends AbstractTreeViewer {
 	}
 
 	protected Item[] getChildren(Widget widget) {
-		// TODO Auto-generated method stub
-		return null;
+		return new Item[0];
 	}
 
 	protected boolean getExpanded(Item item) {
