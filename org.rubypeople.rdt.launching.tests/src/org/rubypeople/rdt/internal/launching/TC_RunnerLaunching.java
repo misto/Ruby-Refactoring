@@ -11,6 +11,7 @@ import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.Path;
 import org.eclipse.debug.core.DebugPlugin;
 import org.eclipse.debug.core.ILaunch;
 import org.eclipse.debug.core.ILaunchConfiguration;
@@ -78,22 +79,24 @@ public class TC_RunnerLaunching extends ModifyingResourceTest {
 	protected String getCommandLine(IProject project, String debugFile, boolean debug) {
 		StringBuffer buffer = new StringBuffer();
 		buffer.append(" \"");
-		buffer.append(interpreter.getInstallLocation());
-		buffer.append("\\bin\\ruby\" ");
+		buffer.append(new Path(interpreter.getInstallLocation().getAbsolutePath()).append("bin").append("ruby").toOSString());
+		buffer.append("\" ");
 		buffer.append(INTERPRETER_ARGUMENTS);
 		buffer.append(" -I \"");
 		buffer.append(project.getLocation().toOSString());
 		buffer.append("\"");
 		if (debug) {
 			buffer.append(" -I \"");
-			buffer.append(StandardVMDebugger.getDirectoryOfRubyDebuggerFile().replace('/', '\\'));
+			buffer.append(new Path(StandardVMDebugger.getDirectoryOfRubyDebuggerFile()).toOSString());
 			buffer.append("\"");
 			buffer.append(" -r");
 			buffer.append(debugFile);
 			buffer.append(" -rclassic-debug");			
 		}
 		buffer.append(" -- ");
-		buffer.append(RUBY_LIB_DIR + "\\" + RUBY_FILE_NAME);
+		buffer.append(RUBY_LIB_DIR);
+		buffer.append(File.separator);
+		buffer.append(RUBY_FILE_NAME);
 		buffer.append(' ');
 		buffer.append(PROGRAM_ARGUMENTS);
 		return buffer.toString();
