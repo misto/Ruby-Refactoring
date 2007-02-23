@@ -37,7 +37,7 @@ import org.rubypeople.rdt.core.RubyModelException;
 import org.rubypeople.rdt.internal.core.util.CharOperation;
 import org.rubypeople.rdt.internal.core.util.Util;
 
-public class AbstractRubyModelTest extends TestCase {
+public abstract class AbstractRubyModelTest extends TestCase {
 	
 	protected IRubyProject currentProject;
 	protected String endChar = ",";
