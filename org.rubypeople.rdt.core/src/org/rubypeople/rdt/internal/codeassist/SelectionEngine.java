@@ -25,6 +25,7 @@ import org.rubypeople.rdt.core.IParent;
 import org.rubypeople.rdt.core.IRubyElement;
 import org.rubypeople.rdt.core.IRubyScript;
 import org.rubypeople.rdt.core.IType;
+import org.rubypeople.rdt.core.RubyCore;
 import org.rubypeople.rdt.core.RubyModelException;
 import org.rubypeople.rdt.internal.core.parser.RubyParser;
 import org.rubypeople.rdt.internal.core.util.ASTUtil;
@@ -49,16 +50,11 @@ public class SelectionEngine {
 			String simpleName = ((Colon2Node)selected).getName();
 			String fullyQualifiedName = ASTUtil.getFullyQualifiedName((Colon2Node) selected);
 			IRubyElement element = findChild(simpleName, IRubyElement.TYPE, script);
-			if (element != null && parentsMatch((IType)element, fullyQualifiedName)) {
+			if (element != null && Util.parentsMatch((IType)element, fullyQualifiedName)) {
 			  return new IRubyElement[] { element };	
 			}
 			RubyElementRequestor completer = new RubyElementRequestor(script);
-			IType[] types = completer.findType(simpleName);
-			List<IType> matches = new ArrayList<IType>();
-			for (int i = 0; i < types.length; i++) {
-				if (parentsMatch(types[i], fullyQualifiedName)) matches.add(types[i]);
-			}
-			return matches.toArray(new IType[matches.size()]);
+			return completer.findType(fullyQualifiedName);
 		} 
 		if (selected instanceof ConstNode) {			
 			ConstNode constNode = (ConstNode) selected;
@@ -120,22 +116,6 @@ public class SelectionEngine {
 		return new IRubyElement[0];
 	}
 
-	private boolean parentsMatch(IType type, String fullyQualifiedName) {
-		String[] names = getTrimmedSimpleNames(fullyQualifiedName);
-		for (int i = names.length - 2; i >= 0; i--) { // Start at second last name piece, go all the way to first
-			IType parent = type.getDeclaringType();
-			if (parent == null || !names[i].equals(parent.getElementName())) {
-				return false;
-			}
-			type = parent;
-		}
-		return true;
-	}
-
-	private String[] getTrimmedSimpleNames(String fullyQualifiedName) {
-		return fullyQualifiedName.split("::");
-	}
-
 	private IRubyElement findChild(String name, int type,
 			IParent parent) {
 		try {
@@ -150,8 +130,7 @@ public class SelectionEngine {
 			    }
 			}
 		} catch (RubyModelException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			RubyCore.log(e);
 		}
 		return null;
 	}

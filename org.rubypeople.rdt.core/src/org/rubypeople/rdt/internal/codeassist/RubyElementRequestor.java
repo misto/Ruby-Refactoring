@@ -16,6 +16,7 @@ import org.rubypeople.rdt.core.IType;
 import org.rubypeople.rdt.core.RubyCore;
 import org.rubypeople.rdt.core.RubyModelException;
 import org.rubypeople.rdt.internal.core.search.ExperimentalIndex;
+import org.rubypeople.rdt.internal.core.util.Util;
 
 public class RubyElementRequestor {
 
@@ -27,7 +28,16 @@ public class RubyElementRequestor {
 		this.script = script;
 	}
 
-	public IType[] findType(String typeName) {
+	public IType[] findType(String fullyQualifiedName) {
+		IType[] types = findTypeWithSimpleName(Util.getSimpleName(fullyQualifiedName));
+		List<IType> matches = new ArrayList<IType>();
+		for (int i = 0; i < types.length; i++) {
+			if (Util.parentsMatch(types[i], fullyQualifiedName)) matches.add(types[i]);
+		}
+		return matches.toArray(new IType[matches.size()]);		
+	}
+		
+	private IType[] findTypeWithSimpleName(String typeName) {
 		List<IType> types = new ArrayList<IType>();
 		IRubyProject rubyProject = script.getRubyProject();
 		try {

@@ -20,6 +20,7 @@ import org.jruby.ast.LocalAsgnNode;
 import org.jruby.ast.LocalVarNode;
 import org.jruby.ast.Node;
 import org.jruby.ast.RootNode;
+import org.jruby.ast.VCallNode;
 import org.rubypeople.rdt.internal.core.parser.RubyParser;
 import org.rubypeople.rdt.internal.core.util.ASTUtil;
 import org.rubypeople.rdt.internal.ti.data.LiteralNodeTypeNames;
@@ -201,14 +202,18 @@ public class DefaultTypeInferrer implements ITypeInferrer {
 	}
 
 	private void tryLocalVarNode(Node node, List<ITypeGuess> guesses) {
+		if (node instanceof VCallNode) {
+		  // FIXME How do we handle local variables who show up as VCallNodes?	
+		  return;
+		}
+		
 		if (!(node instanceof LocalVarNode))
 			return;
 		LocalVarNode localVarNode = (LocalVarNode) node;
 		int nodeStart = node.getPosition().getStartOffset();
 		final String localVarName = TypeInferenceHelper.Instance().getVarName(localVarNode);
 
-		// See if it has been assigned to, earlier [todo: in this local
-		// scope].
+		// See if it has been assigned to, earlier [TODO: in this local scope].
 		// Find first assignment to this var name that occurs before the
 		// reference
 		// TODO: This will find assignments in other local scopes that
@@ -281,7 +286,7 @@ public class DefaultTypeInferrer implements ITypeInferrer {
 			if (callNode.getReceiverNode() instanceof ConstNode) {
 				name = ((ConstNode) callNode.getReceiverNode()).getName();
 			} else if (callNode.getReceiverNode() instanceof Colon2Node) {
-				ASTUtil.getFullyQualifiedName((Colon2Node) node);
+				name = ASTUtil.getFullyQualifiedName((Colon2Node) callNode.getReceiverNode());
 			}
 			if (name != null)
 				guesses.add(new BasicTypeGuess(name, 100));

@@ -29,6 +29,7 @@ import org.eclipse.core.runtime.preferences.InstanceScope;
 import org.rubypeople.rdt.core.IRubyElement;
 import org.rubypeople.rdt.core.IRubyModelStatusConstants;
 import org.rubypeople.rdt.core.IRubyProject;
+import org.rubypeople.rdt.core.IType;
 import org.rubypeople.rdt.core.RubyConventions;
 import org.rubypeople.rdt.core.RubyCore;
 import org.rubypeople.rdt.core.RubyModelException;
@@ -42,6 +43,7 @@ public class Util {
 	private static boolean ENABLE_RUBY_LIKE_EXTENSIONS = true;
 	private static char[][] RUBY_LIKE_EXTENSIONS;
 	private static char[][] RUBY_LIKE_FILENAMES;
+	private static final String NAMESPACE_DELIMETER = "::";
 
     private Util() {
         // cannot be instantiated
@@ -767,6 +769,27 @@ public class Util {
 			}
 		}
 		return true;
+	}
+
+	public static String getSimpleName(String fullyQualifiedName) {
+		String[] names = getTypeNameParts(fullyQualifiedName);
+		return names[names.length - 1];
+	}
+
+	public static boolean parentsMatch(IType type, String fullyQualifiedName) {
+		String[] names = getTypeNameParts(fullyQualifiedName);
+		for (int i = names.length - 2; i >= 0; i--) { // Start at second last name piece, go all the way to first
+			IType parent = type.getDeclaringType();
+			if (parent == null || !names[i].equals(parent.getElementName())) {
+				return false;
+			}
+			type = parent;
+		}
+		return true;
+	}
+	
+	private static String[] getTypeNameParts(String fullyQualifiedName) {
+		return fullyQualifiedName.split(NAMESPACE_DELIMETER);
 	}
 
 }
