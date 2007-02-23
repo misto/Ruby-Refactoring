@@ -28,7 +28,7 @@ import org.jruby.ast.ReturnNode;
 import org.jruby.ast.SelfNode;
 import org.jruby.ast.VCallNode;
 import org.rubypeople.rdt.internal.core.parser.RubyParser;
-import org.rubypeople.rdt.internal.ti.data.ConstNodeTypeNames;
+import org.rubypeople.rdt.internal.ti.data.LiteralNodeTypeNames;
 import org.rubypeople.rdt.internal.ti.util.ClosestSpanningNodeLocator;
 import org.rubypeople.rdt.internal.ti.util.INodeAcceptor;
 import org.rubypeople.rdt.internal.ti.util.MethodDefinitionLocator;
@@ -194,15 +194,15 @@ public class DataFlowTypeInferrer implements ITypeInferrer {
 	}
 
 	private boolean isConstantNode(Node node) {		
-		return ( node instanceof ConstNode ) || ( null != ConstNodeTypeNames.get(node.getClass().getSimpleName() ) );
+		return ( node instanceof ConstNode ) || ( null != LiteralNodeTypeNames.get(node.getClass().getSimpleName() ) );
 	}
 	
-	// Look up from ConstNodeTypeNames
+	// Look up from LiteralNodeTypeNames
 	private ITypeGuess getConstantNodeType(Node node) {
 		if ( node instanceof ConstNode ) {
 			return new BasicTypeGuess( ((ConstNode)node).getName(), 100 );
 		} else {
-			return new BasicTypeGuess( ConstNodeTypeNames.get(node.getClass().getSimpleName()), 100 );
+			return new BasicTypeGuess( LiteralNodeTypeNames.get(node.getClass().getSimpleName()), 100 );
 		}
 	}
 	

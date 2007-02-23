@@ -12,7 +12,7 @@ import org.jruby.ast.ModuleNode;
 import org.jruby.ast.Node;
 import org.jruby.evaluator.Instruction;
 import org.rubypeople.rdt.internal.core.parser.InOrderVisitor;
-import org.rubypeople.rdt.internal.ti.data.ConstNodeTypeNames;
+import org.rubypeople.rdt.internal.ti.data.LiteralNodeTypeNames;
 import org.rubypeople.rdt.internal.ti.data.TypicalMethodReturnNames;
 
 public class TypeInferenceVisitor extends InOrderVisitor {
@@ -180,7 +180,7 @@ public class TypeInferenceVisitor extends InOrderVisitor {
 		Node valueNode = iVisited.getValueNode();
 
 		// Try seeing if the rvalue is a constant (5, "foo", [1,2,3], etc.)
-		String concreteGuess = ConstNodeTypeNames.get(valueNode.getClass().getSimpleName()); 
+		String concreteGuess = LiteralNodeTypeNames.get(valueNode.getClass().getSimpleName()); 
 		if ( concreteGuess != null )
 		{
     		var.getTypeGuesses().add( new BasicTypeGuess( concreteGuess, 100 ) );

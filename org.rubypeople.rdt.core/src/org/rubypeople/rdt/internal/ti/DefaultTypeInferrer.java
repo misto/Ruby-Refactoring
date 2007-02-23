@@ -7,6 +7,7 @@ import java.util.List;
 import org.jruby.ast.ArgsNode;
 import org.jruby.ast.ArgumentNode;
 import org.jruby.ast.CallNode;
+import org.jruby.ast.Colon2Node;
 import org.jruby.ast.ConstNode;
 import org.jruby.ast.DefnNode;
 import org.jruby.ast.DefsNode;
@@ -20,7 +21,8 @@ import org.jruby.ast.LocalVarNode;
 import org.jruby.ast.Node;
 import org.jruby.ast.RootNode;
 import org.rubypeople.rdt.internal.core.parser.RubyParser;
-import org.rubypeople.rdt.internal.ti.data.ConstNodeTypeNames;
+import org.rubypeople.rdt.internal.core.util.ASTUtil;
+import org.rubypeople.rdt.internal.ti.data.LiteralNodeTypeNames;
 import org.rubypeople.rdt.internal.ti.data.TypicalMethodReturnNames;
 import org.rubypeople.rdt.internal.ti.util.FirstPrecursorNodeLocator;
 import org.rubypeople.rdt.internal.ti.util.INodeAcceptor;
@@ -28,6 +30,7 @@ import org.rubypeople.rdt.internal.ti.util.OffsetNodeLocator;
 
 public class DefaultTypeInferrer implements ITypeInferrer {
 
+	private static final String CONSTRUCTOR_INVOKE_NAME = "new";
 	private RootNode rootNode;
 
 	/**
@@ -55,7 +58,7 @@ public class DefaultTypeInferrer implements ITypeInferrer {
 	 */
 	private List<ITypeGuess> infer(Node node) {
 		List<ITypeGuess> guesses = new LinkedList<ITypeGuess>();
-		tryConstantNode(node, guesses);
+		tryLiteralNode(node, guesses);
 		tryAsgnNode(node, guesses);
 
 		// TODO refactor these 3 by common features into 1 (or 1+3) method(s)
@@ -77,16 +80,16 @@ public class DefaultTypeInferrer implements ITypeInferrer {
 	}
 
 	/**
-	 * Infers type if node is a constant node; i.e. 5, 'foo', [1,2,3]
+	 * Infers type if node is a literal node; i.e. 5, 'foo', [1,2,3]
 	 * 
 	 * @param node
 	 *            Node to infer type of.
 	 * @param guesses
 	 *            List of ITypeGuess objects to insert guesses into.
 	 */
-	private void tryConstantNode(Node node, List<ITypeGuess> guesses) {
+	private void tryLiteralNode(Node node, List<ITypeGuess> guesses) {
 		// Try seeing if the rvalue is a constant (5, "foo", [1,2,3], etc.)
-		String concreteGuess = ConstNodeTypeNames.get(node.getClass().getSimpleName());
+		String concreteGuess = LiteralNodeTypeNames.get(node.getClass().getSimpleName());
 		if (concreteGuess != null) {
 			guesses.add(new BasicTypeGuess(concreteGuess, 100));
 		}
@@ -119,184 +122,176 @@ public class DefaultTypeInferrer implements ITypeInferrer {
 	}
 
 	private void tryInstVarNode(Node node, List<ITypeGuess> guesses) {
-		if (node instanceof InstVarNode) {
-			final InstVarNode instVarNode = (InstVarNode) node;
-			int nodeStart = node.getPosition().getStartOffset();
+		if (!(node instanceof InstVarNode))
+			return;
+		final InstVarNode instVarNode = (InstVarNode) node;
+		int nodeStart = node.getPosition().getStartOffset();
 
-			// todo: see if there is attr_reader/attr_writer, maybe?
-			// todo: find calls to the reader/writers
-			// todo: for STI on InstVar, find references within this ClassNode
-			// to this InstVar... record 'em
+		// TODO: see if there is attr_reader/attr_writer, maybe?
+		// TODO: find calls to the reader/writers
+		// TODO: for STI on InstVar, find references within this ClassNode
+		// to this InstVar... record 'em
 
-			// Find first assignment to this var name that occurs before the
-			// reference
-			// todo: This will find assignments in other local scopes that
-			// precede this reference but have the same variable name.
-			// To mitigate, ensure that the closest spanning ScopeNode for both
-			// this LocalVarNode and the AsgnNode are the name ScopeNode.
-			// Or scopingNode. Still not sure whether IterNodes count or not...
-			// silly block-local-var ambiguity ;)
-			Node initialAssignmentNode = FirstPrecursorNodeLocator.Instance().findFirstPrecursor(rootNode, nodeStart, new INodeAcceptor() {
-				public boolean doesAccept(Node node) {
-					String name = null;
-					if (node instanceof LocalAsgnNode)
-						name = ((LocalAsgnNode) node).getName();
-					if (node instanceof InstAsgnNode)
-						name = ((InstAsgnNode) node).getName();
-					if (node instanceof GlobalAsgnNode)
-						name = ((GlobalAsgnNode) node).getName();
-					return (name != null && name.equals(instVarNode.getName()));
-					/**
-					 * refactor to common INodeAcceptor for
-					 * instVarName,localVarName,globalVarName
-					 */
-				}
-			});
-			if (initialAssignmentNode != null) {
-				tryAsgnNode(initialAssignmentNode, guesses);
+		// Find first assignment to this var name that occurs before the
+		// reference
+		// todo: This will find assignments in other local scopes that
+		// precede this reference but have the same variable name.
+		// To mitigate, ensure that the closest spanning ScopeNode for both
+		// this LocalVarNode and the AsgnNode are the name ScopeNode.
+		// Or scopingNode. Still not sure whether IterNodes count or not...
+		// silly block-local-var ambiguity ;)
+		Node initialAssignmentNode = FirstPrecursorNodeLocator.Instance().findFirstPrecursor(rootNode, nodeStart, new INodeAcceptor() {
+			public boolean doesAccept(Node node) {
+				String name = null;
+				if (node instanceof LocalAsgnNode)
+					name = ((LocalAsgnNode) node).getName();
+				if (node instanceof InstAsgnNode)
+					name = ((InstAsgnNode) node).getName();
+				if (node instanceof GlobalAsgnNode)
+					name = ((GlobalAsgnNode) node).getName();
+				return (name != null && name.equals(instVarNode.getName()));
+				/**
+				 * refactor to common INodeAcceptor for
+				 * instVarName,localVarName,globalVarName
+				 */
 			}
+		});
+		if (initialAssignmentNode != null) {
+			tryAsgnNode(initialAssignmentNode, guesses);
 		}
 	}
 
 	private void tryGlobalVarNode(Node node, List<ITypeGuess> guesses) {
-		if (node instanceof GlobalVarNode) {
-			final GlobalVarNode globalVarNode = (GlobalVarNode) node;
-			int nodeStart = node.getPosition().getStartOffset();
+		if (!(node instanceof GlobalVarNode))
+			return;
+		final GlobalVarNode globalVarNode = (GlobalVarNode) node;
+		int nodeStart = node.getPosition().getStartOffset();
 
-			// todo: for STI on GlobalVar, find references within this ClassNode
-			// to this GlobalVar... record 'em
-			// todo: p.s. globals are low-priority.
+		// TODO: for STI on GlobalVar, find references within this ClassNode
+		// to this GlobalVar... record 'em
+		// TODO: p.s. globals are low-priority.
 
-			// Find first assignment to this var name that occurs before the
-			// reference
-			// todo: This will find assignments in other local scopes that
-			// precede this reference but have the same variable name.
-			// To mitigate, ensure that the closest spanning ScopeNode for both
-			// this LocalVarNode and the AsgnNode are the name ScopeNode.
-			// Or scopingNode. Still not sure whether IterNodes count or not...
-			// silly block-local-var ambiguity ;)
-			Node initialAssignmentNode = FirstPrecursorNodeLocator.Instance().findFirstPrecursor(rootNode, nodeStart, new INodeAcceptor() {
-				public boolean doesAccept(Node node) {
-					String name = null;
-					if (node instanceof LocalAsgnNode)
-						name = ((LocalAsgnNode) node).getName();
-					if (node instanceof InstAsgnNode)
-						name = ((InstAsgnNode) node).getName();
-					if (node instanceof GlobalAsgnNode)
-						name = ((GlobalAsgnNode) node).getName();
-					return (name != null && name.equals(globalVarNode.getName()));
-					/**
-					 * refactor to common INodeAcceptor for
-					 * instVarName,localVarName,globalVarName
-					 */
-				}
-			});
-			if (initialAssignmentNode != null) {
-				tryAsgnNode(initialAssignmentNode, guesses);
+		// Find first assignment to this var name that occurs before the
+		// reference
+		// TODO: This will find assignments in other local scopes that
+		// precede this reference but have the same variable name.
+		// To mitigate, ensure that the closest spanning ScopeNode for both
+		// this LocalVarNode and the AsgnNode are the name ScopeNode.
+		// Or scopingNode. Still not sure whether IterNodes count or not...
+		// silly block-local-var ambiguity ;)
+		Node initialAssignmentNode = FirstPrecursorNodeLocator.Instance().findFirstPrecursor(rootNode, nodeStart, new INodeAcceptor() {
+			public boolean doesAccept(Node node) {
+				String name = null;
+				if (node instanceof LocalAsgnNode)
+					name = ((LocalAsgnNode) node).getName();
+				if (node instanceof InstAsgnNode)
+					name = ((InstAsgnNode) node).getName();
+				if (node instanceof GlobalAsgnNode)
+					name = ((GlobalAsgnNode) node).getName();
+				return (name != null && name.equals(globalVarNode.getName()));
+				/**
+				 * refactor to common INodeAcceptor for
+				 * instVarName,localVarName,globalVarName
+				 */
 			}
+		});
+		if (initialAssignmentNode != null) {
+			tryAsgnNode(initialAssignmentNode, guesses);
 		}
 	}
 
 	private void tryLocalVarNode(Node node, List<ITypeGuess> guesses) {
-		// System.out.println(node.getClass().getName());
-		if (node instanceof LocalVarNode) {
-			LocalVarNode localVarNode = (LocalVarNode) node;
-			int nodeStart = node.getPosition().getStartOffset();
-			final String localVarName = TypeInferenceHelper.Instance().getVarName(localVarNode);
+		if (!(node instanceof LocalVarNode))
+			return;
+		LocalVarNode localVarNode = (LocalVarNode) node;
+		int nodeStart = node.getPosition().getStartOffset();
+		final String localVarName = TypeInferenceHelper.Instance().getVarName(localVarNode);
 
-			// See if it has been assigned to, earlier [todo: in this local
-			// scope].
-			// Find first assignment to this var name that occurs before the
-			// reference
-			// todo: This will find assignments in other local scopes that
-			// precede this reference but have the same variable name.
-			// To mitigate, ensure that the closest spanning ScopeNode for both
-			// this LocalVarNode and the AsgnNode are the name ScopeNode.
-			// Or scopingNode. Still not sure whether IterNodes count or not...
-			// silly block-local-var ambiguity ;)
-			Node initialAssignmentNode = FirstPrecursorNodeLocator.Instance().findFirstPrecursor(rootNode, nodeStart, new INodeAcceptor() {
-				public boolean doesAccept(Node node) {
-					String name = null;
-					if (node instanceof LocalAsgnNode)
-						name = ((LocalAsgnNode) node).getName();
-					if (node instanceof InstAsgnNode)
-						name = ((InstAsgnNode) node).getName();
-					if (node instanceof GlobalAsgnNode)
-						name = ((GlobalAsgnNode) node).getName();
-					return (name != null && name.equals(localVarName));
-				}
-			});
-			if (initialAssignmentNode != null) {
-				tryAsgnNode(initialAssignmentNode, guesses);
+		// See if it has been assigned to, earlier [todo: in this local
+		// scope].
+		// Find first assignment to this var name that occurs before the
+		// reference
+		// TODO: This will find assignments in other local scopes that
+		// precede this reference but have the same variable name.
+		// To mitigate, ensure that the closest spanning ScopeNode for both
+		// this LocalVarNode and the AsgnNode are the name ScopeNode.
+		// Or scopingNode. Still not sure whether IterNodes count or not...
+		// silly block-local-var ambiguity ;)
+		Node initialAssignmentNode = FirstPrecursorNodeLocator.Instance().findFirstPrecursor(rootNode, nodeStart, new INodeAcceptor() {
+			public boolean doesAccept(Node node) {
+				String name = null;
+				if (node instanceof LocalAsgnNode)
+					name = ((LocalAsgnNode) node).getName();
+				if (node instanceof InstAsgnNode)
+					name = ((InstAsgnNode) node).getName();
+				if (node instanceof GlobalAsgnNode)
+					name = ((GlobalAsgnNode) node).getName();
+				return (name != null && name.equals(localVarName));
 			}
-			// See if it is a param into this scope
-			ArgsNode argsNode = (ArgsNode) FirstPrecursorNodeLocator.Instance().findFirstPrecursor(rootNode, nodeStart, new INodeAcceptor() {
+		});
+		if (initialAssignmentNode != null) {
+			tryAsgnNode(initialAssignmentNode, guesses);
+		}
+		// See if it is a param into this scope
+		ArgsNode argsNode = (ArgsNode) FirstPrecursorNodeLocator.Instance().findFirstPrecursor(rootNode, nodeStart, new INodeAcceptor() {
+			public boolean doesAccept(Node node) {
+				return ((node instanceof ArgsNode) && (doesArgsNodeContainsVariable((ArgsNode) node, localVarName)));
+			}
+		});
+		// If so, find its enclosing method
+		if (argsNode != null) {
+			// Find enclosing method
+			Node defNode = FirstPrecursorNodeLocator.Instance().findFirstPrecursor(rootNode, nodeStart, new INodeAcceptor() {
 				public boolean doesAccept(Node node) {
-					return ((node instanceof ArgsNode) && (doesArgsNodeContainsVariable((ArgsNode) node, localVarName)));
+					ArgsNode argsNode = null;
+					if (node instanceof DefnNode)
+						argsNode = ((DefnNode) node).getArgsNode();
+					if (node instanceof DefsNode)
+						argsNode = ((DefsNode) node).getArgsNode();
+					return ((argsNode != null) && (doesArgsNodeContainsVariable(argsNode, localVarName)));
 				}
 			});
-			// If so, find its enclosing method
-			if (argsNode != null) {
-				int argNumber = getArgumentIndex(argsNode, localVarName);
-				// System.out.println("Variable " + localVarName + " is the " +
-				// argNumber + "th argument to the enclosing method ");
-
-				// Find enclosing method
-				Node defNode = FirstPrecursorNodeLocator.Instance().findFirstPrecursor(rootNode, nodeStart, new INodeAcceptor() {
-					public boolean doesAccept(Node node) {
-						// System.out.println("Looking for enclosing method,
-						// checking: " + node.getClass().getName() + "[" +
-						// node.getPosition().getStartOffset() + ".." +
-						// node.getPosition().getEndOffset() + "]" );
-						ArgsNode argsNode = null;
-						if (node instanceof DefnNode)
-							argsNode = ((DefnNode) node).getArgsNode();
-						if (node instanceof DefsNode)
-							argsNode = ((DefsNode) node).getArgsNode();
-						return ((argsNode != null) && (doesArgsNodeContainsVariable(argsNode, localVarName)));
-					}
-				});
-				if (defNode != null) {
-					String methodName = null;
-					if (defNode instanceof DefnNode)
-						methodName = ((DefnNode) defNode).getName();
-					if (defNode instanceof DefsNode)
-						methodName = ((DefsNode) defNode).getName();
-
-					// System.out.println("Variable " + localVarName + " is the
-					// " + argNumber + "th argument to method " + methodName );
-
-					// Find all invocations of the surrounding method.
-					// todo: from easiest to hardest:
-					// It may be a global function, where simply a CallNode
-					// where method name must be matched.
-					// It may be a DefsNode static class method, where a
-					// CallNode whose receiverNode is a ConstNode whose name is
-					// the surrounding class
-					// It may be an DefnNode method defined in a class, where a
-					// CallNode whose receiverNode must be type-matched to the
-					// surrounding class
-
-				}
+			if (defNode != null) {
+				String methodName = null;
+				if (defNode instanceof DefnNode)
+					methodName = ((DefnNode) defNode).getName();
+				if (defNode instanceof DefsNode)
+					methodName = ((DefsNode) defNode).getName();
+				// Find all invocations of the surrounding method.
+				// TODO: from easiest to hardest:
+				// It may be a global function, where simply a CallNode
+				// where method name must be matched.
+				// It may be a DefsNode static class method, where a
+				// CallNode whose receiverNode is a ConstNode whose name is
+				// the surrounding class
+				// It may be an DefnNode method defined in a class, where a
+				// CallNode whose receiverNode must be type-matched to the
+				// surrounding class
 			}
 		}
 	}
 
 	private void tryWellKnownMethodCalls(Node node, List<ITypeGuess> guesses) {
-		if (node instanceof CallNode) {
-			CallNode callNode = (CallNode) node;
-
-			String method = callNode.getName();
-			if (method.equals("new") && callNode.getReceiverNode() instanceof ConstNode) {
-				guesses.add(new BasicTypeGuess(((ConstNode) callNode.getReceiverNode()).getName(), 100));
-			} else {
-				// todo: this NEEDS to be done with a multimap and various
-				// confidences for each. i.e. X.slice, X is 50/50 Array or
-				// String
-				String methodReturnTypeGuess = TypicalMethodReturnNames.get(method);
-				if (methodReturnTypeGuess != null) {
-					guesses.add(new BasicTypeGuess(methodReturnTypeGuess, 100));
-				}
+		if (!(node instanceof CallNode))
+			return;
+		CallNode callNode = (CallNode) node;
+		String method = callNode.getName();
+		if (method.equals(CONSTRUCTOR_INVOKE_NAME)) {
+			String name = null;
+			if (callNode.getReceiverNode() instanceof ConstNode) {
+				name = ((ConstNode) callNode.getReceiverNode()).getName();
+			} else if (callNode.getReceiverNode() instanceof Colon2Node) {
+				ASTUtil.getFullyQualifiedName((Colon2Node) node);
+			}
+			if (name != null)
+				guesses.add(new BasicTypeGuess(name, 100));
+		} else {
+			// TODO: this NEEDS to be done with a multimap and various
+			// confidences for each. i.e. X.slice, X is 50/50 Array or
+			// String
+			String methodReturnTypeGuess = TypicalMethodReturnNames.get(method);
+			if (methodReturnTypeGuess != null) {
+				guesses.add(new BasicTypeGuess(methodReturnTypeGuess, 100));
 			}
 		}
 	}
