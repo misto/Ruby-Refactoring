@@ -10,7 +10,7 @@ import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.Path;
 
-public class ModifyingResourceTest extends AbstractRubyModelTest {
+public abstract class ModifyingResourceTest extends AbstractRubyModelTest {
 	
 	public ModifyingResourceTest(String name) {
 		super(name);
