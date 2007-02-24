@@ -7,6 +7,7 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
 import org.rubypeople.rdt.core.tests.ModifyingResourceTest;
+import org.rubypeople.rdt.core.tests.util.Util;
 import org.rubypeople.rdt.launching.IVMInstall;
 import org.rubypeople.rdt.launching.IVMInstallType;
 import org.rubypeople.rdt.launching.RubyRuntime;
@@ -27,8 +28,13 @@ public class TC_RubyRuntime extends ModifyingResourceTest {
 	@Override
 	protected void setUp() throws Exception {
 		super.setUp();
+		RubyRuntime.getVMInstallTypes();
 		vmType = RubyRuntime.getVMInstallType(VM_TYPE_ID);
 		RubyRuntime.setDefaultVMInstall(null, null, true);
+		IVMInstall[] installs = vmType.getVMInstalls();
+		for (int i = 0; i < installs.length; i++) {
+			vmType.disposeVMInstall(installs[i].getId());
+		}
 		LaunchingPlugin.getDefault().setIgnoreVMDefPropertyChangeEvents(true);
 		createProject("/rubyRuntime");
 		folderOne = createFolder("/rubyRuntime/interpreterOne");
@@ -43,11 +49,15 @@ public class TC_RubyRuntime extends ModifyingResourceTest {
 	
 	@Override
 	protected void tearDown() throws Exception {
-		super.tearDown();
-		vmType = null;
 		RubyRuntime.setDefaultVMInstall(null, null, true);
+		IVMInstall[] installs = vmType.getVMInstalls();
+		for (int i = 0; i < installs.length; i++) {
+			vmType.disposeVMInstall(installs[i].getId());
+		}
+		vmType = null;
 		RubyRuntime.getPreferences().setValue(RubyRuntime.PREF_VM_XML, "");
 		deleteProject("/rubyRuntime");
+		super.tearDown();
 	}
 
 	public void testGetInstalledInterpreters() {
@@ -57,17 +67,16 @@ public class TC_RubyRuntime extends ModifyingResourceTest {
 		String vmTwoId = vmTwoName;
 		try {
 			VMStandin standin = new VMStandin(vmType, vmOneId);
-			standin.setInstallLocation(new File("C:/RubyInstallRootOne"));
+			standin.setInstallLocation(folderOne.getLocation().toFile());
 			standin.setName(vmOneName);
 			standin.convertToRealVM();
 
 			VMStandin standin2 = new VMStandin(vmType, vmTwoId);
-			standin2.setInstallLocation(new File("C:/RubyInstallRootTwo"));
+			standin2.setInstallLocation(folderTwo.getLocation().toFile());
 			standin2.setName(vmTwoName);
 			standin2.convertToRealVM();
 
-			IVMInstallType myType = RubyRuntime.getVMInstallType(VM_TYPE_ID);
-			IVMInstall[] installs = myType.getVMInstalls();
+			IVMInstall[] installs = vmType.getVMInstalls();
 			assertEquals(2, installs.length);
 			assertEquals(vmOneName, installs[0].getName());
 			assertEquals(vmTwoName, installs[1].getName());
@@ -86,46 +95,50 @@ public class TC_RubyRuntime extends ModifyingResourceTest {
 			VMStandin standin = new VMStandin(vmType, vmOneId);
 			standin.setInstallLocation(folderOne.getLocation().toFile());
 			standin.setName(vmOneName);
+			RubyRuntime.getVMInstallTypes();
 			IVMInstall one = standin.convertToRealVM();
 			RubyRuntime.setDefaultVMInstall(one, null,true);
+			assertEquals(1, vmType.getVMInstalls().length);
 			IPath vmOneLocation = folderOne.getLocation();
 			assertEquals(
 					"XML should indicate only one interpreter with it being the one selected.",
-					"<?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n" +
+					Util.convertToIndependantLineDelimiter("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n" +
 					"<vmSettings defaultVM=\"43,org.rubypeople.rdt.launching.StandardVMType14," + vmOneId + "\">\r\n" +
 					"<vmType id=\"org.rubypeople.rdt.launching.StandardVMType\">\r\n" +
 					vmToXML(vmOneId, vmOneName, vmOneLocation) +
 					"</vmType>\r\n" +
-					"</vmSettings>\r\n",
-					getVMsXML());			
+					"</vmSettings>\r\n"),
+					Util.convertToIndependantLineDelimiter(getVMsXML()));			
 			IPath vmTwoLocation = folderTwo.getLocation();
 			VMStandin standin2 = new VMStandin(vmType, vmTwoId);
 			standin2.setInstallLocation(vmTwoLocation.toFile());
 			standin2.setName(vmTwoName);
 			IVMInstall two = standin2.convertToRealVM();
 			RubyRuntime.saveVMConfiguration();
+			assertEquals(2, vmType.getVMInstalls().length);
 			assertEquals(
 					"XML should indicate both interpreters with the first one being selected.",
-					"<?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n" +
+					Util.convertToIndependantLineDelimiter("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n" +
 					"<vmSettings defaultVM=\"43,org.rubypeople.rdt.launching.StandardVMType14," + vmOneId + "\">\r\n" +
 					"<vmType id=\"org.rubypeople.rdt.launching.StandardVMType\">\r\n" +
 					vmToXML(vmOneId, vmOneName, vmOneLocation) +
 					vmToXML(vmTwoId, vmTwoName, vmTwoLocation) +
 					"</vmType>\r\n" +
-					"</vmSettings>\r\n",
-					getVMsXML());
+					"</vmSettings>\r\n"),
+					Util.convertToIndependantLineDelimiter(getVMsXML()));
 
 			RubyRuntime.setDefaultVMInstall(two, null,true);
+			assertEquals(2, vmType.getVMInstalls().length);
 			assertEquals(
 					"XML should indicate both interpreters with the second one being selected.",
-					"<?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n" +
+					Util.convertToIndependantLineDelimiter("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n" +
 					"<vmSettings defaultVM=\"" + RubyRuntime.getCompositeIdFromVM(standin2) + "\">\r\n" +
 					"<vmType id=\"org.rubypeople.rdt.launching.StandardVMType\">\r\n" +
 					vmToXML(vmOneId, vmOneName, vmOneLocation) +
 					vmToXML(vmTwoId, vmTwoName, vmTwoLocation) +
 					"</vmType>\r\n" +
-					"</vmSettings>\r\n",
-					getVMsXML());
+					"</vmSettings>\r\n"),
+					Util.convertToIndependantLineDelimiter(getVMsXML()));
 		} finally {
 			vmType.disposeVMInstall(vmOneId);
 			vmType.disposeVMInstall(vmTwoId);
@@ -152,7 +165,7 @@ public class TC_RubyRuntime extends ModifyingResourceTest {
 		xml.append("<libraryLocation src=\"");
 		xml.append(location.toPortableString());
 		xml.append("/lib/ruby/1.8\"/>\r\n");
-		File file = LaunchingPlugin.getFileInPlugin(new Path("ruby/" + id + "/lib"));
+		File file = LaunchingPlugin.getFileInPlugin(new Path("ruby" + File.separator + id + File.separator + "lib"));
 		xml.append("<libraryLocation src=\"");
 		xml.append(Path.fromOSString(file.toString()).toPortableString());
 		xml.append("\"/>\r\n");
