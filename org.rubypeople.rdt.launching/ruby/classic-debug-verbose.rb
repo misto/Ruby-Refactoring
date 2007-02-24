@@ -1,3 +1,3 @@
 module DebugVerbose
 end
-require 'eclipseDebug'
+require 'classic-debug'
