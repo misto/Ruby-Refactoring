@@ -180,7 +180,7 @@ public abstract class AbstractRubyLaunchConfigurationDelegate extends
 		String path = configuration.getAttribute(
 				IRubyLaunchConfigurationConstants.ATTR_WORKING_DIRECTORY,
 				(String) null);
-		if (path != null) {
+		if (path != null && path.length() > 0) {
 			path = VariablesPlugin.getDefault().getStringVariableManager()
 					.performStringSubstitution(path);
 			return new Path(path);
