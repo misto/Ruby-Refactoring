@@ -34,6 +34,7 @@ public class FTC_RubyDebugCommunicationTest extends FTC_ClassicDebuggerCommunica
 		suite.addTest(new FTC_RubyDebugCommunicationTest("testInspectTemporaryArray"));
 		suite.addTest(new FTC_RubyDebugCommunicationTest("testInspectNil"));
 		suite.addTest(new FTC_RubyDebugCommunicationTest("testInspectError"));
+		suite.addTest(new FTC_RubyDebugCommunicationTest("testInspectTimeout"));
 		suite.addTest(new FTC_RubyDebugCommunicationTest("testEvalError"));
 
 		suite.addTest(new FTC_RubyDebugCommunicationTest("testFrames"));

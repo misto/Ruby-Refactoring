@@ -292,8 +292,7 @@ public abstract class FTC_AbstractDebuggerCommunicationTest extends TestCase {
 	}
 
 	private void runTo(String filename, int lineNumber) throws Exception {
-		String command = "b " + filename + ":" + lineNumber;
-		new BreakpointCommand(command).executeWithResult(debuggerConnection);
+		setBreakpoint(filename, lineNumber) ;
 		SuspensionReader reader;
 		if (!debuggerConnection.isCommandPortConnected()) {
 			reader = debuggerConnection.start();
@@ -306,6 +305,15 @@ public abstract class FTC_AbstractDebuggerCommunicationTest extends TestCase {
 		assertNotNull(hit);
 		assertTrue(hit.isBreakpoint());
 		assertEquals(lineNumber, hit.getLine());
+	}
+
+	private void setBreakpoint(String filename, int line) throws Exception{
+		String command = "b " + filename + ":" + line;
+		new BreakpointCommand(command).executeWithResult(debuggerConnection);
+	}	
+	
+	private void setBreakpoint(int line) throws Exception {
+		setBreakpoint("test.rb", line) ;
 	}
 
 	public void testBreakpointOnFirstLine() throws Exception {
@@ -408,7 +416,7 @@ public abstract class FTC_AbstractDebuggerCommunicationTest extends TestCase {
 
 	public void testExceptionHierarchy() throws Exception {
 		createSocket(new String[] { "class MyError < StandardError", "end", "begin", "raise StandardError.new", "rescue", "end", "raise MyError.new" });
-		GenericCommand catchCommand = new GenericCommand("catch StandardError", true /* iscontrol */);
+		GenericCommand catchCommand = new GenericCommand("catch MyError", true /* iscontrol */);
 		catchCommand.execute(debuggerConnection);
 		SuspensionPoint hit = startDebugger().readSuspension();
 		assertNotNull(hit);
@@ -886,14 +894,27 @@ public abstract class FTC_AbstractDebuggerCommunicationTest extends TestCase {
 		sendRuby("v inspect a*2");
 		try {
 			getVariableReader().readVariables(createStackFrame());
+			fail("RubyProcessingException not thrown.");
 		} catch (RubyProcessingException e) {
 			assertNotNull(e.getMessage());
+			assertFalse(e.getMessage().indexOf("Timeout") > -1) ;
 			sendRuby("cont");
-			return;
 		}
-		fail("RubyProcessingException not thrown.");
 	}
-
+	public void testInspectTimeout() throws Exception {
+		createSocket(new String[] { "puts 'test'", "puts 'test'" });
+		runToLine(2);
+		sendRuby("v inspect sleep(100)");
+		try {
+			getVariableReader().readVariables(createStackFrame());
+			fail("Timeout did not occur.");
+		} catch (RubyProcessingException e) {
+			assertTrue(e.getMessage().indexOf("Timeout") > -1) ;
+			sendRuby("cont");
+		}
+	}
+	
+	
 	public void testEvalError() throws Exception {
 		createSocket(new String[] { "puts 'test'", "puts 'test'" });
 		runToLine(2);
@@ -988,16 +1009,17 @@ public abstract class FTC_AbstractDebuggerCommunicationTest extends TestCase {
 
 	public void testThreadFramesAndVariables() throws Exception {
 		createSocket(new String[] { "Thread.new {", "a=5", "x=6", "puts 'x'", "}", "b=10", "b=11" });
-		sendRuby("b test.rb:3");
-		getBreakpointAddedReader().readBreakpointNo();
-		sendRuby("b test.rb:7");
-		getBreakpointAddedReader().readBreakpointNo();
+		setBreakpoint(7) ;
+		runToLine(3);
+		sendRuby("th l");
+		ThreadInfo[] threads = getThreadInfoReader().readThreads();
+
 		sendRuby("th resume 1");
 		getSuspensionReader().readSuspension();
 		getSuspensionReader().readSuspension();
 		// the main thread and the "puts 'a'" - thread are active
 		sendRuby("th l");
-		ThreadInfo[] threads = getThreadInfoReader().readThreads();
+		threads = getThreadInfoReader().readThreads();
 		assertEquals(2, threads.length);
 
 		sendRuby("th " + threads[0].getId() + " ; w ");
