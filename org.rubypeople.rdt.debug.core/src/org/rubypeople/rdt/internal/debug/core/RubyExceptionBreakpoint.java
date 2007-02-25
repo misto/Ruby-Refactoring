@@ -24,7 +24,8 @@ public class RubyExceptionBreakpoint extends Breakpoint {
 	
 	public RubyExceptionBreakpoint(final String exception) throws CoreException {
 		// we need to have a resource, because the marker needs it (BTW: why the hell do 
-		// we need a marker for?)
+		// we need a marker for?) Possible Answer: so that changes can be detected and 
+		// propagated to the DebugTarget in the same manner as for Line Breakpoints?
 		// The workspace root is chosen because JavaExceptionsBreakpoints do so as well
 		final IResource resource = ResourcesPlugin.getWorkspace().getRoot() ;
 		IWorkspaceRunnable wr = new IWorkspaceRunnable() {
@@ -32,10 +33,11 @@ public class RubyExceptionBreakpoint extends Breakpoint {
 			public void run(IProgressMonitor monitor) throws CoreException {
 				setMarker(resource.createMarker(RubyLineBreakpoint.RUBY_BREAKPOINT_MARKER));
 				getMarker().setAttribute(RUBY_EXCEPTION_ATTR, exception);
-				// REGISTERED ?
-				getMarker().setAttribute(REGISTERED, false);
-				setRegistered(true);
 				setEnabled(true);
+				// not yet registered with the BreakpointManager ..
+				getMarker().setAttribute(REGISTERED, false);
+				// .. but now please do so and add the breakpoint to the breakpoint manager
+				setRegistered(true);
 			}
 		};
 		try {

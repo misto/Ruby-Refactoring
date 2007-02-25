@@ -21,6 +21,8 @@ public interface ICommandFactory {
 	public String createStepInto(RubyStackFrame stackFrame);
 
 	public String createReadThreads();
+	
+	public String createThreadStop(RubyThread thread);
 
 	public String createInspect(RubyStackFrame frame, String expression);
 

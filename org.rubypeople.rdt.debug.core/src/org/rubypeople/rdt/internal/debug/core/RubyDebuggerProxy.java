@@ -115,7 +115,7 @@ public class RubyDebuggerProxy {
 	public void updateBreakpoint(IBreakpoint breakpoint, IMarkerDelta markerDelta) {
 		int currentline = markerDelta.getAttribute(IMarker.LINE_NUMBER, -1);
 		try {
-			if (currentline == ((RubyLineBreakpoint) breakpoint).getLineNumber()) {
+			if (breakpoint instanceof RubyLineBreakpoint && currentline == ((RubyLineBreakpoint) breakpoint).getLineNumber()) {
 				return;
 			}
 			this.removeBreakpoint(breakpoint);
@@ -220,6 +220,15 @@ public class RubyDebuggerProxy {
 	public void sendStepIntoEnd(RubyStackFrame stackFrame) {
 		try {
 			this.println(commandFactory.createStepInto(stackFrame));
+		} catch (Exception e) {
+			RdtDebugCorePlugin.log(e);
+		}
+	}
+	
+	public void sendThreadStop(RubyThread thread) {
+		try {
+			String command = commandFactory.createThreadStop(thread) ; 
+			new GenericCommand(command, true /* isControl */).execute(debuggerConnection);
 		} catch (Exception e) {
 			RdtDebugCorePlugin.log(e);
 		}

@@ -68,4 +68,8 @@ public class RubyDebugCommandFactory implements ICommandFactory {
 	public String createCatchOn(IBreakpoint breakpoint) throws CoreException {
 		return "catch " + ((RubyExceptionBreakpoint) breakpoint).getException();
 	}
+
+	public String createThreadStop(RubyThread thread) {
+		return "thread stop " + thread.getId();
+	}
 }
