@@ -57,11 +57,11 @@ public class ModifyCatchpointAction implements IViewActionDelegate,
         try {
 			if (existingBreakpoint == null) {
 				IBreakpoint breakpoint = new RubyExceptionBreakpoint(dialog.getException()); 
-				DebugPlugin.getDefault().getBreakpointManager().addBreakpoint(breakpoint) ;
 			}
 			else {
+				// This will modify the Breakpoint marker as well which then triggers a
+				// ResourceChange event which will be delivered to the RubyDebugTarget
 				existingBreakpoint.setException(dialog.getException()) ;
-				DebugPlugin.getDefault().getBreakpointManager().fireBreakpointChanged(existingBreakpoint) ;
 			}
 		} catch (CoreException e) {
 			RdtDebugCorePlugin.log(e) ;
