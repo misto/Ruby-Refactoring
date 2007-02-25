@@ -140,20 +140,22 @@ public class RubyThread extends PlatformObject implements IThread {
 		} else {
 			suspensionReason = DebugEvent.BREAKPOINT ;
 		}
-		DebugEvent ev = new DebugEvent(this, DebugEvent.SUSPEND,
-				suspensionReason);
-		DebugPlugin.getDefault().fireDebugEventSet(new DebugEvent[] { ev });
 		frames = null ;
 		isSuspended = true;
 		isStepping = false;
 		this.createName(suspensionPoint);
+		DebugEvent ev = new DebugEvent(this, DebugEvent.SUSPEND,
+				suspensionReason);
+		DebugPlugin.getDefault().fireDebugEventSet(new DebugEvent[] { ev });
 	}
 
 	public void suspend() {
+		// TODO: the following 3 steps should be performed when suspend event 
+		// comes back from the debugger
 		frames = null ;
 		isStepping = false;
 		isSuspended = true;
-		// TODO: send suspension command to ruby debugger
+		getRubyDebuggerProxy().sendThreadStop(this) ;
 	}
 
 	public boolean canStepInto() {
