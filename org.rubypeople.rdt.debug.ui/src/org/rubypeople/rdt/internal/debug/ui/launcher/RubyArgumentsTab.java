@@ -139,7 +139,7 @@ public class RubyArgumentsTab extends AbstractLaunchConfigurationTab {
 	public boolean isValid(ILaunchConfiguration launchConfig) {
 		try {
 			String workingDirectory = launchConfig.getAttribute(RubyLaunchConfigurationAttribute.WORKING_DIRECTORY, "");
-			if (workingDirectory.length() == 0) {
+			if (!useDefaultWorkingDirectoryButton.getSelection() && workingDirectory.length() == 0) {
 				setErrorMessage(RdtDebugUiMessages.LaunchConfigurationTab_RubyArguments_working_dir_error_message);
 				return false;
 			}
