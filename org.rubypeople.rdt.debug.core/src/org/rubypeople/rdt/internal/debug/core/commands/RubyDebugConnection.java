@@ -35,13 +35,14 @@ public class RubyDebugConnection extends AbstractDebuggerConnection {
 		try {
 			evalResult = command.getEvalReader().readEvalResult();
 		} catch (RubyProcessingException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			RdtDebugCorePlugin.log(e) ;
 		}
 		if (evalResult == null || !evalResult.equals("true")) {
 			// TODO: go on ?
 			throw new DebuggerNotFoundException("Could not add extension to ruby debug") ;
 		}
+		// set trace: show stack trace if evaluation fails
+		new GenericCommand("set trace", true).execute(this) ;
 	}
 
 	@Override
