@@ -27,19 +27,26 @@ public class BreakpointModificationReader extends XmlStreamReader {
 
 	@Override
 	protected boolean processStartElement(XmlPullParser xpp) throws XmlStreamReaderException {
+		boolean result = false;
 		if (xpp.getName().equals("breakpointAdded")) {
 			no = xpp.getAttributeValue("", "no");
-			return true;
+			result = true;
+		} else if (xpp.getName().equals("breakpointDeleted")) {
+			no = xpp.getAttributeValue("", "no");
+			result = true;
+		} else if (xpp.getName().equals("error")) {
+			no = "-1";
+			result = true;
 		}
-		return false;
+		return result;
 	}
-	
+
 	@Override
 	public void processContent(String text) {}
 
 	@Override
 	protected boolean processEndElement(XmlPullParser xpp) {
-		return xpp.getName().equals("breakpointAdded");
+		return xpp.getName().equals("breakpointAdded") || xpp.getName().equals("breakpointDeleted") || xpp.getName().equals("error");
 	}
 
 }
