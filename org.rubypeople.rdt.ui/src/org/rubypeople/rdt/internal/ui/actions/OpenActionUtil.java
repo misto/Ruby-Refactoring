@@ -9,7 +9,6 @@ import org.rubypeople.rdt.core.IRubyElement;
 import org.rubypeople.rdt.core.RubyModelException;
 import org.rubypeople.rdt.internal.ui.rubyeditor.EditorUtility;
 import org.rubypeople.rdt.ui.RubyElementLabelProvider;
-import org.rubypeople.rdt.ui.RubyElementLabels;
 
 public class OpenActionUtil {
 	

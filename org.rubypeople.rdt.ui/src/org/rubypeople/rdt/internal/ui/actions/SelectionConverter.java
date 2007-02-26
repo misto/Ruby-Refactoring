@@ -59,15 +59,19 @@ public class SelectionConverter {
 	}
 	
 	public static IRubyElement[] codeResolve(IRubyElement input, ITextSelection selection) throws RubyModelException {
+		return codeResolve(input, selection.getOffset(), selection.getLength());
+	}
+	
+	public static IRubyElement[] codeResolve(IRubyElement input, int offset, int length) throws RubyModelException {
 		if (input instanceof ICodeAssist) {
 			if (input instanceof IRubyScript) {
 				RubyModelUtil.reconcile((IRubyScript) input);
 			}
-			IRubyElement[] elements= ((ICodeAssist)input).codeSelect(selection.getOffset(), selection.getLength());
+			IRubyElement[] elements= ((ICodeAssist)input).codeSelect(offset, length);
 			if (elements != null && elements.length > 0)
 				return elements;
 		}
 		return EMPTY_RESULT;
-}
+	}
 
 }

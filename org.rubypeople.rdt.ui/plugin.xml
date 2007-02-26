@@ -939,5 +939,12 @@
             contentMergeViewerId="org.rubypeople.rdt.internal.ui.RubyMergeViewer"
             contentTypeId="org.rubypeople.rdt.core.rubySource"/>
    </extension>
+   
+   <extension
+         point="org.rubypeople.rdt.ui.hyperlinkProvider">
+         <hyperlinkProvider
+               class="org.rubypeople.rdt.internal.ui.text.hyperlinks.RubyElementsHyperlinkProvider">
+         </hyperlinkProvider>
+   </extension>
     
 </plugin>
