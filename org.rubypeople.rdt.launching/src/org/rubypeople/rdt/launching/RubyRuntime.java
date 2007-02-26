@@ -1137,32 +1137,32 @@ public class RubyRuntime {
 	 * </ol>
 	 * </p>
 	 * @param configuration
-	 * @return loadpath container path identifying a JRE or <code>null</code>
+	 * @return loadpath container path identifying a RubyVM or <code>null</code>
 	 * @exception org.eclipse.core.runtime.CoreException if an exception occurs retrieving
 	 *  attributes from the specified launch configuration
 	 * @since 0.9.0
 	 */
 	public static IRuntimeLoadpathEntry computeRubyVMEntry(ILaunchConfiguration configuration) throws CoreException {
-		String jreAttr = configuration.getAttribute(IRubyLaunchConfigurationConstants.ATTR_RUBY_CONTAINER_PATH, (String)null);
+		String rubyVmAttr = configuration.getAttribute(IRubyLaunchConfigurationConstants.ATTR_RUBY_CONTAINER_PATH, (String)null);
 		IPath containerPath = null;
-		if (jreAttr == null) {
+		if (rubyVmAttr == null) {
 			String type = configuration.getAttribute(IRubyLaunchConfigurationConstants.ATTR_VM_INSTALL_TYPE, (String)null);
 			if (type == null) {
-				// default JRE for the launch configuration
+				// default RubyVM for the launch configuration
 				IRubyProject proj = getRubyProject(configuration);
 				if (proj == null) {
-					containerPath = newDefaultJREContainerPath();
+					containerPath = newDefaultRubyVMContainerPath();
 				} else {
 					return computeRubyVMEntry(proj);
 				}
 			} else {
 				String name = configuration.getAttribute(IRubyLaunchConfigurationConstants.ATTR_VM_INSTALL_NAME, (String)null);
 				if (name != null) {
-					containerPath = newDefaultJREContainerPath().append(type).append(name);
+					containerPath = newDefaultRubyVMContainerPath().append(type).append(name);
 				}
 			}
 		} else {
-			containerPath = Path.fromPortableString(jreAttr);
+			containerPath = Path.fromPortableString(rubyVmAttr);
 		}
 		if (containerPath != null) {
 			return newRuntimeContainerLoadpathEntry(containerPath, IRuntimeLoadpathEntry.STANDARD_CLASSES);
@@ -1226,7 +1226,7 @@ public class RubyRuntime {
 	 * @return loadpath container path
 	 * @since 0.9.0
 	 */	
-	public static IPath newDefaultJREContainerPath() {
+	public static IPath newDefaultRubyVMContainerPath() {
 		return new Path(RUBY_CONTAINER);
 	}
 	
