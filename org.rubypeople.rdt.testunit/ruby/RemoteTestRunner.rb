@@ -106,6 +106,26 @@ module Test
           def start_mediator # :nodoc:
             return @mediator.run_suite
           end
+
+          def convert_newlines(str)
+            str.gsub("\\n", "\n").gsub("\\r", "\r")
+          end
+
+          def output_actual(msg)
+            output_single("%ACTUALS \n")
+            msg =~ /<"(.*)">\.$/
+            actual = convert_newlines($1)
+            output_single("#{actual}\n")
+            output_single("%ACTUALE \n")
+          end
+
+          def output_expected(msg)
+            output_single("%EXPECTS \n")
+            msg =~ /^<"(.*?)">/
+            expected = convert_newlines($1)
+            output_single("#{expected}\n")
+            output_single("%EXPECTE \n")
+          end
           
           def add_fault(fault) # :nodoc:
             @faults << fault
@@ -118,6 +138,12 @@ module Test
               header = "Exception: #{fault.exception.message}"
               stack_trace = get_trace(fault.exception.backtrace)
             end
+
+            if fault.message =~ /^<".*?">.*<".*?">\.$/m
+              output_actual(fault.message)
+              output_expected(fault.message)
+            end
+
             output_single("#{fault_type}#{@last_test_id},#{@last_test_name}\n")
             output_single("%TRACES \n")
             output_single("#{header}\n")

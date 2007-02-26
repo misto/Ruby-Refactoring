@@ -18,8 +18,11 @@ import org.eclipse.jface.action.Action;
 public class CompareResultsAction extends Action {
 
 
+	private final FailureTrace fView;
+
 	public CompareResultsAction(FailureTrace view) {
 		super(TestUnitMessages.CompareResultsAction_label);
+		this.fView = view;
 		setDescription(TestUnitMessages.CompareResultsAction_description); 
 		setToolTipText(TestUnitMessages.CompareResultsAction_tooltip);
 
@@ -33,8 +36,8 @@ public class CompareResultsAction extends Action {
 	 */
 	public void run() {
 		// TODO Allow comparison of results
-//		CompareResultDialog dialog = new CompareResultDialog(fView.getShell(), fView.getFailedTest());
-//		dialog.create();
-//		dialog.open();
+		CompareResultDialog dialog = new CompareResultDialog(fView.getShell(), fView.getFailedTest());
+		dialog.create();
+		dialog.open();
 	}
 }

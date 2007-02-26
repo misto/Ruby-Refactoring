@@ -63,6 +63,10 @@ public class TestUnitMessages {
 	public static String TestRunnerViewPart_message_finish;
 	public static String TestRunnerViewPart_message_started;
 	public static String TestRunnerViewPart_configName;
+	public static String CompareResultDialog_expectedLabel;
+	public static String CompareResultDialog_actualLabel;
+	public static String CompareResultDialog_labelOK;
+	public static String CompareResultDialog_title;
 
 	static {
 		NLS.initializeMessages(BUNDLE_NAME, TestUnitMessages.class);

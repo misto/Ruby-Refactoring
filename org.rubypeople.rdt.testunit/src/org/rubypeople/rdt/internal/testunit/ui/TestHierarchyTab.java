@@ -411,7 +411,6 @@ public class TestHierarchyTab extends TestRunTab implements IMenuListener {
 			if (testInfo == null)
 				return;
 				
-			String testLabel= testInfo.getTestName();
 			IAction action = null;
 			
             Shell shell = fTree.getShell();
@@ -427,9 +426,6 @@ public class TestHierarchyTab extends TestRunTab implements IMenuListener {
 
 	public void menuAboutToShow(IMenuManager manager) {
 		if (fTree.getSelectionCount() > 0) {
-			TreeItem treeItem = fTree.getSelection()[0];
-			TestRunInfo testInfo = (TestRunInfo) treeItem.getData();
-			String testLabel = testInfo.getTestName();
             Shell shell = fTree.getShell();
             ISymbolFinder symbolFinder = RubyCore.getPlugin().getSymbolFinder();
 			if (isSuiteSelected()) {
