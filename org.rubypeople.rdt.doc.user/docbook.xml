@@ -873,6 +873,70 @@ persons = Hash[ Person.new('Lisa') =&gt; Person.new('Marge'),
 	</chapter>
 	<chapter id="WhatsNew">
 		<title>What's new</title>
+		<para>New in RDT 0.9.0:</para>
+		<itemizedlist>		
+		    <listitem> Adds an initial catalog of refactorings thanks to Mirko Stocker, Thomas Corbat, and Lukas Felber.</listitem>
+		    <listitem> Better integration with Ruby interpreters: Now integrates loadpaths of the interpreter in backend, also hooks core libraries and standard libraries into the model for code completion/go to declaration, etc.</listitem>
+		    <listitem> Preliminary support for ruby-debug as the debugging backend</listitem>
+		    <listitem> Generate constructor</listitem>
+		    <listitem> Generate accessors</listitem>
+		    <listitem> Improved code completion</listitem>
+		    <listitem> Integration of type inferrencing work done by Jason morrison for Google Summer of Code</listitem>
+		    <listitem> Initial version of Mark occurences support</listitem>
+		    <listitem> Goto Declaration(F3) support</listitem>
+		    <listitem> Hyperlink navigation in source code - similar to F3 - Go To Declaration. Hold Ctrl (or Apple key on macs) and hover over source. Click a link to be taken to it's source.</listitem>
+		    <listitem> Integration with latest JRuby parser: speedier, positioning fixes</listitem>
+			<listitem> Syntax coloring of the Merge/compare view</listitem>	
+		</itemizedlist>	
+		
+		<para>New in RDT 0.8.0:</para>
+		<itemizedlist>		
+			<listitem> Compatible with Eclipse 3.1 and 3.2</listitem>	
+			<listitem> New Ruby Browsing Perspective</listitem>	
+			<listitem> New Class Wizard</listitem>	
+			<listitem> Apply code formatting (indentation) to templates</listitem>	
+			<listitem> Auto-insertion of templates</listitem>	
+			<listitem> Distinct syntax highlighting of globals</listitem>	
+			<listitem> Distinct syntax highlighting of instance/class variables</listitem>	
+			<listitem> Goto matching bracket action</listitem>	
+			<listitem> Right-clicking on "ruler" to left of ruby file's contents now allows user to add bookmark or task</listitem>	
+			<listitem> Auto-extend comments under particular conditions (abov method/class/module definitions, above attr_, above alias, above constant assignment, as first lines of file)</listitem>	
+			<listitem> Allow user to customize font used by Ruby Editor</listitem>	
+			<listitem> Allow user to turn on/off smart auto-closing of strings, brackets and braces on new preference page (was always enabled by default before)</listitem>	
+			<listitem> A number of bugfixes (see <ulink url="http://rubyeclipse.mktec.com/cgi-bin/trac.py/query?status=closed&milestone=0.8.0&type=defect&order=priority">http://rubyeclipse.mktec.com/cgi-bin/trac.py/query?status=closed&milestone=0.8.0&type=defect&order=priority</ulink>)</listitem>	
+		</itemizedlist>	
+		
+		<para>New in RDT 0.7.0:</para>
+		<itemizedlist>		
+			<listitem> Multiple debugger session possible because a free port will be used for the debugger communication. The port is written to a
+    temporary file and conveyed to the ruby process with "-r<tmpFile>". The fixed port used in the past (1098) is still the default 
+    port in the case that a temporary file can not be created</listitem>
+			<listitem> Catchpoints:
+			  <itemizedlist>	
+			    <listitem> The default was to halt at every type of StandardError, the new default is *not* to halt when exceptions are raised</listitem>
+			    <listitem> There is a menu entry in the debug perspective and a toolbar button in the breakpoint view which starts the Catchpoint dialog</listitem>
+			    <listitem> The catchpoint dialog allows to add a ruby exception breakpoint</listitem>
+			    <listitem> There can be at most one exception breakpoint; the breakpoint can be enabled, disabled and removed in the breakpoint view</listitem>
+			    <listitem> Added ability to distinctly color characters</listitem>
+			    <listitem> Added ability to distinctly color Fixnums (numbers)</listitem>
+			    <listitem> Added ability to distinctly color Symbols</listitem>
+			  </itemizedlist>	</listitem>
+			<listitem> Fixed arguments in alias template to refer to methods in ocrrect order (first arg is new name, second is old)</listitem>
+			<listitem> Always suggests Kernel methods (unless user has typed text which would eliminate all of them as possibilities)</listitem>
+			<listitem> Suggest Class and Module names from current project and any projects referenced by it</listitem>
+			<listitem> Added outline support for aliasing methods using the format 'alias :new_method :old_method'</listitem>
+			<listitem> Fixed bug where current visibility was never reset when opening a new class</listitem>
+			<listitem> Fix broken link between RubyProjects and RubyScripts. RubyProjects didn't properly find and add all RubyScripts as children. 
+    					It should do so now (according to RubyFileMatcher's behavior).</listitem>
+			<listitem> Started to implement ElementChangeListeners/RubyDelta/RubyModelOperation core model machinery</listitem>
+			<listitem> Now allows code folding of class methods (self.method)</listitem>
+			<listitem> Now updates code folding points as user edits the ruby script</listitem>
+			<listitem> Double-click now selects text more logically (Try double-clicking a method call or variable in a method chain. 
+    					It used to select until it hit a space or bracket. Now it will stop at periods as well [and more characters too])</listitem>
+			<listitem> New extension point for template proposals</listitem>
+			<listitem> New extension point for text hovers  </listitem>
+		</itemizedlist>	
+		
 		<para>New in RDT 0.6.0:</para>
 		<itemizedlist>		
 			<listitem> Code folding </listitem>	
