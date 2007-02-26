@@ -59,6 +59,8 @@ import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IFileEditorInput;
 import org.eclipse.ui.IWorkbenchActionConstants;
 import org.eclipse.ui.PlatformUI;
+import org.eclipse.ui.dialogs.FilteredTree;
+import org.eclipse.ui.dialogs.PatternFilter;
 import org.eclipse.ui.part.DrillDownAdapter;
 import org.eclipse.ui.part.ViewPart;
 import org.jruby.ast.Node;
@@ -80,8 +82,11 @@ public class AstView extends ViewPart {
 	public void createPartControl(Composite parent) {
 		sashForm = new SashForm(parent, SWT.NONE);
 		sashForm.setOrientation(SWT.VERTICAL);
-		
-		viewer = new TreeViewer(sashForm, SWT.MULTI | SWT.H_SCROLL | SWT.V_SCROLL);
+		PatternFilter patternFilter = new PatternFilter();
+	    final FilteredTree filter = new FilteredTree(sashForm, SWT.MULTI
+	            | SWT.H_SCROLL | SWT.V_SCROLL, patternFilter);
+	    
+		viewer = filter.getViewer();
 		drillDownAdapter = new DrillDownAdapter(viewer);
 		viewContentProvider = new ViewContentProvider(getViewSite());
 		viewer.setContentProvider(viewContentProvider);
