@@ -96,18 +96,14 @@ public class SelectionNodeProvider {
 		Collection<Node> selectedNodes = getNodesFromTo(beginBlockChildNode, endBlockChildNode, blockChildren);
 
 		if(isNodeContainedInNode(selectedNodes.toArray(new Node[selectedNodes.size()])[0], enclosingNode)) { 
-			BlockNode blockAroundSelected = new BlockNode(NodeFactory.unionPositions(beginNode.getPosition(), endNode.getPosition()));
-			for(Node node : selectedNodes) {
-				blockAroundSelected.add(node);
-			}
-			blockAroundSelected.setPosition(NodeFactory.unionPositions(NodeProvider.unwrap(beginNode).getPosition(), NodeProvider.unwrap(endNode).getPosition()));
+			BlockNode blockAroundSelected = NodeFactory.createBlockNode(selectedNodes.toArray(new Node[0])); // new BlockNode(NodeFactory.unionPositions(NodeProvider.unwrap(beginNode).getPosition(), NodeProvider.unwrap(endNode).getPosition()));
+			blockAroundSelected.setPosition(NodeFactory.unionPositions(NodeProvider.unwrap(beginBlockChildNode).getPosition(), NodeProvider.unwrap(endBlockChildNode).getPosition()));
 			return blockAroundSelected;
 		} else if (beginNode.equals(endNode)) {
 			return beginNode;
 		}
 		return enclosingNode;
 	}
-
 
 	public static boolean isNodeContainedInNode(Node containedNode, Node containingNode) {
 		return (nodeContainsPosition(containingNode, containedNode.getPosition().getStartOffset()) 
