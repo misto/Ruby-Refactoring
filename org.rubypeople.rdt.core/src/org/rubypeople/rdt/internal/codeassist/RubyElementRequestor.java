@@ -97,7 +97,8 @@ public class RubyElementRequestor {
 		List<String> tokens = new ArrayList<String>();
 		while(tokenizer.hasMoreTokens()) {
 			tokens.add(tokenizer.nextToken());
-		}					
+		}
+		if (tokens.isEmpty()) return new ArrayList<IType>();
 		String name = tokens.remove(tokens.size() - 1) + RUBY_FILE_EXTENSION;
 		String[] pckgs =  (String[]) tokens.toArray(new String[tokens.size()]);
 		ISourceFolder folder = root.getSourceFolder(pckgs);
