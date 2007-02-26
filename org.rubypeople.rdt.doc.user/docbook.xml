@@ -241,18 +241,19 @@
 			</section>
 			<section id="EncapsulateField">
 				<title>Encapsulate Field</title>
-				<para>The Encapsulate Field refactoring means that you take a field and 
-					hide access to it behind getter and setter methods. This can be done for 
-					external access as well as from	inside the class.</para>
+				<para>The Encapsulate Field refactoring encapsulates a field by 
+					hiding access to the field behind getter and setter methods. This is often 
+					used to enable external access, but can be useful to encapsulate a field 
+					internally within a class.</para>
 			</section>
 			<section id="ExtractMethod">
 				<title>Extract Method</title>
-				<para>Extract Method removes a block of instructions out of an existing method
-					and creates a new one, that contains this functionality. The new method
-					will be called from the existing one where the instructions have been 
-					removed. The local variables from the existing method that are used in
-					the affected code block are passed to the new method as parameters.
-					If one of those local variables is set inside the selected block it will
+				<para>Extract Method removes a block of statements and moves them into a 
+				    new method that contains this functionality. The new method
+					will be called from the location where the original statements appeared. 
+					Any local variables in scope of the extracted code that are used by the
+					affected statements are passed to the new method as parameters.
+					If one of those local variables is set inside the extracted block it will
 					be returned from the new method as its return value.</para>
 			</section>
 			<section id="GenerateAccessors">
@@ -260,8 +261,8 @@
 				<para>Generate Accessors can be used to generate getter and setter methods for 
 					fields of a class. The user can choose whether reader and / or writers
 					are generated and if they should be inserted as methods or in the short
-					form using <varname>attr_reader</varname>, <varname>attr_writer</varname>
-					or <varname>attr_accessor</varname>.</para>
+					form (using <varname>attr_reader</varname>, <varname>attr_writer</varname>
+					or <varname>attr_accessor</varname>).</para>
 			</section>
 			<section id="GenerateConstructorUsingFields">
 				<title>Generate Constructor using Fields</title>
@@ -273,9 +274,9 @@
 			</section>
 			<section id="InlineClass">
 				<title>Inline Class</title>
-				<para>The Inline Class refactoring integrates the code from a usually small class which 
-					had not much functionality into another class. Usually the target class uses 
-					the inlined one.</para>
+				<para>The Inline Class refactoring integrates the code from an existing class (which 
+					typically has few responsibilities) into another class. Typically the target class uses 
+					the inlined class.</para>
 			</section>
 			<section id="InlineMethod">
 				<title>Inline Method</title>
@@ -287,20 +288,19 @@
 			<section id="InlineTemp">
 				<title>Inline Temp</title>
 				<para>The Inline Temp refactoring replaces all occurrences of a local variable with the value
-					it got assigned once. Furthermore the assignment is removed as it will not be used
-					anymore. Usually this refactoring is used to simplify other refactorings or if it
-					does not make sense to keep the variable as it makes the code just more complex.</para>
+					it was once assigned and removes the initial assignment. Usually this refactoring is
+					used to simplify the existing code and lay the groundowrk for future refactorings.</para>
 			</section>
 			<section id="MergeClassParts">
 				<title>Merge Class Parts</title>
-				<para>The Merge Ruby Class Parts refactoring pulls class declarations together and merges them
-					into one single part.</para>
+				<para>The Merge Ruby Class Parts refactoring pulls multiple class declarations together and merges them
+					into one single part. This is used to gather all instances of a re-opened class into a single area.</para>
 			</section>
 			<section id="MoveField">
 				<title>Move Field</title>
-				<para>This refactoring moves, as its name says, a field from one class into another one. This 
+				<para>This refactoring moves a field from one class into another one. This 
 					is useful if you realize that the responsibility for a field is not in the owning class,
-					but in another one. In this case, the field should better be moved to that class.</para>
+					but in another one. In this case, the field is better moved to the new class.</para>
 			</section>
 			<section id="MoveMethod">
 				<title>Move Method</title>
@@ -317,7 +317,7 @@
 			</section>
 			<section id="PushDownMethod">
 				<title>Push Down Method</title>
-				<para>The Push Down Method refactoring removes a method from the super class and pastes it
+				<para>The Push Down Method refactoring removes a method from the super class and pushes it
 					into all its child classes.</para>
 			</section>
 			<section id="Rename">
@@ -326,10 +326,10 @@
 			</section>
 			<section id="SplitLocalVariable">
 				<title>Split Local Variable</title>
-				<para>Programmers, especially inexperienced ones, sometimes tend to assign a temporary variable several 
-					times. The fact that Ruby does not have typed references might misleadingly encourage this. 
-					This is not recommendable because this means, that the temporary variable takes various 
-					responsibilities and thus can not be named properly. So the Split Temporary Variables refactoring 
+				<para>Programmers sometimes tend to assign a temporary variable several 
+					times (the fact that Ruby does not have typed references might misleadingly encourage this). 
+					This is not recommendable because this means that the temporary variable takes various 
+					responsibilities and thus can not be named properly. The Split Temporary Variables refactoring 
 					helps avoiding this by creating a new temporary variable for each responsibility.</para>
 			</section>
 		</section>
