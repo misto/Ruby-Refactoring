@@ -607,10 +607,10 @@ public class RubyElementLabels {
     }
 
     /**
-     * Appends the label for a compilation unit to a {@link StringBuffer}.
+     * Appends the label for a ruby script to a {@link StringBuffer}.
      * Considers the CU_* flags.
      * 
-     * @param cu
+     * @param script
      *            The element to render.
      * @param flags
      *            The rendering flags. Flags with names starting with 'CU_' are
@@ -618,19 +618,19 @@ public class RubyElementLabels {
      * @param buf
      *            The buffer to append the resulting label to.
      */
-    public static void getRubyScriptLabel(IRubyScript cu, long flags, StringBuffer buf) {
+    public static void getRubyScriptLabel(IRubyScript script, long flags, StringBuffer buf) {
         if (getFlag(flags, CU_QUALIFIED)) {
-        	ISourceFolder pack = (ISourceFolder) cu.getParent();
+        	ISourceFolder pack = (ISourceFolder) script.getParent();
             if (!pack.isDefaultPackage()) {
                 getSourceFolderLabel(pack, (flags & QUALIFIER_FLAGS), buf);
                 buf.append('.');
             }
         }
-        buf.append(cu.getElementName());
+        buf.append(script.getElementName());
 
         if (getFlag(flags, CU_POST_QUALIFIED)) {
             buf.append(CONCAT_STRING);
-            getSourceFolderLabel((ISourceFolder) cu.getParent(), flags & QUALIFIER_FLAGS, buf);
+            getSourceFolderLabel((ISourceFolder) script.getParent(), flags & QUALIFIER_FLAGS, buf);
         }
     }
 
