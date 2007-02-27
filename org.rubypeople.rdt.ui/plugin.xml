@@ -454,6 +454,11 @@
             contextId="org.rubypeople.rdt.ui.rubyEditorScope" 
             commandId="org.rubypeople.rdt.ui.edit.text.ruby.open.editor"
             schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"/>
+      <key
+            sequence="M1+M2+T"
+            contextId="org.rubypeople.rdt.ui.rubyEditorScope" 
+            commandId="org.rubypeople.rdt.ui.edit.text.ruby.open.type"
+            schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"/>
     </extension>
    <extension point="org.eclipse.ui.commands">
       <category
@@ -527,12 +532,17 @@
             name="%ActionDefinition.gotoMatchingBracket.name"> 
       </command>
       <command
-            name="%ActionDefinition.openEditor.name"
-            description="%ActionDefinition.openEditor.description"
             categoryId="org.eclipse.ui.category.navigate"
-            id="org.rubypeople.rdt.ui.edit.text.ruby.open.editor">
+            description="%ActionDefinition.openEditor.description"
+            id="org.rubypeople.rdt.ui.edit.text.ruby.open.editor"
+            name="%ActionDefinition.openEditor.name">
       </command>
-            <command
+      <command
+            categoryId="org.eclipse.ui.category.navigate"
+            id="org.rubypeople.rdt.ui.edit.text.ruby.open.type"
+            name="%OpenTypeAction.label">
+      </command>
+      <command
             name="%ActionDefinition.toggleComment.name" 
             description="%ActionDefinition.toggleComment.description"
             categoryId="org.rubypeople.rdt.ui.category.source"
@@ -653,6 +663,15 @@
                menubarPath="navigate/open.ext"
                allowLabelUpdate="true"
                id="org.rubypeople.rdt.ui.actions.Open">
+         </action>
+          <action
+               class="org.rubypeople.rdt.ui.actions.OpenTypeAction"
+               definitionId="org.rubypeople.rdt.ui.edit.text.ruby.open.type"
+               id="org.rubypeople.rdt.ui.actions.OpenType"
+               label="%OpenTypeAction.label"
+               icon="icons/full/etool16/opentype.gif"
+               menubarPath="navigate/open.ext"
+               tooltip="%OpenTypeAction.tooltip">
          </action>
        </actionSet>
    </extension>

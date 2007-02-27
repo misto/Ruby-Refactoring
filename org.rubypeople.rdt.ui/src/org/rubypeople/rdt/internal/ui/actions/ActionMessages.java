@@ -48,6 +48,9 @@ public final class ActionMessages extends NLS {
 	public static String ActionUtil_notOnBuildPath_title;
 	public static String ActionUtil_notOnBuildPath_message;
 	public static String OpenWithMenu_label;
+	public static String OpenTypeAction_error_title;
+	public static String OpenTypeAction_error_messageProblems;
+	public static String OpenTypeAction_message;
 
     static {
         NLS.initializeMessages(BUNDLE_NAME, ActionMessages.class);
