@@ -13,6 +13,7 @@ import org.jruby.ast.Node;
 import org.rubypeople.rdt.core.IBuffer;
 import org.rubypeople.rdt.core.IOpenable;
 import org.rubypeople.rdt.core.IRubyElement;
+import org.rubypeople.rdt.core.IRubyScript;
 import org.rubypeople.rdt.core.ISourceRange;
 import org.rubypeople.rdt.core.ISourceReference;
 import org.rubypeople.rdt.core.RubyModelException;
@@ -38,6 +39,15 @@ public abstract class SourceRefElement extends RubyElement implements ISourceRef
 	 */
 	public SourceRefElement(RubyElement parent) {
 		super(parent);
+	}
+	
+	/*
+	 * (non-Rubydoc)
+	 * 
+	 * @see org.rubypeople.rdt.core.IMember#getRubyScript()
+	 */
+	public IRubyScript getRubyScript() {
+		return ((RubyElement) getParent()).getRubyScript();
 	}
 	
 	/**

@@ -158,15 +158,6 @@ public class RubyType extends NamedMember implements IType {
 		return new RubyType(this, typeName);
 	}
 
-	/*
-	 * (non-Rubydoc)
-	 * 
-	 * @see org.rubypeople.rdt.core.IMember#getRubyScript()
-	 */
-	public IRubyScript getRubyScript() {
-		return ((RubyElement) getParent()).getRubyScript();
-	}
-
 	public boolean equals(Object o) {
 		if (!(o instanceof RubyType)) return false;
 		return super.equals(o);

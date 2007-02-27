@@ -867,13 +867,33 @@ public class RubyProject extends Openable implements IProjectNature, IRubyElemen
 	}
 
 	public ISourceFolder[] getSourceFolders() throws RubyModelException {
-		Object[] children;
-		int length;
-		ISourceFolder[] roots;
+		ISourceFolderRoot[] roots = getSourceFolderRoots();
+		return getSourceFoldersInRoots(roots);
+	}
+	
+	/**
+	 * Returns all the source folders found in the specified
+	 * source folder roots.
+	 * @param roots ISourceFolderRoot[]
+	 * @return ISourceFolder[]
+	 */
+	public ISourceFolder[] getSourceFoldersInRoots(ISourceFolderRoot[] roots) {
 
-		System.arraycopy(children = getChildren(), 0, roots = new ISourceFolder[length = children.length], 0, length);
-
-		return roots;
+		ArrayList frags = new ArrayList();
+		for (int i = 0; i < roots.length; i++) {
+			ISourceFolderRoot root = roots[i];
+			try {
+				IRubyElement[] rootFragments = root.getChildren();
+				for (int j = 0; j < rootFragments.length; j++) {
+					frags.add(rootFragments[j]);
+				}
+			} catch (RubyModelException e) {
+				// do nothing
+			}
+		}
+		ISourceFolder[] fragments = new ISourceFolder[frags.size()];
+		frags.toArray(fragments);
+		return fragments;
 	}
 
 	/*
