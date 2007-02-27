@@ -31,6 +31,8 @@ public class RubyTypeSelectionDialog extends ElementListSelectionDialog {
      * @return
      */
     protected Object[] getElements() {
+    	// FIXME This doesn't pick up all the classes in loadpaths (Ruby library)! We need to search through rubProject.getSourceFolders to do that.
+    	// FIXME If we move to grabbing all types via source fodlers it gets way too slow. We need to make this set up liek JDT so it runs a search job based on input and caches results.
         return getAllTypes();
     }
 
