@@ -42,6 +42,8 @@ import org.rubypeople.rdt.refactoring.core.NodeProvider;
 
 public abstract class DocumentProvider implements IDocumentProvider {
 
+	private RootNode rootNode;
+
 	public ClassNodeProvider getClassNodeProvider() {
 		return new ClassNodeProvider(this);
 	}
@@ -55,6 +57,10 @@ public abstract class DocumentProvider implements IDocumentProvider {
 	}
 	
 	public RootNode getRootNode() {
+//		if(rootNode == null) {
+//			rootNode = NodeProvider.getRootNode(getActiveFileName(), getActiveFileContent()); 
+//		}
+//		return rootNode;
 		return NodeProvider.getRootNode(getActiveFileName(), getActiveFileContent());
 	}
 

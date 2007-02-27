@@ -38,6 +38,7 @@ import org.jruby.ast.MultipleAsgnNode;
 import org.jruby.ast.types.INameNode;
 import org.jruby.parser.StaticScope;
 import org.rubypeople.rdt.refactoring.classnodeprovider.IncludedClassesProvider;
+import org.rubypeople.rdt.refactoring.core.NodeProvider;
 import org.rubypeople.rdt.refactoring.core.RefactoringConditionChecker;
 import org.rubypeople.rdt.refactoring.core.SelectionNodeProvider;
 import org.rubypeople.rdt.refactoring.documentprovider.DocumentProvider;
@@ -47,6 +48,7 @@ import org.rubypeople.rdt.refactoring.util.NodeUtil;
 public class InlineMethodConditionChecker extends RefactoringConditionChecker {
 
 	private InlineMethodConfig config;
+	
 
 	public InlineMethodConditionChecker(InlineMethodConfig config) {
 		super(config.getDocumentProvider(),config);
@@ -58,6 +60,7 @@ public class InlineMethodConditionChecker extends RefactoringConditionChecker {
 		if(!(findSelectedCall(config.getPos()) && findTargetClass(config.getTargetClassFinder()) && findMethodDefinition())) {
 			return;
 		}
+		config.setCellParent(NodeProvider.findParentNode(config.getDocumentProvider().getRootNode(), config.getSelectedCall().getWrappedNode()));
 		
 		replaceParameters();
 		

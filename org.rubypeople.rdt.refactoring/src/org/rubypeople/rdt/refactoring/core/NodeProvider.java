@@ -62,14 +62,11 @@ import org.jruby.ast.WhileNode;
 import org.jruby.ast.types.INameNode;
 import org.jruby.common.NullWarnings;
 import org.jruby.lexer.yacc.LexerSource;
-import org.jruby.lexer.yacc.SourcePosition;
 import org.jruby.lexer.yacc.SyntaxException;
 import org.jruby.parser.DefaultRubyParser;
-import org.jruby.parser.LocalStaticScope;
 import org.jruby.parser.RubyParserConfiguration;
 import org.jruby.parser.RubyParserPool;
 import org.jruby.parser.RubyParserResult;
-import org.jruby.runtime.DynamicScope;
 import org.rubypeople.rdt.refactoring.nodewrapper.AttrAccessorNodeWrapper;
 import org.rubypeople.rdt.refactoring.nodewrapper.FieldNodeWrapper;
 import org.rubypeople.rdt.refactoring.nodewrapper.MethodCallNodeWrapper;
@@ -112,15 +109,10 @@ public class NodeProvider {
 	}
 
 	public static RootNode getRootNode(String fileName, String fileContent) {
-		if(fileContent == null) {
-			return null;
-		}
-
 		try {
-			return parseFile(fileName, fileContent);
+			return (fileContent != null) ? parseFile(fileName, fileContent) : null;
 		} catch(SyntaxException e) {
-//			treat files with syntax errors as empty
-			return new RootNode(new SourcePosition(), new DynamicScope(new LocalStaticScope(null), null), null);
+			return null;
 		}
 	}
 

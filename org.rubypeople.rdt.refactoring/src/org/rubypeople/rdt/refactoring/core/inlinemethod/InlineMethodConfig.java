@@ -32,7 +32,6 @@ import java.util.Collection;
 
 import org.jruby.ast.MethodDefNode;
 import org.jruby.ast.Node;
-import org.rubypeople.rdt.refactoring.core.NodeProvider;
 import org.rubypeople.rdt.refactoring.documentprovider.DocumentProvider;
 import org.rubypeople.rdt.refactoring.nodewrapper.MethodCallNodeWrapper;
 
@@ -47,6 +46,7 @@ public class InlineMethodConfig {
 	private int pos;
 	private ITargetClassFinder targetClassFinder;
 	private Collection<String> usedMembers;
+	private Node cellParent;
 
 	public InlineMethodConfig(DocumentProvider doc, int pos, ITargetClassFinder targetClassFinder) {
 		
@@ -56,7 +56,11 @@ public class InlineMethodConfig {
 	}
 
 	public Node getCallParent() {
-		return NodeProvider.findParentNode(originalDocument.getRootNode(), selectedCall.getWrappedNode());
+		return cellParent;
+	}
+	
+	public void setCellParent(Node cellParent) {
+		this.cellParent = cellParent;
 	}
 
 	public String getClassName() {
