@@ -24,7 +24,6 @@ import org.eclipse.jface.text.templates.TemplateContextType;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.ui.IEditorPart;
 import org.rubypeople.rdt.core.IRubyScript;
-import org.rubypeople.rdt.core.RubyCore;
 import org.rubypeople.rdt.core.RubyModelException;
 import org.rubypeople.rdt.internal.corext.template.ruby.RubyContextType;
 import org.rubypeople.rdt.internal.ui.RubyPlugin;
@@ -111,6 +110,7 @@ public class RubyCompletionProcessor extends TemplateCompletionProcessor
 		cursorPosition = selection.getOffset() + selection.getLength();
 
 		List templates = determineTemplateProposals(viewer, documentOffset);
+		// FIXME Don't suggest templates or keywords if we are invoking a method?
 		ICompletionProposal[] templateArray = (ICompletionProposal[]) templates.toArray(new ICompletionProposal[templates
 				.size()]);
 		ICompletionProposal[] keyWordsAndTemplates = merge(templateArray, determineKeywordProposals(viewer,

@@ -93,11 +93,11 @@ public class RubyScriptCompletion extends CompletionRequestor {
 				// TODO Handle potential method declarations
 //				acceptPotentialMethodDeclaration(proposal);
 			} else {
-				IRubyCompletionProposal javaProposal= createRubyCompletionProposal(proposal);
-				if (javaProposal != null) {
-					fRubyProposals.add(javaProposal);
+				IRubyCompletionProposal rubyProposal= createRubyCompletionProposal(proposal);
+				if (rubyProposal != null) {
+					fRubyProposals.add(rubyProposal);
 					if (proposal.getKind() == CompletionProposal.KEYWORD)
-						fKeywords.add(javaProposal);
+						fKeywords.add(rubyProposal);
 				}
 			}
 		} catch (IllegalArgumentException e) {

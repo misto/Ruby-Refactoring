@@ -2,9 +2,13 @@ package org.rubypeople.rdt.internal.codeassist;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.eclipse.core.resources.IResource;
@@ -53,57 +57,66 @@ import org.rubypeople.rdt.internal.ti.util.ScopedNodeLocator;
 
 public class CompletionEngine {
 	private static final String CONSTRUCTOR_INVOKE_NAME = "new";
-	private CompletionRequestor requestor;
-	private CompletionContext context;
+	private CompletionRequestor fRequestor;
+	private CompletionContext fContext;
 
 	public CompletionEngine(CompletionRequestor requestor) {
-		this.requestor = requestor;
+		this.fRequestor = requestor;
 	}
 
 	public void complete(IRubyScript script, int offset) throws RubyModelException {
-		this.requestor.beginReporting();		
-		context = new CompletionContext(script, offset);
-		if (context.emptyPrefix()) { // no prefix, so we could suggest anything
+		this.fRequestor.beginReporting();		
+		fContext = new CompletionContext(script, offset);
+		if (fContext.emptyPrefix()) { // no prefix, so we could suggest anything
 			suggestTypeNames();
 			suggestConstantNames();
 			suggestGlobals();
 			getDocumentsRubyElementsInScope();
 		} else {
-			if (context.isConstant()) { // type or constant
+			if (fContext.isConstant()) { // type or constant
 				suggestTypeNames();
 				suggestConstantNames();
 			} 
-			if (context.isMethodInvokation()) {
+			if (fContext.isMethodInvokation()) {
 				ITypeInferrer inferrer = new DefaultTypeInferrer();
-				List<ITypeGuess> guesses = inferrer.infer(context.getCorrectedSource(), context.getOffset());
+				List<ITypeGuess> guesses = inferrer.infer(fContext.getCorrectedSource(), fContext.getOffset());
 				RubyElementRequestor requestor = new RubyElementRequestor(script);
 				for (ITypeGuess guess : guesses) {
 					String name = guess.getType();
 					IType[] types = requestor.findType(name);  // FIXME When syntax is broken, grabbing type that is defined in same script like this just doesn't work!
 					for (int i = 0; i < types.length; i++) {
-						suggestMethods(guess.getConfidence(), types[i]);
+						List<CompletionProposal> list = sort(suggestMethods(guess.getConfidence(), types[i]));
+						for (CompletionProposal proposal : list) {
+							fRequestor.accept(proposal);
+						}
 					}
 				}
 			} else {
 				// FIXME Traverse the IRubyElement model, not nodes (and don't reparse)?
 				getDocumentsRubyElementsInScope();
 			}
-			if (context.isGlobal()) { // looks like a global
+			if (fContext.isGlobal()) { // looks like a global
 				suggestGlobals();
 			}
 		}
-		this.requestor.endReporting();
-		context = null;
+		this.fRequestor.endReporting();
+		fContext = null;
+	}
+
+	private List<CompletionProposal> sort(Map<String, CompletionProposal> proposals) {
+		List<CompletionProposal> list = new ArrayList<CompletionProposal>(proposals.values());
+		Collections.sort(list, new CompletionProposalComparator());
+		return list;
 	}
 	
 	private void suggestGlobals() {
 		Set<String> globals = ExperimentalIndex.getGlobalNames();
 		// TODO Sort?
 		for (String name : globals) {
-			if (!context.prefixStartsWith(name))
+			if (!fContext.prefixStartsWith(name))
 				continue;
-			CompletionProposal proposal = createProposal(context.getReplaceStart(), CompletionProposal.FIELD_REF, name);
-			requestor.accept(proposal);
+			CompletionProposal proposal = createProposal(fContext.getReplaceStart(), CompletionProposal.FIELD_REF, name);
+			fRequestor.accept(proposal);
 		}
 	}
 
@@ -111,11 +124,11 @@ public class CompletionEngine {
 		Set<String> types = ExperimentalIndex.getTypeNames();
 		// TODO Sort?
 		for (String name : types) {
-			if (!context.prefixStartsWith(name))
+			if (!fContext.prefixStartsWith(name))
 				continue;
-			CompletionProposal proposal = createProposal(context.getReplaceStart(), CompletionProposal.TYPE_REF, name);
+			CompletionProposal proposal = createProposal(fContext.getReplaceStart(), CompletionProposal.TYPE_REF, name);
 			proposal.setType(name);
-			requestor.accept(proposal);
+			fRequestor.accept(proposal);
 		}
 	}
 
@@ -129,33 +142,37 @@ public class CompletionEngine {
 		Set<String> types = ExperimentalIndex.getConstantNames();
 		// TODO Sort?
 		for (String name : types) {
-			if (!context.prefixStartsWith(name))
+			if (!fContext.prefixStartsWith(name))
 				continue;
-			CompletionProposal proposal = createProposal(context.getReplaceStart(), CompletionProposal.FIELD_REF, name);
-			requestor.accept(proposal);
+			CompletionProposal proposal = createProposal(fContext.getReplaceStart(), CompletionProposal.FIELD_REF, name);
+			fRequestor.accept(proposal);
 		}
 	}
 
-	private void suggestMethods(int confidence, IType type) throws RubyModelException {
+	private Map<String, CompletionProposal> suggestMethods(int confidence, IType type) throws RubyModelException {
+		Map<String, CompletionProposal> proposals = new HashMap<String, CompletionProposal>();
 		if (type == null)
-			return;		
+			return proposals;		
 		IMethod[] methods = type.getMethods();
 		for (int k = 0; k < methods.length; k++) {
-			suggestMethod(methods[k], type.getElementName(), confidence);
-		}
-		// FIXME If a method name matches an existing suggestion (i.e. its overriden in the subclass), don't suggest it again!
+			CompletionProposal proposal = suggestMethod(methods[k], type.getElementName(), confidence);
+		    if (proposal != null && !proposals.containsKey(proposal.getName())) {
+		    	proposals.put(proposal.getName(), proposal); // If a method name matches an existing suggestion (i.e. its overriden in the subclass), don't suggest it again!
+		    }
+		}		
 		String superClass = type.getSuperclassName();
-		if (superClass == null) return;
+		if (superClass == null) return proposals;
 		RubyElementRequestor requestor = new RubyElementRequestor(type.getRubyScript());
 		IType[] supers = requestor.findType(superClass);
 		for (int i = 0; i < supers.length; i++) {
 			IType superType = supers[i];
-			suggestMethods(confidence, superType);
+			proposals.putAll(suggestMethods(confidence, superType));
 		}
+		return proposals;
 	}
 
-	private void suggestMethod(IMethod method, String typeName, int confidence) {
-		int start = context.getReplaceStart();
+	private CompletionProposal suggestMethod(IMethod method, String typeName, int confidence) {
+		int start = fContext.getReplaceStart();
 		String name = method.getElementName();
 		int flags = Flags.AccDefault;
 		if (method.isSingleton()) {
@@ -167,10 +184,10 @@ public class CompletionEngine {
 		} else {
 			// Don't show instance methods if the thing we're working on is a class' name!
 			// FIXME We do want to show if it is a constant, but not a class name
-			if (context.fullPrefixIsConstant()) return;
+			if (fContext.fullPrefixIsConstant()) return null;
 		}
-		if (!context.prefixStartsWith(name))
-			return;
+		if (!fContext.prefixStartsWith(name))
+			return null;
 		
 		try {
 			switch (method.getVisibility()) {
@@ -199,8 +216,7 @@ public class CompletionEngine {
 		if (declaringType != null)
 			declaringName = declaringType.getElementName();
 		proposal.setDeclaringType(declaringName);
-		requestor.accept(proposal);
-		
+		return proposal;
 	}
 
 	/**
@@ -216,13 +232,13 @@ public class CompletionEngine {
 			// FIXME Try to stop all the multiple re-parsing of the source! Can
 			// we parse once and pass the root node around?
 			// Parse
-			Node rootNode = (new RubyParser()).parse(context.getCorrectedSource());
+			Node rootNode = (new RubyParser()).parse(fContext.getCorrectedSource());
 			if (rootNode == null) {
 				return;
 			}
 
 			// Find the enclosing method to get locals and args
-			Node enclosingMethodNode = ClosestSpanningNodeLocator.Instance().findClosestSpanner(rootNode, context.getOffset(), new INodeAcceptor() {
+			Node enclosingMethodNode = ClosestSpanningNodeLocator.Instance().findClosestSpanner(rootNode, fContext.getOffset(), new INodeAcceptor() {
 				public boolean doesAccept(Node node) {
 					return (node instanceof DefnNode || node instanceof DefsNode);
 				}
@@ -232,7 +248,7 @@ public class CompletionEngine {
 
 			// Find the enclosing type (class or module) to get instance and
 			// classvars from
-			Node enclosingTypeNode = ClosestSpanningNodeLocator.Instance().findClosestSpanner(rootNode, context.getOffset(), new INodeAcceptor() {
+			Node enclosingTypeNode = ClosestSpanningNodeLocator.Instance().findClosestSpanner(rootNode, fContext.getOffset(), new INodeAcceptor() {
 				public boolean doesAccept(Node node) {
 					return (node instanceof ClassNode || node instanceof ModuleNode);
 				}
@@ -260,15 +276,15 @@ public class CompletionEngine {
 				List locals = Arrays.asList(scope.getVariables());
 				for (Iterator iter = locals.iterator(); iter.hasNext();) {
 					String local = (String) iter.next();
-					if (!context.prefixStartsWith(local))
+					if (!fContext.prefixStartsWith(local))
 						continue;
 					matches.add(local);
 				}
 			}
 			for (String local : matches) { // Avoid duplicates
 				CompletionProposal proposal = new CompletionProposal(CompletionProposal.LOCAL_VARIABLE_REF, local, 100);
-				proposal.setReplaceRange(context.getReplaceStart(), context.getReplaceStart() + local.length());
-				requestor.accept(proposal);
+				proposal.setReplaceRange(fContext.getReplaceStart(), fContext.getReplaceStart() + local.length());
+				fRequestor.accept(proposal);
 			}
 		}
 	}
@@ -339,7 +355,7 @@ public class CompletionEngine {
 			if (methodDefinition instanceof DefsNode) {
 				name = ((DefsNode) methodDefinition).getName();
 			}
-			if (!context.prefixStartsWith(name))
+			if (!fContext.prefixStartsWith(name))
 				continue;
 			NodeMethod method = new NodeMethod((MethodDefNode)methodDefinition);
 			suggestMethod(method, typeName, 100);
@@ -371,7 +387,7 @@ public class CompletionEngine {
 			// Get the unique names of instance and class variables
 			for (Node varNode : instanceAndClassVars) {
 				String name = ASTUtil.getNameReflectively(varNode);
-				if (!context.prefixStartsWith(name))
+				if (!fContext.prefixStartsWith(name))
 					continue;
 				fields.add(name);
 			}
@@ -380,14 +396,14 @@ public class CompletionEngine {
 		List<String> attrs = AttributeLocator.Instance().findInstanceAttributesInScope(typeNode);
 		for (Iterator iter = attrs.iterator(); iter.hasNext();) {
 			String attr = (String) iter.next();
-			if (!context.prefixStartsWith(attr))
+			if (!fContext.prefixStartsWith(attr))
 				continue;
 			fields.add(attr);
 		}
 		for (String field : fields) {
 			CompletionProposal proposal = new CompletionProposal(CompletionProposal.FIELD_REF, field, 100);
-			proposal.setReplaceRange(context.getReplaceStart(), context.getReplaceStart() + field.length());
-			requestor.accept(proposal);
+			proposal.setReplaceRange(fContext.getReplaceStart(), fContext.getReplaceStart() + field.length());
+			fRequestor.accept(proposal);
 		}
 	}
 
@@ -422,7 +438,7 @@ public class CompletionEngine {
 		System.out.println("Being asked for the type decl node for " + typeName);
 
 		// Find the named type
-		RubyElementRequestor requestor = new RubyElementRequestor(context.getScript());
+		RubyElementRequestor requestor = new RubyElementRequestor(fContext.getScript());
 		IType[] types = requestor.findType(typeName);
 		IType type = types[0];
 
@@ -462,7 +478,7 @@ public class CompletionEngine {
 	}
 
 	private List<String> getIncludedMixinNames(String typeName) {
-		IType rubyType = new RubyType((RubyElement)context.getScript(), typeName);
+		IType rubyType = new RubyType((RubyElement)fContext.getScript(), typeName);
 
 		try {
 			String[] includedModuleNames = rubyType.getIncludedModuleNames();
