@@ -21,7 +21,7 @@ import org.rubypeople.rdt.ui.RubyElementLabelProvider;
 public class RubyTypeSelectionDialog extends ElementListSelectionDialog {
 
     public RubyTypeSelectionDialog(Shell parent) {
-        super(parent, new RubyElementLabelProvider());
+        super(parent, new RubyElementLabelProvider(RubyElementLabelProvider.SHOW_DEFAULT | RubyElementLabelProvider.SHOW_POST_QUALIFIED));
         setElements(getElements());
         setMultipleSelection(false);
     }
