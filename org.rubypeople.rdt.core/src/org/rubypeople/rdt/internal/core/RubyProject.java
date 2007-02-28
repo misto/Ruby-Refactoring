@@ -120,6 +120,17 @@ public class RubyProject extends Openable implements IProjectNature, IRubyElemen
 	}
 
 	public boolean upgrade() throws CoreException {
+		ILoadpathEntry[] entries = getRawLoadpath();
+		if (entries == null || entries.length <= 1) {
+			ILoadpathEntry[] loadpathEntries = new ILoadpathEntry[2];
+			loadpathEntries[0] = RubyCore.newSourceEntry(getProject().getFullPath());
+			loadpathEntries[1] = RubyCore.newContainerEntry(new Path("org.rubypeople.rdt.launching.RUBY_CONTAINER")); //$NON-NLS-1$	
+			try {
+				setRawLoadpath(loadpathEntries, null);
+			} catch (RubyModelException e) {
+				RubyCore.log(e);
+			}
+		}
 		return addToBuildSpec(RubyCore.BUILDER_ID);
 	}
 
