@@ -130,8 +130,8 @@ public class RubyRuntime {
 	 * cycles in project dependencies when resolving loadpath container entries.
 	 * Counters used to know when entering/exiting to clear cache
 	 */
-	private static ThreadLocal fgProjects = new ThreadLocal(); // Lists
-	private static ThreadLocal fgEntryCount = new ThreadLocal(); // Integers
+	private static ThreadLocal<List<IRubyProject>> fgProjects = new ThreadLocal<List<IRubyProject>>(); // Lists
+	private static ThreadLocal<Integer> fgEntryCount = new ThreadLocal<Integer>(); // Integers
 	
 	/**
 	 * Default loadpath provider.
@@ -141,7 +141,7 @@ public class RubyRuntime {
 	/**
 	 * Path providers keyed by id
 	 */
-	private static Map fgPathProviders = null;
+	private static Map<String, RuntimeLoadpathProvider> fgPathProviders = null;
 	
     /**
      *  Set of IDs of VMs contributed via vmInstalls extension point.
@@ -152,9 +152,9 @@ public class RubyRuntime {
 	 * Resolvers keyed by variable name, container id,
 	 * and runtime loadpath entry id.
 	 */
-	private static Map fgVariableResolvers = null;
-	private static Map fgContainerResolvers = null;
-	private static Map fgRuntimeLoadpathEntryResolvers = null;
+	private static Map<String, RuntimeLoadpathEntryResolver> fgVariableResolvers = null;
+	private static Map<String, RuntimeLoadpathEntryResolver> fgContainerResolvers = null;
+	private static Map<String, RuntimeLoadpathEntryResolver> fgRuntimeLoadpathEntryResolvers = null;
     
 	protected RubyRuntime() {
 		super();
@@ -780,11 +780,10 @@ public class RubyRuntime {
 			IRuntimeLoadpathEntryResolver2 resolver = getVariableResolver(rubyVmPath.segment(0));
 			if (resolver != null) {
 				return resolver.resolveVMInstall(entry);
-			} else {
-				resolver = getContainerResolver(rubyVmPath.segment(0));
-				if (resolver != null) {
-					return resolver.resolveVMInstall(entry);
-				}
+			}
+			resolver = getContainerResolver(rubyVmPath.segment(0));
+			if (resolver != null) {
+				return resolver.resolveVMInstall(entry);
 			}
 		}
 		
@@ -873,9 +872,9 @@ public class RubyRuntime {
 	private static void initializeResolvers() {
 		IExtensionPoint point = Platform.getExtensionRegistry().getExtensionPoint(LaunchingPlugin.PLUGIN_ID, EXTENSION_POINT_RUNTIME_CLASSPATH_ENTRY_RESOLVERS);
 		IConfigurationElement[] extensions = point.getConfigurationElements();
-		fgVariableResolvers = new HashMap(extensions.length);
-		fgContainerResolvers = new HashMap(extensions.length);
-		fgRuntimeLoadpathEntryResolvers = new HashMap(extensions.length);
+		fgVariableResolvers = new HashMap<String, RuntimeLoadpathEntryResolver>(extensions.length);
+		fgContainerResolvers = new HashMap<String, RuntimeLoadpathEntryResolver>(extensions.length);
+		fgRuntimeLoadpathEntryResolvers = new HashMap<String, RuntimeLoadpathEntryResolver>(extensions.length);
 		for (int i = 0; i < extensions.length; i++) {
 			RuntimeLoadpathEntryResolver res = new RuntimeLoadpathEntryResolver(extensions[i]);
 			String variable = res.getVariableName();
@@ -1072,7 +1071,7 @@ public class RubyRuntime {
 	private static void initializeProviders() {
 		IExtensionPoint point = Platform.getExtensionRegistry().getExtensionPoint(LaunchingPlugin.PLUGIN_ID, EXTENSION_POINT_RUNTIME_CLASSPATH_PROVIDERS);
 		IConfigurationElement[] extensions = point.getConfigurationElements();
-		fgPathProviders = new HashMap(extensions.length);
+		fgPathProviders = new HashMap<String, RuntimeLoadpathProvider>(extensions.length);
 		for (int i = 0; i < extensions.length; i++) {
 			RuntimeLoadpathProvider res = new RuntimeLoadpathProvider(extensions[i]);
 			fgPathProviders.put(res.getIdentifier(), res);
@@ -1259,7 +1258,7 @@ public class RubyRuntime {
 	 */
 	public static IRuntimeLoadpathEntry[] computeUnresolvedRuntimeLoadpath(IRubyProject project) throws CoreException {
 		ILoadpathEntry[] entries = project.getRawLoadpath();
-		List loadpathEntries = new ArrayList(3);
+		List<IRuntimeLoadpathEntry> loadpathEntries = new ArrayList<IRuntimeLoadpathEntry>(3);
 		for (int i = 0; i < entries.length; i++) {
 			ILoadpathEntry entry = entries[i];
 			switch (entry.getEntryKind()) {
@@ -1424,11 +1423,11 @@ public class RubyRuntime {
 				property = IRuntimeLoadpathEntry.BOOTSTRAP_CLASSES;
 				break;
 		}			
-		List resolved = new ArrayList(cpes.length);
-		List projects = (List) fgProjects.get();
+		List<IRuntimeLoadpathEntry> resolved = new ArrayList<IRuntimeLoadpathEntry>(cpes.length);
+		List<IRubyProject> projects = (List<IRubyProject>) fgProjects.get();
 		Integer count = (Integer) fgEntryCount.get();
 		if (projects == null) {
-			projects = new ArrayList();
+			projects = new ArrayList<IRubyProject>();
 			fgProjects.set(projects);
 			count = new Integer(0);
 		}
@@ -1440,11 +1439,11 @@ public class RubyRuntime {
 				ILoadpathEntry cpe = cpes[i];
 				if (cpe.getEntryKind() == ILoadpathEntry.CPE_PROJECT) {
 					IProject p = ResourcesPlugin.getWorkspace().getRoot().getProject(cpe.getPath().segment(0));
-					IRubyProject jp = RubyCore.create(p);
-					if (!projects.contains(jp)) {
-						projects.add(jp);
-						IRuntimeLoadpathEntry loadpath = newDefaultProjectLoadpathEntry(jp);
-						IRuntimeLoadpathEntry[] entries = resolveRuntimeLoadpathEntry(loadpath, jp);
+					IRubyProject rp = RubyCore.create(p);
+					if (!projects.contains(rp)) {
+						projects.add(rp);
+						IRuntimeLoadpathEntry loadpath = newDefaultProjectLoadpathEntry(rp);
+						IRuntimeLoadpathEntry[] entries = resolveRuntimeLoadpathEntry(loadpath, rp);
 						for (int j = 0; j < entries.length; j++) {
 							IRuntimeLoadpathEntry e = entries[j];
 							if (!resolved.contains(e)) {
