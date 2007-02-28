@@ -864,17 +864,11 @@ public abstract class NewTypeWizardPage extends NewContainerWizardPage {
 	
 	private boolean isConstant(String className) {
         if (className == null || className.length() == 0) return false;
-        if (!Character.isLowerCase(className.charAt(0)) && !Character.isLetter(className.charAt(0)))
-            return false;
         int namespaceDelimeterIndex = className.indexOf("::");
         if (namespaceDelimeterIndex != -1) {
         	return isConstant(className.substring(0, namespaceDelimeterIndex)) && isConstant(className.substring(namespaceDelimeterIndex+2));
         }
-        for (int i = 0; i < className.length(); i++) {
-            char c = className.charAt(i);
-            if (!Character.isLetterOrDigit(c) && c != '_') return false;
-        }
-        return true;
+        return className.matches("^[A-Z]\\w*");
     }
 	
 
