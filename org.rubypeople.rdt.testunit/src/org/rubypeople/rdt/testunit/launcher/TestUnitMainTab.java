@@ -45,7 +45,6 @@ import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.dialogs.ElementListSelectionDialog;
 import org.rubypeople.rdt.core.IRubyElement;
 import org.rubypeople.rdt.internal.debug.ui.RdtDebugUiMessages;
-import org.rubypeople.rdt.internal.launching.RubyLaunchConfigurationAttribute;
 import org.rubypeople.rdt.internal.testunit.ui.TestUnitMessages;
 import org.rubypeople.rdt.internal.testunit.ui.TestunitPlugin;
 import org.rubypeople.rdt.internal.ui.RubyPlugin;
@@ -211,7 +210,7 @@ public class TestUnitMainTab extends AbstractLaunchConfigurationTab implements I
 			}
 		}
 
-		configuration.setAttribute(RubyLaunchConfigurationAttribute.PROJECT_NAME, projectName);
+		configuration.setAttribute(IRubyLaunchConfigurationConstants.ATTR_PROJECT_NAME, projectName);
 		configuration.setAttribute(TestUnitLaunchConfigurationDelegate.LAUNCH_CONTAINER_ATTR, fileName);
 		configuration.setAttribute(TestUnitLaunchConfigurationDelegate.TESTTYPE_ATTR, type);
 		configuration.setAttribute(TestUnitLaunchConfigurationDelegate.TESTNAME_ATTR, "");
