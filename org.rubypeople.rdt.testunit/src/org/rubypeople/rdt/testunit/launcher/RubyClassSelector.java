@@ -138,7 +138,7 @@ public class RubyClassSelector {
 	 * @return
 	 */
 	private IRubyElement[] getAllTypes() {
-		List typeList = new ArrayList();
+		List<IRubyElement> typeList = new ArrayList<IRubyElement>();
 		IProject[] projects = RubyCore.getRubyProjects();
 		for (int i = 0; i < projects.length; i++) {
 			IRubyElement[] types = TestSearchEngine.findTests(projects[i]);

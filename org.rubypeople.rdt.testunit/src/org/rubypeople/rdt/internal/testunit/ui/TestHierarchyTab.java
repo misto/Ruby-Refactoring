@@ -81,11 +81,11 @@ public class TestHierarchyTab extends TestRunTab implements IMenuListener {
 	/**
 	 * Vector of SuiteInfo items
 	 */
-	private Vector fSuiteInfos = new Vector();
+	private Vector<SuiteInfo> fSuiteInfos = new Vector<SuiteInfo>();
 	/**
 	 * Maps test Ids to TreeItems.
 	 */
-	private Map fTreeItemMap = new HashMap();
+	private Map<String, TreeItem> fTreeItemMap = new HashMap<String, TreeItem>();
 
 	private TestUnitView fTestRunnerPart;
 
@@ -209,7 +209,7 @@ public class TestHierarchyTab extends TestRunTab implements IMenuListener {
 	}
 
 	private void updatePath(TreeItem parent) {
-		List newPath = new ArrayList();
+		List<TreeItem> newPath = new ArrayList<TreeItem>();
 		while (parent != null) {
 			newPath.add(parent);
 			parent = parent.getParentItem();
@@ -367,7 +367,7 @@ public class TestHierarchyTab extends TestRunTab implements IMenuListener {
 	public void aboutToStart() {
 		fTree.removeAll();
 		fSuiteInfos.removeAllElements();
-		fTreeItemMap = new HashMap();
+		fTreeItemMap = new HashMap<String, TreeItem>();
 		fCachedParent = null;
 		fCachedItems = null;
 		fMoveSelection = false;

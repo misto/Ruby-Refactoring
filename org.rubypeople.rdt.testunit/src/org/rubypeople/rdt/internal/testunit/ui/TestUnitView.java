@@ -84,12 +84,12 @@ public class TestUnitView extends ViewPart implements ITestRunListener3 {
 	/**
 	 * The collection of ITestRunTabs
 	 */
-	protected Vector fTestRunTabs = new Vector();
+	protected Vector<TestRunTab> fTestRunTabs = new Vector<TestRunTab>();
 
 	/**
 	 * Map storing TestInfos for each executed test keyed by the test name.
 	 */
-	private Map fTestInfos = new HashMap();
+	private Map<String, TestRunInfo> fTestInfos = new HashMap<String, TestRunInfo>();
 
 	/**
 	 * Is the UI disposed
@@ -132,7 +132,7 @@ public class TestUnitView extends ViewPart implements ITestRunListener3 {
 	 * The first failure of a test run. Used to reveal the first failed tests at
 	 * the end of a run.
 	 */
-	private List fFailures = new ArrayList();
+	private List<TestRunInfo> fFailures = new ArrayList<TestRunInfo>();
 
 	protected boolean fShowOnErrorOnly = false;
 
@@ -561,7 +561,7 @@ public class TestUnitView extends ViewPart implements ITestRunListener3 {
 		fTestCount = testCount;
 		aboutToStart();
 		fTestInfos.clear();
-		fFailures = new ArrayList();
+		fFailures = new ArrayList<TestRunInfo>();
 	}
 
 	protected void start(final int total) {
@@ -802,8 +802,7 @@ public class TestUnitView extends ViewPart implements ITestRunListener3 {
 	 * @see ITestRunListener#testRunStopped
 	 */
 	public void testRunStopped(final long elapsedTime) {
-		String msg = TestUnitMessages.TestRunnerViewPart_message_stopped; 
-		setInfoMessage(msg);
+		setInfoMessage(TestUnitMessages.TestRunnerViewPart_message_stopped);
 		handleStopped();
 	}
 

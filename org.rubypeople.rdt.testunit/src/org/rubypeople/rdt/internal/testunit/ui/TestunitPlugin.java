@@ -48,7 +48,7 @@ public class TestunitPlugin extends AbstractUIPlugin implements ILaunchListener 
 	 * TestRunner once to a launch. Once a test runner is connected it is
 	 * removed from the set.
 	 */
-	private AbstractSet fTrackedLaunches = new HashSet(20);
+	private AbstractSet<ILaunch> fTrackedLaunches = new HashSet<ILaunch>(20);
 
 	private static URL fgIconBaseURL;
 

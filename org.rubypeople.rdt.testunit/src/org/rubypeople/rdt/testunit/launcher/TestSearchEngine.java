@@ -49,9 +49,9 @@ public class TestSearchEngine {
         try {
 			script.reconcile();
 			IRubyElement[] children = script.getChildren();
-			List types = new ArrayList();
+			List<IRubyElement> types = new ArrayList<IRubyElement>();
 			for (int i = 0; i < children.length; i++) {
-			    if (children[i].isType(IRubyElement.TYPE) ) types.add(children[i]);
+			    if (children[i].isType(IRubyElement.TYPE)) types.add(children[i]);
 			}
 			IRubyElement[] array = new IRubyElement[types.size()];
 			System.arraycopy(types.toArray(), 0, array, 0, types.size());
@@ -68,7 +68,7 @@ public class TestSearchEngine {
     public static IRubyElement[] findTests(IProject rubyProject) {
         if (rubyProject == null) { return new IRubyElement[0]; }
         try {
-            List tests = new ArrayList();
+            List<IRubyElement> tests = new ArrayList<IRubyElement>();
             RubyElementVisitor visitor = new RubyElementVisitor();
             rubyProject.accept(visitor);
             Object[] rubyFiles = visitor.getCollectedRubyFiles();
