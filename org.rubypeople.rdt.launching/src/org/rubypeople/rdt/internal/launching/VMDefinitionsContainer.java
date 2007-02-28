@@ -64,17 +64,17 @@ public class VMDefinitionsContainer {
 	/**
 	 * Map of VMInstallTypes to Lists of corresponding VMInstalls.
 	 */
-	private Map fVMTypeToVMMap;
+	private Map<IVMInstallType, List<IVMInstall>> fVMTypeToVMMap;
 	
 	/**
 	 * Cached list of VMs in this container
 	 */
-	private List fVMList;
+	private List<IVMInstall> fVMList;
 	
 	/**
 	 * VMs managed by this container whose install locations don't actually exist.
 	 */
-	private List fInvalidVMList;
+	private List<IVMInstall> fInvalidVMList;
 			
 	/**
 	 * The composite identifier of the default VM.  This consists of the install type ID
@@ -86,9 +86,9 @@ public class VMDefinitionsContainer {
 	 * Constructs an empty VM container 
 	 */
 	public VMDefinitionsContainer() {
-		fVMTypeToVMMap = new HashMap(10);
-		fInvalidVMList = new ArrayList(10);	
-		fVMList = new ArrayList(10);		
+		fVMTypeToVMMap = new HashMap<IVMInstallType, List<IVMInstall>>(10);
+		fInvalidVMList = new ArrayList<IVMInstall>(10);	
+		fVMList = new ArrayList<IVMInstall>(10);		
 	}
 		
 	/**
@@ -104,9 +104,9 @@ public class VMDefinitionsContainer {
 	public void addVM(IVMInstall vm) {
 		if (!fVMList.contains(vm)) {	
 			IVMInstallType vmInstallType = vm.getVMInstallType();
-			List vmList = (List) fVMTypeToVMMap.get(vmInstallType);
+			List<IVMInstall> vmList = (List<IVMInstall>) fVMTypeToVMMap.get(vmInstallType);
 			if (vmList == null) {
-				vmList = new ArrayList(3);
+				vmList = new ArrayList<IVMInstall>(3);
 				fVMTypeToVMMap.put(vmInstallType, vmList);			
 			}
 			vmList.add(vm);
@@ -154,7 +154,7 @@ public class VMDefinitionsContainer {
 	 * 
 	 * @return List the data structure containing all VMs managed by this container
 	 */
-	public List getVMList() {
+	public List<IVMInstall> getVMList() {
 		return fVMList;
 	}
 	
@@ -164,9 +164,9 @@ public class VMDefinitionsContainer {
 	 * 
 	 * @return List 
 	 */
-	public List getValidVMList() {
-		List vms = getVMList();
-		List resultList = new ArrayList(vms.size());
+	public List<IVMInstall> getValidVMList() {
+		List<IVMInstall> vms = getVMList();
+		List<IVMInstall> resultList = new ArrayList<IVMInstall>(vms.size());
 		resultList.addAll(vms);
 		resultList.removeAll(fInvalidVMList);
 		return resultList;
@@ -482,7 +482,7 @@ public class VMDefinitionsContainer {
 	private static void setLibraryLocations(IVMInstall vm, Element libLocationsElement) {
 		NodeList list = libLocationsElement.getChildNodes();
 		int length = list.getLength();
-		List locations = new ArrayList(length);
+		List<IPath> locations = new ArrayList<IPath>(length);
 		for (int i = 0; i < length; ++i) {
 			Node node = list.item(i);
 			short type = node.getNodeType();
