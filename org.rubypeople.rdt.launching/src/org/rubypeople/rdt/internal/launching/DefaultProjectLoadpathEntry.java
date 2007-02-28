@@ -124,12 +124,12 @@ public class DefaultProjectLoadpathEntry extends AbstractRuntimeLoadpathEntry {
 	}
 	
 	/* (non-Rubydoc)
-	 * @see org.eclipse.jdt.launching.IRuntimeLoadpathEntry2#getRuntimeLoadpathEntries(org.eclipse.debug.core.ILaunchConfiguration)
+	 * @see org.rubypeople.rdt.launching.IRuntimeLoadpathEntry2#getRuntimeLoadpathEntries(org.eclipse.debug.core.ILaunchConfiguration)
 	 */
 	public IRuntimeLoadpathEntry[] getRuntimeLoadpathEntries(ILaunchConfiguration configuration) throws CoreException {
 		ILoadpathEntry entry = RubyCore.newProjectEntry(getRubyProject().getProject().getFullPath());
 		List classpathEntries = new ArrayList(5);
-		List expanding = new ArrayList(5);
+		List<ILoadpathEntry> expanding = new ArrayList<ILoadpathEntry>(5);
 		expandProject(entry, classpathEntries, expanding);
 		IRuntimeLoadpathEntry[] runtimeEntries = new IRuntimeLoadpathEntry[classpathEntries.size()];
 		for (int i = 0; i < runtimeEntries.length; i++) {
@@ -141,8 +141,8 @@ public class DefaultProjectLoadpathEntry extends AbstractRuntimeLoadpathEntry {
 				runtimeEntries[i] = (IRuntimeLoadpathEntry)e;				
 			}
 		}
-		// remove bootpath entries - this is a default user classpath
-		List ordered = new ArrayList(runtimeEntries.length);
+		// remove bootpath entries - this is a default user loadpath
+		List<IRuntimeLoadpathEntry> ordered = new ArrayList<IRuntimeLoadpathEntry>(runtimeEntries.length);
 		for (int i = 0; i < runtimeEntries.length; i++) {
 			if (runtimeEntries[i].getLoadpathProperty() == IRuntimeLoadpathEntry.USER_CLASSES) {
 				ordered.add(runtimeEntries[i]);
@@ -162,7 +162,7 @@ public class DefaultProjectLoadpathEntry extends AbstractRuntimeLoadpathEntry {
 	 * expanded (to detect cycles)
 	 * @exception CoreException if unable to expand the classpath
 	 */
-	private void expandProject(ILoadpathEntry projectEntry, List expandedPath, List expanding) throws CoreException {
+	private void expandProject(ILoadpathEntry projectEntry, List expandedPath, List<ILoadpathEntry> expanding) throws CoreException {
 		expanding.add(projectEntry);
 		// 1. Get the raw classpath
 		// 2. Replace source folder entries with a project entry

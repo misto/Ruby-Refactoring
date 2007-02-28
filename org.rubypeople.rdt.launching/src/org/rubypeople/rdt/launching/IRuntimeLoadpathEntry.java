@@ -18,7 +18,7 @@ import org.rubypeople.rdt.core.ILoadpathEntry;
 import org.rubypeople.rdt.core.IRubyProject;
 
 /**
- * Represents an entry on a runtime classpath. A runtime classpath entry
+ * Represents an entry on a runtime loadpath. A runtime loadpath entry
  * may refer to one of the following:
  * <ul>
  * 	<li>A Ruby project (type <code>PROJECT</code>) - a project entry refers
@@ -28,22 +28,22 @@ import org.rubypeople.rdt.core.IRubyProject;
  * 		folder in the workspace or in the local file system containing class
  * 		files. An archive may have attached source.</li>
  * 	<li>A variable (type <code>VARIABLE</code>) - a variable refers to a 
- * 		classpath variable, which may refer to a jar.</li>
- * 	<li>A library (type <code>CONTAINER</code>) - a container refers to classpath
+ * 		loadpath variable, which may refer to a jar.</li>
+ * 	<li>A library (type <code>CONTAINER</code>) - a container refers to loadpath
  * 		container variable which refers to a collection of archives derived
  * 		dynamically, on a per project basis.</li>
- *  <li>A contributed classpath entry (type <code>OTHER</code>) - a contributed
- *      classpath entry is an extension contributed by a plug-in. The resolution
- *      of a contributed classpath entry is client defined. See
+ *  <li>A contributed loadpath entry (type <code>OTHER</code>) - a contributed
+ *      loadpath entry is an extension contributed by a plug-in. The resolution
+ *      of a contributed loadpath entry is client defined. See
  * 		<code>IRuntimeLoadpathEntry2</code>.
  * </ul>
  * <p>
- * Clients may implement this interface for contributed a classpath entry
- * types (i.e. type <code>OTHER</code>). Note, contributed classpath entries
+ * Clients may implement this interface for contributed a loadpath entry
+ * types (i.e. type <code>OTHER</code>). Note, contributed loadpath entries
  * are new in 3.0, and are only intended to be contributed by the Ruby debugger.
  * </p>
  * @since 2.0
- * @see org.eclipse.jdt.launching.IRuntimeLoadpathEntry2
+ * @see org.rubypeople.rdt.launching.IRuntimeLoadpathEntry2
  */
 public interface IRuntimeLoadpathEntry {
 	
@@ -87,12 +87,12 @@ public interface IRuntimeLoadpathEntry {
 		
 	/**
 	 * Loadpath property identifier for entries that should appear on the
-	 * user classpath.
+	 * user loadpath.
 	 */
 	public static final int USER_CLASSES = 3;	
 	
 	/**
-	 * Returns this classpath entry's type. The type of a runtime classpath entry is
+	 * Returns this loadpath entry's type. The type of a runtime loadpath entry is
 	 * identified by one of the following constants:
 	 * <ul>
 	 * <li><code>PROJECT</code></li>
@@ -104,14 +104,14 @@ public interface IRuntimeLoadpathEntry {
 	 * <p>
 	 * Since 3.0, a type of <code>OTHER</code> may be returned.
 	 * </p>
-	 * @return this classpath entry's type
+	 * @return this loadpath entry's type
 	 */
 	public int getType();
 	
 	/**
-	 * Returns a memento for this classpath entry.
+	 * Returns a memento for this loadpath entry.
 	 * <p>
-	 * Since 3.0, the memento for a contributed classpath entry (i.e. of
+	 * Since 3.0, the memento for a contributed loadpath entry (i.e. of
 	 * type <code>OTHER</code>), must be in the form of an XML document,
 	 * with the following element structure:
 	 * <pre>
@@ -123,15 +123,15 @@ public interface IRuntimeLoadpathEntry {
 	 * </runtimeLoadpathEntry>
 	 * </pre>
 	 * The <code>id</code> attribute is the unique identifier of the extension
-	 * that contributed this runtime classpath entry type, via the extension
+	 * that contributed this runtime loadpath entry type, via the extension
 	 * point <code>org.eclipse.jdt.launching.runtimeLoadpathEntries</code>.
 	 * The <code>memento</code> element will be used to initialize a
-	 * restored runtime classpath entry, via the method
+	 * restored runtime loadpath entry, via the method
 	 * <code>IRuntimeLoadpathEntry2.initializeFrom(Element memento)</code>. The 
 	 * attributes of the <code>memento</code> element are client defined.
 	 * </p>
 	 * 
-	 * @return a memento for this classpath entry
+	 * @return a memento for this loadpath entry
 	 * @exception CoreException if an exception occurs generating a memento
 	 */
 	public String getMemento() throws CoreException;
@@ -146,9 +146,9 @@ public interface IRuntimeLoadpathEntry {
 	 * <li><code>ARCHIVE</code> - the absolute path of the associated archive,
 	 * 		which may or may not be in the workspace.</li>
 	 * <li><code>VARIABLE</code> - the path corresponding to the associated
-	 * 		classpath variable entry.</li>
+	 * 		loadpath variable entry.</li>
 	 * <li><code>CONTAINER</code> - the path corresponding to the associated
-	 * 		classpath container variable entry.</li>
+	 * 		loadpath container variable entry.</li>
 	 * <li><code>OTHER</code> - the path returned is client defined.</li>
 	 * </ul>
 	 * <p>
@@ -170,29 +170,29 @@ public interface IRuntimeLoadpathEntry {
 	
 	/**
 	 * Returns a constant indicating where this entry should appear on the 
-	 * runtime classpath by default.
+	 * runtime loadpath by default.
 	 * The value returned is one of the following:
 	 * <ul>
 	 * <li><code>STANDARD_CLASSES</code> - a standard entry does not need to appear
-	 * 		on the runtime classpath</li>
+	 * 		on the runtime loadpath</li>
 	 * <li><code>BOOTSTRAP_CLASSES</code> - a bootstrap entry should appear on the
 	 * 		boot path</li>
 	 * <li><code>USER_CLASSES</code> - a user entry should appear on the path
 	 * 		containing user or application classes</li>
 	 * </ul>
 	 * 
-	 * @return where this entry should appear on the runtime classpath
+	 * @return where this entry should appear on the runtime loadpath
 	 */
 	public int getLoadpathProperty();
 	
 	/**
-	 * Sets whether this entry should appear on the bootstrap classpath,
-	 * the user classpath, or whether this entry is a standard bootstrap entry
-	 * that does not need to appear on the classpath.
+	 * Sets whether this entry should appear on the bootstrap loadpath,
+	 * the user loadpath, or whether this entry is a standard bootstrap entry
+	 * that does not need to appear on the loadpath.
 	 * The location is one of:
 	 * <ul>
 	 * <li><code>STANDARD_CLASSES</code> - a standard entry does not need to appear
-	 * 		on the runtime classpath</li>
+	 * 		on the runtime loadpath</li>
 	 * <li><code>BOOTSTRAP_CLASSES</code> - a bootstrap entry should appear on the
 	 * 		boot path</li>
 	 * <li><code>USER_CLASSES</code> - a user entry should appear on the path
@@ -222,21 +222,21 @@ public interface IRuntimeLoadpathEntry {
 	public String getVariableName();
 	
 	/**
-	 * Returns a classpath entry equivalent to this runtime classpath entry,
+	 * Returns a loadpath entry equivalent to this runtime loadpath entry,
 	 * or <code>null</code> if none.
-	 * @return a classpath entry equivalent to this runtime classpath entry,
+	 * @return a loadpath entry equivalent to this runtime loadpath entry,
 	 *  or <code>null</code>
 	 * @since 0.9.0
 	 */
 	public ILoadpathEntry getLoadpathEntry();
 	
 	/**
-	 * Returns the Ruby project associated with this runtime classpath entry
-	 * or <code>null</code> if none. Runtime classpath entries of type
+	 * Returns the Ruby project associated with this runtime loadpath entry
+	 * or <code>null</code> if none. Runtime loadpath entries of type
 	 * <code>CONTAINER</code> may be associated with a project for the
 	 * purposes of resolving the entries in a container. 
 	 * 
-	 * @return the Ruby project associated with this runtime classpath entry
+	 * @return the Ruby project associated with this runtime loadpath entry
 	 * or <code>null</code> if none
 	 * @since 0.9.0
 	 */

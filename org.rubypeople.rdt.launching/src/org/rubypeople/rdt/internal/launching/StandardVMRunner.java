@@ -80,7 +80,7 @@ public class StandardVMRunner extends AbstractVMRunner {
 		return buf.toString();
 	}	
 	
-	protected void addArguments(String[] args, List v) {
+	protected void addArguments(String[] args, List<String> v) {
 		if (args == null) {
 			return;
 		}
@@ -188,7 +188,7 @@ public class StandardVMRunner extends AbstractVMRunner {
 		
 		String program= constructProgramString(config);
 		
-		List arguments= new ArrayList();
+		List<String> arguments= new ArrayList<String>();
 		arguments.add(program);
 				
 		// VM args are the first thing after the ruby program so that users can specify
