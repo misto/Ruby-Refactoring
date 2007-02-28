@@ -29,6 +29,7 @@ import org.rubypeople.rdt.core.IRubyElement;
 import org.rubypeople.rdt.core.IRubyElementDelta;
 import org.rubypeople.rdt.core.IRubyModel;
 import org.rubypeople.rdt.core.IRubyProject;
+import org.rubypeople.rdt.core.IRubyScript;
 import org.rubypeople.rdt.core.ISourceFolderRoot;
 import org.rubypeople.rdt.core.RubyCore;
 import org.rubypeople.rdt.core.RubyModelException;
@@ -122,18 +123,18 @@ public class DeltaProcessor {
     private final ModelUpdater modelUpdater = new ModelUpdater();
 
     /* A set of IRubyProject whose caches need to be reset */
-    private HashSet projectCachesToReset = new HashSet();
+    private HashSet<IRubyProject> projectCachesToReset = new HashSet<IRubyProject>();
 
-	/* A table from IRubyProject to an array of IPackageFragmentRoot.
-	 * This table contains the pkg fragment roots of the project that are being deleted.
+	/* A table from IRubyProject to an array of ISourceFolderRoot.
+	 * This table contains the src folder roots of the project that are being deleted.
 	 */
-	public Map removedRoots;
+	public Map<IRubyProject, ISourceFolderRoot[]> removedRoots;
     
     /*
      * A list of IRubyElement used as a scope for external archives refresh
      * during POST_CHANGE. This is null if no refresh is needed.
      */
-    private HashSet refreshedElements;
+    private HashSet<IRubyElement> refreshedElements;
 
     private DeltaProcessingState state;
     private RubyModelManager manager;
@@ -147,13 +148,13 @@ public class DeltaProcessor {
      * Queue of deltas created explicily by the Ruby Model that have yet to be
      * fired.
      */
-    public ArrayList rubyModelDeltas = new ArrayList();
+    public ArrayList<IRubyElementDelta> rubyModelDeltas = new ArrayList<IRubyElementDelta>();
 
     /*
      * Queue of reconcile deltas on working copies that have yet to be fired.
-     * This is a table form IWorkingCopy to IRubyElementDelta
+     * This is a table from IWorkingCopy to IRubyElementDelta
      */
-    public HashMap reconcileDeltas = new HashMap();
+    public HashMap<IRubyScript, IRubyElementDelta> reconcileDeltas = new HashMap<IRubyScript, IRubyElementDelta>();
 
     /*
      * The ruby element that was last created (see createElement(IResource)).
@@ -163,7 +164,7 @@ public class DeltaProcessor {
     private Openable currentElement;
     
 	/* A set of IRubyProject whose source folder roots need to be refreshed */
-	private HashSet rootsToRefresh = new HashSet();
+	private HashSet<IRubyProject> rootsToRefresh = new HashSet<IRubyProject>();
 	
     /*
      * The <code>RubyElementDelta</code> corresponding to the <code>IResourceDelta</code>
@@ -325,7 +326,7 @@ public class DeltaProcessor {
         if (deltaToNotify != null) {
             // flush now so as to keep listener reactions to post their own
             // deltas for subsequent iteration
-            this.reconcileDeltas = new HashMap();
+            this.reconcileDeltas = new HashMap<IRubyScript, IRubyElementDelta>();
 
             notifyListeners(deltaToNotify, ElementChangedEvent.POST_RECONCILE, listeners,
                     listenerMask, listenerCount);
@@ -336,7 +337,7 @@ public class DeltaProcessor {
      * Flushes all deltas without firing them.
      */
     public void flush() {
-        this.rubyModelDeltas = new ArrayList();
+        this.rubyModelDeltas = new ArrayList<IRubyElementDelta>();
     }
 
     private void notifyListeners(IRubyElementDelta deltaToNotify, int eventType,
@@ -471,9 +472,9 @@ public class DeltaProcessor {
 	 */
 	private void updateLoadpathMarkers(IResourceDelta delta, DeltaProcessingState.ProjectUpdateInfo[] updates) {
 		
-		Map preferredClasspaths = new HashMap(5);
+		Map<RubyProject, ILoadpathEntry[]> preferredClasspaths = new HashMap<RubyProject, ILoadpathEntry[]>(5);
 		Map preferredOutputs = new HashMap(5);
-		HashSet affectedProjects = new HashSet(5);
+		HashSet<IPath> affectedProjects = new HashSet<IPath>(5);
 		
 		// read .loadpath files that have changed, and create markers if format is wrong or if an entry cannot be found
 		RubyModel.flushExternalFileCache();
@@ -538,7 +539,7 @@ public class DeltaProcessor {
 	 * Creates/removes problem markers if needed.
 	 * Remember the affected projects in the given set.
 	 */
-	private void updateLoadpathMarkers(IResourceDelta delta, HashSet affectedProjects, Map preferredClasspaths, Map preferredOutputs) {
+	private void updateLoadpathMarkers(IResourceDelta delta, HashSet<IPath> affectedProjects, Map preferredClasspaths, Map preferredOutputs) {
 		IResource resource = delta.getResource();
 		boolean processChildren = false;
 
@@ -747,7 +748,7 @@ public class DeltaProcessor {
     private void resetProjectCaches() {
         Iterator iterator = this.projectCachesToReset.iterator();
         HashMap projectDepencies = this.state.projectDependencies;
-        HashSet affectedDependents = new HashSet();
+        HashSet<IRubyProject> affectedDependents = new HashSet<IRubyProject>();
         while (iterator.hasNext()) {
             RubyProject project = (RubyProject) iterator.next();
             project.resetCaches();
@@ -766,7 +767,7 @@ public class DeltaProcessor {
      * update.
      */
     private void addDependentProjects(IRubyProject project, HashMap projectDependencies,
-            HashSet result) {
+            HashSet<IRubyProject> result) {
         IRubyProject[] dependents = (IRubyProject[]) projectDependencies.get(project);
         if (dependents == null) return;
         for (int i = 0, length = dependents.length; i < length; i++) {
@@ -843,7 +844,7 @@ public class DeltaProcessor {
 			
 			// remember roots of this project
 			if (this.removedRoots == null) {
-				this.removedRoots = new HashMap();
+				this.removedRoots = new HashMap<IRubyProject, ISourceFolderRoot[]>();
 			}
 			if (rubyProject.isOpen()) {
 				this.removedRoots.put(rubyProject, rubyProject.getSourceFolderRoots());
@@ -1099,9 +1100,9 @@ public class DeltaProcessor {
 	/*
 	 * Adds the given project and its dependents to the list of the roots to refresh.
 	 */
-	private void addToRootsToRefreshWithDependents(IRubyProject javaProject) {
-		this.rootsToRefresh.add(javaProject);
-		this.addDependentProjects(javaProject, this.state.projectDependencies, this.rootsToRefresh);
+	private void addToRootsToRefreshWithDependents(IRubyProject rubyProject) {
+		this.rootsToRefresh.add(rubyProject);
+		this.addDependentProjects(rubyProject, this.state.projectDependencies, this.rootsToRefresh);
 	}
 
     /*
@@ -1110,7 +1111,7 @@ public class DeltaProcessor {
      */
     public void addForRefresh(IRubyElement element) {
         if (this.refreshedElements == null) {
-            this.refreshedElements = new HashSet();
+            this.refreshedElements = new HashSet<IRubyElement>();
         }
         this.refreshedElements.add(element);
     }
@@ -1357,8 +1358,8 @@ public class DeltaProcessor {
                             this.state.updateRoots(element.getPath(), delta, this);
 							
 							// refresh src folder roots and caches of the project (and its dependents)
-							this.rootsToRefresh.add(element);
-							this.projectCachesToReset.add(element);
+							this.rootsToRefresh.add((IRubyProject)element);
+							this.projectCachesToReset.add((IRubyProject)element);
 							
 //							this.manager.indexManager.indexAll(res);
                         }
@@ -1544,8 +1545,8 @@ public class DeltaProcessor {
 				
                 // refresh pkg fragment roots and caches of the project (and its
                 // dependents)
-                this.rootsToRefresh.add(element);
-                this.projectCachesToReset.add(element);
+                this.rootsToRefresh.add((IRubyProject)element);
+                this.projectCachesToReset.add((IRubyProject)element);
             }
         } else {
             if (delta == null || (delta.getFlags() & IResourceDelta.MOVED_FROM) == 0) {
@@ -1718,8 +1719,8 @@ public class DeltaProcessor {
 			this.state.updateRoots(element.getPath(), delta, this);
 
 			// refresh pkg fragment roots and caches of the project (and its dependents)
-			this.rootsToRefresh.add(element);
-			this.projectCachesToReset.add(element);
+			this.rootsToRefresh.add((IRubyProject)element);
+			this.projectCachesToReset.add((IRubyProject)element);
 
 			break;
 		case IRubyElement.SOURCE_FOLDER_ROOT :

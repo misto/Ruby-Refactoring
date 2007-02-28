@@ -58,7 +58,7 @@ public abstract class RubyModelOperation implements IWorkspaceRunnable, IProgres
     /*
      * A HashMap of attributes that can be used by operations
      */
-    protected HashMap attributes;
+    protected HashMap<Object, Object> attributes;
 
     public static final String HAS_MODIFIED_RESOURCE_ATTR = "hasModifiedResource"; //$NON-NLS-1$
     public static final String TRUE = "true"; //$NON-NLS-1$
@@ -104,9 +104,9 @@ public abstract class RubyModelOperation implements IWorkspaceRunnable, IProgres
     protected boolean force = false;
 
     /*
-     * A per thread stack of java model operations (PerThreadObject of ArrayList).
+     * A per thread stack of ruby model operations (PerThreadObject of ArrayList).
      */
-    protected static ThreadLocal operationStacks = new ThreadLocal();
+    protected static ThreadLocal<ArrayList<RubyModelOperation>> operationStacks = new ThreadLocal<ArrayList<RubyModelOperation>>();
     protected RubyModelOperation() {
         // default constructor used in subclasses
     }
@@ -173,7 +173,7 @@ public abstract class RubyModelOperation implements IWorkspaceRunnable, IProgres
      * Registers the given reconcile delta with the Ruby Model Manager.
      */
     protected void addReconcileDelta(IRubyScript workingCopy, IRubyElementDelta delta) {
-        HashMap reconcileDeltas = RubyModelManager.getRubyModelManager().getDeltaProcessor().reconcileDeltas;
+        HashMap<IRubyScript, IRubyElementDelta> reconcileDeltas = RubyModelManager.getRubyModelManager().getDeltaProcessor().reconcileDeltas;
         RubyElementDelta previousDelta = (RubyElementDelta)reconcileDeltas.get(workingCopy);
         if (previousDelta != null) {
             IRubyElementDelta[] children = delta.getAffectedChildren();
@@ -347,16 +347,15 @@ public abstract class RubyModelOperation implements IWorkspaceRunnable, IProgres
         } catch (CoreException ce) {
             if (ce instanceof RubyModelException) {
                 throw (RubyModelException)ce;
-            } else {
-                // translate the core exception to a java model exception
-                if (ce.getStatus().getCode() == IResourceStatus.OPERATION_FAILED) {
-                    Throwable e = ce.getStatus().getException();
-                    if (e instanceof RubyModelException) {
-                        throw (RubyModelException) e;
-                    }
-                }
-                throw new RubyModelException(ce);
             }
+			// translate the core exception to a ruby model exception
+			if (ce.getStatus().getCode() == IResourceStatus.OPERATION_FAILED) {
+			    Throwable e = ce.getStatus().getException();
+			    if (e instanceof RubyModelException) {
+			        throw (RubyModelException) e;
+			    }
+			}
+			throw new RubyModelException(ce);
         }
     }
     /**
@@ -373,9 +372,8 @@ public abstract class RubyModelOperation implements IWorkspaceRunnable, IProgres
         RubyModelOperation topLevelOp = (RubyModelOperation)stack.get(0);
         if (topLevelOp.attributes == null) {
             return null;
-        } else {
-            return topLevelOp.attributes.get(key);
         }
+		return topLevelOp.attributes.get(key);
     }
     /**
      * Returns the compilation unit the given element is contained in,
@@ -390,10 +388,10 @@ public abstract class RubyModelOperation implements IWorkspaceRunnable, IProgres
      * Returns the stack of operations running in the current thread.
      * Returns an empty stack if no operations are currently running in this thread. 
      */
-    protected ArrayList getCurrentOperationStack() {
-        ArrayList stack = (ArrayList)operationStacks.get();
+    protected ArrayList<RubyModelOperation> getCurrentOperationStack() {
+        ArrayList<RubyModelOperation> stack = (ArrayList<RubyModelOperation>)operationStacks.get();
         if (stack == null) {
-            stack = new ArrayList();
+            stack = new ArrayList<RubyModelOperation>();
             operationStacks.set(stack);
         }
         return stack;
@@ -430,9 +428,8 @@ public abstract class RubyModelOperation implements IWorkspaceRunnable, IProgres
     public IRubyModel getRubyModel() {
         if (elementsToProcess == null || elementsToProcess.length == 0) {
             return getParentElement().getRubyModel();
-        } else {
-            return elementsToProcess[0].getRubyModel();
         }
+		return elementsToProcess[0].getRubyModel();
     }
 
     /**
@@ -562,9 +559,8 @@ public abstract class RubyModelOperation implements IWorkspaceRunnable, IProgres
                 operationStacks.set(null); // release reference (see http://bugs.eclipse.org/bugs/show_bug.cgi?id=33927)
             }
             return (RubyModelOperation)stack.remove(size-1);
-        } else {
-            return null;
         }
+		return null;
     }
     /*
      * Registers the given action to be run when the outer most java model operation has finished.
@@ -738,15 +734,14 @@ public abstract class RubyModelOperation implements IWorkspaceRunnable, IProgres
         } catch (CoreException ce) {
             if (ce instanceof RubyModelException) {
                 throw (RubyModelException)ce;
-            } else {
-                if (ce.getStatus().getCode() == IResourceStatus.OPERATION_FAILED) {
-                    Throwable e= ce.getStatus().getException();
-                    if (e instanceof RubyModelException) {
-                        throw (RubyModelException) e;
-                    }
-                }
-                throw new RubyModelException(ce);
             }
+			if (ce.getStatus().getCode() == IResourceStatus.OPERATION_FAILED) {
+			    Throwable e= ce.getStatus().getException();
+			    if (e instanceof RubyModelException) {
+			        throw (RubyModelException) e;
+			    }
+			}
+			throw new RubyModelException(ce);
         }
     }
     protected void runPostActions() throws RubyModelException {
@@ -764,7 +759,7 @@ public abstract class RubyModelOperation implements IWorkspaceRunnable, IProgres
     protected void setAttribute(Object key, Object attribute) {
         RubyModelOperation topLevelOp = (RubyModelOperation)this.getCurrentOperationStack().get(0);
         if (topLevelOp.attributes == null) {
-            topLevelOp.attributes = new HashMap();
+            topLevelOp.attributes = new HashMap<Object, Object>();
         }
         topLevelOp.attributes.put(key, attribute);
     }
