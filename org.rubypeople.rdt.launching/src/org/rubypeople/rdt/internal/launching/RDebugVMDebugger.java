@@ -1,5 +1,6 @@
 package org.rubypeople.rdt.internal.launching;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -32,7 +33,8 @@ public class RDebugVMDebugger extends StandardVMDebugger {
 		// Set it up to use rdebug executable
 		Map map = config.getVMSpecificAttributesMap();
 		if (map == null) map = new HashMap();
-		map.put(IRubyLaunchConfigurationConstants.ATTR_RUBY_COMMAND, "rdebug");
+		String executable = findRDebugExecutable(fVMInstance.getInstallLocation()) ;
+		map.put(IRubyLaunchConfigurationConstants.ATTR_RUBY_COMMAND, executable);
 		config.setVMSpecificAttributesMap(map);
 		
 		super.run(config, launch, monitor);
@@ -57,6 +59,16 @@ public class RDebugVMDebugger extends StandardVMDebugger {
 	
 	protected RubyDebuggerProxy getDebugProxy(RubyDebugTarget debugTarget) {
 		return new RubyDebuggerProxy(debugTarget, RDebugVMDebugger.getDirectoryOfRubyDebuggerFile(), true);
+	}
+
+	public static String findRDebugExecutable(File vmInstallLocation) {
+		// see StandardVMRunner.constructProgramString
+		String cmd = "rdebug" ;
+		String path = vmInstallLocation + File.separator + "bin" + File.separator + "rdebug.cmd" ;
+		if (new File(path).exists()) {
+			cmd = "rdebug.cmd" ;
+		}
+		return cmd ;
 	}
 	
 }
