@@ -31,10 +31,10 @@ import org.eclipse.ui.dialogs.ElementListSelectionDialog;
 import org.rubypeople.rdt.core.IRubyElement;
 import org.rubypeople.rdt.core.RubyModelException;
 import org.rubypeople.rdt.internal.debug.ui.launcher.RubyApplicationShortcut;
-import org.rubypeople.rdt.internal.launching.RubyLaunchConfigurationAttribute;
 import org.rubypeople.rdt.internal.testunit.ui.TestUnitMessages;
 import org.rubypeople.rdt.internal.testunit.ui.TestunitPlugin;
 import org.rubypeople.rdt.internal.ui.RubyPlugin;
+import org.rubypeople.rdt.launching.IRubyLaunchConfigurationConstants;
 import org.rubypeople.rdt.launching.RubyRuntime;
 
 public class TestUnitLaunchShortcut extends RubyApplicationShortcut {
@@ -66,7 +66,7 @@ public class TestUnitLaunchShortcut extends RubyApplicationShortcut {
 			if ((config.getAttribute(TestUnitLaunchConfigurationDelegate.LAUNCH_CONTAINER_ATTR, "").equals(container)) 
 					&& (config.getAttribute(TestUnitLaunchConfigurationDelegate.TESTTYPE_ATTR, "").equals("")) 
 					&& (config.getAttribute(TestUnitLaunchConfigurationDelegate.TESTNAME_ATTR, "").equals(testName)) 
-					&& (config.getAttribute(RubyLaunchConfigurationAttribute.PROJECT_NAME, "").equals(rubyFile.getProject().getName()))) {
+					&& (config.getAttribute(IRubyLaunchConfigurationConstants.ATTR_PROJECT_NAME, "").equals(rubyFile.getProject().getName()))) {
 				candidateConfigs.add(config);
 			}
 		}
@@ -135,10 +135,10 @@ public class TestUnitLaunchShortcut extends RubyApplicationShortcut {
 		try {
 			ILaunchConfigurationType configType = getRubyLaunchConfigType();
 			ILaunchConfigurationWorkingCopy wc = configType.newInstance(null, getLaunchManager().generateUniqueLaunchConfigurationNameFrom(rubyFile.getName()));
-			wc.setAttribute(RubyLaunchConfigurationAttribute.PROJECT_NAME, rubyFile.getProject().getName());
-			wc.setAttribute(RubyLaunchConfigurationAttribute.FILE_NAME, TestUnitLaunchConfigurationDelegate.getTestRunnerPath());
-			wc.setAttribute(RubyLaunchConfigurationAttribute.WORKING_DIRECTORY, TestUnitLaunchShortcut.getDefaultWorkingDirectory(rubyFile.getProject()));
-			wc.setAttribute(RubyLaunchConfigurationAttribute.SELECTED_INTERPRETER, RubyRuntime.getCompositeIdFromVM(RubyRuntime.getDefaultVMInstall()));
+			wc.setAttribute(IRubyLaunchConfigurationConstants.ATTR_PROJECT_NAME, rubyFile.getProject().getName());
+			wc.setAttribute(IRubyLaunchConfigurationConstants.ATTR_FILE_NAME, TestUnitLaunchConfigurationDelegate.getTestRunnerPath());
+			wc.setAttribute(IRubyLaunchConfigurationConstants.ATTR_WORKING_DIRECTORY, TestUnitLaunchShortcut.getDefaultWorkingDirectory(rubyFile.getProject()));
+			wc.setAttribute(IRubyLaunchConfigurationConstants.ATTR_RUBY_CONTAINER_PATH, RubyRuntime.getCompositeIdFromVM(RubyRuntime.getDefaultVMInstall()));
 			wc.setAttribute(TestUnitLaunchConfigurationDelegate.LAUNCH_CONTAINER_ATTR, container);
 			wc.setAttribute(TestUnitLaunchConfigurationDelegate.TESTNAME_ATTR, testName);
 			wc.setAttribute(TestUnitLaunchConfigurationDelegate.TESTTYPE_ATTR, "");
