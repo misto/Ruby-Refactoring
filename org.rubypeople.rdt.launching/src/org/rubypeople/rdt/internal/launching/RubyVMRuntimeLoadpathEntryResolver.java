@@ -90,10 +90,10 @@ public class RubyVMRuntimeLoadpathEntryResolver implements IRuntimeLoadpathEntry
 			if (vmInstallLocation != null) {
 				LibraryInfo libraryInfo= LaunchingPlugin.getLibraryInfo(vmInstallLocation.getAbsolutePath());
 				if (libraryInfo != null) {
-					// only return endorsed and bootstrap classpath entries if we have the info
+					// only return endorsed and bootstrap loadpath entries if we have the info
 					// libs in the ext dirs are not loaded by the boot class loader
 					
-					List resolvedEntries = new ArrayList(libs.length);
+					List<IRuntimeLoadpathEntry> resolvedEntries = new ArrayList<IRuntimeLoadpathEntry>(libs.length);
 					for (int i = 0; i < libs.length; i++) {
 						IPath location = libs[i];
 						IPath libraryPath = location;
@@ -104,7 +104,7 @@ public class RubyVMRuntimeLoadpathEntryResolver implements IRuntimeLoadpathEntry
 				}
 			}
 		}
-		List resolvedEntries = new ArrayList(libs.length);
+		List<IRuntimeLoadpathEntry> resolvedEntries = new ArrayList<IRuntimeLoadpathEntry>(libs.length);
 		for (int i = 0; i < libs.length; i++) {
 			IPath systemLibraryPath = libs[i];
 			if (systemLibraryPath.toFile().exists()) {

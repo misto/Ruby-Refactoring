@@ -67,7 +67,7 @@ public class LaunchingPlugin extends Plugin implements IVMInstallChangedListener
 	/**
 	 * Runtime classpath extensions
 	 */
-	private HashMap fClasspathEntryExtensions = null;
+	private HashMap<String, IConfigurationElement> fClasspathEntryExtensions = null;
 	
 	/**
 	 * Identifier for 'runtimeLoadpathEntries' extension point
@@ -79,7 +79,7 @@ public class LaunchingPlugin extends Plugin implements IVMInstallChangedListener
 	 * Mapping of top-level VM installation directories to library info for that
 	 * VM.
 	 */
-	private static Map fgLibraryInfoMap = null;	
+	private static Map<String, LibraryInfo> fgLibraryInfoMap = null;	
 	
 	/**
 	 * Whether changes in VM preferences are being batched. When being batched
@@ -227,9 +227,9 @@ public class LaunchingPlugin extends Plugin implements IVMInstallChangedListener
 			// Generate the current
 			VMDefinitionsContainer newResults = getVMDefinitions(newPrefString);
 			
-			// Determine the deteled VMs
-			List deleted = oldResults.getVMList();
-			List current = newResults.getValidVMList();
+			// Determine the deleted VMs
+			List<IVMInstall> deleted = oldResults.getVMList();
+			List<IVMInstall> current = newResults.getValidVMList();
 			deleted.removeAll(current);
 			
 			// Dispose deleted VMs.  The 'disposeVMInstall' method fires notification of the 
@@ -501,7 +501,7 @@ public class LaunchingPlugin extends Plugin implements IVMInstallChangedListener
 	 * Restores library information for VMs
 	 */
 	private static void restoreLibraryInfo() {
-		fgLibraryInfoMap = new HashMap(10);
+		fgLibraryInfoMap = new HashMap<String, LibraryInfo>(10);
 		IPath libPath = getDefault().getStateLocation();
 		libPath = libPath.append("libraryInfos.xml"); //$NON-NLS-1$
 		File file = libPath.toFile();
@@ -545,7 +545,7 @@ public class LaunchingPlugin extends Plugin implements IVMInstallChangedListener
 	}
 	
 	private static String[] getPathsFromXML(Element lib, String pathType) {
-		List paths = new ArrayList();
+		List<String> paths = new ArrayList<String>();
 		NodeList list = lib.getChildNodes();
 		int length = list.getLength();
 		for (int i = 0; i < length; ++i) {
@@ -601,7 +601,7 @@ public class LaunchingPlugin extends Plugin implements IVMInstallChangedListener
 	private void initializeRuntimeLoadpathExtensions() {
 		IExtensionPoint extensionPoint= Platform.getExtensionRegistry().getExtensionPoint(LaunchingPlugin.PLUGIN_ID, ID_EXTENSION_POINT_RUNTIME_CLASSPATH_ENTRIES);
 		IConfigurationElement[] configs= extensionPoint.getConfigurationElements(); 
-		fClasspathEntryExtensions = new HashMap(configs.length);
+		fClasspathEntryExtensions = new HashMap<String, IConfigurationElement>(configs.length);
 		for (int i= 0; i < configs.length; i++) {
 			fClasspathEntryExtensions.put(configs[i].getAttribute("id"), configs[i]); //$NON-NLS-1$
 		}
@@ -655,7 +655,7 @@ public class LaunchingPlugin extends Plugin implements IVMInstallChangedListener
 		private boolean fDefaultChanged = false;
 		
 		// old container ids to new
-		private HashMap fRenamedContainerIds = new HashMap();
+		private HashMap<IPath, IPath> fRenamedContainerIds = new HashMap<IPath, IPath>();
 		
 		/**
 		 * Returns the JRE container id that the given VM would map to, or
