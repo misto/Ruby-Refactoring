@@ -20,7 +20,7 @@ public class TypeInferenceVisitor extends InOrderVisitor {
 	private Scope globalScope;	
 	private Scope currentScope;	
 	
-	// todo: init globalScope to null, push in first non-null node as
+	// TODO: init globalScope to null, push in first non-null node as
 	// globalScope
 	public TypeInferenceVisitor( Node rootNode ) {
 		System.out.println("Instantiating new TypeInferenceVisitor with root node " + stringifyNode(rootNode) );
@@ -31,15 +31,15 @@ public class TypeInferenceVisitor extends InOrderVisitor {
 	
 	public Instruction handleNode(Node iVisited) {
 		
-		if ( iVisited != null )
-		{
-			String pos = "";
-			String cls = "";
-			if ( iVisited.getPosition() != null ) pos = Integer.toString(iVisited.getPosition().getStartLine());
-			if ( iVisited.getClass() != null )    cls = iVisited.getClass().getName();
+//		if ( iVisited != null )
+//		{
+//			String pos = "";
+//			String cls = "";
+//			if ( iVisited.getPosition() != null ) pos = Integer.toString(iVisited.getPosition().getStartLine());
+//			if ( iVisited.getClass() != null )    cls = iVisited.getClass().getName();
 //			System.out.println("Visiting " + iVisited.getClass().getSimpleName() + "\tat line " + pos + " of class " + cls );
-			System.out.println("  - Spanning " + iVisited.getPosition().getStartOffset() + "-" + iVisited.getPosition().getEndOffset());
-		}
+//			System.out.println("  - Spanning " + iVisited.getPosition().getStartOffset() + "-" + iVisited.getPosition().getEndOffset());
+//		}
 		return super.handleNode(iVisited);
 	}
 	
@@ -70,7 +70,7 @@ public class TypeInferenceVisitor extends InOrderVisitor {
 	public Instruction visitDefnNode(DefnNode iVisited) {
 		Scope newScope = pushScope( iVisited );
 		Variable.insertLocalsFromScopeNode(iVisited.getScope(), newScope);
-		// todo: insert from argsNodes
+		// TODO: insert from argsNodes
 		return super.visitDefnNode(iVisited);
 	}
 	
@@ -81,7 +81,7 @@ public class TypeInferenceVisitor extends InOrderVisitor {
 	public Instruction visitDefsNode(DefsNode iVisited) {
 		Scope newScope = pushScope( iVisited );
 		Variable.insertLocalsFromScopeNode(iVisited.getScope(), newScope);
-		// todo: insert from argsNodes
+		// TODO: insert from argsNodes
 		return super.visitDefsNode(iVisited);
 	}
 	
@@ -89,10 +89,10 @@ public class TypeInferenceVisitor extends InOrderVisitor {
 	 * Visit an IterNode, and extract variable references from it
 	 */
 	public Instruction visitIterNode(IterNode iVisited) {
-		// todo: push iterator var into the iter's scope.
-		Scope newScope = pushScope(iVisited);
+		// TODO: push iterator var into the iter's scope.
+//		Scope newScope = pushScope(iVisited);
 // newScope.getVariables().add( new Variable( newScope, ))
-		// todo: insert from varNode; either DAsgnNode or LocalAsgnNode
+		// TODO: insert from varNode; either DAsgnNode or LocalAsgnNode
 		// depending... (see: block local var ambiguity)
 		pushScope( iVisited );
 		return super.visitIterNode(iVisited);
@@ -112,8 +112,8 @@ public class TypeInferenceVisitor extends InOrderVisitor {
 		return newScope;
 	}
 	
-	// todo: how to tell when to do this?
-	// todo: perhaps model IndexUpdater rather than InOrderVisitor
+	// TODO: how to tell when to do this?
+	// TODO: perhaps model IndexUpdater rather than InOrderVisitor
 	private void popScope()
 	{
 		currentScope = currentScope.getParentScope();
@@ -128,7 +128,7 @@ public class TypeInferenceVisitor extends InOrderVisitor {
 		if ( var != null )
 		{
 //			System.out.println("Call: " + var.getName() + "." + iVisited.getName() );
-			// todo: add call to list
+			// TODO: add call to list
 		}
 		return super.visitCallNode(iVisited);
 	}
@@ -148,10 +148,10 @@ public class TypeInferenceVisitor extends InOrderVisitor {
 			LocalVarNode localVarNode = (LocalVarNode) node;
 			return currentScope.getLocalVariableByCount(localVarNode.getIndex());
 		}
-		// todo: InstVarNode
-		// todo: GlobalVarNode
-		// todo: ClassVarNode
-		// todo: DVarNode
+		// TODO: InstVarNode
+		// TODO: GlobalVarNode
+		// TODO: ClassVarNode
+		// TODO: DVarNode
 		return null;
 	}
 	
@@ -168,7 +168,7 @@ public class TypeInferenceVisitor extends InOrderVisitor {
 			if ( currentScope == globalScope )
 			{
 				// Yes - stick this variable into the global scope.
-				// todo: Shouldn't JRuby give a ScopeNode w/ a .getLocalNames()
+				// TODO: Shouldn't JRuby give a ScopeNode w/ a .getLocalNames()
 				// for the global script?
 				var = new Variable( globalScope, iVisited.getName(), iVisited.getIndex() );
 				currentScope.getVariables().add(var);
@@ -186,7 +186,7 @@ public class TypeInferenceVisitor extends InOrderVisitor {
     		var.getTypeGuesses().add( new BasicTypeGuess( concreteGuess, 100 ) );
 		}
 //    	else if ( valueNode instanceof LocalVarNode ) {
-//    		// todo: this method needs to be fixed... see
+//    		// TODO: this method needs to be fixed... see
 //			// ReferenceTypeGuess.java
 //    		LocalVarNode rhsNode = (LocalVarNode)valueNode;
 //    		Variable rhsVar = currentScope.getLocalVariableByCount(rhsNode.getCount());

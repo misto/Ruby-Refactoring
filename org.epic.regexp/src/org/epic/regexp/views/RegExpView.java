@@ -494,8 +494,6 @@ public class RegExpView extends ViewPart {
 
 			REMatch[] matches = re.getAllMatches(matchText.getText());
 
-			String matchesString = "";
-
 			result = matches.length > 0 ? true : false;
 
 			// Reset style

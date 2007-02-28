@@ -42,13 +42,13 @@ public class StandardVMRunner extends AbstractVMRunner {
 	
 	protected String renderDebugTarget(String classToRun, int host) {
 		String format= LaunchingMessages.StandardVMRunner__0__at_localhost__1__1; 
-		return MessageFormat.format(format, new String[] { classToRun, String.valueOf(host) });
+		return MessageFormat.format(format, classToRun, String.valueOf(host));
 	}
 
 	public static String renderProcessLabel(String[] commandLine) {
 		String format= LaunchingMessages.StandardVMRunner__0____1___2; 
 		String timestamp= DateFormat.getDateTimeInstance(DateFormat.MEDIUM, DateFormat.MEDIUM).format(new Date(System.currentTimeMillis()));
-		return MessageFormat.format(format, new String[] { commandLine[0], timestamp });
+		return MessageFormat.format(format, commandLine[0], timestamp);
 	}
 	
 	protected static String renderCommandLine(String[] commandLine) {
@@ -105,7 +105,7 @@ public class StandardVMRunner extends AbstractVMRunner {
 		}
 		File dir = new File(path);
 		if (!dir.isDirectory()) {
-			abort(MessageFormat.format(LaunchingMessages.StandardVMRunner_Specified_working_directory_does_not_exist_or_is_not_a_directory___0__3, new String[] {path}), null, IRubyLaunchConfigurationConstants.ERR_WORKING_DIRECTORY_DOES_NOT_EXIST); 
+			abort(MessageFormat.format(LaunchingMessages.StandardVMRunner_Specified_working_directory_does_not_exist_or_is_not_a_directory___0__3, path), null, IRubyLaunchConfigurationConstants.ERR_WORKING_DIRECTORY_DOES_NOT_EXIST); 
 		}
 		return dir;
 	}
@@ -137,7 +137,7 @@ public class StandardVMRunner extends AbstractVMRunner {
 		if (command == null) {
 			File exe = StandardVMType.findRubyExecutable(fVMInstance.getInstallLocation());
 			if (exe == null) {
-				abort(MessageFormat.format(LaunchingMessages.StandardVMRunner_Unable_to_locate_executable_for__0__1, new String[]{fVMInstance.getName()}), null, IRubyLaunchConfigurationConstants.ERR_INTERNAL_ERROR); 
+				abort(MessageFormat.format(LaunchingMessages.StandardVMRunner_Unable_to_locate_executable_for__0__1, fVMInstance.getName()), null, IRubyLaunchConfigurationConstants.ERR_INTERNAL_ERROR); 
 			}
 			return exe.getAbsolutePath();
 		}
@@ -154,7 +154,7 @@ public class StandardVMRunner extends AbstractVMRunner {
 		}
 		
 		// not found
-		abort(MessageFormat.format(LaunchingMessages.StandardVMRunner_Specified_executable__0__does_not_exist_for__1__4, new String[]{command, fVMInstance.getName()}), null, IRubyLaunchConfigurationConstants.ERR_INTERNAL_ERROR); 
+		abort(MessageFormat.format(LaunchingMessages.StandardVMRunner_Specified_executable__0__does_not_exist_for__1__4, command, fVMInstance.getName()), null, IRubyLaunchConfigurationConstants.ERR_INTERNAL_ERROR); 
 		// NOTE: an exception will be thrown - null cannot be returned
 		return null;		
 	}	

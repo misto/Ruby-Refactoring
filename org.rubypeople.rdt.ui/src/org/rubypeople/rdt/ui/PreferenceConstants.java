@@ -782,7 +782,7 @@ public class PreferenceConstants {
 	}
 
 	private static String getDefaultPath(String programName) {
-		IVMInstall interpreter = RubyRuntime.getDefault().getDefaultVMInstall();
+		IVMInstall interpreter = RubyRuntime.getDefaultVMInstall();
 		if (interpreter == null) {
 			return programName;
 		}

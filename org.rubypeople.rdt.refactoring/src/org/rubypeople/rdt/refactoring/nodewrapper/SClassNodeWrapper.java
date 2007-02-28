@@ -79,8 +79,8 @@ public class SClassNodeWrapper extends PartialClassNodeWrapper {
 	}
 
 	private Node getReferencedNode(int id, Map<Integer, Node> references) throws UnknownReferenceException {
-		if (references.containsKey(id)) {
-			return references.get(id);
+		if (references.containsKey(Integer.valueOf(id))) {
+			return references.get(Integer.valueOf(id));
 		}
 		throw new UnknownReferenceException();
 	}
@@ -101,7 +101,7 @@ public class SClassNodeWrapper extends PartialClassNodeWrapper {
 		for (Node node : referencedNodes) {
 			if (node instanceof LocalAsgnNode) {
 				LocalAsgnNode localAsgnNode = (LocalAsgnNode) node;
-				references.put(localAsgnNode.getIndex(), node);
+				references.put(Integer.valueOf(localAsgnNode.getIndex()), node);
 			}
 		}
 		return references;

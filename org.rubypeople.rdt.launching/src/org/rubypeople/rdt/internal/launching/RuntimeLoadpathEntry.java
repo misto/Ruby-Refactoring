@@ -96,7 +96,7 @@ public class RuntimeLoadpathEntry implements IRuntimeLoadpathEntry {
 				setType(VARIABLE);
 				break;
 			default:
-				throw new IllegalArgumentException(MessageFormat.format(LaunchingMessages.RuntimeLoadpathEntry_Illegal_classpath_entry__0__1, new String[] {entry.toString()})); 
+				throw new IllegalArgumentException(MessageFormat.format(LaunchingMessages.RuntimeLoadpathEntry_Illegal_classpath_entry__0__1, entry.toString())); 
 		}
 		setLoadpathEntry(entry);
 		initializeLoadpathProperty();
@@ -114,7 +114,7 @@ public class RuntimeLoadpathEntry implements IRuntimeLoadpathEntry {
 				setType(CONTAINER);
 				break;
 			default:
-				throw new IllegalArgumentException(MessageFormat.format(LaunchingMessages.RuntimeLoadpathEntry_Illegal_classpath_entry__0__1, new String[] {entry.toString()})); 
+				throw new IllegalArgumentException(MessageFormat.format(LaunchingMessages.RuntimeLoadpathEntry_Illegal_classpath_entry__0__1,entry.toString())); 
 		}
 		setLoadpathEntry(entry);
 		setLoadpathProperty(classpathProperty);

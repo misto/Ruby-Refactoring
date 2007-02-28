@@ -111,7 +111,7 @@ public class ExtractedMethodHelper extends Observable {
 				int aktStartOffset = aktNode.getPosition().getStartOffset();
 				if (aktStartOffset > endPostOfLastSelectedNode) {
 					LocalNodeWrapper localNode = new LocalNodeWrapper(aktNode);
-					afterSelectionNodes.put(localNode.getId(), localNode);
+					afterSelectionNodes.put(Integer.valueOf(localNode.getId()), localNode);
 				}
 			}
 		}
@@ -174,7 +174,7 @@ public class ExtractedMethodHelper extends Observable {
 	}
 
 	private boolean localNodeNeededAfterSelectedNodes(LocalNodeWrapper localNode) {
-		return afterSelectionNodes.containsKey(localNode.getId());
+		return afterSelectionNodes.containsKey(Integer.valueOf(localNode.getId()));
 	}
 	
 	public Node getMethodNode(boolean needsNewLineAtBeginOfBlock, boolean needsNewLineAtEndOfBlock) {

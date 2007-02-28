@@ -122,7 +122,7 @@ public class FTC_ClassicDebuggerCommunicationTest extends
 		sendRuby("th l");
 		threadInfos = getThreadInfoReader().readThreads();
 		assertEquals(1, threadInfos.length);
-		assertNotSame(point1.getThreadId(), point2.getThreadId());
+		assertNotSame(Integer.valueOf(point1.getThreadId()), Integer.valueOf(point2.getThreadId()));
 	}
 
 	public void testThreadIdsAndResume() throws Exception {

@@ -174,7 +174,7 @@ public class StandardVMType extends AbstractVMInstallType {
 		}
 		if (info == null) {
 		    // log error that we were unable to generate library info - see bug 70011
-		    LaunchingPlugin.log(MessageFormat.format("Failed to retrieve default libraries for {0}", new String[]{rubyHome.getAbsolutePath()})); //$NON-NLS-1$
+		    LaunchingPlugin.log(MessageFormat.format("Failed to retrieve default libraries for {0}", rubyHome.getAbsolutePath())); //$NON-NLS-1$
 		}
 		return info;
 	}

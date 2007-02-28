@@ -40,6 +40,7 @@ import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.Path;
+import org.rubypeople.rdt.core.RubyModelException;
 import org.rubypeople.rdt.internal.core.util.Util;
 
 public class WorkspaceDocumentProvider extends DocumentProvider {
@@ -106,8 +107,9 @@ public class WorkspaceDocumentProvider extends DocumentProvider {
 		IFile currentFile = getIFile(fileName);
 		try {
 			return new String(Util.getResourceContentsAsCharArray(currentFile));
-		} catch (CoreException e) {
-			e.printStackTrace();
+		}
+		catch (RubyModelException e) {
+			/** Resource does not exist, that happens if a library file is included from an external location.**/
 		}
 		return null;
 	}

@@ -14,12 +14,9 @@ import org.jruby.ast.Node;
 import org.jruby.lexer.yacc.SyntaxException;
 import org.rubypeople.eclipse.shams.resources.ShamFile;
 import org.rubypeople.rdt.internal.core.DefaultWorkingCopyOwner;
-import org.rubypeople.rdt.internal.core.RubyProject;
 import org.rubypeople.rdt.internal.core.RubyScript;
 import org.rubypeople.rdt.internal.core.RubyScriptElementInfo;
 import org.rubypeople.rdt.internal.core.RubyScriptStructureBuilder;
-import org.rubypeople.rdt.internal.core.SourceFolder;
-import org.rubypeople.rdt.internal.core.SourceFolderRoot;
 import org.rubypeople.rdt.internal.core.parser.RdtWarnings;
 import org.rubypeople.rdt.internal.core.parser.RubyParser;
 

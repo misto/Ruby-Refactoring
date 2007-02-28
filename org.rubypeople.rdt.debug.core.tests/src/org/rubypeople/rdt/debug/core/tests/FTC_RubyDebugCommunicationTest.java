@@ -1,17 +1,8 @@
 package org.rubypeople.rdt.debug.core.tests;
 
-import java.io.PrintWriter;
-import java.net.ConnectException;
-import java.net.Socket;
-
 import org.rubypeople.rdt.core.RubyCore;
-import org.rubypeople.rdt.internal.debug.core.SuspensionPoint;
 import org.rubypeople.rdt.internal.debug.core.commands.AbstractDebuggerConnection;
-import org.rubypeople.rdt.internal.debug.core.commands.EvalCommand;
 import org.rubypeople.rdt.internal.debug.core.commands.RubyDebugConnection;
-import org.rubypeople.rdt.internal.debug.core.parsing.AbstractReadStrategy;
-import org.rubypeople.rdt.internal.debug.core.parsing.EvalReader;
-import org.rubypeople.rdt.internal.debug.core.parsing.MultiReaderStrategy;
 import org.rubypeople.rdt.internal.launching.LaunchingPlugin;
 
 public class FTC_RubyDebugCommunicationTest extends FTC_ClassicDebuggerCommunicationTest {

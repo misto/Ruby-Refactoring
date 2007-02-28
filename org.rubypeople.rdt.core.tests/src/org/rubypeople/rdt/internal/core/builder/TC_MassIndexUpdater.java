@@ -53,9 +53,7 @@ public class TC_MassIndexUpdater extends TestCase {
         
         ShamMonitor monitor = new ShamMonitor();
         massUpdater.updateProjects(projects, monitor);
-        RubySourceFileCollectingVisitor expectedVisitor = 
-            new RubySourceFileCollectingVisitor(new ArrayList());
-        
+
         parser.assertParsed(file1);
         parser.assertParsed(file2);
         parser.assertParsed(file3);

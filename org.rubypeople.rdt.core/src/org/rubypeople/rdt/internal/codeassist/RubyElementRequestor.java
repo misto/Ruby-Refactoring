@@ -53,7 +53,7 @@ public class RubyElementRequestor {
 		} catch (RubyModelException e) {
 			RubyCore.log(e);
 		}
-		return (IType[]) types.toArray(new IType[types.size()]);
+		return types.toArray(new IType[types.size()]);
 	}
 
 	private List<IType> filterToMatches(String typeName, List<IType> types) {
@@ -100,7 +100,7 @@ public class RubyElementRequestor {
 		}
 		if (tokens.isEmpty()) return new ArrayList<IType>();
 		String name = tokens.remove(tokens.size() - 1) + RUBY_FILE_EXTENSION;
-		String[] pckgs =  (String[]) tokens.toArray(new String[tokens.size()]);
+		String[] pckgs = tokens.toArray(new String[tokens.size()]);
 		ISourceFolder folder = root.getSourceFolder(pckgs);
 		if (!folder.exists()) return new ArrayList<IType>();
 		IRubyScript otherScript = folder.getRubyScript(name);

@@ -182,7 +182,7 @@ public class RIView extends ViewPart implements RdocListener {
 	}
 	
     private void updatePage() {
-        IVMInstall interpreter = RubyRuntime.getDefault().getDefaultVMInstall();
+        IVMInstall interpreter = RubyRuntime.getDefaultVMInstall();
         if (interpreter != null) {            
             initSearchList();
             if( riFound ){

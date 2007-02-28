@@ -48,7 +48,7 @@ public class NameHelper {
 	public static String createName(String string) {
 		Matcher matcher = Pattern.compile("([@]{0,2}\\w*[a-zA-Z_])(\\d+)").matcher(string);
 		if (matcher.matches()) {
-			return matcher.group(1) + String.valueOf(Integer.valueOf(matcher.group(2)) + 1);
+			return matcher.group(1) + String.valueOf(Integer.valueOf(matcher.group(2)).intValue() + 1);
 		}
 		return string + 1;
 	}

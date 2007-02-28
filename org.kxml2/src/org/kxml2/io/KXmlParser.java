@@ -72,7 +72,6 @@ public class KXmlParser implements XmlPullParser {
     // Event-related
 
     private int type;
-    private String text;
     private boolean isWhitespace;
     private String namespace;
     private String prefix;
@@ -252,7 +251,6 @@ public class KXmlParser implements XmlPullParser {
             prefix = null;
             name = null;
             namespace = null;
-            text = null;
 
             type = peekType();
 

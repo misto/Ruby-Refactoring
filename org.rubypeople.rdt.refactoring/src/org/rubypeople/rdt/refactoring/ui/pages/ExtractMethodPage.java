@@ -202,7 +202,7 @@ public class ExtractMethodPage extends UserInputWizardPage implements IValidatio
 	}
 
 	public void setComplete(Object source, boolean complete) {
-		completedValidators.put(source, complete);
+		completedValidators.put(source, Boolean.valueOf(complete));
 
 		boolean allOk = true;
 		for (boolean ok : completedValidators.values()) {

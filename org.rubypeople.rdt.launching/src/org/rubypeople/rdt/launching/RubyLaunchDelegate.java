@@ -39,7 +39,7 @@ public class RubyLaunchDelegate extends AbstractRubyLaunchConfigurationDelegate 
 			monitor = new NullProgressMonitor();
 		}
 		
-		monitor.beginTask(MessageFormat.format("{0}...", new String[]{configuration.getName()}), 3); //$NON-NLS-1$
+		monitor.beginTask(MessageFormat.format("{0}...", configuration.getName()), 3); //$NON-NLS-1$
 		// check for cancellation
 		if (monitor.isCanceled()) {
 			return;

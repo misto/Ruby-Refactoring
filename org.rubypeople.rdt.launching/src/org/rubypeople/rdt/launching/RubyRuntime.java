@@ -804,21 +804,24 @@ public class RubyRuntime {
 		IVMInstallType vt = getVMInstallType(type);
 		if (vt == null) {
 			// error type does not exist
-			abort(MessageFormat.format(LaunchingMessages.JavaRuntime_Specified_VM_install_type_does_not_exist___0__2, new String[] {type}), null); 
+			abort(MessageFormat.format(LaunchingMessages.JavaRuntime_Specified_VM_install_type_does_not_exist___0__2, type), null); 
 		}
 		IVMInstall vm = null;
 		// look for a name
 		if (name == null) {
 			// error - type specified without a specific install (could be an old config that specified a VM ID)
 			// log the error, but choose the default VM.
-			IStatus status = new Status(IStatus.WARNING, LaunchingPlugin.getUniqueIdentifier(), IRubyLaunchConfigurationConstants.ERR_UNSPECIFIED_VM_INSTALL, MessageFormat.format(LaunchingMessages.JavaRuntime_VM_not_fully_specified_in_launch_configuration__0____missing_VM_name__Reverting_to_default_VM__1, new String[] {configuration.getName()}), null); 
+			IStatus status = new Status(IStatus.WARNING, LaunchingPlugin.getUniqueIdentifier(), 
+					IRubyLaunchConfigurationConstants.ERR_UNSPECIFIED_VM_INSTALL, 
+					MessageFormat.format(LaunchingMessages.JavaRuntime_VM_not_fully_specified_in_launch_configuration__0____missing_VM_name__Reverting_to_default_VM__1, configuration.getName()), 
+					null); 
 			LaunchingPlugin.log(status);
 			return getDefaultVMInstall();
 		} 
 		vm = vt.findVMInstallByName(name);
 		if (vm == null) {
 			// error - install not found
-			abort(MessageFormat.format(LaunchingMessages.JavaRuntime_Specified_VM_install_not_found__type__0___name__1__2, new String[] {vt.getName(), name}), null);					 
+			abort(MessageFormat.format(LaunchingMessages.JavaRuntime_Specified_VM_install_not_found__type__0___name__1__2, vt.getName(), name), null);					 
 		} else {
 			return vm;
 		}
@@ -942,10 +945,10 @@ public class RubyRuntime {
 		}			
 		IRubyProject javaProject = getRubyModel().getRubyProject(projectName);
 		if (javaProject != null && javaProject.getProject().exists() && !javaProject.getProject().isOpen()) {
-			abort(MessageFormat.format(LaunchingMessages.JavaRuntime_28, new String[] {configuration.getName(), projectName}), IRubyLaunchConfigurationConstants.ERR_PROJECT_CLOSED, null); 
+			abort(MessageFormat.format(LaunchingMessages.JavaRuntime_28, configuration.getName(), projectName), IRubyLaunchConfigurationConstants.ERR_PROJECT_CLOSED, null); 
 		}
 		if ((javaProject == null) || !javaProject.exists()) {
-			abort(MessageFormat.format(LaunchingMessages.JavaRuntime_Launch_configuration__0__references_non_existing_project__1___1, new String[] {configuration.getName(), projectName}), IRubyLaunchConfigurationConstants.ERR_NOT_A_RUBY_PROJECT, null); 
+			abort(MessageFormat.format(LaunchingMessages.JavaRuntime_Launch_configuration__0__references_non_existing_project__1___1,configuration.getName(), projectName), IRubyLaunchConfigurationConstants.ERR_NOT_A_RUBY_PROJECT, null); 
 		}
 		return javaProject;
 	}
@@ -1050,7 +1053,7 @@ public class RubyRuntime {
 		} else {
 			provider = (IRuntimeLoadpathProvider)getLoadpathProviders().get(providerId);
 			if (provider == null) {
-				abort(MessageFormat.format(LaunchingMessages.JavaRuntime_26, new String[]{providerId}), null); 
+				abort(MessageFormat.format(LaunchingMessages.JavaRuntime_26, providerId), null); 
 			}
 		}
 		return provider;
@@ -1342,7 +1345,7 @@ public class RubyRuntime {
 					}
 				} else {
 					// could not resolve project
-					abort(MessageFormat.format(LaunchingMessages.JavaRuntime_Classpath_references_non_existant_project___0__3, new String[]{entry.getPath().lastSegment()}), null); 
+					abort(MessageFormat.format(LaunchingMessages.JavaRuntime_Classpath_references_non_existant_project___0__3, entry.getPath().lastSegment()), null); 
 				}
 				break;
 			case IRuntimeLoadpathEntry.VARIABLE:
@@ -1365,11 +1368,11 @@ public class RubyRuntime {
 				// verify the archive exists
 				String location = entry.getLocation();
 				if (location == null) {
-					abort(MessageFormat.format(LaunchingMessages.JavaRuntime_Classpath_references_non_existant_archive___0__4, new String[]{entry.getPath().toString()}), null); 
+					abort(MessageFormat.format(LaunchingMessages.JavaRuntime_Classpath_references_non_existant_archive___0__4, entry.getPath().toString()), null); 
 				}
 				File file = new File(location);
 				if (!file.exists()) {
-					abort(MessageFormat.format(LaunchingMessages.JavaRuntime_Classpath_references_non_existant_archive___0__4, new String[]{entry.getPath().toString()}), null); 
+					abort(MessageFormat.format(LaunchingMessages.JavaRuntime_Classpath_references_non_existant_archive___0__4, entry.getPath().toString()), null); 
 				}
 				break;
 			case IRuntimeLoadpathEntry.OTHER:
@@ -1404,7 +1407,7 @@ public class RubyRuntime {
 		} 
 		ILoadpathContainer container = RubyCore.getLoadpathContainer(entry.getPath(), project);
 		if (container == null) {
-			abort(MessageFormat.format(LaunchingMessages.JavaRuntime_Could_not_resolve_classpath_container___0__1, new String[]{entry.getPath().toString()}), null); 
+			abort(MessageFormat.format(LaunchingMessages.JavaRuntime_Could_not_resolve_classpath_container___0__1,entry.getPath().toString()), null); 
 			// execution will not reach here - exception will be thrown
 			return null;
 		} 

@@ -590,7 +590,7 @@ public class LaunchingPlugin extends Plugin implements IVMInstallChangedListener
 		}
 		IConfigurationElement config = (IConfigurationElement) fClasspathEntryExtensions.get(id);
 		if (config == null) {
-			abort(MessageFormat.format(LaunchingMessages.LaunchingPlugin_32, new String[]{id}), null); 
+			abort(MessageFormat.format(LaunchingMessages.LaunchingPlugin_32, id), null); 
 		}
 		return (IRuntimeLoadpathEntry2) config.createExecutableExtension("class"); //$NON-NLS-1$
 	}

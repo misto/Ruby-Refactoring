@@ -505,7 +505,7 @@ public class RubyScriptStructureBuilder implements NodeVisitor {
 		String name = getFullyQualifiedName(iVisited.getCPath());
 		RubyType handle = new RubyType(modelStack.peek(), name);
 		RubyElement parent = modelStack.peek();
-		RubyType existing = (RubyType) findChild(parent, IRubyElement.TYPE, name);
+		RubyType existing = findChild(parent, IRubyElement.TYPE, name);
 		if (existing != null) {
 		// FIXME Should we just increment the occurence count like I do here, or should we conglomerate the types into one LogicalType?
 			handle.occurrenceCount = existing.occurrenceCount + 1;
@@ -1323,7 +1323,7 @@ public class RubyScriptStructureBuilder implements NodeVisitor {
 		String name = getFullyQualifiedName(iVisited.getCPath());
 		RubyModule module = new RubyModule(modelStack.peek(), name);
 		RubyElement parent = modelStack.peek();
-		RubyType existing = (RubyType) findChild(parent, IRubyElement.TYPE, name);
+		RubyType existing = findChild(parent, IRubyElement.TYPE, name);
 		if (existing != null) {
 		// FIXME Should we just increment the occurence count like I do here, or should we conglomerate the types into one LogicalType?
 			module.occurrenceCount = existing.occurrenceCount + 1;

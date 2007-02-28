@@ -74,7 +74,7 @@ public class TestUnitLaunchShortcut extends RubyApplicationShortcut {
 		case 0:
 			return createConfiguration(rubyFile, container, testName);
 		case 1:
-			return (ILaunchConfiguration) candidateConfigs.get(0);
+			return candidateConfigs.get(0);
 		default:
 			ILaunchConfiguration config = chooseConfiguration(candidateConfigs, mode);
 			if (config != null) { return config; }

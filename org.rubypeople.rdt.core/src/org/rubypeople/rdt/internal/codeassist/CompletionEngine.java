@@ -2,7 +2,6 @@ package org.rubypeople.rdt.internal.codeassist;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -26,7 +25,6 @@ import org.jruby.ast.InstVarNode;
 import org.jruby.ast.MethodDefNode;
 import org.jruby.ast.ModuleNode;
 import org.jruby.ast.Node;
-import org.jruby.ast.types.INameNode;
 import org.jruby.lexer.yacc.SyntaxException;
 import org.jruby.parser.StaticScope;
 import org.rubypeople.rdt.core.CompletionProposal;
@@ -532,11 +530,7 @@ public class CompletionEngine {
 		}
 
 		public String getElementName() {
-			// TODO Auto-generated method stub
-			if (node instanceof INameNode) {
-				return ((INameNode)node).getName();
-			}
-			return null;
+			return node.getName();
 		}
 
 		public int getElementType() {

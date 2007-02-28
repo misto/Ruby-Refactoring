@@ -780,9 +780,9 @@ public class RubyModelManager implements IContentTypeChangeListener, ISavePartic
              Platform.getContentTypeManager().addContentTypeChangeListener(this);
             
 //           retrieve variable values
- 			long start = -1;
- 			if (VERBOSE)
- 				start = System.currentTimeMillis();
+// 			long start = -1;
+// 			if (VERBOSE)
+// 				start = System.currentTimeMillis();
   			loadVariablesAndContainers();
 //  			if (VERBOSE)
 // 				traceVariableAndContainers("Loaded", start); //$NON-NLS-1$
@@ -981,7 +981,7 @@ public class RubyModelManager implements IContentTypeChangeListener, ISavePartic
 			Iterator projectIterator = this.containers.keySet().iterator();
 			while (projectIterator.hasNext()){
 				IRubyProject project = (IRubyProject)projectIterator.next();
-				Map projectContainers = (Map)this.containers.get(project);
+				Map projectContainers = this.containers.get(project);
 				if (projectContainers != null){
 					Iterator containerIterator = projectContainers.keySet().iterator();
 					while (containerIterator.hasNext()){
@@ -1115,7 +1115,7 @@ public class RubyModelManager implements IContentTypeChangeListener, ISavePartic
 	public void saving(ISaveContext context) throws CoreException {
 		
 	    // save variable and container values on snapshot/full save
-		long start = -1;
+//		long start = -1;
 //		if (VERBOSE)
 //			start = System.currentTimeMillis();
 		saveVariablesAndContainers();
@@ -2553,7 +2553,7 @@ public class RubyModelManager implements IContentTypeChangeListener, ISavePartic
 
 				saveString(project.getElementName());
 
-				Map containerMap = (Map) RubyModelManager.this.containers.get(project);
+				Map containerMap = RubyModelManager.this.containers.get(project);
 
 				if (containerMap == null) {
 					containerMap = Collections.EMPTY_MAP;

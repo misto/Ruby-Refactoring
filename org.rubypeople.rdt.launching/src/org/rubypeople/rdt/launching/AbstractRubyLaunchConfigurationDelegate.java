@@ -120,7 +120,7 @@ public abstract class AbstractRubyLaunchConfigurationDelegate extends
 					abort(
 							MessageFormat.format(
 									LaunchingMessages.AbstractJavaLaunchConfigurationDelegate_Working_directory_does_not_exist___0__12, 
-									new String[]{dir.toString()}),
+									dir.toString()),
 									null,
 									IRubyLaunchConfigurationConstants.ERR_WORKING_DIRECTORY_DOES_NOT_EXIST); 
 				}
@@ -143,7 +143,7 @@ public abstract class AbstractRubyLaunchConfigurationDelegate extends
 					MessageFormat
 							.format(
 									LaunchingMessages.AbstractJavaLaunchConfigurationDelegate_Working_directory_does_not_exist___0__12, 
-									new String[]{path.toString()}),
+									path.toString()),
 					null,
 					IRubyLaunchConfigurationConstants.ERR_WORKING_DIRECTORY_DOES_NOT_EXIST); 
 			} else {
@@ -156,7 +156,7 @@ public abstract class AbstractRubyLaunchConfigurationDelegate extends
 					MessageFormat
 							.format(
 									LaunchingMessages.AbstractJavaLaunchConfigurationDelegate_Working_directory_does_not_exist___0__12, 
-									new String[]{path.toString()}),
+									path.toString()),
 					null,
 					IRubyLaunchConfigurationConstants.ERR_WORKING_DIRECTORY_DOES_NOT_EXIST); 
 			}
@@ -287,7 +287,7 @@ public abstract class AbstractRubyLaunchConfigurationDelegate extends
 		IVMInstall vm = verifyVMInstall(configuration);
 		IVMRunner runner = vm.getVMRunner(mode);
 		if (runner == null) {
-			abort(MessageFormat.format(LaunchingMessages.JavaLocalApplicationLaunchConfigurationDelegate_0, new String[]{vm.getName(), mode}), null, IRubyLaunchConfigurationConstants.ERR_VM_RUNNER_DOES_NOT_EXIST); 
+			abort(MessageFormat.format(LaunchingMessages.JavaLocalApplicationLaunchConfigurationDelegate_0, vm.getName(), mode), null, IRubyLaunchConfigurationConstants.ERR_VM_RUNNER_DOES_NOT_EXIST); 
 		}
 		return runner;
 	}
@@ -319,7 +319,7 @@ public abstract class AbstractRubyLaunchConfigurationDelegate extends
 					MessageFormat
 							.format(
 									LaunchingMessages.AbstractJavaLaunchConfigurationDelegate_JRE_home_directory_not_specified_for__0__5, 
-									new String[]{vm.getName()}),
+									vm.getName()),
 					null,
 					IRubyLaunchConfigurationConstants.ERR_VM_INSTALL_DOES_NOT_EXIST); 
 		}
@@ -328,8 +328,7 @@ public abstract class AbstractRubyLaunchConfigurationDelegate extends
 					MessageFormat
 							.format(
 									LaunchingMessages.AbstractJavaLaunchConfigurationDelegate_JRE_home_directory_for__0__does_not_exist___1__6, 
-									new String[]{vm.getName(),
-											location.getAbsolutePath()}),
+									vm.getName(), location.getAbsolutePath()),
 					null,
 					IRubyLaunchConfigurationConstants.ERR_VM_INSTALL_DOES_NOT_EXIST); 
 		}

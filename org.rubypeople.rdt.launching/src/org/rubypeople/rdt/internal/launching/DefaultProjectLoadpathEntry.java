@@ -306,9 +306,9 @@ public class DefaultProjectLoadpathEntry extends AbstractRuntimeLoadpathEntry {
 	 */
 	public String getName() {
 		if (isExportedEntriesOnly()) {
-			return MessageFormat.format(LaunchingMessages.DefaultProjectLoadpathEntry_2, new String[] {getRubyProject().getElementName()});
+			return MessageFormat.format(LaunchingMessages.DefaultProjectLoadpathEntry_2, getRubyProject().getElementName());
 		}
-		return MessageFormat.format(LaunchingMessages.DefaultProjectLoadpathEntry_4, new String[] {getRubyProject().getElementName()}); 
+		return MessageFormat.format(LaunchingMessages.DefaultProjectLoadpathEntry_4, getRubyProject().getElementName()); 
 	}
 	/* (non-Rubydoc)
 	 * @see java.lang.Object#equals(java.lang.Object)
