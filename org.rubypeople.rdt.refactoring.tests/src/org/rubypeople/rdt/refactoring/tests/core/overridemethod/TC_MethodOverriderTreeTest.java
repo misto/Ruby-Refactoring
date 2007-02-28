@@ -113,7 +113,7 @@ public class TC_MethodOverriderTreeTest extends TreeProviderTester
 	public void testDocumentOneMethod()
 	{
 		addContent(new String[]{"A", "method arg"});
-		StringDocumentProvider docProvider = getDocumentProvider(A_EXTENDS_X_DOCUMENT);
+		StringDocumentProvider docProvider = new StringDocumentProvider("override_method_test_testDocumentOneMethod.rb", A_EXTENDS_X_DOCUMENT);
 		docProvider.addFile(superFileName, TEST_DOCUMENT_SIMPLE);
 		validate(new MethodsOverrider(docProvider));
 	}
@@ -121,7 +121,7 @@ public class TC_MethodOverriderTreeTest extends TreeProviderTester
 	public void testDocumentNoConstructorArgs()
 	{
 		addContent(new String[]{"A", "initialize"});
-		StringDocumentProvider docProvider = getDocumentProvider(A_EXTENDS_X_DOCUMENT);
+		StringDocumentProvider docProvider = new StringDocumentProvider("override_method_test_testDocumentNoConstructorArgs.rb", A_EXTENDS_X_DOCUMENT);
 		docProvider.addFile(superFileName, TEST_DOCUMENT_NO_CONSTRUCTOR_ARGS);
 		validate(new MethodsOverrider(docProvider));
 	}
@@ -129,7 +129,7 @@ public class TC_MethodOverriderTreeTest extends TreeProviderTester
 	public void testDocumentOneConstructorArg()
 	{
 		addContent(new String[]{"A", "initialize a"});
-		StringDocumentProvider docProvider = getDocumentProvider(A_EXTENDS_X_DOCUMENT);
+		StringDocumentProvider docProvider = new StringDocumentProvider("override_method_test_testDocumentOneConstructorArg.rb", A_EXTENDS_X_DOCUMENT);
 		docProvider.addFile(superFileName, TEST_DOCUMENT_ONE_CONSTRUCTOR_ARG);
 		validate(new MethodsOverrider(docProvider));
 	}
@@ -137,7 +137,7 @@ public class TC_MethodOverriderTreeTest extends TreeProviderTester
 	public void testDocumentTreeConstructorArgs()
 	{
 		addContent(new String[]{"A", "initialize a, b, c"});
-		StringDocumentProvider docProvider = getDocumentProvider(A_EXTENDS_X_DOCUMENT);
+		StringDocumentProvider docProvider = new StringDocumentProvider("override_method_test_testDocumentTreeConstructorArgs.rb", A_EXTENDS_X_DOCUMENT);
 		docProvider.addFile(superFileName, TEST_DOCUMENT_TREE_ONSTRUCTOR_ARGS);
 		validate(new MethodsOverrider(docProvider));
 	}
@@ -146,7 +146,7 @@ public class TC_MethodOverriderTreeTest extends TreeProviderTester
 	{
 		addContent(new String[]{"A", "initialize a"});
 		addContent(new String[]{"B", "initialize b, c"});
-		StringDocumentProvider docProvider = getDocumentProvider(TWO_CLASSES);
+		StringDocumentProvider docProvider = new StringDocumentProvider("override_method_test_testDocumentTwoClasses.rb", TWO_CLASSES);
 		docProvider.addFile(superFileName, TEST_DOCUMENT_TWO_CLASSES);
 		validate(new MethodsOverrider(docProvider));
 	}
@@ -155,7 +155,7 @@ public class TC_MethodOverriderTreeTest extends TreeProviderTester
 	{
 		addContent(new String[]{"A", "initialize arg0, arg1"});
 		addContent(new String[]{"A", "method arg"});
-		StringDocumentProvider docProvider = getDocumentProvider(A_EXTENDS_X_DOCUMENT);
+		StringDocumentProvider docProvider = new StringDocumentProvider("override_method_test_testDocumentMethodAndConstructor.rb", A_EXTENDS_X_DOCUMENT);
 		docProvider.addFile(superFileName, TEST_DOCUMENT_METHOD_AND_CONSTRUCTOR);
 		validate(new MethodsOverrider(docProvider));
 	}
@@ -165,7 +165,7 @@ public class TC_MethodOverriderTreeTest extends TreeProviderTester
 		addContent(new String[]{"A", "initialize arg"});
 		addContent(new String[]{"A", "method0 arg"});
 		addContent(new String[]{"A", "method1 arg"});
-		StringDocumentProvider docProvider = getDocumentProvider(A_EXTENDS_X_DOCUMENT);
+		StringDocumentProvider docProvider = new StringDocumentProvider("override_method_test_testDocumentMethodsAndTwoConstructors.rb", A_EXTENDS_X_DOCUMENT);
 		docProvider.addFile(superFileName, TEST_DOCUMENT_TWO_METHOD_AND_TWO_CONSTRUCTOR);
 		validate(new MethodsOverrider(docProvider));
 	}

@@ -44,8 +44,8 @@ public class TC_SelectionNodeProvider extends FileTestCase {
 		super(fileName);
 	}
 	
-	private String[] getEnclosingNodeClasses(String fileName, SelectionInformation selection) {
-		Node selected = SelectionNodeProvider.getSelectedNodes(getRootNode(fileName + ".rb"), selection);
+	private String[] getEnclosingNodeClasses(FileTestData data, SelectionInformation selection) {
+		Node selected = SelectionNodeProvider.getSelectedNodes(data.getActiveFileRootNode(), selection);
 		
 		ArrayList<String> classes = new ArrayList<String>();
 		Iterator<Node> it = NodeProvider.getAllNodes(selected).iterator();
@@ -73,7 +73,7 @@ public class TC_SelectionNodeProvider extends FileTestCase {
 	protected void runTest() throws Throwable {
 		FileTestData data = new FileTestData(getName(), ".rb", ".rb");
 		SelectionInformation selection = new SelectionInformation(data.getIntProperty("begin"), data.getIntProperty("end"), "");
-		assertLists(getEnclosingNodeClasses(getName(), selection), data.getCommaSeparatedStringArray("expected"));
+		assertLists(getEnclosingNodeClasses(data, selection), data.getCommaSeparatedStringArray("expected"));
 	}
 }
 

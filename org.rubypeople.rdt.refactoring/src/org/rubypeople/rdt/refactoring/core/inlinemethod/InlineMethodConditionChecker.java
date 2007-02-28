@@ -60,7 +60,7 @@ public class InlineMethodConditionChecker extends RefactoringConditionChecker {
 		if(!(findSelectedCall(config.getPos()) && findTargetClass(config.getTargetClassFinder()) && findMethodDefinition())) {
 			return;
 		}
-		config.setCellParent(NodeProvider.findParentNode(config.getDocumentProvider().getRootNode(), config.getSelectedCall().getWrappedNode()));
+		config.setCallParent(NodeProvider.findParentNode(config.getDocumentProvider().getActiveFileRootNode(), config.getSelectedCall().getWrappedNode()));
 		
 		replaceParameters();
 		
@@ -73,7 +73,7 @@ public class InlineMethodConditionChecker extends RefactoringConditionChecker {
 	}
 	
 	private void renameDuplicates(DocumentProvider doc) {
-		StaticScope parent = NodeUtil.getScope(SelectionNodeProvider.getEnclosingScope(doc.getRootNode(), config.getSelectedCall().getWrappedNode()));
+		StaticScope parent = NodeUtil.getScope(SelectionNodeProvider.getEnclosingScope(doc.getActiveFileRootNode(), config.getSelectedCall().getWrappedNode()));
 		
 		ArrayList<String> localNames = new ArrayList<String>();
 		if(parent.getVariables() != null) {

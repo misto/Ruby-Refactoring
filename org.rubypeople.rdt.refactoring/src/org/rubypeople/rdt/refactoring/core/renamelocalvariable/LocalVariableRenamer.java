@@ -71,6 +71,6 @@ public class LocalVariableRenamer {
 		} catch (BadLocationException e) {
 			assert false;
 		}
-		return new StringDocumentProvider(result.get());
+		return new StringDocumentProvider("modified_" + doc.getActiveFileName(), result.get());
 	}
 }

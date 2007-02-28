@@ -46,7 +46,7 @@ public class InlineMethodConfig {
 	private int pos;
 	private ITargetClassFinder targetClassFinder;
 	private Collection<String> usedMembers;
-	private Node cellParent;
+	private Node callParent;
 
 	public InlineMethodConfig(DocumentProvider doc, int pos, ITargetClassFinder targetClassFinder) {
 		
@@ -56,11 +56,11 @@ public class InlineMethodConfig {
 	}
 
 	public Node getCallParent() {
-		return cellParent;
+		return callParent;
 	}
 	
-	public void setCellParent(Node cellParent) {
-		this.cellParent = cellParent;
+	public void setCallParent(Node cellParent) {
+		this.callParent = cellParent;
 	}
 
 	public String getClassName() {

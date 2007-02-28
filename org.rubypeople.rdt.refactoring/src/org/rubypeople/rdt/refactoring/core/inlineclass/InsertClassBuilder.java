@@ -84,7 +84,7 @@ public class InsertClassBuilder {
 		prechanges.addChildren(getFieldRenameEdits(conflictingFields, inlinedClassDocumentProvider));
 		prechanges.addChildren(getConstructorDeleteEdits(inlinedClassDocumentProvider));
 
-		return new StringDocumentProvider(applyPrechanges(prechanges, inlinedClassDocumentProvider));
+		return new StringDocumentProvider(inlinedClassDocumentProvider.getActiveFileName() + "_with_applied_prechanges", applyPrechanges(prechanges, inlinedClassDocumentProvider));
 
 	}
 
@@ -200,13 +200,14 @@ public class InsertClassBuilder {
 		ISourcePosition classPartPosition = inlinedClassPart.getWrappedNode().getPosition();
 		String activeFileContent = config.getDocProvider().getActiveFileContent();
 		String inlinedClassDocument = activeFileContent.substring(classPartPosition.getStartOffset(), classPartPosition.getEndOffset());
-		StringDocumentProvider inlinedClassDocumentProvider = new StringDocumentProvider(inlinedClassDocument);
+		String fileName = "part_of_" + config.getDocProvider().getActiveFileName();
+		StringDocumentProvider inlinedClassDocumentProvider = new StringDocumentProvider(fileName, inlinedClassDocument);
 		return inlinedClassDocumentProvider;
 	}
 
 	private TextEdit[] getConstructorDeleteEdits(StringDocumentProvider inlinedClassDocument) {
 		ArrayList<TextEdit> constructorDeleters = new ArrayList<TextEdit>();
-		Node rootNode = inlinedClassDocument.getRootNode();
+		Node rootNode = inlinedClassDocument.getActiveFileRootNode();
 		ClassNodeWrapper classNode;
 		try {
 			classNode = SelectionNodeProvider.getSelectedClassNode(rootNode, 1);

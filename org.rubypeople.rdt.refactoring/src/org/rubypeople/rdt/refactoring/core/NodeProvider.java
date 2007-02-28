@@ -294,11 +294,6 @@ public class NodeProvider {
 		return getNodeBefore(parentNode, node) != null;
 	}
 
-	public static Collection<Node> getAllNodesFromFile(String fileName, String fileContent) {
-
-		return getAllNodes(getRootNode(fileName, fileContent));
-	}
-
 	public static Collection<Node> getAllNodes(Node parentNode) {
 		Collection<Node> allNodes = new ArrayList<Node>();
 

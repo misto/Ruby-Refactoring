@@ -37,7 +37,6 @@ import org.jruby.ast.CallNode;
 import org.jruby.ast.Node;
 import org.rubypeople.rdt.refactoring.classnodeprovider.ClassNodeProvider;
 import org.rubypeople.rdt.refactoring.classnodeprovider.IncludedClassesProvider;
-import org.rubypeople.rdt.refactoring.core.NodeProvider;
 import org.rubypeople.rdt.refactoring.core.RefactoringConditionChecker;
 import org.rubypeople.rdt.refactoring.core.SelectionNodeProvider;
 import org.rubypeople.rdt.refactoring.core.renamefield.fielditems.FieldCallItem;
@@ -62,7 +61,7 @@ public class RenameFieldConditionChecker extends RefactoringConditionChecker {
 		this.config = (RenameFieldConfig) configObj;
 
 		config.setDocProvider(new DocumentWithIncluding(config.getDocProvider()));
-		Node rootNode = config.getDocProvider().getRootNode();
+		Node rootNode = config.getDocProvider().getActiveFileRootNode();
 
 		try {
 			ClassNodeWrapper enclosingClassNode = SelectionNodeProvider.getSelectedClassNode(rootNode, config.getCaretPosition());
@@ -119,7 +118,7 @@ public class RenameFieldConditionChecker extends RefactoringConditionChecker {
 			CallNode callNode = (CallNode) candidateNode;
 			if (callNode.getName().replaceAll("=", "").equals(config.getSelectedName())) {
 				String fileName = callNode.getPosition().getFile();
-				Node rootNode = NodeProvider.getRootNode(fileName, config.getDocProvider().getFileContent(fileName));
+				Node rootNode = config.getDocProvider().getRootNode(fileName);
 				try {
 					SelectionNodeProvider.getSelectedClassNode(rootNode, callNode.getPosition().getStartOffset());
 				} catch (NoClassNodeException e) {
@@ -150,7 +149,7 @@ public class RenameFieldConditionChecker extends RefactoringConditionChecker {
 
 	@Override
 	protected void checkInitialConditions() {
-		Collection<FieldNodeWrapper> fields = PartialClassNodeWrapper.getFieldsFromNode(config.getDocProvider().getRootNode());
+		Collection<FieldNodeWrapper> fields = PartialClassNodeWrapper.getFieldsFromNode(config.getDocProvider().getActiveFileRootNode());
 		FieldNodeWrapper selectedFieldNode = SelectionNodeProvider.getSelectedWrappedNode(fields, config.getCaretPosition());
 		if (config.getWholeClassNode() == null) {
 			if (selectedFieldNode != null) {

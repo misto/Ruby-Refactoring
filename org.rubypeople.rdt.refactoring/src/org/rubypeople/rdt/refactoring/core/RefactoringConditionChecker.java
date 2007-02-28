@@ -110,7 +110,7 @@ public abstract class RefactoringConditionChecker implements IRefactoringConditi
 			}
 			for(String aktFileName : docProvider.getFileNames()) {
 				fileName = aktFileName;
-				NodeProvider.getRootNode(aktFileName, docProvider.getFileContent(aktFileName));
+				docProvider.getRootNode(aktFileName);
 			}
 		} catch(SyntaxException se) {
 			String activeFileName = docProvider.getActiveFileName();

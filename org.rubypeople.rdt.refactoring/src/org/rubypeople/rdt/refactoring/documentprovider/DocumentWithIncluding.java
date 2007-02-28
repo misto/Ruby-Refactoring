@@ -34,6 +34,7 @@ import java.util.HashSet;
 
 import org.jruby.ast.FCallNode;
 import org.jruby.ast.Node;
+import org.jruby.ast.RootNode;
 import org.jruby.ast.StrNode;
 import org.jruby.lexer.yacc.SyntaxException;
 import org.rubypeople.rdt.refactoring.classnodeprovider.ClassNodeProvider;
@@ -43,46 +44,37 @@ import org.rubypeople.rdt.refactoring.nodewrapper.PartialClassNodeWrapper;
 
 public class DocumentWithIncluding extends StringDocumentProvider {
 	
-	protected final IDocumentProvider mainFile;
+	protected final IDocumentProvider docProvider;
 
-	public DocumentWithIncluding(IDocumentProvider start) {
-		super(start.getActiveFileName(), start.getActiveFileContent());
-
-		this.mainFile = start;
+	public DocumentWithIncluding(IDocumentProvider docProvider) {
+		super(docProvider.getActiveFileName(), docProvider.getActiveFileContent());
+		this.docProvider = docProvider;
 		searchForRelatedFiles();
 	}
 	
 	private void searchForRelatedFiles() {
-		
-		ArrayList<DocumentProvider> candidateSet = new ArrayList<DocumentProvider>();
-		
-		for(String fileName : mainFile.getFileNames()) {
-			candidateSet.add(new StringDocumentProvider(fileName, mainFile.getFileContent(fileName)));
-		}
-
-		ArrayList<DocumentProvider> markedForRemoval = new ArrayList<DocumentProvider>();
-		
+		Collection<String> candidates = new ArrayList<String>(docProvider.getFileNames());
+		ArrayList<String> markedForRemoval = new ArrayList<String>();
 		HashSet<String> includedFiles = findAllIncludedFiles();
 		
 		do {
 			markedForRemoval.clear();
 			
-			for(DocumentProvider doc : candidateSet) {
-				String fileName = getFileNameWithoutPath(doc);
+			for(String actFileName : candidates) {
+				String fileName = getFileNameWithoutPath(actFileName);
 				if(includedFiles.contains(fileName)) {
-					addFile(doc.getActiveFileName(), doc.getActiveFileContent());
-					markedForRemoval.add(doc);
+					addFile(fileName, docProvider.getFileContent(fileName));
+					markedForRemoval.add(actFileName);
 					continue;
 				}
-				for (FCallNode node : getRequires(doc)) {
+				for (FCallNode node : getRequires(actFileName)) {
 					if(nodeRequiresMe(node)) {
-						addFile(doc.getActiveFileName(), doc.getActiveFileContent());
-						markedForRemoval.add(doc);
+						addFile(fileName, docProvider.getFileContent(fileName));
+						markedForRemoval.add(actFileName);
 					}
 				}
 			}
-			
-			removeMarkedFromCandidates(markedForRemoval, candidateSet);
+			removeMarkedFromCandidates(markedForRemoval, candidates);
 			
 		} while(markedForRemoval.size() > 0);
 	}
@@ -94,7 +86,7 @@ public class DocumentWithIncluding extends StringDocumentProvider {
 
 	private HashSet<String> findAllIncludedFiles() {
 		HashSet<String> includedFiles = new HashSet<String>();
-		ClassNodeProvider includedProvider = mainFile.getIncludedClassNodeProvider();
+		ClassNodeProvider includedProvider = docProvider.getIncludedClassNodeProvider();
 		for(ClassNodeWrapper classNode : includedProvider.getAllClassNodes()) {
 			for (PartialClassNodeWrapper partialClassNode : classNode.getPartialClassNodes()) {
 				String file = partialClassNode.getWrappedNode().getPosition().getFile();
@@ -106,21 +98,20 @@ public class DocumentWithIncluding extends StringDocumentProvider {
 		return includedFiles;
 	}
 
-	private String getFileNameWithoutPath(DocumentProvider doc) {
-		String activeFileName = doc.getActiveFileName();
-		if(activeFileName.contains("/")) {
-			return activeFileName.substring(activeFileName.lastIndexOf("/") + 1, activeFileName.length());
+	private String getFileNameWithoutPath(String actFileName) {
+		if(actFileName.contains("/")) {
+			return actFileName.substring(actFileName.lastIndexOf("/") + 1);
 		}
-		return activeFileName;
+		return actFileName;
 	}
 
 	private boolean nodeRequiresMe(FCallNode node) {
 		return isStrNode(node) && fileIsInResultSet(getRequiredFilename(node));
 	}
 
-	private void removeMarkedFromCandidates(ArrayList<DocumentProvider> markedForRemoval, ArrayList<DocumentProvider> candidateSet) {
-		for (DocumentProvider doc : markedForRemoval) {
-			candidateSet.remove(doc);
+	private void removeMarkedFromCandidates(ArrayList<String> markedForRemoval, Collection<String> candidates) {
+		for (String actName : markedForRemoval) {
+			candidates.remove(actName);
 		}
 	}
 
@@ -128,9 +119,10 @@ public class DocumentWithIncluding extends StringDocumentProvider {
 		return ((StrNode) node.getArgsNode().childNodes().iterator().next()).getValue();
 	}
 
-	private Collection<FCallNode> getRequires(DocumentProvider doc) {
+	private Collection<FCallNode> getRequires(String fileName) {
 		try {
-			return NodeProvider.getLoadAndRequireNodes(doc.getRootNode());
+			RootNode rootNode = docProvider.getRootNode(fileName);
+			return NodeProvider.getLoadAndRequireNodes(rootNode);
 		} catch(SyntaxException e) {
 			return new ArrayList<FCallNode>();
 		} 
@@ -151,10 +143,8 @@ public class DocumentWithIncluding extends StringDocumentProvider {
 				return true;
 			}
 		}
-		
 		return false;
 	}
-
 	
 	private boolean isStrNode(FCallNode node) {
 		return node.getArgsNode().childNodes().iterator().next() instanceof StrNode;
@@ -167,9 +157,6 @@ public class DocumentWithIncluding extends StringDocumentProvider {
 		for(String currentFileName : getFileNames()){
 			allNodes.addAll(getAllNodes(currentFileName));
 		}
-		
 		return allNodes;
 	}
-	
-	
 }

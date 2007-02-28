@@ -60,7 +60,6 @@ import org.jruby.lexer.yacc.ISourcePosition;
 import org.rubypeople.rdt.refactoring.exception.NoClassNodeException;
 import org.rubypeople.rdt.refactoring.nodewrapper.AttrAccessorNodeWrapper;
 import org.rubypeople.rdt.refactoring.nodewrapper.ClassNodeWrapper;
-import org.rubypeople.rdt.refactoring.nodewrapper.FieldNodeWrapper;
 import org.rubypeople.rdt.refactoring.nodewrapper.INodeWrapper;
 import org.rubypeople.rdt.refactoring.nodewrapper.PartialClassNodeWrapper;
 import org.rubypeople.rdt.refactoring.util.NodeUtil;

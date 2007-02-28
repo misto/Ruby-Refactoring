@@ -56,7 +56,7 @@ public class ReturnStatementReplacer implements IReturnStatementReplacer {
 
 	private int countReturnNodes(DocumentProvider doc) {
 		int returnNodes = 0;
-		for (Node node : NodeProvider.getAllNodesFromFile(doc.getActiveFileName(), doc.getActiveFileContent())) {
+		for (Node node : NodeProvider.getAllNodes(doc.getActiveFileRootNode())) {
 			if(node instanceof ReturnNode) {
 				returnNodes++;
 			}
@@ -65,7 +65,7 @@ public class ReturnStatementReplacer implements IReturnStatementReplacer {
 	}
 
 	private ReturnNode getReturnNode(DocumentProvider doc) {
-		for (Node node : NodeProvider.getAllNodesFromFile(doc.getActiveFileName(), doc.getActiveFileContent())) {
+		for (Node node : NodeProvider.getAllNodes(doc.getActiveFileRootNode())) {
 			if(node instanceof ReturnNode) {
 				return (ReturnNode) node;
 			}
@@ -89,13 +89,13 @@ public class ReturnStatementReplacer implements IReturnStatementReplacer {
 			replaceReturnStatementWithAssignment(doc, target, result, returnNode);
 		}
 
-		return new StringDocumentProvider(result.append(ReWriteVisitor.createCodeFromNode(target, doc.getActiveFileContent())).toString());
+		return new StringDocumentProvider("part_of_" + doc.getActiveFileName(), result.append(ReWriteVisitor.createCodeFromNode(target, doc.getActiveFileContent())).toString());
 		
 	}
 
 	private void insertLastLineToAssignment(DocumentProvider doc, AssignableNode target, StringBuilder result) {
 		String[] lines = doc.getActiveFileContent().split("(\\r)?\\n");
-		target.setValueNode(NodeProvider.getRootNode("", lines[lines.length - 1]).getBodyNode());
+		target.setValueNode(NodeProvider.getRootNode("last_line_of_" + doc.getActiveFileName() + "_for_ReturnStatementReplacer", lines[lines.length - 1]).getBodyNode());
 		String lineDelimiter = FileHelper.getLineDelimiter(doc.getActiveFileContent());
 		
 		for(int i = 0; i < lines.length - 1; i++) {
@@ -108,5 +108,4 @@ public class ReturnStatementReplacer implements IReturnStatementReplacer {
 		target.setValueNode(returnNode.getValueNode());
 		result.append(doc.getActiveFileContent().substring(0, returnNode.getPosition().getStartOffset()));
 	}
-
 }

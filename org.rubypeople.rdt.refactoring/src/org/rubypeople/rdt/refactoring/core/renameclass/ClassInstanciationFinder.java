@@ -61,7 +61,7 @@ public class ClassInstanciationFinder implements IClassInstanciationFinder {
 	}
 
 	private void addIfCreatesInstance(String name, Collection<ConstructorCall> found, DocumentProvider file) {
-		for(Node node : NodeProvider.getSubNodes(file.getRootNode(), CallNode.class)) {
+		for(Node node : NodeProvider.getSubNodes(file.getActiveFileRootNode(), CallNode.class)) {
 			CallNode call = (CallNode) node;
 			if(isConstructorFor(name, call)) {
 				found.add(new ConstructorCall(call));

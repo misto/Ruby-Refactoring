@@ -31,6 +31,8 @@
 package org.rubypeople.rdt.refactoring.documentprovider;
 
 import java.util.Collection;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 import org.jruby.ast.Node;
 import org.jruby.ast.RootNode;
@@ -42,7 +44,11 @@ import org.rubypeople.rdt.refactoring.core.NodeProvider;
 
 public abstract class DocumentProvider implements IDocumentProvider {
 
-	private RootNode rootNode;
+	private Map<String, RootNode> cachedRootNodes;
+	
+	public DocumentProvider() {
+		cachedRootNodes = new LinkedHashMap<String, RootNode>();
+	}
 
 	public ClassNodeProvider getClassNodeProvider() {
 		return new ClassNodeProvider(this);
@@ -56,20 +62,22 @@ public abstract class DocumentProvider implements IDocumentProvider {
 		return new IncludedClassesProvider(this);
 	}
 	
-	public RootNode getRootNode() {
-//		if(rootNode == null) {
-//			rootNode = NodeProvider.getRootNode(getActiveFileName(), getActiveFileContent()); 
-//		}
-//		return rootNode;
-		return NodeProvider.getRootNode(getActiveFileName(), getActiveFileContent());
+	public RootNode getActiveFileRootNode() {
+		return getRootNode(getActiveFileName());
 	}
 
 	public Collection<Node> getAllNodes() {
-		return NodeProvider.getAllNodes(getRootNode());
+		return NodeProvider.getAllNodes(getActiveFileRootNode());
 	}
 	
 	public Collection<Node> getAllNodes(String fileName){
-		Node rootNode = NodeProvider.getRootNode(fileName, getFileContent(fileName));
-		return NodeProvider.getAllNodes(rootNode);
+		return NodeProvider.getAllNodes(getRootNode(fileName));
+	}
+	
+	public RootNode getRootNode(String fileName) {
+		if(!cachedRootNodes.containsKey(fileName)) {
+			cachedRootNodes.put(fileName, NodeProvider.getRootNode(fileName, getFileContent(fileName))); 
+		}
+		return cachedRootNodes.get(fileName);
 	}
 }

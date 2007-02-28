@@ -35,6 +35,10 @@ import org.rubypeople.rdt.refactoring.tests.TwoLayerTreeEditProviderTester;
 public class TC_OverridenMethodEditTest extends TwoLayerTreeEditProviderTester
 {
 
+	private static int test_count = 0;
+
+
+
 	public TC_OverridenMethodEditTest()
 	{
 		super(true);
@@ -189,7 +193,8 @@ public class TC_OverridenMethodEditTest extends TwoLayerTreeEditProviderTester
 //	}
 	
 	private void check(String classDocument, String superClassDocument, String expectedDocument) {
-		StringDocumentProvider docProvider = getDocumentProvider(classDocument);
+		
+		StringDocumentProvider docProvider = new StringDocumentProvider("override_method_edit_test_nr_" + ++test_count, classDocument);
 		if(superClassDocument != null) {
 			docProvider.addFile("superClassDocument", superClassDocument);
 		}

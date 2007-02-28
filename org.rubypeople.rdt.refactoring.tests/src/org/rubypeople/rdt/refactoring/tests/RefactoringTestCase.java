@@ -35,7 +35,6 @@ import junit.framework.TestCase;
 import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.Document;
 import org.eclipse.text.edits.TextEdit;
-import org.rubypeople.rdt.refactoring.documentprovider.StringDocumentProvider;
 import org.rubypeople.rdt.refactoring.editprovider.FileMultiEditProvider;
 import org.rubypeople.rdt.refactoring.editprovider.IEditProvider;
 import org.rubypeople.rdt.refactoring.editprovider.IMultiFileEditProvider;
@@ -50,11 +49,6 @@ public abstract class RefactoringTestCase extends TestCase {
 	public RefactoringTestCase() {
 		super(RefactoringTestCase.class.getSimpleName());
 	}
-	
-	protected StringDocumentProvider getDocumentProvider(String dummyDocument) {
-		return new StringDocumentProvider(dummyDocument);
-	}
-	
 	
 	protected void createEditAndCompareResult(String document, String expectedDocument, IEditProvider editProvider) throws BadLocationException {
 		String result;

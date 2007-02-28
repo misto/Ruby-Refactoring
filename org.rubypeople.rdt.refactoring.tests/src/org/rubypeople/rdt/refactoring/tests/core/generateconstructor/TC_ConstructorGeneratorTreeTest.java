@@ -29,6 +29,7 @@
 package org.rubypeople.rdt.refactoring.tests.core.generateconstructor;
 
 import org.rubypeople.rdt.refactoring.core.generateconstructor.ConstructorsGenerator;
+import org.rubypeople.rdt.refactoring.documentprovider.StringDocumentProvider;
 import org.rubypeople.rdt.refactoring.tests.TreeProviderTester;
 
 public class TC_ConstructorGeneratorTreeTest extends TreeProviderTester
@@ -68,13 +69,13 @@ public class TC_ConstructorGeneratorTreeTest extends TreeProviderTester
 	{
 		addContent(new String[]{"X", "a"});
 		addContent(new String[]{"X", "b"});
-		validate(new ConstructorsGenerator(getDocumentProvider(TEST_DOCUMENT_SIMPLE)));
+		validate(new ConstructorsGenerator(new StringDocumentProvider("generate_constructor_test_testSimpleDocument.rb", TEST_DOCUMENT_SIMPLE)));
 	}
 	
 	public void testDocumentNoAttrs()
 	{
 		addContent(new String[]{"X"});
-		validate(new ConstructorsGenerator(getDocumentProvider(TEST_DOCUMENT_NO_ATTRS)));
+		validate(new ConstructorsGenerator(new StringDocumentProvider("generate_constructor_test_testDocumentNoAttrs.rb", TEST_DOCUMENT_NO_ATTRS)));
 	}
 	
 	public void testAllAttrTypes()
@@ -82,7 +83,7 @@ public class TC_ConstructorGeneratorTreeTest extends TreeProviderTester
 		addContent(new String[]{"X", "a"});
 		addContent(new String[]{"X", "b"});
 		addContent(new String[]{"X", "c"});
-		validate(new ConstructorsGenerator(getDocumentProvider(TEST_DOCUMENT_ALL_ATTR_DEFINITION)));
+		validate(new ConstructorsGenerator(new StringDocumentProvider("generate_constructor_test_testAllAttrTypes.rb", TEST_DOCUMENT_ALL_ATTR_DEFINITION)));
 	}
 	
 	public void testSClassNode()
@@ -90,6 +91,6 @@ public class TC_ConstructorGeneratorTreeTest extends TreeProviderTester
 		addContent(new String[]{"x", "a"});
 		addContent(new String[]{"x", "b"});
 		addContent(new String[]{"x", "c"});
-		validate(new ConstructorsGenerator(getDocumentProvider(TEST_DOCUMENT_SCLASS_NODE)));
+		validate(new ConstructorsGenerator(new StringDocumentProvider("generate_constructor_test_testSClassNode.rb", TEST_DOCUMENT_SCLASS_NODE)));
 	}
 }

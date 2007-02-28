@@ -52,7 +52,9 @@ public interface IDocumentProvider {
 
 	public ClassNodeProvider getIncludedClassNodeProvider();
 
-	public RootNode getRootNode();
+	public RootNode getActiveFileRootNode();
+	
+	public RootNode getRootNode(String fileName);
 
 	public Collection<Node> getAllNodes();
 

@@ -76,7 +76,7 @@ public class TC_MethodDownPusherTreeTest  extends TreeProviderTester
 	public void testSimpleOneDocumentPushDown()
 	{
 		addContent(new String[]{"X", "method"});
-		DocumentProvider docProvider =  getDocumentProvider(ONE_DOCUMENT_PUSHDOWN);
+		DocumentProvider docProvider = new StringDocumentProvider("push_down_test_testSimpleOneDocumentPushDown.rb", ONE_DOCUMENT_PUSHDOWN);
 		validate(new MethodDownPusher(docProvider));
 	}
 	
@@ -84,14 +84,14 @@ public class TC_MethodDownPusherTreeTest  extends TreeProviderTester
 	{
 		addContent(new String[]{"X", "method"});
 		addContent(new String[]{"Y", "method"});
-		DocumentProvider docProvider =  getDocumentProvider(ONE_DOCUMENT_PUSHDOWN_MULTIPLE);
+		DocumentProvider docProvider = new StringDocumentProvider("push_down_test_testOneDocumentPushDown.rb", ONE_DOCUMENT_PUSHDOWN_MULTIPLE);
 		validate(new MethodDownPusher(docProvider));
 	}
 	
 	public void testTwoDocumentPushDown()
 	{
 		addContent(new String[]{"X", "method"});
-		StringDocumentProvider docProvider =  getDocumentProvider(DOCUMENT_X);
+		StringDocumentProvider docProvider = new StringDocumentProvider("push_down_test_testTwoDocumentPushDown.rb", DOCUMENT_X);
 		docProvider.addFile("DOCUMENT_A_EXTENDS_X", DOCUMENT_A_EXTENDS_X);
 		validate(new MethodDownPusher(docProvider));
 	}
@@ -99,7 +99,7 @@ public class TC_MethodDownPusherTreeTest  extends TreeProviderTester
 	public void testTreeDocumentPushDown()
 	{
 		addContent(new String[]{"X", "method"});
-		StringDocumentProvider docProvider =  getDocumentProvider(DOCUMENT_X);
+		StringDocumentProvider docProvider = new StringDocumentProvider("push_down_test_testTreeDocumentPushDown.rb", DOCUMENT_X);
 		docProvider.addFile("DOCUMENT_A_EXTENDS_X", DOCUMENT_A_EXTENDS_X);
 		docProvider.addFile("DOCUMENT_B_EXTENDS_X", DOCUMENT_B_EXTENDS_X);
 		validate(new MethodDownPusher(docProvider));

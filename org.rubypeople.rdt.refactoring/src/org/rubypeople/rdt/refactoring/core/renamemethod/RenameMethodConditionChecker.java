@@ -48,7 +48,6 @@ import org.rubypeople.rdt.refactoring.nodewrapper.ClassNodeWrapper;
 import org.rubypeople.rdt.refactoring.nodewrapper.MethodCallNodeWrapper;
 import org.rubypeople.rdt.refactoring.nodewrapper.MethodNodeWrapper;
 import org.rubypeople.rdt.refactoring.nodewrapper.PartialClassNodeWrapper;
-import org.rubypeople.rdt.refactoring.util.NodeUtil;
 
 public class RenameMethodConditionChecker extends RefactoringConditionChecker{
 
@@ -65,7 +64,7 @@ public class RenameMethodConditionChecker extends RefactoringConditionChecker{
 		this.config = (RenameMethodConfig)configObj;
 		config.setDocProvider(new DocumentWithIncluding(config.getDocProvider()));
 		
-		Node rootNode = config.getDocProvider().getRootNode();
+		Node rootNode = config.getDocProvider().getActiveFileRootNode();
 		try {
 			this.config.setClassNode(SelectionNodeProvider.getSelectedClassNode(rootNode, this.config.getCaretPosition()));
 		} catch (NoClassNodeException e) {/* ClassNode stays null */}
@@ -101,15 +100,15 @@ public class RenameMethodConditionChecker extends RefactoringConditionChecker{
 		ArrayList<MethodCallNodeWrapper> possibleCalls = new ArrayList<MethodCallNodeWrapper>();
 
 		for(Node currentNode : allNodes){
-			if(isPossibleCall(currentNode)){
-				possibleCalls.add(new MethodCallNodeWrapper(currentNode));
+			MethodCallNodeWrapper callNode = new MethodCallNodeWrapper(currentNode);
+			if(isPossibleCall(callNode)){
+				possibleCalls.add(callNode);
 			}
 		}
 		return possibleCalls;
 	}
 
-	private boolean isPossibleCall(Node candidateNode) {
-		MethodCallNodeWrapper callNode = new MethodCallNodeWrapper(candidateNode);
+	private boolean isPossibleCall(MethodCallNodeWrapper callNode) {
 		if(config.getTargetMethod().isClassMethod() != callNode.isCallToClassMethod()){
 			return false;			
 		}
@@ -193,7 +192,7 @@ public class RenameMethodConditionChecker extends RefactoringConditionChecker{
 			}
 		} catch (NoClassNodeException e) {
 			
-			Node rootNode = config.getDocProvider().getRootNode();
+			Node rootNode = config.getDocProvider().getActiveFileRootNode();
 			Collection<MethodDefNode> methods = NodeProvider.getMethodNodes(rootNode);
 			ClassNodeProvider classes = new ClassNodeProvider(config.getDocProvider());
 			

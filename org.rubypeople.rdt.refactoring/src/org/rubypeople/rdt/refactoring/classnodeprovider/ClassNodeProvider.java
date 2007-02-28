@@ -64,7 +64,7 @@ public class ClassNodeProvider {
 	}
 
 	public void addSource(String sourceName) {
-		Node rootNode = NodeProvider.getRootNode(sourceName, documentProvider.getFileContent(sourceName));
+		Node rootNode = documentProvider.getRootNode(sourceName);
 		createClassNodes(rootNode);
 	}
 

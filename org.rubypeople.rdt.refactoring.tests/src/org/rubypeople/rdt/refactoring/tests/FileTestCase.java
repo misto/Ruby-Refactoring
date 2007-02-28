@@ -43,6 +43,6 @@ public abstract class FileTestCase extends RefactoringTestCase
 	}
 
 	protected RootNode getRootNode(String fileName) {
-		return NodeProvider.getRootNode("testFile", FileHelper.getFileContent(TestsPlugin.getFile(fileName)));
+		return NodeProvider.getRootNode("testFile", getSource(fileName));
 	}
 }

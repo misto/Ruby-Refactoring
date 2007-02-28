@@ -127,7 +127,7 @@ public class RenameMethodConfig implements INewNameReceiver, NodeSelector {
 	}
 	
 	public Collection<MethodNodeWrapper> getAllMethodsInClass() throws NoClassNodeException {
-		Node rootNode = docProvider.getRootNode();
+		Node rootNode = docProvider.getActiveFileRootNode();
 		ClassNodeWrapper enclosingClass = SelectionNodeProvider.getSelectedClassNode(rootNode, targetMethod.getWrappedNode().getPosition().getStartOffset());
 		IncludedClassesProvider classesProvider = new IncludedClassesProvider(docProvider);
 		ClassNodeWrapper wholeClass = classesProvider.getClassNode(enclosingClass.getName());

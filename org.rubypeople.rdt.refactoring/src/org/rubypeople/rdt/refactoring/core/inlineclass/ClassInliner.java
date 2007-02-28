@@ -75,11 +75,11 @@ public class ClassInliner implements IMultiFileEditProvider {
 		@Override
 		protected Node getInsertNode(int offset, String document) {
 			try {
-				Node rootNode = provider.getRootNode();
+				Node rootNode = provider.getActiveFileRootNode();
 				return SelectionNodeProvider.getSelectedClassNode(rootNode, 1).getFirstPartialClassNode().getClassBodyNode();
 			} catch (NoClassNodeException e) {
 		
-				return provider.getRootNode();
+				return provider.getActiveFileRootNode();
 			}
 		}
 
@@ -299,7 +299,7 @@ public class ClassInliner implements IMultiFileEditProvider {
 
 	public PartialClassNodeWrapper getInlinedClassPart(){
 		DocumentProvider docProvider = config.getDocProvider();
-		Node rootNode = docProvider.getRootNode();
+		Node rootNode = docProvider.getActiveFileRootNode();
 		try {
 			return SelectionNodeProvider.getSelectedClassNode(rootNode, config.getCaretPosition()).getFirstPartialClassNode();
 

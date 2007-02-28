@@ -87,7 +87,7 @@ public class TC_AccessorsGeneratorTreeTest extends TreeProviderTester{
 	
 	public void testSimpleDocument()
 	{
-		DocumentProvider docProvider = new StringDocumentProvider(TEST_DOCUMENT_SIMPLE);
+		DocumentProvider docProvider = new StringDocumentProvider("generate_accessor_test_testSimpleDocument.rb", TEST_DOCUMENT_SIMPLE);
 		AccessorsGenerator provider = new AccessorsGenerator(docProvider, GeneratedAccessor.TYPE_SIMPLE_ACCESSOR);
 		addContentWithBothAccessors(new String[]{"X", "a"});
 		addContentWithBothAccessors(new String[]{"X", "b"});
@@ -98,42 +98,42 @@ public class TC_AccessorsGeneratorTreeTest extends TreeProviderTester{
 	
 	public void testDocumentWithSimpleAccessorSelectedTypeSimple()
 	{
-		DocumentProvider docProvider = new StringDocumentProvider(TEST_DOCUMENT_WITH_SIMPLE_ACCESSOR);
+		DocumentProvider docProvider = new StringDocumentProvider("generate_accessor_test_testDocumentWithSimpleAccessorSelectedTypeSimple.rb", TEST_DOCUMENT_WITH_SIMPLE_ACCESSOR);
 		validate(new AccessorsGenerator(docProvider, GeneratedAccessor.TYPE_SIMPLE_ACCESSOR));
 	}
 	
 	public void testDocumentWithSimpleAccessorSelectedTypeMethod()
 	{
 		addContentWithBothAccessors(new String[]{"X", "a"});
-		DocumentProvider docProvider = new StringDocumentProvider(TEST_DOCUMENT_WITH_SIMPLE_ACCESSOR);
+		DocumentProvider docProvider = new StringDocumentProvider("generate_accessor_test_testDocumentWithSimpleAccessorSelectedTypeMethod.rb", TEST_DOCUMENT_WITH_SIMPLE_ACCESSOR);
 		validate(new AccessorsGenerator(docProvider, GeneratedAccessor.TYPE_METHOD_ACCESSOR));
 	}
 
 	public void testDocumentWithMethodAccessorSelectedTypeSimple()
 	{
 		addContentWithBothAccessors(new String[]{"X", "a"});
-		DocumentProvider docProvider = new StringDocumentProvider(TEST_DOCUMENT_WITH_METHOD_ACCESSOR);
+		DocumentProvider docProvider = new StringDocumentProvider("generate_accessor_test_testDocumentWithMethodAccessorSelectedTypeSimple.rb", TEST_DOCUMENT_WITH_METHOD_ACCESSOR);
 		validate(new AccessorsGenerator(docProvider, GeneratedAccessor.TYPE_SIMPLE_ACCESSOR));
 	}
 	
 
 	public void testDocumentWithMethodAccessorSelectedTypeMethod()
 	{
-		DocumentProvider docProvider = new StringDocumentProvider(TEST_DOCUMENT_WITH_METHOD_ACCESSOR);
+		DocumentProvider docProvider = new StringDocumentProvider("generate_accessor_test_testDocumentWithMethodAccessorSelectedTypeMethod.rb", TEST_DOCUMENT_WITH_METHOD_ACCESSOR);
 		validate(new AccessorsGenerator(docProvider, GeneratedAccessor.TYPE_METHOD_ACCESSOR));
 	}
 	
 	public void testDocumentWithSimpleWriter()
 	{
 		addContent(new String[]{"X", "a", TreeAccessor.READER});
-		DocumentProvider docProvider = new StringDocumentProvider(TEST_DOCUMENT_WITH_SIMPLE_WRITER);
+		DocumentProvider docProvider = new StringDocumentProvider("generate_accessor_test_testDocumentWithSimpleWriter.rb", TEST_DOCUMENT_WITH_SIMPLE_WRITER);
 		validate(new AccessorsGenerator(docProvider, GeneratedAccessor.TYPE_SIMPLE_ACCESSOR));
 	}
 	
 	public void testDocumentWithMethodReader()
 	{
 		addContent(new String[]{"X", "a", TreeAccessor.WRITER});
-		DocumentProvider docProvider = new StringDocumentProvider(TEST_DOCUMENT_WITH_METHOD_READER);
+		DocumentProvider docProvider = new StringDocumentProvider("generate_accessor_test_testDocumentWithMethodReader.rb", TEST_DOCUMENT_WITH_METHOD_READER);
 		validate(new AccessorsGenerator(docProvider, GeneratedAccessor.TYPE_METHOD_ACCESSOR));
 	}
 	

@@ -24,14 +24,14 @@ public class TC_RefactoringConditionChecker extends TestCase {
 
 	public void testSyntaxErrors() {
 		
-		RefactoringConditionChecker checker = new TestConditionChecker(new StringDocumentProvider("class Test; en"), null);
+		RefactoringConditionChecker checker = new TestConditionChecker(new StringDocumentProvider("errorous_dummy_doc.rb", "class Test; en"), null);
 		assertEquals(1, checker.getInitialMessages().get(IRefactoringConditionChecker.ERRORS).size());
 		assertEquals(0, checker.getInitialMessages().get(IRefactoringConditionChecker.WARNING).size());
 	}
 	
 	public void testSyntaxErrorsInIncludes() {
 		
-		StringDocumentProvider stringDocumentProvider = new StringDocumentProvider("class Test; end");
+		StringDocumentProvider stringDocumentProvider = new StringDocumentProvider("dummy_doc_wit_errorous_include.rb", "class Test; end");
 		stringDocumentProvider.addFile("other", "class Test; en");
 		
 		RefactoringConditionChecker checker = new TestConditionChecker(stringDocumentProvider, null);

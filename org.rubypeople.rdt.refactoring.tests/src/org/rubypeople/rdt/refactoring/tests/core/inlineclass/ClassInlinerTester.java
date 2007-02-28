@@ -35,7 +35,6 @@ import java.io.IOException;
 
 import org.eclipse.jface.text.BadLocationException;
 import org.jruby.ast.Node;
-import org.rubypeople.rdt.refactoring.core.NodeProvider;
 import org.rubypeople.rdt.refactoring.core.SelectionNodeProvider;
 import org.rubypeople.rdt.refactoring.core.inlineclass.ClassInliner;
 import org.rubypeople.rdt.refactoring.core.inlineclass.InlineClassConditionChecker;
@@ -56,7 +55,7 @@ public class ClassInlinerTester extends RefactoringTestCase {
 	}
 
 	private PartialClassNodeWrapper getTargetClassPart(String fileName, int classPos) {
-		Node rootNode = NodeProvider.getRootNode(fileName, testData.getFileContent(fileName));
+		Node rootNode = testData.getRootNode(fileName);
 		try {
 			return SelectionNodeProvider.getSelectedClassNode(rootNode, classPos).getFirstPartialClassNode();
 		} catch (NoClassNodeException e) {

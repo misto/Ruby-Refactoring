@@ -53,7 +53,7 @@ public class ParameterReplacer implements IParameterReplacer {
 
 	public DocumentProvider replace(IDocumentProvider doc, MethodCallNodeWrapper call, MethodDefNode definition) {
 		
-		DocumentProvider strDoc = new StringDocumentProvider(doc.getActiveFileContent().substring(definition.getPosition().getStartOffset(), definition.getPosition().getEndOffset() + 1));
+		DocumentProvider strDoc = new StringDocumentProvider("part_of_" + doc.getActiveFileName(), doc.getActiveFileContent().substring(definition.getPosition().getStartOffset(), definition.getPosition().getEndOffset() + 1));
 		
 		ArrayNode headList = new ArrayNode(new SourcePosition());
 		ArrayNode tailList = new ArrayNode(new SourcePosition());
@@ -83,12 +83,12 @@ public class ParameterReplacer implements IParameterReplacer {
 			createAssignments(headList, tailList, insert, lineDelimiter);
 		}
 		
-		MethodDefNode newDefinition = (MethodDefNode) ((NewlineNode) strDoc.getRootNode().getBodyNode()).getNextNode();
+		MethodDefNode newDefinition = (MethodDefNode) ((NewlineNode) strDoc.getActiveFileRootNode().getBodyNode()).getNextNode();
 		insert.append(strDoc.getActiveFileContent().substring(
 						newDefinition.getBodyNode().getPosition().getStartOffset(), 
 						newDefinition.getBodyNode().getPosition().getEndOffset() + 1).trim());
 		
-		return new StringDocumentProvider(insert.toString());
+		return new StringDocumentProvider("subpart_of_" + doc.getActiveFileName(), insert.toString());
 	}
 
 	private void createAssignments(ArrayNode headList, ArrayNode tailList, StringBuffer insert, String lineDelimiter) {

@@ -31,15 +31,14 @@ package org.rubypeople.rdt.refactoring.core.inlinemethod;
 import org.jruby.ast.RootNode;
 import org.rubypeople.rdt.refactoring.core.renamelocalvariable.LocalVariableRenamer;
 import org.rubypeople.rdt.refactoring.documentprovider.DocumentProvider;
-import org.rubypeople.rdt.refactoring.documentprovider.StringDocumentProvider;
 import org.rubypeople.rdt.refactoring.util.NameHelper;
 
 public class RenameDuplicatedVariables implements IRenameDuplicatedVariables {
 
 	public DocumentProvider rename(DocumentProvider doc, String[] localNames) {
 		
-		RootNode rootNode = doc.getRootNode();
-		DocumentProvider result = new StringDocumentProvider(doc.getActiveFileContent());
+		RootNode rootNode = doc.getActiveFileRootNode();
+		DocumentProvider result = doc;
 		
 		for (String name : NameHelper.findDuplicates(rootNode.getStaticScope().getVariables(), localNames)) {
 			if("$~".equals(name) || "$_".equals(name)) continue;

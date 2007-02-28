@@ -36,7 +36,6 @@ import java.util.Map;
 
 public class StringDocumentProvider extends DocumentProvider {
 
-	private static final String defaultDocName = "dummyDocument";
 	protected String document;
 	protected String docName;
 	
@@ -47,10 +46,6 @@ public class StringDocumentProvider extends DocumentProvider {
 		this.docName = documentName;
 		files = new LinkedHashMap<String, String>();
 		files.put(documentName, document);
-	}
-	
-	public StringDocumentProvider(String document) {
-		this(defaultDocName, document);
 	}
 	
 	public StringDocumentProvider(IDocumentProvider other) {

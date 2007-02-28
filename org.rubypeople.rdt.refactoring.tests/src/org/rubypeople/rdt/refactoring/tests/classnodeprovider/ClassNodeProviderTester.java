@@ -54,7 +54,7 @@ public abstract class ClassNodeProviderTester extends FileTestCase {
 	}
 	
 	protected void init() {
-		docProvider = new StringDocumentProvider("","");
+		docProvider = new StringDocumentProvider("empty_document","");
 		expectedMethodSignatures = new ArrayList<String>();
 		expectedClasses = new ArrayList<String>();
 	}

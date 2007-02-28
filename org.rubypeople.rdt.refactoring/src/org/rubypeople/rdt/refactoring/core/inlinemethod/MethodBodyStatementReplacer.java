@@ -52,7 +52,7 @@ public class MethodBodyStatementReplacer implements IMethodBodyStatementReplacer
 		Collection<Node> selfNodes = null;
 		DocumentProvider result = new StringDocumentProvider(doc);
 		do {
-			selfNodes = NodeProvider.gatherNodesOfTypeInAktScopeNode(result.getRootNode().getBodyNode(), SelfNode.class);
+			selfNodes = NodeProvider.gatherNodesOfTypeInAktScopeNode(result.getActiveFileRootNode().getBodyNode(), SelfNode.class);
 			if(selfNodes.isEmpty()) {
 				continue;
 			}
@@ -61,7 +61,8 @@ public class MethodBodyStatementReplacer implements IMethodBodyStatementReplacer
 			tempResult.append(result.getActiveFileContent().substring(0, node.getPosition().getStartOffset()));
 			tempResult.append(object);
 			tempResult.append(result.getActiveFileContent().substring(node.getPosition().getEndOffset()));
-			result = new StringDocumentProvider(tempResult.toString());
+			
+			result = new StringDocumentProvider("part_of_" + doc.getActiveFileName(), tempResult.toString());
 			
 		} while(!selfNodes.isEmpty());
 		
@@ -73,7 +74,7 @@ public class MethodBodyStatementReplacer implements IMethodBodyStatementReplacer
 		DocumentProvider result = new StringDocumentProvider(doc);
 		Collection<Node> varNodes = null;
 		do {
-			varNodes = NodeProvider.gatherNodesOfTypeInAktScopeNode(result.getRootNode().getBodyNode(), InstVarNode.class, InstAsgnNode.class);
+			varNodes = NodeProvider.gatherNodesOfTypeInAktScopeNode(result.getActiveFileRootNode().getBodyNode(), InstVarNode.class, InstAsgnNode.class);
 
 			if(varNodes.isEmpty()) {
 				continue;
@@ -85,7 +86,7 @@ public class MethodBodyStatementReplacer implements IMethodBodyStatementReplacer
 			src.replace(varNode.getPosition().getStartOffset(), 
 					varNode.getPosition().getStartOffset() + name.length(), 
 					object + '.' + name.substring(1));
-			result = new StringDocumentProvider(src.toString());
+			result = new StringDocumentProvider("part_of_" + doc.getActiveFileName(), src.toString());
 			
 		} while(!varNodes.isEmpty());
 		
@@ -100,7 +101,7 @@ public class MethodBodyStatementReplacer implements IMethodBodyStatementReplacer
 		while((call = findCallToMethodInClass(result, provider, className)) != null) {
 			StringBuilder src = new StringBuilder(result.getActiveFileContent());
 			src.insert(call.getWrappedNode().getPosition().getStartOffset(), object + '.');
-			result = new StringDocumentProvider(src.toString());
+			result = new StringDocumentProvider("part_of_" + doc.getActiveFileName(), src.toString());
 		}
 		
 		return result;
@@ -121,7 +122,7 @@ public class MethodBodyStatementReplacer implements IMethodBodyStatementReplacer
 
 	private Collection<MethodCallNodeWrapper> findFAndVCalls(DocumentProvider doc) {
 		Collection<MethodCallNodeWrapper> methodCalls = new ArrayList<MethodCallNodeWrapper>();
-		for (Node node : NodeProvider.gatherNodesOfTypeInAktScopeNode(doc.getRootNode().getBodyNode(), VCallNode.class, FCallNode.class)) {
+		for (Node node : NodeProvider.gatherNodesOfTypeInAktScopeNode(doc.getActiveFileRootNode().getBodyNode(), VCallNode.class, FCallNode.class)) {
 			methodCalls.add(new MethodCallNodeWrapper(node));
 		}
 		return methodCalls;
@@ -131,12 +132,12 @@ public class MethodBodyStatementReplacer implements IMethodBodyStatementReplacer
 		Collection<Node> nodes = null;
 		StringDocumentProvider result = new StringDocumentProvider(doc);
 		do {
-			nodes = NodeProvider.getSubNodes(NodeProvider.getRootNode("", result.getActiveFileContent()), ReturnNode.class);
+			nodes = NodeProvider.getSubNodes(result.getActiveFileRootNode(), ReturnNode.class);
 			if(nodes.isEmpty()) break;
 			StringBuilder newBody = new StringBuilder(result.getActiveFileContent());
 			int startOffset = nodes.iterator().next().getPosition().getStartOffset();
 			newBody.replace(startOffset, startOffset + "return ".length(), "");
-			result = new StringDocumentProvider(newBody.toString());
+			result = new StringDocumentProvider("part_of_" + doc.getActiveFileName(), newBody.toString());
 		} while(!nodes.isEmpty());
 		
 		return result;

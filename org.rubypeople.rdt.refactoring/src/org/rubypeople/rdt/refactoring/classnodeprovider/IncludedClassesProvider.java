@@ -63,7 +63,7 @@ public class IncludedClassesProvider extends ClassNodeProvider {
 	private void prepareIncludedFileNames() {
 
 		includeFilePaths = new ArrayList<IPath>();
-		Node rootNode = documentProvider.getRootNode();
+		Node rootNode = documentProvider.getActiveFileRootNode();
 		Collection<FCallNode> loadAndRequireNodes = NodeProvider.getLoadAndRequireNodes(rootNode);
 
 		for (FCallNode fCallNode : loadAndRequireNodes) {

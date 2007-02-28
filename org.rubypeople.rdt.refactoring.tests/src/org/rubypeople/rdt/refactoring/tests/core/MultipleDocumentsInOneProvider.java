@@ -42,8 +42,11 @@ public class MultipleDocumentsInOneProvider extends DocumentProvider {
 
 	private StringBuffer activeSection;
 	private HashMap<String, StringBuffer> sections;
+	private String fileName;
+	private String partName;
 
 	public MultipleDocumentsInOneProvider(String baseFile, Class<?> resource) {
+		this.fileName = baseFile;
 		FileTestData doc = null;
 		
 		try {
@@ -71,6 +74,7 @@ public class MultipleDocumentsInOneProvider extends DocumentProvider {
 	}
 	
 	public DocumentProvider setActive(String part) {
+		this.partName = part;
 		activeSection = sections.get(part);
 		return this;
 	}
@@ -80,7 +84,7 @@ public class MultipleDocumentsInOneProvider extends DocumentProvider {
 	}
 
 	public String getActiveFileName() {
-		return "";
+		return fileName + "_" + partName;
 	}
 
 	public String getFileContent(String currentFileName) {

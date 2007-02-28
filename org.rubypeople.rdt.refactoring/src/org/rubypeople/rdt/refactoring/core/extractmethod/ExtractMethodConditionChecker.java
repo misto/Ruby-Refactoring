@@ -73,7 +73,7 @@ public class ExtractMethodConditionChecker extends RefactoringConditionChecker {
 	}
 	
 	private void initEnclosingNodes() {
-		RootNode rootNode = config.getDocumentProvider().getRootNode();
+		RootNode rootNode = config.getDocumentProvider().getActiveFileRootNode();
 		config.setRootNode(rootNode);
 		config.setEnclosingScopeNode(SelectionNodeProvider.getEnclosingScope(rootNode, config.getSelection().getStartOfSelection()));
 		config.setEnclosingMethodNode((MethodDefNode) SelectionNodeProvider.getEnclosingNode(rootNode, config.getSelection(), MethodDefNode.class));

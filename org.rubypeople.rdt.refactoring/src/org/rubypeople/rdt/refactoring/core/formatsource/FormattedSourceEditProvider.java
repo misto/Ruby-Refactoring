@@ -38,7 +38,7 @@ public class FormattedSourceEditProvider extends ReplaceEditProvider {
 
 	public FormattedSourceEditProvider(FormatSourceConfig config) {
 		super(true);
-		this.fileRootNode = config.getDocumentProvider().getRootNode();
+		this.fileRootNode = config.getDocumentProvider().getActiveFileRootNode();
 	}
 
 	@Override

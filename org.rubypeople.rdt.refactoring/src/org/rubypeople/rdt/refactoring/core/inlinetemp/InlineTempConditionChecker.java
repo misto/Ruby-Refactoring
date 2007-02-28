@@ -58,7 +58,7 @@ public class InlineTempConditionChecker extends RefactoringConditionChecker {
 	
 	public void init(Object configObj) {
 		this.config = (InlineTempConfig) configObj;
-		rootNode = config.getDocProvider().getRootNode();
+		rootNode = config.getDocProvider().getActiveFileRootNode();
 		int caretPosition = config.getCaretPosition();
 		config.setEnclosingMethod((MethodDefNode) SelectionNodeProvider.getSelectedNodeOfType(rootNode, caretPosition, MethodDefNode.class));
 		
@@ -149,7 +149,7 @@ public class InlineTempConditionChecker extends RefactoringConditionChecker {
 
 	private boolean isNewMethodNameUnique() {
 
-		Node environment = SelectionNodeProvider.getSelectedNodeOfType(config.getDocProvider().getRootNode(), config.getCaretPosition(), ClassNode.class, RootNode.class);
+		Node environment = SelectionNodeProvider.getSelectedNodeOfType(config.getDocProvider().getActiveFileRootNode(), config.getCaretPosition(), ClassNode.class, RootNode.class);
 		Collection<MethodDefNode> methodNodes = NodeProvider.gatherMethodDefinitionNodes(NodeUtil.getBody(environment));
 
 		for (MethodDefNode currentDefnNode : methodNodes) {
