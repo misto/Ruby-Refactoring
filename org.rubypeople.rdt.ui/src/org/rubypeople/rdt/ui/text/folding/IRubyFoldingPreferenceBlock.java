@@ -22,7 +22,7 @@ import org.eclipse.swt.widgets.Control;
  * Clients may implement this interface.
  * </p>
  * 
- * @since 3.0
+ * @since 0.8.0
  */
 public interface IRubyFoldingPreferenceBlock {
 
