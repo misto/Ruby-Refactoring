@@ -26,7 +26,7 @@ public final class FoldingPreferencePage extends AbstractConfigurationBlockPrefe
 	 */
 	protected String getHelpId() {
 		return null;
-		// TOD) Uncomment when we have IRubyHelpContextIds
+		// TODO Uncomment when we have IRubyHelpContextIds
 //		return IRubyHelpContextIds.RUBY_EDITOR_PREFERENCE_PAGE;
 	}
 
