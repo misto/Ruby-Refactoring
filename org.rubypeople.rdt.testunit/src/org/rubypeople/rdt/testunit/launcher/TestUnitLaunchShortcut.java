@@ -138,7 +138,8 @@ public class TestUnitLaunchShortcut extends RubyApplicationShortcut {
 			wc.setAttribute(IRubyLaunchConfigurationConstants.ATTR_PROJECT_NAME, rubyFile.getProject().getName());
 			wc.setAttribute(IRubyLaunchConfigurationConstants.ATTR_FILE_NAME, TestUnitLaunchConfigurationDelegate.getTestRunnerPath());
 			wc.setAttribute(IRubyLaunchConfigurationConstants.ATTR_WORKING_DIRECTORY, TestUnitLaunchShortcut.getDefaultWorkingDirectory(rubyFile.getProject()));
-			wc.setAttribute(IRubyLaunchConfigurationConstants.ATTR_RUBY_CONTAINER_PATH, RubyRuntime.getCompositeIdFromVM(RubyRuntime.getDefaultVMInstall()));
+			wc.setAttribute(IRubyLaunchConfigurationConstants.ATTR_VM_INSTALL_NAME, RubyRuntime.getDefaultVMInstall().getName());
+			wc.setAttribute(IRubyLaunchConfigurationConstants.ATTR_VM_INSTALL_TYPE, RubyRuntime.getDefaultVMInstall().getVMInstallType().getId());
 			wc.setAttribute(TestUnitLaunchConfigurationDelegate.LAUNCH_CONTAINER_ATTR, container);
 			wc.setAttribute(TestUnitLaunchConfigurationDelegate.TESTNAME_ATTR, testName);
 			wc.setAttribute(TestUnitLaunchConfigurationDelegate.TESTTYPE_ATTR, "");

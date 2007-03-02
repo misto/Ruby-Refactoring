@@ -1397,7 +1397,7 @@ public class RubyRuntime {
 	
 	/**
 	 * Performs default resolution for a container entry.
-	 * Delegates to the Java model.
+	 * Delegates to the Ruby model.
 	 */
 	private static IRuntimeLoadpathEntry[] computeDefaultContainerEntries(IRuntimeLoadpathEntry entry, IRubyProject project) throws CoreException {
 		if (project == null || entry == null) {

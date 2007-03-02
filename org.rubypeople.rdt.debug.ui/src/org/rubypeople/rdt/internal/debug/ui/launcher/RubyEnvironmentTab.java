@@ -38,6 +38,7 @@ import org.rubypeople.rdt.internal.debug.ui.rubyvms.IAddVMDialogRequestor;
 import org.rubypeople.rdt.internal.debug.ui.rubyvms.RubyVMMessages;
 import org.rubypeople.rdt.internal.launching.RubyLaunchConfigurationAttribute;
 import org.rubypeople.rdt.internal.ui.RubyPluginImages;
+import org.rubypeople.rdt.launching.IRubyLaunchConfigurationConstants;
 import org.rubypeople.rdt.launching.IVMInstall;
 import org.rubypeople.rdt.launching.IVMInstallType;
 import org.rubypeople.rdt.launching.RubyRuntime;
@@ -46,7 +47,7 @@ import org.rubypeople.rdt.launching.VMStandin;
 public class RubyEnvironmentTab extends AbstractLaunchConfigurationTab {
 	protected ListViewer loadPathListViewer;
 
-	protected java.util.List installedInterpretersWorkingCopy;
+	protected List installedInterpretersWorkingCopy;
 
 	protected Combo interpreterCombo;
 
@@ -217,7 +218,7 @@ public class RubyEnvironmentTab extends AbstractLaunchConfigurationTab {
 			setUseLoadPathDefaults(useDefaultLoadPath);
 			if (useDefaultLoadPath) {
 				String projectName = configuration.getAttribute(
-						RubyLaunchConfigurationAttribute.PROJECT_NAME, "");
+						IRubyLaunchConfigurationConstants.ATTR_PROJECT_NAME, "");
 				if (projectName.length() != 0) {
 					IRubyProject project = RubyModelManager
 							.getRubyModelManager().getRubyModel()

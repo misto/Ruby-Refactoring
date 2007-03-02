@@ -40,9 +40,9 @@ public interface RubyLaunchConfigurationAttribute {
 	static final String PROJECT_NAME = IRubyLaunchConfigurationConstants.ATTR_PROJECT_NAME;
 	
 	/**
-	 * @deprecated Please use <code>IRubyLaunchConfigurationConstants.ATTR_RUBY_CONTAINER_PATH</code>
+	 * @deprecated Please use <code>IRubyLaunchConfigurationConstants.ATTR_VM_INSTALL_NAME</code>.
 	 */
-	static final String SELECTED_INTERPRETER = IRubyLaunchConfigurationConstants.ATTR_RUBY_CONTAINER_PATH;
+	static final String SELECTED_INTERPRETER = IRubyLaunchConfigurationConstants.ATTR_VM_INSTALL_NAME;
 	
 	/**
 	 * @deprecated Please use <code>IRubyLaunchConfigurationConstants.ATTR_WORKING_DIRECTORY</code>

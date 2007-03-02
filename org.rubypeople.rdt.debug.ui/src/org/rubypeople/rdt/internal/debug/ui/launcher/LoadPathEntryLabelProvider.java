@@ -4,6 +4,7 @@ import org.eclipse.core.resources.IProject;
 import org.eclipse.jface.viewers.ILabelProvider;
 import org.eclipse.jface.viewers.ILabelProviderListener;
 import org.eclipse.swt.graphics.Image;
+import org.rubypeople.rdt.core.ILoadpathEntry;
 import org.rubypeople.rdt.internal.core.LoadpathEntry;
 import org.rubypeople.rdt.internal.debug.ui.RdtDebugUiPlugin;
 
@@ -20,20 +21,10 @@ public class LoadPathEntryLabelProvider implements ILabelProvider {
 	 * @see ILabelProvider#getText(Object)
 	 */
 	public String getText(Object element) {
-		if (element != null && element.getClass() == LoadpathEntry.class) {
-			IProject project = ((LoadpathEntry) element).getProject();			
-			// TODO: quick fix
-			if (project == null) {
-				return "Project is null" ;
-			}
-			if (project.isAccessible()) {
-				return project.getLocation().toOSString() ;
-			}
-			else {
-				return project.getName() + " (not accessible)" ;
-			}
+		if (element != null && element instanceof ILoadpathEntry) {
+			ILoadpathEntry entry = (ILoadpathEntry) element;
+			return entry.getPath().toOSString();
 		}
-			
 		RdtDebugUiPlugin.log(new RuntimeException("Unable to render load path."));
 		return null;
 	}

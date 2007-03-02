@@ -27,6 +27,7 @@ import org.rubypeople.rdt.internal.debug.ui.RdtDebugUiMessages;
 import org.rubypeople.rdt.internal.debug.ui.RdtDebugUiPlugin;
 import org.rubypeople.rdt.internal.launching.RubyLaunchConfigurationAttribute;
 import org.rubypeople.rdt.internal.ui.RubyPlugin;
+import org.rubypeople.rdt.launching.IRubyLaunchConfigurationConstants;
 import org.rubypeople.rdt.launching.RubyRuntime;
 
 public class RubyApplicationShortcut implements ILaunchShortcut {
@@ -130,8 +131,8 @@ public class RubyApplicationShortcut implements ILaunchShortcut {
 			wc.setAttribute(RubyLaunchConfigurationAttribute.PROJECT_NAME, rubyFile.getProject().getName());
 			wc.setAttribute(RubyLaunchConfigurationAttribute.FILE_NAME, rubyFile.getProjectRelativePath().toString());
 			wc.setAttribute(RubyLaunchConfigurationAttribute.WORKING_DIRECTORY, RubyApplicationShortcut.getDefaultWorkingDirectory(rubyFile.getProject()));
-			wc.setAttribute(RubyLaunchConfigurationAttribute.SELECTED_INTERPRETER, RubyRuntime.getCompositeIdFromVM(RubyRuntime.getDefaultVMInstall()));
-			// FIXME generate a composite id for the interpreter, not name!
+			wc.setAttribute(IRubyLaunchConfigurationConstants.ATTR_VM_INSTALL_NAME, RubyRuntime.getDefaultVMInstall().getName());
+			wc.setAttribute(IRubyLaunchConfigurationConstants.ATTR_VM_INSTALL_TYPE, RubyRuntime.getDefaultVMInstall().getVMInstallType().getId());
 			wc.setAttribute(ILaunchConfiguration.ATTR_SOURCE_LOCATOR_ID, "org.rubypeople.rdt.debug.ui.rubySourceLocator");
 			config = wc.doSave();
 		} catch (CoreException ce) {
