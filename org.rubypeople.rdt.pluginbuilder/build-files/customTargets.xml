@@ -75,7 +75,8 @@
 	<!-- Steps to do after fetching the build elements -->
 	<!-- ===================================================================== -->
 	<target name="postFetch">
-		<antcall target="replaceVersions"/>		
+		<antcall target="replaceVersions"/>
+		<antcall target="setUpdateSiteURL"/>
 	</target>
 	
 	<target name="replaceVersions">
@@ -101,7 +102,22 @@
 			<replacefilter token="Bundle-Version: 0.0.0" value="Bundle-Version: ${version.full}" />
 			<replacefilter token="VERSION_QUALIFIER" value="${version.qualifier}" />
 		</replace>	
-	</target>	
+	</target>
+	
+	<target name="setUpdateSiteURL" if="isNightlyOrIntegrationBuild">
+
+		<!-- do not replace the update site URL if it is a release build -->
+		<condition property="updateSiteUrl" 
+				value="${nightlyBuildUpdateSiteURL}" 
+				else="${integrationBuildUpdateSiteURL}">
+			<isset property="isNightlyBuild"/>
+		</condition>
+		<echo message="Setting update-site URL: ${updateSiteUrl}"/>
+		<replace dir="${buildDirectory}/features">
+			<include name="org.rubypeople.*/feature.xml"/>
+			<replacefilter token="${releaseUpdateSiteURL}" value="${updateSiteUrl}" />						
+		</replace>
+	</target>
 	<!-- ===================================================================== -->
 	<!-- Steps to do before generating the build scripts. -->
 	<!-- ===================================================================== -->
