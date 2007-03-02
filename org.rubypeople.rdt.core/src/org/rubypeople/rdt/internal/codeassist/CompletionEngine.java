@@ -90,6 +90,7 @@ public class CompletionEngine {
 					}
 				}
 			} else {
+				// FIXME If we're invoked on the class declaration (it's super class) don't do this!
 				// FIXME Traverse the IRubyElement model, not nodes (and don't reparse)?
 				getDocumentsRubyElementsInScope();
 			}
@@ -433,11 +434,10 @@ public class CompletionEngine {
 
 	/** Lookup type declaration nodes */
 	private List<Node> getTypeDeclarationNodes(String typeName) {
-		System.out.println("Being asked for the type decl node for " + typeName);
-
 		// Find the named type
 		RubyElementRequestor requestor = new RubyElementRequestor(fContext.getScript());
 		IType[] types = requestor.findType(typeName);
+		if (types == null || types.length == 0) return new ArrayList<Node>(0);
 		IType type = types[0];
 
 		try {
