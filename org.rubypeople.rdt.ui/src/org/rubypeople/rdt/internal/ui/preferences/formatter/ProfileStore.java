@@ -122,12 +122,12 @@ public class ProfileStore {
     /**
      * Preference key where all profiles are stored
      */
-    private static final String PREF_FORMATTER_PROFILES= "org.eclipse.jdt.ui.formatterprofiles"; //$NON-NLS-1$
+    private static final String PREF_FORMATTER_PROFILES= "org.rubypeople.rdt.ui.formatterprofiles"; //$NON-NLS-1$
     
     /**
      * Preference key where all profiles are stored
      */
-    private static final String PREF_FORMATTER_PROFILES_VERSION= "org.eclipse.jdt.ui.formatterprofiles.version"; //$NON-NLS-1$
+    private static final String PREF_FORMATTER_PROFILES_VERSION= "org.rubypeople.rdt.ui.formatterprofiles.version"; //$NON-NLS-1$
     
     
     
