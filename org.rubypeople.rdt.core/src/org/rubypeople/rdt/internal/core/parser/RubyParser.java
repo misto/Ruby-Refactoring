@@ -16,9 +16,11 @@ import java.io.InputStreamReader;
 import java.io.Reader;
 import java.io.StringReader;
 import java.io.UnsupportedEncodingException;
+import java.util.List;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.CoreException;
+import org.jruby.ast.CommentNode;
 import org.jruby.ast.Node;
 import org.jruby.common.NullWarnings;
 import org.jruby.lexer.yacc.LexerSource;
@@ -38,6 +40,7 @@ public class RubyParser {
     private final RubyParserPool pool;
 	private IRdtWarnings warnings;
 	private static boolean isDebug;
+	private RubyParserResult result;
 
 	public RubyParser() {
 		this(new NullRdtWarnings());
@@ -50,7 +53,7 @@ public class RubyParser {
     
 	public Node parse(IFile file, Reader content) {
 		DefaultRubyParser parser = null;
-        RubyParserResult result = null;
+        result = null;
         try {
             warnings.setFile(file);
         	parser = getDefaultRubyParser();
@@ -65,6 +68,10 @@ public class RubyParser {
         	returnBorrowedParser(parser);
         }
         return result.getAST();
+	}
+	
+	public List<CommentNode> getComments() {
+		return result.getCommentNodes();
 	}
 
 	protected void returnBorrowedParser(DefaultRubyParser parser) {
