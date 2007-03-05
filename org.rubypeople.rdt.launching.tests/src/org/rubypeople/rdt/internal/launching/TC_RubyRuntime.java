@@ -157,7 +157,7 @@ public class TC_RubyRuntime extends ModifyingResourceTest {
 		xml.append(name);
 		xml.append("\" path=\"");
 		xml.append(location.toOSString());
-		xml.append("\">\r\n");
+		xml.append("\" vmargs=\"-e STDOUT.sync=true -e STDERR.sync=true -e load(ARGV.shift)\">\r\n");
 		xml.append("<libraryLocations>\r\n");
 		xml.append("<libraryLocation src=\"");
 		xml.append(location.toPortableString());
