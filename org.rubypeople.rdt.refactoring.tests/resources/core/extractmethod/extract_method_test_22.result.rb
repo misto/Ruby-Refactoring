@@ -1,9 +1,9 @@
 def method1 arg0, arg1
-  dd
+  method1 dd, 1
   i = "asdf"
   i += 1
 end
 
 def dd
-  method1(0, 1)
+  0
 end

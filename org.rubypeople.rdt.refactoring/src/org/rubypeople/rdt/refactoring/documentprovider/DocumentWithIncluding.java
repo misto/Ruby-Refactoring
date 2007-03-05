@@ -116,7 +116,7 @@ public class DocumentWithIncluding extends StringDocumentProvider {
 	}
 
 	private String getRequiredFilename(FCallNode node) {
-		return ((StrNode) node.getArgsNode().childNodes().iterator().next()).getValue();
+		return ((StrNode) node.getArgsNode().childNodes().iterator().next()).getValue().toString();
 	}
 
 	private Collection<FCallNode> getRequires(String fileName) {

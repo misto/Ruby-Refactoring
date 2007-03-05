@@ -112,7 +112,7 @@ public abstract class ASTUtil {
 		if (node instanceof DStrNode)
 			return stringRepresentation((DStrNode) node);
 		if (node instanceof StrNode)
-			return ((StrNode) node).getValue();
+			return ((StrNode) node).getValue().toString();
 		log("Reached node type we don't know how to represent: "
 				+ node.getClass().getName());
 		return node.toString();

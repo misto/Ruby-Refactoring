@@ -35,17 +35,25 @@ import java.util.Collection;
 import org.jruby.ast.ArgsNode;
 import org.jruby.ast.ArgumentNode;
 import org.jruby.ast.ArrayNode;
+import org.jruby.ast.BlockNode;
+import org.jruby.ast.BreakNode;
 import org.jruby.ast.CaseNode;
 import org.jruby.ast.ClassNode;
 import org.jruby.ast.DefnNode;
+import org.jruby.ast.ForNode;
+import org.jruby.ast.IterNode;
 import org.jruby.ast.MethodDefNode;
 import org.jruby.ast.ModuleNode;
 import org.jruby.ast.MultipleAsgnNode;
+import org.jruby.ast.NextNode;
 import org.jruby.ast.Node;
+import org.jruby.ast.RedoNode;
+import org.jruby.ast.RetryNode;
 import org.jruby.ast.RootNode;
 import org.jruby.ast.SClassNode;
 import org.jruby.ast.SuperNode;
 import org.jruby.ast.WhenNode;
+import org.jruby.ast.WhileNode;
 import org.jruby.ast.YieldNode;
 import org.jruby.ast.ZSuperNode;
 import org.rubypeople.rdt.refactoring.core.NodeProvider;
@@ -101,9 +109,13 @@ public class ExtractMethodConditionChecker extends RefactoringConditionChecker {
 			}
 		}
 		
+		//Check on loopControlNodes (Break, Redo, Next, Retry)
+		if(containsLoopControlNode(selectedNode)) {
+			selectedNode = getLoopOrItsParent(rootNode, selectedNode);
+		}
+		
 		//Check if content of an ArgsNode is selected
-		ArgsNode enclosingArgsNode = (ArgsNode) SelectionNodeProvider.getEnclosingNode(rootNode, config.getSelection(), ArgsNode.class);
-		if(enclosingArgsNode != null) {
+		if(SelectionNodeProvider.getEnclosingNode(rootNode, config.getSelection(), ArgsNode.class) != null) {
 			return SelectionNodeProvider.getEnclosingNode(rootNode, config.getSelection(), MethodDefNode.class);
 		}
 		
@@ -115,7 +127,7 @@ public class ExtractMethodConditionChecker extends RefactoringConditionChecker {
 		//check if the selected Nodes are contained in an enclosing arrayNode
 		//if not the fowllowing checks arent necessary anymore.
 		ArrayNode enclosingArrayNode = (ArrayNode) SelectionNodeProvider.getEnclosingNode(rootNode, config.getSelection(), ArrayNode.class);
-		if(!sectedNodesInArrayNode(enclosingArrayNode, selectedNode)) {
+		if(!sectedNodesInArrayNode(enclosingArrayNode, selectedNode) || !NodeUtil.nodeAssignableFrom(selectedNode, ArrayNode.class)) {
 			return selectedNode;
 		}
 		
@@ -137,6 +149,21 @@ public class ExtractMethodConditionChecker extends RefactoringConditionChecker {
 //			}
 		}
 		return selectedNode;
+	}
+
+	private Node getLoopOrItsParent(RootNode rootNode, Node selectedNode) {
+		Node loopNode = NodeProvider.getEnclosingNodeOfType(rootNode, selectedNode, WhileNode.class, ForNode.class, IterNode.class);
+		if(loopNode != null) {
+			selectedNode = loopNode;
+		}
+		if(NodeUtil.nodeAssignableFrom(loopNode, IterNode.class)) {
+			selectedNode = NodeProvider.findParentNode(rootNode, loopNode);
+		}
+		return selectedNode;
+	}
+
+	private boolean containsLoopControlNode(Node selectedNode) {
+		return !NodeProvider.getSubNodes(selectedNode, BreakNode.class, RedoNode.class, NextNode.class, RetryNode.class).isEmpty();
 	}
 
 	private boolean sectedNodesInArrayNode(ArrayNode arrayNode, Node selectedNode) {

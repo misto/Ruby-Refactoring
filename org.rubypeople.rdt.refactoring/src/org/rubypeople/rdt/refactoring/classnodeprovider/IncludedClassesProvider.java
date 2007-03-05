@@ -77,7 +77,7 @@ public class IncludedClassesProvider extends ClassNodeProvider {
 			for (Object o : arrayNode.childNodes()) {
 				if (o instanceof StrNode) {
 					StrNode strNode = (StrNode) o;
-					appendPath(strNode.getValue());
+					appendPath(strNode.getValue().toString());
 				}
 			}
 		}

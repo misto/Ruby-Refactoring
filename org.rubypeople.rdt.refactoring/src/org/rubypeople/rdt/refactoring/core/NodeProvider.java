@@ -209,15 +209,15 @@ public class NodeProvider {
 		return lastMatch;
 	}
 
-	public static boolean hasChildNode(Node parent, Class childClass) {
+	public static boolean hasChildNode(Node parent, Class<? extends Node> childClass) {
 		return getFirstChildNode(parent, childClass) != null;
 	}
 
-	public static Node getFirstChildNode(Node parent, Class childClass) {
+	public static Node getFirstChildNode(Node parent, Class<? extends Node> childClass) {
 		Collection<Node> childList = getChildren(parent);
 		for (Object o : childList) {
 			Node node = unwrap(o);
-			if (node.getClass().isAssignableFrom(childClass))
+			if (childClass.isAssignableFrom(node.getClass()))
 				return node;
 		}
 		return null;
@@ -356,7 +356,7 @@ public class NodeProvider {
 		return candidates;
 	}
 
-	public static Collection<Node> getSubNodes(Node baseNode, Class<?>... klasses) {
+	public static Collection<Node> getSubNodes(Node baseNode, Class... klasses) {
 		Collection<Node> allNodes = getAllNodes(baseNode);
 		Collection<Node> resultNodes = new ArrayList<Node>();
 		for (Node aktNode : allNodes) {
@@ -367,11 +367,11 @@ public class NodeProvider {
 		return resultNodes;
 	}
 
-	public static boolean hasSubNodes(Node baseNode, Class<?>... klasses) {
+	public static boolean hasSubNodes(Node baseNode, Class... klasses) {
 		return !getSubNodes(baseNode, klasses).isEmpty();
 	}
 
-	public static Node getEnclosingNodeOfType(Node baseNode, Node enclosedNode, Class<? extends Object>... klasses) {
+	public static Node getEnclosingNodeOfType(Node baseNode, Node enclosedNode, Class... klasses) {
 		return SelectionNodeProvider.getSelectedNodeOfType(baseNode, enclosedNode.getPosition().getStartOffset(), klasses);
 	}
 

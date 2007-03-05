@@ -696,7 +696,7 @@ public class RubyScriptStructureBuilder implements NodeVisitor {
 	 */
 	public Instruction visitDSymbolNode(DSymbolNode iVisited) {
 		handleNode(iVisited);
-		visitNode(iVisited.getNode());
+		visitIter(iVisited.iterator());
 		return null;
 	}
 
@@ -953,12 +953,12 @@ public class RubyScriptStructureBuilder implements NodeVisitor {
 			for (; iter.hasNext();) {
 				Node mixinNameNode = (Node) iter.next();
 				if ( mixinNameNode instanceof StrNode ) {
-					mixins.add( ((StrNode)mixinNameNode).getValue() );
+					mixins.add( ((StrNode)mixinNameNode).getValue().toString() );
 				}
 				if ( mixinNameNode instanceof DStrNode ) {
 					Node next = (Node)((DStrNode)mixinNameNode).iterator().next();
 					if ( next instanceof StrNode ) {
-						mixins.add( ((StrNode)next).getValue() );
+						mixins.add( ((StrNode)next).getValue().toString() );
 					}
 				}
 				if (mixinNameNode instanceof ConstNode) {
@@ -1006,7 +1006,7 @@ public class RubyScriptStructureBuilder implements NodeVisitor {
 		}
 		if (tmp instanceof StrNode) {
 			StrNode strNode = (StrNode) tmp;
-			return strNode.getValue();
+			return strNode.getValue().toString();
 		}
 		return null;
 	}

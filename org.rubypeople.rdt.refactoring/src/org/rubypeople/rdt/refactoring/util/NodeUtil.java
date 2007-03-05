@@ -62,7 +62,7 @@ public class NodeUtil {
 		return null;
 	}
 
-	public static boolean nodeAssignableFrom(Node n, Class<?>... klasses) {
+	public static boolean nodeAssignableFrom(Node n, Class... klasses) {
 		if(n == null) {
 			return false;
 		}

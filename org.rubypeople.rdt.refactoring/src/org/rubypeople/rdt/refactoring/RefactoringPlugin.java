@@ -30,7 +30,6 @@ package org.rubypeople.rdt.refactoring;
 
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
-import org.jruby.IRuby;
 import org.jruby.Ruby;
 import org.osgi.framework.BundleContext;
 
@@ -41,7 +40,7 @@ public class RefactoringPlugin extends AbstractUIPlugin {
 
 	private static RefactoringPlugin plugin;
 
-	private static IRuby ruby;
+	private static Ruby ruby;
 
 	/**
 	 * The constructor.
@@ -84,7 +83,7 @@ public class RefactoringPlugin extends AbstractUIPlugin {
 		return AbstractUIPlugin.imageDescriptorFromPlugin("org.rubypeople.rdt.refactoring", path);
 	}
 
-	public static IRuby getRuby() {
+	public static Ruby getRuby() {
 		if (ruby == null)
 			ruby = Ruby.getDefaultInstance();
 		return ruby;

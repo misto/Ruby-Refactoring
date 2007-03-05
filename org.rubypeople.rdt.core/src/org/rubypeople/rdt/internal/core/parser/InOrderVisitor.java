@@ -425,7 +425,7 @@ public class InOrderVisitor extends AbstractVisitor {
 	 */
 	public Instruction visitDSymbolNode(DSymbolNode iVisited) {
 		handleNode(iVisited);
-		acceptNode(iVisited.getNode());
+		visitIter(iVisited.iterator());
 		return null;
 	}
 

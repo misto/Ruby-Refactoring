@@ -72,7 +72,7 @@ public class TargetClassFinder implements ITargetClassFinder {
 	}
 	
 	private String getSurroundingClass(final MethodCallNodeWrapper call, final DocumentProvider doc) {
-		ClassNode classNode = ((ClassNode) NodeProvider.getEnclosingNodeOfType(doc.getActiveFileRootNode(), call.getWrappedNode(), new Class<?>[]{ClassNode.class}));
+		ClassNode classNode = ((ClassNode) NodeProvider.getEnclosingNodeOfType(doc.getActiveFileRootNode(), call.getWrappedNode(), ClassNode.class));
 		if(classNode != null) {
 			return classNode.getCPath().getName();
 		}

@@ -366,6 +366,6 @@ public class NodeFactory {
 	}
 
 	public static Node createConstDeclNode(String name, Node valueNode) {
-		return new ConstDeclNode(pos, null, name, valueNode);
+		return new ConstDeclNode(pos, name, null, valueNode);
 	}
 }

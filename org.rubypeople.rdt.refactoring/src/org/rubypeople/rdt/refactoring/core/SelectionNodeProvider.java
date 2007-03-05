@@ -138,7 +138,7 @@ public class SelectionNodeProvider {
 		return (enclosingPos.getStartOffset() <= enclosedPos.getStartOffset() && enclosingPos.getEndOffset() >= enclosedPos.getEndOffset());
 	}
 
-	public static Node getEnclosingNode(Node rootNode, SelectionInformation selection, Class<?>... classes) {
+	public static Node getEnclosingNode(Node rootNode, SelectionInformation selection, Class... classes) {
 		Collection<Node> enclosingNodes = getEnclosingNodes(rootNode, selection, classes);
 		Node lastNode = null;
 		Node secondLastNode = null;
@@ -176,7 +176,7 @@ public class SelectionNodeProvider {
 		return sameStart && sameEnd && isCallNode && isAsgnNode;
 	}
 
-	public static Collection<Node> getEnclosingNodes(Node rootNode, SelectionInformation selection, Class<?>... classes) {
+	public static Collection<Node> getEnclosingNodes(Node rootNode, SelectionInformation selection, Class... classes) {
 		Collection<Node> allNodes = NodeProvider.getAllNodes(rootNode);
 		Collection<Node> enclosingStartNodes = getSelectedNodesOfType(allNodes, selection.getStartOfSelection(), classes);
 		Collection<Node> enclosingNodes = new ArrayList<Node>();
@@ -190,11 +190,11 @@ public class SelectionNodeProvider {
 		return enclosingNodes;
 	}
 
-	public static Node getSelectedNodeOfType(Node baseNode, int position, Class<?>... klasses) {
+	public static Node getSelectedNodeOfType(Node baseNode, int position, Class... klasses) {
 		return getSelectedNodeOfType(NodeProvider.getAllNodes(baseNode), position, klasses);
 	}
 
-	public static Node getSelectedNodeOfType(Collection<? extends Node> nodes, int position, Class<?>... klasses) {
+	public static Node getSelectedNodeOfType(Collection<? extends Node> nodes, int position, Class... klasses) {
 		return returnLast(getSelectedNodesOfType(nodes, position, klasses));
 	}
 
@@ -214,7 +214,7 @@ public class SelectionNodeProvider {
 		return candidate;
 	}
 
-	public static Collection<Node> getSelectedNodesOfType(Collection<? extends Node> nodes, int position, Class<?>... klasses) {
+	public static Collection<Node> getSelectedNodesOfType(Collection<? extends Node> nodes, int position, Class... klasses) {
 		ArrayList<Node> candidates = new ArrayList<Node>();
 		for (Node n : nodes) {
 			if (nodeContainsPosition(n, position) && !(n instanceof NewlineNode) && NodeUtil.nodeAssignableFrom(n, klasses)) {
@@ -224,7 +224,7 @@ public class SelectionNodeProvider {
 		return candidates;
 	}
 
-	public static Collection<Node> getSelectedNodesOfType(Node baseNode, int position, Class<?>... klasses) {
+	public static Collection<Node> getSelectedNodesOfType(Node baseNode, int position, Class... klasses) {
 		return getSelectedNodesOfType(NodeProvider.getAllNodes(baseNode), position, klasses);
 	}
 
@@ -254,7 +254,7 @@ public class SelectionNodeProvider {
 		
 	}
 
-	private static ClassNodeWrapper getSelectedClassNode(Node rootNode, int position, Class<?>... classes) throws NoClassNodeException {
+	private static ClassNodeWrapper getSelectedClassNode(Node rootNode, int position, Class... classes) throws NoClassNodeException {
 		
 		Node enclosingClassNode = getSelectedNodeOfType(rootNode, position, classes);
 		PartialClassNodeWrapper partialClassNode = PartialClassNodeWrapper.getPartialClassNodeWrapper(enclosingClassNode, rootNode);
