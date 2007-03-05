@@ -137,7 +137,12 @@ public class FieldProvider {
 
 			for (FCallNode accessorPart : currentAccessor.getAccessorNodes()) {
 				ArrayNode arrayNode = (ArrayNode) accessorPart.getArgsNode();
-				itemList.add(new AttrFieldItem((SymbolNode) arrayNode.get(0)));
+				for(Object actObj : arrayNode.childNodes()) {
+					SymbolNode aktSymbol = (SymbolNode) actObj;
+					if(name.equals(aktSymbol.getName())) {
+						itemList.add(new AttrFieldItem(aktSymbol));
+					}
+				}
 			}
 		}
 	}

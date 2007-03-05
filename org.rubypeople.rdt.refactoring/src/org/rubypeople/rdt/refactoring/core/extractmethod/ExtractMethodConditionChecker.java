@@ -35,7 +35,6 @@ import java.util.Collection;
 import org.jruby.ast.ArgsNode;
 import org.jruby.ast.ArgumentNode;
 import org.jruby.ast.ArrayNode;
-import org.jruby.ast.BlockNode;
 import org.jruby.ast.BreakNode;
 import org.jruby.ast.CaseNode;
 import org.jruby.ast.ClassNode;
