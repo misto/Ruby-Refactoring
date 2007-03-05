@@ -34,7 +34,6 @@ import java.util.Collection;
 
 import org.rubypeople.rdt.refactoring.core.generateaccessors.AccessorsGenerator;
 import org.rubypeople.rdt.refactoring.core.generateaccessors.GeneratedAccessor;
-import org.rubypeople.rdt.refactoring.core.generateaccessors.AccessorsGenerator.TreeClass.TreeAttribute.TreeAccessor;
 import org.rubypeople.rdt.refactoring.documentprovider.DocumentProvider;
 import org.rubypeople.rdt.refactoring.documentprovider.StringDocumentProvider;
 import org.rubypeople.rdt.refactoring.tests.TreeProviderTester;
@@ -125,14 +124,14 @@ public class TC_AccessorsGeneratorTreeTest extends TreeProviderTester{
 	
 	public void testDocumentWithSimpleWriter()
 	{
-		addContent(new String[]{"X", "a", TreeAccessor.READER});
+		addContent(new String[]{"X", "a", AccessorsGenerator.READER});
 		DocumentProvider docProvider = new StringDocumentProvider("generate_accessor_test_testDocumentWithSimpleWriter.rb", TEST_DOCUMENT_WITH_SIMPLE_WRITER);
 		validate(new AccessorsGenerator(docProvider, GeneratedAccessor.TYPE_SIMPLE_ACCESSOR));
 	}
 	
 	public void testDocumentWithMethodReader()
 	{
-		addContent(new String[]{"X", "a", TreeAccessor.WRITER});
+		addContent(new String[]{"X", "a", AccessorsGenerator.WRITER});
 		DocumentProvider docProvider = new StringDocumentProvider("generate_accessor_test_testDocumentWithMethodReader.rb", TEST_DOCUMENT_WITH_METHOD_READER);
 		validate(new AccessorsGenerator(docProvider, GeneratedAccessor.TYPE_METHOD_ACCESSOR));
 	}
@@ -141,8 +140,8 @@ public class TC_AccessorsGeneratorTreeTest extends TreeProviderTester{
 	
 	private void addContentWithBothAccessors(String[] content)
 	{
-		addContent(addToArray(content, TreeAccessor.READER));
-		addContent(addToArray(content, TreeAccessor.WRITER));
+		addContent(addToArray(content, AccessorsGenerator.READER));
+		addContent(addToArray(content, AccessorsGenerator.WRITER));
 	}
 	
 	private String[] addToArray(String[] content, String additionalContent)
