@@ -54,7 +54,7 @@ public class InstVarFieldItem extends FieldItem {
 	@Override
 	public Node getRenamedNode(String newName) {
 		
-		return new InstVarNode(instVarNode.getPosition(), setPrefixName(newName, "@"));
+		return new InstVarNode(instVarNode.getPosition(), setPrefixName(newName, "@")); //$NON-NLS-1$
 	}
 
 	@Override

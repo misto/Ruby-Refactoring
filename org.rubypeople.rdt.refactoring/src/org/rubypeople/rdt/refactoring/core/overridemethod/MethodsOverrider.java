@@ -77,7 +77,7 @@ public class MethodsOverrider extends EditAndTreeContentProvider implements IIte
 	}
 
 	private IClassSignatureProvider getSuperSignatureProvider(ClassNodeWrapper classNode) throws UnknownClassNameException {
-		String superClassName = "";
+		String superClassName = ""; //$NON-NLS-1$
 		superClassName = classNode.getSuperClassName();
 		return ClassSignatureProvider.getClassSignatureProvider(superClassName, superClassNodeProvider);
 	}
@@ -128,7 +128,7 @@ public class MethodsOverrider extends EditAndTreeContentProvider implements IIte
 
 			public String getSignatureGroup() {
 				if (methodSignature.isConstructor()) {
-					return "c_" + TreeClass.this.toString();
+					return "c_" + TreeClass.this.toString(); //$NON-NLS-1$
 				}
 				return TreeClass.this.toString();
 			}

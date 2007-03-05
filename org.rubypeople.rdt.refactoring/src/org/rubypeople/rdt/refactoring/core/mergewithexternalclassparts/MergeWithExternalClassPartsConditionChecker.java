@@ -48,16 +48,16 @@ public class MergeWithExternalClassPartsConditionChecker extends RefactoringCond
 	@Override
 	protected void checkFinalConditions() {
 		if (config.isSelectionEmpty()) {
-			addError("Please select an external class part as destination.");
+			addError(Messages.getString("MergeWithExternalClassPartsConditionChecker.NoDestination")); //$NON-NLS-1$
 		}
 	}
 
 	@Override
 	protected void checkInitialConditions() {
 		if (!config.hasClassParts()) {
-			addError("There are no classes to merge.");
+			addError(Messages.getString("MergeWithExternalClassPartsConditionChecker.NoClasses")); //$NON-NLS-1$
 		} else if (!config.hasClassWithExternalPart()) {
-			addError("There is no class in the current file that has external parts to merge.");
+			addError(Messages.getString("MergeWithExternalClassPartsConditionChecker.NoClassesWithExternalParts")); //$NON-NLS-1$
 		}
 	}
 }

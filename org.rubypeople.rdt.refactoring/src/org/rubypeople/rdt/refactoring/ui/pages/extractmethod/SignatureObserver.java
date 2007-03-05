@@ -52,17 +52,17 @@ public class SignatureObserver implements Observer {
 	}
 
 	private void setPreviewText() {
-		if ("".equals(methodHelper.getMethodName())) {
+		if ("".equals(methodHelper.getMethodName())) { //$NON-NLS-1$
 			return;
 		}
 
-		StringBuilder string = new StringBuilder("def " + methodHelper.getMethodName() + ' ');
+		StringBuilder string = new StringBuilder("def " + methodHelper.getMethodName() + ' '); //$NON-NLS-1$
 
 		Iterator<String> it = methodHelper.getArguments().iterator();
 		while (it.hasNext()) {
 			string.append(it.next());
 			if (it.hasNext()) {
-				string.append(", ");
+				string.append(", "); //$NON-NLS-1$
 			}
 		}
 

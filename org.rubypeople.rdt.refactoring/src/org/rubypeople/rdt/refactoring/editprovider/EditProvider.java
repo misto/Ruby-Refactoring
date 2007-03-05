@@ -84,7 +84,7 @@ public abstract class EditProvider implements IEditProvider {
 	protected boolean isNextLineEmpty(int offset, String document) {
 		int firstNL = getNextNLPosition(offset, document);
 		int secondNL = getNextNLPosition(firstNL + 1, document);
-		return document.length() > offset + 1 && document.substring(offset + 1, secondNL).trim().equals("");
+		return document.length() > offset + 1 && document.substring(offset + 1, secondNL).trim().equals(""); //$NON-NLS-1$
 	}
 
 	private int getNextNLPosition(int offset, String document) {

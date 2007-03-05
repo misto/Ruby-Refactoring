@@ -45,9 +45,9 @@ public class VisibilityNodeWrapper implements INodeWrapper {
 		PRIVATE, PROTECTED, PUBLIC, NONE
 	}
 	
-	public static final String PUBLIC = "public";
-	public static final String PROTECTED = "protected";
-	public static final String PRIVATE = "private";
+	public static final String PUBLIC = "public"; //$NON-NLS-1$
+	public static final String PROTECTED = "protected"; //$NON-NLS-1$
+	public static final String PRIVATE = "private"; //$NON-NLS-1$
 
 	private FCallNode wrappedNode;
 	
@@ -115,6 +115,6 @@ public class VisibilityNodeWrapper implements INodeWrapper {
 		} else if(METHOD_VISIBILITY.PRIVATE.equals((visibility))) {
 			return PRIVATE;
 		}
-		return "none";
+		return "none"; //$NON-NLS-1$
 	}
 }

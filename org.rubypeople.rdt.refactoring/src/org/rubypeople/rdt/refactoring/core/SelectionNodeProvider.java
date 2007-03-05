@@ -236,8 +236,8 @@ public class SelectionNodeProvider {
 		Vector<String> names = new Vector<String>();
 		names.setSize(nodes.size() + 2);
 
-		names.set(0, "_");
-		names.set(1, "~");
+		names.set(0, "_"); //$NON-NLS-1$
+		names.set(1, "~"); //$NON-NLS-1$
 		for (LocalAsgnNode n : nodes) {
 			if(n.getIndex() >= names.size()) {
 				names.setSize(n.getIndex() + 1);

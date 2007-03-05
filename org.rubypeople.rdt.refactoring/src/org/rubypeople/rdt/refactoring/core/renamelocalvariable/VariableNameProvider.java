@@ -39,9 +39,9 @@ import org.rubypeople.rdt.refactoring.util.NameValidator;
 
 public class VariableNameProvider extends Observable implements IErrorMessageGenerator {
 
-	private String selected = "";
+	private String selected = ""; //$NON-NLS-1$
 
-	private String name = "";
+	private String name = ""; //$NON-NLS-1$
 
 	private IErrorMessageReceiver errorReceiver;
 
@@ -67,7 +67,7 @@ public class VariableNameProvider extends Observable implements IErrorMessageGen
 				name = newName;
 				errorReceiver.setError(null);
 			} else {
-				errorReceiver.setError(newName + " isn't a valid name.");
+				errorReceiver.setError(newName + Messages.VariableNameProvider_NoValidName);
 			}
 		} else {
 			return;

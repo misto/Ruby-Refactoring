@@ -36,7 +36,7 @@ import org.rubypeople.rdt.refactoring.ui.pages.InlineTempPage;
 
 public class InlineTempRefactoring extends RubyRefactoring {
 
-	public static final String NAME = "Inline Local Variable";
+	public static final String NAME = Messages.InlineTempRefactoring_Name;
 
 	private TempInliner tempInliner;
 

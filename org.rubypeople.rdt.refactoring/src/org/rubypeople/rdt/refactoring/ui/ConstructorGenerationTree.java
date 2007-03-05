@@ -40,7 +40,7 @@ public class ConstructorGenerationTree extends CheckboxTreeViewer {
 		super(parent);
 		this.setAutoExpandLevel(3);
 		setContentProvider(contentProvider);
-		setInput("");
+		setInput(""); //$NON-NLS-1$
 		addCheckStateListener(new ICheckStateListener() {
 			public void checkStateChanged(CheckStateChangedEvent event) {
 				handleItemChecked(event.getChecked(), event.getElement());

@@ -99,8 +99,8 @@ public class DocumentWithIncluding extends StringDocumentProvider {
 	}
 
 	private String getFileNameWithoutPath(String actFileName) {
-		if(actFileName.contains("/")) {
-			return actFileName.substring(actFileName.lastIndexOf("/") + 1);
+		if(actFileName.contains("/")) { //$NON-NLS-1$
+			return actFileName.substring(actFileName.lastIndexOf("/") + 1); //$NON-NLS-1$
 		}
 		return actFileName;
 	}
@@ -130,8 +130,8 @@ public class DocumentWithIncluding extends StringDocumentProvider {
 
 	private boolean fileIsInResultSet(String fileName) {
 		String pathlessName = cutProjectPath(fileName);
-		if(!pathlessName.matches(".*\\.rb$")) {
-			pathlessName += ".rb";
+		if(!pathlessName.matches(".*\\.rb$")) { //$NON-NLS-1$
+			pathlessName += ".rb"; //$NON-NLS-1$
 		}
 
 		if(fileName.equals(cutProjectPath(docName))) {

@@ -45,7 +45,7 @@ public class TextSelectionProvider {
 	private int caret;
 	
 
-	@SuppressWarnings("restriction")
+	@SuppressWarnings("restriction") //$NON-NLS-1$
 	public TextSelectionProvider(IAction action) {
 		
 		if (action == null || action instanceof org.eclipse.ui.internal.EditorPluginAction) {
@@ -66,7 +66,7 @@ public class TextSelectionProvider {
 		caret = editor.getCaretPosition().getOffset();
 	}
 
-	@SuppressWarnings("restriction")
+	@SuppressWarnings("restriction") //$NON-NLS-1$
 	private void initOutline(IAction action) {
 		TreeSelection selection = (TreeSelection) ((org.eclipse.ui.internal.PluginAction)action).getSelection();
 		Member member = (Member) selection.toArray()[0];

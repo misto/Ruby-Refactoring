@@ -76,27 +76,27 @@ public class EncapsulateFieldConditionChecker extends RefactoringConditionChecke
 	
 	public void checkFinalConditions() {
 		if (config.isWriterGenerationDisabled() && config.isReaderGenerationDisabled()) {
-			addError("Nothing to refactor.");
+			addError(Messages.EncapsulateFieldConditionChecker_NothingToRefactor);
 		}
 		String readerMethodName = config.getReaderMethodName();
 		String writerMethodName = config.getWriterMethodName();
 		for (MethodNodeWrapper aktMethodNode : config.getEnclosingClassNode().getMethods()) {
 			if (aktMethodNode.getName().equals(readerMethodName) && !config.isReaderGenerationDisabled()) {
-				addWarning("A method with the name \"" + aktMethodNode.getName() + "\" allready exists.");
+				addWarning(Messages.EncapsulateFieldConditionChecker_MethodWithName + aktMethodNode.getName() + Messages.EncapsulateFieldConditionChecker_AlreadyExists);
 			}
 			if (aktMethodNode.getName().equals(writerMethodName) && !config.isWriterGenerationDisabled()) {
-				addWarning("A method with the name \"" + aktMethodNode.getName() + "\" allready exists.");
+				addWarning(Messages.EncapsulateFieldConditionChecker_MethodWithName + aktMethodNode.getName() + Messages.EncapsulateFieldConditionChecker_AlreadyExists);
 			}
 		}
 	}
 
 	public void checkInitialConditions() {
 		if (!config.hasSelectedAccessor() && !config.hasSelectedInstNode()) {
-			addError("No instance variable selected for encapsulation.");
+			addError(Messages.EncapsulateFieldConditionChecker_NoInstanceVariableSelected);
 		} else if (config.getEnclosingClassNode() == null) {
-			addError("Curent selection is not inside of a class.");
+			addError(Messages.EncapsulateFieldConditionChecker_NotInsideAClass);
 		} else if (selectedNodeIsInstVarNodeAndNotInMethod()) {
-			addError("Selected field must be inside a method.");
+			addError(Messages.EncapsulateFieldConditionChecker_NotInsideAMethod);
 		}
 	}
 

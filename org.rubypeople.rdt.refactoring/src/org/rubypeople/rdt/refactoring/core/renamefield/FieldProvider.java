@@ -102,9 +102,9 @@ public class FieldProvider {
 			} else if (currentAttr instanceof ClassVarAsgnNode) {
 				addClassVarAsgn((ClassVarAsgnNode) currentAttr);
 			} else {
-				System.out.println("An unexpected node of type "
+				System.out.println(Messages.FieldProvider_UnexpectedNodeOfType
 						+ currentAttr.getClass()
-						+ " retrieved as a class field: "
+						+ Messages.FieldProvider_RetrievedAsField
 						+ currentAttr.toString());
 			}
 		}
@@ -158,9 +158,9 @@ public class FieldProvider {
 			} else if (currentAttr instanceof InstAsgnNode) {
 				addInstAsgn((InstAsgnNode) currentAttr);
 			} else {
-				System.out.println("An unexpected node of type "
+				System.out.println(Messages.FieldProvider_UnexpectedNodeOfType
 						+ currentAttr.getClass()
-						+ " retrieved as an attribute: "
+						+ Messages.FieldProvider_RetrievedAsAttribute
 						+ currentAttr.toString());
 			}
 		}

@@ -35,7 +35,7 @@ import org.rubypeople.rdt.refactoring.ui.pages.MoveFieldPage;
 
 public class MoveFieldRefactoring extends RubyRefactoring {
 
-	public static final String NAME = "Move Field";
+	public static final String NAME = Messages.MoveFieldRefactoring_Name;
 	
 	public MoveFieldRefactoring(TextSelectionProvider selectionProvider) {
 		super(NAME);

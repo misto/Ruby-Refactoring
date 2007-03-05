@@ -55,9 +55,9 @@ public class LocalVariablesEditProvider extends MultiEditProvider implements Obs
 		}
 	}
 
-	private String selectedVariableName = "";
+	private String selectedVariableName = ""; //$NON-NLS-1$
 
-	private String newVariableName = "";
+	private String newVariableName = ""; //$NON-NLS-1$
 
 	private Node rootNode;
 

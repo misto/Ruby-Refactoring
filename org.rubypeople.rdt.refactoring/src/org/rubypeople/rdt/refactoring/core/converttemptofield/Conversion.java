@@ -44,7 +44,7 @@ public class Conversion extends ReplaceEditProvider {
 	public Conversion(LocalNodeWrapper localNode, String newName, boolean isClassField) {
 		super(false);
 		this.localNode = localNode;
-		newName = ((isClassField) ? "@@" : "@") + newName;
+		newName = ((isClassField) ? "@@" : "@") + newName; //$NON-NLS-1$ //$NON-NLS-2$
 		Collection<LocalNodeWrapper> allLocalNodes = new ArrayList<LocalNodeWrapper>();
 		allLocalNodes.add(localNode);
 		allLocalNodes.addAll(LocalNodeWrapper.gatherLocalNodes(localNode.getWrappedNode()));

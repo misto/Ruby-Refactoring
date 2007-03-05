@@ -33,7 +33,7 @@ import org.rubypeople.rdt.refactoring.ui.pages.OverrideMethodSelectionPage;
 
 public class OverrideMethodRefactoring extends RubyRefactoring {
 
-	public static final String NAME = "Override Method";
+	public static final String NAME = Messages.OverrideMethodRefactoring_Name;
 
 	public OverrideMethodRefactoring() {
 		super(NAME);

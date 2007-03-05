@@ -72,8 +72,8 @@ public abstract class JRubyRefactoringUtils {
 
 		String name = ((CallNode) node).getName();
 
-		String[] operators = new String[] { "**", "!", "+", "-", "*", "/", "%", ">>", "<<", "&", "^", "|", "+@", "-@", "<=>", ">", "<", ">=", "<=", "==",
-				"===", "~", "&&" };
+		String[] operators = new String[] { "**", "!", "+", "-", "*", "/", "%", ">>", "<<", "&", "^", "|", "+@", "-@", "<=>", ">", "<", ">=", "<=", "==", //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$ //$NON-NLS-7$ //$NON-NLS-8$ //$NON-NLS-9$ //$NON-NLS-10$ //$NON-NLS-11$ //$NON-NLS-12$ //$NON-NLS-13$ //$NON-NLS-14$ //$NON-NLS-15$ //$NON-NLS-16$ //$NON-NLS-17$ //$NON-NLS-18$ //$NON-NLS-19$ //$NON-NLS-20$
+				"===", "~", "&&" }; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 
 		for (String currentOp : operators) {
 			if (name.equals(currentOp)) {

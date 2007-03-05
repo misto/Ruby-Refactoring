@@ -78,7 +78,7 @@ public abstract class RefactoringConditionChecker implements IRefactoringConditi
 			}
 		}
 		if (syntaxError) {
-			addWarning("There is a syntax error somewhere in the project, the refactoring might not work on these files.");
+			addWarning(Messages.RefactoringConditionChecker_SyntaxErrorInProject);
 		}
 	}
 
@@ -105,8 +105,8 @@ public abstract class RefactoringConditionChecker implements IRefactoringConditi
 		String fileName = null;
 		try {
 			fileName = docProvider.getActiveFileName();
-			if(docProvider.getActiveFileContent().equals("")) {
-				addError("Nothing to do in empty document.");
+			if(docProvider.getActiveFileContent().equals("")) { //$NON-NLS-1$
+				addError(Messages.RefactoringConditionChecker_EmptyDocument);
 			}
 			for(String aktFileName : docProvider.getFileNames()) {
 				fileName = aktFileName;
@@ -115,12 +115,12 @@ public abstract class RefactoringConditionChecker implements IRefactoringConditi
 		} catch(SyntaxException se) {
 			String activeFileName = docProvider.getActiveFileName();
 			if(fileName == null || fileName.equals(activeFileName)) {
-				addError("There is a syntax error in the current file, refactoring is not possible.");
+				addError(Messages.RefactoringConditionChecker_SyntaxErrorInCurrent);
 			}
 		}
 		
 		if(NodeProvider.hasSyntaxErrors(docProvider.getActiveFileName(), docProvider.getActiveFileContent())) {
-			addError("There is a syntax error in the current file, refactoring is not possible.");
+			addError(Messages.RefactoringConditionChecker_SyntaxErrorInCurrent);
 		}
 	}
 	

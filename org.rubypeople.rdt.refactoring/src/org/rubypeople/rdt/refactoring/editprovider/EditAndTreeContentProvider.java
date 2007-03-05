@@ -65,7 +65,7 @@ public abstract class EditAndTreeContentProvider extends TreeContentProvider imp
 		}
 	}
 	
-	protected ITreeClass createTreeClass(@SuppressWarnings("unused")
+	protected ITreeClass createTreeClass(@SuppressWarnings("unused") //$NON-NLS-1$
 	ClassNodeWrapper classNode) {
 		return null;
 	}

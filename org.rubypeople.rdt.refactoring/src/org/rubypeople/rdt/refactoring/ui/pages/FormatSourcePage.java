@@ -49,7 +49,7 @@ import org.rubypeople.rdt.refactoring.core.formatsource.PreviewGenerator;
 
 public class FormatSourcePage extends UserInputWizardPage {
 
-	private static final String title = "";
+	private static final String title = ""; //$NON-NLS-1$
 
 	private StyledText previewText;
 
@@ -65,14 +65,14 @@ public class FormatSourcePage extends UserInputWizardPage {
 	}
 
 	private void createMethodsTab(TabFolder categoryTab) {
-		TabItem methodsTabItem = createTabItem(categoryTab, "Methods");
+		TabItem methodsTabItem = createTabItem(categoryTab, Messages.FormatSourcePage_Methods);
 
 		Composite optionComposite = createCompositeWithGridLayout(categoryTab);
 		methodsTabItem.setControl(optionComposite);
 
-		Group callArgumentsGroup = createGroupWithGridLayout(optionComposite, "Method Call Arguments");
+		Group callArgumentsGroup = createGroupWithGridLayout(optionComposite, Messages.FormatSourcePage_MethodCallArguments);
 
-		final Button callArgumentsParanthesizeWhereNecessary = createButton(callArgumentsGroup, SWT.RADIO, "paranthesize only where necessary");
+		final Button callArgumentsParanthesizeWhereNecessary = createButton(callArgumentsGroup, SWT.RADIO, Messages.FormatSourcePage_ParenthesizeWhereNecesary);
 		callArgumentsParanthesizeWhereNecessary.addListener(SWT.Selection, new Listener() {
 			public void handleEvent(Event event) {
 				formatter.setAlwaysParanthesizeMethodCalls(!callArgumentsParanthesizeWhereNecessary.getEnabled());
@@ -80,7 +80,7 @@ public class FormatSourcePage extends UserInputWizardPage {
 			}
 		});
 
-		final Button callArgumentsParanthesizeAlways = createButton(callArgumentsGroup, SWT.RADIO, "always paranthesize arguments");
+		final Button callArgumentsParanthesizeAlways = createButton(callArgumentsGroup, SWT.RADIO, Messages.FormatSourcePage_AlwaysParenthesize);
 		callArgumentsParanthesizeAlways.addListener(SWT.Selection, new Listener() {
 			public void handleEvent(Event event) {
 				formatter.setAlwaysParanthesizeMethodCalls(callArgumentsParanthesizeAlways.getEnabled());
@@ -88,9 +88,9 @@ public class FormatSourcePage extends UserInputWizardPage {
 			}
 		});
 
-		Group defArgumentsGroup = createGroupWithGridLayout(optionComposite, "Method Definition Arguments");
+		Group defArgumentsGroup = createGroupWithGridLayout(optionComposite, Messages.FormatSourcePage_MethodDefArguments);
 
-		final Button defArgumentsParanthesizeWhereNecessary = createButton(defArgumentsGroup, SWT.RADIO, "paranthesize only where necessary");
+		final Button defArgumentsParanthesizeWhereNecessary = createButton(defArgumentsGroup, SWT.RADIO, Messages.FormatSourcePage_ParenthesizeWhereNecesary);
 		defArgumentsParanthesizeWhereNecessary.addListener(SWT.Selection, new Listener() {
 			public void handleEvent(Event event) {
 				formatter.setAlwaysParanthesizeMethodDefs(!defArgumentsParanthesizeWhereNecessary.getSelection());
@@ -98,7 +98,7 @@ public class FormatSourcePage extends UserInputWizardPage {
 			}
 		});
 
-		final Button defArgumentsParanthesizeAlways = createButton(defArgumentsGroup, SWT.RADIO, "always paranthesize arguments");
+		final Button defArgumentsParanthesizeAlways = createButton(defArgumentsGroup, SWT.RADIO, Messages.FormatSourcePage_AlwaysParenthesize);
 		defArgumentsParanthesizeAlways.addListener(SWT.Selection, new Listener() {
 			public void handleEvent(Event event) {
 				formatter.setAlwaysParanthesizeMethodDefs(defArgumentsParanthesizeAlways.getSelection());
@@ -106,7 +106,7 @@ public class FormatSourcePage extends UserInputWizardPage {
 			}
 		});
 
-		final Button newlineBetweenClassBodyElements = createButton(optionComposite, SWT.CHECK, "newline between class body elements");
+		final Button newlineBetweenClassBodyElements = createButton(optionComposite, SWT.CHECK, Messages.FormatSourcePage_NewlineBetweenClassElements);
 		newlineBetweenClassBodyElements.addListener(SWT.Selection, new Listener() {
 			public void handleEvent(Event event) {
 				formatter.setNewlineBetweenClassBodyElements(newlineBetweenClassBodyElements.getSelection());
@@ -116,12 +116,12 @@ public class FormatSourcePage extends UserInputWizardPage {
 	}
 
 	private void createBlocksTab(TabFolder categoryTab) {
-		TabItem misc = createTabItem(categoryTab, "Blocks");
+		TabItem misc = createTabItem(categoryTab, Messages.FormatSourcePage_Blocks);
 
 		Composite composite = createCompositeWithGridLayout(categoryTab);
 		misc.setControl(composite);
 
-		final Button spaceBeforeIterBrackets = createButton(composite, SWT.CHECK, "space before iter brackets");
+		final Button spaceBeforeIterBrackets = createButton(composite, SWT.CHECK, Messages.FormatSourcePage_SpaceBeforeIterBrackets);
 		spaceBeforeIterBrackets.addListener(SWT.Selection, new Listener() {
 			public void handleEvent(Event event) {
 				formatter.setSpaceBeforeIterBrackets(spaceBeforeIterBrackets.getSelection());
@@ -129,7 +129,7 @@ public class FormatSourcePage extends UserInputWizardPage {
 			}
 		});
 
-		final Button spaceBeforeClosingIterBrackets = createButton(composite, SWT.CHECK, "space before closing iter brackets");
+		final Button spaceBeforeClosingIterBrackets = createButton(composite, SWT.CHECK, Messages.FormatSourcePage_SpaceBeforeClosingIterBracket);
 		spaceBeforeClosingIterBrackets.addListener(SWT.Selection, new Listener() {
 			public void handleEvent(Event event) {
 				formatter.setSpaceBeforeClosingIterBrackets(spaceBeforeClosingIterBrackets.getSelection());
@@ -137,7 +137,7 @@ public class FormatSourcePage extends UserInputWizardPage {
 			}
 		});
 
-		final Button spaceBeforeIterVars = createButton(composite, SWT.CHECK, "space before iter vars");
+		final Button spaceBeforeIterVars = createButton(composite, SWT.CHECK, Messages.FormatSourcePage_SpaceBeforeIterVars);
 		spaceBeforeIterVars.addListener(SWT.Selection, new Listener() {
 			public void handleEvent(Event event) {
 				formatter.setSpaceBeforeIterVars(spaceBeforeIterVars.getSelection());
@@ -145,7 +145,7 @@ public class FormatSourcePage extends UserInputWizardPage {
 			}
 		});
 
-		final Button spaceAfterIterVars = createButton(composite, SWT.CHECK, "space after iter vars");
+		final Button spaceAfterIterVars = createButton(composite, SWT.CHECK, Messages.FormatSourcePage_SpaceAfterIterVars);
 		spaceAfterIterVars.addListener(SWT.Selection, new Listener() {
 			public void handleEvent(Event event) {
 				formatter.setSpaceAfterIterVars(spaceAfterIterVars.getSelection());
@@ -155,12 +155,12 @@ public class FormatSourcePage extends UserInputWizardPage {
 	}
 
 	private void createSpacesTab(TabFolder categoryTab) {
-		TabItem spaces = createTabItem(categoryTab, "Spaces");
+		TabItem spaces = createTabItem(categoryTab, Messages.FormatSourcePage_Spaces);
 
 		Composite composite = createCompositeWithGridLayout(categoryTab);
 		spaces.setControl(composite);
 
-		final Button spaceAfterComma = createButton(composite, SWT.CHECK, "space after the comma in listings");
+		final Button spaceAfterComma = createButton(composite, SWT.CHECK, Messages.FormatSourcePage_SpaceAfterComma);
 		spaceAfterComma.addListener(SWT.Selection, new Listener() {
 			public void handleEvent(Event event) {
 				formatter.setSpaceAfterCommaInListings(spaceAfterComma.getSelection());
@@ -168,7 +168,7 @@ public class FormatSourcePage extends UserInputWizardPage {
 			}
 		});
 
-		final Button spacesAroundHashAss = createButton(composite, SWT.CHECK, "put spaces around =>");
+		final Button spacesAroundHashAss = createButton(composite, SWT.CHECK, Messages.FormatSourcePage_SpacesAroundHashOperator);
 		spacesAroundHashAss.addListener(SWT.Selection, new Listener() {
 			public void handleEvent(Event event) {
 				formatter.setSpacesAroundHashAssignment(spacesAroundHashAss.getSelection());
@@ -176,7 +176,7 @@ public class FormatSourcePage extends UserInputWizardPage {
 			}
 		});
 
-		final Button spacesAroundHashContent = createButton(composite, SWT.CHECK, "spaces before and after a hash");
+		final Button spacesAroundHashContent = createButton(composite, SWT.CHECK, Messages.FormatSourcePage_SpacesAroundHash);
 		spacesAroundHashContent.addListener(SWT.Selection, new Listener() {
 			public void handleEvent(Event event) {
 				formatter.setSpacesBeforeAndAfterHashContent(spacesAroundHashContent.getSelection());
@@ -184,7 +184,7 @@ public class FormatSourcePage extends UserInputWizardPage {
 			}
 		});
 
-		final Button spacesAroundAssignments = createButton(composite, SWT.CHECK, "spaces before and after assigments");
+		final Button spacesAroundAssignments = createButton(composite, SWT.CHECK, Messages.FormatSourcePage_SpacesAroundAssignment);
 		spacesAroundAssignments.addListener(SWT.Selection, new Listener() {
 			public void handleEvent(Event event) {
 				formatter.setSpacesBeforeAndAfterAssignments(spacesAroundAssignments.getSelection());
@@ -194,14 +194,14 @@ public class FormatSourcePage extends UserInputWizardPage {
 	}
 
 	private void createGeneralTab(TabFolder categoryTab) {
-		TabItem spaces = createTabItem(categoryTab, "General");
+		TabItem spaces = createTabItem(categoryTab, Messages.FormatSourcePage_General);
 
 		Composite composite = createCompositeWithGridLayout(categoryTab);
 		spaces.setControl(composite);
 
-		Group callArgumentsGroup = createGroupWithGridLayout(composite, "Indentation");
+		Group callArgumentsGroup = createGroupWithGridLayout(composite, Messages.FormatSourcePage_Indentation);
 
-		final Button tabInsteadOfSpaces = createButton(callArgumentsGroup, SWT.CHECK, "use tabulator to indent");
+		final Button tabInsteadOfSpaces = createButton(callArgumentsGroup, SWT.CHECK, Messages.FormatSourcePage_UseTab);
 		tabInsteadOfSpaces.addListener(SWT.Selection, new Listener() {
 			public void handleEvent(Event event) {
 				formatter.setTabInsteadOfSpaces(tabInsteadOfSpaces.getSelection());
@@ -226,7 +226,7 @@ public class FormatSourcePage extends UserInputWizardPage {
 		});
 
 		Label label = new Label(indentationComposite, SWT.NONE);
-		label.setText("indentation steps");
+		label.setText(Messages.FormatSourcePage_IndentationSteps);
 
 	}
 

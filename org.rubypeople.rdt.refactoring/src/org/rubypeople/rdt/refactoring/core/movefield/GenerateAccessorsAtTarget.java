@@ -49,7 +49,7 @@ public class GenerateAccessorsAtTarget {
 			}
 		}
 
-		generatedAccessor = new GeneratedAccessor("attr_accessor", accessorName, GeneratedAccessor.TYPE_SIMPLE_ACCESSOR, targetClass);
+		generatedAccessor = new GeneratedAccessor("attr_accessor", accessorName, GeneratedAccessor.TYPE_SIMPLE_ACCESSOR, targetClass); //$NON-NLS-1$
 	}
 	
 	public String getFileName() {

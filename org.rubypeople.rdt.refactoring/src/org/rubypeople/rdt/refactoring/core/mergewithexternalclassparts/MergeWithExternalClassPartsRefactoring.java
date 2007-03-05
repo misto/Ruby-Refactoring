@@ -35,7 +35,7 @@ import org.rubypeople.rdt.refactoring.ui.pages.MergeWithExternalClassPartsPage;
 
 public class MergeWithExternalClassPartsRefactoring extends RubyRefactoring {
 
-	public static final String NAME = "Merge With External Class Parts";
+	public static final String NAME = Messages.getString("MergeWithExternalClassPartsRefactoring.Name"); //$NON-NLS-1$
 
 	private ExternalClassPartsMerger merger;
 

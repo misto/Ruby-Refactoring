@@ -45,7 +45,7 @@ public class RefactoringAction extends Action {
 	private TextSelectionProvider selectionProvider;
 
 	public RefactoringAction(Class<? extends RubyRefactoring> refactoringClass, String refactoringName, TextSelectionProvider selectionProvider) {
-		setText(refactoringName + "...");
+		setText(refactoringName + "..."); //$NON-NLS-1$
 		this.refactoringClass = refactoringClass;
 		this.selectionProvider = selectionProvider;
 	}

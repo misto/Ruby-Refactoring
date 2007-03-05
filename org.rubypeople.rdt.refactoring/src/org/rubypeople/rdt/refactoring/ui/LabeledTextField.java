@@ -62,7 +62,7 @@ public class LabeledTextField extends Composite {
 	}
 
 	public LabeledTextField(Composite parent, String labelName) {
-		this(parent, labelName, "");
+		this(parent, labelName, ""); //$NON-NLS-1$
 	}
 
 	public Text getText() {

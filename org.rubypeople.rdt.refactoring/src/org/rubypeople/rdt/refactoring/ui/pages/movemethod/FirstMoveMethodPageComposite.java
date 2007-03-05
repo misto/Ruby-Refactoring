@@ -69,15 +69,15 @@ public class FirstMoveMethodPageComposite extends Composite {
 		
 		Group group = new Group(this, SWT.NONE);
 		group.setLayout(new GridLayout());
-		group.setText("Selection");
+		group.setText(Messages.FirstMoveMethodPageComposite_Selection);
 		group.setLayoutData(getGridData(2, true));
 		Label selectedMethodLabel = new Label(group, SWT.NONE);
-		selectedMethodLabel.setText("Selected method: " + selectedMethodName);
+		selectedMethodLabel.setText(Messages.FirstMoveMethodPageComposite_SelectedMethod + selectedMethodName);
 		Label visibilityLabel = new Label(group, SWT.NONE);
-		visibilityLabel.setText("Visibility of selected class: " + selectedMethodVisibility);
+		visibilityLabel.setText(Messages.FirstMoveMethodPageComposite_Visibility + selectedMethodVisibility);
 		visibilityLabel.setLayoutData(getGridData(1, true));
 		Label selcetecClassLabel = new Label(group, SWT.NONE);
-		selcetecClassLabel.setText("Selected class: " + selectedClassName);
+		selcetecClassLabel.setText(Messages.FirstMoveMethodPageComposite_SelectedClass + selectedClassName);
 		selcetecClassLabel.setLayoutData(getGridData(1, true));
 	}
 
@@ -95,7 +95,7 @@ public class FirstMoveMethodPageComposite extends Composite {
 
 	private void createClassSelection() {
         Label moveToClassLabel = new Label(this, SWT.NONE);
-        moveToClassLabel.setText("Move to class:");
+        moveToClassLabel.setText(Messages.FirstMoveMethodPageComposite_MoveToClass);
         final Combo classSelectionCombo = new Combo(this, SWT.DROP_DOWN | SWT.READ_ONLY);
         classSelectionCombo.setVisibleItemCount(10);
 		
@@ -117,8 +117,8 @@ public class FirstMoveMethodPageComposite extends Composite {
 	private void createLeaveDelegateMethodCheck() {
 		final Button delegateCheck = new Button(this, SWT.CHECK);
 		delegateCheck.setLayoutData(getGridData(2, true));
-		delegateCheck.setText("Leave a delegate method in class \"" + config.getSourceClassNode().getName() + "\" that delegates calls the moved method \""
-				+ config.getMethodNode().getName() + "\".");
+		delegateCheck.setText(Messages.FirstMoveMethodPageComposite_LeaveDelegate + config.getSourceClassNode().getName() + Messages.FirstMoveMethodPageComposite_DelegatesCalls
+				+ config.getMethodNode().getName() + "\"."); //$NON-NLS-1$
 		delegateCheck.setSelection(config.leaveDelegateMethodInSource());
 		if(config.canCreateDelegateMethod()) {
 			delegateCheck.addSelectionListener(new SelectionListener() {

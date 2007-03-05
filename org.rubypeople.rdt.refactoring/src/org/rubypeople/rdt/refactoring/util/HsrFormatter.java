@@ -84,7 +84,7 @@ public class HsrFormatter
 		} catch (BadLocationException e) {
 			e.printStackTrace();
 		}
-		return "";
+		return ""; //$NON-NLS-1$
 	}
 
 	private static OldCodeFormatter getFormatter()
@@ -94,9 +94,9 @@ public class HsrFormatter
 		}
 	
 		Map<String, String> options = new HashMap<String, String>();
-		options.put(DefaultCodeFormatterConstants.FORMATTER_TAB_CHAR, "space");
-		options.put(DefaultCodeFormatterConstants.FORMATTER_INDENTATION_SIZE, "2");
-		options.put(DefaultCodeFormatterConstants.FORMATTER_TAB_SIZE, "2");
+		options.put(DefaultCodeFormatterConstants.FORMATTER_TAB_CHAR, "space"); //$NON-NLS-1$
+		options.put(DefaultCodeFormatterConstants.FORMATTER_INDENTATION_SIZE, "2"); //$NON-NLS-1$
+		options.put(DefaultCodeFormatterConstants.FORMATTER_TAB_SIZE, "2"); //$NON-NLS-1$
 		return new OldCodeFormatter(options);
 	}
 

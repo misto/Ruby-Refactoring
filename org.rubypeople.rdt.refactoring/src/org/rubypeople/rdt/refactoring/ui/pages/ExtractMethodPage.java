@@ -57,7 +57,7 @@ import org.rubypeople.rdt.refactoring.ui.pages.extractmethod.SignatureObserver;
 
 public class ExtractMethodPage extends UserInputWizardPage implements IValidationController {
 
-	private static final String title = "Convert Local Variable to Field...";
+	private static final String title = Messages.ExtractMethodPage_Title;
 
 	private MethodExtractor methodExtractor;
 

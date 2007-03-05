@@ -59,7 +59,7 @@ public class FieldCallItem extends FieldItem {
 
 	@Override
 	public Node getRenamedNode(String newName) {
-		String adaptedName = getFieldName().endsWith("=") ? newName + '=' : newName;
+		String adaptedName = getFieldName().endsWith("=") ? newName + '=' : newName; //$NON-NLS-1$
 		return NodeFactory.createCallNode(fieldCall.getReceiverNode(), adaptedName, fieldCall.getArgsNode());
 	}
 

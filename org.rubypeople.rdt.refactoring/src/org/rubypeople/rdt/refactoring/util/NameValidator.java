@@ -34,11 +34,11 @@ import org.jruby.lexer.yacc.Keyword;
 
 public class NameValidator {
 
-	private static final String localVariableRegexp = "[a-z_]\\w*";
+	private static final String localVariableRegexp = "[a-z_]\\w*"; //$NON-NLS-1$
 
-	private static final String methodNameRegexp = "[a-zA-Z_]\\w*[!?=]?";
+	private static final String methodNameRegexp = "[a-zA-Z_]\\w*[!?=]?"; //$NON-NLS-1$
 	
-	private static final String classNameRegexp = "[A-Z_]\\w*";
+	private static final String classNameRegexp = "[A-Z_]\\w*"; //$NON-NLS-1$
 
 	public static boolean isValidLocalVariableName(String name) {
 		return validate(localVariableRegexp, name);

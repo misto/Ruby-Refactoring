@@ -38,7 +38,7 @@ import org.rubypeople.rdt.refactoring.ui.pages.movemethod.SecondMoveMethodPage;
 
 public class MoveMethodRefactoring extends RubyRefactoring {
 
-	public static final String NAME = "Move Method";
+	public static final String NAME = Messages.MoveMethodRefactoring_Name;
 	
 	public MoveMethodRefactoring(TextSelectionProvider selectionProvider) {
 		super(NAME);

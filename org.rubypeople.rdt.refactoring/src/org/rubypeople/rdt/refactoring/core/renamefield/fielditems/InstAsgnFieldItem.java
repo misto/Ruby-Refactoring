@@ -57,8 +57,8 @@ public class InstAsgnFieldItem extends FieldItem {
 	@Override
 	public Node getRenamedNode(String newName) {
 		Node valueNode = instAsgnNode.getValueNode();
-		replaceInstVars(valueNode, setPrefixName(newName, "@"));
-		return new InstAsgnNode(instAsgnNode.getPosition(), setPrefixName(newName, "@"), valueNode);
+		replaceInstVars(valueNode, setPrefixName(newName, "@")); //$NON-NLS-1$
+		return new InstAsgnNode(instAsgnNode.getPosition(), setPrefixName(newName, "@"), valueNode); //$NON-NLS-1$
 		
 	}
 	

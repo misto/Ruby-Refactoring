@@ -137,7 +137,7 @@ public class NodeProvider {
 		Collection<Node> fCallNodes = getSubNodes(parent, FCallNode.class);
 		for (Node node : fCallNodes) {
 			FCallNode fCallNode = (FCallNode) node;
-			if (fCallNode.getName().equals("attr")) {
+			if (fCallNode.getName().equals("attr")) { //$NON-NLS-1$
 				result.addAll(getSubNodes(fCallNode.getArgsNode(), SymbolNode.class));
 			}
 		}
@@ -324,7 +324,7 @@ public class NodeProvider {
 	}
 
 	private static boolean isLoadOrRequireNode(FCallNode fCallNode) {
-		return fCallNode.getName().equalsIgnoreCase("load") || fCallNode.getName().equalsIgnoreCase("require");
+		return fCallNode.getName().equalsIgnoreCase("load") || fCallNode.getName().equalsIgnoreCase("require"); //$NON-NLS-1$ //$NON-NLS-2$
 	}
 
 	public static Collection<LocalAsgnNode> gatherLocalAsgnNodes(Node baseNode) {

@@ -38,7 +38,7 @@ import org.rubypeople.rdt.refactoring.ui.LabeledTextField;
 
 public class RenamePage extends UserInputWizardPage implements IErrorMessageReceiver {
 
-	private static final String TITLE = "Rename Variable...";
+	private static final String TITLE = Messages.RenamePage_Title;
 
 	private final String variableName;
 
@@ -62,7 +62,7 @@ public class RenamePage extends UserInputWizardPage implements IErrorMessageRece
 	}
 
 	protected LabeledTextField createTextField(Composite parent) {
-		LabeledTextField textField = new LabeledTextField(parent, "New na&me", variableName);
+		LabeledTextField textField = new LabeledTextField(parent, Messages.RenamePage_NewName, variableName);
 		textField.getText().addListener(SWT.Modify, listener);
 		return textField;
 	}

@@ -38,7 +38,7 @@ import org.rubypeople.rdt.refactoring.core.movemethod.MoveMethodConfig;
 
 public class FirstMoveMethodPage extends UserInputWizardPage {
 
-	private static final String TITLE = "Move Method...";
+	private static final String TITLE = Messages.FirstMoveMethodPage_Title;
 	private MoveMethodConfig config;
 
 	public FirstMoveMethodPage(MoveMethodConfig config) {

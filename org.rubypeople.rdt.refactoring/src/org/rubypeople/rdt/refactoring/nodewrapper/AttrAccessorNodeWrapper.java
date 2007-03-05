@@ -49,11 +49,11 @@ public class AttrAccessorNodeWrapper implements INodeWrapper {
 
 	private SymbolNode symbolNode;
 
-	public static final String ATTR_WRITER = "attr_writer";
+	public static final String ATTR_WRITER = "attr_writer"; //$NON-NLS-1$
 
-	public static final String ATTR_READER = "attr_reader";
+	public static final String ATTR_READER = "attr_reader"; //$NON-NLS-1$
 
-	public static final String ATTR_ACCESSOR = "attr_accessor";
+	public static final String ATTR_ACCESSOR = "attr_accessor"; //$NON-NLS-1$
 
 	private static final String[] typeNames = { ATTR_WRITER, ATTR_READER, ATTR_ACCESSOR };
 

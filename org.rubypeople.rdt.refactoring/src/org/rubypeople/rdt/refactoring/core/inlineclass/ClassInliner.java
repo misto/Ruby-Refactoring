@@ -277,7 +277,7 @@ public class ClassInliner implements IMultiFileEditProvider {
 
 	private String createNewConstructorName() {
 		String className = inlinedClassPart.getClassName().toLowerCase(Locale.ENGLISH);
-		return className + "_" + Constants.CONSTRUCTOR_NAME;
+		return className + "_" + Constants.CONSTRUCTOR_NAME; //$NON-NLS-1$
 	}
 
 

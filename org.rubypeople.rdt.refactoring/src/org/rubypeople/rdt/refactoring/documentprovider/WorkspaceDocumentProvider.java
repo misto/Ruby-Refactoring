@@ -89,7 +89,7 @@ public class WorkspaceDocumentProvider extends DocumentProvider {
 				if (resource.getType() == IResource.FILE) {
 					IFile currentFile = (IFile) resource;
 					String fileExtension = currentFile.getFileExtension();
-					if(fileExtension != null && fileExtension.equals("rb")) {
+					if(fileExtension != null && fileExtension.equals("rb")) { //$NON-NLS-1$
 						fileNames.add(currentFile.getFullPath().toOSString());
 					}
 				}

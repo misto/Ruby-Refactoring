@@ -53,6 +53,10 @@ public class AccessorsGenerator extends EditAndTreeContentProvider implements II
 	private int type;
 
 	private Object[] selectedTreeItems;
+	
+	public static final String WRITER = Messages.AccessorsGenerator_Writer;
+
+	public static final String READER = Messages.AccessorsGenerator_Reader;
 
 	public AccessorsGenerator(DocumentProvider documentProvider, int type) {
 		this.type = type;
@@ -325,9 +329,6 @@ public class AccessorsGenerator extends EditAndTreeContentProvider implements II
 
 			public class TreeAccessor {
 
-				public static final String WRITER = "Writer";
-
-				public static final String READER = "Reader";
 
 				private boolean isReader;
 

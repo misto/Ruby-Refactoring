@@ -72,7 +72,7 @@ public class MoveFieldConditionChecker extends RefactoringConditionChecker {
 		Collection<String> names = new TreeSet<String>();
 		for (FieldNodeWrapper field : fields) {
 			if(field.isInstVar() && !field.getNameWithoutAts().equals(selectedFieldName)) {
-				names.add("@" + field.getNameWithoutAts());
+				names.add("@" + field.getNameWithoutAts()); //$NON-NLS-1$
 			}
 		}
 		return names;
@@ -105,13 +105,13 @@ public class MoveFieldConditionChecker extends RefactoringConditionChecker {
 	@Override
 	protected void checkInitialConditions() {
 		if(selectedClassNode == null) {
-			addError("Please select an instance variable inside a class.");
+			addError(Messages.MoveFieldConditionChecker_NoInstanceInsideClass);
 		} else if (selectedField == null) {
-			addError("Please select a field");
+			addError(Messages.MoveFieldConditionChecker_NoFieldSelected);
 		} else if(config.getReferenceCandidates().isEmpty()) {
-			addError("At least one other field is required through which the moved field can be accessed.");
+			addError(Messages.MoveFieldConditionChecker_NoReference);
 		} else if (config.getTargetClassCandidates().isEmpty()) {
-			addError("There is no destination class.");
+			addError(Messages.MoveFieldConditionChecker_NoDestination);
 		}
 	}
 

@@ -35,9 +35,9 @@ import java.util.Map;
 
 public interface IRefactoringConditionChecker {
 
-	public static final String ERRORS = "errors";
+	public static final String ERRORS = "errors"; //$NON-NLS-1$
 
-	public static final String WARNING = "warnings";
+	public static final String WARNING = "warnings"; //$NON-NLS-1$
 
 	public Map<String, Collection<String>> getInitialMessages();
 

@@ -47,7 +47,7 @@ public class RenameFieldRefactoring extends RubyRefactoring {
 		}
 	}
 
-	public static final String NAME = "Rename Field";
+	public static final String NAME = Messages.RenameFieldRefactoring_Name;
 	private RenameFieldConfig config;
 	private RenameFieldConditionChecker checker;
 	private FieldRenamer renamer;
@@ -68,7 +68,7 @@ public class RenameFieldRefactoring extends RubyRefactoring {
 			
 			nameListener = new NewNameListener(config, new LocalVarNameValidator(), config.getFieldNames());
 			
-			pageOne = new RenameFieldPage(config.getSelectedName().replaceAll("@", ""), nameListener, config);
+			pageOne = new RenameFieldPage(config.getSelectedName().replaceAll("@", ""), nameListener, config); //$NON-NLS-1$ //$NON-NLS-2$
 			pages.add(pageOne);
 			page = new OccurenceReplaceSelectionPage(config, config.getDocProvider());
 			pages.add(page);

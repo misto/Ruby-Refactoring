@@ -51,7 +51,7 @@ import org.rubypeople.rdt.refactoring.nodewrapper.PartialClassNodeWrapper;
 
 public class RenameMethodConditionChecker extends RefactoringConditionChecker{
 
-	public static final String DEFAULT_ERROR = "Please select the name of the method you want to rename first.";
+	public static final String DEFAULT_ERROR = Messages.RenameMethodConditionChecker_NoMethodSelected;
 	private RenameMethodConfig config;
 	
 	public RenameMethodConditionChecker(RenameMethodConfig config) {
@@ -129,9 +129,9 @@ public class RenameMethodConditionChecker extends RefactoringConditionChecker{
 	@Override
 	protected void checkFinalConditions() {
 		if(config.getNewName().equals(config.getTargetMethod().getName())) {
-			addWarning("Nothing to do. Method name stays the same.");
+			addWarning(Messages.RenameMethodConditionChecker_NotChanged);
 		} else if(getAlreadyUsedNames().contains(config.getNewName())){
-			addError("Method name already exists.");
+			addError(Messages.RenameMethodConditionChecker_AlreadyExists);
 		}
 	}
 

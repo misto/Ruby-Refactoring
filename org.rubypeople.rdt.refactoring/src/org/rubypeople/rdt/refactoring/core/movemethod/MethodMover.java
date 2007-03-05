@@ -345,13 +345,13 @@ public class MethodMover implements IMultiFileEditProvider, Observer {
 		config.resetWarnings();
 		if (config.doesNewMethodNeedsReferenceToSourceClass()) {
 			for (AttrAccessorNodeWrapper aktAccessorNode : getMissingAccessors()) {
-				config.addWarning("An " + aktAccessorNode.getAccessorTypeName() + " for the field " + aktAccessorNode.getAttrName() + " will be generated.");
+				config.addWarning(Messages.MethodMover_An + aktAccessorNode.getAccessorTypeName() + Messages.MethodMover_ForField + aktAccessorNode.getAttrName() + Messages.MethodMover_WillBeGenerated);
 			}
 		}
 		if (config.doesNewMethodNeedsReferenceToSourceClass()) {
 			for (MethodNodeWrapper aktMethod : getSourceClassMethodsReferencedInMovingMethod()) {
 				if(!config.getSourceClassNode().getMethodVisibility(aktMethod).equals(METHOD_VISIBILITY.PUBLIC)) {
-					config.addWarning("The visibility of method " + aktMethod.getName() + " will be changed to public.");
+					config.addWarning(Messages.MethodMover_TheVisibilityOfMethod + aktMethod.getName() + Messages.MethodMover_WillBeChangedToPublic);
 				}
 			}
 		}
@@ -360,10 +360,10 @@ public class MethodMover implements IMultiFileEditProvider, Observer {
 		if(!newVisibility.equals(oldVisibility)) {
 			String oldVisibilityName = VisibilityNodeWrapper.getVisibilityName(oldVisibility);
 			String newVisibilityName = VisibilityNodeWrapper.getVisibilityName(newVisibility);
-			config.addWarning("The visibility of the moving method " + config.getMethodNode().getName()  + " is changed from " + oldVisibilityName + " to " + newVisibilityName + '.');
+			config.addWarning(Messages.MethodMover_TheVisibilityOfTheMovingMethod + config.getMethodNode().getName()  + Messages.MethodMover_IsChangedFrom + oldVisibilityName + Messages.MethodMover_To + newVisibilityName + '.');
 		}
 		if(!config.getMethodNode().getName().equals(config.getMovedMethodName())) {
-			config.addWarning("The name of the moving method will be changed to " + config.getMovedMethodName() + " due to name conflicts.");
+			config.addWarning(Messages.MethodMover_NameWillBeChangedTo + config.getMovedMethodName() + Messages.MethodMover_DuToNameConflicts);
 		}
 	}
 }

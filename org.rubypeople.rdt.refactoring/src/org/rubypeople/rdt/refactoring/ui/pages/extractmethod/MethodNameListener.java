@@ -60,7 +60,7 @@ public class MethodNameListener extends Observable implements ModifyListener {
 			validationController.setError(null);
 			validationController.setComplete(this, true);
 		} else {
-			validationController.setError('\'' + name + "' is not a valid method name.");
+			validationController.setError('\'' + name + Messages.MethodNameListener_IsNotValidName);
 			validationController.setComplete(this, false);
 		}
 	}

@@ -46,7 +46,7 @@ public class RenameConditionChecker extends RefactoringConditionChecker {
 		addErrorIfNotDefaultError(classConditionChecker, RenameClassConditionChecker.DEFAULT_ERROR);
 		if (!hasErrors()) {
 
-			addError("Nothing selected to rename.");
+			addError(Messages.RenameConditionChecker_NothingSelected);
 
 		}
 	}

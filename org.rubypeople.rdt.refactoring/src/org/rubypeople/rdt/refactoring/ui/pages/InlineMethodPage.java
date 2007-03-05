@@ -42,7 +42,7 @@ import org.rubypeople.rdt.refactoring.core.inlinemethod.IRemoveDeclaration;
 public class InlineMethodPage extends UserInputWizardPage {
 	
 	private static final int BORDER = 7;
-	private static final String NAME = "Inline Method";
+	private static final String NAME = Messages.InlineMethodPage_Name;
 	private final IRemoveDeclaration remover;
 
 	public InlineMethodPage(IRemoveDeclaration remover) {
@@ -58,7 +58,7 @@ public class InlineMethodPage extends UserInputWizardPage {
 		body.setLayout(new FormLayout());
 		
 		Button button = new Button(body, SWT.CHECK);
-		button.setText("Delete method declaration.");
+		button.setText(Messages.InlineMethodPage_DeleteDeclaration);
 		
 		FormData variableNamesLayoutData = new FormData();
 		variableNamesLayoutData.top = new FormAttachment(0, 1000, BORDER);
@@ -68,7 +68,7 @@ public class InlineMethodPage extends UserInputWizardPage {
 
 			public void handleEvent(Event event) {
 				if(((Button)event.widget).getSelection()) {
-					setMessage("Make sure the method isn't used anywhere else.", WARNING);
+					setMessage(Messages.InlineMethodPage_MakeSureIsntUsed, WARNING);
 				} else {
 					setMessage(null);
 				}

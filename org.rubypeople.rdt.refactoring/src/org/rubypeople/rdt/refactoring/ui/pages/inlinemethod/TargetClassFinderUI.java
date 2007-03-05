@@ -46,11 +46,11 @@ public class TargetClassFinderUI implements ITargetClassFinder {
 	
 	public String findTargetClass(MethodCallNodeWrapper call, DocumentProvider doc) {
 		String result = targetClassFinder.findTargetClass(call, doc);
-		if("".equals(result) && call.getReceiverNode() == null) {
-			return "";
+		if("".equals(result) && call.getReceiverNode() == null) { //$NON-NLS-1$
+			return ""; //$NON-NLS-1$
 		}
-		if(result == null || "".equals(result)) {    
-			final String title = "Please choose the type of the variable " + ((INameNode) call.getReceiverNode()).getName() + ':';
+		if(result == null || "".equals(result)) {     //$NON-NLS-1$
+			final String title = Messages.TargetClassFinderUI_ChooseType + ((INameNode) call.getReceiverNode()).getName() + ':';
 			IncludedClassesSelectionDialog dialog = new IncludedClassesSelectionDialog(doc, title, call.getName());
 	        if (dialog.open() == Window.OK) {
 	            result = dialog.getSelectedName();

@@ -7,10 +7,10 @@ import org.jruby.ast.visitor.rewriter.DefaultFormatHelper;
 
 public class FormatWithParenthesis extends DefaultFormatHelper {
 	public String beforeCallArguments() {
-		return "(";
+		return "("; //$NON-NLS-1$
 	}
 
 	public String afterCallArguments() {
-		return ")";
+		return ")"; //$NON-NLS-1$
 	}
 }

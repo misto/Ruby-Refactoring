@@ -64,7 +64,7 @@ public class MergeClassPartsInFileConditionChecker extends RefactoringConditionC
 	@Override
 	protected void checkFinalConditions() {
 		if (!isSelectionMergable()) {
-			addError("Please check at least two class parts to merge.");
+			addError(Messages.MergeClassPartsInFileConditionChecker_TooFewParts);
 		}
 	}
 
@@ -84,7 +84,7 @@ public class MergeClassPartsInFileConditionChecker extends RefactoringConditionC
 	@Override
 	protected void checkInitialConditions() {
 		if (!config.hasSelectableClasses()) {
-			addError("There is no class with at least two parts to merge.");
+			addError(Messages.MergeClassPartsInFileConditionChecker_NotEnoughPartsFound);
 		}
 	}
 

@@ -49,7 +49,7 @@ import org.rubypeople.rdt.refactoring.nodewrapper.PartialClassNodeWrapper;
 
 public class RenameFieldConditionChecker extends RefactoringConditionChecker {
 
-	public static final String DEFAULT_ERROR = "There is no field at the caret position.";
+	public static final String DEFAULT_ERROR = Messages.RenameFieldConditionChecker_NoFieldAtCaretPosition;
 
 	private RenameFieldConfig config;
 
@@ -116,7 +116,7 @@ public class RenameFieldConditionChecker extends RefactoringConditionChecker {
 		if ((candidateNode instanceof CallNode)) {
 
 			CallNode callNode = (CallNode) candidateNode;
-			if (callNode.getName().replaceAll("=", "").equals(config.getSelectedName())) {
+			if (callNode.getName().replaceAll("=", "").equals(config.getSelectedName())) { //$NON-NLS-1$ //$NON-NLS-2$
 				String fileName = callNode.getPosition().getFile();
 				Node rootNode = config.getDocProvider().getRootNode(fileName);
 				try {
@@ -135,13 +135,13 @@ public class RenameFieldConditionChecker extends RefactoringConditionChecker {
 		String selectedName = config.getSelectedName();
 
 		if (newName == null || selectedName.equals(newName)) {
-			addError("The name has to be changed to perform the refactoring.");
+			addError(Messages.RenameFieldConditionChecker_NoNewName);
 			return;
 		}
 
 		for (String currentName : config.getFieldNames()) {
 			if (currentName.equals(newName)) {
-				addError("Field name already exists.");
+				addError(Messages.RenameFieldConditionChecker_AlreadyExists);
 				return;
 			}
 		}
@@ -153,7 +153,7 @@ public class RenameFieldConditionChecker extends RefactoringConditionChecker {
 		FieldNodeWrapper selectedFieldNode = SelectionNodeProvider.getSelectedWrappedNode(fields, config.getCaretPosition());
 		if (config.getWholeClassNode() == null) {
 			if (selectedFieldNode != null) {
-				addError("Cannot rename the selected field. There was no surrounding class found.");
+				addError(Messages.RenameFieldConditionChecker_CannotNoSurroundingClass);
 				return;
 			}
 		}

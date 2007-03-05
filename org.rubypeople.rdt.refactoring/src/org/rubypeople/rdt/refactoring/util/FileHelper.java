@@ -37,7 +37,7 @@ import java.io.Reader;
 
 
 public class FileHelper {
-	public static final String DEFAULT_LINE_DELIMITER = System.getProperty("line.separator");
+	public static final String DEFAULT_LINE_DELIMITER = System.getProperty("line.separator"); //$NON-NLS-1$
 	
 	public static String getFileContent(String fileName) {
 		try {
@@ -70,12 +70,12 @@ public class FileHelper {
 			
 			if(currentChar == '\r'){
 				if(document.length() > i + 1 && document.charAt(i + 1) == '\n'){
-					return "\r\n";
+					return "\r\n"; //$NON-NLS-1$
 				}
-				return "\r";
+				return "\r"; //$NON-NLS-1$
 			}
 			else if(currentChar == '\n'){
-				return "\n";
+				return "\n"; //$NON-NLS-1$
 			}
 		}
 

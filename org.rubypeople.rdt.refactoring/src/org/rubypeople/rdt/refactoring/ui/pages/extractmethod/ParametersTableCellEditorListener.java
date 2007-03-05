@@ -109,12 +109,12 @@ public class ParametersTableCellEditorListener extends Observable implements Lis
 				item.setBackground(new Color(table.getBackground().getDevice(), 255, 0, 0));
 				message.append('\'');
 				message.append(item.getText());
-				message.append("' is not a valid parameter name.");
+				message.append(Messages.ParametersTableCellEditorListener_IsNotValidParameterName);
 			} else if (nameAlreadyUsed(item.getText())) {
 				valid = false;
 				message.append('\'');
 				message.append(item.getText());
-				message.append("' is already used in the extracted part.");
+				message.append(Messages.ParametersTableCellEditorListener_IsAlreadyUsed);
 			} else {
 				item.setBackground(table.getBackground());
 			}
@@ -139,10 +139,10 @@ public class ParametersTableCellEditorListener extends Observable implements Lis
 		}
 
 		if (!areAllNamesUnique()) {
-			message.append("You cannot have parameters with equal names.");
+			message.append(Messages.ParametersTableCellEditorListener_CannotHaveParametersWithEqualNames);
 		}
 
-		if (message.toString().equals("")) {
+		if (message.toString().equals("")) { //$NON-NLS-1$
 			validationController.setError(null);
 			validationController.setComplete(this, true);
 		} else {

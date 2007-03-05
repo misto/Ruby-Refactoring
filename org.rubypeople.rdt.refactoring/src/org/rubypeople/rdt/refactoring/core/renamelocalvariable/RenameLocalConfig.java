@@ -50,7 +50,7 @@ public class RenameLocalConfig implements IRenameConfig {
 		if (selectedNode instanceof INameNode) {
 			return ((INameNode) selectedNode).getName();
 		}
-		return "";
+		return ""; //$NON-NLS-1$
 	}
 
 	public DocumentProvider getDocumentProvider() {

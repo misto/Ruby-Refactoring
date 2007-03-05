@@ -58,11 +58,11 @@ public class ArgsNodeWrapper implements INodeWrapper {
 
 	public String getArgsListAsString() {
 		if (!hasArgs())
-			return "";
+			return ""; //$NON-NLS-1$
 
 		StringBuilder argList = new StringBuilder();
 		for (String argName : argumentNames) {
-			argList.append(argName + ", ");
+			argList.append(argName + ", "); //$NON-NLS-1$
 		}
 		return ' ' + argList.substring(0, argList.length() - 2);
 	}

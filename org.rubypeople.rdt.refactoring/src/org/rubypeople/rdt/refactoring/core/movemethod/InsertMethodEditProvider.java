@@ -97,7 +97,7 @@ public class InsertMethodEditProvider extends InsertEditProvider {
 		} catch (BadLocationException e) {
 			e.printStackTrace();
 		}
-		MethodDefNode methodNode = (MethodDefNode) NodeProvider.unwrap(NodeProvider.getRootNode("tempFile", doc.get()).getBodyNode());
+		MethodDefNode methodNode = (MethodDefNode) NodeProvider.unwrap(NodeProvider.getRootNode("tempFile", doc.get()).getBodyNode()); //$NON-NLS-1$
 		return createMethodNodeWithAdditionalArg(methodNode);
 	}
 
@@ -112,7 +112,7 @@ public class InsertMethodEditProvider extends InsertEditProvider {
 
 	private TextEdit getFieldInsertionEdit(String docStr) {
 		MultiTextEdit multiEdit = new MultiTextEdit();
-		Node rootNode = NodeProvider.getRootNode("tmpFile", docStr);
+		Node rootNode = NodeProvider.getRootNode("tmpFile", docStr); //$NON-NLS-1$
 		Collection<MethodCallNodeWrapper> callNodes = NodeProvider.getMethodCallNodes(rootNode);
 		for (MethodCallNodeWrapper aktCallNode : callNodes) {
 			addTextEditIfNeeded(multiEdit, aktCallNode);
@@ -133,7 +133,7 @@ public class InsertMethodEditProvider extends InsertEditProvider {
 			int length;
 			String insertText;
 			if (aktFieldNode.getName().equals(config.getFieldInSourceClassOfTypeDestinationClass())) {
-				insertText = "self";
+				insertText = "self"; //$NON-NLS-1$
 				length = aktFieldNode.getPosition().getEndOffset() - insertPos;
 			} else {
 				insertText = config.getFieldInDestinationClassOfTypeSourceClass() + '.';
@@ -145,7 +145,7 @@ public class InsertMethodEditProvider extends InsertEditProvider {
 
 	private void addTextEditIfNeeded(MultiTextEdit multiEdit, MethodCallNodeWrapper aktCallNode) {
 		int insertPos = aktCallNode.getPosition().getStartOffset();
-		String insertText = config.getFieldInDestinationClassOfTypeSourceClass() + ".";
+		String insertText = config.getFieldInDestinationClassOfTypeSourceClass() + "."; //$NON-NLS-1$
 		if (aktCallNode.isCallNode()) {
 			Node receiverNode = aktCallNode.getReceiverNode();
 			if (NodeUtil.nodeAssignableFrom(receiverNode, SelfNode.class) && !isCallToMovingMethod(aktCallNode.getName())) {

@@ -39,7 +39,7 @@ public abstract class MultiEditProvider implements IEditProvider {
 		EditProviderGroups groups = new EditProviderGroups();
 		Collection<EditProvider> unsortedProviders = getEditProviders();
 		for (EditProvider editProvider : unsortedProviders) {
-			String groupName = "offset_" + editProvider.getOffset(document);
+			String groupName = Messages.MultiEditProvider_Offset + editProvider.getOffset(document);
 			groups.add(groupName, editProvider);
 		}
 

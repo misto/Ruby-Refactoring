@@ -33,18 +33,18 @@ import org.rubypeople.rdt.refactoring.ui.pages.FormatSourcePage;
 
 public class FormatSourceRefactoring extends RubyRefactoring {
 
-	public static final String NAME = "Format Source";
+	public static final String NAME = Messages.FormatSourceRefactoring_Name;
 	
 	private static final String source = 
-		"class Sample\n" +
-		  "def testMethod arg1, arg2\n" +
-		    "puts \"Hello world!\"\n" +
-		    "hash = {:key => 'value'}\n" +
-		  "end\n" +	
-		  "def anotherTestMethod arg1, arg2\n" +
-		    "[1, 2, 3, 4].each {|e| puts e}\n" +
-	      "end\n" +
-		"end";
+		"class Sample\n" + //$NON-NLS-1$
+		  "def testMethod arg1, arg2\n" + //$NON-NLS-1$
+		    "puts \"Hello world!\"\n" + //$NON-NLS-1$
+		    "hash = {:key => 'value'}\n" + //$NON-NLS-1$
+		  "end\n" +	 //$NON-NLS-1$
+		  "def anotherTestMethod arg1, arg2\n" + //$NON-NLS-1$
+		    "[1, 2, 3, 4].each {|e| puts e}\n" + //$NON-NLS-1$
+	      "end\n" + //$NON-NLS-1$
+		"end"; //$NON-NLS-1$
 	
 	private FormattedSourceEditProvider provider;
 	

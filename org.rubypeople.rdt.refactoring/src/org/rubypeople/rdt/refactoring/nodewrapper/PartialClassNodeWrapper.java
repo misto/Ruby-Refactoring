@@ -187,7 +187,7 @@ public abstract class PartialClassNodeWrapper implements INodeWrapper {
 
 	public String getModulePrefix() {
 		if (enclosingModules == null) {
-			return "";
+			return ""; //$NON-NLS-1$
 		}
 
 		StringBuilder modulePrefix = new StringBuilder();
@@ -195,7 +195,7 @@ public abstract class PartialClassNodeWrapper implements INodeWrapper {
 			Node cPath = currentModule.getCPath();
 			if (cPath instanceof Colon2Node) {
 				String moduleName = ((Colon2Node) cPath).getName();
-				modulePrefix.append(moduleName).append("::");
+				modulePrefix.append(moduleName).append("::"); //$NON-NLS-1$
 			}
 		}
 		return modulePrefix.toString();

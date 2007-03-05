@@ -112,7 +112,7 @@ public class MoveFieldPage extends UserInputWizardPage {
 		final Label referenceLabel = new Label(composite, SWT.NONE);
 		// what should we ask?
 		//referenceLabel.setText("Class is referenced by:");
-		referenceLabel.setText("Class is accessible by:");
+		referenceLabel.setText(Messages.MoveFieldPage_AccessibleBy);
 	}
 
 	private void createClassComboBox(final Composite composite) {
@@ -131,12 +131,12 @@ public class MoveFieldPage extends UserInputWizardPage {
 
 	private void createClassLabel(final Composite composite) {
 		final Label moveToClassLabel = new Label(composite, SWT.NONE);
-		moveToClassLabel.setText("Move to class:");
+		moveToClassLabel.setText(Messages.MoveFieldPage_MoveToClass);
 	}
 
 	private void createTitleLabel(final Composite composite) {
 		final Label title = new Label(composite, SWT.NONE);
-		title.setText("Choose the new target for '" + config.getSelectedFieldName() + "':");
+		title.setText(Messages.MoveFieldPage_Target + config.getSelectedFieldName() + "':"); //$NON-NLS-1$
 		final GridData gridData = new GridData();
 		gridData.horizontalSpan = 2;
 		title.setLayoutData(gridData);

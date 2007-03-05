@@ -43,7 +43,7 @@ public class RdtCodeViewer extends RubyScriptPreview {
 
 	public static RdtCodeViewer create(Composite parent) {
 		Map<String, String> map = new HashMap<String, String>();
-		map.put(DefaultCodeFormatterConstants.FORMATTER_TAB_CHAR, " ");
+		map.put(DefaultCodeFormatterConstants.FORMATTER_TAB_CHAR, " "); //$NON-NLS-1$
 		return new RdtCodeViewer(map, parent);
 	}
 
@@ -54,7 +54,7 @@ public class RdtCodeViewer extends RubyScriptPreview {
 
 	protected void doFormatPreview() {
 		if (fPreviewText == null) {
-			fPreviewDocument.set("");
+			fPreviewDocument.set(""); //$NON-NLS-1$
 			return;
 		}
 		fPreviewDocument.set(fPreviewText);

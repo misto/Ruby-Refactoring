@@ -70,10 +70,10 @@ public class ClassInstanciationFinder implements IClassInstanciationFinder {
 	}
 
 	private boolean isConstructorFor(String name, CallNode call) {
-		if(!call.getName().equals("new")) {
+		if(!call.getName().equals("new")) { //$NON-NLS-1$
 			return false;
 		}
-		return ((modulePrefix == null || "".equals(modulePrefix)) && call.getReceiverNode() instanceof ConstNode && ((ConstNode) call.getReceiverNode()).getName().equals(name))
+		return ((modulePrefix == null || "".equals(modulePrefix)) && call.getReceiverNode() instanceof ConstNode && ((ConstNode) call.getReceiverNode()).getName().equals(name)) //$NON-NLS-1$
 			|| (call.getReceiverNode() instanceof Colon2Node && NameHelper.getFullyQualifiedName(call.getReceiverNode()).equals(modulePrefix + name	));
 	}
 

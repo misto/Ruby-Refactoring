@@ -41,7 +41,7 @@ import org.rubypeople.rdt.refactoring.ui.NewNameListener;
 
 public class RenameFieldPage extends RenamePage {
 
-	private static final String NAME = "Rename Field";
+	private static final String NAME = Messages.RenameFieldPage_Name;
 	private final ICheckboxListener checkListener;
 
 	public RenameFieldPage(String selectedVariable, NewNameListener listener, ICheckboxListener checkListener) {
@@ -58,7 +58,7 @@ public class RenameFieldPage extends RenamePage {
 		textField.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
 		
 		Button button = new Button(main, SWT.CHECK);
-		button.setText("rename corresponding accessor methods");
+		button.setText(Messages.RenameFieldPage_RenameAccessors);
 		button.setLayoutData( new GridData());
 		button.addListener(SWT.Selection, new Listener() {
 			public void handleEvent(Event event) {

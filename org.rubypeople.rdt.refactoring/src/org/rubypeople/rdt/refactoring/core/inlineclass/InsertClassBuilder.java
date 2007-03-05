@@ -84,7 +84,7 @@ public class InsertClassBuilder {
 		prechanges.addChildren(getFieldRenameEdits(conflictingFields, inlinedClassDocumentProvider));
 		prechanges.addChildren(getConstructorDeleteEdits(inlinedClassDocumentProvider));
 
-		return new StringDocumentProvider(inlinedClassDocumentProvider.getActiveFileName() + "_with_applied_prechanges", applyPrechanges(prechanges, inlinedClassDocumentProvider));
+		return new StringDocumentProvider(inlinedClassDocumentProvider.getActiveFileName() + "_with_applied_prechanges", applyPrechanges(prechanges, inlinedClassDocumentProvider)); //$NON-NLS-1$
 
 	}
 
@@ -141,7 +141,7 @@ public class InsertClassBuilder {
 			int fieldPos = currentField.getWrappedNode().getPosition().getStartOffset();
 			RenameFieldConfig config = new RenameFieldConfig(inlinedClassDocumentProvider, fieldPos);
 			new RenameFieldConditionChecker(config);
-			config.setNewName(newFieldName.replaceAll("@", ""));	
+			config.setNewName(newFieldName.replaceAll("@", ""));	 //$NON-NLS-1$ //$NON-NLS-2$
 			setSelectedCalls(config);
 			FieldRenamer renamer = new FieldRenamer(config);
 
@@ -200,7 +200,7 @@ public class InsertClassBuilder {
 		ISourcePosition classPartPosition = inlinedClassPart.getWrappedNode().getPosition();
 		String activeFileContent = config.getDocProvider().getActiveFileContent();
 		String inlinedClassDocument = activeFileContent.substring(classPartPosition.getStartOffset(), classPartPosition.getEndOffset());
-		String fileName = "part_of_" + config.getDocProvider().getActiveFileName();
+		String fileName = "part_of_" + config.getDocProvider().getActiveFileName(); //$NON-NLS-1$
 		StringDocumentProvider inlinedClassDocumentProvider = new StringDocumentProvider(fileName, inlinedClassDocument);
 		return inlinedClassDocumentProvider;
 	}

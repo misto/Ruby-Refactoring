@@ -37,7 +37,7 @@ import org.rubypeople.rdt.refactoring.ui.NotifiedContainerCheckedTree;
 
 public class OverrideMethodSelectionPage extends UserInputWizardPage {
 
-	private static final String TITLE = "Select methods";
+	private static final String TITLE = Messages.OverrideMethodSelectionPage_SelectMethods;
 
 	private NotifiedContainerCheckedTree tree;
 

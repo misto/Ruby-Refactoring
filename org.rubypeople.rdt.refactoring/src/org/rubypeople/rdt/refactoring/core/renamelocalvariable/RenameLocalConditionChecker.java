@@ -50,13 +50,13 @@ import org.rubypeople.rdt.refactoring.util.NodeUtil;
 
 public class RenameLocalConditionChecker extends RefactoringConditionChecker {
 
-	private static final String ALREADY_EXISTS = "The chosen variable name already exists! Please go back and change it.";
+	private static final String ALREADY_EXISTS = Messages.RenameLocalConditionChecker_NameAlreadyExists;
 
-	private static final String INVALID_NAME = "Please enter a valid name for the variable.";
+	private static final String INVALID_NAME = Messages.RenameLocalConditionChecker_NameInvalid;
 
-	private static final String NO_VARIABLE_SELECTED = "No variable selected. Please select the variable you want to rename.";
+	private static final String NO_VARIABLE_SELECTED = Messages.RenameLocalConditionChecker_NoSelection;
 
-	private static final String NO_LOCAL_VARIABLES = "There are no local variables at the current carret position.";
+	private static final String NO_LOCAL_VARIABLES = Messages.RenameLocalConditionChecker_NoLocalVariable;
 
 	private static final Class[] SELECTED_NODE_TYPES = {LocalVarNode.class, LocalAsgnNode.class, ArgumentNode.class,
 		BlockArgNode.class, DVarNode.class, DAsgnNode.class};
@@ -114,7 +114,7 @@ public class RenameLocalConditionChecker extends RefactoringConditionChecker {
 	@Override
 	protected void checkFinalConditions() {
 		LocalVariablesEditProvider editProvider = config.getRenameEditProvider();
-		if (editProvider.getSelectedVariableName().equals("") && editProvider.getNewVariableName().equals("")) {
+		if (editProvider.getSelectedVariableName().equals("") && editProvider.getNewVariableName().equals("")) { //$NON-NLS-1$ //$NON-NLS-2$
 			addError(NO_VARIABLE_SELECTED);
 		}
 
@@ -123,7 +123,7 @@ public class RenameLocalConditionChecker extends RefactoringConditionChecker {
 		}
 
 		if (editProvider.getSelectedVariableName().equals(editProvider.getNewVariableName())) {
-			addError("You didn't choose a different name.");
+			addError(Messages.RenameLocalConditionChecker_SameName);
 		}
 
 		for (String s : config.getLocalNames()) {

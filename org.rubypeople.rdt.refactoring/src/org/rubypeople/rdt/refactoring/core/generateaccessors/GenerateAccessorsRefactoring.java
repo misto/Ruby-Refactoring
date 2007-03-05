@@ -33,7 +33,7 @@ import org.rubypeople.rdt.refactoring.ui.pages.AccessorSelectionPage;
 
 public class GenerateAccessorsRefactoring extends RubyRefactoring {
 
-	public static final String NAME = "Generate Accessors";
+	public static final String NAME = Messages.GenerateAccessorsRefactoring_Name;
 
 	public GenerateAccessorsRefactoring() {
 		super(NAME);

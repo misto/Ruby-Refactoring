@@ -35,7 +35,7 @@ import org.rubypeople.rdt.refactoring.ui.pages.inlinemethod.TargetClassFinderUI;
 
 public class InlineMethodRefactoring extends RubyRefactoring {
 
-	public static final String NAME = "Inline Method";
+	public static final String NAME = Messages.InlineMethodRefactoring_Name;
 
 	public InlineMethodRefactoring(TextSelectionProvider selectionProvider) {
 		super(NAME);

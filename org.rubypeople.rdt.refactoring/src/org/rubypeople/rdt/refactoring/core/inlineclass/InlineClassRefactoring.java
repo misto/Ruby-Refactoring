@@ -36,7 +36,7 @@ import org.rubypeople.rdt.refactoring.ui.pages.InlineClassPage;
 
 public class InlineClassRefactoring extends RubyRefactoring{
 
-	public final static String NAME = "Inline Class";
+	public final static String NAME = Messages.InlineClassRefactoring_Name;
 	
 	public InlineClassRefactoring(TextSelectionProvider selectionProvider) {
 		super(NAME);

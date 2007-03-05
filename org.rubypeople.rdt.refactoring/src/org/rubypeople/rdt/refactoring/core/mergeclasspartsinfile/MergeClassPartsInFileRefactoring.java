@@ -36,7 +36,7 @@ import org.rubypeople.rdt.refactoring.ui.pages.MergeClassPartsInFilePage;
 
 public class MergeClassPartsInFileRefactoring extends RubyRefactoring {
 
-	public static final String NAME = "Merge Class Parts in File";
+	public static final String NAME = Messages.MergeClassPartsInFileRefactoring_Name;
 	
 	public MergeClassPartsInFileRefactoring() throws CoreException {
 		super(NAME);

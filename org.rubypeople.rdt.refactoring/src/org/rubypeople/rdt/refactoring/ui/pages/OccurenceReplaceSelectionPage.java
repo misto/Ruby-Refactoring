@@ -50,7 +50,7 @@ import org.rubypeople.rdt.refactoring.ui.RdtCodeViewer;
 
 public class OccurenceReplaceSelectionPage extends UserInputWizardPage {
 
-	public static final String NAME = "Select Calls...";
+	public static final String NAME = Messages.OccurenceReplaceSelectionPage_SelectCalls;
 	private final static RGB highlightColor = new RGB(173, 193, 217);
 	
 	private NodeSelector selector;
@@ -127,7 +127,7 @@ public class OccurenceReplaceSelectionPage extends UserInputWizardPage {
 
 	private String getTableCaption(INodeWrapper currentCall) {
 		ISourcePosition pos = currentCall.getWrappedNode().getPosition();
-		return pos.getFile() + " line: " + (pos.getStartLine() + 1) ;
+		return pos.getFile() + Messages.OccurenceReplaceSelectionPage_Line + (pos.getStartLine() + 1) ;
 	}
 
 	private boolean proableCall(INodeWrapper currentCall) {

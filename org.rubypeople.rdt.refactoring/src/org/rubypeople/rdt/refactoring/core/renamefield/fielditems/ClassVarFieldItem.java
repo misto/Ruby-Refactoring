@@ -55,7 +55,7 @@ public class ClassVarFieldItem extends FieldItem {
 	@Override
 	public Node getRenamedNode(String newName) {
 		
-		return new ClassVarNode(classVarNode.getPosition(), setPrefixName(newName, "@@"));
+		return new ClassVarNode(classVarNode.getPosition(), setPrefixName(newName, "@@")); //$NON-NLS-1$
 	}
 
 	@Override

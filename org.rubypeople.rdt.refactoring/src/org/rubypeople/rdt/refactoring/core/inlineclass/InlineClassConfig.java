@@ -115,7 +115,7 @@ public class InlineClassConfig {
 				continue;
 			}
 			
-			if(valueWrapper.getName().equals("new") && valueWrapper.getReceiverNode() instanceof ConstNode && ((ConstNode)valueWrapper.getReceiverNode()).getName().equals(sourceClass.getName()) ){
+			if(valueWrapper.getName().equals("new") && valueWrapper.getReceiverNode() instanceof ConstNode && ((ConstNode)valueWrapper.getReceiverNode()).getName().equals(sourceClass.getName()) ){ //$NON-NLS-1$
 				assignmentsFound.add(currentAssignment);
 				
 			}

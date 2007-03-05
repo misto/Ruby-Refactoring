@@ -35,7 +35,7 @@ import org.rubypeople.rdt.refactoring.ui.pages.ConverterPageParameters;
 
 public class ConvertTempToFieldRefactoring extends RubyRefactoring {
 
-	public static final String NAME = "Convert Local Variable to Field";
+	public static final String NAME = Messages.ConvertTempToFieldRefactoring_Name;
 
 	public ConvertTempToFieldRefactoring(TextSelectionProvider selectionProvider) {
 		super(NAME);

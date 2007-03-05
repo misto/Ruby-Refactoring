@@ -45,7 +45,7 @@ import org.rubypeople.rdt.refactoring.ui.RdtCodeViewer;
 import org.rubypeople.rdt.refactoring.ui.util.SwtUtils;
 
 public class MergeWithExternalClassPartsPage extends UserInputWizardPage {
-	private static final String TITLE = "Select Class Parts";
+	private static final String TITLE = Messages.MergeWithExternalClassPartsPage_SelectParts;
 
 	private NotifiedContainerCheckedTree tree;
 
@@ -77,8 +77,8 @@ public class MergeWithExternalClassPartsPage extends UserInputWizardPage {
 		sidePanel.setLayout(sidePanelLayout);
 
 		// TODO Improve the sentence to make it easier to read.
-		String explTitle = "Description";
-		String explText = "In the tree on the lefthandside all classes that are defined in the current document and have definitions in the included files are displayed. With the checkboxes the destination class to move the class part in the current file can be selected.\nIf there are more than one definition of the same class in one file then there are also several entries below the class name.";
+		String explTitle = Messages.MergeWithExternalClassPartsPage_Description;
+		String explText = Messages.MergeWithExternalClassPartsPage_DescriptionText;
 		SwtUtils.initExplanation(sidePanel, explTitle, explText);
 
 		initClassPartView(sidePanel);
@@ -94,7 +94,7 @@ public class MergeWithExternalClassPartsPage extends UserInputWizardPage {
 				ClassPartTreeItem treeItem = (ClassPartTreeItem) selection.getFirstElement();
 
 				Node classNode = treeItem.getClassPartWrapper().getWrappedNode();
-				classView.setPreviewText(ReWriteVisitor.createCodeFromNode(NodeFactory.createNewLineNode(classNode), ""));
+				classView.setPreviewText(ReWriteVisitor.createCodeFromNode(NodeFactory.createNewLineNode(classNode), "")); //$NON-NLS-1$
 			}
 		});
 	}

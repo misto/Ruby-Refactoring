@@ -11,7 +11,7 @@ import org.rubypeople.rdt.refactoring.core.renamemethod.RenameMethodRefactoring;
 
 public class RenameRefactoring extends RubyRefactoring {
 
-	public static final String NAME = "Rename";
+	public static final String NAME = Messages.RenameRefactoring_Name;
 	private RubyRefactoring delegateRenameRefactoring;
 
 	public RenameRefactoring(TextSelectionProvider selectionProvider) {

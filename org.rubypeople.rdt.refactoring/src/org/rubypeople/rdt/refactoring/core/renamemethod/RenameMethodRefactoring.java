@@ -46,7 +46,7 @@ public class RenameMethodRefactoring extends RubyRefactoring {
 		}
 	}
 
-	public static final String NAME = "Rename Method";
+	public static final String NAME = Messages.RenameMethodRefactoring_Name;
 
 	public RenameMethodRefactoring(TextSelectionProvider selectionProvider) {
 		super(NAME);
@@ -61,7 +61,7 @@ public class RenameMethodRefactoring extends RubyRefactoring {
 						
 			NewNameListener nameListener = new NewNameListener(config, new MethodNameValidator(), checker.getAlreadyUsedNames());
 			
-			RenamePage page = new RenamePage(NAME + "...", config.getTargetMethod().getName(), nameListener);
+			RenamePage page = new RenamePage(NAME + "...", config.getTargetMethod().getName(), nameListener); //$NON-NLS-1$
 			pages.add(page);
 			if(!config.getPossibleCalls().isEmpty()){
 				pages.add(new OccurenceReplaceSelectionPage(config, config.getDocProvider()));

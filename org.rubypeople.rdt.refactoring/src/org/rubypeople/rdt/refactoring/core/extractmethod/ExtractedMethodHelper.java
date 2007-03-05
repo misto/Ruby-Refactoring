@@ -62,7 +62,7 @@ public class ExtractedMethodHelper extends Observable {
 
 	private ArrayList<ExtractedArgument> argsOrdered;
 
-	private String methodName = "";
+	private String methodName = ""; //$NON-NLS-1$
 
 	private final boolean isStaticMethod;
 

@@ -88,7 +88,7 @@ public class RubyTextEditChangePreviewViewer implements IChangePreviewViewer {
 		}
 
 		public String getLeftLabel(Object input) {
-			return "Original Source";
+			return Messages.RubyTextEditChangePreviewViewer_OriginalSource;
 		}
 
 		public Object getRightContent(Object input) {
@@ -104,7 +104,7 @@ public class RubyTextEditChangePreviewViewer implements IChangePreviewViewer {
 		}
 
 		public String getRightLabel(Object input) {
-			return "Refactored Source";
+			return Messages.RubyTextEditChangePreviewViewer_RefactoredSource;
 		}
 
 		public boolean isLeftEditable(Object input) {
@@ -139,7 +139,7 @@ public class RubyTextEditChangePreviewViewer implements IChangePreviewViewer {
 	}
 	
 	private static class CompareElement implements ITypedElement, IEncodedStreamContentAccessor, IResourceProvider {
-		private static final String ENCODING= "UTF-8";
+		private static final String ENCODING= "UTF-8"; //$NON-NLS-1$
 		private String fContent;
 		private String fType;
 		private IResource fResource;
@@ -149,7 +149,7 @@ public class RubyTextEditChangePreviewViewer implements IChangePreviewViewer {
 			fResource= resource;
 		}
 		public String getName() {
-			return "";
+			return ""; //$NON-NLS-1$
 		}
 		public Image getImage() {
 			return null;

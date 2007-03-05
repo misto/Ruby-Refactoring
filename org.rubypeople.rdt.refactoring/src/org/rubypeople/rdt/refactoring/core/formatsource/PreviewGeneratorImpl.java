@@ -57,7 +57,7 @@ public class PreviewGeneratorImpl implements PreviewGenerator {
 		DefaultRubyParser parser = RubyParserPool.getInstance().borrowParser();
 		parser.setWarnings(new NullWarnings());
 
-		LexerSource lexerSource = new LexerSource("", new StringReader(source));
+		LexerSource lexerSource = new LexerSource("", new StringReader(source)); //$NON-NLS-1$
 		ReWriteVisitor visitor = factory.createReWriteVisitor();
 		parser.parse(new RubyParserConfiguration(), lexerSource).getAST().accept(visitor);
 		visitor.flushStream();

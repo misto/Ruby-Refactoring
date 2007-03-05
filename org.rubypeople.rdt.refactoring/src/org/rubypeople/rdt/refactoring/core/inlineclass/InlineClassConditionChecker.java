@@ -78,7 +78,7 @@ public class InlineClassConditionChecker extends RefactoringConditionChecker{
 	@Override
 	protected void checkFinalConditions() {
 		if(equalClassPartPosition(selectedClass.getFirstPartialClassNode(), config.getTargetClassPart())){
-			addError("Cannot inline the selected class part into itself.");
+			addError(Messages.InlineClassConditionChecker_CannotInlineToItself);
 		}
 	}
 
@@ -86,26 +86,26 @@ public class InlineClassConditionChecker extends RefactoringConditionChecker{
 	protected void checkInitialConditions() {
 
 		if(selectedClass == null){
-			addError("There is no class selected to inline.");
+			addError(Messages.InlineClassConditionChecker_NoClassSelected);
 			return;
 		}
 
 		ClassNodeProvider classesProvider = docProvider.getProjectClassNodeProvider();
 		Collection<PartialClassNodeWrapper> inlinedClass = classesProvider.getClassNode(selectedClass.getName()).getPartialClassNodes();
 		if(inlinedClass.size() > 1){
-			addError("The selected class cannot be inlined as its is spread over several class parts.");
+			addError(Messages.InlineClassConditionChecker_CannotMultipleClassParts);
 		}
 		
 		if(classesProvider.getSubClassesOf(selectedClass.getName()).size() > 0){
-			addError("The inlne target is subclassed and thus cannot be inlined.");
+			addError(Messages.InlineClassConditionChecker_CannotWithSubclasses);
 		}
 		
 		if(!selectedClass.getSuperClassName().equals(Constants.OBJECT_NAME)) {
-			addError("The selected class is derived from another class and thus cannot be inlined.");
+			addError(Messages.InlineClassConditionChecker_CannorDerivedClasses);
 		}
 		
 		if(config.getPossibleTargetClasses().isEmpty()){
-			addError("There must be at least one class that creates an instance of the selected class in the constructor and keeps it in a field.");
+			addError(Messages.InlineClassConditionChecker_NoFieldToReference);
 		}
 
 	}

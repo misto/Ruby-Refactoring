@@ -54,7 +54,7 @@ public class SClassNodeWrapper extends PartialClassNodeWrapper {
 
 	@Override
 	public String getSuperClassName() {
-		return "";
+		return ""; //$NON-NLS-1$
 	}
 
 	@Override
@@ -75,7 +75,7 @@ public class SClassNodeWrapper extends PartialClassNodeWrapper {
 			VCallNode vCallNode = (VCallNode) receiverNode;
 			return getModulePrefix() + vCallNode.getName();
 		}
-		return "Unknown Node: " + receiverNode.toString();
+		return Messages.SClassNodeWrapper_UnknownNode + receiverNode.toString();
 	}
 
 	private Node getReferencedNode(int id, Map<Integer, Node> references) throws UnknownReferenceException {

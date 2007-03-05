@@ -49,7 +49,7 @@ public class FormatSourceConditionChecker extends RefactoringConditionChecker {
 	@Override
 	protected void checkInitialConditions() {
 		if (config == null) {
-			addError("There is no open file to reformat.");
+			addError(Messages.FormatSourceConditionChecker_NothingToDo);
 		}
 	}
 

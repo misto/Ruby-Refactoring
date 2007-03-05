@@ -99,26 +99,26 @@ public class InlineTempConditionChecker extends RefactoringConditionChecker {
 	@Override
 	protected void checkFinalConditions() {
 		if (!isNewMethodNameUnique()) {
-			addError("New method name is not unique.");
+			addError(Messages.InlineTempConditionChecker_NameNotUnique);
 		}
 	}
 
 	@Override
 	protected void checkInitialConditions() {
 		if (config.getSelectedItem() == null) {
-			addError("There is no local variable at the current carret position.");
+			addError(Messages.InlineTempConditionChecker_NoLocalVariable);
 		} else if (isTempParameter()) {
-			addError("Cannot inline method parameters.");
+			addError(Messages.InlineTempConditionChecker_CannotMethodParameters);
 		} else if (isBlockArgument()) {
-			addError("Cannot inline block argument");
+			addError(Messages.InlineTempConditionChecker_CannotBlockArgument);
 		} else if (isTempMultiassigned()) {
-			addError("Cannot inline a multi assigned local variable.");
+			addError(Messages.InlineTempConditionChecker_CannotMultiAssigned);
 		} else if (defintiontionContainsItself()) {
-			addError("Cannot inline a local variable that uses its own value in the assignment.");
+			addError(Messages.InlineTempConditionChecker_CannotSelfReferencing);
 		} else if (isMultipleAsgnNode()) {
-			addError("Inline in multiple assignments not jet supported.");
+			addError(Messages.InlineTempConditionChecker_CannotMultipleAssignments);
 		} else if (!hasTarget())	{
-			addError("No target found to inline the selected variable.");
+			addError(Messages.InlineTempConditionChecker_NoTarget);
 		}
 	}
 	

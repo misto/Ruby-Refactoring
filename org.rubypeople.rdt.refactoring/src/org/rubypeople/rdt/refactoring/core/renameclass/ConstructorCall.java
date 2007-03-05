@@ -38,7 +38,7 @@ public class ConstructorCall {
 	private final CallNode node;
 
 	public ConstructorCall(CallNode node) {
-		assert node.getName().equals("new");
+		assert node.getName().equals("new"); //$NON-NLS-1$
 		assert node.getReceiverNode() instanceof ConstNode ||  node.getReceiverNode() instanceof Colon2Node ;
 		
 		this.node = node;

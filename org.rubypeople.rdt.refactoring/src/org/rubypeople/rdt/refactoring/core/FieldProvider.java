@@ -96,9 +96,6 @@ public class FieldProvider {
 			else if (currentAttr instanceof InstAsgnNode){
 				addInstAsgn((InstAsgnNode)currentAttr);
 			}
-			else{
-				System.out.println("An unexpected node of type " + currentAttr.getClass() + " retrieved as an Attribute: " + currentAttr.toString());
-			}
 		}
 	}
 
@@ -115,7 +112,7 @@ public class FieldProvider {
 
 
 	public static String fieldName(String name) {
-		return name.replaceAll("@|:", "");
+		return name.replaceAll("@|:", ""); //$NON-NLS-1$ //$NON-NLS-2$
 	}
 
 	private void addInstVar(InstVarNode currentAttr) {

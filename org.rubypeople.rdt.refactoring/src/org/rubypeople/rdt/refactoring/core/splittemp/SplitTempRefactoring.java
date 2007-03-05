@@ -34,7 +34,7 @@ import org.rubypeople.rdt.refactoring.ui.pages.SplitTempPage;
 
 public class SplitTempRefactoring extends RubyRefactoring {
 
-	public static final String NAME = "Split Local Variable";
+	public static final String NAME = Messages.SplitTempRefactoring_Name;
 
 	public SplitTempRefactoring(TextSelectionProvider selectionProvider) {
 		super(NAME);

@@ -119,7 +119,7 @@ public class MethodDownPusher extends EditAndTreeContentProvider implements IIte
 
 		private void addRemoveEdits(Collection<MethodNodeWrapper> checkedMethods, EditProviderGroups editProviderGroups) {
 			for (MethodNodeWrapper methodNode : checkedMethods) {
-				editProviderGroups.add("removeOldMethods", new DeleteEditProvider(methodNode.getWrappedNode()));
+				editProviderGroups.add(Messages.MethodDownPusher_RemoveOldMethods, new DeleteEditProvider(methodNode.getWrappedNode()));
 			}
 		}
 
@@ -130,11 +130,11 @@ public class MethodDownPusher extends EditAndTreeContentProvider implements IIte
 			separateConstructors(checkedMethods, methodNodes, constructorNodes);
 			if (!constructorNodes.isEmpty()) {
 				DownPushedMethods constructors = new DownPushedMethods(constructorNodes, childClassNode, true);
-				editProviderGroups.add("constructors_" + childClassNode.getName(), constructors);
+				editProviderGroups.add(Messages.MethodDownPusher_Constructors + childClassNode.getName(), constructors);
 			}
 			if (!methodNodes.isEmpty()) {
 				DownPushedMethods methods = new DownPushedMethods(methodNodes, childClassNode, false);
-				editProviderGroups.add("methods_" + childClassNode.getName(), methods);
+				editProviderGroups.add(Messages.MethodDownPusher_Methods + childClassNode.getName(), methods);
 			}
 		}
 
@@ -160,7 +160,7 @@ public class MethodDownPusher extends EditAndTreeContentProvider implements IIte
 
 		private void addDownPushedMethodsClass(String className, Collection<MethodNodeWrapper> checkedMethods, EditProviderGroups editProviderGroups) {
 			DownPushedMethodsClass methodsClass = new DownPushedMethodsClass(className, checkedMethods);
-			editProviderGroups.add("newClasses_", methodsClass);
+			editProviderGroups.add(Messages.MethodDownPusher_NewClasses, methodsClass);
 		}
 
 		public String toString() {

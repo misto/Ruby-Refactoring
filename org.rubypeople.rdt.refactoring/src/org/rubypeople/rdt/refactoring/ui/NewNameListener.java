@@ -67,9 +67,9 @@ public class NewNameListener implements IErrorMessageGenerator {
 		if(valid && !nameAlreadyInUse) {
 			errorReceiver.setError(null);
 		} else if (nameAlreadyInUse) {
-			errorReceiver.setError(name + " is already in use.");
+			errorReceiver.setError(name + Messages.NewNameListener_AlreadyInUse);
 		} else {
-			errorReceiver.setError(name + " isn't a valid name.");
+			errorReceiver.setError(name + Messages.NewNameListener_IsNotValid);
 		}
 		return valid;
 	}

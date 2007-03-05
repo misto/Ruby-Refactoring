@@ -46,7 +46,7 @@ import org.rubypeople.rdt.refactoring.nodewrapper.MethodNodeWrapper;
 public class NameHelper {
 
 	public static String createName(String string) {
-		Matcher matcher = Pattern.compile("([@]{0,2}\\w*[a-zA-Z_])(\\d+)").matcher(string);
+		Matcher matcher = Pattern.compile("([@]{0,2}\\w*[a-zA-Z_])(\\d+)").matcher(string); //$NON-NLS-1$
 		if (matcher.matches()) {
 			return matcher.group(1) + String.valueOf(Integer.valueOf(matcher.group(2)).intValue() + 1);
 		}
@@ -139,7 +139,7 @@ public class NameHelper {
 		
 		for (Node node : subNodes) {
 			name.append(((INameNode) node).getName());
-			name.append("::");
+			name.append("::"); //$NON-NLS-1$
 		}
 		name.append(((INameNode) n).getName());
 		return name.toString();

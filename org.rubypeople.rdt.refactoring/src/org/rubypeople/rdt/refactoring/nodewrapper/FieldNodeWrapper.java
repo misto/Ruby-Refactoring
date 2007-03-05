@@ -53,7 +53,7 @@ public class FieldNodeWrapper implements INodeWrapper {
 	final static Class[] FIELD_NODE_CLASSES = { InstAsgnNode.class, InstVarNode.class, ClassVarAsgnNode.class, ClassVarNode.class, ClassVarDeclNode.class, SymbolNode.class };
 	static final Class[] FIELD_NODE_CLASSES_WITHOUT_SYMBOL_NODE = { InstAsgnNode.class, InstVarNode.class, ClassVarAsgnNode.class, ClassVarNode.class, ClassVarDeclNode.class };
 
-	public static final String ATTR_NAME = "attr";
+	public static final String ATTR_NAME = "attr"; //$NON-NLS-1$
 	
 	private Node wrappedNode;
 	private int nodeType;
@@ -101,7 +101,7 @@ public class FieldNodeWrapper implements INodeWrapper {
 	}
 	
 	public String getNameWithoutAts() {
-		return name.replaceFirst("^@{1,2}", "");
+		return name.replaceFirst("^@{1,2}", ""); //$NON-NLS-1$ //$NON-NLS-2$
 	}
 
 	public int getNodeType() {

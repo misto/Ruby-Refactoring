@@ -40,7 +40,7 @@ public class LocalVarUsage {
 
 	String name;
 
-	String newName = "";
+	String newName = ""; //$NON-NLS-1$
 
 	public int getFromPosition() {
 		return fromPosition;

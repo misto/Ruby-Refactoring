@@ -57,7 +57,7 @@ public class InlineTempPage extends UserInputWizardPage {
 	private String selectedItemName;
 
 	public InlineTempPage(InlineTempConfig config, int occurencesCount, String selectedItemName) {
-		super(InlineTempRefactoring.NAME + "...");
+		super(InlineTempRefactoring.NAME + "..."); //$NON-NLS-1$
 
 		this.config = config;
 		this.occurencesCount = occurencesCount;
@@ -86,10 +86,10 @@ public class InlineTempPage extends UserInputWizardPage {
 		Group queryGroup = initGroup(control);
 
 		final Button checkQuery = new Button(queryGroup, SWT.CHECK);
-		checkQuery.setText("Replace Temp with Query");
+		checkQuery.setText(Messages.InlineTempPage_ReplaceTempWithQuery);
 		checkQuery.setEnabled(true);
 
-		final LabeledTextField newMethodName = new LabeledTextField(queryGroup, "New Method Name: ");
+		final LabeledTextField newMethodName = new LabeledTextField(queryGroup, Messages.InlineTempPage_NewMethodName);
 		newMethodName.setEnabled(checkQuery.getSelection());
 		GridData textData = new GridData(GridData.FILL_HORIZONTAL);
 		newMethodName.setLayoutData(textData);
@@ -113,7 +113,7 @@ public class InlineTempPage extends UserInputWizardPage {
 					InlineTempPage.this.setMessage(null);
 					InlineTempPage.this.setPageComplete(true);
 				} else {
-					InlineTempPage.this.setMessage("'" + newName + "' is not a valid method name in Ruby.", ConvertTempToFieldPage.ERROR);
+					InlineTempPage.this.setMessage("'" + newName + Messages.InlineTempPage_IsNotValidName, ConvertTempToFieldPage.ERROR); //$NON-NLS-1$
 					InlineTempPage.this.setPageComplete(false);
 				}
 
@@ -138,7 +138,7 @@ public class InlineTempPage extends UserInputWizardPage {
 
 	private Group initGroup(Composite control) {
 		Group queryGroup = new Group(control, SWT.NONE);
-		queryGroup.setText("Extract to Method");
+		queryGroup.setText(Messages.InlineTempPage_ExtractToMethod);
 		GridLayout groupLayout = new GridLayout();
 		groupLayout.numColumns = 1;
 		groupLayout.verticalSpacing = 15;
@@ -151,7 +151,7 @@ public class InlineTempPage extends UserInputWizardPage {
 
 	private void initLabel(Composite control) {
 		Label infoLabel = new Label(control, SWT.NONE);
-		infoLabel.setText("Replace " + occurencesCount + " occurence(s) of '" + selectedItemName + "'.");
+		infoLabel.setText(Messages.InlineTempPage_Replace + occurencesCount + Messages.InlineTempPage_Occurences + selectedItemName + "'."); //$NON-NLS-1$
 		GridData layoutData = new GridData(GridData.FILL_HORIZONTAL);
 		infoLabel.setLayoutData(layoutData);
 	}

@@ -58,7 +58,7 @@ public class InlineMethodEditProvider extends EditProvider {
 	
 	@Override
 	public TextEdit getEdit(final String document) {
-		return new ReplaceEdit(getOffset(), getOffsetLength(), format(document).replaceFirst("^\\s*", ""));
+		return new ReplaceEdit(getOffset(), getOffsetLength(), format(document).replaceFirst("^\\s*", "")); //$NON-NLS-1$ //$NON-NLS-2$
 	}
 
 	private String format(final String document) {
@@ -75,7 +75,7 @@ public class InlineMethodEditProvider extends EditProvider {
 
 	@Override
 	protected Node getEditNode(final int offset, final String document) {
-		assert false : "should never be called";
+		assert false : "should never be called"; //$NON-NLS-1$
 		return null;
 	}
 

@@ -46,7 +46,7 @@ import org.rubypeople.rdt.refactoring.nodewrapper.ClassNodeWrapper;
 public class InlineClassPage extends UserInputWizardPage {
 
 
-	public static final String TITLE = "Inline Temp...";
+	public static final String TITLE = Messages.InlineClassPage_InlineTemp;
 	private InlineClassConfig config;
 
 	public InlineClassPage(InlineClassConfig config) {
@@ -77,7 +77,7 @@ public class InlineClassPage extends UserInputWizardPage {
 
 		
 		Label selectText = new Label(control, SWT.NONE);
-		selectText.setText("Select target class:");
+		selectText.setText(Messages.InlineClassPage_SelectTargetClass);
 		
 		List classList = new List(control, SWT.BORDER | SWT.SINGLE | SWT.V_SCROLL);
 		setListLayout(classList);

@@ -33,7 +33,7 @@ import org.rubypeople.rdt.refactoring.ui.pages.MethodDownPusherSelectionPage;
 
 public class PushDownRefactoring extends RubyRefactoring {
 
-	public static final String NAME = "Push down";
+	public static final String NAME = Messages.PushDownRefactoring_Name;
 
 	public PushDownRefactoring() {
 		super(NAME);

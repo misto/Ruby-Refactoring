@@ -49,7 +49,7 @@ public abstract class FieldItem implements INodeWrapper{
 	}
 
 	public static String fieldName(String name) {
-		return name.replaceAll("@|:", "");
+		return name.replaceAll("@|:", ""); //$NON-NLS-1$ //$NON-NLS-2$
 	}
 	
 	public abstract boolean concernsClassField();

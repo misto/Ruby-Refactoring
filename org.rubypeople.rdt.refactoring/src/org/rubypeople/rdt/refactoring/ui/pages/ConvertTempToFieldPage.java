@@ -48,7 +48,7 @@ import org.rubypeople.rdt.refactoring.util.NameValidator;
 
 public class ConvertTempToFieldPage extends UserInputWizardPage {
 
-	private static final String TITLE = "Convert Local Variable to Field...";
+	private static final String TITLE = Messages.ConvertTempToFieldPage_ConvertLocalVariableToField;
 
 	private TempToFieldConverter converter;
 
@@ -69,7 +69,7 @@ public class ConvertTempToFieldPage extends UserInputWizardPage {
 		layout.verticalSpacing = 8;
 		control.setLayout(layout);
 
-		final LabeledTextField labeledText = new LabeledTextField(control, "Field na&me:", converter.getLocalVarName());
+		final LabeledTextField labeledText = new LabeledTextField(control, Messages.ConvertTempToFieldPage_FieldName, converter.getLocalVarName());
 		GridData layoutData = new GridData(GridData.FILL_HORIZONTAL);
 		labeledText.setLayoutData(layoutData);
 		labeledText.getText().addModifyListener(new ModifyListener() {
@@ -85,7 +85,7 @@ public class ConvertTempToFieldPage extends UserInputWizardPage {
 					ConvertTempToFieldPage.this.setMessage(null);
 					ConvertTempToFieldPage.this.setPageComplete(true);
 				} else {
-					ConvertTempToFieldPage.this.setMessage("'" + newName + "' is not a valid local variable name in Ruby.", ConvertTempToFieldPage.ERROR);
+					ConvertTempToFieldPage.this.setMessage("'" + newName + Messages.ConvertTempToFieldPage_IsNotValid, ConvertTempToFieldPage.ERROR); //$NON-NLS-1$
 					ConvertTempToFieldPage.this.setPageComplete(false);
 				}
 
@@ -97,7 +97,7 @@ public class ConvertTempToFieldPage extends UserInputWizardPage {
 		final Button declareClassField = new Button(control, SWT.CHECK);
 		GridData checkData = new GridData();
 		declareClassField.setLayoutData(checkData);
-		declareClassField.setText("Declare as class field");
+		declareClassField.setText(Messages.ConvertTempToFieldPage_DeclareAsClassField);
 		declareClassField.addSelectionListener(new SelectionListener() {
 
 			public void widgetDefaultSelected(SelectionEvent e) {
@@ -113,16 +113,16 @@ public class ConvertTempToFieldPage extends UserInputWizardPage {
 		Group initializeInGroup = new Group(control, SWT.NONE);
 		RowLayout radioGroupLayout = new RowLayout(SWT.VERTICAL);
 		initializeInGroup.setLayout(radioGroupLayout);
-		initializeInGroup.setText("Initialize in");
+		initializeInGroup.setText(Messages.ConvertTempToFieldPage_InitializeIn);
 
 		Button inCurrentMethod = new Button(initializeInGroup, SWT.RADIO);
-		inCurrentMethod.setText("Current method");
+		inCurrentMethod.setText(Messages.ConvertTempToFieldPage_CurrentMethod);
 		inCurrentMethod.setEnabled(pageParameters.isInCurrentMethodRadioEnabled());
 		addRadioListener(inCurrentMethod, TempToFieldConverter.INIT_IN_METHOD);
 		inCurrentMethod.setSelection(true);
 
 		Button inClassConstructor = new Button(initializeInGroup, SWT.RADIO);
-		inClassConstructor.setText("Class constructor(s)");
+		inClassConstructor.setText(Messages.ConvertTempToFieldPage_ClassConstructor);
 		inClassConstructor.setEnabled(pageParameters.isInClassConstructorRadioEnabled());
 		addRadioListener(inClassConstructor, TempToFieldConverter.INIT_IN_CONSTRUCTOR);
 

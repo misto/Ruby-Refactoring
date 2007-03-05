@@ -44,7 +44,7 @@ import org.rubypeople.rdt.refactoring.ui.NotifiedContainerCheckedTree;
 import org.rubypeople.rdt.refactoring.ui.util.SwtUtils;
 
 public class AccessorSelectionPage extends UserInputWizardPage {
-	private static final String title = "Select attributes";
+	private static final String title = Messages.AccessorSelectionPage_Title;
 
 	private NotifiedContainerCheckedTree tree;
 
@@ -72,10 +72,10 @@ public class AccessorSelectionPage extends UserInputWizardPage {
 	}
 
 	private Widget[] initTypeExamples(Composite c) {
-		Group simpleGroup = SwtUtils.initGroup(c, "Example simple accessor:");
-		Label simpleLable = SwtUtils.initLabel(simpleGroup, "attr_accessor :a\nattr_reader :b\nattr_writer :c");
-		Group methodGroup = SwtUtils.initGroup(c, "Example accessor method:");
-		Label methodLabel = SwtUtils.initLabel(methodGroup, "def a= a\n  @a = a\nend\n\ndef a\n  @a\nend");
+		Group simpleGroup = SwtUtils.initGroup(c, Messages.AccessorSelectionPage_SimpeAccessor);
+		Label simpleLable = SwtUtils.initLabel(simpleGroup, Messages.AccessorSelectionPage_ExampleSimpleAccessor);
+		Group methodGroup = SwtUtils.initGroup(c, Messages.AccessorSelectionPage_AccessorMethod);
+		Label methodLabel = SwtUtils.initLabel(methodGroup, Messages.AccessorSelectionPage_ExampleAccessorMethod);
 		return new Widget[] { simpleGroup, simpleLable, methodGroup, methodLabel };
 	}
 
@@ -86,10 +86,10 @@ public class AccessorSelectionPage extends UserInputWizardPage {
 
 	private Widget[] initAccessorTypeSelection(Composite parent) {
 		Group g = new Group(parent, SWT.NONE | SWT.VERTICAL);
-		g.setText("Select accessor type:");
+		g.setText(Messages.AccessorSelectionPage_SelectType);
 		g.setBounds(200, 10, 300, 300);
-		Button simpleButton = initTypeButton("Generate simple accessors", GeneratedAccessor.TYPE_SIMPLE_ACCESSOR, g, 20);
-		Button methodButton = initTypeButton("Generate accessor methods", GeneratedAccessor.TYPE_METHOD_ACCESSOR, g, 40);
+		Button simpleButton = initTypeButton(Messages.AccessorSelectionPage_GenerateSimple, GeneratedAccessor.TYPE_SIMPLE_ACCESSOR, g, 20);
+		Button methodButton = initTypeButton(Messages.AccessorSelectionPage_GenerateMethods, GeneratedAccessor.TYPE_METHOD_ACCESSOR, g, 40);
 		return new Widget[] { g, simpleButton, methodButton };
 	}
 
@@ -112,6 +112,6 @@ public class AccessorSelectionPage extends UserInputWizardPage {
 
 	protected void setType(int type) {
 		accessorsGenerator.setType(type);
-		tree.setInput("");
+		tree.setInput(""); //$NON-NLS-1$
 	}
 }

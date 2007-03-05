@@ -75,11 +75,11 @@ public class EncapsulateFieldAccessorComposite extends Group {
 		groupLayout.fill = true;
 		accessModifierGroup.setLayout(groupLayout);
 		accessModifierGroup.setLayoutData(getDefaultGridData());
-		accessModifierGroup.setText("&Access modifier:");
+		accessModifierGroup.setText(Messages.EncapsulateFieldAccessorComposite_AccessModifier);
 
-		publicButton = initAccessModifierButton(accessModifierGroup, "public", VisibilityNodeWrapper.METHOD_VISIBILITY.PUBLIC);
-		protectedButton = initAccessModifierButton(accessModifierGroup, "protected", VisibilityNodeWrapper.METHOD_VISIBILITY.PROTECTED);
-		privateButton = initAccessModifierButton(accessModifierGroup, "private", VisibilityNodeWrapper.METHOD_VISIBILITY.PRIVATE);
+		publicButton = initAccessModifierButton(accessModifierGroup, "public", VisibilityNodeWrapper.METHOD_VISIBILITY.PUBLIC); //$NON-NLS-1$
+		protectedButton = initAccessModifierButton(accessModifierGroup, "protected", VisibilityNodeWrapper.METHOD_VISIBILITY.PROTECTED); //$NON-NLS-1$
+		privateButton = initAccessModifierButton(accessModifierGroup, "private", VisibilityNodeWrapper.METHOD_VISIBILITY.PRIVATE); //$NON-NLS-1$
 	}
 
 	private GridData getDefaultGridData() {
@@ -110,7 +110,7 @@ public class EncapsulateFieldAccessorComposite extends Group {
 	private void initEnableDisableCheckBox(String name) {
 		enableDisableCheckBox = new Button(this, SWT.CHECK);
 		enableDisableCheckBox.setLayoutData(getDefaultGridData());
-		enableDisableCheckBox.setText("Generate a " + name);
+		enableDisableCheckBox.setText(Messages.EncapsulateFieldAccessorComposite_Generate + name);
 	}
 
 	public void addEnableDisableListener(SelectionListener listener) {

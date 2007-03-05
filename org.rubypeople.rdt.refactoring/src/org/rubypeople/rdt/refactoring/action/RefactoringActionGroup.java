@@ -52,7 +52,7 @@ import org.rubypeople.rdt.refactoring.core.splittemp.SplitTempRefactoring;
 
 public class RefactoringActionGroup extends ActionGroup {
 
-	private static final String INSERT_AFTER_GROUP_NAME = "group.edit";
+	private static final String INSERT_AFTER_GROUP_NAME = "group.edit"; //$NON-NLS-1$
 
 	public void fillContextMenu(IMenuManager menu) {
 		TextSelectionProvider selectionProvider = new TextSelectionProvider(null);
@@ -63,7 +63,7 @@ public class RefactoringActionGroup extends ActionGroup {
 	}
 
 	private IMenuManager getRefactorMenu(TextSelectionProvider selectionProvider) {
-		IMenuManager submenu = new MenuManager("Refactor");
+		IMenuManager submenu = new MenuManager(Messages.SourceActionGroup);
 		submenu.add(new RefactoringAction(ConvertTempToFieldRefactoring.class, ConvertTempToFieldRefactoring.NAME, selectionProvider));
 		submenu.add(new RefactoringAction(EncapsulateFieldRefactoring.class, EncapsulateFieldRefactoring.NAME, selectionProvider));
 		submenu.add(new RefactoringAction(ExtractMethodRefactoring.class, ExtractMethodRefactoring.NAME, selectionProvider));
@@ -81,7 +81,7 @@ public class RefactoringActionGroup extends ActionGroup {
 	}
 	
 	private IMenuManager getSourceMenu(TextSelectionProvider selectionProvider) {
-		IMenuManager submenu = new MenuManager("Source");
+		IMenuManager submenu = new MenuManager(Messages.RefactoringActionGroup);
 		submenu.add(new RefactoringAction(GenerateAccessorsRefactoring.class, GenerateAccessorsRefactoring.NAME, selectionProvider));
 		submenu.add(new RefactoringAction(GenerateConstructorRefactoring.class, GenerateConstructorRefactoring.NAME, selectionProvider));
 		submenu.add(new RefactoringAction(OverrideMethodRefactoring.class, OverrideMethodRefactoring.NAME, selectionProvider));

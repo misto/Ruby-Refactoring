@@ -53,7 +53,7 @@ public class ParameterReplacer implements IParameterReplacer {
 
 	public DocumentProvider replace(IDocumentProvider doc, MethodCallNodeWrapper call, MethodDefNode definition) {
 		
-		DocumentProvider strDoc = new StringDocumentProvider("part_of_" + doc.getActiveFileName(), doc.getActiveFileContent().substring(definition.getPosition().getStartOffset(), definition.getPosition().getEndOffset() + 1));
+		DocumentProvider strDoc = new StringDocumentProvider("part_of_" + doc.getActiveFileName(), doc.getActiveFileContent().substring(definition.getPosition().getStartOffset(), definition.getPosition().getEndOffset() + 1)); //$NON-NLS-1$
 		
 		ArrayNode headList = new ArrayNode(new SourcePosition());
 		ArrayNode tailList = new ArrayNode(new SourcePosition());
@@ -88,13 +88,13 @@ public class ParameterReplacer implements IParameterReplacer {
 						newDefinition.getBodyNode().getPosition().getStartOffset(), 
 						newDefinition.getBodyNode().getPosition().getEndOffset() + 1).trim());
 		
-		return new StringDocumentProvider("subpart_of_" + doc.getActiveFileName(), insert.toString());
+		return new StringDocumentProvider("subpart_of_" + doc.getActiveFileName(), insert.toString()); //$NON-NLS-1$
 	}
 
 	private void createAssignments(ArrayNode headList, ArrayNode tailList, StringBuffer insert, String lineDelimiter) {
 		MultipleAsgnNode multipleAsgnNode = new MultipleAsgnNode(new SourcePosition(), headList, null);
 		multipleAsgnNode.setValueNode(tailList);
-		insert.append(ReWriteVisitor.createCodeFromNode(multipleAsgnNode, ""));
+		insert.append(ReWriteVisitor.createCodeFromNode(multipleAsgnNode, "")); //$NON-NLS-1$
 		insert.append(lineDelimiter);
 	}
 

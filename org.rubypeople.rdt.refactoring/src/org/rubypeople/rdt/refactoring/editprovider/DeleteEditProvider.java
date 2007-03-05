@@ -79,7 +79,7 @@ public class DeleteEditProvider extends EditProvider {
 		}
 		String leadingStr = document.substring(pos, fromNode.getPosition().getStartOffset());
 
-		if (leadingStr.trim().equals("")) {
+		if (leadingStr.trim().equals("")) { //$NON-NLS-1$
 			return pos;
 		}
 		return fromNode.getPosition().getStartOffset();
@@ -88,7 +88,7 @@ public class DeleteEditProvider extends EditProvider {
 	private int getEndOffset(String document) {
 		int offset = toNode.getPosition().getEndOffset();
 		int aktPos = offset;
-		Matcher matcher = Pattern.compile("[\\s;]").matcher(document);
+		Matcher matcher = Pattern.compile("[\\s;]").matcher(document); //$NON-NLS-1$
 		while (matcher.find(aktPos)) {
 			if (matcher.start() == aktPos) {
 				aktPos++;
@@ -109,7 +109,7 @@ public class DeleteEditProvider extends EditProvider {
 	}
 
 	private boolean foundTerminator(String terminator) {
-		return (terminator.equals(Character.toString(Constants.NL)) || terminator.equals(";"));
+		return (terminator.equals(Character.toString(Constants.NL)) || terminator.equals(";")); //$NON-NLS-1$
 	}
 
 	@Override

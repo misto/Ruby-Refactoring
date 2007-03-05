@@ -45,7 +45,7 @@ public class RenameClassRefactoring extends RubyRefactoring {
 		}
 	}
 
-	public static final String NAME = "Rename Class";
+	public static final String NAME = Messages.RenameClassRefactoring_Name;
 
 	public RenameClassRefactoring(TextSelectionProvider selectionProvider) {
 		super(NAME);

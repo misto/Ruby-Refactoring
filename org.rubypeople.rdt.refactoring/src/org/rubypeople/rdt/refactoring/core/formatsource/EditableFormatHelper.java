@@ -59,15 +59,15 @@ public class EditableFormatHelper implements FormatHelper {
 	private boolean spacesBeforeAndAfterAssignments;
 
 	public String beforeAssignment() {
-		return spacesBeforeAndAfterAssignments ? " " : "";
+		return spacesBeforeAndAfterAssignments ? " " : ""; //$NON-NLS-1$ //$NON-NLS-2$
 	}
 
 	public String afterAssignment() {
-		return spacesBeforeAndAfterAssignments ? " " : "";
+		return spacesBeforeAndAfterAssignments ? " " : ""; //$NON-NLS-1$ //$NON-NLS-2$
 	}
 
 	public String matchOperator() {
-		return spacesBeforeAndAfterAssignments ? " =~ " : "=~";
+		return spacesBeforeAndAfterAssignments ? " =~ " : "=~"; //$NON-NLS-1$ //$NON-NLS-2$
 	}
 
 	/*
@@ -77,11 +77,11 @@ public class EditableFormatHelper implements FormatHelper {
 	private boolean alwaysParanthesizeMethodCalls;
 
 	public String beforeCallArguments() {
-		return alwaysParanthesizeMethodCalls ? "(" : " ";
+		return alwaysParanthesizeMethodCalls ? "(" : " "; //$NON-NLS-1$ //$NON-NLS-2$
 	}
 
 	public String afterCallArguments() {
-		return alwaysParanthesizeMethodCalls ? ")" : "";
+		return alwaysParanthesizeMethodCalls ? ")" : ""; //$NON-NLS-1$ //$NON-NLS-2$
 	}
 
 	/*
@@ -91,11 +91,11 @@ public class EditableFormatHelper implements FormatHelper {
 	private boolean spacesBeforeAndAfterHashContent;
 
 	public String beforeHashContent() {
-		return spacesBeforeAndAfterHashContent ? " " : "";
+		return spacesBeforeAndAfterHashContent ? " " : ""; //$NON-NLS-1$ //$NON-NLS-2$
 	}
 
 	public String afterHashContent() {
-		return spacesBeforeAndAfterHashContent ? " " : "";
+		return spacesBeforeAndAfterHashContent ? " " : ""; //$NON-NLS-1$ //$NON-NLS-2$
 	}
 
 	/*
@@ -107,11 +107,11 @@ public class EditableFormatHelper implements FormatHelper {
 	private boolean spaceAfterIterVars;
 
 	public String beforeIterVars() {
-		return spaceBeforeIterVars ? " " : "";
+		return spaceBeforeIterVars ? " " : ""; //$NON-NLS-1$ //$NON-NLS-2$
 	}
 
 	public String afterIterVars() {
-		return spaceAfterIterVars ? " " : "";
+		return spaceAfterIterVars ? " " : ""; //$NON-NLS-1$ //$NON-NLS-2$
 	}
 
 	/*
@@ -121,11 +121,11 @@ public class EditableFormatHelper implements FormatHelper {
 	private boolean alwaysParanthesizeMethodDefs;
 
 	public String beforeMethodArguments() {
-		return alwaysParanthesizeMethodDefs ? "(" : " ";
+		return alwaysParanthesizeMethodDefs ? "(" : " "; //$NON-NLS-1$ //$NON-NLS-2$
 	}
 
 	public String afterMethodArguments() {
-		return alwaysParanthesizeMethodDefs ? ")" : "";
+		return alwaysParanthesizeMethodDefs ? ")" : ""; //$NON-NLS-1$ //$NON-NLS-2$
 	}
 
 	/*
@@ -137,11 +137,11 @@ public class EditableFormatHelper implements FormatHelper {
 	private boolean spaceBeforeClosingIterBrackets;
 
 	public String beforeIterBrackets() {
-		return spaceBeforeIterBrackets ? " " : "";
+		return spaceBeforeIterBrackets ? " " : ""; //$NON-NLS-1$ //$NON-NLS-2$
 	}
 
 	public String beforeClosingIterBrackets() {
-		return spaceBeforeClosingIterBrackets ? " " : "";
+		return spaceBeforeClosingIterBrackets ? " " : ""; //$NON-NLS-1$ //$NON-NLS-2$
 	}
 
 	/*
@@ -153,7 +153,7 @@ public class EditableFormatHelper implements FormatHelper {
 	private boolean newlineBetweenClassBodyElements;
 
 	public String classBodyElementsSeparator() {
-		return newlineBetweenClassBodyElements ? Character.toString(Constants.NL) : "";
+		return newlineBetweenClassBodyElements ? Character.toString(Constants.NL) : ""; //$NON-NLS-1$
 	}
 
 	/*
@@ -163,7 +163,7 @@ public class EditableFormatHelper implements FormatHelper {
 	private boolean spaceAfterCommaInListings;
 
 	public String getListSeparator() {
-		return spaceAfterCommaInListings ? ", " : ",";
+		return spaceAfterCommaInListings ? ", " : ","; //$NON-NLS-1$ //$NON-NLS-2$
 	}
 
 	/*
@@ -173,7 +173,7 @@ public class EditableFormatHelper implements FormatHelper {
 	private boolean spacesAroundHashAssignment;
 
 	public String hashAssignment() {
-		return spacesAroundHashAssignment ? " => " : "=>";
+		return spacesAroundHashAssignment ? " => " : "=>"; //$NON-NLS-1$ //$NON-NLS-2$
 	}
 
 	public void setAlwaysParanthesizeMethodCalls(boolean alwaysParanthesizeMethodCalls) {

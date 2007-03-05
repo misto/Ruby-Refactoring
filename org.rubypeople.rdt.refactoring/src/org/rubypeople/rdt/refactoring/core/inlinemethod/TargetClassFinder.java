@@ -55,7 +55,7 @@ public class TargetClassFinder implements ITargetClassFinder {
 	
 	public String findTargetClass(final MethodCallNodeWrapper call, final DocumentProvider doc) {
 		
-		String name = "";
+		String name = ""; //$NON-NLS-1$
 		
 		if(call.getReceiverNode() == null) {
 			name = getSurroundingClass(call, doc);
@@ -76,7 +76,7 @@ public class TargetClassFinder implements ITargetClassFinder {
 		if(classNode != null) {
 			return classNode.getCPath().getName();
 		}
-		return "";
+		return ""; //$NON-NLS-1$
 	}
 
 	private AssignableNode getAssignableNode(final MethodCallNodeWrapper call, final DocumentProvider doc) {
@@ -93,7 +93,7 @@ public class TargetClassFinder implements ITargetClassFinder {
 	private boolean createsNewInstance(final AssignableNode receiverType) {
 		return receiverType != null
 		&& receiverType.getValueNode() instanceof CallNode 
-		&& "new".equals(((CallNode) receiverType.getValueNode()).getName());
+		&& "new".equals(((CallNode) receiverType.getValueNode()).getName()); //$NON-NLS-1$
 	}
 
 	/**

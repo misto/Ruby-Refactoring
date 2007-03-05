@@ -36,7 +36,7 @@ import org.rubypeople.rdt.refactoring.core.pushdown.MethodDownPusher;
 import org.rubypeople.rdt.refactoring.ui.NotifiedContainerCheckedTree;
 
 public class MethodDownPusherSelectionPage extends UserInputWizardPage {
-	private static final String TITLE = "Selcet methods to push down";
+	private static final String TITLE = Messages.MethodDownPusherSelectionPage_Title;
 
 	private NotifiedContainerCheckedTree tree;
 

@@ -56,8 +56,8 @@ public class ClassVarAsgnFieldItem extends FieldItem {
 	@Override
 	public Node getRenamedNode(String newName) {
 		Node valueNode = classVarAsgnNode.getValueNode();
-		replaceNameInSubnodes(valueNode, setPrefixName(newName, "@@"));
-		return new ClassVarAsgnNode(classVarAsgnNode.getPosition(), setPrefixName(newName, "@@"), classVarAsgnNode.getValueNode());
+		replaceNameInSubnodes(valueNode, setPrefixName(newName, "@@")); //$NON-NLS-1$
+		return new ClassVarAsgnNode(classVarAsgnNode.getPosition(), setPrefixName(newName, "@@"), classVarAsgnNode.getValueNode()); //$NON-NLS-1$
 	}
 
 	private void replaceNameInSubnodes(Node baseNode, String newName) {

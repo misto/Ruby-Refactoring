@@ -85,7 +85,7 @@ public class SplitTempPage extends UserInputWizardPage {
 	}
 	
 	public SplitTempPage(Collection<LocalVarUsage> localUsages, String source, ISplittedNamesReceiver receiver) {
-		super(SplitTempRefactoring.NAME + "...");
+		super(SplitTempRefactoring.NAME + "..."); //$NON-NLS-1$
 		this.localUsages = localUsages;
 		this.source = source;
 		this.receiver = receiver;
@@ -110,7 +110,7 @@ public class SplitTempPage extends UserInputWizardPage {
 		variableNames.setLayout(variableNamesLayout);
 
 		Label newNameLabel = new Label(variableNames, SWT.NONE);
-		newNameLabel.setText("Choose new names:");
+		newNameLabel.setText(Messages.SplitTempPage_ChooseNewNames);
 
 		if(localUsages != null) {
 			names = new Text[localUsages.size()];
@@ -161,11 +161,11 @@ public class SplitTempPage extends UserInputWizardPage {
 		boolean allOk = true;
 
 		for (int i = 0; i < names.length; i++) {
-			if (names[i].getText().equals("")) {
-				setErrorMessage("Please enter a name for the variable.");
+			if (names[i].getText().equals("")) { //$NON-NLS-1$
+				setErrorMessage(Messages.SplitTempPage_PleaseEnterName);
 				allOk = false;
 			} else if (!NameValidator.isValidLocalVariableName(names[i].getText())) {
-				setErrorMessage(names[i].getText() + " is not a valid variable name.");
+				setErrorMessage(names[i].getText() + Messages.SplitTempPage_InvalidVariableName);
 				allOk = false;
 			}
 			newNames[i] = names[i].getText();

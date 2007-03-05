@@ -89,7 +89,7 @@ public class NodeFactory {
 	}
 
 	public static DefsNode createStaticMethodNode(String methodName, Collection<String> args, StaticScope scopeNode, Node body) {
-		return createStaticMethodNode("self", methodName, createArgsNode(args.toArray(new String[args.size()])), scopeNode == null ? new LocalStaticScope(null) : scopeNode, body);
+		return createStaticMethodNode("self", methodName, createArgsNode(args.toArray(new String[args.size()])), scopeNode == null ? new LocalStaticScope(null) : scopeNode, body); //$NON-NLS-1$
 	}
 	
 	public static DefnNode createMethodNode(String methodName, String[] args, Node scopeContentNode) {
@@ -300,7 +300,7 @@ public class NodeFactory {
 	}
 
 	public static Node createGetterSetter(String attrName, boolean isWriterMethod, VisibilityNodeWrapper.METHOD_VISIBILITY visibility) {
-		String methodName = attrName + ((isWriterMethod) ? "=" : "");
+		String methodName = attrName + ((isWriterMethod) ? "=" : ""); //$NON-NLS-1$ //$NON-NLS-2$
 		String[] args = (isWriterMethod) ? new String[] { attrName } : new String[] {};
 		DefnNode methodNode = createGetterSetterNode(isWriterMethod, methodName, attrName, args);
 		BlockNode block = createBlockNode();

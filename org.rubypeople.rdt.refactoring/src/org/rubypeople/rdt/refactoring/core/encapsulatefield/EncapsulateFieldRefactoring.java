@@ -36,7 +36,7 @@ import org.rubypeople.rdt.refactoring.ui.pages.EncapsulateFieldPage;
 
 public class EncapsulateFieldRefactoring extends RubyRefactoring {
 
-	public static final String NAME = "Encapsulate Field";
+	public static final String NAME = Messages.EncapsulateFieldRefactoring_Name;
 
 	public EncapsulateFieldRefactoring(TextSelectionProvider selectionProvider) {
 		super(NAME);

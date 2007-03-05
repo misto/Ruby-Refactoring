@@ -105,8 +105,8 @@ public class SecondMoveMethodPageComposite extends Composite implements Observer
 		String selectedMethodName = config.getMethodNode().getName();
 		String sourceClassName = config.getSourceClassNode().getName();
 		String destClassName = config.getDestinationClassNode().getName();
-		String infoText = "To maintain calls to the method \"" + selectedMethodName + "\", a field reference to the class \"" + destClassName
-				+ "\" is required in the class \"" + sourceClassName + "\".\nSelect the field:";
+		String infoText = Messages.SecondMoveMethodPageComposite_MaintainCalls + selectedMethodName + Messages.SecondMoveMethodPageComposite_FieldReference + destClassName
+				+ Messages.SecondMoveMethodPageComposite_RequiredInClass + sourceClassName + Messages.SecondMoveMethodPageComposite_SelectField;
 		infoTextLabel.setText(infoText);
 	}
 }

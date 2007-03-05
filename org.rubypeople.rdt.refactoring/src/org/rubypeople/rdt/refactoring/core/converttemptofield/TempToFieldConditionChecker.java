@@ -83,7 +83,7 @@ public class TempToFieldConditionChecker extends RefactoringConditionChecker {
 
 	@Override
 	public void checkFinalConditions() {
-		String fieldTypeName = (config.isClassField()) ? "Class" : "Instance";
+		String fieldTypeName = (config.isClassField()) ? "Class" : "Instance"; //$NON-NLS-1$ //$NON-NLS-2$
 		for(FieldNodeWrapper aktField : config.getEnclosingClassNode().getFields()) {
 			if(checkFieldName(config.getNewName(), aktField.getNameWithoutAts(), fieldTypeName)) {
 				return;
@@ -93,7 +93,7 @@ public class TempToFieldConditionChecker extends RefactoringConditionChecker {
 
 	private boolean checkFieldName(String newName, String aktNodeName, String fieldTypeName) {
 		if (newName.equals(aktNodeName)) {
-			addError(fieldTypeName + " field with name '" + newName + "' already exists.");
+			addError(fieldTypeName + Messages.TempToFieldConditionChecker_FieldWithName + newName + Messages.TempToFieldConditionChecker_AlreadyExists);
 			return true;
 		}
 		return false;
@@ -103,15 +103,15 @@ public class TempToFieldConditionChecker extends RefactoringConditionChecker {
 	public void checkInitialConditions() {
 		
 		if (config.getSelectedNode() == null) {
-			addError("There is no local variable at the current caret position.");
+			addError(Messages.TempToFieldConditionChecker_NoLocalVarAtpos);
 		} else if (config.getEnclosingClassNode() == null) {
-			addError("There is no enclosing class to insert fields.");
+			addError(Messages.TempToFieldConditionChecker_NoEnclosingClassToInsert);
 		} else if (config.getEnclosingMethod() == null) {
-			addError("Can only convert local variables in methods to fields.");
+			addError(Messages.TempToFieldConditionChecker_CannotConvertNonlocalVars);
 		} else if (JRubyRefactoringUtils.isParameter(LocalNodeWrapper.getLocalNodeName(config.getSelectedNode()), config.getEnclosingMethod())) {
-			addError("Cannot convert method parameters to fields.");
+			addError(Messages.TempToFieldConditionChecker_CannotConvertMethodParameters);
 		} else if (isIterParameter()) {
-			addError("Cannot convert block parameters to fields.");
+			addError(Messages.TempToFieldConditionChecker_CannotConvertBlockParameters);
 		}
 	}
 	

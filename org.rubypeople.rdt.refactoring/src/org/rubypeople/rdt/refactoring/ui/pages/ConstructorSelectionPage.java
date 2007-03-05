@@ -40,7 +40,7 @@ import org.rubypeople.rdt.refactoring.ui.ConstructorGenerationTree;
 import org.rubypeople.rdt.refactoring.ui.util.SwtUtils;
 
 public class ConstructorSelectionPage extends UserInputWizardPage {
-	private static final String title = "Select constructor";
+	private static final String title = Messages.ConstructorSelectionPage_SelectConstructor;
 
 	private ConstructorGenerationTree tree;
 
@@ -70,10 +70,10 @@ public class ConstructorSelectionPage extends UserInputWizardPage {
 	}
 
 	private Widget[] initExamples(Composite c) {
-		Group emptyGroup = SwtUtils.initGroup(c, "Example for empty constructor:");
-		Label emptyLable = SwtUtils.initLabel(emptyGroup, "def initialize\n  \nend");
-		Group paramGroup = SwtUtils.initGroup(c, "Example for parametrised constructor:");
-		Label paramLabel = SwtUtils.initLabel(paramGroup, "def initialize a, b\n  @a=a\n  @b=b\nend");
+		Group emptyGroup = SwtUtils.initGroup(c, Messages.ConstructorSelectionPage_EmptyConstructor);
+		Label emptyLable = SwtUtils.initLabel(emptyGroup, Messages.ConstructorSelectionPage_EmptyConstructorCode);
+		Group paramGroup = SwtUtils.initGroup(c, Messages.ConstructorSelectionPage_ParametrisedConstructor);
+		Label paramLabel = SwtUtils.initLabel(paramGroup, Messages.ConstructorSelectionPage_ParametrisedConstructorCode);
 		return new Widget[] { emptyGroup, emptyLable, paramGroup, paramLabel };
 	}
 }

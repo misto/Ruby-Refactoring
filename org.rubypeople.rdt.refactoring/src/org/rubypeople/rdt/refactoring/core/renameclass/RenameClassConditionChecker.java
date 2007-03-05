@@ -37,7 +37,7 @@ import org.rubypeople.rdt.refactoring.nodewrapper.ClassNodeWrapper;
 
 public class RenameClassConditionChecker extends RefactoringConditionChecker {
 
-	public static final String DEFAULT_ERROR = "Please select the name of a class declaration.";
+	public static final String DEFAULT_ERROR = Messages.RenameClassConditionChecker_PleaseSelectNameOfAClassDeclaration;
 	private RenameClassConfig config;
 
 	public RenameClassConditionChecker(RenameClassConfig config) {

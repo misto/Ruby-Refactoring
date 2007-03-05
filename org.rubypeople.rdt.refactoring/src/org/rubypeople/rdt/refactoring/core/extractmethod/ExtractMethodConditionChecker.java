@@ -191,7 +191,7 @@ public class ExtractMethodConditionChecker extends RefactoringConditionChecker {
 			Collection<Node> methodNodes = NodeProvider.getSubNodes(enclosingClassNode.getWrappedNode(), DefnNode.class);
 			for (Node aktNode : methodNodes) {
 				if (((DefnNode)aktNode).getName().equals(newMethodName)) {
-					addError("A method with the chose name already exists.");
+					addError(Messages.ExtractMethodConditionChecker_MethodAlreadyExists);
 				}
 			}
 		}
@@ -200,17 +200,17 @@ public class ExtractMethodConditionChecker extends RefactoringConditionChecker {
 	@Override
 	protected void checkInitialConditions() {
 		if(!existSelectedNodes()) {
-			addError("There is nothing selected to extract.");
+			addError(Messages.ExtractMethodConditionChecker_NothingToDo);
 		} else if (containsYieldStatements()) {
-			addError("Extracting methods not possible when the selected code contains a yield statement");
+			addError(Messages.ExtractMethodConditionChecker_NotPossibleContainsYield);
 		} else if (containsSuperStatement()) {
-			addError("Extracting methods not possible when the selected code contains super calls");
+			addError(Messages.ExtractMethodConditionChecker_NotPossibleContainsSuper);
 		} else if (isModuleInSelection()) {
-			addError("Cannot extract a module.");
+			addError(Messages.ExtractMethodConditionChecker_NotPossibleModule);
 		} else if (isClassInSelection()) {
-			addError("Selection must not contain a class.");
+			addError(Messages.ExtractMethodConditionChecker_MustNotContainAClass);
 		} else if (isMethodInSelction()) {
-			addError("Selection must not contain a method.");
+			addError(Messages.ExtractMethodConditionChecker_MustNotContainAMethod);
 		} else {
 			checkInternalMethods();
 		}
@@ -248,10 +248,10 @@ public class ExtractMethodConditionChecker extends RefactoringConditionChecker {
 
 	private void checkInternalMethods() {
 		if (config.hasEnclosingClassNode() && !config.hasEnclosingMethodNode()) {
-			addError("To extract code out of class definitions, the selected code needs to be inside a method definition.");
+			addError(Messages.ExtractMethodConditionChecker_NotInsideAMethod);
 		}
 		if (config.hasEnclosingClassNode() && NodeProvider.hasSubNodes(NodeUtil.getBody(config.getEnclosingScopeNode()), DefnNode.class)) {
-			addError("Extracting methods is not possible when the selected Method contains internal methods.");
+			addError(Messages.ExtractMethodConditionChecker_MustNotContainSubmethods);
 		}
 
 	}

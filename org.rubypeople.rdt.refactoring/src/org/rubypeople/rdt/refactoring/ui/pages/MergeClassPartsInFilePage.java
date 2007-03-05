@@ -53,7 +53,7 @@ import org.rubypeople.rdt.refactoring.ui.RdtCodeViewer;
 import org.rubypeople.rdt.refactoring.ui.util.SwtUtils;
 
 public class MergeClassPartsInFilePage extends UserInputWizardPage {
-	private static final String TITLE = "Select Class Parts";
+	private static final String TITLE = Messages.MergeClassPartsInFilePage_SelectClassParts;
 
 	private RdtCodeViewer classView;
 
@@ -84,8 +84,8 @@ public class MergeClassPartsInFilePage extends UserInputWizardPage {
 		sidePanelLayout.spacing = 5;
 		sidePanel.setLayout(sidePanelLayout);
 
-		String explTitle = "Description";
-		String explText = "Check the parts of a class that should be merged. All parts will be merged together into the selected class part.";
+		String explTitle = Messages.MergeClassPartsInFilePage_Description;
+		String explText = Messages.MergeClassPartsInFilePage_Explanation;
 		SwtUtils.initExplanation(sidePanel, explTitle, explText);
 
 		classView = RdtCodeViewer.create(sidePanel);
@@ -120,7 +120,7 @@ public class MergeClassPartsInFilePage extends UserInputWizardPage {
 				PartialClassNodeWrapper classPart = (PartialClassNodeWrapper) selectedItem.getData();
 				Node classNode = classPart.getWrappedNode();
 
-				classView.setPreviewText(ReWriteVisitor.createCodeFromNode(NodeFactory.createNewLineNode(classNode), ""));
+				classView.setPreviewText(ReWriteVisitor.createCodeFromNode(NodeFactory.createNewLineNode(classNode), "")); //$NON-NLS-1$
 			}
 
 			public void handleEvent(Event event) {
@@ -180,9 +180,9 @@ public class MergeClassPartsInFilePage extends UserInputWizardPage {
 				StringBuilder itemText = new StringBuilder();
 				int lineCount = 0;
 				for (MethodNodeWrapper method : currentPart.getMethods()) {
-					itemText.append(method.getSignature().getNameWithArgs()).append("\n");
+					itemText.append(method.getSignature().getNameWithArgs()).append("\n"); //$NON-NLS-1$
 					if (lineCount >= 2) {
-						itemText.append("...");
+						itemText.append("..."); //$NON-NLS-1$
 						break;
 					}
 					lineCount++;
@@ -193,7 +193,7 @@ public class MergeClassPartsInFilePage extends UserInputWizardPage {
 	}
 
 	private void resetClassView() {
-		classView.setPreviewText("");
+		classView.setPreviewText(""); //$NON-NLS-1$
 		config.setCheckedClassParts(new ArrayList<PartialClassNodeWrapper>());
 		config.setSelectedClassPart(null);
 

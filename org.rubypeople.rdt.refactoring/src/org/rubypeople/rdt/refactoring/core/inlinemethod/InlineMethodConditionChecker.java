@@ -103,7 +103,7 @@ public class InlineMethodConditionChecker extends RefactoringConditionChecker {
 
 	private boolean findTargetClass(ITargetClassFinder targetClassFinder) {
 		config.setClassName(targetClassFinder.findTargetClass(config.getSelectedCall(), config.getDocumentProvider()));
-		return config.getClassName() != null && !"".equals(config.getClassName());
+		return config.getClassName() != null && !"".equals(config.getClassName()); //$NON-NLS-1$
 	}
 
 	private boolean findMethodDefinition() {
@@ -143,13 +143,13 @@ public class InlineMethodConditionChecker extends RefactoringConditionChecker {
 	@Override
 	protected void checkInitialConditions() {
 		if(config.getSelectedCall() == null) {
-			addError("Please select a method call."); 
-		} else if (config.getClassName() == null || "".equals(config.getClassName())) {
-			addError("Sorry, could not guess the type of the selected object.");
+			addError(Messages.InlineMethodConditionChecker_NoMethodCall); 
+		} else if (config.getClassName() == null || "".equals(config.getClassName())) { //$NON-NLS-1$
+			addError(Messages.InlineMethodConditionChecker_CannotGuessType);
 		} else if (config.getMethodDefinitionNode() == null) {
-			addError("Could not find the method definition, sorry.");
+			addError(Messages.InlineMethodConditionChecker_CannotFindDefinition);
 		} else if (config.isSingleReturnStatement() != null && config.isSingleReturnStatement().booleanValue() == false) {
-			addError("You can only inline methods that have at most a single return statement at the end.");
+			addError(Messages.InlineMethodConditionChecker_ToManyReturns);
 		}
 	}
 

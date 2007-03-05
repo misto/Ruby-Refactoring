@@ -56,7 +56,7 @@ public class MethodSignature {
 	private static Collection<String> getAnnonymousArgs(int argCount) {
 		Collection<String> args = new ArrayList<String>();
 		for (int i = 0; i < argCount; i++) {
-			args.add("arg" + i);
+			args.add("arg" + i); //$NON-NLS-1$
 		}
 		return args;
 	}
@@ -71,10 +71,10 @@ public class MethodSignature {
 
 	public String getArgListAsString() {
 		if (args.isEmpty())
-			return "";
+			return ""; //$NON-NLS-1$
 		StringBuilder argList = new StringBuilder();
 		for (String arg : args) {
-			argList.append(arg + ", ");
+			argList.append(arg + ", "); //$NON-NLS-1$
 		}
 		return ' ' + argList.substring(0, argList.length() - 2);
 	}
@@ -85,7 +85,7 @@ public class MethodSignature {
 
 	public String getNameWithArgs() {
 		String argsList = getArgListAsString();
-		return getMethodName() + ((argsList.length() != 0) ? argsList : "");
+		return getMethodName() + ((argsList.length() != 0) ? argsList : ""); //$NON-NLS-1$
 	}
 
 	@Override

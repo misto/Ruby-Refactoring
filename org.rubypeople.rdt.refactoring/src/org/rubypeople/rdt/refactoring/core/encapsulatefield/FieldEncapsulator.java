@@ -114,7 +114,7 @@ public class FieldEncapsulator extends MultiEditProvider {
 
 	public String getExistingAccessorName() {
 
-		return (config.hasSelectedAccessor()) ? config.getSelectedAccessor().getAccessorTypeName() : "none";
+		return (config.hasSelectedAccessor()) ? config.getSelectedAccessor().getAccessorTypeName() : "none"; //$NON-NLS-1$
 	}
 
 	public boolean isWriterGenerationOptional() {

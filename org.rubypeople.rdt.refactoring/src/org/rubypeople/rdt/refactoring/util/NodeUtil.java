@@ -13,7 +13,7 @@ public class NodeUtil {
 	public static boolean hasScope(Node node) {
 		Method[] methods = node.getClass().getMethods();
 		for (int i = 0; i < methods.length; i++) {
-			if (methods[i].getName().equals("getScope") || methods[i].equals("getStaticScope")) {
+			if (methods[i].getName().equals("getScope") || methods[i].equals("getStaticScope")) { //$NON-NLS-1$ //$NON-NLS-2$
 				return true;
 			}
 		}
@@ -22,7 +22,7 @@ public class NodeUtil {
 	
 	public static Node getBody(Node node) {
 		try {
-			Method method = node.getClass().getMethod("getBodyNode", new Class[]{});
+			Method method = node.getClass().getMethod("getBodyNode", new Class[]{}); //$NON-NLS-1$
 			return (Node) method.invoke(node, new Object[]{});
 		} catch (SecurityException e) {
 			e.printStackTrace();
@@ -40,9 +40,9 @@ public class NodeUtil {
 	
 	public static StaticScope getScope(Node node) {
 		
-		String methodName = "getStaticScope";
+		String methodName = "getStaticScope"; //$NON-NLS-1$
 		if(node instanceof MethodDefNode || node instanceof IterNode) {
-			methodName = "getScope";
+			methodName = "getScope"; //$NON-NLS-1$
 		}
 		
 		try {

@@ -41,7 +41,7 @@ public class InlineTempConfig {
 
 	private boolean replaceTempWithQuery;
 
-	private String newMethodName = "extractedMethod";
+	private String newMethodName = "extractedMethod"; //$NON-NLS-1$
 
 	private DocumentProvider docProvider;
 

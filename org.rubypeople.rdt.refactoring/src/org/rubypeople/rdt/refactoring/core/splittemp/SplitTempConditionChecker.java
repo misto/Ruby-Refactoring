@@ -51,7 +51,7 @@ public class SplitTempConditionChecker extends RefactoringConditionChecker {
 	@Override
 	protected void checkInitialConditions() {
 		if (!config.hasLocalUsages()) {
-			addError("There are no local variables to split at the caretposition. Please select an assignment.");
+			addError(Messages.SplitTempConditionChecker_NoLocal);
 		}
 	}
 

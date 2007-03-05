@@ -36,7 +36,7 @@ import org.rubypeople.rdt.refactoring.util.Constants;
 
 public class GenerateConstructorRefactoring extends RubyRefactoring {
 
-	public static final String NAME = "Generate Constructor Using Field";
+	public static final String NAME = Messages.GenerateConstructorRefactoring_Name;
 
 	public GenerateConstructorRefactoring() {
 		super(NAME);
@@ -53,10 +53,11 @@ public class GenerateConstructorRefactoring extends RubyRefactoring {
 		StringBuilder classNames = new StringBuilder();
 		for (ClassNodeWrapper classNode : getDocumentProvider().getClassNodeProvider().getAllClassNodes()) {
 			if (classNode.hasConstructor())
-				classNames.append(classNode.getName() + ", ");
+				classNames.append(classNode.getName() + ", "); //$NON-NLS-1$
 		}
 		if (classNames.length() != 0)
-			page.setMessage("The class" + ((classNames.length() != 1) ? "(es)" : "") + ' ' + classNames.substring(0, classNames.length() - 2)
-					+ " already contains constructors" + Constants.NL, RefactoringStatus.WARNING);
+			page.setMessage(Messages.GenerateConstructorRefactoring_TheClass + ((classNames.length() != 1) ? Messages.GenerateConstructorRefactoring_ClassesPluralForm : "") //$NON-NLS-1$
+					+ ' ' + classNames.substring(0, classNames.length() - 2)
+					+ Messages.GenerateConstructorRefactoring_AlreadyContainsConstructors + Constants.NL, RefactoringStatus.WARNING);
 	}
 }

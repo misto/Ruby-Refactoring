@@ -29,11 +29,11 @@
 package org.rubypeople.rdt.refactoring.util;
 
 public class Constants {
-	public static final String OBJECT_NAME = "Object";
+	public static final String OBJECT_NAME = "Object"; //$NON-NLS-1$
 
 	public static final char NL = '\n';
 
-	public static final String ARGUMENT_ERROR = "ArgumentError";
+	public static final String ARGUMENT_ERROR = "ArgumentError"; //$NON-NLS-1$
 
-	public static final String CONSTRUCTOR_NAME = "initialize";
+	public static final String CONSTRUCTOR_NAME = "initialize"; //$NON-NLS-1$
 }

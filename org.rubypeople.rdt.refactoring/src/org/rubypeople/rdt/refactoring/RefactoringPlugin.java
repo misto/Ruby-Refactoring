@@ -80,7 +80,7 @@ public class RefactoringPlugin extends AbstractUIPlugin {
 	 * @return the image descriptor
 	 */
 	public static ImageDescriptor getImageDescriptor(String path) {
-		return AbstractUIPlugin.imageDescriptorFromPlugin("org.rubypeople.rdt.refactoring", path);
+		return AbstractUIPlugin.imageDescriptorFromPlugin("org.rubypeople.rdt.refactoring", path); //$NON-NLS-1$
 	}
 
 	public static Ruby getRuby() {

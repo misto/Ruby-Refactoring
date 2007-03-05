@@ -86,7 +86,7 @@ public class FieldRenamer implements IMultiFileEditProvider{
 				addMethodEditProviders(fileEdits, methodRenamer);
 			}
 			else if(currentMethod.getName().equals(config.getSelectedName() + '=')){
-				methodConfig.setNewName(config.getNewName() + "=");
+				methodConfig.setNewName(config.getNewName() + "="); //$NON-NLS-1$
 				MethodRenamer methodRenamer = new MethodRenamer(methodConfig);
 				addMethodEditProviders(fileEdits, methodRenamer);
 			}

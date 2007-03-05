@@ -127,7 +127,7 @@ public class ExtractMethodComposite extends Composite {
 		GridData labelLData = new GridData();
 		labelLData.verticalAlignment = GridData.BEGINNING;
 		modifySelectionLabel.setLayoutData(labelLData);
-		modifySelectionLabel.setText("Selected Code:");
+		modifySelectionLabel.setText(Messages.ExtractMethodComposite_SelectedCode);
 
 		modifySelectionEditorComposite = new Composite(modifySelectionComposite, SWT.NONE);
 		FormLayout composite8Layout = new FormLayout();
@@ -168,7 +168,7 @@ public class ExtractMethodComposite extends Composite {
 		Font font = new Font(getFont().getDevice(), fontData.getName(), fontData.getHeight(), fontData.getStyle() | SWT.ITALIC);
 		selectionHelpLabel.setFont(font);
 
-		selectionHelpLabel.setText("Code with a dark-grey background shows your selection, the light-grey code is what we are going to extract.");
+		selectionHelpLabel.setText(Messages.ExtractMethodComposite_ExpansionHint);
 	}
 
 	private Button createButton(Composite parent, String name) {
@@ -196,7 +196,7 @@ public class ExtractMethodComposite extends Composite {
 		labelLData.horizontalAlignment = GridData.FILL;
 		labelLData.grabExcessHorizontalSpace = true;
 		methodSignatureLabel.setLayoutData(labelLData);
-		methodSignatureLabel.setText("Method signature preview:");
+		methodSignatureLabel.setText(Messages.ExtractMethodComposite_SignaturePreview);
 
 		methodSignaturePreviewLabel = new Label(methodSignatureComposite, SWT.NONE);
 		GridData methodSignaturePreviewData = new GridData();
@@ -205,7 +205,7 @@ public class ExtractMethodComposite extends Composite {
 		methodSignaturePreviewData.verticalAlignment = GridData.FILL;
 		methodSignaturePreviewData.grabExcessVerticalSpace = true;
 		methodSignaturePreviewLabel.setLayoutData(methodSignaturePreviewData);
-		methodSignaturePreviewLabel.setText("def");
+		methodSignaturePreviewLabel.setText("def"); //$NON-NLS-1$
 
 	}
 
@@ -230,7 +230,7 @@ public class ExtractMethodComposite extends Composite {
 		buttonLData.grabExcessHorizontalSpace = true;
 		buttonLData.horizontalAlignment = GridData.FILL;
 		replaceAllCheckbox.setLayoutData(buttonLData);
-		replaceAllCheckbox.setText("&Replace all occurrences of statements with method");
+		replaceAllCheckbox.setText(Messages.ExtractMethodComposite_ReplaceAll);
 		replaceAllCheckbox.setEnabled(false);
 	}
 
@@ -246,11 +246,11 @@ public class ExtractMethodComposite extends Composite {
 		parametersButtonComposite.setLayoutData(compositeLData);
 		parametersButtonComposite.setLayout(compositeLayout);
 
-		editParametersButton = createButton(parametersButtonComposite, "&Edit");
+		editParametersButton = createButton(parametersButtonComposite, Messages.ExtractMethodComposite_ButtonEdit);
 		editParametersButton.setEnabled(false);
-		upParametersButton = createButton(parametersButtonComposite, "&Up");
+		upParametersButton = createButton(parametersButtonComposite, Messages.ExtractMethodComposite_ButtonUp);
 		upParametersButton.setEnabled(false);
-		downParametersButton = createButton(parametersButtonComposite, "&Down");
+		downParametersButton = createButton(parametersButtonComposite, Messages.ExtractMethodComposite_ButtonDown);
 		downParametersButton.setEnabled(false);
 	}
 
@@ -275,7 +275,7 @@ public class ExtractMethodComposite extends Composite {
 		parametersTable.setHeaderVisible(true);
 
 		parametersTableNameColumns = new TableColumn(parametersTable, SWT.NONE);
-		parametersTableNameColumns.setText("Name");
+		parametersTableNameColumns.setText(Messages.ExtractMethodComposite_Name);
 		parametersTableNameColumns.setWidth(60);
 
 		createParametersButton(parametersTableComposite);
@@ -294,7 +294,7 @@ public class ExtractMethodComposite extends Composite {
 		labelLData.grabExcessHorizontalSpace = true;
 		labelLData.horizontalAlignment = GridData.FILL;
 		parametersLabel.setLayoutData(labelLData);
-		parametersLabel.setText("&Parameters:");
+		parametersLabel.setText(Messages.ExtractMethodComposite_Parameters);
 	}
 
 	private void createAccessModifierComposite(Composite control) {
@@ -310,19 +310,19 @@ public class ExtractMethodComposite extends Composite {
 		RowLayout groupLayout = new RowLayout(SWT.HORIZONTAL);
 		groupLayout.fill = true;
 		accessModifierGroup.setLayout(groupLayout);
-		accessModifierGroup.setText("&Access modifier:");
+		accessModifierGroup.setText(Messages.ExtractMethodComposite_AccessModifier);
 
 		publicAccessRadioButton = new Button(accessModifierGroup, SWT.RADIO | SWT.LEFT);
-		publicAccessRadioButton.setText("public");
+		publicAccessRadioButton.setText("public"); //$NON-NLS-1$
 
 		protectedAccessRadioButton = new Button(accessModifierGroup, SWT.RADIO | SWT.LEFT);
-		protectedAccessRadioButton.setText("protected");
+		protectedAccessRadioButton.setText("protected"); //$NON-NLS-1$
 
 		privateAccessRadioButton = new Button(accessModifierGroup, SWT.RADIO | SWT.LEFT);
-		privateAccessRadioButton.setText("private");
+		privateAccessRadioButton.setText("private"); //$NON-NLS-1$
 
 		noneAccessRadioButton = new Button(accessModifierGroup, SWT.RADIO | SWT.LEFT);
-		noneAccessRadioButton.setText("same as source method");
+		noneAccessRadioButton.setText(Messages.ExtractMethodComposite_SameAsSource);
 	}
 
 	private void createNewMethodNameComposite(Composite control) {
@@ -332,7 +332,7 @@ public class ExtractMethodComposite extends Composite {
 		gridData.horizontalAlignment = GridData.FILL;
 		methodNameComposite.setLayoutData(gridData);
 		methodNameComposite.setLayout(compositeLayout);
-		newMethodName = new LabeledTextField(methodNameComposite, "Method &name:");
+		newMethodName = new LabeledTextField(methodNameComposite, Messages.ExtractMethodComposite_MethodName);
 	}
 
 	public RdtCodeViewer getCodeViewer() {

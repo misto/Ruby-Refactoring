@@ -37,7 +37,7 @@ import org.rubypeople.rdt.refactoring.ui.pages.ExtractMethodPage;
 
 public class ExtractMethodRefactoring extends RubyRefactoring {
 
-	public static final String NAME = "Extract Method";
+	public static final String NAME = Messages.ExtractMethodRefactoring_Name;
 
 //	private SelectionInformation selectionInformation;
 

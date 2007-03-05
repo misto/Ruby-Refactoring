@@ -46,7 +46,7 @@ import org.rubypeople.rdt.refactoring.ui.util.AbstractSelectionListener;
 
 public class EncapsulateFieldPage extends UserInputWizardPage {
 
-	private static final String TITLE = "Encapsulate Field...";
+	private static final String TITLE = Messages.EncapsulateFieldPage_Title;
 
 	private FieldEncapsulator fieldEncapsulator;
 
@@ -68,7 +68,7 @@ public class EncapsulateFieldPage extends UserInputWizardPage {
 	private void initWriterAccessorControl(Composite parent) {
 		boolean isOptional = fieldEncapsulator.isWriterGenerationOptional();
 		VisibilityNodeWrapper.METHOD_VISIBILITY visibility = fieldEncapsulator.getWriterVisibility();
-		final EncapsulateFieldAccessorComposite accessorControl = new EncapsulateFieldAccessorComposite(parent, "Writer", visibility, isOptional);
+		final EncapsulateFieldAccessorComposite accessorControl = new EncapsulateFieldAccessorComposite(parent, Messages.EncapsulateFieldPage_Writer, visibility, isOptional);
 		accessorControl.enableVisibilityGroup(false);
 		if (isOptional) {
 			accessorControl.addEnableDisableListener(new AbstractSelectionListener() {
@@ -90,7 +90,7 @@ public class EncapsulateFieldPage extends UserInputWizardPage {
 	private void initReaderAccessorControl(Composite parent) {
 		boolean isOptional = fieldEncapsulator.isReaderGenerationOptional();
 		VisibilityNodeWrapper.METHOD_VISIBILITY visibility = fieldEncapsulator.getReaderVisibility();
-		final EncapsulateFieldAccessorComposite accessorControl = new EncapsulateFieldAccessorComposite(parent, "Reader", visibility, isOptional);
+		final EncapsulateFieldAccessorComposite accessorControl = new EncapsulateFieldAccessorComposite(parent, Messages.EncapsulateFieldPage_Reader, visibility, isOptional);
 		accessorControl.enableVisibilityGroup(false);
 		if (isOptional) {
 			accessorControl.addEnableDisableListener(new AbstractSelectionListener() {
@@ -116,11 +116,11 @@ public class EncapsulateFieldPage extends UserInputWizardPage {
 		gridData.horizontalAlignment = GridData.FILL;
 		fieldInfoGroup.setLayoutData(gridData);
 		fieldInfoGroup.setLayout(new GridLayout(1, true));
-		fieldInfoGroup.setText("Selected Field");
+		fieldInfoGroup.setText(Messages.EncapsulateFieldPage_SelectedField);
 		Label fieldNameLabel = new Label(fieldInfoGroup, SWT.NONE);
-		fieldNameLabel.setText("Name: " + fieldEncapsulator.getSelectedFieldName());
+		fieldNameLabel.setText(Messages.EncapsulateFieldPage_Name + fieldEncapsulator.getSelectedFieldName());
 		Label existingAccessorLabel = new Label(fieldInfoGroup, SWT.NONE);
-		existingAccessorLabel.setText("Field Accessor: " + fieldEncapsulator.getExistingAccessorName());
+		existingAccessorLabel.setText(Messages.EncapsulateFieldPage_FieldAccessor + fieldEncapsulator.getExistingAccessorName());
 	}
 
 }

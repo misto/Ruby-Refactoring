@@ -51,7 +51,7 @@ public class ReturnStatementReplacer implements IReturnStatementReplacer {
 	}
 	
 	private boolean returnIsOnLastLine(ReturnNode node, DocumentProvider doc) {
-		return node.getPosition().getStartLine() == doc.getActiveFileContent().split("(\\r)?\\n").length - 1;
+		return node.getPosition().getStartLine() == doc.getActiveFileContent().split("(\\r)?\\n").length - 1; //$NON-NLS-1$
 	}
 
 	private int countReturnNodes(DocumentProvider doc) {
@@ -89,13 +89,13 @@ public class ReturnStatementReplacer implements IReturnStatementReplacer {
 			replaceReturnStatementWithAssignment(doc, target, result, returnNode);
 		}
 
-		return new StringDocumentProvider("part_of_" + doc.getActiveFileName(), result.append(ReWriteVisitor.createCodeFromNode(target, doc.getActiveFileContent())).toString());
+		return new StringDocumentProvider("part_of_" + doc.getActiveFileName(), result.append(ReWriteVisitor.createCodeFromNode(target, doc.getActiveFileContent())).toString()); //$NON-NLS-1$
 		
 	}
 
 	private void insertLastLineToAssignment(DocumentProvider doc, AssignableNode target, StringBuilder result) {
-		String[] lines = doc.getActiveFileContent().split("(\\r)?\\n");
-		target.setValueNode(NodeProvider.getRootNode("last_line_of_" + doc.getActiveFileName() + "_for_ReturnStatementReplacer", lines[lines.length - 1]).getBodyNode());
+		String[] lines = doc.getActiveFileContent().split("(\\r)?\\n"); //$NON-NLS-1$
+		target.setValueNode(NodeProvider.getRootNode("last_line_of_" + doc.getActiveFileName() + "_for_ReturnStatementReplacer", lines[lines.length - 1]).getBodyNode()); //$NON-NLS-1$ //$NON-NLS-2$
 		String lineDelimiter = FileHelper.getLineDelimiter(doc.getActiveFileContent());
 		
 		for(int i = 0; i < lines.length - 1; i++) {

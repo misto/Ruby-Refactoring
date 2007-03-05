@@ -104,15 +104,15 @@ public class MoveMethodConditionChecker extends RefactoringConditionChecker {
 	protected void checkInitialConditions() {
 
 		if(config.getSourceClassNode() == null) {
-			addError("The caret needs to be inside of a class.");
+			addError(Messages.MoveMethodConditionChecker_NeedsToBeInsideClass);
 		} else if (config.getMethodNode() == null) {
-			addError("The caret needs to be inside of the method you want to move.");
+			addError(Messages.MoveMethodConditionChecker_NeedsToBeInsideMethod);
 		} else if (isConstructor()) {
-			addError("The selected method is a constructor and thus cannot be moved.");
+			addError(Messages.MoveMethodConditionChecker_CannotMoveConstructor);
 		} else if (!hasTargetClass()) {
-			addError("There is no target class where you could move to.");
+			addError(Messages.MoveMethodConditionChecker_NoTarget);
 		} else if (!hasFieldToSelect()) {
-			addError("There is no possible field of the type of the target class.");
+			addError(Messages.MoveMethodConditionChecker_NoFieldOfTargetType);
 		}
 	}
 
@@ -139,7 +139,9 @@ public class MoveMethodConditionChecker extends RefactoringConditionChecker {
 	private void checkIsMethodPublicAndNoDelegateMethod() {
 		boolean isPrivate = config.getSourceClassNode().getMethodVisibility(config.getMethodNode()).equals(METHOD_VISIBILITY.PRIVATE);
 		if(!isPrivate && !config.leaveDelegateMethodInSource()) {
-			addWarning("The method " + config.getMethodNode().getName() + " can be called from outside of the class " + config.getSourceClassNode() + ". Since Ruby is dynamically typed, calls from outside the class definition might not get replaced with calls to the class " + config.getDestinationClassNode().getName() + ".");
+			addWarning(Messages.MoveMethodConditionChecker_TheMethod + config.getMethodNode().getName() 
+					+ Messages.MoveMethodConditionChecker_CanBeCalledFromOutside + config.getSourceClassNode() 
+					+ Messages.MoveMethodConditionChecker_MightNotGetReplaced + config.getDestinationClassNode().getName() + "."); //$NON-NLS-1$
 		}
 	}
 
@@ -152,8 +154,8 @@ public class MoveMethodConditionChecker extends RefactoringConditionChecker {
 	private void checkMethodContainsClassFields() {
 		for(FieldNodeWrapper aktField : NodeProvider.getFieldNodes(config.getMethodNode().getWrappedNode())) {
 			if(aktField.isClassVar()) {
-				addWarning("The method \"" + config.getMethodNode().getName() + "\" contains the class field \"" + aktField.getName()
-						+ "\". Moving it might affect the functionality of the class \"" + config.getSourceClassNode().getName() + "\".");
+				addWarning(Messages.MoveMethodConditionChecker_TheMethod + config.getMethodNode().getName() + Messages.MoveMethodConditionChecker_ContainsClassField + aktField.getName()
+						+ Messages.MoveMethodConditionChecker_MovingMightAffectTheFunctionality + config.getSourceClassNode().getName() + "\".");  //$NON-NLS-1$
 			}
 		}
 	}

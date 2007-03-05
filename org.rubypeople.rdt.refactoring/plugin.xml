@@ -70,42 +70,7 @@
                id="org.rubypeople.rdt.refactoring.renameAction"
                label="%rubyRefactoring.RenameLabel"
                menubarPath="org.rubypeople.rdt.refactoring.refactoringMenu/org.rubypeople.rdt.refactoring.refactoringGroup"
-               style="push"
                tooltip="Renames the selected element..."/>
-<!-- old renames              
-         <action
-               class="org.rubypeople.rdt.refactoring.action.RenameMethodAction"
-               definitionId="org.rubypeople.rdt.refactoring.command.RenameMethod"
-               id="org.rubypeople.rdt.refactoring.renameMethodAction"
-               label="%rubyRefactoring.RenameMethodLabel"
-               menubarPath="org.rubypeople.rdt.refactoring.refactoringMenu/org.rubypeople.rdt.refactoring.refactoringGroup"
-               style="push"
-               tooltip="Renames a method."/>
-         <action
-               class="org.rubypeople.rdt.refactoring.action.RenameLocalVariableAction"
-               definitionId="org.rubypeople.rdt.refactoring.command.RenameLocalVariable"
-               id="org.rubypeople.rdt.refactoring.renameLocalVariableAction"
-               label="%rubyRefactoring.RenameLocalVariableLabel"
-               menubarPath="org.rubypeople.rdt.refactoring.refactoringMenu/org.rubypeople.rdt.refactoring.refactoringGroup"
-               style="push"
-               tooltip="Renames a local variable"/>
-         <action
-               class="org.rubypeople.rdt.refactoring.action.RenameFieldAction"
-               definitionId="org.rubypeople.rdt.refactoring.command.RenameField"
-               id="org.rubypeople.rdt.refactoring.renameFieldAction"
-               label="%rubyRefactoring.RenameFieldLabel"
-               menubarPath="org.rubypeople.rdt.refactoring.refactoringMenu/org.rubypeople.rdt.refactoring.refactoringGroup"
-               style="push"
-               tooltip="Renames a field."/>
-         <action
-               class="org.rubypeople.rdt.refactoring.action.RenameClassAction"
-               definitionId="org.rubypeople.rdt.refactoring.command.RenameClass"
-               id="org.rubypeople.rdt.refactoring.renameClassAction"
-               label="%rubyRefactoring.RenameClassLabel"
-               menubarPath="org.rubypeople.rdt.refactoring.refactoringMenu/org.rubypeople.rdt.refactoring.refactoringGroup"
-               style="push"
-               tooltip="Renames a class."/>
--->
          <action
                class="org.rubypeople.rdt.refactoring.action.PushDownAction"
                definitionId="org.rubypeople.rdt.refactoring.command.PushDown"
@@ -224,24 +189,6 @@
          categoryId="org.rubypeople.rdt.refactoring.commands.refactoring"
          id="org.rubypeople.rdt.refactoring.command.Rename"
          name="%rubyRefactoring.RenameLabel"/>
-<!-- old renames     
-   <command
-         categoryId="org.rubypeople.rdt.refactoring.commands.refactoring"
-         id="org.rubypeople.rdt.refactoring.command.RenameLocalVariable"
-         name="%rubyRefactoring.RenameLocalVariableLabel"/>         
-   <command
-         categoryId="org.rubypeople.rdt.refactoring.commands.refactoring"
-         id="org.rubypeople.rdt.refactoring.command.RenameField"
-         name="%rubyRefactoring.RenameFieldLabel"/>
-   <command
-         categoryId="org.rubypeople.rdt.refactoring.commands.refactoring"
-         id="org.rubypeople.rdt.refactoring.command.RenameClass"
-         name="%rubyRefactoring.RenameClassLabel"/>
-   <command
-         categoryId="org.rubypeople.rdt.refactoring.commands.refactoring"
-         id="org.rubypeople.rdt.refactoring.command.RenameMethod"
-         name="%rubyRefactoring.RenameMethodLabel"/>
--->         
    <command
          categoryId="org.rubypeople.rdt.refactoring.commands.refactoring"
          id="org.rubypeople.rdt.refactoring.command.SplitTemp"
@@ -329,28 +276,6 @@
          contextId="org.rubypeople.rdt.ui.rubyEditorScope"
          schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
          sequence="M2+M3+R"/>
-<!-- Old Renames
-   <key
-         commandId="org.rubypeople.rdt.refactoring.command.RenameClass"
-         contextId="org.rubypeople.rdt.ui.rubyEditorScope"
-         schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
-         sequence="M2+M3+R C"/>
-   <key
-         commandId="org.rubypeople.rdt.refactoring.command.RenameField"
-         contextId="org.rubypeople.rdt.ui.rubyEditorScope"
-         schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
-         sequence="M2+M3+R F"/>
-   <key
-         commandId="org.rubypeople.rdt.refactoring.command.RenameLocalVariable"
-         contextId="org.rubypeople.rdt.ui.rubyEditorScope"
-         schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
-         sequence="M2+M3+R L"/>
-   <key
-         commandId="org.rubypeople.rdt.refactoring.command.RenameMethod"
-         contextId="org.rubypeople.rdt.ui.rubyEditorScope"
-         schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
-         sequence="M2+M3+R M"/>
--->         
 </extension>
 <extension
       point="org.eclipse.ui.popupMenus">
@@ -373,6 +298,21 @@
             id="org.rubypeople.rdt.refactoring.action.SplitTempAction"
             label="%rubyRefactoring.SplitTempLabel"
             menubarPath="additions" />
+      <action
+            class="org.rubypeople.rdt.refactoring.action.RenameAction"
+            id="org.rubypeople.rdt.refactoring.action.RenameAction"
+            label="%rubyRefactoring.RenameLabel"
+            menubarPath="additions" />
+   </objectContribution>       
+   
+   <objectContribution
+         id="org.rubypeople.rdt.refactoring.refactoringContext"
+         objectClass="org.rubypeople.rdt.internal.core.RubyType">
+      <action
+            class="org.rubypeople.rdt.refactoring.action.RenameAction"
+            id="org.rubypeople.rdt.refactoring.action.RenameAction"
+            label="%rubyRefactoring.RenameLabel"
+            menubarPath="additions" />
    </objectContribution> 
    
    <objectContribution
@@ -387,6 +327,11 @@
             class="org.rubypeople.rdt.refactoring.action.MoveFieldAction"
             id="org.rubypeople.rdt.refactoring.action.MoveFieldAction"
             label="%rubyRefactoring.MoveFieldLabel"
+            menubarPath="additions" />
+      <action
+            class="org.rubypeople.rdt.refactoring.action.RenameAction"
+            id="org.rubypeople.rdt.refactoring.action.RenameAction"
+            label="%rubyRefactoring.RenameLabel"
             menubarPath="additions" />
    </objectContribution>  
      
@@ -403,6 +348,11 @@
             id="org.rubypeople.rdt.refactoring.action.MoveFieldAction"
             label="%rubyRefactoring.MoveFieldLabel"
             menubarPath="additions" />
+      <action
+            class="org.rubypeople.rdt.refactoring.action.RenameAction"
+            id="org.rubypeople.rdt.refactoring.action.RenameAction"
+            label="%rubyRefactoring.RenameLabel"
+            menubarPath="additions" />
    </objectContribution>      
    
    <objectContribution
@@ -412,6 +362,11 @@
             class="org.rubypeople.rdt.refactoring.action.MoveMethodAction"
             id="org.rubypeople.rdt.refactoring.action.MoveMethodAction"
             label="%rubyRefactoring.MoveMethodLabel"
+            menubarPath="additions" />
+      <action
+            class="org.rubypeople.rdt.refactoring.action.RenameAction"
+            id="org.rubypeople.rdt.refactoring.action.RenameAction"
+            label="%rubyRefactoring.RenameLabel"
             menubarPath="additions" />
    </objectContribution>    
 

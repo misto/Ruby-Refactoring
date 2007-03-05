@@ -62,7 +62,7 @@ public class MethodBodyStatementReplacer implements IMethodBodyStatementReplacer
 			tempResult.append(object);
 			tempResult.append(result.getActiveFileContent().substring(node.getPosition().getEndOffset()));
 			
-			result = new StringDocumentProvider("part_of_" + doc.getActiveFileName(), tempResult.toString());
+			result = new StringDocumentProvider("part_of_" + doc.getActiveFileName(), tempResult.toString()); //$NON-NLS-1$
 			
 		} while(!selfNodes.isEmpty());
 		
@@ -86,7 +86,7 @@ public class MethodBodyStatementReplacer implements IMethodBodyStatementReplacer
 			src.replace(varNode.getPosition().getStartOffset(), 
 					varNode.getPosition().getStartOffset() + name.length(), 
 					object + '.' + name.substring(1));
-			result = new StringDocumentProvider("part_of_" + doc.getActiveFileName(), src.toString());
+			result = new StringDocumentProvider("part_of_" + doc.getActiveFileName(), src.toString()); //$NON-NLS-1$
 			
 		} while(!varNodes.isEmpty());
 		
@@ -101,7 +101,7 @@ public class MethodBodyStatementReplacer implements IMethodBodyStatementReplacer
 		while((call = findCallToMethodInClass(result, provider, className)) != null) {
 			StringBuilder src = new StringBuilder(result.getActiveFileContent());
 			src.insert(call.getWrappedNode().getPosition().getStartOffset(), object + '.');
-			result = new StringDocumentProvider("part_of_" + doc.getActiveFileName(), src.toString());
+			result = new StringDocumentProvider("part_of_" + doc.getActiveFileName(), src.toString()); //$NON-NLS-1$
 		}
 		
 		return result;
@@ -136,8 +136,8 @@ public class MethodBodyStatementReplacer implements IMethodBodyStatementReplacer
 			if(nodes.isEmpty()) break;
 			StringBuilder newBody = new StringBuilder(result.getActiveFileContent());
 			int startOffset = nodes.iterator().next().getPosition().getStartOffset();
-			newBody.replace(startOffset, startOffset + "return ".length(), "");
-			result = new StringDocumentProvider("part_of_" + doc.getActiveFileName(), newBody.toString());
+			newBody.replace(startOffset, startOffset + "return ".length(), ""); //$NON-NLS-1$ //$NON-NLS-2$
+			result = new StringDocumentProvider("part_of_" + doc.getActiveFileName(), newBody.toString()); //$NON-NLS-1$
 		} while(!nodes.isEmpty());
 		
 		return result;

@@ -86,9 +86,9 @@ public class IncludedClassesProvider extends ClassNodeProvider {
 	private void appendPath(String pathName) {
 		IPath path = new Path(pathName);
 		if (path.getFileExtension() == null)
-			path = path.addFileExtension("rb");
-		if (!path.getFileExtension().equalsIgnoreCase("rb"))
-			path = path.addFileExtension("rb");
+			path = path.addFileExtension("rb"); //$NON-NLS-1$
+		if (!path.getFileExtension().equalsIgnoreCase("rb")) //$NON-NLS-1$
+			path = path.addFileExtension("rb"); //$NON-NLS-1$
 
 		includeFilePaths.add(path);
 	}

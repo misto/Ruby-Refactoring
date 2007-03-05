@@ -61,7 +61,7 @@ public class InFileClassPartsMerger extends MultiEditProvider {
 			delEditProvider.setDeleteType(DeleteEditProvider.DELETE_LINEBREAK_AFTER);
 			providerGroups.add(currentClassPart.getWrappedNode().toString(), delEditProvider);
 			if (currentClassPart.getClassBodyNode() != null) {
-				providerGroups.add("Insertion", new ClassInsertProvider(currentClassPart.getClassBodyNode(), config.getSelectedClassPart()));
+				providerGroups.add(Messages.InFileClassPartsMerger_GroupInsertion, new ClassInsertProvider(currentClassPart.getClassBodyNode(), config.getSelectedClassPart()));
 			}
 		}
 
