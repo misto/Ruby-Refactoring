@@ -33,7 +33,6 @@ import java.util.Collection;
 import java.util.HashSet;
 
 import org.jruby.ast.FCallNode;
-import org.jruby.ast.Node;
 import org.jruby.ast.RootNode;
 import org.jruby.ast.StrNode;
 import org.jruby.lexer.yacc.SyntaxException;
@@ -148,15 +147,5 @@ public class DocumentWithIncluding extends StringDocumentProvider {
 	
 	private boolean isStrNode(FCallNode node) {
 		return node.getArgsNode().childNodes().iterator().next() instanceof StrNode;
-	}
-
-	@Override
-	public Collection<Node> getAllNodes() {
-		ArrayList<Node> allNodes = new ArrayList<Node>();
-		
-		for(String currentFileName : getFileNames()){
-			allNodes.addAll(getAllNodes(currentFileName));
-		}
-		return allNodes;
 	}
 }

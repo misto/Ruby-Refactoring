@@ -30,6 +30,7 @@
 
 package org.rubypeople.rdt.refactoring.documentprovider;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -67,7 +68,12 @@ public abstract class DocumentProvider implements IDocumentProvider {
 	}
 
 	public Collection<Node> getAllNodes() {
-		return NodeProvider.getAllNodes(getActiveFileRootNode());
+		ArrayList<Node> allNodes = new ArrayList<Node>();
+	
+		for(String currentFileName : getFileNames()){
+			allNodes.addAll(getAllNodes(currentFileName));
+		}
+		return allNodes;
 	}
 	
 	public Collection<Node> getAllNodes(String fileName){

@@ -35,8 +35,10 @@ import java.util.Collection;
 
 import org.jruby.ast.CallNode;
 import org.jruby.ast.Node;
+import org.jruby.ast.RootNode;
 import org.rubypeople.rdt.refactoring.classnodeprovider.ClassNodeProvider;
 import org.rubypeople.rdt.refactoring.classnodeprovider.IncludedClassesProvider;
+import org.rubypeople.rdt.refactoring.core.NodeProvider;
 import org.rubypeople.rdt.refactoring.core.RefactoringConditionChecker;
 import org.rubypeople.rdt.refactoring.core.SelectionNodeProvider;
 import org.rubypeople.rdt.refactoring.core.renamefield.fielditems.FieldCallItem;
@@ -53,6 +55,8 @@ public class RenameFieldConditionChecker extends RefactoringConditionChecker {
 
 	private RenameFieldConfig config;
 
+	private RootNode rootNode;
+
 	public RenameFieldConditionChecker(RenameFieldConfig config) {
 		super(config.getDocProvider(), config);
 	}
@@ -61,7 +65,7 @@ public class RenameFieldConditionChecker extends RefactoringConditionChecker {
 		this.config = (RenameFieldConfig) configObj;
 
 		config.setDocProvider(new DocumentWithIncluding(config.getDocProvider()));
-		Node rootNode = config.getDocProvider().getActiveFileRootNode();
+		rootNode = config.getDocProvider().getActiveFileRootNode();
 
 		try {
 			ClassNodeWrapper enclosingClassNode = SelectionNodeProvider.getSelectedClassNode(rootNode, config.getCaretPosition());
@@ -102,7 +106,7 @@ public class RenameFieldConditionChecker extends RefactoringConditionChecker {
 	private Collection<FieldItem> getInstVarAccesses() {
 		ArrayList<FieldItem> fieldCallNodes = new ArrayList<FieldItem>();
 
-		Collection<Node> allNodes = config.getDocProvider().getAllNodes();
+		Collection<Node> allNodes = NodeProvider.getAllNodes(rootNode);
 		for (Node currentNode : allNodes) {
 			if (isPossibleCall(currentNode)) {
 				fieldCallNodes.add(new FieldCallItem((CallNode) currentNode));

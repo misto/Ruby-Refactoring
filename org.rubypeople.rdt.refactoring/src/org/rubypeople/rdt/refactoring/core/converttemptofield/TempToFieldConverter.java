@@ -149,7 +149,7 @@ public class TempToFieldConverter extends MultiEditProvider {
 	}
 
 	private Node findSelectedNode(Class<?>... filterNodes) {
-		return SelectionNodeProvider.getSelectedNodeOfType(config.getDocProvider().getAllNodes(), config.getCaretPosition(), filterNodes);
+		return SelectionNodeProvider.getSelectedNodeOfType(config.getDocProvider().getActiveFileRootNode(), config.getCaretPosition(), filterNodes);
 	}
 
 	boolean isInitializationExternalizable() {
