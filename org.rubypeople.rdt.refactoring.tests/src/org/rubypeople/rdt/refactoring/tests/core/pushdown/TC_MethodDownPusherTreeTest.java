@@ -61,10 +61,12 @@ public class TC_MethodDownPusherTreeTest  extends TreeProviderTester
 																	"  end\n" +
 																	"end";
 
-	private final static String DOCUMENT_A_EXTENDS_X =	"class A < X\n" +
+	private final static String DOCUMENT_A_EXTENDS_X =	"require \"DOCUMENT_X.rb\"\n" +
+														"class A < X\n" +
 														"end";
 	
-	private final static String DOCUMENT_B_EXTENDS_X =	"class B < X\n" +
+	private final static String DOCUMENT_B_EXTENDS_X =	"require \"DOCUMENT_X.rb\"\n" +
+														"class B < X\n" +
 														"end";
 
 	private final static String DOCUMENT_X =	"class X\n" +
@@ -91,17 +93,17 @@ public class TC_MethodDownPusherTreeTest  extends TreeProviderTester
 	public void testTwoDocumentPushDown()
 	{
 		addContent(new String[]{"X", "method"});
-		StringDocumentProvider docProvider = new StringDocumentProvider("push_down_test_testTwoDocumentPushDown.rb", DOCUMENT_X);
-		docProvider.addFile("DOCUMENT_A_EXTENDS_X", DOCUMENT_A_EXTENDS_X);
+		StringDocumentProvider docProvider = new StringDocumentProvider("DOCUMENT_X.rb", DOCUMENT_X);
+		docProvider.addFile("DOCUMENT_A_EXTENDS_X.rb", DOCUMENT_A_EXTENDS_X);
 		validate(new MethodDownPusher(docProvider));
 	}
 	
 	public void testTreeDocumentPushDown()
 	{
 		addContent(new String[]{"X", "method"});
-		StringDocumentProvider docProvider = new StringDocumentProvider("push_down_test_testTreeDocumentPushDown.rb", DOCUMENT_X);
-		docProvider.addFile("DOCUMENT_A_EXTENDS_X", DOCUMENT_A_EXTENDS_X);
-		docProvider.addFile("DOCUMENT_B_EXTENDS_X", DOCUMENT_B_EXTENDS_X);
+		StringDocumentProvider docProvider = new StringDocumentProvider("DOCUMENT_X.rb", DOCUMENT_X);
+		docProvider.addFile("DOCUMENT_A_EXTENDS_X.rb", DOCUMENT_A_EXTENDS_X);
+		docProvider.addFile("DOCUMENT_B_EXTENDS_X.rb", DOCUMENT_B_EXTENDS_X);
 		validate(new MethodDownPusher(docProvider));
 	}
 }
