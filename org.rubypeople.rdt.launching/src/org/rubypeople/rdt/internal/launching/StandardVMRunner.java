@@ -201,7 +201,7 @@ public class StandardVMRunner extends AbstractVMRunner {
 		arguments.add("-e");
 		arguments.add("STDERR.sync=true");
 		arguments.add("-e");
-		arguments.add("load(ARGV.shift)");
+		arguments.add("load($0=ARGV.shift)");
 		
 		String[] lp= config.getLoadPath();
 		if (lp.length > 0) {
