@@ -32,8 +32,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 
+import org.rubypeople.rdt.refactoring.classnodeprovider.AllFilesClassNodeProvider;
 import org.rubypeople.rdt.refactoring.classnodeprovider.ClassNodeProvider;
 import org.rubypeople.rdt.refactoring.documentprovider.DocumentProvider;
+import org.rubypeople.rdt.refactoring.documentprovider.DocumentWithIncluding;
 import org.rubypeople.rdt.refactoring.editprovider.DeleteEditProvider;
 import org.rubypeople.rdt.refactoring.editprovider.EditAndTreeContentProvider;
 import org.rubypeople.rdt.refactoring.editprovider.EditProvider;
@@ -54,7 +56,7 @@ public class MethodDownPusher extends EditAndTreeContentProvider implements IIte
 	private ClassNodeProvider classNodeProvider;
 
 	public MethodDownPusher(DocumentProvider documentProvider) {
-		this.projectClassNodeProvider = documentProvider.getProjectClassNodeProvider();
+		this.projectClassNodeProvider = new AllFilesClassNodeProvider(new DocumentWithIncluding(documentProvider));
 		this.classNodeProvider = documentProvider.getClassNodeProvider();
 
 		initTreeClasses(classNodeProvider);
