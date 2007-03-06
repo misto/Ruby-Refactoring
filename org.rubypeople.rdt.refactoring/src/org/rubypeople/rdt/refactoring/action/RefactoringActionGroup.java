@@ -63,7 +63,7 @@ public class RefactoringActionGroup extends ActionGroup {
 	}
 
 	private IMenuManager getRefactorMenu(TextSelectionProvider selectionProvider) {
-		IMenuManager submenu = new MenuManager(Messages.SourceActionGroup);
+		IMenuManager submenu = new MenuManager(Messages.RefactoringActionGroup);
 		submenu.add(new RefactoringAction(ConvertTempToFieldRefactoring.class, ConvertTempToFieldRefactoring.NAME, selectionProvider));
 		submenu.add(new RefactoringAction(EncapsulateFieldRefactoring.class, EncapsulateFieldRefactoring.NAME, selectionProvider));
 		submenu.add(new RefactoringAction(ExtractMethodRefactoring.class, ExtractMethodRefactoring.NAME, selectionProvider));
@@ -81,7 +81,7 @@ public class RefactoringActionGroup extends ActionGroup {
 	}
 	
 	private IMenuManager getSourceMenu(TextSelectionProvider selectionProvider) {
-		IMenuManager submenu = new MenuManager(Messages.RefactoringActionGroup);
+		IMenuManager submenu = new MenuManager(Messages.SourceActionGroup);
 		submenu.add(new RefactoringAction(GenerateAccessorsRefactoring.class, GenerateAccessorsRefactoring.NAME, selectionProvider));
 		submenu.add(new RefactoringAction(GenerateConstructorRefactoring.class, GenerateConstructorRefactoring.NAME, selectionProvider));
 		submenu.add(new RefactoringAction(OverrideMethodRefactoring.class, OverrideMethodRefactoring.NAME, selectionProvider));
