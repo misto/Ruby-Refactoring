@@ -157,7 +157,7 @@ public class TC_RubyRuntime extends ModifyingResourceTest {
 		xml.append(name);
 		xml.append("\" path=\"");
 		xml.append(location.toOSString());
-		xml.append("\" vmargs=\"-e STDOUT.sync=true -e STDERR.sync=true -e load(ARGV.shift)\">\r\n");
+		xml.append("\">\r\n");
 		xml.append("<libraryLocations>\r\n");
 		xml.append("<libraryLocation src=\"");
 		xml.append(location.toPortableString());
@@ -166,9 +166,11 @@ public class TC_RubyRuntime extends ModifyingResourceTest {
 		xml.append(location.toPortableString());
 		xml.append("/lib/ruby/1.8\"/>\r\n");
 		File file = LaunchingPlugin.getFileInPlugin(new Path("ruby" + File.separator + id + File.separator + "lib"));
-		xml.append("<libraryLocation src=\"");
-		xml.append(Path.fromOSString(file.toString()).toPortableString());
-		xml.append("\"/>\r\n");
+		if (file != null) {
+			xml.append("<libraryLocation src=\"");
+			xml.append(Path.fromOSString(file.toString()).toPortableString());
+			xml.append("\"/>\r\n");
+		}
 		xml.append("</libraryLocations>\r\n");
 		xml.append("</vm>\r\n");
 		return xml.toString();

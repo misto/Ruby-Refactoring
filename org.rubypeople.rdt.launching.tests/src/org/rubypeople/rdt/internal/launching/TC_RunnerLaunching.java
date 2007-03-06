@@ -83,7 +83,6 @@ public class TC_RunnerLaunching extends ModifyingResourceTest {
 		buffer.append(new Path(interpreter.getInstallLocation().getAbsolutePath()).append("bin").append("ruby").toOSString());
 		buffer.append("\" ");
 		buffer.append(INTERPRETER_ARGUMENTS);
-		buffer.append(" -e STDOUT.sync=true -e STDERR.sync=true -e load(ARGV.shift)");
 		buffer.append(" -I \"");
 		buffer.append(project.getLocation().toOSString());
 		buffer.append("\"");
