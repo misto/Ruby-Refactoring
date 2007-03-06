@@ -167,14 +167,4 @@ public class StandardVM extends AbstractVMInstall {
 		}
 		return null;
 	}
-	
-	
-	@Override
-	public String getVMArgs() {
-		String vmArgs = super.getVMArgs();
-		if (vmArgs == null) vmArgs = "";
-		else vmArgs += " ";
-		vmArgs += "-e STDOUT.sync=true -e STDERR.sync=true -e load(ARGV.shift)";
-		return vmArgs;
-	}
 }

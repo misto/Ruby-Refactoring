@@ -195,6 +195,13 @@ public class StandardVMRunner extends AbstractVMRunner {
 		// options like '-client' & '-server' which are required to be the first option
 		String[] allVMArgs = combineVmArgs(config, fVMInstance);
 		addArguments(allVMArgs, arguments);
+		// FIXME Find a better place for this to go?
+		arguments.add("-e");
+		arguments.add("STDOUT.sync=true");
+		arguments.add("-e");
+		arguments.add("STDERR.sync=true");
+		arguments.add("-e");
+		arguments.add("load(ARGV.shift)");
 		
 		String[] lp= config.getLoadPath();
 		if (lp.length > 0) {
