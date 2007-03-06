@@ -53,7 +53,7 @@ public class RubyCompletionProcessor extends TemplateCompletionProcessor
 			"data for latest matche for regexp",
 			"whether or not case-sensitive in string matching",
 			"input record separator", "output record separator",
-			"the name of the ruby scpript file",
+			"the name of the ruby script file",
 			"command line arguments for the ruby scpript",
 			"PID for ruby interpreter",
 			"status of the latest executed child process",
