@@ -88,7 +88,6 @@ public class MultipleDocumentsInOneProvider extends DocumentProvider {
 	}
 
 	public String getFileContent(String currentFileName) {
-		assert "".equals(currentFileName) : "Should always equal getActiveFileName()";
 		return getActiveFileContent();
 	}
 

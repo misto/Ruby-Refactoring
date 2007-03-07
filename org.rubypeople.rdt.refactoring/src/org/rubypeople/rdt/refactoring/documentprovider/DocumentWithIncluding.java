@@ -62,20 +62,23 @@ public class DocumentWithIncluding extends StringDocumentProvider {
 			for(String actFileName : candidates) {
 				String fileName = getFileNameWithoutPath(actFileName);
 				if(includedFiles.contains(fileName)) {
-					addFile(fileName, docProvider.getFileContent(fileName));
-					markedForRemoval.add(actFileName);
+					addAndRemove(markedForRemoval, actFileName, fileName);
 					continue;
 				}
 				for (FCallNode node : getRequires(actFileName)) {
 					if(nodeRequiresMe(node)) {
-						addFile(fileName, docProvider.getFileContent(fileName));
-						markedForRemoval.add(actFileName);
+						addAndRemove(markedForRemoval, actFileName, fileName);
 					}
 				}
 			}
 			removeMarkedFromCandidates(markedForRemoval, candidates);
 			
 		} while(markedForRemoval.size() > 0);
+	}
+
+	private void addAndRemove(ArrayList<String> markedForRemoval, String actFileName, String fileName) {
+		addFile(fileName, docProvider.getFileContent(actFileName));
+		markedForRemoval.add(actFileName);
 	}
 
 	private String cutProjectPath(String fileName) {
