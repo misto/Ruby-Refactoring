@@ -5,8 +5,10 @@ package org.rubypeople.rdt.core;
 
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.ResourcesPlugin;
+import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
+import org.rubypeople.rdt.internal.core.LoadpathEntry;
 import org.rubypeople.rdt.internal.core.RubyModelStatus;
 import org.rubypeople.rdt.internal.core.util.Messages;
 
@@ -105,5 +107,9 @@ public class RubyConventions {
 	public static IStatus validateSourceFolderName(String packName) {
 		// TODO Actually do some validation
 		return RubyModelStatus.VERIFIED_OK;
+	}
+
+	public static IRubyModelStatus validateLoadpath(IRubyProject rubyProject, ILoadpathEntry[] rawCLoadpath, IPath projectOutputLocation) {
+		return LoadpathEntry.validateLoadpath(rubyProject, rawCLoadpath, projectOutputLocation);
 	}
 }

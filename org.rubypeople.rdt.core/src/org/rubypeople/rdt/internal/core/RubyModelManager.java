@@ -62,6 +62,7 @@ import org.eclipse.core.runtime.preferences.IEclipsePreferences;
 import org.eclipse.core.runtime.preferences.IPreferencesService;
 import org.eclipse.core.runtime.preferences.InstanceScope;
 import org.osgi.service.prefs.BackingStoreException;
+import org.rubypeople.rdt.core.ILoadpathAttribute;
 import org.rubypeople.rdt.core.ILoadpathContainer;
 import org.rubypeople.rdt.core.ILoadpathEntry;
 import org.rubypeople.rdt.core.IParent;
@@ -2255,9 +2256,10 @@ public class RubyModelManager implements IContentTypeChangeListener, ISavePartic
 			IPath[] inclusionPatterns = loadPaths();
 			IPath[] exclusionPatterns = loadPaths();
 			boolean isExported = loadBoolean();
+			ILoadpathAttribute[] extraAttributes = loadAttributes();
 
 			ILoadpathEntry entry = new LoadpathEntry(entryKind,
-					path, inclusionPatterns, exclusionPatterns, isExported);
+					path, inclusionPatterns, exclusionPatterns, extraAttributes, isExported);
 
 			ILoadpathEntry[] array = this.allLoadpathEntries;
 
@@ -2274,6 +2276,27 @@ public class RubyModelManager implements IContentTypeChangeListener, ISavePartic
 			this.allLoadpathEntryCount = id + 1;
 
 			return entry;
+		}
+		
+		private ILoadpathAttribute[] loadAttributes() throws IOException {
+			int count = loadInt();
+
+			if (count == 0)
+				return LoadpathEntry.NO_EXTRA_ATTRIBUTES;
+
+			ILoadpathAttribute[] attributes = new ILoadpathAttribute[count];
+
+			for (int i = 0; i < count; ++i)
+				attributes[i] = loadAttribute();
+
+			return attributes;
+		}
+		
+		private ILoadpathAttribute loadAttribute() throws IOException {
+			String name = loadString();
+			String value = loadString();
+
+			return new LoadpathAttribute(name, value);
 		}
 
 		private void loadContainers(IRubyProject project) throws IOException {
@@ -2475,7 +2498,21 @@ public class RubyModelManager implements IContentTypeChangeListener, ISavePartic
 				savePaths(entry.getInclusionPatterns());
 				savePaths(entry.getExclusionPatterns());
 				this.out.writeBoolean(entry.isExported());
+				saveAttributes(entry.getExtraAttributes());
 			}
+		}
+		
+		private void saveAttribute(ILoadpathAttribute attribute) throws IOException {
+			saveString(attribute.getName());
+			saveString(attribute.getValue());
+		}
+
+		private void saveAttributes(ILoadpathAttribute[] attributes) throws IOException {
+			int count = attributes == null ? 0 : attributes.length;
+
+			saveInt(count);
+			for (int i = 0; i < count; ++i)
+				saveAttribute(attributes[i]);
 		}
 
 		private void saveContainers(IRubyProject project, Map containerMap)

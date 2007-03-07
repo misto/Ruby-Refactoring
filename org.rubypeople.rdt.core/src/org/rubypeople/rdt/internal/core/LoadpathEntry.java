@@ -11,6 +11,7 @@ import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.AssertionFailedException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
+import org.rubypeople.rdt.core.ILoadpathAttribute;
 import org.rubypeople.rdt.core.ILoadpathEntry;
 import org.rubypeople.rdt.core.IRubyModelStatus;
 import org.rubypeople.rdt.core.IRubyProject;
@@ -33,6 +34,10 @@ public class LoadpathEntry implements ILoadpathEntry {
 	public static final String TAG_EXPORTED = "exported"; //$NON-NLS-1$
 	public static final String TAG_INCLUDING = "including"; //$NON-NLS-1$
 	public static final String TAG_EXCLUDING = "excluding"; //$NON-NLS-1$
+	public static final String TAG_ATTRIBUTES = "attributes"; //$NON-NLS-1$
+	public static final String TAG_ATTRIBUTE = "attribute"; //$NON-NLS-1$
+	public static final String TAG_ATTRIBUTE_NAME = "name"; //$NON-NLS-1$
+	public static final String TAG_ATTRIBUTE_VALUE = "value"; //$NON-NLS-1$
 
 	static class UnknownXmlElements {
 		String[] attributes;
@@ -55,6 +60,10 @@ public class LoadpathEntry implements ILoadpathEntry {
 	private final static char[][] UNINIT_PATTERNS = new char[][] { "Non-initialized yet".toCharArray()}; //$NON-NLS-1$
 
 	/*
+	 * Default extra attributes
+	 */
+	public final static ILoadpathAttribute[] NO_EXTRA_ATTRIBUTES = {};
+	/*
 	 * Default inclusion pattern set
 	 */
 	public final static IPath[] INCLUDE_ALL = {};
@@ -70,18 +79,23 @@ public class LoadpathEntry implements ILoadpathEntry {
 	 * The export flag
 	 */
 	private boolean isExported;
+	
+	/*
+	 * The extra attributes
+	 */
+	ILoadpathAttribute[] extraAttributes;
 
 	public LoadpathEntry(IProject project) {
-		this(ILoadpathEntry.CPE_PROJECT, project.getFullPath(), INCLUDE_ALL, EXCLUDE_NONE, true);
+		this(ILoadpathEntry.CPE_PROJECT, project.getFullPath(), INCLUDE_ALL, EXCLUDE_NONE, NO_EXTRA_ATTRIBUTES, true);
 		this.project = project;
 	}
 
-	public LoadpathEntry(int entryKind, IPath path, IPath[] inclusionPatterns, IPath[] exclusionPatterns, boolean isExported) {
+	public LoadpathEntry(int entryKind, IPath path, IPath[] inclusionPatterns, IPath[] exclusionPatterns, ILoadpathAttribute[] extraAttributes, boolean isExported) {
 		this.path = path;
 		this.entryKind = entryKind;
 		this.inclusionPatterns = inclusionPatterns;
 		this.exclusionPatterns = exclusionPatterns;
-
+		this.extraAttributes = extraAttributes;
 		if (inclusionPatterns != INCLUDE_ALL && inclusionPatterns.length > 0) {
 			this.fullInclusionPatternChars = UNINIT_PATTERNS;
 		}
@@ -223,6 +237,7 @@ public class LoadpathEntry implements ILoadpathEntry {
 								getPath(),
 								this.inclusionPatterns, 
 								this.exclusionPatterns, 
+								this.extraAttributes,
 								referringEntry.isExported() || this.isExported); // duplicate container entry for tagging it as exported
 		}
 		// no need to clone
@@ -256,6 +271,10 @@ public class LoadpathEntry implements ILoadpathEntry {
 		IPath[] exclusionPatterns = decodePatterns(attributes, TAG_EXCLUDING);
 		if (exclusionPatterns == null) exclusionPatterns = EXCLUDE_NONE;
 
+//		 extra attributes (optional)
+		NodeList attributeList = getChildAttributes(TAG_ATTRIBUTES, children, foundChildren);
+		ILoadpathAttribute[] extraAttributes = decodeExtraAttributes(attributeList);
+		
 		String[] unknownAttributes = null;
 		ArrayList unknownChildren = null;
 
@@ -295,38 +314,43 @@ public class LoadpathEntry implements ILoadpathEntry {
 				path,
 				LoadpathEntry.INCLUDE_ALL, // inclusion patterns
 				LoadpathEntry.EXCLUDE_NONE, // exclusion patterns
+				extraAttributes,
 				isExported);
 				break;				
 			case ILoadpathEntry.CPE_LIBRARY :
 				entry = RubyCore.newLibraryEntry(
 												path,
+												extraAttributes,
 												isExported);
 				break;
 			case ILoadpathEntry.CPE_SOURCE :
 				// must be an entry in this project or specify another project
 				String projSegment = path.segment(0);
 				if (projSegment != null && projSegment.equals(project.getElementName())) { // this project
-					entry = RubyCore.newSourceEntry(path, inclusionPatterns, exclusionPatterns);
+					entry = RubyCore.newSourceEntry(path, inclusionPatterns, exclusionPatterns, extraAttributes);
 				} else { 
 					if (path.segmentCount() == 1) {
 						// another project
 						entry = RubyCore.newProjectEntry(
 												path, 
+												extraAttributes,
 												isExported);
 					} else {
 						// an invalid source folder
-						entry = RubyCore.newSourceEntry(path, inclusionPatterns, exclusionPatterns);
+						entry = RubyCore.newSourceEntry(path, inclusionPatterns, exclusionPatterns, extraAttributes);
 					}
 				}
 				break;
 			case ILoadpathEntry.CPE_VARIABLE :
 				entry = RubyCore.newVariableEntry(
 						path,
+						extraAttributes,
 						isExported);
 				break;
 			case ILoadpathEntry.CPE_CONTAINER :
 				entry = RubyCore.newContainerEntry(
 						path,
+						extraAttributes,
 						isExported);
 				break;
 			default :
@@ -341,6 +365,39 @@ public class LoadpathEntry implements ILoadpathEntry {
 		}
 		
 		return entry;
+	}
+	
+	public static NodeList getChildAttributes(String childName, NodeList children, boolean[] foundChildren) {
+		for (int i = 0, length = foundChildren.length; i < length; i++) {
+			Node node = children.item(i);
+			if (childName.equals(node.getNodeName())) {
+				foundChildren[i] = true;
+				return node.getChildNodes();
+			}
+		}
+		return null;
+	}
+	
+	static ILoadpathAttribute[] decodeExtraAttributes(NodeList attributes) {
+		if (attributes == null) return NO_EXTRA_ATTRIBUTES;
+		int length = attributes.getLength();
+		if (length == 0) return NO_EXTRA_ATTRIBUTES;
+		ILoadpathAttribute[] result = new ILoadpathAttribute[length];
+		int index = 0;
+		for (int i = 0; i < length; ++i) {
+			Node node = attributes.item(i);
+			if (node.getNodeType() == Node.ELEMENT_NODE) {
+				Element attribute = (Element)node;
+				String name = attribute.getAttribute(TAG_ATTRIBUTE_NAME);
+				if (name == null) continue;
+				String value = attribute.getAttribute(TAG_ATTRIBUTE_VALUE);
+				if (value == null) continue;
+				result[index++] = new LoadpathAttribute(name, value);
+			}
+		}
+		if (index != length)
+			System.arraycopy(result, 0, result = new ILoadpathAttribute[index], 0, index);
+		return result;
 	}
 	
 	private static void decodeUnknownNode(Node node, StringBuffer buffer, IRubyProject project) {
@@ -451,17 +508,21 @@ public class LoadpathEntry implements ILoadpathEntry {
 	}
 
 	public boolean isOptional() {
-		// TODO Actually take in extra attributes that specifies whether this could be optional
+		for (int i = 0, length = this.extraAttributes.length; i < length; i++) {
+			ILoadpathAttribute attribute = this.extraAttributes[i];
+			if (ILoadpathAttribute.OPTIONAL.equals(attribute.getName()) && "true".equals(attribute.getValue())) //$NON-NLS-1$
+				return true;
+		}
 		return false;
 	}
 
-	public static IRubyModelStatus validateLoadpathEntry(RubyProject project2,
+	public static IRubyModelStatus validateLoadpathEntry(IRubyProject project,
 			ILoadpathEntry rawEntry, boolean b, boolean c) {
 		// TODO Actually do some checking of the entry
 		return RubyModelStatus.VERIFIED_OK;	
 	}
 
-	public static IRubyModelStatus validateLoadpath(RubyProject project2,
+	public static IRubyModelStatus validateLoadpath(IRubyProject project,
 			ILoadpathEntry[] resolvedPath, IPath projectOutputLocation) {
 		// FIXME Remove outputLocation
 		// TODO Actually do some checking of the loadpath
@@ -508,7 +569,7 @@ public class LoadpathEntry implements ILoadpathEntry {
 				parameters.put(tagName, tagValue);
 			}
 		
-		boolean hasExtraAttributes = false;
+		boolean hasExtraAttributes = this.extraAttributes.length != 0;
 		ArrayList unknownChildren = unknownXmlElements != null ? unknownXmlElements.children : null;
 		boolean hasUnknownChildren = unknownChildren != null;
 		writer.printTag(
@@ -517,12 +578,26 @@ public class LoadpathEntry implements ILoadpathEntry {
 			indent, 
 			newLine, 
 			!hasUnknownChildren/*close tag if no unknown children*/);
-		
+		if (hasExtraAttributes)
+			encodeExtraAttributes(writer, indent, newLine);
 	
 		if (hasUnknownChildren) {
 			encodeUnknownChildren(writer, indent, newLine, unknownChildren);
+		if (hasExtraAttributes || hasUnknownChildren)
 			writer.endTag(TAG_LOADPATHENTRY, indent, true/*insert new line*/);
 		}
+	}
+	
+	void encodeExtraAttributes(XMLWriter writer, boolean indent, boolean newLine) {
+		writer.startTag(TAG_ATTRIBUTES, indent);
+		for (int i = 0; i < this.extraAttributes.length; i++) {
+			ILoadpathAttribute attribute = this.extraAttributes[i];
+			HashMap parameters = new HashMap();
+	    	parameters.put(TAG_ATTRIBUTE_NAME, attribute.getName());
+			parameters.put(TAG_ATTRIBUTE_VALUE, attribute.getValue());
+			writer.printTag(TAG_ATTRIBUTE, parameters, indent, newLine, true);
+		}
+		writer.endTag(TAG_ATTRIBUTES, indent, true/*insert new line*/);
 	}
 	
 	/**
@@ -544,5 +619,9 @@ public class LoadpathEntry implements ILoadpathEntry {
 			String child = (String) unknownChildren.get(i);
 			writer.printString(child, indent, false/*don't insert new line*/);
 		}
+	}
+
+	public ILoadpathAttribute[] getExtraAttributes() {
+		return extraAttributes;
 	}
 }

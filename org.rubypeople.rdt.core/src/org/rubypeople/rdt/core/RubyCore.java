@@ -43,6 +43,7 @@ import org.eclipse.core.runtime.preferences.IEclipsePreferences;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.rubypeople.rdt.internal.core.BatchOperation;
+import org.rubypeople.rdt.internal.core.LoadpathAttribute;
 import org.rubypeople.rdt.internal.core.LoadpathEntry;
 import org.rubypeople.rdt.internal.core.RubyCorePreferenceInitializer;
 import org.rubypeople.rdt.internal.core.RubyModel;
@@ -306,10 +307,15 @@ public class RubyCore extends Plugin {
 	 */
 	public static final String CORE_CIRCULAR_CLASSPATH = PLUGIN_ID + ".circularClasspath"; //$NON-NLS-1$
 
+	/**
+	 * Name of the User Library Container id.
+	 * @since 1.0.0
+	 */
+	public static final String USER_LIBRARY_CONTAINER_ID= "org.rubypeople.rdt.USER_LIBRARY"; //$NON-NLS-1$
+	
+	
 	private static final boolean VERBOSE = false;
 	
-		
-
     private SymbolIndex symbolIndex;
     private ISymbolFinder symbolFinder;
 
@@ -724,8 +730,7 @@ public class RubyCore extends Plugin {
 	 * @see #newSourceEntry(IPath, IPath[], IPath[])
 	 */
 	public static ILoadpathEntry newSourceEntry(IPath path) {
-
-		return newSourceEntry(path, LoadpathEntry.INCLUDE_ALL, LoadpathEntry.EXCLUDE_NONE);
+		return newSourceEntry(path, LoadpathEntry.INCLUDE_ALL, LoadpathEntry.EXCLUDE_NONE, LoadpathEntry.NO_EXTRA_ATTRIBUTES);
 	}
 	
 	/**
@@ -749,7 +754,7 @@ public class RubyCore extends Plugin {
 	 * @return a new source classpath entry
 	 * @since 3.0
 	 */
-	public static ILoadpathEntry newSourceEntry(IPath path, IPath[] inclusionPatterns, IPath[] exclusionPatterns) {
+	public static ILoadpathEntry newSourceEntry(IPath path, IPath[] inclusionPatterns, IPath[] exclusionPatterns, ILoadpathAttribute[] extraAttributes) {
 		if (path == null) Assert.isTrue(false, "Source path cannot be null"); //$NON-NLS-1$
 		if (!path.isAbsolute()) Assert.isTrue(false, "Path for ILoadpathEntry must be absolute"); //$NON-NLS-1$
 		if (exclusionPatterns == null) Assert.isTrue(false, "Exclusion pattern set cannot be null"); //$NON-NLS-1$
@@ -760,10 +765,11 @@ public class RubyCore extends Plugin {
 			path,
 			inclusionPatterns,
 			exclusionPatterns,
+			extraAttributes,
 			false); 
 	}
 
-	public static ILoadpathEntry newLibraryEntry(IPath path, boolean isExported) {
+	public static ILoadpathEntry newLibraryEntry(IPath path, ILoadpathAttribute[] extraAttributes, boolean isExported) {
 				
 			if (path == null) Assert.isTrue(false, "Library path cannot be null"); //$NON-NLS-1$
 			if (!path.isAbsolute()) Assert.isTrue(false, "Path for ILoadpathEntry must be absolute"); //$NON-NLS-1$
@@ -773,11 +779,12 @@ public class RubyCore extends Plugin {
 				RubyProject.canonicalizedPath(path),
 				LoadpathEntry.INCLUDE_ALL, // inclusion patterns
 				LoadpathEntry.EXCLUDE_NONE, // exclusion patterns
+				extraAttributes,
 				isExported);
 		
 	}
 
-	public static ILoadpathEntry newProjectEntry(IPath path, boolean isExported) {
+	public static ILoadpathEntry newProjectEntry(IPath path, ILoadpathAttribute[] extraAttributes, boolean isExported) {
 		if (!path.isAbsolute()) Assert.isTrue(false, "Path for ILoadpathEntry must be absolute"); //$NON-NLS-1$
 		
 		return new LoadpathEntry(
@@ -785,10 +792,11 @@ public class RubyCore extends Plugin {
 			path,
 			LoadpathEntry.INCLUDE_ALL, // inclusion patterns
 			LoadpathEntry.EXCLUDE_NONE, // exclusion patterns
+			extraAttributes,
 			isExported);
 	}
 
-	public static ILoadpathEntry newVariableEntry(IPath variablePath, boolean isExported) {
+	public static ILoadpathEntry newVariableEntry(IPath variablePath, ILoadpathAttribute[] extraAttributes, boolean isExported) {
 		if (variablePath == null) Assert.isTrue(false, "Variable path cannot be null"); //$NON-NLS-1$
 		if (variablePath.segmentCount() < 1) {
 			Assert.isTrue(
@@ -801,10 +809,11 @@ public class RubyCore extends Plugin {
 			variablePath,
 			LoadpathEntry.INCLUDE_ALL, // inclusion patterns
 			LoadpathEntry.EXCLUDE_NONE, // exclusion patterns	
+			extraAttributes,
 			isExported);
 	}
 
-	public static ILoadpathEntry newContainerEntry(IPath containerPath,
+	public static ILoadpathEntry newContainerEntry(IPath containerPath, ILoadpathAttribute[] extraAttributes,
 			boolean isExported) {
 		if (containerPath == null) {
 			Assert.isTrue(false, "Container path cannot be null"); //$NON-NLS-1$
@@ -818,6 +827,7 @@ public class RubyCore extends Plugin {
 			containerPath,
 			LoadpathEntry.INCLUDE_ALL, // inclusion patterns
 			LoadpathEntry.EXCLUDE_NONE, // exclusion patterns
+			extraAttributes,
 			isExported);
 	}
 
@@ -845,11 +855,13 @@ public class RubyCore extends Plugin {
 						// internal project
 						return RubyCore.newProjectEntry(
 								resolvedPath,
+								entry.getExtraAttributes(),
 								entry.isExported());					
 					case IResource.FOLDER : 
 						// internal binary folder
 						return RubyCore.newLibraryEntry(
 								resolvedPath,
+								entry.getExtraAttributes(),
 								entry.isExported());
 				}
 			}
@@ -858,10 +870,10 @@ public class RubyCore extends Plugin {
 		if (target instanceof File) {
 			File externalFile = RubyModel.getFolder(target);
 			if (externalFile != null) {
-				return RubyCore.newLibraryEntry(resolvedPath, entry.isExported());				
+				return RubyCore.newLibraryEntry(resolvedPath, entry.getExtraAttributes(), entry.isExported());				
 			} else { // external binary folder
 				if (resolvedPath.isAbsolute()){
-					return RubyCore.newLibraryEntry(resolvedPath, entry.isExported());
+					return RubyCore.newLibraryEntry(resolvedPath, entry.getExtraAttributes(), entry.isExported());
 				}
 			}
 		}
@@ -1317,19 +1329,45 @@ public class RubyCore extends Plugin {
 	}
 
 	public static ILoadpathEntry newProjectEntry(IPath fullPath) {
-		return newProjectEntry(fullPath, false);
+		return newProjectEntry(fullPath, LoadpathEntry.NO_EXTRA_ATTRIBUTES, false);
 	}
 
 	public static ILoadpathEntry newVariableEntry(IPath path) {
-		return newVariableEntry(path, false);
+		return newVariableEntry(path, LoadpathEntry.NO_EXTRA_ATTRIBUTES, false);
 	}
 
 	public static ILoadpathEntry newContainerEntry(IPath path) {
-		return newContainerEntry(path, false);
+		return newContainerEntry(path, LoadpathEntry.NO_EXTRA_ATTRIBUTES, false);
 	}
 
 	public static ILoadpathEntry newLibraryEntry(IPath p) {
-		return newLibraryEntry(p, false);
+		return newLibraryEntry(p, LoadpathEntry.NO_EXTRA_ATTRIBUTES, false);
+	}
+
+	/**
+	 * Creates and returns a new loadpath attribute with the given name and the given value.
+	 * 
+	 * @return a new loadpath attribute
+	 * @since 0.9.0
+	 */
+	public static ILoadpathAttribute newLoadpathAttribute(String name, String value) {
+		return new LoadpathAttribute(name, value);
+	}
+
+	public static ILoadpathEntry newLibraryEntry(IPath path, boolean isExported) {
+		return newLibraryEntry(path, LoadpathEntry.NO_EXTRA_ATTRIBUTES, isExported);
+	}
+
+	public static ILoadpathEntry newVariableEntry(IPath path, boolean isExported) {
+		return newVariableEntry(path, LoadpathEntry.NO_EXTRA_ATTRIBUTES, isExported);
+	}
+
+	public static ILoadpathEntry newProjectEntry(IPath path, boolean isExported) {
+		return newProjectEntry(path, LoadpathEntry.NO_EXTRA_ATTRIBUTES, isExported);
+	}
+
+	public static ILoadpathEntry newContainerEntry(IPath path, boolean isExported) {
+		return newContainerEntry(path, LoadpathEntry.NO_EXTRA_ATTRIBUTES, isExported);
 	}
 
 }

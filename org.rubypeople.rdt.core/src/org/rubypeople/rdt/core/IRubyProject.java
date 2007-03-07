@@ -41,6 +41,8 @@ public interface IRubyProject extends IRubyElement, IParent {
 	public abstract IProject getProject();
 
 	public String[] getRequiredProjectNames() throws RubyModelException;
+	
+	public ILoadpathEntry[] readRawLoadpath();
 
 	/**
 	 * Returns the first type found following this project's classpath with the

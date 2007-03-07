@@ -947,6 +947,14 @@ public class RubyProject extends Openable implements IProjectNature, IRubyElemen
 
 		return new ILoadpathEntry[] { RubyCore.newSourceEntry(this.project.getFullPath()) };
 	}
+	
+	/**
+	 * @see IRubyProject
+	 */
+	public ILoadpathEntry[] readRawLoadpath() {
+		// Read loadpath file without creating markers nor logging problems
+		return this.readLoadpathFile(false, false);
+	}
 
 	/**
 	 * Reads the .classpath file from disk and returns the list of entries it

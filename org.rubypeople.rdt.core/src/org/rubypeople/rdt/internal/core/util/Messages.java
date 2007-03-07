@@ -201,4 +201,12 @@ public final class Messages extends NLS {
     public static String bind(String message, Object[] bindings) {
         return MessageFormat.format(message, bindings);
     }
+
+	public static String format(String message, String[] bindings) {
+		return bind(message, bindings);
+	}
+
+	public static String format(String message, String binding) {
+		return bind(message, binding);
+	}
 }

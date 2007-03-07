@@ -359,4 +359,12 @@ public interface ILoadpathEntry {
 	 */
 	boolean isExported();
 
+	/**
+	 * Returns the extra classpath attributes for this classpath entry. Returns an empty array if this entry
+	 * has no extra attributes.
+	 * 
+	 * @return the possibly empty list of extra classpath attributes for this classpath entry
+	 * @since 1.0.0
+	 */
+	ILoadpathAttribute[] getExtraAttributes();
 }
