@@ -11,4 +11,7 @@ public interface RubyActionIds {
 	 * (value <code>"org.rubypeople.rdt.ui.actions.Uncomment"</code>).
 	 */
 	public static final String UNCOMMENT = "org.rubypeople.rdt.ui.actions.Uncomment";
+	
+	public static final String TOGGLE_COMMENT = "org.rubypeople.rdt.ui.actions.ToggleComment";
+	public static final String FORMAT = "org.rubypeople.rdt.ui.actions.Format";
 }

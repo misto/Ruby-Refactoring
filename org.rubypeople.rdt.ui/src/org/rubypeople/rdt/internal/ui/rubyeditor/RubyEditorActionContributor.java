@@ -72,6 +72,8 @@ public class RubyEditorActionContributor extends BasicTextEditorActionContributo
         actionBars.setGlobalActionHandler(RubyActionIds.COMMENT, getAction(textEditor, "Comment"));
         actionBars.setGlobalActionHandler(RubyActionIds.UNCOMMENT, getAction(textEditor,
                 "Uncomment"));
+        actionBars.setGlobalActionHandler(RubyActionIds.TOGGLE_COMMENT, getAction(textEditor, "ToggleComment")); //$NON-NLS-1$
+        actionBars.setGlobalActionHandler(RubyActionIds.FORMAT, getAction(textEditor, "Format")); //$NON-NLS-1$
 
         /** The global actions to be connected with editor actions */
         IAction action = getAction(textEditor, ITextEditorActionConstants.NEXT);

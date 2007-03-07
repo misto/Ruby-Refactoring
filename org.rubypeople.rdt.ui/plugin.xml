@@ -389,7 +389,7 @@
             symbolicFontName="org.rubypeople.rdt.ui.editors.textfont"
             id="org.rubypeople.rdt.ui.ExternalRubyEditor">
       </editor>
-   </extension>
+   </extension> 
    
    <extension
          point="org.eclipse.ui.contexts">
@@ -618,6 +618,13 @@
             retarget="true"
             menubarPath="org.rubypeople.rdt.ui.ruby.menu/editGroup"
             id="org.rubypeople.rdt.ui.actions.ToggleComment">
+         </action>
+         <action
+            definitionId="org.rubypeople.rdt.ui.edit.text.ruby.format"
+            label="%FormatAction.label"
+            retarget="true"
+            menubarPath="org.rubypeople.rdt.ui.ruby.menu/editGroup"
+            id="org.rubypeople.rdt.ui.actions.Format">
          </action>
          <action
                definitionId="org.rubypeople.rdt.ui.edit.text.ruby.surround.with.begin.rescue"
