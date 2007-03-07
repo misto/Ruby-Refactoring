@@ -34,6 +34,7 @@ import org.rubypeople.rdt.core.ISourceFolder;
 import org.rubypeople.rdt.core.ISourceFolderRoot;
 import org.rubypeople.rdt.core.RubyCore;
 import org.rubypeople.rdt.core.RubyModelException;
+import org.rubypeople.rdt.internal.core.LoadpathEntry;
 import org.rubypeople.rdt.internal.core.util.CharOperation;
 import org.rubypeople.rdt.internal.core.util.Util;
 
@@ -430,7 +431,8 @@ public abstract class AbstractRubyModelTest extends TestCase {
 						RubyCore.newSourceEntry(
 							projectPath.append(sourcePath), 
 							inclusionPaths,
-							exclusionPaths);
+							exclusionPaths,
+							LoadpathEntry.NO_EXTRA_ATTRIBUTES);
 				}
 				for (int i= 0; i < libLength; i++) {
 					String lib = libraries[i];
