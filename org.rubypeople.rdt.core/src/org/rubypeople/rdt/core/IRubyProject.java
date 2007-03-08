@@ -146,4 +146,24 @@ public interface IRubyProject extends IRubyElement, IParent {
 	public abstract ISourceFolderRoot getSourceFolderRoot(String rootPath);
 
 	public abstract ISourceFolderRoot findSourceFolderRoot(IPath path) throws RubyModelException;
+
+	/**
+	 * Returns the existing package fragment roots identified by the given entry.
+	 * Note that a classpath entry that refers to another project may
+	 * have more than one root (if that project has more than on root
+	 * containing source), and classpath entries within the current
+	 * project identify a single root.
+	 * <p>
+	 * If the classpath entry denotes a variable, it will be resolved and return
+	 * the roots of the target entry (empty if not resolvable).
+	 * <p>
+	 * If the classpath entry denotes a container, it will be resolved and return
+	 * the roots corresponding to the set of container entries (empty if not resolvable).
+	 * 
+	 * @param entry the given entry
+	 * @return the existing package fragment roots identified by the given entry
+	 * @see ILoadpathContainer
+	 * @since 1.0.0
+	 */
+	ISourceFolderRoot[] findSourceFolderRoots(ILoadpathEntry entry);
 }

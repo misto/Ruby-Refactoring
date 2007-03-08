@@ -109,5 +109,18 @@ public interface ISourceFolderRoot extends IParent, IRubyElement, IOpenable {
 	Object[] getNonRubyResources() throws RubyModelException;
 
 	ISourceFolder getSourceFolder(String packName);
+
+	/**
+	 * Returns the first raw loadpath entry that corresponds to this package
+	 * fragment root.
+	 * A raw loadpath entry corresponds to a package fragment root if once resolved
+	 * this entry's path is equal to the root's path. 
+	 * 
+	 * @exception RubyModelException if this element does not exist or if an
+	 *		exception occurs while accessing its corresponding resource.
+	 * @return the first raw classpath entry that corresponds to this package fragment root
+	 * @since 1.0.0
+	 */
+	ILoadpathEntry getRawLoadpathEntry() throws RubyModelException;
 	
 }

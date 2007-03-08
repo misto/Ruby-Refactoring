@@ -2382,6 +2382,27 @@ public class RubyProject extends Openable implements IProjectNature, IRubyElemen
 	/**
 	 * @see IRubyProject
 	 */
+	public ISourceFolderRoot[] findSourceFolderRoots(ILoadpathEntry entry) {
+		try {
+			ILoadpathEntry[] classpath = this.getRawLoadpath();
+			for (int i = 0, length = classpath.length; i < length; i++) {
+				if (classpath[i].equals(entry)) { // entry may need to be resolved
+					return 
+						computeSourceFolderRoots(
+							getResolvedLoadpath(new ILoadpathEntry[] {entry}, null, true, false, null/*no reverse map*/), 
+							false, // don't retrieve exported roots
+							null); /*no reverse map*/
+				}
+			}
+		} catch (RubyModelException e) {
+			// project doesn't exist: return an empty array
+		}
+		return new ISourceFolderRoot[] {};
+	}
+	
+	/**
+	 * @see IRubyProject
+	 */
 	public ISourceFolderRoot[] getAllSourceFolderRoots()
 		throws RubyModelException {
 
