@@ -159,6 +159,7 @@ public class RubyScriptStructureBuilder implements NodeVisitor {
 	private Map newElements;
 	private RubyElementInfo importContainerInfo;
 	private boolean DEBUG = false;
+	private boolean inSingletonClass;
 
 	/**
 	 * 
@@ -750,7 +751,7 @@ public class RubyScriptStructureBuilder implements NodeVisitor {
 
 		RubyElement type = getCurrentType();
 		String[] parameterNames = ASTUtil.getArgs(iVisited.getArgsNode(), iVisited.getScope());
-		RubyMethod method = new RubyMethod(type, name, parameterNames);
+		RubyMethod method = createMethod(name, type, parameterNames);
 		modelStack.push(method);
 
 		RubyElementInfo parentInfo = infoStack.peek();
@@ -772,6 +773,12 @@ public class RubyScriptStructureBuilder implements NodeVisitor {
 		modelStack.pop();
 		infoStack.pop();
 		return null;
+	}
+
+	private RubyMethod createMethod(String name, RubyElement type, String[] parameterNames) {
+		if (inSingletonClass)
+			return new RubySingletonMethod(type, name, parameterNames);
+		return new RubyMethod(type, name, parameterNames);
 	}
 
 	/**
@@ -1558,9 +1565,15 @@ public class RubyScriptStructureBuilder implements NodeVisitor {
 	 * @see org.jruby.ast.visitor.NodeVisitor#visitSClassNode(org.jruby.ast.SClassNode)
 	 */
 	public Instruction visitSClassNode(SClassNode iVisited) {
-		handleNode(iVisited);
-		visitNode(iVisited.getReceiverNode());
-		visitNode(iVisited.getBodyNode());
+		handleNode(iVisited);		
+		
+		Node receiver = iVisited.getReceiverNode();
+		if (receiver instanceof SelfNode) {
+//			 TODO We need to mark that we're in the singlteon class - this means all instance methods are actually singleton methods on the class we're in...
+			inSingletonClass = true;
+			visitNode(iVisited.getBodyNode());
+			inSingletonClass = false;
+		}		
 		return null;
 	}
 
