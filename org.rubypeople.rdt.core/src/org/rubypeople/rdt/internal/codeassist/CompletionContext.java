@@ -84,6 +84,10 @@ public class CompletionContext {
 		return correctedSource;
 	}
 	
+	public boolean hasReceiver() {
+		return getFullPrefix().indexOf('.') > 1;
+	}
+	
 	/**
 	 * The original source
 	 * @return

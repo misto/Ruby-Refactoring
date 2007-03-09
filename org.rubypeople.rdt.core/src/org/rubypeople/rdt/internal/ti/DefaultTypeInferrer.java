@@ -68,8 +68,14 @@ public class DefaultTypeInferrer implements ITypeInferrer {
 		tryGlobalVarNode(node, guesses);
 
 		tryWellKnownMethodCalls(node, guesses);
+		if (node instanceof Colon2Node) { // if this is a constant, it may be the type name!
+			Colon2Node colonNode = (Colon2Node)node;
+			String name = ASTUtil.getFullyQualifiedName(colonNode);
+			guesses.add(new BasicTypeGuess(name, 100));
+		}
 		if (node instanceof ConstNode) { // if this is a constant, it may be the type name!
-			guesses.add(new BasicTypeGuess(((ConstNode)node).getName(), 100));
+			ConstNode constNode = (ConstNode)node;
+			guesses.add(new BasicTypeGuess(constNode.getName(), 100));
 		}
 		if (guesses.isEmpty()) { // if we have no guesses..
 			if (node instanceof CallNode) { // and it's a method call, try inferring receiver type

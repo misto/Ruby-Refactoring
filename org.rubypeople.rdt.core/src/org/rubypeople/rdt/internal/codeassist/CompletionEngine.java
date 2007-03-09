@@ -192,6 +192,7 @@ public class CompletionEngine {
 			switch (method.getVisibility()) {
 			case IMethod.PRIVATE:
 				flags |= Flags.AccPrivate;
+				if (fContext.hasReceiver()) return null; // can't invoke a private method on a receiver
 				break;
 			case IMethod.PUBLIC:
 				flags |= Flags.AccPublic;
