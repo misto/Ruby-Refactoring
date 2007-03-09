@@ -389,7 +389,7 @@ public abstract class RubyModelOperation implements IWorkspaceRunnable, IProgres
      * Returns an empty stack if no operations are currently running in this thread. 
      */
     protected ArrayList<RubyModelOperation> getCurrentOperationStack() {
-        ArrayList<RubyModelOperation> stack = (ArrayList<RubyModelOperation>)operationStacks.get();
+        ArrayList<RubyModelOperation> stack = operationStacks.get();
         if (stack == null) {
             stack = new ArrayList<RubyModelOperation>();
             operationStacks.set(stack);
@@ -585,7 +585,7 @@ public abstract class RubyModelOperation implements IWorkspaceRunnable, IProgres
             }
         }
         
-        RubyModelOperation topLevelOp = (RubyModelOperation)getCurrentOperationStack().get(0);
+        RubyModelOperation topLevelOp = getCurrentOperationStack().get(0);
         IPostAction[] postActions = topLevelOp.actions;
         if (postActions == null) {
             topLevelOp.actions = postActions = new IPostAction[1];
@@ -640,7 +640,7 @@ public abstract class RubyModelOperation implements IWorkspaceRunnable, IProgres
             System.out.println("(" + Thread.currentThread() + ") [RubyModelOperation.removeAllPostAction(String)] Removing actions " + actionID); //$NON-NLS-1$ //$NON-NLS-2$
         }
         
-        RubyModelOperation topLevelOp = (RubyModelOperation)getCurrentOperationStack().get(0);
+        RubyModelOperation topLevelOp = getCurrentOperationStack().get(0);
         IPostAction[] postActions = topLevelOp.actions;
         if (postActions == null) return;
         int index = this.actionsStart-1;
@@ -684,7 +684,7 @@ public abstract class RubyModelOperation implements IWorkspaceRunnable, IProgres
                 
                 // update RubyModel using deltas that were recorded during this operation
                 for (int i = previousDeltaCount, size = deltaProcessor.rubyModelDeltas.size(); i < size; i++) {
-                    deltaProcessor.updateRubyModel((IRubyElementDelta)deltaProcessor.rubyModelDeltas.get(i));
+                    deltaProcessor.updateRubyModel(deltaProcessor.rubyModelDeltas.get(i));
                 }
                 
                 // close the parents of the created elements and reset their project's cache (in case we are in an 
@@ -757,7 +757,7 @@ public abstract class RubyModelOperation implements IWorkspaceRunnable, IProgres
      * Registers the given attribute at the given key with the top level operation.
      */
     protected void setAttribute(Object key, Object attribute) {
-        RubyModelOperation topLevelOp = (RubyModelOperation)this.getCurrentOperationStack().get(0);
+        RubyModelOperation topLevelOp = this.getCurrentOperationStack().get(0);
         if (topLevelOp.attributes == null) {
             topLevelOp.attributes = new HashMap<Object, Object>();
         }

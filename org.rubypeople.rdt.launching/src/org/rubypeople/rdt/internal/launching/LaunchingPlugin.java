@@ -437,7 +437,7 @@ public class LaunchingPlugin extends Plugin implements IVMInstallChangedListener
 		Iterator locations = fgLibraryInfoMap.keySet().iterator();
 		while (locations.hasNext()) {
 			String home = (String)locations.next();
-			LibraryInfo info = (LibraryInfo) fgLibraryInfoMap.get(home);
+			LibraryInfo info = fgLibraryInfoMap.get(home);
 			Element locationElemnet = infoAsElement(doc, info);
 			locationElemnet.setAttribute("home", home); //$NON-NLS-1$
 			config.appendChild(locationElemnet);
@@ -494,7 +494,7 @@ public class LaunchingPlugin extends Plugin implements IVMInstallChangedListener
 		if (fgLibraryInfoMap == null) {
 			restoreLibraryInfo(); 
 		}
-		return (LibraryInfo) fgLibraryInfoMap.get(javaInstallPath);
+		return fgLibraryInfoMap.get(javaInstallPath);
 	}
 	
 	/**
@@ -574,7 +574,7 @@ public class LaunchingPlugin extends Plugin implements IVMInstallChangedListener
 				}
 			}
 		}			
-		return (String[])paths.toArray(new String[paths.size()]);		
+		return paths.toArray(new String[paths.size()]);		
 	}
 	
 	/**
@@ -588,7 +588,7 @@ public class LaunchingPlugin extends Plugin implements IVMInstallChangedListener
 		if (fClasspathEntryExtensions == null) {
 			initializeRuntimeLoadpathExtensions();
 		}
-		IConfigurationElement config = (IConfigurationElement) fClasspathEntryExtensions.get(id);
+		IConfigurationElement config = fClasspathEntryExtensions.get(id);
 		if (config == null) {
 			abort(MessageFormat.format(LaunchingMessages.LaunchingPlugin_32, id), null); 
 		}
@@ -764,7 +764,7 @@ public class LaunchingPlugin extends Plugin implements IVMInstallChangedListener
 							String firstSegment = reference.segment(0);
 							if (RubyRuntime.RUBY_CONTAINER.equals(firstSegment)) {
 								if (reference.segmentCount() > 1) {
-									IPath renamed = (IPath)fRenamedContainerIds.get(reference);
+									IPath renamed = fRenamedContainerIds.get(reference);
 									if (renamed != null) {
 										// The JRE was re-named. This changes the identifier of
 										// the container entry.

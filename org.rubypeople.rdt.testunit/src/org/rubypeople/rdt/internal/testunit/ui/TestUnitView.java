@@ -253,7 +253,7 @@ public class TestUnitView extends ViewPart implements ITestRunListener3 {
 
 		loadTestRunTabs(tabFolder);
 		tabFolder.setSelection(0);
-		fActiveRunTab = (TestRunTab) fTestRunTabs.firstElement();
+		fActiveRunTab = fTestRunTabs.firstElement();
 
 		tabFolder.addSelectionListener(new SelectionAdapter() {
 
@@ -342,7 +342,7 @@ public class TestUnitView extends ViewPart implements ITestRunListener3 {
 
 	public TestRunInfo getTestInfo(String testId) {
 		if (testId == null) return null;
-		return (TestRunInfo) fTestInfos.get(testId);
+		return fTestInfos.get(testId);
 	}
 
 	private void showFailure(final TestRunInfo failure) {
@@ -862,7 +862,7 @@ public class TestUnitView extends ViewPart implements ITestRunListener3 {
 	}
 
 	protected void selectFirstFailure() {
-		TestRunInfo firstFailure = (TestRunInfo) fFailures.get(0);
+		TestRunInfo firstFailure = fFailures.get(0);
 		if (firstFailure != null && fAutoScroll) {
 			fActiveRunTab.setSelectedTest(firstFailure.getTestId());
 			handleTestSelected(firstFailure.getTestId());

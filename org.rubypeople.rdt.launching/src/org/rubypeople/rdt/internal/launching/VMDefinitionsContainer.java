@@ -104,7 +104,7 @@ public class VMDefinitionsContainer {
 	public void addVM(IVMInstall vm) {
 		if (!fVMList.contains(vm)) {	
 			IVMInstallType vmInstallType = vm.getVMInstallType();
-			List<IVMInstall> vmList = (List<IVMInstall>) fVMTypeToVMMap.get(vmInstallType);
+			List<IVMInstall> vmList = fVMTypeToVMMap.get(vmInstallType);
 			if (vmList == null) {
 				vmList = new ArrayList<IVMInstall>(3);
 				fVMTypeToVMMap.put(vmInstallType, vmList);			
@@ -493,7 +493,7 @@ public class VMDefinitionsContainer {
 				}
 			}
 		}	
-		vm.setLibraryLocations((IPath[])locations.toArray(new IPath[locations.size()]));
+		vm.setLibraryLocations(locations.toArray(new IPath[locations.size()]));
 	}
 	
 	/**
@@ -504,7 +504,7 @@ public class VMDefinitionsContainer {
 	public void removeVM(IVMInstall vm) {
 		fVMList.remove(vm);
 		fInvalidVMList.remove(vm);
-		List list = (List) fVMTypeToVMMap.get(vm.getVMInstallType());
+		List list = fVMTypeToVMMap.get(vm.getVMInstallType());
 		if (list != null) {
 			list.remove(vm);
 		}

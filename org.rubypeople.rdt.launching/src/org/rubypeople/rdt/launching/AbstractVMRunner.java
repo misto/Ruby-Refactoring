@@ -22,7 +22,6 @@ import org.eclipse.debug.core.DebugPlugin;
 import org.eclipse.debug.core.ILaunch;
 import org.eclipse.debug.core.model.IProcess;
 import org.rubypeople.rdt.internal.launching.LaunchingMessages;
-import org.rubypeople.rdt.internal.launching.LaunchingPlugin;
 
 /**
  * Abstract implementation of a VM runner.

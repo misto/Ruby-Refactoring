@@ -128,7 +128,7 @@ public class StandardVMType extends AbstractVMInstallType {
 		String installPath = rubyHome.getAbsolutePath();
 		LibraryInfo info = LaunchingPlugin.getLibraryInfo(installPath);
 		if (info == null) {
-			info= (LibraryInfo)fgFailedInstallPath.get(installPath);
+			info= fgFailedInstallPath.get(installPath);
 			if (info == null) {
 				info = generateLibraryInfo(rubyHome, rubyExecutable);
 				if (info == null) {
@@ -201,7 +201,7 @@ public class StandardVMType extends AbstractVMInstallType {
 		if (lines.size() > 0) {
 			String version = lines.remove(0);
 		    if (lines.size() > 0) {
-		    	String[] loadpath = (String[]) lines.toArray(new String[lines.size()]);
+		    	String[] loadpath = lines.toArray(new String[lines.size()]);
 		    	return new LibraryInfo(version, loadpath);		
 		    }
 		}

@@ -1,11 +1,9 @@
 package org.rubypeople.rdt.internal.debug.ui.launcher;
 
-import org.eclipse.core.resources.IProject;
 import org.eclipse.jface.viewers.ILabelProvider;
 import org.eclipse.jface.viewers.ILabelProviderListener;
 import org.eclipse.swt.graphics.Image;
 import org.rubypeople.rdt.core.ILoadpathEntry;
-import org.rubypeople.rdt.internal.core.LoadpathEntry;
 import org.rubypeople.rdt.internal.debug.ui.RdtDebugUiPlugin;
 
 public class LoadPathEntryLabelProvider implements ILabelProvider {

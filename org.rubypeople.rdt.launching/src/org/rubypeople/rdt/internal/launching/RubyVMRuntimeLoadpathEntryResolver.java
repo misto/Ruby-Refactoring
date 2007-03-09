@@ -100,7 +100,7 @@ public class RubyVMRuntimeLoadpathEntryResolver implements IRuntimeLoadpathEntry
 						String dir = libraryPath.toFile().getParent();
 						resolvedEntries.add(resolveLibraryLocation(vm, location, kind, overrideRubydoc));
 					}
-					return (IRuntimeLoadpathEntry[]) resolvedEntries.toArray(new IRuntimeLoadpathEntry[resolvedEntries.size()]);
+					return resolvedEntries.toArray(new IRuntimeLoadpathEntry[resolvedEntries.size()]);
 				}
 			}
 		}
@@ -111,7 +111,7 @@ public class RubyVMRuntimeLoadpathEntryResolver implements IRuntimeLoadpathEntry
 				resolvedEntries.add(resolveLibraryLocation(vm, libs[i], kind, overrideRubydoc));
 			}
 		}
-		return (IRuntimeLoadpathEntry[]) resolvedEntries.toArray(new IRuntimeLoadpathEntry[resolvedEntries.size()]);
+		return resolvedEntries.toArray(new IRuntimeLoadpathEntry[resolvedEntries.size()]);
 	}
 		
 	/**

@@ -22,7 +22,7 @@ public class ThreadInfoReader extends XmlStreamReader {
 
 	public ThreadInfo[] readThreads() throws XmlPullParserException, IOException, XmlStreamReaderException {
 		this.read();
-		return (ThreadInfo[]) threads.toArray(new ThreadInfo[threads.size()]);
+		return threads.toArray(new ThreadInfo[threads.size()]);
 	}
 
 	protected boolean processStartElement(XmlPullParser xpp) {

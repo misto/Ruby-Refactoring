@@ -1290,7 +1290,7 @@ public class RubyRuntime {
 			}
 		}
 		loadpathEntries.add(newDefaultProjectLoadpathEntry(project));
-		return (IRuntimeLoadpathEntry[]) loadpathEntries.toArray(new IRuntimeLoadpathEntry[loadpathEntries.size()]);
+		return loadpathEntries.toArray(new IRuntimeLoadpathEntry[loadpathEntries.size()]);
 	}
 	
 	/**
@@ -1424,8 +1424,8 @@ public class RubyRuntime {
 				break;
 		}			
 		List<IRuntimeLoadpathEntry> resolved = new ArrayList<IRuntimeLoadpathEntry>(cpes.length);
-		List<IRubyProject> projects = (List<IRubyProject>) fgProjects.get();
-		Integer count = (Integer) fgEntryCount.get();
+		List<IRubyProject> projects = fgProjects.get();
+		Integer count = fgEntryCount.get();
 		if (projects == null) {
 			projects = new ArrayList<IRubyProject>();
 			fgProjects.set(projects);
@@ -1470,7 +1470,7 @@ public class RubyRuntime {
 		// set loadpath property
 		IRuntimeLoadpathEntry[] result = new IRuntimeLoadpathEntry[resolved.size()];
 		for (int i = 0; i < result.length; i++) {
-			result[i] = (IRuntimeLoadpathEntry) resolved.get(i);
+			result[i] = resolved.get(i);
 			result[i].setLoadpathProperty(property);
 		}
 		return result;

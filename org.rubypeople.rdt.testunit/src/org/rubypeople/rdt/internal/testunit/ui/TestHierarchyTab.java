@@ -465,7 +465,7 @@ public class TestHierarchyTab extends TestRunTab implements IMenuListener {
 		int testCount = Integer.parseInt(treeEntry.substring(index2 + 1));
 		TreeItem treeItem;
 
-		while ((fSuiteInfos.size() > 0) && (((SuiteInfo) fSuiteInfos.lastElement()).fTestCount == 0)) {
+		while ((fSuiteInfos.size() > 0) && ((fSuiteInfos.lastElement()).fTestCount == 0)) {
 			fSuiteInfos.removeElementAt(fSuiteInfos.size() - 1);
 		}
 
@@ -474,14 +474,14 @@ public class TestHierarchyTab extends TestRunTab implements IMenuListener {
 			treeItem.setImage(fSuiteIcon);
 			fSuiteInfos.addElement(new SuiteInfo(treeItem, testCount));
 		} else if (isSuite.equals("true")) { //$NON-NLS-1$
-			treeItem = new TreeItem(((SuiteInfo) fSuiteInfos.lastElement()).fTreeItem, SWT.NONE);
+			treeItem = new TreeItem((fSuiteInfos.lastElement()).fTreeItem, SWT.NONE);
 			treeItem.setImage(fSuiteIcon);
-			((SuiteInfo) fSuiteInfos.lastElement()).fTestCount -= 1;
+			(fSuiteInfos.lastElement()).fTestCount -= 1;
 			fSuiteInfos.addElement(new SuiteInfo(treeItem, testCount));
 		} else {
-			treeItem = new TreeItem(((SuiteInfo) fSuiteInfos.lastElement()).fTreeItem, SWT.NONE);
+			treeItem = new TreeItem((fSuiteInfos.lastElement()).fTreeItem, SWT.NONE);
 			treeItem.setImage(fTestIcon);
-			((SuiteInfo) fSuiteInfos.lastElement()).fTestCount -= 1;
+			(fSuiteInfos.lastElement()).fTestCount -= 1;
 			mapTest(testInfo, treeItem);
 		}
 		treeItem.setText(testInfo.getTestMethodName());

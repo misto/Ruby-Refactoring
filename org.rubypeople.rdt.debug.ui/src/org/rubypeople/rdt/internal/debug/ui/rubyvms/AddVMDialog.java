@@ -335,7 +335,7 @@ public class AddVMDialog extends StatusDialog {
 			} else {
 				IStatus s = ResourcesPlugin.getWorkspace().validateName(name, IResource.FILE);
 				if (!s.isOK()) {
-					status.setError(MessageFormat.format(RubyVMMessages.AddVMDialog_JRE_name_must_be_a_valid_file_name___0__1, new String[]{s.getMessage()})); 
+					status.setError(MessageFormat.format(RubyVMMessages.AddVMDialog_JRE_name_must_be_a_valid_file_name___0__1, s.getMessage())); 
 				}
 			}
 		}

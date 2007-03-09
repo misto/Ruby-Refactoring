@@ -190,7 +190,7 @@ public class DeltaProcessor {
     public void updateRubyModel(IRubyElementDelta customDelta) {
         if (customDelta == null) {
             for (int i = 0, length = this.rubyModelDeltas.size(); i < length; i++) {
-                IRubyElementDelta delta = (IRubyElementDelta) this.rubyModelDeltas.get(i);
+                IRubyElementDelta delta = this.rubyModelDeltas.get(i);
                 this.modelUpdater.processRubyDelta(delta);
             }
         } else {

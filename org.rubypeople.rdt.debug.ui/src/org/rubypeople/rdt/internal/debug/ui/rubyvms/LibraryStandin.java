@@ -106,7 +106,7 @@ public final class LibraryStandin {
 	IStatus validate() {
 		if (!getSystemLibraryPath().toFile().exists()) {
 			return new Status(IStatus.ERROR, RdtDebugUiPlugin.getUniqueIdentifier(), RdtDebugUiConstants.INTERNAL_ERROR, 
-					MessageFormat.format(RubyVMMessages.LibraryStandin_0, new String[]{getSystemLibraryPath().toOSString()}), null);
+					MessageFormat.format(RubyVMMessages.LibraryStandin_0, getSystemLibraryPath().toOSString()), null);
 		}
 		return Status.OK_STATUS;
 	}

@@ -148,7 +148,7 @@ public class DefaultProjectLoadpathEntry extends AbstractRuntimeLoadpathEntry {
 				ordered.add(runtimeEntries[i]);
 			} 
 		}
-		return (IRuntimeLoadpathEntry[]) ordered.toArray(new IRuntimeLoadpathEntry[ordered.size()]);		
+		return ordered.toArray(new IRuntimeLoadpathEntry[ordered.size()]);		
 	}
 	
 	/**
