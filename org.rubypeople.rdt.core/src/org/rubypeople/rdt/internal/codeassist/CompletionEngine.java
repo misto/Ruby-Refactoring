@@ -107,7 +107,16 @@ public class CompletionEngine {
 
 	private void suggestMethodsForEnclosingType(IRubyScript script) throws RubyModelException {
 		IMember element = (IMember) script.getElementAt(fContext.getOffset());
-		IType type = element.getDeclaringType();
+		IType type = null;
+		if (element == null) {
+			// DWe're in the top level, so we're in "Object"
+		    RubyElementRequestor requestor = new RubyElementRequestor(script);
+		    IType[] types = requestor.findType("Object");
+		    if (types != null && types.length > 0) type = types[0];
+		} else {
+			type = element.getDeclaringType();
+		}
+		if (type == null) return;
 		List<CompletionProposal> list = sort(suggestMethods(100, type));
 		for (CompletionProposal proposal : list) {
 			fRequestor.accept(proposal);
