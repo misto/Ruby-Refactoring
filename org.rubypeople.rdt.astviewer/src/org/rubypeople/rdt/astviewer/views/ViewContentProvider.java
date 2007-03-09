@@ -28,6 +28,7 @@
 
 package org.rubypeople.rdt.astviewer.views;
 
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.Iterator;
 
@@ -36,7 +37,9 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.jface.viewers.IStructuredContentProvider;
 import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.viewers.Viewer;
+import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IFileEditorInput;
+import org.eclipse.ui.IStorageEditorInput;
 import org.eclipse.ui.IViewSite;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.PlatformUI;
@@ -77,9 +80,12 @@ class ViewContentProvider implements IStructuredContentProvider, ITreeContentPro
 		RubyParserPool.getInstance().returnParser(parser);
 	}
 	
-	protected IFile getFile()
-	{
-		return ((IFileEditorInput) editor.getEditorInput()).getFile();
+	protected IFile getFile() {
+		IEditorInput input =  editor.getEditorInput();
+		if (input instanceof IFileEditorInput) {
+			return ((IFileEditorInput) input).getFile();
+		}
+		return null;
 	}
 
 	public Object[] getElements(Object parent) {
@@ -114,11 +120,33 @@ class ViewContentProvider implements IStructuredContentProvider, ITreeContentPro
 	public Node getRootNode() {
 		LexerSource lexerSource;
 		try {
-			lexerSource = new LexerSource(getFile().getName(), new InputStreamReader(getFile().getContents()));
+			lexerSource = new LexerSource(getName(), new InputStreamReader(getContents()));
 			return parser.parse(new RubyParserConfiguration(), lexerSource).getAST();
 		} catch (CoreException e) {
 			return null;
 		}
+	}
+
+	private String getName() throws CoreException {
+		IFile file = getFile();
+		if (file != null) return file.getName();
+		IEditorInput input = editor.getEditorInput();
+		if (input instanceof IStorageEditorInput) {
+			IStorageEditorInput storageInput = (IStorageEditorInput) input;
+			return storageInput.getStorage().getName();
+		}
+		return "";
+	}
+
+	private InputStream getContents() throws CoreException {
+		IFile file = getFile();
+		if (file != null) return file.getContents();
+		IEditorInput input = editor.getEditorInput();
+		if (input instanceof IStorageEditorInput) {
+			IStorageEditorInput storageInput = (IStorageEditorInput) input;
+			return storageInput.getStorage().getContents();
+		}
+		return null;
 	}
 
 	private void initialize() {
