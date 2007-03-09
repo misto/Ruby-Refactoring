@@ -34,7 +34,7 @@ import org.rubypeople.rdt.refactoring.core.RubyRefactoring;
 import org.rubypeople.rdt.refactoring.core.TextSelectionProvider;
 import org.rubypeople.rdt.refactoring.core.renameclass.RenameClassRefactoring;
 import org.rubypeople.rdt.refactoring.core.renamefield.RenameFieldRefactoring;
-import org.rubypeople.rdt.refactoring.core.renamelocalvariable.RenameLocalVariableRefactoring;
+import org.rubypeople.rdt.refactoring.core.renamelocal.RenameLocalVariableRefactoring;
 import org.rubypeople.rdt.refactoring.core.renamemethod.RenameMethodRefactoring;
 
 public class RenameRefactoring extends RubyRefactoring {

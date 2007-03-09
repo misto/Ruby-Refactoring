@@ -36,10 +36,10 @@ import org.jruby.ast.LocalAsgnNode;
 import org.jruby.ast.MethodDefNode;
 import org.jruby.ast.NewlineNode;
 import org.jruby.ast.Node;
-import org.rubypeople.rdt.refactoring.core.renamelocalvariable.DynamicVariableRenamer;
-import org.rubypeople.rdt.refactoring.core.renamelocalvariable.IAbortCondition;
-import org.rubypeople.rdt.refactoring.core.renamelocalvariable.SingleLocalVariableEdit;
-import org.rubypeople.rdt.refactoring.core.renamelocalvariable.VariableRenamer;
+import org.rubypeople.rdt.refactoring.core.renamelocal.DynamicVariableRenamer;
+import org.rubypeople.rdt.refactoring.core.renamelocal.IAbortCondition;
+import org.rubypeople.rdt.refactoring.core.renamelocal.SingleLocalVariableEdit;
+import org.rubypeople.rdt.refactoring.core.renamelocal.VariableRenamer;
 import org.rubypeople.rdt.refactoring.editprovider.EditProvider;
 import org.rubypeople.rdt.refactoring.util.NodeUtil;
 

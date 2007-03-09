@@ -38,7 +38,7 @@ import org.jruby.ast.DAsgnNode;
 import org.jruby.ast.DVarNode;
 import org.jruby.ast.LocalAsgnNode;
 import org.jruby.ast.LocalVarNode;
-import org.rubypeople.rdt.refactoring.core.renamelocalvariable.SingleLocalVariableEdit;
+import org.rubypeople.rdt.refactoring.core.renamelocal.SingleLocalVariableEdit;
 import org.rubypeople.rdt.refactoring.core.splittemp.LocalVarFinder;
 import org.rubypeople.rdt.refactoring.core.splittemp.LocalVarUsage;
 import org.rubypeople.rdt.refactoring.core.splittemp.SplittedVariableRenamer;

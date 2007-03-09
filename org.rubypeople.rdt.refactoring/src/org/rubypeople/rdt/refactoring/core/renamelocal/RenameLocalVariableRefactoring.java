@@ -26,51 +26,37 @@
  * the terms of any one of the CPL, the GPL or the LGPL.
  ***** END LICENSE BLOCK *****/
 
-package org.rubypeople.rdt.refactoring.core.renamelocalvariable;
+package org.rubypeople.rdt.refactoring.core.renamelocal;
 
-import org.jruby.ast.ArgsNode;
-import org.jruby.ast.Node;
-import org.jruby.ast.RootNode;
-import org.jruby.parser.LocalStaticScope;
-import org.jruby.runtime.DynamicScope;
-import org.rubypeople.rdt.refactoring.editprovider.ReplaceEditProvider;
+import org.rubypeople.rdt.refactoring.core.RubyRefactoring;
+import org.rubypeople.rdt.refactoring.core.TextSelectionProvider;
+import org.rubypeople.rdt.refactoring.documentprovider.DocumentProvider;
+import org.rubypeople.rdt.refactoring.ui.pages.RenamePage;
 
-public class SingleLocalVariableEdit extends ReplaceEditProvider {
+public class RenameLocalVariableRefactoring extends RubyRefactoring {
 
-	private final Node node;
+	public static final String NAME = Messages.RenameLocalVariableRefactoring_Name;
 
-	private final String[] localNames;
-
-	public SingleLocalVariableEdit(Node node, String[] localNames) {
-		super(false);
-		this.node = node;
-		this.localNames = localNames.clone();
-	}
-
-	@Override
-	public int getOffsetLength() {
-		return node.getPosition().getEndOffset() - node.getPosition().getStartOffset();
-	}
-
-	@Override
-	protected Node getEditNode(int offset, String document) {
-
-		if (node instanceof ArgsNode) {
-			LocalStaticScope localStaticScope = new LocalStaticScope(null);
-			localStaticScope.setVariables(localNames);
-			return new RootNode(node.getPosition(), new DynamicScope(localStaticScope, null), node);
-		}
+	public RenameLocalVariableRefactoring(TextSelectionProvider selectionProvider) {
+		super(NAME);
 		
-		return node;
-	}
+		DocumentProvider docProvider = getDocumentProvider();
+		
+		RenameLocalConfig config = new RenameLocalConfig(docProvider, selectionProvider.getCarretPosition());
+		RenameLocalConditionChecker checker = new RenameLocalConditionChecker(config);
+		setRefactoringConditionChecker(checker);
+		
+		if(checker.shouldPerform()) {
+			LocalVariablesEditProvider editProvider = new LocalVariablesEditProvider(config);
+			setEditProvider(editProvider);
 
-	@Override
-	public int getOffset(String document) {
-		return node.getPosition().getStartOffset();
+			String name = config.getSelectedNodeName();
+			editProvider.setSelectedVariableName(name);
+			editProvider.setNewVariableName(name);
+			
+			VariableNameProvider nameProvider = new VariableNameProvider(name);
+			pages.add(new RenamePage(name, nameProvider));
+			nameProvider.addObserver(editProvider);
+		}
 	}
-
-	public Node getNode() {
-		return node;
-	}
-
 }

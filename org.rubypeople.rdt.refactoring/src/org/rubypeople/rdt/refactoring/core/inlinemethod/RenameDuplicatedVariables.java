@@ -29,7 +29,7 @@
 package org.rubypeople.rdt.refactoring.core.inlinemethod;
 
 import org.jruby.ast.RootNode;
-import org.rubypeople.rdt.refactoring.core.renamelocalvariable.LocalVariableRenamer;
+import org.rubypeople.rdt.refactoring.core.renamelocal.LocalVariableRenamer;
 import org.rubypeople.rdt.refactoring.documentprovider.DocumentProvider;
 import org.rubypeople.rdt.refactoring.util.NameHelper;
 

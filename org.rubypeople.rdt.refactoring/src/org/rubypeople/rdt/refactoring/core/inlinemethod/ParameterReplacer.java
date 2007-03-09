@@ -42,7 +42,7 @@ import org.jruby.ast.Node;
 import org.jruby.ast.types.INameNode;
 import org.jruby.ast.visitor.rewriter.ReWriteVisitor;
 import org.jruby.lexer.yacc.SourcePosition;
-import org.rubypeople.rdt.refactoring.core.renamelocalvariable.LocalVariableRenamer;
+import org.rubypeople.rdt.refactoring.core.renamelocal.LocalVariableRenamer;
 import org.rubypeople.rdt.refactoring.documentprovider.DocumentProvider;
 import org.rubypeople.rdt.refactoring.documentprovider.IDocumentProvider;
 import org.rubypeople.rdt.refactoring.documentprovider.StringDocumentProvider;

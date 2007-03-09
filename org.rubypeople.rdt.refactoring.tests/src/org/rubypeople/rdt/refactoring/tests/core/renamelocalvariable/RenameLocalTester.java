@@ -32,9 +32,9 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 
 import org.eclipse.jface.text.BadLocationException;
-import org.rubypeople.rdt.refactoring.core.renamelocalvariable.LocalVariablesEditProvider;
-import org.rubypeople.rdt.refactoring.core.renamelocalvariable.RenameLocalConditionChecker;
-import org.rubypeople.rdt.refactoring.core.renamelocalvariable.RenameLocalConfig;
+import org.rubypeople.rdt.refactoring.core.renamelocal.LocalVariablesEditProvider;
+import org.rubypeople.rdt.refactoring.core.renamelocal.RenameLocalConditionChecker;
+import org.rubypeople.rdt.refactoring.core.renamelocal.RenameLocalConfig;
 import org.rubypeople.rdt.refactoring.tests.FileTestCase;
 import org.rubypeople.rdt.refactoring.tests.FileTestData;
 

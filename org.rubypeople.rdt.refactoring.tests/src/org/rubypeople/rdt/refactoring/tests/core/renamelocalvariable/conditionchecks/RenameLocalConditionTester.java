@@ -33,8 +33,8 @@ package org.rubypeople.rdt.refactoring.tests.core.renamelocalvariable.conditionc
 import java.io.FileNotFoundException;
 import java.io.IOException;
 
-import org.rubypeople.rdt.refactoring.core.renamelocalvariable.RenameLocalConditionChecker;
-import org.rubypeople.rdt.refactoring.core.renamelocalvariable.RenameLocalConfig;
+import org.rubypeople.rdt.refactoring.core.renamelocal.RenameLocalConditionChecker;
+import org.rubypeople.rdt.refactoring.core.renamelocal.RenameLocalConfig;
 import org.rubypeople.rdt.refactoring.tests.FilePropertyData;
 import org.rubypeople.rdt.refactoring.tests.FileTestData;
 import org.rubypeople.rdt.refactoring.tests.RefactoringConditionTestCase;

@@ -35,8 +35,8 @@ import org.rubypeople.rdt.refactoring.core.renameclass.RenameClassConditionCheck
 import org.rubypeople.rdt.refactoring.core.renameclass.RenameClassConfig;
 import org.rubypeople.rdt.refactoring.core.renamefield.RenameFieldConditionChecker;
 import org.rubypeople.rdt.refactoring.core.renamefield.RenameFieldConfig;
-import org.rubypeople.rdt.refactoring.core.renamelocalvariable.RenameLocalConditionChecker;
-import org.rubypeople.rdt.refactoring.core.renamelocalvariable.RenameLocalConfig;
+import org.rubypeople.rdt.refactoring.core.renamelocal.RenameLocalConditionChecker;
+import org.rubypeople.rdt.refactoring.core.renamelocal.RenameLocalConfig;
 import org.rubypeople.rdt.refactoring.core.renamemethod.RenameMethodConditionChecker;
 import org.rubypeople.rdt.refactoring.core.renamemethod.RenameMethodConfig;
 import org.rubypeople.rdt.refactoring.documentprovider.IDocumentProvider;

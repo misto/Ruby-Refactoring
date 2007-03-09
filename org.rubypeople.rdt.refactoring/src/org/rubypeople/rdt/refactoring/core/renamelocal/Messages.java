@@ -1,4 +1,4 @@
-package org.rubypeople.rdt.refactoring.core.renamelocalvariable;
+package org.rubypeople.rdt.refactoring.core.renamelocal;
 
 import org.eclipse.osgi.util.NLS;
 

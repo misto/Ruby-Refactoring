@@ -26,10 +26,57 @@
  * the terms of any one of the CPL, the GPL or the LGPL.
  ***** END LICENSE BLOCK *****/
 
-package org.rubypeople.rdt.refactoring.core.renamelocalvariable;
+package org.rubypeople.rdt.refactoring.core.renamelocal;
 
-import org.jruby.ast.Node;
+import java.util.Observable;
 
-public interface IAbortCondition {
-	public boolean abort(Node currentNode);
+import org.eclipse.swt.widgets.Event;
+import org.eclipse.swt.widgets.List;
+import org.eclipse.swt.widgets.Text;
+import org.rubypeople.rdt.refactoring.ui.IErrorMessageGenerator;
+import org.rubypeople.rdt.refactoring.ui.IErrorMessageReceiver;
+import org.rubypeople.rdt.refactoring.util.NameValidator;
+
+public class VariableNameProvider extends Observable implements IErrorMessageGenerator {
+
+	private String selected = ""; //$NON-NLS-1$
+
+	private String name = ""; //$NON-NLS-1$
+
+	private IErrorMessageReceiver errorReceiver;
+
+	public VariableNameProvider(String selected) {
+		this.selected = selected;
+		this.name = selected;
+	}
+
+	public String getSelected() {
+		return selected;
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public void handleEvent(Event event) {
+		if (event.widget instanceof List) {
+			selected = ((List) event.widget).getSelection()[0];
+		} else if (event.widget instanceof Text) {
+			String newName = ((Text) event.widget).getText();
+			if(NameValidator.isValidLocalVariableName(newName)) {
+				name = newName;
+				errorReceiver.setError(null);
+			} else {
+				errorReceiver.setError(newName + Messages.VariableNameProvider_NoValidName);
+			}
+		} else {
+			return;
+		}
+		setChanged();
+		notifyObservers();
+	}
+
+	public void setErrorReceiver(IErrorMessageReceiver errorReceiver) {
+		this.errorReceiver = errorReceiver;
+	}
 }

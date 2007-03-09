@@ -26,7 +26,7 @@
  * the terms of any one of the CPL, the GPL or the LGPL.
  ***** END LICENSE BLOCK *****/
 
-package org.rubypeople.rdt.refactoring.core.renamelocalvariable;
+package org.rubypeople.rdt.refactoring.core.renamelocal;
 
 import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.Document;
