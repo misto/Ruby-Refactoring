@@ -60,8 +60,20 @@ public class CompletionContext {
 		this.correctedSource = source.toString();
 	}
 	
-	public boolean isMethodInvokation() {
+	/**
+	 * This is when we have a receiver and a period in the prefix
+	 * @return
+	 */
+	public boolean isExplicitMethodInvokation() {
 	  return isMethodInvokation;	
+	}
+	
+	/**
+	 * This is when it could be a method call with an implicit self, or when it may just be a local
+	 * @return
+	 */
+	public boolean isMethodInvokationOrLocal() {
+		  return !isExplicitMethodInvokation() && (emptyPrefix() || Character.isLowerCase(getPartialPrefix().charAt(0)));	
 	}
 	
 	/**
@@ -125,7 +137,7 @@ public class CompletionContext {
 	}
 
 	public boolean isGlobal() {
-		return !emptyPrefix() && !isMethodInvokation() && getPartialPrefix().startsWith("$");
+		return !emptyPrefix() && !isExplicitMethodInvokation() && getPartialPrefix().startsWith("$");
 	}
 
 	public boolean fullPrefixIsConstant() {

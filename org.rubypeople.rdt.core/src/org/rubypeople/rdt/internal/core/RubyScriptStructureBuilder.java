@@ -916,89 +916,94 @@ public class RubyScriptStructureBuilder implements NodeVisitor {
 	 */
 	public Instruction visitFCallNode(FCallNode iVisited) {
 		handleNode(iVisited);
-		// FIXME Evaluate self and check to see if the method exists!
 		if (DEBUG)
 			System.out.println(iVisited.getName());
 		String functionName = iVisited.getName();
 		if (functionName.equals("require") || functionName.equals("load")) {
-			ArrayNode node = (ArrayNode) iVisited.getArgsNode();
-			String arg = getString(node);
-			if (arg != null) {
-				ImportContainer importContainer = (ImportContainer) script
-						.getImportContainer();
-				// create the import container and its info
-				if (this.importContainerInfo == null) {
-					this.importContainerInfo = new RubyElementInfo();
-					scriptInfo.addChild(importContainer);
-					this.newElements.put(importContainer,
-							this.importContainerInfo);
-				}
-				RubyImport handle = new RubyImport(importContainer, arg);
-
-				ImportDeclarationElementInfo info = new ImportDeclarationElementInfo();
-				setKeywordRange(functionName, node.getPosition(), info, arg);
-				info.name = arg; // no trailing * if onDemand
-
-				this.importContainerInfo.addChild(handle);
-				this.newElements.put(handle, info);
-			}
+			addImport(iVisited, functionName);
 		}
 		
 		// Collect included mixins
 		if ( functionName.equals("include") ) {
-			List<String> mixins = new LinkedList<String>();
-			Node argsNode = iVisited.getArgsNode();
-			Iterator iter = null;
-			if (argsNode instanceof SplatNode) {
-				SplatNode splat = (SplatNode) argsNode;
-				iter = splat.childNodes().iterator();
-			}
-			else if (argsNode instanceof ArrayNode) {
-				ArrayNode arrayNode = (ArrayNode) iVisited.getArgsNode();
-				iter = arrayNode.iterator();
-			}
-			for (; iter.hasNext();) {
-				Node mixinNameNode = (Node) iter.next();
-				if ( mixinNameNode instanceof StrNode ) {
-					mixins.add( ((StrNode)mixinNameNode).getValue().toString() );
-				}
-				if ( mixinNameNode instanceof DStrNode ) {
-					Node next = (Node)((DStrNode)mixinNameNode).iterator().next();
-					if ( next instanceof StrNode ) {
-						mixins.add( ((StrNode)next).getValue().toString() );
-					}
-				}
-				if (mixinNameNode instanceof ConstNode) {
-					mixins.add( ((ConstNode)mixinNameNode).getName() );
-				}
-			}
-			
-			// Push mixins into parent type, if available
-			if ( infoStack.peek() instanceof  RubyTypeElementInfo ) {
-				
-				// Get parent type
-				RubyTypeElementInfo parentType = (RubyTypeElementInfo)infoStack.peek();
-
-				// Get existing imported module names
-				String[] importedModuleNames = parentType.getIncludedModuleNames();
-				List<String> mergedModuleNames = new LinkedList<String>();
-				
-				// Merge newly found module name(s)
-				if ( importedModuleNames != null ) {
-					mergedModuleNames.addAll( (Arrays.asList( importedModuleNames )));
-				}
-				mergedModuleNames.addAll( mixins );
-				
-				// Apply included module names back to parent type info
-				String[] newIncludedModuleNames = mergedModuleNames.toArray(new String[]{});
-				parentType.setIncludedModuleNames( newIncludedModuleNames );
-			}
-
-			
+			includeModule(iVisited);		
 		}
 		visitNode(iVisited.getArgsNode());
 		visitNode(iVisited.getIterNode());
 		return null;
+	}
+
+	private void addImport(FCallNode iVisited, String functionName) {
+		ArrayNode node = (ArrayNode) iVisited.getArgsNode();
+		String arg = getString(node);
+		if (arg != null) {
+			ImportContainer importContainer = (ImportContainer) script
+					.getImportContainer();
+			// create the import container and its info
+			if (this.importContainerInfo == null) {
+				this.importContainerInfo = new RubyElementInfo();
+				scriptInfo.addChild(importContainer);
+				this.newElements.put(importContainer,
+						this.importContainerInfo);
+			}
+			RubyImport handle = new RubyImport(importContainer, arg);
+
+			ImportDeclarationElementInfo info = new ImportDeclarationElementInfo();
+			setKeywordRange(functionName, node.getPosition(), info, arg);
+			info.name = arg; // no trailing * if onDemand
+
+			this.importContainerInfo.addChild(handle);
+			this.newElements.put(handle, info);
+		}
+	}
+
+	private void includeModule(FCallNode iVisited) {
+		List<String> mixins = new LinkedList<String>();
+		Node argsNode = iVisited.getArgsNode();
+		Iterator iter = null;
+		if (argsNode instanceof SplatNode) {
+			SplatNode splat = (SplatNode) argsNode;
+			iter = splat.childNodes().iterator();
+		}
+		else if (argsNode instanceof ArrayNode) {
+			ArrayNode arrayNode = (ArrayNode) iVisited.getArgsNode();
+			iter = arrayNode.iterator();
+		}
+		for (; iter.hasNext();) {
+			Node mixinNameNode = (Node) iter.next();
+			if ( mixinNameNode instanceof StrNode ) {
+				mixins.add( ((StrNode)mixinNameNode).getValue().toString() );
+			}
+			if ( mixinNameNode instanceof DStrNode ) {
+				Node next = (Node)((DStrNode)mixinNameNode).iterator().next();
+				if ( next instanceof StrNode ) {
+					mixins.add( ((StrNode)next).getValue().toString() );
+				}
+			}
+			if (mixinNameNode instanceof ConstNode) {
+				mixins.add( ((ConstNode)mixinNameNode).getName() );
+			}
+		}
+		
+		// Push mixins into parent type, if available
+		if ( infoStack.peek() instanceof  RubyTypeElementInfo ) {
+			
+			// Get parent type
+			RubyTypeElementInfo parentType = (RubyTypeElementInfo)infoStack.peek();
+
+			// Get existing imported module names
+			String[] importedModuleNames = parentType.getIncludedModuleNames();
+			List<String> mergedModuleNames = new LinkedList<String>();
+			
+			// Merge newly found module name(s)
+			if ( importedModuleNames != null ) {
+				mergedModuleNames.addAll( (Arrays.asList( importedModuleNames )));
+			}
+			mergedModuleNames.addAll( mixins );
+			
+			// Apply included module names back to parent type info
+			String[] newIncludedModuleNames = mergedModuleNames.toArray(new String[]{});
+			parentType.setIncludedModuleNames( newIncludedModuleNames );
+		}
 	}
 
 	/**
@@ -1344,8 +1349,6 @@ public class RubyScriptStructureBuilder implements NodeVisitor {
 		info.setHandle(module);
 		ISourcePosition pos = iVisited.getPosition();
 		setKeywordRange(MODULE_KEYWORD, pos, info, name);
-		// TODO Set super module better! set Module if null, set nothing if name is Module.
-		info.setSuperclassName(MODULE);
 		infoStack.push(info);
 
 		newElements.put(module, info);

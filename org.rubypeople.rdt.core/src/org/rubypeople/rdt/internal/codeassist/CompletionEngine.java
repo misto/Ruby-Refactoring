@@ -30,6 +30,7 @@ import org.jruby.parser.StaticScope;
 import org.rubypeople.rdt.core.CompletionProposal;
 import org.rubypeople.rdt.core.CompletionRequestor;
 import org.rubypeople.rdt.core.Flags;
+import org.rubypeople.rdt.core.IMember;
 import org.rubypeople.rdt.core.IMethod;
 import org.rubypeople.rdt.core.IOpenable;
 import org.rubypeople.rdt.core.IRubyElement;
@@ -75,7 +76,7 @@ public class CompletionEngine {
 				suggestTypeNames();
 				suggestConstantNames();
 			} 
-			if (fContext.isMethodInvokation()) {
+			if (fContext.isExplicitMethodInvokation()) {
 				ITypeInferrer inferrer = new DefaultTypeInferrer();
 				List<ITypeGuess> guesses = inferrer.infer(fContext.getCorrectedSource(), fContext.getOffset());
 				RubyElementRequestor requestor = new RubyElementRequestor(script);
@@ -92,7 +93,17 @@ public class CompletionEngine {
 			} else {
 				// FIXME If we're invoked on the class declaration (it's super class) don't do this!
 				// FIXME Traverse the IRubyElement model, not nodes (and don't reparse)?
-				getDocumentsRubyElementsInScope();
+				if (fContext.isMethodInvokationOrLocal()) {
+					// Grab all the methods in this type and it's super/module.
+					IMember element = (IMember) script.getElementAt(fContext.getOffset());
+					IType type = element.getDeclaringType();
+					List<CompletionProposal> list = sort(suggestMethods(100, type));
+					for (CompletionProposal proposal : list) {
+						fRequestor.accept(proposal);
+					}
+				}
+				// FIXME WHat about instance and class variables?
+//				getDocumentsRubyElementsInScope();
 			}
 			if (fContext.isGlobal()) { // looks like a global
 				suggestGlobals();
@@ -159,8 +170,41 @@ public class CompletionEngine {
 		    	proposals.put(proposal.getName(), proposal); // If a method name matches an existing suggestion (i.e. its overriden in the subclass), don't suggest it again!
 		    }
 		}		
+		proposals.putAll(addModuleMethods(confidence, type));
+		proposals.putAll(addSuperClassMethods(confidence, type));
+		return proposals;
+	}
+
+	private Map<String, CompletionProposal> addModuleMethods(int confidence, IType type) {
+		Map<String, CompletionProposal> proposals = new HashMap<String, CompletionProposal>();
+		if (type.isModule()) return proposals;		
+		String[] modules = null;
+		try {
+			modules = type.getIncludedModuleNames();
+		} catch (RubyModelException e) {
+			// ignore
+		}
+		if (modules == null || modules.length == 0) return proposals;
+		RubyElementRequestor requestor = new RubyElementRequestor(type.getRubyScript());
+		for (int i = 0; i < modules.length; i++) {			
+			IType[] moduleTypes = requestor.findType(modules[i]);
+			for (int j = 0; j < moduleTypes.length; j++) {
+				try {
+					IType moduleType = moduleTypes[j];
+					proposals.putAll(suggestMethods(confidence, moduleType));
+				} catch (RubyModelException e) {
+					// ignore
+				}
+			}
+		}
+		return proposals;
+	}
+
+	private Map<String, CompletionProposal> addSuperClassMethods(int confidence, IType type) throws RubyModelException {
+		Map<String, CompletionProposal> proposals = new HashMap<String, CompletionProposal>();
 		String superClass = type.getSuperclassName();
 		if (superClass == null) return proposals;
+		if (type.isModule() && superClass.equals("Module")) return proposals;
 		RubyElementRequestor requestor = new RubyElementRequestor(type.getRubyScript());
 		IType[] supers = requestor.findType(superClass);
 		for (int i = 0; i < supers.length; i++) {
