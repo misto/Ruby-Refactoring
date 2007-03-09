@@ -50,6 +50,7 @@ require 'FileUtils'
     f << "\n"
     klass.included_modules.each {|mod| f << "  include #{mod.to_s}\n" unless mod.to_s == "Kernel" && klass.to_s != "Object"}
     f << "\n"
+    # FIXME We aren't grabbing some important methods inside Module (like "include")
     klass.methods(false).each do |method_name|
       method = eval("#{klass}").method(method_name) rescue nil    
       print_method(f, method, method_name.to_s, true)
