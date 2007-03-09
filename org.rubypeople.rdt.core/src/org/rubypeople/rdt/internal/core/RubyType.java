@@ -205,4 +205,12 @@ public class RubyType extends NamedMember implements IType {
 		return null;
 	}
 
+	public String getFullyQualifiedName() {
+		IType declaring = getDeclaringType();
+		if (declaring != null) {
+			return declaring.getFullyQualifiedName() + "::" + getElementName();
+		}
+		return getElementName();
+	}
+
 }

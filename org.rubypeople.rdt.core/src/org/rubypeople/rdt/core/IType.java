@@ -53,6 +53,8 @@ public interface IType extends IRubyElement, IMember {
 	 * @return
 	 */
 	boolean isClass();
+	
+	String getFullyQualifiedName();
 
 	/**
 	 * @return

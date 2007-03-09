@@ -214,7 +214,7 @@ public class CompletionEngine {
 		IType declaringType = method.getDeclaringType();
 		String declaringName = typeName;
 		if (declaringType != null)
-			declaringName = declaringType.getElementName();
+			declaringName = declaringType.getFullyQualifiedName();
 		proposal.setDeclaringType(declaringName);
 		return proposal;
 	}
