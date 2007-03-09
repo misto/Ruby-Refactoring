@@ -3,6 +3,8 @@ package org.rubypeople.rdt.internal.codeassist;
 import org.rubypeople.rdt.core.IRubyScript;
 import org.rubypeople.rdt.core.RubyModelException;
 
+import com.sun.org.apache.xpath.internal.operations.Gte;
+
 public class CompletionContext {
 	
 	private IRubyScript script;
@@ -129,6 +131,7 @@ public class CompletionContext {
 	}
 
 	public boolean fullPrefixIsConstant() {
+		if (getFullPrefix() == null || getFullPrefix().length() == 0) return false;
 		return Character.isUpperCase(getFullPrefix().charAt(0));
 	}
 
