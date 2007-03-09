@@ -195,7 +195,7 @@ public class CompletionEngine {
 				if (fContext.hasReceiver()) return null; // can't invoke a private method on a receiver
 				break;
 			case IMethod.PUBLIC:
-				flags |= Flags.AccPublic;
+				flags |= Flags.AccPublic; // FIXME Check if receiver is of same class as method's declaring type, if not, skip this method. (so we can invoke with no receiver inside same class, with explicit self as receiver, or with receiver who has same class).
 				break;
 			case IMethod.PROTECTED:
 				flags |= Flags.AccProtected;
