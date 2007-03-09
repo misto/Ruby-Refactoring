@@ -67,9 +67,7 @@ public class CompletionEngine {
 		this.fRequestor.beginReporting();		
 		fContext = new CompletionContext(script, offset);
 		if (fContext.emptyPrefix()) { // no prefix, so we could suggest anything
-			suggestTypeNames();
-			suggestConstantNames();
-			suggestGlobals();
+			suggestMethodsForEnclosingType(script);
 			getDocumentsRubyElementsInScope();
 		} else {
 			if (fContext.isConstant()) { // type or constant
@@ -94,15 +92,9 @@ public class CompletionEngine {
 				// FIXME If we're invoked on the class declaration (it's super class) don't do this!
 				// FIXME Traverse the IRubyElement model, not nodes (and don't reparse)?
 				if (fContext.isMethodInvokationOrLocal()) {
-					// Grab all the methods in this type and it's super/module.
-					IMember element = (IMember) script.getElementAt(fContext.getOffset());
-					IType type = element.getDeclaringType();
-					List<CompletionProposal> list = sort(suggestMethods(100, type));
-					for (CompletionProposal proposal : list) {
-						fRequestor.accept(proposal);
-					}
+					suggestMethodsForEnclosingType(script);
 				}
-				// FIXME WHat about instance and class variables?
+				// FIXME What about instance and class variables?
 //				getDocumentsRubyElementsInScope();
 			}
 			if (fContext.isGlobal()) { // looks like a global
@@ -111,6 +103,15 @@ public class CompletionEngine {
 		}
 		this.fRequestor.endReporting();
 		fContext = null;
+	}
+
+	private void suggestMethodsForEnclosingType(IRubyScript script) throws RubyModelException {
+		IMember element = (IMember) script.getElementAt(fContext.getOffset());
+		IType type = element.getDeclaringType();
+		List<CompletionProposal> list = sort(suggestMethods(100, type));
+		for (CompletionProposal proposal : list) {
+			fRequestor.accept(proposal);
+		}
 	}
 
 	private List<CompletionProposal> sort(Map<String, CompletionProposal> proposals) {
@@ -171,13 +172,12 @@ public class CompletionEngine {
 		    }
 		}		
 		proposals.putAll(addModuleMethods(confidence, type));
-		proposals.putAll(addSuperClassMethods(confidence, type));
+		if (!type.isModule()) proposals.putAll(addSuperClassMethods(confidence, type));
 		return proposals;
 	}
 
 	private Map<String, CompletionProposal> addModuleMethods(int confidence, IType type) {
 		Map<String, CompletionProposal> proposals = new HashMap<String, CompletionProposal>();
-		if (type.isModule()) return proposals;		
 		String[] modules = null;
 		try {
 			modules = type.getIncludedModuleNames();
@@ -204,7 +204,6 @@ public class CompletionEngine {
 		Map<String, CompletionProposal> proposals = new HashMap<String, CompletionProposal>();
 		String superClass = type.getSuperclassName();
 		if (superClass == null) return proposals;
-		if (type.isModule() && superClass.equals("Module")) return proposals;
 		RubyElementRequestor requestor = new RubyElementRequestor(type.getRubyScript());
 		IType[] supers = requestor.findType(superClass);
 		for (int i = 0; i < supers.length; i++) {
@@ -495,6 +494,7 @@ public class CompletionEngine {
 				// Find source and parse
 				RubyType rubyType = (RubyType) type;
 				String source = rubyType.getSource();
+				if (source == null) return new ArrayList<Node>(0);
 
 				// FIXME Why does the parser balk on \r chars?
 				source = source.replace('\r', ' ');
