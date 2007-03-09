@@ -31,6 +31,8 @@
 package org.rubypeople.rdt.refactoring.ui.pages;
 
 import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.TreeSet;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionEvent;
@@ -114,7 +116,16 @@ public class OccurenceReplaceSelectionPage extends RefactoringWizardPage {
 
 	private void initPossibilityTable(Composite control) {
 		possibilityTable = new Table(control, SWT.BORDER | SWT.CHECK);
-		for(INodeWrapper currentCall : selector.getPossibleCalls()){
+		
+		TreeSet<INodeWrapper> possibleCalls = new TreeSet<INodeWrapper>(new Comparator<INodeWrapper>(){
+
+			public int compare(INodeWrapper left, INodeWrapper right) {
+				return left.getWrappedNode().getPosition().getStartOffset() - right.getWrappedNode().getPosition().getStartOffset();
+			}});
+		
+		possibleCalls.addAll(selector.getPossibleCalls());
+		
+		for(INodeWrapper currentCall : possibleCalls){
 			TableItem currentItem = new TableItem(possibilityTable, SWT.NONE);
 			currentItem.setText(getTableCaption(currentCall));
 			if(probableCall(currentCall)){

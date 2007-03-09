@@ -41,7 +41,7 @@ public class RenameLocalVariableRefactoring extends RubyRefactoring {
 		super(NAME);
 		
 		DocumentProvider docProvider = getDocumentProvider();
-		//docprovider vom checker erstellen lassen und dann einfach neu setzen in der config? cache invalidieren!
+		
 		RenameLocalConfig config = new RenameLocalConfig(docProvider, selectionProvider.getCarretPosition());
 		RenameLocalConditionChecker checker = new RenameLocalConditionChecker(config);
 		setRefactoringConditionChecker(checker);
