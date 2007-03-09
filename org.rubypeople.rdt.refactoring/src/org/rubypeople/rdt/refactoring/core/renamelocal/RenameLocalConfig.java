@@ -41,7 +41,7 @@ public class RenameLocalConfig implements IRefactoringConfig {
 	private Node selectedNode;
 	private Node selectedMethod;
 	private String[] localNames;
-	private LocalVariablesEditProvider editProvider;
+	private RenameLocalEditProvider editProvider;
 
 	public RenameLocalConfig(IDocumentProvider docProvider, int caretPosition) {
 		this.docProvider = docProvider;
@@ -85,11 +85,11 @@ public class RenameLocalConfig implements IRefactoringConfig {
 		return localNames;
 	}
 
-	public void setLocalVariablesEditProvider(LocalVariablesEditProvider editProvider) {
+	public void setLocalVariablesEditProvider(RenameLocalEditProvider editProvider) {
 		this.editProvider = editProvider;
 	}
 	
-	public LocalVariablesEditProvider getRenameEditProvider() {
+	public RenameLocalEditProvider getRenameEditProvider() {
 		return editProvider;
 	}
 

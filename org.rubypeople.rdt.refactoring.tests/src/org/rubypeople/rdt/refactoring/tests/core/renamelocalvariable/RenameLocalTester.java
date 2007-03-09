@@ -32,7 +32,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 
 import org.eclipse.jface.text.BadLocationException;
-import org.rubypeople.rdt.refactoring.core.renamelocal.LocalVariablesEditProvider;
+import org.rubypeople.rdt.refactoring.core.renamelocal.RenameLocalEditProvider;
 import org.rubypeople.rdt.refactoring.core.renamelocal.RenameLocalConditionChecker;
 import org.rubypeople.rdt.refactoring.core.renamelocal.RenameLocalConfig;
 import org.rubypeople.rdt.refactoring.tests.FileTestCase;
@@ -56,7 +56,7 @@ public class RenameLocalTester extends FileTestCase {
 		if(!checker.shouldPerform()) {
 			fail();
 		}
-		new LocalVariablesEditProvider(config);
+		new RenameLocalEditProvider(config);
 		config.getRenameEditProvider().setSelectedVariableName(config.getSelectedNodeName());
 		config.getRenameEditProvider().setNewVariableName(testData.getProperty("name"));
 		

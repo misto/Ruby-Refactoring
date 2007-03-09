@@ -41,7 +41,7 @@ import org.rubypeople.rdt.refactoring.editprovider.EditProvider;
 import org.rubypeople.rdt.refactoring.editprovider.MultiEditProvider;
 import org.rubypeople.rdt.refactoring.util.NodeUtil;
 
-public class LocalVariablesEditProvider extends MultiEditProvider implements Observer {
+public class RenameLocalEditProvider extends MultiEditProvider implements Observer {
 
 	private static final class AbortOnScope implements IAbortCondition {
 		public boolean abort(Node currentNode) {
@@ -61,7 +61,7 @@ public class LocalVariablesEditProvider extends MultiEditProvider implements Obs
 
 	private final RenameLocalConfig config;
 
-	public LocalVariablesEditProvider(RenameLocalConfig config) {
+	public RenameLocalEditProvider(RenameLocalConfig config) {
 		this.config = config;
 		config.setLocalVariablesEditProvider(this);
 	}

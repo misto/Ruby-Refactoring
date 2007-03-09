@@ -33,11 +33,11 @@ import org.rubypeople.rdt.refactoring.core.TextSelectionProvider;
 import org.rubypeople.rdt.refactoring.documentprovider.DocumentProvider;
 import org.rubypeople.rdt.refactoring.ui.pages.RenamePage;
 
-public class RenameLocalVariableRefactoring extends RubyRefactoring {
+public class RenameLocalRefactoring extends RubyRefactoring {
 
 	public static final String NAME = Messages.RenameLocalVariableRefactoring_Name;
 
-	public RenameLocalVariableRefactoring(TextSelectionProvider selectionProvider) {
+	public RenameLocalRefactoring(TextSelectionProvider selectionProvider) {
 		super(NAME);
 		
 		DocumentProvider docProvider = getDocumentProvider();
@@ -47,7 +47,7 @@ public class RenameLocalVariableRefactoring extends RubyRefactoring {
 		setRefactoringConditionChecker(checker);
 		
 		if(checker.shouldPerform()) {
-			LocalVariablesEditProvider editProvider = new LocalVariablesEditProvider(config);
+			RenameLocalEditProvider editProvider = new RenameLocalEditProvider(config);
 			setEditProvider(editProvider);
 
 			String name = config.getSelectedNodeName();

@@ -123,7 +123,7 @@ public class RenameLocalConditionChecker extends RefactoringConditionChecker {
 
 	@Override
 	protected void checkFinalConditions() {
-		LocalVariablesEditProvider editProvider = config.getRenameEditProvider();
+		RenameLocalEditProvider editProvider = config.getRenameEditProvider();
 		if (editProvider.getSelectedVariableName().equals("") && editProvider.getNewVariableName().equals("")) { //$NON-NLS-1$ //$NON-NLS-2$
 			addError(NO_VARIABLE_SELECTED);
 		}
