@@ -28,48 +28,29 @@
  * the terms of any one of the CPL, the GPL or the LGPL.
  ***** END LICENSE BLOCK *****/
 
-package org.rubypeople.rdt.refactoring.core.inlinetemp;
+package org.rubypeople.rdt.refactoring.core.inlinelocal;
 
-import org.jruby.ast.Node;
-import org.jruby.lexer.yacc.ISourcePosition;
-import org.rubypeople.rdt.refactoring.editprovider.ReplaceEditProvider;
-import org.rubypeople.rdt.refactoring.nodewrapper.LocalNodeWrapper;
+import org.rubypeople.rdt.refactoring.core.RubyRefactoring;
+import org.rubypeople.rdt.refactoring.core.TextSelectionProvider;
+import org.rubypeople.rdt.refactoring.ui.pages.InlineTempPage;
 
-public class TempValueReplaceProvider extends ReplaceEditProvider {
+public class InlineTempRefactoring extends RubyRefactoring {
 
-	private LocalNodeWrapper targetNode;
+	public static final String NAME = Messages.InlineLocalRefactoring_Name;
 
-	private LocalNodeWrapper inlinedNode;
+	private TempInliner tempInliner;
 
-	private boolean addBrackets;
+	public InlineTempRefactoring(TextSelectionProvider selectionProvider) {
+		super(NAME);
+		
+		InlineTempConfig config = new InlineTempConfig(getDocumentProvider(), selectionProvider.getCarretPosition());
+		InlineTempConditionChecker checker = new InlineTempConditionChecker(config);
+		setRefactoringConditionChecker(checker);
 
-	public TempValueReplaceProvider(LocalNodeWrapper targetNode, LocalNodeWrapper inlinedNode, boolean addBrackets) {
-		super(false);
-		this.inlinedNode = inlinedNode;
-		this.targetNode = targetNode;
-		this.addBrackets = addBrackets;
-	}
-
-	@Override
-	protected int getOffsetLength() {
-		ISourcePosition replacePos = targetNode.getWrappedNode().getPosition();
-		return replacePos.getEndOffset() - replacePos.getStartOffset();
-	}
-
-	@Override
-	protected Node getEditNode(int offset, String document) {
-		return inlinedNode.getValueNode();
-	}
-
-	@Override
-	protected int getOffset(String document) {
-		return targetNode.getWrappedNode().getPosition().getStartOffset();
-	}
-
-	protected String getFormatedNode(String document) {
-		if(addBrackets) {
-			return '(' + super.getFormatedNode(document) + ')';
+		if(checker.shouldPerform()) {
+			tempInliner = new TempInliner(config);
+			setEditProvider(tempInliner);
+			pages.add(new InlineTempPage(config, tempInliner.getOccurrencesCount(), tempInliner.getSelectedItemName()));
 		}
-		return super.getFormatedNode(document);
 	}
 }

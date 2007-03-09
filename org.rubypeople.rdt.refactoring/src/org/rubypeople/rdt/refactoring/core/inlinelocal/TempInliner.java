@@ -28,7 +28,7 @@
  * the terms of any one of the CPL, the GPL or the LGPL.
  ***** END LICENSE BLOCK *****/
 
-package org.rubypeople.rdt.refactoring.core.inlinetemp;
+package org.rubypeople.rdt.refactoring.core.inlinelocal;
 
 import java.util.ArrayList;
 import java.util.Collection;

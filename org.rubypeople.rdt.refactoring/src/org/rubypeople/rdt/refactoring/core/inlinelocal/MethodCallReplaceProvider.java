@@ -28,29 +28,46 @@
  * the terms of any one of the CPL, the GPL or the LGPL.
  ***** END LICENSE BLOCK *****/
 
-package org.rubypeople.rdt.refactoring.core.inlinetemp;
+package org.rubypeople.rdt.refactoring.core.inlinelocal;
 
-import org.rubypeople.rdt.refactoring.core.RubyRefactoring;
-import org.rubypeople.rdt.refactoring.core.TextSelectionProvider;
-import org.rubypeople.rdt.refactoring.ui.pages.InlineTempPage;
+import org.jruby.ast.Node;
+import org.jruby.ast.visitor.rewriter.FormatHelper;
+import org.jruby.lexer.yacc.ISourcePosition;
+import org.rubypeople.rdt.refactoring.core.FormatWithParenthesis;
+import org.rubypeople.rdt.refactoring.editprovider.ReplaceEditProvider;
+import org.rubypeople.rdt.refactoring.nodewrapper.LocalNodeWrapper;
 
-public class InlineTempRefactoring extends RubyRefactoring {
+public class MethodCallReplaceProvider extends ReplaceEditProvider {
 
-	public static final String NAME = Messages.InlineTempRefactoring_Name;
+	LocalNodeWrapper targetNode;
 
-	private TempInliner tempInliner;
+	Node methodCallNode;
 
-	public InlineTempRefactoring(TextSelectionProvider selectionProvider) {
-		super(NAME);
-		
-		InlineTempConfig config = new InlineTempConfig(getDocumentProvider(), selectionProvider.getCarretPosition());
-		InlineTempConditionChecker checker = new InlineTempConditionChecker(config);
-		setRefactoringConditionChecker(checker);
-
-		if(checker.shouldPerform()) {
-			tempInliner = new TempInliner(config);
-			setEditProvider(tempInliner);
-			pages.add(new InlineTempPage(config, tempInliner.getOccurrencesCount(), tempInliner.getSelectedItemName()));
-		}
+	public MethodCallReplaceProvider(LocalNodeWrapper targetNode, Node methodCallNode) {
+		super(false);
+		this.targetNode = targetNode;
+		this.methodCallNode = methodCallNode;
 	}
+
+	@Override
+	protected int getOffsetLength() {
+		ISourcePosition replacePos = targetNode.getWrappedNode().getPosition();
+		return replacePos.getEndOffset() - replacePos.getStartOffset();
+	}
+
+	@Override
+	protected Node getEditNode(int offset, String document) {
+		return methodCallNode;
+	}
+
+	@Override
+	protected int getOffset(String document) {
+		return targetNode.getWrappedNode().getPosition().getStartOffset();
+	}
+
+	@Override
+	protected FormatHelper getFormatHelper() {
+		return new FormatWithParenthesis();
+	}
+
 }

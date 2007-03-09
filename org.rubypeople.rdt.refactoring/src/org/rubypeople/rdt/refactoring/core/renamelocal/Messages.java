@@ -3,7 +3,7 @@ package org.rubypeople.rdt.refactoring.core.renamelocal;
 import org.eclipse.osgi.util.NLS;
 
 public class Messages extends NLS {
-	private static final String BUNDLE_NAME = "org.rubypeople.rdt.refactoring.core.renamelocalvariable.messages"; //$NON-NLS-1$
+	private static final String BUNDLE_NAME = "org.rubypeople.rdt.refactoring.core.renamelocal.messages"; //$NON-NLS-1$
 
 	public static String LocalVariableRenamer_Modified;
 
@@ -17,7 +17,7 @@ public class Messages extends NLS {
 
 	public static String RenameLocalConditionChecker_SameName;
 
-	public static String RenameLocalVariableRefactoring_Name;
+	public static String RenameLocalRefactoring_Name;
 
 	public static String VariableNameProvider_NoValidName;
 	static {

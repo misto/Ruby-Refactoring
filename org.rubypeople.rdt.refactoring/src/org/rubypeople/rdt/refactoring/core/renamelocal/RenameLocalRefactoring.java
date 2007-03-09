@@ -35,7 +35,7 @@ import org.rubypeople.rdt.refactoring.ui.pages.RenamePage;
 
 public class RenameLocalRefactoring extends RubyRefactoring {
 
-	public static final String NAME = Messages.RenameLocalVariableRefactoring_Name;
+	public static final String NAME = Messages.RenameLocalRefactoring_Name;
 
 	public RenameLocalRefactoring(TextSelectionProvider selectionProvider) {
 		super(NAME);

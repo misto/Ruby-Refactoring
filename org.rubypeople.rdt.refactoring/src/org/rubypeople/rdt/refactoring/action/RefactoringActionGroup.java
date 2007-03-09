@@ -39,8 +39,8 @@ import org.rubypeople.rdt.refactoring.core.extractmethod.ExtractMethodRefactorin
 import org.rubypeople.rdt.refactoring.core.generateaccessors.GenerateAccessorsRefactoring;
 import org.rubypeople.rdt.refactoring.core.generateconstructor.GenerateConstructorRefactoring;
 import org.rubypeople.rdt.refactoring.core.inlineclass.InlineClassRefactoring;
+import org.rubypeople.rdt.refactoring.core.inlinelocal.InlineTempRefactoring;
 import org.rubypeople.rdt.refactoring.core.inlinemethod.InlineMethodRefactoring;
-import org.rubypeople.rdt.refactoring.core.inlinetemp.InlineTempRefactoring;
 import org.rubypeople.rdt.refactoring.core.mergeclasspartsinfile.MergeClassPartsInFileRefactoring;
 import org.rubypeople.rdt.refactoring.core.mergewithexternalclassparts.MergeWithExternalClassPartsRefactoring;
 import org.rubypeople.rdt.refactoring.core.movefield.MoveFieldRefactoring;

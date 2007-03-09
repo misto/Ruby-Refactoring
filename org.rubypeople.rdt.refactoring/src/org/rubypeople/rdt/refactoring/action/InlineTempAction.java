@@ -30,7 +30,7 @@
 
 package org.rubypeople.rdt.refactoring.action;
 
-import org.rubypeople.rdt.refactoring.core.inlinetemp.InlineTempRefactoring;
+import org.rubypeople.rdt.refactoring.core.inlinelocal.InlineTempRefactoring;
 
 public class InlineTempAction extends WorkbenchWindowActionDelegate {
 

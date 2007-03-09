@@ -28,25 +28,26 @@
  * the terms of any one of the CPL, the GPL or the LGPL.
  ***** END LICENSE BLOCK *****/
 
-package org.rubypeople.rdt.refactoring.core.inlinetemp;
+package org.rubypeople.rdt.refactoring.core.inlinelocal;
 
 import org.jruby.ast.Node;
-import org.jruby.ast.visitor.rewriter.FormatHelper;
 import org.jruby.lexer.yacc.ISourcePosition;
-import org.rubypeople.rdt.refactoring.core.FormatWithParenthesis;
 import org.rubypeople.rdt.refactoring.editprovider.ReplaceEditProvider;
 import org.rubypeople.rdt.refactoring.nodewrapper.LocalNodeWrapper;
 
-public class MethodCallReplaceProvider extends ReplaceEditProvider {
+public class TempValueReplaceProvider extends ReplaceEditProvider {
 
-	LocalNodeWrapper targetNode;
+	private LocalNodeWrapper targetNode;
 
-	Node methodCallNode;
+	private LocalNodeWrapper inlinedNode;
 
-	public MethodCallReplaceProvider(LocalNodeWrapper targetNode, Node methodCallNode) {
+	private boolean addBrackets;
+
+	public TempValueReplaceProvider(LocalNodeWrapper targetNode, LocalNodeWrapper inlinedNode, boolean addBrackets) {
 		super(false);
+		this.inlinedNode = inlinedNode;
 		this.targetNode = targetNode;
-		this.methodCallNode = methodCallNode;
+		this.addBrackets = addBrackets;
 	}
 
 	@Override
@@ -57,7 +58,7 @@ public class MethodCallReplaceProvider extends ReplaceEditProvider {
 
 	@Override
 	protected Node getEditNode(int offset, String document) {
-		return methodCallNode;
+		return inlinedNode.getValueNode();
 	}
 
 	@Override
@@ -65,9 +66,10 @@ public class MethodCallReplaceProvider extends ReplaceEditProvider {
 		return targetNode.getWrappedNode().getPosition().getStartOffset();
 	}
 
-	@Override
-	protected FormatHelper getFormatHelper() {
-		return new FormatWithParenthesis();
+	protected String getFormatedNode(String document) {
+		if(addBrackets) {
+			return '(' + super.getFormatedNode(document) + ')';
+		}
+		return super.getFormatedNode(document);
 	}
-
 }

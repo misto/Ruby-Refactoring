@@ -34,9 +34,9 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 
 import org.eclipse.jface.text.BadLocationException;
-import org.rubypeople.rdt.refactoring.core.inlinetemp.InlineTempConditionChecker;
-import org.rubypeople.rdt.refactoring.core.inlinetemp.InlineTempConfig;
-import org.rubypeople.rdt.refactoring.core.inlinetemp.TempInliner;
+import org.rubypeople.rdt.refactoring.core.inlinelocal.InlineTempConditionChecker;
+import org.rubypeople.rdt.refactoring.core.inlinelocal.InlineTempConfig;
+import org.rubypeople.rdt.refactoring.core.inlinelocal.TempInliner;
 import org.rubypeople.rdt.refactoring.tests.FileTestData;
 import org.rubypeople.rdt.refactoring.tests.RefactoringTestCase;
 

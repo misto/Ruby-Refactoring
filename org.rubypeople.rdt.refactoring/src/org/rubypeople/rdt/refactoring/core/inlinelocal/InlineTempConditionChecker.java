@@ -28,7 +28,7 @@
  * the terms of any one of the CPL, the GPL or the LGPL.
  ***** END LICENSE BLOCK *****/
 
-package org.rubypeople.rdt.refactoring.core.inlinetemp;
+package org.rubypeople.rdt.refactoring.core.inlinelocal;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -99,26 +99,26 @@ public class InlineTempConditionChecker extends RefactoringConditionChecker {
 	@Override
 	protected void checkFinalConditions() {
 		if (!isNewMethodNameUnique()) {
-			addError(Messages.InlineTempConditionChecker_NameNotUnique);
+			addError(Messages.InlineLocalConditionChecker_NameNotUnique);
 		}
 	}
 
 	@Override
 	protected void checkInitialConditions() {
 		if (config.getSelectedItem() == null) {
-			addError(Messages.InlineTempConditionChecker_NoLocalVariable);
+			addError(Messages.InlineLocalConditionChecker_NoLocalVariable);
 		} else if (isTempParameter()) {
-			addError(Messages.InlineTempConditionChecker_CannotMethodParameters);
+			addError(Messages.InlineLocalConditionChecker_CannotMethodParameters);
 		} else if (isBlockArgument()) {
-			addError(Messages.InlineTempConditionChecker_CannotBlockArgument);
+			addError(Messages.InlineLocalConditionChecker_CannotBlockArgument);
 		} else if (isTempMultiassigned()) {
-			addError(Messages.InlineTempConditionChecker_CannotMultiAssigned);
+			addError(Messages.InlineLocalConditionChecker_CannotMultiAssigned);
 		} else if (defintiontionContainsItself()) {
-			addError(Messages.InlineTempConditionChecker_CannotSelfReferencing);
+			addError(Messages.InlineLocalConditionChecker_CannotSelfReferencing);
 		} else if (isMultipleAsgnNode()) {
-			addError(Messages.InlineTempConditionChecker_CannotMultipleAssignments);
+			addError(Messages.InlineLocalConditionChecker_CannotMultipleAssignments);
 		} else if (!hasTarget())	{
-			addError(Messages.InlineTempConditionChecker_NoTarget);
+			addError(Messages.InlineLocalConditionChecker_NoTarget);
 		}
 	}
 	
