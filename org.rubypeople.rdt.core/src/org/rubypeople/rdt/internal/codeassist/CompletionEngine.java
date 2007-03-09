@@ -55,6 +55,7 @@ import org.rubypeople.rdt.internal.ti.util.INodeAcceptor;
 import org.rubypeople.rdt.internal.ti.util.ScopedNodeLocator;
 
 public class CompletionEngine {
+	private static final String OBJECT = "Object";
 	private static final String CONSTRUCTOR_INVOKE_NAME = "new";
 	private CompletionRequestor fRequestor;
 	private CompletionContext fContext;
@@ -109,9 +110,9 @@ public class CompletionEngine {
 		IMember element = (IMember) script.getElementAt(fContext.getOffset());
 		IType type = null;
 		if (element == null) {
-			// DWe're in the top level, so we're in "Object"
+			// We're in the top level, so we're in "Object"
 		    RubyElementRequestor requestor = new RubyElementRequestor(script);
-		    IType[] types = requestor.findType("Object");
+		    IType[] types = requestor.findType(OBJECT);
 		    if (types != null && types.length > 0) type = types[0];
 		} else {
 			type = element.getDeclaringType();
