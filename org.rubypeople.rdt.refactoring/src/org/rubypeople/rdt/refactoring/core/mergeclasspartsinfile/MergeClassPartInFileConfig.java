@@ -34,13 +34,14 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 import org.rubypeople.rdt.refactoring.classnodeprovider.IncludedClassesProvider;
-import org.rubypeople.rdt.refactoring.documentprovider.DocumentProvider;
+import org.rubypeople.rdt.refactoring.core.IRefactoringConfig;
+import org.rubypeople.rdt.refactoring.documentprovider.IDocumentProvider;
 import org.rubypeople.rdt.refactoring.nodewrapper.ClassNodeWrapper;
 import org.rubypeople.rdt.refactoring.nodewrapper.PartialClassNodeWrapper;
 
-public class MergeClassPartInFileConfig {
+public class MergeClassPartInFileConfig implements IRefactoringConfig {
 
-	private DocumentProvider documentProvider;
+	private IDocumentProvider documentProvider;
 
 	private Collection<ClassNodeWrapper> selectableClasses;
 
@@ -50,12 +51,12 @@ public class MergeClassPartInFileConfig {
 
 	private IncludedClassesProvider classNodeProvider;
 
-	public MergeClassPartInFileConfig(DocumentProvider documentProvider) {
+	public MergeClassPartInFileConfig(IDocumentProvider documentProvider) {
 		this.documentProvider = documentProvider;
 		checkedClassParts = new ArrayList<PartialClassNodeWrapper>();
 	}
 
-	public DocumentProvider getDocumentProvider() {
+	public IDocumentProvider getDocumentProvider() {
 		return documentProvider;
 	}
 
@@ -97,6 +98,10 @@ public class MergeClassPartInFileConfig {
 
 	public void setClassNodeProvider(IncludedClassesProvider classNodeProvider) {
 		this.classNodeProvider = classNodeProvider;
+	}
+
+	public void setDocumentProvider(IDocumentProvider doc) {
+		this.documentProvider = doc;
 	}
 
 }

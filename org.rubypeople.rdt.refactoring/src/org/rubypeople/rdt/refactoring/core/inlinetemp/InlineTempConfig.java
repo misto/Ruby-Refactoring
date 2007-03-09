@@ -34,16 +34,18 @@ import java.util.Collection;
 
 import org.jruby.ast.MethodDefNode;
 import org.jruby.ast.Node;
+import org.rubypeople.rdt.refactoring.core.IRefactoringConfig;
 import org.rubypeople.rdt.refactoring.documentprovider.DocumentProvider;
+import org.rubypeople.rdt.refactoring.documentprovider.IDocumentProvider;
 import org.rubypeople.rdt.refactoring.nodewrapper.LocalNodeWrapper;
 
-public class InlineTempConfig {
+public class InlineTempConfig implements IRefactoringConfig {
 
 	private boolean replaceTempWithQuery;
 
 	private String newMethodName = "extractedMethod"; //$NON-NLS-1$
 
-	private DocumentProvider docProvider;
+	private IDocumentProvider docProvider;
 
 	private int caretPosition;
 
@@ -80,7 +82,7 @@ public class InlineTempConfig {
 		this.newMethodName = newMethodName;
 	}
 
-	public DocumentProvider getDocProvider() {
+	public IDocumentProvider getDocumentProvider() {
 		return docProvider;
 	}
 	
@@ -139,5 +141,9 @@ public class InlineTempConfig {
 
 	public void setEnclosingMethod(MethodDefNode enclosingMethod) {
 		this.enclosingMethod = enclosingMethod;
+	}
+
+	public void setDocumentProvider(IDocumentProvider doc) {
+		this.docProvider = doc;
 	}
 }

@@ -29,7 +29,6 @@
 package org.rubypeople.rdt.refactoring.ui.pages;
 
 import org.eclipse.jface.viewers.ITreeContentProvider;
-import org.eclipse.ltk.ui.refactoring.UserInputWizardPage;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Composite;
@@ -39,7 +38,7 @@ import org.eclipse.swt.widgets.Widget;
 import org.rubypeople.rdt.refactoring.ui.ConstructorGenerationTree;
 import org.rubypeople.rdt.refactoring.ui.util.SwtUtils;
 
-public class ConstructorSelectionPage extends UserInputWizardPage {
+public class ConstructorSelectionPage extends RefactoringWizardPage {
 	private static final String title = Messages.ConstructorSelectionPage_SelectConstructor;
 
 	private ConstructorGenerationTree tree;

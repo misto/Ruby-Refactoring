@@ -50,7 +50,7 @@ import org.rubypeople.rdt.refactoring.core.renamefield.fielditems.ClassVarFieldI
 import org.rubypeople.rdt.refactoring.core.renamefield.fielditems.FieldItem;
 import org.rubypeople.rdt.refactoring.core.renamefield.fielditems.InstAsgnFieldItem;
 import org.rubypeople.rdt.refactoring.core.renamefield.fielditems.InstVarFieldItem;
-import org.rubypeople.rdt.refactoring.documentprovider.DocumentProvider;
+import org.rubypeople.rdt.refactoring.documentprovider.IDocumentProvider;
 import org.rubypeople.rdt.refactoring.nodewrapper.AttrAccessorNodeWrapper;
 import org.rubypeople.rdt.refactoring.nodewrapper.ClassNodeWrapper;
 
@@ -62,9 +62,9 @@ public class FieldProvider {
 
 	private LinkedHashMap<String, ArrayList<FieldItem>> fields;
 
-	private DocumentProvider docProvider;
+	private IDocumentProvider docProvider;
 
-	public FieldProvider(ClassNodeWrapper classNode, DocumentProvider docProvider) {
+	public FieldProvider(ClassNodeWrapper classNode, IDocumentProvider docProvider) {
 		this.classNode = classNode;
 		this.fields = new LinkedHashMap<String, ArrayList<FieldItem>>();
 		this.docProvider = docProvider;

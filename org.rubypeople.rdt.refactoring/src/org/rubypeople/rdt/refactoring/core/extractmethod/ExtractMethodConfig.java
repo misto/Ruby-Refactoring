@@ -32,13 +32,14 @@ package org.rubypeople.rdt.refactoring.core.extractmethod;
 
 import org.jruby.ast.MethodDefNode;
 import org.jruby.ast.Node;
+import org.rubypeople.rdt.refactoring.core.IRefactoringConfig;
 import org.rubypeople.rdt.refactoring.core.SelectionInformation;
-import org.rubypeople.rdt.refactoring.documentprovider.DocumentProvider;
+import org.rubypeople.rdt.refactoring.documentprovider.IDocumentProvider;
 import org.rubypeople.rdt.refactoring.nodewrapper.PartialClassNodeWrapper;
 
-public class ExtractMethodConfig {
+public class ExtractMethodConfig implements IRefactoringConfig {
 
-	private DocumentProvider docProvider;
+	private IDocumentProvider docProvider;
 	private SelectionInformation selectionInfo;
 	private ExtractedMethodHelper extractMethodHelper;
 	private Node selectedNodes;
@@ -47,7 +48,7 @@ public class ExtractMethodConfig {
 	private PartialClassNodeWrapper enclosingClassNode;
 	private Node rootNode;
 
-	public ExtractMethodConfig(DocumentProvider docProvider, SelectionInformation selectionInfo) {
+	public ExtractMethodConfig(IDocumentProvider docProvider, SelectionInformation selectionInfo) {
 		this.docProvider = docProvider;
 		this.selectionInfo = optimizeSelection(selectionInfo);
 	}
@@ -62,7 +63,7 @@ public class ExtractMethodConfig {
 		return new SelectionInformation(start, end, selectionInfo.getSource());
 	}
 
-	public DocumentProvider getDocumentProvider() {
+	public IDocumentProvider getDocumentProvider() {
 		return docProvider;
 	}
 
@@ -124,6 +125,10 @@ public class ExtractMethodConfig {
 
 	public Node getRootNode() {
 		return rootNode;
+	}
+
+	public void setDocumentProvider(IDocumentProvider doc) {
+		this.docProvider = doc;
 	}
 
 }

@@ -48,12 +48,12 @@ public class EncapsulateFieldConditionChecker extends RefactoringConditionChecke
 	private Node rootNode;
 
 	public EncapsulateFieldConditionChecker(EncapsulateFieldConfig config) {
-		super(config.getDocProvider(), config);
+		super(config.getDocumentProvider(), config);
 	}
 
 	public void init(Object configObj) {
 		config = (EncapsulateFieldConfig) configObj;
-		rootNode = config.getDocProvider().getActiveFileRootNode();
+		rootNode = config.getDocumentProvider().getActiveFileRootNode();
 		config.setSelectedInstNode(findSelectedInstNode(config.getCaretPosition()));
 		if (!config.hasSelectedInstNode()) {
 			return;
@@ -101,11 +101,11 @@ public class EncapsulateFieldConditionChecker extends RefactoringConditionChecke
 	}
 
 	private boolean selectedNodeIsInstVarNodeAndNotInMethod() {
-		Node selectedVarNode = SelectionNodeProvider.getSelectedNodeOfType(config.getDocProvider().getActiveFileRootNode(), config.getCaretPosition(), InstVarNode.class, InstAsgnNode.class);
+		Node selectedVarNode = SelectionNodeProvider.getSelectedNodeOfType(config.getDocumentProvider().getActiveFileRootNode(), config.getCaretPosition(), InstVarNode.class, InstAsgnNode.class);
 		if (selectedVarNode == null) {
 			return false;
 		}
-		Node enclosingMethod = SelectionNodeProvider.getSelectedNodeOfType(config.getDocProvider().getActiveFileRootNode(), config.getCaretPosition(), DefnNode.class);
+		Node enclosingMethod = SelectionNodeProvider.getSelectedNodeOfType(config.getDocumentProvider().getActiveFileRootNode(), config.getCaretPosition(), DefnNode.class);
 		return enclosingMethod == null;
 	}
 }

@@ -28,14 +28,13 @@
 
 package org.rubypeople.rdt.refactoring.ui.pages;
 
-import org.eclipse.ltk.ui.refactoring.UserInputWizardPage;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.rubypeople.rdt.refactoring.core.pushdown.MethodDownPusher;
 import org.rubypeople.rdt.refactoring.ui.NotifiedContainerCheckedTree;
 
-public class MethodDownPusherSelectionPage extends UserInputWizardPage {
+public class MethodDownPusherSelectionPage extends RefactoringWizardPage {
 	private static final String TITLE = Messages.MethodDownPusherSelectionPage_Title;
 
 	private NotifiedContainerCheckedTree tree;

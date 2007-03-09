@@ -40,18 +40,20 @@ import org.jruby.ast.InstAsgnNode;
 import org.jruby.ast.LocalAsgnNode;
 import org.jruby.ast.Node;
 import org.rubypeople.rdt.refactoring.classnodeprovider.IncludedClassesProvider;
+import org.rubypeople.rdt.refactoring.core.IRefactoringConfig;
 import org.rubypeople.rdt.refactoring.core.NodeProvider;
 import org.rubypeople.rdt.refactoring.documentprovider.DocumentProvider;
+import org.rubypeople.rdt.refactoring.documentprovider.IDocumentProvider;
 import org.rubypeople.rdt.refactoring.nodewrapper.ClassNodeWrapper;
 import org.rubypeople.rdt.refactoring.nodewrapper.MethodCallNodeWrapper;
 import org.rubypeople.rdt.refactoring.nodewrapper.MethodNodeWrapper;
 import org.rubypeople.rdt.refactoring.nodewrapper.PartialClassNodeWrapper;
 
 
-public class InlineClassConfig {
+public class InlineClassConfig implements IRefactoringConfig {
 
 	private int caretPosition;
-	private DocumentProvider docProvider;
+	private IDocumentProvider docProvider;
 	private PartialClassNodeWrapper targetClassPart;
 	private Collection<ClassNodeWrapper> possibleTargetClasses;
 	private ClassNodeWrapper sourceClass;
@@ -65,7 +67,7 @@ public class InlineClassConfig {
 	public int getCaretPosition() {
 		return caretPosition;
 	}
-	public DocumentProvider getDocProvider() {
+	public IDocumentProvider getDocumentProvider() {
 		return docProvider;
 	}
 
@@ -121,5 +123,9 @@ public class InlineClassConfig {
 			}
 		}
 		return assignmentsFound;
+	}
+
+	public void setDocumentProvider(IDocumentProvider doc) {
+		this.docProvider = doc;
 	}
 }

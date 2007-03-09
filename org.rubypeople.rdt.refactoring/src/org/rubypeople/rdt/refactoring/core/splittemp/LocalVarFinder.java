@@ -41,14 +41,14 @@ import org.jruby.ast.Node;
 import org.jruby.ast.types.INameNode;
 import org.rubypeople.rdt.refactoring.core.NodeProvider;
 import org.rubypeople.rdt.refactoring.core.SelectionNodeProvider;
-import org.rubypeople.rdt.refactoring.documentprovider.DocumentProvider;
+import org.rubypeople.rdt.refactoring.documentprovider.IDocumentProvider;
 import org.rubypeople.rdt.refactoring.util.NodeUtil;
 
 public class LocalVarFinder implements ILocalVarFinder {
 
 	private Node enclosingMethod;
 
-	public Collection<LocalVarUsage> findLocalUsages(DocumentProvider doc, int caretPosition) {
+	public Collection<LocalVarUsage> findLocalUsages(IDocumentProvider doc, int caretPosition) {
 
 		Node rootNode = doc.getActiveFileRootNode();
 

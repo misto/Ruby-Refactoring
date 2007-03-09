@@ -42,9 +42,8 @@ public class RubyRefactoringWizard extends RefactoringWizard {
 	}
 
 	protected void addUserInputPages() {
-
-		for (IWizardPage page : refactoring.getPages())
+		for (IWizardPage page : refactoring.getPages()) {
 			addPage(page);
+		}
 	}
-
 }

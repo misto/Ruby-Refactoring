@@ -41,6 +41,7 @@ import org.jruby.ast.MethodDefNode;
 import org.jruby.ast.Node;
 import org.jruby.ast.RootNode;
 import org.jruby.ast.types.INameNode;
+import org.jruby.lexer.yacc.ISourcePosition;
 import org.rubypeople.rdt.refactoring.core.NodeProvider;
 import org.rubypeople.rdt.refactoring.core.RefactoringConditionChecker;
 import org.rubypeople.rdt.refactoring.core.SelectionNodeProvider;
@@ -83,20 +84,29 @@ public class RenameLocalConditionChecker extends RefactoringConditionChecker {
 		
 		config.setSelectedNode(selectedNode);
 		if(selectedNode == null) {
-			config.setLocalNames(NodeUtil.getScope(rootNode).getVariables());
 			Collection<MethodDefNode> methodNodes = NodeProvider.getMethodNodes(rootNode);
 			config.setSelectedMethod(SelectionNodeProvider.getSelectedNodeOfType(methodNodes, config.getCaretPosition(), MethodDefNode.class));
-			return;
+		} else {
+			config.setSelectedMethod(SelectionNodeProvider.getEnclosingScope(rootNode, selectedNode));
 		}
-		config.setSelectedMethod(SelectionNodeProvider.getEnclosingScope(rootNode, selectedNode));
-		config.setLocalNames(NodeUtil.getScope(config.getSelectedMethod()).getVariables());
+		if(config.getSelectedMethod() != null) {
+			config.setLocalNames(NodeUtil.getScope(config.getSelectedMethod()).getVariables());
+		}
 	}
 	
 	@Override
 	protected void checkInitialConditions() {
-		if (!config.hasSelectedNode() || !isSelectedNodeLocalVar()) {
+		if ((!config.hasSelectedNode() || !isSelectedNodeLocalVar()) && !isSelectionInMethodDefinition()) {
 			addError(NO_LOCAL_VARIABLES);
 		}
+	}
+	
+	private boolean isSelectionInMethodDefinition() {
+		if(config.getSelectedMethod() == null) {
+			return false;
+		}
+		ISourcePosition position = ((MethodDefNode) config.getSelectedMethod()).getArgsNode().getPosition();
+		return position.getStartOffset() <= config.getCaretPosition() && position.getEndOffset() >= config.getCaretPosition();
 	}
 
 	private boolean isSelectedNodeLocalVar() {

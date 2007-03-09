@@ -51,15 +51,15 @@ public class MoveMethodConditionChecker extends RefactoringConditionChecker {
 	private MoveMethodConfig config;
 
 	public MoveMethodConditionChecker(MoveMethodConfig config) {
-		super(config.getDocProvider(), config);
+		super(config.getDocumentProvider(), config);
 	}
 
 	@Override
-	protected void init(Object configObj) {
+	public void init(Object configObj) {
 		this.config = (MoveMethodConfig) configObj;
-		Node rootNode = config.getDocProvider().getActiveFileRootNode();
+		Node rootNode = config.getDocumentProvider().getActiveFileRootNode();
 		int caretPos = config.getCaretPosition();
-		config.setAllClassesNodeProvider(config.getDocProvider().getProjectClassNodeProvider());
+		config.setAllClassesNodeProvider(config.getDocumentProvider().getProjectClassNodeProvider());
 		try {
 			ClassNodeWrapper selectedClassPart = SelectionNodeProvider.getSelectedClassNode(rootNode, caretPos);
 			config.setSourceClassNode(selectedClassPart.getName());

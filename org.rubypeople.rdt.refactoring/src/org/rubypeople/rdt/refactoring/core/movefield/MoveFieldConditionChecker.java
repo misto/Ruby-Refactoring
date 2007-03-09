@@ -45,15 +45,15 @@ public class MoveFieldConditionChecker extends RefactoringConditionChecker {
 	private MoveFieldConfig config;
 
 	public MoveFieldConditionChecker(MoveFieldConfig config) {
-		super(config.getDoc(), config);
+		super(config.getDocumentProvider(), config);
 	}
 
 	@Override
-	protected void init(Object configObj) {
+	public void init(Object configObj) {
 		config = (MoveFieldConfig) configObj;
 	
 		try {
-			selectedClassNode = SelectionNodeProvider.getSelectedClassNode(config.getDoc().getActiveFileRootNode(), config.getPos());
+			selectedClassNode = SelectionNodeProvider.getSelectedClassNode(config.getDocumentProvider().getActiveFileRootNode(), config.getPos());
 		} catch (NoClassNodeException e) {
 			selectedClassNode = null;
 			return;
@@ -95,7 +95,7 @@ public class MoveFieldConditionChecker extends RefactoringConditionChecker {
 
 	private Collection<String> getPossibleTargetClassNames(String selectedClassName) {
 		Collection<String> allClasses = new TreeSet<String>();
-		for(ClassNodeWrapper classNode : new AllFilesClassNodeProvider(config.getDoc()).getAllClassNodes()) {
+		for(ClassNodeWrapper classNode : new AllFilesClassNodeProvider(config.getDocumentProvider()).getAllClassNodes()) {
 			if(!classNode.getName().equals(selectedClassName))
 			allClasses.add(classNode.getName());
 		}

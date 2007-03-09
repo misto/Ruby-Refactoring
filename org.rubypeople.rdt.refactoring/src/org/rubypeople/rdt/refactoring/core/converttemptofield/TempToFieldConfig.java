@@ -31,13 +31,14 @@
 package org.rubypeople.rdt.refactoring.core.converttemptofield;
 
 import org.jruby.ast.MethodDefNode;
-import org.rubypeople.rdt.refactoring.documentprovider.DocumentProvider;
+import org.rubypeople.rdt.refactoring.core.IRefactoringConfig;
+import org.rubypeople.rdt.refactoring.documentprovider.IDocumentProvider;
 import org.rubypeople.rdt.refactoring.nodewrapper.ClassNodeWrapper;
 import org.rubypeople.rdt.refactoring.nodewrapper.LocalNodeWrapper;
 
-public class TempToFieldConfig {
+public class TempToFieldConfig implements IRefactoringConfig {
 
-	private DocumentProvider docProvider;
+	private IDocumentProvider docProvider;
 	private int caretPosition;
 	private LocalNodeWrapper selectedNode;
 	private ClassNodeWrapper enclosingClassNode;
@@ -45,7 +46,7 @@ public class TempToFieldConfig {
 	private boolean classField;
 	private String newName;
 
-	public TempToFieldConfig(DocumentProvider docProvider, int caretPosition) {
+	public TempToFieldConfig(IDocumentProvider docProvider, int caretPosition) {
 		this.docProvider = docProvider;
 		this.caretPosition = caretPosition;
 	}
@@ -94,7 +95,11 @@ public class TempToFieldConfig {
 		this.selectedNode = selectedItem;
 	}
 
-	public DocumentProvider getDocProvider() {
+	public IDocumentProvider getDocumentProvider() {
 		return docProvider;
+	}
+
+	public void setDocumentProvider(IDocumentProvider doc) {
+		this.docProvider = doc;
 	}
 }

@@ -33,19 +33,20 @@ package org.rubypeople.rdt.refactoring.core.renamefield;
 import java.util.ArrayList;
 import java.util.Collection;
 
+import org.rubypeople.rdt.refactoring.core.IRefactoringConfig;
 import org.rubypeople.rdt.refactoring.core.renamefield.fielditems.AttrFieldItem;
 import org.rubypeople.rdt.refactoring.core.renamefield.fielditems.FieldItem;
 import org.rubypeople.rdt.refactoring.core.renamemethod.NodeSelector;
-import org.rubypeople.rdt.refactoring.documentprovider.DocumentProvider;
 import org.rubypeople.rdt.refactoring.documentprovider.DocumentWithIncluding;
+import org.rubypeople.rdt.refactoring.documentprovider.IDocumentProvider;
 import org.rubypeople.rdt.refactoring.nodewrapper.ClassNodeWrapper;
 import org.rubypeople.rdt.refactoring.nodewrapper.INodeWrapper;
 import org.rubypeople.rdt.refactoring.ui.ICheckboxListener;
 import org.rubypeople.rdt.refactoring.ui.INewNameReceiver;
 
-public class RenameFieldConfig implements INewNameReceiver, ICheckboxListener, NodeSelector {
+public class RenameFieldConfig implements INewNameReceiver, ICheckboxListener, NodeSelector, IRefactoringConfig {
 
-	private DocumentProvider docProvider;
+	private IDocumentProvider docProvider;
 
 	private int caretPosition;
 
@@ -66,7 +67,7 @@ public class RenameFieldConfig implements INewNameReceiver, ICheckboxListener, N
 
 	private FieldItem selectedItem;
 
-	public RenameFieldConfig(DocumentProvider docProvider, int caretPosition) {
+	public RenameFieldConfig(IDocumentProvider docProvider, int caretPosition) {
 		this.docProvider = docProvider;
 		this.caretPosition = caretPosition;
 
@@ -79,7 +80,7 @@ public class RenameFieldConfig implements INewNameReceiver, ICheckboxListener, N
 		return caretPosition;
 	}
 
-	public DocumentProvider getDocProvider() {
+	public IDocumentProvider getDocumentProvider() {
 		return docProvider;
 	}
 
@@ -196,5 +197,10 @@ public class RenameFieldConfig implements INewNameReceiver, ICheckboxListener, N
 
 	public void setSelectedName(String selectedName) {
 		this.selectedName = selectedName;
+	}
+
+
+	public void setDocumentProvider(IDocumentProvider doc) {
+		this.docProvider = doc;
 	}
 }

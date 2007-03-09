@@ -36,18 +36,19 @@ import java.util.Collection;
 import org.jruby.ast.Node;
 import org.jruby.ast.SymbolNode;
 import org.rubypeople.rdt.refactoring.classnodeprovider.IncludedClassesProvider;
+import org.rubypeople.rdt.refactoring.core.IRefactoringConfig;
 import org.rubypeople.rdt.refactoring.core.SelectionNodeProvider;
-import org.rubypeople.rdt.refactoring.documentprovider.DocumentProvider;
 import org.rubypeople.rdt.refactoring.documentprovider.DocumentWithIncluding;
+import org.rubypeople.rdt.refactoring.documentprovider.IDocumentProvider;
 import org.rubypeople.rdt.refactoring.exception.NoClassNodeException;
 import org.rubypeople.rdt.refactoring.nodewrapper.ClassNodeWrapper;
 import org.rubypeople.rdt.refactoring.nodewrapper.INodeWrapper;
 import org.rubypeople.rdt.refactoring.nodewrapper.MethodNodeWrapper;
 import org.rubypeople.rdt.refactoring.ui.INewNameReceiver;
 
-public class RenameMethodConfig implements INewNameReceiver, NodeSelector {
+public class RenameMethodConfig implements INewNameReceiver, NodeSelector, IRefactoringConfig {
 
-	private DocumentProvider docProvider;
+	private IDocumentProvider docProvider;
 
 	private int caretPosition;
 
@@ -63,7 +64,7 @@ public class RenameMethodConfig implements INewNameReceiver, NodeSelector {
 
 	private MethodDefinitionWrapper targetMethod;
 
-	public RenameMethodConfig(DocumentProvider docProvider, int caretPosition) {
+	public RenameMethodConfig(IDocumentProvider docProvider, int caretPosition) {
 		this.docProvider = docProvider;
 		this.caretPosition = caretPosition;
 		this.renamedCalls = new ArrayList<INodeWrapper>();
@@ -74,7 +75,7 @@ public class RenameMethodConfig implements INewNameReceiver, NodeSelector {
 		return caretPosition;
 	}
 
-	public DocumentProvider getDocProvider() {
+	public IDocumentProvider getDocumentProvider() {
 		return docProvider;
 	}
 
@@ -138,5 +139,9 @@ public class RenameMethodConfig implements INewNameReceiver, NodeSelector {
 
 	public void setDocProvider(DocumentWithIncluding docProvider) {
 		this.docProvider = docProvider;
+	}
+
+	public void setDocumentProvider(IDocumentProvider doc) {
+		this.docProvider = doc;
 	}
 }

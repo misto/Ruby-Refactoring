@@ -39,7 +39,7 @@ import org.jruby.ast.Node;
 import org.jruby.ast.SClassNode;
 import org.jruby.lexer.yacc.ISourcePosition;
 import org.rubypeople.rdt.refactoring.core.NodeProvider;
-import org.rubypeople.rdt.refactoring.documentprovider.DocumentProvider;
+import org.rubypeople.rdt.refactoring.documentprovider.IDocumentProvider;
 import org.rubypeople.rdt.refactoring.exception.NoClassNodeException;
 import org.rubypeople.rdt.refactoring.nodewrapper.ClassNodeWrapper;
 import org.rubypeople.rdt.refactoring.nodewrapper.MethodNodeWrapper;
@@ -49,13 +49,13 @@ public class ClassNodeProvider {
 
 	private Map<String, ClassNodeWrapper> classNodeWrappers;
 
-	protected DocumentProvider documentProvider;
+	protected IDocumentProvider documentProvider;
 
-	public ClassNodeProvider(DocumentProvider docProvider) {
+	public ClassNodeProvider(IDocumentProvider docProvider) {
 		this(docProvider, true);
 	}
 
-	public ClassNodeProvider(DocumentProvider docProvider, boolean addActiveFile) {
+	public ClassNodeProvider(IDocumentProvider docProvider, boolean addActiveFile) {
 		classNodeWrappers = new LinkedHashMap<String, ClassNodeWrapper>();
 		this.documentProvider = docProvider;
 		if(addActiveFile) {

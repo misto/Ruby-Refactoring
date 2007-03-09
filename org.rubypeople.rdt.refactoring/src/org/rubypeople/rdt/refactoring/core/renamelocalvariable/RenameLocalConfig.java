@@ -28,20 +28,22 @@
 
 package org.rubypeople.rdt.refactoring.core.renamelocalvariable;
 
+import org.jruby.ast.MethodDefNode;
 import org.jruby.ast.Node;
 import org.jruby.ast.types.INameNode;
-import org.rubypeople.rdt.refactoring.documentprovider.DocumentProvider;
+import org.rubypeople.rdt.refactoring.core.IRefactoringConfig;
+import org.rubypeople.rdt.refactoring.documentprovider.IDocumentProvider;
 
-public class RenameLocalConfig implements IRenameConfig {
+public class RenameLocalConfig implements IRefactoringConfig {
 
-	private DocumentProvider docProvider;
+	private IDocumentProvider docProvider;
 	private int caretPosition;
 	private Node selectedNode;
 	private Node selectedMethod;
 	private String[] localNames;
 	private LocalVariablesEditProvider editProvider;
 
-	public RenameLocalConfig(DocumentProvider docProvider, int caretPosition) {
+	public RenameLocalConfig(IDocumentProvider docProvider, int caretPosition) {
 		this.docProvider = docProvider;
 		this.caretPosition = caretPosition;
 	}
@@ -49,11 +51,13 @@ public class RenameLocalConfig implements IRenameConfig {
 	public String getSelectedNodeName() {
 		if (selectedNode instanceof INameNode) {
 			return ((INameNode) selectedNode).getName();
+		} else if (selectedNode == null && selectedMethod instanceof MethodDefNode) {
+			return localNames[((MethodDefNode) selectedMethod).getArgsNode().getRestArg()];
 		}
 		return ""; //$NON-NLS-1$
 	}
 
-	public DocumentProvider getDocumentProvider() {
+	public IDocumentProvider getDocumentProvider() {
 		return docProvider;
 	}
 
@@ -78,7 +82,7 @@ public class RenameLocalConfig implements IRenameConfig {
 	}
 
 	public String[] getLocalNames() {
-		return localNames.clone();
+		return localNames;
 	}
 
 	public void setLocalVariablesEditProvider(LocalVariablesEditProvider editProvider) {
@@ -103,6 +107,10 @@ public class RenameLocalConfig implements IRenameConfig {
 
 	public boolean hasSelectedNode() {
 		return selectedNode != null;
+	}
+
+	public void setDocumentProvider(IDocumentProvider docProvider) {
+		this.docProvider = docProvider;
 	}
 
 }

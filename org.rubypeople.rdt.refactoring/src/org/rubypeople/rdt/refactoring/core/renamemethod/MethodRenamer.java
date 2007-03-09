@@ -46,7 +46,6 @@ import org.rubypeople.rdt.refactoring.core.SelectionNodeProvider;
 import org.rubypeople.rdt.refactoring.core.renamemethod.methoditems.CallCandidateItem;
 import org.rubypeople.rdt.refactoring.core.renamemethod.methoditems.MethodNameArgumentItem;
 import org.rubypeople.rdt.refactoring.core.renamemethod.methoditems.SymbolItem;
-import org.rubypeople.rdt.refactoring.documentprovider.DocumentProvider;
 import org.rubypeople.rdt.refactoring.editprovider.FileEditProvider;
 import org.rubypeople.rdt.refactoring.editprovider.FileMultiEditProvider;
 import org.rubypeople.rdt.refactoring.editprovider.IMultiFileEditProvider;
@@ -60,7 +59,6 @@ import org.rubypeople.rdt.refactoring.nodewrapper.MethodNodeWrapper;
 public class MethodRenamer implements IMultiFileEditProvider {
 	
 	private RenameMethodConfig config;
-	private DocumentProvider docProvider;
 	private MultiFileEditProvider fileEdits;
 	
 	public Collection<String> getAllMethodsFromClass() {
@@ -77,15 +75,12 @@ public class MethodRenamer implements IMultiFileEditProvider {
 	
 	public MethodRenamer(RenameMethodConfig config){
 		this.config = config;
-		this.docProvider = config.getDocProvider();
 		fileEdits = new MultiFileEditProvider();		
 		
 		Collection<MethodCallNodeWrapper> probableClass = getCallCandidatesInClass();
 		probableClass.addAll(getSubsequentCalls());
 		config.setSelectedCalls(probableClass);
 	}
-
-
 
 	public Collection<FileMultiEditProvider> getFileEditProviders(){
 			
@@ -104,7 +99,7 @@ public class MethodRenamer implements IMultiFileEditProvider {
 		if(config.getTargetMethod().isClassMethod()){
 			return;
 		}
-		String file = docProvider.getActiveFileName();
+		String file = config.getDocumentProvider().getActiveFileName();
 		for(SymbolNode currentNode : getSymbolCandidatesInClass()){
 			SymbolItem currentItem = new SymbolItem(currentNode);
 			fileEdits.addEditProvider(new FileEditProvider(file, new MethodRenameEditProvider(currentItem, config.getNewName())));
@@ -123,7 +118,7 @@ public class MethodRenamer implements IMultiFileEditProvider {
 
 	private void addDefinitionRenamer() {
 		if(config.getSelectedClass()==null || config.getTargetMethod().isClassMethod()){
-			String file = docProvider.getActiveFileName();
+			String file = config.getDocumentProvider().getActiveFileName();
 			MethodNameArgumentItem argumentItem = new MethodNameArgumentItem(config.getTargetMethod().getWrappedNode().getNameNode());
 			fileEdits.addEditProvider(new FileEditProvider(file, new MethodRenameEditProvider(argumentItem, config.getNewName())));	
 		}
@@ -141,7 +136,7 @@ public class MethodRenamer implements IMultiFileEditProvider {
 	}
 
 	private ArrayList<ClassNodeWrapper> findRelatedClasses() {
-		ClassNodeProvider projectClassProvider = docProvider.getProjectClassNodeProvider();
+		ClassNodeProvider projectClassProvider = config.getDocumentProvider().getProjectClassNodeProvider();
 		
 		ArrayList<ClassNodeWrapper> relatedClasses = new ArrayList<ClassNodeWrapper>();
 		relatedClasses.addAll(projectClassProvider.getClassAndAllSuperClassesFor(config.getSelectedClass().getName()));
@@ -170,7 +165,7 @@ public class MethodRenamer implements IMultiFileEditProvider {
 	}
 	
 	public Collection<MethodCallNodeWrapper> getSubsequentCalls(){
-		Node fileRoot = docProvider.getActiveFileRootNode(); 
+		Node fileRoot = config.getDocumentProvider().getActiveFileRootNode(); 
 		int methodEndPos = config.getTargetMethod().getWrappedNode().getPosition().getEndOffset();
 		ArrayList<MethodCallNodeWrapper> subsequentCalls = new ArrayList<MethodCallNodeWrapper>();
 		

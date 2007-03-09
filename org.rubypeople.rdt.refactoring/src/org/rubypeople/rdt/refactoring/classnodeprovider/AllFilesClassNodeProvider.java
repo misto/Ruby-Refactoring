@@ -28,12 +28,12 @@
 
 package org.rubypeople.rdt.refactoring.classnodeprovider;
 
-import org.rubypeople.rdt.refactoring.documentprovider.DocumentProvider;
+import org.rubypeople.rdt.refactoring.documentprovider.IDocumentProvider;
 
 
 public class AllFilesClassNodeProvider extends ClassNodeProvider
 {
-	public AllFilesClassNodeProvider(DocumentProvider docProvider) {
+	public AllFilesClassNodeProvider(IDocumentProvider docProvider) {
 		super(docProvider, false);
 		for(String fileName : docProvider.getFileNames()) {
 			addSource(fileName);

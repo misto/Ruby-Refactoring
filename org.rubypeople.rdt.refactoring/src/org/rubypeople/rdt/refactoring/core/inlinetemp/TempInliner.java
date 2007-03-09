@@ -86,7 +86,7 @@ public class TempInliner extends MultiEditProvider {
 		int startPos = config.getDefinitionNode().getValueNode().getPosition().getStartOffset();
 		int endPos = config.getDefinitionNode().getValueNode().getPosition().getEndOffset();
 
-		extractConfig = new ExtractMethodConfig(config.getDocProvider(), new SelectionInformation(startPos, endPos, "")); //$NON-NLS-1$
+		extractConfig = new ExtractMethodConfig(config.getDocumentProvider(), new SelectionInformation(startPos, endPos, "")); //$NON-NLS-1$
 		new ExtractMethodConditionChecker(extractConfig);
 		MethodExtractor methodExtractor = new MethodExtractor(extractConfig);
 		extractConfig.getHelper().setMethodName(config.getNewMethodName());

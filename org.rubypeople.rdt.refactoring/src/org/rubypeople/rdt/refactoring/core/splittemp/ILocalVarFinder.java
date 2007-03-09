@@ -31,10 +31,10 @@ package org.rubypeople.rdt.refactoring.core.splittemp;
 import java.util.Collection;
 
 import org.jruby.ast.Node;
-import org.rubypeople.rdt.refactoring.documentprovider.DocumentProvider;
+import org.rubypeople.rdt.refactoring.documentprovider.IDocumentProvider;
 
 public interface ILocalVarFinder {
 	public Node getScopeNode();
 
-	public Collection<LocalVarUsage> findLocalUsages(DocumentProvider doc, int caretPosition);
+	public Collection<LocalVarUsage> findLocalUsages(IDocumentProvider doc, int caretPosition);
 }

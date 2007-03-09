@@ -28,7 +28,6 @@
 
 package org.rubypeople.rdt.refactoring.ui.pages;
 
-import org.eclipse.ltk.ui.refactoring.UserInputWizardPage;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Listener;
@@ -36,7 +35,7 @@ import org.rubypeople.rdt.refactoring.ui.IErrorMessageGenerator;
 import org.rubypeople.rdt.refactoring.ui.IErrorMessageReceiver;
 import org.rubypeople.rdt.refactoring.ui.LabeledTextField;
 
-public class RenamePage extends UserInputWizardPage implements IErrorMessageReceiver {
+public class RenamePage extends RefactoringWizardPage implements IErrorMessageReceiver {
 
 	private static final String TITLE = Messages.RenamePage_Title;
 

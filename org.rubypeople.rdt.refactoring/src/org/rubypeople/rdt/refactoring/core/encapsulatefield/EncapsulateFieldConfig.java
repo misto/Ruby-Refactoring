@@ -31,11 +31,12 @@
 package org.rubypeople.rdt.refactoring.core.encapsulatefield;
 
 import org.jruby.ast.types.INameNode;
+import org.rubypeople.rdt.refactoring.core.IRefactoringConfig;
 import org.rubypeople.rdt.refactoring.documentprovider.IDocumentProvider;
 import org.rubypeople.rdt.refactoring.nodewrapper.AttrAccessorNodeWrapper;
 import org.rubypeople.rdt.refactoring.nodewrapper.ClassNodeWrapper;
 
-public class EncapsulateFieldConfig {
+public class EncapsulateFieldConfig implements IRefactoringConfig {
 
 	private IDocumentProvider docProvider;
 	private int caretPosition;
@@ -54,7 +55,7 @@ public class EncapsulateFieldConfig {
 		return caretPosition;
 	}
 
-	public IDocumentProvider getDocProvider() {
+	public IDocumentProvider getDocumentProvider() {
 		return docProvider;
 	}
 
@@ -124,5 +125,9 @@ public class EncapsulateFieldConfig {
 			return getSelectedInstNode().getName().substring(1);
 		}
 		return null;
+	}
+
+	public void setDocumentProvider(IDocumentProvider doc) {
+		this.docProvider = doc;
 	}
 }

@@ -42,9 +42,11 @@ public abstract class RefactoringConditionChecker implements IRefactoringConditi
 
 	private Map<String, Collection<String>> messages;
 	private IDocumentProvider docProvider;
+	private final IRefactoringConfig config;
 
-	public RefactoringConditionChecker(IDocumentProvider docProvider, Object config) {
+	public RefactoringConditionChecker(IDocumentProvider docProvider, IRefactoringConfig config) {
 		this.docProvider = docProvider;
+		this.config = config;
 		initMessages();
 		addLocalInitialErrors();
 		if(shouldPerform(true)) {
@@ -141,5 +143,9 @@ public abstract class RefactoringConditionChecker implements IRefactoringConditi
 	protected void checkFinalConditions() {
 	}
 	
-	protected abstract void init(Object configObj);
+	public abstract void init(Object configObj);
+
+	public IRefactoringConfig getConfig() {
+		return config;
+	}
 }

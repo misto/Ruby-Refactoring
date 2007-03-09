@@ -59,7 +59,7 @@ public class MoveFieldEditProvider implements IMultiFileEditProvider {
 	}
 
 	private void addFieldRenamers(MultiFileEditProvider providers) {
-		RenameFieldConfig renameFieldConfig = new RenameFieldConfig(new DocumentWithIncluding(config.getDoc()), config.getPos());
+		RenameFieldConfig renameFieldConfig = new RenameFieldConfig(new DocumentWithIncluding(config.getDocumentProvider()), config.getPos());
 		
 		new RenameFieldConditionChecker(renameFieldConfig);
 		renameFieldConfig.setDoRenameAccessorMethods(false);
@@ -75,7 +75,7 @@ public class MoveFieldEditProvider implements IMultiFileEditProvider {
 	}
 
 	private void addTargetAccessorGenerator(MultiFileEditProvider providers) {
-		GenerateAccessorsAtTarget generateAccessors = new GenerateAccessorsAtTarget(config.getDoc(), config.getTargetClass(), config.getSelectedFieldName());
+		GenerateAccessorsAtTarget generateAccessors = new GenerateAccessorsAtTarget(config.getDocumentProvider(), config.getTargetClass(), config.getSelectedFieldName());
 		providers.addEditProvider(new FileEditProvider(generateAccessors.getFileName(), generateAccessors.getEditProvider()));
 	}
 	
@@ -83,7 +83,7 @@ public class MoveFieldEditProvider implements IMultiFileEditProvider {
 		GenerateAccessorAtSource accessorAtSource = new GenerateAccessorAtSource(config);
 
 		for(EditProvider edit : accessorAtSource.getEditProviders()) {
-			providers.addEditProvider(new FileEditProvider(config.getDoc().getActiveFileName(), edit));
+			providers.addEditProvider(new FileEditProvider(config.getDocumentProvider().getActiveFileName(), edit));
 		}
 	}
 }

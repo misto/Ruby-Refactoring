@@ -41,16 +41,16 @@ public class RenameClassConditionChecker extends RefactoringConditionChecker {
 	private RenameClassConfig config;
 
 	public RenameClassConditionChecker(RenameClassConfig config) {
-		super(config.getDocProvider(), config);
+		super(config.getDocumentProvider(), config);
 	}
 
 	@Override
-	protected void init(Object configObj) {
+	public void init(Object configObj) {
 		config = (RenameClassConfig) configObj;
-		config.setDocumentWithIncludingProvider(new DocumentWithIncluding(config.getDocProvider()));
+		config.setDocumentWithIncludingProvider(new DocumentWithIncluding(config.getDocumentProvider()));
 		ClassNodeWrapper classNode = null;
 		try {
-			classNode = SelectionNodeProvider.getSelectedClassNode(config.getDocProvider().getActiveFileRootNode(), config.getOffset());
+			classNode = SelectionNodeProvider.getSelectedClassNode(config.getDocumentProvider().getActiveFileRootNode(), config.getOffset());
 			int nameStart = ((ClassNode) classNode.getWrappedNode()).getCPath().getPosition().getStartOffset();
 			int nameEnd = ((ClassNode) classNode.getWrappedNode()).getCPath().getPosition().getEndOffset();
 			if(config.getOffset() < nameStart || config.getOffset() > nameEnd) {

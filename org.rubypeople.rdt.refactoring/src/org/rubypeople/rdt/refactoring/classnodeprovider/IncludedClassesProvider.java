@@ -38,14 +38,14 @@ import org.jruby.ast.FCallNode;
 import org.jruby.ast.Node;
 import org.jruby.ast.StrNode;
 import org.rubypeople.rdt.refactoring.core.NodeProvider;
-import org.rubypeople.rdt.refactoring.documentprovider.DocumentProvider;
+import org.rubypeople.rdt.refactoring.documentprovider.IDocumentProvider;
 
 public class IncludedClassesProvider extends ClassNodeProvider {
 	private String includingFileName;
 
 	private ArrayList<IPath> includeFilePaths;
 
-	public IncludedClassesProvider(DocumentProvider documentProvider) {
+	public IncludedClassesProvider(IDocumentProvider documentProvider) {
 		super(documentProvider);
 		this.includingFileName = documentProvider.getActiveFileName();
 		prepareIncludedFileNames();
@@ -101,7 +101,7 @@ public class IncludedClassesProvider extends ClassNodeProvider {
 
 	}
 
-	public DocumentProvider getDocumentProvider() {
+	public IDocumentProvider getDocumentProvider() {
 		return documentProvider;
 	}
 }

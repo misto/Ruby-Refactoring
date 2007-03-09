@@ -29,12 +29,12 @@
 package org.rubypeople.rdt.refactoring.core.inlinemethod;
 
 import org.jruby.ast.MethodDefNode;
-import org.rubypeople.rdt.refactoring.documentprovider.DocumentProvider;
+import org.rubypeople.rdt.refactoring.documentprovider.IDocumentProvider;
 
 /**
  * Searches for the given method name in the class name in the provided document. Returns the 
  * found node.
  */
 public interface IMethodFinder {
-	MethodDefNode find(String className, String methodName, DocumentProvider doc);
+	MethodDefNode find(String className, String methodName, IDocumentProvider doc);
 }

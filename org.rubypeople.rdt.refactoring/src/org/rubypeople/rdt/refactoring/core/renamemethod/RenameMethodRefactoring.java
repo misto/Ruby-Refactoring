@@ -64,7 +64,7 @@ public class RenameMethodRefactoring extends RubyRefactoring {
 			RenamePage page = new RenamePage(NAME + "...", config.getTargetMethod().getName(), nameListener); //$NON-NLS-1$
 			pages.add(page);
 			if(!config.getPossibleCalls().isEmpty()){
-				pages.add(new OccurenceReplaceSelectionPage(config, config.getDocProvider()));
+				pages.add(new OccurenceReplaceSelectionPage(config, config.getDocumentProvider()));
 			}
 		}
 	}

@@ -31,7 +31,6 @@ package org.rubypeople.rdt.refactoring.ui.pages;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.TreeSelection;
-import org.eclipse.ltk.ui.refactoring.UserInputWizardPage;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Composite;
@@ -44,7 +43,7 @@ import org.rubypeople.rdt.refactoring.ui.NotifiedContainerCheckedTree;
 import org.rubypeople.rdt.refactoring.ui.RdtCodeViewer;
 import org.rubypeople.rdt.refactoring.ui.util.SwtUtils;
 
-public class MergeWithExternalClassPartsPage extends UserInputWizardPage {
+public class MergeWithExternalClassPartsPage extends RefactoringWizardPage {
 	private static final String TITLE = Messages.MergeWithExternalClassPartsPage_SelectParts;
 
 	private NotifiedContainerCheckedTree tree;

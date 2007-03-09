@@ -31,7 +31,6 @@ package org.rubypeople.rdt.refactoring.ui.pages;
 import java.util.ArrayList;
 import java.util.Collection;
 
-import org.eclipse.ltk.ui.refactoring.UserInputWizardPage;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
@@ -52,7 +51,7 @@ import org.rubypeople.rdt.refactoring.nodewrapper.PartialClassNodeWrapper;
 import org.rubypeople.rdt.refactoring.ui.RdtCodeViewer;
 import org.rubypeople.rdt.refactoring.ui.util.SwtUtils;
 
-public class MergeClassPartsInFilePage extends UserInputWizardPage {
+public class MergeClassPartsInFilePage extends RefactoringWizardPage {
 	private static final String TITLE = Messages.MergeClassPartsInFilePage_SelectClassParts;
 
 	private RdtCodeViewer classView;

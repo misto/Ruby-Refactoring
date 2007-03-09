@@ -45,7 +45,7 @@ import org.jruby.lexer.yacc.ISourcePosition;
 import org.rubypeople.rdt.refactoring.core.NodeFactory;
 import org.rubypeople.rdt.refactoring.core.NodeProvider;
 import org.rubypeople.rdt.refactoring.core.SelectionNodeProvider;
-import org.rubypeople.rdt.refactoring.documentprovider.DocumentProvider;
+import org.rubypeople.rdt.refactoring.documentprovider.IDocumentProvider;
 import org.rubypeople.rdt.refactoring.documentprovider.StringDocumentProvider;
 import org.rubypeople.rdt.refactoring.editprovider.DeleteEditProvider;
 import org.rubypeople.rdt.refactoring.editprovider.FileEditProvider;
@@ -293,12 +293,12 @@ public class ClassInliner implements IMultiFileEditProvider {
 	private void addClassDeleteProvider(MultiFileEditProvider editProvider) {
 
 		DeleteEditProvider classPartDeleter = new DeleteEditProvider(inlinedClassPart.getWrappedNode());
-		editProvider.addEditProvider(new FileEditProvider(config.getDocProvider().getActiveFileName(), classPartDeleter));
+		editProvider.addEditProvider(new FileEditProvider(config.getDocumentProvider().getActiveFileName(), classPartDeleter));
 	}
 
 
 	public PartialClassNodeWrapper getInlinedClassPart(){
-		DocumentProvider docProvider = config.getDocProvider();
+		IDocumentProvider docProvider = config.getDocumentProvider();
 		Node rootNode = docProvider.getActiveFileRootNode();
 		try {
 			return SelectionNodeProvider.getSelectedClassNode(rootNode, config.getCaretPosition()).getFirstPartialClassNode();

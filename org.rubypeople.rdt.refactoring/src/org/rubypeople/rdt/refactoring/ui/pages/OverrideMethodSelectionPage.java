@@ -28,14 +28,13 @@
 
 package org.rubypeople.rdt.refactoring.ui.pages;
 
-import org.eclipse.ltk.ui.refactoring.UserInputWizardPage;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.rubypeople.rdt.refactoring.core.overridemethod.MethodsOverrider;
 import org.rubypeople.rdt.refactoring.ui.NotifiedContainerCheckedTree;
 
-public class OverrideMethodSelectionPage extends UserInputWizardPage {
+public class OverrideMethodSelectionPage extends RefactoringWizardPage {
 
 	private static final String TITLE = Messages.OverrideMethodSelectionPage_SelectMethods;
 

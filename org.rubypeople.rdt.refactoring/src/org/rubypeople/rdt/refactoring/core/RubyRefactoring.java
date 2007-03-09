@@ -184,12 +184,4 @@ public abstract class RubyRefactoring extends Refactoring {
 	public IMultiFileEditProvider getMultiFileEditProvider() {
 		return multiFileEditProvider;
 	}
-	
-//	protected RubyEditor getEditor() {
-//		return editor;
-//	}
-//	
-//	protected int getCarretPosition() {
-//		return getEditor().getCaretPosition().getOffset();
-//	}
 }

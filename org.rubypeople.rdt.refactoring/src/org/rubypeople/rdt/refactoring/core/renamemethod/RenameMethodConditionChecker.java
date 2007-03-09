@@ -55,16 +55,16 @@ public class RenameMethodConditionChecker extends RefactoringConditionChecker{
 	private RenameMethodConfig config;
 	
 	public RenameMethodConditionChecker(RenameMethodConfig config) {
-		super(config.getDocProvider(), config);
+		super(config.getDocumentProvider(), config);
 	}
 	
 
 	@Override
-	protected void init(Object configObj) {
+	public void init(Object configObj) {
 		this.config = (RenameMethodConfig)configObj;
-		config.setDocProvider(new DocumentWithIncluding(config.getDocProvider()));
+		config.setDocProvider(new DocumentWithIncluding(config.getDocumentProvider()));
 		
-		Node rootNode = config.getDocProvider().getActiveFileRootNode();
+		Node rootNode = config.getDocumentProvider().getActiveFileRootNode();
 		try {
 			this.config.setClassNode(SelectionNodeProvider.getSelectedClassNode(rootNode, this.config.getCaretPosition()));
 		} catch (NoClassNodeException e) {/* ClassNode stays null */}
@@ -96,7 +96,7 @@ public class RenameMethodConditionChecker extends RefactoringConditionChecker{
 
 	private Collection<MethodCallNodeWrapper> getAllCallCandidates() {
 
-		Collection<Node> allNodes = config.getDocProvider().getAllNodes();
+		Collection<Node> allNodes = config.getDocumentProvider().getAllNodes();
 		ArrayList<MethodCallNodeWrapper> possibleCalls = new ArrayList<MethodCallNodeWrapper>();
 
 		for(Node currentNode : allNodes){
@@ -192,9 +192,9 @@ public class RenameMethodConditionChecker extends RefactoringConditionChecker{
 			}
 		} catch (NoClassNodeException e) {
 			
-			Node rootNode = config.getDocProvider().getActiveFileRootNode();
+			Node rootNode = config.getDocumentProvider().getActiveFileRootNode();
 			Collection<MethodDefNode> methods = NodeProvider.getMethodNodes(rootNode);
-			ClassNodeProvider classes = new ClassNodeProvider(config.getDocProvider());
+			ClassNodeProvider classes = new ClassNodeProvider(config.getDocumentProvider());
 			
 			for(MethodDefNode currentMethod : methods){
 				if(checkMethodIsBeyondClasses(currentMethod, classes))

@@ -30,7 +30,6 @@
 
 package org.rubypeople.rdt.refactoring.ui.pages;
 
-import org.eclipse.ltk.ui.refactoring.UserInputWizardPage;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.layout.GridData;
@@ -44,7 +43,7 @@ import org.rubypeople.rdt.refactoring.ui.pages.encapsulatefield.EncapsulateField
 import org.rubypeople.rdt.refactoring.ui.pages.encapsulatefield.IVisibilitySelectionListener;
 import org.rubypeople.rdt.refactoring.ui.util.AbstractSelectionListener;
 
-public class EncapsulateFieldPage extends UserInputWizardPage {
+public class EncapsulateFieldPage extends RefactoringWizardPage {
 
 	private static final String TITLE = Messages.EncapsulateFieldPage_Title;
 

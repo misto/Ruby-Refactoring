@@ -43,7 +43,7 @@ import org.jruby.ast.RootNode;
 import org.rubypeople.rdt.refactoring.classnodeprovider.ClassNodeProvider;
 import org.rubypeople.rdt.refactoring.core.NodeProvider;
 import org.rubypeople.rdt.refactoring.core.SelectionNodeProvider;
-import org.rubypeople.rdt.refactoring.documentprovider.DocumentProvider;
+import org.rubypeople.rdt.refactoring.documentprovider.IDocumentProvider;
 import org.rubypeople.rdt.refactoring.exception.NoClassNodeException;
 import org.rubypeople.rdt.refactoring.nodewrapper.ClassNodeWrapper;
 import org.rubypeople.rdt.refactoring.nodewrapper.FieldNodeWrapper;
@@ -53,7 +53,7 @@ import org.rubypeople.rdt.refactoring.util.NodeUtil;
 
 public class TargetClassFinder implements ITargetClassFinder {
 	
-	public String findTargetClass(final MethodCallNodeWrapper call, final DocumentProvider doc) {
+	public String findTargetClass(final MethodCallNodeWrapper call, final IDocumentProvider doc) {
 		
 		String name = ""; //$NON-NLS-1$
 		
@@ -71,7 +71,7 @@ public class TargetClassFinder implements ITargetClassFinder {
 		return name;
 	}
 	
-	private String getSurroundingClass(final MethodCallNodeWrapper call, final DocumentProvider doc) {
+	private String getSurroundingClass(final MethodCallNodeWrapper call, final IDocumentProvider doc) {
 		ClassNode classNode = ((ClassNode) NodeProvider.getEnclosingNodeOfType(doc.getActiveFileRootNode(), call.getWrappedNode(), ClassNode.class));
 		if(classNode != null) {
 			return classNode.getCPath().getName();
@@ -79,7 +79,7 @@ public class TargetClassFinder implements ITargetClassFinder {
 		return ""; //$NON-NLS-1$
 	}
 
-	private AssignableNode getAssignableNode(final MethodCallNodeWrapper call, final DocumentProvider doc) {
+	private AssignableNode getAssignableNode(final MethodCallNodeWrapper call, final IDocumentProvider doc) {
 		AssignableNode receiverType = null;
 		
 		if(call.getReceiverNode() instanceof LocalVarNode) {
@@ -99,7 +99,7 @@ public class TargetClassFinder implements ITargetClassFinder {
 	/**
 	 * Finds the corresponding InstAsgnNode node to the supplied InstVarNode
 	 */
-	public InstAsgnNode instVarFromCall(final InstVarNode node, final DocumentProvider doc) {
+	public InstAsgnNode instVarFromCall(final InstVarNode node, final IDocumentProvider doc) {
 		InstAsgnNode decoratedNode = null;
 		
 		try {
@@ -122,7 +122,7 @@ public class TargetClassFinder implements ITargetClassFinder {
 		return decoratedNode;
 	}
 
-	private InstAsgnNode findInstVarInScope(final InstVarNode node, final DocumentProvider doc, InstAsgnNode decoratedNode) {
+	private InstAsgnNode findInstVarInScope(final InstVarNode node, final IDocumentProvider doc, InstAsgnNode decoratedNode) {
 		Collection<Node> assignments = NodeProvider.getSubNodes(doc.getActiveFileRootNode(), InstAsgnNode.class);
 		for (Node assignment : assignments) {
 			if(((InstAsgnNode) assignment).getName().equals(node.getName()) && assignment.getPosition().getStartOffset() < node.getPosition().getStartOffset()) {
@@ -135,7 +135,7 @@ public class TargetClassFinder implements ITargetClassFinder {
 	/**
 	 * Finds the corresponding LocalAsgnNode node to the supplied LocalVarNode
 	 */
-	public LocalAsgnNode localAsgnFromLocalVar(final LocalVarNode node, final DocumentProvider doc) {
+	public LocalAsgnNode localAsgnFromLocalVar(final LocalVarNode node, final IDocumentProvider doc) {
 		
 		Node enclosingScope = SelectionNodeProvider.getEnclosingScope(doc.getActiveFileRootNode(), node);
 		LocalAsgnNode asgnNode = findLastAssignmentToVar(node, NodeUtil.getBody(enclosingScope));

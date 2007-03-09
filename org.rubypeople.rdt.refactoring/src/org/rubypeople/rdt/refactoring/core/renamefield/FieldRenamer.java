@@ -78,7 +78,7 @@ public class FieldRenamer implements IMultiFileEditProvider{
 		Collection<MethodNodeWrapper> methods = wholeClass.getMethods();
 		for(MethodNodeWrapper currentMethod : methods){
 			ISourcePosition methodPosition = currentMethod.getWrappedNode().getPosition();
-			RenameMethodConfig methodConfig = new RenameMethodConfig(config.getDocProvider(), methodPosition.getStartOffset());
+			RenameMethodConfig methodConfig = new RenameMethodConfig(config.getDocumentProvider(), methodPosition.getStartOffset());
 			new RenameMethodConditionChecker(methodConfig);
 			if(currentMethod.getName().equals(config.getSelectedName())){
 				methodConfig.setNewName(config.getNewName());

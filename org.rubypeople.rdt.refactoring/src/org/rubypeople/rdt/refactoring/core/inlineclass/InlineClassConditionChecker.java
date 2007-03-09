@@ -39,27 +39,27 @@ import org.jruby.lexer.yacc.ISourcePosition;
 import org.rubypeople.rdt.refactoring.classnodeprovider.ClassNodeProvider;
 import org.rubypeople.rdt.refactoring.core.RefactoringConditionChecker;
 import org.rubypeople.rdt.refactoring.core.SelectionNodeProvider;
-import org.rubypeople.rdt.refactoring.documentprovider.DocumentProvider;
+import org.rubypeople.rdt.refactoring.documentprovider.IDocumentProvider;
 import org.rubypeople.rdt.refactoring.exception.NoClassNodeException;
 import org.rubypeople.rdt.refactoring.nodewrapper.ClassNodeWrapper;
 import org.rubypeople.rdt.refactoring.nodewrapper.MethodNodeWrapper;
 import org.rubypeople.rdt.refactoring.nodewrapper.PartialClassNodeWrapper;
 import org.rubypeople.rdt.refactoring.util.Constants;
 
-public class InlineClassConditionChecker extends RefactoringConditionChecker{
+public class InlineClassConditionChecker extends RefactoringConditionChecker {
 
 	
 	private InlineClassConfig config;
-	private DocumentProvider docProvider;
+	private IDocumentProvider docProvider;
 	private ClassNodeWrapper selectedClass;
 
 	public InlineClassConditionChecker(InlineClassConfig config) {
-		super(config.getDocProvider(), config);
+		super(config.getDocumentProvider(), config);
 	}
 	
 	public void init(Object configObj) {
 		this.config = (InlineClassConfig) configObj;
-		docProvider = config.getDocProvider();
+		docProvider = config.getDocumentProvider();
 		intiSourceClass();
 		initPossibleTargetClasses();
 	}
@@ -111,12 +111,12 @@ public class InlineClassConditionChecker extends RefactoringConditionChecker{
 	}
 	
 	public void initPossibleTargetClasses(){
-		ClassNodeProvider classesProvider = config.getDocProvider().getIncludedClassNodeProvider();
+		ClassNodeProvider classesProvider = config.getDocumentProvider().getIncludedClassNodeProvider();
 		Collection<ClassNodeWrapper> classNodes = classesProvider.getAllClassNodes();
 		
 		ArrayList<ClassNodeWrapper> possibleClassNodes = new ArrayList<ClassNodeWrapper>();
 		
-		Node rootNode = config.getDocProvider().getActiveFileRootNode();
+		Node rootNode = config.getDocumentProvider().getActiveFileRootNode();
 		try {
 			ClassNodeWrapper selectedClass = SelectionNodeProvider.getSelectedClassNode(rootNode, config.getCaretPosition());
 			for(ClassNodeWrapper currentClass : classNodes){

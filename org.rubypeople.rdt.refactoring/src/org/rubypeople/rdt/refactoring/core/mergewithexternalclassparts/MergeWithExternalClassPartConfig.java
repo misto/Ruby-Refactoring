@@ -31,22 +31,23 @@
 package org.rubypeople.rdt.refactoring.core.mergewithexternalclassparts;
 
 import org.rubypeople.rdt.refactoring.classnodeprovider.ClassNodeProvider;
-import org.rubypeople.rdt.refactoring.documentprovider.DocumentProvider;
+import org.rubypeople.rdt.refactoring.core.IRefactoringConfig;
+import org.rubypeople.rdt.refactoring.documentprovider.IDocumentProvider;
 import org.rubypeople.rdt.refactoring.nodewrapper.ClassNodeWrapper;
 import org.rubypeople.rdt.refactoring.nodewrapper.PartialClassNodeWrapper;
 
-public class MergeWithExternalClassPartConfig {
+public class MergeWithExternalClassPartConfig implements IRefactoringConfig {
 
 	private ClassNodeProvider classNodeProvider;
-	private DocumentProvider documentProvider;
+	private IDocumentProvider documentProvider;
 	private boolean selectionEmpty;
 
-	public MergeWithExternalClassPartConfig(DocumentProvider documentProvider) {
+	public MergeWithExternalClassPartConfig(IDocumentProvider documentProvider) {
 		this.documentProvider = documentProvider;
 		selectionEmpty = true;
 	}
 
-	public DocumentProvider getDocumentProvider() {
+	public IDocumentProvider getDocumentProvider() {
 		return documentProvider;
 	}
 
@@ -82,5 +83,9 @@ public class MergeWithExternalClassPartConfig {
 
 	public void setClassNodeProvider(ClassNodeProvider classNodeProvider) {
 		this.classNodeProvider = classNodeProvider;
+	}
+
+	public void setDocumentProvider(IDocumentProvider doc) {
+		this.documentProvider = doc;
 	}
 }

@@ -32,7 +32,6 @@ package org.rubypeople.rdt.refactoring.ui.pages;
 
 import java.util.ArrayList;
 
-import org.eclipse.ltk.ui.refactoring.UserInputWizardPage;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
@@ -44,21 +43,21 @@ import org.eclipse.swt.widgets.TableItem;
 import org.jruby.lexer.yacc.ISourcePosition;
 import org.rubypeople.rdt.refactoring.JRubyRefactoringUtils;
 import org.rubypeople.rdt.refactoring.core.renamemethod.NodeSelector;
-import org.rubypeople.rdt.refactoring.documentprovider.DocumentProvider;
+import org.rubypeople.rdt.refactoring.documentprovider.IDocumentProvider;
 import org.rubypeople.rdt.refactoring.nodewrapper.INodeWrapper;
 import org.rubypeople.rdt.refactoring.ui.RdtCodeViewer;
 
-public class OccurenceReplaceSelectionPage extends UserInputWizardPage {
+public class OccurenceReplaceSelectionPage extends RefactoringWizardPage {
 
 	public static final String NAME = Messages.OccurenceReplaceSelectionPage_SelectCalls;
 	private final static RGB highlightColor = new RGB(173, 193, 217);
 	
 	private NodeSelector selector;
 	private Table possibilityTable;
-	private DocumentProvider docProvider;
+	private IDocumentProvider docProvider;
 	
 	
-	public OccurenceReplaceSelectionPage(NodeSelector selector, DocumentProvider docProvider) {
+	public OccurenceReplaceSelectionPage(NodeSelector selector, IDocumentProvider docProvider) {
 		super(NAME);
 		this.selector = selector;
 		this.docProvider = docProvider;
@@ -118,7 +117,7 @@ public class OccurenceReplaceSelectionPage extends UserInputWizardPage {
 		for(INodeWrapper currentCall : selector.getPossibleCalls()){
 			TableItem currentItem = new TableItem(possibilityTable, SWT.NONE);
 			currentItem.setText(getTableCaption(currentCall));
-			if(proableCall(currentCall)){
+			if(probableCall(currentCall)){
 				currentItem.setChecked(true);
 			}
 			currentItem.setData(currentCall);
@@ -130,7 +129,7 @@ public class OccurenceReplaceSelectionPage extends UserInputWizardPage {
 		return pos.getFile() + Messages.OccurenceReplaceSelectionPage_Line + (pos.getStartLine() + 1) ;
 	}
 
-	private boolean proableCall(INodeWrapper currentCall) {
+	private boolean probableCall(INodeWrapper currentCall) {
 		
 		for(INodeWrapper targetCall : selector.getSelectedCalls()){
 			if(hasSamePosition(currentCall, targetCall)){

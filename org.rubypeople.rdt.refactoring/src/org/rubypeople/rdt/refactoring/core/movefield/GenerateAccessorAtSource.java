@@ -68,7 +68,7 @@ public class GenerateAccessorAtSource {
 	}
 	
 	public Collection<EditProvider> getEditProviders() {
-		EncapsulateFieldConfig fieldConfig = new EncapsulateFieldConfig(config.getDoc(), config.getPos());
+		EncapsulateFieldConfig fieldConfig = new EncapsulateFieldConfig(config.getDocumentProvider(), config.getPos());
 	
 		new EncapsulateFieldConditionChecker(fieldConfig);
 		

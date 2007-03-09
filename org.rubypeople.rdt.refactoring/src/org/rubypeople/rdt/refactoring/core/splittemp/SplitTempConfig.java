@@ -30,25 +30,26 @@ package org.rubypeople.rdt.refactoring.core.splittemp;
 
 import java.util.Collection;
 
-import org.rubypeople.rdt.refactoring.documentprovider.DocumentProvider;
+import org.rubypeople.rdt.refactoring.core.IRefactoringConfig;
+import org.rubypeople.rdt.refactoring.documentprovider.IDocumentProvider;
 
-public class SplitTempConfig {
+public class SplitTempConfig implements IRefactoringConfig {
 
-	private DocumentProvider documentProvider;
-	private int caretPsition;
+	private IDocumentProvider documentProvider;
+	private int caretPosition;
 	Collection<LocalVarUsage> localUsages;
 	private LocalVarFinder localVarFinder;
 
-	public SplitTempConfig(DocumentProvider documentProvider, int caretPosition) {
+	public SplitTempConfig(IDocumentProvider documentProvider, int caretPosition) {
 		this.documentProvider = documentProvider;
-		this.caretPsition = caretPosition;
+		this.caretPosition = caretPosition;
 	}
 
 	public int getCaretPsition() {
-		return caretPsition;
+		return caretPosition;
 	}
 
-	public DocumentProvider getDocumentProvider() {
+	public IDocumentProvider getDocumentProvider() {
 		return documentProvider;
 	}
 
@@ -70,6 +71,10 @@ public class SplitTempConfig {
 
 	public Collection<LocalVarUsage> getLocalUsages() {
 		return localUsages;
+	}
+
+	public void setDocumentProvider(IDocumentProvider doc) {
+		this.documentProvider = doc;
 	}
 
 }

@@ -29,7 +29,6 @@
 package org.rubypeople.rdt.refactoring.ui.pages;
 
 
-import org.eclipse.ltk.ui.refactoring.UserInputWizardPage;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
@@ -41,7 +40,7 @@ import org.eclipse.swt.widgets.Label;
 import org.rubypeople.rdt.refactoring.core.movefield.MoveFieldConfig;
 import org.rubypeople.rdt.refactoring.core.movefield.MoveFieldRefactoring;
 
-public class MoveFieldPage extends UserInputWizardPage {
+public class MoveFieldPage extends RefactoringWizardPage {
 
 	private final class ReferenceSelectionListener implements SelectionListener {
 		private final Combo combo;

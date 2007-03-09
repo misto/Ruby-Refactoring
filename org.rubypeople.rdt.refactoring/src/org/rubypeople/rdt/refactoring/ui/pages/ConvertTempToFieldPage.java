@@ -30,7 +30,6 @@
 
 package org.rubypeople.rdt.refactoring.ui.pages;
 
-import org.eclipse.ltk.ui.refactoring.UserInputWizardPage;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
@@ -46,7 +45,7 @@ import org.rubypeople.rdt.refactoring.core.converttemptofield.TempToFieldConvert
 import org.rubypeople.rdt.refactoring.ui.LabeledTextField;
 import org.rubypeople.rdt.refactoring.util.NameValidator;
 
-public class ConvertTempToFieldPage extends UserInputWizardPage {
+public class ConvertTempToFieldPage extends RefactoringWizardPage {
 
 	private static final String TITLE = Messages.ConvertTempToFieldPage_ConvertLocalVariableToField;
 

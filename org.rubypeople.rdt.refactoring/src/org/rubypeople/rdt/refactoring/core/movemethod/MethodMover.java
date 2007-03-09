@@ -179,7 +179,7 @@ public class MethodMover implements IMultiFileEditProvider, Observer {
 
 	private void addGenerateAccessorsEditProviders(MultiFileEditProvider multiFileEditProvider) {
 		Collection<AttrAccessorNodeWrapper> accessorsToCreate = getMissingAccessors();
-		String fileName = config.getDocProvider().getActiveFileName();
+		String fileName = config.getDocumentProvider().getActiveFileName();
 		for (AttrAccessorNodeWrapper aktAccessorNode : accessorsToCreate) {
 			EditProvider editProvider = new InsertAccessorEditProvider(aktAccessorNode, config.getSourceClassNode());
 			multiFileEditProvider.addEditProvider(new FileEditProvider(fileName, editProvider));
@@ -288,12 +288,12 @@ public class MethodMover implements IMultiFileEditProvider, Observer {
 
 	private FileEditProvider getDeleteSelectedMethodEditProvider() {
 		EditProvider deleteEditProvider = new DeleteEditProvider(config.getMethodNode().getWrappedNode());
-		return new FileEditProvider(config.getDocProvider().getActiveFileName(), deleteEditProvider);
+		return new FileEditProvider(config.getDocumentProvider().getActiveFileName(), deleteEditProvider);
 	}
 
 	private FileEditProvider getDelegateMethodEditProvider() {
 		EditProvider editProvider = new DelegateMethodEditProvider(config);
-		return new FileEditProvider(config.getDocProvider().getActiveFileName(), editProvider);
+		return new FileEditProvider(config.getDocumentProvider().getActiveFileName(), editProvider);
 	}
 
 	private FileEditProvider getInsertMethodInTargetClassProvider() {

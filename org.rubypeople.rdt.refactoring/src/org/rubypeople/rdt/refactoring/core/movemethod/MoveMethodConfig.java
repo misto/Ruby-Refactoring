@@ -35,16 +35,17 @@ import java.util.Collection;
 import java.util.Observable;
 
 import org.rubypeople.rdt.refactoring.classnodeprovider.ClassNodeProvider;
-import org.rubypeople.rdt.refactoring.documentprovider.DocumentProvider;
+import org.rubypeople.rdt.refactoring.core.IRefactoringConfig;
+import org.rubypeople.rdt.refactoring.documentprovider.IDocumentProvider;
 import org.rubypeople.rdt.refactoring.nodewrapper.ArgsNodeWrapper;
 import org.rubypeople.rdt.refactoring.nodewrapper.ClassNodeWrapper;
 import org.rubypeople.rdt.refactoring.nodewrapper.MethodNodeWrapper;
 import org.rubypeople.rdt.refactoring.nodewrapper.VisibilityNodeWrapper.METHOD_VISIBILITY;
 import org.rubypeople.rdt.refactoring.util.NameHelper;
 
-public class MoveMethodConfig extends Observable {
+public class MoveMethodConfig extends Observable implements IRefactoringConfig {
 
-	private DocumentProvider docProvider;
+	private IDocumentProvider docProvider;
 	private int caretPosition;
 	private MethodNodeWrapper methodNode;
 	private ClassNodeWrapper sourceClassNode;
@@ -63,7 +64,7 @@ public class MoveMethodConfig extends Observable {
 	private String movedMethodName;
 	private Collection<String> warnings;
 	
-	public MoveMethodConfig(DocumentProvider docProvider, int caretPosition) {
+	public MoveMethodConfig(IDocumentProvider docProvider, int caretPosition) {
 		this.docProvider = docProvider;
 		this.caretPosition = caretPosition;
 		warnings = new ArrayList<String>();
@@ -87,7 +88,7 @@ public class MoveMethodConfig extends Observable {
 		this.notifyObservers();
 	}
 
-	public DocumentProvider getDocProvider() {
+	public IDocumentProvider getDocumentProvider() {
 		return docProvider;
 	}
 	
@@ -241,5 +242,9 @@ public class MoveMethodConfig extends Observable {
 
 	public void resetWarnings() {
 		warnings.clear();
+	}
+
+	public void setDocumentProvider(IDocumentProvider doc) {
+		this.docProvider = doc;
 	}
 }

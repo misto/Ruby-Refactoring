@@ -28,7 +28,6 @@
 
 package org.rubypeople.rdt.refactoring.ui.pages;
 
-import org.eclipse.ltk.ui.refactoring.UserInputWizardPage;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.SashForm;
 import org.eclipse.swt.custom.StyledText;
@@ -47,7 +46,7 @@ import org.eclipse.swt.widgets.TabItem;
 import org.rubypeople.rdt.refactoring.core.formatsource.EditableFormatHelper;
 import org.rubypeople.rdt.refactoring.core.formatsource.PreviewGenerator;
 
-public class FormatSourcePage extends UserInputWizardPage {
+public class FormatSourcePage extends RefactoringWizardPage {
 
 	private static final String title = ""; //$NON-NLS-1$
 

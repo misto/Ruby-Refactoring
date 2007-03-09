@@ -32,15 +32,15 @@ import org.jruby.ast.AssignableNode;
 
 public class LocalVarUsage {
 
-	int fromPosition;
+	private int fromPosition;
 
-	int toPosition;
+	private int toPosition;
 
-	AssignableNode node;
+	private AssignableNode node;
 
-	String name;
+	private String name;
 
-	String newName = ""; //$NON-NLS-1$
+	private String newName = ""; //$NON-NLS-1$
 
 	public int getFromPosition() {
 		return fromPosition;

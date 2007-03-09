@@ -29,19 +29,19 @@
 package org.rubypeople.rdt.refactoring.core.renameclass;
 
 import org.jruby.ast.ClassNode;
-import org.rubypeople.rdt.refactoring.documentprovider.DocumentProvider;
+import org.rubypeople.rdt.refactoring.core.IRefactoringConfig;
 import org.rubypeople.rdt.refactoring.documentprovider.IDocumentProvider;
 import org.rubypeople.rdt.refactoring.ui.INewNameReceiver;
 
-public class RenameClassConfig implements INewNameReceiver {
+public class RenameClassConfig implements INewNameReceiver, IRefactoringConfig {
 	private IDocumentProvider documentWithIncludingProvider;
 	private final int offset;
 	private ClassNode selectedNode;
 	private String newName;
 	private String modulePrefix;
-	private DocumentProvider docProvider;
+	private IDocumentProvider docProvider;
 	
-	public RenameClassConfig(DocumentProvider docProvider, int offset) {
+	public RenameClassConfig(IDocumentProvider docProvider, int offset) {
 		this.docProvider = docProvider;
 		this.offset = offset;
 	}
@@ -82,7 +82,11 @@ public class RenameClassConfig implements INewNameReceiver {
 		return modulePrefix;
 	}
 	
-	public DocumentProvider getDocProvider() {
+	public IDocumentProvider getDocumentProvider() {
 		return docProvider;
+	}
+
+	public void setDocumentProvider(IDocumentProvider doc) {
+		this.docProvider = doc;
 	}
 }

@@ -30,7 +30,6 @@ package org.rubypeople.rdt.refactoring.ui.pages;
 
 import java.util.Collection;
 
-import org.eclipse.ltk.ui.refactoring.UserInputWizardPage;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
@@ -50,7 +49,7 @@ import org.rubypeople.rdt.refactoring.core.splittemp.SplitTempRefactoring;
 import org.rubypeople.rdt.refactoring.ui.RdtCodeViewer;
 import org.rubypeople.rdt.refactoring.util.NameValidator;
 
-public class SplitTempPage extends UserInputWizardPage {
+public class SplitTempPage extends RefactoringWizardPage {
 
 	private static final int SEPARATOR_AT = 200;
 

@@ -55,12 +55,12 @@ public class TempToFieldConditionChecker extends RefactoringConditionChecker {
 	private RootNode rootNode;
 
 	public TempToFieldConditionChecker(TempToFieldConfig config) {
-		super(config.getDocProvider(), config);
+		super(config.getDocumentProvider(), config);
 	}
 	
 	public void init(Object configObj) {
 		config = (TempToFieldConfig) configObj;
-		rootNode = config.getDocProvider().getActiveFileRootNode();
+		rootNode = config.getDocumentProvider().getActiveFileRootNode();
 		Node selectedNode = findSelectedNode(LocalAsgnNode.class, LocalVarNode.class, DVarNode.class, DAsgnNode.class);
 		if (selectedNode != null) {
 			config.setSelectedNode(new LocalNodeWrapper(selectedNode));

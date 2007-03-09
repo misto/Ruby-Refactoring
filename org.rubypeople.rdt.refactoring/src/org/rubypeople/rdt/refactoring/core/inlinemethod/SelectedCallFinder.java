@@ -33,12 +33,12 @@ import org.jruby.ast.FCallNode;
 import org.jruby.ast.Node;
 import org.jruby.ast.VCallNode;
 import org.rubypeople.rdt.refactoring.core.SelectionNodeProvider;
-import org.rubypeople.rdt.refactoring.documentprovider.DocumentProvider;
+import org.rubypeople.rdt.refactoring.documentprovider.IDocumentProvider;
 import org.rubypeople.rdt.refactoring.nodewrapper.MethodCallNodeWrapper;
 
 public class SelectedCallFinder implements ISelectedCallFinder {
 
-	public MethodCallNodeWrapper findSelectedCall(final int pos, final DocumentProvider doc) {
+	public MethodCallNodeWrapper findSelectedCall(final int pos, final IDocumentProvider doc) {
 
 		final Node selectedNode = SelectionNodeProvider.getSelectedNodeOfType(doc.getActiveFileRootNode(), pos, CallNode.class, FCallNode.class, VCallNode.class);
 

@@ -26,20 +26,45 @@
  * the terms of any one of the CPL, the GPL or the LGPL.
  ***** END LICENSE BLOCK *****/
 
-package org.rubypeople.rdt.refactoring.core.renamelocalvariable;
 
-import org.jruby.ast.Node;
+package org.rubypeople.rdt.refactoring.ui.pages;
 
-public interface IRenameConfig {
+import org.eclipse.ltk.ui.refactoring.UserInputWizardPage;
+import org.rubypeople.rdt.refactoring.core.IRefactoringConfig;
+import org.rubypeople.rdt.refactoring.core.RefactoringConditionChecker;
+import org.rubypeople.rdt.refactoring.core.RubyRefactoring;
 
-	public abstract String getSelectedNodeName();
+public abstract class RefactoringWizardPage extends UserInputWizardPage {
 
-	public abstract String[] getLocalNames();
+	public RefactoringWizardPage(String name) {
+		super(name);
+	}
 
-	public abstract Node getSelectedMethod();
+	@Override
+	public void setVisible(boolean visible) {
+		if(visible) {
+			pageIsEnabled();
+		} else {
+			pageIsDisabled();
+		}
+		
+		super.setVisible(visible);
+	}
 
-	public abstract Node getSelectedNode();
-
-	public abstract LocalVariablesEditProvider getRenameEditProvider();
-
+	public void pageIsEnabled() {
+		RubyRefactoring refactoring = (RubyRefactoring) getRefactoring();
+		RefactoringConditionChecker refactoringConditionChecker = (RefactoringConditionChecker) refactoring.getConditionChecker();
+		
+		if(refactoringConditionChecker == null) {
+			return;
+		}
+		
+		IRefactoringConfig config = refactoringConditionChecker.getConfig();
+		config.setDocumentProvider(refactoring.getDocumentProvider());
+		
+		refactoringConditionChecker.init(config);
+	}
+	
+	public void pageIsDisabled() {
+	}
 }

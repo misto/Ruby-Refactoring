@@ -30,7 +30,6 @@
 
 package org.rubypeople.rdt.refactoring.ui.pages;
 
-import org.eclipse.ltk.ui.refactoring.UserInputWizardPage;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
@@ -48,7 +47,7 @@ import org.rubypeople.rdt.refactoring.core.inlinetemp.InlineTempRefactoring;
 import org.rubypeople.rdt.refactoring.ui.LabeledTextField;
 import org.rubypeople.rdt.refactoring.util.NameValidator;
 
-public class InlineTempPage extends UserInputWizardPage {
+public class InlineTempPage extends RefactoringWizardPage {
 
 	private InlineTempConfig config;
 

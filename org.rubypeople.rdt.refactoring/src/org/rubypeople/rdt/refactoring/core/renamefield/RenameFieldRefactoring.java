@@ -70,7 +70,7 @@ public class RenameFieldRefactoring extends RubyRefactoring {
 			
 			pageOne = new RenameFieldPage(config.getSelectedName().replaceAll("@", ""), nameListener, config); //$NON-NLS-1$ //$NON-NLS-2$
 			pages.add(pageOne);
-			page = new OccurenceReplaceSelectionPage(config, config.getDocProvider());
+			page = new OccurenceReplaceSelectionPage(config, config.getDocumentProvider());
 			pages.add(page);
 		}
 	}

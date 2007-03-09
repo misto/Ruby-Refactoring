@@ -28,7 +28,6 @@
 
 package org.rubypeople.rdt.refactoring.ui.pages;
 
-import org.eclipse.ltk.ui.refactoring.UserInputWizardPage;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.FormAttachment;
 import org.eclipse.swt.layout.FormData;
@@ -39,7 +38,7 @@ import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
 import org.rubypeople.rdt.refactoring.core.inlinemethod.IRemoveDeclaration;
 
-public class InlineMethodPage extends UserInputWizardPage {
+public class InlineMethodPage extends RefactoringWizardPage {
 	
 	private static final int BORDER = 7;
 	private static final String NAME = Messages.InlineMethodPage_Name;

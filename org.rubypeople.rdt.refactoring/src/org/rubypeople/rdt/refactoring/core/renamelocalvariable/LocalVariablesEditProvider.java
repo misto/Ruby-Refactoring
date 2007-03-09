@@ -59,16 +59,10 @@ public class LocalVariablesEditProvider extends MultiEditProvider implements Obs
 
 	private String newVariableName = ""; //$NON-NLS-1$
 
-	private Node rootNode;
-
-	private String[] localNames;
-
-	private final Node selectedNode;
+	private final RenameLocalConfig config;
 
 	public LocalVariablesEditProvider(RenameLocalConfig config) {
-		rootNode = config.getSelectedMethod();
-		selectedNode = config.getSelectedNode();
-		localNames = config.getLocalNames();
+		this.config = config;
 		config.setLocalVariablesEditProvider(this);
 	}
 
@@ -90,13 +84,13 @@ public class LocalVariablesEditProvider extends MultiEditProvider implements Obs
 
 	private ArrayList<Node> renameVariables() {
 		VariableRenamer renamer = null;
-		if (selectedNode instanceof DVarNode || selectedNode instanceof DAsgnNode) {
+		if (config.getSelectedNode() instanceof DVarNode || config.getSelectedNode() instanceof DAsgnNode) {
 			renamer = new DynamicVariableRenamer(selectedVariableName, newVariableName, new AbortOnScope());
 		} else {
 			renamer = new VariableRenamer(selectedVariableName, newVariableName, new AbortOnMethodDef());
 		}
 
-		ArrayList<Node> changedNodes = renamer.replaceVariableNamesInNode(rootNode, localNames);
+		ArrayList<Node> changedNodes = renamer.replaceVariableNamesInNode(config.getSelectedMethod(), config.getLocalNames());
 		return changedNodes;
 	}
 
@@ -111,7 +105,7 @@ public class LocalVariablesEditProvider extends MultiEditProvider implements Obs
 	protected Collection<EditProvider> getEditProviders() {
 		Collection<EditProvider> edits = new ArrayList<EditProvider>();
 		for (Node n : renameVariables()) {
-			edits.add(new SingleLocalVariableEdit(n, localNames));
+			edits.add(new SingleLocalVariableEdit(n, config.getLocalNames()));
 		}
 		return edits;
 	}

@@ -35,18 +35,18 @@ import org.eclipse.ui.PlatformUI;
 import org.rubypeople.rdt.core.IRubyElement;
 import org.rubypeople.rdt.internal.core.RubyType;
 import org.rubypeople.rdt.refactoring.classnodeprovider.IncludedClassesProvider;
-import org.rubypeople.rdt.refactoring.documentprovider.DocumentProvider;
+import org.rubypeople.rdt.refactoring.documentprovider.IDocumentProvider;
 import org.rubypeople.rdt.refactoring.nodewrapper.ClassNodeWrapper;
 import org.rubypeople.rdt.ui.wizards.RubyClassSelectionDialog;
 
 public class IncludedClassesSelectionDialog extends RubyClassSelectionDialog {
-	private final DocumentProvider doc;
+	private final IDocumentProvider doc;
 
-	public IncludedClassesSelectionDialog(DocumentProvider doc, String title) {
+	public IncludedClassesSelectionDialog(IDocumentProvider doc, String title) {
 		this(doc, title, null);		
 	}
 
-	public IncludedClassesSelectionDialog(DocumentProvider doc, String title, String methodname) {
+	public IncludedClassesSelectionDialog(IDocumentProvider doc, String title, String methodname) {
 		super(PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell());
 		setMessage(title);
 		this.doc = doc;

@@ -35,31 +35,27 @@ import org.rubypeople.rdt.refactoring.editprovider.MultiEditProvider;
 
 public class SplitTempEditProvider extends MultiEditProvider implements ISplittedNamesReceiver {
 
-	private Collection<LocalVarUsage> variables;
-
-	private ISplittedVariableRenamer renamer;
-
+	private final SplitTempConfig config;
 
 	public SplitTempEditProvider(SplitTempConfig config) {
-		renamer = new SplittedVariableRenamer(config.getLocalVariablesFinder().getScopeNode());
-		variables = config.getLocalUsages();
+		this.config = config;
 	}
 
 	@Override
 	protected Collection<EditProvider> getEditProviders() {
-		return renamer.rename(variables);
+		return new SplittedVariableRenamer(config.getLocalVariablesFinder().getScopeNode()).rename(config.getLocalUsages());
 	}
 
 	public void setNewNames(String[] names) {
-		assert names.length == variables.size();
+		assert names.length == config.getLocalUsages().size();
 
 		for (int i = 0; i < names.length; i++) {
-			variables.toArray(new LocalVarUsage[variables.size()])[i].setNewName(names[i]);
+			config.getLocalUsages().toArray(new LocalVarUsage[config.getLocalUsages().size()])[i].setNewName(names[i]);
 		}
 	}
 
 	public Collection<LocalVarUsage> getLocalUsages() {
-		return variables;
+		return config.getLocalUsages();
 	}
 
 }

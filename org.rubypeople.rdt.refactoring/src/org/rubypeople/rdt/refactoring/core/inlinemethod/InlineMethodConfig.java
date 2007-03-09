@@ -32,24 +32,25 @@ import java.util.Collection;
 
 import org.jruby.ast.MethodDefNode;
 import org.jruby.ast.Node;
+import org.rubypeople.rdt.refactoring.core.IRefactoringConfig;
 import org.rubypeople.rdt.refactoring.documentprovider.DocumentProvider;
+import org.rubypeople.rdt.refactoring.documentprovider.IDocumentProvider;
 import org.rubypeople.rdt.refactoring.nodewrapper.MethodCallNodeWrapper;
 
-public class InlineMethodConfig {
+public class InlineMethodConfig implements IRefactoringConfig {
 	
 	private Boolean singleReturnStatement;
 	private MethodCallNodeWrapper selectedCall;
 	private String className;
 	private MethodDefNode methodDefinitionNode;
 	private DocumentProvider methodDefDoc;
-	private final DocumentProvider originalDocument;
+	private IDocumentProvider originalDocument;
 	private int pos;
 	private ITargetClassFinder targetClassFinder;
 	private Collection<String> usedMembers;
 	private Node callParent;
 
 	public InlineMethodConfig(DocumentProvider doc, int pos, ITargetClassFinder targetClassFinder) {
-		
 		originalDocument = doc;
 		this.pos = pos;
 		this.targetClassFinder = targetClassFinder;
@@ -91,7 +92,7 @@ public class InlineMethodConfig {
 		return targetClassFinder;
 	}
 
-	public DocumentProvider getDocumentProvider() {
+	public IDocumentProvider getDocumentProvider() {
 		return originalDocument;
 	}
 
@@ -121,5 +122,9 @@ public class InlineMethodConfig {
 
 	public Collection<String> getUsedMembers() {
 		return usedMembers;
+	}
+
+	public void setDocumentProvider(IDocumentProvider doc) {
+		this.originalDocument = doc;
 	}
 }

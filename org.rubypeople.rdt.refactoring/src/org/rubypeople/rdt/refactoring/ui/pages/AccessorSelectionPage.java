@@ -28,7 +28,6 @@
 
 package org.rubypeople.rdt.refactoring.ui.pages;
 
-import org.eclipse.ltk.ui.refactoring.UserInputWizardPage;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
@@ -43,7 +42,7 @@ import org.rubypeople.rdt.refactoring.core.generateaccessors.GeneratedAccessor;
 import org.rubypeople.rdt.refactoring.ui.NotifiedContainerCheckedTree;
 import org.rubypeople.rdt.refactoring.ui.util.SwtUtils;
 
-public class AccessorSelectionPage extends UserInputWizardPage {
+public class AccessorSelectionPage extends RefactoringWizardPage {
 	private static final String title = Messages.AccessorSelectionPage_Title;
 
 	private NotifiedContainerCheckedTree tree;

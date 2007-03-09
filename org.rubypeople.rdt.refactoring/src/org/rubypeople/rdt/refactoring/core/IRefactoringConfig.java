@@ -26,11 +26,13 @@
  * the terms of any one of the CPL, the GPL or the LGPL.
  ***** END LICENSE BLOCK *****/
 
-package org.rubypeople.rdt.refactoring.core.inlinemethod;
+package org.rubypeople.rdt.refactoring.core;
 
 import org.rubypeople.rdt.refactoring.documentprovider.IDocumentProvider;
-import org.rubypeople.rdt.refactoring.nodewrapper.MethodCallNodeWrapper;
 
-public interface ISelectedCallFinder {
-	MethodCallNodeWrapper findSelectedCall(int pos, IDocumentProvider doc);
+
+public interface IRefactoringConfig {
+	IDocumentProvider getDocumentProvider();
+	
+	void setDocumentProvider(IDocumentProvider doc);
 }

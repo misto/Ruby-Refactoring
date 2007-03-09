@@ -34,7 +34,6 @@ import java.util.Observable;
 import java.util.Observer;
 
 import org.eclipse.jface.dialogs.IMessageProvider;
-import org.eclipse.ltk.ui.refactoring.UserInputWizardPage;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
@@ -55,7 +54,7 @@ import org.rubypeople.rdt.refactoring.ui.pages.extractmethod.ParametersButtonDow
 import org.rubypeople.rdt.refactoring.ui.pages.extractmethod.ParametersButtonUpListener;
 import org.rubypeople.rdt.refactoring.ui.pages.extractmethod.SignatureObserver;
 
-public class ExtractMethodPage extends UserInputWizardPage implements IValidationController {
+public class ExtractMethodPage extends RefactoringWizardPage implements IValidationController {
 
 	private static final String title = Messages.ExtractMethodPage_Title;
 

@@ -41,7 +41,7 @@ import org.rubypeople.rdt.refactoring.classnodeprovider.IncludedClassesProvider;
 import org.rubypeople.rdt.refactoring.core.NodeProvider;
 import org.rubypeople.rdt.refactoring.core.RefactoringConditionChecker;
 import org.rubypeople.rdt.refactoring.core.SelectionNodeProvider;
-import org.rubypeople.rdt.refactoring.documentprovider.DocumentProvider;
+import org.rubypeople.rdt.refactoring.documentprovider.IDocumentProvider;
 import org.rubypeople.rdt.refactoring.documentprovider.StringDocumentProvider;
 import org.rubypeople.rdt.refactoring.util.NodeUtil;
 
@@ -72,7 +72,7 @@ public class InlineMethodConditionChecker extends RefactoringConditionChecker {
 		renameDuplicates(config.getDocumentProvider());
 	}
 	
-	private void renameDuplicates(DocumentProvider doc) {
+	private void renameDuplicates(IDocumentProvider doc) {
 		StaticScope parent = NodeUtil.getScope(SelectionNodeProvider.getEnclosingScope(doc.getActiveFileRootNode(), config.getSelectedCall().getWrappedNode()));
 		
 		ArrayList<String> localNames = new ArrayList<String>();
@@ -115,7 +115,7 @@ public class InlineMethodConditionChecker extends RefactoringConditionChecker {
 		config.setMethodDefDoc(new ParameterReplacer().replace(config.getDocumentProvider(), config.getSelectedCall(), config.getMethodDefinitionNode()));
 	}
 
-	private void createInlinedMethodBody(DocumentProvider doc) {
+	private void createInlinedMethodBody(IDocumentProvider doc) {
 		MethodBodyStatementReplacer bodyReplacer = new MethodBodyStatementReplacer();
 		if(config.getSelectedCall().getReceiverNode() != null) {
 			final String name = ((INameNode)config.getSelectedCall().getReceiverNode()).getName();

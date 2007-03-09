@@ -30,7 +30,6 @@
 
 package org.rubypeople.rdt.refactoring.ui.pages;
 
-import org.eclipse.ltk.ui.refactoring.UserInputWizardPage;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
@@ -43,7 +42,7 @@ import org.eclipse.swt.widgets.List;
 import org.rubypeople.rdt.refactoring.core.inlineclass.InlineClassConfig;
 import org.rubypeople.rdt.refactoring.nodewrapper.ClassNodeWrapper;
 
-public class InlineClassPage extends UserInputWizardPage {
+public class InlineClassPage extends RefactoringWizardPage {
 
 
 	public static final String TITLE = Messages.InlineClassPage_InlineTemp;
@@ -111,7 +110,7 @@ public class InlineClassPage extends UserInputWizardPage {
 
 			public void widgetSelected(SelectionEvent e) {
 				String selection = classList.getSelection()[0];
-				ClassNodeWrapper selectedClass = config.getDocProvider().getClassNodeProvider().getClassNode(selection);
+				ClassNodeWrapper selectedClass = config.getDocumentProvider().getClassNodeProvider().getClassNode(selection);
 				config.setTargetClassPart(selectedClass.getFirstPartialClassNode());
 			}	
 		});

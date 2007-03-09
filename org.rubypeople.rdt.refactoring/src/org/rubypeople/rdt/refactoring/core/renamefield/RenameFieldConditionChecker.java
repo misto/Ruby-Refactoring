@@ -58,22 +58,22 @@ public class RenameFieldConditionChecker extends RefactoringConditionChecker {
 	private RootNode rootNode;
 
 	public RenameFieldConditionChecker(RenameFieldConfig config) {
-		super(config.getDocProvider(), config);
+		super(config.getDocumentProvider(), config);
 	}
 
 	public void init(Object configObj) {
 		this.config = (RenameFieldConfig) configObj;
 
-		config.setDocProvider(new DocumentWithIncluding(config.getDocProvider()));
-		rootNode = config.getDocProvider().getActiveFileRootNode();
+		config.setDocProvider(new DocumentWithIncluding(config.getDocumentProvider()));
+		rootNode = config.getDocumentProvider().getActiveFileRootNode();
 
 		try {
 			ClassNodeWrapper enclosingClassNode = SelectionNodeProvider.getSelectedClassNode(rootNode, config.getCaretPosition());
-			ClassNodeProvider classNodeProvider = new IncludedClassesProvider(config.getDocProvider());
+			ClassNodeProvider classNodeProvider = new IncludedClassesProvider(config.getDocumentProvider());
 			config.setWholeClassNode(classNodeProvider.getClassNode(enclosingClassNode.getName()));
-			config.setFieldProvider(new FieldProvider(config.getWholeClassNode(), config.getDocProvider()));
+			config.setFieldProvider(new FieldProvider(config.getWholeClassNode(), config.getDocumentProvider()));
 			config.setSelectedItem(config.getFieldProvider()
-					.getNameAtPosition(config.getCaretPosition(), config.getDocProvider().getActiveFileName()));
+					.getNameAtPosition(config.getCaretPosition(), config.getDocumentProvider().getActiveFileName()));
 			if (config.hasSelectedItem()) {
 				config.setSelectedName(config.getSelectedItem().getFieldName());
 			}
@@ -122,7 +122,7 @@ public class RenameFieldConditionChecker extends RefactoringConditionChecker {
 			CallNode callNode = (CallNode) candidateNode;
 			if (callNode.getName().replaceAll("=", "").equals(config.getSelectedName())) { //$NON-NLS-1$ //$NON-NLS-2$
 				String fileName = callNode.getPosition().getFile();
-				Node rootNode = config.getDocProvider().getRootNode(fileName);
+				Node rootNode = config.getDocumentProvider().getRootNode(fileName);
 				try {
 					SelectionNodeProvider.getSelectedClassNode(rootNode, callNode.getPosition().getStartOffset());
 				} catch (NoClassNodeException e) {
@@ -153,7 +153,7 @@ public class RenameFieldConditionChecker extends RefactoringConditionChecker {
 
 	@Override
 	protected void checkInitialConditions() {
-		Collection<FieldNodeWrapper> fields = PartialClassNodeWrapper.getFieldsFromNode(config.getDocProvider().getActiveFileRootNode());
+		Collection<FieldNodeWrapper> fields = PartialClassNodeWrapper.getFieldsFromNode(config.getDocumentProvider().getActiveFileRootNode());
 		FieldNodeWrapper selectedFieldNode = SelectionNodeProvider.getSelectedWrappedNode(fields, config.getCaretPosition());
 		if (config.getWholeClassNode() == null) {
 			if (selectedFieldNode != null) {

@@ -198,9 +198,9 @@ public class InsertClassBuilder {
 
 	private StringDocumentProvider getDocumentProviderForClassPart(PartialClassNodeWrapper inlinedClassPart) {
 		ISourcePosition classPartPosition = inlinedClassPart.getWrappedNode().getPosition();
-		String activeFileContent = config.getDocProvider().getActiveFileContent();
+		String activeFileContent = config.getDocumentProvider().getActiveFileContent();
 		String inlinedClassDocument = activeFileContent.substring(classPartPosition.getStartOffset(), classPartPosition.getEndOffset());
-		String fileName = "part_of_" + config.getDocProvider().getActiveFileName(); //$NON-NLS-1$
+		String fileName = "part_of_" + config.getDocumentProvider().getActiveFileName(); //$NON-NLS-1$
 		StringDocumentProvider inlinedClassDocumentProvider = new StringDocumentProvider(fileName, inlinedClassDocument);
 		return inlinedClassDocumentProvider;
 	}
