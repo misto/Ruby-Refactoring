@@ -57,6 +57,8 @@ import org.rubypeople.rdt.internal.ti.util.ScopedNodeLocator;
 public class CompletionEngine {
 	private static final String OBJECT = "Object";
 	private static final String CONSTRUCTOR_INVOKE_NAME = "new";
+	private static final String CONSTRUCTOR_DEFINITION_NAME = "initialize";
+	
 	private CompletionRequestor fRequestor;
 	private CompletionContext fContext;
 
@@ -132,7 +134,6 @@ public class CompletionEngine {
 	
 	private void suggestGlobals() {
 		Set<String> globals = ExperimentalIndex.getGlobalNames();
-		// TODO Sort?
 		for (String name : globals) {
 			if (!fContext.prefixStartsWith(name))
 				continue;
@@ -143,7 +144,6 @@ public class CompletionEngine {
 
 	private void suggestTypeNames() {
 		Set<String> types = ExperimentalIndex.getTypeNames();
-		// TODO Sort?
 		for (String name : types) {
 			if (!fContext.prefixStartsWith(name))
 				continue;
@@ -161,7 +161,6 @@ public class CompletionEngine {
 
 	private void suggestConstantNames() {
 		Set<String> types = ExperimentalIndex.getConstantNames();
-		// TODO Sort?
 		for (String name : types) {
 			if (!fContext.prefixStartsWith(name))
 				continue;
@@ -359,26 +358,6 @@ public class CompletionEngine {
 			return;
 		}
 
-		// XXX rubyType may not be in script, but rather be defined in another
-		// script
-		// IType rubyType = new RubyType( (RubyElement)script, typeName );
-		// Better method:
-		// Find the named type
-		// IType rubyType = findTypeFromAllProjects(typeName, script);
-
-		// System.out.println(" -- Located RubyType info.");
-		// System.out.println(" -- Superclass: " + rubyType.getSuperclassName()
-		// );
-
-		// if ( rubyType != null ) {
-		// String[] includedModuleNames = rubyType.getIncludedModuleNames();
-		// if ( includedModuleNames != null ) {
-		// for ( String moduleName : rubyType.getIncludedModuleNames() ) {
-		// System.out.println(" -- Includes module: " + moduleName);
-		// }
-		// }
-		// }
-
 		// Get superclass and add its public members
 		List<Node> superclassNodes = getSuperclassNodes(typeNode);
 		for (Node superclassNode : superclassNodes) {
@@ -545,7 +524,6 @@ public class CompletionEngine {
 	}
 	
 	private class NodeMethod implements IMethod {
-
 		private MethodDefNode node;
 
 		public NodeMethod(MethodDefNode methodDefinition) {
@@ -557,12 +535,11 @@ public class CompletionEngine {
 		}
 
 		public int getVisibility() throws RubyModelException {
-			// TODO Auto-generated method stub
 			return IMethod.PUBLIC;
 		}
 
 		public boolean isConstructor() {
-			return node.getName().equals("initialize");
+			return node.getName().equals(CONSTRUCTOR_DEFINITION_NAME);
 		}
 
 		public boolean isSingleton() {
@@ -570,17 +547,14 @@ public class CompletionEngine {
 		}
 
 		public boolean exists() {
-			// TODO Auto-generated method stub
 			return false;
 		}
 
 		public IRubyElement getAncestor(int ancestorType) {
-			// TODO Auto-generated method stub
 			return null;
 		}
 
 		public IResource getCorrespondingResource() throws RubyModelException {
-			// TODO Auto-generated method stub
 			return null;
 		}
 
@@ -593,52 +567,42 @@ public class CompletionEngine {
 		}
 
 		public IOpenable getOpenable() {
-			// TODO Auto-generated method stub
 			return null;
 		}
 
 		public IRubyElement getParent() {
-			// TODO Auto-generated method stub
 			return null;
 		}
 
 		public IPath getPath() {
-			// TODO Auto-generated method stub
 			return null;
 		}
 
 		public IRubyElement getPrimaryElement() {
-			// TODO Auto-generated method stub
 			return null;
 		}
 
 		public IResource getResource() {
-			// TODO Auto-generated method stub
 			return null;
 		}
 
 		public IRubyModel getRubyModel() {
-			// TODO Auto-generated method stub
 			return null;
 		}
 
 		public IRubyProject getRubyProject() {
-			// TODO Auto-generated method stub
 			return null;
 		}
 
 		public IResource getUnderlyingResource() throws RubyModelException {
-			// TODO Auto-generated method stub
 			return null;
 		}
 
 		public boolean isReadOnly() {
-			// TODO Auto-generated method stub
 			return false;
 		}
 
 		public boolean isStructureKnown() throws RubyModelException {
-			// TODO Auto-generated method stub
 			return false;
 		}
 
@@ -647,47 +611,38 @@ public class CompletionEngine {
 		}
 
 		public Object getAdapter(Class adapter) {
-			// TODO Auto-generated method stub
 			return null;
 		}
 
 		public IType getDeclaringType() {
-			// TODO Auto-generated method stub
 			return null;
 		}
 
 		public ISourceRange getNameRange() throws RubyModelException {
-			// TODO Auto-generated method stub
 			return null;
 		}
 
 		public IRubyScript getRubyScript() {
-			// TODO Auto-generated method stub
 			return null;
 		}
 
 		public IType getType(String name, int occurrenceCount) {
-			// TODO Auto-generated method stub
 			return null;
 		}
 
 		public String getSource() throws RubyModelException {
-			// TODO Auto-generated method stub
 			return null;
 		}
 
 		public ISourceRange getSourceRange() throws RubyModelException {
-			// TODO Auto-generated method stub
 			return null;
 		}
 
 		public IRubyElement[] getChildren() throws RubyModelException {
-			// TODO Auto-generated method stub
 			return null;
 		}
 
 		public boolean hasChildren() throws RubyModelException {
-			// TODO Auto-generated method stub
 			return false;
 		}
 
