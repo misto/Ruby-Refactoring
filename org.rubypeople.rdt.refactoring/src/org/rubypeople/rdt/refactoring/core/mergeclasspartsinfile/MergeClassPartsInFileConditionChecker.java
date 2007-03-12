@@ -43,7 +43,7 @@ public class MergeClassPartsInFileConditionChecker extends RefactoringConditionC
 	private MergeClassPartInFileConfig config;
 
 	public MergeClassPartsInFileConditionChecker(MergeClassPartInFileConfig config) {
-		super(config.getDocumentProvider(), config);
+		super(config);
 	}
 	
 	public void init(Object configObj) {

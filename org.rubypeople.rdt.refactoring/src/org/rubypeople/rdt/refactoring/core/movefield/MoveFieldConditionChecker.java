@@ -45,7 +45,7 @@ public class MoveFieldConditionChecker extends RefactoringConditionChecker {
 	private MoveFieldConfig config;
 
 	public MoveFieldConditionChecker(MoveFieldConfig config) {
-		super(config.getDocumentProvider(), config);
+		super(config);
 	}
 
 	@Override

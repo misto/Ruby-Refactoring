@@ -58,7 +58,7 @@ public class RenameConditionChecker extends RefactoringConditionChecker {
 	private RefactoringConditionChecker classConditionChecker;
 
 	public RenameConditionChecker(RenameConfig config) {
-		super(config.getDocumentProvider(), config);
+		super(config);
 	}
 
 	@Override

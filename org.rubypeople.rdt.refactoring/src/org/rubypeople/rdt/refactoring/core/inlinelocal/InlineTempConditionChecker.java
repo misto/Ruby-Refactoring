@@ -53,7 +53,7 @@ public class InlineTempConditionChecker extends RefactoringConditionChecker {
 	private RootNode rootNode;
 
 	public InlineTempConditionChecker(InlineTempConfig config) {
-		super(config.getDocumentProvider(), config);
+		super(config);
 	}
 	
 	public void init(Object configObj) {

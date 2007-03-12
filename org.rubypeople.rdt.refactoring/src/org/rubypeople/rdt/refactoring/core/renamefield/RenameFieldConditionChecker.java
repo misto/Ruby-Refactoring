@@ -58,7 +58,7 @@ public class RenameFieldConditionChecker extends RefactoringConditionChecker {
 	private RootNode rootNode;
 
 	public RenameFieldConditionChecker(RenameFieldConfig config) {
-		super(config.getDocumentProvider(), config);
+		super(config);
 	}
 
 	public void init(Object configObj) {

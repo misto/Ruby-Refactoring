@@ -44,8 +44,8 @@ public abstract class RefactoringConditionChecker implements IRefactoringConditi
 	private IDocumentProvider docProvider;
 	private final IRefactoringConfig config;
 
-	public RefactoringConditionChecker(IDocumentProvider docProvider, IRefactoringConfig config) {
-		this.docProvider = docProvider;
+	public RefactoringConditionChecker(IRefactoringConfig config) {
+		this.docProvider = config.getDocumentProvider();
 		this.config = config;
 		initMessages();
 		addLocalInitialErrors();

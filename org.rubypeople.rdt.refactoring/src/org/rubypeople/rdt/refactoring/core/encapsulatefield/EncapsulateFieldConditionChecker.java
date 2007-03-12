@@ -48,7 +48,7 @@ public class EncapsulateFieldConditionChecker extends RefactoringConditionChecke
 	private Node rootNode;
 
 	public EncapsulateFieldConditionChecker(EncapsulateFieldConfig config) {
-		super(config.getDocumentProvider(), config);
+		super(config);
 	}
 
 	public void init(Object configObj) {

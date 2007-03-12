@@ -35,7 +35,7 @@ public class FormatSourceConditionChecker extends RefactoringConditionChecker {
 	private FormatSourceConfig config;
 
 	public FormatSourceConditionChecker(FormatSourceConfig config) {
-		super(config.getDocumentProvider(), config);
+		super(config);
 	}
 	
 	public void init(Object configObj) {

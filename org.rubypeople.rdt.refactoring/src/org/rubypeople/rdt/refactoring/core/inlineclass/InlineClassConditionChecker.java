@@ -54,7 +54,7 @@ public class InlineClassConditionChecker extends RefactoringConditionChecker {
 	private ClassNodeWrapper selectedClass;
 
 	public InlineClassConditionChecker(InlineClassConfig config) {
-		super(config.getDocumentProvider(), config);
+		super(config);
 	}
 	
 	public void init(Object configObj) {

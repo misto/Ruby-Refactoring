@@ -51,7 +51,7 @@ public class InlineMethodConditionChecker extends RefactoringConditionChecker {
 	
 
 	public InlineMethodConditionChecker(InlineMethodConfig config) {
-		super(config.getDocumentProvider(),config);
+		super(config);
 	}
 	
 	public void init(Object configObj) {

@@ -67,7 +67,7 @@ public class RenameLocalConditionChecker extends RefactoringConditionChecker {
 	private RenameLocalConfig config;
 
 	public RenameLocalConditionChecker(RenameLocalConfig config) {
-		super(config.getDocumentProvider(), config);
+		super(config);
 	}
 	
 	public void init(Object configObj) {

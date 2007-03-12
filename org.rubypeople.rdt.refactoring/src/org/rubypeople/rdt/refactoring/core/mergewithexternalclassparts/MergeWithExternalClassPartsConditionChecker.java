@@ -37,7 +37,7 @@ public class MergeWithExternalClassPartsConditionChecker extends RefactoringCond
 	private MergeWithExternalClassPartConfig config;
 
 	public MergeWithExternalClassPartsConditionChecker(MergeWithExternalClassPartConfig config) {
-		super(config.getDocumentProvider(), config);
+		super(config);
 	}
 	
 	public void init(Object configObj) {

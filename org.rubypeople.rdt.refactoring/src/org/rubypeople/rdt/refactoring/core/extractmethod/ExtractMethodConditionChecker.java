@@ -68,7 +68,7 @@ public class ExtractMethodConditionChecker extends RefactoringConditionChecker {
 	private ExtractMethodConfig config;
 
 	public ExtractMethodConditionChecker(ExtractMethodConfig config) {
-		super(config.getDocumentProvider(), config);
+		super(config);
 	}
 	
 	public void init(Object configObj) {

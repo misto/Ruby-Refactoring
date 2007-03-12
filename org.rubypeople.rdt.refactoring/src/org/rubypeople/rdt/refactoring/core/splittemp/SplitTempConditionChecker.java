@@ -35,7 +35,7 @@ public class SplitTempConditionChecker extends RefactoringConditionChecker {
 	private SplitTempConfig config;
 
 	public SplitTempConditionChecker(SplitTempConfig config) {
-		super(config.getDocumentProvider(), config);
+		super(config);
 	}
 	
 	public void init(Object configObj) {

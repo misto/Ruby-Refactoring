@@ -55,7 +55,7 @@ public class TempToFieldConditionChecker extends RefactoringConditionChecker {
 	private RootNode rootNode;
 
 	public TempToFieldConditionChecker(TempToFieldConfig config) {
-		super(config.getDocumentProvider(), config);
+		super(config);
 	}
 	
 	public void init(Object configObj) {
