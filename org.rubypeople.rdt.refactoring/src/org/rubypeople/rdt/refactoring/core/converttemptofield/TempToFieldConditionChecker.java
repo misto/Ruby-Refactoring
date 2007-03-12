@@ -40,7 +40,6 @@ import org.jruby.ast.LocalVarNode;
 import org.jruby.ast.MethodDefNode;
 import org.jruby.ast.Node;
 import org.jruby.ast.RootNode;
-import org.rubypeople.rdt.refactoring.JRubyRefactoringUtils;
 import org.rubypeople.rdt.refactoring.core.NodeProvider;
 import org.rubypeople.rdt.refactoring.core.RefactoringConditionChecker;
 import org.rubypeople.rdt.refactoring.core.SelectionNodeProvider;
@@ -48,6 +47,7 @@ import org.rubypeople.rdt.refactoring.exception.NoClassNodeException;
 import org.rubypeople.rdt.refactoring.nodewrapper.ClassNodeWrapper;
 import org.rubypeople.rdt.refactoring.nodewrapper.FieldNodeWrapper;
 import org.rubypeople.rdt.refactoring.nodewrapper.LocalNodeWrapper;
+import org.rubypeople.rdt.refactoring.util.JRubyRefactoringUtils;
 
 public class TempToFieldConditionChecker extends RefactoringConditionChecker {
 

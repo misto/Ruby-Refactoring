@@ -40,11 +40,11 @@ import org.jruby.ast.MultipleAsgnNode;
 import org.jruby.ast.Node;
 import org.jruby.ast.RootNode;
 import org.jruby.lexer.yacc.ISourcePosition;
-import org.rubypeople.rdt.refactoring.JRubyRefactoringUtils;
 import org.rubypeople.rdt.refactoring.core.NodeProvider;
 import org.rubypeople.rdt.refactoring.core.RefactoringConditionChecker;
 import org.rubypeople.rdt.refactoring.core.SelectionNodeProvider;
 import org.rubypeople.rdt.refactoring.nodewrapper.LocalNodeWrapper;
+import org.rubypeople.rdt.refactoring.util.JRubyRefactoringUtils;
 import org.rubypeople.rdt.refactoring.util.NodeUtil;
 
 public class InlineTempConditionChecker extends RefactoringConditionChecker {

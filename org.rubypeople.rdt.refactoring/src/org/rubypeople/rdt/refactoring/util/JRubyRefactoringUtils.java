@@ -28,7 +28,7 @@
  * the terms of any one of the CPL, the GPL or the LGPL.
  ***** END LICENSE BLOCK *****/
 
-package org.rubypeople.rdt.refactoring;
+package org.rubypeople.rdt.refactoring.util;
 
 import org.jruby.ast.ArgsNode;
 import org.jruby.ast.ArgumentNode;

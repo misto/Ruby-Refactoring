@@ -33,7 +33,6 @@ package org.rubypeople.rdt.refactoring.core.inlinelocal;
 import java.util.ArrayList;
 import java.util.Collection;
 
-import org.rubypeople.rdt.refactoring.JRubyRefactoringUtils;
 import org.rubypeople.rdt.refactoring.core.SelectionInformation;
 import org.rubypeople.rdt.refactoring.core.extractmethod.ExtractMethodConditionChecker;
 import org.rubypeople.rdt.refactoring.core.extractmethod.ExtractMethodConfig;
@@ -42,6 +41,7 @@ import org.rubypeople.rdt.refactoring.editprovider.DeleteEditProvider;
 import org.rubypeople.rdt.refactoring.editprovider.EditProvider;
 import org.rubypeople.rdt.refactoring.editprovider.MultiEditProvider;
 import org.rubypeople.rdt.refactoring.nodewrapper.LocalNodeWrapper;
+import org.rubypeople.rdt.refactoring.util.JRubyRefactoringUtils;
 
 public class TempInliner extends MultiEditProvider {
 
@@ -78,7 +78,7 @@ public class TempInliner extends MultiEditProvider {
 	private EditProvider replaceWithValueProvider(LocalNodeWrapper targetNode) {
 
 		boolean addBrackets = JRubyRefactoringUtils.isMathematicalExpression(config.getDefinitionNode().getValueNode());
-		return new TempValueReplaceProvider(targetNode, config.getDefinitionNode(), addBrackets);
+		return new TempValueReplaceProvider(targetNode, config, addBrackets);
 	}
 
 	private EditProvider extractMethodProvider() {

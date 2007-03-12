@@ -30,10 +30,18 @@
 
 package org.rubypeople.rdt.refactoring.core.inlinelocal;
 
+
+import org.jruby.ast.CallNode;
 import org.jruby.ast.Node;
+import org.jruby.ast.visitor.rewriter.DefaultFormatHelper;
+import org.jruby.ast.visitor.rewriter.FormatHelper;
 import org.jruby.lexer.yacc.ISourcePosition;
+import org.rubypeople.rdt.refactoring.core.NodeProvider;
 import org.rubypeople.rdt.refactoring.editprovider.ReplaceEditProvider;
 import org.rubypeople.rdt.refactoring.nodewrapper.LocalNodeWrapper;
+import org.rubypeople.rdt.refactoring.nodewrapper.MethodCallNodeWrapper;
+import org.rubypeople.rdt.refactoring.util.JRubyRefactoringUtils;
+import org.rubypeople.rdt.refactoring.util.NodeUtil;
 
 public class TempValueReplaceProvider extends ReplaceEditProvider {
 
@@ -43,9 +51,12 @@ public class TempValueReplaceProvider extends ReplaceEditProvider {
 
 	private boolean addBrackets;
 
-	public TempValueReplaceProvider(LocalNodeWrapper targetNode, LocalNodeWrapper inlinedNode, boolean addBrackets) {
+	private InlineTempConfig config;
+
+	public TempValueReplaceProvider(LocalNodeWrapper targetNode, InlineTempConfig config, boolean addBrackets) {
 		super(false);
-		this.inlinedNode = inlinedNode;
+		this.config = config;
+		this.inlinedNode = config.getDefinitionNode();
 		this.targetNode = targetNode;
 		this.addBrackets = addBrackets;
 	}
@@ -71,5 +82,37 @@ public class TempValueReplaceProvider extends ReplaceEditProvider {
 			return '(' + super.getFormatedNode(document) + ')';
 		}
 		return super.getFormatedNode(document);
+	}
+
+	@Override
+	protected FormatHelper getFormatHelper() {
+		if(callNeedsBrackets()) {
+			return new DefaultFormatHelper() {
+
+				@Override
+				public String afterCallArguments() {
+					return ")";
+				}
+
+				@Override
+				public String beforeCallArguments() {
+					return "(";
+				}};
+		} else {
+			return super.getFormatHelper();
+		}
+	}
+
+	private boolean callNeedsBrackets() {
+		Node targetEnclosingNode = NodeProvider.findParentNode(config.getDocumentProvider().getActiveFileRootNode(),	targetNode.getWrappedNode());
+		boolean isTargetEnclosingNodeCallNode = NodeUtil.nodeAssignableFrom(targetEnclosingNode, MethodCallNodeWrapper.METHOD_CALL_NODE_CLASSES());
+		if(NodeUtil.nodeAssignableFrom(targetEnclosingNode, CallNode.class)) {
+			isTargetEnclosingNodeCallNode &= !JRubyRefactoringUtils.isMathematicalExpression(targetEnclosingNode);
+		}
+		boolean isInlinedNodeCallNode = NodeUtil.nodeAssignableFrom(inlinedNode.getValueNode(), MethodCallNodeWrapper.METHOD_CALL_NODE_CLASSES());
+		if(NodeUtil.nodeAssignableFrom(inlinedNode.getValueNode(), CallNode.class)) {
+			isInlinedNodeCallNode &= !JRubyRefactoringUtils.isMathematicalExpression(inlinedNode.getValueNode());
+		}
+		return isTargetEnclosingNodeCallNode && isInlinedNodeCallNode;
 	}
 }

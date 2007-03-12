@@ -75,7 +75,11 @@ public class MethodBodyStatementReplacer implements IMethodBodyStatementReplacer
 		Collection<Node> varNodes = null;
 		do {
 			varNodes = NodeProvider.gatherNodesOfTypeInAktScopeNode(result.getActiveFileRootNode().getBodyNode(), InstVarNode.class, InstAsgnNode.class);
-
+			for(Node actVarNode : new ArrayList<Node>(varNodes)) {
+				if(((INameNode)actVarNode).getName().equals(object)) {
+					varNodes.remove(actVarNode);
+				}
+			}
 			if(varNodes.isEmpty()) {
 				continue;
 			}

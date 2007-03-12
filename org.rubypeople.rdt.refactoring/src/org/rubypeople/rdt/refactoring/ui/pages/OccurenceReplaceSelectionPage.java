@@ -43,11 +43,11 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableItem;
 import org.jruby.lexer.yacc.ISourcePosition;
-import org.rubypeople.rdt.refactoring.JRubyRefactoringUtils;
 import org.rubypeople.rdt.refactoring.core.renamemethod.NodeSelector;
 import org.rubypeople.rdt.refactoring.documentprovider.IDocumentProvider;
 import org.rubypeople.rdt.refactoring.nodewrapper.INodeWrapper;
 import org.rubypeople.rdt.refactoring.ui.RdtCodeViewer;
+import org.rubypeople.rdt.refactoring.util.JRubyRefactoringUtils;
 
 public class OccurenceReplaceSelectionPage extends RefactoringWizardPage {
 
