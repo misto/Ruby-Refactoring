@@ -74,7 +74,7 @@ public class ExtractMethodConditionChecker extends RefactoringConditionChecker {
 	public void init(Object configObj) {
 		this.config = (ExtractMethodConfig) configObj;
 		initEnclosingNodes();
-		if (!NodeProvider.isEmptyNode(config.getSelectedNodes())) {
+		if (!NodeProvider.isEmptyNode(config.getSelectedNodes()) && config.getExtractMethodHelper() == null ) {
 			config.setExtractedMethodHelper(new ExtractedMethodHelper(config));
 		}
 	}

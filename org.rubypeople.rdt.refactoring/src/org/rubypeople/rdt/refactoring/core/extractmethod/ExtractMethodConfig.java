@@ -131,4 +131,7 @@ public class ExtractMethodConfig implements IRefactoringConfig {
 		this.docProvider = doc;
 	}
 
+	public ExtractedMethodHelper getExtractMethodHelper() {
+		return extractMethodHelper;
+	}
 }
