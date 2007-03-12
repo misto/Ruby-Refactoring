@@ -1416,7 +1416,7 @@ public class RubyModelManager implements IContentTypeChangeListener, ISavePartic
 			pkg = root.getSourceFolder(ISourceFolder.DEFAULT_PACKAGE_NAME);
 			
 			if (VERBOSE){
-				System.out.println("WARNING : creating unit element outside classpath ("+ Thread.currentThread()+"): " + file.getFullPath()); //$NON-NLS-1$//$NON-NLS-2$
+				System.out.println("WARNING : creating unit element outside loadpath ("+ Thread.currentThread()+"): " + file.getFullPath()); //$NON-NLS-1$//$NON-NLS-2$
 			}
 		}
 		return pkg.getRubyScript(file.getName());
