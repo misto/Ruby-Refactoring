@@ -59,7 +59,6 @@ import org.rubypeople.rdt.refactoring.nodewrapper.MethodNodeWrapper;
 public class MethodRenamer implements IMultiFileEditProvider {
 	
 	private RenameMethodConfig config;
-	private MultiFileEditProvider fileEdits;
 	
 	public Collection<String> getAllMethodsFromClass() {
 		Collection<String> names = new ArrayList<String>();
@@ -75,7 +74,6 @@ public class MethodRenamer implements IMultiFileEditProvider {
 	
 	public MethodRenamer(RenameMethodConfig config){
 		this.config = config;
-		fileEdits = new MultiFileEditProvider();		
 		
 		Collection<MethodCallNodeWrapper> probableClass = getCallCandidatesInClass();
 		probableClass.addAll(getSubsequentCalls());
@@ -84,18 +82,20 @@ public class MethodRenamer implements IMultiFileEditProvider {
 
 	public Collection<FileMultiEditProvider> getFileEditProviders(){
 			
-		addDefinitionRenamer();
+		MultiFileEditProvider fileEdits = new MultiFileEditProvider();		
 		
-		addCallRenamers();
+		addDefinitionRenamer(fileEdits);
+		
+		addCallRenamers(fileEdits);
 		
 		if(!config.getTargetMethod().isClassMethod()){
-			addSymbolRenamers();
+			addSymbolRenamers(fileEdits);
 		}
 		
 		return fileEdits.getFileEditProviders();
 	}
 
-	private void addSymbolRenamers() {
+	private void addSymbolRenamers(MultiFileEditProvider fileEdits) {
 		if(config.getTargetMethod().isClassMethod()){
 			return;
 		}
@@ -106,7 +106,7 @@ public class MethodRenamer implements IMultiFileEditProvider {
 		}
 	}
 
-	private void addCallRenamers() {
+	private void addCallRenamers(MultiFileEditProvider fileEdits) {
 		
 		for(INodeWrapper currentCandidate : config.getSelectedCalls()){
 			String file = currentCandidate.getWrappedNode().getPosition().getFile();
@@ -116,8 +116,8 @@ public class MethodRenamer implements IMultiFileEditProvider {
 		}
 	}
 
-	private void addDefinitionRenamer() {
-		if(config.getSelectedClass()==null || config.getTargetMethod().isClassMethod()){
+	private void addDefinitionRenamer(MultiFileEditProvider fileEdits) {
+		if(config.getSelectedClass() == null || config.getTargetMethod().isClassMethod()){
 			String file = config.getDocumentProvider().getActiveFileName();
 			MethodNameArgumentItem argumentItem = new MethodNameArgumentItem(config.getTargetMethod().getWrappedNode().getNameNode());
 			fileEdits.addEditProvider(new FileEditProvider(file, new MethodRenameEditProvider(argumentItem, config.getNewName())));	
