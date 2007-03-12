@@ -34,6 +34,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 import org.rubypeople.rdt.refactoring.classnodeprovider.IncludedClassesProvider;
+import org.rubypeople.rdt.refactoring.core.IRefactoringConfig;
 import org.rubypeople.rdt.refactoring.core.RefactoringConditionChecker;
 import org.rubypeople.rdt.refactoring.nodewrapper.ClassNodeWrapper;
 import org.rubypeople.rdt.refactoring.nodewrapper.PartialClassNodeWrapper;
@@ -46,7 +47,7 @@ public class MergeClassPartsInFileConditionChecker extends RefactoringConditionC
 		super(config);
 	}
 	
-	public void init(Object configObj) {
+	public void init(IRefactoringConfig configObj) {
 		this.config = (MergeClassPartInFileConfig) configObj;
 		config.setClassNodeProvider(new IncludedClassesProvider(config.getDocumentProvider()));
 		initSelectableClasses();

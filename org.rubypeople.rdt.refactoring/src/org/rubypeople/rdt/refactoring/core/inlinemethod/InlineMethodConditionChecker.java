@@ -38,6 +38,7 @@ import org.jruby.ast.MultipleAsgnNode;
 import org.jruby.ast.types.INameNode;
 import org.jruby.parser.StaticScope;
 import org.rubypeople.rdt.refactoring.classnodeprovider.IncludedClassesProvider;
+import org.rubypeople.rdt.refactoring.core.IRefactoringConfig;
 import org.rubypeople.rdt.refactoring.core.NodeProvider;
 import org.rubypeople.rdt.refactoring.core.RefactoringConditionChecker;
 import org.rubypeople.rdt.refactoring.core.SelectionNodeProvider;
@@ -54,7 +55,7 @@ public class InlineMethodConditionChecker extends RefactoringConditionChecker {
 		super(config);
 	}
 	
-	public void init(Object configObj) {
+	public void init(IRefactoringConfig configObj) {
 		this.config = (InlineMethodConfig) configObj;
 
 		if(!(findSelectedCall(config.getPos()) && findTargetClass(config.getTargetClassFinder()) && findMethodDefinition())) {

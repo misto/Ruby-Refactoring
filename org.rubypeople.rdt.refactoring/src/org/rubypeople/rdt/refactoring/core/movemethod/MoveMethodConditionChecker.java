@@ -37,6 +37,7 @@ import java.util.TreeSet;
 
 import org.jruby.ast.MethodDefNode;
 import org.jruby.ast.Node;
+import org.rubypeople.rdt.refactoring.core.IRefactoringConfig;
 import org.rubypeople.rdt.refactoring.core.NodeProvider;
 import org.rubypeople.rdt.refactoring.core.RefactoringConditionChecker;
 import org.rubypeople.rdt.refactoring.core.SelectionNodeProvider;
@@ -55,7 +56,7 @@ public class MoveMethodConditionChecker extends RefactoringConditionChecker {
 	}
 
 	@Override
-	public void init(Object configObj) {
+	public void init(IRefactoringConfig configObj) {
 		this.config = (MoveMethodConfig) configObj;
 		Node rootNode = config.getDocumentProvider().getActiveFileRootNode();
 		int caretPos = config.getCaretPosition();

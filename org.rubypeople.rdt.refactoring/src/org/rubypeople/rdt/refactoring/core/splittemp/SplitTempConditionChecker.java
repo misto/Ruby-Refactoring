@@ -28,6 +28,7 @@
 
 package org.rubypeople.rdt.refactoring.core.splittemp;
 
+import org.rubypeople.rdt.refactoring.core.IRefactoringConfig;
 import org.rubypeople.rdt.refactoring.core.RefactoringConditionChecker;
 
 public class SplitTempConditionChecker extends RefactoringConditionChecker {
@@ -38,7 +39,7 @@ public class SplitTempConditionChecker extends RefactoringConditionChecker {
 		super(config);
 	}
 	
-	public void init(Object configObj) {
+	public void init(IRefactoringConfig configObj) {
 		this.config = (SplitTempConfig) configObj;
 		config.setLocalVariablesFinder(new LocalVarFinder());
 		config.setLocalUsages(config.getLocalVariablesFinder().findLocalUsages(config.getDocumentProvider(), config.getCaretPsition()));

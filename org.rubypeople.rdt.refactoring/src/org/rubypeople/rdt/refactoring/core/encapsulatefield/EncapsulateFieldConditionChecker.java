@@ -36,6 +36,7 @@ import org.jruby.ast.InstVarNode;
 import org.jruby.ast.Node;
 import org.jruby.ast.SymbolNode;
 import org.jruby.ast.types.INameNode;
+import org.rubypeople.rdt.refactoring.core.IRefactoringConfig;
 import org.rubypeople.rdt.refactoring.core.RefactoringConditionChecker;
 import org.rubypeople.rdt.refactoring.core.SelectionNodeProvider;
 import org.rubypeople.rdt.refactoring.exception.NoClassNodeException;
@@ -51,7 +52,7 @@ public class EncapsulateFieldConditionChecker extends RefactoringConditionChecke
 		super(config);
 	}
 
-	public void init(Object configObj) {
+	public void init(IRefactoringConfig configObj) {
 		config = (EncapsulateFieldConfig) configObj;
 		rootNode = config.getDocumentProvider().getActiveFileRootNode();
 		config.setSelectedInstNode(findSelectedInstNode(config.getCaretPosition()));

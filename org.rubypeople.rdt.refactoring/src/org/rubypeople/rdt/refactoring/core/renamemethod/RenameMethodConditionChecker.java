@@ -38,6 +38,7 @@ import org.jruby.ast.MethodDefNode;
 import org.jruby.ast.Node;
 import org.jruby.ast.SymbolNode;
 import org.rubypeople.rdt.refactoring.classnodeprovider.ClassNodeProvider;
+import org.rubypeople.rdt.refactoring.core.IRefactoringConfig;
 import org.rubypeople.rdt.refactoring.core.NodeProvider;
 import org.rubypeople.rdt.refactoring.core.RefactoringConditionChecker;
 import org.rubypeople.rdt.refactoring.core.SelectionNodeProvider;
@@ -60,7 +61,7 @@ public class RenameMethodConditionChecker extends RefactoringConditionChecker{
 	
 
 	@Override
-	public void init(Object configObj) {
+	public void init(IRefactoringConfig configObj) {
 		this.config = (RenameMethodConfig)configObj;
 		config.setDocProvider(new DocumentWithIncluding(config.getDocumentProvider()));
 		

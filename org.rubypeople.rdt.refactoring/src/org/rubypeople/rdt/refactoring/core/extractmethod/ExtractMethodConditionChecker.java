@@ -55,6 +55,7 @@ import org.jruby.ast.WhenNode;
 import org.jruby.ast.WhileNode;
 import org.jruby.ast.YieldNode;
 import org.jruby.ast.ZSuperNode;
+import org.rubypeople.rdt.refactoring.core.IRefactoringConfig;
 import org.rubypeople.rdt.refactoring.core.NodeProvider;
 import org.rubypeople.rdt.refactoring.core.RefactoringConditionChecker;
 import org.rubypeople.rdt.refactoring.core.SelectionNodeProvider;
@@ -71,7 +72,7 @@ public class ExtractMethodConditionChecker extends RefactoringConditionChecker {
 		super(config);
 	}
 	
-	public void init(Object configObj) {
+	public void init(IRefactoringConfig configObj) {
 		this.config = (ExtractMethodConfig) configObj;
 		initEnclosingNodes();
 		if (!NodeProvider.isEmptyNode(config.getSelectedNodes()) && config.getExtractMethodHelper() == null ) {

@@ -28,6 +28,7 @@
 
 package org.rubypeople.rdt.refactoring.core.formatsource;
 
+import org.rubypeople.rdt.refactoring.core.IRefactoringConfig;
 import org.rubypeople.rdt.refactoring.core.RefactoringConditionChecker;
 
 public class FormatSourceConditionChecker extends RefactoringConditionChecker {
@@ -38,7 +39,7 @@ public class FormatSourceConditionChecker extends RefactoringConditionChecker {
 		super(config);
 	}
 	
-	public void init(Object configObj) {
+	public void init(IRefactoringConfig configObj) {
 		this.config = (FormatSourceConfig) configObj;
 	}
 

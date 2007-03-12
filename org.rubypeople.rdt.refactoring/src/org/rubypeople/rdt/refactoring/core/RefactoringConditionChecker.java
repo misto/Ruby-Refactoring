@@ -143,7 +143,7 @@ public abstract class RefactoringConditionChecker implements IRefactoringConditi
 	protected void checkFinalConditions() {
 	}
 	
-	public abstract void init(Object configObj);
+	public abstract void init(IRefactoringConfig configObj);
 
 	public IRefactoringConfig getConfig() {
 		return config;

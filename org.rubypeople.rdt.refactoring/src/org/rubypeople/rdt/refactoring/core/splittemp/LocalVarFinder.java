@@ -41,6 +41,7 @@ import org.jruby.ast.Node;
 import org.jruby.ast.types.INameNode;
 import org.rubypeople.rdt.refactoring.core.NodeProvider;
 import org.rubypeople.rdt.refactoring.core.SelectionNodeProvider;
+import org.rubypeople.rdt.refactoring.core.inlinemethod.TargetClassFinder;
 import org.rubypeople.rdt.refactoring.documentprovider.IDocumentProvider;
 import org.rubypeople.rdt.refactoring.util.NodeUtil;
 
@@ -52,8 +53,7 @@ public class LocalVarFinder implements ILocalVarFinder {
 
 		Node rootNode = doc.getActiveFileRootNode();
 
-		INameNode selectedAssignment = (INameNode) SelectionNodeProvider.getSelectedNodeOfType(rootNode, caretPosition, LocalAsgnNode.class, DAsgnNode.class);
-
+		INameNode selectedAssignment = findAssignment(doc, caretPosition, rootNode);
 		if (selectedAssignment == null) {
 			return null;
 		}
@@ -62,6 +62,22 @@ public class LocalVarFinder implements ILocalVarFinder {
 		assert enclosingMethod != null;
 
 		return createLocalVariableUsages(gatherLocalAssignments(selectedAssignment));
+	}
+
+	private INameNode findAssignment(IDocumentProvider doc, int caretPosition, Node rootNode) {
+		INameNode selectedAssignment = (INameNode) SelectionNodeProvider.getSelectedNodeOfType(rootNode, caretPosition, LocalAsgnNode.class, DAsgnNode.class);
+
+		if (selectedAssignment == null) {
+			
+			final LocalVarNode selectedLocalVar = (LocalVarNode) SelectionNodeProvider.getSelectedNodeOfType(rootNode, caretPosition, LocalVarNode.class);
+			
+			if(selectedLocalVar == null)
+				return null;
+			
+			selectedAssignment = new TargetClassFinder().localAsgnFromLocalVar(selectedLocalVar, doc);
+		}
+		
+		return selectedAssignment;
 	}
 
 	private ArrayList<LocalVarUsage> createLocalVariableUsages(ArrayList<AssignableNode> myAsgns) {

@@ -30,6 +30,7 @@
 
 package org.rubypeople.rdt.refactoring.core.mergewithexternalclassparts;
 
+import org.rubypeople.rdt.refactoring.core.IRefactoringConfig;
 import org.rubypeople.rdt.refactoring.core.RefactoringConditionChecker;
 
 public class MergeWithExternalClassPartsConditionChecker extends RefactoringConditionChecker {
@@ -40,7 +41,7 @@ public class MergeWithExternalClassPartsConditionChecker extends RefactoringCond
 		super(config);
 	}
 	
-	public void init(Object configObj) {
+	public void init(IRefactoringConfig configObj) {
 		this.config = (MergeWithExternalClassPartConfig) configObj;
 		config.setClassNodeProvider(config.getDocumentProvider().getIncludedClassNodeProvider());
 	}

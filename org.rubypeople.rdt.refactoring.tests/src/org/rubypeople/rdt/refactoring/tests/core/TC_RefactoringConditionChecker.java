@@ -17,7 +17,7 @@ public class TC_RefactoringConditionChecker extends TestCase {
 		
 
 		@Override
-		public void init(Object configObj) {				
+		public void init(IRefactoringConfig configObj) {				
 		}
 
 		@Override

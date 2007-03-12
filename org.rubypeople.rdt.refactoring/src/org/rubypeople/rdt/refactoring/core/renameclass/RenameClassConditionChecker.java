@@ -29,6 +29,7 @@
 package org.rubypeople.rdt.refactoring.core.renameclass;
 
 import org.jruby.ast.ClassNode;
+import org.rubypeople.rdt.refactoring.core.IRefactoringConfig;
 import org.rubypeople.rdt.refactoring.core.RefactoringConditionChecker;
 import org.rubypeople.rdt.refactoring.core.SelectionNodeProvider;
 import org.rubypeople.rdt.refactoring.documentprovider.DocumentWithIncluding;
@@ -45,7 +46,7 @@ public class RenameClassConditionChecker extends RefactoringConditionChecker {
 	}
 
 	@Override
-	public void init(Object configObj) {
+	public void init(IRefactoringConfig configObj) {
 		config = (RenameClassConfig) configObj;
 		config.setDocumentWithIncludingProvider(new DocumentWithIncluding(config.getDocumentProvider()));
 		ClassNodeWrapper classNode = null;

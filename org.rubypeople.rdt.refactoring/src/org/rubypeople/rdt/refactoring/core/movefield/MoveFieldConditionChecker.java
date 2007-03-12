@@ -32,6 +32,7 @@ import java.util.Collection;
 import java.util.TreeSet;
 
 import org.rubypeople.rdt.refactoring.classnodeprovider.AllFilesClassNodeProvider;
+import org.rubypeople.rdt.refactoring.core.IRefactoringConfig;
 import org.rubypeople.rdt.refactoring.core.RefactoringConditionChecker;
 import org.rubypeople.rdt.refactoring.core.SelectionNodeProvider;
 import org.rubypeople.rdt.refactoring.exception.NoClassNodeException;
@@ -49,7 +50,7 @@ public class MoveFieldConditionChecker extends RefactoringConditionChecker {
 	}
 
 	@Override
-	public void init(Object configObj) {
+	public void init(IRefactoringConfig configObj) {
 		config = (MoveFieldConfig) configObj;
 	
 		try {

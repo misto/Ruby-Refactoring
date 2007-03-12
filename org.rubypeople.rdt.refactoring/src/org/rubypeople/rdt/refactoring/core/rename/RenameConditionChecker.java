@@ -30,6 +30,7 @@
 package org.rubypeople.rdt.refactoring.core.rename;
 
 import org.rubypeople.rdt.refactoring.core.IRefactoringConditionChecker;
+import org.rubypeople.rdt.refactoring.core.IRefactoringConfig;
 import org.rubypeople.rdt.refactoring.core.RefactoringConditionChecker;
 import org.rubypeople.rdt.refactoring.core.renameclass.RenameClassConditionChecker;
 import org.rubypeople.rdt.refactoring.core.renameclass.RenameClassConfig;
@@ -88,7 +89,7 @@ public class RenameConditionChecker extends RefactoringConditionChecker {
 	}
 
 	@Override
-	public void init(Object configObj) {
+	public void init(IRefactoringConfig configObj) {
 		RenameConfig config = (RenameConfig) configObj;
 		int offset = config.getOffset();
 		IDocumentProvider docProvider = config.getDocumentProvider();

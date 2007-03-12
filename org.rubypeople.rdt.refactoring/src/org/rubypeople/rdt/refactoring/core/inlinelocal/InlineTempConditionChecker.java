@@ -40,6 +40,7 @@ import org.jruby.ast.MultipleAsgnNode;
 import org.jruby.ast.Node;
 import org.jruby.ast.RootNode;
 import org.jruby.lexer.yacc.ISourcePosition;
+import org.rubypeople.rdt.refactoring.core.IRefactoringConfig;
 import org.rubypeople.rdt.refactoring.core.NodeProvider;
 import org.rubypeople.rdt.refactoring.core.RefactoringConditionChecker;
 import org.rubypeople.rdt.refactoring.core.SelectionNodeProvider;
@@ -56,7 +57,7 @@ public class InlineTempConditionChecker extends RefactoringConditionChecker {
 		super(config);
 	}
 	
-	public void init(Object configObj) {
+	public void init(IRefactoringConfig configObj) {
 		this.config = (InlineTempConfig) configObj;
 		rootNode = config.getDocumentProvider().getActiveFileRootNode();
 		int caretPosition = config.getCaretPosition();

@@ -37,6 +37,7 @@ import org.jruby.ast.AssignableNode;
 import org.jruby.ast.Node;
 import org.jruby.lexer.yacc.ISourcePosition;
 import org.rubypeople.rdt.refactoring.classnodeprovider.ClassNodeProvider;
+import org.rubypeople.rdt.refactoring.core.IRefactoringConfig;
 import org.rubypeople.rdt.refactoring.core.RefactoringConditionChecker;
 import org.rubypeople.rdt.refactoring.core.SelectionNodeProvider;
 import org.rubypeople.rdt.refactoring.documentprovider.IDocumentProvider;
@@ -57,7 +58,7 @@ public class InlineClassConditionChecker extends RefactoringConditionChecker {
 		super(config);
 	}
 	
-	public void init(Object configObj) {
+	public void init(IRefactoringConfig configObj) {
 		this.config = (InlineClassConfig) configObj;
 		docProvider = config.getDocumentProvider();
 		intiSourceClass();
