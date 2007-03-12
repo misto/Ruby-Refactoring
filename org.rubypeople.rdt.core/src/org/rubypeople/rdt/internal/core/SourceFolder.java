@@ -17,6 +17,7 @@ import org.rubypeople.rdt.core.IRubyScript;
 import org.rubypeople.rdt.core.ISourceFolder;
 import org.rubypeople.rdt.core.RubyModelException;
 import org.rubypeople.rdt.core.WorkingCopyOwner;
+import org.rubypeople.rdt.internal.core.util.MementoTokenizer;
 import org.rubypeople.rdt.internal.core.util.Messages;
 import org.rubypeople.rdt.internal.core.util.Util;
 
@@ -220,6 +221,26 @@ public class SourceFolder extends Openable implements ISourceFolder {
 			throw new IllegalArgumentException(Messages.convention_unit_notJavaName); 
 		}
 		return new RubyScript(this, name, DefaultWorkingCopyOwner.PRIMARY);
+	}
+	
+	/*
+	 * @see RubyElement
+	 */
+	public IRubyElement getHandleFromMemento(String token, MementoTokenizer memento, WorkingCopyOwner owner) {
+		switch (token.charAt(0)) {
+			case JEM_RUBYSCRIPT:
+				if (!memento.hasMoreTokens()) return this;
+				String cuName = memento.nextToken();
+				RubyElement cu = new RubyScript(this, cuName, owner);
+				return cu.getHandleFromMemento(memento, owner);
+		}
+		return null;
+	}
+	/**
+	 * @see RubyElement#getHandleMementoDelimiter()
+	 */
+	protected char getHandleMementoDelimiter() {
+		return RubyElement.JEM_SOURCE_FOLDER;
 	}
 
 }

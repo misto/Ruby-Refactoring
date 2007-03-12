@@ -57,8 +57,10 @@ import org.rubypeople.rdt.core.ISourceFolderRoot;
 import org.rubypeople.rdt.core.IType;
 import org.rubypeople.rdt.core.RubyCore;
 import org.rubypeople.rdt.core.RubyModelException;
+import org.rubypeople.rdt.core.WorkingCopyOwner;
 import org.rubypeople.rdt.internal.compiler.CategorizedProblem;
 import org.rubypeople.rdt.internal.compiler.util.ObjectVector;
+import org.rubypeople.rdt.internal.core.util.MementoTokenizer;
 import org.rubypeople.rdt.internal.core.util.Messages;
 import org.rubypeople.rdt.internal.core.util.Util;
 import org.w3c.dom.Element;
@@ -2407,5 +2409,45 @@ public class RubyProject extends Openable implements IProjectNature, IRubyElemen
 		throws RubyModelException {
 
 		return getAllSourceFolderRoots(null /*no reverse map*/);
+	}
+	
+	/*
+	 * @see RubyElement
+	 */
+	public IRubyElement getHandleFromMemento(String token, MementoTokenizer memento, WorkingCopyOwner owner) {
+		switch (token.charAt(0)) {
+			case JEM_SOURCEFOLDERROOT:
+				String rootPath = ISourceFolderRoot.DEFAULT_PACKAGEROOT_PATH;
+				token = null;
+				while (memento.hasMoreTokens()) {
+					token = memento.nextToken();
+					char firstChar = token.charAt(0);
+					if (firstChar != JEM_SOURCE_FOLDER && firstChar != JEM_COUNT) {
+						rootPath += token;
+					} else {
+						break;
+					}
+				}
+				IPath path = new Path(rootPath);
+				RubyElement root;
+				if(path.isAbsolute()) {
+					root = (RubyElement) getPackageFragmentRoot0(path);
+				} else
+					root = (RubyElement)getSourceFolderRoot(path);
+				if (token != null && token.charAt(0) == JEM_SOURCE_FOLDER) {
+					return root.getHandleFromMemento(token, memento, owner);
+				} else {
+					return root.getHandleFromMemento(memento, owner);
+				}
+		}
+		return null;
+	}
+
+	/**
+	 * Returns the <code>char</code> that marks the start of this handles
+	 * contribution to a memento.
+	 */
+	protected char getHandleMementoDelimiter() {
+		return JEM_RUBYPROJECT;
 	}
 }

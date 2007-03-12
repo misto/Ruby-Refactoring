@@ -18,7 +18,9 @@ import org.rubypeople.rdt.core.IRubyModelStatusConstants;
 import org.rubypeople.rdt.core.ISourceFolder;
 import org.rubypeople.rdt.core.ISourceFolderRoot;
 import org.rubypeople.rdt.core.RubyModelException;
+import org.rubypeople.rdt.core.WorkingCopyOwner;
 import org.rubypeople.rdt.internal.core.util.CharOperation;
+import org.rubypeople.rdt.internal.core.util.MementoTokenizer;
 import org.rubypeople.rdt.internal.core.util.Util;
 
 public class SourceFolderRoot extends Openable implements ISourceFolderRoot {
@@ -277,5 +279,62 @@ public class SourceFolderRoot extends Openable implements ISourceFolderRoot {
 	public ISourceFolder getSourceFolder(String packName) {
 		String[] names = Util.getTrimmedSimpleNames(packName);
 		return getSourceFolder(names);
+	}
+	
+	/**
+	 * @see RubyElement#getHandleMemento()
+	 */
+	protected char getHandleMementoDelimiter() {
+		return RubyElement.JEM_SOURCEFOLDERROOT;
+	}
+	/*
+	 * @see RubyElement
+	 */
+	public IRubyElement getHandleFromMemento(String token, MementoTokenizer memento, WorkingCopyOwner owner) {
+		switch (token.charAt(0)) {
+			case JEM_SOURCE_FOLDER:
+				String pkgName;
+				if (memento.hasMoreTokens()) {
+					pkgName = memento.nextToken();
+					char firstChar = pkgName.charAt(0);
+					if (firstChar == JEM_RUBYSCRIPT || firstChar == JEM_COUNT) {
+						token = pkgName;
+						pkgName = ISourceFolder.DEFAULT_PACKAGE_NAME;
+					} else {
+						token = null;
+					}
+				} else {
+					pkgName = ISourceFolder.DEFAULT_PACKAGE_NAME;
+					token = null;
+				}
+				RubyElement pkg = (RubyElement)getSourceFolder(pkgName);
+				if (token == null) {
+					return pkg.getHandleFromMemento(memento, owner);
+				} else {
+					return pkg.getHandleFromMemento(token, memento, owner);
+				}
+		}
+		return null;
+	}
+	/**
+	 * @see RubyElement#getHandleMemento(StringBuffer)
+	 */
+	protected void getHandleMemento(StringBuffer buff) {
+		IPath path;
+		IResource underlyingResource = getResource();
+		if (underlyingResource != null) {
+			// internal jar or regular root
+			if (getResource().getProject().equals(getRubyProject().getProject())) {
+				path = underlyingResource.getProjectRelativePath();
+			} else {
+				path = underlyingResource.getFullPath();
+			}
+		} else {
+			// external jar
+			path = getPath();
+		}
+		((RubyElement)getParent()).getHandleMemento(buff);
+		buff.append(getHandleMementoDelimiter());
+		escapeMementoName(buff, path.toString()); 
 	}
 }

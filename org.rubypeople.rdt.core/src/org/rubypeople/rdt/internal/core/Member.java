@@ -12,9 +12,11 @@ package org.rubypeople.rdt.internal.core;
 
 import org.rubypeople.rdt.core.IMember;
 import org.rubypeople.rdt.core.IRubyElement;
-import org.rubypeople.rdt.core.IType;
 import org.rubypeople.rdt.core.ISourceRange;
+import org.rubypeople.rdt.core.IType;
 import org.rubypeople.rdt.core.RubyModelException;
+import org.rubypeople.rdt.core.WorkingCopyOwner;
+import org.rubypeople.rdt.internal.core.util.MementoTokenizer;
 
 /**
  * @see IMember
@@ -116,5 +118,67 @@ public abstract class Member extends SourceRefElement implements IMember {
 		} catch (RubyModelException npe) {
 			return;
 		}
+	}
+	
+	/*
+	 * @see RubyElement
+	 */
+	public IRubyElement getHandleFromMemento(String token, MementoTokenizer memento, WorkingCopyOwner workingCopyOwner) {
+		switch (token.charAt(0)) {
+			case JEM_COUNT:
+				return getHandleUpdatingCountFromMemento(memento, workingCopyOwner);
+			case JEM_TYPE:
+				String typeName;
+				if (memento.hasMoreTokens()) {
+					typeName = memento.nextToken();
+					char firstChar = typeName.charAt(0);
+					if (firstChar == JEM_FIELD || firstChar == JEM_METHOD || firstChar == JEM_TYPE || firstChar == JEM_COUNT) {
+						token = typeName;
+						typeName = ""; //$NON-NLS-1$
+					} else {
+						token = null;
+					}
+				} else {
+					typeName = ""; //$NON-NLS-1$
+					token = null;
+				}
+				RubyElement type = (RubyElement)getType(typeName, 1);
+				if (token == null) {
+					return type.getHandleFromMemento(memento, workingCopyOwner);
+				} else {
+					return type.getHandleFromMemento(token, memento, workingCopyOwner);
+				}
+//			case JEM_LOCALVARIABLE:
+//				if (!memento.hasMoreTokens()) return this;
+//				String varName = memento.nextToken();
+//				if (!memento.hasMoreTokens()) return this;
+//				memento.nextToken(); // JEM_COUNT
+//				if (!memento.hasMoreTokens()) return this;
+//				int declarationStart = Integer.parseInt(memento.nextToken());
+//				if (!memento.hasMoreTokens()) return this;
+//				memento.nextToken(); // JEM_COUNT
+//				if (!memento.hasMoreTokens()) return this;
+//				int declarationEnd = Integer.parseInt(memento.nextToken());
+//				if (!memento.hasMoreTokens()) return this;
+//				memento.nextToken(); // JEM_COUNT
+//				if (!memento.hasMoreTokens()) return this;
+//				int nameStart = Integer.parseInt(memento.nextToken());
+//				if (!memento.hasMoreTokens()) return this;
+//				memento.nextToken(); // JEM_COUNT
+//				if (!memento.hasMoreTokens()) return this;
+//				int nameEnd = Integer.parseInt(memento.nextToken());
+//				if (!memento.hasMoreTokens()) return this;
+//				memento.nextToken(); // JEM_COUNT
+//				if (!memento.hasMoreTokens()) return this;
+//				String typeSignature = memento.nextToken();
+//				return new LocalVariable(this, varName, declarationStart, declarationEnd, nameStart, nameEnd, typeSignature);
+		}
+		return null;
+	}
+	/**
+	 * @see JavaElement#getHandleMemento()
+	 */
+	protected char getHandleMementoDelimiter() {
+		return RubyElement.JEM_TYPE;
 	}
 }

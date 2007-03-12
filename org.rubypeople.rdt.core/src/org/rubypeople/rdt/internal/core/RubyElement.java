@@ -43,6 +43,8 @@ import org.rubypeople.rdt.core.IRubyScript;
 import org.rubypeople.rdt.core.ISourceRange;
 import org.rubypeople.rdt.core.ISourceReference;
 import org.rubypeople.rdt.core.RubyModelException;
+import org.rubypeople.rdt.core.WorkingCopyOwner;
+import org.rubypeople.rdt.internal.core.util.MementoTokenizer;
 import org.rubypeople.rdt.internal.core.util.Util;
 
 /**
@@ -51,6 +53,18 @@ import org.rubypeople.rdt.internal.core.util.Util;
  */
 public abstract class RubyElement extends PlatformObject implements IRubyElement {
 
+	public static final char JEM_ESCAPE = '\\';
+	public static final char JEM_RUBYPROJECT = '=';
+	public static final char JEM_SOURCEFOLDERROOT = '/';
+	public static final char JEM_SOURCE_FOLDER = '<';
+	public static final char JEM_FIELD = '^';
+	public static final char JEM_METHOD = '~';
+	public static final char JEM_RUBYSCRIPT = '{';
+	public static final char JEM_TYPE = '[';
+	public static final char JEM_IMPORTDECLARATION = '#';
+	public static final char JEM_COUNT = '!';
+	public static final char JEM_LOCALVARIABLE = '@';
+	
 	public static final IRubyElement[] NO_ELEMENTS = new IRubyElement[0];
 	protected static final Object NO_INFO = new Object();
 
@@ -528,5 +542,66 @@ public abstract class RubyElement extends PlatformObject implements IRubyElement
 
 	public Node findNode(Node cuAST) {
 		return null; // works only inside a ruby script
+	}
+	
+	/*
+	 * Creates a Ruby element handle from the given memento.
+	 * The given token is the current delimiter indicating the type of the next token(s).
+	 * The given working copy owner is used only for ruby script handles.
+	 */
+	public abstract IRubyElement getHandleFromMemento(String token, MementoTokenizer memento, WorkingCopyOwner owner);
+	/*
+	 * Creates a Ruby element handle from the given memento.
+	 * The given working copy owner is used only for ruby script handles.
+	 */
+	public IRubyElement getHandleFromMemento(MementoTokenizer memento, WorkingCopyOwner owner) {
+		if (!memento.hasMoreTokens()) return this;
+		String token = memento.nextToken();
+		return getHandleFromMemento(token, memento, owner);
+	}
+	/**
+	 * @see IJavaElement
+	 */
+	public String getHandleIdentifier() {
+		return getHandleMemento();
+	}
+	/**
+	 * @see JavaElement#getHandleMemento()
+	 */
+	public String getHandleMemento(){
+		StringBuffer buff = new StringBuffer();
+		getHandleMemento(buff);
+		return buff.toString();
+	}
+	protected void getHandleMemento(StringBuffer buff) {
+		((RubyElement)getParent()).getHandleMemento(buff);
+		buff.append(getHandleMementoDelimiter());
+		escapeMementoName(buff, getElementName());
+	}
+	/**
+	 * Returns the <code>char</code> that marks the start of this handles
+	 * contribution to a memento.
+	 */
+	protected abstract char getHandleMementoDelimiter();
+
+	protected void escapeMementoName(StringBuffer buffer, String mementoName) {
+		for (int i = 0, length = mementoName.length(); i < length; i++) {
+			char character = mementoName.charAt(i);
+			switch (character) {
+				case JEM_ESCAPE:
+				case JEM_COUNT:
+				case JEM_RUBYPROJECT:
+				case JEM_SOURCEFOLDERROOT:
+				case JEM_SOURCE_FOLDER:
+				case JEM_FIELD:
+				case JEM_METHOD:
+				case JEM_RUBYSCRIPT:
+				case JEM_TYPE:
+				case JEM_IMPORTDECLARATION:
+				case JEM_LOCALVARIABLE:
+					buffer.append(JEM_ESCAPE);
+			}
+			buffer.append(character);
+		}
 	}
 }

@@ -17,7 +17,9 @@ import org.rubypeople.rdt.core.IRubyScript;
 import org.rubypeople.rdt.core.ISourceRange;
 import org.rubypeople.rdt.core.ISourceReference;
 import org.rubypeople.rdt.core.RubyModelException;
+import org.rubypeople.rdt.core.WorkingCopyOwner;
 import org.rubypeople.rdt.internal.core.util.DOMFinder;
+import org.rubypeople.rdt.internal.core.util.MementoTokenizer;
 
 /**
  * @author cawilliams
@@ -172,6 +174,36 @@ public abstract class SourceRefElement extends RubyElement implements ISourceRef
 	public boolean equals(Object o) {
 		if (!(o instanceof SourceRefElement)) return false;
 		return this.occurrenceCount == ((SourceRefElement) o).occurrenceCount && super.equals(o);
+	}
+	
+	/*
+	 * Update the occurence count of the receiver and creates a Ruby element handle from the given memento.
+	 * The given working copy owner is used only for compilation unit handles.
+	 */
+	public IRubyElement getHandleUpdatingCountFromMemento(MementoTokenizer memento, WorkingCopyOwner owner) {
+		if (!memento.hasMoreTokens()) return this;
+		this.occurrenceCount = Integer.parseInt(memento.nextToken());
+		if (!memento.hasMoreTokens()) return this;
+		String token = memento.nextToken();
+		return getHandleFromMemento(token, memento, owner);
+	}
+	
+	/*
+	 * @see RubyElement
+	 */
+	public IRubyElement getHandleFromMemento(String token, MementoTokenizer memento, WorkingCopyOwner workingCopyOwner) {
+		switch (token.charAt(0)) {
+			case JEM_COUNT:
+				return getHandleUpdatingCountFromMemento(memento, workingCopyOwner);
+		}
+		return this;
+	}
+	protected void getHandleMemento(StringBuffer buff) {
+		super.getHandleMemento(buff);
+		if (this.occurrenceCount > 1) {
+			buff.append(JEM_COUNT);
+			buff.append(this.occurrenceCount);
+		}
 	}
 
 }

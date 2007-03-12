@@ -3,6 +3,12 @@ package org.rubypeople.rdt.core;
 import org.eclipse.core.runtime.IProgressMonitor;
 
 public interface ISourceFolderRoot extends IParent, IRubyElement, IOpenable {
+
+	/**
+	 * Empty root path
+	 */
+	String DEFAULT_PACKAGEROOT_PATH = ""; //$NON-NLS-1$
+	
 	/**
 	 * Returns whether this package fragment root is external
 	 * to the workbench (that is, a local file), and has no

@@ -646,5 +646,10 @@ public class CompletionEngine {
 			return false;
 		}
 
+		public String getHandleIdentifier() {
+			// TODO Auto-generated method stub
+			return null;
+		}
+
 	}
 }

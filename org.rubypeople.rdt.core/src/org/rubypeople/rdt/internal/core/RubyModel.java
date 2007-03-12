@@ -16,6 +16,7 @@ import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.resources.ResourcesPlugin;
+import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.Path;
@@ -24,6 +25,8 @@ import org.rubypeople.rdt.core.IRubyElement;
 import org.rubypeople.rdt.core.IRubyModel;
 import org.rubypeople.rdt.core.IRubyProject;
 import org.rubypeople.rdt.core.RubyModelException;
+import org.rubypeople.rdt.core.WorkingCopyOwner;
+import org.rubypeople.rdt.internal.core.util.MementoTokenizer;
 import org.rubypeople.rdt.internal.core.util.Messages;
 
 /**
@@ -254,6 +257,34 @@ public static synchronized File getFolder(Object target) {
 	}
 	
 	return null;
+}
+
+/*
+ * @see RubyElement
+ */
+public IRubyElement getHandleFromMemento(String token, MementoTokenizer memento, WorkingCopyOwner owner) {
+	switch (token.charAt(0)) {
+		case JEM_RUBYPROJECT:
+			if (!memento.hasMoreTokens()) return this;
+			String projectName = memento.nextToken();
+			RubyElement project = (RubyElement)getRubyProject(projectName);
+			return project.getHandleFromMemento(memento, owner);
+	}
+	return null;
+}
+/**
+ * @see RubyElement#getHandleMemento(StringBuffer)
+ */
+protected void getHandleMemento(StringBuffer buff) {
+	buff.append(getElementName());
+}
+/**
+ * Returns the <code>char</code> that marks the start of this handles
+ * contribution to a memento.
+ */
+protected char getHandleMementoDelimiter(){
+	Assert.isTrue(false, "Should not be called"); //$NON-NLS-1$
+	return 0;
 }
 
 }

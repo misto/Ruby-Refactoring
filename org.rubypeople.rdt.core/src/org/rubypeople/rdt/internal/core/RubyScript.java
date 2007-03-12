@@ -58,6 +58,7 @@ import org.rubypeople.rdt.core.WorkingCopyOwner;
 import org.rubypeople.rdt.internal.codeassist.CompletionEngine;
 import org.rubypeople.rdt.internal.core.buffer.BufferManager;
 import org.rubypeople.rdt.internal.core.parser.RubyParser;
+import org.rubypeople.rdt.internal.core.util.MementoTokenizer;
 import org.rubypeople.rdt.internal.core.util.Util;
 
 
@@ -643,5 +644,29 @@ public class RubyScript extends Openable implements IRubyScript {
 	public void codeComplete(int offset, CompletionRequestor requestor) throws RubyModelException {
 		CompletionEngine engine = new CompletionEngine(requestor);
 		engine.complete(this, offset);		
+	}
+	
+	/*
+	 * @see RubyElement
+	 */
+	public IRubyElement getHandleFromMemento(String token, MementoTokenizer memento, WorkingCopyOwner workingCopyOwner) {
+		switch (token.charAt(0)) {
+			case JEM_IMPORTDECLARATION:
+				RubyElement container = (RubyElement)getImportContainer();
+				return container.getHandleFromMemento(token, memento, workingCopyOwner);
+			case JEM_TYPE:
+				if (!memento.hasMoreTokens()) return this;
+				String typeName = memento.nextToken();
+				RubyElement type = (RubyElement)getType(typeName);
+				return type.getHandleFromMemento(memento, workingCopyOwner);
+		}
+		return null;
+	}
+	
+	/**
+	 * @see RubyElement#getHandleMementoDelimiter()
+	 */
+	protected char getHandleMementoDelimiter() {
+		return RubyElement.JEM_RUBYSCRIPT;
 	}
 }

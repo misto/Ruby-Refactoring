@@ -24,6 +24,7 @@
  */
 package org.rubypeople.rdt.internal.core;
 
+import org.eclipse.core.runtime.Assert;
 import org.rubypeople.rdt.core.IImportDeclaration;
 import org.rubypeople.rdt.core.IRubyElement;
 
@@ -59,6 +60,27 @@ public class RubyImport extends SourceRefElement implements IImportDeclaration {
 
 	public String getElementName() {
 		return this.name;
+	}
+	
+	/**
+	 * @see RubyElement#getHandleMemento(StringBuffer)
+	 * For import declarations, the handle delimiter is associated to the import container already
+	 */
+	protected void getHandleMemento(StringBuffer buff) {
+		((RubyElement)getParent()).getHandleMemento(buff);
+		escapeMementoName(buff, getElementName());
+		if (this.occurrenceCount > 1) {
+			buff.append(JEM_COUNT);
+			buff.append(this.occurrenceCount);
+		}
+	}
+	/**
+	 * @see RubyElement#getHandleMemento()
+	 */
+	protected char getHandleMementoDelimiter() {
+		// For import declarations, the handle delimiter is associated to the import container already
+		Assert.isTrue(false, "Should not be called"); //$NON-NLS-1$
+		return 0;
 	}
 
 }

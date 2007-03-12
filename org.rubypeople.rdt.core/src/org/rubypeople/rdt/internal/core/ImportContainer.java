@@ -12,10 +12,13 @@ package org.rubypeople.rdt.internal.core;
 
 import org.rubypeople.rdt.core.IImportContainer;
 import org.rubypeople.rdt.core.IImportDeclaration;
+import org.rubypeople.rdt.core.IParent;
 import org.rubypeople.rdt.core.IRubyElement;
 import org.rubypeople.rdt.core.ISourceRange;
 import org.rubypeople.rdt.core.ISourceReference;
 import org.rubypeople.rdt.core.RubyModelException;
+import org.rubypeople.rdt.core.WorkingCopyOwner;
+import org.rubypeople.rdt.internal.core.util.MementoTokenizer;
 
 
 /**
@@ -100,5 +103,30 @@ protected void toStringInfo(int tab, StringBuffer buffer, Object info) {
 	if (info == null) {
 		buffer.append(" (not open)"); //$NON-NLS-1$
 	}
+}
+
+/*
+ * @see RubyElement
+ */
+public IRubyElement getHandleFromMemento(String token, MementoTokenizer memento, WorkingCopyOwner workingCopyOwner) {
+	switch (token.charAt(0)) {
+		case JEM_COUNT:
+			return getHandleUpdatingCountFromMemento(memento, workingCopyOwner);
+		case JEM_IMPORTDECLARATION:
+			if (memento.hasMoreTokens()) {
+				String importName = memento.nextToken();
+				RubyElement importDecl = (RubyElement)getImport(importName);
+				return importDecl.getHandleFromMemento(memento, workingCopyOwner);
+			} else {
+				return this;
+			}
+	}
+	return null;
+}
+/**
+ * @see RubyElement#getHandleMemento()
+ */
+protected char getHandleMementoDelimiter() {
+	return RubyElement.JEM_IMPORTDECLARATION;
 }
 }

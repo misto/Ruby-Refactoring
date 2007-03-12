@@ -8,6 +8,8 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.rubypeople.rdt.core.IRubyElement;
 import org.rubypeople.rdt.core.IRubyScript;
 import org.rubypeople.rdt.core.RubyModelException;
+import org.rubypeople.rdt.core.WorkingCopyOwner;
+import org.rubypeople.rdt.internal.core.util.MementoTokenizer;
 import org.rubypeople.rdt.internal.core.util.Messages;
 import org.rubypeople.rdt.internal.core.util.Util;
 
@@ -61,5 +63,19 @@ public class ExternalSourceFolder extends SourceFolder {
 			throw new IllegalArgumentException(Messages.convention_unit_notJavaName); 
 		}
 		return new ExternalRubyScript(this, name, DefaultWorkingCopyOwner.PRIMARY);
+	}
+	
+	/*
+	 * @see RubyElement
+	 */
+	public IRubyElement getHandleFromMemento(String token, MementoTokenizer memento, WorkingCopyOwner owner) {
+		switch (token.charAt(0)) {
+			case JEM_RUBYSCRIPT:
+				if (!memento.hasMoreTokens()) return this;
+				String classFileName = memento.nextToken();
+				RubyElement classFile = new ExternalRubyScript(this, classFileName, owner);
+				return classFile.getHandleFromMemento(memento, owner);
+		}
+		return null;
 	}
 }

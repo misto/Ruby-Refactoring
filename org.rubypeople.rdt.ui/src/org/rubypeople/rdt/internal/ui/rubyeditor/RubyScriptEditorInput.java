@@ -83,10 +83,10 @@ public class RubyScriptEditorInput implements IRubyScriptEditorInput, IPersistab
 	}
 
 	public String getFactoryId() {
-		return RubyExternalEditorFactory.FACTORY_ID;
+		return RubyScriptEditorInputFactory.ID;
 	}
 
 	public void saveState(IMemento memento) {
-		memento.putString(RubyExternalEditorFactory.MEMENTO_ABSOLUTE_PATH_KEY, fScript.getFile().getAbsolutePath()); //$NON-NLS-1$
+		RubyScriptEditorInputFactory.saveState(memento, this);
 	}
 }

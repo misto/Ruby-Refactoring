@@ -36,6 +36,8 @@ import org.rubypeople.rdt.core.IRubyScript;
 import org.rubypeople.rdt.core.ISourceFolder;
 import org.rubypeople.rdt.core.IType;
 import org.rubypeople.rdt.core.RubyModelException;
+import org.rubypeople.rdt.core.WorkingCopyOwner;
+import org.rubypeople.rdt.internal.core.util.MementoTokenizer;
 
 /**
  * @author Chris
@@ -211,6 +213,72 @@ public class RubyType extends NamedMember implements IType {
 			return declaring.getFullyQualifiedName() + "::" + getElementName();
 		}
 		return getElementName();
+	}
+	
+	/*
+	 * @see RubyElement
+	 */
+	public IRubyElement getHandleFromMemento(String token, MementoTokenizer memento, WorkingCopyOwner workingCopyOwner) {
+		switch (token.charAt(0)) {
+			case JEM_COUNT:
+				return getHandleUpdatingCountFromMemento(memento, workingCopyOwner);
+			case JEM_FIELD:
+				if (!memento.hasMoreTokens()) return this;
+				String fieldName = memento.nextToken();
+				RubyElement field = (RubyElement)getField(fieldName);
+				return field.getHandleFromMemento(memento, workingCopyOwner);
+			case JEM_METHOD:
+				if (!memento.hasMoreTokens()) return this;
+				String selector = memento.nextToken();
+				ArrayList params = new ArrayList();
+				nextParam: while (memento.hasMoreTokens()) {
+					token = memento.nextToken();
+					switch (token.charAt(0)) {
+						case JEM_TYPE:
+							break nextParam;
+						case JEM_METHOD:
+							if (!memento.hasMoreTokens()) return this;
+							String param = memento.nextToken();
+							StringBuffer buffer = new StringBuffer();
+							params.add(buffer.toString() + param);
+							break;
+						default:
+							break nextParam;
+					}
+				}
+				String[] parameters = new String[params.size()];
+				params.toArray(parameters);
+				RubyElement method = (RubyElement)getMethod(selector, parameters);
+				switch (token.charAt(0)) {
+					case JEM_TYPE:
+					case JEM_LOCALVARIABLE:
+						return method.getHandleFromMemento(token, memento, workingCopyOwner);
+					default:
+						return method;
+				}
+			case JEM_TYPE:
+				String typeName;
+				if (memento.hasMoreTokens()) {
+					typeName = memento.nextToken();
+					char firstChar = typeName.charAt(0);
+					if (firstChar == JEM_FIELD || firstChar == JEM_METHOD || firstChar == JEM_TYPE || firstChar == JEM_COUNT) {
+						token = typeName;
+						typeName = ""; //$NON-NLS-1$
+					} else {
+						token = null;
+					}
+				} else {
+					typeName = ""; //$NON-NLS-1$
+					token = null;
+				}
+				RubyElement type = (RubyElement)getType(typeName);
+				if (token == null) {
+					return type.getHandleFromMemento(memento, workingCopyOwner);
+				} else {
+					return type.getHandleFromMemento(token, memento, workingCopyOwner);
+				}			
+		}
+		return null;
 	}
 
 }

@@ -252,4 +252,6 @@ public interface IRubyElement extends IAdaptable {
 	// TODO (philippe) predicate shouldn't throw an exception
 	boolean isStructureKnown() throws RubyModelException;
 
+	public String getHandleIdentifier();
+	
 }
