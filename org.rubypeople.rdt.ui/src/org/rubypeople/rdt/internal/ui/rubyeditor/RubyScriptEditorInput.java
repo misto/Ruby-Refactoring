@@ -87,6 +87,6 @@ public class RubyScriptEditorInput implements IRubyScriptEditorInput, IPersistab
 	}
 
 	public void saveState(IMemento memento) {
-		// TODO Auto-generated method stub
+		memento.putString(RubyExternalEditorFactory.MEMENTO_ABSOLUTE_PATH_KEY, fScript.getFile().getAbsolutePath()); //$NON-NLS-1$
 	}
 }
