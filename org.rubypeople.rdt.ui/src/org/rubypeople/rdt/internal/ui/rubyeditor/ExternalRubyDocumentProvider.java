@@ -65,8 +65,7 @@ public class ExternalRubyDocumentProvider extends AbstractDocumentProvider {
 		IDocument document,
 		boolean overwrite)
 		throws CoreException {
-
-
+		// do nothing
 	}
 
 	protected IRunnableContext getOperationRunner(IProgressMonitor monitor) {

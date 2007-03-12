@@ -53,6 +53,7 @@ import org.rubypeople.rdt.internal.ui.preferences.MockupPreferenceStore;
 import org.rubypeople.rdt.internal.ui.rdocexport.RDocUtility;
 import org.rubypeople.rdt.internal.ui.rubyeditor.DocumentAdapter;
 import org.rubypeople.rdt.internal.ui.rubyeditor.RubyDocumentProvider;
+import org.rubypeople.rdt.internal.ui.rubyeditor.RubyScriptDocumentProvider;
 import org.rubypeople.rdt.internal.ui.rubyeditor.WorkingCopyManager;
 import org.rubypeople.rdt.internal.ui.symbols.BlockingSymbolFinder;
 import org.rubypeople.rdt.internal.ui.text.IRubyColorConstants;
@@ -93,6 +94,7 @@ public class RubyPlugin extends AbstractUIPlugin implements IRubyColorConstants 
     private boolean new060ViewsOpened;
     private ImageDescriptorRegistry fImageDescriptorRegistry;
     private MembersOrderPreferenceCache fMembersOrderPreferenceCache;
+	private RubyScriptDocumentProvider fExternalRubyDocumentProvider;
 
 	public RubyPlugin() {
 		super();
@@ -494,4 +496,10 @@ public class RubyPlugin extends AbstractUIPlugin implements IRubyColorConstants 
         // initialized on startup
         return fMembersOrderPreferenceCache;
     }
+
+	public synchronized RubyScriptDocumentProvider getExternalDocumentProvider() {
+		 if (fExternalRubyDocumentProvider == null)
+			 fExternalRubyDocumentProvider= new RubyScriptDocumentProvider();
+	        return fExternalRubyDocumentProvider;
+	}
 }

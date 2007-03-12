@@ -87,7 +87,6 @@ import org.rubypeople.rdt.internal.ui.text.ContentAssistPreference;
 import org.rubypeople.rdt.internal.ui.text.IRubyPartitions;
 import org.rubypeople.rdt.internal.ui.text.PreferencesAdapter;
 import org.rubypeople.rdt.internal.ui.text.RubyPairMatcher;
-import org.rubypeople.rdt.ui.IWorkingCopyManager;
 import org.rubypeople.rdt.ui.PreferenceConstants;
 import org.rubypeople.rdt.ui.RubyUI;
 import org.rubypeople.rdt.ui.text.RubySourceViewerConfiguration;
@@ -341,15 +340,24 @@ public abstract class RubyAbstractEditor extends TextEditor {
      * @see org.eclipse.ui.editors.text.TextEditor#doSetInput(org.eclipse.ui.IEditorInput)
      */
     protected void doSetInput(IEditorInput input) throws CoreException {
+    	if (input instanceof IRubyScriptEditorInput) {
+    		setDocumentProvider(RubyPlugin.getDefault().getExternalDocumentProvider());
+    	} else {
+    		setDocumentProvider(RubyPlugin.getDefault().getRubyDocumentProvider());
+    	}
         super.doSetInput(input);
         setOutlinePageInput(fOutlinePage, input);
     }
 
     protected void setOutlinePageInput(RubyOutlinePage page, IEditorInput input) {
-        if (page != null) {
-            IWorkingCopyManager manager = RubyPlugin.getDefault().getWorkingCopyManager();
-            page.setInput(manager.getWorkingCopy(input));
-        }
+		if (page == null)
+			return;
+		
+		IRubyElement re= getInputRubyElement();
+		if (re != null && re.exists())
+			page.setInput(re);
+		else
+			page.setInput(null);
     }
     
     protected void handlePreferenceStoreChanged(PropertyChangeEvent event) {
@@ -437,8 +445,6 @@ public abstract class RubyAbstractEditor extends TextEditor {
 		}		
     }
     
-
-
 	/**
 	 * Returns the Ruby element wrapped by this editors input.
 	 *

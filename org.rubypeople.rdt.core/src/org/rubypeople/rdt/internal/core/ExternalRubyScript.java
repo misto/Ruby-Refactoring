@@ -92,15 +92,14 @@ public class ExternalRubyScript extends RubyScript {
 	}
 
 	private char[] findSource() {
-		File file = getFile();
-		byte[] bytes;
+		String source = null;
 		try {
-			bytes = Util.getFileByteContent(file);
-		} catch (IOException e) {
+			source = getSource();			
+		} catch (RubyModelException e) {
 			RubyCore.log(e);
-			return new char[0];
 		}
-		return new String(bytes).toCharArray();
+		if (source == null) return new char[0];
+		return source.toCharArray();
 	}
 	
 	@Override
@@ -112,5 +111,18 @@ public class ExternalRubyScript extends RubyScript {
 	@Override
 	public IPath getPath() {
 		return getParent().getPath().append(getElementName());
+	}
+	
+	@Override
+	public String getSource() throws RubyModelException {
+		File file = getFile();
+		byte[] bytes;
+		try {
+			bytes = Util.getFileByteContent(file);
+		} catch (IOException e) {
+			RubyCore.log(e);
+			return null;
+		}
+		return new String(bytes);
 	}
 }

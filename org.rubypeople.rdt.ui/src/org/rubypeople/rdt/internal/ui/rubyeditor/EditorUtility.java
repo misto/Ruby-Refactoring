@@ -143,7 +143,7 @@ public class EditorUtility {
 						return new FileEditorInput((IFile) resource);
 			}
 			if (element instanceof ExternalRubyScript)
-				return new ExternalRubyFileEditorInput(((ExternalRubyScript) element).getFile());
+				return new RubyScriptEditorInput(((ExternalRubyScript) element));
 			element= element.getParent();
 		}
 
