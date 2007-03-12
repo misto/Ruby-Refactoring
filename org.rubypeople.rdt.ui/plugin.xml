@@ -367,27 +367,6 @@
             class="org.rubypeople.rdt.internal.ui.infoviews.RIView"
             id="org.rubypeople.rdt.ui.views.RIView">
       </view>
-      <view
-            name="Rails API"
-            icon="icons/full/elcl16/help.gif"
-            category="org.rubypeople.rdt.ui.ruby"
-            class="org.rubypeople.rdt.internal.ui.infoviews.RailsAPIView"
-            id="org.rubypeople.rdt.ui.views.RailsAPIView">
-      </view>
-      <view
-            name="Ruby Core API"
-            icon="icons/full/elcl16/help.gif"
-            category="org.rubypeople.rdt.ui.ruby"
-            class="org.rubypeople.rdt.internal.ui.infoviews.RubyCoreAPIView"
-            id="org.rubypeople.rdt.ui.views.RubyCoreAPIView">
-      </view>
-      <view
-            name="Ruby Standard Library API"
-            icon="icons/full/elcl16/help.gif"
-            category="org.rubypeople.rdt.ui.ruby"
-            class="org.rubypeople.rdt.internal.ui.infoviews.RubyStdLibAPIView"
-            id="org.rubypeople.rdt.ui.views.RubyStdLibAPIView">
-      </view>
    </extension>
    <extension point="org.eclipse.ui.editors">
       <editor
