@@ -36,7 +36,8 @@ class SmartTypingConfigurationBlock extends AbstractConfigurationBlock {
 		return new OverlayPreferenceStore.OverlayKey[] {				
 				new OverlayPreferenceStore.OverlayKey(OverlayPreferenceStore.BOOLEAN, PreferenceConstants.EDITOR_CLOSE_STRINGS),
 				new OverlayPreferenceStore.OverlayKey(OverlayPreferenceStore.BOOLEAN, PreferenceConstants.EDITOR_CLOSE_BRACKETS),
-				new OverlayPreferenceStore.OverlayKey(OverlayPreferenceStore.BOOLEAN, PreferenceConstants.EDITOR_CLOSE_BRACES)
+				new OverlayPreferenceStore.OverlayKey(OverlayPreferenceStore.BOOLEAN, PreferenceConstants.EDITOR_CLOSE_BRACES),
+				new OverlayPreferenceStore.OverlayKey(OverlayPreferenceStore.BOOLEAN, PreferenceConstants.EDITOR_END_STATEMENTS)
 		};
 	}	
 
@@ -82,6 +83,9 @@ class SmartTypingConfigurationBlock extends AbstractConfigurationBlock {
 
 		label= PreferencesMessages.RubyEditorPreferencePage_closeBraces; 
 		addCheckBox(composite, label, PreferenceConstants.EDITOR_CLOSE_BRACES, 0);
+
+		label= PreferencesMessages.RubyEditorPreferencePage_endStatements; 
+		addCheckBox(composite, label, PreferenceConstants.EDITOR_END_STATEMENTS, 0);
 	}
 
 }

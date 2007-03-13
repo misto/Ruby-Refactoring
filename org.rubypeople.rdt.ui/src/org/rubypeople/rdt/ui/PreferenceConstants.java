@@ -557,6 +557,15 @@ public class PreferenceConstants {
 	 * @since 2.1
 	 */
 	public final static String EDITOR_CLOSE_BRACES = "closeBraces"; //$NON-NLS-1$
+	
+	/**
+	 * A named preference that controls whether the 'end' should be inserted
+	 * automatically.
+	 * <p>
+	 * Value is of type <code>Boolean</code>.
+	 * </p>
+	 */
+	public final static String EDITOR_END_STATEMENTS = "endStatements"; //$NON-NLS-1$
 
 	/**
 	 * A named preference that controls whether occurrences are marked in the

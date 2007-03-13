@@ -4,6 +4,8 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Iterator;
 import java.util.Stack;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.runtime.CoreException;
@@ -125,6 +127,8 @@ public class RubyEditor extends RubyAbstractEditor {
 	private final static String CLOSE_BRACKETS= PreferenceConstants.EDITOR_CLOSE_BRACKETS;
 	/** Preference key for automatically closing braces */
 	private final static String CLOSE_BRACES= PreferenceConstants.EDITOR_CLOSE_BRACES;
+	/** Preference key for automatically 'end'ing statements */
+	private final static String END_STATEMENTS= PreferenceConstants.EDITOR_END_STATEMENTS;
 	/** Preference key for code formatter tab size */
 	private final static String CODE_FORMATTER_TAB_SIZE= DefaultCodeFormatterConstants.FORMATTER_TAB_SIZE;
 	/** Preference key for inserting spaces rather than tabs */
@@ -174,6 +178,7 @@ public class RubyEditor extends RubyAbstractEditor {
 	private FoldingActionGroup fFoldingGroup;
     
     private BracketInserter fBracketInserter = new BracketInserter();
+    private EndInserter fEndInserter = new EndInserter();
 	private CompositeActionGroup fActionGroups;
 	private CompositeActionGroup fContextMenuGroup;
 
@@ -307,10 +312,13 @@ public class RubyEditor extends RubyAbstractEditor {
     		boolean closeBrackets= preferenceStore.getBoolean(CLOSE_BRACKETS);
     		boolean closeBraces= preferenceStore.getBoolean(CLOSE_BRACES);
     		boolean closeStrings= preferenceStore.getBoolean(CLOSE_STRINGS);
+    		boolean endStatements= preferenceStore.getBoolean(END_STATEMENTS);
     		fBracketInserter.setCloseBracketsEnabled(closeBrackets);
     		fBracketInserter.setCloseBracesEnabled(closeBraces);
     		fBracketInserter.setCloseStringsEnabled(closeStrings);
-            ((ITextViewerExtension) sourceViewer).prependVerifyKeyListener(fBracketInserter);
+    		fEndInserter.setEndStatementsEnabled(endStatements);
+    		((ITextViewerExtension) sourceViewer).prependVerifyKeyListener(fBracketInserter);
+    		((ITextViewerExtension) sourceViewer).prependVerifyKeyListener(fEndInserter);
         }
 
     }
@@ -616,9 +624,10 @@ public class RubyEditor extends RubyAbstractEditor {
      */
     public void dispose() {        
         ISourceViewer sourceViewer= getSourceViewer();
-		if (sourceViewer instanceof ITextViewerExtension)
+		if (sourceViewer instanceof ITextViewerExtension) {
 			((ITextViewerExtension) sourceViewer).removeVerifyKeyListener(fBracketInserter);
-
+			((ITextViewerExtension) sourceViewer).removeVerifyKeyListener(fEndInserter);
+		}
 
         if (fProjectionModelUpdater != null) {
             fProjectionModelUpdater.uninstall();
@@ -759,6 +768,11 @@ public class RubyEditor extends RubyAbstractEditor {
 
 		if (CLOSE_STRINGS.equals(property)) {
 			fBracketInserter.setCloseStringsEnabled(getPreferenceStore().getBoolean(property));
+			return;
+		}      
+
+		if (END_STATEMENTS.equals(property)) {
+			fEndInserter.setEndStatementsEnabled(getPreferenceStore().getBoolean(property));
 			return;
 		}        
 		
@@ -1042,6 +1056,67 @@ public class RubyEditor extends RubyAbstractEditor {
             return fCategory;
         }
 
+    }
+
+    private class EndInserter implements VerifyKeyListener {
+    	
+    	/** Pattern to match lines with statements that can be completed with 'end' */
+    	private final Pattern openBlockPattern = 
+    		Pattern.compile("(\\s*)" +       // Capture the space before the statement, we need it to indent 'end'
+        		"((def|class|module)\\s.*" + // Either we look for one of these statements
+        		"|.*[\\S].*do[\\w|\\s]*)"  + // or for an iterator, which needs at least one none-space character and 'do' with optional arguments.
+        		"[^(end)]");                 // And it should not contain end already.
+
+		private boolean endStatements;
+
+		public void verifyKey(VerifyEvent event) {
+            if (!event.doit || !endStatements) return;
+            
+            switch (event.character) {
+            case '\n':
+            case '\r':
+                break;
+            default:
+                return;
+            }
+            
+            final IDocument document = getSourceViewer().getDocument();
+            final int offset = getSourceViewer().getSelectedRange().x;
+            final int length = getSourceViewer().getSelectedRange().y;
+			try {
+				IRegion startLine = document.getLineInformationOfOffset(offset);
+	        	String lineContent = document.get(startLine.getOffset(), startLine.getLength());
+	        	Matcher matched = openBlockPattern.matcher(lineContent);
+	        	if(matched.matches()) {
+	        		String baseIndentation = matched.group(1); // 1 marks the spaces in front of the statement
+	        		String bodyIndentation = addOneIndentationLevel(baseIndentation);
+	        
+	        		String lineDelimiter = Platform.getPreferencesService().getString(Platform.PI_RUNTIME, Platform.PREF_LINE_SEPARATOR, null, null);
+	        		
+	        		String body = event.character + bodyIndentation + lineDelimiter + baseIndentation + "end";
+					document.replace(offset, length, body);
+					getSourceViewer().setSelectedRange(offset + bodyIndentation.length() + 1 /*for the newline char*/, 0);
+	        		event.doit = false;
+	          	}
+			} catch (BadLocationException e) {
+                RubyPlugin.log(e);
+			}
+		}
+		
+		private String addOneIndentationLevel(String indentation) {
+			if(RubyCore.getOption(DefaultCodeFormatterConstants.FORMATTER_TAB_CHAR).equals(RubyCore.SPACE)) {
+				for(int i = 0; i < Integer.parseInt(RubyCore.getOption(DefaultCodeFormatterConstants.FORMATTER_TAB_SIZE)); i++) {
+					indentation += ' ';
+				}
+			} else {
+				indentation += '\t';
+			}
+			return indentation;
+		}
+
+		public void setEndStatementsEnabled(boolean endStatements) {
+			this.endStatements = endStatements;
+		}
     }
 
     private class BracketInserter implements VerifyKeyListener, ILinkedModeListener {
