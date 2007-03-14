@@ -8,16 +8,14 @@
       <documentation>
          This extension point allows to add a Quick Fix processor to offer new Quick Fixes on Ruby problems.
 &lt;p&gt;
-Since 3.2 an extension can specify which problem marker types it can handle. It will only get problems of these types to process.
-If no handled marker type are specified, the processor will only get problems of types org.rubypeople.rdt.core.problem, org.rubypeople.rdt.core.buildpath_problem and org.rubypeople.rdt.core.task (compatible to the behaviour prior to 3.2).
+An extension can specify which problem marker types it can handle. It will only get problems of these types to process.
+If no handled marker type are specified, the processor will only get problems of types org.rubypeople.rdt.core.problem, org.rubypeople.rdt.core.buildpath_problem and org.rubypeople.rdt.core.task.
 &lt;/p&gt;
 &lt;p&gt;
 This extension point supports the &lt;code&gt;enablement&lt;/code&gt; tag. Properties to test on are:
 &lt;dl&gt;
-&lt;li&gt;compilationUnit: type IRubyScript; the compilation unit the quick assist is applied on&lt;/li&gt;
-
+&lt;li&gt;rubyScript: type IRubyScript; the compilation unit the quick assist is applied on&lt;/li&gt;
 &lt;li&gt;projectNatures: type Collection; all project natures of the current project&lt;/li&gt;
-&lt;li&gt;sourceLevel: type String; the source compliance of the current project&lt;/li&gt;
 &lt;/dl&gt;
 &lt;/p&gt;
       </documentation>
