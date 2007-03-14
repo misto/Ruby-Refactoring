@@ -21,8 +21,8 @@ import org.rubypeople.rdt.internal.ui.text.RubyColorManager;
 import org.rubypeople.rdt.internal.ui.text.RubyCommentScanner;
 import org.rubypeople.rdt.internal.ui.text.RubyPartitionScanner;
 import org.rubypeople.rdt.internal.ui.text.ruby.AbstractRubyScanner;
-import org.rubypeople.rdt.internal.ui.text.ruby.RubyCodeScanner;
-import org.rubypeople.rdt.internal.ui.text.ruby.SingleTokenRubyCodeScanner;
+import org.rubypeople.rdt.internal.ui.text.ruby.AbstractRubyTokenScanner;
+import org.rubypeople.rdt.internal.ui.text.ruby.RubyTokenScanner;
 
 public class RubyTextTools {
 
@@ -45,15 +45,12 @@ public class RubyTextTools {
     protected static String[] keywords;
     protected RubyColorManager fColorManager;
     protected RubyPartitionScanner partitionScanner;
-    protected AbstractRubyScanner fCodeScanner;
-    protected AbstractRubyScanner fMultilineCommentScanner, fSinglelineCommentScanner,
-            stringScanner;
+    protected AbstractRubyTokenScanner fCodeScanner;
+    protected AbstractRubyScanner fMultilineCommentScanner, fSinglelineCommentScanner;
     private IPreferenceStore fPreferenceStore;
     private Preferences fCorePreferenceStore;
     /** The preference change listener */
     private PreferenceListener fPreferenceListener = new PreferenceListener();
-    private SingleTokenRubyCodeScanner fRegexpScanner;
-    private SingleTokenRubyCodeScanner fCommandScanner;
 
     /**
      * Creates a new Ruby text tools collection.
@@ -108,17 +105,11 @@ public class RubyTextTools {
         fColorManager = new RubyColorManager(autoDisposeOnDisplayDispose);
         partitionScanner = new RubyPartitionScanner();
 
-        fCodeScanner = new RubyCodeScanner(fColorManager, store);
+        fCodeScanner = new RubyTokenScanner(fColorManager, store);
         fMultilineCommentScanner = new RubyCommentScanner(fColorManager, store, coreStore,
                 IRubyColorConstants.RUBY_MULTI_LINE_COMMENT);
         fSinglelineCommentScanner = new RubyCommentScanner(fColorManager, store, coreStore,
                 IRubyColorConstants.RUBY_SINGLE_LINE_COMMENT);
-        stringScanner = new SingleTokenRubyCodeScanner(fColorManager, store,
-                IRubyColorConstants.RUBY_STRING);
-        fRegexpScanner = new SingleTokenRubyCodeScanner(fColorManager, store,
-                IRubyColorConstants.RUBY_REGEXP);
-        fCommandScanner = new SingleTokenRubyCodeScanner(fColorManager, store,
-                IRubyColorConstants.RUBY_COMMAND);
 
         fPreferenceStore = store;
         fPreferenceStore.addPropertyChangeListener(fPreferenceListener);
@@ -142,10 +133,7 @@ public class RubyTextTools {
         if (fMultilineCommentScanner.affectsBehavior(event))
             fMultilineCommentScanner.adaptToPreferenceChange(event);
         if (fSinglelineCommentScanner.affectsBehavior(event))
-            fSinglelineCommentScanner.adaptToPreferenceChange(event);
-        if (stringScanner.affectsBehavior(event)) stringScanner.adaptToPreferenceChange(event);
-        if (fRegexpScanner.affectsBehavior(event)) fRegexpScanner.adaptToPreferenceChange(event);
-        if (fCommandScanner.affectsBehavior(event)) fCommandScanner.adaptToPreferenceChange(event);
+            fSinglelineCommentScanner.adaptToPreferenceChange(event);        
     }
 
     public IDocumentPartitioner createDocumentPartitioner() {
@@ -161,7 +149,7 @@ public class RubyTextTools {
      * @deprecated As of 0.8.0, replaced by
      *             {@link RubySourceViewerConfiguration#getCodeScanner()}
      */
-    public AbstractRubyScanner getCodeScanner() {
+    public AbstractRubyTokenScanner getCodeScanner() {
         return fCodeScanner;
     }
 
@@ -179,14 +167,6 @@ public class RubyTextTools {
      */
     public ITokenScanner getSinglelineCommentScanner() {
         return fSinglelineCommentScanner;
-    }
-
-    /**
-     * @deprecated As of 0.8.0, replaced by
-     *             {@link RubySourceViewerConfiguration#getStringScanner()}
-     */
-    public ITokenScanner getStringScanner() {
-        return stringScanner;
     }
 
     public IPreferenceStore getPreferenceStore() {
@@ -212,9 +192,7 @@ public class RubyTextTools {
     public boolean affectsTextPresentation(PropertyChangeEvent event) {
         return fCodeScanner.affectsBehavior(event)
                 || fMultilineCommentScanner.affectsBehavior(event)
-                || fSinglelineCommentScanner.affectsBehavior(event)
-                || stringScanner.affectsBehavior(event) || fRegexpScanner.affectsBehavior(event)
-                || fCommandScanner.affectsBehavior(event);
+                || fSinglelineCommentScanner.affectsBehavior(event);
     }
 
     /**
@@ -246,9 +224,6 @@ public class RubyTextTools {
         fCodeScanner = null;
         fMultilineCommentScanner = null;
         fSinglelineCommentScanner = null;
-        stringScanner = null;
-        fRegexpScanner = null;
-        fCommandScanner = null;
         // fJavaDocScanner= null;
         partitionScanner = null;
 
@@ -268,22 +243,6 @@ public class RubyTextTools {
 
             fPreferenceListener = null;
         }
-    }
-
-    /**
-     * @deprecated As of 0.8.0, replaced by
-     *             {@link RubySourceViewerConfiguration#getRegexpScanner()}
-     */
-    public ITokenScanner getRegexpScanner() {
-        return fRegexpScanner;
-    }
-
-    /**
-     * @deprecated As of 0.8.0, replaced by
-     *             {@link RubySourceViewerConfiguration#getCommandScanner()}
-     */
-    public ITokenScanner getCommandScanner() {
-        return fCommandScanner;
     }
 
     /**

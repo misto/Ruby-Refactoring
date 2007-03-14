@@ -4,6 +4,7 @@ public interface IRubyColorConstants {
 	public static final String RUBY_COLOR_PREFIX = "color_ruby_";
 	public static final String RUBY_DEFAULT = RUBY_COLOR_PREFIX + "default";
 	public static final String RUBY_KEYWORD = RUBY_COLOR_PREFIX + "keyword";
+	public static final String RUBY_ERROR = RUBY_COLOR_PREFIX + "error";
 	public static final String RUBY_STRING = RUBY_COLOR_PREFIX + "string";
 	public static final String RUBY_REGEXP = RUBY_COLOR_PREFIX + "regexp";
 	public static final String RUBY_COMMAND = RUBY_COLOR_PREFIX + "command";

@@ -286,7 +286,11 @@ public class RubyPlugin extends AbstractUIPlugin implements IRubyColorConstants 
 		store.setDefault(RUBY_DEFAULT + PreferenceConstants.EDITOR_ITALIC_SUFFIX, false);
 		PreferenceConverter.setDefault(store, RUBY_KEYWORD, new RGB(164, 53, 122));
 		store.setDefault(RUBY_KEYWORD + PreferenceConstants.EDITOR_BOLD_SUFFIX, true);
-		store.setDefault(RUBY_KEYWORD + PreferenceConstants.EDITOR_ITALIC_SUFFIX, false);
+		store.setDefault(RUBY_KEYWORD + PreferenceConstants.EDITOR_ITALIC_SUFFIX, false);		
+		PreferenceConverter.setDefault(store, RUBY_ERROR, new RGB(255, 255, 255));
+		store.setDefault(RUBY_ERROR + PreferenceConstants.EDITOR_BOLD_SUFFIX, true);
+		store.setDefault(RUBY_ERROR + PreferenceConstants.EDITOR_ITALIC_SUFFIX, false);
+		PreferenceConverter.setDefault(store, RUBY_ERROR + PreferenceConstants.EDITOR_BG_SUFFIX, new RGB(255, 0, 0));
 		PreferenceConverter.setDefault(store, RUBY_STRING, new RGB(42, 0, 255));
 		store.setDefault(RUBY_STRING + PreferenceConstants.EDITOR_BOLD_SUFFIX, false);
 		store.setDefault(RUBY_STRING + PreferenceConstants.EDITOR_ITALIC_SUFFIX, false);

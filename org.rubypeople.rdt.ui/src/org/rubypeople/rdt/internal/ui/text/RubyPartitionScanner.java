@@ -10,11 +10,7 @@ import org.eclipse.jface.text.rules.IPartitionTokenScanner;
 import org.eclipse.jface.text.rules.IPredicateRule;
 import org.eclipse.jface.text.rules.IRule;
 import org.eclipse.jface.text.rules.IToken;
-import org.eclipse.jface.text.rules.IWordDetector;
-import org.eclipse.jface.text.rules.PatternRule;
-import org.eclipse.jface.text.rules.SingleLineRule;
 import org.eclipse.jface.text.rules.Token;
-import org.eclipse.jface.text.rules.WordPatternRule;
 
 public class RubyPartitionScanner extends BufferedRuleBasedScanner implements
 		IPartitionTokenScanner {
@@ -25,16 +21,11 @@ public class RubyPartitionScanner extends BufferedRuleBasedScanner implements
 	/** The offset of the partition inside which to resume. */
 	protected int fPartitionOffset;
 
-	public final static String RUBY_STRING = IRubyPartitions.RUBY_STRING;
 	public final static String RUBY_MULTI_LINE_COMMENT = IRubyPartitions.RUBY_MULTI_LINE_COMMENT;
-	public static final String RUBY_SINGLE_LINE_COMMENT = IRubyPartitions.RUBY_SINGLE_LINE_COMMENT;
-	public static final String RUBY_REGULAR_EXPRESSION = IRubyPartitions.RUBY_REGEX;
-	public static final String RUBY_COMMAND = IRubyPartitions.RUBY_COMMAND;
-	public static final String HERE_DOC = "partition_scanner_here_doc";
 
-	public static final String[] LEGAL_CONTENT_TYPES = { RUBY_STRING,
-			RUBY_MULTI_LINE_COMMENT, RUBY_SINGLE_LINE_COMMENT,
-			RUBY_REGULAR_EXPRESSION, RUBY_COMMAND };
+	public static final String[] LEGAL_CONTENT_TYPES = {
+			RUBY_MULTI_LINE_COMMENT
+			};
 
 	public RubyPartitionScanner() {
 		super();
@@ -42,79 +33,10 @@ public class RubyPartitionScanner extends BufferedRuleBasedScanner implements
 	}
 
 	protected void initialize() {
-		IToken string = new Token(RUBY_STRING);
 		IToken multiLineComment = new Token(RUBY_MULTI_LINE_COMMENT);
-		IToken singleLineComment = new Token(RUBY_SINGLE_LINE_COMMENT);
-		IToken regexp = new Token(RUBY_REGULAR_EXPRESSION);
-		IToken command = new Token(RUBY_COMMAND);
-		IToken hereDoc = new Token(RUBY_STRING);
 
 		List rules = new ArrayList();
-
-		// TODO Fix this to be able to recognize variable substitution inside
-		// strings (and therefore have quotes inside them which don't end the
-		// partition)
-
-		// Strings
-		rules.add(new PatternRule("\"", "\"", string, '\\', false, false));
-		rules.add(new PatternRule("'", "'", string, '\\', false, false));
-
-		// Regular expressions
-		// TODO Work with options: 's', 'u', 'e', 'n', 'x', 'm', 'o', 'i'
-		rules.add(new SingleLineRule("/", "/", regexp, '\\'));
-
-		// Commands
-		rules.add(new SingleLineRule("`", "`", command, '\\'));
-
-		// Catch all the wacky Percent Syntax (Strings/commands/regexps)
-		rules.add(new PercentSyntaxRule());
-
-		// Single line comments
-		// ?# evaluates to the ascii value of #
-		rules.add(new WordPatternRule(new NumberSignDetector(), "?", "#",
-				Token.UNDEFINED));
-		// ugly hacks to make ?" and ?' recognized as characters
-		rules.add(new WordPatternRule(new IWordDetector() {
-		
-			public boolean isWordPart(char c) {
-				return c == '"';
-			}
-		
-			public boolean isWordStart(char c) {
-				return c == '?';
-			}
-		
-		}, "?", "\"", Token.UNDEFINED));
-		rules.add(new WordPatternRule(new IWordDetector() {
-			
-			public boolean isWordPart(char c) {
-				return c == '\'';
-			}
-		
-			public boolean isWordStart(char c) {
-				return c == '?';
-			}
-		
-		}, "?", "'", Token.UNDEFINED));
-		rules.add(new WordPatternRule(new IWordDetector() {
-			
-			public boolean isWordPart(char c) {
-				return c == '/';
-			}
-		
-			public boolean isWordStart(char c) {
-				return c == '?';
-			}
-		
-		}, "?", "/", Token.UNDEFINED));
-		
-		rules.add(new EndOfLineRule("#", singleLineComment));
 		rules.add(new DocumentationCommentRule(multiLineComment));
-		rules.add(new HereDocPatternRule(hereDoc));
-
-		// FIXME Create Hyrbid of RuleBasedPartitionScanner which allows IRule
-		// or IPredicateRule and will only evaluate IPredicateRules if success
-		// token matches content type
 		IRule[] result = new IRule[rules.size()];
 		rules.toArray(result);
 		setRules(result);
