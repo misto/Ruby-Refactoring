@@ -7,6 +7,7 @@
    <extension-point id="foldingStructureProviders" name="%foldingStructureProviders" schema="schema/foldingStructureProviders.exsd"/>
    <extension-point id="editorPopupExtender" name="%editorPopupExtender" schema="schema/org.rubypeople.rdt.ui.editorPopupExtender.exsd"/>
    <extension-point id="rubyTemplateProvider" name="Ruby template provider" schema="schema/rubyTemplateProvider.exsd"/>
+   <extension-point id="quickFixProcessors" name="%quickFixProcessorExtensionPoint" schema="schema/quickFixProcessors.exsd"/>  
      
    <extension
          point="org.eclipse.ui.preferencePages">
