@@ -62,7 +62,7 @@ public class OffsetNodeLocator extends NodeLocator {
 		{
 			ArgsNode argsNode = (ArgsNode)node;
 			if ( argsNode.getArgsCount() > 0 ) {
-				for (Iterator iter = argsNode.getArgs().iterator(); iter.hasNext();) {
+				for (Iterator iter = argsNode.getArgs().childNodes().iterator(); iter.hasNext();) {
 					ArgumentNode argNode = (ArgumentNode) iter.next();
 					if ( nodeDoesSpanOffset(argNode, offset) ) {
 //						System.out.println("Refining " + node.getClass().getSimpleName() + "["+node.getPosition().getStartOffset() + ".." + node.getPosition().getEndOffset() + "] to " + argNode.getClass().getSimpleName() + "["+argNode.getPosition().getStartOffset() + ".." + argNode.getPosition().getEndOffset() + "]");

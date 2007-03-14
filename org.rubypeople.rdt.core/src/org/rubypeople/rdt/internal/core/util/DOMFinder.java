@@ -138,7 +138,7 @@ public class DOMFinder implements NodeVisitor {
 	public Instruction visitArgsNode(ArgsNode iVisited) {
 		visitNode(iVisited.getBlockArgNode());
 		if (iVisited.getOptArgs() != null) {
-			visitIter(iVisited.getOptArgs().iterator());
+			visitIter(iVisited.getOptArgs().childNodes().iterator());
 		}
 		return null;
 	}
@@ -151,7 +151,7 @@ public class DOMFinder implements NodeVisitor {
 	}
 
 	public Instruction visitArrayNode(ArrayNode iVisited) {
-		visitIter(iVisited.iterator());
+		visitIter(iVisited.childNodes().iterator());
 		return null;
 	}
 
@@ -173,7 +173,7 @@ public class DOMFinder implements NodeVisitor {
 	}
 
 	public Instruction visitBlockNode(BlockNode iVisited) {
-		visitIter(iVisited.iterator());
+		visitIter(iVisited.childNodes().iterator());
 		return null;
 	}
 

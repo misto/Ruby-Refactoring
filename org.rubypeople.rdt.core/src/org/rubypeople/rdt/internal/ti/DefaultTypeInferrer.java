@@ -336,7 +336,7 @@ public class DefaultTypeInferrer implements ITypeInferrer {
 		int argNumber = 0;
 		ListNode args = argsNode.getArgs();
 		if (args == null) return -1; // no args. Maybe we should check arity instead?
-		for (Iterator iter = args.iterator(); iter.hasNext();) {
+		for (Iterator iter = args.childNodes().iterator(); iter.hasNext();) {
 			ArgumentNode arg = (ArgumentNode) iter.next();
 			if (arg.getName().equals(argName)) {
 				break;

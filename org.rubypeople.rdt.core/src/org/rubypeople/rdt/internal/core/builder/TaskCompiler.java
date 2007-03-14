@@ -47,7 +47,5 @@ public final class TaskCompiler implements SingleFileCompiler {
         } finally {
             IoUtils.closeQuietly(contents);
         }
-        
     }
-
 }

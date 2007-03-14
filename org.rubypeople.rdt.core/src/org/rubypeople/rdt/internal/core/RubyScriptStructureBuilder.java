@@ -239,7 +239,7 @@ public class RubyScriptStructureBuilder implements NodeVisitor {
 		handleNode(iVisited);
 		visitNode(iVisited.getBlockArgNode());
 		if (iVisited.getOptArgs() != null) {
-			visitIter(iVisited.getOptArgs().iterator());
+			visitIter(iVisited.getOptArgs().childNodes().iterator());
 		}
 		return null;
 	}
@@ -263,7 +263,7 @@ public class RubyScriptStructureBuilder implements NodeVisitor {
 	 */
 	public Instruction visitArrayNode(ArrayNode iVisited) {
 		handleNode(iVisited);
-		visitIter(iVisited.iterator());
+		visitIter(iVisited.childNodes().iterator());
 		return null;
 	}
 
@@ -325,7 +325,7 @@ public class RubyScriptStructureBuilder implements NodeVisitor {
 	 */
 	public Instruction visitBlockNode(BlockNode iVisited) {
 		handleNode(iVisited);
-		visitIter(iVisited.iterator());
+		visitIter(iVisited.childNodes().iterator());
 		return null;
 	}
 
@@ -675,7 +675,7 @@ public class RubyScriptStructureBuilder implements NodeVisitor {
 	 */
 	public Instruction visitDRegxNode(DRegexpNode iVisited) {
 		handleNode(iVisited);
-		visitIter(iVisited.iterator());
+		visitIter(iVisited.childNodes().iterator());
 		return null;
 	}
 
@@ -686,7 +686,7 @@ public class RubyScriptStructureBuilder implements NodeVisitor {
 	 */
 	public Instruction visitDStrNode(DStrNode iVisited) {
 		handleNode(iVisited);
-		visitIter(iVisited.iterator());
+		visitIter(iVisited.childNodes().iterator());
 		return null;
 	}
 
@@ -697,7 +697,7 @@ public class RubyScriptStructureBuilder implements NodeVisitor {
 	 */
 	public Instruction visitDSymbolNode(DSymbolNode iVisited) {
 		handleNode(iVisited);
-		visitIter(iVisited.iterator());
+		visitIter(iVisited.childNodes().iterator());
 		return null;
 	}
 
@@ -720,7 +720,7 @@ public class RubyScriptStructureBuilder implements NodeVisitor {
 	 */
 	public Instruction visitDXStrNode(DXStrNode iVisited) {
 		handleNode(iVisited);
-		visitIter(iVisited.iterator());
+		visitIter(iVisited.childNodes().iterator());
 		return null;
 	}
 
@@ -966,7 +966,7 @@ public class RubyScriptStructureBuilder implements NodeVisitor {
 		}
 		else if (argsNode instanceof ArrayNode) {
 			ArrayNode arrayNode = (ArrayNode) iVisited.getArgsNode();
-			iter = arrayNode.iterator();
+			iter = arrayNode.childNodes().iterator();
 		}
 		for (; iter.hasNext();) {
 			Node mixinNameNode = (Node) iter.next();
@@ -974,7 +974,7 @@ public class RubyScriptStructureBuilder implements NodeVisitor {
 				mixins.add( ((StrNode)mixinNameNode).getValue().toString() );
 			}
 			if ( mixinNameNode instanceof DStrNode ) {
-				Node next = (Node)((DStrNode)mixinNameNode).iterator().next();
+				Node next = (Node)((DStrNode)mixinNameNode).childNodes().iterator().next();
 				if ( next instanceof StrNode ) {
 					mixins.add( ((StrNode)next).getValue().toString() );
 				}
@@ -1011,10 +1011,10 @@ public class RubyScriptStructureBuilder implements NodeVisitor {
 	 * @return
 	 */
 	private String getString(ArrayNode node) {
-		Object tmp = node.iterator().next();
+		Object tmp = node.childNodes().iterator().next();
 		if (tmp instanceof DStrNode) {
 			DStrNode dstrNode = (DStrNode) tmp;
-			tmp = dstrNode.iterator().next();
+			tmp = dstrNode.childNodes().iterator().next();
 		}
 		if (tmp instanceof StrNode) {
 			StrNode strNode = (StrNode) tmp;

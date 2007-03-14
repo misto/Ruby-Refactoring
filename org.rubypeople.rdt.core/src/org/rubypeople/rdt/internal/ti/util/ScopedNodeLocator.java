@@ -69,7 +69,7 @@ public class ScopedNodeLocator extends NodeLocator {
 	public Instruction visitArgsNode(ArgsNode iVisited) {
 		if ( iVisited.getArgsCount() > 0 )
 		{
-			for (Iterator iter = iVisited.getArgs().iterator(); iter.hasNext();) {
+			for (Iterator iter = iVisited.getArgs().childNodes().iterator(); iter.hasNext();) {
 				ArgumentNode argNode = (ArgumentNode) iter.next();
 				if ( acceptor.doesAccept(argNode))
 				{

@@ -69,7 +69,7 @@ public class AttributeLocator extends NodeLocator {
 				Node argsNode = fCallNode.getArgsNode();
 				if ( argsNode instanceof ArrayNode ) {
 					ArrayNode arrayNode = (ArrayNode)argsNode;
-					for (Iterator iter = arrayNode.iterator(); iter.hasNext();) {
+					for (Iterator iter = arrayNode.childNodes().iterator(); iter.hasNext();) {
 						Node argNode = (Node) iter.next();
 
 						// The nodes are found - record them!

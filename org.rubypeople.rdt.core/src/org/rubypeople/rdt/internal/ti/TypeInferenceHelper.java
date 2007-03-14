@@ -42,7 +42,7 @@ public class TypeInferenceHelper {
 	public int getArgIndex(ListNode listNode, String argName)
 	{
 		int argNumber = 0;
-		for ( Iterator iter = listNode.iterator(); iter.hasNext();) {
+		for ( Iterator iter = listNode.childNodes().iterator(); iter.hasNext();) {
 			if (((ArgumentNode)iter.next()).getName().equals(argName)) { return argNumber; }
 			argNumber++;
 		}

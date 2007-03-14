@@ -73,7 +73,7 @@ public abstract class ASTUtil {
 	private static List<String> getArguments(ListNode argList) {
 		if (argList == null) return new ArrayList<String>();
 		List<String> arguments = new ArrayList<String>();
-		for (Iterator iter = argList.iterator(); iter.hasNext();) {
+		for (Iterator iter = argList.childNodes().iterator(); iter.hasNext();) {
 			Object node = iter.next();
 			if (node instanceof ArgumentNode) {
 				arguments.add(((ArgumentNode) node).getName());

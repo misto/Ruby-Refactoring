@@ -161,7 +161,7 @@ public class InOrderVisitor extends AbstractVisitor {
 		handleNode(iVisited);
 		acceptNode(iVisited.getBlockArgNode());
 		if (iVisited.getOptArgs() != null) {
-			visitIter(iVisited.getOptArgs().iterator());
+			visitIter(iVisited.getOptArgs().childNodes().iterator());
 		}
 		return null;
 	}
@@ -185,7 +185,7 @@ public class InOrderVisitor extends AbstractVisitor {
 	 */
 	public Instruction visitArrayNode(ArrayNode iVisited) {
 		handleNode(iVisited);
-		visitIter(iVisited.iterator());
+		visitIter(iVisited.childNodes().iterator());
 		return null;
 	}
 
@@ -247,7 +247,7 @@ public class InOrderVisitor extends AbstractVisitor {
 	 */
 	public Instruction visitBlockNode(BlockNode iVisited) {
 		handleNode(iVisited);
-		visitIter(iVisited.iterator());
+		visitIter(iVisited.childNodes().iterator());
 		return null;
 	}
 
@@ -403,7 +403,7 @@ public class InOrderVisitor extends AbstractVisitor {
 	 */
 	public Instruction visitDRegxNode(DRegexpNode iVisited) {
 		handleNode(iVisited);
-		visitIter(iVisited.iterator());
+		visitIter(iVisited.childNodes().iterator());
 		return null;
 	}
 
@@ -414,7 +414,7 @@ public class InOrderVisitor extends AbstractVisitor {
 	 */
 	public Instruction visitDStrNode(DStrNode iVisited) {
 		handleNode(iVisited);
-		visitIter(iVisited.iterator());
+		visitIter(iVisited.childNodes().iterator());
 		return null;
 	}
 
@@ -425,7 +425,7 @@ public class InOrderVisitor extends AbstractVisitor {
 	 */
 	public Instruction visitDSymbolNode(DSymbolNode iVisited) {
 		handleNode(iVisited);
-		visitIter(iVisited.iterator());
+		visitIter(iVisited.childNodes().iterator());
 		return null;
 	}
 
@@ -446,7 +446,7 @@ public class InOrderVisitor extends AbstractVisitor {
 	 */
 	public Instruction visitDXStrNode(DXStrNode iVisited) {
 		handleNode(iVisited);
-		visitIter(iVisited.iterator());
+		visitIter(iVisited.childNodes().iterator());
 		return null;
 	}
 
