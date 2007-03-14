@@ -44,6 +44,16 @@ public class TC_RubyTokenScanner extends TestCase {
 		assertToken(IRubyColorConstants.RUBY_KEYWORD, 12, 3);
 	}
 	
+	public void testMultipleCommentsInARow() {
+		String code = "# comment one\n#comment two\nclass Chris\nend\n";
+		setUpScanner(code);
+		assertToken(IRubyColorConstants.RUBY_SINGLE_LINE_COMMENT, 0, 27);
+		assertToken(IRubyColorConstants.RUBY_KEYWORD, 27, 5);
+		assertToken(IRubyColorConstants.RUBY_DEFAULT, 32, 6);
+		assertToken(IRubyColorConstants.RUBY_DEFAULT, 38, 1);
+		assertToken(IRubyColorConstants.RUBY_KEYWORD, 39, 3);		
+	}
+	
 	public void testCommentAfterEnd() {
 		String code = "class Chris\nend # comment\n";
 		setUpScanner(code);
@@ -54,7 +64,7 @@ public class TC_RubyTokenScanner extends TestCase {
 		assertToken(IRubyColorConstants.RUBY_SINGLE_LINE_COMMENT, 15, 10);
 	}
 	
-	public void testCommentAfterEndYeah() {
+	public void testCommentAfterEndWhileEditing() {
 		String code = "=begin\r\n" +
 "c\r\n" +
 "=end\r\n" +
