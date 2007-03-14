@@ -153,7 +153,7 @@ public abstract class AbstractRubyTokenScanner implements ITokenScanner {
 		}
 	}
 
-	protected Token getToken(String key) {
+	public Token getToken(String key) {
 		if (fNeedsLazyColorLoading) resolveProxyAttributes();
 		return (Token) fTokenMap.get(key);
 	}

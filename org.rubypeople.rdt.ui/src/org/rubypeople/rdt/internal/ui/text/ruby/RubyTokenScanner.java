@@ -109,8 +109,14 @@ public class RubyTokenScanner extends AbstractRubyTokenScanner {
 			}
 			List comments = result.getCommentNodes();
 			if (comments != null && !comments.isEmpty()) {
-				CommentNode comment = (CommentNode) comments.remove(comments.size() - 1); // Grab last comment
-				tokenLength = comment.getContent().length() + 1;
+				CommentNode comment;
+				while (!comments.isEmpty()) {
+					comment = (CommentNode) comments.remove(0);
+					// Grab comment and add it's length to our running tally
+					tokenLength += comment.getContent().length() + 1;
+				}
+				// FIXME What if we have two lines of comments in a row?
+//				tokenLength = comment.getContent().length() + 1;
 				fSavedToken = returnValue;
 				fSavedOffset = oldOffset + tokenLength;
 				if (!isEOF) fSavedLength = getOffset() - fSavedOffset;
@@ -138,7 +144,7 @@ public class RubyTokenScanner extends AbstractRubyTokenScanner {
 	}
 
 	@Override
-	protected Token getToken(String key) {
+	public Token getToken(String key) {
 		if (isInRegexp)
 			return super.getToken(IRubyColorConstants.RUBY_REGEXP);
 		if (isInString)
@@ -186,6 +192,10 @@ public class RubyTokenScanner extends AbstractRubyTokenScanner {
 		lexer.reset();
 		lexer.setState(LexState.EXPR_BEG);
 		parserSupport.initTopLocalVariables();
+		lastWasComment = false;
+		fSavedLength = -1;
+		fSavedToken = null;
+		fSavedOffset = -1;
 		if (offset == 0) {
 			isInRegexp = false;
 			isInString = false;
