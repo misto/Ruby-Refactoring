@@ -97,4 +97,20 @@ public interface IRubyAnnotation {
 	 */
 	IRubyScript getRubyScript();
 
+	/**
+	 * Returns the problem id or <code>-1</code> if no problem id can be evaluated.
+	 * 
+	 * @return returns the problem id or <code>-1</code>
+	 */
+	int getId();
+
+	/**
+	 * Returns the marker type associated to this problem or <code>null<code> if no marker type
+	 * can be evaluated. 
+	 * 
+	 * @return the type of the marker which would be associated to the problem or
+	 * <code>null<code> if no marker type can be evaluated. 
+	 */
+	String getMarkerType();
+
 }

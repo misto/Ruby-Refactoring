@@ -14,8 +14,8 @@ package org.rubypeople.rdt.internal.ui.rubyeditor;
 import java.util.Iterator;
 
 import org.eclipse.core.resources.IMarker;
-
 import org.eclipse.ui.texteditor.MarkerAnnotation;
+import org.eclipse.ui.texteditor.MarkerUtilities;
 import org.rubypeople.rdt.core.IRubyElement;
 import org.rubypeople.rdt.core.IRubyModelMarker;
 import org.rubypeople.rdt.core.IRubyScript;
@@ -130,5 +130,13 @@ public class RubyMarkerAnnotation extends MarkerAnnotation implements IRubyAnnot
 			return (IRubyScript)element;
 		}
 		return null;
+	}
+
+	public String getMarkerType() {
+		IMarker marker= getMarker();
+		if (marker == null  || !marker.exists())
+			return null;
+		
+		return  MarkerUtilities.getMarkerType(getMarker());
 	}
 }
