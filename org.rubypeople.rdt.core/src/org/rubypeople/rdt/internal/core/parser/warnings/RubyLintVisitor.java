@@ -6,7 +6,7 @@ import org.jruby.evaluator.Instruction;
 import org.jruby.lexer.yacc.ISourcePosition;
 import org.rubypeople.rdt.core.IProblemRequestor;
 import org.rubypeople.rdt.core.RubyCore;
-import org.rubypeople.rdt.core.parser.IProblem;
+import org.rubypeople.rdt.core.compiler.IProblem;
 import org.rubypeople.rdt.internal.core.parser.Error;
 import org.rubypeople.rdt.internal.core.parser.NodeUtil;
 import org.rubypeople.rdt.internal.core.parser.Warning;

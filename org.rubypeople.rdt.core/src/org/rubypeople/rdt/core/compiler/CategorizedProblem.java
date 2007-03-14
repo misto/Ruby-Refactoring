@@ -8,14 +8,13 @@
  * Contributors:
  *     IBM Corporation - initial API and implementation
  *******************************************************************************/
-package org.rubypeople.rdt.internal.compiler;
+package org.rubypeople.rdt.core.compiler;
 
-import org.rubypeople.rdt.core.parser.IProblem;
 import org.rubypeople.rdt.internal.core.util.CharOperation;
 
 
 /**
- * Richer description of a Java problem, as detected by the compiler or some of the underlying
+ * Richer description of a Ruby problem, as detected by the compiler or some of the underlying
  * technology reusing the compiler. With the introduction of <code>CompilationParticipant</code>,
  * the simpler problem interface <code>IProblem</code> did not carry enough information to better
  * separate and categorize Java problems. In order to minimize impact on existing API, Java problems
@@ -53,7 +52,7 @@ import org.rubypeople.rdt.internal.core.util.CharOperation;
 public abstract class CategorizedProblem implements IProblem {
 	
 	/**
-	 * List of standard category IDs used by Java problems, more categories will be added 
+	 * List of standard category IDs used by Ruby problems, more categories will be added 
 	 * in the future.
 	 */
 	public static final int CAT_UNSPECIFIED = 0;
@@ -97,7 +96,7 @@ public abstract class CategorizedProblem implements IProblem {
  * attribute "categoryId" persisting the originating problem category ID as defined by this method).
  * @return id - an integer identifying the category of this problem
  */
-public abstract int getCategoryID();
+//public abstract int getCategoryID(); FIXME Uncomment when we're ready to do categorization...
 
 /**
  * Returns the marker type associated to this problem, if it gets persisted into a marker by the JavaBuilder
@@ -120,7 +119,6 @@ public abstract String getMarkerType();
  * <li>	<code>IMarker#CHAR_END</code>  -&gt; {@link IProblem#getSourceEnd()}</li>
  * <li>	<code>IMarker#LINE_NUMBER</code>  -&gt; {@link IProblem#getSourceLineNumber()}</li>
  * <li>	<code>IJavaModelMarker#ARGUMENTS</code>  -&gt; some <code>String[]</code> used to compute quickfixes </li>
- * <li>	<code>IJavaModelMarker#CATEGORY_ID</code> -&gt; {@link CategorizedProblem#getCategoryID()}</li>
  * </ul>
  * The names must be eligible for marker creation, as defined by <code>IMarker#setAttributes(String[], Object[])</code>, 
  * and there must be as many names as values according to {@link #getExtraMarkerAttributeValues()}.

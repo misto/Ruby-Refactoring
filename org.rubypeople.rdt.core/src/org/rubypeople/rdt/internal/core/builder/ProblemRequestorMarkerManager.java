@@ -6,7 +6,7 @@ import java.util.List;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.CoreException;
 import org.rubypeople.rdt.core.IProblemRequestor;
-import org.rubypeople.rdt.core.parser.IProblem;
+import org.rubypeople.rdt.core.compiler.IProblem;
 import org.rubypeople.rdt.internal.core.parser.TaskTag;
 
 public class ProblemRequestorMarkerManager implements IProblemRequestor {

@@ -3,7 +3,7 @@
  */
 package org.rubypeople.rdt.internal.core.parser;
 
-import org.rubypeople.rdt.core.parser.IProblem;
+import org.rubypeople.rdt.core.compiler.IProblem;
 
 /**
  * @author Chris

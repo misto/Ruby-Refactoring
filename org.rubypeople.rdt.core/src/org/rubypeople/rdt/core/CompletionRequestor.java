@@ -10,7 +10,7 @@
  *******************************************************************************/
 package org.rubypeople.rdt.core;
 
-import org.rubypeople.rdt.core.parser.IProblem;
+import org.rubypeople.rdt.core.compiler.IProblem;
 
 /**
  * Abstract base class for a completion requestor which is passed completion

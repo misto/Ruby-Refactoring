@@ -4,15 +4,21 @@
 package org.rubypeople.rdt.internal.core.parser;
 
 import org.jruby.lexer.yacc.ISourcePosition;
-import org.rubypeople.rdt.core.parser.IProblem;
+import org.rubypeople.rdt.core.compiler.CategorizedProblem;
+import org.rubypeople.rdt.core.compiler.IProblem;
 
 /**
  * @author Chris
  */
-abstract class DefaultProblem implements IProblem {
+abstract class DefaultProblem extends CategorizedProblem {
 
 	private ISourcePosition position;
 	private String message;
+	private int id;
+	
+//	 cannot directly point to IRubyModelMarker constants from within batch compiler
+	private static final String MARKER_TYPE_PROBLEM = "org.rubypeople.rdt.core.problem"; //$NON-NLS-1$
+	private static final String MARKER_TYPE_TASK = "org.rubypeople.rdt.core.task"; //$NON-NLS-1$
 
 	/**
 	 * @param position
@@ -21,6 +27,7 @@ abstract class DefaultProblem implements IProblem {
 	public DefaultProblem(ISourcePosition position, String message) {
 		this.position = position;
 		this.message = message;
+		id = IProblem.Uncategorized;
 	}
 
 	/**
@@ -48,5 +55,14 @@ abstract class DefaultProblem implements IProblem {
 
 	public String toString() {
 		return position.toString() + " => " + message;
+	}
+	
+	public int getID() {
+		return this.id;
+	}
+	
+	@Override
+	public String getMarkerType() {
+		return isTask() ? MARKER_TYPE_TASK : MARKER_TYPE_PROBLEM;
 	}
 }

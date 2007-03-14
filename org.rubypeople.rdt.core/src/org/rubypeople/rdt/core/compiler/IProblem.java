@@ -8,7 +8,7 @@
  * Contributors:
  *     IBM Corporation - initial API and implementation
  ****************************************************************************/
-package org.rubypeople.rdt.core.parser;
+package org.rubypeople.rdt.core.compiler;
 
 /**
  * Description of a Ruby problem, as detected by the compiler or some of the
@@ -32,6 +32,15 @@ package org.rubypeople.rdt.core.parser;
  * @since 2.0
  */
 public interface IProblem {
+	
+	int Uncategorized = 0;
+
+	/**
+	 * Returns the problem id
+	 * 
+	 * @return the problem id
+	 */
+	int getID();
 
 	/**
 	 * Answer a localized, human-readable message string which describes the
