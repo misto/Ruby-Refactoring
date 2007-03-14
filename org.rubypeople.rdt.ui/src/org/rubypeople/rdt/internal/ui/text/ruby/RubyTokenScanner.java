@@ -112,8 +112,9 @@ public class RubyTokenScanner extends AbstractRubyTokenScanner {
 				CommentNode comment = (CommentNode) comments.remove(comments.size() - 1); // Grab last comment
 				tokenLength = comment.getContent().length() + 1;
 				fSavedToken = returnValue;
-				fSavedOffset = comment.getPosition().getEndOffset();
-				fSavedLength = lexerSource.getOffset() - fSavedOffset;			
+				fSavedOffset = oldOffset + tokenLength;
+				if (!isEOF) fSavedLength = getOffset() - fSavedOffset;
+				else fSavedLength = 0;
 				lastWasComment = true;
 				return getToken(IRubyColorConstants.RUBY_SINGLE_LINE_COMMENT);
 			}
