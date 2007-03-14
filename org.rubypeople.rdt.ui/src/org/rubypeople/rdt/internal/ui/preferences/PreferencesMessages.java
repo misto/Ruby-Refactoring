@@ -123,6 +123,7 @@ public final class PreferencesMessages extends NLS {
 	public static String RubyEditorPreferencePage_closeBrackets;
 	public static String RubyEditorPreferencePage_closeBraces;
 	public static String RubyEditorPreferencePage_endStatements;
+	public static String RubyEditorPreferencePage_smartHomeEnd;
 	public static String ProblemSeveritiesPreferencePage_title;
 	public static String ProblemSeveritiesConfigurationBlock_needsbuild_title;
 	public static String ProblemSeveritiesConfigurationBlock_needsfullbuild_message;

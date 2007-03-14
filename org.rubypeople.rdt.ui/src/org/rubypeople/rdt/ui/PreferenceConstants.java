@@ -15,6 +15,7 @@ import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.preference.PreferenceConverter;
 import org.eclipse.swt.graphics.RGB;
+import org.eclipse.ui.texteditor.AbstractTextEditor;
 import org.rubypeople.rdt.core.ILoadpathEntry;
 import org.rubypeople.rdt.core.RubyCore;
 import org.rubypeople.rdt.internal.ui.RubyPlugin;
@@ -567,6 +568,16 @@ public class PreferenceConstants {
 	 */
 	public final static String EDITOR_END_STATEMENTS = "endStatements"; //$NON-NLS-1$
 
+	/**
+	 * A named preference that controls whether the 'smart home-end' feature is
+	 * enabled.
+	 * <p>
+	 * Value is of type <code>Boolean</code>.
+	 * </p>
+	 * @since 2.1
+	 */
+	public final static String EDITOR_SMART_HOME_END= AbstractTextEditor.PREFERENCE_NAVIGATION_SMART_HOME_END;
+	
 	/**
 	 * A named preference that controls whether occurrences are marked in the
 	 * editor.
