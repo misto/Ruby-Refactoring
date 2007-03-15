@@ -116,8 +116,13 @@ public class RubyTokenScanner extends AbstractRubyTokenScanner {
 				}
 				fSavedToken = returnValue;
 				fSavedOffset = oldOffset + tokenLength;
-				if (!isEOF) fSavedLength = getOffset() - fSavedOffset;
-				else fSavedLength = 0;
+				if (!isEOF) {
+					fSavedLength = getOffset() - fSavedOffset;
+				} else {
+					fSavedOffset--;
+					tokenLength -= 2;
+					fSavedLength = 0;
+				}
 				lastWasComment = true;
 				return getToken(IRubyColorConstants.RUBY_SINGLE_LINE_COMMENT);
 			}
