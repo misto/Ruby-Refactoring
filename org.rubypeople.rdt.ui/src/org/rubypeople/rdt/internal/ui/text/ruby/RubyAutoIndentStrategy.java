@@ -133,12 +133,21 @@ public class RubyAutoIndentStrategy extends DefaultIndentLineAutoEditStrategy im
 			RubyPlugin.log(e1);
 		}
 		
+		RubyParser parser = new RubyParser();
 		try {
-			RubyParser parser = new RubyParser();
 			parser.parse(d.get());
 		} catch (SyntaxException e) {
 			String msg = e.getMessage();
-			return msg.contains("expecting") && (msg.contains("kEND") || msg.contains("kTHEN"));
+			if (msg.contains("expecting") && (msg.contains("kEND") || msg.contains("kTHEN")))
+				return true;
+			try {
+				StringBuffer buffer = new StringBuffer(d.get());
+				buffer.insert(offset, "\n" + BLOCK_CLOSER);
+				parser.parse(buffer.toString());
+			} catch (SyntaxException syntaxException) {
+				return false;
+			}
+			return true;
 		}
 		return false;
 	}
