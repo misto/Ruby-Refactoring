@@ -43,6 +43,7 @@ public class RubyTokenScanner extends AbstractRubyTokenScanner {
 	private int oldOffset;
 	private boolean isInRegexp;
 	private boolean isInString;
+	private boolean isInSymbol;
 	private RubyParserResult result;
 	private int origOffset;
 	private int origLength;
@@ -51,7 +52,6 @@ public class RubyTokenScanner extends AbstractRubyTokenScanner {
 	private IToken fSavedToken = null;
 	private int fSavedLength = -1;
 	private int fSavedOffset = -1;
-
 	private boolean lastWasComment;
 
 	public RubyTokenScanner(IColorManager manager, IPreferenceStore store) {
@@ -112,11 +112,8 @@ public class RubyTokenScanner extends AbstractRubyTokenScanner {
 				CommentNode comment;
 				while (!comments.isEmpty()) {
 					comment = (CommentNode) comments.remove(0);
-					// Grab comment and add it's length to our running tally
 					tokenLength += comment.getContent().length() + 1;
 				}
-				// FIXME What if we have two lines of comments in a row?
-//				tokenLength = comment.getContent().length() + 1;
 				fSavedToken = returnValue;
 				fSavedOffset = oldOffset + tokenLength;
 				if (!isEOF) fSavedLength = getOffset() - fSavedOffset;
@@ -145,6 +142,8 @@ public class RubyTokenScanner extends AbstractRubyTokenScanner {
 
 	@Override
 	public Token getToken(String key) {
+		if (isInSymbol)
+			return super.getToken(IRubyColorConstants.RUBY_SYMBOL);
 		if (isInRegexp)
 			return super.getToken(IRubyColorConstants.RUBY_REGEXP);
 		if (isInString)
@@ -153,10 +152,26 @@ public class RubyTokenScanner extends AbstractRubyTokenScanner {
 	}
 
 	private IToken token(int i) {
+		if (isInSymbol) {
+			if ((i == Tokens.tAREF) || (i == Tokens.tASET) || (i == Tokens.tIDENTIFIER) 
+					|| (i == Tokens.tIVAR) || (i == Tokens.tCVAR) || (i == Tokens.tMINUS)
+					|| (i == Tokens.tPLUS) || (i == Tokens.tPIPE) || (i == Tokens.tCARET)
+					|| (i == Tokens.tLT) || (i == Tokens.tGT) || (i == Tokens.tAMPER)
+					|| (i == Tokens.tSTAR2) || (i == Tokens.tDIVIDE) || (i == Tokens.tPERCENT)
+					|| (i == Tokens.tBACK_REF2) || (i == Tokens.tTILDE)) {
+				isInSymbol = false;
+				return getToken(IRubyColorConstants.RUBY_SYMBOL);
+			}
+			if (i == Tokens.tASSOC || i == 44 /* ',' */) {
+				isInSymbol = false;
+				return getToken(IRubyColorConstants.RUBY_DEFAULT);
+			}
+		}
 		if (i >= 257 && i <= 303)
 			return getToken(IRubyColorConstants.RUBY_KEYWORD);
 		switch (i) {
 		case Tokens.tSYMBEG:
+			isInSymbol = true;
 			return getToken(IRubyColorConstants.RUBY_SYMBOL);
 		case Tokens.tGVAR:
 			return getToken(IRubyColorConstants.RUBY_GLOBAL);
@@ -199,6 +214,7 @@ public class RubyTokenScanner extends AbstractRubyTokenScanner {
 		if (offset == 0) {
 			isInRegexp = false;
 			isInString = false;
+			isInSymbol = false;
 		}
 		try {
 			contents = document.get(offset, length);
