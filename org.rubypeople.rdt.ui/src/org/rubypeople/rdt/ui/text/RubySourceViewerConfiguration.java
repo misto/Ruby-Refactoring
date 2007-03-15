@@ -42,7 +42,6 @@ import org.rubypeople.rdt.internal.corext.util.CodeFormatterUtil;
 import org.rubypeople.rdt.internal.ui.RubyPlugin;
 import org.rubypeople.rdt.internal.ui.rubyeditor.IRubyScriptDocumentProvider;
 import org.rubypeople.rdt.internal.ui.rubyeditor.RubyAbstractEditor;
-import org.rubypeople.rdt.internal.ui.rubyeditor.RubyAutoEditStrategy;
 import org.rubypeople.rdt.internal.ui.text.ContentAssistPreference;
 import org.rubypeople.rdt.internal.ui.text.HTMLTextPresenter;
 import org.rubypeople.rdt.internal.ui.text.IRubyColorConstants;
@@ -58,6 +57,7 @@ import org.rubypeople.rdt.internal.ui.text.comment.RubyCommentAutoIndentStrategy
 import org.rubypeople.rdt.internal.ui.text.hyperlinks.RubyHyperLinkDetector;
 import org.rubypeople.rdt.internal.ui.text.ruby.AbstractRubyScanner;
 import org.rubypeople.rdt.internal.ui.text.ruby.AbstractRubyTokenScanner;
+import org.rubypeople.rdt.internal.ui.text.ruby.RubyAutoIndentStrategy;
 import org.rubypeople.rdt.internal.ui.text.ruby.RubyCompletionProcessor;
 import org.rubypeople.rdt.internal.ui.text.ruby.RubyFormattingStrategy;
 import org.rubypeople.rdt.internal.ui.text.ruby.RubyReconcilingStrategy;
@@ -321,26 +321,18 @@ public class RubySourceViewerConfiguration extends
 	}
 
 	public IAutoEditStrategy[] getAutoEditStrategies(
-			ISourceViewer sourceViewer, String contentType) {
-		String partitioning = getConfiguredDocumentPartitioning(sourceViewer);
-		if (IRubyPartitions.RUBY_SINGLE_LINE_COMMENT.equals(contentType)) {
-			return new IAutoEditStrategy[] { new RubyCommentAutoIndentStrategy(
-					partitioning) };
-		} else if (IDocument.DEFAULT_CONTENT_TYPE.equals(contentType)) {
-			IAutoEditStrategy[] strategies = super.getAutoEditStrategies(
-					sourceViewer, contentType);
-			IAutoEditStrategy[] newStrategies = new IAutoEditStrategy[strategies.length + 1];
-			System
-					.arraycopy(strategies, 0, newStrategies, 0,
-							strategies.length);
-			newStrategies[newStrategies.length - 1] = new RubyAutoEditStrategy(
-					partitioning, sourceViewer, fRubyCp);
-			strategies = newStrategies;
-			return strategies;
-		} else {
-			return super.getAutoEditStrategies(sourceViewer, contentType);
-		}
-	}
+            ISourceViewer sourceViewer, String contentType) {
+        String partitioning = getConfiguredDocumentPartitioning(sourceViewer);
+        if (IRubyPartitions.RUBY_SINGLE_LINE_COMMENT.equals(contentType)) {
+            return new IAutoEditStrategy[] { new RubyCommentAutoIndentStrategy(
+                    partitioning) };
+        } else if ( IDocument.DEFAULT_CONTENT_TYPE.equals(contentType)) {
+            return new IAutoEditStrategy[] { new RubyAutoIndentStrategy(partitioning, getProject()) };
+        } else {
+            return super.getAutoEditStrategies (sourceViewer, contentType);
+        }
+    }
+
 
 	/*
 	 * @see SourceViewerConfiguration#getInformationControlCreator(ISourceViewer)
