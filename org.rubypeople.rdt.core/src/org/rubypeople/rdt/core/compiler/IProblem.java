@@ -34,6 +34,31 @@ package org.rubypeople.rdt.core.compiler;
 public interface IProblem {
 	
 	int Uncategorized = 0;
+	
+	/**
+	 * Problem Categories
+	 * The high bits of a problem ID contains information about the category of a problem. 
+	 * For example, (problemID & TypeRelated) != 0, indicates that this problem is type related.
+	 * 
+	 * A problem category can help to implement custom problem filters. Indeed, when numerous problems
+	 * are listed, focusing on import related problems first might be relevant.
+	 * 
+	 * When a problem is tagged as Internal, it means that no change other than a local source code change
+	 * can  fix the corresponding problem. A type related problem could be addressed by changing the type
+	 * involved in it.
+	 */
+	int TypeRelated = 0x01000000;
+	int FieldRelated = 0x02000000;
+	int MethodRelated = 0x04000000;
+	int ConstructorRelated = 0x08000000;
+	int ImportRelated = 0x10000000;
+	int Internal = 0x20000000;
+	int Syntax = 0x40000000;
+	
+	/**
+	 * Mask to use in order to filter out the category portion of the problem ID.
+	 */
+	int IgnoreCategoriesMask = 0xFFFFFF;
 
 	/**
 	 * Returns the problem id
