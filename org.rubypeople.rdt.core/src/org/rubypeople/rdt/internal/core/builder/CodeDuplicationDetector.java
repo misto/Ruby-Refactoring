@@ -9,6 +9,8 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.Path;
 import org.rubypeople.rdt.core.RubyCore;
+import org.rubypeople.rdt.internal.core.parser.RdtPosition;
+import org.rubypeople.rdt.internal.core.parser.Warning;
 import org.rubypeople.rdt.internal.core.pmd.CPD;
 import org.rubypeople.rdt.internal.core.pmd.Match;
 import org.rubypeople.rdt.internal.core.pmd.TokenEntry;
@@ -42,7 +44,8 @@ public class CodeDuplicationDetector implements MultipleFileCompiler {
         	TokenEntry mark = (TokenEntry) occurrences.next();
             // FIXME Make TokenEntry hold an IFile pointer to source file?
             IFile file = RubyCore.getWorkspace().getRoot().getFileForLocation(Path.fromOSString(mark.getTokenSrcID()));
-            markerManager.addWarning(file, message.toString(), mark.getBeginLine(), mark.getStartOffset(), mark.getStartOffset() + match.getSourceCodeSlice().length());
+            Warning warning = new Warning(new RdtPosition(mark.getBeginLine(), mark.getStartOffset(), mark.getStartOffset() + match.getSourceCodeSlice().length()), message.toString());
+            markerManager.addProblem(file, warning);
         }        
 	}
 	

@@ -40,6 +40,7 @@ public class MarkerUtility {
 			map.put(IMarker.LINE_NUMBER, new Integer(pos.getStartLine()));
 			map.put(IMarker.CHAR_START, new Integer(pos.getStartOffset()));
 			map.put(IMarker.CHAR_END, new Integer(pos.getEndOffset()));
+			map.put(IRubyModelMarker.ID, IProblem.Syntax);
 			marker.setAttributes(map);
 		} catch (CoreException e) {
 			RubyCore.log(e);
@@ -81,13 +82,14 @@ public class MarkerUtility {
 			map.put(IMarker.LINE_NUMBER, new Integer(problem.getSourceLineNumber()));
 			map.put(IMarker.CHAR_START, new Integer(problem.getSourceStart()));
 			map.put(IMarker.CHAR_END, new Integer(problem.getSourceEnd()));
+			map.put(IRubyModelMarker.ID, problem.getID());
 			marker.setAttributes(map);
 		} catch (CoreException e) {
 			RubyCore.log(e);
 		}
 	}
 
-	public static void createTasks(IResource underlyingResource, List tasks) throws CoreException {
+	public static void createTasks(IResource underlyingResource, List<TaskTag> tasks) throws CoreException {
 		for (Iterator iter = tasks.iterator(); iter.hasNext();) {
 			createTask(underlyingResource, (TaskTag) iter.next());
 		}		
@@ -112,6 +114,7 @@ public class MarkerUtility {
 			map.put(IMarker.TRANSIENT, new Boolean(false));
 			map.put(IMarker.CHAR_START, new Integer(task.getSourceStart()));
 			map.put(IMarker.CHAR_END, new Integer(task.getSourceEnd()));
+			map.put(IRubyModelMarker.ID, task.getID());
 			marker = resource.createMarker(IRubyModelMarker.TASK_MARKER);
 			marker.setAttributes(map);
 		}

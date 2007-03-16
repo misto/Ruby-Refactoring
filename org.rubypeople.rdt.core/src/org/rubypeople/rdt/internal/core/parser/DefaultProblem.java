@@ -5,7 +5,6 @@ package org.rubypeople.rdt.internal.core.parser;
 
 import org.jruby.lexer.yacc.ISourcePosition;
 import org.rubypeople.rdt.core.compiler.CategorizedProblem;
-import org.rubypeople.rdt.core.compiler.IProblem;
 
 /**
  * @author Chris
@@ -23,11 +22,12 @@ abstract class DefaultProblem extends CategorizedProblem {
 	/**
 	 * @param position
 	 * @param message
+	 * @param problemID 
 	 */
-	public DefaultProblem(ISourcePosition position, String message) {
+	public DefaultProblem(ISourcePosition position, String message, int problemID) {
 		this.position = position;
 		this.message = message;
-		id = IProblem.Uncategorized;
+		id = problemID;
 	}
 
 	/**

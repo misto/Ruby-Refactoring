@@ -25,11 +25,12 @@ public class ImmediateWarnings implements IRdtWarnings {
 		if (message.startsWith("Useless")) {
 			return ;
 		}
-        markerManager.addWarning(file, message, position.getStartLine(), position.getStartOffset(), position.getEndOffset());
+		Warning warning = new Warning(position, message);
+        markerManager.addProblem(file, warning);
 	}
 
 	public void warn(String message) {
-        markerManager.addWarning(file, message);
+        warning(message);
 	}
 
 	public boolean isVerbose() {

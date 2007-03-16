@@ -17,13 +17,26 @@ import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
 import org.jruby.lexer.yacc.SyntaxException;
+import org.rubypeople.rdt.core.compiler.IProblem;
+import org.rubypeople.rdt.internal.core.parser.TaskTag;
 
 public interface IMarkerManager {
-    public void removeProblemsAndTasksFor(IResource resource);
+    
+	public void removeProblemsAndTasksFor(IResource resource);
+    
+	/**
+	 * @deprecated Use addProblem
+	 * @param file
+	 * @param e
+	 */
     public void createSyntaxError(IFile file, SyntaxException e);
-    public void createError(IFile file, String message, int startLine, int startOffset, int endOffset);
-    public void createTasks(IFile file, List tasks) throws CoreException;
-    public void addWarning(IFile file, String message);
-    public void addWarning(IFile file, String message, int startLine, int startOffset, int endOffset);
 
+    /**
+     * @param file
+     * @param tasks
+     * @throws CoreException
+     */
+    public void createTasks(IFile file, List<TaskTag> tasks) throws CoreException;
+
+    public void addProblem(IFile file, IProblem problem);
 }

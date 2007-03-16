@@ -17,10 +17,9 @@ import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
 import org.jruby.lexer.yacc.SyntaxException;
-import org.rubypeople.rdt.internal.core.parser.Error;
+import org.rubypeople.rdt.core.compiler.IProblem;
 import org.rubypeople.rdt.internal.core.parser.MarkerUtility;
-import org.rubypeople.rdt.internal.core.parser.RdtPosition;
-import org.rubypeople.rdt.internal.core.parser.Warning;
+import org.rubypeople.rdt.internal.core.parser.TaskTag;
 
 class MarkerManager implements IMarkerManager {
 
@@ -32,21 +31,12 @@ class MarkerManager implements IMarkerManager {
         MarkerUtility.createSyntaxError(file, e);
     }
 
-    public void createTasks(IFile file, List tasks) throws CoreException {
+    public void createTasks(IFile file, List<TaskTag> tasks) throws CoreException {
         MarkerUtility.createTasks(file, tasks);
     }
-
-    public void addWarning(IFile file, String message) {
-        addWarning(file,message, 1, 0, 0);
-    }
-
-    public void addWarning(IFile file, String message, int startLine, int startOffset, int endOffset) {
-        MarkerUtility.createProblemMarker(file, new Warning(new RdtPosition(startLine, startOffset, endOffset), message));
-    }
-
-	public void createError(IFile file, String message, int startLine, int startOffset, int endOffset) {
-		MarkerUtility.createProblemMarker(file, new Error(new RdtPosition(startLine, startOffset, endOffset), message));
-		
+    
+	public void addProblem(IFile file, IProblem problem) {
+		MarkerUtility.createProblemMarker(file, problem);		
 	}
 
 }

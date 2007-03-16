@@ -14,7 +14,7 @@ public class TaskTag extends DefaultProblem implements IProblem {
 	private int priority;
 
 	public TaskTag(String message, int priority, int lineNumber, int start, int end) {
-		super(new RdtPosition(lineNumber, start, end), message);
+		super(new RdtPosition(lineNumber, start, end), message, IProblem.Task);
 		this.priority = priority;
 	}
 

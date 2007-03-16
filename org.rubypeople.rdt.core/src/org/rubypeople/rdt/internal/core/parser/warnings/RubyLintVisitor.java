@@ -31,9 +31,9 @@ public abstract class RubyLintVisitor extends AbstractVisitor {
 			return;
 		IProblem problem;
 		if (value != null && value.equals(RubyCore.ERROR))
-			problem = new Error(position, message);
+			problem = new Error(position, message, getProblemID());
 		else
-		  problem = new Warning(position, message);
+		  problem = new Warning(position, message, getProblemID());
 		problemRequestor.acceptProblem(problem);
 	}
 	
@@ -48,4 +48,8 @@ public abstract class RubyLintVisitor extends AbstractVisitor {
 	 */
 	abstract protected String getOptionKey();
 
+	protected int getProblemID() {
+		return IProblem.Uncategorized;
+	}
+	
 }

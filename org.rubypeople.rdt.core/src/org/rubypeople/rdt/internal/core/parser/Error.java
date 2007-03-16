@@ -13,9 +13,13 @@ import org.jruby.lexer.yacc.ISourcePosition;
 public class Error extends DefaultProblem {
 
 	public Error(ISourcePosition position, String message) {
-		super(position, message);
+		this(position, message, -1);
 	}
 	
+	public Error(ISourcePosition position, String message, int problemID) {
+		super(position, message, problemID);
+	}
+
 	public boolean isError() {
 		return true;
 	}

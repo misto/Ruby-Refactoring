@@ -13,9 +13,13 @@ import org.jruby.lexer.yacc.ISourcePosition;
 public class Warning extends DefaultProblem {
 
 	public Warning(ISourcePosition position, String message) {
-		super(position, message);
+		this(position, message, -1);
 	}
 	
+	public Warning(ISourcePosition position, String message, int problemID) {
+		super(position, message, problemID);
+	}
+
 	public boolean isWarning() {
 		return true;
 	}

@@ -26,14 +26,8 @@ public class ProblemRequestorMarkerManager implements IProblemRequestor {
 	public void acceptProblem(IProblem problem) {
 		// TODO Use active flag by calling begin and end reporting
 		// if (!isActive()) return;
-		if (problem.isWarning()) {
-			markerManager.addWarning(file, problem.getMessage(), problem.getSourceLineNumber(), problem.getSourceStart(), problem.getSourceEnd());
-			return;
-		}
-		if (problem.isError()) {
-			markerManager.createError(file, problem.getMessage(),
-					problem.getSourceLineNumber(), problem
-							.getSourceStart(), problem.getSourceEnd());
+		if (problem.isWarning() || problem.isError()) {
+			markerManager.addProblem(file, problem);
 			return;
 		}
 		if (problem.isTask()) {

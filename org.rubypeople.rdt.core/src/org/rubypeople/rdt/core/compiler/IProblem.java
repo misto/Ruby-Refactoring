@@ -60,6 +60,14 @@ public interface IProblem {
 	 */
 	int IgnoreCategoriesMask = 0xFFFFFF;
 
+	int UndocumentedEmptyBlock = Internal + 460;
+	int UnusedPrivateField = Internal + FieldRelated + 77;
+	int LocalVariableIsNeverUsed = Internal + 61;
+	int ArgumentIsNeverUsed = Internal + 62;
+	int UnusedPrivateMethod = Internal + MethodRelated + 118;
+
+	int Task = Internal + 450;
+
 	/**
 	 * Returns the problem id
 	 * 
