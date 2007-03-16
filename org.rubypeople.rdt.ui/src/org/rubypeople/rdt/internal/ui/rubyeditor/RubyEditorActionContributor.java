@@ -8,6 +8,7 @@ import org.eclipse.jface.action.Separator;
 import org.eclipse.ui.IActionBars;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IWorkbenchActionConstants;
+import org.eclipse.ui.ide.IDEActionFactory;
 import org.eclipse.ui.texteditor.BasicTextEditorActionContributor;
 import org.eclipse.ui.texteditor.ITextEditor;
 import org.eclipse.ui.texteditor.ITextEditorActionConstants;
@@ -22,6 +23,7 @@ public class RubyEditorActionContributor extends BasicTextEditorActionContributo
 
     protected RetargetTextEditorAction contentAssistProposal;
     private RetargetTextEditorAction fGotoMatchingBracket;
+	private RetargetTextEditorAction fQuickAssistAction;
 
     public RubyEditorActionContributor() {
         super();
@@ -32,6 +34,9 @@ public class RubyEditorActionContributor extends BasicTextEditorActionContributo
         fGotoMatchingBracket = new RetargetTextEditorAction(b, "GotoMatchingBracket."); //$NON-NLS-1$
         fGotoMatchingBracket
                 .setActionDefinitionId(IRubyEditorActionDefinitionIds.GOTO_MATCHING_BRACKET);
+        
+        fQuickAssistAction= new RetargetTextEditorAction(RubyEditorMessages.getBundleForConstructedKeys(), "CorrectionAssistProposal."); //$NON-NLS-1$
+		fQuickAssistAction.setActionDefinitionId(ITextEditorActionDefinitionIds.QUICK_ASSIST);
 
     }
 
@@ -40,6 +45,7 @@ public class RubyEditorActionContributor extends BasicTextEditorActionContributo
         if (editMenu != null) {
             editMenu.add(new Separator());
             editMenu.add(contentAssistProposal);
+            editMenu.add(fQuickAssistAction);
         }
         
         IMenuManager gotoMenu= menuManager.findMenuUsingPath("navigate/goTo"); //$NON-NLS-1$
@@ -47,6 +53,8 @@ public class RubyEditorActionContributor extends BasicTextEditorActionContributo
             gotoMenu.add(new Separator("additions2"));  //$NON-NLS-1$
             gotoMenu.appendToGroup("additions2", fGotoMatchingBracket); //$NON-NLS-1$
         }
+        
+       
     }
 
     public void setActiveEditor(IEditorPart part) {
@@ -58,6 +66,7 @@ public class RubyEditorActionContributor extends BasicTextEditorActionContributo
         contentAssistProposal.setAction(getAction(textEditor, "ContentAssistProposal"));
         fGotoMatchingBracket.setAction(getAction(textEditor,
                 GotoMatchingBracketAction.GOTO_MATCHING_BRACKET));
+        fQuickAssistAction.setAction(getAction(textEditor, ITextEditorActionConstants.QUICK_ASSIST));
 
         
         if (part instanceof RubyEditor) {
@@ -84,5 +93,9 @@ public class RubyEditorActionContributor extends BasicTextEditorActionContributo
         actionBars.setGlobalActionHandler(ITextEditorActionDefinitionIds.GOTO_PREVIOUS_ANNOTATION,
                 action);
         actionBars.setGlobalActionHandler(ITextEditorActionConstants.PREVIOUS, action);
+        
+
+		actionBars.setGlobalActionHandler(IDEActionFactory.ADD_TASK.getId(), getAction(textEditor, IDEActionFactory.ADD_TASK.getId()));
+		actionBars.setGlobalActionHandler(IDEActionFactory.BOOKMARK.getId(), getAction(textEditor, IDEActionFactory.BOOKMARK.getId()));
     }
 }

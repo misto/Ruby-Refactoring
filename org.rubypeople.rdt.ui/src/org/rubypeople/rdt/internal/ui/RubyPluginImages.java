@@ -133,9 +133,10 @@ public class RubyPluginImages {
     public static final ImageDescriptor DESC_MISC_PRIVATE= createManagedFromKey(T_OBJ, IMG_MISC_PRIVATE);
     
     public static final ImageDescriptor DESC_OBJS_UNKNOWN= createManagedFromKey(T_OBJ, IMG_OBJS_UNKNOWN);
-       
+	public static final String IMG_CORRECTION_CHANGE= NAME_PREFIX + "correction_change.gif"; //$NON-NLS-1$       
     
 	static {
+		createManagedFromKey(T_OBJ, IMG_CORRECTION_CHANGE);
 		createManagedFromKey(T_OBJ, IMG_OBJS_FIXABLE_ERROR);
 		createManagedFromKey(T_OBJ, IMG_OBJS_FIXABLE_PROBLEM);
 		createManagedFromKey(T_OBJ, IMG_OBJS_ERROR);

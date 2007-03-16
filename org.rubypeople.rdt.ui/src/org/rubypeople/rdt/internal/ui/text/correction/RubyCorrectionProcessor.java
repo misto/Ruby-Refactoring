@@ -1,6 +1,7 @@
 package org.rubypeople.rdt.internal.ui.text.correction;
 
 import java.util.ArrayList;
+import java.util.Collection;
 
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.runtime.IConfigurationElement;
@@ -10,26 +11,71 @@ import org.eclipse.core.runtime.MultiStatus;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.SafeRunner;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.jface.text.ITextViewer;
+import org.eclipse.jface.text.Position;
+import org.eclipse.jface.text.contentassist.ContentAssistEvent;
+import org.eclipse.jface.text.contentassist.ICompletionListener;
 import org.eclipse.jface.text.contentassist.ICompletionProposal;
 import org.eclipse.jface.text.quickassist.IQuickAssistInvocationContext;
 import org.eclipse.jface.text.source.Annotation;
+import org.eclipse.jface.text.source.IAnnotationModel;
+import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IMarkerHelpRegistry;
+import org.eclipse.ui.IMarkerResolution;
 import org.eclipse.ui.ide.IDE;
 import org.eclipse.ui.texteditor.SimpleMarkerAnnotation;
 import org.rubypeople.rdt.core.IRubyScript;
 import org.rubypeople.rdt.internal.ui.RubyPlugin;
 import org.rubypeople.rdt.internal.ui.rubyeditor.IRubyAnnotation;
 import org.rubypeople.rdt.ui.RubyUI;
+import org.rubypeople.rdt.ui.text.ruby.IInvocationContext;
+import org.rubypeople.rdt.ui.text.ruby.IProblemLocation;
+import org.rubypeople.rdt.ui.text.ruby.IQuickAssistProcessor;
 import org.rubypeople.rdt.ui.text.ruby.IQuickFixProcessor;
+import org.rubypeople.rdt.ui.text.ruby.IRubyCompletionProposal;
 
 public class RubyCorrectionProcessor implements org.eclipse.jface.text.quickassist.IQuickAssistProcessor {
 
 	private static final String QUICKFIX_PROCESSOR_CONTRIBUTION_ID= "quickFixProcessors"; //$NON-NLS-1$
+	private static final String QUICKASSIST_PROCESSOR_CONTRIBUTION_ID= "quickAssistProcessors"; //$NON-NLS-1$
 
+	private static ContributedProcessorDescriptor[] fContributedAssistProcessors= null;
 	private static ContributedProcessorDescriptor[] fContributedCorrectionProcessors= null;
 	
 	private String fErrorMessage;
+	private RubyCorrectionAssistant fAssistant;
 	
+	/*
+	 * Constructor for RubyCorrectionProcessor.
+	 */
+	public RubyCorrectionProcessor(RubyCorrectionAssistant assistant) {
+		fAssistant= assistant;
+		fAssistant.addCompletionListener(new ICompletionListener() {
+		
+			public void assistSessionEnded(ContentAssistEvent event) {
+				fAssistant.setStatusLineVisible(false);
+			}
+		
+			public void assistSessionStarted(ContentAssistEvent event) {
+				fAssistant.setStatusLineVisible(true);
+			}
+
+			public void selectionChanged(ICompletionProposal proposal, boolean smartToggle) {
+				if (proposal instanceof IStatusLineProposal) {
+					IStatusLineProposal statusLineProposal= (IStatusLineProposal)proposal;
+					String message= statusLineProposal.getStatusMessage();
+					if (message != null) {
+						fAssistant.setStatusMessage(message);
+					} else {
+						fAssistant.setStatusMessage(""); //$NON-NLS-1$
+					}
+				} else {
+					fAssistant.setStatusMessage(""); //$NON-NLS-1$
+				}
+			}
+		});
+	}
+
 	public boolean canAssist(IQuickAssistInvocationContext invocationContext) {
 		// TODO Auto-generated method stub
 		return false;
@@ -39,9 +85,148 @@ public class RubyCorrectionProcessor implements org.eclipse.jface.text.quickassi
 		return hasCorrections(annotation);
 	}
 
-	public ICompletionProposal[] computeQuickAssistProposals(IQuickAssistInvocationContext invocationContext) {
-		// TODO Auto-generated method stub
-		return new ICompletionProposal[0];
+	public ICompletionProposal[] computeQuickAssistProposals(IQuickAssistInvocationContext quickAssistContext) {
+		ITextViewer viewer= quickAssistContext.getSourceViewer();
+		int documentOffset= quickAssistContext.getOffset();
+		
+		IEditorPart part= fAssistant.getEditor();
+
+		IRubyScript cu= RubyUI.getWorkingCopyManager().getWorkingCopy(part.getEditorInput());
+		IAnnotationModel model= RubyUI.getDocumentProvider().getAnnotationModel(part.getEditorInput());
+		
+		int length= viewer != null ? viewer.getSelectedRange().y : 0;
+		AssistContext context= new AssistContext(cu, documentOffset, length);
+
+		Annotation[] annotations= fAssistant.getAnnotationsAtOffset();
+		
+		fErrorMessage= null;
+		
+		ICompletionProposal[] res= null;
+		if (model != null && annotations != null) {
+			ArrayList proposals= new ArrayList(10);
+			IStatus status= collectProposals(context, model, annotations, true, !fAssistant.isUpdatedOffset(), proposals);
+			res= (ICompletionProposal[]) proposals.toArray(new ICompletionProposal[proposals.size()]);
+			if (!status.isOK()) {
+				fErrorMessage= status.getMessage();
+				RubyPlugin.log(status);
+			}
+		}
+		
+		if (res == null || res.length == 0) {
+			return new ICompletionProposal[0];
+		}
+//		if (res.length > 1) {
+//			Arrays.sort(res, new CompletionProposalComparator());
+//		}
+		return res;
+	}
+	
+	public static IStatus collectProposals(IInvocationContext context, IAnnotationModel model, Annotation[] annotations, boolean addQuickFixes, boolean addQuickAssists, Collection proposals) {
+		ArrayList problems= new ArrayList();
+		
+		// collect problem locations and corrections from marker annotations
+		for (int i= 0; i < annotations.length; i++) {
+			Annotation curr= annotations[i];
+			if (curr instanceof IRubyAnnotation) {
+				ProblemLocation problemLocation= getProblemLocation((IRubyAnnotation) curr, model);
+				if (problemLocation != null) {
+					problems.add(problemLocation);
+				}
+			} else if (addQuickFixes && curr instanceof SimpleMarkerAnnotation) {
+				// don't collect if annotation is already a java annotation
+				collectMarkerProposals((SimpleMarkerAnnotation) curr, proposals);
+			}
+		}
+		MultiStatus resStatus= null;
+		
+		IProblemLocation[] problemLocations= (IProblemLocation[]) problems.toArray(new IProblemLocation[problems.size()]);
+		if (addQuickFixes) {
+			IStatus status= collectCorrections(context, problemLocations, proposals);
+			if (!status.isOK()) {
+				resStatus= new MultiStatus(RubyUI.ID_PLUGIN, IStatus.ERROR, CorrectionMessages.RubyCorrectionProcessor_error_quickfix_message, null);
+				resStatus.add(status);
+			}
+		}
+//		if (addQuickAssists) {
+//			IStatus status= collectAssists(context, problemLocations, proposals);
+//			if (!status.isOK()) {
+//				if (resStatus == null) {
+//					resStatus= new MultiStatus(RubyUI.ID_PLUGIN, IStatus.ERROR, CorrectionMessages.JavaCorrectionProcessor_error_quickassist_message, null);
+//				}
+//				resStatus.add(status);
+//			}
+//		}
+		if (resStatus != null) {
+			return resStatus;
+		}
+		return Status.OK_STATUS;
+	}
+	
+	public static IStatus collectCorrections(IInvocationContext context, IProblemLocation[] locations, Collection proposals) {
+		ContributedProcessorDescriptor[] processors= getCorrectionProcessors();
+		SafeCorrectionCollector collector= new SafeCorrectionCollector(context, proposals);
+		for (int i= 0; i < processors.length; i++) {
+			ContributedProcessorDescriptor curr= processors[i];
+			IProblemLocation[] handled= getHandledProblems(locations, curr);
+			if (handled != null) {
+				collector.setProblemLocations(handled);
+				collector.process(curr);
+			}
+		}
+		return collector.getStatus();
+	}
+	
+	private static void collectMarkerProposals(SimpleMarkerAnnotation annotation, Collection proposals) {
+		IMarker marker= annotation.getMarker();
+		IMarkerResolution[] res= IDE.getMarkerHelpRegistry().getResolutions(marker);
+		if (res.length > 0) {
+			for (int i= 0; i < res.length; i++) {
+				proposals.add(new MarkerResolutionProposal(res[i], marker));
+			}
+		}
+	}
+	
+	private static IProblemLocation[] getHandledProblems(IProblemLocation[] locations, ContributedProcessorDescriptor processor) {
+		// implementation tries to avoid creating a new array
+		boolean allHandled= true;
+		ArrayList res= null;
+		for (int i= 0; i < locations.length; i++) {
+			IProblemLocation curr= locations[i];
+			if (processor.canHandleMarkerType(curr.getMarkerType())) {
+				if (!allHandled) { // first handled problem
+					if (res == null) {
+						res= new ArrayList(locations.length - i);
+					}
+					res.add(curr);
+				}
+			} else if (allHandled) { 
+				if (i > 0) { // first non handled problem 
+					res= new ArrayList(locations.length - i);
+					for (int k= 0; k < i; k++) {
+						res.add(locations[k]);
+					}
+				}
+				allHandled= false;
+			}
+		}
+		if (allHandled) {
+			return locations;
+		}
+		if (res == null) {
+			return null;
+		}
+		return (IProblemLocation[]) res.toArray(new IProblemLocation[res.size()]);
+	}
+	
+	private static ProblemLocation getProblemLocation(IRubyAnnotation javaAnnotation, IAnnotationModel model) {
+		int problemId= javaAnnotation.getId();
+		if (problemId != -1) {
+			Position pos= model.getPosition((Annotation) javaAnnotation);
+			if (pos != null) {
+				return new ProblemLocation(pos.getOffset(), pos.getLength(), javaAnnotation); // ruby problems all handled by the quick assist processors
+			}
+		}
+		return null;
 	}
 
 	public String getErrorMessage() {
@@ -171,4 +356,74 @@ public class RubyCorrectionProcessor implements org.eclipse.jface.text.quickassi
 
 	}
 
+	public static boolean isQuickFixableType(Annotation annotation) {
+		return (annotation instanceof IRubyAnnotation || annotation instanceof SimpleMarkerAnnotation) && !annotation.isMarkedDeleted();
+	}
+
+	private static class SafeCorrectionCollector extends SafeCorrectionProcessorAccess {
+		private final IInvocationContext fContext;
+		private final Collection fProposals;
+		private IProblemLocation[] fLocations;
+
+		public SafeCorrectionCollector(IInvocationContext context, Collection proposals) {
+			fContext= context;
+			fProposals= proposals;
+		}
+		
+		public void setProblemLocations(IProblemLocation[] locations) {
+			fLocations= locations;
+		}
+
+		public void safeRun(ContributedProcessorDescriptor desc) throws Exception {
+			IQuickFixProcessor curr= (IQuickFixProcessor) desc.getProcessor(fContext.getRubyScript());
+			if (curr != null) {
+				IRubyCompletionProposal[] res= curr.getCorrections(fContext, fLocations);
+				if (res != null) {
+					for (int k= 0; k < res.length; k++) {
+						fProposals.add(res[k]);
+					}
+				}
+			}
+		}
+	}
+
+	public static IStatus collectAssists(IInvocationContext context, IProblemLocation[] locations, Collection proposals) {
+		ContributedProcessorDescriptor[] processors= getAssistProcessors();
+		SafeAssistCollector collector= new SafeAssistCollector(context, locations, proposals);
+		collector.process(processors);
+
+		return collector.getStatus();
+	}
+	
+	private static ContributedProcessorDescriptor[] getAssistProcessors() {
+		if (fContributedAssistProcessors == null) {
+			fContributedAssistProcessors= getProcessorDescriptors(QUICKASSIST_PROCESSOR_CONTRIBUTION_ID, false);
+		}
+		return fContributedAssistProcessors;
+	}
+	
+	private static class SafeAssistCollector extends SafeCorrectionProcessorAccess {
+		private final IInvocationContext fContext;
+		private final IProblemLocation[] fLocations;
+		private final Collection fProposals;
+
+		public SafeAssistCollector(IInvocationContext context, IProblemLocation[] locations, Collection proposals) {
+			fContext= context;
+			fLocations= locations;
+			fProposals= proposals;
+		}
+
+		public void safeRun(ContributedProcessorDescriptor desc) throws Exception {
+			IQuickAssistProcessor curr= (IQuickAssistProcessor) desc.getProcessor(fContext.getRubyScript());
+			if (curr != null) {
+				IRubyCompletionProposal[] res= curr.getAssists(fContext, fLocations);
+				if (res != null) {
+					for (int k= 0; k < res.length; k++) {
+						fProposals.add(res[k]);
+					}
+				}
+			}
+		}
+	}
+	
 }

@@ -18,6 +18,7 @@ import org.eclipse.jface.text.formatter.MultiPassContentFormatter;
 import org.eclipse.jface.text.hyperlink.IHyperlinkDetector;
 import org.eclipse.jface.text.presentation.IPresentationReconciler;
 import org.eclipse.jface.text.presentation.PresentationReconciler;
+import org.eclipse.jface.text.quickassist.IQuickAssistAssistant;
 import org.eclipse.jface.text.reconciler.IReconciler;
 import org.eclipse.jface.text.rules.DefaultDamagerRepairer;
 import org.eclipse.jface.text.rules.ITokenScanner;
@@ -54,6 +55,7 @@ import org.rubypeople.rdt.internal.ui.text.RubyPartitionScanner;
 import org.rubypeople.rdt.internal.ui.text.RubyReconciler;
 import org.rubypeople.rdt.internal.ui.text.comment.CommentFormattingStrategy;
 import org.rubypeople.rdt.internal.ui.text.comment.RubyCommentAutoIndentStrategy;
+import org.rubypeople.rdt.internal.ui.text.correction.RubyCorrectionAssistant;
 import org.rubypeople.rdt.internal.ui.text.hyperlinks.RubyHyperLinkDetector;
 import org.rubypeople.rdt.internal.ui.text.ruby.AbstractRubyScanner;
 import org.rubypeople.rdt.internal.ui.text.ruby.AbstractRubyTokenScanner;
@@ -64,8 +66,7 @@ import org.rubypeople.rdt.internal.ui.text.ruby.RubyReconcilingStrategy;
 import org.rubypeople.rdt.internal.ui.text.ruby.RubyTokenScanner;
 import org.rubypeople.rdt.internal.ui.text.ruby.hover.RubyCodeTextHover;
 
-public class RubySourceViewerConfiguration extends
-		TextSourceViewerConfiguration {
+public class RubySourceViewerConfiguration extends TextSourceViewerConfiguration {
 
 	protected RubyTextTools textTools;
 	protected ITextEditor fTextEditor;
@@ -90,7 +91,7 @@ public class RubySourceViewerConfiguration extends
 	protected AbstractRubyScanner fMultilineCommentScanner;
 	private RubyDoubleClickSelector fRubyDoubleClickSelector;
 	private RubyCompletionProcessor fRubyCp;
-	
+
 	/**
 	 * Creates a new Ruby source viewer configuration for viewers in the given
 	 * editor using the given preference store, the color manager and the
@@ -116,9 +117,7 @@ public class RubySourceViewerConfiguration extends
 	 *            <code>null</code> for the default partitioning
 	 * @since 3.0
 	 */
-	public RubySourceViewerConfiguration(IColorManager colorManager,
-			IPreferenceStore preferenceStore, ITextEditor editor,
-			String partitioning) {
+	public RubySourceViewerConfiguration(IColorManager colorManager, IPreferenceStore preferenceStore, ITextEditor editor, String partitioning) {
 		super(preferenceStore);
 		fColorManager = colorManager;
 		fTextEditor = editor;
@@ -130,35 +129,27 @@ public class RubySourceViewerConfiguration extends
 	 * @see SourceViewerConfiguration#getContentFormatter(ISourceViewer)
 	 */
 	public IContentFormatter getContentFormatter(ISourceViewer sourceViewer) {
-		final MultiPassContentFormatter formatter = new MultiPassContentFormatter(
-				getConfiguredDocumentPartitioning(sourceViewer),
-				IDocument.DEFAULT_CONTENT_TYPE);
+		final MultiPassContentFormatter formatter = new MultiPassContentFormatter(getConfiguredDocumentPartitioning(sourceViewer), IDocument.DEFAULT_CONTENT_TYPE);
 
 		formatter.setMasterStrategy(new RubyFormattingStrategy());
-		formatter.setSlaveStrategy(new CommentFormattingStrategy(),
-				IRubyPartitions.RUBY_DOC);
-		formatter.setSlaveStrategy(new CommentFormattingStrategy(),
-				IRubyPartitions.RUBY_SINGLE_LINE_COMMENT);
-		formatter.setSlaveStrategy(new CommentFormattingStrategy(),
-				IRubyPartitions.RUBY_MULTI_LINE_COMMENT);
+		formatter.setSlaveStrategy(new CommentFormattingStrategy(), IRubyPartitions.RUBY_DOC);
+		formatter.setSlaveStrategy(new CommentFormattingStrategy(), IRubyPartitions.RUBY_SINGLE_LINE_COMMENT);
+		formatter.setSlaveStrategy(new CommentFormattingStrategy(), IRubyPartitions.RUBY_MULTI_LINE_COMMENT);
 
 		return formatter;
 	}
 
 	@Override
 	public IHyperlinkDetector[] getHyperlinkDetectors(ISourceViewer sourceViewer) {
-		if (!fPreferenceStore
-				.getBoolean(AbstractDecoratedTextEditorPreferenceConstants.EDITOR_HYPERLINKS_ENABLED))
+		if (!fPreferenceStore.getBoolean(AbstractDecoratedTextEditorPreferenceConstants.EDITOR_HYPERLINKS_ENABLED))
 			return null;
 
-		IHyperlinkDetector[] inheritedDetectors = super
-				.getHyperlinkDetectors(sourceViewer);
+		IHyperlinkDetector[] inheritedDetectors = super.getHyperlinkDetectors(sourceViewer);
 
 		if (fTextEditor == null)
 			return inheritedDetectors;
 
-		int inheritedDetectorsLength = inheritedDetectors != null ? inheritedDetectors.length
-				: 0;
+		int inheritedDetectorsLength = inheritedDetectors != null ? inheritedDetectors.length : 0;
 		IHyperlinkDetector[] detectors = new IHyperlinkDetector[inheritedDetectorsLength + 1];
 		detectors[0] = new RubyHyperLinkDetector(fTextEditor.getEditorInput());
 		for (int i = 0; i < inheritedDetectorsLength; i++)
@@ -177,8 +168,7 @@ public class RubySourceViewerConfiguration extends
 	 * @since 0.8.0
 	 */
 	public boolean affectsTextPresentation(PropertyChangeEvent event) {
-		return fCodeScanner.affectsBehavior(event)
-				|| fMultilineCommentScanner.affectsBehavior(event);
+		return fCodeScanner.affectsBehavior(event) || fMultilineCommentScanner.affectsBehavior(event);
 	}
 
 	/**
@@ -212,18 +202,13 @@ public class RubySourceViewerConfiguration extends
 	 * @return the combined read-only preference store
 	 * @since 0.8.0
 	 */
-	private static final IPreferenceStore createPreferenceStore(
-			RubyTextTools rubyTextTools) {
+	private static final IPreferenceStore createPreferenceStore(RubyTextTools rubyTextTools) {
 		Assert.isNotNull(rubyTextTools);
 		IPreferenceStore generalTextStore = EditorsUI.getPreferenceStore();
 		if (rubyTextTools.getCorePreferenceStore() == null)
-			return new ChainedPreferenceStore(new IPreferenceStore[] {
-					rubyTextTools.getPreferenceStore(), generalTextStore });
+			return new ChainedPreferenceStore(new IPreferenceStore[] { rubyTextTools.getPreferenceStore(), generalTextStore });
 
-		return new ChainedPreferenceStore(new IPreferenceStore[] {
-				rubyTextTools.getPreferenceStore(),
-				new PreferencesAdapter(rubyTextTools.getCorePreferenceStore()),
-				generalTextStore });
+		return new ChainedPreferenceStore(new IPreferenceStore[] { rubyTextTools.getPreferenceStore(), new PreferencesAdapter(rubyTextTools.getCorePreferenceStore()), generalTextStore });
 	}
 
 	/**
@@ -234,8 +219,7 @@ public class RubySourceViewerConfiguration extends
 	private void initializeScanners() {
 		Assert.isTrue(isNewSetup());
 		fCodeScanner = new RubyTokenScanner(getColorManager(), fPreferenceStore);
-		fMultilineCommentScanner = new RubyCommentScanner(getColorManager(),
-				fPreferenceStore, IRubyColorConstants.RUBY_MULTI_LINE_COMMENT);
+		fMultilineCommentScanner = new RubyCommentScanner(getColorManager(), fPreferenceStore, IRubyColorConstants.RUBY_MULTI_LINE_COMMENT);
 	}
 
 	/**
@@ -257,8 +241,7 @@ public class RubySourceViewerConfiguration extends
 		return fColorManager;
 	}
 
-	public IPresentationReconciler getPresentationReconciler(
-			ISourceViewer sourceViewer) {
+	public IPresentationReconciler getPresentationReconciler(ISourceViewer sourceViewer) {
 		PresentationReconciler reconciler = new PresentationReconciler();
 		reconciler.setDocumentPartitioning(IRubyPartitions.RUBY_PARTITIONING);
 
@@ -268,8 +251,7 @@ public class RubySourceViewerConfiguration extends
 
 		dr = new DefaultDamagerRepairer(getMultilineCommentScanner());
 		reconciler.setDamager(dr, RubyPartitionScanner.RUBY_MULTI_LINE_COMMENT);
-		reconciler
-				.setRepairer(dr, RubyPartitionScanner.RUBY_MULTI_LINE_COMMENT);
+		reconciler.setRepairer(dr, RubyPartitionScanner.RUBY_MULTI_LINE_COMMENT);
 		return reconciler;
 	}
 
@@ -282,8 +264,7 @@ public class RubySourceViewerConfiguration extends
 	}
 
 	public String[] getConfiguredContentTypes(ISourceViewer sourceViewer) {
-		return new String[] { IDocument.DEFAULT_CONTENT_TYPE,
-				RubyPartitionScanner.RUBY_MULTI_LINE_COMMENT };
+		return new String[] { IDocument.DEFAULT_CONTENT_TYPE, RubyPartitionScanner.RUBY_MULTI_LINE_COMMENT };
 	}
 
 	/*
@@ -300,16 +281,12 @@ public class RubySourceViewerConfiguration extends
 		fRubyCp = new RubyCompletionProcessor(getEditor());
 
 		ContentAssistant contentAssistant = new ContentAssistant();
-		contentAssistant.setContentAssistProcessor(fRubyCp,
-				IDocument.DEFAULT_CONTENT_TYPE);
+		contentAssistant.setContentAssistProcessor(fRubyCp, IDocument.DEFAULT_CONTENT_TYPE);
 
-		contentAssistant
-				.setProposalPopupOrientation(ContentAssistant.PROPOSAL_OVERLAY);
-		contentAssistant
-				.setContextInformationPopupOrientation(ContentAssistant.CONTEXT_INFO_ABOVE);
+		contentAssistant.setProposalPopupOrientation(ContentAssistant.PROPOSAL_OVERLAY);
+		contentAssistant.setContextInformationPopupOrientation(ContentAssistant.CONTEXT_INFO_ABOVE);
 
-		ContentAssistPreference.configure(contentAssistant,
-				getPreferenceStore());
+		ContentAssistPreference.configure(contentAssistant, getPreferenceStore());
 		return contentAssistant;
 	}
 
@@ -320,31 +297,26 @@ public class RubySourceViewerConfiguration extends
 		return new RubyAnnotationHover(RubyAnnotationHover.VERTICAL_RULER_HOVER);
 	}
 
-	public IAutoEditStrategy[] getAutoEditStrategies(
-            ISourceViewer sourceViewer, String contentType) {
-        String partitioning = getConfiguredDocumentPartitioning(sourceViewer);
-        if (IRubyPartitions.RUBY_SINGLE_LINE_COMMENT.equals(contentType)) {
-            return new IAutoEditStrategy[] { new RubyCommentAutoIndentStrategy(
-                    partitioning) };
-        } else if ( IDocument.DEFAULT_CONTENT_TYPE.equals(contentType)) {
-            return new IAutoEditStrategy[] { new RubyAutoIndentStrategy(partitioning, getProject()) };
-        } else {
-            return super.getAutoEditStrategies (sourceViewer, contentType);
-        }
-    }
-
+	public IAutoEditStrategy[] getAutoEditStrategies(ISourceViewer sourceViewer, String contentType) {
+		String partitioning = getConfiguredDocumentPartitioning(sourceViewer);
+		if (IRubyPartitions.RUBY_SINGLE_LINE_COMMENT.equals(contentType)) {
+			return new IAutoEditStrategy[] { new RubyCommentAutoIndentStrategy(partitioning) };
+		} else if (IDocument.DEFAULT_CONTENT_TYPE.equals(contentType)) {
+			return new IAutoEditStrategy[] { new RubyAutoIndentStrategy(partitioning, getProject()) };
+		} else {
+			return super.getAutoEditStrategies(sourceViewer, contentType);
+		}
+	}
 
 	/*
 	 * @see SourceViewerConfiguration#getInformationControlCreator(ISourceViewer)
 	 * @since 2.0
 	 */
-	public IInformationControlCreator getInformationControlCreator(
-			ISourceViewer sourceViewer) {
+	public IInformationControlCreator getInformationControlCreator(ISourceViewer sourceViewer) {
 		return new IInformationControlCreator() {
 
 			public IInformationControl createInformationControl(Shell parent) {
-				return new DefaultInformationControl(parent, SWT.NONE,
-						new HTMLTextPresenter(true));
+				return new DefaultInformationControl(parent, SWT.NONE, new HTMLTextPresenter(true));
 			}
 		};
 	}
@@ -362,8 +334,7 @@ public class RubySourceViewerConfiguration extends
 		return RubyPlugin.getDefault().getPreferenceStore();
 	}
 
-	public String[] getDefaultPrefixes(ISourceViewer sourceViewer,
-			String contentType) {
+	public String[] getDefaultPrefixes(ISourceViewer sourceViewer, String contentType) {
 		return new String[] { "#", "" };
 	}
 
@@ -375,9 +346,7 @@ public class RubySourceViewerConfiguration extends
 	public IReconciler getReconciler(ISourceViewer sourceViewer) {
 		final ITextEditor editor = getEditor();
 		if (editor != null && editor.isEditable()) {
-			RubyReconciler reconciler = new RubyReconciler(fTextEditor,
-					new RubyReconcilingStrategy(
-							(RubyAbstractEditor) fTextEditor), true);
+			RubyReconciler reconciler = new RubyReconciler(fTextEditor, new RubyReconcilingStrategy((RubyAbstractEditor) fTextEditor), true);
 			reconciler.setIsIncrementalReconciler(false);
 			reconciler.setIsAllowedToModifyDocument(false);
 			reconciler.setProgressMonitor(new NullProgressMonitor());
@@ -406,8 +375,7 @@ public class RubySourceViewerConfiguration extends
 		return element.getRubyProject();
 	}
 
-	public String[] getIndentPrefixes(ISourceViewer sourceViewer,
-			String contentType) {
+	public String[] getIndentPrefixes(ISourceViewer sourceViewer, String contentType) {
 
 		Vector vector = new Vector();
 
@@ -419,14 +387,9 @@ public class RubySourceViewerConfiguration extends
 		int spaceEquivalents = Math.min(tabWidth, indentWidth);
 		boolean useSpaces;
 		if (project == null)
-			useSpaces = RubyCore.SPACE
-					.equals(RubyCore
-							.getOption(DefaultCodeFormatterConstants.FORMATTER_TAB_CHAR))
-					|| tabWidth > indentWidth;
+			useSpaces = RubyCore.SPACE.equals(RubyCore.getOption(DefaultCodeFormatterConstants.FORMATTER_TAB_CHAR)) || tabWidth > indentWidth;
 		else
-			useSpaces = RubyCore.SPACE.equals(project.getOption(
-					DefaultCodeFormatterConstants.FORMATTER_TAB_CHAR, true))
-					|| tabWidth > indentWidth;
+			useSpaces = RubyCore.SPACE.equals(project.getOption(DefaultCodeFormatterConstants.FORMATTER_TAB_CHAR, true)) || tabWidth > indentWidth;
 
 		for (int i = 0; i <= spaceEquivalents; i++) {
 			StringBuffer prefix = new StringBuffer();
@@ -453,8 +416,7 @@ public class RubySourceViewerConfiguration extends
 		return (String[]) vector.toArray(new String[vector.size()]);
 	}
 
-	public ITextDoubleClickStrategy getDoubleClickStrategy(
-			ISourceViewer sourceViewer, String contentType) {
+	public ITextDoubleClickStrategy getDoubleClickStrategy(ISourceViewer sourceViewer, String contentType) {
 		if (fRubyDoubleClickSelector == null) {
 			fRubyDoubleClickSelector = new RubyDoubleClickSelector();
 		}
@@ -468,13 +430,19 @@ public class RubySourceViewerConfiguration extends
 		return CodeFormatterUtil.getTabWidth(getProject());
 	}
 
-	public ITextHover getTextHover(ISourceViewer sourceViewer,
-			String contentType) {
+	public ITextHover getTextHover(ISourceViewer sourceViewer, String contentType) {
 		if (fRubyTextHover == null) {
 			fRubyTextHover = new RubyCodeTextHover();
 			fRubyTextHover.setEditor(getEditor());
 		}
 		return fRubyTextHover;
+	}
+
+	@Override
+	public IQuickAssistAssistant getQuickAssistAssistant(ISourceViewer sourceViewer) {
+		if (getEditor() != null)
+			return new RubyCorrectionAssistant(getEditor());
+		return null;
 	}
 
 }

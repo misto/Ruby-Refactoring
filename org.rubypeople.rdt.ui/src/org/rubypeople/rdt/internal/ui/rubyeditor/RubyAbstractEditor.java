@@ -11,6 +11,7 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.NullProgressMonitor;
+import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.core.runtime.preferences.IEclipsePreferences;
@@ -94,6 +95,8 @@ import org.rubypeople.rdt.ui.text.RubyTextTools;
 
 public abstract class RubyAbstractEditor extends TextEditor {
 
+	private static final boolean CODE_ASSIST_DEBUG= "true".equalsIgnoreCase(Platform.getDebugOption("org.rubypeople.rdt.ui/debug/ResultCollector"));  //$NON-NLS-1$//$NON-NLS-2$
+	
     protected RubyTextTools textTools;
     private ISourceReference reference;
 
@@ -1092,7 +1095,47 @@ public abstract class RubyAbstractEditor extends TextEditor {
 				return false;
 			return super.requestWidgetToken(requester, priority);
 		}
+		
+		/*
+		 * @see ITextOperationTarget#doOperation(int)
+		 */
+		public void doOperation(int operation) {
 
+			if (getTextWidget() == null)
+				return;
+
+			switch (operation) {
+				case CONTENTASSIST_PROPOSALS:
+					long time= CODE_ASSIST_DEBUG ? System.currentTimeMillis() : 0;
+					String msg= fContentAssistant.showPossibleCompletions();
+					if (CODE_ASSIST_DEBUG) {
+						long delta= System.currentTimeMillis() - time;
+						System.err.println("Code Assist (total): " + delta); //$NON-NLS-1$
+					}
+					setStatusLineErrorMessage(msg);
+					return;
+				case QUICK_ASSIST:
+					/*
+					 * XXX: We can get rid of this once the SourceViewer has a way to update the status line
+					 * https://bugs.eclipse.org/bugs/show_bug.cgi?id=133787
+					 */
+					msg= fQuickAssistAssistant.showPossibleQuickAssists();
+					setStatusLineErrorMessage(msg);
+					return;
+				case UNDO:
+					fIgnoreTextConverters= true;
+					super.doOperation(operation);
+					fIgnoreTextConverters= false;
+					return;
+				case REDO:
+					fIgnoreTextConverters= true;
+					super.doOperation(operation);
+					fIgnoreTextConverters= false;
+					return;
+			}
+
+			super.doOperation(operation);
+		}
 	}
 	/**
 	 * Internal activation listener.

@@ -55,5 +55,6 @@ Require-Bundle: org.eclipse.ui.ide,
  org.eclipse.search,
  org.jruby,
  org.eclipse.compare,
- org.eclipse.core.expressions
+ org.eclipse.core.expressions,
+ org.eclipse.ltk.core.refactoring
 Eclipse-LazyStart: true
