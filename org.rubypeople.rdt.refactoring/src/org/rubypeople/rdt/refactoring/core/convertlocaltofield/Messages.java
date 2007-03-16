@@ -3,9 +3,9 @@ package org.rubypeople.rdt.refactoring.core.convertlocaltofield;
 import org.eclipse.osgi.util.NLS;
 
 public class Messages extends NLS {
-	private static final String BUNDLE_NAME = "org.rubypeople.rdt.refactoring.core.converttemptofield.messages"; //$NON-NLS-1$
+	private static final String BUNDLE_NAME = "org.rubypeople.rdt.refactoring.core.convertlocaltofield.messages"; //$NON-NLS-1$
 
-	public static String ConvertTempToFieldRefactoring_Name;
+	public static String ConvertLocalToFieldRefactoring_Name;
 
 	public static String TempToFieldConditionChecker_AlreadyExists;
 

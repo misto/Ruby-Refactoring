@@ -34,9 +34,9 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 
 import org.eclipse.jface.text.BadLocationException;
-import org.rubypeople.rdt.refactoring.core.convertlocaltofield.TempToFieldConditionChecker;
-import org.rubypeople.rdt.refactoring.core.convertlocaltofield.TempToFieldConfig;
-import org.rubypeople.rdt.refactoring.core.convertlocaltofield.TempToFieldConverter;
+import org.rubypeople.rdt.refactoring.core.convertlocaltofield.LocalToFieldConditionChecker;
+import org.rubypeople.rdt.refactoring.core.convertlocaltofield.LocalToFieldConfig;
+import org.rubypeople.rdt.refactoring.core.convertlocaltofield.LocalToFieldConverter;
 import org.rubypeople.rdt.refactoring.tests.FilePropertyData;
 import org.rubypeople.rdt.refactoring.tests.FileTestData;
 import org.rubypeople.rdt.refactoring.tests.RefactoringTestCase;
@@ -51,9 +51,9 @@ public class TempToFieldTester extends RefactoringTestCase {
 
 	protected int getInitPlace(String initPlace) {
 		if (initPlace.equalsIgnoreCase("TempToFieldConverter.INIT_IN_METHOD")) {
-			return TempToFieldConverter.INIT_IN_METHOD;
+			return LocalToFieldConverter.INIT_IN_METHOD;
 		} else if (initPlace.equalsIgnoreCase("TempToFieldConverter.INIT_IN_CONSTRUCTOR")) {
-			return TempToFieldConverter.INIT_IN_CONSTRUCTOR;
+			return LocalToFieldConverter.INIT_IN_CONSTRUCTOR;
 		} else {
 			assertTrue(false);
 			return 0;
@@ -63,12 +63,12 @@ public class TempToFieldTester extends RefactoringTestCase {
 
 	protected void runTempToFieldTest(FilePropertyData data, String sourceDocument, String expectedDocument, String newName, boolean isClassField, int initPlace,
 			int cursorPosition) throws BadLocationException {
-		TempToFieldConfig config = new TempToFieldConfig(data, cursorPosition);
-		TempToFieldConditionChecker checker = new TempToFieldConditionChecker(config);
+		LocalToFieldConfig config = new LocalToFieldConfig(data, cursorPosition);
+		LocalToFieldConditionChecker checker = new LocalToFieldConditionChecker(config);
 		if (!checker.shouldPerform()) {
 			fail();
 		}
-		TempToFieldConverter converter = new TempToFieldConverter(config);
+		LocalToFieldConverter converter = new LocalToFieldConverter(config);
 		converter.setInitPlace(initPlace);
 		converter.setIsClassField(isClassField);
 		converter.setNewName(newName);

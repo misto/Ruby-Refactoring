@@ -50,17 +50,17 @@ import org.rubypeople.rdt.refactoring.nodewrapper.FieldNodeWrapper;
 import org.rubypeople.rdt.refactoring.nodewrapper.LocalNodeWrapper;
 import org.rubypeople.rdt.refactoring.util.JRubyRefactoringUtils;
 
-public class TempToFieldConditionChecker extends RefactoringConditionChecker {
+public class LocalToFieldConditionChecker extends RefactoringConditionChecker {
 
-	private TempToFieldConfig config;
+	private LocalToFieldConfig config;
 	private RootNode rootNode;
 
-	public TempToFieldConditionChecker(TempToFieldConfig config) {
+	public LocalToFieldConditionChecker(LocalToFieldConfig config) {
 		super(config);
 	}
 	
 	public void init(IRefactoringConfig configObj) {
-		config = (TempToFieldConfig) configObj;
+		config = (LocalToFieldConfig) configObj;
 		rootNode = config.getDocumentProvider().getActiveFileRootNode();
 		Node selectedNode = findSelectedNode(LocalAsgnNode.class, LocalVarNode.class, DVarNode.class, DAsgnNode.class);
 		if (selectedNode != null) {

@@ -33,15 +33,15 @@ package org.rubypeople.rdt.refactoring.tests.core.inlinetemp.conditionchecks;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 
-import org.rubypeople.rdt.refactoring.core.inlinelocal.InlineTempConditionChecker;
-import org.rubypeople.rdt.refactoring.core.inlinelocal.InlineTempConfig;
+import org.rubypeople.rdt.refactoring.core.inlinelocal.InlineLocalConditionChecker;
+import org.rubypeople.rdt.refactoring.core.inlinelocal.InlineLocalConfig;
 import org.rubypeople.rdt.refactoring.core.inlinelocal.TempInliner;
 import org.rubypeople.rdt.refactoring.tests.FileTestData;
 import org.rubypeople.rdt.refactoring.tests.RefactoringConditionTestCase;
 
 public class InlineTempConditionTester extends RefactoringConditionTestCase {
 
-	private InlineTempConfig config;
+	private InlineLocalConfig config;
 	private FileTestData testData;
 
 	public InlineTempConditionTester(String fileName) {
@@ -52,8 +52,8 @@ public class InlineTempConditionTester extends RefactoringConditionTestCase {
 	public void runTest() throws FileNotFoundException, IOException {
 		testData = new FileTestData(getName(), ".test_source", ".test_source");
 		
-		config = new InlineTempConfig(testData, testData.getIntProperty("cursorPosition"));
-		InlineTempConditionChecker checker = new InlineTempConditionChecker(config);
+		config = new InlineLocalConfig(testData, testData.getIntProperty("cursorPosition"));
+		InlineLocalConditionChecker checker = new InlineLocalConditionChecker(config);
 		checkConditions(checker, testData);
 	}
 

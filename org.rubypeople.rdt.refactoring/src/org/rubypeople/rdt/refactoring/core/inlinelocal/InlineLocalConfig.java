@@ -39,7 +39,7 @@ import org.rubypeople.rdt.refactoring.documentprovider.DocumentProvider;
 import org.rubypeople.rdt.refactoring.documentprovider.IDocumentProvider;
 import org.rubypeople.rdt.refactoring.nodewrapper.LocalNodeWrapper;
 
-public class InlineTempConfig implements IRefactoringConfig {
+public class InlineLocalConfig implements IRefactoringConfig {
 
 	private boolean replaceTempWithQuery;
 
@@ -61,7 +61,7 @@ public class InlineTempConfig implements IRefactoringConfig {
 
 	private Collection<LocalNodeWrapper> localOccurrences;
 
-	public InlineTempConfig(DocumentProvider docProvider, int caretPosition) {
+	public InlineLocalConfig(DocumentProvider docProvider, int caretPosition) {
 		this.docProvider = docProvider;
 		this.caretPosition = caretPosition;
 	}

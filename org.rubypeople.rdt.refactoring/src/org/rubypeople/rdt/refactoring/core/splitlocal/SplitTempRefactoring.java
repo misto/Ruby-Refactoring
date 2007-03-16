@@ -39,8 +39,8 @@ public class SplitTempRefactoring extends RubyRefactoring {
 	public SplitTempRefactoring(TextSelectionProvider selectionProvider) {
 		super(NAME);
 
-		SplitTempConfig config = new SplitTempConfig(getDocumentProvider(), selectionProvider.getCarretPosition());
-		SplitTempConditionChecker checker = new SplitTempConditionChecker(config);
+		SplitLocalConfig config = new SplitLocalConfig(getDocumentProvider(), selectionProvider.getCarretPosition());
+		SplitLocalConditionChecker checker = new SplitLocalConditionChecker(config);
 		setRefactoringConditionChecker(checker);
 		
 		if(checker.shouldPerform()) {

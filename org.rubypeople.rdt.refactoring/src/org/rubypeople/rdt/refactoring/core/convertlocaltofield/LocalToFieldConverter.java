@@ -53,7 +53,7 @@ import org.rubypeople.rdt.refactoring.nodewrapper.LocalNodeWrapper;
 import org.rubypeople.rdt.refactoring.util.Constants;
 import org.rubypeople.rdt.refactoring.util.NodeUtil;
 
-public class TempToFieldConverter extends MultiEditProvider {
+public class LocalToFieldConverter extends MultiEditProvider {
 
 	public static final int INIT_IN_METHOD = 1;
 
@@ -63,9 +63,9 @@ public class TempToFieldConverter extends MultiEditProvider {
 
 	private Collection<LocalNodeWrapper> localNodes;
 
-	private TempToFieldConfig config;
+	private LocalToFieldConfig config;
 	
-	public TempToFieldConverter(TempToFieldConfig config) {
+	public LocalToFieldConverter(LocalToFieldConfig config) {
 		this.config = config;
 		config.setNewName(getLocalVarName());
 		localNodes = gatherLocalNodes();
@@ -116,7 +116,7 @@ public class TempToFieldConverter extends MultiEditProvider {
 		LocalNodeWrapper firstLocalNode = localNodes.toArray(new LocalNodeWrapper[localNodes.size()])[0];
 
 		for (LocalNodeWrapper aktLocalNode : localNodes) {
-			Conversion conversion = new Conversion(aktLocalNode, config.getNewName(), config.isClassField());
+			LocalToFieldEditProvider conversion = new LocalToFieldEditProvider(aktLocalNode, config.getNewName(), config.isClassField());
 			editProviderMap.put(aktLocalNode, conversion);
 		}
 		if (initPlace == INIT_IN_CONSTRUCTOR) {
@@ -125,7 +125,7 @@ public class TempToFieldConverter extends MultiEditProvider {
 		Collection<EditProvider> editProviders = new ArrayList<EditProvider>(editProviderMap.values());
 
 		if (initPlace == INIT_IN_CONSTRUCTOR) {
-			editProviders.add(new InitInConstructorConversion(firstLocalNode, config));
+			editProviders.add(new InitInConstructorEditProvider(firstLocalNode, config));
 			editProviders.add(new DeleteEditProvider(firstLocalNode.getWrappedNode()));
 		}
 

@@ -28,32 +28,53 @@
 
 package org.rubypeople.rdt.refactoring.core.splitlocal;
 
+import java.util.Collection;
+
 import org.rubypeople.rdt.refactoring.core.IRefactoringConfig;
-import org.rubypeople.rdt.refactoring.core.RefactoringConditionChecker;
+import org.rubypeople.rdt.refactoring.documentprovider.IDocumentProvider;
 
-public class SplitTempConditionChecker extends RefactoringConditionChecker {
+public class SplitLocalConfig implements IRefactoringConfig {
 
-	private SplitTempConfig config;
+	private IDocumentProvider documentProvider;
+	private int caretPosition;
+	Collection<LocalVarUsage> localUsages;
+	private LocalVarFinder localVarFinder;
 
-	public SplitTempConditionChecker(SplitTempConfig config) {
-		super(config);
-	}
-	
-	public void init(IRefactoringConfig configObj) {
-		this.config = (SplitTempConfig) configObj;
-		config.setLocalVariablesFinder(new LocalVarFinder());
-		config.setLocalUsages(config.getLocalVariablesFinder().findLocalUsages(config.getDocumentProvider(), config.getCaretPsition()));
+	public SplitLocalConfig(IDocumentProvider documentProvider, int caretPosition) {
+		this.documentProvider = documentProvider;
+		this.caretPosition = caretPosition;
 	}
 
-	@Override
-	protected void checkFinalConditions() {
+	public int getCaretPsition() {
+		return caretPosition;
 	}
 
-	@Override
-	protected void checkInitialConditions() {
-		if (!config.hasLocalUsages()) {
-			addError(Messages.SplitTempConditionChecker_NoLocal);
-		}
+	public IDocumentProvider getDocumentProvider() {
+		return documentProvider;
+	}
+
+	public boolean hasLocalUsages() {
+		return localUsages != null;
+	}
+
+	public void setLocalUsages(Collection<LocalVarUsage> localUsages) {
+		this.localUsages = localUsages;
+	}
+
+	public ILocalVarFinder getLocalVariablesFinder() {
+		return localVarFinder;
+	}
+
+	public void setLocalVariablesFinder(LocalVarFinder localVarFinder) {
+		this.localVarFinder = localVarFinder;
+	}
+
+	public Collection<LocalVarUsage> getLocalUsages() {
+		return localUsages;
+	}
+
+	public void setDocumentProvider(IDocumentProvider doc) {
+		this.documentProvider = doc;
 	}
 
 }

@@ -30,52 +30,76 @@
 
 package org.rubypeople.rdt.refactoring.core.convertlocaltofield;
 
-import java.util.ArrayList;
-import java.util.Collection;
-
-import org.jruby.ast.Node;
-import org.rubypeople.rdt.refactoring.editprovider.ReplaceEditProvider;
+import org.jruby.ast.MethodDefNode;
+import org.rubypeople.rdt.refactoring.core.IRefactoringConfig;
+import org.rubypeople.rdt.refactoring.documentprovider.IDocumentProvider;
+import org.rubypeople.rdt.refactoring.nodewrapper.ClassNodeWrapper;
 import org.rubypeople.rdt.refactoring.nodewrapper.LocalNodeWrapper;
 
-public class Conversion extends ReplaceEditProvider {
+public class LocalToFieldConfig implements IRefactoringConfig {
 
-	private LocalNodeWrapper localNode;
+	private IDocumentProvider docProvider;
+	private int caretPosition;
+	private LocalNodeWrapper selectedNode;
+	private ClassNodeWrapper enclosingClassNode;
+	private MethodDefNode enclosingMethod;
+	private boolean classField;
+	private String newName;
 
-	public Conversion(LocalNodeWrapper localNode, String newName, boolean isClassField) {
-		super(false);
-		this.localNode = localNode;
-		newName = ((isClassField) ? "@@" : "@") + newName; //$NON-NLS-1$ //$NON-NLS-2$
-		Collection<LocalNodeWrapper> allLocalNodes = new ArrayList<LocalNodeWrapper>();
-		allLocalNodes.add(localNode);
-		allLocalNodes.addAll(LocalNodeWrapper.gatherLocalNodes(localNode.getWrappedNode()));
-		replaceAllNames(allLocalNodes, LocalNodeWrapper.getLocalNodeName(localNode), newName);
+	public LocalToFieldConfig(IDocumentProvider docProvider, int caretPosition) {
+		this.docProvider = docProvider;
+		this.caretPosition = caretPosition;
+	}
+	
+	public boolean isClassField() {
+		return classField;
 	}
 
-	private void replaceAllNames(Collection<LocalNodeWrapper> allLocalNodes, String orgName, String newName) {
-		for (LocalNodeWrapper aktNode : allLocalNodes) {
-			String aktNodeName = LocalNodeWrapper.getLocalNodeName(aktNode);
-			if (aktNodeName.equals(orgName)) {
-				setNodeName(aktNode, newName);
-			}
-		}
+	public void setClassField(boolean classField) {
+		this.classField = classField;
 	}
 
-	private void setNodeName(LocalNodeWrapper localNode, String newName) {
-		localNode.setName(newName);
+	public String getNewName() {
+		return newName;
 	}
 
-	@Override
-	protected int getOffsetLength() {
-		return localNode.getWrappedNode().getPosition().getEndOffset() - getOffset(null);
+	public void setNewName(String newName) {
+		this.newName = newName;
 	}
 
-	@Override
-	protected Node getEditNode(int offset, String document) {
-		return localNode.getWrappedNode();
+	public int getCaretPosition() {
+		return caretPosition;
 	}
 
-	@Override
-	protected int getOffset(String document) {
-		return localNode.getWrappedNode().getPosition().getStartOffset();
+	public ClassNodeWrapper getEnclosingClassNode() {
+		return enclosingClassNode;
+	}
+
+	public void setEnclosingClassNode(ClassNodeWrapper enclosingClassNode) {
+		this.enclosingClassNode = enclosingClassNode;
+	}
+
+	public MethodDefNode getEnclosingMethod() {
+		return enclosingMethod;
+	}
+
+	public void setEnclosingMethod(MethodDefNode enclosingMethod) {
+		this.enclosingMethod = enclosingMethod;
+	}
+
+	public LocalNodeWrapper getSelectedNode() {
+		return selectedNode;
+	}
+
+	public void setSelectedNode(LocalNodeWrapper selectedItem) {
+		this.selectedNode = selectedItem;
+	}
+
+	public IDocumentProvider getDocumentProvider() {
+		return docProvider;
+	}
+
+	public void setDocumentProvider(IDocumentProvider doc) {
+		this.docProvider = doc;
 	}
 }

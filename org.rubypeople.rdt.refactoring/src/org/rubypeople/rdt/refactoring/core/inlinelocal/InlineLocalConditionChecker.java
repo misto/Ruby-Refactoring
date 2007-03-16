@@ -48,17 +48,17 @@ import org.rubypeople.rdt.refactoring.nodewrapper.LocalNodeWrapper;
 import org.rubypeople.rdt.refactoring.util.JRubyRefactoringUtils;
 import org.rubypeople.rdt.refactoring.util.NodeUtil;
 
-public class InlineTempConditionChecker extends RefactoringConditionChecker {
+public class InlineLocalConditionChecker extends RefactoringConditionChecker {
 
-	private InlineTempConfig config;
+	private InlineLocalConfig config;
 	private RootNode rootNode;
 
-	public InlineTempConditionChecker(InlineTempConfig config) {
+	public InlineLocalConditionChecker(InlineLocalConfig config) {
 		super(config);
 	}
 	
 	public void init(IRefactoringConfig configObj) {
-		this.config = (InlineTempConfig) configObj;
+		this.config = (InlineLocalConfig) configObj;
 		rootNode = config.getDocumentProvider().getActiveFileRootNode();
 		int caretPosition = config.getCaretPosition();
 		config.setEnclosingMethod((MethodDefNode) SelectionNodeProvider.getSelectedNodeOfType(rootNode, caretPosition, MethodDefNode.class));

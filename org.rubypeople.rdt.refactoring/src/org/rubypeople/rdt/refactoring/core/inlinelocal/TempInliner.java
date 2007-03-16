@@ -45,11 +45,11 @@ import org.rubypeople.rdt.refactoring.util.JRubyRefactoringUtils;
 
 public class TempInliner extends MultiEditProvider {
 
-	private InlineTempConfig config;
+	private InlineLocalConfig config;
 
 	private ExtractMethodConfig extractConfig;
 
-	public TempInliner(InlineTempConfig config) {
+	public TempInliner(InlineLocalConfig config) {
 		this.config = config;
 	}
 
@@ -106,7 +106,7 @@ public class TempInliner extends MultiEditProvider {
 		return config.getSelectedItemName();
 	}
 
-	public InlineTempConfig getConfig() {
+	public InlineLocalConfig getConfig() {
 		return config;
 	}
 }

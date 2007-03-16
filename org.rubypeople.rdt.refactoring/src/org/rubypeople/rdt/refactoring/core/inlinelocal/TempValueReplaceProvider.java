@@ -51,9 +51,9 @@ public class TempValueReplaceProvider extends ReplaceEditProvider {
 
 	private boolean addBrackets;
 
-	private InlineTempConfig config;
+	private InlineLocalConfig config;
 
-	public TempValueReplaceProvider(LocalNodeWrapper targetNode, InlineTempConfig config, boolean addBrackets) {
+	public TempValueReplaceProvider(LocalNodeWrapper targetNode, InlineLocalConfig config, boolean addBrackets) {
 		super(false);
 		this.config = config;
 		this.inlinedNode = config.getDefinitionNode();

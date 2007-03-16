@@ -35,18 +35,18 @@ import org.rubypeople.rdt.refactoring.ui.pages.ConverterPageParameters;
 
 public class ConvertTempToFieldRefactoring extends RubyRefactoring {
 
-	public static final String NAME = Messages.ConvertTempToFieldRefactoring_Name;
+	public static final String NAME = Messages.ConvertLocalToFieldRefactoring_Name;
 
 	public ConvertTempToFieldRefactoring(TextSelectionProvider selectionProvider) {
 		super(NAME);
 
-		TempToFieldConfig config = new TempToFieldConfig(getDocumentProvider(), selectionProvider.getCarretPosition());
-		TempToFieldConditionChecker checker = new TempToFieldConditionChecker(config);
+		LocalToFieldConfig config = new LocalToFieldConfig(getDocumentProvider(), selectionProvider.getCarretPosition());
+		LocalToFieldConditionChecker checker = new LocalToFieldConditionChecker(config);
 
 		setRefactoringConditionChecker(checker);
 
 		if(checker.shouldPerform()) {
-			TempToFieldConverter tempToFieldConverter = new TempToFieldConverter(config);
+			LocalToFieldConverter tempToFieldConverter = new LocalToFieldConverter(config);
 			setEditProvider(tempToFieldConverter);
 			ConverterPageParameters pageParameters = createPageParameters(tempToFieldConverter);
 			ConvertTempToFieldPage page = new ConvertTempToFieldPage(tempToFieldConverter, pageParameters);
@@ -54,7 +54,7 @@ public class ConvertTempToFieldRefactoring extends RubyRefactoring {
 		}
 	}
 
-	private ConverterPageParameters createPageParameters(TempToFieldConverter tempToFieldConverter) {
+	private ConverterPageParameters createPageParameters(LocalToFieldConverter tempToFieldConverter) {
 		ConverterPageParameters pageParameters = new ConverterPageParameters();
 
 		if (tempToFieldConverter.isVariableInConstructor()) {

@@ -42,15 +42,15 @@ import org.rubypeople.rdt.refactoring.offsetprovider.AfterLastNodeInMethodOffset
 import org.rubypeople.rdt.refactoring.offsetprovider.ConstructorOffsetProvider;
 import org.rubypeople.rdt.refactoring.offsetprovider.OffsetProvider;
 
-public class InitInConstructorConversion extends InsertEditProvider {
+public class InitInConstructorEditProvider extends InsertEditProvider {
 
 	private ClassNodeWrapper enclosingClassNode;
 
 	private Node insertNode;
 
-	public InitInConstructorConversion(LocalNodeWrapper originalNode, TempToFieldConfig config) {
+	public InitInConstructorEditProvider(LocalNodeWrapper originalNode, LocalToFieldConfig config) {
 		super(true);
-		Conversion conversion = new Conversion(originalNode, config.getNewName(), config.isClassField());
+		LocalToFieldEditProvider conversion = new LocalToFieldEditProvider(originalNode, config.getNewName(), config.isClassField());
 		insertNode = conversion.getEditNode(0, null);
 		enclosingClassNode = config.getEnclosingClassNode();
 	}

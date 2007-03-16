@@ -32,8 +32,8 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 
 import org.eclipse.jface.text.BadLocationException;
-import org.rubypeople.rdt.refactoring.core.splitlocal.SplitTempConditionChecker;
-import org.rubypeople.rdt.refactoring.core.splitlocal.SplitTempConfig;
+import org.rubypeople.rdt.refactoring.core.splitlocal.SplitLocalConditionChecker;
+import org.rubypeople.rdt.refactoring.core.splitlocal.SplitLocalConfig;
 import org.rubypeople.rdt.refactoring.core.splitlocal.SplitTempEditProvider;
 import org.rubypeople.rdt.refactoring.tests.FileTestCase;
 import org.rubypeople.rdt.refactoring.tests.FileTestData;
@@ -49,8 +49,8 @@ public class SplitTempTester extends FileTestCase {
 		
 		FileTestData testData = new FileTestData(getName(), ".source.rb", ".result.rb");
 
-		SplitTempConfig config = new SplitTempConfig(testData, testData.getIntProperty("pos"));
-		SplitTempConditionChecker checker = new SplitTempConditionChecker(config);
+		SplitLocalConfig config = new SplitLocalConfig(testData, testData.getIntProperty("pos"));
+		SplitLocalConditionChecker checker = new SplitLocalConditionChecker(config);
 		
 		if(!checker.shouldPerform()) {
 			fail();

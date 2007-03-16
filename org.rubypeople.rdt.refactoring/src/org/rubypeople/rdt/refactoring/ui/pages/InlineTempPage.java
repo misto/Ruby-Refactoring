@@ -42,20 +42,20 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
-import org.rubypeople.rdt.refactoring.core.inlinelocal.InlineTempConfig;
+import org.rubypeople.rdt.refactoring.core.inlinelocal.InlineLocalConfig;
 import org.rubypeople.rdt.refactoring.core.inlinelocal.InlineTempRefactoring;
 import org.rubypeople.rdt.refactoring.ui.LabeledTextField;
 import org.rubypeople.rdt.refactoring.util.NameValidator;
 
 public class InlineTempPage extends RefactoringWizardPage {
 
-	private InlineTempConfig config;
+	private InlineLocalConfig config;
 
 	private int occurencesCount;
 
 	private String selectedItemName;
 
-	public InlineTempPage(InlineTempConfig config, int occurencesCount, String selectedItemName) {
+	public InlineTempPage(InlineLocalConfig config, int occurencesCount, String selectedItemName) {
 		super(InlineTempRefactoring.NAME + "..."); //$NON-NLS-1$
 
 		this.config = config;

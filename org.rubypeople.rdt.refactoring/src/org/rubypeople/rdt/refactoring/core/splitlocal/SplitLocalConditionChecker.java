@@ -28,53 +28,32 @@
 
 package org.rubypeople.rdt.refactoring.core.splitlocal;
 
-import java.util.Collection;
-
 import org.rubypeople.rdt.refactoring.core.IRefactoringConfig;
-import org.rubypeople.rdt.refactoring.documentprovider.IDocumentProvider;
+import org.rubypeople.rdt.refactoring.core.RefactoringConditionChecker;
 
-public class SplitTempConfig implements IRefactoringConfig {
+public class SplitLocalConditionChecker extends RefactoringConditionChecker {
 
-	private IDocumentProvider documentProvider;
-	private int caretPosition;
-	Collection<LocalVarUsage> localUsages;
-	private LocalVarFinder localVarFinder;
+	private SplitLocalConfig config;
 
-	public SplitTempConfig(IDocumentProvider documentProvider, int caretPosition) {
-		this.documentProvider = documentProvider;
-		this.caretPosition = caretPosition;
+	public SplitLocalConditionChecker(SplitLocalConfig config) {
+		super(config);
+	}
+	
+	public void init(IRefactoringConfig configObj) {
+		this.config = (SplitLocalConfig) configObj;
+		config.setLocalVariablesFinder(new LocalVarFinder());
+		config.setLocalUsages(config.getLocalVariablesFinder().findLocalUsages(config.getDocumentProvider(), config.getCaretPsition()));
 	}
 
-	public int getCaretPsition() {
-		return caretPosition;
+	@Override
+	protected void checkFinalConditions() {
 	}
 
-	public IDocumentProvider getDocumentProvider() {
-		return documentProvider;
-	}
-
-	public boolean hasLocalUsages() {
-		return localUsages != null;
-	}
-
-	public void setLocalUsages(Collection<LocalVarUsage> localUsages) {
-		this.localUsages = localUsages;
-	}
-
-	public ILocalVarFinder getLocalVariablesFinder() {
-		return localVarFinder;
-	}
-
-	public void setLocalVariablesFinder(LocalVarFinder localVarFinder) {
-		this.localVarFinder = localVarFinder;
-	}
-
-	public Collection<LocalVarUsage> getLocalUsages() {
-		return localUsages;
-	}
-
-	public void setDocumentProvider(IDocumentProvider doc) {
-		this.documentProvider = doc;
+	@Override
+	protected void checkInitialConditions() {
+		if (!config.hasLocalUsages()) {
+			addError(Messages.SplitTempConditionChecker_NoLocal);
+		}
 	}
 
 }

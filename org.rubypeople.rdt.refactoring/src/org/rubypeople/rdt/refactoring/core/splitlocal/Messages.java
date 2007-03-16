@@ -3,7 +3,7 @@ package org.rubypeople.rdt.refactoring.core.splitlocal;
 import org.eclipse.osgi.util.NLS;
 
 public class Messages extends NLS {
-	private static final String BUNDLE_NAME = "org.rubypeople.rdt.refactoring.core.splittemp.messages"; //$NON-NLS-1$
+	private static final String BUNDLE_NAME = "org.rubypeople.rdt.refactoring.core.splitlocal.messages"; //$NON-NLS-1$
 
 	public static String SplitTempConditionChecker_NoLocal;
 

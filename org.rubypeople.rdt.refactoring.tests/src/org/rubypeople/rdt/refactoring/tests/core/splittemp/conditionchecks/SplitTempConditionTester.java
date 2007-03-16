@@ -31,8 +31,8 @@ package org.rubypeople.rdt.refactoring.tests.core.splittemp.conditionchecks;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 
-import org.rubypeople.rdt.refactoring.core.splitlocal.SplitTempConditionChecker;
-import org.rubypeople.rdt.refactoring.core.splitlocal.SplitTempConfig;
+import org.rubypeople.rdt.refactoring.core.splitlocal.SplitLocalConditionChecker;
+import org.rubypeople.rdt.refactoring.core.splitlocal.SplitLocalConfig;
 import org.rubypeople.rdt.refactoring.core.splitlocal.SplitTempEditProvider;
 import org.rubypeople.rdt.refactoring.tests.FilePropertyData;
 import org.rubypeople.rdt.refactoring.tests.FileTestData;
@@ -41,7 +41,7 @@ import org.rubypeople.rdt.refactoring.tests.RefactoringConditionTestCase;
 public class SplitTempConditionTester extends RefactoringConditionTestCase {
 
 	private FilePropertyData testData;
-	private SplitTempConfig config;
+	private SplitLocalConfig config;
 
 	public SplitTempConditionTester(String fileName) {
 		super(fileName);
@@ -51,8 +51,8 @@ public class SplitTempConditionTester extends RefactoringConditionTestCase {
 	public void runTest() throws FileNotFoundException, IOException {
 		testData = new FileTestData(getName(), ".test_source", ".test_source");
 		int caretPosition = testData.getIntProperty("cursorPosition");
-		config = new SplitTempConfig(testData, caretPosition);
-		SplitTempConditionChecker checker = new SplitTempConditionChecker(config);
+		config = new SplitLocalConfig(testData, caretPosition);
+		SplitLocalConditionChecker checker = new SplitLocalConditionChecker(config);
 		checkConditions(checker, testData);
 	}
 

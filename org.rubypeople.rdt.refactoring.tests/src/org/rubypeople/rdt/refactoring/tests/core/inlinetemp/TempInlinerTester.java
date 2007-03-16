@@ -34,8 +34,8 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 
 import org.eclipse.jface.text.BadLocationException;
-import org.rubypeople.rdt.refactoring.core.inlinelocal.InlineTempConditionChecker;
-import org.rubypeople.rdt.refactoring.core.inlinelocal.InlineTempConfig;
+import org.rubypeople.rdt.refactoring.core.inlinelocal.InlineLocalConditionChecker;
+import org.rubypeople.rdt.refactoring.core.inlinelocal.InlineLocalConfig;
 import org.rubypeople.rdt.refactoring.core.inlinelocal.TempInliner;
 import org.rubypeople.rdt.refactoring.tests.FileTestData;
 import org.rubypeople.rdt.refactoring.tests.RefactoringTestCase;
@@ -52,8 +52,8 @@ public class TempInlinerTester extends RefactoringTestCase {
 
 	private void runInlineTempTest(FileTestData data) throws BadLocationException {
 
-		InlineTempConfig config = new InlineTempConfig(data, data.getIntProperty("caretPosition"));
-		InlineTempConditionChecker checker = new InlineTempConditionChecker(config);
+		InlineLocalConfig config = new InlineLocalConfig(data, data.getIntProperty("caretPosition"));
+		InlineLocalConditionChecker checker = new InlineLocalConditionChecker(config);
 		if (!checker.shouldPerform()) {
 			fail();
 		}

@@ -41,7 +41,7 @@ import org.eclipse.swt.layout.RowLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Group;
-import org.rubypeople.rdt.refactoring.core.convertlocaltofield.TempToFieldConverter;
+import org.rubypeople.rdt.refactoring.core.convertlocaltofield.LocalToFieldConverter;
 import org.rubypeople.rdt.refactoring.ui.LabeledTextField;
 import org.rubypeople.rdt.refactoring.util.NameValidator;
 
@@ -49,11 +49,11 @@ public class ConvertTempToFieldPage extends RefactoringWizardPage {
 
 	private static final String TITLE = Messages.ConvertTempToFieldPage_ConvertLocalVariableToField;
 
-	private TempToFieldConverter converter;
+	private LocalToFieldConverter converter;
 
 	private ConverterPageParameters pageParameters;
 
-	public ConvertTempToFieldPage(TempToFieldConverter converter, ConverterPageParameters parameters) {
+	public ConvertTempToFieldPage(LocalToFieldConverter converter, ConverterPageParameters parameters) {
 		super(TITLE);
 		this.converter = converter;
 		this.pageParameters = parameters;
@@ -117,13 +117,13 @@ public class ConvertTempToFieldPage extends RefactoringWizardPage {
 		Button inCurrentMethod = new Button(initializeInGroup, SWT.RADIO);
 		inCurrentMethod.setText(Messages.ConvertTempToFieldPage_CurrentMethod);
 		inCurrentMethod.setEnabled(pageParameters.isInCurrentMethodRadioEnabled());
-		addRadioListener(inCurrentMethod, TempToFieldConverter.INIT_IN_METHOD);
+		addRadioListener(inCurrentMethod, LocalToFieldConverter.INIT_IN_METHOD);
 		inCurrentMethod.setSelection(true);
 
 		Button inClassConstructor = new Button(initializeInGroup, SWT.RADIO);
 		inClassConstructor.setText(Messages.ConvertTempToFieldPage_ClassConstructor);
 		inClassConstructor.setEnabled(pageParameters.isInClassConstructorRadioEnabled());
-		addRadioListener(inClassConstructor, TempToFieldConverter.INIT_IN_CONSTRUCTOR);
+		addRadioListener(inClassConstructor, LocalToFieldConverter.INIT_IN_CONSTRUCTOR);
 
 		GridData groupData = new GridData(GridData.FILL_HORIZONTAL);
 		initializeInGroup.setLayoutData(groupData);

@@ -33,16 +33,16 @@ package org.rubypeople.rdt.refactoring.tests.core.converttemptofield.conditionch
 import java.io.FileNotFoundException;
 import java.io.IOException;
 
-import org.rubypeople.rdt.refactoring.core.convertlocaltofield.TempToFieldConditionChecker;
-import org.rubypeople.rdt.refactoring.core.convertlocaltofield.TempToFieldConfig;
-import org.rubypeople.rdt.refactoring.core.convertlocaltofield.TempToFieldConverter;
+import org.rubypeople.rdt.refactoring.core.convertlocaltofield.LocalToFieldConditionChecker;
+import org.rubypeople.rdt.refactoring.core.convertlocaltofield.LocalToFieldConfig;
+import org.rubypeople.rdt.refactoring.core.convertlocaltofield.LocalToFieldConverter;
 import org.rubypeople.rdt.refactoring.tests.FilePropertyData;
 import org.rubypeople.rdt.refactoring.tests.FileTestData;
 import org.rubypeople.rdt.refactoring.tests.RefactoringConditionTestCase;
 
 public class TempToFieldConditionTester extends RefactoringConditionTestCase {
 	private FilePropertyData testData;
-	private TempToFieldConfig config;
+	private LocalToFieldConfig config;
 
 	public TempToFieldConditionTester(String fileName) {
 		super(fileName);
@@ -51,14 +51,14 @@ public class TempToFieldConditionTester extends RefactoringConditionTestCase {
 	@Override
 	public void runTest() throws FileNotFoundException, IOException {
 		testData = new FileTestData(getName(), ".test_source", ".test_source");
-		config = new TempToFieldConfig(testData, testData.getIntProperty("cursorPosition"));
-		TempToFieldConditionChecker checker = new TempToFieldConditionChecker(config);
+		config = new LocalToFieldConfig(testData, testData.getIntProperty("cursorPosition"));
+		LocalToFieldConditionChecker checker = new LocalToFieldConditionChecker(config);
 		checkConditions(checker, testData);
 	}
 
 	@Override
 	protected void createEditProviderAndSetUserInput() {
-		TempToFieldConverter converter = new TempToFieldConverter(config);
+		LocalToFieldConverter converter = new LocalToFieldConverter(config);
 		converter.setIsClassField(testData.getBoolProperty("isClassField"));
 		converter.setNewName(testData.getProperty("newName"));		
 	}

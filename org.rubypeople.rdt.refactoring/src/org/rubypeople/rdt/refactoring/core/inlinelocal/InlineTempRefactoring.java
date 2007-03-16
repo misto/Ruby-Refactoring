@@ -43,8 +43,8 @@ public class InlineTempRefactoring extends RubyRefactoring {
 	public InlineTempRefactoring(TextSelectionProvider selectionProvider) {
 		super(NAME);
 		
-		InlineTempConfig config = new InlineTempConfig(getDocumentProvider(), selectionProvider.getCarretPosition());
-		InlineTempConditionChecker checker = new InlineTempConditionChecker(config);
+		InlineLocalConfig config = new InlineLocalConfig(getDocumentProvider(), selectionProvider.getCarretPosition());
+		InlineLocalConditionChecker checker = new InlineLocalConditionChecker(config);
 		setRefactoringConditionChecker(checker);
 
 		if(checker.shouldPerform()) {

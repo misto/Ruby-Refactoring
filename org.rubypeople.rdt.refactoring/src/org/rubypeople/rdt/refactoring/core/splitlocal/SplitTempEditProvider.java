@@ -35,9 +35,9 @@ import org.rubypeople.rdt.refactoring.editprovider.MultiEditProvider;
 
 public class SplitTempEditProvider extends MultiEditProvider implements ISplittedNamesReceiver {
 
-	private final SplitTempConfig config;
+	private final SplitLocalConfig config;
 
-	public SplitTempEditProvider(SplitTempConfig config) {
+	public SplitTempEditProvider(SplitLocalConfig config) {
 		this.config = config;
 	}
 
