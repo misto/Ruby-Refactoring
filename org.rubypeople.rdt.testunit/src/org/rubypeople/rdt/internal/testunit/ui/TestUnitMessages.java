@@ -67,6 +67,10 @@ public class TestUnitMessages {
 	public static String CompareResultDialog_actualLabel;
 	public static String CompareResultDialog_labelOK;
 	public static String CompareResultDialog_title;
+	public static String TestRunnerViewPart_toggle_horizontal_label;
+	public static String TestRunnerViewPart_toggle_vertical_label;
+	public static String TestRunnerViewPart_toggle_automatic_label;
+	public static String TestRunnerViewPart_layout_menu;
 
 	static {
 		NLS.initializeMessages(BUNDLE_NAME, TestUnitMessages.class);

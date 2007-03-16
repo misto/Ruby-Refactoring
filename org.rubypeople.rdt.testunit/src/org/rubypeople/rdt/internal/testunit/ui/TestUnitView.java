@@ -23,8 +23,10 @@ import org.eclipse.debug.core.ILaunchConfigurationWorkingCopy;
 import org.eclipse.debug.core.ILaunchManager;
 import org.eclipse.debug.ui.DebugUITools;
 import org.eclipse.jface.action.Action;
+import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.IStatusLineManager;
 import org.eclipse.jface.action.IToolBarManager;
+import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.dialogs.ErrorDialog;
 import org.eclipse.jface.dialogs.MessageDialog;
@@ -35,9 +37,12 @@ import org.eclipse.swt.custom.CTabFolder;
 import org.eclipse.swt.custom.SashForm;
 import org.eclipse.swt.custom.ViewForm;
 import org.eclipse.swt.dnd.Clipboard;
+import org.eclipse.swt.events.ControlEvent;
+import org.eclipse.swt.events.ControlListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
@@ -68,11 +73,14 @@ public class TestUnitView extends ViewPart implements ITestRunListener3 {
 	static final int REFRESH_INTERVAL = 200;
 
 	public static final String ID_EXTENSION_POINT_TESTRUN_TABS = TestunitPlugin.PLUGIN_ID + "." + "internalTestRunTabs"; //$NON-NLS-1$ //$NON-NLS-2$
+	
+	static enum VIEW_ORIENTATION {VERTICAL, HORIZONTAL, AUTOMATIC};
+	
+	private VIEW_ORIENTATION fOrientation= VIEW_ORIENTATION.AUTOMATIC;
+	
+	private VIEW_ORIENTATION fCurrentOrientation;
 
-	//orientations
-	static final int VIEW_ORIENTATION_VERTICAL = 0;
-	static final int VIEW_ORIENTATION_HORIZONTAL = 1;
-	static final int VIEW_ORIENTATION_AUTOMATIC = 2;
+	private ToggleOrientationAction[] fToggleOrientationActions;
 
 	final Image fStackViewIcon = TestUnitView.createImage("eview16/stackframe.gif");//$NON-NLS-1$
 
@@ -138,8 +146,8 @@ public class TestUnitView extends ViewPart implements ITestRunListener3 {
 
 	private CounterPanel fCounterPanel;
 	private TestUnitProgressBar fProgressBar;
-	private int fCurrentOrientation;
 	private Composite fCounterComposite;
+	private Composite fParent;
 	private SashForm fSashForm;
 	private CTabFolder fTabFolder;
 	private FailureTrace fFailureTrace;
@@ -177,6 +185,9 @@ public class TestUnitView extends ViewPart implements ITestRunListener3 {
 	 * it.
 	 */
 	public void createPartControl(Composite parent) {
+		fParent = parent;
+		addResizeListener(parent);
+		
 		fClipboard = new Clipboard(parent.getDisplay());
 
 		GridLayout gridLayout = new GridLayout();
@@ -191,12 +202,43 @@ public class TestUnitView extends ViewPart implements ITestRunListener3 {
 		SashForm sashForm = createSashForm(parent);
 		sashForm.setLayoutData(new GridData(GridData.FILL_BOTH));
 	}
+	
+	private class ToggleOrientationAction extends Action {
+		private final VIEW_ORIENTATION fActionOrientation;
+		
+		public ToggleOrientationAction(TestUnitView v, VIEW_ORIENTATION orientation) {
+			super("", AS_RADIO_BUTTON); //$NON-NLS-1$
+
+			if (orientation == VIEW_ORIENTATION.HORIZONTAL) {
+				setText(TestUnitMessages.TestRunnerViewPart_toggle_horizontal_label); 
+				setImageDescriptor(TestunitPlugin.getImageDescriptor("elcl16/th_horizontal.gif")); //$NON-NLS-1$				
+			} else if (orientation == VIEW_ORIENTATION.VERTICAL) {
+				setText(TestUnitMessages.TestRunnerViewPart_toggle_vertical_label); 
+				setImageDescriptor(TestunitPlugin.getImageDescriptor("elcl16/th_vertical.gif")); //$NON-NLS-1$				
+			} else if (orientation == VIEW_ORIENTATION.AUTOMATIC) {
+				setText(TestUnitMessages.TestRunnerViewPart_toggle_automatic_label);  
+				setImageDescriptor(TestunitPlugin.getImageDescriptor("elcl16/th_automatic.gif")); //$NON-NLS-1$				
+			}
+			fActionOrientation= orientation;
+		}
+		
+		public VIEW_ORIENTATION getOrientation() {
+			return fActionOrientation;
+		}
+		
+		public void run() {
+			if (isChecked()) {
+				fOrientation= fActionOrientation;
+				computeOrientation();
+			}
+		}		
+	}
 
 	private void configureToolBar() {
 		IActionBars actionBars = getViewSite().getActionBars();
 		IToolBarManager toolBar = actionBars.getToolBarManager();
-		// TODO Uncomment when other actions and orientation are available
-		//IMenuManager viewMenu = actionBars.getMenuManager();
+		// TODO Uncomment when other actions are available
+		IMenuManager viewMenu = actionBars.getMenuManager();
 		fRerunLastTestAction = new RerunLastAction();
 		fScrollLockAction = new ScrollLockAction(this);
 		//fNextAction= new ShowNextFailureAction(this);
@@ -216,10 +258,19 @@ public class TestUnitView extends ViewPart implements ITestRunListener3 {
 		toolBar.add(new Separator());
 		toolBar.add(fRerunLastTestAction);
 		toolBar.add(fScrollLockAction);
+		
+		fToggleOrientationActions =
+			new ToggleOrientationAction[] {
+				new ToggleOrientationAction(this, VIEW_ORIENTATION.VERTICAL),
+				new ToggleOrientationAction(this, VIEW_ORIENTATION.HORIZONTAL),
+				new ToggleOrientationAction(this, VIEW_ORIENTATION.AUTOMATIC)};
 
-		//for (int i = 0; i < fToggleOrientationActions.length; ++i)
-		//	viewMenu.add(fToggleOrientationActions[i]);
-
+		MenuManager layoutSubMenu= new MenuManager(TestUnitMessages.TestRunnerViewPart_layout_menu);
+		for (int i = 0; i < fToggleOrientationActions.length; ++i) {
+			layoutSubMenu.add(fToggleOrientationActions[i]);
+		}
+		viewMenu.add(layoutSubMenu);
+		
 		fScrollLockAction.setChecked(!fAutoScroll);
 
 		actionBars.updateActionBars();
@@ -309,7 +360,7 @@ public class TestUnitView extends ViewPart implements ITestRunListener3 {
 	}
 
 	private void setCounterColumns(GridLayout layout) {
-		if (fCurrentOrientation == VIEW_ORIENTATION_HORIZONTAL)
+		if (fCurrentOrientation == VIEW_ORIENTATION.HORIZONTAL)
 			layout.numColumns = 2;
 		else
 			layout.numColumns = 1;
@@ -934,6 +985,45 @@ public class TestUnitView extends ViewPart implements ITestRunListener3 {
 		if (fLastLaunch != null && fLastLaunch.getLaunchConfiguration() != null) {
 			DebugUITools.launch(fLastLaunch.getLaunchConfiguration(), fLastLaunch.getLaunchMode());
 		}
+	}
+	
+	private void addResizeListener(Composite parent) {
+		parent.addControlListener(new ControlListener() {
+			public void controlMoved(ControlEvent e) {
+			}
+			public void controlResized(ControlEvent e) {
+				computeOrientation();
+			}
+		});
+	}
+	
+	void computeOrientation() {
+		if (fOrientation != VIEW_ORIENTATION.AUTOMATIC) {
+			fCurrentOrientation= fOrientation;
+			setOrientation(fCurrentOrientation);
+		}
+		else {
+			Point size= fParent.getSize();
+			if (size.x != 0 && size.y != 0) {
+				if (size.x > size.y) 
+					setOrientation(VIEW_ORIENTATION.HORIZONTAL);
+				else 
+					setOrientation(VIEW_ORIENTATION.VERTICAL);
+			}
+		}
+	}
+	
+	private void setOrientation(VIEW_ORIENTATION orientation) {
+		if ((fSashForm == null) || fSashForm.isDisposed())
+			return;
+		boolean horizontal = orientation == VIEW_ORIENTATION.HORIZONTAL;
+		fSashForm.setOrientation(horizontal ? SWT.HORIZONTAL : SWT.VERTICAL);
+		for (int i = 0; i < fToggleOrientationActions.length; ++i)
+			fToggleOrientationActions[i].setChecked(fOrientation == fToggleOrientationActions[i].getOrientation());
+		fCurrentOrientation = orientation;
+		GridLayout layout= (GridLayout) fCounterComposite.getLayout();
+		setCounterColumns(layout); 
+		fParent.layout();
 	}
 	
 	public IRubyProject getLaunchedProject() {
