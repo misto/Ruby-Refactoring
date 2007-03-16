@@ -25,6 +25,7 @@ import org.rubypeople.rdt.core.RubyModelException;
 import org.rubypeople.rdt.core.WorkingCopyOwner;
 import org.rubypeople.rdt.internal.codeassist.SelectionEngine;
 import org.rubypeople.rdt.internal.core.buffer.BufferManager;
+import org.rubypeople.rdt.internal.core.util.Util;
 
 /**
  * @author cawilliams
@@ -378,5 +379,11 @@ public abstract class Openable extends RubyElement implements IOpenable, IBuffer
 
 		SelectionEngine engine = new SelectionEngine();
 		return engine.select(cu, offset, offset + length - 1);
+	}
+	
+	public String findRecommendedLineSeparator() throws RubyModelException {
+		IBuffer buffer = getBuffer();
+		String source = buffer == null ? null : buffer.getContents();
+		return Util.getLineSeparator(source, getRubyProject());
 	}
 }

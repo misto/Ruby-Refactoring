@@ -262,4 +262,27 @@ public class EditorUtility {
 		return rProject;
 	}
 
+	/**
+	 * Tests if a CU is currently shown in an editor
+	 * @return the IEditorPart if shown, null if element is not open in an editor
+	 */
+	public static IEditorPart isOpenInEditor(Object inputElement) {
+		IEditorInput input= null;
+
+		try {
+			input= getEditorInput(inputElement);
+		} catch (RubyModelException x) {
+			RubyPlugin.log(x.getStatus());
+		}
+
+		if (input != null) {
+			IWorkbenchPage p= RubyPlugin.getActivePage();
+			if (p != null) {
+				return p.findEditor(input);
+			}
+		}
+
+		return null;
+	}
+
 }

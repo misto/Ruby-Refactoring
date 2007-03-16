@@ -170,4 +170,18 @@ public interface IOpenable {
 	 *                </ul>
 	 */
 	public void save(IProgressMonitor progress, boolean force) throws RubyModelException;
+
+	/**
+	 * Finds and returns the recommended line separator for this element.
+	 * The element's buffer is first searched and the first line separator in this buffer is returned if any.
+	 * Otherwise the preference {@link org.eclipse.core.runtime.Platform#PREF_LINE_SEPARATOR} 
+	 * on this element's project or workspace is returned.
+	 * Finally if no such preference is set, the system line separator is returned.
+	 * 
+	 * @return the recommended line separator for this element
+	 * @exception RubyModelException if this element does not exist or if an
+	 *		exception occurs while accessing its corresponding resource.
+	 * @since 0.9.0
+	 */
+	public String findRecommendedLineSeparator() throws RubyModelException;
 }

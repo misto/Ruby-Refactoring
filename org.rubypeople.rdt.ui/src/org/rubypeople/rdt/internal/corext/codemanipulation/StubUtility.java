@@ -5,7 +5,10 @@ import org.eclipse.core.resources.ProjectScope;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.preferences.IScopeContext;
 import org.eclipse.core.runtime.preferences.InstanceScope;
+import org.rubypeople.rdt.core.IOpenable;
+import org.rubypeople.rdt.core.IRubyElement;
 import org.rubypeople.rdt.core.IRubyProject;
+import org.rubypeople.rdt.core.RubyModelException;
 
 public class StubUtility {
 
@@ -44,5 +47,22 @@ public class StubUtility {
 		scopeContext= new IScopeContext[] { new InstanceScope() };
 		String platformDefault= System.getProperty("line.separator", "\n"); //$NON-NLS-1$ //$NON-NLS-2$
 		return Platform.getPreferencesService().getString(Platform.PI_RUNTIME, Platform.PREF_LINE_SEPARATOR, platformDefault, scopeContext);
+	}
+
+	/**
+	 * Examines a string and returns the first line delimiter found.
+	 */
+	public static String getLineDelimiterUsed(IRubyElement elem) {
+		while (elem != null && !(elem instanceof IOpenable)) {
+			elem= elem.getParent();
+		}
+		if (elem != null) {
+			try {
+				return ((IOpenable) elem).findRecommendedLineSeparator();
+			} catch (RubyModelException exception) {
+				// Use project setting
+			}
+		}
+		return getProjectLineDelimiter(null);
 	}
 }
