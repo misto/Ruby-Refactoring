@@ -233,11 +233,13 @@ public class RubyElementDeltaBuilder {
         if (oldInfo instanceof RubyTypeElementInfo && newInfo instanceof RubyTypeElementInfo) {
             RubyTypeElementInfo oldSourceTypeInfo = (RubyTypeElementInfo) oldInfo;
             RubyTypeElementInfo newSourceTypeInfo = (RubyTypeElementInfo) newInfo;
+            if (oldSourceTypeInfo.getSuperclassName() != null && newSourceTypeInfo.getSuperclassName() != null) {
             if (!oldSourceTypeInfo.getSuperclassName().equals(newSourceTypeInfo
                     .getSuperclassName())
                     || !CharOperation.equals(oldSourceTypeInfo.getIncludedModuleNames(),
                             newSourceTypeInfo.getIncludedModuleNames())) {
                 this.delta.changed(newElement, IRubyElementDelta.F_SUPER_TYPES);
+            }
             }
         }
     }
