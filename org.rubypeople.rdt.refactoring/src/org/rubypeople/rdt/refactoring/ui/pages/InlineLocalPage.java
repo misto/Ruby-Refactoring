@@ -43,11 +43,11 @@ import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 import org.rubypeople.rdt.refactoring.core.inlinelocal.InlineLocalConfig;
-import org.rubypeople.rdt.refactoring.core.inlinelocal.InlineTempRefactoring;
+import org.rubypeople.rdt.refactoring.core.inlinelocal.InlineLocalRefactoring;
 import org.rubypeople.rdt.refactoring.ui.LabeledTextField;
 import org.rubypeople.rdt.refactoring.util.NameValidator;
 
-public class InlineTempPage extends RefactoringWizardPage {
+public class InlineLocalPage extends RefactoringWizardPage {
 
 	private InlineLocalConfig config;
 
@@ -55,8 +55,8 @@ public class InlineTempPage extends RefactoringWizardPage {
 
 	private String selectedItemName;
 
-	public InlineTempPage(InlineLocalConfig config, int occurencesCount, String selectedItemName) {
-		super(InlineTempRefactoring.NAME + "..."); //$NON-NLS-1$
+	public InlineLocalPage(InlineLocalConfig config, int occurencesCount, String selectedItemName) {
+		super(InlineLocalRefactoring.NAME + "..."); //$NON-NLS-1$
 
 		this.config = config;
 		this.occurencesCount = occurencesCount;
@@ -109,11 +109,11 @@ public class InlineTempPage extends RefactoringWizardPage {
 
 			private void checkInput(String newName) {
 				if (NameValidator.isValidMethodName(newName)) {
-					InlineTempPage.this.setMessage(null);
-					InlineTempPage.this.setPageComplete(true);
+					InlineLocalPage.this.setMessage(null);
+					InlineLocalPage.this.setPageComplete(true);
 				} else {
-					InlineTempPage.this.setMessage("'" + newName + Messages.InlineTempPage_IsNotValidName, ConvertTempToFieldPage.ERROR); //$NON-NLS-1$
-					InlineTempPage.this.setPageComplete(false);
+					InlineLocalPage.this.setMessage("'" + newName + Messages.InlineTempPage_IsNotValidName, ConvertLocalToFieldPage.ERROR); //$NON-NLS-1$
+					InlineLocalPage.this.setPageComplete(false);
 				}
 
 			}

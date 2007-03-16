@@ -30,14 +30,14 @@ package org.rubypeople.rdt.refactoring.core.convertlocaltofield;
 
 import org.rubypeople.rdt.refactoring.core.RubyRefactoring;
 import org.rubypeople.rdt.refactoring.core.TextSelectionProvider;
-import org.rubypeople.rdt.refactoring.ui.pages.ConvertTempToFieldPage;
+import org.rubypeople.rdt.refactoring.ui.pages.ConvertLocalToFieldPage;
 import org.rubypeople.rdt.refactoring.ui.pages.ConverterPageParameters;
 
-public class ConvertTempToFieldRefactoring extends RubyRefactoring {
+public class ConvertLocalToFieldRefactoring extends RubyRefactoring {
 
 	public static final String NAME = Messages.ConvertLocalToFieldRefactoring_Name;
 
-	public ConvertTempToFieldRefactoring(TextSelectionProvider selectionProvider) {
+	public ConvertLocalToFieldRefactoring(TextSelectionProvider selectionProvider) {
 		super(NAME);
 
 		LocalToFieldConfig config = new LocalToFieldConfig(getDocumentProvider(), selectionProvider.getCarretPosition());
@@ -49,7 +49,7 @@ public class ConvertTempToFieldRefactoring extends RubyRefactoring {
 			LocalToFieldConverter tempToFieldConverter = new LocalToFieldConverter(config);
 			setEditProvider(tempToFieldConverter);
 			ConverterPageParameters pageParameters = createPageParameters(tempToFieldConverter);
-			ConvertTempToFieldPage page = new ConvertTempToFieldPage(tempToFieldConverter, pageParameters);
+			ConvertLocalToFieldPage page = new ConvertLocalToFieldPage(tempToFieldConverter, pageParameters);
 			pages.add(page);
 		}
 	}

@@ -43,13 +43,13 @@ import org.rubypeople.rdt.refactoring.editprovider.MultiEditProvider;
 import org.rubypeople.rdt.refactoring.nodewrapper.LocalNodeWrapper;
 import org.rubypeople.rdt.refactoring.util.JRubyRefactoringUtils;
 
-public class TempInliner extends MultiEditProvider {
+public class LocalVariableInliner extends MultiEditProvider {
 
 	private InlineLocalConfig config;
 
 	private ExtractMethodConfig extractConfig;
 
-	public TempInliner(InlineLocalConfig config) {
+	public LocalVariableInliner(InlineLocalConfig config) {
 		this.config = config;
 	}
 
@@ -78,7 +78,7 @@ public class TempInliner extends MultiEditProvider {
 	private EditProvider replaceWithValueProvider(LocalNodeWrapper targetNode) {
 
 		boolean addBrackets = JRubyRefactoringUtils.isMathematicalExpression(config.getDefinitionNode().getValueNode());
-		return new TempValueReplaceProvider(targetNode, config, addBrackets);
+		return new LocalValueReplaceProvider(targetNode, config, addBrackets);
 	}
 
 	private EditProvider extractMethodProvider() {

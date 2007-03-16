@@ -49,7 +49,7 @@ import org.rubypeople.rdt.refactoring.core.splitlocal.SplitTempRefactoring;
 import org.rubypeople.rdt.refactoring.ui.RdtCodeViewer;
 import org.rubypeople.rdt.refactoring.util.NameValidator;
 
-public class SplitTempPage extends RefactoringWizardPage {
+public class SplitLocalPage extends RefactoringWizardPage {
 
 	private static final int SEPARATOR_AT = 200;
 
@@ -83,7 +83,7 @@ public class SplitTempPage extends RefactoringWizardPage {
 		};
 	}
 	
-	public SplitTempPage(Collection<LocalVarUsage> localUsages, String source, ISplittedNamesReceiver receiver) {
+	public SplitLocalPage(Collection<LocalVarUsage> localUsages, String source, ISplittedNamesReceiver receiver) {
 		super(SplitTempRefactoring.NAME + "..."); //$NON-NLS-1$
 		this.localUsages = localUsages;
 		this.source = source;

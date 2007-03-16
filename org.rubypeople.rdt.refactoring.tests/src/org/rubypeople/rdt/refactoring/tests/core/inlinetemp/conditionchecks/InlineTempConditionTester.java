@@ -35,7 +35,7 @@ import java.io.IOException;
 
 import org.rubypeople.rdt.refactoring.core.inlinelocal.InlineLocalConditionChecker;
 import org.rubypeople.rdt.refactoring.core.inlinelocal.InlineLocalConfig;
-import org.rubypeople.rdt.refactoring.core.inlinelocal.TempInliner;
+import org.rubypeople.rdt.refactoring.core.inlinelocal.LocalVariableInliner;
 import org.rubypeople.rdt.refactoring.tests.FileTestData;
 import org.rubypeople.rdt.refactoring.tests.RefactoringConditionTestCase;
 
@@ -59,7 +59,7 @@ public class InlineTempConditionTester extends RefactoringConditionTestCase {
 
 	@Override
 	protected void createEditProviderAndSetUserInput() {
-		new TempInliner(config);
+		new LocalVariableInliner(config);
 		if(testData.hasProperty("newName")) {
 			config.setReplaceTempWithQuery(true);
 			config.setNewMethodName(testData.getProperty("newName"));

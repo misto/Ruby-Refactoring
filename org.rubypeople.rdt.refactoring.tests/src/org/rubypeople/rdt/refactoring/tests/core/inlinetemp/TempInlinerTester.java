@@ -36,7 +36,7 @@ import java.io.IOException;
 import org.eclipse.jface.text.BadLocationException;
 import org.rubypeople.rdt.refactoring.core.inlinelocal.InlineLocalConditionChecker;
 import org.rubypeople.rdt.refactoring.core.inlinelocal.InlineLocalConfig;
-import org.rubypeople.rdt.refactoring.core.inlinelocal.TempInliner;
+import org.rubypeople.rdt.refactoring.core.inlinelocal.LocalVariableInliner;
 import org.rubypeople.rdt.refactoring.tests.FileTestData;
 import org.rubypeople.rdt.refactoring.tests.RefactoringTestCase;
 
@@ -57,7 +57,7 @@ public class TempInlinerTester extends RefactoringTestCase {
 		if (!checker.shouldPerform()) {
 			fail();
 		}
-		TempInliner inliner = new TempInliner(config);
+		LocalVariableInliner inliner = new LocalVariableInliner(config);
 		config.setReplaceTempWithQuery(data.getBoolProperty("replaceWithQuery"));
 		config.setNewMethodName(data.getProperty("newMethodName"));
 

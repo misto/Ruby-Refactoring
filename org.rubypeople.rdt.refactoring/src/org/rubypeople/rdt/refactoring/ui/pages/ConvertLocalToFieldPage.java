@@ -45,7 +45,7 @@ import org.rubypeople.rdt.refactoring.core.convertlocaltofield.LocalToFieldConve
 import org.rubypeople.rdt.refactoring.ui.LabeledTextField;
 import org.rubypeople.rdt.refactoring.util.NameValidator;
 
-public class ConvertTempToFieldPage extends RefactoringWizardPage {
+public class ConvertLocalToFieldPage extends RefactoringWizardPage {
 
 	private static final String TITLE = Messages.ConvertTempToFieldPage_ConvertLocalVariableToField;
 
@@ -53,7 +53,7 @@ public class ConvertTempToFieldPage extends RefactoringWizardPage {
 
 	private ConverterPageParameters pageParameters;
 
-	public ConvertTempToFieldPage(LocalToFieldConverter converter, ConverterPageParameters parameters) {
+	public ConvertLocalToFieldPage(LocalToFieldConverter converter, ConverterPageParameters parameters) {
 		super(TITLE);
 		this.converter = converter;
 		this.pageParameters = parameters;
@@ -81,11 +81,11 @@ public class ConvertTempToFieldPage extends RefactoringWizardPage {
 
 			private void checkInput(String newName) {
 				if (NameValidator.isValidLocalVariableName(newName)) {
-					ConvertTempToFieldPage.this.setMessage(null);
-					ConvertTempToFieldPage.this.setPageComplete(true);
+					ConvertLocalToFieldPage.this.setMessage(null);
+					ConvertLocalToFieldPage.this.setPageComplete(true);
 				} else {
-					ConvertTempToFieldPage.this.setMessage("'" + newName + Messages.ConvertTempToFieldPage_IsNotValid, ConvertTempToFieldPage.ERROR); //$NON-NLS-1$
-					ConvertTempToFieldPage.this.setPageComplete(false);
+					ConvertLocalToFieldPage.this.setMessage("'" + newName + Messages.ConvertTempToFieldPage_IsNotValid, ConvertLocalToFieldPage.ERROR); //$NON-NLS-1$
+					ConvertLocalToFieldPage.this.setPageComplete(false);
 				}
 
 			}

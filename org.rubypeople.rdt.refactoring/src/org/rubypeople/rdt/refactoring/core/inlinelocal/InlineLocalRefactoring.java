@@ -32,15 +32,15 @@ package org.rubypeople.rdt.refactoring.core.inlinelocal;
 
 import org.rubypeople.rdt.refactoring.core.RubyRefactoring;
 import org.rubypeople.rdt.refactoring.core.TextSelectionProvider;
-import org.rubypeople.rdt.refactoring.ui.pages.InlineTempPage;
+import org.rubypeople.rdt.refactoring.ui.pages.InlineLocalPage;
 
-public class InlineTempRefactoring extends RubyRefactoring {
+public class InlineLocalRefactoring extends RubyRefactoring {
 
 	public static final String NAME = Messages.InlineLocalRefactoring_Name;
 
-	private TempInliner tempInliner;
+	private LocalVariableInliner tempInliner;
 
-	public InlineTempRefactoring(TextSelectionProvider selectionProvider) {
+	public InlineLocalRefactoring(TextSelectionProvider selectionProvider) {
 		super(NAME);
 		
 		InlineLocalConfig config = new InlineLocalConfig(getDocumentProvider(), selectionProvider.getCarretPosition());
@@ -48,9 +48,9 @@ public class InlineTempRefactoring extends RubyRefactoring {
 		setRefactoringConditionChecker(checker);
 
 		if(checker.shouldPerform()) {
-			tempInliner = new TempInliner(config);
+			tempInliner = new LocalVariableInliner(config);
 			setEditProvider(tempInliner);
-			pages.add(new InlineTempPage(config, tempInliner.getOccurrencesCount(), tempInliner.getSelectedItemName()));
+			pages.add(new InlineLocalPage(config, tempInliner.getOccurrencesCount(), tempInliner.getSelectedItemName()));
 		}
 	}
 }

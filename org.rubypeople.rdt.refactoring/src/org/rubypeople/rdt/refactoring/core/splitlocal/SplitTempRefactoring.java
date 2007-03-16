@@ -30,7 +30,7 @@ package org.rubypeople.rdt.refactoring.core.splitlocal;
 
 import org.rubypeople.rdt.refactoring.core.RubyRefactoring;
 import org.rubypeople.rdt.refactoring.core.TextSelectionProvider;
-import org.rubypeople.rdt.refactoring.ui.pages.SplitTempPage;
+import org.rubypeople.rdt.refactoring.ui.pages.SplitLocalPage;
 
 public class SplitTempRefactoring extends RubyRefactoring {
 
@@ -46,7 +46,7 @@ public class SplitTempRefactoring extends RubyRefactoring {
 		if(checker.shouldPerform()) {
 			SplitTempEditProvider splitTempEditProvider = new SplitTempEditProvider(config);
 			setEditProvider(splitTempEditProvider);
-			pages.add(new SplitTempPage(splitTempEditProvider.getLocalUsages(), config.getDocumentProvider().getActiveFileContent(), splitTempEditProvider));
+			pages.add(new SplitLocalPage(splitTempEditProvider.getLocalUsages(), config.getDocumentProvider().getActiveFileContent(), splitTempEditProvider));
 		}
 	}
 }

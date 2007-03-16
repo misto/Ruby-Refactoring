@@ -43,7 +43,7 @@ import org.rubypeople.rdt.refactoring.nodewrapper.MethodCallNodeWrapper;
 import org.rubypeople.rdt.refactoring.util.JRubyRefactoringUtils;
 import org.rubypeople.rdt.refactoring.util.NodeUtil;
 
-public class TempValueReplaceProvider extends ReplaceEditProvider {
+public class LocalValueReplaceProvider extends ReplaceEditProvider {
 
 	private LocalNodeWrapper targetNode;
 
@@ -53,7 +53,7 @@ public class TempValueReplaceProvider extends ReplaceEditProvider {
 
 	private InlineLocalConfig config;
 
-	public TempValueReplaceProvider(LocalNodeWrapper targetNode, InlineLocalConfig config, boolean addBrackets) {
+	public LocalValueReplaceProvider(LocalNodeWrapper targetNode, InlineLocalConfig config, boolean addBrackets) {
 		super(false);
 		this.config = config;
 		this.inlinedNode = config.getDefinitionNode();
