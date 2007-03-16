@@ -11,7 +11,9 @@
  * implied. See the License for the specific language governing
  * rights and limitations under the License.
  *
+ * Copyright (C) 2006 Lukas Felber <lfelber@hsr.ch>
  * Copyright (C) 2006 Mirko Stocker <me@misto.ch>
+ * Copyright (C) 2006 Thomas Corbat <tcorbat@hsr.ch>
  * 
  * Alternatively, the contents of this file may be used under the terms of
  * either of the GNU General Public License Version 2 or later (the "GPL"),
@@ -26,55 +28,78 @@
  * the terms of any one of the CPL, the GPL or the LGPL.
  ***** END LICENSE BLOCK *****/
 
-package org.rubypeople.rdt.refactoring.core.splittemp;
+package org.rubypeople.rdt.refactoring.core.convertlocaltofield;
 
-import java.util.Collection;
-
+import org.jruby.ast.MethodDefNode;
 import org.rubypeople.rdt.refactoring.core.IRefactoringConfig;
 import org.rubypeople.rdt.refactoring.documentprovider.IDocumentProvider;
+import org.rubypeople.rdt.refactoring.nodewrapper.ClassNodeWrapper;
+import org.rubypeople.rdt.refactoring.nodewrapper.LocalNodeWrapper;
 
-public class SplitTempConfig implements IRefactoringConfig {
+public class TempToFieldConfig implements IRefactoringConfig {
 
-	private IDocumentProvider documentProvider;
+	private IDocumentProvider docProvider;
 	private int caretPosition;
-	Collection<LocalVarUsage> localUsages;
-	private LocalVarFinder localVarFinder;
+	private LocalNodeWrapper selectedNode;
+	private ClassNodeWrapper enclosingClassNode;
+	private MethodDefNode enclosingMethod;
+	private boolean classField;
+	private String newName;
 
-	public SplitTempConfig(IDocumentProvider documentProvider, int caretPosition) {
-		this.documentProvider = documentProvider;
+	public TempToFieldConfig(IDocumentProvider docProvider, int caretPosition) {
+		this.docProvider = docProvider;
 		this.caretPosition = caretPosition;
 	}
+	
+	public boolean isClassField() {
+		return classField;
+	}
 
-	public int getCaretPsition() {
+	public void setClassField(boolean classField) {
+		this.classField = classField;
+	}
+
+	public String getNewName() {
+		return newName;
+	}
+
+	public void setNewName(String newName) {
+		this.newName = newName;
+	}
+
+	public int getCaretPosition() {
 		return caretPosition;
 	}
 
+	public ClassNodeWrapper getEnclosingClassNode() {
+		return enclosingClassNode;
+	}
+
+	public void setEnclosingClassNode(ClassNodeWrapper enclosingClassNode) {
+		this.enclosingClassNode = enclosingClassNode;
+	}
+
+	public MethodDefNode getEnclosingMethod() {
+		return enclosingMethod;
+	}
+
+	public void setEnclosingMethod(MethodDefNode enclosingMethod) {
+		this.enclosingMethod = enclosingMethod;
+	}
+
+	public LocalNodeWrapper getSelectedNode() {
+		return selectedNode;
+	}
+
+	public void setSelectedNode(LocalNodeWrapper selectedItem) {
+		this.selectedNode = selectedItem;
+	}
+
 	public IDocumentProvider getDocumentProvider() {
-		return documentProvider;
-	}
-
-	public boolean hasLocalUsages() {
-		return localUsages != null;
-	}
-
-	public void setLocalUsages(Collection<LocalVarUsage> localUsages) {
-		this.localUsages = localUsages;
-	}
-
-	public ILocalVarFinder getLocalVariablesFinder() {
-		return localVarFinder;
-	}
-
-	public void setLocalVariablesFinder(LocalVarFinder localVarFinder) {
-		this.localVarFinder = localVarFinder;
-	}
-
-	public Collection<LocalVarUsage> getLocalUsages() {
-		return localUsages;
+		return docProvider;
 	}
 
 	public void setDocumentProvider(IDocumentProvider doc) {
-		this.documentProvider = doc;
+		this.docProvider = doc;
 	}
-
 }

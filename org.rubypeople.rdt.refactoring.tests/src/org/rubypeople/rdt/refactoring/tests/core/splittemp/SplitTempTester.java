@@ -32,9 +32,9 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 
 import org.eclipse.jface.text.BadLocationException;
-import org.rubypeople.rdt.refactoring.core.splittemp.SplitTempConditionChecker;
-import org.rubypeople.rdt.refactoring.core.splittemp.SplitTempConfig;
-import org.rubypeople.rdt.refactoring.core.splittemp.SplitTempEditProvider;
+import org.rubypeople.rdt.refactoring.core.splitlocal.SplitTempConditionChecker;
+import org.rubypeople.rdt.refactoring.core.splitlocal.SplitTempConfig;
+import org.rubypeople.rdt.refactoring.core.splitlocal.SplitTempEditProvider;
 import org.rubypeople.rdt.refactoring.tests.FileTestCase;
 import org.rubypeople.rdt.refactoring.tests.FileTestData;
 

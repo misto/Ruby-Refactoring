@@ -33,7 +33,7 @@ import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.Separator;
 import org.eclipse.ui.actions.ActionGroup;
 import org.rubypeople.rdt.refactoring.core.TextSelectionProvider;
-import org.rubypeople.rdt.refactoring.core.converttemptofield.ConvertTempToFieldRefactoring;
+import org.rubypeople.rdt.refactoring.core.convertlocaltofield.ConvertTempToFieldRefactoring;
 import org.rubypeople.rdt.refactoring.core.encapsulatefield.EncapsulateFieldRefactoring;
 import org.rubypeople.rdt.refactoring.core.extractmethod.ExtractMethodRefactoring;
 import org.rubypeople.rdt.refactoring.core.generateaccessors.GenerateAccessorsRefactoring;
@@ -48,7 +48,7 @@ import org.rubypeople.rdt.refactoring.core.movemethod.MoveMethodRefactoring;
 import org.rubypeople.rdt.refactoring.core.overridemethod.OverrideMethodRefactoring;
 import org.rubypeople.rdt.refactoring.core.pushdown.PushDownRefactoring;
 import org.rubypeople.rdt.refactoring.core.rename.RenameRefactoring;
-import org.rubypeople.rdt.refactoring.core.splittemp.SplitTempRefactoring;
+import org.rubypeople.rdt.refactoring.core.splitlocal.SplitTempRefactoring;
 
 public class RefactoringActionGroup extends ActionGroup {
 

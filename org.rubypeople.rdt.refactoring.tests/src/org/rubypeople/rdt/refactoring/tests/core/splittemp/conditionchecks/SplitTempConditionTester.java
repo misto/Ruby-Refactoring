@@ -31,9 +31,9 @@ package org.rubypeople.rdt.refactoring.tests.core.splittemp.conditionchecks;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 
-import org.rubypeople.rdt.refactoring.core.splittemp.SplitTempConditionChecker;
-import org.rubypeople.rdt.refactoring.core.splittemp.SplitTempConfig;
-import org.rubypeople.rdt.refactoring.core.splittemp.SplitTempEditProvider;
+import org.rubypeople.rdt.refactoring.core.splitlocal.SplitTempConditionChecker;
+import org.rubypeople.rdt.refactoring.core.splitlocal.SplitTempConfig;
+import org.rubypeople.rdt.refactoring.core.splitlocal.SplitTempEditProvider;
 import org.rubypeople.rdt.refactoring.tests.FilePropertyData;
 import org.rubypeople.rdt.refactoring.tests.FileTestData;
 import org.rubypeople.rdt.refactoring.tests.RefactoringConditionTestCase;

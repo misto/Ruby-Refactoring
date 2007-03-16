@@ -41,7 +41,7 @@ import org.eclipse.swt.layout.RowLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Group;
-import org.rubypeople.rdt.refactoring.core.converttemptofield.TempToFieldConverter;
+import org.rubypeople.rdt.refactoring.core.convertlocaltofield.TempToFieldConverter;
 import org.rubypeople.rdt.refactoring.ui.LabeledTextField;
 import org.rubypeople.rdt.refactoring.util.NameValidator;
 

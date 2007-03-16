@@ -43,9 +43,9 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
-import org.rubypeople.rdt.refactoring.core.splittemp.ISplittedNamesReceiver;
-import org.rubypeople.rdt.refactoring.core.splittemp.LocalVarUsage;
-import org.rubypeople.rdt.refactoring.core.splittemp.SplitTempRefactoring;
+import org.rubypeople.rdt.refactoring.core.splitlocal.ISplittedNamesReceiver;
+import org.rubypeople.rdt.refactoring.core.splitlocal.LocalVarUsage;
+import org.rubypeople.rdt.refactoring.core.splitlocal.SplitTempRefactoring;
 import org.rubypeople.rdt.refactoring.ui.RdtCodeViewer;
 import org.rubypeople.rdt.refactoring.util.NameValidator;
 

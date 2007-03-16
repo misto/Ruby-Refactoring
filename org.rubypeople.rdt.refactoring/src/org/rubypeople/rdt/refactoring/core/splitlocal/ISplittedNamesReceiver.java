@@ -26,34 +26,8 @@
  * the terms of any one of the CPL, the GPL or the LGPL.
  ***** END LICENSE BLOCK *****/
 
-package org.rubypeople.rdt.refactoring.core.splittemp;
+package org.rubypeople.rdt.refactoring.core.splitlocal;
 
-import org.rubypeople.rdt.refactoring.core.IRefactoringConfig;
-import org.rubypeople.rdt.refactoring.core.RefactoringConditionChecker;
-
-public class SplitTempConditionChecker extends RefactoringConditionChecker {
-
-	private SplitTempConfig config;
-
-	public SplitTempConditionChecker(SplitTempConfig config) {
-		super(config);
-	}
-	
-	public void init(IRefactoringConfig configObj) {
-		this.config = (SplitTempConfig) configObj;
-		config.setLocalVariablesFinder(new LocalVarFinder());
-		config.setLocalUsages(config.getLocalVariablesFinder().findLocalUsages(config.getDocumentProvider(), config.getCaretPsition()));
-	}
-
-	@Override
-	protected void checkFinalConditions() {
-	}
-
-	@Override
-	protected void checkInitialConditions() {
-		if (!config.hasLocalUsages()) {
-			addError(Messages.SplitTempConditionChecker_NoLocal);
-		}
-	}
-
+public interface ISplittedNamesReceiver {
+	public void setNewNames(String[] names);
 }

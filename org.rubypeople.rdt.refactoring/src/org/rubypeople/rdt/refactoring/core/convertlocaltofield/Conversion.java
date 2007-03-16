@@ -28,7 +28,7 @@
  * the terms of any one of the CPL, the GPL or the LGPL.
  ***** END LICENSE BLOCK *****/
 
-package org.rubypeople.rdt.refactoring.core.converttemptofield;
+package org.rubypeople.rdt.refactoring.core.convertlocaltofield;
 
 import java.util.ArrayList;
 import java.util.Collection;

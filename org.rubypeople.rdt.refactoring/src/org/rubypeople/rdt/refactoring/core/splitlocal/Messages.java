@@ -1,4 +1,4 @@
-package org.rubypeople.rdt.refactoring.core.splittemp;
+package org.rubypeople.rdt.refactoring.core.splitlocal;
 
 import org.eclipse.osgi.util.NLS;
 

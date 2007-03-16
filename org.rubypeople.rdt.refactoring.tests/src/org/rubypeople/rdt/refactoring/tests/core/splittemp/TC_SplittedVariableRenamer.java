@@ -39,9 +39,9 @@ import org.jruby.ast.DVarNode;
 import org.jruby.ast.LocalAsgnNode;
 import org.jruby.ast.LocalVarNode;
 import org.rubypeople.rdt.refactoring.core.renamelocal.SingleLocalVariableEdit;
-import org.rubypeople.rdt.refactoring.core.splittemp.LocalVarFinder;
-import org.rubypeople.rdt.refactoring.core.splittemp.LocalVarUsage;
-import org.rubypeople.rdt.refactoring.core.splittemp.SplittedVariableRenamer;
+import org.rubypeople.rdt.refactoring.core.splitlocal.LocalVarFinder;
+import org.rubypeople.rdt.refactoring.core.splitlocal.LocalVarUsage;
+import org.rubypeople.rdt.refactoring.core.splitlocal.SplittedVariableRenamer;
 import org.rubypeople.rdt.refactoring.tests.FileTestData;
 
 public class TC_SplittedVariableRenamer extends TestCase {

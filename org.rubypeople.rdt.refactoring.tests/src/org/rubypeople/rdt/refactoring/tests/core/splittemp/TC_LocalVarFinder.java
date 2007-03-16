@@ -34,8 +34,8 @@ import java.util.Collection;
 
 import junit.framework.TestCase;
 
-import org.rubypeople.rdt.refactoring.core.splittemp.LocalVarFinder;
-import org.rubypeople.rdt.refactoring.core.splittemp.LocalVarUsage;
+import org.rubypeople.rdt.refactoring.core.splitlocal.LocalVarFinder;
+import org.rubypeople.rdt.refactoring.core.splitlocal.LocalVarUsage;
 import org.rubypeople.rdt.refactoring.tests.FileTestData;
 
 public class TC_LocalVarFinder extends TestCase {

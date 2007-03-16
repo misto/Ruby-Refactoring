@@ -26,36 +26,55 @@
  * the terms of any one of the CPL, the GPL or the LGPL.
  ***** END LICENSE BLOCK *****/
 
-package org.rubypeople.rdt.refactoring.core.splittemp;
+package org.rubypeople.rdt.refactoring.core.splitlocal;
 
 import java.util.Collection;
 
-import org.rubypeople.rdt.refactoring.editprovider.EditProvider;
-import org.rubypeople.rdt.refactoring.editprovider.MultiEditProvider;
+import org.rubypeople.rdt.refactoring.core.IRefactoringConfig;
+import org.rubypeople.rdt.refactoring.documentprovider.IDocumentProvider;
 
-public class SplitTempEditProvider extends MultiEditProvider implements ISplittedNamesReceiver {
+public class SplitTempConfig implements IRefactoringConfig {
 
-	private final SplitTempConfig config;
+	private IDocumentProvider documentProvider;
+	private int caretPosition;
+	Collection<LocalVarUsage> localUsages;
+	private LocalVarFinder localVarFinder;
 
-	public SplitTempEditProvider(SplitTempConfig config) {
-		this.config = config;
+	public SplitTempConfig(IDocumentProvider documentProvider, int caretPosition) {
+		this.documentProvider = documentProvider;
+		this.caretPosition = caretPosition;
 	}
 
-	@Override
-	protected Collection<EditProvider> getEditProviders() {
-		return new SplittedVariableRenamer(config.getLocalVariablesFinder().getScopeNode()).rename(config.getLocalUsages());
+	public int getCaretPsition() {
+		return caretPosition;
 	}
 
-	public void setNewNames(String[] names) {
-		assert names.length == config.getLocalUsages().size();
+	public IDocumentProvider getDocumentProvider() {
+		return documentProvider;
+	}
 
-		for (int i = 0; i < names.length; i++) {
-			config.getLocalUsages().toArray(new LocalVarUsage[config.getLocalUsages().size()])[i].setNewName(names[i]);
-		}
+	public boolean hasLocalUsages() {
+		return localUsages != null;
+	}
+
+	public void setLocalUsages(Collection<LocalVarUsage> localUsages) {
+		this.localUsages = localUsages;
+	}
+
+	public ILocalVarFinder getLocalVariablesFinder() {
+		return localVarFinder;
+	}
+
+	public void setLocalVariablesFinder(LocalVarFinder localVarFinder) {
+		this.localVarFinder = localVarFinder;
 	}
 
 	public Collection<LocalVarUsage> getLocalUsages() {
-		return config.getLocalUsages();
+		return localUsages;
+	}
+
+	public void setDocumentProvider(IDocumentProvider doc) {
+		this.documentProvider = doc;
 	}
 
 }

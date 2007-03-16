@@ -26,60 +26,27 @@
  * the terms of any one of the CPL, the GPL or the LGPL.
  ***** END LICENSE BLOCK *****/
 
-package org.rubypeople.rdt.refactoring.core.splittemp;
+package org.rubypeople.rdt.refactoring.core.splitlocal;
 
-import org.jruby.ast.AssignableNode;
+import org.rubypeople.rdt.refactoring.core.RubyRefactoring;
+import org.rubypeople.rdt.refactoring.core.TextSelectionProvider;
+import org.rubypeople.rdt.refactoring.ui.pages.SplitTempPage;
 
-public class LocalVarUsage {
+public class SplitTempRefactoring extends RubyRefactoring {
 
-	private int fromPosition;
+	public static final String NAME = Messages.SplitTempRefactoring_Name;
 
-	private int toPosition;
+	public SplitTempRefactoring(TextSelectionProvider selectionProvider) {
+		super(NAME);
 
-	private AssignableNode node;
-
-	private String name;
-
-	private String newName = ""; //$NON-NLS-1$
-
-	public int getFromPosition() {
-		return fromPosition;
+		SplitTempConfig config = new SplitTempConfig(getDocumentProvider(), selectionProvider.getCarretPosition());
+		SplitTempConditionChecker checker = new SplitTempConditionChecker(config);
+		setRefactoringConditionChecker(checker);
+		
+		if(checker.shouldPerform()) {
+			SplitTempEditProvider splitTempEditProvider = new SplitTempEditProvider(config);
+			setEditProvider(splitTempEditProvider);
+			pages.add(new SplitTempPage(splitTempEditProvider.getLocalUsages(), config.getDocumentProvider().getActiveFileContent(), splitTempEditProvider));
+		}
 	}
-
-	public void setFromPosition(int from) {
-		this.fromPosition = from;
-	}
-
-	public String getName() {
-		return name;
-	}
-
-	public void setName(String name) {
-		this.name = name;
-	}
-
-	public AssignableNode getNode() {
-		return node;
-	}
-
-	public void setNode(AssignableNode node) {
-		this.node = node;
-	}
-
-	public int getToPosition() {
-		return toPosition;
-	}
-
-	public void setToPosition(int to) {
-		this.toPosition = to;
-	}
-
-	public String getNewName() {
-		return newName;
-	}
-
-	public void setNewName(String newName) {
-		this.newName = newName;
-	}
-
 }

@@ -11,9 +11,7 @@
  * implied. See the License for the specific language governing
  * rights and limitations under the License.
  *
- * Copyright (C) 2006 Lukas Felber <lfelber@hsr.ch>
  * Copyright (C) 2006 Mirko Stocker <me@misto.ch>
- * Copyright (C) 2006 Thomas Corbat <tcorbat@hsr.ch>
  * 
  * Alternatively, the contents of this file may be used under the terms of
  * either of the GNU General Public License Version 2 or later (the "GPL"),
@@ -28,15 +26,60 @@
  * the terms of any one of the CPL, the GPL or the LGPL.
  ***** END LICENSE BLOCK *****/
 
-package org.rubypeople.rdt.refactoring.action;
+package org.rubypeople.rdt.refactoring.core.splitlocal;
 
-import org.rubypeople.rdt.refactoring.core.splitlocal.SplitTempRefactoring;
+import org.jruby.ast.AssignableNode;
 
-public class SplitTempAction extends WorkbenchWindowActionDelegate {
+public class LocalVarUsage {
 
-	@Override
-	public void run() {
-		run(SplitTempRefactoring.class, SplitTempRefactoring.NAME);
+	private int fromPosition;
+
+	private int toPosition;
+
+	private AssignableNode node;
+
+	private String name;
+
+	private String newName = ""; //$NON-NLS-1$
+
+	public int getFromPosition() {
+		return fromPosition;
+	}
+
+	public void setFromPosition(int from) {
+		this.fromPosition = from;
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	public AssignableNode getNode() {
+		return node;
+	}
+
+	public void setNode(AssignableNode node) {
+		this.node = node;
+	}
+
+	public int getToPosition() {
+		return toPosition;
+	}
+
+	public void setToPosition(int to) {
+		this.toPosition = to;
+	}
+
+	public String getNewName() {
+		return newName;
+	}
+
+	public void setNewName(String newName) {
+		this.newName = newName;
 	}
 
 }

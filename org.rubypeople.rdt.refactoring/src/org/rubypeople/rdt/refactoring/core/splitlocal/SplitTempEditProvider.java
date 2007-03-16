@@ -26,27 +26,36 @@
  * the terms of any one of the CPL, the GPL or the LGPL.
  ***** END LICENSE BLOCK *****/
 
-package org.rubypeople.rdt.refactoring.core.splittemp;
+package org.rubypeople.rdt.refactoring.core.splitlocal;
 
-import org.rubypeople.rdt.refactoring.core.RubyRefactoring;
-import org.rubypeople.rdt.refactoring.core.TextSelectionProvider;
-import org.rubypeople.rdt.refactoring.ui.pages.SplitTempPage;
+import java.util.Collection;
 
-public class SplitTempRefactoring extends RubyRefactoring {
+import org.rubypeople.rdt.refactoring.editprovider.EditProvider;
+import org.rubypeople.rdt.refactoring.editprovider.MultiEditProvider;
 
-	public static final String NAME = Messages.SplitTempRefactoring_Name;
+public class SplitTempEditProvider extends MultiEditProvider implements ISplittedNamesReceiver {
 
-	public SplitTempRefactoring(TextSelectionProvider selectionProvider) {
-		super(NAME);
+	private final SplitTempConfig config;
 
-		SplitTempConfig config = new SplitTempConfig(getDocumentProvider(), selectionProvider.getCarretPosition());
-		SplitTempConditionChecker checker = new SplitTempConditionChecker(config);
-		setRefactoringConditionChecker(checker);
-		
-		if(checker.shouldPerform()) {
-			SplitTempEditProvider splitTempEditProvider = new SplitTempEditProvider(config);
-			setEditProvider(splitTempEditProvider);
-			pages.add(new SplitTempPage(splitTempEditProvider.getLocalUsages(), config.getDocumentProvider().getActiveFileContent(), splitTempEditProvider));
+	public SplitTempEditProvider(SplitTempConfig config) {
+		this.config = config;
+	}
+
+	@Override
+	protected Collection<EditProvider> getEditProviders() {
+		return new SplittedVariableRenamer(config.getLocalVariablesFinder().getScopeNode()).rename(config.getLocalUsages());
+	}
+
+	public void setNewNames(String[] names) {
+		assert names.length == config.getLocalUsages().size();
+
+		for (int i = 0; i < names.length; i++) {
+			config.getLocalUsages().toArray(new LocalVarUsage[config.getLocalUsages().size()])[i].setNewName(names[i]);
 		}
 	}
+
+	public Collection<LocalVarUsage> getLocalUsages() {
+		return config.getLocalUsages();
+	}
+
 }

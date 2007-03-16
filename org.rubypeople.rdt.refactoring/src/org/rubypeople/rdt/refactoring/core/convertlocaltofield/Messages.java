@@ -1,4 +1,4 @@
-package org.rubypeople.rdt.refactoring.core.converttemptofield;
+package org.rubypeople.rdt.refactoring.core.convertlocaltofield;
 
 import org.eclipse.osgi.util.NLS;
 

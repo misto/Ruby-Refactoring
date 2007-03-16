@@ -26,15 +26,14 @@
  * the terms of any one of the CPL, the GPL or the LGPL.
  ***** END LICENSE BLOCK *****/
 
-package org.rubypeople.rdt.refactoring.core.splittemp;
+package org.rubypeople.rdt.refactoring.core.splitlocal;
 
 import java.util.Collection;
 
-import org.jruby.ast.Node;
-import org.rubypeople.rdt.refactoring.documentprovider.IDocumentProvider;
+import org.rubypeople.rdt.refactoring.editprovider.EditProvider;
 
-public interface ILocalVarFinder {
-	public Node getScopeNode();
+public interface ISplittedVariableRenamer {
 
-	public Collection<LocalVarUsage> findLocalUsages(IDocumentProvider doc, int caretPosition);
+	public Collection<EditProvider> rename(Collection<LocalVarUsage> variables);
+
 }
