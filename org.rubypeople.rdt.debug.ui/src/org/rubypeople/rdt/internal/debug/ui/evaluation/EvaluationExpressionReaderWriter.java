@@ -68,6 +68,7 @@ public class EvaluationExpressionReaderWriter {
 	private static final String TEMPLATE_ELEMENT = "expression"; //$NON-NLS-1$
 	private static final String NAME_ATTRIBUTE = "name"; //$NON-NLS-1$
 	private static final String DESCRIPTION_ATTRIBUTE = "description"; //$NON-NLS-1$
+	private static final String ENABLED_ATTRIBUTE = "enabled"; //$NON-NLS-1$
 
 	/**
 	 * Create a new instance.
@@ -134,13 +135,15 @@ public class EvaluationExpressionReaderWriter {
 				String description = getStringValue(attributes, DESCRIPTION_ATTRIBUTE, ""); //$NON-NLS-1$
 				description = translateString(description, bundle);
 
+				String enabled = getStringValue(attributes, ENABLED_ATTRIBUTE, "false"); //$NON-NLS-1$
+
 				StringBuffer buffer = new StringBuffer();
 				NodeList children = node.getChildNodes();
 				for (int j = 0; j != children.getLength(); j++) {
 					String value = children.item(j).getNodeValue();
 					if (value != null) buffer.append(value);
 				}
-				expressions.add(new EvaluationExpression(name, description, buffer.toString()));
+				expressions.add(new EvaluationExpression(name, description, buffer.toString(), new Boolean(enabled)));
 			}
 
 			return (EvaluationExpression[]) expressions.toArray(new EvaluationExpression[expressions.size()]);
@@ -220,6 +223,10 @@ public class EvaluationExpressionReaderWriter {
 				Attr description = document.createAttribute(DESCRIPTION_ATTRIBUTE);
 				description.setValue(evaluationExpression.getDescription());
 				attributes.setNamedItem(description);
+
+				Attr enabled =  document.createAttribute(ENABLED_ATTRIBUTE);
+				enabled.setValue(String.valueOf(evaluationExpression.isEnabled()));
+				attributes.setNamedItem(enabled);
 
 				Text pattern = document.createTextNode(evaluationExpression.getExpression());
 				node.appendChild(pattern);

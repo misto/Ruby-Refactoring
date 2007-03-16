@@ -17,11 +17,13 @@ public class EvaluationExpression {
     private String name ;
     private String description;
     private String expression;
-    
-    public EvaluationExpression(String name, String description, String expression) {
+    private boolean enabled;
+
+    public EvaluationExpression(String name, String description, String expression, boolean enabled) {
     	this.name = name ;
         this.description = description ;
         this.expression = expression ;
+        this.enabled = enabled ;
     }
 	public String getDescription() {
 		return description;
@@ -45,13 +47,17 @@ public class EvaluationExpression {
     public String substitute(String value) {        
         return this.expression.replaceAll(VARIABLE_TOKEN, value) ; 
     }
-    
-    public boolean hasVariable() {
+    public boolean isEnabled() {
+		return enabled;
+	}
+	public void setEnabled(boolean enabled) {
+		this.enabled = enabled;
+	}
+	public boolean hasVariable() {
     	return this.expression.indexOf(VARIABLE_TOKEN) != -1 ;
     }       
     
 	public Object clone() throws CloneNotSupportedException {
-		return new EvaluationExpression(this.getName(), this.getDescription(), this.getExpression()) ;
+		return new EvaluationExpression(this.getName(), this.getDescription(), this.getExpression(), this.enabled) ;
 	}
-    
 }

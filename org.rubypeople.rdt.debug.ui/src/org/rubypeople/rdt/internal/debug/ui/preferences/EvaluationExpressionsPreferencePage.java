@@ -41,7 +41,10 @@ import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.preference.PreferencePage;
 import org.eclipse.jface.text.templates.persistence.TemplateReaderWriter;
+import org.eclipse.jface.viewers.CheckStateChangedEvent;
+import org.eclipse.jface.viewers.CheckboxTableViewer;
 import org.eclipse.jface.viewers.DoubleClickEvent;
+import org.eclipse.jface.viewers.ICheckStateListener;
 import org.eclipse.jface.viewers.IDoubleClickListener;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.IStructuredContentProvider;
@@ -51,7 +54,6 @@ import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.viewers.TableLayout;
-import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.window.Window;
 import org.eclipse.swt.SWT;
@@ -203,7 +205,7 @@ public class EvaluationExpressionsPreferencePage extends PreferencePage implemen
 
 	}
 
-	private TableViewer fTableViewer;
+	private CheckboxTableViewer fTableViewer;
 
 	/* buttons */
 	private Button fAddButton;
@@ -267,7 +269,7 @@ public class EvaluationExpressionsPreferencePage extends PreferencePage implemen
 		TableColumn column2 = new TableColumn(table, SWT.NONE);
 		column2.setText(RdtDebugUiMessages.EvaluationExpressionsPreferencePage_column_description);
 
-		fTableViewer = new TableViewer(table);
+		fTableViewer = new CheckboxTableViewer(table);
 		fTableViewer.setLabelProvider(new EvaluationExpressionLabelProvider());
 		fTableViewer.setContentProvider(new EvaluationExpressionContentProvider());
 
@@ -282,6 +284,13 @@ public class EvaluationExpressionsPreferencePage extends PreferencePage implemen
 
 			public void selectionChanged(SelectionChangedEvent e) {
 				selectionChanged1();
+			}
+		});
+
+		fTableViewer.addCheckStateListener(new ICheckStateListener(){
+
+			public void checkStateChanged(CheckStateChangedEvent event) {
+				((EvaluationExpression) event.getElement()).setEnabled(event.getChecked());
 			}
 		});
 
@@ -345,12 +354,24 @@ public class EvaluationExpressionsPreferencePage extends PreferencePage implemen
 		});
 
 		fTableViewer.setInput(fModel);
-
+		setEnabledExpresions(fTableViewer);
 		updateButtons();
 		configureTableResizing(innerParent, buttons, table, column1, column2);
 
 		Dialog.applyDialogFont(parent);
 		return parent;
+	}
+
+	/**
+	 * Sets the list checkboxes to proper state
+	 *
+	 * @param viewer checkbox viewer
+	 */
+	private void setEnabledExpresions(CheckboxTableViewer viewer) {
+		for(Object o : fModel.getExpressionsAsArray()) {
+			EvaluationExpression expr = (EvaluationExpression)o;
+			viewer.setChecked(o, expr.isEnabled());
+		}
 	}
 
 	/**
@@ -438,7 +459,7 @@ public class EvaluationExpressionsPreferencePage extends PreferencePage implemen
 
 	private void add() {
 
-		EvaluationExpression evalExpression = new EvaluationExpression("", "", "");
+		EvaluationExpression evalExpression = new EvaluationExpression("", "", "", false);
 		String title = RdtDebugUiMessages.EditEvaluationExpressionDialog_add;
 		Dialog dialog = new EditEvaluationExpressionDialog(getShell(), title, evalExpression);
 		if (dialog.open() == Window.OK) {
@@ -512,7 +533,7 @@ public class EvaluationExpressionsPreferencePage extends PreferencePage implemen
 		File file = new File(path);
 
 		if (file.isHidden()) {
-			String title = RdtDebugUiMessages.EvaluationExpressionsPreferencePage_export_error_title; 
+			String title = RdtDebugUiMessages.EvaluationExpressionsPreferencePage_export_error_title;
 			String message = RdtDebugUiMessages.getFormattedString(RdtDebugUiMessages.EvaluationExpressionsPreferencePage_export_error_hidden, file.getAbsolutePath());
 			MessageDialog.openError(getShell(), title, message);
 			return;
@@ -582,7 +603,7 @@ public class EvaluationExpressionsPreferencePage extends PreferencePage implemen
 		return super.performCancel();
 	}
 
-	protected TableViewer getTableViewer() {
+	protected CheckboxTableViewer getTableViewer() {
 		return fTableViewer;
 	}
 }
