@@ -12,6 +12,7 @@ package org.rubypeople.rdt.ui;
 
 import org.eclipse.jface.util.Assert;
 import org.eclipse.ui.IEditorInput;
+import org.eclipse.ui.texteditor.IDocumentProvider;
 import org.rubypeople.rdt.core.IRubyElement;
 import org.rubypeople.rdt.internal.ui.RubyPlugin;
 import org.rubypeople.rdt.internal.ui.SharedImages;
@@ -125,5 +126,16 @@ public final class RubyUI {
 	 */
 	public static IWorkingCopyManager getWorkingCopyManager() {
 		return RubyPlugin.getDefault().getWorkingCopyManager();
+	}
+	/**
+	 * Returns the DocumentProvider used for Ruby compilation units.
+	 *
+	 * @return the DocumentProvider for Ruby compilation units.
+	 * 
+	 * @see IDocumentProvider
+	 * @since 2.0
+	 */
+	public static IDocumentProvider getDocumentProvider() {
+		return RubyPlugin.getDefault().getRubyDocumentProvider();
 	}
 }
