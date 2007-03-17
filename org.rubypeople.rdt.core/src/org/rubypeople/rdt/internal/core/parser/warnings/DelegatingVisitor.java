@@ -138,7 +138,7 @@ public class DelegatingVisitor extends InOrderVisitor {
 		}
 		return super.visitAliasNode(iVisited);
 	}
-
+	
 	@Override
 	public Instruction visitAndNode(AndNode iVisited) {
 		for (RubyLintVisitor visitor : visitors) {
@@ -224,7 +224,11 @@ public class DelegatingVisitor extends InOrderVisitor {
 		for (RubyLintVisitor visitor : visitors) {
 			visitor.visitBlockNode(iVisited);
 		}
-		return super.visitBlockNode(iVisited);
+		Instruction ins = super.visitBlockNode(iVisited);
+		for (RubyLintVisitor visitor : visitors) {
+			visitor.exitBlockNode(iVisited);
+		}
+		return ins;
 	}
 
 	@Override
@@ -264,7 +268,11 @@ public class DelegatingVisitor extends InOrderVisitor {
 		for (RubyLintVisitor visitor : visitors) {
 			visitor.visitClassNode(iVisited);
 		}
-		return super.visitClassNode(iVisited);
+		Instruction ins = super.visitClassNode(iVisited);
+		for (RubyLintVisitor visitor : visitors) {
+			visitor.exitClassNode(iVisited);
+		}
+		return ins;
 	}
 
 	@Override
@@ -344,7 +352,11 @@ public class DelegatingVisitor extends InOrderVisitor {
 		for (RubyLintVisitor visitor : visitors) {
 			visitor.visitDefnNode(iVisited);
 		}
-		return super.visitDefnNode(iVisited);
+		Instruction ins = super.visitDefnNode(iVisited);
+		for (RubyLintVisitor visitor : visitors) {
+			visitor.exitDefnNode(iVisited);
+		}
+		return ins;
 	}
 
 	@Override
@@ -352,8 +364,13 @@ public class DelegatingVisitor extends InOrderVisitor {
 		for (RubyLintVisitor visitor : visitors) {
 			visitor.visitDefsNode(iVisited);
 		}
-		return super.visitDefsNode(iVisited);
+		Instruction ins = super.visitDefsNode(iVisited);
+		for (RubyLintVisitor visitor : visitors) {
+			visitor.exitDefsNode(iVisited);
+		}
+		return ins;
 	}
+
 
 	@Override
 	public Instruction visitDotNode(DotNode iVisited) {
@@ -496,7 +513,11 @@ public class DelegatingVisitor extends InOrderVisitor {
 		for (RubyLintVisitor visitor : visitors) {
 			visitor.visitIfNode(iVisited);
 		}
-		return super.visitIfNode(iVisited);
+		Instruction ins = super.visitIfNode(iVisited);
+		for (RubyLintVisitor visitor : visitors) {
+			visitor.exitIfNode(iVisited);
+		}
+		return ins;
 	}
 
 	@Override
@@ -568,7 +589,11 @@ public class DelegatingVisitor extends InOrderVisitor {
 		for (RubyLintVisitor visitor : visitors) {
 			visitor.visitModuleNode(iVisited);
 		}
-		return super.visitModuleNode(iVisited);
+		Instruction ins = super.visitModuleNode(iVisited);
+		for (RubyLintVisitor visitor : visitors) {
+			visitor.exitModuleNode(iVisited);
+		}
+		return ins;
 	}
 
 	@Override
@@ -736,7 +761,11 @@ public class DelegatingVisitor extends InOrderVisitor {
 		for (RubyLintVisitor visitor : visitors) {
 			visitor.visitSClassNode(iVisited);
 		}
-		return super.visitSClassNode(iVisited);
+		Instruction ins = super.visitSClassNode(iVisited);
+		for (RubyLintVisitor visitor : visitors) {
+			visitor.exitSClassNode(iVisited);
+		}
+		return ins;
 	}
 
 	@Override
@@ -840,7 +869,11 @@ public class DelegatingVisitor extends InOrderVisitor {
 		for (RubyLintVisitor visitor : visitors) {
 			visitor.visitWhenNode(iVisited);
 		}
-		return super.visitWhenNode(iVisited);
+		Instruction ins = super.visitWhenNode(iVisited);
+		for (RubyLintVisitor visitor : visitors) {
+			visitor.exitWhenNode(iVisited);
+		}
+		return ins;
 	}
 
 	@Override
