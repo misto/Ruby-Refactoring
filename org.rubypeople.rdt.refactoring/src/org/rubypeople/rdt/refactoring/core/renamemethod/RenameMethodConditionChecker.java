@@ -42,10 +42,13 @@ import org.rubypeople.rdt.refactoring.core.IRefactoringConfig;
 import org.rubypeople.rdt.refactoring.core.NodeProvider;
 import org.rubypeople.rdt.refactoring.core.RefactoringConditionChecker;
 import org.rubypeople.rdt.refactoring.core.SelectionNodeProvider;
+import org.rubypeople.rdt.refactoring.core.renamefield.FieldProvider;
+import org.rubypeople.rdt.refactoring.core.renamefield.InstVarAccessesFinder;
 import org.rubypeople.rdt.refactoring.documentprovider.DocumentWithIncluding;
 import org.rubypeople.rdt.refactoring.exception.NoClassNodeException;
 import org.rubypeople.rdt.refactoring.nodewrapper.ArgsNodeWrapper;
 import org.rubypeople.rdt.refactoring.nodewrapper.ClassNodeWrapper;
+import org.rubypeople.rdt.refactoring.nodewrapper.INodeWrapper;
 import org.rubypeople.rdt.refactoring.nodewrapper.MethodCallNodeWrapper;
 import org.rubypeople.rdt.refactoring.nodewrapper.MethodNodeWrapper;
 import org.rubypeople.rdt.refactoring.nodewrapper.PartialClassNodeWrapper;
@@ -58,7 +61,6 @@ public class RenameMethodConditionChecker extends RefactoringConditionChecker{
 	public RenameMethodConditionChecker(RenameMethodConfig config) {
 		super(config);
 	}
-	
 
 	@Override
 	public void init(IRefactoringConfig configObj) {
@@ -75,9 +77,8 @@ public class RenameMethodConditionChecker extends RefactoringConditionChecker{
 		}
 	}
 
-
 	private void setSelectedMethodNode(Node rootNode) {
- 
+		
 		MethodDefNode methodNode = (MethodDefNode) SelectionNodeProvider.getSelectedNodeOfType(rootNode, this.config.getCaretPosition(), MethodDefNode.class);
 		if(methodNode == null) {
 			SymbolNode selectedSymbolNode = (SymbolNode) SelectionNodeProvider.getSelectedNodeOfType(rootNode, config.getCaretPosition(), SymbolNode.class);
@@ -88,17 +89,18 @@ public class RenameMethodConditionChecker extends RefactoringConditionChecker{
 				}
 			}
 		}
-		MethodDefinitionWrapper targetMethod = new MethodDefinitionWrapper(methodNode);
+		
+		MethodNodeWrapper targetMethod = new MethodNodeWrapper(methodNode, config.getSelectedClass());
 		this.config.setTargetMethod(targetMethod);
 		if(methodNode != null && config.getNewName() == null) {
 			this.config.setNewName(targetMethod.getName());
 		}
 	}
 
-	private Collection<MethodCallNodeWrapper> getAllCallCandidates() {
+	private Collection<INodeWrapper> getAllCallCandidates() {
 
 		Collection<Node> allNodes = config.getDocumentProvider().getAllNodes();
-		ArrayList<MethodCallNodeWrapper> possibleCalls = new ArrayList<MethodCallNodeWrapper>();
+		ArrayList<INodeWrapper> possibleCalls = new ArrayList<INodeWrapper>();
 
 		for(Node currentNode : allNodes){
 			MethodCallNodeWrapper callNode = new MethodCallNodeWrapper(currentNode);
@@ -106,6 +108,22 @@ public class RenameMethodConditionChecker extends RefactoringConditionChecker{
 				possibleCalls.add(callNode);
 			}
 		}
+		
+		if(config.getTargetMethod().isAccessor() && config.renameFields()) {
+			String name;
+			
+			if(config.getTargetMethod().isWriter()) {
+				name = config.getTargetMethod().getName().replace("=", "");
+				
+			} else {
+				name = config.getTargetMethod().getName();
+			}
+			
+			possibleCalls.addAll(InstVarAccessesFinder.find(config.getDocumentProvider(), name));
+			possibleCalls.addAll(new FieldProvider(config.getSelectedClass(), config.getDocumentProvider()).getFieldItems(name, false));
+			config.setSelectedCalls(new FieldProvider(config.getSelectedClass(), config.getDocumentProvider()).getFieldItems(name, false));
+		}
+		
 		return possibleCalls;
 	}
 
@@ -183,15 +201,13 @@ public class RenameMethodConditionChecker extends RefactoringConditionChecker{
 	public Collection<String> getAlreadyUsedNames() {
 		HashSet<String> usedNames = new HashSet<String>();
 		
-		try {
-			Collection<MethodNodeWrapper> methods = config.getAllMethodsInClass();
-			
-			for (MethodNodeWrapper currentMethod : methods){
+		if(config.getSelectedClass() != null)  {
+			for (MethodNodeWrapper currentMethod : config.getSelectedClass().getMethods()){
 				if(isSameTypeAsSelectedMethod(currentMethod)){
 					usedNames.add(currentMethod.getName());
 				}
 			}
-		} catch (NoClassNodeException e) {
+		} else {
 			
 			Node rootNode = config.getDocumentProvider().getActiveFileRootNode();
 			Collection<MethodDefNode> methods = NodeProvider.getMethodNodes(rootNode);

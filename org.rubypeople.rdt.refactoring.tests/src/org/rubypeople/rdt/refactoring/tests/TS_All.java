@@ -46,6 +46,7 @@ import org.rubypeople.rdt.refactoring.tests.core.mergeclasspartsinfile.TS_MergeC
 import org.rubypeople.rdt.refactoring.tests.core.mergewithexternalclassparts.TS_MergeWithExternalClassParts;
 import org.rubypeople.rdt.refactoring.tests.core.movefield.TS_MoveField;
 import org.rubypeople.rdt.refactoring.tests.core.movemethod.TS_MoveMethod;
+import org.rubypeople.rdt.refactoring.tests.core.nodewrapper.TS_NodeWrapper;
 import org.rubypeople.rdt.refactoring.tests.core.overridemethod.TS_OverrideMethod;
 import org.rubypeople.rdt.refactoring.tests.core.pushdown.TS_PushDown;
 import org.rubypeople.rdt.refactoring.tests.core.rename.TS_Rename;
@@ -86,6 +87,7 @@ public class TS_All
 		suite.addTest(TS_MoveMethod.suite());
 		suite.addTest(TS_MoveField.suite());
 		suite.addTest(TS_Rename.suite());
+		suite.addTest(TS_NodeWrapper.suite());
 
 		return suite;
 	}

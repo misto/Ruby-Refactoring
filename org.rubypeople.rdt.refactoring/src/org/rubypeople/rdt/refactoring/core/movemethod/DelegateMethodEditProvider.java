@@ -49,7 +49,7 @@ public class DelegateMethodEditProvider extends ReplaceEditProvider {
 		super(false);
 		this.config = config;
 		oldMethod = config.getMethodNode();
-		scopePos = NodeProvider.unwrap(oldMethod.getScopeNode()).getPosition();
+		scopePos = NodeProvider.unwrap(oldMethod.getBodyNode()).getPosition();
 	}
 
 	@Override

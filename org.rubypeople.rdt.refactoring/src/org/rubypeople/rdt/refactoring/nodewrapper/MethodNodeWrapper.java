@@ -28,12 +28,13 @@
 
 package org.rubypeople.rdt.refactoring.nodewrapper;
 
+import java.util.ArrayList;
 import java.util.Collection;
 
-import org.jruby.ast.DefnNode;
 import org.jruby.ast.DefsNode;
 import org.jruby.ast.MethodDefNode;
 import org.jruby.ast.Node;
+import org.jruby.ast.SymbolNode;
 import org.jruby.lexer.yacc.ISourcePosition;
 import org.rubypeople.rdt.refactoring.core.NodeProvider;
 import org.rubypeople.rdt.refactoring.signatureprovider.MethodSignature;
@@ -42,14 +43,11 @@ import org.rubypeople.rdt.refactoring.util.Constants;
 public class MethodNodeWrapper implements INodeWrapper {
 
 	protected MethodDefNode methodNode;
-	private boolean isClassMethod;
-	public MethodNodeWrapper(MethodDefNode methodDef) {
+	private final ClassNodeWrapper containingClass;
+	
+	public MethodNodeWrapper(MethodDefNode methodDef, ClassNodeWrapper containingClass) {
 		this.methodNode = methodDef;
-		if (methodNode instanceof DefnNode) {
-			isClassMethod = false;
-		} else if (methodNode instanceof DefsNode) {
-			isClassMethod = true;
-		}
+		this.containingClass = containingClass;
 	}
 
 	public String getName() {
@@ -57,8 +55,7 @@ public class MethodNodeWrapper implements INodeWrapper {
 	}
 
 	public MethodSignature getSignature() {
-		ArgsNodeWrapper argsNode = new ArgsNodeWrapper(methodNode.getArgsNode());
-		return new MethodSignature(methodNode.getName(), argsNode);
+		return new MethodSignature(methodNode.getName(), getArgsNode());
 	}
 
 	public ArgsNodeWrapper getArgsNode() {
@@ -70,7 +67,7 @@ public class MethodNodeWrapper implements INodeWrapper {
 	}
 	
 	public boolean isClassMethod() {
-		return isClassMethod;
+		return methodNode instanceof DefsNode;
 	}
 	
 	public Collection<MethodCallNodeWrapper> getMethodCallNodes() {
@@ -81,7 +78,7 @@ public class MethodNodeWrapper implements INodeWrapper {
 	public int hashCode() {
 		final int PRIME = 31;
 		int result = 1;
-		result = PRIME * result + (isClassMethod ? 1231 : 1237);
+		result = PRIME * result + (isClassMethod() ? 1231 : 1237);
 		return result;
 	}
 	
@@ -106,7 +103,49 @@ public class MethodNodeWrapper implements INodeWrapper {
 		return methodNode.getScope().getVariables();
 	}
 
-	public Node getScopeNode() {
+	public Node getBodyNode() {
 		return methodNode.getBodyNode();
+	}
+	
+	public Collection<MethodCallNodeWrapper> getCallCandidatesInClass(ClassNodeWrapper classNode) {
+		if(classNode == null){
+			return new ArrayList<MethodCallNodeWrapper>();
+		}	
+		return classNode.getMethodCalls(methodNode);
+	}
+
+	public Collection<SymbolNode> getSymbolCandidatesInClass(ClassNodeWrapper classNode) {
+		if(classNode == null){
+			return new ArrayList<SymbolNode>();
+		}
+		return classNode.getMethodSymbols(methodNode);
+	}
+	
+	public boolean isAccessor() {
+		return isWriter() || isReader();
+	}	
+	
+	public boolean isWriter() {
+		if(containingClass == null) {
+			return false;
+		}
+		for (FieldNodeWrapper field : containingClass.getFields()) {
+			if ((field.getNameWithoutAts() + "=").equals(getName()) && getSignature().getArguments().size() == 1) {
+				return true;
+			}
+		}
+		return false;
+	}
+	
+	public boolean isReader() {
+		if(containingClass == null) {
+			return false;
+		}
+		for (FieldNodeWrapper field : containingClass.getFields()) {
+			if(field.getNameWithoutAts().equals(getName()) && getSignature().getArguments().isEmpty()) {
+				return true;
+			}
+		}
+		return false;
 	}
 }

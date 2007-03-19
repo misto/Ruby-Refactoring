@@ -68,7 +68,7 @@ public class MoveMethodConditionChecker extends RefactoringConditionChecker {
 			/*don't care*/
 		}
 		MethodDefNode methodDefNode = (MethodDefNode) SelectionNodeProvider.getSelectedNodeOfType(rootNode, caretPos, MethodDefNode.class);
-		MethodNodeWrapper methodNode = (methodDefNode == null) ? null : new MethodNodeWrapper(methodDefNode);
+		MethodNodeWrapper methodNode = (methodDefNode == null) ? null : new MethodNodeWrapper(methodDefNode, config.getSourceClassNode());
 		config.setMethodNode(methodNode);
 		initTargetClassNames();
 		if(config.getSourceClassNode() != null) {

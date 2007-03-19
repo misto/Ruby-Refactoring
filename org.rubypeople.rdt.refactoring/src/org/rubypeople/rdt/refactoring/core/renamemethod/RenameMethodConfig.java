@@ -33,14 +33,10 @@ package org.rubypeople.rdt.refactoring.core.renamemethod;
 import java.util.ArrayList;
 import java.util.Collection;
 
-import org.jruby.ast.Node;
 import org.jruby.ast.SymbolNode;
-import org.rubypeople.rdt.refactoring.classnodeprovider.IncludedClassesProvider;
 import org.rubypeople.rdt.refactoring.core.IRefactoringConfig;
-import org.rubypeople.rdt.refactoring.core.SelectionNodeProvider;
 import org.rubypeople.rdt.refactoring.documentprovider.DocumentWithIncluding;
 import org.rubypeople.rdt.refactoring.documentprovider.IDocumentProvider;
-import org.rubypeople.rdt.refactoring.exception.NoClassNodeException;
 import org.rubypeople.rdt.refactoring.nodewrapper.ClassNodeWrapper;
 import org.rubypeople.rdt.refactoring.nodewrapper.INodeWrapper;
 import org.rubypeople.rdt.refactoring.nodewrapper.MethodNodeWrapper;
@@ -62,7 +58,9 @@ public class RenameMethodConfig implements INewNameReceiver, NodeSelector, IRefa
 	
 	private ClassNodeWrapper classNode;
 
-	private MethodDefinitionWrapper targetMethod;
+	private MethodNodeWrapper targetMethod;
+
+	private boolean renameFields = true;
 
 	public RenameMethodConfig(IDocumentProvider docProvider, int caretPosition) {
 		this.docProvider = docProvider;
@@ -107,11 +105,11 @@ public class RenameMethodConfig implements INewNameReceiver, NodeSelector, IRefa
 		classNode = selectedClassNode;
 	}
 
-	public void setTargetMethod(MethodDefinitionWrapper selectedMethod) {
+	public void setTargetMethod(MethodNodeWrapper selectedMethod) {
 		this.targetMethod = selectedMethod;
 	}
 
-	public MethodDefinitionWrapper getTargetMethod() {
+	public MethodNodeWrapper getTargetMethod() {
 		return targetMethod;
 	}
 
@@ -126,16 +124,6 @@ public class RenameMethodConfig implements INewNameReceiver, NodeSelector, IRefa
 	public void setPossibleCalls(Collection<? extends INodeWrapper> possibleCalls){
 		this.possibleCalls = possibleCalls;
 	}
-	
-	public Collection<MethodNodeWrapper> getAllMethodsInClass() throws NoClassNodeException {
-		Node rootNode = docProvider.getActiveFileRootNode();
-		ClassNodeWrapper enclosingClass = SelectionNodeProvider.getSelectedClassNode(rootNode, targetMethod.getWrappedNode().getPosition().getStartOffset());
-		IncludedClassesProvider classesProvider = new IncludedClassesProvider(docProvider);
-		ClassNodeWrapper wholeClass = classesProvider.getClassNode(enclosingClass.getName());
-		
-		Collection<MethodNodeWrapper> methods = wholeClass.getMethods();
-		return methods;
-	}
 
 	public void setDocProvider(DocumentWithIncluding docProvider) {
 		this.docProvider = docProvider;
@@ -143,5 +131,13 @@ public class RenameMethodConfig implements INewNameReceiver, NodeSelector, IRefa
 
 	public void setDocumentProvider(IDocumentProvider doc) {
 		this.docProvider = doc;
+	}
+
+	public boolean renameFields() {
+		return renameFields;
+	}
+
+	public void setRenameFields(boolean renameFields) {
+		this.renameFields = renameFields;
 	}
 }

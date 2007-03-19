@@ -114,7 +114,7 @@ public abstract class PartialClassNodeWrapper implements INodeWrapper {
 			methods = new ArrayList<MethodNodeWrapper>();
 			Collection<Node> methodNodes = NodeProvider.getSubNodes(wrappedNode, MethodDefNode.class);
 			for (Node methodNode : methodNodes) {
-				methods.add(new MethodNodeWrapper((MethodDefNode) methodNode));
+				methods.add(new MethodNodeWrapper((MethodDefNode) methodNode, new ClassNodeWrapper(this)));
 			}
 		}
 		return methods;

@@ -33,16 +33,12 @@ package org.rubypeople.rdt.refactoring.core.renamefield;
 import java.util.ArrayList;
 import java.util.Collection;
 
-import org.jruby.ast.CallNode;
-import org.jruby.ast.Node;
 import org.jruby.ast.RootNode;
 import org.rubypeople.rdt.refactoring.classnodeprovider.ClassNodeProvider;
 import org.rubypeople.rdt.refactoring.classnodeprovider.IncludedClassesProvider;
 import org.rubypeople.rdt.refactoring.core.IRefactoringConfig;
-import org.rubypeople.rdt.refactoring.core.NodeProvider;
 import org.rubypeople.rdt.refactoring.core.RefactoringConditionChecker;
 import org.rubypeople.rdt.refactoring.core.SelectionNodeProvider;
-import org.rubypeople.rdt.refactoring.core.renamefield.fielditems.FieldCallItem;
 import org.rubypeople.rdt.refactoring.core.renamefield.fielditems.FieldItem;
 import org.rubypeople.rdt.refactoring.documentprovider.DocumentWithIncluding;
 import org.rubypeople.rdt.refactoring.exception.NoClassNodeException;
@@ -98,41 +94,12 @@ public class RenameFieldConditionChecker extends RefactoringConditionChecker {
 		possibleItems.addAll(selectedItems);
 
 		if (!concernsClassField) {
-			possibleItems.addAll(getInstVarAccesses());
+			possibleItems.addAll(InstVarAccessesFinder.find(config.getDocumentProvider(), config.getSelectedName()));
 		}
 
 		config.setPossibleCalls(possibleItems);
 	}
 
-	private Collection<FieldItem> getInstVarAccesses() {
-		ArrayList<FieldItem> fieldCallNodes = new ArrayList<FieldItem>();
-
-		Collection<Node> allNodes = NodeProvider.getAllNodes(rootNode);
-		for (Node currentNode : allNodes) {
-			if (isPossibleCall(currentNode)) {
-				fieldCallNodes.add(new FieldCallItem((CallNode) currentNode));
-			}
-		}
-
-		return fieldCallNodes;
-	}
-
-	private boolean isPossibleCall(Node candidateNode) {
-		if ((candidateNode instanceof CallNode)) {
-
-			CallNode callNode = (CallNode) candidateNode;
-			if (callNode.getName().replaceAll("=", "").equals(config.getSelectedName())) { //$NON-NLS-1$ //$NON-NLS-2$
-				String fileName = callNode.getPosition().getFile();
-				Node rootNode = config.getDocumentProvider().getRootNode(fileName);
-				try {
-					SelectionNodeProvider.getSelectedClassNode(rootNode, callNode.getPosition().getStartOffset());
-				} catch (NoClassNodeException e) {
-					return true;
-				}
-			}
-		}
-		return false;
-	}
 
 	@Override
 	protected void checkFinalConditions() {

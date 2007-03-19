@@ -117,7 +117,7 @@ public class OccurenceReplaceSelectionPage extends RefactoringWizardPage {
 	private void initPossibilityTable(Composite control) {
 		possibilityTable = new Table(control, SWT.BORDER | SWT.CHECK);
 		
-		TreeSet<INodeWrapper> possibleCalls = new TreeSet<INodeWrapper>(new Comparator<INodeWrapper>(){
+		TreeSet<INodeWrapper> possibleCalls = new TreeSet<INodeWrapper>(new Comparator<INodeWrapper>() {
 
 			public int compare(INodeWrapper left, INodeWrapper right) {
 				return left.getWrappedNode().getPosition().getStartOffset() - right.getWrappedNode().getPosition().getStartOffset();
@@ -125,10 +125,10 @@ public class OccurenceReplaceSelectionPage extends RefactoringWizardPage {
 		
 		possibleCalls.addAll(selector.getPossibleCalls());
 		
-		for(INodeWrapper currentCall : possibleCalls){
+		for(INodeWrapper currentCall : possibleCalls) {
 			TableItem currentItem = new TableItem(possibilityTable, SWT.NONE);
 			currentItem.setText(getTableCaption(currentCall));
-			if(probableCall(currentCall)){
+			if(probableCall(currentCall)) {
 				currentItem.setChecked(true);
 			}
 			currentItem.setData(currentCall);
@@ -153,6 +153,4 @@ public class OccurenceReplaceSelectionPage extends RefactoringWizardPage {
 	private boolean hasSamePosition(INodeWrapper currentCall, INodeWrapper targetCall) {
 		return JRubyRefactoringUtils.hasSamePosition(currentCall.getWrappedNode(), targetCall.getWrappedNode());
 	}
-
-
 }

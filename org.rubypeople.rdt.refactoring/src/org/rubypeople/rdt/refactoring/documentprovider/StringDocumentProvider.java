@@ -41,11 +41,11 @@ public class StringDocumentProvider extends DocumentProvider {
 	
 	protected Map<String, String> files;
 
-	public StringDocumentProvider(String documentName, String document) {
+	public StringDocumentProvider(String name, String document) {
 		this.document = document;
-		this.docName = documentName;
+		this.docName = name;
 		files = new LinkedHashMap<String, String>();
-		files.put(documentName, document);
+		files.put(name, document);
 	}
 	
 	public StringDocumentProvider(IDocumentProvider other) {

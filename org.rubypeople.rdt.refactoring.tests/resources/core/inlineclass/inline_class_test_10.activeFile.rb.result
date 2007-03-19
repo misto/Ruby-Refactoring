@@ -33,7 +33,7 @@ baum = self
     @plant
   end
   def tree1
-    @tree
+    @tree1
   end
   def goo
     p 5

@@ -93,7 +93,7 @@ public class ClassNodeWrapper implements INodeWrapper {
 	public MethodNodeWrapper getConstructorNode() {
 		Collection<MethodNodeWrapper> constructors = getExistingConstructors();
 		if (constructors.isEmpty()) {
-			return new MethodNodeWrapper(NodeFactory.createDefaultConstructor());
+			return new MethodNodeWrapper(NodeFactory.createDefaultConstructor(), this);
 		}
 		return constructors.toArray(new MethodNodeWrapper[constructors.size()])[constructors.size() - 1];
 	}

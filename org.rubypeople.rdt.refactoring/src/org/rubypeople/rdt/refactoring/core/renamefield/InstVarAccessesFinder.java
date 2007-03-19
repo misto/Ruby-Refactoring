@@ -28,38 +28,49 @@
  * the terms of any one of the CPL, the GPL or the LGPL.
  ***** END LICENSE BLOCK *****/
 
-package org.rubypeople.rdt.refactoring.core.renamemethod;
+
+package org.rubypeople.rdt.refactoring.core.renamefield;
 
 import java.util.ArrayList;
 import java.util.Collection;
 
-import org.jruby.ast.MethodDefNode;
-import org.jruby.ast.SymbolNode;
-import org.rubypeople.rdt.refactoring.nodewrapper.ClassNodeWrapper;
-import org.rubypeople.rdt.refactoring.nodewrapper.MethodCallNodeWrapper;
-import org.rubypeople.rdt.refactoring.nodewrapper.MethodNodeWrapper;
+import org.jruby.ast.CallNode;
+import org.jruby.ast.Node;
+import org.rubypeople.rdt.refactoring.core.SelectionNodeProvider;
+import org.rubypeople.rdt.refactoring.core.renamefield.fielditems.FieldCallItem;
+import org.rubypeople.rdt.refactoring.core.renamefield.fielditems.FieldItem;
+import org.rubypeople.rdt.refactoring.documentprovider.IDocumentProvider;
+import org.rubypeople.rdt.refactoring.exception.NoClassNodeException;
 
-public class MethodDefinitionWrapper extends MethodNodeWrapper{
-	
-	public MethodDefinitionWrapper(MethodDefNode methodDefinition){
-		super(methodDefinition);
+public class InstVarAccessesFinder {
+
+	public static Collection<FieldItem> find(IDocumentProvider document, String selectedName) {
+		ArrayList<FieldItem> fieldCallNodes = new ArrayList<FieldItem>();
+		
+		Collection<Node> allNodes = document.getAllNodes();
+		for (Node currentNode : allNodes) {
+			if (isPossibleCall(currentNode, document, selectedName)) {
+				fieldCallNodes.add(new FieldCallItem((CallNode) currentNode));
+			}
+		}
+
+		return fieldCallNodes;
 	}
 
-	public Collection<MethodCallNodeWrapper> getCallCandidatesInClass(ClassNodeWrapper classNode) {
-		if(classNode == null){
-			return new ArrayList<MethodCallNodeWrapper>();
-		}
-		Collection<MethodCallNodeWrapper> calls = classNode.getMethodCalls(methodNode);
-		
-		return calls;
-	}
+	private static boolean isPossibleCall(Node candidateNode, IDocumentProvider document, String selectedName) {
+		if ((candidateNode instanceof CallNode)) {
 
-	public Collection<SymbolNode> getSymbolCandidatesInClass(ClassNodeWrapper classNode) {
-		if(classNode == null){
-			return new ArrayList<SymbolNode>();
+			CallNode callNode = (CallNode) candidateNode;
+			if (callNode.getName().replaceAll("=", "").equals(selectedName)) { //$NON-NLS-1$ //$NON-NLS-2$
+				String fileName = callNode.getPosition().getFile();
+				Node rootNode = document.getRootNode(fileName);
+				try {
+					SelectionNodeProvider.getSelectedClassNode(rootNode, callNode.getPosition().getStartOffset());
+				} catch (NoClassNodeException e) {
+					return true;
+				}
+			}
 		}
-		Collection<SymbolNode> symbols = classNode.getMethodSymbols(methodNode);
-		
-		return symbols;
+		return false;
 	}
 }

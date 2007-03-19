@@ -39,41 +39,41 @@ import org.jruby.ast.SymbolNode;
 import org.rubypeople.rdt.refactoring.core.renamemethod.MethodRenamer;
 import org.rubypeople.rdt.refactoring.core.renamemethod.RenameMethodConditionChecker;
 import org.rubypeople.rdt.refactoring.core.renamemethod.RenameMethodConfig;
-import org.rubypeople.rdt.refactoring.nodewrapper.MethodCallNodeWrapper;
+import org.rubypeople.rdt.refactoring.nodewrapper.INodeWrapper;
 import org.rubypeople.rdt.refactoring.tests.MultiFileTestData;
 import org.rubypeople.rdt.refactoring.tests.RefactoringTestCase;
 
-public class RenameMethodSelectionTester extends RefactoringTestCase{
+public class RenameMethodSelectionTester extends RefactoringTestCase {
 
 	private String fileName;
+
 	private MultiFileTestData testData;
-	
-	public RenameMethodSelectionTester(String fileName)
-	{
+
+	public RenameMethodSelectionTester(String fileName) {
 		this.fileName = fileName;
 	}
-	 
+
 	@Override
 	public void runTest() throws FileNotFoundException, IOException, BadLocationException {
-			testData = new MultiFileTestData(fileName);
-			int caretPosition = testData.getIntProperty("caretPosition");		
-			
-			RenameMethodConfig config = new RenameMethodConfig(testData, caretPosition);
-			new RenameMethodConditionChecker(config);
-			
-			MethodRenamer renamer = new MethodRenamer(config);
-			config.setNewName(testData.getProperty("newName"));
-			
-			Collection<MethodCallNodeWrapper> calls = renamer.getCallCandidatesInClass();
-			calls.addAll(renamer.getSubsequentCalls());
-			config.setSelectedCalls(calls);
-			
-			Collection<SymbolNode> symbols = renamer.getSymbolCandidatesInClass();
-			config.setRenamedSymbols(symbols);
-			
-			checkMultiFileEdits(renamer, testData);
+		testData = new MultiFileTestData(fileName);
+		int caretPosition = testData.getIntProperty("caretPosition");
+
+		RenameMethodConfig config = new RenameMethodConfig(testData, caretPosition);
+		new RenameMethodConditionChecker(config);
+
+		MethodRenamer renamer = new MethodRenamer(config);
+		config.setNewName(testData.getProperty("newName"));
+
+		Collection<INodeWrapper> calls = renamer.getCallCandidatesInClass();
+		calls.addAll(renamer.getSubsequentCalls());
+		config.setSelectedCalls(calls);
+
+		Collection<SymbolNode> symbols = renamer.getSymbolCandidatesInClass();
+		config.setRenamedSymbols(symbols);
+
+		checkMultiFileEdits(renamer, testData);
 	}
-	
+
 	@Override
 	public String getName() {
 		return fileName;

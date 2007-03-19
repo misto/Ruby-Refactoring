@@ -43,6 +43,8 @@ import org.jruby.ast.VCallNode;
 import org.rubypeople.rdt.refactoring.classnodeprovider.ClassNodeProvider;
 import org.rubypeople.rdt.refactoring.core.NodeProvider;
 import org.rubypeople.rdt.refactoring.core.SelectionNodeProvider;
+import org.rubypeople.rdt.refactoring.core.renamefield.FieldRenameEditProvider;
+import org.rubypeople.rdt.refactoring.core.renamefield.fielditems.FieldItem;
 import org.rubypeople.rdt.refactoring.core.renamemethod.methoditems.CallCandidateItem;
 import org.rubypeople.rdt.refactoring.core.renamemethod.methoditems.MethodNameArgumentItem;
 import org.rubypeople.rdt.refactoring.core.renamemethod.methoditems.SymbolItem;
@@ -62,12 +64,11 @@ public class MethodRenamer implements IMultiFileEditProvider {
 	
 	public Collection<String> getAllMethodsFromClass() {
 		Collection<String> names = new ArrayList<String>();
-		try {
-			for(MethodNodeWrapper method : config.getAllMethodsInClass()) {
+		
+		if(config.getSelectedClass() != null) {
+			for(MethodNodeWrapper method : config.getSelectedClass().getMethods()) {
 				names.add(method.getName());
 			}
-		} catch (NoClassNodeException e) {
-			/*we don't care*/
 		}
 		return names;
 	}
@@ -75,8 +76,9 @@ public class MethodRenamer implements IMultiFileEditProvider {
 	public MethodRenamer(RenameMethodConfig config){
 		this.config = config;
 		
-		Collection<MethodCallNodeWrapper> probableClass = getCallCandidatesInClass();
+		Collection<INodeWrapper> probableClass = getCallCandidatesInClass();
 		probableClass.addAll(getSubsequentCalls());
+		probableClass.addAll(config.getSelectedCalls());
 		config.setSelectedCalls(probableClass);
 	}
 
@@ -91,7 +93,7 @@ public class MethodRenamer implements IMultiFileEditProvider {
 		if(!config.getTargetMethod().isClassMethod()){
 			addSymbolRenamers(fileEdits);
 		}
-		
+
 		return fileEdits.getFileEditProviders();
 	}
 
@@ -101,18 +103,33 @@ public class MethodRenamer implements IMultiFileEditProvider {
 		}
 		String file = config.getDocumentProvider().getActiveFileName();
 		for(SymbolNode currentNode : getSymbolCandidatesInClass()){
-			SymbolItem currentItem = new SymbolItem(currentNode);
-			fileEdits.addEditProvider(new FileEditProvider(file, new MethodRenameEditProvider(currentItem, config.getNewName())));
+			addSymbolRenamer(fileEdits, file, currentNode, config.getNewName());
 		}
+	}
+
+	private void addSymbolRenamer(MultiFileEditProvider fileEdits, String file, SymbolNode currentNode, String name) {
+		SymbolItem currentItem = new SymbolItem(currentNode);
+		fileEdits.addEditProvider(new FileEditProvider(file, new MethodRenameEditProvider(currentItem, name)));
 	}
 
 	private void addCallRenamers(MultiFileEditProvider fileEdits) {
 		
 		for(INodeWrapper currentCandidate : config.getSelectedCalls()){
 			String file = currentCandidate.getWrappedNode().getPosition().getFile();
-			//Were expecting only MethodCallNodeWrappers in this refactoring
-			CallCandidateItem candidateItem = new CallCandidateItem((MethodCallNodeWrapper)currentCandidate);
-			fileEdits.addEditProvider(new FileEditProvider(file, new MethodRenameEditProvider(candidateItem, config.getNewName())));
+			
+			String newName = config.getNewName();
+			
+			if(currentCandidate instanceof MethodCallNodeWrapper) {
+				CallCandidateItem candidateItem = new CallCandidateItem((MethodCallNodeWrapper) currentCandidate);
+				fileEdits.addEditProvider(new FileEditProvider(file, new MethodRenameEditProvider(candidateItem, newName)));
+			} else if(config.renameFields()) {
+				if(config.getTargetMethod().isWriter()) {
+					newName = newName.replace("=", "");
+				}
+				
+				FieldRenameEditProvider currentRenameProvider = new FieldRenameEditProvider((FieldItem) currentCandidate, newName);	
+				fileEdits.addEditProvider(new FileEditProvider(file, currentRenameProvider));
+			}
 		}
 	}
 
@@ -129,10 +146,35 @@ public class MethodRenamer implements IMultiFileEditProvider {
 					continue;
 				}
 				String currentFile = currentMethodDef.getPosition().getFile();
-				MethodNameArgumentItem argumentItem = new MethodNameArgumentItem(currentMethodDef.getWrappedNode().getNameNode());
-				fileEdits.addEditProvider(new FileEditProvider(currentFile, new MethodRenameEditProvider(argumentItem, config.getNewName())));
+				addMethodNameRenamer(fileEdits, currentMethodDef, currentFile, config.getNewName());
 			}
 		}
+		
+		if(config.getTargetMethod().isAccessor() && config.renameFields()) {
+			String theOtherAccessor;
+			String newName;
+			if(config.getTargetMethod().isReader()) {
+				theOtherAccessor = config.getTargetMethod().getName() + "=";
+				newName = config.getNewName() + "=";
+			} else {
+				theOtherAccessor = config.getTargetMethod().getName().replace("=", "");
+				newName = config.getNewName().replace("=", "");
+			}
+			
+			MethodNodeWrapper method = config.getSelectedClass().getMethod(theOtherAccessor);
+			if(method != null) {
+				addMethodNameRenamer(fileEdits, method, method.getPosition().getFile(), newName);
+				
+				for (SymbolNode node : method.getSymbolCandidatesInClass(config.getSelectedClass())) {
+					addSymbolRenamer(fileEdits, method.getPosition().getFile(), node, newName);
+				}
+			}
+		}
+	}
+
+	private void addMethodNameRenamer(MultiFileEditProvider fileEdits, MethodNodeWrapper currentMethodDef, String currentFile, String newName) {
+		MethodNameArgumentItem argumentItem = new MethodNameArgumentItem(currentMethodDef.getWrappedNode().getNameNode());
+		fileEdits.addEditProvider(new FileEditProvider(currentFile, new MethodRenameEditProvider(argumentItem, newName)));
 	}
 
 	private ArrayList<ClassNodeWrapper> findRelatedClasses() {
@@ -148,9 +190,9 @@ public class MethodRenamer implements IMultiFileEditProvider {
 		return config;
 	}
 	
-	public Collection<MethodCallNodeWrapper> getCallCandidatesInClass(){
+	public Collection<INodeWrapper> getCallCandidatesInClass(){
 		
-		ArrayList<MethodCallNodeWrapper> callCandidates = new ArrayList<MethodCallNodeWrapper>();
+		ArrayList<INodeWrapper> callCandidates = new ArrayList<INodeWrapper>();
 
 		if(config.getSelectedClass() != null){
 			for(ClassNodeWrapper currentClass : findRelatedClasses()){

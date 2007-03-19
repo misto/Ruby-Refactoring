@@ -220,7 +220,7 @@ public class FieldProvider {
 
 	public ArrayList<FieldItem> getFieldItems(String fieldName, boolean concernsClassField) {
 		ArrayList<FieldItem> matchingItems = new ArrayList<FieldItem>();
-		
+
 		for(FieldItem currentItem : fields.get(fieldName)){
 			if(currentItem.concernsClassField() == concernsClassField){
 				matchingItems.add(currentItem);
