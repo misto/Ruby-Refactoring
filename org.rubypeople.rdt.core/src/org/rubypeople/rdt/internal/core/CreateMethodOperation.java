@@ -7,6 +7,7 @@ import org.jruby.ast.DefnNode;
 import org.jruby.ast.DefsNode;
 import org.jruby.ast.NewlineNode;
 import org.jruby.ast.Node;
+import org.jruby.ast.RootNode;
 import org.rubypeople.rdt.core.IRubyElement;
 import org.rubypeople.rdt.core.IRubyModelStatus;
 import org.rubypeople.rdt.core.IRubyModelStatusConstants;
@@ -224,8 +225,7 @@ public class CreateMethodOperation extends RubyModelOperation {
 	private Node generateElementAST(IDocument document, IRubyScript cu) {
 		RubyParser parser = new RubyParser();		
 		Node root = parser.parse(this.source);
-		NewlineNode newline = (NewlineNode) root;		
-		this.createdNode = newline.getNextNode(); // Grab node from our parsed source!
+		this.createdNode = ((NewlineNode) ((RootNode) root).getBodyNode()).getNextNode(); // Grab node from our parsed source!
 		return this.createdNode;
 	}
 

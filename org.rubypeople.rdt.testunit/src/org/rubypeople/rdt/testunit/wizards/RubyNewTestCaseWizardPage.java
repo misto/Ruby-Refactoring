@@ -22,7 +22,6 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 import org.rubypeople.rdt.core.IRubyElement;
 import org.rubypeople.rdt.core.IRubyProject;
-import org.rubypeople.rdt.core.IRubyScript;
 import org.rubypeople.rdt.core.ISourceFolderRoot;
 import org.rubypeople.rdt.core.IType;
 import org.rubypeople.rdt.core.RubyConventions;
@@ -281,6 +280,7 @@ public class RubyNewTestCaseWizardPage extends NewTypeWizardPage {
 		fClassUnderTestStatus= classUnderTestChanged();
 		handleFieldChanged(CLASS_UNDER_TEST);
 	}
+
 	
 	/**
 	 * Hook method that gets called when the class under test has changed. The method class under test
@@ -359,19 +359,19 @@ public class RubyNewTestCaseWizardPage extends NewTypeWizardPage {
 		// TODO Uncomment to set up type page
 //		initTypePage(element);
 		// put default class to test		
-		if (element != null) {
-			IType classToTest= null;
+//		if (element != null) {
+//			IType classToTest= null;
 			// evaluate the enclosing type
-			IType typeInCompUnit= (IType) element.getAncestor(IRubyElement.TYPE);
-			if (typeInCompUnit != null) {
-				if (typeInCompUnit.getRubyScript() != null) {
-					classToTest= typeInCompUnit;
-				}
-			} else {
-				IRubyScript cu= (IRubyScript) element.getAncestor(IRubyElement.SCRIPT);
-				if (cu != null) 
-					classToTest= cu.findPrimaryType();
-			}
+//			IType typeInCompUnit= (IType) element.getAncestor(IRubyElement.TYPE);
+//			if (typeInCompUnit != null) {
+//				if (typeInCompUnit.getRubyScript() != null) {
+//					classToTest= typeInCompUnit;
+//				}
+//			} else {
+//				IRubyScript cu= (IRubyScript) element.getAncestor(IRubyElement.SCRIPT);
+//				if (cu != null) 
+//					classToTest= cu.findPrimaryType();
+//			}
 			// TODO uncomment to set class under test
 //			if (classToTest != null) {
 //				try {
@@ -382,7 +382,7 @@ public class RubyNewTestCaseWizardPage extends NewTypeWizardPage {
 //					TestunitPlugin.log(e);
 //				}
 //			}
-		}
+//		}
 
 		restoreWidgetValues();
 				

@@ -12,7 +12,6 @@ package org.rubypeople.rdt.ui.wizards;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.core.runtime.IStatus;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.IDialogSettings;
 import org.eclipse.jface.viewers.IStructuredSelection;
@@ -89,30 +88,6 @@ public class NewClassWizardPage extends NewTypeWizardPage {
 		}
 		
 		setMethodStubSelection(createConstructors, true);
-	}
-	
-	// ------ validation --------
-	private void doStatusUpdate() {
-		// status of all used components
-		IStatus[] status= new IStatus[] {
-			fContainerStatus,
-			fTypeNameStatus,
-			fSuperClassStatus,
-			fSuperInterfacesStatus
-		};
-		
-		// the mode severe status will be displayed and the OK button enabled/disabled.
-		updateStatus(status);
-	}
-	
-	
-	/*
-	 * @see NewContainerWizardPage#handleFieldChanged
-	 */
-	protected void handleFieldChanged(String fieldName) {
-		super.handleFieldChanged(fieldName);
-		
-		doStatusUpdate();
 	}
 	
 	

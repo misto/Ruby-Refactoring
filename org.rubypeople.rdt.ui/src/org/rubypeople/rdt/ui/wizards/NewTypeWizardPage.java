@@ -794,6 +794,31 @@ public abstract class NewTypeWizardPage extends NewContainerWizardPage {
 		return status;
 	}
 	
+	
+	// ------ validation --------
+	protected void doStatusUpdate() {
+		// status of all used components
+		IStatus[] status= new IStatus[] {
+			fContainerStatus,
+			fTypeNameStatus,
+			fSuperClassStatus,
+			fSuperInterfacesStatus
+		};
+		
+		// the mode severe status will be displayed and the OK button enabled/disabled.
+		updateStatus(status);
+	}
+	
+	
+	/*
+	 * @see NewContainerWizardPage#handleFieldChanged
+	 */
+	protected void handleFieldChanged(String fieldName) {
+		super.handleFieldChanged(fieldName);
+		
+		doStatusUpdate();
+	}
+	
 	/**
 	 * Initializes all fields provided by the page with a given selection.
 	 * 
