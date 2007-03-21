@@ -308,6 +308,11 @@ public class RubyModelStatus extends Status implements IRubyModelStatus, IRubyMo
 					newPath = path.removeFirstSegments(1);
 				}
 				return Messages.bind(Messages.classpath_disabledMultipleOutputLocations, newPath.makeRelative().toString(), projectName);
+				
+			case PROJECT_HAS_NO_RUBY_NATURE:
+				javaProject = (IRubyProject)elements[0];
+				projectName = javaProject.getElementName();
+				return Messages.bind(Messages.project_has_no_ruby_nature, projectName);
 			}
 			if (string != null) {
 				return string;

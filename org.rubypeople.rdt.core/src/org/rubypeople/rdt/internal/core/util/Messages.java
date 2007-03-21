@@ -153,6 +153,7 @@ public final class Messages extends NLS {
     public static String convention_package_uppercaseName;
 	public static String build_saveStateProgress;
 	public static String build_saveStateComplete;
+	public static String project_has_no_ruby_nature;
 
     static {
         NLS.initializeMessages(BUNDLE_NAME, Messages.class);

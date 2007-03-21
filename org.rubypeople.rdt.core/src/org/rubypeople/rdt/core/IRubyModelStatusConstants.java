@@ -307,4 +307,5 @@ public interface IRubyModelStatusConstants {
 	 * @since 3.1
 	 */
 //	public static final int INVALID_COMPILER_OPTION = 1007;	
+	public static final int PROJECT_HAS_NO_RUBY_NATURE	= 1007;	
 }

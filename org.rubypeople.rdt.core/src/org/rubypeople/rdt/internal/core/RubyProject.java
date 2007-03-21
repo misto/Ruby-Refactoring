@@ -469,7 +469,7 @@ public class RubyProject extends Openable implements IProjectNature, IRubyElemen
 
 		// check whether the ruby project can be opened
 		if (!hasRubyNature((IProject) underlyingResource)) {
-			throw newNotPresentException();
+			throw new RubyModelException(new RubyModelStatus(IRubyModelStatusConstants.PROJECT_HAS_NO_RUBY_NATURE, this));
 		}
 
 		// cannot refresh cp markers on opening (emulate cp check on startup)
