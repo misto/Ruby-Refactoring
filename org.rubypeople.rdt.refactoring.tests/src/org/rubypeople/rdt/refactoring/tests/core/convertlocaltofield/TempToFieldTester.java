@@ -28,46 +28,63 @@
  * the terms of any one of the CPL, the GPL or the LGPL.
  ***** END LICENSE BLOCK *****/
 
-package org.rubypeople.rdt.refactoring.tests.core.inlinetemp;
+package org.rubypeople.rdt.refactoring.tests.core.convertlocaltofield;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
 
 import org.eclipse.jface.text.BadLocationException;
-import org.rubypeople.rdt.refactoring.core.inlinelocal.InlineLocalConditionChecker;
-import org.rubypeople.rdt.refactoring.core.inlinelocal.InlineLocalConfig;
-import org.rubypeople.rdt.refactoring.core.inlinelocal.LocalVariableInliner;
+import org.rubypeople.rdt.refactoring.core.convertlocaltofield.LocalToFieldConditionChecker;
+import org.rubypeople.rdt.refactoring.core.convertlocaltofield.LocalToFieldConfig;
+import org.rubypeople.rdt.refactoring.core.convertlocaltofield.LocalToFieldConverter;
+import org.rubypeople.rdt.refactoring.tests.FilePropertyData;
 import org.rubypeople.rdt.refactoring.tests.FileTestData;
 import org.rubypeople.rdt.refactoring.tests.RefactoringTestCase;
 
-public class TempInlinerTester extends RefactoringTestCase {
+public class TempToFieldTester extends RefactoringTestCase {
 
 	private String fileName;
 
-	private FileTestData testData;
-
-	public TempInlinerTester(String fileName) {
+	public TempToFieldTester(String fileName) {
 		this.fileName = fileName;
 	}
 
-	private void runInlineTempTest(FileTestData data) throws BadLocationException {
+	protected int getInitPlace(String initPlace) {
+		if (initPlace.equalsIgnoreCase("TempToFieldConverter.INIT_IN_METHOD")) {
+			return LocalToFieldConverter.INIT_IN_METHOD;
+		} else if (initPlace.equalsIgnoreCase("TempToFieldConverter.INIT_IN_CONSTRUCTOR")) {
+			return LocalToFieldConverter.INIT_IN_CONSTRUCTOR;
+		} else {
+			assertTrue(false);
+			return 0;
+		}
 
-		InlineLocalConfig config = new InlineLocalConfig(data, data.getIntProperty("caretPosition"));
-		InlineLocalConditionChecker checker = new InlineLocalConditionChecker(config);
+	}
+
+	protected void runTempToFieldTest(FilePropertyData data, String sourceDocument, String expectedDocument, String newName, boolean isClassField, int initPlace,
+			int cursorPosition) throws BadLocationException {
+		LocalToFieldConfig config = new LocalToFieldConfig(data, cursorPosition);
+		LocalToFieldConditionChecker checker = new LocalToFieldConditionChecker(config);
 		if (!checker.shouldPerform()) {
 			fail();
 		}
-		LocalVariableInliner inliner = new LocalVariableInliner(config);
-		config.setReplaceTempWithQuery(data.getBoolProperty("replaceWithQuery"));
-		config.setNewMethodName(data.getProperty("newMethodName"));
-
-		createEditAndCompareResult(data.getActiveFileContent(), data.getExpectedResult(), inliner);
+		LocalToFieldConverter converter = new LocalToFieldConverter(config);
+		converter.setInitPlace(initPlace);
+		converter.setIsClassField(isClassField);
+		converter.setNewName(newName);
+		createEditAndCompareResult(sourceDocument, expectedDocument, converter);
 	}
 
 	@Override
 	public void runTest() throws FileNotFoundException, IOException, BadLocationException {
-		testData = new FileTestData(fileName, getClass());
-		runInlineTempTest(testData);
+		FileTestData data = new FileTestData(fileName, getClass());
+		String source = data.getSource();
+		String expected = data.getExpectedResult();
+		String newName = data.getProperty("newName");
+		boolean isClassField = data.getBoolProperty("isClassField");
+		int initPlace = getInitPlace(data.getProperty("initPlace"));
+		int cursorPos = data.getIntProperty("cursorPosition");
+		runTempToFieldTest(data, source, expected, newName, isClassField, initPlace, cursorPos);
 	}
 
 	@Override

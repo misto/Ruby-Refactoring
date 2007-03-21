@@ -28,16 +28,50 @@
  * the terms of any one of the CPL, the GPL or the LGPL.
  ***** END LICENSE BLOCK *****/
 
-package org.rubypeople.rdt.refactoring.tests.core.converttemptofield.conditionchecks;
+package org.rubypeople.rdt.refactoring.tests.core.inlinelocal;
 
-import junit.framework.Test;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 
-import org.rubypeople.rdt.refactoring.tests.FileTestSuite;
+import org.eclipse.jface.text.BadLocationException;
+import org.rubypeople.rdt.refactoring.core.inlinelocal.InlineLocalConditionChecker;
+import org.rubypeople.rdt.refactoring.core.inlinelocal.InlineLocalConfig;
+import org.rubypeople.rdt.refactoring.core.inlinelocal.LocalVariableInliner;
+import org.rubypeople.rdt.refactoring.tests.FileTestData;
+import org.rubypeople.rdt.refactoring.tests.RefactoringTestCase;
 
-public class TS_TempToFieldChecks extends FileTestSuite {
+public class TempInlinerTester extends RefactoringTestCase {
 
-	public static Test suite() {
-		return createSuite("ConvertTempToFieldTests", "temp_to_field_checker_test_*test_source", TempToFieldConditionTester.class);
+	private String fileName;
+
+	private FileTestData testData;
+
+	public TempInlinerTester(String fileName) {
+		this.fileName = fileName;
 	}
 
+	private void runInlineTempTest(FileTestData data) throws BadLocationException {
+
+		InlineLocalConfig config = new InlineLocalConfig(data, data.getIntProperty("caretPosition"));
+		InlineLocalConditionChecker checker = new InlineLocalConditionChecker(config);
+		if (!checker.shouldPerform()) {
+			fail();
+		}
+		LocalVariableInliner inliner = new LocalVariableInliner(config);
+		config.setReplaceTempWithQuery(data.getBoolProperty("replaceWithQuery"));
+		config.setNewMethodName(data.getProperty("newMethodName"));
+
+		createEditAndCompareResult(data.getActiveFileContent(), data.getExpectedResult(), inliner);
+	}
+
+	@Override
+	public void runTest() throws FileNotFoundException, IOException, BadLocationException {
+		testData = new FileTestData(fileName, getClass());
+		runInlineTempTest(testData);
+	}
+
+	@Override
+	public String getName() {
+		return fileName;
+	}
 }

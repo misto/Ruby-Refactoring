@@ -26,16 +26,40 @@
  * the terms of any one of the CPL, the GPL or the LGPL.
  ***** END LICENSE BLOCK *****/
 
-package org.rubypeople.rdt.refactoring.tests.core.splittemp.conditionchecks;
+package org.rubypeople.rdt.refactoring.tests.core.renamelocal;
 
-import junit.framework.Test;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 
-import org.rubypeople.rdt.refactoring.tests.FileTestSuite;
+import org.eclipse.jface.text.BadLocationException;
+import org.rubypeople.rdt.refactoring.core.renamelocal.RenameLocalEditProvider;
+import org.rubypeople.rdt.refactoring.core.renamelocal.RenameLocalConditionChecker;
+import org.rubypeople.rdt.refactoring.core.renamelocal.RenameLocalConfig;
+import org.rubypeople.rdt.refactoring.tests.FileTestCase;
+import org.rubypeople.rdt.refactoring.tests.FileTestData;
 
-public class TS_SplitTempChecks extends FileTestSuite {
-
-	public static Test suite() {
-		return createSuite("SplitTempConditionChecks", "split_temp_checker_test_*test_source", SplitTempConditionTester.class);
+public class RenameLocalTester extends FileTestCase {
+	
+	public RenameLocalTester(String fileName) {
+		super(fileName);
 	}
-
+	
+	@Override
+	public void runTest() throws FileNotFoundException, IOException, BadLocationException {
+		
+		FileTestData testData = new FileTestData(getName(), ".source.rb", ".result.rb");
+	
+		int caretPosition = testData.getIntProperty("pos");
+		
+		RenameLocalConfig config = new RenameLocalConfig(testData, caretPosition);
+		RenameLocalConditionChecker checker = new RenameLocalConditionChecker(config);
+		if(!checker.shouldPerform()) {
+			fail();
+		}
+		new RenameLocalEditProvider(config);
+		config.getRenameEditProvider().setSelectedVariableName(config.getSelectedNodeName());
+		config.getRenameEditProvider().setNewVariableName(testData.getProperty("name"));
+		
+		createEditAndCompareResult(testData.getSource(), testData.getExpectedResult(), config.getRenameEditProvider());
+	}
 }

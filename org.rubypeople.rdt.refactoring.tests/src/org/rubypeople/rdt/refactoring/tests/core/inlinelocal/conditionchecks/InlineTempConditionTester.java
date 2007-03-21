@@ -11,7 +11,9 @@
  * implied. See the License for the specific language governing
  * rights and limitations under the License.
  *
+ * Copyright (C) 2006 Lukas Felber <lfelber@hsr.ch>
  * Copyright (C) 2006 Mirko Stocker <me@misto.ch>
+ * Copyright (C) 2006 Thomas Corbat <tcorbat@hsr.ch>
  * 
  * Alternatively, the contents of this file may be used under the terms of
  * either of the GNU General Public License Version 2 or later (the "GPL"),
@@ -26,38 +28,42 @@
  * the terms of any one of the CPL, the GPL or the LGPL.
  ***** END LICENSE BLOCK *****/
 
-package org.rubypeople.rdt.refactoring.tests.core.splittemp.conditionchecks;
+package org.rubypeople.rdt.refactoring.tests.core.inlinelocal.conditionchecks;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
 
-import org.rubypeople.rdt.refactoring.core.splitlocal.SplitLocalConditionChecker;
-import org.rubypeople.rdt.refactoring.core.splitlocal.SplitLocalConfig;
-import org.rubypeople.rdt.refactoring.core.splitlocal.SplitTempEditProvider;
-import org.rubypeople.rdt.refactoring.tests.FilePropertyData;
+import org.rubypeople.rdt.refactoring.core.inlinelocal.InlineLocalConditionChecker;
+import org.rubypeople.rdt.refactoring.core.inlinelocal.InlineLocalConfig;
+import org.rubypeople.rdt.refactoring.core.inlinelocal.LocalVariableInliner;
 import org.rubypeople.rdt.refactoring.tests.FileTestData;
 import org.rubypeople.rdt.refactoring.tests.RefactoringConditionTestCase;
 
-public class SplitTempConditionTester extends RefactoringConditionTestCase {
+public class InlineTempConditionTester extends RefactoringConditionTestCase {
 
-	private FilePropertyData testData;
-	private SplitLocalConfig config;
+	private InlineLocalConfig config;
+	private FileTestData testData;
 
-	public SplitTempConditionTester(String fileName) {
+	public InlineTempConditionTester(String fileName) {
 		super(fileName);
 	}
-	
+
 	@Override
 	public void runTest() throws FileNotFoundException, IOException {
 		testData = new FileTestData(getName(), ".test_source", ".test_source");
-		int caretPosition = testData.getIntProperty("cursorPosition");
-		config = new SplitLocalConfig(testData, caretPosition);
-		SplitLocalConditionChecker checker = new SplitLocalConditionChecker(config);
+		
+		config = new InlineLocalConfig(testData, testData.getIntProperty("cursorPosition"));
+		InlineLocalConditionChecker checker = new InlineLocalConditionChecker(config);
 		checkConditions(checker, testData);
 	}
 
 	@Override
 	protected void createEditProviderAndSetUserInput() {
-		new SplitTempEditProvider(config);
+		new LocalVariableInliner(config);
+		if(testData.hasProperty("newName")) {
+			config.setReplaceTempWithQuery(true);
+			config.setNewMethodName(testData.getProperty("newName"));
+		}
 	}
+	
 }

@@ -28,19 +28,16 @@
  * the terms of any one of the CPL, the GPL or the LGPL.
  ***** END LICENSE BLOCK *****/
 
-package org.rubypeople.rdt.refactoring.tests.core.converttemptofield;
+package org.rubypeople.rdt.refactoring.tests.core.inlinelocal.conditionchecks;
 
-import junit.framework.Test;
 import junit.framework.TestSuite;
 
 import org.rubypeople.rdt.refactoring.tests.FileTestSuite;
-import org.rubypeople.rdt.refactoring.tests.core.converttemptofield.conditionchecks.TS_TempToFieldChecks;
 
-public class TS_TempToField extends FileTestSuite
-{
-	public static Test suite() {
-		TestSuite suite =  createSuite("TempToField", "temp_to_field_test*test_source", TempToFieldTester.class);
-		suite.addTest(TS_TempToFieldChecks.suite());
-		return suite;
-	}
+public class TS_InlineTempConditionChecks extends FileTestSuite {
+
+	public static TestSuite suite() {
+			return createSuite("InlineTempConditionChecks", "inline_temp_checker_test_*test_source", InlineTempConditionTester.class);
+		}
+
 }

@@ -11,9 +11,7 @@
  * implied. See the License for the specific language governing
  * rights and limitations under the License.
  *
- * Copyright (C) 2006 Lukas Felber <lfelber@hsr.ch>
  * Copyright (C) 2006 Mirko Stocker <me@misto.ch>
- * Copyright (C) 2006 Thomas Corbat <tcorbat@hsr.ch>
  * 
  * Alternatively, the contents of this file may be used under the terms of
  * either of the GNU General Public License Version 2 or later (the "GPL"),
@@ -28,38 +26,38 @@
  * the terms of any one of the CPL, the GPL or the LGPL.
  ***** END LICENSE BLOCK *****/
 
-package org.rubypeople.rdt.refactoring.tests.core.converttemptofield.conditionchecks;
+package org.rubypeople.rdt.refactoring.tests.core.splitlocal.conditionchecks;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
 
-import org.rubypeople.rdt.refactoring.core.convertlocaltofield.LocalToFieldConditionChecker;
-import org.rubypeople.rdt.refactoring.core.convertlocaltofield.LocalToFieldConfig;
-import org.rubypeople.rdt.refactoring.core.convertlocaltofield.LocalToFieldConverter;
+import org.rubypeople.rdt.refactoring.core.splitlocal.SplitLocalConditionChecker;
+import org.rubypeople.rdt.refactoring.core.splitlocal.SplitLocalConfig;
+import org.rubypeople.rdt.refactoring.core.splitlocal.SplitTempEditProvider;
 import org.rubypeople.rdt.refactoring.tests.FilePropertyData;
 import org.rubypeople.rdt.refactoring.tests.FileTestData;
 import org.rubypeople.rdt.refactoring.tests.RefactoringConditionTestCase;
 
-public class TempToFieldConditionTester extends RefactoringConditionTestCase {
-	private FilePropertyData testData;
-	private LocalToFieldConfig config;
+public class SplitTempConditionTester extends RefactoringConditionTestCase {
 
-	public TempToFieldConditionTester(String fileName) {
+	private FilePropertyData testData;
+	private SplitLocalConfig config;
+
+	public SplitTempConditionTester(String fileName) {
 		super(fileName);
 	}
-
+	
 	@Override
 	public void runTest() throws FileNotFoundException, IOException {
 		testData = new FileTestData(getName(), ".test_source", ".test_source");
-		config = new LocalToFieldConfig(testData, testData.getIntProperty("cursorPosition"));
-		LocalToFieldConditionChecker checker = new LocalToFieldConditionChecker(config);
+		int caretPosition = testData.getIntProperty("cursorPosition");
+		config = new SplitLocalConfig(testData, caretPosition);
+		SplitLocalConditionChecker checker = new SplitLocalConditionChecker(config);
 		checkConditions(checker, testData);
 	}
 
 	@Override
 	protected void createEditProviderAndSetUserInput() {
-		LocalToFieldConverter converter = new LocalToFieldConverter(config);
-		converter.setIsClassField(testData.getBoolProperty("isClassField"));
-		converter.setNewName(testData.getProperty("newName"));		
+		new SplitTempEditProvider(config);
 	}
 }

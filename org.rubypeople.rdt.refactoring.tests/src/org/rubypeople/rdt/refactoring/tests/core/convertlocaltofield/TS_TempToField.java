@@ -12,6 +12,8 @@
  * rights and limitations under the License.
  *
  * Copyright (C) 2006 Lukas Felber <lfelber@hsr.ch>
+ * Copyright (C) 2006 Mirko Stocker <me@misto.ch>
+ * Copyright (C) 2006 Thomas Corbat <tcorbat@hsr.ch>
  * 
  * Alternatively, the contents of this file may be used under the terms of
  * either of the GNU General Public License Version 2 or later (the "GPL"),
@@ -26,19 +28,19 @@
  * the terms of any one of the CPL, the GPL or the LGPL.
  ***** END LICENSE BLOCK *****/
 
-package org.rubypeople.rdt.refactoring.tests.core.inlinetemp;
+package org.rubypeople.rdt.refactoring.tests.core.convertlocaltofield;
 
 import junit.framework.Test;
 import junit.framework.TestSuite;
 
 import org.rubypeople.rdt.refactoring.tests.FileTestSuite;
-import org.rubypeople.rdt.refactoring.tests.core.inlinetemp.conditionchecks.TS_InlineTempConditionChecks;
+import org.rubypeople.rdt.refactoring.tests.core.convertlocaltofield.conditionchecks.TS_TempToFieldChecks;
 
-public class TS_InlineTemp extends FileTestSuite {
-	
+public class TS_TempToField extends FileTestSuite
+{
 	public static Test suite() {
-		TestSuite suite = createSuite("Inline Temp", "inline_temp_test_*.test_properties", TempInlinerTester.class);
-		suite.addTest(TS_InlineTempConditionChecks.suite());
+		TestSuite suite =  createSuite("TempToField", "temp_to_field_test*test_source", TempToFieldTester.class);
+		suite.addTest(TS_TempToFieldChecks.suite());
 		return suite;
 	}
 }

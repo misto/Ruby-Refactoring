@@ -11,7 +11,9 @@
  * implied. See the License for the specific language governing
  * rights and limitations under the License.
  *
+ * Copyright (C) 2006 Lukas Felber <lfelber@hsr.ch>
  * Copyright (C) 2006 Mirko Stocker <me@misto.ch>
+ * Copyright (C) 2006 Thomas Corbat <tcorbat@hsr.ch>
  * 
  * Alternatively, the contents of this file may be used under the terms of
  * either of the GNU General Public License Version 2 or later (the "GPL"),
@@ -26,19 +28,16 @@
  * the terms of any one of the CPL, the GPL or the LGPL.
  ***** END LICENSE BLOCK *****/
 
-package org.rubypeople.rdt.refactoring.tests.core.renamelocalvariable;
+package org.rubypeople.rdt.refactoring.tests.core.convertlocaltofield.conditionchecks;
 
 import junit.framework.Test;
-import junit.framework.TestSuite;
 
 import org.rubypeople.rdt.refactoring.tests.FileTestSuite;
-import org.rubypeople.rdt.refactoring.tests.core.renamelocalvariable.conditionchecks.TS_RenameLocalCondition;
 
-public class TS_RenameLocalVariable extends FileTestSuite {
+public class TS_TempToFieldChecks extends FileTestSuite {
+
 	public static Test suite() {
-
-		TestSuite suite = createSuite("RenameLocalVariable", "rename_local_test_*source.rb", RenameLocalTester.class);
-		suite.addTest(TS_RenameLocalCondition.suite());
-		return suite;
+		return createSuite("ConvertTempToFieldTests", "temp_to_field_checker_test_*test_source", TempToFieldConditionTester.class);
 	}
+
 }

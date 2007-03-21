@@ -26,7 +26,7 @@
  * the terms of any one of the CPL, the GPL or the LGPL.
  ***** END LICENSE BLOCK *****/
 
-package org.rubypeople.rdt.refactoring.tests.core.splittemp;
+package org.rubypeople.rdt.refactoring.tests.core.splitlocal;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;

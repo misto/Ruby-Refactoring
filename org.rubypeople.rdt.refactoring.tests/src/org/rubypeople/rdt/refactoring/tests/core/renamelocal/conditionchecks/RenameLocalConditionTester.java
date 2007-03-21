@@ -28,15 +28,34 @@
  * the terms of any one of the CPL, the GPL or the LGPL.
  ***** END LICENSE BLOCK *****/
 
-package org.rubypeople.rdt.refactoring.tests.core.renamelocalvariable.conditionchecks;
+package org.rubypeople.rdt.refactoring.tests.core.renamelocal.conditionchecks;
 
-import junit.framework.Test;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 
-import org.rubypeople.rdt.refactoring.tests.FileTestSuite;
+import org.rubypeople.rdt.refactoring.core.renamelocal.RenameLocalConditionChecker;
+import org.rubypeople.rdt.refactoring.core.renamelocal.RenameLocalConfig;
+import org.rubypeople.rdt.refactoring.tests.FilePropertyData;
+import org.rubypeople.rdt.refactoring.tests.FileTestData;
+import org.rubypeople.rdt.refactoring.tests.RefactoringConditionTestCase;
 
-public class TS_RenameLocalCondition extends FileTestSuite {
+public class RenameLocalConditionTester extends RefactoringConditionTestCase {
+	
+	public RenameLocalConditionTester(String fileName) {
+		super(fileName);
+	}
 
-	public static Test suite() {
-		return createSuite("Rename Local Condition Checks", "rename_local_condition_test_*test_source.rb", RenameLocalConditionTester.class);
+	@Override
+	public void runTest() throws FileNotFoundException, IOException {
+		FilePropertyData testData = new FileTestData(getName(), ".test_source.rb", ".test_source.rb");
+		RenameLocalConfig config = new RenameLocalConfig(testData, testData.getIntProperty("cursorPosition"));
+		RenameLocalConditionChecker checker = new RenameLocalConditionChecker(config);
+		
+		checkConditions(checker, testData);
+	}
+
+	@Override
+	protected void createEditProviderAndSetUserInput() {
+		//no userInputNeeded
 	}
 }

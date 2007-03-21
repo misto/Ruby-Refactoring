@@ -33,15 +33,15 @@ import junit.framework.TestSuite;
 
 import org.rubypeople.rdt.refactoring.tests.classnodeprovider.TS_ClassNodeProvider;
 import org.rubypeople.rdt.refactoring.tests.core.TS_Core;
-import org.rubypeople.rdt.refactoring.tests.core.converttemptofield.TS_TempToField;
+import org.rubypeople.rdt.refactoring.tests.core.convertlocaltofield.TS_TempToField;
 import org.rubypeople.rdt.refactoring.tests.core.encapsulatefield.TS_EncapsulateField;
 import org.rubypeople.rdt.refactoring.tests.core.extractmethod.TS_ExtractMethod;
 import org.rubypeople.rdt.refactoring.tests.core.formatsource.TS_FormatSource;
 import org.rubypeople.rdt.refactoring.tests.core.generateaccessors.TS_GenerateAccessors;
 import org.rubypeople.rdt.refactoring.tests.core.generateconstructor.TS_GenerateConstructor;
 import org.rubypeople.rdt.refactoring.tests.core.inlineclass.TS_InlineClass;
+import org.rubypeople.rdt.refactoring.tests.core.inlinelocal.TS_InlineTemp;
 import org.rubypeople.rdt.refactoring.tests.core.inlinemethod.TS_InlineMethod;
-import org.rubypeople.rdt.refactoring.tests.core.inlinetemp.TS_InlineTemp;
 import org.rubypeople.rdt.refactoring.tests.core.mergeclasspartsinfile.TS_MergeClassPartsInFile;
 import org.rubypeople.rdt.refactoring.tests.core.mergewithexternalclassparts.TS_MergeWithExternalClassParts;
 import org.rubypeople.rdt.refactoring.tests.core.movefield.TS_MoveField;
@@ -52,9 +52,9 @@ import org.rubypeople.rdt.refactoring.tests.core.pushdown.TS_PushDown;
 import org.rubypeople.rdt.refactoring.tests.core.rename.TS_Rename;
 import org.rubypeople.rdt.refactoring.tests.core.renameclass.TS_RenameClass;
 import org.rubypeople.rdt.refactoring.tests.core.renamefield.TS_RenameField;
-import org.rubypeople.rdt.refactoring.tests.core.renamelocalvariable.TS_RenameLocalVariable;
+import org.rubypeople.rdt.refactoring.tests.core.renamelocal.TS_RenameLocalVariable;
 import org.rubypeople.rdt.refactoring.tests.core.renamemethod.TS_RenameMethod;
-import org.rubypeople.rdt.refactoring.tests.core.splittemp.TS_SplitTemp;
+import org.rubypeople.rdt.refactoring.tests.core.splitlocal.TS_SplitTemp;
 import org.rubypeople.rdt.refactoring.tests.util.TS_Util;
 
 public class TS_All

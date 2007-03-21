@@ -26,21 +26,19 @@
  * the terms of any one of the CPL, the GPL or the LGPL.
  ***** END LICENSE BLOCK *****/
 
-package org.rubypeople.rdt.refactoring.tests.core.splittemp;
+package org.rubypeople.rdt.refactoring.tests.core.renamelocal;
 
+import junit.framework.Test;
 import junit.framework.TestSuite;
 
 import org.rubypeople.rdt.refactoring.tests.FileTestSuite;
-import org.rubypeople.rdt.refactoring.tests.core.splittemp.conditionchecks.TS_SplitTempChecks;
+import org.rubypeople.rdt.refactoring.tests.core.renamelocal.conditionchecks.TS_RenameLocalCondition;
 
-public class TS_SplitTemp extends FileTestSuite {
+public class TS_RenameLocalVariable extends FileTestSuite {
+	public static Test suite() {
 
-	public static TestSuite suite() {
-	
-		TestSuite suite = createSuite("Split Temp", "split_temp_test_*source.rb", SplitTempTester.class);
-		suite.addTestSuite(TC_LocalVarFinder.class);
-		suite.addTestSuite(TC_SplittedVariableRenamer.class);
-		suite.addTest(TS_SplitTempChecks.suite());
+		TestSuite suite = createSuite("RenameLocalVariable", "rename_local_test_*source.rb", RenameLocalTester.class);
+		suite.addTest(TS_RenameLocalCondition.suite());
 		return suite;
 	}
 }

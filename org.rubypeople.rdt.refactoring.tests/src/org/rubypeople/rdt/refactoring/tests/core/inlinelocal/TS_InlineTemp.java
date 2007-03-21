@@ -12,8 +12,6 @@
  * rights and limitations under the License.
  *
  * Copyright (C) 2006 Lukas Felber <lfelber@hsr.ch>
- * Copyright (C) 2006 Mirko Stocker <me@misto.ch>
- * Copyright (C) 2006 Thomas Corbat <tcorbat@hsr.ch>
  * 
  * Alternatively, the contents of this file may be used under the terms of
  * either of the GNU General Public License Version 2 or later (the "GPL"),
@@ -28,42 +26,19 @@
  * the terms of any one of the CPL, the GPL or the LGPL.
  ***** END LICENSE BLOCK *****/
 
-package org.rubypeople.rdt.refactoring.tests.core.inlinetemp.conditionchecks;
+package org.rubypeople.rdt.refactoring.tests.core.inlinelocal;
 
-import java.io.FileNotFoundException;
-import java.io.IOException;
+import junit.framework.Test;
+import junit.framework.TestSuite;
 
-import org.rubypeople.rdt.refactoring.core.inlinelocal.InlineLocalConditionChecker;
-import org.rubypeople.rdt.refactoring.core.inlinelocal.InlineLocalConfig;
-import org.rubypeople.rdt.refactoring.core.inlinelocal.LocalVariableInliner;
-import org.rubypeople.rdt.refactoring.tests.FileTestData;
-import org.rubypeople.rdt.refactoring.tests.RefactoringConditionTestCase;
+import org.rubypeople.rdt.refactoring.tests.FileTestSuite;
+import org.rubypeople.rdt.refactoring.tests.core.inlinelocal.conditionchecks.TS_InlineTempConditionChecks;
 
-public class InlineTempConditionTester extends RefactoringConditionTestCase {
-
-	private InlineLocalConfig config;
-	private FileTestData testData;
-
-	public InlineTempConditionTester(String fileName) {
-		super(fileName);
-	}
-
-	@Override
-	public void runTest() throws FileNotFoundException, IOException {
-		testData = new FileTestData(getName(), ".test_source", ".test_source");
-		
-		config = new InlineLocalConfig(testData, testData.getIntProperty("cursorPosition"));
-		InlineLocalConditionChecker checker = new InlineLocalConditionChecker(config);
-		checkConditions(checker, testData);
-	}
-
-	@Override
-	protected void createEditProviderAndSetUserInput() {
-		new LocalVariableInliner(config);
-		if(testData.hasProperty("newName")) {
-			config.setReplaceTempWithQuery(true);
-			config.setNewMethodName(testData.getProperty("newName"));
-		}
-	}
+public class TS_InlineTemp extends FileTestSuite {
 	
+	public static Test suite() {
+		TestSuite suite = createSuite("Inline Temp", "inline_temp_test_*.test_properties", TempInlinerTester.class);
+		suite.addTest(TS_InlineTempConditionChecks.suite());
+		return suite;
+	}
 }
