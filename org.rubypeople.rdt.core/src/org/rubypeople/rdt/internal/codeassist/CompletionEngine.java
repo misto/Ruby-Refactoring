@@ -180,8 +180,8 @@ public class CompletionEngine {
 		    	proposals.put(proposal.getName(), proposal); // If a method name matches an existing suggestion (i.e. its overriden in the subclass), don't suggest it again!
 		    }
 		}		
-		proposals.putAll(addModuleMethods(confidence, type));
-		if (!type.isModule()) proposals.putAll(addSuperClassMethods(confidence, type));
+		proposals.putAll(addModuleMethods(confidence - 1, type)); // Decrement confidence by one as a hack to make sure as we move up the inheritance chain we suggest "closer" parents methods first
+		if (!type.isModule()) proposals.putAll(addSuperClassMethods(confidence - 1, type));
 		return proposals;
 	}
 
