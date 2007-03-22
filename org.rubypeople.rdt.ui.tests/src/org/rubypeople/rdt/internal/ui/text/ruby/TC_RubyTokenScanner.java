@@ -79,4 +79,25 @@ public class TC_RubyTokenScanner extends TestCase {
 		assertToken(IRubyColorConstants.RUBY_SINGLE_LINE_COMMENT, 80, 7);
 	}
 
+	public void testCommentAtEndOfLineWithStringAtBeginning() {
+		String code = "hash = {\n" +
+				"  \"string\" => { # comment\n" +
+				"    123\n" +
+				"  }\n" +
+				"}";
+		setUpScanner(code);
+		assertToken(IRubyColorConstants.RUBY_DEFAULT, 0, 4); // 'hash'
+		assertToken(IRubyColorConstants.RUBY_DEFAULT, 4, 2);  // ' ='
+		assertToken(IRubyColorConstants.RUBY_DEFAULT, 6, 2);  // ' {'		
+		assertToken(IRubyColorConstants.RUBY_DEFAULT, 8, 4);  // whitespace
+		
+		assertToken(IRubyColorConstants.RUBY_STRING, 12, 6);
+		assertToken(IRubyColorConstants.RUBY_STRING, 18, 1);
+		
+		assertToken(IRubyColorConstants.RUBY_DEFAULT, 19, 3);
+		assertToken(IRubyColorConstants.RUBY_DEFAULT, 22, 2);
+		
+		assertToken(IRubyColorConstants.RUBY_SINGLE_LINE_COMMENT, 24, 10);
+	}
+	
 }

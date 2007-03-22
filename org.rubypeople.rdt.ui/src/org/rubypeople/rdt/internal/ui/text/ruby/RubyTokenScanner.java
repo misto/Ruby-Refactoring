@@ -147,6 +147,8 @@ public class RubyTokenScanner extends AbstractRubyTokenScanner {
 
 	@Override
 	public Token getToken(String key) {
+		if (key.equals(IRubyColorConstants.RUBY_SINGLE_LINE_COMMENT)) // if we know it's a comment, force it!
+			return super.getToken(key);
 		if (isInSymbol)
 			return super.getToken(IRubyColorConstants.RUBY_SYMBOL);
 		if (isInRegexp)
