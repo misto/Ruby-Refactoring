@@ -141,6 +141,9 @@ SCRIPT_LINES__ = {} unless defined? SCRIPT_LINES__
 
 class DEBUGGER__
   
+  # type: 0 - breakpoint, 1 - watchpoint
+  Breakpoint = Struct.new("Breakpoint", :valid, :type, :file, :pos)
+
   class CommandLinePrinter
     def printXml(s)
       # print XML only
@@ -547,13 +550,9 @@ class DEBUGGER__
           stdout.print "Trace off.\n"
         end
         
-      when /^\s*b\s+((?:.*?:)?.+)$/
-        #@printer.debug("S")
-        pos = $1
-        if pos.index(":")
-          file, pos = pos.split(":")
-        end
-        file = File.basename(file)
+      when /^\s*b(?:reak)?\s+(?:(.+):)?([^.:]+)$/
+        pos = $2
+        file = File.basename($1)
         if pos =~ /^\d+$/
           pname = pos
           pos = pos.to_i
@@ -561,7 +560,7 @@ class DEBUGGER__
           pname = pos = pos.intern.id2name
         end
         # TODO: pname is not used
-        break_points.push [true, 0, file, pos]
+        break_points.push Breakpoint.new(true, 0, file, pos)
         @printer.printXml("<breakpointAdded no=\"%d\" location=\"%s:%s\"/>", break_points.size, file, pos)
         
       when /^\s*delete\s+(\d+)$/
@@ -796,13 +795,14 @@ class DEBUGGER__
       file = File.basename(file)
       n = 1
       for b in break_points
-        @printer.debug("file=%s, pos=%s; breakpoint: %s, %s, %s, %s.\n ", file, pos, b[0], b[1], b[2], b[3])
-        if b[0] # valid
-          if b[1] == 0 and b[2] == file and b[3] == pos # breakpoint
+        @printer.debug("file=%s, pos=%s; breakpoint=[valid=%s, type=%s, file=%s, pos=%s]\n ",
+                       file, pos, b.valid, b.type, b.file, b.pos)
+        if b.valid
+          if b.type == 0 and b.file == file and b.pos == pos # breakpoint
             @printer.printBreakpoint(n, debug_funcname(id), file, pos)
             return true
-          elsif b[1] == 1 # watchpoint
-            if debug_silent_eval(b[2], binding)
+          elsif b.type == 1 # watchpoint
+            if debug_silent_eval(b.file, binding)
               stdout.printf "Watchpoint %d, %s at %s:%s\n", n, debug_funcname(id), file, pos
               return true
             end
@@ -898,8 +898,6 @@ class DEBUGGER__
   @last_thread = Thread::main
   @max_thread = 1
   @thread_list = {Thread::main => 1}
-  # break_points' one entry: [valid, type, file, pos]
-  # type: 0 - breakpoint, 1 - watchpoint
   @break_points = []
   @display = []
   @waiting = []
