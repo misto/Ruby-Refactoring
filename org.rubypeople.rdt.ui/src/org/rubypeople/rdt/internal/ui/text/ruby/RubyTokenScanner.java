@@ -110,8 +110,13 @@ public class RubyTokenScanner extends AbstractRubyTokenScanner {
 			List comments = result.getCommentNodes();
 			if (comments != null && !comments.isEmpty()) {
 				CommentNode comment;
+				boolean firstComment = true;
 				while (!comments.isEmpty()) {
 					comment = (CommentNode) comments.remove(0);
+					if (firstComment) {
+						firstComment = false;
+					    oldOffset = origOffset + comment.getPosition().getStartOffset(); // correct start offset, since when a line with nothing but spaces on it appears before comment, we get messed up positions
+					}
 					tokenLength += comment.getContent().length() + 1;
 				}
 				fSavedToken = returnValue;

@@ -61,7 +61,7 @@ public class TC_RubyTokenScanner extends TestCase {
 		assertToken(IRubyColorConstants.RUBY_DEFAULT, 5, 6);
 		assertToken(IRubyColorConstants.RUBY_DEFAULT, 11, 1);
 		assertToken(IRubyColorConstants.RUBY_KEYWORD, 12, 3);
-		assertToken(IRubyColorConstants.RUBY_SINGLE_LINE_COMMENT, 15, 10);
+		assertToken(IRubyColorConstants.RUBY_SINGLE_LINE_COMMENT, 16, 10);
 	}
 	
 	public void testCommentAfterEndWhileEditing() {
@@ -76,7 +76,7 @@ public class TC_RubyTokenScanner extends TestCase {
 "end";
 		setUpScanner(code, 75, 14);
 		assertToken(IRubyColorConstants.RUBY_KEYWORD, 75, 5);
-		assertToken(IRubyColorConstants.RUBY_SINGLE_LINE_COMMENT, 80, 7);
+		assertToken(IRubyColorConstants.RUBY_SINGLE_LINE_COMMENT, 82, 7);
 	}
 
 	public void testCommentAtEndOfLineWithStringAtBeginning() {
@@ -97,7 +97,19 @@ public class TC_RubyTokenScanner extends TestCase {
 		assertToken(IRubyColorConstants.RUBY_DEFAULT, 19, 3);
 		assertToken(IRubyColorConstants.RUBY_DEFAULT, 22, 2);
 		
-		assertToken(IRubyColorConstants.RUBY_SINGLE_LINE_COMMENT, 24, 10);
+		assertToken(IRubyColorConstants.RUBY_SINGLE_LINE_COMMENT, 25, 10);
+	}
+	
+	public void testLinesWithJustSpaceBeforeComment() {
+		String code = "  \n" +
+				"  # comment\n" +
+				"  def method\n" +
+				"    \n" +
+				"  end";
+		setUpScanner(code);
+		assertToken(IRubyColorConstants.RUBY_SINGLE_LINE_COMMENT, 5, 10); // '# comment'
+		assertToken(IRubyColorConstants.RUBY_KEYWORD, 15, 5);  // '  def'
+		assertToken(IRubyColorConstants.RUBY_DEFAULT, 20, 7);  // ' method'	
 	}
 	
 }
