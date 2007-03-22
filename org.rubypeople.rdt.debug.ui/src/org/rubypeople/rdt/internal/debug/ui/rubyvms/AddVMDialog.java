@@ -111,13 +111,7 @@ public class AddVMDialog extends StatusDialog {
 					if (segs == 1) {
 						genName = path.segment(0);
 					} else if (segs >= 2) {
-						String last = path.lastSegment();
-						// FIXME What is this reference to a jre directory?
-						if ("jre".equalsIgnoreCase(last)) { //$NON-NLS-1$
-							genName = path.segment(segs - 2);
-						} else {
-							genName = last;
-						}
+						genName = path.lastSegment();
 					}
 					if (genName != null) {
 						fVMName.setText(genName);

@@ -42,7 +42,7 @@ public class StandardVMType extends AbstractVMInstallType {
 	 * VM install locations, relative to the VM install location.
 	 */
 	private static final String[] fgCandidateRubyFiles = {"rubyw", "rubyw.exe", "ruby", "ruby.exe"}; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
-	private static final String[] fgCandidateRubyLocations = {"bin" + fgSeparator}; //$NON-NLS-1$ 
+	private static final String[] fgCandidateRubyLocations = {"", "bin" + fgSeparator}; //$NON-NLS-1$ //$NON-NLS-2$
 	
 	
 	@Override
