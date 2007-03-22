@@ -26,38 +26,44 @@
  * the terms of any one of the CPL, the GPL or the LGPL.
  ***** END LICENSE BLOCK *****/
 
-package org.rubypeople.rdt.refactoring.tests.core.splitlocal.conditionchecks;
+package org.rubypeople.rdt.refactoring.tests.core.splitlocal;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
 
+import org.eclipse.jface.text.BadLocationException;
 import org.rubypeople.rdt.refactoring.core.splitlocal.SplitLocalConditionChecker;
 import org.rubypeople.rdt.refactoring.core.splitlocal.SplitLocalConfig;
 import org.rubypeople.rdt.refactoring.core.splitlocal.SplitTempEditProvider;
-import org.rubypeople.rdt.refactoring.tests.FilePropertyData;
+import org.rubypeople.rdt.refactoring.tests.FileTestCase;
 import org.rubypeople.rdt.refactoring.tests.FileTestData;
-import org.rubypeople.rdt.refactoring.tests.RefactoringConditionTestCase;
 
-public class SplitTempConditionTester extends RefactoringConditionTestCase {
-
-	private FilePropertyData testData;
-	private SplitLocalConfig config;
-
-	public SplitTempConditionTester(String fileName) {
+public class SplitLocalTester extends FileTestCase {
+	
+	public SplitLocalTester(String fileName) {
 		super(fileName);
 	}
 	
 	@Override
-	public void runTest() throws FileNotFoundException, IOException {
-		testData = new FileTestData(getName(), ".test_source", ".test_source");
-		int caretPosition = testData.getIntProperty("cursorPosition");
-		config = new SplitLocalConfig(testData, caretPosition);
-		SplitLocalConditionChecker checker = new SplitLocalConditionChecker(config);
-		checkConditions(checker, testData);
-	}
+	public void runTest() throws FileNotFoundException, IOException, BadLocationException {
+		
+		FileTestData testData = new FileTestData(getName(), ".source.rb", ".result.rb");
 
-	@Override
-	protected void createEditProviderAndSetUserInput() {
-		new SplitTempEditProvider(config);
+		SplitLocalConfig config = new SplitLocalConfig(testData, testData.getIntProperty("pos"));
+		SplitLocalConditionChecker checker = new SplitLocalConditionChecker(config);
+		
+		if(!checker.shouldPerform()) {
+			fail();
+		}
+		
+		SplitTempEditProvider splitTempEditProvider = new SplitTempEditProvider(config);
+		
+		String[] names = testData.getCommaSeparatedStringArray("names");
+		
+		assertEquals("Error in property file, wrong number of names.", splitTempEditProvider.getLocalUsages().size(), names.length);
+		
+		splitTempEditProvider.setNewNames(names);
+		
+		createEditAndCompareResult(testData.getSource(), testData.getExpectedResult(), splitTempEditProvider);
 	}
 }

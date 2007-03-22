@@ -31,16 +31,16 @@ package org.rubypeople.rdt.refactoring.tests.core.splitlocal;
 import junit.framework.TestSuite;
 
 import org.rubypeople.rdt.refactoring.tests.FileTestSuite;
-import org.rubypeople.rdt.refactoring.tests.core.splitlocal.conditionchecks.TS_SplitTempChecks;
+import org.rubypeople.rdt.refactoring.tests.core.splitlocal.conditionchecks.TS_SplitLocalChecks;
 
-public class TS_SplitTemp extends FileTestSuite {
+public class TS_SplitLocal extends FileTestSuite {
 
 	public static TestSuite suite() {
 	
-		TestSuite suite = createSuite("Split Temp", "split_temp_test_*source.rb", SplitTempTester.class);
+		TestSuite suite = createSuite("Split Temp", "split_temp_test_*source.rb", SplitLocalTester.class);
 		suite.addTestSuite(TC_LocalVarFinder.class);
 		suite.addTestSuite(TC_SplittedVariableRenamer.class);
-		suite.addTest(TS_SplitTempChecks.suite());
+		suite.addTest(TS_SplitLocalChecks.suite());
 		return suite;
 	}
 }

@@ -34,7 +34,7 @@ import junit.framework.TestSuite;
 import org.rubypeople.rdt.refactoring.tests.FileTestSuite;
 import org.rubypeople.rdt.refactoring.tests.core.renamelocal.conditionchecks.TS_RenameLocalCondition;
 
-public class TS_RenameLocalVariable extends FileTestSuite {
+public class TS_RenameLocal extends FileTestSuite {
 	public static Test suite() {
 
 		TestSuite suite = createSuite("RenameLocalVariable", "rename_local_test_*source.rb", RenameLocalTester.class);

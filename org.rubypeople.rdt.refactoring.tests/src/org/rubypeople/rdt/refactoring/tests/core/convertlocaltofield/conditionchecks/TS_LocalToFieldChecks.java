@@ -34,10 +34,10 @@ import junit.framework.Test;
 
 import org.rubypeople.rdt.refactoring.tests.FileTestSuite;
 
-public class TS_TempToFieldChecks extends FileTestSuite {
+public class TS_LocalToFieldChecks extends FileTestSuite {
 
 	public static Test suite() {
-		return createSuite("ConvertTempToFieldTests", "temp_to_field_checker_test_*test_source", TempToFieldConditionTester.class);
+		return createSuite("ConvertTempToFieldTests", "temp_to_field_checker_test_*test_source", LocalToFieldConditionTester.class);
 	}
 
 }

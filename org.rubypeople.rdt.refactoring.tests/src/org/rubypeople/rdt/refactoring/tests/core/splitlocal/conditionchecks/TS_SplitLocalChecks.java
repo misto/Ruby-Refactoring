@@ -11,9 +11,7 @@
  * implied. See the License for the specific language governing
  * rights and limitations under the License.
  *
- * Copyright (C) 2006 Lukas Felber <lfelber@hsr.ch>
  * Copyright (C) 2006 Mirko Stocker <me@misto.ch>
- * Copyright (C) 2006 Thomas Corbat <tcorbat@hsr.ch>
  * 
  * Alternatively, the contents of this file may be used under the terms of
  * either of the GNU General Public License Version 2 or later (the "GPL"),
@@ -28,16 +26,16 @@
  * the terms of any one of the CPL, the GPL or the LGPL.
  ***** END LICENSE BLOCK *****/
 
-package org.rubypeople.rdt.refactoring.tests.core.inlinelocal.conditionchecks;
+package org.rubypeople.rdt.refactoring.tests.core.splitlocal.conditionchecks;
 
-import junit.framework.TestSuite;
+import junit.framework.Test;
 
 import org.rubypeople.rdt.refactoring.tests.FileTestSuite;
 
-public class TS_InlineTempConditionChecks extends FileTestSuite {
+public class TS_SplitLocalChecks extends FileTestSuite {
 
-	public static TestSuite suite() {
-			return createSuite("InlineTempConditionChecks", "inline_temp_checker_test_*test_source", InlineTempConditionTester.class);
-		}
+	public static Test suite() {
+		return createSuite("SplitTempConditionChecks", "split_temp_checker_test_*test_source", SplitLocalConditionTester.class);
+	}
 
 }

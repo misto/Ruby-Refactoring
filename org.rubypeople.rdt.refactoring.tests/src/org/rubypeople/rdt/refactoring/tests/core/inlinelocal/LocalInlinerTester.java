@@ -40,13 +40,13 @@ import org.rubypeople.rdt.refactoring.core.inlinelocal.LocalVariableInliner;
 import org.rubypeople.rdt.refactoring.tests.FileTestData;
 import org.rubypeople.rdt.refactoring.tests.RefactoringTestCase;
 
-public class TempInlinerTester extends RefactoringTestCase {
+public class LocalInlinerTester extends RefactoringTestCase {
 
 	private String fileName;
 
 	private FileTestData testData;
 
-	public TempInlinerTester(String fileName) {
+	public LocalInlinerTester(String fileName) {
 		this.fileName = fileName;
 	}
 

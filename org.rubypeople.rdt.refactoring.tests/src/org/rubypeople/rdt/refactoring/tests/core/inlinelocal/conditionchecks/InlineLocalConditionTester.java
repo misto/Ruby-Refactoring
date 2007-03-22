@@ -28,38 +28,42 @@
  * the terms of any one of the CPL, the GPL or the LGPL.
  ***** END LICENSE BLOCK *****/
 
-package org.rubypeople.rdt.refactoring.tests.core.convertlocaltofield.conditionchecks;
+package org.rubypeople.rdt.refactoring.tests.core.inlinelocal.conditionchecks;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
 
-import org.rubypeople.rdt.refactoring.core.convertlocaltofield.LocalToFieldConditionChecker;
-import org.rubypeople.rdt.refactoring.core.convertlocaltofield.LocalToFieldConfig;
-import org.rubypeople.rdt.refactoring.core.convertlocaltofield.LocalToFieldConverter;
-import org.rubypeople.rdt.refactoring.tests.FilePropertyData;
+import org.rubypeople.rdt.refactoring.core.inlinelocal.InlineLocalConditionChecker;
+import org.rubypeople.rdt.refactoring.core.inlinelocal.InlineLocalConfig;
+import org.rubypeople.rdt.refactoring.core.inlinelocal.LocalVariableInliner;
 import org.rubypeople.rdt.refactoring.tests.FileTestData;
 import org.rubypeople.rdt.refactoring.tests.RefactoringConditionTestCase;
 
-public class TempToFieldConditionTester extends RefactoringConditionTestCase {
-	private FilePropertyData testData;
-	private LocalToFieldConfig config;
+public class InlineLocalConditionTester extends RefactoringConditionTestCase {
 
-	public TempToFieldConditionTester(String fileName) {
+	private InlineLocalConfig config;
+	private FileTestData testData;
+
+	public InlineLocalConditionTester(String fileName) {
 		super(fileName);
 	}
 
 	@Override
 	public void runTest() throws FileNotFoundException, IOException {
 		testData = new FileTestData(getName(), ".test_source", ".test_source");
-		config = new LocalToFieldConfig(testData, testData.getIntProperty("cursorPosition"));
-		LocalToFieldConditionChecker checker = new LocalToFieldConditionChecker(config);
+		
+		config = new InlineLocalConfig(testData, testData.getIntProperty("cursorPosition"));
+		InlineLocalConditionChecker checker = new InlineLocalConditionChecker(config);
 		checkConditions(checker, testData);
 	}
 
 	@Override
 	protected void createEditProviderAndSetUserInput() {
-		LocalToFieldConverter converter = new LocalToFieldConverter(config);
-		converter.setIsClassField(testData.getBoolProperty("isClassField"));
-		converter.setNewName(testData.getProperty("newName"));		
+		new LocalVariableInliner(config);
+		if(testData.hasProperty("newName")) {
+			config.setReplaceTempWithQuery(true);
+			config.setNewMethodName(testData.getProperty("newName"));
+		}
 	}
+	
 }
