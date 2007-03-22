@@ -4,8 +4,7 @@
 package org.rubypeople.rdt.internal.core;
 
 import java.io.StringReader;
-import java.util.ArrayList;
-import java.util.Iterator;
+import java.util.HashMap;
 import java.util.List;
 
 import org.eclipse.core.resources.IFile;
@@ -14,8 +13,8 @@ import org.jruby.ast.Node;
 import org.jruby.ast.visitor.NodeVisitor;
 import org.jruby.lexer.yacc.SyntaxException;
 import org.rubypeople.rdt.core.IProblemRequestor;
+import org.rubypeople.rdt.core.IRubyModelMarker;
 import org.rubypeople.rdt.core.RubyModelException;
-import org.rubypeople.rdt.core.compiler.IProblem;
 import org.rubypeople.rdt.internal.core.parser.RdtWarnings;
 import org.rubypeople.rdt.internal.core.parser.RubyParser;
 import org.rubypeople.rdt.internal.core.parser.TaskParser;
@@ -29,24 +28,18 @@ import org.rubypeople.rdt.internal.core.parser.warnings.RubyLintVisitor;
 public class RubyScriptProblemFinder {
 
     // DSC convert to ImmediateWarnings
-    public static void process(RubyScript script, char[] charContents,
-            IProblemRequestor problemRequestor, IProgressMonitor pm) {
+    public static void process(RubyScript script, char[] charContents, HashMap problems, IProgressMonitor pm) {
         RdtWarnings warnings = new RdtWarnings();
         RubyParser parser = new RubyParser(warnings);
         String contents = new String(charContents);
 
-        runLint(script, problemRequestor, parser, contents);
+//        runLint(script, problemRequestor, parser, contents); FIXME Make all these compilationParticipants
 
         TaskParser taskParser = new TaskParser(script.getRubyProject().getOptions(true));
         taskParser.parse(contents);
 
-        List problems = new ArrayList();
-        problems.addAll(warnings.getWarnings());
-        problems.addAll(taskParser.getTasks());
-        for (Iterator iter = problems.iterator(); iter.hasNext();) {
-            IProblem problem = (IProblem) iter.next();
-            problemRequestor.acceptProblem(problem);
-        }
+        problems.put(IRubyModelMarker.RUBY_MODEL_PROBLEM_MARKER, warnings.getWarnings());
+        problems.put(IRubyModelMarker.TASK_MARKER, taskParser.getTasks());
     }
 
 	private static void runLint(RubyScript script, IProblemRequestor problemRequestor, RubyParser parser, String contents) {
@@ -64,5 +57,4 @@ public class RubyScriptProblemFinder {
 			e.printStackTrace();
 		}
 	}
-
 }

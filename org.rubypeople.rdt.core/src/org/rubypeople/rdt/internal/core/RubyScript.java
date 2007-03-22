@@ -26,6 +26,8 @@ package org.rubypeople.rdt.internal.core;
 
 import java.io.CharArrayReader;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 
 import org.eclipse.core.resources.IContainer;
@@ -36,6 +38,7 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Path;
 import org.jruby.ast.Node;
+import org.jruby.ast.RootNode;
 import org.jruby.lexer.yacc.SyntaxException;
 import org.rubypeople.rdt.core.CompletionRequestor;
 import org.rubypeople.rdt.core.IBuffer;
@@ -55,6 +58,7 @@ import org.rubypeople.rdt.core.RubyConventions;
 import org.rubypeople.rdt.core.RubyCore;
 import org.rubypeople.rdt.core.RubyModelException;
 import org.rubypeople.rdt.core.WorkingCopyOwner;
+import org.rubypeople.rdt.core.compiler.CategorizedProblem;
 import org.rubypeople.rdt.internal.codeassist.CompletionEngine;
 import org.rubypeople.rdt.internal.core.buffer.BufferManager;
 import org.rubypeople.rdt.internal.core.parser.RubyParser;
@@ -112,13 +116,25 @@ public class RubyScript extends Openable implements IRubyScript {
 
 		RubyModelManager.PerWorkingCopyInfo perWorkingCopyInfo = getPerWorkingCopyInfo();
 		IRubyProject project = getRubyProject();
+		
+		boolean createAST;
+		HashMap problems;
+		if (info instanceof ASTHolderCUInfo) {
+			ASTHolderCUInfo astHolder = (ASTHolderCUInfo) info;
+			createAST = true;
+			problems = astHolder.problems;
+		} else {
+			createAST = false;
+			problems = null;
+		}		
 		boolean computeProblems = RubyProject.hasRubyNature(project.getProject()) && perWorkingCopyInfo != null && perWorkingCopyInfo.isActive();
 
+		Node ast = null;
 		try {
 			RubyParser parser = new RubyParser();
-			Node node = parser.parse((IFile) getResource(), new CharArrayReader(contents));
+			ast = parser.parse((IFile) getResource(), new CharArrayReader(contents));
 			RubyScriptStructureBuilder visitor = new RubyScriptStructureBuilder(this, unitInfo, newElements);
-			if (node != null) node.accept(visitor);
+			if (ast != null) ast.accept(visitor);
 			unitInfo.setIsStructureKnown(true);
 		} catch (SyntaxException e) {
 			unitInfo.setIsStructureKnown(false);
@@ -137,8 +153,31 @@ public class RubyScript extends Openable implements IRubyScript {
 		// compute other problems if needed
 		if (computeProblems) {
 			perWorkingCopyInfo.beginReporting();
-			RubyScriptProblemFinder.process(this, contents, perWorkingCopyInfo, pm);
+			RubyScriptProblemFinder.process(this, contents, problems, pm);
+			if (problems == null) {
+				// report problems to the problem requestor
+				problems = new HashMap();
+				RubyScriptProblemFinder.process(this, contents, problems, pm);
+				try {
+					perWorkingCopyInfo.beginReporting();
+					for (Iterator iteraror = problems.values().iterator(); iteraror.hasNext();) {
+						CategorizedProblem[] categorizedProblems = (CategorizedProblem[]) iteraror.next();
+						if (categorizedProblems == null) continue;
+						for (int i = 0, length = categorizedProblems.length; i < length; i++) {
+							perWorkingCopyInfo.acceptProblem(categorizedProblems[i]);
+						}
+					}
+				} finally {
+					perWorkingCopyInfo.endReporting();
+				}
+			} else {
+				// collect problems
+				RubyScriptProblemFinder.process(this, contents, problems, pm);
+			}
 			perWorkingCopyInfo.endReporting();
+		}
+		if (createAST) {
+			((ASTHolderCUInfo) info).ast = (RootNode) ast;
 		}
 		return unitInfo.isStructureKnown();
 	}
@@ -529,25 +568,22 @@ public class RubyScript extends Openable implements IRubyScript {
 	 * @see IOpenable#makeConsistent(IProgressMonitor)
 	 */
 	public void makeConsistent(IProgressMonitor monitor) throws RubyModelException {
-		makeConsistent(false, monitor);
+		makeConsistent(false, null, monitor);
 	}
     
-    public RubyScript makeConsistent(boolean createAST, IProgressMonitor monitor) throws RubyModelException {
+    public RootNode makeConsistent(boolean createAST, HashMap problems, IProgressMonitor monitor) throws RubyModelException {
         if (isConsistent()) return null;
             
-        // create a new info and make it the current info
-        // (this will remove the info and its children just before storing the new infos)
-       // TODO When createAST is specified, actually do it!
-//        if (createAST) {
-//            ASTHolderCUInfo info = new ASTHolderCUInfo();
-//            openWhenClosed(info, monitor);
-//            RubyScript result = info.ast;
-//            info.ast = null;
-//            return result;
-//        } else {
-            openWhenClosed(createElementInfo(), monitor);
-            return null;
-//        }
+        if (createAST) {
+            ASTHolderCUInfo info = new ASTHolderCUInfo();
+            info.problems = problems;
+            openWhenClosed(info, monitor);
+            RootNode result = info.ast;
+            info.ast = null;
+            return result;
+        }
+		openWhenClosed(createElementInfo(), monitor);
+		return null;
     }
 
 	/*

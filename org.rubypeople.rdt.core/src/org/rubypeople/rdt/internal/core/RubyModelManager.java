@@ -45,6 +45,7 @@ import org.eclipse.core.runtime.IExtension;
 import org.eclipse.core.runtime.IExtensionPoint;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.ISafeRunnable;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.MultiStatus;
 import org.eclipse.core.runtime.Path;
@@ -53,6 +54,7 @@ import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Plugin;
 import org.eclipse.core.runtime.Preferences;
 import org.eclipse.core.runtime.QualifiedName;
+import org.eclipse.core.runtime.SafeRunner;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.content.IContentTypeManager.ContentTypeChangeEvent;
 import org.eclipse.core.runtime.content.IContentTypeManager.IContentTypeChangeListener;
@@ -77,6 +79,7 @@ import org.rubypeople.rdt.core.LoadpathContainerInitializer;
 import org.rubypeople.rdt.core.RubyCore;
 import org.rubypeople.rdt.core.RubyModelException;
 import org.rubypeople.rdt.core.WorkingCopyOwner;
+import org.rubypeople.rdt.core.compiler.CompilationParticipant;
 import org.rubypeople.rdt.core.compiler.IProblem;
 import org.rubypeople.rdt.internal.compiler.util.HashtableOfObjectToInt;
 import org.rubypeople.rdt.internal.core.buffer.BufferManager;
@@ -197,7 +200,7 @@ public class RubyModelManager implements IContentTypeChangeListener, ISavePartic
 
     public final IEclipsePreferences[] preferencesLookup = new IEclipsePreferences[2];
 	private WeakHashSet stringSymbols = new WeakHashSet(5);
-    static final int PREF_INSTANCE = 0;
+	static final int PREF_INSTANCE = 0;
     static final int PREF_DEFAULT = 1;
     
 	public static final IRubyScript[] NO_WORKING_COPY = new IRubyScript[0];
@@ -223,6 +226,137 @@ public class RubyModelManager implements IContentTypeChangeListener, ISavePartic
 	
 	public static boolean PERF_VARIABLE_INITIALIZER = false;
 	public static boolean PERF_CONTAINER_INITIALIZER = false;
+	
+	private static final Object[] NO_PARTICIPANTS = new Object[0];
+	/**
+	 * Name of the extension point for contributing a compilation participant
+	 */
+	public static final String COMPILATION_PARTICIPANT_EXTPOINT_ID = "compilationParticipant" ; //$NON-NLS-1$
+	
+	
+	public class CompilationParticipants {
+			
+		private Object[] registeredParticipants = null;
+		private HashSet managedMarkerTypes;
+				
+		public CompilationParticipant[] getCompilationParticipants(IRubyProject project) {
+			final Object[] participants = getRegisteredParticipants();
+			if (participants == NO_PARTICIPANTS)
+				return null;
+			
+			int length = participants.length;
+			CompilationParticipant[] result = new CompilationParticipant[length];
+			int index = 0;
+			for (int i = 0; i < length; i++) {
+				if (participants[i] instanceof IConfigurationElement) {
+					final IConfigurationElement configElement = (IConfigurationElement) participants[i];
+					final int participantIndex = i;
+					SafeRunner.run(new ISafeRunnable() {
+						public void handleException(Throwable exception) {
+							Util.log(exception, "Exception occurred while creating compilation participant"); //$NON-NLS-1$
+						}
+						public void run() throws Exception {
+							Object executableExtension = configElement.createExecutableExtension("class"); //$NON-NLS-1$ 
+							participants[participantIndex] = executableExtension;
+						}
+					});
+				} 
+				CompilationParticipant participant = (CompilationParticipant) participants[i];
+				if (participant != null && participant.isActive(project))
+					result[index++] = participant;
+			}
+			if (index == 0)
+				return null;
+			if (index < length)
+				System.arraycopy(result, 0, result = new CompilationParticipant[index], 0, index);
+			return result;
+		}
+		
+		public HashSet managedMarkerTypes() {
+			if (this.managedMarkerTypes == null) {
+				// force extension points to be read
+				getRegisteredParticipants();
+			}
+			return this.managedMarkerTypes;
+		}
+		
+		private synchronized Object[] getRegisteredParticipants() {
+			if (this.registeredParticipants != null) {
+				return this.registeredParticipants;
+			}
+			this.managedMarkerTypes = new HashSet();
+			IExtensionPoint extension = Platform.getExtensionRegistry().getExtensionPoint(RubyCore.PLUGIN_ID, COMPILATION_PARTICIPANT_EXTPOINT_ID);
+			if (extension == null)
+				return this.registeredParticipants = NO_PARTICIPANTS;
+			final ArrayList modifyingEnv = new ArrayList();
+			final ArrayList creatingProblems = new ArrayList();
+			final ArrayList others = new ArrayList();
+			IExtension[] extensions = extension.getExtensions();
+			// for all extensions of this point...
+			for(int i = 0; i < extensions.length; i++) {
+				IConfigurationElement[] configElements = extensions[i].getConfigurationElements();
+				// for all config elements named "compilationParticipant"
+				for(int j = 0; j < configElements.length; j++) {
+					final IConfigurationElement configElement = configElements[j];
+					String elementName =configElement.getName();
+					if (!("compilationParticipant".equals(elementName))) { //$NON-NLS-1$
+						continue;
+					}
+					// add config element in the group it belongs to
+					if ("true".equals(configElement.getAttribute("modifiesEnvironment"))) //$NON-NLS-1$ //$NON-NLS-2$
+						modifyingEnv.add(configElement);
+					else if ("true".equals(configElement.getAttribute("createsProblems"))) //$NON-NLS-1$ //$NON-NLS-2$
+						creatingProblems.add(configElement);
+					else
+						others.add(configElement);
+					// add managed marker types
+					IConfigurationElement[] managedMarkers = configElement.getChildren("managedMarker"); //$NON-NLS-1$
+					for (int k = 0, length = managedMarkers.length; k < length; k++) {
+						IConfigurationElement element = managedMarkers[k];
+						String markerType = element.getAttribute("markerType"); //$NON-NLS-1$
+						if (markerType != null)
+							this.managedMarkerTypes.add(markerType);
+					}
+				}
+			}
+			int size = modifyingEnv.size() + creatingProblems.size() + others.size();
+			if (size == 0)
+				return this.registeredParticipants = NO_PARTICIPANTS;
+			
+			// sort config elements in each group
+			IConfigurationElement[] configElements = new IConfigurationElement[size];
+			int index = 0;
+			index = sortParticipants(modifyingEnv, configElements, index);
+			index = sortParticipants(creatingProblems, configElements, index);
+			index = sortParticipants(others, configElements, index);
+			return this.registeredParticipants = configElements;
+		}
+		
+		private int sortParticipants(ArrayList group, IConfigurationElement[] configElements, int index) {
+			int size = group.size();
+			if (size == 0) return index;
+			Object[] elements = group.toArray();
+			Util.sort(elements, new Util.Comparer() {
+				public int compare(Object a, Object b) {
+					if (a == b) return 0;
+					String id = ((IConfigurationElement) a).getAttribute("id"); //$NON-NLS-1$
+					if (id == null) return -1;
+					IConfigurationElement[] requiredElements = ((IConfigurationElement) b).getChildren("requires"); //$NON-NLS-1$
+					for (int i = 0, length = requiredElements.length; i < length; i++) {
+						IConfigurationElement required = requiredElements[i];
+						if (id.equals(required.getAttribute("id"))) //$NON-NLS-1$
+							return 1;
+					}
+					return -1;
+				}
+			});
+			for (int i = 0; i < size; i++)
+				configElements[index+i] = (IConfigurationElement) elements[i];
+			return index + size;
+		}
+	}
+
+	public final CompilationParticipants compilationParticipants = new CompilationParticipants();
     
 	/**
      * Update the classpath variable cache

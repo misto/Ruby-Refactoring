@@ -3,6 +3,7 @@
 <plugin>
    <extension-point id="loadpathVariableInitializer" name="%loadpathVariableInitializersName" schema="schema/loadpathVariableInitializer.exsd"/>
    <extension-point id="loadpathContainerInitializer" name="%loadpathContainerInitializersName" schema="schema/loadpathContainerInitializer.exsd"/>
+   <extension-point id="compilationParticipant" name="%compilationParticipantsName" schema="schema/compilationParticipant.exsd"/>
 
      <extension
          id="rubynature"

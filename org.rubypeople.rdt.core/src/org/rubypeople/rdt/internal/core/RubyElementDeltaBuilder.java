@@ -60,7 +60,7 @@ public class RubyElementDeltaBuilder {
     /**
      * Change delta
      */
-    RubyElementDelta delta;
+    public RubyElementDelta delta;
 
     /**
      * List of added elements
