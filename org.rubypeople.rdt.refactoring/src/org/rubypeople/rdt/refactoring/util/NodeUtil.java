@@ -111,10 +111,41 @@ public class NodeUtil {
 		List<Node> childList = node.childNodes();
 		
 		for(Node currentChild : childList){
-			enclosingPosition = SourcePosition.combinePosition(enclosingPosition, subPositionUnion(currentChild));
+//			combinePosition() is not yet available in JRuby (SourcePosition), hope it will we soon.
+//			While waiting for this use the posUnion method.
+//			enclosingPosition = SourcePosition.combinePosition(enclosingPosition, subPositionUnion(currentChild));
+			enclosingPosition = posUnion(enclosingPosition, subPositionUnion(currentChild));
+			
+		
 		}
 		
 		return enclosingPosition;
+	}
+	
+	
+
+	private static ISourcePosition posUnion(ISourcePosition firstPos, ISourcePosition secondPos) {
+		String fileName = firstPos.getFile();
+        int startOffset = firstPos.getStartOffset();
+        int endOffset = firstPos.getEndOffset();
+        int startLine = firstPos.getStartLine();
+        int endLine = firstPos.getEndLine();
+        
+        if(startOffset > secondPos.getStartOffset()){
+            startOffset = secondPos.getStartOffset();
+            startLine = secondPos.getStartLine();
+        }
+        
+        if(endOffset < secondPos.getEndOffset()){
+            endOffset = secondPos.getEndOffset();
+            endLine = secondPos.getEndLine();
+        }
+        
+        SourcePosition combinedPosition = new SourcePosition(fileName, startLine, endLine, startOffset, endOffset);
+        
+        return combinedPosition;  
+               
+	    
 	}
 	
 }
