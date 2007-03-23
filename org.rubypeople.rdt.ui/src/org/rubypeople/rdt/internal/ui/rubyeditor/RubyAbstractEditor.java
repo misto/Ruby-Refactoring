@@ -668,7 +668,10 @@ public abstract class RubyAbstractEditor extends TextEditor {
     class OutlineSelectionChangedListener extends AbstractSelectionChangedListener {
 
         public void selectionChanged(SelectionChangedEvent event) {
-            doSelectionChanged(event);
+            boolean isLinkingEnabled = PreferenceConstants.getPreferenceStore().getBoolean(PreferenceConstants.EDITOR_SYNC_OUTLINE_ON_CURSOR_MOVE); 
+            if (isLinkingEnabled) {
+                doSelectionChanged(event);
+            }
         }
     }
 
