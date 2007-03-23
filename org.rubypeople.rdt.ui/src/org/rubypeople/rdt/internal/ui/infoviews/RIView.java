@@ -7,11 +7,14 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Iterator;
 import java.util.List;
 
 import org.eclipse.core.runtime.IPath;
+import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Path;
+import org.eclipse.core.runtime.Status;
+import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.action.IToolBarManager;
@@ -43,10 +46,6 @@ import org.rubypeople.rdt.internal.ui.RubyPlugin;
 import org.rubypeople.rdt.internal.ui.RubyPluginImages;
 import org.rubypeople.rdt.internal.ui.rdocexport.RDocUtility;
 import org.rubypeople.rdt.internal.ui.rdocexport.RdocListener;
-import org.rubypeople.rdt.launching.IVMInstall;
-import org.rubypeople.rdt.launching.IVMInstallChangedListener;
-import org.rubypeople.rdt.launching.PropertyChangeEvent;
-import org.rubypeople.rdt.launching.RubyRuntime;
 import org.rubypeople.rdt.ui.PreferenceConstants;
 
 public class RIView extends ViewPart implements RdocListener {
@@ -54,15 +53,13 @@ public class RIView extends ViewPart implements RdocListener {
 	private boolean riFound = false;
 	private PageBook pageBook;
     private SashForm form;    
-    private Label interpreterNeededLabel, riNotFoundLabel;
+    private Label riNotFoundLabel;
 	private Text searchStr;
     private TableViewer searchListViewer;
     private Browser searchResult;
-    private List possibleMatches = new ArrayList();
-    private SearchValue itemToSearch = new SearchValue();
-    private DescriptionUpdater descriptionUpdater = new DescriptionUpdater();
-    private IVMInstallChangedListener runtimeListener;
+    private static List<String> fgPossibleMatches = new ArrayList<String>();
     private ListContentProvider contentProvider = new ListContentProvider();
+	private RubyInvokerJob latestJob;
 
 	/**
 	 * The constructor.
@@ -74,17 +71,16 @@ public class RIView extends ViewPart implements RdocListener {
 	 * it.
 	 */
 	public void createPartControl(Composite parent) {
-		
-		contributeToActionBars() ;
+		contributeToActionBars();
 		
 		pageBook = new PageBook(parent, SWT.NONE);
-        
-        interpreterNeededLabel = new Label(pageBook, SWT.NONE);
-        interpreterNeededLabel.setText(InfoViewMessages.getString("RubyInformation.interpreter_not_selected"));
-        
+          
         riNotFoundLabel = new Label( pageBook, SWT.LEFT | SWT.TOP | SWT.WRAP );
         riNotFoundLabel.setText( InfoViewMessages.getString( "RubyInformation.ri_not_found")  );
                        
+        
+        Label inProgressLabel = new Label( pageBook, SWT.LEFT | SWT.TOP | SWT.WRAP );
+        inProgressLabel.setText("Please wait. Updating RI View...");
         
         form = new SashForm(pageBook, SWT.HORIZONTAL);        
                        
@@ -135,23 +131,6 @@ public class RIView extends ViewPart implements RdocListener {
         searchResult = new Browser(form, SWT.BORDER);
         
         form.setWeights(new int[]{1, 3});
-
-        runtimeListener = new IVMInstallChangedListener() {
-            public void defaultVMInstallChanged(IVMInstall previous,
-            		IVMInstall current) {
-            	updatePage();            	
-            }
-
-			public void vmAdded(IVMInstall newVm) {				
-			}
-
-			public void vmChanged(PropertyChangeEvent event) {				
-			}
-
-			public void vmRemoved(IVMInstall removedVm) {				
-			}
-        };
-        RubyRuntime.addVMInstallChangedListener(runtimeListener);
         
         RubyPlugin.getDefault().getPreferenceStore().addPropertyChangeListener(new IPropertyChangeListener() {
         	public void propertyChange(org.eclipse.jface.util.PropertyChangeEvent event) {
@@ -161,9 +140,8 @@ public class RIView extends ViewPart implements RdocListener {
         	}
         });
         
-                
+        pageBook.showPage(inProgressLabel);
         updatePage();
-        descriptionUpdater.start();
 		RDocUtility.addRdocListener(this);
 	}
 	    
@@ -182,95 +160,61 @@ public class RIView extends ViewPart implements RdocListener {
 	}
 	
     private void updatePage() {
-        IVMInstall interpreter = RubyRuntime.getDefaultVMInstall();
-        if (interpreter != null) {            
-            initSearchList();
-            if( riFound ){
-            	pageBook.showPage(form);
-            }
-        }
-        else {
-            pageBook.showPage(interpreterNeededLabel);
-        }
+    	initSearchList();
+        if( riFound ){
+        	pageBook.showPage(form);
+        }        
     }
     
     private void showSelectedItem() {
         String searchText = (String)((IStructuredSelection)searchListViewer.getSelection()).getFirstElement();        
-        synchronized(itemToSearch) { itemToSearch.set(searchText); }
+        if (latestJob != null && latestJob.getState() != Job.NONE) {
+        	latestJob.cancel();
+        }
+        latestJob = new RubyInvokerJob(new RIDescriptionUpdater(searchText));
+        latestJob.setPriority(Job.INTERACTIVE);
+        latestJob.schedule();
     }        
     
     public void dispose() {
-        descriptionUpdater.requestStop();
-        RubyRuntime.removeVMInstallChangedListener(runtimeListener);
         RDocUtility.removeRdocListener(this);
         super.dispose();
     }
         
-    private class SearchValue {
-        String value = null;
-        
-        void set(String value) {
-            this.value = value;
-            notifyAll();
-        }
-        
-        boolean isSet() {
-            return value != null;
-        }
-        
-        String get() {
-            String result = value;
-            value = null;
-            return result;            
-        }
-    }
-    
-	private void initSearchList() {        
-        RubyInvoker invoker = new RubyInvoker() {        
-            protected void handleOutput(Process process) {
-            	if (process == null) return;
-				riFound = false;
-                BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
-                String line = null;
-                int numberOfMatches = 0;
-                possibleMatches = new ArrayList() ;
-                try {
-                    while ((line = reader.readLine()) != null) {
-                        possibleMatches.add(line.trim());
-                        numberOfMatches++;
-                    }
-                    // if not matches were found display an error message
-                    if( numberOfMatches == 0 ){
-						riFound = false;
-                    	pageBook.showPage( riNotFoundLabel );
-                    } else {
-                    	riFound = true;
-                    }
-                }
-                catch (IOException e) {
-                    RubyPlugin.log(e);
-                }
-            }        
+    private synchronized void initSearchList() {        
+        RubyInvoker invoker = new RIPopulator(this);
+        Job job = new RubyInvokerJob(invoker);
+        job.setPriority(Job.LONG);
+        job.schedule();
+	}	
+	
+	private static class RubyInvokerJob extends Job {
+		private RubyInvoker invoker;
 
-            protected List getArgList() {
-                List args = new ArrayList();
-                args.add("--no-pager");
-                args.add("-l");
-                return args;
-            }
-        };
-        invoker.invoke();
-        filterSearchList();
-    }
+		public RubyInvokerJob(RubyInvoker invoker) {
+			super("Updating RI View"); // $NON-NLS-1$
+			this.invoker = invoker;
+		}
+
+		@Override
+		protected IStatus run(IProgressMonitor monitor) {
+			invoker.invoke();
+			return Status.OK_STATUS;
+		}
+	}
+	
 
     private void filterSearchList() {               
-        List filteredList = new ArrayList();
+        List<String> filteredList = new ArrayList<String>();
         String text = searchStr.getText();
-        for (Iterator iter = possibleMatches.iterator(); iter.hasNext();) {
-            String possibleMatch = (String) iter.next();      
-			if (possibleMatch.toLowerCase().indexOf(text.toLowerCase()) > -1 ) {
-                filteredList.add(possibleMatch);                
-            }
+        if (text != null && text.trim().length() > 0) {
+        	for (String string : fgPossibleMatches) {
+        		if (string.toLowerCase().indexOf(text.toLowerCase()) > -1 ) {
+        			filteredList.add(string);                
+        		}
+			}
+        } else {
+        	filteredList = fgPossibleMatches;
         }
         searchListViewer.setInput(filteredList);       
         if (filteredList.size() > 0) searchListViewer.getTable().setSelection(0);             
@@ -296,69 +240,7 @@ public class RIView extends ViewPart implements RdocListener {
         }
     }
 
-    private final class DescriptionUpdater extends Thread {
-        private String searchValue;
-        private volatile boolean stopped = false;
-        
-        public DescriptionUpdater() {
-            super("RI Description Updater");            
-        }               
-    
-        private RubyInvoker invoker = new RubyInvoker() {
-            protected List getArgList() {
-                ArrayList args = new ArrayList();
-                args.add("--no-pager");
-                args.add("-f");
-                args.add("html");
-                args.add(searchValue);
-                return args;
-            }
-    
-            protected void beforeInvoke() {
-                searchResult.setText(InfoViewMessages.getString("RubyInformation.please_wait"));
-            }
-    
-            protected void handleOutput(final Process process) {
-            	if (process == null) return;
-                // any output?
-                final StreamRedirector outputRedirect = new StreamRedirector(process.getInputStream(), "");
-                // kick them off
-                outputRedirect.start();
-                final int rc;
-                try {
-                    rc = process.waitFor();
-                    if (rc != 0) {
-                        outputRedirect.inQueue("<p>No matching results.</p>");
-                    }
-                    outputRedirect.done();                    
-                }
-                catch (InterruptedException IGNORE) {
-                }
-            }
-        };
-    
-        public void requestStop() {
-            stopped = true;
-            interrupt();
-        }
-        
-        public void run() {
-            while (!stopped) {
-                synchronized (itemToSearch) {
-                    try {
-                        while (!itemToSearch.isSet() && !stopped) { itemToSearch.wait(); }
-                        searchValue = itemToSearch.get();
-                    }
-                    catch (InterruptedException IGNORE) {                            
-                    }                    
-                }
-                if (stopped) return;
-                invoker.invoke();
-            }
-        }
-    }
-    
-    private abstract class RubyInvoker {
+    abstract class RubyInvoker {
         protected abstract List<String> getArgList();
         protected abstract void handleOutput(Process process);
         protected void beforeInvoke(){}
@@ -390,32 +272,30 @@ public class RIView extends ViewPart implements RdocListener {
     		}      
         }
     }
-
-    class StreamRedirector extends Thread {
-	    // TODO Add ability to style by CSS stylesheet!
-		// FIXME Use the HTMLPrinter from rdt.internal.ui.text!
-		InputStream is;
-		String linePrefix;
-		String line = null;
-		boolean done = false;
-		final java.util.List queue = new ArrayList();
-		private StringBuffer buffer = new StringBuffer();
+    
+    private class RIDescriptionUpdater extends RubyInvoker {
+    	private String searchValue;
 		private final String HEADER = "<html><head></head><body>";
 		private final String TAIL = "</body></html>";
+		private StringBuffer buffer;
+    	
+    	RIDescriptionUpdater(String value) {
+    		this.searchValue = value;
+    	}
+    	
+        protected List<String> getArgList() {
+            List<String> args = new ArrayList<String>();
+            args.add("--no-pager");
+            args.add("-f");
+            args.add("html");
+            args.add(searchValue);
+            return args;
+        }
 
-		StreamRedirector(final InputStream is, final String type) {
-			this.is = is;
-			this.linePrefix = type;
-		}
-
-		void done() {
-			done = true;
-		}
-
-		void inQueue(final String msg) {
-			queue.add(msg);
-		}
-
+        protected void beforeInvoke() {
+            searchResult.setText(InfoViewMessages.getString("RubyInformation.please_wait"));
+        }
+        
 		void addToBuffer(int position, final String line) {			
 		    if (position < 0) position = 0;
 		    StringBuffer modifiedLine = new StringBuffer(line);
@@ -424,56 +304,88 @@ public class RIView extends ViewPart implements RdocListener {
 			buffer.insert(position, modifiedLine.toString());
 		}
 
-		public void run() {
+        protected void handleOutput(final Process process) {
+        	if (process == null)
+				return;
 			try {
-				InputStreamReader isr = new InputStreamReader(is);
+				buffer = new StringBuffer();
+				InputStreamReader isr = new InputStreamReader(process.getInputStream());
 				BufferedReader br = new BufferedReader(isr);
 				// Insert all the text
+				String line = null; // FIXME What do we do if this process hits an error?
 				while ((line = br.readLine()) != null) {
-					addToBuffer(buffer.length() - 1, linePrefix + line);					
+					addToBuffer(buffer.length() - 1, line);
 				}
 				buffer.insert(0, HEADER); // Put the header before all the contents
 				buffer.append(TAIL); // Put the body and html close tags at end
-				
-				setText();
-				// Insert later text at end, but before close body and html tags
-				while ((!done) || (queue.size() > 0)) {
-					if (queue.size() > 0) {
-						String queued = (String) queue.get(0);
-						if(queued == null) {
-							queue.remove(0);
-							continue;
-						}
-						addToBuffer(buffer.length() - TAIL.length(), linePrefix + queued);
-						queue.remove(0);
-						setText();
-					} else {
-						try {
-							Thread.sleep(100);
-						} catch (InterruptedException IGNORE) {}
+				final String text = buffer.toString();
+				Display.getDefault().syncExec(new Runnable() {
+					public void run() {
+						searchResult.setText(text);
 					}
-				}
+				});
 			} catch (IOException ioe) {
 				ioe.printStackTrace();
 			}
-		}
-
-        /**
-         * Puts the contents of the buffer into the widget
-         */
-        private void setText() {
-            Display.getDefault().syncExec(new Runnable() {
-            	public void run() {
-            		searchResult.setText(buffer.toString());
-            	}
-            });
         }
-	}
+    }
 
-	/**
+    /**
 	 * When teh rdoc has changed, automatically update/regenerate the view
 	 */
 	public void rdocChanged() {
 		updatePage();		
+	}
+	
+	private class RIPopulator extends RubyInvoker {
+		private RIView view;
+		
+		public RIPopulator(RIView view) {
+			this.view = view;
+		}
+		
+		@Override
+		protected List<String> getArgList() {
+			 List<String> args = new ArrayList<String>();
+             args.add("--no-pager");
+             args.add("-l");
+             return args;
+		}
+
+		@Override
+		protected void handleOutput(Process process) {
+			if (process == null) return;
+			view.riFound = false;
+            BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
+            String line = null;
+            fgPossibleMatches = new ArrayList<String>();
+            try {
+                while ((line = reader.readLine()) != null) {
+                    fgPossibleMatches.add(line.trim());
+                }
+                // if not matches were found display an error message
+                if( fgPossibleMatches.size() == 0 ){
+                	view.riNotFound();
+                } else {
+                	view.riFound = true;
+                }
+            }
+            catch (IOException e) {
+                RubyPlugin.log(e);
+            }		
+            final Display display = Display.getDefault();
+    		display.asyncExec (new Runnable () {
+    		      public void run () {
+    		    	filterSearchList();
+    		    	if (riFound) pageBook.showPage(form);
+    		      }
+    		   });
+		}
+		
+	}
+	
+	void riNotFound() {
+		riFound = false;
+		pageBook.showPage( riNotFoundLabel );
 	}
 }
