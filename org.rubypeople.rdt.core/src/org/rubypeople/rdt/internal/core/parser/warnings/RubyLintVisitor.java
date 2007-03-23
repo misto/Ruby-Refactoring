@@ -1,5 +1,8 @@
 package org.rubypeople.rdt.internal.core.parser.warnings;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.jruby.ast.BlockNode;
 import org.jruby.ast.ClassNode;
 import org.jruby.ast.DefnNode;
@@ -12,8 +15,8 @@ import org.jruby.ast.WhenNode;
 import org.jruby.ast.visitor.AbstractVisitor;
 import org.jruby.evaluator.Instruction;
 import org.jruby.lexer.yacc.ISourcePosition;
-import org.rubypeople.rdt.core.IProblemRequestor;
 import org.rubypeople.rdt.core.RubyCore;
+import org.rubypeople.rdt.core.compiler.CategorizedProblem;
 import org.rubypeople.rdt.core.compiler.IProblem;
 import org.rubypeople.rdt.internal.core.parser.Error;
 import org.rubypeople.rdt.internal.core.parser.NodeUtil;
@@ -21,28 +24,32 @@ import org.rubypeople.rdt.internal.core.parser.Warning;
 
 public abstract class RubyLintVisitor extends AbstractVisitor {
 
-	private IProblemRequestor problemRequestor;
 	private String contents;
+	private List<CategorizedProblem> problems;
 
-	public RubyLintVisitor(String contents, IProblemRequestor problemRequestor) {
-		this.problemRequestor = problemRequestor;
+	public RubyLintVisitor(String contents) {
+		this.problems = new ArrayList<CategorizedProblem>();
 		this.contents = contents;
 	}
 	
 	protected String getSource(Node node) {
 		return NodeUtil.getSource(contents, node);
 	}
+	
+	public List<CategorizedProblem> getProblems() {
+		return problems;
+	}
 
 	protected void createProblem(ISourcePosition position, String message) {
 		String value = RubyCore.getOption(getOptionKey());
 		if (value != null && value.equals(RubyCore.IGNORE))
 			return;
-		IProblem problem;
+		CategorizedProblem problem;
 		if (value != null && value.equals(RubyCore.ERROR))
 			problem = new Error(position, message, getProblemID());
 		else
 		  problem = new Warning(position, message, getProblemID());
-		problemRequestor.acceptProblem(problem);
+		problems.add(problem);
 	}
 	
 	@Override

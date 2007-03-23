@@ -1,6 +1,7 @@
 package org.rubypeople.rdt.internal.core.parser.warnings;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import org.jruby.ast.AliasNode;
@@ -99,6 +100,7 @@ import org.jruby.ast.ZArrayNode;
 import org.jruby.ast.ZSuperNode;
 import org.jruby.evaluator.Instruction;
 import org.rubypeople.rdt.core.IProblemRequestor;
+import org.rubypeople.rdt.core.compiler.CategorizedProblem;
 import org.rubypeople.rdt.internal.core.parser.InOrderVisitor;
 
 /**
@@ -117,14 +119,22 @@ public class DelegatingVisitor extends InOrderVisitor {
 
 	private List<RubyLintVisitor> visitors;
 
-	public static List<RubyLintVisitor> createVisitors(String contents, IProblemRequestor requestor) {
+	public static List<RubyLintVisitor> createVisitors(String contents) {
 		List<RubyLintVisitor> visitors = new ArrayList<RubyLintVisitor>();
 		// FIXME Run through a map of keys to classes and add instances of
 		// classes whose key is not set to ignore
-		visitors.add(new EmptyStatementVisitor(contents, requestor));
-		visitors.add(new StaticConditionalVisitor(contents, requestor));
-		visitors.add(new ConstantReassignmentVisitor(contents, requestor));
+		visitors.add(new EmptyStatementVisitor(contents));
+		visitors.add(new StaticConditionalVisitor(contents));
+		visitors.add(new ConstantReassignmentVisitor(contents));
 		return visitors;
+	}
+	
+	public List<CategorizedProblem> getProblems() {
+		List<CategorizedProblem> problems = new ArrayList<CategorizedProblem>();
+		for (RubyLintVisitor visitor : visitors) {
+			problems.addAll(visitor.getProblems());
+		}
+		return problems;
 	}
 
 	public DelegatingVisitor(List<RubyLintVisitor> visitors) {

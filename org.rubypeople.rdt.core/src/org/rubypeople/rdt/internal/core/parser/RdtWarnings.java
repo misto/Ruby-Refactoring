@@ -15,13 +15,13 @@ import org.jruby.lexer.yacc.ISourcePosition;
  */
 public class RdtWarnings implements IRdtWarnings     {
 
-	private List warnings;
+	private List<Warning> warnings;
 
 	public RdtWarnings() {
-		warnings = new ArrayList();
+		warnings = new ArrayList<Warning>();
 	}
 
-	public List getWarnings() {
+	public List<Warning> getWarnings() {
 		return Collections.unmodifiableList(warnings);
 	}
 

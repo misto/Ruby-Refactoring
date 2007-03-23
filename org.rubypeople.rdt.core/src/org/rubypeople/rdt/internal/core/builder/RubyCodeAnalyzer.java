@@ -58,7 +58,7 @@ public final class RubyCodeAnalyzer implements SingleFileCompiler {
         try {
             Node rootNode = parser.parse(file, new StringReader(contents));
             if (rootNode == null) return;         
-            List<RubyLintVisitor> visitors = DelegatingVisitor.createVisitors(contents, new ProblemRequestorMarkerManager(file, markerManager));
+            List<RubyLintVisitor> visitors = DelegatingVisitor.createVisitors(contents); // FIXME How do we hook the warnings/errors up now?!
 			NodeVisitor visitor = new DelegatingVisitor(visitors);
             rootNode.accept(visitor);
             indexUpdater.update(file, rootNode, true);

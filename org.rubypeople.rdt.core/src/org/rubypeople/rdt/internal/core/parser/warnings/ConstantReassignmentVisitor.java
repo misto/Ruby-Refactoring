@@ -5,14 +5,13 @@ import java.util.Set;
 
 import org.jruby.ast.ConstDeclNode;
 import org.jruby.evaluator.Instruction;
-import org.rubypeople.rdt.core.IProblemRequestor;
 
 public class ConstantReassignmentVisitor extends RubyLintVisitor {
 
 	private Set<String> assignedConstants;
 	
-	public ConstantReassignmentVisitor(String contents, IProblemRequestor problemRequestor) {
-		super(contents, problemRequestor);
+	public ConstantReassignmentVisitor(String contents) {
+		super(contents);
 		assignedConstants = new HashSet<String>();
 	}
 

@@ -6,13 +6,12 @@ import org.jruby.ast.IfNode;
 import org.jruby.ast.IterNode;
 import org.jruby.ast.WhenNode;
 import org.jruby.evaluator.Instruction;
-import org.rubypeople.rdt.core.IProblemRequestor;
 import org.rubypeople.rdt.core.RubyCore;
 
 public class EmptyStatementVisitor extends RubyLintVisitor {
 
-	public EmptyStatementVisitor(String contents, IProblemRequestor problemRequestor) {
-		super(contents, problemRequestor);
+	public EmptyStatementVisitor(String contents) {
+		super(contents);
 	}
 	
 	@Override

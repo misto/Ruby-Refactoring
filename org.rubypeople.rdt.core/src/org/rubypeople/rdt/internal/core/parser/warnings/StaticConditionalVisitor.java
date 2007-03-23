@@ -6,12 +6,11 @@ import org.jruby.ast.NilNode;
 import org.jruby.ast.Node;
 import org.jruby.ast.TrueNode;
 import org.jruby.evaluator.Instruction;
-import org.rubypeople.rdt.core.IProblemRequestor;
 
 public class StaticConditionalVisitor extends RubyLintVisitor {
 
-	public StaticConditionalVisitor(String contents, IProblemRequestor problemRequestor) {
-		super(contents, problemRequestor);
+	public StaticConditionalVisitor(String contents) {
+		super(contents);
 	}
 
 	@Override

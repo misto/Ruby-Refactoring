@@ -25,7 +25,7 @@ public class TaskParser {
 	private boolean fCaseSensitive = false;
 	private String[] fTags;
 	private int[] fPriorities;
-	private List tasks;
+	private List<TaskTag> tasks;
 
 	public TaskParser(Map preferences) {
 		String caseSensitive = getString(preferences, RubyCore.COMPILER_TASK_CASE_SENSITIVE, RubyCore.ENABLED);
@@ -34,7 +34,7 @@ public class TaskParser {
 		String priorities = getString(preferences, RubyCore.COMPILER_TASK_PRIORITIES, RubyCore.DEFAULT_TASK_PRIORITIES);
 		fTags = tokenize(tags, ",");
 		fPriorities = convertPriorities(tokenize(priorities, ","));
-		tasks = new ArrayList();
+		tasks = new ArrayList<TaskTag>();
 	}
 
 	private String getString(Map preferences, String key, String def) {
@@ -140,7 +140,7 @@ public class TaskParser {
 		}
 	}
 
-	public List getTasks() {
+	public List<TaskTag> getTasks() {
 		return Collections.unmodifiableList(tasks);
 	}
 
