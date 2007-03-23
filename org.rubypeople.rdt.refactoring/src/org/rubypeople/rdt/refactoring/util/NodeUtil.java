@@ -30,10 +30,13 @@ package org.rubypeople.rdt.refactoring.util;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.List;
 
 import org.jruby.ast.IterNode;
 import org.jruby.ast.MethodDefNode;
 import org.jruby.ast.Node;
+import org.jruby.lexer.yacc.ISourcePosition;
+import org.jruby.lexer.yacc.SourcePosition;
 import org.jruby.parser.StaticScope;
 
 public class NodeUtil {
@@ -100,4 +103,18 @@ public class NodeUtil {
 		}
 		return false;
 	}
+
+	public static ISourcePosition subPositionUnion(Node node){
+		
+		ISourcePosition enclosingPosition = node.getPositionIncludingComments();
+		
+		List<Node> childList = node.childNodes();
+		
+		for(Node currentChild : childList){
+			enclosingPosition = SourcePosition.combinePosition(enclosingPosition, subPositionUnion(currentChild));
+		}
+		
+		return enclosingPosition;
+	}
+	
 }

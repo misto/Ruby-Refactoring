@@ -12,6 +12,7 @@
  * rights and limitations under the License.
  *
  * Copyright (C) 2006 Lukas Felber <lfelber@hsr.ch>
+ * Copyright (C) 2006 Thomas Corbat <tcorbat@hsr.ch>
  * 
  * Alternatively, the contents of this file may be used under the terms of
  * either of the GNU General Public License Version 2 or later (the "GPL"),
@@ -29,10 +30,13 @@
 package org.rubypeople.rdt.refactoring.editprovider;
 
 import org.eclipse.text.edits.TextEdit;
+import org.jruby.ast.NewlineNode;
 import org.jruby.ast.Node;
 import org.jruby.ast.visitor.rewriter.DefaultFormatHelper;
 import org.jruby.ast.visitor.rewriter.FormatHelper;
 import org.jruby.ast.visitor.rewriter.ReWriteVisitor;
+import org.jruby.lexer.yacc.ISourcePosition;
+import org.rubypeople.rdt.refactoring.core.NodeFactory;
 import org.rubypeople.rdt.refactoring.util.Constants;
 import org.rubypeople.rdt.refactoring.util.HsrFormatter;
 
@@ -90,5 +94,19 @@ public abstract class EditProvider implements IEditProvider {
 	private int getNextNLPosition(int offset, String document) {
 		int pos = document.indexOf(Constants.NL, offset);
 		return (pos != -1) ? pos : document.length() - 1;
+	}
+	
+	protected ISourcePosition getExtendedPosition(Node node){
+		if(node instanceof NewlineNode){
+			node = ((NewlineNode)node).getNextNode();
+		}
+		ISourcePosition extendedPosition = node.getPositionIncludingComments();
+		
+		for(Object currentChild : node.childNodes()){
+			extendedPosition = NodeFactory.unionPositions(extendedPosition, getExtendedPosition((Node) currentChild));
+		}
+		
+		return extendedPosition;
+				
 	}
 }

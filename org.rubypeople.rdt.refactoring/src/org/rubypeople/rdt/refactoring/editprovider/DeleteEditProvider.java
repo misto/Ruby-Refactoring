@@ -12,6 +12,7 @@
  * rights and limitations under the License.
  *
  * Copyright (C) 2006 Lukas Felber <lfelber@hsr.ch>
+ * Copyright (C) 2007 Lukas Felber <lfelber@hsr.ch>
  * 
  * Alternatively, the contents of this file may be used under the terms of
  * either of the GNU General Public License Version 2 or later (the "GPL"),
@@ -35,6 +36,7 @@ import org.eclipse.text.edits.DeleteEdit;
 import org.eclipse.text.edits.TextEdit;
 import org.jruby.ast.Node;
 import org.rubypeople.rdt.refactoring.util.Constants;
+import org.rubypeople.rdt.refactoring.util.NodeUtil;
 
 public class DeleteEditProvider extends EditProvider {
 
@@ -69,7 +71,7 @@ public class DeleteEditProvider extends EditProvider {
 	}
 
 	private int getStartOffset(String document) {
-		int startLine = fromNode.getPosition().getStartLine();
+		int startLine = NodeUtil.subPositionUnion(fromNode).getStartLine();
 		int pos = -1;
 		for (int i = 0; i < startLine; i++) {
 			pos = document.indexOf(Constants.NL, pos + 1);
@@ -77,16 +79,16 @@ public class DeleteEditProvider extends EditProvider {
 		if (pos < 0) {
 			pos = 0;
 		}
-		String leadingStr = document.substring(pos, fromNode.getPosition().getStartOffset());
+		String leadingStr = document.substring(pos, NodeUtil.subPositionUnion(fromNode).getStartOffset());
 
 		if (leadingStr.trim().equals("")) { //$NON-NLS-1$
 			return pos;
 		}
-		return fromNode.getPosition().getStartOffset();
+		return NodeUtil.subPositionUnion(fromNode).getStartOffset();
 	}
 
 	private int getEndOffset(String document) {
-		int offset = toNode.getPosition().getEndOffset();
+		int offset = NodeUtil.subPositionUnion(toNode).getEndOffset();
 		int aktPos = offset;
 		Matcher matcher = Pattern.compile("[\\s;]").matcher(document); //$NON-NLS-1$
 		while (matcher.find(aktPos)) {
