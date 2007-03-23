@@ -36,8 +36,8 @@ public class PreferenceConstants {
 
 	public static final String TEMPLATES_USE_CODEFORMATTER = "templatesUseCodeFormatter"; //$NON-NLS-1$	
 
-	private final static String DEFAULT_RDOC_CMD = "rdoc"; //$NON-NLS-1$	
-	private final static String DEFAULT_RI_CMD = "ri"; //$NON-NLS-1$	
+	private final static String DEFAULT_RDOC_CMD = ""; //$NON-NLS-1$	
+	private final static String DEFAULT_RI_CMD = ""; //$NON-NLS-1$	
 	
 	private static final String LOADPATH_RUBYVMLIBRARY_INDEX= PreferenceConstants.NEWPROJECT_JRELIBRARY_INDEX;
 	private static final String LOADPATH_RUBYVMLIBRARY_LIST= PreferenceConstants.NEWPROJECT_JRELIBRARY_LIST;
