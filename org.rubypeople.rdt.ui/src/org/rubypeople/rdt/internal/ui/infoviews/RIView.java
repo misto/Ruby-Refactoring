@@ -3,7 +3,6 @@ package org.rubypeople.rdt.internal.ui.infoviews;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -263,8 +262,10 @@ public class RIView extends ViewPart implements RdocListener {
    		try {        			
                 List<String> args = getArgList();
                 args.add(0, riPath.toString());
-                String[] argArray= (String[]) args.toArray(new String[args.size()]);
-                Process p= Runtime.getRuntime().exec(argArray);
+                ProcessBuilder builder = new ProcessBuilder();
+                builder.command(args);
+                builder.redirectErrorStream(true);
+                Process p = builder.start();
                 handleOutput(p); 
     		} catch (IOException e)  {
     			// message of RuntimeException will be displayed in the RI View
