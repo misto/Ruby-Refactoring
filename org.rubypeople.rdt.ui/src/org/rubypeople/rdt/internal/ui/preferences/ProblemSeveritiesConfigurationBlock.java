@@ -206,14 +206,15 @@ public class ProblemSeveritiesConfigurationBlock extends OptionsConfigurationBlo
 		Composite inner;
 		
 		Map<String, String> categories = getErrorCategories();
-		for (String categoryId : categories.keySet()) {
+		for (String categoryId : categories.keySet()) {			
+			List<Error> errors = getErrors(categoryId);
+			if (errors == null || errors.isEmpty()) continue;
 			excomposite= createStyleSection(composite, categories.get(categoryId), nColumns);
 			inner= new Composite(excomposite, SWT.NONE);
 			inner.setFont(composite.getFont());
 			inner.setLayout(new GridLayout(nColumns, false));
 			excomposite.setClient(inner);
 			
-			List<Error> errors = getErrors(categoryId);
 			for (Error error : errors) {
 				addComboBox(inner, error.label + ':', getKey(error.getContributor(), error.getId()), errorWarningIgnore, errorWarningIgnoreLabels, defaultIndent);
 				if (error.hasArgument()) {
