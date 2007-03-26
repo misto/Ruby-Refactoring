@@ -5,6 +5,7 @@ import java.util.Set;
 
 import org.jruby.ast.ConstDeclNode;
 import org.jruby.evaluator.Instruction;
+import org.rubypeople.rdt.core.RubyCore;
 
 public class ConstantReassignmentVisitor extends RubyLintVisitor {
 
@@ -17,8 +18,7 @@ public class ConstantReassignmentVisitor extends RubyLintVisitor {
 
 	@Override
 	protected String getOptionKey() {
-		// FIXME Set up a compiler option for this!
-		return null;
+		return RubyCore.COMPILER_PB_CONSTANT_REASSIGNMENT;
 	}
 	
 	public Instruction visitConstDeclNode(ConstDeclNode iVisited) {

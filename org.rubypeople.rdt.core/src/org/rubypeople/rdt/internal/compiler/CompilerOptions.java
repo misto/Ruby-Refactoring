@@ -3,23 +3,26 @@ package org.rubypeople.rdt.internal.compiler;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.rubypeople.rdt.core.RubyCore;
+
 public class CompilerOptions {
+
+	public static final long EmptyStatement = 0x01;
+	public static final long ConstantReassignment = 0x02;
 	
-	public static final String OPTION_ReportEmptyStatement = "org.rubypeople.rdt.core.compiler.problem.emptyStatement"; //$NON-NLS-1$
-	
-	public static final long EmptyStatement = 0x80000;
-	
-	public static final String ERROR = "error"; //$NON-NLS-1$
-	public static final String WARNING = "warning"; //$NON-NLS-1$
-	public static final String IGNORE = "ignore"; //$NON-NLS-1$
+	public static final String ERROR = RubyCore.ERROR; //$NON-NLS-1$
+	public static final String WARNING = RubyCore.WARNING; //$NON-NLS-1$
+	public static final String IGNORE = RubyCore.IGNORE; //$NON-NLS-1$
 	
 //	 Default severity level for handlers
 	public long errorThreshold = 0;
-	public long warningThreshold = 0;
+	public long warningThreshold = 
+		ConstantReassignment;
 	
 	public Map getMap() {
 		Map optionsMap = new HashMap(30);
-		optionsMap.put(OPTION_ReportEmptyStatement, getSeverityString(EmptyStatement));
+		optionsMap.put(RubyCore.COMPILER_PB_EMPTY_STATEMENT, getSeverityString(EmptyStatement));
+		optionsMap.put(RubyCore.COMPILER_PB_CONSTANT_REASSIGNMENT, getSeverityString(ConstantReassignment));
 		return optionsMap;
 	}
 	
@@ -33,7 +36,8 @@ public class CompilerOptions {
 	
 	public void set(Map optionsMap) {
 		Object optionValue;
-		if ((optionValue = optionsMap.get(OPTION_ReportEmptyStatement)) != null) updateSeverity(EmptyStatement, optionValue);
+		if ((optionValue = optionsMap.get(RubyCore.COMPILER_PB_EMPTY_STATEMENT)) != null) updateSeverity(EmptyStatement, optionValue);
+		if ((optionValue = optionsMap.get(RubyCore.COMPILER_PB_CONSTANT_REASSIGNMENT)) != null) updateSeverity(ConstantReassignment, optionValue);
 	}
 	
 	void updateSeverity(long irritant, Object severityString) {

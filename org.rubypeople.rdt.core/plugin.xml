@@ -116,8 +116,14 @@
    <extension
        point="org.rubypeople.rdt.core.errorProvider">       
        <category id="org.rubypeople.rdt.errors.codeComplexity" name="Code Complexity" />
+       
        <category id="org.rubypeople.rdt.errors.potentialProblems" name="Potential programming problems" />
+       <error prefKey="org.rubypeople.rdt.core.compiler.problem.constantReassignment" 
+       		label="Re-Assignment to a constant"
+       		categoryId="org.rubypeople.rdt.errors.potentialProblems"/>
+       		
        <category id="org.rubypeople.rdt.errors.unneccesaryCode" name="Unnecessary code" />
+       <error prefKey="org.rubypeople.rdt.core.compiler.problem.emptyStatement" label="Empty Statements"
+       		categoryId="org.rubypeople.rdt.errors.unneccesaryCode"/>
  	</extension>
-
 </plugin>

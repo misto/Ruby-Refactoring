@@ -231,52 +231,14 @@ public class RubyCore extends Plugin {
 	 * @see #getDefaultOptions()
 	 * @since 0.9.0
 	 */
-	public static final String COMPILER_PB_ENSURE_BLOCK_NOT_COMPLETING = PLUGIN_ID + ".compiler.problem.ensureBlockNotCompletingNormally"; //$NON-NLS-1$
-	/**
-	 * Possible  configurable option ID.
-	 * @see #getDefaultOptions()
-	 * @since 0.9.0
-	 */
 	public static final String COMPILER_PB_EMPTY_STATEMENT = PLUGIN_ID + ".compiler.problem.emptyStatement"; //$NON-NLS-1$
-	/**
-	 * Possible  configurable option ID.
-	 * @see #getDefaultOptions()
-	 */
-	public static final String COMPILER_PB_HIDDEN_RESCUE_BLOCK = PLUGIN_ID + ".compiler.problem.hiddenRescueBlock"; //$NON-NLS-1$
+	
 	/**
 	 * Possible  configurable option ID.
 	 * @see #getDefaultOptions()
 	 * @since 0.9.0
 	 */
-	public static final String COMPILER_PB_FALLTHROUGH_CASE = PLUGIN_ID + ".compiler.problem.fallthroughCase"; //$NON-NLS-1$
-	/**
-	 * Possible  configurable option ID.
-	 * @see #getDefaultOptions()
-	 * @since 0.9.0
-	 */
-	public static final String COMPILER_PB_NULL_REFERENCE = PLUGIN_ID + ".compiler.problem.nullReference"; //$NON-NLS-1$
-	/**
-	 * Possible  configurable option ID.
-	 * @see #getDefaultOptions()
-	 */
-	public static final String COMPILER_PB_UNUSED_LOCAL = PLUGIN_ID + ".compiler.problem.unusedLocal"; //$NON-NLS-1$
-	/**
-	 * Possible  configurable option ID.
-	 * @see #getDefaultOptions()
-	 */
-	public static final String COMPILER_PB_UNUSED_PARAMETER = PLUGIN_ID + ".compiler.problem.unusedParameter"; //$NON-NLS-1$
-	/**
-	 * Possible  configurable option ID.
-	 * @see #getDefaultOptions()
-	 * @since 0.9.0
-	 */
-	public static final String COMPILER_PB_UNUSED_PRIVATE_MEMBER = PLUGIN_ID + ".compiler.problem.unusedPrivateMember"; //$NON-NLS-1$
-	/**
-	 * Possible  configurable option ID.
-	 * @see #getDefaultOptions()
-	 * @since 0.9.0
-	 */
-	public static final String COMPILER_PB_UNNECESSARY_ELSE = PLUGIN_ID + ".compiler.problem.unnecessaryElse"; //$NON-NLS-1$
+	public static final String COMPILER_PB_CONSTANT_REASSIGNMENT = PLUGIN_ID + ".compiler.problem.constantReassignment"; //$NON-NLS-1$
 
 	/**
 	 * Possible  configurable option ID.
