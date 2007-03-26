@@ -129,10 +129,7 @@ public class RubyFormatter {
         
             return partitionType != null && (
                 partitionType.equals(IRubyPartitions.RUBY_MULTI_LINE_COMMENT) ||
-                partitionType.equals(IRubyPartitions.RUBY_SINGLE_LINE_COMMENT) ||
-                partitionType.equals(IRubyPartitions.RUBY_STRING) ||
-                partitionType.equals(IRubyPartitions.RUBY_CHARACTER) ||
-                partitionType.equals(IRubyPartitions.RUBY_DOC));
+                partitionType.equals(IRubyPartitions.RUBY_SINGLE_LINE_COMMENT)); // FIXME How do we tell if we're in a string now?
 
         } catch (BadLocationException e) {
             return false;   

@@ -136,8 +136,6 @@ public class CommentFormattingStrategy extends ContextBasedFormattingStrategy {
                 return CodeFormatter.K_SINGLE_LINE_COMMENT;
         if (IRubyPartitions.RUBY_MULTI_LINE_COMMENT.equals(type))
                 return CodeFormatter.K_MULTI_LINE_COMMENT;
-        if (IRubyPartitions.RUBY_DOC.equals(type))
-                return CodeFormatter.K_RUBY_DOC;
         return CodeFormatter.K_UNKNOWN;
     }
 

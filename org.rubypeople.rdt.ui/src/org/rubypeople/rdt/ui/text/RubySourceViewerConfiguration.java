@@ -132,10 +132,8 @@ public class RubySourceViewerConfiguration extends TextSourceViewerConfiguration
 		final MultiPassContentFormatter formatter = new MultiPassContentFormatter(getConfiguredDocumentPartitioning(sourceViewer), IDocument.DEFAULT_CONTENT_TYPE);
 
 		formatter.setMasterStrategy(new RubyFormattingStrategy());
-		formatter.setSlaveStrategy(new CommentFormattingStrategy(), IRubyPartitions.RUBY_DOC);
 		formatter.setSlaveStrategy(new CommentFormattingStrategy(), IRubyPartitions.RUBY_SINGLE_LINE_COMMENT);
 		formatter.setSlaveStrategy(new CommentFormattingStrategy(), IRubyPartitions.RUBY_MULTI_LINE_COMMENT);
-
 		return formatter;
 	}
 

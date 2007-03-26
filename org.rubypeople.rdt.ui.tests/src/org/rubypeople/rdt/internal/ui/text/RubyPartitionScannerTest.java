@@ -21,8 +21,9 @@ public class RubyPartitionScannerTest extends TestCase {
 
 	public void testSingleLineComment() {
 		setDocument("# comment");
-		assertEquals(IRubyPartitions.RUBY_SINGLE_LINE_COMMENT, scanner
-				.nextToken().getData());
+//		assertEquals(IRubyPartitions.RUBY_SINGLE_LINE_COMMENT, scanner
+//				.nextToken().getData());
+		assertNull(scanner.nextToken().getData()); // comments are default partition now
 	}
 
 	public void testMultiLineComment() {
@@ -41,141 +42,6 @@ public class RubyPartitionScannerTest extends TestCase {
 	public void testPoundCharacterIsntAComment() {
 		setDocument("?#");
 		assertNull(scanner.nextToken().getData());
-	}
-
-	public void testDoubleQuotedString() {
-		setDocument("\"double quoted string\"");
-		assertEquals(IRubyPartitions.RUBY_STRING, scanner.nextToken().getData());
-	}
-
-	public void testSingleQuotedString() {
-		setDocument("'single quoted string'");
-		assertEquals(IRubyPartitions.RUBY_STRING, scanner.nextToken().getData());
-		assertTrue(scanner.nextToken().isEOF());
-	}
-
-	public void testCommand() {
-		setDocument("`command`");
-		assertEquals(IRubyPartitions.RUBY_COMMAND, scanner.nextToken()
-				.getData());
-		assertTrue(scanner.nextToken().isEOF());
-	}
-
-	public void testRegularExpression() {
-		setDocument("/regex/");
-		assertEquals(IRubyPartitions.RUBY_REGEX, scanner.nextToken().getData());
-		assertTrue(scanner.nextToken().isEOF());
-	}
-	
-	public void testRegularExpressionWithPercentSyntax() {
-		setDocument("%r(regex)");
-		assertEquals(IRubyPartitions.RUBY_REGEX, scanner.nextToken().getData());
-		assertTrue(scanner.nextToken().isEOF());
-		
-		setDocument("%r!regex!");
-		assertEquals(IRubyPartitions.RUBY_REGEX, scanner.nextToken().getData());
-		assertTrue(scanner.nextToken().isEOF());
-		
-		setDocument("%r{regex}");
-		assertEquals(IRubyPartitions.RUBY_REGEX, scanner.nextToken().getData());
-		assertTrue(scanner.nextToken().isEOF());
-	}
-	
-	public void testCommandWithPercentSyntax() {
-		setDocument("%x(command)");
-		assertEquals(IRubyPartitions.RUBY_COMMAND, scanner.nextToken().getData());
-		assertTrue(scanner.nextToken().isEOF());
-		
-		setDocument("%x!command!");
-		assertEquals(IRubyPartitions.RUBY_COMMAND, scanner.nextToken().getData());
-		assertTrue(scanner.nextToken().isEOF());
-		
-		setDocument("%x{command}");
-		assertEquals(IRubyPartitions.RUBY_COMMAND, scanner.nextToken().getData());
-		assertTrue(scanner.nextToken().isEOF());
-	}
-	
-	public void testStringWithPercentSyntax() {
-		setDocument("%q(command) # Comment");
-		assertEquals(IRubyPartitions.RUBY_STRING, scanner.nextToken().getData());
-		assertCommentFollows();
-		
-		setDocument("%q!command! # Comment");
-		assertEquals(IRubyPartitions.RUBY_STRING, scanner.nextToken().getData());
-		assertCommentFollows();
-		
-		setDocument("%q{command} # Comment");
-		assertEquals(IRubyPartitions.RUBY_STRING, scanner.nextToken().getData());
-		assertCommentFollows();
-		
-		setDocument("%Q(command) # Comment");
-		assertEquals(IRubyPartitions.RUBY_STRING, scanner.nextToken().getData());
-		assertCommentFollows();
-		
-		setDocument("%Q!command! # Comment");
-		assertEquals(IRubyPartitions.RUBY_STRING, scanner.nextToken().getData());
-		assertCommentFollows();
-		
-		setDocument("%Q[command] # Comment");
-		assertEquals(IRubyPartitions.RUBY_STRING, scanner.nextToken().getData());
-		assertCommentFollows();
-		
-		setDocument("%/command/ # Comment");
-		assertEquals(IRubyPartitions.RUBY_STRING, scanner.nextToken().getData());
-		assertCommentFollows();
-		
-		setDocument("%!command! # Comment");
-		assertEquals(IRubyPartitions.RUBY_STRING, scanner.nextToken().getData());
-		assertCommentFollows();
-		
-		setDocument("%[command] # Comment");
-		assertEquals(IRubyPartitions.RUBY_STRING, scanner.nextToken().getData());
-		assertCommentFollows();
-	}
-
-	private void assertCommentFollows() {
-		assertNull(scanner.nextToken().getData());
-		assertEquals(IRubyPartitions.RUBY_SINGLE_LINE_COMMENT, scanner
-				.nextToken().getData());
-		assertTrue(scanner.nextToken().isEOF());
-	}
-
-	public void testRegularExpressionClosesProperly() {
-		setDocument("/regex/ # Comment");
-		assertEquals(IRubyPartitions.RUBY_REGEX, scanner.nextToken().getData());
-		assertCommentFollows();
-	}
-	
-	public void testRegularExpressionWithOptions() {
-		setDocument("/regex/i");
-		assertEquals(IRubyPartitions.RUBY_REGEX, scanner.nextToken().getData());
-		assertTrue("Failed to gobble up option/flag as part of regular expression",scanner.nextToken().isEOF());
-		
-		setDocument("/regex/i # Comment");
-		assertEquals(IRubyPartitions.RUBY_REGEX, scanner.nextToken().getData());
-		assertNull(scanner.nextToken().getData());
-		assertEquals(IRubyPartitions.RUBY_SINGLE_LINE_COMMENT, scanner
-				.nextToken().getData());
-	}
-	
-	public void testStringWithEscapedEndChar() {
-		setDocument("%q(ain\\)# blah)");
-		assertEquals(IRubyPartitions.RUBY_STRING, scanner.nextToken().getData());
-		assertTrue("failed to skip escaped end character", scanner.nextToken().isEOF());
-		
-		setDocument("%(ain\\)# blah)");
-		assertEquals(IRubyPartitions.RUBY_STRING, scanner.nextToken().getData());
-		assertTrue("failed to skip escaped end character", scanner.nextToken().isEOF());
-		
-		setDocument("%Q(ain\\)# blah)");
-		assertEquals(IRubyPartitions.RUBY_STRING, scanner.nextToken().getData());
-		assertTrue("failed to skip escaped end character", scanner.nextToken().isEOF());
-	}
-	
-	public void testExpressionSubstitution() {
-		setDocument("%{There are #{count} monkeys}");
-		assertEquals(IRubyPartitions.RUBY_STRING, scanner.nextToken().getData());
-		assertTrue("failed to gobble up expression substiution", scanner.nextToken().isEOF());
 	}
 
 }

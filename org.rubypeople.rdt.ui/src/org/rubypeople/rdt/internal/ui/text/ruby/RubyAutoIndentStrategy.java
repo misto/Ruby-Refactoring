@@ -92,8 +92,8 @@ public class RubyAutoIndentStrategy extends DefaultIndentLineAutoEditStrategy im
 
 			int start= reg.getOffset();
 			ITypedRegion region= TextUtilities.getPartition(d, fPartitioning, start, true);
-			if (IRubyPartitions.RUBY_DOC.equals(region.getType()))
-				start= d.getLineInformationOfOffset(region.getOffset()).getOffset();
+//			if (IRubyPartitions.RUBY_DOC.equals(region.getType()))
+//				start= d.getLineInformationOfOffset(region.getOffset()).getOffset();
 
 			// insert closing "end" on new line after an unclosed block
 			if (closeBlock() && unclosedBlock(d, start, c.offset)) {
