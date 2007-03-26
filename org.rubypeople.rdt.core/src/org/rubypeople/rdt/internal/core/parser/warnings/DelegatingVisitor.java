@@ -1,7 +1,6 @@
 package org.rubypeople.rdt.internal.core.parser.warnings;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 import org.jruby.ast.AliasNode;
@@ -99,7 +98,6 @@ import org.jruby.ast.YieldNode;
 import org.jruby.ast.ZArrayNode;
 import org.jruby.ast.ZSuperNode;
 import org.jruby.evaluator.Instruction;
-import org.rubypeople.rdt.core.IProblemRequestor;
 import org.rubypeople.rdt.core.compiler.CategorizedProblem;
 import org.rubypeople.rdt.internal.core.parser.InOrderVisitor;
 
@@ -124,7 +122,6 @@ public class DelegatingVisitor extends InOrderVisitor {
 		// FIXME Run through a map of keys to classes and add instances of
 		// classes whose key is not set to ignore
 		visitors.add(new EmptyStatementVisitor(contents));
-		visitors.add(new StaticConditionalVisitor(contents));
 		visitors.add(new ConstantReassignmentVisitor(contents));
 		return visitors;
 	}
