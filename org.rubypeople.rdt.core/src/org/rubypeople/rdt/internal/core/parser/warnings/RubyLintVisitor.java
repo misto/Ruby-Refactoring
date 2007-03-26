@@ -19,8 +19,8 @@ import org.rubypeople.rdt.core.RubyCore;
 import org.rubypeople.rdt.core.compiler.CategorizedProblem;
 import org.rubypeople.rdt.core.compiler.IProblem;
 import org.rubypeople.rdt.internal.core.parser.Error;
-import org.rubypeople.rdt.internal.core.parser.NodeUtil;
 import org.rubypeople.rdt.internal.core.parser.Warning;
+import org.rubypeople.rdt.internal.core.util.ASTUtil;
 
 public abstract class RubyLintVisitor extends AbstractVisitor {
 
@@ -33,7 +33,7 @@ public abstract class RubyLintVisitor extends AbstractVisitor {
 	}
 	
 	protected String getSource(Node node) {
-		return NodeUtil.getSource(contents, node);
+		return ASTUtil.getSource(contents, node);
 	}
 	
 	public List<CategorizedProblem> getProblems() {

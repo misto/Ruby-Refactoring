@@ -7,12 +7,16 @@ import java.util.List;
 
 import org.jruby.ast.ArgsNode;
 import org.jruby.ast.ArgumentNode;
+import org.jruby.ast.AttrAssignNode;
+import org.jruby.ast.ClassVarAsgnNode;
 import org.jruby.ast.Colon2Node;
 import org.jruby.ast.ConstNode;
 import org.jruby.ast.DStrNode;
 import org.jruby.ast.FalseNode;
 import org.jruby.ast.FixnumNode;
+import org.jruby.ast.GlobalAsgnNode;
 import org.jruby.ast.HashNode;
+import org.jruby.ast.InstAsgnNode;
 import org.jruby.ast.ListNode;
 import org.jruby.ast.LocalAsgnNode;
 import org.jruby.ast.NilNode;
@@ -22,6 +26,7 @@ import org.jruby.ast.StrNode;
 import org.jruby.ast.TrueNode;
 import org.jruby.ast.ZArrayNode;
 import org.jruby.ast.types.INameNode;
+import org.jruby.lexer.yacc.ISourcePosition;
 import org.jruby.parser.StaticScope;
 
 public abstract class ASTUtil {
@@ -165,6 +170,17 @@ public abstract class ASTUtil {
 		name.append("::");
 		name.append(node.getName());
 		return name.toString();
+	}
+
+	public static boolean isAssignment(Node node) {
+		return (node  instanceof LocalAsgnNode) || (node instanceof ClassVarAsgnNode) 
+			|| (node instanceof InstAsgnNode) || (node instanceof GlobalAsgnNode)
+			|| (node instanceof AttrAssignNode);
+	}
+	
+	public static String getSource(String contents, Node node) {
+		ISourcePosition pos = node.getPosition();
+		return contents.substring(pos.getStartOffset(), pos.getEndOffset());
 	}
 
 }
