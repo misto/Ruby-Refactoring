@@ -62,9 +62,9 @@ public class MarkerUtility {
 	 * @param resource
 	 * @param problems
 	 */
-	public static void createProblemMarkers(IResource resource, List problems) {
+	public static void createProblemMarkers(IResource resource, List<IProblem> problems) {
 		for (Iterator iter = problems.iterator(); iter.hasNext();) {
-			createProblemMarker(resource, (DefaultProblem) iter.next());
+			createProblemMarker(resource, (IProblem) iter.next());
 		}
 	}
 
