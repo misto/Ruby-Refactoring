@@ -42,6 +42,7 @@ import org.rubypeople.rdt.core.IType;
 import org.rubypeople.rdt.core.RubyCore;
 import org.rubypeople.rdt.core.RubyModelException;
 import org.rubypeople.rdt.internal.core.RubyElement;
+import org.rubypeople.rdt.internal.core.RubyScript;
 import org.rubypeople.rdt.internal.core.RubyType;
 import org.rubypeople.rdt.internal.core.parser.RubyParser;
 import org.rubypeople.rdt.internal.core.search.ExperimentalIndex;
@@ -95,10 +96,9 @@ public class CompletionEngine {
 				// FIXME If we're invoked on the class declaration (it's super class) don't do this!
 				// FIXME Traverse the IRubyElement model, not nodes (and don't reparse)?
 				if (fContext.isMethodInvokationOrLocal()) {
-					suggestMethodsForEnclosingType(script);
+					suggestMethodsForEnclosingType(script);				
 				}
-				// FIXME What about instance and class variables?
-//				getDocumentsRubyElementsInScope();
+				getDocumentsRubyElementsInScope();
 			}
 			if (fContext.isGlobal()) { // looks like a global
 				suggestGlobals();
@@ -284,7 +284,7 @@ public class CompletionEngine {
 			// FIXME Try to stop all the multiple re-parsing of the source! Can
 			// we parse once and pass the root node around?
 			// Parse
-			Node rootNode = (new RubyParser()).parse(fContext.getCorrectedSource());
+			Node rootNode = ((RubyScript) fContext.getScript()).lastGoodAST;
 			if (rootNode == null) {
 				return;
 			}

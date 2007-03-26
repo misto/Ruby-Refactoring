@@ -74,7 +74,8 @@ public class RubyScript extends Openable implements IRubyScript {
 
 	public WorkingCopyOwner owner;
 	protected String name;
-
+	public Node lastGoodAST;
+	
 	/**
 	 * @param name
 	 */
@@ -133,6 +134,7 @@ public class RubyScript extends Openable implements IRubyScript {
 		try {
 			RubyParser parser = new RubyParser();
 			ast = parser.parse((IFile) getResource(), new CharArrayReader(contents));
+			lastGoodAST = ast;
 			RubyScriptStructureBuilder visitor = new RubyScriptStructureBuilder(this, unitInfo, newElements);
 			if (ast != null) ast.accept(visitor);
 			unitInfo.setIsStructureKnown(true);
