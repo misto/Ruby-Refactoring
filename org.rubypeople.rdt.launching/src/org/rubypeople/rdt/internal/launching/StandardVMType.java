@@ -38,10 +38,10 @@ public class StandardVMType extends AbstractVMInstallType {
 	private static final char fgSeparator = File.separatorChar;
 
 	/**
-	 * The list of locations in which to look for the java executable in candidate
+	 * The list of locations in which to look for the ruby executable in candidate
 	 * VM install locations, relative to the VM install location.
 	 */
-	private static final String[] fgCandidateRubyFiles = {"rubyw", "rubyw.exe", "ruby", "ruby.exe"}; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
+	private static final String[] fgCandidateRubyFiles = {"rubyw", "rubyw.exe", "ruby", "ruby.exe", "jrubyw", "jrubyw.bat", "jruby", "jruby.bat"}; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$ //$NON-NLS-7$ //$NON-NLS-8$
 	private static final String[] fgCandidateRubyLocations = {"", "bin" + fgSeparator}; //$NON-NLS-1$ //$NON-NLS-2$
 	
 	
@@ -200,12 +200,27 @@ public class StandardVMType extends AbstractVMInstallType {
 		}
 		if (lines.size() > 0) {
 			String version = lines.remove(0);
+	    	removeNotExistingLibs(lines);
 		    if (lines.size() > 0) {
 		    	String[] loadpath = lines.toArray(new String[lines.size()]);
 		    	return new LibraryInfo(version, loadpath);		
 		    }
 		}
 		return null;
+	}
+
+	/**
+	 * Do not consider libraries which does not exist.
+	 * @param libraries
+	 */
+	private void removeNotExistingLibs(List<String> libraries) {
+		List<String> toRemove = new ArrayList<String>();
+		for (String path : libraries) {
+			File file = new File(path);
+			if (!file.exists())
+				toRemove.add(path);
+		}
+		libraries.removeAll(toRemove);
 	}
 
 	/**
