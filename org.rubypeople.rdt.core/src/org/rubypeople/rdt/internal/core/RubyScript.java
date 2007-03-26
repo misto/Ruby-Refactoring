@@ -154,8 +154,6 @@ public class RubyScript extends Openable implements IRubyScript {
 
 		// compute other problems if needed
 		if (computeProblems) {
-			perWorkingCopyInfo.beginReporting();
-			RubyScriptProblemFinder.process(this, contents, problems, pm);
 			if (problems == null) {
 				// report problems to the problem requestor
 				problems = new HashMap();
