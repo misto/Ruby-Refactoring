@@ -4,6 +4,7 @@
    <extension-point id="loadpathVariableInitializer" name="%loadpathVariableInitializersName" schema="schema/loadpathVariableInitializer.exsd"/>
    <extension-point id="loadpathContainerInitializer" name="%loadpathContainerInitializersName" schema="schema/loadpathContainerInitializer.exsd"/>
    <extension-point id="compilationParticipant" name="%compilationParticipantsName" schema="schema/compilationParticipant.exsd"/>
+   <extension-point id="errorProvider" name="%errorProvidersName" schema="schema/errorProvider.exsd"/>
 
      <extension
          id="rubynature"
@@ -110,5 +111,13 @@
       point="org.eclipse.core.runtime.preferences">
    <initializer class="org.rubypeople.rdt.internal.core.RubyCorePreferenceInitializer"/>
 </extension>
+
+   
+   <extension
+       point="org.rubypeople.rdt.core.errorProvider">       
+       <category id="org.rubypeople.rdt.errors.codeComplexity" name="Code Complexity" />
+       <category id="org.rubypeople.rdt.errors.potentialProblems" name="Potential programming problems" />
+       <category id="org.rubypeople.rdt.errors.unneccesaryCode" name="Unnecessary code" />
+ 	</extension>
 
 </plugin>

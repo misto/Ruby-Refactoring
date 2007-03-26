@@ -165,6 +165,9 @@ public final class PreferencesMessages extends NLS {
 	public static String NewJavaProjectPreferencePage_error_decode;
 	public static String NewJavaProjectPreferencePage_jre_variable_description;
 	public static String NewJavaProjectPreferencePage_jre_container_description;
+	
+	public static String RubyBuildConfigurationBlock_empty_input;
+	public static String RubyBuildConfigurationBlock_invalid_input;
 
     static {
         NLS.initializeMessages(BUNDLE_NAME, PreferencesMessages.class);

@@ -10,7 +10,17 @@
  *******************************************************************************/
 package org.rubypeople.rdt.internal.ui.preferences;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import org.eclipse.core.resources.IProject;
+import org.eclipse.core.runtime.IConfigurationElement;
+import org.eclipse.core.runtime.IExtension;
+import org.eclipse.core.runtime.IExtensionPoint;
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Platform;
 import org.eclipse.jface.dialogs.IDialogSettings;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
@@ -18,11 +28,14 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.forms.widgets.ExpandableComposite;
 import org.eclipse.ui.preferences.IWorkbenchPreferenceContainer;
 import org.rubypeople.rdt.core.RubyCore;
+import org.rubypeople.rdt.internal.corext.util.Messages;
 import org.rubypeople.rdt.internal.ui.RubyPlugin;
 import org.rubypeople.rdt.internal.ui.dialogs.StatusInfo;
+import org.rubypeople.rdt.internal.ui.dialogs.StatusUtil;
 import org.rubypeople.rdt.internal.ui.util.PixelConverter;
 import org.rubypeople.rdt.internal.ui.wizards.IStatusChangeListener;
 
@@ -30,19 +43,8 @@ import org.rubypeople.rdt.internal.ui.wizards.IStatusChangeListener;
   */
 public class ProblemSeveritiesConfigurationBlock extends OptionsConfigurationBlock {
 
-	private static final String SETTINGS_SECTION_NAME= null; //"ProblemSeveritiesConfigurationBlock"; 
+	private static final String SETTINGS_SECTION_NAME= null; //"ProblemSeveritiesConfigurationBlock"; 	
 	
-	// Preference store keys, see RubyCore.getOptions
-	// TODO Actually implement checking for these things in the builders!
-	private static final Key PREF_PB_ENSURE_BLOCK_NOT_COMPLETING = getRDTCoreKey(RubyCore.COMPILER_PB_ENSURE_BLOCK_NOT_COMPLETING);
-	private static final Key PREF_PB_EMPTY_STATEMENT = getRDTCoreKey(RubyCore.COMPILER_PB_EMPTY_STATEMENT);
-	private static final Key PREF_PB_HIDDEN_RESCUE_BLOCK = getRDTCoreKey(RubyCore.COMPILER_PB_HIDDEN_RESCUE_BLOCK);
-	private static final Key PREF_PB_FALLTHROUGH_CASE = getRDTCoreKey(RubyCore.COMPILER_PB_FALLTHROUGH_CASE);
-	private static final Key PREF_PB_NULL_REFERENCE = getRDTCoreKey(RubyCore.COMPILER_PB_NULL_REFERENCE);
-	private static final Key PREF_PB_UNUSED_LOCAL = getRDTCoreKey(RubyCore.COMPILER_PB_UNUSED_LOCAL);
-	private static final Key PREF_PB_UNUSED_PARAMETER = getRDTCoreKey(RubyCore.COMPILER_PB_UNUSED_PARAMETER);
-	private static final Key PREF_PB_UNUSED_PRIVATE = getRDTCoreKey(RubyCore.COMPILER_PB_UNUSED_PRIVATE_MEMBER);
-	private static final Key PREF_PB_UNNECESSARY_ELSE = getRDTCoreKey(RubyCore.COMPILER_PB_UNNECESSARY_ELSE);	
 	// values
 	private static final String ERROR= RubyCore.ERROR;
 	private static final String WARNING= RubyCore.WARNING;
@@ -51,22 +53,98 @@ public class ProblemSeveritiesConfigurationBlock extends OptionsConfigurationBlo
 	private static final String ENABLED= RubyCore.ENABLED;
 	private static final String DISABLED= RubyCore.DISABLED;
 
-
+	private static Key[] fgKeys;
+	private static Map<String, String> fgCategories;
+	private static HashMap<String, List<Error>> fgErrors;
 
 	private PixelConverter fPixelConverter;
+	private IStatus fStatus;
 	
 	public ProblemSeveritiesConfigurationBlock(IStatusChangeListener context, IProject project, IWorkbenchPreferenceContainer container) {
 		super(context, project, getKeys(), container);
+		fStatus= new StatusInfo();
+	}
+	
+	private static List<IConfigurationElement> getErrorProviderElements() {
+		List<IConfigurationElement> elements = new ArrayList<IConfigurationElement>();
+		IExtensionPoint extension = Platform.getExtensionRegistry().getExtensionPoint(RubyCore.PLUGIN_ID, "errorProvider");
+		if (extension == null)
+			return elements;		
+		IExtension[] extensions = extension.getExtensions();
+		for(int i = 0; i < extensions.length; i++) {
+			IConfigurationElement[] configElements = extensions[i].getConfigurationElements();
+			for (int j = 0; j < configElements.length; j++) elements.add(configElements[j]);
+		}
+		return elements;
+	}
+	
+	private static Map<String, String> getErrorCategories() {
+		if (fgCategories != null) return fgCategories;
+		Map<String, String> categories = new HashMap<String, String>();
+		List<IConfigurationElement> configElements = getErrorProviderElements();
+		for (IConfigurationElement configElement : configElements) {
+			String name = configElement.getName();
+			String contributorName = configElement.getContributor().getName();
+			if (name.equals("category")) { // Grab the categories
+				categories.put(configElement.getAttribute("id"), configElement.getAttribute("name"));
+			}
+		}
+		fgCategories = categories;
+		return fgCategories;
+	}
+	
+	private static class Error {
+		private String id;
+		private String label;
+		private String contributor;
+		private String argument;
+		private String type;
+		
+		Error(IConfigurationElement element) {
+			this.id = element.getAttribute("prefKey");
+			this.label = element.getAttribute("label");
+			this.contributor = element.getContributor().getName();
+			IConfigurationElement[] elements = element.getChildren("argument");
+			if (elements != null && elements.length > 0) {
+				this.argument = elements[0].getAttribute("prefKey");
+				this.type = elements[0].getAttribute("type");
+				if (type == null) {
+					type = "int";
+				}
+			}
+		}
+		public boolean hasArgument() {
+			return argument != null;
+		}
+		public String getContributor() {
+			return contributor;
+		}
+		public String getId() {
+			return id;
+		}
+		public String getLabel() {
+			return label;
+		}
+		public String getArgument() {
+			return argument;
+		}
+		public boolean argumentIsInt() {
+			return hasArgument() && type.equals("int");
+		}
 	}
 	
 	private static Key[] getKeys() {
-		return new Key[] {
-//				PREF_PB_ENSURE_BLOCK_NOT_COMPLETING, 
-				PREF_PB_EMPTY_STATEMENT, 
-//				PREF_PB_HIDDEN_RESCUE_BLOCK,
-//				PREF_PB_FALLTHROUGH_CASE, PREF_PB_NULL_REFERENCE, PREF_PB_UNUSED_LOCAL,
-//				PREF_PB_UNUSED_PARAMETER, PREF_PB_UNUSED_PRIVATE, PREF_PB_UNNECESSARY_ELSE
-			};
+		if (fgKeys != null) return fgKeys;
+		List<Key> keys = new ArrayList<Key>();
+		Map<String, String> categories = getErrorCategories();
+		for (String categoryId : categories.keySet()) {
+			List<Error> errors = getErrors(categoryId);
+			for (Error error : errors) {
+				keys.add(getKey(error.getContributor(), error.getId()));
+			}
+		}
+		fgKeys = keys.toArray(new Key[keys.size()]);
+		return fgKeys;
 	}
 	
 	/*
@@ -127,59 +205,50 @@ public class ProblemSeveritiesConfigurationBlock extends OptionsConfigurationBlo
 		ExpandableComposite excomposite;
 		Composite inner;
 		
-		// --- potential_programming_problems
-		
-		label= PreferencesMessages.ProblemSeveritiesConfigurationBlock_section_potential_programming_problems; 
-		excomposite= createStyleSection(composite, label, nColumns);
-		
-		inner= new Composite(excomposite, SWT.NONE);
-		inner.setFont(composite.getFont());
-		inner.setLayout(new GridLayout(nColumns, false));
-		excomposite.setClient(inner);
-
-//		label= PreferencesMessages.ProblemSeveritiesConfigurationBlock_pb_ensure_block_not_completing_label; 
-//		addComboBox(inner, label, PREF_PB_ENSURE_BLOCK_NOT_COMPLETING, errorWarningIgnore, errorWarningIgnoreLabels, defaultIndent);
-
-		label= PreferencesMessages.ProblemSeveritiesConfigurationBlock_pb_empty_statement_label; 
-		addComboBox(inner, label, PREF_PB_EMPTY_STATEMENT, errorWarningIgnore, errorWarningIgnoreLabels, defaultIndent);
-
-//		label= PreferencesMessages.ProblemSeveritiesConfigurationBlock_pb_hidden_rescueblock_label; 
-//		addComboBox(inner, label, PREF_PB_HIDDEN_RESCUE_BLOCK, errorWarningIgnore, errorWarningIgnoreLabels, defaultIndent);
-//
-//		label= PreferencesMessages.ProblemSeveritiesConfigurationBlock_pb_fall_through_case;
-//		addComboBox(inner, label, PREF_PB_FALLTHROUGH_CASE, errorWarningIgnore, errorWarningIgnoreLabels, defaultIndent);
-//		
-//		label= PreferencesMessages.ProblemSeveritiesConfigurationBlock_pb_null_reference;
-//		addComboBox(inner, label, PREF_PB_NULL_REFERENCE, errorWarningIgnore, errorWarningIgnoreLabels, defaultIndent);
-
-		// --- unnecessary_code
-		
-//		label= PreferencesMessages.ProblemSeveritiesConfigurationBlock_section_unnecessary_code; 
-//		excomposite= createStyleSection(composite, label, nColumns);
-//	
-//		inner= new Composite(excomposite, SWT.NONE);
-//		inner.setFont(composite.getFont());
-//		inner.setLayout(new GridLayout(nColumns, false));
-//		excomposite.setClient(inner);
-		
-//		label= PreferencesMessages.ProblemSeveritiesConfigurationBlock_pb_unused_local_label; 
-//		addComboBox(inner, label, PREF_PB_UNUSED_LOCAL, errorWarningIgnore, errorWarningIgnoreLabels, defaultIndent);
-//
-//		label= PreferencesMessages.ProblemSeveritiesConfigurationBlock_pb_unused_parameter_label; 
-//		addComboBox(inner, label, PREF_PB_UNUSED_PARAMETER, errorWarningIgnore, errorWarningIgnoreLabels, defaultIndent);
-//		
-//		label= PreferencesMessages.ProblemSeveritiesConfigurationBlock_pb_unused_private_label; 
-//		addComboBox(inner, label, PREF_PB_UNUSED_PRIVATE, errorWarningIgnore, errorWarningIgnoreLabels, defaultIndent);
-//		
-//		label= PreferencesMessages.ProblemSeveritiesConfigurationBlock_pb_unnecessary_else_label; 
-//		addComboBox(inner, label, PREF_PB_UNNECESSARY_ELSE, errorWarningIgnore, errorWarningIgnoreLabels, defaultIndent);
+		Map<String, String> categories = getErrorCategories();
+		for (String categoryId : categories.keySet()) {
+			excomposite= createStyleSection(composite, categories.get(categoryId), nColumns);
+			inner= new Composite(excomposite, SWT.NONE);
+			inner.setFont(composite.getFont());
+			inner.setLayout(new GridLayout(nColumns, false));
+			excomposite.setClient(inner);
 			
+			List<Error> errors = getErrors(categoryId);
+			for (Error error : errors) {
+				addComboBox(inner, error.label + ':', getKey(error.getContributor(), error.getId()), errorWarningIgnore, errorWarningIgnoreLabels, defaultIndent);
+				if (error.hasArgument()) {
+					Text text= addTextField(inner, "", getKey(error.getContributor(), error.getArgument()), 0, 0);
+					GridData gd= (GridData) text.getLayoutData();
+					gd.widthHint= fPixelConverter.convertWidthInCharsToPixels(8);
+					gd.horizontalAlignment= GridData.END;
+					text.setTextLimit(6);
+				}
+			}	
+		}		
+
 		IDialogSettings section= RubyPlugin.getDefault().getDialogSettings().getSection(SETTINGS_SECTION_NAME);
 		restoreSectionExpansionStates(section);
 		
 		return sc1;
 	}
 	
+	private static List<Error> getErrors(String categoryId) {
+		if (fgErrors == null) {
+			fgErrors = new HashMap<String, List<Error>>();
+		}
+		if (fgErrors.get(categoryId) != null) return fgErrors.get(categoryId);
+		List<Error> categories = new ArrayList<Error>();
+		List<IConfigurationElement> configElements = getErrorProviderElements();
+		for (IConfigurationElement configElement : configElements) {
+			String name = configElement.getName();
+			if (name.equals("error") && configElement.getAttribute("categoryId").equals(categoryId)) { // Grab the errors for this category
+				categories.add(new Error(configElement));
+			}
+		}
+		fgErrors.put(categoryId, categories);
+		return categories;
+	}
+
 	/* (non-javadoc)
 	 * Update fields and validate.
 	 * @param changedKey Key that changed, or null, if all changed.
@@ -187,18 +256,53 @@ public class ProblemSeveritiesConfigurationBlock extends OptionsConfigurationBlo
 	protected void validateSettings(Key changedKey, String oldValue, String newValue) {
 		if (!areSettingsEnabled()) {
 			return;
-		}
-		
+		}		
 		if (changedKey != null) {
-				return;
+			List<Error> errors = getErrors();
+			for (Error error : errors) {
+				if (error.hasArgument() && error.argumentIsInt() && changedKey.getName().equals(error.getArgument())) {
+					fStatus = validateMaxNumber(changedKey, error.getLabel());
+					fContext.statusChanged(fStatus);
+					return;
+				}
+			}
 		} else {
 			updateEnableStates();
 		}		
-		fContext.statusChanged(new StatusInfo());
+		IStatus status= StatusUtil.getMostSevere(new IStatus[] { fStatus });
+		fContext.statusChanged(status);
+	}
+	
+	private static List<Error> getErrors() {
+		List<Error> errors = new ArrayList<Error>();
+		Map<String, String> categories = getErrorCategories();
+		for (String categoryId : categories.keySet()) {
+			errors.addAll(getErrors(categoryId));
+		}
+		return errors;
+	}
+
+	private IStatus validateMaxNumber(Key key, String label) {
+		String number= getValue(key);
+		StatusInfo status= new StatusInfo();
+		if (number.length() == 0) {
+			status.setError(PreferencesMessages.RubyBuildConfigurationBlock_empty_input); 
+		} else {
+			try {
+				int value= Integer.parseInt(number);
+				if (value <= 0) {
+					status.setError(Messages.format(PreferencesMessages.RubyBuildConfigurationBlock_invalid_input, new Object[] {number, label})); 
+				}
+			} catch (NumberFormatException e) {
+				status.setError(Messages.format(PreferencesMessages.RubyBuildConfigurationBlock_invalid_input, new Object[] {number, label})); 
+			}
+		}
+		return status;
 	}
 	
 	private void updateEnableStates() {
 		// TODO Handle enabling/disabling checkboxes as prefs change
+		// FIXME Iterate through errors which have "arguments", if error is set to ignore, disable value textbox!
 	}
 
 	protected String[] getFullBuildDialogStrings(boolean workspaceSettings) {
