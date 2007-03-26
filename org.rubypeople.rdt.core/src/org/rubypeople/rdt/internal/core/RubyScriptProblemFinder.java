@@ -16,11 +16,11 @@ import org.rubypeople.rdt.core.IRubyModelMarker;
 import org.rubypeople.rdt.core.RubyCore;
 import org.rubypeople.rdt.core.RubyModelException;
 import org.rubypeople.rdt.core.compiler.CategorizedProblem;
+import org.rubypeople.rdt.internal.core.parser.Error;
 import org.rubypeople.rdt.internal.core.parser.RdtWarnings;
 import org.rubypeople.rdt.internal.core.parser.RubyParser;
 import org.rubypeople.rdt.internal.core.parser.TaskParser;
 import org.rubypeople.rdt.internal.core.parser.TaskTag;
-import org.rubypeople.rdt.internal.core.parser.Warning;
 import org.rubypeople.rdt.internal.core.parser.warnings.DelegatingVisitor;
 import org.rubypeople.rdt.internal.core.parser.warnings.RubyLintVisitor;
 
@@ -55,8 +55,9 @@ public class RubyScriptProblemFinder {
             node.accept(visitor);
             return visitor.getProblems();
         } catch (SyntaxException e) {
-        	// Eat the exception
-//            problemRequestor.acceptProblem(new Error(e.getPosition(), e.getMessage()));
+        	List<CategorizedProblem> list = new ArrayList<CategorizedProblem>();
+        	list.add(new Error(e.getPosition(), e.getMessage()));
+        	return list;
         } catch (RubyModelException e) {
 			RubyCore.log(e);
 		}

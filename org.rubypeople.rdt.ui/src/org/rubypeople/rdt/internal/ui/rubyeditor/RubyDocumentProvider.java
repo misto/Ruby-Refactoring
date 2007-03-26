@@ -870,6 +870,7 @@ public class RubyDocumentProvider extends TextFileDocumentProvider implements IR
 		 * Signals the end of problem reporting.
 		 */
 		private void reportProblems(List reportedProblems) {
+			// FIXME Find a way to not add annotations for problems which are duplicates of markers on the underlying file!
 			if (fProgressMonitor != null && fProgressMonitor.isCanceled())
 				return;
 				

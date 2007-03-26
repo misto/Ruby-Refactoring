@@ -25,6 +25,7 @@ import org.jruby.ast.Node;
 import org.jruby.ast.visitor.NodeVisitor;
 import org.jruby.lexer.yacc.SyntaxException;
 import org.rubypeople.rdt.core.RubyCore;
+import org.rubypeople.rdt.internal.core.parser.Error;
 import org.rubypeople.rdt.internal.core.parser.ImmediateWarnings;
 import org.rubypeople.rdt.internal.core.parser.RubyParser;
 import org.rubypeople.rdt.internal.core.parser.warnings.DelegatingVisitor;
@@ -63,8 +64,7 @@ public final class RubyCodeAnalyzer implements SingleFileCompiler {
             rootNode.accept(visitor);
             indexUpdater.update(file, rootNode, true);
         } catch (SyntaxException e) {
-            // Should we really put a marker here? I think the normal parsing process will create syntax markers just fine
-            markerManager.createSyntaxError(file, e);
+        	markerManager.addProblem(file, new Error(e.getPosition(), e.getMessage()));
         } finally {
             IoUtils.closeQuietly(reader);
         }
