@@ -25,6 +25,7 @@ import org.jruby.ast.LocalAsgnNode;
 import org.jruby.ast.LocalVarNode;
 import org.jruby.ast.ModuleNode;
 import org.jruby.ast.Node;
+import org.jruby.ast.ReturnNode;
 import org.jruby.ast.SymbolNode;
 import org.jruby.lexer.yacc.ISourcePosition;
 import org.jruby.lexer.yacc.SourcePosition;
@@ -137,6 +138,10 @@ public class DefaultOccurrencesFinder extends AbstractOccurencesFinder {
 
 		if (fMarkTypeOccurrences && isTypeRef(orig)) {
 			pushTypeRefs(root, orig, occurrences);
+		}
+		
+		if (fMarkMethodExitPoints) {
+			pushReturns(root, orig, occurrences);
 		}
 
 		// Convert ISourcePosition to IPosition
@@ -549,6 +554,32 @@ public class DefaultOccurrencesFinder extends AbstractOccurencesFinder {
 
 		for (Node searchResult : searchResults) {
 			occurrences.add(getPositionOfName(searchResult, root));
+		}
+	}
+	
+	private void pushReturns(Node root, Node orig, List<ISourcePosition> occurrences) {
+		// TODO Combine most of this stuff with the stuff in pushLocalVareRefs
+		// Find the search space
+		Node searchSpace = FirstPrecursorNodeLocator.Instance().findFirstPrecursor(root, orig.getPosition().getStartOffset(), new INodeAcceptor() {
+			public boolean doesAccept(Node node) {
+				return ((node instanceof DefnNode) || (node instanceof DefsNode) ); // TODO: Block Body?
+			}
+		});
+
+		// If no enclosing node found, search the entire space
+		if (searchSpace == null) {
+			searchSpace = root;
+		}
+//		 Find all return nodes
+		List<Node> searchResults = ScopedNodeLocator.Instance().findNodesInScope(searchSpace, new INodeAcceptor() {
+			public boolean doesAccept(Node node) {
+				return (node instanceof ReturnNode);
+			}
+		});
+
+		// Scrape position from pertinent nodes
+		for (Node searchResult : searchResults) {
+			occurrences.add(searchResult.getPosition());
 		}
 	}
 

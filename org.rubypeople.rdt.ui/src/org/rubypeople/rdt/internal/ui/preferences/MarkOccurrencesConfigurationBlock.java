@@ -124,9 +124,9 @@ class MarkOccurrencesConfigurationBlock implements IPreferenceConfigurationBlock
 		slave= addCheckBox(composite, label, PreferenceConstants.EDITOR_MARK_LOCAL_VARIABLE_OCCURRENCES, 0); 
 		createDependency(master, PreferenceConstants.EDITOR_MARK_LOCAL_VARIABLE_OCCURRENCES, slave);
 
-//		label= PreferencesMessages.MarkOccurrencesConfigurationBlock_markMethodExitPoints; 
-//		slave= addCheckBox(composite, label, PreferenceConstants.EDITOR_MARK_METHOD_EXIT_POINTS, 0); 
-//		createDependency(master, PreferenceConstants.EDITOR_MARK_METHOD_EXIT_POINTS, slave);
+		label= PreferencesMessages.MarkOccurrencesConfigurationBlock_markMethodExitPoints; 
+		slave= addCheckBox(composite, label, PreferenceConstants.EDITOR_MARK_METHOD_EXIT_POINTS, 0); 
+		createDependency(master, PreferenceConstants.EDITOR_MARK_METHOD_EXIT_POINTS, slave);
 
 		addFiller(composite);
 		
