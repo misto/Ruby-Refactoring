@@ -170,8 +170,10 @@ public class RubyTokenScanner extends AbstractRubyTokenScanner {
 					|| (i == Tokens.tPLUS) || (i == Tokens.tPIPE) || (i == Tokens.tCARET)
 					|| (i == Tokens.tLT) || (i == Tokens.tGT) || (i == Tokens.tAMPER)
 					|| (i == Tokens.tSTAR2) || (i == Tokens.tDIVIDE) || (i == Tokens.tPERCENT)
-					|| (i == Tokens.tBACK_REF2) || (i == Tokens.tTILDE)) {
+					|| (i == Tokens.tBACK_REF2) || (i == Tokens.tTILDE) || (i == 10) /* Newline? */) {
 				isInSymbol = false;
+				if (i == 10)
+					return getToken(IRubyColorConstants.RUBY_DEFAULT);
 				return getToken(IRubyColorConstants.RUBY_SYMBOL);
 			}
 			if (i == Tokens.tASSOC || i == 44 /* ',' */) {
@@ -223,10 +225,10 @@ public class RubyTokenScanner extends AbstractRubyTokenScanner {
 		fSavedLength = -1;
 		fSavedToken = null;
 		fSavedOffset = -1;
+		isInSymbol = false;
 		if (offset == 0) {
 			isInRegexp = false;
 			isInString = false;
-			isInSymbol = false;
 		}
 		try {
 			contents = document.get(offset, length);

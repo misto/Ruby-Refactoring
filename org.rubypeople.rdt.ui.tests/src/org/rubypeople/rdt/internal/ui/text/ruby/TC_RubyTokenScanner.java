@@ -112,4 +112,17 @@ public class TC_RubyTokenScanner extends TestCase {
 		assertToken(IRubyColorConstants.RUBY_DEFAULT, 20, 7);  // ' method'	
 	}
 	
+	public void testSymbolAtEndOfLine() {
+		String code = "  helper_method :logged_in?\n" +
+				"  def method\n" +
+				"    \n" +
+				"  end";
+		setUpScanner(code);
+		assertToken(IRubyColorConstants.RUBY_DEFAULT, 0, 15);  // '  helper_method'
+		assertToken(IRubyColorConstants.RUBY_SYMBOL, 15, 2);  // ' :'
+		assertToken(IRubyColorConstants.RUBY_SYMBOL, 17, 10);  // 'logged_in?'
+		assertToken(IRubyColorConstants.RUBY_SYMBOL, 27, 1);  // '\n'
+		assertToken(IRubyColorConstants.RUBY_KEYWORD, 28, 5);  // '  def'
+		assertToken(IRubyColorConstants.RUBY_DEFAULT, 33, 7);  // ' method'	
+	}
 }
