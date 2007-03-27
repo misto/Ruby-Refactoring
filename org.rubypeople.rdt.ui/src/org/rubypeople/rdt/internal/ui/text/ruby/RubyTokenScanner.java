@@ -170,9 +170,10 @@ public class RubyTokenScanner extends AbstractRubyTokenScanner {
 					|| (i == Tokens.tPLUS) || (i == Tokens.tPIPE) || (i == Tokens.tCARET)
 					|| (i == Tokens.tLT) || (i == Tokens.tGT) || (i == Tokens.tAMPER)
 					|| (i == Tokens.tSTAR2) || (i == Tokens.tDIVIDE) || (i == Tokens.tPERCENT)
-					|| (i == Tokens.tBACK_REF2) || (i == Tokens.tTILDE) || (i == 10) /* Newline? */) {
-				isInSymbol = false;
-				if (i == 10)
+					|| (i == Tokens.tBACK_REF2) || (i == Tokens.tTILDE) || (i == 10) /* Newline */
+					|| ( i >= 257 && i <= 303) /* keywords */) {
+				isInSymbol = false; // we're at the end of the symbol
+				if (i == 10) // newline ends it and is actually default, not symbol
 					return getToken(IRubyColorConstants.RUBY_DEFAULT);
 				return getToken(IRubyColorConstants.RUBY_SYMBOL);
 			}
