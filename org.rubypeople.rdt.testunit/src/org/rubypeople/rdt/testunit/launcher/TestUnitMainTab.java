@@ -214,6 +214,7 @@ public class TestUnitMainTab extends AbstractLaunchConfigurationTab implements I
 		configuration.setAttribute(TestUnitLaunchConfigurationDelegate.LAUNCH_CONTAINER_ATTR, fileName);
 		configuration.setAttribute(TestUnitLaunchConfigurationDelegate.TESTTYPE_ATTR, type);
 		configuration.setAttribute(TestUnitLaunchConfigurationDelegate.TESTNAME_ATTR, "");
+		configuration.setAttribute(IRubyLaunchConfigurationConstants.ATTR_FILE_NAME, TestUnitLaunchConfigurationDelegate.getTestRunnerPath());
 
 		// set hidden attribute
 		configuration.setAttribute(ILaunchConfiguration.ATTR_SOURCE_LOCATOR_ID, "org.rubypeople.rdt.debug.ui.rubySourceLocator");
