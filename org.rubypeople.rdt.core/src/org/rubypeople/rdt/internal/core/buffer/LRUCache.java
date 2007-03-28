@@ -10,6 +10,7 @@
  *******************************************************************************/
 package org.rubypeople.rdt.internal.core.buffer;
 
+import java.text.NumberFormat;
 import java.util.Enumeration;
 import java.util.Hashtable;
 
@@ -481,6 +482,21 @@ protected String toStringContents() {
 	}
 	return result.toString();
 }
+
+public String toStringFillingRation(String cacheName) {
+	StringBuffer buffer = new StringBuffer(cacheName);
+	buffer.append('[');
+	buffer.append(getSpaceLimit());
+	buffer.append("]: "); //$NON-NLS-1$
+	buffer.append(NumberFormat.getInstance().format(fillingRatio()));
+	buffer.append("% full"); //$NON-NLS-1$
+	return buffer.toString();
+}
+
+public double fillingRatio() {
+	return (fCurrentSpace) * 100.0 / fSpaceLimit;
+}
+
 	/**
 	 * Updates the timestamp for the given entry, ensuring that the queue is 
 	 * kept in correct order.  The entry must exist

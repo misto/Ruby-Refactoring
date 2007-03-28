@@ -37,6 +37,11 @@ public class RubyModelCache {
 	 * Cache of open source folders
 	 */
 	protected ElementCache folderCache;
+	
+	/**
+	 * Cache of open source folder roots.
+	 */
+	protected ElementCache rootCache;
 
 	/**
 	 * Cache of open ruby script files
@@ -49,6 +54,7 @@ public class RubyModelCache {
     protected Map childrenCache;
     
 	public static final int DEFAULT_PROJECT_SIZE = 5;  // average 25552 bytes per project.
+	public static final int DEFAULT_ROOT_SIZE = 50; // average 2590 bytes per root -> maximum size : 25900*BASE_VALUE bytes
 	public static final int DEFAULT_FOLDER_SIZE = 500; // average 1782 bytes per pkg -> maximum size : 178200*BASE_VALUE bytes
 	public static final int DEFAULT_OPENABLE_SIZE = 500; // average 6629 bytes per openable (includes children) -> maximum size : 662900*BASE_VALUE bytes
 	public static final int DEFAULT_CHILDREN_SIZE = 500*20; // average 20 children per openable
@@ -61,6 +67,7 @@ public class RubyModelCache {
     public RubyModelCache() {
 //    	 set the size of the caches in function of the maximum amount of memory available
     	double ratio = getMemoryRatio();
+    	this.rootCache = new ElementCache((int) (DEFAULT_ROOT_SIZE * ratio));
     	this.projectCache = new HashMap(DEFAULT_PROJECT_SIZE); // NB: Don't use a LRUCache for projects as they are constantly reopened (e.g. during delta processing)
         this.openableCache = new ElementCache((int) (DEFAULT_OPENABLE_SIZE * ratio));
         this.folderCache = new ElementCache((int) (DEFAULT_FOLDER_SIZE * ratio));
@@ -86,6 +93,8 @@ public class RubyModelCache {
             return this.modelInfo;
         case IRubyElement.RUBY_PROJECT:
             return this.projectCache.get(element);
+        case IRubyElement.SOURCE_FOLDER_ROOT:
+			return this.rootCache.get(element);
 		case IRubyElement.SOURCE_FOLDER:
 			return this.folderCache.get(element);
         case IRubyElement.SCRIPT:
@@ -104,6 +113,8 @@ public class RubyModelCache {
             return this.modelInfo;
         case IRubyElement.RUBY_PROJECT:
             return this.projectCache.get(element);
+        case IRubyElement.SOURCE_FOLDER_ROOT:
+			return this.rootCache.peek(element);
         case IRubyElement.SOURCE_FOLDER:
 			return this.folderCache.peek(element);
         case IRubyElement.SCRIPT:
@@ -123,6 +134,10 @@ public class RubyModelCache {
 			break;
 		case IRubyElement.RUBY_PROJECT:
 			this.projectCache.put(element, info);
+			this.rootCache.ensureSpaceLimit(((RubyElementInfo) info).children.length, element);
+			break;
+		case IRubyElement.SOURCE_FOLDER_ROOT:
+			this.rootCache.put(element, info);
 			this.folderCache.ensureSpaceLimit(((RubyElementInfo) info).children.length, element);
 			break;
 		case IRubyElement.SOURCE_FOLDER:
@@ -147,6 +162,10 @@ public class RubyModelCache {
 			break;
 		case IRubyElement.RUBY_PROJECT:
 			this.projectCache.remove(element);
+			this.rootCache.resetSpaceLimit((int) (DEFAULT_ROOT_SIZE * getMemoryRatio()), element);
+			break;
+		case IRubyElement.SOURCE_FOLDER_ROOT:
+			this.rootCache.remove(element);
 			this.folderCache.resetSpaceLimit((int) (DEFAULT_FOLDER_SIZE * getMemoryRatio()), element);
 			break;
 		case IRubyElement.SOURCE_FOLDER:
@@ -168,6 +187,12 @@ public class RubyModelCache {
         buffer.append(this.projectCache.size());
         buffer.append(" projects\n"); //$NON-NLS-1$
         buffer.append(prefix);
+    	buffer.append(this.rootCache.toStringFillingRation("Root cache")); //$NON-NLS-1$
+    	buffer.append('\n');
+    	buffer.append(prefix);
+    	buffer.append(this.folderCache.toStringFillingRation("Folder cache")); //$NON-NLS-1$
+    	buffer.append('\n');
+    	buffer.append(prefix);
         buffer.append("Openable cache: "); //$NON-NLS-1$
         buffer.append(NumberFormat.getInstance().format(this.openableCache.fillingRatio()));
         buffer.append("%\n"); //$NON-NLS-1$
