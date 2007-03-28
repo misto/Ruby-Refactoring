@@ -133,7 +133,7 @@ public class CompletionEngine {
 	}
 	
 	private void suggestGlobals() {
-		Set<String> globals = ExperimentalIndex.getGlobalNames();
+		Set<String> globals = ExperimentalIndex.getGlobalNames(fContext.getScript());
 		for (String name : globals) {
 			if (!fContext.prefixStartsWith(name))
 				continue;
@@ -143,7 +143,7 @@ public class CompletionEngine {
 	}
 
 	private void suggestTypeNames() {
-		Set<String> types = ExperimentalIndex.getTypeNames();
+		Set<String> types = ExperimentalIndex.getTypeNames(fContext.getScript());
 		for (String name : types) {
 			if (!fContext.prefixStartsWith(name))
 				continue;
@@ -160,7 +160,7 @@ public class CompletionEngine {
 	}
 
 	private void suggestConstantNames() {
-		Set<String> types = ExperimentalIndex.getConstantNames();
+		Set<String> types = ExperimentalIndex.getConstantNames(fContext.getScript());
 		for (String name : types) {
 			if (!fContext.prefixStartsWith(name))
 				continue;
