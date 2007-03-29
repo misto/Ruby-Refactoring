@@ -10,6 +10,7 @@ import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.rules.IToken;
 import org.eclipse.jface.text.rules.Token;
 import org.jruby.ast.CommentNode;
+import org.jruby.common.NullWarnings;
 import org.jruby.lexer.yacc.LexState;
 import org.jruby.lexer.yacc.LexerSource;
 import org.jruby.lexer.yacc.RubyYaccLexer;
@@ -62,6 +63,7 @@ public class RubyTokenScanner extends AbstractRubyTokenScanner {
 		result = new RubyParserResult();
 		parserSupport.setResult(result);
 		lexer.setParserSupport(parserSupport);
+		lexer.setWarnings(new NullWarnings());
 		initialize();
 	}
 
