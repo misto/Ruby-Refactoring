@@ -154,8 +154,7 @@ public class RubyTokenScanner extends AbstractRubyTokenScanner {
 		return lexerSource.getOffset() + origOffset;
 	}
 
-	@Override
-	public Token getToken(String key) {
+	private Token doGetToken(String key) {
 		if (key.equals(IRubyColorConstants.RUBY_SINGLE_LINE_COMMENT)) // if we know it's a comment, force it!
 			return super.getToken(key);
 		if (isInSymbol)
@@ -174,51 +173,51 @@ public class RubyTokenScanner extends AbstractRubyTokenScanner {
 					|| (i == Tokens.tPLUS) || (i == Tokens.tPIPE) || (i == Tokens.tCARET)
 					|| (i == Tokens.tLT) || (i == Tokens.tGT) || (i == Tokens.tAMPER)
 					|| (i == Tokens.tSTAR2) || (i == Tokens.tDIVIDE) || (i == Tokens.tPERCENT)
-					|| (i == Tokens.tBACK_REF2) || (i == Tokens.tTILDE) || (i == 10) /* Newline */
-					|| ( i >= 257 && i <= 303) /* keywords */) {
+					|| (i == Tokens.tBACK_REF2) || (i == Tokens.tTILDE) || (i == Tokens.tCONSTANT) 
+					|| (i == 10) /* Newline */	|| ( i >= 257 && i <= 303) /* keywords */) {
 				isInSymbol = false; // we're at the end of the symbol
 				if (i == 10) // newline ends it and is actually default, not symbol
-					return getToken(IRubyColorConstants.RUBY_DEFAULT);
-				return getToken(IRubyColorConstants.RUBY_SYMBOL);
+					return doGetToken(IRubyColorConstants.RUBY_DEFAULT);
+				return doGetToken(IRubyColorConstants.RUBY_SYMBOL);
 			}
 			if (i == Tokens.tASSOC || i == 44 /* ',' */) {
 				isInSymbol = false;
-				return getToken(IRubyColorConstants.RUBY_DEFAULT);
+				return doGetToken(IRubyColorConstants.RUBY_DEFAULT);
 			}
 		}
 		if (i >= 257 && i <= 303)
-			return getToken(IRubyColorConstants.RUBY_KEYWORD);
+			return doGetToken(IRubyColorConstants.RUBY_KEYWORD);
 		switch (i) {
 		case Tokens.tSYMBEG:
 			isInSymbol = true;
-			return getToken(IRubyColorConstants.RUBY_SYMBOL);
+			return doGetToken(IRubyColorConstants.RUBY_SYMBOL);
 		case Tokens.tGVAR:
-			return getToken(IRubyColorConstants.RUBY_GLOBAL);
+			return doGetToken(IRubyColorConstants.RUBY_GLOBAL);
 		case Tokens.tIVAR:
 		case Tokens.tCVAR: // FIXME Allow for unique coloring of class variables...
-			return getToken(IRubyColorConstants.RUBY_INSTANCE_VARIABLE);
+			return doGetToken(IRubyColorConstants.RUBY_INSTANCE_VARIABLE);
 		case Tokens.tFLOAT:
 		case Tokens.tINTEGER:
 			// A character is marked as an integer, lets check for that special case...
 			if ((((oldOffset - origOffset) + 1) < contents.length()) && (contents.charAt((oldOffset - origOffset) + 1) == '?'))
-				return getToken(IRubyColorConstants.RUBY_CHARACTER);
-			return getToken(IRubyColorConstants.RUBY_FIXNUM);
+				return doGetToken(IRubyColorConstants.RUBY_CHARACTER);
+			return doGetToken(IRubyColorConstants.RUBY_FIXNUM);
 		case Tokens.tSTRING_CONTENT:
-			return getToken(IRubyColorConstants.RUBY_STRING);
+			return doGetToken(IRubyColorConstants.RUBY_STRING);
 		case Tokens.tSTRING_BEG:
 			isInString = true;
-			return getToken(IRubyColorConstants.RUBY_STRING);
+			return doGetToken(IRubyColorConstants.RUBY_STRING);
 		case Tokens.tSTRING_END:
 			isInString = false;
-			return getToken(IRubyColorConstants.RUBY_STRING);
+			return doGetToken(IRubyColorConstants.RUBY_STRING);
 		case Tokens.tREGEXP_BEG:
 			isInRegexp = true;
-			return getToken(IRubyColorConstants.RUBY_REGEXP);
+			return doGetToken(IRubyColorConstants.RUBY_REGEXP);
 		case Tokens.tREGEXP_END:
 			isInRegexp = false;
-			return getToken(IRubyColorConstants.RUBY_REGEXP);
+			return doGetToken(IRubyColorConstants.RUBY_REGEXP);
 		default:
-			return getToken(IRubyColorConstants.RUBY_DEFAULT);
+			return doGetToken(IRubyColorConstants.RUBY_DEFAULT);
 		}
 	}
 

@@ -32,7 +32,7 @@ public class TC_RubyTokenScanner extends TestCase {
 		IToken token = fScanner.nextToken();
 		assertEquals("Offsets don't match", offset, fScanner.getTokenOffset());
 		assertEquals("Lengths don't match", length, fScanner.getTokenLength());	
-		assertEquals("Colors don't match", fScanner.getToken(color), token);
+		assertEquals("Colors don't match", fScanner.getToken(color), token); // call getToken so we bypass the scanner's overriding in doGetToken
 	}
 	
 	public void testSimpleClassDefinition() {
@@ -146,6 +146,17 @@ public class TC_RubyTokenScanner extends TestCase {
 		assertToken(IRubyColorConstants.RUBY_KEYWORD, 70, 5);  // ' self'
 	}
 	
+	public void testSymbolInsideParentheses() {
+		String code = "Object.const_defined?(:RedCloth)";
+		setUpScanner(code);
+		assertToken(IRubyColorConstants.RUBY_DEFAULT, 0, 6);  // 'Object'
+		assertToken(IRubyColorConstants.RUBY_DEFAULT, 6, 1);  // '.'
+		assertToken(IRubyColorConstants.RUBY_DEFAULT, 7, 14);  // 'const_define?'
+		assertToken(IRubyColorConstants.RUBY_DEFAULT, 21, 1);  // '('
+		assertToken(IRubyColorConstants.RUBY_SYMBOL, 22, 1);  // ':'
+		assertToken(IRubyColorConstants.RUBY_SYMBOL, 23, 8);  // 'RedCloth'
+		assertToken(IRubyColorConstants.RUBY_DEFAULT, 31, 1);  // ')'
+	}
 
 	
 }
