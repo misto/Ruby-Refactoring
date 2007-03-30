@@ -903,13 +903,13 @@ persons = Hash[ Person.new('Lisa') =&gt; Person.new('Marge'),
 			<listitem> Auto-extend comments under particular conditions (abov method/class/module definitions, above attr_, above alias, above constant assignment, as first lines of file)</listitem>	
 			<listitem> Allow user to customize font used by Ruby Editor</listitem>	
 			<listitem> Allow user to turn on/off smart auto-closing of strings, brackets and braces on new preference page (was always enabled by default before)</listitem>	
-			<listitem> A number of bugfixes (see <ulink url="http://rubyeclipse.mktec.com/cgi-bin/trac.py/query?status=closed&milestone=0.8.0&type=defect&order=priority">http://rubyeclipse.mktec.com/cgi-bin/trac.py/query?status=closed&milestone=0.8.0&type=defect&order=priority</ulink>)</listitem>	
+			<listitem> A number of bugfixes (see <ulink url="http://rubyeclipse.mktec.com/cgi-bin/trac.py/query?status=closed&amp;milestone=0.8.0&amp;type=defect&amp;order=priority">http://rubyeclipse.mktec.com/cgi-bin/trac.py/query?status=closed&amp;milestone=0.8.0&amp;type=defect&amp;order=priority</ulink>)</listitem>	
 		</itemizedlist>	
 		
 		<para>New in RDT 0.7.0:</para>
 		<itemizedlist>		
 			<listitem> Multiple debugger session possible because a free port will be used for the debugger communication. The port is written to a
-    temporary file and conveyed to the ruby process with "-r<tmpFile>". The fixed port used in the past (1098) is still the default 
+    temporary file and conveyed to the ruby process with "-r&lt;tmpFile&gt;". The fixed port used in the past (1098) is still the default 
     port in the case that a temporary file can not be created</listitem>
 			<listitem> Catchpoints:
 			  <itemizedlist>	
