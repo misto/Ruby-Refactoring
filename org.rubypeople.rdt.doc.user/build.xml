@@ -52,6 +52,7 @@
 			be absolute, too -->
 		<java classpath="${basedir}/lib/ant.jar:${basedir}/lib/ant-launcher.jar:${basedir}/lib/ant-trax.jar" classname="org.apache.tools.ant.Main" dir="${basedir}" fork="true" >
 			<arg value="-Dversion=${version}"/>
+			<arg value="-Dversion.full=${version.full}"/>
 			<arg value="-f"/>
 			<arg value="buildDocbook.xml"/>
 			<arg value="html"/>
