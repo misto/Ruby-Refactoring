@@ -17,6 +17,12 @@
 		<mkdir dir="${docbook.dtd.dir}"/>
 		<unzip src="docbook/docbook-xml-4.2.zip" dest="${docbook.dtd.dir}"/>
 		<copy file="docbook/modified_eclipse.xsl" tofile="${docbook.xsl.dir}/eclipse/eclipse.xsl"/>
+		<copy file="modifications/html/param.ent" tofile="${docbook.xsl.dir}/html/param.ent"/>
+		<copy file="modifications/html/param.xml" tofile="${docbook.xsl.dir}/html/param.xml"/>
+		<copy file="modifications/html/param.xsl" tofile="${docbook.xsl.dir}/html/param.xsl"/>
+		<copy file="modifications/html/param.xweb" tofile="${docbook.xsl.dir}/html/param.xweb"/>
+		<copy file="modifications/params/eclipse.plugin.version.xml" tofile="${docbook.xsl.dir}/params/eclipse.plugin.version.xml"/>
+		<copy file="modifications/xhtml/param.xsl" tofile="${docbook.xsl.dir}/xhtml/param.xsl"/>
 	</target>
 	
 	<target name="init" depends="docbook.unpack">
