@@ -16,7 +16,7 @@
 		<move file="docbook/docbook-xsl-${docbook.xsl.version}" tofile="${docbook.xsl.dir}" />
 		<mkdir dir="${docbook.dtd.dir}"/>
 		<unzip src="docbook/docbook-xml-4.2.zip" dest="${docbook.dtd.dir}"/>
-		<copy file="modifications/eclipse/modified_eclipse.xsl" tofile="${docbook.xsl.dir}/eclipse/eclipse.xsl"/>
+		<copy file="modifications/eclipse/eclipse.xsl" tofile="${docbook.xsl.dir}/eclipse/eclipse.xsl"/>
 		<copy file="modifications/html/param.ent" tofile="${docbook.xsl.dir}/html/param.ent"/>
 		<copy file="modifications/html/param.xml" tofile="${docbook.xsl.dir}/html/param.xml"/>
 		<copy file="modifications/html/param.xsl" tofile="${docbook.xsl.dir}/html/param.xsl"/>
