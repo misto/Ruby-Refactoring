@@ -36,7 +36,8 @@ public abstract class AbstractDebuggerConnection {
 	 */
 	public abstract SuspensionReader start() throws  DebuggerNotFoundException, IOException;
 
-
+	public abstract boolean isStarted() ;
+	
 	/*
 	 * always call via Command.execute
 	 */

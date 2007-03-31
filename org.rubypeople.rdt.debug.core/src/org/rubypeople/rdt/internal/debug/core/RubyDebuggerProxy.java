@@ -13,6 +13,7 @@ import org.rubypeople.rdt.internal.debug.core.commands.ClassicDebuggerConnection
 import org.rubypeople.rdt.internal.debug.core.commands.GenericCommand;
 import org.rubypeople.rdt.internal.debug.core.commands.RubyDebugConnection;
 import org.rubypeople.rdt.internal.debug.core.model.IRubyDebugTarget;
+import org.rubypeople.rdt.internal.debug.core.model.RubyDebugTarget;
 import org.rubypeople.rdt.internal.debug.core.model.RubyProcessingException;
 import org.rubypeople.rdt.internal.debug.core.model.RubyStackFrame;
 import org.rubypeople.rdt.internal.debug.core.model.RubyThread;
@@ -33,12 +34,15 @@ public class RubyDebuggerProxy {
 	private IRubyDebugTarget debugTarget;
 	private RubyLoop rubyLoop;
 	private ICommandFactory commandFactory;
+	private Thread threadUpdater;
+	private Thread errorReader;
+	private boolean isLoopFinished ;
 
-	public RubyDebuggerProxy(IRubyDebugTarget debugTarget, String rubyFileDirectory, boolean isRubyDebug) {
+	public RubyDebuggerProxy(IRubyDebugTarget debugTarget, boolean isRubyDebug) {
 		this.debugTarget = debugTarget;
 		debugTarget.setRubyDebuggerProxy(this);
 		commandFactory = isRubyDebug ? new RubyDebugCommandFactory() : new ClassicDebuggerCommandFactory();
-		debuggerConnection = isRubyDebug ? new RubyDebugConnection(rubyFileDirectory, debugTarget.getPort()) : new ClassicDebuggerConnection(debugTarget.getPort());
+		debuggerConnection = isRubyDebug ? new RubyDebugConnection(debugTarget.getPort()) : new ClassicDebuggerConnection(debugTarget.getPort());
 	}
 
 	public boolean checkConnection() {
@@ -46,7 +50,7 @@ public class RubyDebuggerProxy {
 	}
 
 	public void start() throws RubyProcessingException, IOException {
-		
+			isLoopFinished = false ;
 			debuggerConnection.connect();
 			this.setBreakPoints();
 			this.startRubyLoop();
@@ -132,15 +136,48 @@ public class RubyDebuggerProxy {
 		Runnable runnable = new Runnable() {
 			public void run() {
 				try {
-					while (true) {
+					RdtDebugCorePlugin.debug("Command Connection error handler started.") ;
+					while (debuggerConnection.getCommandReadStrategy().isConnected()) {
+						// The read strategy resumes read() after the connection to the debugger
+						// has been dropped
 						new ErrorReader(debuggerConnection.getCommandReadStrategy()).read();
 					}
 				} catch (Exception e) {
 					RdtDebugCorePlugin.log(e);
+				} finally {
+					RdtDebugCorePlugin.debug("Command Connection error handler finished.") ;
 				}
 			};
 		};
-		new Thread(runnable).start();
+		errorReader = new Thread(runnable, "Error Reader");
+		errorReader.start();
+		// TODO: Check if it would not be better if the ruby part created the threadinfos
+		// only after a change to the thread status has occurred
+		Runnable threadListener = new Runnable() {
+			public void run() {
+				try {
+					RdtDebugCorePlugin.debug("Thread updater started.") ;
+					Thread.sleep(2000) ;
+					GenericCommand cmd = null ;
+					while (cmd == null || (cmd != null && cmd.getReadStrategy().isConnected())) {
+						if (!getDebugTarget().isSuspended()) {
+							String command = commandFactory.createReadThreads() ;
+							cmd = new GenericCommand(command, true /* isControl */) ;
+							cmd.execute(debuggerConnection);
+							ThreadInfo[] threadInfos = new ThreadInfoReader(cmd.getReadStrategy()).readThreads() ;
+							((RubyDebugTarget)getDebugTarget()).updateThreads(threadInfos) ;
+						}
+						Thread.sleep(2000) ;
+					}
+				} catch (Exception e) {
+					RdtDebugCorePlugin.log(e);
+				} finally {
+					RdtDebugCorePlugin.debug("Thread updater finished.") ;
+				}
+			};
+		};
+		threadUpdater = new Thread(threadListener, "Ruby Thread Updater");
+		threadUpdater.start();
 	}
 
 	public void resume(RubyThread thread) {
@@ -247,7 +284,8 @@ public class RubyDebuggerProxy {
 
 	public ThreadInfo[] readThreads() {
 		try {
-			this.println(commandFactory.createReadThreads());
+			String command = commandFactory.createReadThreads() ;
+			new GenericCommand(command, true /* isControl */).execute(debuggerConnection);
 			return new ThreadInfoReader(getMultiReaderStrategy()).readThreads();
 		} catch (Exception e) {
 			RdtDebugCorePlugin.log(e);
@@ -284,8 +322,6 @@ public class RubyDebuggerProxy {
 			try {
 				System.setProperty(DEBUGGER_ACTIVE_KEY, "true");
 				
-				// TODO Update threads?
-				//getDebugTarget().updateThreads();
 				RdtDebugCorePlugin.debug("Waiting for breakpoints.");
 				while (true) {
 					final SuspensionPoint hit = new SuspensionReader(getMultiReaderStrategy()).readSuspension();
@@ -317,6 +353,7 @@ public class RubyDebuggerProxy {
 			}
 		}
 	}
+
 
 
 }

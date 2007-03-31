@@ -294,7 +294,7 @@ public abstract class FTC_AbstractDebuggerCommunicationTest extends TestCase {
 	private void runTo(String filename, int lineNumber) throws Exception {
 		setBreakpoint(filename, lineNumber) ;
 		SuspensionReader reader;
-		if (!debuggerConnection.isCommandPortConnected()) {
+		if (!debuggerConnection.isStarted()) {
 			reader = debuggerConnection.start();
 		} else {
 			StepCommand stepCommand = new StepCommand("cont");
@@ -979,7 +979,7 @@ public abstract class FTC_AbstractDebuggerCommunicationTest extends TestCase {
 		sendRuby("b test.rb:4");
 		getBreakpointAddedReader().readBreakpointNo();
 		sendRuby("w");
-		RubyThread thread = new RubyThread(null, 0);
+		RubyThread thread = new RubyThread(null, 0, "run");
 		getFramesReader().readFrames(thread);
 		assertEquals(2, thread.getStackFrames().length);
 		RubyStackFrame frame1 = (RubyStackFrame) thread.getStackFrames()[0];
@@ -1001,7 +1001,7 @@ public abstract class FTC_AbstractDebuggerCommunicationTest extends TestCase {
 	public void testFramesWhenThreadSpawned() throws Exception {
 		createSocket(new String[] { "def startThread", "Thread.new() {  a = 5  }", "end", "def calc", "5 + 5", "end", "startThread()", "calc()" });
 		runTo("test.rb", 5);
-		RubyThread thread = new RubyThread(null, 0);
+		RubyThread thread = new RubyThread(null, 0, "run");
 		sendRuby("w");
 		getFramesReader().readFrames(thread);
 		assertEquals(2, thread.getStackFramesSize());
@@ -1023,7 +1023,7 @@ public abstract class FTC_AbstractDebuggerCommunicationTest extends TestCase {
 		assertEquals(2, threads.length);
 
 		sendRuby("th " + threads[0].getId() + " ; w ");
-		RubyStackFrame[] stackFrames = getFramesReader().readFrames(new RubyThread(null, 1));
+		RubyStackFrame[] stackFrames = getFramesReader().readFrames(new RubyThread(null, 1, "run"));
 		assertEquals(1, stackFrames.length);
 		assertEquals(7, stackFrames[0].getLineNumber());
 		sendRuby("th " + threads[0].getId() + " ; v l");
@@ -1031,7 +1031,7 @@ public abstract class FTC_AbstractDebuggerCommunicationTest extends TestCase {
 		assertEquals(1, variables.length);
 		assertEquals("b", variables[0].getName());
 		sendRuby("th " + threads[1].getId() + " ; w");
-		stackFrames = getFramesReader().readFrames(new RubyThread(null, 1));
+		stackFrames = getFramesReader().readFrames(new RubyThread(null, 1, "run"));
 		assertEquals(1, stackFrames.length);
 		assertEquals(3, stackFrames[0].getLineNumber());
 		sendRuby("th " + threads[1].getId() + " ; v l");

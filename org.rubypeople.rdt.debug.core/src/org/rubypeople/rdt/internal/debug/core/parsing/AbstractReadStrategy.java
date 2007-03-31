@@ -15,5 +15,7 @@ public abstract class AbstractReadStrategy {
 	public abstract void readElement(XmlStreamReader streamReader) throws XmlPullParserException, IOException, XmlStreamReaderException  ;
 	
 	public abstract void readElement(XmlStreamReader streamReader, long maxWaitTime) throws XmlPullParserException, IOException, XmlStreamReaderException  ;
+	
+	public abstract boolean isConnected() ;
 
 }

@@ -40,4 +40,9 @@ public class SingleReaderStrategy extends AbstractReadStrategy {
 		readElement(streamReader) ;
 	}
 
+	@Override
+	public boolean isConnected() {
+		return true;
+	}
+
 }

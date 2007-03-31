@@ -14,9 +14,12 @@ public class MultiReaderStrategy extends AbstractReadStrategy {
 
 	private Map<XmlStreamReader, Thread> threads;
 	private XmlStreamReader currentReader;
+	private boolean isConnected ;
+	
 
 	public MultiReaderStrategy(XmlPullParser xpp) {
 		super(xpp);
+		isConnected = true ;
 		threads = new HashMap<XmlStreamReader, Thread>();
 
 		new Thread("xml reader") {
@@ -35,6 +38,7 @@ public class MultiReaderStrategy extends AbstractReadStrategy {
 						Thread.sleep(1000) ; // Avoid Commodfication Exceptions
 					} catch (InterruptedException e) {
 					} 
+					isConnected = false;
 					releaseAllReaders();	
 				}
 				
@@ -93,6 +97,7 @@ public class MultiReaderStrategy extends AbstractReadStrategy {
 	}
 	
     private synchronized void findReaderForTag() throws XmlStreamReaderException {
+    	System.out.println("There are no threads:" + threads.size()) ;
     	for (XmlStreamReader streamReader : threads.keySet()) { 
 			if (streamReader.processStartElement(xpp)) {
 				currentReader = streamReader;
@@ -118,11 +123,14 @@ public class MultiReaderStrategy extends AbstractReadStrategy {
 		threads.put(streamReader, Thread.currentThread());
 	}
 
-	public void readElement(XmlStreamReader streamReader) {
+	public void readElement(XmlStreamReader streamReader) throws IOException {
 		readElement(streamReader, Long.MAX_VALUE) ;
 	}
 	
-	public void readElement(XmlStreamReader streamReader, long maxWaitTime) {
+	public void readElement(XmlStreamReader streamReader, long maxWaitTime) throws IOException {
+		if (!isConnected) {
+			throw new IOException("Read loop has finished") ; 
+		}
 		this.addReader(streamReader);
 		try {
 			RdtDebugCorePlugin.debug("Thread is waiting for input: " + Thread.currentThread());
@@ -131,6 +139,10 @@ public class MultiReaderStrategy extends AbstractReadStrategy {
 		} catch (InterruptedException e) {
 			RdtDebugCorePlugin.debug("Thread has finished processing : " + Thread.currentThread());
 		}
+	}
+
+	public boolean isConnected() {
+		return isConnected;
 	}
 
 }

@@ -2,14 +2,16 @@ package org.rubypeople.rdt.debug.core.tests;
 
 import junit.framework.TestSuite;
 /*
- * purpose of this test suite is to provide temporary smaller test suites for development
+ * purpose of this test suite is to provide small temporary test suites for development
  */
 public class FTC_Single extends TestSuite {
 	public static junit.framework.TestSuite suite() {
 
 		TestSuite suite = new TestSuite();
-		suite.addTest(new FTC_ClassicDebuggerCommunicationTest("testBreakpointAddAndRemove"));
-		suite.addTest(new FTC_RubyDebugCommunicationTest("testBreakpointAddAndRemove"));
+		//suite.addTest(new FTC_ClassicDebuggerCommunicationTest("testBreakpointAddAndRemove"));
+		//suite.addTest(new FTC_RubyDebugCommunicationTest("testBreakpointAddAndRemove"));
+		suite.addTest(new FTC_RubyDebugCommunicationTest("testInspectError"));
+		
 		//suite.addTest(classicSuite()) ;
 		//suite.addTest(rdebugSuite()) ;
 		return suite ;

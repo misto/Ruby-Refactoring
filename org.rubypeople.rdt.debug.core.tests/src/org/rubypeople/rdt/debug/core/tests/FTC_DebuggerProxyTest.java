@@ -51,9 +51,7 @@ public class FTC_DebuggerProxyTest extends TestCase {
 	
 	public void setUp() throws Exception {
 		target = new TestRubyDebugTarget() ;
-		//TODO: get proper directory
-		String rubyFileDirectory ="launching/ruby " ;
-		proxy = new RubyDebuggerProxy(target, rubyFileDirectory, false /*useRubyDebug*/) ;
+		proxy = new RubyDebuggerProxy(target, false /*useRubyDebug*/) ;
 		PipedInputStream pipedInputStream = new PipedInputStream() ;
 		PipedOutputStream pipedOutputStream = new PipedOutputStream(pipedInputStream) ; 
 
@@ -85,9 +83,7 @@ public class FTC_DebuggerProxyTest extends TestCase {
 			}
 		}.start() ;
 
-		// blocks until threads are read
-		ThreadInfo[] threadInfos = getProxy().readThreads() ;		
-		assertEquals(1, threadInfos.length) ;
+
 		Thread.sleep(1000) ;
 		assertEquals(55, getTarget().getLastSuspensionPoint().getLine()) ;
 	}

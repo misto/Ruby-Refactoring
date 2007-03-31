@@ -24,13 +24,13 @@ public class TestVMDebugger extends StandardVMDebugger implements IVMRunner {
 	
 	@Override
 	protected RubyDebuggerProxy getDebugProxy(RubyDebugTarget debugTarget) {
-		return new TestDebuggerProxy(debugTarget, getDirectoryOfRubyDebuggerFile(), false);
+		return new TestDebuggerProxy(debugTarget, false);
 	}
 
 	private static class TestDebuggerProxy extends RubyDebuggerProxy {
 
-		public TestDebuggerProxy(IRubyDebugTarget debugTarget, String rubyFileDirectory, boolean isRubyDebug) {
-			super(debugTarget, rubyFileDirectory, isRubyDebug);
+		public TestDebuggerProxy(IRubyDebugTarget debugTarget, boolean isRubyDebug) {
+			super(debugTarget, isRubyDebug);
 		}
 		
 		@Override

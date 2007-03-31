@@ -7,6 +7,8 @@ import org.rubypeople.rdt.internal.debug.core.parsing.SuspensionReader;
 
 public class ClassicDebuggerConnection extends AbstractDebuggerConnection {
 
+	private boolean isStarted;
+
 	public ClassicDebuggerConnection(int port) {
 		super(port);
 	}
@@ -20,7 +22,13 @@ public class ClassicDebuggerConnection extends AbstractDebuggerConnection {
 	public SuspensionReader start() throws DebuggerNotFoundException, IOException {
 		StepCommand stepCommand = new StepCommand("cont");
 		stepCommand.execute(this) ;
+		isStarted = true ;
 		return stepCommand.getSuspensionReader() ;
+	}
+
+	@Override
+	public boolean isStarted() {
+		return isStarted;
 	}
 
 }

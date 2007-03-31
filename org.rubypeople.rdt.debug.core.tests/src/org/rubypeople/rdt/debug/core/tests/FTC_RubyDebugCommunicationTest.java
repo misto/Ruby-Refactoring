@@ -67,7 +67,7 @@ public class FTC_RubyDebugCommunicationTest extends FTC_ClassicDebuggerCommunica
 	@Override
 	public void startRubyProcess() throws Exception {
 		// TODO Auto-generated method stub
-		String cmd = "rdebug -s -w -n -p 1098 --cport 1099 -d -f xml -I " + getTmpDir().replace('\\', '/') + " " + getRubyTestFilename();
+		String cmd = "rdebug-ide -p 1098 -d -I " + getTmpDir().replace('\\', '/') + " " + getRubyTestFilename();
 		// "FTC_DebuggerCommunicationTest.RUBY_INTERPRETER + " -I" +
 		// createIncludeDir() + " -I" + getTmpDir().replace('\\', '/') + "
 		// -rclassic-debug-verbose.rb " + ;
@@ -89,40 +89,10 @@ public class FTC_RubyDebugCommunicationTest extends FTC_ClassicDebuggerCommunica
 		}
 		return result;
 	}
-	
-//	@Override
-//	protected void createControlSocket() throws Exception {
-//			try {
-//				controlSocket = new Socket("localhost", 1099);
-//			} catch (ConnectException cex) {
-//				throw new RuntimeException(
-//						"Ruby process finished prematurely. Last line in stderr: "
-//								+ rubyStderrRedirectorThread.getLastLine(), cex);
-//			}
-//			controlReaderStrategy = new MultiReaderStrategy(getXpp(controlSocket));
-//
-//			Runnable runnable = new Runnable() {
-//				public void run() {
-//					try {
-//						while (true) {
-//							new WasteReader(controlReaderStrategy).read();
-//						}
-//					} catch (Exception e) {
-//						e.printStackTrace();
-//					}
-//				};
-//			};
-//			new Thread(runnable).start();
-//			Thread.sleep(500) ;
-//			controlWriter = new PrintWriter(controlSocket.getOutputStream(), true);
-//			registerRubyDebugExtensions() ;
-//	}
 
 	@Override
 	protected AbstractDebuggerConnection createDebuggerConnection() {
-		return new RubyDebugConnection(getDirectoryOfRubyDebuggerFile(), 1098);
+		return new RubyDebugConnection(1098);
 	}
-	
-
 
 }

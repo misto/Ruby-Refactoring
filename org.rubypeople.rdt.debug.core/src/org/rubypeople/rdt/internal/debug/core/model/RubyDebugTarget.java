@@ -4,7 +4,13 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
 
+import org.eclipse.core.internal.runtime.FindSupport;
 import org.eclipse.core.resources.IMarkerDelta;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.PlatformObject;
@@ -40,19 +46,21 @@ public class RubyDebugTarget extends PlatformObject implements IRubyDebugTarget 
 	public RubyDebugTarget(ILaunch launch) {
 		this(launch, null);
 	}
-	
+
 	public RubyDebugTarget(ILaunch launch, IProcess process) {
 		this(launch, process, DEFAULT_PORT);
 	}
-	
+
 	public RubyDebugTarget(ILaunch launch, IProcess process, int port) {
 		this.launch = launch;
 		this.port = port;
 		this.process = process;
-		this.threads = new RubyThread[0] ;
-		this.isTerminated = false ;
-		IBreakpointManager manager= DebugPlugin.getDefault().getBreakpointManager();
-		manager.addBreakpointListener(this);
+		this.threads = new RubyThread[0];
+		this.isTerminated = false;
+		if (DebugPlugin.getDefault() != null) { // null only expected in Unit test
+			IBreakpointManager manager = DebugPlugin.getDefault().getBreakpointManager();
+			manager.addBreakpointListener(this);
+		}
 		addDebugParameter("$RemoteDebugPort=" + port);
 	}
 
@@ -61,29 +69,62 @@ public class RubyDebugTarget extends PlatformObject implements IRubyDebugTarget 
 	}
 
 	public void updateThreads() {
-		// preconditions:
-		// 1) both threadInfos and updatedThreads are sorted by their id attribute
-		// 2) once a thread has died its id is never reused for new threads again. Instead each new 
-		//    thread gets an id which is the currently highest id + 1.
-
 		RdtDebugCorePlugin.debug("udpating threads");
 		ThreadInfo[] threadInfos = this.getRubyDebuggerProxy().readThreads();
-		RubyThread[] updatedThreads = new RubyThread[threadInfos.length];
+		updateThreads(threadInfos);
+	}
+
+	public synchronized void updateThreads(ThreadInfo[] threadInfos) {
+		if (isSuspended()) {
+			return ;
+		}
+		DebugEvent[] events = updateThreadsInternal(threadInfos) ;
+		DebugPlugin.getDefault().fireDebugEventSet(events);
+	}
+	
+	// only public for testing 
+	public DebugEvent[] updateThreadsInternal(ThreadInfo[] threadInfos) {
+	
+		// preconditions:
+		// 1) once a thread has died its id is never reused for new threads
+		// again. Instead each new
+		// thread gets an id which is the currently highest id + 1.			
+		List<DebugEvent> events = new ArrayList<DebugEvent>() ;
+		RubyThread[] newThreads = new RubyThread[threadInfos.length] ;
+		Set<Integer> newIds = new TreeSet<Integer>() ;
+		boolean changed = false ;
 		int threadIndex = 0;
 		for (int i = 0; i < threadInfos.length; i++) {
-			while (threadIndex < threads.length && threadInfos[i].getId() != threads[threadIndex].getId()) {
-				// step over dead threads, which do not occur in threadInfos anymore
-				threadIndex += 1;
-			}
-			if (threadIndex == threads.length) {
-				updatedThreads[i] = new RubyThread(this, threadInfos[i].getId());
-				DebugEvent ev = new DebugEvent(updatedThreads[i], DebugEvent.CREATE);
-				DebugPlugin.getDefault().fireDebugEventSet(new DebugEvent[] { ev });				
+			ThreadInfo currentThreadInfo = threadInfos[i] ;
+			RubyThread existingThread = getThreadById(currentThreadInfo.getId()) ;
+		
+			if (existingThread == null) {
+				newThreads[i] = new RubyThread(this, currentThreadInfo.getId(), currentThreadInfo.getStatus());
+				DebugEvent ev = new DebugEvent(newThreads[i], DebugEvent.CREATE);
+				events.add(ev) ;
 			} else {
-				updatedThreads[i] = threads[threadIndex];
+				newThreads[i] =existingThread;
+				if (!existingThread.getStatus().equals(currentThreadInfo.getStatus())) {
+					existingThread.setStatus(currentThreadInfo.getStatus());
+					existingThread.updateName();
+					DebugEvent ev = new DebugEvent(newThreads[i], DebugEvent.CHANGE);
+					events.add(ev) ;
+				}
+			}
+			newIds.add(newThreads[i].getId()) ;
+		}
+		for (int i = 0; i < threads.length ; i++) {
+			if (!newIds.contains(threads[i].getId())) {
+				DebugEvent ev = new DebugEvent(threads[i], DebugEvent.TERMINATE);
+				events.add(ev) ;			        				
 			}
 		}
-		threads = updatedThreads;
+		threads = newThreads;
+		if (changed) {
+			DebugEvent ev1 = new DebugEvent(this, DebugEvent.CHANGE, DebugEvent.CONTENT);
+			events.add(ev1) ;
+		}
+		return events.toArray(new DebugEvent[] {}) ;
 	}
 
 	protected RubyThread getThreadById(int id) {
@@ -141,27 +182,27 @@ public class RubyDebugTarget extends PlatformObject implements IRubyDebugTarget 
 		return isTerminated;
 	}
 
-	public void terminate() {
+	public synchronized void terminate() {
 		if (isTerminated) {
-			return ;
+			return;
 		}
 		try {
-			this.getProcess().terminate() ;
-			this.threads = new RubyThread[0] ;
+			this.getProcess().terminate();
+			this.threads = new RubyThread[0];
 			isTerminated = true;
-			rubyDebuggerProxy.stop() ;
+			rubyDebuggerProxy.stop();
 		} catch (DebugException e) {
-			RdtDebugCorePlugin.debug("Exception while terminating process.", e) ;
+			RdtDebugCorePlugin.debug("Exception while terminating process.", e);
 		}
-		
+
 		// launch is one of the listeners
-		DebugPlugin.getDefault().fireDebugEventSet(new DebugEvent[] {new DebugEvent(this, DebugEvent.TERMINATE)});
-		
+		DebugPlugin.getDefault().fireDebugEventSet(new DebugEvent[] { new DebugEvent(this, DebugEvent.TERMINATE) });
+
 		// delete the debugParameteFile if it could be created
 		if (debugParameterFile.exists()) {
-			boolean deleted = debugParameterFile.delete() ;
+			boolean deleted = debugParameterFile.delete();
 			if (!deleted) {
-				RdtDebugCorePlugin.debug("Could not delete debugParameteFile:" + debugParameterFile.toURI()) ;
+				RdtDebugCorePlugin.debug("Could not delete debugParameteFile:" + debugParameterFile.toURI());
 			}
 		}
 	}
@@ -175,46 +216,51 @@ public class RubyDebugTarget extends PlatformObject implements IRubyDebugTarget 
 	}
 
 	public boolean isSuspended() {
-		return false;
+		boolean isSuspended = false ;
+		for (int i = 0; i < getThreads().length; i++) {
+			if (getThreads()[i].isSuspended()) {
+				isSuspended = true ;
+				break ;
+			}
+		}
+		return isSuspended;
 	}
 
-	public void resume() throws DebugException {
-	}
+	public void resume() throws DebugException {}
 
-	public void suspend() throws DebugException {
-	}
+	public void suspend() throws DebugException {}
 
 	public void breakpointAdded(IBreakpoint breakpoint) {
 		if (isTerminated) {
-			return ;
+			return;
 		}
-		this.getRubyDebuggerProxy().addBreakpoint(breakpoint) ;
+		this.getRubyDebuggerProxy().addBreakpoint(breakpoint);
 	}
 
 	public void breakpointRemoved(IBreakpoint breakpoint, IMarkerDelta arg1) {
 		if (isTerminated) {
-			return ;
-		}		
-		this.getRubyDebuggerProxy().removeBreakpoint(breakpoint) ;		
+			return;
+		}
+		this.getRubyDebuggerProxy().removeBreakpoint(breakpoint);
 	}
 
 	public void breakpointChanged(IBreakpoint breakpoint, IMarkerDelta arg1) {
 		// is called e.g. after a line has been inserted before a breakpoint
 		// or the enablement status has changed
-		// in the first case it is essential that the debugger has reloaded the file
+		// in the first case it is essential that the debugger has reloaded the
+		// file
 		// so that the breakpoint moving is in synch with the new file
 		if (isTerminated) {
-			return ;
-		}	
-		this.getRubyDebuggerProxy().updateBreakpoint(breakpoint, arg1) ;
+			return;
+		}
+		this.getRubyDebuggerProxy().updateBreakpoint(breakpoint, arg1);
 	}
 
 	public boolean canDisconnect() {
 		return false;
 	}
 
-	public void disconnect() throws DebugException {
-	}
+	public void disconnect() throws DebugException {}
 
 	public boolean isDisconnected() {
 		return false;
@@ -243,18 +289,18 @@ public class RubyDebugTarget extends PlatformObject implements IRubyDebugTarget 
 	public void setRubyDebuggerProxy(RubyDebuggerProxy rubyDebuggerProxy) {
 		this.rubyDebuggerProxy = rubyDebuggerProxy;
 	}
-	
+
 	public File getDebugParameterFile() {
 		if (debugParameterFile == null) {
 			try {
-				debugParameterFile = File.createTempFile("classic-debug",".rb") ;
+				debugParameterFile = File.createTempFile("classic-debug", ".rb");
 			} catch (IOException e) {
-				RdtDebugCorePlugin.log("Could not create debugParameterFile", e) ;
+				RdtDebugCorePlugin.log("Could not create debugParameterFile", e);
 			}
 		}
 		return debugParameterFile;
 	}
-	
+
 	private boolean addDebugParameter(String line) {
 		PrintWriter writer = null;
 		try {
@@ -269,12 +315,12 @@ public class RubyDebugTarget extends PlatformObject implements IRubyDebugTarget 
 			writer.close();
 		}
 	}
-	
+
 	public int getPort() {
 		return port;
 	}
-	
+
 	public boolean isUsingDefaultPort() {
-		return getPort() == DEFAULT_PORT ;
+		return getPort() == DEFAULT_PORT;
 	}
 }

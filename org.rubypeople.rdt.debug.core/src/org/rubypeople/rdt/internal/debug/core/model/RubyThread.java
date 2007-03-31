@@ -21,11 +21,13 @@ public class RubyThread extends PlatformObject implements IThread {
 	private boolean isTerminated = false;
 	private boolean isStepping = false;
 	private String name;
+	private String status;
 	private int id;
 
-	public RubyThread(IDebugTarget target, int id) {
+	public RubyThread(IDebugTarget target, int id, String status) {
 		this.target = target;
 		this.setId(id);
+		this.status = status ;
 		this.updateName();
 	}
 
@@ -99,7 +101,9 @@ public class RubyThread extends PlatformObject implements IThread {
 	}
 
 	public boolean canSuspend() {
-		return !isSuspended;
+		// TODO: manually suspending a thread is not yet possible with ruby-debug
+		//return !isSuspended;
+		return false ;
 	}
 
 	public boolean isSuspended() {
@@ -229,6 +233,8 @@ public class RubyThread extends PlatformObject implements IThread {
 		this.name = "Ruby Thread - " + this.getId();
 		if (suspensionPoint != null) {
 			this.name += " (" + suspensionPoint + ")";
+		} else {
+			this.name += " (" + status + ")";
 		}
 	}
 
@@ -247,5 +253,13 @@ public class RubyThread extends PlatformObject implements IThread {
 			return getLaunch();	
 		}
 		return super.getAdapter(adapterType);
+	}
+
+	public String getStatus() {
+		return status;
+	}
+
+	public void setStatus(String status) {
+		this.status = status;
 	}
 }
