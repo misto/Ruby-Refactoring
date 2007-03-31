@@ -118,7 +118,9 @@ public class StandardVMDebugger extends StandardVMRunner implements IVMRunner {
 		}
 
 		IProcess process = newProcess(launch, p, renderProcessLabel(cmdLine), getDefaultProcessMap());
-		process.setAttribute(IProcess.ATTR_CMDLINE, renderCommandLine(cmdLine));
+		String commandLine = renderCommandLine(cmdLine);
+		LaunchingPlugin.debug("Starting: " + commandLine) ;
+		process.setAttribute(IProcess.ATTR_CMDLINE, commandLine);
 		subMonitor.worked(1);
 		subMonitor.subTask(LaunchingMessages.StandardVMDebugger_Establishing_debug_connection____5);
 
@@ -140,7 +142,7 @@ public class StandardVMDebugger extends StandardVMRunner implements IVMRunner {
 	}
 
 	protected RubyDebuggerProxy getDebugProxy(RubyDebugTarget debugTarget) {
-		return new RubyDebuggerProxy(debugTarget, getDirectoryOfRubyDebuggerFile(), false);
+		return new RubyDebuggerProxy(debugTarget, false /* isRubyDebug*/);
 	}
 
 	protected List<String> debugSpecificVMArgs(RubyDebugTarget debugTarget) {

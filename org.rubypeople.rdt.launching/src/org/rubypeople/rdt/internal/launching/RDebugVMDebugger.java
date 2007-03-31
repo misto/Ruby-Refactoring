@@ -42,31 +42,25 @@ public class RDebugVMDebugger extends StandardVMDebugger {
 
 	protected List<String> debugSpecificVMArgs(RubyDebugTarget debugTarget) {
 		List<String> arguments = new ArrayList<String>();
-		arguments.add("--server");
-		arguments.add("-w"); // wait for client to connect on command port
-		arguments.add("-n"); // do not halt when client connects
 		arguments.add("--port");
 		arguments.add(Integer.toString(debugTarget.getPort()));
-		arguments.add("--cport");
-		arguments.add(Integer.toString(debugTarget.getPort() + 1));
 		if (isDebuggerVerbose()) {
 			arguments.add("-d");
 		}
-		arguments.add("-f");
-		arguments.add("xml");
 		return arguments;
 	}
 	
 	protected RubyDebuggerProxy getDebugProxy(RubyDebugTarget debugTarget) {
-		return new RubyDebuggerProxy(debugTarget, RDebugVMDebugger.getDirectoryOfRubyDebuggerFile(), true);
+		return new RubyDebuggerProxy(debugTarget, true);
 	}
 
 	public static String findRDebugExecutable(File vmInstallLocation) {
 		// see StandardVMRunner.constructProgramString
-		String cmd = "rdebug" ;
-		String path = vmInstallLocation + File.separator + "bin" + File.separator + "rdebug.cmd" ;
+		String cmd = "rdebug-ide" ;
+		String cmdWin = "rdebug-ide.cmd";
+		String path = vmInstallLocation + File.separator + "bin" + File.separator + cmdWin;
 		if (new File(path).exists()) {
-			cmd = "rdebug.cmd" ;
+			cmd = cmdWin ;
 		}
 		return cmd ;
 	}
