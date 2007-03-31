@@ -126,6 +126,10 @@ public class TC_CodeFormatter extends TestCase {
 	
 	public void testLiteralsStartingWithPercentSign() {
 		this.doTest("LiteralsStartingWithPercentSign");
+	}
+	
+	public void testNegativeIndentation() {
+		this.doTest("NegativeIndentation");
 	}	
 	
 }

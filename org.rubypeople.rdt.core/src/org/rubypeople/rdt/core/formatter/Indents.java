@@ -79,6 +79,9 @@ public class Indents {
      * @return the indent string
      */
     public static String createIndentString(int indentationUnits, Map options) {
+        if (indentationUnits < 0) {
+           return "" ;
+        }
         if (options == null || indentationUnits < 0) {
             throw new IllegalArgumentException();
         }
