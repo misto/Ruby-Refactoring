@@ -611,5 +611,29 @@ if
 </part>
 </test>
 
+
+<test ID="NegativeIndentation">
+
+<part>
+<assertionMessage>Invalid ruby with too many end</assertionMessage>  
+<unformatted>
+class
+ def m
+     end
+     end
+     end
+</unformatted>
+<formatted>
+class
+  def m
+  end
+end
+end
+</formatted>
+</part>
+
+</test>
+
+
 </tests>
 
