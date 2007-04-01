@@ -527,8 +527,6 @@ class DEBUGGER__
       previous_line = nil
       display_expressions(binding)
       
-      
-      
       case input
       when /^\s*tr(?:ace)?(?:\s+(on|off))?(?:\s+(all))?$/
         if defined?( $2 )
@@ -560,16 +558,17 @@ class DEBUGGER__
           pname = pos = pos.intern.id2name
         end
         # TODO: pname is not used
-        break_points.push Breakpoint.new(true, 0, file, pos)
-        @printer.printXml("<breakpointAdded no=\"%d\" location=\"%s:%s\"/>", break_points.size, file, pos)
+        id = DEBUGGER__.next_breakpoint_id
+        break_points[id] = Breakpoint.new(true, 0, file, pos)
+        @printer.printXml("<breakpointAdded no=\"%d\" location=\"%s:%s\"/>", id, file, pos)
         
       when /^\s*delete\s+(\d+)$/
-        pos = $1.to_i
-        if pos < 1 || pos > break_points.length
-          @printer.printXml("<error>Breakpoint number out of bounds: %d. There are currently %d breakpoints defined.</error>", pos, break_points.length )
+        breakpoint_id = $1.to_i
+        if break_points.delete(breakpoint_id)
+          @printer.printXml("<breakpointDeleted no=\"%d\"/>", breakpoint_id)
         else         
-          break_points.delete_at(pos-1)
-          @printer.printXml("<breakpointDeleted no=\"%d\"/>", pos)
+          @printer.printXml("<error>No breakpoint with id: %d. Currently following breakpoints defined: %s</error>",
+                            breakpoint_id, breakpoints.keys.join(', '))
         end
         
         #        when /^\s*wat(?:ch)?\s+(.+)$/
@@ -603,24 +602,6 @@ class DEBUGGER__
         #            stdout.print "No breakpoints\n"
         #          else
         #            stdout.print "\n"
-        #          end
-        
-        #        when /^\s*del(?:ete)?(?:\s+(\d+))?$/
-        #          pos = $1
-        #          unless pos
-        #            input = readline("Clear all breakpoints? (y/n) ", false)
-        #            if input == "y"
-        #              for b in break_points
-        #                b[0] = false
-        #              end
-        #            end
-        #          else
-        #            pos = pos.to_i
-        #            if break_points[pos-1]
-        #              break_points[pos-1][0] = false
-        #            else
-        #              stdout.printf "Breakpoint %d is not defined\n", pos
-        #            end
         #          end
         
         #        when /^\s*disp(?:lay)?\s+(.+)$/
@@ -724,11 +705,7 @@ class DEBUGGER__
         @printer.debug("Unknown input : %s", input)
       end
       
-      
-      
     end
-    
-    
     
     def display_expressions(binding)
       n = 1
@@ -794,7 +771,7 @@ class DEBUGGER__
       return false if break_points.empty?
       file = File.basename(file)
       n = 1
-      for b in break_points
+      break_points.each_value do |b|
         @printer.debug("file=%s, pos=%s; breakpoint=[valid=%s, type=%s, file=%s, pos=%s]\n ",
                        file, pos, b.valid, b.type, b.file, b.pos)
         if b.valid
@@ -897,8 +874,9 @@ class DEBUGGER__
   trap("INT") { DEBUGGER__.interrupt }
   @last_thread = Thread::main
   @max_thread = 1
+  @max_breakpoint_id = 0
   @thread_list = {Thread::main => 1}
-  @break_points = []
+  @break_points = {} # id => Breakpoint
   @display = []
   @waiting = []
   @stdout = STDOUT
@@ -1079,6 +1057,10 @@ class DEBUGGER__
         return context(th) 
       end     
     end
+
+    def next_breakpoint_id
+      @max_breakpoint_id += 1
+  end
   end
   
   @@socket = nil
