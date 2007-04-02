@@ -189,6 +189,7 @@ public class RubyTokenScanner extends AbstractRubyTokenScanner {
 			return doGetToken(IRubyColorConstants.RUBY_KEYWORD);
 		switch (i) {
 		case Tokens.tSYMBEG:
+		case 58: // ':' FIXME JRuby returns the number for ':' on second symbol's beginning in alias calls
 			isInSymbol = true;
 			return doGetToken(IRubyColorConstants.RUBY_SYMBOL);
 		case Tokens.tGVAR:

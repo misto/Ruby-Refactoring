@@ -88,9 +88,9 @@ public class TC_RubyTokenScanner extends TestCase {
 		setUpScanner(code);
 		assertToken(IRubyColorConstants.RUBY_DEFAULT, 0, 4); // 'hash'
 		assertToken(IRubyColorConstants.RUBY_DEFAULT, 4, 2);  // ' ='
-		assertToken(IRubyColorConstants.RUBY_DEFAULT, 6, 2);  // ' {'		
-		assertToken(IRubyColorConstants.RUBY_DEFAULT, 8, 4);  // whitespace
+		assertToken(IRubyColorConstants.RUBY_DEFAULT, 6, 2);  // ' {'	
 		
+		assertToken(IRubyColorConstants.RUBY_STRING, 8, 4);  // whitespace
 		assertToken(IRubyColorConstants.RUBY_STRING, 12, 6);
 		assertToken(IRubyColorConstants.RUBY_STRING, 18, 1);
 		
@@ -157,6 +157,14 @@ public class TC_RubyTokenScanner extends TestCase {
 		assertToken(IRubyColorConstants.RUBY_SYMBOL, 23, 8);  // 'RedCloth'
 		assertToken(IRubyColorConstants.RUBY_DEFAULT, 31, 1);  // ')'
 	}
-
 	
+	public void testAliasWithTwoSymbols() {
+		String code = "alias :tsort_each_child :each_key";
+		setUpScanner(code);
+		assertToken(IRubyColorConstants.RUBY_KEYWORD, 0, 5);  // 'alias'
+		assertToken(IRubyColorConstants.RUBY_SYMBOL, 5, 2);  // ' :'
+		assertToken(IRubyColorConstants.RUBY_SYMBOL, 7, 16);  // 'tsort_each_child'
+		assertToken(IRubyColorConstants.RUBY_SYMBOL, 23, 2);  // ' :'
+		assertToken(IRubyColorConstants.RUBY_SYMBOL, 25, 8);  // 'each_key'
+	}
 }
