@@ -39,7 +39,8 @@ public class ExternalRubyScript extends RubyScript {
 			RubyParser parser = new RubyParser();
 			Node node = parser.parse(null, new CharArrayReader(contents));
 			RubyScriptStructureBuilder visitor = new RubyScriptStructureBuilder(this, unitInfo, newElements);
-			if (node != null) node.accept(visitor);
+			SourceParser sp = new SourceParser(visitor);
+			if (node != null) node.accept(sp);
 			unitInfo.setIsStructureKnown(true);
 		} catch (SyntaxException e) {
 			unitInfo.setIsStructureKnown(false);

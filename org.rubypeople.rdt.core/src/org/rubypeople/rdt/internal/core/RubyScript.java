@@ -60,6 +60,7 @@ import org.rubypeople.rdt.core.RubyModelException;
 import org.rubypeople.rdt.core.WorkingCopyOwner;
 import org.rubypeople.rdt.core.compiler.CategorizedProblem;
 import org.rubypeople.rdt.internal.codeassist.CompletionEngine;
+import org.rubypeople.rdt.internal.compiler.ISourceElementRequestor;
 import org.rubypeople.rdt.internal.core.buffer.BufferManager;
 import org.rubypeople.rdt.internal.core.parser.RubyParser;
 import org.rubypeople.rdt.internal.core.util.MementoTokenizer;
@@ -135,8 +136,9 @@ public class RubyScript extends Openable implements IRubyScript {
 			RubyParser parser = new RubyParser();
 			ast = parser.parse((IFile) getResource(), new CharArrayReader(contents));
 			lastGoodAST = ast;
-			RubyScriptStructureBuilder visitor = new RubyScriptStructureBuilder(this, unitInfo, newElements);
-			if (ast != null) ast.accept(visitor);
+			ISourceElementRequestor requestor = new RubyScriptStructureBuilder(this, unitInfo, newElements);
+			SourceParser sp = new SourceParser(requestor);
+			if (ast != null) ast.accept(sp);
 			unitInfo.setIsStructureKnown(true);
 		} catch (SyntaxException e) {
 			unitInfo.setIsStructureKnown(false);

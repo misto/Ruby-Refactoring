@@ -13,10 +13,12 @@ import java.util.Map;
 import org.jruby.ast.Node;
 import org.jruby.lexer.yacc.SyntaxException;
 import org.rubypeople.eclipse.shams.resources.ShamFile;
+import org.rubypeople.rdt.internal.compiler.ISourceElementRequestor;
 import org.rubypeople.rdt.internal.core.DefaultWorkingCopyOwner;
 import org.rubypeople.rdt.internal.core.RubyScript;
 import org.rubypeople.rdt.internal.core.RubyScriptElementInfo;
 import org.rubypeople.rdt.internal.core.RubyScriptStructureBuilder;
+import org.rubypeople.rdt.internal.core.SourceParser;
 import org.rubypeople.rdt.internal.core.parser.RdtWarnings;
 import org.rubypeople.rdt.internal.core.parser.RubyParser;
 
@@ -104,9 +106,10 @@ public class RubyParserCmd {
             Node node = parser.parse(new ShamFile(file), new FileReader(file));
 			RubyScriptElementInfo unitInfo = new RubyScriptElementInfo() ; 
 			RubyScript script = new RubyScript(null, file, DefaultWorkingCopyOwner.PRIMARY ) ;
-			RubyScriptStructureBuilder visitor = new RubyScriptStructureBuilder(script, unitInfo, elements);
+			ISourceElementRequestor visitor = new RubyScriptStructureBuilder(script, unitInfo, elements);
+			SourceParser sp = new SourceParser(visitor);
 			if (node != null) {
-				node.accept(visitor);
+				node.accept(sp);
 			}
 			else {
 				System.out.println("Node is null for : " + file) ;
