@@ -4,8 +4,6 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Iterator;
 import java.util.Stack;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.runtime.CoreException;
@@ -202,23 +200,23 @@ public class RubyEditor extends RubyAbstractEditor {
     protected void createActions() {
         super.createActions();
         
-        Action action = new ContentAssistAction(RubyUIMessages.getResourceBundle(),
+        Action action = new ContentAssistAction(RubyPlugin.getDefault().getPluginProperties(),
                 "ContentAssistProposal.", this);
         action.setActionDefinitionId(IRubyEditorActionDefinitionIds.CONTENT_ASSIST_PROPOSALS);
         setAction("ContentAssistProposal", action);
 
-        action = new TextOperationAction(RubyUIMessages.getResourceBundle(), "Comment.", this,
+        action = new TextOperationAction(RubyPlugin.getDefault().getPluginProperties(), "CommentAction.", this,
                 ITextOperationTarget.PREFIX);
         action.setActionDefinitionId(IRubyEditorActionDefinitionIds.COMMENT);
         setAction("Comment", action);
 
-        action = new TextOperationAction(RubyUIMessages.getResourceBundle(), "Uncomment.", this,
+        action = new TextOperationAction(RubyPlugin.getDefault().getPluginProperties(), "UncommentAction.", this,
                 ITextOperationTarget.STRIP_PREFIX);
         action.setActionDefinitionId(IRubyEditorActionDefinitionIds.UNCOMMENT);
         setAction("Uncomment", action);
 
-        action = new ToggleCommentAction(RubyUIMessages.getResourceBundle(),
-                "ToggleComment.", this); //$NON-NLS-1$
+        action = new ToggleCommentAction(RubyPlugin.getDefault().getPluginProperties(),
+                "ToggleCommentAction.", this); //$NON-NLS-1$
         action.setActionDefinitionId(IRubyEditorActionDefinitionIds.TOGGLE_COMMENT);
         setAction("ToggleComment", action); //$NON-NLS-1$
         markAsStateDependentAction("ToggleComment", true); //$NON-NLS-1$
@@ -229,7 +227,7 @@ public class RubyEditor extends RubyAbstractEditor {
         action.setActionDefinitionId(IRubyEditorActionDefinitionIds.GOTO_MATCHING_BRACKET);
         setAction(GotoMatchingBracketAction.GOTO_MATCHING_BRACKET, action);
 
-        action = new FormatAction(RubyUIMessages.getResourceBundle(), "Format.", this);
+        action = new FormatAction(RubyPlugin.getDefault().getPluginProperties(), "FormatAction.", this);
         action.setActionDefinitionId(IRubyEditorActionDefinitionIds.FORMAT);
         setAction("Format", action);
                        
@@ -698,7 +696,9 @@ public class RubyEditor extends RubyAbstractEditor {
 
     protected void editorContextMenuAboutToShow(IMenuManager menu) {
         super.editorContextMenuAboutToShow(menu);
-
+        
+        fActionGroups.fillContextMenu(menu) ;
+        
         IExtensionRegistry registry = Platform.getExtensionRegistry();
         IExtensionPoint extensionPoint = registry
                 .getExtensionPoint("org.rubypeople.rdt.ui.editorPopupExtender");

@@ -49,6 +49,7 @@ import org.rubypeople.rdt.refactoring.core.overridemethod.OverrideMethodRefactor
 import org.rubypeople.rdt.refactoring.core.pushdown.PushDownRefactoring;
 import org.rubypeople.rdt.refactoring.core.rename.RenameRefactoring;
 import org.rubypeople.rdt.refactoring.core.splitlocal.SplitTempRefactoring;
+import org.rubypeople.rdt.ui.actions.RubyActionGroup;
 
 public class RefactoringActionGroup extends ActionGroup {
 
@@ -57,7 +58,7 @@ public class RefactoringActionGroup extends ActionGroup {
 	public void fillContextMenu(IMenuManager menu) {
 		TextSelectionProvider selectionProvider = new TextSelectionProvider(null);
 		menu.insertAfter(INSERT_AFTER_GROUP_NAME, new Separator());
-		menu.insertAfter(INSERT_AFTER_GROUP_NAME, getSourceMenu(selectionProvider));
+		menu.insertAfter(INSERT_AFTER_GROUP_NAME, getSourceMenu(menu, selectionProvider));
 		menu.insertAfter(INSERT_AFTER_GROUP_NAME, getRefactorMenu(selectionProvider));
 		menu.insertAfter(INSERT_AFTER_GROUP_NAME, new Separator());
 	}
@@ -80,11 +81,11 @@ public class RefactoringActionGroup extends ActionGroup {
 		return submenu;
 	}
 	
-	private IMenuManager getSourceMenu(TextSelectionProvider selectionProvider) {
-		IMenuManager submenu = new MenuManager(Messages.SourceActionGroup);
-		submenu.add(new RefactoringAction(GenerateAccessorsRefactoring.class, GenerateAccessorsRefactoring.NAME, selectionProvider));
-		submenu.add(new RefactoringAction(GenerateConstructorRefactoring.class, GenerateConstructorRefactoring.NAME, selectionProvider));
-		submenu.add(new RefactoringAction(OverrideMethodRefactoring.class, OverrideMethodRefactoring.NAME, selectionProvider));
+	private IMenuManager getSourceMenu(IMenuManager menu, TextSelectionProvider selectionProvider) {
+		IMenuManager submenu =  RubyActionGroup.getRubySourceMenu(menu) ;
+		submenu.insertAfter(RubyActionGroup.RUBY_SOURCE_SEPARATOR, new RefactoringAction(GenerateAccessorsRefactoring.class, GenerateAccessorsRefactoring.NAME, selectionProvider));
+		submenu.insertAfter(RubyActionGroup.RUBY_SOURCE_SEPARATOR, new RefactoringAction(GenerateConstructorRefactoring.class, GenerateConstructorRefactoring.NAME, selectionProvider));
+		submenu.insertAfter(RubyActionGroup.RUBY_SOURCE_SEPARATOR, new RefactoringAction(OverrideMethodRefactoring.class, OverrideMethodRefactoring.NAME, selectionProvider));
 		return submenu;
 	}
 }

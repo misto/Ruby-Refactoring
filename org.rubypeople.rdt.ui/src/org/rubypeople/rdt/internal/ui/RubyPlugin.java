@@ -8,13 +8,18 @@
  */
 package org.rubypeople.rdt.internal.ui;
 
+import java.io.IOException;
+import java.util.PropertyResourceBundle;
+
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
@@ -68,7 +73,7 @@ public class RubyPlugin extends AbstractUIPlugin implements IRubyColorConstants 
 
 	private static final String ORG_ECLIPSE_UI_VIEWS_TASK_LIST = "org.eclipse.ui.views.TaskList";
 	private static final String ORG_ECLIPSE_UI_VIEWS_PROBLEM_VIEW = "org.eclipse.ui.views.ProblemView";
-    protected static RubyPlugin plugin;
+	protected static RubyPlugin plugin;
 	public static final String PLUGIN_ID = "org.rubypeople.rdt.ui"; //$NON-NLS-1$
 
 	protected RubyTextTools textTools;
@@ -76,8 +81,11 @@ public class RubyPlugin extends AbstractUIPlugin implements IRubyColorConstants 
 	private IWorkingCopyManager fWorkingCopyManager;
 	private RubyDocumentProvider fDocumentProvider;
 	
+	protected PropertyResourceBundle pluginProperties;
+
 	/**
 	 * The combined preference store.
+	 * 
 	 * @since 3.0
 	 */
 	private IPreferenceStore fCombinedPreferenceStore;
@@ -91,9 +99,9 @@ public class RubyPlugin extends AbstractUIPlugin implements IRubyColorConstants 
 	private MockupPreferenceStore fMockupPreferenceStore;
 
 	private RubyFoldingStructureProviderRegistry fFoldingStructureProviderRegistry;
-    private boolean new060ViewsOpened;
-    private ImageDescriptorRegistry fImageDescriptorRegistry;
-    private MembersOrderPreferenceCache fMembersOrderPreferenceCache;
+	private boolean new060ViewsOpened;
+	private ImageDescriptorRegistry fImageDescriptorRegistry;
+	private MembersOrderPreferenceCache fMembersOrderPreferenceCache;
 	private RubyScriptDocumentProvider fExternalRubyDocumentProvider;
 
 	public RubyPlugin() {
@@ -108,7 +116,8 @@ public class RubyPlugin extends AbstractUIPlugin implements IRubyColorConstants 
 	 * @return the mock-up preference store
 	 */
 	public MockupPreferenceStore getMockupPreferenceStore() {
-		if (fMockupPreferenceStore == null) fMockupPreferenceStore = new MockupPreferenceStore();
+		if (fMockupPreferenceStore == null)
+			fMockupPreferenceStore = new MockupPreferenceStore();
 
 		return fMockupPreferenceStore;
 	}
@@ -127,7 +136,7 @@ public class RubyPlugin extends AbstractUIPlugin implements IRubyColorConstants 
 		// wrong order, changes to properties in the preferences page are not
 		// immediately updated
 		// within the ruby editors.
-		//getTextTools();
+		// getTextTools();
 
 		// Here's where the magic happens that makes the IRubyScript's contents
 		// get re-routed to the IDocument's latest contents
@@ -136,70 +145,70 @@ public class RubyPlugin extends AbstractUIPlugin implements IRubyColorConstants 
 			public IBuffer createBuffer(IRubyScript workingCopy) {
 				IRubyScript original = workingCopy.getPrimary();
 				IResource resource = original.getResource();
-				if (resource instanceof IFile) return new DocumentAdapter(workingCopy, (IFile) resource);
+				if (resource instanceof IFile)
+					return new DocumentAdapter(workingCopy, (IFile) resource);
 				return DocumentAdapter.NULL;
 			}
 		});
-        
-        IPreferenceStore store= getPreferenceStore();
-        fMembersOrderPreferenceCache= new MembersOrderPreferenceCache();
-        fMembersOrderPreferenceCache.install(store);
-        
-        
-        RubyCore rubyCore = RubyCore.getPlugin();
-        BlockingSymbolFinder symbolFinder = new BlockingSymbolFinder(rubyCore.getSymbolFinder(), new EclipseJobScheduler());
-        rubyCore.setSymbolFinder(symbolFinder);
-		
+
+		IPreferenceStore store = getPreferenceStore();
+		fMembersOrderPreferenceCache = new MembersOrderPreferenceCache();
+		fMembersOrderPreferenceCache.install(store);
+
+		RubyCore rubyCore = RubyCore.getPlugin();
+		BlockingSymbolFinder symbolFinder = new BlockingSymbolFinder(rubyCore.getSymbolFinder(), new EclipseJobScheduler());
+		rubyCore.setSymbolFinder(symbolFinder);
+
 		listenForNewProjects();
 		upgradeOldProjects();
 		String generateRdocOption = Platform.getDebugOption(RubyPlugin.PLUGIN_ID + "/generaterdoc");
 		RDocUtility.setDebugging(generateRdocOption == null ? false : generateRdocOption.equalsIgnoreCase("true"));
 	}
 
-    private void listenForNewProjects() {
-        ResourcesPlugin.getWorkspace().addResourceChangeListener(new ProjectUpgradeListener(this));
-    }
-	
-	void upgradeOldProjects() {
-	    Job job = new Job("Upgrade Old Ruby Projects") {
-	        
-	        protected IStatus run(IProgressMonitor monitor) {
-	            try {
-	                boolean projectUpgraded = RubyCore.upgradeOldProjects();
-	                
-	                if (projectUpgraded) {
-	                    openNew060Views();
-	                }
-	            } catch (CoreException e) {
-	                log(IStatus.WARNING, "While upgrading RDT projects", e);
-	            }
-	            return Status.OK_STATUS;
-	        }};
-        job.schedule();
+	private void listenForNewProjects() {
+		ResourcesPlugin.getWorkspace().addResourceChangeListener(new ProjectUpgradeListener(this));
 	}
 
-    private void openNew060Views() {
-        if (new060ViewsOpened)
-            return;
-        WorkbenchJob job = new WorkbenchJob("Show Task View") {
-            public IStatus runInUIThread(IProgressMonitor monitor) {
-                try{
-                    IWorkbenchWindow dw = PlatformUI.getWorkbench().getActiveWorkbenchWindow();
-                    if (dw != null) {
-                        IWorkbenchPage page = dw.getActivePage();
-                        if (page != null) {
-                            page.showView(ORG_ECLIPSE_UI_VIEWS_TASK_LIST);
-                            page.showView(ORG_ECLIPSE_UI_VIEWS_PROBLEM_VIEW);
-                            new060ViewsOpened = true;
-                        }
-                    }
-                }catch (PartInitException ignored){
-                }        
-                return Status.OK_STATUS;
-            }
-        };
-        job.schedule();
-    }
+	void upgradeOldProjects() {
+		Job job = new Job("Upgrade Old Ruby Projects") {
+
+			protected IStatus run(IProgressMonitor monitor) {
+				try {
+					boolean projectUpgraded = RubyCore.upgradeOldProjects();
+
+					if (projectUpgraded) {
+						openNew060Views();
+					}
+				} catch (CoreException e) {
+					log(IStatus.WARNING, "While upgrading RDT projects", e);
+				}
+				return Status.OK_STATUS;
+			}
+		};
+		job.schedule();
+	}
+
+	private void openNew060Views() {
+		if (new060ViewsOpened)
+			return;
+		WorkbenchJob job = new WorkbenchJob("Show Task View") {
+			public IStatus runInUIThread(IProgressMonitor monitor) {
+				try {
+					IWorkbenchWindow dw = PlatformUI.getWorkbench().getActiveWorkbenchWindow();
+					if (dw != null) {
+						IWorkbenchPage page = dw.getActivePage();
+						if (page != null) {
+							page.showView(ORG_ECLIPSE_UI_VIEWS_TASK_LIST);
+							page.showView(ORG_ECLIPSE_UI_VIEWS_PROBLEM_VIEW);
+							new060ViewsOpened = true;
+						}
+					}
+				} catch (PartInitException ignored) {}
+				return Status.OK_STATUS;
+			}
+		};
+		job.schedule();
+	}
 
 	/*
 	 * (non-Javadoc)
@@ -221,12 +230,12 @@ public class RubyPlugin extends AbstractUIPlugin implements IRubyColorConstants 
 				textTools.dispose();
 				textTools = null;
 			}
-            
-            if (fMembersOrderPreferenceCache != null) {
-                fMembersOrderPreferenceCache.dispose();
-                fMembersOrderPreferenceCache= null;
-            }
-            
+
+			if (fMembersOrderPreferenceCache != null) {
+				fMembersOrderPreferenceCache.dispose();
+				fMembersOrderPreferenceCache = null;
+			}
+
 		} finally {
 			super.stop(context);
 		}
@@ -255,7 +264,8 @@ public class RubyPlugin extends AbstractUIPlugin implements IRubyColorConstants 
 	public static void log(IStatus status) {
 		getDefault().getLog().log(status);
 		System.out.println(status.getMessage());
-		if (status.getException() != null) status.getException().printStackTrace();
+		if (status.getException() != null)
+			status.getException().printStackTrace();
 	}
 
 	public static void log(Throwable e) {
@@ -272,12 +282,13 @@ public class RubyPlugin extends AbstractUIPlugin implements IRubyColorConstants 
 	}
 
 	public synchronized RubyTextTools getRubyTextTools() {
-		if (textTools == null) textTools = new RubyTextTools(getPreferenceStore(), RubyCore.getPlugin().getPluginPreferences());
+		if (textTools == null)
+			textTools = new RubyTextTools(getPreferenceStore(), RubyCore.getPlugin().getPluginPreferences());
 		return textTools;
 	}
 
 	public OldCodeFormatter getCodeFormatter() {
-        return new OldCodeFormatter(RubyCore.getOptions());
+		return new OldCodeFormatter(RubyCore.getOptions());
 	}
 
 	protected void initializeDefaultPreferences(IPreferenceStore store) {
@@ -286,7 +297,7 @@ public class RubyPlugin extends AbstractUIPlugin implements IRubyColorConstants 
 		store.setDefault(RUBY_DEFAULT + PreferenceConstants.EDITOR_ITALIC_SUFFIX, false);
 		PreferenceConverter.setDefault(store, RUBY_KEYWORD, new RGB(164, 53, 122));
 		store.setDefault(RUBY_KEYWORD + PreferenceConstants.EDITOR_BOLD_SUFFIX, true);
-		store.setDefault(RUBY_KEYWORD + PreferenceConstants.EDITOR_ITALIC_SUFFIX, false);		
+		store.setDefault(RUBY_KEYWORD + PreferenceConstants.EDITOR_ITALIC_SUFFIX, false);
 		PreferenceConverter.setDefault(store, RUBY_ERROR, new RGB(255, 255, 255));
 		store.setDefault(RUBY_ERROR + PreferenceConstants.EDITOR_BOLD_SUFFIX, true);
 		store.setDefault(RUBY_ERROR + PreferenceConstants.EDITOR_ITALIC_SUFFIX, false);
@@ -296,7 +307,7 @@ public class RubyPlugin extends AbstractUIPlugin implements IRubyColorConstants 
 		store.setDefault(RUBY_STRING + PreferenceConstants.EDITOR_ITALIC_SUFFIX, false);
 		PreferenceConverter.setDefault(store, RUBY_REGEXP, new RGB(90, 30, 160));
 		store.setDefault(RUBY_REGEXP + PreferenceConstants.EDITOR_BOLD_SUFFIX, false);
-		store.setDefault(RUBY_REGEXP + PreferenceConstants.EDITOR_ITALIC_SUFFIX, false);		
+		store.setDefault(RUBY_REGEXP + PreferenceConstants.EDITOR_ITALIC_SUFFIX, false);
 		PreferenceConverter.setDefault(store, RUBY_COMMAND, new RGB(0, 128, 128));
 		store.setDefault(RUBY_COMMAND + PreferenceConstants.EDITOR_BOLD_SUFFIX, false);
 		store.setDefault(RUBY_COMMAND + PreferenceConstants.EDITOR_ITALIC_SUFFIX, false);
@@ -306,15 +317,15 @@ public class RubyPlugin extends AbstractUIPlugin implements IRubyColorConstants 
 		PreferenceConverter.setDefault(store, RUBY_CHARACTER, new RGB(255, 128, 128));
 		store.setDefault(RUBY_CHARACTER + PreferenceConstants.EDITOR_BOLD_SUFFIX, true);
 		store.setDefault(RUBY_CHARACTER + PreferenceConstants.EDITOR_ITALIC_SUFFIX, true);
-        PreferenceConverter.setDefault(store, RUBY_SYMBOL, new RGB(255, 64, 64));
-        store.setDefault(RUBY_SYMBOL + PreferenceConstants.EDITOR_BOLD_SUFFIX, true);
-        store.setDefault(RUBY_SYMBOL + PreferenceConstants.EDITOR_ITALIC_SUFFIX, false);
-        PreferenceConverter.setDefault(store, RUBY_INSTANCE_VARIABLE, new RGB(0, 64, 128));
-        store.setDefault(RUBY_INSTANCE_VARIABLE + PreferenceConstants.EDITOR_BOLD_SUFFIX, true);
-        store.setDefault(RUBY_INSTANCE_VARIABLE + PreferenceConstants.EDITOR_ITALIC_SUFFIX, false);
-        PreferenceConverter.setDefault(store, RUBY_GLOBAL, new RGB(255, 0, 0));
-        store.setDefault(RUBY_GLOBAL + PreferenceConstants.EDITOR_BOLD_SUFFIX, false);
-        store.setDefault(RUBY_GLOBAL + PreferenceConstants.EDITOR_ITALIC_SUFFIX, false);
+		PreferenceConverter.setDefault(store, RUBY_SYMBOL, new RGB(255, 64, 64));
+		store.setDefault(RUBY_SYMBOL + PreferenceConstants.EDITOR_BOLD_SUFFIX, true);
+		store.setDefault(RUBY_SYMBOL + PreferenceConstants.EDITOR_ITALIC_SUFFIX, false);
+		PreferenceConverter.setDefault(store, RUBY_INSTANCE_VARIABLE, new RGB(0, 64, 128));
+		store.setDefault(RUBY_INSTANCE_VARIABLE + PreferenceConstants.EDITOR_BOLD_SUFFIX, true);
+		store.setDefault(RUBY_INSTANCE_VARIABLE + PreferenceConstants.EDITOR_ITALIC_SUFFIX, false);
+		PreferenceConverter.setDefault(store, RUBY_GLOBAL, new RGB(255, 0, 0));
+		store.setDefault(RUBY_GLOBAL + PreferenceConstants.EDITOR_BOLD_SUFFIX, false);
+		store.setDefault(RUBY_GLOBAL + PreferenceConstants.EDITOR_ITALIC_SUFFIX, false);
 		PreferenceConverter.setDefault(store, RUBY_MULTI_LINE_COMMENT, new RGB(63, 127, 95));
 		store.setDefault(RUBY_MULTI_LINE_COMMENT + PreferenceConstants.EDITOR_BOLD_SUFFIX, false);
 		store.setDefault(RUBY_MULTI_LINE_COMMENT + PreferenceConstants.EDITOR_ITALIC_SUFFIX, false);
@@ -324,7 +335,7 @@ public class RubyPlugin extends AbstractUIPlugin implements IRubyColorConstants 
 		PreferenceConverter.setDefault(store, TASK_TAG, new RGB(127, 159, 191));
 		store.setDefault(TASK_TAG + PreferenceConstants.EDITOR_BOLD_SUFFIX, true);
 		store.setDefault(TASK_TAG + PreferenceConstants.EDITOR_ITALIC_SUFFIX, false);
-		
+
 		//
 		EditorsUI.useAnnotationsPreferencePage(store);
 		EditorsUI.useQuickDiffPreferencePage(store);
@@ -338,7 +349,8 @@ public class RubyPlugin extends AbstractUIPlugin implements IRubyColorConstants 
 	 */
 	public static IWorkbenchPage getActivePage() {
 		IWorkbenchWindow window = getDefault().getWorkbench().getActiveWorkbenchWindow();
-		if (window == null) return null;
+		if (window == null)
+			return null;
 		return getDefault().getWorkbench().getActiveWorkbenchWindow().getActivePage();
 	}
 
@@ -352,17 +364,23 @@ public class RubyPlugin extends AbstractUIPlugin implements IRubyColorConstants 
 
 	public IResource getSelectedResource() {
 		IWorkbenchPage page = RubyPlugin.getActivePage();
-		if (page == null) { return null; }
+		if (page == null) {
+			return null;
+		}
 		// first try: a selection in the navigator or ruby resource view
 		ISelection selection = page.getSelection();
 		if (selection instanceof IStructuredSelection && !selection.isEmpty()) {
 			IStructuredSelection structuredSelection = (IStructuredSelection) selection;
 			Object obj = structuredSelection.getFirstElement();
-			if (obj instanceof IResource) { return (IResource) obj; }
+			if (obj instanceof IResource) {
+				return (IResource) obj;
+			}
 		}
 		// second try: an editor is selected
 		IEditorPart part = page.getActiveEditor();
-		if (part == null) { return null; }
+		if (part == null) {
+			return null;
+		}
 		IEditorInput input = part.getEditorInput();
 		return (IResource) input.getAdapter(IResource.class);
 	}
@@ -374,7 +392,9 @@ public class RubyPlugin extends AbstractUIPlugin implements IRubyColorConstants 
 	}
 
 	public boolean isRubyFile(IResource resource) {
-		if (resource == null || !(resource instanceof IFile)) { return false; }
+		if (resource == null || !(resource instanceof IFile)) {
+			return false;
+		}
 		return isRubyFile((IFile) resource);
 	}
 
@@ -390,7 +410,8 @@ public class RubyPlugin extends AbstractUIPlugin implements IRubyColorConstants 
 	}
 
 	public synchronized RubyDocumentProvider getRubyDocumentProvider() {
-		if (fDocumentProvider == null) fDocumentProvider = new RubyDocumentProvider();
+		if (fDocumentProvider == null)
+			fDocumentProvider = new RubyDocumentProvider();
 		return fDocumentProvider;
 	}
 
@@ -404,7 +425,8 @@ public class RubyPlugin extends AbstractUIPlugin implements IRubyColorConstants 
 	 * @since 3.0
 	 */
 	public synchronized RubyFoldingStructureProviderRegistry getFoldingStructureProviderRegistry() {
-		if (fFoldingStructureProviderRegistry == null) fFoldingStructureProviderRegistry = new RubyFoldingStructureProviderRegistry();
+		if (fFoldingStructureProviderRegistry == null)
+			fFoldingStructureProviderRegistry = new RubyFoldingStructureProviderRegistry();
 		return fFoldingStructureProviderRegistry;
 	}
 
@@ -431,8 +453,8 @@ public class RubyPlugin extends AbstractUIPlugin implements IRubyColorConstants 
 	 */
 	public IPreferenceStore getCombinedPreferenceStore() {
 		if (fCombinedPreferenceStore == null) {
-			IPreferenceStore generalTextStore= EditorsUI.getPreferenceStore(); 
-			fCombinedPreferenceStore= new ChainedPreferenceStore(new IPreferenceStore[] { getPreferenceStore(), new PreferencesAdapter(RubyCore.getPlugin().getPluginPreferences()), generalTextStore });
+			IPreferenceStore generalTextStore = EditorsUI.getPreferenceStore();
+			fCombinedPreferenceStore = new ChainedPreferenceStore(new IPreferenceStore[] { getPreferenceStore(), new PreferencesAdapter(RubyCore.getPlugin().getPluginPreferences()), generalTextStore });
 		}
 		return fCombinedPreferenceStore;
 	}
@@ -450,7 +472,7 @@ public class RubyPlugin extends AbstractUIPlugin implements IRubyColorConstants 
 	public TemplateStore getTemplateStore() {
 		return RubyTemplateAccess.getDefault().getTemplateStore();
 	}
-	
+
 	/**
 	 * Returns the template context type registry for the ruby plugin.
 	 * 
@@ -461,49 +483,70 @@ public class RubyPlugin extends AbstractUIPlugin implements IRubyColorConstants 
 		return RubyTemplateAccess.getDefault().getContextTypeRegistry();
 	}
 
-    public static boolean isDebug() {
-        // TODO set to true based on debugging/tracing!
-        return false;
-    }
+	public static boolean isDebug() {
+		// TODO set to true based on debugging/tracing!
+		return false;
+	}
 
-    /**
-     * Creates the Java plugin standard groups in a context menu.
-     * 
-     * @param menu the menu manager to be populated
-     */
-    public static void createStandardGroups(IMenuManager menu) {
-        if (!menu.isEmpty())
-            return;            
-        menu.add(new Separator(IContextMenuConstants.GROUP_NEW));
-        menu.add(new GroupMarker(IContextMenuConstants.GROUP_GOTO));
-        menu.add(new Separator(IContextMenuConstants.GROUP_OPEN));
-        menu.add(new GroupMarker(IContextMenuConstants.GROUP_SHOW));
-        menu.add(new Separator(IContextMenuConstants.GROUP_REORGANIZE));
-        menu.add(new Separator(IContextMenuConstants.GROUP_GENERATE));
-        menu.add(new Separator(IContextMenuConstants.GROUP_SEARCH));
-        menu.add(new Separator(IContextMenuConstants.GROUP_BUILD));
-        menu.add(new Separator(IContextMenuConstants.GROUP_ADDITIONS));
-        menu.add(new Separator(IContextMenuConstants.GROUP_VIEWER_SETUP));
-        menu.add(new Separator(IContextMenuConstants.GROUP_PROPERTIES));
-    }
+	/**
+	 * Creates the Java plugin standard groups in a context menu.
+	 * 
+	 * @param menu
+	 *            the menu manager to be populated
+	 */
+	public static void createStandardGroups(IMenuManager menu) {
+		if (!menu.isEmpty())
+			return;
+		menu.add(new Separator(IContextMenuConstants.GROUP_NEW));
+		menu.add(new GroupMarker(IContextMenuConstants.GROUP_GOTO));
+		menu.add(new Separator(IContextMenuConstants.GROUP_OPEN));
+		menu.add(new GroupMarker(IContextMenuConstants.GROUP_SHOW));
+		menu.add(new Separator(IContextMenuConstants.GROUP_REORGANIZE));
+		menu.add(new Separator(IContextMenuConstants.GROUP_GENERATE));
+		menu.add(new Separator(IContextMenuConstants.GROUP_SEARCH));
+		menu.add(new Separator(IContextMenuConstants.GROUP_BUILD));
+		menu.add(new Separator(IContextMenuConstants.GROUP_ADDITIONS));
+		menu.add(new Separator(IContextMenuConstants.GROUP_VIEWER_SETUP));
+		menu.add(new Separator(IContextMenuConstants.GROUP_PROPERTIES));
+	}
 
-    public static ImageDescriptorRegistry getImageDescriptorRegistry() {
-        return getDefault().internalGetImageDescriptorRegistry();
-    }
-    private synchronized ImageDescriptorRegistry internalGetImageDescriptorRegistry() {
-        if (fImageDescriptorRegistry == null)
-            fImageDescriptorRegistry= new ImageDescriptorRegistry();
-        return fImageDescriptorRegistry;
-    }
+	public static ImageDescriptorRegistry getImageDescriptorRegistry() {
+		return getDefault().internalGetImageDescriptorRegistry();
+	}
 
-    public synchronized MembersOrderPreferenceCache getMemberOrderPreferenceCache() {
-        // initialized on startup
-        return fMembersOrderPreferenceCache;
-    }
+	private synchronized ImageDescriptorRegistry internalGetImageDescriptorRegistry() {
+		if (fImageDescriptorRegistry == null)
+			fImageDescriptorRegistry = new ImageDescriptorRegistry();
+		return fImageDescriptorRegistry;
+	}
+
+	public synchronized MembersOrderPreferenceCache getMemberOrderPreferenceCache() {
+		// initialized on startup
+		return fMembersOrderPreferenceCache;
+	}
 
 	public synchronized RubyScriptDocumentProvider getExternalDocumentProvider() {
-		 if (fExternalRubyDocumentProvider == null)
-			 fExternalRubyDocumentProvider= new RubyScriptDocumentProvider();
-	        return fExternalRubyDocumentProvider;
+		if (fExternalRubyDocumentProvider == null)
+			fExternalRubyDocumentProvider = new RubyScriptDocumentProvider();
+		return fExternalRubyDocumentProvider;
+	}
+
+
+	public PropertyResourceBundle getPluginProperties() {
+
+		if (pluginProperties == null) {
+			try {
+
+				pluginProperties = new PropertyResourceBundle(
+
+				FileLocator.openStream(this.getBundle(),
+
+				new Path("plugin.properties"), false));
+
+			} catch (IOException e) {
+				log(e);
+			}
+		}
+		return pluginProperties;
 	}
 }
