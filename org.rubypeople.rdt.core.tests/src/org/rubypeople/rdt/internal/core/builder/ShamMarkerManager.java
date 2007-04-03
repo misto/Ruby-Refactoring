@@ -48,11 +48,6 @@ public class ShamMarkerManager implements IMarkerManager {
         syntaxExceptionArg = syntaxException;
     }
 
-    public void assertErrorCreated(ShamFile expectedFile, SyntaxException expectedSyntaxException) {
-        Assert.assertEquals("file", expectedFile, fileArg);
-        Assert.assertEquals("syntaxException", expectedSyntaxException, syntaxExceptionArg);
-    }
-
     public void createTasks(IFile file, List<TaskTag> tasks) throws CoreException {
         fileArg = file;
         tasksArg = tasks;
@@ -88,13 +83,6 @@ public class ShamMarkerManager implements IMarkerManager {
         startOffsetArg = startOffset;
         endOffsetArg = endOffset;
     }
-
-	public void createError(IFile file, String message, int startLine, int startOffset, int endOffset) {
-		 fileArg = file;
-		 ISourcePosition position = new RdtPosition(startLine, startOffset, endOffset);
-		 SyntaxException e = new SyntaxException(position, message);
-	     syntaxExceptionArg = e;
-	}
 
 	public void addProblem(IFile file, IProblem problem) {
 		fileArg = file;

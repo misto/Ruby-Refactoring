@@ -20,6 +20,7 @@ import org.jruby.ast.visitor.NodeVisitor;
 import org.jruby.evaluator.Instruction;
 import org.jruby.lexer.yacc.SyntaxException;
 import org.rubypeople.eclipse.shams.resources.ShamFile;
+import org.rubypeople.rdt.internal.core.parser.RdtPosition;
 
 public class TC_RubyCodeAnalyzer extends TestCase {
 
@@ -64,12 +65,12 @@ public class TC_RubyCodeAnalyzer extends TestCase {
     
 
     public void testSyntaxException() throws Exception {
-        SyntaxException syntaxException = new SyntaxException(null, "");
+        SyntaxException syntaxException = new SyntaxException(new RdtPosition(1, 0, 10), "");
         parser.setExceptionToThrow(syntaxException);
         
         compiler.compileFile(file);
         
         file.assertContentStreamClosed();
-        markerManager.assertErrorCreated(file, syntaxException);
+        markerManager.assertWarningAdded(file, "", 1, 0, 10);
     }
 }
