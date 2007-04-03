@@ -42,7 +42,7 @@ public class ExperimentalIndex implements IElementChangedListener {
 		processDelta(event.getDelta());
 	}
 	
-	// FIXME We're ding poor man's scoping by passing in the script. We should actually create scope classes which could tell if a document fell in our out of it...
+	// FIXME We're doing poor man's scoping by passing in the script. We should actually create scope classes which could tell if a document fell in our out of it...
 	public static Set<String> getTypeNames(IRubyScript script) {
 		return getElementNames(IRubyElement.TYPE, script);
 	}
