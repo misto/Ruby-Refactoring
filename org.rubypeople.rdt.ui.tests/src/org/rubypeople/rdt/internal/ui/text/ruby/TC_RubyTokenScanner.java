@@ -167,4 +167,18 @@ public class TC_RubyTokenScanner extends TestCase {
 		assertToken(IRubyColorConstants.RUBY_SYMBOL, 23, 2);  // ' :'
 		assertToken(IRubyColorConstants.RUBY_SYMBOL, 25, 8);  // 'each_key'
 	}
+	
+	public void testSymbolInsideBracketsTwo() {
+		String code = "@repository=params[:repository]";
+		setUpScanner(code);
+		assertToken(IRubyColorConstants.RUBY_INSTANCE_VARIABLE, 0, 11);  // '@repository'
+		assertToken(IRubyColorConstants.RUBY_DEFAULT, 11, 1);  // '='
+		assertToken(IRubyColorConstants.RUBY_DEFAULT, 12, 6);  // 'params'
+		assertToken(IRubyColorConstants.RUBY_DEFAULT, 18, 1);  // '['
+		assertToken(IRubyColorConstants.RUBY_SYMBOL, 19, 1);  // ':'
+		assertToken(IRubyColorConstants.RUBY_SYMBOL, 20, 10);  // 'repository'
+		assertToken(IRubyColorConstants.RUBY_DEFAULT, 30, 1);  // ']'
+	}
+
+    
 }
