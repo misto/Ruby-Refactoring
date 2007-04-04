@@ -100,12 +100,10 @@ public class RubyHyperLinkDetector implements IHyperlinkDetector {
 					}
 				}
 			} catch (RubyModelException e) {
-				RubyPlugin.log(e);
+				//ignore 
 			}
 		}
-
 		return null;
-
 	}
 
 }
