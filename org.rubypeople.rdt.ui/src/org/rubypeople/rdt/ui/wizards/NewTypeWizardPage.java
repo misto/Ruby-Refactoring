@@ -31,6 +31,7 @@ import org.rubypeople.rdt.core.IType;
 import org.rubypeople.rdt.core.RubyConventions;
 import org.rubypeople.rdt.core.RubyModelException;
 import org.rubypeople.rdt.core.formatter.CodeFormatter;
+import org.rubypeople.rdt.internal.core.RubyProject;
 import org.rubypeople.rdt.internal.corext.codemanipulation.StubUtility;
 import org.rubypeople.rdt.internal.corext.util.CodeFormatterUtil;
 import org.rubypeople.rdt.internal.corext.util.Messages;
@@ -118,9 +119,9 @@ public abstract class NewTypeWizardPage extends NewContainerWizardPage {
 	protected IStatus fSuperInterfacesStatus;	
 
 	private int fTypeKind;
-	private ISourceFolder fCurrPackage;
+	private ISourceFolder fCurrSourceFolder;
 
-	private boolean fCanModifyPackage;
+	private boolean fCanModifySourceFolder;
 	
 	/**
 	 * Constant to signal that the created type is a class.
@@ -230,7 +231,7 @@ public abstract class NewTypeWizardPage extends NewContainerWizardPage {
 		
 		ISourceFolderRoot root= getSourceFolderRoot();
 		if (root != null) {		
-			fCurrPackage= root.getSourceFolder(packName);
+			fCurrSourceFolder= root.getSourceFolder(packName);
 		} else {
 			status.setError(""); //$NON-NLS-1$
 		}
@@ -535,7 +536,7 @@ public abstract class NewTypeWizardPage extends NewContainerWizardPage {
 	 * could not be resolved.
 	 */
 	public ISourceFolder getSourceFolder() {
-		return fCurrPackage;		
+		return fCurrSourceFolder;		
 	}
 	
 	/**
@@ -547,8 +548,8 @@ public abstract class NewTypeWizardPage extends NewContainerWizardPage {
 	 * editable; otherwise it is read-only.
 	 */
 	public void setSourceFolder(ISourceFolder pack, boolean canBeModified) {
-		fCurrPackage= pack;
-		fCanModifyPackage= canBeModified;
+		fCurrSourceFolder= pack;
+		fCanModifySourceFolder= canBeModified;
 		String str= (pack == null) ? "" : pack.getElementName(); //$NON-NLS-1$
 		fPackageDialogField.setText(str);
 		updateEnableState();
@@ -559,7 +560,7 @@ public abstract class NewTypeWizardPage extends NewContainerWizardPage {
 	 */
 	private void updateEnableState() {
 		boolean enclosing= isEnclosingTypeSelected();
-		fPackageDialogField.setEnabled(fCanModifyPackage && !enclosing);
+		fPackageDialogField.setEnabled(fCanModifySourceFolder && !enclosing);
 	}	
 	
 	private boolean isEnclosingTypeSelected() {
@@ -830,13 +831,17 @@ public abstract class NewTypeWizardPage extends NewContainerWizardPage {
 		ArrayList initSuperinterfaces= new ArrayList(5);
 
 		IRubyProject project= null;
-		ISourceFolder pack= null;
+		ISourceFolder folder= null;
 		IType enclosingType= null;
 				
 		if (elem != null) {
 			// evaluate the enclosing type
 			project= elem.getRubyProject();
-			pack= (ISourceFolder) elem.getAncestor(IRubyElement.SOURCE_FOLDER);
+			if (elem instanceof RubyProject) {
+				folder = getSourceFolderRoot().getSourceFolder(new String[0]);
+			} else {
+				folder= (ISourceFolder) elem.getAncestor(IRubyElement.SOURCE_FOLDER);
+			}
 			IType typeInCU= (IType) elem.getAncestor(IRubyElement.TYPE);
 			if (typeInCU != null) {
 				if (typeInCU.getRubyScript() != null) {
@@ -878,7 +883,7 @@ public abstract class NewTypeWizardPage extends NewContainerWizardPage {
 			}
 		}
 
-//		setPackageFragment(pack, true);
+		setSourceFolder(folder, true);
 		
 		setTypeName(typeName, true);
 		setSuperClass(initSuperclass, true);

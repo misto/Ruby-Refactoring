@@ -120,7 +120,7 @@ public class SourceParser extends InOrderVisitor {
 		
 		Instruction ins = super.visitClassNode(iVisited);
 		
-		requestor.exitType(iVisited.getPosition().getEndOffset());
+		requestor.exitType(iVisited.getPosition().getEndOffset() - 1);
 		return ins;
 	}
 	
@@ -139,7 +139,7 @@ public class SourceParser extends InOrderVisitor {
 		
 		Instruction ins = super.visitModuleNode(iVisited);
 		
-		requestor.exitType(iVisited.getPosition().getEndOffset());
+		requestor.exitType(iVisited.getPosition().getEndOffset() - 1);
 		return ins;
 	}
 	
