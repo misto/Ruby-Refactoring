@@ -224,9 +224,11 @@ public class RubyElementDeltaBuilder {
                 }
             } else if (oldInfo instanceof RubyFieldElementInfo
                     && newInfo instanceof RubyFieldElementInfo) {
-                if (!((RubyFieldElementInfo) oldInfo).getTypeName().equals(
+            	if ( ((RubyFieldElementInfo) oldInfo).getTypeName() != null && ((RubyFieldElementInfo) newInfo).getTypeName() != null) {
+                	if (!((RubyFieldElementInfo) oldInfo).getTypeName().equals(
                         ((RubyFieldElementInfo) newInfo).getTypeName())) {
-                    this.delta.changed(newElement, IRubyElementDelta.F_CONTENT);
+                    	this.delta.changed(newElement, IRubyElementDelta.F_CONTENT);
+                	}
                 }
             }
         }
