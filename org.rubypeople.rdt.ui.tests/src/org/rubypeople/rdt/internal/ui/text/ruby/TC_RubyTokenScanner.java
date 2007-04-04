@@ -179,6 +179,34 @@ public class TC_RubyTokenScanner extends TestCase {
 		assertToken(IRubyColorConstants.RUBY_SYMBOL, 20, 10);  // 'repository'
 		assertToken(IRubyColorConstants.RUBY_DEFAULT, 30, 1);  // ']'
 	}
+	
+	public void testTertiaryConditional() {
+		String code = "multiparameter_name = true ? value.method : value";
+		setUpScanner(code);
+		assertToken(IRubyColorConstants.RUBY_DEFAULT, 0, 19);  // 'multiparameter_name'
+		assertToken(IRubyColorConstants.RUBY_DEFAULT, 19, 2);  // ' ='
+		assertToken(IRubyColorConstants.RUBY_KEYWORD, 21, 5);  // ' true'
+		assertToken(IRubyColorConstants.RUBY_DEFAULT, 26, 2);  // ' ?'
+		assertToken(IRubyColorConstants.RUBY_DEFAULT, 28, 6);  // ' value'
+		assertToken(IRubyColorConstants.RUBY_DEFAULT, 34, 1);  // '.'
+		assertToken(IRubyColorConstants.RUBY_DEFAULT, 35, 6);  // 'method'
+		assertToken(IRubyColorConstants.RUBY_DEFAULT, 41, 2);  // ' :'
+		assertToken(IRubyColorConstants.RUBY_DEFAULT, 43, 6);  // ' value'
+	}    
+	
+	public void testWhen() {
+		String code = "case value\n" +
+					"when FalseClass: 0\n" +
+					"else value\n" +
+					"end";
+		setUpScanner(code);
+		assertToken(IRubyColorConstants.RUBY_KEYWORD, 0, 4);  // 'case'
+		assertToken(IRubyColorConstants.RUBY_DEFAULT, 4, 6);  // ' value'
+		assertToken(IRubyColorConstants.RUBY_DEFAULT, 10, 1);  // '\n'
+		assertToken(IRubyColorConstants.RUBY_KEYWORD, 11, 4);  // 'when'
+		assertToken(IRubyColorConstants.RUBY_DEFAULT, 15, 11);  // ' FalseClass'
+		assertToken(IRubyColorConstants.RUBY_DEFAULT, 26, 1);  // ':'
+		assertToken(IRubyColorConstants.RUBY_FIXNUM, 27, 2);  // ' 0'
+	}    
 
-    
 }

@@ -25,6 +25,12 @@ import org.rubypeople.rdt.ui.text.IColorManager;
 
 public class RubyTokenScanner extends AbstractRubyTokenScanner {
 
+	private static final int MIN_KEYWORD = 257;
+	private static final int MAX_KEYWORD = 303;
+	private static final int COMMA = 44;
+	private static final int COLON = 58;
+	private static final int NEWLINE = 10;
+
 	protected String[] keywords;
 
 	private static String[] fgTokenProperties = { IRubyColorConstants.RUBY_KEYWORD, IRubyColorConstants.RUBY_DEFAULT, 
@@ -54,6 +60,7 @@ public class RubyTokenScanner extends AbstractRubyTokenScanner {
 	private int fSavedLength = -1;
 	private int fSavedOffset = -1;
 	private boolean lastWasComment;
+	private boolean inAlias;
 
 	public RubyTokenScanner(IColorManager manager, IPreferenceStore store) {
 		super(manager, store);
@@ -165,31 +172,29 @@ public class RubyTokenScanner extends AbstractRubyTokenScanner {
 		return super.getToken(key);
 	}
 
-	private IToken token(int i) {
+	private IToken token(int i) {		
 		if (isInSymbol) {
-			if ((i == Tokens.tAREF) || (i == Tokens.tASET) || (i == Tokens.tIDENTIFIER) 
-					|| (i == Tokens.tIVAR) || (i == Tokens.tCVAR) || (i == Tokens.tMINUS)
-					|| (i == Tokens.tPLUS) || (i == Tokens.tPIPE) || (i == Tokens.tCARET)
-					|| (i == Tokens.tLT) || (i == Tokens.tGT) || (i == Tokens.tAMPER)
-					|| (i == Tokens.tSTAR2) || (i == Tokens.tDIVIDE) || (i == Tokens.tPERCENT)
-					|| (i == Tokens.tBACK_REF2) || (i == Tokens.tTILDE) || (i == Tokens.tCONSTANT) 
-					|| (i == Tokens.tFID) || (i == 10) /* Newline */ 
-					|| ( i >= 257 && i <= 303) /* keywords */) {
+			if (isSymbolTerminator(i)) {
 				isInSymbol = false; // we're at the end of the symbol
-				if (i == 10) // newline ends it and is actually default, not symbol
+				if (shouldReturnDefault(i))
 					return doGetToken(IRubyColorConstants.RUBY_DEFAULT);
 				return doGetToken(IRubyColorConstants.RUBY_SYMBOL);
 			}
-			if (i == Tokens.tASSOC || i == 44 /* ',' */) {
-				isInSymbol = false;
-				return doGetToken(IRubyColorConstants.RUBY_DEFAULT);
-			}
 		}
-		if (i >= 257 && i <= 303)
+		// The next two conditionals work around a JRuby parsing bug
+		// JRuby returns the number for ':' on second symbol's beginning in alias calls
+		if (i == Tokens.kALIAS) {
+			inAlias = true;
+		}
+		if (i == COLON && inAlias) {
+			isInSymbol = true;
+			inAlias = false;
+			return doGetToken(IRubyColorConstants.RUBY_SYMBOL);
+		} // end JRuby parsing hack for alias
+		if (isKeyword(i))
 			return doGetToken(IRubyColorConstants.RUBY_KEYWORD);
 		switch (i) {
-		case Tokens.tSYMBEG:
-		case 58: // ':' FIXME JRuby returns the number for ':' on second symbol's beginning in alias calls
+		case Tokens.tSYMBEG:		
 			isInSymbol = true;
 			return doGetToken(IRubyColorConstants.RUBY_SYMBOL);
 		case Tokens.tGVAR:
@@ -220,6 +225,52 @@ public class RubyTokenScanner extends AbstractRubyTokenScanner {
 		default:
 			return doGetToken(IRubyColorConstants.RUBY_DEFAULT);
 		}
+	}
+
+	private boolean shouldReturnDefault(int i) {
+		switch (i) {
+		case NEWLINE:
+		case COMMA:
+		case Tokens.tASSOC:
+			return true;
+		default:
+			return false;
+		}
+	}
+
+	private boolean isSymbolTerminator(int i) {
+		if (isKeyword(i)) return true;
+		switch (i) {
+		case Tokens.tAREF:
+		case Tokens.tCVAR:
+		case Tokens.tMINUS:
+		case Tokens.tPLUS:
+		case Tokens.tPIPE:
+		case Tokens.tCARET:
+		case Tokens.tLT:
+		case Tokens.tGT:
+		case Tokens.tAMPER:
+		case Tokens.tSTAR2:
+		case Tokens.tDIVIDE:
+		case Tokens.tPERCENT:
+		case Tokens.tBACK_REF2:
+		case Tokens.tTILDE:
+		case Tokens.tCONSTANT: 
+		case Tokens.tFID:
+		case Tokens.tASET:
+		case Tokens.tIDENTIFIER: 
+		case Tokens.tIVAR:
+		case Tokens.tASSOC:
+		case COMMA:
+		case NEWLINE:
+			return true;
+		default:
+			return false;
+		}
+	}
+
+	private boolean isKeyword(int i) {
+		return (i >= MIN_KEYWORD && i <= MAX_KEYWORD);
 	}
 
 	public void setRange(IDocument document, int offset, int length) {
