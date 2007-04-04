@@ -518,17 +518,34 @@ public abstract class NewTypeWizardPage extends NewContainerWizardPage {
 	
 	/**
 	 * Hook method that is called when evaluating the name of the compilation unit to create. By default, a file extension
-	 * <code>java</code> is added to the given type name, but implementors can override this behavior.
+	 * <code>rb</code> is added to the given type name, but implementors can override this behavior.
 	 * 
 	 * @param typeName the name of the type to create the compilation unit for.
 	 * @return the name of the compilation unit to be created for the given name
 	 * 
-	 * @since 3.2
+	 * @since 0.9.0
 	 */
 	protected String getRubyScriptName(String typeName) {
-		return typeName + RubyModelUtil.DEFAULT_SCRIPT_SUFFIX;
+		return convertCamelCaseToUnderscore(typeName) + RubyModelUtil.DEFAULT_SCRIPT_SUFFIX;
 	}
 	
+	private String convertCamelCaseToUnderscore(String name) {
+		StringBuffer newName = new StringBuffer();
+		boolean lastWasUpper = false;
+		for (int i = 0; i < name.length(); i++) {
+			char c = name.charAt(i);
+			newName.append(Character.toLowerCase(c));
+			if (lastWasUpper && Character.isLowerCase(c)) {
+				if (newName.length() > 2) newName.insert(newName.length() - 2, "_");
+				lastWasUpper = false;
+			}
+			if (Character.isUpperCase(c)) {				
+				lastWasUpper = true;
+			} 
+		}
+		return newName.toString();
+	}
+
 	/**
 	 * Returns the package fragment corresponding to the current input.
 	 * 
