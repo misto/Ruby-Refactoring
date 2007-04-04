@@ -232,8 +232,11 @@ public class CompletionEngine {
 			flags |= Flags.AccStatic;
 			if (method.isConstructor())
 				name = CONSTRUCTOR_INVOKE_NAME;
-			else
-				name = name.substring(typeName.length() + 1);
+			else {
+				if (name.startsWith(typeName)) {
+					name = name.substring(typeName.length() + 1);
+				}
+			}
 		} else {
 			// Don't show instance methods if the thing we're working on is a class' name!
 			// FIXME We do want to show if it is a constant, but not a class name
