@@ -86,6 +86,7 @@ public class RubyHyperLinkDetector implements IHyperlinkDetector {
 			SelectionEngine engine = new SelectionEngine();
 			IWorkingCopyManager manager = RubyPlugin.getDefault().getWorkingCopyManager();
 			IRubyScript script = manager.getWorkingCopy(fEditorInput);
+			if (script == null) return null;
 			RubyParser parser = new RubyParser();
 			try {
 				Node root = parser.parse((IFile) script.getResource(), new StringReader(script.getSource()));
