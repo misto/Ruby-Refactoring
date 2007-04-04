@@ -183,7 +183,6 @@ public class DefaultReferenceFinder implements IReferenceFinder {
 		List<Node> searchResults = ScopedNodeLocator.Instance().findNodesInScope(searchSpace, new INodeAcceptor() {
 			public boolean doesAccept(Node node) {
 				String name = getLocalVarRefName(node, finalSearchSpace);
-//				System.out.println("Matching name" + name);
 				return ( name != null && name.equals(origName));
 			}
 		});
@@ -192,8 +191,6 @@ public class DefaultReferenceFinder implements IReferenceFinder {
 		for ( Node searchResult : searchResults ) {
 			references.add(getPositionOfName(searchResult, searchSpace));
 		}
-		
-//		System.out.println("Searching search space " + searchSpace.toString() + searchSpace.getPosition().toString() );
 	}
 	
 	private void log(String string) {

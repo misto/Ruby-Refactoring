@@ -252,9 +252,6 @@ public class DefaultOccurrencesFinder extends AbstractOccurencesFinder {
 	 * @param occurrences
 	 */
 	private void pushLocalVarRefs(Node root, Node orig, List<ISourcePosition> occurrences) {
-		// System.out.println("Finding occurrences for a local variable " +
-		// orig.toString());
-
 		// Find the search space
 		Node searchSpace = FirstPrecursorNodeLocator.Instance().findFirstPrecursor(root, orig.getPosition().getStartOffset(), new INodeAcceptor() {
 			public boolean doesAccept(Node node) {
@@ -297,9 +294,6 @@ public class DefaultOccurrencesFinder extends AbstractOccurencesFinder {
 	 * @param occurrences
 	 */
 	private void pushDVarRefs(Node root, Node orig, List<ISourcePosition> occurrences) {
-		// System.out.println("Finding occurrences for a local variable " +
-		// orig.toString());
-
 		// Find the search space
 		Node searchSpace = FirstPrecursorNodeLocator.Instance().findFirstPrecursor(root, orig.getPosition().getStartOffset(), new INodeAcceptor() {
 			public boolean doesAccept(Node node) {
@@ -340,9 +334,6 @@ public class DefaultOccurrencesFinder extends AbstractOccurencesFinder {
 	 * @param occurrences
 	 */
 	private void pushInstVarRefs(Node root, Node orig, List<ISourcePosition> occurrences) {
-		// System.out.println("Finding occurrences for an instance variable " +
-		// orig.toString() );
-
 		Node searchSpace = determineSearchSpace(root, orig);
 
 		// Finalize searchSpace because Java's scoping rules are the awesome
@@ -411,9 +402,6 @@ public class DefaultOccurrencesFinder extends AbstractOccurencesFinder {
 	 * @param occurrences
 	 */
 	private void pushClassVarRefs(Node root, Node orig, List<ISourcePosition> occurrences) {
-		// System.out.println("Finding occurrences for an instance variable " +
-		// orig.toString() );
-
 		Node searchSpace = determineSearchSpace(root, orig);
 
 		// Finalize searchSpace because Java's scoping rules are the awesome

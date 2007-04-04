@@ -48,21 +48,15 @@ public class FirstPrecursorNodeLocator extends NodeLocator {
 	/**
 	 * Searches via InOrderVisitor for the closest precursor.
 	 */
-	public Instruction handleNode(Node iVisited)
-	{
-//todo: This will include nodes that envelop nodeStart, not only those starting strictly before it.
+	public Instruction handleNode(Node iVisited) {
+// TODO This will include nodes that envelop nodeStart, not only those starting strictly before it.
 //      If this behavior is unwanted, remove the || (iVisited.getPosition().getStartOffset() <= offset)
-//		in the conditional
-		
-		if (( iVisited.getPosition().getEndOffset() <= offset) || (iVisited.getPosition().getStartOffset() <= offset ))
-		{
-			if ( acceptor.doesAccept( iVisited ) )
-			{
-//				System.out.println("Recording accepted node: " + iVisited.getClass().getSimpleName() + "@" + iVisited.getPosition().getStartOffset() + ".." + iVisited.getPosition().getEndOffset() );
+//		in the conditional		
+		if (( iVisited.getPosition().getEndOffset() <= offset) || (iVisited.getPosition().getStartOffset() <= offset )) {
+			if ( acceptor.doesAccept( iVisited ) ) {
 				locatedNode = iVisited;
 			}
-		}
-		
+		}		
 		return super.handleNode(iVisited);
 	}
 	

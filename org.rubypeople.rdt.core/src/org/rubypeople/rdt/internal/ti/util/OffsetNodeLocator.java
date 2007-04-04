@@ -58,14 +58,12 @@ public class OffsetNodeLocator extends NodeLocator {
 	
 	private Node refine(Node node) {
 		// If the search returned an ArgsNode, try to find the specific ArgumentNode matched
-		if ( node instanceof ArgsNode )
-		{
+		if ( node instanceof ArgsNode ) {
 			ArgsNode argsNode = (ArgsNode)node;
 			if ( argsNode.getArgsCount() > 0 ) {
 				for (Iterator iter = argsNode.getArgs().childNodes().iterator(); iter.hasNext();) {
 					ArgumentNode argNode = (ArgumentNode) iter.next();
 					if ( nodeDoesSpanOffset(argNode, offset) ) {
-//						System.out.println("Refining " + node.getClass().getSimpleName() + "["+node.getPosition().getStartOffset() + ".." + node.getPosition().getEndOffset() + "] to " + argNode.getClass().getSimpleName() + "["+argNode.getPosition().getStartOffset() + ".." + argNode.getPosition().getEndOffset() + "]");
 						return argNode;
 					}
 				}
@@ -79,9 +77,7 @@ public class OffsetNodeLocator extends NodeLocator {
 	 * If so, see if it spans it more closely than any previously identified spanning node.
 	 * If so, record it as the most closely spanning yet.
 	 */
-	public Instruction handleNode(Node iVisited)
-	{
-//		System.out.println("Looking for node at offset, checking: " + iVisited.getClass().getName() + "[" + iVisited.getPosition().getStartOffset() + ".." + iVisited.getPosition().getEndOffset() + "]" );
+	public Instruction handleNode(Node iVisited) {
 		// Skip the NewlineNode since its position is very unaccurate
 		if (!(iVisited instanceof NewlineNode) && nodeDoesSpanOffset(iVisited, offset)) {
 			//note: careful... should this be <=?  I think so; since it traverses in-order, this should find the "most specific" closest node. i.e.
@@ -93,7 +89,7 @@ public class OffsetNodeLocator extends NodeLocator {
 			}
 		}
 		
-		//todo: Since we are moving in order, if a spanning node has been located, and the current node does
+		// TODO Since we are moving in order, if a spanning node has been located, and the current node does
 		//      not span, we can effectively return early since no subsequent nodes should span.  Not doing this
 		//      now, just in case InOrderVisitor proves to not quite be in-order (i.e. offsets reported are off.)
 		

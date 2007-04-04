@@ -78,9 +78,7 @@ public class AttributeLocator extends NodeLocator {
 						}
 						if ( argNode instanceof StrNode ) {
 							attributes.add(attrPrefix + ((StrNode)argNode).getValue() );
-						}
-						System.out.println(argNode.getClass().getName());
-						
+						}						
 					}
 				}
 			}

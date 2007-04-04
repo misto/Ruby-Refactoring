@@ -23,24 +23,8 @@ public class TypeInferenceVisitor extends InOrderVisitor {
 	// TODO: init globalScope to null, push in first non-null node as
 	// globalScope
 	public TypeInferenceVisitor( Node rootNode ) {
-		System.out.println("Instantiating new TypeInferenceVisitor with root node " + stringifyNode(rootNode) );
 		globalScope = new Scope( rootNode, null );
 		currentScope = globalScope;
-	}
-	
-	
-	public Instruction handleNode(Node iVisited) {
-		
-//		if ( iVisited != null )
-//		{
-//			String pos = "";
-//			String cls = "";
-//			if ( iVisited.getPosition() != null ) pos = Integer.toString(iVisited.getPosition().getStartLine());
-//			if ( iVisited.getClass() != null )    cls = iVisited.getClass().getName();
-//			System.out.println("Visiting " + iVisited.getClass().getSimpleName() + "\tat line " + pos + " of class " + cls );
-//			System.out.println("  - Spanning " + iVisited.getPosition().getStartOffset() + "-" + iVisited.getPosition().getEndOffset());
-//		}
-		return super.handleNode(iVisited);
 	}
 	
 	/**
@@ -106,7 +90,6 @@ public class TypeInferenceVisitor extends InOrderVisitor {
 	 * @return newly pushed Scope
 	 */
 	private Scope pushScope( Node node ) {
-		System.out.println("Pushing Scope for Node: " + stringifyNode(node) );
 		Scope newScope = new Scope( node, currentScope );
 		currentScope = newScope;
 		return newScope;
@@ -114,8 +97,7 @@ public class TypeInferenceVisitor extends InOrderVisitor {
 	
 	// TODO: how to tell when to do this?
 	// TODO: perhaps model IndexUpdater rather than InOrderVisitor
-	private void popScope()
-	{
+	private void popScope() {
 		currentScope = currentScope.getParentScope();
 	}
 	
@@ -125,9 +107,7 @@ public class TypeInferenceVisitor extends InOrderVisitor {
 	 */
 	public Instruction visitCallNode(CallNode iVisited) {
 		Variable var = getVariableByVarNode( iVisited.getReceiverNode() );
-		if ( var != null )
-		{
-//			System.out.println("Call: " + var.getName() + "." + iVisited.getName() );
+		if ( var != null ) {
 			// TODO: add call to list
 		}
 		return super.visitCallNode(iVisited);
@@ -159,7 +139,6 @@ public class TypeInferenceVisitor extends InOrderVisitor {
 	 * Local assignment may provide a concrete type from the rvalue
 	 */
 	public Instruction visitLocalAsgnNode(LocalAsgnNode iVisited) {
-//		System.out.println("Visiting LocalAsgnNode: " + stringifyNode(iVisited));
 		Variable var = currentScope.getLocalVariableByCount( iVisited.getIndex() );
 		if ( var == null )
 		{
@@ -214,23 +193,8 @@ public class TypeInferenceVisitor extends InOrderVisitor {
 				}
 			}
 		}
-
-		// Print list of types now assoc'd with the var
-		System.out.print("[");
-		for ( ITypeGuess guess : var.getTypeGuesses() )
-		{
-			System.out.print(guess.getType() + ",");
-		}
-		System.out.print("]");
-		
-		
-    	System.out.println("");
 		return super.visitLocalAsgnNode(iVisited);
 	}
-	
-	
-	
-	
 	
 	/**
 	 * Similar to Node.toString(),. but with the beginning line number.
@@ -238,8 +202,7 @@ public class TypeInferenceVisitor extends InOrderVisitor {
 	 * @param node
 	 * @return
 	 */
-	private String stringifyNode(Node node)
-	{
+	private String stringifyNode(Node node) {
 		return node.getClass().getName() + "@ :" + node.getPosition().getStartLine();
 	}
 
