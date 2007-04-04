@@ -116,6 +116,8 @@ public class CompletionEngine {
 		    RubyElementRequestor requestor = new RubyElementRequestor(script);
 		    IType[] types = requestor.findType(OBJECT);
 		    if (types != null && types.length > 0) type = types[0];
+		} else if (element instanceof IType) {
+			type = (IType) element;
 		} else {
 			type = element.getDeclaringType();
 		}
