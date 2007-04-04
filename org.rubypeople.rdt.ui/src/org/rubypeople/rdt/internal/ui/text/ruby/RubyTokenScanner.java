@@ -129,7 +129,6 @@ public class RubyTokenScanner extends AbstractRubyTokenScanner {
 					fSavedLength = getOffset() - fSavedOffset;
 				} else {
 					fSavedOffset--;
-					tokenLength -= 2;
 					fSavedLength = 0;
 				}
 				lastWasComment = true;
