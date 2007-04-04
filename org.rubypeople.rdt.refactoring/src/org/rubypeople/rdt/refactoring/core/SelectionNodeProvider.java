@@ -54,7 +54,6 @@ import org.jruby.ast.ModuleNode;
 import org.jruby.ast.NewlineNode;
 import org.jruby.ast.Node;
 import org.jruby.ast.RootNode;
-import org.jruby.ast.SClassNode;
 import org.jruby.ast.types.INameNode;
 import org.jruby.lexer.yacc.ISourcePosition;
 import org.rubypeople.rdt.refactoring.exception.NoClassNodeException;
@@ -250,21 +249,20 @@ public class SelectionNodeProvider {
 	public static final int CURSOR_TOLERANCE = 1;
 
 	public static ClassNodeWrapper getSelectedClassNode(Node rootNode, int position) throws NoClassNodeException {
-		return getSelectedClassNode(rootNode, position, SClassNode.class, ClassNode.class);
 		
-	}
-
-	private static ClassNodeWrapper getSelectedClassNode(Node rootNode, int position, Class... classes) throws NoClassNodeException {
-		
-		Node enclosingClassNode = getSelectedNodeOfType(rootNode, position, classes);
+		Node enclosingClassNode = getSelectedNodeOfType(rootNode, position, ClassNode.class);
 		PartialClassNodeWrapper partialClassNode = PartialClassNodeWrapper.getPartialClassNodeWrapper(enclosingClassNode, rootNode);
 
 		ArrayList<ModuleNode> moduleNodes = new ArrayList<ModuleNode>();
-		ModuleNode moduleNode = (ModuleNode) SelectionNodeProvider.getSelectedNodeOfType(rootNode, position, ModuleNode.class);
-		if (moduleNode != null) {
-			moduleNodes.add(moduleNode);
-			partialClassNode.setEnclosingModules(moduleNodes);
+		Collection<Node> subNodes = NodeProvider.getSubNodes(rootNode, ModuleNode.class);
+		for (Node node : subNodes) {
+			if(nodeContainsPosition(node, position)) {
+				moduleNodes.add((ModuleNode) node);
+			}
 		}
+
+		partialClassNode.setEnclosingModules(moduleNodes);
+		
 		return new ClassNodeWrapper(partialClassNode);
 	}
 
