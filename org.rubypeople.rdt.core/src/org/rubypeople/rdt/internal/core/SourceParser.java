@@ -179,23 +179,9 @@ public class SourceParser extends InOrderVisitor {
 	
 	@Override
 	public Instruction visitDefsNode(DefsNode iVisited) {
-		/*
-		 * Get the name of the current static method and add the name of the
-		 * class or module to the beginning of it. This aInstructions instance
-		 * method naming conflicts. e.g.: class A def self.method; end def
-		 * method; end end will give us: A.method method in the Outline View.
-		 */
-		String fullName;
-		String receiver = ASTUtil.stringRepresentation(iVisited.getReceiverNode());
-		if (receiver != null && receiver.trim().length() > 0) {
-			fullName = receiver + "." + iVisited.getName();
-		} else {
-			fullName = iVisited.getName();
-		}
-
 		MethodInfo methodInfo = new MethodInfo();
 		methodInfo.declarationStart = iVisited.getPosition().getStartOffset();
-		methodInfo.name = fullName;
+		methodInfo.name = iVisited.getName();
 		methodInfo.nameSourceStart = iVisited.getNameNode().getPosition().getStartOffset();
 		methodInfo.nameSourceEnd = iVisited.getNameNode().getPosition().getEndOffset() - 1;
 		methodInfo.isConstructor = false;
