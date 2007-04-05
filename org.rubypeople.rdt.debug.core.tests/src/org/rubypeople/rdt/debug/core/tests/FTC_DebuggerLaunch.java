@@ -17,6 +17,7 @@ import org.eclipse.debug.core.model.IProcess;
 import org.rubypeople.eclipse.testutils.ResourceTools;
 import org.rubypeople.rdt.internal.debug.core.RubyLineBreakpoint;
 import org.rubypeople.rdt.internal.launching.RubyLaunchConfigurationAttribute;
+import org.rubypeople.rdt.launching.IRubyLaunchConfigurationConstants;
 import org.rubypeople.rdt.launching.IVMInstallType;
 import org.rubypeople.rdt.launching.RubyRuntime;
 import org.rubypeople.rdt.launching.VMStandin;
@@ -81,7 +82,7 @@ public class FTC_DebuggerLaunch extends TestCase {
 		
 		rubyFile.create(new ByteArrayInputStream("puts 'a'\nputs 'b'".getBytes()), true, new NullProgressMonitor()) ;
 		wc.setAttribute(RubyLaunchConfigurationAttribute.PROJECT_NAME, rubyFile.getProject().getName());
-		wc.setAttribute(RubyLaunchConfigurationAttribute.FILE_NAME, rubyFile.getProjectRelativePath().toString());
+		wc.setAttribute(IRubyLaunchConfigurationConstants.ATTR_FILE_NAME, rubyFile.getProjectRelativePath().toString());
 		//wc.setAttribute(RubyLaunchConfigurationAttribute.WORKING_DIRECTORY, RubyApplicationShortcut.getDefaultWorkingDirectory(rubyFile.getProject()));
 		wc.setAttribute(RubyLaunchConfigurationAttribute.SELECTED_INTERPRETER, RUBY_INTERPRETER_ID);
 		ILaunchConfiguration lc = wc.doSave() ;

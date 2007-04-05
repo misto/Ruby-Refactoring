@@ -101,7 +101,7 @@ public class RubyApplicationShortcut implements ILaunchShortcut {
 			ILaunchConfiguration config = configs[i];
 			boolean projectsEqual = config.getAttribute(RubyLaunchConfigurationAttribute.PROJECT_NAME, "").equals(rubyFile.getProject().getName());
 			if (projectsEqual) {
-				boolean projectRelativeFileNamesEqual = config.getAttribute(RubyLaunchConfigurationAttribute.FILE_NAME, "").equals(rubyFile.getProjectRelativePath().toString());
+				boolean projectRelativeFileNamesEqual = config.getAttribute(IRubyLaunchConfigurationConstants.ATTR_FILE_NAME, "").equals(rubyFile.getProjectRelativePath().toString());
 				if (projectRelativeFileNamesEqual) {
 					candidateConfigs.add(config);
 				}
@@ -129,7 +129,7 @@ public class RubyApplicationShortcut implements ILaunchShortcut {
 			ILaunchConfigurationType configType = getRubyLaunchConfigType();
 			ILaunchConfigurationWorkingCopy wc = configType.newInstance(null, getLaunchManager().generateUniqueLaunchConfigurationNameFrom(rubyFile.getName()));
 			wc.setAttribute(RubyLaunchConfigurationAttribute.PROJECT_NAME, rubyFile.getProject().getName());
-			wc.setAttribute(RubyLaunchConfigurationAttribute.FILE_NAME, rubyFile.getProjectRelativePath().toString());
+			wc.setAttribute(IRubyLaunchConfigurationConstants.ATTR_FILE_NAME, rubyFile.getProjectRelativePath().toString());
 			wc.setAttribute(RubyLaunchConfigurationAttribute.WORKING_DIRECTORY, RubyApplicationShortcut.getDefaultWorkingDirectory(rubyFile.getProject()));
 			wc.setAttribute(IRubyLaunchConfigurationConstants.ATTR_VM_INSTALL_NAME, RubyRuntime.getDefaultVMInstall().getName());
 			wc.setAttribute(IRubyLaunchConfigurationConstants.ATTR_VM_INSTALL_TYPE, RubyRuntime.getDefaultVMInstall().getVMInstallType().getId());

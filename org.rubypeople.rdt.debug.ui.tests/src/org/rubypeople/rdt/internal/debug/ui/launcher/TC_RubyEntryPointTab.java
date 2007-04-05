@@ -7,6 +7,7 @@ import org.rubypeople.eclipse.shams.debug.core.ShamLaunchConfigurationWorkingCop
 import org.rubypeople.rdt.internal.debug.ui.RdtDebugUiMessages;
 import org.rubypeople.rdt.internal.debug.ui.launcher.RubyEntryPointTab;
 import org.rubypeople.rdt.internal.launching.RubyLaunchConfigurationAttribute;
+import org.rubypeople.rdt.launching.IRubyLaunchConfigurationConstants;
 
 public class TC_RubyEntryPointTab extends TestCase {
 
@@ -29,7 +30,7 @@ public class TC_RubyEntryPointTab extends TestCase {
 		errorMessage = RdtDebugUiMessages.LaunchConfigurationTab_RubyEntryPoint_invalidFileSelectionMessage;
 		assertEquals("The tab should set the error message for no file.", errorMessage, tab.getErrorMessage());
 
-		configuration.setAttribute(RubyLaunchConfigurationAttribute.FILE_NAME, "myFileName");
+		configuration.setAttribute(IRubyLaunchConfigurationConstants.ATTR_FILE_NAME, "myFileName");
 		assertTrue("The tab is valid when the configuration has a filename and projectName.", tab.isValid(configuration));
 		assertNull("The tab should set the error message to null when there is a filename and projectname.", tab.getErrorMessage());
 	}

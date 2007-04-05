@@ -24,6 +24,7 @@ import org.rubypeople.rdt.internal.ui.RubyPluginImages;
 import org.rubypeople.rdt.internal.ui.RubyPlugin;
 import org.rubypeople.rdt.internal.ui.util.RubyFileSelector;
 import org.rubypeople.rdt.internal.ui.util.RubyProjectSelector;
+import org.rubypeople.rdt.launching.IRubyLaunchConfigurationConstants;
 
 public class RubyEntryPointTab extends AbstractLaunchConfigurationTab {
 	protected String originalFileName, originalProjectName;
@@ -70,13 +71,13 @@ public class RubyEntryPointTab extends AbstractLaunchConfigurationTab {
 			return ;
 		}
 		configuration.setAttribute(RubyLaunchConfigurationAttribute.PROJECT_NAME, project.getName());
-		configuration.setAttribute(RubyLaunchConfigurationAttribute.FILE_NAME, selectedResource.getProjectRelativePath().toString()) ;
+		configuration.setAttribute(IRubyLaunchConfigurationConstants.ATTR_FILE_NAME, selectedResource.getProjectRelativePath().toString()) ;
 	}
 
 	public void initializeFrom(ILaunchConfiguration configuration) {
 		try {
 			originalProjectName = configuration.getAttribute(RubyLaunchConfigurationAttribute.PROJECT_NAME, "");
-			originalFileName = configuration.getAttribute(RubyLaunchConfigurationAttribute.FILE_NAME, "");
+			originalFileName = configuration.getAttribute(IRubyLaunchConfigurationConstants.ATTR_FILE_NAME, "");
 		} catch (CoreException e) {
 			log(e);
 		}
@@ -90,7 +91,7 @@ public class RubyEntryPointTab extends AbstractLaunchConfigurationTab {
 	public void performApply(ILaunchConfigurationWorkingCopy configuration) {
 		configuration.setAttribute(RubyLaunchConfigurationAttribute.PROJECT_NAME, projectSelector.getSelectionText());
 		IFile file = fileSelector.getSelection();
-		configuration.setAttribute(RubyLaunchConfigurationAttribute.FILE_NAME, file == null ? "" : file.getProjectRelativePath().toString());
+		configuration.setAttribute(IRubyLaunchConfigurationConstants.ATTR_FILE_NAME, file == null ? "" : file.getProjectRelativePath().toString());
 	}
 
 	protected Composite createPageRoot(Composite parent) {
@@ -116,7 +117,7 @@ public class RubyEntryPointTab extends AbstractLaunchConfigurationTab {
 				return false;
 			}
 
-			String fileName = launchConfig.getAttribute(RubyLaunchConfigurationAttribute.FILE_NAME, "");
+			String fileName = launchConfig.getAttribute(IRubyLaunchConfigurationConstants.ATTR_FILE_NAME, "");
 			if (fileName.length() == 0) {
 				setErrorMessage(RdtDebugUiMessages.LaunchConfigurationTab_RubyEntryPoint_invalidFileSelectionMessage);
 				return false;

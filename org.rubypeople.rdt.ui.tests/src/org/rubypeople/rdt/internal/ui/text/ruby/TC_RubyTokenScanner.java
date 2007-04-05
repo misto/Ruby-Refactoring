@@ -228,4 +228,16 @@ public class TC_RubyTokenScanner extends TestCase {
 		assertToken(IRubyColorConstants.RUBY_SYMBOL, 6, 2);  // '$$'
 		assertToken(IRubyColorConstants.RUBY_DEFAULT, 8, 1);  // ')'
 	} 
+	
+	public void testTertiaryConditionalWithNoSpaces() {
+		String code = "puts(a?b:c)";
+		setUpScanner(code);
+		assertToken(IRubyColorConstants.RUBY_DEFAULT, 0, 4);  // 'puts'
+		assertToken(IRubyColorConstants.RUBY_DEFAULT, 4, 1);  // '('
+		assertToken(IRubyColorConstants.RUBY_DEFAULT, 5, 2);  // 'a?'
+		assertToken(IRubyColorConstants.RUBY_DEFAULT, 7, 1);  // 'b'
+		assertToken(IRubyColorConstants.RUBY_DEFAULT, 8, 1);  // ':'
+		assertToken(IRubyColorConstants.RUBY_DEFAULT, 9, 1);  // 'c'
+		assertToken(IRubyColorConstants.RUBY_DEFAULT, 10, 1);  // ')'
+	} 	
 }

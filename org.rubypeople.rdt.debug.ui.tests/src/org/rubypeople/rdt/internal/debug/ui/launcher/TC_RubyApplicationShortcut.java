@@ -25,6 +25,7 @@ import org.rubypeople.rdt.core.tests.ModifyingResourceTest;
 import org.rubypeople.rdt.internal.debug.ui.RdtDebugUiPlugin;
 import org.rubypeople.rdt.internal.debug.ui.RubySourceLocator;
 import org.rubypeople.rdt.internal.launching.RubyLaunchConfigurationAttribute;
+import org.rubypeople.rdt.launching.IRubyLaunchConfigurationConstants;
 import org.rubypeople.rdt.launching.IVMInstall;
 import org.rubypeople.rdt.launching.IVMInstallType;
 import org.rubypeople.rdt.launching.RubyRuntime;
@@ -50,7 +51,7 @@ public class TC_RubyApplicationShortcut extends ModifyingResourceTest {
 			ILaunchConfigurationType configType = DebugPlugin.getDefault().getLaunchManager().getLaunchConfigurationType(SHAM_LAUNCH_CONFIG_TYPE);
 			ILaunchConfigurationWorkingCopy wc = configType.newInstance(null, pFile.getName());
 			wc.setAttribute(RubyLaunchConfigurationAttribute.PROJECT_NAME, pFile.getProject().getName());
-			wc.setAttribute(RubyLaunchConfigurationAttribute.FILE_NAME, pFile.getProjectRelativePath().toString());
+			wc.setAttribute(IRubyLaunchConfigurationConstants.ATTR_FILE_NAME, pFile.getProjectRelativePath().toString());
 			wc.setAttribute(RubyLaunchConfigurationAttribute.WORKING_DIRECTORY, "");
 			wc.setAttribute(RubyLaunchConfigurationAttribute.SELECTED_INTERPRETER, RubyRuntime.getCompositeIdFromVM(RubyRuntime.getDefaultVMInstall()));
 			wc.setAttribute(ILaunchConfiguration.ATTR_SOURCE_LOCATOR_ID, "org.rubypeople.rdt.debug.ui.rubySourceLocator");
@@ -156,7 +157,7 @@ public class TC_RubyApplicationShortcut extends ModifyingResourceTest {
 		assertEquals("A launch took place.", 1, shortcut.launchCount());
 		assertTrue("The shortcut should not log a message when asked to launch the correct file type.", !shortcut.didLog());
 
-		String launchedFileName = configurations[0].getAttribute(RubyLaunchConfigurationAttribute.FILE_NAME, "");
+		String launchedFileName = configurations[0].getAttribute(IRubyLaunchConfigurationConstants.ATTR_FILE_NAME, "");
 		assertEquals("folderOne/myFile.rb", launchedFileName);
 	}
 
@@ -180,7 +181,7 @@ public class TC_RubyApplicationShortcut extends ModifyingResourceTest {
 		assertEquals("A launch took place.", 1, shortcut.launchCount());
 		assertTrue("The shortcut should not log a message when asked to launch the correct file type.", !shortcut.didLog());
 
-		String launchedFileName = configurations[0].getAttribute(RubyLaunchConfigurationAttribute.FILE_NAME, "");
+		String launchedFileName = configurations[0].getAttribute(IRubyLaunchConfigurationConstants.ATTR_FILE_NAME, "");
 		assertEquals("folderOne/myFile.rb", launchedFileName);
 	}
 
