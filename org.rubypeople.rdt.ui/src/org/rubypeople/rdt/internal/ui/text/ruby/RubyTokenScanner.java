@@ -177,9 +177,9 @@ public class RubyTokenScanner extends AbstractRubyTokenScanner {
 			if (isSymbolTerminator(i)) {
 				isInSymbol = false; // we're at the end of the symbol
 				if (shouldReturnDefault(i))
-					return doGetToken(IRubyColorConstants.RUBY_DEFAULT);
-				return doGetToken(IRubyColorConstants.RUBY_SYMBOL);
+					return doGetToken(IRubyColorConstants.RUBY_DEFAULT);				
 			}
+			return doGetToken(IRubyColorConstants.RUBY_SYMBOL);
 		}
 		// The next two conditionals work around a JRuby parsing bug
 		// JRuby returns the number for ':' on second symbol's beginning in alias calls
@@ -232,6 +232,7 @@ public class RubyTokenScanner extends AbstractRubyTokenScanner {
 		case NEWLINE:
 		case COMMA:
 		case Tokens.tASSOC:
+		case Tokens.tRPAREN:
 			return true;
 		default:
 			return false;
@@ -260,7 +261,10 @@ public class RubyTokenScanner extends AbstractRubyTokenScanner {
 		case Tokens.tASET:
 		case Tokens.tIDENTIFIER: 
 		case Tokens.tIVAR:
+		case Tokens.tGVAR:
 		case Tokens.tASSOC:
+		case Tokens.tLSHFT:
+		case Tokens.tRPAREN:
 		case COMMA:
 		case NEWLINE:
 			return true;

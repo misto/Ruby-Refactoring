@@ -209,4 +209,23 @@ public class TC_RubyTokenScanner extends TestCase {
 		assertToken(IRubyColorConstants.RUBY_FIXNUM, 27, 2);  // ' 0'
 	}    
 
+	public void testAppendSymbol() {
+		String code = "puts(:<<)";
+		setUpScanner(code);
+		assertToken(IRubyColorConstants.RUBY_DEFAULT, 0, 4);  // 'puts'
+		assertToken(IRubyColorConstants.RUBY_DEFAULT, 4, 1);  // '('
+		assertToken(IRubyColorConstants.RUBY_SYMBOL, 5, 1);  // ':'
+		assertToken(IRubyColorConstants.RUBY_SYMBOL, 6, 2);  // '<<'
+		assertToken(IRubyColorConstants.RUBY_DEFAULT, 8, 1);  // ')'
+	}    
+	
+	public void testDollarDollarSymbol() {
+		String code = "puts(:$$)";
+		setUpScanner(code);
+		assertToken(IRubyColorConstants.RUBY_DEFAULT, 0, 4);  // 'puts'
+		assertToken(IRubyColorConstants.RUBY_DEFAULT, 4, 1);  // '('
+		assertToken(IRubyColorConstants.RUBY_SYMBOL, 5, 1);  // ':'
+		assertToken(IRubyColorConstants.RUBY_SYMBOL, 6, 2);  // '$$'
+		assertToken(IRubyColorConstants.RUBY_DEFAULT, 8, 1);  // ')'
+	} 
 }
