@@ -154,6 +154,9 @@ public final class Messages extends NLS {
 	public static String build_saveStateProgress;
 	public static String build_saveStateComplete;
 	public static String project_has_no_ruby_nature;
+	public static String manager_filesToIndex;
+	public static String manager_indexingInProgress;
+	public static String process_name;
 
     static {
         NLS.initializeMessages(BUNDLE_NAME, Messages.class);

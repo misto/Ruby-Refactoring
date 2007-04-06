@@ -4,6 +4,10 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.UnsupportedEncodingException;
+
+import org.rubypeople.rdt.internal.core.util.CharOperation;
 
 public class Util {
 
@@ -115,4 +119,91 @@ public class Util {
 			});
 	}
 
+		/**
+	 * Returns the contents of the given file as a char array.
+	 * When encoding is null, then the platform default one is used
+	 * @throws IOException if a problem occured reading the file.
+	 */
+	public static char[] getFileCharContent(File file, String encoding) throws IOException {
+		InputStream stream = null;
+		try {
+			stream = new FileInputStream(file);
+			return getInputStreamAsCharArray(stream, (int) file.length(), encoding);
+		} finally {
+			if (stream != null) {
+				try {
+					stream.close();
+				} catch (IOException e) {
+					// ignore
+				}
+			}
+		}
+	}
+	
+	/**
+	 * Returns the given input stream's contents as a character array.
+	 * If a length is specified (ie. if length != -1), this represents the number of bytes in the stream.
+	 * Note this doesn't close the stream.
+	 * @throws IOException if a problem occured reading the stream.
+	 */
+	public static char[] getInputStreamAsCharArray(InputStream stream, int length, String encoding)
+		throws IOException {
+		InputStreamReader reader = null;
+		try {
+			reader = encoding == null
+						? new InputStreamReader(stream)
+						: new InputStreamReader(stream, encoding);
+		} catch (UnsupportedEncodingException e) {
+			// encoding is not supported
+			reader =  new InputStreamReader(stream);
+		}
+		char[] contents;
+		int totalRead = 0;
+		if (length == -1) {
+			contents = CharOperation.NO_CHAR;
+		} else {
+			// length is a good guess when the encoding produces less or the same amount of characters than the file length
+			contents = new char[length]; // best guess
+		}
+
+		while (true) {
+			int amountRequested;
+			if (totalRead < length) {
+				// until known length is met, reuse same array sized eagerly
+				amountRequested = length - totalRead;
+			} else {
+				// reading beyond known length
+				int current = reader.read(); 
+				if (current < 0) break;
+				
+				amountRequested = Math.max(stream.available(), DEFAULT_READING_SIZE);  // read at least 8K
+				
+				// resize contents if needed
+				if (totalRead + 1 + amountRequested > contents.length)
+					System.arraycopy(contents, 	0, 	contents = new char[totalRead + 1 + amountRequested], 0, totalRead);
+				
+				// add current character
+				contents[totalRead++] = (char) current; // coming from totalRead==length
+			}
+			// read as many chars as possible
+			int amountRead = reader.read(contents, totalRead, amountRequested);
+			if (amountRead < 0) break;
+			totalRead += amountRead;
+		}
+
+		// Do not keep first character for UTF-8 BOM encoding
+		int start = 0;
+		if (totalRead > 0 && UTF_8.equals(encoding)) {
+			if (contents[0] == 0xFEFF) { // if BOM char then skip
+				totalRead--;
+				start = 1;
+			}
+		}
+		
+		// resize contents if necessary
+		if (totalRead < contents.length)
+			System.arraycopy(contents, start, contents = new char[totalRead], 	0, 	totalRead);
+
+		return contents;
+	}
 }
