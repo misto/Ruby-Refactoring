@@ -45,6 +45,7 @@ import org.rubypeople.rdt.internal.core.RubyElement;
 import org.rubypeople.rdt.internal.core.RubyScript;
 import org.rubypeople.rdt.internal.core.RubyType;
 import org.rubypeople.rdt.internal.core.parser.RubyParser;
+import org.rubypeople.rdt.internal.core.search.BasicSearchEngine;
 import org.rubypeople.rdt.internal.core.search.indexing.IndexManager;
 import org.rubypeople.rdt.internal.core.util.ASTUtil;
 import org.rubypeople.rdt.internal.ti.DefaultTypeInferrer;
@@ -135,7 +136,7 @@ public class CompletionEngine {
 	}
 	
 	private void suggestGlobals() {
-		Set<String> globals = IndexManager.getGlobalNames(fContext.getScript());
+		Set<String> globals = BasicSearchEngine.getGlobalNames(fContext.getScript());
 		for (String name : globals) {
 			if (!fContext.prefixStartsWith(name))
 				continue;
@@ -145,7 +146,7 @@ public class CompletionEngine {
 	}
 
 	private void suggestTypeNames() {
-		Set<String> types = IndexManager.getTypeNames(fContext.getScript());
+		Set<String> types = BasicSearchEngine.getTypeNames(fContext.getScript());
 		for (String name : types) {
 			if (!fContext.prefixStartsWith(name))
 				continue;
@@ -162,7 +163,7 @@ public class CompletionEngine {
 	}
 
 	private void suggestConstantNames() {
-		Set<String> types = IndexManager.getConstantNames(fContext.getScript());
+		Set<String> types = BasicSearchEngine.getConstantNames(fContext.getScript());
 		for (String name : types) {
 			if (!fContext.prefixStartsWith(name))
 				continue;
