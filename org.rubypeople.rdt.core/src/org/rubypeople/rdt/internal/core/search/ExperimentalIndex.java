@@ -1,38 +1,27 @@
 package org.rubypeople.rdt.internal.core.search;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 import org.eclipse.core.runtime.IPath;
-import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
 import org.rubypeople.rdt.core.ElementChangedEvent;
 import org.rubypeople.rdt.core.IElementChangedListener;
-import org.rubypeople.rdt.core.IParent;
 import org.rubypeople.rdt.core.IRubyElement;
 import org.rubypeople.rdt.core.IRubyElementDelta;
-import org.rubypeople.rdt.core.IRubyModel;
 import org.rubypeople.rdt.core.IRubyProject;
 import org.rubypeople.rdt.core.IRubyScript;
 import org.rubypeople.rdt.core.ISourceFolderRoot;
 import org.rubypeople.rdt.core.IType;
-import org.rubypeople.rdt.core.RubyCore;
 import org.rubypeople.rdt.core.RubyModelException;
-import org.rubypeople.rdt.internal.core.Openable;
-import org.rubypeople.rdt.internal.core.RubyModelManager;
 
 public class ExperimentalIndex implements IElementChangedListener {
 
 	private static ExperimentalIndex fgInstance;
 	private static Map<IPath, SearchDocument> documents;
-	private static HandleFactory factory = new HandleFactory();
 
 	private ExperimentalIndex() {
 		documents = new HashMap<IPath, SearchDocument>();
@@ -150,145 +139,7 @@ public class ExperimentalIndex implements IElementChangedListener {
 	}
 
 	public static void start() {
-		Job job = new ExperimentalIndexJob(instance());
+		Job job = new IndexAllJob(instance());
 		job.schedule();
-	}
-
-	private static class ExperimentalIndexJob extends Job {
-		private ExperimentalIndex index;
-
-		public ExperimentalIndexJob(ExperimentalIndex index) {
-			super("Search Index Job");
-			this.index = index;
-		}
-
-		@Override
-		protected IStatus run(IProgressMonitor monitor) {
-			// TODO Load up saved data if there is any, rather than starting
-			// over
-			// TODO Clear saved state if user cleans a project
-			// TODO Save state after a run
-			IRubyModel model = RubyModelManager.getRubyModelManager().getRubyModel();
-			addChildren(model);
-			return Status.OK_STATUS;
-		}
-
-		private void addChildren(IParent parent) {
-			try {
-				IRubyElement[] children = parent.getChildren();
-				for (int i = 0; i < children.length; i++) {
-					index.addElement(children[i]);
-					if (children[i] instanceof IParent) {
-						IParent newParent = (IParent) children[i];
-						addChildren(newParent);
-					}
-				}
-			} catch (RubyModelException e) {
-				RubyCore.log(e);
-			}
-		}
-
-	}
-
-	private class SearchDocument {
-		private static final String SEPARATOR = "/";
-		private List<String> indices = new ArrayList<String>();
-		private IPath path;
-		private IRubyScript script;
-
-		SearchDocument(IPath path) {
-			this.path = path;
-		}
-
-		public Set<String> getElementNamesOfType(int type) {
-			Set<String> names = new HashSet<String>();
-			for (String indexKey : indices) {
-				if (getTypeFromKey(indexKey) != type) continue;
-				names.add(getNameFromKey(indexKey));
-			}
-			return names;
-		}
-
-		public List<IRubyElement> getElementsOfType(int type) {
-			IRubyScript script = getScript();
-			return getChildrenOfType(script, type);
-		}
-
-		private IRubyScript getScript() {
-			if (this.script == null) {
-				Openable openable = factory.createOpenable(path.toString());
-				this.script = (IRubyScript) openable;
-			}
-			return this.script;
-		}	
-
-		private List<IRubyElement> getChildrenOfType(IParent parent, int type) {
-			List<IRubyElement> elements = new ArrayList<IRubyElement>();
-			if (parent == null) return elements;
-			try {
-				IRubyElement[] children = parent.getChildren();
-				if (children == null)
-					return elements;
-				for (int i = 0; i < children.length; i++) {
-					if (children[i].isType(type))
-						elements.add(children[i]);
-					if (children[i] instanceof IParent) {
-						IParent childParent = (IParent) children[i];
-						elements.addAll(getChildrenOfType(childParent, type));
-					}
-				}
-			} catch (RubyModelException e) {
-				// ignore
-			}
-			return elements;
-		}
-
-		public boolean isEmpty() {
-			return indices.isEmpty();
-		}
-
-		public void removeElement(IRubyElement element) {
-			indices.remove(createKey(element));
-		}
-
-		private String createKey(IRubyElement element) {
-			return createKey(element.getElementType(), element.getElementName());
-		}
-
-		private String createKey(int type, String name) {
-			return type + SEPARATOR + name;
-		}
-
-		public void addElement(IRubyElement element) {
-			indices.add(createKey(element));
-		}
-
-		public IType findType(String name) {
-			return (IType) findElement(createKey(IRubyElement.TYPE, name));
-		}
-
-		private IRubyElement findElement(String key) {
-			for (String indexKey : indices) {
-				if (!indexKey.equals(key))
-					continue;
-				IRubyScript script = getScript();
-				List<IRubyElement> children = getChildrenOfType(script, getTypeFromKey(key));
-				for (IRubyElement element : children) {
-					if (element.getElementName().equals(getNameFromKey(key)))
-						return element;
-				}
-			}
-			return null;
-		}
-
-		private String getNameFromKey(String key) {
-			String[] parts = key.split(SEPARATOR);
-			return parts[1];
-		}
-
-		private int getTypeFromKey(String key) {
-			String[] parts = key.split(SEPARATOR);
-			return Integer.parseInt(parts[0]);
-		}
 	}
 }
