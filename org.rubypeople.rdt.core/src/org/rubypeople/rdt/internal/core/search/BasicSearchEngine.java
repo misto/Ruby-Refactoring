@@ -12,6 +12,7 @@ import org.rubypeople.rdt.core.IRubyScript;
 import org.rubypeople.rdt.core.ISourceFolderRoot;
 import org.rubypeople.rdt.core.IType;
 import org.rubypeople.rdt.core.RubyModelException;
+import org.rubypeople.rdt.core.search.SearchDocument;
 import org.rubypeople.rdt.internal.core.search.indexing.IndexManager;
 
 public class BasicSearchEngine {

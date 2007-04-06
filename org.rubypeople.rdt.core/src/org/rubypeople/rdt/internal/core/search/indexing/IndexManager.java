@@ -9,7 +9,7 @@ import org.rubypeople.rdt.core.ElementChangedEvent;
 import org.rubypeople.rdt.core.IElementChangedListener;
 import org.rubypeople.rdt.core.IRubyElement;
 import org.rubypeople.rdt.core.IRubyElementDelta;
-import org.rubypeople.rdt.internal.core.search.SearchDocument;
+import org.rubypeople.rdt.core.search.SearchDocument;
 
 public class IndexManager implements IElementChangedListener {
 

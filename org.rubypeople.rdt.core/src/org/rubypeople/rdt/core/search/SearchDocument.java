@@ -1,4 +1,4 @@
-package org.rubypeople.rdt.internal.core.search;
+package org.rubypeople.rdt.core.search;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -12,6 +12,7 @@ import org.rubypeople.rdt.core.IRubyScript;
 import org.rubypeople.rdt.core.IType;
 import org.rubypeople.rdt.core.RubyModelException;
 import org.rubypeople.rdt.internal.core.Openable;
+import org.rubypeople.rdt.internal.core.search.HandleFactory;
 
 public class SearchDocument {
 	
