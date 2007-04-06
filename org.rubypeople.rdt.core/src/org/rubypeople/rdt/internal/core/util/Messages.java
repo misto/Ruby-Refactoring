@@ -157,6 +157,7 @@ public final class Messages extends NLS {
 	public static String manager_filesToIndex;
 	public static String manager_indexingInProgress;
 	public static String process_name;
+	public static String exception_wrongFormat;
 
     static {
         NLS.initializeMessages(BUNDLE_NAME, Messages.class);

@@ -3,6 +3,9 @@
  */
 package org.rubypeople.rdt.internal.core.util;
 
+import org.rubypeople.rdt.internal.compiler.parser.ScannerHelper;
+
+
 
 /**
  * @author Chris
@@ -973,5 +976,210 @@ public class CharOperation {
 	split[currentWord] = new char[length - last];
 	System.arraycopy(array, last, split[currentWord], 0, length - last);
 	return split;
+}
+
+	/**
+ * Answers true if the given name starts with the given prefix, false otherwise.
+ * The comparison is case sensitive.
+ * <br>
+ * <br>
+ * For example:
+ * <ol>
+ * <li><pre>
+ *    prefix = { 'a' , 'b' }
+ *    name = { 'a' , 'b', 'b', 'a', 'b', 'a' }
+ *    result => true
+ * </pre>
+ * </li>
+ * <li><pre>
+ *    prefix = { 'a' , 'c' }
+ *    name = { 'a' , 'b', 'b', 'a', 'b', 'a' }
+ *    result => false
+ * </pre>
+ * </li>
+ * </ol>
+ * 
+ * @param prefix the given prefix
+ * @param name the given name
+ * @return true if the given name starts with the given prefix, false otherwise
+ * @throws NullPointerException if the given name is null or if the given prefix is null
+ */
+public static final boolean prefixEquals(char[] prefix, char[] name) {
+
+	int max = prefix.length;
+	if (name.length < max)
+		return false;
+	for (int i = max;
+		--i >= 0;
+		) // assumes the prefix is not larger than the name
+		if (prefix[i] != name[i])
+			return false;
+	return true;
+}
+
+	public static final boolean camelCaseMatch(char[] pattern, char[] name) {
+	if (pattern == null)
+		return true; // null pattern is equivalent to '*'
+	if (name == null)
+		return false; // null name cannot match
+
+	return camelCaseMatch(pattern, 0, pattern.length, name, 0, name.length);
+	}
+	
+	public static final boolean camelCaseMatch(char[] pattern, int patternStart, int patternEnd, char[] name, int nameStart, int nameEnd) {
+		if (name == null)
+			return false; // null name cannot match
+		if (pattern == null)
+			return true; // null pattern is equivalent to '*'
+		if (patternEnd < 0) 	patternEnd = pattern.length;
+		if (nameEnd < 0) nameEnd = name.length;
+
+		if (patternEnd <= patternStart) return nameEnd <= nameStart;
+		if (nameEnd <= nameStart) return false;
+		// check first pattern char
+		if (name[nameStart] != pattern[patternStart]) {
+			// first char must strictly match (upper/lower)
+			return false;
+		}
+
+		char patternChar, nameChar;
+		int iPattern = patternStart;
+		int iName = nameStart;
+
+		// Main loop is on pattern characters
+		while (true) {
+
+			iPattern++;
+			iName++;
+
+			if (iPattern == patternEnd) {
+				// We have exhausted pattern, so it's a match
+				return true;
+			}
+
+			if (iName == nameEnd){
+				// We have exhausted name (and not pattern), so it's not a match 
+				return false;
+			}
+
+			// For as long as we're exactly matching, bring it on (even if it's a lower case character)
+			if ((patternChar = pattern[iPattern]) == name[iName]) {
+				continue;
+			}
+
+			// If characters are not equals, then it's not a match if patternChar is lowercase
+			if (patternChar < ScannerHelper.MAX_OBVIOUS) {
+				if ((ScannerHelper.OBVIOUS_IDENT_CHAR_NATURES[patternChar] & ScannerHelper.C_UPPER_LETTER) == 0) {
+					return false;
+				}
+			}
+			else if (Character.isJavaIdentifierPart(patternChar) && !Character.isUpperCase(patternChar)) {
+				return false;
+			}
+
+			// patternChar is uppercase, so let's find the next uppercase in name
+			while (true) {
+				if (iName == nameEnd){
+		            //	We have exhausted name (and not pattern), so it's not a match
+					return false;
+				}
+
+				nameChar = name[iName];
+				if (nameChar < ScannerHelper.MAX_OBVIOUS) {
+					if ((ScannerHelper.OBVIOUS_IDENT_CHAR_NATURES[nameChar] & (ScannerHelper.C_LOWER_LETTER | ScannerHelper.C_SPECIAL | ScannerHelper.C_DIGIT)) != 0) {
+						// nameChar is lowercase    
+						iName++;
+					// nameChar is uppercase...
+					} else  if (patternChar != nameChar) {
+						//.. and it does not match patternChar, so it's not a match
+						return false;
+					} else {
+						//.. and it matched patternChar. Back to the big loop
+						break;
+					}
+				}
+				else if (Character.isJavaIdentifierPart(nameChar) && !Character.isUpperCase(nameChar)) {
+					// nameChar is lowercase    
+					iName++;
+				// nameChar is uppercase...
+				} else  if (patternChar != nameChar) {
+					//.. and it does not match patternChar, so it's not a match
+					return false;
+				} else {
+					//.. and it matched patternChar. Back to the big loop
+					break;
+				}
+			}
+			// At this point, either name has been exhausted, or it is at an uppercase letter.
+			// Since pattern is also at an uppercase letter
+		}
+	}
+
+	public static final boolean equals(
+	char[] first,
+	char[] second,
+	boolean isCaseSensitive) {
+
+	if (isCaseSensitive) {
+		return equals(first, second);
+	}
+	if (first == second)
+		return true;
+	if (first == null || second == null)
+		return false;
+	if (first.length != second.length)
+		return false;
+
+	for (int i = first.length; --i >= 0;)
+		if (ScannerHelper.toLowerCase(first[i])
+			!= ScannerHelper.toLowerCase(second[i]))
+			return false;
+	return true;
+}
+
+	public static final boolean prefixEquals(
+	char[] prefix,
+	char[] name,
+	boolean isCaseSensitive) {
+
+	int max = prefix.length;
+	if (name.length < max)
+		return false;
+	if (isCaseSensitive) {
+		for (int i = max;
+			--i >= 0;
+			) // assumes the prefix is not larger than the name
+			if (prefix[i] != name[i])
+				return false;
+		return true;
+	}
+
+	for (int i = max;
+		--i >= 0;
+		) // assumes the prefix is not larger than the name
+		if (ScannerHelper.toLowerCase(prefix[i])
+			!= ScannerHelper.toLowerCase(name[i]))
+			return false;
+	return true;
+}
+
+	public static final boolean match(
+	char[] pattern,
+	char[] name,
+	boolean isCaseSensitive) {
+
+	if (name == null)
+		return false; // null name cannot match
+	if (pattern == null)
+		return true; // null pattern is equivalent to '*'
+
+	return match(
+		pattern,
+		0,
+		pattern.length,
+		name,
+		0,
+		name.length,
+		isCaseSensitive);
 }
 }
