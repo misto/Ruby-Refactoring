@@ -5,7 +5,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.eclipse.core.runtime.IPath;
 import org.rubypeople.rdt.core.IParent;
 import org.rubypeople.rdt.core.IRubyElement;
 import org.rubypeople.rdt.core.IRubyScript;
@@ -13,17 +12,34 @@ import org.rubypeople.rdt.core.IType;
 import org.rubypeople.rdt.core.RubyModelException;
 import org.rubypeople.rdt.internal.core.Openable;
 import org.rubypeople.rdt.internal.core.search.HandleFactory;
+import org.rubypeople.rdt.internal.core.search.indexing.InternalSearchDocument;
 
-public class SearchDocument {
+public class SearchDocument extends InternalSearchDocument {
 	
 	private static HandleFactory factory = new HandleFactory();
-	private static final String SEPARATOR = "/";
-	private List<String> indices = new ArrayList<String>();
-	private IPath path;
 	private IRubyScript script;
+	
+	private static final String SEPARATOR = "/";
+	
+	private List<String> indices = new ArrayList<String>();
+	
+	private String documentPath;
 
-	public SearchDocument(IPath path) {
-		this.path = path;
+	public SearchDocument(String documentPath) {
+		this.documentPath = documentPath;
+	}
+	
+	public void addIndexEntry(char[] category, char[] key) {
+		super.addIndexEntry(category, key);
+	}
+	
+	/**
+	 * Removes all index entries from the index for the given document.
+	 * This method must be called from 
+	 * {@link SearchParticipant#indexDocument(SearchDocument document, org.eclipse.core.runtime.IPath indexPath)}.
+	 */
+	public void removeAllIndexEntries() {
+		super.removeAllIndexEntries();
 	}
 
 	public Set<String> getElementNamesOfType(int type) {
@@ -42,7 +58,7 @@ public class SearchDocument {
 
 	private IRubyScript getScript() {
 		if (this.script == null) {
-			Openable openable = factory.createOpenable(path.toString());
+			Openable openable = factory.createOpenable(documentPath);
 			this.script = (IRubyScript) openable;
 		}
 		return this.script;

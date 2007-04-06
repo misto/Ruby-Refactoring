@@ -65,7 +65,7 @@ public class IndexManager implements IElementChangedListener {
 			(element.isType(IRubyElement.SOURCE_FOLDER))) return;
 		SearchDocument doc = documents.get(element.getPath());
 		if (doc == null) {
-			doc = new SearchDocument(element.getPath());
+			doc = new SearchDocument(element.getPath().toString());
 			documents.put(element.getPath(), doc);
 		}
 		doc.addElement(element);
