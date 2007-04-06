@@ -1,4 +1,4 @@
-package org.rubypeople.rdt.internal.core.search;
+package org.rubypeople.rdt.internal.core.search.indexing;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
@@ -10,8 +10,9 @@ import org.rubypeople.rdt.core.IRubyModel;
 import org.rubypeople.rdt.core.RubyCore;
 import org.rubypeople.rdt.core.RubyModelException;
 import org.rubypeople.rdt.internal.core.RubyModelManager;
+import org.rubypeople.rdt.internal.core.search.ExperimentalIndex;
 
-class IndexAllJob extends Job {
+public class IndexAllJob extends Job {
 		private ExperimentalIndex index;
 
 		public IndexAllJob(ExperimentalIndex index) {

@@ -17,6 +17,7 @@ import org.rubypeople.rdt.core.IRubyScript;
 import org.rubypeople.rdt.core.ISourceFolderRoot;
 import org.rubypeople.rdt.core.IType;
 import org.rubypeople.rdt.core.RubyModelException;
+import org.rubypeople.rdt.internal.core.search.indexing.IndexAllJob;
 
 public class ExperimentalIndex implements IElementChangedListener {
 
@@ -117,7 +118,7 @@ public class ExperimentalIndex implements IElementChangedListener {
 			documents.remove(element.getPath());
 	}
 
-	void addElement(IRubyElement element) {
+	public void addElement(IRubyElement element) {
 		if ((element.isType(IRubyElement.RUBY_MODEL)) || 
 			(element.isType(IRubyElement.RUBY_PROJECT)) ||
 			(element.isType(IRubyElement.SCRIPT)) ||
