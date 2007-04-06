@@ -15,7 +15,7 @@ import org.rubypeople.rdt.core.ISourceFolderRoot;
 import org.rubypeople.rdt.core.IType;
 import org.rubypeople.rdt.core.RubyCore;
 import org.rubypeople.rdt.core.RubyModelException;
-import org.rubypeople.rdt.internal.core.search.ExperimentalIndex;
+import org.rubypeople.rdt.internal.core.search.IndexManager;
 import org.rubypeople.rdt.internal.core.util.Util;
 
 public class RubyElementRequestor {
@@ -48,7 +48,7 @@ public class RubyElementRequestor {
 			}
 			if (types.size() == 0) { // Couldn't find any!
 				// Do a full search
-				types.addAll(ExperimentalIndex.findType(typeName));
+				types.addAll(IndexManager.findType(typeName));
 			}
 		} catch (RubyModelException e) {
 			RubyCore.log(e);

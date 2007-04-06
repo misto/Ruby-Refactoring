@@ -19,12 +19,12 @@ import org.rubypeople.rdt.core.IType;
 import org.rubypeople.rdt.core.RubyModelException;
 import org.rubypeople.rdt.internal.core.search.indexing.IndexAllJob;
 
-public class ExperimentalIndex implements IElementChangedListener {
+public class IndexManager implements IElementChangedListener {
 
-	private static ExperimentalIndex fgInstance;
+	private static IndexManager fgInstance;
 	private static Map<IPath, SearchDocument> documents;
 
-	private ExperimentalIndex() {
+	private IndexManager() {
 		documents = new HashMap<IPath, SearchDocument>();
 	}
 
@@ -132,9 +132,9 @@ public class ExperimentalIndex implements IElementChangedListener {
 		doc.addElement(element);
 	}
 
-	public static ExperimentalIndex instance() {
+	public static IndexManager instance() {
 		if (fgInstance == null) {
-			fgInstance = new ExperimentalIndex();
+			fgInstance = new IndexManager();
 		}
 		return fgInstance;
 	}

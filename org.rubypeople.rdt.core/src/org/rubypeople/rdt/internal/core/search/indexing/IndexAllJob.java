@@ -10,12 +10,12 @@ import org.rubypeople.rdt.core.IRubyModel;
 import org.rubypeople.rdt.core.RubyCore;
 import org.rubypeople.rdt.core.RubyModelException;
 import org.rubypeople.rdt.internal.core.RubyModelManager;
-import org.rubypeople.rdt.internal.core.search.ExperimentalIndex;
+import org.rubypeople.rdt.internal.core.search.IndexManager;
 
 public class IndexAllJob extends Job {
-		private ExperimentalIndex index;
+		private IndexManager index;
 
-		public IndexAllJob(ExperimentalIndex index) {
+		public IndexAllJob(IndexManager index) {
 			super("Search Index Job");
 			this.index = index;
 		}

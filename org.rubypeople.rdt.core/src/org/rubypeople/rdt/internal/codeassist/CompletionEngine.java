@@ -45,7 +45,7 @@ import org.rubypeople.rdt.internal.core.RubyElement;
 import org.rubypeople.rdt.internal.core.RubyScript;
 import org.rubypeople.rdt.internal.core.RubyType;
 import org.rubypeople.rdt.internal.core.parser.RubyParser;
-import org.rubypeople.rdt.internal.core.search.ExperimentalIndex;
+import org.rubypeople.rdt.internal.core.search.IndexManager;
 import org.rubypeople.rdt.internal.core.util.ASTUtil;
 import org.rubypeople.rdt.internal.ti.DefaultTypeInferrer;
 import org.rubypeople.rdt.internal.ti.ITypeGuess;
@@ -135,7 +135,7 @@ public class CompletionEngine {
 	}
 	
 	private void suggestGlobals() {
-		Set<String> globals = ExperimentalIndex.getGlobalNames(fContext.getScript());
+		Set<String> globals = IndexManager.getGlobalNames(fContext.getScript());
 		for (String name : globals) {
 			if (!fContext.prefixStartsWith(name))
 				continue;
@@ -145,7 +145,7 @@ public class CompletionEngine {
 	}
 
 	private void suggestTypeNames() {
-		Set<String> types = ExperimentalIndex.getTypeNames(fContext.getScript());
+		Set<String> types = IndexManager.getTypeNames(fContext.getScript());
 		for (String name : types) {
 			if (!fContext.prefixStartsWith(name))
 				continue;
@@ -162,7 +162,7 @@ public class CompletionEngine {
 	}
 
 	private void suggestConstantNames() {
-		Set<String> types = ExperimentalIndex.getConstantNames(fContext.getScript());
+		Set<String> types = IndexManager.getConstantNames(fContext.getScript());
 		for (String name : types) {
 			if (!fContext.prefixStartsWith(name))
 				continue;
