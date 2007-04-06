@@ -15,7 +15,7 @@ import org.rubypeople.rdt.core.ISourceFolderRoot;
 import org.rubypeople.rdt.core.IType;
 import org.rubypeople.rdt.core.RubyCore;
 import org.rubypeople.rdt.core.RubyModelException;
-import org.rubypeople.rdt.internal.core.search.IndexManager;
+import org.rubypeople.rdt.internal.core.search.indexing.IndexManager;
 import org.rubypeople.rdt.internal.core.util.Util;
 
 public class RubyElementRequestor {

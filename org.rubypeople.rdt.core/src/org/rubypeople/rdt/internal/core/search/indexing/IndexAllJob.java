@@ -10,7 +10,6 @@ import org.rubypeople.rdt.core.IRubyModel;
 import org.rubypeople.rdt.core.RubyCore;
 import org.rubypeople.rdt.core.RubyModelException;
 import org.rubypeople.rdt.internal.core.RubyModelManager;
-import org.rubypeople.rdt.internal.core.search.IndexManager;
 
 public class IndexAllJob extends Job {
 		private IndexManager index;

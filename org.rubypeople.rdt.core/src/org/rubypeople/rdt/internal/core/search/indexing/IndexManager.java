@@ -1,4 +1,4 @@
-package org.rubypeople.rdt.internal.core.search;
+package org.rubypeople.rdt.internal.core.search.indexing;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -17,7 +17,7 @@ import org.rubypeople.rdt.core.IRubyScript;
 import org.rubypeople.rdt.core.ISourceFolderRoot;
 import org.rubypeople.rdt.core.IType;
 import org.rubypeople.rdt.core.RubyModelException;
-import org.rubypeople.rdt.internal.core.search.indexing.IndexAllJob;
+import org.rubypeople.rdt.internal.core.search.SearchDocument;
 
 public class IndexManager implements IElementChangedListener {
 
@@ -118,7 +118,7 @@ public class IndexManager implements IElementChangedListener {
 			documents.remove(element.getPath());
 	}
 
-	public void addElement(IRubyElement element) {
+	void addElement(IRubyElement element) {
 		if ((element.isType(IRubyElement.RUBY_MODEL)) || 
 			(element.isType(IRubyElement.RUBY_PROJECT)) ||
 			(element.isType(IRubyElement.SCRIPT)) ||

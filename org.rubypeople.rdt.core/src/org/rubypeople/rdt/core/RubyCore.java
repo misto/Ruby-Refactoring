@@ -56,7 +56,7 @@ import org.rubypeople.rdt.internal.core.builder.IndexUpdater;
 import org.rubypeople.rdt.internal.core.builder.MassIndexUpdaterJob;
 import org.rubypeople.rdt.internal.core.builder.RubyBuilder;
 import org.rubypeople.rdt.internal.core.parser.RubyParser;
-import org.rubypeople.rdt.internal.core.search.IndexManager;
+import org.rubypeople.rdt.internal.core.search.indexing.IndexManager;
 import org.rubypeople.rdt.internal.core.symbols.ISymbolFinder;
 import org.rubypeople.rdt.internal.core.symbols.SymbolIndex;
 import org.rubypeople.rdt.internal.core.util.MementoTokenizer;

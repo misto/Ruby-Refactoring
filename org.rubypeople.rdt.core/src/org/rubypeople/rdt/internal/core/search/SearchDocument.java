@@ -21,7 +21,7 @@ public class SearchDocument {
 	private IPath path;
 	private IRubyScript script;
 
-	SearchDocument(IPath path) {
+	public SearchDocument(IPath path) {
 		this.path = path;
 	}
 
