@@ -55,13 +55,22 @@ public class InlineLocalPage extends RefactoringWizardPage {
 
 	private String selectedItemName;
 
+	private LabeledTextField newMethodName;
+
+	private Button checkQuery;
+
 	public InlineLocalPage(InlineLocalConfig config, int occurencesCount, String selectedItemName) {
 		super(InlineLocalRefactoring.NAME + "..."); //$NON-NLS-1$
 
 		this.config = config;
 		this.occurencesCount = occurencesCount;
 		this.selectedItemName = selectedItemName;
+	}
 
+	@Override
+	public void pageIsEnabled() {
+		super.pageIsEnabled();
+		newMethodName.setEnabled(checkQuery.getSelection());
 	}
 
 	public void createControl(Composite parent) {
@@ -84,12 +93,11 @@ public class InlineLocalPage extends RefactoringWizardPage {
 	private void initExtractArea(Composite control) {
 		Group queryGroup = initGroup(control);
 
-		final Button checkQuery = new Button(queryGroup, SWT.CHECK);
+		checkQuery = new Button(queryGroup, SWT.CHECK);
 		checkQuery.setText(Messages.InlineTempPage_ReplaceTempWithQuery);
 		checkQuery.setEnabled(true);
 
-		final LabeledTextField newMethodName = new LabeledTextField(queryGroup, Messages.InlineTempPage_NewMethodName);
-		newMethodName.setEnabled(checkQuery.getSelection());
+		newMethodName = new LabeledTextField(queryGroup, Messages.InlineTempPage_NewMethodName);
 		GridData textData = new GridData(GridData.FILL_HORIZONTAL);
 		newMethodName.setLayoutData(textData);
 
@@ -98,6 +106,7 @@ public class InlineLocalPage extends RefactoringWizardPage {
 	}
 
 	private void createModifyListener(final Text newMethodName) {
+		
 		newMethodName.addModifyListener(new ModifyListener() {
 
 			public void modifyText(ModifyEvent e) {
@@ -129,8 +138,13 @@ public class InlineLocalPage extends RefactoringWizardPage {
 			}
 
 			public void widgetSelected(SelectionEvent e) {
-				newMethodName.setEnabled(checkQuery.getSelection());
-				config.setReplaceTempWithQuery(checkQuery.getSelection());
+				boolean doReplaceTempWithQuery = checkQuery.getSelection();
+				newMethodName.setEnabled(doReplaceTempWithQuery);
+				config.setReplaceTempWithQuery(doReplaceTempWithQuery);
+				if (!doReplaceTempWithQuery) {
+					setMessage(null);
+				}
+				setPageComplete(!doReplaceTempWithQuery);
 			}
 		});
 	}
