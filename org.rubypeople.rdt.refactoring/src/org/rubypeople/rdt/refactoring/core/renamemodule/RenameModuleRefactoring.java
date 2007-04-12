@@ -26,7 +26,7 @@
  * the terms of any one of the CPL, the GPL or the LGPL.
  ***** END LICENSE BLOCK *****/
 
-package org.rubypeople.rdt.refactoring.core.renameclass;
+package org.rubypeople.rdt.refactoring.core.renamemodule;
 
 import java.util.ArrayList;
 
@@ -36,21 +36,21 @@ import org.rubypeople.rdt.refactoring.core.TextSelectionProvider;
 import org.rubypeople.rdt.refactoring.ui.NewNameListener;
 import org.rubypeople.rdt.refactoring.ui.pages.RenamePage;
 
-public class RenameClassRefactoring extends RubyRefactoring {
+public class RenameModuleRefactoring extends RubyRefactoring {
 
-	public static final String NAME = Messages.RenameClassRefactoring_Name;
+	public static final String NAME = "Rename Module";
 
-	public RenameClassRefactoring(TextSelectionProvider selectionProvider) {
+	public RenameModuleRefactoring(TextSelectionProvider selectionProvider) {
 		super(NAME);
-		RenameClassConfig renameClassConfig = new RenameClassConfig(getDocumentProvider(), selectionProvider.getCarretPosition());
-		RenameClassConditionChecker conditionChecker = new RenameClassConditionChecker(renameClassConfig);
+		RenameModuleConfig renameModuleConfig = new RenameModuleConfig(getDocumentProvider(), selectionProvider.getCarretPosition());
+		RenameModuleConditionChecker conditionChecker = new RenameModuleConditionChecker(renameModuleConfig);
 		setRefactoringConditionChecker(conditionChecker);
 		if(conditionChecker.shouldPerform()) {
-			RenameClassEditProvider editProvider = new RenameClassEditProvider(renameClassConfig);
+			RenameModuleEditProvider editProvider = new RenameModuleEditProvider(renameModuleConfig);
 			setEditProvider(editProvider);
 			
-			pages.add(new RenamePage(NAME, renameClassConfig.getSelectedNode().getCPath().getName(),
-					new NewNameListener(renameClassConfig, new ConstNameValidator(), new ArrayList<String>())));
+			pages.add(new RenamePage(NAME, renameModuleConfig.getSelectedModuleName(),
+					new NewNameListener(renameModuleConfig, new ConstNameValidator(), new ArrayList<String>())));
 			
 		}
 	}

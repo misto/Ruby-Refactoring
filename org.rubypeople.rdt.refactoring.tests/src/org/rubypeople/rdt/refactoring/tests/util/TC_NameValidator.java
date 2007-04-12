@@ -55,23 +55,23 @@ public class TC_NameValidator extends TestCase {
 		assertFalse(NameValidator.isValidLocalVariableName("self"));
 	}
 	public void testIsValidClassName() {
-		assertTrue(NameValidator.isValidClassName("T"));
-		assertTrue(NameValidator.isValidClassName("T1"));
-		assertTrue(NameValidator.isValidClassName("Tbla_1"));
-		assertTrue(NameValidator.isValidClassName("T__1"));
-		assertTrue(NameValidator.isValidClassName("T123456"));
+		assertTrue(NameValidator.isValidConstName("T"));
+		assertTrue(NameValidator.isValidConstName("T1"));
+		assertTrue(NameValidator.isValidConstName("Tbla_1"));
+		assertTrue(NameValidator.isValidConstName("T__1"));
+		assertTrue(NameValidator.isValidConstName("T123456"));
 	}
 
 	public void testIsInvalidClassName() {
-		assertFalse(NameValidator.isValidClassName("8"));
-		assertFalse(NameValidator.isValidClassName("-"));
-		assertFalse(NameValidator.isValidClassName("@Test"));
-		assertFalse(NameValidator.isValidClassName(":test"));
-		assertFalse(NameValidator.isValidClassName("while"));
-		assertFalse(NameValidator.isValidClassName("if"));
-		assertFalse(NameValidator.isValidClassName("T!"));
-		assertFalse(NameValidator.isValidClassName("T?"));
-		assertFalse(NameValidator.isValidClassName("T="));
+		assertFalse(NameValidator.isValidConstName("8"));
+		assertFalse(NameValidator.isValidConstName("-"));
+		assertFalse(NameValidator.isValidConstName("@Test"));
+		assertFalse(NameValidator.isValidConstName(":test"));
+		assertFalse(NameValidator.isValidConstName("while"));
+		assertFalse(NameValidator.isValidConstName("if"));
+		assertFalse(NameValidator.isValidConstName("T!"));
+		assertFalse(NameValidator.isValidConstName("T?"));
+		assertFalse(NameValidator.isValidConstName("T="));
 	}
 
 	public void testIsValidMethodName() {

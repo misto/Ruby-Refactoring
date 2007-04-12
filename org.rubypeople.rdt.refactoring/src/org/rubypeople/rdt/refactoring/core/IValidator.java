@@ -26,32 +26,8 @@
  * the terms of any one of the CPL, the GPL or the LGPL.
  ***** END LICENSE BLOCK *****/
 
-package org.rubypeople.rdt.refactoring.core.renameclass;
+package org.rubypeople.rdt.refactoring.core;
 
-import java.util.ArrayList;
-
-import org.rubypeople.rdt.refactoring.core.ConstNameValidator;
-import org.rubypeople.rdt.refactoring.core.RubyRefactoring;
-import org.rubypeople.rdt.refactoring.core.TextSelectionProvider;
-import org.rubypeople.rdt.refactoring.ui.NewNameListener;
-import org.rubypeople.rdt.refactoring.ui.pages.RenamePage;
-
-public class RenameClassRefactoring extends RubyRefactoring {
-
-	public static final String NAME = Messages.RenameClassRefactoring_Name;
-
-	public RenameClassRefactoring(TextSelectionProvider selectionProvider) {
-		super(NAME);
-		RenameClassConfig renameClassConfig = new RenameClassConfig(getDocumentProvider(), selectionProvider.getCarretPosition());
-		RenameClassConditionChecker conditionChecker = new RenameClassConditionChecker(renameClassConfig);
-		setRefactoringConditionChecker(conditionChecker);
-		if(conditionChecker.shouldPerform()) {
-			RenameClassEditProvider editProvider = new RenameClassEditProvider(renameClassConfig);
-			setEditProvider(editProvider);
-			
-			pages.add(new RenamePage(NAME, renameClassConfig.getSelectedNode().getCPath().getName(),
-					new NewNameListener(renameClassConfig, new ConstNameValidator(), new ArrayList<String>())));
-			
-		}
-	}
+public interface IValidator {
+	boolean isValid(String test);
 }

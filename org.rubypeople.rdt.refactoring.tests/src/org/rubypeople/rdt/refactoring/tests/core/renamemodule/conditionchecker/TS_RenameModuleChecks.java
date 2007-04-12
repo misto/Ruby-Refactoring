@@ -26,32 +26,16 @@
  * the terms of any one of the CPL, the GPL or the LGPL.
  ***** END LICENSE BLOCK *****/
 
-package org.rubypeople.rdt.refactoring.core.renameclass;
+package org.rubypeople.rdt.refactoring.tests.core.renamemodule.conditionchecker;
 
-import java.util.ArrayList;
 
-import org.rubypeople.rdt.refactoring.core.ConstNameValidator;
-import org.rubypeople.rdt.refactoring.core.RubyRefactoring;
-import org.rubypeople.rdt.refactoring.core.TextSelectionProvider;
-import org.rubypeople.rdt.refactoring.ui.NewNameListener;
-import org.rubypeople.rdt.refactoring.ui.pages.RenamePage;
+import junit.framework.Test;
 
-public class RenameClassRefactoring extends RubyRefactoring {
+import org.rubypeople.rdt.refactoring.tests.FileTestSuite;
 
-	public static final String NAME = Messages.RenameClassRefactoring_Name;
+public class TS_RenameModuleChecks extends FileTestSuite {
 
-	public RenameClassRefactoring(TextSelectionProvider selectionProvider) {
-		super(NAME);
-		RenameClassConfig renameClassConfig = new RenameClassConfig(getDocumentProvider(), selectionProvider.getCarretPosition());
-		RenameClassConditionChecker conditionChecker = new RenameClassConditionChecker(renameClassConfig);
-		setRefactoringConditionChecker(conditionChecker);
-		if(conditionChecker.shouldPerform()) {
-			RenameClassEditProvider editProvider = new RenameClassEditProvider(renameClassConfig);
-			setEditProvider(editProvider);
-			
-			pages.add(new RenamePage(NAME, renameClassConfig.getSelectedNode().getCPath().getName(),
-					new NewNameListener(renameClassConfig, new ConstNameValidator(), new ArrayList<String>())));
-			
-		}
+	public static Test suite() {
+		return createSuite("RenameModuleConditionChecks", "rename_module_checker_test_*test_source", RenameModuleConditionTester.class);
 	}
 }

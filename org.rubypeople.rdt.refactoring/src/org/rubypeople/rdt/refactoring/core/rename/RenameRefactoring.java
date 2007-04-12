@@ -12,6 +12,7 @@
  * rights and limitations under the License.
  *
  * Copyright (C) 2006 Lukas Felber <lfelber@hsr.ch>
+ * Copyright (C) 2007 Mirko Stocker <me@misto.ch>
  * 
  * Alternatively, the contents of this file may be used under the terms of
  * either of the GNU General Public License Version 2 or later (the "GPL"),
@@ -36,6 +37,7 @@ import org.rubypeople.rdt.refactoring.core.renameclass.RenameClassRefactoring;
 import org.rubypeople.rdt.refactoring.core.renamefield.RenameFieldRefactoring;
 import org.rubypeople.rdt.refactoring.core.renamelocal.RenameLocalRefactoring;
 import org.rubypeople.rdt.refactoring.core.renamemethod.RenameMethodRefactoring;
+import org.rubypeople.rdt.refactoring.core.renamemodule.RenameModuleRefactoring;
 
 public class RenameRefactoring extends RubyRefactoring {
 
@@ -57,6 +59,8 @@ public class RenameRefactoring extends RubyRefactoring {
 				delegateRenameRefactoring = new RenameMethodRefactoring(selectionProvider);
 			} else if(checker.shouldRenameClass()) {
 				delegateRenameRefactoring = new RenameClassRefactoring(selectionProvider);
+			} else if(checker.shouldRenameModule()) {
+				delegateRenameRefactoring = new RenameModuleRefactoring(selectionProvider);
 			}
 			IRefactoringConditionChecker delegateConditionChecker = delegateRenameRefactoring.getConditionChecker();
 			setRefactoringConditionChecker(delegateConditionChecker);

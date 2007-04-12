@@ -85,10 +85,10 @@ public class TC_ClassFinder extends TestCase {
 		
 		assertEquals(4, classNodes.length);
 		
-		assertEquals("Subclass3", classNodes[0].getCPath().getName());
+		assertEquals("Subclass1", classNodes[0].getCPath().getName());
 		assertEquals("Subclass1", classNodes[1].getCPath().getName());
-		assertEquals("Subclass1", classNodes[2].getCPath().getName());
-		assertEquals("Subclass2", classNodes[3].getCPath().getName());
+		assertEquals("Subclass2", classNodes[2].getCPath().getName());
+		assertEquals("Subclass3", classNodes[3].getCPath().getName());
 	}
 }
 

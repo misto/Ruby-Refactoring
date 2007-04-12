@@ -30,10 +30,10 @@
 
 package org.rubypeople.rdt.refactoring.core.renamefield;
 
+import org.rubypeople.rdt.refactoring.core.IValidator;
 import org.rubypeople.rdt.refactoring.core.RubyRefactoring;
 import org.rubypeople.rdt.refactoring.core.TextSelectionProvider;
 import org.rubypeople.rdt.refactoring.documentprovider.DocumentWithIncluding;
-import org.rubypeople.rdt.refactoring.ui.IValidator;
 import org.rubypeople.rdt.refactoring.ui.NewNameListener;
 import org.rubypeople.rdt.refactoring.ui.pages.OccurenceReplaceSelectionPage;
 import org.rubypeople.rdt.refactoring.ui.pages.RenameFieldPage;

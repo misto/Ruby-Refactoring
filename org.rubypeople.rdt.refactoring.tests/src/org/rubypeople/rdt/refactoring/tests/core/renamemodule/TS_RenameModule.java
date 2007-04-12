@@ -26,32 +26,18 @@
  * the terms of any one of the CPL, the GPL or the LGPL.
  ***** END LICENSE BLOCK *****/
 
-package org.rubypeople.rdt.refactoring.core.renameclass;
+package org.rubypeople.rdt.refactoring.tests.core.renamemodule;
 
-import java.util.ArrayList;
+import junit.framework.TestSuite;
 
-import org.rubypeople.rdt.refactoring.core.ConstNameValidator;
-import org.rubypeople.rdt.refactoring.core.RubyRefactoring;
-import org.rubypeople.rdt.refactoring.core.TextSelectionProvider;
-import org.rubypeople.rdt.refactoring.ui.NewNameListener;
-import org.rubypeople.rdt.refactoring.ui.pages.RenamePage;
+import org.rubypeople.rdt.refactoring.tests.FileTestSuite;
+import org.rubypeople.rdt.refactoring.tests.core.renamemodule.conditionchecker.TS_RenameModuleChecks;
 
-public class RenameClassRefactoring extends RubyRefactoring {
+public class TS_RenameModule extends FileTestSuite {
+	public static TestSuite suite() {
+		TestSuite suite = createSuite("Rename Module", "rename_module_test_*active*source", ModuleRenameTester.class);	
 
-	public static final String NAME = Messages.RenameClassRefactoring_Name;
-
-	public RenameClassRefactoring(TextSelectionProvider selectionProvider) {
-		super(NAME);
-		RenameClassConfig renameClassConfig = new RenameClassConfig(getDocumentProvider(), selectionProvider.getCarretPosition());
-		RenameClassConditionChecker conditionChecker = new RenameClassConditionChecker(renameClassConfig);
-		setRefactoringConditionChecker(conditionChecker);
-		if(conditionChecker.shouldPerform()) {
-			RenameClassEditProvider editProvider = new RenameClassEditProvider(renameClassConfig);
-			setEditProvider(editProvider);
-			
-			pages.add(new RenamePage(NAME, renameClassConfig.getSelectedNode().getCPath().getName(),
-					new NewNameListener(renameClassConfig, new ConstNameValidator(), new ArrayList<String>())));
-			
-		}
+		suite.addTest(TS_RenameModuleChecks.suite());
+		return suite;
 	}
 }

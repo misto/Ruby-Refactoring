@@ -48,7 +48,7 @@ public class NameValidator {
 		return validate(methodNameRegexp, name);
 	}
 	
-	public static boolean isValidClassName(String name) {
+	public static boolean isValidConstName(String name) {
 		return validate(classNameRegexp, name);
 	}
 
@@ -59,7 +59,7 @@ public class NameValidator {
 
 	public static boolean isValidConstantName(String newName) {
 		// FIXME Check for valid constant name
-		return isValidClassName(newName);
+		return isValidConstName(newName);
 	}
 
 }

@@ -26,8 +26,12 @@
  * the terms of any one of the CPL, the GPL or the LGPL.
  ***** END LICENSE BLOCK *****/
 
-package org.rubypeople.rdt.refactoring.ui;
+package org.rubypeople.rdt.refactoring.core;
 
-public interface IValidator {
-	boolean isValid(String test);
+import org.rubypeople.rdt.refactoring.util.NameValidator;
+
+public class ConstNameValidator implements IValidator {
+	public boolean isValid(String test) {
+		return NameValidator.isValidConstName(test);
+	}
 }

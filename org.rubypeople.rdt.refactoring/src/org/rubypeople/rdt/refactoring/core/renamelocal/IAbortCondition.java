@@ -31,5 +31,5 @@ package org.rubypeople.rdt.refactoring.core.renamelocal;
 import org.jruby.ast.Node;
 
 public interface IAbortCondition {
-	public boolean abort(Node currentNode);
+	boolean abort(Node currentNode);
 }

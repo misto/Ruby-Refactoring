@@ -32,6 +32,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.List;
 
+import org.jruby.ast.Colon3Node;
 import org.jruby.ast.IterNode;
 import org.jruby.ast.MethodDefNode;
 import org.jruby.ast.Node;
@@ -148,4 +149,7 @@ public class NodeUtil {
 	    
 	}
 	
+	public static boolean positionIsInNode(int offset, Colon3Node path) {
+		return offset >= path.getPosition().getStartOffset() && offset <= path.getPosition().getEndOffset();
+	}
 }

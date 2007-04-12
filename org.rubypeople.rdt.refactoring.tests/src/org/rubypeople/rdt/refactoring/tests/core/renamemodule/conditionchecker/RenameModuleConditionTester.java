@@ -26,32 +26,38 @@
  * the terms of any one of the CPL, the GPL or the LGPL.
  ***** END LICENSE BLOCK *****/
 
-package org.rubypeople.rdt.refactoring.core.renameclass;
+package org.rubypeople.rdt.refactoring.tests.core.renamemodule.conditionchecker;
 
-import java.util.ArrayList;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 
-import org.rubypeople.rdt.refactoring.core.ConstNameValidator;
-import org.rubypeople.rdt.refactoring.core.RubyRefactoring;
-import org.rubypeople.rdt.refactoring.core.TextSelectionProvider;
-import org.rubypeople.rdt.refactoring.ui.NewNameListener;
-import org.rubypeople.rdt.refactoring.ui.pages.RenamePage;
+import org.rubypeople.rdt.refactoring.core.renamemodule.RenameModuleConditionChecker;
+import org.rubypeople.rdt.refactoring.core.renamemodule.RenameModuleConfig;
+import org.rubypeople.rdt.refactoring.core.renamemodule.RenameModuleEditProvider;
+import org.rubypeople.rdt.refactoring.tests.FilePropertyData;
+import org.rubypeople.rdt.refactoring.tests.FileTestData;
+import org.rubypeople.rdt.refactoring.tests.RefactoringConditionTestCase;
 
-public class RenameClassRefactoring extends RubyRefactoring {
+public class RenameModuleConditionTester extends RefactoringConditionTestCase {
 
-	public static final String NAME = Messages.RenameClassRefactoring_Name;
+	private FilePropertyData testData;
+	private RenameModuleConfig renameModuleConfig;
 
-	public RenameClassRefactoring(TextSelectionProvider selectionProvider) {
-		super(NAME);
-		RenameClassConfig renameClassConfig = new RenameClassConfig(getDocumentProvider(), selectionProvider.getCarretPosition());
-		RenameClassConditionChecker conditionChecker = new RenameClassConditionChecker(renameClassConfig);
-		setRefactoringConditionChecker(conditionChecker);
-		if(conditionChecker.shouldPerform()) {
-			RenameClassEditProvider editProvider = new RenameClassEditProvider(renameClassConfig);
-			setEditProvider(editProvider);
+	public RenameModuleConditionTester(String fileName) {
+		super(fileName);
+	}
+
+	@Override
+	public void runTest() throws FileNotFoundException, IOException {
+		testData = new FileTestData(getName(), ".test_source", ".test_source");
+		renameModuleConfig = new RenameModuleConfig(testData, testData.getIntProperty("caretPosition"));
+		RenameModuleConditionChecker checker = new RenameModuleConditionChecker(renameModuleConfig);
 			
-			pages.add(new RenamePage(NAME, renameClassConfig.getSelectedNode().getCPath().getName(),
-					new NewNameListener(renameClassConfig, new ConstNameValidator(), new ArrayList<String>())));
-			
-		}
+		checkConditions(checker, testData);
+	}
+
+	@Override
+	protected void createEditProviderAndSetUserInput() {
+		new RenameModuleEditProvider(renameModuleConfig);
 	}
 }

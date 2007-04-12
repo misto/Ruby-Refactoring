@@ -40,12 +40,14 @@ import org.rubypeople.rdt.refactoring.core.renamelocal.RenameLocalConditionCheck
 import org.rubypeople.rdt.refactoring.core.renamelocal.RenameLocalConfig;
 import org.rubypeople.rdt.refactoring.core.renamemethod.RenameMethodConditionChecker;
 import org.rubypeople.rdt.refactoring.core.renamemethod.RenameMethodConfig;
+import org.rubypeople.rdt.refactoring.core.renamemodule.RenameModuleConditionChecker;
+import org.rubypeople.rdt.refactoring.core.renamemodule.RenameModuleConfig;
 import org.rubypeople.rdt.refactoring.documentprovider.IDocumentProvider;
 
 public class RenameConditionChecker extends RefactoringConditionChecker {
 
 	private enum RenameType {
-		INVALID, LOCAL, FIELD, METHOD, CLASS
+		INVALID, LOCAL, FIELD, METHOD, CLASS, MODULE
 	};
 
 	private RenameType selectedType;
@@ -57,6 +59,8 @@ public class RenameConditionChecker extends RefactoringConditionChecker {
 	private RefactoringConditionChecker methodConditionChecker;
 
 	private RefactoringConditionChecker classConditionChecker;
+	
+	private RefactoringConditionChecker moduleConditionChecker;
 
 	public RenameConditionChecker(RenameConfig config) {
 		super(config);
@@ -74,6 +78,7 @@ public class RenameConditionChecker extends RefactoringConditionChecker {
 		addErrorIfNotDefaultError(fieldConditionChecker, RenameFieldConditionChecker.DEFAULT_ERROR);
 		addErrorIfNotDefaultError(methodConditionChecker, RenameMethodConditionChecker.DEFAULT_ERROR);
 		addErrorIfNotDefaultError(classConditionChecker, RenameClassConditionChecker.DEFAULT_ERROR);
+		addErrorIfNotDefaultError(moduleConditionChecker, RenameClassConditionChecker.DEFAULT_ERROR);
 		if (!hasErrors()) {
 
 			addError(Messages.RenameConditionChecker_NothingSelected);
@@ -92,11 +97,14 @@ public class RenameConditionChecker extends RefactoringConditionChecker {
 	public void init(IRefactoringConfig configObj) {
 		RenameConfig config = (RenameConfig) configObj;
 		int offset = config.getOffset();
-		IDocumentProvider docProvider = config.getDocumentProvider();
-		localConditionChecker = new RenameLocalConditionChecker(new RenameLocalConfig(docProvider, offset));
-		fieldConditionChecker = new RenameFieldConditionChecker(new RenameFieldConfig(docProvider, offset));
-		methodConditionChecker = new RenameMethodConditionChecker(new RenameMethodConfig(docProvider, offset));
-		classConditionChecker = new RenameClassConditionChecker(new RenameClassConfig(docProvider, offset));
+		IDocumentProvider doc = config.getDocumentProvider();
+		
+		localConditionChecker = new RenameLocalConditionChecker(new RenameLocalConfig(doc, offset));
+		fieldConditionChecker = new RenameFieldConditionChecker(new RenameFieldConfig(doc, offset));
+		methodConditionChecker = new RenameMethodConditionChecker(new RenameMethodConfig(doc, offset));
+		classConditionChecker = new RenameClassConditionChecker(new RenameClassConfig(doc, offset));
+		moduleConditionChecker = new RenameModuleConditionChecker(new RenameModuleConfig(doc, offset));
+		
 		if (localConditionChecker.shouldPerform()) {
 			selectedType = RenameType.LOCAL;
 		} else if (fieldConditionChecker.shouldPerform()) {
@@ -105,6 +113,8 @@ public class RenameConditionChecker extends RefactoringConditionChecker {
 			selectedType = RenameType.METHOD;
 		} else if (classConditionChecker.shouldPerform()) {
 			selectedType = RenameType.CLASS;
+		} else if (moduleConditionChecker.shouldPerform()) {
+			selectedType = RenameType.MODULE;
 		} else {
 			selectedType = RenameType.INVALID;
 		}
@@ -124,5 +134,9 @@ public class RenameConditionChecker extends RefactoringConditionChecker {
 
 	public boolean shouldRenameClass() {
 		return selectedType == RenameType.CLASS;
+	}
+	
+	public boolean shouldRenameModule() {
+		return selectedType == RenameType.MODULE;
 	}
 }

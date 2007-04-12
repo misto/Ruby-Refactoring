@@ -33,7 +33,6 @@ import java.util.Collection;
 
 import org.jruby.ast.ClassNode;
 import org.rubypeople.rdt.refactoring.documentprovider.IDocumentProvider;
-import org.rubypeople.rdt.refactoring.documentprovider.StringDocumentProvider;
 import org.rubypeople.rdt.refactoring.nodewrapper.ClassNodeWrapper;
 import org.rubypeople.rdt.refactoring.nodewrapper.PartialClassNodeWrapper;
 
@@ -42,43 +41,44 @@ public class ClassFinder implements IClassFinder {
 	private Collection<ClassNodeWrapper> classNodes;
 	private final String modulePrefix;
 	
+	private interface INodeAcceptor {
+		boolean accept(PartialClassNodeWrapper node);
+	}
+	
 	public ClassFinder(IDocumentProvider doc, String name, String modulePrefix) {
 		this.name = name;
 		this.modulePrefix = modulePrefix;
 		classNodes = new ArrayList<ClassNodeWrapper>();
+		classNodes.addAll(doc.getProjectClassNodeProvider().getAllClassNodes());
+	}
+	
+	private Collection<ClassNode> find(INodeAcceptor acceptor) {
+		Collection<ClassNode> found = new ArrayList<ClassNode>();
 		
-		for(String fileName : doc.getFileNames()) {
-			if(! fileName.equals(doc.getActiveFileName())) {
-				classNodes.addAll(new StringDocumentProvider(fileName, doc.getFileContent(fileName)).getClassNodeProvider().getAllClassNodes());
+		for (ClassNodeWrapper classNode : classNodes) {
+			for(PartialClassNodeWrapper node : classNode.getPartialClassNodes()) {
+				if(acceptor.accept(node)) {
+					found.add((ClassNode) node.getWrappedNode());
+				}
 			}
 		}
 		
-		classNodes.addAll(new StringDocumentProvider(doc.getActiveFileName(), doc.getActiveFileContent()).getClassNodeProvider().getAllClassNodes());
+		return found;
 	}
+	
 	public Collection<ClassNode> findParts() {
-		Collection<ClassNode> found = new ArrayList<ClassNode>();
-		
-		for (ClassNodeWrapper classNode : classNodes) {
-			for(PartialClassNodeWrapper node : classNode.getPartialClassNodes()) {
-				if(node.getClassName().equals(modulePrefix + name)) {
-					found.add((ClassNode) node.getWrappedNode());
-				}
-			}
-		}
-		
-		return found;
+		return find(new INodeAcceptor(){
+			public boolean accept(PartialClassNodeWrapper node) {
+				return node.getClassName().equals(modulePrefix + name);
+				
+			}});
 	}
+	
 	public Collection<ClassNode> findChildren() {
-		Collection<ClassNode> found = new ArrayList<ClassNode>();
-		
-		for (ClassNodeWrapper classNode : classNodes) {
-			for(PartialClassNodeWrapper node : classNode.getPartialClassNodes()) {
-				if((node.getModulePrefix() + node.getSuperClassName()).equals(modulePrefix + name)) {
-					found.add((ClassNode) node.getWrappedNode());
-				}
-			}
-		}
-		
-		return found;
+		return find(new INodeAcceptor(){
+			public boolean accept(PartialClassNodeWrapper node) {
+				return (node.getModulePrefix() + node.getSuperClassName()).equals(modulePrefix + name);
+				
+			}});
 	}
 }

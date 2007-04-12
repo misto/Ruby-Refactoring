@@ -32,6 +32,7 @@ import java.util.Collection;
 
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Text;
+import org.rubypeople.rdt.refactoring.core.IValidator;
 
 public class NewNameListener implements IErrorMessageGenerator {
 	private final INewNameReceiver receiver;

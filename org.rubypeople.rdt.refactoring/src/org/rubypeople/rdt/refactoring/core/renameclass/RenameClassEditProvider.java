@@ -48,8 +48,7 @@ public class RenameClassEditProvider implements IMultiFileEditProvider {
 
 	private ChildClassesRenameEditProvider createChildrenEditProvider() {
 		Collection<ClassNode> childClasses = new ClassFinder(document, config.getSelectedNode().getCPath().getName(), config.getModulePrefix()).findChildren();
-		ChildClassesRenameEditProvider childClassesRenameEditProvider = new ChildClassesRenameEditProvider(childClasses, config.getNewName());
-		return childClassesRenameEditProvider;
+		return new ChildClassesRenameEditProvider(childClasses, config.getNewName());
 	}
 
 	private PartialClassesRenameEditProvider createPartialsEditProvider() {

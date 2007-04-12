@@ -35,6 +35,7 @@ import org.rubypeople.rdt.refactoring.core.SelectionNodeProvider;
 import org.rubypeople.rdt.refactoring.documentprovider.DocumentWithIncluding;
 import org.rubypeople.rdt.refactoring.exception.NoClassNodeException;
 import org.rubypeople.rdt.refactoring.nodewrapper.ClassNodeWrapper;
+import org.rubypeople.rdt.refactoring.util.NodeUtil;
 
 public class RenameClassConditionChecker extends RefactoringConditionChecker {
 
@@ -52,16 +53,16 @@ public class RenameClassConditionChecker extends RefactoringConditionChecker {
 		ClassNodeWrapper classNode = null;
 		try {
 			classNode = SelectionNodeProvider.getSelectedClassNode(config.getDocumentProvider().getActiveFileRootNode(), config.getOffset());
-			int nameStart = ((ClassNode) classNode.getWrappedNode()).getCPath().getPosition().getStartOffset();
-			int nameEnd = ((ClassNode) classNode.getWrappedNode()).getCPath().getPosition().getEndOffset();
-			if(config.getOffset() < nameStart || config.getOffset() > nameEnd) {
+			if(!NodeUtil.positionIsInNode(config.getOffset(), ((ClassNode) classNode.getWrappedNode()).getCPath())) {
 				return;
 			}
 		} catch (NoClassNodeException e) {return;}
+		
 		config.setModulePrefix(classNode.getFirstPartialClassNode().getModulePrefix());
 		config.setSelectedNode((ClassNode) classNode.getFirstPartialClassNode().getWrappedNode());
 		config.setNewName(classNode.getName());
 	}
+
 
 	@Override
 	protected void checkInitialConditions() {
