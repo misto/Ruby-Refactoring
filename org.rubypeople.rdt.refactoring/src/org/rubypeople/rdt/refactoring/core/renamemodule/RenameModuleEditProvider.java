@@ -4,10 +4,10 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 import org.jruby.ast.IScopingNode;
-import org.rubypeople.rdt.refactoring.core.renameclass.PartialClassesRenameEditProvider;
 import org.rubypeople.rdt.refactoring.editprovider.FileMultiEditProvider;
 import org.rubypeople.rdt.refactoring.editprovider.IMultiFileEditProvider;
 import org.rubypeople.rdt.refactoring.editprovider.MultiFileEditProvider;
+import org.rubypeople.rdt.refactoring.editprovider.ScopingNodeRenameEditProvider;
 
 public class RenameModuleEditProvider implements IMultiFileEditProvider {
 
@@ -17,10 +17,10 @@ public class RenameModuleEditProvider implements IMultiFileEditProvider {
 		this.config = config;
 	}
 	
-	private PartialClassesRenameEditProvider getModuleEditProvider() {
+	private ScopingNodeRenameEditProvider getModuleEditProvider() {
 		ArrayList<IScopingNode> modules = new ArrayList<IScopingNode>();
 		modules.add(config.getSelectedModule().getWrappedNode());
-		return new PartialClassesRenameEditProvider(modules, config.getNewName());
+		return new ScopingNodeRenameEditProvider(modules, config.getNewName());
 	}
 
 	public Collection<FileMultiEditProvider> getFileEditProviders() {

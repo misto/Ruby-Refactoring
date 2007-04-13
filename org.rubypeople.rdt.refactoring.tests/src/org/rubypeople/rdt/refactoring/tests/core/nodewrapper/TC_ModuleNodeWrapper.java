@@ -1,6 +1,6 @@
 package org.rubypeople.rdt.refactoring.tests.core.nodewrapper;
 
-import org.rubypeople.rdt.refactoring.core.SelectionNodeProvider;
+import org.rubypeople.rdt.refactoring.core.ModuleNodeProvider;
 import org.rubypeople.rdt.refactoring.nodewrapper.ModuleNodeWrapper;
 import org.rubypeople.rdt.refactoring.tests.FileTestCase;
 
@@ -11,7 +11,7 @@ public class TC_ModuleNodeWrapper extends FileTestCase {
 	}
 
 	private ModuleNodeWrapper findModule(String file, int position) {
-		return SelectionNodeProvider.getSelectedModuleNode(getRootNode(file),position);
+		return ModuleNodeProvider.getSelectedModuleNode(getRootNode(file),position);
 	}
 	
 	public void testSimpleModule() {

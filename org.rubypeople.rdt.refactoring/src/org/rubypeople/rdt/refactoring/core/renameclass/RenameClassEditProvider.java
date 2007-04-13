@@ -35,6 +35,7 @@ import org.rubypeople.rdt.refactoring.documentprovider.IDocumentProvider;
 import org.rubypeople.rdt.refactoring.editprovider.FileMultiEditProvider;
 import org.rubypeople.rdt.refactoring.editprovider.IMultiFileEditProvider;
 import org.rubypeople.rdt.refactoring.editprovider.MultiFileEditProvider;
+import org.rubypeople.rdt.refactoring.editprovider.ScopingNodeRenameEditProvider;
 
 public class RenameClassEditProvider implements IMultiFileEditProvider {
 
@@ -51,9 +52,9 @@ public class RenameClassEditProvider implements IMultiFileEditProvider {
 		return new ChildClassesRenameEditProvider(childClasses, config.getNewName());
 	}
 
-	private PartialClassesRenameEditProvider createPartialsEditProvider() {
+	private ScopingNodeRenameEditProvider createPartialsEditProvider() {
 		Collection<ClassNode> classNodes = new ClassFinder(document, config.getSelectedNode().getCPath().getName(),  config.getModulePrefix()).findParts();
-		return new PartialClassesRenameEditProvider(classNodes, config.getNewName());
+		return new ScopingNodeRenameEditProvider(classNodes, config.getNewName());
 	}
 
 	private ConstructorRenameEditProvider createConstructorEditProvider() {

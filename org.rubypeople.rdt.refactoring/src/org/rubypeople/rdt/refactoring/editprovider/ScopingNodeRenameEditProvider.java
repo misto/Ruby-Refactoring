@@ -26,7 +26,7 @@
  * the terms of any one of the CPL, the GPL or the LGPL.
  ***** END LICENSE BLOCK *****/
 
-package org.rubypeople.rdt.refactoring.core.renameclass;
+package org.rubypeople.rdt.refactoring.editprovider;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -36,7 +36,7 @@ import org.jruby.ast.Node;
 import org.rubypeople.rdt.refactoring.editprovider.FileEditProvider;
 import org.rubypeople.rdt.refactoring.editprovider.ReplaceEditProvider;
 
-public class PartialClassesRenameEditProvider  {
+public class ScopingNodeRenameEditProvider  {
 
 	private static class ScopingNodeRenameEdit extends ReplaceEditProvider {
 
@@ -65,7 +65,7 @@ public class PartialClassesRenameEditProvider  {
 	private final Collection<? extends IScopingNode> nodes;
 	private final String newName;
 
-	public PartialClassesRenameEditProvider(Collection<? extends IScopingNode> nodes, String newName) {
+	public ScopingNodeRenameEditProvider(Collection<? extends IScopingNode> nodes, String newName) {
 		this.nodes = nodes;
 		this.newName = newName;
 	}
