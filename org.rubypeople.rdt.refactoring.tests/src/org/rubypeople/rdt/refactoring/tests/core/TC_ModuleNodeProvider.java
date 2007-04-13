@@ -28,20 +28,44 @@
 
 package org.rubypeople.rdt.refactoring.tests.core;
 
-import junit.framework.Test;
-import junit.framework.TestSuite;
+import org.rubypeople.rdt.refactoring.core.ModuleNodeProvider;
+import org.rubypeople.rdt.refactoring.nodewrapper.ModuleNodeWrapper;
+import org.rubypeople.rdt.refactoring.tests.FileTestCase;
 
-import org.rubypeople.rdt.refactoring.tests.FileTestSuite;
-import org.rubypeople.rdt.refactoring.tests.core.nodewrapper.TS_NodeWrapper;
+public class TC_ModuleNodeProvider extends FileTestCase {
 
-public class TS_Core extends FileTestSuite {
+	public TC_ModuleNodeProvider() {
+		super("Module Node Provider");
+	}
+
+	private ModuleNodeWrapper findModule(String file, int position) {
+		return ModuleNodeProvider.getSelectedModuleNode(getRootNode(file),position);
+	}
 	
-	public static Test suite() {
-		TestSuite suite = createSuite("Core", "enclosing_nodes_test*rb", TC_SelectionNodeProvider.class);
-		suite.addTestSuite(TC_NodeProvider.class);
-		suite.addTestSuite(TC_ModuleNodeProvider.class);
-		suite.addTest(TS_NodeWrapper.suite());
-		suite.addTestSuite(TC_RefactoringConditionChecker.class);
-		return suite;
+	public void testSimpleModule() {
+		ModuleNodeWrapper moduleNode = findModule("TC_ModuleNodeProvider_SimpleModule.rb", 8);
+		
+		assertNull(moduleNode.getParentModule());
+		assertNotNull(moduleNode.getWrappedNode());
+		assertEquals("Modul", moduleNode.getName());
+		assertEquals("Modul", moduleNode.getFullName());
+	}
+
+	public void testModuleWithParent() {
+		ModuleNodeWrapper moduleNode = findModule("TC_ModuleNodeProvider_ModuleWithParent.rb", 31);
+		
+		assertNotNull(moduleNode.getParentModule());
+		assertNotNull(moduleNode.getParentModule().getWrappedNode());
+		assertNull(moduleNode.getParentModule().getParentModule());
+		assertNotNull(moduleNode.getWrappedNode());
+		assertEquals("Modul", moduleNode.getName());
+		assertEquals("OuterModule::Modul", moduleNode.getFullName());
+	}
+	
+	public void testModuleWithMultipleParents() {
+		ModuleNodeWrapper moduleNode = findModule("TC_ModuleNodeProvider_ModuleWithMultipleParents.rb", 68);
+
+		assertEquals("M5", moduleNode.getName());
+		assertEquals("M1::M2::M3::M4::M5", moduleNode.getFullName());
 	}
 }

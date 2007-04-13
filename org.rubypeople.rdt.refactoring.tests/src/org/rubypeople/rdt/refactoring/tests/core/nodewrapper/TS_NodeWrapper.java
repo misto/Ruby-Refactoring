@@ -35,7 +35,6 @@ public class TS_NodeWrapper {
 		TestSuite suite = new TestSuite("Node Wrapper");
 		suite.addTestSuite(TC_FieldNodeWrapper.class);
 		suite.addTestSuite(TC_MethodNodeWrapper.class);
-		suite.addTestSuite(TC_ModuleNodeWrapper.class);
 		return suite;
 	}
 }
