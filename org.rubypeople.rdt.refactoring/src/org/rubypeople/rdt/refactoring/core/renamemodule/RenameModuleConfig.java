@@ -1,15 +1,16 @@
 package org.rubypeople.rdt.refactoring.core.renamemodule;
 
-import org.jruby.ast.ModuleNode;
 import org.rubypeople.rdt.refactoring.core.IRefactoringConfig;
 import org.rubypeople.rdt.refactoring.documentprovider.IDocumentProvider;
+import org.rubypeople.rdt.refactoring.nodewrapper.ModuleNodeWrapper;
 import org.rubypeople.rdt.refactoring.ui.INewNameReceiver;
 
 public class RenameModuleConfig implements IRefactoringConfig, INewNameReceiver {
 
 	private IDocumentProvider doc;
 	private final int carretPosition;
-	private ModuleNode selectedModule;
+	private ModuleNodeWrapper selectedModule;
+	private String newName;
 
 	public RenameModuleConfig(IDocumentProvider doc, int carretPosition) {
 		this.doc = doc;
@@ -24,25 +25,27 @@ public class RenameModuleConfig implements IRefactoringConfig, INewNameReceiver 
 		this.doc = doc;
 	}
 
-	public void setNewName(String name) {
-		// TODO Auto-generated method stub
-		
+	public void setNewName(String newName) {
+		this.newName = newName;
 	}
 
 	public String getSelectedModuleName() {
-		// TODO Auto-generated method stub
-		return null;
+		return selectedModule != null ? selectedModule.getName() : null;
 	}
 
 	public int getCarretPosition() {
 		return carretPosition;
 	}
 
-	public ModuleNode getSelectedModule() {
+	public ModuleNodeWrapper getSelectedModule() {
 		return selectedModule;
 	}
 
-	public void setSelectedModule(ModuleNode selectedModule) {
+	public void setSelectedModule(ModuleNodeWrapper selectedModule) {
 		this.selectedModule = selectedModule;
+	}
+
+	public String getNewName() {
+		return newName;
 	}
 }

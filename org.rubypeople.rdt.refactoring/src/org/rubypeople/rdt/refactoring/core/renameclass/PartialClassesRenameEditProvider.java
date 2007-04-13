@@ -31,53 +31,51 @@ package org.rubypeople.rdt.refactoring.core.renameclass;
 import java.util.ArrayList;
 import java.util.Collection;
 
-import org.jruby.ast.ClassNode;
+import org.jruby.ast.IScopingNode;
 import org.jruby.ast.Node;
 import org.rubypeople.rdt.refactoring.editprovider.FileEditProvider;
 import org.rubypeople.rdt.refactoring.editprovider.ReplaceEditProvider;
 
 public class PartialClassesRenameEditProvider  {
 
-	private static class PartialClassRenameEdit extends ReplaceEditProvider {
+	private static class ScopingNodeRenameEdit extends ReplaceEditProvider {
 
-		private final ClassNode klass;
+		private final IScopingNode node;
 
-		public PartialClassRenameEdit(ClassNode klass) {
-			this.klass = klass;
+		public ScopingNodeRenameEdit(IScopingNode klass) {
+			this.node = klass;
 		}
 
 		@Override
 		protected int getOffsetLength() {
-			return klass.getCPath().getPosition().getEndOffset() - klass.getCPath().getPosition().getStartOffset();
+			return node.getCPath().getPosition().getEndOffset() - node.getCPath().getPosition().getStartOffset();
 		}
 
 		@Override
 		protected Node getEditNode(int offset, String document) {
-			return klass.getCPath();
+			return node.getCPath();
 		}
 
 		@Override
 		protected int getOffset(String document) {
-			return klass.getCPath().getPosition().getStartOffset();
+			return node.getCPath().getPosition().getStartOffset();
 		}
-		
-		
 	}
 	
-	private final Collection<ClassNode> classes;
+	private final Collection<? extends IScopingNode> nodes;
 	private final String newName;
 
-	public PartialClassesRenameEditProvider(Collection<ClassNode> partials, String newName) {
-		this.classes = partials;
+	public PartialClassesRenameEditProvider(Collection<? extends IScopingNode> nodes, String newName) {
+		this.nodes = nodes;
 		this.newName = newName;
 	}
 
-	protected Collection<FileEditProvider> getEditProviders() {
+	public Collection<FileEditProvider> getEditProviders() {
 		Collection<FileEditProvider> edits = new ArrayList<FileEditProvider>();
 		
-		for(ClassNode klass : classes) {
+		for(IScopingNode klass : nodes) {
 			klass.getCPath().setName(newName);
-			edits.add(new FileEditProvider(klass.getPosition().getFile(), new PartialClassRenameEdit(klass)));
+			edits.add(new FileEditProvider(((Node) klass).getPosition().getFile(), new ScopingNodeRenameEdit(klass)));
 		}
 		
 		return edits;

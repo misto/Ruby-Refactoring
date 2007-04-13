@@ -1,9 +1,9 @@
 package org.rubypeople.rdt.refactoring.core.renamemodule;
 
-import org.jruby.ast.ModuleNode;
 import org.rubypeople.rdt.refactoring.core.IRefactoringConfig;
 import org.rubypeople.rdt.refactoring.core.RefactoringConditionChecker;
 import org.rubypeople.rdt.refactoring.core.SelectionNodeProvider;
+import org.rubypeople.rdt.refactoring.nodewrapper.ModuleNodeWrapper;
 import org.rubypeople.rdt.refactoring.util.NodeUtil;
 
 public class RenameModuleConditionChecker extends RefactoringConditionChecker {
@@ -27,12 +27,16 @@ public class RenameModuleConditionChecker extends RefactoringConditionChecker {
 	public void init(IRefactoringConfig configObj) {
 		config = (RenameModuleConfig) configObj;
 		
-		ModuleNode selectedModule = (ModuleNode) SelectionNodeProvider.getSelectedNodeOfType(config.getDocumentProvider().getActiveFileRootNode(), config.getCarretPosition(), ModuleNode.class);
+		ModuleNodeWrapper selectedModule = SelectionNodeProvider.getSelectedModuleNode(config.getDocumentProvider().getActiveFileRootNode(), config.getCarretPosition());
 		config.setSelectedModule(selectedModule);
-		if(config.getSelectedModule()== null || !NodeUtil.positionIsInNode(config.getCarretPosition(), selectedModule.getCPath())) {
+		if(config.getSelectedModule() == null || caretIsNotOnModuleName(selectedModule)) {
 			return;
 		}
-		config.setNewName(selectedModule.getCPath().getName());
+		config.setNewName(selectedModule.getName());
+	}
+
+	private boolean caretIsNotOnModuleName(ModuleNodeWrapper selectedModule) {
+		return !NodeUtil.positionIsInNode(config.getCarretPosition(), selectedModule.getWrappedNode().getCPath());
 	}
 
 }

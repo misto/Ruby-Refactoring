@@ -60,6 +60,7 @@ import org.rubypeople.rdt.refactoring.exception.NoClassNodeException;
 import org.rubypeople.rdt.refactoring.nodewrapper.AttrAccessorNodeWrapper;
 import org.rubypeople.rdt.refactoring.nodewrapper.ClassNodeWrapper;
 import org.rubypeople.rdt.refactoring.nodewrapper.INodeWrapper;
+import org.rubypeople.rdt.refactoring.nodewrapper.ModuleNodeWrapper;
 import org.rubypeople.rdt.refactoring.nodewrapper.PartialClassNodeWrapper;
 import org.rubypeople.rdt.refactoring.util.NodeUtil;
 
@@ -306,4 +307,33 @@ public class SelectionNodeProvider {
 		}
 		return newNode;
 	}
+	
+	public static ModuleNodeWrapper getSelectedModuleNode(Node root, int pos) {
+		
+		ModuleNode module = (ModuleNode) getSelectedNodeOfType(root, pos, ModuleNode.class);
+		if(module == null) {
+			return null;
+		}
+		
+		ArrayList<ModuleNode> modules = new ArrayList<ModuleNode>();
+		modules.add(module);
+		ModuleNode parent = null;
+		
+		while(true) {
+			parent = (ModuleNode) NodeProvider.findParentNode(root, module, ModuleNode.class);
+			if(parent == null)
+				break;
+			modules.add(0, parent);
+			module = parent;
+		}
+		
+		ModuleNodeWrapper previousWrapper = null;
+		for (ModuleNode node : modules) {
+			ModuleNodeWrapper nodeWrapper = new ModuleNodeWrapper(node, previousWrapper);
+			previousWrapper = nodeWrapper;
+		}
+		return previousWrapper;
+	}
 }
+
+

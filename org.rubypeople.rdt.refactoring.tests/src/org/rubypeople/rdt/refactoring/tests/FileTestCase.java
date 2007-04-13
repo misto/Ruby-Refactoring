@@ -34,8 +34,8 @@ import org.rubypeople.rdt.refactoring.util.FileHelper;
 
 public abstract class FileTestCase extends RefactoringTestCase
 {
-	public FileTestCase(String fileName) {
-		super(fileName);
+	public FileTestCase(String name) {
+		super(name);
 	}
 
 	protected String getSource(String file){

@@ -227,7 +227,9 @@ public class NodeProvider {
 	 * Returns the parent of a given node.
 	 */
 	public static Node findParentNode(Node rootNode, Node child) {
-
+		
+		if (child == null) return null;
+		
 		Collection<Node> allNodes = getAllNodes(rootNode);
 		for (Node node : allNodes) {
 			if (containsNode(node.childNodes(), child)) {
@@ -238,7 +240,7 @@ public class NodeProvider {
 	}
 	
 	public static Node findParentNode(Node rootNode, Node child, Class type) {
-		while((child = findParentNode(rootNode, child)) != null) {
+		while((child = findParentNode(rootNode, child)) != null && !(child instanceof RootNode)) {
 			if(child.getClass().isAssignableFrom(type)) {
 				return child;
 			}

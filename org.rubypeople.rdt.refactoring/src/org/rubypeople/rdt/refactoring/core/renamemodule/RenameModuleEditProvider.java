@@ -1,19 +1,33 @@
 package org.rubypeople.rdt.refactoring.core.renamemodule;
 
+import java.util.ArrayList;
 import java.util.Collection;
 
+import org.jruby.ast.IScopingNode;
+import org.rubypeople.rdt.refactoring.core.renameclass.PartialClassesRenameEditProvider;
 import org.rubypeople.rdt.refactoring.editprovider.FileMultiEditProvider;
 import org.rubypeople.rdt.refactoring.editprovider.IMultiFileEditProvider;
+import org.rubypeople.rdt.refactoring.editprovider.MultiFileEditProvider;
 
 public class RenameModuleEditProvider implements IMultiFileEditProvider {
 
-	public RenameModuleEditProvider(RenameModuleConfig renameModuleConfig) {
-		// TODO Auto-generated constructor stub
+	private final RenameModuleConfig config;
+
+	public RenameModuleEditProvider(RenameModuleConfig config) {
+		this.config = config;
+	}
+	
+	private PartialClassesRenameEditProvider getModuleEditProvider() {
+		ArrayList<IScopingNode> modules = new ArrayList<IScopingNode>();
+		modules.add(config.getSelectedModule().getWrappedNode());
+		return new PartialClassesRenameEditProvider(modules, config.getNewName());
 	}
 
 	public Collection<FileMultiEditProvider> getFileEditProviders() {
-		// TODO Auto-generated method stub
-		return null;
+		MultiFileEditProvider fileEdits = new MultiFileEditProvider();
+		
+		fileEdits.addEditProviders(getModuleEditProvider().getEditProviders());
+		
+		return fileEdits.getFileEditProviders();
 	}
-
 }
