@@ -26,16 +26,18 @@
  * the terms of any one of the CPL, the GPL or the LGPL.
  ***** END LICENSE BLOCK *****/
 
-
 package org.rubypeople.rdt.refactoring.core;
 
 import java.util.ArrayList;
+import java.util.Collection;
 
+import org.jruby.ast.ConstNode;
 import org.jruby.ast.ModuleNode;
 import org.jruby.ast.Node;
+import org.rubypeople.rdt.refactoring.documentprovider.IDocumentProvider;
 import org.rubypeople.rdt.refactoring.nodewrapper.ModuleNodeWrapper;
 
-public class ModuleNodeProvider {
+public abstract class ModuleNodeProvider {
 
 	public static ModuleNodeWrapper getSelectedModuleNode(Node root, int pos) {
 		
@@ -43,7 +45,36 @@ public class ModuleNodeProvider {
 		if(module == null) {
 			return null;
 		}
+		return createModuleNodeWrapper(root, module);
+	}	
+	
+	public static Collection<ModuleNodeWrapper> findOtherParts(IDocumentProvider doc, ModuleNodeWrapper module) {
+		ArrayList<ModuleNodeWrapper> modules = new ArrayList<ModuleNodeWrapper>();
 		
+		for (String file : doc.getFileNames()) {
+			for (Node node : NodeProvider.getSubNodes(doc.getRootNode(file), ModuleNode.class)) {
+				ModuleNode moduleNode = (ModuleNode) node;
+				ModuleNodeWrapper wrapper = createModuleNodeWrapper(doc.getRootNode(file), moduleNode);
+				if(wrapper.getFullName().equals(module.getFullName())) {
+					modules.add(wrapper);
+				}
+			}
+		}
+		
+		return modules;
+	}
+	
+	public static Collection<ConstNode> getAllModuleMethodDefinitions(Collection<ModuleNodeWrapper> modules) {
+		ArrayList<ConstNode> methods = new ArrayList<ConstNode>();
+		
+		for (ModuleNodeWrapper wrapper : modules) {
+			methods.addAll(wrapper.getModuleMethodConstNodes());
+		}
+		
+		return methods;
+	}
+
+	private static ModuleNodeWrapper createModuleNodeWrapper(Node root, ModuleNode module) {
 		ArrayList<ModuleNode> modules = new ArrayList<ModuleNode>();
 		modules.add(module);
 		ModuleNode parent = null;

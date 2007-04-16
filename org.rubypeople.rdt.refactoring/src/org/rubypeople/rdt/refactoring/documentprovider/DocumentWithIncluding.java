@@ -66,7 +66,7 @@ public class DocumentWithIncluding extends StringDocumentProvider {
 					continue;
 				}
 				for (FCallNode node : getRequires(actFileName)) {
-					if(nodeRequiresMe(node)) {
+					if(nodeRequiresMe(node) && !getFileNames().contains(actFileName)) {
 						addAndRemove(markedForRemoval, actFileName, fileName);
 					}
 				}

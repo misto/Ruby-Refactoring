@@ -28,7 +28,12 @@
 
 package org.rubypeople.rdt.refactoring.tests.core;
 
+import java.util.Collection;
+
+import org.jruby.ast.ConstNode;
+import org.jruby.lexer.yacc.SourcePosition;
 import org.rubypeople.rdt.refactoring.core.ModuleNodeProvider;
+import org.rubypeople.rdt.refactoring.documentprovider.StringDocumentProvider;
 import org.rubypeople.rdt.refactoring.nodewrapper.ModuleNodeWrapper;
 import org.rubypeople.rdt.refactoring.tests.FileTestCase;
 
@@ -40,6 +45,10 @@ public class TC_ModuleNodeProvider extends FileTestCase {
 
 	private ModuleNodeWrapper findModule(String file, int position) {
 		return ModuleNodeProvider.getSelectedModuleNode(getRootNode(file),position);
+	}
+	
+	private Collection<ModuleNodeWrapper> findModules(String file, ModuleNodeWrapper moduleNode) {
+		return ModuleNodeProvider.findOtherParts(new StringDocumentProvider("TC_ModuleNodeProvider", getSource(file)), moduleNode);
 	}
 	
 	public void testSimpleModule() {
@@ -67,5 +76,48 @@ public class TC_ModuleNodeProvider extends FileTestCase {
 
 		assertEquals("M5", moduleNode.getName());
 		assertEquals("M1::M2::M3::M4::M5", moduleNode.getFullName());
+	}
+	
+	public void testTwoSimpleModules() {
+		ModuleNodeWrapper[] nodeWrappers = getModules("TC_ModuleNodeProvider_TwoSimpleModules.rb", 8).toArray(new ModuleNodeWrapper[]{});
+
+		assertEquals(2, nodeWrappers.length);
+		assertEquals("Modul", nodeWrappers[0].getFullName());	
+		assertEquals("Modul", nodeWrappers[1].getFullName());	
+	}
+
+	private Collection<ModuleNodeWrapper> getModules(String fileName, int pos) {
+		ModuleNodeWrapper moduleNode = findModule(fileName, pos);
+		return findModules(fileName, moduleNode);
+	}
+
+	public void testFindSingleMethod() {
+		Collection<ModuleNodeWrapper> modules = getModules("TC_ModuleNodeProvider_FindSingleMethod.rb", 8);
+		ConstNode[] nodes = ModuleNodeProvider.getAllModuleMethodDefinitions(modules).toArray(new ConstNode[]{});
+		
+		assertEquals(2, nodes.length);
+		assertEquals("Modul", nodes[0].getName());
+		assertEquals(new SourcePosition("TC_ModuleNodeProvider", 1, 1, 19, 24), nodes[0].getPosition());
+		
+		assertEquals("Modul", nodes[1].getName());
+		assertEquals(new SourcePosition("TC_ModuleNodeProvider", 13, 13, 145, 150), nodes[1].getPosition());
+	}
+	
+	public void testFindMultipleMethods() {
+		Collection<ModuleNodeWrapper> modules = getModules("TC_ModuleNodeProvider_FindMultipleMethods.rb", 8);
+		ConstNode[] nodes = ModuleNodeProvider.getAllModuleMethodDefinitions(modules).toArray(new ConstNode[]{});
+		
+		assertEquals(4, nodes.length);
+		assertEquals("Modul", nodes[0].getName());
+		assertEquals(new SourcePosition("TC_ModuleNodeProvider", 1, 1, 19, 24), nodes[0].getPosition());
+		
+		assertEquals("Modul", nodes[1].getName());
+		assertEquals(new SourcePosition("TC_ModuleNodeProvider", 13, 13, 145, 150), nodes[1].getPosition());
+		
+		assertEquals("Modul", nodes[2].getName());
+		assertEquals(new SourcePosition("TC_ModuleNodeProvider", 15, 15, 175, 180), nodes[2].getPosition());
+		
+		assertEquals("Modul", nodes[3].getName());
+		assertEquals(new SourcePosition("TC_ModuleNodeProvider", 17, 17, 207, 212), nodes[3].getPosition());
 	}
 }

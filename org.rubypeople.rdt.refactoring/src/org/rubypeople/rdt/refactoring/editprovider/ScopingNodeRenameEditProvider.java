@@ -33,35 +33,9 @@ import java.util.Collection;
 
 import org.jruby.ast.IScopingNode;
 import org.jruby.ast.Node;
-import org.rubypeople.rdt.refactoring.editprovider.FileEditProvider;
-import org.rubypeople.rdt.refactoring.editprovider.ReplaceEditProvider;
 
 public class ScopingNodeRenameEditProvider  {
 
-	private static class ScopingNodeRenameEdit extends ReplaceEditProvider {
-
-		private final IScopingNode node;
-
-		public ScopingNodeRenameEdit(IScopingNode klass) {
-			this.node = klass;
-		}
-
-		@Override
-		protected int getOffsetLength() {
-			return node.getCPath().getPosition().getEndOffset() - node.getCPath().getPosition().getStartOffset();
-		}
-
-		@Override
-		protected Node getEditNode(int offset, String document) {
-			return node.getCPath();
-		}
-
-		@Override
-		protected int getOffset(String document) {
-			return node.getCPath().getPosition().getStartOffset();
-		}
-	}
-	
 	private final Collection<? extends IScopingNode> nodes;
 	private final String newName;
 
@@ -75,7 +49,7 @@ public class ScopingNodeRenameEditProvider  {
 		
 		for(IScopingNode klass : nodes) {
 			klass.getCPath().setName(newName);
-			edits.add(new FileEditProvider(((Node) klass).getPosition().getFile(), new ScopingNodeRenameEdit(klass)));
+			edits.add(new FileEditProvider(((Node) klass).getPosition().getFile(), new SimpleNodeEditProvider(klass.getCPath())));
 		}
 		
 		return edits;

@@ -26,58 +26,30 @@
  * the terms of any one of the CPL, the GPL or the LGPL.
  ***** END LICENSE BLOCK *****/
 
-package org.rubypeople.rdt.refactoring.core.renameclass;
-
-import java.util.ArrayList;
-import java.util.Collection;
+package org.rubypeople.rdt.refactoring.editprovider;
 
 import org.jruby.ast.Node;
-import org.rubypeople.rdt.refactoring.editprovider.FileEditProvider;
-import org.rubypeople.rdt.refactoring.editprovider.ReplaceEditProvider;
 
-public class ConstructorRenameEditProvider {
-	
-	private static class ConstructorEditProvider extends ReplaceEditProvider {
-		
-		private final ConstructorCall call;
+public class SimpleNodeEditProvider extends ReplaceEditProvider {
 
-		public ConstructorEditProvider(ConstructorCall call) {
-			this.call = call;
-		}
+	private final Node node;
 
-		@Override
-		protected int getOffsetLength() {
-			return call.getReceiverLength();
-		}
-
-		@Override
-		protected Node getEditNode(int offset, String document) {
-			return call.getNode().getReceiverNode();
-		}
-
-		@Override
-		protected int getOffset(String document) {
-			return call.getReceiverOffset();
-		}
-	}
-	
-	private final Collection<ConstructorCall> calls;
-	private final String newName;
-
-	public ConstructorRenameEditProvider(Collection<ConstructorCall> calls, String newName) {
-		this.calls = calls;
-		this.newName = newName;
+	public SimpleNodeEditProvider(Node node) {
+		this.node = node;
 	}
 
-	protected Collection<FileEditProvider> getEditProviders() {
-		Collection<FileEditProvider> edits = new ArrayList<FileEditProvider>();
-		
-		for (ConstructorCall call : calls) {
-			call.setName(newName);
-			edits.add(new FileEditProvider(call.getNode().getPosition().getFile(), new ConstructorEditProvider(call)));
-		}
-		
-		return edits;
+	@Override
+	protected int getOffsetLength() {
+		return node.getPosition().getEndOffset() - node.getPosition().getStartOffset();
 	}
 
+	@Override
+	protected Node getEditNode(int offset, String document) {
+		return node;
+	}
+
+	@Override
+	protected int getOffset(String document) {
+		return node.getPosition().getStartOffset();
+	}
 }

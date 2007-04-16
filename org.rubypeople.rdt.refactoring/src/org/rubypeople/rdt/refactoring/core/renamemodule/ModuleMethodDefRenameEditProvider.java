@@ -28,64 +28,31 @@
 
 package org.rubypeople.rdt.refactoring.core.renamemodule;
 
+import java.util.ArrayList;
 import java.util.Collection;
 
-import org.rubypeople.rdt.refactoring.core.IRefactoringConfig;
-import org.rubypeople.rdt.refactoring.documentprovider.DocumentWithIncluding;
-import org.rubypeople.rdt.refactoring.documentprovider.IDocumentProvider;
-import org.rubypeople.rdt.refactoring.nodewrapper.ModuleNodeWrapper;
-import org.rubypeople.rdt.refactoring.ui.INewNameReceiver;
+import org.jruby.ast.ConstNode;
+import org.rubypeople.rdt.refactoring.editprovider.FileEditProvider;
+import org.rubypeople.rdt.refactoring.editprovider.SimpleNodeEditProvider;
 
-public class RenameModuleConfig implements IRefactoringConfig, INewNameReceiver {
+public class ModuleMethodDefRenameEditProvider  {
 
-	private IDocumentProvider doc;
-	private final int carretPosition;
-	private ModuleNodeWrapper selectedModule;
-	private String newName;
-	private Collection<ModuleNodeWrapper> moduleParts;
+	private final Collection<ConstNode> nodes;
+	private final String newName;
 
-	public RenameModuleConfig(IDocumentProvider doc, int carretPosition) {
-		this.doc = doc;
-		this.carretPosition = carretPosition;
-	}
-
-	public IDocumentProvider getDocumentProvider() {
-		return doc;
-	}
-
-	public void setDocumentProvider(IDocumentProvider doc) {
-		this.doc = new DocumentWithIncluding(doc);
-	}
-
-	public void setNewName(String newName) {
+	public ModuleMethodDefRenameEditProvider(Collection<ConstNode> nodes, String newName) {
+		this.nodes = nodes;
 		this.newName = newName;
 	}
 
-	public String getSelectedModuleName() {
-		return selectedModule != null ? selectedModule.getName() : null;
-	}
-
-	public int getCarretPosition() {
-		return carretPosition;
-	}
-
-	public ModuleNodeWrapper getSelectedModule() {
-		return selectedModule;
-	}
-
-	public void setSelectedModule(ModuleNodeWrapper selectedModule) {
-		this.selectedModule = selectedModule;
-	}
-
-	public String getNewName() {
-		return newName;
-	}
-
-	public void setModuleParts(Collection<ModuleNodeWrapper> moduleParts) {
-		this.moduleParts = moduleParts;
-	}
-
-	public Collection<ModuleNodeWrapper> getModuleParts() {
-		return moduleParts;
+	public Collection<FileEditProvider> getEditProviders() {
+		Collection<FileEditProvider> edits = new ArrayList<FileEditProvider>();
+		
+		for(ConstNode node : nodes) {
+			node.setName(newName);
+			edits.add(new FileEditProvider(node.getPosition().getFile(), new SimpleNodeEditProvider(node)));
+		}
+		
+		return edits;
 	}
 }

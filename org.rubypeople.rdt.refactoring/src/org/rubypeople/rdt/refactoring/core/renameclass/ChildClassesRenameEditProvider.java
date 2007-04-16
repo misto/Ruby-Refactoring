@@ -33,37 +33,11 @@ import java.util.Collection;
 
 import org.jruby.ast.ClassNode;
 import org.jruby.ast.ConstNode;
-import org.jruby.ast.Node;
 import org.rubypeople.rdt.refactoring.editprovider.FileEditProvider;
-import org.rubypeople.rdt.refactoring.editprovider.ReplaceEditProvider;
+import org.rubypeople.rdt.refactoring.editprovider.SimpleNodeEditProvider;
 
 public class ChildClassesRenameEditProvider {
 
-	private static class ChildClassEditProvider extends ReplaceEditProvider {
-		
-		private final Node node;
-
-		public ChildClassEditProvider(Node node) {
-			this.node = node;
-		}
-
-		@Override
-		protected int getOffsetLength() {
-			return node.getPosition().getEndOffset() - node.getPosition().getStartOffset();
-		}
-
-		@Override
-		protected Node getEditNode(int offset, String document) {
-			return node;
-		}
-
-		@Override
-		protected int getOffset(String document) {
-			return node.getPosition().getStartOffset();
-		}
-		
-	}
-	
 	private final Collection<ClassNode> classes;
 	private final String newName;
 
@@ -77,7 +51,7 @@ public class ChildClassesRenameEditProvider {
 		
 		for(ClassNode klass : classes) {
 			((ConstNode) klass.getSuperNode()).setName(newName);
-			edits.add(new FileEditProvider(klass.getPosition().getFile(), new ChildClassEditProvider(klass.getSuperNode())));
+			edits.add(new FileEditProvider(klass.getPosition().getFile(), new SimpleNodeEditProvider(klass.getSuperNode())));
 		}
 		
 		return edits;

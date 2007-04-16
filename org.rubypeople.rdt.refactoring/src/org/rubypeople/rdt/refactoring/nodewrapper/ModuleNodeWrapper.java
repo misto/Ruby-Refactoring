@@ -1,14 +1,23 @@
 package org.rubypeople.rdt.refactoring.nodewrapper;
 
+import java.util.ArrayList;
+import java.util.Collection;
+
+import org.jruby.ast.ConstNode;
+import org.jruby.ast.DefsNode;
 import org.jruby.ast.ModuleNode;
+import org.jruby.ast.Node;
+import org.rubypeople.rdt.refactoring.core.NodeProvider;
 
 public class ModuleNodeWrapper implements INodeWrapper {
 	private final ModuleNode moduleNode;
 	private ModuleNodeWrapper parentModule;
+	private ArrayList<ConstNode> moduleMethodNodes = new ArrayList<ConstNode>();;
 
 	public ModuleNodeWrapper(ModuleNode moduleNode, ModuleNodeWrapper parentModule) {
 		this.moduleNode = moduleNode;
-		this.parentModule = parentModule;
+		this.parentModule = parentModule;	
+		initModuleMethodConstNodes();
 	}
 
 	public ModuleNode getWrappedNode() {
@@ -29,5 +38,19 @@ public class ModuleNodeWrapper implements INodeWrapper {
 
 	public String getFullName() {
 		return (parentModule != null ? parentModule.getFullName() + "::" : "") + getName();
+	}
+	
+	public Collection<ConstNode> getModuleMethodConstNodes() {
+
+		return moduleMethodNodes;
+	}
+
+	private void initModuleMethodConstNodes() {
+		for (Node node : NodeProvider.getSubNodes(getWrappedNode(), DefsNode.class)) {
+			ConstNode constNode = (ConstNode) ((DefsNode) node).getReceiverNode();
+			if(constNode.getName().equals(getName())) {
+				moduleMethodNodes.add(constNode);
+			}
+		}
 	}
 }

@@ -6,15 +6,15 @@ module OuterModule
 end
 
 module Module
-  module CentralModule
+  module InnerModule
   end
 end
 
-module CentralModule
+module InnerModule
 end
 
 class ModulTest
   include OuterModule::Module::CentralModule
-  include Module::CentralModule
-  include CentralModule
+  include Module::InnerModule
+  include InnerModule
 end
