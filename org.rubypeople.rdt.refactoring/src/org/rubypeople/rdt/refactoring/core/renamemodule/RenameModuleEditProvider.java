@@ -26,7 +26,6 @@
  * the terms of any one of the CPL, the GPL or the LGPL.
  ***** END LICENSE BLOCK *****/
 
-
 package org.rubypeople.rdt.refactoring.core.renamemodule;
 
 import java.util.ArrayList;
@@ -57,9 +56,13 @@ public class RenameModuleEditProvider implements IMultiFileEditProvider {
 		
 		return new ScopingNodeRenameEditProvider(modules, config.getNewName());
 	}
-	
+
 	private ModuleMethodDefRenameEditProvider getModuleModuleMethodDefEditProvider() {
 		return new ModuleMethodDefRenameEditProvider(ModuleNodeProvider.getAllModuleMethodDefinitions(config.getModuleParts()), config.getNewName());
+	}
+	
+	private IncludeRenameEditProvider getIncludeRenameEditProvider() {
+		return new IncludeRenameEditProvider(config);
 	}
 
 	public Collection<FileMultiEditProvider> getFileEditProviders() {
@@ -67,6 +70,7 @@ public class RenameModuleEditProvider implements IMultiFileEditProvider {
 		
 		fileEdits.addEditProviders(getModuleEditProvider().getEditProviders());
 		fileEdits.addEditProviders(getModuleModuleMethodDefEditProvider().getEditProviders());
+		fileEdits.addEditProviders(getIncludeRenameEditProvider().getEditProviders());
 		
 		return fileEdits.getFileEditProviders();
 	}

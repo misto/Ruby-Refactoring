@@ -56,10 +56,10 @@ public class RenameModuleConditionChecker extends RefactoringConditionChecker {
 		config = (RenameModuleConfig) configObj;
 		
 		ModuleNodeWrapper selectedModule = ModuleNodeProvider.getSelectedModuleNode(config.getDocumentProvider().getActiveFileRootNode(), config.getCarretPosition());
-		config.setSelectedModule(selectedModule);
-		if(config.getSelectedModule() == null || caretIsNotOnModuleName(selectedModule)) {
+		if(selectedModule == null || caretIsNotOnModuleName(selectedModule)) {
 			return;
 		}
+		config.setSelectedModule(selectedModule);
 		config.setNewName(selectedModule.getName());
 		config.setModuleParts(ModuleNodeProvider.findOtherParts(config.getDocumentProvider(), config.getSelectedModule()));
 	}

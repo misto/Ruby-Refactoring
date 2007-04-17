@@ -45,6 +45,7 @@ import org.jruby.ast.SClassNode;
 import org.jruby.ast.SymbolNode;
 import org.jruby.ast.VCallNode;
 import org.rubypeople.rdt.refactoring.core.NodeProvider;
+import org.rubypeople.rdt.refactoring.core.renamemodule.ModuleIncludeWrapper;
 import org.rubypeople.rdt.refactoring.exception.NoClassNodeException;
 import org.rubypeople.rdt.refactoring.nodewrapper.VisibilityNodeWrapper.METHOD_VISIBILITY;
 import org.rubypeople.rdt.refactoring.util.NodeUtil;
@@ -202,25 +203,23 @@ public abstract class PartialClassNodeWrapper implements INodeWrapper {
 	}
 
 	public Collection<Node> getInstFieldOccurences() {
-		Collection<Node> allOccurences = NodeProvider.getInstFieldOccurences(wrappedNode);
-
-		for (Node node : allOccurences) {
-			if (isDirectChild(node)){
-				allOccurences.remove(node);
-			}
-		}
-		return allOccurences;
+		return NodeProvider.getInstFieldOccurences(wrappedNode);
 	}
 	
 	public Collection<Node> getClassFieldOccurences() {
-		Collection<Node> classFieldOccurences = NodeProvider.getClassFieldOccurences(wrappedNode);
+		return NodeProvider.getClassFieldOccurences(wrappedNode);
+	}	
+	
+	public Collection<ModuleIncludeWrapper> getIncludeCalls() {
+		Collection<ModuleIncludeWrapper> includes = new ArrayList<ModuleIncludeWrapper>();
 
-		for (Node node : classFieldOccurences) {
-			if (isDirectChild(node)){
-				classFieldOccurences.remove(node);
+		for (Node node : NodeProvider.getSubNodes(wrappedNode, FCallNode.class)) {
+			FCallNode call = (FCallNode) node;
+			if("include".equals(call.getName())) { //$NON-NLS-1$
+				includes.add(ModuleIncludeWrapper.create(((ArrayNode) call.getArgsNode()).get(0), getModulePrefix()));
 			}
 		}
-		return classFieldOccurences;
+		return includes;
 	}
 
 	public Collection<MethodCallNodeWrapper> getMethodCalls(MethodDefNode decoratedMethod) {

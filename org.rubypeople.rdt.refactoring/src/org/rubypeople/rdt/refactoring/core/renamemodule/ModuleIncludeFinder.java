@@ -11,7 +11,7 @@
  * implied. See the License for the specific language governing
  * rights and limitations under the License.
  *
- * Copyright (C) 2006 Mirko Stocker <me@misto.ch>
+ * Copyright (C) 2007 Mirko Stocker <me@misto.ch>
  * 
  * Alternatively, the contents of this file may be used under the terms of
  * either of the GNU General Public License Version 2 or later (the "GPL"),
@@ -26,18 +26,41 @@
  * the terms of any one of the CPL, the GPL or the LGPL.
  ***** END LICENSE BLOCK *****/
 
-package org.rubypeople.rdt.refactoring.tests.core.renamemodule;
+package org.rubypeople.rdt.refactoring.core.renamemodule;
 
-import junit.framework.TestSuite;
+import java.util.ArrayList;
+import java.util.Collection;
 
-import org.rubypeople.rdt.refactoring.tests.FileTestSuite;
-import org.rubypeople.rdt.refactoring.tests.core.renamemodule.conditionchecker.TS_RenameModuleChecks;
+import org.rubypeople.rdt.refactoring.documentprovider.IDocumentProvider;
+import org.rubypeople.rdt.refactoring.nodewrapper.ClassNodeWrapper;
 
-public class TS_RenameModule extends FileTestSuite {
-	public static TestSuite suite() {
-		TestSuite suite = createSuite("Rename Module", "rename_module_test_*active*source", ModuleRenameTester.class);	
-		suite.addTestSuite(TC_ModuleInclusionFinder.class);
-		suite.addTest(TS_RenameModuleChecks.suite());
-		return suite;
+public class ModuleIncludeFinder {
+
+	private final IDocumentProvider document;
+
+	public ModuleIncludeFinder(IDocumentProvider document) {
+		this.document = document;
+	}
+
+	public Collection<ModuleIncludeWrapper> find(String name) {
+		ArrayList<ModuleIncludeWrapper> includes = new ArrayList<ModuleIncludeWrapper>();
+		
+		for (ModuleIncludeWrapper includeWrapper : findAllIncludes()) {
+			if(includeWrapper.getFullName().startsWith(name)) {
+				includes.add(includeWrapper);
+			}
+		}
+		
+		return includes;
+	}
+
+	private ArrayList<ModuleIncludeWrapper>  findAllIncludes() {
+		ArrayList<ModuleIncludeWrapper> includes = new ArrayList<ModuleIncludeWrapper>();
+		
+		for(ClassNodeWrapper classNodeWrapper : document.getIncludedClassNodeProvider().getAllClassNodes()) {
+			includes.addAll(classNodeWrapper.getIncludes());
+		}
+		
+		return includes;
 	}
 }

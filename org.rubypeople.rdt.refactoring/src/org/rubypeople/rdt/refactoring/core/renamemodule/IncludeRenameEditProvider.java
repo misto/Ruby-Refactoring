@@ -26,18 +26,30 @@
  * the terms of any one of the CPL, the GPL or the LGPL.
  ***** END LICENSE BLOCK *****/
 
-package org.rubypeople.rdt.refactoring.tests.core.renamemodule;
+package org.rubypeople.rdt.refactoring.core.renamemodule;
 
-import junit.framework.TestSuite;
+import java.util.ArrayList;
+import java.util.Collection;
 
-import org.rubypeople.rdt.refactoring.tests.FileTestSuite;
-import org.rubypeople.rdt.refactoring.tests.core.renamemodule.conditionchecker.TS_RenameModuleChecks;
+import org.rubypeople.rdt.refactoring.editprovider.FileEditProvider;
+import org.rubypeople.rdt.refactoring.editprovider.SimpleNodeEditProvider;
 
-public class TS_RenameModule extends FileTestSuite {
-	public static TestSuite suite() {
-		TestSuite suite = createSuite("Rename Module", "rename_module_test_*active*source", ModuleRenameTester.class);	
-		suite.addTestSuite(TC_ModuleInclusionFinder.class);
-		suite.addTest(TS_RenameModuleChecks.suite());
-		return suite;
+public class IncludeRenameEditProvider {
+
+	private RenameModuleConfig config;
+
+	public IncludeRenameEditProvider(RenameModuleConfig config) {
+		this.config = config;
+	}
+
+	public Collection<FileEditProvider> getEditProviders() {
+		Collection<FileEditProvider> edits = new ArrayList<FileEditProvider>();
+		
+		for(ModuleIncludeWrapper include : new ModuleIncludeFinder(config.getDocumentProvider()).find(config.getOriginalFullName())) {
+			include.setNewName(config.getOriginalName(), config.getNewName());
+			edits.add(new FileEditProvider(include.getWrappedNode().getPosition().getFile(), new SimpleNodeEditProvider(include.getWrappedNode())));
+		}
+		
+		return edits;
 	}
 }

@@ -46,7 +46,7 @@ public abstract class ModuleNodeProvider {
 			return null;
 		}
 		return createModuleNodeWrapper(root, module);
-	}	
+	}
 	
 	public static Collection<ModuleNodeWrapper> findOtherParts(IDocumentProvider doc, ModuleNodeWrapper module) {
 		ArrayList<ModuleNodeWrapper> modules = new ArrayList<ModuleNodeWrapper>();

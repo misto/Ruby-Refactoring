@@ -43,6 +43,8 @@ public class RenameModuleConfig implements IRefactoringConfig, INewNameReceiver 
 	private ModuleNodeWrapper selectedModule;
 	private String newName;
 	private Collection<ModuleNodeWrapper> moduleParts;
+	private String originalFullName;
+	private String originalName;
 
 	public RenameModuleConfig(IDocumentProvider doc, int carretPosition) {
 		this.doc = doc;
@@ -75,6 +77,8 @@ public class RenameModuleConfig implements IRefactoringConfig, INewNameReceiver 
 
 	public void setSelectedModule(ModuleNodeWrapper selectedModule) {
 		this.selectedModule = selectedModule;
+		this.originalFullName = selectedModule.getFullName();
+		this.originalName = selectedModule.getName();
 	}
 
 	public String getNewName() {
@@ -87,5 +91,13 @@ public class RenameModuleConfig implements IRefactoringConfig, INewNameReceiver 
 
 	public Collection<ModuleNodeWrapper> getModuleParts() {
 		return moduleParts;
+	}
+
+	public String getOriginalFullName() {
+		return originalFullName;
+	}
+
+	public String getOriginalName() {
+		return originalName;
 	}
 }
