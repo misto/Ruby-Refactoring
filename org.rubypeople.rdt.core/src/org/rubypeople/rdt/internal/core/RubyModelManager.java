@@ -75,15 +75,19 @@ import org.rubypeople.rdt.core.IRubyProject;
 import org.rubypeople.rdt.core.IRubyScript;
 import org.rubypeople.rdt.core.ISourceFolder;
 import org.rubypeople.rdt.core.ISourceFolderRoot;
+import org.rubypeople.rdt.core.IType;
 import org.rubypeople.rdt.core.LoadpathContainerInitializer;
 import org.rubypeople.rdt.core.RubyCore;
 import org.rubypeople.rdt.core.RubyModelException;
 import org.rubypeople.rdt.core.WorkingCopyOwner;
 import org.rubypeople.rdt.core.compiler.CompilationParticipant;
 import org.rubypeople.rdt.core.compiler.IProblem;
+import org.rubypeople.rdt.core.search.IRubySearchScope;
 import org.rubypeople.rdt.internal.compiler.util.HashtableOfObjectToInt;
 import org.rubypeople.rdt.internal.core.buffer.BufferManager;
 import org.rubypeople.rdt.internal.core.builder.RubyBuilder;
+import org.rubypeople.rdt.internal.core.search.RubyWorkspaceScope;
+import org.rubypeople.rdt.internal.core.search.indexing.IndexManager;
 import org.rubypeople.rdt.internal.core.util.Messages;
 import org.rubypeople.rdt.internal.core.util.Util;
 import org.rubypeople.rdt.internal.core.util.WeakHashSet;
@@ -112,6 +116,7 @@ public class RubyModelManager implements IContentTypeChangeListener, ISavePartic
     public static final String DELTA_LISTENER_PERF = RubyCore.PLUGIN_ID + "/perf/rubydeltalistener"; //$NON-NLS-1$
     public static final String RECONCILE_PERF = RubyCore.PLUGIN_ID + "/perf/reconcile"; //$NON-NLS-1$
 
+    private final static String INDEXED_SECONDARY_TYPES = "#@*_indexing secondary cache_*@#"; //$NON-NLS-1$
     
 	/**
 	 * Name of the extension point for contributing classpath variable initializers
@@ -151,6 +156,8 @@ public class RubyModelManager implements IContentTypeChangeListener, ISavePartic
      */
     public DeltaProcessingState deltaState = new DeltaProcessingState();
 
+	private IndexManager indexManager = null;
+    
     /**
      * Unique handle onto the RubyModel
      */
@@ -172,6 +179,11 @@ public class RubyModelManager implements IContentTypeChangeListener, ISavePartic
      */
     private ThreadLocal<HashSet<IRubyProject>> classpathsBeingResolved = new ThreadLocal<HashSet<IRubyProject>>();
 
+	/*
+	 * The unique workspace scope
+	 */
+	public RubyWorkspaceScope workspaceScope;
+    
     /**
      * Infos cache.
      */
@@ -375,6 +387,7 @@ public class RubyModelManager implements IContentTypeChangeListener, ISavePartic
      */
     private RubyModelManager() {
         // singleton: prevent others from creating a new instance
+    	if (Platform.isRunning()) this.indexManager = new IndexManager();
     }
 
     /**
@@ -735,6 +748,7 @@ public class RubyModelManager implements IContentTypeChangeListener, ISavePartic
         public Map resolvedPathToRawEntries; // reverse map from resolved
         // path to raw entries
         public IPath outputLocation;
+        public Hashtable secondaryTypes;
 
         public IEclipsePreferences preferences;
         public Hashtable options;
@@ -932,7 +946,7 @@ public class RubyModelManager implements IContentTypeChangeListener, ISavePartic
  					| IResourceChangeEvent.PRE_DELETE
  					| IResourceChangeEvent.PRE_CLOSE);
 
-// 			startIndexing();
+ 			startIndexing();
  			
  			// process deltas since last activated in indexer thread so that indexes are up-to-date.
  			// see https://bugs.eclipse.org/bugs/show_bug.cgi?id=38658
@@ -968,6 +982,14 @@ public class RubyModelManager implements IContentTypeChangeListener, ISavePartic
             throw e;
         }
     }
+    
+	/**
+	 * Initiate the background indexing process.
+	 * This should be deferred after the plugin activation.
+	 */
+	private void startIndexing() {
+		getIndexManager().reset();
+	}
     
     public void loadVariablesAndContainers() throws CoreException {
 		// backward compatibility, consider persistent property	
@@ -1233,15 +1255,19 @@ public class RubyModelManager implements IContentTypeChangeListener, ISavePartic
         workspace.removeResourceChangeListener(this.deltaState);
         workspace.removeSaveParticipant(javaCore);
 
-        // wait for the initialization job to finish
-        try {
-            Platform.getJobManager().join(RubyCore.PLUGIN_ID, null);
-        } catch (InterruptedException e) {
-            // ignore
-        }
-
-        // Note: no need to close the Java model as this just removes Java
-        // element infos from the Java model cache
+		if (this.indexManager != null){ // no more indexing
+			this.indexManager.shutdown();
+		}
+		
+		// wait for the initialization job to finish
+		try {
+			Job.getJobManager().join(RubyCore.PLUGIN_ID, null);
+		} catch (InterruptedException e) {
+			// ignore
+		}
+        
+        // Note: no need to close the Ruby model as this just removes Java
+        // element infos from the Ruby model cache
     }
     
     /**
@@ -1263,13 +1289,13 @@ public class RubyModelManager implements IContentTypeChangeListener, ISavePartic
 			
 			// clean up indexes on workspace full save
 			// (see https://bugs.eclipse.org/bugs/show_bug.cgi?id=52347)
-//			IndexManager manager = this.indexManager;
-//			if (manager != null 
-//					// don't force initialization of workspace scope as we could be shutting down
-//					// (see https://bugs.eclipse.org/bugs/show_bug.cgi?id=93941)
-//					&& this.workspaceScope != null) { 
-//				manager.cleanUpIndexes();
-//			}
+			IndexManager manager = this.indexManager;
+			if (manager != null 
+					// don't force initialization of workspace scope as we could be shutting down
+					// (see https://bugs.eclipse.org/bugs/show_bug.cgi?id=93941)
+					&& this.workspaceScope != null) { 
+				manager.cleanUpIndexes();
+			}
 		}
 	
 		IProject savedProject = context.getProject();
@@ -2753,6 +2779,133 @@ public class RubyModelManager implements IContentTypeChangeListener, ISavePartic
 
 				saveString(varName);
 				savePath(varPath);
+			}
+		}
+	}
+
+	public IRubySearchScope getWorkspaceScope() {
+		if (this.workspaceScope == null) {
+			this.workspaceScope = new RubyWorkspaceScope();
+		}
+		return this.workspaceScope;
+	}
+
+	public IndexManager getIndexManager() {
+		return indexManager;
+	}
+
+	/**
+	 * Remove from secondary types cache all types belonging to a given file.
+	 * Clean secondary types cache built while indexing if requested.
+	 * 
+	 * Project's secondary types cache is found using file location.
+	 * 
+	 * @param file File to remove
+	 */
+	public void secondaryTypesRemoving(IFile file, boolean cleanIndexCache) {
+		if (VERBOSE) {
+			StringBuffer buffer = new StringBuffer("JavaModelManager.removeFromSecondaryTypesCache("); //$NON-NLS-1$
+			buffer.append(file.getName());
+			buffer.append(')');
+			Util.verbose(buffer.toString());
+		}
+		if (file != null) {
+			PerProjectInfo projectInfo = getPerProjectInfo(file.getProject(), false);
+			if (projectInfo != null && projectInfo.secondaryTypes != null) {
+				if (VERBOSE) {
+					Util.verbose("-> remove file from cache of project: "+file.getProject().getName()); //$NON-NLS-1$
+				}
+
+				// Clean current cache
+				secondaryTypesRemoving(projectInfo.secondaryTypes, file);
+				
+				// Clean indexing cache if necessary
+				if (!cleanIndexCache) return;
+				HashMap indexingCache = (HashMap) projectInfo.secondaryTypes.get(INDEXED_SECONDARY_TYPES);
+				if (indexingCache != null) {
+					Set keys = indexingCache.keySet();
+					int filesSize = keys.size(), filesCount = 0;
+					IFile[] removed = null;
+					Iterator cachedFiles = keys.iterator();
+					while (cachedFiles.hasNext()) {
+						IFile cachedFile = (IFile) cachedFiles.next();
+						if (file.equals(cachedFile)) {
+							if (removed == null) removed = new IFile[filesSize];
+							filesSize--;
+							removed[filesCount++] = cachedFile;
+						}
+					}
+					if (removed != null) {
+						for (int i=0; i<filesCount; i++) {
+							indexingCache.remove(removed[i]);
+						}
+					}
+				}
+			}
+		}
+	}
+	
+	/*
+	 * Remove from a given cache map all secondary types belonging to a given file.
+	 * Note that there can have several secondary types per file...
+	 */
+	private void secondaryTypesRemoving(Hashtable secondaryTypesMap, IFile file) {
+		if (VERBOSE) {
+			StringBuffer buffer = new StringBuffer("RubyModelManager.removeSecondaryTypesFromMap("); //$NON-NLS-1$
+			Iterator keys = secondaryTypesMap.keySet().iterator();
+			while (keys.hasNext()) {
+				String qualifiedName = (String) keys.next();
+				buffer.append(qualifiedName+':'+secondaryTypesMap.get(qualifiedName));
+			}
+			buffer.append(',');
+			buffer.append(file.getFullPath());
+			buffer.append(')');
+			Util.verbose(buffer.toString());
+		}
+		Set packageKeys = secondaryTypesMap.keySet();
+		int packagesSize = packageKeys.size(), removedPackagesCount = 0;
+		String[] removedPackages = null;
+		Iterator packages = packageKeys.iterator();
+		while (packages.hasNext()) {
+			String packName = (String) packages.next();
+			if (packName != INDEXED_SECONDARY_TYPES) { // skip indexing cache entry if present (!= is intentional)
+				HashMap types = (HashMap) secondaryTypesMap.get(packName);
+				Set nameKeys = types.keySet();
+				int namesSize = nameKeys.size(), removedNamesCount = 0;
+				String[] removedNames = null;
+				Iterator names = nameKeys.iterator();
+				while (names.hasNext()) {
+					String typeName = (String) names.next();
+					IType type = (IType) types.get(typeName);
+					if (file.equals(type.getResource())) {
+						if (removedNames == null) removedNames = new String[namesSize];
+						namesSize--;
+						removedNames[removedNamesCount++] = typeName;
+					}
+				}
+				if (removedNames != null) {
+					for (int i=0; i<removedNamesCount; i++) {
+						types.remove(removedNames[i]);
+					}
+				}
+				if (types.size() == 0) {
+					if (removedPackages == null) removedPackages = new String[packagesSize];
+					packagesSize--;
+					removedPackages[removedPackagesCount++] = packName;
+				}
+			}
+		}
+		if (removedPackages != null) {
+			for (int i=0; i<removedPackagesCount; i++) {
+				secondaryTypesMap.remove(removedPackages[i]);
+			}
+		}
+		if (VERBOSE) {
+			Util.verbose("	- new secondary types map:"); //$NON-NLS-1$
+			Iterator keys = secondaryTypesMap.keySet().iterator();
+			while (keys.hasNext()) {
+				String qualifiedName = (String) keys.next();
+				Util.verbose("		+ "+qualifiedName+':'+secondaryTypesMap.get(qualifiedName) ); //$NON-NLS-1$
 			}
 		}
 	}

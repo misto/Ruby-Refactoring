@@ -74,6 +74,17 @@ public Object get(Object key) {
 	return null;
 }
 
+public Object getKey(Object key) {
+	int length = keyTable.length;
+	int index = (key.hashCode() & 0x7FFFFFFF) % length;
+	Object currentKey;
+	while ((currentKey = keyTable[index]) != null) {
+		if (currentKey.equals(key)) return currentKey;
+		if (++index == length) index = 0;
+	}
+	return key;
+}
+
 public Object keyForValue(Object valueToMatch) {
 	if (valueToMatch != null)
 		for (int i = 0, l = keyTable.length; i < l; i++)

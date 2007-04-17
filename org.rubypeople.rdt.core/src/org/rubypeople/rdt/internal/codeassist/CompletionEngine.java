@@ -11,6 +11,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.eclipse.core.resources.IResource;
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.jruby.ast.ClassNode;
 import org.jruby.ast.ClassVarAsgnNode;
@@ -41,12 +42,17 @@ import org.rubypeople.rdt.core.ISourceRange;
 import org.rubypeople.rdt.core.IType;
 import org.rubypeople.rdt.core.RubyCore;
 import org.rubypeople.rdt.core.RubyModelException;
+import org.rubypeople.rdt.core.search.IRubySearchConstants;
+import org.rubypeople.rdt.core.search.IRubySearchScope;
+import org.rubypeople.rdt.core.search.SearchMatch;
+import org.rubypeople.rdt.core.search.SearchParticipant;
+import org.rubypeople.rdt.core.search.SearchPattern;
 import org.rubypeople.rdt.internal.core.RubyElement;
 import org.rubypeople.rdt.internal.core.RubyScript;
 import org.rubypeople.rdt.internal.core.RubyType;
 import org.rubypeople.rdt.internal.core.parser.RubyParser;
 import org.rubypeople.rdt.internal.core.search.BasicSearchEngine;
-import org.rubypeople.rdt.internal.core.search.indexing.IndexManager;
+import org.rubypeople.rdt.internal.core.search.CollectingSearchRequestor;
 import org.rubypeople.rdt.internal.core.util.ASTUtil;
 import org.rubypeople.rdt.internal.ti.DefaultTypeInferrer;
 import org.rubypeople.rdt.internal.ti.ITypeGuess;
@@ -136,24 +142,46 @@ public class CompletionEngine {
 	}
 	
 	private void suggestGlobals() {
-		Set<String> globals = BasicSearchEngine.getGlobalNames(fContext.getScript());
-		for (String name : globals) {
+		SearchPattern pattern = SearchPattern.createPattern(IRubyElement.GLOBAL, "*", IRubySearchConstants.DECLARATIONS, SearchPattern.R_PATTERN_MATCH);
+		IRubySearchScope scope = BasicSearchEngine.createRubySearchScope(new IRubyElement[] {fContext.getScript().getRubyProject()});
+		List<SearchMatch> results = search(pattern, scope);		
+		for (SearchMatch match: results) {
+			IRubyElement element = (IRubyElement) match.getElement();
+			String name = element.getElementName();
 			if (!fContext.prefixStartsWith(name))
 				continue;
 			CompletionProposal proposal = createProposal(fContext.getReplaceStart(), CompletionProposal.FIELD_REF, name);
+			proposal.setType(name);
 			fRequestor.accept(proposal);
 		}
 	}
 
-	private void suggestTypeNames() {
-		Set<String> types = BasicSearchEngine.getTypeNames(fContext.getScript());
-		for (String name : types) {
+	private void suggestTypeNames() {	
+		SearchPattern pattern = SearchPattern.createPattern(IRubyElement.TYPE, "*", IRubySearchConstants.DECLARATIONS, SearchPattern.R_PATTERN_MATCH);
+		IRubySearchScope scope = BasicSearchEngine.createRubySearchScope(new IRubyElement[] {fContext.getScript().getRubyProject()});
+		List<SearchMatch> results = search(pattern, scope);		
+		for (SearchMatch match: results) {
+			IRubyElement element = (IRubyElement) match.getElement();
+			String name = element.getElementName();
 			if (!fContext.prefixStartsWith(name))
 				continue;
 			CompletionProposal proposal = createProposal(fContext.getReplaceStart(), CompletionProposal.TYPE_REF, name);
 			proposal.setType(name);
 			fRequestor.accept(proposal);
 		}
+	}
+	
+	private List<SearchMatch> search(SearchPattern pattern, IRubySearchScope scope) {
+		BasicSearchEngine engine = new BasicSearchEngine();
+		SearchParticipant[] participants = new SearchParticipant[] { BasicSearchEngine.getDefaultSearchParticipant() };
+		CollectingSearchRequestor requestor = new CollectingSearchRequestor();
+		try {
+			engine.search(pattern, participants, scope, requestor, null);
+		} catch (CoreException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return requestor.getResults();
 	}
 
 	private CompletionProposal createProposal(int replaceStart, int type, String name) {
@@ -163,11 +191,16 @@ public class CompletionEngine {
 	}
 
 	private void suggestConstantNames() {
-		Set<String> types = BasicSearchEngine.getConstantNames(fContext.getScript());
-		for (String name : types) {
+		SearchPattern pattern = SearchPattern.createPattern(IRubyElement.CONSTANT, "*", IRubySearchConstants.DECLARATIONS, SearchPattern.R_PATTERN_MATCH);
+		IRubySearchScope scope = BasicSearchEngine.createRubySearchScope(new IRubyElement[] {fContext.getScript()});
+		List<SearchMatch> results = search(pattern, scope);
+		for (SearchMatch match: results) {
+			IRubyElement element = (IRubyElement) match.getElement();
+			String name = element.getElementName();
 			if (!fContext.prefixStartsWith(name))
 				continue;
 			CompletionProposal proposal = createProposal(fContext.getReplaceStart(), CompletionProposal.FIELD_REF, name);
+			proposal.setType(name);
 			fRequestor.accept(proposal);
 		}
 	}

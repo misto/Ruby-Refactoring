@@ -16,6 +16,8 @@ public class Flags {
 	 * @since 3.0
 	 */
 	public static final int AccDefault = 0;
+	
+	public static final int AccModule = 0x0001;
 
 	/**
 	 * Returns whether the given integer includes the <code>private</code> modifier.

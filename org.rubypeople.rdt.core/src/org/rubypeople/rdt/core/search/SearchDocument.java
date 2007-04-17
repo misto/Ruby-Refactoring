@@ -1,5 +1,6 @@
 package org.rubypeople.rdt.core.search;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -11,22 +12,22 @@ import org.rubypeople.rdt.core.IRubyScript;
 import org.rubypeople.rdt.core.IType;
 import org.rubypeople.rdt.core.RubyModelException;
 import org.rubypeople.rdt.internal.core.Openable;
+import org.rubypeople.rdt.internal.core.index.EntryResult;
 import org.rubypeople.rdt.internal.core.search.HandleFactory;
+import org.rubypeople.rdt.internal.core.search.indexing.IIndexConstants;
 import org.rubypeople.rdt.internal.core.search.indexing.InternalSearchDocument;
 
-public class SearchDocument extends InternalSearchDocument {
+public abstract class SearchDocument extends InternalSearchDocument {
 	
 	private static HandleFactory factory = new HandleFactory();
 	private IRubyScript script;
-	
-	private static final String SEPARATOR = "/";
-	
-	private List<String> indices = new ArrayList<String>();
-	
+		
 	private String documentPath;
+	private SearchParticipant participant;
 
-	public SearchDocument(String documentPath) {
+	public SearchDocument(String documentPath, SearchParticipant participant) {
 		this.documentPath = documentPath;
+		this.participant = participant;
 	}
 	
 	public void addIndexEntry(char[] category, char[] key) {
@@ -44,9 +45,15 @@ public class SearchDocument extends InternalSearchDocument {
 
 	public Set<String> getElementNamesOfType(int type) {
 		Set<String> names = new HashSet<String>();
-		for (String indexKey : indices) {
-			if (getTypeFromKey(indexKey) != type) continue;
-			names.add(getNameFromKey(indexKey));
+		try {
+			EntryResult[] results = index.query(new char[][] {getCategory(type)}, new char[] {'*'}, SearchPattern.R_PATTERN_MATCH);
+			for (int i = 0; i < results.length; i++) {
+				String name = new String(results[i].getWord());
+				names.add(name);
+			}
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 		return names;
 	}
@@ -63,6 +70,18 @@ public class SearchDocument extends InternalSearchDocument {
 		}
 		return this.script;
 	}	
+	
+	/**
+	 * Returns the path to the original document to publicly mention in index
+	 * or search results. This path is a string that uniquely identifies the document.
+	 * Most of the time it is a workspace-relative path, but it can also be a file system path, 
+	 * or a path inside a zip file.
+	 * 
+	 * @return the path to the document
+	 */	
+	public final String getPath() {
+		return this.documentPath;
+	}
 
 	private List<IRubyElement> getChildrenOfType(IParent parent, int type) {
 		List<IRubyElement> elements = new ArrayList<IRubyElement>();
@@ -85,51 +104,74 @@ public class SearchDocument extends InternalSearchDocument {
 		return elements;
 	}
 
-	public boolean isEmpty() {
-		return indices.isEmpty();
-	}
-
 	public void removeElement(IRubyElement element) {
-		indices.remove(createKey(element));
-	}
-
-	private String createKey(IRubyElement element) {
-		return createKey(element.getElementType(), element.getElementName());
-	}
-
-	private String createKey(int type, String name) {
-		return type + SEPARATOR + name;
+		// FIXME Rebuild the index?!
 	}
 
 	public void addElement(IRubyElement element) {
-		indices.add(createKey(element));
+		addIndexEntry(getCategory(element), element.getElementName().toCharArray());
+	}
+
+	private char[] getCategory(IRubyElement element) {
+		return getCategory(element.getElementType());
+	}
+
+	private char[] getCategory(int elementType) {
+		switch (elementType) {
+		case IRubyElement.TYPE:
+			return IIndexConstants.TYPE_DECL;
+		case IRubyElement.METHOD:
+			return IIndexConstants.METHOD_DECL;
+		case IRubyElement.CONSTANT:
+		case IRubyElement.GLOBAL:
+		case IRubyElement.CLASS_VAR:
+		case IRubyElement.INSTANCE_VAR:
+		case IRubyElement.LOCAL_VARIABLE:
+			return IIndexConstants.FIELD_DECL;
+		default:
+			return new char[0];
+		}
 	}
 
 	public IType findType(String name) {
-		return (IType) findElement(createKey(IRubyElement.TYPE, name));
+		return (IType) findElement(IRubyElement.TYPE, name);
 	}
 
-	private IRubyElement findElement(String key) {
-		for (String indexKey : indices) {
-			if (!indexKey.equals(key))
-				continue;
-			IRubyScript script = getScript();
-			List<IRubyElement> children = getChildrenOfType(script, getTypeFromKey(key));
-			for (IRubyElement element : children) {
-				if (element.getElementName().equals(getNameFromKey(key)))
-					return element;
-			}
+	private IRubyElement findElement(int type, String name) {
+		IRubyScript script = getScript();
+		List<IRubyElement> children = getChildrenOfType(script, type);
+		for (IRubyElement element : children) {
+			if (element.getElementName().equals(name))
+				return element;
 		}
 		return null;
 	}
 
-	private String getNameFromKey(String key) {
-		String[] parts = key.split(SEPARATOR);
-		return parts[1];
-	}
+	/**
+	 * Returns the contents of this document.
+	 * Contents may be different from actual resource at corresponding document
+	 * path due to preprocessing.
+	 * <p>
+	 * This method must be implemented in subclasses.
+	 * </p><p>
+	 * Note: some implementation may choose to cache the contents directly on the
+	 * document for performance reason. However, this could induce scalability issues due
+	 * to the fact that collections of documents are manipulated throughout the search
+	 * operation, and cached contents would then consume lots of memory until they are 
+	 * all released at once in the end.
+	 * </p>
+	 * 
+	 * @return the contents of this document,
+	 * or <code>null</code> if none
+	 */
+	public abstract char[] getCharContents();
 
-	private int getTypeFromKey(String key) {
-		String[] parts = key.split(SEPARATOR);
-		return Integer.parseInt(parts[0]);
+	/**
+	 * Returns the participant that created this document.
+	 * 
+	 * @return the participant that created this document
+	 */
+	public final SearchParticipant getParticipant() {
+		return this.participant;
 	}
 }

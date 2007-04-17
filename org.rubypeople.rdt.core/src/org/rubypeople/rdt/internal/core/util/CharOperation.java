@@ -1182,4 +1182,371 @@ public static final boolean prefixEquals(char[] prefix, char[] name) {
 		name.length,
 		isCaseSensitive);
 }
+
+	/**
+ * Answers the result of a char[] conversion to lowercase. Answers null if the given chars array is null.
+ * <br>
+ * NOTE: If no conversion was necessary, then answers back the argument one.
+ * <br>
+ * <br>
+ * For example:
+ * <ol>
+ * <li><pre>
+ *    chars = { 'a' , 'b' }
+ *    result => { 'a' , 'b' }
+ * </pre>
+ * </li>
+ * <li><pre>
+ *    array = { 'A', 'b' }
+ *    result => { 'a' , 'b' }
+ * </pre>
+ * </li>
+ * </ol>
+ * 
+ * @param chars the chars to convert
+ * @return the result of a char[] conversion to lowercase
+ */
+final static public char[] toLowerCase(char[] chars) {
+	if (chars == null)
+		return null;
+	int length = chars.length;
+	char[] lowerChars = null;
+	for (int i = 0; i < length; i++) {
+		char c = chars[i];
+		char lc = ScannerHelper.toLowerCase(c);
+		if ((c != lc) || (lowerChars != null)) {
+			if (lowerChars == null) {
+				System.arraycopy(
+					chars,
+					0,
+					lowerChars = new char[length],
+					0,
+					i);
+			}
+			lowerChars[i] = lc;
+		}
+	}
+	return lowerChars == null ? chars : lowerChars;
+}
+
+	/**
+ * Answers a new array which is a copy of the given array starting at the given start and 
+ * ending at the given end. The given start is inclusive and the given end is exclusive.
+ * Answers null if start is greater than end, if start is lower than 0 or if end is greater 
+ * than the length of the given array. If end  equals -1, it is converted to the array length.
+ * <br>
+ * <br>
+ * For example:
+ * <ol>
+ * <li><pre>
+ *    array = { { 'a' } , { 'b' } }
+ *    start = 0
+ *    end = 1
+ *    result => { { 'a' } }
+ * </pre>
+ * </li>
+ * <li><pre>
+ *    array = { { 'a' } , { 'b' } }
+ *    start = 0
+ *    end = -1
+ *    result => { { 'a' }, { 'b' } }
+ * </pre>
+ * </li>
+ * </ol>
+ *  
+ * @param array the given array
+ * @param start the given starting index
+ * @param end the given ending index
+ * @return a new array which is a copy of the given array starting at the given start and 
+ * ending at the given end
+ * @throws NullPointerException if the given array is null
+ */
+public static final char[][] subarray(char[][] array, int start, int end) {
+	if (end == -1)
+		end = array.length;
+	if (start > end)
+		return null;
+	if (start < 0)
+		return null;
+	if (end > array.length)
+		return null;
+
+	char[][] result = new char[end - start][];
+	System.arraycopy(array, start, result, 0, end - start);
+	return result;
+}
+
+/**
+ * Answers the concatenation of the three arrays inserting the sep1 character between the 
+ * first two arrays and sep2 between the last two.
+ * It answers null if the three arrays are null.
+ * If the first array is null, then it answers the concatenation of second and third inserting
+ * the sep2 character between them.
+ * If the second array is null, then it answers the concatenation of first and third inserting
+ * the sep1 character between them.
+ * If the third array is null, then it answers the concatenation of first and second inserting
+ * the sep1 character between them.
+ * <br>
+ * <br>
+ * For example:
+ * <ol>
+ * <li><pre>
+ *    first = null
+ *    sep1 = '/'
+ *    second = { 'a' }
+ *    sep2 = ':'
+ *    third = { 'b' }
+ *    => result = { ' a' , ':', 'b' }
+ * </pre>
+ * </li>
+ * <li><pre>
+ *    first = { 'a' }
+ *    sep1 = '/'
+ *    second = null
+ *    sep2 = ':'
+ *    third = { 'b' }
+ *    => result = { ' a' , '/', 'b' }
+ * </pre>
+ * </li>
+ * <li><pre>
+ *    first = { 'a' }
+ *    sep1 = '/'
+ *    second = { 'b' }
+ *    sep2 = ':'
+ *    third = null
+ *    => result = { ' a' , '/', 'b' }
+ * </pre>
+ * </li>
+ * <li><pre>
+ *    first = { 'a' }
+ *    sep1 = '/'
+ *    second = { 'b' }
+ *    sep2 = ':'
+ *    third = { 'c' }
+ *    => result = { ' a' , '/', 'b' , ':', 'c' }
+ * </pre>
+ * </li>
+ * </ol>
+ * 
+ * @param first the first array to concatenate
+ * @param sep1 the character to insert
+ * @param second the second array to concatenate
+ * @param sep2 the character to insert
+ * @param third the second array to concatenate
+ * @return the concatenation of the three arrays inserting the sep1 character between the 
+ * two arrays and sep2 between the last two.
+ */
+public static final char[] concat(
+	char[] first,
+	char sep1,
+	char[] second,
+	char sep2,
+	char[] third) {
+	if (first == null)
+		return concat(second, third, sep2);
+	if (second == null)
+		return concat(first, third, sep1);
+	if (third == null)
+		return concat(first, second, sep1);
+
+	int length1 = first.length;
+	int length2 = second.length;
+	int length3 = third.length;
+	char[] result = new char[length1 + length2 + length3 + 2];
+	System.arraycopy(first, 0, result, 0, length1);
+	result[length1] = sep1;
+	System.arraycopy(second, 0, result, length1 + 1, length2);
+	result[length1 + length2 + 1] = sep2;
+	System.arraycopy(third, 0, result, length1 + length2 + 2, length3);
+	return result;
+}
+
+/**
+ * Answers a new array with appending the suffix character at the end of the array.
+ * <br>
+ * <br>
+ * For example:<br>
+ * <ol>
+ * <li><pre>
+ *    array = { 'a', 'b' }
+ *    suffix = 'c'
+ *    => result = { 'a', 'b' , 'c' }
+ * </pre>
+ * </li>
+ * <li><pre>
+ *    array = null
+ *    suffix = 'c'
+ *    => result = { 'c' }
+ * </pre></li>
+ * </ol>
+ * 
+ * @param array the array that is concanated with the suffix character
+ * @param suffix the suffix character
+ * @return the new array
+ */
+public static final char[] append(char[] array, char suffix) {
+	if (array == null)
+		return new char[] { suffix };
+	int length = array.length;
+	System.arraycopy(array, 0, array = new char[length + 1], 0, length);
+	array[length] = suffix;
+	return array;
+}
+
+/**
+ * If isCaseSensite is true, answers true if the two arrays are identical character
+ * by character, otherwise false.
+ * If it is false, answers true if the two arrays are identical character by 
+ * character without checking the case, otherwise false.
+ * <br>
+ * <br>
+ * For example:
+ * <ol>
+ * <li><pre>
+ *    first = null
+ *    second = null
+ *    isCaseSensitive = true
+ *    result => true
+ * </pre>
+ * </li>
+ * <li><pre>
+ *    first = { { } }
+ *    second = null
+ *    isCaseSensitive = true
+ *    result => false
+ * </pre>
+ * </li>
+ * <li><pre>
+ *    first = { { 'A' } }
+ *    second = { { 'a' } }
+ *    isCaseSensitive = true
+ *    result => false
+ * </pre>
+ * </li>
+ * <li><pre>
+ *    first = { { 'A' } }
+ *    second = { { 'a' } }
+ *    isCaseSensitive = false
+ *    result => true
+ * </pre>
+ * </li>
+ * </ol>
+ * 
+ * @param first the first array
+ * @param second the second array
+ * @param isCaseSensitive check whether or not the equality should be case sensitive
+ * @return true if the two arrays are identical character by character according to the value
+ * of isCaseSensitive, otherwise false
+ */
+public static final boolean equals(
+	char[][] first,
+	char[][] second,
+	boolean isCaseSensitive) {
+
+	if (isCaseSensitive) {
+		return equals(first, second);
+	}
+	if (first == second)
+		return true;
+	if (first == null || second == null)
+		return false;
+	if (first.length != second.length)
+		return false;
+
+	for (int i = first.length; --i >= 0;)
+		if (!equals(first[i], second[i], false))
+			return false;
+	return true;
+}
+
+public static char[][] splitOn(String divider, char[] key, int start, int last) {
+	String newKey = new String(key);
+	newKey = newKey.substring(start, last);
+	String[] result = newKey.split(divider);
+	char[][] resultEnd = new char[result.length][];
+	for (int i = 0; i < resultEnd.length; i++) {
+		resultEnd[i] = result[i].toCharArray();
+	}
+	return resultEnd;
+}
+
+public static char[][] splitOn(String divider, char[] key) {
+	String newKey = new String(key);
+	String[] result = newKey.split(divider);
+	char[][] resultEnd = new char[result.length][];
+	for (int i = 0; i < resultEnd.length; i++) {
+		resultEnd[i] = result[i].toCharArray();
+	}
+	return resultEnd;
+	
+}
+
+public static int occurencesOf(String toBeFound, char[] originalString) {
+	String newKey = new String(originalString);
+	int count = 0;
+	int index = newKey.indexOf(toBeFound);
+	while (index > -1) {
+		count++;
+		if (newKey.length() < index + toBeFound.length()) break;
+		newKey = newKey.substring(index + toBeFound.length());
+		index = newKey.indexOf(toBeFound);
+	}
+	return count;
+}
+
+public static int lastIndexOf(String toBeFound, char[] typePart) {
+	return new String(typePart).lastIndexOf(toBeFound);
+}
+
+/**
+ * Answers the concatenation of the two arrays. It answers null if the two arrays are null.
+ * If the first array is null, then the second array is returned.
+ * If the second array is null, then the first array is returned.
+ * <br>
+ * <br>
+ * For example:
+ * <ol>
+ * <li><pre>
+ *    first = null
+ *    second = { 'a' }
+ *    => result = { ' a' }
+ * </pre>
+ * </li>
+ * <li><pre>
+ *    first = { ' a' }
+ *    second = null
+ *    => result = { ' a' }
+ * </pre>
+ * </li>
+ * <li><pre>
+ *    first = { ' a' }
+ *    second = { ' b' }
+ *    => result = { ' a' , ' b' }
+ * </pre>
+ * </li>
+ * </ol>
+ * 
+ * @param first the first array to concatenate
+ * @param second the second array to concatenate
+ * @return the concatenation of the two arrays, or null if the two arrays are null.
+ */
+public static final char[] concat(char[] first, char[] second) {
+	if (first == null)
+		return second;
+	if (second == null)
+		return first;
+
+	int length1 = first.length;
+	int length2 = second.length;
+	char[] result = new char[length1 + length2];
+	System.arraycopy(first, 0, result, 0, length1);
+	System.arraycopy(second, 0, result, length1, length2);
+	return result;
+}
+
+public static char[] lastSegment(char[] typeName, String divider) {
+	if (typeName == null) return NO_CHAR;
+	char[][] result = splitOn(divider, typeName);
+	return result[result.length - 1];
+}
 }

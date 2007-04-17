@@ -9,6 +9,7 @@ import java.util.Iterator;
 import java.util.Map;
 
 import org.eclipse.core.resources.IFile;
+import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IResourceChangeEvent;
@@ -30,10 +31,13 @@ import org.rubypeople.rdt.core.IRubyElementDelta;
 import org.rubypeople.rdt.core.IRubyModel;
 import org.rubypeople.rdt.core.IRubyProject;
 import org.rubypeople.rdt.core.IRubyScript;
+import org.rubypeople.rdt.core.ISourceFolder;
 import org.rubypeople.rdt.core.ISourceFolderRoot;
 import org.rubypeople.rdt.core.RubyCore;
 import org.rubypeople.rdt.core.RubyModelException;
 import org.rubypeople.rdt.internal.core.builder.RubyBuilder;
+import org.rubypeople.rdt.internal.core.search.indexing.IndexManager;
+import org.rubypeople.rdt.internal.core.util.CharOperation;
 import org.rubypeople.rdt.internal.core.util.Util;
 
 public class DeltaProcessor {
@@ -177,6 +181,8 @@ public class DeltaProcessor {
      * is.
      */
     public int overridenEventType = -1;
+    
+	private SourceParser sourceElementParserCache;
 
     public DeltaProcessor(DeltaProcessingState state, RubyModelManager manager) {
         this.state = state;
@@ -1298,117 +1304,6 @@ public class DeltaProcessor {
 		return (ArrayList)this.state.otherRoots.get(path);
 	}	
 
-	/*
-     * Update the current delta (ie. add/remove/change the given element) and
-     * update the correponding index. Returns whether the children of the given
-     * delta must be processed. @throws a RubyModelException if the delta
-     * doesn't correspond to a ruby element of the given type.
-     */
-    public boolean updateCurrentDeltaAndIndex(IResourceDelta delta, int elementType, RootInfo rootInfo) {
-        Openable element;
-        switch (delta.getKind()) {
-        case IResourceDelta.ADDED:
-            IResource deltaRes = delta.getResource();
-            element = createElement(deltaRes, elementType, rootInfo);
-            if (element == null) {
-				// resource might be containing shared roots (see bug 19058)
-				this.state.updateRoots(deltaRes.getFullPath(), delta, this);
-				return rootInfo != null && rootInfo.inclusionPatterns != null;
-			}
-            elementAdded(element, delta, rootInfo);
-            return elementType == IRubyElement.SOURCE_FOLDER;
-        case IResourceDelta.REMOVED:
-            deltaRes = delta.getResource();
-            element = createElement(deltaRes, elementType, rootInfo);
-            if (element == null) {
-				// resource might be containing shared roots (see bug 19058)
-				this.state.updateRoots(deltaRes.getFullPath(), delta, this);
-				return rootInfo != null && rootInfo.inclusionPatterns != null;
-			}
-            elementRemoved(element, delta, rootInfo);
-
-            if (deltaRes.getType() == IResource.PROJECT) {
-                // reset the corresponding project built state, since cannot
-                // reuse if added back
-                if (RubyBuilder.DEBUG)
-                    System.out.println("Clearing last state for removed project : " + deltaRes); //$NON-NLS-1$
-                this.manager.setLastBuiltState((IProject)deltaRes, null /*no state*/);
-				
-				// clean up previous session containers (see https://bugs.eclipse.org/bugs/show_bug.cgi?id=89850)
-				this.manager.previousSessionContainers.remove(element);
-            }
-            return elementType == IRubyElement.SOURCE_FOLDER;
-        case IResourceDelta.CHANGED:
-            int flags = delta.getFlags();
-            if ((flags & IResourceDelta.CONTENT) != 0 || (flags & IResourceDelta.ENCODING) != 0) {
-                // content or encoding has changed
-                element = createElement(delta.getResource(), elementType, rootInfo);
-                if (element == null) return false;
-                contentChanged(element);
-            } else if (elementType == IRubyElement.RUBY_PROJECT) {
-                if ((flags & IResourceDelta.OPEN) != 0) {
-                    // project has been opened or closed
-                    IProject res = (IProject) delta.getResource();
-                    element = createElement(res, elementType, rootInfo);
-                    if (element == null) { return false; }
-                    if (res.isOpen()) {
-                        if (RubyProject.hasRubyNature(res)) {
-                            addToParentInfo(element);
-                            currentDelta().opened(element);
-                            this.state.updateRoots(element.getPath(), delta, this);
-							
-							// refresh src folder roots and caches of the project (and its dependents)
-							this.rootsToRefresh.add((IRubyProject)element);
-							this.projectCachesToReset.add((IRubyProject)element);
-							
-//							this.manager.indexManager.indexAll(res);
-                        }
-                    } else {
-                        RubyModel javaModel = this.manager.getRubyModel();
-                        boolean wasJavaProject = javaModel.findRubyProject(res) != null;
-                        if (wasJavaProject) {
-                            close(element);
-                            removeFromParentInfo(element);
-                            currentDelta().closed(element);
-                        }
-                    }
-                    return false; // when a project is open/closed don't
-                    // process children
-                }
-                if ((flags & IResourceDelta.DESCRIPTION) != 0) {
-                    IProject res = (IProject) delta.getResource();
-                    RubyModel javaModel = this.manager.getRubyModel();
-                    boolean wasJavaProject = javaModel.findRubyProject(res) != null;
-                    boolean isJavaProject = RubyProject.hasRubyNature(res);
-                    if (wasJavaProject != isJavaProject) {
-                        // project's nature has been added or removed
-                        element = this.createElement(res, elementType, rootInfo);
-                        if (element == null) return false; // note its
-                        // resources are
-                        // still visible as
-                        // roots to other
-                        // projects
-                        if (isJavaProject) {
-                            elementAdded(element, delta, rootInfo);
-                        } else {
-                            elementRemoved(element, delta, rootInfo);
-                            // reset the corresponding project built state,
-                            // since cannot reuse if added back
-                            if (RubyBuilder.DEBUG)
-                                System.out
-                                        .println("Clearing last state for project losing Ruby nature: " + res); //$NON-NLS-1$
-
-                        }
-                        return false; // when a project's nature is
-                        // added/removed don't process children
-                    }
-                }
-            }
-            return true;
-        }
-        return true;
-    }
-
     /*
      * Closes the given element, which removes it from the cache of open
      * elements.
@@ -1879,5 +1774,245 @@ public class DeltaProcessor {
 				}
 		}
 	}
+	
+	private void updateIndex(Openable element, IResourceDelta delta) {
+		
+		IndexManager indexManager = this.manager.getIndexManager();
+		if (indexManager == null)
+			return;
+	
+		switch (element.getElementType()) {
+			case IRubyElement.RUBY_PROJECT :
+				switch (delta.getKind()) {
+					case IResourceDelta.ADDED :
+						indexManager.indexAll(element.getRubyProject().getProject());
+						break;
+					case IResourceDelta.REMOVED :
+						indexManager.removeIndexFamily(element.getRubyProject().getProject().getFullPath());
+						// NB: Discarding index jobs belonging to this project was done during PRE_DELETE
+						break;
+					// NB: Update of index if project is opened, closed, or its java nature is added or removed
+					//     is done in updateCurrentDeltaAndIndex
+				}
+				break;
+			case IRubyElement.SOURCE_FOLDER_ROOT :
+				if (element instanceof ExternalSourceFolderRoot) {
+					ExternalSourceFolderRoot root = (ExternalSourceFolderRoot)element;
+					// index jar file only once (if the root is in its declaring project)
+					IPath jarPath = root.getPath();
+					switch (delta.getKind()) {
+						case IResourceDelta.ADDED:
+							// index the new jar
+							indexManager.indexLibrary(jarPath, root.getRubyProject().getProject());
+							break;
+						case IResourceDelta.CHANGED:
+							// first remove the index so that it is forced to be re-indexed
+							indexManager.removeIndex(jarPath);
+							// then index the jar
+							indexManager.indexLibrary(jarPath, root.getRubyProject().getProject());
+							break;
+						case IResourceDelta.REMOVED:
+							// the jar was physically removed: remove the index
+							indexManager.discardJobs(jarPath.toString());
+							indexManager.removeIndex(jarPath);
+							break;
+					}
+					break;
+				}
+				int kind = delta.getKind();
+				if (kind == IResourceDelta.ADDED || kind == IResourceDelta.REMOVED) {
+					SourceFolderRoot root = (SourceFolderRoot)element;
+					this.updateRootIndex(root, CharOperation.NO_STRINGS, delta);
+					break;
+				}
+				// don't break as packages of the package fragment root can be indexed below
+			case IRubyElement.SOURCE_FOLDER :
+				switch (delta.getKind()) {
+					case IResourceDelta.ADDED:
+					case IResourceDelta.REMOVED:
+						ISourceFolder pkg = null;
+						if (element instanceof ISourceFolderRoot) {
+							SourceFolderRoot root = (SourceFolderRoot)element;
+							pkg = root.getSourceFolder(CharOperation.NO_STRINGS);
+						} else {
+							pkg = (ISourceFolder)element;
+						}
+						RootInfo rootInfo = rootInfo(pkg.getParent().getPath(), delta.getKind());
+						boolean isSource = 
+							rootInfo == null // if null, defaults to source
+							|| rootInfo.entryKind == ILoadpathEntry.CPE_SOURCE;
+						IResourceDelta[] children = delta.getAffectedChildren();
+						for (int i = 0, length = children.length; i < length; i++) {
+							IResourceDelta child = children[i];
+							IResource resource = child.getResource();
+							// TODO (philippe) Why do this? Every child is added anyway as the delta is walked
+							if (resource instanceof IFile) {
+								String name = resource.getName();
+								if (isSource) {
+									if (org.rubypeople.rdt.internal.core.util.Util.isRubyLikeFileName(name)) {
+										Openable cu = (Openable)pkg.getRubyScript(name);
+										this.updateIndex(cu, child);
+									}
+								}
+							}
+						}
+						break;
+				}
+				break;
+			case IRubyElement.SCRIPT :
+				IFile file = (IFile) delta.getResource();
+				switch (delta.getKind()) {
+					case IResourceDelta.CHANGED :
+						// no need to index if the content has not changed
+						int flags = delta.getFlags();
+						if ((flags & IResourceDelta.CONTENT) == 0 && (flags & IResourceDelta.ENCODING) == 0)
+							break;
+					case IResourceDelta.ADDED :
+						indexManager.addSource(file, file.getProject().getFullPath(), getSourceElementParser(element));
+						// Clean file from secondary types cache but do not update indexing secondary type cache as it will be updated through indexing itself
+						this.manager.secondaryTypesRemoving(file, false);
+						break;
+					case IResourceDelta.REMOVED :
+						indexManager.remove(Util.relativePath(file.getFullPath(), 1/*remove project segment*/), file.getProject().getFullPath());
+						// Clean file from secondary types cache and update indexing secondary type cache as indexing cannot remove secondary types from cache
+						this.manager.secondaryTypesRemoving(file, true);
+						break;
+				}
+		}
+	}
 
+	private SourceParser getSourceElementParser(Openable element) {
+		if (this.sourceElementParserCache == null)
+			this.sourceElementParserCache = this.manager.getIndexManager().getSourceElementParser(element.getRubyProject(), null/*requestor will be set by indexer*/);
+		return this.sourceElementParserCache;
+	}
+	
+	/*
+	 * Updates the index of the given root (assuming it's an addition or a removal).
+	 * This is done recusively, pkg being the current package.
+	 */
+	private void updateRootIndex(SourceFolderRoot root, String[] pkgName, IResourceDelta delta) {
+		Openable pkg = root.getSourceFolder(pkgName);
+		this.updateIndex(pkg, delta);
+		IResourceDelta[] children = delta.getAffectedChildren();
+		for (int i = 0, length = children.length; i < length; i++) {
+			IResourceDelta child = children[i];
+			IResource resource = child.getResource();
+			if (resource instanceof IFolder) {
+				String[] subpkgName = Util.arrayConcat(pkgName, resource.getName());
+				this.updateRootIndex(root, subpkgName, child);
+			}
+		}
+	}
+	
+	/*
+	 * Update the current delta (ie. add/remove/change the given element) and update the correponding index.
+	 * Returns whether the children of the given delta must be processed.
+	 * @throws a JavaModelException if the delta doesn't correspond to a java element of the given type.
+	 */
+	public boolean updateCurrentDeltaAndIndex(IResourceDelta delta, int elementType, RootInfo rootInfo) {
+		Openable element;
+		switch (delta.getKind()) {
+			case IResourceDelta.ADDED :
+				IResource deltaRes = delta.getResource();
+				element = createElement(deltaRes, elementType, rootInfo);
+				if (element == null) {
+					// resource might be containing shared roots (see bug 19058)
+					this.state.updateRoots(deltaRes.getFullPath(), delta, this);
+					return rootInfo != null && rootInfo.inclusionPatterns != null;
+				}
+				updateIndex(element, delta);
+				elementAdded(element, delta, rootInfo);
+				return elementType == IRubyElement.SOURCE_FOLDER;
+			case IResourceDelta.REMOVED :
+				deltaRes = delta.getResource();
+				element = createElement(deltaRes, elementType, rootInfo);
+				if (element == null) {
+					// resource might be containing shared roots (see bug 19058)
+					this.state.updateRoots(deltaRes.getFullPath(), delta, this);
+					return rootInfo != null && rootInfo.inclusionPatterns != null;
+				}
+				updateIndex(element, delta);
+				elementRemoved(element, delta, rootInfo);
+	
+				if (deltaRes.getType() == IResource.PROJECT){			
+					// reset the corresponding project built state, since cannot reuse if added back
+					if (RubyBuilder.DEBUG)
+						System.out.println("Clearing last state for removed project : " + deltaRes); //$NON-NLS-1$
+					this.manager.setLastBuiltState((IProject)deltaRes, null /*no state*/);
+					
+					// clean up previous session containers (see https://bugs.eclipse.org/bugs/show_bug.cgi?id=89850)
+					this.manager.previousSessionContainers.remove(element);
+				}
+				return elementType == IRubyElement.SOURCE_FOLDER;
+			case IResourceDelta.CHANGED :
+				int flags = delta.getFlags();
+				if ((flags & IResourceDelta.CONTENT) != 0 || (flags & IResourceDelta.ENCODING) != 0) {
+					// content or encoding has changed
+					element = createElement(delta.getResource(), elementType, rootInfo);
+					if (element == null) return false;
+					updateIndex(element, delta);
+					contentChanged(element);
+				} else if (elementType == IRubyElement.RUBY_PROJECT) {
+					if ((flags & IResourceDelta.OPEN) != 0) {
+						// project has been opened or closed
+						IProject res = (IProject)delta.getResource();
+						element = createElement(res, elementType, rootInfo);
+						if (element == null) {
+							// resource might be containing shared roots (see bug 19058)
+							this.state.updateRoots(res.getFullPath(), delta, this);
+							return false;
+						}
+						if (res.isOpen()) {
+							if (RubyProject.hasRubyNature(res)) {
+								addToParentInfo(element);
+								currentDelta().opened(element);
+								this.state.updateRoots(element.getPath(), delta, this);
+								
+								// refresh pkg fragment roots and caches of the project (and its dependents)
+								this.rootsToRefresh.add((IRubyProject)element);
+								this.projectCachesToReset.add((IRubyProject)element);
+								
+								this.manager.getIndexManager().indexAll(res);
+							}
+						} else {
+							boolean wasJavaProject = this.state.findRubyProject(res.getName()) != null;
+							if (wasJavaProject) {
+								close(element);
+								removeFromParentInfo(element);
+								currentDelta().closed(element);
+								this.manager.getIndexManager().discardJobs(element.getElementName());
+								this.manager.getIndexManager().removeIndexFamily(res.getFullPath());
+							}
+						}
+						return false; // when a project is open/closed don't process children
+					}
+					if ((flags & IResourceDelta.DESCRIPTION) != 0) {
+						IProject res = (IProject)delta.getResource();
+						boolean wasJavaProject = this.state.findRubyProject(res.getName()) != null;
+						boolean isJavaProject = RubyProject.hasRubyNature(res);
+						if (wasJavaProject != isJavaProject) {
+							// project's nature has been added or removed
+							element = this.createElement(res, elementType, rootInfo);
+							if (element == null) return false; // note its resources are still visible as roots to other projects
+							if (isJavaProject) {
+								elementAdded(element, delta, rootInfo);
+								this.manager.getIndexManager().indexAll(res);
+							} else {
+								elementRemoved(element, delta, rootInfo);
+								this.manager.getIndexManager().discardJobs(element.getElementName());
+								this.manager.getIndexManager().removeIndexFamily(res.getFullPath());
+								// reset the corresponding project built state, since cannot reuse if added back
+								if (RubyBuilder.DEBUG)
+									System.out.println("Clearing last state for project loosing Java nature: " + res); //$NON-NLS-1$
+								this.manager.setLastBuiltState(res, null /*no state*/);
+							}
+							return false; // when a project's nature is added/removed don't process children
+						}
+					}
+				}
+				return true;
+		}
+		return true;
+	}
 }

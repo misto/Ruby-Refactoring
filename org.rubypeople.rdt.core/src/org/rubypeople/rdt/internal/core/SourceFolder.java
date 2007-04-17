@@ -23,7 +23,7 @@ import org.rubypeople.rdt.internal.core.util.Util;
 
 public class SourceFolder extends Openable implements ISourceFolder {
 
-	String[] names;
+	public String[] names;
 
 	public SourceFolder(SourceFolderRoot parent, String[] names) {
 		super(parent);

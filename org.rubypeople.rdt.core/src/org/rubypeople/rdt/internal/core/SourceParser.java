@@ -61,13 +61,14 @@ import org.rubypeople.rdt.internal.compiler.ISourceElementRequestor.FieldInfo;
 import org.rubypeople.rdt.internal.compiler.ISourceElementRequestor.MethodInfo;
 import org.rubypeople.rdt.internal.compiler.ISourceElementRequestor.TypeInfo;
 import org.rubypeople.rdt.internal.core.parser.InOrderVisitor;
+import org.rubypeople.rdt.internal.core.parser.RubyParser;
 import org.rubypeople.rdt.internal.core.util.ASTUtil;
 
 /**
  * @author Chris
  * 
  */
-public class SourceParser extends InOrderVisitor {
+public class SourceParser extends InOrderVisitor { // TODO Rename to SourceElementParser
 
 	private static final String EMPTY_STRING = "";
 	private static final String PROTECTED = "protected";
@@ -83,7 +84,7 @@ public class SourceParser extends InOrderVisitor {
 	private static final String OBJECT = "Object";
 	private Visibility currentVisibility = Visibility.PUBLIC;
 	private boolean inSingletonClass;
-	private ISourceElementRequestor requestor;
+	public ISourceElementRequestor requestor;
 
 	/**
 	 * 
@@ -434,5 +435,11 @@ public class SourceParser extends InOrderVisitor {
 		requestor.enterMethod(method);
 		requestor.exitMethod(iVisited.getPosition().getEndOffset());
 		return super.visitAliasNode(iVisited);
+	}
+
+	public void parse(char[] source, char[] name) {
+		RubyParser p = new RubyParser();
+		Node ast = p.parse(new String(source));
+		acceptNode(ast);		
 	}
 }

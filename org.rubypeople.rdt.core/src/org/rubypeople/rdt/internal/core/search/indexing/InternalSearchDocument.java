@@ -10,15 +10,16 @@
  *******************************************************************************/
 package org.rubypeople.rdt.internal.core.search.indexing;
 
+import org.rubypeople.rdt.internal.core.SourceParser;
 import org.rubypeople.rdt.internal.core.index.Index;
 
 /**
  * Internal search document implementation
  */
 public class InternalSearchDocument {
-	Index index;
+	protected Index index;
 	private String containerRelativePath;
-//	SourceElementParser parser;
+	public SourceParser parser;
 	/*
 	 * Hidden by API SearchDocument subclass
 	 */

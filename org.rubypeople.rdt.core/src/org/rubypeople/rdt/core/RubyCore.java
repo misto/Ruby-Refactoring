@@ -321,8 +321,6 @@ public class RubyCore extends Plugin {
         List rubyProjects = Arrays.asList(getRubyProjects());
         MassIndexUpdaterJob massUpdater = new MassIndexUpdaterJob(indexUpdater, rubyProjects);
         massUpdater.schedule();
-        addElementChangedListener(IndexManager.instance());
-        IndexManager.start();
     }
 
     /*
@@ -334,7 +332,6 @@ public class RubyCore extends Plugin {
     public void stop(BundleContext context) throws Exception {
         try {
             RubyModelManager.getRubyModelManager().shutdown();
-            removeElementChangedListener(IndexManager.instance());
         } finally {
             // ensure we call super.stop as the last thing
             super.stop(context);

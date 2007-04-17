@@ -244,7 +244,7 @@ public class SourceFolderRoot extends Openable implements ISourceFolderRoot {
 		return super.exists() && validateOnLoadpath().isOK();
 	}
 	
-	public ISourceFolder getSourceFolder(String[] names) {
+	public SourceFolder getSourceFolder(String[] names) {
 		return new SourceFolder(this, names);
 	}
 
