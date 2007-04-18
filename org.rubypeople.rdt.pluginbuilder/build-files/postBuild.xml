@@ -63,14 +63,13 @@
             tofile="${buildResultsDirectory}/logs/testsWorkspace.log" failonerror="false"/>
         -->
         
-        <!--
-            <mkdir dir="${buildResultsDirectory}/doc"/>
-            <copy todir="${buildResultsDirectory}/doc">
+
+        <mkdir dir="${buildResultsDirectory}/doc"/>
+        <copy todir="${buildResultsDirectory}/doc">
             <fileset dir="${buildDirectory}/plugins/org.rubypeople.rdt.doc.user">
             <include name="html/**/*"/>
             <include name="images/**/*"/>
             </fileset>
-            </copy>
-        -->
+        </copy>
     </target>
 </project>
