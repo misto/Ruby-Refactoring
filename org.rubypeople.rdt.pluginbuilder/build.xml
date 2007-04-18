@@ -127,7 +127,7 @@
 		<property name="buildResultsDirectory" value="${buildDirectory}/results"/>
 	</target>
 	
-	<target name="release" if="build.version" depends="-releaseproperties"/>
+	<target name="release" if="build.version" depends="-releaseproperties">
 		<antcall target="main"/>
 	</target>
 		
