@@ -121,5 +121,78 @@
 		<property name="buildTarget" value="postBuild"/>
 		<antcall target="-build"/>
 	</target>
+	
+	<target name="-releaseproperties">
+		<property name="buildDirectory" value="/home/rdt/release-${build.version}"/>
+		<property name="buildResultsDirectory" value="${buildDirectory}/results"/>
+	</target>
+	
+	<target name="release" if="build.version" depends="-releaseproperties"/>
+		<antcall target="main"/>
+	</target>
+		
+	<target name="-updateSiteXml">
+		<property name="siteXmlFile" value="site.xml"/>
+		<property name="placeHolder" value="&lt;!--AddNewFeatureElementHere--&gt;"/>
+		<property name="featureUrl" value="features/org.rubypeople.rdt_${version.full}.jar"/>
+		<!-- replacevalue nested element does not support variable replacement. Therefore a two step approach:
+			1. add a feature element
+			2. add newline -->
+		<echo message="Adding feature version ${version.full} to ${siteXmlFile}"/>
+		<replace file="${siteXmlFile}" token="${placeHolder}" value="&lt;feature url=&quot;${featureUrl}&quot; id=&quot;org.rubypeople.rdt&quot; version=&quot;${version.full}&quot;&gt; &lt;category name=&quot;RubyEclipseIntegrationBuilds&quot;/&gt; &lt;/feature&gt; ${placeHolder}"/>
+		<replace file="${siteXmlFile}" token="${placeHolder}">
+			<replacevalue>
+	&lt;!--AddNewFeatureElementHere--&gt;</replacevalue>
+		</replace>
+	</target>
+
+	<target name="deploy" if="build.version" depends="-releaseproperties,-properties">
+		<!-- This target is used for manually deploying integration and release builds
+		Nightly builds are deployed using cruise controls config.xml file -->
+		<property name="downloadUser" value="rubypeople"/>
+		<property name="downloadHost" value="download.rubypeople.org"/>
+		<property name="buildTypeDirectory" value="integration"/>
+		<property name="downloadDirectory" value="~/subdomains/download/httpdocs/${buildTypeDirectory}/${version.full}"/>
+		<property name="updateSiteDirectory" value="~/subdomains/updatesite/httpdocs/${buildTypeDirectory}"/>
+		<property name="buildResultsDirectory" value="${buildDirectory}/results"/>
+		<echo message="Copying ${buildResultsDirectory} to ${downloadUser}@${downloadHost}:${downloadDirectory}"/>
+		<sshexec host="${downloadHost}"
+			username="${downloadUser}"
+			keyfile="${user.home}/.ssh/id_download"
+			command="mkdir --parents ${downloadDirectory}"/>
+		<scp todir="${downloadUser}:usekeyinsteadofpw@${downloadHost}:${downloadDirectory}"
+			keyfile="${user.home}/.ssh/id_download"
+			passphrase="">
+			<fileset dir="${buildResultsDirectory}"/>
+		</scp>
+		<echo message="Copying files to updatesite: ${downloadUser}@${downloadHost}:${downloadDirectory}"/>
+		<property name="updateSiteScpUrl" value="${downloadUser}@${downloadHost}:${updateSiteDirectory}"/>
+		<scp todir="${updateSiteScpUrl}"
+			keyfile="${user.home}/.ssh/id_download"
+			passphrase="">
+			<fileset dir="${buildResultsDirectory}/updateSite">
+				<exclude name="site.xml"/>
+			</fileset>
+		</scp>
+		<echo message="Updating site.xml"/>
+		<property name="siteXmlFile" value="/tmp/site.xml"/>
+		<scp file="${updateSiteScpUrl}/site.xml" 
+			localTofile="${siteXmlFile}"
+			keyfile="${user.home}/.ssh/id_download"
+			passphrase=""/>
+		<antcall target="-updateSiteXml"/>
+		<scp file="${siteXmlFile}" 
+			todir="${updateSiteScpUrl}"
+			keyfile="${user.home}/.ssh/id_download"
+			passphrase=""/>
+	</target>
+
+	<target name="deploy-sourceforge" if="build.version" depends="-releaseproperties,-properties">
+		<ftp server="upload.sf.net" remotedir="incoming" userid="anonymous" password="mbarchfe@users.sf.net">
+			<fileset dir="${buildResultsDirectory}">
+				<include name="org.rubypeople.rdt-${version.full}.zip"/>
+			</fileset>
+		</ftp>
+	</target>
 
 </project>
