@@ -230,7 +230,7 @@ public class StandardRubyElementContentProvider implements ITreeContentProvider 
 	}
 
 	private Object[] getFoldersAndRubyScripts(ISourceFolder folder) throws RubyModelException {
-		return folder.getChildren();
+		return concatenate(folder.getRubyScripts(), folder.getNonRubyResources());
 	}
 
 
