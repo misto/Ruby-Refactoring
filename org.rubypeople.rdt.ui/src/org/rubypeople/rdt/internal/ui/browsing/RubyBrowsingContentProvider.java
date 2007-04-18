@@ -82,7 +82,7 @@ public class RubyBrowsingContentProvider extends
 			if (fProvideMembers && element instanceof IType)
 				return getChildren((IType)element);
 			if (fProvideMembers && element instanceof ISourceReference && element instanceof IParent)
-				return super.getChildren(element);
+				return removeImportDeclarations(super.getChildren(element));
 			if (element instanceof IRubyProject)
 				return getSourceFolderRoots((IRubyProject)element);
 			return super.getChildren(element);
@@ -91,6 +91,14 @@ public class RubyBrowsingContentProvider extends
 		} finally {
 			finishedReadInDisplayThread();
 		}
+	}
+	
+	private Object[] removeImportDeclarations(Object[] members) {
+		ArrayList tempResult= new ArrayList(members.length);
+		for (int i= 0; i < members.length; i++)
+			if (!(members[i] instanceof IImportContainer))
+				tempResult.add(members[i]);
+		return tempResult.toArray();
 	}
 	
 	private Object[] getFolderContents(ISourceFolder fragment) throws RubyModelException {
