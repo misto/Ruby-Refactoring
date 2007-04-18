@@ -1,4 +1,4 @@
-Since 0.8.0 Release:
+Release 0.9.0:
 * Initial Refactoring support
   * Adds an initial catalog of refactorings
   * Also adds some basic source manipulation
