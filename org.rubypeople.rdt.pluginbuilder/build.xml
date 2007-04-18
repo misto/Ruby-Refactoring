@@ -158,17 +158,17 @@
 		<echo message="Copying ${buildResultsDirectory} to ${downloadUser}@${downloadHost}:${downloadDirectory}"/>
 		<sshexec host="${downloadHost}"
 			username="${downloadUser}"
-			keyfile="${user.home}/.ssh/id_download"
+			keyfile="${user.home}/.ssh/id_rdt_download"
 			command="mkdir --parents ${downloadDirectory}"/>
 		<scp todir="${downloadUser}:usekeyinsteadofpw@${downloadHost}:${downloadDirectory}"
-			keyfile="${user.home}/.ssh/id_download"
+			keyfile="${user.home}/.ssh/id_rdt_download"
 			passphrase="">
 			<fileset dir="${buildResultsDirectory}"/>
 		</scp>
 		<echo message="Copying files to updatesite: ${downloadUser}@${downloadHost}:${downloadDirectory}"/>
 		<property name="updateSiteScpUrl" value="${downloadUser}@${downloadHost}:${updateSiteDirectory}"/>
 		<scp todir="${updateSiteScpUrl}"
-			keyfile="${user.home}/.ssh/id_download"
+			keyfile="${user.home}/.ssh/id_rdt_download"
 			passphrase="">
 			<fileset dir="${buildResultsDirectory}/updateSite">
 				<exclude name="site.xml"/>
@@ -178,12 +178,12 @@
 		<property name="siteXmlFile" value="/tmp/site.xml"/>
 		<scp file="${updateSiteScpUrl}/site.xml" 
 			localTofile="${siteXmlFile}"
-			keyfile="${user.home}/.ssh/id_download"
+			keyfile="${user.home}/.ssh/id_rdt_download"
 			passphrase=""/>
 		<antcall target="-updateSiteXml"/>
 		<scp file="${siteXmlFile}" 
 			todir="${updateSiteScpUrl}"
-			keyfile="${user.home}/.ssh/id_download"
+			keyfile="${user.home}/.ssh/id_rdt_download"
 			passphrase=""/>
 	</target>
 
