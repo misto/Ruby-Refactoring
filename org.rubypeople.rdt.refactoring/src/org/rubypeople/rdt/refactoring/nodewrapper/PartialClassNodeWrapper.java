@@ -252,7 +252,7 @@ public abstract class PartialClassNodeWrapper implements INodeWrapper {
 			FCallNode currentFCall = (FCallNode)currentCall;
 			String callName = currentFCall.getName();
 			
-			if(VisibilityNodeWrapper.isVisibilityString(callName)){			
+			if(VisibilityNodeWrapper.isVisibilityString(callName) || "alias_method".equals(callName)){			
 				Collection<Node> symbolNodes = NodeProvider.getSubNodes(currentFCall, SymbolNode.class);
 				for(Node currentItem : symbolNodes){
 					SymbolNode currentSymbol = (SymbolNode)currentItem;
