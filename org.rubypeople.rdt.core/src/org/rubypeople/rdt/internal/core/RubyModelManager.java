@@ -19,6 +19,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.Map.Entry;
@@ -257,31 +258,33 @@ public class RubyModelManager implements IContentTypeChangeListener, ISavePartic
 				return null;
 			
 			int length = participants.length;
-			CompilationParticipant[] result = new CompilationParticipant[length];
-			int index = 0;
+			final List<CompilationParticipant> result = new ArrayList<CompilationParticipant>();
 			for (int i = 0; i < length; i++) {
 				if (participants[i] instanceof IConfigurationElement) {
 					final IConfigurationElement configElement = (IConfigurationElement) participants[i];
-					final int participantIndex = i;
 					SafeRunner.run(new ISafeRunnable() {
 						public void handleException(Throwable exception) {
 							Util.log(exception, "Exception occurred while creating compilation participant"); //$NON-NLS-1$
 						}
 						public void run() throws Exception {
 							Object executableExtension = configElement.createExecutableExtension("class"); //$NON-NLS-1$ 
-							participants[participantIndex] = executableExtension;
+							CompilationParticipant participant = (CompilationParticipant) executableExtension;
+							result.add(participant);
 						}
 					});
-				} 
-				CompilationParticipant participant = (CompilationParticipant) participants[i];
-				if (participant != null && participant.isActive(project))
-					result[index++] = participant;
+				} else {
+					CompilationParticipant participant = (CompilationParticipant) participants[i];
+					result.add(participant);
+				}				
 			}
-			if (index == 0)
+			if (result.isEmpty())
 				return null;
-			if (index < length)
-				System.arraycopy(result, 0, result = new CompilationParticipant[index], 0, index);
-			return result;
+			List<CompilationParticipant> finalResult = new ArrayList<CompilationParticipant>();
+			for (CompilationParticipant participant : result) {
+				if (participant != null && participant.isActive(project))
+					finalResult.add(participant);
+			}
+			return finalResult.toArray(new CompilationParticipant[finalResult.size()]);
 		}
 		
 		public HashSet managedMarkerTypes() {
