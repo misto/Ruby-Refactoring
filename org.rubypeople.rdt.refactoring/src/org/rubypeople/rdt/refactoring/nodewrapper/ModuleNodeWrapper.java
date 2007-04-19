@@ -47,9 +47,12 @@ public class ModuleNodeWrapper implements INodeWrapper {
 
 	private void initModuleMethodConstNodes() {
 		for (Node node : NodeProvider.getSubNodes(getWrappedNode(), DefsNode.class)) {
-			ConstNode constNode = (ConstNode) ((DefsNode) node).getReceiverNode();
-			if(constNode.getName().equals(getName())) {
-				moduleMethodNodes.add(constNode);
+			DefsNode defsNode = (DefsNode) node;
+			if(defsNode.getReceiverNode() instanceof ConstNode) {
+				ConstNode constNode = (ConstNode) defsNode.getReceiverNode();
+				if(constNode.getName().equals(getName())) {
+					moduleMethodNodes.add(constNode);
+				}
 			}
 		}
 	}
