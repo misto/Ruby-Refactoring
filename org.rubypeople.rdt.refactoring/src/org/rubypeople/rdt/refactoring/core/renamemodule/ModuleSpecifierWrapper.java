@@ -36,11 +36,11 @@ import org.rubypeople.rdt.refactoring.core.NodeProvider;
 import org.rubypeople.rdt.refactoring.nodewrapper.INodeWrapper;
 import org.rubypeople.rdt.refactoring.util.NameHelper;
 
-public abstract class ModuleIncludeWrapper implements INodeWrapper {
+public abstract class ModuleSpecifierWrapper implements INodeWrapper {
 	
 	protected String modulePrefix;
 	
-	private static class Colon2IncludeWrapper extends ModuleIncludeWrapper {
+	private static class Colon2IncludeWrapper extends ModuleSpecifierWrapper {
 		protected Colon2Node node;
 
 		public Colon2IncludeWrapper(Colon2Node node, String modulePrefix) {
@@ -77,7 +77,7 @@ public abstract class ModuleIncludeWrapper implements INodeWrapper {
 		}
 	}
 	
-	private static class ConstIncludeWrapper extends ModuleIncludeWrapper {
+	private static class ConstIncludeWrapper extends ModuleSpecifierWrapper {
 		protected ConstNode node;
 
 		public ConstIncludeWrapper(ConstNode node, String modulePrefix) {
@@ -101,7 +101,7 @@ public abstract class ModuleIncludeWrapper implements INodeWrapper {
 		}
 	}
 	
-	public static ModuleIncludeWrapper create(Node node, String modulePrefix) {
+	public static ModuleSpecifierWrapper create(Node node, String modulePrefix) {
 			
 		if(node instanceof Colon2Node) {
 			return new Colon2IncludeWrapper((Colon2Node) node, modulePrefix);
@@ -115,7 +115,10 @@ public abstract class ModuleIncludeWrapper implements INodeWrapper {
 	public abstract String getIncludeName();
 	
 	public String getFullName() {
-		return modulePrefix + getIncludeName();
+		if("".equals(modulePrefix)) {
+			return  getIncludeName();
+		}
+		return modulePrefix + "::" + getIncludeName();
 	}
 	public abstract void setNewName(String oldName, String newName);
 }

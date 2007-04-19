@@ -58,7 +58,12 @@ public class RenameClassConditionChecker extends RefactoringConditionChecker {
 			}
 		} catch (NoClassNodeException e) {return;}
 		
-		config.setModulePrefix(classNode.getFirstPartialClassNode().getModulePrefix());
+		String modulePrefix = classNode.getFirstPartialClassNode().getModulePrefix();
+		if("".equals(modulePrefix)) {
+			config.setModulePrefix("");
+		} else {
+			config.setModulePrefix(modulePrefix + "::");
+		}
 		config.setSelectedNode((ClassNode) classNode.getFirstPartialClassNode().getWrappedNode());
 		config.setNewName(classNode.getName());
 	}

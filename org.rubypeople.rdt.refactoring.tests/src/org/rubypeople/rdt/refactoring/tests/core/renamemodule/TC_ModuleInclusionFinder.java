@@ -29,7 +29,7 @@
 package org.rubypeople.rdt.refactoring.tests.core.renamemodule;
 
 import org.rubypeople.rdt.refactoring.core.renamemodule.ModuleIncludeFinder;
-import org.rubypeople.rdt.refactoring.core.renamemodule.ModuleIncludeWrapper;
+import org.rubypeople.rdt.refactoring.core.renamemodule.ModuleSpecifierWrapper;
 import org.rubypeople.rdt.refactoring.documentprovider.IDocumentProvider;
 import org.rubypeople.rdt.refactoring.documentprovider.StringDocumentProvider;
 import org.rubypeople.rdt.refactoring.tests.FileTestCase;
@@ -43,7 +43,7 @@ public class TC_ModuleInclusionFinder extends FileTestCase {
 	public void testSingleDirectInclude() {
 		IDocumentProvider document = getDocument("TC_ModuleInclusionFinder_SingleDirectInclude.rb");
 		
-		ModuleIncludeWrapper[] includes = new ModuleIncludeFinder(document).find("M1").toArray(new ModuleIncludeWrapper[]{});
+		ModuleSpecifierWrapper[] includes = new ModuleIncludeFinder(document).find("M1").toArray(new ModuleSpecifierWrapper[]{});
 		
 		assertEquals(1, includes.length);
 		assertNotNull(includes[0].getWrappedNode());
@@ -53,7 +53,7 @@ public class TC_ModuleInclusionFinder extends FileTestCase {
 	public void testMultipleDirectIncludes() {
 		IDocumentProvider document = getDocument("TC_ModuleInclusionFinder_MultipleDirectIncludes.rb");
 		
-		ModuleIncludeWrapper[] includes = new ModuleIncludeFinder(document).find("M1").toArray(new ModuleIncludeWrapper[]{});
+		ModuleSpecifierWrapper[] includes = new ModuleIncludeFinder(document).find("M1").toArray(new ModuleSpecifierWrapper[]{});
 		
 		assertEquals(2, includes.length);
 		assertEquals("M1", includes[0].getFullName());
@@ -63,7 +63,7 @@ public class TC_ModuleInclusionFinder extends FileTestCase {
 	public void testIncludeWithNamespace() {
 		IDocumentProvider document = getDocument("TC_ModuleInclusionFinder_IncludeWithNamespace.rb");
 		
-		ModuleIncludeWrapper[] includes = new ModuleIncludeFinder(document).find("Namespace::M1").toArray(new ModuleIncludeWrapper[]{});
+		ModuleSpecifierWrapper[] includes = new ModuleIncludeFinder(document).find("Namespace::M1").toArray(new ModuleSpecifierWrapper[]{});
 		
 		assertEquals(1, includes.length);
 		assertEquals("Namespace::M1", includes[0].getFullName());
@@ -72,7 +72,7 @@ public class TC_ModuleInclusionFinder extends FileTestCase {
 	public void testIncludeFromWithinSameNamespace() {
 		IDocumentProvider document = getDocument("TC_ModuleInclusionFinder_IncludeFromWithinSameNamespace.rb");
 		
-		ModuleIncludeWrapper[] includes = new ModuleIncludeFinder(document).find("Modul::M").toArray(new ModuleIncludeWrapper[]{});
+		ModuleSpecifierWrapper[] includes = new ModuleIncludeFinder(document).find("Modul::M").toArray(new ModuleSpecifierWrapper[]{});
 		
 		assertEquals(2, includes.length);
 		assertEquals("Modul::M", includes[0].getFullName());
@@ -82,7 +82,7 @@ public class TC_ModuleInclusionFinder extends FileTestCase {
 	public void testModulesWithEqualNamesInDifferentNamespaces() {
 		IDocumentProvider document = getDocument("TC_ModuleInclusionFinder_ModulesWithEqualNamesInDifferentNamespaces.rb");
 		
-		ModuleIncludeWrapper[] includes = new ModuleIncludeFinder(document).find("Module::InnerModule").toArray(new ModuleIncludeWrapper[]{});
+		ModuleSpecifierWrapper[] includes = new ModuleIncludeFinder(document).find("Module::InnerModule").toArray(new ModuleSpecifierWrapper[]{});
 		
 		assertEquals(1, includes.length);
 		assertEquals("Module::InnerModule", includes[0].getFullName());
@@ -91,7 +91,7 @@ public class TC_ModuleInclusionFinder extends FileTestCase {
 	public void testNoIncludes() {
 		IDocumentProvider document = getDocument("TC_ModuleInclusionFinder_NoIncludes.rb");
 		
-		ModuleIncludeWrapper[] includes = new ModuleIncludeFinder(document).find("M1").toArray(new ModuleIncludeWrapper[]{});
+		ModuleSpecifierWrapper[] includes = new ModuleIncludeFinder(document).find("M1").toArray(new ModuleSpecifierWrapper[]{});
 		
 		assertEquals(0, includes.length);
 	}

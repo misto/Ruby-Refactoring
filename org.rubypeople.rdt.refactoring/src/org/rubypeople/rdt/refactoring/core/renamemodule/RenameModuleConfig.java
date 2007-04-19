@@ -31,12 +31,14 @@ package org.rubypeople.rdt.refactoring.core.renamemodule;
 import java.util.Collection;
 
 import org.rubypeople.rdt.refactoring.core.IRefactoringConfig;
+import org.rubypeople.rdt.refactoring.core.renamemethod.NodeSelector;
 import org.rubypeople.rdt.refactoring.documentprovider.DocumentWithIncluding;
 import org.rubypeople.rdt.refactoring.documentprovider.IDocumentProvider;
+import org.rubypeople.rdt.refactoring.nodewrapper.INodeWrapper;
 import org.rubypeople.rdt.refactoring.nodewrapper.ModuleNodeWrapper;
 import org.rubypeople.rdt.refactoring.ui.INewNameReceiver;
 
-public class RenameModuleConfig implements IRefactoringConfig, INewNameReceiver {
+public class RenameModuleConfig implements IRefactoringConfig, INewNameReceiver, NodeSelector {
 
 	private IDocumentProvider doc;
 	private final int carretPosition;
@@ -45,6 +47,9 @@ public class RenameModuleConfig implements IRefactoringConfig, INewNameReceiver 
 	private Collection<ModuleNodeWrapper> moduleParts;
 	private String originalFullName;
 	private String originalName;
+	private Collection<? extends INodeWrapper> possibleCalls;
+	private Collection<? extends INodeWrapper> selectedCalls;
+	private Collection<ModuleSpecifierWrapper> includes;
 
 	public RenameModuleConfig(IDocumentProvider doc, int carretPosition) {
 		this.doc = doc;
@@ -63,10 +68,6 @@ public class RenameModuleConfig implements IRefactoringConfig, INewNameReceiver 
 		this.newName = newName;
 	}
 
-	public String getSelectedModuleName() {
-		return selectedModule != null ? selectedModule.getName() : null;
-	}
-
 	public int getCarretPosition() {
 		return carretPosition;
 	}
@@ -77,8 +78,8 @@ public class RenameModuleConfig implements IRefactoringConfig, INewNameReceiver 
 
 	public void setSelectedModule(ModuleNodeWrapper selectedModule) {
 		this.selectedModule = selectedModule;
-		this.originalFullName = selectedModule.getFullName();
-		this.originalName = selectedModule.getName();
+		originalFullName = selectedModule.getFullName();
+		originalName = selectedModule.getName();
 	}
 
 	public String getNewName() {
@@ -99,5 +100,29 @@ public class RenameModuleConfig implements IRefactoringConfig, INewNameReceiver 
 
 	public String getOriginalName() {
 		return originalName;
+	}
+
+	public Collection<? extends INodeWrapper> getPossibleCalls() {
+		return possibleCalls;
+	}
+
+	public Collection<ModuleSpecifierWrapper> getSelectedCalls() {
+		return (Collection<ModuleSpecifierWrapper>) selectedCalls;
+	}
+
+	public void setPossibleCalls(Collection<? extends INodeWrapper> possibleCalls) {
+		this.possibleCalls = possibleCalls;
+	}
+
+	public void setSelectedCalls(Collection<? extends INodeWrapper> selectedCalls) {
+		this.selectedCalls = selectedCalls;
+	}
+
+	public void setIncludes(Collection<ModuleSpecifierWrapper> includes) {
+		this.includes = includes;
+	}
+
+	public Collection<ModuleSpecifierWrapper> getIncludes() {
+		return includes;
 	}
 }

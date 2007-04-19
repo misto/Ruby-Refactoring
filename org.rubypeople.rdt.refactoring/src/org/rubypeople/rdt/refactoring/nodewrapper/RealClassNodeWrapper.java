@@ -56,7 +56,10 @@ public class RealClassNodeWrapper extends PartialClassNodeWrapper {
 
 	@Override
 	public String getClassName() {
-		return getModulePrefix() + ((INameNode) classNode.getCPath()).getName();
+		if("".equals(getModulePrefix())) {
+			return classNode.getCPath().getName();
+		}
+		return getModulePrefix() + "::" + classNode.getCPath().getName();
 	}
 
 	@Override

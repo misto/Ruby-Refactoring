@@ -28,10 +28,20 @@
 
 package org.rubypeople.rdt.refactoring.core.renamemodule;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
+
+import org.jruby.ast.Colon2Node;
+import org.jruby.ast.ConstNode;
+import org.jruby.ast.Node;
+import org.jruby.ast.RootNode;
 import org.rubypeople.rdt.refactoring.core.IRefactoringConfig;
 import org.rubypeople.rdt.refactoring.core.ModuleNodeProvider;
+import org.rubypeople.rdt.refactoring.core.NodeProvider;
 import org.rubypeople.rdt.refactoring.core.RefactoringConditionChecker;
 import org.rubypeople.rdt.refactoring.nodewrapper.ModuleNodeWrapper;
+import org.rubypeople.rdt.refactoring.util.NameHelper;
 import org.rubypeople.rdt.refactoring.util.NodeUtil;
 
 public class RenameModuleConditionChecker extends RefactoringConditionChecker {
@@ -60,8 +70,46 @@ public class RenameModuleConditionChecker extends RefactoringConditionChecker {
 			return;
 		}
 		config.setSelectedModule(selectedModule);
-		config.setNewName(selectedModule.getName());
 		config.setModuleParts(ModuleNodeProvider.findOtherParts(config.getDocumentProvider(), config.getSelectedModule()));
+
+		config.setIncludes(new ModuleIncludeFinder(config.getDocumentProvider()).find(config.getOriginalFullName()));
+		
+		config.setPossibleCalls(findPossibleCalls());
+		config.setSelectedCalls(config.getPossibleCalls());
+	}
+
+	private ArrayList<ModuleSpecifierWrapper> findPossibleCalls() {
+		ArrayList<ModuleSpecifierWrapper> calls = new ArrayList<ModuleSpecifierWrapper>();
+		
+		Collection<Node> toSkip = collectAllModulePartsAndIncludeNameNodes();
+
+		for(String file : config.getDocumentProvider().getFileNames()) {
+			RootNode rootNode = config.getDocumentProvider().getRootNode(file);
+			for (final Node node : NodeProvider.getSubNodes(rootNode, ConstNode.class, Colon2Node.class)) {
+				if(toSkip.contains(node)) {
+					continue;
+				}
+				ModuleSpecifierWrapper module = ModuleSpecifierWrapper.create(node, NameHelper.getEncosingModulePrefix(rootNode, node));
+				
+				if(module.getFullName().equals(config.getOriginalFullName())) {		
+					calls.add(module);
+				}
+			}
+		}
+		
+		return calls;
+	}
+
+	private Collection<Node> collectAllModulePartsAndIncludeNameNodes() {
+		Collection<Node> toSkip = new HashSet<Node>();
+		
+		for(ModuleNodeWrapper part : config.getModuleParts()) {
+			toSkip.add(part.getWrappedNode().getCPath());
+		}
+		for(ModuleSpecifierWrapper include : config.getIncludes()) {
+			toSkip.add(include.getWrappedNode());
+		}
+		return toSkip;
 	}
 
 	private boolean caretIsNotOnModuleName(ModuleNodeWrapper selectedModule) {

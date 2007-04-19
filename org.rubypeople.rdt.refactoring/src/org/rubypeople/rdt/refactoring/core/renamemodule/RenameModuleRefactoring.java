@@ -11,7 +11,7 @@
  * implied. See the License for the specific language governing
  * rights and limitations under the License.
  *
- * Copyright (C) 2006 Mirko Stocker <me@misto.ch>
+ * Copyright (C) 2007 Mirko Stocker <me@misto.ch>
  * 
  * Alternatively, the contents of this file may be used under the terms of
  * either of the GNU General Public License Version 2 or later (the "GPL"),
@@ -34,6 +34,7 @@ import org.rubypeople.rdt.refactoring.core.ConstNameValidator;
 import org.rubypeople.rdt.refactoring.core.RubyRefactoring;
 import org.rubypeople.rdt.refactoring.core.TextSelectionProvider;
 import org.rubypeople.rdt.refactoring.ui.NewNameListener;
+import org.rubypeople.rdt.refactoring.ui.pages.OccurenceReplaceSelectionPage;
 import org.rubypeople.rdt.refactoring.ui.pages.RenamePage;
 
 public class RenameModuleRefactoring extends RubyRefactoring {
@@ -49,9 +50,11 @@ public class RenameModuleRefactoring extends RubyRefactoring {
 			RenameModuleEditProvider editProvider = new RenameModuleEditProvider(renameModuleConfig);
 			setEditProvider(editProvider);
 			
-			pages.add(new RenamePage(NAME, renameModuleConfig.getSelectedModuleName(),
+			pages.add(new RenamePage(NAME, renameModuleConfig.getOriginalName(),
 					new NewNameListener(renameModuleConfig, new ConstNameValidator(), new ArrayList<String>())));
-			
+			if(!renameModuleConfig.getPossibleCalls().isEmpty()){
+				pages.add(new OccurenceReplaceSelectionPage(renameModuleConfig, renameModuleConfig.getDocumentProvider()));
+			}
 		}
 	}
 }

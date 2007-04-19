@@ -31,11 +31,15 @@ package org.rubypeople.rdt.refactoring.util;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Iterator;
+import java.util.Vector;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.jruby.ast.Colon2Node;
+import org.jruby.ast.Colon3Node;
 import org.jruby.ast.ConstNode;
+import org.jruby.ast.ModuleNode;
 import org.jruby.ast.Node;
 import org.jruby.ast.types.INameNode;
 import org.rubypeople.rdt.refactoring.core.NodeProvider;
@@ -123,6 +127,36 @@ public class NameHelper {
 			newName = createName(newName);
 		}
 		return newName;
+	}
+	
+	public static String getEncosingModulePrefix(Node rootNode, Node node) {
+		Vector<String> nameParts = new Vector<String>();
+		
+		while(true) {
+			Node parent = NodeProvider.findParentNode(rootNode, node, ModuleNode.class);
+			if(parent == null) {
+				break;
+			}
+			Colon3Node path = ((ModuleNode) parent).getCPath();
+			if(path != node) {
+				nameParts.insertElementAt(getFullyQualifiedName(path), 0);
+			}
+			node = parent;
+		}
+		
+		StringBuilder prefix = new StringBuilder();
+		Iterator<String> it = nameParts.iterator();
+		while (it.hasNext()) {
+			String name = it.next();
+
+			prefix.append(name);	
+			
+			if(it.hasNext()) {
+				prefix.append("::");
+			}
+		}
+		
+		return prefix.toString();
 	}
 
 	public static String getFullyQualifiedName(Node n) {

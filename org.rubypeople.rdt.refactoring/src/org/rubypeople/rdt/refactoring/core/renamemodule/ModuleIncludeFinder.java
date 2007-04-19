@@ -42,11 +42,11 @@ public class ModuleIncludeFinder {
 		this.document = document;
 	}
 
-	public Collection<ModuleIncludeWrapper> find(String name) {
-		ArrayList<ModuleIncludeWrapper> includes = new ArrayList<ModuleIncludeWrapper>();
+	public Collection<ModuleSpecifierWrapper> find(String name) {
+		ArrayList<ModuleSpecifierWrapper> includes = new ArrayList<ModuleSpecifierWrapper>();
 		
-		for (ModuleIncludeWrapper includeWrapper : findAllIncludes()) {
-			if(includeWrapper.getFullName().startsWith(name)) {
+		for (ModuleSpecifierWrapper includeWrapper : findAllIncludes()) {
+			if(includeWrapper.getFullName().equals(name)) {
 				includes.add(includeWrapper);
 			}
 		}
@@ -54,8 +54,8 @@ public class ModuleIncludeFinder {
 		return includes;
 	}
 
-	private ArrayList<ModuleIncludeWrapper>  findAllIncludes() {
-		ArrayList<ModuleIncludeWrapper> includes = new ArrayList<ModuleIncludeWrapper>();
+	private ArrayList<ModuleSpecifierWrapper>  findAllIncludes() {
+		ArrayList<ModuleSpecifierWrapper> includes = new ArrayList<ModuleSpecifierWrapper>();
 		
 		for(ClassNodeWrapper classNodeWrapper : document.getIncludedClassNodeProvider().getAllClassNodes()) {
 			includes.addAll(classNodeWrapper.getIncludes());

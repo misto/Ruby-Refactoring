@@ -30,11 +30,17 @@ package org.rubypeople.rdt.refactoring.tests.util;
 
 import java.util.ArrayList;
 
+import org.jruby.ast.Node;
+import org.jruby.ast.RootNode;
+import org.rubypeople.rdt.refactoring.core.SelectionNodeProvider;
+import org.rubypeople.rdt.refactoring.tests.FileTestCase;
 import org.rubypeople.rdt.refactoring.util.NameHelper;
 
-import junit.framework.TestCase;
+public class TC_NameHelper extends FileTestCase {
 
-public class TC_NameHelper extends TestCase {
+	public TC_NameHelper() {
+		super("Name Helper");
+	}
 
 	public void testCreateName() {
 		assertEquals("string1", NameHelper.createName("string"));
@@ -73,5 +79,30 @@ public class TC_NameHelper extends TestCase {
 		for (int i = 0; i < first.length; i++) {
 			assertEquals(first[i], name.get(i));
 		}
+	}
+	
+	public void testModulePrefix() {
+		final RootNode rootNode = getRootNode("TC_NameHelper_ModulePrefix.rb");
+		
+		Node node = getLastNode(14, rootNode);
+		assertEquals("M1", NameHelper.getEncosingModulePrefix(rootNode, node));
+		
+		node = getLastNode(27, rootNode);
+	
+		assertEquals("", NameHelper.getEncosingModulePrefix(rootNode, node));
+		
+		node = getLastNode(62, rootNode);
+	
+		assertEquals("M1::M3", NameHelper.getEncosingModulePrefix(rootNode, node));
+		
+		node = getLastNode(173, rootNode);
+	
+		assertEquals("OuterModule", NameHelper.getEncosingModulePrefix(rootNode, node));
+	}
+
+	private Node getLastNode(int pos, RootNode rootNode) {
+		Node[] nodes = SelectionNodeProvider.getSelectedNodesOfType(rootNode, pos, Node.class).toArray(new Node[]{});
+		assertTrue(nodes.length > 0);
+		return nodes[nodes.length - 1];
 	}
 }

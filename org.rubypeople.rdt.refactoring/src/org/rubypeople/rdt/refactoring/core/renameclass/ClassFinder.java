@@ -39,7 +39,7 @@ import org.rubypeople.rdt.refactoring.nodewrapper.PartialClassNodeWrapper;
 public class ClassFinder implements IClassFinder {
 	private final String name;
 	private Collection<ClassNodeWrapper> classNodes;
-	private final String modulePrefix;
+	private String modulePrefix;
 	
 	private interface INodeAcceptor {
 		boolean accept(PartialClassNodeWrapper node);
@@ -77,7 +77,13 @@ public class ClassFinder implements IClassFinder {
 	public Collection<ClassNode> findChildren() {
 		return find(new INodeAcceptor(){
 			public boolean accept(PartialClassNodeWrapper node) {
-				return (node.getModulePrefix() + node.getSuperClassName()).equals(modulePrefix + name);
+				String fullName = node.getModulePrefix();
+				if(!"".equals(fullName)) {
+					fullName += "::";
+				}
+				fullName += node.getSuperClassName();
+				
+				return (fullName).equals(modulePrefix + name);
 				
 			}});
 	}

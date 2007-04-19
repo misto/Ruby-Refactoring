@@ -30,6 +30,7 @@ package org.rubypeople.rdt.refactoring.nodewrapper;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Iterator;
 
 import org.jruby.ast.ArrayNode;
 import org.jruby.ast.BlockNode;
@@ -45,7 +46,7 @@ import org.jruby.ast.SClassNode;
 import org.jruby.ast.SymbolNode;
 import org.jruby.ast.VCallNode;
 import org.rubypeople.rdt.refactoring.core.NodeProvider;
-import org.rubypeople.rdt.refactoring.core.renamemodule.ModuleIncludeWrapper;
+import org.rubypeople.rdt.refactoring.core.renamemodule.ModuleSpecifierWrapper;
 import org.rubypeople.rdt.refactoring.exception.NoClassNodeException;
 import org.rubypeople.rdt.refactoring.nodewrapper.VisibilityNodeWrapper.METHOD_VISIBILITY;
 import org.rubypeople.rdt.refactoring.util.NodeUtil;
@@ -192,13 +193,18 @@ public abstract class PartialClassNodeWrapper implements INodeWrapper {
 		}
 
 		StringBuilder modulePrefix = new StringBuilder();
-		for (ModuleNode currentModule : enclosingModules) {
+		Iterator<ModuleNode> it = enclosingModules.iterator();
+		while (it.hasNext()) {
+			ModuleNode currentModule = it.next();
 			Node cPath = currentModule.getCPath();
 			if (cPath instanceof Colon2Node) {
-				String moduleName = ((Colon2Node) cPath).getName();
-				modulePrefix.append(moduleName).append("::"); //$NON-NLS-1$
+				modulePrefix.append(((Colon2Node) cPath).getName());
+				if(it.hasNext()) {
+					modulePrefix.append("::"); //$NON-NLS-1$
+				}
 			}
 		}
+
 		return modulePrefix.toString();
 	}
 
@@ -210,13 +216,13 @@ public abstract class PartialClassNodeWrapper implements INodeWrapper {
 		return NodeProvider.getClassFieldOccurences(wrappedNode);
 	}	
 	
-	public Collection<ModuleIncludeWrapper> getIncludeCalls() {
-		Collection<ModuleIncludeWrapper> includes = new ArrayList<ModuleIncludeWrapper>();
+	public Collection<ModuleSpecifierWrapper> getIncludeCalls() {
+		Collection<ModuleSpecifierWrapper> includes = new ArrayList<ModuleSpecifierWrapper>();
 
 		for (Node node : NodeProvider.getSubNodes(wrappedNode, FCallNode.class)) {
 			FCallNode call = (FCallNode) node;
 			if("include".equals(call.getName())) { //$NON-NLS-1$
-				includes.add(ModuleIncludeWrapper.create(((ArrayNode) call.getArgsNode()).get(0), getModulePrefix()));
+				includes.add(ModuleSpecifierWrapper.create(((ArrayNode) call.getArgsNode()).get(0), getModulePrefix()));
 			}
 		}
 		return includes;

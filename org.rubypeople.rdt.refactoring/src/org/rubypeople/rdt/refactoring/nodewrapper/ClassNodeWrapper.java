@@ -37,7 +37,7 @@ import org.jruby.ast.MethodDefNode;
 import org.jruby.ast.Node;
 import org.jruby.ast.SymbolNode;
 import org.rubypeople.rdt.refactoring.core.NodeFactory;
-import org.rubypeople.rdt.refactoring.core.renamemodule.ModuleIncludeWrapper;
+import org.rubypeople.rdt.refactoring.core.renamemodule.ModuleSpecifierWrapper;
 import org.rubypeople.rdt.refactoring.nodewrapper.VisibilityNodeWrapper.METHOD_VISIBILITY;
 
 public class ClassNodeWrapper implements INodeWrapper {
@@ -62,8 +62,8 @@ public class ClassNodeWrapper implements INodeWrapper {
 		return fields;
 	}
 	
-	public Collection<ModuleIncludeWrapper> getIncludes() {
-		ArrayList<ModuleIncludeWrapper> fields = new ArrayList<ModuleIncludeWrapper>();
+	public Collection<ModuleSpecifierWrapper> getIncludes() {
+		ArrayList<ModuleSpecifierWrapper> fields = new ArrayList<ModuleSpecifierWrapper>();
 
 		for (PartialClassNodeWrapper partialClassNode : partialClassNodes) {
 			fields.addAll(partialClassNode.getIncludeCalls());
