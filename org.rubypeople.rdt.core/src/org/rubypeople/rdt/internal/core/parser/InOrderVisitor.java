@@ -1153,7 +1153,7 @@ public class InOrderVisitor extends AbstractVisitor {
 	}
 
 	protected Instruction handleNode(Node visited) {
-		return null;
+		return visitNode(visited);
 	}	
 	
 	/* (non-Javadoc)
@@ -1188,7 +1188,6 @@ public class InOrderVisitor extends AbstractVisitor {
 
 	@Override
 	protected Instruction visitNode(Node iVisited) {
-		// TODO Auto-generated method stub
 		return null;
 	}
 

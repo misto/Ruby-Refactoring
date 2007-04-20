@@ -30,6 +30,7 @@ import javax.xml.parsers.ParserConfigurationException;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
+import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IResourceChangeEvent;
@@ -72,6 +73,7 @@ import org.rubypeople.rdt.core.IParent;
 import org.rubypeople.rdt.core.IProblemRequestor;
 import org.rubypeople.rdt.core.IRubyElement;
 import org.rubypeople.rdt.core.IRubyModel;
+import org.rubypeople.rdt.core.IRubyModelMarker;
 import org.rubypeople.rdt.core.IRubyProject;
 import org.rubypeople.rdt.core.IRubyScript;
 import org.rubypeople.rdt.core.ISourceFolder;
@@ -87,6 +89,7 @@ import org.rubypeople.rdt.core.search.IRubySearchScope;
 import org.rubypeople.rdt.internal.compiler.util.HashtableOfObjectToInt;
 import org.rubypeople.rdt.internal.core.buffer.BufferManager;
 import org.rubypeople.rdt.internal.core.builder.RubyBuilder;
+import org.rubypeople.rdt.internal.core.parser.MarkerUtility;
 import org.rubypeople.rdt.internal.core.search.RubyWorkspaceScope;
 import org.rubypeople.rdt.internal.core.search.indexing.IndexManager;
 import org.rubypeople.rdt.internal.core.util.Messages;
@@ -604,7 +607,17 @@ public class RubyModelManager implements IContentTypeChangeListener, ISavePartic
         }
 
         public void acceptProblem(IProblem problem) {
-            if (this.problemRequestor == null) return;
+        	// Don't accept the problem if a marker already exists for this same problem...
+        	try {
+				IResource resource = workingCopy.getUnderlyingResource();
+				IMarker marker = MarkerUtility.markerExists(resource, problem.getMessage(), problem.getSourceLineNumber(), IRubyModelMarker.RUBY_MODEL_PROBLEM_MARKER);
+				if (marker != null) return;
+			} catch (RubyModelException e) {
+				// ignore
+			} catch (CoreException e) {
+				// ignore
+			}
+        	if (this.problemRequestor == null) return;
             this.problemRequestor.acceptProblem(problem);
         }
 

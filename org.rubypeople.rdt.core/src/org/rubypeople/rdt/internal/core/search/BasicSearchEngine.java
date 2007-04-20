@@ -13,6 +13,7 @@ import org.eclipse.core.runtime.SubProgressMonitor;
 import org.rubypeople.rdt.core.IRubyElement;
 import org.rubypeople.rdt.core.IRubyScript;
 import org.rubypeople.rdt.core.IType;
+import org.rubypeople.rdt.core.RubyCore;
 import org.rubypeople.rdt.core.RubyModelException;
 import org.rubypeople.rdt.core.WorkingCopyOwner;
 import org.rubypeople.rdt.core.search.IRubySearchConstants;
@@ -239,18 +240,23 @@ public class BasicSearchEngine {
 		return RubyModelManager.getRubyModelManager().getWorkspaceScope();
 	}
 
-	public static Collection<? extends IType> findType(String typeName) {
-		SearchPattern pattern = SearchPattern.createPattern(IRubyElement.TYPE, typeName, IRubySearchConstants.DECLARATIONS, SearchPattern.R_EXACT_MATCH);
+	public static Collection<? extends IType> findType(String simpleTypeName) {
+		SearchPattern pattern = SearchPattern.createPattern(IRubyElement.TYPE, "*", IRubySearchConstants.DECLARATIONS, SearchPattern.R_EXACT_MATCH);
 		SearchParticipant[] participants = new SearchParticipant[] {getDefaultSearchParticipant()};
 		IRubySearchScope scope = createWorkspaceScope();
 		TypeRequestor requestor = new TypeRequestor();
 		try {
 			new BasicSearchEngine().search(pattern, participants, scope, requestor, null);
 		} catch (CoreException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			RubyCore.log(e);
 		}
-		return requestor.getTypes();
+		List<IType> types = new ArrayList<IType>();
+		List<IType> matches = requestor.getTypes();
+		for (IType type : matches) {
+			if (Util.getSimpleName(type.getElementName()).equals(simpleTypeName))
+					types.add(type);
+		}
+		return types;
 	}
 	
 	private static class TypeRequestor extends SearchRequestor {

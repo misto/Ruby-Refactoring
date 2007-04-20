@@ -70,12 +70,14 @@ public class MarkerUtility {
 
 	public static void createProblemMarker(IResource underlyingResource, IProblem problem) {
 		try {
-			IMarker marker = underlyingResource.createMarker(IRubyModelMarker.RUBY_MODEL_PROBLEM_MARKER);
+			IMarker marker = markerExists(underlyingResource, problem.getMessage(), problem.getSourceLineNumber(), IRubyModelMarker.RUBY_MODEL_PROBLEM_MARKER);
+			if (marker != null) return;
 			Map<String, Comparable> map = new HashMap<String, Comparable>();
 			int severity;
 			if(problem.isWarning()) severity = IMarker.SEVERITY_WARNING;
 			else if(problem.isError()) severity = IMarker.SEVERITY_ERROR;
 			else severity = IMarker.SEVERITY_INFO;
+			marker = underlyingResource.createMarker(IRubyModelMarker.RUBY_MODEL_PROBLEM_MARKER);
 			map.put(IMarker.SEVERITY, new Integer(severity));
 			map.put(IMarker.MESSAGE, problem.getMessage());
 			map.put(IMarker.USER_EDITABLE, Boolean.FALSE);

@@ -9,19 +9,21 @@ import java.util.List;
 
 import org.eclipse.core.resources.IFile;
 import org.jruby.lexer.yacc.ISourcePosition;
+import org.rubypeople.rdt.core.RubyCore;
+import org.rubypeople.rdt.core.compiler.CategorizedProblem;
 
 /**
  * @author Chris
  */
 public class RdtWarnings implements IRdtWarnings     {
 
-	private List<Warning> warnings;
+	private List<CategorizedProblem> warnings;
 
 	public RdtWarnings() {
-		warnings = new ArrayList<Warning>();
+		warnings = new ArrayList<CategorizedProblem>();
 	}
 
-	public List<Warning> getWarnings() {
+	public List<CategorizedProblem> getWarnings() {
 		return Collections.unmodifiableList(warnings);
 	}
 
@@ -53,6 +55,16 @@ public class RdtWarnings implements IRdtWarnings     {
 	public void warn(ISourcePosition position, String message) {
 		if (message.startsWith("Useless")) {
 			return ;
+		}
+		if (message.equals("Statement not reached.")) { // TODO Categorize problems that JRuby provides in one place
+			String value = RubyCore.getOption(RubyCore.COMPILER_PB_UNREACHABLE_CODE);
+			if (value == null || value.equals(RubyCore.WARNING)) {
+				warnings.add(new Warning(position, message));
+			}
+			if (value != null && value.equals(RubyCore.ERROR)) {
+				warnings.add(new Error(position, message));
+			}
+			return;
 		}
 		warnings.add(new Warning(position, message));
 	}
