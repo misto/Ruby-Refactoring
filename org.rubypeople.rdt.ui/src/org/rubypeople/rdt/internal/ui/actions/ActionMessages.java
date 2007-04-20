@@ -51,6 +51,14 @@ public final class ActionMessages extends NLS {
 	public static String OpenTypeAction_error_title;
 	public static String OpenTypeAction_error_messageProblems;
 	public static String OpenTypeAction_message;
+	public static String OpenNewSourceFolderWizardAction_text2;
+	public static String OpenNewSourceFolderWizardAction_description;
+	public static String OpenNewSourceFolderWizardAction_tooltip;
+	public static String BuildPath_label;
+	
+	public static String OpenNewRubyProjectWizardAction_text;
+	public static String OpenNewRubyProjectWizardAction_description;
+	public static String OpenNewRubyProjectWizardAction_tooltip;
 
     static {
         NLS.initializeMessages(BUNDLE_NAME, ActionMessages.class);

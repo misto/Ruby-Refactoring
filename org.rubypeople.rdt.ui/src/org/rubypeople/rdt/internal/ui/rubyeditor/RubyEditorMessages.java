@@ -33,7 +33,9 @@ public class RubyEditorMessages extends NLS {
 	public static String Editor_FoldingMenu_name;
 	public static String ToggleComment_error_title;
 	public static String ToggleComment_error_message;
-
+	public static String CompletionProcessor_ContextInfo_value_pattern;
+	public static String CompletionProcessor_ContextInfo_display_pattern;
+	
     private static ResourceBundle fgResourceBundle = ResourceBundle.getBundle(BUNDLE_NAME);
 
     private static final String BUNDLE_FOR_CONSTRUCTED_KEYS= "org.rubypeople.rdt.internal.ui.rubyeditor.ConstructedRubyEditorMessages";//$NON-NLS-1$

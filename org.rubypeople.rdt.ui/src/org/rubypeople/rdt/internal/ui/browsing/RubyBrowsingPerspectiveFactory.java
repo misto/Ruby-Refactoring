@@ -68,7 +68,7 @@ public class RubyBrowsingPerspectiveFactory implements IPerspectiveFactory {
 		layout.addShowViewShortcut(IPageLayout.ID_RES_NAV);
 
 		// new actions - Ruby project creation wizard
-		layout.addNewWizardShortcut("org.rubypeople.rdt.ui.wizards.NewProjectCreationWizard"); //$NON-NLS-1$
+		layout.addNewWizardShortcut("org.rubypeople.rdt.ui.wizards.RubyProjectWizard"); //$NON-NLS-1$
 		layout.addNewWizardShortcut("org.rubypeople.rdt.ui.wizards.NewClassCreationWizard"); //$NON-NLS-1$
 		layout.addNewWizardShortcut("org.eclipse.ui.wizards.new.folder");//$NON-NLS-1$
 		layout.addNewWizardShortcut("org.eclipse.ui.wizards.new.file");//$NON-NLS-1$

@@ -7,7 +7,7 @@
    <extension-point id="foldingStructureProviders" name="%foldingStructureProviders" schema="schema/foldingStructureProviders.exsd"/>
    <extension-point id="editorPopupExtender" name="%editorPopupExtender" schema="schema/org.rubypeople.rdt.ui.editorPopupExtender.exsd"/>
    <extension-point id="rubyTemplateProvider" name="Ruby template provider" schema="schema/rubyTemplateProvider.exsd"/>
-   <extension-point id="quickFixProcessors" name="%quickFixProcessorExtensionPoint" schema="schema/quickFixProcessors.exsd"/>  
+   <extension-point id="quickFixProcessors" name="%quickFixProcessorExtensionPoint" schema="schema/quickFixProcessors.exsd"/>
      
    <extension
          point="org.eclipse.ui.preferencePages">
@@ -245,11 +245,11 @@
             name="%NewWizardRubyProject.name"
             icon="icons/full/etool16/newrprj_wiz.gif"
             category="org.rubypeople.rdt.ui"
-            class="org.rubypeople.rdt.internal.ui.wizards.NewProjectCreationWizard"
+            class="org.rubypeople.rdt.internal.ui.wizards.RubyProjectWizard"
             preferredPerspectives="org.rubypeople.rdt.ui.PerspectiveRuby"
             project="true"
             finalPerspective="org.rubypeople.rdt.ui.PerspectiveRuby"
-            id="org.rubypeople.rdt.ui.wizards.NewWizardProjectCreation">
+            id="org.rubypeople.rdt.ui.wizards.RubyProjectWizard">           
          <description>
             Create a new Ruby project.
          </description>
@@ -297,6 +297,28 @@
 		  </adapt>         
         </enabledWhen>
          <keywordReference id="org.rubypeople.rdt.ui.severities"/>
+      </page>
+      <page
+            objectClass="org.eclipse.core.resources.IProject"
+            name="%buildPathPageName"        
+            class="org.rubypeople.rdt.internal.ui.preferences.BuildPathsPropertyPage"
+            id="org.rubypeople.rdt.ui.propertyPages.BuildPathsPropertyPage">
+         <filter
+               name="nature"
+               value="org.rubypeople.rdt.core.rubynature">
+         </filter>
+         <keywordReference id="org.rubypeople.rdt.ui.buildpath"/>
+      </page>
+      <page
+            objectClass="org.rubypeople.rdt.core.IRubyProject"
+            name="%buildPathPageName"
+            class="org.rubypeople.rdt.internal.ui.preferences.BuildPathsPropertyPage"
+            id="org.rubypeople.rdt.ui.propertyPages.BuildPathsPropertyPage">
+         <filter
+               name="nature"
+               value="org.rubypeople.rdt.core.rubynature">
+         </filter>
+         <keywordReference id="org.rubypeople.rdt.ui.buildpath"/>
       </page>
    </extension>
    
@@ -652,7 +674,7 @@
                label="%OpenProjectWizardAction.label"
                icon="icons/full/etool16/newrprj_wiz.gif"
                tooltip="%OpenProjectWizardAction.tooltip"
-               class="org.rubypeople.rdt.internal.ui.wizards.OpenProjectWizardAction"
+               class="org.rubypeople.rdt.internal.ui.wizards.OpenRubyProjectWizardToolbarAction"
                toolbarPath="Normal/RubyWizards"
                id="org.rubypeople.rdt.ui.actions.OpenProjectWizard">
          </action>
@@ -975,6 +997,5 @@
          <hyperlinkProvider
                class="org.rubypeople.rdt.internal.ui.text.hyperlinks.RubyElementsHyperlinkProvider">
          </hyperlinkProvider>
-   </extension>
-    
+   </extension>    
 </plugin>

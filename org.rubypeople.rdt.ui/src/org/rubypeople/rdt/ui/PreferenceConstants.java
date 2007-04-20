@@ -668,6 +668,28 @@ public class PreferenceConstants {
 	public static final String EDITOR_MARK_METHOD_EXIT_POINTS = "markMethodExitPoints"; //$NON-NLS-1$
 
 	
+	/**
+	 * A named preference that controls whether new projects are generated using source folder.
+	 * <p>
+	 * Value is of type <code>Boolean</code>. if <code>true</code> new projects are created with a source 
+	 * folder. If <code>false</code> source folder equals to the project.
+	 * </p>
+	 */
+	public static final String SRCBIN_FOLDERS_IN_NEWPROJ= "org.rubypeople.rdt.ui.wizards.srcFoldersInNewProjects"; //$NON-NLS-1$
+
+	/**
+	 * A named preference that specifies the source folder name used when creating a new Ruby project. Value is inactive
+	 * if <code>SRCBIN_FOLDERS_IN_NEWPROJ</code> is set to <code>false</code>.
+	 * <p>
+	 * Value is of type <code>String</code>. 
+	 * </p>
+	 * 
+	 * @see #SRCBIN_FOLDERS_IN_NEWPROJ
+	 */
+	public static final String SRCBIN_SRCNAME= "org.rubypeople.rdt.ui.wizards.srcFoldersSrcName"; //$NON-NLS-1$
+
+	
+	
 	private static String getDefaultRubyVMLibraries() {
 		StringBuffer buf= new StringBuffer();
 		ILoadpathEntry cntentry= getRubyVMContainerEntry();

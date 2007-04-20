@@ -3,10 +3,12 @@
  */
 package org.rubypeople.rdt.internal.corext.util;
 
+import org.eclipse.core.runtime.IPath;
 import org.rubypeople.rdt.core.IRubyElement;
 import org.rubypeople.rdt.core.IRubyScript;
 import org.rubypeople.rdt.core.ISourceFolderRoot;
 import org.rubypeople.rdt.core.RubyModelException;
+import org.rubypeople.rdt.internal.core.util.CharOperation;
 import org.rubypeople.rdt.internal.ui.RubyPlugin;
 
 /**
@@ -68,5 +70,16 @@ public final class RubyModelUtil {
 	 */
 	public static ISourceFolderRoot getSourceFolderRoot(IRubyElement element) {
 		return (ISourceFolderRoot) element.getAncestor(IRubyElement.SOURCE_FOLDER_ROOT);
+	}
+
+	public static boolean isExcludedPath(IPath resourcePath, IPath[] exclusionPatterns) {
+		char[] path = resourcePath.toString().toCharArray();
+		for (int i = 0, length = exclusionPatterns.length; i < length; i++) {
+			char[] pattern= exclusionPatterns[i].toString().toCharArray();
+			if (CharOperation.pathMatch(pattern, path, true, '/')) {
+				return true;
+			}
+		}
+		return false;	
 	}
 }

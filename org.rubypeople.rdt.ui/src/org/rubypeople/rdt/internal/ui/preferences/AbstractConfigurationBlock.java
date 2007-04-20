@@ -45,11 +45,11 @@ import org.rubypeople.rdt.internal.ui.dialogs.StatusUtil;
 import org.rubypeople.rdt.internal.ui.util.PixelConverter;
 
 /**
- * Configures Java Editor typing preferences.
+ * Configures Ruby Editor typing preferences.
  * 
  * @since 3.1
  */
-abstract class AbstractConfigurationBlock implements IPreferenceConfigurationBlock {
+public abstract class AbstractConfigurationBlock implements IPreferenceConfigurationBlock {
 
 	/**
 	 * Use as follows:
@@ -320,7 +320,10 @@ abstract class AbstractConfigurationBlock implements IPreferenceConfigurationBlo
 	 * @return the controls added
 	 */
 	protected Control[] addLabelledTextField(Composite composite, String label, String key, int textLimit, int indentation, boolean isNumber) {
-		
+		return addLabelledTextField(composite, label, key, textLimit, indentation, isNumber, SWT.BORDER | SWT.SINGLE, 1, textLimit);
+	}
+
+	protected Control[] addLabelledTextField(Composite composite, String label, String key, int textLimit, int indentation, boolean isNumber, int textStyle, int height, int width) {
 		PixelConverter pixelConverter= new PixelConverter(composite);
 		
 		Label labelControl= new Label(composite, SWT.NONE);
@@ -329,11 +332,12 @@ abstract class AbstractConfigurationBlock implements IPreferenceConfigurationBlo
 		gd.horizontalIndent= indentation;
 		labelControl.setLayoutData(gd);
 		
-		Text textControl= new Text(composite, SWT.BORDER | SWT.SINGLE);		
+		Text textControl= new Text(composite, textStyle);		
 		gd= new GridData(GridData.HORIZONTAL_ALIGN_BEGINNING);
-		gd.widthHint= pixelConverter.convertWidthInCharsToPixels(textLimit + 1);
+		gd.widthHint= pixelConverter.convertWidthInCharsToPixels(width + 1);
 		textControl.setLayoutData(gd);
 		textControl.setTextLimit(textLimit);
+		gd.heightHint = pixelConverter.convertHeightInCharsToPixels(height);
 		fTextFields.put(textControl, key);
 		if (isNumber) {
 			fNumberFields.add(textControl);
@@ -344,7 +348,7 @@ abstract class AbstractConfigurationBlock implements IPreferenceConfigurationBlo
 			
 		return new Control[]{labelControl, textControl};
 	}
-
+	
 	protected void createDependency(final Button master, final Control slave) {
 		createDependency(master, new Control[] {slave});
 	}

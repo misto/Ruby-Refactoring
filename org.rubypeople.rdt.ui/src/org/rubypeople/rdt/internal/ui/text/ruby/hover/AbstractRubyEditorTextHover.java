@@ -81,7 +81,7 @@ public abstract class AbstractRubyEditorTextHover implements IRubyEditorTextHove
 	 * @return the hover information string
 	 * @since 2.1
 	 */
-	protected String getHoverInfo(IRubyElement[] javaElements) {
+	protected String getHoverInfo(IRubyElement[] rubyElements) {
 		return null;
 	}
 

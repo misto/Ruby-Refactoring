@@ -12,6 +12,8 @@ public class CorrectionMessages extends NLS {
 	public static String ChangeCorrectionProposal_error_title;
 	public static String ChangeCorrectionProposal_error_message;
 	public static String ChangeCorrectionProposal_name_with_shortcut;
+	public static String CUCorrectionProposal_error_title;
+	public static String CUCorrectionProposal_error_message;
 	
 	static {
 		NLS.initializeMessages(BUNDLE_NAME, CorrectionMessages.class);

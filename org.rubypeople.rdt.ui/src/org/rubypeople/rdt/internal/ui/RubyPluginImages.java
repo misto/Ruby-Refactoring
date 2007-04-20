@@ -30,19 +30,20 @@ public class RubyPluginImages {
     private static final String T_DLCL= "dlcl16";   //$NON-NLS-1$
 	private static final String T_CTOOL = "ctool16"; 	//$NON-NLS-1$
 	private static final String T_WIZBAN= "wizban"; 	//$NON-NLS-1$
-
+	private static final String T_ETOOL= "etool16"; 	//$NON-NLS-1$
+	
     /*
      * Keys for images available from the Ruby-UI plug-in image registry.
      */
     public static final String IMG_MISC_PUBLIC= NAME_PREFIX + "methpub_obj.gif";            //$NON-NLS-1$
     public static final String IMG_MISC_PROTECTED= NAME_PREFIX + "methpro_obj.gif";         //$NON-NLS-1$
     public static final String IMG_MISC_PRIVATE= NAME_PREFIX + "methpri_obj.gif";       //$NON-NLS-1$
-    
     public static final String IMG_OBJS_ERROR = NAME_PREFIX + "error_obj.gif";
     public static final String IMG_OBJS_WARNING = NAME_PREFIX + "warning_obj.gif";
     public static final String IMG_OBJS_INFO = NAME_PREFIX + "info_obj.gif";
     public static final String IMG_OBJS_HELP= NAME_PREFIX + "help.gif"; //$NON-NLS-1$
     private static final String IMG_OBJS_GHOST= NAME_PREFIX + "ghost.gif";               //$NON-NLS-1$
+    
     private static final String IMG_OBJS_CLASS= NAME_PREFIX + "class_obj.gif";          //$NON-NLS-1$
     private static final String IMG_OBJS_INNER_CLASS= NAME_PREFIX + "innerclass_obj.gif"; //$NON-NLS-1$
     private static final String IMG_OBJS_CLASSALT= NAME_PREFIX + "classfo_obj.gif";          //$NON-NLS-1$
@@ -50,12 +51,14 @@ public class RubyPluginImages {
     private static final String IMG_OBJS_MODULEALT= NAME_PREFIX + "modulefo_obj.gif";          //$NON-NLS-1$
     private static final String IMG_OBJS_RUBY_MODEL= NAME_PREFIX + "ruby_model_obj.gif"; //$NON-NLS-1$
     private static final String IMG_OBJS_SOURCE_FOLDER= NAME_PREFIX + "fldr_obj.gif"; //$NON-NLS-1$
-    private static final String IMG_OBJS_SOURCE_FOLDER_ROOT= NAME_PREFIX + "fldr_root_obj.gif"; //$NON-NLS-1$
+    public static final String IMG_OBJS_SOURCE_FOLDER_ROOT= NAME_PREFIX + "fldr_root_obj.gif"; //$NON-NLS-1$
     private static final String IMG_OBJS_SCRIPT= NAME_PREFIX + "rscript_obj.gif";                 //$NON-NLS-1$
     private static final String IMG_OBJS_RUBY_RESOURCE= NAME_PREFIX + "rscript_resource_obj.gif"; //$NON-NLS-1$      
     private static final String IMG_OBJS_UNKNOWN= NAME_PREFIX + "unknown_obj.gif"; //$NON-NLS-1$
-
+    public static final String IMG_OBJS_ENV_VAR= NAME_PREFIX + "envvar_obj.gif"; 			//$NON-NLS-1$
     public static final String IMG_OBJS_LIBRARY= NAME_PREFIX + "library_obj.gif"; 		//$NON-NLS-1$
+    public static final String IMG_OBJS_EXTJAR= NAME_PREFIX + "jar_l_obj.gif"; 			//$NON-NLS-1$
+    public static final String IMG_OBJS_EXTJAR_WSRC= NAME_PREFIX + "jar_lsrc_obj.gif";	//$NON-NLS-1$
     
     private static final String IMG_CTOOLS_RUBY_IMPORT_CONTAINER = NAME_PREFIX + "imp_c.gif";
     private static final String IMG_CTOOLS_RUBY_IMPORT = NAME_PREFIX + "imp_obj.gif";
@@ -80,14 +83,23 @@ public class RubyPluginImages {
 
 	public static final ImageDescriptor DESC_WIZBAN_NEWJPRJ = createUnManaged(T_WIZBAN, "newrprj_wiz.gif"); 			//$NON-NLS-1$
 	public static final ImageDescriptor DESC_WIZBAN_NEWCLASS = createUnManaged(T_WIZBAN, "newclass_wiz.gif"); 			//$NON-NLS-1$
-
-	// RI
-	public static final ImageDescriptor TOOLBAR_REFRESH = createUnManaged(T_ELCL, "refresh.png");    
+    public static final ImageDescriptor DESC_WIZBAN_NEWSRCFOLDR= createUnManaged(T_WIZBAN, "newsrcfldr_wiz.png"); 	//$NON-NLS-1$
+    public static final ImageDescriptor DESC_WIZBAN_ADD_LIBRARY= createUnManaged(T_WIZBAN, "addlibrary_wiz.png");//$NON-NLS-1$
+    
+    public static final ImageDescriptor TOOLBAR_REFRESH = createUnManaged(T_ELCL, "refresh.png");    
+    
+    public static final ImageDescriptor DESC_OBJS_HELP= createManagedFromKey(T_ELCL, IMG_OBJS_HELP);    
     
     public static final ImageDescriptor DESC_OBJ_OVERRIDES= createUnManaged(T_OBJ, "over_co.gif");                      //$NON-NLS-1$
     public static final ImageDescriptor DESC_OBJ_IMPLEMENTS= createUnManaged(T_OBJ, "implm_co.gif");                //$NON-NLS-1$
 	public static final ImageDescriptor DESC_OBJS_LIBRARY= createManagedFromKey(T_OBJ, IMG_OBJS_LIBRARY);
-
+	public static final ImageDescriptor DESC_OBJS_EXTJAR= createManagedFromKey(T_OBJ, IMG_OBJS_EXTJAR);
+	public static final ImageDescriptor DESC_OBJS_EXTJAR_WSRC= createManagedFromKey(T_OBJ, IMG_OBJS_EXTJAR_WSRC);
+	public static final ImageDescriptor DESC_OBJS_ENV_VAR= createManagedFromKey(T_OBJ, IMG_OBJS_ENV_VAR);
+	
+	public static final ImageDescriptor DESC_OBJS_EXCLUSION_FILTER_ATTRIB= createUnManaged(T_OBJ, "exclusion_filter_attrib.gif"); //$NON-NLS-1$
+	public static final ImageDescriptor DESC_OBJS_INCLUSION_FILTER_ATTRIB= createUnManaged(T_OBJ, "inclusion_filter_attrib.gif"); //$NON-NLS-1$
+    	
     public static final ImageDescriptor DESC_OVR_STATIC= createUnManaged(T_OVR, "static_co.gif");                       //$NON-NLS-1$
     public static final ImageDescriptor DESC_OVR_FINAL= createUnManaged(T_OVR, "final_co.gif");                         //$NON-NLS-1$
     public static final ImageDescriptor DESC_OVR_ABSTRACT= createUnManaged(T_OVR, "abstract_co.gif");                   //$NON-NLS-1$
@@ -102,9 +114,6 @@ public class RubyPluginImages {
     public static final ImageDescriptor DESC_OVR_CONSTRUCTOR= createUnManaged(T_OVR, "constr_ovr.gif");         //$NON-NLS-1$
     public static final ImageDescriptor DESC_OVR_DEPRECATED= createUnManaged(T_OVR, "deprecated.gif");  
 	    
-    public static final ImageDescriptor DESC_ELCL_FILTER= createUnManaged(T_ELCL, "filter_ps.gif"); //$NON-NLS-1$
-    public static final ImageDescriptor DESC_DLCL_FILTER= createUnManaged(T_DLCL, "filter_ps.gif"); //$NON-NLS-1$
-
     public static final ImageDescriptor DESC_OBJS_GHOST= createManagedFromKey(T_OBJ, IMG_OBJS_GHOST);
     public static final ImageDescriptor DESC_OBJS_IMPDECL= createManagedFromKey(T_OBJ, IMG_CTOOLS_RUBY_IMPORT);
     public static final ImageDescriptor DESC_OBJS_IMPCONT= createManagedFromKey(T_OBJ, IMG_CTOOLS_RUBY_IMPORT_CONTAINER);
@@ -122,18 +131,47 @@ public class RubyPluginImages {
     public static final ImageDescriptor DESC_OBJS_CLASS= createManagedFromKey(T_OBJ, IMG_OBJS_CLASS);
     public static final ImageDescriptor DESC_OBJS_CLASSALT= createManagedFromKey(T_OBJ, IMG_OBJS_CLASSALT);    
     public static final ImageDescriptor DESC_OBJS_INNER_CLASS= createManagedFromKey(T_OBJ, IMG_OBJS_INNER_CLASS);
-    public static final ImageDescriptor DESC_OBJS_MODULEALT = createManagedFromKey(T_OBJ, IMG_OBJS_MODULEALT); 
-    
-    
+    public static final ImageDescriptor DESC_OBJS_MODULEALT = createManagedFromKey(T_OBJ, IMG_OBJS_MODULEALT);    
     public static final ImageDescriptor DESC_OBJS_SCRIPT= createManagedFromKey(T_OBJ, IMG_OBJS_SCRIPT);
     public static final ImageDescriptor DESC_OBJS_RUBY_RESOURCE= createManagedFromKey(T_OBJ, IMG_OBJS_RUBY_RESOURCE);
+    public static final ImageDescriptor DESC_OBJS_UNKNOWN= createManagedFromKey(T_OBJ, IMG_OBJS_UNKNOWN);
+    
+    public static final ImageDescriptor DESC_TOOL_NEWPACKROOT= createUnManaged(T_ETOOL, "newpackfolder_wiz.gif");         //$NON-NLS-1$
+    
+    public static final ImageDescriptor DESC_ELCL_FILTER= createUnManaged(T_ELCL, "filter_ps.gif"); //$NON-NLS-1$
+    public static final ImageDescriptor DESC_DLCL_FILTER= createUnManaged(T_DLCL, "filter_ps.gif"); //$NON-NLS-1$
+   
+    public static final ImageDescriptor DESC_ELCL_REMOVE_FROM_BP= createUnManaged(T_ELCL, "remove_from_buildpath.gif"); //$NON-NLS-1$
+    
+    public static final ImageDescriptor DESC_DLCL_ADD_AS_SOURCE_FOLDER= createUnManaged(T_DLCL, "add_as_source_folder.gif");  //$NON-NLS-1$
+    public static final ImageDescriptor DESC_ELCL_ADD_AS_SOURCE_FOLDER= createUnManaged(T_ELCL, "add_as_source_folder.gif");  //$NON-NLS-1$
+    
+    public static final ImageDescriptor DESC_DLCL_REMOVE_AS_SOURCE_FOLDER= createUnManaged(T_DLCL, "remove_as_source_folder.gif");  //$NON-NLS-1$
+    public static final ImageDescriptor DESC_ELCL_REMOVE_AS_SOURCE_FOLDER= createUnManaged(T_ELCL, "remove_as_source_folder.gif");  //$NON-NLS-1$
+    
+    public static final ImageDescriptor DESC_DLCL_EXCLUDE_FROM_BUILDPATH= createUnManaged(T_DLCL, "exclude_from_buildpath.gif");  //$NON-NLS-1$
+    public static final ImageDescriptor DESC_ELCL_EXCLUDE_FROM_BUILDPATH= createUnManaged(T_ELCL, "exclude_from_buildpath.gif");  //$NON-NLS-1$
+    
+    public static final ImageDescriptor DESC_DLCL_INCLUDE_ON_BUILDPATH= createUnManaged(T_DLCL, "include_on_buildpath.gif");  //$NON-NLS-1$
+    public static final ImageDescriptor DESC_ELCL_INCLUDE_ON_BUILDPATH= createUnManaged(T_ELCL, "include_on_buildpath.gif");  //$NON-NLS-1$
+    
+    public static final ImageDescriptor DESC_DLCL_CONFIGURE_BUILDPATH_FILTERS= createUnManaged(T_DLCL, "configure_buildpath_filters.gif"); //$NON-NLS-1$
+    public static final ImageDescriptor DESC_ELCL_CONFIGURE_BUILDPATH_FILTERS= createUnManaged(T_ELCL, "configure_buildpath_filters.gif"); //$NON-NLS-1$
+    
+    public static final ImageDescriptor DESC_DLCL_ADD_LINKED_SOURCE_TO_BUILDPATH= createUnManaged(T_DLCL, "add_linked_source_to_buildpath.gif"); //$NON-NLS-1$
+    public static final ImageDescriptor DESC_ELCL_ADD_LINKED_SOURCE_TO_BUILDPATH= createUnManaged(T_ELCL, "add_linked_source_to_buildpath.gif"); //$NON-NLS-1$
+    
+    public static final ImageDescriptor DESC_ELCL_CLEAR= createUnManaged(T_ELCL, "clear_co.gif"); //$NON-NLS-1$
+    public static final ImageDescriptor DESC_DLCL_CLEAR= createUnManaged(T_DLCL, "clear_co.gif"); //$NON-NLS-1$
+    
+    public static final ImageDescriptor DESC_DLCL_CONFIGURE_BUILDPATH= createUnManaged(T_DLCL, "configure_build_path.gif"); //$NON-NLS-1$
+    public static final ImageDescriptor DESC_ELCL_CONFIGURE_BUILDPATH= createUnManaged(T_ELCL, "configure_build_path.gif"); //$NON-NLS-1$
     
     public static final ImageDescriptor DESC_MISC_PUBLIC= createManagedFromKey(T_OBJ, IMG_MISC_PUBLIC);
     public static final ImageDescriptor DESC_MISC_PROTECTED= createManagedFromKey(T_OBJ, IMG_MISC_PROTECTED);
     public static final ImageDescriptor DESC_MISC_PRIVATE= createManagedFromKey(T_OBJ, IMG_MISC_PRIVATE);
-    
-    public static final ImageDescriptor DESC_OBJS_UNKNOWN= createManagedFromKey(T_OBJ, IMG_OBJS_UNKNOWN);
 	public static final String IMG_CORRECTION_CHANGE= NAME_PREFIX + "correction_change.gif"; //$NON-NLS-1$       
+    public static final ImageDescriptor DESC_TOOL_LOADPATH_ORDER= createUnManaged(T_OBJ, "cp_order_obj.gif"); 		//$NON-NLS-1$
     
 	static {
 		createManagedFromKey(T_OBJ, IMG_CORRECTION_CHANGE);
