@@ -261,7 +261,7 @@ public class RubyProjectWizardFirstPage extends WizardPage {
 	 */
 	private final class LayoutGroup implements Observer, SelectionListener {
 
-		private final SelectionButtonDialogField fStdRadio, fSrcBinRadio;
+		private final SelectionButtonDialogField fStdRadio;
 		private final Group fGroup;
 		private final Link fPreferenceLink;
 		
@@ -276,14 +276,9 @@ public class RubyProjectWizardFirstPage extends WizardPage {
 			fStdRadio= new SelectionButtonDialogField(SWT.RADIO);
 			fStdRadio.setLabelText(NewWizardMessages.RubyProjectWizardFirstPage_LayoutGroup_option_oneFolder); 
 			
-			fSrcBinRadio= new SelectionButtonDialogField(SWT.RADIO);
-			fSrcBinRadio.setLabelText(NewWizardMessages.RubyProjectWizardFirstPage_LayoutGroup_option_separateFolders); 
-
 			fStdRadio.doFillIntoGrid(fGroup, 3);
 			LayoutUtil.setHorizontalGrabbing(fStdRadio.getSelectionButton(null));
-			
-			fSrcBinRadio.doFillIntoGrid(fGroup, 2);
-			
+						
 			fPreferenceLink= new Link(fGroup, SWT.NONE);
 			fPreferenceLink.setText(NewWizardMessages.RubyProjectWizardFirstPage_LayoutGroup_link_description);
 			fPreferenceLink.setLayoutData(new GridData(GridData.END, GridData.END, false, false));
@@ -291,20 +286,19 @@ public class RubyProjectWizardFirstPage extends WizardPage {
 						
 //			boolean useSrcBin= PreferenceConstants.getPreferenceStore().getBoolean(PreferenceConstants.SRCBIN_FOLDERS_IN_NEWPROJ);
 			boolean useSrcBin= false;
-			fSrcBinRadio.setSelection(useSrcBin);
 			fStdRadio.setSelection(!useSrcBin);
 		}
 
 		public void update(Observable o, Object arg) {
 			final boolean detect= fDetectGroup.mustDetect();
 			fStdRadio.setEnabled(!detect);
-			fSrcBinRadio.setEnabled(!detect);
+//			fSrcBinRadio.setEnabled(!detect);
 			fPreferenceLink.setEnabled(!detect);
 			fGroup.setEnabled(!detect);
 		}
 		
 		public boolean isSrcBin() {
-			return fSrcBinRadio.isSelected();
+			return false;
 		}
 
 		/* (non-Rubydoc)
