@@ -26,8 +26,8 @@ public class ExtractConstantConditionChecker extends RefactoringConditionChecker
 
 	private ExtractConstantConfig config;
 
-	public ExtractConstantConditionChecker(ExtractConstantConfig config) {
-		super(config);
+	public ExtractConstantConditionChecker(IRefactoringConfig config2) {
+		super(config2);
 	}
 	
 	protected void checkInitialConditions() {

@@ -35,6 +35,7 @@ import org.rubypeople.rdt.refactoring.tests.classnodeprovider.TS_ClassNodeProvid
 import org.rubypeople.rdt.refactoring.tests.core.TS_Core;
 import org.rubypeople.rdt.refactoring.tests.core.convertlocaltofield.TS_LocalToField;
 import org.rubypeople.rdt.refactoring.tests.core.encapsulatefield.TS_EncapsulateField;
+import org.rubypeople.rdt.refactoring.tests.core.extractconstant.TS_ExtractConstant;
 import org.rubypeople.rdt.refactoring.tests.core.extractmethod.TS_ExtractMethod;
 import org.rubypeople.rdt.refactoring.tests.core.formatsource.TS_FormatSource;
 import org.rubypeople.rdt.refactoring.tests.core.generateaccessors.TS_GenerateAccessors;
@@ -75,6 +76,7 @@ public class TS_All
 		suite.addTest(TS_LocalToField.suite());
 		suite.addTest(TS_Core.suite());
 		suite.addTest(TS_ExtractMethod.suite());
+		suite.addTest(TS_ExtractConstant.suite());
 		suite.addTest(TS_MergeWithExternalClassParts.suite());
 		suite.addTest(TS_MergeClassPartsInFile.suite());
 		suite.addTest(TS_InlineLocal.suite());
