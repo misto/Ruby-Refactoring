@@ -74,17 +74,15 @@ public class LibrariesWorkbookPage extends BuildPathBasePage {
 	
 	private Control fSWTControl;
 
-	private final int IDX_ADDFOL= 0;
-	private final int IDX_ADDEXT= 1;
-	private final int IDX_EDIT= 3;
-	private final int IDX_REMOVE= 4;
+	private final int IDX_ADDEXT= 0;
+	private final int IDX_EDIT= 2;
+	private final int IDX_REMOVE= 3;
 		
 	public LibrariesWorkbookPage(CheckedListDialogField classPathList, IWorkbenchPreferenceContainer pageContainer) {
 		fClassPathList= classPathList;
 		fSWTControl= null;
 		
 		String[] buttonLabels= new String[] { 
-			NewWizardMessages.LibrariesWorkbookPage_libraries_addclassfolder_button, 
 			NewWizardMessages.LibrariesWorkbookPage_libraries_addextjar_button, 
 			/* */ null,  
 			NewWizardMessages.LibrariesWorkbookPage_libraries_edit_button, 
@@ -200,10 +198,7 @@ public class LibrariesWorkbookPage extends BuildPathBasePage {
 	
 	private void libaryPageCustomButtonPressed(DialogField field, int index) {
 		CPListElement[] libentries= null;
-		switch (index) {
-		case IDX_ADDFOL: /* add (internal) folder */
-			libentries= openScriptFolderDialog(null);
-			break;			
+		switch (index) {	
 		case IDX_ADDEXT: /* add external folder */
 			libentries= openExtFolderDialog(null);
 			break;
@@ -225,9 +220,6 @@ public class LibrariesWorkbookPage extends BuildPathBasePage {
 				if (!cplist.contains(curr) && !elementsToAdd.contains(curr)) {
 					elementsToAdd.add(curr);
 				}
-			}
-			if (!elementsToAdd.isEmpty() && (index == IDX_ADDFOL)) {
-				askForAddingExclusionPatternsDialog(elementsToAdd);
 			}
 			
 			fLibrariesList.addElements(elementsToAdd);
@@ -260,17 +252,6 @@ public class LibrariesWorkbookPage extends BuildPathBasePage {
 	public void addElement(CPListElement element) {
 		fLibrariesList.addElement(element);
 		fLibrariesList.postSetSelection(new StructuredSelection(element));
-	}
-	
-	private void askForAddingExclusionPatternsDialog(List newEntries) {
-		HashSet modified= new HashSet();
-		List existing= fClassPathList.getElements();
-		fixNestingConflicts((CPListElement[])newEntries.toArray(new CPListElement[newEntries.size()]), (CPListElement[])existing.toArray(new CPListElement[existing.size()]), modified);
-		if (!modified.isEmpty()) {
-			String title= NewWizardMessages.LibrariesWorkbookPage_exclusion_added_title; 
-			String message= NewWizardMessages.LibrariesWorkbookPage_exclusion_added_message; 
-			MessageDialog.openInformation(getShell(), title, message);
-		}
 	}
 	
 	protected void libaryPageDoubleClicked(TreeListDialogField field) {
@@ -424,9 +405,6 @@ public class LibrariesWorkbookPage extends BuildPathBasePage {
 		List selElements= fLibrariesList.getSelectedElements();
 		fLibrariesList.enableButton(IDX_EDIT, canEdit(selElements));
 		fLibrariesList.enableButton(IDX_REMOVE, canRemove(selElements));
-		
-		boolean noAttributes= containsOnlyTopLevelEntries(selElements);
-		fLibrariesList.enableButton(IDX_ADDFOL, noAttributes);
 	}
 	
 	private boolean canEdit(List selElements) {
