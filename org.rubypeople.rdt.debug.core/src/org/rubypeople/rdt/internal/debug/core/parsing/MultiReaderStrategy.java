@@ -97,7 +97,7 @@ public class MultiReaderStrategy extends AbstractReadStrategy {
 	}
 	
     private synchronized void findReaderForTag() throws XmlStreamReaderException {
-    	System.out.println("There are no threads:" + threads.size()) ;
+//    	System.out.println("There are no threads:" + threads.size()) ;
     	for (XmlStreamReader streamReader : threads.keySet()) { 
 			if (streamReader.processStartElement(xpp)) {
 				currentReader = streamReader;
