@@ -54,6 +54,7 @@ import org.rubypeople.rdt.internal.core.parser.RubyParser;
 import org.rubypeople.rdt.internal.core.search.BasicSearchEngine;
 import org.rubypeople.rdt.internal.core.search.CollectingSearchRequestor;
 import org.rubypeople.rdt.internal.core.util.ASTUtil;
+import org.rubypeople.rdt.internal.ti.BasicTypeGuess;
 import org.rubypeople.rdt.internal.ti.DefaultTypeInferrer;
 import org.rubypeople.rdt.internal.ti.ITypeGuess;
 import org.rubypeople.rdt.internal.ti.ITypeInferrer;
@@ -88,6 +89,9 @@ public class CompletionEngine {
 			if (fContext.isExplicitMethodInvokation()) {
 				ITypeInferrer inferrer = new DefaultTypeInferrer();
 				List<ITypeGuess> guesses = inferrer.infer(fContext.getCorrectedSource(), fContext.getOffset());
+				if (guesses.isEmpty()) {
+					guesses.add(new BasicTypeGuess(OBJECT, 100));
+				}
 				RubyElementRequestor requestor = new RubyElementRequestor(script);
 				for (ITypeGuess guess : guesses) {
 					String name = guess.getType();
@@ -99,6 +103,7 @@ public class CompletionEngine {
 						}
 					}
 				}
+				
 			} else {
 				// FIXME If we're invoked on the class declaration (it's super class) don't do this!
 				// FIXME Traverse the IRubyElement model, not nodes (and don't reparse)?
