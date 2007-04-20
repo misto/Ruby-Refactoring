@@ -6,6 +6,7 @@ import java.util.List;
 
 import org.eclipse.jface.text.Position;
 import org.jruby.ast.ArgumentNode;
+import org.jruby.ast.BlockArgNode;
 import org.jruby.ast.BlockNode;
 import org.jruby.ast.ClassNode;
 import org.jruby.ast.ClassVarAsgnNode;
@@ -591,7 +592,7 @@ public class DefaultOccurrencesFinder extends AbstractOccurencesFinder {
 
 		// TODO refactor the getting-of-name
 		String name = null;
-		if (isLocalVarRef(node) || isDVarRef(node) || isInstanceVarRef(node) || isGlobalVarRef(node) || isClassVarRef(node) || isConstRef(node)) {
+		if (isLocalVarRef(node) || isDVarRef(node) || isInstanceVarRef(node) || isGlobalVarRef(node) || isClassVarRef(node) || isConstRef(node) || node instanceof BlockArgNode) {
 			name = ASTUtil.getNameReflectively(node);
 		} else if (node instanceof ClassNode) {
 			name = getClassNodeName((ClassNode) node);
