@@ -1,5 +1,6 @@
 package org.rubypeople.rdt.internal.ti;
 
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -28,6 +29,7 @@ import org.rubypeople.rdt.internal.ti.data.TypicalMethodReturnNames;
 import org.rubypeople.rdt.internal.ti.util.FirstPrecursorNodeLocator;
 import org.rubypeople.rdt.internal.ti.util.INodeAcceptor;
 import org.rubypeople.rdt.internal.ti.util.OffsetNodeLocator;
+import org.rubypeople.rdt.internal.ti.util.ScopedNodeLocator;
 
 public class DefaultTypeInferrer implements ITypeInferrer {
 
@@ -132,7 +134,6 @@ public class DefaultTypeInferrer implements ITypeInferrer {
 		if (!(node instanceof InstVarNode))
 			return;
 		final InstVarNode instVarNode = (InstVarNode) node;
-		int nodeStart = node.getPosition().getStartOffset();
 
 		// TODO: see if there is attr_reader/attr_writer, maybe?
 		// TODO: find calls to the reader/writers
@@ -141,30 +142,22 @@ public class DefaultTypeInferrer implements ITypeInferrer {
 
 		// Find first assignment to this var name that occurs before the
 		// reference
-		// todo: This will find assignments in other local scopes that
+		// TODO: This will find assignments in other local scopes that
 		// precede this reference but have the same variable name.
 		// To mitigate, ensure that the closest spanning ScopeNode for both
 		// this LocalVarNode and the AsgnNode are the name ScopeNode.
 		// Or scopingNode. Still not sure whether IterNodes count or not...
 		// silly block-local-var ambiguity ;)
-		Node initialAssignmentNode = FirstPrecursorNodeLocator.Instance().findFirstPrecursor(rootNode, nodeStart, new INodeAcceptor() {
+		
+		// CHRIS - Changed to just grab all assignments to this instance variable, not just first assignment
+		List<Node> assignments = new ArrayList<Node>();		
+		assignments.addAll(ScopedNodeLocator.Instance().findNodesInScope(rootNode, new INodeAcceptor() {		
 			public boolean doesAccept(Node node) {
-				String name = null;
-				if (node instanceof LocalAsgnNode)
-					name = ((LocalAsgnNode) node).getName();
-				if (node instanceof InstAsgnNode)
-					name = ((InstAsgnNode) node).getName();
-				if (node instanceof GlobalAsgnNode)
-					name = ((GlobalAsgnNode) node).getName();
-				return (name != null && name.equals(instVarNode.getName()));
-				/**
-				 * refactor to common INodeAcceptor for
-				 * instVarName,localVarName,globalVarName
-				 */
+				return (node instanceof InstAsgnNode) && (((InstAsgnNode)node).getName().equals(instVarNode.getName()));
 			}
-		});
-		if (initialAssignmentNode != null) {
-			tryAsgnNode(initialAssignmentNode, guesses);
+		}));
+		for (Node assignNode : assignments) {
+			tryAsgnNode(assignNode, guesses);
 		}
 	}
 
