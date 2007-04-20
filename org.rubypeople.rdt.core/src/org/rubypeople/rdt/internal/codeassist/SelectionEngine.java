@@ -20,6 +20,7 @@ import org.jruby.ast.LocalVarNode;
 import org.jruby.ast.Node;
 import org.jruby.ast.VCallNode;
 import org.jruby.ast.types.INameNode;
+import org.jruby.lexer.yacc.SyntaxException;
 import org.rubypeople.rdt.core.IMethod;
 import org.rubypeople.rdt.core.IParent;
 import org.rubypeople.rdt.core.IRubyElement;
@@ -27,6 +28,7 @@ import org.rubypeople.rdt.core.IRubyScript;
 import org.rubypeople.rdt.core.IType;
 import org.rubypeople.rdt.core.RubyCore;
 import org.rubypeople.rdt.core.RubyModelException;
+import org.rubypeople.rdt.internal.core.RubyScript;
 import org.rubypeople.rdt.internal.core.parser.RubyParser;
 import org.rubypeople.rdt.internal.core.util.ASTUtil;
 import org.rubypeople.rdt.internal.core.util.Util;
@@ -40,9 +42,14 @@ public class SelectionEngine {
 	public IRubyElement[] select(IRubyScript script, int start, int end)
 			throws RubyModelException {
 		String source = script.getSource();
-		RubyParser parser = new RubyParser();
-		Node root = parser.parse((IFile) script.getResource(),
-				new StringReader(source));
+		Node root;
+		try {
+			RubyParser parser = new RubyParser();
+			root = parser.parse((IFile) script.getResource(),
+					new StringReader(source));
+		} catch (SyntaxException e) {
+			root = ((RubyScript)script).lastGoodAST;
+		}
 		Node selected = OffsetNodeLocator.Instance().getNodeAtOffset(root,
 				start);
 
