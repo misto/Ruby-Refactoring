@@ -32,16 +32,12 @@ import org.rubypeople.rdt.refactoring.core.overridemethod.MethodsOverrider;
 import org.rubypeople.rdt.refactoring.documentprovider.StringDocumentProvider;
 import org.rubypeople.rdt.refactoring.tests.TwoLayerTreeEditProviderTester;
 
-public class TC_OverridenMethodEditTest extends TwoLayerTreeEditProviderTester
-{
+public class TC_OverridenMethodEditTest extends TwoLayerTreeEditProviderTester {
 
 	private static int test_count = 0;
 
-
-
-	public TC_OverridenMethodEditTest()
-	{
-		super(true);
+	public TC_OverridenMethodEditTest() {
+		super("Overriden Method Edit Test", true);
 	}
 
 	private final static String BASE_DOCUMENT_SIMPLE =	"class A < X\n" +
@@ -57,12 +53,6 @@ public class TC_OverridenMethodEditTest extends TwoLayerTreeEditProviderTester
 														"  attr_accessor :b\n" +
 														"end";
 
-//  Support for JRubyBuilt in Classes disabled (uncommented Code) because the Arity of the methods
-//  cannot propperly be evaluated.
-	
-//	private final static String BASE_DOCUMENT_EXTENDS_DIR =	"class A < Dir\n" +
-//															"end";
-	
 	private final static String SUPER_CLASS_EMPTY =	"class X\n" +
 													"end";
 	
@@ -182,15 +172,6 @@ public class TC_OverridenMethodEditTest extends TwoLayerTreeEditProviderTester
 																			"attr_accessor :b\n" +
 																			"end");
 	}
-	
-//	Support for JRubyBuilt in Classes disabled (uncommented Code) because the Arity of the methods
-//  cannot propperly be evaluated.
-	
-//	public void testDirSuperClass()
-//	{
-//		addSelection("A", "initialize");
-//		check(BASE_DOCUMENT_EXTENDS_DIR, null, "class A < Dir\n\ndef initialize arg0\nsuper arg0\nend\n\nend");
-//	}
 	
 	private void check(String classDocument, String superClassDocument, String expectedDocument) {
 		

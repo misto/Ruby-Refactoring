@@ -37,16 +37,13 @@ import org.eclipse.jface.text.BadLocationException;
 import org.rubypeople.rdt.refactoring.core.convertlocaltofield.LocalToFieldConditionChecker;
 import org.rubypeople.rdt.refactoring.core.convertlocaltofield.LocalToFieldConfig;
 import org.rubypeople.rdt.refactoring.core.convertlocaltofield.LocalToFieldConverter;
-import org.rubypeople.rdt.refactoring.tests.FilePropertyData;
 import org.rubypeople.rdt.refactoring.tests.FileTestData;
 import org.rubypeople.rdt.refactoring.tests.RefactoringTestCase;
 
 public class LocalToFieldTester extends RefactoringTestCase {
 
-	private String fileName;
-
 	public LocalToFieldTester(String fileName) {
-		this.fileName = fileName;
+		super(fileName);
 	}
 
 	protected int getInitPlace(String initPlace) {
@@ -55,40 +52,25 @@ public class LocalToFieldTester extends RefactoringTestCase {
 		} else if (initPlace.equalsIgnoreCase("TempToFieldConverter.INIT_IN_CONSTRUCTOR")) {
 			return LocalToFieldConverter.INIT_IN_CONSTRUCTOR;
 		} else {
-			assertTrue(false);
+			fail();
 			return 0;
 		}
-
-	}
-
-	protected void runTempToFieldTest(FilePropertyData data, String sourceDocument, String expectedDocument, String newName, boolean isClassField, int initPlace,
-			int cursorPosition) throws BadLocationException {
-		LocalToFieldConfig config = new LocalToFieldConfig(data, cursorPosition);
-		LocalToFieldConditionChecker checker = new LocalToFieldConditionChecker(config);
-		if (!checker.shouldPerform()) {
-			fail();
-		}
-		LocalToFieldConverter converter = new LocalToFieldConverter(config);
-		converter.setInitPlace(initPlace);
-		converter.setIsClassField(isClassField);
-		converter.setNewName(newName);
-		createEditAndCompareResult(sourceDocument, expectedDocument, converter);
 	}
 
 	@Override
 	public void runTest() throws FileNotFoundException, IOException, BadLocationException {
-		FileTestData data = new FileTestData(fileName, getClass());
-		String source = data.getSource();
-		String expected = data.getExpectedResult();
-		String newName = data.getProperty("newName");
-		boolean isClassField = data.getBoolProperty("isClassField");
-		int initPlace = getInitPlace(data.getProperty("initPlace"));
-		int cursorPos = data.getIntProperty("cursorPosition");
-		runTempToFieldTest(data, source, expected, newName, isClassField, initPlace, cursorPos);
-	}
-
-	@Override
-	public String getName() {
-		return fileName;
+		FileTestData data = new FileTestData(getName());
+		LocalToFieldConfig config = new LocalToFieldConfig(data, data.getIntProperty("cursorPosition"));
+		LocalToFieldConditionChecker checker = new LocalToFieldConditionChecker(config);
+		
+		if (!checker.shouldPerform()) {
+			fail();
+		}
+		
+		LocalToFieldConverter converter = new LocalToFieldConverter(config);
+		converter.setInitPlace(getInitPlace(data.getProperty("initPlace")));
+		converter.setIsClassField(data.getBoolProperty("isClassField"));
+		converter.setNewName(data.getProperty("newName"));
+		createEditAndCompareResult(data.getSource(), data.getExpectedResult(), converter);
 	}
 }

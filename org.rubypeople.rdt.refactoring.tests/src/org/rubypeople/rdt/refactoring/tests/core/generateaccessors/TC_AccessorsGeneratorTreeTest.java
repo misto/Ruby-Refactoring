@@ -38,7 +38,7 @@ import org.rubypeople.rdt.refactoring.documentprovider.DocumentProvider;
 import org.rubypeople.rdt.refactoring.documentprovider.StringDocumentProvider;
 import org.rubypeople.rdt.refactoring.tests.TreeProviderTester;
 
-public class TC_AccessorsGeneratorTreeTest extends TreeProviderTester{
+public class TC_AccessorsGeneratorTreeTest extends TreeProviderTester {
 	
 	private final static String TEST_DOCUMENT_SIMPLE =	"#ClassComment\n" +
 														"class X\n" +

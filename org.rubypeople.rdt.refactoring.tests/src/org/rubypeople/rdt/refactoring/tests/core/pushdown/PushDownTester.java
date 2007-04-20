@@ -44,17 +44,14 @@ import org.rubypeople.rdt.refactoring.tests.TwoLayerTreeEditProviderTester;
 
 public class PushDownTester extends TwoLayerTreeEditProviderTester {
 
-	private String testName;
-
 	public PushDownTester(String fileName) {
-		super(true);
-		testName = fileName;
+		super(fileName, true);
 	}
 
 	@Override
 	public void runTest() throws FileNotFoundException, IOException, MalformedTreeException, BadLocationException {
 		FileTestData testData;
-		testData = new FileTestData(testName, getClass());
+		testData = new FileTestData(getName());
 		StringDocumentProvider docProvider = new StringDocumentProvider(testData.getFileName(), testData.getActiveFileContent());
 		Collection<String> projectFileNames = testData.getNumberedProperty("projectfilename");
 		for (String projectFileName : projectFileNames) {
@@ -73,10 +70,5 @@ public class PushDownTester extends TwoLayerTreeEditProviderTester {
 			}
 		}
 		createEditAndCompareResult(testData.getSource(), testData.getExpectedResult(), downPusher);
-	}
-
-	@Override
-	public String getName() {
-		return testName;
 	}
 }

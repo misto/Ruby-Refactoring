@@ -41,15 +41,13 @@ import org.rubypeople.rdt.refactoring.tests.RefactoringTestCase;
 
 public class MoveFieldTester extends RefactoringTestCase {
 
-	private String testName;
-	
 	public MoveFieldTester(String testName) {
-		this.testName = testName;
+		super(testName);
 	}
 	
 	@Override
 	public void runTest() throws FileNotFoundException, IOException, BadLocationException {
-		MultiFileTestData testData = new MultiFileTestData(testName + ".", ".source.rb", ".result.rb", testName + ".test_properties");
+		MultiFileTestData testData = new MultiFileTestData(getName() + ".", ".source.rb", ".result.rb", getName() + ".test_properties");
 		
 		MoveFieldConfig config = new MoveFieldConfig(new DocumentWithIncluding(testData), testData.getIntProperty("caretPosition"));
 		new MoveFieldConditionChecker(config);
@@ -59,11 +57,5 @@ public class MoveFieldTester extends RefactoringTestCase {
 		
 		MoveFieldEditProvider editProvider = new MoveFieldEditProvider(config);
 		checkMultiFileEdits(editProvider, testData);
-	}
-
-	
-	@Override
-	public String getName() {
-		return testName;
 	}
 }

@@ -58,7 +58,7 @@ public class FileTestData extends FilePropertyData {
 		return fileName;
 	}
 
-	public FileTestData(String fileName, Class<?> resourceProvier) throws FileNotFoundException, IOException {
+	public FileTestData(String fileName) throws FileNotFoundException, IOException {
 		this(fileName, ".test_source", ".test_result");
 	}
 

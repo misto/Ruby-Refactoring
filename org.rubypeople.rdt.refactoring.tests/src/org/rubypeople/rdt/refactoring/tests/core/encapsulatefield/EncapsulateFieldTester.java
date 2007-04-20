@@ -43,15 +43,13 @@ import org.rubypeople.rdt.refactoring.tests.RefactoringTestCase;
 
 public class EncapsulateFieldTester extends RefactoringTestCase {
 
-	private String testName;
-
 	public EncapsulateFieldTester(String fileName) {
-		testName = fileName;
+		super(fileName);
 	}
 
 	@Override
 	public void runTest() throws FileNotFoundException, IOException, BadLocationException {
-		FileTestData testData = new FileTestData(testName, getClass());
+		FileTestData testData = new FileTestData(getName());
 			
 		EncapsulateFieldConfig config = new EncapsulateFieldConfig(testData, testData.getIntProperty("cursorPosition"));
 		EncapsulateFieldConditionChecker checker = new EncapsulateFieldConditionChecker(config);
@@ -87,10 +85,4 @@ public class EncapsulateFieldTester extends RefactoringTestCase {
 		fail();
 		return METHOD_VISIBILITY.NONE;
 	}
-
-	@Override
-	public String getName() {
-		return testName;
-	}
-
 }

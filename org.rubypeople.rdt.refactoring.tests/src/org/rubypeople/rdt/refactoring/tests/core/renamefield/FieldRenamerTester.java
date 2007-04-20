@@ -42,18 +42,13 @@ import org.rubypeople.rdt.refactoring.tests.MultiFileTestData;
 import org.rubypeople.rdt.refactoring.tests.RefactoringTestCase;
 
 public class FieldRenamerTester extends RefactoringTestCase {
-
-	private String fileName;
-
-	private MultiFileTestData testData;
-
 	public FieldRenamerTester(String fileName) {
-		this.fileName = fileName;
+		super(fileName);
 	}
 
 	@Override
 	public void runTest() throws FileNotFoundException, IOException, BadLocationException {
-		testData = new MultiFileTestData(fileName);
+		MultiFileTestData testData = new MultiFileTestData(getName());
 		int caretPosition = testData.getIntProperty("caretPosition");
 
 		RenameFieldConfig config = new RenameFieldConfig(testData, caretPosition);
@@ -65,10 +60,5 @@ public class FieldRenamerTester extends RefactoringTestCase {
 		config.setNewName(testData.getProperty("newName"));
 		config.setDoRenameAccessorMethods(testData.getBoolProperty("replaceMethodAccessors"));
 		checkMultiFileEdits(renamer, testData);
-	}
-
-	@Override
-	public String getName() {
-		return fileName;
 	}
 }

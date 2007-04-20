@@ -43,16 +43,13 @@ import org.rubypeople.rdt.refactoring.tests.TwoLayerTreeEditProviderTester;
 
 public class ConstructorGeneratorTester extends TwoLayerTreeEditProviderTester {
 
-	private String testName;
-
 	public ConstructorGeneratorTester(String fileName) {
-		super(true);
-		testName = fileName;
+		super(fileName, true);
 	}
 
 	@Override
 	public void runTest() throws FileNotFoundException, IOException, MalformedTreeException, BadLocationException {
-		FileTestData testData = new FileTestData(testName, getClass());
+		FileTestData testData = new FileTestData(getName());
 		ConstructorsGenerator generator = new ConstructorsGenerator(testData);
 		Collection<String> strSelections = testData.getNumberedProperty("selection");
 		for (String aktSelection : strSelections) {
@@ -66,10 +63,5 @@ public class ConstructorGeneratorTester extends TwoLayerTreeEditProviderTester {
 			}
 		}
 		createEditAndCompareResult(testData.getSource(), testData.getExpectedResult(), generator);
-	}
-
-	@Override
-	public String getName() {
-		return testName;
 	}
 }

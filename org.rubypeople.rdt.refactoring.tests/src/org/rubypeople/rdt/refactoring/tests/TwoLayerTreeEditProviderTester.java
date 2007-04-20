@@ -48,7 +48,8 @@ public abstract class TwoLayerTreeEditProviderTester extends RefactoringTestCase
 
 	private boolean autoCheckChildrenOnParentCheck;
 
-	public TwoLayerTreeEditProviderTester(boolean autoCheckChildrenOnParentCheck) {
+	public TwoLayerTreeEditProviderTester(String fileName, boolean autoCheckChildrenOnParentCheck) {
+		super(fileName);
 		this.autoCheckChildrenOnParentCheck = autoCheckChildrenOnParentCheck;
 		selections = new ArrayList<ItemSelection>();
 	}

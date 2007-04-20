@@ -44,22 +44,20 @@ import org.rubypeople.rdt.refactoring.tests.TwoLayerTreeEditProviderTester;
 
 public class OverrideMethodTester extends TwoLayerTreeEditProviderTester {
 
-	private String testName;
-
 	public OverrideMethodTester(String fileName) {
-		super(true);
-		testName = fileName;
+		super(fileName, true);
 	}
 
 	@Override
 	public void runTest() throws FileNotFoundException, IOException, MalformedTreeException, BadLocationException {
 		FileTestData testData;
-		testData = new FileTestData(testName, getClass());
+		testData = new FileTestData(getName());
 		StringDocumentProvider docProvider = new StringDocumentProvider(testData.getFileName(), testData.getActiveFileContent());
 		String superClassFileName = testData.getProperty("superclassfilename");
 		docProvider.addFile(superClassFileName, testData.getFileContent(superClassFileName));
 		MethodsOverrider overrider = new MethodsOverrider(docProvider);
 		Collection<String> strSelections = testData.getNumberedProperty("selection");
+		
 		for (String aktSelection : strSelections) {
 			String[] selection = FilePropertyData.seperateString(aktSelection);
 			if (selection.length == 2) {
@@ -71,10 +69,5 @@ public class OverrideMethodTester extends TwoLayerTreeEditProviderTester {
 			}
 		}
 		createEditAndCompareResult(testData.getSource(), testData.getExpectedResult(), overrider);
-	}
-
-	@Override
-	public String getName() {
-		return testName;
 	}
 }

@@ -33,8 +33,14 @@ import java.util.Map;
 
 import org.eclipse.jface.viewers.ITreeContentProvider;
 
-public abstract class TreeProviderTester extends RefactoringTestCase
-{
+public abstract class TreeProviderTester extends RefactoringTestCase {
+	public TreeProviderTester() {
+		this("Tree Provider Tester");
+	}
+	
+	public TreeProviderTester(String fileName) {
+		super(fileName);
+	}
 
 	private Map<String, Entry> elements;
 
@@ -45,8 +51,7 @@ public abstract class TreeProviderTester extends RefactoringTestCase
 		elements = new HashMap<String, Entry>();
 	}
 
-	public void addContent(String[] content)
-	{
+	public void addContent(String[] content) {
 		Map<String, Entry> aktMap = elements;
 		for (String str : content)
 		{
@@ -58,15 +63,12 @@ public abstract class TreeProviderTester extends RefactoringTestCase
 		}
 	}
 
-	public void validate(ITreeContentProvider provider)
-	{
+	public void validate(ITreeContentProvider provider) {
 		this.provider = provider;
 		checkElements(elements, provider.getElements(null));
 	}
 
-	private void checkElements(Map<String, Entry> expectedElements,
-			Object[] elements)
-	{
+	private void checkElements(Map<String, Entry> expectedElements, Object[] elements) {
 
 		assertNotNull(elements);
 		assertEquals(expectedElements.size(), elements.length);
@@ -85,30 +87,25 @@ public abstract class TreeProviderTester extends RefactoringTestCase
 		}
 	}
 
-	static class Entry
-	{
+	static class Entry {
 		private String name;
 
 		private Map<String, Entry> childs;
 
-		public Entry(String name)
-		{
+		public Entry(String name) {
 			this.name = name;
 			childs = new HashMap<String, Entry>();
 		}
 
-		public String getName()
-		{
+		public String getName() {
 			return name;
 		}
 
-		public void addChild(Entry child)
-		{
+		public void addChild(Entry child) {
 			childs.put(child.getName(), child);
 		}
 
-		public Map<String, Entry> getChilds()
-		{
+		public Map<String, Entry> getChilds() {
 			return childs;
 		}
 	}

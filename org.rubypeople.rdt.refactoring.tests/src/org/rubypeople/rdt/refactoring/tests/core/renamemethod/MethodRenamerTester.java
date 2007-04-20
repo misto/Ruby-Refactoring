@@ -46,16 +46,13 @@ import org.rubypeople.rdt.refactoring.tests.RefactoringTestCase;
 
 public class MethodRenamerTester extends RefactoringTestCase {
 
-	private String fileName;
-
-
 	public MethodRenamerTester(String fileName) {
-		this.fileName = fileName;
+		super(fileName);
 	}
 
 	@Override
 	public void runTest() throws FileNotFoundException, IOException, BadLocationException {
-		MultiFileTestData testData = new MultiFileTestData(fileName);
+		MultiFileTestData testData = new MultiFileTestData(getName());
 		int caretPosition = testData.getIntProperty("caretPosition");
 		
 		RenameMethodConfig config = new RenameMethodConfig(testData, caretPosition);
@@ -79,10 +76,5 @@ public class MethodRenamerTester extends RefactoringTestCase {
 		}
 
 		checkMultiFileEdits(renamer, testData);
-	}
-
-	@Override
-	public String getName() {
-		return fileName;
 	}
 }

@@ -48,17 +48,14 @@ import org.rubypeople.rdt.refactoring.tests.RefactoringTestCase;
 
 public class MergeWithExternalClassPartsTester extends RefactoringTestCase{
 
-	private String testName;
-	
-	public MergeWithExternalClassPartsTester(String testName)
-	{
-		this.testName = testName;
+	public MergeWithExternalClassPartsTester(String testName) {
+		super(testName);
 	}
 	
 	@Override
 	public void runTest() throws FileNotFoundException, IOException, BadLocationException
 	{
-		MultiFileTestData testData = new MultiFileTestData(testName);
+		MultiFileTestData testData = new MultiFileTestData(getName());
 		MergeWithExternalClassPartConfig config = new MergeWithExternalClassPartConfig(testData);
 		MergeWithExternalClassPartsConditionChecker checker = new MergeWithExternalClassPartsConditionChecker(config);
 		
@@ -124,11 +121,5 @@ public class MergeWithExternalClassPartsTester extends RefactoringTestCase{
 		}
 			
 		return partNumbers.get(0).intValue();
-	}
-	
-	@Override
-	public String getName()
-	{
-		return testName;
 	}
 }

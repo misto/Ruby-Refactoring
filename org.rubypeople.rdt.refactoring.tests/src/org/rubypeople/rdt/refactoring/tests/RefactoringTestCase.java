@@ -45,10 +45,6 @@ public abstract class RefactoringTestCase extends TestCase {
 	public RefactoringTestCase(String name) {
 		super(name);
 	}
-
-	public RefactoringTestCase() {
-		super(RefactoringTestCase.class.getSimpleName());
-	}
 	
 	protected void createEditAndCompareResult(String document, String expectedDocument, IEditProvider editProvider) throws BadLocationException {
 		String result;

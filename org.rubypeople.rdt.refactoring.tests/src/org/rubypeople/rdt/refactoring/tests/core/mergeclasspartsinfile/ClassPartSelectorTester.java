@@ -48,14 +48,12 @@ import org.rubypeople.rdt.refactoring.tests.RefactoringTestCase;
 
 public class ClassPartSelectorTester extends RefactoringTestCase {
 
-	private String fileName;
-
 	private FileTestData testData;
 
 	private ClassNodeWrapper selectedClass;
 
 	public ClassPartSelectorTester(String fileName) {
-		this.fileName = fileName;
+		super(fileName);
 	}
 
 	private Collection<Integer> getCheckedPartNumbers() {
@@ -114,12 +112,8 @@ public class ClassPartSelectorTester extends RefactoringTestCase {
 
 	@Override
 	public void runTest() throws FileNotFoundException, IOException, BadLocationException {
-		testData = new FileTestData(fileName, getClass());
+		testData = new FileTestData(getName());
 		runMergeClassPartsInFileTest(testData);
 	}
 
-	@Override
-	public String getName() {
-		return fileName;
-	}
 }

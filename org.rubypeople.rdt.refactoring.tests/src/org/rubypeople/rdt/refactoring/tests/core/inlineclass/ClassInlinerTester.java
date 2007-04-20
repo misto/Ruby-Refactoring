@@ -46,12 +46,10 @@ import org.rubypeople.rdt.refactoring.tests.RefactoringTestCase;
 
 public class ClassInlinerTester extends RefactoringTestCase {
 
-	private String fileName;
-
 	private MultiFileTestData testData;
 
 	public ClassInlinerTester(String fileName) {
-		this.fileName = fileName;
+		super(fileName);
 	}
 
 	private PartialClassNodeWrapper getTargetClassPart(String fileName, int classPos) {
@@ -67,7 +65,7 @@ public class ClassInlinerTester extends RefactoringTestCase {
 
 	@Override
 	public void runTest() throws FileNotFoundException, IOException, BadLocationException {
-		testData = new MultiFileTestData(fileName);
+		testData = new MultiFileTestData(getName());
 		int caretPosition = testData.getIntProperty("caretPosition");
 		
 		InlineClassConfig config = new InlineClassConfig(testData, caretPosition);
@@ -81,10 +79,5 @@ public class ClassInlinerTester extends RefactoringTestCase {
 		config.setTargetClassPart(targetClassPart);
 		
 		checkMultiFileEdits(inliner, testData);
-	}
-
-	@Override
-	public String getName() {
-		return fileName;
 	}
 }

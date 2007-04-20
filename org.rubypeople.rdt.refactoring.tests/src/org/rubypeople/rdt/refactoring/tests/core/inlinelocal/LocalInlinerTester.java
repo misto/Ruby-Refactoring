@@ -42,16 +42,13 @@ import org.rubypeople.rdt.refactoring.tests.RefactoringTestCase;
 
 public class LocalInlinerTester extends RefactoringTestCase {
 
-	private String fileName;
-
-	private FileTestData testData;
-
 	public LocalInlinerTester(String fileName) {
-		this.fileName = fileName;
+		super(fileName);
 	}
 
-	private void runInlineTempTest(FileTestData data) throws BadLocationException {
-
+	@Override
+	public void runTest() throws FileNotFoundException, IOException, BadLocationException {
+		FileTestData data = new FileTestData(getName());
 		InlineLocalConfig config = new InlineLocalConfig(data, data.getIntProperty("caretPosition"));
 		InlineLocalConditionChecker checker = new InlineLocalConditionChecker(config);
 		if (!checker.shouldPerform()) {
@@ -60,18 +57,7 @@ public class LocalInlinerTester extends RefactoringTestCase {
 		LocalVariableInliner inliner = new LocalVariableInliner(config);
 		config.setReplaceTempWithQuery(data.getBoolProperty("replaceWithQuery"));
 		config.setNewMethodName(data.getProperty("newMethodName"));
-
+		
 		createEditAndCompareResult(data.getActiveFileContent(), data.getExpectedResult(), inliner);
-	}
-
-	@Override
-	public void runTest() throws FileNotFoundException, IOException, BadLocationException {
-		testData = new FileTestData(fileName, getClass());
-		runInlineTempTest(testData);
-	}
-
-	@Override
-	public String getName() {
-		return fileName;
 	}
 }

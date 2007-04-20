@@ -47,21 +47,18 @@ import org.rubypeople.rdt.refactoring.tests.RefactoringTestCase;
 
 public class GenerateAccessorTester extends RefactoringTestCase {
 
-	private String testName;
-
 	private AccessorsGenerator accessorsGenerator;
 
-	private Collection<AccessorSelection> selections;
+	private Collection<AccessorSelection> selections = new ArrayList<AccessorSelection>();
 
 	public GenerateAccessorTester(String fileName) {
-		testName = fileName;
-		selections = new ArrayList<AccessorSelection>();
+		super(fileName);
 	}
 
 	@Override
 	public void runTest() throws FileNotFoundException, IOException, BadLocationException {
 		FileTestData testData;
-		testData = new FileTestData(testName, getClass());
+		testData = new FileTestData(getName());
 		int type = getAccessorType(testData);
 		accessorsGenerator = new AccessorsGenerator(testData, type);
 		Collection<String> strSelections = testData.getNumberedProperty("selection");
@@ -82,11 +79,6 @@ public class GenerateAccessorTester extends RefactoringTestCase {
 		}
 		fail();
 		return -1;
-	}
-
-	@Override
-	public String getName() {
-		return testName;
 	}
 
 	protected void addSelection(String name, String attributeName, boolean readerSelected, boolean writerSelected) {

@@ -42,17 +42,14 @@ import org.rubypeople.rdt.refactoring.tests.RefactoringTestCase;
 
 public class MoveMethodTester extends RefactoringTestCase {
 
-	private String testName;
-	
-	public MoveMethodTester(String testName)
-	{
-		this.testName = testName;
+	public MoveMethodTester(String testName) {
+		super(testName);
 	}
 	
 	@Override
 	public void runTest() throws FileNotFoundException, IOException, BadLocationException
 	{
-		MultiFileTestData testData = new MultiFileTestData(testName);
+		MultiFileTestData testData = new MultiFileTestData(getName());
 		MoveMethodConfig config = new MoveMethodConfig(testData, testData.getIntProperty("caretPosition"));
 		MoveMethodConditionChecker checker = new MoveMethodConditionChecker(config);
 		
@@ -79,12 +76,5 @@ public class MoveMethodTester extends RefactoringTestCase {
 		}
 		
 		checkMultiFileEdits(mover, testData);
-	}
-
-	
-	@Override
-	public String getName()
-	{
-		return testName;
 	}
 }
