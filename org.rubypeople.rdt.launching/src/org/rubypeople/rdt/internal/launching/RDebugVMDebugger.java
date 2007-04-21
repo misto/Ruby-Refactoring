@@ -19,30 +19,17 @@ public class RDebugVMDebugger extends StandardVMDebugger {
 
 	private static final String PORT_SWITCH = "--port";
 	private static final String VERBOSE_FLAG = "-d";
-	private static final String RDEBUG_EXECUTABLE_WINDOWS = "rdebug-ide.cmd";
 	private static final String RDEBUG_EXECUTABLE = "rdebug-ide";
 
 	public RDebugVMDebugger(IVMInstall vmInstance) {
 		super(vmInstance);
 	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.rubypeople.rdt.launching.IVMRunner#run(org.rubypeople.rdt.launching.VMRunnerConfiguration,
-	 *      org.eclipse.debug.core.ILaunch,
-	 *      org.eclipse.core.runtime.IProgressMonitor)
-	 */
-	public void run(VMRunnerConfiguration config, ILaunch launch, IProgressMonitor monitor) throws CoreException {
-
-		// Set it up to use rdebug executable
-		Map map = config.getVMSpecificAttributesMap();
-		if (map == null) map = new HashMap();
-		String executable = findRDebugExecutable(fVMInstance.getInstallLocation());
-		map.put(IRubyLaunchConfigurationConstants.ATTR_RUBY_COMMAND, executable);
-		config.setVMSpecificAttributesMap(map);
-		
-		super.run(config, launch, monitor);
+	
+	@Override
+	protected List<String> constructProgramString(VMRunnerConfiguration config) throws CoreException {
+		List<String> string = super.constructProgramString(config);
+		string.add(findRDebugExecutable(fVMInstance.getInstallLocation()));
+		return string;
 	}
 
 	protected List<String> debugSpecificVMArgs(RubyDebugTarget debugTarget) {
@@ -60,13 +47,7 @@ public class RDebugVMDebugger extends StandardVMDebugger {
 	}
 
 	public static String findRDebugExecutable(File vmInstallLocation) {
-		// see StandardVMRunner.constructProgramString
-		String cmdWin = RDEBUG_EXECUTABLE_WINDOWS;
-		String path = vmInstallLocation + File.separator + "bin" + File.separator + cmdWin;
-		if (new File(path).exists()) {
-			return cmdWin;
-		}
-		return RDEBUG_EXECUTABLE;
+		return vmInstallLocation + File.separator + "bin" + File.separator + RDEBUG_EXECUTABLE;
 	}
 	
 }

@@ -125,7 +125,8 @@ public class StandardVMRunner extends AbstractVMRunner {
 	 * @return full path to ruby executable
 	 * @exception CoreException if unable to locate an executeable
 	 */
-	protected String constructProgramString(VMRunnerConfiguration config) throws CoreException {
+	protected List<String> constructProgramString(VMRunnerConfiguration config) throws CoreException {
+		List<String> string = new ArrayList<String>();
 		// Look for the user-specified ruby executable command
 		String command= null;
 		Map map= config.getVMSpecificAttributesMap();
@@ -139,18 +140,21 @@ public class StandardVMRunner extends AbstractVMRunner {
 			if (exe == null) {
 				abort(MessageFormat.format(LaunchingMessages.StandardVMRunner_Unable_to_locate_executable_for__0__1, fVMInstance.getName()), null, IRubyLaunchConfigurationConstants.ERR_INTERNAL_ERROR); 
 			}
-			return exe.getAbsolutePath();
+			string.add(exe.getAbsolutePath());
+			return string;
 		}
 				
 		// Build the path to the ruby executable.  First try 'bin'
 		String installLocation = fVMInstance.getInstallLocation().getAbsolutePath() + File.separatorChar;
 		File exe = new File(installLocation + "bin" + File.separatorChar + command); //$NON-NLS-1$ 		
 		if (fileExists(exe)){
-			return exe.getAbsolutePath();
+			string.add(exe.getAbsolutePath());
+			return string;
 		}
 		exe = new File(exe.getAbsolutePath() + ".exe"); //$NON-NLS-1$
 		if (fileExists(exe)){
-			return exe.getAbsolutePath();
+			string.add(exe.getAbsolutePath());
+			return string;
 		}
 		
 		// not found
@@ -186,10 +190,8 @@ public class StandardVMRunner extends AbstractVMRunner {
 		subMonitor.beginTask(LaunchingMessages.StandardVMRunner_Launching_VM____1, 2); 
 		subMonitor.subTask(LaunchingMessages.StandardVMRunner_Constructing_command_line____2); 
 		
-		String program= constructProgramString(config);
 		
-		List<String> arguments= new ArrayList<String>();
-		arguments.add(program);
+		List<String> arguments= constructProgramString(config);
 				
 		// VM args are the first thing after the ruby program so that users can specify
 		// options like '-client' & '-server' which are required to be the first option
