@@ -25,7 +25,7 @@ public class AbstractInspectAction {
     protected IWorkbenchPage page;
 
     public void init(IViewPart view) {
-    	System.out.println("view:" + view) ;
+//    	System.out.println("view:" + view) ;
     	page = view.getSite().getPage() ;
     }
 
