@@ -48,7 +48,7 @@ public class RenameClassRefactoring extends RubyRefactoring {
 		if(conditionChecker.shouldPerform()) {
 			RenameClassEditProvider editProvider = new RenameClassEditProvider(renameClassConfig);
 			setEditProvider(editProvider);
-			
+			setFileNameChangeProvider(new RenameClassFileNameChangeProvider(renameClassConfig));
 			pages.add(new RenamePage(NAME, renameClassConfig.getSelectedNode().getCPath().getName(),
 					new NewNameListener(renameClassConfig, new ConstNameValidator(), new ArrayList<String>())));
 			

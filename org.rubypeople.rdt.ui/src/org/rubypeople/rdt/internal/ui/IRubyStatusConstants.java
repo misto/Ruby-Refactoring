@@ -22,5 +22,10 @@ public interface IRubyStatusConstants {
 	// collide with resource and ruby model constants.
 	
 	public static final int INTERNAL_ERROR= 10001;
-
+	
+	/**
+	 * Status constant indicating that an validateEdit call has changed the
+	 * content of a file on disk.
+	 */
+	public static final int VALIDATE_EDIT_CHANGED_CONTENT= 10003;
  }

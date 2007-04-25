@@ -68,6 +68,7 @@ public class RenameRefactoring extends RubyRefactoring {
 				setName(delegateRenameRefactoring.getName());
 				setEditProvider(delegateRenameRefactoring.getMultiFileEditProvider());
 				setEditProvider(delegateRenameRefactoring.getEditProvider());
+				setFileNameChangeProvider(delegateRenameRefactoring.getFileNameChangeProvider());
 				for(IWizardPage aktPage : delegateRenameRefactoring.getPages()) {
 					pages.add(aktPage);
 				}

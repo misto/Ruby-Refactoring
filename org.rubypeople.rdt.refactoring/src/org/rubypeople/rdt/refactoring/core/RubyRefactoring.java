@@ -32,6 +32,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Map;
 
+import org.eclipse.core.internal.resources.File;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -43,10 +44,12 @@ import org.eclipse.ltk.core.refactoring.Refactoring;
 import org.eclipse.ltk.core.refactoring.RefactoringStatus;
 import org.eclipse.ui.IFileEditorInput;
 import org.eclipse.ui.PlatformUI;
+import org.rubypeople.rdt.internal.ui.RubyPlugin;
 import org.rubypeople.rdt.internal.ui.rubyeditor.RubyEditor;
 import org.rubypeople.rdt.refactoring.documentprovider.DocumentProvider;
 import org.rubypeople.rdt.refactoring.documentprovider.WorkspaceDocumentProvider;
 import org.rubypeople.rdt.refactoring.editprovider.FileMultiEditProvider;
+import org.rubypeople.rdt.refactoring.editprovider.FileNameChangeProvider;
 import org.rubypeople.rdt.refactoring.editprovider.IEditProvider;
 import org.rubypeople.rdt.refactoring.editprovider.IMultiFileEditProvider;
 import org.rubypeople.rdt.refactoring.preview.RubyTextFileChange;
@@ -69,6 +72,8 @@ public abstract class RubyRefactoring extends Refactoring {
 
 	private RubyEditor editor;
 
+	private FileNameChangeProvider fileNameChangeProvider;
+
 	public RubyRefactoring(String name) {
 		this.name = name;
 		initialStatus = new RefactoringStatus();
@@ -84,9 +89,13 @@ public abstract class RubyRefactoring extends Refactoring {
 	protected void setEditProvider(IEditProvider editProvider) {
 		this.editProvider = editProvider;
 	}
-	
+
 	protected void setEditProvider(IMultiFileEditProvider multiFileEditProvider) {
 		this.multiFileEditProvider = multiFileEditProvider;
+	}
+	
+	protected void setFileNameChangeProvider(FileNameChangeProvider fileNameChangeProvider) {
+		this.fileNameChangeProvider = fileNameChangeProvider;
 	}
 
 	@Override
@@ -133,7 +142,35 @@ public abstract class RubyRefactoring extends Refactoring {
 
 	@Override
 	public Change createChange(IProgressMonitor pm) throws CoreException, OperationCanceledException {
+		Change change = createEditChanges();
+
+		Map<String, String> filesToRename = fileNameChangeProvider.getFilesToRename(getAllAffectedFiles(change));
+		if(filesToRename.isEmpty()) {
+			return change;
+		}
+		
+		CompositeChange compositeChange = new CompositeChange(getName(), new Change[]{change});
+		compositeChange.markAsSynthetic();
+		for (Map.Entry<String, String> entry : filesToRename.entrySet()) {
+			RenameResourceChange renameResourceChange = new RenameResourceChange(null, RubyPlugin.getWorkspace().getRoot().findMember(entry.getKey()), entry.getValue(), "comment");
+			compositeChange.add(new DynamicValidationStateChange(renameResourceChange));
+		}
+		return compositeChange;
+	}
+
+	private Collection<File> getAllAffectedFiles(Change change) {
+		Collection<File> affectedFiles = new ArrayList<File>();
+		for (Object object : change.getAffectedObjects()) {
+			if (object instanceof File) {
+				affectedFiles.add((File) object);
+			}
+		}
+		return affectedFiles;
+	}
+
+	private Change createEditChanges() {
 		DocumentProvider docProvider = new WorkspaceDocumentProvider(getActiveFile());
+
 		if(multiFileEditProvider != null) {
 			return createMultiFileChange(docProvider);
 		}
@@ -183,5 +220,9 @@ public abstract class RubyRefactoring extends Refactoring {
 
 	public IMultiFileEditProvider getMultiFileEditProvider() {
 		return multiFileEditProvider;
+	}
+
+	public FileNameChangeProvider getFileNameChangeProvider() {
+		return fileNameChangeProvider != null ? fileNameChangeProvider : new FileNameChangeProvider();
 	}
 }
