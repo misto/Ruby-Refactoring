@@ -228,16 +228,22 @@ public class AddVMDialog extends StatusDialog {
 		fVMTypeCombo.doFillIntoGrid(parent, 3);
 		((GridData)fVMTypeCombo.getComboControl(null).getLayoutData()).widthHint= convertWidthInCharsToPixels(50);
 
-		fVMName.doFillIntoGrid(parent, 3);
-	
+		Label l = new Label(parent, SWT.NONE);
+		l.setText(RubyVMMessages.enterRubyInstallLocation); 
+		GridData gd = new GridData(GridData.FILL_HORIZONTAL);
+		gd.horizontalSpan = 3;
+		l.setLayoutData(gd);	
+		
 		fRubyVMRoot.doFillIntoGrid(parent, 3);
+		
+		fVMName.doFillIntoGrid(parent, 3);		
 		
 		fVMArgs.doFillIntoGrid(parent, 3);
 		((GridData)fVMArgs.getTextControl(null).getLayoutData()).widthHint= convertWidthInCharsToPixels(50);
 		
-		Label l = new Label(parent, SWT.NONE);
+		l = new Label(parent, SWT.NONE);
 		l.setText(RubyVMMessages.AddVMDialog_JRE_system_libraries__1); 
-		GridData gd = new GridData(GridData.FILL_HORIZONTAL);
+		gd = new GridData(GridData.FILL_HORIZONTAL);
 		gd.horizontalSpan = 3;
 		l.setLayoutData(gd);	
 		

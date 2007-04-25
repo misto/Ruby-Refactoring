@@ -31,6 +31,7 @@ public class RubyVMMessages extends NLS {
 	public static String InstalledJREsBlock_15;
 	public static String JREsPreferencePage_2;
 	public static String JREsPreferencePage_1;
+	public static String enterRubyInstallLocation;
 
 	static {
 		// load message values from bundle file
