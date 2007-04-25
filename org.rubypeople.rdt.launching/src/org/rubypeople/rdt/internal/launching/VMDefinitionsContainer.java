@@ -364,13 +364,12 @@ public class VMDefinitionsContainer {
 		}
 		
 		// If the top-level node wasn't what we expected, bail out
-		if (!config.getNodeName().equalsIgnoreCase("vmSettings")) { //$NON-NLS-1$
+		if (!config.getNodeName().equalsIgnoreCase("runtimeconfig")) { //$NON-NLS-1$
 			throw new IOException(LaunchingMessages.RubyRuntime_badFormat); 
 		}
 		
-		// Populate the default VM-related fields
-		container.setDefaultVMInstallCompositeID(config.getAttribute("defaultVM")); //$NON-NLS-1$
-		
+		IVMInstallType vmType = RubyRuntime.getVMInstallType("org.rubypeople.rdt.launching.StandardVMType");
+
 		// Traverse the parsed structure and populate the VMType to VM Map
 		NodeList list = config.getChildNodes();
 		int length = list.getLength();
@@ -378,39 +377,11 @@ public class VMDefinitionsContainer {
 			Node node = list.item(i);
 			short type = node.getNodeType();
 			if (type == Node.ELEMENT_NODE) {
-				Element vmTypeElement = (Element) node;
-				if (vmTypeElement.getNodeName().equalsIgnoreCase("vmType")) { //$NON-NLS-1$
-					populateVMTypes(vmTypeElement, container);
+				Element vmElement = (Element) node;
+				if (vmElement.getNodeName().equalsIgnoreCase("interpreter")) { //$NON-NLS-1$
+					populateVMForType(vmType, vmElement, container);
 				}
 			}
-		}
-	}
-	
-	/**
-	 * For the specified vm type node, parse all subordinate VM definitions and add them
-	 * to the specified container.
-	 */
-	private static void populateVMTypes(Element vmTypeElement, VMDefinitionsContainer container) {
-		
-		// Retrieve the 'id' attribute and the corresponding VM type object
-		String id = vmTypeElement.getAttribute("id");         //$NON-NLS-1$
-		IVMInstallType vmType= RubyRuntime.getVMInstallType(id);
-		if (vmType != null) {
-			
-			// For each VM child node, populate the container with a subordinate node
-			NodeList vmNodeList = vmTypeElement.getChildNodes();
-			for (int i = 0; i < vmNodeList.getLength(); ++i) {
-				Node vmNode = vmNodeList.item(i);
-				short type = vmNode.getNodeType();
-				if (type == Node.ELEMENT_NODE) {
-					Element vmElement = (Element) vmNode;
-					if (vmElement.getNodeName().equalsIgnoreCase("vm")) { //$NON-NLS-1$
-						populateVMForType(vmType, vmElement, container);
-					}
-				}
-			}
-		} else {
-			LaunchingPlugin.log(LaunchingMessages.RubyRuntime_VM_type_element_with_unknown_id_1); 
 		}
 	}
 
@@ -419,7 +390,7 @@ public class VMDefinitionsContainer {
 	 * specified container.
 	 */
 	private static void populateVMForType(IVMInstallType vmType, Element vmElement, VMDefinitionsContainer container) {
-		String id= vmElement.getAttribute("id"); //$NON-NLS-1$
+		String id= vmElement.getAttribute("name"); //$NON-NLS-1$
 		if (id != null) {
 			
 			// Retrieve the 'path' attribute.  If none, skip this node.
@@ -430,37 +401,14 @@ public class VMDefinitionsContainer {
 						
 			// Create a VMStandin for the node and set its 'name' & 'installLocation' attributes
 			VMStandin vmStandin = new VMStandin(vmType, id);
-			vmStandin.setName(vmElement.getAttribute("name")); //$NON-NLS-1$
+			vmStandin.setName(id); //$NON-NLS-1$
 			File installLocation= new File(installPath);
+			//  If the path is to the executable (which it should be), chop off last part of path!
+			if (installLocation.isFile()) {
+				installLocation = installLocation.getParentFile();
+			}
 			vmStandin.setInstallLocation(installLocation);
 			container.addVM(vmStandin);
-			
-			// Look for subordinate nodes.  These may be 'libraryLocation',
-			// 'libraryLocations' or 'versionInfo'.
-			NodeList list = vmElement.getChildNodes();
-			int length = list.getLength();
-			for (int i = 0; i < length; ++i) {
-				Node node = list.item(i);
-				short type = node.getNodeType();
-				if (type == Node.ELEMENT_NODE) {
-					Element subElement = (Element)node;
-					String subElementName = subElement.getNodeName();
-					if (subElementName.equals("libraryLocation")) { //$NON-NLS-1$
-						IPath loc = getLibraryLocation(subElement);
-						vmStandin.setLibraryLocations(new IPath[]{loc});
-						break;
-					} else if (subElementName.equals("libraryLocations")) { //$NON-NLS-1$
-						setLibraryLocations(vmStandin, subElement);
-						break;
-					}
-				}
-			}
-						
-			// vm Arguments
-			String vmArgs = vmElement.getAttribute("vmargs"); //$NON-NLS-1$
-			if (vmArgs != null && vmArgs.length() >0) {
-				vmStandin.setVMArgs(vmArgs);
-			}
 		} else {
 			LaunchingPlugin.log(LaunchingMessages.RubyRuntime_VM_element_specified_with_no_id_attribute_2); 
 		}

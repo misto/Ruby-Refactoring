@@ -517,14 +517,14 @@ public class RubyRuntime {
 		} else {			
 			// Otherwise, look for the old file that previously held the VM definitions
 			IPath stateLocation= LaunchingPlugin.getDefault().getStateLocation();
-			IPath stateFile= stateLocation.append("vmConfiguration.xml"); //$NON-NLS-1$
+			IPath stateFile= stateLocation.append("runtimeConfiguration.xml"); //$NON-NLS-1$
 			File file = new File(stateFile.toOSString());
 			
 			if (file.exists()) {        
 				// If file exists, load VM definitions from it into memory and write the definitions to
 				// the preference store WITHOUT triggering any processing of the new value
 				FileInputStream fileInputStream = new FileInputStream(file);
-				VMDefinitionsContainer.parseXMLIntoContainer(fileInputStream, vmDefs);			
+				VMDefinitionsContainer.parseXMLIntoContainer(fileInputStream, vmDefs);
 			}		
 		}
 		return true;
