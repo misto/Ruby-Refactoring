@@ -100,6 +100,9 @@ public class AddVMDialog extends StatusDialog {
 			}
 		}
 		if (s.isOK()) {
+			if (file.getName().equals("bin")) {
+				file = file.getParentFile();
+			}			
 			fLibraryBlock.setHomeDirectory(file);
 			String name = fVMName.getText();
 			if (name == null || name.trim().length() == 0) {
