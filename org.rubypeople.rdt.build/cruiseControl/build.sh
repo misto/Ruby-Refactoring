@@ -4,7 +4,7 @@ if [ "$1" == "" ]; then
   exit 1
 fi
 #echo "Make sure xvfb is running - otherwise the tests won't run. Start with"
-Xvfb :1 &
+Xvfb -nolisten tcp :1 &
 export DISPLAY=localhost:1
 cmd="ant -f build-RDT.xml $1"
 logfile=build.$1.log
