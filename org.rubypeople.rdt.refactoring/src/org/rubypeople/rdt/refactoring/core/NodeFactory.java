@@ -296,7 +296,27 @@ public class NodeFactory {
 	}
 
 	public static ISourcePosition unionPositions(ISourcePosition first, ISourcePosition second) {
-		return parserSupport.union(first, second);
+		 String fileName = first.getFile();
+        int startOffset = first.getStartOffset();
+        int endOffset = first.getEndOffset();
+        int startLine = first.getStartLine();
+        int endLine = first.getEndLine();
+        
+
+        if(startOffset > second.getStartOffset()){
+            startOffset = second.getStartOffset();
+            startLine = second.getStartLine();
+        }
+        
+        if(endOffset < second.getEndOffset()){
+            endOffset = second.getEndOffset();
+            endLine = second.getEndLine();
+        }
+ 
+
+        ISourcePosition commentIncludingPos = new SourcePosition(fileName, startLine, endLine, startOffset, endOffset);
+        
+        return commentIncludingPos;
 	}
 
 	public static Node createGetterSetter(String attrName, boolean isWriterMethod, VisibilityNodeWrapper.METHOD_VISIBILITY visibility) {

@@ -39,12 +39,9 @@ public class ExtractMethodRefactoring extends RubyRefactoring {
 
 	public static final String NAME = Messages.ExtractMethodRefactoring_Name;
 
-//	private SelectionInformation selectionInformation;
-
 	public ExtractMethodRefactoring(TextSelectionProvider selectionProvider) {
 		super(NAME);
 		
-//		initPositions((ITextSelection) getEditor().getSelectionProvider().getSelection());
 		ExtractMethodConfig config = new ExtractMethodConfig(getDocumentProvider(), selectionProvider.getSelectionInformation());
 		ExtractMethodConditionChecker checker = new ExtractMethodConditionChecker(config);
 		
@@ -56,13 +53,4 @@ public class ExtractMethodRefactoring extends RubyRefactoring {
 			pages.add(page);
 		}
 	}
-
-//	private void initPositions(ITextSelection selection) {
-//		int startOffset = selection.getOffset();
-//		int endOffset = startOffset + selection.getLength();
-//		if (endOffset > startOffset) {
-//			endOffset--;
-//		}
-//		selectionInformation = new SelectionInformation(startOffset, endOffset, getEditor().getViewer().getDocument().get());
-//	}
 }

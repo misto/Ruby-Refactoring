@@ -228,7 +228,7 @@ public class SelectionNodeProvider {
 	}
 
 	public static boolean nodeContainsPosition(Node n, int position) {
-		return (position + CURSOR_TOLERANCE >= n.getPosition().getStartOffset() && position - CURSOR_TOLERANCE < n.getPosition().getEndOffset());
+		return (position + CURSOR_TOLERANCE >= NodeUtil.subPositionUnion(n).getStartOffset() && position - CURSOR_TOLERANCE < NodeUtil.subPositionUnion(n).getEndOffset());
 	}
 
 	public static String[] localNamesFromLocalAsgnNodes(Collection<LocalAsgnNode> nodes) {

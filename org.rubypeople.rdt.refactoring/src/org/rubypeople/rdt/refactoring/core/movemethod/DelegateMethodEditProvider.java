@@ -32,7 +32,6 @@ package org.rubypeople.rdt.refactoring.core.movemethod;
 
 import org.jruby.ast.ArrayNode;
 import org.jruby.ast.Node;
-import org.jruby.lexer.yacc.ISourcePosition;
 import org.rubypeople.rdt.refactoring.core.NodeFactory;
 import org.rubypeople.rdt.refactoring.core.NodeProvider;
 import org.rubypeople.rdt.refactoring.editprovider.ReplaceEditProvider;
@@ -42,19 +41,19 @@ import org.rubypeople.rdt.refactoring.nodewrapper.MethodNodeWrapper;
 public class DelegateMethodEditProvider extends ReplaceEditProvider {
 
 	private MoveMethodConfig config;
-	private ISourcePosition scopePos;
+	private Node scopePos;
 	private MethodNodeWrapper oldMethod;
 
 	public DelegateMethodEditProvider(MoveMethodConfig config) {
 		super(false);
 		this.config = config;
 		oldMethod = config.getMethodNode();
-		scopePos = NodeProvider.unwrap(oldMethod.getBodyNode()).getPosition();
+		scopePos = NodeProvider.unwrap(oldMethod.getBodyNode());
 	}
 
 	@Override
 	protected int getOffsetLength() {
-		return scopePos.getEndOffset() - scopePos.getStartOffset();
+		return getExtendedPosition(scopePos).getEndOffset() - getExtendedPosition(scopePos).getStartOffset();
 	}
 
 	@Override
@@ -83,7 +82,7 @@ public class DelegateMethodEditProvider extends ReplaceEditProvider {
 
 	@Override
 	protected int getOffset(String document) {
-		return scopePos.getStartOffset();
+		return getExtendedPosition(scopePos).getStartOffset();
 	}
 
 }

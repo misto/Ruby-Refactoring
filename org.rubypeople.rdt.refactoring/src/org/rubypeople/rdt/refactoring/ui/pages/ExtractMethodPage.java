@@ -53,6 +53,7 @@ import org.rubypeople.rdt.refactoring.ui.pages.extractmethod.ParameterTextChange
 import org.rubypeople.rdt.refactoring.ui.pages.extractmethod.ParametersButtonDownListener;
 import org.rubypeople.rdt.refactoring.ui.pages.extractmethod.ParametersButtonUpListener;
 import org.rubypeople.rdt.refactoring.ui.pages.extractmethod.SignatureObserver;
+import org.rubypeople.rdt.refactoring.util.NodeUtil;
 
 public class ExtractMethodPage extends RefactoringWizardPage implements IValidationController {
 
@@ -117,8 +118,8 @@ public class ExtractMethodPage extends RefactoringWizardPage implements IValidat
 	private void setupSelectionPreview() {
 		extractComposite.getCodeViewer().setPreviewText(selectionInformation.getSource());
 
-		int nodeStart = extractedMethod.getSelectedNodes().getPosition().getStartOffset();
-		int nodeLength = extractedMethod.getSelectedNodes().getPosition().getEndOffset() - nodeStart;
+		int nodeStart = NodeUtil.subPositionUnion(extractedMethod.getSelectedNodes()).getStartOffset();
+		int nodeLength = NodeUtil.subPositionUnion(extractedMethod.getSelectedNodes()).getEndOffset() - nodeStart;
 		extractComposite.getCodeViewer().setBackgroundColor(nodeStart, nodeLength, SWT.COLOR_GRAY);
 
 		int selectionStart = selectionInformation.getStartOfSelection();

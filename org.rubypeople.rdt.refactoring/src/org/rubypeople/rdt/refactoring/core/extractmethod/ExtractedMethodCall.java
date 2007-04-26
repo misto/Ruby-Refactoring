@@ -63,11 +63,11 @@ public class ExtractedMethodCall extends ReplaceEditProvider {
 	}
 
 	private int getStartOffset() {
-		return extractedMethodHelper.getSelectedNodes().getPosition().getStartOffset();
+		return getExtendedPosition(extractedMethodHelper.getSelectedNodes()).getStartOffset();
 	}
 
 	private int getEndOffset() {
-		return extractedMethodHelper.getSelectedNodes().getPosition().getEndOffset();
+		return getExtendedPosition(extractedMethodHelper.getSelectedNodes()).getEndOffset();
 	}
 
 	@Override

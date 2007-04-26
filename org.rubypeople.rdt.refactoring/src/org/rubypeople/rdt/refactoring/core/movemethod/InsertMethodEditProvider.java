@@ -102,12 +102,19 @@ public class InsertMethodEditProvider extends InsertEditProvider {
 	}
 
 	private MethodDefNode createMethodNodeWithAdditionalArg(MethodDefNode methodNode) {
+		MethodDefNode resultMethod;
 		ArgsNodeWrapper args = config.getMovedMethodArgs();
 		if (config.getMethodNode().isClassMethod()) {
 			String destClassName = config.getDestinationClassNode().getName();
-			return NodeFactory.createStaticMethodNode(destClassName, config.getMovedMethodName(), args.getWrappedNode(), new LocalStaticScope(null), methodNode.getBodyNode());
+			resultMethod = NodeFactory.createStaticMethodNode(destClassName, config.getMovedMethodName(), args.getWrappedNode(), new LocalStaticScope(null), methodNode.getBodyNode());
 		}
-		return NodeFactory.createMethodNodeWithoutNewline(config.getMovedMethodName(), args.getWrappedNode(), methodNode.getBodyNode());
+		else{
+			resultMethod = NodeFactory.createMethodNodeWithoutNewline(config.getMovedMethodName(), args.getWrappedNode(), methodNode.getBodyNode());
+		}
+		
+		resultMethod.addComments(methodNode.getComments());
+		resultMethod.setPosition(methodNode.getPosition());
+		return resultMethod;
 	}
 
 	private TextEdit getFieldInsertionEdit(String docStr) {
