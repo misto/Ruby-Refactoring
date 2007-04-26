@@ -76,7 +76,6 @@ public class RubyTokenScanner extends AbstractRubyTokenScanner {
 
 	public int getTokenLength() {
 		if (lastWasComment) {
-			lastWasComment = false;
 			return tokenLength;
 		}
 		if (fSavedLength != -1) {
@@ -100,6 +99,9 @@ public class RubyTokenScanner extends AbstractRubyTokenScanner {
 	}
 
 	public IToken nextToken() {
+		if (lastWasComment) {
+			lastWasComment = false;
+		}
 		if (fSavedToken != null) {
 			IToken returnToken = fSavedToken;
 			fSavedToken = null;
