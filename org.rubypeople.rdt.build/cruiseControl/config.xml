@@ -1,7 +1,7 @@
 <cruisecontrol>
 	<project name="RDT" buildafterfailed="false">
 		<plugin name="labelincrementer" classname="org.rubypeople.rdt.cruisecontrol.plugin.EclipsePluginLabelProvider"/>
-		<labelincrementer prefix="0.8.0"/>
+		<labelincrementer prefix="0.9.0"/>
 		<property name="buildDirectory" value="/home/rdt/build-cc"/>     		
 		<bootstrappers>
 			<svnbootstrapper localworkingcopy="../pluginbuilder"/>
