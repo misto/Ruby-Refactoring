@@ -38,6 +38,10 @@ import org.rubypeople.rdt.refactoring.documentprovider.IDocumentProvider;
 import org.rubypeople.rdt.refactoring.nodewrapper.ModuleNodeWrapper;
 
 public abstract class ModuleNodeProvider {
+	
+	private interface IModuleAcceptor {
+		boolean accept(ModuleNodeWrapper wrapper);
+	}
 
 	public static ModuleNodeWrapper getSelectedModuleNode(Node root, int pos) {
 		
@@ -48,20 +52,36 @@ public abstract class ModuleNodeProvider {
 		return createModuleNodeWrapper(root, module);
 	}
 	
-	public static Collection<ModuleNodeWrapper> findOtherParts(IDocumentProvider doc, ModuleNodeWrapper module) {
+	private static Collection<ModuleNodeWrapper> findModules(IDocumentProvider doc, IModuleAcceptor acceptor) {
 		ArrayList<ModuleNodeWrapper> modules = new ArrayList<ModuleNodeWrapper>();
 		
 		for (String file : doc.getFileNames()) {
 			for (Node node : NodeProvider.getSubNodes(doc.getRootNode(file), ModuleNode.class)) {
 				ModuleNode moduleNode = (ModuleNode) node;
 				ModuleNodeWrapper wrapper = createModuleNodeWrapper(doc.getRootNode(file), moduleNode);
-				if(wrapper.getFullName().equals(module.getFullName())) {
+				if(acceptor.accept(wrapper)) {
 					modules.add(wrapper);
 				}
 			}
 		}
 		
 		return modules;
+	}
+	
+	public static Collection<ModuleNodeWrapper> findOtherParts(IDocumentProvider doc, final ModuleNodeWrapper module) {
+		return findModules(doc, new IModuleAcceptor(){
+
+			public boolean accept(ModuleNodeWrapper wrapper) {
+				return wrapper.getFullName().equals(module.getFullName());
+			}});
+	}
+	
+	public static Collection<ModuleNodeWrapper> findAllModules(IDocumentProvider doc) {
+		return findModules(doc, new IModuleAcceptor(){
+
+			public boolean accept(ModuleNodeWrapper wrapper) {
+				return true;
+			}});
 	}
 	
 	public static Collection<ConstNode> getAllModuleMethodDefinitions(Collection<ModuleNodeWrapper> modules) {

@@ -32,10 +32,12 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 
+import org.jruby.ast.ClassNode;
 import org.jruby.ast.Colon2Node;
 import org.jruby.ast.ConstNode;
 import org.jruby.ast.Node;
 import org.jruby.ast.RootNode;
+import org.jruby.ast.SClassNode;
 import org.rubypeople.rdt.refactoring.core.IRefactoringConfig;
 import org.rubypeople.rdt.refactoring.core.ModuleNodeProvider;
 import org.rubypeople.rdt.refactoring.core.NodeProvider;
@@ -62,6 +64,16 @@ public class RenameModuleConditionChecker extends RefactoringConditionChecker {
 	}
 
 	@Override
+	protected void checkFinalConditions() {
+		if (config.getOriginalName().equals(config.getNewName())) {
+			addWarning("You did not change the name.");
+		}
+		if(config.getAllModuleNames().contains(config.getNewName())) {
+			addWarning("The name you chose is already in use.");
+		}
+	}
+
+	@Override
 	public void init(IRefactoringConfig configObj) {
 		config = (RenameModuleConfig) configObj;
 		
@@ -70,12 +82,23 @@ public class RenameModuleConditionChecker extends RefactoringConditionChecker {
 			return;
 		}
 		config.setSelectedModule(selectedModule);
+		config.setNewName(config.getOriginalName());
 		config.setModuleParts(ModuleNodeProvider.findOtherParts(config.getDocumentProvider(), config.getSelectedModule()));
 
 		config.setIncludes(new ModuleIncludeFinder(config.getDocumentProvider()).find(config.getOriginalFullName()));
 		
 		config.setPossibleCalls(findPossibleCalls());
 		config.setSelectedCalls(config.getPossibleCalls());
+		
+		config.setAllModuleNames(getAllModuleNames());
+	}
+
+	private Collection<String> getAllModuleNames() {
+		Collection<String> names = new ArrayList<String>();
+		for(ModuleNodeWrapper module : ModuleNodeProvider.findAllModules(config.getDocumentProvider())) {
+			names.add(module.getFullName());
+		}
+		return names;
 	}
 
 	private ArrayList<ModuleSpecifierWrapper> findPossibleCalls() {
@@ -86,7 +109,9 @@ public class RenameModuleConditionChecker extends RefactoringConditionChecker {
 		for(String file : config.getDocumentProvider().getFileNames()) {
 			RootNode rootNode = config.getDocumentProvider().getRootNode(file);
 			for (final Node node : NodeProvider.getSubNodes(rootNode, ConstNode.class, Colon2Node.class)) {
-				if(toSkip.contains(node)) {
+				if(toSkip.contains(node) 
+						|| NodeProvider.findParentNode(rootNode, node) instanceof ClassNode 
+						|| NodeProvider.findParentNode(rootNode, node) instanceof SClassNode) {
 					continue;
 				}
 				ModuleSpecifierWrapper module = ModuleSpecifierWrapper.create(node, NameHelper.getEncosingModulePrefix(rootNode, node));

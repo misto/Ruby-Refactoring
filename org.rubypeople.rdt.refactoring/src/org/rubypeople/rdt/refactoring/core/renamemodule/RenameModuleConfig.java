@@ -50,6 +50,7 @@ public class RenameModuleConfig implements IRefactoringConfig, INewNameReceiver,
 	private Collection<? extends INodeWrapper> possibleCalls;
 	private Collection<? extends INodeWrapper> selectedCalls;
 	private Collection<ModuleSpecifierWrapper> includes;
+	private Collection<String> allModuleNames;
 
 	public RenameModuleConfig(IDocumentProvider doc, int carretPosition) {
 		this.doc = doc;
@@ -124,5 +125,13 @@ public class RenameModuleConfig implements IRefactoringConfig, INewNameReceiver,
 
 	public Collection<ModuleSpecifierWrapper> getIncludes() {
 		return includes;
+	}
+
+	public Collection<String> getAllModuleNames() {
+		return allModuleNames;
+	}
+
+	public void setAllModuleNames(Collection<String> allModuleNames) {
+		this.allModuleNames = allModuleNames;
 	}
 }
