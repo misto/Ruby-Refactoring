@@ -144,7 +144,7 @@ public abstract class RubyRefactoring extends Refactoring {
 	public Change createChange(IProgressMonitor pm) throws CoreException, OperationCanceledException {
 		Change change = createEditChanges();
 
-		Map<String, String> filesToRename = fileNameChangeProvider.getFilesToRename(getAllAffectedFiles(change));
+		Map<String, String> filesToRename = getFileNameChangeProvider().getFilesToRename(getAllAffectedFiles(change));
 		if(filesToRename.isEmpty()) {
 			return change;
 		}
