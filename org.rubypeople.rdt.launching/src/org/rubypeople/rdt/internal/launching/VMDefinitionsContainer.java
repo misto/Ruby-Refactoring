@@ -28,7 +28,6 @@ import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerException;
 
 import org.eclipse.core.runtime.IPath;
-import org.eclipse.core.runtime.Path;
 import org.rubypeople.rdt.launching.IVMInstall;
 import org.rubypeople.rdt.launching.IVMInstall2;
 import org.rubypeople.rdt.launching.IVMInstallType;
@@ -405,7 +404,10 @@ public class VMDefinitionsContainer {
 			File installLocation= new File(installPath);
 			//  If the path is to the executable (which it should be), chop off last part of path!
 			if (installLocation.isFile()) {
-				installLocation = installLocation.getParentFile();
+				installLocation = installLocation.getParentFile(); // move up to "bin"
+				if (installLocation != null && installLocation.getParentFile() != null) {
+					installLocation = installLocation.getParentFile(); // this should now be ruby install location
+				}
 			}
 			vmStandin.setInstallLocation(installLocation);
 			container.addVM(vmStandin);
@@ -413,36 +415,6 @@ public class VMDefinitionsContainer {
 			LaunchingPlugin.log(LaunchingMessages.RubyRuntime_VM_element_specified_with_no_id_attribute_2); 
 		}
 	}	
-	
-	/**
-	 * Create & return a LibraryLocation object populated from the attribute values
-	 * in the specified node.
-	 */
-	private static IPath getLibraryLocation(Element libLocationElement) {
-		String src= libLocationElement.getAttribute("src"); //$NON-NLS-1$
-		return new Path(src);
-	}
-	
-	/**
-	 * Set the LibraryLocations on the specified VM, by extracting the subordinate
-	 * nodes from the specified 'lirbaryLocations' node.
-	 */
-	private static void setLibraryLocations(IVMInstall vm, Element libLocationsElement) {
-		NodeList list = libLocationsElement.getChildNodes();
-		int length = list.getLength();
-		List<IPath> locations = new ArrayList<IPath>(length);
-		for (int i = 0; i < length; ++i) {
-			Node node = list.item(i);
-			short type = node.getNodeType();
-			if (type == Node.ELEMENT_NODE) {
-				Element libraryLocationElement= (Element)node;
-				if (libraryLocationElement.getNodeName().equals("libraryLocation")) { //$NON-NLS-1$
-					locations.add(getLibraryLocation(libraryLocationElement));
-				}
-			}
-		}	
-		vm.setLibraryLocations(locations.toArray(new IPath[locations.size()]));
-	}
 	
 	/**
 	 * Removes the VM from this container.
