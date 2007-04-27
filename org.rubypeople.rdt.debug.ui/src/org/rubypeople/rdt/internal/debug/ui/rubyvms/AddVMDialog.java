@@ -375,6 +375,9 @@ public class AddVMDialog extends StatusDialog {
 	
 	protected void setFieldValuesToVM(IVMInstall vm) {
 		File dir = new File(fRubyVMRoot.getText());
+		if (dir.getName().equals("bin")) {
+			dir = dir.getParentFile();
+		}			
 		try {
 			vm.setInstallLocation(dir.getCanonicalFile());
 		} catch (IOException e) {
