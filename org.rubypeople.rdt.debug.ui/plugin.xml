@@ -290,6 +290,12 @@
         id="org.rubypeople.rdt.debug.ui.RDTDebugActionSet"
         label="Ruby Debug"
         visible="true">
+        <menu
+               id="org.eclipse.ui.run"
+               label="Run"
+               path="additions">
+            <separator name="breakpointGroup"/>
+         </menu>
 			<action
 				definitionId="org.rubypeople.rdt.debug.ui.commands.ModifyCatchpoint"
 				label="%modifyCatchpoint.label"
