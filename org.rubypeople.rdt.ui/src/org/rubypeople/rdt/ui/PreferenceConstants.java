@@ -693,10 +693,10 @@ public class PreferenceConstants {
 	private static String getDefaultRubyVMLibraries() {
 		StringBuffer buf= new StringBuffer();
 		ILoadpathEntry cntentry= getRubyVMContainerEntry();
-		buf.append(encodeRubyVMLibrary(PreferencesMessages.NewJavaProjectPreferencePage_jre_container_description, new ILoadpathEntry[] { cntentry} )); 
+		buf.append(encodeRubyVMLibrary(PreferencesMessages.NewRubyProjectPreferencePage_jre_container_description, new ILoadpathEntry[] { cntentry} )); 
 		buf.append(';');
 		ILoadpathEntry varentry= getRubyVMVariableEntry();
-		buf.append(encodeRubyVMLibrary(PreferencesMessages.NewJavaProjectPreferencePage_jre_variable_description, new ILoadpathEntry[] { varentry })); 
+		buf.append(encodeRubyVMLibrary(PreferencesMessages.NewRubyProjectPreferencePage_jre_variable_description, new ILoadpathEntry[] { varentry })); 
 		buf.append(';');
 		return buf.toString();
 	}
@@ -894,10 +894,10 @@ public class PreferenceConstants {
 						break;
 				}								
 			} catch (NumberFormatException e) {
-				String message= PreferencesMessages.NewJavaProjectPreferencePage_error_decode; 
+				String message= PreferencesMessages.NewRubyProjectPreferencePage_error_decode; 
 				RubyPlugin.log(new Status(IStatus.ERROR, RubyUI.ID_PLUGIN, IStatus.ERROR, message, e));
 			} catch (NoSuchElementException e) {
-				String message= PreferencesMessages.NewJavaProjectPreferencePage_error_decode; 
+				String message= PreferencesMessages.NewRubyProjectPreferencePage_error_decode; 
 				RubyPlugin.log(new Status(IStatus.ERROR, RubyUI.ID_PLUGIN, IStatus.ERROR, message, e));
 			}
 		}

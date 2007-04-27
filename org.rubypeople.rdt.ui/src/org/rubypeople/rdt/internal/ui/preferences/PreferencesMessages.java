@@ -132,30 +132,8 @@ public final class PreferencesMessages extends NLS {
 	public static String ProblemSeveritiesConfigurationBlock_warning;
 	public static String ProblemSeveritiesConfigurationBlock_ignore;
 	public static String ProblemSeveritiesConfigurationBlock_common_description;
-	public static String ProblemSeveritiesConfigurationBlock_section_unnecessary_code;
-	public static String ProblemSeveritiesConfigurationBlock_section_potential_programming_problems;
-	public static String ProblemSeveritiesConfigurationBlock_pb_ensure_block_not_completing_label;
 	public static String ProblemSeveritiesConfigurationBlock_pb_empty_statement_label;
-	public static String ProblemSeveritiesConfigurationBlock_pb_hidden_rescueblock_label;
-	public static String ProblemSeveritiesConfigurationBlock_pb_fall_through_case;
-	public static String ProblemSeveritiesConfigurationBlock_pb_null_reference;
-	public static String ProblemSeveritiesConfigurationBlock_pb_unused_local_label;
-	public static String ProblemSeveritiesConfigurationBlock_pb_unused_parameter_label;
-	public static String ProblemSeveritiesConfigurationBlock_pb_unused_private_label;
-	public static String ProblemSeveritiesConfigurationBlock_pb_unnecessary_else_label;
-	public static String ProblemSeveritiesConfigurationBlock_pb_misspelled_constructor_label;
-	public static String ProblemSeveritiesConfigurationBlock_pb_possible_accidental_boolean_assignment_label;
-	public static String ProblemSeveritiesConfigurationBlock_pb_local_masks_method_label;
-	public static String ProblemSeveritiesConfigurationBlock_section_code_complexity;
-	public static String ProblemSeveritiesConfigurationBlock_pb_max_lines_label;
-	public static String ProblemSeveritiesConfigurationBlock_pb_max_locals_label;
-	public static String ProblemSeveritiesConfigurationBlock_pb_max_arguments_label;
-	public static String ProblemSeveritiesConfigurationBlock_pb_max_branches_label;
-	public static String ProblemSeveritiesConfigurationBlock_pb_max_returns_label;
-	public static String ProblemSeveritiesConfigurationBlock_pb_similar_variable_names_label;
 	public static String ProblemSeveritiesConfigurationBlock_pb_unreachable_code_label;
-	public static String ProblemSeveritiesConfigurationBlock_pb_comparable_missing_method_label;
-	public static String ProblemSeveritiesConfigurationBlock_pb_enumerable_missing_method_label;
 	
 	public static String RubyEditorPreferencePage_background_color;
 	public static String MarkOccurrencesConfigurationBlock_markOccurrences;
@@ -176,14 +154,11 @@ public final class PreferencesMessages extends NLS {
 	public static String ProjectSelectionDialog_filter;
 	public static String FoldingConfigurationBlock_enable;
 	public static String FoldingConfigurationBlock_combo_caption;
-	public static String NewJavaProjectPreferencePage_error_decode;
-	public static String NewJavaProjectPreferencePage_jre_variable_description;
-	public static String NewJavaProjectPreferencePage_jre_container_description;
 	
 	public static String RubyBuildConfigurationBlock_empty_input;
 	public static String RubyBuildConfigurationBlock_invalid_input;
         
-        public static String BuildPathsPropertyPage_unsavedchanges_title;
+    public static String BuildPathsPropertyPage_unsavedchanges_title;
 	public static String BuildPathsPropertyPage_unsavedchanges_message;
 	public static String BuildPathsPropertyPage_unsavedchanges_button_save;
 	public static String BuildPathsPropertyPage_unsavedchanges_button_discard;
