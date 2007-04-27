@@ -28,6 +28,7 @@ import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerException;
 
 import org.eclipse.core.runtime.IPath;
+import org.eclipse.core.runtime.Path;
 import org.rubypeople.rdt.launching.IVMInstall;
 import org.rubypeople.rdt.launching.IVMInstall2;
 import org.rubypeople.rdt.launching.IVMInstallType;
@@ -362,13 +363,146 @@ public class VMDefinitionsContainer {
 			stream.close();
 		}
 		
-		// If the top-level node wasn't what we expected, bail out
-		if (!config.getNodeName().equalsIgnoreCase("runtimeconfig")) { //$NON-NLS-1$
+		String nodeName = config.getNodeName();
+		if (nodeName.equalsIgnoreCase("runtimeconfig")) {
+			// Do the legacy stuff
+			importLegacyInterpreters(config, container);
+			return;
+		} else if (!config.getNodeName().equalsIgnoreCase("vmSettings")) { //$NON-NLS-1$
+			// If the top-level node wasn't what we expected, bail out
 			throw new IOException(LaunchingMessages.RubyRuntime_badFormat); 
 		}
 		
-		IVMInstallType vmType = RubyRuntime.getVMInstallType("org.rubypeople.rdt.launching.StandardVMType");
+		// Populate the default VM-related fields
+		container.setDefaultVMInstallCompositeID(config.getAttribute("defaultVM")); //$NON-NLS-1$
+		
+		// Traverse the parsed structure and populate the VMType to VM Map
+		NodeList list = config.getChildNodes();
+		int length = list.getLength();
+		for (int i = 0; i < length; ++i) {
+			Node node = list.item(i);
+			short type = node.getNodeType();
+			if (type == Node.ELEMENT_NODE) {
+				Element vmTypeElement = (Element) node;
+				if (vmTypeElement.getNodeName().equalsIgnoreCase("vmType")) { //$NON-NLS-1$
+					populateVMTypes(vmTypeElement, container);
+				}
+			}
+		}
+	}
+	
+	/**
+	 * For the specified vm type node, parse all subordinate VM definitions and add them
+	 * to the specified container.
+	 */
+	private static void populateVMTypes(Element vmTypeElement, VMDefinitionsContainer container) {
+		
+		// Retrieve the 'id' attribute and the corresponding VM type object
+		String id = vmTypeElement.getAttribute("id");         //$NON-NLS-1$
+		IVMInstallType vmType= RubyRuntime.getVMInstallType(id);
+		if (vmType != null) {
+			
+			// For each VM child node, populate the container with a subordinate node
+			NodeList vmNodeList = vmTypeElement.getChildNodes();
+			for (int i = 0; i < vmNodeList.getLength(); ++i) {
+				Node vmNode = vmNodeList.item(i);
+				short type = vmNode.getNodeType();
+				if (type == Node.ELEMENT_NODE) {
+					Element vmElement = (Element) vmNode;
+					if (vmElement.getNodeName().equalsIgnoreCase("vm")) { //$NON-NLS-1$
+						populateVMForType(vmType, vmElement, container);
+					}
+				}
+			}
+		} else {
+			LaunchingPlugin.log(LaunchingMessages.RubyRuntime_VM_type_element_with_unknown_id_1); 
+		}
+	}
+	
+	/**
+	 * Parse the specified VM node, create a VMStandin for it, and add this to the 
+	 * specified container.
+	 */
+	private static void populateVMForType(IVMInstallType vmType, Element vmElement, VMDefinitionsContainer container) {
+		String id= vmElement.getAttribute("id"); //$NON-NLS-1$
+		if (id != null) {
+			
+			// Retrieve the 'path' attribute.  If none, skip this node.
+			String installPath= vmElement.getAttribute("path"); //$NON-NLS-1$
+			if (installPath == null) {
+				return;
+			}
+						
+			// Create a VMStandin for the node and set its 'name' & 'installLocation' attributes
+			VMStandin vmStandin = new VMStandin(vmType, id);
+			vmStandin.setName(vmElement.getAttribute("name")); //$NON-NLS-1$
+			File installLocation= new File(installPath);
+			vmStandin.setInstallLocation(installLocation);
+			container.addVM(vmStandin);
+			
+			// Look for subordinate nodes.  These may be 'libraryLocation',
+			// 'libraryLocations' or 'versionInfo'.
+			NodeList list = vmElement.getChildNodes();
+			int length = list.getLength();
+			for (int i = 0; i < length; ++i) {
+				Node node = list.item(i);
+				short type = node.getNodeType();
+				if (type == Node.ELEMENT_NODE) {
+					Element subElement = (Element)node;
+					String subElementName = subElement.getNodeName();
+					if (subElementName.equals("libraryLocation")) { //$NON-NLS-1$
+						IPath loc = getLibraryLocation(subElement);
+						vmStandin.setLibraryLocations(new IPath[]{loc});
+						break;
+					} else if (subElementName.equals("libraryLocations")) { //$NON-NLS-1$
+						setLibraryLocations(vmStandin, subElement);
+						break;
+					}
+				}
+			}
+						
+			// vm Arguments
+			String vmArgs = vmElement.getAttribute("vmargs"); //$NON-NLS-1$
+			if (vmArgs != null && vmArgs.length() >0) {
+				vmStandin.setVMArgs(vmArgs);
+			}
+		} else {
+			LaunchingPlugin.log(LaunchingMessages.RubyRuntime_VM_element_specified_with_no_id_attribute_2); 
+		}
+	}
+	
+	/**
+	 * Create & return a LibraryLocation object populated from the attribute values
+	 * in the specified node.
+	 */
+	private static IPath getLibraryLocation(Element libLocationElement) {
+		String src= libLocationElement.getAttribute("src"); //$NON-NLS-1$
+		return new Path(src);
+	}
+	
+	/**
+	 * Set the LibraryLocations on the specified VM, by extracting the subordinate
+	 * nodes from the specified 'lirbaryLocations' node.
+	 */
+	private static void setLibraryLocations(IVMInstall vm, Element libLocationsElement) {
+		NodeList list = libLocationsElement.getChildNodes();
+		int length = list.getLength();
+		List<IPath> locations = new ArrayList<IPath>(length);
+		for (int i = 0; i < length; ++i) {
+			Node node = list.item(i);
+			short type = node.getNodeType();
+			if (type == Node.ELEMENT_NODE) {
+				Element libraryLocationElement= (Element)node;
+				if (libraryLocationElement.getNodeName().equals("libraryLocation")) { //$NON-NLS-1$
+					locations.add(getLibraryLocation(libraryLocationElement));
+				}
+			}
+		}	
+		vm.setLibraryLocations(locations.toArray(new IPath[locations.size()]));
+	}
 
+	private static void importLegacyInterpreters(Element config, VMDefinitionsContainer container) {
+		IVMInstallType vmType = RubyRuntime.getVMInstallType("org.rubypeople.rdt.launching.StandardVMType");
 		// Traverse the parsed structure and populate the VMType to VM Map
 		NodeList list = config.getChildNodes();
 		int length = list.getLength();
@@ -378,17 +512,18 @@ public class VMDefinitionsContainer {
 			if (type == Node.ELEMENT_NODE) {
 				Element vmElement = (Element) node;
 				if (vmElement.getNodeName().equalsIgnoreCase("interpreter")) { //$NON-NLS-1$
-					populateVMForType(vmType, vmElement, container);
+					legacyPopulateVMForType(vmType, vmElement, container);
 				}
 			}
 		}
+		
 	}
 
 	/**
 	 * Parse the specified VM node, create a VMStandin for it, and add this to the 
 	 * specified container.
 	 */
-	private static void populateVMForType(IVMInstallType vmType, Element vmElement, VMDefinitionsContainer container) {
+	private static void legacyPopulateVMForType(IVMInstallType vmType, Element vmElement, VMDefinitionsContainer container) {
 		String id= vmElement.getAttribute("name"); //$NON-NLS-1$
 		if (id != null) {
 			
