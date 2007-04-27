@@ -56,6 +56,20 @@
 					targetuser="rubypeople"
 					targethost="download.rubypeople.org"
 					targetdir="~/subdomains/updatesite/httpdocs/nightly"/>
+				<scp 
+					sourcedir="${buildDirectory}/results"
+					file="."
+					options="-r"
+					targetuser="mbarchfeld"
+					targethost="www.aptana.org"
+					targetdir="/var/websites/download.rubypeople.org/html/nightly"/>
+				<scp 
+					sourcedir="${buildDirectory}/results/updateSite"
+					file="."
+					options="-r"
+					targetuser="mbarchfeld"
+					targethost="www.aptana.org"
+					targetdir="/var/websites/updatesite.rubypeople.org/html/nightly"/>				
 			</onsuccess>    
 
 			<email 
