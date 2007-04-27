@@ -1,27 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?eclipse version="3.0"?>
-<plugin
-   id="org.rubypeople.rdt.debug.core"
-   name="%Plugin.name"
-   version="0.0.0"
-   provider-name="%providerName"
-   class="org.rubypeople.rdt.internal.debug.core.RdtDebugCorePlugin">
+<plugin>
 
-   <runtime>
-      <library name="rdtdebugcore.jar">
-         <export name="*"/>
-      </library>
-   </runtime>
-
-   <requires>
-      <import plugin="org.eclipse.core.resources"/>
-      <import plugin="org.eclipse.debug.core"/>
-      <import plugin="org.rubypeople.rdt.core"/>
-      <import plugin="org.kxml2"/>
-      <import plugin="org.eclipse.core.runtime"/>
-   </requires>
-
-   <extension
+     <extension
          id="RubyBreakpointMarker"
          point="org.eclipse.core.resources.markers">
       <super
