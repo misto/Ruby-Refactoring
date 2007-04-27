@@ -32,3 +32,4 @@ Require-Bundle: org.eclipse.core.runtime,
  org.jruby,
  org.eclipse.core.filesystem
 Eclipse-LazyStart: true
+Bundle-RequiredExecutionEnvironment: J2SE-1.5
