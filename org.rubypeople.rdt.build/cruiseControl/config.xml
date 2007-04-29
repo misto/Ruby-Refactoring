@@ -46,20 +46,6 @@
 					sourcedir="${buildDirectory}/results"
 					file="."
 					options="-r"
-					targetuser="rubypeople"
-					targethost="download.rubypeople.org"
-					targetdir="~/subdomains/download/httpdocs/nightly"/>
-				<scp 
-					sourcedir="${buildDirectory}/results/updateSite"
-					file="."
-					options="-r"
-					targetuser="rubypeople"
-					targethost="download.rubypeople.org"
-					targetdir="~/subdomains/updatesite/httpdocs/nightly"/>
-				<scp 
-					sourcedir="${buildDirectory}/results"
-					file="."
-					options="-r"
 					targetuser="mbarchfeld"
 					targethost="www.aptana.org"
 					targetdir="/var/websites/download.rubypeople.org/html/nightly"/>
