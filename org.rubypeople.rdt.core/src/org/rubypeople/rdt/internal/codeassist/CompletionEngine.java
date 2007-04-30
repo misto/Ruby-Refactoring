@@ -92,18 +92,21 @@ public class CompletionEngine {
 				if (guesses.isEmpty()) {
 					guesses.add(new BasicTypeGuess(OBJECT, 100));
 				}
+				List<CompletionProposal> list = new ArrayList<CompletionProposal>();
 				RubyElementRequestor requestor = new RubyElementRequestor(script);
 				for (ITypeGuess guess : guesses) {
 					String name = guess.getType();
 					IType[] types = requestor.findType(name);  // FIXME When syntax is broken, grabbing type that is defined in same script like this just doesn't work!
 					for (int i = 0; i < types.length; i++) {
-						List<CompletionProposal> list = sort(suggestMethods(guess.getConfidence(), types[i]));
-						for (CompletionProposal proposal : list) {
-							fRequestor.accept(proposal);
-						}
+						Map<String, CompletionProposal> map = suggestMethods(guess.getConfidence(), types[i]);
+						list.addAll(map.values());						
 					}
 				}
-				
+				list.addAll(suggestAllMethodsMatchingPrefix(script));
+				Collections.sort(list, new CompletionProposalComparator());
+				for (CompletionProposal proposal : list) {
+					fRequestor.accept(proposal);
+				}				
 			} else {
 				// FIXME If we're invoked on the class declaration (it's super class) don't do this!
 				// FIXME Traverse the IRubyElement model, not nodes (and don't reparse)?
@@ -118,6 +121,32 @@ public class CompletionEngine {
 		}
 		this.fRequestor.endReporting();
 		fContext = null;
+	}
+
+	private List<CompletionProposal> suggestAllMethodsMatchingPrefix(IRubyScript script) {
+		List< CompletionProposal> list = new ArrayList<CompletionProposal>();
+		IRubySearchScope scope = BasicSearchEngine.createRubySearchScope(new IRubyElement[] {script.getRubyProject()});
+		SearchParticipant participant = BasicSearchEngine.getDefaultSearchParticipant();
+		CollectingSearchRequestor searchRequestor = new CollectingSearchRequestor();
+		SearchPattern pattern = SearchPattern.createPattern(IRubyElement.METHOD, fContext.getPartialPrefix(), IRubySearchConstants.DECLARATIONS, SearchPattern.R_PREFIX_MATCH);
+		try {
+			new BasicSearchEngine().search(pattern, new SearchParticipant[] {participant}, scope, searchRequestor, null);
+		} catch (CoreException e) {
+			RubyCore.log(e);
+		}
+		List<SearchMatch> matches = searchRequestor.getResults();
+		for (SearchMatch match : matches) {
+			IMethod element = (IMethod) match.getElement();
+			IType type = element.getDeclaringType();
+			String typeName = "";
+			if (type != null)
+				typeName = type.getElementName();
+			CompletionProposal proposal = suggestMethod(element, typeName, 100); // TODO Base confidence on accuracy in match?
+		    if (proposal != null) {
+		    	list.add(proposal);
+		    }
+		}
+		return list;
 	}
 
 	private void suggestMethodsForEnclosingType(IRubyScript script) throws RubyModelException {
