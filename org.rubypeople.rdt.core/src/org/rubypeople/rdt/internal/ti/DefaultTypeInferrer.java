@@ -22,6 +22,7 @@ import org.jruby.ast.LocalVarNode;
 import org.jruby.ast.Node;
 import org.jruby.ast.RootNode;
 import org.jruby.ast.VCallNode;
+import org.jruby.lexer.yacc.SyntaxException;
 import org.rubypeople.rdt.internal.core.parser.RubyParser;
 import org.rubypeople.rdt.internal.core.util.ASTUtil;
 import org.rubypeople.rdt.internal.ti.data.LiteralNodeTypeNames;
@@ -42,14 +43,18 @@ public class DefaultTypeInferrer implements ITypeInferrer {
 	 * @return List of ITypeGuess objects.
 	 */
 	public List<ITypeGuess> infer(String source, int offset) {
-		RubyParser parser = new RubyParser();
-		rootNode = (RootNode) parser.parse(source);
-		Node node = OffsetNodeLocator.Instance().getNodeAtOffset(rootNode.getBodyNode(), offset);
+		try {
+			RubyParser parser = new RubyParser();
+			rootNode = (RootNode) parser.parse(source);
+			Node node = OffsetNodeLocator.Instance().getNodeAtOffset(rootNode.getBodyNode(), offset);
 
-		if (node == null) {
-			return null;
+			if (node == null) {
+				return new ArrayList<ITypeGuess>();
+			}
+			return infer(node);
+		} catch (SyntaxException e) {
+			return new ArrayList<ITypeGuess>();
 		}
-		return infer(node);
 	}
 
 	/**
