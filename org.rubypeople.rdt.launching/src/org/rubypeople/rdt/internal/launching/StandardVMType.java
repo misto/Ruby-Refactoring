@@ -255,34 +255,45 @@ public class StandardVMType extends AbstractVMInstallType {
 	 * @see org.eclipse.jdt.launching.IVMInstallType#detectInstallLocation()
 	 */
 	public File detectInstallLocation() {
-		// do not detect on Windows
-		if (Platform.getOS().equals(Constants.OS_WIN32)) {
-			return null;
-		}		
-		
-		String[] cmdLine = new String[] { "which", "ruby" }; //$NON-NLS-1$ //$NON-NLS-2$
-		Process p = null;
 		File rubyExecutable = null;
-		try {
-			p = Runtime.getRuntime().exec(cmdLine);
-			IProcess process = DebugPlugin.newProcess(new Launch(null, ILaunchManager.RUN_MODE, null), p, "Standard Ruby VM Install Detection"); //$NON-NLS-1$
-			for (int i = 0; i < 200; i++) {
-				// Wait no more than 10 seconds (200 * 50 mils)
-				if (process.isTerminated()) {
+		if (Platform.getOS().equals(Constants.OS_WIN32)) {
+			String winPath = System.getenv("Path");  // iterate through system path and try to find ruby.exe
+			String[] paths = winPath.split(";");
+			for (int i = 0; i < paths.length; i++) {
+				String possibleExecutablePath = paths[i] + File.separator + "ruby.exe";
+				File possible = new File(possibleExecutablePath);
+				if (possible.exists()) {
+					rubyExecutable = possible; 
 					break;
 				}
-				try {
-					Thread.sleep(50);
-				} catch (InterruptedException e) {}
 			}
-			rubyExecutable = parseRubyExecutableLocation(process);
-		} catch (IOException ioe) {
-			LaunchingPlugin.log(ioe);
-		} finally {
-			if (p != null) {
-				p.destroy();
+		} else { // Mac, Linux - so let's just run 'which ruby' and parse out the result
+			String[] cmdLine = new String[] { "which", "ruby" }; //$NON-NLS-1$ //$NON-NLS-2$
+			Process p = null;			
+			try {
+				p = Runtime.getRuntime().exec(cmdLine);
+				IProcess process = DebugPlugin.newProcess(new Launch(null,
+						ILaunchManager.RUN_MODE, null), p,
+						"Standard Ruby VM Install Detection"); //$NON-NLS-1$
+				for (int i = 0; i < 200; i++) {
+					// Wait no more than 10 seconds (200 * 50 mils)
+					if (process.isTerminated()) {
+						break;
+					}
+					try {
+						Thread.sleep(50);
+					} catch (InterruptedException e) {
+					}
+				}
+				rubyExecutable = parseRubyExecutableLocation(process);
+			} catch (IOException ioe) {
+				LaunchingPlugin.log(ioe);
+			} finally {
+				if (p != null) {
+					p.destroy();
+				}
 			}
-		} 
+		}
 		
 		if (rubyExecutable == null) {
 			return null;
