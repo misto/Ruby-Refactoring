@@ -8,16 +8,13 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.action.IToolBarManager;
-import org.eclipse.jface.util.IPropertyChangeListener;
 import org.eclipse.jface.viewers.IStructuredContentProvider;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.TableViewer;
@@ -45,9 +42,12 @@ import org.rubypeople.rdt.internal.ui.RubyPlugin;
 import org.rubypeople.rdt.internal.ui.RubyPluginImages;
 import org.rubypeople.rdt.internal.ui.rdocexport.RDocUtility;
 import org.rubypeople.rdt.internal.ui.rdocexport.RdocListener;
-import org.rubypeople.rdt.ui.PreferenceConstants;
+import org.rubypeople.rdt.launching.IVMInstall;
+import org.rubypeople.rdt.launching.IVMInstallChangedListener;
+import org.rubypeople.rdt.launching.PropertyChangeEvent;
+import org.rubypeople.rdt.launching.RubyRuntime;
 
-public class RIView extends ViewPart implements RdocListener {
+public class RIView extends ViewPart implements RdocListener, IVMInstallChangedListener {
 
 	private boolean riFound = false;
 	private PageBook pageBook;
@@ -63,7 +63,9 @@ public class RIView extends ViewPart implements RdocListener {
 	/**
 	 * The constructor.
 	 */
-	public RIView() {}
+	public RIView() {
+		RubyRuntime.addVMInstallChangedListener(this);
+	}
 
 	/**
 	 * This is a callback that will allow us to create the viewer and initialize
@@ -129,15 +131,7 @@ public class RIView extends ViewPart implements RdocListener {
         // search result
         searchResult = new Browser(form, SWT.BORDER);
         
-        form.setWeights(new int[]{1, 3});
-        
-        RubyPlugin.getDefault().getPreferenceStore().addPropertyChangeListener(new IPropertyChangeListener() {
-        	public void propertyChange(org.eclipse.jface.util.PropertyChangeEvent event) {
-        		if (event.getProperty().equals(PreferenceConstants.RI_PATH)) {
-        			updatePage();
-        		}
-        	}
-        });
+        form.setWeights(new int[]{1, 3});        
         
         pageBook.showPage(inProgressLabel);
         updatePage();
@@ -177,6 +171,7 @@ public class RIView extends ViewPart implements RdocListener {
     
     public void dispose() {
         RDocUtility.removeRdocListener(this);
+        RubyRuntime.removeVMInstallChangedListener(this);
         super.dispose();
     }
         
@@ -244,16 +239,13 @@ public class RIView extends ViewPart implements RdocListener {
         protected abstract void handleOutput(Process process);
         protected void beforeInvoke(){}
         
-        public final void invoke() {
-
-        	IPath riPath = new Path( RubyPlugin.getDefault().getPreferenceStore().getString( PreferenceConstants.RI_PATH ) );
-        	
+        public final void invoke() {        	
         	// check the ri path for existence. It might have been unconfigured
 			// and set to the default value or the file could have been removed
-			File file = new File(riPath.toOSString());
+			File file = RubyRuntime.getRI();
 
 			// If we can't find it ourselves then display an error to the user
-			if (!file.exists() || !file.isFile()) {
+			if (file == null || !file.exists() || !file.isFile()) {
 				riFound = false;
 				pageBook.showPage(riNotFoundLabel);
 				return;
@@ -261,7 +253,7 @@ public class RIView extends ViewPart implements RdocListener {
 			   		
    		try {        			
                 List<String> args = getArgList();
-                args.add(0, riPath.toString());
+                args.add(0, file.getAbsolutePath());
                 ProcessBuilder builder = new ProcessBuilder();
                 builder.command(args);
                 builder.redirectErrorStream(true);
@@ -388,5 +380,21 @@ public class RIView extends ViewPart implements RdocListener {
 	void riNotFound() {
 		riFound = false;
 		pageBook.showPage( riNotFoundLabel );
+	}
+
+	public void defaultVMInstallChanged(IVMInstall previous, IVMInstall current) {
+		updatePage();		
+	}
+
+	public void vmAdded(IVMInstall newVm) {
+		// ignore		
+	}
+
+	public void vmChanged(PropertyChangeEvent event) {
+		// ignore		
+	}
+
+	public void vmRemoved(IVMInstall removedVm) {
+		// ignore		
 	}
 }

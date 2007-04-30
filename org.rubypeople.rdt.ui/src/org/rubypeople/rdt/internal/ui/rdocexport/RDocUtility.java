@@ -12,14 +12,12 @@ import java.util.Set;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
-import org.eclipse.core.runtime.IPath;
-import org.eclipse.core.runtime.Path;
 import org.eclipse.jface.dialogs.ErrorDialog;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.rubypeople.rdt.internal.ui.RubyPlugin;
 import org.rubypeople.rdt.internal.ui.RubyUIMessages;
 import org.rubypeople.rdt.internal.ui.dialogs.StatusInfo;
-import org.rubypeople.rdt.ui.PreferenceConstants;
+import org.rubypeople.rdt.launching.RubyRuntime;
 
 /**
  * A utility class which will generate RDoc for a resource. If teh resource is
@@ -82,21 +80,18 @@ public class RDocUtility {
 		public final void invoke() {
 			log("Generating RDoc for " + resource.getName());
 
-			IPath rdocPath = new Path(RubyPlugin.getDefault().getPreferenceStore().getString(PreferenceConstants.RDOC_PATH));
-
+			File file = RubyRuntime.getRDoc();
 			// check the rdoc path for existence. It might have been
 			// unconfigured
 			// and set to the default value or the file could have been removed
-			File file = new File(rdocPath.toOSString());
-
 			// If we can't find it ourselves then display an error to the user
-			if (!file.exists() || !file.isFile()) {
+			if (file == null || !file.exists() || !file.isFile()) {
 				MessageDialog.openError(RubyPlugin.getActiveWorkbenchShell(), RubyUIMessages.RDocPathErrorTitle, RubyUIMessages.RDocPathError);
 				return;
 			}
 			
 			List<String> args = new ArrayList<String>();
-			args.add(rdocPath.toString());
+			args.add(file.getAbsolutePath());
 			args.add("-r");
 			args.add(resource.getLocation().toOSString());
 			String[] argArray= (String[]) args.toArray(new String[args.size()]);

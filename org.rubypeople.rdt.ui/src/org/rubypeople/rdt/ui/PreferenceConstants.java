@@ -30,14 +30,9 @@ public class PreferenceConstants {
 	
 	private static String fgDefaultEncoding= System.getProperty("file.encoding"); //$NON-NLS-1$
 
-	public static final String RI_PATH = "riDirectoryPath";
-	public static final String RDOC_PATH = "rdocDirectoryPath";
 	public static final String DEBUGGER_USE_RUBY_DEBUG = "useRubyDebug";
 
 	public static final String TEMPLATES_USE_CODEFORMATTER = "templatesUseCodeFormatter"; //$NON-NLS-1$	
-
-	private final static String DEFAULT_RDOC_CMD = ""; //$NON-NLS-1$	
-	private final static String DEFAULT_RI_CMD = ""; //$NON-NLS-1$	
 	
 	private static final String LOADPATH_RUBYVMLIBRARY_INDEX= PreferenceConstants.NEWPROJECT_JRELIBRARY_INDEX;
 	private static final String LOADPATH_RUBYVMLIBRARY_LIST= PreferenceConstants.NEWPROJECT_JRELIBRARY_LIST;
@@ -781,9 +776,6 @@ public class PreferenceConstants {
 		store.setDefault(PreferenceConstants.EDITOR_FOLDING_METHODS, false);
 
 		store.setDefault(PreferenceConstants.EDITOR_SHOW_TEXT_HOVER_AFFORDANCE, true);
-
-		store.setDefault(PreferenceConstants.RDOC_PATH, PreferenceConstants.getDefaultPath(PreferenceConstants.DEFAULT_RDOC_CMD));
-		store.setDefault(PreferenceConstants.RI_PATH, PreferenceConstants.getDefaultPath(PreferenceConstants.DEFAULT_RI_CMD));
 
 		store.setDefault(PreferenceConstants.DEBUGGER_USE_RUBY_DEBUG, false);
 
