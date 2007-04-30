@@ -2,7 +2,10 @@ package org.rubypeople.rdt.internal.codeassist;
 
 import java.io.StringReader;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.eclipse.core.resources.IFile;
 import org.jruby.ast.ArgumentNode;
@@ -85,46 +88,94 @@ public class SelectionEngine {
 			List<IRubyElement> possible = getChildrenWithName(script
 					.getChildren(), IRubyElement.LOCAL_VARIABLE,
 					getName(selected));
-			return convertToArray(possible);
+			return possible.toArray(new IRubyElement[possible.size()]);
 		}
 		if (isInstanceVarRef(selected)) {
 			List<IRubyElement> possible = getChildrenWithName(script
 					.getChildren(), IRubyElement.INSTANCE_VAR,
 					getName(selected));
-			return convertToArray(possible);
+			return possible.toArray(new IRubyElement[possible.size()]);
 		}
 		if (isClassVarRef(selected)) {
 			List<IRubyElement> possible = getChildrenWithName(script
 					.getChildren(), IRubyElement.CLASS_VAR, getName(selected));
-			return convertToArray(possible);
+			return possible.toArray(new IRubyElement[possible.size()]);
 		}
 		if (isMethodCall(selected)) {
-			List<IRubyElement> possible = new ArrayList<IRubyElement>();
+			Set<IRubyElement> possible = new HashSet<IRubyElement>();
 			ITypeInferrer inferrer = new DefaultTypeInferrer();
 			List<ITypeGuess> guesses = inferrer.infer(source, start);
 			RubyElementRequestor requestor = new RubyElementRequestor(script);
 			String methodName = getName(selected);
 			for (ITypeGuess guess : guesses) {
+				
 				String name = guess.getType();
 				IType[] types = requestor.findType(name);
 				for (int i = 0; i < types.length; i++) {
 					IType type = types[i];
-					IMethod[] methods = type.getMethods();
-					for (int j = 0; i < methods.length; j++) {
-					  if (methods[j].getElementName().equals(methodName)) {
-						  possible.add(methods[j]);
-						  break;
-					  }
+					Collection<IMethod> methods = suggestMethods(type);
+					for (IMethod method : methods) {
+						if (method.getElementName().equals(methodName)) 
+							possible.add(method);
 					}
 				}
 			}
-			return convertToArray(possible);
+			return possible.toArray(new IRubyElement[possible.size()]);
 		}
 		return new IRubyElement[0];
 	}
+	
+	// TODO This is all copy-pasted and modified from CompletionEngine. Move this out into a util class and call it from both.
+	private Collection<IMethod> suggestMethods(IType type) throws RubyModelException {
+		List<IMethod> proposals = new ArrayList<IMethod>();
+		if (type == null) return proposals;		
+		IMethod[] methods = type.getMethods();
+		for (int k = 0; k < methods.length; k++) {
+			proposals.add(methods[k]);
+		}		
+		proposals.addAll(addModuleMethods(type)); // Decrement confidence by one as a hack to make sure as we move up the inheritance chain we suggest "closer" parents methods first
+		if (!type.isModule()) proposals.addAll(addSuperClassMethods(type));
+		return proposals;
+	}
 
-	private IRubyElement findChild(String name, int type,
-			IParent parent) {
+	private Collection<IMethod> addModuleMethods(IType type) {
+		List<IMethod> proposals = new ArrayList<IMethod>();
+		String[] modules = null;
+		try {
+			modules = type.getIncludedModuleNames();
+		} catch (RubyModelException e) {
+			// ignore
+		}
+		if (modules == null || modules.length == 0) return proposals;
+		RubyElementRequestor requestor = new RubyElementRequestor(type.getRubyScript());
+		for (int i = 0; i < modules.length; i++) {			
+			IType[] moduleTypes = requestor.findType(modules[i]);
+			for (int j = 0; j < moduleTypes.length; j++) {
+				try {
+					IType moduleType = moduleTypes[j];
+					proposals.addAll(suggestMethods(moduleType));
+				} catch (RubyModelException e) {
+					// ignore
+				}
+			}
+		}
+		return proposals;
+	}
+	
+	private Collection<IMethod> addSuperClassMethods(IType type) throws RubyModelException {
+		List<IMethod> proposals = new ArrayList<IMethod>();
+		String superClass = type.getSuperclassName();
+		if (superClass == null) return proposals;
+		RubyElementRequestor requestor = new RubyElementRequestor(type.getRubyScript());
+		IType[] supers = requestor.findType(superClass);
+		for (int i = 0; i < supers.length; i++) {
+			IType superType = supers[i];
+			proposals.addAll(suggestMethods(superType));
+		}
+		return proposals;
+	}
+
+	private IRubyElement findChild(String name, int type, IParent parent) {
 		try {
 			IRubyElement[] children = parent.getChildren();
 			for (int j = 0; j < children.length; j++) {
@@ -144,15 +195,6 @@ public class SelectionEngine {
 
 	private boolean isMethodCall(Node selected) {
 		return (selected instanceof VCallNode) || (selected instanceof FCallNode) || (selected instanceof CallNode);
-	}
-
-	private IRubyElement[] convertToArray(List<IRubyElement> possible) {
-		IRubyElement[] elements = new IRubyElement[possible.size()];
-		int x = 0;
-		for (IRubyElement element : possible) {
-			elements[x++] = element;
-		}
-		return elements;
 	}
 
 	private List<IRubyElement> getChildrenWithName(IRubyElement[] children,
