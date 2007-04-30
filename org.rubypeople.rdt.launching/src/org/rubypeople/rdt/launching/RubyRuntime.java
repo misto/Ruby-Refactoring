@@ -1657,4 +1657,23 @@ public class RubyRuntime {
 			notifyDefaultVMChanged(previous, current);
 		}
 	}	
+	
+	public static File getRI() {
+		return getBinExecutable("ri");
+	}
+	
+	public static File getRDoc() {
+		return getBinExecutable("rdoc");
+	}
+	
+	private static File getBinExecutable(String command) {
+		IVMInstall vm = RubyRuntime.getDefaultVMInstall();
+		if (vm == null) return null;
+		File installLocation = vm.getInstallLocation();
+		String path = installLocation.getAbsolutePath() + File.separator + "bin" + File.separator + command;
+		if (Platform.getOS().equals(Platform.OS_WIN32)) {
+			path += ".bat";
+		}
+		return new File(path);
+	}
 }
