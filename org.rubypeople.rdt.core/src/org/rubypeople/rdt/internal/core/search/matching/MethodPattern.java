@@ -128,7 +128,7 @@ public MethodPattern(
 		declaringQualification,
 		declaringSimpleName,	
 		parameterSimpleNames,
-		(IMethod)null,
+		(IType)null,
 		matchRule);
 }
 public void decodeIndexKey(char[] key) {
