@@ -8,18 +8,23 @@ import java.util.List;
 import java.util.Set;
 
 import org.eclipse.core.resources.IFile;
+import org.eclipse.core.runtime.CoreException;
 import org.jruby.ast.ArgumentNode;
 import org.jruby.ast.CallNode;
+import org.jruby.ast.ClassNode;
 import org.jruby.ast.ClassVarAsgnNode;
 import org.jruby.ast.ClassVarDeclNode;
 import org.jruby.ast.ClassVarNode;
 import org.jruby.ast.Colon2Node;
 import org.jruby.ast.ConstNode;
+import org.jruby.ast.DefnNode;
+import org.jruby.ast.DefsNode;
 import org.jruby.ast.FCallNode;
 import org.jruby.ast.InstAsgnNode;
 import org.jruby.ast.InstVarNode;
 import org.jruby.ast.LocalAsgnNode;
 import org.jruby.ast.LocalVarNode;
+import org.jruby.ast.ModuleNode;
 import org.jruby.ast.Node;
 import org.jruby.ast.VCallNode;
 import org.jruby.ast.types.INameNode;
@@ -31,14 +36,25 @@ import org.rubypeople.rdt.core.IRubyScript;
 import org.rubypeople.rdt.core.IType;
 import org.rubypeople.rdt.core.RubyCore;
 import org.rubypeople.rdt.core.RubyModelException;
+import org.rubypeople.rdt.core.search.IRubySearchConstants;
+import org.rubypeople.rdt.core.search.IRubySearchScope;
+import org.rubypeople.rdt.core.search.SearchEngine;
+import org.rubypeople.rdt.core.search.SearchMatch;
+import org.rubypeople.rdt.core.search.SearchParticipant;
+import org.rubypeople.rdt.core.search.SearchPattern;
 import org.rubypeople.rdt.internal.core.RubyScript;
 import org.rubypeople.rdt.internal.core.parser.RubyParser;
+import org.rubypeople.rdt.internal.core.search.BasicSearchEngine;
+import org.rubypeople.rdt.internal.core.search.CollectingSearchRequestor;
 import org.rubypeople.rdt.internal.core.util.ASTUtil;
 import org.rubypeople.rdt.internal.core.util.Util;
 import org.rubypeople.rdt.internal.ti.DefaultTypeInferrer;
 import org.rubypeople.rdt.internal.ti.ITypeGuess;
 import org.rubypeople.rdt.internal.ti.ITypeInferrer;
+import org.rubypeople.rdt.internal.ti.util.ClosestSpanningNodeLocator;
+import org.rubypeople.rdt.internal.ti.util.INodeAcceptor;
 import org.rubypeople.rdt.internal.ti.util.OffsetNodeLocator;
+import org.rubypeople.rdt.internal.ti.util.ScopedNodeLocator;
 
 public class SelectionEngine {
 
@@ -102,23 +118,64 @@ public class SelectionEngine {
 			return possible.toArray(new IRubyElement[possible.size()]);
 		}
 		if (isMethodCall(selected)) {
-			Set<IRubyElement> possible = new HashSet<IRubyElement>();
-			ITypeInferrer inferrer = new DefaultTypeInferrer();
-			List<ITypeGuess> guesses = inferrer.infer(source, start);
-			RubyElementRequestor requestor = new RubyElementRequestor(script);
 			String methodName = getName(selected);
-			for (ITypeGuess guess : guesses) {
-				
-				String name = guess.getType();
-				IType[] types = requestor.findType(name);
-				for (int i = 0; i < types.length; i++) {
-					IType type = types[i];
-					Collection<IMethod> methods = suggestMethods(type);
-					for (IMethod method : methods) {
-						if (method.getElementName().equals(methodName)) 
-							possible.add(method);
+			Set<IRubyElement> possible = new HashSet<IRubyElement>();
+			// FIXME If VCallNode we know the method is in the enclosing scope
+			// (usually the type or it's hierarchy)
+			if (selected instanceof VCallNode) {
+				Node enclosingTypeNode = ClosestSpanningNodeLocator.Instance()
+						.findClosestSpanner(root, start, new INodeAcceptor() {
+							public boolean doesAccept(Node node) {
+								return (node instanceof ClassNode || node instanceof ModuleNode);
+							}
+						});
+				if (enclosingTypeNode == null) {
+					// TODO Handle case we're in top-level - we need to find the method some other way!
+					RubyCore.log("Was unable to grab the enclosing type for our VCallNode. Maybe we're in top-level?");
+					return new IRubyElement[0];
+				}
+				String typeName = ASTUtil.getNameReflectively(enclosingTypeNode);
+				IRubySearchScope scope = SearchEngine.createRubySearchScope(new IRubyElement[] { script });
+				CollectingSearchRequestor requestor = new CollectingSearchRequestor();
+				SearchPattern pattern = SearchPattern.createPattern(
+						IRubyElement.TYPE, typeName,
+						IRubySearchConstants.DECLARATIONS,
+						SearchPattern.R_EXACT_MATCH);
+				SearchParticipant[] participants = { BasicSearchEngine.getDefaultSearchParticipant() };
+				try {
+					new BasicSearchEngine().search(pattern, participants, scope, requestor, null);
+				} catch (CoreException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				List<SearchMatch> matches = requestor.getResults();
+				if (matches == null || matches.isEmpty()) return new IRubyElement[0];
+				SearchMatch match = matches.get(0);
+				IType type = (IType) match.getElement();
+				Collection<IMethod> methods = suggestMethods(type);
+				for (IMethod method : methods) {
+					if (method.getElementName().equals(methodName))
+						possible.add(method);
+				}
+			} else {
+
+				ITypeInferrer inferrer = new DefaultTypeInferrer();
+				List<ITypeGuess> guesses = inferrer.infer(source, start);
+				RubyElementRequestor requestor = new RubyElementRequestor(
+						script);
+				for (ITypeGuess guess : guesses) {
+					String name = guess.getType();
+					IType[] types = requestor.findType(name);
+					for (int i = 0; i < types.length; i++) {
+						IType type = types[i];
+						Collection<IMethod> methods = suggestMethods(type);
+						for (IMethod method : methods) {
+							if (method.getElementName().equals(methodName))
+								possible.add(method);
+						}
 					}
 				}
+
 			}
 			return possible.toArray(new IRubyElement[possible.size()]);
 		}
