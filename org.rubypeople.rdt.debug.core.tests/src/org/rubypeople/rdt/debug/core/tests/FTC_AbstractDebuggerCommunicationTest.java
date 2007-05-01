@@ -319,6 +319,7 @@ public abstract class FTC_AbstractDebuggerCommunicationTest extends TestCase {
 	public void testBreakpointOnFirstLine() throws Exception {
 		createSocket(new String[] { "puts 'a'" });
 		runTo("test.rb", 1);
+		sendRuby("exit") ;
 	}
 
 	public void testBreakpointAddAndRemove() throws Exception {
@@ -904,7 +905,8 @@ public abstract class FTC_AbstractDebuggerCommunicationTest extends TestCase {
 	public void testInspectTimeout() throws Exception {
 		createSocket(new String[] { "puts 'test'", "puts 'test'" });
 		runToLine(2);
-		sendRuby("v inspect sleep(100)");
+		// timeout is 10 seconds
+		sendRuby("v inspect sleep(15)");
 		try {
 			getVariableReader().readVariables(createStackFrame());
 			fail("Timeout did not occur.");
