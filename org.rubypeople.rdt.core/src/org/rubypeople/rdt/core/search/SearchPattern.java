@@ -1,6 +1,7 @@
 package org.rubypeople.rdt.core.search;
 
 import org.rubypeople.rdt.core.IRubyElement;
+import org.rubypeople.rdt.internal.compiler.parser.ScannerHelper;
 import org.rubypeople.rdt.internal.core.search.indexing.IIndexConstants;
 import org.rubypeople.rdt.internal.core.search.matching.ConstructorPattern;
 import org.rubypeople.rdt.internal.core.search.matching.FieldPattern;
@@ -466,5 +467,325 @@ public abstract class SearchPattern extends InternalSearchPattern {
 					matchRule);
 		}
 	}
+
+	/**
+	 * Answers true if the pattern matches the given name using CamelCase rules, or false otherwise. 
+	 * CamelCase matching does NOT accept explicit wild-cards '*' and '?' and is inherently case sensitive.
+	 * <br>
+	 * CamelCase denotes the convention of writing compound names without spaces, and capitalizing every term.
+	 * This function recognizes both upper and lower CamelCase, depending whether the leading character is capitalized
+	 * or not. The leading part of an upper CamelCase pattern is assumed to contain a sequence of capitals which are appearing
+	 * in the matching name; e.g. 'NPE' will match 'NullPointerException', but not 'NewPerfData'. A lower CamelCase pattern
+	 * uses a lowercase first character. In Java, type names follow the upper CamelCase convention, whereas method or field
+	 * names follow the lower CamelCase convention.
+	 * <br>
+	 * The pattern may contain lowercase characters, which will be match in a case sensitive way. These characters must
+	 * appear in sequence in the name. For instance, 'NPExcep' will match 'NullPointerException', but not 'NullPointerExCEPTION'
+	 * or 'NuPoEx' will match 'NullPointerException', but not 'NoPointerException'.
+	 * <br><br>
+	 * Examples:
+	 * <ol>
+	 * <li><pre>
+	 *    pattern = "NPE"
+	 *    name = NullPointerException / NoPermissionException
+	 *    result => true
+	 * </pre>
+	 * </li>
+	 * <li><pre>
+	 *    pattern = "NuPoEx"
+	 *    name = NullPointerException
+	 *    result => true
+	 * </pre>
+	 * </li>
+	 * <li><pre>
+	 *    pattern = "npe"
+	 *    name = NullPointerException
+	 *    result => false
+	 * </pre>
+	 * </li>
+	 * </ol>
+	 * @see CharOperation#camelCaseMatch(char[], char[])
+	 * 	Implementation has been entirely copied from this method except for array lengthes
+	 * 	which were obviously replaced with calls to {@link String#length()}.
+	 * 
+	 * @param pattern the given pattern
+	 * @param name the given name
+	 * @return true if the pattern matches the given name, false otherwise
+	 * @since 3.2
+	 */
+	public static final boolean camelCaseMatch(String pattern, String name) {
+		if (pattern == null)
+			return true; // null pattern is equivalent to '*'
+		if (name == null)
+			return false; // null name cannot match
+
+		return camelCaseMatch(pattern, 0, pattern.length(), name, 0, name.length());
+	}
+	
+	/**
+	 * Answers true if a sub-pattern matches the subpart of the given name using CamelCase rules, or false otherwise.  
+	 * CamelCase matching does NOT accept explicit wild-cards '*' and '?' and is inherently case sensitive. 
+	 * Can match only subset of name/pattern, considering end positions as non-inclusive.
+	 * The subpattern is defined by the patternStart and patternEnd positions.
+	 * <br>
+	 * CamelCase denotes the convention of writing compound names without spaces, and capitalizing every term.
+	 * This function recognizes both upper and lower CamelCase, depending whether the leading character is capitalized
+	 * or not. The leading part of an upper CamelCase pattern is assumed to contain a sequence of capitals which are appearing
+	 * in the matching name; e.g. 'NPE' will match 'NullPointerException', but not 'NewPerfData'. A lower CamelCase pattern
+	 * uses a lowercase first character. In Java, type names follow the upper CamelCase convention, whereas method or field
+	 * names follow the lower CamelCase convention.
+	 * <br>
+	 * The pattern may contain lowercase characters, which will be match in a case sensitive way. These characters must
+	 * appear in sequence in the name. For instance, 'NPExcep' will match 'NullPointerException', but not 'NullPointerExCEPTION'
+	 * or 'NuPoEx' will match 'NullPointerException', but not 'NoPointerException'.
+	 * <br><br>
+	 * Examples:
+	 * <ol>
+	 * <li><pre>
+	 *    pattern = "NPE"
+	 *    patternStart = 0
+	 *    patternEnd = 3
+	 *    name = NullPointerException
+	 *    nameStart = 0
+	 *    nameEnd = 20
+	 *    result => true
+	 * </pre>
+	 * </li>
+	 * <li><pre>
+	 *    pattern = "NPE"
+	 *    patternStart = 0
+	 *    patternEnd = 3
+	 *    name = NoPermissionException
+	 *    nameStart = 0
+	 *    nameEnd = 21
+	 *    result => true
+	 * </pre>
+	 * </li>
+	 * <li><pre>
+	 *    pattern = "NuPoEx"
+	 *    patternStart = 0
+	 *    patternEnd = 6
+	 *    name = NullPointerException
+	 *    nameStart = 0
+	 *    nameEnd = 20
+	 *    result => true
+	 * </pre>
+	 * </li>
+	 * <li><pre>
+	 *    pattern = "NuPoEx"
+	 *    patternStart = 0
+	 *    patternEnd = 6
+	 *    name = NoPermissionException
+	 *    nameStart = 0
+	 *    nameEnd = 21
+	 *    result => false
+	 * </pre>
+	 * </li>
+	 * <li><pre>
+	 *    pattern = "npe"
+	 *    patternStart = 0
+	 *    patternEnd = 3
+	 *    name = NullPointerException
+	 *    nameStart = 0
+	 *    nameEnd = 20
+	 *    result => false
+	 * </pre>
+	 * </li>
+	 * </ol>
+	 * @see CharOperation#camelCaseMatch(char[], int, int, char[], int, int)
+	 * 	Implementation has been entirely copied from this method except for array lengthes
+	 * 	which were obviously replaced with calls to {@link String#length()} and
+	 * 	for array direct access which were replaced with calls to {@link String#charAt(int)}.
+	 * 
+	 * @param pattern the given pattern
+	 * @param patternStart the start index of the pattern, inclusive
+	 * @param patternEnd the end index of the pattern, exclusive
+	 * @param name the given name
+	 * @param nameStart the start index of the name, inclusive
+	 * @param nameEnd the end index of the name, exclusive
+	 * @return true if a sub-pattern matches the subpart of the given name, false otherwise
+	 * @since 3.2
+	 */
+	public static final boolean camelCaseMatch(String pattern, int patternStart, int patternEnd, String name, int nameStart, int nameEnd) {
+		if (name == null)
+			return false; // null name cannot match
+		if (pattern == null)
+			return true; // null pattern is equivalent to '*'
+		if (patternEnd < 0) 	patternEnd = pattern.length();
+		if (nameEnd < 0) nameEnd = name.length();
+
+		if (patternEnd <= patternStart) return nameEnd <= nameStart;
+		if (nameEnd <= nameStart) return false;
+		// check first pattern char
+		if (name.charAt(nameStart) != pattern.charAt(patternStart)) {
+			// first char must strictly match (upper/lower)
+			return false;
+		}
+
+		char patternChar, nameChar;
+		int iPattern = patternStart;
+		int iName = nameStart;
+
+		// Main loop is on pattern characters
+		while (true) {
+
+			iPattern++;
+			iName++;
+
+			if (iPattern == patternEnd) {
+				// We have exhausted pattern, so it's a match
+				return true;
+			}
+
+			if (iName == nameEnd){
+				// We have exhausted name (and not pattern), so it's not a match 
+				return false;
+			}
+
+			// For as long as we're exactly matching, bring it on (even if it's a lower case character)
+			if ((patternChar = pattern.charAt(iPattern)) == name.charAt(iName)) {
+				continue;
+			}
+
+			// If characters are not equals, then it's not a match if patternChar is lowercase
+			if (patternChar < ScannerHelper.MAX_OBVIOUS) {
+				if ((ScannerHelper.OBVIOUS_IDENT_CHAR_NATURES[patternChar] & ScannerHelper.C_UPPER_LETTER) == 0) {
+					return false;
+				}
+			}
+			else if (Character.isJavaIdentifierPart(patternChar) && !Character.isUpperCase(patternChar)) {
+				return false;
+			}
+
+			// patternChar is uppercase, so let's find the next uppercase in name
+			while (true) {
+				if (iName == nameEnd){
+		            //	We have exhausted name (and not pattern), so it's not a match
+					return false;
+				}
+
+				nameChar = name.charAt(iName);
+
+				if (nameChar < ScannerHelper.MAX_OBVIOUS) {
+					if ((ScannerHelper.OBVIOUS_IDENT_CHAR_NATURES[nameChar] & (ScannerHelper.C_LOWER_LETTER | ScannerHelper.C_SPECIAL | ScannerHelper.C_DIGIT)) != 0) {
+						// nameChar is lowercase    
+						iName++;
+					// nameChar is uppercase...
+					} else  if (patternChar != nameChar) {
+						//.. and it does not match patternChar, so it's not a match
+						return false;
+					} else {
+						//.. and it matched patternChar. Back to the big loop
+						break;
+					}
+				}
+				else if (Character.isJavaIdentifierPart(nameChar) && !Character.isUpperCase(nameChar)) {
+					// nameChar is lowercase    
+					iName++;
+				// nameChar is uppercase...
+				} else  if (patternChar != nameChar) {
+					//.. and it does not match patternChar, so it's not a match
+					return false;
+				} else {
+					//.. and it matched patternChar. Back to the big loop
+					break;
+				}
+			}
+			// At this point, either name has been exhausted, or it is at an uppercase letter.
+			// Since pattern is also at an uppercase letter
+		}
+	}
+
+	/**
+	 * Validate compatibility between given string pattern and match rule.
+	 *<br>
+	 * Optimized (ie. returned match rule is modified) combinations are:
+	 * <ul>
+	 * 	<li>{@link #R_PATTERN_MATCH} without any '*' or '?' in string pattern:
+	 * 		pattern match bit is unset,
+	 * 	</li>
+	 * 	<li>{@link #R_PATTERN_MATCH} and {@link #R_PREFIX_MATCH}  bits simultaneously set:
+	 * 		prefix match bit is unset,
+	 * 	</li>
+	 * 	<li>{@link #R_PATTERN_MATCH} and {@link #R_CAMELCASE_MATCH}  bits simultaneously set:
+	 * 		camel case match bit is unset,
+	 * 	</li>
+	 * 	<li>{@link #R_CAMELCASE_MATCH} with invalid combination of uppercase and lowercase characters:
+	 * 		camel case match bit is unset and replaced with prefix match pattern,
+	 * 	</li>
+	 * 	<li>{@link #R_CAMELCASE_MATCH} combined with {@link #R_PREFIX_MATCH} and {@link #R_CASE_SENSITIVE}
+	 * 		bits is reduced to only {@link #R_CAMELCASE_MATCH} as Camel Case search is already prefix and case sensitive,
+	 * 	</li>
+	 * </ul>
+	 *<br>
+	 * Rejected (ie. returned match rule -1) combinations are:
+	 * <ul>
+	 * 	<li>{@link #R_REGEXP_MATCH} with any other match mode bit set,
+	 * 	</li>
+	 * </ul>
+	 *
+	 * @param stringPattern The string pattern
+	 * @param matchRule The match rule
+	 * @return Optimized valid match rule or -1 if an incompatibility was detected.
+	 * @since 3.2
+	 */
+	public static int validateMatchRule(String stringPattern, int matchRule) {
+
+		// Verify Regexp match rule
+		if ((matchRule & R_REGEXP_MATCH) != 0) {
+			if ((matchRule & R_PATTERN_MATCH) != 0 || (matchRule & R_PREFIX_MATCH) != 0 || (matchRule & R_CAMELCASE_MATCH) != 0) {
+				return -1;
+			}
+		}
+
+		// Verify Pattern match rule
+		int starIndex = stringPattern.indexOf('*');
+		int questionIndex = stringPattern.indexOf('?');
+		if (starIndex < 0 && questionIndex < 0) {
+			// reset pattern match bit if any
+			matchRule &= ~R_PATTERN_MATCH;
+		} else {
+			// force Pattern rule
+			matchRule |= R_PATTERN_MATCH;
+		}
+		if ((matchRule & R_PATTERN_MATCH) != 0) {
+			// remove Camel Case and Prefix match bits if any
+			matchRule &= ~R_CAMELCASE_MATCH;
+			matchRule &= ~R_PREFIX_MATCH;
+		}
+
+		// Verify Camel Case match rule
+		if ((matchRule & R_CAMELCASE_MATCH) != 0) {
+			// Verify sting pattern validity
+			int length = stringPattern.length();
+			boolean validCamelCase = true;
+			boolean uppercase = false;
+			for (int i=0; i<length && validCamelCase; i++) {
+				char ch = stringPattern.charAt(i);
+				validCamelCase = ScannerHelper.isJavaIdentifierStart(ch);
+				// at least one uppercase character is need in CamelCase pattern
+				// (see bug https://bugs.eclipse.org/bugs/show_bug.cgi?id=136313)
+				if (!uppercase) uppercase = ScannerHelper.isUpperCase(ch);
+			}
+			validCamelCase = validCamelCase && uppercase;
+			// Verify bits compatibility
+			if (validCamelCase) {
+				if ((matchRule & R_PREFIX_MATCH) != 0) {
+					if ((matchRule & R_CASE_SENSITIVE) != 0) {
+						// This is equivalent to Camel Case match rule
+						matchRule &= ~R_PREFIX_MATCH;
+						matchRule &= ~R_CASE_SENSITIVE;
+					}
+				}
+			} else {
+				matchRule &= ~R_CAMELCASE_MATCH;
+				if ((matchRule & R_PREFIX_MATCH) == 0) {
+					matchRule |= R_PREFIX_MATCH;
+					matchRule |= R_CASE_SENSITIVE;
+				}
+			}
+		}
+		return matchRule;
+	}	
 	
 }

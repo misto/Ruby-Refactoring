@@ -50,4 +50,39 @@ public interface IRubySearchConstants {
 	 * @since 2.0
 	 */
 	int WRITE_ACCESSES = 5;
+	
+/* Nature of searched element */
+	
+	/**
+	 * The searched element is a type, which may include classes and modules.
+	 */
+	int TYPE= 0;
+	
+	/**
+	 * The searched element is a method.
+	 */
+	int METHOD= 1;
+
+	/**
+	 * The searched element is a constructor.
+	 */
+	int CONSTRUCTOR= 3;
+
+	/**
+	 * The searched element is a field.
+	 */
+	int FIELD= 4;
+
+	/**
+	 * The searched element is a class. 
+	 * More selective than using {@link #TYPE}.
+	 */
+	int CLASS= 5;
+
+	/**
+	 * The searched element is a module.
+	 * More selective than using {@link #TYPE}.
+	 */
+	int MODULE= 6;
+
 }

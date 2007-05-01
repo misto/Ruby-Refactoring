@@ -1,6 +1,7 @@
 package org.rubypeople.rdt.core.search;
 
 import org.eclipse.core.runtime.IPath;
+import org.rubypeople.rdt.core.IRubyElement;
 
 public interface IRubySearchScope {
 
@@ -67,5 +68,7 @@ public interface IRubySearchScope {
 	 * @return whether the resource is enclosed by this scope
 	 */
 	public boolean encloses(String resourcePath);
+
+	boolean encloses(IRubyElement element);
 
 }

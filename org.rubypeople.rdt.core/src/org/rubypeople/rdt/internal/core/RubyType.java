@@ -281,4 +281,26 @@ public class RubyType extends NamedMember implements IType {
 		return null;
 	}
 
+	/**
+	 * @see IType#getTypeQualifiedName(char)
+	 */
+	public String getTypeQualifiedName(String enclosingTypeSeparator) {
+		try {
+			return getTypeQualifiedName(enclosingTypeSeparator, false/*don't show parameters*/);
+		} catch (RubyModelException e) {
+			// exception thrown only when showing parameters
+			return null;
+		}
+	}
+
+	/**
+	 * @see IType
+	 */
+	public IType[] getTypes() throws RubyModelException {
+		ArrayList list= getChildrenOfType(TYPE);
+		IType[] array= new IType[list.size()];
+		list.toArray(array);
+		return array;
+	}
+
 }

@@ -375,4 +375,6 @@ public interface IRubyScript extends IRubyElement, ISourceReference, IParent, IO
     IRubyElement getElementAt(int position) throws RubyModelException;
 
 	IType findPrimaryType();
+
+	IType[] getAllTypes() throws RubyModelException;
 }

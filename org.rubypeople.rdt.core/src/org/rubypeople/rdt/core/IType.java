@@ -176,4 +176,16 @@ public interface IType extends IRubyElement, IMember {
 
 	public ISourceFolder getSourceFolder();
 
+	public String getTypeQualifiedName(String string);
+
+	/**
+	 * Returns the immediate member types declared by this type.
+	 * The results are listed in the order in which they appear in the source or class file.
+	 *
+	 * @exception RubyModelException if this element does not exist or if an
+	 *		exception occurs while accessing its corresponding resource.
+	 * @return the immediate member types declared by this type
+	 */
+	IType[] getTypes() throws RubyModelException;
+
 }

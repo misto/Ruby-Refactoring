@@ -1,7 +1,6 @@
 package org.rubypeople.rdt.internal.compiler.parser;
 
 
-
 public class ScannerHelper {
 	public final static int MAX_OBVIOUS = 128;
 	public final static int[] OBVIOUS_IDENT_CHAR_NATURES = new int[MAX_OBVIOUS];
@@ -101,5 +100,19 @@ public class ScannerHelper {
 		}
 	}
 	return Character.toLowerCase(c);
-}
+	}
+
+	public static boolean isUpperCase(char c) {
+		if (c < MAX_OBVIOUS) {
+			return (ScannerHelper.OBVIOUS_IDENT_CHAR_NATURES[c] & ScannerHelper.C_UPPER_LETTER) != 0;
+		}
+		return Character.isUpperCase(c);
+	}
+	
+	public static boolean isJavaIdentifierStart(char c) {
+		if (c < MAX_OBVIOUS) {
+			return (ScannerHelper.OBVIOUS_IDENT_CHAR_NATURES[c] & ScannerHelper.C_IDENT_START) != 0;
+		}
+		return Character.isJavaIdentifierStart(c);
+	}	
 }

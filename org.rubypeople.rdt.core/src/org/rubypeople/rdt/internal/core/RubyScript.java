@@ -645,7 +645,7 @@ public class RubyScript extends Openable implements IRubyScript {
 	}
 	
 	/**
-	 * @see ICompilationUnit#getTypeNames()
+	 * @see IRubyScript#getTypeNames()
 	 */
 	public IType[] getTypes() throws RubyModelException {
 		ArrayList list = getChildrenOfType(TYPE);
@@ -706,5 +706,30 @@ public class RubyScript extends Openable implements IRubyScript {
 	 */
 	protected char getHandleMementoDelimiter() {
 		return RubyElement.JEM_RUBYSCRIPT;
+	}
+
+	/**
+	 * @see IRubyScript#getAllTypes()
+	 */
+	public IType[] getAllTypes() throws RubyModelException {
+		IRubyElement[] types = getTypes();
+		int i;
+		ArrayList allTypes = new ArrayList(types.length);
+		ArrayList typesToTraverse = new ArrayList(types.length);
+		for (i = 0; i < types.length; i++) {
+			typesToTraverse.add(types[i]);
+		}
+		while (!typesToTraverse.isEmpty()) {
+			IType type = (IType) typesToTraverse.get(0);
+			typesToTraverse.remove(type);
+			allTypes.add(type);
+			types = type.getTypes();
+			for (i = 0; i < types.length; i++) {
+				typesToTraverse.add(types[i]);
+			}
+		} 
+		IType[] arrayOfAllTypes = new IType[allTypes.size()];
+		allTypes.toArray(arrayOfAllTypes);
+		return arrayOfAllTypes;
 	}
 }

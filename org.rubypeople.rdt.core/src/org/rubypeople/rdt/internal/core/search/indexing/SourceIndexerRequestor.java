@@ -78,7 +78,7 @@ public class SourceIndexerRequestor implements ISourceElementRequestor {
 		if (type.superclass != null) {
 			superclass = type.superclass.toCharArray();
 		}
-		indexer.addClassDeclaration(type.isModule ? Flags.AccModule : 0, type.name.toCharArray(), packName, null, superclass, mod, type.secondary);
+		indexer.addClassDeclaration(type.isModule ? Flags.AccModule : 0, packName, type.name.toCharArray(), null, superclass, mod, type.secondary);
 	}
 
 	public void exitConstructor(int endOffset) {

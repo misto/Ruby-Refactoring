@@ -442,4 +442,65 @@ public class RubySearchScope implements IRubySearchScope {
 				return getPath(element.getParent(), relativeToRoot);
 		}
 	}
+	
+	/* (non-Javadoc)
+	 * @see IRubySearchScope#encloses(IRubyElement)
+	 */
+	public boolean encloses(IRubyElement element) {
+		if (this.elements != null) {
+			for (int i = 0, length = this.elements.size(); i < length; i++) {
+				IRubyElement scopeElement = (IRubyElement)this.elements.get(i);
+				IRubyElement searchedElement = element;
+				while (searchedElement != null) {
+					if (searchedElement.equals(scopeElement))
+						return true;
+					searchedElement = searchedElement.getParent();
+				}
+			}
+			return false;
+		}
+		ISourceFolderRoot root = (ISourceFolderRoot) element.getAncestor(IRubyElement.SOURCE_FOLDER_ROOT);
+		if (root != null && root.isExternal()) {
+			// external
+			IPath rootPath = root.getPath();
+			String rootPathToString = rootPath.getDevice() == null ? rootPath.toString() : rootPath.toOSString();
+			IPath relativePath = getPath(element, true/*relative path*/);
+			return indexOf(rootPathToString, relativePath.toString()) >= 0;
+		}
+		// resource in workspace
+		String fullResourcePathString = getPath(element, false/*full path*/).toString();
+		return indexOf(fullResourcePathString) >= 0;
+	}
+	
+	/**
+	 * Returns paths list index of given path or -1 if not found.
+	 * @param containerPath the path of the container, e.g.
+	 *   1. /P/src
+	 *   2. /P
+	 *   3. /P/lib.jar
+	 *   4. /home/mylib.jar
+	 *   5. c:\temp\mylib.jar
+	 * @param relativePath the forward slash path relatively to the container, e.g.
+	 *   1. x/y/Z.class
+	 *   2. x/y
+	 *   3. X.java
+	 *   4. (empty)
+	 */
+	private int indexOf(String containerPath, String relativePath) {
+		// use the hash to get faster comparison
+		int length = this.containerPaths.length,
+			index = (containerPath.hashCode()& 0x7FFFFFFF) % length;
+		String currentContainerPath;
+		while ((currentContainerPath = this.containerPaths[index]) != null) {
+			if (currentContainerPath.equals(containerPath)) {
+				String currentRelativePath = this.relativePaths[index];
+				if (encloses(currentRelativePath, relativePath, index))
+					return index;
+			}
+			if (++index == length) {
+				index = 0;
+			}
+		}
+		return -1;
+	}
 }

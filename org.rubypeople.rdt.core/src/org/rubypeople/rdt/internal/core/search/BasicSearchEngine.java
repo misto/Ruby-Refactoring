@@ -10,6 +10,7 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.OperationCanceledException;
 import org.eclipse.core.runtime.SubProgressMonitor;
+import org.rubypeople.rdt.core.Flags;
 import org.rubypeople.rdt.core.IRubyElement;
 import org.rubypeople.rdt.core.IRubyScript;
 import org.rubypeople.rdt.core.IType;
@@ -19,20 +20,30 @@ import org.rubypeople.rdt.core.WorkingCopyOwner;
 import org.rubypeople.rdt.core.search.IRubySearchConstants;
 import org.rubypeople.rdt.core.search.IRubySearchScope;
 import org.rubypeople.rdt.core.search.SearchDocument;
+import org.rubypeople.rdt.core.search.SearchEngine;
 import org.rubypeople.rdt.core.search.SearchMatch;
 import org.rubypeople.rdt.core.search.SearchParticipant;
 import org.rubypeople.rdt.core.search.SearchPattern;
 import org.rubypeople.rdt.core.search.SearchRequestor;
+import org.rubypeople.rdt.core.search.TypeNameRequestor;
 import org.rubypeople.rdt.internal.core.DefaultWorkingCopyOwner;
 import org.rubypeople.rdt.internal.core.RubyModelManager;
 import org.rubypeople.rdt.internal.core.RubyProject;
 import org.rubypeople.rdt.internal.core.RubyScript;
+import org.rubypeople.rdt.internal.core.search.indexing.IIndexConstants;
 import org.rubypeople.rdt.internal.core.search.indexing.IndexManager;
 import org.rubypeople.rdt.internal.core.search.matching.MatchLocator;
+import org.rubypeople.rdt.internal.core.search.matching.RubySearchPattern;
+import org.rubypeople.rdt.internal.core.search.matching.TypeDeclarationPattern;
+import org.rubypeople.rdt.internal.core.util.CharOperation;
 import org.rubypeople.rdt.internal.core.util.Messages;
 import org.rubypeople.rdt.internal.core.util.Util;
 
 public class BasicSearchEngine {
+	
+	// Type decl kinds
+	public static final int CLASS_DECL = 1;
+	public static final int MODULE_DECL = 2;
 	
 	public static final boolean VERBOSE = false;
 	
@@ -47,6 +58,21 @@ public class BasicSearchEngine {
 	 * their original compilation units.
 	 */
 	private WorkingCopyOwner workingCopyOwner;
+
+	
+	/*
+	 * Creates a new search basic engine.
+	 */
+	public BasicSearchEngine() {
+		// will use working copies of PRIMARY owner
+	}
+	
+	/**
+	 * @see SearchEngine#SearchEngine(WorkingCopyOwner) for detailed comment.
+	 */
+	public BasicSearchEngine(WorkingCopyOwner workingCopyOwner) {
+		this.workingCopyOwner = workingCopyOwner;
+	}
 
 	/**
 	 * Searches for matches of a given search pattern. Search patterns can be created using helper
@@ -269,5 +295,273 @@ public class BasicSearchEngine {
 		public List<IType> getTypes() {
 			return types;
 		}
+	}
+	
+	
+	/**
+	 * Searches for all top-level types and member types in the given scope.
+	 * The search can be selecting specific types (given a package or a type name
+	 * prefix and match modes). 
+	 * 
+	 * @see SearchEngine#searchAllTypeNames(char[], char[], int, int, IJavaSearchScope, TypeNameRequestor, int, IProgressMonitor)
+	 * 	for detailed comment
+	 */
+	public void searchAllTypeNames(
+		final char[] packageName, 
+		final char[] typeName,
+		final int matchRule, 
+		int searchFor, 
+		IRubySearchScope scope, 
+		final TypeNameRequestor nameRequestor,
+		int waitingPolicy,
+		IProgressMonitor progressMonitor)  throws RubyModelException {
+
+		if (VERBOSE) {
+			Util.verbose("BasicSearchEngine.searchAllTypeNames(char[], char[], int, int, IRubySearchScope, IRestrictedAccessTypeRequestor, int, IProgressMonitor)"); //$NON-NLS-1$
+			Util.verbose("	- package name: "+(packageName==null?"null":new String(packageName))); //$NON-NLS-1$ //$NON-NLS-2$
+			Util.verbose("	- type name: "+(typeName==null?"null":new String(typeName))); //$NON-NLS-1$ //$NON-NLS-2$
+			Util.verbose("	- match rule: "+getMatchRuleString(matchRule)); //$NON-NLS-1$
+			Util.verbose("	- search for: "+searchFor); //$NON-NLS-1$
+			Util.verbose("	- scope: "+scope); //$NON-NLS-1$
+		}
+
+		// Return on invalid combination of package and type names
+		if (packageName == null || packageName.length == 0) {
+			if (typeName != null && typeName.length == 0) {
+				if (VERBOSE) {
+					Util.verbose("	=> return no result due to invalid empty values for package and type names!"); //$NON-NLS-1$
+				}
+				return;
+			}
+		}
+
+		IndexManager indexManager = RubyModelManager.getRubyModelManager().getIndexManager();
+		final char typeSuffix;
+		switch(searchFor){
+			case IRubySearchConstants.CLASS :
+				typeSuffix = IIndexConstants.CLASS_SUFFIX;
+				break;
+//			case IRubySearchConstants.CLASS_AND_MODULE :
+//				typeSuffix = IIndexConstants.CLASS_AND_MODULE_SUFFIX; FIXME Converge the TYPE_SUFFIX and CLASS_AND_MODULE_SUFFIX
+//				break;
+			case IRubySearchConstants.MODULE :
+				typeSuffix = IIndexConstants.MODULE_SUFFIX;
+				break;
+			default : 
+				typeSuffix = IIndexConstants.TYPE_SUFFIX;
+				break;
+		}
+		final TypeDeclarationPattern pattern = new TypeDeclarationPattern(
+			packageName,
+			null, // do find member types
+			typeName,
+			typeSuffix,
+			matchRule);
+
+		// Get working copy path(s). Store in a single string in case of only one to optimize comparison in requestor
+		final HashSet workingCopyPaths = new HashSet();
+		String workingCopyPath = null;
+		IRubyScript[] copies = getWorkingCopies();
+		final int copiesLength = copies == null ? 0 : copies.length;
+		if (copies != null) {
+			if (copiesLength == 1) {
+				workingCopyPath = copies[0].getPath().toString();
+			} else {
+				for (int i = 0; i < copiesLength; i++) {
+					IRubyScript workingCopy = copies[i];
+					workingCopyPaths.add(workingCopy.getPath().toString());
+				}
+			}
+		}
+		final String singleWkcpPath = workingCopyPath;
+
+		// Index requestor
+		IndexQueryRequestor searchRequestor = new IndexQueryRequestor(){
+			public boolean acceptIndexMatch(String documentPath, SearchPattern indexRecord, SearchParticipant participant) {
+				// Filter unexpected types
+				TypeDeclarationPattern record = (TypeDeclarationPattern)indexRecord;
+				if (record.enclosingTypeNames == IIndexConstants.ONE_ZERO_CHAR) {
+					return true; // filter out local and anonymous classes
+				}
+				switch (copiesLength) {
+					case 0:
+						break;
+					case 1:
+						if (singleWkcpPath.equals(documentPath)) {
+							return true; // fliter out *the* working copy
+						}
+						break;
+					default:
+						if (workingCopyPaths.contains(documentPath)) {
+							return true; // filter out working copies
+						}
+						break;
+				}
+
+				// Accept document path
+				if (match(record.typeSuffix, record.modifiers)) {
+					nameRequestor.acceptType(record.typeSuffix == IIndexConstants.MODULE_SUFFIX, record.pkg, record.simpleName, record.enclosingTypeNames, documentPath);
+				}
+				return true;
+			}
+		};
+	
+		try {
+			if (progressMonitor != null) {
+				progressMonitor.beginTask(Messages.engine_searching, 100); 
+			}
+			// add type names from indexes
+			indexManager.performConcurrentJob(
+				new PatternSearchJob(
+					pattern, 
+					getDefaultSearchParticipant(), // Ruby search only
+					scope, 
+					searchRequestor),
+				waitingPolicy,
+				progressMonitor == null ? null : new SubProgressMonitor(progressMonitor, 100));	
+				
+			// add type names from working copies
+			if (copies != null) {
+				for (int i = 0; i < copiesLength; i++) {
+					IRubyScript workingCopy = copies[i];
+					if (!scope.encloses(workingCopy)) continue;
+					final String path = workingCopy.getPath().toString();
+					if (workingCopy.isConsistent()) {
+						// TODO Clean this up and figure out what we use instead of package names...
+//						IPackageDeclaration[] packageDeclarations = workingCopy.getPackageDeclarations();
+//						char[] packageDeclaration = packageDeclarations.length == 0 ? CharOperation.NO_CHAR : packageDeclarations[0].getElementName().toCharArray();
+						char[] packageDeclaration = CharOperation.NO_CHAR;
+						IType[] allTypes = workingCopy.getAllTypes();
+						for (int j = 0, allTypesLength = allTypes.length; j < allTypesLength; j++) {
+							IType type = allTypes[j];
+							IRubyElement parent = type.getParent();
+							char[][] enclosingTypeNames;
+							if (parent instanceof IType) {
+								char[] parentQualifiedName = ((IType)parent).getTypeQualifiedName("::").toCharArray();
+								enclosingTypeNames = CharOperation.splitOn("::", parentQualifiedName);
+							} else {
+								enclosingTypeNames = CharOperation.NO_CHAR_CHAR;
+							}
+							char[] simpleName = type.getElementName().toCharArray();
+							int kind;
+							if (type.isClass()) {
+								kind = CLASS_DECL;
+							} else /*if (type.isModule())*/ {
+								kind = MODULE_DECL;
+							}
+							if (match(typeSuffix, packageName, typeName, matchRule, kind, packageDeclaration, simpleName)) {
+								nameRequestor.acceptType(type.isModule(), packageDeclaration, simpleName, enclosingTypeNames, path);
+							}
+						}
+					} else {
+						// TODO Parse and traverse AST, report all type declarations...
+					}
+				}
+			}	
+		} finally {
+			if (progressMonitor != null) {
+				progressMonitor.done();
+			}
+		}
+	}
+	
+	boolean match(char patternTypeSuffix, int modifiers) {
+		switch(patternTypeSuffix) {
+			case IIndexConstants.CLASS_SUFFIX :
+				return (modifiers & (Flags.AccModule)) == 0;
+			case IIndexConstants.CLASS_AND_MODULE_SUFFIX:
+				return true;
+			case IIndexConstants.MODULE_SUFFIX :
+				return (modifiers & Flags.AccModule) != 0;
+		}
+		return true;
+	}
+	
+	boolean match(char patternTypeSuffix, char[] patternPkg, char[] patternTypeName, int matchRule, int typeKind, char[] pkg, char[] typeName) {
+		switch(patternTypeSuffix) {
+			case IIndexConstants.CLASS_SUFFIX :
+				if (typeKind != CLASS_DECL) return false;
+				break;
+			case IIndexConstants.CLASS_AND_MODULE_SUFFIX:
+				if (typeKind != CLASS_DECL && typeKind != MODULE_DECL) return false;
+				break;
+			case IIndexConstants.MODULE_SUFFIX :
+				if (typeKind != MODULE_DECL) return false;
+				break;
+			case IIndexConstants.TYPE_SUFFIX : // nothing
+		}
+	
+		boolean isCaseSensitive = (matchRule & SearchPattern.R_CASE_SENSITIVE) != 0;
+		if (patternPkg != null && !CharOperation.equals(patternPkg, pkg, isCaseSensitive))
+				return false;
+		
+		if (patternTypeName != null) {
+			boolean isCamelCase = (matchRule & SearchPattern.R_CAMELCASE_MATCH) != 0;
+			int matchMode = matchRule & RubySearchPattern.MATCH_MODE_MASK;
+			if (!isCaseSensitive && !isCamelCase) {
+				patternTypeName = CharOperation.toLowerCase(patternTypeName);
+			}
+			boolean matchFirstChar = !isCaseSensitive || patternTypeName[0] == typeName[0];
+			if (isCamelCase && matchFirstChar && CharOperation.camelCaseMatch(patternTypeName, typeName)) {
+				return true;
+			}
+			switch(matchMode) {
+				case SearchPattern.R_EXACT_MATCH :
+					if (!isCamelCase) {
+						return matchFirstChar && CharOperation.equals(patternTypeName, typeName, isCaseSensitive);
+					}
+					// fall through next case to match as prefix if camel case failed
+				case SearchPattern.R_PREFIX_MATCH :
+					return matchFirstChar && CharOperation.prefixEquals(patternTypeName, typeName, isCaseSensitive);
+				case SearchPattern.R_PATTERN_MATCH :
+					return CharOperation.match(patternTypeName, typeName, isCaseSensitive);
+				case SearchPattern.R_REGEXP_MATCH :
+					// TODO (frederic) implement regular expression match
+					break;
+			}
+		}
+		return true;
+	
+	}	
+	
+	/**
+	 * @param matchRule
+	 */
+	public static String getMatchRuleString(final int matchRule) {
+		if (matchRule == 0) {
+			return "R_EXACT_MATCH"; //$NON-NLS-1$
+		}
+		StringBuffer buffer = new StringBuffer();
+		for (int i=1; i<=8; i++) {
+			int bit = matchRule & (1<<(i-1));
+			if (bit != 0 && buffer.length()>0) buffer.append(" | "); //$NON-NLS-1$
+			switch (bit) {
+				case SearchPattern.R_PREFIX_MATCH:
+					buffer.append("R_PREFIX_MATCH"); //$NON-NLS-1$
+					break;
+				case SearchPattern.R_CASE_SENSITIVE:
+					buffer.append("R_CASE_SENSITIVE"); //$NON-NLS-1$
+					break;
+				case SearchPattern.R_EQUIVALENT_MATCH:
+					buffer.append("R_EQUIVALENT_MATCH"); //$NON-NLS-1$
+					break;
+				case SearchPattern.R_ERASURE_MATCH:
+					buffer.append("R_ERASURE_MATCH"); //$NON-NLS-1$
+					break;
+				case SearchPattern.R_FULL_MATCH:
+					buffer.append("R_FULL_MATCH"); //$NON-NLS-1$
+					break;
+				case SearchPattern.R_PATTERN_MATCH:
+					buffer.append("R_PATTERN_MATCH"); //$NON-NLS-1$
+					break;
+				case SearchPattern.R_REGEXP_MATCH:
+					buffer.append("R_REGEXP_MATCH"); //$NON-NLS-1$
+					break;
+				case SearchPattern.R_CAMELCASE_MATCH:
+					buffer.append("R_CAMELCASE_MATCH"); //$NON-NLS-1$
+					break;
+			}
+		}
+		return buffer.toString();
 	}
 }

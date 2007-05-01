@@ -10,6 +10,10 @@
  *******************************************************************************/
 package org.rubypeople.rdt.internal.core;
 
+import org.rubypeople.rdt.core.IMember;
+import org.rubypeople.rdt.core.IRubyElement;
+import org.rubypeople.rdt.core.RubyModelException;
+
 
 public abstract class NamedMember extends Member {
 
@@ -26,5 +30,27 @@ public abstract class NamedMember extends Member {
 
 	public String getElementName() {
 		return this.name;
+	}
+	
+	public String getTypeQualifiedName(String enclosingTypeSeparator, boolean showParameters) throws RubyModelException {
+		NamedMember declaringType;
+		switch (this.parent.getElementType()) {
+			case IRubyElement.SCRIPT:
+				return this.name;
+			case IRubyElement.TYPE:
+				declaringType = (NamedMember) this.parent;
+				break;
+			case IRubyElement.FIELD:
+			case IRubyElement.METHOD:
+				declaringType = (NamedMember) ((IMember) this.parent).getDeclaringType();
+				break;
+			default:
+				return null;
+		}
+		StringBuffer buffer = new StringBuffer(declaringType.getTypeQualifiedName(enclosingTypeSeparator, showParameters));
+		buffer.append(enclosingTypeSeparator);
+		String simpleName = this.name.length() == 0 ? Integer.toString(this.occurrenceCount) : this.name;
+		buffer.append(simpleName);
+		return buffer.toString();
 	}
 }
