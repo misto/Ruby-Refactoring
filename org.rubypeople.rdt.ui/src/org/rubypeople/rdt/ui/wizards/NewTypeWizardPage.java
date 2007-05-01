@@ -1,6 +1,7 @@
 package org.rubypeople.rdt.ui.wizards;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import org.eclipse.core.resources.IResource;
@@ -31,6 +32,9 @@ import org.rubypeople.rdt.core.IType;
 import org.rubypeople.rdt.core.RubyConventions;
 import org.rubypeople.rdt.core.RubyModelException;
 import org.rubypeople.rdt.core.formatter.CodeFormatter;
+import org.rubypeople.rdt.core.search.IRubySearchConstants;
+import org.rubypeople.rdt.core.search.IRubySearchScope;
+import org.rubypeople.rdt.core.search.SearchEngine;
 import org.rubypeople.rdt.internal.core.RubyProject;
 import org.rubypeople.rdt.internal.corext.codemanipulation.StubUtility;
 import org.rubypeople.rdt.internal.corext.util.CodeFormatterUtil;
@@ -39,7 +43,9 @@ import org.rubypeople.rdt.internal.corext.util.RubyModelUtil;
 import org.rubypeople.rdt.internal.ui.RubyPlugin;
 import org.rubypeople.rdt.internal.ui.RubyPluginImages;
 import org.rubypeople.rdt.internal.ui.dialogs.StatusInfo;
+import org.rubypeople.rdt.internal.ui.dialogs.TypeSelectionDialog2;
 import org.rubypeople.rdt.internal.ui.wizards.NewWizardMessages;
+import org.rubypeople.rdt.internal.ui.wizards.SuperModuleSelectionDialog;
 import org.rubypeople.rdt.internal.ui.wizards.dialogfields.DialogField;
 import org.rubypeople.rdt.internal.ui.wizards.dialogfields.IDialogFieldListener;
 import org.rubypeople.rdt.internal.ui.wizards.dialogfields.IListAdapter;
@@ -110,13 +116,13 @@ public abstract class NewTypeWizardPage extends NewContainerWizardPage {
 	private StringButtonStatusDialogField fPackageDialogField;
 	
 	private StringButtonDialogField fSuperClassDialogField;
-	private ListDialogField fSuperInterfacesDialogField;
+	private ListDialogField fSuperModulesDialogField;
 	
 	private IType fCreatedType;
 		
 	protected IStatus fTypeNameStatus;
 	protected IStatus fSuperClassStatus;
-	protected IStatus fSuperInterfacesStatus;	
+	protected IStatus fSuperModulesStatus;	
 
 	private int fTypeKind;
 	private ISourceFolder fCurrSourceFolder;
@@ -182,15 +188,15 @@ public abstract class NewTypeWizardPage extends NewContainerWizardPage {
 			/* 1 */ null,
 			NewWizardMessages.NewTypeWizardPage_interfaces_remove
 		}; 
-		fSuperInterfacesDialogField= new ListDialogField(adapter, addButtons, new InterfacesListLabelProvider());
-		fSuperInterfacesDialogField.setDialogFieldListener(adapter);
-		fSuperInterfacesDialogField.setTableColumns(new ListDialogField.ColumnsDescription(1, false));
-		fSuperInterfacesDialogField.setLabelText(getSuperInterfacesLabel());
-		fSuperInterfacesDialogField.setRemoveButtonIndex(2);
+		fSuperModulesDialogField= new ListDialogField(adapter, addButtons, new InterfacesListLabelProvider());
+		fSuperModulesDialogField.setDialogFieldListener(adapter);
+		fSuperModulesDialogField.setTableColumns(new ListDialogField.ColumnsDescription(1, false));
+		fSuperModulesDialogField.setLabelText(getSuperModulesLabel());
+		fSuperModulesDialogField.setRemoveButtonIndex(2);
 							
 		fTypeNameStatus= new StatusInfo();
 		fSuperClassStatus= new StatusInfo();
-		fSuperInterfacesStatus= new StatusInfo();
+		fSuperModulesStatus= new StatusInfo();
 	}
 	
 	/**
@@ -316,7 +322,7 @@ public abstract class NewTypeWizardPage extends NewContainerWizardPage {
 	 * @return the label that is used for the super interfaces input field.
 	 * @since 3.2
 	 */
-	protected String getSuperInterfacesLabel() {
+	protected String getSuperModulesLabel() {
 	    if (fTypeKind != INTERFACE_TYPE)
 	        return NewWizardMessages.NewTypeWizardPage_interfaces_class_label; 
 	    return NewWizardMessages.NewTypeWizardPage_interfaces_ifc_label; 
@@ -472,12 +478,12 @@ public abstract class NewTypeWizardPage extends NewContainerWizardPage {
 	}
 	
 	private void typePageCustomButtonPressed(DialogField field, int index) {		
-		if (field == fSuperInterfacesDialogField) {
-			chooseSuperInterfaces();
-			List interfaces= fSuperInterfacesDialogField.getElements();
+		if (field == fSuperModulesDialogField) {
+			chooseSuperModules();
+			List interfaces= fSuperModulesDialogField.getElements();
 			if (!interfaces.isEmpty()) {
 				Object element= interfaces.get(interfaces.size() - 1);
-				fSuperInterfacesDialogField.editElement(element);
+				fSuperModulesDialogField.editElement(element);
 			}
 		}
 	}
@@ -681,6 +687,11 @@ public abstract class NewTypeWizardPage extends NewContainerWizardPage {
 	private String constructSimpleTypeStub(String lineDelimiter) {
 		StringBuffer buf= new StringBuffer("class "); //$NON-NLS-1$
 		buf.append(getTypeName());
+		String superclass = getSuperClass();
+		if (superclass != null && superclass.trim().length() > 0 && !superclass.trim().equals("Object") ) {
+			buf.append(" < ");
+			buf.append(superclass.trim());
+		}
 		buf.append(lineDelimiter);
 		buf.append("end"); //$NON-NLS-1$
 		return buf.toString();
@@ -688,27 +699,73 @@ public abstract class NewTypeWizardPage extends NewContainerWizardPage {
 	
 	/**
 	 * Opens a selection dialog that allows to select the super interfaces. The selected interfaces are
-	 * directly added to the wizard page using {@link #addSuperInterface(String)}.
+	 * directly added to the wizard page using {@link #addSuperModule(String)}.
 	 * 
 	 * 	<p>
 	 * Clients can override this method if they want to offer a different dialog.
 	 * </p>
 	 * 
-	 * @since 3.2
+	 * @since 1.0
 	 */
-	protected void chooseSuperInterfaces() {
+	protected void chooseSuperModules() {
 		ISourceFolderRoot root= getSourceFolderRoot();
 		if (root == null) {
 			return;
 		}		
 
-		RubyModuleSelectionDialog dialog = new RubyModuleSelectionDialog(getShell());
-		dialog.setTitle(getInterfaceDialogTitle());
+		IRubyProject project= root.getRubyProject();
+		SuperModuleSelectionDialog dialog= new SuperModuleSelectionDialog(getShell(), getWizard().getContainer(), this, project);
+		dialog.setTitle(getModuleDialogTitle());
 		dialog.setMessage(NewWizardMessages.NewTypeWizardPage_InterfacesDialog_message); 
-		dialog.open();	
+		dialog.open();
 	}
 	
-	private String getInterfaceDialogTitle() {
+	/**
+	 * Sets the super interfaces.
+	 * 
+	 * @param interfacesNames a list of super interface. The method requires that
+	 * the list's elements are of type <code>String</code>
+	 * @param canBeModified if <code>true</code> the super interface field is
+	 * editable; otherwise it is read-only.
+	 */	
+	public void setSuperModules(List interfacesNames, boolean canBeModified) {
+		ArrayList interfaces= new ArrayList(interfacesNames.size());
+		for (Iterator iter= interfacesNames.iterator(); iter.hasNext();) {
+			interfaces.add(new InterfaceWrapper((String) iter.next()));
+		}
+		fSuperModulesDialogField.setElements(interfaces);
+		fSuperModulesDialogField.setEnabled(canBeModified);
+	}
+	
+	/**
+	 * Returns the chosen super interfaces.
+	 * 
+	 * @return a list of chosen super interfaces. The list's elements
+	 * are of type <code>String</code>
+	 */
+	public List getSuperModules() {
+		List interfaces= fSuperModulesDialogField.getElements();
+		ArrayList result= new ArrayList(interfaces.size());
+		for (Iterator iter= interfaces.iterator(); iter.hasNext();) {
+			InterfaceWrapper wrapper= (InterfaceWrapper) iter.next();
+			result.add(wrapper.interfaceName);
+		}
+		return result;
+	}
+	
+	/**
+	 * Adds a super interface to the end of the list and selects it if it is not in the list yet.
+	 * 
+	 * @param superInterface the fully qualified type name of the interface.
+	 * @return returns <code>true</code>if the interfaces has been added, <code>false</code>
+	 * if the interface already is in the list.
+	 * @since 1.0
+	 */
+	public boolean addSuperModule(String superInterface) {
+		return fSuperModulesDialogField.addElement(new InterfaceWrapper(superInterface));
+	}
+	
+	private String getModuleDialogTitle() {
 	    if (fTypeKind == INTERFACE_TYPE)
 	        return NewWizardMessages.NewTypeWizardPage_InterfacesDialog_interface_title; 
 	    return NewWizardMessages.NewTypeWizardPage_InterfacesDialog_class_title; 
@@ -741,8 +798,8 @@ public abstract class NewTypeWizardPage extends NewContainerWizardPage {
 		} else if (field == fSuperClassDialogField) {
 			fSuperClassStatus= superClassChanged();
 			fieldName= SUPER;
-		} else if (field == fSuperInterfacesDialogField) {
-			fSuperInterfacesStatus= superInterfacesChanged();
+		} else if (field == fSuperModulesDialogField) {
+			fSuperModulesStatus= superInterfacesChanged();
 			fieldName= INTERFACES;
 		} else {
 			fieldName= METHODS;
@@ -820,7 +877,7 @@ public abstract class NewTypeWizardPage extends NewContainerWizardPage {
 			fContainerStatus,
 			fTypeNameStatus,
 			fSuperClassStatus,
-			fSuperInterfacesStatus
+			fSuperModulesStatus
 		};
 		
 		// the mode severe status will be displayed and the OK button enabled/disabled.
@@ -932,10 +989,10 @@ public abstract class NewTypeWizardPage extends NewContainerWizardPage {
 		StatusInfo status= new StatusInfo();
 		
 		ISourceFolderRoot root= getSourceFolderRoot();
-		fSuperInterfacesDialogField.enableButton(0, root != null);
+		fSuperModulesDialogField.enableButton(0, root != null);
 						
 		if (root != null) {
-			List elements= fSuperInterfacesDialogField.getElements();
+			List elements= fSuperModulesDialogField.getElements();
 			int nElements= elements.size();
 			for (int i= 0; i < nElements; i++) {
 				// TODO Check to make sure each interface exists and is valid
@@ -961,15 +1018,23 @@ public abstract class NewTypeWizardPage extends NewContainerWizardPage {
 	 *         different dialog.
 	 *         </p>
 	 * 
-	 * @since 3.2
+	 * @since 0.9
 	 */
 	protected IType chooseSuperClass() {
 		ISourceFolderRoot root= getSourceFolderRoot();
 		if (root == null) {
 			return null;
-		}	
+		}
 		
-		RubyClassSelectionDialog dialog = new RubyClassSelectionDialog(getShell());
+		IRubyElement[] elements= new IRubyElement[] { root.getRubyProject() };
+		IRubySearchScope scope= SearchEngine.createRubySearchScope(elements);
+
+		TypeSelectionDialog2 dialog= new TypeSelectionDialog2(getShell(), false,
+			getWizard().getContainer(), scope, IRubySearchConstants.CLASS);
+		dialog.setTitle(NewWizardMessages.NewTypeWizardPage_SuperClassDialog_title); 
+		dialog.setMessage(NewWizardMessages.NewTypeWizardPage_SuperClassDialog_message); 
+		dialog.setFilter(getSuperClass());
+
 		if (dialog.open() == Window.OK) {
 			return (IType) dialog.getFirstResult();
 		}

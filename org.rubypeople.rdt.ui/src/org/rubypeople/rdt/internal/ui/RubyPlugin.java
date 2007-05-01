@@ -27,6 +27,7 @@ import org.eclipse.debug.internal.ui.ImageDescriptorRegistry;
 import org.eclipse.jface.action.GroupMarker;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.Separator;
+import org.eclipse.jface.dialogs.IDialogSettings;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.preference.PreferenceConverter;
 import org.eclipse.jface.text.templates.ContextTypeRegistry;
@@ -566,5 +567,21 @@ public class RubyPlugin extends AbstractUIPlugin implements IRubyColorConstants 
 		if (fTypeFilter == null)
 			fTypeFilter= new TypeFilter();
 		return fTypeFilter;
+	}
+
+	/**
+	 * Returns a section in the Ruby plugin's dialog settings. If the section doesn't exist yet, it is created.
+	 *
+	 * @param name the name of the section
+	 * @return the section of the given name
+	 * @since 1.0
+	 */
+	public IDialogSettings getDialogSettingsSection(String name) {
+		IDialogSettings dialogSettings= getDialogSettings();
+		IDialogSettings section= dialogSettings.getSection(name);
+		if (section == null) {
+			section= dialogSettings.addNewSection(name);
+		}
+		return section;
 	}	
 }

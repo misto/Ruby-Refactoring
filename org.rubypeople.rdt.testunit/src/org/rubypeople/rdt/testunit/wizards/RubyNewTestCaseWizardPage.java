@@ -26,13 +26,17 @@ import org.rubypeople.rdt.core.ISourceFolderRoot;
 import org.rubypeople.rdt.core.IType;
 import org.rubypeople.rdt.core.RubyConventions;
 import org.rubypeople.rdt.core.RubyModelException;
+import org.rubypeople.rdt.core.search.IRubySearchConstants;
+import org.rubypeople.rdt.core.search.IRubySearchScope;
+import org.rubypeople.rdt.core.search.SearchEngine;
+import org.rubypeople.rdt.internal.corext.codemanipulation.StubUtility;
 import org.rubypeople.rdt.internal.corext.util.Messages;
 import org.rubypeople.rdt.internal.testunit.util.LayoutUtil;
 import org.rubypeople.rdt.internal.testunit.util.TestUnitStatus;
 import org.rubypeople.rdt.internal.testunit.wizards.MethodStubsSelectionButtonGroup;
 import org.rubypeople.rdt.internal.testunit.wizards.WizardMessages;
+import org.rubypeople.rdt.internal.ui.dialogs.TypeSelectionDialog2;
 import org.rubypeople.rdt.ui.wizards.NewTypeWizardPage;
-import org.rubypeople.rdt.ui.wizards.RubyClassSelectionDialog;
 
 public class RubyNewTestCaseWizardPage extends NewTypeWizardPage {
 
@@ -127,47 +131,58 @@ public class RubyNewTestCaseWizardPage extends NewTypeWizardPage {
     /* (non-Javadoc)
 	 * @see org.eclipse.jdt.ui.wizards.NewTypeWizardPage#createTypeMembers(org.eclipse.jdt.core.IType, org.eclipse.jdt.ui.wizards.NewTypeWizardPage.ImportsManager, org.eclipse.core.runtime.IProgressMonitor)
 	 */
-	protected void createTypeMembers(IType type, IProgressMonitor monitor) throws CoreException {		
+	protected void createTypeMembers(IType type, IProgressMonitor monitor) throws CoreException {	
+		String lineDelimiter= StubUtility.getLineDelimiterUsed(type.getRubyProject());
+		
 		if (fMethodStubsButtons.isSelected(IDX_CONSTRUCTOR)) {
-			createConstructor(type); 	
+			createConstructor(type, lineDelimiter); 	
 		}
 		
 		if (fMethodStubsButtons.isSelected(IDX_SETUP)) {
-			createSetUp(type);
+			createSetUp(type, lineDelimiter);
 		}
 		
 		if (fMethodStubsButtons.isSelected(IDX_TEARDOWN)) {
-			createTearDown(type);
+			createTearDown(type, lineDelimiter);
 		}
 
 		if (fClassUnderTest != null) {
-			createTestMethodStubs(type);
+			createTestMethodStubs(type, lineDelimiter);
 		}		
 	}
 
 
-	private void createConstructor(IType type) throws CoreException {
-    	StringBuffer content = new StringBuffer("def initialize\n");
-    	content.append("  super\n");
-    	content.append("end\n");
+	private void createConstructor(IType type, String lineDelimiter) throws CoreException {
+    	StringBuffer content = new StringBuffer("def initialize");
+    	content.append(lineDelimiter);
+    	content.append("  super");
+    	content.append(lineDelimiter);
+    	content.append("end");
+    	content.append(lineDelimiter);
     	type.createMethod(content.toString(), null, true, null);		
 	}
 	
-	private void createSetUp(IType type) throws CoreException {
-    	StringBuffer content = new StringBuffer("def setup\n");
-    	content.append("  super\n");
-    	content.append("end\n");
+	private void createSetUp(IType type, String lineDelimiter) throws CoreException {
+    	StringBuffer content = new StringBuffer("def setup");
+    	content.append(lineDelimiter);
+    	content.append("  super");
+    	content.append(lineDelimiter);
+    	content.append("end");
+    	content.append(lineDelimiter);
     	type.createMethod(content.toString(), null, true, null);		
 	}
 	
-	private void createTearDown(IType type) throws CoreException {
-    	StringBuffer content = new StringBuffer("def teardown\n");
-    	content.append("  super\n");
-    	content.append("end\n");
+	private void createTearDown(IType type, String lineDelimiter) throws CoreException {
+    	StringBuffer content = new StringBuffer("def teardown");
+    	content.append(lineDelimiter);
+    	content.append("  super");
+    	content.append(lineDelimiter);
+    	content.append("end");
+    	content.append(lineDelimiter);
     	type.createMethod(content.toString(), null, true, null);		
 	}
 	
-	private void createTestMethodStubs(IType type) throws CoreException {
+	private void createTestMethodStubs(IType type, String lineDelimiter) throws CoreException {
 //    	StringBuffer content = new StringBuffer("def setup");
 //    	content.append("  super\n");
 //    	content.append("end\n");
@@ -238,21 +253,21 @@ public class RubyNewTestCaseWizardPage extends NewTypeWizardPage {
 	
 	private IType chooseClassToTestType() {	
 		ISourceFolderRoot root= getSourceFolderRoot();
-		if (root == null) 
+		if (root == null) {
 			return null;
+		}
+		
+		IRubyElement[] elements= new IRubyElement[] { root.getRubyProject() };
+		IRubySearchScope scope= SearchEngine.createRubySearchScope(elements);
 
-//		IRubyElement[] elements= new IRubyElement[] { root.getRubyProject() };
+		TypeSelectionDialog2 dialog= new TypeSelectionDialog2(getShell(), false,
+			getWizard().getContainer(), scope, IRubySearchConstants.CLASS);
+		dialog.setTitle(WizardMessages.NewTestCaseWizardPage_class_to_test_dialog_title); 
+		dialog.setMessage(WizardMessages.NewTestCaseWizardPage_class_to_test_dialog_message); 
 
-	
-			RubyClassSelectionDialog dialog = new RubyClassSelectionDialog(getShell());
-			dialog.setTitle(WizardMessages.NewTestCaseWizardPage_class_to_test_dialog_title); 
-			dialog.setMessage(WizardMessages.NewTestCaseWizardPage_class_to_test_dialog_message); 
-			if (dialog.open() == Window.OK) {
-				Object[] resultArray= dialog.getResult();
-				if (resultArray != null && resultArray.length > 0)
-					return (IType) resultArray[0];
-			}
-
+		if (dialog.open() == Window.OK) {
+			return (IType) dialog.getFirstResult();
+		}
 		return null;
 	}
 	

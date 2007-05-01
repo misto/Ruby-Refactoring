@@ -8,6 +8,7 @@ Bundle-Activator: org.rubypeople.rdt.internal.ui.RubyPlugin
 Bundle-Vendor: %providerName
 Bundle-Localization: plugin
 Export-Package: org.rubypeople.rdt.internal.corext,
+ org.rubypeople.rdt.internal.corext.codemanipulation,
  org.rubypeople.rdt.internal.corext.util,
  org.rubypeople.rdt.internal.ui,
  org.rubypeople.rdt.internal.ui.actions,

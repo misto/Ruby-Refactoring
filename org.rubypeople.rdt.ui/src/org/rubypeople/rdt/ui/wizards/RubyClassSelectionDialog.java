@@ -6,9 +6,16 @@ import java.util.List;
 import org.eclipse.swt.widgets.Shell;
 import org.rubypeople.rdt.core.IRubyElement;
 import org.rubypeople.rdt.core.IType;
+import org.rubypeople.rdt.internal.ui.dialogs.TypeSelectionDialog2;
 
+/**
+ * 
+ * @author Chris Williams
+ * @deprecated Please use {@link TypeSelectionDialog2}
+ */
 public class RubyClassSelectionDialog extends RubyTypeSelectionDialog {
-
+//	 XXX Remve all references to this and remove it and its parent!
+	
     public RubyClassSelectionDialog(Shell parent) {
         super(parent);
     }

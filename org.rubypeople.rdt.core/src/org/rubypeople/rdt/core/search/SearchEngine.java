@@ -1,6 +1,7 @@
 package org.rubypeople.rdt.core.search;
 
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.rubypeople.rdt.core.IRubyElement;
 import org.rubypeople.rdt.core.RubyModelException;
 import org.rubypeople.rdt.core.WorkingCopyOwner;
 import org.rubypeople.rdt.internal.core.search.BasicSearchEngine;
@@ -93,6 +94,10 @@ public class SearchEngine {
 		IProgressMonitor progressMonitor)  throws RubyModelException {
 		
 		this.basicEngine.searchAllTypeNames(packageName, typeName, matchRule, searchFor, scope, nameRequestor, waitingPolicy, progressMonitor);
+	}
+
+	public static IRubySearchScope createRubySearchScope(IRubyElement[] elements) {
+		return BasicSearchEngine.createRubySearchScope(elements);
 	}
 
 }

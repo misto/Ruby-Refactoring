@@ -604,16 +604,16 @@ public class ListDialogField extends DialogField {
 	/**
 	 * Adds an element at the end of the list.
 	 */		
-	public void addElement(Object element) {
-		addElement(element, fElements.size());
+	public boolean addElement(Object element) {
+		return addElement(element, fElements.size());
 	}
 	
 	/**
 	 * Adds an element at a position.
 	 */		
-	public void addElement(Object element, int index) {
+	public boolean addElement(Object element, int index) {
 		if (fElements.contains(element)) {
-			return;
+			return false;
 		}
 		fElements.add(index, element);
 		if (isOkToUse(fTableControl)) {
@@ -622,6 +622,7 @@ public class ListDialogField extends DialogField {
 		}
 		
 		dialogFieldChanged();
+		return true;
 	}	
 
 	/**
