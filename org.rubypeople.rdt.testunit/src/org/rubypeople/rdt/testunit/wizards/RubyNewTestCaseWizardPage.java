@@ -1,12 +1,14 @@
 package org.rubypeople.rdt.testunit.wizards;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.IDialogPage;
 import org.eclipse.jface.dialogs.IDialogSettings;
-import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.window.Window;
 import org.eclipse.swt.SWT;
@@ -66,11 +68,11 @@ public class RubyNewTestCaseWizardPage extends NewTypeWizardPage {
 	private IType fClassUnderTest;
 
     /**
-     * Constructor for SampleNewWizardPage.
+     * Constructor for RubyNewTestCaseWizardPage.
      * 
      * @param pageName
      */
-    public RubyNewTestCaseWizardPage(ISelection selection) {
+    public RubyNewTestCaseWizardPage() {
     	super(true, PAGE_NAME);
 
     	setTitle(WizardMessages.NewTestCaseWizardPage_title);
@@ -133,7 +135,7 @@ public class RubyNewTestCaseWizardPage extends NewTypeWizardPage {
 	 */
 	protected void createTypeMembers(IType type, IProgressMonitor monitor) throws CoreException {	
 		String lineDelimiter= StubUtility.getLineDelimiterUsed(type.getRubyProject());
-		
+	
 		if (fMethodStubsButtons.isSelected(IDX_CONSTRUCTOR)) {
 			createConstructor(type, lineDelimiter); 	
 		}
@@ -151,6 +153,13 @@ public class RubyNewTestCaseWizardPage extends NewTypeWizardPage {
 		}		
 	}
 
+	@Override
+	protected List<String> addImports() {
+		List<String> imports =  new ArrayList<String>();
+		imports.add("test/unit");
+		// TODO Add import for class under test?
+		return imports;
+	}
 
 	private void createConstructor(IType type, String lineDelimiter) throws CoreException {
     	StringBuffer content = new StringBuffer("def initialize");
@@ -363,45 +372,30 @@ public class RubyNewTestCaseWizardPage extends NewTypeWizardPage {
 		return fClassUnderTestText;
 	}
 	
-	/**
-	 * Initialized the page with the current selection
-	 * @param selection The selection
+		/**
+	 * The wizard owning this page is responsible for calling this method with the
+	 * current selection. The selection is used to initialize the fields of the wizard 
+	 * page.
+	 * 
+	 * @param selection used to initialize the fields
 	 */
 	public void init(IStructuredSelection selection) {
-		IRubyElement element= getInitialRubyElement(selection);
-
-		initContainerPage(element);
-		// TODO Uncomment to set up type page
-//		initTypePage(element);
-		// put default class to test		
-//		if (element != null) {
-//			IType classToTest= null;
-			// evaluate the enclosing type
-//			IType typeInCompUnit= (IType) element.getAncestor(IRubyElement.TYPE);
-//			if (typeInCompUnit != null) {
-//				if (typeInCompUnit.getRubyScript() != null) {
-//					classToTest= typeInCompUnit;
-//				}
-//			} else {
-//				IRubyScript cu= (IRubyScript) element.getAncestor(IRubyElement.SCRIPT);
-//				if (cu != null) 
-//					classToTest= cu.findPrimaryType();
-//			}
-			// TODO uncomment to set class under test
-//			if (classToTest != null) {
-//				try {
-//					if (!TestSearchEngine.isTestImplementor(classToTest)) {
-//						setClassUnderTest(classToTest.getFullyQualifiedName('.'));
-//					}
-//				} catch (RubyModelException e) {
-//					TestunitPlugin.log(e);
-//				}
+		IRubyElement jelem= getInitialRubyElement(selection);
+		initContainerPage(jelem);
+		initTypePage(jelem);
+		doStatusUpdate();
+		
+//		boolean createConstructors= false;
+//		boolean createUnimplemented= true;
+//		IDialogSettings dialogSettings= getDialogSettings();
+//		if (dialogSettings != null) {
+//			IDialogSettings section= dialogSettings.getSection(PAGE_NAME);
+//			if (section != null) {
+//				createConstructors= section.getBoolean(SETTINGS_CREATECONSTR);
 //			}
 //		}
-
-		restoreWidgetValues();
-				
-		updateStatus(getStatusList());
+//		
+//		setMethodStubSelection(createConstructors, true);
 	}
 	
 	/**

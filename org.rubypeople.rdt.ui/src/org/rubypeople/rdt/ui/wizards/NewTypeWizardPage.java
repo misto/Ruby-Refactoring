@@ -685,7 +685,17 @@ public abstract class NewTypeWizardPage extends NewContainerWizardPage {
 	}	
 	
 	private String constructSimpleTypeStub(String lineDelimiter) {
-		StringBuffer buf= new StringBuffer("class "); //$NON-NLS-1$
+		StringBuffer buf= new StringBuffer(); //$NON-NLS-1$
+		List<String> imports = addImports();
+		if (imports != null) {
+			for (String string : imports) {
+				buf.append("require \"");
+				buf.append(string);
+				buf.append('"');
+				buf.append(lineDelimiter);
+			}
+		}
+		buf.append("class "); //$NON-NLS-1$
 		buf.append(getTypeName());
 		String superclass = getSuperClass();
 		if (superclass != null && superclass.trim().length() > 0 && !superclass.trim().equals("Object") ) {
@@ -697,6 +707,11 @@ public abstract class NewTypeWizardPage extends NewContainerWizardPage {
 		return buf.toString();
 	}
 	
+	protected List<String> addImports() {
+		// This is an ugly hack since we don't have an Iportsmanager or ImportRewrite yet.
+		return null;
+	}
+
 	/**
 	 * Opens a selection dialog that allows to select the super interfaces. The selected interfaces are
 	 * directly added to the wizard page using {@link #addSuperModule(String)}.
@@ -772,10 +787,10 @@ public abstract class NewTypeWizardPage extends NewContainerWizardPage {
 	}
 	
 	/**
-	 * Returns the resource handle that corresponds to the compilation unit to was or
+	 * Returns the resource handle that corresponds to the ruby script that was or
 	 * will be created or modified.
 	 * @return A resource or null if the page contains illegal values.
-	 * @since 3.0
+	 * @since 1.0
 	 */
 	public IResource getModifiedResource() {
 		ISourceFolder pack= getSourceFolder();
