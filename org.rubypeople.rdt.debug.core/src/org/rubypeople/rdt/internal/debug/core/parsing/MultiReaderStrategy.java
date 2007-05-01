@@ -34,11 +34,11 @@ public class MultiReaderStrategy extends AbstractReadStrategy {
 					// RdtDebugCorePlugin.log(e);
 					e.printStackTrace();
 				} finally {
+					isConnected = false;
 					try {
 						Thread.sleep(1000) ; // Avoid Commodfication Exceptions
 					} catch (InterruptedException e) {
 					} 
-					isConnected = false;
 					releaseAllReaders();	
 				}
 				
