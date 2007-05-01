@@ -32,7 +32,6 @@ public class RubyDebugConnection extends AbstractDebuggerConnection {
 
 	@Override
 	public void exit() throws IOException {
-		super.exit();
 		GenericCommand command = new GenericCommand("exit", true);
 		command.execute(this);
 	}
