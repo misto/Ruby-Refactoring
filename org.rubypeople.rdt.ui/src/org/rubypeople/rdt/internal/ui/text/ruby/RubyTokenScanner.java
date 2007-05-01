@@ -297,7 +297,8 @@ public class RubyTokenScanner extends AbstractRubyTokenScanner {
 			lexerSource = new LexerSource("filename", new StringReader(contents));
 			lexer.setSource(lexerSource);
 		} catch (BadLocationException e) {
-			RubyPlugin.log(e);
+			lexerSource = new LexerSource("filename", new StringReader(""));
+			lexer.setSource(lexerSource);
 		}
 		origOffset = offset;
 		origLength = length;
