@@ -8,6 +8,7 @@ import java.util.List;
 import org.jruby.ast.ArgsNode;
 import org.jruby.ast.ArgumentNode;
 import org.jruby.ast.AttrAssignNode;
+import org.jruby.ast.ClassNode;
 import org.jruby.ast.ClassVarAsgnNode;
 import org.jruby.ast.Colon2Node;
 import org.jruby.ast.ConstNode;
@@ -19,6 +20,7 @@ import org.jruby.ast.HashNode;
 import org.jruby.ast.InstAsgnNode;
 import org.jruby.ast.ListNode;
 import org.jruby.ast.LocalAsgnNode;
+import org.jruby.ast.ModuleNode;
 import org.jruby.ast.NilNode;
 import org.jruby.ast.Node;
 import org.jruby.ast.SelfNode;
@@ -147,6 +149,14 @@ public abstract class ASTUtil {
 	 * @return name or null
 	 */
 	public static String getNameReflectively(Node node) {
+		if (node instanceof ClassNode) {
+			ClassNode classNode = (ClassNode) node;
+			return getNameReflectively(classNode.getCPath());
+		}
+		if (node instanceof ModuleNode) {
+			ModuleNode moduleNode = (ModuleNode) node;
+			return getNameReflectively(moduleNode.getCPath());
+		}
 		if (node instanceof INameNode) {
 			return ((INameNode)node).getName();
 		}
