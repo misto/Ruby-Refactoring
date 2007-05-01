@@ -316,7 +316,7 @@ public class VMLibraryBlock implements SelectionListener, ISelectionChangedListe
 			lastUsedPath= ""; //$NON-NLS-1$
 		}
 		DirectoryDialog dialog= new DirectoryDialog(fLibraryViewer.getControl().getShell(), SWT.MULTI);
-		dialog.setText(RubyVMMessages.VMLibraryBlock_10);
+		dialog.setMessage(RubyVMMessages.VMLibraryBlock_10);
 		dialog.setFilterPath(lastUsedPath);
 		String res= dialog.open();
 		if (res == null) {
