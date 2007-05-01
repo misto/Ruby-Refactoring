@@ -24,12 +24,20 @@ public class RubyDebugCommandFactory implements ICommandFactory {
 		return "frame " + frame.getIndex() + " ; next" ;
 	}
 
+	public String createForcedStepOver(RubyStackFrame frame) {
+		return "frame " + frame.getIndex() + " ; next+";
+	}
+
 	public String createStepReturn(RubyStackFrame frame) {
-		return  "frame " + frame.getIndex() + " ; next 1 " + (frame.getIndex() + 1)  ;
+		return "frame " + frame.getIndex() + "; finish";
 	}
 
 	public String createStepInto(RubyStackFrame frame) {
 		return "frame " + frame.getIndex() + " ; step";
+	}
+
+	public String createForcedStepInto(RubyStackFrame frame) {
+		return "frame " + frame.getIndex() + " ; step+";
 	}
 
 	public String createReadThreads() {
