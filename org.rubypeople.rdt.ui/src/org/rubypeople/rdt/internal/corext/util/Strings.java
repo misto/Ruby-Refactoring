@@ -101,4 +101,47 @@ public class Strings {
 		return true;
 	}
 
+	public static boolean equals(String s, char[] c) {
+		if (s.length() != c.length)
+			return false;
+
+		for (int i = c.length; --i >= 0;)
+			if (s.charAt(i) != c[i])
+				return false;
+		return true;
+	}
+
+	public static boolean startsWithIgnoreCase(String text, String prefix) {
+		int textLength= text.length();
+		int prefixLength= prefix.length();
+		if (textLength < prefixLength)
+			return false;
+		for (int i= prefixLength - 1; i >= 0; i--) {
+			if (Character.toLowerCase(prefix.charAt(i)) != Character.toLowerCase(text.charAt(i)))
+				return false;
+		}
+		return true;
+	}
+
+	/**
+	 * tests if a char is lower case. Fix for 26529 
+	 */
+	public static boolean isLowerCase(char ch) {
+		return Character.toLowerCase(ch) == ch;
+	}
+
+	public static String removeMnemonicIndicator(String string) {
+		int length= string.length();
+		StringBuffer result= new StringBuffer(length);
+		char lastChar= ' '; // everything except & is OK as an initializer
+		for(int i= 0; i < length; i++) {
+			char ch= string.charAt(i);
+			if (ch != '&' || lastChar == '&') {
+				result.append(ch);				
+			}
+			lastChar= ch;
+		}
+		return result.toString();
+	}
+
 }

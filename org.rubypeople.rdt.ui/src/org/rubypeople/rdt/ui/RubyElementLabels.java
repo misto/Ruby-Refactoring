@@ -241,7 +241,7 @@ public class RubyElementLabels {
     private final static long QUALIFIER_FLAGS = P_COMPRESSED | USE_RESOLVED;
 
 	/**
-	 * User-readable string for the default package name (e.g. "(default package)").
+	 * User-readable string for the default package name (e.g. "(root source folder)").
 	 */
 	public final static String DEFAULT_PACKAGE= RubyUIMessages.RubyElementLabels_default_package; 
 

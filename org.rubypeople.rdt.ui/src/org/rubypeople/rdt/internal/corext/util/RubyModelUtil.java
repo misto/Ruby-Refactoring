@@ -7,6 +7,7 @@ import org.eclipse.core.runtime.IPath;
 import org.rubypeople.rdt.core.IRubyElement;
 import org.rubypeople.rdt.core.IRubyScript;
 import org.rubypeople.rdt.core.ISourceFolderRoot;
+import org.rubypeople.rdt.core.IType;
 import org.rubypeople.rdt.core.RubyModelException;
 import org.rubypeople.rdt.internal.core.util.CharOperation;
 import org.rubypeople.rdt.internal.ui.RubyPlugin;
@@ -81,5 +82,61 @@ public final class RubyModelUtil {
 			}
 		}
 		return false;	
+	}
+
+	/**
+	 * Concatenates two names. Uses a '/' for separation.
+	 * Both strings can be empty or <code>null</code>.
+	 */
+	public static String concatenateName(char[] name1, char[] name2) {
+		StringBuffer buf= new StringBuffer();
+		if (name1 != null && name1.length > 0) {
+			buf.append(name1);
+		}
+		if (name2 != null && name2.length > 0) {
+			if (buf.length() > 0) {
+				buf.append("/");
+			}
+			buf.append(name2);
+		}		
+		return buf.toString();
+	}
+
+	/**
+	 * Returns the fully qualified name of the given type using '::' as separators.
+	 * This is a replace for IType.getFullyQualifiedTypeName
+	 * which uses '$' as separators. As '$' is also a valid character in an id
+	 * this is ambiguous.
+	 */
+	public static String getFullyQualifiedName(IType type) {
+		return type.getFullyQualifiedName();
+	}
+
+	/** 
+	 * Finds a type in a ruby script. Typical usage is to find the corresponding
+	 * type in a working copy.
+	 * @param script the compilation unit to search in
+	 * @param typeQualifiedName the type qualified name (type name with enclosing type names (separated by dots))
+	 * @return the type found, or null if not existing
+	 */		
+	public static IType findTypeInRubyScript(IRubyScript script, String typeQualifiedName) throws RubyModelException {
+			IType[] types= script.getAllTypes();
+			for (int i= 0; i < types.length; i++) {
+				String currName= getTypeQualifiedName(types[i]);
+				if (typeQualifiedName.equals(currName)) {
+					return types[i];
+				}
+			}
+			return null;
+	}
+	
+	/**
+	 * Returns the qualified type name of the given type using '.' as separators.
+	 * This is a replace for IType.getTypeQualifiedName()
+	 * which uses '$' as separators. As '$' is also a valid character in an id
+	 * this is ambiguous. JavaCore PR: 1GCFUNT
+	 */
+	public static String getTypeQualifiedName(IType type) {
+		return type.getTypeQualifiedName("::");
 	}
 }

@@ -44,13 +44,13 @@ public class RubyPluginImages {
     public static final String IMG_OBJS_HELP= NAME_PREFIX + "help.gif"; //$NON-NLS-1$
     private static final String IMG_OBJS_GHOST= NAME_PREFIX + "ghost.gif";               //$NON-NLS-1$
     
-    private static final String IMG_OBJS_CLASS= NAME_PREFIX + "class_obj.gif";          //$NON-NLS-1$
+    public static final String IMG_OBJS_CLASS= NAME_PREFIX + "class_obj.gif";          //$NON-NLS-1$
     private static final String IMG_OBJS_INNER_CLASS= NAME_PREFIX + "innerclass_obj.gif"; //$NON-NLS-1$
     private static final String IMG_OBJS_CLASSALT= NAME_PREFIX + "classfo_obj.gif";          //$NON-NLS-1$
     public static final String IMG_OBJS_MODULE = NAME_PREFIX + "module_obj.gif"; //$NON-NLS-1$
     private static final String IMG_OBJS_MODULEALT= NAME_PREFIX + "modulefo_obj.gif";          //$NON-NLS-1$
     private static final String IMG_OBJS_RUBY_MODEL= NAME_PREFIX + "ruby_model_obj.gif"; //$NON-NLS-1$
-    private static final String IMG_OBJS_SOURCE_FOLDER= NAME_PREFIX + "fldr_obj.gif"; //$NON-NLS-1$
+    public static final String IMG_OBJS_SOURCE_FOLDER= NAME_PREFIX + "fldr_obj.gif"; //$NON-NLS-1$
     public static final String IMG_OBJS_SOURCE_FOLDER_ROOT= NAME_PREFIX + "fldr_root_obj.gif"; //$NON-NLS-1$
     private static final String IMG_OBJS_SCRIPT= NAME_PREFIX + "rscript_obj.gif";                 //$NON-NLS-1$
     private static final String IMG_OBJS_RUBY_RESOURCE= NAME_PREFIX + "rscript_resource_obj.gif"; //$NON-NLS-1$      
@@ -59,6 +59,9 @@ public class RubyPluginImages {
     public static final String IMG_OBJS_LIBRARY= NAME_PREFIX + "library_obj.gif"; 		//$NON-NLS-1$
     public static final String IMG_OBJS_EXTJAR= NAME_PREFIX + "jar_l_obj.gif"; 			//$NON-NLS-1$
     public static final String IMG_OBJS_EXTJAR_WSRC= NAME_PREFIX + "jar_lsrc_obj.gif";	//$NON-NLS-1$
+    
+	public static final String IMG_ELCL_VIEW_MENU= NAME_PREFIX + T_ELCL + "view_menu.gif"; //$NON-NLS-1$
+	public static final String IMG_DLCL_VIEW_MENU= NAME_PREFIX + T_DLCL + "view_menu.gif"; //$NON-NLS-1$
     
     private static final String IMG_CTOOLS_RUBY_IMPORT_CONTAINER = NAME_PREFIX + "imp_c.gif";
     private static final String IMG_CTOOLS_RUBY_IMPORT = NAME_PREFIX + "imp_obj.gif";
@@ -80,6 +83,8 @@ public class RubyPluginImages {
 
     public static final String IMG_OBJS_FIXABLE_PROBLEM= NAME_PREFIX + "quickfix_warning_obj.gif"; //$NON-NLS-1$
     private static final String IMG_OBJS_FIXABLE_ERROR= NAME_PREFIX + "quickfix_error_obj.gif"; //$NON-NLS-1$
+    
+	public static final String IMG_CORRECTION_CHANGE= NAME_PREFIX + "correction_change.gif"; //$NON-NLS-1$      
 
 	public static final ImageDescriptor DESC_WIZBAN_NEWJPRJ = createUnManaged(T_WIZBAN, "newrprj_wiz.gif"); 			//$NON-NLS-1$
 	public static final ImageDescriptor DESC_WIZBAN_NEWCLASS = createUnManaged(T_WIZBAN, "newclass_wiz.gif"); 			//$NON-NLS-1$
@@ -88,6 +93,8 @@ public class RubyPluginImages {
     
     public static final ImageDescriptor TOOLBAR_REFRESH = createUnManaged(T_ELCL, "refresh.png");    
     
+	public static final ImageDescriptor DESC_OBJS_TYPE_SEPARATOR= createUnManaged(T_OBJ, "type_separator.gif");  //$NON-NLS-1$
+	
     public static final ImageDescriptor DESC_OBJS_HELP= createManagedFromKey(T_ELCL, IMG_OBJS_HELP);    
     
     public static final ImageDescriptor DESC_OBJ_OVERRIDES= createUnManaged(T_OBJ, "over_co.gif");                      //$NON-NLS-1$
@@ -167,13 +174,17 @@ public class RubyPluginImages {
     public static final ImageDescriptor DESC_DLCL_CONFIGURE_BUILDPATH= createUnManaged(T_DLCL, "configure_build_path.gif"); //$NON-NLS-1$
     public static final ImageDescriptor DESC_ELCL_CONFIGURE_BUILDPATH= createUnManaged(T_ELCL, "configure_build_path.gif"); //$NON-NLS-1$
     
+	public static final ImageDescriptor DESC_ELCL_VIEW_MENU= createManaged(T_ELCL, "view_menu.gif", IMG_ELCL_VIEW_MENU); //$NON-NLS-1$
+	public static final ImageDescriptor DESC_DLCL_VIEW_MENU= createManaged(T_DLCL, "view_menu.gif", IMG_DLCL_VIEW_MENU); //$NON-NLS-1$
+    
     public static final ImageDescriptor DESC_MISC_PUBLIC= createManagedFromKey(T_OBJ, IMG_MISC_PUBLIC);
     public static final ImageDescriptor DESC_MISC_PROTECTED= createManagedFromKey(T_OBJ, IMG_MISC_PROTECTED);
     public static final ImageDescriptor DESC_MISC_PRIVATE= createManagedFromKey(T_OBJ, IMG_MISC_PRIVATE);
-	public static final String IMG_CORRECTION_CHANGE= NAME_PREFIX + "correction_change.gif"; //$NON-NLS-1$       
+ 
     public static final ImageDescriptor DESC_TOOL_LOADPATH_ORDER= createUnManaged(T_OBJ, "cp_order_obj.gif"); 		//$NON-NLS-1$
-    
-	static {
+    public static final ImageDescriptor DESC_TOOL_OPENTYPE= createUnManaged(T_ETOOL, "opentype.gif"); 					//$NON-NLS-1$
+
+    static {
 		createManagedFromKey(T_OBJ, IMG_CORRECTION_CHANGE);
 		createManagedFromKey(T_OBJ, IMG_OBJS_FIXABLE_ERROR);
 		createManagedFromKey(T_OBJ, IMG_OBJS_FIXABLE_PROBLEM);

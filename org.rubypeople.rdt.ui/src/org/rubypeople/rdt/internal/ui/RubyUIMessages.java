@@ -58,6 +58,36 @@ public class RubyUIMessages extends NLS {
 	public static String WizardNewProjectCreationPage_pageTitle;
 	public static String WizardNewProjectCreationPage_pageDescription;
 
+	public static String TypeSelectionComponent_show_status_line_label;
+	public static String TypeSelectionComponent_fully_qualify_duplicates_label;
+	public static String TypeSelectionComponent_label;
+	public static String TypeSelectionComponent_menu;
+	public static String TypeSelectionDialog2_title_format;
+	public static String TypeSelectionDialog_error_type_doesnot_exist;
+	public static String TypeSelectionDialog_error3Title;
+	public static String TypeSelectionDialog_error3Message;
+	public static String TypeSelectionDialog_progress_consistency;
+	public static String TypeInfoViewer_default_package;
+	public static String TypeInfoViewer_library_name_format;
+	public static String TypeInfoViewer_progressJob_label;
+	public static String TypeInfoViewer_progress_label;
+	public static String TypeInfoViewer_job_label;
+	public static String TypeInfoViewer_job_error;
+	public static String TypeInfoViewer_job_cancel;
+	public static String TypeInfoViewer_searchJob_taskName;
+	public static String TypeInfoViewer_syncJob_label;
+	public static String TypeInfoViewer_syncJob_taskName;
+	public static String TypeInfoViewer_remove_from_history;
+	public static String TypeInfoViewer_separator_message;
+	public static String TypeInfoLabelProvider_default_package;
+	public static String OpenTypeAction_dialogTitle;
+	public static String OpenTypeAction_dialogMessage;
+	public static String OpenTypeAction_label;
+	public static String OpenTypeAction_description;
+	public static String OpenTypeAction_tooltip;
+	public static String OpenTypeAction_errorTitle;
+	public static String OpenTypeAction_errorMessage;
+
     private RubyUIMessages() {
     }
 

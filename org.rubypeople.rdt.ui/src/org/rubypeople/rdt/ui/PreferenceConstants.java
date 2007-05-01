@@ -202,6 +202,16 @@ public class PreferenceConstants {
 	public final static String EDITOR_SYNC_OUTLINE_ON_CURSOR_MOVE = "RubyEditor.SyncOutlineOnCursorMove"; //$NON-NLS-1$
 
 	/**
+	 * A named preference that controls whether the 'sub-word navigation' feature is
+	 * enabled.
+	 * <p>
+	 * Value is of type <code>Boolean</code>.
+	 * </p>
+	 * @since 1.0
+	 */
+	public final static String EDITOR_SUB_WORD_NAVIGATION= "subWordNavigation"; //$NON-NLS-1$
+	
+	/**
 	 * A named preference that defines how member elements are ordered by the
 	 * Ruby views using the <code>RubyElementSorter</code>.
 	 * <p>
@@ -683,7 +693,11 @@ public class PreferenceConstants {
 	 */
 	public static final String SRCBIN_SRCNAME= "org.rubypeople.rdt.ui.wizards.srcFoldersSrcName"; //$NON-NLS-1$
 
-	
+	/**
+	 * A named preference that holds a list of semicolon separated fully qualified type names with wild card characters.
+	 * @since 1.0
+	 */	
+	public static final String TYPEFILTER_ENABLED= "org.rubypeople.rdt.ui.typefilter.enabled"; //$NON-NLS-1$	
 	
 	private static String getDefaultRubyVMLibraries() {
 		StringBuffer buf= new StringBuffer();
@@ -768,6 +782,9 @@ public class PreferenceConstants {
 		store.setDefault(PreferenceConstants.EDITOR_CORRECTION_INDICATION, true);
 		store.setDefault(PreferenceConstants.EDITOR_EVALUTE_TEMPORARY_PROBLEMS, true);
 
+//		 TypeFilterPreferencePage
+		store.setDefault(PreferenceConstants.TYPEFILTER_ENABLED, ""); //$NON-NLS-1$
+		
 		// folding
 		store.setDefault(PreferenceConstants.EDITOR_FOLDING_ENABLED, true);
 		store.setDefault(PreferenceConstants.EDITOR_FOLDING_PROVIDER, "org.rubypeople.rdt.ui.text.defaultFoldingProvider"); //$NON-NLS-1$
@@ -800,6 +817,7 @@ public class PreferenceConstants {
 		store.setDefault(PreferenceConstants.CODEASSIST_GUESS_METHOD_ARGUMENTS, false);
 		store.setDefault(PreferenceConstants.CODEASSIST_PREFIX_COMPLETION, false);
 
+		store.setDefault(PreferenceConstants.EDITOR_SUB_WORD_NAVIGATION, true);
 		store.setDefault(PreferenceConstants.EDITOR_CLOSE_STRINGS, true);
 		store.setDefault(PreferenceConstants.EDITOR_CLOSE_BRACKETS, true);
 		store.setDefault(PreferenceConstants.EDITOR_CLOSE_BRACES, true);

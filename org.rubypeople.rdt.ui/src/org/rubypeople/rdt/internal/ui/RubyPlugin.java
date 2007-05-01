@@ -52,6 +52,7 @@ import org.rubypeople.rdt.core.IRubyScript;
 import org.rubypeople.rdt.core.RubyCore;
 import org.rubypeople.rdt.core.WorkingCopyOwner;
 import org.rubypeople.rdt.internal.core.util.EclipseJobScheduler;
+import org.rubypeople.rdt.internal.corext.util.TypeFilter;
 import org.rubypeople.rdt.internal.formatter.OldCodeFormatter;
 import org.rubypeople.rdt.internal.ui.preferences.MembersOrderPreferenceCache;
 import org.rubypeople.rdt.internal.ui.preferences.MockupPreferenceStore;
@@ -103,6 +104,12 @@ public class RubyPlugin extends AbstractUIPlugin implements IRubyColorConstants 
 	private ImageDescriptorRegistry fImageDescriptorRegistry;
 	private MembersOrderPreferenceCache fMembersOrderPreferenceCache;
 	private RubyScriptDocumentProvider fExternalRubyDocumentProvider;
+	
+	/**
+	 * Default instance of the appearance type filters.
+	 * @since 1.0
+	 */
+	private TypeFilter fTypeFilter;
 
 	public RubyPlugin() {
 		super();
@@ -229,6 +236,11 @@ public class RubyPlugin extends AbstractUIPlugin implements IRubyColorConstants 
 			if (textTools != null) {
 				textTools.dispose();
 				textTools = null;
+			}
+			
+			if (fTypeFilter != null) {
+				fTypeFilter.dispose();
+				fTypeFilter= null;
 			}
 
 			if (fMembersOrderPreferenceCache != null) {
@@ -549,4 +561,10 @@ public class RubyPlugin extends AbstractUIPlugin implements IRubyColorConstants 
 		}
 		return pluginProperties;
 	}
+
+	public synchronized TypeFilter getTypeFilter() {
+		if (fTypeFilter == null)
+			fTypeFilter= new TypeFilter();
+		return fTypeFilter;
+	}	
 }
