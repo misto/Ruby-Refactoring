@@ -477,7 +477,30 @@ public abstract class RubyElement extends PlatformObject implements IRubyElement
 		}
 		this.toStringChildren(tab, buffer, info);
 	}
+	/**
+	 *  Debugging purposes
+	 */
+	public String toStringWithAncestors(boolean showResolvedInfo) {
+		StringBuffer buffer = new StringBuffer();
+		this.toStringInfo(0, buffer, NO_INFO, showResolvedInfo);
+		this.toStringAncestors(buffer);
+		return buffer.toString();
+	}
 
+	/**
+	 * Debugging purposes
+	 * 
+	 * @param showResolvedInfo
+	 *            TODO
+	 */
+	protected void toStringInfo(int tab, StringBuffer buffer, Object info,
+			boolean showResolvedInfo) {
+		buffer.append(this.tabString(tab));
+		toStringName(buffer);
+		if (info == null) {
+			buffer.append(" (not open)"); //$NON-NLS-1$
+		}
+	}
 	/**
 	 * Debugging purposes
 	 */

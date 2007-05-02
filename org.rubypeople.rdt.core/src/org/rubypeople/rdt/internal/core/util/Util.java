@@ -37,6 +37,7 @@ import org.rubypeople.rdt.core.IType;
 import org.rubypeople.rdt.core.RubyConventions;
 import org.rubypeople.rdt.core.RubyCore;
 import org.rubypeople.rdt.core.RubyModelException;
+import org.rubypeople.rdt.internal.core.RubyElement;
 
 /**
  * @author Chris
@@ -998,6 +999,23 @@ public class Util {
 		if (hasTrailingSeparator)
 			result[offset++] = '/';
 		return new String(result);
+	}
+
+	/**
+	 * Sorts an array of Ruby elements based on their toStringWithAncestors(), 
+	 * returning a new array with the sorted items. 
+	 * The original array is left untouched.
+	 */
+	public static IRubyElement[] sortCopy(IRubyElement[] elements) {
+		int len = elements.length;
+		IRubyElement[] copy = new IRubyElement[len];
+		System.arraycopy(elements, 0, copy, 0, len);
+		sort(copy, new Comparer() {
+			public int compare(Object a, Object b) {
+				return ((RubyElement) a).toStringWithAncestors().compareTo(((RubyElement) b).toStringWithAncestors());
+			}
+		});
+		return copy;
 	}
 
 }

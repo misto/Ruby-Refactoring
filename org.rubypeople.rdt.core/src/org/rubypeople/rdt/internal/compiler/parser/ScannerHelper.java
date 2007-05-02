@@ -1,6 +1,7 @@
 package org.rubypeople.rdt.internal.compiler.parser;
 
 
+
 public class ScannerHelper {
 	public final static int MAX_OBVIOUS = 128;
 	public final static int[] OBVIOUS_IDENT_CHAR_NATURES = new int[MAX_OBVIOUS];
@@ -115,4 +116,16 @@ public class ScannerHelper {
 		}
 		return Character.isJavaIdentifierStart(c);
 	}	
+	
+	/**
+	 * Include also non JLS whitespaces.
+	 * 
+	 * return true if Character.isWhitespace(c) would return true
+	 */
+	public static boolean isWhitespace(char c) {
+		if (c < MAX_OBVIOUS) {
+			return (ScannerHelper.OBVIOUS_IDENT_CHAR_NATURES[c] & ScannerHelper.C_SPACE) != 0;
+		}	
+		return Character.isWhitespace(c);
+	}
 }

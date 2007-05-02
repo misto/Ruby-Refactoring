@@ -16,9 +16,9 @@ import org.jruby.ast.ClassVarAsgnNode;
 import org.jruby.ast.ClassVarDeclNode;
 import org.jruby.ast.ClassVarNode;
 import org.jruby.ast.Colon2Node;
+import org.jruby.ast.ConstDeclNode;
 import org.jruby.ast.ConstNode;
 import org.jruby.ast.DefnNode;
-import org.jruby.ast.DefsNode;
 import org.jruby.ast.FCallNode;
 import org.jruby.ast.InstAsgnNode;
 import org.jruby.ast.InstVarNode;
@@ -54,7 +54,6 @@ import org.rubypeople.rdt.internal.ti.ITypeInferrer;
 import org.rubypeople.rdt.internal.ti.util.ClosestSpanningNodeLocator;
 import org.rubypeople.rdt.internal.ti.util.INodeAcceptor;
 import org.rubypeople.rdt.internal.ti.util.OffsetNodeLocator;
-import org.rubypeople.rdt.internal.ti.util.ScopedNodeLocator;
 
 public class SelectionEngine {
 
@@ -116,6 +115,11 @@ public class SelectionEngine {
 			List<IRubyElement> possible = getChildrenWithName(script
 					.getChildren(), IRubyElement.CLASS_VAR, getName(selected));
 			return possible.toArray(new IRubyElement[possible.size()]);
+		}
+		// We're already on the declaration, just return it
+		if ((selected instanceof DefnNode) || (selected instanceof ConstDeclNode)) {
+			IRubyElement element = ((RubyScript)script).getElementAt(start);
+			return new IRubyElement[] {element};
 		}
 		if (isMethodCall(selected)) {
 			String methodName = getName(selected);
