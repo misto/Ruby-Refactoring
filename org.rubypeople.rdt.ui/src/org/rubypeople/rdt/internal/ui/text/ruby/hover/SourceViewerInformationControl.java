@@ -11,6 +11,7 @@
 package org.rubypeople.rdt.internal.ui.text.ruby.hover;
 
 import org.eclipse.jface.preference.IPreferenceStore;
+import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.jface.text.Document;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.IInformationControl;
@@ -37,6 +38,7 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 import org.rubypeople.rdt.internal.ui.RubyPlugin;
 import org.rubypeople.rdt.internal.ui.rubyeditor.RubySourceViewer;
+import org.rubypeople.rdt.internal.ui.text.IRubyPartitions;
 import org.rubypeople.rdt.internal.ui.text.SimpleRubySourceViewerConfiguration;
 
 /**
@@ -131,7 +133,7 @@ public class SourceViewerInformationControl implements IInformationControl, IInf
 		// Source viewer
 		IPreferenceStore store= RubyPlugin.getDefault().getCombinedPreferenceStore();
 		fViewer= new RubySourceViewer(composite, null, null, false, style, store);
-		fViewer.configure(new SimpleRubySourceViewerConfiguration(RubyPlugin.getDefault().getRubyTextTools().getColorManager(), store, null, null, false));
+		fViewer.configure(new SimpleRubySourceViewerConfiguration(RubyPlugin.getDefault().getRubyTextTools().getColorManager(), store, null, IRubyPartitions.RUBY_PARTITIONING, false));
 		fViewer.setEditable(false);
 
 		fText= fViewer.getTextWidget();
@@ -140,6 +142,8 @@ public class SourceViewerInformationControl implements IInformationControl, IInf
 		fText.setForeground(parent.getDisplay().getSystemColor(SWT.COLOR_INFO_FOREGROUND));
 		fText.setBackground(parent.getDisplay().getSystemColor(SWT.COLOR_INFO_BACKGROUND));
 
+		initializeFont();
+		
 		fText.addKeyListener(new KeyListener() {
 
 			public void keyPressed(KeyEvent e)  {
@@ -229,6 +233,17 @@ public class SourceViewerInformationControl implements IInformationControl, IInf
 	public SourceViewerInformationControl(Shell parent, String statusFieldText) {
 		this(parent, SWT.NONE, statusFieldText);
 	}
+	
+	/**
+	 * Initialize the font to the Ruby editor font.
+	 * 
+	 * @since 1.0
+	 */
+	private void initializeFont() {
+		Font font= JFaceResources.getFont("org.rubypeople.rdt.ui.editors.textfont"); //$NON-NLS-1$
+		StyledText styledText= getViewer().getTextWidget();
+		styledText.setFont(font);
+	}
 
 	/*
 	 * @see org.eclipse.jface.text.IInformationControlExtension2#setInput(java.lang.Object)
@@ -250,7 +265,7 @@ public class SourceViewerInformationControl implements IInformationControl, IInf
 		}
 
 		IDocument doc= new Document(content);
-		RubyPlugin.getDefault().getRubyTextTools().setupRubyDocumentPartitioner(doc);
+		RubyPlugin.getDefault().getRubyTextTools().setupRubyDocumentPartitioner(doc, IRubyPartitions.RUBY_PARTITIONING);
 		fViewer.setInput(doc);
 	}
 
