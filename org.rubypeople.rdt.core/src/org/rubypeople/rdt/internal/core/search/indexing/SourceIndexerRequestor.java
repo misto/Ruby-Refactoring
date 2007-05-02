@@ -1,5 +1,7 @@
 package org.rubypeople.rdt.internal.core.search.indexing;
 
+import java.util.Stack;
+
 import org.rubypeople.rdt.core.Flags;
 import org.rubypeople.rdt.core.compiler.CategorizedProblem;
 import org.rubypeople.rdt.internal.compiler.ISourceElementRequestor;
@@ -7,9 +9,11 @@ import org.rubypeople.rdt.internal.compiler.ISourceElementRequestor;
 public class SourceIndexerRequestor implements ISourceElementRequestor {
 
 	private SourceIndexer indexer;
+	private Stack<String> typeStack;
 
 	public SourceIndexerRequestor(SourceIndexer sourceIndexer) {
 		this.indexer = sourceIndexer;
+		typeStack = new Stack<String>();
 	}
 
 	public void acceptConstructorReference(String name, int argCount, int offset) {
@@ -78,7 +82,17 @@ public class SourceIndexerRequestor implements ISourceElementRequestor {
 		if (type.superclass != null) {
 			superclass = type.superclass.toCharArray();
 		}
-		indexer.addClassDeclaration(type.isModule ? Flags.AccModule : 0, packName, type.name.toCharArray(), null, superclass, mod, type.secondary);
+		indexer.addClassDeclaration(type.isModule ? Flags.AccModule : 0, packName, type.name.toCharArray(), getEnclosingTypeNames(), superclass, mod, type.secondary);
+	    typeStack.push(type.name);
+	}
+
+	private char[][] getEnclosingTypeNames() {
+		char[][] names = new char[typeStack.size()][];
+		int i = 0;
+		for (String name : typeStack) {
+			names[i++] = name.toCharArray();
+		}
+		return names;
 	}
 
 	public void exitConstructor(int endOffset) {
@@ -102,8 +116,7 @@ public class SourceIndexerRequestor implements ISourceElementRequestor {
 	}
 
 	public void exitType(int endOffset) {
-		// TODO Auto-generated method stub
-
+		typeStack.pop();
 	}
 
 }

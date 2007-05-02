@@ -95,7 +95,7 @@ public static char[] createIndexKey(int modifiers, char[] typeName, char[] packa
 		for (int i = 0, length = enclosingTypeNames.length; i < length;) {
 			enclosingNamesLength += enclosingTypeNames[i].length;
 			if (++i < length)
-				enclosingNamesLength++; // for the '.' separator
+				enclosingNamesLength += 2; // for the "::" separator
 		}
 	}
 
@@ -119,8 +119,10 @@ public static char[] createIndexKey(int modifiers, char[] typeName, char[] packa
 			int itsLength = enclosingName.length;
 			System.arraycopy(enclosingName, 0, result, pos, itsLength);
 			pos += itsLength;
-			if (++i < length)
-				result[pos++] = '.';
+			if (++i < length) {
+				result[pos++] = ':';
+				result[pos++] = ':';
+			}
 		}
 	}
 	result[pos++] = SEPARATOR;

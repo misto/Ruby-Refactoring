@@ -158,14 +158,14 @@ public abstract class TypeInfo {
 	
 	/**
 	 * Gets the type qualified name: Includes enclosing type names, but
-	 * not package name. Identifiers are separated by dots.
+	 * not package name. Identifiers are separated by "::".
 	 */
 	public String getTypeQualifiedName() {
 		if (fEnclosingNames != null && fEnclosingNames.length > 0) {
 			StringBuffer buf= new StringBuffer();
 			for (int i= 0; i < fEnclosingNames.length; i++) {
 				buf.append(fEnclosingNames[i]);
-				buf.append('.');
+				buf.append("::");
 			}
 			buf.append(fName);
 			return buf.toString();
