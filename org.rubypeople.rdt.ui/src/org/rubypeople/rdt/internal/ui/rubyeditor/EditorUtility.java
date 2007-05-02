@@ -8,10 +8,12 @@ import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.text.Assert;
 import org.eclipse.jface.text.TextSelection;
 import org.eclipse.jface.viewers.ISelectionProvider;
+import org.eclipse.swt.SWT;
 import org.eclipse.ui.IEditorDescriptor;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorPart;
@@ -35,6 +37,7 @@ import org.rubypeople.rdt.core.ISourceReference;
 import org.rubypeople.rdt.core.RubyCore;
 import org.rubypeople.rdt.core.RubyModelException;
 import org.rubypeople.rdt.internal.core.ExternalRubyScript;
+import org.rubypeople.rdt.internal.core.util.Messages;
 import org.rubypeople.rdt.internal.corext.util.RubyModelUtil;
 import org.rubypeople.rdt.internal.ui.RubyPlugin;
 import org.rubypeople.rdt.ui.PreferenceConstants;
@@ -283,6 +286,70 @@ public class EditorUtility {
 		}
 
 		return null;
+	}
+
+	/**
+	 * Maps the localized modifier name to a code in the same
+	 * manner as #findModifier.
+	 *
+	 * @param modifierName the modifier name
+	 * @return the SWT modifier bit, or <code>0</code> if no match was found
+	 * @since 2.1.1
+	 */
+	public static int findLocalizedModifier(String modifierName) {
+		if (modifierName == null)
+			return 0;
+
+		if (modifierName.equalsIgnoreCase(Action.findModifierString(SWT.CTRL)))
+			return SWT.CTRL;
+		if (modifierName.equalsIgnoreCase(Action.findModifierString(SWT.SHIFT)))
+			return SWT.SHIFT;
+		if (modifierName.equalsIgnoreCase(Action.findModifierString(SWT.ALT)))
+			return SWT.ALT;
+		if (modifierName.equalsIgnoreCase(Action.findModifierString(SWT.COMMAND)))
+			return SWT.COMMAND;
+
+		return 0;
+	}
+
+	/**
+	 * Returns the modifier string for the given SWT modifier
+	 * modifier bits.
+	 *
+	 * @param stateMask	the SWT modifier bits
+	 * @return the modifier string
+	 * @since 2.1.1
+	 */
+	public static String getModifierString(int stateMask) {
+		String modifierString= ""; //$NON-NLS-1$
+		if ((stateMask & SWT.CTRL) == SWT.CTRL)
+			modifierString= appendModifierString(modifierString, SWT.CTRL);
+		if ((stateMask & SWT.ALT) == SWT.ALT)
+			modifierString= appendModifierString(modifierString, SWT.ALT);
+		if ((stateMask & SWT.SHIFT) == SWT.SHIFT)
+			modifierString= appendModifierString(modifierString, SWT.SHIFT);
+		if ((stateMask & SWT.COMMAND) == SWT.COMMAND)
+			modifierString= appendModifierString(modifierString,  SWT.COMMAND);
+
+		return modifierString;
+	}
+	
+	/**
+	 * Appends to modifier string of the given SWT modifier bit
+	 * to the given modifierString.
+	 *
+	 * @param modifierString	the modifier string
+	 * @param modifier			an int with SWT modifier bit
+	 * @return the concatenated modifier string
+	 * @since 2.1.1
+	 */
+	private static String appendModifierString(String modifierString, int modifier) {
+		if (modifierString == null)
+			modifierString= ""; //$NON-NLS-1$
+		String newModifierString= Action.findModifierString(modifier);
+		if (modifierString.length() == 0)
+			return newModifierString;
+		return Messages.format(RubyEditorMessages.EditorUtility_concatModifierStrings, new String[] {modifierString, newModifierString});
 	}
 
 }

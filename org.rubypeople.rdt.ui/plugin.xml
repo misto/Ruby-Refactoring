@@ -8,6 +8,7 @@
    <extension-point id="editorPopupExtender" name="%editorPopupExtender" schema="schema/org.rubypeople.rdt.ui.editorPopupExtender.exsd"/>
    <extension-point id="rubyTemplateProvider" name="Ruby template provider" schema="schema/rubyTemplateProvider.exsd"/>
    <extension-point id="quickFixProcessors" name="%quickFixProcessorExtensionPoint" schema="schema/quickFixProcessors.exsd"/>
+   <extension-point id="rubyEditorTextHovers" name="%rubyEditorTextHover" schema="schema/rubyEditorTextHovers.exsd"/>
      
    <extension
          point="org.eclipse.ui.preferencePages">
@@ -921,12 +922,38 @@
             id="org.rubypeople.rdt.ui.search.RubySearchResultPage"
             searchResultClass="org.rubypeople.rdt.internal.ui.search.RubySearchResult"/>
    </extension>
-   
-   <extension
-         point="org.rubypeople.rdt.ui.textHoverProvider">
-         <textHoverProvider class="org.rubypeople.rdt.internal.ui.text.ruby.hover.RiDocHoverProvider" />
+    
+  <extension point="org.rubypeople.rdt.ui.rubyEditorTextHovers">
+   	  <hover
+            label="%sequentialHover"
+            description="%sequentialHoverDescription"
+            class="org.rubypeople.rdt.internal.ui.text.ruby.hover.BestMatchHover"
+            id="org.rubypeople.rdt.ui.BestMatchHover">
+      </hover>
+      <hover
+            label="%problemHover"
+            description="%problemHoverDescription"
+            class="org.rubypeople.rdt.internal.ui.text.ruby.hover.ProblemHover"
+            id="org.rubypeople.rdt.ui.ProblemHover">
+      </hover>
+      <hover
+   			id="org.rubypeople.rdt.ui.RiDocHover"
+   			class="org.rubypeople.rdt.internal.ui.text.ruby.hover.RiDocHoverProvider"
+   			label="%rdocHover"/>
+      <hover
+            label="%sourceHover"
+            description="%sourceHoverDescription"
+            class="org.rubypeople.rdt.internal.ui.text.ruby.hover.RubySourceHover"
+            id="org.rubypeople.rdt.ui.RubySourceHover">
+      </hover>
+      <hover
+            label="%annotationHover"
+            description="%annotationHoverDescription"
+            class="org.rubypeople.rdt.internal.ui.text.ruby.hover.AnnotationHover"
+            id="org.rubypeople.rdt.ui.AnnotationHover">
+      </hover>
   </extension>
-  
+    
   <extension
          point="org.eclipse.ui.popupMenus">
       <viewerContribution

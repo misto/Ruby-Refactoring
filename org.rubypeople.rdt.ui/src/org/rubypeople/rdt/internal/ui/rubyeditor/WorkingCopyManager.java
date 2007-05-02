@@ -18,6 +18,7 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.jface.text.Assert;
 import org.eclipse.ui.IEditorInput;
 import org.rubypeople.rdt.core.IRubyScript;
+import org.rubypeople.rdt.internal.corext.util.RubyModelUtil;
 import org.rubypeople.rdt.ui.IWorkingCopyManager;
 import org.rubypeople.rdt.ui.IWorkingCopyManagerExtension;
 
@@ -80,9 +81,32 @@ public class WorkingCopyManager implements IWorkingCopyManager, IWorkingCopyMana
 	 * @see org.eclipse.jdt.ui.IWorkingCopyManager#getWorkingCopy(org.eclipse.ui.IEditorInput)
 	 */
 	public IRubyScript getWorkingCopy(IEditorInput input) {
-		IRubyScript unit = fMap == null ? null : (IRubyScript) fMap.get(input);
-		return unit != null ? unit : fDocumentProvider.getWorkingCopy(input);
+		return getWorkingCopy(input, true);
 	}
+
+	/**
+	 * Returns the working copy remembered for the compilation unit encoded in the
+	 * given editor input.
+	 * <p>
+	 * Note: This method must not be part of the public {@link IWorkingCopyManager} API.
+	 * </p>
+	 *
+	 * @param input the editor input
+	 * @param primaryOnly if <code>true</code> only primary working copies will be returned
+	 * @return the working copy of the compilation unit, or <code>null</code> if the
+	 *   input does not encode an editor input, or if there is no remembered working
+	 *   copy for this compilation unit
+	 * @since 3.2
+	 */
+	public IRubyScript getWorkingCopy(IEditorInput input, boolean primaryOnly) {
+		IRubyScript unit= fMap == null ? null : (IRubyScript) fMap.get(input);
+		if (unit == null)
+			unit= fDocumentProvider.getWorkingCopy(input);
+		if (unit != null && (!primaryOnly || RubyModelUtil.isPrimary(unit)))
+			return unit;
+		return null;
+	}
+	
 
 	/*
 	 * @see org.eclipse.jdt.internal.ui.javaeditor.IWorkingCopyManagerExtension#setWorkingCopy(org.eclipse.ui.IEditorInput,

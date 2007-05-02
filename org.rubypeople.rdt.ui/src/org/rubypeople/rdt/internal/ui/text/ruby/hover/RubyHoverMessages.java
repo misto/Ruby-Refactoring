@@ -21,6 +21,7 @@ class RubyHoverMessages extends NLS {
 	}
 
 	public static String RubyTextHover_makeStickyHint;
+	public static String RubyTextHover_createTextHover;
 	
 	static {
 		NLS.initializeMessages(BUNDLE_NAME, RubyHoverMessages.class);

@@ -35,6 +35,7 @@ public class RubyEditorMessages extends NLS {
 	public static String ToggleComment_error_message;
 	public static String CompletionProcessor_ContextInfo_value_pattern;
 	public static String CompletionProcessor_ContextInfo_display_pattern;
+	public static String EditorUtility_concatModifierStrings;
 	
     private static ResourceBundle fgResourceBundle = ResourceBundle.getBundle(BUNDLE_NAME);
 

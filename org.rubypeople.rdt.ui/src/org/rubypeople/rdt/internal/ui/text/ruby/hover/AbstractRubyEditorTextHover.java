@@ -1,17 +1,22 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2004 IBM Corporation and others.
- * All rights reserved. This program and the accompanying materials 
- * are made available under the terms of the Common Public License v1.0
+ * Copyright (c) 2000, 2006 IBM Corporation and others.
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/cpl-v10.html
- * 
+ * http://www.eclipse.org/legal/epl-v10.html
+ *
  * Contributors:
  *     IBM Corporation - initial API and implementation
  *******************************************************************************/
 package org.rubypeople.rdt.internal.ui.text.ruby.hover;
 
-import java.util.List;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.URL;
 
+import org.eclipse.core.runtime.FileLocator;
+import org.eclipse.core.runtime.Platform;
 import org.eclipse.jface.text.DefaultInformationControl;
 import org.eclipse.jface.text.IInformationControl;
 import org.eclipse.jface.text.IInformationControlCreator;
@@ -20,14 +25,18 @@ import org.eclipse.jface.text.ITextHoverExtension;
 import org.eclipse.jface.text.ITextViewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Shell;
+import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.PlatformUI;
-import org.eclipse.ui.commands.ICommand;
-import org.eclipse.ui.commands.ICommandManager;
-import org.eclipse.ui.commands.IKeySequenceBinding;
-import org.eclipse.ui.keys.KeySequence;
+import org.eclipse.ui.keys.IBindingService;
+import org.osgi.framework.Bundle;
+import org.rubypeople.rdt.core.ICodeAssist;
 import org.rubypeople.rdt.core.IRubyElement;
+import org.rubypeople.rdt.core.RubyModelException;
+import org.rubypeople.rdt.internal.core.util.Messages;
 import org.rubypeople.rdt.internal.ui.RubyPlugin;
+import org.rubypeople.rdt.internal.ui.rubyeditor.RubyScriptEditorInput;
+import org.rubypeople.rdt.internal.ui.rubyeditor.WorkingCopyManager;
 import org.rubypeople.rdt.internal.ui.text.HTMLTextPresenter;
 import org.rubypeople.rdt.internal.ui.text.RubyWordFinder;
 import org.rubypeople.rdt.ui.PreferenceConstants;
@@ -36,19 +45,20 @@ import org.rubypeople.rdt.ui.text.ruby.hover.IRubyEditorTextHover;
 
 /**
  * Abstract class for providing hover information for Ruby elements.
- * 
- * @since 2.1
+ *
+ * @since 1.0
  */
 public abstract class AbstractRubyEditorTextHover implements IRubyEditorTextHover, ITextHoverExtension {
 
-
+	/**
+	 * The style sheet (css).
+	 * @since 1.0
+	 */
+	private static String fgStyleSheet;
 	private IEditorPart fEditor;
-	private ICommand fCommand;
+	private IBindingService fBindingService;
 	{
-		ICommandManager commandManager= PlatformUI.getWorkbench().getCommandSupport().getCommandManager();
-		fCommand= commandManager.getCommand(IRubyEditorActionDefinitionIds.SHOW_RDOC);
-		if (!fCommand.isDefined())
-			fCommand= null;
+		fBindingService= (IBindingService)PlatformUI.getWorkbench().getAdapter(IBindingService.class);
 	}
 
 	/*
@@ -61,25 +71,68 @@ public abstract class AbstractRubyEditorTextHover implements IRubyEditorTextHove
 	protected IEditorPart getEditor() {
 		return fEditor;
 	}
-	
+
+	protected ICodeAssist getCodeAssist() {
+		if (fEditor != null) {
+			IEditorInput input= fEditor.getEditorInput();
+			if (input instanceof RubyScriptEditorInput) {
+				RubyScriptEditorInput cfeInput= (RubyScriptEditorInput) input;
+				return cfeInput.getRubyScript();
+			}
+
+			WorkingCopyManager manager= RubyPlugin.getDefault().getWorkingCopyManager();
+			return manager.getWorkingCopy(input, false);
+		}
+
+		return null;
+	}
+
 	/*
 	 * @see ITextHover#getHoverRegion(ITextViewer, int)
 	 */
 	public IRegion getHoverRegion(ITextViewer textViewer, int offset) {
 		return RubyWordFinder.findWord(textViewer.getDocument(), offset);
 	}
-	
+
 	/*
 	 * @see ITextHover#getHoverInfo(ITextViewer, IRegion)
 	 */
-	public abstract String getHoverInfo(ITextViewer textViewer, IRegion hoverRegion);
-	
+	public String getHoverInfo(ITextViewer textViewer, IRegion hoverRegion) {
+		
+		/*
+		 * The region should be a word region an not of length 0.
+		 * This check is needed because codeSelect(...) also finds
+		 * the Ruby element if the offset is behind the word.
+		 */
+		if (hoverRegion.getLength() == 0)
+			return null;
+		
+		ICodeAssist resolve= getCodeAssist();
+		if (resolve != null) {
+			try {
+				IRubyElement[] result= resolve.codeSelect(hoverRegion.getOffset(), hoverRegion.getLength());
+				if (result == null)
+					return null;
+
+				int nResults= result.length;
+				if (nResults == 0)
+					return null;
+
+				return getHoverInfo(result);
+
+			} catch (RubyModelException x) {
+				return null;
+			}
+		}
+		return null;
+	}
+
 	/**
 	 * Provides hover information for the given Ruby elements.
-	 * 
-	 * @param javaElements the Ruby elements for which to provide hover information
+	 *
+	 * @param rubyElements the Ruby elements for which to provide hover information
 	 * @return the hover information string
-	 * @since 2.1
+	 * @since 1.0
 	 */
 	protected String getHoverInfo(IRubyElement[] rubyElements) {
 		return null;
@@ -87,7 +140,7 @@ public abstract class AbstractRubyEditorTextHover implements IRubyEditorTextHove
 
 	/*
 	 * @see ITextHoverExtension#getHoverControlCreator()
-	 * @since 3.0
+	 * @since 1.0
 	 */
 	public IInformationControlCreator getHoverControlCreator() {
 		return new IInformationControlCreator() {
@@ -96,44 +149,52 @@ public abstract class AbstractRubyEditorTextHover implements IRubyEditorTextHove
 			}
 		};
 	}
-	
+
 	/**
 	 * Returns the tool tip affordance string.
-	 * 
+	 *
 	 * @return the affordance string or <code>null</code> if disabled or no key binding is defined
-	 * @since 3.0
+	 * @since 1.0
 	 */
 	protected String getTooltipAffordanceString() {
-		if (!RubyPlugin.getDefault().getPreferenceStore().getBoolean(PreferenceConstants.EDITOR_SHOW_TEXT_HOVER_AFFORDANCE))
+		if (fBindingService == null || !RubyPlugin.getDefault().getPreferenceStore().getBoolean(PreferenceConstants.EDITOR_SHOW_TEXT_HOVER_AFFORDANCE))
+			return null;
+
+		String keySequence= fBindingService.getBestActiveBindingFormattedFor(IRubyEditorActionDefinitionIds.SHOW_RDOC);
+		if (keySequence == null)
 			return null;
 		
-		KeySequence[] sequences= getKeySequences();
-		if (sequences == null)
-			return null;
-		
-		String keySequence= sequences[0].format();
-		return RubyHoverMessages.getFormattedString(RubyHoverMessages.RubyTextHover_makeStickyHint, keySequence);
+		return Messages.format(RubyHoverMessages.RubyTextHover_makeStickyHint, keySequence == null ? "" : keySequence); //$NON-NLS-1$
 	}
 
 	/**
-	 * Returns the array of valid key sequence bindings for the
-	 * show tool tip description command.
-	 * 
-	 * @return the array with the {@link KeySequence}s
-	 * 
-	 * @since 3.0
+	 * Returns the style sheet.
+	 *
+	 * @since 1.0
 	 */
-	private KeySequence[] getKeySequences() {
-		if (fCommand != null) {
-			List list= fCommand.getKeySequenceBindings();
-			if (!list.isEmpty()) {
-				KeySequence[] keySequences= new KeySequence[list.size()];
-				for (int i= 0; i < keySequences.length; i++) {
-					keySequences[i]= ((IKeySequenceBinding) list.get(i)).getKeySequence();
+	protected static String getStyleSheet() {
+		if (fgStyleSheet == null) {
+			Bundle bundle= Platform.getBundle(RubyPlugin.getPluginId());
+			URL styleSheetURL= bundle.getEntry("/RubydocHoverStyleSheet.css"); //$NON-NLS-1$
+			if (styleSheetURL != null) {
+				try {
+					styleSheetURL= FileLocator.toFileURL(styleSheetURL);
+					BufferedReader reader= new BufferedReader(new InputStreamReader(styleSheetURL.openStream()));
+					StringBuffer buffer= new StringBuffer(200);
+					String line= reader.readLine();
+					while (line != null) {
+						buffer.append(line);
+						buffer.append('\n');
+						line= reader.readLine();
+					}
+					fgStyleSheet= buffer.toString();
+				} catch (IOException ex) {
+					RubyPlugin.log(ex);
+					fgStyleSheet= ""; //$NON-NLS-1$
 				}
-				return keySequences;
-			}		
+			}
 		}
-		return null;
+		return fgStyleSheet;
 	}
+	
 }

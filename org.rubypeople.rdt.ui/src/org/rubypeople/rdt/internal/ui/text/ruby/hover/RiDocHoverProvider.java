@@ -10,16 +10,14 @@ import java.util.List;
 import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.IRegion;
 import org.eclipse.jface.text.ITextViewer;
-import org.eclipse.ui.IEditorInput;
 import org.rubypeople.rdt.internal.ui.RubyPlugin;
-import org.rubypeople.rdt.launching.IVMInstall;
 import org.rubypeople.rdt.launching.RubyRuntime;
-import org.rubypeople.rdt.ui.extensions.ITextHoverProvider;
 
-
-public class RiDocHoverProvider implements ITextHoverProvider {
-	public String getHoverInfo(IEditorInput input, ITextViewer textViewer, IRegion hoverRegion){
-    	File ri = RubyRuntime.getRI();
+public class RiDocHoverProvider extends AbstractRubyEditorTextHover {
+	
+	@Override
+	public String getHoverInfo(ITextViewer textViewer, IRegion hoverRegion) {
+		File ri = RubyRuntime.getRI();
     	if (ri == null || !ri.exists() || !ri.isFile()) return null;
     	
     	List<String> args = new ArrayList<String>();
@@ -64,8 +62,7 @@ public class RiDocHoverProvider implements ITextHoverProvider {
 					RubyPlugin.log(e);
 				}
 			}
-		}
-		
+		}		
 		return null;
 	}
 }

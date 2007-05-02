@@ -64,13 +64,13 @@ import org.rubypeople.rdt.internal.ui.text.ruby.RubyCompletionProcessor;
 import org.rubypeople.rdt.internal.ui.text.ruby.RubyFormattingStrategy;
 import org.rubypeople.rdt.internal.ui.text.ruby.RubyReconcilingStrategy;
 import org.rubypeople.rdt.internal.ui.text.ruby.RubyTokenScanner;
-import org.rubypeople.rdt.internal.ui.text.ruby.hover.RubyCodeTextHover;
+import org.rubypeople.rdt.internal.ui.text.ruby.hover.RubyEditorTextHoverDescriptor;
+import org.rubypeople.rdt.internal.ui.text.ruby.hover.RubyEditorTextHoverProxy;
 
 public class RubySourceViewerConfiguration extends TextSourceViewerConfiguration {
 
 	protected RubyTextTools textTools;
 	protected ITextEditor fTextEditor;
-	private RubyCodeTextHover fRubyTextHover;
 
 	/**
 	 * The document partitioning.
@@ -428,12 +428,45 @@ public class RubySourceViewerConfiguration extends TextSourceViewerConfiguration
 		return CodeFormatterUtil.getTabWidth(getProject());
 	}
 
-	public ITextHover getTextHover(ISourceViewer sourceViewer, String contentType) {
-		if (fRubyTextHover == null) {
-			fRubyTextHover = new RubyCodeTextHover();
-			fRubyTextHover.setEditor(getEditor());
+	@Override
+	public ITextHover getTextHover(ISourceViewer sourceViewer, String contentType, int stateMask) {
+		RubyEditorTextHoverDescriptor[] hoverDescs= RubyPlugin.getDefault().getRubyEditorTextHoverDescriptors();
+		int i= 0;
+		while (i < hoverDescs.length) {
+			if (hoverDescs[i].isEnabled() &&  hoverDescs[i].getStateMask() == stateMask)
+				return new RubyEditorTextHoverProxy(hoverDescs[i], getEditor());
+			i++;
 		}
-		return fRubyTextHover;
+		return null;
+	}
+	
+	/*
+	 * @see SourceViewerConfiguration#getConfiguredTextHoverStateMasks(ISourceViewer, String)
+	 * @since 2.1
+	 */
+	public int[] getConfiguredTextHoverStateMasks(ISourceViewer sourceViewer, String contentType) {
+		RubyEditorTextHoverDescriptor[] hoverDescs= RubyPlugin.getDefault().getRubyEditorTextHoverDescriptors();
+		int stateMasks[]= new int[hoverDescs.length];
+		int stateMasksLength= 0;
+		for (int i= 0; i < hoverDescs.length; i++) {
+			if (hoverDescs[i].isEnabled()) {
+				int j= 0;
+				int stateMask= hoverDescs[i].getStateMask();
+				while (j < stateMasksLength) {
+					if (stateMasks[j] == stateMask)
+						break;
+					j++;
+				}
+				if (j == stateMasksLength)
+					stateMasks[stateMasksLength++]= stateMask;
+			}
+		}
+		if (stateMasksLength == hoverDescs.length)
+			return stateMasks;
+
+		int[] shortenedStateMasks= new int[stateMasksLength];
+		System.arraycopy(stateMasks, 0, shortenedStateMasks, 0, stateMasksLength);
+		return shortenedStateMasks;
 	}
 
 	@Override

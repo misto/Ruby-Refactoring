@@ -24,7 +24,7 @@ import org.eclipse.ui.IEditorPart;
  * @see org.eclipse.ui.IEditorPart
  * @see org.eclipse.jface.text.ITextHover
  * 
- * @since 2.0
+ * @since 1.0
  */
 public interface IRubyEditorTextHover extends ITextHover {
 

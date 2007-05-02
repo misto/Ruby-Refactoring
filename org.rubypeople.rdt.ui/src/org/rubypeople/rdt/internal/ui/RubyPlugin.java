@@ -17,6 +17,7 @@ import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.FileLocator;
+import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Path;
@@ -47,6 +48,7 @@ import org.eclipse.ui.editors.text.EditorsUI;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.eclipse.ui.progress.WorkbenchJob;
 import org.eclipse.ui.texteditor.ChainedPreferenceStore;
+import org.eclipse.ui.texteditor.ConfigurationElementSorter;
 import org.osgi.framework.BundleContext;
 import org.rubypeople.rdt.core.IBuffer;
 import org.rubypeople.rdt.core.IRubyScript;
@@ -66,8 +68,8 @@ import org.rubypeople.rdt.internal.ui.symbols.BlockingSymbolFinder;
 import org.rubypeople.rdt.internal.ui.text.IRubyColorConstants;
 import org.rubypeople.rdt.internal.ui.text.PreferencesAdapter;
 import org.rubypeople.rdt.internal.ui.text.folding.RubyFoldingStructureProviderRegistry;
+import org.rubypeople.rdt.internal.ui.text.ruby.hover.RubyEditorTextHoverDescriptor;
 import org.rubypeople.rdt.internal.ui.text.template.contentassist.RubyTemplateAccess;
-import org.rubypeople.rdt.ui.IWorkingCopyManager;
 import org.rubypeople.rdt.ui.PreferenceConstants;
 import org.rubypeople.rdt.ui.text.RubyTextTools;
 
@@ -80,7 +82,7 @@ public class RubyPlugin extends AbstractUIPlugin implements IRubyColorConstants 
 
 	protected RubyTextTools textTools;
 	protected RubyFileMatcher rubyFileMatcher;
-	private IWorkingCopyManager fWorkingCopyManager;
+	private WorkingCopyManager fWorkingCopyManager;
 	private RubyDocumentProvider fDocumentProvider;
 	
 	protected PropertyResourceBundle pluginProperties;
@@ -105,6 +107,8 @@ public class RubyPlugin extends AbstractUIPlugin implements IRubyColorConstants 
 	private ImageDescriptorRegistry fImageDescriptorRegistry;
 	private MembersOrderPreferenceCache fMembersOrderPreferenceCache;
 	private RubyScriptDocumentProvider fExternalRubyDocumentProvider;
+	
+	private RubyEditorTextHoverDescriptor[] fRubyEditorTextHoverDescriptors;
 	
 	/**
 	 * Default instance of the appearance type filters.
@@ -414,7 +418,7 @@ public class RubyPlugin extends AbstractUIPlugin implements IRubyColorConstants 
 	/**
 	 * @return
 	 */
-	public IWorkingCopyManager getWorkingCopyManager() {
+	public WorkingCopyManager getWorkingCopyManager() {
 		if (fWorkingCopyManager == null) {
 			RubyDocumentProvider provider = getRubyDocumentProvider();
 			fWorkingCopyManager = new WorkingCopyManager(provider);
@@ -584,4 +588,39 @@ public class RubyPlugin extends AbstractUIPlugin implements IRubyColorConstants 
 		}
 		return section;
 	}	
+	
+	/**
+	 * Returns all Ruby editor text hovers contributed to the workbench.
+	 * 
+	 * @return an array of RubyEditorTextHoverDescriptor
+	 * @since 1.0
+	 */
+	public RubyEditorTextHoverDescriptor[] getRubyEditorTextHoverDescriptors() {
+		if (fRubyEditorTextHoverDescriptors == null) {
+			fRubyEditorTextHoverDescriptors= RubyEditorTextHoverDescriptor.getContributedHovers();
+			ConfigurationElementSorter sorter= new ConfigurationElementSorter() {
+				/*
+				 * @see org.eclipse.ui.texteditor.ConfigurationElementSorter#getConfigurationElement(java.lang.Object)
+				 */
+				public IConfigurationElement getConfigurationElement(Object object) {
+					return ((RubyEditorTextHoverDescriptor)object).getConfigurationElement();
+				}
+			};
+			sorter.sort(fRubyEditorTextHoverDescriptors);
+		
+			// Move Best Match hover to front
+			for (int i= 0; i < fRubyEditorTextHoverDescriptors.length - 1; i++) {
+				if (PreferenceConstants.ID_BESTMATCH_HOVER.equals(fRubyEditorTextHoverDescriptors[i].getId())) {
+					RubyEditorTextHoverDescriptor hoverDescriptor= fRubyEditorTextHoverDescriptors[i];
+					for (int j= i; j > 0; j--)
+						fRubyEditorTextHoverDescriptors[j]= fRubyEditorTextHoverDescriptors[j-1];
+					fRubyEditorTextHoverDescriptors[0]= hoverDescriptor;
+					break;
+				}
+				
+			}
+		}
+		
+		return fRubyEditorTextHoverDescriptors;
+	} 
 }

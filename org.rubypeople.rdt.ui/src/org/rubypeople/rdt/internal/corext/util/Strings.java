@@ -1,6 +1,11 @@
 package org.rubypeople.rdt.internal.corext.util;
 
+import org.eclipse.jface.text.BadLocationException;
+import org.eclipse.jface.text.DefaultLineTracker;
+import org.eclipse.jface.text.ILineTracker;
+import org.eclipse.jface.text.IRegion;
 import org.rubypeople.rdt.core.IRubyProject;
+import org.rubypeople.rdt.core.formatter.IndentManipulation;
 
 public class Strings {
 
@@ -142,6 +147,129 @@ public class Strings {
 			lastChar= ch;
 		}
 		return result.toString();
+	}
+
+	/**
+	 * Converts the given string into an array of lines. The lines 
+	 * don't contain any line delimiter characters.
+	 *
+	 * @return the string converted into an array of strings. Returns <code>
+	 * 	null</code> if the input string can't be converted in an array of lines.
+	 */
+	public static String[] convertIntoLines(String input) {
+		try {
+			ILineTracker tracker= new DefaultLineTracker();
+			tracker.set(input);
+			int size= tracker.getNumberOfLines();
+			String result[]= new String[size];
+			for (int i= 0; i < size; i++) {
+				IRegion region= tracker.getLineInformation(i);
+				int offset= region.getOffset();
+				result[i]= input.substring(offset, offset + region.getLength());
+			}
+			return result;
+		} catch (BadLocationException e) {
+			return null;
+		}
+	}
+	
+	/**
+	 * Removes the common number of indents from all lines. If a line
+	 * only consists out of white space it is ignored.
+
+	 * @param project the java project from which to get the formatter
+	 *        preferences, or <code>null</code> for global preferences
+	 * @since 3.1
+	 */
+	public static void trimIndentation(String[] lines, IRubyProject project) {
+		trimIndentation(lines, CodeFormatterUtil.getTabWidth(project), CodeFormatterUtil.getIndentWidth(project), true);
+	}
+	
+	/**
+	 * Removes the common number of indents from all lines. If a line
+	 * only consists out of white space it is ignored. If <code>
+	 * considerFirstLine</code> is false the first line will be ignored.
+	 * @since 3.1
+	 */
+	public static void trimIndentation(String[] lines, int tabWidth, int indentWidth, boolean considerFirstLine) {
+		String[] toDo= new String[lines.length];
+		// find indentation common to all lines
+		int minIndent= Integer.MAX_VALUE; // very large
+		for (int i= considerFirstLine ? 0 : 1; i < lines.length; i++) {
+			String line= lines[i];
+			if (containsOnlyWhitespaces(line))
+				continue;
+			toDo[i]= line;
+			int indent= computeIndentUnits(line, tabWidth, indentWidth);
+			if (indent < minIndent) {
+				minIndent= indent;
+			}
+		}
+		
+		if (minIndent > 0) {
+			// remove this indent from all lines
+			for (int i= considerFirstLine ? 0 : 1; i < toDo.length; i++) {
+				String s= toDo[i];
+				if (s != null)
+					lines[i]= trimIndent(s, minIndent, tabWidth, indentWidth);
+				else {
+					String line= lines[i];
+					int indent= computeIndentUnits(line, tabWidth, indentWidth);
+					if (indent > minIndent)
+						lines[i]= trimIndent(line, minIndent, tabWidth, indentWidth);
+					else
+						lines[i]= trimLeadingTabsAndSpaces(line);
+				}
+			}
+		}
+	}
+	
+	/**
+	 * Removes the given number of indents from the line. Asserts that the given line 
+	 * has the requested number of indents. If <code>indentsToRemove <= 0</code>
+	 * the line is returned.
+	 * 
+	 * @since 3.1
+	 */
+	public static String trimIndent(String line, int indentsToRemove, int tabWidth, int indentWidth) {
+		return IndentManipulation.trimIndent(line, indentsToRemove, tabWidth, indentWidth);
+	}
+	
+	/**
+	 * Removes leading tabs and spaces from the given string. If the string
+	 * doesn't contain any leading tabs or spaces then the string itself is 
+	 * returned.
+	 */
+	public static String trimLeadingTabsAndSpaces(String line) {
+		int size= line.length();
+		int start= size;
+		for (int i= 0; i < size; i++) {
+			char c= line.charAt(i);
+			if (!IndentManipulation.isIndentChar(c)) {
+				start= i;
+				break;
+			}
+		}
+		if (start == 0)
+			return line;
+		else if (start == size)
+			return ""; //$NON-NLS-1$
+		else
+			return line.substring(start);
+	}
+	
+	/**
+	 * Concatenate the given strings into one strings using the passed line delimiter as a
+	 * delimiter. No delimiter is added to the last line.
+	 */
+	public static String concatenate(String[] lines, String delimiter) {
+		StringBuffer buffer= new StringBuffer();
+		for (int i= 0; i < lines.length; i++) {
+			if (i > 0)
+				buffer.append(delimiter);
+			buffer.append(lines[i]);
+		}
+		return buffer.toString();
 	}
 
 }

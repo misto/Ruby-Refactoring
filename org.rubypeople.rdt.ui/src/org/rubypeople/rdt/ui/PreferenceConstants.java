@@ -1,6 +1,5 @@
 package org.rubypeople.rdt.ui;
 
-import java.io.File;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
@@ -12,8 +11,10 @@ import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.jface.action.Action;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.preference.PreferenceConverter;
+import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.RGB;
 import org.eclipse.ui.texteditor.AbstractTextEditor;
 import org.rubypeople.rdt.core.ILoadpathEntry;
@@ -21,8 +22,6 @@ import org.rubypeople.rdt.core.RubyCore;
 import org.rubypeople.rdt.internal.ui.RubyPlugin;
 import org.rubypeople.rdt.internal.ui.preferences.PreferencesMessages;
 import org.rubypeople.rdt.internal.ui.preferences.formatter.ProfileManager;
-import org.rubypeople.rdt.launching.IVMInstall;
-import org.rubypeople.rdt.launching.RubyRuntime;
 
 public class PreferenceConstants {
 
@@ -699,6 +698,41 @@ public class PreferenceConstants {
 	 */	
 	public static final String TYPEFILTER_ENABLED= "org.rubypeople.rdt.ui.typefilter.enabled"; //$NON-NLS-1$	
 	
+	/**
+	 * A named preference that defines the key for the hover modifiers.
+	 *
+	 * @see RubyUI
+	 * @since 1.0
+	 */
+	public static final String EDITOR_TEXT_HOVER_MODIFIERS= "hoverModifiers"; //$NON-NLS-1$
+
+	/**
+	 * A named preference that defines the key for the hover modifier state masks.
+	 * The value is only used if the value of <code>EDITOR_TEXT_HOVER_MODIFIERS</code>
+	 * cannot be resolved to valid SWT modifier bits.
+	 * 
+	 * @see RubyUI
+	 * @see #EDITOR_TEXT_HOVER_MODIFIERS
+	 * @since 1.0
+	 */
+	public static final String EDITOR_TEXT_HOVER_MODIFIER_MASKS= "hoverModifierMasks"; //$NON-NLS-1$
+	
+	/**
+	 * The id of the best match hover contributed for extension point
+	 * <code>rubyEditorTextHovers</code>.
+	 *
+	 * @since 1.0
+	 */
+	public static final String ID_BESTMATCH_HOVER= "org.rubypeople.rdt.ui.BestMatchHover"; //$NON-NLS-1$
+
+	/**
+	 * The id of the source code hover contributed for extension point
+	 * <code>rubyEditorTextHovers</code>.
+	 *
+	 * @since 1.0
+	 */
+	public static final String ID_SOURCE_HOVER= "org.rubypeople.rdt.ui.RubySourceHover"; //$NON-NLS-1$
+	
 	private static String getDefaultRubyVMLibraries() {
 		StringBuffer buf= new StringBuffer();
 		ILoadpathEntry cntentry= getRubyVMContainerEntry();
@@ -832,15 +866,11 @@ public class PreferenceConstants {
 		store.setDefault(PreferenceConstants.EDITOR_MARK_FIELD_OCCURRENCES, true);
 		store.setDefault(PreferenceConstants.EDITOR_MARK_LOCAL_VARIABLE_OCCURRENCES, true);
 		store.setDefault(PreferenceConstants.EDITOR_MARK_METHOD_EXIT_POINTS, true);
-	}
-
-	private static String getDefaultPath(String programName) {
-		IVMInstall interpreter = RubyRuntime.getDefaultVMInstall();
-		if (interpreter == null) {
-			return programName;
-		}
-		File path = interpreter.getInstallLocation();
-		return path.getParent() + File.separator + programName;
+		
+		int sourceHoverModifier= SWT.MOD2;
+		String sourceHoverModifierName= Action.findModifierString(sourceHoverModifier);	// Shift
+		store.setDefault(PreferenceConstants.EDITOR_TEXT_HOVER_MODIFIERS, "org.rubypeople.rdt.ui.BestMatchHover;0;org.rubypeople.rdt.ui.RubySourceHover;" + sourceHoverModifierName); //$NON-NLS-1$
+		store.setDefault(PreferenceConstants.EDITOR_TEXT_HOVER_MODIFIER_MASKS, "org.rubypeople.rdt.ui.BestMatchHover;0;org.rubypeople.rdt.ui.RubySourceHover;" + sourceHoverModifier); //$NON-NLS-1$
 	}
 
 	/**
