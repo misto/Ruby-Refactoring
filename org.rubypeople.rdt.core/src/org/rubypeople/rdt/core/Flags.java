@@ -55,5 +55,8 @@ public class Flags {
 	public static boolean isStatic(int flags) {
 		return (flags & AccStatic) != 0;
 	}
+	public static boolean isModule(int flags) {
+		return (flags & AccModule) != 0;
+	}
 
 }
