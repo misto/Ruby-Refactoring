@@ -23,6 +23,8 @@
       <perspectiveExtension
             targetID="org.rubypeople.rdt.ui.PerspectiveRuby">
          <viewShortcut id="org.rubypeople.rdt.testunit.views.TestUnitView"/> 
+         <newWizardShortcut id="org.rubypeople.rdt.testunit.wizards.RubyNewTestCaseWizard">
+         </newWizardShortcut>
          <view
                relative="org.eclipse.ui.views.ContentOutline"
                relationship="stack"
@@ -141,10 +143,15 @@
    
    <extension
          point="org.eclipse.ui.newWizards">
+          <category
+            name="%WizardCategory.name"
+            parentCategory="org.rubypeople.rdt.ui"
+            id="org.rubypeople.rdt.testunit">
+          </category>
       <wizard
             name="%NewWizardRubyTestCase.name"
             icon="$nl$/icons/full/etool16/new_testcase.gif"
-            category="org.rubypeople.rdt.ui"
+            category="org.rubypeople.rdt.testunit"
             class="org.rubypeople.rdt.internal.testunit.wizards.NewTestCaseCreationWizard"
             preferredPerspectives="org.rubypeople.rdt.ui.PerspectiveRuby"
             id="org.rubypeople.rdt.testunit.wizards.RubyNewTestCaseWizard">
