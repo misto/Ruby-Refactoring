@@ -120,5 +120,10 @@
       <param name="element.id" value="org.rubypeople.rdt.refactoring.tests"/>
       <param name="project.name" value="org.rubypeople.rdt.refactoring.tests"/>
     </antcall>
+  	<antcall target="svn.co">
+  	  <param name="target" value="plugins"/>
+  	  <param name="element.id" value="com.aptana.rdt.tests"/>
+  	  <param name="project.name" value="com.aptana.rdt.tests"/>
+  	</antcall>
   </target>
 </project>
