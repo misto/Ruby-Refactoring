@@ -7,6 +7,9 @@ import org.rubypeople.rdt.core.TS_Core;
 import org.rubypeople.rdt.debug.ui.tests.TS_DebugUi;
 import org.rubypeople.rdt.internal.launching.TS_InternalLaunching;
 import org.rubypeople.rdt.internal.ui.TS_InternalUi;
+import org.rubypeople.rdt.refactoring.tests.TS_All;
+
+import com.aptana.rdt.TS_Aptana;
 
 public class TS_RdtAllUnitTests {
 
@@ -25,7 +28,13 @@ public class TS_RdtAllUnitTests {
 		
 		// org.rubypeople.rdt.debug.ui.tests
 		suite.addTest(TS_DebugUi.suite());
+		
+		// com.aptana.rdt.tests
+		suite.addTest(TS_Aptana.suite());
 
+		// org.rubypeople.rdt.refactoring.tests
+		suite.addTest(TS_All.suite());
+		
 		//$JUnit-END$
 		return suite;
 	}

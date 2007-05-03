@@ -16,6 +16,8 @@
       <import plugin="org.rubypeople.rdt.launching.tests"/>
       <import plugin="org.rubypeople.rdt.debug.core.tests"/>
       <import plugin="org.rubypeople.rdt.ui.tests"/>
+      <import plugin="com.aptana.rdt.tests"/>
+      <import plugin="org.rubypeople.rdt.refactoring.tests"/>
    </requires>
 
 </plugin>
