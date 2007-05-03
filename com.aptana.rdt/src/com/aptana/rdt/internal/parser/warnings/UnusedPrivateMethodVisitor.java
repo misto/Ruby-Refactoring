@@ -15,7 +15,7 @@ import org.jruby.runtime.Visibility;
 import org.rubypeople.rdt.internal.core.parser.warnings.RubyLintVisitor;
 import org.rubypeople.rdt.internal.core.util.ASTUtil;
 
-import com.aptana.rdt.RubyRedPlugin;
+import com.aptana.rdt.AptanaRDTPlugin;
 
 public class UnusedPrivateMethodVisitor extends RubyLintVisitor {
 
@@ -73,7 +73,7 @@ public class UnusedPrivateMethodVisitor extends RubyLintVisitor {
 
 	@Override
 	protected String getOptionKey() {
-		return RubyRedPlugin.COMPILER_PB_UNUSED_PRIVATE_MEMBER;
+		return AptanaRDTPlugin.COMPILER_PB_UNUSED_PRIVATE_MEMBER;
 	}	
 
 }

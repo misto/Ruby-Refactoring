@@ -9,7 +9,7 @@ import org.jruby.ast.LocalAsgnNode;
 import org.jruby.evaluator.Instruction;
 import org.rubypeople.rdt.internal.core.parser.warnings.RubyLintVisitor;
 
-import com.aptana.rdt.RubyRedPlugin;
+import com.aptana.rdt.AptanaRDTPlugin;
 
 public class LocalsMaskingMethodsVisitor extends RubyLintVisitor {
 
@@ -24,7 +24,7 @@ public class LocalsMaskingMethodsVisitor extends RubyLintVisitor {
 
 	@Override
 	protected String getOptionKey() {
-		return RubyRedPlugin.COMPILER_PB_LOCAL_MASKS_METHOD;
+		return AptanaRDTPlugin.COMPILER_PB_LOCAL_MASKS_METHOD;
 	}
 	
 	public Instruction visitClassNode(ClassNode iVisited) {

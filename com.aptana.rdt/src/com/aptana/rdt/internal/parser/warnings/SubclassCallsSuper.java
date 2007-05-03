@@ -8,7 +8,7 @@ import org.jruby.ast.ZSuperNode;
 import org.jruby.evaluator.Instruction;
 import org.rubypeople.rdt.internal.core.parser.warnings.RubyLintVisitor;
 
-import com.aptana.rdt.RubyRedPlugin;
+import com.aptana.rdt.AptanaRDTPlugin;
 
 public class SubclassCallsSuper extends RubyLintVisitor {
 
@@ -22,7 +22,7 @@ public class SubclassCallsSuper extends RubyLintVisitor {
 
 	@Override
 	protected String getOptionKey() {
-		return RubyRedPlugin.COMPILER_PB_SUBCLASS_DOESNT_CALL_SUPER;
+		return AptanaRDTPlugin.COMPILER_PB_SUBCLASS_DOESNT_CALL_SUPER;
 	}
 	
 	@Override

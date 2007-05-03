@@ -9,7 +9,7 @@ import org.jruby.ast.Node;
 import org.jruby.evaluator.Instruction;
 import org.rubypeople.rdt.internal.core.parser.warnings.RubyLintVisitor;
 
-import com.aptana.rdt.RubyRedPlugin;
+import com.aptana.rdt.AptanaRDTPlugin;
 
 public class AccidentalBooleanAssignmentVisitor extends RubyLintVisitor {
 
@@ -19,7 +19,7 @@ public class AccidentalBooleanAssignmentVisitor extends RubyLintVisitor {
 
 	@Override
 	protected String getOptionKey() {
-		return RubyRedPlugin.COMPILER_PB_POSSIBLE_ACCIDENTAL_BOOLEAN_ASSIGNMENT;
+		return AptanaRDTPlugin.COMPILER_PB_POSSIBLE_ACCIDENTAL_BOOLEAN_ASSIGNMENT;
 	}
 	
 	public Instruction visitIfNode(IfNode iVisited) {

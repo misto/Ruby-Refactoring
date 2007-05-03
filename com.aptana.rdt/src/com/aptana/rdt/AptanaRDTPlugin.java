@@ -18,7 +18,7 @@ import com.aptana.rdt.internal.ui.RubyRedMessages;
 /**
  * The activator class controls the plug-in life cycle
  */
-public class RubyRedPlugin extends AbstractUIPlugin {
+public class AptanaRDTPlugin extends AbstractUIPlugin {
 
 	// The plug-in ID
 	public static final String PLUGIN_ID = "com.aptana.rdt";
@@ -175,12 +175,12 @@ public class RubyRedPlugin extends AbstractUIPlugin {
 	public static final String COMPILER_PB_ASSIGNMENT_PRECEDENCE = PLUGIN_ID + ".compiler.problem.assignmentPrecedence"; //$NON-NLS-1$
 
 	// The shared instance
-	private static RubyRedPlugin plugin;
+	private static AptanaRDTPlugin plugin;
 	
 	/**
 	 * The constructor
 	 */
-	public RubyRedPlugin() {
+	public AptanaRDTPlugin() {
 		super();
 		plugin = this;
 	}
@@ -208,7 +208,7 @@ public class RubyRedPlugin extends AbstractUIPlugin {
 	 *
 	 * @return the shared instance
 	 */
-	public static RubyRedPlugin getDefault() {
+	public static AptanaRDTPlugin getDefault() {
 		return plugin;
 	}
 

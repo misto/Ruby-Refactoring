@@ -10,7 +10,7 @@ import org.jruby.evaluator.Instruction;
 import org.jruby.lexer.yacc.ISourcePosition;
 import org.rubypeople.rdt.internal.core.parser.warnings.RubyLintVisitor;
 
-import com.aptana.rdt.RubyRedPlugin;
+import com.aptana.rdt.AptanaRDTPlugin;
 
 public class ComparableInclusionVisitor extends RubyLintVisitor {
 
@@ -28,7 +28,7 @@ public class ComparableInclusionVisitor extends RubyLintVisitor {
 
 	@Override
 	protected String getOptionKey() {
-		return RubyRedPlugin.COMPILER_PB_COMPARABLE_MISSING_METHOD;
+		return AptanaRDTPlugin.COMPILER_PB_COMPARABLE_MISSING_METHOD;
 	}
 
 	@Override

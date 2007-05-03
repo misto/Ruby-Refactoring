@@ -4,7 +4,7 @@ import org.jruby.ast.DefnNode;
 import org.jruby.evaluator.Instruction;
 import org.rubypeople.rdt.internal.core.parser.warnings.RubyLintVisitor;
 
-import com.aptana.rdt.RubyRedPlugin;
+import com.aptana.rdt.AptanaRDTPlugin;
 
 public class MisspelledConstructorVisitor extends RubyLintVisitor {
 
@@ -22,7 +22,7 @@ public class MisspelledConstructorVisitor extends RubyLintVisitor {
 	
 	@Override
 	protected String getOptionKey() {
-		return RubyRedPlugin.COMPILER_PB_MISSPELLED_CONSTRUCTOR;
+		return AptanaRDTPlugin.COMPILER_PB_MISSPELLED_CONSTRUCTOR;
 	}
 
 }

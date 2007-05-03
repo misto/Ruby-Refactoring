@@ -7,7 +7,7 @@ import org.jruby.evaluator.Instruction;
 import org.rubypeople.rdt.internal.core.parser.warnings.RubyLintVisitor;
 import org.rubypeople.rdt.internal.core.util.ASTUtil;
 
-import com.aptana.rdt.RubyRedPlugin;
+import com.aptana.rdt.AptanaRDTPlugin;
 
 public class AndOrUsedOnRighthandAssignment extends RubyLintVisitor {
 	
@@ -17,7 +17,7 @@ public class AndOrUsedOnRighthandAssignment extends RubyLintVisitor {
 
 	@Override
 	protected String getOptionKey() {
-		return RubyRedPlugin.COMPILER_PB_ASSIGNMENT_PRECEDENCE;
+		return AptanaRDTPlugin.COMPILER_PB_ASSIGNMENT_PRECEDENCE;
 	}
 	
 	@Override

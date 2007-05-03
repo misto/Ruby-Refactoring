@@ -22,7 +22,7 @@ import org.jruby.ast.types.INameNode;
 import org.jruby.evaluator.Instruction;
 import org.rubypeople.rdt.internal.core.parser.warnings.RubyLintVisitor;
 
-import com.aptana.rdt.RubyRedPlugin;
+import com.aptana.rdt.AptanaRDTPlugin;
 
 public class SimilarVariableNameVisitor extends RubyLintVisitor {
 
@@ -35,7 +35,7 @@ public class SimilarVariableNameVisitor extends RubyLintVisitor {
 
 	@Override
 	protected String getOptionKey() {
-		return RubyRedPlugin.COMPILER_PB_SIMILAR_VARIABLE_NAMES;
+		return AptanaRDTPlugin.COMPILER_PB_SIMILAR_VARIABLE_NAMES;
 	}
 
 	@Override

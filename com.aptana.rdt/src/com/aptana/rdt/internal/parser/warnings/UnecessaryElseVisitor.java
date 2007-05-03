@@ -14,7 +14,7 @@ import org.jruby.evaluator.Instruction;
 import org.rubypeople.rdt.internal.core.parser.InOrderVisitor;
 import org.rubypeople.rdt.internal.core.parser.warnings.RubyLintVisitor;
 
-import com.aptana.rdt.RubyRedPlugin;
+import com.aptana.rdt.AptanaRDTPlugin;
 
 public class UnecessaryElseVisitor extends RubyLintVisitor {
 
@@ -24,7 +24,7 @@ public class UnecessaryElseVisitor extends RubyLintVisitor {
 
 	@Override
 	protected String getOptionKey() {
-		return RubyRedPlugin.COMPILER_PB_UNNECESSARY_ELSE;
+		return AptanaRDTPlugin.COMPILER_PB_UNNECESSARY_ELSE;
 	}
 	
 	@Override

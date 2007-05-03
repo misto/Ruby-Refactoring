@@ -15,7 +15,7 @@ import org.jruby.evaluator.Instruction;
 import org.rubypeople.rdt.internal.core.parser.warnings.RubyLintVisitor;
 import org.rubypeople.rdt.internal.core.util.ASTUtil;
 
-import com.aptana.rdt.RubyRedPlugin;
+import com.aptana.rdt.AptanaRDTPlugin;
 
 public class UnusedParameterVisitor extends RubyLintVisitor {
 
@@ -28,7 +28,7 @@ public class UnusedParameterVisitor extends RubyLintVisitor {
 
 	@Override
 	protected String getOptionKey() {
-		return RubyRedPlugin.COMPILER_PB_UNUSED_PARAMETER;
+		return AptanaRDTPlugin.COMPILER_PB_UNUSED_PARAMETER;
 	}
 	
 	public Instruction visitDefnNode(DefnNode iVisited) {

@@ -14,7 +14,7 @@ import org.rubypeople.rdt.internal.core.RubyModelManager;
 import org.rubypeople.rdt.internal.core.parser.warnings.RubyLintVisitor;
 import org.rubypeople.rdt.internal.core.util.ASTUtil;
 
-import com.aptana.rdt.RubyRedPlugin;
+import com.aptana.rdt.AptanaRDTPlugin;
 
 public class CodeComplexityVisitor extends RubyLintVisitor {
 
@@ -35,11 +35,11 @@ public class CodeComplexityVisitor extends RubyLintVisitor {
 	public CodeComplexityVisitor(Map options, String contents) {
 		super(contents);
 		fOptions = options;
-		maxArgLength = getInt(RubyRedPlugin.COMPILER_PB_MAX_ARGUMENTS, 5); 
-		maxLines = getInt(RubyRedPlugin.COMPILER_PB_MAX_LINES, 20); 
-		maxReturns = getInt(RubyRedPlugin.COMPILER_PB_MAX_RETURNS, 5); 
-		maxBranches = getInt(RubyRedPlugin.COMPILER_PB_MAX_BRANCHES, 5); 
-		maxLocals = getInt(RubyRedPlugin.COMPILER_PB_MAX_LOCALS, 4); 
+		maxArgLength = getInt(AptanaRDTPlugin.COMPILER_PB_MAX_ARGUMENTS, 5); 
+		maxLines = getInt(AptanaRDTPlugin.COMPILER_PB_MAX_LINES, 20); 
+		maxReturns = getInt(AptanaRDTPlugin.COMPILER_PB_MAX_RETURNS, 5); 
+		maxBranches = getInt(AptanaRDTPlugin.COMPILER_PB_MAX_BRANCHES, 5); 
+		maxLocals = getInt(AptanaRDTPlugin.COMPILER_PB_MAX_LOCALS, 4); 
 		returnCount = 0;
 		branchCount = 0;
 	}
@@ -54,7 +54,7 @@ public class CodeComplexityVisitor extends RubyLintVisitor {
 	@Override
 	protected String getOptionKey() {
 		// TODO Break this visitor up into multiple! One for each key.
-		return RubyRedPlugin.COMPILER_PB_MAX_ARGUMENTS;
+		return AptanaRDTPlugin.COMPILER_PB_MAX_ARGUMENTS;
 	}
 
 	@Override

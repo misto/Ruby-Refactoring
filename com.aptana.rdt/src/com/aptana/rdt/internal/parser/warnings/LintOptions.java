@@ -5,7 +5,7 @@ import java.util.Map;
 
 import org.rubypeople.rdt.core.RubyCore;
 
-import com.aptana.rdt.RubyRedPlugin;
+import com.aptana.rdt.AptanaRDTPlugin;
 
 public class LintOptions {
 	
@@ -59,28 +59,28 @@ public class LintOptions {
 	
 	public Map getMap() {
 		Map optionsMap = new HashMap(30);		
-		optionsMap.put(RubyRedPlugin.COMPILER_PB_UNUSED_PRIVATE_MEMBER, getSeverityString(UnusedPrivateMember));
-		optionsMap.put(RubyRedPlugin.COMPILER_PB_SUBCLASS_DOESNT_CALL_SUPER, getSeverityString(SubclassDoesntCallSuper));
-		optionsMap.put(RubyRedPlugin.COMPILER_PB_ASSIGNMENT_PRECEDENCE, getSeverityString(AssignmentPrecedence));
-		optionsMap.put(RubyRedPlugin.COMPILER_PB_UNUSED_PARAMETER, getSeverityString(UnusedArgument));
-		optionsMap.put(RubyRedPlugin.COMPILER_PB_UNNECESSARY_ELSE, getSeverityString(UnnecessaryElse));
-		optionsMap.put(RubyRedPlugin.COMPILER_PB_MISSPELLED_CONSTRUCTOR, getSeverityString(MisspelledConstructor));
-		optionsMap.put(RubyRedPlugin.COMPILER_PB_POSSIBLE_ACCIDENTAL_BOOLEAN_ASSIGNMENT, getSeverityString(PossibleAccidentalBooleanAssignment));
-		optionsMap.put(RubyRedPlugin.COMPILER_PB_LOCAL_MASKS_METHOD, getSeverityString(LocalVariableMasksMethod));		
-		optionsMap.put(RubyRedPlugin.COMPILER_PB_CODE_COMPLEXITY_ARGUMENTS, getSeverityString(MaxArguments));
-		optionsMap.put(RubyRedPlugin.COMPILER_PB_CODE_COMPLEXITY_BRANCHES, getSeverityString(MaxBranches));
-		optionsMap.put(RubyRedPlugin.COMPILER_PB_CODE_COMPLEXITY_LINES, getSeverityString(MaxLines));
-		optionsMap.put(RubyRedPlugin.COMPILER_PB_CODE_COMPLEXITY_LOCALS, getSeverityString(MaxLocals));
-		optionsMap.put(RubyRedPlugin.COMPILER_PB_CODE_COMPLEXITY_RETURNS, getSeverityString(MaxReturns));
-		optionsMap.put(RubyRedPlugin.COMPILER_PB_SIMILAR_VARIABLE_NAMES, getSeverityString(SimilarVariableNames));
-		optionsMap.put(RubyRedPlugin.COMPILER_PB_UNREACHABLE_CODE, getSeverityString(UnreachableCode));
-		optionsMap.put(RubyRedPlugin.COMPILER_PB_COMPARABLE_MISSING_METHOD, getSeverityString(ComparableMissingMethod));
-		optionsMap.put(RubyRedPlugin.COMPILER_PB_ENUMERABLE_MISSING_METHOD, getSeverityString(EnumerableMissingMethod));
-		optionsMap.put(RubyRedPlugin.COMPILER_PB_MAX_ARGUMENTS, String.valueOf(maxArguments));
-		optionsMap.put(RubyRedPlugin.COMPILER_PB_MAX_LINES, String.valueOf(maxLines));
-		optionsMap.put(RubyRedPlugin.COMPILER_PB_MAX_LOCALS, String.valueOf(maxLocals));
-		optionsMap.put(RubyRedPlugin.COMPILER_PB_MAX_RETURNS, String.valueOf(maxReturns));
-		optionsMap.put(RubyRedPlugin.COMPILER_PB_MAX_BRANCHES, String.valueOf(maxBranches));
+		optionsMap.put(AptanaRDTPlugin.COMPILER_PB_UNUSED_PRIVATE_MEMBER, getSeverityString(UnusedPrivateMember));
+		optionsMap.put(AptanaRDTPlugin.COMPILER_PB_SUBCLASS_DOESNT_CALL_SUPER, getSeverityString(SubclassDoesntCallSuper));
+		optionsMap.put(AptanaRDTPlugin.COMPILER_PB_ASSIGNMENT_PRECEDENCE, getSeverityString(AssignmentPrecedence));
+		optionsMap.put(AptanaRDTPlugin.COMPILER_PB_UNUSED_PARAMETER, getSeverityString(UnusedArgument));
+		optionsMap.put(AptanaRDTPlugin.COMPILER_PB_UNNECESSARY_ELSE, getSeverityString(UnnecessaryElse));
+		optionsMap.put(AptanaRDTPlugin.COMPILER_PB_MISSPELLED_CONSTRUCTOR, getSeverityString(MisspelledConstructor));
+		optionsMap.put(AptanaRDTPlugin.COMPILER_PB_POSSIBLE_ACCIDENTAL_BOOLEAN_ASSIGNMENT, getSeverityString(PossibleAccidentalBooleanAssignment));
+		optionsMap.put(AptanaRDTPlugin.COMPILER_PB_LOCAL_MASKS_METHOD, getSeverityString(LocalVariableMasksMethod));		
+		optionsMap.put(AptanaRDTPlugin.COMPILER_PB_CODE_COMPLEXITY_ARGUMENTS, getSeverityString(MaxArguments));
+		optionsMap.put(AptanaRDTPlugin.COMPILER_PB_CODE_COMPLEXITY_BRANCHES, getSeverityString(MaxBranches));
+		optionsMap.put(AptanaRDTPlugin.COMPILER_PB_CODE_COMPLEXITY_LINES, getSeverityString(MaxLines));
+		optionsMap.put(AptanaRDTPlugin.COMPILER_PB_CODE_COMPLEXITY_LOCALS, getSeverityString(MaxLocals));
+		optionsMap.put(AptanaRDTPlugin.COMPILER_PB_CODE_COMPLEXITY_RETURNS, getSeverityString(MaxReturns));
+		optionsMap.put(AptanaRDTPlugin.COMPILER_PB_SIMILAR_VARIABLE_NAMES, getSeverityString(SimilarVariableNames));
+		optionsMap.put(AptanaRDTPlugin.COMPILER_PB_UNREACHABLE_CODE, getSeverityString(UnreachableCode));
+		optionsMap.put(AptanaRDTPlugin.COMPILER_PB_COMPARABLE_MISSING_METHOD, getSeverityString(ComparableMissingMethod));
+		optionsMap.put(AptanaRDTPlugin.COMPILER_PB_ENUMERABLE_MISSING_METHOD, getSeverityString(EnumerableMissingMethod));
+		optionsMap.put(AptanaRDTPlugin.COMPILER_PB_MAX_ARGUMENTS, String.valueOf(maxArguments));
+		optionsMap.put(AptanaRDTPlugin.COMPILER_PB_MAX_LINES, String.valueOf(maxLines));
+		optionsMap.put(AptanaRDTPlugin.COMPILER_PB_MAX_LOCALS, String.valueOf(maxLocals));
+		optionsMap.put(AptanaRDTPlugin.COMPILER_PB_MAX_RETURNS, String.valueOf(maxReturns));
+		optionsMap.put(AptanaRDTPlugin.COMPILER_PB_MAX_BRANCHES, String.valueOf(maxBranches));
 		return optionsMap;
 	}
 	
@@ -94,24 +94,24 @@ public class LintOptions {
 	
 	public void set(Map optionsMap) {
 		Object optionValue;
-		if ((optionValue = optionsMap.get(RubyRedPlugin.COMPILER_PB_UNUSED_PRIVATE_MEMBER)) != null)  updateSeverity(UnusedPrivateMember, optionValue);
-		if ((optionValue = optionsMap.get(RubyRedPlugin.COMPILER_PB_UNUSED_PARAMETER)) != null)  updateSeverity(UnusedArgument, optionValue);
-		if ((optionValue = optionsMap.get(RubyRedPlugin.COMPILER_PB_UNNECESSARY_ELSE)) != null)  updateSeverity(UnnecessaryElse, optionValue);
-		if ((optionValue = optionsMap.get(RubyRedPlugin.COMPILER_PB_MISSPELLED_CONSTRUCTOR)) != null)  updateSeverity(MisspelledConstructor, optionValue);
-		if ((optionValue = optionsMap.get(RubyRedPlugin.COMPILER_PB_POSSIBLE_ACCIDENTAL_BOOLEAN_ASSIGNMENT)) != null)  updateSeverity(PossibleAccidentalBooleanAssignment, optionValue);
-		if ((optionValue = optionsMap.get(RubyRedPlugin.COMPILER_PB_LOCAL_MASKS_METHOD)) != null)  updateSeverity(LocalVariableMasksMethod, optionValue);		
-		if ((optionValue = optionsMap.get(RubyRedPlugin.COMPILER_PB_CODE_COMPLEXITY_ARGUMENTS)) != null)  updateSeverity(MaxArguments, optionValue);
-		if ((optionValue = optionsMap.get(RubyRedPlugin.COMPILER_PB_CODE_COMPLEXITY_BRANCHES)) != null)  updateSeverity(MaxBranches, optionValue);
-		if ((optionValue = optionsMap.get(RubyRedPlugin.COMPILER_PB_CODE_COMPLEXITY_LINES)) != null)  updateSeverity(MaxLines, optionValue);
-		if ((optionValue = optionsMap.get(RubyRedPlugin.COMPILER_PB_CODE_COMPLEXITY_LOCALS)) != null)  updateSeverity(MaxLocals, optionValue);
-		if ((optionValue = optionsMap.get(RubyRedPlugin.COMPILER_PB_CODE_COMPLEXITY_RETURNS)) != null)  updateSeverity(MaxReturns, optionValue);	
-		if ((optionValue = optionsMap.get(RubyRedPlugin.COMPILER_PB_SIMILAR_VARIABLE_NAMES)) != null)  updateSeverity(SimilarVariableNames, optionValue);	
-		if ((optionValue = optionsMap.get(RubyRedPlugin.COMPILER_PB_UNREACHABLE_CODE)) != null)  updateSeverity(UnreachableCode, optionValue);	
-		if ((optionValue = optionsMap.get(RubyRedPlugin.COMPILER_PB_COMPARABLE_MISSING_METHOD)) != null)  updateSeverity(ComparableMissingMethod, optionValue);	
-		if ((optionValue = optionsMap.get(RubyRedPlugin.COMPILER_PB_ENUMERABLE_MISSING_METHOD)) != null)  updateSeverity(EnumerableMissingMethod, optionValue);	
-		if ((optionValue = optionsMap.get(RubyRedPlugin.COMPILER_PB_SUBCLASS_DOESNT_CALL_SUPER)) != null)  updateSeverity(SubclassDoesntCallSuper, optionValue);	
-		if ((optionValue = optionsMap.get(RubyRedPlugin.COMPILER_PB_ASSIGNMENT_PRECEDENCE)) != null)  updateSeverity(AssignmentPrecedence, optionValue);
-		if ((optionValue = optionsMap.get(RubyRedPlugin.COMPILER_PB_MAX_LOCALS)) != null) {
+		if ((optionValue = optionsMap.get(AptanaRDTPlugin.COMPILER_PB_UNUSED_PRIVATE_MEMBER)) != null)  updateSeverity(UnusedPrivateMember, optionValue);
+		if ((optionValue = optionsMap.get(AptanaRDTPlugin.COMPILER_PB_UNUSED_PARAMETER)) != null)  updateSeverity(UnusedArgument, optionValue);
+		if ((optionValue = optionsMap.get(AptanaRDTPlugin.COMPILER_PB_UNNECESSARY_ELSE)) != null)  updateSeverity(UnnecessaryElse, optionValue);
+		if ((optionValue = optionsMap.get(AptanaRDTPlugin.COMPILER_PB_MISSPELLED_CONSTRUCTOR)) != null)  updateSeverity(MisspelledConstructor, optionValue);
+		if ((optionValue = optionsMap.get(AptanaRDTPlugin.COMPILER_PB_POSSIBLE_ACCIDENTAL_BOOLEAN_ASSIGNMENT)) != null)  updateSeverity(PossibleAccidentalBooleanAssignment, optionValue);
+		if ((optionValue = optionsMap.get(AptanaRDTPlugin.COMPILER_PB_LOCAL_MASKS_METHOD)) != null)  updateSeverity(LocalVariableMasksMethod, optionValue);		
+		if ((optionValue = optionsMap.get(AptanaRDTPlugin.COMPILER_PB_CODE_COMPLEXITY_ARGUMENTS)) != null)  updateSeverity(MaxArguments, optionValue);
+		if ((optionValue = optionsMap.get(AptanaRDTPlugin.COMPILER_PB_CODE_COMPLEXITY_BRANCHES)) != null)  updateSeverity(MaxBranches, optionValue);
+		if ((optionValue = optionsMap.get(AptanaRDTPlugin.COMPILER_PB_CODE_COMPLEXITY_LINES)) != null)  updateSeverity(MaxLines, optionValue);
+		if ((optionValue = optionsMap.get(AptanaRDTPlugin.COMPILER_PB_CODE_COMPLEXITY_LOCALS)) != null)  updateSeverity(MaxLocals, optionValue);
+		if ((optionValue = optionsMap.get(AptanaRDTPlugin.COMPILER_PB_CODE_COMPLEXITY_RETURNS)) != null)  updateSeverity(MaxReturns, optionValue);	
+		if ((optionValue = optionsMap.get(AptanaRDTPlugin.COMPILER_PB_SIMILAR_VARIABLE_NAMES)) != null)  updateSeverity(SimilarVariableNames, optionValue);	
+		if ((optionValue = optionsMap.get(AptanaRDTPlugin.COMPILER_PB_UNREACHABLE_CODE)) != null)  updateSeverity(UnreachableCode, optionValue);	
+		if ((optionValue = optionsMap.get(AptanaRDTPlugin.COMPILER_PB_COMPARABLE_MISSING_METHOD)) != null)  updateSeverity(ComparableMissingMethod, optionValue);	
+		if ((optionValue = optionsMap.get(AptanaRDTPlugin.COMPILER_PB_ENUMERABLE_MISSING_METHOD)) != null)  updateSeverity(EnumerableMissingMethod, optionValue);	
+		if ((optionValue = optionsMap.get(AptanaRDTPlugin.COMPILER_PB_SUBCLASS_DOESNT_CALL_SUPER)) != null)  updateSeverity(SubclassDoesntCallSuper, optionValue);	
+		if ((optionValue = optionsMap.get(AptanaRDTPlugin.COMPILER_PB_ASSIGNMENT_PRECEDENCE)) != null)  updateSeverity(AssignmentPrecedence, optionValue);
+		if ((optionValue = optionsMap.get(AptanaRDTPlugin.COMPILER_PB_MAX_LOCALS)) != null) {
 			if (optionValue instanceof String) {
 				String stringValue = (String) optionValue;
 				try {
@@ -122,7 +122,7 @@ public class LintOptions {
 				}				
 			}
 		}
-		if ((optionValue = optionsMap.get(RubyRedPlugin.COMPILER_PB_MAX_LINES)) != null) {
+		if ((optionValue = optionsMap.get(AptanaRDTPlugin.COMPILER_PB_MAX_LINES)) != null) {
 			if (optionValue instanceof String) {
 				String stringValue = (String) optionValue;
 				try {
@@ -133,7 +133,7 @@ public class LintOptions {
 				}				
 			}
 		}
-		if ((optionValue = optionsMap.get(RubyRedPlugin.COMPILER_PB_MAX_BRANCHES)) != null) {
+		if ((optionValue = optionsMap.get(AptanaRDTPlugin.COMPILER_PB_MAX_BRANCHES)) != null) {
 			if (optionValue instanceof String) {
 				String stringValue = (String) optionValue;
 				try {
@@ -144,7 +144,7 @@ public class LintOptions {
 				}				
 			}
 		}
-		if ((optionValue = optionsMap.get(RubyRedPlugin.COMPILER_PB_MAX_ARGUMENTS)) != null) {
+		if ((optionValue = optionsMap.get(AptanaRDTPlugin.COMPILER_PB_MAX_ARGUMENTS)) != null) {
 			if (optionValue instanceof String) {
 				String stringValue = (String) optionValue;
 				try {
@@ -155,7 +155,7 @@ public class LintOptions {
 				}				
 			}
 		}
-		if ((optionValue = optionsMap.get(RubyRedPlugin.COMPILER_PB_MAX_RETURNS)) != null) {
+		if ((optionValue = optionsMap.get(AptanaRDTPlugin.COMPILER_PB_MAX_RETURNS)) != null) {
 			if (optionValue instanceof String) {
 				String stringValue = (String) optionValue;
 				try {

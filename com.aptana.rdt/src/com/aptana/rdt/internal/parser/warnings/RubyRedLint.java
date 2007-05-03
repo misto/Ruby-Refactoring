@@ -17,7 +17,7 @@ import org.rubypeople.rdt.internal.core.parser.warnings.DelegatingVisitor;
 import org.rubypeople.rdt.internal.core.parser.warnings.EmptyStatementVisitor;
 import org.rubypeople.rdt.internal.core.parser.warnings.RubyLintVisitor;
 
-import com.aptana.rdt.RubyRedPlugin;
+import com.aptana.rdt.AptanaRDTPlugin;
 
 public class RubyRedLint extends CompilationParticipant {
 	
@@ -32,7 +32,7 @@ public class RubyRedLint extends CompilationParticipant {
 			List<CategorizedProblem> problems = visitor.getProblems();			
 			context.putProblems(IRubyModelMarker.RUBY_MODEL_PROBLEM_MARKER, problems.toArray(new CategorizedProblem[problems.size()]));
 		} catch (RubyModelException e) {
-			RubyRedPlugin.log(e);
+			AptanaRDTPlugin.log(e);
 		}
 	}
 	
