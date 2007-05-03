@@ -3,6 +3,7 @@ package org.rubypeople.rdt.internal.launching;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import org.eclipse.core.runtime.CoreException;
@@ -64,8 +65,7 @@ public class StandardVMDebugger extends StandardVMRunner implements IVMRunner {
 
 		RubyDebugTarget debugTarget = new RubyDebugTarget(launch, port);
 		List<String> arguments = constructProgramString(config);
-//		arguments.add(program);
-
+		
 		// VM args are the first thing after the ruby program so that users can
 		// specify
 		// options like '-client' & '-server' which are required to be the first
@@ -75,14 +75,15 @@ public class StandardVMDebugger extends StandardVMRunner implements IVMRunner {
 
 		String[] cp = config.getLoadPath();
 		if (cp.length > 0) {
-			arguments.addAll(convertLoadPath(cp));
+			arguments.addAll(convertLoadPath(cp)); // TODO If our working directory is equal to loadpath, don't add loadpath
 		}
-
-		arguments.addAll(debugSpecificVMArgs(debugTarget));
-
+		arguments.addAll(debugSpecificVMArgs(debugTarget));		
+		
 		arguments.add(StandardVMRunner.END_OF_OPTIONS_DELIMITER);
+		
+		arguments.addAll(debugArgs(debugTarget));		
 
-		arguments.add(config.getFileToLaunch());
+		arguments.add(config.getFileToLaunch());		
 		addArguments(config.getProgramArguments(), arguments);
 		String[] cmdLine = new String[arguments.size()];
 		arguments.toArray(cmdLine);
@@ -138,6 +139,10 @@ public class StandardVMDebugger extends StandardVMRunner implements IVMRunner {
 		// if (p != null) {
 		// p.destroy();
 		// }
+	}
+
+	protected Collection<String> debugArgs(RubyDebugTarget debugTarget) {
+		return new ArrayList<String>();
 	}
 
 	protected RubyDebuggerProxy getDebugProxy(RubyDebugTarget debugTarget) {
