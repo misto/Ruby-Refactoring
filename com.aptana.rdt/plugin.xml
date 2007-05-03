@@ -1,0 +1,172 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.2"?>
+<plugin>
+    
+   <extension point="org.eclipse.ui.perspectiveExtensions">
+      <perspectiveExtension targetID="org.rubypeople.rdt.ui.RubyBrowsingPerspective">
+         <perspectiveShortcut id="org.radrails.rails.ui.PerspectiveRails"/>
+      </perspectiveExtension>
+      <perspectiveExtension targetID="org.eclipse.debug.ui.DebugPerspective">
+         <perspectiveShortcut id="org.radrails.rails.ui.PerspectiveRails"/>
+      </perspectiveExtension>
+   	 <perspectiveExtension targetID="org.eclipse.ui.resourcePerspective">
+       <perspectiveShortcut id="org.radrails.rails.ui.PerspectiveRails" />
+     </perspectiveExtension>
+     <perspectiveExtension targetID="org.rubypeople.rdt.ui.PerspectiveRuby">
+       <perspectiveShortcut id="org.radrails.rails.ui.PerspectiveRails" />
+     </perspectiveExtension>
+   </extension>
+   
+   <extension
+         point="org.eclipse.ui.cheatsheets.cheatSheetContent">
+      <category
+            id="com.aptana.rdt.cheatsheet.category"
+            name="%cheatsheet.category.rubyred"/>
+         <cheatsheet
+            category="com.aptana.rdt.cheatsheet.category"
+            composite="false"
+            contentFile="$nl$/cheatsheets/HelloWorld.xml"
+            id="com.aptana.rdt.cheatsheets.helloworld"
+            name="%cheatsheet.helloworld.name">
+         <description>
+            %cheatsheet.helloworld.desc
+         </description>
+      </cheatsheet>
+    </extension>
+    
+    <extension point="org.rubypeople.rdt.ui.rubyEditorTextHovers">
+         <hover
+   			id="com.aptana.rdt.ui.RubyCommentHover"
+   			class="com.aptana.rdt.internal.ui.text.ruby.hover.CommentHoverProvider"
+   			label="%commentHover"/>
+   </extension>
+   
+   <extension
+         point="org.eclipse.ui.views">
+         <view
+            name="Rails API"
+            icon="icons/full/elcl16/rails.gif"
+            category="org.radrails.rails.ui.ViewCategoryRails"
+            class="com.aptana.rdt.internal.ui.infoviews.RailsAPIView"
+            id="com.aptana.rdt.ui.views.RailsAPIView">
+      </view>
+      <view
+            name="Ruby Core API"
+            icon="icons/full/elcl16/rubydoc.gif"
+            category="org.rubypeople.rdt.ui.ruby"
+            class="com.aptana.rdt.internal.ui.infoviews.RubyCoreAPIView"
+            id="com.aptana.rdt.ui.views.RubyCoreAPIView">
+      </view>
+      <view
+            name="Ruby Standard Library API"
+            icon="icons/full/elcl16/rubydoc.gif"
+            category="org.rubypeople.rdt.ui.ruby"
+            class="com.aptana.rdt.internal.ui.infoviews.RubyStdLibAPIView"
+            id="com.aptana.rdt.ui.views.RubyStdLibAPIView">
+      </view>
+  </extension>
+  
+  <extension point="org.eclipse.ui.perspectiveExtensions">
+     <perspectiveExtension targetID="org.rubypeople.rdt.ui.PerspectiveRuby">
+       <viewShortcut id="com.aptana.rdt.ui.views.RubyStdLibAPIView"/>   
+       <viewShortcut id="com.aptana.rdt.ui.views.RubyCoreAPIView"/> 
+     </perspectiveExtension> 
+     <perspectiveExtension targetID="org.radrails.rails.ui.PerspectiveRails">
+       <viewShortcut id="com.aptana.rdt.ui.views.RailsAPIView"/>  
+     </perspectiveExtension> 
+   </extension>
+   
+   <extension
+         point="org.rubypeople.rdt.ui.quickFixProcessors">
+      <quickFixProcessor
+            name="%defaultQuickFixProcessor"
+            class="com.aptana.rdt.internal.ui.text.correction.QuickFixProcessor"
+            id="com.aptana.rdt.ui.text.correction.QuickFixProcessor">
+      </quickFixProcessor>
+   </extension>
+	<extension
+      id="rubyredlint"
+      name="%annotationProcessingName"
+      point="org.rubypeople.rdt.core.compilationParticipant">
+   		<compilationParticipant
+         class="com.aptana.rdt.internal.parser.warnings.RubyRedLint"
+         id="RubyRedLint">
+      <managedMarker markerType="org.rubypeople.rdt.core.problem"/>
+   </compilationParticipant>
+</extension>
+	<extension
+       point="org.rubypeople.rdt.core.errorProvider">
+       <!-- Potential Programming Problems -->
+       <error categoryId="org.rubypeople.rdt.errors.potentialProblems" 
+       			label="Misspelled constructor" 
+       			prefKey="com.aptana.rdt.compiler.problem.misspelledConstructor" />
+       <error categoryId="org.rubypeople.rdt.errors.potentialProblems" 
+       			label="Similarity in variable names" 
+       			prefKey="com.aptana.rdt.compiler.problem.similarVariableNames" />
+       <error categoryId="org.rubypeople.rdt.errors.potentialProblems" 
+       			label="Local variable declaration masks method" 
+       			prefKey="com.aptana.rdt.compiler.problem.localVariableMasksMethod" />
+       	<error categoryId="org.rubypeople.rdt.errors.potentialProblems" 
+       			label="Includes Comparable but doesn't define custom &lt;=&gt; method" 
+       			prefKey="com.aptana.rdt.compiler.problem.comparableMissingMethod" />
+       	<error categoryId="org.rubypeople.rdt.errors.potentialProblems" 
+       			label="Includes Enumerable but doesn't define custom each method" 
+       			prefKey="com.aptana.rdt.compiler.problem.enumerableMissingMethod" />
+       	<error prefKey="com.aptana.rdt.compiler.problem.subclassDoesntCallSuper" 
+       		label="Subclass constructor doesn't call super"
+       		categoryId="org.rubypeople.rdt.errors.potentialProblems"/>
+        <error prefKey="com.aptana.rdt.compiler.problem.assignmentPrecedence" 
+       		label="'and' and 'or' operators after an assignment"
+       		categoryId="org.rubypeople.rdt.errors.potentialProblems"/>
+       			
+       	<!-- Unused code -->
+       	<error categoryId="org.rubypeople.rdt.errors.unneccesaryCode" 
+       			label="Parameter is never read" 
+       			prefKey="com.aptana.rdt.compiler.problem.unusedParameter" />
+       	<error categoryId="org.rubypeople.rdt.errors.unneccesaryCode" 
+       			label="Unused local or private member" 
+       			prefKey="com.aptana.rdt.compiler.problem.unusedPrivateMember" />
+       	<error categoryId="org.rubypeople.rdt.errors.unneccesaryCode" 
+       			label="Unnecessary else statement" 
+       			prefKey="com.aptana.rdt.compiler.problem.unnecessaryElse" />
+       	<error categoryId="org.rubypeople.rdt.errors.unneccesaryCode" 
+       			label="Possible accidental boolean assignment (e.g. if a = b)" 
+       			prefKey="com.aptana.rdt.compiler.problem.possibleAccidentalBooleanAssignment" />
+       			
+       	<!-- Code Complexity -->
+       	<error categoryId="org.rubypeople.rdt.errors.codeComplexity" 
+       			label="Maximum number of arguments to a method" 
+       			prefKey="com.aptana.rdt.compiler.problem.codeComplexityArguments">
+       			<argument prefKey="com.aptana.rdt.compiler.problem.maxArguments" />
+       	</error>
+       	<error categoryId="org.rubypeople.rdt.errors.codeComplexity" 
+       			label="Maximum number of lines in a method" 
+       			prefKey="com.aptana.rdt.compiler.problem.codeComplexityLines">
+       			<argument prefKey="com.aptana.rdt.compiler.problem.maxLines" />
+       	</error>
+       	<error categoryId="org.rubypeople.rdt.errors.codeComplexity" 
+       			label="Maximum number of locals declared in a method" 
+       			prefKey="com.aptana.rdt.compiler.problem.codeComplexityLocals">
+       			<argument prefKey="com.aptana.rdt.compiler.problem.maxLocals" />
+       	</error>
+       	<error categoryId="org.rubypeople.rdt.errors.codeComplexity" 
+       			label="Maximum number of branches in a method" 
+       			prefKey="com.aptana.rdt.compiler.problem.codeComplexityBranches">
+       			<argument prefKey="com.aptana.rdt.compiler.problem.maxBranches" />
+       	</error>
+       	<error categoryId="org.rubypeople.rdt.errors.codeComplexity" 
+       			label="Maximum number of returns in a method" 
+       			prefKey="com.aptana.rdt.compiler.problem.codeComplexityReturns">
+       			<argument prefKey="com.aptana.rdt.compiler.problem.maxReturns"/>
+       	</error>		
+ </extension>
+ 
+ 
+<!-- =================================================================================== -->
+<!-- Extension: Eclipse preferences initializer                                          -->
+<!-- =================================================================================== -->
+<extension
+      point="org.eclipse.core.runtime.preferences">
+   <initializer class="com.aptana.rdt.internal.core.RubyRedPreferenceInitializer"/>
+</extension>
+</plugin>

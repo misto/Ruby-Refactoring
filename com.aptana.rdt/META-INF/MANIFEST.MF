@@ -1,0 +1,21 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Aptana RDT Extensions
+Bundle-SymbolicName: com.aptana.rdt;singleton:=true
+Bundle-Version: 0.0.0
+Bundle-ClassPath: lib/sourcetaplm.jar
+Bundle-Activator: com.aptana.rdt.RubyRedPlugin
+Eclipse-LazyStart: true
+Bundle-Vendor: Aptana, Inc.
+Export-Package: com.aptana.rdt,
+ com.aptana.rdt.internal.parser.warnings;x-friends:="com.aptana.rdt.tests",
+ com.aptana.rdt.internal.ui.preferences,
+ com.aptana.rdt.internal.ui.text.ruby.hover
+Require-Bundle: org.rubypeople.rdt.ui,
+ org.eclipse.ui.intro,
+ org.eclipse.jface.text,
+ org.eclipse.ui,
+ org.rubypeople.rdt.core,
+ org.eclipse.core.runtime,
+ org.jruby,
+ org.eclipse.core.resources

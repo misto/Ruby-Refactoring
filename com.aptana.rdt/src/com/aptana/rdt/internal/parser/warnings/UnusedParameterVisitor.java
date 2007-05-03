@@ -1,0 +1,73 @@
+package com.aptana.rdt.internal.parser.warnings;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+
+import org.jruby.ast.ArgsNode;
+import org.jruby.ast.DefnNode;
+import org.jruby.ast.ListNode;
+import org.jruby.ast.LocalVarNode;
+import org.jruby.ast.Node;
+import org.jruby.evaluator.Instruction;
+import org.rubypeople.rdt.internal.core.parser.warnings.RubyLintVisitor;
+import org.rubypeople.rdt.internal.core.util.ASTUtil;
+
+import com.aptana.rdt.RubyRedPlugin;
+
+public class UnusedParameterVisitor extends RubyLintVisitor {
+
+	private Map<String, Node> declared;
+	
+	public UnusedParameterVisitor(String contents) {
+		super(contents);
+		declared = new HashMap<String, Node>();
+	}
+
+	@Override
+	protected String getOptionKey() {
+		return RubyRedPlugin.COMPILER_PB_UNUSED_PARAMETER;
+	}
+	
+	public Instruction visitDefnNode(DefnNode iVisited) {
+		List<Node> args = getArgs(iVisited.getArgsNode());
+		for (Node arg : args) {
+			declared.put(ASTUtil.getNameReflectively(arg), arg);
+		}
+		return null;
+	}
+	
+	public void exitDefnNode(DefnNode iVisited) {
+		for (Node unused : declared.values()) {
+			createProblem(unused.getPosition(), "Unused Method parameter " + ASTUtil.getNameReflectively(unused));
+		}
+		declared.clear();
+	}
+	
+	private void usedParameter(String name) {
+		declared.remove(name);
+	}
+
+	private List<Node> getArgs(ArgsNode argsNode) {
+		List<Node> arguments = new ArrayList<Node>();
+		if (argsNode == null) return arguments;
+		ArgsNode args = (ArgsNode) argsNode;
+		ListNode argList = args.getArgs();
+		if (argList == null) return arguments;
+		for (Iterator iter = argList.iterator(); iter.hasNext();) {
+			Object node = iter.next();
+			if (node instanceof Node) {
+				arguments.add((Node)node);
+			}
+		}
+		return arguments;
+	}
+	
+	public Instruction visitLocalVarNode(LocalVarNode iVisited) {
+		usedParameter(iVisited.getName());
+		return super.visitLocalVarNode(iVisited);
+	}
+
+}
