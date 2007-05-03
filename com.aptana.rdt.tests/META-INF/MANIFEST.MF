@@ -1,8 +1,8 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
-Bundle-Name: Tests
+Bundle-Name: Aptana RDT Extension Tests
 Bundle-SymbolicName: com.aptana.rdt.tests
-Bundle-Version: 1.0.0
+Bundle-Version: 0.0.0
 Bundle-Localization: plugin
 Require-Bundle: com.aptana.rdt,
  org.rubypeople.rdt.core,
@@ -10,3 +10,4 @@ Require-Bundle: com.aptana.rdt,
  org.eclipse.core.resources,
  org.eclipse.core.runtime,
  org.junit
+Bundle-Vendor: Aptana, Inc.
