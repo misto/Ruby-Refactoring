@@ -26,17 +26,24 @@
       <import plugin="org.eclipse.debug.core"/>
       <import plugin="org.junit"/>
       <import plugin="org.rubypeople.rdt.core"/>
+      <import plugin="org.eclipse.jface.text"/>
       <import plugin="org.rubypeople.rdt.debug.core"/>
       <import plugin="org.kxml2"/>
+      <import plugin="org.rubypeople.rdt.launching"/>
       <import plugin="org.eclipse.ui.ide"/>
       <import plugin="org.eclipse.ui.views"/>
-      <import plugin="org.eclipse.jface.text"/>
       <import plugin="org.eclipse.ui.workbench.texteditor"/>
       <import plugin="org.eclipse.ui.editors"/>
       <import plugin="org.rubypeople.rdt.debug.ui"/>
-      <import plugin="org.rubypeople.rdt.launching"/>
       <import plugin="org.rubypeople.rdt.ui"/>
       <import plugin="org.eclipse.debug.ui"/>
+      <import plugin="org.jruby"/>
+      <import plugin="org.eclipse.core.runtime"/>
+      <import plugin="org.eclipse.ui.console"/>
+      <import plugin="org.eclipse.search"/>
+      <import plugin="org.rubypeople.rdt.refactoring"/>
+      <import plugin="org.eclipse.text"/>
+      <import plugin="com.aptana.rdt"/>
    </requires>
 
    <plugin
