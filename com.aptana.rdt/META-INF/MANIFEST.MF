@@ -8,7 +8,7 @@ Bundle-Activator: com.aptana.rdt.AptanaRDTPlugin
 Eclipse-LazyStart: true
 Bundle-Vendor: Aptana, Inc.
 Export-Package: com.aptana.rdt,
- com.aptana.rdt.internal.parser.warnings;x-friends:="com.aptana.rdt.tests",
+ com.aptana.rdt.internal.parser.warnings,
  com.aptana.rdt.internal.ui.preferences,
  com.aptana.rdt.internal.ui.text.ruby.hover
 Require-Bundle: org.rubypeople.rdt.ui,
