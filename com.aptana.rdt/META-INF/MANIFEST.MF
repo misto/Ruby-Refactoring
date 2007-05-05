@@ -3,7 +3,8 @@ Bundle-ManifestVersion: 2
 Bundle-Name: Aptana RDT Extensions
 Bundle-SymbolicName: com.aptana.rdt;singleton:=true
 Bundle-Version: 0.0.0
-Bundle-ClassPath: lib/sourcetaplm.jar
+Bundle-ClassPath: lib/sourcetaplm.jar,
+ .
 Bundle-Activator: com.aptana.rdt.AptanaRDTPlugin
 Eclipse-LazyStart: true
 Bundle-Vendor: Aptana, Inc.
