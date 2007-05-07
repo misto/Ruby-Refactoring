@@ -126,6 +126,10 @@ public class TestUnitLaunchShortcut extends RubyApplicationShortcut {
 	}
 
 	protected ILaunchConfiguration createConfiguration(IFile rubyFile, String container, String testName) {
+		return createConfiguration(rubyFile.getLocation().toOSString(), container, rubyFile.getProject(), testName);
+	}
+
+	protected ILaunchConfiguration createConfiguration(String rubyFile, String container, IProject project, String testName) {
 		if (RubyRuntime.getDefaultVMInstall() == null) {
 			showNoInterpreterDialog();
 			return null;
@@ -134,10 +138,10 @@ public class TestUnitLaunchShortcut extends RubyApplicationShortcut {
 		ILaunchConfiguration config = null;
 		try {
 			ILaunchConfigurationType configType = getRubyLaunchConfigType();
-			ILaunchConfigurationWorkingCopy wc = configType.newInstance(null, getLaunchManager().generateUniqueLaunchConfigurationNameFrom(rubyFile.getName()));
-			wc.setAttribute(IRubyLaunchConfigurationConstants.ATTR_PROJECT_NAME, rubyFile.getProject().getName());
+			ILaunchConfigurationWorkingCopy wc = configType.newInstance(null, getLaunchManager().generateUniqueLaunchConfigurationNameFrom(rubyFile));
+			wc.setAttribute(IRubyLaunchConfigurationConstants.ATTR_PROJECT_NAME, project.getName());
 			wc.setAttribute(IRubyLaunchConfigurationConstants.ATTR_FILE_NAME, TestUnitLaunchConfigurationDelegate.getTestRunnerPath());
-			wc.setAttribute(IRubyLaunchConfigurationConstants.ATTR_WORKING_DIRECTORY, TestUnitLaunchShortcut.getDefaultWorkingDirectory(rubyFile.getProject()));
+			wc.setAttribute(IRubyLaunchConfigurationConstants.ATTR_WORKING_DIRECTORY, TestUnitLaunchShortcut.getDefaultWorkingDirectory(project));
 			wc.setAttribute(IRubyLaunchConfigurationConstants.ATTR_VM_INSTALL_NAME, RubyRuntime.getDefaultVMInstall().getName());
 			wc.setAttribute(IRubyLaunchConfigurationConstants.ATTR_VM_INSTALL_TYPE, RubyRuntime.getDefaultVMInstall().getVMInstallType().getId());
 			wc.setAttribute(TestUnitLaunchConfigurationDelegate.LAUNCH_CONTAINER_ATTR, container);
