@@ -50,7 +50,7 @@ public class InitInConstructorEditProvider extends InsertEditProvider {
 
 	public InitInConstructorEditProvider(LocalNodeWrapper originalNode, LocalToFieldConfig config) {
 		super(true);
-		LocalToFieldEditProvider conversion = new LocalToFieldEditProvider(originalNode, config.getNewName(), config.isClassField());
+		LocalToFieldEditProvider conversion = new LocalToFieldEditProvider(originalNode, config.getNewName(), config.isClassField(), true);
 		insertNode = conversion.getEditNode(0, null);
 		enclosingClassNode = config.getEnclosingClassNode();
 	}

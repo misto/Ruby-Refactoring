@@ -32,6 +32,7 @@ package org.rubypeople.rdt.refactoring.core.convertlocaltofield;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
 import org.jruby.ast.Node;
 import org.rubypeople.rdt.refactoring.editprovider.ReplaceEditProvider;
@@ -40,10 +41,12 @@ import org.rubypeople.rdt.refactoring.nodewrapper.LocalNodeWrapper;
 public class LocalToFieldEditProvider extends ReplaceEditProvider {
 
 	private LocalNodeWrapper localNode;
+	private boolean initInConstructor;
 
-	public LocalToFieldEditProvider(LocalNodeWrapper localNode, String newName, boolean isClassField) {
+	public LocalToFieldEditProvider(LocalNodeWrapper localNode, String newName, boolean isClassField, boolean initInConstructor) {
 		super(false);
 		this.localNode = localNode;
+		this.initInConstructor = initInConstructor;
 		newName = ((isClassField) ? "@@" : "@") + newName; //$NON-NLS-1$ //$NON-NLS-2$
 		Collection<LocalNodeWrapper> allLocalNodes = new ArrayList<LocalNodeWrapper>();
 		allLocalNodes.add(localNode);
@@ -66,16 +69,36 @@ public class LocalToFieldEditProvider extends ReplaceEditProvider {
 
 	@Override
 	protected int getOffsetLength() {
-		return localNode.getWrappedNode().getPosition().getEndOffset() - getOffset(null);
+		if(initInConstructor)
+			return localNode.getWrappedNode().getPositionIncludingComments().getEndOffset() - getOffset(null);
+		else
+			return localNode.getWrappedNode().getPosition().getEndOffset() - getOffset(null);
 	}
 
 	@Override
 	protected Node getEditNode(int offset, String document) {
-		return localNode.getWrappedNode();
+		if(initInConstructor)
+			return localNode.getWrappedNode();
+		else
+			return stripComments(localNode.getWrappedNode());
+	}
+
+	private Node stripComments(Node wrappedNode) {
+		
+		wrappedNode.getComments().clear();
+		List childs = wrappedNode.childNodes();
+		for(int i = 0; i < childs.size(); i++){
+			if(childs.get(i) instanceof Node)
+				stripComments((Node)childs.get(i));
+		}
+		return wrappedNode;
 	}
 
 	@Override
 	protected int getOffset(String document) {
-		return localNode.getWrappedNode().getPosition().getStartOffset();
+		if(initInConstructor)
+			return localNode.getWrappedNode().getPositionIncludingComments().getStartOffset();
+		else
+			return localNode.getWrappedNode().getPosition().getStartOffset();
 	}
 }

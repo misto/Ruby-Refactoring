@@ -116,7 +116,8 @@ public class LocalToFieldConverter extends MultiEditProvider {
 		LocalNodeWrapper firstLocalNode = localNodes.toArray(new LocalNodeWrapper[localNodes.size()])[0];
 
 		for (LocalNodeWrapper aktLocalNode : localNodes) {
-			LocalToFieldEditProvider conversion = new LocalToFieldEditProvider(aktLocalNode, config.getNewName(), config.isClassField());
+			boolean initInConstructor = (initPlace == INIT_IN_CONSTRUCTOR);
+			LocalToFieldEditProvider conversion = new LocalToFieldEditProvider(aktLocalNode, config.getNewName(), config.isClassField(),initInConstructor);
 			editProviderMap.put(aktLocalNode, conversion);
 		}
 		if (initPlace == INIT_IN_CONSTRUCTOR) {
