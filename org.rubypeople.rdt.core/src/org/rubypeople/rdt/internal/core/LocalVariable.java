@@ -34,7 +34,7 @@ import org.rubypeople.rdt.internal.core.util.Util;
  * @author Chris
  * 
  */
-public class RubyLocalVar extends RubyField {
+public class LocalVariable extends RubyField {
 
     private int start;
     private int end;
@@ -42,7 +42,7 @@ public class RubyLocalVar extends RubyField {
 	/**
 	 * @param name
 	 */
-	public RubyLocalVar(RubyElement parent, String name, int start, int end) {
+	public LocalVariable(RubyElement parent, String name, int start, int end) {
 		super(parent, name);
 	}
 
@@ -69,8 +69,8 @@ public class RubyLocalVar extends RubyField {
     }
     
     public boolean equals(Object o) {
-        if (!(o instanceof RubyLocalVar)) return false;
-        RubyLocalVar other = (RubyLocalVar)o;
+        if (!(o instanceof LocalVariable)) return false;
+        LocalVariable other = (LocalVariable)o;
         return 
             this.start == other.start
             && this.end == other.end

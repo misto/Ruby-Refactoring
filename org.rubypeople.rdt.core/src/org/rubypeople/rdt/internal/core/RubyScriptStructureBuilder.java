@@ -201,13 +201,13 @@ public class RubyScriptStructureBuilder implements ISourceElementRequestor {
 		} else {
 			int start = field.declarationStart - field.name.length() + 1;
 			int end = start + field.name.length();
-			handle = new RubyLocalVar(modelStack.peek(), field.name, start, end);
+			handle = new LocalVariable(modelStack.peek(), field.name, start, end);
 		}		
 		modelStack.push(handle);
 		
 		// Add to enclosing type
 		RubyElementInfo parentInfo;
-		if (handle instanceof RubyLocalVar) {
+		if (handle instanceof LocalVariable) {
 			parentInfo = infoStack.peek();
 		} else if (handle instanceof RubyGlobal){
 			parentInfo = scriptInfo; // FIXME Grab the project info?
