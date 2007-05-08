@@ -190,6 +190,9 @@
 								<test value="*.rbx"
 									property="org.eclipse.debug.ui.matchesPattern">
 								</test>
+								<test value="*.rbw"
+									property="org.eclipse.debug.ui.matchesPattern">
+								</test>
 								<test
 									property="org.eclipse.debug.ui.matchesContentType"
 									value="org.eclipse.ant.core.antBuildFile"/>
