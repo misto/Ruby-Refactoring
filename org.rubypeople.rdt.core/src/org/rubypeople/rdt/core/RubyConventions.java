@@ -60,9 +60,9 @@ public class RubyConventions {
 	 * field name.
 	 * 
 	 * @param id
-	 *            the Java identifier
+	 *            the Ruby identifier
 	 * @return a status object with code <code>IStatus.OK</code> if the given
-	 *         identifier is a valid Java identifier, otherwise a status object
+	 *         identifier is a valid Ruby identifier, otherwise a status object
 	 *         indicating what is wrong with the identifier
 	 */
 	public static IStatus validateIdentifier(String id) {
@@ -111,5 +111,9 @@ public class RubyConventions {
 
 	public static IRubyModelStatus validateLoadpath(IRubyProject rubyProject, ILoadpathEntry[] rawCLoadpath, IPath projectOutputLocation) {
 		return LoadpathEntry.validateLoadpath(rubyProject, rawCLoadpath, projectOutputLocation);
+	}
+
+	public static IStatus validateMethodName(String methodName) {
+		return validateIdentifier(methodName);
 	}
 }
