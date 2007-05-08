@@ -21,8 +21,7 @@ public class SourceIndexerRequestor implements ISourceElementRequestor {
 	}
 
 	public void acceptFieldReference(String name, int offset) {
-		// TODO Auto-generated method stub
-
+		indexer.addFieldReference(name.toCharArray());
 	}
 
 	public void acceptImport(String value, int startOffset, int endOffset) {
@@ -35,7 +34,7 @@ public class SourceIndexerRequestor implements ISourceElementRequestor {
 	}
 
 	public void acceptMixin(String string) {
-		// TODO Auto-generated method stub
+		indexer.addTypeReference(string.toCharArray());
 
 	}
 

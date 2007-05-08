@@ -61,7 +61,7 @@ public class SourceIndexer implements IIndexConstants {
 		char[] indexKey = TypeDeclarationPattern.createIndexKey(modifiers, name, packageName, enclosingTypeNames, secondary);
 		addIndexEntry(TYPE_DECL, indexKey);
 
-		if (superclass != null) {
+		if (superclass != null && !superclass.equals("Object")) {
 			addTypeReference(superclass);
 		}
 		// FIXME Add back in references to super type when we have SuperTypePattern!
@@ -77,7 +77,7 @@ public class SourceIndexer implements IIndexConstants {
 	
 	public void addFieldDeclaration(char[] typeName, char[] fieldName) {
 		addIndexEntry(FIELD_DECL, FieldPattern.createIndexKey(fieldName));
-		addTypeReference(typeName);
+		if (typeName != null) addTypeReference(typeName);
 	}
 	public void addFieldReference(char[] fieldName) {
 		addNameReference(fieldName);
