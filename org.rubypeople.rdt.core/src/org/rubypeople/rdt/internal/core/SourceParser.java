@@ -126,6 +126,13 @@ public class SourceParser extends InOrderVisitor { // TODO Rename to SourceEleme
 	}
 	
 	@Override
+	public Instruction visitConstNode(ConstNode iVisited) {
+		// FIXME ConstNode could be a reference to a type, or a constant(field)!
+		requestor.acceptTypeReference(iVisited.getName(), iVisited.getPosition().getStartOffset(), iVisited.getPosition().getEndOffset());
+		return super.visitConstNode(iVisited);
+	}
+	
+	@Override
 	public Instruction visitModuleNode(ModuleNode iVisited) {
 		TypeInfo typeInfo = new TypeInfo();
 		typeInfo.name = getFullyQualifiedName(iVisited.getCPath());
