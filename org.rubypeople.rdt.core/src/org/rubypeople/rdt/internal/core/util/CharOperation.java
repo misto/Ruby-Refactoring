@@ -1549,4 +1549,119 @@ public static char[] lastSegment(char[] typeName, String divider) {
 	char[][] result = splitOn(divider, typeName);
 	return result[result.length - 1];
 }
+
+/**
+ * Answers the concatenation of the two arrays. It answers null if the two arrays are null.
+ * If the first array is null, then the second array is returned.
+ * If the second array is null, then the first array is returned.
+ * <br>
+ * <br>
+ * For example:
+ * <ol>
+ * <li><pre>
+ *    first = null
+ *    second = null
+ *    => result = null
+ * </pre>
+ * </li>
+ * <li><pre>
+ *    first = { { ' a' } }
+ *    second = null
+ *    => result = { { ' a' } }
+ * </pre>
+ * </li>
+ * <li><pre>
+ *    first = null
+ *    second = { { ' a' } }
+ *    => result = { { ' a' } }
+ * </pre>
+ * </li>
+ * <li><pre>
+ *    first = { { ' b' } }
+ *    second = { { ' a' } }
+ *    => result = { { ' b' }, { ' a' } }
+ * </pre>
+ * </li>
+ * </ol>
+ * 
+ * @param first the first array to concatenate
+ * @param second the second array to concatenate
+ * @return the concatenation of the two arrays, or null if the two arrays are null.
+ */
+public static final char[][] arrayConcat(char[][] first, char[][] second) {
+	if (first == null)
+		return second;
+	if (second == null)
+		return first;
+
+	int length1 = first.length;
+	int length2 = second.length;
+	char[][] result = new char[length1 + length2][];
+	System.arraycopy(first, 0, result, 0, length1);
+	System.arraycopy(second, 0, result, length1, length2);
+	return result;
+}
+
+/**
+ * Answers a new array adding the second array at the end of first array.
+ * It answers null if the first and second are null.
+ * If the first array is null, then a new array char[][] is created with second.
+ * If the second array is null, then the first array is returned.
+ * <br>
+ * <br>
+ * For example:
+ * <ol>
+ * <li><pre>
+ *    first = null
+ *    second = { 'a' }
+ *    => result = { { ' a' } }
+ * </pre>
+ * <li><pre>
+ *    first = { { ' a' } }
+ *    second = null
+ *    => result = { { ' a' } }
+ * </pre>
+ * </li>
+ * <li><pre>
+ *    first = { { ' a' } }
+ *    second = { ' b' }
+ *    => result = { { ' a' } , { ' b' } }
+ * </pre>
+ * </li>
+ * </ol>
+ * 
+ * @param first the first array to concatenate
+ * @param second the array to add at the end of the first array
+ * @return a new array adding the second array at the end of first array, or null if the two arrays are null.
+ */
+public static final char[][] arrayConcat(char[][] first, char[] second) {
+	if (second == null)
+		return first;
+	if (first == null)
+		return new char[][] { second };
+
+	int length = first.length;
+	char[][] result = new char[length + 1][];
+	System.arraycopy(first, 0, result, 0, length);
+	result[length] = second;
+	return result;
+}
+
+public static char[] concatWith(char[][] enclosingTypeNames, String string) {
+	StringBuffer buffer = new StringBuffer();
+	for (int i = 0; i < enclosingTypeNames.length; i++) {
+		char[] name = enclosingTypeNames[i];
+		if (i > 0) buffer.append(string);
+		buffer.append(name);		
+	}
+	return buffer.toString().toCharArray();
+}
+
+public static char[] concat(char[] one, char[] two, String separator) {
+	StringBuffer buffer = new StringBuffer();
+	buffer.append(one);
+	buffer.append(separator);
+	buffer.append(two);
+	return buffer.toString().toCharArray();
+}
 }
