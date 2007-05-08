@@ -659,6 +659,7 @@ public class RubyScript extends Openable implements IRubyScript {
 	 */
 	public IType findPrimaryType() {
 		String typeName = Util.getNameWithoutRubyLikeExtension(getElementName());
+		typeName = Util.identifierToConstant(typeName);
 		IType primaryType= getType(typeName);
 		if (primaryType.exists()) {
 			return primaryType;

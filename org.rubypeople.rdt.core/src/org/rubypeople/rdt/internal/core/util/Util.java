@@ -1018,4 +1018,20 @@ public class Util {
 		return copy;
 	}
 
+	public static String identifierToConstant(String typeName) {
+		StringBuffer buffer = new StringBuffer();
+		boolean doNextAsUpper = true;
+		for (int i = 0; i < typeName.length(); i++) {
+			char c = typeName.charAt(i);
+			if (doNextAsUpper) {
+				buffer.append(Character.toUpperCase(c));
+				doNextAsUpper = false;
+			} else if (c == '_') {
+				doNextAsUpper = true;
+			} else {
+				buffer.append(c);
+			}
+		}
+		return buffer.toString();
+	}
 }
