@@ -166,4 +166,20 @@ public interface IRubyProject extends IRubyElement, IParent {
 	 * @since 1.0.0
 	 */
 	ISourceFolderRoot[] findSourceFolderRoots(ILoadpathEntry entry);
+
+		/**
+	 * Same functionality as {@link #findType(String)} but also look for secondary
+	 * types if given name does not match a compilation unit name.
+	 * 
+	 * @param fullyQualifiedName the given fully qualified name
+	 * @param progressMonitor the progress monitor to report progress to,
+	 * 	or <code>null</code> if no progress monitor is provided
+	 * @exception RubyModelException if this project does not exist or if an
+	 *		exception occurs while accessing its corresponding resource
+	 * @return the first type found following this project's classpath 
+	 * with the given fully qualified name or <code>null</code> if none is found
+	 * @see IType#getFullyQualifiedName(char)
+	 * @since 1.0
+	 */
+	IType findType(String fullyQualifiedName, IProgressMonitor progressMonitor) throws RubyModelException;
 }

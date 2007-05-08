@@ -408,6 +408,15 @@ public class RubyProject extends Openable implements IProjectNature, IRubyElemen
 	 * @see org.rubypeople.rdt.core.IRubyProject#findType(java.lang.String)
 	 */
 	public IType findType(String fullyQualifiedName) {
+		return findType(fullyQualifiedName, null);
+	}
+	
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.rubypeople.rdt.core.IRubyProject#findType(java.lang.String, org.eclipse.core.runtime.IProgressMonitor)
+	 */
+	public IType findType(String fullyQualifiedName, IProgressMonitor monitor) {
 		int index = fullyQualifiedName.lastIndexOf("::");
 		String className = null;
 		if (index == -1) {
