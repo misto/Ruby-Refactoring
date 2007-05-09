@@ -75,7 +75,7 @@ public class StandardVMDebugger extends StandardVMRunner implements IVMRunner {
 
 		String[] cp = config.getLoadPath();
 		if (cp.length > 0) {
-			arguments.addAll(convertLoadPath(cp)); // TODO If our working directory is equal to loadpath, don't add loadpath
+			arguments.addAll(convertLoadPath(config, cp));
 		}
 		arguments.addAll(debugSpecificVMArgs(debugTarget));		
 		

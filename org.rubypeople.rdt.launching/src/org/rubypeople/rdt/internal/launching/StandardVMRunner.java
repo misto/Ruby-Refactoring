@@ -167,11 +167,21 @@ public class StandardVMRunner extends AbstractVMRunner {
 		return file.exists() && file.isFile();
 	}
 
-	protected List<String> convertLoadPath(String[] lp) {
+	protected List<String> convertLoadPath(VMRunnerConfiguration config, String[] lp) {
+		String working = null;
+		try {
+			File workingDir = getWorkingDir(config);
+			if (workingDir != null) working = workingDir.getAbsolutePath();
+		} catch (CoreException e) {
+			// ignore
+		}
 		List<String> strings = new ArrayList<String>();
 		for (int i= 0; i < lp.length; i++) {
+			String path = lp[i];
+			// Don't add project to loadpath if project is working directory
+			if (working != null && working.equals(path)) continue;
 			strings.add("-I"); //$NON-NLS-1$
-			strings.add(lp[i]);
+			strings.add(path);
 		}
 		return strings;
 	}
@@ -207,7 +217,7 @@ public class StandardVMRunner extends AbstractVMRunner {
 		
 		String[] lp= config.getLoadPath();
 		if (lp.length > 0) {
-			arguments.addAll(convertLoadPath(lp));
+			arguments.addAll(convertLoadPath(config, lp));
 		}
 		arguments.add(END_OF_OPTIONS_DELIMITER);
 		
