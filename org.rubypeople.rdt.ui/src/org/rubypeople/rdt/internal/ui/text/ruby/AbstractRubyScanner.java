@@ -18,10 +18,11 @@ import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.widgets.Display;
 import org.rubypeople.rdt.ui.PreferenceConstants;
+import org.rubypeople.rdt.ui.text.IAbstractManagedScanner;
 import org.rubypeople.rdt.ui.text.IColorManager;
 import org.rubypeople.rdt.ui.text.IColorManagerExtension;
 
-public abstract class AbstractRubyScanner extends BufferedRuleBasedScanner {
+public abstract class AbstractRubyScanner extends BufferedRuleBasedScanner implements IAbstractManagedScanner {
 
 	private String[] fPropertyNamesColor;
 	private String[] fPropertyNamesBgColor;
