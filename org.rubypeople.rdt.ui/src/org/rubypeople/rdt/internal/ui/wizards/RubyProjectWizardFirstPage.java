@@ -431,7 +431,9 @@ public class RubyProjectWizardFirstPage extends WizardPage {
 		}
 
 		private String getDefaultJVMName() {
-			return RubyRuntime.getDefaultVMInstall().getName();
+			IVMInstall vm = RubyRuntime.getDefaultVMInstall();
+			if (vm == null) return "";
+			return vm.getName();
 		}
 
 		private String getDefaultJVMLabel() {
