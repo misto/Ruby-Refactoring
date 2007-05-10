@@ -36,6 +36,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
+import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.part.PageBook;
 import org.eclipse.ui.part.ViewPart;
 import org.rubypeople.rdt.internal.ui.RubyPlugin;
@@ -247,7 +248,11 @@ public class RIView extends ViewPart implements RdocListener, IVMInstallChangedL
 			// If we can't find it ourselves then display an error to the user
 			if (file == null || !file.exists() || !file.isFile()) {
 				riFound = false;
-				pageBook.showPage(riNotFoundLabel);
+				PlatformUI.getWorkbench().getDisplay().asyncExec(new Runnable() {
+					public void run() {
+						pageBook.showPage(riNotFoundLabel);
+					}
+				});				
 				return;
 			}
 			   		
