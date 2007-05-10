@@ -22,6 +22,11 @@ import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IProjectDescription;
 import org.eclipse.core.resources.IResource;
+import org.eclipse.core.resources.IResourceChangeEvent;
+import org.eclipse.core.resources.IResourceChangeListener;
+import org.eclipse.core.resources.IResourceDelta;
+import org.eclipse.core.resources.IResourceProxy;
+import org.eclipse.core.resources.IResourceProxyVisitor;
 import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.resources.IWorkspaceRunnable;
@@ -39,6 +44,7 @@ import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Plugin;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.ISchedulingRule;
+import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.core.runtime.preferences.IEclipsePreferences;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
@@ -322,6 +328,8 @@ public class RubyCore extends Plugin {
         SymbolIndex.setVerbose(isDebugOptionTrue(SYMBOL_INDEX_VERBOSE_OPTION));
         RubyBuilder.setVerbose(isDebugOptionTrue(BUILDER_VERBOSE_OPTION));
 
+        ResourcesPlugin.getWorkspace().addResourceChangeListener(new RubyProjectListener(), IResourceChangeEvent.POST_CHANGE);
+                
         SymbolIndexResourceChangeListener.register(symbolIndex);
         IndexUpdater indexUpdater = new IndexUpdater(symbolIndex);
         List rubyProjects = Arrays.asList(getRubyProjects());
@@ -330,7 +338,7 @@ public class RubyCore extends Plugin {
     }
 
     /*
-     * (non-Javadoc) Shutdown the JavaCore plug-in. <p> De-registers the
+     * (non-Javadoc) Shutdown the RubyCore plug-in. <p> De-registers the
      * RubyModelManager as a resource changed listener and save participant. <p>
      * 
      * @see org.eclipse.core.runtime.Plugin#stop(BundleContext)
@@ -1409,4 +1417,71 @@ public class RubyCore extends Plugin {
 		return RubyModelManager.createRubyScriptFrom(file, null/*unknown ruby project*/);
 	}
 
+	
+	private static class RubyProjectListener implements IResourceChangeListener {
+
+		public void resourceChanged(IResourceChangeEvent event) {
+			if (event == null)
+				return;
+			IResourceDelta delta = event.getDelta();
+			checkDelta(delta);
+		}
+
+		private void checkDelta(IResourceDelta delta) {
+			if (delta == null)
+				return;
+			IResource resource = delta.getResource();
+			if (resource instanceof IProject) {
+				// if (IResourceDelta.ADDED != delta.getKind()) //
+				// FIXME Try to narrow down which deltas we actually
+				// check
+				// return;
+				final IProject project = (IProject) resource;
+				if (!RubyProject.hasRubyNature(project)) {
+					// check for ruby scripts, and if it has any,
+					// add the nature.
+					IResourceProxyVisitor visitor = new IResourceProxyVisitor() {
+						private boolean added = false;
+
+						public boolean visit(IResourceProxy proxy)
+								throws CoreException {
+							if (proxy.getType() == IResource.FILE) {
+								if (RubyCore
+										.isRubyLikeFileName(proxy.getName())) {
+									Job job = new Job("Add Ruby Nature") {
+
+										@Override
+										protected IStatus run(
+												IProgressMonitor monitor) {
+											try {
+												RubyCore.addRubyNature(project,
+														monitor);
+											} catch (CoreException e) {
+												RubyCore.log(e);
+											}
+											return Status.OK_STATUS;
+										}
+
+									};
+									job.schedule(500);
+									added = true;
+								}
+							}
+							return !added;
+						}
+
+					};
+					try {
+						project.accept(visitor, IResource.NONE);
+					} catch (CoreException e) {
+						RubyCore.log(e);
+					}
+				}
+				IResourceDelta[] children = delta.getAffectedChildren();
+				for (int i = 0; i < children.length; i++) {
+					checkDelta(children[i]);
+				}
+			}
+		}
+	}
 }
