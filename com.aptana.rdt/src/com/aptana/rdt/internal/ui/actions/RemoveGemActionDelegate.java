@@ -9,6 +9,7 @@
 package com.aptana.rdt.internal.ui.actions;
 
 import org.eclipse.jface.action.IAction;
+import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.swt.widgets.Display;
@@ -19,6 +20,7 @@ import org.eclipse.ui.IWorkbenchPart;
 
 import com.aptana.rdt.internal.gems.Gem;
 import com.aptana.rdt.internal.gems.GemManager;
+import com.aptana.rdt.ui.gems.GemsMessages;
 import com.aptana.rdt.ui.gems.GemsView;
 
 /**
@@ -43,6 +45,9 @@ public class RemoveGemActionDelegate implements IObjectActionDelegate, IViewActi
 	 * @see org.eclipse.ui.IActionDelegate#run(org.eclipse.jface.action.IAction)
 	 */
 	public void run(IAction action) {
+		boolean okay = MessageDialog.openConfirm(view.getViewSite()
+				.getShell(), null, GemsMessages.bind(GemsMessages.RemoveGemDialog_msg, selectedGem.getName()));
+		if (!okay) return;
 		Display.getDefault().asyncExec(new Runnable() {
 		
 			public void run() {

@@ -14,6 +14,7 @@ public class GemsMessages extends NLS {
 	public static String InstallGemDialog_name_label;
 	public static String GemManager_loading_local_gems;
 	public static String GemManager_loading_remote_gems;
+	public static String RemoveGemDialog_msg;
 	
 	static {
 		NLS.initializeMessages(BUNDLE_NAME, GemsMessages.class);
