@@ -3,12 +3,11 @@ package com.aptana.rdt.internal.gems;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.FileReader;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.PrintWriter;
 import java.io.StringReader;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -28,6 +27,7 @@ import javax.xml.parsers.FactoryConfigurationError;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParserFactory;
 
+import org.eclipse.core.internal.resources.XMLWriter;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
@@ -70,7 +70,8 @@ public class GemManager {
 	private static final int TIMEOUT = 30000;
 	private static final String TIMEOUT_MSG = "Installing gem took more than 30 seconds, intentionally broke out to avoid infinite loop";
 	
-	private static final String LOCAL_CACHE_FILE = "remote_gems.xml";
+	private static final String REMOTE_GEMS_CACHE_FILE = "remote_gems.xml";
+	private static final String LOCAL_GEMS_CACHE_FILE = "local_gems.xml";
 	private static final String GEM_INDEX_URL = "http://gems.rubyforge.org/yaml";
 
 	private static GemManager fgInstance;
@@ -89,10 +90,10 @@ public class GemManager {
 
 			@Override
 			protected IStatus run(IProgressMonitor monitor) {
-				remoteGems = loadLocalCache();
+				remoteGems = loadLocalCache(getConfigFile(REMOTE_GEMS_CACHE_FILE));
 				if (remoteGems.isEmpty()) {
 					remoteGems = loadRemoteGems();
-					storeGemCache();
+					storeGemCache(remoteGems, getConfigFile(REMOTE_GEMS_CACHE_FILE));
 				}
 				return Status.OK_STATUS;
 			}
@@ -103,7 +104,11 @@ public class GemManager {
 
 			@Override
 			protected IStatus run(IProgressMonitor monitor) {
-				gems = loadLocalGems();
+				gems = loadLocalCache(getConfigFile(LOCAL_GEMS_CACHE_FILE));
+				if (gems.isEmpty()) {
+					gems = loadLocalGems();
+					storeGemCache(gems, getConfigFile(LOCAL_GEMS_CACHE_FILE));					
+				}
 				for (GemListener listener : listeners) {
 					listener.gemsRefreshed();
 				}
@@ -114,10 +119,10 @@ public class GemManager {
 		job2.schedule();
 	}
 
-	protected Set<Gem> loadLocalCache() {
+	protected Set<Gem> loadLocalCache(File file) {
 		FileReader fileReader = null;
 		try {
-			fileReader = new FileReader(getConfigFile());
+			fileReader = new FileReader(file);
 			XMLReader reader = SAXParserFactory.newInstance().newSAXParser()
 					.getXMLReader();
 			GemManagerContentHandler handler = new GemManagerContentHandler();
@@ -146,11 +151,11 @@ public class GemManager {
 		return new HashSet<Gem>();
 	}
 
-	protected void storeGemCache() {
-		PrintWriter out = null;
+	protected void storeGemCache(Set<Gem> gems, File file) {
+		XMLWriter out = null;
 		try {
-			out = new PrintWriter(new FileWriter(getConfigFile()));
-			writeXML(out);
+			out = new XMLWriter(new FileOutputStream(file));
+			writeXML(gems, out);
 		} catch (FileNotFoundException e) {
 			AptanaRDTPlugin.log(e);
 		} catch (IOException e) {
@@ -161,36 +166,29 @@ public class GemManager {
 		}
 	}
 
-	/**
-	 * Returns the configuration file to use for the servers. The file is
-	 * located in the plugin state directory and called
-	 * <code>remote_gems.xml</code>.
-	 * 
-	 * @return the config file
-	 */
-	private File getConfigFile() {
+	private File getConfigFile(String fileName) {
 		return AptanaRDTPlugin.getDefault().getStateLocation().append(
-				LOCAL_CACHE_FILE).toFile();
+				fileName).toFile();
 	}
 
 	/**
 	 * Writes each server configuration to file in XML format.
+	 * @param gems 
 	 * 
 	 * @param out
 	 *            the writer to use
 	 */
-	private void writeXML(PrintWriter out) {
-		out.println("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
-		out.println("<gems>");
-		for (Gem gem : remoteGems) {
-			out.println("<gem>");
-			out.println("<name>" + gem.getName() + "</name>");
-			out.println("<version>" + gem.getVersion() + "</version>");
-			out.println("<description>" + gem.getDescription()
-					+ "</description>");
-			out.println("</gem>");
+	private void writeXML(Set<Gem> gems, XMLWriter out) {
+		out.startTag("gems", null);
+		for (Gem gem : gems) {
+			out.startTag("gem", null);
+			out.printSimpleTag("name", gem.getName());
+			out.printSimpleTag("version", gem.getVersion());
+			out.printSimpleTag("description", gem.getDescription());
+			out.printSimpleTag("platform", gem.getPlatform());
+			out.endTag("gem");
 		}
-		out.println("</gems>");
+		out.endTag("gems");
 		out.flush();
 	}
 
@@ -228,7 +226,11 @@ public class GemManager {
 					name = line.trim().substring(6);
 				}
 				if (line.trim().startsWith("platform:")) {
-					platform = line.trim().substring(10);
+					if (line.trim().length() == 9) {
+						platform = Gem.RUBY_PLATFORM;
+					} else {
+						platform = line.trim().substring(10);
+					}
 				}
 				if (line.trim().startsWith("summary:")) {
 					description = line.trim().substring(9);

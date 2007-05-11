@@ -16,6 +16,7 @@ public class Gem implements Comparable {
 	public Gem(String name, String version, String description, String platform) {
 		if (name == null) throw new IllegalArgumentException("A Gem's name must not be null");
 		if (version == null) throw new IllegalArgumentException("A Gem's version must not be null");
+		if (platform == null) throw new IllegalArgumentException("A Gem's platform must not be null");
 		this.name = name;
 		this.version = version;
 		this.description = description;
