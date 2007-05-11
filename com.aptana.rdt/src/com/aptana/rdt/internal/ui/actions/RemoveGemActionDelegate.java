@@ -46,7 +46,7 @@ public class RemoveGemActionDelegate implements IObjectActionDelegate, IViewActi
 		Display.getDefault().asyncExec(new Runnable() {
 		
 			public void run() {
-				GemManager.getInstance().removeGem(selectedGem.getName());		
+				GemManager.getInstance().removeGem(selectedGem);		
 			}
 		
 		});

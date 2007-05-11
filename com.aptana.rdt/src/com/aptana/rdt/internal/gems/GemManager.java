@@ -104,7 +104,9 @@ public class GemManager {
 			@Override
 			protected IStatus run(IProgressMonitor monitor) {
 				gems = loadLocalGems();
-				informListeners();
+				for (GemListener listener : listeners) {
+					listener.gemsRefreshed();
+				}
 				return Status.OK_STATUS;
 			}
 
@@ -333,9 +335,9 @@ public class GemManager {
 		return gems;
 	}
 
-	public boolean upgrade(String gemName) {
+	public boolean update(Gem gem) {
 		try {
-			String command = UPDATE_COMMAND + " " + gemName;
+			String command = UPDATE_COMMAND + " " + gem.getName();
 			ILaunchConfiguration config = createGemLaunchConfiguration(command);
 			config.launch(ILaunchManager.RUN_MODE, null);
 		} catch (CoreException e) {
@@ -343,10 +345,6 @@ public class GemManager {
 			return false;
 		}
 		return true;
-	}
-
-	public boolean installGem(String name) {
-		return installGem(name, null);
 	}
 
 	private ILaunchConfigurationType getRubyApplicationConfigType() {
@@ -405,11 +403,11 @@ public class GemManager {
 		return path + File.separator + "bin" + File.separator + "gem";
 	}
 
-	public boolean installGem(String name, String version) {
+	public boolean installGem(Gem gem) {
 		try {
-			String command = INSTALL_COMMAND + " " + name;
-			if (version != null && version.trim().length() > 0) {
-				command += " " + VERSION_SWITCH + " " + version;
+			String command = INSTALL_COMMAND + " " + gem.getName();
+			if (gem.getVersion() != null && gem.getVersion().trim().length() > 0) {
+				command += " " + VERSION_SWITCH + " " + gem.getVersion();
 			}
 			ILaunchConfiguration config = createGemLaunchConfiguration(command);
 			ILaunch launch = config.launch(ILaunchManager.RUN_MODE, null);
@@ -484,15 +482,17 @@ public class GemManager {
 			AptanaRDTPlugin.log(e);
 			return false;
 		}
-		refresh();
+		for (GemListener listener : listeners) {
+			listener.gemAdded(gem);
+		}
 		return true;
 	}
 
-	public boolean removeGem(String name, String version) {
+	public boolean removeGem(Gem gem) {
 		try {
-			String command = UNINSTALL_COMMAND + " " + name;
-			if (version != null && version.trim().length() > 0) {
-				command += " " + VERSION_SWITCH + " " + version;
+			String command = UNINSTALL_COMMAND + " " + gem.getName();
+			if (gem.getVersion() != null && gem.getVersion().trim().length() > 0) {
+				command += " " + VERSION_SWITCH + " " + gem.getVersion();
 			}
 			ILaunchConfiguration config = createGemLaunchConfiguration(command);
 			config.launch(ILaunchManager.RUN_MODE, null);
@@ -500,12 +500,10 @@ public class GemManager {
 			AptanaRDTPlugin.log(e);
 			return false;
 		}
-		refresh(); // FIXME Need to wait until uninstall is finished!
+		for (GemListener listener : listeners) {
+			listener.gemRemoved(gem);
+		} // FIXME Need to wait until uninstall is finished!
 		return true;
-	}
-
-	public boolean removeGem(String name) {
-		return removeGem(name, null);
 	}
 
 	public Set<Gem> getGems() {
@@ -523,16 +521,12 @@ public class GemManager {
 		if (!newGems.isEmpty()) {
 			gems.clear();
 			gems = newGems;
-			informListeners();
+			for (GemListener listener : listeners) {
+				listener.gemsRefreshed();
+			}
 			return true;
 		}
 		return false;
-	}
-
-	private void informListeners() {
-		for (GemListener listener : listeners) {
-			listener.gemsRefreshed();
-		}
 	}
 
 	public void addGemObserver(GemListener listener) {
@@ -541,6 +535,8 @@ public class GemManager {
 
 	public interface GemListener {
 		public void gemsRefreshed();
+		public void gemAdded(Gem gem);
+		public void gemRemoved(Gem gem);
 	}
 
 	public Set<Gem> getRemoteGems() {

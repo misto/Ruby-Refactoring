@@ -45,7 +45,7 @@ public class InstallGemActionDelegate implements IObjectActionDelegate, IViewAct
 			final Gem gem = dialog.getGem();
 			Display.getDefault().asyncExec(new Runnable() {			
 				public void run() {
-					GemManager.getInstance().installGem(gem.getName(), gem.getVersion());			
+					GemManager.getInstance().installGem(gem);			
 				}			
 			});			
 		}		

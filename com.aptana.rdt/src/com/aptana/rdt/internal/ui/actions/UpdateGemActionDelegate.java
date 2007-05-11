@@ -46,7 +46,7 @@ public class UpdateGemActionDelegate implements IObjectActionDelegate, IViewActi
 		Display.getDefault().asyncExec(new Runnable() {
 		
 			public void run() {
-				GemManager.getInstance().upgrade(selectedGem.getName());		
+				GemManager.getInstance().update(selectedGem);		
 			}
 		
 		});		
