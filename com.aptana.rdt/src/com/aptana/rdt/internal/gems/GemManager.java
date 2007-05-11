@@ -329,7 +329,7 @@ public class GemManager {
 
 	public boolean upgrade(String gemName) {
 		try {
-			String command = "upgrade " + gemName;
+			String command = "update " + gemName;
 			ILaunchConfiguration config = createGemLaunchConfiguration(command);
 			config.launch(ILaunchManager.RUN_MODE, null);
 		} catch (CoreException e) {
