@@ -64,6 +64,12 @@
             class="com.aptana.rdt.internal.ui.infoviews.RubyStdLibAPIView"
             id="com.aptana.rdt.ui.views.RubyStdLibAPIView">
       </view>
+      <view
+            category="org.rubypeople.rdt.ui.ruby"
+            class="com.aptana.rdt.ui.gems.GemsView"
+            icon="icons/rubygems.png"
+            id="com.aptana.gems.ui.ViewGems"
+            name="RubyGems"/>
   </extension>
   
   <extension point="org.eclipse.ui.perspectiveExtensions">
@@ -160,7 +166,46 @@
        			<argument prefKey="com.aptana.rdt.compiler.problem.maxReturns"/>
        	</error>		
  </extension>
- 
+   
+   <extension
+         point="org.eclipse.ui.viewActions">
+      <viewContribution
+            id="com.aptana.gems.ui.ViewActions"
+            targetID="com.aptana.gems.ui.ViewGems">
+         <action
+               class="com.aptana.rdt.internal.ui.actions.InstallGemActionDelegate"
+               icon="icons/add.gif"
+               id="com.aptana.gems.ui.ActionInstallGem"
+               label="Install"
+               style="push"
+               toolbarPath="additions"
+               tooltip="Install"/>
+         <action
+               class="com.aptana.rdt.internal.ui.actions.RemoveGemActionDelegate"
+               icon="icons/remove.gif"
+               id="com.aptana.gems.ui.ActionRemoveGem"
+               label="Remove"
+               style="push"
+               toolbarPath="additions"
+               tooltip="Remove"/>
+         <action
+               class="com.aptana.rdt.internal.ui.actions.RefreshGemsActionDelegate"
+               icon="icons/nav_refresh.gif"
+               id="com.aptana.gems.ui.ActionRefreshGems"
+               label="Refresh"
+               style="push"
+               toolbarPath="additions"
+               tooltip="Refresh"/>
+         <action
+               class="com.aptana.rdt.internal.ui.actions.UpdateGemActionDelegate"
+               icon="icons/upgrade.gif"
+               id="com.aptana.gems.ui.ActionUpdateGem"
+               label="Update Gem"
+               style="push"
+               toolbarPath="additions"
+               tooltip="Update Gem"/>
+      </viewContribution>
+   </extension>
  
 <!-- =================================================================================== -->
 <!-- Extension: Eclipse preferences initializer                                          -->
