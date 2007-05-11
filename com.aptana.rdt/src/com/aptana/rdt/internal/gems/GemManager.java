@@ -318,7 +318,7 @@ public class GemManager {
 			int j = 2;
 			if ((i + 2) < lines.size()) {
 				String nextLine = lines.get(i + 2);
-				while (!nextLine.trim().isEmpty()) {
+				while (nextLine.trim().length() != 0) {
 					j++;
 					description += " " + nextLine.trim();
 					nextLine = lines.get(i + j);
