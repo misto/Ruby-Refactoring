@@ -54,23 +54,29 @@ import org.xml.sax.SAXException;
 import org.xml.sax.XMLReader;
 
 import com.aptana.rdt.AptanaRDTPlugin;
+import com.aptana.rdt.ui.gems.GemsMessages;
 
 public class GemManager {
 
+	private static final String LOCAL_SWITCH = "-l";
+	private static final String LIST_COMMAND = "list";
+	private static final String INSTALL_COMMAND = "install";
+	private static final String VERSION_SWITCH = "-v";
+	private static final String UNINSTALL_COMMAND = "uninstall";
+	private static final String UPDATE_COMMAND = "update";
+	private static final String EXECUTABLE = "ruby";
+	private static final String VM_ARGS = "-e STDOUT.sync=true -e STDERR.sync=true -e load(ARGV.shift)";
+
 	private static final int TIMEOUT = 30000;
-
 	private static final String TIMEOUT_MSG = "Installing gem took more than 30 seconds, intentionally broke out to avoid infinite loop";
-
+	
 	private static final String LOCAL_CACHE_FILE = "remote_gems.xml";
-
 	private static final String GEM_INDEX_URL = "http://gems.rubyforge.org/yaml";
 
 	private static GemManager fgInstance;
 
 	private Set<Gem> gems;
-
 	private Set<Gem> remoteGems;
-
 	private Set<GemListener> listeners;
 
 	private GemManager() {
@@ -79,7 +85,7 @@ public class GemManager {
 		// FIXME Do an incremental check for new remote gems somehow?
 		remoteGems = new HashSet<Gem>();
 		listeners = new HashSet<GemListener>();
-		Job job = new Job("Loading remote gem information") {
+		Job job = new Job(GemsMessages.GemManager_loading_remote_gems) {
 
 			@Override
 			protected IStatus run(IProgressMonitor monitor) {
@@ -93,7 +99,7 @@ public class GemManager {
 
 		};
 		job.schedule();
-		Job job2 = new Job("Loading local gem information") {
+		Job job2 = new Job(GemsMessages.GemManager_loading_local_gems) {
 
 			@Override
 			protected IStatus run(IProgressMonitor monitor) {
@@ -243,7 +249,7 @@ public class GemManager {
 	}
 
 	private Set<Gem> loadLocalGems() {
-		List<String> lines = launchAndRead("list -l");
+		List<String> lines = launchAndRead(LIST_COMMAND + " " + LOCAL_SWITCH);
 		if (lines.size() > 2) {
 			lines.remove(0); // Remove first 3 lines from local list
 			lines.remove(0);
@@ -329,7 +335,7 @@ public class GemManager {
 
 	public boolean upgrade(String gemName) {
 		try {
-			String command = "update " + gemName;
+			String command = UPDATE_COMMAND + " " + gemName;
 			ILaunchConfiguration config = createGemLaunchConfiguration(command);
 			config.launch(ILaunchManager.RUN_MODE, null);
 		} catch (CoreException e) {
@@ -353,7 +359,7 @@ public class GemManager {
 	}
 
 	private ILaunchConfiguration createGemLaunchConfiguration(String arguments) {
-		String gemPath = getServerScript();
+		String gemPath = getGemScriptPath();
 		ILaunchConfiguration config = null;
 		try {
 			ILaunchConfigurationType configType = getRubyApplicationConfigType();
@@ -375,11 +381,11 @@ public class GemManager {
 			 wc
 			 .setAttribute(
 			 IRubyLaunchConfigurationConstants.ATTR_VM_ARGUMENTS,
-			 "-e STDOUT.sync=true -e STDERR.sync=true -e load(ARGV.shift)");
+			 VM_ARGS);
 			Map<String, String> map = new HashMap<String, String>();
 			map
 					.put(IRubyLaunchConfigurationConstants.ATTR_RUBY_COMMAND,
-							"ruby");
+							EXECUTABLE);
 			wc
 					.setAttribute(
 							IRubyLaunchConfigurationConstants.ATTR_VM_INSTALL_TYPE_SPECIFIC_ATTRS_MAP,
@@ -392,7 +398,7 @@ public class GemManager {
 		return config;
 	}
 
-	private String getServerScript() {
+	private static String getGemScriptPath() {
 		IVMInstall vm = RubyRuntime.getDefaultVMInstall();
 		File installLocation = vm.getInstallLocation();
 		String path = installLocation.getAbsolutePath();
@@ -401,9 +407,9 @@ public class GemManager {
 
 	public boolean installGem(String name, String version) {
 		try {
-			String command = "install " + name;
+			String command = INSTALL_COMMAND + " " + name;
 			if (version != null && version.trim().length() > 0) {
-				command += " -v " + version;
+				command += " " + VERSION_SWITCH + " " + version;
 			}
 			ILaunchConfiguration config = createGemLaunchConfiguration(command);
 			ILaunch launch = config.launch(ILaunchManager.RUN_MODE, null);
@@ -448,9 +454,9 @@ public class GemManager {
 						}
 						// Automatically select the option which matches this
 						// platform.
-						String myPlatform = "ruby";
+						String myPlatform = Gem.RUBY_PLATFORM;
 						if (Platform.getOS().equals(Constants.OS_WIN32)) {
-							myPlatform = "mswin32";
+							myPlatform = Gem.MSWIN32_PLATFORM;
 						}
 						try {
 							p.getStreamsProxy().write(
@@ -484,9 +490,9 @@ public class GemManager {
 
 	public boolean removeGem(String name, String version) {
 		try {
-			String command = "uninstall " + name;
+			String command = UNINSTALL_COMMAND + " " + name;
 			if (version != null && version.trim().length() > 0) {
-				command += " -v " + version;
+				command += " " + VERSION_SWITCH + " " + version;
 			}
 			ILaunchConfiguration config = createGemLaunchConfiguration(command);
 			config.launch(ILaunchManager.RUN_MODE, null);

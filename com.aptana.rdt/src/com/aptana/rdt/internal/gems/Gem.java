@@ -6,6 +6,8 @@ public class Gem implements Comparable {
 	private String version;
 	private String description;
 	private String platform;
+	static final String RUBY_PLATFORM = "ruby";
+	static final String MSWIN32_PLATFORM = "mswin32";
 
 	public Gem(String name, String version, String description) {
 		this(name, version, description, "ruby");
