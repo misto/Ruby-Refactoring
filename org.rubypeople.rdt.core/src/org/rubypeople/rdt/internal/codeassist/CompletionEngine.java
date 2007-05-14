@@ -88,6 +88,7 @@ public class CompletionEngine {
 			if (fContext.isConstant()) { // type or constant
 				suggestTypeNames();
 				suggestConstantNames();
+				return;
 			} 
 			if (fContext.isExplicitMethodInvokation()) {
 				ITypeInferrer inferrer = new DefaultTypeInferrer();
