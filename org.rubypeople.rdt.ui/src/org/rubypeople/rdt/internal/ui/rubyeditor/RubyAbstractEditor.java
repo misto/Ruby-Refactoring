@@ -253,7 +253,7 @@ public abstract class RubyAbstractEditor extends TextEditor {
     }
 
 	protected ISourceViewer createRubySourceViewer(Composite parent, IVerticalRuler verticalRuler, IOverviewRuler overviewRuler, boolean isOverviewRulerVisible, int styles, IPreferenceStore store) {
-		return new RubySourceViewer(parent, verticalRuler, overviewRuler,
+		return new AdaptedSourceViewer(parent, verticalRuler, overviewRuler,
 				isOverviewRulerVisible, styles, store);
 	}
 
