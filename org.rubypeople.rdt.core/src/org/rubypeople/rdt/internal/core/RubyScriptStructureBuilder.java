@@ -32,6 +32,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import org.rubypeople.rdt.core.IMethod;
 import org.rubypeople.rdt.core.IRubyElement;
 import org.rubypeople.rdt.core.IRubyScript;
 import org.rubypeople.rdt.core.RubyCore;
@@ -226,12 +227,7 @@ public class RubyScriptStructureBuilder implements ISourceElementRequestor {
 	}
 
 	public void enterMethod(MethodInfo methodInfo) {
-		RubyMethod method;
-		if (methodInfo.isClassLevel) {
-			method = new RubySingletonMethod(getCurrentType(), methodInfo.name, methodInfo.parameterNames);
-		} else {
-			method = new RubyMethod(getCurrentType(), methodInfo.name, methodInfo.parameterNames);
-		}
+		RubyMethod method = new RubyMethod(getCurrentType(), methodInfo.name, methodInfo.parameterNames);
 		modelStack.push(method);
 
 		infoStack.peek().addChild(method);
@@ -242,6 +238,7 @@ public class RubyScriptStructureBuilder implements ISourceElementRequestor {
 		info.setNameSourceStart(methodInfo.nameSourceStart);
 		info.setNameSourceEnd(methodInfo.nameSourceEnd);
 		info.setSourceRangeStart(methodInfo.declarationStart);
+		info.setIsSingleton(methodInfo.isClassLevel);
 		infoStack.push(info);
 		newElements.put(method, info);
 	}
@@ -329,6 +326,45 @@ public class RubyScriptStructureBuilder implements ISourceElementRequestor {
 		// Apply included module names back to parent type info
 		String[] newIncludedModuleNames = mergedModuleNames.toArray(new String[] {});
 		parentType.setIncludedModuleNames(newIncludedModuleNames);
+	}
+
+	public void acceptMethodVisibilityChange(String methodName, int visibility) {
+		RubyElementInfo info = getCurrentTypeInfo();
+		if (!(info instanceof RubyTypeElementInfo)) return;
+		RubyTypeElementInfo parentType = (RubyTypeElementInfo) info;
+		
+		IMethod[] methods = parentType.getMethods();
+		for (int i = 0; i < methods.length; i++) {
+			RubyMethod method = (RubyMethod) methods[i];
+			if (!method.getElementName().equals(methodName)) continue;;
+			try {
+				RubyMethodElementInfo methodInfo = (RubyMethodElementInfo) method.getElementInfo();
+				methodInfo.setVisibility(visibility);
+				return;
+			} catch (RubyModelException e) {
+				RubyCore.log(e);
+			}
+		}
+	}
+
+	public void acceptModuleFunction(String methodName) {
+		RubyElementInfo info = getCurrentTypeInfo();
+		if (!(info instanceof RubyTypeElementInfo)) return;
+		RubyTypeElementInfo parentType = (RubyTypeElementInfo) info;
+		
+		IMethod[] methods = parentType.getMethods();
+		for (int i = 0; i < methods.length; i++) {
+			RubyMethod method = (RubyMethod) methods[i];
+			if (!method.getElementName().equals(methodName)) continue;
+			try {
+				RubyMethodElementInfo methodInfo = (RubyMethodElementInfo) method.getElementInfo();
+				methodInfo.setIsSingleton(true);
+				return;
+			} catch (RubyModelException e) {
+				RubyCore.log(e);
+			}
+		}
+		
 	}
 
 }

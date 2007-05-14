@@ -118,4 +118,14 @@ public class SourceIndexerRequestor implements ISourceElementRequestor {
 		typeStack.pop();
 	}
 
+	public void acceptMethodVisibilityChange(String methodName, int visibility) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public void acceptModuleFunction(String function) {
+		// TODO Auto-generated method stub
+		
+	}
+
 }

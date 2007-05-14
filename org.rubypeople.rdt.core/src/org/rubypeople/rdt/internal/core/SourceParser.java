@@ -24,6 +24,7 @@
  */
 package org.rubypeople.rdt.internal.core;
 
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -31,6 +32,7 @@ import java.util.List;
 import org.jruby.ast.AliasNode;
 import org.jruby.ast.ArrayNode;
 import org.jruby.ast.AssignableNode;
+import org.jruby.ast.CallNode;
 import org.jruby.ast.ClassNode;
 import org.jruby.ast.ClassVarAsgnNode;
 import org.jruby.ast.Colon2Node;
@@ -42,6 +44,7 @@ import org.jruby.ast.DefnNode;
 import org.jruby.ast.DefsNode;
 import org.jruby.ast.FCallNode;
 import org.jruby.ast.GlobalAsgnNode;
+import org.jruby.ast.IArgumentNode;
 import org.jruby.ast.InstAsgnNode;
 import org.jruby.ast.IterNode;
 import org.jruby.ast.LocalAsgnNode;
@@ -70,6 +73,7 @@ import org.rubypeople.rdt.internal.core.util.ASTUtil;
  */
 public class SourceParser extends InOrderVisitor { // TODO Rename to SourceElementParser
 
+	private static final String MODULE_FUNCTION = "module_function";
 	private static final String EMPTY_STRING = "";
 	private static final String PROTECTED = "protected";
 	private static final String PRIVATE = "private";
@@ -85,6 +89,7 @@ public class SourceParser extends InOrderVisitor { // TODO Rename to SourceEleme
 	private Visibility currentVisibility = Visibility.PUBLIC;
 	private boolean inSingletonClass;
 	public ISourceElementRequestor requestor;
+	private boolean inModuleFunction;
 
 	/**
 	 * 
@@ -148,6 +153,7 @@ public class SourceParser extends InOrderVisitor { // TODO Rename to SourceEleme
 		Instruction ins = super.visitModuleNode(iVisited);
 		
 		requestor.exitType(iVisited.getPosition().getEndOffset() - 1);
+		inModuleFunction = false;
 		return ins;
 	}
 	
@@ -165,7 +171,7 @@ public class SourceParser extends InOrderVisitor { // TODO Rename to SourceEleme
 		} else {
 			methodInfo.isConstructor = false;
 		}
-		methodInfo.isClassLevel = inSingletonClass;
+		methodInfo.isClassLevel = inSingletonClass || inModuleFunction;
 		methodInfo.visibility = convertVisibility(visibility);
 		methodInfo.parameterNames = ASTUtil.getArgs(iVisited.getArgsNode(), iVisited.getScope());
 		
@@ -342,11 +348,31 @@ public class SourceParser extends InOrderVisitor { // TODO Rename to SourceEleme
 	}
 	
 	public Instruction visitFCallNode(FCallNode iVisited) {
-		String functionName = iVisited.getName();
-		if (functionName.equals(REQUIRE) || functionName.equals(LOAD)) {
+		String name = iVisited.getName();
+		if (name.equals(REQUIRE) || name.equals(LOAD)) {
 			addImport(iVisited);
-		} else if (functionName.equals(INCLUDE)) { // Collect included mixins
+		} else if (name.equals(INCLUDE)) { // Collect included mixins
 			includeModule(iVisited); 
+		} if (name.equals(PUBLIC)) {
+			List<String> arguments = getArgumentsFromFunctionCall(iVisited);
+			for (String methodName : arguments) {
+				requestor.acceptMethodVisibilityChange(methodName, convertVisibility(Visibility.PUBLIC));
+			}			
+		} else if (name.equals(PRIVATE)) {
+			List<String> arguments = getArgumentsFromFunctionCall(iVisited);
+			for (String methodName : arguments) {
+				requestor.acceptMethodVisibilityChange(methodName, convertVisibility(Visibility.PRIVATE));
+			}
+		} else if (name.equals(PROTECTED)) {
+			List<String> arguments = getArgumentsFromFunctionCall(iVisited);
+			for (String methodName : arguments) {
+				requestor.acceptMethodVisibilityChange(methodName, convertVisibility(Visibility.PROTECTED));
+			}
+		} else if (name.equals(MODULE_FUNCTION)) {
+			List<String> arguments = getArgumentsFromFunctionCall(iVisited);
+			for (String methodName : arguments) {
+				requestor.acceptModuleFunction(methodName);
+			}
 		}
 		return super.visitFCallNode(iVisited);
 	}
@@ -417,10 +443,57 @@ public class SourceParser extends InOrderVisitor { // TODO Rename to SourceEleme
 			currentVisibility = Visibility.PRIVATE;
 		} else if (functionName.equals(PROTECTED)) {
 			currentVisibility = Visibility.PROTECTED;
+		} else if (functionName.equals(MODULE_FUNCTION)) {
+			inModuleFunction = true;
 		}
 		return super.visitVCallNode(iVisited);
 	}
 	
+	@Override
+	public Instruction visitCallNode(CallNode iVisited) {
+		String name = iVisited.getName();
+		if (name.equals(PUBLIC)) {
+			List<String> arguments = getArgumentsFromFunctionCall(iVisited);
+			for (String methodName : arguments) {
+				requestor.acceptMethodVisibilityChange(methodName, convertVisibility(Visibility.PUBLIC));
+			}			
+		} else if (name.equals(PRIVATE)) {
+			List<String> arguments = getArgumentsFromFunctionCall(iVisited);
+			for (String methodName : arguments) {
+				requestor.acceptMethodVisibilityChange(methodName, convertVisibility(Visibility.PRIVATE));
+			}
+		} else if (name.equals(PROTECTED)) {
+			List<String> arguments = getArgumentsFromFunctionCall(iVisited);
+			for (String methodName : arguments) {
+				requestor.acceptMethodVisibilityChange(methodName, convertVisibility(Visibility.PROTECTED));
+			}
+		} else if (name.equals(MODULE_FUNCTION)) {
+			List<String> arguments = getArgumentsFromFunctionCall(iVisited);
+			for (String methodName : arguments) {
+				requestor.acceptModuleFunction(methodName);
+			}
+		}
+		return super.visitCallNode(iVisited);
+	}
+	
+	private List<String> getArgumentsFromFunctionCall(IArgumentNode iVisited) {
+		List<String> arguments = new ArrayList<String>();
+		Node argsNode = iVisited.getArgsNode();
+		Iterator iter = null;
+		if (argsNode instanceof SplatNode) {
+			SplatNode splat = (SplatNode) argsNode;
+			iter = splat.childNodes().iterator();
+		} else if (argsNode instanceof ArrayNode) {
+			ArrayNode arrayNode = (ArrayNode) iVisited.getArgsNode();
+			iter = arrayNode.childNodes().iterator();
+		}
+		for (; iter.hasNext();) {
+			Node mixinNameNode = (Node) iter.next();
+			arguments.add(ASTUtil.getNameReflectively(mixinNameNode));
+		}
+		return arguments;
+	}
+
 	public Instruction visitAliasNode(AliasNode iVisited) {
 		String name = iVisited.getNewName();		
 		MethodInfo method = new MethodInfo();

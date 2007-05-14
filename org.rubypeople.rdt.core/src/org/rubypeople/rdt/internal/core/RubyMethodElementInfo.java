@@ -27,6 +27,7 @@ public class RubyMethodElementInfo extends MemberElementInfo {
 	 * parameters.
 	 */
 	protected String[] argumentNames;
+	private boolean isSingleton;
 
 	public String[] getArgumentNames() {
 		return this.argumentNames;
@@ -55,5 +56,13 @@ public class RubyMethodElementInfo extends MemberElementInfo {
 
 	protected void setArgumentNames(String[] names) {
 		this.argumentNames = names;
+	}
+
+	protected void setIsSingleton(boolean b) {
+		isSingleton = b;		
+	}
+	
+	public boolean isSingleton() {
+		return isSingleton || isConstructor();
 	}
 }

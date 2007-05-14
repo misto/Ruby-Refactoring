@@ -54,4 +54,7 @@ public interface ISourceElementRequestor {
 	public void acceptUnknownReference(String name, int startOffset, int endOffset);
 	public void acceptProblem(CategorizedProblem problem);
 	public void acceptMixin(String string);
+	
+	public void acceptModuleFunction(String function);
+	public void acceptMethodVisibilityChange(String methodName, int visibility);
 }

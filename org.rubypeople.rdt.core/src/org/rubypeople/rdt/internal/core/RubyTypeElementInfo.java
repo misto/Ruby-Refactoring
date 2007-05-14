@@ -195,19 +195,20 @@ public class RubyTypeElementInfo extends MemberElementInfo {
 	 * @see IType
 	 */
 	public IMethod[] getMethods() {
-		RubyMethod[] methodHandles = getMethodHandles();
-		int length = methodHandles.length;
-		IMethod[] methods = new IMethod[length];
-		int methodIndex = 0;
-		for (int i = 0; i < length; i++) {
-			try {
-				IMethod method = (IMethod) methodHandles[i].getElementInfo();
-				methods[methodIndex++] = method;
-			} catch (RubyModelException e) {
-				// ignore
-			}
-		}
-		return methods;
+		return getMethodHandles();
+//		RubyMethod[] methodHandles = getMethodHandles();
+//		int length = methodHandles.length;
+//		IMethod[] methods = new IMethod[length];
+//		int methodIndex = 0;
+//		for (int i = 0; i < length; i++) {
+//			try {
+//				IMethod method = (IMethod) methodHandles[i].getElementInfo();
+//				methods[methodIndex++] = method;
+//			} catch (RubyModelException e) {
+//				// ignore
+//			}
+//		}
+//		return methods;
 	}
 
 	public RubyMethod[] getMethodHandles() {

@@ -27,6 +27,7 @@ package org.rubypeople.rdt.internal.core;
 import org.rubypeople.rdt.core.IMethod;
 import org.rubypeople.rdt.core.IRubyElement;
 import org.rubypeople.rdt.core.IType;
+import org.rubypeople.rdt.core.RubyCore;
 import org.rubypeople.rdt.core.RubyModelException;
 import org.rubypeople.rdt.internal.core.util.Util;
 
@@ -111,7 +112,24 @@ public class RubyMethod extends NamedMember implements IMethod {
     }
 
     public boolean isSingleton() {
-        return isConstructor();
+    	try {
+			RubyMethodElementInfo info = (RubyMethodElementInfo) getElementInfo();
+			return info.isSingleton();
+		} catch (RubyModelException e) {
+			RubyCore.log(e);
+		}
+		return isConstructor();
     }
+
+	public static RubyMethod singleton(RubyElement currentType, String name, String[] parameterNames2) {
+		RubyMethod method = new RubyMethod(currentType, name, parameterNames2);
+		try {
+			RubyMethodElementInfo info = (RubyMethodElementInfo) method.getElementInfo();
+			info.setIsSingleton(true);
+		} catch (RubyModelException e) {
+			RubyCore.log(e);
+		}
+		return method;
+	}
 
 }
