@@ -1,7 +1,9 @@
 package org.rubypeople.rdt.internal.codeassist;
 
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -26,6 +28,7 @@ import org.jruby.ast.InstVarNode;
 import org.jruby.ast.MethodDefNode;
 import org.jruby.ast.ModuleNode;
 import org.jruby.ast.Node;
+import org.jruby.ast.RootNode;
 import org.jruby.lexer.yacc.SyntaxException;
 import org.jruby.parser.StaticScope;
 import org.rubypeople.rdt.core.CompletionProposal;
@@ -362,14 +365,20 @@ public class CompletionEngine {
 				return;
 			}
 
-			// Find the enclosing method to get locals and args
-			Node enclosingMethodNode = ClosestSpanningNodeLocator.Instance().findClosestSpanner(rootNode, fContext.getOffset(), new INodeAcceptor() {
+			// XXX Just find enclosing scope and grab variables?
+			Node enclosingNode = ClosestSpanningNodeLocator.Instance().findClosestSpanner(rootNode, fContext.getOffset(), new INodeAcceptor() {
 				public boolean doesAccept(Node node) {
-					return (node instanceof DefnNode || node instanceof DefsNode);
+					return (node instanceof DefnNode || node instanceof DefsNode || node instanceof ClassNode || node instanceof ModuleNode || node instanceof RootNode);
 				}
 			});
+			
+			Collection<String> variables = addVariablesinScope(getScope(enclosingNode));
+			for (String variable : variables) {
+				CompletionProposal proposal = new CompletionProposal(CompletionProposal.LOCAL_VARIABLE_REF, variable, 100);
+				proposal.setReplaceRange(fContext.getReplaceStart(), fContext.getReplaceStart() + variable.length());
+				fRequestor.accept(proposal);
+			}			
 
-			addLocalVariablesAndArguments(enclosingMethodNode);
 
 			// Find the enclosing type (class or module) to get instance and
 			// classvars from
@@ -389,6 +398,34 @@ public class CompletionEngine {
 		} catch (SyntaxException se) {
 			RubyCore.log(se);
 			RubyCore.log("SyntaxError in CompletionEngine::getElementsInScope()");
+		}
+	}
+
+	private Set<String> addVariablesinScope(StaticScope scope) {
+		Set<String> matches = new HashSet<String>();
+		if (scope == null) return matches;
+		String[] variables = scope.getVariables();
+		for(int i = 0; i < variables.length; i++) {
+			String local = variables[i];
+			if (!fContext.prefixStartsWith(local))
+				continue;
+			matches.add(local);
+		}
+		matches.addAll(addVariablesinScope(scope.getEnclosingScope()));
+		return matches;
+	}
+
+	private StaticScope getScope(Node enclosingNode) {
+		if (enclosingNode instanceof RootNode) {
+			RootNode root = (RootNode) enclosingNode;
+			return root.getStaticScope();
+		}
+		try {
+			Method getScopeMethod = enclosingNode.getClass().getMethod("getScope", new Class[] {});
+			Object scope = getScopeMethod.invoke(enclosingNode, new Object[0]);
+			return (StaticScope) scope;
+		} catch (Exception e) {
+			return null;
 		}
 	}
 
