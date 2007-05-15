@@ -63,6 +63,8 @@ import org.eclipse.ui.progress.UIJob;
 import org.rubypeople.rdt.core.IRubyElement;
 import org.rubypeople.rdt.core.IRubyProject;
 import org.rubypeople.rdt.core.IType;
+import org.rubypeople.rdt.internal.core.RubyModelManager;
+import org.rubypeople.rdt.launching.IRubyLaunchConfigurationConstants;
 import org.rubypeople.rdt.testunit.ITestRunListener;
 import org.rubypeople.rdt.testunit.launcher.TestUnitLaunchConfigurationDelegate;
 
@@ -474,6 +476,14 @@ public class TestUnitView extends ViewPart implements ITestRunListener3 {
 
 	public void startTestRunListening(int port, IType type, ILaunch launch) {
 	    if(type != null) fTestProject= type.getRubyProject();
+	    else {
+	    	try {
+				String projectName = launch.getLaunchConfiguration().getAttribute(IRubyLaunchConfigurationConstants.ATTR_PROJECT_NAME, (String)null);
+				fTestProject = RubyModelManager.getRubyModelManager().getRubyModel().getRubyProject(projectName);
+	    	} catch (CoreException e) {
+				TestunitPlugin.log(e);
+			}
+	    }
 		fLaunchMode = launch.getLaunchMode();
 		aboutToLaunch();
 
@@ -488,12 +498,11 @@ public class TestUnitView extends ViewPart implements ITestRunListener3 {
 		fTestRunnerClient.startListening(listenerArray, port);
 
 		fLastLaunch = launch;
-		// TODO Uncomment now that we have the type object!
-		//		setViewPartTitle(type);
-		//		if (type instanceof IType)
-		//			setTitleToolTip(((IType)type).getFullyQualifiedName());
-		//		else
-		//			setTitleToolTip(type.getElementName());
+		setViewPartTitle(type);
+		if (type instanceof IType)
+			setTitleToolTip(((IType)type).getFullyQualifiedName());
+//		else
+//			setTitleToolTip(type.getElementName());
 	}
 
 	protected void aboutToLaunch() {

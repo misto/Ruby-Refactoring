@@ -29,11 +29,9 @@ import org.eclipse.jface.window.Window;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.dialogs.ElementListSelectionDialog;
 import org.rubypeople.rdt.core.IRubyElement;
-import org.rubypeople.rdt.core.RubyModelException;
 import org.rubypeople.rdt.internal.debug.ui.launcher.RubyApplicationShortcut;
 import org.rubypeople.rdt.internal.testunit.ui.TestUnitMessages;
 import org.rubypeople.rdt.internal.testunit.ui.TestunitPlugin;
-import org.rubypeople.rdt.internal.ui.RubyPlugin;
 import org.rubypeople.rdt.launching.IRubyLaunchConfigurationConstants;
 import org.rubypeople.rdt.launching.RubyRuntime;
 
@@ -116,13 +114,15 @@ public class TestUnitLaunchShortcut extends RubyApplicationShortcut {
 	 * @return
 	 */
 	private String getContainer(IRubyElement rubyElement) {
-		try {
-			IFile rubyFile = (IFile) rubyElement.getUnderlyingResource();
-			return rubyFile.getProjectRelativePath().toString();
-		} catch (RubyModelException e) {
-			RubyPlugin.log(e);
-			return rubyElement.getElementName();
-		}
+		return rubyElement.getHandleIdentifier(); // XXX We always held the absolute file path here before (and RadRails relies on this!) Now what do we do?!
+//		
+//		try {
+//			IFile rubyFile = (IFile) rubyElement.getUnderlyingResource();
+//			return rubyFile.getProjectRelativePath().toString();
+//		} catch (RubyModelException e) {
+//			RubyPlugin.log(e);
+//			return rubyElement.getElementName();
+//		}
 	}
 
 	protected ILaunchConfiguration createConfiguration(IFile rubyFile, String container, String testName) {

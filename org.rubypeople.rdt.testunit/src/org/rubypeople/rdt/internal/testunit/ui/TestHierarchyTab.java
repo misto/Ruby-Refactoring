@@ -41,12 +41,8 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Menu;
-import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeItem;
-import org.rubypeople.rdt.core.RubyCore;
-import org.rubypeople.rdt.internal.core.symbols.ClassSymbol;
-import org.rubypeople.rdt.internal.core.symbols.ISymbolFinder;
 import org.rubypeople.rdt.testunit.ITestRunListener;
 
 /*
@@ -412,13 +408,11 @@ public class TestHierarchyTab extends TestRunTab implements IMenuListener {
 				return;
 				
 			IAction action = null;
-			
-            Shell shell = fTree.getShell();
-            ISymbolFinder finder = RubyCore.getPlugin().getSymbolFinder();
+			           
 			if (isSuiteSelected())
-				action= OpenSymbolAction.forClass(getClassName(), finder, shell);
+				action= new OpenTestAction(fTestRunnerPart, getClassName());
 			else
-			    action= OpenSymbolAction.forMethod(getClassName(), getTestMethod(), finder, shell);
+			    action= new OpenTestAction(fTestRunnerPart, getClassName(), getTestMethod());
 	
 			if (action != null && action.isEnabled())
 				action.run();
@@ -426,18 +420,15 @@ public class TestHierarchyTab extends TestRunTab implements IMenuListener {
 
 	public void menuAboutToShow(IMenuManager manager) {
 		if (fTree.getSelectionCount() > 0) {
-            Shell shell = fTree.getShell();
-            ISymbolFinder symbolFinder = RubyCore.getPlugin().getSymbolFinder();
 			if (isSuiteSelected()) {
-				manager.add(OpenSymbolAction.forClass(getClassName(), symbolFinder, shell));
+				manager.add(new OpenTestAction(fTestRunnerPart, getClassName()));
 				manager.add(new Separator());
 				if (testClassExists(getClassName()) && !fTestRunnerPart.lastLaunchIsKeptAlive()) {
 					manager.add(new RerunAction(fTestRunnerPart, getSelectedTestId(), getClassName(), null, ILaunchManager.RUN_MODE));
                     manager.add(new RerunAction(fTestRunnerPart, getSelectedTestId(), getClassName(), null, ILaunchManager.DEBUG_MODE));
 				}
 			} else {
-			    manager.add(OpenSymbolAction.forMethod(getClassName(), 
-                        getTestMethod(), symbolFinder, shell));
+			    manager.add(new OpenTestAction(fTestRunnerPart, getClassName(), getTestMethod(), true));
 				manager.add(new Separator());
 				manager.add(new RerunAction(fTestRunnerPart, getSelectedTestId(), getClassName(), getTestMethod(), ILaunchManager.RUN_MODE));
                 manager.add(new RerunAction(fTestRunnerPart, getSelectedTestId(), getClassName(), getTestMethod(), ILaunchManager.DEBUG_MODE));                
@@ -448,7 +439,7 @@ public class TestHierarchyTab extends TestRunTab implements IMenuListener {
 	}
 
 	private boolean testClassExists(String className) {
-        return RubyCore.getPlugin().getSymbolFinder().find(new ClassSymbol(className)).size() > 0;
+        return true; // FIXME We need to re-implement this!
 	}
 
 	public void newTreeEntry(String treeEntry) {

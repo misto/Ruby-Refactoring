@@ -246,20 +246,15 @@ public class TestunitPlugin extends AbstractUIPlugin implements ILaunchListener 
 		if (config != null) {
 
 			String typeStr = launch.getAttribute(TestUnitLaunchConfigurationDelegate.TESTTYPE_ATTR);
-			// String fileName= launch.getAttribute(TestUnitLaunchConfigurationDelegate.LAUNCH_CONTAINER_ATTR);
 
 			if (typeStr != null) {
-				// FIXME Get the handle on the test type from the model somehow!
-				// IFile script = RubyCore.find(fileName);
-				// if (element instanceof IRubyType)
-				// launchedType= (IRubyType) element;
+				 launchedType = (IType) RubyCore.create(typeStr);
 			}
-
 		}
 		fTrackedLaunches.remove(launch);
 		
 		final IType finalType= launchedType;
-		final int finalPort = Integer.parseInt(launch.getAttribute(TESTUNIT_PORT_ATTR)) ;
+		final int finalPort = Integer.parseInt(launch.getAttribute(TESTUNIT_PORT_ATTR));
 		getDisplay().asyncExec(new Runnable() {
 			public void run() {
 				connectTestRunner(launch, finalType, finalPort);

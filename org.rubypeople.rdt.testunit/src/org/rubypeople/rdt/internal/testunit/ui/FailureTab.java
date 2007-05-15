@@ -37,8 +37,6 @@ import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableItem;
-import org.rubypeople.rdt.core.RubyCore;
-import org.rubypeople.rdt.internal.core.symbols.ISymbolFinder;
 import org.rubypeople.rdt.testunit.ITestRunListener;
 
 /**
@@ -152,7 +150,7 @@ public class FailureTab extends TestRunTab implements IMenuListener {
 			String methodName = getMethodName();
 			if (className != null) {
                 System.err.println("MethodName: " + methodName); 
-                manager.add(OpenSymbolAction.forMethod(className, methodName, getSymbolFinder(), getShell()));
+                manager.add(new OpenTestAction(fRunnerViewPart, className, methodName, true));
 				manager.add(new Separator());
 				manager.add(new RerunAction(fRunnerViewPart, getSelectedTestId(), 
                         className, methodName, ILaunchManager.RUN_MODE));
@@ -165,10 +163,6 @@ public class FailureTab extends TestRunTab implements IMenuListener {
 			}
 		}
 	}
-
-    private ISymbolFinder getSymbolFinder() {
-        return RubyCore.getPlugin().getSymbolFinder();
-    }
 
 	private TableItem getSelectedItem() {
 		int index = fTable.getSelectionIndex();
@@ -276,7 +270,7 @@ public class FailureTab extends TestRunTab implements IMenuListener {
 
 	void handleDoubleClick(MouseEvent e) {
         if (fTable.getSelectionCount() > 0) 
-	        OpenSymbolAction.forMethod(getClassName(), getMethodName(), getSymbolFinder(), getShell()).run();
+        	new OpenTestAction(fRunnerViewPart, getClassName(), getMethodName(), true).run();
 	}
 
     private Shell getShell() {

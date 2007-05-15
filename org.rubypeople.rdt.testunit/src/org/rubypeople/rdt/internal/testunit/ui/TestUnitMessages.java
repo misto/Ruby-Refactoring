@@ -71,6 +71,15 @@ public class TestUnitMessages {
 	public static String TestRunnerViewPart_toggle_vertical_label;
 	public static String TestRunnerViewPart_toggle_automatic_label;
 	public static String TestRunnerViewPart_layout_menu;
+	public static String OpenEditorAction_error_cannotopen_title;
+	public static String OpenEditorAction_error_cannotopen_message;
+	public static String OpenEditorAction_error_dialog_title;
+	public static String OpenEditorAction_error_dialog_message;
+	public static String OpenEditorAction_message_cannotopen;
+	public static String OpenTestAction_error_title;
+	public static String OpenTestAction_error_methodNoFound;
+	public static String TestUnitBaseLaunchConfiguration_error_invalidproject;
+	public static String JUnitBaseLaunchConfiguration_dialog_title;
 
 	static {
 		NLS.initializeMessages(BUNDLE_NAME, TestUnitMessages.class);
