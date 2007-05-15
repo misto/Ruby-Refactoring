@@ -30,7 +30,6 @@ public class TC_RubyCodeAnalyzer extends TestCase {
     private ShamMarkerManager markerManager;
     private ShamRubyParser parser;
     private RubyCodeAnalyzer compiler;
-    private ShamIndexUpdater indexUpdater;
     private Node rootNode;
 
     public void setUp() {
@@ -51,8 +50,7 @@ public class TC_RubyCodeAnalyzer extends TestCase {
         markerManager = new ShamMarkerManager();
         parser = new ShamRubyParser();
         parser.addParseResult(file, rootNode);
-        indexUpdater = new ShamIndexUpdater();
-        compiler = new RubyCodeAnalyzer(markerManager, parser, indexUpdater);
+        compiler = new RubyCodeAnalyzer(markerManager, parser);
     }
     
     public void testParserInvocation() throws Exception {
@@ -60,7 +58,6 @@ public class TC_RubyCodeAnalyzer extends TestCase {
         
         parser.assertParsed(file, FILE_CONTENTS);
         file.assertContentStreamClosed();
-        indexUpdater.assertUpdated(file, rootNode, true);
     }
     
 

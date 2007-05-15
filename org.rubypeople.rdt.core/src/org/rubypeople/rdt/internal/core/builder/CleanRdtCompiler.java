@@ -5,28 +5,23 @@ import java.util.List;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
-import org.rubypeople.rdt.internal.core.symbols.SymbolIndex;
 
 public class CleanRdtCompiler extends AbstractRdtCompiler  {
 
     private List<IFile> projectFiles;
 
-    public CleanRdtCompiler(IProject project, SymbolIndex symbolIndex) {
-        this(project, symbolIndex, new MarkerManager());
+    public CleanRdtCompiler(IProject project) {
+        this(project, new MarkerManager());
     }
 
-    public CleanRdtCompiler(IProject project, SymbolIndex symbolIndex, 
+    public CleanRdtCompiler(IProject project, 
             IMarkerManager markerManager, List singleCompilers) {
-        super(project, symbolIndex, markerManager, singleCompilers);
+        super(project, markerManager, singleCompilers);
     }
 
-    private CleanRdtCompiler(IProject project, SymbolIndex symbolIndex, 
+    private CleanRdtCompiler(IProject project,
             MarkerManager markerManager) {
-        this(project,symbolIndex, markerManager, singleFileCompilers(markerManager));
-    }
-
-    protected void flushIndexEntries(SymbolIndex symbolIndex) {
-        symbolIndex.flush(project);
+        this(project, markerManager, singleFileCompilers(markerManager));
     }
 
     protected void removeMarkers(IMarkerManager markerManager) {

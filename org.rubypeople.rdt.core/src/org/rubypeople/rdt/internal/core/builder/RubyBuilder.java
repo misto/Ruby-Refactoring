@@ -13,7 +13,10 @@ package org.rubypeople.rdt.internal.core.builder;
 
 import java.io.DataOutputStream;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.Map;
+import java.util.Set;
+
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IncrementalProjectBuilder;
@@ -21,7 +24,7 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.rubypeople.rdt.core.IRubyModelMarker;
 import org.rubypeople.rdt.core.RubyCore;
-import org.rubypeople.rdt.internal.core.symbols.SymbolIndex;
+import org.rubypeople.rdt.internal.core.RubyModelManager;
 
 
 public class RubyBuilder extends IncrementalProjectBuilder {
@@ -47,10 +50,9 @@ public class RubyBuilder extends IncrementalProjectBuilder {
 	}
     
     private AbstractRdtCompiler createCompiler(int kind) {
-        SymbolIndex symbolIndex = RubyCore.getPlugin().getSymbolIndex();
         if (isPartialBuild(kind))
-            return new IncrementalRdtCompiler(currentProject, getDelta(currentProject), symbolIndex);
-        return new CleanRdtCompiler(currentProject, symbolIndex);
+            return new IncrementalRdtCompiler(currentProject, getDelta(currentProject));
+        return new CleanRdtCompiler(currentProject);
         
     }
     private String buildType(int kind) {
@@ -80,11 +82,11 @@ public class RubyBuilder extends IncrementalProjectBuilder {
 				resource.deleteMarkers(IRubyModelMarker.TASK_MARKER, false, IResource.DEPTH_INFINITE);
 				
 				// delete managed markers
-//				Set markerTypes = RubyModelManager.getRubyModelManager().compilationParticipants.managedMarkerTypes();
-//				if (markerTypes.size() == 0) return;
-//				Iterator iterator = markerTypes.iterator();
-//				while (iterator.hasNext())
-//					resource.deleteMarkers((String) iterator.next(), false, IResource.DEPTH_INFINITE);
+				Set markerTypes = RubyModelManager.getRubyModelManager().compilationParticipants.managedMarkerTypes();
+				if (markerTypes.size() == 0) return;
+				Iterator iterator = markerTypes.iterator();
+				while (iterator.hasNext())
+					resource.deleteMarkers((String) iterator.next(), false, IResource.DEPTH_INFINITE);
 			}
 		} catch (CoreException e) {
 			// assume there were no problems

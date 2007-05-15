@@ -18,7 +18,6 @@ import org.rubypeople.rdt.core.tests.model.BufferTests;
 import org.rubypeople.rdt.internal.core.TS_InternalCore;
 import org.rubypeople.rdt.internal.core.builder.TS_InternalCoreBuilder;
 import org.rubypeople.rdt.internal.core.parser.TS_InternalCoreParser;
-import org.rubypeople.rdt.internal.core.symbols.TS_CoreSymbols;
 import org.rubypeople.rdt.internal.core.util.TS_Util;
 import org.rubypeople.rdt.internal.formatter.TS_InternalFormatter;
 import org.rubypeople.rdt.internal.ti.TS_TypeInference;
@@ -29,7 +28,6 @@ public class TS_Core {
 		TestSuite suite = new TestSuite("Core");
 		suite.addTest(TS_InternalCoreBuilder.suite());
 		suite.addTest(TS_InternalCoreParser.suite());
-		suite.addTest(TS_CoreSymbols.suite());
 		suite.addTest(TS_InternalCore.suite());
 		suite.addTest(TS_InternalFormatter.suite());
 		suite.addTest(TS_Util.suite());

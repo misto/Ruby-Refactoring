@@ -8,33 +8,29 @@ import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.rubypeople.rdt.internal.core.symbols.SymbolIndex;
 import org.rubypeople.rdt.internal.core.util.ListUtil;
 
 public abstract class AbstractRdtCompiler {
 
     protected final IProject project;
     protected final IMarkerManager markerManager;
-    protected final SymbolIndex symbolIndex;
     protected final List<SingleFileCompiler> singleFileCompilers;
     protected final List<MultipleFileCompiler> multiFileCompilers;
     
-    public AbstractRdtCompiler(IProject project, SymbolIndex symbolIndex, 
+    public AbstractRdtCompiler(IProject project,
             IMarkerManager markerManager, List<SingleFileCompiler> singleCompilers, List<MultipleFileCompiler> multiFileCompilers) {
         this.project = project;
-        this.symbolIndex = symbolIndex;
         this.markerManager = markerManager;
         this.singleFileCompilers = singleCompilers;
         this.multiFileCompilers = multiFileCompilers;
     }
     
-    public AbstractRdtCompiler(IProject project, SymbolIndex symbolIndex, 
+    public AbstractRdtCompiler(IProject project,
             IMarkerManager markerManager, List<SingleFileCompiler> singleCompilers) {
-        this(project, symbolIndex, markerManager, singleCompilers, new ArrayList<MultipleFileCompiler>());
+        this(project, markerManager, singleCompilers, new ArrayList<MultipleFileCompiler>());
     }
 
     protected abstract void removeMarkers(IMarkerManager markerManager);
-    protected abstract void flushIndexEntries(SymbolIndex symbolIndex);
     protected abstract List<IFile> getFilesToCompile();
     protected abstract void analyzeFiles() throws CoreException;
 
@@ -47,15 +43,12 @@ public abstract class AbstractRdtCompiler {
         analyzeFiles();
         List<IFile> files = getFilesToCompile();
         int filesToClear = getFilesToClear().size();
-        int taskCount = (filesToClear * 2) +  (files.size() * (singleFileCompilers.size() + multiFileCompilers.size()));
+        int taskCount = (filesToClear) +  (files.size() * (singleFileCompilers.size() + multiFileCompilers.size()));
         
         monitor.beginTask("Building "+project.getName() + "...", taskCount);
         monitor.subTask("Removing Markers...");
         
         removeMarkers(markerManager);
-        monitor.worked(filesToClear);
-        monitor.subTask("Removing Search Indices...");
-        flushIndexEntries(symbolIndex);
         monitor.worked(filesToClear);
 		
         compileFiles(files, monitor);

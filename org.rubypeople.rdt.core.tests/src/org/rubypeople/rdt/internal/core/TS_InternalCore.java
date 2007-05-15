@@ -18,7 +18,6 @@ public class TS_InternalCore {
 		suite.addTestSuite(TC_RubyCore.class);
 		suite.addTestSuite(TC_RubyProject.class);
 		suite.addTestSuite(TC_LoadPathEntry.class);
-		suite.addTestSuite(TC_SymbolIndexResourceEventListener.class);
 		return suite;
 	}
 }

@@ -23,7 +23,7 @@ public interface IRubySearchConstants {
 	 * References can contain implementers since they are more generic kind
 	 * of matches.
 	 */
-	int REFERENCES= 2;
+	int REFERENCES= 1;
 	
 	/**
 	 * The search result is a declaration, a reference, or an implementer 
@@ -31,7 +31,7 @@ public interface IRubySearchConstants {
 	 * Can be used in conjunction with any of the nature of searched elements
 	 * so as to better narrow down the search.
 	 */
-	int ALL_OCCURRENCES= 3;
+	int ALL_OCCURRENCES= 2;
 	
 	/**
 	 * When searching for field matches, it will exclusively find read accesses, as
@@ -40,7 +40,7 @@ public interface IRubySearchConstants {
 	 * 
 	 * @since 2.0
 	 */
-	int READ_ACCESSES = 4;
+	int READ_ACCESSES = 3;
 	
 	/**
 	 * When searching for field matches, it will exclusively find write accesses, as
@@ -49,7 +49,14 @@ public interface IRubySearchConstants {
 	 * 
 	 * @since 2.0
 	 */
-	int WRITE_ACCESSES = 5;
+	int WRITE_ACCESSES = 4;
+	
+	/**
+	 * Ignore declaring type while searching result.
+	 * Can be used in conjunction with any of the nature of match.
+	 * @since 1.0
+	 */
+	int IGNORE_DECLARING_TYPE = 0x10;
 	
 /* Nature of searched element */
 	
@@ -66,23 +73,23 @@ public interface IRubySearchConstants {
 	/**
 	 * The searched element is a constructor.
 	 */
-	int CONSTRUCTOR= 3;
+	int CONSTRUCTOR= 2;
 
 	/**
 	 * The searched element is a field.
 	 */
-	int FIELD= 4;
+	int FIELD= 3;
 
 	/**
 	 * The searched element is a class. 
 	 * More selective than using {@link #TYPE}.
 	 */
-	int CLASS= 5;
+	int CLASS= 4;
 
 	/**
 	 * The searched element is a module.
 	 * More selective than using {@link #TYPE}.
 	 */
-	int MODULE= 6;
+	int MODULE= 5;
 
 }

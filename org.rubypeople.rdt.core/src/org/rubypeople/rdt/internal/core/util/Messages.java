@@ -207,14 +207,14 @@ public final class Messages extends NLS {
      * @return the manipulated String
      */
     public static String bind(String message, Object[] bindings) {
-        return MessageFormat.format(message, bindings);
+        return format(message, bindings);
     }
-
-	public static String format(String message, String[] bindings) {
-		return bind(message, bindings);
+	
+	public static String format(String message, Object[] objects) {
+		return MessageFormat.format(message, objects);
 	}
 
 	public static String format(String message, String binding) {
-		return bind(message, binding);
+		return MessageFormat.format(message, binding);
 	}
 }

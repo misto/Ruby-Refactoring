@@ -1,5 +1,6 @@
 package org.rubypeople.rdt.core.search;
 
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.rubypeople.rdt.core.IRubyElement;
 import org.rubypeople.rdt.core.RubyModelException;
@@ -98,6 +99,65 @@ public class SearchEngine {
 
 	public static IRubySearchScope createRubySearchScope(IRubyElement[] elements) {
 		return BasicSearchEngine.createRubySearchScope(elements);
+	}
+
+	/**
+	 * Returns a Ruby search scope limited to the given Ruby elements.
+	 * The Ruby elements resulting from a search with this scope will
+	 * be children of the given elements.
+	 * 
+	 * If an element is an IRubyProject, then it includes:
+	 * - its source folders if IRubySearchScope.SOURCES is specified, 
+	 * - its application libraries (internal and external jars, class folders that are on the raw classpath, 
+	 *   or the ones that are coming from a classpath path variable,
+	 *   or the ones that are coming from a classpath container with the K_APPLICATION kind)
+	 *   if IJavaSearchScope.APPLICATION_LIBRARIES is specified
+	 * - its system libraries (internal and external jars, class folders that are coming from an 
+	 *   IClasspathContainer with the K_SYSTEM kind) 
+	 *   if IJavaSearchScope.APPLICATION_LIBRARIES is specified
+	 * - its referenced projects (with their source folders and jars, recursively) 
+	 *   if IJavaSearchScope.REFERENCED_PROJECTS is specified.
+	 * If an element is an IPackageFragmentRoot, then only the package fragments of 
+	 * this package fragment root will be included.
+	 * If an element is an IPackageFragment, then only the compilation unit and class 
+	 * files of this package fragment will be included. Subpackages will NOT be 
+	 * included.
+	 *
+	 * @param elements the Ruby elements the scope is limited to
+	 * @param includeMask the bit-wise OR of all include types of interest
+	 * @return a new Ruby search scope
+	 * @see IRubySearchScope#SOURCES
+	 * @see IRubySearchScope#APPLICATION_LIBRARIES
+	 * @see IRubySearchScope#SYSTEM_LIBRARIES
+	 * @see IRubySearchScope#REFERENCED_PROJECTS
+	 * @since 1.0
+	 */
+	public static IRubySearchScope createRubySearchScope(IRubyElement[] elements, int includeMask) {
+		return BasicSearchEngine.createRubySearchScope(elements, includeMask);
+	}
+
+	public static SearchParticipant getDefaultSearchParticipant() {
+		return BasicSearchEngine.getDefaultSearchParticipant();
+	}
+
+	/**
+	 * Searches for matches of a given search pattern. Search patterns can be created using helper
+	 * methods (from a String pattern or a Java element) and encapsulate the description of what is
+	 * being searched (for example, search method declarations in a case sensitive way).
+	 *
+	 * @param pattern the pattern to search
+	 * @param participants the particpants in the search
+	 * @param scope the search scope
+	 * @param requestor the requestor to report the matches to
+	 * @param monitor the progress monitor used to report progress
+	 * @exception CoreException if the search failed. Reasons include:
+	 *	<ul>
+	 *		<li>the classpath is incorrectly set</li>
+	 *	</ul>
+	 *@since 1.0
+	 */
+	public void search(SearchPattern pattern, SearchParticipant[] participants, IRubySearchScope scope, SearchRequestor requestor, IProgressMonitor monitor) throws CoreException {
+		this.basicEngine.search(pattern, participants, scope, requestor, monitor);
 	}
 
 }

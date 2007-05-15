@@ -12,7 +12,6 @@ package org.rubypeople.rdt.core;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.List;
@@ -57,13 +56,8 @@ import org.rubypeople.rdt.internal.core.RubyModel;
 import org.rubypeople.rdt.internal.core.RubyModelManager;
 import org.rubypeople.rdt.internal.core.RubyProject;
 import org.rubypeople.rdt.internal.core.SetLoadpathOperation;
-import org.rubypeople.rdt.internal.core.SymbolIndexResourceChangeListener;
-import org.rubypeople.rdt.internal.core.builder.IndexUpdater;
-import org.rubypeople.rdt.internal.core.builder.MassIndexUpdaterJob;
 import org.rubypeople.rdt.internal.core.builder.RubyBuilder;
 import org.rubypeople.rdt.internal.core.parser.RubyParser;
-import org.rubypeople.rdt.internal.core.symbols.ISymbolFinder;
-import org.rubypeople.rdt.internal.core.symbols.SymbolIndex;
 import org.rubypeople.rdt.internal.core.util.MementoTokenizer;
 import org.rubypeople.rdt.internal.core.util.Util;
 
@@ -75,7 +69,6 @@ public class RubyCore extends Plugin {
 
     private static final String RUBY_PARSER_DEBUG_OPTION = RubyCore.PLUGIN_ID + "/rubyparser";//$NON-NLS-1$
     private static final String MODEL_MANAGER_VERBOSE_OPTION = RubyCore.PLUGIN_ID + "/modelmanager";//$NON-NLS-1$
-    private static final String SYMBOL_INDEX_VERBOSE_OPTION = RubyCore.PLUGIN_ID + "/symbolIndex";//$NON-NLS-1$
     private static final String BUILDER_VERBOSE_OPTION = RubyCore.PLUGIN_ID + "/rubyBuilder";//$NON-NLS-1$
 
     public final static String NATURE_ID = PLUGIN_ID + ".rubynature";//$NON-NLS-1$
@@ -288,17 +281,12 @@ public class RubyCore extends Plugin {
 	 * @since 1.0.0
 	 */
 	public static final String USER_LIBRARY_CONTAINER_ID= "org.rubypeople.rdt.USER_LIBRARY"; //$NON-NLS-1$
-	
-	
+		
 	private static final boolean VERBOSE = false;
 	
-    private SymbolIndex symbolIndex;
-    private ISymbolFinder symbolFinder;
-
     public RubyCore() {
         super();
         RUBY_CORE_PLUGIN = this;
-        symbolFinder = symbolIndex = new SymbolIndex();
     }
 
     /**
@@ -325,16 +313,9 @@ public class RubyCore extends Plugin {
 
         RubyParser.setDebugging(isDebugOptionTrue(RUBY_PARSER_DEBUG_OPTION));
         RubyModelManager.setVerbose(isDebugOptionTrue(MODEL_MANAGER_VERBOSE_OPTION));
-        SymbolIndex.setVerbose(isDebugOptionTrue(SYMBOL_INDEX_VERBOSE_OPTION));
         RubyBuilder.setVerbose(isDebugOptionTrue(BUILDER_VERBOSE_OPTION));
 
         ResourcesPlugin.getWorkspace().addResourceChangeListener(new RubyProjectListener(), IResourceChangeEvent.POST_CHANGE);
-                
-        SymbolIndexResourceChangeListener.register(symbolIndex);
-        IndexUpdater indexUpdater = new IndexUpdater(symbolIndex);
-        List rubyProjects = Arrays.asList(getRubyProjects());
-        MassIndexUpdaterJob massUpdater = new MassIndexUpdaterJob(indexUpdater, rubyProjects);
-        massUpdater.schedule();
     }
 
     /*
@@ -538,18 +519,6 @@ public class RubyCore extends Plugin {
             // autobuild mode
             workspace.run(new BatchOperation(action), rule, IWorkspace.AVOID_UPDATE, monitor);
         }
-    }
-
-    public SymbolIndex getSymbolIndex() {
-        return symbolIndex;
-    }
-
-    public ISymbolFinder getSymbolFinder() {
-        return symbolFinder;
-    }
-
-    public void setSymbolFinder(ISymbolFinder symbolFinder) {
-        this.symbolFinder = symbolFinder;
     }
 
     /**

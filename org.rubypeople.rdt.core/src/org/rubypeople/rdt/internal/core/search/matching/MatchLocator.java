@@ -23,6 +23,7 @@ import org.rubypeople.rdt.core.search.SearchParticipant;
 import org.rubypeople.rdt.core.search.SearchPattern;
 import org.rubypeople.rdt.core.search.SearchRequestor;
 import org.rubypeople.rdt.core.search.TypeDeclarationMatch;
+import org.rubypeople.rdt.core.search.TypeReferenceMatch;
 import org.rubypeople.rdt.internal.compiler.util.SimpleLookupTable;
 import org.rubypeople.rdt.internal.core.ExternalSourceFolderRoot;
 import org.rubypeople.rdt.internal.core.Openable;
@@ -141,6 +142,10 @@ public class MatchLocator {
 			}
 		}
 		return matches;
+	}
+	
+	public static void setFocus(InternalSearchPattern pattern, IRubyElement focus) {
+		pattern.focus = focus;
 	}
 	
 	/*
@@ -482,6 +487,16 @@ public class MatchLocator {
 	
 	public SearchParticipant getParticipant() {
 		return this.currentPossibleMatch.document.getParticipant();
+	}
+	
+	public TypeReferenceMatch newTypeReferenceMatch(
+			IRubyElement enclosingElement,
+			int accuracy,
+			int offset,  
+			int length) {
+		SearchParticipant participant = getParticipant(); 
+		IResource resource = this.currentPossibleMatch.resource;
+		return new TypeReferenceMatch(enclosingElement, accuracy, offset, length, participant, resource);
 	}
 	
 }

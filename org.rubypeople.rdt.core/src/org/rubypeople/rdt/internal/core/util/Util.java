@@ -582,6 +582,7 @@ public class Util {
 	}
 
 	public static String[] getTrimmedSimpleNames(String packageName) {
+		if (packageName.length() == 0) return new String[0];
 		return packageName.split("\\" + File.separator);
 	}
 

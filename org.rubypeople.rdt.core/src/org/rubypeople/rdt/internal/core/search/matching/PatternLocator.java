@@ -65,11 +65,11 @@ public class PatternLocator implements IIndexConstants {
 	
 	public static PatternLocator patternLocator(SearchPattern pattern) {
 		switch (((InternalSearchPattern)pattern).kind) { // XXX Implement all pattern types (not just methods, fields, and type declarations)
-//			case IIndexConstants.TYPE_REF_PATTERN :
-//				return new TypeReferenceLocator((TypeReferencePattern) pattern);
+			case IIndexConstants.TYPE_REF_PATTERN :
+				return new TypeReferenceLocator((TypeReferencePattern) pattern);
 			case IIndexConstants.TYPE_DECL_PATTERN :
 				return new TypeDeclarationLocator((TypeDeclarationPattern) pattern);
-//			case IIndexConstants.SUPER_REF_PATTERN :
+//			case IIndexConstants.SUPER_REF_PATTERN : FIXME Implement these commented out pattern locators!
 //				return new SuperTypeReferenceLocator((SuperTypeReferencePattern) pattern);
 //			case IIndexConstants.CONSTRUCTOR_PATTERN :
 //				return new ConstructorLocator((ConstructorPattern) pattern);
@@ -77,10 +77,10 @@ public class PatternLocator implements IIndexConstants {
 				return new FieldLocator((FieldPattern) pattern);
 			case IIndexConstants.METHOD_PATTERN :
 				return new MethodLocator((MethodPattern) pattern);
-//			case IIndexConstants.OR_PATTERN :
-//				return new OrLocator((OrPattern) pattern);
-//			case IIndexConstants.LOCAL_VAR_PATTERN :
-//				return new LocalVariableLocator((LocalVariablePattern) pattern);
+			case IIndexConstants.OR_PATTERN :
+				return new OrLocator((OrPattern) pattern);
+			case IIndexConstants.LOCAL_VAR_PATTERN :
+				return new LocalVariableLocator((LocalVariablePattern) pattern);
 		}
 		return null;
 	}

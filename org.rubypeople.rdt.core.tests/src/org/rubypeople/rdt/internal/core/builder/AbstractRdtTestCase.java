@@ -11,17 +11,13 @@ import org.rubypeople.eclipse.shams.resources.ShamFile;
 import org.rubypeople.eclipse.shams.resources.ShamFolder;
 import org.rubypeople.eclipse.shams.resources.ShamProject;
 import org.rubypeople.eclipse.shams.runtime.ShamMonitor;
-import org.rubypeople.rdt.internal.core.symbols.SymbolIndex;
 import org.rubypeople.rdt.internal.core.util.ListUtil;
 
 public abstract class AbstractRdtTestCase extends TestCase {
     static protected final String REMOVING_MARKERS_SUB_TASK = "Removing Markers...";
-    static protected final String REMOVING_INDICES_SUB_TASK = "Removing Search Indices...";
 
     protected abstract void assertMarkersRemoved(List expectedFiles);
-    protected abstract void assertIndexFlushed(List expectedFiles);
-    abstract AbstractRdtCompiler createCompiler(SymbolIndex index, 
-            IMarkerManager markerManager, List singleCompilers);
+    abstract AbstractRdtCompiler createCompiler(IMarkerManager markerManager, List singleCompilers);
 
     protected ShamMonitor monitor;
     protected ShamFile t1;
@@ -30,7 +26,6 @@ public abstract class AbstractRdtTestCase extends TestCase {
     protected ShamFolder f1;
     protected ShamProject project;
     protected ShamMarkerManager markerManager;
-    protected ShamSymbolIndex symbolIndex;
     protected ShamSingleCompiler singleCompiler1;
     protected ShamSingleCompiler singleCompiler2;
     protected AbstractRdtCompiler compiler;
@@ -45,12 +40,11 @@ public abstract class AbstractRdtTestCase extends TestCase {
         project = new ShamProject("test");
     
         markerManager = new ShamMarkerManager();
-        symbolIndex = new ShamSymbolIndex();
         singleCompiler1 = new ShamSingleCompiler();
         singleCompiler2 = new ShamSingleCompiler();
         List singleCompilers = ListUtil.create(singleCompiler1, singleCompiler2);
         
-        compiler = createCompiler(symbolIndex, markerManager, singleCompilers);
+        compiler = createCompiler(markerManager, singleCompilers);
         monitor = new ShamMonitor();
     }
 
@@ -104,11 +98,10 @@ public abstract class AbstractRdtTestCase extends TestCase {
     
         monitor.assertTaskBegun("Building test...", 8);
         monitor.assertDone(6);
-        List subTasks = ListUtil.create(REMOVING_MARKERS_SUB_TASK, REMOVING_INDICES_SUB_TASK, 
+        List subTasks = ListUtil.create(REMOVING_MARKERS_SUB_TASK, 
                 t1.getFullPath().toString());
         monitor.assertSubTasks(subTasks);
         assertMarkersRemoved(ListUtil.create(t1,t2));
-        assertIndexFlushed(ListUtil.create(t1,t2));
         singleCompiler1.assertCompiled(new HashSet(expectedFiles));
         singleCompiler2.assertCompiled(new HashSet(expectedFiles));
     }
@@ -130,7 +123,7 @@ public abstract class AbstractRdtTestCase extends TestCase {
     protected void assertCompliationFor(List expectedFiles, int totalWork) {
         monitor.assertTaskBegun("Building test...", totalWork);
         monitor.assertDone(totalWork);
-        List subTasks = ListUtil.create(REMOVING_MARKERS_SUB_TASK, REMOVING_INDICES_SUB_TASK);
+        List subTasks = ListUtil.create(REMOVING_MARKERS_SUB_TASK);
         for (Iterator iter = expectedFiles.iterator(); iter.hasNext();) {
             IFile file = (IFile) iter.next();
             subTasks.add(file.getFullPath().toString());
@@ -138,7 +131,6 @@ public abstract class AbstractRdtTestCase extends TestCase {
     
         monitor.assertSubTasks(subTasks);
         assertMarkersRemoved(expectedFiles);
-        assertIndexFlushed(expectedFiles);
         singleCompiler1.assertCompiled(new HashSet(expectedFiles));
         singleCompiler2.assertCompiled(new HashSet(expectedFiles));
     }

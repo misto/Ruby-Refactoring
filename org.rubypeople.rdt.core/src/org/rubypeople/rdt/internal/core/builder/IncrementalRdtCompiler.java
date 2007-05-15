@@ -10,7 +10,6 @@ import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IResourceDelta;
 import org.eclipse.core.resources.IResourceDeltaVisitor;
 import org.eclipse.core.runtime.CoreException;
-import org.rubypeople.rdt.internal.core.symbols.SymbolIndex;
 import org.rubypeople.rdt.internal.core.util.Util;
 
 public class IncrementalRdtCompiler extends AbstractRdtCompiler {
@@ -20,32 +19,24 @@ public class IncrementalRdtCompiler extends AbstractRdtCompiler {
     private final IResourceDelta rootDelta;
 
     public IncrementalRdtCompiler(IProject project, IResourceDelta delta, 
-            SymbolIndex symbolIndex, IMarkerManager markerManager, List<SingleFileCompiler> singleCompilers) {
-        super(project, symbolIndex, markerManager, singleCompilers);
+            IMarkerManager markerManager, List<SingleFileCompiler> singleCompilers) {
+        super(project, markerManager, singleCompilers);
         this.rootDelta = delta;
     }
 
-    public IncrementalRdtCompiler(IProject project, IResourceDelta delta, 
-            SymbolIndex symbolIndex) {
-        this(project, delta, symbolIndex, new MarkerManager()); 
+    public IncrementalRdtCompiler(IProject project, IResourceDelta delta) {
+        this(project, delta, new MarkerManager()); 
     }
 
     private IncrementalRdtCompiler(IProject project, IResourceDelta delta, 
-           SymbolIndex symbolIndex, MarkerManager manager) {
-        this(project, delta, symbolIndex, manager, singleFileCompilers(manager));
+           MarkerManager manager) {
+        this(project, delta, manager, singleFileCompilers(manager));
     }
 
     protected void removeMarkers(IMarkerManager markerManager) {
         for (Iterator iter = filesToClear.iterator(); iter.hasNext();) {
             IFile file  = (IFile) iter.next();
             markerManager.removeProblemsAndTasksFor(file);
-        }
-    }
-
-    protected void flushIndexEntries(SymbolIndex symbolIndex) {
-        for (Iterator iter = filesToClear.iterator(); iter.hasNext();) {
-            IFile file = (IFile) iter.next();
-            symbolIndex.flush(file);
         }
     }
 

@@ -34,16 +34,14 @@ import org.rubypeople.rdt.internal.core.parser.warnings.RubyLintVisitor;
 public final class RubyCodeAnalyzer implements SingleFileCompiler {
     private final IMarkerManager markerManager;
     private RubyParser parser;
-    private final IndexUpdater indexUpdater;
 
     public RubyCodeAnalyzer(IMarkerManager markerManager) {
-        this(markerManager, new RubyParser(new ImmediateWarnings(markerManager)), new IndexUpdater((RubyCore.getPlugin()).getSymbolIndex()));
+        this(markerManager, new RubyParser(new ImmediateWarnings(markerManager)));
     }
     
-    public RubyCodeAnalyzer(IMarkerManager markerManager, RubyParser parser, IndexUpdater indexUpdater) {
+    public RubyCodeAnalyzer(IMarkerManager markerManager, RubyParser parser) {
         this.markerManager = markerManager;
         this.parser = parser;
-        this.indexUpdater = indexUpdater;
     }
 
     public void compileFile(IFile file) throws CoreException {
@@ -62,7 +60,6 @@ public final class RubyCodeAnalyzer implements SingleFileCompiler {
             List<RubyLintVisitor> visitors = DelegatingVisitor.createVisitors(contents); // FIXME How do we hook the warnings/errors up now?!
 			NodeVisitor visitor = new DelegatingVisitor(visitors);
             rootNode.accept(visitor);
-            indexUpdater.update(file, rootNode, true);
         } catch (SyntaxException e) {
         	markerManager.addProblem(file, new Error(e.getPosition(), e.getMessage()));
         } finally {
