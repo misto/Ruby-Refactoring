@@ -3,6 +3,7 @@ package com.aptana.rdt;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
+import java.util.Set;
 
 import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.core.runtime.IPath;
@@ -214,24 +215,30 @@ public class AptanaRDTPlugin extends AbstractUIPlugin {
 	 */
 	public void start(BundleContext context) throws Exception {
 		super.start(context);
-		GemManager.getInstance().addGemListener(new GemListener() {
+		Set<Gem> gems = GemManager.getInstance().getGems();
+		if (gems.isEmpty()) {
+			GemManager.getInstance().addGemListener(new GemListener() {
 		
-			public void gemsRefreshed() {
-				boolean rubyDebugInstalled = GemManager.getInstance().gemInstalled("ruby-debug-ide");
-				LaunchingPlugin.getDefault().getPluginPreferences().setValue(org.rubypeople.rdt.internal.launching.PreferenceConstants.USE_RUBY_DEBUG, rubyDebugInstalled);
-				Job job = new RubyDebugGemListener(this);
-				job.schedule();
-			}
+				public void gemsRefreshed() {
+					boolean rubyDebugInstalled = GemManager.getInstance().gemInstalled("ruby-debug-ide");
+					LaunchingPlugin.getDefault().getPluginPreferences().setValue(org.rubypeople.rdt.internal.launching.PreferenceConstants.USE_RUBY_DEBUG, rubyDebugInstalled);
+					Job job = new RubyDebugGemListener(this);
+					job.schedule();
+				}
 		
-			public void gemRemoved(Gem gem) {
-				// ignore
-			}
+				public void gemRemoved(Gem gem) {
+					// ignore
+				}
 		
-			public void gemAdded(Gem gem) {
-				// ignore		
-			}
+				public void gemAdded(Gem gem) {
+					// ignore		
+				}
 		
-		});
+			});
+		} else {
+			boolean rubyDebugInstalled = GemManager.getInstance().gemInstalled("ruby-debug-ide");
+			LaunchingPlugin.getDefault().getPluginPreferences().setValue(org.rubypeople.rdt.internal.launching.PreferenceConstants.USE_RUBY_DEBUG, rubyDebugInstalled);
+		}
 	}
 
 	/*
