@@ -56,6 +56,7 @@ public class InstallGemActionDelegate implements IObjectActionDelegate, IViewAct
 	 *      org.eclipse.jface.viewers.ISelection)
 	 */
 	public void selectionChanged(IAction action, ISelection selection) {
+		action.setEnabled(!GemManager.getInstance().getRemoteGems().isEmpty());
 	}
 
 	/**
@@ -63,5 +64,7 @@ public class InstallGemActionDelegate implements IObjectActionDelegate, IViewAct
 	 */
 	public void init(IViewPart view) {
 	}
+	
+	
 
 }
