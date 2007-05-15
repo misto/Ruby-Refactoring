@@ -908,20 +908,6 @@
             fileNames="%EditorRubyFile.filenames">
       </participant>
    </extension>
-   <extension
-         point="org.eclipse.search.searchPages">
-      <page
-            class="org.rubypeople.rdt.internal.ui.search.RubySearchPage"
-            id="org.rubypeople.rdt.ui.RubySearchPage"
-            label="%RubySearchPage.label"/>
-   </extension>
-   <extension
-         point="org.eclipse.search.searchResultViewPages">
-      <viewPage
-            class="org.rubypeople.rdt.internal.ui.search.RubySearchResultPage"
-            id="org.rubypeople.rdt.ui.search.RubySearchResultPage"
-            searchResultClass="org.rubypeople.rdt.internal.ui.search.RubySearchResult"/>
-   </extension>
     
   <extension point="org.rubypeople.rdt.ui.rubyEditorTextHovers">
    	  <hover
@@ -1019,4 +1005,41 @@
                class="org.rubypeople.rdt.internal.ui.text.hyperlinks.RubyElementsHyperlinkProvider">
          </hyperlinkProvider>
    </extension>    
+   
+<!-- =========================================================================== -->
+<!-- Ruby Search Page                                                            -->
+<!-- =========================================================================== -->
+   <extension
+         point="org.eclipse.search.searchPages">
+      <page
+            showScopeSection="true"
+            canSearchEnclosingProjects="true"
+            label="%RubySearchPage.label"
+            icon="$nl$/icons/full/obj16/rsearch_obj.gif"
+            extensions="rb:90,rbw:90"
+            class="org.rubypeople.rdt.internal.ui.search.RubySearchPage"
+            sizeHint="460,160"
+            id="org.rubypeople.rdt.ui.RubySearchPage">
+      </page>
+   </extension>
+   
+   <extension
+    	id="RubySearchResultPage"
+        point="org.eclipse.search.searchResultViewPages">
+		<viewPage
+			id="org.rubypeople.rdt.ui.RubySearchResultPage"
+			searchResultClass="org.rubypeople.rdt.internal.ui.search.RubySearchResult"
+			class="org.rubypeople.rdt.internal.ui.search.RubySearchResultPage">
+		</viewPage>
+   </extension>
+<!--   <extension
+    	id="OccurrencesSearchResultPage"
+        point="org.eclipse.search.searchResultViewPages">
+		<viewPage
+			id="org.rubypeople.rdt.internal.ui.search.OccurrencesSearchResultPage"
+			searchResultClass="org.rubypeople.rdt.internal.ui.search.OccurrencesSearchResult"
+			class="org.rubypeople.rdt.internal.ui.search.OccurrencesSearchResultPage">
+		</viewPage>
+   </extension>
+   -->
 </plugin>

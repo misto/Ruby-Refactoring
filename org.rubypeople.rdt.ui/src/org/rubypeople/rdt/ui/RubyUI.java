@@ -83,6 +83,8 @@ public final class RubyUI {
 	 * (value <code>"org.rubypeople.rdt.ui.PerspectiveRuby"</code>).
 	 */	
 	public static final String ID_PERSPECTIVE= 		"org.rubypeople.rdt.ui.PerspectiveRuby"; //$NON-NLS-1$
+
+	public static final String ID_RUBY_RESOURCE_VIEW = "org.rubypeople.rdt.ui.ViewRubyResources"; //$NON-NLS-1$
 		
 	/**
 	 * Returns the Ruby element wrapped by the given editor input.

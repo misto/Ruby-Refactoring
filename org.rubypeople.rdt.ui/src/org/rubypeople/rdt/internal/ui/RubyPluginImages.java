@@ -43,6 +43,8 @@ public class RubyPluginImages {
     public static final String IMG_OBJS_INFO = NAME_PREFIX + "info_obj.gif";
     public static final String IMG_OBJS_HELP= NAME_PREFIX + "help.gif"; //$NON-NLS-1$
     private static final String IMG_OBJS_GHOST= NAME_PREFIX + "ghost.gif";               //$NON-NLS-1$
+	public static final String IMG_OBJS_SEARCH_DECL= NAME_PREFIX + "search_decl_obj.gif"; //$NON-NLS-1$
+	public static final String IMG_OBJS_SEARCH_REF= NAME_PREFIX + "search_ref_obj.gif"; 	//$NON-NLS-1$
     
     public static final String IMG_OBJS_CLASS= NAME_PREFIX + "class_obj.gif";          //$NON-NLS-1$
     private static final String IMG_OBJS_INNER_CLASS= NAME_PREFIX + "innerclass_obj.gif"; //$NON-NLS-1$
@@ -103,6 +105,8 @@ public class RubyPluginImages {
 	public static final ImageDescriptor DESC_OBJS_EXTJAR= createManagedFromKey(T_OBJ, IMG_OBJS_EXTJAR);
 	public static final ImageDescriptor DESC_OBJS_EXTJAR_WSRC= createManagedFromKey(T_OBJ, IMG_OBJS_EXTJAR_WSRC);
 	public static final ImageDescriptor DESC_OBJS_ENV_VAR= createManagedFromKey(T_OBJ, IMG_OBJS_ENV_VAR);
+	public static final ImageDescriptor DESC_OBJS_SEARCH_DECL= createManagedFromKey(T_OBJ, IMG_OBJS_SEARCH_DECL);
+	public static final ImageDescriptor DESC_OBJS_SEARCH_REF= createManagedFromKey(T_OBJ, IMG_OBJS_SEARCH_REF);
 	
 	public static final ImageDescriptor DESC_OBJS_EXCLUSION_FILTER_ATTRIB= createUnManaged(T_OBJ, "exclusion_filter_attrib.gif"); //$NON-NLS-1$
 	public static final ImageDescriptor DESC_OBJS_INCLUSION_FILTER_ATTRIB= createUnManaged(T_OBJ, "inclusion_filter_attrib.gif"); //$NON-NLS-1$

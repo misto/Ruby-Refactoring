@@ -54,7 +54,6 @@ import org.rubypeople.rdt.core.IBuffer;
 import org.rubypeople.rdt.core.IRubyScript;
 import org.rubypeople.rdt.core.RubyCore;
 import org.rubypeople.rdt.core.WorkingCopyOwner;
-import org.rubypeople.rdt.internal.core.util.EclipseJobScheduler;
 import org.rubypeople.rdt.internal.corext.util.TypeFilter;
 import org.rubypeople.rdt.internal.formatter.OldCodeFormatter;
 import org.rubypeople.rdt.internal.ui.preferences.MembersOrderPreferenceCache;
@@ -64,12 +63,12 @@ import org.rubypeople.rdt.internal.ui.rubyeditor.DocumentAdapter;
 import org.rubypeople.rdt.internal.ui.rubyeditor.RubyDocumentProvider;
 import org.rubypeople.rdt.internal.ui.rubyeditor.RubyScriptDocumentProvider;
 import org.rubypeople.rdt.internal.ui.rubyeditor.WorkingCopyManager;
-import org.rubypeople.rdt.internal.ui.symbols.BlockingSymbolFinder;
 import org.rubypeople.rdt.internal.ui.text.IRubyColorConstants;
 import org.rubypeople.rdt.internal.ui.text.PreferencesAdapter;
 import org.rubypeople.rdt.internal.ui.text.folding.RubyFoldingStructureProviderRegistry;
 import org.rubypeople.rdt.internal.ui.text.ruby.hover.RubyEditorTextHoverDescriptor;
 import org.rubypeople.rdt.internal.ui.text.template.contentassist.RubyTemplateAccess;
+import org.rubypeople.rdt.internal.ui.viewsupport.ProblemMarkerManager;
 import org.rubypeople.rdt.ui.PreferenceConstants;
 import org.rubypeople.rdt.ui.text.RubyTextTools;
 
@@ -115,6 +114,7 @@ public class RubyPlugin extends AbstractUIPlugin implements IRubyColorConstants 
 	 * @since 1.0
 	 */
 	private TypeFilter fTypeFilter;
+	private ProblemMarkerManager fProblemMarkerManager;
 
 	public RubyPlugin() {
 		super();
@@ -166,10 +166,6 @@ public class RubyPlugin extends AbstractUIPlugin implements IRubyColorConstants 
 		IPreferenceStore store = getPreferenceStore();
 		fMembersOrderPreferenceCache = new MembersOrderPreferenceCache();
 		fMembersOrderPreferenceCache.install(store);
-
-		RubyCore rubyCore = RubyCore.getPlugin();
-		BlockingSymbolFinder symbolFinder = new BlockingSymbolFinder(rubyCore.getSymbolFinder(), new EclipseJobScheduler());
-		rubyCore.setSymbolFinder(symbolFinder);
 
 		listenForNewProjects();
 		upgradeOldProjects();
@@ -622,5 +618,11 @@ public class RubyPlugin extends AbstractUIPlugin implements IRubyColorConstants 
 		}
 		
 		return fRubyEditorTextHoverDescriptors;
-	} 
+	}
+
+	public synchronized ProblemMarkerManager getProblemMarkerManager() {
+		if (fProblemMarkerManager == null)
+			fProblemMarkerManager= new ProblemMarkerManager();
+		return fProblemMarkerManager;
+	}	
 }

@@ -17,9 +17,7 @@ public class TS_InternalUiRubySearch {
 
     public static TestSuite suite() {
         TestSuite suite = new TestSuite("org.rubypeople.rdt.internal.ui.search");
-        suite.addTestSuite(TC_RubySearchTreeContentProvider.class);
-        suite.addTestSuite(TC_Scope.class) ;
-        suite.addTestSuite(TC_GroupByScopeStrategy.class) ;        
+   
         return suite;
     }
 }
