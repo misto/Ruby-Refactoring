@@ -531,7 +531,7 @@ public class GemManager {
 		return false;
 	}
 
-	public void addGemObserver(GemListener listener) {
+	public void addGemListener(GemListener listener) {
 		listeners.add(listener);
 	}
 
@@ -555,5 +555,17 @@ public class GemManager {
 			temp.add(gem);
 		}
 		return Collections.unmodifiableSortedSet(logical);
+	}
+
+	public boolean gemInstalled(String gemName) {
+		Set<Gem> gems = getGems();
+		for (Gem gem : gems) {
+			if (gem.getName().equalsIgnoreCase(gemName)) return true;
+		}
+		return false;
+	}
+
+	public void removeGemListener(GemListener listener) {
+		listeners.remove(listener);		
 	}
 }

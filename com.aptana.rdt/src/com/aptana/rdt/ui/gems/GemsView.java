@@ -58,7 +58,7 @@ public class GemsView extends ViewPart implements GemListener {
 		gemViewer.setInput(GemManager.getInstance().getGems());
 		createPopupMenu();
 
-		GemManager.getInstance().addGemObserver(this);
+		GemManager.getInstance().addGemListener(this);
 	}
 
 	@Override

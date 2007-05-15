@@ -6,13 +6,19 @@ import java.net.URL;
 
 import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.core.runtime.IPath;
+import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.osgi.framework.BundleContext;
+import org.rubypeople.rdt.internal.launching.LaunchingPlugin;
 import org.rubypeople.rdt.internal.ui.IRubyStatusConstants;
 
+import com.aptana.rdt.internal.gems.Gem;
+import com.aptana.rdt.internal.gems.GemManager;
+import com.aptana.rdt.internal.gems.GemManager.GemListener;
 import com.aptana.rdt.internal.ui.RubyRedMessages;
 
 /**
@@ -184,6 +190,23 @@ public class AptanaRDTPlugin extends AbstractUIPlugin {
 		super();
 		plugin = this;
 	}
+	
+	private static class RubyDebugGemListener extends Job {
+
+		private GemListener listener;
+
+		public RubyDebugGemListener(GemListener listener) {
+			super("Removing temporary gem listener");
+			this.listener = listener;
+		}
+
+		@Override
+		protected IStatus run(IProgressMonitor monitor) {
+			GemManager.getInstance().removeGemListener(listener);
+			return Status.OK_STATUS;
+		}
+		
+	}
 
 	/*
 	 * (non-Javadoc)
@@ -191,7 +214,24 @@ public class AptanaRDTPlugin extends AbstractUIPlugin {
 	 */
 	public void start(BundleContext context) throws Exception {
 		super.start(context);
+		GemManager.getInstance().addGemListener(new GemListener() {
 		
+			public void gemsRefreshed() {
+				boolean rubyDebugInstalled = GemManager.getInstance().gemInstalled("ruby-debug-ide");
+				LaunchingPlugin.getDefault().getPluginPreferences().setValue(org.rubypeople.rdt.internal.launching.PreferenceConstants.USE_RUBY_DEBUG, rubyDebugInstalled);
+				Job job = new RubyDebugGemListener(this);
+				job.schedule();
+			}
+		
+			public void gemRemoved(Gem gem) {
+				// ignore
+			}
+		
+			public void gemAdded(Gem gem) {
+				// ignore		
+			}
+		
+		});
 	}
 
 	/*
