@@ -193,63 +193,74 @@ public class GemManager {
 	}
 
 	private Set<Gem> loadRemoteGems() {
-		Set<Gem> gems = new HashSet<Gem>();
+		
 		try {
-			URL url = new URL(GEM_INDEX_URL);
-			URLConnection con = url.openConnection();
-			InputStream content = (InputStream) con.getContent();
-			BufferedReader reader = new BufferedReader(new InputStreamReader(
-					content));
-			String line = null;
-			String name = null;
-			String version = null;
-			String description = null;
-			String platform = null;
-			boolean nextIsRealVersion = false;
-			while ((line = reader.readLine()) != null) {
-				if (nextIsRealVersion && line.trim().startsWith("version: ")) {
-					version = line.trim().substring(9);
-					if (version.charAt(0) == '"')
-						version = version.substring(1);
-					if (version.charAt(version.length() - 1) == '"')
-						version = version.substring(0, version.length() - 1);
-					nextIsRealVersion = false;
-				} else if (line.trim().equals(
-						"version: !ruby/object:Gem::Version")) {
-					nextIsRealVersion = true;
-				}
-				// if (line.trim().endsWith(":
-				// !ruby/object:Gem::Specification")) {
-				// // new gem
-				// }
-				if (line.trim().startsWith("name:")) {
-					name = line.trim().substring(6);
-				}
-				if (line.trim().startsWith("platform:")) {
-					if (line.trim().length() == 9) {
-						platform = Gem.RUBY_PLATFORM;
-					} else {
-						platform = line.trim().substring(10);
-					}
-				}
-				if (line.trim().startsWith("summary:")) {
-					description = line.trim().substring(9);
-				}
-				if (description != null && name != null && version != null
-						&& platform != null) {
-					gems.add(new Gem(name, version, description, platform));
-					description = null;
-					version = null;
-					name = null;
-					platform = null;
-				}
-			}
+			List<String> lines = getContents();
+			return convertToGems(lines);
 		} catch (MalformedURLException e) {
 			AptanaRDTPlugin.log(e);
 		} catch (IOException e) {
 			AptanaRDTPlugin.log(e);
 		}
+		return new HashSet<Gem>();
+	}
+
+	private Set<Gem> convertToGems(List<String> lines) {
+		Set<Gem> gems = new HashSet<Gem>();
+		String name = null;
+		String version = null;
+		String description = null;
+		String platform = null;
+		boolean nextIsRealVersion = false;
+		for (String line : lines) {
+			if (nextIsRealVersion && line.trim().startsWith("version: ")) {
+				version = line.trim().substring(9);
+				if (version.charAt(0) == '"')
+					version = version.substring(1);
+				if (version.charAt(version.length() - 1) == '"')
+					version = version.substring(0, version.length() - 1);
+				nextIsRealVersion = false;
+			} else if (line.trim().equals(
+					"version: !ruby/object:Gem::Version")) {
+				nextIsRealVersion = true;
+			}
+			if (line.trim().startsWith("name:")) {
+				name = line.trim().substring(6);
+			}
+			if (line.trim().startsWith("platform:")) {
+				if (line.trim().length() == 9) {
+					platform = Gem.RUBY_PLATFORM;
+				} else {
+					platform = line.trim().substring(10);
+				}
+			}
+			if (line.trim().startsWith("summary:")) {
+				description = line.trim().substring(9);
+			}
+			if (description != null && name != null && version != null
+					&& platform != null) {
+				gems.add(new Gem(name, version, description, platform));
+				description = null;
+				version = null;
+				name = null;
+				platform = null;
+			}
+		}
 		return gems;
+	}
+
+	private List<String> getContents() throws MalformedURLException, IOException {
+		List<String> lines = new ArrayList<String>();
+		URL url = new URL(GEM_INDEX_URL);
+		URLConnection con = url.openConnection();
+		InputStream content = (InputStream) con.getContent();
+		BufferedReader reader = new BufferedReader(new InputStreamReader(
+				content));
+		String line = null;
+		while ((line = reader.readLine()) != null) {
+			lines.add(line);
+		}
+		return lines;
 	}
 
 	private Set<Gem> loadLocalGems() {
