@@ -215,7 +215,7 @@ public class AptanaRDTPlugin extends AbstractUIPlugin {
 	 */
 	public void start(BundleContext context) throws Exception {
 		super.start(context);
-		Set<Gem> gems = GemManager.getInstance().getGems();
+		Set<Gem> gems = GemManager.getInstance().getGems(); // FIXME What if user has explicity disabled using ruby-debug?!
 		if (gems.isEmpty()) {
 			GemManager.getInstance().addGemListener(new GemListener() {
 		
