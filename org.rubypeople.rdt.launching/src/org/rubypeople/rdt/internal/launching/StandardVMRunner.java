@@ -207,13 +207,6 @@ public class StandardVMRunner extends AbstractVMRunner {
 		// options like '-client' & '-server' which are required to be the first option
 		String[] allVMArgs = combineVmArgs(config, fVMInstance);
 		addArguments(allVMArgs, arguments);
-		// FIXME Find a way to set stderr and stdout to sync/auto-flush without messing up value of __FILE__ (becomes absolute which messes up the 'if __FILE__ == $0' idiom)
-//		arguments.add("-e");
-//		arguments.add("STDOUT.sync=true");
-//		arguments.add("-e");
-//		arguments.add("STDERR.sync=true");
-//		arguments.add("-e");
-//		arguments.add("load($0=ARGV.shift)");
 		
 		String[] lp= config.getLoadPath();
 		if (lp.length > 0) {

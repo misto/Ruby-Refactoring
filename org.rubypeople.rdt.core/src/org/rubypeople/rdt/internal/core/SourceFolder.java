@@ -1,5 +1,6 @@
 package org.rubypeople.rdt.internal.core;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Map;
@@ -98,7 +99,7 @@ public class SourceFolder extends Openable implements ISourceFolder {
 	@Override
 	public String getElementName() {
 		if (names.length == 0) return "";
-		return names[names.length - 1];
+		return Util.concatWith(this.names, File.separatorChar);
 	}
 
 	public boolean containsRubyResources() throws RubyModelException {

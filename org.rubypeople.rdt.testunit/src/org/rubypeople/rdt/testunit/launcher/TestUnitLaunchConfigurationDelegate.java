@@ -46,7 +46,7 @@ public class TestUnitLaunchConfigurationDelegate extends RubyLaunchDelegate {
 		
 //		setDefaultSourceLocator(launch, configuration);
 		launch.setAttribute(TestunitPlugin.TESTUNIT_PORT_ATTR, Integer.toString(getPort()));
-		if (testTypes.length > 0) launch.setAttribute(TESTTYPE_ATTR, testTypes[0].getHandleIdentifier());
+		if (testTypes != null && testTypes.length > 0) launch.setAttribute(TESTTYPE_ATTR, testTypes[0].getHandleIdentifier());
 
 		
 		super.launch(configuration, mode, launch, monitor);
@@ -65,7 +65,11 @@ public class TestUnitLaunchConfigurationDelegate extends RubyLaunchDelegate {
 		if (containerHandle.length() > 0) {
 			IRubyElement element = RubyCore.create(containerHandle);
 			IRubyScript script = (IRubyScript) element;
-			if (script != null) return new IType[] { script.findPrimaryType() };
+			if (script != null) {
+				IType type = script.findPrimaryType();
+				if (type != null)
+					return new IType[] { type };
+			}
 		}
 		String testTypeName= configuration.getAttribute(TESTTYPE_ATTR, (String) null);
 		if (testTypeName != null && testTypeName.length() > 0) {
@@ -143,8 +147,10 @@ public class TestUnitLaunchConfigurationDelegate extends RubyLaunchDelegate {
 		String container = configuration.getAttribute(TestUnitLaunchConfigurationDelegate.LAUNCH_CONTAINER_ATTR, "");
 		IRubyElement element = (IRubyElement) RubyCore.create(container);
 		if (element != null)
-		return element.getResource().getLocation().toFile().getAbsolutePath();
-		// otherwise it may be an actual path!
+		  container = element.getResource().getProjectRelativePath().toOSString();
+		if (!container.startsWith("\"") && container.indexOf(' ') != -1) {
+			container = '"' + container + '"';
+		}
 		return container;
 	}
 }
