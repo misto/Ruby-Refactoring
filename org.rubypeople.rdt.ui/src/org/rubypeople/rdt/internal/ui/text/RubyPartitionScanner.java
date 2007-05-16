@@ -2,6 +2,7 @@ package org.rubypeople.rdt.internal.ui.text;
 
 import java.io.IOException;
 import java.io.StringReader;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.jface.text.BadLocationException;
@@ -22,20 +23,42 @@ import org.rubypeople.rdt.internal.core.util.ASTUtil;
 import org.rubypeople.rdt.internal.ui.RubyPlugin;
 
 public class RubyPartitionScanner implements IPartitionTokenScanner {
+		
+	private static class QueuedToken {
+		private IToken token;
+		private int length;
+		private int offset;
 
+		QueuedToken(IToken token, int offset, int length) {
+			this.token = token;
+			this.length = length;
+			this.offset = offset;
+		}
+		
+		public int getLength() {
+			return length;
+		}
+		
+		public int getOffset() {
+			return offset;
+		}
+		
+		public IToken getToken() {
+			return token;
+		}
+	}
+	
 	private RubyYaccLexer lexer;
 	private ParserSupport parserSupport;
 	private RubyParserResult result;
-	private boolean lastWasComment;
-	private int fSavedLength;
-	private IToken fSavedToken;
-	private int fSavedOffset;
 	private String contents;
 	private LexerSource lexerSource;
 	private int origOffset;
 	private int origLength;
 	private int tokenLength;
-	private int oldOffset;
+	private int tokenOffset;
+	
+	private List<QueuedToken> queue = new ArrayList<QueuedToken>();
 	
 	// XXX Also do strings, regex partitions!
 	public final static String RUBY_MULTI_LINE_COMMENT = IRubyPartitions.RUBY_MULTI_LINE_COMMENT;
@@ -57,13 +80,7 @@ public class RubyPartitionScanner implements IPartitionTokenScanner {
 
 	public void setPartialRange(IDocument document, int offset, int length,
 			String contentType, int partitionOffset) {
-		lexer.reset();
-		lexer.setState(LexState.EXPR_BEG);
-		parserSupport.initTopLocalVariables();
-		lastWasComment = false;
-		fSavedLength = -1;
-		fSavedToken = null;
-		fSavedOffset = -1;
+		reset();
 		try {
 			contents = document.get(offset, length);
 			lexerSource = new LexerSource("filename", new StringReader(contents));
@@ -76,40 +93,29 @@ public class RubyPartitionScanner implements IPartitionTokenScanner {
 		origLength = length;
 	}
 
+	private void reset() {
+		lexer.reset();
+		lexer.setState(LexState.EXPR_BEG);
+		parserSupport.initTopLocalVariables();
+		queue.clear();
+	}
+
 	public int getTokenLength() {
-		if (lastWasComment) {
-			return tokenLength;
-		}
-		if (fSavedLength != -1) {
-			int length = fSavedLength;
-			fSavedLength = -1;
-			return length;
-		}
 		return tokenLength;
 	}
 
 	public int getTokenOffset() {
-		if (lastWasComment) {			
-			return oldOffset;
-		}
-		if (fSavedOffset != -1) {
-			int offset = fSavedOffset;
-			fSavedOffset = -1;
-			return offset;
-		}
-		return oldOffset;
+		return tokenOffset;
 	}
 
 	public IToken nextToken() {
-		if (lastWasComment) {
-			lastWasComment = false;
+		if (!queue.isEmpty()) {
+			QueuedToken token = queue.remove(0);
+			tokenOffset = token.getOffset();
+			tokenLength = token.getLength();
+			return token.getToken();
 		}
-		if (fSavedToken != null) {
-			IToken returnToken = fSavedToken;
-			fSavedToken = null;
-			return returnToken;
-		}
-		oldOffset = getOffset();
+		tokenOffset = getOffset();
 		tokenLength = 0;
 		IToken returnValue = new Token(null);
 		boolean isEOF = false;
@@ -117,8 +123,6 @@ public class RubyPartitionScanner implements IPartitionTokenScanner {
 			isEOF = !lexer.advance();
 			if (isEOF) {
 				returnValue = Token.EOF;
-			} else {
-				returnValue = token(lexer.token());
 			}
 			List comments = result.getCommentNodes();
 			if (comments != null && !comments.isEmpty()) {
@@ -132,21 +136,20 @@ public class RubyPartitionScanner implements IPartitionTokenScanner {
 						String src = ASTUtil.getSource(contents, comment);
 						if (src != null && src.startsWith("=begin")) multiline = true;
 						firstComment = false;
-					    oldOffset = origOffset + comment.getPosition().getStartOffset(); // correct start offset, since when a line with nothing but spaces on it appears before comment, we get messed up positions
+					    tokenOffset = origOffset + comment.getPosition().getStartOffset(); // correct start offset, since when a line with nothing but spaces on it appears before comment, we get messed up positions
 					}
 					endOffset = origOffset + comment.getPosition().getEndOffset();					
 				}
-				tokenLength = endOffset - oldOffset;
-				fSavedToken = returnValue;
-				fSavedOffset = oldOffset + tokenLength;
+				tokenLength = endOffset - tokenOffset;
+				int queuedOffset = tokenOffset + tokenLength;
+				int queuedLength = 0;
 				if (!isEOF) {
-					fSavedLength = getOffset() - fSavedOffset;
+					queuedLength = getOffset() - queuedOffset;
 				} else {
-					fSavedOffset--;
-					fSavedLength = 0;
+					queuedOffset--;
 				}
-				lastWasComment = true;
-				// FIXME What about multiline comments?!
+				// Throw saved token onto queue
+				queue.add(new QueuedToken(returnValue, queuedOffset, queuedLength));
 				String contentType = RUBY_SINGLE_LINE_COMMENT;
 				if (multiline) contentType = RUBY_MULTI_LINE_COMMENT;
 				return new Token(contentType);
@@ -156,18 +159,14 @@ public class RubyPartitionScanner implements IPartitionTokenScanner {
 				return Token.EOF; // return eof if we hit a problem found at
 									// end of parsing
 			else
-				tokenLength = getOffset() - oldOffset;
+				tokenLength = getOffset() - tokenOffset;
 			return new Token(null);
 		} catch (IOException e) {
 			RubyPlugin.log(e);
 		}
 		if (!isEOF)
-			tokenLength = getOffset() - oldOffset;
+			tokenLength = getOffset() - tokenOffset;
 		return returnValue;
-	}
-	
-	private IToken token(int i) {
-		return new Token(null);
 	}
 
 	private int getOffset() {
