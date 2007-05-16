@@ -256,7 +256,7 @@ def createTcpSession(host, port)
   end
 end
 
-if __FILE__ == $0
+#if __FILE__ == $0
   require 'socket'
   if ARGV.empty?
     puts "You should supply the name of a test suite file and the port to the runner"
@@ -277,7 +277,6 @@ if __FILE__ == $0
   # 4. test class name (optional)
   # 5. test name (optional)
   #
-  
   filename = ARGV[0].slice(0, ARGV[0].rindex('.'))
   port = ARGV[1].to_i
   keepAliveString = ARGV[2]
@@ -299,4 +298,4 @@ if __FILE__ == $0
   remoteTestRunner.start
   session.close
   exit
-end
+#end
