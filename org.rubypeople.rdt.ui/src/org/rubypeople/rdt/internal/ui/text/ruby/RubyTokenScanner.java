@@ -2,14 +2,12 @@ package org.rubypeople.rdt.internal.ui.text.ruby;
 
 import java.io.IOException;
 import java.io.StringReader;
-import java.util.List;
 
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.rules.IToken;
 import org.eclipse.jface.text.rules.Token;
-import org.jruby.ast.CommentNode;
 import org.jruby.common.NullWarnings;
 import org.jruby.lexer.yacc.LexState;
 import org.jruby.lexer.yacc.LexerSource;
@@ -51,16 +49,11 @@ public class RubyTokenScanner extends AbstractRubyTokenScanner {
 	private boolean isInRegexp;
 	private boolean isInString;
 	private boolean isInSymbol;
+	private boolean inAlias;
 	private RubyParserResult result;
 	private int origOffset;
 	private int origLength;
-	private String contents;
-
-	private IToken fSavedToken = null;
-	private int fSavedLength = -1;
-	private int fSavedOffset = -1;
-	private boolean lastWasComment;
-	private boolean inAlias;
+	private String contents;	
 
 	public RubyTokenScanner(IColorManager manager, IPreferenceStore store) {
 		super(manager, store);
@@ -75,38 +68,14 @@ public class RubyTokenScanner extends AbstractRubyTokenScanner {
 	}
 
 	public int getTokenLength() {
-		if (lastWasComment) {
-			return tokenLength;
-		}
-		if (fSavedLength != -1) {
-			int length = fSavedLength;
-			fSavedLength = -1;
-			return length;
-		}
 		return tokenLength;
 	}
 
 	public int getTokenOffset() {
-		if (lastWasComment) {			
-			return oldOffset;
-		}
-		if (fSavedOffset != -1) {
-			int offset = fSavedOffset;
-			fSavedOffset = -1;
-			return offset;
-		}
 		return oldOffset;
 	}
 
 	public IToken nextToken() {
-		if (lastWasComment) {
-			lastWasComment = false;
-		}
-		if (fSavedToken != null) {
-			IToken returnToken = fSavedToken;
-			fSavedToken = null;
-			return returnToken;
-		}
 		oldOffset = getOffset();
 		tokenLength = 0;
 		IToken returnValue = getToken(IRubyColorConstants.RUBY_DEFAULT);
@@ -117,31 +86,6 @@ public class RubyTokenScanner extends AbstractRubyTokenScanner {
 				returnValue = Token.EOF;
 			} else {
 				returnValue = token(lexer.token());
-			}
-			List comments = result.getCommentNodes();
-			if (comments != null && !comments.isEmpty()) {
-				CommentNode comment;
-				boolean firstComment = true;
-				int endOffset = 0;
-				while (!comments.isEmpty()) {
-					comment = (CommentNode) comments.remove(0);
-					if (firstComment) {
-						firstComment = false;
-					    oldOffset = origOffset + comment.getPosition().getStartOffset(); // correct start offset, since when a line with nothing but spaces on it appears before comment, we get messed up positions
-					}
-					endOffset = origOffset + comment.getPosition().getEndOffset();					
-				}
-				tokenLength = endOffset - oldOffset;
-				fSavedToken = returnValue;
-				fSavedOffset = oldOffset + tokenLength;
-				if (!isEOF) {
-					fSavedLength = getOffset() - fSavedOffset;
-				} else {
-					fSavedOffset--;
-					fSavedLength = 0;
-				}
-				lastWasComment = true;
-				return getToken(IRubyColorConstants.RUBY_SINGLE_LINE_COMMENT);
 			}
 		} catch (SyntaxException se) {
 			if (lexerSource.getOffset() - origLength == 0)
@@ -283,10 +227,6 @@ public class RubyTokenScanner extends AbstractRubyTokenScanner {
 		lexer.reset();
 		lexer.setState(LexState.EXPR_BEG);
 		parserSupport.initTopLocalVariables();
-		lastWasComment = false;
-		fSavedLength = -1;
-		fSavedToken = null;
-		fSavedOffset = -1;
 		isInSymbol = false;
 		if (offset == 0) {
 			isInRegexp = false;

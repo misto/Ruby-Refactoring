@@ -29,6 +29,14 @@ public class TC_RubyPartitionScanner extends TestCase {
 	    assert(true);
 	}	
 
+	public void testPartitioningOfSingleLineComment() {
+		String source = "# This is a comment\n";
+		
+		assertEquals(RubyPartitionScanner.RUBY_SINGLE_LINE_COMMENT, this.getContentType(source, 0));
+		assertEquals(RubyPartitionScanner.RUBY_SINGLE_LINE_COMMENT, this.getContentType(source, 1));
+		assertEquals(RubyPartitionScanner.RUBY_SINGLE_LINE_COMMENT, this.getContentType(source, 18));
+	}
+	
 	public void testRecognizeSpecialCase() {
 		String source = "a,b=?#,'This is not a comment!'\n";
 		
@@ -48,7 +56,7 @@ public class TC_RubyPartitionScanner extends TestCase {
 				 "=end";
 		assertEquals(RubyPartitionScanner.RUBY_MULTI_LINE_COMMENT, this.getContentType(source, 0));
 		assertEquals(RubyPartitionScanner.RUBY_MULTI_LINE_COMMENT, this.getContentType(source, source.length() / 2));
-		assertEquals(RubyPartitionScanner.RUBY_MULTI_LINE_COMMENT, this.getContentType(source, source.length() - 1));
+		assertEquals(RubyPartitionScanner.RUBY_MULTI_LINE_COMMENT, this.getContentType(source, source.length() - 2));
 	}
 	
 	public void testMultilineCommentNotOnFirstColumn() {
@@ -60,4 +68,31 @@ public class TC_RubyPartitionScanner extends TestCase {
 		assertEquals(IDocument.DEFAULT_CONTENT_TYPE, this.getContentType(source, 10));
 	}
 	
+	public void testRecognizeDivision() {
+		String source = "1/3 #This is a comment\n";
+		
+		assertEquals(IDocument.DEFAULT_CONTENT_TYPE, this.getContentType(source, 0));
+		assertEquals(IDocument.DEFAULT_CONTENT_TYPE, this.getContentType(source, 3));
+		assertEquals(RubyPartitionScanner.RUBY_SINGLE_LINE_COMMENT, this.getContentType(source, 5));
+	}	
+	
+	public void testRecognizeOddballCharacters() {
+		String source = "?\" #comment\n";
+		
+		assertEquals(IDocument.DEFAULT_CONTENT_TYPE, this.getContentType(source, 0));
+		assertEquals(IDocument.DEFAULT_CONTENT_TYPE, this.getContentType(source, 2));
+		assertEquals(RubyPartitionScanner.RUBY_SINGLE_LINE_COMMENT, this.getContentType(source, 5));
+		
+		source = "?' #comment\n";
+		
+		assertEquals(IDocument.DEFAULT_CONTENT_TYPE, this.getContentType(source, 0));
+		assertEquals(IDocument.DEFAULT_CONTENT_TYPE, this.getContentType(source, 2));
+		assertEquals(RubyPartitionScanner.RUBY_SINGLE_LINE_COMMENT, this.getContentType(source, 5));
+		
+		source = "?/ #comment\n";
+		
+		assertEquals(IDocument.DEFAULT_CONTENT_TYPE, this.getContentType(source, 0));
+		assertEquals(IDocument.DEFAULT_CONTENT_TYPE, this.getContentType(source, 2));
+		assertEquals(RubyPartitionScanner.RUBY_SINGLE_LINE_COMMENT, this.getContentType(source, 5));
+	}
 }

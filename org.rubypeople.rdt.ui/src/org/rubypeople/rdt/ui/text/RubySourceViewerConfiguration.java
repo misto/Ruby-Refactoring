@@ -29,10 +29,8 @@ import org.eclipse.jface.util.PropertyChangeEvent;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.IEditorInput;
-import org.eclipse.ui.editors.text.EditorsUI;
 import org.eclipse.ui.editors.text.TextSourceViewerConfiguration;
 import org.eclipse.ui.texteditor.AbstractDecoratedTextEditorPreferenceConstants;
-import org.eclipse.ui.texteditor.ChainedPreferenceStore;
 import org.eclipse.ui.texteditor.IDocumentProvider;
 import org.eclipse.ui.texteditor.ITextEditor;
 import org.rubypeople.rdt.core.IRubyElement;
@@ -47,7 +45,6 @@ import org.rubypeople.rdt.internal.ui.text.ContentAssistPreference;
 import org.rubypeople.rdt.internal.ui.text.HTMLTextPresenter;
 import org.rubypeople.rdt.internal.ui.text.IRubyColorConstants;
 import org.rubypeople.rdt.internal.ui.text.IRubyPartitions;
-import org.rubypeople.rdt.internal.ui.text.PreferencesAdapter;
 import org.rubypeople.rdt.internal.ui.text.RubyAnnotationHover;
 import org.rubypeople.rdt.internal.ui.text.RubyCommentScanner;
 import org.rubypeople.rdt.internal.ui.text.RubyDoubleClickSelector;
@@ -88,7 +85,7 @@ public class RubySourceViewerConfiguration extends TextSourceViewerConfiguration
 
 	protected AbstractRubyTokenScanner fCodeScanner;
 
-	protected AbstractRubyScanner fMultilineCommentScanner;
+	protected AbstractRubyScanner fMultilineCommentScanner, fSinglelineCommentScanner;
 	private RubyDoubleClickSelector fRubyDoubleClickSelector;
 	private RubyCompletionProcessor fRubyCp;
 
@@ -166,7 +163,7 @@ public class RubySourceViewerConfiguration extends TextSourceViewerConfiguration
 	 * @since 0.8.0
 	 */
 	public boolean affectsTextPresentation(PropertyChangeEvent event) {
-		return fCodeScanner.affectsBehavior(event) || fMultilineCommentScanner.affectsBehavior(event);
+		return fCodeScanner.affectsBehavior(event) || fMultilineCommentScanner.affectsBehavior(event) || fSinglelineCommentScanner.affectsBehavior(event);
 	}
 
 	/**
@@ -189,24 +186,8 @@ public class RubySourceViewerConfiguration extends TextSourceViewerConfiguration
 			fCodeScanner.adaptToPreferenceChange(event);
 		if (fMultilineCommentScanner.affectsBehavior(event))
 			fMultilineCommentScanner.adaptToPreferenceChange(event);
-	}
-
-	/**
-	 * Creates and returns a preference store which combines the preference
-	 * stores from the text tools and which is read-only.
-	 * 
-	 * @param rubyTextTools
-	 *            the Ruby text tools
-	 * @return the combined read-only preference store
-	 * @since 0.8.0
-	 */
-	private static final IPreferenceStore createPreferenceStore(RubyTextTools rubyTextTools) {
-		Assert.isNotNull(rubyTextTools);
-		IPreferenceStore generalTextStore = EditorsUI.getPreferenceStore();
-		if (rubyTextTools.getCorePreferenceStore() == null)
-			return new ChainedPreferenceStore(new IPreferenceStore[] { rubyTextTools.getPreferenceStore(), generalTextStore });
-
-		return new ChainedPreferenceStore(new IPreferenceStore[] { rubyTextTools.getPreferenceStore(), new PreferencesAdapter(rubyTextTools.getCorePreferenceStore()), generalTextStore });
+		if (fSinglelineCommentScanner.affectsBehavior(event))
+			fSinglelineCommentScanner.adaptToPreferenceChange(event);
 	}
 
 	/**
@@ -218,6 +199,7 @@ public class RubySourceViewerConfiguration extends TextSourceViewerConfiguration
 		Assert.isTrue(isNewSetup());
 		fCodeScanner = new RubyTokenScanner(getColorManager(), fPreferenceStore);
 		fMultilineCommentScanner = new RubyCommentScanner(getColorManager(), fPreferenceStore, IRubyColorConstants.RUBY_MULTI_LINE_COMMENT);
+		fSinglelineCommentScanner = new RubyCommentScanner(getColorManager(), fPreferenceStore, IRubyColorConstants.RUBY_SINGLE_LINE_COMMENT);
 	}
 
 	/**
@@ -250,6 +232,10 @@ public class RubySourceViewerConfiguration extends TextSourceViewerConfiguration
 		dr = new DefaultDamagerRepairer(getMultilineCommentScanner());
 		reconciler.setDamager(dr, RubyPartitionScanner.RUBY_MULTI_LINE_COMMENT);
 		reconciler.setRepairer(dr, RubyPartitionScanner.RUBY_MULTI_LINE_COMMENT);
+		
+		dr = new DefaultDamagerRepairer(getSinglelineCommentScanner());
+		reconciler.setDamager(dr, RubyPartitionScanner.RUBY_SINGLE_LINE_COMMENT);
+		reconciler.setRepairer(dr, RubyPartitionScanner.RUBY_SINGLE_LINE_COMMENT);
 		return reconciler;
 	}
 
@@ -260,9 +246,13 @@ public class RubySourceViewerConfiguration extends TextSourceViewerConfiguration
 	protected ITokenScanner getMultilineCommentScanner() {
 		return fMultilineCommentScanner;
 	}
+	
+	protected ITokenScanner getSinglelineCommentScanner() {
+		return fSinglelineCommentScanner;
+	}
 
 	public String[] getConfiguredContentTypes(ISourceViewer sourceViewer) {
-		return new String[] { IDocument.DEFAULT_CONTENT_TYPE, RubyPartitionScanner.RUBY_MULTI_LINE_COMMENT };
+		return new String[] { IDocument.DEFAULT_CONTENT_TYPE, RubyPartitionScanner.RUBY_MULTI_LINE_COMMENT, RubyPartitionScanner.RUBY_SINGLE_LINE_COMMENT };
 	}
 
 	/*
