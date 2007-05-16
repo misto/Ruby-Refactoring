@@ -16,6 +16,7 @@ import org.eclipse.jface.text.hyperlink.IHyperlink;
 import org.eclipse.jface.text.hyperlink.IHyperlinkDetector;
 import org.eclipse.ui.IEditorInput;
 import org.jruby.ast.Node;
+import org.jruby.lexer.yacc.SyntaxException;
 import org.rubypeople.rdt.core.IRubyScript;
 import org.rubypeople.rdt.core.RubyModelException;
 import org.rubypeople.rdt.internal.codeassist.SelectionEngine;
@@ -99,6 +100,8 @@ public class RubyHyperLinkDetector implements IHyperlinkDetector {
 						return new IHyperlink[] { link };
 					}
 				}
+			} catch (SyntaxException se) {
+				// ignore
 			} catch (RubyModelException e) {
 				//ignore 
 			}
