@@ -95,4 +95,17 @@ public class TC_RubyPartitionScanner extends TestCase {
 		assertEquals(IDocument.DEFAULT_CONTENT_TYPE, this.getContentType(source, 2));
 		assertEquals(RubyPartitionScanner.RUBY_SINGLE_LINE_COMMENT, this.getContentType(source, 5));
 	}
+	
+	public void testPoundCharacterIsntAComment() {
+		String source = "?#";		
+		assertEquals(IDocument.DEFAULT_CONTENT_TYPE, this.getContentType(source, 1));
+	}
+	
+	public void testSinglelineCommentJustAfterMultilineComment() {
+		String source = "=begin\nComment\n=end\n# this is a singleline comment\n";
+
+		assertEquals(RubyPartitionScanner.RUBY_MULTI_LINE_COMMENT, this.getContentType(source, 0));
+		assertEquals(RubyPartitionScanner.RUBY_MULTI_LINE_COMMENT, this.getContentType(source, 10));
+		assertEquals(RubyPartitionScanner.RUBY_SINGLE_LINE_COMMENT, this.getContentType(source, source.length() - 5));
+	}
 }
