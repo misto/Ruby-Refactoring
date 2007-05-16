@@ -7,7 +7,6 @@ import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.StringReader;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -22,6 +21,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
+import java.util.zip.DataFormatException;
+import java.util.zip.Inflater;
 
 import javax.xml.parsers.FactoryConfigurationError;
 import javax.xml.parsers.ParserConfigurationException;
@@ -72,7 +73,7 @@ public class GemManager {
 	
 	private static final String REMOTE_GEMS_CACHE_FILE = "remote_gems.xml";
 	private static final String LOCAL_GEMS_CACHE_FILE = "local_gems.xml";
-	private static final String GEM_INDEX_URL = "http://gems.rubyforge.org/yaml";
+	private static final String GEM_INDEX_URL = "http://gems.rubyforge.org/yaml.Z";
 
 	private static GemManager fgInstance;
 
@@ -109,8 +110,10 @@ public class GemManager {
 					gems = loadLocalGems();
 					storeGemCache(gems, getConfigFile(LOCAL_GEMS_CACHE_FILE));					
 				}
-				for (GemListener listener : listeners) {
-					listener.gemsRefreshed();
+				synchronized (listeners) {
+					for (GemListener listener : listeners) {
+						listener.gemsRefreshed();
+					}
 				}
 				return Status.OK_STATUS;
 			}
@@ -195,7 +198,13 @@ public class GemManager {
 	private Set<Gem> loadRemoteGems() {
 		
 		try {
-			List<String> lines = getContents();
+			List<String> lines = new ArrayList<String>();
+			try {
+				lines = getContents();
+			} catch (DataFormatException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 			return convertToGems(lines);
 		} catch (MalformedURLException e) {
 			AptanaRDTPlugin.log(e);
@@ -249,18 +258,42 @@ public class GemManager {
 		return gems;
 	}
 
-	private List<String> getContents() throws MalformedURLException, IOException {
+	private List<String> getContents() throws MalformedURLException, IOException, DataFormatException {
+		// XXX Make sure this algorithm is returning same number of gems!!!!!
 		List<String> lines = new ArrayList<String>();
 		URL url = new URL(GEM_INDEX_URL);
 		URLConnection con = url.openConnection();
 		InputStream content = (InputStream) con.getContent();
-		BufferedReader reader = new BufferedReader(new InputStreamReader(
-				content));
-		String line = null;
-		while ((line = reader.readLine()) != null) {
-			lines.add(line);
-		}
-		return lines;
+		byte[] input = new byte[1024];
+		int index = 0;
+		while (true) {
+			int bytesToRead = content.available();
+			byte[] tmp = new byte[bytesToRead];
+			int length = content.read(tmp);
+			if (length == -1) break;
+			while ((index + length) > input.length) { // if we'll overflow the array, we need to expand it
+				byte[] newInput = new byte[input.length * 2];
+				System.arraycopy(input, 0, newInput, 0, input.length);
+				input = newInput;
+			}			
+			System.arraycopy(tmp, 0, input, index, length);
+			index += length;
+		}				
+		
+//		 Decompress the bytes
+		 Inflater decompresser = new Inflater();
+		 decompresser.setInput(input);
+		 byte[] result = new byte[input.length * 20]; // XXX This is a hack. I have no idea what the length should be here
+		 int resultLength = decompresser.inflate(result);
+		 decompresser.end();
+
+		 // Decode the bytes into a String
+		 String outputString = new String(result, 0, resultLength);
+		 String[] lineArray =  outputString.split("\n");	
+		 for (int i = 0; i < lineArray.length; i++) {
+			 lines.add(lineArray[i]);
+		 }
+		 return lines;
 	}
 
 	private Set<Gem> loadLocalGems() {
@@ -542,7 +575,7 @@ public class GemManager {
 		return false;
 	}
 
-	public void addGemListener(GemListener listener) {
+	public synchronized void addGemListener(GemListener listener) {
 		listeners.add(listener);
 	}
 
@@ -576,7 +609,7 @@ public class GemManager {
 		return false;
 	}
 
-	public void removeGemListener(GemListener listener) {
+	public synchronized void removeGemListener(GemListener listener) {
 		listeners.remove(listener);		
 	}
 }
