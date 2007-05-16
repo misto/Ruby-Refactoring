@@ -1,9 +1,11 @@
 package org.rubypeople.rdt.internal.ti;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 
 import org.jruby.ast.ArgsNode;
 import org.jruby.ast.ArgumentNode;
@@ -27,6 +29,7 @@ import org.rubypeople.rdt.internal.core.parser.RubyParser;
 import org.rubypeople.rdt.internal.core.util.ASTUtil;
 import org.rubypeople.rdt.internal.ti.data.LiteralNodeTypeNames;
 import org.rubypeople.rdt.internal.ti.data.TypicalMethodReturnNames;
+import org.rubypeople.rdt.internal.ti.util.ClosestSpanningNodeLocator;
 import org.rubypeople.rdt.internal.ti.util.FirstPrecursorNodeLocator;
 import org.rubypeople.rdt.internal.ti.util.INodeAcceptor;
 import org.rubypeople.rdt.internal.ti.util.OffsetNodeLocator;
@@ -36,6 +39,7 @@ public class DefaultTypeInferrer implements ITypeInferrer {
 
 	private static final String CONSTRUCTOR_INVOKE_NAME = "new";
 	private RootNode rootNode;
+	private Set<Node> dontVisitNodes;
 
 	/**
 	 * Infers type inside the source at given offset.
@@ -43,6 +47,7 @@ public class DefaultTypeInferrer implements ITypeInferrer {
 	 * @return List of ITypeGuess objects.
 	 */
 	public List<ITypeGuess> infer(String source, int offset) {
+		dontVisitNodes = new HashSet<Node>();
 		try {
 			RubyParser parser = new RubyParser();
 			rootNode = (RootNode) parser.parse(source);
@@ -154,13 +159,22 @@ public class DefaultTypeInferrer implements ITypeInferrer {
 		// Or scopingNode. Still not sure whether IterNodes count or not...
 		// silly block-local-var ambiguity ;)
 		
-		// CHRIS - Changed to just grab all assignments to this instance variable, not just first assignment
+		// try and grab the assignment node if this reference is in an assignment, so we can "blacklist" it from being grabbed in next step where we grab all assignments to the instance variable
+		final Node assignmentNode = ClosestSpanningNodeLocator.Instance().findClosestSpanner(rootNode, instVarNode.getPosition().getStartOffset(), new INodeAcceptor() {
+			
+			public boolean doesAccept(Node node) {
+				return node instanceof InstAsgnNode;
+			}
+		
+		});
+		if (assignmentNode != null) dontVisitNodes.add(assignmentNode);
 		List<Node> assignments = new ArrayList<Node>();		
 		assignments.addAll(ScopedNodeLocator.Instance().findNodesInScope(rootNode, new INodeAcceptor() {		
 			public boolean doesAccept(Node node) {
-				return (node instanceof InstAsgnNode) && (((InstAsgnNode)node).getName().equals(instVarNode.getName()));
+				return (node instanceof InstAsgnNode) && (((InstAsgnNode)node).getName().equals(instVarNode.getName())) && !dontVisitNodes.contains(node);
 			}
 		}));
+
 		for (Node assignNode : assignments) {
 			tryAsgnNode(assignNode, guesses);
 		}

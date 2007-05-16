@@ -1,48 +1,11 @@
 package org.rubypeople.rdt.internal.ti;
 
-import java.util.List;
-
-import junit.framework.TestCase;
 
 /**
  * @author Jason
  *
  */
-public class DataFlowTypeInferrerTest extends TestCase {
-	
-	private ITypeInferrer inferrer;
-	public void setUp() {
-		inferrer = createTypeInferrer();
-	}
-	
-	/**
-	 * Shortcut for testing that a particular type is the only one inferred, 
-	 * and is inferred with 100% confidence
-	 * @param guesses
-	 * @param type
-	 */
-	private void assertInfersTypeWithoutDoubt(List<ITypeGuess> guesses, String type) {
-		assertEquals(1, guesses.size());
-		ITypeGuess guess = guesses.get(0);
-		assertEquals(type, guess.getType());
-		assertEquals(100, guess.getConfidence());		
-	}
-
-	/**
-	 * Shortcut for testing that two types are inferred, each with 50% confidence
-	 * @param guesses
-	 * @param type
-	 * @param type2
-	 */
-
-	private void assertInfersTypeFiftyFifty( List<ITypeGuess> guesses, String type1, String type2 ) {
-		assertEquals(2, guesses.size());
-		assertEquals( guesses.get(0).getType(), type1 );
-		assertEquals( guesses.get(1).getType(), type2 );
-		assertEquals( guesses.get(0).getConfidence(), 50 );
-		assertEquals( guesses.get(1).getConfidence(), 50 );
-	}
-	
+public class DataFlowTypeInferrerTest extends TypeInferrerTestCase {	
 	
 	public void testFixnum() throws Exception {
 		assertInfersTypeWithoutDoubt(inferrer.infer("5", 0), "Fixnum");
