@@ -570,10 +570,8 @@ public class DataFlowTypeInferrer implements ITypeInferrer {
 			possibleTypes.add( getTypeDefinitionNodeType( enclosingTypeNode ) );
 		}
 		if ( node instanceof VCallNode ) {
-			System.err.println("//TODO: Why doesn't VCallNode support getReceiverNode() ???"); 
-			//TODO: Why doesn't VCallNode support getReceiverNode() ??? 
-//			Node receiverNode = ((VCallNode)node).getReceiverNode();
-//			return inferNodeType( receiverNode );
+			Node enclosingTypeNode = findEnclosingTypeNode(node);
+			possibleTypes.add( getTypeDefinitionNodeType( enclosingTypeNode ) );
 		}
 		
 		return possibleTypes;
