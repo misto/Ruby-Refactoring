@@ -116,7 +116,7 @@ public class SimilarVariableNameVisitor extends RubyLintVisitor {
 				}
 				if (damerauLevenshteinDistance(modName, string) <= levenshteinThreshold(modName)) {
 					createProblem(map.get(name).getPosition(),
-							"Variable has similar name to another in scope: Possible mis-spelling."); // FIXME Shouldn't create a problem if there is a method with this name!
+							"Variable has similar name to another in scope: Possible misspelling."); // FIXME Shouldn't create a problem if there is a method with this name!
 				}
 			}
 		}
