@@ -124,68 +124,68 @@ public class SelectionEngine {
 		if (isMethodCall(selected)) {
 			String methodName = getName(selected);
 			Set<IRubyElement> possible = new HashSet<IRubyElement>();
-			// FIXME If VCallNode we know the method is in the enclosing scope
-			// (usually the type or it's hierarchy)
-			if (selected instanceof VCallNode) {
-				Node enclosingTypeNode = ClosestSpanningNodeLocator.Instance()
-						.findClosestSpanner(root, start, new INodeAcceptor() {
-							public boolean doesAccept(Node node) {
-								return (node instanceof ClassNode || node instanceof ModuleNode);
-							}
-						});
-				if (enclosingTypeNode == null) {
-					// TODO Handle case we're in top-level - we need to find the method some other way!
-					RubyCore.log("Was unable to grab the enclosing type for our VCallNode. Maybe we're in top-level?");
-					return new IRubyElement[0];
-				}
-				String typeName = ASTUtil.getNameReflectively(enclosingTypeNode);
-				IRubySearchScope scope = SearchEngine.createRubySearchScope(new IRubyElement[] { script });
-				CollectingSearchRequestor requestor = new CollectingSearchRequestor();
-				SearchPattern pattern = SearchPattern.createPattern(
-						IRubyElement.TYPE, typeName,
-						IRubySearchConstants.DECLARATIONS,
-						SearchPattern.R_EXACT_MATCH);
-				SearchParticipant[] participants = { BasicSearchEngine.getDefaultSearchParticipant() };
-				try {
-					new BasicSearchEngine().search(pattern, participants, scope, requestor, null);
-				} catch (CoreException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-				List<SearchMatch> matches = requestor.getResults();
-				if (matches == null || matches.isEmpty()) return new IRubyElement[0];
-				SearchMatch match = matches.get(0);
-				IType type = (IType) match.getElement();
+			IType[] types = getReceiver(script, source, selected, root, start);
+			for (int i = 0; i < types.length; i++) {
+				IType type = types[i];
 				Collection<IMethod> methods = suggestMethods(type);
 				for (IMethod method : methods) {
 					if (method.getElementName().equals(methodName))
 						possible.add(method);
 				}
-			} else {
-
-				ITypeInferrer inferrer = new DefaultTypeInferrer();
-				List<ITypeGuess> guesses = inferrer.infer(source, start);
-				RubyElementRequestor requestor = new RubyElementRequestor(
-						script);
-				for (ITypeGuess guess : guesses) {
-					String name = guess.getType();
-					IType[] types = requestor.findType(name);
-					for (int i = 0; i < types.length; i++) {
-						IType type = types[i];
-						Collection<IMethod> methods = suggestMethods(type);
-						for (IMethod method : methods) {
-							if (method.getElementName().equals(methodName))
-								possible.add(method);
-						}
-					}
-				}
-
-			}
+			}		
 			return possible.toArray(new IRubyElement[possible.size()]);
 		}
 		return new IRubyElement[0];
 	}
 	
+	private IType[] getReceiver(IRubyScript script, String source, Node selected, Node root, int start) {
+		List<IType> types = new ArrayList<IType>();
+		if ((selected instanceof FCallNode) || (selected instanceof VCallNode)) {
+			Node receiver = null;
+			IRubySearchScope scope = null;
+
+				receiver = ClosestSpanningNodeLocator.Instance()
+				.findClosestSpanner(root, start, new INodeAcceptor() {
+					public boolean doesAccept(Node node) {
+						return (node instanceof ClassNode || node instanceof ModuleNode);
+					}
+				});
+				scope = SearchEngine.createRubySearchScope(new IRubyElement[] { script });
+			
+			
+			String typeName = ASTUtil.getNameReflectively(receiver);
+			CollectingSearchRequestor requestor = new CollectingSearchRequestor();
+			SearchPattern pattern = SearchPattern.createPattern(
+					IRubyElement.TYPE, typeName,
+					IRubySearchConstants.DECLARATIONS,
+					SearchPattern.R_EXACT_MATCH);
+			SearchParticipant[] participants = { BasicSearchEngine.getDefaultSearchParticipant() };
+			try {
+				new BasicSearchEngine().search(pattern, participants, scope, requestor, null);
+			} catch (CoreException e) {
+				RubyCore.log(e);
+			}
+			List<SearchMatch> matches = requestor.getResults();
+			if (matches == null || matches.isEmpty()) return new IType[0]; // TODO Check up the type hierarchy!
+			for (SearchMatch match : matches) {
+				types.add((IType) match.getElement());
+			}
+		} else {
+			ITypeInferrer inferrer = new DefaultTypeInferrer();
+			List<ITypeGuess> guesses = inferrer.infer(source, start);
+			RubyElementRequestor requestor = new RubyElementRequestor(
+					script);
+			for (ITypeGuess guess : guesses) {
+				String name = guess.getType();
+				IType[] tmpTypes = requestor.findType(name);
+				for (int i = 0; i < tmpTypes.length; i++) {
+					types.add(tmpTypes[i]);
+				}
+			}
+		}
+		return types.toArray(new IType[types.size()]);
+	}
+
 	// TODO This is all copy-pasted and modified from CompletionEngine. Move this out into a util class and call it from both.
 	private Collection<IMethod> suggestMethods(IType type) throws RubyModelException {
 		List<IMethod> proposals = new ArrayList<IMethod>();
