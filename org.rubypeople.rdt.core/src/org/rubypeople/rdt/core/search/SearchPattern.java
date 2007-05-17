@@ -390,7 +390,8 @@ public abstract class SearchPattern extends InternalSearchPattern {
 	 * 		- '?' is treated as a wildcard when it is inside &lt;&gt; (ie. it must be put on first position of the type argument)
 	 */
 	private static SearchPattern createTypePattern(String patternString, int limitTo, int matchRule, char indexSuffix) {
-		char[] typePart = patternString.toCharArray();
+		char[] typePart = null;
+		if (patternString != null) typePart = patternString.toCharArray();
 		char[] typeChars = null;
 		char[] qualificationChars = null;
 		// get qualification name
