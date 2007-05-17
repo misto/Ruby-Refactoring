@@ -148,7 +148,7 @@ public class InOrderVisitor extends AbstractVisitor {
 	public Instruction visitAndNode(AndNode iVisited) {
 		handleNode(iVisited);
 		acceptNode(iVisited.getFirstNode());
-		acceptNode(iVisited.getFirstNode());
+		acceptNode(iVisited.getSecondNode());
 		return null;
 	}
 
