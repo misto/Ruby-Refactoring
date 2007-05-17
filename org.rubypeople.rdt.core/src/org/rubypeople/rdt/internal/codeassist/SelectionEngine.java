@@ -173,6 +173,28 @@ public class SelectionEngine {
 		} else {
 			ITypeInferrer inferrer = new DefaultTypeInferrer();
 			List<ITypeGuess> guesses = inferrer.infer(source, start);
+			// TODO If guesses are empty, just do a global search for this method?
+			if (guesses.isEmpty()) {
+				String methodName = ASTUtil.getNameReflectively(selected);
+				IRubySearchScope scope = SearchEngine.createRubySearchScope(new IRubyElement[] { script.getRubyProject() });
+				CollectingSearchRequestor requestor = new CollectingSearchRequestor();
+				SearchPattern pattern = SearchPattern.createPattern(
+						IRubyElement.METHOD, methodName,
+						IRubySearchConstants.DECLARATIONS,
+						SearchPattern.R_EXACT_MATCH);
+				SearchParticipant[] participants = { BasicSearchEngine.getDefaultSearchParticipant() };
+				try {
+					new BasicSearchEngine().search(pattern, participants, scope, requestor, null);
+				} catch (CoreException e) {
+					RubyCore.log(e);
+				}
+				List<SearchMatch> matches = requestor.getResults();
+				if (matches == null || matches.isEmpty()) return new IType[0];
+				for (SearchMatch match : matches) {
+					IMethod method = (IMethod) match.getElement();
+					types.add(method.getDeclaringType());
+				}
+			} else {
 			RubyElementRequestor requestor = new RubyElementRequestor(
 					script);
 			for (ITypeGuess guess : guesses) {
@@ -181,6 +203,7 @@ public class SelectionEngine {
 				for (int i = 0; i < tmpTypes.length; i++) {
 					types.add(tmpTypes[i]);
 				}
+			}
 			}
 		}
 		return types.toArray(new IType[types.size()]);
