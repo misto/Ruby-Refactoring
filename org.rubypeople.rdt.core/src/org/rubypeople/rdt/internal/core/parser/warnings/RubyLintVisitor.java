@@ -41,7 +41,7 @@ public abstract class RubyLintVisitor extends AbstractVisitor {
 	}
 
 	protected void createProblem(ISourcePosition position, String message) {
-		String value = RubyCore.getOption(getOptionKey());
+		String value = getSeverity();
 		if (value != null && value.equals(RubyCore.IGNORE))
 			return;
 		CategorizedProblem problem;
@@ -50,6 +50,10 @@ public abstract class RubyLintVisitor extends AbstractVisitor {
 		else
 		  problem = new Warning(position, message, getProblemID());
 		problems.add(problem);
+	}
+
+	protected String getSeverity() {
+		return RubyCore.getOption(getOptionKey());
 	}
 	
 	@Override
