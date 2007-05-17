@@ -1,5 +1,7 @@
 package com.aptana.rdt.internal.core.parser.warnings;
 
+import org.rubypeople.rdt.core.RubyCore;
+import org.rubypeople.rdt.internal.core.RubyModelManager;
 import org.rubypeople.rdt.internal.core.parser.warnings.RubyLintVisitor;
 
 import com.aptana.rdt.internal.parser.warnings.SimilarVariableNameVisitor;
@@ -8,7 +10,14 @@ public class TC_SimilarVariableNameVisitor extends WarningVisitorTest {
 
 	@Override
 	protected RubyLintVisitor createVisitor(String code) {
-		return new SimilarVariableNameVisitor(code);
+		return new SimilarVariableNameVisitor(code){
+		
+			@Override
+			protected String getSeverity() {
+				return RubyCore.WARNING;
+			}
+		
+		};
 	}
 	
 	public void testEmptyHasNoProblems() throws Exception {
@@ -123,6 +132,30 @@ public class TC_SimilarVariableNameVisitor extends WarningVisitorTest {
 				"  def self.name\n" +
 				"    @@local = 1\n" +
 				"    puts @@lcal\n" +
+				"  end\n" +
+				"end\n";
+		parse(code);
+		assertEquals(1, numberOfProblems());
+	}
+	
+	public void testDontWarnAboutDeclarationOfSimilarVariableName() throws Exception {
+		String code = "class Ralph\n" +
+				"  def name\n" +
+				"    @local = 1\n" +
+				"    @lcal = 2\n" +
+				"  end\n" +
+				"end\n";
+		parse(code);
+		assertEquals(0, numberOfProblems());
+	}
+	
+	public void testHandleScoping() throws Exception {
+		String code = "class Ralph\n" +
+				"  def initialize(name)\n" +
+				"    @name = name\n" +
+				"  end\n" +
+				"  def name\n" +
+				"    @namee\n" +
 				"  end\n" +
 				"end\n";
 		parse(code);

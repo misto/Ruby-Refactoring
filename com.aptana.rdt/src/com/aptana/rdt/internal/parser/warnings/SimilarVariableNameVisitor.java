@@ -7,10 +7,12 @@ import java.util.Map;
 
 import org.jruby.ast.ArgsNode;
 import org.jruby.ast.BlockNode;
+import org.jruby.ast.ClassNode;
 import org.jruby.ast.ClassVarAsgnNode;
 import org.jruby.ast.ClassVarDeclNode;
 import org.jruby.ast.ClassVarNode;
 import org.jruby.ast.DefnNode;
+import org.jruby.ast.DefsNode;
 import org.jruby.ast.InstAsgnNode;
 import org.jruby.ast.InstVarNode;
 import org.jruby.ast.ListNode;
@@ -40,8 +42,19 @@ public class SimilarVariableNameVisitor extends RubyLintVisitor {
 
 	@Override
 	public Instruction visitDefnNode(DefnNode iVisited) {
-		enterScope();
+		enterMethod();
 		return super.visitDefnNode(iVisited);
+	}
+	
+	@Override
+	public Instruction visitDefsNode(DefsNode iVisited) {
+		enterMethod();
+		return super.visitDefsNode(iVisited);
+	}
+
+	private void enterMethod() {
+		// TODO Auto-generated method stub
+		enterScope();
 	}
 
 	@Override
@@ -65,7 +78,7 @@ public class SimilarVariableNameVisitor extends RubyLintVisitor {
 
 	@Override
 	public void exitDefnNode(DefnNode iVisited) {
-		exitScope();
+		exitMethod();
 		super.exitDefnNode(iVisited);
 	}
 
@@ -86,6 +99,7 @@ public class SimilarVariableNameVisitor extends RubyLintVisitor {
 	}
 
 	private void exitScope() {
+		// FIXME Only create warnings on references to variables that have no declaration
 		Map<String, Node> map = stack.remove(stack.size() - 1); // pop
 		List<String> names = new ArrayList<String>(map.keySet());
 		while (!names.isEmpty()) {
@@ -232,6 +246,23 @@ public class SimilarVariableNameVisitor extends RubyLintVisitor {
 			map = stack.get(stack.size() - 1);
 		}
 		map.put(iVisited.getName(), (Node) iVisited);
+	}
+
+	@Override
+	public void exitClassNode(ClassNode iVisited) {
+		// TODO Check for references to class and instance variables that have no declaration/assignment
+		super.exitClassNode(iVisited);
+	}
+
+	@Override
+	public void exitDefsNode(DefsNode iVisited) {
+		exitMethod();
+		super.exitDefsNode(iVisited);
+	}
+	
+	private void exitMethod() {
+		// TODO Check for references to local variables that have no declaration/assignment
+		exitScope();
 	}
 
 	@Override

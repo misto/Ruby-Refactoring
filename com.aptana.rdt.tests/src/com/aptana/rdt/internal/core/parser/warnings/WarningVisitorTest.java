@@ -13,13 +13,12 @@ import org.rubypeople.rdt.internal.core.parser.warnings.RubyLintVisitor;
 
 public abstract class WarningVisitorTest extends TestCase {
 
-	private MockProblemRequestor problemRequestor;
 	private RubyParser parser;
+	private DelegatingVisitor visitor;
 
 	@Override
 	protected void setUp() throws Exception {
-		super.setUp();
-		problemRequestor = new MockProblemRequestor();
+		super.setUp();		
 		parser = new RubyParser();
 	}
 
@@ -27,16 +26,16 @@ public abstract class WarningVisitorTest extends TestCase {
 		Node root = parser.parse(code);
 		List<RubyLintVisitor> visitors = new ArrayList<RubyLintVisitor>();
 		visitors.add(createVisitor(code));
-		DelegatingVisitor visitor = new DelegatingVisitor(visitors);
+		visitor = new DelegatingVisitor(visitors);
 		root.accept(visitor);
 	}
 
 	public int numberOfProblems() {
-		return problemRequestor.numberOfProblems();
+		return visitor.getProblems().size();
 	}
 	
 	protected IProblem getProblemAtLine(int i) {
-		return problemRequestor.getProblemAtLine(i);
+		return visitor.getProblems().get(i);
 	}
 	
 	abstract protected RubyLintVisitor createVisitor(String code);
