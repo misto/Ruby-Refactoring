@@ -108,6 +108,11 @@ public class SimilarVariableNameVisitor extends RubyLintVisitor {
 				} else { // name is local var
 					if (isInstanceVar(string) || isClassVar(string))
 						continue;
+				}				
+				if (isPlural(modName, string) || isPlural(string, modName)) {
+					// check for one being plural of other, if so skip them
+					// FIXME Make this option configurable!
+					continue;
 				}
 				if (damerauLevenshteinDistance(modName, string) <= levenshteinThreshold(modName)) {
 					createProblem(map.get(name).getPosition(),
@@ -115,6 +120,11 @@ public class SimilarVariableNameVisitor extends RubyLintVisitor {
 				}
 			}
 		}
+	}
+
+	private boolean isPlural(String singular, String plural) {
+		return (singular.length() == plural.length() - 1) && (singular.equals(plural.substring(0, plural.length() - 1))) &&
+			plural.charAt(plural.length() - 1) == 's';
 	}
 
 	private boolean isInstanceVar(String name) {
