@@ -41,11 +41,6 @@ public class LintOptions {
 		| MisspelledConstructor
 		| PossibleAccidentalBooleanAssignment
 		| LocalVariableMasksMethod
-		| MaxArguments
-		| MaxBranches
-		| MaxReturns
-		| MaxLocals
-		| MaxLines
 		| UnreachableCode
 		| AssignmentPrecedence
 		| SubclassDoesntCallSuper
