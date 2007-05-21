@@ -1,15 +1,12 @@
-package com.aptana.rdt.internal.gems;
+package com.aptana.rdt.internal.core.gems;
 
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.FileReader;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.PrintWriter;
-import java.io.StringReader;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
@@ -23,15 +20,18 @@ import java.util.Map;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
+import java.util.zip.DataFormatException;
+import java.util.zip.Inflater;
 
 import javax.xml.parsers.FactoryConfigurationError;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParserFactory;
 
+import org.eclipse.core.internal.resources.XMLWriter;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.debug.core.DebugPlugin;
@@ -40,12 +40,8 @@ import org.eclipse.debug.core.ILaunchConfiguration;
 import org.eclipse.debug.core.ILaunchConfigurationType;
 import org.eclipse.debug.core.ILaunchConfigurationWorkingCopy;
 import org.eclipse.debug.core.ILaunchManager;
-import org.eclipse.debug.core.IStreamListener;
 import org.eclipse.debug.core.model.IProcess;
-import org.eclipse.debug.core.model.IStreamMonitor;
-import org.eclipse.debug.core.model.IStreamsProxy;
 import org.eclipse.debug.ui.IDebugUIConstants;
-import org.eclipse.osgi.service.environment.Constants;
 import org.rubypeople.rdt.launching.IRubyLaunchConfigurationConstants;
 import org.rubypeople.rdt.launching.IVMInstall;
 import org.rubypeople.rdt.launching.RubyRuntime;
@@ -54,24 +50,34 @@ import org.xml.sax.SAXException;
 import org.xml.sax.XMLReader;
 
 import com.aptana.rdt.AptanaRDTPlugin;
+import com.aptana.rdt.core.gems.Gem;
+import com.aptana.rdt.core.gems.GemListener;
+import com.aptana.rdt.core.gems.IGemManager;
+import com.aptana.rdt.ui.gems.GemsMessages;
 
-public class GemManager {
+public class GemManager implements IGemManager {
 
-	private static final int TIMEOUT = 30000;
+	private static final String LOCAL_SWITCH = "-l";
+	private static final String LIST_COMMAND = "list";
+	private static final String INSTALL_COMMAND = "install";
+	private static final String VERSION_SWITCH = "-v";
+	private static final String UNINSTALL_COMMAND = "uninstall";
+	private static final String UPDATE_COMMAND = "update";
+	private static final String EXECUTABLE = "ruby";
 
-	private static final String TIMEOUT_MSG = "Installing gem took more than 30 seconds, intentionally broke out to avoid infinite loop";
+	private static final String VM_ARGS = "-e STDOUT.sync=true -e STDERR.sync=true -e load(ARGV.shift)";
 
-	private static final String LOCAL_CACHE_FILE = "remote_gems.xml";
+	private static final String REMOTE_GEMS_CACHE_FILE = "remote_gems.xml";
+	private static final String LOCAL_GEMS_CACHE_FILE = "local_gems.xml";
 
-	private static final String GEM_INDEX_URL = "http://gems.rubyforge.org/yaml";
+	private static final String GEM_INDEX_URL = "http://gems.rubyforge.org/yaml.Z";
 
-	private static GemManager fgInstance;
+	private static IGemManager fgInstance;
 
 	private Set<Gem> gems;
-
 	private Set<Gem> remoteGems;
-
 	private Set<GemListener> listeners;
+	private String fGemInstallPath;
 
 	private GemManager() {
 		gems = new HashSet<Gem>();
@@ -79,26 +85,35 @@ public class GemManager {
 		// FIXME Do an incremental check for new remote gems somehow?
 		remoteGems = new HashSet<Gem>();
 		listeners = new HashSet<GemListener>();
-		Job job = new Job("Loading remote gem information") {
+		Job job = new Job(GemsMessages.GemManager_loading_remote_gems) {
 
 			@Override
 			protected IStatus run(IProgressMonitor monitor) {
-				remoteGems = loadLocalCache();
+				remoteGems = loadLocalCache(getConfigFile(REMOTE_GEMS_CACHE_FILE));
 				if (remoteGems.isEmpty()) {
 					remoteGems = loadRemoteGems();
-					storeGemCache();
+					storeGemCache(remoteGems,
+							getConfigFile(REMOTE_GEMS_CACHE_FILE));
 				}
 				return Status.OK_STATUS;
 			}
 
 		};
 		job.schedule();
-		Job job2 = new Job("Loading local gem information") {
+		Job job2 = new Job(GemsMessages.GemManager_loading_local_gems) {
 
 			@Override
 			protected IStatus run(IProgressMonitor monitor) {
-				gems = loadLocalGems();
-				informListeners();
+				gems = loadLocalCache(getConfigFile(LOCAL_GEMS_CACHE_FILE));
+				if (gems.isEmpty()) {
+					gems = loadLocalGems();
+					storeGemCache(gems, getConfigFile(LOCAL_GEMS_CACHE_FILE));
+				}
+				synchronized (listeners) {
+					for (GemListener listener : listeners) {
+						listener.gemsRefreshed();
+					}
+				}
 				return Status.OK_STATUS;
 			}
 
@@ -106,10 +121,10 @@ public class GemManager {
 		job2.schedule();
 	}
 
-	protected Set<Gem> loadLocalCache() {
+	protected Set<Gem> loadLocalCache(File file) {
 		FileReader fileReader = null;
 		try {
-			fileReader = new FileReader(getConfigFile());
+			fileReader = new FileReader(file);
 			XMLReader reader = SAXParserFactory.newInstance().newSAXParser()
 					.getXMLReader();
 			GemManagerContentHandler handler = new GemManagerContentHandler();
@@ -138,11 +153,11 @@ public class GemManager {
 		return new HashSet<Gem>();
 	}
 
-	protected void storeGemCache() {
-		PrintWriter out = null;
+	protected void storeGemCache(Set<Gem> gems, File file) {
+		XMLWriter out = null;
 		try {
-			out = new PrintWriter(new FileWriter(getConfigFile()));
-			writeXML(out);
+			out = new XMLWriter(new FileOutputStream(file));
+			writeXML(gems, out);
 		} catch (FileNotFoundException e) {
 			AptanaRDTPlugin.log(e);
 		} catch (IOException e) {
@@ -153,153 +168,148 @@ public class GemManager {
 		}
 	}
 
-	/**
-	 * Returns the configuration file to use for the servers. The file is
-	 * located in the plugin state directory and called
-	 * <code>remote_gems.xml</code>.
-	 * 
-	 * @return the config file
-	 */
-	private File getConfigFile() {
-		return AptanaRDTPlugin.getDefault().getStateLocation().append(
-				LOCAL_CACHE_FILE).toFile();
+	private File getConfigFile(String fileName) {
+		return AptanaRDTPlugin.getDefault().getStateLocation().append(fileName)
+				.toFile();
 	}
 
 	/**
 	 * Writes each server configuration to file in XML format.
 	 * 
+	 * @param gems
+	 * 
 	 * @param out
 	 *            the writer to use
 	 */
-	private void writeXML(PrintWriter out) {
-		out.println("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
-		out.println("<gems>");
-		for (Gem gem : remoteGems) {
-			out.println("<gem>");
-			out.println("<name>" + gem.getName() + "</name>");
-			out.println("<version>" + gem.getVersion() + "</version>");
-			out.println("<description>" + gem.getDescription()
-					+ "</description>");
-			out.println("</gem>");
+	private void writeXML(Set<Gem> gems, XMLWriter out) {
+		out.startTag("gems", null);
+		for (Gem gem : gems) {
+			out.startTag("gem", null);
+			out.printSimpleTag("name", gem.getName());
+			out.printSimpleTag("version", gem.getVersion());
+			out.printSimpleTag("description", gem.getDescription());
+			out.printSimpleTag("platform", gem.getPlatform());
+			out.endTag("gem");
 		}
-		out.println("</gems>");
+		out.endTag("gems");
 		out.flush();
 	}
 
 	private Set<Gem> loadRemoteGems() {
-		Set<Gem> gems = new HashSet<Gem>();
+
 		try {
-			URL url = new URL(GEM_INDEX_URL);
-			URLConnection con = url.openConnection();
-			InputStream content = (InputStream) con.getContent();
-			BufferedReader reader = new BufferedReader(new InputStreamReader(
-					content));
-			String line = null;
-			String name = null;
-			String version = null;
-			String description = null;
-			String platform = null;
-			boolean nextIsRealVersion = false;
-			while ((line = reader.readLine()) != null) {
-				if (nextIsRealVersion && line.trim().startsWith("version: ")) {
-					version = line.trim().substring(9);
-					if (version.charAt(0) == '"')
-						version = version.substring(1);
-					if (version.charAt(version.length() - 1) == '"')
-						version = version.substring(0, version.length() - 1);
-					nextIsRealVersion = false;
-				} else if (line.trim().equals(
-						"version: !ruby/object:Gem::Version")) {
-					nextIsRealVersion = true;
-				}
-				// if (line.trim().endsWith(":
-				// !ruby/object:Gem::Specification")) {
-				// // new gem
-				// }
-				if (line.trim().startsWith("name:")) {
-					name = line.trim().substring(6);
-				}
-				if (line.trim().startsWith("platform:")) {
-					platform = line.trim().substring(10);
-				}
-				if (line.trim().startsWith("summary:")) {
-					description = line.trim().substring(9);
-				}
-				if (description != null && name != null && version != null
-						&& platform != null) {
-					gems.add(new Gem(name, version, description, platform));
-					description = null;
-					version = null;
-					name = null;
-					platform = null;
-				}
+			List<String> lines = new ArrayList<String>();
+			try {
+				lines = getContents();
+			} catch (DataFormatException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
 			}
+			return convertToGems(lines);
 		} catch (MalformedURLException e) {
 			AptanaRDTPlugin.log(e);
 		} catch (IOException e) {
 			AptanaRDTPlugin.log(e);
 		}
+		return new HashSet<Gem>();
+	}
+
+	private Set<Gem> convertToGems(List<String> lines) {
+		Set<Gem> gems = new HashSet<Gem>();
+		String name = null;
+		String version = null;
+		String description = null;
+		String platform = null;
+		boolean nextIsRealVersion = false;
+		for (String line : lines) {
+			if (nextIsRealVersion && line.trim().startsWith("version: ")) {
+				version = line.trim().substring(9);
+				if (version.charAt(0) == '"')
+					version = version.substring(1);
+				if (version.charAt(version.length() - 1) == '"')
+					version = version.substring(0, version.length() - 1);
+				nextIsRealVersion = false;
+			} else if (line.trim().equals("version: !ruby/object:Gem::Version")) {
+				nextIsRealVersion = true;
+			}
+			if (line.trim().startsWith("name:")) {
+				name = line.trim().substring(6);
+			}
+			if (line.trim().startsWith("platform:")) {
+				if (line.trim().length() == 9) {
+					platform = Gem.RUBY_PLATFORM;
+				} else {
+					platform = line.trim().substring(10);
+				}
+			}
+			if (line.trim().startsWith("summary:")) {
+				description = line.trim().substring(9);
+			}
+			if (description != null && name != null && version != null
+					&& platform != null) {
+				gems.add(new Gem(name, version, description, platform));
+				description = null;
+				version = null;
+				name = null;
+				platform = null;
+			}
+		}
 		return gems;
 	}
 
+	private List<String> getContents() throws MalformedURLException,
+			IOException, DataFormatException {
+		// XXX Make sure this algorithm is returning same number of gems!!!!!
+		List<String> lines = new ArrayList<String>();
+		URL url = new URL(GEM_INDEX_URL);
+		URLConnection con = url.openConnection();
+		InputStream content = (InputStream) con.getContent();
+		byte[] input = new byte[1024];
+		int index = 0;
+		while (true) {
+			int bytesToRead = content.available();
+			byte[] tmp = new byte[bytesToRead];
+			int length = content.read(tmp);
+			if (length == -1)
+				break;
+			while ((index + length) > input.length) { // if we'll overflow the
+														// array, we need to
+														// expand it
+				byte[] newInput = new byte[input.length * 2];
+				System.arraycopy(input, 0, newInput, 0, input.length);
+				input = newInput;
+			}
+			System.arraycopy(tmp, 0, input, index, length);
+			index += length;
+		}
+
+		// Decompress the bytes
+		Inflater decompresser = new Inflater();
+		decompresser.setInput(input);
+		byte[] result = new byte[input.length * 20]; // XXX This is a hack. I
+														// have no idea what the
+														// length should be here
+		int resultLength = decompresser.inflate(result);
+		decompresser.end();
+
+		// Decode the bytes into a String
+		String outputString = new String(result, 0, resultLength);
+		String[] lineArray = outputString.split("\n");
+		for (int i = 0; i < lineArray.length; i++) {
+			lines.add(lineArray[i]);
+		}
+		return lines;
+	}
+
 	private Set<Gem> loadLocalGems() {
-		List<String> lines = launchAndRead("list -l");
+		ILaunchConfiguration config = createGemLaunchConfiguration(LIST_COMMAND + " " + LOCAL_SWITCH, false);
+		List<String> lines = readOutput(config);
 		if (lines.size() > 2) {
 			lines.remove(0); // Remove first 3 lines from local list
 			lines.remove(0);
 			lines.remove(0);
 		}
 		return parseOutGems(lines);
-	}
-
-	private List<String> launchAndRead(String command) {
-		try {
-			ILaunchConfiguration config = createGemLaunchConfiguration(command);
-			ILaunch launch = config.launch(ILaunchManager.RUN_MODE, null);
-			IProcess[] processes = launch.getProcesses();
-			IProcess p = processes[0];
-			IStreamsProxy proxy = p.getStreamsProxy();
-			final StringBuffer output = new StringBuffer();
-			IStreamMonitor monitor = proxy.getOutputStreamMonitor();
-			monitor.addListener(new IStreamListener() {
-				public void streamAppended(String text, IStreamMonitor monitor) {
-					output.append(text);
-				}
-
-			});
-			long start = System.currentTimeMillis();
-			String lastOut = null;
-			while (!p.isTerminated() || output.length() == 0) {
-				Thread.yield();
-				if (lastOut != null && !lastOut.equals(output.toString())) {
-					start = System.currentTimeMillis(); // restart timeout if we
-					// have changes in
-					// output
-				}
-				lastOut = output.toString();				
-				if (System.currentTimeMillis() > start + TIMEOUT) {
-					AptanaRDTPlugin.log(new Exception(TIMEOUT_MSG));
-					break;
-				}
-			}
-
-			BufferedReader reader = new BufferedReader(new StringReader(output
-					.toString()));
-			String line = null;
-			try {
-				List<String> lines = new ArrayList<String>();
-				while ((line = reader.readLine()) != null) {
-					lines.add(line);
-				}
-				return lines;
-			} catch (IOException e) {
-				AptanaRDTPlugin.log(e);
-			}
-
-		} catch (CoreException e) {
-			AptanaRDTPlugin.log(e);
-		}
-		return new ArrayList<String>();
 	}
 
 	private Set<Gem> parseOutGems(List<String> lines) {
@@ -310,7 +320,7 @@ public class GemManager {
 			int j = 2;
 			if ((i + 2) < lines.size()) {
 				String nextLine = lines.get(i + 2);
-				while (!nextLine.trim().isEmpty()) {
+				while (nextLine.trim().length() != 0) {
 					j++;
 					description += " " + nextLine.trim();
 					nextLine = lines.get(i + j);
@@ -327,20 +337,21 @@ public class GemManager {
 		return gems;
 	}
 
-	public boolean upgrade(String gemName) {
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.aptana.rdt.internal.gems.IGemManager#update(com.aptana.rdt.internal.gems.Gem)
+	 */
+	public boolean update(Gem gem) {
 		try {
-			String command = "upgrade " + gemName;
-			ILaunchConfiguration config = createGemLaunchConfiguration(command);
+			String command = UPDATE_COMMAND + " " + gem.getName();
+			ILaunchConfiguration config = createGemLaunchConfiguration(command, true);
 			config.launch(ILaunchManager.RUN_MODE, null);
 		} catch (CoreException e) {
 			AptanaRDTPlugin.log(e);
 			return false;
 		}
 		return true;
-	}
-
-	public boolean installGem(String name) {
-		return installGem(name, null);
 	}
 
 	private ILaunchConfigurationType getRubyApplicationConfigType() {
@@ -352,8 +363,8 @@ public class GemManager {
 		return DebugPlugin.getDefault().getLaunchManager();
 	}
 
-	private ILaunchConfiguration createGemLaunchConfiguration(String arguments) {
-		String gemPath = getServerScript();
+	private ILaunchConfiguration createGemLaunchConfiguration(String arguments, boolean interactive) {
+		String gemPath = getGemScriptPath();
 		ILaunchConfiguration config = null;
 		try {
 			ILaunchConfigurationType configType = getRubyApplicationConfigType();
@@ -372,19 +383,29 @@ public class GemManager {
 			wc.setAttribute(
 					IRubyLaunchConfigurationConstants.ATTR_PROGRAM_ARGUMENTS,
 					arguments);
-			 wc
-			 .setAttribute(
-			 IRubyLaunchConfigurationConstants.ATTR_VM_ARGUMENTS,
-			 "-e STDOUT.sync=true -e STDERR.sync=true -e load(ARGV.shift)");
+			wc.setAttribute(
+					IRubyLaunchConfigurationConstants.ATTR_VM_ARGUMENTS,
+					VM_ARGS);
 			Map<String, String> map = new HashMap<String, String>();
-			map
-					.put(IRubyLaunchConfigurationConstants.ATTR_RUBY_COMMAND,
-							"ruby");
+			map.put(IRubyLaunchConfigurationConstants.ATTR_RUBY_COMMAND,
+					EXECUTABLE);
 			wc
 					.setAttribute(
 							IRubyLaunchConfigurationConstants.ATTR_VM_INSTALL_TYPE_SPECIFIC_ATTRS_MAP,
 							map);
-			wc.setAttribute(IDebugUIConstants.ATTR_LAUNCH_IN_BACKGROUND, true);
+			wc.setAttribute(IDebugUIConstants.ATTR_PRIVATE, true);
+			if (!interactive) {
+				wc.setAttribute(IDebugUIConstants.ATTR_LAUNCH_IN_BACKGROUND,
+						true);
+				wc.setAttribute(IDebugUIConstants.ATTR_CAPTURE_IN_CONSOLE,
+						false);
+				IPath outFilePath = AptanaRDTPlugin.getDefault()
+						.getStateLocation();
+				outFilePath = outFilePath.append(System.currentTimeMillis()
+						+ ".txt");
+				wc.setAttribute(IDebugUIConstants.ATTR_CAPTURE_IN_FILE,
+						outFilePath.toPortableString());
+			}
 			config = wc.doSave();
 		} catch (CoreException ce) {
 			// ignore for now
@@ -392,151 +413,108 @@ public class GemManager {
 		return config;
 	}
 
-	private String getServerScript() {
+	private static String getGemScriptPath() {
 		IVMInstall vm = RubyRuntime.getDefaultVMInstall();
 		File installLocation = vm.getInstallLocation();
 		String path = installLocation.getAbsolutePath();
 		return path + File.separator + "bin" + File.separator + "gem";
 	}
 
-	public boolean installGem(String name, String version) {
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.aptana.rdt.internal.gems.IGemManager#installGem(com.aptana.rdt.internal.gems.Gem)
+	 */
+	public boolean installGem(Gem gem) {
 		try {
-			String command = "install " + name;
-			if (version != null && version.trim().length() > 0) {
-				command += " -v " + version;
+			String command = INSTALL_COMMAND + " " + gem.getName();
+			if (gem.getVersion() != null
+					&& gem.getVersion().trim().length() > 0) {
+				command += " " + VERSION_SWITCH + " " + gem.getVersion();
 			}
-			ILaunchConfiguration config = createGemLaunchConfiguration(command);
-			ILaunch launch = config.launch(ILaunchManager.RUN_MODE, null);
-			IProcess[] processes = launch.getProcesses();
-			IProcess p = processes[0];
-			IStreamMonitor monitor = p.getStreamsProxy()
-					.getOutputStreamMonitor();
-			final StringBuffer buffer = new StringBuffer();
-			monitor.addListener(new IStreamListener() {
-
-				public void streamAppended(String text, IStreamMonitor monitor) {
-					buffer.append(text);
-				}
-
-			});
-			String contents = null;
-			boolean wroteSelection = false;
-			long start = System.currentTimeMillis();
-			String lastOut = null;
-			while (!p.isTerminated()) {
-				contents = buffer.toString();
-				if (contents != null && contents.trim().length() > 0
-						&& !wroteSelection) {
-					// System.out.println(contents);
-					if (contents.contains("Select which gem")) {
-						// Parse out options
-						Map<String, String> options = new HashMap<String, String>();
-
-						String[] lines = contents.split("\n");
-						for (int i = 0; i < lines.length; i++) {
-							String line = lines[i].trim();
-							if (Character.isDigit(line.charAt(0))) {
-								String number = line.substring(0, line
-										.indexOf('.'));
-								int parenIndex = line.indexOf('(');
-								if (parenIndex == -1)
-									continue; // Skip or cancel option
-								String platform = line.substring(
-										parenIndex + 1, line.lastIndexOf(')'));
-								options.put(platform, number);
-							}
-						}
-						// Automatically select the option which matches this
-						// platform.
-						String myPlatform = "ruby";
-						if (Platform.getOS().equals(Constants.OS_WIN32)) {
-							myPlatform = "mswin32";
-						}
-						try {
-							p.getStreamsProxy().write(
-									options.get(myPlatform) + "\r\n");
-							wroteSelection = true;
-						} catch (IOException e) {
-							AptanaRDTPlugin.log(e);
-						}
-					}
-				} else {
-					Thread.yield();
-					if (lastOut != null && !lastOut.equals(buffer.toString())) {
-						start = System.currentTimeMillis(); // restart timeout
-						// if we have
-						// changes in output
-					}
-					if (System.currentTimeMillis() > start + TIMEOUT) {
-						AptanaRDTPlugin.log(new Exception(TIMEOUT_MSG));
-						break;
-					}
-				}
-
-			}
+			ILaunchConfiguration config = createGemLaunchConfiguration(command, true);
+			config.launch(ILaunchManager.RUN_MODE, null);			
 		} catch (CoreException e) {
 			AptanaRDTPlugin.log(e);
 			return false;
 		}
-		refresh();
+		for (GemListener listener : listeners) {
+			listener.gemAdded(gem);
+		}
 		return true;
 	}
 
-	public boolean removeGem(String name, String version) {
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.aptana.rdt.internal.gems.IGemManager#removeGem(com.aptana.rdt.internal.gems.Gem)
+	 */
+	public boolean removeGem(Gem gem) {
 		try {
-			String command = "uninstall " + name;
-			if (version != null && version.trim().length() > 0) {
-				command += " -v " + version;
+			String command = UNINSTALL_COMMAND + " " + gem.getName();
+			if (gem.getVersion() != null
+					&& gem.getVersion().trim().length() > 0) {
+				command += " " + VERSION_SWITCH + " " + gem.getVersion();
 			}
-			ILaunchConfiguration config = createGemLaunchConfiguration(command);
+			ILaunchConfiguration config = createGemLaunchConfiguration(command, true);
 			config.launch(ILaunchManager.RUN_MODE, null);
 		} catch (CoreException e) {
 			AptanaRDTPlugin.log(e);
 			return false;
 		}
-		refresh(); // FIXME Need to wait until uninstall is finished!
+		for (GemListener listener : listeners) {
+			listener.gemRemoved(gem);
+		} // FIXME Need to wait until uninstall is finished!
 		return true;
 	}
 
-	public boolean removeGem(String name) {
-		return removeGem(name, null);
-	}
-
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.aptana.rdt.internal.gems.IGemManager#getGems()
+	 */
 	public Set<Gem> getGems() {
 		return Collections.unmodifiableSortedSet(new TreeSet<Gem>(gems));
 	}
 
-	public static GemManager getInstance() {
+	public static IGemManager getInstance() {
 		if (fgInstance == null)
 			fgInstance = new GemManager();
 		return fgInstance;
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.aptana.rdt.internal.gems.IGemManager#refresh()
+	 */
 	public boolean refresh() {
 		Set<Gem> newGems = loadLocalGems();
 		if (!newGems.isEmpty()) {
 			gems.clear();
 			gems = newGems;
-			informListeners();
+			for (GemListener listener : listeners) {
+				listener.gemsRefreshed();
+			}
 			return true;
 		}
 		return false;
 	}
 
-	private void informListeners() {
-		for (GemListener listener : listeners) {
-			listener.gemsRefreshed();
-		}
-	}
-
-	public void addGemObserver(GemListener listener) {
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.aptana.rdt.internal.gems.IGemManager#addGemListener(com.aptana.rdt.internal.gems.GemManager.GemListener)
+	 */
+	public synchronized void addGemListener(GemListener listener) {
 		listeners.add(listener);
 	}
 
-	public interface GemListener {
-		public void gemsRefreshed();
-	}
-
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.aptana.rdt.internal.gems.IGemManager#getRemoteGems()
+	 */
 	public Set<Gem> getRemoteGems() {
 		SortedSet<Gem> sorted = new TreeSet<Gem>(remoteGems);
 		SortedSet<Gem> logical = new TreeSet<Gem>();
@@ -551,5 +529,77 @@ public class GemManager {
 			temp.add(gem);
 		}
 		return Collections.unmodifiableSortedSet(logical);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.aptana.rdt.internal.gems.IGemManager#gemInstalled(java.lang.String)
+	 */
+	public boolean gemInstalled(String gemName) {
+		Set<Gem> gems = getGems();
+		for (Gem gem : gems) {
+			if (gem.getName().equalsIgnoreCase(gemName))
+				return true;
+		}
+		return false;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.aptana.rdt.internal.gems.IGemManager#removeGemListener(com.aptana.rdt.internal.gems.GemManager.GemListener)
+	 */
+	public synchronized void removeGemListener(GemListener listener) {
+		listeners.remove(listener);
+	}
+
+	public String getGemInstallPath() {
+		if (fGemInstallPath == null) {
+			ILaunchConfiguration config = createGemLaunchConfiguration("environment", false);
+			List<String> lines = readOutput(config);
+			if (lines == null || lines.size() < 3) return null;
+			String path = lines.get(2);
+			path = path.substring(path.indexOf("INSTALLATION DIRECTORY:") + 23);
+			fGemInstallPath = path.trim();
+		}
+		return fGemInstallPath;
+	}
+
+	private List<String> readOutput(ILaunchConfiguration config) {
+		List<String> lines = new ArrayList<String>();
+		File file = null;
+		BufferedReader reader = null;
+		try {
+			ILaunch launch = config.launch(ILaunchManager.RUN_MODE, null);
+			IProcess[] processes = launch.getProcesses();
+			IProcess p = processes[0];
+			while (!p.isTerminated()) {
+				Thread.yield();
+			}
+			file = new File(launch
+					.getAttribute(IDebugUIConstants.ATTR_CAPTURE_IN_FILE));
+			reader = new BufferedReader(new FileReader(file));			
+			String line = null;
+			while ((line = reader.readLine()) != null) {
+				lines.add(line);
+			}
+		} catch(CoreException e) {
+			AptanaRDTPlugin.log(e);
+		} catch (FileNotFoundException e) {
+			AptanaRDTPlugin.log(e);
+		} catch (IOException e) {
+			AptanaRDTPlugin.log(e);
+		} finally {
+			try {
+				if (reader != null) reader.close();
+			} catch (IOException e) {
+				// ignore
+			}
+			if (file != null) {
+				file.delete();
+			}
+		}
+		return lines;
 	}
 }

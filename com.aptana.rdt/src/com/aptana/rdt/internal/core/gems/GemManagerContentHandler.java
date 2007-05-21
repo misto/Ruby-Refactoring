@@ -1,4 +1,4 @@
-package com.aptana.rdt.internal.gems;
+package com.aptana.rdt.internal.core.gems;
 
 import java.util.Collections;
 import java.util.HashSet;
@@ -8,6 +8,8 @@ import org.xml.sax.Attributes;
 import org.xml.sax.ContentHandler;
 import org.xml.sax.Locator;
 import org.xml.sax.SAXException;
+
+import com.aptana.rdt.core.gems.Gem;
 
 public class GemManagerContentHandler implements ContentHandler {
 

@@ -1,9 +1,11 @@
-package com.aptana.rdt.internal.gems;
+package com.aptana.rdt.internal.core.gems;
 
 import java.util.Collection;
 import java.util.SortedSet;
 import java.util.StringTokenizer;
 import java.util.TreeSet;
+
+import com.aptana.rdt.core.gems.Gem;
 
 public class LogicalGem extends Gem {
 
