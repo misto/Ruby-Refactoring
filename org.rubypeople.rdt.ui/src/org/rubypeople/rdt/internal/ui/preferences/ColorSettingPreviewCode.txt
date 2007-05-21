@@ -19,6 +19,7 @@ class ClassName < SuperClass
 		string.gsub!(/ah/, 'eet')
 		local = 42 * hash_code()
 		static_method()
+		hash = {:name => 'foo'}
 		return bar(local) + parameter
 	end
 end
