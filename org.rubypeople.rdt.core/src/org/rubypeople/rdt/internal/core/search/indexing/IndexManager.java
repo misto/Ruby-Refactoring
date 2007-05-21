@@ -597,4 +597,31 @@ public class IndexManager extends JobManager {
 			return null;
 		}
 	}
+	
+	/**
+	 * Remove the content of the given source folder from the index.
+	 */
+	public void removeSourceFolderFromIndex(RubyProject javaProject, IPath sourceFolder, char[][] inclusionPatterns, char[][] exclusionPatterns) {
+		IProject project = javaProject.getProject();
+		if (this.jobEnd > this.jobStart) {
+			// skip it if a job to index the project is already in the queue
+			IndexRequest request = new IndexAllProject(project, this);
+			if (isJobWaiting(request)) return;
+		}
+
+		this.request(new RemoveFolderFromIndex(sourceFolder, inclusionPatterns, exclusionPatterns, project, this));	
+	}
+	
+	/**
+	 * Index the content of the given source folder.
+	 */
+	public void indexSourceFolder(RubyProject javaProject, IPath sourceFolder, char[][] inclusionPatterns, char[][] exclusionPatterns) {
+		IProject project = javaProject.getProject();
+		if (this.jobEnd > this.jobStart) {
+			// skip it if a job to index the project is already in the queue
+			IndexRequest request = new IndexAllProject(project, this);
+			if (isJobWaiting(request)) return;
+		}
+		this.request(new AddFolderToIndex(sourceFolder, project, inclusionPatterns, exclusionPatterns, this));
+	}
 }

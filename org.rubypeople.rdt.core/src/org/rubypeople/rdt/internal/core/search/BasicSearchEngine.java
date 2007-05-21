@@ -267,7 +267,7 @@ public class BasicSearchEngine {
 	}
 
 	public static Collection<? extends IType> findType(String simpleTypeName) {
-		SearchPattern pattern = SearchPattern.createPattern(IRubyElement.TYPE, "*", IRubySearchConstants.DECLARATIONS, SearchPattern.R_EXACT_MATCH);
+		SearchPattern pattern = SearchPattern.createPattern(IRubyElement.TYPE, "*" + simpleTypeName + "*", IRubySearchConstants.DECLARATIONS, SearchPattern.R_PATTERN_MATCH);
 		SearchParticipant[] participants = new SearchParticipant[] {getDefaultSearchParticipant()};
 		IRubySearchScope scope = createWorkspaceScope();
 		TypeRequestor requestor = new TypeRequestor();

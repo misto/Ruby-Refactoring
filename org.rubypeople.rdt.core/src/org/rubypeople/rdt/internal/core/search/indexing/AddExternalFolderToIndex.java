@@ -7,7 +7,6 @@ import java.io.InputStream;
 
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.core.runtime.Path;
 import org.rubypeople.rdt.core.search.SearchParticipant;
 import org.rubypeople.rdt.internal.compiler.util.SimpleLookupTable;
 import org.rubypeople.rdt.internal.core.RubyModelManager;

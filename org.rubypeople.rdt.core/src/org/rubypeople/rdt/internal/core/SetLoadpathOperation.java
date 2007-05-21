@@ -34,6 +34,7 @@ import org.rubypeople.rdt.core.ISourceFolder;
 import org.rubypeople.rdt.core.ISourceFolderRoot;
 import org.rubypeople.rdt.core.RubyModelException;
 import org.rubypeople.rdt.internal.compiler.util.ObjectVector;
+import org.rubypeople.rdt.internal.core.search.indexing.IndexManager;
 import org.rubypeople.rdt.internal.core.util.Messages;
 import org.rubypeople.rdt.internal.core.util.Util;
 
@@ -298,7 +299,7 @@ public class SetLoadpathOperation extends RubyModelOperation {
 		int oldLength = oldResolvedPath.length;
 		int newLength = newResolvedPath.length;
 			
-//		final IndexManager indexManager = manager.getIndexManager();
+		final IndexManager indexManager = manager.getIndexManager();
 		Map oldRoots = null;
 		ISourceFolderRoot[] roots = null;
 		if (project.isOpen()) {
@@ -364,41 +365,41 @@ public class SetLoadpathOperation extends RubyModelOperation {
 
 				// Remove the .java files from the index for a source folder
 				// For a lib folder or a .jar file, remove the corresponding index if not shared.
-//				if (indexManager != null) {
-//					ILoadpathEntry oldEntry = oldResolvedPath[i];
-//					final IPath path = oldEntry.getPath();
-//					switch (changeKind) {
-//						case ILoadpathEntry.CPE_SOURCE:
-//							final char[][] inclusionPatterns = ((LoadpathEntry)oldEntry).fullInclusionPatternChars();
-//							final char[][] exclusionPatterns = ((LoadpathEntry)oldEntry).fullExclusionPatternChars();
-//							postAction(new IPostAction() {
-//								public String getID() {
-//									return path.toString();
-//								}
-//								public void run() /* throws RubyModelException */ {
-//									indexManager.removeSourceFolderFromIndex(project, path, inclusionPatterns, exclusionPatterns);
-//								}
-//							}, 
-//							REMOVEALL_APPEND);
-//							break;
-//						case ILoadpathEntry.CPE_LIBRARY:
-//							final DeltaProcessingState deltaState = manager.deltaState;
-//							postAction(new IPostAction() {
-//								public String getID() {
-//									return path.toString();
-//								}
-//								public void run() /* throws RubyModelException */ {
-//									if (deltaState.otherRoots.get(path) == null) { // if root was not shared
-//										indexManager.discardJobs(path.toString());
-//										indexManager.removeIndex(path);
-//										// TODO (kent) we could just remove the in-memory index and have the indexing check for timestamps
-//									}
-//								}
-//							}, 
-//							REMOVEALL_APPEND);
-//							break;
-//					}		
-//				}
+				if (indexManager != null) {
+					ILoadpathEntry oldEntry = oldResolvedPath[i];
+					final IPath path = oldEntry.getPath();
+					switch (changeKind) {
+						case ILoadpathEntry.CPE_SOURCE:
+							final char[][] inclusionPatterns = ((LoadpathEntry)oldEntry).fullInclusionPatternChars();
+							final char[][] exclusionPatterns = ((LoadpathEntry)oldEntry).fullExclusionPatternChars();
+							postAction(new IPostAction() {
+								public String getID() {
+									return path.toString();
+								}
+								public void run() /* throws RubyModelException */ {
+									indexManager.removeSourceFolderFromIndex(project, path, inclusionPatterns, exclusionPatterns);
+								}
+							}, 
+							REMOVEALL_APPEND);
+							break;
+						case ILoadpathEntry.CPE_LIBRARY:
+							final DeltaProcessingState deltaState = manager.deltaState;
+							postAction(new IPostAction() {
+								public String getID() {
+									return path.toString();
+								}
+								public void run() /* throws RubyModelException */ {
+									if (deltaState.otherRoots.get(path) == null) { // if root was not shared
+										indexManager.discardJobs(path.toString());
+										indexManager.removeIndex(path);
+										// TODO (kent) we could just remove the in-memory index and have the indexing check for timestamps
+									}
+								}
+							}, 
+							REMOVEALL_APPEND);
+							break;
+					}		
+				}
 				hasDelta = true;
 
 			} else {
@@ -441,47 +442,47 @@ public class SetLoadpathOperation extends RubyModelOperation {
 				int changeKind = newResolvedPath[i].getEntryKind();
 				
 				// Request indexing
-//				if (indexManager != null) {
-//					switch (changeKind) {
-//						case ILoadpathEntry.CPE_LIBRARY:
-//							boolean pathHasChanged = true;
-//							final IPath newPath = newResolvedPath[i].getPath();
-//							for (int j = 0; j < oldLength; j++) {
-//								ILoadpathEntry oldEntry = oldResolvedPath[j];
-//								if (oldEntry.getPath().equals(newPath)) {
-//									pathHasChanged = false;
-//									break;
-//								}
-//							}
-//							if (pathHasChanged) {
-//								postAction(new IPostAction() {
-//									public String getID() {
-//										return newPath.toString();
-//									}
-//									public void run() /* throws RubyModelException */ {
-//										indexManager.indexLibrary(newPath, project.getProject());
-//									}
-//								}, 
-//								REMOVEALL_APPEND);
-//							}
-//							break;
-//						case ILoadpathEntry.CPE_SOURCE:
-//							ILoadpathEntry entry = newResolvedPath[i];
-//							final IPath path = entry.getPath();
-//							final char[][] inclusionPatterns = ((LoadpathEntry)entry).fullInclusionPatternChars();
-//							final char[][] exclusionPatterns = ((LoadpathEntry)entry).fullExclusionPatternChars();
-//							postAction(new IPostAction() {
-//								public String getID() {
-//									return path.toString();
-//								}
-//								public void run() /* throws RubyModelException */ {
-//									indexManager.indexSourceFolder(project, path, inclusionPatterns, exclusionPatterns);
-//								}
-//							}, 
-//							APPEND); // append so that a removeSourceFolder action is not removed
-//							break;
-//					}
-//				}
+				if (indexManager != null) {
+					switch (changeKind) {
+						case ILoadpathEntry.CPE_LIBRARY:
+							boolean pathHasChanged = true;
+							final IPath newPath = newResolvedPath[i].getPath();
+							for (int j = 0; j < oldLength; j++) {
+								ILoadpathEntry oldEntry = oldResolvedPath[j];
+								if (oldEntry.getPath().equals(newPath)) {
+									pathHasChanged = false;
+									break;
+								}
+							}
+							if (pathHasChanged) {
+								postAction(new IPostAction() {
+									public String getID() {
+										return newPath.toString();
+									}
+									public void run() /* throws RubyModelException */ {
+										indexManager.indexLibrary(newPath, project.getProject());
+									}
+								}, 
+								REMOVEALL_APPEND);
+							}
+							break;
+						case ILoadpathEntry.CPE_SOURCE:
+							ILoadpathEntry entry = newResolvedPath[i];
+							final IPath path = entry.getPath();
+							final char[][] inclusionPatterns = ((LoadpathEntry)entry).fullInclusionPatternChars();
+							final char[][] exclusionPatterns = ((LoadpathEntry)entry).fullExclusionPatternChars();
+							postAction(new IPostAction() {
+								public String getID() {
+									return path.toString();
+								}
+								public void run() /* throws RubyModelException */ {
+									indexManager.indexSourceFolder(project, path, inclusionPatterns, exclusionPatterns);
+								}
+							}, 
+							APPEND); // append so that a removeSourceFolder action is not removed
+							break;
+					}
+				}
 				
 				needToUpdateDependents |= (changeKind == ILoadpathEntry.CPE_SOURCE) || newResolvedPath[i].isExported();
 				hasDelta = true;
