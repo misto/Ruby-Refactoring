@@ -17,7 +17,7 @@ import org.eclipse.ui.IViewActionDelegate;
 import org.eclipse.ui.IViewPart;
 import org.eclipse.ui.IWorkbenchPart;
 
-import com.aptana.rdt.internal.gems.GemManager;
+import com.aptana.rdt.internal.core.gems.GemManager;
 
 /**
  * Install a gem
