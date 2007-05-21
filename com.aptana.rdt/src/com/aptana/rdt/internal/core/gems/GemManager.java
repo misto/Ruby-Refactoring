@@ -32,6 +32,7 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.debug.core.DebugPlugin;
@@ -77,7 +78,7 @@ public class GemManager implements IGemManager {
 	private Set<Gem> gems;
 	private Set<Gem> remoteGems;
 	private Set<GemListener> listeners;
-	private String fGemInstallPath;
+	private IPath fGemInstallPath;
 
 	private GemManager() {
 		gems = new HashSet<Gem>();
@@ -554,14 +555,14 @@ public class GemManager implements IGemManager {
 		listeners.remove(listener);
 	}
 
-	public String getGemInstallPath() {
+	public IPath getGemInstallPath() {
 		if (fGemInstallPath == null) {
 			ILaunchConfiguration config = createGemLaunchConfiguration("environment", false);
 			List<String> lines = readOutput(config);
 			if (lines == null || lines.size() < 3) return null;
 			String path = lines.get(2);
 			path = path.substring(path.indexOf("INSTALLATION DIRECTORY:") + 23);
-			fGemInstallPath = path.trim();
+			fGemInstallPath = new Path(path.trim());
 		}
 		return fGemInstallPath;
 	}

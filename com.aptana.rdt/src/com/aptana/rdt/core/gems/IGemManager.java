@@ -2,6 +2,8 @@ package com.aptana.rdt.core.gems;
 
 import java.util.Set;
 
+import org.eclipse.core.runtime.IPath;
+
 public interface IGemManager {
 
 	public abstract boolean update(Gem gem);
@@ -22,6 +24,6 @@ public interface IGemManager {
 
 	public abstract void removeGemListener(GemListener listener);
 
-	public abstract String getGemInstallPath();
+	public abstract IPath getGemInstallPath();
 
 }
