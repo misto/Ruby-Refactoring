@@ -2,6 +2,7 @@ package org.rubypeople.rdt.internal.core.search.indexing;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 
@@ -127,21 +128,7 @@ public class AddExternalFolderToIndex extends IndexRequest {
 					return false;
 				}
 
-				File[] children = file.listFiles();
-				for (int i = 0; i < children.length; i++) {
-					if (this.isCancelled) {
-						if (JobManager.VERBOSE)
-							org.rubypeople.rdt.internal.core.util.Util.verbose("-> indexing of " + file.getName() + " has been cancelled"); //$NON-NLS-1$ //$NON-NLS-2$
-						return false;
-					}
-					String name = children[i].getName();
-					if (Util.isRubyLikeFileName(name)) {
-						InputStream stream = new FileInputStream(children[i]);
-						char[] contents = Util.getInputStreamAsCharArray(stream, -1, null);
-						RubySearchDocument entryDocument = new RubySearchDocument(children[i].getAbsolutePath(), contents, participant);
-						this.manager.indexDocument(entryDocument, participant, index, this.containerPath);
-					}
-				}
+				if (!indexFiles(index, file, participant)) return false;
 				this.manager.saveIndex(index);
 				if (JobManager.VERBOSE)
 					org.rubypeople.rdt.internal.core.util.Util.verbose("-> done indexing of " //$NON-NLS-1$
@@ -157,6 +144,27 @@ public class AddExternalFolderToIndex extends IndexRequest {
 			}
 			manager.removeIndex(this.containerPath);
 			return false;
+		}
+		return true;
+	}
+
+	private boolean indexFiles(Index index, File file, SearchParticipant participant) throws FileNotFoundException, IOException {
+		File[] children = file.listFiles();
+		if (children == null) return true;
+		for (int i = 0; i < children.length; i++) {
+			if (this.isCancelled) {
+				if (JobManager.VERBOSE)
+					org.rubypeople.rdt.internal.core.util.Util.verbose("-> indexing of " + file.getName() + " has been cancelled"); //$NON-NLS-1$ //$NON-NLS-2$
+				return false;
+			}
+			String name = children[i].getName();
+			if (children[i].isFile() && Util.isRubyLikeFileName(name)) {
+				InputStream stream = new FileInputStream(children[i]);
+				char[] contents = Util.getInputStreamAsCharArray(stream, -1, null);
+				RubySearchDocument entryDocument = new RubySearchDocument(children[i].getAbsolutePath(), contents, participant);
+				this.manager.indexDocument(entryDocument, participant, index, this.containerPath);
+			}
+			if (!indexFiles(index, children[i], participant)) return false;
 		}
 		return true;
 	}
