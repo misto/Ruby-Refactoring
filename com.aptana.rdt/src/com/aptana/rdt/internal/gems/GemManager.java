@@ -55,9 +55,12 @@ import org.xml.sax.SAXException;
 import org.xml.sax.XMLReader;
 
 import com.aptana.rdt.AptanaRDTPlugin;
+import com.aptana.rdt.core.gems.Gem;
+import com.aptana.rdt.core.gems.GemListener;
+import com.aptana.rdt.core.gems.IGemManager;
 import com.aptana.rdt.ui.gems.GemsMessages;
 
-public class GemManager {
+public class GemManager implements IGemManager {
 
 	private static final String LOCAL_SWITCH = "-l";
 	private static final String LIST_COMMAND = "list";
@@ -75,12 +78,12 @@ public class GemManager {
 	private static final String LOCAL_GEMS_CACHE_FILE = "local_gems.xml";
 	private static final String GEM_INDEX_URL = "http://gems.rubyforge.org/yaml.Z";
 
-	private static GemManager fgInstance;
+	private static IGemManager fgInstance;
 
 	private Set<Gem> gems;
 	private Set<Gem> remoteGems;
 	private Set<GemListener> listeners;
-
+	
 	private GemManager() {
 		gems = new HashSet<Gem>();
 		// FIXME Somehow allow user to refresh remote gem list
@@ -381,6 +384,9 @@ public class GemManager {
 		return gems;
 	}
 
+	/* (non-Javadoc)
+	 * @see com.aptana.rdt.internal.gems.IGemManager#update(com.aptana.rdt.internal.gems.Gem)
+	 */
 	public boolean update(Gem gem) {
 		try {
 			String command = UPDATE_COMMAND + " " + gem.getName();
@@ -449,6 +455,9 @@ public class GemManager {
 		return path + File.separator + "bin" + File.separator + "gem";
 	}
 
+	/* (non-Javadoc)
+	 * @see com.aptana.rdt.internal.gems.IGemManager#installGem(com.aptana.rdt.internal.gems.Gem)
+	 */
 	public boolean installGem(Gem gem) {
 		try {
 			String command = INSTALL_COMMAND + " " + gem.getName();
@@ -534,6 +543,9 @@ public class GemManager {
 		return true;
 	}
 
+	/* (non-Javadoc)
+	 * @see com.aptana.rdt.internal.gems.IGemManager#removeGem(com.aptana.rdt.internal.gems.Gem)
+	 */
 	public boolean removeGem(Gem gem) {
 		try {
 			String command = UNINSTALL_COMMAND + " " + gem.getName();
@@ -552,16 +564,22 @@ public class GemManager {
 		return true;
 	}
 
+	/* (non-Javadoc)
+	 * @see com.aptana.rdt.internal.gems.IGemManager#getGems()
+	 */
 	public Set<Gem> getGems() {
 		return Collections.unmodifiableSortedSet(new TreeSet<Gem>(gems));
 	}
 
-	public static GemManager getInstance() {
+	public static IGemManager getInstance() {
 		if (fgInstance == null)
 			fgInstance = new GemManager();
 		return fgInstance;
 	}
 
+	/* (non-Javadoc)
+	 * @see com.aptana.rdt.internal.gems.IGemManager#refresh()
+	 */
 	public boolean refresh() {
 		Set<Gem> newGems = loadLocalGems();
 		if (!newGems.isEmpty()) {
@@ -575,16 +593,16 @@ public class GemManager {
 		return false;
 	}
 
+	/* (non-Javadoc)
+	 * @see com.aptana.rdt.internal.gems.IGemManager#addGemListener(com.aptana.rdt.internal.gems.GemManager.GemListener)
+	 */
 	public synchronized void addGemListener(GemListener listener) {
 		listeners.add(listener);
 	}
 
-	public interface GemListener {
-		public void gemsRefreshed();
-		public void gemAdded(Gem gem);
-		public void gemRemoved(Gem gem);
-	}
-
+	/* (non-Javadoc)
+	 * @see com.aptana.rdt.internal.gems.IGemManager#getRemoteGems()
+	 */
 	public Set<Gem> getRemoteGems() {
 		SortedSet<Gem> sorted = new TreeSet<Gem>(remoteGems);
 		SortedSet<Gem> logical = new TreeSet<Gem>();
@@ -601,6 +619,9 @@ public class GemManager {
 		return Collections.unmodifiableSortedSet(logical);
 	}
 
+	/* (non-Javadoc)
+	 * @see com.aptana.rdt.internal.gems.IGemManager#gemInstalled(java.lang.String)
+	 */
 	public boolean gemInstalled(String gemName) {
 		Set<Gem> gems = getGems();
 		for (Gem gem : gems) {
@@ -609,7 +630,40 @@ public class GemManager {
 		return false;
 	}
 
+	/* (non-Javadoc)
+	 * @see com.aptana.rdt.internal.gems.IGemManager#removeGemListener(com.aptana.rdt.internal.gems.GemManager.GemListener)
+	 */
 	public synchronized void removeGemListener(GemListener listener) {
 		listeners.remove(listener);		
+	}
+
+	public String getGemInstallPath() {
+		try {
+			ILaunchConfiguration config = createGemLaunchConfiguration("environment");
+			ILaunch launch = config.launch(ILaunchManager.RUN_MODE, null);
+			IProcess[] processes = launch.getProcesses();
+			IProcess p = processes[0];
+			IStreamMonitor monitor = p.getStreamsProxy()
+					.getOutputStreamMonitor();
+			final StringBuffer buffer = new StringBuffer();
+			monitor.addListener(new IStreamListener() {
+
+				public void streamAppended(String text, IStreamMonitor monitor) {
+					buffer.append(text);
+				}
+
+			});
+			while (!p.isTerminated()) {
+				Thread.yield();
+			}
+			String contents = buffer.toString();
+			int index = contents.indexOf("INSTALLATION DIRECTORY:");
+			int endIndex = contents.indexOf("\n", index);
+			String path = contents.substring(index + 23, endIndex);
+			return path.trim();
+		} catch(CoreException e) {
+			AptanaRDTPlugin.log(e);
+		}		
+		return null;
 	}
 }

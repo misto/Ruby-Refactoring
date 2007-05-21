@@ -18,7 +18,7 @@ import org.eclipse.ui.IViewActionDelegate;
 import org.eclipse.ui.IViewPart;
 import org.eclipse.ui.IWorkbenchPart;
 
-import com.aptana.rdt.internal.gems.Gem;
+import com.aptana.rdt.core.gems.Gem;
 import com.aptana.rdt.internal.gems.GemManager;
 import com.aptana.rdt.ui.gems.GemsMessages;
 import com.aptana.rdt.ui.gems.GemsView;

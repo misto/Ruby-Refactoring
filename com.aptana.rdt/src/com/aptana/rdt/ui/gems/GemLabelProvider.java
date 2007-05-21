@@ -4,7 +4,7 @@ import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.swt.graphics.Image;
 
-import com.aptana.rdt.internal.gems.Gem;
+import com.aptana.rdt.core.gems.Gem;
 
 public class GemLabelProvider extends LabelProvider implements ITableLabelProvider {
 

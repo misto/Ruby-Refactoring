@@ -26,7 +26,7 @@ import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.Text;
 import org.rubypeople.rdt.ui.TableViewerSorter;
 
-import com.aptana.rdt.internal.gems.Gem;
+import com.aptana.rdt.core.gems.Gem;
 import com.aptana.rdt.internal.gems.GemManager;
 import com.aptana.rdt.internal.gems.LogicalGem;
 

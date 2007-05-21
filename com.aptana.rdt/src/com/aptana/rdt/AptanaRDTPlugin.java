@@ -17,9 +17,10 @@ import org.osgi.framework.BundleContext;
 import org.rubypeople.rdt.internal.launching.LaunchingPlugin;
 import org.rubypeople.rdt.internal.ui.IRubyStatusConstants;
 
-import com.aptana.rdt.internal.gems.Gem;
+import com.aptana.rdt.core.gems.Gem;
+import com.aptana.rdt.core.gems.GemListener;
+import com.aptana.rdt.core.gems.IGemManager;
 import com.aptana.rdt.internal.gems.GemManager;
-import com.aptana.rdt.internal.gems.GemManager.GemListener;
 import com.aptana.rdt.internal.ui.RubyRedMessages;
 
 /**
@@ -215,6 +216,8 @@ public class AptanaRDTPlugin extends AbstractUIPlugin {
 	 */
 	public void start(BundleContext context) throws Exception {
 		super.start(context);
+		context.registerService(IGemManager.class.getName(), GemManager.getInstance(), null);
+		
 		Set<Gem> gems = GemManager.getInstance().getGems(); // FIXME What if user has explicity disabled using ruby-debug?!
 		if (gems.isEmpty()) {
 			GemManager.getInstance().addGemListener(new GemListener() {

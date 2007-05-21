@@ -9,6 +9,8 @@ import org.xml.sax.ContentHandler;
 import org.xml.sax.Locator;
 import org.xml.sax.SAXException;
 
+import com.aptana.rdt.core.gems.Gem;
+
 public class GemManagerContentHandler implements ContentHandler {
 
 	private HashSet<Gem> gems;
