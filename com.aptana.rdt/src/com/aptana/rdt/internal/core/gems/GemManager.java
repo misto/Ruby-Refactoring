@@ -578,8 +578,7 @@ public class GemManager implements IGemManager {
 			while (!p.isTerminated()) {
 				Thread.yield();
 			}
-			file = new File(launch
-					.getAttribute(IDebugUIConstants.ATTR_CAPTURE_IN_FILE));
+			file = new File(config.getAttribute(IDebugUIConstants.ATTR_CAPTURE_IN_FILE, (String) null));
 			reader = new BufferedReader(new FileReader(file));			
 			String line = null;
 			while ((line = reader.readLine()) != null) {
