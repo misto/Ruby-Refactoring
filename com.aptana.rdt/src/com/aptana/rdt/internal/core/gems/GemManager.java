@@ -602,4 +602,20 @@ public class GemManager implements IGemManager {
 		}
 		return lines;
 	}
+
+	public IPath getGemPath(String gemName) {
+		IPath path = getGemInstallPath();
+		path = path.append("gems");
+		File gemFolder = path.toFile();
+		File[] gems = gemFolder.listFiles();
+		for (int i = 0; i < gems.length; i++) {
+			if (gems[i].getName().startsWith(gemName)) 
+				return new Path(gems[i].getAbsolutePath()).append("lib");
+		}
+		return null;
+	}
+	
+	public IPath getGemPath(String gemName, String version) {
+		return getGemPath(gemName + "-" + version);
+	}
 }

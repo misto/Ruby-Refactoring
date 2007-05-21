@@ -26,4 +26,8 @@ public interface IGemManager {
 
 	public abstract IPath getGemInstallPath();
 
+	public abstract IPath getGemPath(String gemName);
+	
+	public abstract IPath getGemPath(String gemName, String version);
+
 }
