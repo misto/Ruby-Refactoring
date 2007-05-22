@@ -11,6 +11,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -260,8 +261,12 @@ public class GemManager implements IGemManager {
 
 	private List<String> getContents() throws MalformedURLException,
 			IOException, DataFormatException {
-		// XXX Make sure this algorithm is returning same number of gems!!!!!
-		List<String> lines = new ArrayList<String>();
+		String outputString = decompress(getZippedGemIndex());		
+		String[] lineArray = outputString.split("\n");
+		return Arrays.asList(lineArray);
+	}
+
+	private byte[] getZippedGemIndex() throws MalformedURLException, IOException {
 		URL url = new URL(GEM_INDEX_URL);
 		URLConnection con = url.openConnection();
 		InputStream content = (InputStream) con.getContent();
@@ -283,23 +288,24 @@ public class GemManager implements IGemManager {
 			System.arraycopy(tmp, 0, input, index, length);
 			index += length;
 		}
+		// Strip byte array down to just length of the content we actually read in.
+		byte[] newInput = new byte[index];
+		System.arraycopy(input, 0, newInput, 0, index);
+		return newInput;
+	}
 
+	private String decompress(byte[] input) throws DataFormatException {
 		// Decompress the bytes
 		Inflater decompresser = new Inflater();
 		decompresser.setInput(input);
-		byte[] result = new byte[input.length * 20]; // XXX This is a hack. I
+		byte[] result = new byte[input.length * 10]; // XXX This is a hack. I
 														// have no idea what the
 														// length should be here
 		int resultLength = decompresser.inflate(result);
 		decompresser.end();
 
 		// Decode the bytes into a String
-		String outputString = new String(result, 0, resultLength);
-		String[] lineArray = outputString.split("\n");
-		for (int i = 0; i < lineArray.length; i++) {
-			lines.add(lineArray[i]);
-		}
-		return lines;
+		return new String(result, 0, resultLength);
 	}
 
 	private Set<Gem> loadLocalGems() {
