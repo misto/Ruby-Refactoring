@@ -182,7 +182,7 @@ public class DeltaProcessor {
      */
     public int overridenEventType = -1;
     
-	private SourceParser sourceElementParserCache;
+	private SourceElementParser sourceElementParserCache;
 
     public DeltaProcessor(DeltaProcessingState state, RubyModelManager manager) {
         this.state = state;
@@ -1881,7 +1881,7 @@ public class DeltaProcessor {
 		}
 	}
 
-	private SourceParser getSourceElementParser(Openable element) {
+	private SourceElementParser getSourceElementParser(Openable element) {
 		if (this.sourceElementParserCache == null)
 			this.sourceElementParserCache = this.manager.getIndexManager().getSourceElementParser(element.getRubyProject(), null/*requestor will be set by indexer*/);
 		return this.sourceElementParserCache;

@@ -27,7 +27,7 @@ import org.rubypeople.rdt.internal.compiler.util.SimpleSet;
 import org.rubypeople.rdt.internal.core.RubyModel;
 import org.rubypeople.rdt.internal.core.RubyModelManager;
 import org.rubypeople.rdt.internal.core.RubyProject;
-import org.rubypeople.rdt.internal.core.SourceParser;
+import org.rubypeople.rdt.internal.core.SourceElementParser;
 import org.rubypeople.rdt.internal.core.index.DiskIndex;
 import org.rubypeople.rdt.internal.core.index.Index;
 import org.rubypeople.rdt.internal.core.search.BasicSearchEngine;
@@ -404,7 +404,7 @@ public class IndexManager extends JobManager {
 	 * Trigger addition of a resource to an index
 	 * Note: the actual operation is performed in background
 	 */
-	public void addSource(IFile resource, IPath containerPath, SourceParser parser) {
+	public void addSource(IFile resource, IPath containerPath, SourceElementParser parser) {
 		if (RubyCore.getPlugin() == null) return;	
 		SearchParticipant participant = BasicSearchEngine.getDefaultSearchParticipant();
 		SearchDocument document = participant.getDocument(resource.getFullPath().toString());
@@ -492,9 +492,9 @@ public class IndexManager extends JobManager {
 
 		writeSavedIndexNamesFile();
 	}
-	public SourceParser getSourceElementParser(IRubyProject project, ISourceElementRequestor requestor) {
+	public SourceElementParser getSourceElementParser(IRubyProject project, ISourceElementRequestor requestor) {
 		// TODO take into account the project?
-		return new SourceParser(requestor);
+		return new SourceElementParser(requestor);
 	}
 	public void indexLibrary(IPath path, IProject project) {
 //		 requestingProject is no longer used to cancel jobs but leave it here just in case

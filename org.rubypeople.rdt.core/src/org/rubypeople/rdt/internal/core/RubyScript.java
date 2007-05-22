@@ -137,7 +137,7 @@ public class RubyScript extends Openable implements IRubyScript {
 			ast = parser.parse((IFile) getResource(), new CharArrayReader(contents));
 			lastGoodAST = ast;
 			ISourceElementRequestor requestor = new RubyScriptStructureBuilder(this, unitInfo, newElements);
-			SourceParser sp = new SourceParser(requestor);
+			SourceElementParser sp = new SourceElementParser(requestor);
 			if (ast != null) ast.accept(sp);
 			unitInfo.setIsStructureKnown(true);
 		} catch (SyntaxException e) {

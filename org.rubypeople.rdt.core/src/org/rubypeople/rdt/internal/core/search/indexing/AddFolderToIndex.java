@@ -19,7 +19,7 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.rubypeople.rdt.core.RubyCore;
-import org.rubypeople.rdt.internal.core.SourceParser;
+import org.rubypeople.rdt.internal.core.SourceElementParser;
 import org.rubypeople.rdt.internal.core.index.Index;
 import org.rubypeople.rdt.internal.core.search.processing.JobManager;
 import org.rubypeople.rdt.internal.core.util.Util;
@@ -55,7 +55,7 @@ class AddFolderToIndex extends IndexRequest {
 
 			final IPath container = this.containerPath;
 			final IndexManager indexManager = this.manager;
-			final SourceParser parser = indexManager.getSourceElementParser(RubyCore.create(this.project), null/*requestor will be set by indexer*/);
+			final SourceElementParser parser = indexManager.getSourceElementParser(RubyCore.create(this.project), null/*requestor will be set by indexer*/);
 			if (this.exclusionPatterns == null && this.inclusionPatterns == null) {
 				folder.accept(
 					new IResourceProxyVisitor() {

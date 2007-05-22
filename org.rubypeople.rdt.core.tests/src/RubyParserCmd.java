@@ -18,7 +18,7 @@ import org.rubypeople.rdt.internal.core.DefaultWorkingCopyOwner;
 import org.rubypeople.rdt.internal.core.RubyScript;
 import org.rubypeople.rdt.internal.core.RubyScriptElementInfo;
 import org.rubypeople.rdt.internal.core.RubyScriptStructureBuilder;
-import org.rubypeople.rdt.internal.core.SourceParser;
+import org.rubypeople.rdt.internal.core.SourceElementParser;
 import org.rubypeople.rdt.internal.core.parser.RdtWarnings;
 import org.rubypeople.rdt.internal.core.parser.RubyParser;
 
@@ -107,7 +107,7 @@ public class RubyParserCmd {
 			RubyScriptElementInfo unitInfo = new RubyScriptElementInfo() ; 
 			RubyScript script = new RubyScript(null, file, DefaultWorkingCopyOwner.PRIMARY ) ;
 			ISourceElementRequestor visitor = new RubyScriptStructureBuilder(script, unitInfo, elements);
-			SourceParser sp = new SourceParser(visitor);
+			SourceElementParser sp = new SourceElementParser(visitor);
 			if (node != null) {
 				node.accept(sp);
 			}

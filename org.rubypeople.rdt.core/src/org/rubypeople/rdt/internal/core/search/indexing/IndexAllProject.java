@@ -28,7 +28,7 @@ import org.rubypeople.rdt.core.RubyCore;
 import org.rubypeople.rdt.internal.compiler.util.SimpleLookupTable;
 import org.rubypeople.rdt.internal.core.LoadpathEntry;
 import org.rubypeople.rdt.internal.core.RubyProject;
-import org.rubypeople.rdt.internal.core.SourceParser;
+import org.rubypeople.rdt.internal.core.SourceElementParser;
 import org.rubypeople.rdt.internal.core.index.Index;
 import org.rubypeople.rdt.internal.core.search.processing.JobManager;
 import org.rubypeople.rdt.internal.core.util.Util;
@@ -181,7 +181,7 @@ public class IndexAllProject extends IndexRequest {
 				}
 			}
 			
-			SourceParser parser = this.manager.getSourceElementParser(javaProject, null/*requestor will be set by indexer*/);
+			SourceElementParser parser = this.manager.getSourceElementParser(javaProject, null/*requestor will be set by indexer*/);
 			Object[] names = indexedFileNames.keyTable;
 			Object[] values = indexedFileNames.valueTable;
 			for (int i = 0, namesLength = names.length; i < namesLength; i++) {

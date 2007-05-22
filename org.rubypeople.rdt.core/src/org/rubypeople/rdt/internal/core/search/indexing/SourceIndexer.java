@@ -7,7 +7,7 @@ import org.eclipse.core.runtime.Path;
 import org.rubypeople.rdt.core.RubyCore;
 import org.rubypeople.rdt.core.search.SearchDocument;
 import org.rubypeople.rdt.internal.core.RubyModelManager;
-import org.rubypeople.rdt.internal.core.SourceParser;
+import org.rubypeople.rdt.internal.core.SourceElementParser;
 import org.rubypeople.rdt.internal.core.search.matching.ConstructorPattern;
 import org.rubypeople.rdt.internal.core.search.matching.FieldPattern;
 import org.rubypeople.rdt.internal.core.search.matching.MethodPattern;
@@ -27,7 +27,7 @@ public class SourceIndexer implements IIndexConstants {
 		// Create a new Parser
 		SourceIndexerRequestor requestor = new SourceIndexerRequestor(this);
 		String documentPath = this.document.getPath();
-		SourceParser parser = ((InternalSearchDocument) this.document).parser;
+		SourceElementParser parser = ((InternalSearchDocument) this.document).parser;
 		if (parser == null) {
 			IPath path = new Path(documentPath);
 			IProject project = ResourcesPlugin.getWorkspace().getRoot().getProject(path.segment(0));
