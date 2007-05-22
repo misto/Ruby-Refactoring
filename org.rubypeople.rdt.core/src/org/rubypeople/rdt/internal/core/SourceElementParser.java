@@ -71,7 +71,7 @@ import org.rubypeople.rdt.internal.core.util.ASTUtil;
  * @author Chris
  * 
  */
-public class SourceParser extends InOrderVisitor { // TODO Rename to SourceElementParser
+public class SourceElementParser extends InOrderVisitor { // TODO Rename to SourceElementParser
 
 	private static final String MODULE_FUNCTION = "module_function";
 	private static final String EMPTY_STRING = "";
@@ -95,7 +95,7 @@ public class SourceParser extends InOrderVisitor { // TODO Rename to SourceEleme
 	 * 
 	 * @param requestor The {@link ISourceElementRequestor} that wants to be notified of the source structure
 	 */
-	public SourceParser(ISourceElementRequestor requestor) {
+	public SourceElementParser(ISourceElementRequestor requestor) {
 		super();
 		this.requestor = requestor;
 	}
