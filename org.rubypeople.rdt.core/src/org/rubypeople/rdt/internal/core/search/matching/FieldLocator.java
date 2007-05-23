@@ -33,8 +33,11 @@ public class FieldLocator extends PatternLocator {
 	
 	@Override
 	public void reportMatches(final RubyScript script, final MatchLocator locator) {
-//		reportMatches((IParent) script, locator);
-		reportASTMatches(script, locator);
+		if (!this.pattern.findReferences) { // just traverse our own model
+		  reportMatches((IParent) script, locator);
+		} else { // they want references too, so we need to traverse the AST
+			reportASTMatches(script, locator);
+		}		
 	}
 
 	private void reportASTMatches(final RubyScript script, final MatchLocator locator) {
@@ -43,6 +46,7 @@ public class FieldLocator extends PatternLocator {
 			if (ast == null) {
 				ast = new RubyParser().parse(script.getSource());
 			}
+			final boolean findDeclarations = this.pattern.findDeclarations;
 			new InOrderVisitor() {
 			
 				@Override
@@ -51,7 +55,7 @@ public class FieldLocator extends PatternLocator {
 					return super.visitInstVarNode(iVisited);
 				}
 
-				// XXX Handle constants!
+				// XXX Handle constant references!
 			
 				@Override
 				public Instruction visitGlobalVarNode(GlobalVarNode iVisited) {
@@ -61,13 +65,13 @@ public class FieldLocator extends PatternLocator {
 				
 				@Override
 				public Instruction visitConstDeclNode(ConstDeclNode iVisited) {
-					match(iVisited);
+					if (findDeclarations) match(iVisited);
 					return super.visitConstDeclNode(iVisited);
 				}
 			
 				@Override
 				public Instruction visitGlobalAsgnNode(GlobalAsgnNode iVisited) {
-					match(iVisited);
+					match(iVisited); // TODO check whether we want to find write references
 					return super.visitGlobalAsgnNode(iVisited);
 				}
 				
@@ -79,13 +83,13 @@ public class FieldLocator extends PatternLocator {
 				
 				@Override
 				public Instruction visitClassVarAsgnNode(ClassVarAsgnNode iVisited) {
-					match(iVisited);
+					match(iVisited); // TODO check whether we want to find write references
 					return super.visitClassVarAsgnNode(iVisited);
 				}
 				
 				@Override
 				public Instruction visitInstAsgnNode(InstAsgnNode iVisited) {
-					match(iVisited);
+					match(iVisited); // TODO check whether we want to find write references
 					return super.visitInstAsgnNode(iVisited);
 				}
 				
@@ -154,10 +158,8 @@ public class FieldLocator extends PatternLocator {
 
 	private int getAccuracy(String name) {
 		if (this.pattern.findReferences)
-			// must be a write only access with an initializer
-			if (this.pattern.writeAccess)
-				if (matchesName(this.pattern.name, name.toCharArray()))
-					return ACCURATE_MATCH;
+			if (matchesName(this.pattern.name, name.toCharArray()))
+				return ACCURATE_MATCH;
 
 		if (this.pattern.findDeclarations) {
 			if (matchesName(this.pattern.name, name.toCharArray()))

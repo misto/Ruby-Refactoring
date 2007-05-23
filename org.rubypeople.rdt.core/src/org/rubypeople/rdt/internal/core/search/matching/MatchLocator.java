@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
@@ -532,6 +533,7 @@ public class MatchLocator {
 	public SearchMatch newMethodReferenceMatch(
 			IRubyElement enclosingElement,
 			IRubyElement binding,
+			List<String> arguments,
 			int accuracy,
 			int offset,  
 			int length,
@@ -539,7 +541,7 @@ public class MatchLocator {
 			Node reference) {
 		SearchParticipant participant = getParticipant(); 
 		IResource resource = this.currentPossibleMatch.resource;
-		return new MethodReferenceMatch(enclosingElement, binding, accuracy, offset, length, isConstructor, false, participant, resource);
+		return new MethodReferenceMatch(enclosingElement, binding, arguments, accuracy, offset, length, isConstructor, false, participant, resource);
 	}
 	
 }

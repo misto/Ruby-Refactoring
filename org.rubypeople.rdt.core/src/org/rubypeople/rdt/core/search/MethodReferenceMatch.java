@@ -10,6 +10,8 @@
  *******************************************************************************/
 package org.rubypeople.rdt.core.search;
 
+import java.util.List;
+
 import org.eclipse.core.resources.IResource;
 import org.rubypeople.rdt.core.IRubyElement;
 
@@ -25,6 +27,7 @@ import org.rubypeople.rdt.core.IRubyElement;
 public class MethodReferenceMatch extends SearchMatch {
 	private boolean constructor;
 	private IRubyElement binding;
+	private List<String> arguments;
 
 	/**
 	 * Creates a new method reference match.
@@ -58,8 +61,9 @@ public class MethodReferenceMatch extends SearchMatch {
 	 * @param resource the resource of the element
 	 * @since 1.0
 	 */
-	public MethodReferenceMatch(IRubyElement enclosingElement, IRubyElement binding, int accuracy, int offset, int length, boolean constructor, boolean insideDocComment, SearchParticipant participant, IResource resource) {
+	public MethodReferenceMatch(IRubyElement enclosingElement, IRubyElement binding, List<String> args, int accuracy, int offset, int length, boolean constructor, boolean insideDocComment, SearchParticipant participant, IResource resource) {
 		this(enclosingElement, accuracy, offset, length, insideDocComment, participant, resource);
+		this.arguments = args;
 		this.constructor = constructor;
 		this.binding = binding;
 	}
@@ -76,6 +80,10 @@ public class MethodReferenceMatch extends SearchMatch {
 	
 	public IRubyElement getBinding() {
 		return this.binding;
+	}
+
+	public List<String> getArguments() {
+		return this.arguments;
 	}
 	
 }

@@ -24,7 +24,9 @@
  */
 package org.rubypeople.rdt.internal.core.parser;
 
+import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 
 import org.jruby.ast.AliasNode;
 import org.jruby.ast.AndNode;
@@ -71,10 +73,12 @@ import org.jruby.ast.ForNode;
 import org.jruby.ast.GlobalAsgnNode;
 import org.jruby.ast.GlobalVarNode;
 import org.jruby.ast.HashNode;
+import org.jruby.ast.IArgumentNode;
 import org.jruby.ast.IfNode;
 import org.jruby.ast.InstAsgnNode;
 import org.jruby.ast.InstVarNode;
 import org.jruby.ast.IterNode;
+import org.jruby.ast.ListNode;
 import org.jruby.ast.LocalAsgnNode;
 import org.jruby.ast.LocalVarNode;
 import org.jruby.ast.Match2Node;
@@ -123,6 +127,7 @@ import org.jruby.ast.ZArrayNode;
 import org.jruby.ast.ZSuperNode;
 import org.jruby.ast.visitor.AbstractVisitor;
 import org.jruby.evaluator.Instruction;
+import org.rubypeople.rdt.internal.core.util.ASTUtil;
 
 /**
  * @author Chris
@@ -1189,6 +1194,48 @@ public class InOrderVisitor extends AbstractVisitor {
 	@Override
 	protected Instruction visitNode(Node iVisited) {
 		return null;
+	}
+	
+	protected List<String> getArgumentsFromFunctionCall(IArgumentNode iVisited) {
+		List<String> arguments = new ArrayList<String>();
+		Node argsNode = iVisited.getArgsNode();
+		Iterator iter = null;
+		if (argsNode instanceof SplatNode) {
+			SplatNode splat = (SplatNode) argsNode;
+			iter = splat.childNodes().iterator();
+		} else if (argsNode instanceof ArrayNode) {
+			ArrayNode arrayNode = (ArrayNode) iVisited.getArgsNode();
+			iter = arrayNode.childNodes().iterator();
+		} else if (argsNode == null) {
+			// Block?
+			Node iterNode = null;
+			if (iVisited instanceof FCallNode) {
+				FCallNode fcall = (FCallNode) iVisited;
+				iterNode = fcall.getIterNode();
+			} else if (iVisited instanceof CallNode) {
+				CallNode call = (CallNode) iVisited;	
+				iterNode = call.getIterNode();
+			}
+			if (iterNode == null) return arguments;
+			if (iterNode instanceof IterNode) { // yup, it has a block
+				IterNode yeah = (IterNode) iterNode;
+				Node varNode = yeah.getVarNode();
+				if (varNode instanceof DAsgnNode) { // single variable in block
+					DAsgnNode dassgn = (DAsgnNode) varNode;
+					arguments.add(dassgn.getName());
+				} else if (varNode instanceof MultipleAsgnNode) { // multiple variables in block
+					MultipleAsgnNode multi = (MultipleAsgnNode) varNode;
+					ListNode list = multi.getHeadNode();
+					iter = list.iterator();
+				}
+			}
+		}
+		if (iter == null) return arguments;
+		for (; iter.hasNext();) {
+			Node argument = (Node) iter.next();
+			arguments.add(ASTUtil.getNameReflectively(argument));
+		}
+		return arguments;
 	}
 
 }

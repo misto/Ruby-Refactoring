@@ -50,8 +50,10 @@ import org.jruby.ast.IArgumentNode;
 import org.jruby.ast.InstAsgnNode;
 import org.jruby.ast.InstVarNode;
 import org.jruby.ast.IterNode;
+import org.jruby.ast.ListNode;
 import org.jruby.ast.LocalAsgnNode;
 import org.jruby.ast.ModuleNode;
+import org.jruby.ast.MultipleAsgnNode;
 import org.jruby.ast.Node;
 import org.jruby.ast.RootNode;
 import org.jruby.ast.SClassNode;
@@ -370,31 +372,29 @@ public class SourceElementParser extends InOrderVisitor { // TODO Rename to Sour
 	
 	public Instruction visitFCallNode(FCallNode iVisited) {
 		String name = iVisited.getName();
+		List<String> arguments = getArgumentsFromFunctionCall(iVisited);
 		if (name.equals(REQUIRE) || name.equals(LOAD)) {
 			addImport(iVisited);
 		} else if (name.equals(INCLUDE)) { // Collect included mixins
 			includeModule(iVisited); 
 		} if (name.equals(PUBLIC)) {
-			List<String> arguments = getArgumentsFromFunctionCall(iVisited);
 			for (String methodName : arguments) {
 				requestor.acceptMethodVisibilityChange(methodName, convertVisibility(Visibility.PUBLIC));
 			}			
 		} else if (name.equals(PRIVATE)) {
-			List<String> arguments = getArgumentsFromFunctionCall(iVisited);
 			for (String methodName : arguments) {
 				requestor.acceptMethodVisibilityChange(methodName, convertVisibility(Visibility.PRIVATE));
 			}
 		} else if (name.equals(PROTECTED)) {
-			List<String> arguments = getArgumentsFromFunctionCall(iVisited);
 			for (String methodName : arguments) {
 				requestor.acceptMethodVisibilityChange(methodName, convertVisibility(Visibility.PROTECTED));
 			}
-		} else if (name.equals(MODULE_FUNCTION)) {
-			List<String> arguments = getArgumentsFromFunctionCall(iVisited);
+		} else if (name.equals(MODULE_FUNCTION)) {			
 			for (String methodName : arguments) {
 				requestor.acceptModuleFunction(methodName);
 			}
 		}
+		requestor.acceptMethodReference(name, arguments.size(), iVisited.getPosition().getStartOffset());
 		return super.visitFCallNode(iVisited);
 	}
 	
@@ -455,8 +455,6 @@ public class SourceElementParser extends InOrderVisitor { // TODO Rename to Sour
 	}
 	
 	public Instruction visitVCallNode(VCallNode iVisited) {
-		// XXX If the call has arguments, we need to find the method matching the
-		// symbols and mark their visibility differently
 		String functionName = iVisited.getName();
 		if (functionName.equals(PUBLIC)) {
 			currentVisibility = Visibility.PUBLIC;
@@ -467,52 +465,33 @@ public class SourceElementParser extends InOrderVisitor { // TODO Rename to Sour
 		} else if (functionName.equals(MODULE_FUNCTION)) {
 			inModuleFunction = true;
 		}
+		requestor.acceptMethodReference(functionName, 0, iVisited.getPosition().getStartOffset());
 		return super.visitVCallNode(iVisited);
 	}
 	
 	@Override
 	public Instruction visitCallNode(CallNode iVisited) {
 		String name = iVisited.getName();
+		List<String> arguments = getArgumentsFromFunctionCall(iVisited);
 		if (name.equals(PUBLIC)) {
-			List<String> arguments = getArgumentsFromFunctionCall(iVisited);
 			for (String methodName : arguments) {
 				requestor.acceptMethodVisibilityChange(methodName, convertVisibility(Visibility.PUBLIC));
 			}			
 		} else if (name.equals(PRIVATE)) {
-			List<String> arguments = getArgumentsFromFunctionCall(iVisited);
 			for (String methodName : arguments) {
 				requestor.acceptMethodVisibilityChange(methodName, convertVisibility(Visibility.PRIVATE));
 			}
 		} else if (name.equals(PROTECTED)) {
-			List<String> arguments = getArgumentsFromFunctionCall(iVisited);
 			for (String methodName : arguments) {
 				requestor.acceptMethodVisibilityChange(methodName, convertVisibility(Visibility.PROTECTED));
 			}
 		} else if (name.equals(MODULE_FUNCTION)) {
-			List<String> arguments = getArgumentsFromFunctionCall(iVisited);
 			for (String methodName : arguments) {
 				requestor.acceptModuleFunction(methodName);
 			}
 		}
+		requestor.acceptMethodReference(name, arguments.size(), iVisited.getPosition().getStartOffset());
 		return super.visitCallNode(iVisited);
-	}
-	
-	private List<String> getArgumentsFromFunctionCall(IArgumentNode iVisited) {
-		List<String> arguments = new ArrayList<String>();
-		Node argsNode = iVisited.getArgsNode();
-		Iterator iter = null;
-		if (argsNode instanceof SplatNode) {
-			SplatNode splat = (SplatNode) argsNode;
-			iter = splat.childNodes().iterator();
-		} else if (argsNode instanceof ArrayNode) {
-			ArrayNode arrayNode = (ArrayNode) iVisited.getArgsNode();
-			iter = arrayNode.childNodes().iterator();
-		}
-		for (; iter.hasNext();) {
-			Node mixinNameNode = (Node) iter.next();
-			arguments.add(ASTUtil.getNameReflectively(mixinNameNode));
-		}
-		return arguments;
 	}
 
 	public Instruction visitAliasNode(AliasNode iVisited) {
