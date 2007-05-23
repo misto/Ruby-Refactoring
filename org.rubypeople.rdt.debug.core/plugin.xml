@@ -16,7 +16,7 @@
          point="org.eclipse.debug.core.breakpoints">
       <breakpoint
             markerType="RubyBreakpointMarker"
-            class="org.rubypeople.rdt.internal.debug.core.RubyLineBreakpoint"
+            class="org.rubypeople.rdt.debug.core.RubyLineBreakpoint"
             id="RubyLineBreakpoint">
       </breakpoint>
    </extension>

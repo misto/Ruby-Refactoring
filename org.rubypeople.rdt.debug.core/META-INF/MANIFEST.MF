@@ -7,7 +7,8 @@ Bundle-ClassPath: rdtdebugcore.jar
 Bundle-Activator: org.rubypeople.rdt.internal.debug.core.RdtDebugCorePlugin
 Bundle-Vendor: %providerName
 Bundle-Localization: plugin
-Export-Package: org.rubypeople.rdt.internal.debug.core,
+Export-Package: org.rubypeople.rdt.debug.core,
+ org.rubypeople.rdt.internal.debug.core,
  org.rubypeople.rdt.internal.debug.core.commands,
  org.rubypeople.rdt.internal.debug.core.model,
  org.rubypeople.rdt.internal.debug.core.parsing

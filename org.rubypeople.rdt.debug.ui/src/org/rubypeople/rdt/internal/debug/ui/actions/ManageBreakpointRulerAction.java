@@ -28,7 +28,7 @@ import org.eclipse.ui.texteditor.AbstractMarkerAnnotationModel;
 import org.eclipse.ui.texteditor.IDocumentProvider;
 import org.eclipse.ui.texteditor.ITextEditor;
 import org.eclipse.ui.texteditor.IUpdate;
-import org.rubypeople.rdt.internal.debug.core.RubyLineBreakpoint;
+import org.rubypeople.rdt.debug.core.RubyLineBreakpoint;
 
 /**
  * 

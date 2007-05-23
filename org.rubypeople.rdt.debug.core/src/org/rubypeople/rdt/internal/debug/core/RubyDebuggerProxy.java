@@ -7,6 +7,7 @@ import org.eclipse.core.resources.IMarkerDelta;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.debug.core.DebugPlugin;
 import org.eclipse.debug.core.model.IBreakpoint;
+import org.rubypeople.rdt.debug.core.RubyLineBreakpoint;
 import org.rubypeople.rdt.internal.debug.core.commands.AbstractDebuggerConnection;
 import org.rubypeople.rdt.internal.debug.core.commands.BreakpointCommand;
 import org.rubypeople.rdt.internal.debug.core.commands.ClassicDebuggerConnection;

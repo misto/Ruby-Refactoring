@@ -15,7 +15,7 @@ import org.eclipse.debug.core.ILaunchConfigurationType;
 import org.eclipse.debug.core.ILaunchConfigurationWorkingCopy;
 import org.eclipse.debug.core.model.IProcess;
 import org.rubypeople.eclipse.testutils.ResourceTools;
-import org.rubypeople.rdt.internal.debug.core.RubyLineBreakpoint;
+import org.rubypeople.rdt.debug.core.RubyLineBreakpoint;
 import org.rubypeople.rdt.internal.launching.RubyLaunchConfigurationAttribute;
 import org.rubypeople.rdt.launching.IRubyLaunchConfigurationConstants;
 import org.rubypeople.rdt.launching.IVMInstallType;
