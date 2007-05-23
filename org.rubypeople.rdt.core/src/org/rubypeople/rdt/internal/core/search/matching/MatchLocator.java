@@ -10,11 +10,16 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.OperationCanceledException;
+import org.jruby.ast.ClassVarAsgnNode;
+import org.jruby.ast.GlobalAsgnNode;
+import org.jruby.ast.InstAsgnNode;
+import org.jruby.ast.Node;
 import org.rubypeople.rdt.core.IRubyElement;
 import org.rubypeople.rdt.core.IRubyProject;
 import org.rubypeople.rdt.core.IRubyScript;
 import org.rubypeople.rdt.core.RubyModelException;
 import org.rubypeople.rdt.core.search.FieldDeclarationMatch;
+import org.rubypeople.rdt.core.search.FieldReferenceMatch;
 import org.rubypeople.rdt.core.search.IRubySearchScope;
 import org.rubypeople.rdt.core.search.MethodDeclarationMatch;
 import org.rubypeople.rdt.core.search.SearchDocument;
@@ -335,6 +340,10 @@ public class MatchLocator {
 		}
 	}
 	
+	protected boolean encloses(IRubyElement element) {
+		return element != null && this.scope.encloses(element);
+	}
+	
 	protected void report(SearchMatch match) throws CoreException {
 		long start = -1;
 		if (BasicSearchEngine.VERBOSE) {
@@ -497,6 +506,25 @@ public class MatchLocator {
 		SearchParticipant participant = getParticipant(); 
 		IResource resource = this.currentPossibleMatch.resource;
 		return new TypeReferenceMatch(enclosingElement, accuracy, offset, length, participant, resource);
+	}
+	
+	public SearchMatch newFieldReferenceMatch(
+			IRubyElement enclosingElement,
+			IRubyElement binding, int accuracy,
+			int offset,  
+			int length,
+			Node reference) {
+		boolean isReadAccess = false;
+		boolean isWriteAccess = false;
+		if ((reference instanceof GlobalAsgnNode) || (reference instanceof ClassVarAsgnNode) ||
+				(reference instanceof InstAsgnNode)) {
+			isWriteAccess = true;
+		} else {
+			isReadAccess = true;
+		}
+		SearchParticipant participant = getParticipant(); 
+		IResource resource = this.currentPossibleMatch.resource;
+		return new FieldReferenceMatch(enclosingElement, binding, accuracy, offset, length, isReadAccess, isWriteAccess, false, participant, resource);
 	}
 	
 }

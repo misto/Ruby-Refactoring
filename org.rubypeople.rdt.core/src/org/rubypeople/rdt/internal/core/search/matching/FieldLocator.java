@@ -1,13 +1,26 @@
 package org.rubypeople.rdt.internal.core.search.matching;
 
 import org.eclipse.core.runtime.CoreException;
-import org.rubypeople.rdt.core.IField;
+import org.jruby.ast.ClassVarAsgnNode;
+import org.jruby.ast.ClassVarNode;
+import org.jruby.ast.ConstDeclNode;
+import org.jruby.ast.GlobalAsgnNode;
+import org.jruby.ast.GlobalVarNode;
+import org.jruby.ast.InstAsgnNode;
+import org.jruby.ast.InstVarNode;
+import org.jruby.ast.Node;
+import org.jruby.ast.types.INameNode;
+import org.jruby.evaluator.Instruction;
 import org.rubypeople.rdt.core.IMember;
 import org.rubypeople.rdt.core.IParent;
 import org.rubypeople.rdt.core.IRubyElement;
 import org.rubypeople.rdt.core.ISourceRange;
+import org.rubypeople.rdt.core.IType;
+import org.rubypeople.rdt.core.RubyCore;
 import org.rubypeople.rdt.core.RubyModelException;
 import org.rubypeople.rdt.internal.core.RubyScript;
+import org.rubypeople.rdt.internal.core.parser.InOrderVisitor;
+import org.rubypeople.rdt.internal.core.parser.RubyParser;
 
 public class FieldLocator extends PatternLocator {
 
@@ -19,8 +32,93 @@ public class FieldLocator extends PatternLocator {
 	}
 	
 	@Override
-	public void reportMatches(RubyScript script, MatchLocator locator) {
-		reportMatches((IParent) script, locator);
+	public void reportMatches(final RubyScript script, final MatchLocator locator) {
+//		reportMatches((IParent) script, locator);
+		reportASTMatches(script, locator);
+	}
+
+	private void reportASTMatches(final RubyScript script, final MatchLocator locator) {
+		try {
+			Node ast = script.lastGoodAST;		
+			if (ast == null) {
+				ast = new RubyParser().parse(script.getSource());
+			}
+			new InOrderVisitor() {
+			
+				@Override
+				public Instruction visitInstVarNode(InstVarNode iVisited) {
+					match(iVisited);
+					return super.visitInstVarNode(iVisited);
+				}
+
+				// XXX Handle constants!
+			
+				@Override
+				public Instruction visitGlobalVarNode(GlobalVarNode iVisited) {
+					match(iVisited);
+					return super.visitGlobalVarNode(iVisited);
+				}
+				
+				@Override
+				public Instruction visitConstDeclNode(ConstDeclNode iVisited) {
+					match(iVisited);
+					return super.visitConstDeclNode(iVisited);
+				}
+			
+				@Override
+				public Instruction visitGlobalAsgnNode(GlobalAsgnNode iVisited) {
+					match(iVisited);
+					return super.visitGlobalAsgnNode(iVisited);
+				}
+				
+				@Override
+				public Instruction visitClassVarNode(ClassVarNode iVisited) {					
+					match(iVisited);
+					return super.visitClassVarNode(iVisited);
+				}
+				
+				@Override
+				public Instruction visitClassVarAsgnNode(ClassVarAsgnNode iVisited) {
+					match(iVisited);
+					return super.visitClassVarAsgnNode(iVisited);
+				}
+				
+				@Override
+				public Instruction visitInstAsgnNode(InstAsgnNode iVisited) {
+					match(iVisited);
+					return super.visitInstAsgnNode(iVisited);
+				}
+				
+				private void match(Node iVisited) {
+					int accuracy = getAccuracy(((INameNode)iVisited).getName());
+					if (accuracy != IMPOSSIBLE_MATCH) {
+						try {
+							IRubyElement element = script.getElementAt(iVisited.getPosition().getStartOffset());
+							if (locator.encloses(element)) {
+								IRubyElement binding = resolve(element, ((INameNode)iVisited).getName());
+								locator.report(locator.newFieldReferenceMatch(element, binding, accuracy, 
+									iVisited.getPosition().getStartOffset(), iVisited.getPosition().getEndOffset(), iVisited));
+							}
+						} catch (CoreException e) {
+							RubyCore.log(e);
+						}
+					}
+				}
+
+				private IRubyElement resolve(IRubyElement element, String name) {
+					if (element instanceof IMember) {
+						IMember member = (IMember) element;
+						IType type = member.getDeclaringType();
+						return type.getField(name);
+					}
+					return null;
+				}
+				
+			
+			}.acceptNode(ast);
+		} catch(RubyModelException e) {
+			RubyCore.log(e);
+		}
 	}
 
 	private void reportMatches(IParent parent, MatchLocator locator) {
@@ -33,15 +131,14 @@ public class FieldLocator extends PatternLocator {
 						child.isType(IRubyElement.CONSTANT) ||
 						child.isType(IRubyElement.CLASS_VAR) ||
 						child.isType(IRubyElement.INSTANCE_VAR)) {
-					int accuracy = getAccuracy((IField) child);
+					int accuracy = getAccuracy(child.getElementName());
 					if (accuracy != IMPOSSIBLE_MATCH) {
 						IMember member = (IMember) child;
 						ISourceRange range = member.getSourceRange();
 						try {
 							locator.report(locator.newDeclarationMatch(child, accuracy, range.getOffset(), range.getLength()));
 						} catch (CoreException e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
+							RubyCore.log(e);
 						}
 					}
 				}
@@ -51,20 +148,19 @@ public class FieldLocator extends PatternLocator {
 				}
 			}
 		} catch (RubyModelException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			RubyCore.log(e);
 		}
 	}
 
-	private int getAccuracy(IField field) {
+	private int getAccuracy(String name) {
 		if (this.pattern.findReferences)
 			// must be a write only access with an initializer
 			if (this.pattern.writeAccess)
-				if (matchesName(this.pattern.name, field.getElementName().toCharArray()))
+				if (matchesName(this.pattern.name, name.toCharArray()))
 					return ACCURATE_MATCH;
 
 		if (this.pattern.findDeclarations) {
-			if (matchesName(this.pattern.name, field.getElementName().toCharArray()))
+			if (matchesName(this.pattern.name, name.toCharArray()))
 				return ACCURATE_MATCH;
 
 		}

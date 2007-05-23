@@ -26,11 +26,13 @@ public class FieldReferenceMatch extends SearchMatch {
 
 	private boolean isReadAccess;
 	private boolean isWriteAccess;
+	private IRubyElement binding;
 
 	/**
 	 * Creates a new field reference match.
 	 * 
 	 * @param enclosingElement the inner-most enclosing member that references this field
+	 * @param binding The actual field we are referring to
 	 * @param accuracy one of {@link #A_ACCURATE} or {@link #A_INACCURATE}
 	 * @param offset the offset the match starts at, or -1 if unknown
 	 * @param length the length of the match, or -1 if unknown
@@ -41,9 +43,10 @@ public class FieldReferenceMatch extends SearchMatch {
 	 * @param participant the search participant that created the match
 	 * @param resource the resource of the element
 	 */
-	public FieldReferenceMatch(IRubyElement enclosingElement, int accuracy, int offset, int length, boolean isReadAccess, boolean isWriteAccess, boolean insideDocComment, SearchParticipant participant, IResource resource) {
+	public FieldReferenceMatch(IRubyElement enclosingElement, IRubyElement binding, int accuracy, int offset, int length, boolean isReadAccess, boolean isWriteAccess, boolean insideDocComment, SearchParticipant participant, IResource resource) {
 		super(enclosingElement, accuracy, offset, length, participant, resource);
-		this.isReadAccess = isReadAccess;
+		this.binding = binding;
+		this.isReadAccess = isReadAccess;		
 		this.isWriteAccess = isWriteAccess;
 		setInsideDocComment(insideDocComment);
 	}
@@ -66,6 +69,10 @@ public class FieldReferenceMatch extends SearchMatch {
 	 */
 	public final boolean isWriteAccess() {
 		return this.isWriteAccess;
+	}
+	
+	public IRubyElement getBinding() {
+		return this.binding;
 	}
 	
 }
