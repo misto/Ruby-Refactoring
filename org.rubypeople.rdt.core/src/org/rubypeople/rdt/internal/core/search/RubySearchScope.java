@@ -354,7 +354,7 @@ public class RubySearchScope implements IRubySearchScope {
 				break;
 			case IRubyElement.SOURCE_FOLDER:
 				root = (ISourceFolderRoot)element.getParent();
-				if (root.isArchive()) {
+				if (root.isExternal()) {
 					String relativePath = Util.concatWith(((SourceFolder) element).names, '/');
 					containerPath = root.getPath();
 					containerPathToString = containerPath.getDevice() == null ? containerPath.toString() : containerPath.toOSString();
