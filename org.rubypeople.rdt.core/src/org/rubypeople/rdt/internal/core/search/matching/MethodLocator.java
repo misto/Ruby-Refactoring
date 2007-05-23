@@ -59,15 +59,13 @@ public class MethodLocator extends PatternLocator {
 				
 				@Override
 				public Instruction visitFCallNode(FCallNode iVisited) {
-					Node args = iVisited.getArgsNode(); // FIXME Grab the actual argument count
-					match(iVisited, 0);
+					match(iVisited, getArgumentsFromFunctionCall(iVisited).size());
 					return super.visitFCallNode(iVisited);
 				}
 				
 				@Override
 				public Instruction visitCallNode(CallNode iVisited) {
-					Node args = iVisited.getArgsNode();
-					match(iVisited, 0); // FIXME Grab the actual arg count
+					match(iVisited, getArgumentsFromFunctionCall(iVisited).size());
 					return super.visitCallNode(iVisited);
 				}
 				
