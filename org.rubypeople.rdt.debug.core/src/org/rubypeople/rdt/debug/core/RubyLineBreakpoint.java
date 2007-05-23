@@ -1,4 +1,4 @@
-package org.rubypeople.rdt.internal.debug.core;
+package org.rubypeople.rdt.debug.core;
 
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IResource;
@@ -10,7 +10,7 @@ import org.eclipse.debug.core.DebugException;
 import org.eclipse.debug.core.model.LineBreakpoint;
 
 public class RubyLineBreakpoint extends LineBreakpoint {
-	protected static final String RUBY_BREAKPOINT_MARKER = "org.rubypeople.rdt.debug.core.RubyBreakpointMarker"; //$NON-NLS-1$
+	public static final String RUBY_BREAKPOINT_MARKER = "org.rubypeople.rdt.debug.core.RubyBreakpointMarker"; //$NON-NLS-1$
 
 	private int index = -1 ; // index of breakpoint on ruby debugger side
 	
