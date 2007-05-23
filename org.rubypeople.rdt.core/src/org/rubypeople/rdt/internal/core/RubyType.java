@@ -85,7 +85,16 @@ public class RubyType extends NamedMember implements IType {
 	 * @see IType#getField
 	 */
 	public IField getField(String fieldName) {
-		return new RubyField(this, fieldName);
+		if (fieldName.startsWith("@@"))
+		  return new RubyClassVar(this, fieldName);
+		if (fieldName.startsWith("@"))
+			  return new RubyInstVar(this, fieldName);
+		if (fieldName.startsWith("$"))
+			  return new RubyGlobal(this, fieldName);
+		if (Character.isUpperCase(fieldName.charAt(0)))
+			  return new RubyConstant(this, fieldName);
+		Assert.isTrue(false, "Tried to access a field which isn't an instance variable, class variable, global or constant");
+		return null;
 	}
 
 	/**

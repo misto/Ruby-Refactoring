@@ -32,7 +32,7 @@ import org.rubypeople.rdt.core.IType;
  * @author Chris
  * 
  */
-public class RubyField extends NamedMember implements IField {
+public abstract class RubyField extends NamedMember implements IField {
 
 	// FIXME Combine the Variables into a single class?
 
