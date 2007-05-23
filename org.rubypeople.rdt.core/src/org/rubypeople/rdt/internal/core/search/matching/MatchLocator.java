@@ -22,6 +22,7 @@ import org.rubypeople.rdt.core.search.FieldDeclarationMatch;
 import org.rubypeople.rdt.core.search.FieldReferenceMatch;
 import org.rubypeople.rdt.core.search.IRubySearchScope;
 import org.rubypeople.rdt.core.search.MethodDeclarationMatch;
+import org.rubypeople.rdt.core.search.MethodReferenceMatch;
 import org.rubypeople.rdt.core.search.SearchDocument;
 import org.rubypeople.rdt.core.search.SearchMatch;
 import org.rubypeople.rdt.core.search.SearchParticipant;
@@ -525,6 +526,20 @@ public class MatchLocator {
 		SearchParticipant participant = getParticipant(); 
 		IResource resource = this.currentPossibleMatch.resource;
 		return new FieldReferenceMatch(enclosingElement, binding, accuracy, offset, length, isReadAccess, isWriteAccess, false, participant, resource);
+	}
+	
+
+	public SearchMatch newMethodReferenceMatch(
+			IRubyElement enclosingElement,
+			IRubyElement binding,
+			int accuracy,
+			int offset,  
+			int length,
+			boolean isConstructor,
+			Node reference) {
+		SearchParticipant participant = getParticipant(); 
+		IResource resource = this.currentPossibleMatch.resource;
+		return new MethodReferenceMatch(enclosingElement, binding, accuracy, offset, length, isConstructor, false, participant, resource);
 	}
 	
 }
