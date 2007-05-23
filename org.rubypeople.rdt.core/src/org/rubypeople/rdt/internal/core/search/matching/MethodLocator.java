@@ -28,7 +28,7 @@ public class MethodLocator extends PatternLocator {
 			IRubyElement[] children = parent.getChildren();
 			for (int i = 0; i < children.length; i++) {
 				IRubyElement child = children[i];
-				if (child.isType(IRubyElement.METHOD)) {
+				if (child.isType(IRubyElement.METHOD) && locator.encloses(child)) {					
 					int accuracy = getAccuracy((IMethod) child);
 					if (accuracy != IMPOSSIBLE_MATCH) {
 						IMember member = (IMember) child;
