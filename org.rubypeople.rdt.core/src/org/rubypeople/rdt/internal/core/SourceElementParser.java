@@ -35,6 +35,7 @@ import org.jruby.ast.AssignableNode;
 import org.jruby.ast.CallNode;
 import org.jruby.ast.ClassNode;
 import org.jruby.ast.ClassVarAsgnNode;
+import org.jruby.ast.ClassVarNode;
 import org.jruby.ast.Colon2Node;
 import org.jruby.ast.ConstDeclNode;
 import org.jruby.ast.ConstNode;
@@ -44,8 +45,10 @@ import org.jruby.ast.DefnNode;
 import org.jruby.ast.DefsNode;
 import org.jruby.ast.FCallNode;
 import org.jruby.ast.GlobalAsgnNode;
+import org.jruby.ast.GlobalVarNode;
 import org.jruby.ast.IArgumentNode;
 import org.jruby.ast.InstAsgnNode;
+import org.jruby.ast.InstVarNode;
 import org.jruby.ast.IterNode;
 import org.jruby.ast.LocalAsgnNode;
 import org.jruby.ast.ModuleNode;
@@ -279,6 +282,12 @@ public class SourceElementParser extends InOrderVisitor { // TODO Rename to Sour
 		return super.visitClassVarAsgnNode(iVisited);
 	}
 	
+	@Override
+	public Instruction visitClassVarNode(ClassVarNode iVisited) {
+		requestor.acceptFieldReference(iVisited.getName(), iVisited.getPosition().getStartOffset());
+		return super.visitClassVarNode(iVisited);
+	}
+	
 	public Instruction visitLocalAsgnNode(LocalAsgnNode iVisited) {	
 		FieldInfo field = createFieldInfo(iVisited);
 		field.name = iVisited.getName();
@@ -297,12 +306,24 @@ public class SourceElementParser extends InOrderVisitor { // TODO Rename to Sour
 	}
 	
 	@Override
+	public Instruction visitInstVarNode(InstVarNode iVisited) {
+		requestor.acceptFieldReference(iVisited.getName(), iVisited.getPosition().getStartOffset());
+		return super.visitInstVarNode(iVisited);
+	}
+	
+	@Override
 	public Instruction visitGlobalAsgnNode(GlobalAsgnNode iVisited) {
 		FieldInfo field = createFieldInfo(iVisited);
 		field.name = iVisited.getName();
 		requestor.enterField(field);
 		exitField(iVisited);
 		return super.visitGlobalAsgnNode(iVisited);
+	}
+	
+	@Override
+	public Instruction visitGlobalVarNode(GlobalVarNode iVisited) {
+		requestor.acceptFieldReference(iVisited.getName(), iVisited.getPosition().getStartOffset());
+		return super.visitGlobalVarNode(iVisited);
 	}
 
 	private void exitField(AssignableNode iVisited) {
