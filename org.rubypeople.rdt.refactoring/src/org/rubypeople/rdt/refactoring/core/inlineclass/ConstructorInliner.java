@@ -32,6 +32,7 @@ package org.rubypeople.rdt.refactoring.core.inlineclass;
 
 import org.jruby.ast.MethodDefNode;
 import org.jruby.ast.Node;
+import org.jruby.lexer.yacc.ISourcePosition;
 import org.rubypeople.rdt.refactoring.core.NodeFactory;
 import org.rubypeople.rdt.refactoring.editprovider.InsertEditProvider;
 import org.rubypeople.rdt.refactoring.nodewrapper.MethodNodeWrapper;
@@ -56,8 +57,16 @@ public class ConstructorInliner extends InsertEditProvider{
 	protected Node getInsertNode(int offset, String document) {
 		MethodDefNode constructor = inlinedConstructor.getWrappedNode();
 		MethodDefNode inlinedConstructor = NodeFactory.createMethodNode(newName, constructor.getArgsNode(), constructor.getBodyNode());
+
+		ISourcePosition constructorPosition = constructor.getPosition();
+		
+		inlinedConstructor.setPosition(constructorPosition);
+		
+		inlinedConstructor.addComments(constructor.getComments());
+	
 		return NodeFactory.createBlockNode(false, true, inlinedConstructor);
 	}
+
 
 	@Override
 	protected int getOffset(String document) {

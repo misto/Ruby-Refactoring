@@ -66,7 +66,6 @@ import org.jruby.ast.ZSuperNode;
 import org.jruby.lexer.yacc.ISourcePosition;
 import org.jruby.lexer.yacc.SourcePosition;
 import org.jruby.parser.LocalStaticScope;
-import org.jruby.parser.ParserSupport;
 import org.jruby.parser.StaticScope;
 import org.jruby.runtime.Visibility;
 import org.rubypeople.rdt.refactoring.nodewrapper.ArgsNodeWrapper;
@@ -75,8 +74,6 @@ import org.rubypeople.rdt.refactoring.nodewrapper.VisibilityNodeWrapper;
 import org.rubypeople.rdt.refactoring.util.Constants;
 
 public class NodeFactory {
-
-	private static final ParserSupport parserSupport = new ParserSupport();
 
 	public static final SourcePosition pos = new SourcePosition();
 
@@ -319,10 +316,15 @@ public class NodeFactory {
         return commentIncludingPos;
 	}
 
-	public static Node createGetterSetter(String attrName, boolean isWriterMethod, VisibilityNodeWrapper.METHOD_VISIBILITY visibility) {
+	public static BlockNode createGetterSetter(String attrName, boolean isWriterMethod, VisibilityNodeWrapper.METHOD_VISIBILITY visibility){
+		return createGetterSetter(attrName, isWriterMethod, visibility, new ArrayList<CommentNode>());
+	}
+	
+	public static BlockNode createGetterSetter(String attrName, boolean isWriterMethod, VisibilityNodeWrapper.METHOD_VISIBILITY visibility, Collection<CommentNode> comments) {
 		String methodName = attrName + ((isWriterMethod) ? "=" : ""); //$NON-NLS-1$ //$NON-NLS-2$
 		String[] args = (isWriterMethod) ? new String[] { attrName } : new String[] {};
 		DefnNode methodNode = createGetterSetterNode(isWriterMethod, methodName, attrName, args);
+		methodNode.addComments(comments);
 		BlockNode block = createBlockNode();
 		block.add(createNewLineNode(methodNode));
 		if (!visibility.equals(VisibilityNodeWrapper.METHOD_VISIBILITY.NONE))

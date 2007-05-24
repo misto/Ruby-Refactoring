@@ -33,13 +33,17 @@ package org.rubypeople.rdt.refactoring.core.encapsulatefield;
 import java.util.ArrayList;
 import java.util.Collection;
 
+import org.jruby.ast.BlockNode;
+import org.jruby.ast.CommentNode;
 import org.jruby.ast.FCallNode;
 import org.jruby.ast.Node;
+import org.jruby.lexer.yacc.SourcePosition;
 import org.rubypeople.rdt.refactoring.core.NodeFactory;
 import org.rubypeople.rdt.refactoring.editprovider.DeleteEditProvider;
 import org.rubypeople.rdt.refactoring.editprovider.EditProvider;
 import org.rubypeople.rdt.refactoring.editprovider.InsertEditProvider;
 import org.rubypeople.rdt.refactoring.editprovider.MultiEditProvider;
+import org.rubypeople.rdt.refactoring.nodewrapper.AttrAccessorNodeWrapper;
 import org.rubypeople.rdt.refactoring.nodewrapper.VisibilityNodeWrapper;
 import org.rubypeople.rdt.refactoring.offsetprovider.AfterLastMethodInClassOffsetProvider;
 import org.rubypeople.rdt.refactoring.offsetprovider.IOffsetProvider;
@@ -150,6 +154,41 @@ public class FieldEncapsulator extends MultiEditProvider {
 	}
 
 	protected Node createGetterOrSetter(final boolean writer, final VisibilityNodeWrapper.METHOD_VISIBILITY visibility) {
-		return NodeFactory.createGetterSetter(config.getFieldName(), writer, visibility);
+		
+		Collection<CommentNode> comments = getAccessorComments(writer);
+		
+		BlockNode getterAndSetter = NodeFactory.createGetterSetter(config.getFieldName(), writer, visibility, comments);
+	
+		return getterAndSetter;
+	}
+
+	private Collection<CommentNode> getAccessorComments(boolean isSetter) {
+		
+		ArrayList<CommentNode> matchingComments = new ArrayList<CommentNode>();
+		AttrAccessorNodeWrapper accessor = config.getSelectedAccessor();
+		if(accessor != null){
+			Collection<FCallNode> accessors = accessor.getAccessorNodes();
+			
+			for(FCallNode currentAccessor : accessors){
+				if(isSetter && currentAccessor.getName().equals("attr_writer")){
+						matchingComments.addAll(currentAccessor.getComments());
+				}
+				else if(!isSetter && currentAccessor.getName().equals("attr_reader")){ 
+					matchingComments.addAll(currentAccessor.getComments());
+				}
+				else if(currentAccessor.getName().equals("attr_accessor")){
+					matchingComments.addAll(currentAccessor.getComments());			}
+			}
+			
+		}
+		return resetCommentPositions(matchingComments);
+	}
+
+	private Collection<CommentNode> resetCommentPositions(ArrayList<CommentNode> comments) {
+		ArrayList<CommentNode> resettedComments = new ArrayList<CommentNode>();
+		for(CommentNode currentComment : comments){
+			resettedComments.add(new CommentNode(new SourcePosition("",-1,-1,-1,-1), currentComment.getContent()));
+		}
+		return resettedComments;
 	}	
 }

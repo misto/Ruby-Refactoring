@@ -49,12 +49,12 @@ public abstract class RefactoringTestCase extends TestCase {
 	protected void createEditAndCompareResult(String document, String expectedDocument, IEditProvider editProvider) throws BadLocationException {
 		String result;
 		if(editProvider != null) {
-		TextEdit edit = editProvider.getEdit(document);
-		Document doc = new Document(document);
-		edit.apply(doc);
-		result = doc.get();
-		result = formatText(result);
-		expectedDocument = formatText(expectedDocument);
+			TextEdit edit = editProvider.getEdit(document);
+			Document doc = new Document(document);
+			edit.apply(doc);
+			result = doc.get();
+			result = formatText(result);
+			expectedDocument = formatText(expectedDocument);
 		} else {
 			result = document;
 		}

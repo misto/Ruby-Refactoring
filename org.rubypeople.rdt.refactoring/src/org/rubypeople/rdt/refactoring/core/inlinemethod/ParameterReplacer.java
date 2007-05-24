@@ -41,6 +41,7 @@ import org.jruby.ast.NewlineNode;
 import org.jruby.ast.Node;
 import org.jruby.ast.types.INameNode;
 import org.jruby.ast.visitor.rewriter.ReWriteVisitor;
+import org.jruby.lexer.yacc.ISourcePosition;
 import org.jruby.lexer.yacc.SourcePosition;
 import org.rubypeople.rdt.refactoring.core.renamelocal.LocalVariableRenamer;
 import org.rubypeople.rdt.refactoring.documentprovider.DocumentProvider;
@@ -48,6 +49,7 @@ import org.rubypeople.rdt.refactoring.documentprovider.IDocumentProvider;
 import org.rubypeople.rdt.refactoring.documentprovider.StringDocumentProvider;
 import org.rubypeople.rdt.refactoring.nodewrapper.MethodCallNodeWrapper;
 import org.rubypeople.rdt.refactoring.util.FileHelper;
+import org.rubypeople.rdt.refactoring.util.NodeUtil;
 
 public class ParameterReplacer implements IParameterReplacer {
 
@@ -84,9 +86,10 @@ public class ParameterReplacer implements IParameterReplacer {
 		}
 		
 		MethodDefNode newDefinition = (MethodDefNode) ((NewlineNode) strDoc.getActiveFileRootNode().getBodyNode()).getNextNode();
+		ISourcePosition bodyPosition = NodeUtil.subPositionUnion(newDefinition.getBodyNode());
 		insert.append(strDoc.getActiveFileContent().substring(
-						newDefinition.getBodyNode().getPosition().getStartOffset(), 
-						newDefinition.getBodyNode().getPosition().getEndOffset() + 1).trim());
+				bodyPosition.getStartOffset(), 
+				bodyPosition.getEndOffset() + 1).trim());
 		
 		return new StringDocumentProvider("subpart_of_" + doc.getActiveFileName(), insert.toString()); //$NON-NLS-1$
 	}

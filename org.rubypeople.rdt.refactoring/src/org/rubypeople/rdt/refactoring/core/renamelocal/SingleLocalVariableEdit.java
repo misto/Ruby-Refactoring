@@ -49,7 +49,7 @@ public class SingleLocalVariableEdit extends ReplaceEditProvider {
 
 	@Override
 	public int getOffsetLength() {
-		return node.getPosition().getEndOffset() - node.getPosition().getStartOffset();
+		return node.getPositionIncludingComments().getEndOffset() - node.getPositionIncludingComments().getStartOffset();
 	}
 
 	@Override
@@ -66,7 +66,7 @@ public class SingleLocalVariableEdit extends ReplaceEditProvider {
 
 	@Override
 	public int getOffset(String document) {
-		return node.getPosition().getStartOffset();
+		return node.getPositionIncludingComments().getStartOffset();
 	}
 
 	public Node getNode() {
