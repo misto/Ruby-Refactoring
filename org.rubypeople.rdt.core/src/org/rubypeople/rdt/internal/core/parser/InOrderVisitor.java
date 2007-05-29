@@ -1226,7 +1226,15 @@ public class InOrderVisitor extends AbstractVisitor {
 				} else if (varNode instanceof MultipleAsgnNode) { // multiple variables in block
 					MultipleAsgnNode multi = (MultipleAsgnNode) varNode;
 					ListNode list = multi.getHeadNode();
-					iter = list.iterator();
+					if (list != null)
+						iter = list.iterator();
+					else {
+						Node multiArgsNode = multi.getArgsNode();
+						if (multiArgsNode instanceof DAsgnNode) { // single variable in block
+							DAsgnNode dassgn = (DAsgnNode) multiArgsNode;
+							arguments.add(dassgn.getName());
+						}
+					}
 				}
 			}
 		}
