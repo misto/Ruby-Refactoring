@@ -85,7 +85,21 @@ public class RubyConventions {
         if (!isConstant(typeName)) {
         	return new Status(IStatus.ERROR, RubyCore.PLUGIN_ID, -1, "Class name must be a constant. It must begin with a capital letter, and contain only letters, digits, or underscores.", null);
         }
-        return new Status(IStatus.OK, RubyCore.PLUGIN_ID, -1, null, null);
+        return RubyModelStatus.VERIFIED_OK;
+    
+	}
+	
+	public static IStatus validateConstant(String constantName) {
+		if (constantName == null) {
+			return new Status(IStatus.ERROR, RubyCore.PLUGIN_ID, -1, Messages.convention_type_nullName, null); 
+		}
+		if (constantName.length() == 0) {
+			return new Status(IStatus.ERROR, RubyCore.PLUGIN_ID, -1, Messages.bind(Messages.convention_type_invalidName, constantName), null);
+        }
+        if (!isConstant(constantName)) {
+        	return new Status(IStatus.ERROR, RubyCore.PLUGIN_ID, -1, "Name must be a constant. It must begin with a capital letter, and contain only letters, digits, or underscores.", null);
+        }
+        return RubyModelStatus.VERIFIED_OK;
     
 	}
 	
