@@ -3,6 +3,7 @@ package org.rubypeople.rdt.internal.ui.text.ruby.hover;
 import org.eclipse.jface.text.DefaultInformationControl;
 import org.eclipse.jface.text.IInformationControl;
 import org.eclipse.jface.text.IInformationControlCreator;
+import org.eclipse.jface.text.information.IInformationProviderExtension2;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Shell;
 import org.rubypeople.rdt.core.IMember;
@@ -11,12 +12,9 @@ import org.rubypeople.rdt.core.util.RDocUtil;
 import org.rubypeople.rdt.internal.ui.text.HTMLPrinter;
 import org.rubypeople.rdt.internal.ui.text.HTMLTextPresenter;
 import org.rubypeople.rdt.internal.ui.text.ruby.IInformationControlExtension4;
-import org.rubypeople.rdt.internal.ui.text.ruby.hover.AbstractReusableInformationControlCreator;
-import org.rubypeople.rdt.internal.ui.text.ruby.hover.AbstractRubyEditorTextHover;
-import org.rubypeople.rdt.internal.ui.text.ruby.hover.BrowserInformationControl;
 import org.rubypeople.rdt.ui.RubyElementLabels;
 
-public class CommentHoverProvider extends AbstractRubyEditorTextHover {
+public class CommentHoverProvider extends AbstractRubyEditorTextHover implements IInformationProviderExtension2 {
 
 	private final long LABEL_FLAGS= RubyElementLabels.ALL_FULLY_QUALIFIED | RubyElementLabels.M_PARAMETER_NAMES | RubyElementLabels.USE_RESOLVED;
 	private final long LOCAL_VARIABLE_FLAGS= LABEL_FLAGS & ~RubyElementLabels.F_FULLY_QUALIFIED | RubyElementLabels.F_POST_QUALIFIED;
