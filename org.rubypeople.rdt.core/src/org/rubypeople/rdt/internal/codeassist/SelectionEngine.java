@@ -19,6 +19,7 @@ import org.jruby.ast.Colon2Node;
 import org.jruby.ast.ConstDeclNode;
 import org.jruby.ast.ConstNode;
 import org.jruby.ast.DefnNode;
+import org.jruby.ast.DefsNode;
 import org.jruby.ast.FCallNode;
 import org.jruby.ast.InstAsgnNode;
 import org.jruby.ast.InstVarNode;
@@ -117,7 +118,8 @@ public class SelectionEngine {
 			return possible.toArray(new IRubyElement[possible.size()]);
 		}
 		// We're already on the declaration, just return it
-		if ((selected instanceof DefnNode) || (selected instanceof ConstDeclNode) || (selected instanceof ClassNode) || (selected instanceof ModuleNode)) {
+		if ((selected instanceof DefnNode) || (selected instanceof DefsNode) 
+				|| (selected instanceof ConstDeclNode) || (selected instanceof ClassNode) || (selected instanceof ModuleNode)) {
 			IRubyElement element = ((RubyScript)script).getElementAt(start);
 			return new IRubyElement[] {element};
 		}
