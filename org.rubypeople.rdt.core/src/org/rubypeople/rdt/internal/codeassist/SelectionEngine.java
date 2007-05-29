@@ -117,7 +117,7 @@ public class SelectionEngine {
 			return possible.toArray(new IRubyElement[possible.size()]);
 		}
 		// We're already on the declaration, just return it
-		if ((selected instanceof DefnNode) || (selected instanceof ConstDeclNode)) {
+		if ((selected instanceof DefnNode) || (selected instanceof ConstDeclNode) || (selected instanceof ClassNode) || (selected instanceof ModuleNode)) {
 			IRubyElement element = ((RubyScript)script).getElementAt(start);
 			return new IRubyElement[] {element};
 		}
