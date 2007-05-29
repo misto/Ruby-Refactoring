@@ -19,6 +19,8 @@ public class RefactoringMessages extends NLS {
 	public static String ExtractConstantAction_extract_constant;
 	public static String ExtractConstantAction_label;
 	public static String ExtractConstantInputPage_constant_name;
+	public static String ExtractConstantInputPage_enter_name;
+	public static String ExtractConstantInputPage_invalid_name;
 	public static String ExtractConstantWizard_defaultPageTitle;
 	public static String PullUpMethod_Wizard_title;
 

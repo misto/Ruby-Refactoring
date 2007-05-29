@@ -28,6 +28,7 @@ public class ExtractConstantPage extends UserInputWizardPage {
 
 	public ExtractConstantPage(ConstantExtractor extractor) {
 		super(RefactoringMessages.ExtractConstantWizard_defaultPageTitle);
+		setDescription(RefactoringMessages.ExtractConstantInputPage_enter_name);
 		this.extractor = extractor;
 	}
 	
@@ -55,7 +56,7 @@ public class ExtractConstantPage extends UserInputWizardPage {
 					ExtractConstantPage.this.setMessage(null);
 					ExtractConstantPage.this.setPageComplete(true);
 				} else {
-					ExtractConstantPage.this.setMessage("'" + newName + "' is not a valid local variable name in Ruby.", IMessageProvider.ERROR);
+					ExtractConstantPage.this.setMessage(RefactoringMessages.bind(RefactoringMessages.ExtractConstantInputPage_invalid_name, newName), IMessageProvider.ERROR);
 					ExtractConstantPage.this.setPageComplete(false);
 				}
 
