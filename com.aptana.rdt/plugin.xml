@@ -33,13 +33,6 @@
          </description>
       </cheatsheet>
     </extension>
-    
-    <extension point="org.rubypeople.rdt.ui.rubyEditorTextHovers">
-         <hover
-   			id="com.aptana.rdt.ui.RubyCommentHover"
-   			class="com.aptana.rdt.internal.ui.text.ruby.hover.CommentHoverProvider"
-   			label="%commentHover"/>
-   </extension>
    
    <extension
          point="org.eclipse.ui.views">

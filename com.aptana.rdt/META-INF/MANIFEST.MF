@@ -10,7 +10,6 @@ Bundle-Vendor: Aptana, Inc.
 Export-Package: com.aptana.rdt,
  com.aptana.rdt.internal.parser.warnings,
  com.aptana.rdt.internal.ui.preferences,
- com.aptana.rdt.internal.ui.text.ruby.hover,
  com.aptana.rdt.core.gems
 Require-Bundle: org.eclipse.core.resources,
  org.eclipse.core.runtime,
