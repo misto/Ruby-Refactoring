@@ -1,15 +1,27 @@
 package org.rubypeople.rdt.core.util;
 
+import java.io.File;
+import java.io.IOException;
+import java.net.URL;
 import java.util.Collection;
 
+import org.eclipse.core.runtime.FileLocator;
+import org.eclipse.core.runtime.Path;
+import org.jruby.Ruby;
 import org.jruby.ast.CommentNode;
+import org.jruby.exceptions.RaiseException;
 import org.jruby.lexer.yacc.ISourcePosition;
+import org.jruby.runtime.builtin.IRubyObject;
 import org.rubypeople.rdt.core.IMember;
 import org.rubypeople.rdt.core.IRubyElement;
+import org.rubypeople.rdt.core.RubyCore;
 import org.rubypeople.rdt.core.RubyModelException;
 import org.rubypeople.rdt.internal.core.parser.RubyParser;
 
 public class RDocUtil {
+	private static Ruby fgRuby;
+	private static String fgRdocScriptPath;
+
 	private RDocUtil() {}
 	
 	public static String getDocumentation(IRubyElement element) {
@@ -17,6 +29,10 @@ public class RDocUtil {
 			return getContents((IMember)element);
 		}
 		return "";
+	}
+	
+	public static String getHTMLDocumentation(IRubyElement element) {
+		return getHTMLDocumentation(getDocumentation(element));
 	}
 	
 	private static String getContents(IMember member) {
@@ -89,5 +105,42 @@ public class RDocUtil {
 	 */
 	private static String removePrecedingHashes(String comment) {
 		return comment.trim().substring(1);
+	}
+
+	public static String getHTMLDocumentation(String docs) {
+		if (docs == null) return null;
+		String script = "require 'rdoc/markup/simple_markup'\n" +
+						"require 'rdoc/markup/simple_markup/to_html'\n" +
+						"p = SM::SimpleMarkup.new\n" +
+						"h = SM::ToHtml.new\n" +
+						"input_string =<<EOF\n" + docs + "\nEOF\n" +
+						"p.convert(input_string, h)\n";
+		Ruby ruby = getJRubyInstance();		
+		try {			
+			ruby.setCurrentDirectory(getRDocScriptPath());
+			IRubyObject object = ruby.evalScript(script);
+			docs = object.toString();
+		} catch (IOException e) {
+			// ignore
+		} catch (RaiseException e) {
+			e.printStackTrace();
+		}
+		return docs;		
+	}
+
+	private static Ruby getJRubyInstance() {
+		if (fgRuby == null)
+			fgRuby = Ruby.getDefaultInstance();
+		return fgRuby;
+	}
+
+	private static String getRDocScriptPath() throws IOException {
+		if (fgRdocScriptPath == null) {
+			URL installURL = new URL(RubyCore.getPlugin().getBundle().getEntry("/"),new Path("ruby").toString()); //$NON-NLS-1$
+			URL localURL = FileLocator.toFileURL(installURL);
+			File file = new File(localURL.getFile());
+			fgRdocScriptPath = file.getAbsolutePath();
+		}			
+		return fgRdocScriptPath;
 	}
 }
