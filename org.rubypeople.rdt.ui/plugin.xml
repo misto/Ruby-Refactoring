@@ -442,6 +442,11 @@
             contextId="org.rubypeople.rdt.ui.rubyEditorScope "
             schemeId="org.eclipse.ui.defaultAcceleratorConfiguration">
       </key>
+      <key
+            sequence="F2"
+            contextId="org.rubypeople.rdt.ui.rubyEditorScope"
+            commandId="org.rubypeople.rdt.ui.edit.text.ruby.show.rdoc"
+            schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"/>
       <!-- alternative for some gtk input modes -->
       <key
             platform="gtk" 
@@ -489,6 +494,12 @@
             description="%category.project.description"
             id="org.rubypeople.rdt.ui.category.project ">
       </category>
+      <command
+            name="%ActionDefinition.showRdoc.name"
+            description="%ActionDefinition.showRdoc.description"
+            categoryId="org.eclipse.ui.category.edit"
+            id="org.rubypeople.rdt.ui.edit.text.ruby.show.rdoc">
+      </command>
       <command
             categoryId="org.rubypeople.rdt.ui.category.source"
             description="%ActionDefinition.format.description"
@@ -923,6 +934,10 @@
             id="org.rubypeople.rdt.ui.ProblemHover">
       </hover>
       <hover
+   			id="com.aptana.rdt.ui.RubyCommentHover"
+   			class="org.rubypeople.rdt.internal.ui.text.ruby.hover.CommentHoverProvider"
+   			label="%commentHover"/>
+     <hover
    			id="org.rubypeople.rdt.ui.RiDocHover"
    			class="org.rubypeople.rdt.internal.ui.text.ruby.hover.RiDocHoverProvider"
    			label="%rdocHover"/>

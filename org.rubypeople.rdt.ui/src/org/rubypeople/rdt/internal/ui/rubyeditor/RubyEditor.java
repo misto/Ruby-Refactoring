@@ -3,6 +3,7 @@ package org.rubypeople.rdt.internal.ui.rubyeditor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Iterator;
+import java.util.ResourceBundle;
 import java.util.Stack;
 
 import org.eclipse.core.resources.IMarker;
@@ -20,24 +21,36 @@ import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.preference.IPreferenceStore;
+import org.eclipse.jface.text.AbstractInformationControlManager;
 import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.BadPositionCategoryException;
+import org.eclipse.jface.text.DefaultInformationControl;
 import org.eclipse.jface.text.DocumentCommand;
 import org.eclipse.jface.text.DocumentEvent;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.IDocumentExtension;
 import org.eclipse.jface.text.IDocumentListener;
+import org.eclipse.jface.text.IInformationControl;
+import org.eclipse.jface.text.IInformationControlCreator;
 import org.eclipse.jface.text.ILineTracker;
 import org.eclipse.jface.text.IPositionUpdater;
 import org.eclipse.jface.text.IRegion;
+import org.eclipse.jface.text.ITextHover;
 import org.eclipse.jface.text.ITextOperationTarget;
 import org.eclipse.jface.text.ITextSelection;
+import org.eclipse.jface.text.ITextViewer;
 import org.eclipse.jface.text.ITextViewerExtension;
+import org.eclipse.jface.text.ITextViewerExtension2;
+import org.eclipse.jface.text.ITextViewerExtension4;
 import org.eclipse.jface.text.ITextViewerExtension5;
 import org.eclipse.jface.text.ITypedRegion;
 import org.eclipse.jface.text.Position;
 import org.eclipse.jface.text.Region;
 import org.eclipse.jface.text.TextUtilities;
+import org.eclipse.jface.text.information.IInformationProvider;
+import org.eclipse.jface.text.information.IInformationProviderExtension;
+import org.eclipse.jface.text.information.IInformationProviderExtension2;
+import org.eclipse.jface.text.information.InformationPresenter;
 import org.eclipse.jface.text.link.ILinkedModeListener;
 import org.eclipse.jface.text.link.LinkedModeModel;
 import org.eclipse.jface.text.link.LinkedModeUI;
@@ -46,11 +59,16 @@ import org.eclipse.jface.text.link.LinkedPositionGroup;
 import org.eclipse.jface.text.link.LinkedModeUI.ExitFlags;
 import org.eclipse.jface.text.link.LinkedModeUI.IExitPolicy;
 import org.eclipse.jface.text.source.Annotation;
+import org.eclipse.jface.text.source.IAnnotationHover;
+import org.eclipse.jface.text.source.IAnnotationHoverExtension;
 import org.eclipse.jface.text.source.IAnnotationModel;
 import org.eclipse.jface.text.source.ICharacterPairMatcher;
+import org.eclipse.jface.text.source.ILineRange;
 import org.eclipse.jface.text.source.IOverviewRuler;
 import org.eclipse.jface.text.source.ISourceViewer;
+import org.eclipse.jface.text.source.ISourceViewerExtension3;
 import org.eclipse.jface.text.source.IVerticalRuler;
+import org.eclipse.jface.text.source.IVerticalRulerInfo;
 import org.eclipse.jface.text.source.SourceViewerConfiguration;
 import org.eclipse.jface.text.source.projection.ProjectionSupport;
 import org.eclipse.jface.text.source.projection.ProjectionViewer;
@@ -60,11 +78,13 @@ import org.eclipse.jface.viewers.ISelectionProvider;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.search.ui.IContextMenuConstants;
+import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.StyledText;
 import org.eclipse.swt.custom.VerifyKeyListener;
 import org.eclipse.swt.events.VerifyEvent;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IPageLayout;
 import org.eclipse.ui.IPartListener2;
@@ -83,6 +103,8 @@ import org.eclipse.ui.texteditor.IDocumentProvider;
 import org.eclipse.ui.texteditor.IEditorStatusLine;
 import org.eclipse.ui.texteditor.ITextEditorActionConstants;
 import org.eclipse.ui.texteditor.MarkerAnnotation;
+import org.eclipse.ui.texteditor.ResourceAction;
+import org.eclipse.ui.texteditor.TextEditorAction;
 import org.eclipse.ui.texteditor.TextOperationAction;
 import org.eclipse.ui.texteditor.link.EditorLinkedModeUI;
 import org.eclipse.ui.views.contentoutline.IContentOutlinePage;
@@ -96,12 +118,13 @@ import org.rubypeople.rdt.internal.corext.util.CodeFormatterUtil;
 import org.rubypeople.rdt.internal.corext.util.RubyModelUtil;
 import org.rubypeople.rdt.internal.ui.IRubyHelpContextIds;
 import org.rubypeople.rdt.internal.ui.RubyPlugin;
-import org.rubypeople.rdt.internal.ui.RubyUIMessages;
 import org.rubypeople.rdt.internal.ui.actions.CompositeActionGroup;
 import org.rubypeople.rdt.internal.ui.actions.FoldingActionGroup;
+import org.rubypeople.rdt.internal.ui.text.HTMLTextPresenter;
 import org.rubypeople.rdt.internal.ui.text.IRubyPartitions;
 import org.rubypeople.rdt.internal.ui.text.RubyHeuristicScanner;
 import org.rubypeople.rdt.internal.ui.text.Symbols;
+import org.rubypeople.rdt.internal.ui.text.ruby.hover.SourceViewerInformationControl;
 import org.rubypeople.rdt.ui.IWorkingCopyManager;
 import org.rubypeople.rdt.ui.PreferenceConstants;
 import org.rubypeople.rdt.ui.actions.FormatAction;
@@ -177,6 +200,8 @@ public class RubyEditor extends RubyAbstractEditor {
 	private CompositeActionGroup fActionGroups;
 	private CompositeActionGroup fContextMenuGroup;
 
+	private InformationPresenter fInformationPresenter;
+
 	
     public RubyEditor() {
         super();
@@ -242,6 +267,12 @@ public class RubyEditor extends RubyAbstractEditor {
         ISelectionProvider provider= getSite().getSelectionProvider();
         ISelection selection= provider.getSelection();
         
+        ResourceAction resAction= new TextOperationAction(RubyEditorMessages.getBundleForConstructedKeys(), "ShowRDoc.", this, ISourceViewer.INFORMATION, true); //$NON-NLS-1$
+		resAction= new InformationDispatchAction(RubyEditorMessages.getBundleForConstructedKeys(), "ShowRDoc.", (TextOperationAction) resAction); //$NON-NLS-1$
+		resAction.setActionDefinitionId(IRubyEditorActionDefinitionIds.SHOW_RDOC);
+		setAction("ShowRDoc", resAction); //$NON-NLS-1$
+//		PlatformUI.getWorkbench().getHelpSystem().setHelp(resAction, IRubyHelpContextIds.SHOW_JAVADOC_ACTION);
+        
         SurroundWithBeginRescueAction beginRescueAction = new SurroundWithBeginRescueAction(this);
         beginRescueAction.setActionDefinitionId(IRubyEditorActionDefinitionIds.SURROUND_WITH_BEGIN_RESCUE);
         beginRescueAction.update(selection);
@@ -272,6 +303,19 @@ public class RubyEditor extends RubyAbstractEditor {
      */
     public void createPartControl(Composite parent) {
         super.createPartControl(parent);
+        
+		IInformationControlCreator informationControlCreator= new IInformationControlCreator() {
+			public IInformationControl createInformationControl(Shell shell) {
+				boolean cutDown= false;
+				int style= cutDown ? SWT.NONE : (SWT.V_SCROLL | SWT.H_SCROLL);
+				return new DefaultInformationControl(shell, SWT.RESIZE | SWT.TOOL, style, new HTMLTextPresenter(cutDown));
+			}
+		};
+
+		fInformationPresenter= new InformationPresenter(informationControlCreator);
+		fInformationPresenter.setSizeConstraints(60, 10, true, true);
+		fInformationPresenter.install(getSourceViewer());
+		fInformationPresenter.setDocumentPartitioning(IRubyPartitions.RUBY_PARTITIONING);
         
         ProjectionViewer projectionViewer = (ProjectionViewer) getSourceViewer();
 
@@ -1673,5 +1717,249 @@ public class RubyEditor extends RubyAbstractEditor {
 		else
 			option= project.getOption(SPACES_FOR_TABS, true);
 		return RubyCore.SPACE.equals(option);
+	}
+	
+	/**
+	 * This action behaves in two different ways: If there is no current text
+	 * hover, the javadoc is displayed using information presenter. If there is
+	 * a current text hover, it is converted into a information presenter in
+	 * order to make it sticky.
+	 */
+	class InformationDispatchAction extends TextEditorAction {
+
+		/** The wrapped text operation action. */
+		private final TextOperationAction fTextOperationAction;
+
+		/**
+		 * Creates a dispatch action.
+		 *
+		 * @param resourceBundle the resource bundle
+		 * @param prefix the prefix
+		 * @param textOperationAction the text operation action
+		 */
+		public InformationDispatchAction(ResourceBundle resourceBundle, String prefix, final TextOperationAction textOperationAction) {
+			super(resourceBundle, prefix, RubyEditor.this);
+			if (textOperationAction == null)
+				throw new IllegalArgumentException();
+			fTextOperationAction= textOperationAction;
+		}
+
+		/*
+		 * @see org.eclipse.jface.action.IAction#run()
+		 */
+		public void run() {
+
+			ISourceViewer sourceViewer= getSourceViewer();
+			if (sourceViewer == null) {
+				fTextOperationAction.run();
+				return;
+			}
+
+			if (sourceViewer instanceof ITextViewerExtension4)  {
+				ITextViewerExtension4 extension4= (ITextViewerExtension4) sourceViewer;
+				if (extension4.moveFocusToWidgetToken())
+					return;
+			}
+
+			if (sourceViewer instanceof ITextViewerExtension2) {
+				// does a text hover exist?
+				ITextHover textHover= ((ITextViewerExtension2) sourceViewer).getCurrentTextHover();
+				if (textHover != null && makeTextHoverFocusable(sourceViewer, textHover))
+					return;
+			}
+
+			if (sourceViewer instanceof ISourceViewerExtension3) {
+				// does an annotation hover exist?
+				IAnnotationHover annotationHover= ((ISourceViewerExtension3) sourceViewer).getCurrentAnnotationHover();
+				if (annotationHover != null && makeAnnotationHoverFocusable(sourceViewer, annotationHover))
+					return;
+			}
+			
+			// otherwise, just run the action
+			fTextOperationAction.run();
+		}
+
+		/**
+		 * Tries to make a text hover focusable (or "sticky").
+		 * 
+		 * @param sourceViewer the source viewer to display the hover over
+		 * @param textHover the hover to make focusable
+		 * @return <code>true</code> if successful, <code>false</code> otherwise
+		 * @since 3.2
+		 */
+		private boolean makeTextHoverFocusable(ISourceViewer sourceViewer, ITextHover textHover) {
+			Point hoverEventLocation= ((ITextViewerExtension2) sourceViewer).getHoverEventLocation();
+			int offset= computeOffsetAtLocation(sourceViewer, hoverEventLocation.x, hoverEventLocation.y);
+			if (offset == -1)
+				return false;
+			
+			try {
+				IRegion hoverRegion= textHover.getHoverRegion(sourceViewer, offset);
+				if (hoverRegion == null)
+					return false;
+
+				String hoverInfo= textHover.getHoverInfo(sourceViewer, hoverRegion);
+
+				IInformationControlCreator controlCreator= null;
+				if (textHover instanceof IInformationProviderExtension2)
+					controlCreator= ((IInformationProviderExtension2)textHover).getInformationPresenterControlCreator();
+
+				IInformationProvider informationProvider= new InformationProvider(hoverRegion, hoverInfo, controlCreator);
+
+				fInformationPresenter.setOffset(offset);
+				fInformationPresenter.setAnchor(AbstractInformationControlManager.ANCHOR_BOTTOM);
+				fInformationPresenter.setMargins(6, 6); // default values from AbstractInformationControlManager
+				String contentType= TextUtilities.getContentType(sourceViewer.getDocument(), IRubyPartitions.RUBY_PARTITIONING, offset, true);
+				fInformationPresenter.setInformationProvider(informationProvider, contentType);
+				fInformationPresenter.showInformation();
+
+				return true;
+
+			} catch (BadLocationException e) {
+				return false;
+			}
+		}
+
+		/**
+		 * Tries to make an annotation hover focusable (or "sticky").
+		 * 
+		 * @param sourceViewer the source viewer to display the hover over
+		 * @param annotationHover the hover to make focusable
+		 * @return <code>true</code> if successful, <code>false</code> otherwise
+		 * @since 3.2
+		 */
+		private boolean makeAnnotationHoverFocusable(ISourceViewer sourceViewer, IAnnotationHover annotationHover) {
+			IVerticalRulerInfo info= getVerticalRuler();
+			int line= info.getLineOfLastMouseButtonActivity();
+			if (line == -1)
+				return false;
+
+			try {
+
+				// compute the hover information
+				Object hoverInfo;
+				if (annotationHover instanceof IAnnotationHoverExtension) {
+					IAnnotationHoverExtension extension= (IAnnotationHoverExtension) annotationHover;
+					ILineRange hoverLineRange= extension.getHoverLineRange(sourceViewer, line);
+					if (hoverLineRange == null)
+						return false;
+					final int maxVisibleLines= Integer.MAX_VALUE; // allow any number of lines being displayed, as we support scrolling
+					hoverInfo= extension.getHoverInfo(sourceViewer, hoverLineRange, maxVisibleLines);
+				} else {
+					hoverInfo= annotationHover.getHoverInfo(sourceViewer, line);
+				}
+				
+				// hover region: the beginning of the concerned line to place the control right over the line
+				IDocument document= sourceViewer.getDocument();
+				int offset= document.getLineOffset(line);
+				String contentType= TextUtilities.getContentType(document, IRubyPartitions.RUBY_PARTITIONING, offset, true);
+
+				IInformationControlCreator controlCreator= null;
+				
+				/* 
+				 * XXX: This is a hack to avoid API changes at the end of 3.2,
+				 * and should be fixed for 3.3, see: https://bugs.eclipse.org/bugs/show_bug.cgi?id=137967
+				 */
+				if ("org.eclipse.jface.text.source.projection.ProjectionAnnotationHover".equals(annotationHover.getClass().getName())) { //$NON-NLS-1$
+					controlCreator= new IInformationControlCreator() {
+						public IInformationControl createInformationControl(Shell shell) {
+							int shellStyle= SWT.RESIZE | SWT.TOOL | getOrientation();
+							int style= SWT.V_SCROLL | SWT.H_SCROLL;
+							return new SourceViewerInformationControl(shell, shellStyle, style);
+						}
+					};
+					
+				} else {
+					if (annotationHover instanceof IInformationProviderExtension2)
+						controlCreator= ((IInformationProviderExtension2) annotationHover).getInformationPresenterControlCreator();
+					else if (annotationHover instanceof IAnnotationHoverExtension)
+						controlCreator= ((IAnnotationHoverExtension) annotationHover).getHoverControlCreator();
+				}
+				
+				IInformationProvider informationProvider= new InformationProvider(new Region(offset, 0), hoverInfo, controlCreator);
+
+				fInformationPresenter.setOffset(offset);
+				fInformationPresenter.setAnchor(AbstractInformationControlManager.ANCHOR_RIGHT);
+				fInformationPresenter.setMargins(4, 0); // AnnotationBarHoverManager sets (5,0), minus SourceViewer.GAP_SIZE_1
+				fInformationPresenter.setInformationProvider(informationProvider, contentType);
+				fInformationPresenter.showInformation();
+
+				return true;
+
+			} catch (BadLocationException e) {
+				return false;
+			}
+        }
+
+		// modified version from TextViewer
+		private int computeOffsetAtLocation(ITextViewer textViewer, int x, int y) {
+
+			StyledText styledText= textViewer.getTextWidget();
+			IDocument document= textViewer.getDocument();
+
+			if (document == null)
+				return -1;
+
+			try {
+				int widgetOffset= styledText.getOffsetAtLocation(new Point(x, y));
+				Point p= styledText.getLocationAtOffset(widgetOffset);
+				if (p.x > x)
+					widgetOffset--;
+				
+				if (textViewer instanceof ITextViewerExtension5) {
+					ITextViewerExtension5 extension= (ITextViewerExtension5) textViewer;
+					return extension.widgetOffset2ModelOffset(widgetOffset);
+				} else {
+					IRegion visibleRegion= textViewer.getVisibleRegion();
+					return widgetOffset + visibleRegion.getOffset();
+				}
+			} catch (IllegalArgumentException e) {
+				return -1;
+			}
+
+		}
+	}
+	
+	/**
+	 * Information provider used to present focusable information shells.
+	 *
+	 * @since 3.2
+	 */
+	private static final class InformationProvider implements IInformationProvider, IInformationProviderExtension, IInformationProviderExtension2 {
+		
+		private IRegion fHoverRegion;
+		private Object fHoverInfo;
+		private IInformationControlCreator fControlCreator;
+		
+		InformationProvider(IRegion hoverRegion, Object hoverInfo, IInformationControlCreator controlCreator) {
+			fHoverRegion= hoverRegion;
+			fHoverInfo= hoverInfo;
+			fControlCreator= controlCreator;
+		}
+		/*
+		 * @see org.eclipse.jface.text.information.IInformationProvider#getSubject(org.eclipse.jface.text.ITextViewer, int)
+		 */
+		public IRegion getSubject(ITextViewer textViewer, int invocationOffset) {
+			return fHoverRegion;
+		}
+		/*
+		 * @see org.eclipse.jface.text.information.IInformationProvider#getInformation(org.eclipse.jface.text.ITextViewer, org.eclipse.jface.text.IRegion)
+		 */
+		public String getInformation(ITextViewer textViewer, IRegion subject) {
+			return fHoverInfo.toString();
+		}
+		/*
+		 * @see org.eclipse.jface.text.information.IInformationProviderExtension#getInformation2(org.eclipse.jface.text.ITextViewer, org.eclipse.jface.text.IRegion)
+		 * @since 3.2
+		 */
+		public Object getInformation2(ITextViewer textViewer, IRegion subject) {
+			return fHoverInfo;
+		}
+		/*
+		 * @see org.eclipse.jface.text.information.IInformationProviderExtension2#getInformationPresenterControlCreator()
+		 */
+		public IInformationControlCreator getInformationPresenterControlCreator() {
+			return fControlCreator;
+		}
 	}
 }

@@ -42,6 +42,8 @@ public class RubyEditorMessages extends NLS {
     private static final String BUNDLE_FOR_CONSTRUCTED_KEYS= "org.rubypeople.rdt.internal.ui.rubyeditor.ConstructedRubyEditorMessages";//$NON-NLS-1$
     private static ResourceBundle fgBundleForConstructedKeys= ResourceBundle.getBundle(BUNDLE_FOR_CONSTRUCTED_KEYS);
 
+	public static String ShowRDoc_label;
+
     /**
      * Returns the message bundle which contains constructed keys.
      *

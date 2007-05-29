@@ -1,5 +1,8 @@
 package org.rubypeople.rdt.internal.ui.rubyeditor;
 
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 import java.util.ResourceBundle;
 
 import org.eclipse.jface.action.IAction;
@@ -8,6 +11,8 @@ import org.eclipse.jface.action.Separator;
 import org.eclipse.ui.IActionBars;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IWorkbenchActionConstants;
+import org.eclipse.ui.IWorkbenchPage;
+import org.eclipse.ui.actions.RetargetAction;
 import org.eclipse.ui.ide.IDEActionFactory;
 import org.eclipse.ui.texteditor.BasicTextEditorActionContributor;
 import org.eclipse.ui.texteditor.ITextEditor;
@@ -17,17 +22,27 @@ import org.eclipse.ui.texteditor.RetargetTextEditorAction;
 import org.rubypeople.rdt.internal.ui.RubyUIMessages;
 import org.rubypeople.rdt.internal.ui.actions.FoldingActionGroup;
 import org.rubypeople.rdt.ui.actions.IRubyEditorActionDefinitionIds;
+import org.rubypeople.rdt.ui.actions.RdtActionConstants;
 import org.rubypeople.rdt.ui.actions.RubyActionIds;
 
 public class RubyEditorActionContributor extends BasicTextEditorActionContributor {
 
+	private List fPartListeners= new ArrayList();
+	
     protected RetargetTextEditorAction contentAssistProposal;
     private RetargetTextEditorAction fGotoMatchingBracket;
 	private RetargetTextEditorAction fQuickAssistAction;
+	
+	private RetargetAction fRetargetShowRubyDoc;
+	private RetargetTextEditorAction fShowRubyDoc;
 
     public RubyEditorActionContributor() {
         super();
         ResourceBundle b = RubyEditorMessages.getBundleForConstructedKeys();
+        
+        fRetargetShowRubyDoc= new RetargetAction(RdtActionConstants.SHOW_RUBY_DOC, RubyEditorMessages.ShowRDoc_label);
+		fRetargetShowRubyDoc.setActionDefinitionId(IRubyEditorActionDefinitionIds.SHOW_RDOC);
+		markAsPartListener(fRetargetShowRubyDoc);
 
         contentAssistProposal = new RetargetTextEditorAction(RubyUIMessages.getResourceBundle(),
                 "ContentAssistProposal.");
@@ -38,7 +53,13 @@ public class RubyEditorActionContributor extends BasicTextEditorActionContributo
         fQuickAssistAction= new RetargetTextEditorAction(RubyEditorMessages.getBundleForConstructedKeys(), "CorrectionAssistProposal."); //$NON-NLS-1$
 		fQuickAssistAction.setActionDefinitionId(ITextEditorActionDefinitionIds.QUICK_ASSIST);
 
+		fShowRubyDoc= new RetargetTextEditorAction(b, "ShowRDoc."); //$NON-NLS-1$
+		fShowRubyDoc.setActionDefinitionId(IRubyEditorActionDefinitionIds.SHOW_RDOC);
     }
+    
+	protected final void markAsPartListener(RetargetAction action) {
+		fPartListeners.add(action);
+	}
 
     public void contributeToMenu(IMenuManager menuManager) {
         IMenuManager editMenu = menuManager.findMenuUsingPath(IWorkbenchActionConstants.M_EDIT);
@@ -98,4 +119,37 @@ public class RubyEditorActionContributor extends BasicTextEditorActionContributo
 		actionBars.setGlobalActionHandler(IDEActionFactory.ADD_TASK.getId(), getAction(textEditor, IDEActionFactory.ADD_TASK.getId()));
 		actionBars.setGlobalActionHandler(IDEActionFactory.BOOKMARK.getId(), getAction(textEditor, IDEActionFactory.BOOKMARK.getId()));
     }
+    
+    @Override
+    public void init(IActionBars bars, IWorkbenchPage page) {
+    	Iterator e= fPartListeners.iterator();
+		while (e.hasNext())
+			page.addPartListener((RetargetAction) e.next());
+
+		super.init(bars, page);
+//
+//		bars.setGlobalActionHandler(ITextEditorActionDefinitionIds.TOGGLE_SHOW_SELECTED_ELEMENT_ONLY, fTogglePresentation);
+//		bars.setGlobalActionHandler(IRubyEditorActionDefinitionIds.TOGGLE_MARK_OCCURRENCES, fToggleMarkOccurrencesAction);
+
+		bars.setGlobalActionHandler(RdtActionConstants.SHOW_RUBY_DOC, fShowRubyDoc);
+    }
+    
+	/*
+	 * @see IEditorActionBarContributor#dispose()
+	 */
+	public void dispose() {
+
+		Iterator e= fPartListeners.iterator();
+		while (e.hasNext())
+			getPage().removePartListener((RetargetAction) e.next());
+		fPartListeners.clear();
+
+		if (fRetargetShowRubyDoc != null) {
+			fRetargetShowRubyDoc.dispose();
+			fRetargetShowRubyDoc= null;
+		}
+		
+		setActiveEditor(null);
+		super.dispose();
+	}
 }

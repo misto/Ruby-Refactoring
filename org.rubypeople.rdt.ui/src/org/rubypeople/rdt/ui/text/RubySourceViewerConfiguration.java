@@ -16,6 +16,9 @@ import org.eclipse.jface.text.contentassist.IContentAssistant;
 import org.eclipse.jface.text.formatter.IContentFormatter;
 import org.eclipse.jface.text.formatter.MultiPassContentFormatter;
 import org.eclipse.jface.text.hyperlink.IHyperlinkDetector;
+import org.eclipse.jface.text.information.IInformationPresenter;
+import org.eclipse.jface.text.information.IInformationProvider;
+import org.eclipse.jface.text.information.InformationPresenter;
 import org.eclipse.jface.text.presentation.IPresentationReconciler;
 import org.eclipse.jface.text.presentation.PresentationReconciler;
 import org.eclipse.jface.text.quickassist.IQuickAssistAssistant;
@@ -63,6 +66,7 @@ import org.rubypeople.rdt.internal.ui.text.ruby.RubyReconcilingStrategy;
 import org.rubypeople.rdt.internal.ui.text.ruby.RubyTokenScanner;
 import org.rubypeople.rdt.internal.ui.text.ruby.hover.RubyEditorTextHoverDescriptor;
 import org.rubypeople.rdt.internal.ui.text.ruby.hover.RubyEditorTextHoverProxy;
+import org.rubypeople.rdt.internal.ui.text.ruby.hover.RubyInformationProvider;
 
 public class RubySourceViewerConfiguration extends TextSourceViewerConfiguration {
 
@@ -302,9 +306,45 @@ public class RubySourceViewerConfiguration extends TextSourceViewerConfiguration
 	 */
 	public IInformationControlCreator getInformationControlCreator(ISourceViewer sourceViewer) {
 		return new IInformationControlCreator() {
-
 			public IInformationControl createInformationControl(Shell parent) {
 				return new DefaultInformationControl(parent, SWT.NONE, new HTMLTextPresenter(true));
+			}
+		};
+	}
+	
+	/*
+	 * @see SourceViewerConfiguration#getInformationPresenter(ISourceViewer)
+	 * @since 2.0
+	 */
+	public IInformationPresenter getInformationPresenter(ISourceViewer sourceViewer) {
+		InformationPresenter presenter= new InformationPresenter(getInformationPresenterControlCreator(sourceViewer));
+		presenter.setDocumentPartitioning(getConfiguredDocumentPartitioning(sourceViewer));
+		
+		// Register information provider
+		IInformationProvider provider= new RubyInformationProvider(getEditor());
+		String[] contentTypes= getConfiguredContentTypes(sourceViewer);
+		for (int i= 0; i < contentTypes.length; i++)
+			presenter.setInformationProvider(provider, contentTypes[i]);
+		
+		presenter.setSizeConstraints(60, 10, true, true);
+		return presenter;
+	}
+	
+	/**
+	 * Returns the information presenter control creator. The creator is a factory creating the
+	 * presenter controls for the given source viewer. This implementation always returns a creator
+	 * for <code>DefaultInformationControl</code> instances.
+	 *
+	 * @param sourceViewer the source viewer to be configured by this configuration
+	 * @return an information control creator
+	 * @since 2.1
+	 */
+	private IInformationControlCreator getInformationPresenterControlCreator(ISourceViewer sourceViewer) {
+		return new IInformationControlCreator() {
+			public IInformationControl createInformationControl(Shell parent) {
+				int shellStyle= SWT.RESIZE | SWT.TOOL;
+				int style= SWT.V_SCROLL | SWT.H_SCROLL;
+				return new DefaultInformationControl(parent, shellStyle, style, new HTMLTextPresenter(false));
 			}
 		};
 	}
