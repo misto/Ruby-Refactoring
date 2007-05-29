@@ -24,7 +24,7 @@ public class RiDocHoverProvider extends AbstractRubyEditorTextHover {
     	args.add(0, ri.getAbsolutePath());
     	// these will get rid of some of the overhead formatting
     	args.add("-f");
-    	args.add("simple");
+    	args.add("html");
     	args.add("--no-pager");
     	
     	BufferedReader br = null; 
