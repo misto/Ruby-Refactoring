@@ -13,18 +13,18 @@ import org.eclipse.ltk.ui.refactoring.UserInputWizardPage;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Composite;
+import org.rubypeople.rdt.internal.refactoring.RefactoringMessages;
 import org.rubypeople.rdt.refactoring.core.pullup.MethodUpPuller;
 import org.rubypeople.rdt.refactoring.ui.NotifiedContainerCheckedTree;
 
 public class MethodUpPullerSelectionPage extends UserInputWizardPage {
-	private static final String TITLE = "Selcet methods to pull up";
 
 	private NotifiedContainerCheckedTree tree;
 	private MethodUpPuller methodUpPuller;
 
 	public MethodUpPullerSelectionPage(MethodUpPuller methodUpPuller) {
-		super(TITLE);
-		setTitle(TITLE);
+		super(RefactoringMessages.PullUpMethod_Wizard_title);
+		setTitle(RefactoringMessages.PullUpMethod_Wizard_title);
 		this.methodUpPuller = methodUpPuller;
 	}
 
