@@ -322,24 +322,29 @@ public class GemManager implements IGemManager {
 	private Set<Gem> parseOutGems(List<String> lines) {
 		Set<Gem> gems = new HashSet<Gem>();
 		for (int i = 0; i < lines.size();) {
-			String nameAndVersion = lines.get(i);
-			String description = lines.get(i + 1);
-			int j = 2;
-			if ((i + 2) < lines.size()) {
-				String nextLine = lines.get(i + 2);
-				while (nextLine.trim().length() != 0) {
-					j++;
-					description += " " + nextLine.trim();
-					nextLine = lines.get(i + j);
+			try {
+				String nameAndVersion = lines.get(i);
+				String description = lines.get(i + 1);
+				int j = 2;
+				if ((i + 2) < lines.size()) {
+					String nextLine = lines.get(i + 2);
+					while (nextLine.trim().length() != 0) {
+						j++;
+						description += " " + nextLine.trim();
+						nextLine = lines.get(i + j);
+					}
 				}
+				int openParen = nameAndVersion.indexOf('(');
+				int closeParen = nameAndVersion.indexOf(')');
+				String name = nameAndVersion.substring(0, openParen);
+				String version = nameAndVersion
+						.substring(openParen + 1, closeParen);
+				gems.add(new Gem(name.trim(), version, description.trim()));
+				i += (j + 1);
+			} catch (RuntimeException e) {
+				AptanaRDTPlugin.log(new IllegalStateException("Was unable to parse local gems correctly from: " + lines.toString()));
+				AptanaRDTPlugin.log(e);
 			}
-			int openParen = nameAndVersion.indexOf('(');
-			int closeParen = nameAndVersion.indexOf(')');
-			String name = nameAndVersion.substring(0, openParen);
-			String version = nameAndVersion
-					.substring(openParen + 1, closeParen);
-			gems.add(new Gem(name.trim(), version, description.trim()));
-			i += (j + 1);
 		}
 		return gems;
 	}
