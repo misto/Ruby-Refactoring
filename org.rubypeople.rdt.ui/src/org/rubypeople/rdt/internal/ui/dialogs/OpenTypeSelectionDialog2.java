@@ -35,7 +35,7 @@ public class OpenTypeSelectionDialog2 extends TypeSelectionDialog2 {
 	private Point fLocation;
 	private Point fSize;
 
-	private static final String DIALOG_SETTINGS= "org.eclipse.jdt.internal.ui.dialogs.OpenTypeSelectionDialog2"; //$NON-NLS-1$
+	private static final String DIALOG_SETTINGS= "org.rubypeople.rdt.internal.ui.dialogs.OpenTypeSelectionDialog2"; //$NON-NLS-1$
 	private static final String WIDTH= "width"; //$NON-NLS-1$
 	private static final String HEIGHT= "height"; //$NON-NLS-1$
 	
