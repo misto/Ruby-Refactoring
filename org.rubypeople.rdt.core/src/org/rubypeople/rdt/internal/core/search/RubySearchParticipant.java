@@ -24,9 +24,8 @@ public class RubySearchParticipant extends SearchParticipant {
 
 	@Override
 	public void indexDocument(SearchDocument document, IPath indexLocation) {
-		// TODO must verify that the document + indexPath match, when this is not called from scheduleDocumentIndexing
 		document.removeAllIndexEntries(); // in case the document was already indexed
-
+		// FIXME We can cheat and use indexLocation as the source folder root path, and determine the "src folder" names from the diff between it and documentPath!
 		String documentPath = document.getPath();
 		if (org.rubypeople.rdt.internal.core.util.Util.isRubyLikeFileName(documentPath)) {
 			new SourceIndexer(document).indexDocument();
