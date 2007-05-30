@@ -26,6 +26,14 @@ public class TC_StackTraceLine extends TestCase {
     public void testWithFrom() {
 		assertFalse("has a stack trace", StackTraceLine.isTraceLine(WITH_TRAILING_SPACE));
 	}
+    
+    public void testRelativePathWithPeriod() {
+		assertTrue("has a stack trace", StackTraceLine.isTraceLine(" ./content/scripts/WatirScripts/byFeature/../lib/lib_atf_base.rb:240:in `treeNavigation'"));
+	}
+    
+    public void testRelativePathWithoutPeriod() {
+		assertTrue("has a stack trace", StackTraceLine.isTraceLine("content/scripts/WatirScripts/byFeature/serialized_framework_validation_IT13_script.rb:43:in `test_tc85'"));
+	}
 
     public void testWithTrailingSpace() {
 		assertTrue("has a stack trace", StackTraceLine.isTraceLine(WITH_FROM));

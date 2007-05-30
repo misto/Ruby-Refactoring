@@ -15,9 +15,8 @@ package org.rubypeople.rdt.internal.ui.util;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.eclipse.core.resources.IProject;
 import org.rubypeople.rdt.core.IRubyProject;
-import org.rubypeople.rdt.internal.ui.rubyeditor.EditorUtility;
-import org.rubypeople.rdt.ui.actions.OpenEditorActionGroup;
 
 
 
@@ -38,10 +37,14 @@ public class StackTraceLine {
 	}
 	
 	public StackTraceLine(String traceLine) {
-		this(traceLine, null);
+		this(traceLine, (IProject) null);
+	}
+	
+	public StackTraceLine(String traceLine, IRubyProject launchedProject) {
+		this(traceLine, launchedProject.getProject());
 	}
     
-    public StackTraceLine(String traceLine, IRubyProject launchedProject) {
+    public StackTraceLine(String traceLine, IProject launchedProject) {
     	int prefix = 0;
 		Matcher matcher = OPTIONAL_PREFIX.matcher(traceLine);
 		if (matcher.find()) {
@@ -56,15 +59,35 @@ public class StackTraceLine {
 				return;
 		}
 		
-		fFilename = matcher.group(1);	
-		if (fFilename.startsWith("./") && launchedProject != null) {
-			fFilename = launchedProject.getPath().toPortableString() + fFilename.substring(1);
+		fFilename = matcher.group(1);		
+		offset = matcher.start(1) + prefix;
+		if (fFilename.startsWith("[")) {
+			fFilename = fFilename.substring(1);
+			offset++;
 		}
 		String lineNumber = matcher.group(2);
 		fLineNumber = Integer.parseInt(lineNumber);
-		
-		offset = matcher.start(1) + prefix;
 		length = fFilename.length()+lineNumber.length()+1;
+		if (isRelativePath() && launchedProject != null) {
+			makeRelativeToWorkspace(launchedProject);
+		}		
+		
+	}
+
+	private void makeRelativeToWorkspace(IProject launchedProject) {
+		if (fFilename.startsWith("./")) {
+			fFilename = launchedProject.getFullPath().toPortableString() + fFilename.substring(1);
+			return;
+		} else {
+			fFilename = launchedProject.getFullPath().toPortableString() + '/' + fFilename;
+		}
+		
+	}
+
+	private boolean isRelativePath() {
+		if (fFilename.startsWith("./")) return true;
+		if (!fFilename.startsWith("/") && fFilename.charAt(fFilename.indexOf('/') - 1) != ':' ) return true;
+		return false;
 	}
 
 	public void openEditor() {

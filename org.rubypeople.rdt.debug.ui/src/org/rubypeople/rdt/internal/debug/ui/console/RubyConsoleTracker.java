@@ -22,12 +22,18 @@ package org.rubypeople.rdt.internal.debug.ui.console;
 
 import java.io.File;
 
+import org.eclipse.core.resources.IFile;
+import org.eclipse.core.resources.IProject;
+import org.eclipse.core.resources.ResourcesPlugin;
+import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.Path;
 import org.eclipse.debug.ui.console.IConsole;
 import org.eclipse.debug.ui.console.IConsoleLineTracker;
 import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.IRegion;
 import org.eclipse.ui.console.IHyperlink;
 import org.rubypeople.rdt.internal.ui.util.StackTraceLine;
+import org.rubypeople.rdt.launching.IRubyLaunchConfigurationConstants;
 
 /**
  * Provides links for stack traces, eg:
@@ -49,7 +55,10 @@ public class RubyConsoleTracker implements IConsoleLineTracker {
 	
 			public boolean fileExists(String filename) {
 				File file = new File(filename);
-				return file.exists();
+				if (file.exists()) return true;
+				IFile iFile = ResourcesPlugin.getWorkspace().getRoot().getFile(new Path(filename));
+				if (iFile != null) return true;
+				return false;
 			}
 		}
 		private final FileExistanceChecker existanceChecker;
@@ -89,17 +98,30 @@ public class RubyConsoleTracker implements IConsoleLineTracker {
 						
 			String text = fConsole.getDocument().get(offset, length);
 			while (StackTraceLine.isTraceLine(text)) {
-				StackTraceLine stackTraceLine = new StackTraceLine(text);
+				String projectName = null;
+				try {
+					projectName = fConsole.getProcess().getLaunch().getLaunchConfiguration().getAttribute(IRubyLaunchConfigurationConstants.ATTR_PROJECT_NAME, (String) null);
+				} catch (CoreException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				IProject project = ResourcesPlugin.getWorkspace().getRoot().getProject(projectName);
+				StackTraceLine stackTraceLine = new StackTraceLine(text, project);
 				if (! existanceChecker.fileExists(stackTraceLine.getFilename()))
 					return;
 				IHyperlink link = new RubyStackTraceHyperlink(fConsole, stackTraceLine);
 				fConsole.addLink(link, line.getOffset() + prefix + stackTraceLine.offset() , stackTraceLine.length());
 								
 				prefix = stackTraceLine.offset() + stackTraceLine.length();
-				text = text.substring(stackTraceLine.offset() + stackTraceLine.length());
-				if (text.startsWith(":in `require':")) {
-					text = text.substring(14);
-					prefix += 14;
+				int substring = stackTraceLine.offset() + stackTraceLine.length();
+				if (text.length() < substring - 1) {
+					text = "";
+				} else {
+					text = text.substring(substring);
+					if (text.startsWith(":in `require':")) {
+						text = text.substring(14);
+						prefix += 14;
+					}
 				}
 			}
 		} catch (BadLocationException e) {
