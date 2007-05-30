@@ -15,6 +15,10 @@ package org.rubypeople.rdt.internal.ui.util;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.rubypeople.rdt.core.IRubyProject;
+import org.rubypeople.rdt.internal.ui.rubyeditor.EditorUtility;
+import org.rubypeople.rdt.ui.actions.OpenEditorActionGroup;
+
 
 
 public class StackTraceLine {
@@ -34,7 +38,11 @@ public class StackTraceLine {
 	}
 	
 	public StackTraceLine(String traceLine) {
-		int prefix = 0;
+		this(traceLine, null);
+	}
+    
+    public StackTraceLine(String traceLine, IRubyProject launchedProject) {
+    	int prefix = 0;
 		Matcher matcher = OPTIONAL_PREFIX.matcher(traceLine);
 		if (matcher.find()) {
 			traceLine = traceLine.substring(matcher.group(0).length());
@@ -48,15 +56,18 @@ public class StackTraceLine {
 				return;
 		}
 		
-		fFilename = matcher.group(1);
+		fFilename = matcher.group(1);	
+		if (fFilename.startsWith("./") && launchedProject != null) {
+			fFilename = launchedProject.getPath().toPortableString() + fFilename.substring(1);
+		}
 		String lineNumber = matcher.group(2);
 		fLineNumber = Integer.parseInt(lineNumber);
 		
 		offset = matcher.start(1) + prefix;
 		length = fFilename.length()+lineNumber.length()+1;
 	}
-    
-    public void openEditor() {
+
+	public void openEditor() {
         if (fFilename == null)
             return;
         new LineBasedEditorOpener(fFilename, fLineNumber).open();

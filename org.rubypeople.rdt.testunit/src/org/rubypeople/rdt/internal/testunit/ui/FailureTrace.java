@@ -28,7 +28,6 @@ import org.eclipse.swt.dnd.Clipboard;
 import org.eclipse.swt.events.DisposeEvent;
 import org.eclipse.swt.events.DisposeListener;
 import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Menu;
@@ -50,6 +49,7 @@ public class FailureTrace implements IMenuListener {
 	private final Clipboard fClipboard;
     private TestRunInfo fFailure;
     private CompareResultsAction fCompareAction;
+	private TestUnitView fTestRunner;
     
 
 	public FailureTrace(Composite parent, Clipboard clipboard, TestUnitView testRunner, ToolBar toolBar) {
@@ -64,6 +64,7 @@ public class FailureTrace implements IMenuListener {
         failureToolBarmanager.add(fCompareAction);			
 		failureToolBarmanager.update(true);
 		
+		fTestRunner = testRunner;
 		fTable= new Table(parent, SWT.SINGLE | SWT.V_SCROLL | SWT.H_SCROLL);
 		fClipboard= clipboard;
 		
@@ -82,14 +83,6 @@ public class FailureTrace implements IMenuListener {
 		});
 		
 		initMenu();
-		fTable.addSelectionListener(new SelectionListener() {
-		
-			public void widgetSelected(SelectionEvent e) {}
-			
-			public void widgetDefaultSelected(SelectionEvent e) {
-					new StackTraceLine(getSelectedText()).openEditor();
-			}
-		});
 		
 		parent.addDisposeListener(new DisposeListener() {
 			public void widgetDisposed(DisposeEvent e) {
@@ -127,7 +120,8 @@ public class FailureTrace implements IMenuListener {
 	}	
 		
 	private Action createOpenEditorAction(String traceLine) {
-		return new OpenEditorAction(new StackTraceLine(traceLine));
+		StackTraceLine stack = new StackTraceLine(traceLine, fTestRunner.getLaunchedProject());
+		return new OpenEditorAtLineAction(fTestRunner, stack.getFilename(), stack.getLineNumber());
 	}
 
 	private void disposeIcons(){
@@ -246,17 +240,4 @@ public class FailureTrace implements IMenuListener {
     public Shell getShell() {
         return fTable.getShell();
     }
-	
-	private class OpenEditorAction extends Action {
-		private final StackTraceLine trace;
-	
-		public OpenEditorAction(StackTraceLine trace) {
-			super(TestUnitMessages.OpenEditor_action_label);
-			this.trace = trace;
-		}
-	
-		public void run() {
-			trace.openEditor();
-		}	
-	}
 }
