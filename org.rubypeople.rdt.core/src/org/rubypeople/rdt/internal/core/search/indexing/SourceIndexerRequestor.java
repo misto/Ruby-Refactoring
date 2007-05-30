@@ -5,6 +5,7 @@ import java.util.Stack;
 import org.rubypeople.rdt.core.Flags;
 import org.rubypeople.rdt.core.compiler.CategorizedProblem;
 import org.rubypeople.rdt.internal.compiler.ISourceElementRequestor;
+import org.rubypeople.rdt.internal.core.util.Util;
 
 public class SourceIndexerRequestor implements ISourceElementRequestor {
 
@@ -76,20 +77,31 @@ public class SourceIndexerRequestor implements ISourceElementRequestor {
 		for (int i = 0; i < modules.length; i++) {
 			mod[i] = modules[i].toCharArray();
 		}
-		char[] packName = new char[0];
+		char[] packName = new char[0]; // XXX We need to know the relative path from the source folder root!
 		char[] superclass = new char[0];
 		if (type.superclass != null) {
 			superclass = type.superclass.toCharArray();
 		}
-		indexer.addClassDeclaration(type.isModule ? Flags.AccModule : 0, packName, type.name.toCharArray(), getEnclosingTypeNames(), superclass, mod, type.secondary);
+		char[]simpleName = getSimpleName(type.name);
+		char[][] enclosingTypes = getEnclosingTypeNames(type.name);
+		indexer.addClassDeclaration(type.isModule ? Flags.AccModule : 0, packName, simpleName, enclosingTypes, superclass, mod, type.secondary);
 	    typeStack.push(type.name);
 	}
 
-	private char[][] getEnclosingTypeNames() {
-		char[][] names = new char[typeStack.size()][];
+	private char[] getSimpleName(String name) {
+		return Util.getSimpleName(name).toCharArray();
+	}
+
+	private char[][] getEnclosingTypeNames(String typeName) {
+		String[] parts = typeName.split("::");
+		
+		char[][] names = new char[typeStack.size() + parts.length - 1][];
 		int i = 0;
 		for (String name : typeStack) {
 			names[i++] = name.toCharArray();
+		}
+		for (int j = 0; j < parts.length - 1; j++) {
+			names[i++] = parts[j].toCharArray();
 		}
 		return names;
 	}
