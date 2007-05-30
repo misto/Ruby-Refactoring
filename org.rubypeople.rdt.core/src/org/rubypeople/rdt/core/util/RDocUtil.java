@@ -123,7 +123,7 @@ public class RDocUtil {
 		} catch (IOException e) {
 			// ignore
 		} catch (RaiseException e) {
-			e.printStackTrace();
+			// ignore
 		}
 		return docs;		
 	}
