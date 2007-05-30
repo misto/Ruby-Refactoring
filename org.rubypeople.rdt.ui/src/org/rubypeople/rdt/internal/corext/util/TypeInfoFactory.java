@@ -40,8 +40,7 @@ public class TypeInfoFactory {
 		String pn= getPackageName(packageName);
 		String tn= new String(typeName);
 		TypeInfo result= null;
-		// FIXME If the type is in an external file we need to handle that!
-			String project = getProject(path);
+		String project = getProject(path);
 		if (project != null) {
 			result = createIFileTypeInfo(pn, tn, enclosingName, isModule, path,	getIFileTypeInfo(fLast), project);
 		} else {
