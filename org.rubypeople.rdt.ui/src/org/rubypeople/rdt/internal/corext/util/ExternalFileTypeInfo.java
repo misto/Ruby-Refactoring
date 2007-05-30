@@ -61,15 +61,18 @@ public class ExternalFileTypeInfo extends TypeInfo {
 		IRubyModel jmodel= RubyCore.create(ResourcesPlugin.getWorkspace().getRoot());
 		IPath[] enclosedPaths= scope.enclosingProjectsAndJars();
 
-		// TODO Remove the last segment of the path, it's the filename. Also remove "package names" from path
-		String rootPath = new File(fPath).getParent();
+		IPath filePath = new Path(fPath);
 		for (int i= 0; i < enclosedPaths.length; i++) {
 			IPath curr= enclosedPaths[i];
-			if (curr.segmentCount() == 1) {
+			if (curr.segmentCount() == 1) { // check the project
 				IRubyProject jproject= jmodel.getRubyProject(curr.segment(0));
-				ISourceFolderRoot root= jproject.getSourceFolderRoot(rootPath);
-				if (root.exists()) {
-					return findElementInRoot(root);
+				ISourceFolderRoot[] roots = jproject.getSourceFolderRoots();
+				for (int j = 0; j < roots.length; j++) {
+					ISourceFolderRoot root = roots[j];
+					if (root.isExternal() && root.getPath().isPrefixOf(filePath)) {
+						IPath relative = filePath.removeFirstSegments(root.getPath().segmentCount());
+						return findElementInRoot(root, relative);
+					}
 				}
 			}
 		}
@@ -78,18 +81,22 @@ public class ExternalFileTypeInfo extends TypeInfo {
 		for (int i= 0; i < projects.length; i++) {
 			IRubyProject jproject= projects[i];
 			if (!paths.contains(jproject.getPath())) {
-				ISourceFolderRoot root= jproject.getSourceFolderRoot(fPath);
-				if (root.exists()) {
-					return findElementInRoot(root);
+				ISourceFolderRoot[] roots = jproject.getSourceFolderRoots();
+				for (int j = 0; j < roots.length; j++) {
+					ISourceFolderRoot root = roots[j];
+					if (root.isExternal() && root.getPath().isPrefixOf(filePath)) {
+						IPath relative = filePath.removeFirstSegments(root.getPath().segmentCount());
+						return findElementInRoot(root, relative);
+					}
 				}
 			}
 		}
 		return null;
 	}
 	
-	private IRubyElement findElementInRoot(ISourceFolderRoot root) {
+	private IRubyElement findElementInRoot(ISourceFolderRoot root, IPath relative) {
 		IRubyElement res;
-		ISourceFolder frag= root.getSourceFolder(getPackageName());
+		ISourceFolder frag= root.getSourceFolder(relative.removeLastSegments(1).segments());
 		String extension= getExtension();
 		String fullName= getFileName() + '.' + extension;
 		
