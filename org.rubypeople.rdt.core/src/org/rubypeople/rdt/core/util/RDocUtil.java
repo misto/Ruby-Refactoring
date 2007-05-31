@@ -116,6 +116,7 @@ public class RDocUtil {
 
 	public static String getHTMLDocumentation(String docs) {
 		if (docs == null) return null;
+		docs = removeUnecessaryIndent(docs);
 		String script = "require 'rdoc/markup/simple_markup'\n" +
 						"require 'rdoc/markup/simple_markup/to_html'\n" +
 						"p = SM::SimpleMarkup.new\n" +
@@ -133,6 +134,33 @@ public class RDocUtil {
 			// ignore
 		}
 		return docs;		
+	}
+
+	private static String removeUnecessaryIndent(String docs) {
+		int count = 0;
+		String[] lines = docs.split("\n");
+		if (lines == null || lines.length == 0) return docs;
+		String tmp = lines[0];
+		if (tmp != null && tmp.length() > 0) {
+			while(tmp.charAt(0) == ' ') {
+				count++;
+				if (tmp.length() == 1) break;
+				tmp = tmp.substring(1);			
+			}
+		}
+		StringBuffer modified = new StringBuffer();
+		for (int i = 0; i < lines.length; i++) {
+			String line = lines[i];
+			if (line.length() > count) {			
+				if (line.substring(0, count).trim().length() == 0) {
+					line = line.substring(count);
+				}
+			}
+			modified.append(line);
+			modified.append("\n");
+		}
+		modified.deleteCharAt(modified.length() - 1); // remove last newline
+		return modified.toString();
 	}
 
 	private static Ruby getJRubyInstance() {
