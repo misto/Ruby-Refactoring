@@ -47,7 +47,14 @@ public class RDocUtil {
 		RubyParser parser = new RubyParser();		
 		parser.parse(src); // parse so we can grab the comment nodes
 		Collection<CommentNode> comments = parser.getComments();		
-		if (member.isType(IRubyElement.TYPE) || member.isType(IRubyElement.METHOD) || member.isType(IRubyElement.CONSTANT)) {
+		if (member.isType(IRubyElement.TYPE) || member.isType(IRubyElement.METHOD)) {
+			return getPrecedingComment(comments, elementOffset, src);
+		}
+		// for variables try to get the following comment, if it's null grab the leading/preceding comment
+		if (member.isType(IRubyElement.CLASS_VAR) || member.isType(IRubyElement.INSTANCE_VAR) || 
+				member.isType(IRubyElement.LOCAL_VARIABLE) || member.isType(IRubyElement.CONSTANT)) {
+			String comment = getFollowingComment(comments, elementOffset, src);
+			if (comment != null) return comment;
 			return getPrecedingComment(comments, elementOffset, src);
 		}
 		return getFollowingComment(comments, elementOffset, src);
