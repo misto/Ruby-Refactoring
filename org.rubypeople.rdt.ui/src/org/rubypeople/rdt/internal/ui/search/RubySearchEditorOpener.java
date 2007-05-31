@@ -111,7 +111,7 @@ public class RubySearchEditorOpener {
 			String editorID= getEditorID(file);
 			return showInEditor(wbPage, new FileEditorInput(file), editorID);
 		}
-		return null;
+		return showWithoutReuse(element, wbPage);
 	}
 
 	private IFile getFile(Object element) throws RubyModelException {
