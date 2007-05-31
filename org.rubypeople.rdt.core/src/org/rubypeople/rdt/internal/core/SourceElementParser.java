@@ -35,6 +35,7 @@ import org.jruby.ast.AssignableNode;
 import org.jruby.ast.CallNode;
 import org.jruby.ast.ClassNode;
 import org.jruby.ast.ClassVarAsgnNode;
+import org.jruby.ast.ClassVarDeclNode;
 import org.jruby.ast.ClassVarNode;
 import org.jruby.ast.Colon2Node;
 import org.jruby.ast.ConstDeclNode;
@@ -282,6 +283,15 @@ public class SourceElementParser extends InOrderVisitor { // TODO Rename to Sour
 		requestor.enterField(field);
 		exitField(iVisited);
 		return super.visitClassVarAsgnNode(iVisited);
+	}
+	
+	@Override
+	public Instruction visitClassVarDeclNode(ClassVarDeclNode iVisited) {
+		FieldInfo field = createFieldInfo(iVisited);
+		field.name = iVisited.getName();
+		requestor.enterField(field);
+		exitField(iVisited);
+		return super.visitClassVarDeclNode(iVisited);
 	}
 	
 	@Override
