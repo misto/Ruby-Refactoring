@@ -9,6 +9,7 @@ import java.util.List;
 
 import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.BadPartitioningException;
+import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.IDocumentExtension3;
 import org.eclipse.jface.text.IRegion;
 import org.eclipse.jface.text.ITextViewer;
@@ -47,12 +48,15 @@ public class RiDocHoverProvider extends AbstractRubyEditorTextHover {
 			}
 		}
 		try {
-			IDocumentExtension3 extension = (IDocumentExtension3)textViewer.getDocument();			
+			IDocument doc = textViewer.getDocument();				
 			String contentType = null;
-			try {
-				contentType = extension.getContentType(IRubyPartitions.RUBY_PARTITIONING, hoverRegion.getOffset(), false);
-			} catch (BadPartitioningException e) {
-				// ignore
+			if (doc instanceof IDocumentExtension3) {
+				IDocumentExtension3 extension = (IDocumentExtension3) doc;		
+				try {
+					contentType = extension.getContentType(IRubyPartitions.RUBY_PARTITIONING, hoverRegion.getOffset(), false);
+				} catch (BadPartitioningException e) {
+					// ignore
+				}
 			}
 			if (contentType != null && (contentType.equals(IRubyPartitions.RUBY_MULTI_LINE_COMMENT) || contentType.equals(IRubyPartitions.RUBY_SINGLE_LINE_COMMENT))) {
 				return null;
@@ -68,6 +72,7 @@ public class RiDocHoverProvider extends AbstractRubyEditorTextHover {
 	
 	
 	private String getRIResult(String symbol) {
+		if (symbol == null || symbol.trim().length() == 0) return null;
 		File ri = RubyRuntime.getRI();
     	if (ri == null || !ri.exists() || !ri.isFile()) return null;
     	
