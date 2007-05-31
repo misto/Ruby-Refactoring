@@ -118,8 +118,9 @@ public class SelectionEngine {
 			return possible.toArray(new IRubyElement[possible.size()]);
 		}
 		// We're already on the declaration, just return it
-		if ((selected instanceof DefnNode) || (selected instanceof DefsNode) 
-				|| (selected instanceof ConstDeclNode) || (selected instanceof ClassNode) || (selected instanceof ModuleNode)) {
+		if ((selected instanceof DefnNode) || (selected instanceof DefsNode) ||
+				(selected instanceof ConstDeclNode) || (selected instanceof ClassNode) || 
+				(selected instanceof ModuleNode) || (selected instanceof ClassVarDeclNode)) {
 			IRubyElement element = ((RubyScript)script).getElementAt(start);
 			return new IRubyElement[] {element};
 		}
@@ -315,7 +316,7 @@ public class SelectionEngine {
 	}
 
 	private boolean isClassVarRef(Node node) {
-		return ((node instanceof ClassVarAsgnNode) || (node instanceof ClassVarNode)|| (node instanceof ClassVarDeclNode));
+		return ((node instanceof ClassVarAsgnNode) || (node instanceof ClassVarNode));
 	}
 
 	private boolean isLocalVarRef(Node node) {
