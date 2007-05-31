@@ -30,20 +30,9 @@ public class OrLocator extends PatternLocator {
 
 	@Override
 	public void reportMatches(RubyScript script, MatchLocator locator) {
-//		PatternLocator closestPattern = null;
-//		int level = IMPOSSIBLE_MATCH;
-//		for (int i = 0, length = this.patternLocators.length; i < length; i++) {
-//			PatternLocator patternLocator = this.patternLocators[i];
-//			int newLevel = patternLocator.referenceType() == 0 ? IMPOSSIBLE_MATCH
-//					: patternLocator.resolveLevel(reference);
-//			if (newLevel > level) {
-//				closestPattern = patternLocator;
-//				if (newLevel == ACCURATE_MATCH)
-//					break;
-//				level = newLevel;
-//			}
-//		}
-//		if (closestPattern != null)
-//			closestPattern.matchReportReference(reference, element,	elementBinding, accuracy, locator);
+		for (int i = 0, length = this.patternLocators.length; i < length; i++) {
+			PatternLocator patternLocator = this.patternLocators[i];
+			patternLocator.reportMatches(script, locator);
+		}
 	}
 }
