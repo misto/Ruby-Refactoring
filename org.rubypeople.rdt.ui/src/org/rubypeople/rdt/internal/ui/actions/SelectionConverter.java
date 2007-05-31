@@ -9,6 +9,7 @@ import org.rubypeople.rdt.core.IRubyScript;
 import org.rubypeople.rdt.core.RubyModelException;
 import org.rubypeople.rdt.internal.corext.util.RubyModelUtil;
 import org.rubypeople.rdt.internal.ui.RubyPlugin;
+import org.rubypeople.rdt.internal.ui.rubyeditor.IRubyScriptEditorInput;
 import org.rubypeople.rdt.internal.ui.rubyeditor.RubyEditor;
 import org.rubypeople.rdt.ui.IWorkingCopyManager;
 
@@ -23,9 +24,13 @@ public class SelectionConverter {
     }
     
     public static IRubyElement getInput(RubyEditor editor) {
-        if (editor == null)
+    	if (editor == null)
             return null;
         IEditorInput input= editor.getEditorInput();
+        if (input instanceof IRubyScriptEditorInput) {
+        	IRubyScriptEditorInput scriptEditor = (IRubyScriptEditorInput) input;
+        	return scriptEditor.getRubyScript();
+        }
         IWorkingCopyManager manager= RubyPlugin.getDefault().getWorkingCopyManager();               
         return manager.getWorkingCopy(input);           
     }
