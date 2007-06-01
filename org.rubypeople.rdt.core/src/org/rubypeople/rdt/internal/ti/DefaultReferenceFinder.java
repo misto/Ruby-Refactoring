@@ -225,7 +225,7 @@ public class DefaultReferenceFinder implements IReferenceFinder {
 					return false;
 				}
 			});
-			BlockNode blockNode = new BlockNode(new SourcePosition("",0));
+			BlockNode blockNode = new BlockNode(new SourcePosition());
 			for ( Node classNode : classNodes )
 			{
 				blockNode.add( classNode );

@@ -83,10 +83,10 @@ public class RubyPartitionScanner implements IPartitionTokenScanner {
 		reset();
 		try {
 			contents = document.get(offset, length);
-			lexerSource = new LexerSource("filename", new StringReader(contents));
+			lexerSource = new LexerSource("filename", new StringReader(contents), 0);
 			lexer.setSource(lexerSource);
 		} catch (BadLocationException e) {
-			lexerSource = new LexerSource("filename", new StringReader(""));
+			lexerSource = new LexerSource("filename", new StringReader(""), 0);
 			lexer.setSource(lexerSource);
 		}
 		origOffset = offset;

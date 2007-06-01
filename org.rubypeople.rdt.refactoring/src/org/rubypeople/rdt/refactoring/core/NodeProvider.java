@@ -104,7 +104,7 @@ public class NodeProvider {
 		DefaultRubyParser parser;
 		parser = RubyParserPool.getInstance().borrowParser();
 		parser.setWarnings(new NullWarnings());
-		LexerSource lexerSource = new LexerSource(fileName, reader);
+		LexerSource lexerSource = new LexerSource(fileName, reader, 1);
 		RubyParserConfiguration parserConfig = new RubyParserConfiguration();
 //		parserConfig.addPostProcessor(new DefaultCommentPlacer());
 		RubyParserResult result = parser.parse(parserConfig, lexerSource);

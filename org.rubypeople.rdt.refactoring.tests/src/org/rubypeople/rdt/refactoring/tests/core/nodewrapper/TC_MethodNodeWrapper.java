@@ -53,17 +53,17 @@ public class TC_MethodNodeWrapper extends TestCase {
 	}
 
 	private MethodNodeWrapper createReaderMethod(String name) {
-		MethodNodeWrapper wrapper = new MethodNodeWrapper(new DefnNode(EMPTY_POSITION, new ArgumentNode(EMPTY_POSITION, name), new ArgsNode(EMPTY_POSITION, null, null, 0, null), null, null, null), klass);
+		MethodNodeWrapper wrapper = new MethodNodeWrapper(new DefnNode(EMPTY_POSITION, new ArgumentNode(EMPTY_POSITION, name), new ArgsNode(EMPTY_POSITION, null, null, 0, null, null), null, null, null), klass);
 		return wrapper;
 	}
 	
 	private MethodNodeWrapper createWriterMethod(String name) {
-		MethodNodeWrapper wrapper = new MethodNodeWrapper(new DefnNode(EMPTY_POSITION, new ArgumentNode(EMPTY_POSITION, name), new ArgsNode(EMPTY_POSITION, new ArrayNode(EMPTY_POSITION, new ArgumentNode(EMPTY_POSITION, "value")), null, 0, null), null, null, null), klass);
+		MethodNodeWrapper wrapper = new MethodNodeWrapper(new DefnNode(EMPTY_POSITION, new ArgumentNode(EMPTY_POSITION, name), new ArgsNode(EMPTY_POSITION, new ArrayNode(EMPTY_POSITION, new ArgumentNode(EMPTY_POSITION, "value")), null, 0, null, null), null, null, null), klass);
 		return wrapper;
 	}
 	
 	private MethodNodeWrapper createInvalidWriterMethod(String name) {
-		MethodNodeWrapper wrapper = new MethodNodeWrapper(new DefnNode(EMPTY_POSITION, new ArgumentNode(EMPTY_POSITION, name), new ArgsNode(EMPTY_POSITION, new ArrayNode(EMPTY_POSITION, new ArgumentNode(EMPTY_POSITION, "value")).add(new ArgumentNode(EMPTY_POSITION, "value2")), null, 0, null), null, null, null), klass);
+		MethodNodeWrapper wrapper = new MethodNodeWrapper(new DefnNode(EMPTY_POSITION, new ArgumentNode(EMPTY_POSITION, name), new ArgsNode(EMPTY_POSITION, new ArrayNode(EMPTY_POSITION, new ArgumentNode(EMPTY_POSITION, "value")).add(new ArgumentNode(EMPTY_POSITION, "value2")), null, 0, null, null), null, null, null), klass);
 		return wrapper;
 	}
 

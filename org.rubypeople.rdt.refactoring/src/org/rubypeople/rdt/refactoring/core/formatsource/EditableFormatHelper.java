@@ -219,4 +219,9 @@ public class EditableFormatHelper implements FormatHelper {
 	public void setSpacesBeforeAndAfterHashContent(boolean spacesBeforeAndAfterHashContent) {
 		this.spacesBeforeAndAfterHashContent = spacesBeforeAndAfterHashContent;
 	}
+	
+	public String getLineDelimiter() {
+		// TODO Is this right?
+		return "\n";
+	}
 }

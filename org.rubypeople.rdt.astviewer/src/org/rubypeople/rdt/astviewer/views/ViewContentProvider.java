@@ -120,7 +120,7 @@ class ViewContentProvider implements IStructuredContentProvider, ITreeContentPro
 	public Node getRootNode() {
 		LexerSource lexerSource;
 		try {
-			lexerSource = new LexerSource(getName(), new InputStreamReader(getContents()));
+			lexerSource = new LexerSource(getName(), new InputStreamReader(getContents()), 1);
 			return parser.parse(new RubyParserConfiguration(), lexerSource).getAST();
 		} catch (CoreException e) {
 			return null;

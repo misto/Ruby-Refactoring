@@ -387,7 +387,7 @@ public class DefaultOccurrencesFinder extends AbstractOccurencesFinder {
 					return false;
 				}
 			});
-			BlockNode blockNode = new BlockNode(new SourcePosition("", 0));
+			BlockNode blockNode = new BlockNode(new SourcePosition());
 			for (Node classNode : classNodes) {
 				blockNode.add(classNode);
 			}

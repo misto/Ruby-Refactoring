@@ -94,7 +94,7 @@ public class ArgsNodeWrapper implements INodeWrapper {
 	public ArgsNodeWrapper cloneWithNewArgName(String newArgName) {
 		Collection<String> newArgNames = new ArrayList<String>(argumentNames);
 		newArgNames.add(newArgName);
-		ArgsNode tempArgsNode = NodeFactory.createArgsNode(newArgNames.toArray(new String[newArgNames.size()]), argsNode.getOptArgs(), argsNode.getRestArg(), argsNode.getBlockArgNode());
+		ArgsNode tempArgsNode = NodeFactory.createArgsNode(newArgNames.toArray(new String[newArgNames.size()]), argsNode.getOptArgs(), argsNode.getRestArg(), argsNode.getRestArgNode(), argsNode.getBlockArgNode());
 		return new ArgsNodeWrapper(tempArgsNode);
 	}
 

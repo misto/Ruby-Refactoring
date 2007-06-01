@@ -113,21 +113,21 @@ public class NodeFactory {
 	}
 
 	public static ArgsNode createArgsNode(String...args) {
-		return createArgsNode(args, null, -1, null);
+		return createArgsNode(args, null, -1, null, null);
 	}
 
 	public static ArgsNode createArgsNode(Collection<String> args) {
 		return createArgsNode(args.toArray(new String[args.size()]));
 	}
 	
-	public static ArgsNode createArgsNode(String[] args, ListNode optArgs, int restArgs, BlockArgNode blockArg) {
+	public static ArgsNode createArgsNode(String[] args, ListNode optArgs, int restArgs, ArgumentNode restArgNode, BlockArgNode blockArg) {
 		ListNode argumentsList = null;
 		if (args.length > 0) {
 			argumentsList = new ListNode(pos);
 			for (String arg : args)
 				argumentsList.add(new ArgumentNode(pos, arg));
 		}
-		ArgsNode argsNode = new ArgsNode(pos, argumentsList, optArgs, restArgs, blockArg);
+		ArgsNode argsNode = new ArgsNode(pos, argumentsList, optArgs, restArgs, restArgNode, blockArg);
 		return argsNode;
 	}
 

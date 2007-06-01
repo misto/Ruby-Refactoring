@@ -1227,7 +1227,7 @@ public class InOrderVisitor extends AbstractVisitor {
 					MultipleAsgnNode multi = (MultipleAsgnNode) varNode;
 					ListNode list = multi.getHeadNode();
 					if (list != null)
-						iter = list.iterator();
+						iter = list.childNodes().iterator();
 					else {
 						Node multiArgsNode = multi.getArgsNode();
 						if (multiArgsNode instanceof DAsgnNode) { // single variable in block

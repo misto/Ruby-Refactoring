@@ -56,7 +56,7 @@ public class UnusedParameterVisitor extends RubyLintVisitor {
 		ArgsNode args = (ArgsNode) argsNode;
 		ListNode argList = args.getArgs();
 		if (argList == null) return arguments;
-		for (Iterator iter = argList.iterator(); iter.hasNext();) {
+		for (Iterator iter = argList.childNodes().iterator(); iter.hasNext();) {
 			Object node = iter.next();
 			if (node instanceof Node) {
 				arguments.add((Node)node);
