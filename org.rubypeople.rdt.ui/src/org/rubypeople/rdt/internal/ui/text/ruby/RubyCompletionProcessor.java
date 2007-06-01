@@ -122,6 +122,7 @@ public class RubyCompletionProcessor extends TemplateCompletionProcessor
 	private ICompletionProposal[] codeComplete(int offset) {
 		try {
 			IRubyScript script = fManager.getWorkingCopy(fEditor.getEditorInput());
+			if (script == null) return new ICompletionProposal[0];
 			RubyScriptCompletion requestor = new RubyScriptCompletion(script); // TODO Instantiate a real one
 			requestor.beginReporting();
 			script.codeComplete(offset - 1, requestor);			
