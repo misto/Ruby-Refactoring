@@ -1,14 +1,20 @@
 package org.rubypeople.rdt.internal.ui.actions;
 
+import java.lang.reflect.InvocationTargetException;
+
+import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.jface.text.ITextSelection;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.IEditorInput;
+import org.eclipse.ui.PlatformUI;
 import org.rubypeople.rdt.core.ICodeAssist;
 import org.rubypeople.rdt.core.IRubyElement;
 import org.rubypeople.rdt.core.IRubyScript;
 import org.rubypeople.rdt.core.RubyModelException;
 import org.rubypeople.rdt.internal.corext.util.RubyModelUtil;
 import org.rubypeople.rdt.internal.ui.RubyPlugin;
+import org.rubypeople.rdt.internal.ui.rubyeditor.EditorUtility;
 import org.rubypeople.rdt.internal.ui.rubyeditor.IRubyScriptEditorInput;
 import org.rubypeople.rdt.internal.ui.rubyeditor.RubyEditor;
 import org.rubypeople.rdt.ui.IWorkingCopyManager;
@@ -77,6 +83,43 @@ public class SelectionConverter {
 				return elements;
 		}
 		return EMPTY_RESULT;
+	}
+
+	/**
+	 * Perform a code resolve in a separate thread.
+	 * @param primaryOnly if <code>true</code> only primary working copies will be returned
+	 * @throws InterruptedException 
+	 * @throws InvocationTargetException 
+	 * @since 1.0
+	 */
+	public static IRubyElement[] codeResolveForked(RubyEditor editor, boolean primaryOnly) throws InvocationTargetException, InterruptedException {
+		return performForkedCodeResolve(getInput(editor, primaryOnly), (ITextSelection)editor.getSelectionProvider().getSelection());
+	}
+	
+	/**
+	 * @param primaryOnly if <code>true</code> only primary working copies will be returned
+	 * @since 1.0
+	 */
+	private static IRubyElement getInput(RubyEditor editor, boolean primaryOnly) {
+		if (editor == null)
+			return null;
+		return EditorUtility.getEditorInputRubyElement(editor, primaryOnly);
+	}
+	
+	private static IRubyElement[] performForkedCodeResolve(final IRubyElement input, final ITextSelection selection) throws InvocationTargetException, InterruptedException {
+		final class CodeResolveRunnable implements IRunnableWithProgress {
+			IRubyElement[] result;
+			public void run(IProgressMonitor monitor) throws InvocationTargetException {
+				try {
+					result= codeResolve(input, selection);
+				} catch (RubyModelException e) {
+					throw new InvocationTargetException(e);
+				}
+			}
+		}
+		CodeResolveRunnable runnable= new CodeResolveRunnable();
+		PlatformUI.getWorkbench().getProgressService().busyCursorWhile(runnable);
+		return runnable.result;
 	}
 
 }

@@ -41,6 +41,7 @@ import org.rubypeople.rdt.internal.core.util.Messages;
 import org.rubypeople.rdt.internal.corext.util.RubyModelUtil;
 import org.rubypeople.rdt.internal.ui.RubyPlugin;
 import org.rubypeople.rdt.ui.PreferenceConstants;
+import org.rubypeople.rdt.ui.RubyUI;
 
 public class EditorUtility {
 	
@@ -350,6 +351,27 @@ public class EditorUtility {
 		if (modifierString.length() == 0)
 			return newModifierString;
 		return Messages.format(RubyEditorMessages.EditorUtility_concatModifierStrings, new String[] {modifierString, newModifierString});
+	}
+
+	/**
+	 * Returns the given editor's input as Ruby element.
+	 *
+	 * @param editor the editor
+	 * @param primaryOnly if <code>true</code> only primary working copies will be returned
+	 * @return the given editor's input as Ruby element or <code>null</code> if none
+	 * @since 1.0
+	 */
+	public static IRubyElement getEditorInputRubyElement(IEditorPart editor, boolean primaryOnly) {
+		Assert.isNotNull(editor);
+		IEditorInput editorInput= editor.getEditorInput();
+		if (editorInput == null)
+			return null;
+		
+		IRubyElement je= RubyUI.getEditorInputRubyElement(editorInput);
+		if (je != null || primaryOnly)
+			return je;
+
+		return  RubyPlugin.getDefault().getWorkingCopyManager().getWorkingCopy(editorInput, false);
 	}
 
 }

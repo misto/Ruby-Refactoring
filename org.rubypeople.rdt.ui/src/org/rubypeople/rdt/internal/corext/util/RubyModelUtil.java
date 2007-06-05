@@ -3,6 +3,7 @@
  */
 package org.rubypeople.rdt.internal.corext.util;
 
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.rubypeople.rdt.core.IRubyElement;
 import org.rubypeople.rdt.core.IRubyScript;
@@ -138,5 +139,36 @@ public final class RubyModelUtil {
 	 */
 	public static String getTypeQualifiedName(IType type) {
 		return type.getTypeQualifiedName("::");
+	}
+
+	/*
+	 * http://bugs.eclipse.org/bugs/show_bug.cgi?id=19253
+	 * 
+	 * Reconciling happens in a separate thread. This can cause a situation where the
+	 * Java element gets disposed after an exists test has been done. So we should not
+	 * log not present exceptions when they happen in working copies.
+	 */
+	public static boolean isExceptionToBeLogged(CoreException exception) {
+		if (!(exception instanceof RubyModelException))
+			return true;
+		RubyModelException je= (RubyModelException)exception;
+		if (!je.isDoesNotExist())
+			return true;
+		IRubyElement[] elements= je.getRubyModelStatus().getElements();
+		for (int i= 0; i < elements.length; i++) {
+			IRubyElement element= elements[i];
+			// if the element is already a compilation unit don't log
+			// does not exist exceptions. See bug 
+			// https://bugs.eclipse.org/bugs/show_bug.cgi?id=75894
+			// for more details
+			if (element.getElementType() == IRubyElement.SCRIPT)
+				continue;
+			IRubyScript unit= (IRubyScript)element.getAncestor(IRubyElement.SCRIPT);
+			if (unit == null)
+				return true;
+			if (!unit.isWorkingCopy())
+				return true;
+		}
+		return false;		
 	}
 }
