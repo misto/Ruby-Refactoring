@@ -180,7 +180,7 @@ public class SourceFolder extends Openable implements ISourceFolder {
 
 	public IResource getResource() {
 		SourceFolderRoot root = this.getSourceFolderRoot();
-		if (root.isArchive()) {
+		if (root.isExternal()) {
 			return root.getResource();
 		}
 		int length = this.names.length;

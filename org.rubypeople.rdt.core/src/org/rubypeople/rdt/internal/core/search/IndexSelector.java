@@ -19,6 +19,7 @@ import org.rubypeople.rdt.core.RubyModelException;
 import org.rubypeople.rdt.core.search.IRubySearchScope;
 import org.rubypeople.rdt.core.search.SearchPattern;
 import org.rubypeople.rdt.internal.compiler.util.SimpleSet;
+import org.rubypeople.rdt.internal.core.ExternalSourceFolderRoot;
 import org.rubypeople.rdt.internal.core.RubyModelManager;
 import org.rubypeople.rdt.internal.core.RubyProject;
 import org.rubypeople.rdt.internal.core.search.indexing.IndexManager;
@@ -90,17 +91,17 @@ public static boolean canSeeFocus(IRubyElement focus, RubyProject javaProject, I
 					return true;
 			}
 		}
-//		if (focus instanceof JarSourceFolderRoot) {
-//			// focus is part of a jar
-//			IPath focusPath = focus.getPath();
-//			ILoadpathEntry[] entries = javaProject.getExpandedLoadpath();
-//			for (int i = 0, length = entries.length; i < length; i++) {
-//				ILoadpathEntry entry = entries[i];
-//				if (entry.getEntryKind() == ILoadpathEntry.CPE_LIBRARY && entry.getPath().equals(focusPath))
-//					return true;
-//			}
-//			return false;
-//		}
+		if (focus instanceof ExternalSourceFolderRoot) {
+			// focus is part of a jar
+			IPath focusPath = focus.getPath();
+			ILoadpathEntry[] entries = javaProject.getExpandedLoadpath(true);
+			for (int i = 0, length = entries.length; i < length; i++) {
+				ILoadpathEntry entry = entries[i];
+				if (entry.getEntryKind() == ILoadpathEntry.CPE_LIBRARY && entry.getPath().equals(focusPath))
+					return true;
+			}
+			return false;
+		}
 		// look for dependent projects
 		IPath focusPath = ((RubyProject) focus).getProject().getFullPath();
 		ILoadpathEntry[] entries = javaProject.getExpandedLoadpath(true);

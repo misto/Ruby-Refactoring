@@ -1648,7 +1648,8 @@ public static final char[][] arrayConcat(char[][] first, char[] second) {
 }
 
 public static char[] concatWith(char[][] enclosingTypeNames, String string) {
-	StringBuffer buffer = new StringBuffer();
+	if (enclosingTypeNames == null) return NO_CHAR;
+	StringBuffer buffer = new StringBuffer();	
 	for (int i = 0; i < enclosingTypeNames.length; i++) {
 		char[] name = enclosingTypeNames[i];
 		if (i > 0) buffer.append(string);
