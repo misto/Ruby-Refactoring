@@ -86,7 +86,8 @@ public class StackTraceLine {
 
 	private boolean isRelativePath() {
 		if (fFilename.startsWith("./")) return true;
-		if (!fFilename.startsWith("/") && fFilename.charAt(fFilename.indexOf('/') - 1) != ':' ) return true;
+		int index = fFilename.indexOf('/');
+		if (index != -1 && !fFilename.startsWith("/") && fFilename.charAt(index - 1) != ':' ) return true;
 		return false;
 	}
 

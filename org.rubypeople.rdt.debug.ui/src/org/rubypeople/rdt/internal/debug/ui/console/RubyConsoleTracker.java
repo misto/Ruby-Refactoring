@@ -26,6 +26,7 @@ import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.debug.ui.console.IConsole;
 import org.eclipse.debug.ui.console.IConsoleLineTracker;
@@ -56,8 +57,16 @@ public class RubyConsoleTracker implements IConsoleLineTracker {
 			public boolean fileExists(String filename) {
 				File file = new File(filename);
 				if (file.exists()) return true;
-				IFile iFile = ResourcesPlugin.getWorkspace().getRoot().getFile(new Path(filename));
-				if (iFile != null) return true;
+				IPath path = new Path(filename);
+				if (!path.isValidPath(filename)) {
+					return false;
+				}
+				try {
+					IFile iFile = ResourcesPlugin.getWorkspace().getRoot().getFile(path);
+					if (iFile != null) return iFile.exists();
+				} catch (IllegalArgumentException e) {
+					 return false;
+				}
 				return false;
 			}
 		}
