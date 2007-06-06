@@ -1,10 +1,18 @@
-package org.rubypeople.rdt.internal.ti;
+package org.rubypeople.rdt.internal.ui.search;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.eclipse.jface.text.BadLocationException;
+import org.eclipse.jface.text.IDocument;
+import org.eclipse.jface.text.IRegion;
 import org.eclipse.jface.text.Position;
+import org.eclipse.search.ui.text.Match;
 import org.jruby.ast.ArgumentNode;
 import org.jruby.ast.BlockArgNode;
 import org.jruby.ast.BlockNode;
@@ -31,8 +39,10 @@ import org.jruby.ast.SymbolNode;
 import org.jruby.lexer.yacc.ISourcePosition;
 import org.jruby.lexer.yacc.SourcePosition;
 import org.jruby.lexer.yacc.SyntaxException;
+import org.rubypeople.rdt.core.IRubyElement;
 import org.rubypeople.rdt.internal.core.parser.RubyParser;
 import org.rubypeople.rdt.internal.core.util.ASTUtil;
+import org.rubypeople.rdt.internal.ti.AbstractOccurencesFinder;
 import org.rubypeople.rdt.internal.ti.util.FirstPrecursorNodeLocator;
 import org.rubypeople.rdt.internal.ti.util.INodeAcceptor;
 import org.rubypeople.rdt.internal.ti.util.OffsetNodeLocator;
@@ -50,40 +60,94 @@ public class DefaultOccurrencesFinder extends AbstractOccurencesFinder {
 	private Node root;
 
 	// Originating node; corresponds to cursor selection
-	private Node orig;
+	private Node fSelectedNode;
 
+	private List<Node> fUsages= new ArrayList<Node>();
+	private List<Node> fWriteUsages= new ArrayList<Node>();
+	
 	// Original source
 	private String source;
+	
+	public String getJobLabel() {
+		return SearchMessages.OccurrencesFinder_searchfor; 
+	}
+	
+	public String getUnformattedPluralLabel() {
+		return SearchMessages.OccurrencesFinder_label_plural;
+	}
+	
+	public String getUnformattedSingularLabel() {
+		return SearchMessages.OccurrencesFinder_label_singular;
+	}
+	
+	public void collectOccurrenceMatches(IRubyElement element, IDocument document, Collection resultingMatches) {
+		HashMap lineToGroup= new HashMap();
+		
+		for (Iterator iter= fUsages.iterator(); iter.hasNext();) {
+			Node node= (Node) iter.next();
+			ISourcePosition position = getPositionOfName(node);
+			int startPosition= position.getStartOffset();
+			int length= position.getEndOffset() - position.getStartOffset();
+			try {
+				boolean isWriteAccess= fWriteUsages.contains(node);
+				int line= document.getLineOfOffset(startPosition);
+				Integer lineInteger= new Integer(line);
+				OccurrencesGroupKey groupKey= (OccurrencesGroupKey) lineToGroup.get(lineInteger);
+				if (groupKey == null) {
+					IRegion region= document.getLineInformation(line);
+					String lineContents= document.get(region.getOffset(), region.getLength()).trim();
+					groupKey= new OccurrencesGroupKey(element, line, lineContents, isWriteAccess, isVariable(element));
+					lineToGroup.put(lineInteger, groupKey);
+				} else if (isWriteAccess) {
+					// a line with read an write access is considered as write access:
+					groupKey.setWriteAccess(true);
+				}
+				Match match= new Match(groupKey, startPosition, length);
+				resultingMatches.add(match);
+			} catch (BadLocationException e) {
+				//nothing
+			}
+		}
+	}
+	
+	private boolean isVariable(IRubyElement element) {
+		return element.isType(IRubyElement.INSTANCE_VAR) || element.isType(IRubyElement.GLOBAL) || element.isType(IRubyElement.CLASS_VAR) || element.isType(IRubyElement.LOCAL_VARIABLE) || element.isType(IRubyElement.DYNAMIC_VAR);
+	}
+
+	public String initialize(Node root, int offset, int length) {
+		if (root == null) {
+			return null;
+		}
+		this.root = root;
+		this.fSelectedNode = OffsetNodeLocator.Instance().getNodeAtOffset(root, offset);
+		if (fSelectedNode == null) {
+			return SearchMessages.OccurrencesFinder_no_element; 
+		}
+//		if (fSelectedNode.getPosition().getEndOffset() > offset + length) {
+//			// Selection spans nodes; not handling that for now.
+//			return "Selection spans nodes; can only search for a single node.";
+//		}
+		return null;
+	}
 
 	public String initialize(String source, int offset, int length) {
 		if (source == null) {
 			return null;
+		} else {
+			this.source = source;
 		}
-
-		this.source = source;
+		
+		Node root = null;
 		try {
 			RubyParser rubyParser = new RubyParser();
-			this.root = rubyParser.parse(source);
-			if (this.root == null) {
-				return null;
-			}
+			root = rubyParser.parse(source);
 		}
 		// TODO: Is there anything else the parsing could choke on that should
 		// be silently ignored with no markings?
 		catch (SyntaxException se) {
-			this.root = null;
-			return null;
+			// ignore
 		}
-		this.orig = OffsetNodeLocator.Instance().getNodeAtOffset(root, offset);
-		if (orig == null) {
-			return null;
-		}
-		if (orig.getPosition().getEndOffset() > offset + length) {
-			// Selection spans nodes; not handling that for now.
-			return "Selection spans nodes; can only search for a single node.";
-		}
-
-		return null;
+		return initialize(root, offset, length);
 	}
 
 	/**
@@ -95,59 +159,53 @@ public class DefaultOccurrencesFinder extends AbstractOccurencesFinder {
 		// correctly.)
 		if (root == null)
 			return new LinkedList<Position>();
-		if (orig == null)
+		if (fSelectedNode == null)
 			return new LinkedList<Position>();
 
-		// occurrences to return
-		List<ISourcePosition> occurrences = new LinkedList<ISourcePosition>();
-
-		if (fMarkLocalVariableOccurrences && isLocalVarRef(orig)) {
-			pushLocalVarRefs(root, orig, occurrences);
+		if (fMarkLocalVariableOccurrences && isLocalVarRef(fSelectedNode)) {
+			pushLocalVarRefs(root, fSelectedNode, fUsages);
 		}
 
-		if (fMarkLocalVariableOccurrences && isDVarRef(orig)) {
-			pushDVarRefs(root, orig, occurrences);
+		if (fMarkLocalVariableOccurrences && isDVarRef(fSelectedNode)) {
+			pushDVarRefs(root, fSelectedNode, fUsages);
 		}
 
-		// XXX: Add pref for instvars
-		if (fMarkLocalVariableOccurrences && isInstanceVarRef(orig)) {
-			pushInstVarRefs(root, orig, occurrences);
+		if (fMarkLocalVariableOccurrences && isInstanceVarRef(fSelectedNode)) {
+			pushInstVarRefs(root, fSelectedNode, fUsages);
 		}
 
-		// XXX: Add pref for classvars
-		if (fMarkLocalVariableOccurrences && isClassVarRef(orig)) {
-			pushClassVarRefs(root, orig, occurrences);
+		if (fMarkLocalVariableOccurrences && isClassVarRef(fSelectedNode)) {
+			pushClassVarRefs(root, fSelectedNode, fUsages);
 		}
 
-		// XXX: Add pref for global vars
-		if (fMarkLocalVariableOccurrences && isGlobalVarRef(orig)) {
-			pushGlobalVarRefs(root, orig, occurrences);
+		if (fMarkLocalVariableOccurrences && isGlobalVarRef(fSelectedNode)) {
+			pushGlobalVarRefs(root, fSelectedNode, fUsages);
 		}
 
-		// XXX: Add pref for symbols
-		if (fMarkConstantOccurrences && orig instanceof SymbolNode) {
-			pushSymbolRefs(root, orig, occurrences);
+		if (fMarkConstantOccurrences && fSelectedNode instanceof SymbolNode) {
+			pushSymbolRefs(root, fSelectedNode, fUsages);
 		}
 
-		// if ( isMethodRefNode(orig)) {
-		// pushMethodRefs( root, orig, occurrences );
+		// if ( isMethodRefNode(fSelectedNode)) {
+		// pushMethodRefs( root, fSelectedNode, occurrences );
 		// }
 
-		if (fMarkConstantOccurrences && isConstRef(orig)) {
-			pushConstRefs(root, orig, occurrences);
+		if (fMarkConstantOccurrences && isConstRef(fSelectedNode)) {
+			pushConstRefs(root, fSelectedNode, fUsages);
 		}
 
-		if (fMarkTypeOccurrences && isTypeRef(orig)) {
-			pushTypeRefs(root, orig, occurrences);
+		if (fMarkTypeOccurrences && isTypeRef(fSelectedNode)) {
+			pushTypeRefs(root, fSelectedNode, fUsages);
 		}
 		
 		if (fMarkMethodExitPoints) {
-			pushReturns(root, orig, occurrences);
+			pushReturns(root, fSelectedNode, fUsages);
 		}
 
 		// Convert ISourcePosition to IPosition
 		List<Position> positions = new LinkedList<Position>();
-		for (ISourcePosition occurrence : occurrences) {
+		for (Node node : fUsages) {
+			ISourcePosition occurrence = getPositionOfName(node);
 			Position position = new Position(occurrence.getStartOffset(), occurrence.getEndOffset() - occurrence.getStartOffset());
 			positions.add(position);
 		}
@@ -248,11 +306,11 @@ public class DefaultOccurrencesFinder extends AbstractOccurencesFinder {
 	 * 
 	 * @param root
 	 *            Root node to search
-	 * @param orig
+	 * @param fSelectedNode
 	 *            Originating node
 	 * @param occurrences
 	 */
-	private void pushLocalVarRefs(Node root, Node orig, List<ISourcePosition> occurrences) {
+	private void pushLocalVarRefs(Node root, Node orig, List<Node> occurrences) {
 		// Find the search space
 		Node searchSpace = FirstPrecursorNodeLocator.Instance().findFirstPrecursor(root, orig.getPosition().getStartOffset(), new INodeAcceptor() {
 			public boolean doesAccept(Node node) {
@@ -281,7 +339,7 @@ public class DefaultOccurrencesFinder extends AbstractOccurencesFinder {
 
 		// Scrape position from pertinent nodes
 		for (Node searchResult : searchResults) {
-			occurrences.add(getPositionOfName(searchResult, searchSpace));
+			occurrences.add(searchResult);
 		}
 	}
 
@@ -290,11 +348,11 @@ public class DefaultOccurrencesFinder extends AbstractOccurencesFinder {
 	 * 
 	 * @param root
 	 *            Root node to search
-	 * @param orig
+	 * @param fSelectedNode
 	 *            Originating node
 	 * @param occurrences
 	 */
-	private void pushDVarRefs(Node root, Node orig, List<ISourcePosition> occurrences) {
+	private void pushDVarRefs(Node root, Node orig, List<Node> occurrences) {
 		// Find the search space
 		Node searchSpace = FirstPrecursorNodeLocator.Instance().findFirstPrecursor(root, orig.getPosition().getStartOffset(), new INodeAcceptor() {
 			public boolean doesAccept(Node node) {
@@ -323,7 +381,7 @@ public class DefaultOccurrencesFinder extends AbstractOccurencesFinder {
 
 		// Scrape position from pertinent nodes
 		for (Node searchResult : searchResults) {
-			occurrences.add(getPositionOfName(searchResult, searchSpace));
+			occurrences.add(searchResult);
 		}
 	}
 
@@ -331,10 +389,10 @@ public class DefaultOccurrencesFinder extends AbstractOccurencesFinder {
 	 * Collects all instance variable occurrences
 	 * 
 	 * @param root
-	 * @param orig
+	 * @param fSelectedNode
 	 * @param occurrences
 	 */
-	private void pushInstVarRefs(Node root, Node orig, List<ISourcePosition> occurrences) {
+	private void pushInstVarRefs(Node root, Node orig, List<Node> occurrences) {
 		Node searchSpace = determineSearchSpace(root, orig);
 
 		// Finalize searchSpace because Java's scoping rules are the awesome
@@ -357,7 +415,7 @@ public class DefaultOccurrencesFinder extends AbstractOccurencesFinder {
 
 		// Scrape position from pertinent nodes
 		for (Node searchResult : searchResults) {
-			occurrences.add(getPositionOfName(searchResult, searchSpace));
+			occurrences.add(searchResult);
 		}
 
 	}
@@ -399,10 +457,10 @@ public class DefaultOccurrencesFinder extends AbstractOccurencesFinder {
 	 * Collects all class variable occurrences
 	 * 
 	 * @param root
-	 * @param orig
+	 * @param fSelectedNode
 	 * @param occurrences
 	 */
-	private void pushClassVarRefs(Node root, Node orig, List<ISourcePosition> occurrences) {
+	private void pushClassVarRefs(Node root, Node orig, List<Node> occurrences) {
 		Node searchSpace = determineSearchSpace(root, orig);
 
 		// Finalize searchSpace because Java's scoping rules are the awesome
@@ -425,7 +483,7 @@ public class DefaultOccurrencesFinder extends AbstractOccurencesFinder {
 
 		// Scrape position from pertinent nodes
 		for (Node searchResult : searchResults) {
-			occurrences.add(getPositionOfName(searchResult, searchSpace));
+			occurrences.add(searchResult);
 		}
 
 	}
@@ -434,10 +492,10 @@ public class DefaultOccurrencesFinder extends AbstractOccurencesFinder {
 	 * Collects all global variable occurrences
 	 * 
 	 * @param root
-	 * @param orig
+	 * @param fSelectedNode
 	 * @param occurrences
 	 */
-	private void pushGlobalVarRefs(Node root, Node orig, List<ISourcePosition> occurrences) {
+	private void pushGlobalVarRefs(Node root, Node orig, List<Node> occurrences) {
 		final Node searchSpace = root;
 		final String origName = ASTUtil.getNameReflectively(orig);
 
@@ -450,7 +508,7 @@ public class DefaultOccurrencesFinder extends AbstractOccurencesFinder {
 
 		// Scrape position from pertinent nodes
 		for (Node searchResult : searchResults) {
-			occurrences.add(getPositionOfName(searchResult, searchSpace));
+			occurrences.add(searchResult);
 		}
 	}
 
@@ -458,10 +516,10 @@ public class DefaultOccurrencesFinder extends AbstractOccurencesFinder {
 	 * Collects all symbol occurrences
 	 * 
 	 * @param root
-	 * @param orig
+	 * @param fSelectedNode
 	 * @param occurrences
 	 */
-	private void pushSymbolRefs(Node root, Node orig, List<ISourcePosition> occurrences) {
+	private void pushSymbolRefs(Node root, Node orig, List<Node> occurrences) {
 		final Node searchSpace = root;
 		final String origName = ((SymbolNode) orig).getName();
 
@@ -474,36 +532,36 @@ public class DefaultOccurrencesFinder extends AbstractOccurencesFinder {
 
 		// Scrape position from pertinent nodes
 		for (Node searchResult : searchResults) {
-			occurrences.add(getPositionOfName(searchResult, searchSpace));
+			occurrences.add(searchResult);
 		}
 	}
 
 	// todo: complete
-	// private void pushMethodRefs( Node root, Node orig, List<ISourcePosition>
+	// private void pushMethodRefs( Node root, Node fSelectedNode, List<ISourcePosition>
 	// occurrences) {
 	//	
 	// // DefnNode DefsNode CallNode VCallNode
 	//		
 	// System.out.println("Finding occurrences for method reference node " +
-	// orig.toString() );
+	// fSelectedNode.toString() );
 	//		
 	// final Node searchSpace = root;
-	// String origName = getMethodRefName(orig);
+	// String origName = getMethodRefName(fSelectedNode);
 	//		
-	// // If orig is a method definition, find all occurrences to that selector
-	// for the orig's enclosing type
-	// if ( orig instanceof DefnNode || orig instanceof DefsNode )
+	// // If fSelectedNode is a method definition, find all occurrences to that selector
+	// for the fSelectedNode's enclosing type
+	// if ( fSelectedNode instanceof DefnNode || fSelectedNode instanceof DefsNode )
 	// {
-	// ((DefnNode)orig).g
+	// ((DefnNode)fSelectedNode).g
 	// }
 	//		
-	// Node receiver = getMethodReceiver(orig);
+	// Node receiver = getMethodReceiver(fSelectedNode);
 	// }
 
 	/**
 	 * Collects all pertinent const occurrences
 	 */
-	private void pushConstRefs(Node root, Node orig, List<ISourcePosition> occurrences) {
+	private void pushConstRefs(Node root, Node orig, List<Node> occurrences) {
 		if (!isConstRef(orig)) {
 			return;
 		}
@@ -519,14 +577,14 @@ public class DefaultOccurrencesFinder extends AbstractOccurencesFinder {
 		});
 
 		for (Node searchResult : searchResults) {
-			occurrences.add(getPositionOfName(searchResult, root));
+			occurrences.add(searchResult);
 		}
 	}
 
 	/**
 	 * Collects all pertinent type ref occurrences
 	 */
-	private void pushTypeRefs(Node root, Node orig, List<ISourcePosition> occurrences) {
+	private void pushTypeRefs(Node root, Node orig, List<Node> occurrences) {
 		if (!isTypeRef(orig)) {
 			return;
 		}
@@ -542,11 +600,11 @@ public class DefaultOccurrencesFinder extends AbstractOccurencesFinder {
 		});
 
 		for (Node searchResult : searchResults) {
-			occurrences.add(getPositionOfName(searchResult, root));
+			occurrences.add(searchResult);
 		}
 	}
 	
-	private void pushReturns(Node root, Node orig, List<ISourcePosition> occurrences) {
+	private void pushReturns(Node root, Node orig, List<Node> occurrences) {
 		// TODO Combine most of this stuff with the stuff in pushLocalVareRefs
 		// Find the search space
 		Node searchSpace = FirstPrecursorNodeLocator.Instance().findFirstPrecursor(root, orig.getPosition().getStartOffset(), new INodeAcceptor() {
@@ -568,7 +626,7 @@ public class DefaultOccurrencesFinder extends AbstractOccurencesFinder {
 
 		// Scrape position from pertinent nodes
 		for (Node searchResult : searchResults) {
-			occurrences.add(searchResult.getPosition());
+			occurrences.add(searchResult);
 		}
 	}
 
@@ -583,16 +641,16 @@ public class DefaultOccurrencesFinder extends AbstractOccurencesFinder {
 	 * 
 	 * @param node
 	 *            Node that responds to getName() or some variant
-	 * @param scope
-	 *            Scope that holds the node (pertinent for locals and args)
 	 * @return ISourcePosition that holds the name of the node
 	 */
-	private ISourcePosition getPositionOfName(Node node, Node scope) {
+	private ISourcePosition getPositionOfName(Node node) {
 		ISourcePosition pos = node.getPosition();
 
 		// TODO refactor the getting-of-name
 		String name = null;
-		if (isLocalVarRef(node) || isDVarRef(node) || isInstanceVarRef(node) || isGlobalVarRef(node) || isClassVarRef(node) || isConstRef(node) || node instanceof BlockArgNode) {
+		if (node instanceof ReturnNode) {
+			return node.getPosition();
+		} else if (isLocalVarRef(node) || isDVarRef(node) || isInstanceVarRef(node) || isGlobalVarRef(node) || isClassVarRef(node) || isConstRef(node) || node instanceof BlockArgNode) {
 			name = ASTUtil.getNameReflectively(node);
 		} else if (node instanceof ClassNode) {
 			name = getClassNodeName((ClassNode) node);
@@ -613,7 +671,7 @@ public class DefaultOccurrencesFinder extends AbstractOccurencesFinder {
 		}
 
 		if (name == null) {
-			throw new RuntimeException("Couldn't get the name for: " + node.toString() + " in " + scope.toString());
+			throw new RuntimeException("Couldn't get the name for: " + node.toString());
 		}
 		return new SourcePosition(pos.getFile(), pos.getStartLine(), pos.getEndLine(), pos.getStartOffset(), pos.getStartOffset() + name.length());
 	}
@@ -660,6 +718,13 @@ public class DefaultOccurrencesFinder extends AbstractOccurencesFinder {
 			return getModuleNodeName((ModuleNode) node);
 		}
 		return ASTUtil.getNameReflectively(node);
+	}
+
+	public String getElementName() {
+		if (fSelectedNode != null) {
+			return ASTUtil.stringRepresentation(fSelectedNode);
+		}
+		return null;
 	}
 
 }

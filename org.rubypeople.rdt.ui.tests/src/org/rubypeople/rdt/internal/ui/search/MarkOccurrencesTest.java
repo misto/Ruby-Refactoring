@@ -1,10 +1,12 @@
-package org.rubypeople.rdt.internal.ti;
+package org.rubypeople.rdt.internal.ui.search;
 
 import java.util.List;
 
 import junit.framework.TestCase;
 
 import org.eclipse.jface.text.Position;
+import org.rubypeople.rdt.core.search.IOccurrencesFinder;
+import org.rubypeople.rdt.internal.ui.search.DefaultOccurrencesFinder;
 
 /**
  * Tests related to matching occurrences.

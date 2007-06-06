@@ -8,13 +8,14 @@
  * Contributors:
  *     IBM Corporation - initial API and implementation
  *******************************************************************************/
-package org.rubypeople.rdt.internal.ti;
+package org.rubypeople.rdt.core.search;
 
 import java.util.Collection;
 import java.util.List;
 
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.Position;
+import org.jruby.ast.Node;
 import org.rubypeople.rdt.core.IRubyElement;
 
 public interface IOccurrencesFinder {
@@ -30,6 +31,18 @@ public interface IOccurrencesFinder {
 	 * @return
 	 */
 	public String initialize(String source, int offset, int length);
+	
+	/**
+	 * 
+	 * @param root
+	 *            the root node
+	 * @param offset
+	 *            position in source where selection is
+	 * @param length
+	 *            length of the selection
+	 * @return
+	 */
+	public String initialize(Node root, int offset, int length);
 
 	/**
 	 * Returns a lit of AST Nodes back (which contain their associated
@@ -65,7 +78,7 @@ public interface IOccurrencesFinder {
 	public String getUnformattedSingularLabel();
 
 	/**
-	 * Returns the name of the lement to look for or <code>null</code> if the
+	 * Returns the name of the element to look for or <code>null</code> if the
 	 * finder hasn't been initialized yet.
 	 * 
 	 * @return the name of the element

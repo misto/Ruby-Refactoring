@@ -7,7 +7,6 @@ public class TS_TypeInference {
 	public static Test suite() {
 		TestSuite suite = new TestSuite("Type Inference");
 		suite.addTestSuite(DataFlowTypeInferrerTest.class);
-		suite.addTestSuite(MarkOccurrencesTest.class);
 		suite.addTestSuite(ReferenceMatchTest.class);
 		suite.addTestSuite(TypeInferrerTest.class);
 		return suite;

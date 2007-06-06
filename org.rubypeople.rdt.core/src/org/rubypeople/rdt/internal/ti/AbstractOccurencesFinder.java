@@ -1,12 +1,8 @@
 package org.rubypeople.rdt.internal.ti;
 
-import java.util.Collection;
-import java.util.List;
+import org.rubypeople.rdt.core.search.IOccurrencesFinder;
 
-import org.eclipse.jface.text.IDocument;
-import org.rubypeople.rdt.core.IRubyElement;
-
-public class AbstractOccurencesFinder implements IOccurrencesFinder {
+public abstract class AbstractOccurencesFinder implements IOccurrencesFinder {
 	
 	protected boolean fMarkOccurrenceAnnotations;
 	protected boolean fStickyOccurrenceAnnotations;
@@ -16,41 +12,6 @@ public class AbstractOccurencesFinder implements IOccurrencesFinder {
 	protected boolean fMarkFieldOccurrences;
 	protected boolean fMarkLocalVariableOccurrences;
 	protected boolean fMarkMethodExitPoints;
-
-	public void collectOccurrenceMatches(IRubyElement element,
-			IDocument document, Collection resultingMatches) {
-		// TODO Auto-generated method stub
-	}
-
-	public String getElementName() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	public String getJobLabel() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	public String getUnformattedPluralLabel() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	public String getUnformattedSingularLabel() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	public String initialize(String source, int offset, int length) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	public List perform() {
-		// TODO Auto-generated method stub
-		return null;
-	}
 
 	public void setFMarkConstantOccurrences(boolean markConstantOccurrences) {
 		fMarkConstantOccurrences = markConstantOccurrences;

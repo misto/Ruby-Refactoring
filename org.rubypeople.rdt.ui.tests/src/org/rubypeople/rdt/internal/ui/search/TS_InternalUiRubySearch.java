@@ -17,7 +17,7 @@ public class TS_InternalUiRubySearch {
 
     public static TestSuite suite() {
         TestSuite suite = new TestSuite("org.rubypeople.rdt.internal.ui.search");
-   
+		suite.addTestSuite(MarkOccurrencesTest.class);
         return suite;
     }
 }
