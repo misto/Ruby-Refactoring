@@ -1674,6 +1674,20 @@ public class RubyRuntime {
 		if (Platform.getOS().equals(Platform.OS_WIN32)) {
 			path += ".bat";
 		}
+		File file = new File(path);
+		if (file.exists()) return file;
+		// try adding major version number to end of command for OSes like Debian that do ri1.8
+		if (vm instanceof IVMInstall2) {
+			IVMInstall2 vm2 = (IVMInstall2) vm;
+			String version = vm2.getRubyVersion();
+			if (version == null || version.length() < 3) return file;
+			version = version.substring(0, 3);
+			path = installLocation.getAbsolutePath() + File.separator + "bin"
+					+ File.separator + command + version;
+			if (Platform.getOS().equals(Platform.OS_WIN32)) {
+				path += ".bat";
+			}
+		}
 		return new File(path);
 	}
 }
