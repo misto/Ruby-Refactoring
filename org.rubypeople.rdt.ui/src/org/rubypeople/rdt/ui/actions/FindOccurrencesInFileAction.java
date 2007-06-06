@@ -33,7 +33,7 @@ import org.rubypeople.rdt.internal.ui.RubyPlugin;
 import org.rubypeople.rdt.internal.ui.actions.ActionUtil;
 import org.rubypeople.rdt.internal.ui.rubyeditor.IRubyScriptEditorInput;
 import org.rubypeople.rdt.internal.ui.rubyeditor.RubyEditor;
-import org.rubypeople.rdt.internal.ui.search.DefaultOccurrencesFinder;
+import org.rubypeople.rdt.internal.ui.search.OccurrencesFinder;
 import org.rubypeople.rdt.internal.ui.search.FindOccurrencesEngine;
 import org.rubypeople.rdt.internal.ui.search.SearchMessages;
 
@@ -143,7 +143,7 @@ public class FindOccurrencesInFileAction extends SelectionDispatchAction {
 		IMember member= getMember(selection);
 		if (!ActionUtil.isProcessable(getShell(), member))
 			return;
-		FindOccurrencesEngine engine= FindOccurrencesEngine.create(member, new DefaultOccurrencesFinder());
+		FindOccurrencesEngine engine= FindOccurrencesEngine.create(member, new OccurrencesFinder());
 		try {
 			ISourceRange range= member.getNameRange();
 			String result= engine.run(range.getOffset(), range.getLength());
@@ -178,7 +178,7 @@ public class FindOccurrencesInFileAction extends SelectionDispatchAction {
 		IRubyElement input= getEditorInput(fEditor);
 		if (!ActionUtil.isProcessable(getShell(), input))
 			return;
-		FindOccurrencesEngine engine= FindOccurrencesEngine.create(input, new DefaultOccurrencesFinder());
+		FindOccurrencesEngine engine= FindOccurrencesEngine.create(input, new OccurrencesFinder());
 		try {
 			String result= engine.run(ts.getOffset(), ts.getLength());
 			if (result != null)

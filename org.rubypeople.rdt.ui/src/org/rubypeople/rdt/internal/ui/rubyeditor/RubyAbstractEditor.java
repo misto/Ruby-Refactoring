@@ -82,7 +82,7 @@ import org.rubypeople.rdt.core.RubyCore;
 import org.rubypeople.rdt.core.RubyModelException;
 import org.rubypeople.rdt.internal.ui.RubyPlugin;
 import org.rubypeople.rdt.internal.ui.rubyeditor.RubyEditor.ITextConverter;
-import org.rubypeople.rdt.internal.ui.search.DefaultOccurrencesFinder;
+import org.rubypeople.rdt.internal.ui.search.OccurrencesFinder;
 import org.rubypeople.rdt.internal.ui.search.IOccurrencesFinder;
 import org.rubypeople.rdt.internal.ui.text.ContentAssistPreference;
 import org.rubypeople.rdt.internal.ui.text.IRubyPartitions;
@@ -1422,7 +1422,7 @@ public abstract class RubyAbstractEditor extends TextEditor {
 	protected void installOccurrencesFinder(boolean forceUpdate) {
 		fMarkOccurrenceAnnotations= true;
 		
-		fOccurrencesFinder = new DefaultOccurrencesFinder();
+		fOccurrencesFinder = new OccurrencesFinder();
 		
 		fPostSelectionListener = new ISelectionChangedListener() {
 			public void selectionChanged(SelectionChangedEvent event) {

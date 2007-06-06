@@ -53,7 +53,7 @@ import org.rubypeople.rdt.internal.ti.util.ScopedNodeLocator;
  * @author Jason Morrison
  * 
  */
-public class DefaultOccurrencesFinder extends AbstractOccurencesFinder {
+public class OccurrencesFinder extends AbstractOccurencesFinder {
 
 	// Root of the document to search
 	private Node root;

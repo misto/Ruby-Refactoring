@@ -5,7 +5,7 @@ import java.util.List;
 import junit.framework.TestCase;
 
 import org.eclipse.jface.text.Position;
-import org.rubypeople.rdt.internal.ui.search.DefaultOccurrencesFinder;
+import org.rubypeople.rdt.internal.ui.search.OccurrencesFinder;
 
 /**
  * Tests related to matching occurrences.
@@ -17,7 +17,7 @@ public class MarkOccurrencesTest extends TestCase {
 	
 	private IOccurrencesFinder occurrencesFinder;
 	public void setUp() {
-		occurrencesFinder = new DefaultOccurrencesFinder();
+		occurrencesFinder = new OccurrencesFinder();
 		occurrencesFinder.setFMarkConstantOccurrences(true);
 		occurrencesFinder.setFMarkFieldOccurrences(true);
 		occurrencesFinder.setFMarkLocalVariableOccurrences(true);
