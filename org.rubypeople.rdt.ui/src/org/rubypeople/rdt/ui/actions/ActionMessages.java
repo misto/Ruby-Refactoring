@@ -10,6 +10,8 @@ public class ActionMessages {
 	public static String SurroundWithBeginRescueAction_label;
 	public static String SurroundWithBeginRescueAction_error;
 	public static String SurroundWithBeginRescueAction_dialog_title;
+
+	public static String QuickMenuAction_menuTextWithShortcut;
 	
 	static {
 		NLS.initializeMessages(BUNDLE_NAME, ActionMessages.class);

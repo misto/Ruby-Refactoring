@@ -14,4 +14,50 @@ public class RdtActionConstants {
 	 */
 	public static final String SHOW_RUBY_DOC= "org.rubypeople.rdt.ui.actions.ShowRubyDoc"; //$NON-NLS-1$
 
+	// Search Menu
+	
+	/**
+	 * Search menu: name of standard Find References in Workspace global action
+	 * (value <code>"org.rubypeople.rdt.ui.actions.ReferencesInWorkspace"</code>).
+	 */
+	public static final String FIND_REFERENCES_IN_WORKSPACE= "org.rubypeople.rdt.ui.actions.ReferencesInWorkspace"; //$NON-NLS-1$
+
+	/**
+	 * Search menu: name of standard Find References in Project global action
+	 * (value <code>"org.rubypeople.rdt.ui.actions.ReferencesInProject"</code>).
+	 */
+	public static final String FIND_REFERENCES_IN_PROJECT= "org.rubypeople.rdt.ui.actions.ReferencesInProject"; //$NON-NLS-1$
+
+	/**
+	 * Search menu: name of standard Find References in Working Set global action
+	 * (value <code>"org.rubypeople.rdt.ui.actions.ReferencesInWorkingSet"</code>).
+	 */
+	public static final String FIND_REFERENCES_IN_WORKING_SET= "org.rubypeople.rdt.ui.actions.ReferencesInWorkingSet"; //$NON-NLS-1$
+
+	/**
+	 * Search menu: name of standard Find Read Access in Workspace global action
+	 * (value <code>"org.rubypeople.rdt.ui.actions.ReadAccessInWorkspace"</code>).
+	 */
+	public static final String FIND_READ_ACCESS_IN_WORKSPACE= "org.rubypeople.rdt.ui.actions.ReadAccessInWorkspace"; //$NON-NLS-1$
+
+	/**
+	 * Search menu: name of standard Find Read Access in Project global action
+	 * (value <code>"org.rubypeople.rdt.ui.actions.ReadAccessInProject"</code>).
+	 */
+	public static final String FIND_READ_ACCESS_IN_PROJECT= "org.rubypeople.rdt.ui.actions.ReadAccessInProject"; //$NON-NLS-1$
+
+	/**
+	 * Search menu: name of standard Find Read Access in Working Set global action
+	 * (value <code>"org.rubypeople.rdt.ui.actions.ReadAccessInWorkingSet"</code>).
+	 */
+	public static final String FIND_READ_ACCESS_IN_WORKING_SET= "org.rubypeople.rdt.ui.actions.ReadAccessInWorkingSet"; //$NON-NLS-1$
+
+	/**
+	 * Search menu: name of standard Occurrences in File global action (value
+	 * <code>"org.rubypeople.rdt.ui.actions.OccurrencesInFile"</code>).
+	 * 
+	 * @since 1.0
+	 */
+	public static final String FIND_OCCURRENCES_IN_FILE= "org.rubypeople.rdt.ui.actions.OccurrencesInFile"; //$NON-NLS-1$
+	
 }

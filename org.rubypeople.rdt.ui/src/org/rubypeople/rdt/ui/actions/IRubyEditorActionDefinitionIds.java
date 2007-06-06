@@ -63,7 +63,57 @@ public interface IRubyEditorActionDefinitionIds extends ITextEditorActionDefinit
 	 */
 	public static final String FOLDING_COLLAPSE_COMMENTS= "org.rubypeople.rdt.ui.edit.text.ruby.folding.collapseComments"; //$NON-NLS-1$
 
+	// search
 	
+	/**
+	 * Action definition ID of the search -> references in workspace action
+	 * (value <code>"org.rubypeople.rdt.ui.edit.text.ruby.search.references.in.workspace"</code>).
+	 */
+	public static final String SEARCH_REFERENCES_IN_WORKSPACE= "org.rubypeople.rdt.ui.edit.text.ruby.search.references.in.workspace"; //$NON-NLS-1$
+
+	/**
+	 * Action definition ID of the search -> references in project action
+	 * (value <code>"org.rubypeople.rdt.ui.edit.text.ruby.search.references.in.project"</code>).
+	 */
+	public static final String SEARCH_REFERENCES_IN_PROJECT= "org.rubypeople.rdt.ui.edit.text.ruby.search.references.in.project"; //$NON-NLS-1$
+
+	/**
+	 * Action definition ID of the search -> references in working set action
+	 * (value <code>"org.rubypeople.rdt.ui.edit.text.ruby.search.references.in.working.set"</code>).
+	 */
+	public static final String SEARCH_REFERENCES_IN_WORKING_SET= "org.rubypeople.rdt.ui.edit.text.ruby.search.references.in.working.set"; //$NON-NLS-1$
+	
+	/**
+	 * Action definition ID of the search -> read access in workspace action
+	 * (value <code>"org.rubypeople.rdt.ui.edit.text.ruby.search.read.access.in.workspace"</code>).
+	 */
+	public static final String SEARCH_READ_ACCESS_IN_WORKSPACE= "org.rubypeople.rdt.ui.edit.text.ruby.search.read.access.in.workspace"; //$NON-NLS-1$
+	
+	/**
+	 * Action definition ID of the search -> read access in project action
+	 * (value <code>"org.rubypeople.rdt.ui.edit.text.ruby.search.read.access.in.project"</code>).
+	 */
+	public static final String SEARCH_READ_ACCESS_IN_PROJECT= "org.rubypeople.rdt.ui.edit.text.ruby.search.read.access.in.project"; //$NON-NLS-1$
+
+	/**
+	 * Action definition ID of the search -> read access in working set action
+	 * (value <code>"org.rubypeople.rdt.ui.edit.text.ruby.search.read.access.in.working.set"</code>).
+	 */
+	public static final String SEARCH_READ_ACCESS_IN_WORKING_SET= "org.rubypeople.rdt.ui.edit.text.ruby.search.read.access.in.working.set"; //$NON-NLS-1$
+	
+	/**
+	 * Action definition ID of the search -> occurrences in file quick menu action
+	 * (value <code>"org.rubypeople.rdt.ui.edit.text.ruby.search.occurrences.in.file.quickMenu"</code>).
+	 * @since 1.0
+	 */
+	public static final String SEARCH_OCCURRENCES_IN_FILE_QUICK_MENU= "org.rubypeople.rdt.ui.edit.text.ruby.search.occurrences.in.file.quickMenu"; //$NON-NLS-1$
+	
+	/**
+	 * Action definition ID of the search -> occurrences in file > elements action
+	 * (value <code>"org.rubypeople.rdt.ui.edit.text.ruby.search.occurrences.in.file"</code>).
+	 * @since 1.0
+	 */
+	public static final String SEARCH_OCCURRENCES_IN_FILE= "org.rubypeople.rdt.ui.edit.text.ruby.search.occurrences.in.file"; //$NON-NLS-1$
 
 
 }

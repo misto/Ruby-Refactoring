@@ -59,6 +59,7 @@ import org.rubypeople.rdt.internal.formatter.OldCodeFormatter;
 import org.rubypeople.rdt.internal.ui.preferences.MembersOrderPreferenceCache;
 import org.rubypeople.rdt.internal.ui.preferences.MockupPreferenceStore;
 import org.rubypeople.rdt.internal.ui.rdocexport.RDocUtility;
+import org.rubypeople.rdt.internal.ui.rubyeditor.ASTProvider;
 import org.rubypeople.rdt.internal.ui.rubyeditor.DocumentAdapter;
 import org.rubypeople.rdt.internal.ui.rubyeditor.RubyDocumentProvider;
 import org.rubypeople.rdt.internal.ui.rubyeditor.RubyScriptDocumentProvider;
@@ -115,6 +116,7 @@ public class RubyPlugin extends AbstractUIPlugin implements IRubyColorConstants 
 	 */
 	private TypeFilter fTypeFilter;
 	private ProblemMarkerManager fProblemMarkerManager;
+	private ASTProvider fASTProvider;
 
 	public RubyPlugin() {
 		super();
@@ -624,5 +626,18 @@ public class RubyPlugin extends AbstractUIPlugin implements IRubyColorConstants 
 		if (fProblemMarkerManager == null)
 			fProblemMarkerManager= new ProblemMarkerManager();
 		return fProblemMarkerManager;
-	}	
+	}
+
+	/**
+	 * Returns the AST provider.
+	 * 
+	 * @return the AST provider
+	 * @since 3.0
+	 */
+	public synchronized ASTProvider getASTProvider() {
+		if (fASTProvider == null)
+			fASTProvider= new ASTProvider();
+		
+		return fASTProvider;
+	}
 }

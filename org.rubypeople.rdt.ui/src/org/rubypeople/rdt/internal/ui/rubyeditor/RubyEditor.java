@@ -131,6 +131,7 @@ import org.rubypeople.rdt.ui.actions.FormatAction;
 import org.rubypeople.rdt.ui.actions.IRubyEditorActionDefinitionIds;
 import org.rubypeople.rdt.ui.actions.OpenEditorActionGroup;
 import org.rubypeople.rdt.ui.actions.RubyActionGroup;
+import org.rubypeople.rdt.ui.actions.RubySearchActionGroup;
 import org.rubypeople.rdt.ui.actions.SurroundWithBeginRescueAction;
 import org.rubypeople.rdt.ui.text.folding.IRubyFoldingStructureProvider;
 import org.rubypeople.rdt.ui.text.folding.IRubyFoldingStructureProviderExtension;
@@ -256,11 +257,12 @@ public class RubyEditor extends RubyAbstractEditor {
         action.setActionDefinitionId(IRubyEditorActionDefinitionIds.FORMAT);
         setAction("Format", action);
                        
-        ActionGroup oeg;
+        ActionGroup oeg, rsg;
 		fActionGroups= new CompositeActionGroup(new ActionGroup[] {
-			oeg= new OpenEditorActionGroup(this)
+			oeg= new OpenEditorActionGroup(this),
+			rsg= new RubySearchActionGroup(this)
 		});
-		fContextMenuGroup= new CompositeActionGroup(new ActionGroup[] {oeg});
+		fContextMenuGroup= new CompositeActionGroup(new ActionGroup[] {oeg, rsg});
         
         fFoldingGroup= new FoldingActionGroup(this, getViewer());
         

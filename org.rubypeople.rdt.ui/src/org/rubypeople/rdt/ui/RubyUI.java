@@ -44,8 +44,24 @@ public final class RubyUI {
 	 */
 	public static final String ID_PLUGIN = "org.rubypeople.rdt.ui"; //$NON-NLS-1$
 
-	public static final String ID_ACTION_SET = null;
+	/**
+	 * The id of the Ruby action set
+	 * (value <code>"org.rubypeople.rdt.ui.RubyActionSet"</code>).
+	 */
+	public static final String ID_ACTION_SET = "org.rubypeople.rdt.ui.RubyActionSet"; //$NON-NLS-1$
 
+	/**
+	 * The editor part id of the editor that presents Ruby compilation units
+	 * (value <code>"org.rubypeople.rdt.ui.EditorRubyFile"</code>).
+	 */	
+	public static final String ID_RUBY_EDITOR=			"org.rubypeople.rdt.ui.EditorRubyFile"; //$NON-NLS-1$
+	
+	/**
+	 * The editor part id of the editor that presents Ruby binary class files
+	 * (value <code>"org.rubypeople.rdt.ui.ExternalRubyEditor"</code>).
+	 */
+	public static final String ID_EXTERNAL_EDITOR=			"org.rubypeople.rdt.ui.ExternalRubyEditor"; //$NON-NLS-1$
+	
 	/**
 	 * The view part id of the Ruby Browsing Projects view (value
 	 * <code>"org.rubypeople.rdt.ui.ProjectsView"</code>).

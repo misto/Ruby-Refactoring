@@ -595,6 +595,43 @@
             categoryId="org.rubypeople.rdt.ui.category.source"
             id="org.rubypeople.rdt.ui.edit.text.ruby.surround.with.begin.rescue">
       </command>
+      <!-- search -->
+      <command
+            name="%ActionDefinition.referencesInWorkspace.name"
+            description="%ActionDefinition.referencesInWorkspace.description"
+            categoryId="org.eclipse.search.ui.category.search"
+            id="org.rubypeople.rdt.ui.edit.text.ruby.search.references.in.workspace">
+      </command>
+      <command
+            name="%ActionDefinition.referencesInProject.name"
+            description="%ActionDefinition.referencesInProject.description"
+            categoryId="org.eclipse.search.ui.category.search"
+            id="org.rubypeople.rdt.ui.edit.text.ruby.search.references.in.project">
+      </command>
+      <command
+            name="%ActionDefinition.referencesInWorkingSet.name"
+            description="%ActionDefinition.referencesInWorkingSet.description"
+            categoryId="org.eclipse.search.ui.category.search"
+            id="org.rubypeople.rdt.ui.edit.text.ruby.search.references.in.working.set">
+      </command>
+      <command
+            name="%ActionDefinition.readAccessInworkspace.name"
+            description="%ActionDefinition.readAccessInWorkspace.description"
+            categoryId="org.eclipse.search.ui.category.search"
+            id="org.rubypeople.rdt.ui.edit.text.ruby.search.read.access.in.workspace">
+      </command>
+      <command
+            name="%ActionDefinition.readAccessInProject.name"
+            description="%ActionDefinition.readAccessInProject.description"
+            categoryId="org.eclipse.search.ui.category.search"
+            id="org.rubypeople.rdt.ui.edit.text.ruby.search.read.access.in.project">
+      </command>
+      <command
+            name="%ActionDefinition.readAccessInWorkingSet.name"
+            description="%ActionDefinition.readAccessInWorkingSet.description"
+            categoryId="org.eclipse.search.ui.category.search"
+            id="org.rubypeople.rdt.ui.edit.text.ruby.search.read.access.in.working.set">
+      </command>
    </extension>
    <extension
          point="org.eclipse.ui.actionSets">
@@ -1047,7 +1084,7 @@
 			class="org.rubypeople.rdt.internal.ui.search.RubySearchResultPage">
 		</viewPage>
    </extension>
-<!--   <extension
+   <extension
     	id="OccurrencesSearchResultPage"
         point="org.eclipse.search.searchResultViewPages">
 		<viewPage
@@ -1056,5 +1093,4 @@
 			class="org.rubypeople.rdt.internal.ui.search.OccurrencesSearchResultPage">
 		</viewPage>
    </extension>
-   -->
 </plugin>

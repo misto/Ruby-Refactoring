@@ -733,6 +733,15 @@ public class PreferenceConstants {
 	 */
 	public static final String ID_SOURCE_HOVER= "org.rubypeople.rdt.ui.RubySourceHover"; //$NON-NLS-1$
 	
+	/**
+	 * A named preference that controls a reduced search menu is used in the Ruby editors.
+	 * <p>
+	 * Value is of type <code>Boolean</code>.
+	 * </p>
+	 * @since 1.0
+	 */
+	public static final String SEARCH_USE_REDUCED_MENU= "Search.usereducemenu"; //$NON-NLS-1$
+	
 	private static String getDefaultRubyVMLibraries() {
 		StringBuffer buf= new StringBuffer();
 		ILoadpathEntry cntentry= getRubyVMContainerEntry();
@@ -796,6 +805,8 @@ public class PreferenceConstants {
 		// TextEdits (rather than one huge replace)
 		// store.setDefault(PreferenceConstants.TEMPLATES_USE_CODEFORMATTER,
 		// true);
+		
+		store.setDefault(PreferenceConstants.SEARCH_USE_REDUCED_MENU, false);
 
 		store.setDefault(PreferenceConstants.FORMATTER_PROFILE, ProfileManager.DEFAULT_PROFILE);
 

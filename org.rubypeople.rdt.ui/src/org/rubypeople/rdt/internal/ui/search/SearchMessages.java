@@ -35,11 +35,9 @@ public class SearchMessages extends NLS {
 
 	public static String SearchPage_searchFor_type;
 	public static String SearchPage_searchFor_method;
-	public static String SearchPage_searchFor_package;
 	public static String SearchPage_searchFor_constructor;
 	public static String SearchPage_searchFor_field;
 	public static String SearchPage_limitTo_declarations;
-	public static String SearchPage_limitTo_implementors;
 	public static String SearchPage_limitTo_references;
 	public static String SearchPage_limitTo_allOccurrences;
 	public static String SearchPage_limitTo_readReferences;
@@ -51,12 +49,6 @@ public class SearchMessages extends NLS {
 	public static String SearchPage_expression_label;
 	
 	public static String SearchUtil_workingSetConcatenation;
-
-	public static String Search_FindReferencesAction_BinPrimConstWarnDialog_title;
-	public static String Search_FindReferencesAction_BinPrimConstWarnDialog_message;
-
-	public static String Search_Error_javaElementAccess_message;
-	public static String Search_Error_javaElementAccess_title;
 
 	public static String RubySearchQuery_error_participant_estimate;
 	public static String RubySearchQuery_error_element_does_not_exist;
@@ -134,6 +126,55 @@ public class SearchMessages extends NLS {
 	public static String SearchLabelProvider_exact_and_potential_plural;
 	public static String SearchLabelProvider_potential_plural;
 	public static String SearchLabelProvider_exact_plural;
+
+	public static String group_references;	
+	public static String group_readReferences;
+	public static String group_search;
+	
+	public static String RubyElementAction_operationUnavailable_title;
+	public static String RubyElementAction_operationUnavailable_generic;
+	public static String RubyElementAction_error_open_message;
+	public static String RubyElementAction_typeSelectionDialog_title;
+	public static String RubyElementAction_typeSelectionDialog_message;
+	public static String RubyElementAction_operationUnavailable_field;
+	
+	public static String SearchElementSelectionDialog_title;
+	public static String SearchElementSelectionDialog_message;	
+	
+	public static String Search_Error_search_title;
+	public static String Search_Error_codeResolve;
+	public static String Search_Error_search_notsuccessful_title;
+	public static String Search_Error_search_notsuccessful_message;
+	public static String Search_Error_search_message;
+	
+	public static String Search_FindReferencesAction_label;
+	public static String Search_FindReferencesAction_tooltip;
+	public static String Search_FindReferencesInProjectAction_label;
+	public static String Search_FindReferencesInProjectAction_tooltip;
+	public static String Search_FindReferencesInWorkingSetAction_label;
+	public static String Search_FindReferencesInWorkingSetAction_tooltip;
+	public static String Search_FindReadReferencesAction_label;
+	public static String Search_FindReadReferencesAction_tooltip;
+	public static String Search_FindReadReferencesInProjectAction_label;
+	public static String Search_FindReadReferencesInProjectAction_tooltip;
+	public static String Search_FindReadReferencesInWorkingSetAction_label;
+	public static String Search_FindReadReferencesInWorkingSetAction_tooltip;
+
+	public static String OccurrencesFinder_searchfor;
+	public static String OccurrencesFinder_label_plural;
+	public static String OccurrencesFinder_label_singular;
+	public static String OccurrencesFinder_no_element;
+
+	public static String Search_FindOccurrencesInFile_tooltip;
+	public static String Search_FindOccurrencesInFile_label;
+	public static String Search_FindOccurrencesInFile_shortLabel;
+
+	public static String FindOccurrencesEngine_noSource_text;
+	public static String FindOccurrencesEngine_cannotParse_text;
+
+	public static String group_occurrences;
+
+	public static String TextSearchLabelProvider_matchCountFormat;
 
 	static {
 		NLS.initializeMessages(BUNDLE_NAME, SearchMessages.class);
