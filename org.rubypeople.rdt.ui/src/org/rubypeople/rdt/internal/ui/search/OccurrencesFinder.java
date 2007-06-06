@@ -21,6 +21,7 @@ import org.jruby.ast.ClassVarAsgnNode;
 import org.jruby.ast.ClassVarDeclNode;
 import org.jruby.ast.ClassVarNode;
 import org.jruby.ast.Colon2Node;
+import org.jruby.ast.ConstDeclNode;
 import org.jruby.ast.ConstNode;
 import org.jruby.ast.DAsgnNode;
 import org.jruby.ast.DVarNode;
@@ -278,7 +279,7 @@ public class OccurrencesFinder extends AbstractOccurencesFinder {
 	 * @return
 	 */
 	private boolean isConstRef(Node node) {
-		return (node instanceof ConstNode);
+		return (node instanceof ConstNode) || (node instanceof ConstDeclNode);
 	}
 
 	/**
@@ -339,6 +340,7 @@ public class OccurrencesFinder extends AbstractOccurencesFinder {
 		// Scrape position from pertinent nodes
 		for (Node searchResult : searchResults) {
 			occurrences.add(searchResult);
+			if (searchResult instanceof LocalAsgnNode) fWriteUsages.add(searchResult);
 		}
 	}
 
@@ -381,6 +383,7 @@ public class OccurrencesFinder extends AbstractOccurencesFinder {
 		// Scrape position from pertinent nodes
 		for (Node searchResult : searchResults) {
 			occurrences.add(searchResult);
+			if (searchResult instanceof DAsgnNode) fWriteUsages.add(searchResult);
 		}
 	}
 
@@ -395,7 +398,7 @@ public class OccurrencesFinder extends AbstractOccurencesFinder {
 		Node searchSpace = determineSearchSpace(root, orig);
 
 		// Finalize searchSpace because Java's scoping rules are the awesome
-		// todo: not needed?
+		// TODO: not needed?
 		// final Node finalSearchSpace = searchSpace;
 
 		// Get name of local variable reference
@@ -415,6 +418,7 @@ public class OccurrencesFinder extends AbstractOccurencesFinder {
 		// Scrape position from pertinent nodes
 		for (Node searchResult : searchResults) {
 			occurrences.add(searchResult);
+			if (searchResult instanceof InstAsgnNode) fWriteUsages.add(searchResult);
 		}
 
 	}
@@ -483,6 +487,7 @@ public class OccurrencesFinder extends AbstractOccurencesFinder {
 		// Scrape position from pertinent nodes
 		for (Node searchResult : searchResults) {
 			occurrences.add(searchResult);
+			if ((searchResult instanceof ClassVarAsgnNode) || (searchResult instanceof ClassVarDeclNode)) fWriteUsages.add(searchResult);
 		}
 
 	}
@@ -508,6 +513,7 @@ public class OccurrencesFinder extends AbstractOccurencesFinder {
 		// Scrape position from pertinent nodes
 		for (Node searchResult : searchResults) {
 			occurrences.add(searchResult);
+			if (searchResult instanceof GlobalAsgnNode) fWriteUsages.add(searchResult);
 		}
 	}
 
@@ -577,6 +583,7 @@ public class OccurrencesFinder extends AbstractOccurencesFinder {
 
 		for (Node searchResult : searchResults) {
 			occurrences.add(searchResult);
+			if (searchResult instanceof ConstDeclNode) fWriteUsages.add(searchResult);
 		}
 	}
 
