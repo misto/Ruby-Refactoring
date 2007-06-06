@@ -42,7 +42,6 @@ import org.jruby.lexer.yacc.SyntaxException;
 import org.rubypeople.rdt.core.IRubyElement;
 import org.rubypeople.rdt.internal.core.parser.RubyParser;
 import org.rubypeople.rdt.internal.core.util.ASTUtil;
-import org.rubypeople.rdt.internal.ti.AbstractOccurencesFinder;
 import org.rubypeople.rdt.internal.ti.util.FirstPrecursorNodeLocator;
 import org.rubypeople.rdt.internal.ti.util.INodeAcceptor;
 import org.rubypeople.rdt.internal.ti.util.OffsetNodeLocator;

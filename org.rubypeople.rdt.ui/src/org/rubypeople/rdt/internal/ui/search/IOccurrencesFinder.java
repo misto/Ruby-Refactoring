@@ -8,7 +8,7 @@
  * Contributors:
  *     IBM Corporation - initial API and implementation
  *******************************************************************************/
-package org.rubypeople.rdt.core.search;
+package org.rubypeople.rdt.internal.ui.search;
 
 import java.util.Collection;
 import java.util.List;

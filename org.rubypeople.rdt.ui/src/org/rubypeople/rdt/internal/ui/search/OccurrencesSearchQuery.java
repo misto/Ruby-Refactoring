@@ -21,7 +21,6 @@ import org.eclipse.search.ui.ISearchQuery;
 import org.eclipse.search.ui.ISearchResult;
 import org.eclipse.search.ui.text.Match;
 import org.rubypeople.rdt.core.IRubyElement;
-import org.rubypeople.rdt.core.search.IOccurrencesFinder;
 import org.rubypeople.rdt.internal.corext.util.Messages;
 import org.rubypeople.rdt.internal.ui.dialogs.StatusInfo;
 

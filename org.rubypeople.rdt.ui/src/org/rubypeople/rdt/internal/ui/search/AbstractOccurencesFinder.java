@@ -1,6 +1,5 @@
-package org.rubypeople.rdt.internal.ti;
+package org.rubypeople.rdt.internal.ui.search;
 
-import org.rubypeople.rdt.core.search.IOccurrencesFinder;
 
 public abstract class AbstractOccurencesFinder implements IOccurrencesFinder {
 	
