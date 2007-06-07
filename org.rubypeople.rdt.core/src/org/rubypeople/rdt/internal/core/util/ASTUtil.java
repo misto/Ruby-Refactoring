@@ -10,14 +10,19 @@ import org.jruby.ast.ArgumentNode;
 import org.jruby.ast.AttrAssignNode;
 import org.jruby.ast.ClassNode;
 import org.jruby.ast.ClassVarAsgnNode;
+import org.jruby.ast.ClassVarDeclNode;
+import org.jruby.ast.ClassVarNode;
 import org.jruby.ast.Colon2Node;
+import org.jruby.ast.ConstDeclNode;
 import org.jruby.ast.ConstNode;
 import org.jruby.ast.DStrNode;
 import org.jruby.ast.FalseNode;
 import org.jruby.ast.FixnumNode;
 import org.jruby.ast.GlobalAsgnNode;
+import org.jruby.ast.GlobalVarNode;
 import org.jruby.ast.HashNode;
 import org.jruby.ast.InstAsgnNode;
+import org.jruby.ast.InstVarNode;
 import org.jruby.ast.ListNode;
 import org.jruby.ast.LocalAsgnNode;
 import org.jruby.ast.ModuleNode;
@@ -191,6 +196,14 @@ public abstract class ASTUtil {
 	public static String getSource(String contents, Node node) {
 		ISourcePosition pos = node.getPosition();
 		return contents.substring(pos.getStartOffset(), pos.getEndOffset());
+	}
+
+	public static boolean isVariable(Node node) {
+		return (node instanceof GlobalAsgnNode) || (node instanceof GlobalVarNode) 
+			|| (node instanceof InstAsgnNode) || (node instanceof InstVarNode)
+			|| (node instanceof ConstDeclNode) || (node instanceof ConstNode)
+			|| (node instanceof ClassVarAsgnNode) || (node instanceof ClassVarDeclNode)
+			|| (node instanceof ClassVarNode);
 	}
 
 }

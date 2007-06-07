@@ -96,7 +96,7 @@ public class OccurrencesFinder extends AbstractOccurencesFinder {
 				if (groupKey == null) {
 					IRegion region= document.getLineInformation(line);
 					String lineContents= document.get(region.getOffset(), region.getLength()).trim();
-					groupKey= new OccurrencesGroupKey(element, line, lineContents, isWriteAccess, isVariable(element));
+					groupKey= new OccurrencesGroupKey(element, line, lineContents, isWriteAccess, isVariable(fSelectedNode));
 					lineToGroup.put(lineInteger, groupKey);
 				} else if (isWriteAccess) {
 					// a line with read an write access is considered as write access:
@@ -110,8 +110,8 @@ public class OccurrencesFinder extends AbstractOccurencesFinder {
 		}
 	}
 	
-	private boolean isVariable(IRubyElement element) {
-		return element.isType(IRubyElement.INSTANCE_VAR) || element.isType(IRubyElement.GLOBAL) || element.isType(IRubyElement.CLASS_VAR) || element.isType(IRubyElement.LOCAL_VARIABLE) || element.isType(IRubyElement.DYNAMIC_VAR);
+	private boolean isVariable(Node node) {
+		return ASTUtil.isVariable(node);
 	}
 
 	public String initialize(Node root, int offset, int length) {
