@@ -3,7 +3,6 @@ package com.aptana.rdt;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
-import java.util.Set;
 
 import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.core.runtime.IPath;
@@ -218,16 +217,18 @@ public class AptanaRDTPlugin extends AbstractUIPlugin {
 		super.start(context);
 		context.registerService(IGemManager.class.getName(), GemManager.getInstance(), null);
 		
-		Set<Gem> gems = GemManager.getInstance().getGems(); // FIXME What if user has explicity disabled using ruby-debug?!
-		if (gems.isEmpty()) {
+		boolean rubyDebugInstalled = GemManager.getInstance().gemInstalled("ruby-debug-ide");
+		 // FIXME What if user has explicity disabled using ruby-debug?!
+		if (rubyDebugInstalled) {
+			setRubyDebugAsDefault();
+		} else {
 			GemManager.getInstance().addGemListener(new GemListener() {
 		
 				public void gemsRefreshed() {
-					boolean rubyDebugInstalled = GemManager.getInstance().gemInstalled("ruby-debug-ide");
-					LaunchingPlugin.getDefault().getPluginPreferences().setValue(org.rubypeople.rdt.internal.launching.PreferenceConstants.USE_RUBY_DEBUG, rubyDebugInstalled);
-					Job job = new RubyDebugGemListener(this);
-					job.schedule();
-				}
+					if (GemManager.getInstance().gemInstalled("ruby-debug-ide")) {
+						setRubyDebugUp();
+					}					
+				}				
 		
 				public void gemRemoved(Gem gem) {
 					// ignore
@@ -235,13 +236,25 @@ public class AptanaRDTPlugin extends AbstractUIPlugin {
 		
 				public void gemAdded(Gem gem) {
 					// ignore		
+					if(gem.getName().equals("ruby-debug-ide"))
+						setRubyDebugUp();
 				}
-		
+
+				private void setRubyDebugUp() {
+					setRubyDebugAsDefault();
+					removeListener(this);					
+				}
 			});
-		} else {
-			boolean rubyDebugInstalled = GemManager.getInstance().gemInstalled("ruby-debug-ide");
-			LaunchingPlugin.getDefault().getPluginPreferences().setValue(org.rubypeople.rdt.internal.launching.PreferenceConstants.USE_RUBY_DEBUG, rubyDebugInstalled);
 		}
+	}
+	
+	protected void setRubyDebugAsDefault() {
+		LaunchingPlugin.getDefault().getPluginPreferences().setValue(org.rubypeople.rdt.internal.launching.PreferenceConstants.USE_RUBY_DEBUG, true);
+	}
+	
+	protected void removeListener(GemListener listener) {
+		Job job = new RubyDebugGemListener(listener);
+		job.schedule();
 	}
 
 	/*
