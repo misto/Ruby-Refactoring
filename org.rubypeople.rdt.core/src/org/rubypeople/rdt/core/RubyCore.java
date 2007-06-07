@@ -56,8 +56,6 @@ import org.rubypeople.rdt.internal.core.RubyModel;
 import org.rubypeople.rdt.internal.core.RubyModelManager;
 import org.rubypeople.rdt.internal.core.RubyProject;
 import org.rubypeople.rdt.internal.core.SetLoadpathOperation;
-import org.rubypeople.rdt.internal.core.builder.RubyBuilder;
-import org.rubypeople.rdt.internal.core.parser.RubyParser;
 import org.rubypeople.rdt.internal.core.util.MementoTokenizer;
 import org.rubypeople.rdt.internal.core.util.Util;
 
@@ -66,11 +64,6 @@ public class RubyCore extends Plugin {
     private static RubyCore RUBY_CORE_PLUGIN = null;
 
     public final static String PLUGIN_ID = "org.rubypeople.rdt.core";//$NON-NLS-1$
-
-    private static final String RUBY_PARSER_DEBUG_OPTION = RubyCore.PLUGIN_ID + "/rubyparser";//$NON-NLS-1$
-    private static final String MODEL_MANAGER_VERBOSE_OPTION = RubyCore.PLUGIN_ID + "/modelmanager";//$NON-NLS-1$
-    private static final String BUILDER_VERBOSE_OPTION = RubyCore.PLUGIN_ID + "/rubyBuilder";//$NON-NLS-1$
-
     public final static String NATURE_ID = PLUGIN_ID + ".rubynature";//$NON-NLS-1$
 
     /**
@@ -311,10 +304,6 @@ public class RubyCore extends Plugin {
         super.start(context);
         RubyModelManager.getRubyModelManager().startup();
 
-        RubyParser.setDebugging(isDebugOptionTrue(RUBY_PARSER_DEBUG_OPTION));
-        RubyModelManager.setVerbose(isDebugOptionTrue(MODEL_MANAGER_VERBOSE_OPTION));
-        RubyBuilder.setVerbose(isDebugOptionTrue(BUILDER_VERBOSE_OPTION));
-
         ResourcesPlugin.getWorkspace().addResourceChangeListener(new RubyProjectListener(), IResourceChangeEvent.POST_CHANGE);
     }
 
@@ -331,11 +320,6 @@ public class RubyCore extends Plugin {
             // ensure we call super.stop as the last thing
             super.stop(context);
         }
-    }
-
-    private boolean isDebugOptionTrue(String option) {
-        String optionText = Platform.getDebugOption(option);
-        return optionText == null ? false : optionText.equalsIgnoreCase("true");
     }
 
     public static boolean upgradeOldProjects() throws CoreException {

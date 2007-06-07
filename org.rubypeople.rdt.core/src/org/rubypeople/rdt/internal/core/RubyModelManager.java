@@ -13,6 +13,7 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.StringReader;
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -90,6 +91,7 @@ import org.rubypeople.rdt.internal.compiler.util.HashtableOfObjectToInt;
 import org.rubypeople.rdt.internal.core.buffer.BufferManager;
 import org.rubypeople.rdt.internal.core.builder.RubyBuilder;
 import org.rubypeople.rdt.internal.core.parser.MarkerUtility;
+import org.rubypeople.rdt.internal.core.parser.RubyParser;
 import org.rubypeople.rdt.internal.core.search.RubyWorkspaceScope;
 import org.rubypeople.rdt.internal.core.search.indexing.IndexManager;
 import org.rubypeople.rdt.internal.core.util.Messages;
@@ -114,6 +116,9 @@ public class RubyModelManager implements IContentTypeChangeListener, ISavePartic
             + "/debug/rubydelta/verbose"; //$NON-NLS-1$
     private static final String POST_ACTION_DEBUG = RubyCore.PLUGIN_ID + "/debug/postaction"; //$NON-NLS-1$
     private static final String BUILDER_DEBUG = RubyCore.PLUGIN_ID + "/debug/builder"; //$NON-NLS-1$
+    private static final String RUBY_PARSER_DEBUG_OPTION = RubyCore.PLUGIN_ID + "/rubyparser";//$NON-NLS-1$
+    private static final String MODEL_MANAGER_VERBOSE_OPTION = RubyCore.PLUGIN_ID + "/modelmanager";//$NON-NLS-1$
+    private static final String BUILDER_VERBOSE_OPTION = RubyCore.PLUGIN_ID + "/rubyBuilder";//$NON-NLS-1$
 
     private static final String ENABLE_NEW_FORMATTER = RubyCore.PLUGIN_ID + "/formatter/enable_new"; //$NON-NLS-1$
 
@@ -206,9 +211,9 @@ public class RubyModelManager implements IContentTypeChangeListener, ISavePartic
      */
     protected Map<WorkingCopyOwner, Map> perWorkingCopyInfos = new HashMap<WorkingCopyOwner, Map>(5);
 
-    private static boolean verbose = false;
     public static boolean CP_RESOLVE_VERBOSE = false;
 	public static boolean ZIP_ACCESS_VERBOSE = false;
+	public static boolean VERBOSE = false;
 
     // Preferences
     HashSet optionNames = new HashSet(20);
@@ -219,8 +224,7 @@ public class RubyModelManager implements IContentTypeChangeListener, ISavePartic
 	static final int PREF_INSTANCE = 0;
     static final int PREF_DEFAULT = 1;
     
-	public static final IRubyScript[] NO_WORKING_COPY = new IRubyScript[0];
-	public static final boolean VERBOSE = false;
+	public static final IRubyScript[] NO_WORKING_COPY = new IRubyScript[0];	
 	
 	public final static String CP_VARIABLE_PREFERENCES_PREFIX = RubyCore.PLUGIN_ID+".loadpathVariable."; //$NON-NLS-1$
 	public final static String CP_CONTAINER_PREFERENCES_PREFIX = RubyCore.PLUGIN_ID+".loadpathContainer."; //$NON-NLS-1$
@@ -868,14 +872,6 @@ public class RubyModelManager implements IContentTypeChangeListener, ISavePartic
         }
     }
 
-    public static void setVerbose(boolean verbose) {
-        RubyModelManager.verbose = verbose;
-    }
-
-    public static boolean isVerbose() {
-        return verbose;
-    }
-
     public String getOption(String optionName) {
         if (RubyCore.CORE_ENCODING.equals(optionName)) { return RubyCore.getEncoding(); }
         String propertyName = optionName;
@@ -945,17 +941,17 @@ public class RubyModelManager implements IContentTypeChangeListener, ISavePartic
              Platform.getContentTypeManager().addContentTypeChangeListener(this);
             
 //           retrieve variable values
-// 			long start = -1;
-// 			if (VERBOSE)
-// 				start = System.currentTimeMillis();
+ 			long start = -1;
+ 			if (VERBOSE)
+ 				start = System.currentTimeMillis();
   			loadVariablesAndContainers();
-//  			if (VERBOSE)
-// 				traceVariableAndContainers("Loaded", start); //$NON-NLS-1$
+  			if (VERBOSE)
+ 				traceVariableAndContainers("Loaded", start); //$NON-NLS-1$
 
  			final IWorkspace workspace = ResourcesPlugin.getWorkspace();
  			workspace.addResourceChangeListener(
  				this.deltaState,
- 				/* update spec in JavaCore#addPreProcessingResourceChangedListener(...) if adding more event types */
+ 				/* update spec in RubyCore#addPreProcessingResourceChangedListener(...) if adding more event types */
  				IResourceChangeEvent.PRE_BUILD
  					| IResourceChangeEvent.POST_BUILD
  					| IResourceChangeEvent.POST_CHANGE
@@ -1458,12 +1454,24 @@ public class RubyModelManager implements IContentTypeChangeListener, ISavePartic
             if (option != null) DeltaProcessor.VERBOSE = option.equalsIgnoreCase("true"); //$NON-NLS-1$
 
             option = Platform.getDebugOption(RUBYMODEL_DEBUG);
-            if (option != null) RubyModelManager.verbose = option.equalsIgnoreCase("true"); //$NON-NLS-1$
+            if (option != null) RubyModelManager.VERBOSE = option.equalsIgnoreCase("true"); //$NON-NLS-1$
 
             option = Platform.getDebugOption(POST_ACTION_DEBUG);
             if (option != null)
                 RubyModelOperation.POST_ACTION_VERBOSE = option.equalsIgnoreCase("true"); //$NON-NLS-1$
-
+            
+            option = Platform.getDebugOption(RUBY_PARSER_DEBUG_OPTION);
+            if (option != null)
+            	RubyParser.setDebugging(option.equalsIgnoreCase("true")); //$NON-NLS-1$
+            
+            option = Platform.getDebugOption(MODEL_MANAGER_VERBOSE_OPTION);
+            if (option != null)
+            	RubyModelManager.VERBOSE = option.equalsIgnoreCase("true"); //$NON-NLS-1$
+            
+            option = Platform.getDebugOption(BUILDER_VERBOSE_OPTION);
+            if (option != null)
+            	RubyBuilder.setVerbose(option.equalsIgnoreCase("true")); //$NON-NLS-1$
+            
             // configure performance options
             if (PerformanceStats.ENABLED) {
                 DeltaProcessor.PERF = PerformanceStats.isEnabled(DELTA_LISTENER_PERF);
@@ -2924,6 +2932,20 @@ public class RubyModelManager implements IContentTypeChangeListener, ISavePartic
 				Util.verbose("		+ "+qualifiedName+':'+secondaryTypesMap.get(qualifiedName) ); //$NON-NLS-1$
 			}
 		}
+	}
+	
+	private void traceVariableAndContainers(String action, long start) {
+
+		Long delta = new Long(System.currentTimeMillis() - start);
+		Long length = new Long(getVariableAndContainersFile().length());
+		String pattern = "{0} {1} bytes in variablesAndContainers.dat in {2}ms"; //$NON-NLS-1$
+		String message = MessageFormat.format(pattern, new Object[]{action, length, delta});
+
+		System.out.println(message);
+	}
+
+	public static boolean isVerbose() {
+		return VERBOSE;
 	}
 
 }
