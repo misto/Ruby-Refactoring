@@ -60,4 +60,23 @@ public class RdtActionConstants {
 	 */
 	public static final String FIND_OCCURRENCES_IN_FILE= "org.rubypeople.rdt.ui.actions.OccurrencesInFile"; //$NON-NLS-1$
 	
+	
+	/**
+	 * Search menu: name of standard Find Declarations in Workspace global action
+	 * (value <code>"org.rubypeople.rdt.ui.actions.DeclarationsInWorkspace"</code>).
+	 */
+	public static final String FIND_DECLARATIONS_IN_WORKSPACE= "org.rubypeople.rdt.ui.actions.DeclarationsInWorkspace"; //$NON-NLS-1$
+
+	/**
+	 * Search menu: name of standard Find Declarations in Project global action
+	 * (value <code>"org.rubypeople.rdt.ui.actions.DeclarationsInProject"</code>).
+	 */
+	public static final String FIND_DECLARATIONS_IN_PROJECT= "org.rubypeople.rdt.ui.actions.DeclarationsInProject"; //$NON-NLS-1$
+
+	/**
+	 * Search menu: name of standard Find Declarations in Working Set global action
+	 * (value <code>"org.rubypeople.rdt.ui.actions.DeclarationsInWorkingSet"</code>).
+	 */
+	public static final String FIND_DECLARATIONS_IN_WORKING_SET= "org.rubypeople.rdt.ui.actions.DeclarationsInWorkingSet"; //$NON-NLS-1$
+
 }

@@ -114,6 +114,22 @@ public interface IRubyEditorActionDefinitionIds extends ITextEditorActionDefinit
 	 * @since 1.0
 	 */
 	public static final String SEARCH_OCCURRENCES_IN_FILE= "org.rubypeople.rdt.ui.edit.text.ruby.search.occurrences.in.file"; //$NON-NLS-1$
-
+	
+	/**
+	 * Action definition ID of the search -> declarations in workspace action
+	 * (value <code>"org.rubypeople.rdt.ui.edit.text.ruby.search.declarations.in.workspace"</code>).
+	 */
+	public static final String SEARCH_DECLARATIONS_IN_WORKSPACE= "org.rubypeople.rdt.ui.edit.text.ruby.search.declarations.in.workspace"; //$NON-NLS-1$
+	/**
+	 * Action definition ID of the search -> declarations in project action
+	 * (value <code>"org.rubypeople.rdt.ui.edit.text.ruby.search.declarations.in.project"</code>).
+	 */
+	public static final String SEARCH_DECLARATIONS_IN_PROJECTS= "org.rubypeople.rdt.ui.edit.text.ruby.search.declarations.in.project"; //$NON-NLS-1$
+	/**
+	 * Action definition ID of the search -> declarations in working set action
+	 * (value <code>"org.rubypeople.rdt.ui.edit.text.ruby.search.declarations.in.working.set"</code>).
+	 */
+	public static final String SEARCH_DECLARATIONS_IN_WORKING_SET= "org.rubypeople.rdt.ui.edit.text.ruby.search.declarations.in.working.set"; //$NON-NLS-1$
+	
 
 }

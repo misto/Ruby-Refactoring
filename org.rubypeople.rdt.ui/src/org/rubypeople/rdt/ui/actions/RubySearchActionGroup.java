@@ -43,7 +43,7 @@ public class RubySearchActionGroup extends ActionGroup {
 	private ReferencesSearchGroup fReferencesGroup;
 	private ReadReferencesSearchGroup fReadAccessGroup;
 //	private WriteReferencesSearchGroup fWriteAccessGroup;
-//	private DeclarationsSearchGroup fDeclarationsGroup;
+	private DeclarationsSearchGroup fDeclarationsGroup;
 //	private ImplementorsSearchGroup fImplementorsGroup;
 	private OccurrencesSearchGroup fOccurrencesGroup;
 	
@@ -81,7 +81,7 @@ public class RubySearchActionGroup extends ActionGroup {
 		fReferencesGroup= new ReferencesSearchGroup(fEditor);
 		fReadAccessGroup= new ReadReferencesSearchGroup(fEditor);
 //		fWriteAccessGroup= new WriteReferencesSearchGroup(fEditor);
-//		fDeclarationsGroup= new DeclarationsSearchGroup(fEditor);
+		fDeclarationsGroup= new DeclarationsSearchGroup(fEditor);
 //		fImplementorsGroup= new ImplementorsSearchGroup(fEditor);
 		fOccurrencesGroup= new OccurrencesSearchGroup(fEditor);
 	}
@@ -90,7 +90,7 @@ public class RubySearchActionGroup extends ActionGroup {
 		fReferencesGroup= new ReferencesSearchGroup(site);
 		fReadAccessGroup= new ReadReferencesSearchGroup(site);
 //		fWriteAccessGroup= new WriteReferencesSearchGroup(site);
-//		fDeclarationsGroup= new DeclarationsSearchGroup(site);
+		fDeclarationsGroup= new DeclarationsSearchGroup(site);
 //		fImplementorsGroup= new ImplementorsSearchGroup(site);
 		fOccurrencesGroup= new OccurrencesSearchGroup(site);
 	}
@@ -100,7 +100,7 @@ public class RubySearchActionGroup extends ActionGroup {
 	 */
 	public void setContext(ActionContext context) {
 		fReferencesGroup.setContext(context);
-//		fDeclarationsGroup.setContext(context);
+		fDeclarationsGroup.setContext(context);
 //		fImplementorsGroup.setContext(context);
 		fReadAccessGroup.setContext(context);
 //		fWriteAccessGroup.setContext(context);
@@ -113,7 +113,7 @@ public class RubySearchActionGroup extends ActionGroup {
 	public void fillActionBars(IActionBars actionBar) {
 		super.fillActionBars(actionBar);
 		fReferencesGroup.fillActionBars(actionBar);
-//		fDeclarationsGroup.fillActionBars(actionBar);
+		fDeclarationsGroup.fillActionBars(actionBar);
 //		fImplementorsGroup.fillActionBars(actionBar);
 		fReadAccessGroup.fillActionBars(actionBar);
 //		fWriteAccessGroup.fillActionBars(actionBar);
@@ -128,7 +128,7 @@ public class RubySearchActionGroup extends ActionGroup {
 		
 		if(PreferenceConstants.getPreferenceStore().getBoolean(PreferenceConstants.SEARCH_USE_REDUCED_MENU)) {
 			fReferencesGroup.fillContextMenu(menu);
-//			fDeclarationsGroup.fillContextMenu(menu);
+			fDeclarationsGroup.fillContextMenu(menu);
 
 			if (fEditor == null) {
 //				fImplementorsGroup.fillContextMenu(menu);
@@ -146,7 +146,7 @@ public class RubySearchActionGroup extends ActionGroup {
 			}
 			
 			fReferencesGroup.fillContextMenu(target);
-//			fDeclarationsGroup.fillContextMenu(target);
+			fDeclarationsGroup.fillContextMenu(target);
 //			fImplementorsGroup.fillContextMenu(target);
 			fReadAccessGroup.fillContextMenu(target);
 //			fWriteAccessGroup.fillContextMenu(target);
@@ -168,7 +168,7 @@ public class RubySearchActionGroup extends ActionGroup {
 	 */
 	public void dispose() {
 		fReferencesGroup.dispose();
-//		fDeclarationsGroup.dispose();
+		fDeclarationsGroup.dispose();
 //		fImplementorsGroup.dispose();
 		fReadAccessGroup.dispose();
 //		fWriteAccessGroup.dispose();
