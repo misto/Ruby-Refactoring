@@ -132,6 +132,7 @@ public class SearchMessages extends NLS {
 	public static String group_search;
 	public static String group_occurrences;
 	public static String group_declarations;
+	public static String group_writeReferences;
 	
 	public static String RubyElementAction_operationUnavailable_title;
 	public static String RubyElementAction_operationUnavailable_generic;
@@ -182,6 +183,13 @@ public class SearchMessages extends NLS {
 	public static String Search_FindDeclarationsInProjectAction_tooltip;
 	public static String Search_FindDeclarationsInWorkingSetAction_label;
 	public static String Search_FindDeclarationsInWorkingSetAction_tooltip;
+
+	public static String Search_FindWriteReferencesAction_label;
+	public static String Search_FindWriteReferencesAction_tooltip;
+	public static String Search_FindWriteReferencesInWorkingSetAction_label;
+	public static String Search_FindWriteReferencesInWorkingSetAction_tooltip;
+	public static String Search_FindWriteReferencesInProjectAction_label;
+	public static String Search_FindWriteReferencesInProjectAction_tooltip;
 
 	static {
 		NLS.initializeMessages(BUNDLE_NAME, SearchMessages.class);

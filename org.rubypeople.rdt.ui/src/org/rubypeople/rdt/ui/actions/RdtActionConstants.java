@@ -60,7 +60,6 @@ public class RdtActionConstants {
 	 */
 	public static final String FIND_OCCURRENCES_IN_FILE= "org.rubypeople.rdt.ui.actions.OccurrencesInFile"; //$NON-NLS-1$
 	
-	
 	/**
 	 * Search menu: name of standard Find Declarations in Workspace global action
 	 * (value <code>"org.rubypeople.rdt.ui.actions.DeclarationsInWorkspace"</code>).
@@ -79,4 +78,23 @@ public class RdtActionConstants {
 	 */
 	public static final String FIND_DECLARATIONS_IN_WORKING_SET= "org.rubypeople.rdt.ui.actions.DeclarationsInWorkingSet"; //$NON-NLS-1$
 
+	/**
+	 * Search menu: name of standard Find Write Access in Workspace global action
+	 * (value <code>"org.rubypeople.rdt.ui.actions.WriteAccessInWorkspace"</code>).
+	 */
+	public static final String FIND_WRITE_ACCESS_IN_WORKSPACE= "org.rubypeople.rdt.ui.actions.WriteAccessInWorkspace"; //$NON-NLS-1$
+
+	/**
+	 * Search menu: name of standard Find Write Access in Project global action
+	 * (value <code>"org.rubypeople.rdt.ui.actions.WriteAccessInProject"</code>).
+	 */
+	public static final String FIND_WRITE_ACCESS_IN_PROJECT= "org.rubypeople.rdt.ui.actions.WriteAccessInProject"; //$NON-NLS-1$
+
+	/**
+	 * Search menu: name of standard Find Read Access in Working Set global action
+	 * (value <code>"org.rubypeople.rdt.ui.actions.WriteAccessInWorkingSet"</code>).
+	 */
+	public static final String FIND_WRITE_ACCESS_IN_WORKING_SET= "org.rubypeople.rdt.ui.actions.WriteAccessInWorkingSet"; //$NON-NLS-1$
+	
+	
 }
