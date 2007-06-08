@@ -90,9 +90,6 @@ public class RenameLocalConditionChecker extends RefactoringConditionChecker {
 		} else {
 			config.setSelectedMethod(SelectionNodeProvider.getEnclosingScope(rootNode, selectedNode));
 		}
-		if(config.getSelectedMethod() != null) {
-			config.setLocalNames(NodeUtil.getScope(config.getSelectedMethod()).getVariables());
-		}
 	}
 	
 	@Override

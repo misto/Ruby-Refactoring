@@ -107,7 +107,7 @@ public class SplittedVariableRenamer implements ISplittedVariableRenamer {
 				return null;
 			}
 			
-			final ArrayList<Node> nodes = renamer.replaceVariableNamesInNode(scopeNode, NodeUtil.getScope(scopeNode).getVariables());
+			final ArrayList<Node> nodes = renamer.replaceVariableNamesInNode(scopeNode);
 			for (Node node : nodes) {
 				edits.add(new SingleLocalVariableEdit(node, NodeUtil.getScope(scopeNode).getVariables()));	
 			}

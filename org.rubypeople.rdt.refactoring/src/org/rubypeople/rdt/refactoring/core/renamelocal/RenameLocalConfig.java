@@ -28,17 +28,16 @@
 
 package org.rubypeople.rdt.refactoring.core.renamelocal;
 
-import org.jruby.ast.MethodDefNode;
 import org.jruby.ast.Node;
 import org.jruby.ast.types.INameNode;
 import org.rubypeople.rdt.refactoring.core.rename.RenameConfig;
 import org.rubypeople.rdt.refactoring.documentprovider.IDocumentProvider;
+import org.rubypeople.rdt.refactoring.util.NodeUtil;
 
 public class RenameLocalConfig extends RenameConfig {
 
 	private Node selectedNode;
 	private Node selectedMethod;
-	private String[] localNames;
 	private RenameLocalEditProvider editProvider;
 
 	public RenameLocalConfig(IDocumentProvider docProvider, int caretPosition) {
@@ -48,18 +47,12 @@ public class RenameLocalConfig extends RenameConfig {
 	public String getSelectedNodeName() {
 		if (selectedNode instanceof INameNode) {
 			return ((INameNode) selectedNode).getName();
-		} else if (selectedNode == null && selectedMethod instanceof MethodDefNode) {
-			return localNames[((MethodDefNode) selectedMethod).getArgsNode().getRestArg()];
 		}
 		return ""; //$NON-NLS-1$
 	}
 
 	public boolean hasSelectedMethod() {
 		return selectedMethod != null;
-	}
-
-	public boolean hasLocalNames() {
-		return localNames.length > 2;
 	}
 
 	public Node getSelectedNode() {
@@ -71,7 +64,7 @@ public class RenameLocalConfig extends RenameConfig {
 	}
 
 	public String[] getLocalNames() {
-		return localNames;
+		return NodeUtil.getScope(getSelectedMethod()).getVariables();
 	}
 
 	public void setLocalVariablesEditProvider(RenameLocalEditProvider editProvider) {
@@ -88,10 +81,6 @@ public class RenameLocalConfig extends RenameConfig {
 
 	public void setSelectedMethod(Node selectedMethod) {
 		this.selectedMethod = selectedMethod;
-	}
-
-	public void setLocalNames(String[] localNames) {
-		this.localNames = localNames.clone();
 	}
 
 	public boolean hasSelectedNode() {

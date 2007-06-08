@@ -42,7 +42,7 @@ public class DynamicVariableRenamer extends VariableRenamer {
 		super(oldName, newName, abort);
 	}
 
-	public ArrayList<Node> replaceVariableNamesInNode(Node n, String[] localNames) {
+	public ArrayList<Node> replaceVariableNamesInNode(Node n) {
 		ArrayList<Node> renamed = new ArrayList<Node>();
 		
 		if (n instanceof MethodDefNode) {

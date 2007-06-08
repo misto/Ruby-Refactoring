@@ -90,7 +90,7 @@ public class RenameLocalEditProvider extends MultiEditProvider implements Observ
 			renamer = new VariableRenamer(selectedVariableName, newVariableName, new AbortOnMethodDef());
 		}
 
-		ArrayList<Node> changedNodes = renamer.replaceVariableNamesInNode(config.getSelectedMethod(), config.getLocalNames());
+		ArrayList<Node> changedNodes = renamer.replaceVariableNamesInNode(config.getSelectedMethod());
 		return changedNodes;
 	}
 

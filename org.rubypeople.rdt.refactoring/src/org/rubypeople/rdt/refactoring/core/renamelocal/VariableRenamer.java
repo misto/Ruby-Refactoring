@@ -53,7 +53,7 @@ public class VariableRenamer {
 		this.abort = abort;
 	}
 
-	public ArrayList<Node> replaceVariableNamesInNode(Node n, String[] localNames) {
+	public ArrayList<Node> replaceVariableNamesInNode(Node n) {
 
 		ArrayList<Node> nodes = new ArrayList<Node>();
 
