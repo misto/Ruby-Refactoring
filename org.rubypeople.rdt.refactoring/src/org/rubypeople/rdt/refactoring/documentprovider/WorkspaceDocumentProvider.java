@@ -41,6 +41,7 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.Path;
 import org.rubypeople.rdt.core.RubyModelException;
 import org.rubypeople.rdt.internal.core.util.Util;
+import org.rubypeople.rdt.internal.ui.RubyPlugin;
 
 public class WorkspaceDocumentProvider extends DocumentProvider {
 
@@ -93,7 +94,7 @@ public class WorkspaceDocumentProvider extends DocumentProvider {
 				}
 			}
 		} catch (CoreException e) {
-			e.printStackTrace();
+			RubyPlugin.log(e);
 		}
 	}
 
@@ -103,7 +104,7 @@ public class WorkspaceDocumentProvider extends DocumentProvider {
 			return new String(Util.getResourceContentsAsCharArray(currentFile));
 		}
 		catch (RubyModelException e) {
-			/** Resource does not exist, that happens if a library file is included from an external location.**/
+			/* Resource does not exist, that happens if a library file is included from an external location.*/
 		}
 		return null;
 	}

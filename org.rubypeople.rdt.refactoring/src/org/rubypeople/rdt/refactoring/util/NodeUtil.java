@@ -28,7 +28,6 @@
 
 package org.rubypeople.rdt.refactoring.util;
 
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.List;
 
@@ -39,6 +38,7 @@ import org.jruby.ast.Node;
 import org.jruby.lexer.yacc.IDESourcePosition;
 import org.jruby.lexer.yacc.ISourcePosition;
 import org.jruby.parser.StaticScope;
+import org.rubypeople.rdt.internal.ui.RubyPlugin;
 
 public class NodeUtil {
 	public static boolean hasScope(Node node) {
@@ -55,16 +55,8 @@ public class NodeUtil {
 		try {
 			Method method = node.getClass().getMethod("getBodyNode", new Class[]{}); //$NON-NLS-1$
 			return (Node) method.invoke(node, new Object[]{});
-		} catch (SecurityException e) {
-			e.printStackTrace();
-		} catch (NoSuchMethodException e) {
-			e.printStackTrace();
-		} catch (IllegalArgumentException e) {
-			e.printStackTrace();
-		} catch (IllegalAccessException e) {
-			e.printStackTrace();
-		} catch (InvocationTargetException e) {
-			e.printStackTrace();
+		} catch (Exception e) {
+			RubyPlugin.log(e);
 		}
 		return null;
 	}
@@ -79,16 +71,8 @@ public class NodeUtil {
 		try {
 			Method method = node.getClass().getMethod(methodName, new Class[]{});
 			return (StaticScope) method.invoke(node, new Object[]{});
-		} catch (SecurityException e) {
-			e.printStackTrace();
-		} catch (NoSuchMethodException e) {
-			e.printStackTrace();
-		} catch (IllegalArgumentException e) {
-			e.printStackTrace();
-		} catch (IllegalAccessException e) {
-			e.printStackTrace();
-		} catch (InvocationTargetException e) {
-			e.printStackTrace();
+		} catch (Exception e) {
+			RubyPlugin.log(e);
 		}
 		return null;
 	}

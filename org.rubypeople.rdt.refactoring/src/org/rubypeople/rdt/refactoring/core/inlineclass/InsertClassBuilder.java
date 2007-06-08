@@ -43,6 +43,7 @@ import org.eclipse.text.edits.MultiTextEdit;
 import org.eclipse.text.edits.TextEdit;
 import org.jruby.ast.Node;
 import org.jruby.lexer.yacc.ISourcePosition;
+import org.rubypeople.rdt.internal.ui.RubyPlugin;
 import org.rubypeople.rdt.refactoring.core.SelectionNodeProvider;
 import org.rubypeople.rdt.refactoring.core.renamefield.FieldRenamer;
 import org.rubypeople.rdt.refactoring.core.renamefield.RenameFieldConditionChecker;
@@ -212,7 +213,7 @@ public class InsertClassBuilder {
 		try {
 			classNode = SelectionNodeProvider.getSelectedClassNode(rootNode, 1);
 		} catch (NoClassNodeException e) {
-			e.printStackTrace();
+			RubyPlugin.log(e);
 			return constructorDeleters.toArray(new TextEdit[constructorDeleters.size()]);
 		}
 		Collection<MethodNodeWrapper> constructors = classNode.getExistingConstructors();
@@ -229,9 +230,9 @@ public class InsertClassBuilder {
 		try {
 			prechanges.apply(inlinedPart);
 		} catch (MalformedTreeException e) {
-			e.printStackTrace();
+			RubyPlugin.log(e);
 		} catch (BadLocationException e) {
-			e.printStackTrace();
+			RubyPlugin.log(e);
 		}
 
 		return inlinedPart.get();

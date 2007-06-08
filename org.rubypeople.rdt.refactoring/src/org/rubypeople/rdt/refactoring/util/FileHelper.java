@@ -53,7 +53,7 @@ public class FileHelper {
 		try {
 			return getReaderContent(new FileReader(fileName));
 		} catch (FileNotFoundException e) {
-			e.printStackTrace();
+			RubyPlugin.log(e);
 		}
 		return null;
 	}
@@ -68,7 +68,7 @@ public class FileHelper {
 			}
 			return contentBuilder.toString();
 		} catch (IOException e) {
-			e.printStackTrace();
+			RubyPlugin.log(e);
 		}
 		return null;
 	}
@@ -98,7 +98,7 @@ public class FileHelper {
 				}});
 			
 		} catch (CoreException e) {
-			e.printStackTrace();
+			RubyPlugin.log(e);
 		}
 		
 		return docs;

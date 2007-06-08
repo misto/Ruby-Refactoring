@@ -39,6 +39,7 @@ import org.eclipse.ui.internal.handlers.CommandLegacyActionWrapper;
 import org.rubypeople.rdt.core.RubyModelException;
 import org.rubypeople.rdt.internal.core.Member;
 import org.rubypeople.rdt.internal.core.MemberElementInfo;
+import org.rubypeople.rdt.internal.ui.RubyPlugin;
 import org.rubypeople.rdt.internal.ui.rubyeditor.RubyEditor;
 
 public class TextSelectionProvider {
@@ -94,7 +95,7 @@ public class TextSelectionProvider {
 				end = info.getNameSourceEnd()+1;
 				caret = start;
 			} catch (RubyModelException e) {
-				e.printStackTrace();
+				RubyPlugin.log(e);
 			}
 		} else if (selectedObject instanceof IFile) {
 			activeDocument = ((IFile) selectedObject).getFullPath().toString();

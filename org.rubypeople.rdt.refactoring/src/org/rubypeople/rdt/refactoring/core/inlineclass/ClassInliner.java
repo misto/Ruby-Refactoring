@@ -42,6 +42,7 @@ import org.jruby.ast.LocalAsgnNode;
 import org.jruby.ast.Node;
 import org.jruby.ast.types.INameNode;
 import org.jruby.lexer.yacc.ISourcePosition;
+import org.rubypeople.rdt.internal.ui.RubyPlugin;
 import org.rubypeople.rdt.refactoring.core.NodeFactory;
 import org.rubypeople.rdt.refactoring.core.NodeProvider;
 import org.rubypeople.rdt.refactoring.core.SelectionNodeProvider;
@@ -78,7 +79,6 @@ public class ClassInliner implements IMultiFileEditProvider {
 				Node rootNode = provider.getRootNode();
 				return SelectionNodeProvider.getSelectedClassNode(rootNode, 1).getFirstPartialClassNode().getClassBodyNode();
 			} catch (NoClassNodeException e) {
-		
 				return provider.getRootNode();
 			}
 		}
@@ -304,7 +304,7 @@ public class ClassInliner implements IMultiFileEditProvider {
 			return SelectionNodeProvider.getSelectedClassNode(rootNode, config.getCaretPosition()).getFirstPartialClassNode();
 
 		} catch (NoClassNodeException e) {
-			e.printStackTrace();
+			RubyPlugin.log(e);
 			return null;
 		}
 	}

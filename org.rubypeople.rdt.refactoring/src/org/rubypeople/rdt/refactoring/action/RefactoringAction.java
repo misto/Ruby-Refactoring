@@ -34,6 +34,7 @@ import org.eclipse.jface.action.Action;
 import org.eclipse.ltk.ui.refactoring.RefactoringWizardOpenOperation;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.PlatformUI;
+import org.rubypeople.rdt.internal.ui.RubyPlugin;
 import org.rubypeople.rdt.refactoring.core.RubyRefactoring;
 import org.rubypeople.rdt.refactoring.core.TextSelectionProvider;
 import org.rubypeople.rdt.refactoring.ui.RubyRefactoringWizard;
@@ -68,7 +69,7 @@ public class RefactoringAction extends Action {
 				op.run(shell, refactoring.getName());
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
+			RubyPlugin.log(e);
 		}
 	}
 }

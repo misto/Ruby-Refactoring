@@ -80,9 +80,9 @@ public class HsrFormatter
 			getFormatter().format(0, code, 0, code.length(), 0, Character.toString(Constants.NL)).apply(doc);
 			return doc.get();	
 		} catch (MalformedTreeException e) {
-			e.printStackTrace();
+			RubyPlugin.log(e);
 		} catch (BadLocationException e) {
-			e.printStackTrace();
+			RubyPlugin.log(e);
 		}
 		return ""; //$NON-NLS-1$
 	}

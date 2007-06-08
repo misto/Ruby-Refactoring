@@ -44,6 +44,7 @@ import org.jruby.ast.Node;
 import org.jruby.ast.SelfNode;
 import org.jruby.ast.visitor.rewriter.ReWriteVisitor;
 import org.jruby.parser.LocalStaticScope;
+import org.rubypeople.rdt.internal.ui.RubyPlugin;
 import org.rubypeople.rdt.refactoring.core.NodeFactory;
 import org.rubypeople.rdt.refactoring.core.NodeProvider;
 import org.rubypeople.rdt.refactoring.editprovider.InsertEditProvider;
@@ -93,9 +94,9 @@ public class InsertMethodEditProvider extends InsertEditProvider {
 		try {
 			getFieldInsertionEdit(docStr).apply(doc);
 		} catch (MalformedTreeException e) {
-			e.printStackTrace();
+			RubyPlugin.log(e);
 		} catch (BadLocationException e) {
-			e.printStackTrace();
+			RubyPlugin.log(e);
 		}
 		MethodDefNode methodNode = (MethodDefNode) NodeProvider.unwrap(NodeProvider.getRootNode("tempFile", doc.get()).getBodyNode()); //$NON-NLS-1$
 		return createMethodNodeWithAdditionalArg(methodNode);

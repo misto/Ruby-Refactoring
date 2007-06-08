@@ -19,6 +19,7 @@ import org.jruby.ast.ModuleNode;
 import org.jruby.ast.Node;
 import org.jruby.ast.SClassNode;
 import org.jruby.lexer.yacc.ISourcePosition;
+import org.rubypeople.rdt.internal.ui.RubyPlugin;
 import org.rubypeople.rdt.refactoring.core.NodeProvider;
 import org.rubypeople.rdt.refactoring.documentprovider.IDocumentProvider;
 import org.rubypeople.rdt.refactoring.exception.NoClassNodeException;
@@ -62,7 +63,7 @@ public class ClassNodeProvider {
 				addEnclosingModules(partialClassNode, moduleNodes);
 				addPartialClassNode(partialClassNode, classNodeWrappers);
 			} catch (NoClassNodeException e) {
-				e.printStackTrace();
+				RubyPlugin.log(e);
 			}
 		}
 	}

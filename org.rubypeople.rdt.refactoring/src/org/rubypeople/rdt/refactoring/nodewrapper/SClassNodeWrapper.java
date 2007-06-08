@@ -38,6 +38,7 @@ import org.jruby.ast.Node;
 import org.jruby.ast.SClassNode;
 import org.jruby.ast.VCallNode;
 import org.jruby.ast.types.INameNode;
+import org.rubypeople.rdt.internal.ui.RubyPlugin;
 import org.rubypeople.rdt.refactoring.core.NodeProvider;
 import org.rubypeople.rdt.refactoring.exception.UnknownReferenceException;
 
@@ -69,7 +70,7 @@ public class SClassNodeWrapper extends PartialClassNodeWrapper {
 					return getModulePrefix() + ((INameNode) referencedNode).getName();
 				}
 			} catch (UnknownReferenceException e) {
-				e.printStackTrace();
+				RubyPlugin.log(e);
 			}
 		} else if (receiverNode instanceof VCallNode) {
 			VCallNode vCallNode = (VCallNode) receiverNode;

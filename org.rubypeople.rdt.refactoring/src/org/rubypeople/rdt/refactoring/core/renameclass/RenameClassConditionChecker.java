@@ -55,7 +55,10 @@ public class RenameClassConditionChecker extends RefactoringConditionChecker {
 			if(!NodeUtil.positionIsInNode(config.getCaretPosition(), ((ClassNode) classNode.getWrappedNode()).getCPath())) {
 				return;
 			}
-		} catch (NoClassNodeException e) {return;}
+		} catch (NoClassNodeException e) {
+			/* don't care*/
+			return;
+		}
 		
 		String modulePrefix = classNode.getFirstPartialClassNode().getModulePrefix();
 		if("".equals(modulePrefix)) {
