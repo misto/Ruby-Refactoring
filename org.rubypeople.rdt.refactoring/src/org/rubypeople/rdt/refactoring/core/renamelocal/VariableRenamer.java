@@ -30,7 +30,6 @@ package org.rubypeople.rdt.refactoring.core.renamelocal;
 
 import java.util.ArrayList;
 
-import org.jruby.ast.ArgsNode;
 import org.jruby.ast.ArgumentNode;
 import org.jruby.ast.BlockArgNode;
 import org.jruby.ast.LocalAsgnNode;
@@ -54,12 +53,6 @@ public class VariableRenamer {
 		this.abort = abort;
 	}
 
-	private boolean isRenamedVariableRestArg(ArgsNode args, String[] localNames) {
-		return args.getRestArg() > 0 
-				&& args.getRestArg() < localNames.length
-				&& localNames[args.getRestArg()].equals(oldName);
-	}
-
 	public ArrayList<Node> replaceVariableNamesInNode(Node n, String[] localNames) {
 
 		ArrayList<Node> nodes = new ArrayList<Node>();
@@ -67,18 +60,16 @@ public class VariableRenamer {
 		// the name of the MethodDefNode is stored in an argumentnode, which we do
 		// not handle, so we have to skip
 		if (n instanceof MethodDefNode) {
-			nodes.addAll(replaceVariableNames(((MethodDefNode) n).getArgsNode()));
-			nodes.addAll(replaceVariableNames(((MethodDefNode) n).getBodyNode()));
+			MethodDefNode methodDef = (MethodDefNode) n;
+			nodes.addAll(replaceVariableNames(methodDef.getArgsNode()));
+			nodes.addAll(replaceVariableNames(methodDef.getBodyNode()));
+			
+			int index;
+			if((index = nodes.indexOf(methodDef.getArgsNode().getRestArgNode())) >= 0) {
+				((ArgumentNode) nodes.get(index)).setName("*" + newName);
+			}
 		} else {
 			nodes.addAll(replaceVariableNames(n));
-		}
-
-		// rewrite the argument-list if we are renaming
-		if (n instanceof MethodDefNode && isRenamedVariableRestArg(((MethodDefNode) n).getArgsNode(), localNames)) {
-			MethodDefNode defn = ((MethodDefNode) n);
-			nodes.add(defn.getArgsNode());
-
-			localNames[defn.getArgsNode().getRestArg()] = newName;
 		}
 
 		return nodes;

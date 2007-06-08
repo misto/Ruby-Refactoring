@@ -51,7 +51,7 @@ public class MethodBodyStatementReplacer implements IMethodBodyStatementReplacer
 
 	public DocumentProvider replaceSelfWithObject(final DocumentProvider doc, final String object) {
 		Collection<Node> selfNodes = null;
-		DocumentProvider result = new StringDocumentProvider(doc.getActiveFileName(), doc.getActiveFileContent() + "\n");
+		DocumentProvider result = new StringDocumentProvider(doc.getActiveFileName(), doc.getActiveFileContent());
 		do {
 			RootNode rootNode = result.getRootNode();
 			Node bodyNode = rootNode.getBodyNode();
