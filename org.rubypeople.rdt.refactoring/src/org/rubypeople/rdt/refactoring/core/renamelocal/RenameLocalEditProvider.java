@@ -36,6 +36,7 @@ import java.util.Observer;
 import org.jruby.ast.DAsgnNode;
 import org.jruby.ast.DVarNode;
 import org.jruby.ast.MethodDefNode;
+import org.jruby.ast.NewlineNode;
 import org.jruby.ast.Node;
 import org.rubypeople.rdt.refactoring.editprovider.EditProvider;
 import org.rubypeople.rdt.refactoring.editprovider.MultiEditProvider;
@@ -106,7 +107,7 @@ public class RenameLocalEditProvider extends MultiEditProvider implements Observ
 	protected Collection<EditProvider> getEditProviders() {
 		Collection<EditProvider> edits = new ArrayList<EditProvider>();
 		for (Node n : renameVariables()) {
-			edits.add(new SimpleNodeEditProvider(n));
+			edits.add(new SimpleNodeEditProvider(new NewlineNode(n.getPosition(), n)));
 		}
 		return edits;
 	}
