@@ -28,12 +28,5 @@
 
 package org.rubypeople.rdt.refactoring.action;
 
-import org.rubypeople.rdt.refactoring.core.convertlocaltofield.ConvertLocalToFieldRefactoring;
 
-public class ConvertTempToFieldAction extends WorkbenchWindowActionDelegate {
-
-	@Override
-	public void run() {
-		run(ConvertLocalToFieldRefactoring.class, ConvertLocalToFieldRefactoring.NAME);
-	}
-}
+public class ConvertTempToFieldAction extends WorkbenchWindowActionDelegate {}

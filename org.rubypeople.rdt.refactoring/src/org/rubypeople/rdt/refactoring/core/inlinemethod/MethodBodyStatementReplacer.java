@@ -36,6 +36,7 @@ import org.jruby.ast.InstAsgnNode;
 import org.jruby.ast.InstVarNode;
 import org.jruby.ast.Node;
 import org.jruby.ast.ReturnNode;
+import org.jruby.ast.RootNode;
 import org.jruby.ast.SelfNode;
 import org.jruby.ast.VCallNode;
 import org.jruby.ast.types.INameNode;
@@ -50,9 +51,11 @@ public class MethodBodyStatementReplacer implements IMethodBodyStatementReplacer
 
 	public DocumentProvider replaceSelfWithObject(final DocumentProvider doc, final String object) {
 		Collection<Node> selfNodes = null;
-		DocumentProvider result = new StringDocumentProvider(doc);
+		DocumentProvider result = new StringDocumentProvider(doc.getActiveFileName(), doc.getActiveFileContent() + "\n");
 		do {
-			selfNodes = NodeProvider.gatherNodesOfTypeInAktScopeNode(result.getRootNode().getBodyNode(), SelfNode.class);
+			RootNode rootNode = result.getRootNode();
+			Node bodyNode = rootNode.getBodyNode();
+			selfNodes = NodeProvider.gatherNodesOfTypeInAktScopeNode(bodyNode, SelfNode.class);
 			if(selfNodes.isEmpty()) {
 				continue;
 			}

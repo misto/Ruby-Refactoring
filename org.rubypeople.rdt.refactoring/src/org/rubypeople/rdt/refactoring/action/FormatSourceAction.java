@@ -28,12 +28,5 @@
 
 package org.rubypeople.rdt.refactoring.action;
 
-import org.rubypeople.rdt.refactoring.core.formatsource.FormatSourceRefactoring;
 
-public class FormatSourceAction extends WorkbenchWindowActionDelegate {
-
-	@Override
-	public void run() {
-		run(FormatSourceRefactoring.class, FormatSourceRefactoring.NAME);
-	}
-}
+public class FormatSourceAction extends WorkbenchWindowActionDelegate {}

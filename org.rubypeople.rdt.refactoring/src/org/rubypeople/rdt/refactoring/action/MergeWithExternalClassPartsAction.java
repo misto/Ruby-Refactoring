@@ -30,12 +30,5 @@
 
 package org.rubypeople.rdt.refactoring.action;
 
-import org.rubypeople.rdt.refactoring.core.mergewithexternalclassparts.MergeWithExternalClassPartsRefactoring;
 
-public class MergeWithExternalClassPartsAction extends WorkbenchWindowActionDelegate {
-
-	@Override
-	public void run() {
-		run(MergeWithExternalClassPartsRefactoring.class, MergeWithExternalClassPartsRefactoring.NAME);
-	}
-}
+public class MergeWithExternalClassPartsAction extends WorkbenchWindowActionDelegate {}

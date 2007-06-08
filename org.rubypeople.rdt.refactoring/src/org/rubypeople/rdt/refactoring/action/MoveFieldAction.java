@@ -30,12 +30,5 @@
 
 package org.rubypeople.rdt.refactoring.action;
 
-import org.rubypeople.rdt.refactoring.core.movefield.MoveFieldRefactoring;
 
-public class MoveFieldAction extends WorkbenchWindowActionDelegate {
-
-	@Override
-	public void run() {
-		run(MoveFieldRefactoring.class, MoveFieldRefactoring.NAME);
-	}
-}
+public class MoveFieldAction extends WorkbenchWindowActionDelegate {}

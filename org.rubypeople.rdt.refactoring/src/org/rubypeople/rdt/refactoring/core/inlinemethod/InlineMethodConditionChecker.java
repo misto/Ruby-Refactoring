@@ -122,6 +122,7 @@ public class InlineMethodConditionChecker extends RefactoringConditionChecker {
 			final String name = ((INameNode)config.getSelectedCall().getReceiverNode()).getName();
 			config.setMethodDefDoc(bodyReplacer.replaceSelfWithObject(config.getMethodDefDoc(), name));
 			config.setMethodDefDoc(bodyReplacer.prefixCallsWithObject(config.getMethodDefDoc(),  new IncludedClassesProvider(doc), config.getClassName(), name));
+			
 			Collection<String> usedMembers = new HashSet<String>();
 			config.setMethodDefDoc(bodyReplacer.replaceVarsWithAccessor(config.getMethodDefDoc(), name, usedMembers));
 			config.setUsedMembers(usedMembers);

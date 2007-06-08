@@ -28,10 +28,5 @@
 
 package org.rubypeople.rdt.refactoring.action;
 
-import org.rubypeople.rdt.refactoring.core.generateaccessors.GenerateAccessorsRefactoring;
 
-public class GenerateAccessorsAction extends WorkbenchWindowActionDelegate {
-	public void run() {
-		run(GenerateAccessorsRefactoring.class, GenerateAccessorsRefactoring.NAME);
-	}
-}
+public class GenerateAccessorsAction extends WorkbenchWindowActionDelegate {}

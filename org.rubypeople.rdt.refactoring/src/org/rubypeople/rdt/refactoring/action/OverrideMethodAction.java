@@ -28,12 +28,5 @@
 
 package org.rubypeople.rdt.refactoring.action;
 
-import org.rubypeople.rdt.refactoring.core.overridemethod.OverrideMethodRefactoring;
 
-public class OverrideMethodAction extends WorkbenchWindowActionDelegate {
-
-	@Override
-	public void run() {
-		run(OverrideMethodRefactoring.class, OverrideMethodRefactoring.NAME);
-	}
-}
+public class OverrideMethodAction extends WorkbenchWindowActionDelegate {}

@@ -30,13 +30,5 @@
 
 package org.rubypeople.rdt.refactoring.action;
 
-import org.rubypeople.rdt.refactoring.core.inlinemethod.InlineMethodRefactoring;
 
-public class InlineMethodAction extends WorkbenchWindowActionDelegate {
-
-	@Override
-	public void run() {
-		run(InlineMethodRefactoring.class, InlineMethodRefactoring.NAME);
-	}
-
-}
+public class InlineMethodAction extends WorkbenchWindowActionDelegate {}

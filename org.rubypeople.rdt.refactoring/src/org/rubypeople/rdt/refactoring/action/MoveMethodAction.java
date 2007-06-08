@@ -30,12 +30,5 @@
 
 package org.rubypeople.rdt.refactoring.action;
 
-import org.rubypeople.rdt.refactoring.core.movemethod.MoveMethodRefactoring;
 
-public class MoveMethodAction extends WorkbenchWindowActionDelegate {
-
-	@Override
-	public void run() {
-		run(MoveMethodRefactoring.class, MoveMethodRefactoring.NAME);
-	}
-}
+public class MoveMethodAction extends WorkbenchWindowActionDelegate {}

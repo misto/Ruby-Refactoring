@@ -30,13 +30,5 @@
 
 package org.rubypeople.rdt.refactoring.action;
 
-import org.rubypeople.rdt.refactoring.core.encapsulatefield.EncapsulateFieldRefactoring;
 
-public class EncapsulateFieldAction extends WorkbenchWindowActionDelegate {
-
-	@Override
-	public void run() {
-		run(EncapsulateFieldRefactoring.class, EncapsulateFieldRefactoring.NAME);
-	}
-
-}
+public class EncapsulateFieldAction extends WorkbenchWindowActionDelegate {}

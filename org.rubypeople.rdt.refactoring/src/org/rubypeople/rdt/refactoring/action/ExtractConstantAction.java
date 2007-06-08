@@ -9,13 +9,5 @@
  */
 package org.rubypeople.rdt.refactoring.action;
 
-import org.rubypeople.rdt.internal.refactoring.RefactoringMessages;
-import org.rubypeople.rdt.refactoring.core.extractconstant.ExtractConstantRefactoring;
 
-public class ExtractConstantAction extends WorkbenchWindowActionDelegate {
-
-	@Override
-	public void run() {
-		run(ExtractConstantRefactoring.class, RefactoringMessages.ExtractConstantAction_label);
-	}
-}
+public class ExtractConstantAction extends WorkbenchWindowActionDelegate {}

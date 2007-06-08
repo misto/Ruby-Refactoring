@@ -231,7 +231,7 @@
             </enablement>
          </action>
          <action
-               class="org.rubypeople.rdt.refactoring.action.InlineTempAction"
+               class="org.rubypeople.rdt.refactoring.action.InlineLocalAction"
                definitionId="org.rubypeople.rdt.refactoring.command.InlineTemp"
                id="org.rubypeople.rdt.refactoring.inlineTemp"
                label="%rubyRefactoring.InlineTempLabel"
@@ -448,7 +448,7 @@
             label="%rubyRefactoring.ConvertTempToFieldLabel"
             menubarPath="additions" />
       <action
-            class="org.rubypeople.rdt.refactoring.action.InlineTempAction"
+            class="org.rubypeople.rdt.refactoring.action.InlineLocalAction"
             id="org.rubypeople.rdt.refactoring.action.InlineTempAction"
             label="%rubyRefactoring.InlineTempLabel"
             menubarPath="additions" />

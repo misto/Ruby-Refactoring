@@ -12,6 +12,7 @@
  * rights and limitations under the License.
  *
  * Copyright (C) 2006 Lukas Felber <lfelber@hsr.ch>
+ * Copyright (C) 2007 Mirko Stocker <me@misto.ch>
  * 
  * Alternatively, the contents of this file may be used under the terms of
  * either of the GNU General Public License Version 2 or later (the "GPL"),
@@ -39,13 +40,32 @@ import org.rubypeople.rdt.refactoring.core.TextSelectionProvider;
 
 public abstract class WorkbenchWindowActionDelegate implements IWorkbenchWindowActionDelegate, IEditorActionDelegate {
 
-	private TextSelectionProvider selectionProvider;
-
-	abstract void run();
-
 	public void run(IAction action) {
-		selectionProvider = new TextSelectionProvider(action);
-		run();
+		
+		String refactoringName = getClass().getSimpleName().replaceFirst("Action$", "");
+		String fullRefactoringName = "org.rubypeople.rdt.refactoring.core." + refactoringName.toLowerCase() + "." +  refactoringName + "Refactoring";
+		
+		Class<? extends RubyRefactoring> klass = null;
+		try {
+			klass = (Class<? extends RubyRefactoring>) Class.forName(fullRefactoringName);
+		} catch (ClassNotFoundException e) {
+			e.printStackTrace();
+		}
+		
+		String name = "";
+		try {
+			name = (String) klass.getDeclaredField("NAME").get(klass);
+		} catch (IllegalArgumentException e) {
+			e.printStackTrace();
+		} catch (SecurityException e) {
+			e.printStackTrace();
+		} catch (IllegalAccessException e) {
+			e.printStackTrace();
+		} catch (NoSuchFieldException e) {
+			e.printStackTrace();
+		}
+		
+		new RefactoringAction(klass, name, new TextSelectionProvider(action)).run();
 	}
 
 	public void dispose() {
@@ -55,11 +75,6 @@ public abstract class WorkbenchWindowActionDelegate implements IWorkbenchWindowA
 	}
 
 	public void selectionChanged(IAction action, ISelection selection) {
-	}
-
-	protected void run(Class<? extends RubyRefactoring> refactoringClass, String refactoringName) {
-		RefactoringAction delegateAction = new RefactoringAction(refactoringClass, refactoringName, selectionProvider);
-		delegateAction.run();
 	}
 
 	public void setActiveEditor(IAction action, IEditorPart targetEditor) {

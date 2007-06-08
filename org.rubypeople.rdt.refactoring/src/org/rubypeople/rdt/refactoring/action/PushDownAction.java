@@ -28,11 +28,5 @@
 
 package org.rubypeople.rdt.refactoring.action;
 
-import org.rubypeople.rdt.refactoring.core.pushdown.PushDownRefactoring;
 
-public class PushDownAction extends WorkbenchWindowActionDelegate {
-
-	public void run() {
-		run(PushDownRefactoring.class, PushDownRefactoring.NAME);
-	}
-}
+public class PushDownAction extends WorkbenchWindowActionDelegate {}

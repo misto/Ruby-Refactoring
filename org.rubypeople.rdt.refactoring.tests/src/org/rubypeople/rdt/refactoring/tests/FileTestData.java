@@ -87,7 +87,11 @@ public class FileTestData extends FilePropertyData {
 	}
 
 	public String getFileContent(String currentFileName) {
-		return FileHelper.getFileContent(TestsPlugin.getFile(currentFileName));
+		String file = TestsPlugin.getFile(currentFileName);
+		if(file == null) {
+			return "";
+		}
+		return FileHelper.getFileContent(file);
 	}
 
 	public Collection<String> getFileNames() {
