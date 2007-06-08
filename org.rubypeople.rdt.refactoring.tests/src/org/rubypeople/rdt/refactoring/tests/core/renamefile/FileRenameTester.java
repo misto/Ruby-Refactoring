@@ -66,7 +66,6 @@ public class FileRenameTester extends RefactoringTestCase {
 			assertEquals(config.getNewName(), tuple.getValue());
 		}
 		
-		
 		checkMultiFileEdits(editProvider, testData);
 	}
 }

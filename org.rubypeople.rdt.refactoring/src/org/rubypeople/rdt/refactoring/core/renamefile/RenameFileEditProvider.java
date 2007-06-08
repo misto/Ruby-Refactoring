@@ -31,6 +31,7 @@ package org.rubypeople.rdt.refactoring.core.renamefile;
 import java.util.Collection;
 
 import org.jruby.ast.Node;
+import org.jruby.util.ByteList;
 import org.rubypeople.rdt.refactoring.core.NodeProvider;
 import org.rubypeople.rdt.refactoring.editprovider.FileEditProvider;
 import org.rubypeople.rdt.refactoring.editprovider.FileMultiEditProvider;
@@ -55,7 +56,9 @@ public class RenameFileEditProvider implements IMultiFileEditProvider {
 			Node rootNode = config.getDocumentProvider().getRootNode(fileName);
 			for (RequireAndLoadWrapper requireCallNode : NodeProvider.getLoadAndRequireNodes(rootNode)) {
 				if(isRequireFor(config.getOriginalName(), requireCallNode.getFile())) {
-					requireCallNode.getRequireStrNode().getValue().replace(createNewName(requireCallNode.getFile()));
+					ByteList value = requireCallNode.getRequireStrNode().getValue();
+					value.replace(createNewName(requireCallNode.getFile()));
+					value.invalidate();
 					fileEdits.addEditProvider(new FileEditProvider(fileName, new SimpleNodeEditProvider(requireCallNode.getRequireStrNode())));
 				}
 			}

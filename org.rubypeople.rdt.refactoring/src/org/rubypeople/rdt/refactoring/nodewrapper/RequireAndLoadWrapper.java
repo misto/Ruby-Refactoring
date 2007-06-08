@@ -57,7 +57,7 @@ public class RequireAndLoadWrapper implements INodeWrapper {
 	public String getFile() {
 		return getRequireStrNode().getValue().toString();
 	}
-
+	
 	public StrNode getRequireStrNode() {
 		ArrayNode arrayNode = ((ArrayNode) node.getArgsNode());
 		if(arrayNode.get(0) instanceof StrNode) {
