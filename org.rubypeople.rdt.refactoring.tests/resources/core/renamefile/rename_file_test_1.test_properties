@@ -1,0 +1,3 @@
+activeFile=file_to_rename.rb
+destinationFiles=including_file.rb
+newName=new_name.rb

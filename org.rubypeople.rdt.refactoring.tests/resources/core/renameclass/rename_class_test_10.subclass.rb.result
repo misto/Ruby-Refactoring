@@ -1,0 +1,3 @@
+require 'class'
+
+class Subclass < Class; end

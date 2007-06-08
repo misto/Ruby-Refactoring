@@ -1,0 +1,5 @@
+name=Class
+pos=10
+activeFile=superclass.rb
+destinationFiles=subclass.rb
+newFileName=class.rb
