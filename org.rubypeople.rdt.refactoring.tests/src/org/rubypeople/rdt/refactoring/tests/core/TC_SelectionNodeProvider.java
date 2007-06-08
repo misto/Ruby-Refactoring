@@ -45,7 +45,7 @@ public class TC_SelectionNodeProvider extends FileTestCase {
 	}
 	
 	private String[] getEnclosingNodeClasses(FileTestData data, SelectionInformation selection) {
-		Node selected = SelectionNodeProvider.getSelectedNodes(data.getActiveFileRootNode(), selection);
+		Node selected = SelectionNodeProvider.getSelectedNodes(data.getRootNode(), selection);
 		
 		ArrayList<String> classes = new ArrayList<String>();
 		Iterator<Node> it = NodeProvider.getAllNodes(selected).iterator();

@@ -12,40 +12,36 @@ package org.rubypeople.rdt.refactoring.core.extractconstant;
 import org.jruby.ast.Node;
 import org.rubypeople.rdt.core.RubyConventions;
 import org.rubypeople.rdt.internal.core.util.ASTUtil;
-import org.rubypeople.rdt.refactoring.core.IRefactoringConfig;
 import org.rubypeople.rdt.refactoring.core.NodeFactory;
+import org.rubypeople.rdt.refactoring.core.RefactoringConfig;
 import org.rubypeople.rdt.refactoring.core.SelectionInformation;
 import org.rubypeople.rdt.refactoring.core.SelectionNodeProvider;
-import org.rubypeople.rdt.refactoring.documentprovider.DocumentProvider;
 import org.rubypeople.rdt.refactoring.documentprovider.IDocumentProvider;
 
-public class ExtractConstantConfig implements IRefactoringConfig {
+public class ExtractConstantConfig extends RefactoringConfig {
 
 	private static final String DEFAULT_CONSTANT_NAME = "CONSTANT";
-	private IDocumentProvider docProvider;
+
 	private SelectionInformation selectionInfo;
 	private Node selectedNodes;
 	private Node rootNode;
 	private String constName = DEFAULT_CONSTANT_NAME;
 
-	public ExtractConstantConfig(DocumentProvider docProvider, SelectionInformation selectionInfo) {
-		this.docProvider = docProvider;
+	public ExtractConstantConfig(IDocumentProvider docProvider, SelectionInformation selectionInfo) {
+		super(docProvider);
 		this.selectionInfo = optimizeSelection(selectionInfo);
 	}
 
 	private SelectionInformation optimizeSelection(SelectionInformation selectionInfo) {
 		int start = selectionInfo.getStartOfSelection();
 		int end = selectionInfo.getEndOfSelection() + 1;
-		String selectedText = docProvider.getActiveFileContent().substring(start, end);
+		String selectedText = getDocumentProvider().getActiveFileContent().substring(start, end);
 		String trimedSelectionInformation = selectedText.trim();
 		start += selectedText.indexOf(trimedSelectionInformation);
 		end = start + trimedSelectionInformation.length() - 1;
 		return new SelectionInformation(start, end, selectionInfo.getSource());
 	}
 
-	public IDocumentProvider getDocumentProvider() {
-		return docProvider;
-	}
 
 	public SelectionInformation getSelection() {
 		return selectionInfo;
@@ -76,7 +72,7 @@ public class ExtractConstantConfig implements IRefactoringConfig {
 	}
 
 	public void init() {
-		rootNode = getDocumentProvider().getActiveFileRootNode();
+		rootNode = getDocumentProvider().getRootNode();
 		selectedNodes = SelectionNodeProvider.getSelectedNodes(rootNode, getSelection());
 		constName = extractConstantName(selectedNodes);
 	}
@@ -113,9 +109,4 @@ public class ExtractConstantConfig implements IRefactoringConfig {
 		}
 		return name;
 	}
-
-	public void setDocumentProvider(IDocumentProvider doc) {
-		this.docProvider = doc;
-	}
-
 }

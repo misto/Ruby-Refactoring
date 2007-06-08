@@ -73,7 +73,7 @@ public class RenameLocalConditionChecker extends RefactoringConditionChecker {
 	
 	public void init(IRefactoringConfig configObj) {
 		config = (RenameLocalConfig) configObj;
-		RootNode rootNode = config.getDocumentProvider().getActiveFileRootNode();
+		RootNode rootNode = config.getDocumentProvider().getRootNode();
 		Node selectedNode = SelectionNodeProvider.getSelectedNodeOfType(rootNode, config.getCaretPosition(), SELECTED_NODE_TYPES);
 		if(selectedNode instanceof AssignableNode) {
 			int start = selectedNode.getPosition().getStartOffset();

@@ -60,7 +60,7 @@ public class ExtractedMethodDef extends InsertEditProvider {
 		}
 		Node enclosingBlockNode = SelectionNodeProvider.getEnclosingNode(config.getRootNode(), config.getSelection(), BlockNode.class);
 		if (enclosingBlockNode != null) {
-			Node firstSelectedNode = (Node) config.getSelectedNodes();
+			Node firstSelectedNode = config.getSelectedNodes();
 			if (!firstSelectedNode.childNodes().isEmpty()) {
 				firstSelectedNode = (Node) firstSelectedNode.childNodes().toArray()[0];
 			}

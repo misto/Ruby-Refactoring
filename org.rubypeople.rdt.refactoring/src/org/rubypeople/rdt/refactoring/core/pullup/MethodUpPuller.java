@@ -14,7 +14,7 @@ import java.util.Arrays;
 import java.util.Collection;
 
 import org.rubypeople.rdt.refactoring.classnodeprovider.ClassNodeProvider;
-import org.rubypeople.rdt.refactoring.documentprovider.DocumentProvider;
+import org.rubypeople.rdt.refactoring.documentprovider.IDocumentProvider;
 import org.rubypeople.rdt.refactoring.editprovider.DeleteEditProvider;
 import org.rubypeople.rdt.refactoring.editprovider.EditAndTreeContentProvider;
 import org.rubypeople.rdt.refactoring.editprovider.EditProvider;
@@ -34,7 +34,7 @@ public class MethodUpPuller extends EditAndTreeContentProvider implements IItemS
 
 	private ClassNodeProvider classNodeProvider;
 
-	public MethodUpPuller(DocumentProvider documentProvider) {
+	public MethodUpPuller(IDocumentProvider documentProvider) {
 		this.projectClassNodeProvider = documentProvider.getProjectClassNodeProvider();
 		this.classNodeProvider = documentProvider.getClassNodeProvider();
 

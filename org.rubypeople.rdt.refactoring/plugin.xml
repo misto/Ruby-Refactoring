@@ -5,20 +5,98 @@
               class="org.rubypeople.rdt.refactoring.action.RefactoringActionGroup">
         </rubyEditorPopupMenuExtension>
    </extension>
+
 <extension
-      point="org.eclipse.ui.editorActions">
-      
- 
-      
-   <editorContribution
-         id="org.rubypeople.rdt.refactoring.refactoringEditorActions"
-         targetID="org.rubypeople.rdt.ui.EditorRubyFile">
+      point="org.eclipse.ui.popupMenus">
+   <objectContribution
+         id="org.rubypeople.rdt.refactoring.refactoringContext"
+         objectClass="org.eclipse.core.resources.IFile">
+         <menu
+               id="org.rubypeople.rdt.refactoring.refactoringMenu"
+               label="%rubyRefactoring.refactoringMenuLabel"
+               path="additions">
+            <separator name="org.rubypeople.rdt.refactoring.refactoringGroup"/>
+         </menu>
+      <action
+            class="org.rubypeople.rdt.refactoring.action.RenameFileAction"
+            enablesFor="1"
+            id="org.rubypeople.rdt.refactoring.action.RenameFileAction"
+            label="Rename"
+            menubarPath="org.rubypeople.rdt.refactoring.refactoringMenu/org.rubypeople.rdt.refactoring.refactoringGroup">
+      </action>
+      <visibility>
+         <and>
+            <objectClass
+                  name="org.eclipse.core.resources.IResource">
+            </objectClass>
+            <objectState
+                  name="name"
+                  value="*.rb">
+            </objectState>
+         </and>
+      </visibility>
+   </objectContribution>     
+</extension>
+
+   <extension
+         point="org.eclipse.ui.actionSets">
+      <actionSet
+            label="%CodingActionSet.label"
+            description="%CodingActionSet.description"
+            visible="false"
+            id="org.rubypeople.rdt.refactoring.CodingActionSet">
          <menu
                id="org.rubypeople.rdt.refactoring.refactoringMenu"
                label="%rubyRefactoring.refactoringMenuLabel"
                path="edit">
             <separator name="org.rubypeople.rdt.refactoring.refactoringGroup"/>
          </menu>
+         <menu
+               id="org.rubypeople.rdt.refactoring.sourceMenu"
+               label="%rubyRefactoring.sourceMenuLabel"
+               path="edit">
+            <separator name="org.rubypeople.rdt.refactoring.sourceGeneratorGroup"/>
+         </menu>
+<!-- Source: -->       
+         <action
+               class="org.rubypeople.rdt.refactoring.action.OverrideMethodAction"
+               definitionId="org.rubypeople.rdt.refactoring.command.OverrideMethod"
+               id="org.rubypeople.rdt.refactoring.overrideMethodAction"
+               label="%rubyRefactoring.OverrideMethodLabel"
+               menubarPath="org.rubypeople.rdt.refactoring.sourceMenu/org.rubypeople.rdt.refactoring.sourceGeneratorGroup"
+               tooltip="Add Constructor from Superclass">
+            <enablement>
+               <objectClass
+                     name="org.eclipse.jface.text.TextSelection">
+               </objectClass>
+            </enablement>
+         </action>
+         <action
+               class="org.rubypeople.rdt.refactoring.action.GenerateConstructorAction"
+               definitionId="org.rubypeople.rdt.refactoring.command.GenerateConstructor"
+               id="org.rubypeople.rdt.refactoring.generateConstructorAction"
+               label="%rubyRefactoring.GenerateConstructorLabel"
+               menubarPath="org.rubypeople.rdt.refactoring.sourceMenu/org.rubypeople.rdt.refactoring.sourceGeneratorGroup"
+               tooltip="Generate Constructor">
+            <enablement>
+               <objectClass
+                     name="org.eclipse.jface.text.TextSelection">
+               </objectClass>
+            </enablement>
+         </action>
+         <action
+               class="org.rubypeople.rdt.refactoring.action.GenerateAccessorsAction"
+               definitionId="org.rubypeople.rdt.refactoring.command.GenerateAccessors"
+               id="org.rubypeople.rdt.refactoring.generateaccessors"
+               label="%rubyRefactoring.GenerateAccessorLabel"
+               menubarPath="org.rubypeople.rdt.refactoring.sourceMenu/org.rubypeople.rdt.refactoring.sourceGeneratorGroup"
+               tooltip="Generate Accessors">
+            <enablement>
+               <objectClass
+                     name="org.eclipse.jface.text.TextSelection">
+               </objectClass>
+            </enablement>
+         </action>     
 <!-- experimental
          <action
                class="org.rubypeople.rdt.refactoring.action.FormatSourceAction"
@@ -35,14 +113,23 @@
                id="org.rubypeople.rdt.refactoring.splitTempAction"
                label="%rubyRefactoring.SplitTempLabel"
                menubarPath="org.rubypeople.rdt.refactoring.refactoringMenu/org.rubypeople.rdt.refactoring.refactoringGroup"
-               tooltip="Split Temporary Variable"/>
+               tooltip="Split Temporary Variable">
+            <enablement>
+               <or>
+                  <objectClass name="org.eclipse.jface.text.TextSelection"/>
+                  <objectClass name="org.rubypeople.rdt.internal.core.LocalVariable"/>
+               </or>
+            </enablement>
+         </action>
          <action
                class="org.rubypeople.rdt.refactoring.action.RenameAction"
                definitionId="org.rubypeople.rdt.refactoring.command.Rename"
                id="org.rubypeople.rdt.refactoring.renameAction"
                label="%rubyRefactoring.RenameLabel"
                menubarPath="org.rubypeople.rdt.refactoring.refactoringMenu/org.rubypeople.rdt.refactoring.refactoringGroup"
-               tooltip="Renames the selected element..."/>
+               tooltip="Renames the selected element...">
+
+         </action>
          <action
                class="org.rubypeople.rdt.refactoring.action.PushDownAction"
                definitionId="org.rubypeople.rdt.refactoring.command.PushDown"
@@ -50,7 +137,13 @@
                label="%rubyRefactoring.PushDownLabel"
                menubarPath="org.rubypeople.rdt.refactoring.refactoringMenu/org.rubypeople.rdt.refactoring.refactoringGroup"
                style="push"
-               tooltip="Pushes down a method"/>
+               tooltip="Pushes down a method">
+            <enablement>
+               <objectClass
+                     name="org.eclipse.jface.text.TextSelection">
+               </objectClass>
+            </enablement>
+         </action>
          <action
                class="org.rubypeople.rdt.refactoring.action.PullUpAction"
                definitionId="org.rubypeople.rdt.refactoring.command.PullUp"
@@ -58,7 +151,13 @@
                label="%rubyRefactoring.PullUpLabel"
                menubarPath="org.rubypeople.rdt.refactoring.refactoringMenu/org.rubypeople.rdt.refactoring.refactoringGroup"
                style="push"
-               tooltip="Pulls up a method into it's supperclass"/>
+               tooltip="Pulls up a method into it's supperclass">
+            <enablement>
+               <objectClass
+                     name="org.eclipse.jface.text.TextSelection">
+               </objectClass>
+            </enablement>
+         </action>
          <action
                class="org.rubypeople.rdt.refactoring.action.MoveMethodAction"
                definitionId="org.rubypeople.rdt.refactoring.command.MoveMethod"
@@ -66,7 +165,14 @@
                label="%rubyRefactoring.MoveMethodLabel"
                menubarPath="org.rubypeople.rdt.refactoring.refactoringMenu/org.rubypeople.rdt.refactoring.refactoringGroup"
                style="push"
-               tooltip="Moves the selected method into another class."/>
+               tooltip="Moves the selected method into another class.">
+            <enablement>
+               <or>
+                  <objectClass name="org.eclipse.jface.text.TextSelection"/>
+                  <objectClass name="org.rubypeople.rdt.internal.core.RubyMethod"/>
+               </or>
+            </enablement>
+         </action>
          <action
                class="org.rubypeople.rdt.refactoring.action.MoveFieldAction"
                definitionId="org.rubypeople.rdt.refactoring.command.MoveField"
@@ -74,7 +180,14 @@
                label="%rubyRefactoring.MoveFieldLabel"
                menubarPath="org.rubypeople.rdt.refactoring.refactoringMenu/org.rubypeople.rdt.refactoring.refactoringGroup"
                style="push"
-               tooltip="Moves the selected field into another class."/>
+               tooltip="Moves the selected field into another class.">
+            <enablement>
+               <or>
+                  <objectClass name="org.eclipse.jface.text.TextSelection"/>
+                  <objectClass name="org.rubypeople.rdt.internal.core.RubyInstVar"/>
+               </or>
+            </enablement>
+         </action>
 		 <action
                class="org.rubypeople.rdt.refactoring.action.MergeWithExternalClassPartsAction"
                definitionId="org.rubypeople.rdt.refactoring.command.MergeWithExternalClassParts"
@@ -82,7 +195,13 @@
                label="%rubyRefactoring.MergeWithExternalClassPartsLabel"
                menubarPath="org.rubypeople.rdt.refactoring.refactoringMenu/org.rubypeople.rdt.refactoring.refactoringGroup"
                style="push"
-               tooltip="Merges different class parts of the same class in different files."/>
+               tooltip="Merges different class parts of the same class in different files.">
+            <enablement>
+               <objectClass
+                     name="org.eclipse.jface.text.TextSelection">
+               </objectClass>
+            </enablement>
+         </action>
          <action
                class="org.rubypeople.rdt.refactoring.action.MergeClassPartsInFileAction"
                definitionId="org.rubypeople.rdt.refactoring.command.MergeClassPartsInFile"
@@ -90,7 +209,13 @@
                label="%rubyRefactoring.MergeClassPartsInFileLabel"
                menubarPath="org.rubypeople.rdt.refactoring.refactoringMenu/org.rubypeople.rdt.refactoring.refactoringGroup"
                style="push"
-               tooltip="Merges different class parts of the same class in the current file."/>
+               tooltip="Merges different class parts of the same class in the current file.">
+            <enablement>
+               <objectClass
+                     name="org.eclipse.jface.text.TextSelection">
+               </objectClass>
+            </enablement>
+         </action>
          <action
                class="org.rubypeople.rdt.refactoring.action.InlineMethodAction"
                definitionId="org.rubypeople.rdt.refactoring.command.InlineMethod"
@@ -98,7 +223,13 @@
                label="%rubyRefactoring.InlineMethodLabel"
                menubarPath="org.rubypeople.rdt.refactoring.refactoringMenu/org.rubypeople.rdt.refactoring.refactoringGroup"
                style="push"
-               tooltip="Replaces the selected method call with the methods body."/>
+               tooltip="Replaces the selected method call with the methods body.">
+            <enablement>
+               <objectClass
+                     name="org.eclipse.jface.text.TextSelection">
+               </objectClass>
+            </enablement>
+         </action>
          <action
                class="org.rubypeople.rdt.refactoring.action.InlineTempAction"
                definitionId="org.rubypeople.rdt.refactoring.command.InlineTemp"
@@ -106,7 +237,14 @@
                label="%rubyRefactoring.InlineTempLabel"
                menubarPath="org.rubypeople.rdt.refactoring.refactoringMenu/org.rubypeople.rdt.refactoring.refactoringGroup"
                style="push"
-               tooltip="Replaces the occurences fo a local variable with its value."/>
+               tooltip="Replaces the occurences fo a local variable with its value.">
+            <enablement>
+               <or>
+                  <objectClass name="org.eclipse.jface.text.TextSelection"/>
+                  <objectClass name="org.rubypeople.rdt.internal.core.LocalVariable"/>
+               </or>
+            </enablement>
+         </action>
          <action
                class="org.rubypeople.rdt.refactoring.action.InlineClassAction"
                definitionId="org.rubypeople.rdt.refactoring.command.InlineClass"
@@ -114,7 +252,13 @@
                label="%rubyRefactoring.InlineClassLabel"
                menubarPath="org.rubypeople.rdt.refactoring.refactoringMenu/org.rubypeople.rdt.refactoring.refactoringGroup"
                style="push"
-               tooltip="Inlines the selected class into another one."/>
+               tooltip="Inlines the selected class into another one.">
+            <enablement>
+               <objectClass
+                     name="org.eclipse.jface.text.TextSelection">
+               </objectClass>
+            </enablement>
+         </action>
          <action
                class="org.rubypeople.rdt.refactoring.action.ExtractMethodAction"
                definitionId="org.rubypeople.rdt.refactoring.command.ExtractMethod"
@@ -122,7 +266,13 @@
                label="%rubyRefactoring.ExtractMethodLabel"
                menubarPath="org.rubypeople.rdt.refactoring.refactoringMenu/org.rubypeople.rdt.refactoring.refactoringGroup"
                style="push"
-               tooltip="Extracts the selected code into a new method."/>
+               tooltip="Extracts the selected code into a new method.">
+            <enablement>
+               <objectClass
+                     name="org.eclipse.jface.text.TextSelection">
+               </objectClass>
+            </enablement>
+         </action>
         <action
                class="org.rubypeople.rdt.refactoring.action.ExtractConstantAction"
                definitionId="org.rubypeople.rdt.refactoring.command.ExtractConstant"
@@ -130,7 +280,13 @@
                label="%rubyRefactoring.ExtractConstantLabel"
                menubarPath="org.rubypeople.rdt.refactoring.refactoringMenu/org.rubypeople.rdt.refactoring.refactoringGroup"
                style="push"
-               tooltip="Extracts the selected value into a new constant."/>
+               tooltip="Extracts the selected value into a new constant.">
+            <enablement>
+               <objectClass
+                     name="org.eclipse.jface.text.TextSelection">
+               </objectClass>
+            </enablement>
+         </action>
          <action
                class="org.rubypeople.rdt.refactoring.action.EncapsulateFieldAction"
                definitionId="org.rubypeople.rdt.refactoring.command.EncapsulateField"
@@ -138,7 +294,14 @@
                label="%rubyRefactoring.EncapsulateField"
                menubarPath="org.rubypeople.rdt.refactoring.refactoringMenu/org.rubypeople.rdt.refactoring.refactoringGroup"
                style="push"
-               tooltip="Encapsulates a field. A field (accessor) will be removed and getter and setter methods will be added."/>
+               tooltip="Encapsulates a field. A field (accessor) will be removed and getter and setter methods will be added.">
+            <enablement>
+               <or>
+                  <objectClass name="org.eclipse.jface.text.TextSelection"/>
+                  <objectClass name="org.rubypeople.rdt.internal.core.RubyInstVar"/>
+               </or>
+            </enablement>
+         </action>
          <action
                class="org.rubypeople.rdt.refactoring.action.ConvertTempToFieldAction"
                definitionId="org.rubypeople.rdt.refactoring.command.ConvertTempToField"
@@ -146,9 +309,16 @@
                label="%rubyRefactoring.ConvertTempToFieldLabel"
                menubarPath="org.rubypeople.rdt.refactoring.refactoringMenu/org.rubypeople.rdt.refactoring.refactoringGroup"
                style="push"
-               tooltip="Converts a local variable to a field."/>
-   </editorContribution>
-</extension>
+               tooltip="Converts a local variable to a field.">
+            <enablement>
+               <or>
+                  <objectClass name="org.eclipse.jface.text.TextSelection"/>
+                  <objectClass name="org.rubypeople.rdt.internal.core.LocalVariable"/>
+               </or>
+            </enablement>
+         </action>
+      </actionSet>
+   </extension>
 <extension
       point="org.eclipse.ui.commands">
    <category
@@ -188,7 +358,8 @@
    <command
          categoryId="org.rubypeople.rdt.refactoring.commands.refactoring"
          id="org.rubypeople.rdt.refactoring.command.ConvertTempToField"
-         name="%rubyRefactoring.ConvertTempToFieldLabel"/>
+         name="%rubyRefactoring.ConvertTempToFieldLabel">
+   </command>
    <command
          categoryId="org.rubypeople.rdt.refactoring.commands.refactoring"
          id="org.rubypeople.rdt.refactoring.command.PushDown"
@@ -261,7 +432,7 @@
          sequence="M2+M3+I M"/>
    <key
          commandId="org.rubypeople.rdt.refactoring.command.Rename"
-         contextId="org.rubypeople.rdt.ui.rubyEditorScope"
+
          schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
          sequence="M2+M3+R"/>
 </extension>
@@ -327,16 +498,6 @@
          id="org.rubypeople.rdt.refactoring.refactoringContext"
          objectClass="org.rubypeople.rdt.internal.core.RubyClassVar">
       <action
-            class="org.rubypeople.rdt.refactoring.action.EncapsulateFieldAction"
-            id="org.rubypeople.rdt.refactoring.action.EncapsulateFieldAction"
-            label="%rubyRefactoring.EncapsulateField"
-            menubarPath="additions" />
-      <action
-            class="org.rubypeople.rdt.refactoring.action.MoveFieldAction"
-            id="org.rubypeople.rdt.refactoring.action.MoveFieldAction"
-            label="%rubyRefactoring.MoveFieldLabel"
-            menubarPath="additions" />
-      <action
             class="org.rubypeople.rdt.refactoring.action.RenameAction"
             id="org.rubypeople.rdt.refactoring.action.RenameAction"
             label="%rubyRefactoring.RenameLabel"
@@ -356,9 +517,21 @@
             id="org.rubypeople.rdt.refactoring.action.RenameAction"
             label="%rubyRefactoring.RenameLabel"
             menubarPath="additions" />
-   </objectContribution>    
-
+   </objectContribution>
 </extension>
+
+   <extension
+         point="org.eclipse.ui.actionSetPartAssociations">
+      <actionSetPartAssociation
+            targetID="org.rubypeople.rdt.refactoring.CodingActionSet">
+         <part
+               id="org.rubypeople.rdt.ui.EditorRubyFile">
+         </part>
+         <!--<part
+               id="org.rubypeople.rdt.ui.ViewRubyResources">
+         </part>-->
+      </actionSetPartAssociation>
+   </extension>
 
 <extension
          point="org.eclipse.ltk.ui.refactoring.changePreviewViewers">
@@ -370,42 +543,4 @@
          </enablement>
       </changePreviewViewer>
    </extension>
-<extension
-      point="org.eclipse.ui.actionSets">
-   <actionSet
-         id="org.rubypeople.rdt.ui.RefactoringActionSet"
-         label="org.rubypeople.rdt.ui.RefactoringActionSet"
-         visible="false">
-      <action
-            class="org.rubypeople.rdt.refactoring.action.GenerateConstructorAction"
-            definitionId="org.rubypeople.rdt.refactoring.command.GenerateConstructor"
-            id="org.rubypeople.rdt.refactoring.generateConstructorAction"
-            label="%rubyRefactoring.GenerateConstructorLabel"
-            menubarPath="org.rubypeople.rdt.ui.source.menu/generateGroup"
-            style="push"
-            tooltip="Generate Constructor"/>
-      <action
-            class="org.rubypeople.rdt.refactoring.action.GenerateAccessorsAction"
-            definitionId="org.rubypeople.rdt.refactoring.command.GenerateAccessors"
-            id="org.rubypeople.rdt.refactoring.generateaccessors"
-            label="%rubyRefactoring.GenerateAccessorLabel"
-            menubarPath="org.rubypeople.rdt.ui.source.menu/generateGroup"
-            style="push"
-            tooltip="Generate Accessors"/>
-      <action
-            class="org.rubypeople.rdt.refactoring.action.OverrideMethodAction"
-            definitionId="org.rubypeople.rdt.refactoring.command.OverrideMethod"
-            id="org.rubypeople.rdt.refactoring.overrideMethodAction"
-            label="%rubyRefactoring.OverrideMethodLabel"
-            menubarPath="org.rubypeople.rdt.ui.source.menu/generateGroup"
-            style="push"
-            tooltip="Add Constructor from Superclass"/>
-   </actionSet>
-</extension>
-<extension
-      point="org.eclipse.ui.actionSetPartAssociations">
-   <actionSetPartAssociation targetID="org.rubypeople.rdt.ui.RefactoringActionSet">
-      <part id="org.rubypeople.rdt.ui.EditorRubyFile"/>
-   </actionSetPartAssociation>
-</extension>
 </plugin>

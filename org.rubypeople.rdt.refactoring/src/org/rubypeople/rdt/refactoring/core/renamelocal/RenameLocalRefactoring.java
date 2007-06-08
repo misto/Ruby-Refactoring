@@ -30,7 +30,6 @@ package org.rubypeople.rdt.refactoring.core.renamelocal;
 
 import org.rubypeople.rdt.refactoring.core.RubyRefactoring;
 import org.rubypeople.rdt.refactoring.core.TextSelectionProvider;
-import org.rubypeople.rdt.refactoring.documentprovider.DocumentProvider;
 import org.rubypeople.rdt.refactoring.ui.pages.RenamePage;
 
 public class RenameLocalRefactoring extends RubyRefactoring {
@@ -40,9 +39,7 @@ public class RenameLocalRefactoring extends RubyRefactoring {
 	public RenameLocalRefactoring(TextSelectionProvider selectionProvider) {
 		super(NAME);
 		
-		DocumentProvider docProvider = getDocumentProvider();
-		
-		RenameLocalConfig config = new RenameLocalConfig(docProvider, selectionProvider.getCarretPosition());
+		RenameLocalConfig config = new RenameLocalConfig(getDocumentProvider(), selectionProvider.getCarretPosition());
 		RenameLocalConditionChecker checker = new RenameLocalConditionChecker(config);
 		setRefactoringConditionChecker(checker);
 		

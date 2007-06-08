@@ -30,7 +30,6 @@ package org.rubypeople.rdt.refactoring.util;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Iterator;
 import java.util.Vector;
 import java.util.regex.Matcher;
@@ -41,13 +40,13 @@ import org.jruby.ast.Colon3Node;
 import org.jruby.ast.ConstNode;
 import org.jruby.ast.ModuleNode;
 import org.jruby.ast.Node;
-import org.jruby.ast.types.INameNode;
+import org.jruby.ast.visitor.rewriter.ReWriteVisitor;
 import org.rubypeople.rdt.refactoring.core.NodeProvider;
 import org.rubypeople.rdt.refactoring.nodewrapper.ClassNodeWrapper;
 import org.rubypeople.rdt.refactoring.nodewrapper.FieldNodeWrapper;
 import org.rubypeople.rdt.refactoring.nodewrapper.MethodNodeWrapper;
 
-public class NameHelper {
+public abstract class NameHelper {
 
 	public static String createName(String string) {
 		Matcher matcher = Pattern.compile("([@]{0,2}\\w*[a-zA-Z_])(\\d+)").matcher(string); //$NON-NLS-1$
@@ -86,7 +85,6 @@ public class NameHelper {
 	}
 
 	public static boolean methodnameExistsInClassPart(String methodName, ClassNodeWrapper klass) {
-
 		return methodsContainMethod(klass.getMethods(), methodName);
 	}
 
@@ -109,7 +107,6 @@ public class NameHelper {
 	}
 
 	public static boolean methodnameExistsInClass(String methodName, ClassNodeWrapper classNode) {
-
 		return methodsContainMethod(classNode.getMethods(), methodName);
 	}
 
@@ -161,22 +158,39 @@ public class NameHelper {
 
 	public static String getFullyQualifiedName(Node n) {
 		assert n instanceof ConstNode || n instanceof Colon2Node;
-		
-		if (n instanceof ConstNode) {
-			ConstNode constNode = (ConstNode) n;
-			return constNode.getName();
-		}
-		StringBuilder name = new StringBuilder();
+		return ReWriteVisitor.createCodeFromNode(n, "");
+	}
 	
-		ArrayList<Node> subNodes = new ArrayList<Node>(NodeProvider.getSubNodes(((Colon2Node) n).getLeftNode(), Colon2Node.class, ConstNode.class));
-		Collections.reverse(subNodes);
+	public static boolean fileNameEqualsClassName(String file, String klass) {
+		file = file.split("/")[file.split("/").length - 1];
+		file = withoutRubyFileExtension(file);
+		file = file.toLowerCase();
+		file = file.replaceAll("_", "");
 		
-		for (Node node : subNodes) {
-			name.append(((INameNode) node).getName());
-			name.append("::"); //$NON-NLS-1$
+		klass = klass.toLowerCase();
+		
+		return file.equals(klass);
+	}
+	
+	private static final String RB = ".rb";
+	
+	public static String withoutRubyFileExtension(String name) {
+		if(name.endsWith(RB)) {
+			name = name.substring(0, name.length() - RB.length());
 		}
-		name.append(((INameNode) n).getName());
-		return name.toString();
+		return name;
+	}
+	
+	public static String fileNameFromClassName(String className) {
+		Matcher matcher = Pattern.compile("([a-z])([A-Z])").matcher(className);
+		StringBuffer fileName = new StringBuffer();
+		
+		while (matcher.find()) {
+			matcher.appendReplacement(fileName, matcher.group(1) + "_" + matcher.group(2));
+		}
+		
+		matcher.appendTail(fileName);
+		return fileName.toString().toLowerCase() + RB;
 	}
 }
 

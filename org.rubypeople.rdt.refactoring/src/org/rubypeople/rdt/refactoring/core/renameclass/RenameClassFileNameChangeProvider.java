@@ -4,28 +4,26 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.eclipse.core.resources.IFile;
+import org.rubypeople.rdt.refactoring.core.RenameTypeConfig;
 import org.rubypeople.rdt.refactoring.editprovider.FileNameChangeProvider;
+import org.rubypeople.rdt.refactoring.util.NameHelper;
 
 public class RenameClassFileNameChangeProvider extends FileNameChangeProvider {
 
-	private final RenameClassConfig config;
+	private final RenameTypeConfig config;
 
-	public RenameClassFileNameChangeProvider(RenameClassConfig renameClassConfig) {
+	public RenameClassFileNameChangeProvider(RenameTypeConfig renameClassConfig) {
 		this.config = renameClassConfig;
 	}
 
 	@Override
-	public Map<String, String> getFilesToRename(Collection<IFile> objects) {
+	public Map<String, String> getFilesToRename(Collection<String> affectedFiles) {
 		HashMap<String, String> filesToRename = new HashMap<String, String>();
-		for (IFile file : objects) {
-			String name = file.getName();
-			name = name.replaceAll("\\." + file.getFileExtension() + "$", "");
-			if(name.equals(config.getSelectedNode().getCPath().getName())) {
-				filesToRename.put(file.getFullPath().toString(), config.getNewName() + ".rb");
+		for (String file : affectedFiles) {
+			if(NameHelper.fileNameEqualsClassName(file, config.getSelectedName())) {
+				filesToRename.put(file, NameHelper.fileNameFromClassName(config.getNewName()));
 			}
 		}
 		return filesToRename;
 	}
-
 }

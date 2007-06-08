@@ -51,7 +51,7 @@ public class LocalVarFinder implements ILocalVarFinder {
 
 	public Collection<LocalVarUsage> findLocalUsages(IDocumentProvider doc, int caretPosition) {
 
-		Node rootNode = doc.getActiveFileRootNode();
+		Node rootNode = doc.getRootNode();
 
 		INameNode selectedAssignment = findAssignment(doc, caretPosition, rootNode);
 		if (selectedAssignment == null) {

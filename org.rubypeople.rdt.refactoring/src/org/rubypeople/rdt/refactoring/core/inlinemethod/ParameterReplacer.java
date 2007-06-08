@@ -85,7 +85,7 @@ public class ParameterReplacer implements IParameterReplacer {
 			createAssignments(headList, tailList, insert, lineDelimiter);
 		}
 		
-		MethodDefNode newDefinition = (MethodDefNode) ((NewlineNode) strDoc.getActiveFileRootNode().getBodyNode()).getNextNode();
+		MethodDefNode newDefinition = (MethodDefNode) ((NewlineNode) strDoc.getRootNode().getBodyNode()).getNextNode();
 		ISourcePosition bodyPosition = NodeUtil.subPositionUnion(newDefinition.getBodyNode());
 		insert.append(strDoc.getActiveFileContent().substring(
 				bodyPosition.getStartOffset(), 

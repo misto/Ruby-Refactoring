@@ -4,6 +4,7 @@ import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import junit.framework.TestCase;
 
@@ -21,6 +22,7 @@ import org.eclipse.debug.core.ILaunch;
 import org.eclipse.debug.core.ILaunchConfiguration;
 import org.eclipse.debug.core.ILaunchConfigurationType;
 import org.eclipse.debug.core.ILaunchConfigurationWorkingCopy;
+import org.eclipse.debug.core.ILaunchDelegate;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
@@ -243,5 +245,27 @@ public class TC_RubySourceLocator extends TestCase {
             // TODO Auto-generated method stub
             
         }
+
+		public Set getAttribute(String attributeName, Set defaultValue)
+				throws CoreException {
+			// TODO Auto-generated method stub
+			return null;
+		}
+
+		public Set getModes() throws CoreException {
+			// TODO Auto-generated method stub
+			return null;
+		}
+
+		public ILaunchDelegate getPreferredDelegate(Set modes)
+				throws CoreException {
+			// TODO Auto-generated method stub
+			return null;
+		}
+
+		public boolean isReadOnly() {
+			// TODO Auto-generated method stub
+			return false;
+		}
 }
 }

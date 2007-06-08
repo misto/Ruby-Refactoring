@@ -35,7 +35,6 @@ import java.util.Collection;
 
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFile;
-import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.runtime.CoreException;
@@ -48,21 +47,18 @@ public class WorkspaceDocumentProvider extends DocumentProvider {
 	private IFile activeFile;
 
 	private String activeFileContent;
-
-	private IProject activeProject;
-
+	
 	private IWorkspaceRoot workspaceRoot;
 
 	public WorkspaceDocumentProvider(IFile activeFile) {
-		this.activeFile = activeFile;
-		this.activeProject = activeFile.getProject();
-		workspaceRoot = this.activeFile.getWorkspace().getRoot();
-		this.activeFileContent = getFileContent(getActiveFileName());
-
+		if(activeFile != null) {
+			this.activeFile = activeFile;
+			workspaceRoot = this.activeFile.getWorkspace().getRoot();
+			this.activeFileContent = getFileContent(getActiveFileName());
+		}
 	}
 
 	public String getActiveFileContent() {
-
 		return activeFileContent;
 	}
 
@@ -71,16 +67,14 @@ public class WorkspaceDocumentProvider extends DocumentProvider {
 	}
 
 	public IFile getIFile(String fileName) {
-
 		fileName = makePathAbsoulte(fileName);
 		return workspaceRoot.getFile(new Path(fileName));
 	}
 
 	public Collection<String> getFileNames() {
 		ArrayList<String> fileNames = new ArrayList<String>();
-		fillFileNames(fileNames, activeProject);
+		fillFileNames(fileNames, activeFile.getProject());
 		return fileNames;
-
 	}
 
 	private void fillFileNames(ArrayList<String> fileNames, IContainer container) {

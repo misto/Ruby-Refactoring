@@ -44,10 +44,10 @@ public class FileTestSuite extends TestSuite {
 	protected static TestSuite createSuite(String name, String pattern, Class<? extends RefactoringTestCase> klass) {
 		TestSuite suite = new TestSuite(name);
 		try {
-			for(File file : TestsPlugin.getFiles(pattern)) {		
+			for(String file : TestsPlugin.getFiles(pattern)) {		
 				try {
 					Constructor<? extends RefactoringTestCase> constructor = klass.getConstructor(new Class[]{String.class});
-					suite.addTest(constructor.newInstance(getTestName(file)));
+					suite.addTest(constructor.newInstance(file));
 				} catch (SecurityException e) {
 					e.printStackTrace();
 				} catch (NoSuchMethodException e) {

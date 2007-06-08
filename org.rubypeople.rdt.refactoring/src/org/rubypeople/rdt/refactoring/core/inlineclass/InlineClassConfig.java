@@ -40,9 +40,8 @@ import org.jruby.ast.InstAsgnNode;
 import org.jruby.ast.LocalAsgnNode;
 import org.jruby.ast.Node;
 import org.rubypeople.rdt.refactoring.classnodeprovider.IncludedClassesProvider;
-import org.rubypeople.rdt.refactoring.core.IRefactoringConfig;
 import org.rubypeople.rdt.refactoring.core.NodeProvider;
-import org.rubypeople.rdt.refactoring.documentprovider.DocumentProvider;
+import org.rubypeople.rdt.refactoring.core.RefactoringConfig;
 import org.rubypeople.rdt.refactoring.documentprovider.IDocumentProvider;
 import org.rubypeople.rdt.refactoring.nodewrapper.ClassNodeWrapper;
 import org.rubypeople.rdt.refactoring.nodewrapper.MethodCallNodeWrapper;
@@ -50,25 +49,20 @@ import org.rubypeople.rdt.refactoring.nodewrapper.MethodNodeWrapper;
 import org.rubypeople.rdt.refactoring.nodewrapper.PartialClassNodeWrapper;
 
 
-public class InlineClassConfig implements IRefactoringConfig {
+public class InlineClassConfig extends RefactoringConfig {
 
 	private int caretPosition;
-	private IDocumentProvider docProvider;
 	private PartialClassNodeWrapper targetClassPart;
 	private Collection<ClassNodeWrapper> possibleTargetClasses;
 	private ClassNodeWrapper sourceClass;
 	
-	public InlineClassConfig(DocumentProvider docProvider, int caretPosition) {
-		super();
+	public InlineClassConfig(IDocumentProvider docProvider, int caretPosition) {
+		super(docProvider);
 		this.caretPosition = caretPosition;
-		this.docProvider = docProvider;
 	}
 	
 	public int getCaretPosition() {
 		return caretPosition;
-	}
-	public IDocumentProvider getDocumentProvider() {
-		return docProvider;
 	}
 
 	public PartialClassNodeWrapper getTargetClassPart() {
@@ -78,11 +72,10 @@ public class InlineClassConfig implements IRefactoringConfig {
 	public void setTargetClassPart(PartialClassNodeWrapper targetClassPart) {
 		this.targetClassPart = targetClassPart;
 	}
-	
 
 	public ClassNodeWrapper getTargetClass() {
 		
-		IncludedClassesProvider classesProvider = new IncludedClassesProvider(docProvider);
+		IncludedClassesProvider classesProvider = new IncludedClassesProvider(getDocumentProvider());
 		ClassNodeWrapper classNode = classesProvider.getClassNode(targetClassPart.getClassName());
 		
 		return classNode;
@@ -123,9 +116,5 @@ public class InlineClassConfig implements IRefactoringConfig {
 			}
 		}
 		return assignmentsFound;
-	}
-
-	public void setDocumentProvider(IDocumentProvider doc) {
-		this.docProvider = doc;
 	}
 }

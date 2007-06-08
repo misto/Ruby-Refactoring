@@ -30,12 +30,10 @@
 
 package org.rubypeople.rdt.refactoring.core.movemethod;
 
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Observable;
 
 import org.rubypeople.rdt.refactoring.classnodeprovider.ClassNodeProvider;
-import org.rubypeople.rdt.refactoring.core.IRefactoringConfig;
+import org.rubypeople.rdt.refactoring.core.RefactoringConfig;
 import org.rubypeople.rdt.refactoring.documentprovider.IDocumentProvider;
 import org.rubypeople.rdt.refactoring.nodewrapper.ArgsNodeWrapper;
 import org.rubypeople.rdt.refactoring.nodewrapper.ClassNodeWrapper;
@@ -43,9 +41,8 @@ import org.rubypeople.rdt.refactoring.nodewrapper.MethodNodeWrapper;
 import org.rubypeople.rdt.refactoring.nodewrapper.VisibilityNodeWrapper.METHOD_VISIBILITY;
 import org.rubypeople.rdt.refactoring.util.NameHelper;
 
-public class MoveMethodConfig extends Observable implements IRefactoringConfig {
+public class MoveMethodConfig extends RefactoringConfig {
 
-	private IDocumentProvider docProvider;
 	private int caretPosition;
 	private MethodNodeWrapper methodNode;
 	private ClassNodeWrapper sourceClassNode;
@@ -62,12 +59,10 @@ public class MoveMethodConfig extends Observable implements IRefactoringConfig {
 	private boolean sourceClassHasCallsToMovingMethod;
 	private ArgsNodeWrapper movedMethodArgs;
 	private String movedMethodName;
-	private Collection<String> warnings;
 	
 	public MoveMethodConfig(IDocumentProvider docProvider, int caretPosition) {
-		this.docProvider = docProvider;
+		super(docProvider);
 		this.caretPosition = caretPosition;
-		warnings = new ArrayList<String>();
 	}
 
 	public boolean doesNewMethodNeedsReferenceToSourceClass() {
@@ -84,17 +79,10 @@ public class MoveMethodConfig extends Observable implements IRefactoringConfig {
 
 	public void setFieldInSourceClassOfTypeDestinationClass(String fieldOfDestinationClassType) {
 		this.fieldInSourceClassOfTypeDestinationClass = fieldOfDestinationClassType;
-		this.setChanged();
-		this.notifyObservers();
-	}
-
-	public IDocumentProvider getDocumentProvider() {
-		return docProvider;
 	}
 	
 	public boolean isClassMethod() {
 		return methodNode.isClassMethod();
-	
 	}
 
 	public ClassNodeProvider getAllClassesNodeProvider() {
@@ -112,8 +100,6 @@ public class MoveMethodConfig extends Observable implements IRefactoringConfig {
 	public void setDestinationClassNode(String aktClassName) {
 		destinationClassNode = allClassesNodeProvider.getClassNode(aktClassName);
 		movedMethodName = initMovedMethodName();
-		this.setChanged();
-		this.notifyObservers();
 	}
 	
 	private String initMovedMethodName() {
@@ -162,8 +148,6 @@ public class MoveMethodConfig extends Observable implements IRefactoringConfig {
 
 	public void setLeaveDelegateMethodInSource(boolean leaveDelegateMethodInSoruce) {
 		this.leaveDelegateMethodInSoruce = leaveDelegateMethodInSoruce;
-		setChanged();
-		notifyObservers();
 	}
 
 	public METHOD_VISIBILITY getMovedMethodVisibility() {
@@ -231,20 +215,5 @@ public class MoveMethodConfig extends Observable implements IRefactoringConfig {
 	public boolean canCreateDelegateMethod() {
 		return needsSecondPage() || methodNode.isClassMethod();
 	}
-
-	public Collection<String> getWarnings() {
-		return warnings;
-	}
 	
-	public void addWarning(String warning) {
-		warnings.add(warning);
-	}
-
-	public void resetWarnings() {
-		warnings.clear();
-	}
-
-	public void setDocumentProvider(IDocumentProvider doc) {
-		this.docProvider = doc;
-	}
 }

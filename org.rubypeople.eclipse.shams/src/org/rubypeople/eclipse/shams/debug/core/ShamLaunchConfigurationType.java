@@ -6,6 +6,7 @@ import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.debug.core.ILaunchConfigurationType;
 import org.eclipse.debug.core.ILaunchConfigurationWorkingCopy;
+import org.eclipse.debug.core.ILaunchDelegate;
 import org.eclipse.debug.core.model.ILaunchConfigurationDelegate;
 import org.eclipse.debug.core.sourcelookup.ISourcePathComputer;
 
@@ -78,6 +79,37 @@ public class ShamLaunchConfigurationType implements ILaunchConfigurationType {
 
 	public Set getSupportedModes() {
 		return null;
+	}
+
+	public String getContributorName() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public ILaunchDelegate[] getDelegates(Set modes) throws CoreException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public ILaunchDelegate getPreferredDelegate(Set modes) throws CoreException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public Set getSupportedModeCombinations() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public void setPreferredDelegate(Set modes, ILaunchDelegate delegate)
+			throws CoreException {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public boolean supportsModeCombination(Set modes) {
+		// TODO Auto-generated method stub
+		return false;
 	}
 
 }

@@ -30,7 +30,6 @@ package org.rubypeople.rdt.refactoring.core;
 
 import org.rubypeople.rdt.refactoring.documentprovider.IDocumentProvider;
 
-
 public interface IRefactoringConfig {
 	IDocumentProvider getDocumentProvider();
 	

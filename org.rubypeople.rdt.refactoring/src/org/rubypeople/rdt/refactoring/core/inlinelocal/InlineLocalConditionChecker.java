@@ -59,7 +59,7 @@ public class InlineLocalConditionChecker extends RefactoringConditionChecker {
 	
 	public void init(IRefactoringConfig configObj) {
 		this.config = (InlineLocalConfig) configObj;
-		rootNode = config.getDocumentProvider().getActiveFileRootNode();
+		rootNode = config.getDocumentProvider().getRootNode();
 		int caretPosition = config.getCaretPosition();
 		config.setEnclosingMethod((MethodDefNode) SelectionNodeProvider.getSelectedNodeOfType(rootNode, caretPosition, MethodDefNode.class));
 		
@@ -150,7 +150,7 @@ public class InlineLocalConditionChecker extends RefactoringConditionChecker {
 
 	private boolean isNewMethodNameUnique() {
 
-		Node environment = SelectionNodeProvider.getSelectedNodeOfType(config.getDocumentProvider().getActiveFileRootNode(), config.getCaretPosition(), ClassNode.class, RootNode.class);
+		Node environment = SelectionNodeProvider.getSelectedNodeOfType(config.getDocumentProvider().getRootNode(), config.getCaretPosition(), ClassNode.class, RootNode.class);
 		Collection<MethodDefNode> methodNodes = NodeProvider.gatherMethodDefinitionNodes(NodeUtil.getBody(environment));
 
 		for (MethodDefNode currentDefnNode : methodNodes) {

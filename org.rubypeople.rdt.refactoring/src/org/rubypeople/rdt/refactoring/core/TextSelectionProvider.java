@@ -28,10 +28,14 @@
 
 package org.rubypeople.rdt.refactoring.core;
 
+import org.eclipse.core.resources.IFile;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.text.ITextSelection;
+import org.eclipse.jface.text.TextSelection;
 import org.eclipse.jface.viewers.TreeSelection;
 import org.eclipse.ui.PlatformUI;
+import org.eclipse.ui.internal.PluginAction;
+import org.eclipse.ui.internal.handlers.CommandLegacyActionWrapper;
 import org.rubypeople.rdt.core.RubyModelException;
 import org.rubypeople.rdt.internal.core.Member;
 import org.rubypeople.rdt.internal.core.MemberElementInfo;
@@ -43,16 +47,26 @@ public class TextSelectionProvider {
 	private int start;
 	private int end;
 	private int caret;
-	
 
-	@SuppressWarnings("restriction") //$NON-NLS-1$
 	public TextSelectionProvider(IAction action) {
 		
-		if (action == null || action instanceof org.eclipse.ui.internal.EditorPluginAction) {
+		if (invokedFromContextMenu(action) || invokedFromMenu(action) || invokedFromShortcut(action)) {
 			initEditor();
 		} else {
 			initOutline(action);
 		}
+	}
+
+	private boolean invokedFromShortcut(IAction action) {
+		return action instanceof CommandLegacyActionWrapper;
+	}
+
+	private boolean invokedFromMenu(IAction action) {
+		return action instanceof PluginAction && ((PluginAction) action).getSelection() instanceof TextSelection;
+	}
+
+	private boolean invokedFromContextMenu(IAction action) {
+		return action == null;
 	}
 	
 	private void initEditor() {
@@ -60,6 +74,8 @@ public class TextSelectionProvider {
 		ITextSelection selection = (ITextSelection) editor.getSelectionProvider().getSelection();
 		start = selection.getOffset();
 		end = start + selection.getLength();
+		
+		//XXX Mirko asks: What's that for?
 		if (end > start) {
 			end--;
 		}
@@ -68,15 +84,20 @@ public class TextSelectionProvider {
 
 	@SuppressWarnings("restriction") //$NON-NLS-1$
 	private void initOutline(IAction action) {
-		TreeSelection selection = (TreeSelection) ((org.eclipse.ui.internal.PluginAction)action).getSelection();
-		Member member = (Member) selection.toArray()[0];
-		try {
-			MemberElementInfo info = (MemberElementInfo) member.getElementInfo();
-			start = info.getNameSourceStart();
-			end = info.getNameSourceEnd()+1;
-			caret = start;
-		} catch (RubyModelException e) {
-			e.printStackTrace();
+		TreeSelection selection = (TreeSelection) ((PluginAction) action).getSelection();
+		Object selectedObject = selection.toArray()[0];
+		if (selectedObject instanceof Member) {
+			Member member = (Member) selectedObject;
+			try {
+				MemberElementInfo info = (MemberElementInfo) member.getElementInfo();
+				start = info.getNameSourceStart();
+				end = info.getNameSourceEnd()+1;
+				caret = start;
+			} catch (RubyModelException e) {
+				e.printStackTrace();
+			}
+		} else if (selectedObject instanceof IFile) {
+			activeDocument = ((IFile) selectedObject).getFullPath().toString();
 		}
 	}
 
@@ -98,5 +119,9 @@ public class TextSelectionProvider {
 	
 	public int getEndOffset() {
 		return end;
+	}
+
+	public String getActiveDocument() {
+		return activeDocument;
 	}
 }

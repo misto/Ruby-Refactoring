@@ -64,8 +64,7 @@ public abstract class OffsetProvider implements IOffsetProvider {
 	}
 
 	protected Node getLastContentNode(PartialClassNodeWrapper classNode) {
-		List childNodes = classNode.getClassBodyNode().childNodes();
-		Node lastNode = (Node) childNodes.get(childNodes.size() - 1);
-		return lastNode;
+		List<Node> childNodes = classNode.getClassBodyNode().childNodes();
+		return childNodes.get(childNodes.size() - 1);
 	}
 }

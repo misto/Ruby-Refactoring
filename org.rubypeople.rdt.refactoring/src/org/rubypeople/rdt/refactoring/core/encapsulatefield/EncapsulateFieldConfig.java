@@ -31,14 +31,13 @@
 package org.rubypeople.rdt.refactoring.core.encapsulatefield;
 
 import org.jruby.ast.types.INameNode;
-import org.rubypeople.rdt.refactoring.core.IRefactoringConfig;
+import org.rubypeople.rdt.refactoring.core.RefactoringConfig;
 import org.rubypeople.rdt.refactoring.documentprovider.IDocumentProvider;
 import org.rubypeople.rdt.refactoring.nodewrapper.AttrAccessorNodeWrapper;
 import org.rubypeople.rdt.refactoring.nodewrapper.ClassNodeWrapper;
 
-public class EncapsulateFieldConfig implements IRefactoringConfig {
+public class EncapsulateFieldConfig extends RefactoringConfig {
 
-	private IDocumentProvider docProvider;
 	private int caretPosition;
 	private boolean readerGenerationDisabled;
 	private boolean writerGenerationDisabled;
@@ -47,16 +46,12 @@ public class EncapsulateFieldConfig implements IRefactoringConfig {
 	private AttrAccessorNodeWrapper selectedAccessor;
 
 	public EncapsulateFieldConfig(IDocumentProvider docProvider, int caretPosition) {
-		this.docProvider = docProvider;
+		super(docProvider);
 		this.caretPosition = caretPosition;
 	}
 
 	public int getCaretPosition() {
 		return caretPosition;
-	}
-
-	public IDocumentProvider getDocumentProvider() {
-		return docProvider;
 	}
 
 	public boolean isReaderGenerationDisabled() {
@@ -125,9 +120,5 @@ public class EncapsulateFieldConfig implements IRefactoringConfig {
 			return getSelectedInstNode().getName().substring(1);
 		}
 		return null;
-	}
-
-	public void setDocumentProvider(IDocumentProvider doc) {
-		this.docProvider = doc;
 	}
 }

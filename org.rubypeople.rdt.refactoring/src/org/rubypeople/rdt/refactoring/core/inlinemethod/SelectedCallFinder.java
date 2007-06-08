@@ -40,7 +40,7 @@ public class SelectedCallFinder implements ISelectedCallFinder {
 
 	public MethodCallNodeWrapper findSelectedCall(final int pos, final IDocumentProvider doc) {
 
-		final Node selectedNode = SelectionNodeProvider.getSelectedNodeOfType(doc.getActiveFileRootNode(), pos, CallNode.class, FCallNode.class, VCallNode.class);
+		final Node selectedNode = SelectionNodeProvider.getSelectedNodeOfType(doc.getRootNode(), pos, CallNode.class, FCallNode.class, VCallNode.class);
 
 		return selectedNode != null ? new MethodCallNodeWrapper(selectedNode) : null;
 	}

@@ -104,7 +104,7 @@ public class LocalValueReplaceProvider extends ReplaceEditProvider {
 	}
 
 	private boolean callNeedsBrackets() {
-		Node targetEnclosingNode = NodeProvider.findParentNode(config.getDocumentProvider().getActiveFileRootNode(),	targetNode.getWrappedNode());
+		Node targetEnclosingNode = NodeProvider.findParentNode(config.getDocumentProvider().getRootNode(),	targetNode.getWrappedNode());
 		boolean isTargetEnclosingNodeCallNode = NodeUtil.nodeAssignableFrom(targetEnclosingNode, MethodCallNodeWrapper.METHOD_CALL_NODE_CLASSES());
 		if(NodeUtil.nodeAssignableFrom(targetEnclosingNode, CallNode.class)) {
 			isTargetEnclosingNodeCallNode &= !JRubyRefactoringUtils.isMathematicalExpression(targetEnclosingNode);

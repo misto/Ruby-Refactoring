@@ -30,27 +30,22 @@ package org.rubypeople.rdt.refactoring.core.splitlocal;
 
 import java.util.Collection;
 
-import org.rubypeople.rdt.refactoring.core.IRefactoringConfig;
+import org.rubypeople.rdt.refactoring.core.RefactoringConfig;
 import org.rubypeople.rdt.refactoring.documentprovider.IDocumentProvider;
 
-public class SplitLocalConfig implements IRefactoringConfig {
+public class SplitLocalConfig extends RefactoringConfig {
 
-	private IDocumentProvider documentProvider;
 	private int caretPosition;
 	Collection<LocalVarUsage> localUsages;
 	private LocalVarFinder localVarFinder;
 
 	public SplitLocalConfig(IDocumentProvider documentProvider, int caretPosition) {
-		this.documentProvider = documentProvider;
+		super(documentProvider);
 		this.caretPosition = caretPosition;
 	}
 
-	public int getCaretPsition() {
+	public int getCaretPosition() {
 		return caretPosition;
-	}
-
-	public IDocumentProvider getDocumentProvider() {
-		return documentProvider;
 	}
 
 	public boolean hasLocalUsages() {
@@ -72,9 +67,4 @@ public class SplitLocalConfig implements IRefactoringConfig {
 	public Collection<LocalVarUsage> getLocalUsages() {
 		return localUsages;
 	}
-
-	public void setDocumentProvider(IDocumentProvider doc) {
-		this.documentProvider = doc;
-	}
-
 }

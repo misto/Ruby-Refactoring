@@ -65,9 +65,9 @@ public class RenameMethodConditionChecker extends RefactoringConditionChecker{
 	@Override
 	public void init(IRefactoringConfig configObj) {
 		this.config = (RenameMethodConfig)configObj;
-		config.setDocProvider(new DocumentWithIncluding(config.getDocumentProvider()));
+		config.setDocumentProvider(new DocumentWithIncluding(config.getDocumentProvider()));
 		
-		Node rootNode = config.getDocumentProvider().getActiveFileRootNode();
+		Node rootNode = config.getDocumentProvider().getRootNode();
 		try {
 			this.config.setClassNode(SelectionNodeProvider.getSelectedClassNode(rootNode, this.config.getCaretPosition()));
 		} catch (NoClassNodeException e) {/* ClassNode stays null */}
@@ -209,7 +209,7 @@ public class RenameMethodConditionChecker extends RefactoringConditionChecker{
 			}
 		} else {
 			
-			Node rootNode = config.getDocumentProvider().getActiveFileRootNode();
+			Node rootNode = config.getDocumentProvider().getRootNode();
 			Collection<MethodDefNode> methods = NodeProvider.getMethodNodes(rootNode);
 			ClassNodeProvider classes = new ClassNodeProvider(config.getDocumentProvider());
 			

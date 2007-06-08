@@ -55,7 +55,7 @@ public class NewNameListener implements IErrorMessageGenerator {
 		 }
 	}
 	
-	private boolean isValid(String name) {
+	 protected boolean isValid(String name) {
 		boolean valid = validator.isValid(name);
 		boolean nameAlreadyInUse = false;
 		
@@ -77,5 +77,9 @@ public class NewNameListener implements IErrorMessageGenerator {
 
 	public void setErrorReceiver(IErrorMessageReceiver errorReceiver) {
 		this.errorReceiver = errorReceiver;
+	}
+
+	protected IErrorMessageReceiver getErrorReceiver() {
+		return errorReceiver;
 	}
 }

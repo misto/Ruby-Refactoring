@@ -52,7 +52,7 @@ public class MethodBodyStatementReplacer implements IMethodBodyStatementReplacer
 		Collection<Node> selfNodes = null;
 		DocumentProvider result = new StringDocumentProvider(doc);
 		do {
-			selfNodes = NodeProvider.gatherNodesOfTypeInAktScopeNode(result.getActiveFileRootNode().getBodyNode(), SelfNode.class);
+			selfNodes = NodeProvider.gatherNodesOfTypeInAktScopeNode(result.getRootNode().getBodyNode(), SelfNode.class);
 			if(selfNodes.isEmpty()) {
 				continue;
 			}
@@ -74,7 +74,7 @@ public class MethodBodyStatementReplacer implements IMethodBodyStatementReplacer
 		DocumentProvider result = new StringDocumentProvider(doc);
 		Collection<Node> varNodes = null;
 		do {
-			varNodes = NodeProvider.gatherNodesOfTypeInAktScopeNode(result.getActiveFileRootNode().getBodyNode(), InstVarNode.class, InstAsgnNode.class);
+			varNodes = NodeProvider.gatherNodesOfTypeInAktScopeNode(result.getRootNode().getBodyNode(), InstVarNode.class, InstAsgnNode.class);
 			for(Node actVarNode : new ArrayList<Node>(varNodes)) {
 				if(((INameNode)actVarNode).getName().equals(object)) {
 					varNodes.remove(actVarNode);
@@ -126,7 +126,7 @@ public class MethodBodyStatementReplacer implements IMethodBodyStatementReplacer
 
 	private Collection<MethodCallNodeWrapper> findFAndVCalls(DocumentProvider doc) {
 		Collection<MethodCallNodeWrapper> methodCalls = new ArrayList<MethodCallNodeWrapper>();
-		for (Node node : NodeProvider.gatherNodesOfTypeInAktScopeNode(doc.getActiveFileRootNode().getBodyNode(), VCallNode.class, FCallNode.class)) {
+		for (Node node : NodeProvider.gatherNodesOfTypeInAktScopeNode(doc.getRootNode().getBodyNode(), VCallNode.class, FCallNode.class)) {
 			methodCalls.add(new MethodCallNodeWrapper(node));
 		}
 		return methodCalls;
@@ -136,7 +136,7 @@ public class MethodBodyStatementReplacer implements IMethodBodyStatementReplacer
 		Collection<Node> nodes = null;
 		StringDocumentProvider result = new StringDocumentProvider(doc);
 		do {
-			nodes = NodeProvider.getSubNodes(result.getActiveFileRootNode(), ReturnNode.class);
+			nodes = NodeProvider.getSubNodes(result.getRootNode(), ReturnNode.class);
 			if(nodes.isEmpty()) break;
 			StringBuilder newBody = new StringBuilder(result.getActiveFileContent());
 			int startOffset = nodes.iterator().next().getPosition().getStartOffset();

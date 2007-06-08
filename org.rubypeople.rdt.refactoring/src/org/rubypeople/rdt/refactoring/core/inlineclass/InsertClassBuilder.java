@@ -207,7 +207,7 @@ public class InsertClassBuilder {
 
 	private TextEdit[] getConstructorDeleteEdits(StringDocumentProvider inlinedClassDocument) {
 		ArrayList<TextEdit> constructorDeleters = new ArrayList<TextEdit>();
-		Node rootNode = inlinedClassDocument.getActiveFileRootNode();
+		Node rootNode = inlinedClassDocument.getRootNode();
 		ClassNodeWrapper classNode;
 		try {
 			classNode = SelectionNodeProvider.getSelectedClassNode(rootNode, 1);

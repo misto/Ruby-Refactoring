@@ -31,21 +31,18 @@ package org.rubypeople.rdt.refactoring.core.renamelocal;
 import org.jruby.ast.MethodDefNode;
 import org.jruby.ast.Node;
 import org.jruby.ast.types.INameNode;
-import org.rubypeople.rdt.refactoring.core.IRefactoringConfig;
+import org.rubypeople.rdt.refactoring.core.rename.RenameConfig;
 import org.rubypeople.rdt.refactoring.documentprovider.IDocumentProvider;
 
-public class RenameLocalConfig implements IRefactoringConfig {
+public class RenameLocalConfig extends RenameConfig {
 
-	private IDocumentProvider docProvider;
-	private int caretPosition;
 	private Node selectedNode;
 	private Node selectedMethod;
 	private String[] localNames;
 	private RenameLocalEditProvider editProvider;
 
 	public RenameLocalConfig(IDocumentProvider docProvider, int caretPosition) {
-		this.docProvider = docProvider;
-		this.caretPosition = caretPosition;
+		super(docProvider, caretPosition);
 	}
 	
 	public String getSelectedNodeName() {
@@ -55,14 +52,6 @@ public class RenameLocalConfig implements IRefactoringConfig {
 			return localNames[((MethodDefNode) selectedMethod).getArgsNode().getRestArg()];
 		}
 		return ""; //$NON-NLS-1$
-	}
-
-	public IDocumentProvider getDocumentProvider() {
-		return docProvider;
-	}
-
-	public int getCaretPosition() {
-		return caretPosition;
 	}
 
 	public boolean hasSelectedMethod() {
@@ -108,9 +97,4 @@ public class RenameLocalConfig implements IRefactoringConfig {
 	public boolean hasSelectedNode() {
 		return selectedNode != null;
 	}
-
-	public void setDocumentProvider(IDocumentProvider docProvider) {
-		this.docProvider = docProvider;
-	}
-
 }

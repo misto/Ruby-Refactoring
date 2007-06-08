@@ -2,6 +2,7 @@ package org.rubypeople.eclipse.shams.debug.core;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IResource;
@@ -12,6 +13,7 @@ import org.eclipse.debug.core.ILaunch;
 import org.eclipse.debug.core.ILaunchConfiguration;
 import org.eclipse.debug.core.ILaunchConfigurationType;
 import org.eclipse.debug.core.ILaunchConfigurationWorkingCopy;
+import org.eclipse.debug.core.ILaunchDelegate;
 
 public class ShamLaunchConfiguration implements ILaunchConfiguration {
 
@@ -135,4 +137,25 @@ public class ShamLaunchConfiguration implements ILaunchConfiguration {
         // TODO Auto-generated method stub
         
     }
+
+	public Set getAttribute(String attributeName, Set defaultValue)
+			throws CoreException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public Set getModes() throws CoreException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public ILaunchDelegate getPreferredDelegate(Set modes) throws CoreException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public boolean isReadOnly() {
+		// TODO Auto-generated method stub
+		return false;
+	}
 }

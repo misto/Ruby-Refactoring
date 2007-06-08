@@ -30,9 +30,6 @@
 
 package org.rubypeople.rdt.refactoring.ui.pages.movemethod;
 
-import java.util.Observable;
-import java.util.Observer;
-
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
@@ -43,7 +40,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.rubypeople.rdt.refactoring.core.movemethod.MoveMethodConfig;
 
-public class SecondMoveMethodPageComposite extends Composite implements Observer {
+public class SecondMoveMethodPageComposite extends Composite {
 
 	private MoveMethodConfig config;
 
@@ -52,7 +49,6 @@ public class SecondMoveMethodPageComposite extends Composite implements Observer
 	public SecondMoveMethodPageComposite(Composite parent, MoveMethodConfig config) {
 		super(parent, SWT.NONE);
 		this.config = config;
-		config.addObserver(this);
 		setLayout(new GridLayout(1, true));
 		init();
 	}
@@ -65,6 +61,7 @@ public class SecondMoveMethodPageComposite extends Composite implements Observer
 	private void initInformationText() {
 		infoTextLabel = new Label(this, SWT.WRAP);
 		infoTextLabel.setLayoutData(getGridData(true));
+		infoTextLabel.setText("Please select a field that references an object of the target type:");
 	}
 
 	private GridData getGridData(boolean grab) {
@@ -99,14 +96,5 @@ public class SecondMoveMethodPageComposite extends Composite implements Observer
 				config.setFieldInSourceClassOfTypeDestinationClass(fieldSelectionCombo.getText());
 			}
 		});
-	}
-
-	public void update(Observable arg0, Object arg1) {
-		String selectedMethodName = config.getMethodNode().getName();
-		String sourceClassName = config.getSourceClassNode().getName();
-		String destClassName = config.getDestinationClassNode().getName();
-		String infoText = Messages.SecondMoveMethodPageComposite_MaintainCalls + selectedMethodName + Messages.SecondMoveMethodPageComposite_FieldReference + destClassName
-				+ Messages.SecondMoveMethodPageComposite_RequiredInClass + sourceClassName + Messages.SecondMoveMethodPageComposite_SelectField;
-		infoTextLabel.setText(infoText);
 	}
 }

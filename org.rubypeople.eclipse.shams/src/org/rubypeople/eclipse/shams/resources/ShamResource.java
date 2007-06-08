@@ -300,4 +300,10 @@ public class ShamResource implements IResource {
 		return null;
 	}
 
+	public int findMaxProblemSeverity(String type, boolean includeSubtypes,
+			int depth) throws CoreException {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
 }

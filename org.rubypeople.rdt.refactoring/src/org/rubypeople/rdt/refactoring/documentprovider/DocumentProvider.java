@@ -62,10 +62,6 @@ public abstract class DocumentProvider implements IDocumentProvider {
 	public ClassNodeProvider getIncludedClassNodeProvider() {
 		return new IncludedClassesProvider(this);
 	}
-	
-	public RootNode getActiveFileRootNode() {
-		return getRootNode(getActiveFileName());
-	}
 
 	public Collection<Node> getAllNodes() {
 		ArrayList<Node> allNodes = new ArrayList<Node>();
@@ -79,6 +75,10 @@ public abstract class DocumentProvider implements IDocumentProvider {
 	public Collection<Node> getAllNodes(String fileName){
 		return NodeProvider.getAllNodes(getRootNode(fileName));
 	}
+	
+	public RootNode getRootNode() {
+		return getRootNode(getActiveFileName());
+	}	
 	
 	public RootNode getRootNode(String fileName) {
 		if(!cachedRootNodes.containsKey(fileName)) {

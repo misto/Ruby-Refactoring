@@ -34,7 +34,7 @@ import java.util.Collection;
 import org.jruby.ast.Node;
 import org.jruby.ast.types.INameNode;
 import org.rubypeople.rdt.refactoring.classnodeprovider.ClassNodeProvider;
-import org.rubypeople.rdt.refactoring.documentprovider.DocumentProvider;
+import org.rubypeople.rdt.refactoring.documentprovider.IDocumentProvider;
 import org.rubypeople.rdt.refactoring.editprovider.EditAndTreeContentProvider;
 import org.rubypeople.rdt.refactoring.editprovider.EditProvider;
 import org.rubypeople.rdt.refactoring.nodewrapper.ClassNodeWrapper;
@@ -45,7 +45,7 @@ public class ConstructorsGenerator extends EditAndTreeContentProvider {
 
 	private Collection<TreeClass> classes;
 
-	public ConstructorsGenerator(DocumentProvider docProvider) {
+	public ConstructorsGenerator(IDocumentProvider docProvider) {
 		classes = new ArrayList<TreeClass>();
 		ClassNodeProvider provider = docProvider.getClassNodeProvider();
 		if (provider != null) {

@@ -30,11 +30,15 @@ package org.rubypeople.rdt.refactoring.tests.core.renameclass;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Map;
 
 import org.eclipse.jface.text.BadLocationException;
 import org.rubypeople.rdt.refactoring.core.renameclass.RenameClassConditionChecker;
 import org.rubypeople.rdt.refactoring.core.renameclass.RenameClassConfig;
 import org.rubypeople.rdt.refactoring.core.renameclass.RenameClassEditProvider;
+import org.rubypeople.rdt.refactoring.core.renameclass.RenameClassFileNameChangeProvider;
+import org.rubypeople.rdt.refactoring.documentprovider.DocumentWithIncluding;
 import org.rubypeople.rdt.refactoring.tests.FileTestCase;
 import org.rubypeople.rdt.refactoring.tests.MultiFileTestData;
 
@@ -51,13 +55,24 @@ public class ClassRenameTester extends FileTestCase {
 		
 		int caretPosition = testData.getIntProperty("pos");
 		
-		
-		RenameClassConfig renameClassConfig = new RenameClassConfig(testData, caretPosition);
+		RenameClassConfig renameClassConfig = new RenameClassConfig(new DocumentWithIncluding(testData), caretPosition);
 		new RenameClassConditionChecker(renameClassConfig);
 	
 		renameClassConfig.setNewName(testData.getProperty("name"));
 		
 		RenameClassEditProvider editProvider = new RenameClassEditProvider(renameClassConfig);
+		
+		if (testData.hasProperty("newFileName")) {
+			RenameClassFileNameChangeProvider fileNameChangeProvider = new RenameClassFileNameChangeProvider(renameClassConfig);
+			
+			ArrayList<String> filesThatChanged = new ArrayList<String>();
+			filesThatChanged.add(testData.getActiveFileName());
+			
+			for (Map.Entry<String, String> tuple : fileNameChangeProvider.getFilesToRename(filesThatChanged).entrySet()) {
+				assertEquals(testData.getActiveFileName(), tuple.getKey());
+				assertEquals(testData.getProperty("newFileName"), tuple.getValue());
+			}
+		}
 		
 		checkMultiFileEdits(editProvider, testData);
 	}

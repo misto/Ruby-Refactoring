@@ -149,8 +149,8 @@ public class LocalToFieldConverter extends MultiEditProvider {
 		return LocalNodeWrapper.getLocalNodeName(config.getSelectedNode());
 	}
 
-	private Node findSelectedNode(Class<?>... filterNodes) {
-		return SelectionNodeProvider.getSelectedNodeOfType(config.getDocumentProvider().getActiveFileRootNode(), config.getCaretPosition(), filterNodes);
+	private Node findSelectedNode(Class<? extends Node>... filterNodes) {
+		return SelectionNodeProvider.getSelectedNodeOfType(config.getDocumentProvider().getRootNode(), config.getCaretPosition(), filterNodes);
 	}
 
 	boolean isInitializationExternalizable() {

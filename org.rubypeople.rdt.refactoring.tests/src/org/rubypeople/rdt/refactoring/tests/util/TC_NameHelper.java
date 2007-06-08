@@ -105,4 +105,25 @@ public class TC_NameHelper extends FileTestCase {
 		assertTrue(nodes.length > 0);
 		return nodes[nodes.length - 1];
 	}
+	
+	public void testNameIsSimilar() {
+		assertTrue(NameHelper.fileNameEqualsClassName("class.rb", "Class"));
+		assertTrue(NameHelper.fileNameEqualsClassName("Class.rb", "Class"));
+
+		assertTrue(NameHelper.fileNameEqualsClassName("my_class.rb", "MyClass"));
+		assertTrue(NameHelper.fileNameEqualsClassName("myclass.rb", "MyClass"));
+
+		assertTrue(NameHelper.fileNameEqualsClassName("My_Class.rb", "MyClass"));
+		assertTrue(NameHelper.fileNameEqualsClassName("MyClass.rb", "MyClass"));
+
+		assertFalse(NameHelper.fileNameEqualsClassName("My_Clas.rb", "MyClass"));
+		assertFalse(NameHelper.fileNameEqualsClassName("my_clas.rb", "MyClass"));
+	}
+	
+	public void testFileNameFromClassName() {
+		assertEquals("my_class.rb", NameHelper.fileNameFromClassName("MyClass"));
+		assertEquals("class.rb", NameHelper.fileNameFromClassName("Class"));
+		assertEquals("rgb.rb", NameHelper.fileNameFromClassName("RGB"));
+		assertEquals("wo_wo_wo_wo.rb", NameHelper.fileNameFromClassName("WoWoWoWo"));
+	}
 }

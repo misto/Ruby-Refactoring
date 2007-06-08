@@ -61,8 +61,8 @@ public class RenameFieldConditionChecker extends RefactoringConditionChecker {
 	public void init(IRefactoringConfig configObj) {
 		this.config = (RenameFieldConfig) configObj;
 
-		config.setDocProvider(new DocumentWithIncluding(config.getDocumentProvider()));
-		rootNode = config.getDocumentProvider().getActiveFileRootNode();
+		config.setDocumentProvider(new DocumentWithIncluding(config.getDocumentProvider()));
+		rootNode = config.getDocumentProvider().getRootNode();
 
 		try {
 			ClassNodeWrapper enclosingClassNode = SelectionNodeProvider.getSelectedClassNode(rootNode, config.getCaretPosition());
@@ -121,7 +121,7 @@ public class RenameFieldConditionChecker extends RefactoringConditionChecker {
 
 	@Override
 	protected void checkInitialConditions() {
-		Collection<FieldNodeWrapper> fields = PartialClassNodeWrapper.getFieldsFromNode(config.getDocumentProvider().getActiveFileRootNode());
+		Collection<FieldNodeWrapper> fields = PartialClassNodeWrapper.getFieldsFromNode(config.getDocumentProvider().getRootNode());
 		FieldNodeWrapper selectedFieldNode = SelectionNodeProvider.getSelectedWrappedNode(fields, config.getCaretPosition());
 		if (config.getWholeClassNode() == null) {
 			if (selectedFieldNode != null) {

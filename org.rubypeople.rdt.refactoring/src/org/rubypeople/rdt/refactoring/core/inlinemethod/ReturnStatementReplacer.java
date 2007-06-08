@@ -56,7 +56,7 @@ public class ReturnStatementReplacer implements IReturnStatementReplacer {
 
 	private int countReturnNodes(DocumentProvider doc) {
 		int returnNodes = 0;
-		for (Node node : NodeProvider.getAllNodes(doc.getActiveFileRootNode())) {
+		for (Node node : NodeProvider.getAllNodes(doc.getRootNode())) {
 			if(node instanceof ReturnNode) {
 				returnNodes++;
 			}
@@ -65,7 +65,7 @@ public class ReturnStatementReplacer implements IReturnStatementReplacer {
 	}
 
 	private ReturnNode getReturnNode(DocumentProvider doc) {
-		for (Node node : NodeProvider.getAllNodes(doc.getActiveFileRootNode())) {
+		for (Node node : NodeProvider.getAllNodes(doc.getRootNode())) {
 			if(node instanceof ReturnNode) {
 				return (ReturnNode) node;
 			}

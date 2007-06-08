@@ -77,7 +77,7 @@ public class RenameModuleConditionChecker extends RefactoringConditionChecker {
 	public void init(IRefactoringConfig configObj) {
 		config = (RenameModuleConfig) configObj;
 		
-		ModuleNodeWrapper selectedModule = ModuleNodeProvider.getSelectedModuleNode(config.getDocumentProvider().getActiveFileRootNode(), config.getCarretPosition());
+		ModuleNodeWrapper selectedModule = ModuleNodeProvider.getSelectedModuleNode(config.getDocumentProvider().getRootNode(), config.getCaretPosition());
 		if(selectedModule == null || caretIsNotOnModuleName(selectedModule)) {
 			return;
 		}
@@ -138,6 +138,6 @@ public class RenameModuleConditionChecker extends RefactoringConditionChecker {
 	}
 
 	private boolean caretIsNotOnModuleName(ModuleNodeWrapper selectedModule) {
-		return !NodeUtil.positionIsInNode(config.getCarretPosition(), selectedModule.getWrappedNode().getCPath());
+		return !NodeUtil.positionIsInNode(config.getCaretPosition(), selectedModule.getWrappedNode().getCPath());
 	}
 }

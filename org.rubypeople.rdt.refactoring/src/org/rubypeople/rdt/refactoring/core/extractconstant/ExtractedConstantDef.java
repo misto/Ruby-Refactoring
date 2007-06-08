@@ -48,7 +48,7 @@ public class ExtractedConstantDef extends InsertEditProvider {
 		}
 		Node enclosingBlockNode = SelectionNodeProvider.getEnclosingNode(config.getRootNode(), config.getSelection(), BlockNode.class);
 		if (enclosingBlockNode != null) {
-			Node firstSelectedNode = (Node) config.getSelectedNodes();
+			Node firstSelectedNode = config.getSelectedNodes();
 			if (!firstSelectedNode.childNodes().isEmpty()) {
 				firstSelectedNode = (Node) firstSelectedNode.childNodes().toArray()[0];
 			}
@@ -68,10 +68,10 @@ public class ExtractedConstantDef extends InsertEditProvider {
 			return 0;
 		}
 		if (insertAfterNode instanceof ClassNode) {
-			return new BeforeFirstMethodInClassOffsetProvider(new RealClassNodeWrapper((ClassNode)insertAfterNode), config.getDocumentProvider().getActiveFileContent()).getOffset();
+			return new BeforeFirstMethodInClassOffsetProvider(new RealClassNodeWrapper(insertAfterNode), config.getDocumentProvider().getActiveFileContent()).getOffset();
 		}
 		if (insertAfterNode instanceof SClassNode) {
-			return new BeforeFirstMethodInClassOffsetProvider(new SClassNodeWrapper((SClassNode)insertAfterNode, config.getRootNode()), config.getDocumentProvider().getActiveFileContent()).getOffset();
+			return new BeforeFirstMethodInClassOffsetProvider(new SClassNodeWrapper(insertAfterNode, config.getRootNode()), config.getDocumentProvider().getActiveFileContent()).getOffset();
 		}
 		if (insertAfterNode instanceof ModuleNode) {
 			return new BeforeFirstMethodInClassOffsetProvider((ModuleNode) insertAfterNode, config.getDocumentProvider().getActiveFileContent()).getOffset();

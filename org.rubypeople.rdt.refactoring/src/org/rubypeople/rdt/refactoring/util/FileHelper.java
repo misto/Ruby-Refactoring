@@ -12,7 +12,7 @@
  * rights and limitations under the License.
  *
  * Copyright (C) 2006 Lukas Felber <lfelber@hsr.ch>
- * Copyright (C) 2006 Mirko Stocker <me@misto.ch>
+ * Copyright (C) 2007 Mirko Stocker <me@misto.ch>
  * Copyright (C) 2006 Thomas Corbat <tcorbat@hsr.ch>
  * 
  * Alternatively, the contents of this file may be used under the terms of
@@ -34,6 +34,16 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.Reader;
+import java.util.ArrayList;
+import java.util.Collection;
+
+import org.eclipse.core.resources.IFile;
+import org.eclipse.core.resources.IResource;
+import org.eclipse.core.resources.IResourceVisitor;
+import org.eclipse.core.runtime.CoreException;
+import org.rubypeople.rdt.internal.core.util.Util;
+import org.rubypeople.rdt.internal.ui.RubyPlugin;
+import org.rubypeople.rdt.refactoring.documentprovider.StringDocumentProvider;
 
 
 public class FileHelper {
@@ -64,21 +74,33 @@ public class FileHelper {
 	}
 	
 	public static String getLineDelimiter(String document){
+		String findLineSeparator = Util.findLineSeparator(document.toCharArray());
+		return findLineSeparator == null ? DEFAULT_LINE_DELIMITER : findLineSeparator;
+	}
+	
+	public static String getFileNameFromPath(String path) {
+		String[] strings = path.split("/");
+		return strings[strings.length - 1];
+	}
+	
+	public static Collection<StringDocumentProvider> getAllDocuments() {
+		final Collection<StringDocumentProvider> docs = new ArrayList<StringDocumentProvider>();
 		
-		for(int i = 0; i < document.length(); i++){
-			char currentChar = document.charAt(i);
-			
-			if(currentChar == '\r'){
-				if(document.length() > i + 1 && document.charAt(i + 1) == '\n'){
-					return "\r\n"; //$NON-NLS-1$
-				}
-				return "\r"; //$NON-NLS-1$
-			}
-			else if(currentChar == '\n'){
-				return "\n"; //$NON-NLS-1$
-			}
-		}
+		try {
+			RubyPlugin.getWorkspace().getRoot().accept(new IResourceVisitor(){
+				public boolean visit(IResource resource) throws CoreException {
 
-		return DEFAULT_LINE_DELIMITER;
+					if(resource instanceof IFile && Util.isValidRubyScriptName(((IFile) resource).getName())) {
+						IFile file = (IFile) resource;
+						docs.add(new StringDocumentProvider(file.getFullPath().toString(), new String(Util.getResourceContentsAsCharArray(file))));
+					}
+					return true;
+				}});
+			
+		} catch (CoreException e) {
+			e.printStackTrace();
+		}
+		
+		return docs;
 	}
 }

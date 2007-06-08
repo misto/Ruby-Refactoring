@@ -15,12 +15,11 @@ import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 
 import org.eclipse.compare.CompareConfiguration;
-import org.eclipse.compare.CompareViewerPane;
 import org.eclipse.compare.IEncodedStreamContentAccessor;
 import org.eclipse.compare.ITypedElement;
-import org.eclipse.compare.contentmergeviewer.TextMergeViewer;
 import org.eclipse.compare.structuremergeviewer.DiffNode;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.jface.action.ToolBarManager;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.dialogs.TrayDialog;
 import org.eclipse.jface.text.DocumentEvent;
@@ -30,43 +29,29 @@ import org.eclipse.jface.text.ITypedRegion;
 import org.eclipse.jface.text.Region;
 import org.eclipse.jface.text.TextAttribute;
 import org.eclipse.jface.text.TextPresentation;
-import org.eclipse.jface.text.TextViewer;
 import org.eclipse.jface.text.presentation.IPresentationDamager;
 import org.eclipse.jface.text.presentation.IPresentationReconciler;
 import org.eclipse.jface.text.presentation.IPresentationRepairer;
 import org.eclipse.jface.text.presentation.PresentationReconciler;
 import org.eclipse.jface.text.source.ISourceViewer;
-import org.eclipse.jface.text.source.SourceViewer;
 import org.eclipse.jface.text.source.SourceViewerConfiguration;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.StyleRange;
+import org.eclipse.swt.custom.ViewForm;
 import org.eclipse.swt.events.DisposeEvent;
 import org.eclipse.swt.events.DisposeListener;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.GridData;
-import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
+import org.eclipse.swt.widgets.ToolBar;
+import org.rubypeople.rdt.internal.ui.actions.ShowWhiteSpaceAction;
+import org.rubypeople.rdt.internal.ui.compare.RubyMergeViewer;
 
 public class CompareResultDialog extends TrayDialog {
-    private static class CompareResultMergeViewer extends TextMergeViewer {
-         private CompareResultMergeViewer(Composite parent, int style, CompareConfiguration configuration) {
-             super(parent, style, configuration);
-         }
-         
-     	protected void createControls(Composite composite) {
-     		super.createControls(composite);
-    		//PlatformUI.getWorkbench().getHelpSystem().setHelp(composite, IJUnitHelpContextIds.RESULT_COMPARE_DIALOG);
-     	}
-         
-        protected void configureTextViewer(TextViewer textViewer) {
-            if (textViewer instanceof SourceViewer) {
-                ((SourceViewer)textViewer).configure(new CompareResultViewerConfiguration());   
-            }
-        }
-    }
     
     public static class CompareResultViewerConfiguration extends SourceViewerConfiguration {
         public static class SimpleDamagerRepairer implements IPresentationDamager, IPresentationRepairer {
@@ -124,7 +109,7 @@ public class CompareResultDialog extends TrayDialog {
         }
 	}
 
-    private TextMergeViewer fViewer;
+    private RubyMergeViewer fViewer;
     private String fExpected;
     private String fActual;
     private String fTestName;
@@ -175,23 +160,27 @@ public class CompareResultDialog extends TrayDialog {
 	}
 
 	protected Control createDialogArea(Composite parent) {
-		Composite composite = (Composite)super.createDialogArea(parent);
-		GridLayout layout= new GridLayout();
-		layout.numColumns= 1;
-		composite.setLayout(layout);
-		
-		CompareViewerPane pane = new CompareViewerPane(composite, SWT.BORDER | SWT.FLAT);
-		pane.setText(fTestName);
+		Composite composite = (Composite) super.createDialogArea(parent);
+		ViewForm pane = new ViewForm(composite, SWT.BORDER | SWT.FLAT);
+		Control control = createPreviewer(pane);
 		GridData data= new GridData(GridData.FILL_HORIZONTAL | GridData.FILL_VERTICAL);
 		data.widthHint= convertWidthInCharsToPixels(120);
 		data.heightHint= convertHeightInCharsToPixels(13);
 		pane.setLayoutData(data);
+		ToolBar tb = new ToolBar(pane, SWT.BORDER|SWT.FLAT);
+		ToolBarManager tbm = new ToolBarManager(tb);
+		ShowWhiteSpaceAction action = new ShowWhiteSpaceAction(fViewer);
+		tbm.add(action);
+		tbm.update(true);;
+		pane.setTopRight(tb);
 		
-		Control previewer= createPreviewer(pane);
-		pane.setContent(previewer);
+		Label label = new Label(pane, SWT.NONE);
+		label.setText(fTestName);
+		pane.setTopLeft(label);
+		
+		pane.setContent(control);
 		GridData gd= new GridData(GridData.FILL_BOTH);
-		previewer.setLayoutData(gd);
-		applyDialogFont(parent);
+		control.setLayoutData(gd);
 		return composite;
 	}
 	
@@ -203,7 +192,7 @@ public class CompareResultDialog extends TrayDialog {
 	    compareConfiguration.setRightEditable(false);
 	    compareConfiguration.setProperty(CompareConfiguration.IGNORE_WHITESPACE, Boolean.FALSE);
 
-	    fViewer= new CompareResultMergeViewer(parent, SWT.NONE, compareConfiguration);
+	    fViewer= new RubyMergeViewer(parent, SWT.NONE, compareConfiguration);
 	    fViewer.setInput(new DiffNode( 
         new CompareElement(fExpected), 
         new CompareElement(fActual)));

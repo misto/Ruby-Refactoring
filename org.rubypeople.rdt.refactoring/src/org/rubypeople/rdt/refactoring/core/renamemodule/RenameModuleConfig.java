@@ -30,20 +30,15 @@ package org.rubypeople.rdt.refactoring.core.renamemodule;
 
 import java.util.Collection;
 
-import org.rubypeople.rdt.refactoring.core.IRefactoringConfig;
+import org.rubypeople.rdt.refactoring.core.RenameTypeConfig;
 import org.rubypeople.rdt.refactoring.core.renamemethod.NodeSelector;
-import org.rubypeople.rdt.refactoring.documentprovider.DocumentWithIncluding;
 import org.rubypeople.rdt.refactoring.documentprovider.IDocumentProvider;
 import org.rubypeople.rdt.refactoring.nodewrapper.INodeWrapper;
 import org.rubypeople.rdt.refactoring.nodewrapper.ModuleNodeWrapper;
-import org.rubypeople.rdt.refactoring.ui.INewNameReceiver;
 
-public class RenameModuleConfig implements IRefactoringConfig, INewNameReceiver, NodeSelector {
+public class RenameModuleConfig extends RenameTypeConfig implements NodeSelector {
 
-	private IDocumentProvider doc;
-	private final int carretPosition;
 	private ModuleNodeWrapper selectedModule;
-	private String newName;
 	private Collection<ModuleNodeWrapper> moduleParts;
 	private String originalFullName;
 	private String originalName;
@@ -53,24 +48,7 @@ public class RenameModuleConfig implements IRefactoringConfig, INewNameReceiver,
 	private Collection<String> allModuleNames;
 
 	public RenameModuleConfig(IDocumentProvider doc, int carretPosition) {
-		this.doc = doc;
-		this.carretPosition = carretPosition;
-	}
-
-	public IDocumentProvider getDocumentProvider() {
-		return doc;
-	}
-
-	public void setDocumentProvider(IDocumentProvider doc) {
-		this.doc = new DocumentWithIncluding(doc);
-	}
-
-	public void setNewName(String newName) {
-		this.newName = newName;
-	}
-
-	public int getCarretPosition() {
-		return carretPosition;
+		super(doc, carretPosition);
 	}
 
 	public ModuleNodeWrapper getSelectedModule() {
@@ -81,10 +59,6 @@ public class RenameModuleConfig implements IRefactoringConfig, INewNameReceiver,
 		this.selectedModule = selectedModule;
 		originalFullName = selectedModule.getFullName();
 		originalName = selectedModule.getName();
-	}
-
-	public String getNewName() {
-		return newName;
 	}
 
 	public void setModuleParts(Collection<ModuleNodeWrapper> moduleParts) {
@@ -133,5 +107,10 @@ public class RenameModuleConfig implements IRefactoringConfig, INewNameReceiver,
 
 	public void setAllModuleNames(Collection<String> allModuleNames) {
 		this.allModuleNames = allModuleNames;
+	}
+
+	@Override
+	public String getSelectedName() {
+		return getOriginalName();
 	}
 }

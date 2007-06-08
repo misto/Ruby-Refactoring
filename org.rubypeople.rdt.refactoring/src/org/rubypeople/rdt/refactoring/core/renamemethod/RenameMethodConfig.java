@@ -34,22 +34,14 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 import org.jruby.ast.SymbolNode;
-import org.rubypeople.rdt.refactoring.core.IRefactoringConfig;
-import org.rubypeople.rdt.refactoring.documentprovider.DocumentWithIncluding;
+import org.rubypeople.rdt.refactoring.core.rename.RenameConfig;
 import org.rubypeople.rdt.refactoring.documentprovider.IDocumentProvider;
 import org.rubypeople.rdt.refactoring.nodewrapper.ClassNodeWrapper;
 import org.rubypeople.rdt.refactoring.nodewrapper.INodeWrapper;
 import org.rubypeople.rdt.refactoring.nodewrapper.MethodNodeWrapper;
-import org.rubypeople.rdt.refactoring.ui.INewNameReceiver;
 
-public class RenameMethodConfig implements INewNameReceiver, NodeSelector, IRefactoringConfig {
+public class RenameMethodConfig extends RenameConfig implements NodeSelector {
 
-	private IDocumentProvider docProvider;
-
-	private int caretPosition;
-
-	private String newName;
-	
 	private Collection<? extends INodeWrapper> renamedCalls;
 	
 	private Collection<? extends INodeWrapper> possibleCalls;
@@ -63,28 +55,11 @@ public class RenameMethodConfig implements INewNameReceiver, NodeSelector, IRefa
 	private boolean renameFields = true;
 
 	public RenameMethodConfig(IDocumentProvider docProvider, int caretPosition) {
-		this.docProvider = docProvider;
-		this.caretPosition = caretPosition;
+		super(docProvider, caretPosition);
 		this.renamedCalls = new ArrayList<INodeWrapper>();
 		this.possibleCalls = new ArrayList<INodeWrapper>();
 	}
 
-	public int getCaretPosition() {
-		return caretPosition;
-	}
-
-	public IDocumentProvider getDocumentProvider() {
-		return docProvider;
-	}
-
-	public String getNewName() {
-		return newName;
-	}
-
-	public void setNewName(String newName) {
-		this.newName = newName;
-	}
-	
 	public void setSelectedCalls(Collection<? extends INodeWrapper> callCandidates){
 		this.renamedCalls = callCandidates;
 	}
@@ -123,14 +98,6 @@ public class RenameMethodConfig implements INewNameReceiver, NodeSelector, IRefa
 	
 	public void setPossibleCalls(Collection<? extends INodeWrapper> possibleCalls){
 		this.possibleCalls = possibleCalls;
-	}
-
-	public void setDocProvider(DocumentWithIncluding docProvider) {
-		this.docProvider = docProvider;
-	}
-
-	public void setDocumentProvider(IDocumentProvider doc) {
-		this.docProvider = doc;
 	}
 
 	public boolean renameFields() {

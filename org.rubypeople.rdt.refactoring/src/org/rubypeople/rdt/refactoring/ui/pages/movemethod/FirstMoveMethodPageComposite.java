@@ -59,7 +59,6 @@ public class FirstMoveMethodPageComposite extends Composite {
         createSelectionGroup();
         createClassSelection();
         createLeaveDelegateMethodCheck();
-			
 	}
 
 	private void createSelectionGroup() {

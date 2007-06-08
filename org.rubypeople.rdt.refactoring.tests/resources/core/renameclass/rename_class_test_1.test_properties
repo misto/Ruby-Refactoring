@@ -1,3 +1,4 @@
 name=NewName
 pos=8
-activeFile=activeFile.rb
+activeFile=test.rb
+newFileName=new_name.rb

@@ -33,6 +33,7 @@ import java.util.ArrayList;
 import org.rubypeople.rdt.refactoring.core.ConstNameValidator;
 import org.rubypeople.rdt.refactoring.core.RubyRefactoring;
 import org.rubypeople.rdt.refactoring.core.TextSelectionProvider;
+import org.rubypeople.rdt.refactoring.core.renameclass.RenameClassFileNameChangeProvider;
 import org.rubypeople.rdt.refactoring.ui.NewNameListener;
 import org.rubypeople.rdt.refactoring.ui.pages.OccurenceReplaceSelectionPage;
 import org.rubypeople.rdt.refactoring.ui.pages.RenamePage;
@@ -49,6 +50,7 @@ public class RenameModuleRefactoring extends RubyRefactoring {
 		if(conditionChecker.shouldPerform()) {
 			RenameModuleEditProvider editProvider = new RenameModuleEditProvider(renameModuleConfig);
 			setEditProvider(editProvider);
+			setFileNameChangeProvider(new RenameClassFileNameChangeProvider(renameModuleConfig));
 			
 			pages.add(new RenamePage(NAME, renameModuleConfig.getOriginalName(),
 					new NewNameListener(renameModuleConfig, new ConstNameValidator(), new ArrayList<String>())));

@@ -1,19 +1,26 @@
 package org.rubypeople.rdt.internal.ui.compare;
 
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 
 import org.eclipse.compare.CompareConfiguration;
 import org.eclipse.compare.IResourceProvider;
 import org.eclipse.compare.ITypedElement;
 import org.eclipse.compare.contentmergeviewer.TextMergeViewer;
+import org.eclipse.compare.internal.MergeSourceViewer;
 import org.eclipse.compare.structuremergeviewer.ICompareInput;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.ProjectScope;
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.preference.PreferenceConverter;
 import org.eclipse.jface.text.IDocumentPartitioner;
+import org.eclipse.jface.text.PaintManager;
 import org.eclipse.jface.text.TextViewer;
+import org.eclipse.jface.text.WhitespaceCharacterPainter;
 import org.eclipse.jface.text.source.SourceViewer;
 import org.eclipse.jface.util.IPropertyChangeListener;
 import org.eclipse.jface.util.PropertyChangeEvent;
@@ -31,6 +38,7 @@ import org.rubypeople.rdt.internal.ui.RubyPlugin;
 import org.rubypeople.rdt.internal.ui.text.IRubyColorConstants;
 import org.rubypeople.rdt.internal.ui.text.IRubyPartitions;
 import org.rubypeople.rdt.internal.ui.text.PreferencesAdapter;
+import org.rubypeople.rdt.ui.PreferenceConstants;
 import org.rubypeople.rdt.ui.text.RubySourceViewerConfiguration;
 import org.rubypeople.rdt.ui.text.RubyTextTools;
 
@@ -40,7 +48,10 @@ public class RubyMergeViewer extends TextMergeViewer {
 	private IPreferenceStore fPreferenceStore;
 	private boolean fUseSystemColors;
 	private RubySourceViewerConfiguration fSourceViewerConfiguration;
-	private ArrayList fSourceViewer;
+	private ArrayList<TextViewer> fSourceViewer;
+	
+	private WhitespaceCharacterPainter leftWhitespaceCharacterPainter;
+	private WhitespaceCharacterPainter rightWhitespaceCharacterPainter;
 	
 	public RubyMergeViewer(Composite parent, int styles, CompareConfiguration mp) {
 		super(parent, styles | SWT.LEFT_TO_RIGHT, mp);
@@ -72,7 +83,7 @@ public class RubyMergeViewer extends TextMergeViewer {
 			if (project != null) {
 				setPreferenceStore(createChainedPreferenceStore(project));
 				if (fSourceViewer != null) {
-					Iterator iterator= fSourceViewer.iterator();
+					Iterator<TextViewer> iterator= fSourceViewer.iterator();
 					while (iterator.hasNext()) {
 						SourceViewer sourceViewer= (SourceViewer) iterator.next();
 						sourceViewer.unconfigure();
@@ -120,13 +131,13 @@ public class RubyMergeViewer extends TextMergeViewer {
 	}
 		
 	private ChainedPreferenceStore createChainedPreferenceStore(IRubyProject project) {
-	    	ArrayList stores= new ArrayList(4);
+	    	ArrayList<IPreferenceStore> stores= new ArrayList<IPreferenceStore>(4);
 	    	if (project != null)
 	    		stores.add(new EclipsePreferencesAdapter(new ProjectScope(project.getProject()), RubyCore.PLUGIN_ID));
 			stores.add(RubyPlugin.getDefault().getPreferenceStore());
 			stores.add(new PreferencesAdapter(RubyCore.getPlugin().getPluginPreferences()));
 			stores.add(EditorsUI.getPreferenceStore());
-			return new ChainedPreferenceStore((IPreferenceStore[]) stores.toArray(new IPreferenceStore[stores.size()]));
+			return new ChainedPreferenceStore(stores.toArray(new IPreferenceStore[stores.size()]));
 	}
 	
 	private RubySourceViewerConfiguration getSourceViewerConfiguration() {
@@ -209,34 +220,129 @@ public class RubyMergeViewer extends TextMergeViewer {
 		return PreferenceConverter.getColor(store, key);
 	}
 	
+	private enum ViewerLocation {
+		LEFT,
+		CENTER,
+		RIGHT
+	}
+	
+	
+	private MergeSourceViewer getSourceViewer(ViewerLocation loc) throws SecurityException, NoSuchFieldException, IllegalArgumentException, IllegalAccessException {
+		Class<?> class1 = ((TextMergeViewer)this).getClass().getSuperclass();
+		String fieldName = "";
+		switch (loc) {
+		case LEFT:
+			fieldName = "fLeft";
+			break;
+		case RIGHT:
+			fieldName = "fRight";
+			break;
+		case CENTER:
+			fieldName = "fAncestor";
+			break;
+		}
+		
+		Field field = class1.getDeclaredField(fieldName);
+		field.setAccessible(true);
+		MergeSourceViewer viewer = (MergeSourceViewer) field.get(this);
+		return viewer;
+
+	}
+	
+	
+	/**
+	 * Installs the painter on the editor.
+	 */
+	private void installPainter() {
+		try {
+			MergeSourceViewer left = getSourceViewer(ViewerLocation.LEFT);
+			MergeSourceViewer right = getSourceViewer(ViewerLocation.RIGHT);
+			
+			leftWhitespaceCharacterPainter = new WhitespaceCharacterPainter(left);
+			left.addPainter(leftWhitespaceCharacterPainter);
+			rightWhitespaceCharacterPainter = new WhitespaceCharacterPainter(right);
+			right.addPainter(rightWhitespaceCharacterPainter);
+		} catch (Exception e) {
+			logException(e);
+		}
+	}
+
+
+	/**
+	 * Remove the painter from the current editor.
+	 */
+	private void uninstallPainter() {
+		try {
+			MergeSourceViewer left = getSourceViewer(ViewerLocation.LEFT);
+			MergeSourceViewer right = getSourceViewer(ViewerLocation.RIGHT);
+			
+			
+			if(leftWhitespaceCharacterPainter == null) {
+				leftWhitespaceCharacterPainter = getWhitespaceCharacterPainter(left);
+			}
+			if(rightWhitespaceCharacterPainter == null) {
+				rightWhitespaceCharacterPainter = getWhitespaceCharacterPainter(right);
+			}
+			
+			left.removePainter(leftWhitespaceCharacterPainter);
+			right.removePainter(rightWhitespaceCharacterPainter);
+			left.invalidateTextPresentation();
+			right.invalidateTextPresentation();
+			left.refresh();
+			right.refresh();
+			
+		} catch (Exception e) {
+			logException(e);
+		}
+		
+	}
+	
+	private WhitespaceCharacterPainter getWhitespaceCharacterPainter(
+			MergeSourceViewer viewer) {
+		try {
+			Class<?> viewerClass = Class.forName("org.eclipse.jface.text.TextViewer");
+			Field painterMgField = viewerClass.getDeclaredField("fPaintManager");
+			painterMgField.setAccessible(true);
+			PaintManager pm = (PaintManager)painterMgField.get(viewer);
+			
+			Class<? extends PaintManager> classPm = pm.getClass();
+			Field painterListField = classPm.getDeclaredField("fPainters");
+			painterListField.setAccessible(true);
+			List painters = (List) painterListField.get(pm);
+			for (Object object : painters) {
+				if (object instanceof WhitespaceCharacterPainter) {
+					WhitespaceCharacterPainter whitePainter = (WhitespaceCharacterPainter) object;
+					return whitePainter;
+				}
+			}
+		} catch (Exception e) {
+			logException(e);
+		}
+		return null;
+	}
+
+	private void logException(Exception e) {
+		RubyPlugin.log(new Status(IStatus.ERROR, RubyPlugin.PLUGIN_ID, e.getMessage(), e));
+	}
+
+	public void showWhitespaces(boolean show) {
+		if(show) {
+			installPainter();
+		}else {
+			uninstallPainter();
+		}
+		invalidateTextPresentation();
+		refresh();
+	}
+	
 	@Override
 	protected void configureTextViewer(TextViewer textViewer) {
-		if (textViewer instanceof SourceViewer) {
-			if (fSourceViewer == null)
-				fSourceViewer= new ArrayList();
-			fSourceViewer.add(textViewer);
-			RubyTextTools tools= RubyCompareUtilities.getRubyTextTools();
-			if (tools != null)
-				((SourceViewer)textViewer).configure(getSourceViewerConfiguration());
+		super.configureTextViewer(textViewer);
+		WhitespaceCharacterPainter whitespaceCharPainter = null;
+		if(RubyPlugin.getDefault().getPreferenceStore().getBoolean(PreferenceConstants.SHOW_WHITESPACES)) {
+			whitespaceCharPainter= new WhitespaceCharacterPainter(textViewer);
+			textViewer.addPainter(whitespaceCharPainter);
 		}
-//		if (textViewer instanceof SourceViewer) {
-//			
-//			SourceViewer sourceViewer = ((SourceViewer) textViewer);
-//			
-//			RubyTextTools tools = RubyPlugin.getDefault().getRubyTextTools();
-//			Document doc = new Document();
-//			tools.setupRubyDocumentPartitioner(doc,	IRubyPartitions.RUBY_PARTITIONING);
-//
-//			IPreferenceStore[] chain = { RubyPlugin.getDefault().getCombinedPreferenceStore() };
-//			ChainedPreferenceStore preferenceStore = new ChainedPreferenceStore(chain);
-//
-//			SimpleRubySourceViewerConfiguration viewerConfiguration = new SimpleRubySourceViewerConfiguration(tools
-//					.getColorManager(), preferenceStore, null, IRubyPartitions.RUBY_PARTITIONING, true);
-//			sourceViewer.configure(viewerConfiguration);
-//			
-//   		} else {
-//			super.configureTextViewer(textViewer);
-//		}
 	}
 	
 	protected void handleDispose(DisposeEvent event) {

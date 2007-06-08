@@ -34,7 +34,7 @@ import java.util.Collection;
 import org.rubypeople.rdt.refactoring.classnodeprovider.ClassNodeProvider;
 import org.rubypeople.rdt.refactoring.classnodeprovider.IncludedClassesProvider;
 import org.rubypeople.rdt.refactoring.core.overridemethod.MethodsOverrider.TreeClass.TreeMethod;
-import org.rubypeople.rdt.refactoring.documentprovider.DocumentProvider;
+import org.rubypeople.rdt.refactoring.documentprovider.IDocumentProvider;
 import org.rubypeople.rdt.refactoring.editprovider.EditAndTreeContentProvider;
 import org.rubypeople.rdt.refactoring.editprovider.EditProvider;
 import org.rubypeople.rdt.refactoring.editprovider.EditProviderGroups;
@@ -53,7 +53,7 @@ public class MethodsOverrider extends EditAndTreeContentProvider implements IIte
 
 	private Object[] selectedTreeItems;
 
-	public MethodsOverrider(DocumentProvider docProvider) {
+	public MethodsOverrider(IDocumentProvider docProvider) {
 		superClassNodeProvider = docProvider.getClassNodeProvider();
 		IncludedClassesProvider includedClassesProvider = new IncludedClassesProvider(docProvider);
 		if (includedClassesProvider != null)

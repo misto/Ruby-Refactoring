@@ -54,7 +54,7 @@ public class EncapsulateFieldConditionChecker extends RefactoringConditionChecke
 
 	public void init(IRefactoringConfig configObj) {
 		config = (EncapsulateFieldConfig) configObj;
-		rootNode = config.getDocumentProvider().getActiveFileRootNode();
+		rootNode = config.getDocumentProvider().getRootNode();
 		config.setSelectedInstNode(findSelectedInstNode(config.getCaretPosition()));
 		if (!config.hasSelectedInstNode()) {
 			return;
@@ -102,11 +102,11 @@ public class EncapsulateFieldConditionChecker extends RefactoringConditionChecke
 	}
 
 	private boolean selectedNodeIsInstVarNodeAndNotInMethod() {
-		Node selectedVarNode = SelectionNodeProvider.getSelectedNodeOfType(config.getDocumentProvider().getActiveFileRootNode(), config.getCaretPosition(), InstVarNode.class, InstAsgnNode.class);
+		Node selectedVarNode = SelectionNodeProvider.getSelectedNodeOfType(config.getDocumentProvider().getRootNode(), config.getCaretPosition(), InstVarNode.class, InstAsgnNode.class);
 		if (selectedVarNode == null) {
 			return false;
 		}
-		Node enclosingMethod = SelectionNodeProvider.getSelectedNodeOfType(config.getDocumentProvider().getActiveFileRootNode(), config.getCaretPosition(), DefnNode.class);
+		Node enclosingMethod = SelectionNodeProvider.getSelectedNodeOfType(config.getDocumentProvider().getRootNode(), config.getCaretPosition(), DefnNode.class);
 		return enclosingMethod == null;
 	}
 }

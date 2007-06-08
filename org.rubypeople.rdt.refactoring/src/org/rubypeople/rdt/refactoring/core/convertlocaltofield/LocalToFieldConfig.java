@@ -31,14 +31,13 @@
 package org.rubypeople.rdt.refactoring.core.convertlocaltofield;
 
 import org.jruby.ast.MethodDefNode;
-import org.rubypeople.rdt.refactoring.core.IRefactoringConfig;
+import org.rubypeople.rdt.refactoring.core.RefactoringConfig;
 import org.rubypeople.rdt.refactoring.documentprovider.IDocumentProvider;
 import org.rubypeople.rdt.refactoring.nodewrapper.ClassNodeWrapper;
 import org.rubypeople.rdt.refactoring.nodewrapper.LocalNodeWrapper;
 
-public class LocalToFieldConfig implements IRefactoringConfig {
+public class LocalToFieldConfig extends RefactoringConfig {
 
-	private IDocumentProvider docProvider;
 	private int caretPosition;
 	private LocalNodeWrapper selectedNode;
 	private ClassNodeWrapper enclosingClassNode;
@@ -47,7 +46,7 @@ public class LocalToFieldConfig implements IRefactoringConfig {
 	private String newName;
 
 	public LocalToFieldConfig(IDocumentProvider docProvider, int caretPosition) {
-		this.docProvider = docProvider;
+		super(docProvider);
 		this.caretPosition = caretPosition;
 	}
 	
@@ -93,13 +92,5 @@ public class LocalToFieldConfig implements IRefactoringConfig {
 
 	public void setSelectedNode(LocalNodeWrapper selectedItem) {
 		this.selectedNode = selectedItem;
-	}
-
-	public IDocumentProvider getDocumentProvider() {
-		return docProvider;
-	}
-
-	public void setDocumentProvider(IDocumentProvider doc) {
-		this.docProvider = doc;
 	}
 }

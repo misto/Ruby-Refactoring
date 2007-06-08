@@ -37,7 +37,7 @@ import org.jruby.ast.types.INameNode;
 import org.rubypeople.rdt.refactoring.classnodeprovider.ClassNodeProvider;
 import org.rubypeople.rdt.refactoring.core.generateaccessors.AccessorsGenerator.TreeClass.TreeAttribute;
 import org.rubypeople.rdt.refactoring.core.generateaccessors.AccessorsGenerator.TreeClass.TreeAttribute.TreeAccessor;
-import org.rubypeople.rdt.refactoring.documentprovider.DocumentProvider;
+import org.rubypeople.rdt.refactoring.documentprovider.IDocumentProvider;
 import org.rubypeople.rdt.refactoring.editprovider.EditAndTreeContentProvider;
 import org.rubypeople.rdt.refactoring.editprovider.EditProvider;
 import org.rubypeople.rdt.refactoring.nodewrapper.ArgsNodeWrapper;
@@ -58,7 +58,7 @@ public class AccessorsGenerator extends EditAndTreeContentProvider implements II
 
 	public static final String READER = Messages.AccessorsGenerator_Reader;
 
-	public AccessorsGenerator(DocumentProvider documentProvider, int type) {
+	public AccessorsGenerator(IDocumentProvider documentProvider, int type) {
 		this.type = type;
 		selectedTreeItems = new Object[] {};
 		initTreeClasses(documentProvider.getClassNodeProvider());
@@ -177,7 +177,7 @@ public class AccessorsGenerator extends EditAndTreeContentProvider implements II
 			return classNode;
 		}
 
-		public class TreeAttribute implements Comparable, org.rubypeople.rdt.refactoring.ui.IChildrenProvider {
+		public class TreeAttribute implements Comparable<TreeAttribute>, org.rubypeople.rdt.refactoring.ui.IChildrenProvider {
 			private ClassNodeWrapper classNode;
 
 			private TreeAccessor reader;
@@ -277,21 +277,18 @@ public class AccessorsGenerator extends EditAndTreeContentProvider implements II
 				return !getChlidren().isEmpty();
 			}
 
-			public int compareTo(Object arg0) {
+			public int compareTo(TreeAttribute otherAttr) {
 				String thisStr = classNode.getName() + name;
 				String otherStr;
-				if (arg0 instanceof String) {
-					otherStr = (String) arg0;
-				} else {
-				  TreeAttribute otherAttr = (TreeAttribute) arg0;
-				  ClassNodeWrapper otherClassNode = otherAttr.getTreeClass().getClassNode();
-				  otherStr = otherClassNode.getName() + otherAttr.toString();
-				}
+
+				ClassNodeWrapper otherClassNode = otherAttr.getTreeClass().getClassNode();
+				otherStr = otherClassNode.getName() + otherAttr.toString();
+				
 				return thisStr.compareTo(otherStr);
 			}
 			
-			public boolean equals(Object o) {
-				return o != null && o instanceof TreeAttribute && compareTo(o) == 0;
+			public boolean equals(TreeAttribute o) {
+				return o != null && compareTo(o) == 0;
 			}
 
 			@Override

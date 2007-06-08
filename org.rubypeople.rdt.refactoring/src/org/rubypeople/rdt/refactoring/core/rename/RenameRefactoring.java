@@ -35,6 +35,7 @@ import org.rubypeople.rdt.refactoring.core.RubyRefactoring;
 import org.rubypeople.rdt.refactoring.core.TextSelectionProvider;
 import org.rubypeople.rdt.refactoring.core.renameclass.RenameClassRefactoring;
 import org.rubypeople.rdt.refactoring.core.renamefield.RenameFieldRefactoring;
+import org.rubypeople.rdt.refactoring.core.renamefile.RenameFileRefactoring;
 import org.rubypeople.rdt.refactoring.core.renamelocal.RenameLocalRefactoring;
 import org.rubypeople.rdt.refactoring.core.renamemethod.RenameMethodRefactoring;
 import org.rubypeople.rdt.refactoring.core.renamemodule.RenameModuleRefactoring;
@@ -42,36 +43,44 @@ import org.rubypeople.rdt.refactoring.core.renamemodule.RenameModuleRefactoring;
 public class RenameRefactoring extends RubyRefactoring {
 
 	public static final String NAME = Messages.RenameRefactoring_Name;
-	private RubyRefactoring delegateRenameRefactoring;
 
 	public RenameRefactoring(TextSelectionProvider selectionProvider) {
 		super(NAME);
-
+				
+		if (selectionProvider.getActiveDocument() != null) {
+			doTheRefactoring(new RenameFileRefactoring(selectionProvider));
+			return;
+		}
+		
 		RenameConfig config = new RenameConfig(getDocumentProvider(), selectionProvider.getCarretPosition());
 		RenameConditionChecker checker = new RenameConditionChecker(config);
 		setRefactoringConditionChecker(checker);
+		
 		if(checker.shouldPerform()) {
 			if(checker.shouldRenameLocal()) {
-				delegateRenameRefactoring = new RenameLocalRefactoring(selectionProvider);
+				doTheRefactoring(new RenameLocalRefactoring(selectionProvider));
 			} else if (checker.shouldRenameField()) {
-				delegateRenameRefactoring = new RenameFieldRefactoring(selectionProvider);
+				doTheRefactoring(new RenameFieldRefactoring(selectionProvider));
 			} else if(checker.shouldRenameMethod()) {
-				delegateRenameRefactoring = new RenameMethodRefactoring(selectionProvider);
+				doTheRefactoring(new RenameMethodRefactoring(selectionProvider));
 			} else if(checker.shouldRenameClass()) {
-				delegateRenameRefactoring = new RenameClassRefactoring(selectionProvider);
+				doTheRefactoring(new RenameClassRefactoring(selectionProvider));
 			} else if(checker.shouldRenameModule()) {
-				delegateRenameRefactoring = new RenameModuleRefactoring(selectionProvider);
+				doTheRefactoring(new RenameModuleRefactoring(selectionProvider));
 			}
-			IRefactoringConditionChecker delegateConditionChecker = delegateRenameRefactoring.getConditionChecker();
-			setRefactoringConditionChecker(delegateConditionChecker);
-			if(delegateConditionChecker.shouldPerform()) {
-				setName(delegateRenameRefactoring.getName());
-				setEditProvider(delegateRenameRefactoring.getMultiFileEditProvider());
-				setEditProvider(delegateRenameRefactoring.getEditProvider());
-				setFileNameChangeProvider(delegateRenameRefactoring.getFileNameChangeProvider());
-				for(IWizardPage aktPage : delegateRenameRefactoring.getPages()) {
-					pages.add(aktPage);
-				}
+		}
+	}
+
+	private void doTheRefactoring(RubyRefactoring delegateRenameRefactoring) {
+		IRefactoringConditionChecker delegateConditionChecker = delegateRenameRefactoring.getConditionChecker();
+		setRefactoringConditionChecker(delegateConditionChecker);
+		if(delegateConditionChecker.shouldPerform()) {
+			setName(delegateRenameRefactoring.getName());
+			setEditProvider(delegateRenameRefactoring.getMultiFileEditProvider());
+			setEditProvider(delegateRenameRefactoring.getEditProvider());
+			setFileNameChangeProvider(delegateRenameRefactoring.getFileNameChangeProvider());
+			for(IWizardPage aktPage : delegateRenameRefactoring.getPages()) {
+				pages.add(aktPage);
 			}
 		}
 	}

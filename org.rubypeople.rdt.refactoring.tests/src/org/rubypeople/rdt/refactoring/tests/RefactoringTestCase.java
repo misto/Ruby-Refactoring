@@ -83,6 +83,4 @@ public abstract class RefactoringTestCase extends TestCase {
 		}
 		return null;
 	}
-	
-	
 }

@@ -33,6 +33,7 @@ import java.util.ArrayList;
 import org.rubypeople.rdt.refactoring.core.ConstNameValidator;
 import org.rubypeople.rdt.refactoring.core.RubyRefactoring;
 import org.rubypeople.rdt.refactoring.core.TextSelectionProvider;
+import org.rubypeople.rdt.refactoring.documentprovider.DocumentWithIncluding;
 import org.rubypeople.rdt.refactoring.ui.NewNameListener;
 import org.rubypeople.rdt.refactoring.ui.pages.RenamePage;
 
@@ -42,7 +43,7 @@ public class RenameClassRefactoring extends RubyRefactoring {
 
 	public RenameClassRefactoring(TextSelectionProvider selectionProvider) {
 		super(NAME);
-		RenameClassConfig renameClassConfig = new RenameClassConfig(getDocumentProvider(), selectionProvider.getCarretPosition());
+		RenameClassConfig renameClassConfig = new RenameClassConfig(new DocumentWithIncluding(getDocumentProvider()), selectionProvider.getCarretPosition());
 		RenameClassConditionChecker conditionChecker = new RenameClassConditionChecker(renameClassConfig);
 		setRefactoringConditionChecker(conditionChecker);
 		if(conditionChecker.shouldPerform()) {

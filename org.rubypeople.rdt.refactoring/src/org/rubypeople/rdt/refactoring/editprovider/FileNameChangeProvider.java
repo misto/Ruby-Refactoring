@@ -4,12 +4,13 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.eclipse.core.resources.IFile;
-
 public class FileNameChangeProvider {
 	
-	public Map<String, String> getFilesToRename(Collection<IFile> objects) {
+	public Map<String, String> getFilesToRename(Collection<String> collection) {
 		return new HashMap<String, String>(); 
+	}	
+	
+	public Map<String, String> getFilesToRename() {
+		return getFilesToRename(null); 
 	}
-
 }

@@ -29,45 +29,20 @@
 package org.rubypeople.rdt.refactoring.core.renameclass;
 
 import org.jruby.ast.ClassNode;
-import org.rubypeople.rdt.refactoring.core.IRefactoringConfig;
+import org.rubypeople.rdt.refactoring.core.RenameTypeConfig;
 import org.rubypeople.rdt.refactoring.documentprovider.IDocumentProvider;
-import org.rubypeople.rdt.refactoring.ui.INewNameReceiver;
 
-public class RenameClassConfig implements INewNameReceiver, IRefactoringConfig {
-	private IDocumentProvider documentWithIncludingProvider;
-	private final int offset;
+public class RenameClassConfig extends RenameTypeConfig {
+	
 	private ClassNode selectedNode;
-	private String newName;
 	private String modulePrefix;
-	private IDocumentProvider docProvider;
 	
 	public RenameClassConfig(IDocumentProvider docProvider, int offset) {
-		this.docProvider = docProvider;
-		this.offset = offset;
-	}
-	
-	public void setDocumentWithIncludingProvider(IDocumentProvider documentWithIncludingProvider) {
-		this.documentWithIncludingProvider = documentWithIncludingProvider;
-	}
-	
-	public int getOffset() {
-		return offset;
+		super(docProvider, offset);
 	}
 	
 	public void setSelectedNode(ClassNode selectedNode) {
 		this.selectedNode = selectedNode;
-	}
-	
-	public void setNewName(String name) {
-		 newName = name;
-	}
-	
-	public IDocumentProvider getDocumentWithIncludingProvider() {
-		return documentWithIncludingProvider;
-	}
-	
-	public String getNewName() {
-		return newName;
 	}
 	
 	public ClassNode getSelectedNode() {
@@ -81,12 +56,9 @@ public class RenameClassConfig implements INewNameReceiver, IRefactoringConfig {
 	public String getModulePrefix() {
 		return modulePrefix;
 	}
-	
-	public IDocumentProvider getDocumentProvider() {
-		return docProvider;
-	}
 
-	public void setDocumentProvider(IDocumentProvider doc) {
-		this.docProvider = doc;
+	@Override
+	public String getSelectedName() {
+		return getSelectedNode().getCPath().getName();
 	}
 }

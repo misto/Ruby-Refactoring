@@ -29,16 +29,15 @@
 package org.rubypeople.rdt.refactoring.classnodeprovider;
 
 import java.util.ArrayList;
-import java.util.Collection;
 
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
 import org.jruby.ast.ArrayNode;
-import org.jruby.ast.FCallNode;
 import org.jruby.ast.Node;
 import org.jruby.ast.StrNode;
 import org.rubypeople.rdt.refactoring.core.NodeProvider;
 import org.rubypeople.rdt.refactoring.documentprovider.IDocumentProvider;
+import org.rubypeople.rdt.refactoring.nodewrapper.RequireAndLoadWrapper;
 
 public class IncludedClassesProvider extends ClassNodeProvider {
 	private String includingFileName;
@@ -63,11 +62,9 @@ public class IncludedClassesProvider extends ClassNodeProvider {
 	private void prepareIncludedFileNames() {
 
 		includeFilePaths = new ArrayList<IPath>();
-		Node rootNode = documentProvider.getActiveFileRootNode();
-		Collection<FCallNode> loadAndRequireNodes = NodeProvider.getLoadAndRequireNodes(rootNode);
-
-		for (FCallNode fCallNode : loadAndRequireNodes) {
-			addToIncludeFiles(fCallNode.getArgsNode());
+		Node rootNode = documentProvider.getRootNode();
+		for (RequireAndLoadWrapper fCallNode : NodeProvider.getLoadAndRequireNodes(rootNode)) {
+			addToIncludeFiles(fCallNode.getWrappedNode().getArgsNode());
 		}
 	}
 

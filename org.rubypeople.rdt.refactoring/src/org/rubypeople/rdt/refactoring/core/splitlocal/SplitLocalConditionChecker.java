@@ -42,7 +42,7 @@ public class SplitLocalConditionChecker extends RefactoringConditionChecker {
 	public void init(IRefactoringConfig configObj) {
 		this.config = (SplitLocalConfig) configObj;
 		config.setLocalVariablesFinder(new LocalVarFinder());
-		config.setLocalUsages(config.getLocalVariablesFinder().findLocalUsages(config.getDocumentProvider(), config.getCaretPsition()));
+		config.setLocalUsages(config.getLocalVariablesFinder().findLocalUsages(config.getDocumentProvider(), config.getCaretPosition()));
 	}
 
 	@Override

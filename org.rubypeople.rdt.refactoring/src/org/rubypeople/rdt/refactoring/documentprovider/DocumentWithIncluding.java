@@ -32,14 +32,13 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 
-import org.jruby.ast.FCallNode;
 import org.jruby.ast.RootNode;
-import org.jruby.ast.StrNode;
 import org.jruby.lexer.yacc.SyntaxException;
 import org.rubypeople.rdt.refactoring.classnodeprovider.ClassNodeProvider;
 import org.rubypeople.rdt.refactoring.core.NodeProvider;
 import org.rubypeople.rdt.refactoring.nodewrapper.ClassNodeWrapper;
 import org.rubypeople.rdt.refactoring.nodewrapper.PartialClassNodeWrapper;
+import org.rubypeople.rdt.refactoring.nodewrapper.RequireAndLoadWrapper;
 
 public class DocumentWithIncluding extends StringDocumentProvider {
 	
@@ -56,7 +55,7 @@ public class DocumentWithIncluding extends StringDocumentProvider {
 		ArrayList<String> markedForRemoval = new ArrayList<String>();
 		HashSet<String> includedFiles = findAllIncludedFiles();
 		
-		do {
+		do {	
 			markedForRemoval.clear();
 			
 			for(String actFileName : candidates) {
@@ -65,7 +64,7 @@ public class DocumentWithIncluding extends StringDocumentProvider {
 					addAndRemove(markedForRemoval, actFileName, fileName);
 					continue;
 				}
-				for (FCallNode node : getRequires(actFileName)) {
+				for (RequireAndLoadWrapper node : getRequires(actFileName)) {
 					if(nodeRequiresMe(node) && !getFileNames().contains(actFileName)) {
 						addAndRemove(markedForRemoval, actFileName, fileName);
 					}
@@ -82,7 +81,6 @@ public class DocumentWithIncluding extends StringDocumentProvider {
 	}
 
 	private String cutProjectPath(String fileName) {
-		
 		return fileName.substring(fileName.lastIndexOf('/') + 1);
 	}
 
@@ -107,8 +105,8 @@ public class DocumentWithIncluding extends StringDocumentProvider {
 		return actFileName;
 	}
 
-	private boolean nodeRequiresMe(FCallNode node) {
-		return isStrNode(node) && fileIsInResultSet(getRequiredFilename(node));
+	private boolean nodeRequiresMe(RequireAndLoadWrapper node) {
+		return fileIsInResultSet(node.getFile());
 	}
 
 	private void removeMarkedFromCandidates(ArrayList<String> markedForRemoval, Collection<String> candidates) {
@@ -117,16 +115,12 @@ public class DocumentWithIncluding extends StringDocumentProvider {
 		}
 	}
 
-	private String getRequiredFilename(FCallNode node) {
-		return ((StrNode) node.getArgsNode().childNodes().iterator().next()).getValue().toString();
-	}
-
-	private Collection<FCallNode> getRequires(String fileName) {
+	private Collection<RequireAndLoadWrapper> getRequires(String fileName) {
 		try {
 			RootNode rootNode = docProvider.getRootNode(fileName);
 			return NodeProvider.getLoadAndRequireNodes(rootNode);
 		} catch(SyntaxException e) {
-			return new ArrayList<FCallNode>();
+			return new ArrayList<RequireAndLoadWrapper>();
 		} 
 	}
 
@@ -146,9 +140,5 @@ public class DocumentWithIncluding extends StringDocumentProvider {
 			}
 		}
 		return false;
-	}
-	
-	private boolean isStrNode(FCallNode node) {
-		return node.getArgsNode().childNodes().iterator().next() instanceof StrNode;
 	}
 }

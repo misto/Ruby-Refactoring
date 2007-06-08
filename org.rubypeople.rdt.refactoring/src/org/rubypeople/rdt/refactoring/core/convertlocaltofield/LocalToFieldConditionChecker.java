@@ -61,7 +61,7 @@ public class LocalToFieldConditionChecker extends RefactoringConditionChecker {
 	
 	public void init(IRefactoringConfig configObj) {
 		config = (LocalToFieldConfig) configObj;
-		rootNode = config.getDocumentProvider().getActiveFileRootNode();
+		rootNode = config.getDocumentProvider().getRootNode();
 		Node selectedNode = findSelectedNode(LocalAsgnNode.class, LocalVarNode.class, DVarNode.class, DAsgnNode.class);
 		if (selectedNode != null) {
 			config.setSelectedNode(new LocalNodeWrapper(selectedNode));
@@ -70,7 +70,7 @@ public class LocalToFieldConditionChecker extends RefactoringConditionChecker {
 		}
 	}
 
-	private Node findSelectedNode(Class<?>... filterNodes) {
+	private Node findSelectedNode(Class<? extends Node>... filterNodes) {
 		return SelectionNodeProvider.getSelectedNodeOfType(rootNode.getBodyNode(), config.getCaretPosition(), filterNodes);
 	}
 	

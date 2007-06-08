@@ -207,7 +207,7 @@ public class MethodRenamer implements IMultiFileEditProvider {
 	}
 	
 	public Collection<MethodCallNodeWrapper> getSubsequentCalls(){
-		Node fileRoot = config.getDocumentProvider().getActiveFileRootNode(); 
+		Node fileRoot = config.getDocumentProvider().getRootNode(); 
 		int methodEndPos = config.getTargetMethod().getWrappedNode().getPosition().getEndOffset();
 		ArrayList<MethodCallNodeWrapper> subsequentCalls = new ArrayList<MethodCallNodeWrapper>();
 		

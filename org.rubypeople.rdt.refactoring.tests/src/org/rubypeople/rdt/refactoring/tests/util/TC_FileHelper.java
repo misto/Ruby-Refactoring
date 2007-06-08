@@ -12,6 +12,7 @@
  * rights and limitations under the License.
  *
  * Copyright (C) 2006 Lukas Felber <lfelber@hsr.ch>
+ * Copyright (C) 2007 Mirko Stocker <me@misto.ch>
  * 
  * Alternatively, the contents of this file may be used under the terms of
  * either of the GNU General Public License Version 2 or later (the "GPL"),
@@ -49,7 +50,6 @@ public class TC_FileHelper extends TestCase {
 		testDelimiter(TEST_DOCUMENT_CR, CR);
 		testDelimiter(TEST_DOCUMENT_CRLF, CR + LF);
 		testDelimiter(TEST_DOCUMENT_MIXED, CR + LF);
-		
 	}
 
 	private void testDelimiter(String document, String expectedDelimiter){
@@ -57,4 +57,11 @@ public class TC_FileHelper extends TestCase {
 		assertEquals(expectedDelimiter, resultDelimiter);
 	}
 	
+	public void testFileNameFromPath() {
+		assertEquals("file", FileHelper.getFileNameFromPath("file"));
+		assertEquals("file.rb", FileHelper.getFileNameFromPath("file.rb"));
+		assertEquals("file.rb", FileHelper.getFileNameFromPath("/file.rb"));
+		assertEquals("file.rb", FileHelper.getFileNameFromPath("/dir/file.rb"));
+		assertEquals("file.rb", FileHelper.getFileNameFromPath("L/dir/file.rb"));
+	}
 }

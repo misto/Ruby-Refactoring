@@ -171,8 +171,7 @@ public class FieldProvider {
 		}
 	}
 
-	private boolean isVarSubNodeOfAsgn(Node instVar,
-			Collection<Node> allNodes, Class kind) {
+	private boolean isVarSubNodeOfAsgn(Node instVar, Collection<Node> allNodes, Class<? extends Node> kind) {
 		for (Node currentNode : allNodes) {
 			if (currentNode.getClass().isAssignableFrom(kind)) {
 				if (currentNode.getPosition().getFile().equals(instVar.getPosition().getFile())) {

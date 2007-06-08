@@ -30,13 +30,12 @@ package org.rubypeople.rdt.refactoring.core.movefield;
 
 import java.util.Collection;
 
-import org.rubypeople.rdt.refactoring.core.IRefactoringConfig;
+import org.rubypeople.rdt.refactoring.core.RefactoringConfig;
 import org.rubypeople.rdt.refactoring.documentprovider.IDocumentProvider;
 import org.rubypeople.rdt.refactoring.nodewrapper.FieldNodeWrapper;
 
-public class MoveFieldConfig implements IRefactoringConfig {
+public class MoveFieldConfig extends RefactoringConfig {
 
-	private IDocumentProvider doc;
 	private final int pos;
 	private Collection<String> targetClassCandidates;
 	private Collection<String> referenceCandidates;
@@ -45,7 +44,7 @@ public class MoveFieldConfig implements IRefactoringConfig {
 	private FieldNodeWrapper selectedField;
 	
 	public MoveFieldConfig(IDocumentProvider doc, int pos) {
-		this.doc = doc;
+		super(doc);
 		this.pos = pos;
 	}
 
@@ -76,10 +75,6 @@ public class MoveFieldConfig implements IRefactoringConfig {
 	public String getSelectedFieldName() {
 		return selectedField.getNameWithoutAts();
 	}
-	
-	public IDocumentProvider getDocumentProvider() {
-		return doc;
-	}
 
 	public int getPos() {
 		return pos;
@@ -95,9 +90,5 @@ public class MoveFieldConfig implements IRefactoringConfig {
 
 	public void setSelectedField(FieldNodeWrapper selectedField) {
 		this.selectedField = selectedField;
-	}
-
-	public void setDocumentProvider(IDocumentProvider doc) {
-		this.doc = doc;
 	}
 }

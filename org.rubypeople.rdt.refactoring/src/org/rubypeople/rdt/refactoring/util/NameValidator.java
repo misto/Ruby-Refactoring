@@ -39,6 +39,8 @@ public class NameValidator {
 	private static final String methodNameRegexp = "[a-zA-Z_]\\w*[!?=]?"; //$NON-NLS-1$
 	
 	private static final String classNameRegexp = "[A-Z_]\\w*"; //$NON-NLS-1$
+	
+	private static final String fileNameRegexp = "[\\w\\.]+"; //$NON-NLS-1$
 
 	public static boolean isValidLocalVariableName(String name) {
 		return validate(localVariableRegexp, name);
@@ -60,6 +62,10 @@ public class NameValidator {
 	public static boolean isValidConstantName(String newName) {
 		// FIXME Check for valid constant name
 		return isValidConstName(newName);
+	}
+
+	public static boolean isValidFileName(String name) {
+		return validate(fileNameRegexp, name);
 	}
 
 }

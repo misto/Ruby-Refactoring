@@ -31,34 +31,41 @@ package org.rubypeople.rdt.refactoring.core.renameclass;
 import java.util.Collection;
 
 import org.jruby.ast.ClassNode;
+import org.rubypeople.rdt.refactoring.core.renamefile.RenameFileConfig;
+import org.rubypeople.rdt.refactoring.core.renamefile.RenameFileEditProvider;
 import org.rubypeople.rdt.refactoring.documentprovider.IDocumentProvider;
+import org.rubypeople.rdt.refactoring.editprovider.EditProvider;
+import org.rubypeople.rdt.refactoring.editprovider.FileEditProvider;
 import org.rubypeople.rdt.refactoring.editprovider.FileMultiEditProvider;
 import org.rubypeople.rdt.refactoring.editprovider.IMultiFileEditProvider;
 import org.rubypeople.rdt.refactoring.editprovider.MultiFileEditProvider;
 import org.rubypeople.rdt.refactoring.editprovider.ScopingNodeRenameEditProvider;
+import org.rubypeople.rdt.refactoring.util.NameHelper;
 
 public class RenameClassEditProvider implements IMultiFileEditProvider {
 
 	private final RenameClassConfig config;
 	private IDocumentProvider document;
+	private String selectedName;
 
 	public RenameClassEditProvider(RenameClassConfig config) {
 		this.config = config;
-		document = config.getDocumentWithIncludingProvider();
+		document = config.getDocumentProvider();
+		selectedName = config.getSelectedNode().getCPath().getName();
 	}
 
 	private ChildClassesRenameEditProvider createChildrenEditProvider() {
-		Collection<ClassNode> childClasses = new ClassFinder(document, config.getSelectedNode().getCPath().getName(), config.getModulePrefix()).findChildren();
+		Collection<ClassNode> childClasses = new ClassFinder(document, selectedName, config.getModulePrefix()).findChildren();
 		return new ChildClassesRenameEditProvider(childClasses, config.getNewName());
 	}
 
 	private ScopingNodeRenameEditProvider createPartialsEditProvider() {
-		Collection<ClassNode> classNodes = new ClassFinder(document, config.getSelectedNode().getCPath().getName(),  config.getModulePrefix()).findParts();
+		Collection<ClassNode> classNodes = new ClassFinder(document, selectedName, config.getModulePrefix()).findParts();
 		return new ScopingNodeRenameEditProvider(classNodes, config.getNewName());
 	}
 
 	private ConstructorRenameEditProvider createConstructorEditProvider() {
-		Collection<ConstructorCall> allCalls = new ClassInstanciationFinder().findAll(document, config.getSelectedNode().getCPath().getName(), config.getModulePrefix());
+		Collection<ConstructorCall> allCalls = new ClassInstanciationFinder().findAll(document, selectedName, config.getModulePrefix());
 		return new ConstructorRenameEditProvider(allCalls, config.getNewName());
 	}
 	
@@ -69,6 +76,21 @@ public class RenameClassEditProvider implements IMultiFileEditProvider {
 		fileEdits.addEditProviders(createPartialsEditProvider().getEditProviders());
 		fileEdits.addEditProviders(createChildrenEditProvider().getEditProviders());
 		
+		if(NameHelper.fileNameEqualsClassName(config.getDocumentProvider().getActiveFileName(), selectedName)) {
+			addRequireRenames(fileEdits);
+		}
+		
 		return fileEdits.getFileEditProviders();
+	}
+
+	private void addRequireRenames(MultiFileEditProvider fileEdits) {
+		RenameFileConfig renameFileConfig = new RenameFileConfig(config.getDocumentProvider(), config.getDocumentProvider().getActiveFileName());
+		renameFileConfig.setNewName(NameHelper.fileNameFromClassName(config.getNewName()));
+		
+		for (FileMultiEditProvider fileMultiEditProvider : new RenameFileEditProvider(renameFileConfig).getFileEditProviders()) {
+			for (EditProvider editProvider : fileMultiEditProvider.getEditProviders()) {
+				fileEdits.addEditProvider(new FileEditProvider(fileMultiEditProvider.getFileName(), editProvider));
+			}
+		}
 	}
 }

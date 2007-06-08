@@ -70,6 +70,7 @@ import org.jruby.parser.RubyParserResult;
 import org.rubypeople.rdt.refactoring.nodewrapper.AttrAccessorNodeWrapper;
 import org.rubypeople.rdt.refactoring.nodewrapper.FieldNodeWrapper;
 import org.rubypeople.rdt.refactoring.nodewrapper.MethodCallNodeWrapper;
+import org.rubypeople.rdt.refactoring.nodewrapper.RequireAndLoadWrapper;
 import org.rubypeople.rdt.refactoring.util.NodeUtil;
 
 /**
@@ -82,10 +83,10 @@ public class NodeProvider {
 	private static final Class[] EMPTY_NODES = {NewlineNode.class, BlockNode.class, ArrayNode.class, ArgsNode.class, IterNode.class, WhileNode.class};
 	
 	public static Collection<Node> getChildren(Node enclosingNode) {
-		Iterator it = enclosingNode.childNodes().iterator();
+		Iterator<Node> it = enclosingNode.childNodes().iterator();
 		Collection<Node> children = new ArrayList<Node>();
 		while (it.hasNext())
-			children.add((Node) it.next());
+			children.add(it.next());
 		return children;
 	}
 	
@@ -233,8 +234,7 @@ public class NodeProvider {
 		
 		if (child == null) return null;
 		
-		Collection<Node> allNodes = getAllNodes(rootNode);
-		for (Node node : allNodes) {
+		for (Node node : getAllNodes(rootNode)) {
 			if (containsNode(node.childNodes(), child)) {
 				return node;
 			}
@@ -242,7 +242,7 @@ public class NodeProvider {
 		return null;
 	}
 	
-	public static Node findParentNode(Node rootNode, Node child, Class type) {
+	public static Node findParentNode(Node rootNode, Node child, Class<? extends Node> type) {
 		while((child = findParentNode(rootNode, child)) != null && !(child instanceof RootNode)) {
 			if(child.getClass().isAssignableFrom(type)) {
 				return child;
@@ -251,7 +251,7 @@ public class NodeProvider {
 		return null;
 	}
 	
-	private static boolean containsNode(List list, Node node) {
+	private static boolean containsNode(List<Node> list, Node node) {
 		for (Object object : list) {
 			Node child = (Node) object;
 			if(child.getPosition().getStartOffset() == node.getPosition().getStartOffset()
@@ -317,19 +317,14 @@ public class NodeProvider {
 		return Arrays.asList(subNodes.toArray(new MethodDefNode[subNodes.size()]));
 	}
 
-	public static Collection<FCallNode> getLoadAndRequireNodes(Node rootNode) {
-		Collection<FCallNode> loadAndRequireNodes = new ArrayList<FCallNode>();
-		Collection<Node> fCallNodes = NodeProvider.getSubNodes(rootNode, FCallNode.class);
-		for (Node node : fCallNodes) {
-			FCallNode fCallNode = (FCallNode) node;
-			if (isLoadOrRequireNode(fCallNode))
-				loadAndRequireNodes.add(fCallNode);
+	public static Collection<RequireAndLoadWrapper> getLoadAndRequireNodes(Node rootNode) {
+		Collection<RequireAndLoadWrapper> loadAndRequireNodes = new ArrayList<RequireAndLoadWrapper>();
+		for (Node node : NodeProvider.getSubNodes(rootNode, FCallNode.class)) {
+			if (RequireAndLoadWrapper.isLoadOrRequireNode(node)) {
+				loadAndRequireNodes.add(new RequireAndLoadWrapper(((FCallNode) node)));
+			}
 		}
 		return loadAndRequireNodes;
-	}
-
-	private static boolean isLoadOrRequireNode(FCallNode fCallNode) {
-		return fCallNode.getName().equalsIgnoreCase("load") || fCallNode.getName().equalsIgnoreCase("require"); //$NON-NLS-1$ //$NON-NLS-2$
 	}
 
 	public static Collection<LocalAsgnNode> gatherLocalAsgnNodes(Node baseNode) {
@@ -346,7 +341,7 @@ public class NodeProvider {
 		return dAsgnNodes;
 	}
 
-	public static Collection<Node> gatherNodesOfTypeInAktScopeNode(Node baseNode, Class... klasses) {
+	public static Collection<Node> gatherNodesOfTypeInAktScopeNode(Node baseNode, Class<? extends Node>... klasses) {
 		ArrayList<Node> candidates = new ArrayList<Node>();
 		if (NodeUtil.nodeAssignableFrom(baseNode, klasses)) {
 			candidates.add(baseNode);
@@ -361,7 +356,7 @@ public class NodeProvider {
 		return candidates;
 	}
 
-	public static Collection<Node> getSubNodes(Node baseNode, Class... klasses) {
+	public static Collection<Node> getSubNodes(Node baseNode, Class<? extends Node>... klasses) {
 		Collection<Node> allNodes = getAllNodes(baseNode);
 		Collection<Node> resultNodes = new ArrayList<Node>();
 		for (Node aktNode : allNodes) {
@@ -372,11 +367,11 @@ public class NodeProvider {
 		return resultNodes;
 	}
 
-	public static boolean hasSubNodes(Node baseNode, Class... klasses) {
+	public static boolean hasSubNodes(Node baseNode, Class<? extends Node>... klasses) {
 		return !getSubNodes(baseNode, klasses).isEmpty();
 	}
 
-	public static Node getEnclosingNodeOfType(Node baseNode, Node enclosedNode, Class... klasses) {
+	public static Node getEnclosingNodeOfType(Node baseNode, Node enclosedNode, Class<? extends Node>... klasses) {
 		return SelectionNodeProvider.getSelectedNodeOfType(baseNode, enclosedNode.getPosition().getStartOffset(), klasses);
 	}
 

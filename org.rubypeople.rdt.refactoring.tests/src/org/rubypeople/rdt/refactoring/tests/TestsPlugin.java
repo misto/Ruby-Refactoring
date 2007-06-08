@@ -31,10 +31,10 @@ package org.rubypeople.rdt.refactoring.tests;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Enumeration;
 import java.util.HashMap;
+import java.util.HashSet;
 
 import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.jface.resource.ImageDescriptor;
@@ -85,9 +85,9 @@ public class TestsPlugin extends AbstractUIPlugin {
 	private static void initializeFiles() {
 		files = new HashMap<String, String>();
 		
-		Enumeration enumeration = getDefault().getBundle().findEntries("/resources", null, true);
+		Enumeration<URL> enumeration = getDefault().getBundle().findEntries("/resources", null, true);
 		while(enumeration != null && enumeration.hasMoreElements()) {
-			URL file = (URL) enumeration.nextElement();
+			URL file = enumeration.nextElement();
 			if(file.getFile().matches(".*\\.svn.*")) {
 				continue;
 			}
@@ -108,14 +108,18 @@ public class TestsPlugin extends AbstractUIPlugin {
 		}
 		return files.get(name);
 	}
-	
-	protected static Collection<File> getFiles(final String filter) throws IOException {
-		ArrayList<File> files = new ArrayList<File>();
 
-		Enumeration enumeration = TestsPlugin.getDefault().getBundle().findEntries("/resources", filter, true);
+	protected static String getTestName(File f) {
+		return f.getName().substring(0, f.getName().indexOf('.'));
+	}
+	
+	protected static Collection<String> getFiles(final String filter) throws IOException {
+		HashSet<String> files = new HashSet<String>();
+
+		Enumeration<URL> enumeration = TestsPlugin.getDefault().getBundle().findEntries("/resources", filter, true);
 		while(enumeration.hasMoreElements()) {
-			URL url = FileLocator.resolve((URL) enumeration.nextElement());
-			files.add(new File( url.getFile()));
+			URL url = FileLocator.resolve(enumeration.nextElement());
+			files.add(getTestName(new File( url.getFile())));
 		}
 
 		return files;

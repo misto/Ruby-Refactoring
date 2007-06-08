@@ -31,24 +31,19 @@
 package org.rubypeople.rdt.refactoring.core.mergewithexternalclassparts;
 
 import org.rubypeople.rdt.refactoring.classnodeprovider.ClassNodeProvider;
-import org.rubypeople.rdt.refactoring.core.IRefactoringConfig;
+import org.rubypeople.rdt.refactoring.core.RefactoringConfig;
 import org.rubypeople.rdt.refactoring.documentprovider.IDocumentProvider;
 import org.rubypeople.rdt.refactoring.nodewrapper.ClassNodeWrapper;
 import org.rubypeople.rdt.refactoring.nodewrapper.PartialClassNodeWrapper;
 
-public class MergeWithExternalClassPartConfig implements IRefactoringConfig {
+public class MergeWithExternalClassPartConfig extends RefactoringConfig {
 
 	private ClassNodeProvider classNodeProvider;
-	private IDocumentProvider documentProvider;
 	private boolean selectionEmpty;
 
 	public MergeWithExternalClassPartConfig(IDocumentProvider documentProvider) {
-		this.documentProvider = documentProvider;
+		super(documentProvider);
 		selectionEmpty = true;
-	}
-
-	public IDocumentProvider getDocumentProvider() {
-		return documentProvider;
 	}
 
 	public ClassNodeProvider getClassNodeProvider() {
@@ -68,12 +63,12 @@ public class MergeWithExternalClassPartConfig implements IRefactoringConfig {
 	}
 
 	public boolean hasClassWithExternalPart() {
-		ClassNodeProvider activeFileClassNodeProvider = documentProvider.getClassNodeProvider();
+		ClassNodeProvider activeFileClassNodeProvider = getDocumentProvider().getClassNodeProvider();
 		for(ClassNodeWrapper aktClassNode : activeFileClassNodeProvider.getAllClassNodes()) {
 			String className = aktClassNode.getName();
 			ClassNodeWrapper wholeClass = classNodeProvider.getClassNode(className);
 			for(PartialClassNodeWrapper aktPart : wholeClass.getPartialClassNodes()) {
-				if(!aktPart.getFile().equals(documentProvider.getActiveFileName())) {
+				if(!aktPart.getFile().equals(getDocumentProvider().getActiveFileName())) {
 					return true;
 				}
 			}
@@ -83,9 +78,5 @@ public class MergeWithExternalClassPartConfig implements IRefactoringConfig {
 
 	public void setClassNodeProvider(ClassNodeProvider classNodeProvider) {
 		this.classNodeProvider = classNodeProvider;
-	}
-
-	public void setDocumentProvider(IDocumentProvider doc) {
-		this.documentProvider = doc;
 	}
 }

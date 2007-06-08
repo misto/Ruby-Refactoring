@@ -54,7 +54,7 @@ public class MoveFieldConditionChecker extends RefactoringConditionChecker {
 		config = (MoveFieldConfig) configObj;
 	
 		try {
-			selectedClassNode = SelectionNodeProvider.getSelectedClassNode(config.getDocumentProvider().getActiveFileRootNode(), config.getPos());
+			selectedClassNode = SelectionNodeProvider.getSelectedClassNode(config.getDocumentProvider().getRootNode(), config.getPos());
 		} catch (NoClassNodeException e) {
 			selectedClassNode = null;
 			return;

@@ -32,14 +32,13 @@ package org.rubypeople.rdt.refactoring.core.extractmethod;
 
 import org.jruby.ast.MethodDefNode;
 import org.jruby.ast.Node;
-import org.rubypeople.rdt.refactoring.core.IRefactoringConfig;
+import org.rubypeople.rdt.refactoring.core.RefactoringConfig;
 import org.rubypeople.rdt.refactoring.core.SelectionInformation;
 import org.rubypeople.rdt.refactoring.documentprovider.IDocumentProvider;
 import org.rubypeople.rdt.refactoring.nodewrapper.PartialClassNodeWrapper;
 
-public class ExtractMethodConfig implements IRefactoringConfig {
+public class ExtractMethodConfig extends RefactoringConfig {
 
-	private IDocumentProvider docProvider;
 	private SelectionInformation selectionInfo;
 	private ExtractedMethodHelper extractMethodHelper;
 	private Node selectedNodes;
@@ -49,22 +48,18 @@ public class ExtractMethodConfig implements IRefactoringConfig {
 	private Node rootNode;
 
 	public ExtractMethodConfig(IDocumentProvider docProvider, SelectionInformation selectionInfo) {
-		this.docProvider = docProvider;
+		super(docProvider);
 		this.selectionInfo = optimizeSelection(selectionInfo);
 	}
 
 	private SelectionInformation optimizeSelection(SelectionInformation selectionInfo) {
 		int start = selectionInfo.getStartOfSelection();
 		int end = selectionInfo.getEndOfSelection() + 1;
-		String selectedText = docProvider.getActiveFileContent().substring(start, end);
+		String selectedText = getDocumentProvider().getActiveFileContent().substring(start, end);
 		String trimedSelectionInformation = selectedText.trim();
 		start += selectedText.indexOf(trimedSelectionInformation);
 		end = start + trimedSelectionInformation.length() - 1;
 		return new SelectionInformation(start, end, selectionInfo.getSource());
-	}
-
-	public IDocumentProvider getDocumentProvider() {
-		return docProvider;
 	}
 
 	public ExtractedMethodHelper getHelper() {
@@ -125,10 +120,6 @@ public class ExtractMethodConfig implements IRefactoringConfig {
 
 	public Node getRootNode() {
 		return rootNode;
-	}
-
-	public void setDocumentProvider(IDocumentProvider doc) {
-		this.docProvider = doc;
 	}
 
 	public ExtractedMethodHelper getExtractMethodHelper() {

@@ -778,6 +778,11 @@ public class PreferenceConstants {
 	 * @since 1.0
 	 */
 	public static final String ID_SOURCE_HOVER= "org.rubypeople.rdt.ui.RubySourceHover"; //$NON-NLS-1$
+
+	/**
+	 * Show whitespaces in the compare views.
+	 */
+	public static final String SHOW_WHITESPACES= "org.rubypeople.rdt.ui.ShowWhitespaces"; //$NON-NLS-1$
 	
 	/**
 	 * A named preference that controls a reduced search menu is used in the Ruby editors.
@@ -1042,6 +1047,8 @@ public class PreferenceConstants {
 		String sourceHoverModifierName= Action.findModifierString(sourceHoverModifier);	// Shift
 		store.setDefault(PreferenceConstants.EDITOR_TEXT_HOVER_MODIFIERS, "org.rubypeople.rdt.ui.BestMatchHover;0;org.rubypeople.rdt.ui.RubySourceHover;" + sourceHoverModifierName); //$NON-NLS-1$
 		store.setDefault(PreferenceConstants.EDITOR_TEXT_HOVER_MODIFIER_MASKS, "org.rubypeople.rdt.ui.BestMatchHover;0;org.rubypeople.rdt.ui.RubySourceHover;" + sourceHoverModifier); //$NON-NLS-1$
+	
+		store.setDefault(PreferenceConstants.SHOW_WHITESPACES, false);
 	}
 
 	/**

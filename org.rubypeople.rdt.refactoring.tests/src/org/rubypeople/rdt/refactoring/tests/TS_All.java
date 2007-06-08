@@ -53,6 +53,7 @@ import org.rubypeople.rdt.refactoring.tests.core.pushdown.TS_PushDown;
 import org.rubypeople.rdt.refactoring.tests.core.rename.TS_Rename;
 import org.rubypeople.rdt.refactoring.tests.core.renameclass.TS_RenameClass;
 import org.rubypeople.rdt.refactoring.tests.core.renamefield.TS_RenameField;
+import org.rubypeople.rdt.refactoring.tests.core.renamefile.TS_RenameFile;
 import org.rubypeople.rdt.refactoring.tests.core.renamelocal.TS_RenameLocal;
 import org.rubypeople.rdt.refactoring.tests.core.renamemethod.TS_RenameMethod;
 import org.rubypeople.rdt.refactoring.tests.core.renamemodule.TS_RenameModule;
@@ -91,6 +92,7 @@ public class TS_All
 		suite.addTest(TS_MoveMethod.suite());
 		suite.addTest(TS_MoveField.suite());
 		suite.addTest(TS_Rename.suite());
+		suite.addTest(TS_RenameFile.suite());
 		suite.addTest(TS_NodeWrapper.suite());
 
 		return suite;

@@ -58,7 +58,7 @@ public class MoveMethodConditionChecker extends RefactoringConditionChecker {
 	@Override
 	public void init(IRefactoringConfig configObj) {
 		this.config = (MoveMethodConfig) configObj;
-		Node rootNode = config.getDocumentProvider().getActiveFileRootNode();
+		Node rootNode = config.getDocumentProvider().getRootNode();
 		int caretPos = config.getCaretPosition();
 		config.setAllClassesNodeProvider(config.getDocumentProvider().getProjectClassNodeProvider());
 		try {
@@ -147,8 +147,8 @@ public class MoveMethodConditionChecker extends RefactoringConditionChecker {
 	}
 
 	private void addConfigWarnings() {
-		for(String aktWarning : config.getWarnings()) {
-			addWarning(aktWarning);
+		if(!config.getMethodNode().getName().equals(config.getMovedMethodName())) {
+			addWarning(Messages.MethodMover_NameWillBeChangedTo + config.getMovedMethodName() + Messages.MethodMover_DuToNameConflicts);
 		}
 	}
 

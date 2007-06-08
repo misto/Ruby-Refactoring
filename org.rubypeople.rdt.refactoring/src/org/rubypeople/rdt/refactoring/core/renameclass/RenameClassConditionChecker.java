@@ -32,7 +32,6 @@ import org.jruby.ast.ClassNode;
 import org.rubypeople.rdt.refactoring.core.IRefactoringConfig;
 import org.rubypeople.rdt.refactoring.core.RefactoringConditionChecker;
 import org.rubypeople.rdt.refactoring.core.SelectionNodeProvider;
-import org.rubypeople.rdt.refactoring.documentprovider.DocumentWithIncluding;
 import org.rubypeople.rdt.refactoring.exception.NoClassNodeException;
 import org.rubypeople.rdt.refactoring.nodewrapper.ClassNodeWrapper;
 import org.rubypeople.rdt.refactoring.util.NodeUtil;
@@ -49,11 +48,11 @@ public class RenameClassConditionChecker extends RefactoringConditionChecker {
 	@Override
 	public void init(IRefactoringConfig configObj) {
 		config = (RenameClassConfig) configObj;
-		config.setDocumentWithIncludingProvider(new DocumentWithIncluding(config.getDocumentProvider()));
+		//config.setDocumentProvider(new DocumentWithIncluding(config.getDocumentProvider()));
 		ClassNodeWrapper classNode = null;
 		try {
-			classNode = SelectionNodeProvider.getSelectedClassNode(config.getDocumentProvider().getActiveFileRootNode(), config.getOffset());
-			if(!NodeUtil.positionIsInNode(config.getOffset(), ((ClassNode) classNode.getWrappedNode()).getCPath())) {
+			classNode = SelectionNodeProvider.getSelectedClassNode(config.getDocumentProvider().getRootNode(), config.getCaretPosition());
+			if(!NodeUtil.positionIsInNode(config.getCaretPosition(), ((ClassNode) classNode.getWrappedNode()).getCPath())) {
 				return;
 			}
 		} catch (NoClassNodeException e) {return;}

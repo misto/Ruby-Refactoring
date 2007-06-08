@@ -47,7 +47,7 @@ public class RdtCodeViewer extends RubyScriptPreview {
 		return new RdtCodeViewer(map, parent);
 	}
 
-	protected RdtCodeViewer(Map workingValues, Composite parent) {
+	protected RdtCodeViewer(Map<String, String> workingValues, Composite parent) {
 		super(workingValues, parent);
 		getTextWidget().setEditable(false);
 	}

@@ -69,15 +69,14 @@ public class InstAsgnFieldItem extends FieldItem {
 				((InstVarNode)valueNode).setName(newName);
 			}
 		}
-		List childNodes;
+		List<Node> childNodes;
 		if(valueNode != null){
 			childNodes = valueNode.childNodes();
+		} else {
+			childNodes = new ArrayList<Node>();
 		}
-		else{
-			childNodes = new ArrayList<Object>();
-		}
-		for(Object currentChild : childNodes){
-			replaceInstVars((Node)currentChild, newName);
+		for(Node currentChild : childNodes){
+			replaceInstVars(currentChild, newName);
 		}
 	}
 

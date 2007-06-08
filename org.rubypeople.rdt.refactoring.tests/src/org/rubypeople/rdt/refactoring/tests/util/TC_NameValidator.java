@@ -90,4 +90,13 @@ public class TC_NameValidator extends TestCase {
 		assertFalse(NameValidator.isValidLocalVariableName("?Test"));
 		assertFalse(NameValidator.isValidLocalVariableName("=Test"));
 	}
+
+	public void testIsValidFileName() {
+		assertTrue(NameValidator.isValidFileName(".test"));
+		assertTrue(NameValidator.isValidFileName("test"));
+		assertTrue(NameValidator.isValidFileName("tes_t"));
+		assertTrue(NameValidator.isValidFileName("test.rb"));
+		assertTrue(NameValidator.isValidFileName("test123.rb"));
+		assertTrue(NameValidator.isValidFileName("Test123.rb"));
+	}
 }

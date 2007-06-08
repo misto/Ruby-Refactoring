@@ -29,29 +29,29 @@
 
 package org.rubypeople.rdt.refactoring.core.rename;
 
-import org.rubypeople.rdt.refactoring.core.IRefactoringConfig;
-import org.rubypeople.rdt.refactoring.documentprovider.DocumentProvider;
+import org.rubypeople.rdt.refactoring.core.RefactoringConfig;
 import org.rubypeople.rdt.refactoring.documentprovider.IDocumentProvider;
+import org.rubypeople.rdt.refactoring.ui.INewNameReceiver;
 
-public class RenameConfig implements IRefactoringConfig {
+public class RenameConfig extends RefactoringConfig implements INewNameReceiver {
 
-	private IDocumentProvider documentProvider;
-	private int offset;
+	private int caretPosition;
+	private String newName;
 
-	public RenameConfig(DocumentProvider documentProvider, int offset) {
-		this.documentProvider = documentProvider;
-		this.offset = offset;
+	public RenameConfig(IDocumentProvider documentProvider, int offset) {
+		super(documentProvider);
+		this.caretPosition = offset;
 	}
 
-	public IDocumentProvider getDocumentProvider() {
-		return documentProvider;
+	public int getCaretPosition() {
+		return caretPosition;
 	}
 
-	public int getOffset() {
-		return offset;
+	public void setNewName(String newName) {
+		this.newName = newName;
 	}
-
-	public void setDocumentProvider(IDocumentProvider doc) {
-		this.documentProvider = doc;
+	
+	public String getNewName() {
+		return newName;
 	}
 }

@@ -34,18 +34,15 @@ import java.util.Collection;
 
 import org.jruby.ast.MethodDefNode;
 import org.jruby.ast.Node;
-import org.rubypeople.rdt.refactoring.core.IRefactoringConfig;
-import org.rubypeople.rdt.refactoring.documentprovider.DocumentProvider;
+import org.rubypeople.rdt.refactoring.core.RefactoringConfig;
 import org.rubypeople.rdt.refactoring.documentprovider.IDocumentProvider;
 import org.rubypeople.rdt.refactoring.nodewrapper.LocalNodeWrapper;
 
-public class InlineLocalConfig implements IRefactoringConfig {
+public class InlineLocalConfig extends RefactoringConfig {
 
 	private boolean replaceTempWithQuery;
 
 	private String newMethodName = "extractedMethod"; //$NON-NLS-1$
-
-	private IDocumentProvider docProvider;
 
 	private int caretPosition;
 
@@ -61,8 +58,8 @@ public class InlineLocalConfig implements IRefactoringConfig {
 
 	private Collection<LocalNodeWrapper> localOccurrences;
 
-	public InlineLocalConfig(DocumentProvider docProvider, int caretPosition) {
-		this.docProvider = docProvider;
+	public InlineLocalConfig(IDocumentProvider docProvider, int caretPosition) {
+		super(docProvider);
 		this.caretPosition = caretPosition;
 	}
 
@@ -82,17 +79,8 @@ public class InlineLocalConfig implements IRefactoringConfig {
 		this.newMethodName = newMethodName;
 	}
 
-	public IDocumentProvider getDocumentProvider() {
-		return docProvider;
-	}
-	
 	public int getCaretPosition() {
 		return caretPosition;
-	}
-
-	public String getActiveFileName() {
-
-		return docProvider.getActiveFileName();
 	}
 
 	public LocalNodeWrapper getDefinitionNode() {
@@ -141,9 +129,5 @@ public class InlineLocalConfig implements IRefactoringConfig {
 
 	public void setEnclosingMethod(MethodDefNode enclosingMethod) {
 		this.enclosingMethod = enclosingMethod;
-	}
-
-	public void setDocumentProvider(IDocumentProvider doc) {
-		this.docProvider = doc;
 	}
 }

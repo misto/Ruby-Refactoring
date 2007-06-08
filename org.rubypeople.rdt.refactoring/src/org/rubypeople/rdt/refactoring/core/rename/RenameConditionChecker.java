@@ -96,7 +96,7 @@ public class RenameConditionChecker extends RefactoringConditionChecker {
 	@Override
 	public void init(IRefactoringConfig configObj) {
 		RenameConfig config = (RenameConfig) configObj;
-		int offset = config.getOffset();
+		int offset = config.getCaretPosition();
 		IDocumentProvider doc = config.getDocumentProvider();
 		
 		localConditionChecker = new RenameLocalConditionChecker(new RenameLocalConfig(doc, offset));

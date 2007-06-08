@@ -33,24 +33,16 @@ package org.rubypeople.rdt.refactoring.core.renamefield;
 import java.util.ArrayList;
 import java.util.Collection;
 
-import org.rubypeople.rdt.refactoring.core.IRefactoringConfig;
+import org.rubypeople.rdt.refactoring.core.rename.RenameConfig;
 import org.rubypeople.rdt.refactoring.core.renamefield.fielditems.AttrFieldItem;
 import org.rubypeople.rdt.refactoring.core.renamefield.fielditems.FieldItem;
 import org.rubypeople.rdt.refactoring.core.renamemethod.NodeSelector;
-import org.rubypeople.rdt.refactoring.documentprovider.DocumentWithIncluding;
 import org.rubypeople.rdt.refactoring.documentprovider.IDocumentProvider;
 import org.rubypeople.rdt.refactoring.nodewrapper.ClassNodeWrapper;
 import org.rubypeople.rdt.refactoring.nodewrapper.INodeWrapper;
 import org.rubypeople.rdt.refactoring.ui.ICheckboxListener;
-import org.rubypeople.rdt.refactoring.ui.INewNameReceiver;
 
-public class RenameFieldConfig implements INewNameReceiver, ICheckboxListener, NodeSelector, IRefactoringConfig {
-
-	private IDocumentProvider docProvider;
-
-	private int caretPosition;
-
-	private String newName;
+public class RenameFieldConfig extends RenameConfig implements ICheckboxListener, NodeSelector {
 
 	private String selectedName;
 
@@ -68,28 +60,10 @@ public class RenameFieldConfig implements INewNameReceiver, ICheckboxListener, N
 	private FieldItem selectedItem;
 
 	public RenameFieldConfig(IDocumentProvider docProvider, int caretPosition) {
-		this.docProvider = docProvider;
-		this.caretPosition = caretPosition;
+		super(docProvider, caretPosition);
 
 		possibleCalls = new ArrayList<INodeWrapper>();
 		selectedCalls = new ArrayList<INodeWrapper>();
-	}
-
-
-	public int getCaretPosition() {
-		return caretPosition;
-	}
-
-	public IDocumentProvider getDocumentProvider() {
-		return docProvider;
-	}
-
-	public String getNewName() {
-		return newName;
-	}
-
-	public void setNewName(String newName) {
-		this.newName = newName;
 	}
 
 	public String getSelectedName() {
@@ -179,28 +153,15 @@ public class RenameFieldConfig implements INewNameReceiver, ICheckboxListener, N
 		this.doRenameAccessors = doRenameAccessors;
 	}
 
-
-	public void setDocProvider(DocumentWithIncluding docProvider) {
-		this.docProvider = docProvider;
-	}
-
-
 	public void setWholeClassNode(ClassNodeWrapper wholeClassNode) {
 		this.wholeClassNode = wholeClassNode;
 	}
-
 
 	public void setFieldProvider(FieldProvider fieldProvider) {
 		this.fieldProvider = fieldProvider;
 	}
 
-
 	public void setSelectedName(String selectedName) {
 		this.selectedName = selectedName;
-	}
-
-
-	public void setDocumentProvider(IDocumentProvider doc) {
-		this.docProvider = doc;
 	}
 }

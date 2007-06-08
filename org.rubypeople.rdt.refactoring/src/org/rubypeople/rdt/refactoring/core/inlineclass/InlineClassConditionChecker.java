@@ -67,7 +67,7 @@ public class InlineClassConditionChecker extends RefactoringConditionChecker {
 
 	private void intiSourceClass() {
 		int caretPosition = config.getCaretPosition();
-		Node rootNode = docProvider.getActiveFileRootNode();
+		Node rootNode = docProvider.getRootNode();
 		try {
 			selectedClass = SelectionNodeProvider.getSelectedClassNode(rootNode, caretPosition);
 			config.setSourceClass(selectedClass);
@@ -117,7 +117,7 @@ public class InlineClassConditionChecker extends RefactoringConditionChecker {
 		
 		ArrayList<ClassNodeWrapper> possibleClassNodes = new ArrayList<ClassNodeWrapper>();
 		
-		Node rootNode = config.getDocumentProvider().getActiveFileRootNode();
+		Node rootNode = config.getDocumentProvider().getRootNode();
 		try {
 			ClassNodeWrapper selectedClass = SelectionNodeProvider.getSelectedClassNode(rootNode, config.getCaretPosition());
 			for(ClassNodeWrapper currentClass : classNodes){

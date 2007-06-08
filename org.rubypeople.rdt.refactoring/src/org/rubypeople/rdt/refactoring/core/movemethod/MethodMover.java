@@ -12,7 +12,7 @@
  * rights and limitations under the License.
  *
  * Copyright (C) 2006 Lukas Felber <lfelber@hsr.ch>
- * Copyright (C) 2006 Mirko Stocker <me@misto.ch>
+ * Copyright (C) 2007 Mirko Stocker <me@misto.ch>
  * Copyright (C) 2006 Thomas Corbat <tcorbat@hsr.ch>
  * 
  * Alternatively, the contents of this file may be used under the terms of
@@ -35,8 +35,6 @@ import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Observable;
-import java.util.Observer;
 
 import org.jruby.ast.FCallNode;
 import org.jruby.ast.Node;
@@ -62,7 +60,7 @@ import org.rubypeople.rdt.refactoring.nodewrapper.VisibilityNodeWrapper.METHOD_V
 import org.rubypeople.rdt.refactoring.util.NameHelper;
 import org.rubypeople.rdt.refactoring.util.NodeUtil;
 
-public class MethodMover implements IMultiFileEditProvider, Observer {
+public class MethodMover implements IMultiFileEditProvider {
 
 	private MoveMethodConfig config;
 	private Collection<String> visibilitiesToDelete;
@@ -70,7 +68,6 @@ public class MethodMover implements IMultiFileEditProvider, Observer {
 	public MethodMover(MoveMethodConfig config) {
 		this.config = config;
 		visibilitiesToDelete = new ArrayList<String>();
-		config.addObserver(this);
 		initConfig();
 	}
 
@@ -105,8 +102,6 @@ public class MethodMover implements IMultiFileEditProvider, Observer {
 		ArgsNodeWrapper argsNode = config.getMethodNode().getArgsNode();
 		config.setMovedMethodArgs(argsNode.cloneWithNewArgName(newArgName));
 	}
-
-	
 
 	private boolean methodContainsReferencesToSourceClass() {
 		for (MethodCallNodeWrapper aktCall : config.getMethodNode().getMethodCallNodes()) {
@@ -334,36 +329,5 @@ public class MethodMover implements IMultiFileEditProvider, Observer {
 		boolean isSelfNode = methodCall.isCallNode() && NodeUtil.nodeAssignableFrom(methodCall.getReceiverNode(), SelfNode.class);
 		boolean sameType = config.getMethodNode().isClassMethod() == methodCall.isCallToClassMethod();
 		return sameName && sameType && notInMovingMethod && (isNotCallNode || isSelfNode || methodCall.isCallToClassMethod());
-	}
-
-	public void update(Observable arg0, Object arg1) {
-		setMovedMethodVisibility();
-		initWarnings();
-	}
-	
-	private void initWarnings() {
-		config.resetWarnings();
-		if (config.doesNewMethodNeedsReferenceToSourceClass()) {
-			for (AttrAccessorNodeWrapper aktAccessorNode : getMissingAccessors()) {
-				config.addWarning(Messages.MethodMover_An + aktAccessorNode.getAccessorTypeName() + Messages.MethodMover_ForField + aktAccessorNode.getAttrName() + Messages.MethodMover_WillBeGenerated);
-			}
-		}
-		if (config.doesNewMethodNeedsReferenceToSourceClass()) {
-			for (MethodNodeWrapper aktMethod : getSourceClassMethodsReferencedInMovingMethod()) {
-				if(!config.getSourceClassNode().getMethodVisibility(aktMethod).equals(METHOD_VISIBILITY.PUBLIC)) {
-					config.addWarning(Messages.MethodMover_TheVisibilityOfMethod + aktMethod.getName() + Messages.MethodMover_WillBeChangedToPublic);
-				}
-			}
-		}
-		METHOD_VISIBILITY newVisibility = config.getMethodVisibility();
-		METHOD_VISIBILITY oldVisibility = config.getMethodVisibility();
-		if(!newVisibility.equals(oldVisibility)) {
-			String oldVisibilityName = VisibilityNodeWrapper.getVisibilityName(oldVisibility);
-			String newVisibilityName = VisibilityNodeWrapper.getVisibilityName(newVisibility);
-			config.addWarning(Messages.MethodMover_TheVisibilityOfTheMovingMethod + config.getMethodNode().getName()  + Messages.MethodMover_IsChangedFrom + oldVisibilityName + Messages.MethodMover_To + newVisibilityName + '.');
-		}
-		if(!config.getMethodNode().getName().equals(config.getMovedMethodName())) {
-			config.addWarning(Messages.MethodMover_NameWillBeChangedTo + config.getMovedMethodName() + Messages.MethodMover_DuToNameConflicts);
-		}
 	}
 }

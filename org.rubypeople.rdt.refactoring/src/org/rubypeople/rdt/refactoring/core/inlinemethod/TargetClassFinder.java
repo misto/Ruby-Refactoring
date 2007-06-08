@@ -72,7 +72,7 @@ public class TargetClassFinder implements ITargetClassFinder {
 	}
 	
 	private String getSurroundingClass(final MethodCallNodeWrapper call, final IDocumentProvider doc) {
-		ClassNode classNode = ((ClassNode) NodeProvider.getEnclosingNodeOfType(doc.getActiveFileRootNode(), call.getWrappedNode(), ClassNode.class));
+		ClassNode classNode = ((ClassNode) NodeProvider.getEnclosingNodeOfType(doc.getRootNode(), call.getWrappedNode(), ClassNode.class));
 		if(classNode != null) {
 			return classNode.getCPath().getName();
 		}
@@ -103,7 +103,7 @@ public class TargetClassFinder implements ITargetClassFinder {
 		InstAsgnNode decoratedNode = null;
 		
 		try {
-			final ClassNodeWrapper selectedClassNode = SelectionNodeProvider.getSelectedClassNode(doc.getActiveFileRootNode(), node.getPosition().getStartOffset());
+			final ClassNodeWrapper selectedClassNode = SelectionNodeProvider.getSelectedClassNode(doc.getRootNode(), node.getPosition().getStartOffset());
 			final ClassNodeWrapper allClassNodes = new ClassNodeProvider(doc).getClassNode((selectedClassNode.getName()));
 			
 			if(allClassNodes == null) {
@@ -123,7 +123,7 @@ public class TargetClassFinder implements ITargetClassFinder {
 	}
 
 	private InstAsgnNode findInstVarInScope(final InstVarNode node, final IDocumentProvider doc, InstAsgnNode decoratedNode) {
-		Collection<Node> assignments = NodeProvider.getSubNodes(doc.getActiveFileRootNode(), InstAsgnNode.class);
+		Collection<Node> assignments = NodeProvider.getSubNodes(doc.getRootNode(), InstAsgnNode.class);
 		for (Node assignment : assignments) {
 			if(((InstAsgnNode) assignment).getName().equals(node.getName()) && assignment.getPosition().getStartOffset() < node.getPosition().getStartOffset()) {
 				decoratedNode = (InstAsgnNode) assignment;
@@ -137,14 +137,14 @@ public class TargetClassFinder implements ITargetClassFinder {
 	 */
 	public LocalAsgnNode localAsgnFromLocalVar(final LocalVarNode node, final IDocumentProvider doc) {
 		
-		Node enclosingScope = SelectionNodeProvider.getEnclosingScope(doc.getActiveFileRootNode(), node);
+		Node enclosingScope = SelectionNodeProvider.getEnclosingScope(doc.getRootNode(), node);
 		LocalAsgnNode asgnNode = findLastAssignmentToVar(node, NodeUtil.getBody(enclosingScope));
 		if(asgnNode != null) {
 			return asgnNode;
 		}
 
 		do {
-			enclosingScope = SelectionNodeProvider.getEnclosingScope(doc.getActiveFileRootNode(), NodeProvider.findParentNode(doc.getActiveFileRootNode(), enclosingScope));
+			enclosingScope = SelectionNodeProvider.getEnclosingScope(doc.getRootNode(), NodeProvider.findParentNode(doc.getRootNode(), enclosingScope));
 			asgnNode = findLastAssignmentToVar(node, NodeUtil.getBody(enclosingScope));
 		} while(!(enclosingScope instanceof RootNode || enclosingScope instanceof MethodDefNode) && asgnNode == null);
 		

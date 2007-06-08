@@ -54,14 +54,14 @@ public class RefactoringAction extends Action {
 		Shell shell = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell();
 		try {
 			if (PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage().saveAllEditors(true)) {
-				Constructor constructor = refactoringClass.getConstructors()[0];
+				Constructor<RubyRefactoring> constructor = refactoringClass.getConstructors()[0];
 				Object[] args;
 				if(constructor.getParameterTypes().length == 1) {
 					args = new Object[] {selectionProvider};
 				} else {
 					args = new Object[0];
 				}
-				RubyRefactoring refactoring = (RubyRefactoring) constructor.newInstance(args);
+				RubyRefactoring refactoring = constructor.newInstance(args);
 				RubyRefactoringWizard wizard = new RubyRefactoringWizard(refactoring);
 				wizard.setWindowTitle(refactoring.getName());
 				RefactoringWizardOpenOperation op = new RefactoringWizardOpenOperation(wizard);

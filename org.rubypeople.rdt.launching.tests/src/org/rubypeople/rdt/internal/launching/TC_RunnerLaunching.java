@@ -3,6 +3,7 @@ package org.rubypeople.rdt.internal.launching;
 import java.io.File;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
@@ -18,6 +19,7 @@ import org.eclipse.debug.core.ILaunch;
 import org.eclipse.debug.core.ILaunchConfiguration;
 import org.eclipse.debug.core.ILaunchConfigurationType;
 import org.eclipse.debug.core.ILaunchConfigurationWorkingCopy;
+import org.eclipse.debug.core.ILaunchDelegate;
 import org.eclipse.debug.core.ILaunchManager;
 import org.eclipse.debug.core.Launch;
 import org.eclipse.debug.core.model.IProcess;
@@ -279,6 +281,28 @@ public class TC_RunnerLaunching extends ModifyingResourceTest {
 		public void migrate() throws CoreException {
 		// TODO Auto-generated method stub
 
+		}
+
+		public Set getAttribute(String attributeName, Set defaultValue)
+				throws CoreException {
+			// TODO Auto-generated method stub
+			return null;
+		}
+
+		public Set getModes() throws CoreException {
+			// TODO Auto-generated method stub
+			return null;
+		}
+
+		public ILaunchDelegate getPreferredDelegate(Set modes)
+				throws CoreException {
+			// TODO Auto-generated method stub
+			return null;
+		}
+
+		public boolean isReadOnly() {
+			// TODO Auto-generated method stub
+			return false;
 		}
 	}
 

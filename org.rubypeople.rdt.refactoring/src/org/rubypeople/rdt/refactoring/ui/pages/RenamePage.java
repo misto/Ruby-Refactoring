@@ -45,6 +45,7 @@ public class RenamePage extends RefactoringWizardPage implements IErrorMessageRe
 
 	public RenamePage(String name, IErrorMessageGenerator listener) {
 		this(TITLE, name, listener);
+		
 	}
 	
 	public RenamePage(String title, String name, IErrorMessageGenerator listener) {
@@ -58,6 +59,7 @@ public class RenamePage extends RefactoringWizardPage implements IErrorMessageRe
 	public void createControl(Composite parent) {
 		LabeledTextField textField = createTextField(parent);
 		setControl(textField);
+		setPageComplete(false);
 	}
 
 	protected LabeledTextField createTextField(Composite parent) {

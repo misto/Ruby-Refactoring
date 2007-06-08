@@ -82,7 +82,7 @@ public abstract class RubyRefactoring extends Refactoring {
 	}
 
 	protected IFile getActiveFile() {
-		return ((IFileEditorInput) editor.getEditorInput()).getFile();
+		return editor != null ? ((IFileEditorInput) editor.getEditorInput()).getFile() : null;
 	}
 
 	protected void setEditProvider(IEditProvider editProvider) {
@@ -110,8 +110,7 @@ public abstract class RubyRefactoring extends Refactoring {
 	public RefactoringStatus checkInitialConditions(IProgressMonitor pm) {
 		if (conditionChecker != null) {
 			Map<String, Collection<String>> messages = conditionChecker.getInitialMessages();
-			Collection<String> errors = messages.get(IRefactoringConditionChecker.ERRORS);
-			for (String errMessage : errors) {
+			for (String errMessage : messages.get(IRefactoringConditionChecker.ERRORS)) {
 				initialStatus.addFatalError(errMessage);
 			}
 			Collection<String> warnings = messages.get(IRefactoringConditionChecker.ERRORS);
@@ -146,22 +145,34 @@ public abstract class RubyRefactoring extends Refactoring {
 		Map<String, String> filesToRename = getFileNameChangeProvider().getFilesToRename(getAllAffectedFiles(change));
 		if(filesToRename.isEmpty()) {
 			return change;
+		} 
+		
+		CompositeChange compositeChange;
+		
+		if (change.getAffectedObjects().length <= 0) {
+			compositeChange = new CompositeChange(getName(), new Change[]{null});
+		} else {
+			compositeChange = new CompositeChange(getName(), new Change[]{change});
 		}
 		
-		CompositeChange compositeChange = new CompositeChange(getName(), new Change[]{change});
 		compositeChange.markAsSynthetic();
 		for (Map.Entry<String, String> entry : filesToRename.entrySet()) {
-			RenameResourceChange renameResourceChange = new RenameResourceChange(null, RubyPlugin.getWorkspace().getRoot().findMember(entry.getKey()), entry.getValue(), "comment");
-			compositeChange.add(new DynamicValidationStateChange(renameResourceChange));
+			compositeChange.add(createDynamicValidationChange(entry.getKey(), entry.getValue()));
 		}
 		return compositeChange;
 	}
 
-	private Collection<IFile> getAllAffectedFiles(Change change) {
-		Collection<IFile> affectedFiles = new ArrayList<IFile>();
+	private DynamicValidationStateChange createDynamicValidationChange(String key, String value) {
+		RenameResourceChange renameResourceChange = new RenameResourceChange(null, RubyPlugin.getWorkspace().getRoot().findMember(key), value, "comment");
+		DynamicValidationStateChange dynamicValidationStateChange = new DynamicValidationStateChange(renameResourceChange);
+		return dynamicValidationStateChange;
+	}
+
+	private Collection<String> getAllAffectedFiles(Change change) {
+		Collection<String> affectedFiles = new ArrayList<String>();
 		for (Object object : change.getAffectedObjects()) {
-			if (object instanceof IFile) {
-				affectedFiles.add((IFile) object);
+			if (object instanceof File) {
+				affectedFiles.add(((File) object).getFullPath().toString());
 			}
 		}
 		return affectedFiles;
