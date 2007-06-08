@@ -38,7 +38,7 @@ import org.jruby.ast.DAsgnNode;
 import org.jruby.ast.DVarNode;
 import org.jruby.ast.LocalAsgnNode;
 import org.jruby.ast.LocalVarNode;
-import org.rubypeople.rdt.refactoring.core.renamelocal.SingleLocalVariableEdit;
+import org.jruby.ast.Node;
 import org.rubypeople.rdt.refactoring.core.splitlocal.LocalVarFinder;
 import org.rubypeople.rdt.refactoring.core.splitlocal.LocalVarUsage;
 import org.rubypeople.rdt.refactoring.core.splitlocal.SplittedVariableRenamer;
@@ -46,107 +46,107 @@ import org.rubypeople.rdt.refactoring.tests.FileTestData;
 
 public class TC_SplittedVariableRenamer extends TestCase {
 	
-	private SingleLocalVariableEdit[] getEdits(String name, int pos) throws FileNotFoundException, IOException {
+	private Node[] getEdits(String name, int pos) throws FileNotFoundException, IOException {
 		LocalVarFinder finder = new LocalVarFinder();
 		Collection<LocalVarUsage> variables = finder.findLocalUsages(new FileTestData(name, "", ""), pos);
 		SplittedVariableRenamer variableRenamer = new SplittedVariableRenamer(finder.getScopeNode());
-		return variableRenamer.rename(variables).toArray(new SingleLocalVariableEdit[0]);
+		return variableRenamer.rename(variables).toArray(new Node[0]);
 	}
 	
 	public void testRename_1() throws FileNotFoundException, IOException {
 		
-		SingleLocalVariableEdit[] edits = getEdits("testFindLocalUsages_1.rb", 0);
+		Node[] edits = getEdits("testFindLocalUsages_1.rb", 0);
 		assertEquals(2, edits.length);
 		
-		assertEquals(LocalAsgnNode.class, edits[0].getNode().getClass());
-		assertEquals(5, edits[0].getOffsetLength());
-		assertEquals(LocalVarNode.class, edits[1].getNode().getClass());
-		assertEquals(1, edits[1].getOffsetLength());
+		assertEquals(LocalAsgnNode.class, edits[0].getClass());
+		assertEquals(5, edits[0].getPosition().getEndOffset() - edits[0].getPosition().getStartOffset());
+		assertEquals(LocalVarNode.class, edits[1].getClass());
+		assertEquals(1, edits[1].getPosition().getEndOffset() - edits[1].getPosition().getStartOffset());
 	}
 	
 	public void testRename_2() throws FileNotFoundException, IOException {
 		
-		SingleLocalVariableEdit[] edits = getEdits("testFindLocalUsages_2.rb", 0);
+		Node[] edits = getEdits("testFindLocalUsages_2.rb", 0);
 		assertEquals(4, edits.length);
 		
-		assertEquals(LocalAsgnNode.class, edits[0].getNode().getClass());
-		assertEquals(5, edits[0].getOffsetLength());
-		assertEquals(LocalVarNode.class, edits[1].getNode().getClass());
-		assertEquals(1, edits[1].getOffsetLength());
-		assertEquals(LocalAsgnNode.class, edits[2].getNode().getClass());
-		assertEquals(5, edits[2].getOffsetLength());
-		assertEquals(LocalVarNode.class, edits[3].getNode().getClass());
-		assertEquals(1, edits[3].getOffsetLength());
+		assertEquals(LocalAsgnNode.class, edits[0].getClass());
+		assertEquals(5, edits[0].getPosition().getEndOffset() - edits[0].getPosition().getStartOffset());
+		assertEquals(LocalVarNode.class, edits[1].getClass());
+		assertEquals(1, edits[1].getPosition().getEndOffset() - edits[1].getPosition().getStartOffset());
+		assertEquals(LocalAsgnNode.class, edits[2].getClass());
+		assertEquals(5, edits[2].getPosition().getEndOffset() - edits[2].getPosition().getStartOffset());
+		assertEquals(LocalVarNode.class, edits[3].getClass());
+		assertEquals(1, edits[3].getPosition().getEndOffset() - edits[3].getPosition().getStartOffset());
 	}
 
 	public void testRename_3() throws FileNotFoundException, IOException {
 		
-		SingleLocalVariableEdit[] edits = getEdits("testFindLocalUsages_3.rb", 0);
+		Node[] edits = getEdits("testFindLocalUsages_3.rb", 0);
 		assertEquals(4, edits.length);
 		
-		assertEquals(LocalAsgnNode.class, edits[0].getNode().getClass());
-		assertEquals(5, edits[0].getOffsetLength());
-		assertEquals(LocalVarNode.class, edits[1].getNode().getClass());
-		assertEquals(1, edits[1].getOffsetLength());
-		assertEquals(LocalAsgnNode.class, edits[2].getNode().getClass());
-		assertEquals(5, edits[2].getOffsetLength());
-		assertEquals(LocalVarNode.class, edits[3].getNode().getClass());
-		assertEquals(1, edits[3].getOffsetLength());
+		assertEquals(LocalAsgnNode.class, edits[0].getClass());
+		assertEquals(5, edits[0].getPosition().getEndOffset() - edits[0].getPosition().getStartOffset());
+		assertEquals(LocalVarNode.class, edits[1].getClass());
+		assertEquals(1, edits[1].getPosition().getEndOffset() - edits[1].getPosition().getStartOffset());
+		assertEquals(LocalAsgnNode.class, edits[2].getClass());
+		assertEquals(5, edits[2].getPosition().getEndOffset() - edits[2].getPosition().getStartOffset());
+		assertEquals(LocalVarNode.class, edits[3].getClass());
+		assertEquals(1, edits[3].getPosition().getEndOffset() - edits[3].getPosition().getStartOffset());
 	}
 	
 	public void testRename_4() throws FileNotFoundException, IOException {
 		
-		SingleLocalVariableEdit[] edits = getEdits("testFindLocalUsages_4.rb", 14);
+		Node[] edits = getEdits("testFindLocalUsages_4.rb", 14);
 		assertEquals(4, edits.length);
 		
-		assertEquals(LocalAsgnNode.class, edits[0].getNode().getClass());
-		assertEquals(5, edits[0].getOffsetLength());
-		assertEquals(LocalAsgnNode.class, edits[1].getNode().getClass());
-		assertEquals(1, edits[1].getOffsetLength());
-		assertEquals(LocalVarNode.class, edits[2].getNode().getClass());
-		assertEquals(1, edits[2].getOffsetLength());
-		assertEquals(LocalVarNode.class, edits[3].getNode().getClass());
-		assertEquals(1, edits[3].getOffsetLength());
+		assertEquals(LocalAsgnNode.class, edits[0].getClass());
+		assertEquals(5, edits[0].getPosition().getEndOffset() - edits[0].getPosition().getStartOffset());
+		assertEquals(LocalAsgnNode.class, edits[1].getClass());
+		assertEquals(1, edits[1].getPosition().getEndOffset() - edits[1].getPosition().getStartOffset());
+		assertEquals(LocalVarNode.class, edits[2].getClass());
+		assertEquals(1, edits[2].getPosition().getEndOffset() - edits[2].getPosition().getStartOffset());
+		assertEquals(LocalVarNode.class, edits[3].getClass());
+		assertEquals(1, edits[3].getPosition().getEndOffset() - edits[3].getPosition().getStartOffset());
 	}
 	
 	public void testRename_5() throws FileNotFoundException, IOException {
 		
-		SingleLocalVariableEdit[] edits = getEdits("testFindLocalUsages_5.rb", 14);
+		Node[] edits = getEdits("testFindLocalUsages_5.rb", 14);
 		assertEquals(2, edits.length);
 
-		assertEquals(LocalAsgnNode.class, edits[0].getNode().getClass());
-		assertEquals(5, edits[0].getOffsetLength());
-		assertEquals(LocalAsgnNode.class, edits[1].getNode().getClass());
-		assertEquals(6, edits[1].getOffsetLength());
+		assertEquals(LocalAsgnNode.class, edits[0].getClass());
+		assertEquals(5, edits[0].getPosition().getEndOffset() - edits[0].getPosition().getStartOffset());
+		assertEquals(LocalAsgnNode.class, edits[1].getClass());
+		assertEquals(6, edits[1].getPosition().getEndOffset() - edits[1].getPosition().getStartOffset());
 	}
 	
 	public void testRename_6() throws FileNotFoundException, IOException {
 		
-		SingleLocalVariableEdit[] edits = getEdits("testFindLocalUsages_6.rb", 14);
+		Node[] edits = getEdits("testFindLocalUsages_6.rb", 14);
 		assertEquals(3, edits.length);
 
-		assertEquals(LocalAsgnNode.class, edits[0].getNode().getClass());
-		assertEquals(5, edits[0].getOffsetLength());
-		assertEquals(LocalAsgnNode.class, edits[1].getNode().getClass());
-		assertEquals(6, edits[1].getOffsetLength());
-		assertEquals(LocalAsgnNode.class, edits[2].getNode().getClass());
-		assertEquals(5, edits[2].getOffsetLength());
+		assertEquals(LocalAsgnNode.class, edits[0].getClass());
+		assertEquals(5, edits[0].getPosition().getEndOffset() - edits[0].getPosition().getStartOffset());
+		assertEquals(LocalAsgnNode.class, edits[1].getClass());
+		assertEquals(6, edits[1].getPosition().getEndOffset() - edits[1].getPosition().getStartOffset());
+		assertEquals(LocalAsgnNode.class, edits[2].getClass());
+		assertEquals(5, edits[2].getPosition().getEndOffset() - edits[2].getPosition().getStartOffset());
 	}
 	
 	public void testRename_7() throws FileNotFoundException, IOException {
 		
-		SingleLocalVariableEdit[] edits = getEdits("testFindLocalUsages_7.rb", 14);
+		Node[] edits = getEdits("testFindLocalUsages_7.rb", 14);
 		assertEquals(5, edits.length);
 
-		assertEquals(DAsgnNode.class, edits[0].getNode().getClass());
-		assertEquals(5, edits[0].getOffsetLength());
-		assertEquals(DVarNode.class, edits[1].getNode().getClass());
-		assertEquals(5, edits[1].getOffsetLength());
-		assertEquals(DAsgnNode.class, edits[2].getNode().getClass());
-		assertEquals(12, edits[2].getOffsetLength());
-		assertEquals(DAsgnNode.class, edits[3].getNode().getClass());
-		assertEquals(13, edits[3].getOffsetLength());
-		assertEquals(DVarNode.class, edits[4].getNode().getClass());
-		assertEquals(5, edits[4].getOffsetLength());
+		assertEquals(DAsgnNode.class, edits[0].getClass());
+		assertEquals(5, edits[0].getPosition().getEndOffset() - edits[0].getPosition().getStartOffset());
+		assertEquals(DVarNode.class, edits[1].getClass());
+		assertEquals(5, edits[1].getPosition().getEndOffset() - edits[1].getPosition().getStartOffset());
+		assertEquals(DAsgnNode.class, edits[2].getClass());
+		assertEquals(12, edits[2].getPosition().getEndOffset() - edits[2].getPosition().getStartOffset());
+		assertEquals(DAsgnNode.class, edits[3].getClass());
+		assertEquals(13, edits[3].getPosition().getEndOffset() - edits[3].getPosition().getStartOffset());
+		assertEquals(DVarNode.class, edits[4].getClass());
+		assertEquals(5, edits[4].getPosition().getEndOffset() - edits[4].getPosition().getStartOffset());
 	}
 }

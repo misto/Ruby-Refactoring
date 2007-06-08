@@ -38,9 +38,7 @@ import org.jruby.ast.NewlineNode;
 import org.jruby.ast.Node;
 import org.rubypeople.rdt.refactoring.core.renamelocal.DynamicVariableRenamer;
 import org.rubypeople.rdt.refactoring.core.renamelocal.IAbortCondition;
-import org.rubypeople.rdt.refactoring.core.renamelocal.SingleLocalVariableEdit;
 import org.rubypeople.rdt.refactoring.core.renamelocal.VariableRenamer;
-import org.rubypeople.rdt.refactoring.editprovider.EditProvider;
 import org.rubypeople.rdt.refactoring.util.NodeUtil;
 
 public class SplittedVariableRenamer implements ISplittedVariableRenamer {
@@ -85,9 +83,9 @@ public class SplittedVariableRenamer implements ISplittedVariableRenamer {
 		this.scopeNode = scopeNode;
 	}
 
-	public Collection<EditProvider> rename(final Collection<LocalVarUsage> variables) {
+	public Collection<Node> rename(final Collection<LocalVarUsage> variables) {
 		
-		final ArrayList<EditProvider> edits = new ArrayList<EditProvider>();
+		final ArrayList<Node> edits = new ArrayList<Node>();
 		
 		for (final LocalVarUsage localVarUsage : variables) {
 			
@@ -107,10 +105,7 @@ public class SplittedVariableRenamer implements ISplittedVariableRenamer {
 				return null;
 			}
 			
-			final ArrayList<Node> nodes = renamer.replaceVariableNamesInNode(scopeNode);
-			for (Node node : nodes) {
-				edits.add(new SingleLocalVariableEdit(node, NodeUtil.getScope(scopeNode).getVariables()));	
-			}
+			edits.addAll(renamer.replaceVariableNamesInNode(scopeNode));
 		}
 		
 		return edits;

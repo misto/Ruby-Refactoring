@@ -28,10 +28,13 @@
 
 package org.rubypeople.rdt.refactoring.core.splitlocal;
 
+import java.util.ArrayList;
 import java.util.Collection;
 
+import org.jruby.ast.Node;
 import org.rubypeople.rdt.refactoring.editprovider.EditProvider;
 import org.rubypeople.rdt.refactoring.editprovider.MultiEditProvider;
+import org.rubypeople.rdt.refactoring.editprovider.SimpleNodeEditProvider;
 
 public class SplitTempEditProvider extends MultiEditProvider implements ISplittedNamesReceiver {
 
@@ -43,7 +46,11 @@ public class SplitTempEditProvider extends MultiEditProvider implements ISplitte
 
 	@Override
 	protected Collection<EditProvider> getEditProviders() {
-		return new SplittedVariableRenamer(config.getLocalVariablesFinder().getScopeNode()).rename(config.getLocalUsages());
+		ArrayList<EditProvider> edits = new ArrayList<EditProvider>();
+		for (Node node : new SplittedVariableRenamer(config.getLocalVariablesFinder().getScopeNode()).rename(config.getLocalUsages())) {
+			edits.add(new SimpleNodeEditProvider(node));
+		}
+		return edits;
 	}
 
 	public void setNewNames(String[] names) {

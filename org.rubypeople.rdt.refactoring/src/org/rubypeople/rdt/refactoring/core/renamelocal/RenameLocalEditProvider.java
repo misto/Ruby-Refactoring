@@ -39,6 +39,7 @@ import org.jruby.ast.MethodDefNode;
 import org.jruby.ast.Node;
 import org.rubypeople.rdt.refactoring.editprovider.EditProvider;
 import org.rubypeople.rdt.refactoring.editprovider.MultiEditProvider;
+import org.rubypeople.rdt.refactoring.editprovider.SimpleNodeEditProvider;
 import org.rubypeople.rdt.refactoring.util.NodeUtil;
 
 public class RenameLocalEditProvider extends MultiEditProvider implements Observer {
@@ -105,7 +106,7 @@ public class RenameLocalEditProvider extends MultiEditProvider implements Observ
 	protected Collection<EditProvider> getEditProviders() {
 		Collection<EditProvider> edits = new ArrayList<EditProvider>();
 		for (Node n : renameVariables()) {
-			edits.add(new SingleLocalVariableEdit(n, config.getLocalNames()));
+			edits.add(new SimpleNodeEditProvider(n));
 		}
 		return edits;
 	}

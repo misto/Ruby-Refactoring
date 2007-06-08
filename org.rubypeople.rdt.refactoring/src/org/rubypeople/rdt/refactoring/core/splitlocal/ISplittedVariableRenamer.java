@@ -30,10 +30,10 @@ package org.rubypeople.rdt.refactoring.core.splitlocal;
 
 import java.util.Collection;
 
-import org.rubypeople.rdt.refactoring.editprovider.EditProvider;
+import org.jruby.ast.Node;
 
 public interface ISplittedVariableRenamer {
 
-	public Collection<EditProvider> rename(Collection<LocalVarUsage> variables);
+	public Collection<Node> rename(Collection<LocalVarUsage> variables);
 
 }

@@ -40,7 +40,7 @@ public class SimpleNodeEditProvider extends ReplaceEditProvider {
 
 	@Override
 	protected int getOffsetLength() {
-		return node.getPosition().getEndOffset() - node.getPosition().getStartOffset();
+		return node.getPositionIncludingComments().getEndOffset() - node.getPositionIncludingComments().getStartOffset();
 	}
 
 	@Override
@@ -50,6 +50,6 @@ public class SimpleNodeEditProvider extends ReplaceEditProvider {
 
 	@Override
 	protected int getOffset(String document) {
-		return node.getPosition().getStartOffset();
+		return node.getPositionIncludingComments().getStartOffset();
 	}
 }
