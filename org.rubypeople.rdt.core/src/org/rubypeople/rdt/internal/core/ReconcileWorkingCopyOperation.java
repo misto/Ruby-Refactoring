@@ -125,8 +125,8 @@ public class ReconcileWorkingCopyOperation extends RubyModelOperation {
 				this.problems = new HashMap();
 			this.ast = workingCopy.makeConsistent(true, this.problems, this.progressMonitor);
 			this.deltaBuilder.buildDeltas();
-			// if (this.ast != null && this.deltaBuilder.delta != null)
-			// this.deltaBuilder.delta.changedAST(this.ast);
+			if (this.ast != null && this.deltaBuilder.delta != null)
+			 this.deltaBuilder.delta.changedAST(this.ast);
 			return this.ast;
 		}
 		if (this.ast != null)

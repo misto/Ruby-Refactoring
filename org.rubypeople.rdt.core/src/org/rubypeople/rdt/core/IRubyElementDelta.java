@@ -11,7 +11,7 @@
 package org.rubypeople.rdt.core;
 
 import org.eclipse.core.resources.IResourceDelta;
-import org.rubypeople.rdt.internal.core.RubyScript;
+import org.jruby.ast.Node;
 
 /**
  * A Java element delta describes changes in Java element between two discrete
@@ -348,7 +348,7 @@ public interface IRubyElementDelta {
      * @see #F_AST_AFFECTED
      * @since 3.2
      */
-    public RubyScript getRubyScriptAST();
+    public Node getRubyScriptAST();
 
     /**
      * Returns deltas for the children which have changed.

@@ -535,6 +535,7 @@ public class DefaultRubyFoldingStructureProvider implements IProjectionListener,
          */
         public void elementChanged(ElementChangedEvent e) {
             IRubyElementDelta delta = findElement(fInput, e.getDelta());
+            if (delta.getRubyScriptAST() == null) return;
             if (delta != null) processDelta(delta);
         }
 

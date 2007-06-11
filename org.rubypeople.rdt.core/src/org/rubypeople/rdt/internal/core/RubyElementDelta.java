@@ -13,6 +13,7 @@ package org.rubypeople.rdt.internal.core;
 import java.util.ArrayList;
 
 import org.eclipse.core.resources.IResourceDelta;
+import org.jruby.ast.Node;
 import org.rubypeople.rdt.core.IRubyElement;
 import org.rubypeople.rdt.core.IRubyElementDelta;
 
@@ -32,7 +33,7 @@ public class RubyElementDelta extends SimpleDelta implements IRubyElementDelta {
      * reconcile operation - the changed element is an IRubyScript in
      * working copy mode
      */
-    protected RubyScript ast = null;
+    protected Node ast = null;
 
     /*
      * The element that this delta describes the change to.
@@ -264,7 +265,7 @@ public class RubyElementDelta extends SimpleDelta implements IRubyElementDelta {
     /*
      * Records the last changed AST .
      */
-    public void changedAST(RubyScript changedAST) {
+    public void changedAST(Node changedAST) {
         this.ast = changedAST;
         changed(F_AST_AFFECTED);
     }
@@ -397,7 +398,7 @@ public class RubyElementDelta extends SimpleDelta implements IRubyElementDelta {
         return parents;
     }
 
-    public RubyScript getRubyScriptAST() {
+    public Node getRubyScriptAST() {
         return this.ast;
     }
 
