@@ -107,13 +107,13 @@ public class CodeComplexityVisitor extends RubyLintVisitor {
 
 	public void exitDefnNode(DefnNode iVisited) {
 		if (returnCount > maxReturns) {
-			createProblem(iVisited.getPosition(), "Too many explicit returns: " + returnCount);
+			createProblem(iVisited.getNameNode().getPosition(), "Too many explicit returns: " + returnCount);
 		}
 		if (branchCount > maxBranches) {
-			createProblem(iVisited.getPosition(), "Too many branches: " + branchCount);
+			createProblem(iVisited.getNameNode().getPosition(), "Too many branches: " + branchCount);
 		}
 		if (locals.size() > maxLocals) {
-			createProblem(iVisited.getPosition(), "Too many local variables: " + locals.size());
+			createProblem(iVisited.getNameNode().getPosition(), "Too many local variables: " + locals.size());
 		}
 		returnCount = 0;
 		branchCount = 0;
