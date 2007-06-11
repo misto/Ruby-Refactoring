@@ -384,7 +384,7 @@ public class RubyOutlinePage extends Page implements IContentOutlinePage, IAdapt
                         Item i= (Item) node;
                         if (i.getData() instanceof IRubyElement) {
                             IRubyElement je= (IRubyElement) i.getData();
-                            if (je.getElementType() == IRubyElement.IMPORT_CONTAINER || isInnerType(je)) {
+                            if (je.getElementType() == IRubyElement.IMPORT_CONTAINER) {
                                 if (i != fReusedExpandedItem) {
                                     setExpanded(i, false);
                                     return;
