@@ -3,16 +3,25 @@ package com.aptana.rdt;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
+import java.util.HashSet;
+import java.util.Hashtable;
+import java.util.Iterator;
 
 import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
+import org.eclipse.core.runtime.preferences.DefaultScope;
+import org.eclipse.core.runtime.preferences.IEclipsePreferences;
+import org.eclipse.core.runtime.preferences.IPreferencesService;
+import org.eclipse.core.runtime.preferences.InstanceScope;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.osgi.framework.BundleContext;
+import org.rubypeople.rdt.internal.core.RubyModelManager.EclipsePreferencesListener;
 import org.rubypeople.rdt.internal.launching.LaunchingPlugin;
 import org.rubypeople.rdt.internal.ui.IRubyStatusConstants;
 
@@ -29,6 +38,14 @@ public class AptanaRDTPlugin extends AbstractUIPlugin {
 
 	// The plug-in ID
 	public static final String PLUGIN_ID = "com.aptana.rdt";
+	
+    // Preferences
+    public HashSet optionNames = new HashSet(20);
+    public Hashtable<String, String> optionsCache;
+	
+    public final IEclipsePreferences[] preferencesLookup = new IEclipsePreferences[2];
+	static final int PREF_INSTANCE = 0;
+    static final int PREF_DEFAULT = 1;
 
 	/**
 	 * Possible  configurable option ID.
@@ -216,6 +233,7 @@ public class AptanaRDTPlugin extends AbstractUIPlugin {
 	public void start(BundleContext context) throws Exception {
 		super.start(context);
 		context.registerService(IGemManager.class.getName(), GemManager.getInstance(), null);
+		initializePreferences();
 		
 		boolean rubyDebugInstalled = GemManager.getInstance().gemInstalled("ruby-debug-ide");
 		 // FIXME What if user has explicity disabled using ruby-debug?!
@@ -248,6 +266,40 @@ public class AptanaRDTPlugin extends AbstractUIPlugin {
 		}
 	}
 	
+	private void initializePreferences() {
+		 // Create lookups
+        preferencesLookup[PREF_INSTANCE] = new InstanceScope().getNode(PLUGIN_ID);
+        preferencesLookup[PREF_DEFAULT] = new DefaultScope().getNode(PLUGIN_ID);
+
+        // Listen to instance preferences node removal from parent in order to refresh stored one
+        IEclipsePreferences.INodeChangeListener listener = new IEclipsePreferences.INodeChangeListener() {
+            public void added(IEclipsePreferences.NodeChangeEvent event) {
+                // do nothing
+            }
+            public void removed(IEclipsePreferences.NodeChangeEvent event) {
+                if (event.getChild() == preferencesLookup[PREF_INSTANCE]) {
+                    preferencesLookup[PREF_INSTANCE] = new InstanceScope().getNode(PLUGIN_ID);
+                    preferencesLookup[PREF_INSTANCE].addPreferenceChangeListener(new EclipsePreferencesListener());
+                }
+            }
+        };
+        ((IEclipsePreferences) preferencesLookup[PREF_INSTANCE].parent()).addNodeChangeListener(listener);
+        preferencesLookup[PREF_INSTANCE].addPreferenceChangeListener(new EclipsePreferencesListener());
+
+        // Listen to default preferences node removal from parent in order to refresh stored one
+        listener = new IEclipsePreferences.INodeChangeListener() {
+            public void added(IEclipsePreferences.NodeChangeEvent event) {
+                // do nothing
+            }
+            public void removed(IEclipsePreferences.NodeChangeEvent event) {
+                if (event.getChild() == preferencesLookup[PREF_DEFAULT]) {
+                    preferencesLookup[PREF_DEFAULT] = new DefaultScope().getNode(PLUGIN_ID);
+                }
+            }
+        };
+        ((IEclipsePreferences) preferencesLookup[PREF_DEFAULT].parent()).addNodeChangeListener(listener);
+	}
+
 	protected void setRubyDebugAsDefault() {
 		LaunchingPlugin.getDefault().getPluginPreferences().setValue(org.rubypeople.rdt.internal.launching.PreferenceConstants.USE_RUBY_DEBUG, true);
 	}
@@ -308,4 +360,30 @@ public class AptanaRDTPlugin extends AbstractUIPlugin {
 	public static String getPluginId() {
 		return PLUGIN_ID;
 	}
+
+	public Hashtable<String, String> getOptions() {
+
+        // return cached options if already computed
+//        if (this.optionsCache != null) return new Hashtable<String, String>(this.optionsCache);
+
+        // init
+        Hashtable<String, String> options = new Hashtable<String, String>(10);
+        IPreferencesService service = Platform.getPreferencesService();
+
+        // set options using preferences service lookup
+        Iterator iterator = optionNames.iterator();
+        while (iterator.hasNext()) {
+            String propertyName = (String) iterator.next();
+            String propertyValue = service.get(propertyName, null, this.preferencesLookup);
+            if (propertyValue != null) {
+                options.put(propertyName, propertyValue);
+            }
+        }
+        
+        // store built map in cache
+        this.optionsCache = new Hashtable<String, String>(options);
+
+        // return built map
+        return options;
+    }
 }

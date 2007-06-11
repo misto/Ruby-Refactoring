@@ -1,6 +1,8 @@
 package com.aptana.rdt.internal.parser.warnings;
 
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 import org.jruby.ast.CaseNode;
 import org.jruby.ast.DefnNode;
@@ -25,11 +27,11 @@ public class CodeComplexityVisitor extends RubyLintVisitor {
 	private int maxLocals;
 	private int returnCount;
 	private int branchCount;
-	private int locals;
+	private Set locals;
 	private Map fOptions;
 
 	public CodeComplexityVisitor(String contents) {
-		this(RubyModelManager.getRubyModelManager().getOptions(), contents);		
+		this(AptanaRDTPlugin.getDefault().getOptions(), contents);		
 	}
 	
 	public CodeComplexityVisitor(Map options, String contents) {
@@ -61,7 +63,7 @@ public class CodeComplexityVisitor extends RubyLintVisitor {
 	public Instruction visitDefnNode(DefnNode iVisited) {
 		returnCount = 0;
 		branchCount = 0;
-		locals = 0;
+		locals = new HashSet();
 
 		String[] args = ASTUtil.getArgs(iVisited.getArgsNode(), iVisited.getScope());
 		if (args != null && args.length > maxArgLength) {
@@ -70,7 +72,7 @@ public class CodeComplexityVisitor extends RubyLintVisitor {
 		ISourcePosition pos = iVisited.getPosition();
 		int lines = (pos.getEndLine() - pos.getStartLine()) - 1;
 		if (lines > maxLines) {
-			createProblem(iVisited.getPosition(), "Too many lines in method: " + lines);
+			createProblem(iVisited.getNameNode().getPosition(), "Too many lines in method: " + lines);
 		}
 		return super.visitDefnNode(iVisited);
 	}
@@ -99,7 +101,7 @@ public class CodeComplexityVisitor extends RubyLintVisitor {
 	
 	@Override
 	public Instruction visitLocalAsgnNode(LocalAsgnNode iVisited) {
-		locals++;
+		locals.add(iVisited.getName());
 		return super.visitLocalAsgnNode(iVisited);
 	}
 
@@ -110,12 +112,12 @@ public class CodeComplexityVisitor extends RubyLintVisitor {
 		if (branchCount > maxBranches) {
 			createProblem(iVisited.getPosition(), "Too many branches: " + branchCount);
 		}
-		if (locals > maxLocals) {
-			createProblem(iVisited.getPosition(), "Too many local variables: " + locals);
+		if (locals.size() > maxLocals) {
+			createProblem(iVisited.getPosition(), "Too many local variables: " + locals.size());
 		}
 		returnCount = 0;
 		branchCount = 0;
-		locals = 0;
+		locals.clear();
 	}
 
 	@Override

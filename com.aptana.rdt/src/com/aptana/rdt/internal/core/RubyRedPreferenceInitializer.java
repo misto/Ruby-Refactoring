@@ -1,5 +1,6 @@
 package com.aptana.rdt.internal.core;
 
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
 
@@ -13,6 +14,7 @@ import com.aptana.rdt.internal.parser.warnings.LintOptions;
 public class RubyRedPreferenceInitializer extends AbstractPreferenceInitializer {
 
     public void initializeDefaultPreferences() {		
+    	HashSet optionNames = AptanaRDTPlugin.getDefault().optionNames;
 		// Lint visitor settings
 		Map defaultOptionsMap = new LintOptions().getMap(); // compiler defaults
 
@@ -22,8 +24,9 @@ public class RubyRedPreferenceInitializer extends AbstractPreferenceInitializer 
             Map.Entry entry = (Map.Entry) iter.next();
             String optionName = (String) entry.getKey();
             defaultPreferences.put(optionName, (String) entry.getValue());
+            optionNames.add(optionName);
         }
-
+        AptanaRDTPlugin.getDefault().optionsCache = null;
     }
 
 }
