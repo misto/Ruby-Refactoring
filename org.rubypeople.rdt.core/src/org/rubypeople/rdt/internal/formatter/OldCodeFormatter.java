@@ -8,6 +8,7 @@ import java.util.regex.PatternSyntaxException;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.text.edits.ReplaceEdit;
 import org.eclipse.text.edits.TextEdit;
+import org.jruby.ast.NextNode;
 import org.rubypeople.rdt.core.RubyCore;
 import org.rubypeople.rdt.core.formatter.CodeFormatter;
 import org.rubypeople.rdt.core.formatter.DefaultCodeFormatterConstants;
@@ -316,6 +317,10 @@ public class OldCodeFormatter extends CodeFormatter {
             }
 
             if (lastBlockMarker != null) {
+            	if (!lastBlockMarker.getKeyword().equals("begin") && newBlockMarker.getKeyword().equals("rescue")) {
+            		// we have a rescue modifier?
+            		continue;
+            	}
                 lastBlockMarker.setNext(newBlockMarker);
             }
             lastBlockMarker = newBlockMarker;

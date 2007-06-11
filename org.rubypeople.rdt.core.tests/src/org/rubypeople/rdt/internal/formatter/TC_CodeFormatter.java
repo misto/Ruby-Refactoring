@@ -132,4 +132,8 @@ public class TC_CodeFormatter extends TestCase {
 		this.doTest("NegativeIndentation");
 	}	
 	
+	public void testRescueModifier() {
+		doTest("RescueModifier");
+	}
+	
 }

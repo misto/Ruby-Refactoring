@@ -633,7 +633,48 @@ end
 </part>
 
 </test>
-
+<test ID="RescueModifier">
+<part>
+<assertionMessage>Rescue Modifier</assertionMessage>  
+<unformatted>
+class A
+  var = do_something rescue nil
+foo 
+end
+</unformatted>
+<formatted>
+class A
+  var = do_something rescue nil
+  foo 
+end
+</formatted>
+</part>
+<part>
+<assertionMessage>Rescue Modifier With Previous Block</assertionMessage>  
+<unformatted>
+class A
+  begin
+do_something
+  rescue
+yeah
+  end
+  var = do_something rescue nil
+foo 
+end
+</unformatted>
+<formatted>
+class A
+  begin
+    do_something
+  rescue
+    yeah
+  end
+  var = do_something rescue nil
+  foo 
+end
+</formatted>
+</part>
+</test>
 
 </tests>
 
