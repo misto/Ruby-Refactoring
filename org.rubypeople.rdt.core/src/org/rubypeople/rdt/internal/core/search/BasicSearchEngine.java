@@ -266,7 +266,7 @@ public class BasicSearchEngine {
 		return RubyModelManager.getRubyModelManager().getWorkspaceScope();
 	}
 
-	public static Collection<? extends IType> findType(String simpleTypeName) {
+	public static Collection<IType> findType(String simpleTypeName) {
 		SearchPattern pattern = SearchPattern.createPattern(IRubyElement.TYPE, "*" + simpleTypeName + "*", IRubySearchConstants.DECLARATIONS, SearchPattern.R_PATTERN_MATCH);
 		SearchParticipant[] participants = new SearchParticipant[] {getDefaultSearchParticipant()};
 		IRubySearchScope scope = createWorkspaceScope();
