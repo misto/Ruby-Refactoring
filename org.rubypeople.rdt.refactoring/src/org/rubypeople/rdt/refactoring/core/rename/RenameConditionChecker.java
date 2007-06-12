@@ -78,11 +78,9 @@ public class RenameConditionChecker extends RefactoringConditionChecker {
 		addErrorIfNotDefaultError(fieldConditionChecker, RenameFieldConditionChecker.DEFAULT_ERROR);
 		addErrorIfNotDefaultError(methodConditionChecker, RenameMethodConditionChecker.DEFAULT_ERROR);
 		addErrorIfNotDefaultError(classConditionChecker, RenameClassConditionChecker.DEFAULT_ERROR);
-		addErrorIfNotDefaultError(moduleConditionChecker, RenameClassConditionChecker.DEFAULT_ERROR);
+		addErrorIfNotDefaultError(moduleConditionChecker, RenameModuleConditionChecker.DEFAULT_ERROR);
 		if (!hasErrors()) {
-
 			addError(Messages.RenameConditionChecker_NothingSelected);
-
 		}
 	}
 
