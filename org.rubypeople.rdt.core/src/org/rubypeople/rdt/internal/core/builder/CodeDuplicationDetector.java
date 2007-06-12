@@ -15,6 +15,7 @@ import org.rubypeople.rdt.internal.core.pmd.CPD;
 import org.rubypeople.rdt.internal.core.pmd.Match;
 import org.rubypeople.rdt.internal.core.pmd.TokenEntry;
 
+// XXX Either use this in some way, or remove it!
 public class CodeDuplicationDetector implements MultipleFileCompiler {
 
 	private IMarkerManager markerManager;
