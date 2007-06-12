@@ -30,6 +30,7 @@ public interface ISourceElementRequestor {
 		public int declarationStart;
 //		public String type; TODO Pre populate our guesses at type?
 		public String name;
+		public boolean isDynamic;
 		public int nameSourceStart;
 		public int nameSourceEnd;
 	}

@@ -186,6 +186,7 @@ public class RubyElementImageProvider {
                 return RubyPluginImages.DESC_OBJS_CONSTANT;
 
             case IRubyElement.LOCAL_VARIABLE:
+            case IRubyElement.DYNAMIC_VAR: // FIXME Make dynamic var have it's own image?
                 return RubyPluginImages.DESC_OBJS_LOCAL_VAR;
 
             case IRubyElement.INSTANCE_VAR:

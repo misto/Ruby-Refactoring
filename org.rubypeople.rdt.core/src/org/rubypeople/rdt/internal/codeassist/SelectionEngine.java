@@ -18,6 +18,8 @@ import org.jruby.ast.ClassVarNode;
 import org.jruby.ast.Colon2Node;
 import org.jruby.ast.ConstDeclNode;
 import org.jruby.ast.ConstNode;
+import org.jruby.ast.DAsgnNode;
+import org.jruby.ast.DVarNode;
 import org.jruby.ast.DefnNode;
 import org.jruby.ast.DefsNode;
 import org.jruby.ast.FCallNode;
@@ -53,6 +55,7 @@ import org.rubypeople.rdt.internal.ti.DefaultTypeInferrer;
 import org.rubypeople.rdt.internal.ti.ITypeGuess;
 import org.rubypeople.rdt.internal.ti.ITypeInferrer;
 import org.rubypeople.rdt.internal.ti.util.ClosestSpanningNodeLocator;
+import org.rubypeople.rdt.internal.ti.util.FirstPrecursorNodeLocator;
 import org.rubypeople.rdt.internal.ti.util.INodeAcceptor;
 import org.rubypeople.rdt.internal.ti.util.OffsetNodeLocator;
 
@@ -82,6 +85,18 @@ public class SelectionEngine {
 			RubyElementRequestor completer = new RubyElementRequestor(script);
 			return completer.findType(fullyQualifiedName);
 		} 
+		if (selected instanceof DVarNode) {
+			final String name = ((DVarNode) selected).getName();
+			Node assignment = FirstPrecursorNodeLocator.Instance().findFirstPrecursor(root, start, new INodeAcceptor() {
+			
+				public boolean doesAccept(Node node) {
+					// TODO Auto-generated method stub
+					return (node instanceof DAsgnNode) && ((DAsgnNode) node).getName().equals(name);
+				}
+			
+			});
+			return new IRubyElement[] { script.getElementAt(assignment.getPosition().getStartOffset()) };
+		}
 		if (selected instanceof ConstNode) {			
 			ConstNode constNode = (ConstNode) selected;
 			String name = constNode.getName();

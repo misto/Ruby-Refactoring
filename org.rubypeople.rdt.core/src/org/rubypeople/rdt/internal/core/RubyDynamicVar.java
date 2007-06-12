@@ -31,13 +31,13 @@ import org.eclipse.core.runtime.IProgressMonitor;
  * RubyDynamicVar is a dynamic variable which is scoped to an iterator or loop
  *
  */
-public class RubyDynamicVar extends RubyField {
+public class RubyDynamicVar extends LocalVariable {
 
 	/**
 	 * @param name
 	 */
-	public RubyDynamicVar(RubyElement parent, String name) {
-		super(parent, name);
+	public RubyDynamicVar(RubyElement parent, String name, int start, int end) {
+		super(parent, name, start, end);
 	}
 	
 	/* (non-Javadoc)

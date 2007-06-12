@@ -365,6 +365,11 @@ public class SourceElementParser extends InOrderVisitor { // TODO Rename to Sour
 	@Override
 	public Instruction visitDAsgnNode(DAsgnNode iVisited) {
 //		RubyDynamicVar var = new RubyDynamicVar(modelStack.peek(), iVisited.getName()); FIXME Notify like a normal local var?
+		FieldInfo field = createFieldInfo(iVisited);
+		field.name = iVisited.getName();
+		field.isDynamic = true;
+		requestor.enterField(field);
+		exitField(iVisited);
 		return super.visitDAsgnNode(iVisited);
 	}
 	
