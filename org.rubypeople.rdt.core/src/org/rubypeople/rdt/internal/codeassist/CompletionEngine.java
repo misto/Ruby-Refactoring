@@ -85,6 +85,27 @@ public class CompletionEngine {
 			suggestMethodsForEnclosingType(script);
 			getDocumentsRubyElementsInScope();
 		} else {
+			if (fContext.isDoubleSemiColon()) {				
+				String prefix = fContext.getFullPrefix();
+				prefix = prefix.substring(0, prefix.length() - 2);
+				RubyElementRequestor requestor = new RubyElementRequestor(script);
+				IType[] types = requestor.findType(prefix);
+				for (int i = 0; i < types.length; i++) {
+					IType type = types[i];
+					suggestTypesConstants(type);
+//					 Suggest nested types
+					suggestNestedTypes(type);
+					// Suggest class level methods
+					Map<String, CompletionProposal> map = suggestMethods(100, type, false);
+					for (CompletionProposal proposal : map.values()) {
+						fRequestor.accept(proposal);
+					}
+				}
+				
+				this.fRequestor.endReporting();
+				fContext = null;
+				return;
+			}
 			if (fContext.isConstant()) { // type or constant
 				suggestTypeNames();
 				suggestConstantNames();
@@ -102,7 +123,7 @@ public class CompletionEngine {
 					String name = guess.getType();
 					IType[] types = requestor.findType(name);  // FIXME When syntax is broken, grabbing type that is defined in same script like this just doesn't work!
 					for (int i = 0; i < types.length; i++) {
-						Map<String, CompletionProposal> map = suggestMethods(guess.getConfidence(), types[i]);
+						Map<String, CompletionProposal> map = suggestMethods(guess.getConfidence(), types[i], true);
 						list.addAll(map.values());						
 					}
 				}
@@ -125,6 +146,34 @@ public class CompletionEngine {
 		}
 		this.fRequestor.endReporting();
 		fContext = null;
+	}
+
+	private void suggestTypesConstants(IType type) throws RubyModelException {
+		SearchPattern pattern = SearchPattern.createPattern(IRubyElement.CONSTANT, "*", IRubySearchConstants.DECLARATIONS, SearchPattern.R_PATTERN_MATCH);
+		IRubySearchScope scope = BasicSearchEngine.createRubySearchScope(new IRubyElement[] {type});
+		List<SearchMatch> results = search(pattern, scope);
+		for (SearchMatch match: results) {
+			IRubyElement element = (IRubyElement) match.getElement();
+			if (element.getElementType() != IRubyElement.CONSTANT) continue; // XXX we shouldn't have to do this
+			// Add proposal
+			CompletionProposal proposal = createProposal(fContext.getReplaceStart(), CompletionProposal.FIELD_REF, element.getElementName());
+			proposal.setType(type.getFullyQualifiedName());
+			fRequestor.accept(proposal);
+		}
+	}
+	
+	private void suggestNestedTypes(IType type) throws RubyModelException {
+		SearchPattern pattern = SearchPattern.createPattern(IRubyElement.TYPE, "*", IRubySearchConstants.DECLARATIONS, SearchPattern.R_PATTERN_MATCH);
+		IRubySearchScope scope = BasicSearchEngine.createRubySearchScope(new IRubyElement[] {type});
+		List<SearchMatch> results = search(pattern, scope);
+		for (SearchMatch match: results) {
+			IType aType = (IType) match.getElement();
+			if (!aType.getFullyQualifiedName().startsWith(type.getFullyQualifiedName()) || aType.getFullyQualifiedName().equals(type.getFullyQualifiedName())) continue; 
+			// Add proposal			
+			CompletionProposal proposal = createProposal(fContext.getReplaceStart(), CompletionProposal.TYPE_REF, aType.getElementName());
+			proposal.setType(aType.getFullyQualifiedName());
+			fRequestor.accept(proposal);
+		}
 	}
 
 	private List<CompletionProposal> suggestAllMethodsMatchingPrefix(IRubyScript script) {
@@ -167,7 +216,7 @@ public class CompletionEngine {
 			type = element.getDeclaringType();
 		}
 		if (type == null) return;
-		List<CompletionProposal> list = sort(suggestMethods(100, type));
+		List<CompletionProposal> list = sort(suggestMethods(100, type, true));
 		for (CompletionProposal proposal : list) {
 			fRequestor.accept(proposal);
 		}
@@ -243,19 +292,22 @@ public class CompletionEngine {
 		}
 	}
 
-	private Map<String, CompletionProposal> suggestMethods(int confidence, IType type) throws RubyModelException {
+	private Map<String, CompletionProposal> suggestMethods(int confidence, IType type, boolean includeInstanceMethods) throws RubyModelException {
 		Map<String, CompletionProposal> proposals = new HashMap<String, CompletionProposal>();
 		if (type == null)
 			return proposals;		
 		IMethod[] methods = type.getMethods();
 		for (int k = 0; k < methods.length; k++) {
+			if (!includeInstanceMethods && !methods[k].isSingleton()) {
+				continue;
+			}
 			CompletionProposal proposal = suggestMethod(methods[k], type.getElementName(), confidence);
 		    if (proposal != null && !proposals.containsKey(proposal.getName())) {
 		    	proposals.put(proposal.getName(), proposal); // If a method name matches an existing suggestion (i.e. its overriden in the subclass), don't suggest it again!
 		    }
 		}		
 		proposals.putAll(addModuleMethods(confidence - 1, type)); // Decrement confidence by one as a hack to make sure as we move up the inheritance chain we suggest "closer" parents methods first
-		if (!type.isModule()) proposals.putAll(addSuperClassMethods(confidence - 1, type));
+		if (!type.isModule()) proposals.putAll(addSuperClassMethods(confidence - 1, type, includeInstanceMethods));
 		return proposals;
 	}
 
@@ -274,7 +326,7 @@ public class CompletionEngine {
 			for (int j = 0; j < moduleTypes.length; j++) {
 				try {
 					IType moduleType = moduleTypes[j];
-					proposals.putAll(suggestMethods(confidence, moduleType));
+					proposals.putAll(suggestMethods(confidence, moduleType, true));
 				} catch (RubyModelException e) {
 					// ignore
 				}
@@ -283,7 +335,7 @@ public class CompletionEngine {
 		return proposals;
 	}
 
-	private Map<String, CompletionProposal> addSuperClassMethods(int confidence, IType type) throws RubyModelException {
+	private Map<String, CompletionProposal> addSuperClassMethods(int confidence, IType type, boolean includeInstanceMethods) throws RubyModelException {
 		Map<String, CompletionProposal> proposals = new HashMap<String, CompletionProposal>();
 		String superClass = type.getSuperclassName();
 		if (superClass == null) return proposals;
@@ -291,7 +343,7 @@ public class CompletionEngine {
 		IType[] supers = requestor.findType(superClass);
 		for (int i = 0; i < supers.length; i++) {
 			IType superType = supers[i];
-			proposals.putAll(suggestMethods(confidence, superType));
+			proposals.putAll(suggestMethods(confidence, superType, includeInstanceMethods));
 		}
 		return proposals;
 	}

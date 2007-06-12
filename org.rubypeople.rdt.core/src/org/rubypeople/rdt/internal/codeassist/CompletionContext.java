@@ -12,6 +12,7 @@ public class CompletionContext {
 	private String partialPrefix;
 	private String fullPrefix;
 	private int replaceStart;
+	private boolean isAfterDoubleSemiColon = false;
 
 	public CompletionContext(IRubyScript script, int offset) throws RubyModelException {
 		this.script = script;
@@ -37,6 +38,21 @@ public class CompletionContext {
 				case '@':
 					// TODO What if there is a valid character after this, so syntax isn't broken?
 					source.deleteCharAt(i);
+					break;
+				case ':':
+					if (i > 0) {						
+						// Check character before this for :
+						char previous = source.charAt(i - 1);
+						if (previous == ':') {
+							isAfterDoubleSemiColon = true;
+							source.deleteCharAt(i);
+							source.deleteCharAt(i - 1);
+							tmpPrefix.insert(0, "::");
+							partialPrefix = "";
+							i--;
+							continue;
+						}
+					}					
 					break;
 				}
 			}
@@ -138,6 +154,10 @@ public class CompletionContext {
 
 	public boolean isGlobal() {
 		return !emptyPrefix() && !isExplicitMethodInvokation() && getPartialPrefix().startsWith("$");
+	}
+	
+	public boolean isDoubleSemiColon() {
+		return isAfterDoubleSemiColon;
 	}
 
 	public boolean fullPrefixIsConstant() {
