@@ -280,8 +280,6 @@ public class RubyEditor extends RubyAbstractEditor {
         beginRescueAction.update(selection);
         provider.addSelectionChangedListener(beginRescueAction);
         setAction(SurroundWithBeginRescueAction.SURROUND_WTH_BEGIN_RESCUE, beginRescueAction);
-        
-		fActionGroups.addGroup(new RubyActionGroup(this, ITextEditorActionConstants.GROUP_EDIT));
     }
    
     /**
