@@ -93,7 +93,7 @@ public class CompletionEngine {
 				for (int i = 0; i < types.length; i++) {
 					IType type = types[i];
 					suggestTypesConstants(type);
-//					 Suggest nested types
+					// Suggest nested types
 					suggestNestedTypes(type);
 					// Suggest class level methods
 					Map<String, CompletionProposal> map = suggestMethods(100, type, false);
@@ -120,8 +120,35 @@ public class CompletionEngine {
 				List<CompletionProposal> list = new ArrayList<CompletionProposal>();
 				RubyElementRequestor requestor = new RubyElementRequestor(script);
 				for (ITypeGuess guess : guesses) {
-					String name = guess.getType();
-					IType[] types = requestor.findType(name);  // FIXME When syntax is broken, grabbing type that is defined in same script like this just doesn't work!
+					final String name = guess.getType();
+					if (fContext.isBroken()) {
+						Node rootNode = new RubyParser().parse(fContext.getCorrectedSource());
+						List<Node> typeNodes = ScopedNodeLocator.Instance().findNodesInScope(rootNode, new INodeAcceptor() {
+						
+							public boolean doesAccept(Node node) {
+								if ((node instanceof ClassNode) || (node instanceof ModuleNode)) {
+									return ASTUtil.getNameReflectively(node).equals(name);
+								}
+								return false;
+							}
+						
+						});
+						for (Node typeNode : typeNodes) {
+							List<Node> methods = ScopedNodeLocator.Instance().findNodesInScope(typeNode, new INodeAcceptor() {
+								
+								public boolean doesAccept(Node node) {
+									return (node instanceof DefnNode) || (node instanceof DefsNode);
+								}
+							
+							});
+							for (Node methodNode : methods) {
+								MethodDefNode methodDef = (MethodDefNode) methodNode;
+								NodeMethod method = new NodeMethod(methodDef);
+								list.add(suggestMethod(method, name, 100));
+							}
+						}
+					}					
+					IType[] types = requestor.findType(name);
 					for (int i = 0; i < types.length; i++) {
 						Map<String, CompletionProposal> map = suggestMethods(guess.getConfidence(), types[i], true);
 						list.addAll(map.values());						
@@ -178,6 +205,7 @@ public class CompletionEngine {
 
 	private List<CompletionProposal> suggestAllMethodsMatchingPrefix(IRubyScript script) {
 		List< CompletionProposal> list = new ArrayList<CompletionProposal>();
+		if (fContext.getPartialPrefix() == null || fContext.getPartialPrefix().trim().length() == 0) return list;
 		IRubySearchScope scope = BasicSearchEngine.createRubySearchScope(new IRubyElement[] {script.getRubyProject()});
 		SearchParticipant participant = BasicSearchEngine.getDefaultSearchParticipant();
 		CollectingSearchRequestor searchRequestor = new CollectingSearchRequestor();

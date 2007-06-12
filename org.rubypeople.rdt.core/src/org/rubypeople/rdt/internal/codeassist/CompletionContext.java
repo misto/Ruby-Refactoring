@@ -112,6 +112,14 @@ public class CompletionContext {
 		return correctedSource;
 	}
 	
+	public boolean isBroken() {
+		try {
+			return !getCorrectedSource().equals(script.getSource());
+		} catch (RubyModelException e) {
+			return true;
+		}
+	}
+	
 	public boolean hasReceiver() {
 		return getFullPrefix().indexOf('.') > 1;
 	}
