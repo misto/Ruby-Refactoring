@@ -1495,6 +1495,7 @@ public static int occurencesOf(String toBeFound, char[] originalString) {
 }
 
 public static int lastIndexOf(String toBeFound, char[] typePart) {
+	if (typePart == null || typePart.length == 0) return -1;
 	return new String(typePart).lastIndexOf(toBeFound);
 }
 
