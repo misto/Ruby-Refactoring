@@ -534,9 +534,11 @@ public class DefaultRubyFoldingStructureProvider implements IProjectionListener,
          * @see org.eclipse.jdt.core.IElementChangedListener#elementChanged(org.eclipse.jdt.core.ElementChangedEvent)
          */
         public void elementChanged(ElementChangedEvent e) {
-            IRubyElementDelta delta = findElement(fInput, e.getDelta());
-            if (delta.getRubyScriptAST() == null) return;
-            if (delta != null) processDelta(delta);
+            IRubyElementDelta delta = findElement(fInput, e.getDelta());            
+            if (delta != null) {
+            	if (delta.getRubyScriptAST() == null) return;
+            	processDelta(delta);
+            }
         }
 
         private IRubyElementDelta findElement(IRubyElement target, IRubyElementDelta delta) {
