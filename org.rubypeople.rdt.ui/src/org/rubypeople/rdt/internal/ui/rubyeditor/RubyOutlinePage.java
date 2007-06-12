@@ -384,7 +384,7 @@ public class RubyOutlinePage extends Page implements IContentOutlinePage, IAdapt
                         Item i= (Item) node;
                         if (i.getData() instanceof IRubyElement) {
                             IRubyElement je= (IRubyElement) i.getData();
-                            if (je.getElementType() == IRubyElement.IMPORT_CONTAINER) {
+                            if (je.getElementType() == IRubyElement.IMPORT_CONTAINER || je.getElementType() == IRubyElement.METHOD) {
                                 if (i != fReusedExpandedItem) {
                                     setExpanded(i, false);
                                     return;
@@ -1189,30 +1189,6 @@ public class RubyOutlinePage extends Page implements IContentOutlinePage, IAdapt
     public void setFocus() {
         if (fOutlineViewer != null)
             fOutlineViewer.getControl().setFocus();
-    }
-
-    /**
-     * Checks whether a given Ruby element is an inner type.
-     *
-     * @param element the ruby element
-     * @return <code>true</code> iff the given element is an inner type
-     */
-    private boolean isInnerType(IRubyElement element) {
-
-        if (element != null && element.getElementType() == IRubyElement.TYPE) {
-            IType type= (IType)element;
-            try {
-                return type.isMember();
-            } catch (RubyModelException e) {
-                IRubyElement parent= type.getParent();
-                if (parent != null) {
-                    int parentElementType= parent.getElementType();
-                    return (parentElementType != IRubyElement.SCRIPT);
-                }
-            }
-        }
-
-        return false;
     }
 
     /**
