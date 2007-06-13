@@ -501,8 +501,8 @@ public class TestUnitView extends ViewPart implements ITestRunListener3 {
 		setViewPartTitle(type);
 		if (type instanceof IType)
 			setTitleToolTip(((IType)type).getFullyQualifiedName());
-//		else
-//			setTitleToolTip(type.getElementName());
+		else
+			setTitleToolTip(type.getElementName());
 	}
 
 	protected void aboutToLaunch() {
@@ -596,8 +596,12 @@ public class TestUnitView extends ViewPart implements ITestRunListener3 {
 		String title;
 		if (type == null)
 			title = " "; //$NON-NLS-1$
-		else
-			title = type.toString();
+		else {
+			if (type instanceof IType) {
+				title = ((IType) type).getFullyQualifiedName();
+			} else
+				title = type.getElementName();
+		}
 		setContentDescription(title);
 	}
 
