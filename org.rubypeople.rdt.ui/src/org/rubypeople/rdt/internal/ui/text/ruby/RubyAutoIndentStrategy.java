@@ -94,13 +94,14 @@ public class RubyAutoIndentStrategy extends DefaultIndentLineAutoEditStrategy im
 			ITypedRegion region= TextUtilities.getPartition(d, fPartitioning, start, true);
 //			if (IRubyPartitions.RUBY_DOC.equals(region.getType()))
 //				start= d.getLineInformationOfOffset(region.getOffset()).getOffset();
-
-			// insert closing "end" on new line after an unclosed block
-			if (closeBlock() && unclosedBlock(d, start, c.offset)) {
+			// If we're hitting return at the end of the line of a new block, add indent
+			if (atStartOfBlock(getTrimmedLine(d, start, c.offset))) {
 				buf.append(CodeFormatterUtil.createIndentString(1, fProject));
 				c.caretOffset= c.offset + buf.length();
 				c.shiftsCaret= false;
-				
+			}
+			// insert closing "end" on new line after an unclosed block
+			if (closeBlock() && unclosedBlock(d, start, c.offset)) {			
 				// copy old content of line behind insertion point to new line
 				if (c.offset == 0) {
 					if (lineEnd - contentStart > 0) {
@@ -123,10 +124,7 @@ public class RubyAutoIndentStrategy extends DefaultIndentLineAutoEditStrategy im
 	private boolean unclosedBlock(IDocument d, int start, int offset) {
 		// FIXME wow is this ugly! There has to be an easier way to tell if there's an unclosed block besides parsing and catching a syntaxError!
 		try {
-			String line = d.get(start, offset - start);
-			line = line.trim();
-			if (!line.startsWith("class ") && !line.startsWith("if ") && !line.startsWith("module ") && !line.startsWith("unless ")
-					&& !line.startsWith("def ") && !line.equals("begin") && !openBlockPattern.matcher(line).matches()) {
+			if (!atStartOfBlock(getTrimmedLine(d, start, offset))) {
 				return false;
 			}
 		} catch (BadLocationException e1) {
@@ -150,6 +148,18 @@ public class RubyAutoIndentStrategy extends DefaultIndentLineAutoEditStrategy im
 			return true;
 		}
 		return false;
+	}
+
+	private String getTrimmedLine(IDocument d, int start, int offset) throws BadLocationException {
+		String line = d.get(start, offset - start);
+		line = line.trim();
+		return line;
+	}
+
+	private boolean atStartOfBlock(String line) {
+		return line.startsWith("class ") || line.startsWith("if ") || line.startsWith("module ") 
+		  || line.startsWith("unless ") || line.startsWith("def ") || line.equals("begin") 
+		  || openBlockPattern.matcher(line).matches();
 	}
 
 	private boolean closeBlock() {
