@@ -8,7 +8,8 @@ Bundle-Activator: org.rubypeople.rdt.internal.testunit.ui.TestunitPlugin
 Bundle-Vendor: %providerName
 Bundle-Localization: plugin
 Export-Package: org.rubypeople.rdt.testunit.launcher,
- org.rubypeople.rdt.testunit.wizards
+ org.rubypeople.rdt.testunit.wizards,
+ org.rubypeople.rdt.testunit
 Require-Bundle: org.eclipse.ui,
  org.eclipse.core.runtime,
  org.eclipse.debug.core,
