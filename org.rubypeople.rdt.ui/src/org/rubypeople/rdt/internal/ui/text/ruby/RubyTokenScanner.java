@@ -34,7 +34,7 @@ public class RubyTokenScanner extends AbstractRubyTokenScanner {
 	private static String[] fgTokenProperties = { IRubyColorConstants.RUBY_KEYWORD, IRubyColorConstants.RUBY_DEFAULT, 
 		IRubyColorConstants.RUBY_FIXNUM, IRubyColorConstants.RUBY_CHARACTER, IRubyColorConstants.RUBY_SYMBOL, 
 		IRubyColorConstants.RUBY_INSTANCE_VARIABLE, IRubyColorConstants.RUBY_GLOBAL, IRubyColorConstants.RUBY_STRING, 
-		IRubyColorConstants.RUBY_REGEXP, IRubyColorConstants.RUBY_ERROR, IRubyColorConstants.RUBY_SINGLE_LINE_COMMENT
+		IRubyColorConstants.RUBY_REGEXP, IRubyColorConstants.RUBY_ERROR
 	// TODO Add Ability to set colors for return and operators
 	// IRubyColorConstants.RUBY_METHOD_NAME,
 	// IRubyColorConstants.RUBY_KEYWORD_RETURN,
@@ -107,8 +107,6 @@ public class RubyTokenScanner extends AbstractRubyTokenScanner {
 	}
 
 	private Token doGetToken(String key) {
-		if (key.equals(IRubyColorConstants.RUBY_SINGLE_LINE_COMMENT)) // if we know it's a comment, force it!
-			return super.getToken(key);
 		if (isInSymbol)
 			return super.getToken(IRubyColorConstants.RUBY_SYMBOL);
 		if (isInRegexp)
