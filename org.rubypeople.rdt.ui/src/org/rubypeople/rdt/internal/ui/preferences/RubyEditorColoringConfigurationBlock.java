@@ -367,6 +367,7 @@ class RubyEditorColoringConfigurationBlock extends AbstractConfigurationBlock {
 		for (int i= 0, n= fListModel.size(); i < n; i++) {
 			HighlightingColorListItem item= (HighlightingColorListItem) fListModel.get(i);
 			overlayKeys.add(new OverlayPreferenceStore.OverlayKey(OverlayPreferenceStore.STRING, item.getColorKey()));
+			overlayKeys.add(new OverlayPreferenceStore.OverlayKey(OverlayPreferenceStore.STRING, item.getBackgroundKey()));
 			overlayKeys.add(new OverlayPreferenceStore.OverlayKey(OverlayPreferenceStore.BOOLEAN, item.getBoldKey()));
 			overlayKeys.add(new OverlayPreferenceStore.OverlayKey(OverlayPreferenceStore.BOOLEAN, item.getItalicKey()));
 			overlayKeys.add(new OverlayPreferenceStore.OverlayKey(OverlayPreferenceStore.BOOLEAN, item.getStrikethroughKey()));
