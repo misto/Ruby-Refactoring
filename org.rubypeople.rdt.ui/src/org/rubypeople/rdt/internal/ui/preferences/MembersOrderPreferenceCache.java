@@ -34,8 +34,7 @@ public class MembersOrderPreferenceCache implements IPropertyChangeListener {
     private static final int PUBLIC_INDEX= 0;
     private static final int PRIVATE_INDEX= 1;
     private static final int PROTECTED_INDEX= 2;
-    private static final int DEFAULT_INDEX= 3;
-    private static final int N_VISIBILITIES= DEFAULT_INDEX + 1; 
+    private static final int N_VISIBILITIES= PROTECTED_INDEX + 1; 
     
     private int[] fCategoryOffsets= null;
     
@@ -130,7 +129,7 @@ public class MembersOrderPreferenceCache implements IPropertyChangeListener {
         if (fVisibilityOffsets == null) {
             fVisibilityOffsets= getVisibilityOffsets();
         }
-        int kind= DEFAULT_INDEX;
+        int kind= PUBLIC_INDEX;
         if (Flags.isPublic(modifierFlags)) {
             kind= PUBLIC_INDEX;
         } else if (Flags.isProtected(modifierFlags)) {
@@ -165,9 +164,7 @@ public class MembersOrderPreferenceCache implements IPropertyChangeListener {
                 offsets[PRIVATE_INDEX]= i++;
             } else if ("R".equals(token)) { //$NON-NLS-1$
                 offsets[PROTECTED_INDEX]= i++;
-            } else if ("D".equals(token)) { //$NON-NLS-1$
-                offsets[DEFAULT_INDEX]= i++;
-            }
+            } 
         }
         return i == N_VISIBILITIES;
     }
