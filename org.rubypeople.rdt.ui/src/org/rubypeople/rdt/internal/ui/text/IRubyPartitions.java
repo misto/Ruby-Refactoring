@@ -26,4 +26,14 @@ public interface IRubyPartitions {
      * The identifier multi-line comment partition content type.
      */
     String RUBY_MULTI_LINE_COMMENT= "__ruby_multiline_comment"; //$NON-NLS-1$	
+    
+    /**
+     * The identifier regular expression partition content type.
+     */
+    String RUBY_REGULAR_EXPRESSION= "__ruby_regular_expression"; //$NON-NLS-1$	
+    
+    /**
+     * The identifier string partition content type.
+     */
+    String RUBY_STRING= "__ruby_string"; //$NON-NLS-1$	
 }
