@@ -1,32 +1,30 @@
 package com.aptana.rdt.internal.parser.warnings;
 
-import java.util.HashSet;
 import java.util.Map;
-import java.util.Set;
 
 import org.jruby.ast.DefnNode;
 import org.jruby.ast.DefsNode;
-import org.jruby.ast.LocalAsgnNode;
+import org.jruby.ast.ReturnNode;
 import org.jruby.evaluator.Instruction;
 import org.rubypeople.rdt.internal.core.parser.warnings.RubyLintVisitor;
 
 import com.aptana.rdt.AptanaRDTPlugin;
 
-public class CodeComplexityVisitor extends RubyLintVisitor {
+public class TooManyReturnsVisitor extends RubyLintVisitor {
 
-
-	private int maxLocals;
-	private Set locals;
+	private int maxReturns;
+	private int returnCount;
 	private Map fOptions;
 
-	public CodeComplexityVisitor(String contents) {
+	public TooManyReturnsVisitor(String contents) {
 		this(AptanaRDTPlugin.getDefault().getOptions(), contents);		
 	}
 	
-	public CodeComplexityVisitor(Map options, String contents) {
+	public TooManyReturnsVisitor(Map options, String contents) {
 		super(contents);
 		fOptions = options;
-		maxLocals = getInt(AptanaRDTPlugin.COMPILER_PB_MAX_LOCALS, 4); 
+		maxReturns = getInt(AptanaRDTPlugin.COMPILER_PB_MAX_RETURNS, 5); 
+		returnCount = 0;
 	}
 	private int getInt(String key, int defaultValue) {
 		try {
@@ -38,40 +36,41 @@ public class CodeComplexityVisitor extends RubyLintVisitor {
 
 	@Override
 	protected String getOptionKey() {
-		return AptanaRDTPlugin.COMPILER_PB_MAX_LOCALS;
+		return AptanaRDTPlugin.COMPILER_PB_MAX_RETURNS;
 	}
 
 	@Override
 	public Instruction visitDefsNode(DefsNode iVisited) {
-		locals = new HashSet();
+		returnCount = 0;
 		return super.visitDefsNode(iVisited);
 	}
 	
 	@Override
 	public Instruction visitDefnNode(DefnNode iVisited) {
-		locals = new HashSet();
+		returnCount = 0;
 		return super.visitDefnNode(iVisited);
 	}
 
-	@Override
-	public Instruction visitLocalAsgnNode(LocalAsgnNode iVisited) {
-		locals.add(iVisited.getName());
-		return super.visitLocalAsgnNode(iVisited);
-	}
-
 	public void exitDefnNode(DefnNode iVisited) {
-		if (locals.size() > maxLocals) {
-			createProblem(iVisited.getNameNode().getPosition(), "Too many local variables: " + locals.size());
+		if (returnCount > maxReturns) {
+			createProblem(iVisited.getNameNode().getPosition(), "Too many explicit returns: " + returnCount);
 		}
-		locals.clear();
+		returnCount = 0;
 	}
 	
 	@Override
 	public void exitDefsNode(DefsNode iVisited) {
-		if (locals.size() > maxLocals) {
-			createProblem(iVisited.getNameNode().getPosition(), "Too many local variables: " + locals.size());
+		if (returnCount > maxReturns) {
+			createProblem(iVisited.getNameNode().getPosition(), "Too many explicit returns: " + returnCount);
 		}
-		locals.clear();
+		returnCount = 0;
 		super.exitDefsNode(iVisited);
 	}
+
+	@Override
+	public Instruction visitReturnNode(ReturnNode iVisited) {
+		returnCount++;
+		return super.visitReturnNode(iVisited);
+	}
+
 }

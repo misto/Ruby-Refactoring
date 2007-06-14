@@ -73,6 +73,10 @@ public class RubyRedLint extends CompilationParticipant {
 		visitors.add(new UnusedParameterVisitor(contents));
 		visitors.add(new UnecessaryElseVisitor(contents));
 		visitors.add(new CodeComplexityVisitor(contents));
+		visitors.add(new TooManyLinesVisitor(contents));
+		visitors.add(new TooManyBranchesVisitor(contents));
+		visitors.add(new TooManyArgumentsVisitor(contents));
+		visitors.add(new TooManyReturnsVisitor(contents));
 		visitors.add(new SimilarVariableNameVisitor(contents));
 		visitors.add(new SubclassCallsSuper(contents));
 		visitors.add(new ComparableInclusionVisitor(contents));
