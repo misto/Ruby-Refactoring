@@ -12,18 +12,18 @@ import org.rubypeople.rdt.internal.core.parser.warnings.RubyLintVisitor;
 
 import com.aptana.rdt.AptanaRDTPlugin;
 
-public class CodeComplexityVisitor extends RubyLintVisitor {
+public class TooManyLocalsVisitor extends RubyLintVisitor {
 
 
 	private int maxLocals;
 	private Set locals;
 	private Map fOptions;
 
-	public CodeComplexityVisitor(String contents) {
+	public TooManyLocalsVisitor(String contents) {
 		this(AptanaRDTPlugin.getDefault().getOptions(), contents);		
 	}
 	
-	public CodeComplexityVisitor(Map options, String contents) {
+	public TooManyLocalsVisitor(Map options, String contents) {
 		super(contents);
 		fOptions = options;
 		maxLocals = getInt(AptanaRDTPlugin.COMPILER_PB_MAX_LOCALS, 4); 

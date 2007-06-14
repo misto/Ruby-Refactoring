@@ -2,7 +2,7 @@ package com.aptana.rdt.internal.core.parser.warnings;
 
 import org.rubypeople.rdt.internal.core.parser.warnings.RubyLintVisitor;
 
-import com.aptana.rdt.internal.parser.warnings.CodeComplexityVisitor;
+import com.aptana.rdt.internal.parser.warnings.TooManyLocalsVisitor;
 
 
 public class TC_CodeComplexity extends WarningVisitorTest {
@@ -11,7 +11,7 @@ public class TC_CodeComplexity extends WarningVisitorTest {
 	
 	@Override
 	protected RubyLintVisitor createVisitor(String code) {
-		return new CodeComplexityVisitor(code);
+		return new TooManyLocalsVisitor(code);
 	}
 	
 	// TODO Add tests for max branches
