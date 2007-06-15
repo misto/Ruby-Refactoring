@@ -50,6 +50,7 @@ public class UnecessaryElseVisitor extends RubyLintVisitor {
 	}
 
 	private boolean alwaysExplicitReturn(Node body) {
+		if (body == null) return false;
 		ReturnVisitor visitor = new ReturnVisitor();
 		body.accept(visitor);
 		return visitor.alwaysExplicit();
