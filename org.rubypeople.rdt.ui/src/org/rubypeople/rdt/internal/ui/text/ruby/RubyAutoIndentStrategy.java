@@ -17,7 +17,6 @@ import org.rubypeople.rdt.core.IRubyProject;
 import org.rubypeople.rdt.internal.core.parser.RubyParser;
 import org.rubypeople.rdt.internal.corext.util.CodeFormatterUtil;
 import org.rubypeople.rdt.internal.ui.RubyPlugin;
-import org.rubypeople.rdt.internal.ui.text.IRubyPartitions;
 import org.rubypeople.rdt.internal.ui.text.RubyHeuristicScanner;
 import org.rubypeople.rdt.internal.ui.text.RubyIndenter;
 import org.rubypeople.rdt.ui.PreferenceConstants;
@@ -94,14 +93,29 @@ public class RubyAutoIndentStrategy extends DefaultIndentLineAutoEditStrategy im
 			ITypedRegion region= TextUtilities.getPartition(d, fPartitioning, start, true);
 //			if (IRubyPartitions.RUBY_DOC.equals(region.getType()))
 //				start= d.getLineInformationOfOffset(region.getOffset()).getOffset();
-			// If we're hitting return at the end of the line of a new block, add indent
-			if (atStartOfBlock(getTrimmedLine(d, start, c.offset))) {
+			// if 
+			String trimmed = getTrimmedLine(d, start, c.offset);
+			if (shouldDeIndent(trimmed)) {
+				IRegion previousLineRegion = d.getLineInformation(line - 1);
+				String previousIndent= indenter.computeIndentation(previousLineRegion.getOffset()).toString();
+				// FIXME This all assumes spaces!
+				String unindented = previousIndent.substring(0, previousIndent.length() - CodeFormatterUtil.createIndentString(1, fProject).length());
+				if (!unindented.equals(indent.toString())) {
+					d.replace(start, c.offset - start, unindented + trimmed);
+					int shift = previousIndent.length() - unindented.length();
+					c.offset = c.offset - shift;
+					if (trimmed.equals(BLOCK_CLOSER)) // if we're closing the block, remove an indent unit
+						buf.delete(buf.length() - shift, buf.length());
+				}			
+			}
+//			 If we're hitting return at the end of the line of a new block, add indent
+			if (atStartOfBlock(trimmed)) {
 				buf.append(CodeFormatterUtil.createIndentString(1, fProject));
 				c.caretOffset= c.offset + buf.length();
 				c.shiftsCaret= false;
 			}
 			// insert closing "end" on new line after an unclosed block
-			if (closeBlock() && unclosedBlock(d, start, c.offset)) {			
+			if (closeBlock() && unclosedBlock(d, trimmed, c.offset)) {			
 				// copy old content of line behind insertion point to new line
 				if (c.offset == 0) {
 					if (lineEnd - contentStart > 0) {
@@ -121,14 +135,16 @@ public class RubyAutoIndentStrategy extends DefaultIndentLineAutoEditStrategy im
 		}
 	}
 
-	private boolean unclosedBlock(IDocument d, int start, int offset) {
+	private boolean shouldDeIndent(String trimmed) {
+		if (trimmed == null || trimmed.length() == 0) return false;
+		return trimmed.equals("rescue") || trimmed.equals("else") || trimmed.equals("ensure") || trimmed.equals(BLOCK_CLOSER)
+			|| trimmed.startsWith("when ") || trimmed.startsWith("elsif ");
+	}
+
+	private boolean unclosedBlock(IDocument d, String trimmed, int offset) {
 		// FIXME wow is this ugly! There has to be an easier way to tell if there's an unclosed block besides parsing and catching a syntaxError!
-		try {
-			if (!atStartOfBlock(getTrimmedLine(d, start, offset))) {
-				return false;
-			}
-		} catch (BadLocationException e1) {
-			RubyPlugin.log(e1);
+		if (!atStartOfBlock(trimmed)) {
+			return false;
 		}
 		
 		RubyParser parser = new RubyParser();
@@ -140,7 +156,7 @@ public class RubyAutoIndentStrategy extends DefaultIndentLineAutoEditStrategy im
 				return true;
 			try {
 				StringBuffer buffer = new StringBuffer(d.get());
-				buffer.insert(offset, "\n" + BLOCK_CLOSER);
+				buffer.insert(offset, TextUtilities.getDefaultLineDelimiter(d) + BLOCK_CLOSER);
 				parser.parse(buffer.toString());
 			} catch (SyntaxException syntaxException) {
 				return false;
@@ -152,8 +168,7 @@ public class RubyAutoIndentStrategy extends DefaultIndentLineAutoEditStrategy im
 
 	private String getTrimmedLine(IDocument d, int start, int offset) throws BadLocationException {
 		String line = d.get(start, offset - start);
-		line = line.trim();
-		return line;
+		return line.trim();
 	}
 
 	private boolean atStartOfBlock(String line) {
