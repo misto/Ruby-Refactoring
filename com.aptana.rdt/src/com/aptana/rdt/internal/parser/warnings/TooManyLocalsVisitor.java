@@ -7,6 +7,7 @@ import java.util.Set;
 import org.jruby.ast.DefnNode;
 import org.jruby.ast.DefsNode;
 import org.jruby.ast.LocalAsgnNode;
+import org.jruby.ast.RootNode;
 import org.jruby.evaluator.Instruction;
 import org.rubypeople.rdt.internal.core.parser.warnings.RubyLintVisitor;
 
@@ -40,6 +41,15 @@ public class TooManyLocalsVisitor extends RubyLintVisitor {
 	protected String getOptionKey() {
 		return AptanaRDTPlugin.COMPILER_PB_MAX_LOCALS;
 	}
+	
+	@Override
+	public Instruction visitRootNode(RootNode iVisited) {
+		locals = new HashSet(); // FIXME Keep a scoped stack of locals?!
+		Instruction ins = super.visitRootNode(iVisited);
+		locals.clear();
+		return ins;
+	}
+	
 
 	@Override
 	public Instruction visitDefsNode(DefsNode iVisited) {
