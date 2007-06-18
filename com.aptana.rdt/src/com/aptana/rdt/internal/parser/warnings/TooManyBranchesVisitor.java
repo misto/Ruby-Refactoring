@@ -6,6 +6,8 @@ import org.jruby.ast.CaseNode;
 import org.jruby.ast.DefnNode;
 import org.jruby.ast.DefsNode;
 import org.jruby.ast.IfNode;
+import org.jruby.ast.NewlineNode;
+import org.jruby.ast.Node;
 import org.jruby.ast.WhenNode;
 import org.jruby.evaluator.Instruction;
 import org.rubypeople.rdt.internal.core.parser.warnings.RubyLintVisitor;
@@ -70,7 +72,12 @@ public class TooManyBranchesVisitor extends RubyLintVisitor {
 		WhenNode when = (WhenNode) iVisited.getFirstWhenNode();
 		while (when != null) {
 			branchCount++;
-			when = (WhenNode) when.getNextCase();
+			Node thing = when.getNextCase();
+			if (thing instanceof WhenNode) {
+				when = (WhenNode) when.getNextCase();
+			} else {
+				when = null;
+			}			
 		}
 		return super.visitCaseNode(iVisited);
 	}
