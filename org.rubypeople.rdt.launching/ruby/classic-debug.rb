@@ -2,6 +2,7 @@
 # Copyright (C) 2000  Information-technology Promotion Agency, Japan
 require 'cgi'
 require 'thread'
+require 'yaml'
 
 # REMOTE_DEBUG_PORT is the port on which the debugger waits for commands from a
 # front-end.
