@@ -480,17 +480,10 @@ public class TestHierarchyTab extends TestRunTab implements IMenuListener {
 	}
 
 	private int scanTestName(String s, int start, StringBuffer testName) {
-		boolean inQuote = false;
 		int i = start;
 		for (; i < s.length(); i++) {
 			char c = s.charAt(i);
-			if (c == '\\' && !inQuote) {
-				inQuote = true;
-				continue;
-			} else if (inQuote) {
-				inQuote = false;
-				testName.append(c);
-			} else if (c == ',')
+			if (c == ',')
 				break;
 			else
 				testName.append(c);
