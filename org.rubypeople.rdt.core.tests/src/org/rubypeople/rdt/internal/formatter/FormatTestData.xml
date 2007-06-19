@@ -676,5 +676,23 @@ end
 </part>
 </test>
 
+<test ID="LineStartingWithParen">
+<part>
+<assertionMessage>Align line starting with paren</assertionMessage>  
+<unformatted>
+class A
+  foo
+   (1 - 2).inspect
+end
+</unformatted>
+<formatted>
+class A
+  foo
+  (1 - 2).inspect
+end
+</formatted>
+</part>
+</test>
+
 </tests>
 

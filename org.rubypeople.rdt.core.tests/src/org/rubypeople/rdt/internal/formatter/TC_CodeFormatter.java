@@ -136,4 +136,8 @@ public class TC_CodeFormatter extends TestCase {
 		doTest("RescueModifier");
 	}
 	
+	public void testParen() {
+		doTest("LineStartingWithParen");
+	}
+	
 }
