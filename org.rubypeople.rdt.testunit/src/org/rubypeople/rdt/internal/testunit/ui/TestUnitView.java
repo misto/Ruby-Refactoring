@@ -501,7 +501,7 @@ public class TestUnitView extends ViewPart implements ITestRunListener3 {
 		setViewPartTitle(type);
 		if (type instanceof IType)
 			setTitleToolTip(((IType)type).getFullyQualifiedName());
-		else
+		else if (type != null)
 			setTitleToolTip(type.getElementName());
 	}
 
