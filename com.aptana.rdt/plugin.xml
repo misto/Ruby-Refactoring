@@ -192,7 +192,7 @@
                tooltip="Refresh"/>
          <action
                class="com.aptana.rdt.internal.ui.actions.UpdateGemActionDelegate"
-               icon="icons/upgrade.gif"
+               icon="icons/ruby_get.png"
                id="com.aptana.gems.ui.ActionUpdateGem"
                label="Update Gem"
                style="push"
