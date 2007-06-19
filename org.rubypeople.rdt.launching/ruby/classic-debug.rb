@@ -76,6 +76,7 @@ class XmlPrinter
         valueString.slice!(1..(valueString.length)-2)
       end
     end
+    valueString = "[Binary Data]" if valueString.is_binary_data?
     out("<variable name=\"%s\" kind=\"%s\" value=\"%s\" type=\"%s\" hasChildren=\"%s\" objectId=\"%#+x\"/>", CGI.escapeHTML(name), kind, CGI.escapeHTML(valueString), value.class(), hasChildren, value.respond_to?(:object_id) ? value.object_id : value.id)
   end
 
@@ -1101,7 +1102,7 @@ class DEBUGGER__
     sleep(1.0) # workaround for large files with ruby 1.6.8, otherwise parse exceptions
     loop do
       sleep(0.1)
-      newData, x, y = IO.select( [socket], nil, nil, 0.001 )
+      newData, _, _ = IO.select( [socket], nil, nil, 0.001 )
       next unless newData
       DEBUGGER__.traceOff()
       input = newData[0].gets.chomp!
