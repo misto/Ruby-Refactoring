@@ -11,3 +11,5 @@ Require-Bundle: com.aptana.rdt,
  org.eclipse.core.runtime,
  org.junit
 Bundle-Vendor: Aptana, Inc.
+Bundle-Activator: com.aptana.rdt.AptanaRDTTests
+Eclipse-LazyStart: true

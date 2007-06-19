@@ -180,6 +180,7 @@
                label="Remove"
                style="push"
                toolbarPath="additions"
+               enablesFor="1"
                tooltip="Remove"/>
          <action
                class="com.aptana.rdt.internal.ui.actions.RefreshGemsActionDelegate"
@@ -195,8 +196,17 @@
                id="com.aptana.gems.ui.ActionUpdateGem"
                label="Update Gem"
                style="push"
+               enablesFor="1"
                toolbarPath="additions"
                tooltip="Update Gem"/>
+         <action
+               class="com.aptana.rdt.internal.ui.actions.UpdateAllActionDelegate"
+               icon="icons/upgrade.gif"
+               id="com.aptana.gems.ui.ActionUpdateAllGems"
+               label="Update All Gems"
+               style="push"
+               toolbarPath="additions"
+               tooltip="Update All Gems"/>
       </viewContribution>
    </extension>
  

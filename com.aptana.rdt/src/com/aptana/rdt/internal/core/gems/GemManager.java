@@ -311,42 +311,13 @@ public class GemManager implements IGemManager {
 	private Set<Gem> loadLocalGems() {
 		ILaunchConfiguration config = createGemLaunchConfiguration(LIST_COMMAND + " " + LOCAL_SWITCH, false);
 		List<String> lines = readOutput(config);
-		if (lines.size() > 2) {
-			lines.remove(0); // Remove first 3 lines from local list
-			lines.remove(0);
-			lines.remove(0);
+		StringBuffer buffer = new StringBuffer();
+		for (int i = 0; i < lines.size(); i++) {
+			buffer.append(lines.get(i));
+			if (i < (lines.size() - 1)) buffer.append("\n");
 		}
-		return parseOutGems(lines);
-	}
-
-	private Set<Gem> parseOutGems(List<String> lines) {
-		Set<Gem> gems = new HashSet<Gem>();
-		for (int i = 0; i < lines.size();) {
-			try {
-				String nameAndVersion = lines.get(i);
-				String description = lines.get(i + 1);
-				int j = 2;
-				if ((i + 2) < lines.size()) {
-					String nextLine = lines.get(i + 2);
-					while (nextLine.trim().length() != 0) {
-						j++;
-						description += " " + nextLine.trim();
-						nextLine = lines.get(i + j);
-					}
-				}
-				int openParen = nameAndVersion.indexOf('(');
-				int closeParen = nameAndVersion.indexOf(')');
-				String name = nameAndVersion.substring(0, openParen);
-				String version = nameAndVersion
-						.substring(openParen + 1, closeParen);
-				gems.add(new Gem(name.trim(), version, description.trim()));
-				i += (j + 1);
-			} catch (RuntimeException e) {
-				AptanaRDTPlugin.log(new IllegalStateException("Was unable to parse local gems correctly from: " + lines.toString()));
-				AptanaRDTPlugin.log(e);
-			}
-		}
-		return gems;
+		GemParser parser = new GemParser();
+		return parser.parse(buffer.toString());
 	}
 
 	/*
@@ -406,9 +377,9 @@ public class GemManager implements IGemManager {
 							IRubyLaunchConfigurationConstants.ATTR_VM_INSTALL_TYPE_SPECIFIC_ATTRS_MAP,
 							map);
 			wc.setAttribute(IDebugUIConstants.ATTR_PRIVATE, true);
+			wc.setAttribute(IDebugUIConstants.ATTR_LAUNCH_IN_BACKGROUND,
+					!interactive);
 			if (!interactive) {
-				wc.setAttribute(IDebugUIConstants.ATTR_LAUNCH_IN_BACKGROUND,
-						true);
 				wc.setAttribute(IDebugUIConstants.ATTR_CAPTURE_IN_CONSOLE,
 						false);
 				IPath outFilePath = AptanaRDTPlugin.getDefault()
@@ -503,8 +474,8 @@ public class GemManager implements IGemManager {
 	public boolean refresh() {
 		Set<Gem> newGems = loadLocalGems();
 		if (!newGems.isEmpty()) {
-			gems.clear();
 			gems = newGems;
+			storeGemCache(gems, getConfigFile(LOCAL_GEMS_CACHE_FILE));
 			for (GemListener listener : listeners) {
 				listener.gemsRefreshed();
 			}
@@ -628,5 +599,16 @@ public class GemManager implements IGemManager {
 	
 	public IPath getGemPath(String gemName, String version) {
 		return getGemPath(gemName + "-" + version);
+	}
+
+	public boolean updateAll() {
+		try {
+			ILaunchConfiguration config = createGemLaunchConfiguration(UPDATE_COMMAND, true);
+			config.launch(ILaunchManager.RUN_MODE, null);
+		} catch (CoreException e) {
+			AptanaRDTPlugin.log(e);
+			return false;
+		}
+		return true;
 	}
 }
