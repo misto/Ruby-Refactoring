@@ -1,6 +1,9 @@
 package com.aptana.rdt.internal.core.gems;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Comparator;
+import java.util.List;
 import java.util.SortedSet;
 import java.util.StringTokenizer;
 import java.util.TreeSet;
@@ -31,12 +34,40 @@ public class LogicalGem extends Gem {
 
 	public SortedSet<String> getVersions() {
 		String raw = getVersion().substring(1, getVersion().length() - 1);
-		SortedSet<String> version = new TreeSet<String>();
+		SortedSet<String> version = new TreeSet<String>(new VersionComparator());
 		StringTokenizer tokenizer = new StringTokenizer(raw, ",");
 		while (tokenizer.hasMoreTokens()) {
 			version.add(tokenizer.nextToken().trim());
 		}
 		return version;
+	}
+	
+	private class VersionComparator implements Comparator {
+
+		public int compare(Object o1, Object o2) {
+			String v1 = (String) o1;
+			String v2 = (String) o2;
+			
+			List<Integer> v1Parts = getParts(v1);
+			List<Integer> v2Parts = getParts(v2);
+			for (int i = 0; i <= 3; i++) {
+				Integer one = v1Parts.get(i);
+				Integer two = v2Parts.get(i);
+				int result = one.compareTo(two);
+				if (result != 0) return result;
+			}
+			return 0;
+		}
+		
+		private List<Integer> getParts(String version) {
+			StringTokenizer tokenizer = new StringTokenizer(version, ".");
+			List<Integer> parts = new ArrayList<Integer>();
+			while (tokenizer.hasMoreTokens()) {
+				parts.add(Integer.parseInt(tokenizer.nextToken()));
+			}
+			return parts;
+		}
+		
 	}
 
 }
