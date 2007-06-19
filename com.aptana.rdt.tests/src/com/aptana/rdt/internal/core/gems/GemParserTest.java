@@ -29,6 +29,13 @@ public class GemParserTest extends TestCase {
 		Set<Gem> gems = parser.parse(contents);
 		assertEquals(21, gems.size());
 	}
+	
+	public void testMattsBrokenList() {
+		GemParser parser = new GemParser();
+		String contents = getContents("src/com/aptana/rdt/internal/core/gems/matt.txt");
+		Set<Gem> gems = parser.parse(contents);
+		assertEquals(22, gems.size());
+	}
 
 	private String getContents(String path) {
 		File file = AptanaRDTTests.getFileInPlugin(new Path(path));
