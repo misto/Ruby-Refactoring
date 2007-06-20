@@ -6,20 +6,20 @@ import java.util.List;
 
 public class ArgumentSplitter {
 
-    private List args;
+    private List<String> args;
     private StringBuffer currentArg;
     private boolean inQuotedArg;
     private char expectedCloseQuote;
     
-    public static List split(String input) {
+    public static List<String> split(String input) {
         return new ArgumentSplitter().internalSplit(input);
     }
     
     private ArgumentSplitter() {}
     
-    private List internalSplit(String input) {
+    private List<String> internalSplit(String input) {
         currentArg = new StringBuffer();
-        args = new ArrayList();
+        args = new ArrayList<String>();
 
         for (int i=0; i< input.length(); i++) {
             char c = input.charAt(i);

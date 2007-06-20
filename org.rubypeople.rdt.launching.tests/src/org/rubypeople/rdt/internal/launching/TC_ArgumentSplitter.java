@@ -43,7 +43,7 @@ public class TC_ArgumentSplitter extends TestCase {
     }
 
     private void verifySplit(String[] expected, String input) {
-        List args = ArgumentSplitter.split(input);
-        assertEquals("For input: "+input, new ArrayList(Arrays.asList(expected)), args);
+        List<String> args = ArgumentSplitter.split(input);
+        assertEquals("For input: "+input, new ArrayList<String>(Arrays.asList(expected)), args);
     }
 }
