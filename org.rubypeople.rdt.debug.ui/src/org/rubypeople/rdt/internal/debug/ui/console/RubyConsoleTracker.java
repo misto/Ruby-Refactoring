@@ -138,6 +138,7 @@ public class RubyConsoleTracker implements IConsoleLineTracker {
 			e.printStackTrace();
 			return null;
 		}
+		if (projectName == null) return null;
 		return ResourcesPlugin.getWorkspace().getRoot().getProject(projectName);
 	}
 
