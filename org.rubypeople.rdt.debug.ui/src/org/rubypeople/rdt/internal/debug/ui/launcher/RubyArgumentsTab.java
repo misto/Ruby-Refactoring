@@ -1,6 +1,5 @@
 package org.rubypeople.rdt.internal.debug.ui.launcher;
 
-import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.debug.core.ILaunchConfiguration;
 import org.eclipse.debug.core.ILaunchConfigurationWorkingCopy;
@@ -25,10 +24,10 @@ import org.rubypeople.rdt.internal.ui.util.DirectorySelector;
 import org.rubypeople.rdt.launching.IRubyLaunchConfigurationConstants;
 
 public class RubyArgumentsTab extends AbstractLaunchConfigurationTab {
+	
 	protected Text interpreterArgsText, programArgsText;
 	protected DirectorySelector workingDirectorySelector;
 	protected Button useDefaultWorkingDirectoryButton;
-	private IProject rubyProject ;
 	
 	public RubyArgumentsTab() {
 		super();
