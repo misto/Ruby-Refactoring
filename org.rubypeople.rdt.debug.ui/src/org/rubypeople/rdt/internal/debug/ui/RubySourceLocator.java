@@ -14,7 +14,6 @@ import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.part.FileEditorInput;
 import org.rubypeople.rdt.internal.debug.core.RdtDebugCorePlugin;
 import org.rubypeople.rdt.internal.debug.core.model.RubyStackFrame;
-import org.rubypeople.rdt.internal.launching.RubyLaunchConfigurationAttribute;
 import org.rubypeople.rdt.internal.ui.rubyeditor.ExternalRubyFileEditorInput;
 import org.rubypeople.rdt.launching.IRubyLaunchConfigurationConstants;
 import org.rubypeople.rdt.ui.IRubyConstants;
