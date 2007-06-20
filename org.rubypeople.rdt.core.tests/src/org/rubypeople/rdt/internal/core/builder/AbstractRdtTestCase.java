@@ -55,7 +55,7 @@ public abstract class AbstractRdtTestCase extends TestCase {
         
         compiler.compile(monitor);
     
-        assertCompliationFor(ListUtil.create(t1), 4);
+        assertCompilationFor(ListUtil.create(t1), 3);
     }
 
     public void testNotARubyFile() throws Exception {
@@ -64,7 +64,7 @@ public abstract class AbstractRdtTestCase extends TestCase {
         
         compiler.compile(monitor);
     
-        assertCompliationFor(ListUtil.create(), 0); // FIXME should be no work done for non-ruby file?
+        assertCompilationFor(ListUtil.create(), 0); // FIXME should be no work done for non-ruby file?
     }
 
     public void testCompileIncludesFolders() throws Exception {
@@ -74,7 +74,7 @@ public abstract class AbstractRdtTestCase extends TestCase {
         
         compiler.compile(monitor);
         
-        assertCompliationFor(ListUtil.create(t3), 4);
+        assertCompilationFor(ListUtil.create(t3), 3);
     }
 
     public void testCompileMultipleFiles() throws Exception {
@@ -83,12 +83,12 @@ public abstract class AbstractRdtTestCase extends TestCase {
         setFiles(ListUtil.create(t1, t2));
     
         compiler.compile(monitor);
-        int expectedWorkUnits = 8; // code analyzer, taskparser, index, markers for each file
-        assertCompliationFor(ListUtil.create(t1, t2), expectedWorkUnits);
+        int expectedWorkUnits = 6; // code analyzer, taskparser, index, markers for each file
+        assertCompilationFor(ListUtil.create(t1, t2), expectedWorkUnits);
     }
 
     public void testCancellation() throws Exception {
-        monitor.cancelAfter(6);
+        monitor.cancelAfter(4);
         project.addResource(t1);
         project.addResource(t2);
         setFiles(ListUtil.create(t1, t2));
@@ -96,8 +96,8 @@ public abstract class AbstractRdtTestCase extends TestCase {
         compiler.compile(monitor);
         List expectedFiles = ListUtil.create(t1);
     
-        monitor.assertTaskBegun("Building test...", 8);
-        monitor.assertDone(6);
+        monitor.assertTaskBegun("Building test...", 6);
+        monitor.assertDone(4);
         List subTasks = ListUtil.create(REMOVING_MARKERS_SUB_TASK, 
                 t1.getFullPath().toString());
         monitor.assertSubTasks(subTasks);
@@ -114,13 +114,13 @@ public abstract class AbstractRdtTestCase extends TestCase {
     
         compiler.compile(monitor);
     
-        assertCompliationFor(ListUtil.create(t1), 4);
+        assertCompilationFor(ListUtil.create(t1), 3);
     }
 
     protected void setFiles(List filesForTest) throws Exception {
     }
     
-    protected void assertCompliationFor(List expectedFiles, int totalWork) {
+    protected void assertCompilationFor(List expectedFiles, int totalWork) {
         monitor.assertTaskBegun("Building test...", totalWork);
         monitor.assertDone(totalWork);
         List subTasks = ListUtil.create(REMOVING_MARKERS_SUB_TASK);

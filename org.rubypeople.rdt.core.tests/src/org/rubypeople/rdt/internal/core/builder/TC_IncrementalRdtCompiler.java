@@ -22,8 +22,8 @@ public class TC_IncrementalRdtCompiler extends AbstractRdtTestCase {
         compiler.compile(monitor);
         ListUtil.create(t1); //expected files
        
-        monitor.assertTaskBegun("Building test...", 2);
-        monitor.assertDone(2);
+        monitor.assertTaskBegun("Building test...", 1);
+        monitor.assertDone(1);
         List subTasks = ListUtil.create(REMOVING_MARKERS_SUB_TASK);
         monitor.assertSubTasks(subTasks);
         assertMarkersRemoved(ListUtil.create(t1));
