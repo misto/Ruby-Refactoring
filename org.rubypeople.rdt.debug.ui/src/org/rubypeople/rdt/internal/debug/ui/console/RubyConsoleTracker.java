@@ -107,15 +107,7 @@ public class RubyConsoleTracker implements IConsoleLineTracker {
 						
 			String text = fConsole.getDocument().get(offset, length);
 			while (StackTraceLine.isTraceLine(text)) {
-				String projectName = null;
-				try {
-					projectName = fConsole.getProcess().getLaunch().getLaunchConfiguration().getAttribute(IRubyLaunchConfigurationConstants.ATTR_PROJECT_NAME, (String) null);
-				} catch (CoreException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-				IProject project = ResourcesPlugin.getWorkspace().getRoot().getProject(projectName);
-				StackTraceLine stackTraceLine = new StackTraceLine(text, project);
+				StackTraceLine stackTraceLine = new StackTraceLine(text, getProject());
 				if (! existanceChecker.fileExists(stackTraceLine.getFilename()))
 					return;
 				IHyperlink link = new RubyStackTraceHyperlink(fConsole, stackTraceLine);
@@ -135,6 +127,18 @@ public class RubyConsoleTracker implements IConsoleLineTracker {
 			}
 		} catch (BadLocationException e) {
 		}
+	}
+
+	protected IProject getProject() {
+		String projectName = null;
+		try {
+			projectName = fConsole.getProcess().getLaunch().getLaunchConfiguration().getAttribute(IRubyLaunchConfigurationConstants.ATTR_PROJECT_NAME, (String) null);
+		} catch (CoreException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return null;
+		}
+		return ResourcesPlugin.getWorkspace().getRoot().getProject(projectName);
 	}
 
 	/**

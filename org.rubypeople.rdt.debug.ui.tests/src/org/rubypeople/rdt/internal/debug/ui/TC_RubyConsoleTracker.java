@@ -5,6 +5,7 @@ import java.util.List;
 
 import junit.framework.TestCase;
 
+import org.eclipse.core.resources.IProject;
 import org.eclipse.debug.core.model.IProcess;
 import org.eclipse.debug.core.model.IStreamMonitor;
 import org.eclipse.debug.core.model.IStreamsProxy;
@@ -99,7 +100,14 @@ public class TC_RubyConsoleTracker extends TestCase {
 		RubyConsoleTracker tracker ;
 		
 		public TestConsole(FileExistanceChecker fileChecker) throws Exception {
-			tracker = new RubyConsoleTracker(fileChecker);						
+			tracker = new RubyConsoleTracker(fileChecker){
+			
+				@Override
+				protected IProject getProject() {
+					return null;
+				}
+			
+			};						
 			tracker.init(this) ;			
 		}
 		
