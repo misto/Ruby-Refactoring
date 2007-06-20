@@ -1,6 +1,7 @@
 package org.rubypeople.rdt.debug.core.tests;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import org.eclipse.core.resources.IMarkerDelta;
 import org.eclipse.debug.core.DebugException;
@@ -15,13 +16,13 @@ import org.rubypeople.rdt.internal.debug.core.SuspensionPoint;
 import org.rubypeople.rdt.internal.debug.core.model.IRubyDebugTarget;
 
 public class TestRubyDebugTarget implements IRubyDebugTarget {
-	private ArrayList suspensionPoints = new ArrayList() ;
+	private List<SuspensionPoint> suspensionPoints = new ArrayList<SuspensionPoint>();
 	
 	public SuspensionPoint getLastSuspensionPoint() {
-		if (suspensionPoints.size() == 0) {
-			return null ;
+		if (suspensionPoints.isEmpty()) {
+			return null;
 		}
-		return (SuspensionPoint) suspensionPoints.get(suspensionPoints.size()-1);
+		return suspensionPoints.get(suspensionPoints.size()-1);
 	}
 
 
@@ -29,7 +30,7 @@ public class TestRubyDebugTarget implements IRubyDebugTarget {
 	}
 
 	public void suspensionOccurred(SuspensionPoint suspensionPoint) {
-		suspensionPoints.add(suspensionPoint) ;
+		suspensionPoints.add(suspensionPoint);
 	}
 
 	public void terminate()  {

@@ -13,7 +13,6 @@ import junit.framework.TestCase;
 import org.eclipse.core.runtime.CoreException;
 import org.rubypeople.rdt.internal.debug.core.RubyDebuggerProxy;
 import org.rubypeople.rdt.internal.debug.core.RubyExceptionBreakpoint;
-import org.rubypeople.rdt.internal.debug.core.model.ThreadInfo;
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserFactory;
 
