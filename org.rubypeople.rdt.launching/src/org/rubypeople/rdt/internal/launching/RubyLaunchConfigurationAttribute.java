@@ -10,26 +10,6 @@ import org.rubypeople.rdt.launching.IRubyLaunchConfigurationConstants;
 public interface RubyLaunchConfigurationAttribute {
 
 	/**
-	 * @deprecated Please use <code>IRubyLaunchConfigurationConstants.ATTR_LOADPATH</code>
-	 */
-	static final String CUSTOM_LOAD_PATH = IRubyLaunchConfigurationConstants.ATTR_LOADPATH;
-	
-	/**
-	 * @deprecated Please use <code>IRubyLaunchConfigurationConstants.ATTR_FILE_NAME</code>
-	 */
-	static final String FILE_NAME = IRubyLaunchConfigurationConstants.ATTR_FILE_NAME;
-	
-	/**
-	 * @deprecated Please use <code>IRubyLaunchConfigurationConstants.ATTR_VM_ARGUMENTS</code>
-	 */
-	static final String INTERPRETER_ARGUMENTS = IRubyLaunchConfigurationConstants.ATTR_VM_ARGUMENTS;
-	
-	/**
-	 * @deprecated Please use <code>IRubyLaunchConfigurationConstants.ATTR_PROGRAM_ARGUMENTS</code>
-	 */
-	static final String PROGRAM_ARGUMENTS = IRubyLaunchConfigurationConstants.ATTR_PROGRAM_ARGUMENTS;
-	
-	/**
 	 * @deprecated Please use <code>IRubyLaunchConfigurationConstants.ATTR_PROJECT_NAME</code>
 	 */
 	static final String PROJECT_NAME = IRubyLaunchConfigurationConstants.ATTR_PROJECT_NAME;

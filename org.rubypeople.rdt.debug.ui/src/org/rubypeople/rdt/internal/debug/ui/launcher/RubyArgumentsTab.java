@@ -22,6 +22,7 @@ import org.rubypeople.rdt.internal.debug.ui.RdtDebugUiMessages;
 import org.rubypeople.rdt.internal.debug.ui.RdtDebugUiPlugin;
 import org.rubypeople.rdt.internal.launching.RubyLaunchConfigurationAttribute;
 import org.rubypeople.rdt.internal.ui.util.DirectorySelector;
+import org.rubypeople.rdt.launching.IRubyLaunchConfigurationConstants;
 
 public class RubyArgumentsTab extends AbstractLaunchConfigurationTab {
 	protected Text interpreterArgsText, programArgsText;
@@ -101,8 +102,8 @@ public class RubyArgumentsTab extends AbstractLaunchConfigurationTab {
 		boolean useDefaultWorkDir = true;
 		try {
 			workingDirectory = configuration.getAttribute(RubyLaunchConfigurationAttribute.WORKING_DIRECTORY, "");
-			interpreterArgs = configuration.getAttribute(RubyLaunchConfigurationAttribute.INTERPRETER_ARGUMENTS, "");
-			programArgs = configuration.getAttribute(RubyLaunchConfigurationAttribute.PROGRAM_ARGUMENTS, "");
+			interpreterArgs = configuration.getAttribute(IRubyLaunchConfigurationConstants.ATTR_VM_ARGUMENTS, "");
+			programArgs = configuration.getAttribute(IRubyLaunchConfigurationConstants.ATTR_PROGRAM_ARGUMENTS, "");
 			useDefaultWorkDir = configuration.getAttribute(RubyLaunchConfigurationAttribute.USE_DEFAULT_WORKING_DIRECTORY, true);
 		} catch (CoreException e) {
 			log(e);
@@ -116,8 +117,8 @@ public class RubyArgumentsTab extends AbstractLaunchConfigurationTab {
 
 	public void performApply(ILaunchConfigurationWorkingCopy configuration) {
 		configuration.setAttribute(RubyLaunchConfigurationAttribute.WORKING_DIRECTORY, workingDirectorySelector.getValidatedSelectionText());
-		configuration.setAttribute(RubyLaunchConfigurationAttribute.INTERPRETER_ARGUMENTS, interpreterArgsText.getText());
-		configuration.setAttribute(RubyLaunchConfigurationAttribute.PROGRAM_ARGUMENTS, programArgsText.getText());
+		configuration.setAttribute(IRubyLaunchConfigurationConstants.ATTR_VM_ARGUMENTS, interpreterArgsText.getText());
+		configuration.setAttribute(IRubyLaunchConfigurationConstants.ATTR_PROGRAM_ARGUMENTS, programArgsText.getText());
 		configuration.setAttribute(RubyLaunchConfigurationAttribute.USE_DEFAULT_WORKING_DIRECTORY, useDefaultWorkingDirectoryButton.getSelection());
 	}
 

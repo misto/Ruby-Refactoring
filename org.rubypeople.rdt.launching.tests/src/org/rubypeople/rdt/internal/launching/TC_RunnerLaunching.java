@@ -174,7 +174,7 @@ public class TC_RunnerLaunching extends ModifyingResourceTest {
 				return RUBY_LIB_DIR + File.separator + RUBY_FILE_NAME;
 			} else if (attributeName.equals(RubyLaunchConfigurationAttribute.WORKING_DIRECTORY)) {
 				return '/' + PROJECT_NAME;
-			} else if (attributeName.equals(RubyLaunchConfigurationAttribute.PROGRAM_ARGUMENTS)) {
+			} else if (attributeName.equals(IRubyLaunchConfigurationConstants.ATTR_PROGRAM_ARGUMENTS)) {
 				return PROGRAM_ARGUMENTS;
 			} else if (attributeName.equals(IRubyLaunchConfigurationConstants.ATTR_VM_ARGUMENTS)) {
 				return INTERPRETER_ARGUMENTS;

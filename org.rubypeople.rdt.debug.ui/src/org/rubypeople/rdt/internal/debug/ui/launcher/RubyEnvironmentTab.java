@@ -303,7 +303,7 @@ public class RubyEnvironmentTab extends AbstractLaunchConfigurationTab {
 				loadPathStrings.add(entry.getPath().toString());
 			}
 			configuration.setAttribute(
-					RubyLaunchConfigurationAttribute.CUSTOM_LOAD_PATH,
+					IRubyLaunchConfigurationConstants.ATTR_LOADPATH,
 					loadPathStrings);
 		}
 	}
