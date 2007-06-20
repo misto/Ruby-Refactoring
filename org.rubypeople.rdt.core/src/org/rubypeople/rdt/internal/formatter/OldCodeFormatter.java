@@ -8,7 +8,6 @@ import java.util.regex.PatternSyntaxException;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.text.edits.ReplaceEdit;
 import org.eclipse.text.edits.TextEdit;
-import org.jruby.ast.NextNode;
 import org.rubypeople.rdt.core.RubyCore;
 import org.rubypeople.rdt.core.formatter.CodeFormatter;
 import org.rubypeople.rdt.core.formatter.DefaultCodeFormatterConstants;

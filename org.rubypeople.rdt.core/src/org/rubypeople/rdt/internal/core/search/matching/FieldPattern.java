@@ -13,7 +13,6 @@ package org.rubypeople.rdt.internal.core.search.matching;
 import org.rubypeople.rdt.core.search.SearchPattern;
 import org.rubypeople.rdt.internal.core.search.indexing.IIndexConstants;
 import org.rubypeople.rdt.internal.core.util.CharOperation;
-import org.rubypeople.rdt.internal.core.util.Util;
 
 public class FieldPattern extends VariablePattern implements IIndexConstants {
 

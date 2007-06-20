@@ -15,7 +15,6 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.OperationCanceledException;
 import org.rubypeople.rdt.core.IRubyElement;
 import org.rubypeople.rdt.core.ISourceFolderRoot;
-import org.rubypeople.rdt.core.IType;
 import org.rubypeople.rdt.core.search.IRubySearchScope;
 import org.rubypeople.rdt.core.search.SearchParticipant;
 import org.rubypeople.rdt.internal.core.LocalVariable;
