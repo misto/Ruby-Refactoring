@@ -130,7 +130,6 @@ import org.rubypeople.rdt.ui.PreferenceConstants;
 import org.rubypeople.rdt.ui.actions.FormatAction;
 import org.rubypeople.rdt.ui.actions.IRubyEditorActionDefinitionIds;
 import org.rubypeople.rdt.ui.actions.OpenEditorActionGroup;
-import org.rubypeople.rdt.ui.actions.RubyActionGroup;
 import org.rubypeople.rdt.ui.actions.RubySearchActionGroup;
 import org.rubypeople.rdt.ui.actions.SurroundWithBeginRescueAction;
 import org.rubypeople.rdt.ui.text.folding.IRubyFoldingStructureProvider;

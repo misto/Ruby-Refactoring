@@ -15,7 +15,6 @@ import org.jruby.ast.RootNode;
 import org.rubypeople.rdt.core.IRubyScript;
 import org.rubypeople.rdt.core.RubyModelException;
 import org.rubypeople.rdt.internal.core.parser.RubyParser;
-import org.rubypeople.rdt.internal.core.util.DOMFinder;
 import org.rubypeople.rdt.internal.ti.util.OffsetNodeLocator;
 import org.rubypeople.rdt.internal.ui.RubyPlugin;
 import org.rubypeople.rdt.ui.text.ruby.IInvocationContext;

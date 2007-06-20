@@ -27,7 +27,6 @@ import org.rubypeople.rdt.internal.ui.RubyPluginImages;
 import org.rubypeople.rdt.internal.ui.rubyeditor.RubyEditor;
 import org.rubypeople.rdt.internal.ui.search.RubySearchScopeFactory;
 import org.rubypeople.rdt.internal.ui.search.SearchMessages;
-import org.rubypeople.rdt.internal.ui.search.SearchUtil;
 import org.rubypeople.rdt.ui.search.ElementQuerySpecification;
 import org.rubypeople.rdt.ui.search.QuerySpecification;
 

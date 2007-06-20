@@ -25,12 +25,10 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 
 import org.eclipse.core.runtime.CoreException;
-import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.rubypeople.rdt.core.ILoadpathEntry;
 import org.rubypeople.rdt.core.IRubyProject;
 import org.rubypeople.rdt.core.RubyModelException;
-import org.rubypeople.rdt.internal.corext.buildpath.LoadpathModifier.ILoadpathModifierListener;
 import org.rubypeople.rdt.internal.ui.wizards.NewWizardMessages;
 import org.rubypeople.rdt.internal.ui.wizards.buildpaths.newsourcepage.LoadpathModifierOperation;
 

@@ -30,7 +30,6 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.rubypeople.rdt.core.IRubyElement;
 import org.rubypeople.rdt.core.IRubyProject;
 import org.rubypeople.rdt.core.RubyModelException;
-import org.rubypeople.rdt.internal.corext.buildpath.LoadpathModifier.ILoadpathModifierListener;
 import org.rubypeople.rdt.internal.corext.util.Messages;
 import org.rubypeople.rdt.internal.ui.wizards.NewWizardMessages;
 import org.rubypeople.rdt.internal.ui.wizards.buildpaths.newsourcepage.DialogPackageExplorerActionGroup;

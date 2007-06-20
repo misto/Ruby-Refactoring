@@ -22,7 +22,6 @@ package org.rubypeople.rdt.internal.ui.wizards.buildpaths;
 
 import java.util.ArrayList;
 
-import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -30,15 +29,12 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.widgets.Shell;
-import org.rubypeople.rdt.core.ILoadpathAttribute;
 import org.rubypeople.rdt.core.ILoadpathContainer;
 import org.rubypeople.rdt.core.ILoadpathEntry;
-import org.rubypeople.rdt.core.IRubyModel;
 import org.rubypeople.rdt.core.IRubyProject;
 import org.rubypeople.rdt.core.LoadpathContainerInitializer;
 import org.rubypeople.rdt.core.RubyCore;
 import org.rubypeople.rdt.core.RubyModelException;
-import org.rubypeople.rdt.internal.ui.RubyPlugin;
 import org.rubypeople.rdt.internal.ui.wizards.NewWizardMessages;
 import org.rubypeople.rdt.ui.RubyUI;
 
@@ -47,7 +43,7 @@ import org.rubypeople.rdt.ui.RubyUI;
  */
 public class BuildPathSupport {
 	
-	public static final String JRE_PREF_PAGE_ID= "org.eclipse.jdt.debug.ui.preferences.VMPreferencePage"; //$NON-NLS-1$
+	public static final String JRE_PREF_PAGE_ID= "org.rubypeople.rdt.debug.ui.preferences.VMPreferencePage"; //$NON-NLS-1$
 
 	
 	private BuildPathSupport() {
