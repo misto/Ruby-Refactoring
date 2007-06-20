@@ -87,10 +87,10 @@ public abstract class OpenEditorAction extends Action {
 	protected abstract void reveal(ITextEditor editor);
 
 	protected IType findType(IRubyProject project, String className) throws RubyModelException {
-		return internalFindType(project, className, new HashSet());
+		return internalFindType(project, className, new HashSet<IRubyProject>());
 	}
 
-	private IType internalFindType(IRubyProject project, String className, Set/*<IRubyProject>*/ visitedProjects) throws RubyModelException {
+	private IType internalFindType(IRubyProject project, String className, Set<IRubyProject> visitedProjects) throws RubyModelException {
 		if (visitedProjects.contains(project))
 			return null;
 		
