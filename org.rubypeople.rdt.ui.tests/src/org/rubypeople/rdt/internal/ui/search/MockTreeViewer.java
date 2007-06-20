@@ -13,6 +13,7 @@ package org.rubypeople.rdt.internal.ui.search;
 
 import java.util.Hashtable;
 import java.util.List;
+import java.util.Map;
 
 import org.eclipse.jface.viewers.AbstractTreeViewer;
 import org.eclipse.swt.events.TreeListener;
@@ -20,19 +21,18 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Item;
 import org.eclipse.swt.widgets.Widget;
 
-
 public class MockTreeViewer extends AbstractTreeViewer {
-	private Hashtable hashtable = new Hashtable() ;
+	private Map<Object, Object> hashtable = new Hashtable<Object, Object>();
 	public void add(Object parentElement, Object childElement) {
-		hashtable.put(parentElement, childElement) ;
+		hashtable.put(parentElement, childElement);
 	}
 
 	public boolean isParentAdded(Object parentElement) {
-		return hashtable.containsKey(parentElement) ;
+		return hashtable.containsKey(parentElement);
 	}
 	
 	public Object childFrom(Object parentElement) {
-		return hashtable.get(parentElement) ;
+		return hashtable.get(parentElement);
 	}
 	
 	protected void addTreeListener(Control control, TreeListener listener) {
