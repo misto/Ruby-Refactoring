@@ -16,6 +16,7 @@ import org.rubypeople.rdt.internal.debug.core.RdtDebugCorePlugin;
 import org.rubypeople.rdt.internal.debug.core.model.RubyStackFrame;
 import org.rubypeople.rdt.internal.launching.RubyLaunchConfigurationAttribute;
 import org.rubypeople.rdt.internal.ui.rubyeditor.ExternalRubyFileEditorInput;
+import org.rubypeople.rdt.launching.IRubyLaunchConfigurationConstants;
 import org.rubypeople.rdt.ui.IRubyConstants;
 
 /**
@@ -53,7 +54,7 @@ public class RubySourceLocator implements IPersistableSourceLocator, ISourcePres
 	 * @see org.eclipse.debug.core.model.IPersistableSourceLocator#initializeDefaults(ILaunchConfiguration)
 	 */
 	public void initializeDefaults(ILaunchConfiguration configuration) throws CoreException {
-		this.absoluteWorkingDirectory = configuration.getAttribute(RubyLaunchConfigurationAttribute.WORKING_DIRECTORY, ""); //$NON-NLS-1$
+		this.absoluteWorkingDirectory = configuration.getAttribute(IRubyLaunchConfigurationConstants.ATTR_WORKING_DIRECTORY, ""); //$NON-NLS-1$
 	}
 
 	/**

@@ -92,7 +92,7 @@ public class RubyArgumentsTab extends AbstractLaunchConfigurationTab {
 
 	public void setDefaults(ILaunchConfigurationWorkingCopy configuration) {
 		configuration.setAttribute(RubyLaunchConfigurationAttribute.USE_DEFAULT_WORKING_DIRECTORY, true);
-		configuration.setAttribute(RubyLaunchConfigurationAttribute.WORKING_DIRECTORY, (String)null);
+		configuration.setAttribute(IRubyLaunchConfigurationConstants.ATTR_WORKING_DIRECTORY, (String)null);
 		// set hidden attribute
 		configuration.setAttribute(ILaunchConfiguration.ATTR_SOURCE_LOCATOR_ID, "org.rubypeople.rdt.debug.ui.rubySourceLocator") ;
 	}
@@ -101,7 +101,7 @@ public class RubyArgumentsTab extends AbstractLaunchConfigurationTab {
 		String workingDirectory = "", interpreterArgs = "", programArgs = "";
 		boolean useDefaultWorkDir = true;
 		try {
-			workingDirectory = configuration.getAttribute(RubyLaunchConfigurationAttribute.WORKING_DIRECTORY, "");
+			workingDirectory = configuration.getAttribute(IRubyLaunchConfigurationConstants.ATTR_WORKING_DIRECTORY, "");
 			interpreterArgs = configuration.getAttribute(IRubyLaunchConfigurationConstants.ATTR_VM_ARGUMENTS, "");
 			programArgs = configuration.getAttribute(IRubyLaunchConfigurationConstants.ATTR_PROGRAM_ARGUMENTS, "");
 			useDefaultWorkDir = configuration.getAttribute(RubyLaunchConfigurationAttribute.USE_DEFAULT_WORKING_DIRECTORY, true);
@@ -116,7 +116,7 @@ public class RubyArgumentsTab extends AbstractLaunchConfigurationTab {
 	}
 
 	public void performApply(ILaunchConfigurationWorkingCopy configuration) {
-		configuration.setAttribute(RubyLaunchConfigurationAttribute.WORKING_DIRECTORY, workingDirectorySelector.getValidatedSelectionText());
+		configuration.setAttribute(IRubyLaunchConfigurationConstants.ATTR_WORKING_DIRECTORY, workingDirectorySelector.getValidatedSelectionText());
 		configuration.setAttribute(IRubyLaunchConfigurationConstants.ATTR_VM_ARGUMENTS, interpreterArgsText.getText());
 		configuration.setAttribute(IRubyLaunchConfigurationConstants.ATTR_PROGRAM_ARGUMENTS, programArgsText.getText());
 		configuration.setAttribute(RubyLaunchConfigurationAttribute.USE_DEFAULT_WORKING_DIRECTORY, useDefaultWorkingDirectoryButton.getSelection());
@@ -139,7 +139,7 @@ public class RubyArgumentsTab extends AbstractLaunchConfigurationTab {
 
 	public boolean isValid(ILaunchConfiguration launchConfig) {
 		try {
-			String workingDirectory = launchConfig.getAttribute(RubyLaunchConfigurationAttribute.WORKING_DIRECTORY, "");
+			String workingDirectory = launchConfig.getAttribute(IRubyLaunchConfigurationConstants.ATTR_WORKING_DIRECTORY, "");
 			if (!useDefaultWorkingDirectoryButton() && workingDirectory.length() == 0) {
 				setErrorMessage(RdtDebugUiMessages.LaunchConfigurationTab_RubyArguments_working_dir_error_message);
 				return false;

@@ -7,6 +7,7 @@ import org.rubypeople.eclipse.shams.debug.core.ShamLaunchConfigurationWorkingCop
 import org.rubypeople.rdt.internal.debug.ui.RdtDebugUiMessages;
 import org.rubypeople.rdt.internal.debug.ui.launcher.RubyArgumentsTab;
 import org.rubypeople.rdt.internal.launching.RubyLaunchConfigurationAttribute;
+import org.rubypeople.rdt.launching.IRubyLaunchConfigurationConstants;
 
 public class TC_RubyArgumentsTab extends TestCase {
 
@@ -24,7 +25,7 @@ public class TC_RubyArgumentsTab extends TestCase {
 		errorMessage = RdtDebugUiMessages.LaunchConfigurationTab_RubyArguments_working_dir_error_message;
 		assertEquals("The tab should set the error message for invalid working directory.", errorMessage, tab.getErrorMessage());
 
-		configuration.setAttribute(RubyLaunchConfigurationAttribute.WORKING_DIRECTORY, "aValidDirectory");
+		configuration.setAttribute(IRubyLaunchConfigurationConstants.ATTR_WORKING_DIRECTORY, "aValidDirectory");
 		assertTrue("The tab is valid when the configuration has a working directory.", tab.isValid(configuration));
 		assertNull("The tab should set the error message to null when there is a working directory.", tab.getErrorMessage());
 	}

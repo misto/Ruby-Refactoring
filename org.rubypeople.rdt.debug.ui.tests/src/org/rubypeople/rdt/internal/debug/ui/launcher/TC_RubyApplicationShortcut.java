@@ -50,9 +50,9 @@ public class TC_RubyApplicationShortcut extends ModifyingResourceTest {
 		try {
 			ILaunchConfigurationType configType = DebugPlugin.getDefault().getLaunchManager().getLaunchConfigurationType(SHAM_LAUNCH_CONFIG_TYPE);
 			ILaunchConfigurationWorkingCopy wc = configType.newInstance(null, pFile.getName());
-			wc.setAttribute(RubyLaunchConfigurationAttribute.PROJECT_NAME, pFile.getProject().getName());
+			wc.setAttribute(IRubyLaunchConfigurationConstants.ATTR_PROJECT_NAME, pFile.getProject().getName());
 			wc.setAttribute(IRubyLaunchConfigurationConstants.ATTR_FILE_NAME, pFile.getProjectRelativePath().toString());
-			wc.setAttribute(RubyLaunchConfigurationAttribute.WORKING_DIRECTORY, "");
+			wc.setAttribute(IRubyLaunchConfigurationConstants.ATTR_WORKING_DIRECTORY, "");
 			wc.setAttribute(RubyLaunchConfigurationAttribute.SELECTED_INTERPRETER, RubyRuntime.getCompositeIdFromVM(RubyRuntime.getDefaultVMInstall()));
 			wc.setAttribute(ILaunchConfiguration.ATTR_SOURCE_LOCATOR_ID, "org.rubypeople.rdt.debug.ui.rubySourceLocator");
 			config = wc.doSave();

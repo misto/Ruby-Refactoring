@@ -70,13 +70,13 @@ public class RubyEntryPointTab extends AbstractLaunchConfigurationTab {
 		if (project == null || !RubyCore.isRubyProject(project)) {
 			return ;
 		}
-		configuration.setAttribute(RubyLaunchConfigurationAttribute.PROJECT_NAME, project.getName());
+		configuration.setAttribute(IRubyLaunchConfigurationConstants.ATTR_PROJECT_NAME, project.getName());
 		configuration.setAttribute(IRubyLaunchConfigurationConstants.ATTR_FILE_NAME, selectedResource.getProjectRelativePath().toString()) ;
 	}
 
 	public void initializeFrom(ILaunchConfiguration configuration) {
 		try {
-			originalProjectName = configuration.getAttribute(RubyLaunchConfigurationAttribute.PROJECT_NAME, "");
+			originalProjectName = configuration.getAttribute(IRubyLaunchConfigurationConstants.ATTR_PROJECT_NAME, "");
 			originalFileName = configuration.getAttribute(IRubyLaunchConfigurationConstants.ATTR_FILE_NAME, "");
 		} catch (CoreException e) {
 			log(e);
@@ -89,7 +89,7 @@ public class RubyEntryPointTab extends AbstractLaunchConfigurationTab {
 	}
 
 	public void performApply(ILaunchConfigurationWorkingCopy configuration) {
-		configuration.setAttribute(RubyLaunchConfigurationAttribute.PROJECT_NAME, projectSelector.getSelectionText());
+		configuration.setAttribute(IRubyLaunchConfigurationConstants.ATTR_PROJECT_NAME, projectSelector.getSelectionText());
 		IFile file = fileSelector.getSelection();
 		configuration.setAttribute(IRubyLaunchConfigurationConstants.ATTR_FILE_NAME, file == null ? "" : file.getProjectRelativePath().toString());
 	}
@@ -111,7 +111,7 @@ public class RubyEntryPointTab extends AbstractLaunchConfigurationTab {
 	public boolean isValid(ILaunchConfiguration launchConfig) {
 		try {
 				
-			String projectName = launchConfig.getAttribute(RubyLaunchConfigurationAttribute.PROJECT_NAME, "");
+			String projectName = launchConfig.getAttribute(IRubyLaunchConfigurationConstants.ATTR_PROJECT_NAME, "");
 			if (projectName.length() == 0) {
 				setErrorMessage(RdtDebugUiMessages.LaunchConfigurationTab_RubyEntryPoint_invalidProjectSelectionMessage);
 				return false;

@@ -168,11 +168,11 @@ public class TC_RunnerLaunching extends ModifyingResourceTest {
 		}
 
 		public String getAttribute(String attributeName, String defaultValue) throws CoreException {
-			if (attributeName.equals(RubyLaunchConfigurationAttribute.PROJECT_NAME)) {
+			if (attributeName.equals(IRubyLaunchConfigurationConstants.ATTR_PROJECT_NAME)) {
 				return PROJECT_NAME;
 			} else if (attributeName.equals(IRubyLaunchConfigurationConstants.ATTR_FILE_NAME)) {
 				return RUBY_LIB_DIR + File.separator + RUBY_FILE_NAME;
-			} else if (attributeName.equals(RubyLaunchConfigurationAttribute.WORKING_DIRECTORY)) {
+			} else if (attributeName.equals(IRubyLaunchConfigurationConstants.ATTR_WORKING_DIRECTORY)) {
 				return '/' + PROJECT_NAME;
 			} else if (attributeName.equals(IRubyLaunchConfigurationConstants.ATTR_PROGRAM_ARGUMENTS)) {
 				return PROGRAM_ARGUMENTS;

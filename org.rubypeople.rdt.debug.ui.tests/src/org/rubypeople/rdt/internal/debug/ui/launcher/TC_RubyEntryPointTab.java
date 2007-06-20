@@ -25,7 +25,7 @@ public class TC_RubyEntryPointTab extends TestCase {
 		errorMessage = RdtDebugUiMessages.LaunchConfigurationTab_RubyEntryPoint_invalidProjectSelectionMessage;
 		assertEquals("The tab should set the error message for no project.", errorMessage, tab.getErrorMessage());
 
-		configuration.setAttribute(RubyLaunchConfigurationAttribute.PROJECT_NAME, "myProjectName");
+		configuration.setAttribute(IRubyLaunchConfigurationConstants.ATTR_PROJECT_NAME, "myProjectName");
 		assertTrue("The tab is not valid when the configuration has only a projectname.", !tab.isValid(configuration));
 		errorMessage = RdtDebugUiMessages.LaunchConfigurationTab_RubyEntryPoint_invalidFileSelectionMessage;
 		assertEquals("The tab should set the error message for no file.", errorMessage, tab.getErrorMessage());
