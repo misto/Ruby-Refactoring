@@ -383,6 +383,9 @@ public class RubyNewTestCaseWizardPage extends NewTypeWizardPage {
 		IRubyElement jelem= getInitialRubyElement(selection);
 		initContainerPage(jelem);
 		initTypePage(jelem);
+		
+		restoreWidgetValues();
+		
 		doStatusUpdate();
 		
 //		boolean createConstructors= false;

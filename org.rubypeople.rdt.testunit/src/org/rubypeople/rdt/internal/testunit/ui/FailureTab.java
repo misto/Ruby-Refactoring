@@ -34,7 +34,6 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Menu;
-import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableItem;
 import org.rubypeople.rdt.testunit.ITestRunListener;
@@ -272,10 +271,6 @@ public class FailureTab extends TestRunTab implements IMenuListener {
         if (fTable.getSelectionCount() > 0) 
         	new OpenTestAction(fRunnerViewPart, getClassName(), getMethodName(), true).run();
 	}
-
-    private Shell getShell() {
-        return fTable.getShell();
-    }
 
 	/*
 	 * @see ITestRunView#testStatusChanged(TestRunInfo)
