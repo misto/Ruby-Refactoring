@@ -142,7 +142,7 @@ public class RubyApplicationShortcut implements ILaunchShortcut {
 	}
 
 	protected ILaunchConfigurationType getRubyLaunchConfigType() {
-		return getLaunchManager().getLaunchConfigurationType(RubyLaunchConfigurationAttribute.RUBY_LAUNCH_CONFIGURATION_TYPE);
+		return getLaunchManager().getLaunchConfigurationType(IRubyLaunchConfigurationConstants.ID_RUBY_APPLICATION);
 	}
 
 	protected ILaunchManager getLaunchManager() {

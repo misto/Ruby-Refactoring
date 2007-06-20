@@ -74,7 +74,7 @@ public class FTC_DebuggerLaunch extends TestCase {
 
 	
 	public void testTwoSessions() throws Exception {
-		ILaunchConfigurationType lcT = DebugPlugin.getDefault().getLaunchManager().getLaunchConfigurationType(RubyLaunchConfigurationAttribute.RUBY_LAUNCH_CONFIGURATION_TYPE) ;
+		ILaunchConfigurationType lcT = DebugPlugin.getDefault().getLaunchManager().getLaunchConfigurationType(IRubyLaunchConfigurationConstants.ID_RUBY_APPLICATION);
 		
 		ILaunchConfigurationWorkingCopy wc = lcT.newInstance(null, "TestLaunchConfiguration") ;
 		IProject project = ResourceTools.createProject("FTCDebuggerLaunchMultipleSessions") ;

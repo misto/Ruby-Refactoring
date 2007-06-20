@@ -25,8 +25,8 @@ import org.eclipse.ui.IWindowListener;
 import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.rubypeople.rdt.internal.debug.core.model.RubyDebugTarget;
-import org.rubypeople.rdt.internal.launching.RubyLaunchConfigurationAttribute;
 import org.rubypeople.rdt.internal.ui.rubyeditor.RubyEditor;
+import org.rubypeople.rdt.launching.IRubyLaunchConfigurationConstants;
 
 public class CodeReloader implements IPartListener, IPropertyListener, IWindowListener {
 
@@ -75,7 +75,7 @@ public class CodeReloader implements IPartListener, IPropertyListener, IWindowLi
 				if (!launch.getLaunchMode().equals(ILaunchManager.DEBUG_MODE)) {
 					continue;
 				}
-				if (!launch.getLaunchConfiguration().getType().getIdentifier().equals(RubyLaunchConfigurationAttribute.RUBY_LAUNCH_CONFIGURATION_TYPE)) {
+				if (!launch.getLaunchConfiguration().getType().getIdentifier().equals(IRubyLaunchConfigurationConstants.ID_RUBY_APPLICATION)) {
 					continue;
 				}
 				final RubyDebugTarget target = (RubyDebugTarget) launch.getDebugTarget();

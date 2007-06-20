@@ -8,11 +8,6 @@ import org.rubypeople.rdt.launching.IRubyLaunchConfigurationConstants;
  * 
  */
 public interface RubyLaunchConfigurationAttribute {
-	
-	/**
-	 * @deprecated Please use <code>IRubyLaunchConfigurationConstants.ID_RUBY_APPLICATION</code>
-	 */
-	static final String RUBY_LAUNCH_CONFIGURATION_TYPE = IRubyLaunchConfigurationConstants.ID_RUBY_APPLICATION;
 
 	/**
 	 * @deprecated Please use <code>IRubyLaunchConfigurationConstants.ATTR_LOADPATH</code>

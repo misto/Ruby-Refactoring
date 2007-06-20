@@ -105,7 +105,7 @@ public class TC_RunnerLaunching extends ModifyingResourceTest {
 
 	public void testDebugEnabled() throws Exception {
 		// check if debugging is enabled in plugin.xml
-		ILaunchConfigurationType launchConfigurationType = getLaunchManager().getLaunchConfigurationType(RubyLaunchConfigurationAttribute.RUBY_LAUNCH_CONFIGURATION_TYPE);
+		ILaunchConfigurationType launchConfigurationType = getLaunchManager().getLaunchConfigurationType(IRubyLaunchConfigurationConstants.ID_RUBY_APPLICATION);
 		assertEquals("Ruby Application", launchConfigurationType.getName());
 		assertTrue("LaunchConfiguration supports debug", launchConfigurationType.supportsMode(ILaunchManager.DEBUG_MODE));
 	}
@@ -113,7 +113,7 @@ public class TC_RunnerLaunching extends ModifyingResourceTest {
 	public void launch(boolean debug) throws Exception {
 		ILaunchConfiguration configuration = new ShamLaunchConfiguration();
 		ILaunch launch = new Launch(configuration, debug ? ILaunchManager.DEBUG_MODE : ILaunchManager.RUN_MODE, null);
-		ILaunchConfigurationType launchConfigurationType = getLaunchManager().getLaunchConfigurationType(RubyLaunchConfigurationAttribute.RUBY_LAUNCH_CONFIGURATION_TYPE);
+		ILaunchConfigurationType launchConfigurationType = getLaunchManager().getLaunchConfigurationType(IRubyLaunchConfigurationConstants.ID_RUBY_APPLICATION);
 		launchConfigurationType.getDelegate(debug ? "debug" : "run").launch(configuration, debug ? ILaunchManager.DEBUG_MODE : ILaunchManager.RUN_MODE, launch, null);
 
 		RubyDebugTarget debugTarget = (RubyDebugTarget) launch.getDebugTarget();
