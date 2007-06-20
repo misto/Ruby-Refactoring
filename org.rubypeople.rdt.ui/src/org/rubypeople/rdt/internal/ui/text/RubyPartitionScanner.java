@@ -3,9 +3,12 @@ package org.rubypeople.rdt.internal.ui.text;
 import java.io.IOException;
 import java.io.StringReader;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
+import org.eclipse.core.runtime.Assert;
 import org.eclipse.jface.text.BadLocationException;
+import org.eclipse.jface.text.Document;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.rules.IPartitionTokenScanner;
 import org.eclipse.jface.text.rules.IToken;
@@ -19,11 +22,14 @@ import org.jruby.lexer.yacc.SyntaxException;
 import org.jruby.parser.ParserSupport;
 import org.jruby.parser.RubyParserConfiguration;
 import org.jruby.parser.RubyParserResult;
+import org.jruby.parser.Tokens;
 import org.rubypeople.rdt.internal.core.util.ASTUtil;
 import org.rubypeople.rdt.internal.ui.RubyPlugin;
 
 public class RubyPartitionScanner implements IPartitionTokenScanner {
 		
+	private static final String BEGIN = "=begin";
+
 	private static class QueuedToken {
 		private IToken token;
 		private int length;
@@ -51,21 +57,25 @@ public class RubyPartitionScanner implements IPartitionTokenScanner {
 	private RubyYaccLexer lexer;
 	private ParserSupport parserSupport;
 	private RubyParserResult result;
-	private String contents;
+	private String fContents;
 	private LexerSource lexerSource;
 	private int origOffset;
 	private int origLength;
-	private int tokenLength;
-	private int tokenOffset;
+	private int fLength;
+	private int fOffset;
 	
-	private List<QueuedToken> queue = new ArrayList<QueuedToken>();
+	private List<QueuedToken> fQueue = new ArrayList<QueuedToken>();
+	private String fContentType;
 	
-	// XXX Also do strings, regex partitions!
+	// XXX Also do regex partitions!
 	public final static String RUBY_MULTI_LINE_COMMENT = IRubyPartitions.RUBY_MULTI_LINE_COMMENT;
 	public final static String RUBY_SINGLE_LINE_COMMENT = IRubyPartitions.RUBY_SINGLE_LINE_COMMENT;
+	public final static String RUBY_STRING = IRubyPartitions.RUBY_STRING;
+	public final static String RUBY_REGULAR_EXPRESSION = IRubyPartitions.RUBY_REGULAR_EXPRESSION;
+	public static final String RUBY_DEFAULT = IDocument.DEFAULT_CONTENT_TYPE;
 
 	public static final String[] LEGAL_CONTENT_TYPES = {
-			RUBY_MULTI_LINE_COMMENT, RUBY_SINGLE_LINE_COMMENT
+			RUBY_DEFAULT, RUBY_MULTI_LINE_COMMENT, RUBY_SINGLE_LINE_COMMENT, RUBY_REGULAR_EXPRESSION, RUBY_STRING
 			};
 
 	public RubyPartitionScanner() {
@@ -81,15 +91,22 @@ public class RubyPartitionScanner implements IPartitionTokenScanner {
 	public void setPartialRange(IDocument document, int offset, int length,
 			String contentType, int partitionOffset) {
 		reset();
-		try {
-			contents = document.get(offset, length);
-			lexerSource = new LexerSource("filename", new StringReader(contents), 0);
+		int myOffset = offset;
+		if (contentType != null) {
+			int diff = offset - partitionOffset;
+			myOffset = partitionOffset; // backtrack to beginning of partition so we don't get in weird state
+			length += diff;
+		}
+		if (myOffset == -1) myOffset = 0;
+		try {			
+			fContents = document.get(myOffset, length);
+			lexerSource = new LexerSource("filename", new StringReader(fContents), 0);
 			lexer.setSource(lexerSource);
 		} catch (BadLocationException e) {
 			lexerSource = new LexerSource("filename", new StringReader(""), 0);
 			lexer.setSource(lexerSource);
 		}
-		origOffset = offset;
+		origOffset = myOffset;
 		origLength = length;
 	}
 
@@ -97,76 +114,247 @@ public class RubyPartitionScanner implements IPartitionTokenScanner {
 		lexer.reset();
 		lexer.setState(LexState.EXPR_BEG);
 		parserSupport.initTopLocalVariables();
-		queue.clear();
+		fQueue.clear();
 	}
 
 	public int getTokenLength() {
-		return tokenLength;
+		return fLength;
 	}
 
 	public int getTokenOffset() {
-		return tokenOffset;
+		return fOffset;
 	}
 
 	public IToken nextToken() {
-		if (!queue.isEmpty()) {
-			QueuedToken token = queue.remove(0);
-			tokenOffset = token.getOffset();
-			tokenLength = token.getLength();
-			return token.getToken();
+		if (!fQueue.isEmpty()) {
+			return popTokenOffQueue();
 		}
-		tokenOffset = getOffset();
-		tokenLength = 0;
+		fOffset = getOffset();
+		fLength = 0;
 		IToken returnValue = new Token(null);
 		boolean isEOF = false;
 		try {
 			isEOF = !lexer.advance();
 			if (isEOF) {
 				returnValue = Token.EOF;
+			} else {
+				int lexerToken = lexer.token();
+				if (lexerToken == Tokens.tSTRING_DVAR) { // we hit a single dynamic variable
+					addPoundToken();
+					scanDynamicVariable();
+					setLexerPastDynamicSectionOfString();
+					return popTokenOffQueue();
+				} else if (lexerToken == Tokens.tSTRING_DBEG) { // if we hit dynamic code inside a string
+					addPoundBraceToken();
+					scanTokensInsideDynamicPortion();			
+					addClosingBraceToken();
+					setLexerPastDynamicSectionOfString();
+					return popTokenOffQueue();
+				}
+				returnValue = getToken(lexerToken);				
 			}
 			List comments = result.getCommentNodes();
 			if (comments != null && !comments.isEmpty()) {
-				CommentNode comment;
-				boolean firstComment = true;
-				int endOffset = 0;
-				boolean multiline = false;
-				while (!comments.isEmpty()) {
-					comment = (CommentNode) comments.remove(0);
-					if (firstComment) {
-						String src = ASTUtil.getSource(contents, comment);
-						if (src != null && src.startsWith("=begin")) multiline = true;
-						firstComment = false;
-					    tokenOffset = origOffset + comment.getPosition().getStartOffset(); // correct start offset, since when a line with nothing but spaces on it appears before comment, we get messed up positions
-					}
-					endOffset = origOffset + comment.getPosition().getEndOffset();					
-				}
-				tokenLength = endOffset - tokenOffset;
-				int queuedOffset = tokenOffset + tokenLength;
-				int queuedLength = 0;
-				if (!isEOF) {
-					queuedLength = getOffset() - queuedOffset;
-				} else {
-					queuedOffset--;
-				}
-				// Throw saved token onto queue
-				queue.add(new QueuedToken(returnValue, queuedOffset, queuedLength));
-				String contentType = RUBY_SINGLE_LINE_COMMENT;
-				if (multiline) contentType = RUBY_MULTI_LINE_COMMENT;
-				return new Token(contentType);
+				parseOutComments(comments);
+				addQueuedToken(returnValue, isEOF); // Queue the normal token we just ate up
+				comments.clear();
+				return popTokenOffQueue();
 			}
 		} catch (SyntaxException se) {
+			if (se.getMessage().equals("embedded document meets end of file")) {
+				// TODO recover somehow by removing this chunk out of the fContents?
+				setOffset(se.getPosition().getStartOffset());
+				fLength = fContents.length() - se.getPosition().getStartOffset();
+				return new Token(RUBY_MULTI_LINE_COMMENT);
+			}
+			
 			if (lexerSource.getOffset() - origLength == 0)
 				return Token.EOF; // return eof if we hit a problem found at
 									// end of parsing
 			else
-				tokenLength = getOffset() - tokenOffset;
-			return new Token(null);
+				fLength = getOffset() - fOffset;
+			return new Token(RUBY_DEFAULT);
 		} catch (IOException e) {
 			RubyPlugin.log(e);
 		}
 		if (!isEOF)
-			tokenLength = getOffset() - tokenOffset;
+			fLength = getOffset() - fOffset;
 		return returnValue;
+	}
+
+	private void setOffset(int offset) {
+//		Assert.isTrue(offset > fOffset);
+		fOffset = offset;
+	}
+
+	private void addPoundToken() {
+		addStringToken(1);// add token for the #
+	}
+
+	private void scanDynamicVariable() {
+		int whitespace = fContents.indexOf(' ', fOffset - origOffset); // read until whitespace or '"'
+		if (whitespace == -1) whitespace = Integer.MAX_VALUE;
+		int doubleQuote = fContents.indexOf('"', fOffset - origOffset);
+		if (doubleQuote == -1) doubleQuote = Integer.MAX_VALUE;
+		int end = Math.min(whitespace, doubleQuote);
+		// FIXME If we can't find whitespace or doubleQuote, we are pretty screwed.
+		String possible = null;
+		if (end == -1) {
+			possible = fContents.substring(fOffset - origOffset);
+		} else {
+			possible = fContents.substring(fOffset - origOffset, end);
+		}
+		RubyPartitionScanner scanner = new RubyPartitionScanner();
+		IDocument document = new Document(possible);
+		scanner.setRange(document, 0, possible.length());
+		IToken token;
+		while (!(token = scanner.nextToken()).isEOF()) {
+			push(new QueuedToken(token, scanner.getTokenOffset() + (fOffset), scanner.getTokenLength()));
+		}
+		setOffset(fOffset + possible.length());
+	}
+
+	private void scanTokensInsideDynamicPortion() {
+		String possible = new String(fContents.substring(fOffset - origOffset));			
+		int end = possible.indexOf('}');// TODO Find the end brace '}' in a proper way!
+		if (end != -1) {
+			possible = possible.substring(0, end); 
+		} else {
+			possible = possible.substring(0);
+		}
+		RubyPartitionScanner scanner = new RubyPartitionScanner();
+		IDocument document = new Document(possible);
+		scanner.setRange(document, 0, possible.length());
+		IToken token;
+		while (!(token = scanner.nextToken()).isEOF()) {
+			push(new QueuedToken(token, scanner.getTokenOffset() + fOffset, scanner.getTokenLength()));
+		}
+		setOffset(fOffset + possible.length());
+	}
+
+	private void addPoundBraceToken() {
+		addStringToken(2); // add token for the #{
+	}
+	
+	private void addStringToken(int length) {
+		push(new QueuedToken(new Token(RUBY_STRING), fOffset, length));
+		setOffset(fOffset + length); // move past token
+	}
+
+	private void addClosingBraceToken() {
+		addStringToken(1);
+	}
+
+	private void setLexerPastDynamicSectionOfString() throws IOException {
+		IDocument document;
+		StringBuffer fakeContents = new StringBuffer();
+		int start = fOffset - 1;
+		for (int i = 0; i < start; i++) {
+			fakeContents.append(" ");
+		}
+		fakeContents.append('"');
+		if ((fOffset - origOffset) < origLength) {
+			fakeContents.append(new String(fContents.substring((fOffset - origOffset)))); // BLAH removed + 1 from end here
+		}
+		document = new Document(fakeContents.toString());
+		List<QueuedToken> queueCopy = new ArrayList<QueuedToken>(fQueue);
+		setPartialRange(document, start, fakeContents.length() - start, null, start);
+		fQueue = new ArrayList<QueuedToken>(queueCopy);
+		lexer.advance();
+	}
+
+	private void parseOutComments(List comments) {
+		int i = 0;
+		for (Iterator iter = comments.iterator(); iter.hasNext();) {
+			CommentNode comment = (CommentNode) iter.next();
+			int offset = correctOffset(comment);
+			int length = comment.getContent().length();
+			Token token = new Token(getContentType(comment));
+			push(new QueuedToken(token, offset, length));
+			i++;
+		}
+	}
+
+	private IToken popTokenOffQueue() {
+		QueuedToken token = fQueue.remove(0);
+		setOffset(token.getOffset());
+		Assert.isTrue(token.getLength() >= 0);
+		fLength = token.getLength();
+		return token.getToken();
+	}
+
+	private IToken getToken(int i) {
+		// If we hit a 32 (space) inside a qword, just return string content type (not default)
+		// FIXME IF we're in qwords, we should inspect the contents because it may be a variable
+		if (i == 32) {
+			return new Token(fContentType);
+		}
+		switch (i) {
+		case Tokens.tSTRING_CONTENT:
+			return new Token(RUBY_STRING);
+		case Tokens.tSTRING_BEG:
+			return new Token(RUBY_STRING);
+		case Tokens.tQWORDS_BEG:
+			fContentType = RUBY_STRING;
+			return new Token(RUBY_STRING);
+		case Tokens.tSTRING_END:
+			fContentType = RUBY_DEFAULT;
+			return new Token(RUBY_STRING);
+		case Tokens.tREGEXP_BEG:
+			return new Token(RUBY_REGULAR_EXPRESSION);
+		case Tokens.tREGEXP_END:
+			return new Token(RUBY_REGULAR_EXPRESSION);
+		default:
+			return new Token(RUBY_DEFAULT);
+		}
+	}
+
+	/**
+	 * Grabs the end of the comment
+	 * @param comments
+	 * @return
+	 */
+	private int getEndOfComment(CommentNode comment) {
+		return origOffset + comment.getPosition().getEndOffset();
+	}
+
+	/**
+	 * correct start offset, since when a line with nothing but spaces on it appears before comment, 
+	 * we get messed up positions
+	 */
+	private int correctOffset(CommentNode comment) {
+		return origOffset + comment.getPosition().getStartOffset();
+	}
+
+	private boolean isCommentMultiLine(CommentNode comment) {
+		String src = ASTUtil.getSource(fContents, comment);
+		if (src != null && src.startsWith(BEGIN)) return true;
+		return false;
+	}
+
+	private String getContentType(CommentNode comment) {
+		if (isCommentMultiLine(comment)) return RUBY_MULTI_LINE_COMMENT;
+		return RUBY_SINGLE_LINE_COMMENT;
+	}
+
+	private void addQueuedToken(IToken returnValue, boolean isEOF) {
+		// grab end of last comment (last thing in queue)
+		QueuedToken token = peek();
+		setOffset(token.getOffset() + token.getLength());
+		int length = getOffset() - fOffset;
+		if (length < 0 ) {
+			length = 0;
+		}
+		push(new QueuedToken(returnValue, fOffset, length));
+	}
+	
+	private QueuedToken peek() {
+		return fQueue.get(fQueue.size() - 1);
+	}
+
+	private void push(QueuedToken token) {
+		Assert.isTrue(token.getLength() >= 0);
+		fQueue.add(token);
 	}
 
 	private int getOffset() {
@@ -174,7 +362,7 @@ public class RubyPartitionScanner implements IPartitionTokenScanner {
 	}
 
 	public void setRange(IDocument document, int offset, int length) {
-		setPartialRange(document, offset, length, null, 0);
+		setPartialRange(document, offset, length, null, -1);
 	}
 
 }

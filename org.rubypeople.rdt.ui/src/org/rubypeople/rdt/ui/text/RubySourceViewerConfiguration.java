@@ -64,6 +64,7 @@ import org.rubypeople.rdt.internal.ui.text.ruby.RubyCompletionProcessor;
 import org.rubypeople.rdt.internal.ui.text.ruby.RubyFormattingStrategy;
 import org.rubypeople.rdt.internal.ui.text.ruby.RubyReconcilingStrategy;
 import org.rubypeople.rdt.internal.ui.text.ruby.RubyTokenScanner;
+import org.rubypeople.rdt.internal.ui.text.ruby.SingleTokenRubyScanner;
 import org.rubypeople.rdt.internal.ui.text.ruby.hover.RubyEditorTextHoverDescriptor;
 import org.rubypeople.rdt.internal.ui.text.ruby.hover.RubyEditorTextHoverProxy;
 import org.rubypeople.rdt.internal.ui.text.ruby.hover.RubyInformationProvider;
@@ -89,7 +90,7 @@ public class RubySourceViewerConfiguration extends TextSourceViewerConfiguration
 
 	protected AbstractRubyTokenScanner fCodeScanner;
 
-	protected AbstractRubyScanner fMultilineCommentScanner, fSinglelineCommentScanner;
+	protected AbstractRubyScanner fMultilineCommentScanner, fSinglelineCommentScanner, fStringScanner;
 	private RubyDoubleClickSelector fRubyDoubleClickSelector;
 	private RubyCompletionProcessor fRubyCp;
 
@@ -167,7 +168,8 @@ public class RubySourceViewerConfiguration extends TextSourceViewerConfiguration
 	 * @since 0.8.0
 	 */
 	public boolean affectsTextPresentation(PropertyChangeEvent event) {
-		return fCodeScanner.affectsBehavior(event) || fMultilineCommentScanner.affectsBehavior(event) || fSinglelineCommentScanner.affectsBehavior(event);
+		return fCodeScanner.affectsBehavior(event) || fMultilineCommentScanner.affectsBehavior(event) 
+		|| fSinglelineCommentScanner.affectsBehavior(event)	|| fStringScanner.affectsBehavior(event);
 	}
 
 	/**
@@ -192,6 +194,8 @@ public class RubySourceViewerConfiguration extends TextSourceViewerConfiguration
 			fMultilineCommentScanner.adaptToPreferenceChange(event);
 		if (fSinglelineCommentScanner.affectsBehavior(event))
 			fSinglelineCommentScanner.adaptToPreferenceChange(event);
+		if (fStringScanner.affectsBehavior(event))
+			fStringScanner.adaptToPreferenceChange(event);
 	}
 
 	/**
@@ -204,6 +208,7 @@ public class RubySourceViewerConfiguration extends TextSourceViewerConfiguration
 		fCodeScanner = new RubyTokenScanner(getColorManager(), fPreferenceStore);
 		fMultilineCommentScanner = new RubyCommentScanner(getColorManager(), fPreferenceStore, IRubyColorConstants.RUBY_MULTI_LINE_COMMENT);
 		fSinglelineCommentScanner = new RubyCommentScanner(getColorManager(), fPreferenceStore, IRubyColorConstants.RUBY_SINGLE_LINE_COMMENT);
+		fStringScanner = new SingleTokenRubyScanner(getColorManager(), fPreferenceStore, IRubyColorConstants.RUBY_STRING);
 	}
 
 	/**
@@ -240,6 +245,10 @@ public class RubySourceViewerConfiguration extends TextSourceViewerConfiguration
 		dr = new DefaultDamagerRepairer(getSinglelineCommentScanner());
 		reconciler.setDamager(dr, RubyPartitionScanner.RUBY_SINGLE_LINE_COMMENT);
 		reconciler.setRepairer(dr, RubyPartitionScanner.RUBY_SINGLE_LINE_COMMENT);
+		
+		dr = new DefaultDamagerRepairer(getStringScanner());
+		reconciler.setDamager(dr, RubyPartitionScanner.RUBY_STRING);
+		reconciler.setRepairer(dr, RubyPartitionScanner.RUBY_STRING);
 		return reconciler;
 	}
 
@@ -254,9 +263,13 @@ public class RubySourceViewerConfiguration extends TextSourceViewerConfiguration
 	protected ITokenScanner getSinglelineCommentScanner() {
 		return fSinglelineCommentScanner;
 	}
+	
+	protected ITokenScanner getStringScanner() {
+		return fStringScanner;
+	}
 
 	public String[] getConfiguredContentTypes(ISourceViewer sourceViewer) {
-		return new String[] { IDocument.DEFAULT_CONTENT_TYPE, RubyPartitionScanner.RUBY_MULTI_LINE_COMMENT, RubyPartitionScanner.RUBY_SINGLE_LINE_COMMENT };
+		return new String[] { IDocument.DEFAULT_CONTENT_TYPE, RubyPartitionScanner.RUBY_MULTI_LINE_COMMENT, RubyPartitionScanner.RUBY_SINGLE_LINE_COMMENT, RubyPartitionScanner.RUBY_STRING };
 	}
 
 	/*

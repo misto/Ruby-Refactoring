@@ -33,7 +33,7 @@ public class RubyTokenScanner extends AbstractRubyTokenScanner {
 
 	private static String[] fgTokenProperties = { IRubyColorConstants.RUBY_KEYWORD, IRubyColorConstants.RUBY_DEFAULT, 
 		IRubyColorConstants.RUBY_FIXNUM, IRubyColorConstants.RUBY_CHARACTER, IRubyColorConstants.RUBY_SYMBOL, 
-		IRubyColorConstants.RUBY_INSTANCE_VARIABLE, IRubyColorConstants.RUBY_GLOBAL, IRubyColorConstants.RUBY_STRING, 
+		IRubyColorConstants.RUBY_INSTANCE_VARIABLE, IRubyColorConstants.RUBY_GLOBAL, 
 		IRubyColorConstants.RUBY_REGEXP, IRubyColorConstants.RUBY_ERROR
 	// TODO Add Ability to set colors for return and operators
 	// IRubyColorConstants.RUBY_METHOD_NAME,
@@ -47,7 +47,6 @@ public class RubyTokenScanner extends AbstractRubyTokenScanner {
 	private int tokenLength;
 	private int oldOffset;
 	private boolean isInRegexp;
-	private boolean isInString;
 	private boolean isInSymbol;
 	private boolean inAlias;
 	private RubyParserResult result;
@@ -81,7 +80,7 @@ public class RubyTokenScanner extends AbstractRubyTokenScanner {
 		IToken returnValue = getToken(IRubyColorConstants.RUBY_DEFAULT);
 		boolean isEOF = false;
 		try {
-			isEOF = !lexer.advance();
+			isEOF = !lexer.advance(); // FIXME if we're assigning a string to a variable we may get a NumberformatException here!
 			if (isEOF) {
 				returnValue = Token.EOF;
 			} else {
@@ -90,10 +89,12 @@ public class RubyTokenScanner extends AbstractRubyTokenScanner {
 		} catch (SyntaxException se) {
 			if (lexerSource.getOffset() - origLength == 0)
 				return Token.EOF; // return eof if we hit a problem found at
-									// end of parsing
-			else
-				tokenLength = getOffset() - oldOffset;
+									// end of parsing			
+			tokenLength = getOffset() - oldOffset;
 			return getToken(IRubyColorConstants.RUBY_ERROR);
+		} catch (NumberFormatException nfe) {
+			tokenLength = getOffset() - oldOffset;
+			return returnValue;
 		} catch (IOException e) {
 			RubyPlugin.log(e);
 		}
@@ -111,8 +112,6 @@ public class RubyTokenScanner extends AbstractRubyTokenScanner {
 			return super.getToken(IRubyColorConstants.RUBY_SYMBOL);
 		if (isInRegexp)
 			return super.getToken(IRubyColorConstants.RUBY_REGEXP);
-		if (isInString)
-			return super.getToken(IRubyColorConstants.RUBY_STRING);
 		return super.getToken(key);
 	}
 
@@ -152,14 +151,6 @@ public class RubyTokenScanner extends AbstractRubyTokenScanner {
 			if ((((oldOffset - origOffset) + 1) < contents.length()) && (contents.charAt((oldOffset - origOffset) + 1) == '?'))
 				return doGetToken(IRubyColorConstants.RUBY_CHARACTER);
 			return doGetToken(IRubyColorConstants.RUBY_FIXNUM);
-		case Tokens.tSTRING_CONTENT:
-			return doGetToken(IRubyColorConstants.RUBY_STRING);
-		case Tokens.tSTRING_BEG:
-			isInString = true;
-			return doGetToken(IRubyColorConstants.RUBY_STRING);
-		case Tokens.tSTRING_END:
-			isInString = false;
-			return doGetToken(IRubyColorConstants.RUBY_STRING);
 		case Tokens.tREGEXP_BEG:
 			isInRegexp = true;
 			return doGetToken(IRubyColorConstants.RUBY_REGEXP);
@@ -228,7 +219,6 @@ public class RubyTokenScanner extends AbstractRubyTokenScanner {
 		isInSymbol = false;
 		if (offset == 0) {
 			isInRegexp = false;
-			isInString = false;
 		}
 		try {
 			contents = document.get(offset, length);

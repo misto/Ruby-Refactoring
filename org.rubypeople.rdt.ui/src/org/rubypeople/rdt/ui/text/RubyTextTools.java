@@ -11,11 +11,11 @@ import org.eclipse.jface.text.IDocumentExtension3;
 import org.eclipse.jface.text.IDocumentPartitioner;
 import org.eclipse.jface.text.rules.DefaultPartitioner;
 import org.eclipse.jface.text.rules.IPartitionTokenScanner;
-import org.eclipse.jface.text.rules.ITokenScanner;
 import org.eclipse.jface.util.IPropertyChangeListener;
 import org.eclipse.jface.util.PropertyChangeEvent;
 import org.rubypeople.rdt.internal.ui.RubyPlugin;
 import org.rubypeople.rdt.internal.ui.rubyeditor.RubyEditorPreferences;
+import org.rubypeople.rdt.internal.ui.text.MergingPartitionScanner;
 import org.rubypeople.rdt.internal.ui.text.IRubyColorConstants;
 import org.rubypeople.rdt.internal.ui.text.RubyColorManager;
 import org.rubypeople.rdt.internal.ui.text.RubyCommentScanner;
@@ -23,6 +23,7 @@ import org.rubypeople.rdt.internal.ui.text.RubyPartitionScanner;
 import org.rubypeople.rdt.internal.ui.text.ruby.AbstractRubyScanner;
 import org.rubypeople.rdt.internal.ui.text.ruby.AbstractRubyTokenScanner;
 import org.rubypeople.rdt.internal.ui.text.ruby.RubyTokenScanner;
+import org.rubypeople.rdt.internal.ui.text.ruby.SingleTokenRubyScanner;
 
 public class RubyTextTools {
 
@@ -44,9 +45,9 @@ public class RubyTextTools {
 
     protected static String[] keywords;
     protected RubyColorManager fColorManager;
-    protected RubyPartitionScanner partitionScanner;
+    protected IPartitionTokenScanner partitionScanner;
     protected AbstractRubyTokenScanner fCodeScanner;
-    protected AbstractRubyScanner fMultilineCommentScanner, fSinglelineCommentScanner;
+    protected AbstractRubyScanner fMultilineCommentScanner, fSinglelineCommentScanner, FStringScanner;
     private IPreferenceStore fPreferenceStore;
     private Preferences fCorePreferenceStore;
     /** The preference change listener */
@@ -103,13 +104,15 @@ public class RubyTextTools {
         super();
 
         fColorManager = new RubyColorManager(autoDisposeOnDisplayDispose);
-        partitionScanner = new RubyPartitionScanner();
+        partitionScanner = new MergingPartitionScanner();
 
         fCodeScanner = new RubyTokenScanner(fColorManager, store);
         fMultilineCommentScanner = new RubyCommentScanner(fColorManager, store, coreStore,
                 IRubyColorConstants.RUBY_MULTI_LINE_COMMENT);
         fSinglelineCommentScanner = new RubyCommentScanner(fColorManager, store, coreStore,
                 IRubyColorConstants.RUBY_SINGLE_LINE_COMMENT);
+        FStringScanner = new SingleTokenRubyScanner(fColorManager, store,
+                IRubyColorConstants.RUBY_STRING);
 
         fPreferenceStore = store;
         fPreferenceStore.addPropertyChangeListener(fPreferenceListener);
@@ -133,7 +136,9 @@ public class RubyTextTools {
         if (fMultilineCommentScanner.affectsBehavior(event))
             fMultilineCommentScanner.adaptToPreferenceChange(event);
         if (fSinglelineCommentScanner.affectsBehavior(event))
-            fSinglelineCommentScanner.adaptToPreferenceChange(event);        
+            fSinglelineCommentScanner.adaptToPreferenceChange(event);
+        if (FStringScanner.affectsBehavior(event))
+        	FStringScanner.adaptToPreferenceChange(event);   
     }
 
     public IDocumentPartitioner createDocumentPartitioner() {
@@ -143,30 +148,6 @@ public class RubyTextTools {
 
     protected IPartitionTokenScanner getPartitionScanner() {
         return partitionScanner;
-    }
-
-    /**
-     * @deprecated As of 0.8.0, replaced by
-     *             {@link RubySourceViewerConfiguration#getCodeScanner()}
-     */
-    public AbstractRubyTokenScanner getCodeScanner() {
-        return fCodeScanner;
-    }
-
-    /**
-     * @deprecated As of 0.8.0, replaced by
-     *             {@link RubySourceViewerConfiguration#getMultilineCommentScanner()}
-     */
-    public ITokenScanner getMultilineCommentScanner() {
-        return fMultilineCommentScanner;
-    }
-
-    /**
-     * @deprecated As of 0.8.0, replaced by
-     *             {@link RubySourceViewerConfiguration#getSingleineCommentScanner()}
-     */
-    public ITokenScanner getSinglelineCommentScanner() {
-        return fSinglelineCommentScanner;
     }
 
     public IPreferenceStore getPreferenceStore() {
@@ -192,7 +173,8 @@ public class RubyTextTools {
     public boolean affectsTextPresentation(PropertyChangeEvent event) {
         return fCodeScanner.affectsBehavior(event)
                 || fMultilineCommentScanner.affectsBehavior(event)
-                || fSinglelineCommentScanner.affectsBehavior(event);
+                || fSinglelineCommentScanner.affectsBehavior(event)
+                || FStringScanner.affectsBehavior(event);
     }
 
     /**

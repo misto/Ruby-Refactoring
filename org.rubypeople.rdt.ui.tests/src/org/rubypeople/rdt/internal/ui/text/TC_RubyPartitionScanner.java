@@ -108,4 +108,73 @@ public class TC_RubyPartitionScanner extends TestCase {
 		assertEquals(RubyPartitionScanner.RUBY_MULTI_LINE_COMMENT, this.getContentType(source, 10));
 		assertEquals(RubyPartitionScanner.RUBY_SINGLE_LINE_COMMENT, this.getContentType(source, source.length() - 5));
 	}
+	
+	public void testMultipleCommentsInARow() {
+		String code = "# comment 1\n# comment 2\nclass Chris\nend\n";
+		
+		assertEquals(RubyPartitionScanner.RUBY_SINGLE_LINE_COMMENT, this.getContentType(code, 6));
+		assertEquals(RubyPartitionScanner.RUBY_SINGLE_LINE_COMMENT, this.getContentType(code, 17));
+		assertEquals(IDocument.DEFAULT_CONTENT_TYPE, this.getContentType(code, 26));
+		assertEquals(IDocument.DEFAULT_CONTENT_TYPE, this.getContentType(code, 29));
+	}
+	
+	public void testCommentAfterEnd() {
+		String code = "class Chris\nend # comment\n";
+		assertEquals(IDocument.DEFAULT_CONTENT_TYPE, this.getContentType(code, 12));
+		assertEquals(RubyPartitionScanner.RUBY_SINGLE_LINE_COMMENT, this.getContentType(code, 17));
+	}
+	
+	public void testCommentAfterEndWhileEditing() {
+		String code = "=begin\r\n" +
+"c\r\n" +
+"=end\r\n" +
+"#hmm\r\n" +
+"#comment here why is ths\r\n" +
+"class Chris\r\n" +
+"  def thing\r\n" +
+"  end  #ocmm \r\n" +
+"end";
+		assertEquals(IDocument.DEFAULT_CONTENT_TYPE, this.getContentType(code, 76));
+		assertEquals(RubyPartitionScanner.RUBY_SINGLE_LINE_COMMENT, this.getContentType(code, 83));
+	}
+
+	public void testCommentAtEndOfLineWithStringAtBeginning() {
+		String code = "hash = {\n" +
+				"  \"string\" => { # comment\n" +
+				"    123\n" +
+				"  }\n" +
+				"}";
+		assertEquals(IDocument.DEFAULT_CONTENT_TYPE, this.getContentType(code, 0));
+		assertEquals(IDocument.DEFAULT_CONTENT_TYPE, this.getContentType(code, 4));
+		assertEquals(IDocument.DEFAULT_CONTENT_TYPE, this.getContentType(code, 6));
+		
+		assertEquals(RubyPartitionScanner.RUBY_STRING, this.getContentType(code, 8));
+		assertEquals(RubyPartitionScanner.RUBY_STRING, this.getContentType(code, 12));
+		assertEquals(RubyPartitionScanner.RUBY_STRING, this.getContentType(code, 18));
+		
+		assertEquals(IDocument.DEFAULT_CONTENT_TYPE, this.getContentType(code, 19));
+		assertEquals(IDocument.DEFAULT_CONTENT_TYPE, this.getContentType(code, 22));
+		
+		assertEquals(RubyPartitionScanner.RUBY_SINGLE_LINE_COMMENT, this.getContentType(code, 25));
+	}
+	
+	public void testLinesWithJustSpaceBeforeComment() {
+		String code = "  \n" +
+				"  # comment\n" +
+				"  def method\n" +
+				"    \n" +
+				"  end";
+		assertEquals(RubyPartitionScanner.RUBY_SINGLE_LINE_COMMENT, this.getContentType(code, 5));
+		assertEquals(IDocument.DEFAULT_CONTENT_TYPE, this.getContentType(code, 14));
+		assertEquals(IDocument.DEFAULT_CONTENT_TYPE, this.getContentType(code, 20));
+	}
+	
+	public void testCommentsWithAlotOfPrecedingSpaces() {
+		String code = "                # We \n" +
+				"                # caller-requested until.\n" +
+				"return self\n";
+		assertEquals(RubyPartitionScanner.RUBY_SINGLE_LINE_COMMENT, this.getContentType(code, 16));
+		assertEquals(IDocument.DEFAULT_CONTENT_TYPE, this.getContentType(code, 63));
+		assertEquals(IDocument.DEFAULT_CONTENT_TYPE, this.getContentType(code, 70));		
+	}
 }

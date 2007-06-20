@@ -44,74 +44,6 @@ public class TC_RubyTokenScanner extends TestCase {
 		assertToken(IRubyColorConstants.RUBY_KEYWORD, 12, 3);
 	}
 	
-	public void testMultipleCommentsInARow() {
-		String code = "# comment one\n#comment two\nclass Chris\nend\n";
-		setUpScanner(code);
-		assertToken(IRubyColorConstants.RUBY_SINGLE_LINE_COMMENT, 0, 26);
-		assertToken(IRubyColorConstants.RUBY_KEYWORD, 26, 6); // '\nclass'
-		assertToken(IRubyColorConstants.RUBY_DEFAULT, 32, 6); // ' Chris'
-		assertToken(IRubyColorConstants.RUBY_DEFAULT, 38, 1); // '\n'
-		assertToken(IRubyColorConstants.RUBY_KEYWORD, 39, 3); // 'end'		
-	}
-	
-	public void testCommentAfterEnd() {
-		String code = "class Chris\nend # comment\n";
-		setUpScanner(code);
-		assertToken(IRubyColorConstants.RUBY_KEYWORD, 0, 5); // 'class'
-		assertToken(IRubyColorConstants.RUBY_DEFAULT, 5, 6); // ' Chris'
-		assertToken(IRubyColorConstants.RUBY_DEFAULT, 11, 1); // '\n'
-		assertToken(IRubyColorConstants.RUBY_KEYWORD, 12, 3); // 'end'
-		assertToken(IRubyColorConstants.RUBY_SINGLE_LINE_COMMENT, 16, 9); // '# comment'
-	}
-	
-	public void testCommentAfterEndWhileEditing() {
-		String code = "=begin\r\n" +
-"c\r\n" +
-"=end\r\n" +
-"#hmm\r\n" +
-"#comment here why is ths\r\n" +
-"class Chris\r\n" +
-"  def thing\r\n" +
-"  end  #ocmm \r\n" +
-"end";
-		setUpScanner(code, 75, 14);
-		assertToken(IRubyColorConstants.RUBY_KEYWORD, 75, 5); // '  end'
-		assertToken(IRubyColorConstants.RUBY_SINGLE_LINE_COMMENT, 82, 5); // '#ocmm'
-	}
-
-	public void testCommentAtEndOfLineWithStringAtBeginning() {
-		String code = "hash = {\n" +
-				"  \"string\" => { # comment\n" +
-				"    123\n" +
-				"  }\n" +
-				"}";
-		setUpScanner(code);
-		assertToken(IRubyColorConstants.RUBY_DEFAULT, 0, 4); // 'hash'
-		assertToken(IRubyColorConstants.RUBY_DEFAULT, 4, 2);  // ' ='
-		assertToken(IRubyColorConstants.RUBY_DEFAULT, 6, 2);  // ' {'	
-		
-		assertToken(IRubyColorConstants.RUBY_STRING, 8, 4);  // whitespace
-		assertToken(IRubyColorConstants.RUBY_STRING, 12, 6);
-		assertToken(IRubyColorConstants.RUBY_STRING, 18, 1);
-		
-		assertToken(IRubyColorConstants.RUBY_DEFAULT, 19, 3);
-		assertToken(IRubyColorConstants.RUBY_DEFAULT, 22, 2);
-		
-		assertToken(IRubyColorConstants.RUBY_SINGLE_LINE_COMMENT, 25, 9);
-	}
-	
-	public void testLinesWithJustSpaceBeforeComment() {
-		String code = "  \n" +
-				"  # comment\n" +
-				"  def method\n" +
-				"    \n" +
-				"  end";
-		setUpScanner(code);
-		assertToken(IRubyColorConstants.RUBY_SINGLE_LINE_COMMENT, 5, 9); // '# comment'
-		assertToken(IRubyColorConstants.RUBY_KEYWORD, 14, 6);  // '\n  def'
-		assertToken(IRubyColorConstants.RUBY_DEFAULT, 20, 7);  // ' method'	
-	}
-	
 	public void testSymbolAtEndOfLine() {
 		String code = "  helper_method :logged_in?\n" +
 				"  def method\n" +
@@ -134,16 +66,6 @@ public class TC_RubyTokenScanner extends TestCase {
 		assertToken(IRubyColorConstants.RUBY_SYMBOL, 5, 1);  // ' :'
 		assertToken(IRubyColorConstants.RUBY_SYMBOL, 6, 5);  // 'begin'
 		assertToken(IRubyColorConstants.RUBY_DEFAULT, 11, 1);  // ']'	
-	}
-	
-	public void testCommentsWithAlotOfPrecedingSpaces() {
-		String code = "                # We \n" +
-				"                # caller-requested until.\n" +
-				"return self\n";
-		setUpScanner(code);
-		assertToken(IRubyColorConstants.RUBY_SINGLE_LINE_COMMENT, 16, 47);  //
-		assertToken(IRubyColorConstants.RUBY_KEYWORD, 63, 7);  // 'return'
-		assertToken(IRubyColorConstants.RUBY_KEYWORD, 70, 5);  // ' self'
 	}
 	
 	public void testSymbolInsideParentheses() {
