@@ -81,7 +81,7 @@ public class FTC_DebuggerLaunch extends TestCase {
 		IFile rubyFile = project.getFile("run.rb");
 		
 		rubyFile.create(new ByteArrayInputStream("puts 'a'\nputs 'b'".getBytes()), true, new NullProgressMonitor()) ;
-		wc.setAttribute(RubyLaunchConfigurationAttribute.PROJECT_NAME, rubyFile.getProject().getName());
+		wc.setAttribute(IRubyLaunchConfigurationConstants.ATTR_PROJECT_NAME, rubyFile.getProject().getName());
 		wc.setAttribute(IRubyLaunchConfigurationConstants.ATTR_FILE_NAME, rubyFile.getProjectRelativePath().toString());
 		//wc.setAttribute(RubyLaunchConfigurationAttribute.WORKING_DIRECTORY, RubyApplicationShortcut.getDefaultWorkingDirectory(rubyFile.getProject()));
 		wc.setAttribute(RubyLaunchConfigurationAttribute.SELECTED_INTERPRETER, RUBY_INTERPRETER_ID);
