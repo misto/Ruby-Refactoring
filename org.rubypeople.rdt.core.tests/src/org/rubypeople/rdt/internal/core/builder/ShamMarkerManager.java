@@ -11,11 +11,8 @@ import junit.framework.Assert;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
-import org.jruby.lexer.yacc.ISourcePosition;
 import org.jruby.lexer.yacc.SyntaxException;
-import org.rubypeople.eclipse.shams.resources.ShamFile;
 import org.rubypeople.rdt.core.compiler.IProblem;
-import org.rubypeople.rdt.internal.core.parser.RdtPosition;
 import org.rubypeople.rdt.internal.core.parser.TaskTag;
 import org.rubypeople.rdt.internal.core.util.ListUtil;
 
@@ -27,8 +24,7 @@ public class ShamMarkerManager implements IMarkerManager {
     private int lineArg;
     private int startOffsetArg;
     private int endOffsetArg;
-    private SyntaxException syntaxExceptionArg;
-    private List resourcesRemoved = new ArrayList();
+    private List<IResource> resourcesRemoved = new ArrayList<IResource>();
 
     public void removeProblemsAndTasksFor(IResource resource) {
         resourcesRemoved.add(resource);
@@ -45,7 +41,6 @@ public class ShamMarkerManager implements IMarkerManager {
     }
     public void createSyntaxError(IFile file, SyntaxException syntaxException) {
         fileArg = file;
-        syntaxExceptionArg = syntaxException;
     }
 
     public void createTasks(IFile file, List<TaskTag> tasks) throws CoreException {
