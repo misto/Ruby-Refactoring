@@ -273,7 +273,12 @@ public class DefaultRubyFoldingStructureProvider implements IProjectionListener,
             int end = fCachedDocument.getLineOfOffset(region.getOffset() + region.getLength());
             if (start != end) {
                 int offset = fCachedDocument.getLineOffset(start);
-                int endOffset = fCachedDocument.getLineOffset(end + 1);
+                int endOffset = -1;
+                if ((end + 1) == fCachedDocument.getNumberOfLines()) {                	
+                	endOffset = fCachedDocument.getLength();
+                } else {
+                	endOffset = fCachedDocument.getLineOffset(end + 1);
+                }
                 return new Position(offset, endOffset - offset);
             }
         } catch (BadLocationException x) {
