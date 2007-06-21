@@ -92,6 +92,7 @@ public class SourceElementParser extends InOrderVisitor { // TODO Rename to Sour
 	private boolean inSingletonClass;
 	public ISourceElementRequestor requestor;
 	private boolean inModuleFunction;
+	private char[] source;
 
 	/**
 	 * 
@@ -529,6 +530,7 @@ public class SourceElementParser extends InOrderVisitor { // TODO Rename to Sour
 
 	public void parse(char[] source, char[] name) {
 		RubyParser p = new RubyParser();
+		this.source = source;
 		Node ast = p.parse(new String(source));
 		acceptNode(ast);		
 	}

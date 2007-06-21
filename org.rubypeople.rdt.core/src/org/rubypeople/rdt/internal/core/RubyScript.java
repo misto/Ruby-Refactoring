@@ -39,6 +39,7 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Path;
 import org.jruby.ast.Node;
 import org.jruby.ast.RootNode;
+import org.jruby.evaluator.Instruction;
 import org.jruby.lexer.yacc.SyntaxException;
 import org.rubypeople.rdt.core.CompletionRequestor;
 import org.rubypeople.rdt.core.IBuffer;
@@ -133,12 +134,17 @@ public class RubyScript extends Openable implements IRubyScript {
 
 		Node ast = null;
 		try {
-			RubyParser parser = new RubyParser();
-			ast = parser.parse((IFile) getResource(), new CharArrayReader(contents));
-			lastGoodAST = ast;
 			ISourceElementRequestor requestor = new RubyScriptStructureBuilder(this, unitInfo, newElements);
-			SourceElementParser sp = new SourceElementParser(requestor);
-			if (ast != null) ast.accept(sp);
+			SourceElementParser sp = new SourceElementParser(requestor){
+			
+				@Override
+				public Instruction visitRootNode(RootNode iVisited) {
+					lastGoodAST = iVisited;
+					return super.visitRootNode(iVisited);
+				}			
+			};			
+			sp.parse(contents, null);
+			ast = lastGoodAST;
 			unitInfo.setIsStructureKnown(true);
 		} catch (SyntaxException e) {
 			unitInfo.setIsStructureKnown(false);
