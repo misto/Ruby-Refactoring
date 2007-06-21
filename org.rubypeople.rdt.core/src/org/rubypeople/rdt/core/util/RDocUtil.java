@@ -7,6 +7,8 @@ import java.util.Collection;
 
 import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.core.runtime.Path;
+import org.eclipse.jface.text.IRegion;
+import org.eclipse.jface.text.Region;
 import org.jruby.Ruby;
 import org.jruby.ast.CommentNode;
 import org.jruby.exceptions.RaiseException;
@@ -177,5 +179,42 @@ public class RDocUtil {
 			fgRdocScriptPath = file.getAbsolutePath();
 		}			
 		return fgRdocScriptPath;
+	}
+
+	public static IRegion getDocumentationRegion(IRubyElement element) {
+		IMember member = (IMember) element;
+		String src = "";
+		int elementOffset = -1;
+		try {
+			src = member.getRubyScript().getSource();
+			elementOffset = member.getSourceRange().getOffset();
+		} catch (RubyModelException e) {
+			return null;
+		}
+		RubyParser parser = new RubyParser();		
+		parser.parse(src); // parse so we can grab the comment nodes
+		Collection<CommentNode> comments = parser.getComments();		
+		if (member.isType(IRubyElement.TYPE) || member.isType(IRubyElement.METHOD)) {
+			return getPrecedingCommentRegion(comments, elementOffset, src);
+		}
+		return null;
+	}
+	
+	private static IRegion getPrecedingCommentRegion(Collection<CommentNode> comments, int elementStart, String src) {
+		for (CommentNode comment : comments) {
+			ISourcePosition pos = comment.getPosition();
+			if (pos.getEndOffset() > elementStart) continue;
+			String between = src.substring(pos.getEndOffset(), elementStart);
+			if (between.trim().length() > 0)
+				continue; // if there's anything but whitespace between (\n\r\t ), move to next comment			
+			IRegion preceding = getPrecedingCommentRegion(comments, pos.getStartOffset(), src);
+			if (preceding == null) {
+				preceding = new Region(pos.getStartOffset(), pos.getEndOffset() - pos.getStartOffset());
+			} else {
+				preceding = new Region(preceding.getOffset(), pos.getEndOffset() - preceding.getOffset());
+			}
+			return preceding;
+		}
+		return null;
 	}
 }

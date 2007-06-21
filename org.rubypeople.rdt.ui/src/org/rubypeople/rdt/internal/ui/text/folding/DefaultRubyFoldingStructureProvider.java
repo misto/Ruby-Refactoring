@@ -44,6 +44,7 @@ import org.rubypeople.rdt.core.ISourceReference;
 import org.rubypeople.rdt.core.IType;
 import org.rubypeople.rdt.core.RubyCore;
 import org.rubypeople.rdt.core.RubyModelException;
+import org.rubypeople.rdt.core.util.RDocUtil;
 import org.rubypeople.rdt.internal.ui.RubyPlugin;
 import org.rubypeople.rdt.internal.ui.rubyeditor.RubyAbstractEditor;
 import org.rubypeople.rdt.internal.ui.rubyeditor.RubyEditor;
@@ -246,7 +247,10 @@ public class DefaultRubyFoldingStructureProvider implements IProjectionListener,
                 List regions = new ArrayList();
                 int shift = range.getOffset();
                 int start = shift;
-
+                
+                IRegion region = RDocUtil.getDocumentationRegion(element);
+                if (region != null)
+                	regions.add(region);
                 regions.add(new Region(start, range.getOffset() + range.getLength() - start));
 
                 if (regions.size() > 0) {
