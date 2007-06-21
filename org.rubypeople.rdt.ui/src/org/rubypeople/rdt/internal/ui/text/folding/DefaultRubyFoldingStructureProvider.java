@@ -239,9 +239,9 @@ public class DefaultRubyFoldingStructureProvider implements IProjectionListener,
             if (element instanceof ISourceReference) {
                 ISourceReference reference = (ISourceReference) element;
                 ISourceRange range = reference.getSourceRange();
-                // TODO Uncomment when getSource is set up right!
-                // String contents = reference.getSource();
-                // if (contents == null) return null;
+                
+                String contents = reference.getSource();
+                if (contents == null) return null;
 
                 List regions = new ArrayList();
                 int shift = range.getOffset();

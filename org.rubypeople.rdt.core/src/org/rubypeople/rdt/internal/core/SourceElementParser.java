@@ -122,13 +122,12 @@ public class SourceElementParser extends InOrderVisitor { // TODO Rename to Sour
 		  typeInfo.superclass = superClass;
 		}
 		typeInfo.isModule = false;
-		typeInfo.modules = new String[0]; // FIXME Set up the modules as we go, or proactively dive into AST to grab these?
+		typeInfo.modules = new String[0];
 		typeInfo.secondary = false; // TODO Set secondary to true if we're enclosed by another type?
 		requestor.enterType(typeInfo);
 		
 		Instruction ins = super.visitClassNode(iVisited);
-		
-		requestor.exitType(iVisited.getPosition().getEndOffset() - 1);
+		requestor.exitType(iVisited.getBodyNode().getPosition().getEndOffset() + 3); //'end'.length()
 		return ins;
 	}
 	
@@ -154,7 +153,7 @@ public class SourceElementParser extends InOrderVisitor { // TODO Rename to Sour
 		
 		Instruction ins = super.visitModuleNode(iVisited);
 		
-		requestor.exitType(iVisited.getPosition().getEndOffset() - 1);
+		requestor.exitType(iVisited.getBodyNode().getPosition().getEndOffset() + 3); //'end'.length()
 		inModuleFunction = false;
 		return ins;
 	}
@@ -184,11 +183,11 @@ public class SourceElementParser extends InOrderVisitor { // TODO Rename to Sour
 		}
 
 		Instruction ins = super.visitDefnNode(iVisited); // now traverse it's body
-		
+		int end = iVisited.getPosition().getEndOffset() - 2;
 		if (methodInfo.isConstructor) {
-			requestor.exitConstructor(iVisited.getPosition().getEndOffset());
+			requestor.exitConstructor(end);
 		} else {
-			requestor.exitMethod(iVisited.getPosition().getEndOffset());
+			requestor.exitMethod(end);
 		}
 		return ins;
 	}
@@ -208,7 +207,7 @@ public class SourceElementParser extends InOrderVisitor { // TODO Rename to Sour
 
 		Instruction ins = super.visitDefsNode(iVisited); // now traverse it's body
 		
-		requestor.exitMethod(iVisited.getPosition().getEndOffset());
+		requestor.exitMethod(iVisited.getPosition().getEndOffset() - 2);
 		return ins;
 	}
 	
