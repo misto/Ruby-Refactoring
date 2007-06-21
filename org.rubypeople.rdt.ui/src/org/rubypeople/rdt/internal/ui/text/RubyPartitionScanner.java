@@ -243,7 +243,7 @@ public class RubyPartitionScanner implements IPartitionTokenScanner {
 	}
 	
 	private void addStringToken(int length) {
-		push(new QueuedToken(new Token(RUBY_STRING), fOffset, length));
+		push(new QueuedToken(new Token(fContentType), fOffset, length));
 		setOffset(fOffset + length); // move past token
 	}
 
@@ -258,7 +258,11 @@ public class RubyPartitionScanner implements IPartitionTokenScanner {
 		for (int i = 0; i < start; i++) {
 			fakeContents.append(" ");
 		}
-		fakeContents.append('"');
+		if (fContentType.equals(RUBY_REGULAR_EXPRESSION)) {
+			fakeContents.append('/');
+		} else {
+			fakeContents.append('"');
+		}
 		if ((fOffset - origOffset) < origLength) {
 			fakeContents.append(new String(fContents.substring((fOffset - origOffset)))); // BLAH removed + 1 from end here
 		}
@@ -297,12 +301,13 @@ public class RubyPartitionScanner implements IPartitionTokenScanner {
 		}
 		switch (i) {
 		case Tokens.tSTRING_CONTENT:
-			return new Token(RUBY_STRING);
+			return new Token(fContentType);
 		case Tokens.tSTRING_BEG:
-			String token = fContents.substring(fOffset, getOffset());
+			String token = fContents.substring(fOffset - origOffset, lexerSource.getOffset());
 			if (token.trim().equals("'")) {
 				inSingleQuote = true;
 			}
+			fContentType = RUBY_STRING;
 			return new Token(RUBY_STRING);
 		case Tokens.tQWORDS_BEG:
 			fContentType = RUBY_STRING;
@@ -312,8 +317,10 @@ public class RubyPartitionScanner implements IPartitionTokenScanner {
 			inSingleQuote = false;
 			return new Token(RUBY_STRING);
 		case Tokens.tREGEXP_BEG:
+			fContentType = RUBY_REGULAR_EXPRESSION;
 			return new Token(RUBY_REGULAR_EXPRESSION);
 		case Tokens.tREGEXP_END:
+			fContentType = RUBY_DEFAULT;
 			return new Token(RUBY_REGULAR_EXPRESSION);
 		default:
 			return new Token(RUBY_DEFAULT);

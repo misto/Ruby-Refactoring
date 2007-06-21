@@ -229,4 +229,20 @@ public class TC_RubyPartitionScanner extends TestCase {
 		assertEquals(RubyPartitionScanner.RUBY_STRING, this.getContentType(code, 42)); // 1'}' t		
 		assertEquals(RubyPartitionScanner.RUBY_STRING, this.getContentType(code, 44)); // 't'here
 	}	
+	
+	public void testRegex() {
+		String code = "regex = /hi there/";
+		assertEquals(RubyPartitionScanner.RUBY_DEFAULT, this.getContentType(code, 2)); // re'g'ex
+		assertEquals(RubyPartitionScanner.RUBY_REGULAR_EXPRESSION, this.getContentType(code, 9)); // '/'hi the
+		assertEquals(RubyPartitionScanner.RUBY_REGULAR_EXPRESSION, this.getContentType(code, 11)); // /h'i' the
+	}	
+	
+	public void testRegexWithDynamicCode() {
+		String code = "/\\.#{Regexp.escape(extension.to_s)}$/ # comment";
+		assertEquals(RubyPartitionScanner.RUBY_REGULAR_EXPRESSION, this.getContentType(code, 3));
+		assertEquals(RubyPartitionScanner.RUBY_SINGLE_LINE_COMMENT, this.getContentType(code, 38)); // '#' co
+		assertEquals(RubyPartitionScanner.RUBY_SINGLE_LINE_COMMENT, this.getContentType(code, 40)); // # 'c'ommen
+	}
+	
+	
 }
