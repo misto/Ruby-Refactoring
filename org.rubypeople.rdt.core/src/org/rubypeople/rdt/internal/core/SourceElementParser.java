@@ -127,7 +127,7 @@ public class SourceElementParser extends InOrderVisitor { // TODO Rename to Sour
 		requestor.enterType(typeInfo);
 		
 		Instruction ins = super.visitClassNode(iVisited);
-		requestor.exitType(iVisited.getBodyNode().getPosition().getEndOffset() + 3); //'end'.length()
+		requestor.exitType(iVisited.getPosition().getEndOffset() - 2);
 		return ins;
 	}
 	
@@ -153,7 +153,7 @@ public class SourceElementParser extends InOrderVisitor { // TODO Rename to Sour
 		
 		Instruction ins = super.visitModuleNode(iVisited);
 		
-		requestor.exitType(iVisited.getBodyNode().getPosition().getEndOffset() + 3); //'end'.length()
+		requestor.exitType(iVisited.getPosition().getEndOffset() - 2);
 		inModuleFunction = false;
 		return ins;
 	}
