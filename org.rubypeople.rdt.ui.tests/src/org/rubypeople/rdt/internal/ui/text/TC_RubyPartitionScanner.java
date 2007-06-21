@@ -40,8 +40,8 @@ public class TC_RubyPartitionScanner extends TestCase {
 	public void testRecognizeSpecialCase() {
 		String source = "a,b=?#,'This is not a comment!'\n";
 		
-		assertEquals(IDocument.DEFAULT_CONTENT_TYPE, this.getContentType(source, 5));
-		assertEquals(IDocument.DEFAULT_CONTENT_TYPE, this.getContentType(source, 6));
+		assertEquals(RubyPartitionScanner.RUBY_DEFAULT, this.getContentType(source, 5));
+		assertEquals(RubyPartitionScanner.RUBY_DEFAULT, this.getContentType(source, 6));
 	}	
 		
 	public void testMultilineComment() {
@@ -62,43 +62,43 @@ public class TC_RubyPartitionScanner extends TestCase {
 	public void testMultilineCommentNotOnFirstColumn() {
 		String source = " =begin\nComment\n=end";
 
-		assertEquals(IDocument.DEFAULT_CONTENT_TYPE, this.getContentType(source, 0));
-		assertEquals(IDocument.DEFAULT_CONTENT_TYPE, this.getContentType(source, 1));
-		assertEquals(IDocument.DEFAULT_CONTENT_TYPE, this.getContentType(source, 2));
-		assertEquals(IDocument.DEFAULT_CONTENT_TYPE, this.getContentType(source, 10));
+		assertEquals(RubyPartitionScanner.RUBY_DEFAULT, this.getContentType(source, 0));
+		assertEquals(RubyPartitionScanner.RUBY_DEFAULT, this.getContentType(source, 1));
+		assertEquals(RubyPartitionScanner.RUBY_DEFAULT, this.getContentType(source, 2));
+		assertEquals(RubyPartitionScanner.RUBY_DEFAULT, this.getContentType(source, 10));
 	}
 	
 	public void testRecognizeDivision() {
 		String source = "1/3 #This is a comment\n";
 		
-		assertEquals(IDocument.DEFAULT_CONTENT_TYPE, this.getContentType(source, 0));
-		assertEquals(IDocument.DEFAULT_CONTENT_TYPE, this.getContentType(source, 3));
+		assertEquals(RubyPartitionScanner.RUBY_DEFAULT, this.getContentType(source, 0));
+		assertEquals(RubyPartitionScanner.RUBY_DEFAULT, this.getContentType(source, 3));
 		assertEquals(RubyPartitionScanner.RUBY_SINGLE_LINE_COMMENT, this.getContentType(source, 5));
 	}	
 	
 	public void testRecognizeOddballCharacters() {
 		String source = "?\" #comment\n";
 		
-		assertEquals(IDocument.DEFAULT_CONTENT_TYPE, this.getContentType(source, 0));
-		assertEquals(IDocument.DEFAULT_CONTENT_TYPE, this.getContentType(source, 2));
+		assertEquals(RubyPartitionScanner.RUBY_DEFAULT, this.getContentType(source, 0));
+		assertEquals(RubyPartitionScanner.RUBY_DEFAULT, this.getContentType(source, 2));
 		assertEquals(RubyPartitionScanner.RUBY_SINGLE_LINE_COMMENT, this.getContentType(source, 5));
 		
 		source = "?' #comment\n";
 		
-		assertEquals(IDocument.DEFAULT_CONTENT_TYPE, this.getContentType(source, 0));
-		assertEquals(IDocument.DEFAULT_CONTENT_TYPE, this.getContentType(source, 2));
+		assertEquals(RubyPartitionScanner.RUBY_DEFAULT, this.getContentType(source, 0));
+		assertEquals(RubyPartitionScanner.RUBY_DEFAULT, this.getContentType(source, 2));
 		assertEquals(RubyPartitionScanner.RUBY_SINGLE_LINE_COMMENT, this.getContentType(source, 5));
 		
 		source = "?/ #comment\n";
 		
-		assertEquals(IDocument.DEFAULT_CONTENT_TYPE, this.getContentType(source, 0));
-		assertEquals(IDocument.DEFAULT_CONTENT_TYPE, this.getContentType(source, 2));
+		assertEquals(RubyPartitionScanner.RUBY_DEFAULT, this.getContentType(source, 0));
+		assertEquals(RubyPartitionScanner.RUBY_DEFAULT, this.getContentType(source, 2));
 		assertEquals(RubyPartitionScanner.RUBY_SINGLE_LINE_COMMENT, this.getContentType(source, 5));
 	}
 	
 	public void testPoundCharacterIsntAComment() {
 		String source = "?#";		
-		assertEquals(IDocument.DEFAULT_CONTENT_TYPE, this.getContentType(source, 1));
+		assertEquals(RubyPartitionScanner.RUBY_DEFAULT, this.getContentType(source, 1));
 	}
 	
 	public void testSinglelineCommentJustAfterMultilineComment() {
@@ -114,13 +114,13 @@ public class TC_RubyPartitionScanner extends TestCase {
 		
 		assertEquals(RubyPartitionScanner.RUBY_SINGLE_LINE_COMMENT, this.getContentType(code, 6));
 		assertEquals(RubyPartitionScanner.RUBY_SINGLE_LINE_COMMENT, this.getContentType(code, 17));
-		assertEquals(IDocument.DEFAULT_CONTENT_TYPE, this.getContentType(code, 26));
-		assertEquals(IDocument.DEFAULT_CONTENT_TYPE, this.getContentType(code, 29));
+		assertEquals(RubyPartitionScanner.RUBY_DEFAULT, this.getContentType(code, 26));
+		assertEquals(RubyPartitionScanner.RUBY_DEFAULT, this.getContentType(code, 29));
 	}
 	
 	public void testCommentAfterEnd() {
 		String code = "class Chris\nend # comment\n";
-		assertEquals(IDocument.DEFAULT_CONTENT_TYPE, this.getContentType(code, 12));
+		assertEquals(RubyPartitionScanner.RUBY_DEFAULT, this.getContentType(code, 12));
 		assertEquals(RubyPartitionScanner.RUBY_SINGLE_LINE_COMMENT, this.getContentType(code, 17));
 	}
 	
@@ -134,7 +134,7 @@ public class TC_RubyPartitionScanner extends TestCase {
 "  def thing\r\n" +
 "  end  #ocmm \r\n" +
 "end";
-		assertEquals(IDocument.DEFAULT_CONTENT_TYPE, this.getContentType(code, 76));
+		assertEquals(RubyPartitionScanner.RUBY_DEFAULT, this.getContentType(code, 76));
 		assertEquals(RubyPartitionScanner.RUBY_SINGLE_LINE_COMMENT, this.getContentType(code, 83));
 	}
 
@@ -144,16 +144,16 @@ public class TC_RubyPartitionScanner extends TestCase {
 				"    123\n" +
 				"  }\n" +
 				"}";
-		assertEquals(IDocument.DEFAULT_CONTENT_TYPE, this.getContentType(code, 0));
-		assertEquals(IDocument.DEFAULT_CONTENT_TYPE, this.getContentType(code, 4));
-		assertEquals(IDocument.DEFAULT_CONTENT_TYPE, this.getContentType(code, 6));
+		assertEquals(RubyPartitionScanner.RUBY_DEFAULT, this.getContentType(code, 0));
+		assertEquals(RubyPartitionScanner.RUBY_DEFAULT, this.getContentType(code, 4));
+		assertEquals(RubyPartitionScanner.RUBY_DEFAULT, this.getContentType(code, 6));
 		
 		assertEquals(RubyPartitionScanner.RUBY_STRING, this.getContentType(code, 8));
 		assertEquals(RubyPartitionScanner.RUBY_STRING, this.getContentType(code, 12));
 		assertEquals(RubyPartitionScanner.RUBY_STRING, this.getContentType(code, 18));
 		
-		assertEquals(IDocument.DEFAULT_CONTENT_TYPE, this.getContentType(code, 19));
-		assertEquals(IDocument.DEFAULT_CONTENT_TYPE, this.getContentType(code, 22));
+		assertEquals(RubyPartitionScanner.RUBY_DEFAULT, this.getContentType(code, 19));
+		assertEquals(RubyPartitionScanner.RUBY_DEFAULT, this.getContentType(code, 22));
 		
 		assertEquals(RubyPartitionScanner.RUBY_SINGLE_LINE_COMMENT, this.getContentType(code, 25));
 	}
@@ -165,8 +165,8 @@ public class TC_RubyPartitionScanner extends TestCase {
 				"    \n" +
 				"  end";
 		assertEquals(RubyPartitionScanner.RUBY_SINGLE_LINE_COMMENT, this.getContentType(code, 5));
-		assertEquals(IDocument.DEFAULT_CONTENT_TYPE, this.getContentType(code, 14));
-		assertEquals(IDocument.DEFAULT_CONTENT_TYPE, this.getContentType(code, 20));
+		assertEquals(RubyPartitionScanner.RUBY_DEFAULT, this.getContentType(code, 14));
+		assertEquals(RubyPartitionScanner.RUBY_DEFAULT, this.getContentType(code, 20));
 	}
 	
 	public void testCommentsWithAlotOfPrecedingSpaces() {
@@ -174,7 +174,59 @@ public class TC_RubyPartitionScanner extends TestCase {
 				"                # caller-requested until.\n" +
 				"return self\n";
 		assertEquals(RubyPartitionScanner.RUBY_SINGLE_LINE_COMMENT, this.getContentType(code, 16));
-		assertEquals(IDocument.DEFAULT_CONTENT_TYPE, this.getContentType(code, 63));
-		assertEquals(IDocument.DEFAULT_CONTENT_TYPE, this.getContentType(code, 70));		
+		assertEquals(RubyPartitionScanner.RUBY_DEFAULT, this.getContentType(code, 63));
+		assertEquals(RubyPartitionScanner.RUBY_DEFAULT, this.getContentType(code, 70));		
 	}
+	
+	public void testCodeWithinString() {
+		String code = "string = \"here's some code: #{1} there\"";
+		assertEquals(RubyPartitionScanner.RUBY_DEFAULT, this.getContentType(code, 2)); // st'r'...
+		assertEquals(RubyPartitionScanner.RUBY_STRING, this.getContentType(code, 10)); // "'h'er...	
+		assertEquals(RubyPartitionScanner.RUBY_STRING, this.getContentType(code, 28)); // '#'{1...
+		assertEquals(RubyPartitionScanner.RUBY_DEFAULT, this.getContentType(code, 30));	// '1'} t...
+		assertEquals(RubyPartitionScanner.RUBY_STRING, this.getContentType(code, 31)); // '}' th...
+		assertEquals(RubyPartitionScanner.RUBY_STRING, this.getContentType(code, 35)); // th'e're..
+	}
+	
+	public void testCodeWithinSingleQuoteString() {
+		String code = "string = 'here s some code: #{1} there'";
+		assertEquals(RubyPartitionScanner.RUBY_DEFAULT, this.getContentType(code, 2)); // st'r'...
+		assertEquals(RubyPartitionScanner.RUBY_STRING, this.getContentType(code, 10)); // "'h'er...	
+		assertEquals(RubyPartitionScanner.RUBY_STRING, this.getContentType(code, 28)); // '#'{1...
+		assertEquals(RubyPartitionScanner.RUBY_STRING, this.getContentType(code, 30));	// '1'} t...
+		assertEquals(RubyPartitionScanner.RUBY_STRING, this.getContentType(code, 31)); // '}' th...
+		assertEquals(RubyPartitionScanner.RUBY_STRING, this.getContentType(code, 35)); // th'e're..
+	}
+	
+	public void testVariableSubstitutionWithinString() {
+		String code = "string = \"here's some code: #$global there\"";
+		assertEquals(RubyPartitionScanner.RUBY_DEFAULT, this.getContentType(code, 2)); // st'r'...
+		assertEquals(RubyPartitionScanner.RUBY_STRING, this.getContentType(code, 10)); // "'h'er...	
+		assertEquals(RubyPartitionScanner.RUBY_STRING, this.getContentType(code, 28)); // '#'$glo...
+		assertEquals(RubyPartitionScanner.RUBY_DEFAULT, this.getContentType(code, 29));	// '$'global
+		assertEquals(RubyPartitionScanner.RUBY_STRING, this.getContentType(code, 36));// ' 'there...
+	}
+	
+	public void testStringWithinCodeWithinString() {
+		String code = "string = \"here's some code: #{var = 'string'} there\"";
+		assertEquals(RubyPartitionScanner.RUBY_DEFAULT, this.getContentType(code, 2)); // st'r'...
+		assertEquals(RubyPartitionScanner.RUBY_STRING, this.getContentType(code, 10)); // "'h'er...	
+		assertEquals(RubyPartitionScanner.RUBY_STRING, this.getContentType(code, 28)); // '#'{var
+		assertEquals(RubyPartitionScanner.RUBY_DEFAULT, this.getContentType(code, 30)); // 'v'ar = 
+		assertEquals(RubyPartitionScanner.RUBY_STRING, this.getContentType(code, 36)); // '''string
+		assertEquals(RubyPartitionScanner.RUBY_STRING, this.getContentType(code, 46)); // 't'here
+	}
+	
+	public void testStringWithEndBraceWithinCodeWithinString() {
+		String code = "string = \"here's some code: #{var = '}'; 1} there\"";
+		assertEquals(RubyPartitionScanner.RUBY_DEFAULT, this.getContentType(code, 2)); // st'r'...
+		assertEquals(RubyPartitionScanner.RUBY_STRING, this.getContentType(code, 10)); // "'h'er...	
+		assertEquals(RubyPartitionScanner.RUBY_STRING, this.getContentType(code, 28)); // '#'{var
+		assertEquals(RubyPartitionScanner.RUBY_DEFAULT, this.getContentType(code, 30)); // 'v'ar = 
+		assertEquals(RubyPartitionScanner.RUBY_STRING, this.getContentType(code, 37)); // '}'; 
+		assertEquals(RubyPartitionScanner.RUBY_DEFAULT, this.getContentType(code, 39)); // ';' 1} 
+		assertEquals(RubyPartitionScanner.RUBY_DEFAULT, this.getContentType(code, 41)); // ; '1'} 
+		assertEquals(RubyPartitionScanner.RUBY_STRING, this.getContentType(code, 42)); // 1'}' t		
+		assertEquals(RubyPartitionScanner.RUBY_STRING, this.getContentType(code, 44)); // 't'here
+	}	
 }

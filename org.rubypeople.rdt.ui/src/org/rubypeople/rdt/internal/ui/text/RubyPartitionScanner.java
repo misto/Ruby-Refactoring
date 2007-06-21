@@ -66,6 +66,7 @@ public class RubyPartitionScanner implements IPartitionTokenScanner {
 	
 	private List<QueuedToken> fQueue = new ArrayList<QueuedToken>();
 	private String fContentType;
+	private boolean inSingleQuote;
 	
 	// XXX Also do regex partitions!
 	public final static String RUBY_MULTI_LINE_COMMENT = IRubyPartitions.RUBY_MULTI_LINE_COMMENT;
@@ -115,6 +116,7 @@ public class RubyPartitionScanner implements IPartitionTokenScanner {
 		lexer.setState(LexState.EXPR_BEG);
 		parserSupport.initTopLocalVariables();
 		fQueue.clear();
+		inSingleQuote = false;
 	}
 
 	public int getTokenLength() {
@@ -139,12 +141,12 @@ public class RubyPartitionScanner implements IPartitionTokenScanner {
 				returnValue = Token.EOF;
 			} else {
 				int lexerToken = lexer.token();
-				if (lexerToken == Tokens.tSTRING_DVAR) { // we hit a single dynamic variable
+				if (!inSingleQuote && lexerToken == Tokens.tSTRING_DVAR) { // we hit a single dynamic variable
 					addPoundToken();
 					scanDynamicVariable();
 					setLexerPastDynamicSectionOfString();
 					return popTokenOffQueue();
-				} else if (lexerToken == Tokens.tSTRING_DBEG) { // if we hit dynamic code inside a string
+				} else if (!inSingleQuote && lexerToken == Tokens.tSTRING_DBEG) { // if we hit dynamic code inside a string
 					addPoundBraceToken();
 					scanTokensInsideDynamicPortion();			
 					addClosingBraceToken();
@@ -216,7 +218,7 @@ public class RubyPartitionScanner implements IPartitionTokenScanner {
 
 	private void scanTokensInsideDynamicPortion() {
 		String possible = new String(fContents.substring(fOffset - origOffset));			
-		int end = possible.indexOf('}');// TODO Find the end brace '}' in a proper way!
+		int end = findEnd(possible);
 		if (end != -1) {
 			possible = possible.substring(0, end); 
 		} else {
@@ -230,6 +232,10 @@ public class RubyPartitionScanner implements IPartitionTokenScanner {
 			push(new QueuedToken(token, scanner.getTokenOffset() + fOffset, scanner.getTokenLength()));
 		}
 		setOffset(fOffset + possible.length());
+	}
+
+	private int findEnd(String possible) {
+		return new EndBraceFinder(possible).find();
 	}
 
 	private void addPoundBraceToken() {
@@ -293,12 +299,17 @@ public class RubyPartitionScanner implements IPartitionTokenScanner {
 		case Tokens.tSTRING_CONTENT:
 			return new Token(RUBY_STRING);
 		case Tokens.tSTRING_BEG:
+			String token = fContents.substring(fOffset, getOffset());
+			if (token.trim().equals("'")) {
+				inSingleQuote = true;
+			}
 			return new Token(RUBY_STRING);
 		case Tokens.tQWORDS_BEG:
 			fContentType = RUBY_STRING;
 			return new Token(RUBY_STRING);
 		case Tokens.tSTRING_END:
 			fContentType = RUBY_DEFAULT;
+			inSingleQuote = false;
 			return new Token(RUBY_STRING);
 		case Tokens.tREGEXP_BEG:
 			return new Token(RUBY_REGULAR_EXPRESSION);
@@ -307,15 +318,6 @@ public class RubyPartitionScanner implements IPartitionTokenScanner {
 		default:
 			return new Token(RUBY_DEFAULT);
 		}
-	}
-
-	/**
-	 * Grabs the end of the comment
-	 * @param comments
-	 * @return
-	 */
-	private int getEndOfComment(CommentNode comment) {
-		return origOffset + comment.getPosition().getEndOffset();
 	}
 
 	/**
@@ -365,4 +367,73 @@ public class RubyPartitionScanner implements IPartitionTokenScanner {
 		setPartialRange(document, offset, length, null, -1);
 	}
 
+	private static class EndBraceFinder {
+		private String input;
+		private List<String> stack;
+		
+		public EndBraceFinder(String possible) {
+			this.input = possible;
+			stack = new ArrayList<String>();
+		}
+		
+		public int find() {
+			for (int i = 0; i < input.length(); i++) {
+				char c = input.charAt(i);
+				switch (c) {
+				case '"':
+					if (topEquals("\"")) {
+						pop();
+					} else {
+						push("\"");
+					}
+					break;
+				case '\'':
+					if (topEquals("'")) {
+						pop();
+					} else {
+						push("'");
+					}
+					break;
+				case '#':
+					// Only add if we're inside a double quote string
+					if (topEquals("\"")) {
+						c = input.charAt(i + 1);
+						if (c == '{')
+							push("#{");
+					}					
+					break;
+				case '}':
+					if (stack.isEmpty()) { // if not in open state
+						return i;
+					}
+					if (topEquals("#{")) {
+						pop();
+					} 
+					break;
+				default:
+					break;
+				}
+			}		
+			return -1;
+		}
+
+		private boolean topEquals(String string) {
+			String open = peek();
+			return open != null && open.equals(string);
+		}
+
+		private boolean push(String string) {
+			return stack.add(string);
+		}
+
+		private String pop() {
+			return stack.remove(stack.size() - 1);
+		}
+
+		private String peek() {
+			if (stack.isEmpty())
+				return null;				
+			return stack.get(stack.size() - 1);
+		}
+	}
 }
