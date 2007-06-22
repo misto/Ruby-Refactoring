@@ -50,11 +50,18 @@ public class LogicalGem extends Gem {
 			
 			List<Integer> v1Parts = getParts(v1);
 			List<Integer> v2Parts = getParts(v2);
-			for (int i = 0; i <= 3; i++) {
+			int blah = Math.min(v1Parts.size(), v2Parts.size());
+			for (int i = 0; i < blah; i++) {
 				Integer one = v1Parts.get(i);
 				Integer two = v2Parts.get(i);
 				int result = one.compareTo(two);
 				if (result != 0) return result;
+			}
+			// if parts sizes aren't equal, the one with more parts is newer.
+			if (v1Parts.size() > v2Parts.size()) {
+				return 1;
+			} else if (v2Parts.size() > v1Parts.size()) {
+				return -1;
 			}
 			return 0;
 		}
