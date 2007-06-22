@@ -8,14 +8,25 @@ import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.IRegion;
 import org.eclipse.jface.text.Region;
 import org.eclipse.jface.text.TextUtilities;
+import org.eclipse.ui.texteditor.ITextEditor;
+import org.rubypeople.rdt.core.IMethod;
+import org.rubypeople.rdt.core.IRubyElement;
+import org.rubypeople.rdt.core.IRubyScript;
+import org.rubypeople.rdt.core.RubyModelException;
+import org.rubypeople.rdt.internal.ui.RubyPlugin;
+import org.rubypeople.rdt.internal.ui.rubyeditor.WorkingCopyManager;
 
 public class RubyCommentAutoIndentStrategy extends
 		DefaultIndentLineAutoEditStrategy {
 
 	private String fPartitioning;
+	private ITextEditor fEditor;
+	private WorkingCopyManager fManager;
 
-	public RubyCommentAutoIndentStrategy(String partitioning) {
+	public RubyCommentAutoIndentStrategy(ITextEditor textEditor, String partitioning) {
 		fPartitioning = partitioning;
+		fEditor = textEditor;
+		fManager = RubyPlugin.getDefault().getWorkingCopyManager();
 	}
 
 	public void customizeDocumentCommand(IDocument document,
@@ -78,7 +89,9 @@ public class RubyCommentAutoIndentStrategy extends
 					.getLength());
 
 			buf.append(indentation.substring(0, lengthToAdd));
-
+			
+			String src = getRDoc(d, c.text, lineNumber + 1);
+			if (src != null) buf.append(src);
 			// move the caret behind the prefix, even if we do not have to
 			// insert it.
 			if (lengthToAdd < prefix.getLength())
@@ -88,6 +101,47 @@ public class RubyCommentAutoIndentStrategy extends
 		} catch (BadLocationException excp) {
 			// stop work
 		}
+	}
+
+	private String getRDoc(IDocument d, String newLine, int line) {
+		IRubyScript script = fManager.getWorkingCopy(fEditor.getEditorInput());
+		int pos;
+		try {
+			IRegion region = d.getLineInformation(line);
+			pos = findEndOfWhiteSpace(d, region.getOffset(), region.getOffset() + region.getLength());
+		} catch (BadLocationException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return null;
+		}
+		IRubyElement element = null;
+		try {
+			element = script.getElementAt(pos);
+
+			if (element == null)
+				return null;
+			StringBuffer buffer = new StringBuffer();
+			if (element instanceof IMethod) {
+				IMethod method = (IMethod) element;
+				String[] names = method.getParameterNames();
+				for (int i = 0; i < names.length; i++) {
+					String name = names[i];
+					int end = name.indexOf(' ');
+					if (end != -1) {
+						name = name.substring(0, end);
+					}
+					buffer.append("+");
+					buffer.append(name);
+					buffer.append("+");
+					buffer.append(newLine);
+				}
+			}
+			return buffer.toString();
+		} catch (RubyModelException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return null;
+		}		
 	}
 
 	private boolean isComment(String nextLineText) {
