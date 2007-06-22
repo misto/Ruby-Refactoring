@@ -112,7 +112,7 @@ public class GemsView extends ViewPart implements GemListener {
 		Display.getDefault().asyncExec(new Runnable() {
 
 			public void run() {
-				gemViewer.add(gem);
+				gemViewer.setInput(GemManager.getInstance().getGems());
 			}
 
 		});
@@ -122,7 +122,7 @@ public class GemsView extends ViewPart implements GemListener {
 		Display.getDefault().asyncExec(new Runnable() {
 
 			public void run() {
-				gemViewer.remove(gem);
+				gemViewer.setInput(GemManager.getInstance().getGems());
 			}
 
 		});

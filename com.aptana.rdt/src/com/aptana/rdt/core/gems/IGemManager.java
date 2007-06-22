@@ -31,5 +31,7 @@ public interface IGemManager {
 	public abstract IPath getGemPath(String gemName, String version);
 
 	public abstract boolean updateAll();
+	
+	public abstract boolean isInitialized();
 
 }

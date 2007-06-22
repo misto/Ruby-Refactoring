@@ -44,6 +44,8 @@ import org.eclipse.debug.core.ILaunchConfigurationWorkingCopy;
 import org.eclipse.debug.core.ILaunchManager;
 import org.eclipse.debug.core.model.IProcess;
 import org.eclipse.debug.ui.IDebugUIConstants;
+import org.eclipse.jface.dialogs.Dialog;
+import org.eclipse.swt.widgets.Display;
 import org.rubypeople.rdt.launching.IRubyLaunchConfigurationConstants;
 import org.rubypeople.rdt.launching.IVMInstall;
 import org.rubypeople.rdt.launching.RubyRuntime;
@@ -56,6 +58,7 @@ import com.aptana.rdt.core.gems.Gem;
 import com.aptana.rdt.core.gems.GemListener;
 import com.aptana.rdt.core.gems.IGemManager;
 import com.aptana.rdt.ui.gems.GemsMessages;
+import com.aptana.rdt.ui.gems.RemoveGemDialog;
 
 public class GemManager implements IGemManager {
 
@@ -80,6 +83,8 @@ public class GemManager implements IGemManager {
 	private Set<Gem> remoteGems;
 	private Set<GemListener> listeners;
 	private IPath fGemInstallPath;
+	
+	protected boolean isInitialized;
 
 	private GemManager() {
 		gems = new HashSet<Gem>();
@@ -111,6 +116,7 @@ public class GemManager implements IGemManager {
 					gems = loadLocalGems();
 					storeGemCache(gems, getConfigFile(LOCAL_GEMS_CACHE_FILE));
 				}
+				isInitialized = true;
 				synchronized (listeners) {
 					for (GemListener listener : listeners) {
 						listener.gemsRefreshed();
@@ -121,6 +127,10 @@ public class GemManager implements IGemManager {
 
 		};
 		job2.schedule();
+	}
+	
+	public boolean isInitialized() {
+		return isInitialized;
 	}
 
 	protected Set<Gem> loadLocalCache(File file) {
@@ -417,6 +427,7 @@ public class GemManager implements IGemManager {
 			}
 			ILaunchConfiguration config = createGemLaunchConfiguration(command, true);
 			config.launch(ILaunchManager.RUN_MODE, null);			
+			// FIXME Listen for end of launch and then notify listeners
 		} catch (CoreException e) {
 			AptanaRDTPlugin.log(e);
 			return false;
@@ -432,22 +443,45 @@ public class GemManager implements IGemManager {
 	 * 
 	 * @see com.aptana.rdt.internal.gems.IGemManager#removeGem(com.aptana.rdt.internal.gems.Gem)
 	 */
-	public boolean removeGem(Gem gem) {
+	public boolean removeGem(final Gem gem) {
+		if (gem.hasMultipleVersions()) {
+			RemoveGemDialog dialog = new RemoveGemDialog(Display.getDefault().getActiveShell(), gem.versions());
+			if (dialog.open() == Dialog.OK) {
+				return removeGem(new Gem(gem.getName(), dialog.getVersion(), null));
+			} else {
+				return false;
+			}
+		}
 		try {
-			String command = UNINSTALL_COMMAND + " " + gem.getName();
+			String command = UNINSTALL_COMMAND + " " + gem.getName();			
 			if (gem.getVersion() != null
 					&& gem.getVersion().trim().length() > 0) {
 				command += " " + VERSION_SWITCH + " " + gem.getVersion();
 			}
 			ILaunchConfiguration config = createGemLaunchConfiguration(command, true);
-			config.launch(ILaunchManager.RUN_MODE, null);
+			final ILaunch launch = config.launch(ILaunchManager.RUN_MODE, null);
+			Job job = new Job("Notify gem listeners of uninstalled gem") {
+			
+				@Override
+				protected IStatus run(IProgressMonitor monitor) {
+					while (!launch.isTerminated()) {
+						Thread.yield();
+					}
+					refresh();
+					// Need to wait until uninstall is finished
+					for (GemListener listener : listeners) {
+						listener.gemRemoved(gem);
+					} 
+					return Status.OK_STATUS;
+				}
+			
+			};
+			job.schedule();			
 		} catch (CoreException e) {
 			AptanaRDTPlugin.log(e);
 			return false;
 		}
-		for (GemListener listener : listeners) {
-			listener.gemRemoved(gem);
-		} // FIXME Need to wait until uninstall is finished!
+		
 		return true;
 	}
 

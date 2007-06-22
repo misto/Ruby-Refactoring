@@ -1,5 +1,9 @@
 package com.aptana.rdt.core.gems;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.StringTokenizer;
+
 public class Gem implements Comparable {
 	
 	private String name;
@@ -61,6 +65,20 @@ public class Gem implements Comparable {
 	@Override
 	public String toString() {
 		return getName().toLowerCase() + " " + getVersion() + " " + getPlatform();
+	}
+
+	public boolean hasMultipleVersions() {
+		return version != null && version.indexOf(",") != -1;
+	}
+
+	public List<String> versions() {
+		List<String> versions = new ArrayList<String>();
+		if (version == null) return versions;
+		StringTokenizer tokenizer = new StringTokenizer(version, ",");
+		while (tokenizer.hasMoreTokens()) {
+			versions.add(tokenizer.nextToken().trim());
+		}
+		return versions;
 	}
 
 }
