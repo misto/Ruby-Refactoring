@@ -6,6 +6,7 @@ import org.eclipse.jface.action.IMenuListener;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.Separator;
+import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.KeyEvent;
@@ -50,7 +51,9 @@ public class GemsView extends ViewPart implements GemListener {
 				if (e.keyCode == SWT.DEL) {
 					TableItem item = gemTable.getItem(gemTable.getSelectionIndex());
 					Gem gem = (Gem) item.getData();
-					GemManager.getInstance().removeGem(gem);
+					if (MessageDialog.openConfirm(gemTable.getShell(), null, GemsMessages.bind(GemsMessages.RemoveGemDialog_msg, gem.getName()))) {
+						GemManager.getInstance().removeGem(gem);
+					}
 				}
 			}
 		
