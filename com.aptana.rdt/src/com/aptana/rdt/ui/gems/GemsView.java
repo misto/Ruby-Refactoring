@@ -8,6 +8,8 @@ import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.KeyEvent;
+import org.eclipse.swt.events.KeyListener;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
@@ -15,6 +17,7 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
+import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.ui.IWorkbenchActionConstants;
 import org.eclipse.ui.part.ViewPart;
 import org.rubypeople.rdt.ui.TableViewerSorter;
@@ -32,20 +35,36 @@ public class GemsView extends ViewPart implements GemListener {
 		parent.setLayout(new GridLayout());
 
 		gemViewer = new TableViewer(parent, SWT.SINGLE | SWT.FULL_SELECTION);
-		Table serverTable = gemViewer.getTable();
-		serverTable.setHeaderVisible(true);
-		serverTable.setLinesVisible(false);
-		serverTable.setLayoutData(new GridData(GridData.FILL_BOTH));
+		final Table gemTable = gemViewer.getTable();
+		gemTable.setHeaderVisible(true);
+		gemTable.setLinesVisible(false);
+		gemTable.setLayoutData(new GridData(GridData.FILL_BOTH));
 
-		TableColumn nameColumn = new TableColumn(serverTable, SWT.LEFT);
+		gemTable.addKeyListener(new KeyListener() {
+			
+			public void keyReleased(KeyEvent e) {
+				// ignore
+			}
+		
+			public void keyPressed(KeyEvent e) {
+				if (e.keyCode == SWT.DEL) {
+					TableItem item = gemTable.getItem(gemTable.getSelectionIndex());
+					Gem gem = (Gem) item.getData();
+					GemManager.getInstance().removeGem(gem);
+				}
+			}
+		
+		});
+		
+		TableColumn nameColumn = new TableColumn(gemTable, SWT.LEFT);
 		nameColumn.setText(GemsMessages.GemsView_NameColumn_label);
 		nameColumn.setWidth(150);
 
-		TableColumn versionColumn = new TableColumn(serverTable, SWT.LEFT);
+		TableColumn versionColumn = new TableColumn(gemTable, SWT.LEFT);
 		versionColumn.setText(GemsMessages.GemsView_VersionColumn_label);
 		versionColumn.setWidth(75);
 
-		TableColumn descriptionColumn = new TableColumn(serverTable, SWT.LEFT);
+		TableColumn descriptionColumn = new TableColumn(gemTable, SWT.LEFT);
 		descriptionColumn
 				.setText(GemsMessages.GemsView_DescriptionColumn_label);
 		descriptionColumn.setWidth(275);
@@ -54,6 +73,7 @@ public class GemsView extends ViewPart implements GemListener {
 		gemViewer.setContentProvider(new GemContentProvider());
 		TableViewerSorter.bind(gemViewer);
 		getSite().setSelectionProvider(gemViewer);
+
 
 		gemViewer.setInput(GemManager.getInstance().getGems());
 		createPopupMenu();
