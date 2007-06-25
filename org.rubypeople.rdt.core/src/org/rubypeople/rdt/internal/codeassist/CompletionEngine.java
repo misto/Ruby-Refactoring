@@ -107,11 +107,8 @@ public class CompletionEngine {
 				Collections.sort(list, new CompletionProposalComparator());
 				for (CompletionProposal proposal : list) {
 					if (proposal.getCompletion().startsWith(fContext.getPartialPrefix()))
-					fRequestor.accept(proposal);
+						fRequestor.accept(proposal);
 				}				
-				this.fRequestor.endReporting();
-				fContext = null;
-				return;
 			}
 			if (fContext.isConstant()) { // type or constant
 				suggestTypeNames();

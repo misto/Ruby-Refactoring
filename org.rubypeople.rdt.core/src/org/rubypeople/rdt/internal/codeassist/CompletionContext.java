@@ -47,7 +47,8 @@ public class CompletionContext {
 							isAfterDoubleSemiColon = true;
 							source.deleteCharAt(i);
 							source.deleteCharAt(i - 1);
-							tmpPrefix.insert(0, "::");							
+							tmpPrefix.insert(0, "::");
+							partialPrefix = "";
 							i--;
 							continue;
 						}
@@ -65,7 +66,7 @@ public class CompletionContext {
 					char previous = source.charAt(i - 1);
 					if (previous == ':') {
 						isAfterDoubleSemiColon = true;
-						partialPrefix = tmpPrefix.toString();
+						if (partialPrefix == null) partialPrefix = tmpPrefix.toString();
 						tmpPrefix.insert(0, ":");							
 						i--;
 					}
@@ -99,7 +100,7 @@ public class CompletionContext {
 	 * @return
 	 */
 	public boolean isMethodInvokationOrLocal() {
-		  return !isExplicitMethodInvokation() && (emptyPrefix() || Character.isLowerCase(getPartialPrefix().charAt(0)));	
+		  return !isExplicitMethodInvokation() && (emptyPrefix() || (getPartialPrefix().length() > 0 && Character.isLowerCase(getPartialPrefix().charAt(0))));	
 	}
 	
 	/**
@@ -175,7 +176,7 @@ public class CompletionContext {
 	}
 	
 	public boolean isDoubleSemiColon() {
-		return isAfterDoubleSemiColon;
+		return isAfterDoubleSemiColon && !isMethodInvokation;
 	}
 
 	public boolean fullPrefixIsConstant() {
