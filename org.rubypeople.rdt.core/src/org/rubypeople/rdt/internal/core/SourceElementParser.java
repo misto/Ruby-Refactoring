@@ -24,6 +24,7 @@
  */
 package org.rubypeople.rdt.internal.core;
 
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -88,7 +89,8 @@ public class SourceElementParser extends InOrderVisitor { // TODO Rename to Sour
 	private static final String CONSTRUCTOR_NAME = "initialize";
 	private static final String NAMESPACE_DELIMETER = "::";
 	private static final String OBJECT = "Object";
-	private Visibility currentVisibility = Visibility.PUBLIC;
+	
+	private List<Visibility> visibilities = new ArrayList<Visibility>();
 	private boolean inSingletonClass;
 	public ISourceElementRequestor requestor;
 	private boolean inModuleFunction;
@@ -111,7 +113,7 @@ public class SourceElementParser extends InOrderVisitor { // TODO Rename to Sour
 	public Instruction visitClassNode(ClassNode iVisited) {
 		// This resets the visibility when opening or declaring a class to
 		// public
-		currentVisibility = Visibility.PUBLIC;
+		pushVisibility(Visibility.PUBLIC);
 
 		TypeInfo typeInfo = new TypeInfo();
 		typeInfo.name = getFullyQualifiedName(iVisited.getCPath());
@@ -128,6 +130,7 @@ public class SourceElementParser extends InOrderVisitor { // TODO Rename to Sour
 		requestor.enterType(typeInfo);
 		
 		Instruction ins = super.visitClassNode(iVisited);
+		popVisibility();
 		requestor.exitType(iVisited.getPosition().getEndOffset() - 2);
 		return ins;
 	}
@@ -141,6 +144,7 @@ public class SourceElementParser extends InOrderVisitor { // TODO Rename to Sour
 	
 	@Override
 	public Instruction visitModuleNode(ModuleNode iVisited) {
+		pushVisibility(Visibility.PUBLIC);
 		TypeInfo typeInfo = new TypeInfo();
 		typeInfo.name = getFullyQualifiedName(iVisited.getCPath());
 		typeInfo.declarationStart = iVisited.getPosition().getStartOffset();
@@ -154,6 +158,7 @@ public class SourceElementParser extends InOrderVisitor { // TODO Rename to Sour
 		
 		Instruction ins = super.visitModuleNode(iVisited);
 		
+		popVisibility();
 		requestor.exitType(iVisited.getPosition().getEndOffset() - 2);
 		inModuleFunction = false;
 		return ins;
@@ -161,7 +166,7 @@ public class SourceElementParser extends InOrderVisitor { // TODO Rename to Sour
 	
 	@Override
 	public Instruction visitDefnNode(DefnNode iVisited) {
-		Visibility visibility = currentVisibility;		
+		Visibility visibility = getCurrentVisibility();		
 		MethodInfo methodInfo = new MethodInfo();
 		methodInfo.declarationStart = iVisited.getPosition().getStartOffset();
 		methodInfo.name = iVisited.getName();
@@ -202,7 +207,7 @@ public class SourceElementParser extends InOrderVisitor { // TODO Rename to Sour
 		methodInfo.nameSourceEnd = iVisited.getNameNode().getPosition().getEndOffset() - 1;
 		methodInfo.isConstructor = false;
 		methodInfo.isClassLevel = true;
-		methodInfo.visibility = convertVisibility(currentVisibility);
+		methodInfo.visibility = convertVisibility(getCurrentVisibility());
 		methodInfo.parameterNames = ASTUtil.getArgs(iVisited.getArgsNode(), iVisited.getScope());
 		requestor.enterMethod(methodInfo);
 
@@ -229,11 +234,17 @@ public class SourceElementParser extends InOrderVisitor { // TODO Rename to Sour
 	@Override
 	public Instruction visitRootNode(RootNode iVisited) {
 		requestor.enterScript();
+		pushVisibility(Visibility.PUBLIC);
 		Instruction ins = super.visitRootNode(iVisited);
+		popVisibility();
 		requestor.exitScript(-1); // FIXME Actually grab the correct end offset somehow!
 		return ins;
 	}
 	
+	private void popVisibility() {
+		visibilities.remove(visibilities.size() - 1);		
+	}
+
 	private String getFullyQualifiedName(Node node) {
 		if (node == null)
 			return EMPTY_STRING;
@@ -374,11 +385,14 @@ public class SourceElementParser extends InOrderVisitor { // TODO Rename to Sour
 		Node receiver = iVisited.getReceiverNode();
 		if (receiver instanceof SelfNode) {
 			inSingletonClass = true;
-			Instruction ins = super.visitSClassNode(iVisited);
+		}
+		pushVisibility(Visibility.PUBLIC);
+		Instruction ins = super.visitSClassNode(iVisited);		
+		popVisibility();
+		if (receiver instanceof SelfNode) {
 			inSingletonClass = false;
-			return ins;
-		}	
-		return super.visitSClassNode(iVisited);
+		}
+		return ins;
 	}
 	
 	public Instruction visitFCallNode(FCallNode iVisited) {
@@ -468,11 +482,11 @@ public class SourceElementParser extends InOrderVisitor { // TODO Rename to Sour
 	public Instruction visitVCallNode(VCallNode iVisited) {
 		String functionName = iVisited.getName();
 		if (functionName.equals(PUBLIC)) {
-			currentVisibility = Visibility.PUBLIC;
+			setVisibility(Visibility.PUBLIC);
 		} else if (functionName.equals(PRIVATE)) {
-			currentVisibility = Visibility.PRIVATE;
+			setVisibility(Visibility.PRIVATE);
 		} else if (functionName.equals(PROTECTED)) {
-			currentVisibility = Visibility.PROTECTED;
+			setVisibility(Visibility.PROTECTED);
 		} else if (functionName.equals(MODULE_FUNCTION)) {
 			inModuleFunction = true;
 		}
@@ -480,6 +494,15 @@ public class SourceElementParser extends InOrderVisitor { // TODO Rename to Sour
 		return super.visitVCallNode(iVisited);
 	}
 	
+	private void setVisibility(Visibility visibility) {
+		popVisibility();
+		pushVisibility(visibility);
+	}
+	
+	private void pushVisibility(Visibility visibility) {
+		visibilities.add(visibility);		
+	}
+
 	@Override
 	public Instruction visitCallNode(CallNode iVisited) {
 		String name = iVisited.getName();
@@ -509,7 +532,7 @@ public class SourceElementParser extends InOrderVisitor { // TODO Rename to Sour
 		String name = iVisited.getNewName();		
 		MethodInfo method = new MethodInfo();
 		// TODO Use the visibility for the original method that this is aliasing?
-		Visibility visibility = currentVisibility;
+		Visibility visibility = getCurrentVisibility();
 		if (name.equals(CONSTRUCTOR_NAME)) {
 			visibility = Visibility.PROTECTED;
 			method.isConstructor = true;
@@ -526,6 +549,10 @@ public class SourceElementParser extends InOrderVisitor { // TODO Rename to Sour
 		requestor.enterMethod(method);
 		requestor.exitMethod(iVisited.getPosition().getEndOffset());
 		return super.visitAliasNode(iVisited);
+	}
+
+	private Visibility getCurrentVisibility() {
+		return visibilities.get(visibilities.size() - 1);
 	}
 
 	public void parse(char[] source, char[] name) {
