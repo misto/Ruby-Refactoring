@@ -91,9 +91,9 @@ public class CompletionEngine {
 		} else {
 			if (fContext.isDoubleSemiColon()) {				
 				String prefix = fContext.getFullPrefix();
-				prefix = prefix.substring(0, prefix.length() - 2);
+				String typeName = prefix.substring(0, prefix.lastIndexOf("::"));
 				RubyElementRequestor requestor = new RubyElementRequestor(script);
-				IType[] types = requestor.findType(prefix);
+				IType[] types = requestor.findType(typeName);
 				Map<String, CompletionProposal> proposals = new HashMap<String, CompletionProposal>();
 				for (int i = 0; i < types.length; i++) {
 					IType type = types[i];
@@ -106,6 +106,7 @@ public class CompletionEngine {
 				List<CompletionProposal> list = new ArrayList<CompletionProposal>(proposals.values());
 				Collections.sort(list, new CompletionProposalComparator());
 				for (CompletionProposal proposal : list) {
+					if (proposal.getCompletion().startsWith(fContext.getPartialPrefix()))
 					fRequestor.accept(proposal);
 				}				
 				this.fRequestor.endReporting();

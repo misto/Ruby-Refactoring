@@ -47,8 +47,7 @@ public class CompletionContext {
 							isAfterDoubleSemiColon = true;
 							source.deleteCharAt(i);
 							source.deleteCharAt(i - 1);
-							tmpPrefix.insert(0, "::");
-							partialPrefix = "";
+							tmpPrefix.insert(0, "::");							
 							i--;
 							continue;
 						}
@@ -60,6 +59,17 @@ public class CompletionContext {
 				isMethodInvokation = true;
 				offset = i - 1;
 				if (partialPrefix == null) this.partialPrefix = tmpPrefix.toString();
+			} else if (curChar == ':') {
+				if (i > 0) {						
+					// Check character before this for :
+					char previous = source.charAt(i - 1);
+					if (previous == ':') {
+						isAfterDoubleSemiColon = true;
+						partialPrefix = tmpPrefix.toString();
+						tmpPrefix.insert(0, ":");							
+						i--;
+					}
+				}
 			}
 			// FIXME This logic is very much like RubyWordDetector in the UI!
 			if (Character.isWhitespace(curChar) || curChar == ',' || curChar == '(' || curChar == '[' || curChar == '{') {
