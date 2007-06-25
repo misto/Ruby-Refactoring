@@ -13,15 +13,13 @@ import com.aptana.rdt.AptanaRDTPlugin;
 public class TooManyArgumentsVisitor extends RubyLintVisitor {
 
 	private int maxArgLength;
-	private Map fOptions;
 
 	public TooManyArgumentsVisitor(String contents) {
 		this(AptanaRDTPlugin.getDefault().getOptions(), contents);		
 	}
 	
 	public TooManyArgumentsVisitor(Map options, String contents) {
-		super(contents);
-		fOptions = options;
+		super(options, contents);
 		maxArgLength = getInt(AptanaRDTPlugin.COMPILER_PB_MAX_ARGUMENTS, 5); 
 	}
 	private int getInt(String key, int defaultValue) {
@@ -34,7 +32,7 @@ public class TooManyArgumentsVisitor extends RubyLintVisitor {
 
 	@Override
 	protected String getOptionKey() {
-		return AptanaRDTPlugin.COMPILER_PB_MAX_ARGUMENTS;
+		return AptanaRDTPlugin.COMPILER_PB_CODE_COMPLEXITY_ARGUMENTS;
 	}
 
 	@Override

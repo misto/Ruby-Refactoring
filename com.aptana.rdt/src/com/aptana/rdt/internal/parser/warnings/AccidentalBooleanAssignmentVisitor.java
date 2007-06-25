@@ -14,7 +14,7 @@ import com.aptana.rdt.AptanaRDTPlugin;
 public class AccidentalBooleanAssignmentVisitor extends RubyLintVisitor {
 
 	public AccidentalBooleanAssignmentVisitor(String contents) {
-		super(contents);
+		super(AptanaRDTPlugin.getDefault().getOptions(), contents);
 	}
 
 	@Override

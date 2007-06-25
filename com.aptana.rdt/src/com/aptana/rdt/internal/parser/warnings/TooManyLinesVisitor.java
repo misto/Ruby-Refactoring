@@ -13,15 +13,13 @@ import com.aptana.rdt.AptanaRDTPlugin;
 public class TooManyLinesVisitor extends RubyLintVisitor {
 
 	private int maxLines;
-	private Map fOptions;
 
 	public TooManyLinesVisitor(String contents) {
 		this(AptanaRDTPlugin.getDefault().getOptions(), contents);		
 	}
 	
 	public TooManyLinesVisitor(Map options, String contents) {
-		super(contents);
-		fOptions = options;
+		super(options, contents);
 		maxLines = getInt(AptanaRDTPlugin.COMPILER_PB_MAX_LINES, 20); 
 	}
 	private int getInt(String key, int defaultValue) {
@@ -34,7 +32,7 @@ public class TooManyLinesVisitor extends RubyLintVisitor {
 
 	@Override
 	protected String getOptionKey() {
-		return AptanaRDTPlugin.COMPILER_PB_MAX_LINES;
+		return AptanaRDTPlugin.COMPILER_PB_CODE_COMPLEXITY_LINES;
 	}
 
 	@Override

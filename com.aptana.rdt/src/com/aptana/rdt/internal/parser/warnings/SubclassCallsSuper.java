@@ -17,7 +17,7 @@ public class SubclassCallsSuper extends RubyLintVisitor {
 	private boolean isSubClass;
 	
 	public SubclassCallsSuper(String contents) {
-		super(contents);
+		super(AptanaRDTPlugin.getDefault().getOptions(), contents);
 	}
 
 	@Override

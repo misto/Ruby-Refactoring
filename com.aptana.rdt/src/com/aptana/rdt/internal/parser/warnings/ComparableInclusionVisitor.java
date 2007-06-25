@@ -23,7 +23,7 @@ public class ComparableInclusionVisitor extends RubyLintVisitor {
 	private ISourcePosition pos;
 	
 	public ComparableInclusionVisitor(String code) {
-		super(code);
+		super(AptanaRDTPlugin.getDefault().getOptions(), code);
 	}
 
 	@Override

@@ -23,7 +23,7 @@ public class UnusedPrivateMethodVisitor extends RubyLintVisitor {
 	private Visibility visibility;
 	
 	public UnusedPrivateMethodVisitor(String contents) {
-		super(contents);
+		super(AptanaRDTPlugin.getDefault().getOptions(), contents);
 		visibility = Visibility.PUBLIC;
 	}
 	

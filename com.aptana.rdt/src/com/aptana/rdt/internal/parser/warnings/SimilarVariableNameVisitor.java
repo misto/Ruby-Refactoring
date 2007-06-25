@@ -31,7 +31,7 @@ public class SimilarVariableNameVisitor extends RubyLintVisitor {
 	private List<Map<String, Node>> stack;
 
 	public SimilarVariableNameVisitor(String contents) {
-		super(contents);
+		super(AptanaRDTPlugin.getDefault().getOptions(), contents);
 		stack = new ArrayList<Map<String, Node>>();
 	}
 

@@ -6,7 +6,6 @@ import org.jruby.ast.CaseNode;
 import org.jruby.ast.DefnNode;
 import org.jruby.ast.DefsNode;
 import org.jruby.ast.IfNode;
-import org.jruby.ast.NewlineNode;
 import org.jruby.ast.Node;
 import org.jruby.ast.WhenNode;
 import org.jruby.evaluator.Instruction;
@@ -18,15 +17,13 @@ public class TooManyBranchesVisitor extends RubyLintVisitor {
 
 	private int maxBranches;
 	private int branchCount;
-	private Map fOptions;
 
 	public TooManyBranchesVisitor(String contents) {
 		this(AptanaRDTPlugin.getDefault().getOptions(), contents);		
 	}
 	
 	public TooManyBranchesVisitor(Map options, String contents) {
-		super(contents);
-		fOptions = options;
+		super(options, contents);
 		maxBranches = getInt(AptanaRDTPlugin.COMPILER_PB_MAX_BRANCHES, 5); 
 		branchCount = 0;
 	}
@@ -40,7 +37,7 @@ public class TooManyBranchesVisitor extends RubyLintVisitor {
 
 	@Override
 	protected String getOptionKey() {
-		return AptanaRDTPlugin.COMPILER_PB_MAX_BRANCHES;
+		return AptanaRDTPlugin.COMPILER_PB_CODE_COMPLEXITY_BRANCHES;
 	}
 
 	@Override

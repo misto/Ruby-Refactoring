@@ -14,15 +14,13 @@ public class TooManyReturnsVisitor extends RubyLintVisitor {
 
 	private int maxReturns;
 	private int returnCount;
-	private Map fOptions;
 
 	public TooManyReturnsVisitor(String contents) {
 		this(AptanaRDTPlugin.getDefault().getOptions(), contents);		
 	}
 	
 	public TooManyReturnsVisitor(Map options, String contents) {
-		super(contents);
-		fOptions = options;
+		super(options, contents);
 		maxReturns = getInt(AptanaRDTPlugin.COMPILER_PB_MAX_RETURNS, 5); 
 		returnCount = 0;
 	}
@@ -36,7 +34,7 @@ public class TooManyReturnsVisitor extends RubyLintVisitor {
 
 	@Override
 	protected String getOptionKey() {
-		return AptanaRDTPlugin.COMPILER_PB_MAX_RETURNS;
+		return AptanaRDTPlugin.COMPILER_PB_CODE_COMPLEXITY_RETURNS;
 	}
 
 	@Override

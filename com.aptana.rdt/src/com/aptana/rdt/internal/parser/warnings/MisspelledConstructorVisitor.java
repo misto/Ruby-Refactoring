@@ -9,7 +9,7 @@ import com.aptana.rdt.AptanaRDTPlugin;
 public class MisspelledConstructorVisitor extends RubyLintVisitor {
 
 	public MisspelledConstructorVisitor(String contents) {
-		super(contents);
+		super(AptanaRDTPlugin.getDefault().getOptions(), contents);
 	}
 
 	public Instruction visitDefnNode(DefnNode iVisited) {

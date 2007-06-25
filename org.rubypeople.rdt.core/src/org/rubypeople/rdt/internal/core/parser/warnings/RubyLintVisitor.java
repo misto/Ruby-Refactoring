@@ -2,6 +2,7 @@ package org.rubypeople.rdt.internal.core.parser.warnings;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import org.jruby.ast.BlockNode;
 import org.jruby.ast.ClassNode;
@@ -25,11 +26,17 @@ import org.rubypeople.rdt.internal.core.util.ASTUtil;
 public abstract class RubyLintVisitor extends AbstractVisitor {
 
 	private String contents;
+	protected Map fOptions;
 	private List<CategorizedProblem> problems;
 
 	public RubyLintVisitor(String contents) {
+		this(RubyCore.getOptions(), contents);
+	}
+	
+	public RubyLintVisitor(Map options, String contents) {
 		this.problems = new ArrayList<CategorizedProblem>();
 		this.contents = contents;
+		this.fOptions = options;
 	}
 	
 	protected String getSource(Node node) {
@@ -53,7 +60,7 @@ public abstract class RubyLintVisitor extends AbstractVisitor {
 	}
 
 	protected String getSeverity() {
-		return RubyCore.getOption(getOptionKey());
+		return (String) fOptions.get(getOptionKey());
 	}
 	
 	@Override

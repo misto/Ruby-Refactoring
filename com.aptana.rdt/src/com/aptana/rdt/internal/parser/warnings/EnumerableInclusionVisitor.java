@@ -23,7 +23,7 @@ public class EnumerableInclusionVisitor extends RubyLintVisitor {
 	private ISourcePosition pos;
 	
 	public EnumerableInclusionVisitor(String code) {
-		super(code);
+		super(AptanaRDTPlugin.getDefault().getOptions(), code);
 	}
 
 	@Override

@@ -22,7 +22,7 @@ public class UnusedParameterVisitor extends RubyLintVisitor {
 	private Map<String, Node> declared;
 	
 	public UnusedParameterVisitor(String contents) {
-		super(contents);
+		super(AptanaRDTPlugin.getDefault().getOptions(), contents);
 		declared = new HashMap<String, Node>();
 	}
 

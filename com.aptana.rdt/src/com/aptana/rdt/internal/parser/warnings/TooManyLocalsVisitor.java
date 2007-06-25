@@ -15,18 +15,15 @@ import com.aptana.rdt.AptanaRDTPlugin;
 
 public class TooManyLocalsVisitor extends RubyLintVisitor {
 
-
 	private int maxLocals;
 	private Set locals;
-	private Map fOptions;
 
 	public TooManyLocalsVisitor(String contents) {
 		this(AptanaRDTPlugin.getDefault().getOptions(), contents);		
 	}
 	
 	public TooManyLocalsVisitor(Map options, String contents) {
-		super(contents);
-		fOptions = options;
+		super(options, contents);
 		maxLocals = getInt(AptanaRDTPlugin.COMPILER_PB_MAX_LOCALS, 4); 
 	}
 	private int getInt(String key, int defaultValue) {
@@ -39,7 +36,7 @@ public class TooManyLocalsVisitor extends RubyLintVisitor {
 
 	@Override
 	protected String getOptionKey() {
-		return AptanaRDTPlugin.COMPILER_PB_MAX_LOCALS;
+		return AptanaRDTPlugin.COMPILER_PB_CODE_COMPLEXITY_LOCALS;
 	}
 	
 	@Override

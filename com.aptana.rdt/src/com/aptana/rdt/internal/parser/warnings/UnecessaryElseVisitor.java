@@ -19,7 +19,7 @@ import com.aptana.rdt.AptanaRDTPlugin;
 public class UnecessaryElseVisitor extends RubyLintVisitor {
 
 	public UnecessaryElseVisitor(String contents) {
-		super(contents);
+		super(AptanaRDTPlugin.getDefault().getOptions(), contents);
 	}
 
 	@Override

@@ -17,7 +17,7 @@ public class LocalsMaskingMethodsVisitor extends RubyLintVisitor {
 	private HashSet<String> methods;
 	
 	public LocalsMaskingMethodsVisitor(String contents) {
-		super(contents);
+		super(AptanaRDTPlugin.getDefault().getOptions(), contents);
 		locals = new ArrayList<LocalAsgnNode>();
 		methods = new HashSet<String>();
 	}
