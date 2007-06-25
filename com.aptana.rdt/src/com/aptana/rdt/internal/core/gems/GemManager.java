@@ -335,11 +335,24 @@ public class GemManager implements IGemManager {
 	 * 
 	 * @see com.aptana.rdt.internal.gems.IGemManager#update(com.aptana.rdt.internal.gems.Gem)
 	 */
-	public boolean update(Gem gem) {
+	public boolean update(final Gem gem) {
 		try {
 			String command = UPDATE_COMMAND + " " + gem.getName();
 			ILaunchConfiguration config = createGemLaunchConfiguration(command, true);
-			config.launch(ILaunchManager.RUN_MODE, null);
+			final ILaunch launch = config.launch(ILaunchManager.RUN_MODE, null);
+			Job job = new Job("Notify gem listeners of uninstalled gem") {
+			
+				@Override
+				protected IStatus run(IProgressMonitor monitor) {
+					while (!launch.isTerminated()) {
+						Thread.yield();
+					}
+					refresh();
+					return Status.OK_STATUS;
+				}
+			
+			};
+			job.schedule();			
 		} catch (CoreException e) {
 			AptanaRDTPlugin.log(e);
 			return false;
@@ -418,7 +431,7 @@ public class GemManager implements IGemManager {
 	 * 
 	 * @see com.aptana.rdt.internal.gems.IGemManager#installGem(com.aptana.rdt.internal.gems.Gem)
 	 */
-	public boolean installGem(Gem gem) {
+	public boolean installGem(final Gem gem) {
 		try {
 			String command = INSTALL_COMMAND + " " + gem.getName();
 			if (gem.getVersion() != null
@@ -426,8 +439,24 @@ public class GemManager implements IGemManager {
 				command += " " + VERSION_SWITCH + " " + gem.getVersion();
 			}
 			ILaunchConfiguration config = createGemLaunchConfiguration(command, true);
-			config.launch(ILaunchManager.RUN_MODE, null);			
-			// FIXME Listen for end of launch and then notify listeners
+			final ILaunch launch = config.launch(ILaunchManager.RUN_MODE, null);	
+			Job job = new Job("Notify gem listeners of uninstalled gem") {
+			
+				@Override
+				protected IStatus run(IProgressMonitor monitor) {
+					while (!launch.isTerminated()) {
+						Thread.yield();
+					}
+					refresh();
+					// Need to wait until uninstall is finished
+					for (GemListener listener : listeners) {
+						listener.gemAdded(gem);
+					} 
+					return Status.OK_STATUS;
+				}
+			
+			};
+			job.schedule();		
 		} catch (CoreException e) {
 			AptanaRDTPlugin.log(e);
 			return false;
@@ -638,7 +667,20 @@ public class GemManager implements IGemManager {
 	public boolean updateAll() {
 		try {
 			ILaunchConfiguration config = createGemLaunchConfiguration(UPDATE_COMMAND, true);
-			config.launch(ILaunchManager.RUN_MODE, null);
+			final ILaunch launch = config.launch(ILaunchManager.RUN_MODE, null);
+			Job job = new Job("Notify gem listeners of uninstalled gem") {
+			
+				@Override
+				protected IStatus run(IProgressMonitor monitor) {
+					while (!launch.isTerminated()) {
+						Thread.yield();
+					}
+					refresh();
+					return Status.OK_STATUS;
+				}
+			
+			};
+			job.schedule();			
 		} catch (CoreException e) {
 			AptanaRDTPlugin.log(e);
 			return false;
