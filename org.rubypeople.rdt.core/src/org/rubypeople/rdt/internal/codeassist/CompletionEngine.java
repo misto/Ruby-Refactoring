@@ -58,6 +58,7 @@ import org.rubypeople.rdt.internal.core.parser.RubyParser;
 import org.rubypeople.rdt.internal.core.search.BasicSearchEngine;
 import org.rubypeople.rdt.internal.core.search.CollectingSearchRequestor;
 import org.rubypeople.rdt.internal.core.util.ASTUtil;
+import org.rubypeople.rdt.internal.core.util.Util;
 import org.rubypeople.rdt.internal.ti.BasicTypeGuess;
 import org.rubypeople.rdt.internal.ti.DefaultTypeInferrer;
 import org.rubypeople.rdt.internal.ti.ITypeGuess;
@@ -66,6 +67,8 @@ import org.rubypeople.rdt.internal.ti.util.AttributeLocator;
 import org.rubypeople.rdt.internal.ti.util.ClosestSpanningNodeLocator;
 import org.rubypeople.rdt.internal.ti.util.INodeAcceptor;
 import org.rubypeople.rdt.internal.ti.util.ScopedNodeLocator;
+
+import sun.security.action.PutAllAction;
 
 public class CompletionEngine {
 	private static final String OBJECT = "Object";
@@ -91,18 +94,20 @@ public class CompletionEngine {
 				prefix = prefix.substring(0, prefix.length() - 2);
 				RubyElementRequestor requestor = new RubyElementRequestor(script);
 				IType[] types = requestor.findType(prefix);
+				Map<String, CompletionProposal> proposals = new HashMap<String, CompletionProposal>();
 				for (int i = 0; i < types.length; i++) {
 					IType type = types[i];
-					suggestTypesConstants(type);
+					proposals.putAll(suggestTypesConstants(type));
 					// Suggest nested types
-					suggestNestedTypes(type);
+					proposals.putAll(suggestNestedTypes(type));
 					// Suggest class level methods
-					Map<String, CompletionProposal> map = suggestMethods(100, type, false);
-					for (CompletionProposal proposal : map.values()) {
-						fRequestor.accept(proposal);
-					}
+					proposals.putAll(suggestMethods(100, type, false));
 				}
-				
+				List<CompletionProposal> list = new ArrayList<CompletionProposal>(proposals.values());
+				Collections.sort(list, new CompletionProposalComparator());
+				for (CompletionProposal proposal : list) {
+					fRequestor.accept(proposal);
+				}				
 				this.fRequestor.endReporting();
 				fContext = null;
 				return;
@@ -176,7 +181,8 @@ public class CompletionEngine {
 		fContext = null;
 	}
 
-	private void suggestTypesConstants(IType type) throws RubyModelException {
+	private Map<String, CompletionProposal> suggestTypesConstants(IType type) throws RubyModelException {
+		Map<String, CompletionProposal> proposals = new HashMap<String, CompletionProposal>();
 		SearchPattern pattern = SearchPattern.createPattern(IRubyElement.CONSTANT, "*", IRubySearchConstants.DECLARATIONS, SearchPattern.R_PATTERN_MATCH);
 		IRubySearchScope scope = BasicSearchEngine.createRubySearchScope(new IRubyElement[] {type});
 		List<SearchMatch> results = search(pattern, scope);
@@ -186,22 +192,32 @@ public class CompletionEngine {
 			// Add proposal
 			CompletionProposal proposal = createProposal(fContext.getReplaceStart(), CompletionProposal.FIELD_REF, element.getElementName());
 			proposal.setType(type.getFullyQualifiedName());
-			fRequestor.accept(proposal);
+			proposal.setName(element.getElementName());
+			proposals.put(element.getElementName(), proposal);
 		}
+		return proposals;
 	}
 	
-	private void suggestNestedTypes(IType type) throws RubyModelException {
+	private Map<String, CompletionProposal> suggestNestedTypes(IType type) throws RubyModelException {
+		Map<String, CompletionProposal> proposals = new HashMap<String, CompletionProposal>();
 		SearchPattern pattern = SearchPattern.createPattern(IRubyElement.TYPE, "*", IRubySearchConstants.DECLARATIONS, SearchPattern.R_PATTERN_MATCH);
 		IRubySearchScope scope = BasicSearchEngine.createRubySearchScope(new IRubyElement[] {type});
 		List<SearchMatch> results = search(pattern, scope);
 		for (SearchMatch match: results) {
 			IType aType = (IType) match.getElement();
-			if (!aType.getFullyQualifiedName().startsWith(type.getFullyQualifiedName()) || aType.getFullyQualifiedName().equals(type.getFullyQualifiedName())) continue; 
-			// Add proposal			
+			String fullname = aType.getFullyQualifiedName();
+			if (fullname.equals(type.getFullyQualifiedName())) continue; // don't return exact match to prefix
+			if (!fullname.startsWith(type.getFullyQualifiedName())) continue; // only return those nested underneath prefix
+			String[] parts = Util.getTypeNameParts(fullname);
+//			 Don't add if it's not the directly nested child (and is instead the grandchild)
+			if (parts.length != Util.getTypeNameParts(type.getFullyQualifiedName()).length + 1) continue;
+			// Add proposal						
 			CompletionProposal proposal = createProposal(fContext.getReplaceStart(), CompletionProposal.TYPE_REF, aType.getElementName());
 			proposal.setType(aType.getFullyQualifiedName());
-			fRequestor.accept(proposal);
+			proposal.setName(aType.getElementName());
+			proposals.put(aType.getElementName(), proposal);
 		}
+		return proposals;
 	}
 
 	private List<CompletionProposal> suggestAllMethodsMatchingPrefix(IRubyScript script) {

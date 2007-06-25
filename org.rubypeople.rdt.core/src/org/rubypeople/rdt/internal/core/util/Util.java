@@ -794,7 +794,7 @@ public class Util {
 		return true;
 	}
 	
-	private static String[] getTypeNameParts(String fullyQualifiedName) {
+	public static String[] getTypeNameParts(String fullyQualifiedName) {
 		return fullyQualifiedName.split(NAMESPACE_DELIMETER);
 	}
 

@@ -341,9 +341,6 @@ public class BasicSearchEngine {
 			case IRubySearchConstants.CLASS :
 				typeSuffix = IIndexConstants.CLASS_SUFFIX;
 				break;
-//			case IRubySearchConstants.CLASS_AND_MODULE :
-//				typeSuffix = IIndexConstants.CLASS_AND_MODULE_SUFFIX; FIXME Converge the TYPE_SUFFIX and CLASS_AND_MODULE_SUFFIX
-//				break;
 			case IRubySearchConstants.MODULE :
 				typeSuffix = IIndexConstants.MODULE_SUFFIX;
 				break;

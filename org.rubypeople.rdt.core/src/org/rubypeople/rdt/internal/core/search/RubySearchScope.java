@@ -385,8 +385,8 @@ public class RubySearchScope implements IRubySearchScope {
 				root = (ISourceFolderRoot) element.getAncestor(IRubyElement.SOURCE_FOLDER_ROOT);
 				String relativePath;
 				
-					containerPath = root.getParent().getPath();
-					relativePath = Util.relativePath(getPath(element, false/*full path*/), 1/*remove project segmet*/);
+					containerPath = root.getPath();
+					relativePath = Util.relativePath(getPath(element, true/*full path*/), 0/*remove project segment*/);
 				
 				containerPathToString = containerPath.getDevice() == null ? containerPath.toString() : containerPath.toOSString();
 				add(relativePath, containerPathToString, false/*not a package*/);

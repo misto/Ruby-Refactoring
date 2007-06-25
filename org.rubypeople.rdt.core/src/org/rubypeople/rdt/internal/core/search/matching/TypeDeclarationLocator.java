@@ -28,7 +28,7 @@ public class TypeDeclarationLocator extends PatternLocator {
 			IRubyElement[] children = parent.getChildren();
 			for (int i = 0; i < children.length; i++) {
 				IRubyElement child = children[i];
-				if (child.isType(IRubyElement.TYPE)) {
+				if (child.isType(IRubyElement.TYPE) && locator.encloses(child)) {
 					int accuracy = getAccuracy((IType) child);
 					if (accuracy != IMPOSSIBLE_MATCH) {
 						IMember member = (IMember) child;

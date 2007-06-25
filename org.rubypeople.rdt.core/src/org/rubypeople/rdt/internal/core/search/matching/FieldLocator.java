@@ -34,7 +34,7 @@ public class FieldLocator extends PatternLocator {
 	@Override
 	public void reportMatches(final RubyScript script, final MatchLocator locator) {
 		if (!this.pattern.findReferences) { // just traverse our own model
-		  reportMatches((IParent) script, locator);
+			reportMatches((IParent) script, locator);
 		} else { // they want references too, so we need to traverse the AST
 			reportASTMatches(script, locator);
 		}		
@@ -130,11 +130,11 @@ public class FieldLocator extends PatternLocator {
 			IRubyElement[] children = parent.getChildren();
 			for (int i = 0; i < children.length; i++) {
 				IRubyElement child = children[i];
-				if (child.isType(IRubyElement.FIELD) || 
+				if ((child.isType(IRubyElement.FIELD) || 
 						child.isType(IRubyElement.GLOBAL) ||
 						child.isType(IRubyElement.CONSTANT) ||
 						child.isType(IRubyElement.CLASS_VAR) ||
-						child.isType(IRubyElement.INSTANCE_VAR)) {
+						child.isType(IRubyElement.INSTANCE_VAR)) && (locator.encloses(child))) {
 					int accuracy = getAccuracy(child.getElementName());
 					if (accuracy != IMPOSSIBLE_MATCH) {
 						IMember member = (IMember) child;
