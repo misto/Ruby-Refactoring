@@ -127,6 +127,8 @@ public class OccurrencesFinder extends AbstractOccurencesFinder {
 //			// Selection spans nodes; not handling that for now.
 //			return "Selection spans nodes; can only search for a single node.";
 //		}
+		fUsages.clear();
+		fWriteUsages.clear();
 		return null;
 	}
 

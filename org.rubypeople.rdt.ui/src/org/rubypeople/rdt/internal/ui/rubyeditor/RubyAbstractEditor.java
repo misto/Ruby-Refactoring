@@ -23,6 +23,7 @@ import org.eclipse.jface.text.DocumentEvent;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.IDocumentExtension4;
 import org.eclipse.jface.text.IDocumentListener;
+import org.eclipse.jface.text.IRegion;
 import org.eclipse.jface.text.ISelectionValidator;
 import org.eclipse.jface.text.ISynchronizable;
 import org.eclipse.jface.text.ITextInputListener;
@@ -82,12 +83,13 @@ import org.rubypeople.rdt.core.RubyCore;
 import org.rubypeople.rdt.core.RubyModelException;
 import org.rubypeople.rdt.internal.ui.RubyPlugin;
 import org.rubypeople.rdt.internal.ui.rubyeditor.RubyEditor.ITextConverter;
-import org.rubypeople.rdt.internal.ui.search.OccurrencesFinder;
 import org.rubypeople.rdt.internal.ui.search.IOccurrencesFinder;
+import org.rubypeople.rdt.internal.ui.search.OccurrencesFinder;
 import org.rubypeople.rdt.internal.ui.text.ContentAssistPreference;
 import org.rubypeople.rdt.internal.ui.text.IRubyPartitions;
 import org.rubypeople.rdt.internal.ui.text.PreferencesAdapter;
 import org.rubypeople.rdt.internal.ui.text.RubyPairMatcher;
+import org.rubypeople.rdt.internal.ui.text.RubyWordFinder;
 import org.rubypeople.rdt.ui.PreferenceConstants;
 import org.rubypeople.rdt.ui.RubyUI;
 import org.rubypeople.rdt.ui.text.RubySourceViewerConfiguration;
@@ -199,6 +201,8 @@ public abstract class RubyAbstractEditor extends TextEditor {
 	/** The occurrences finder job canceler */
 	private OccurrencesFinderJobCanceler fOccurrencesFinderJobCanceler;
 	private IOccurrencesFinder fOccurrencesFinder;
+
+	private IRegion fMarkOccurrenceTargetRegion;
     
 	/**
 	 * Creates and returns the preference store for this Ruby editor with the given input.
@@ -1377,6 +1381,21 @@ public abstract class RubyAbstractEditor extends TextEditor {
 			return;
 		
 		IDocument document= getDocumentProvider().getDocument(getEditorInput());
+		if (document == null)
+			return;
+
+		if (document instanceof IDocumentExtension4) {
+			int offset= selection.getOffset();
+			long currentModificationStamp= ((IDocumentExtension4)document).getModificationStamp();
+			if (fMarkOccurrenceTargetRegion != null && currentModificationStamp == fMarkOccurrenceModificationStamp) {
+				if (fMarkOccurrenceTargetRegion.getOffset() <= offset && offset <= fMarkOccurrenceTargetRegion.getOffset() + fMarkOccurrenceTargetRegion.getLength())
+					return;
+			}
+			fMarkOccurrenceTargetRegion= RubyWordFinder.findWord(document, offset);
+			fMarkOccurrenceModificationStamp= currentModificationStamp;
+		}
+		
+		
 		String source = document.get();
 
 		// Search for occurrences
@@ -1391,27 +1410,22 @@ public abstract class RubyAbstractEditor extends TextEditor {
 		fOccurrencesFinder.initialize(source, selection.getOffset(), selection.getLength());		
 		List<Position> matches = fOccurrencesFinder.perform();
 
-		if (matches.isEmpty()) {
+		if (matches == null || matches.isEmpty()) {
 			if (!fStickyOccurrenceAnnotations) {
 				removeOccurrenceAnnotations();
 			}
 			return;
-		} else {
-			// Convert to array
-			//TODO: Update IOccurrencesFinder interface to return an array of Position
-			Position[] positions = new Position[matches.size()];
-			int i = 0;
-			for (Position match : matches) {
-				positions[i++] = match;
-			}
+		} 
+		
+		// Convert to array
+		Position[] positions = matches.toArray(new Position[matches.size()]);
 
-			// Mark occurrences
-			fOccurrencesFinderJob= new OccurrencesFinderJob(document, positions, selection);
-			//fOccurrencesFinderJob.setPriority(Job.DECORATE);
-			//fOccurrencesFinderJob.setSystem(true);
-			//fOccurrencesFinderJob.schedule();
-			fOccurrencesFinderJob.run(new NullProgressMonitor());
-		}
+		// Mark occurrences
+		fOccurrencesFinderJob= new OccurrencesFinderJob(document, positions, selection);
+		//fOccurrencesFinderJob.setPriority(Job.DECORATE);
+		//fOccurrencesFinderJob.setSystem(true);
+		//fOccurrencesFinderJob.schedule();
+		fOccurrencesFinderJob.run(new NullProgressMonitor());
 	}
 	
 	protected void setMarkOccurrencePreferences(IOccurrencesFinder occurrencesFinder)
@@ -1470,39 +1484,10 @@ public abstract class RubyAbstractEditor extends TextEditor {
 		return fMarkOccurrenceAnnotations;
 	}
 
-//	boolean markOccurrencesOfType(IBinding binding) {
-//
-//		if (binding == null)
-//			return false;
-//
-//		int kind= binding.getKind();
-//
-//		if (fMarkTypeOccurrences && kind == IBinding.TYPE)
-//			return true;
-//
-//		if (fMarkMethodOccurrences && kind == IBinding.METHOD)
-//			return true;
-//
-//		if (kind == IBinding.VARIABLE) {
-//			IVariableBinding variableBinding= (IVariableBinding)binding;
-//			if (variableBinding.isField()) {
-//				int constantModifier= IModifierConstants.ACC_STATIC | IModifierConstants.ACC_FINAL;
-//				boolean isConstant= (variableBinding.getModifiers() & constantModifier) == constantModifier;
-//				if (isConstant)
-//					return fMarkConstantOccurrences;
-//				else
-//					return fMarkFieldOccurrences;
-//			}
-//
-//			return fMarkLocalVariableypeOccurrences;
-//		}
-//
-//		return false;
-//	}
-
 	void removeOccurrenceAnnotations() {
 		fMarkOccurrenceModificationStamp= IDocumentExtension4.UNKNOWN_MODIFICATION_STAMP;
-
+		fMarkOccurrenceTargetRegion= null;
+		
 		IDocumentProvider documentProvider= getDocumentProvider();
 		if (documentProvider == null)
 			return;
