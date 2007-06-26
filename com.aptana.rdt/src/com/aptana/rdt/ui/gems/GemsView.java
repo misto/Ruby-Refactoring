@@ -23,6 +23,7 @@ import org.eclipse.ui.IWorkbenchActionConstants;
 import org.eclipse.ui.part.ViewPart;
 import org.rubypeople.rdt.ui.TableViewerSorter;
 
+import com.aptana.rdt.AptanaRDTPlugin;
 import com.aptana.rdt.core.gems.Gem;
 import com.aptana.rdt.core.gems.GemListener;
 import com.aptana.rdt.internal.core.gems.GemManager;
@@ -52,7 +53,7 @@ public class GemsView extends ViewPart implements GemListener {
 					TableItem item = gemTable.getItem(gemTable.getSelectionIndex());
 					Gem gem = (Gem) item.getData();
 					if (MessageDialog.openConfirm(gemTable.getShell(), null, GemsMessages.bind(GemsMessages.RemoveGemDialog_msg, gem.getName()))) {
-						GemManager.getInstance().removeGem(gem);
+						AptanaRDTPlugin.getDefault().getGemManager().removeGem(gem);
 					}
 				}
 			}
@@ -78,10 +79,10 @@ public class GemsView extends ViewPart implements GemListener {
 		getSite().setSelectionProvider(gemViewer);
 
 
-		gemViewer.setInput(GemManager.getInstance().getGems());
+		gemViewer.setInput(AptanaRDTPlugin.getDefault().getGemManager().getGems());
 		createPopupMenu();
 
-		GemManager.getInstance().addGemListener(this);
+		AptanaRDTPlugin.getDefault().getGemManager().addGemListener(this);
 	}
 
 	@Override
@@ -123,7 +124,7 @@ public class GemsView extends ViewPart implements GemListener {
 		Display.getDefault().asyncExec(new Runnable() {
 
 			public void run() {
-				gemViewer.setInput(GemManager.getInstance().getGems());
+				gemViewer.setInput(AptanaRDTPlugin.getDefault().getGemManager().getGems());
 				gemViewer.refresh();
 			}
 
@@ -135,7 +136,7 @@ public class GemsView extends ViewPart implements GemListener {
 		Display.getDefault().asyncExec(new Runnable() {
 
 			public void run() {
-				gemViewer.setInput(GemManager.getInstance().getGems());
+				gemViewer.setInput(AptanaRDTPlugin.getDefault().getGemManager().getGems());
 			}
 
 		});
@@ -145,10 +146,14 @@ public class GemsView extends ViewPart implements GemListener {
 		Display.getDefault().asyncExec(new Runnable() {
 
 			public void run() {
-				gemViewer.setInput(GemManager.getInstance().getGems());
+				gemViewer.setInput(AptanaRDTPlugin.getDefault().getGemManager().getGems());
 			}
 
 		});
+	}
+
+	public void managerInitialized() {
+		// ignore		
 	}
 
 }

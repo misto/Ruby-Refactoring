@@ -16,6 +16,7 @@ import org.eclipse.ui.IViewActionDelegate;
 import org.eclipse.ui.IViewPart;
 import org.eclipse.ui.IWorkbenchPart;
 
+import com.aptana.rdt.AptanaRDTPlugin;
 import com.aptana.rdt.internal.core.gems.GemManager;
 
 /**
@@ -41,7 +42,7 @@ public class UpdateAllActionDelegate implements IObjectActionDelegate, IViewActi
 		Display.getDefault().asyncExec(new Runnable() {
 		
 			public void run() {
-				GemManager.getInstance().updateAll();		
+				AptanaRDTPlugin.getDefault().getGemManager().updateAll();		
 			}
 		
 		});		

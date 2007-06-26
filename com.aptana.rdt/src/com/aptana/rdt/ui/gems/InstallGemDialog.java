@@ -26,6 +26,7 @@ import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.Text;
 import org.rubypeople.rdt.ui.TableViewerSorter;
 
+import com.aptana.rdt.AptanaRDTPlugin;
 import com.aptana.rdt.core.gems.Gem;
 import com.aptana.rdt.internal.core.gems.GemManager;
 import com.aptana.rdt.internal.core.gems.LogicalGem;
@@ -111,7 +112,7 @@ public class InstallGemDialog extends Dialog {
 		gemViewer.setLabelProvider(new GemLabelProvider());
 		gemViewer.setContentProvider(contentProvider);
 		TableViewerSorter.bind(gemViewer);
-		gemViewer.setInput(GemManager.getInstance().getRemoteGems());
+		gemViewer.setInput(AptanaRDTPlugin.getDefault().getGemManager().getRemoteGems());
 		gemViewer.addFilter(new MyViewerFilter(nameText));
 
 		gemViewer.addSelectionChangedListener(new ISelectionChangedListener() {

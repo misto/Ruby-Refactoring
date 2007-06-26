@@ -21,6 +21,8 @@ import org.eclipse.core.runtime.preferences.InstanceScope;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.osgi.framework.BundleContext;
+import org.osgi.framework.FrameworkEvent;
+import org.osgi.framework.FrameworkListener;
 import org.rubypeople.rdt.internal.core.RubyModelManager.EclipsePreferencesListener;
 import org.rubypeople.rdt.internal.launching.LaunchingPlugin;
 import org.rubypeople.rdt.internal.ui.IRubyStatusConstants;
@@ -44,6 +46,7 @@ public class AptanaRDTPlugin extends AbstractUIPlugin {
     public Hashtable<String, String> optionsCache;
 	
     public final IEclipsePreferences[] preferencesLookup = new IEclipsePreferences[2];
+	
 	static final int PREF_INSTANCE = 0;
     static final int PREF_DEFAULT = 1;
 
@@ -230,40 +233,50 @@ public class AptanaRDTPlugin extends AbstractUIPlugin {
 	 * (non-Javadoc)
 	 * @see org.eclipse.ui.plugin.AbstractUIPlugin#start(org.osgi.framework.BundleContext)
 	 */
-	public void start(BundleContext context) throws Exception {
+	public void start(final BundleContext context) throws Exception {
 		super.start(context);
-		context.registerService(IGemManager.class.getName(), GemManager.getInstance(), null);
+		
 		initializePreferences();
+		context.registerService(IGemManager.class.getName(), getGemManager(), null);
 		
-		boolean rubyDebugInstalled = GemManager.getInstance().gemInstalled("ruby-debug-ide");
-		 // FIXME What if user has explicity disabled using ruby-debug?!
-		if (rubyDebugInstalled) {
-			setRubyDebugAsDefault();
-		} else {
-			GemManager.getInstance().addGemListener(new GemListener() {
+		context.addFrameworkListener(new FrameworkListener() {
 		
-				public void gemsRefreshed() {
-					if (GemManager.getInstance().gemInstalled("ruby-debug-ide")) {
-						setRubyDebugUp();
-					}					
+			public void frameworkEvent(FrameworkEvent event) {
+				if (event.getType() == FrameworkEvent.STARTED) {
+					GemManager.getInstance().initialize();
+				}
+		
+			}
+		
+		});
+		getGemManager().addGemListener(new GemListener() {
+		
+			public void managerInitialized() {
+				if (getGemManager().gemInstalled("ruby-debug-ide")) {
+					setRubyDebugUp();
 				}				
+			}
 		
-				public void gemRemoved(Gem gem) {
-					// ignore
-				}
+			private void setRubyDebugUp() {
+				setRubyDebugAsDefault();
+				removeListener(this);					
+			}
+			
+			public void gemsRefreshed() {
+				if (getGemManager().gemInstalled("ruby-debug-ide")) {
+					setRubyDebugUp();
+				}					
+			}
 		
-				public void gemAdded(Gem gem) {
-					// ignore		
-					if(gem.getName().equals("ruby-debug-ide"))
-						setRubyDebugUp();
-				}
-
-				private void setRubyDebugUp() {
-					setRubyDebugAsDefault();
-					removeListener(this);					
-				}
-			});
-		}
+			public void gemRemoved(Gem gem) {
+				// ignore		
+			}
+		
+			public void gemAdded(Gem gem) {
+				// ignore		
+			}
+		
+		});
 	}
 	
 	private void initializePreferences() {
@@ -386,4 +399,8 @@ public class AptanaRDTPlugin extends AbstractUIPlugin {
         // return built map
         return options;
     }
+	
+	public IGemManager getGemManager() {
+		return GemManager.getInstance();
+	}
 }

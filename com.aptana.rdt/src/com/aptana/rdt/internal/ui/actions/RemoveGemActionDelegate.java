@@ -18,6 +18,7 @@ import org.eclipse.ui.IViewActionDelegate;
 import org.eclipse.ui.IViewPart;
 import org.eclipse.ui.IWorkbenchPart;
 
+import com.aptana.rdt.AptanaRDTPlugin;
 import com.aptana.rdt.core.gems.Gem;
 import com.aptana.rdt.internal.core.gems.GemManager;
 import com.aptana.rdt.ui.gems.GemsMessages;
@@ -51,7 +52,7 @@ public class RemoveGemActionDelegate implements IObjectActionDelegate, IViewActi
 		Display.getDefault().asyncExec(new Runnable() {
 		
 			public void run() {
-				GemManager.getInstance().removeGem(selectedGem);		
+				AptanaRDTPlugin.getDefault().getGemManager().removeGem(selectedGem);		
 			}
 		
 		});

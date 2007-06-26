@@ -77,7 +77,7 @@ public class GemManager implements IGemManager {
 
 	private static final String GEM_INDEX_URL = "http://gems.rubyforge.org/yaml.Z";
 
-	private static IGemManager fgInstance;
+	private static GemManager fgInstance;
 
 	private Set<Gem> gems;
 	private Set<Gem> remoteGems;
@@ -92,41 +92,6 @@ public class GemManager implements IGemManager {
 		// FIXME Do an incremental check for new remote gems somehow?
 		remoteGems = new HashSet<Gem>();
 		listeners = new HashSet<GemListener>();
-		Job job = new Job(GemsMessages.GemManager_loading_remote_gems) {
-
-			@Override
-			protected IStatus run(IProgressMonitor monitor) {
-				remoteGems = loadLocalCache(getConfigFile(REMOTE_GEMS_CACHE_FILE));
-				if (remoteGems.isEmpty()) {
-					remoteGems = loadRemoteGems();
-					storeGemCache(remoteGems,
-							getConfigFile(REMOTE_GEMS_CACHE_FILE));
-				}
-				return Status.OK_STATUS;
-			}
-
-		};
-		job.schedule();
-		Job job2 = new Job(GemsMessages.GemManager_loading_local_gems) {
-
-			@Override
-			protected IStatus run(IProgressMonitor monitor) {
-				gems = loadLocalCache(getConfigFile(LOCAL_GEMS_CACHE_FILE));
-				if (gems.isEmpty()) {
-					gems = loadLocalGems();
-					storeGemCache(gems, getConfigFile(LOCAL_GEMS_CACHE_FILE));
-				}
-				isInitialized = true;
-				synchronized (listeners) {
-					for (GemListener listener : listeners) {
-						listener.gemsRefreshed();
-					}
-				}
-				return Status.OK_STATUS;
-			}
-
-		};
-		job2.schedule();
 	}
 	
 	public boolean isInitialized() {
@@ -523,7 +488,7 @@ public class GemManager implements IGemManager {
 		return Collections.unmodifiableSortedSet(new TreeSet<Gem>(gems));
 	}
 
-	public static IGemManager getInstance() {
+	public static GemManager getInstance() {
 		if (fgInstance == null)
 			fgInstance = new GemManager();
 		return fgInstance;
@@ -686,5 +651,56 @@ public class GemManager implements IGemManager {
 			return false;
 		}
 		return true;
+	}
+
+	public void initialize() {
+		scheduleLoadingRemoteGems();
+		scheduleLoadingLocalGems();		
+	}
+
+	private void scheduleLoadingLocalGems() {
+		Job job2 = new Job(GemsMessages.GemManager_loading_local_gems) {
+
+			@Override
+			protected IStatus run(IProgressMonitor monitor) {
+				gems = loadLocalCache(getConfigFile(LOCAL_GEMS_CACHE_FILE));
+				if (gems.isEmpty()) {
+					gems = loadLocalGems();
+					storeGemCache(gems, getConfigFile(LOCAL_GEMS_CACHE_FILE));
+				}
+				isInitialized = true;
+				synchronized (listeners) {
+					for (GemListener listener : listeners) {
+						listener.managerInitialized();
+					}
+				}
+				synchronized (listeners) {
+					for (GemListener listener : listeners) {
+						listener.gemsRefreshed();
+					}
+				}
+				return Status.OK_STATUS;
+			}
+
+		};
+		job2.schedule();
+	}
+
+	private void scheduleLoadingRemoteGems() {
+		Job job = new Job(GemsMessages.GemManager_loading_remote_gems) {
+
+			@Override
+			protected IStatus run(IProgressMonitor monitor) {
+				remoteGems = loadLocalCache(getConfigFile(REMOTE_GEMS_CACHE_FILE));
+				if (remoteGems.isEmpty()) {
+					remoteGems = loadRemoteGems();
+					storeGemCache(remoteGems,
+							getConfigFile(REMOTE_GEMS_CACHE_FILE));
+				}
+				return Status.OK_STATUS;
+			}
+
+		};
+		job.schedule();
 	}
 }

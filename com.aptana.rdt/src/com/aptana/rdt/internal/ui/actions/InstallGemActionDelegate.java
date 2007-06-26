@@ -17,6 +17,7 @@ import org.eclipse.ui.IViewActionDelegate;
 import org.eclipse.ui.IViewPart;
 import org.eclipse.ui.IWorkbenchPart;
 
+import com.aptana.rdt.AptanaRDTPlugin;
 import com.aptana.rdt.core.gems.Gem;
 import com.aptana.rdt.internal.core.gems.GemManager;
 import com.aptana.rdt.ui.gems.InstallGemDialog;
@@ -45,7 +46,7 @@ public class InstallGemActionDelegate implements IObjectActionDelegate, IViewAct
 			final Gem gem = dialog.getGem();
 			Display.getDefault().asyncExec(new Runnable() {			
 				public void run() {
-					GemManager.getInstance().installGem(gem);			
+					AptanaRDTPlugin.getDefault().getGemManager().installGem(gem);			
 				}			
 			});			
 		}		
@@ -56,7 +57,7 @@ public class InstallGemActionDelegate implements IObjectActionDelegate, IViewAct
 	 *      org.eclipse.jface.viewers.ISelection)
 	 */
 	public void selectionChanged(IAction action, ISelection selection) {
-		action.setEnabled(!GemManager.getInstance().getRemoteGems().isEmpty());
+		action.setEnabled(!AptanaRDTPlugin.getDefault().getGemManager().getRemoteGems().isEmpty());
 	}
 
 	/**

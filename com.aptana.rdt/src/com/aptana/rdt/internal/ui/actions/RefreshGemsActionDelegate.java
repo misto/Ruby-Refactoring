@@ -17,6 +17,7 @@ import org.eclipse.ui.IViewActionDelegate;
 import org.eclipse.ui.IViewPart;
 import org.eclipse.ui.IWorkbenchPart;
 
+import com.aptana.rdt.AptanaRDTPlugin;
 import com.aptana.rdt.internal.core.gems.GemManager;
 
 /**
@@ -39,7 +40,7 @@ public class RefreshGemsActionDelegate implements IObjectActionDelegate,
 	 * @see org.eclipse.ui.IActionDelegate#run(org.eclipse.jface.action.IAction)
 	 */
 	public void run(IAction action) {
-		if (!GemManager.getInstance().refresh()) {
+		if (!AptanaRDTPlugin.getDefault().getGemManager().refresh()) {
 			MessageDialog.openError(Display.getCurrent().getActiveShell(), "Unable to refresh local gems", "Sorry we were unable to refresh the list of local gems.");
 		}
 	}
