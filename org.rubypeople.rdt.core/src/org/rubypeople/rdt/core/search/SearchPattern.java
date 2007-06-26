@@ -404,7 +404,7 @@ public abstract class SearchPattern extends InternalSearchPattern {
 		} else {
 			typeChars = typePart;
 		}
-		if (typeChars.length == 1 && typeChars[0] == '*') {
+		if (typeChars != null && typeChars.length == 1 && typeChars[0] == '*') {
 			typeChars = null;
 		}
 		switch (limitTo) {
