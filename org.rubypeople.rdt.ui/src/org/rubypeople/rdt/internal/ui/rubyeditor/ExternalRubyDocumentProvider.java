@@ -15,6 +15,7 @@ import org.eclipse.ui.internal.editors.text.WorkspaceOperationRunner;
 import org.eclipse.ui.texteditor.AbstractDocumentProvider;
 import org.rubypeople.rdt.internal.ui.RubyUIMessages;
 import org.rubypeople.rdt.internal.ui.RubyPlugin;
+import org.rubypeople.rdt.internal.ui.text.IRubyPartitions;
 import org.rubypeople.rdt.ui.text.RubyTextTools;
 
 public class ExternalRubyDocumentProvider extends AbstractDocumentProvider {
@@ -45,11 +46,9 @@ public class ExternalRubyDocumentProvider extends AbstractDocumentProvider {
 		Document document = new Document() ;
 		document.set(fileContent.toString()) ;
         // TODO: check if this should be inherited from RubyDocumentProvider
-		if (document != null) {
-			RubyTextTools tools = RubyPlugin.getDefault().getRubyTextTools();
-			IDocumentPartitioner partitioner = tools.createDocumentPartitioner();
-			document.setDocumentPartitioner(partitioner);
-			partitioner.connect(document);
+		if (document != null) {			
+			RubyTextTools tools= RubyPlugin.getDefault().getRubyTextTools();
+			tools.setupRubyDocumentPartitioner(document, IRubyPartitions.RUBY_PARTITIONING);
 		}
 		return document;
 	}
