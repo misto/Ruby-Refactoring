@@ -260,12 +260,15 @@ public class RubyElementImageProvider {
             if (element.getElementType() == IRubyElement.METHOD
                     && ((IMethod) element).isConstructor())
                 flags |= RubyElementImageDescriptor.CONSTRUCTOR;
+            if (element.getElementType() == IRubyElement.METHOD
+                    && ((IMethod) element).isSingleton())
+                flags |= RubyElementImageDescriptor.STATIC;
 
         }
         return flags;
     }
 
-    public static ImageDescriptor getMethodImageDescriptor(int flags) {
+    public static ImageDescriptor getMethodImageDescriptor(int flags) {		
         if (Flags.isPublic(flags)) return RubyPluginImages.DESC_MISC_PUBLIC;
         if (Flags.isProtected(flags)) return RubyPluginImages.DESC_MISC_PROTECTED;
         return RubyPluginImages.DESC_MISC_PRIVATE;
