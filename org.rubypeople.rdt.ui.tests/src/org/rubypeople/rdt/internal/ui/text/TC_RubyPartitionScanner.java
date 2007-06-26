@@ -244,5 +244,35 @@ public class TC_RubyPartitionScanner extends TestCase {
 		assertEquals(RubyPartitionScanner.RUBY_SINGLE_LINE_COMMENT, this.getContentType(code, 40)); // # 'c'ommen
 	}
 	
+	public void testWronglyColoredHeredoc() {
+		// FIXME Something is weird, this test passes, and it works in a normal editor, but is broken in ActiveRecord::Base externally
+		String code = "def destroy\n" +
+"  unless new_record?\n" +
+"    connection.delete <<-end_sql, \"#{self.class.name} Destroy\"\n" +
+"      DELETE FROM #{self.class.table_name}\n" +
+"      WHERE #{connection.quote_column_name(self.class.primary_key)} = #{quoted_id}\n" +
+"    end_sql\n" +
+"  end\n" +
+"  \n" +
+"  freeze\n" +
+"end";
+		assertEquals(RubyPartitionScanner.RUBY_STRING, this.getContentType(code, 58)); // <<-'e'nd_sql
+		assertEquals(RubyPartitionScanner.RUBY_DEFAULT, this.getContentType(code, code.length() - 8)); // fr'e'eze
+		assertEquals(RubyPartitionScanner.RUBY_DEFAULT, this.getContentType(code, code.length() - 2)); // e'n'd
+	}
 	
+	public void testEscapedCharactersAndSingleQuoteInsideDoubleQuote() {
+		String code = "quoted_value = \"'#{quoted_value[1..-2].gsub(/\\'/, \"\\\\\\\\'\")}'\" if quoted_value.include?(\"\\\\\\'\") # (for ruby mode) \"\n" + 
+						"quoted_value";
+		assertEquals(RubyPartitionScanner.RUBY_STRING, this.getContentType(code, 16)); // 
+		assertEquals(RubyPartitionScanner.RUBY_DEFAULT, this.getContentType(code, 19)); // #{'q'uoted 
+		assertEquals(RubyPartitionScanner.RUBY_REGULAR_EXPRESSION, this.getContentType(code, 44)); // / 
+		assertEquals(RubyPartitionScanner.RUBY_STRING, this.getContentType(code, 51)); // "\ 
+		assertEquals(RubyPartitionScanner.RUBY_STRING, this.getContentType(code, 59)); // '" if 
+		assertEquals(RubyPartitionScanner.RUBY_DEFAULT, this.getContentType(code, 62)); // 'i'f quoted_ 
+		assertEquals(RubyPartitionScanner.RUBY_STRING, this.getContentType(code, 87)); // include?('"'
+		assertEquals(RubyPartitionScanner.RUBY_SINGLE_LINE_COMMENT, this.getContentType(code, 95)); //'#' (for ruby mode)
+		assertEquals(RubyPartitionScanner.RUBY_DEFAULT, this.getContentType(code, code.length() - 3));
+	}
 }
+
