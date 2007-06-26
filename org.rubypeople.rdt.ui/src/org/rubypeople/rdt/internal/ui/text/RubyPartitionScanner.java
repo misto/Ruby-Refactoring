@@ -387,6 +387,10 @@ public class RubyPartitionScanner implements IPartitionTokenScanner {
 			for (int i = 0; i < input.length(); i++) {
 				char c = input.charAt(i);
 				switch (c) {
+				case '\\':
+					// skip next character
+					i++;
+					break;
 				case '"':
 					if (topEquals("\"")) {
 						pop();
@@ -397,7 +401,7 @@ public class RubyPartitionScanner implements IPartitionTokenScanner {
 				case '\'':
 					if (topEquals("'")) {
 						pop();
-					} else {
+					} else if (!topEquals("\"")){
 						push("'");
 					}
 					break;
