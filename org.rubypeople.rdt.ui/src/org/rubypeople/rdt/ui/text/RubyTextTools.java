@@ -9,14 +9,14 @@ import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.IDocumentExtension3;
 import org.eclipse.jface.text.IDocumentPartitioner;
-import org.eclipse.jface.text.rules.DefaultPartitioner;
+import org.eclipse.jface.text.rules.FastPartitioner;
 import org.eclipse.jface.text.rules.IPartitionTokenScanner;
 import org.eclipse.jface.util.IPropertyChangeListener;
 import org.eclipse.jface.util.PropertyChangeEvent;
 import org.rubypeople.rdt.internal.ui.RubyPlugin;
 import org.rubypeople.rdt.internal.ui.rubyeditor.RubyEditorPreferences;
-import org.rubypeople.rdt.internal.ui.text.MergingPartitionScanner;
 import org.rubypeople.rdt.internal.ui.text.IRubyColorConstants;
+import org.rubypeople.rdt.internal.ui.text.MergingPartitionScanner;
 import org.rubypeople.rdt.internal.ui.text.RubyColorManager;
 import org.rubypeople.rdt.internal.ui.text.RubyCommentScanner;
 import org.rubypeople.rdt.internal.ui.text.RubyPartitionScanner;
@@ -142,7 +142,7 @@ public class RubyTextTools {
     }
 
     public IDocumentPartitioner createDocumentPartitioner() {
-        return new DefaultPartitioner(getPartitionScanner(),
+        return new FastPartitioner(getPartitionScanner(),
                 RubyPartitionScanner.LEGAL_CONTENT_TYPES);
     }
 
