@@ -68,8 +68,6 @@ import org.rubypeople.rdt.internal.ti.util.ClosestSpanningNodeLocator;
 import org.rubypeople.rdt.internal.ti.util.INodeAcceptor;
 import org.rubypeople.rdt.internal.ti.util.ScopedNodeLocator;
 
-import sun.security.action.PutAllAction;
-
 public class CompletionEngine {
 	private static final String OBJECT = "Object";
 	private static final String CONSTRUCTOR_INVOKE_NAME = "new";
