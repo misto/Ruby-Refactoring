@@ -523,28 +523,6 @@ public class CompletionEngine {
 		}
 	}
 
-	private void addLocalVariablesAndArguments(Node enclosingMethodNode) {
-		// Add local vars and arguments
-		if (enclosingMethodNode != null && enclosingMethodNode instanceof MethodDefNode) {
-			Set<String> matches = new HashSet<String>();
-			StaticScope scope = ((MethodDefNode) enclosingMethodNode).getScope();
-			if (scope != null && scope.getVariables().length > 0) {
-				List locals = Arrays.asList(scope.getVariables());
-				for (Iterator iter = locals.iterator(); iter.hasNext();) {
-					String local = (String) iter.next();
-					if (!fContext.prefixStartsWith(local))
-						continue;
-					matches.add(local);
-				}
-			}
-			for (String local : matches) { // Avoid duplicates
-				CompletionProposal proposal = new CompletionProposal(CompletionProposal.LOCAL_VARIABLE_REF, local, 100);
-				proposal.setReplaceRange(fContext.getReplaceStart(), fContext.getReplaceStart() + local.length());
-				fRequestor.accept(proposal);
-			}
-		}
-	}
-
 	/**
 	 * Gets the members available inside a type node (ModuleNode, ClassNode): -
 	 * Instance variables - Class variables - Methods
