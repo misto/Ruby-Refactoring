@@ -1,10 +1,17 @@
 package org.rubypeople.rdt.testunit.launcher;
 
-import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.Writer;
+import java.net.URL;
 
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.FileLocator;
+import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.debug.core.ILaunch;
 import org.eclipse.debug.core.ILaunchConfiguration;
@@ -111,14 +118,51 @@ public class TestUnitLaunchConfigurationDelegate extends RubyLaunchDelegate {
 		return display;		
 	}
 	
-	public static String getTestRunnerPath() {
-		String directory = RubyCore.getOSDirectory(TestunitPlugin.getDefault());
-		File pluginDirFile  = new File(directory, "ruby");
-		
-		if (!pluginDirFile.exists()) 
-			throw new RuntimeException("Expected directory of RemoteTestRunner.rb does not exist: " + pluginDirFile.getAbsolutePath()); 
+	private static URL getOriginalTestRunner() {
+		IPath path = new Path("ruby").append(TestUnitLaunchShortcut.TEST_RUNNER_FILE);
+		URL url = FileLocator.find(TestunitPlugin.getDefault().getBundle(), path, null);
+		if (url == null)
+			throw new RuntimeException("Expected directory of RemoteTestRunner.rb does not exist: " + path); 
+		return url;
+	}
 	
-		return pluginDirFile.getAbsolutePath() + File.separator + TestUnitLaunchShortcut.TEST_RUNNER_FILE;
+	public static String getTestRunnerPath() {
+		IPath path = TestunitPlugin.getDefault().getStateLocation().append(TestUnitLaunchShortcut.TEST_RUNNER_FILE);
+		
+		if (!path.toFile().exists()) {
+			// copy original over
+			Writer writer = null;
+			InputStream stream = null;
+			try {
+				URL url = getOriginalTestRunner();
+				stream = url.openStream();
+				path.toFile().createNewFile();
+				writer = new FileWriter(path.toFile());
+				int b = 0; // FIXME Copy over on byte buffers rather than per byte to speed this up
+				while((b = stream.read()) != -1) {
+					writer.write(b);
+				}
+			} catch (IOException e) {
+				// ignore
+				e.printStackTrace();
+			} finally {
+				try {
+					if (stream != null) stream.close();
+				} catch (IOException e) {
+					// ignore
+				}
+				try {
+					if (writer != null) writer.close();
+				} catch (IOException e) {
+					// ignore
+				}
+			}
+		}
+		
+		if (!path.toFile().exists())
+			throw new RuntimeException("Expected directory of RemoteTestRunner.rb does not exist: " + path); 
+	
+		return path.toPortableString();
 	}
 	
 	private int getPort() {
