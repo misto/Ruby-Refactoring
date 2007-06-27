@@ -11,10 +11,13 @@ import org.eclipse.jface.text.TextUtilities;
 import org.eclipse.ui.texteditor.ITextEditor;
 import org.rubypeople.rdt.core.IMethod;
 import org.rubypeople.rdt.core.IRubyElement;
+import org.rubypeople.rdt.core.IRubyProject;
 import org.rubypeople.rdt.core.IRubyScript;
 import org.rubypeople.rdt.core.RubyModelException;
+import org.rubypeople.rdt.internal.corext.util.CodeFormatterUtil;
 import org.rubypeople.rdt.internal.ui.RubyPlugin;
 import org.rubypeople.rdt.internal.ui.rubyeditor.WorkingCopyManager;
+import org.rubypeople.rdt.internal.ui.text.IRubyPartitions;
 
 public class RubyCommentAutoIndentStrategy extends
 		DefaultIndentLineAutoEditStrategy {
@@ -22,11 +25,13 @@ public class RubyCommentAutoIndentStrategy extends
 	private String fPartitioning;
 	private ITextEditor fEditor;
 	private WorkingCopyManager fManager;
+	private IRubyProject fProject;
 
-	public RubyCommentAutoIndentStrategy(ITextEditor textEditor, String partitioning) {
+	public RubyCommentAutoIndentStrategy(ITextEditor textEditor, String partitioning, IRubyProject project) {
 		fPartitioning = partitioning;
 		fEditor = textEditor;
 		fManager = RubyPlugin.getDefault().getWorkingCopyManager();
+		fProject = project;
 	}
 
 	public void customizeDocumentCommand(IDocument document,
@@ -56,7 +61,43 @@ public class RubyCommentAutoIndentStrategy extends
 	 *            the command to deal with
 	 */
 	private void indentAfterNewLine(IDocument d, DocumentCommand c) {
+		if (fPartitioning.equals(IRubyPartitions.RUBY_SINGLE_LINE_COMMENT)) {
+			doSingleLineComment(d, c);
+		} else {
+			doMultiLineComment(d, c);
+		}
+	}
 
+	private void doMultiLineComment(IDocument d, DocumentCommand c) {
+		
+		int offset = c.offset;
+		if (offset == -1 || d.getLength() == 0)
+			return;
+
+		try {
+			int p = (offset == d.getLength() ? offset - 1 : offset);
+				
+			int lineNumber = d.getLineOfOffset(p);
+			IRegion line = d.getLineInformation(lineNumber);
+			String aLine = getLine(d, lineNumber - 1);
+			StringBuffer buf = new StringBuffer(c.text);
+			if (aLine.trim().equals("=begin")) {
+				// add =end
+				buf.append(CodeFormatterUtil.createIndentString(1, fProject));
+				c.caretOffset= c.offset + buf.length();
+				c.shiftsCaret= false;
+				buf.append(TextUtilities.getDefaultLineDelimiter(d));
+				buf.append("=end");
+			}			
+					
+			c.text = buf.toString();
+
+		} catch (BadLocationException excp) {
+			// stop work
+		}
+	}
+
+	private void doSingleLineComment(IDocument d, DocumentCommand c) {
 		int offset = c.offset;
 		if (offset == -1 || d.getLength() == 0)
 			return;

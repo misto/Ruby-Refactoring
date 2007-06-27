@@ -325,8 +325,8 @@ public class RubySourceViewerConfiguration extends TextSourceViewerConfiguration
 
 	public IAutoEditStrategy[] getAutoEditStrategies(ISourceViewer sourceViewer, String contentType) {
 		String partitioning = getConfiguredDocumentPartitioning(sourceViewer);
-		if (IRubyPartitions.RUBY_SINGLE_LINE_COMMENT.equals(contentType)) {
-			return new IAutoEditStrategy[] { new RubyCommentAutoIndentStrategy(fTextEditor, partitioning) };
+		if (IRubyPartitions.RUBY_SINGLE_LINE_COMMENT.equals(contentType) || IRubyPartitions.RUBY_MULTI_LINE_COMMENT.equals(contentType)) {
+			return new IAutoEditStrategy[] { new RubyCommentAutoIndentStrategy(fTextEditor, partitioning, getProject()) };
 		} else if (IDocument.DEFAULT_CONTENT_TYPE.equals(contentType)) {
 			return new IAutoEditStrategy[] { new RubyAutoIndentStrategy(partitioning, getProject()) };
 		} else {
