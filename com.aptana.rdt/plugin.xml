@@ -70,9 +70,6 @@
        <viewShortcut id="com.aptana.rdt.ui.views.RubyStdLibAPIView"/>   
        <viewShortcut id="com.aptana.rdt.ui.views.RubyCoreAPIView"/> 
      </perspectiveExtension> 
-     <perspectiveExtension targetID="org.radrails.rails.ui.PerspectiveRails">
-       <viewShortcut id="com.aptana.rdt.ui.views.RailsAPIView"/>  
-     </perspectiveExtension> 
    </extension>
    
    <extension
