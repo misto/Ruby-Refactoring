@@ -41,4 +41,9 @@ public interface IRubyPartitions {
      * The identifier string partition content type.
      */
     String RUBY_STRING= "__ruby_string"; //$NON-NLS-1$	
+    
+    /**
+     * The identifier command partition content type.
+     */
+    String RUBY_COMMAND= "__ruby_command"; //$NON-NLS-1$	
 }

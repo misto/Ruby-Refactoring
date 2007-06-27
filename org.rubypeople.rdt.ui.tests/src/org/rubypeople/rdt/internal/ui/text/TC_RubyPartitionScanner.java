@@ -284,5 +284,22 @@ public class TC_RubyPartitionScanner extends TestCase {
 		assertEquals(RubyPartitionScanner.RUBY_STRING, this.getContentType(code, 18));
 		assertEquals(RubyPartitionScanner.RUBY_STRING, this.getContentType(code, 24)); 
 	}
+
+	public void testCommands() {
+		String code = "if OPTIONS[:detach]\n" +
+	         "  `mongrel_rails #{parameters.join(\" \")} -d`\n" +
+	         "else\n" +
+	         "  ENV[\"RAILS_ENV\"] = OPTIONS[:environment]";
+		assertEquals(RubyPartitionScanner.RUBY_DEFAULT, this.getContentType(code, 1));
+		assertEquals(RubyPartitionScanner.RUBY_COMMAND, this.getContentType(code, 22)); 
+		assertEquals(RubyPartitionScanner.RUBY_COMMAND, this.getContentType(code, 23));		
+		assertEquals(RubyPartitionScanner.RUBY_COMMAND, this.getContentType(code, 38));
+		assertEquals(RubyPartitionScanner.RUBY_DEFAULT, this.getContentType(code, 50));
+		assertEquals(RubyPartitionScanner.RUBY_STRING, this.getContentType(code, 55));
+		assertEquals(RubyPartitionScanner.RUBY_DEFAULT, this.getContentType(code, 58));
+		assertEquals(RubyPartitionScanner.RUBY_COMMAND, this.getContentType(code, 59));
+		assertEquals(RubyPartitionScanner.RUBY_COMMAND, this.getContentType(code, 63));
+		assertEquals(RubyPartitionScanner.RUBY_DEFAULT, this.getContentType(code, 65));
+	}
 }
 

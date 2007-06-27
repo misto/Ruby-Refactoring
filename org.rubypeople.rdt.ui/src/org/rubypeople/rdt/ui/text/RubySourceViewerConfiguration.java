@@ -90,7 +90,7 @@ public class RubySourceViewerConfiguration extends TextSourceViewerConfiguration
 
 	protected AbstractRubyTokenScanner fCodeScanner;
 
-	protected AbstractRubyScanner fMultilineCommentScanner, fSinglelineCommentScanner, fStringScanner, fRegexScanner;
+	protected AbstractRubyScanner fMultilineCommentScanner, fSinglelineCommentScanner, fStringScanner, fRegexScanner, fCommandScanner;
 	private RubyDoubleClickSelector fRubyDoubleClickSelector;
 	private RubyCompletionProcessor fRubyCp;
 
@@ -213,6 +213,7 @@ public class RubySourceViewerConfiguration extends TextSourceViewerConfiguration
 		fSinglelineCommentScanner = new RubyCommentScanner(getColorManager(), fPreferenceStore, IRubyColorConstants.RUBY_SINGLE_LINE_COMMENT);
 		fStringScanner = new SingleTokenRubyScanner(getColorManager(), fPreferenceStore, IRubyColorConstants.RUBY_STRING);
 		fRegexScanner = new SingleTokenRubyScanner(getColorManager(), fPreferenceStore, IRubyColorConstants.RUBY_REGEXP);
+		fCommandScanner = new SingleTokenRubyScanner(getColorManager(), fPreferenceStore, IRubyColorConstants.RUBY_COMMAND);
 	}
 
 	/**
@@ -257,6 +258,10 @@ public class RubySourceViewerConfiguration extends TextSourceViewerConfiguration
 		dr = new DefaultDamagerRepairer(getRegexScanner());
 		reconciler.setDamager(dr, RubyPartitionScanner.RUBY_REGULAR_EXPRESSION);
 		reconciler.setRepairer(dr, RubyPartitionScanner.RUBY_REGULAR_EXPRESSION);
+		
+		dr = new DefaultDamagerRepairer(getCommandScanner());
+		reconciler.setDamager(dr, RubyPartitionScanner.RUBY_COMMAND);
+		reconciler.setRepairer(dr, RubyPartitionScanner.RUBY_COMMAND);
 		return reconciler;
 	}
 
@@ -278,6 +283,10 @@ public class RubySourceViewerConfiguration extends TextSourceViewerConfiguration
 	
 	protected ITokenScanner getRegexScanner() {
 		return fRegexScanner;
+	}
+	
+	protected ITokenScanner getCommandScanner() {
+		return fCommandScanner;
 	}
 
 	public String[] getConfiguredContentTypes(ISourceViewer sourceViewer) {

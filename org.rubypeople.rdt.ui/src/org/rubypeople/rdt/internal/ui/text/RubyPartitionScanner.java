@@ -65,18 +65,19 @@ public class RubyPartitionScanner implements IPartitionTokenScanner {
 	private int fOffset;
 	
 	private List<QueuedToken> fQueue = new ArrayList<QueuedToken>();
-	private String fContentType;
+	private String fContentType = RUBY_DEFAULT;
 	private boolean inSingleQuote;
 	
-	// XXX Also do regex partitions!
+
 	public final static String RUBY_MULTI_LINE_COMMENT = IRubyPartitions.RUBY_MULTI_LINE_COMMENT;
 	public final static String RUBY_SINGLE_LINE_COMMENT = IRubyPartitions.RUBY_SINGLE_LINE_COMMENT;
 	public final static String RUBY_STRING = IRubyPartitions.RUBY_STRING;
 	public final static String RUBY_REGULAR_EXPRESSION = IRubyPartitions.RUBY_REGULAR_EXPRESSION;
 	public static final String RUBY_DEFAULT = IDocument.DEFAULT_CONTENT_TYPE;
-
+	public static final String RUBY_COMMAND = IRubyPartitions.RUBY_COMMAND;
+	
 	public static final String[] LEGAL_CONTENT_TYPES = {
-			RUBY_DEFAULT, RUBY_MULTI_LINE_COMMENT, RUBY_SINGLE_LINE_COMMENT, RUBY_REGULAR_EXPRESSION, RUBY_STRING
+			RUBY_DEFAULT, RUBY_MULTI_LINE_COMMENT, RUBY_SINGLE_LINE_COMMENT, RUBY_REGULAR_EXPRESSION, RUBY_STRING, RUBY_COMMAND
 			};
 
 	public RubyPartitionScanner() {
@@ -133,7 +134,7 @@ public class RubyPartitionScanner implements IPartitionTokenScanner {
 		}
 		fOffset = getOffset();
 		fLength = 0;
-		IToken returnValue = new Token(null);
+		IToken returnValue = new Token(RUBY_DEFAULT);
 		boolean isEOF = false;
 		try {
 			isEOF = !lexer.advance();
@@ -185,7 +186,6 @@ public class RubyPartitionScanner implements IPartitionTokenScanner {
 	}
 
 	private void setOffset(int offset) {
-//		Assert.isTrue(offset > fOffset);
 		fOffset = offset;
 	}
 
@@ -260,6 +260,8 @@ public class RubyPartitionScanner implements IPartitionTokenScanner {
 		}
 		if (fContentType.equals(RUBY_REGULAR_EXPRESSION)) {
 			fakeContents.append('/');
+		} else if (fContentType.equals(RUBY_COMMAND)) {
+			fakeContents.append('`');
 		} else {
 			fakeContents.append('"');
 		}
@@ -309,13 +311,17 @@ public class RubyPartitionScanner implements IPartitionTokenScanner {
 			}
 			fContentType = RUBY_STRING;
 			return new Token(RUBY_STRING);
+		case Tokens.tXSTRING_BEG:
+			fContentType = RUBY_COMMAND;
+			return new Token(RUBY_COMMAND);
 		case Tokens.tQWORDS_BEG:
 			fContentType = RUBY_STRING;
 			return new Token(RUBY_STRING);
 		case Tokens.tSTRING_END:
+			String oldContentType = fContentType;
 			fContentType = RUBY_DEFAULT;
 			inSingleQuote = false;
-			return new Token(RUBY_STRING);
+			return new Token(oldContentType);
 		case Tokens.tREGEXP_BEG:
 			fContentType = RUBY_REGULAR_EXPRESSION;
 			return new Token(RUBY_REGULAR_EXPRESSION);
