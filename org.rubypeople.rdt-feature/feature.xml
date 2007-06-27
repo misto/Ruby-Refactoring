@@ -247,10 +247,6 @@ litigation.
       <update label="rubyeclipse" url="http://rubyeclipse.sourceforge.net/updatesite"/>
    </url>
 
-   <includes
-         id="org.rubypeople.rdt.source"
-         version="0.0.0"/>
-
    <requires>
       <import plugin="org.eclipse.ui"/>
       <import plugin="org.eclipse.core.runtime"/>
