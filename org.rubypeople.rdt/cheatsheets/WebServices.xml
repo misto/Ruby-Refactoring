@@ -3,16 +3,25 @@
 	<intro href="/org.eclipse.platform.doc.user/reference/ref-cheatsheets.htm">
 		<description> This cheat sheet is an introduction to the Ruby Development Tools
 			(RDT) and uses a real world scenario to show how the RDT can be leveraged in your
-			work with ruby. As a prerequiste you need to get and install soap4r 1.5.5: extract
-			soap4r-1_5_5.tar.gz and run install.rb. Although soap4r is included since
-			ruby 1.8.1, you will need it because of the wsdl2ruby.rb file, which is not part of
-			ruby 1.8.1 or later. Extract so To start working on this cheat sheet, click the
-			&quot;Click to Begin&quot; button below. </description>
+			work with ruby.<br/>
+			<br/>
+			As a prerequisite you need to get and install soap4r 1.5.6: extract
+			the soap4r distribution and run install.rb.<br/> 
+			<br/>
+			You can get it from the download section of: http://dev.ctor.org/soap4r<br/>
+			<br/>
+			Although soap4r is included within ruby since the 1.8.1 release, you will still need to 
+			download the library because we use the wsdl2ruby.rb file, which is not part of the installed 
+			library in ruby.<br/>
+			<br/>
+			To start working on this cheat 
+			sheet, click the &quot;Click to Begin&quot; button below. </description>
 	</intro>
 	<item href="/org.rubypeople.rdt.doc.user/html/ch02.html#importantSettings"
 		title="Interpreter setup">
-		<description> Make sure you have registered at least one ruby interpreter with RDT.
-			Click on the help button if you don't know how to do that. </description>
+		<description> Make sure you have registered at least one ruby interpreter in your preferences.
+		    We will try to autodetect your interpreter, but you should confirm the correct settings.
+			Click on the help button to the upper right if you don't know how to do that. </description>
 	</item>
 	<item title="Switch to Ruby Perspective">
 		<command
@@ -30,7 +39,7 @@
 			project called soap4r on top of the soap4r installation directory at first.
 			After clicking the &quot;Click to Perform&quot; button below, the &quot;New
 			Ruby Project&quot; wizard will open. The project name &quot;soap4r&quot; is
-			already entered. Disable the &quot;Use Default&quot; checkbox in the project
+			already entered. Disable the &quot;Use default location&quot; checkbox in the project
 			content area and use the browse button to select the directory to which you have
 			unzipped the soap4r tar ball. </description>
 	</item>
@@ -58,11 +67,7 @@
 		<action pluginId="org.rubypeople.rdt"
 			param1="/cheatsheets/Sample.wsdl" param2="/MyWebservice/sample.wsdl"
 			class="org.rubypeople.rdt.internal.cheatsheets.webservice.CopyContentAction"/>
-		<description> In the last step you have created the file &quot;sample.wsdl&quot;.
-			But why is it not there? It is, but is filtered out: In the Ruby Resources views menu
-			deselect
-			&quot;Show Ruby Files only&quot; (this can be found by clicking the down arrow in
-			the Ruby Resources view MenuBar, in the menu of options). The &quot;Click to
+		<description>The &quot;Click to
 			Perform&quot; buttons copies sample content to the wsdl file. The content is
 			copied from the Sample.wsdl file which ships with RDT. </description>
 	</item>
