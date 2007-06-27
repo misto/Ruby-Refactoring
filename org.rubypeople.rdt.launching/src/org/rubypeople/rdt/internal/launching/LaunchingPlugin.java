@@ -635,6 +635,7 @@ public class LaunchingPlugin extends Plugin implements IVMInstallChangedListener
 	}
 
 	public void vmRemoved(IVMInstall vm) {
+		removeCoreStubs(vm);
 		if (!fBatchingChanges) {
 			try {
 				VMChanges changes = new VMChanges();
@@ -646,6 +647,22 @@ public class LaunchingPlugin extends Plugin implements IVMInstallChangedListener
 		}		
 	}	
 	
+	private void removeCoreStubs(IVMInstall vm) {
+		IPath coreStubPath = getStateLocation().append(vm.getId());
+		deleteRecursively(coreStubPath.toFile());
+	}
+
+	private void deleteRecursively(File file) {
+		if (file.isDirectory()) {
+			File[] children = file.listFiles();
+			for (int i = 0; i < children.length; i++) {
+				deleteRecursively(children[i]);
+			}
+		}
+		if (!file.delete()) 
+			file.deleteOnExit();		
+	}
+
 	/**
 	 * Stores VM changes resulting from a JRE preference change.
 	 */

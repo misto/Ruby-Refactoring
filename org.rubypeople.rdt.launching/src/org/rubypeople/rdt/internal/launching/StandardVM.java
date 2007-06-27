@@ -135,7 +135,7 @@ public class StandardVM extends AbstractVMInstall {
 		//locate the script to generate our core stubs
 		File coreStubber = LaunchingPlugin.getFileInPlugin(new Path("ruby" + fgSeparator + "core_stubber.rb")); //$NON-NLS-1$ //$NON-NLS-2$
 		if (coreStubber.exists()) {	
-			IPath stubFolder = new Path(coreStubber.getParentFile().getAbsolutePath() + fgSeparator + getId() + fgSeparator + "lib"); //$NON-NLS-1$
+			IPath stubFolder = LaunchingPlugin.getDefault().getStateLocation().append(getId()).append("lib"); //$NON-NLS-1$
 			if (stubFolder.toFile().exists()) {
 				return stubFolder; // we've already created the stubs for this VM
 			}
