@@ -100,7 +100,7 @@ public class RubyAutoIndentStrategy extends DefaultIndentLineAutoEditStrategy im
 				String previousIndent= indenter.computeIndentation(previousLineRegion.getOffset()).toString();
 				// FIXME This all assumes spaces!
 				int length = previousIndent.length() - CodeFormatterUtil.createIndentString(1, fProject).length();
-				String unindented = previousIndent;
+				String unindented = "";
 				if (length > 0) {
 					unindented = previousIndent.substring(0, length);
 				}
