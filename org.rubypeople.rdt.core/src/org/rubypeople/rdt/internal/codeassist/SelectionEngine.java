@@ -272,6 +272,7 @@ public class SelectionEngine {
 		IType[] supers = requestor.findType(superClass);
 		for (int i = 0; i < supers.length; i++) {
 			IType superType = supers[i];
+			if (superType.equals(type)) continue;
 			proposals.addAll(suggestMethods(superType));
 		}
 		return proposals;
