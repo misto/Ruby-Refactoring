@@ -128,7 +128,7 @@ public class TestUnitLaunchConfigurationDelegate extends RubyLaunchDelegate {
 	
 	public static String getTestRunnerPath() {
 		IPath path = TestunitPlugin.getDefault().getStateLocation().append(TestUnitLaunchShortcut.TEST_RUNNER_FILE);
-		
+		// FIXME What if the file already exists but we have a newer version of the original script and we want to copy it over top?
 		if (!path.toFile().exists()) {
 			// copy original over
 			Writer writer = null;
@@ -138,7 +138,7 @@ public class TestUnitLaunchConfigurationDelegate extends RubyLaunchDelegate {
 				stream = url.openStream();
 				path.toFile().createNewFile();
 				writer = new FileWriter(path.toFile());
-				int b = 0; // FIXME Copy over on byte buffers rather than per byte to speed this up
+				int b = 0; // TODO Copy over on byte buffers rather than per byte to speed this up
 				while((b = stream.read()) != -1) {
 					writer.write(b);
 				}
