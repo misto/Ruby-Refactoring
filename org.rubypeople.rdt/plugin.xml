@@ -30,6 +30,16 @@
             %cheatsheet.webservices.desc
          </description>
       </cheatsheet>
+       <cheatsheet
+            category="org.rubypeople.rdt.cheatsheet.category"
+            composite="false"
+            contentFile="$nl$/cheatsheets/HelloWorld.xml"
+            id="org.rubypeople.rdt.cheatsheets.helloworld"
+            name="%cheatsheet.helloworld.name">
+         <description>
+            %cheatsheet.helloworld.desc
+         </description>
+      </cheatsheet>
    </extension>
 
 </plugin>

@@ -18,23 +18,6 @@
    </extension>
    
    <extension
-         point="org.eclipse.ui.cheatsheets.cheatSheetContent">
-      <category
-            id="com.aptana.rdt.cheatsheet.category"
-            name="%cheatsheet.category.rubyred"/>
-         <cheatsheet
-            category="com.aptana.rdt.cheatsheet.category"
-            composite="false"
-            contentFile="$nl$/cheatsheets/HelloWorld.xml"
-            id="com.aptana.rdt.cheatsheets.helloworld"
-            name="%cheatsheet.helloworld.name">
-         <description>
-            %cheatsheet.helloworld.desc
-         </description>
-      </cheatsheet>
-    </extension>
-   
-   <extension
          point="org.eclipse.ui.views">
          <view
             name="Rails API"
