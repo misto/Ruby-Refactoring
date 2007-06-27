@@ -18,7 +18,7 @@ public class TC_RubyPartitionScanner extends TestCase {
 	
 	private String getContentType(String content, int offset) {
 		IDocument doc = new Document(content);
-		FastPartitioner partitioner = new FastPartitioner(new RubyPartitionScanner(), RubyPartitionScanner.LEGAL_CONTENT_TYPES);
+		FastPartitioner partitioner = new FastPartitioner(new MergingPartitionScanner(), RubyPartitionScanner.LEGAL_CONTENT_TYPES);
 		partitioner.connect(doc);
 		return partitioner.getContentType(offset);
 	}
@@ -273,6 +273,16 @@ public class TC_RubyPartitionScanner extends TestCase {
 		assertEquals(RubyPartitionScanner.RUBY_STRING, this.getContentType(code, 87)); // include?('"'
 		assertEquals(RubyPartitionScanner.RUBY_SINGLE_LINE_COMMENT, this.getContentType(code, 95)); //'#' (for ruby mode)
 		assertEquals(RubyPartitionScanner.RUBY_DEFAULT, this.getContentType(code, code.length() - 3));
+	}
+	
+	public void testSingleQuotedString() {
+		String code = "require 'commands/server'";
+		assertEquals(RubyPartitionScanner.RUBY_DEFAULT, this.getContentType(code, 1)); 
+		assertEquals(RubyPartitionScanner.RUBY_STRING, this.getContentType(code, 8)); 
+		assertEquals(RubyPartitionScanner.RUBY_STRING, this.getContentType(code, 9)); 
+		assertEquals(RubyPartitionScanner.RUBY_STRING, this.getContentType(code, 17)); 
+		assertEquals(RubyPartitionScanner.RUBY_STRING, this.getContentType(code, 18));
+		assertEquals(RubyPartitionScanner.RUBY_STRING, this.getContentType(code, 24)); 
 	}
 }
 

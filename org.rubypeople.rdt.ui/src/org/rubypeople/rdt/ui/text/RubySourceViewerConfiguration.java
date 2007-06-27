@@ -281,7 +281,7 @@ public class RubySourceViewerConfiguration extends TextSourceViewerConfiguration
 	}
 
 	public String[] getConfiguredContentTypes(ISourceViewer sourceViewer) {
-		return new String[] { IDocument.DEFAULT_CONTENT_TYPE, RubyPartitionScanner.RUBY_MULTI_LINE_COMMENT, RubyPartitionScanner.RUBY_SINGLE_LINE_COMMENT, RubyPartitionScanner.RUBY_STRING, RubyPartitionScanner.RUBY_REGULAR_EXPRESSION };
+		return RubyPartitionScanner.LEGAL_CONTENT_TYPES;
 	}
 
 	/*
