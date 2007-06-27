@@ -5,8 +5,11 @@
 			(RDT) and uses a real world scenario to show how the RDT can be leveraged in your
 			work with ruby.<br/>
 			<br/>
-			As a prerequisite you need to get and install soap4r 1.5.6: extract
-			the soap4r distribution and run install.rb.<br/> 
+			To start working on this cheat 
+			sheet, click the &quot;Click to Begin&quot; button below. </description>
+	</intro>
+	<item title="Download SOAP4R" skip="true">
+       <description>As a prerequisite you will need to get and install soap4r.<br/>
 			<br/>
 			You can get it from the download section of: http://dev.ctor.org/soap4r<br/>
 			<br/>
@@ -14,9 +17,17 @@
 			download the library because we use the wsdl2ruby.rb file, which is not part of the installed 
 			library in ruby.<br/>
 			<br/>
-			To start working on this cheat 
-			sheet, click the &quot;Click to Begin&quot; button below. </description>
-	</intro>
+			To navigate to the homepage of SOAP4R to download the release, 
+			click the &quot;Click to Perform&quot; button below.<br/>
+			<br/>
+			If you already have a version of SOAP4R, please skip this and the following step.
+			</description>
+       <command serialization=
+          "org.eclipse.ui.browser.openBrowser(url=http://dev.ctor.org/soap4r)"/>
+    </item>
+    <item title="Install SOAP4R" skip="true">
+		<description>Please extract	the soap4r distribution and run install.rb.</description>
+	</item>
 	<item href="/org.rubypeople.rdt.doc.user/html/ch02.html#importantSettings"
 		title="Interpreter setup">
 		<description> Make sure you have registered at least one ruby interpreter in your preferences.
