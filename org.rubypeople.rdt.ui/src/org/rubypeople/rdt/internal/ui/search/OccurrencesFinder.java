@@ -47,6 +47,7 @@ import org.rubypeople.rdt.internal.ti.util.FirstPrecursorNodeLocator;
 import org.rubypeople.rdt.internal.ti.util.INodeAcceptor;
 import org.rubypeople.rdt.internal.ti.util.OffsetNodeLocator;
 import org.rubypeople.rdt.internal.ti.util.ScopedNodeLocator;
+import org.rubypeople.rdt.internal.ui.RubyPlugin;
 
 /**
  * Implements "Mark Occurences" feature
@@ -85,8 +86,15 @@ public class OccurrencesFinder extends AbstractOccurencesFinder {
 		
 		for (Iterator iter= fUsages.iterator(); iter.hasNext();) {
 			Node node= (Node) iter.next();
-			ISourcePosition position = getPositionOfName(node);
+			ISourcePosition position;
+			try {
+				position = getPositionOfName(node);
+			} catch (RuntimeException e) {
+				RubyPlugin.log(e);
+				continue;
+			}
 			int startPosition= position.getStartOffset();
+			if (startPosition < 0) continue;
 			int length= position.getEndOffset() - position.getStartOffset();
 			try {
 				boolean isWriteAccess= fWriteUsages.contains(node);
@@ -207,9 +215,13 @@ public class OccurrencesFinder extends AbstractOccurencesFinder {
 		// Convert ISourcePosition to IPosition
 		List<Position> positions = new LinkedList<Position>();
 		for (Node node : fUsages) {
-			ISourcePosition occurrence = getPositionOfName(node);
-			Position position = new Position(occurrence.getStartOffset(), occurrence.getEndOffset() - occurrence.getStartOffset());
-			positions.add(position);
+			try {
+				ISourcePosition occurrence = getPositionOfName(node);
+				Position position = new Position(occurrence.getStartOffset(), occurrence.getEndOffset() - occurrence.getStartOffset());
+				positions.add(position);
+			} catch (RuntimeException re) {
+				RubyPlugin.log(re);
+			}			
 		}
 
 		// Uniqueify positions
