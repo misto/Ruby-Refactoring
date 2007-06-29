@@ -75,6 +75,7 @@ public class CompletionEngine {
 	
 	private CompletionRequestor fRequestor;
 	private CompletionContext fContext;
+	private Set<IType> fVisitedTypes;
 
 	public CompletionEngine(CompletionRequestor requestor) {
 		this.fRequestor = requestor;
@@ -152,7 +153,7 @@ public class CompletionEngine {
 					}					
 					IType[] types = requestor.findType(name);
 					for (int i = 0; i < types.length; i++) {
-						Map<String, CompletionProposal> map = suggestMethods(guess.getConfidence(), types[i], true);
+						Map<String, CompletionProposal> map = doSuggestMethods(guess.getConfidence(), types[i], true);
 						list.addAll(map.values());						
 					}
 				}
@@ -262,6 +263,22 @@ public class CompletionEngine {
 			fRequestor.accept(proposal);
 		}
 	}
+	
+	/**
+	 * Wrap beginning of recursion to suggest methods for a type. We keep track of types visited so that we can avoid inifnite loops.
+	 * 
+	 * @param confidence
+	 * @param type
+	 * @param includeInstanceMethods
+	 * @return
+	 * @throws RubyModelException
+	 */
+	private Map<String, CompletionProposal> suggestMethods(int confidence, IType type, boolean includeInstanceMethods) throws RubyModelException {
+		if (fVisitedTypes == null) fVisitedTypes = new HashSet<IType>();
+		Map<String, CompletionProposal> list = doSuggestMethods(100, type, true);
+		fVisitedTypes.clear();
+		return list;
+	}
 
 	private List<CompletionProposal> sort(Map<String, CompletionProposal> proposals) {
 		List<CompletionProposal> list = new ArrayList<CompletionProposal>(proposals.values());
@@ -333,10 +350,12 @@ public class CompletionEngine {
 		}
 	}
 
-	private Map<String, CompletionProposal> suggestMethods(int confidence, IType type, boolean includeInstanceMethods) throws RubyModelException {
+	private Map<String, CompletionProposal> doSuggestMethods(int confidence, IType type, boolean includeInstanceMethods) throws RubyModelException {
 		Map<String, CompletionProposal> proposals = new HashMap<String, CompletionProposal>();
 		if (type == null)
 			return proposals;		
+		if (fVisitedTypes.contains(type)) return proposals;
+		fVisitedTypes.add(type);
 		IMethod[] methods = type.getMethods();
 		for (int k = 0; k < methods.length; k++) {
 			if (!includeInstanceMethods && !methods[k].isSingleton()) {
@@ -367,7 +386,7 @@ public class CompletionEngine {
 			for (int j = 0; j < moduleTypes.length; j++) {
 				try {
 					IType moduleType = moduleTypes[j];
-					proposals.putAll(suggestMethods(confidence, moduleType, true));
+					proposals.putAll(doSuggestMethods(confidence, moduleType, true));
 				} catch (RubyModelException e) {
 					// ignore
 				}
@@ -384,7 +403,7 @@ public class CompletionEngine {
 		IType[] supers = requestor.findType(superClass);
 		for (int i = 0; i < supers.length; i++) {
 			IType superType = supers[i];
-			proposals.putAll(suggestMethods(confidence, superType, includeInstanceMethods));
+			proposals.putAll(doSuggestMethods(confidence, superType, includeInstanceMethods));
 		}
 		return proposals;
 	}

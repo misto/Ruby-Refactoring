@@ -59,7 +59,11 @@ import org.rubypeople.rdt.internal.ti.util.FirstPrecursorNodeLocator;
 import org.rubypeople.rdt.internal.ti.util.INodeAcceptor;
 import org.rubypeople.rdt.internal.ti.util.OffsetNodeLocator;
 
+import com.sun.corba.se.impl.io.FVDCodeBaseImpl;
+
 public class SelectionEngine {
+
+	private HashSet<IType> fVisitedTypes;
 
 	public IRubyElement[] select(IRubyScript script, int start, int end)
 			throws RubyModelException {
@@ -145,7 +149,9 @@ public class SelectionEngine {
 			IType[] types = getReceiver(script, source, selected, root, start);
 			for (int i = 0; i < types.length; i++) {
 				IType type = types[i];
+				if (fVisitedTypes == null) { fVisitedTypes = new HashSet<IType>(); } // keep track of types so we don't get into infinite loop
 				Collection<IMethod> methods = suggestMethods(type);
+				fVisitedTypes.clear();
 				for (IMethod method : methods) {
 					if (method.getElementName().equals(methodName))
 						possible.add(method);
@@ -231,12 +237,14 @@ public class SelectionEngine {
 	private Collection<IMethod> suggestMethods(IType type) throws RubyModelException {
 		List<IMethod> proposals = new ArrayList<IMethod>();
 		if (type == null) return proposals;		
+		if (fVisitedTypes.contains(type)) return proposals;
+		fVisitedTypes.add(type);
 		IMethod[] methods = type.getMethods();
 		for (int k = 0; k < methods.length; k++) {
 			proposals.add(methods[k]);
 		}		
 		proposals.addAll(addModuleMethods(type)); // Decrement confidence by one as a hack to make sure as we move up the inheritance chain we suggest "closer" parents methods first
-		if (!type.isModule()) proposals.addAll(addSuperClassMethods(type));
+		if (!type.isModule()) proposals.addAll(addSuperClassMethods(type));		
 		return proposals;
 	}
 
