@@ -8,7 +8,6 @@ import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.IRegion;
 import org.eclipse.jface.text.Region;
 import org.eclipse.jface.text.TextUtilities;
-import org.eclipse.jface.text.rules.Token;
 import org.eclipse.ui.texteditor.ITextEditor;
 import org.jruby.lexer.yacc.SyntaxException;
 import org.rubypeople.rdt.core.IMethod;
