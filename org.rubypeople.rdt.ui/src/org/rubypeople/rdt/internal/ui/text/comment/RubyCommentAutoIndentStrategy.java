@@ -8,12 +8,15 @@ import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.IRegion;
 import org.eclipse.jface.text.Region;
 import org.eclipse.jface.text.TextUtilities;
+import org.eclipse.jface.text.rules.Token;
 import org.eclipse.ui.texteditor.ITextEditor;
+import org.jruby.lexer.yacc.SyntaxException;
 import org.rubypeople.rdt.core.IMethod;
 import org.rubypeople.rdt.core.IRubyElement;
 import org.rubypeople.rdt.core.IRubyProject;
 import org.rubypeople.rdt.core.IRubyScript;
 import org.rubypeople.rdt.core.RubyModelException;
+import org.rubypeople.rdt.internal.core.parser.RubyParser;
 import org.rubypeople.rdt.internal.corext.util.CodeFormatterUtil;
 import org.rubypeople.rdt.internal.ui.RubyPlugin;
 import org.rubypeople.rdt.internal.ui.rubyeditor.WorkingCopyManager;
@@ -76,6 +79,14 @@ public class RubyCommentAutoIndentStrategy extends
 
 		try {
 			int p = (offset == d.getLength() ? offset - 1 : offset);
+			try {
+				new RubyParser().parse(d.get());
+				return;
+			} catch(SyntaxException se) {
+				if (!se.getMessage().equals("embedded document meets end of file")) {
+					return;
+				}
+			}
 				
 			int lineNumber = d.getLineOfOffset(p);
 			IRegion line = d.getLineInformation(lineNumber);
