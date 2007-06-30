@@ -284,7 +284,7 @@ litigation.
 
    <plugin
          id="org.rubypeople.rdt.doc.user"
-         download-size="0"
+         download-size="341"
          install-size="0"
          version="0.0.0"
          unpack="false"/>
@@ -297,7 +297,7 @@ litigation.
 
    <plugin
          id="org.rubypeople.rdt.ui"
-         download-size="0"
+         download-size="1369"
          install-size="0"
          version="0.0.0"/>
 
@@ -310,51 +310,51 @@ litigation.
 
    <plugin
          id="org.rubypeople.rdt.testunit"
-         download-size="0"
+         download-size="124"
          install-size="0"
          version="0.0.0"/>
 
    <plugin
          id="org.rubypeople.rdt.launching"
-         download-size="0"
+         download-size="88"
          install-size="0"
          version="0.0.0"/>
 
    <plugin
          id="org.rubypeople.rdt.debug.ui"
-         download-size="0"
+         download-size="104"
          install-size="0"
          version="0.0.0"/>
 
    <plugin
          id="org.rubypeople.rdt.debug.core"
-         download-size="0"
+         download-size="45"
          install-size="0"
          version="0.0.0"/>
 
    <plugin
          id="org.rubypeople.rdt.core"
-         download-size="0"
+         download-size="544"
          install-size="0"
          version="0.0.0"/>
 
    <plugin
          id="org.jruby"
-         download-size="0"
+         download-size="2359"
          install-size="0"
          version="1.0.0.3788"
          unpack="false"/>
 
    <plugin
          id="org.rubypeople.rdt.refactoring"
-         download-size="0"
+         download-size="427"
          install-size="0"
          version="0.0.0"
          unpack="false"/>
 
    <plugin
          id="com.aptana.rdt"
-         download-size="0"
+         download-size="88"
          install-size="0"
          version="0.0.0"
          unpack="false"/>
