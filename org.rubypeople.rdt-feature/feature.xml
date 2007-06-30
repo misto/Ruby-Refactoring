@@ -278,84 +278,84 @@ litigation.
 
    <plugin
          id="org.kxml2"
-         download-size="0"
-         install-size="0"
+         download-size="29"
+         install-size="32"
          version="2.1.4"/>
 
    <plugin
          id="org.rubypeople.rdt.doc.user"
          download-size="341"
-         install-size="0"
+         install-size="341"
          version="0.0.0"
          unpack="false"/>
 
    <plugin
          id="org.epic.regexp"
-         download-size="0"
-         install-size="0"
+         download-size="43"
+         install-size="51"
          version="0.1.4"/>
 
    <plugin
          id="org.rubypeople.rdt.ui"
          download-size="1369"
-         install-size="0"
+         install-size="1646"
          version="0.0.0"/>
 
    <plugin
          id="org.rubypeople.rdt"
-         download-size="0"
-         install-size="0"
+         download-size="25"
+         install-size="25"
          version="0.0.0"
          unpack="false"/>
 
    <plugin
          id="org.rubypeople.rdt.testunit"
          download-size="124"
-         install-size="0"
+         install-size="151"
          version="0.0.0"/>
 
    <plugin
          id="org.rubypeople.rdt.launching"
          download-size="88"
-         install-size="0"
+         install-size="123"
          version="0.0.0"/>
 
    <plugin
          id="org.rubypeople.rdt.debug.ui"
          download-size="104"
-         install-size="0"
+         install-size="132"
          version="0.0.0"/>
 
    <plugin
          id="org.rubypeople.rdt.debug.core"
          download-size="45"
-         install-size="0"
+         install-size="56"
          version="0.0.0"/>
 
    <plugin
          id="org.rubypeople.rdt.core"
          download-size="544"
-         install-size="0"
+         install-size="706"
          version="0.0.0"/>
 
    <plugin
          id="org.jruby"
          download-size="2359"
-         install-size="0"
+         install-size="2359"
          version="1.0.0.3788"
          unpack="false"/>
 
    <plugin
          id="org.rubypeople.rdt.refactoring"
          download-size="427"
-         install-size="0"
+         install-size="427"
          version="0.0.0"
          unpack="false"/>
 
    <plugin
          id="com.aptana.rdt"
          download-size="88"
-         install-size="0"
+         install-size="88"
          version="0.0.0"
          unpack="false"/>
 
