@@ -365,8 +365,14 @@ public class RuntimeLoadpathEntry implements IRuntimeLoadpathEntry {
 				}
 				break;
 			case PROJECT:
-			case ARCHIVE:
 				setLoadpathProperty(USER_CLASSES);
+				break;
+			case ARCHIVE:
+				if (isGem()) { // FIXME This is a huge hack. We should integrate the idea of gems into our loadpath infrastructure much more!
+					setLoadpathProperty(STANDARD_CLASSES);
+				} else {
+					setLoadpathProperty(USER_CLASSES);
+				}
 				break;
 			default:
 				break;
@@ -374,6 +380,15 @@ public class RuntimeLoadpathEntry implements IRuntimeLoadpathEntry {
 	}
 	
 	
+	private boolean isGem() {
+		String[] segments = fLoadpathEntry.getPath().segments();
+		if (segments == null) return false;
+		for (int i = 0; i < segments.length; i++) {
+			if (segments[i].equals("gems")) return true;
+		}
+		return false;
+	}
+
 	/**
 	 * @see IRuntimeLoadpathEntry#setLoadpathProperty(int)
 	 */
