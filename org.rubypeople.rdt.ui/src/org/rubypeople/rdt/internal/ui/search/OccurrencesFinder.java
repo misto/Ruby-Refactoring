@@ -93,6 +93,7 @@ public class OccurrencesFinder extends AbstractOccurencesFinder {
 				RubyPlugin.log(e);
 				continue;
 			}
+			if (position == null) continue;
 			int startPosition= position.getStartOffset();
 			if (startPosition < 0) continue;
 			int length= position.getEndOffset() - position.getStartOffset();
@@ -217,6 +218,7 @@ public class OccurrencesFinder extends AbstractOccurencesFinder {
 		for (Node node : fUsages) {
 			try {
 				ISourcePosition occurrence = getPositionOfName(node);
+				if (occurrence == null) continue;
 				Position position = new Position(occurrence.getStartOffset(), occurrence.getEndOffset() - occurrence.getStartOffset());
 				positions.add(position);
 			} catch (RuntimeException re) {
@@ -674,13 +676,21 @@ public class OccurrencesFinder extends AbstractOccurencesFinder {
 			name = ASTUtil.getNameReflectively(node);
 		} else if (node instanceof ClassNode) {
 			name = getClassNodeName((ClassNode) node);
-			String classDeclString = source.substring(pos.getStartOffset(), pos.getEndOffset());
-			int begin = pos.getStartOffset() + classDeclString.indexOf(name);
+			int end = pos.getEndOffset();
+			if (source.length() < end) end = source.length();
+			String classDeclString = source.substring(pos.getStartOffset(), end);
+			int nameEnd = classDeclString.indexOf(name);
+			if (nameEnd == -1) return null;
+			int begin = pos.getStartOffset() + nameEnd;
 			return new SourcePosition(pos.getFile(), pos.getStartLine(), pos.getEndLine(), begin, begin + name.length());
 		} else if (node instanceof ModuleNode) {
 			name = getModuleNodeName((ModuleNode) node);
-			String moduleDeclString = source.substring(pos.getStartOffset(), pos.getEndOffset());
-			int begin = moduleDeclString.indexOf(name);
+			int end = pos.getEndOffset();
+			if (source.length() < end) end = source.length();
+			String classDeclString = source.substring(pos.getStartOffset(), end);
+			int nameEnd = classDeclString.indexOf(name);
+			if (nameEnd == -1) return null;
+			int begin = pos.getStartOffset() + nameEnd;
 			return new SourcePosition(pos.getFile(), pos.getStartLine(), pos.getEndLine(), begin, begin + name.length());
 		} else if (node instanceof SymbolNode) {
 			// XXX: This is a hack to get around improper offsets in my JRuby
