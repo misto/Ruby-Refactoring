@@ -380,7 +380,7 @@ public class RubySearchResultPage extends AbstractTextSearchViewPage implements 
 		};
 	}
 	
-	int getElementLimit() {
+	public Integer getElementLimit() {
 		return fElementLimit;
 	}
 
