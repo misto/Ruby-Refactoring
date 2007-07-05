@@ -35,9 +35,13 @@ import java.util.Observer;
 
 import org.jruby.ast.DAsgnNode;
 import org.jruby.ast.DVarNode;
+import org.jruby.ast.LocalAsgnNode;
 import org.jruby.ast.MethodDefNode;
 import org.jruby.ast.NewlineNode;
 import org.jruby.ast.Node;
+import org.jruby.ast.OpAsgnAndNode;
+import org.jruby.ast.OpAsgnOrNode;
+import org.rubypeople.rdt.refactoring.core.NodeProvider;
 import org.rubypeople.rdt.refactoring.editprovider.EditProvider;
 import org.rubypeople.rdt.refactoring.editprovider.MultiEditProvider;
 import org.rubypeople.rdt.refactoring.editprovider.SimpleNodeEditProvider;
@@ -92,8 +96,31 @@ public class RenameLocalEditProvider extends MultiEditProvider implements Observ
 			renamer = new VariableRenamer(selectedVariableName, newVariableName, new AbortOnMethodDef());
 		}
 
-		ArrayList<Node> changedNodes = renamer.replaceVariableNamesInNode(config.getSelectedMethod());
-		return changedNodes;
+        ArrayList<Node> toRemove = new ArrayList<Node>();
+        ArrayList<Node> toRename = new ArrayList<Node>();
+
+        //we only want to rename certain nodes in case we have OpAsgnAndNode or OpAsgnOrNodes
+        for (Node changedNode : renamer.replaceVariableNamesInNode(config.getSelectedMethod())) {
+                if (changedNode instanceof LocalAsgnNode || changedNode instanceof DAsgnNode) {
+                        Node parentNode = NodeProvider.findParentNode(config.getSelectedMethod(), changedNode);
+                        if(parentNode instanceof OpAsgnAndNode) {
+                                toRemove.add(((OpAsgnAndNode) parentNode).getFirstNode());
+                                toRemove.add(((OpAsgnAndNode) parentNode).getSecondNode());
+                                toRename.add(parentNode);
+                        } else  if(parentNode instanceof OpAsgnOrNode) {
+                                toRemove.add(((OpAsgnOrNode) parentNode).getFirstNode());
+                                toRemove.add(((OpAsgnOrNode) parentNode).getSecondNode());
+                                toRename.add(parentNode);
+                        } else {
+                                toRename.add(changedNode);
+                        }
+                } else {
+                        toRename.add(changedNode);
+                }
+        }
+        
+        toRename.removeAll(toRemove);
+        return toRename;
 	}
 
 	public void update(Observable subject, Object arg1) {

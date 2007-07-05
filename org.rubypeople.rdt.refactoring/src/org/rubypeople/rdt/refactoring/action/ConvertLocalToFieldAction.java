@@ -29,4 +29,4 @@
 package org.rubypeople.rdt.refactoring.action;
 
 
-public class ConvertTempToFieldAction extends WorkbenchWindowActionDelegate {}
+public class ConvertLocalToFieldAction extends WorkbenchWindowActionDelegate {}

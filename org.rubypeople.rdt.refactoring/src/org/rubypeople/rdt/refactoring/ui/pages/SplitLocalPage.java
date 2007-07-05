@@ -45,7 +45,7 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 import org.rubypeople.rdt.refactoring.core.splitlocal.ISplittedNamesReceiver;
 import org.rubypeople.rdt.refactoring.core.splitlocal.LocalVarUsage;
-import org.rubypeople.rdt.refactoring.core.splitlocal.SplitTempRefactoring;
+import org.rubypeople.rdt.refactoring.core.splitlocal.SplitLocalRefactoring;
 import org.rubypeople.rdt.refactoring.ui.RdtCodeViewer;
 import org.rubypeople.rdt.refactoring.util.NameValidator;
 
@@ -84,11 +84,11 @@ public class SplitLocalPage extends RefactoringWizardPage {
 	}
 	
 	public SplitLocalPage(Collection<LocalVarUsage> localUsages, String source, ISplittedNamesReceiver receiver) {
-		super(SplitTempRefactoring.NAME + "..."); //$NON-NLS-1$
+		super(SplitLocalRefactoring.NAME + "..."); //$NON-NLS-1$
 		this.localUsages = localUsages;
 		this.source = source;
 		this.receiver = receiver;
-		setTitle(SplitTempRefactoring.NAME);
+		setTitle(SplitLocalRefactoring.NAME);
 	}
 
 	public void createControl(Composite parent) {

@@ -30,7 +30,7 @@ import org.rubypeople.rdt.refactoring.core.overridemethod.OverrideMethodRefactor
 import org.rubypeople.rdt.refactoring.core.pullup.PullUpRefactoring;
 import org.rubypeople.rdt.refactoring.core.pushdown.PushDownRefactoring;
 import org.rubypeople.rdt.refactoring.core.rename.RenameRefactoring;
-import org.rubypeople.rdt.refactoring.core.splitlocal.SplitTempRefactoring;
+import org.rubypeople.rdt.refactoring.core.splitlocal.SplitLocalRefactoring;
 import org.rubypeople.rdt.ui.actions.RubyActionGroup;
 
 public class RefactoringActionGroup extends ActionGroup {
@@ -58,7 +58,7 @@ public class RefactoringActionGroup extends ActionGroup {
 		submenu.add(new RefactoringAction(PushDownRefactoring.class, PushDownRefactoring.NAME, selectionProvider));
 		submenu.add(new RefactoringAction(PullUpRefactoring.class, PullUpRefactoring.NAME, selectionProvider));
 		submenu.add(new RefactoringAction(RenameRefactoring.class, RenameRefactoring.NAME, selectionProvider));
-		submenu.add(new RefactoringAction(SplitTempRefactoring.class, SplitTempRefactoring.NAME, selectionProvider));
+		submenu.add(new RefactoringAction(SplitLocalRefactoring.class, SplitLocalRefactoring.NAME, selectionProvider));
 		return submenu;
 	}
 	

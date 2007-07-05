@@ -11,7 +11,9 @@
  * implied. See the License for the specific language governing
  * rights and limitations under the License.
  *
+ * Copyright (C) 2006 Lukas Felber <lfelber@hsr.ch>
  * Copyright (C) 2006 Mirko Stocker <me@misto.ch>
+ * Copyright (C) 2006 Thomas Corbat <tcorbat@hsr.ch>
  * 
  * Alternatively, the contents of this file may be used under the terms of
  * either of the GNU General Public License Version 2 or later (the "GPL"),
@@ -26,43 +28,7 @@
  * the terms of any one of the CPL, the GPL or the LGPL.
  ***** END LICENSE BLOCK *****/
 
-package org.rubypeople.rdt.refactoring.core.splitlocal;
+package org.rubypeople.rdt.refactoring.action;
 
-import java.util.ArrayList;
-import java.util.Collection;
 
-import org.jruby.ast.Node;
-import org.rubypeople.rdt.refactoring.editprovider.EditProvider;
-import org.rubypeople.rdt.refactoring.editprovider.MultiEditProvider;
-import org.rubypeople.rdt.refactoring.editprovider.SimpleNodeEditProvider;
-
-public class SplitTempEditProvider extends MultiEditProvider implements ISplittedNamesReceiver {
-
-	private final SplitLocalConfig config;
-
-	public SplitTempEditProvider(SplitLocalConfig config) {
-		this.config = config;
-	}
-
-	@Override
-	protected Collection<EditProvider> getEditProviders() {
-		ArrayList<EditProvider> edits = new ArrayList<EditProvider>();
-		for (Node node : new SplittedVariableRenamer(config.getLocalVariablesFinder().getScopeNode()).rename(config.getLocalUsages())) {
-			edits.add(new SimpleNodeEditProvider(node));
-		}
-		return edits;
-	}
-
-	public void setNewNames(String[] names) {
-		assert names.length == config.getLocalUsages().size();
-
-		for (int i = 0; i < names.length; i++) {
-			config.getLocalUsages().toArray(new LocalVarUsage[config.getLocalUsages().size()])[i].setNewName(names[i]);
-		}
-	}
-
-	public Collection<LocalVarUsage> getLocalUsages() {
-		return config.getLocalUsages();
-	}
-
-}
+public class SplitLocalAction extends WorkbenchWindowActionDelegate {}

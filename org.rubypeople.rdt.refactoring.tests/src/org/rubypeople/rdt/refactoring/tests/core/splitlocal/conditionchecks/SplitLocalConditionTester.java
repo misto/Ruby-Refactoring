@@ -33,7 +33,7 @@ import java.io.IOException;
 
 import org.rubypeople.rdt.refactoring.core.splitlocal.SplitLocalConditionChecker;
 import org.rubypeople.rdt.refactoring.core.splitlocal.SplitLocalConfig;
-import org.rubypeople.rdt.refactoring.core.splitlocal.SplitTempEditProvider;
+import org.rubypeople.rdt.refactoring.core.splitlocal.SplitLocalEditProvider;
 import org.rubypeople.rdt.refactoring.tests.FilePropertyData;
 import org.rubypeople.rdt.refactoring.tests.FileTestData;
 import org.rubypeople.rdt.refactoring.tests.RefactoringConditionTestCase;
@@ -58,6 +58,6 @@ public class SplitLocalConditionTester extends RefactoringConditionTestCase {
 
 	@Override
 	protected void createEditProviderAndSetUserInput() {
-		new SplitTempEditProvider(config);
+		new SplitLocalEditProvider(config);
 	}
 }

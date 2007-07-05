@@ -28,25 +28,41 @@
 
 package org.rubypeople.rdt.refactoring.core.splitlocal;
 
-import org.rubypeople.rdt.refactoring.core.RubyRefactoring;
-import org.rubypeople.rdt.refactoring.core.TextSelectionProvider;
-import org.rubypeople.rdt.refactoring.ui.pages.SplitLocalPage;
+import java.util.ArrayList;
+import java.util.Collection;
 
-public class SplitTempRefactoring extends RubyRefactoring {
+import org.jruby.ast.Node;
+import org.rubypeople.rdt.refactoring.editprovider.EditProvider;
+import org.rubypeople.rdt.refactoring.editprovider.MultiEditProvider;
+import org.rubypeople.rdt.refactoring.editprovider.SimpleNodeEditProvider;
 
-	public static final String NAME = Messages.SplitTempRefactoring_Name;
+public class SplitLocalEditProvider extends MultiEditProvider implements ISplittedNamesReceiver {
 
-	public SplitTempRefactoring(TextSelectionProvider selectionProvider) {
-		super(NAME);
+	private final SplitLocalConfig config;
 
-		SplitLocalConfig config = new SplitLocalConfig(getDocumentProvider(), selectionProvider.getCarretPosition());
-		SplitLocalConditionChecker checker = new SplitLocalConditionChecker(config);
-		setRefactoringConditionChecker(checker);
-		
-		if(checker.shouldPerform()) {
-			SplitTempEditProvider splitTempEditProvider = new SplitTempEditProvider(config);
-			setEditProvider(splitTempEditProvider);
-			pages.add(new SplitLocalPage(splitTempEditProvider.getLocalUsages(), config.getDocumentProvider().getActiveFileContent(), splitTempEditProvider));
+	public SplitLocalEditProvider(SplitLocalConfig config) {
+		this.config = config;
+	}
+
+	@Override
+	protected Collection<EditProvider> getEditProviders() {
+		ArrayList<EditProvider> edits = new ArrayList<EditProvider>();
+		for (Node node : new SplittedVariableRenamer(config.getLocalVariablesFinder().getScopeNode()).rename(config.getLocalUsages())) {
+			edits.add(new SimpleNodeEditProvider(node));
+		}
+		return edits;
+	}
+
+	public void setNewNames(String[] names) {
+		assert names.length == config.getLocalUsages().size();
+
+		for (int i = 0; i < names.length; i++) {
+			config.getLocalUsages().toArray(new LocalVarUsage[config.getLocalUsages().size()])[i].setNewName(names[i]);
 		}
 	}
+
+	public Collection<LocalVarUsage> getLocalUsages() {
+		return config.getLocalUsages();
+	}
+
 }

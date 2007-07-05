@@ -34,7 +34,7 @@ import java.io.IOException;
 import org.eclipse.jface.text.BadLocationException;
 import org.rubypeople.rdt.refactoring.core.splitlocal.SplitLocalConditionChecker;
 import org.rubypeople.rdt.refactoring.core.splitlocal.SplitLocalConfig;
-import org.rubypeople.rdt.refactoring.core.splitlocal.SplitTempEditProvider;
+import org.rubypeople.rdt.refactoring.core.splitlocal.SplitLocalEditProvider;
 import org.rubypeople.rdt.refactoring.tests.FileTestCase;
 import org.rubypeople.rdt.refactoring.tests.FileTestData;
 
@@ -56,7 +56,7 @@ public class SplitLocalTester extends FileTestCase {
 			fail();
 		}
 		
-		SplitTempEditProvider splitTempEditProvider = new SplitTempEditProvider(config);
+		SplitLocalEditProvider splitTempEditProvider = new SplitLocalEditProvider(config);
 		
 		String[] names = testData.getCommaSeparatedStringArray("names");
 		
