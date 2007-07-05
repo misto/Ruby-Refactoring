@@ -10,25 +10,22 @@
  *******************************************************************************/
 package org.rubypeople.rdt.internal.ui.infoviews;
 
-import java.util.MissingResourceException;
-import java.util.ResourceBundle;
+import org.eclipse.osgi.util.NLS;
 
 /**
- * @since 3.0
+ * 
  */
-class InfoViewMessages {
+class InfoViewMessages extends NLS {
 
 	private static final String BUNDLE_NAME= InfoViewMessages.class.getName();
-
-	private static final ResourceBundle RESOURCE_BUNDLE= ResourceBundle.getBundle(BUNDLE_NAME);
-
-	private InfoViewMessages() {}
-
-	public static String getString(String key) {
-		try {
-			return RESOURCE_BUNDLE.getString(key);
-		} catch (MissingResourceException e) {
-			return '!' + key + '!';
-		}
+	
+	public static String RubyInformation_ri_not_found;
+	public static String RubyInformation_please_wait;
+	public static String RubyInformation_refresh;
+	public static String RubyInformation_refresh_tooltip;
+	public static String RubyInformation_update_job_title;
+	
+	static {
+		NLS.initializeMessages(BUNDLE_NAME, InfoViewMessages.class);
 	}
 }

@@ -53,7 +53,6 @@ public class RIView extends ViewPart implements RdocListener, IVMInstallChangedL
 	private boolean riFound = false;
 	private PageBook pageBook;
     private SashForm form;    
-    private Label riNotFoundLabel;
 	private Text searchStr;
     private TableViewer searchListViewer;
     private Browser searchResult;
@@ -75,14 +74,10 @@ public class RIView extends ViewPart implements RdocListener, IVMInstallChangedL
 	public void createPartControl(Composite parent) {
 		contributeToActionBars();
 		
-		pageBook = new PageBook(parent, SWT.NONE);
-          
-        riNotFoundLabel = new Label( pageBook, SWT.LEFT | SWT.TOP | SWT.WRAP );
-        riNotFoundLabel.setText( InfoViewMessages.getString( "RubyInformation.ri_not_found")  );
-                       
+		pageBook = new PageBook(parent, SWT.NONE);                       
         
         Label inProgressLabel = new Label( pageBook, SWT.LEFT | SWT.TOP | SWT.WRAP );
-        inProgressLabel.setText("Please wait. Updating RI View...");
+        inProgressLabel.setText(InfoViewMessages.RubyInformation_please_wait);
         
         form = new SashForm(pageBook, SWT.HORIZONTAL);        
                        
@@ -145,8 +140,8 @@ public class RIView extends ViewPart implements RdocListener, IVMInstallChangedL
 				updatePage();
 			}
 		};
-		refreshAction.setText("Refresh");
-		refreshAction.setToolTipText("Refresh list of names");
+		refreshAction.setText(InfoViewMessages.RubyInformation_refresh);
+		refreshAction.setToolTipText(InfoViewMessages.RubyInformation_refresh_tooltip);
 		refreshAction.setImageDescriptor(RubyPluginImages.TOOLBAR_REFRESH);
 			
 		IToolBarManager manager = getViewSite().getActionBars().getToolBarManager();
@@ -187,7 +182,7 @@ public class RIView extends ViewPart implements RdocListener, IVMInstallChangedL
 		private RubyInvoker invoker;
 
 		public RubyInvokerJob(RubyInvoker invoker) {
-			super("Updating RI View"); // $NON-NLS-1$
+			super(InfoViewMessages.RubyInformation_update_job_title);
 			this.invoker = invoker;
 		}
 
@@ -250,7 +245,7 @@ public class RIView extends ViewPart implements RdocListener, IVMInstallChangedL
 				riFound = false;
 				PlatformUI.getWorkbench().getDisplay().asyncExec(new Runnable() {
 					public void run() {
-						pageBook.showPage(riNotFoundLabel);
+						pageBook.showPage(riNotFoundLabel());
 					}
 				});				
 				return;
@@ -291,7 +286,7 @@ public class RIView extends ViewPart implements RdocListener, IVMInstallChangedL
         }
 
         protected void beforeInvoke() {
-            searchResult.setText(InfoViewMessages.getString("RubyInformation.please_wait"));
+            searchResult.setText(InfoViewMessages.RubyInformation_please_wait);
         }
         
 		void addToBuffer(int position, final String line) {			
@@ -361,7 +356,7 @@ public class RIView extends ViewPart implements RdocListener, IVMInstallChangedL
                 while ((line = reader.readLine()) != null) {
                     fgPossibleMatches.add(line.trim());
                 }
-                // if not matches were found display an error message
+                // if no matches were found display an error message
                 if( fgPossibleMatches.size() == 0 ){
                 	view.riNotFound();
                 } else {
@@ -384,7 +379,13 @@ public class RIView extends ViewPart implements RdocListener, IVMInstallChangedL
 	
 	void riNotFound() {
 		riFound = false;
-		pageBook.showPage( riNotFoundLabel );
+		pageBook.showPage( riNotFoundLabel() );
+	}
+	
+	protected Label riNotFoundLabel() {
+		Label riNotFoundLabel = new Label( pageBook, SWT.LEFT | SWT.TOP | SWT.WRAP );
+        riNotFoundLabel.setText(InfoViewMessages.bind(InfoViewMessages.RubyInformation_ri_not_found, RubyRuntime.getRI()));
+        return riNotFoundLabel;
 	}
 
 	public void defaultVMInstallChanged(IVMInstall previous, IVMInstall current) {
