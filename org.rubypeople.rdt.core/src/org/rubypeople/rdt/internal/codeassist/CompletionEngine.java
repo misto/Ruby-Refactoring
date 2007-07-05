@@ -153,7 +153,7 @@ public class CompletionEngine {
 					}					
 					IType[] types = requestor.findType(name);
 					for (int i = 0; i < types.length; i++) {
-						Map<String, CompletionProposal> map = doSuggestMethods(guess.getConfidence(), types[i], true);
+						Map<String, CompletionProposal> map = suggestMethods(guess.getConfidence(), types[i], true);
 						list.addAll(map.values());						
 					}
 				}
@@ -357,7 +357,9 @@ public class CompletionEngine {
 		if (fVisitedTypes.contains(type)) return proposals;
 		fVisitedTypes.add(type);
 		IMethod[] methods = type.getMethods();
+		if (methods == null) return proposals;
 		for (int k = 0; k < methods.length; k++) {
+			if (methods[k] == null) continue;
 			if (!includeInstanceMethods && !methods[k].isSingleton()) {
 				continue;
 			}
