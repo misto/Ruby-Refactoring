@@ -77,6 +77,26 @@ public class TC_RubyConsoleTracker extends TestCase {
 		console.assertLinkCount(0);
 	}
 	
+	/**
+	 * From http://www.aptana.com/trac/ticket/5019
+	 * @throws Exception
+	 */
+	public void testBackslashesInFilePath() throws Exception {
+		fileChecker.addKnownFile("C:\\ruby\\lib\\ruby\\gems\\1.8\\gems\\rails-1.2.3\\lib/commands/server.rb");
+		
+		console.lineAppend("\tfrom C:\\ruby\\lib\\ruby\\gems\\1.8\\gems\\rails-1.2.3\\lib/commands/server.rb:1") ;
+		console.assertLinkCount(1);
+		console.assertLink(6, 67, "C:\\ruby\\lib\\ruby\\gems\\1.8\\gems\\rails-1.2.3\\lib/commands/server.rb", 1, 0);
+	}	
+	
+	public void testWorkspaceRelativeStartingWithSlash() throws Exception {
+		fileChecker.addKnownFile("/app/controllers/tags_controller.rb");
+			
+		console.lineAppend("\t/app/controllers/tags_controller.rb:5:in `index'") ;
+		console.assertLinkCount(1);
+		console.assertLink(1, 37, "/app/controllers/tags_controller.rb", 5, 0);
+	}
+	
 	private final class MockFileExistanceChecker implements RubyConsoleTracker.FileExistanceChecker {
 		private List knownFiles = new ArrayList();
 		

@@ -12,6 +12,7 @@
  *******************************************************************************/
 package org.rubypeople.rdt.internal.ui.util;
 
+import java.io.File;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -77,17 +78,22 @@ public class StackTraceLine {
 	private void makeRelativeToWorkspace(IProject launchedProject) {
 		if (fFilename.startsWith("./")) {
 			fFilename = launchedProject.getFullPath().toPortableString() + fFilename.substring(1);
-			return;
+		} else if (fFilename.startsWith("/")) {
+			fFilename = launchedProject.getFullPath().toPortableString() + fFilename;
 		} else {
 			fFilename = launchedProject.getFullPath().toPortableString() + '/' + fFilename;
-		}
-		
+		}		
 	}
 
 	private boolean isRelativePath() {
 		if (fFilename.startsWith("./")) return true;
+		if (fFilename.startsWith("/")) { // If it starts with '/' it could be relative to workspace or absolute on *-nix!
+			File file = new File(fFilename);
+			if (file.exists()) return false;
+			return true;
+		}
 		int index = fFilename.indexOf('/');
-		if (index != -1 && !fFilename.startsWith("/") && fFilename.charAt(index - 1) != ':' ) return true;
+		if (index != -1 && fFilename.charAt(index - 1) != ':' ) return true;		
 		return false;
 	}
 

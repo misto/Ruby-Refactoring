@@ -10,6 +10,7 @@
  *******************************************************************************/
 package org.rubypeople.rdt.internal.ui;
 
+import org.rubypeople.eclipse.shams.resources.ShamProject;
 import org.rubypeople.rdt.internal.ui.util.StackTraceLine;
 
 import junit.framework.TestCase;
@@ -22,6 +23,7 @@ public class TC_StackTraceLine extends TestCase {
     private static final String ODD_WITH_FROM				= " ^	from /RdtTestLib/anotherFile.rb:4";
 	private static final String WITH_OUT_FROM 				= "/RdtTestLib/anotherFile.rb:4";
 	private static final String WITH_TRAILING_SPACE 		= "/RdtTestLib/anotherFile.rb:4 ";
+	private static final String LOOKS_ABSOLUTE 		= "\t/app/controllers/tags_controller.rb:5:in `index'";
 
     public void testWithFrom() {
 		assertFalse("has a stack trace", StackTraceLine.isTraceLine(WITH_TRAILING_SPACE));
@@ -94,6 +96,15 @@ public class TC_StackTraceLine extends TestCase {
 		assertEquals("Line Number", 12, traceLine.getLineNumber());
 		assertEquals("Offset", 3, traceLine.offset());
 		assertEquals("Length", 29, traceLine.length());
+	}
+	
+	public void testLooksAbsoluteButIsRelativeToProject() {
+		StackTraceLine traceLine = new StackTraceLine(LOOKS_ABSOLUTE, new ShamProject("testing"));
+		
+		assertEquals("Filename", "/testing/app/controllers/tags_controller.rb", traceLine.getFilename());
+		assertEquals("Line Number", 5, traceLine.getLineNumber());
+		assertEquals("Offset", 1, traceLine.offset());
+		assertEquals("Length", 37, traceLine.length());
 
 	}
 
