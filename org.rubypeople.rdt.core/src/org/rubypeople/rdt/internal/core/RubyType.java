@@ -35,6 +35,7 @@ import org.rubypeople.rdt.core.IRubyElement;
 import org.rubypeople.rdt.core.IRubyScript;
 import org.rubypeople.rdt.core.ISourceFolder;
 import org.rubypeople.rdt.core.IType;
+import org.rubypeople.rdt.core.ITypeHierarchy;
 import org.rubypeople.rdt.core.RubyModelException;
 import org.rubypeople.rdt.core.WorkingCopyOwner;
 import org.rubypeople.rdt.internal.core.util.MementoTokenizer;
@@ -310,6 +311,29 @@ public class RubyType extends NamedMember implements IType {
 		IType[] array= new IType[list.size()];
 		list.toArray(array);
 		return array;
+	}
+	
+	/**
+	 * @see IType
+	 */
+	public ITypeHierarchy newSupertypeHierarchy(IProgressMonitor monitor) throws RubyModelException {
+		return this.newSupertypeHierarchy(DefaultWorkingCopyOwner.PRIMARY, monitor);
+	}
+	
+	/**
+	 * @see IType#newSupertypeHierarchy(WorkingCopyOwner, IProgressMonitor)
+	 */
+	public ITypeHierarchy newSupertypeHierarchy(
+		WorkingCopyOwner owner,
+		IProgressMonitor monitor)
+		throws RubyModelException {
+
+		IRubyScript[] workingCopies = RubyModelManager.getRubyModelManager().getWorkingCopies(owner, true/*add primary working copies*/);
+//		CreateTypeHierarchyOperation op= new CreateTypeHierarchyOperation(this, workingCopies, SearchEngine.createWorkspaceScope(), false);
+//		op.runOperation(monitor);
+//		return op.getResult();
+		// XXX Implement!
+		return null;
 	}
 
 }
