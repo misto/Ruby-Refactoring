@@ -218,4 +218,83 @@ public final class RubyModelUtil {
 		ISourceFolder otherpack= (ISourceFolder) member.getAncestor(IRubyElement.SOURCE_FOLDER);
 		return (pack != null && pack.equals(otherpack));
 	}
+
+	/**
+	 * Finds a method in a type and all its super types. The super class hierarchy is searched first, then the super interfaces.
+	 * This searches for a method with the same name and signature. Parameter types are only
+	 * compared by the simple name, no resolving for the fully qualified type name is done.
+	 * Constructors are only compared by parameters, not the name.
+	 * NOTE: For finding overridden methods or for finding the declaring method, use {@link MethodOverrideTester}
+	 * @param hierarchy The hierarchy containing the type
+	 * 	@param type The type to start the search from
+	 * @param name The name of the method to find
+	 * @param paramTypes The type signatures of the parameters e.g. <code>{"QString;","I"}</code>
+	 * @param isConstructor If the method is a constructor
+	 * @return The first found method or <code>null</code>, if nothing found
+	 */
+	public static IMethod findMethodInHierarchy(ITypeHierarchy hierarchy, IType type, String name, String[] paramTypes, boolean isConstructor) throws RubyModelException {
+		// FIXME We shouldn't be taking iin parameter types at all. All we care about in Ruby is the method name. (we might care a little bit about arity of method, but not for overriding).
+		IMethod method= findMethod(name, paramTypes, isConstructor, type);
+		if (method != null) {
+			return method;
+		}
+		IType superClass= hierarchy.getSuperclass(type);
+		if (superClass != null) {
+			IMethod res=  findMethodInHierarchy(hierarchy, superClass, name, paramTypes, isConstructor);
+			if (res != null) {
+				return res;
+			}
+		}
+		if (!isConstructor) {
+			IType[] superInterfaces= hierarchy.getSuperInterfaces(type);
+			for (int i= 0; i < superInterfaces.length; i++) {
+				IMethod res= findMethodInHierarchy(hierarchy, superInterfaces[i], name, paramTypes, false);
+				if (res != null) {
+					return res;
+				}
+			}
+		}
+		return method;		
+	}
+	
+	/**
+	 * Finds a method in a type.
+	 * This searches for a method with the same name and signature. Parameter types are only
+	 * compared by the simple name, no resolving for the fully qualified type name is done.
+	 * Constructors are only compared by parameters, not the name.
+	 * @param name The name of the method to find
+	 * @param paramTypes The type signatures of the parameters e.g. <code>{"QString;","I"}</code>
+	 * @param isConstructor If the method is a constructor
+	 * @return The first found method or <code>null</code>, if nothing found
+	 */
+	public static IMethod findMethod(String name, String[] paramTypes, boolean isConstructor, IType type) throws RubyModelException {
+		IMethod[] methods= type.getMethods();
+		for (int i= 0; i < methods.length; i++) {
+			if (isSameMethodSignature(name, paramTypes, isConstructor, methods[i])) {
+				return methods[i];
+			}
+		}
+		return null;
+	}
+	
+	/**
+	 * Tests if a method equals to the given signature.
+	 * Parameter types are only compared by the simple name, no resolving for
+	 * the fully qualified type name is done. Constructors are only compared by
+	 * parameters, not the name.
+	 * @param name Name of the method
+	 * @param paramTypes The type signatures of the parameters e.g. <code>{"QString;","I"}</code>
+	 * @param isConstructor Specifies if the method is a constructor
+	 * @return Returns <code>true</code> if the method has the given name and parameter types and constructor state.
+	 */
+	public static boolean isSameMethodSignature(String name, String[] paramTypes, boolean isConstructor, IMethod curr) throws RubyModelException {
+		if (isConstructor || name.equals(curr.getElementName())) {
+			if (isConstructor == curr.isConstructor()) {
+//				if (paramTypes.length == curr.getNumberOfParameters()) {
+					return true;
+//				}
+			}
+		}
+		return false;
+	}
 }
