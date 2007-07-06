@@ -16,6 +16,7 @@ import org.rubypeople.rdt.internal.ui.util.StackTraceLine;
 import junit.framework.TestCase;
 
 public class TC_StackTraceLine extends TestCase {
+	private static final String BACKSLASH_FILE_PATH = "C:\\ruby\\lib\\ruby\\gems\\1.8\\gems\\activesupport-1.4.2\\lib/active_support/dependencies.rb:376:in `new_constants_in': undefined method `empty?' for nil:NilClass (NoMethodError)";
 	private static final String RUBY_CONSOLE_TEST_FAILURE 	= "testA(BTest) [/RdtTestLib/anotherFile.rb:12]:"; 
 	private static final String TEST_UNIT_VIEW_BACKTRACE  	= "   /RdtTestLib/anotherFile.rb:12"; 
 	private static final String BACKTRACE_WITH_IN 			= "   /RdtTestLib/anotherFile.rb:12:in `testB'";
@@ -105,7 +106,15 @@ public class TC_StackTraceLine extends TestCase {
 		assertEquals("Line Number", 5, traceLine.getLineNumber());
 		assertEquals("Offset", 1, traceLine.offset());
 		assertEquals("Length", 37, traceLine.length());
-
+	}
+	
+	public void testBackslashInFilePath() {
+		StackTraceLine traceLine = new StackTraceLine(BACKSLASH_FILE_PATH, new ShamProject("testing"));
+		
+		assertEquals("Filename", "C:\\ruby\\lib\\ruby\\gems\\1.8\\gems\\activesupport-1.4.2\\lib/active_support/dependencies.rb", traceLine.getFilename());
+		assertEquals("Line Number", 376, traceLine.getLineNumber());
+		assertEquals("Offset", 0, traceLine.offset());
+		assertEquals("Length", 89, traceLine.length());
 	}
 
 }

@@ -92,8 +92,7 @@ public class StackTraceLine {
 			if (file.exists()) return false;
 			return true;
 		}
-		int index = fFilename.indexOf('/');
-		if (index != -1 && fFilename.charAt(index - 1) != ':' ) return true;		
+		if (fFilename.contains(":")) return false;
 		return false;
 	}
 
