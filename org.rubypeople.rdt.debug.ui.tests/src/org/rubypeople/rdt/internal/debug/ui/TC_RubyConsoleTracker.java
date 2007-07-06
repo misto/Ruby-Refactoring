@@ -136,12 +136,16 @@ public class TC_RubyConsoleTracker extends TestCase {
 		}
 		
 		public void assertLink(int expectedOffset, int expectedLength, String expectedFilename, int expectedLineNumber, int linkIndex) {
-			MetaLink metaLink = (MetaLink) metaLinks.get(linkIndex);
-			assertNotNull(metaLink);
-			assertEquals("Offset of link["+linkIndex+"]", expectedOffset, metaLink.offset);
-			assertEquals(expectedLength, metaLink.length);
-			assertEquals(expectedFilename, metaLink.link.getFilename());
-			assertEquals(expectedLineNumber, metaLink.link.getLineNumber());
+			try {
+				MetaLink metaLink = (MetaLink) metaLinks.get(linkIndex);
+				assertNotNull(metaLink);
+				assertEquals("Offset of link["+linkIndex+"]", expectedOffset, metaLink.offset);
+				assertEquals(expectedLength, metaLink.length);
+				assertEquals(expectedFilename, metaLink.link.getFilename());
+				assertEquals(expectedLineNumber, metaLink.link.getLineNumber());
+			} catch (IndexOutOfBoundsException e) {
+				fail("Link index out of bounds: (" + linkIndex + ")");
+			}
 		}
 				
 		public void addLink(IConsoleHyperlink pLink, int pOffset, int pLength) {			
