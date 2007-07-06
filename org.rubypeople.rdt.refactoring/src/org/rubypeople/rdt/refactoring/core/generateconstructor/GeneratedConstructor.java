@@ -35,7 +35,7 @@ import org.jruby.ast.BlockNode;
 import org.jruby.ast.DefnNode;
 import org.jruby.ast.InstAsgnNode;
 import org.jruby.ast.Node;
-import org.jruby.lexer.yacc.SourcePosition;
+import org.jruby.lexer.yacc.IDESourcePosition;
 import org.rubypeople.rdt.refactoring.core.NodeFactory;
 import org.rubypeople.rdt.refactoring.editprovider.InsertEditProvider;
 import org.rubypeople.rdt.refactoring.nodewrapper.ClassNodeWrapper;
@@ -63,7 +63,7 @@ public class GeneratedConstructor extends InsertEditProvider {
 
 	private Node getBody(Collection<String> args) {
 		Iterator<String> argsIter = args.iterator();
-		BlockNode blockNode = new BlockNode(new SourcePosition());
+		BlockNode blockNode = new BlockNode(new IDESourcePosition());
 		
 		for (int i = 0; i < args.size(); i++) {
 			String name = argsIter.next();

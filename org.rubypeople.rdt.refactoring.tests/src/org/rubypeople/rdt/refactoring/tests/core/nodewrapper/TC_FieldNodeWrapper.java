@@ -32,23 +32,23 @@ import junit.framework.TestCase;
 
 import org.jruby.ast.ClassVarNode;
 import org.jruby.ast.InstVarNode;
-import org.jruby.lexer.yacc.SourcePosition;
+import org.jruby.lexer.yacc.IDESourcePosition;
 import org.rubypeople.rdt.refactoring.nodewrapper.FieldNodeWrapper;
 
 public class TC_FieldNodeWrapper extends TestCase {
 
 	public void testGetNameWithoutAtsInst() {
-		assertEquals("name", new FieldNodeWrapper(new InstVarNode(new SourcePosition(), "name")).getNameWithoutAts());
-		assertEquals("name", new FieldNodeWrapper(new InstVarNode(new SourcePosition(), "@name")).getNameWithoutAts());
-		assertEquals("name", new FieldNodeWrapper(new InstVarNode(new SourcePosition(), "@@name")).getNameWithoutAts());
-		assertEquals("@name", new FieldNodeWrapper(new InstVarNode(new SourcePosition(), "@@@name")).getNameWithoutAts());
+		assertEquals("name", new FieldNodeWrapper(new InstVarNode(new IDESourcePosition(), "name")).getNameWithoutAts());
+		assertEquals("name", new FieldNodeWrapper(new InstVarNode(new IDESourcePosition(), "@name")).getNameWithoutAts());
+		assertEquals("name", new FieldNodeWrapper(new InstVarNode(new IDESourcePosition(), "@@name")).getNameWithoutAts());
+		assertEquals("@name", new FieldNodeWrapper(new InstVarNode(new IDESourcePosition(), "@@@name")).getNameWithoutAts());
 	}
 	
 	public void testGetNameWithoutAtsClass() {
-		assertEquals("name", new FieldNodeWrapper(new ClassVarNode(new SourcePosition(), "name")).getNameWithoutAts());
-		assertEquals("name", new FieldNodeWrapper(new ClassVarNode(new SourcePosition(), "@name")).getNameWithoutAts());
-		assertEquals("name", new FieldNodeWrapper(new ClassVarNode(new SourcePosition(), "@@name")).getNameWithoutAts());
-		assertEquals("@name", new FieldNodeWrapper(new ClassVarNode(new SourcePosition(), "@@@name")).getNameWithoutAts());
+		assertEquals("name", new FieldNodeWrapper(new ClassVarNode(new IDESourcePosition(), "name")).getNameWithoutAts());
+		assertEquals("name", new FieldNodeWrapper(new ClassVarNode(new IDESourcePosition(), "@name")).getNameWithoutAts());
+		assertEquals("name", new FieldNodeWrapper(new ClassVarNode(new IDESourcePosition(), "@@name")).getNameWithoutAts());
+		assertEquals("@name", new FieldNodeWrapper(new ClassVarNode(new IDESourcePosition(), "@@@name")).getNameWithoutAts());
 	}
 
 }

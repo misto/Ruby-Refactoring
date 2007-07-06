@@ -36,8 +36,8 @@ import org.jruby.ast.Colon3Node;
 import org.jruby.ast.IterNode;
 import org.jruby.ast.MethodDefNode;
 import org.jruby.ast.Node;
+import org.jruby.lexer.yacc.IDESourcePosition;
 import org.jruby.lexer.yacc.ISourcePosition;
-import org.jruby.lexer.yacc.SourcePosition;
 import org.jruby.parser.StaticScope;
 
 public class NodeUtil {
@@ -142,11 +142,7 @@ public class NodeUtil {
             endLine = secondPos.getEndLine();
         }
         
-        SourcePosition combinedPosition = new SourcePosition(fileName, startLine, endLine, startOffset, endOffset);
-        
-        return combinedPosition;  
-               
-	    
+        return new IDESourcePosition(fileName, startLine, endLine, startOffset, endOffset);   
 	}
 	
 	public static boolean positionIsInNode(int offset, Colon3Node path) {

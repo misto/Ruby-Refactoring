@@ -41,8 +41,8 @@ import org.jruby.ast.NewlineNode;
 import org.jruby.ast.Node;
 import org.jruby.ast.types.INameNode;
 import org.jruby.ast.visitor.rewriter.ReWriteVisitor;
+import org.jruby.lexer.yacc.IDESourcePosition;
 import org.jruby.lexer.yacc.ISourcePosition;
-import org.jruby.lexer.yacc.SourcePosition;
 import org.rubypeople.rdt.refactoring.core.renamelocal.LocalVariableRenamer;
 import org.rubypeople.rdt.refactoring.documentprovider.DocumentProvider;
 import org.rubypeople.rdt.refactoring.documentprovider.IDocumentProvider;
@@ -57,8 +57,8 @@ public class ParameterReplacer implements IParameterReplacer {
 		
 		DocumentProvider strDoc = new StringDocumentProvider("part_of_" + doc.getActiveFileName(), doc.getActiveFileContent().substring(definition.getPosition().getStartOffset(), definition.getPosition().getEndOffset() + 1)); //$NON-NLS-1$
 		
-		ArrayNode headList = new ArrayNode(new SourcePosition());
-		ArrayNode tailList = new ArrayNode(new SourcePosition());
+		ArrayNode headList = new ArrayNode(new IDESourcePosition());
+		ArrayNode tailList = new ArrayNode(new IDESourcePosition());
 		
 		
 		if(definition.getArgsNode().getArgs() != null && call.getArgsNode() != null) {
@@ -95,7 +95,7 @@ public class ParameterReplacer implements IParameterReplacer {
 	}
 
 	private void createAssignments(ArrayNode headList, ArrayNode tailList, StringBuffer insert, String lineDelimiter) {
-		MultipleAsgnNode multipleAsgnNode = new MultipleAsgnNode(new SourcePosition(), headList, null);
+		MultipleAsgnNode multipleAsgnNode = new MultipleAsgnNode(new IDESourcePosition(), headList, null);
 		multipleAsgnNode.setValueNode(tailList);
 		insert.append(ReWriteVisitor.createCodeFromNode(multipleAsgnNode, "")); //$NON-NLS-1$
 		insert.append(lineDelimiter);
@@ -122,7 +122,7 @@ public class ParameterReplacer implements IParameterReplacer {
 
 	private void processRestArg(MethodDefNode definition, ArrayNode headList, ArrayNode tailList, Object[] defnArguments, Object[] arguments) {
 		String restArgName = definition.getScope().getVariables()[definition.getArgsNode().getRestArg()];
-		ArrayNode restParams = new ArrayNode(new SourcePosition());
+		ArrayNode restParams = new ArrayNode(new IDESourcePosition());
 		for(int i = defnArguments.length; i < arguments.length; i++) {
 			restParams.add((Node) arguments[i]);
 		}
@@ -131,7 +131,7 @@ public class ParameterReplacer implements IParameterReplacer {
 	}
 
 	private LocalAsgnNode createAssignment(String name) {
-		return new LocalAsgnNode(new SourcePosition(), name, -1, null);
+		return new LocalAsgnNode(new IDESourcePosition(), name, -1, null);
 	}
 	
 	private DocumentProvider renameVariable(DocumentProvider StringDocumentProvider, INameNode varNode, INameNode argumentNode) {

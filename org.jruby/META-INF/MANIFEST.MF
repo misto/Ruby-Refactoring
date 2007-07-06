@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: JRuby Plug-in
 Bundle-SymbolicName: org.jruby
-Bundle-Version: 1.0.0.3788
+Bundle-Version: 1.0.0.3967
 Bundle-Localization: plugin
 Require-Bundle: org.eclipse.core.runtime
 Eclipse-LazyStart: false
@@ -10,9 +10,7 @@ Bundle-ClassPath: lib/asm-commons-2.2.3.jar,
  lib/asm-2.2.3.jar,
  lib/backport-util-concurrent.jar,
  lib/jruby.jar
-Export-Package: org.ablaf.ast,
- org.ablaf.internal.ast,
- org.jruby,
+Export-Package: org.jruby,
  org.jruby.ast,
  org.jruby.ast.types,
  org.jruby.ast.util,
@@ -30,7 +28,6 @@ Export-Package: org.ablaf.ast,
  org.jruby.javasupport.util,
  org.jruby.lexer.yacc,
  org.jruby.libraries,
- org.jruby.main,
  org.jruby.parser,
  org.jruby.runtime,
  org.jruby.runtime.builtin,

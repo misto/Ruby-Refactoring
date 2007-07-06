@@ -29,7 +29,7 @@
 package org.rubypeople.rdt.refactoring.tests.core.inlinemethod;
 
 import org.jruby.ast.LocalAsgnNode;
-import org.jruby.lexer.yacc.SourcePosition;
+import org.jruby.lexer.yacc.IDESourcePosition;
 import org.rubypeople.rdt.refactoring.core.inlinemethod.ReturnStatementReplacer;
 import org.rubypeople.rdt.refactoring.documentprovider.IDocumentProvider;
 import org.rubypeople.rdt.refactoring.tests.core.MultipleDocumentsInOneProvider;
@@ -58,31 +58,31 @@ public class TC_ReturnStatementReplacer extends FinderTestsBase {
 
 	public void testExplicitReturn() {
 		doc.setActive("test5");
-		IDocumentProvider resultDocument = new ReturnStatementReplacer().replaceReturn(doc, new LocalAsgnNode(new SourcePosition(), "result", 2, null));
+		IDocumentProvider resultDocument = new ReturnStatementReplacer().replaceReturn(doc, new LocalAsgnNode(new IDESourcePosition(), "result", 2, null));
 		assertEquals("result = var", lastLine(resultDocument));
 	}
 
 	public void testImplicitReturn() {
 		doc.setActive("test6");
-		IDocumentProvider resultDocument = new ReturnStatementReplacer().replaceReturn(doc, new LocalAsgnNode(new SourcePosition(), "result", 2, null));
+		IDocumentProvider resultDocument = new ReturnStatementReplacer().replaceReturn(doc, new LocalAsgnNode(new IDESourcePosition(), "result", 2, null));
 		assertEquals("result = (2 ** 10)", lastLine(resultDocument));
 	}
 
 	public void testFactorialReturn() {
 		doc.setActive("test7");
-		IDocumentProvider resultDocument = new ReturnStatementReplacer().replaceReturn(doc, new LocalAsgnNode(new SourcePosition(), "fac", 2, null));
+		IDocumentProvider resultDocument = new ReturnStatementReplacer().replaceReturn(doc, new LocalAsgnNode(new IDESourcePosition(), "fac", 2, null));
 		assertEquals("fac = ((1..10).inject(1) {|i, j| i * j})", lastLine(resultDocument));
 	}
 	
 	public void testReturnFixnum() {
 		doc.setActive("test8");
-		IDocumentProvider resultDocument = new ReturnStatementReplacer().replaceReturn(doc, new LocalAsgnNode(new SourcePosition(), "var", 2, null));
+		IDocumentProvider resultDocument = new ReturnStatementReplacer().replaceReturn(doc, new LocalAsgnNode(new IDESourcePosition(), "var", 2, null));
 		assertEquals("var = 5", lastLine(resultDocument));
 	}
 
 	public void testErroneousDocument() {
 		doc.setActive("test3");
-		IDocumentProvider resultDocument = new ReturnStatementReplacer().replaceReturn(doc, new LocalAsgnNode(new SourcePosition(), "fac", 2, null));
+		IDocumentProvider resultDocument = new ReturnStatementReplacer().replaceReturn(doc, new LocalAsgnNode(new IDESourcePosition(), "fac", 2, null));
 		assertNull(resultDocument);
 	}
 

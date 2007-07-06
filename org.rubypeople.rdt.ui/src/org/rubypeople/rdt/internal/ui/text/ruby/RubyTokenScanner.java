@@ -58,7 +58,7 @@ public class RubyTokenScanner extends AbstractRubyTokenScanner {
 		super(manager, store);
 		lexer = new RubyYaccLexer();
 		parserSupport = new ParserSupport();
-		parserSupport.setConfiguration(new RubyParserConfiguration());
+		parserSupport.setConfiguration(new RubyParserConfiguration(false));
 		result = new RubyParserResult();
 		parserSupport.setResult(result);
 		lexer.setParserSupport(parserSupport);
@@ -222,10 +222,10 @@ public class RubyTokenScanner extends AbstractRubyTokenScanner {
 		}
 		try {
 			contents = document.get(offset, length);
-			lexerSource = new LexerSource("filename", new StringReader(contents), 0);
+			lexerSource = new LexerSource("filename", new StringReader(contents), 0, true);
 			lexer.setSource(lexerSource);
 		} catch (BadLocationException e) {
-			lexerSource = new LexerSource("filename", new StringReader(""), 0);
+			lexerSource = new LexerSource("filename", new StringReader(""), 0, true);
 			lexer.setSource(lexerSource);
 		}
 		origOffset = offset;

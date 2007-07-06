@@ -63,8 +63,8 @@ import org.jruby.ast.SuperNode;
 import org.jruby.ast.SymbolNode;
 import org.jruby.ast.VCallNode;
 import org.jruby.ast.ZSuperNode;
+import org.jruby.lexer.yacc.IDESourcePosition;
 import org.jruby.lexer.yacc.ISourcePosition;
-import org.jruby.lexer.yacc.SourcePosition;
 import org.jruby.parser.LocalStaticScope;
 import org.jruby.parser.StaticScope;
 import org.jruby.runtime.Visibility;
@@ -75,7 +75,7 @@ import org.rubypeople.rdt.refactoring.util.Constants;
 
 public class NodeFactory {
 
-	public static final SourcePosition pos = new SourcePosition();
+	public static final ISourcePosition pos = new IDESourcePosition();
 
 	public static final Node NULL_POSITION_NODE = new NewlineNode(pos, null);
 
@@ -309,11 +309,8 @@ public class NodeFactory {
             endOffset = second.getEndOffset();
             endLine = second.getEndLine();
         }
- 
 
-        ISourcePosition commentIncludingPos = new SourcePosition(fileName, startLine, endLine, startOffset, endOffset);
-        
-        return commentIncludingPos;
+        return new IDESourcePosition(fileName, startLine, endLine, startOffset, endOffset);
 	}
 
 	public static BlockNode createGetterSetter(String attrName, boolean isWriterMethod, VisibilityNodeWrapper.METHOD_VISIBILITY visibility){

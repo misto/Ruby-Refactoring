@@ -36,7 +36,8 @@ import org.jruby.ast.ArrayNode;
 import org.jruby.ast.DefnNode;
 import org.jruby.ast.NewlineNode;
 import org.jruby.ast.RootNode;
-import org.jruby.lexer.yacc.SourcePosition;
+import org.jruby.lexer.yacc.IDESourcePosition;
+import org.jruby.lexer.yacc.ISourcePosition;
 import org.rubypeople.rdt.refactoring.documentprovider.StringDocumentProvider;
 import org.rubypeople.rdt.refactoring.nodewrapper.ClassNodeWrapper;
 import org.rubypeople.rdt.refactoring.nodewrapper.MethodNodeWrapper;
@@ -44,7 +45,7 @@ import org.rubypeople.rdt.refactoring.nodewrapper.RealClassNodeWrapper;
 
 public class TC_MethodNodeWrapper extends TestCase {
 
-	private static final SourcePosition EMPTY_POSITION = new SourcePosition();
+	private static final ISourcePosition EMPTY_POSITION = new IDESourcePosition();
 	ClassNodeWrapper klass;
 	
 	public void setUp() {

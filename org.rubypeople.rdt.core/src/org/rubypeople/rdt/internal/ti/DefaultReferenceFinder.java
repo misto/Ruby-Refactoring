@@ -19,8 +19,8 @@ import org.jruby.ast.LocalAsgnNode;
 import org.jruby.ast.LocalVarNode;
 import org.jruby.ast.Node;
 import org.jruby.ast.types.INameNode;
+import org.jruby.lexer.yacc.IDESourcePosition;
 import org.jruby.lexer.yacc.ISourcePosition;
-import org.jruby.lexer.yacc.SourcePosition;
 import org.rubypeople.rdt.internal.core.parser.RdtWarnings;
 import org.rubypeople.rdt.internal.core.parser.RubyParser;
 import org.rubypeople.rdt.internal.ti.util.FirstPrecursorNodeLocator;
@@ -86,7 +86,7 @@ public class DefaultReferenceFinder implements IReferenceFinder {
 		{
 			System.err.println("Couldn't get the name for: " + node.toString() + " in " + scope.toString() );
 		}
-		return new SourcePosition(pos.getFile(), pos.getStartLine(), pos.getEndLine(), pos.getStartOffset(), pos.getStartOffset() + name.length() );
+		return new IDESourcePosition(pos.getFile(), pos.getStartLine(), pos.getEndLine(), pos.getStartOffset(), pos.getStartOffset() + name.length() );
 	}
 	
 	/**
@@ -225,7 +225,7 @@ public class DefaultReferenceFinder implements IReferenceFinder {
 					return false;
 				}
 			});
-			BlockNode blockNode = new BlockNode(new SourcePosition());
+			BlockNode blockNode = new BlockNode(new IDESourcePosition());
 			for ( Node classNode : classNodes )
 			{
 				blockNode.add( classNode );

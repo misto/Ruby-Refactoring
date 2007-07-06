@@ -31,7 +31,7 @@ package org.rubypeople.rdt.refactoring.tests.core;
 import java.util.Collection;
 
 import org.jruby.ast.ConstNode;
-import org.jruby.lexer.yacc.SourcePosition;
+import org.jruby.lexer.yacc.IDESourcePosition;
 import org.rubypeople.rdt.refactoring.core.ModuleNodeProvider;
 import org.rubypeople.rdt.refactoring.documentprovider.StringDocumentProvider;
 import org.rubypeople.rdt.refactoring.nodewrapper.ModuleNodeWrapper;
@@ -97,10 +97,10 @@ public class TC_ModuleNodeProvider extends FileTestCase {
 		
 		assertEquals(2, nodes.length);
 		assertEquals("Modul", nodes[0].getName());
-		assertEquals(new SourcePosition("TC_ModuleNodeProvider", 1, 1, 19, 24), nodes[0].getPosition());
+		assertEquals(new IDESourcePosition("TC_ModuleNodeProvider", 1, 1, 19, 24), nodes[0].getPosition());
 		
 		assertEquals("Modul", nodes[1].getName());
-		assertEquals(new SourcePosition("TC_ModuleNodeProvider", 13, 13, 145, 150), nodes[1].getPosition());
+		assertEquals(new IDESourcePosition("TC_ModuleNodeProvider", 13, 13, 145, 150), nodes[1].getPosition());
 	}
 	
 	public void testFindMultipleMethods() {
@@ -109,15 +109,15 @@ public class TC_ModuleNodeProvider extends FileTestCase {
 		
 		assertEquals(4, nodes.length);
 		assertEquals("Modul", nodes[0].getName());
-		assertEquals(new SourcePosition("TC_ModuleNodeProvider", 1, 1, 19, 24), nodes[0].getPosition());
+		assertEquals(new IDESourcePosition("TC_ModuleNodeProvider", 1, 1, 19, 24), nodes[0].getPosition());
 		
 		assertEquals("Modul", nodes[1].getName());
-		assertEquals(new SourcePosition("TC_ModuleNodeProvider", 13, 13, 145, 150), nodes[1].getPosition());
+		assertEquals(new IDESourcePosition("TC_ModuleNodeProvider", 13, 13, 145, 150), nodes[1].getPosition());
 		
 		assertEquals("Modul", nodes[2].getName());
-		assertEquals(new SourcePosition("TC_ModuleNodeProvider", 15, 15, 175, 180), nodes[2].getPosition());
+		assertEquals(new IDESourcePosition("TC_ModuleNodeProvider", 15, 15, 175, 180), nodes[2].getPosition());
 		
 		assertEquals("Modul", nodes[3].getName());
-		assertEquals(new SourcePosition("TC_ModuleNodeProvider", 17, 17, 207, 212), nodes[3].getPosition());
+		assertEquals(new IDESourcePosition("TC_ModuleNodeProvider", 17, 17, 207, 212), nodes[3].getPosition());
 	}
 }

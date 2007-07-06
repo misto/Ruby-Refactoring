@@ -37,8 +37,8 @@ import org.jruby.ast.ModuleNode;
 import org.jruby.ast.Node;
 import org.jruby.ast.ReturnNode;
 import org.jruby.ast.SymbolNode;
+import org.jruby.lexer.yacc.IDESourcePosition;
 import org.jruby.lexer.yacc.ISourcePosition;
-import org.jruby.lexer.yacc.SourcePosition;
 import org.jruby.lexer.yacc.SyntaxException;
 import org.rubypeople.rdt.core.IRubyElement;
 import org.rubypeople.rdt.internal.core.parser.RubyParser;
@@ -464,7 +464,7 @@ public class OccurrencesFinder extends AbstractOccurencesFinder {
 					return false;
 				}
 			});
-			BlockNode blockNode = new BlockNode(new SourcePosition());
+			BlockNode blockNode = new BlockNode(new IDESourcePosition());
 			for (Node classNode : classNodes) {
 				blockNode.add(classNode);
 			}
@@ -682,7 +682,7 @@ public class OccurrencesFinder extends AbstractOccurencesFinder {
 			int nameEnd = classDeclString.indexOf(name);
 			if (nameEnd == -1) return null;
 			int begin = pos.getStartOffset() + nameEnd;
-			return new SourcePosition(pos.getFile(), pos.getStartLine(), pos.getEndLine(), begin, begin + name.length());
+			return new IDESourcePosition(pos.getFile(), pos.getStartLine(), pos.getEndLine(), begin, begin + name.length());
 		} else if (node instanceof ModuleNode) {
 			name = getModuleNodeName((ModuleNode) node);
 			int end = pos.getEndOffset();
@@ -691,19 +691,19 @@ public class OccurrencesFinder extends AbstractOccurencesFinder {
 			int nameEnd = classDeclString.indexOf(name);
 			if (nameEnd == -1) return null;
 			int begin = pos.getStartOffset() + nameEnd;
-			return new SourcePosition(pos.getFile(), pos.getStartLine(), pos.getEndLine(), begin, begin + name.length());
+			return new IDESourcePosition(pos.getFile(), pos.getStartLine(), pos.getEndLine(), begin, begin + name.length());
 		} else if (node instanceof SymbolNode) {
 			// XXX: This is a hack to get around improper offsets in my JRuby
 			// copy; ":foo" returns offset for ":fo", so compensate by adding
 			// one
 			name = ((SymbolNode) node).getName();
-			return new SourcePosition(pos.getFile(), pos.getStartLine(), pos.getEndLine(), pos.getStartOffset(), pos.getStartOffset() + name.length() + 1);
+			return new IDESourcePosition(pos.getFile(), pos.getStartLine(), pos.getEndLine(), pos.getStartOffset(), pos.getStartOffset() + name.length() + 1);
 		}
 
 		if (name == null) {
 			throw new RuntimeException("Couldn't get the name for: " + node.toString());
 		}
-		return new SourcePosition(pos.getFile(), pos.getStartLine(), pos.getEndLine(), pos.getStartOffset(), pos.getStartOffset() + name.length());
+		return new IDESourcePosition(pos.getFile(), pos.getStartLine(), pos.getEndLine(), pos.getStartOffset(), pos.getStartOffset() + name.length());
 	}
 
 	/**

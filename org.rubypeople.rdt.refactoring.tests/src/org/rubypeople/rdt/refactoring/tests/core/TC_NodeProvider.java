@@ -39,7 +39,7 @@ import org.jruby.ast.LocalVarNode;
 import org.jruby.ast.NewlineNode;
 import org.jruby.ast.Node;
 import org.jruby.ast.RootNode;
-import org.jruby.lexer.yacc.SourcePosition;
+import org.jruby.lexer.yacc.IDESourcePosition;
 import org.rubypeople.rdt.refactoring.core.NodeProvider;
 import org.rubypeople.rdt.refactoring.core.SelectionNodeProvider;
 import org.rubypeople.rdt.refactoring.tests.FileTestCase;
@@ -86,10 +86,10 @@ public class TC_NodeProvider extends FileTestCase {
 	}
 	
 	public void testNodeContainsCaretPosition() {
-		assertTrue (SelectionNodeProvider.nodeContainsPosition(new ArgumentNode(new SourcePosition("", 0, 1, 0, 5), ""), 0));
-		assertTrue (SelectionNodeProvider.nodeContainsPosition(new ArgumentNode(new SourcePosition("", 0, 1, 0, 5), ""), 5));
-		assertFalse(SelectionNodeProvider.nodeContainsPosition(new ArgumentNode(new SourcePosition("", 0, 1, 0, 5), ""), 6));
-		assertFalse(SelectionNodeProvider.nodeContainsPosition(new ArgumentNode(new SourcePosition("", 0, 1, 0, 5), ""), 7));
+		assertTrue (SelectionNodeProvider.nodeContainsPosition(new ArgumentNode(new IDESourcePosition("", 0, 1, 0, 5), ""), 0));
+		assertTrue (SelectionNodeProvider.nodeContainsPosition(new ArgumentNode(new IDESourcePosition("", 0, 1, 0, 5), ""), 5));
+		assertFalse(SelectionNodeProvider.nodeContainsPosition(new ArgumentNode(new IDESourcePosition("", 0, 1, 0, 5), ""), 6));
+		assertFalse(SelectionNodeProvider.nodeContainsPosition(new ArgumentNode(new IDESourcePosition("", 0, 1, 0, 5), ""), 7));
 	}
 	
 	public void testGatherLocalAsgnNodes() {

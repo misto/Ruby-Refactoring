@@ -33,7 +33,7 @@ import java.util.Collection;
 
 import org.jruby.ast.BlockNode;
 import org.jruby.ast.Node;
-import org.jruby.lexer.yacc.SourcePosition;
+import org.jruby.lexer.yacc.IDESourcePosition;
 import org.rubypeople.rdt.refactoring.core.NodeFactory;
 import org.rubypeople.rdt.refactoring.editprovider.InsertEditProvider;
 import org.rubypeople.rdt.refactoring.nodewrapper.MethodNodeWrapper;
@@ -85,7 +85,7 @@ public class DownPushedMethodsClass extends InsertEditProvider {
 	}
 
 	private Node getBody() {
-		BlockNode body = new BlockNode(new SourcePosition());
+		BlockNode body = new BlockNode(new IDESourcePosition());
 		body.add(NodeFactory.createNewLineNode(null));
 		for (MethodNodeWrapper constructor : constructorNodes) {
 			body.add(NodeFactory.createNewLineNode(constructor.getWrappedNode()));

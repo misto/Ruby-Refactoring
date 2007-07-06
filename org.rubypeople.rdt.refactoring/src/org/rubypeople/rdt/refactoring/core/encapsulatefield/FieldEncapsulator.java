@@ -37,7 +37,7 @@ import org.jruby.ast.BlockNode;
 import org.jruby.ast.CommentNode;
 import org.jruby.ast.FCallNode;
 import org.jruby.ast.Node;
-import org.jruby.lexer.yacc.SourcePosition;
+import org.jruby.lexer.yacc.IDESourcePosition;
 import org.rubypeople.rdt.refactoring.core.NodeFactory;
 import org.rubypeople.rdt.refactoring.editprovider.DeleteEditProvider;
 import org.rubypeople.rdt.refactoring.editprovider.EditProvider;
@@ -187,7 +187,7 @@ public class FieldEncapsulator extends MultiEditProvider {
 	private Collection<CommentNode> resetCommentPositions(ArrayList<CommentNode> comments) {
 		ArrayList<CommentNode> resettedComments = new ArrayList<CommentNode>();
 		for(CommentNode currentComment : comments){
-			resettedComments.add(new CommentNode(new SourcePosition("",-1,-1,-1,-1), currentComment.getContent()));
+			resettedComments.add(new CommentNode(new IDESourcePosition("",-1,-1,-1,-1), currentComment.getContent()));
 		}
 		return resettedComments;
 	}	

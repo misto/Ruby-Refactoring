@@ -60,8 +60,8 @@ public class RubyParser {
         	parser.setWarnings(warnings);
         	String fileName = "";
         	if (file != null) fileName = file.getName();
-        	LexerSource lexerSource = new LexerSource(fileName, content, 0);
-        	result = parser.parse(new RubyParserConfiguration(), lexerSource);
+        	LexerSource lexerSource = new LexerSource(fileName, content, 0, true);
+        	result = parser.parse(new RubyParserConfiguration(false), lexerSource);
         } catch (SyntaxException e) {
         	throw e;
         } finally {
