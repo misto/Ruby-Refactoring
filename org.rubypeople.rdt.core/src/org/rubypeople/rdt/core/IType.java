@@ -188,4 +188,15 @@ public interface IType extends IRubyElement, IMember {
 	 */
 	IType[] getTypes() throws RubyModelException;
 
+	/**
+	 * Creates and returns a type hierarchy for this type containing
+	 * this type and all of its supertypes.
+	 *
+	 * @param monitor the given progress monitor
+	 * @exception RubyModelException if this element does not exist or if an
+	 *		exception occurs while accessing its corresponding resource.
+	 * @return a type hierarchy for this type containing this type and all of its supertypes
+	 */
+	ITypeHierarchy newSupertypeHierarchy(IProgressMonitor monitor) throws RubyModelException;
+
 }
