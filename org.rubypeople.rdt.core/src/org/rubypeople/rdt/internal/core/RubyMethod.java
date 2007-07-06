@@ -110,6 +110,10 @@ public class RubyMethod extends NamedMember implements IMethod {
     public String[] getParameterNames() throws RubyModelException {
        return parameterNames;
     }
+    
+    public int getNumberOfParameters() throws RubyModelException {
+    	return getParameterNames().length;
+    }
 
     public boolean isSingleton() {
     	try {

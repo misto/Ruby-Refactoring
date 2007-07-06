@@ -87,6 +87,8 @@ public class RubyUIMessages extends NLS {
 	public static String OpenTypeAction_tooltip;
 	public static String OpenTypeAction_errorTitle;
 	public static String OpenTypeAction_errorMessage;
+	public static String RubyOutlineControl_statusFieldText_hideInheritedMembers;
+	public static String RubyOutlineControl_statusFieldText_showInheritedMembers;
 
     private RubyUIMessages() {
     }

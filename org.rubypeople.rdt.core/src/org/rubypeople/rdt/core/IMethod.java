@@ -43,4 +43,6 @@ public interface IMethod extends IRubyElement, IMember {
 
     public boolean isSingleton();
 
+	public int getNumberOfParameters() throws RubyModelException;
+
 }

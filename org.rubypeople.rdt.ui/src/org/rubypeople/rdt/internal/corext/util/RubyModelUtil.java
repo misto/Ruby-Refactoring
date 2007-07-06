@@ -5,10 +5,15 @@ package org.rubypeople.rdt.internal.corext.util;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
+import org.rubypeople.rdt.core.Flags;
+import org.rubypeople.rdt.core.IMember;
+import org.rubypeople.rdt.core.IMethod;
 import org.rubypeople.rdt.core.IRubyElement;
 import org.rubypeople.rdt.core.IRubyScript;
+import org.rubypeople.rdt.core.ISourceFolder;
 import org.rubypeople.rdt.core.ISourceFolderRoot;
 import org.rubypeople.rdt.core.IType;
+import org.rubypeople.rdt.core.ITypeHierarchy;
 import org.rubypeople.rdt.core.RubyModelException;
 import org.rubypeople.rdt.internal.core.util.CharOperation;
 import org.rubypeople.rdt.internal.ui.RubyPlugin;
@@ -170,5 +175,47 @@ public final class RubyModelUtil {
 				return true;
 		}
 		return false;		
+	}
+
+	public static boolean isSuperType(ITypeHierarchy hierarchy, IType possibleSuperType, IType type) {
+		// filed bug 112635 to add this method to ITypeHierarchy
+		IType superClass= hierarchy.getSuperclass(type);
+		if (superClass != null && (possibleSuperType.equals(superClass) || isSuperType(hierarchy, possibleSuperType, superClass))) {
+			return true;
+		}
+		if (Flags.isModule(hierarchy.getCachedFlags(possibleSuperType))) {
+			IType[] superInterfaces= hierarchy.getSuperInterfaces(type);
+			for (int i= 0; i < superInterfaces.length; i++) {
+				IType curr= superInterfaces[i];
+				if (possibleSuperType.equals(curr) || isSuperType(hierarchy, possibleSuperType, curr)) {
+					return true;
+				}
+			}
+		}
+		return false;
+	}
+	/**
+	 * Evaluates if a member in the focus' element hierarchy is visible from
+	 * elements in a package.
+	 * @param member The member to test the visibility for
+	 * @param pack The package of the focus element focus
+	 */
+	public static boolean isVisibleInHierarchy(IMember member, ISourceFolder pack) throws RubyModelException {
+		if (member.isType(IRubyElement.GLOBAL))
+			return true;
+		if (!member.isType(IRubyElement.METHOD))
+			return false;
+		
+		IMethod method = (IMethod) member;
+		
+		IType declaringType= member.getDeclaringType();
+		if (method.getVisibility() == IMethod.PUBLIC || method.getVisibility() == IMethod.PROTECTED || (declaringType != null && declaringType.isModule())) {
+			return true;
+		} else if (method.getVisibility() == IMethod.PRIVATE) {
+			return false;
+		}		
+		
+		ISourceFolder otherpack= (ISourceFolder) member.getAncestor(IRubyElement.SOURCE_FOLDER);
+		return (pack != null && pack.equals(otherpack));
 	}
 }

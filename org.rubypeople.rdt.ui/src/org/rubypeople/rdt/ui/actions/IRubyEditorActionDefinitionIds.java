@@ -149,5 +149,20 @@ public interface IRubyEditorActionDefinitionIds extends ITextEditorActionDefinit
 	 */
 	public static final String SEARCH_DECLARATIONS_IN_WORKING_SET= "org.rubypeople.rdt.ui.edit.text.ruby.search.declarations.in.working.set"; //$NON-NLS-1$
 	
+	/**
+	 * Action definition ID of the navigate -> Show Outline action
+	 * (value <code>"org.rubypeople.rdt.ui.edit.text.ruby.show.outline"</code>).
+	 * 
+	 * @since 1.0
+	 */
+	public static final String SHOW_OUTLINE= "org.rubypeople.rdt.ui.edit.text.ruby.show.outline"; //$NON-NLS-1$
+	
+	/**
+	 * Action definition ID of the Navigate -> Open Structure action
+	 * (value <code>"org.rubypeople.rdt.ui.navigate.ruby.open.structure"</code>).
+	 * 
+	 * @since 1.0
+	 */
+	public static final String OPEN_STRUCTURE= "org.rubypeople.rdt.ui.navigate.ruby.open.structure"; //$NON-NLS-1$
 
 }

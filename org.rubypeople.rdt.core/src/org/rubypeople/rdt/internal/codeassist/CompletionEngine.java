@@ -736,6 +736,10 @@ public class CompletionEngine {
 		public String[] getParameterNames() throws RubyModelException {
 			return ASTUtil.getArgs(node.getArgsNode(), node.getScope());
 		}
+		
+		public int getNumberOfParameters() throws RubyModelException {
+			return getParameterNames().length;
+		}
 
 		public int getVisibility() throws RubyModelException {
 			return IMethod.PUBLIC;
