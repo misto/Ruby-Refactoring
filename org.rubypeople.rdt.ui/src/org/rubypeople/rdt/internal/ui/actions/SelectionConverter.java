@@ -5,8 +5,13 @@ import java.lang.reflect.InvocationTargetException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.jface.text.ITextSelection;
+import org.eclipse.jface.viewers.ISelection;
+import org.eclipse.jface.viewers.ISelectionProvider;
+import org.eclipse.jface.viewers.IStructuredSelection;
+import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.IEditorInput;
+import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.PlatformUI;
 import org.rubypeople.rdt.core.ICodeAssist;
 import org.rubypeople.rdt.core.IRubyElement;
@@ -20,6 +25,54 @@ import org.rubypeople.rdt.internal.ui.rubyeditor.RubyEditor;
 import org.rubypeople.rdt.ui.IWorkingCopyManager;
 
 public class SelectionConverter {
+	
+	/**
+	 * Converts the selection provided by the given part into a structured selection.
+	 * The following conversion rules are used:
+	 * <ul>
+	 *	<li><code>part instanceof RubyEditor</code>: returns a structured selection
+	 * 	using code resolve to convert the editor's text selection.</li>
+	 * <li><code>part instanceof IWorkbenchPart</code>: returns the part's selection
+	 * 	if it is a structured selection.</li>
+	 * <li><code>default</code>: returns an empty structured selection.</li>
+	 * </ul>
+	 */
+	public static IStructuredSelection getStructuredSelection(IWorkbenchPart part) throws RubyModelException {
+		if (part instanceof RubyEditor)
+			return new StructuredSelection(codeResolve((RubyEditor)part));
+		ISelectionProvider provider= part.getSite().getSelectionProvider();
+		if (provider != null) {
+			ISelection selection= provider.getSelection();
+			if (selection instanceof IStructuredSelection)
+				return (IStructuredSelection)selection;
+		}
+		return StructuredSelection.EMPTY;
+	}
+	
+	public static IRubyElement getElementAtOffset(RubyEditor editor) throws RubyModelException {
+		return getElementAtOffset(editor, true);
+	}
+	
+	/**
+	 * @param primaryOnly if <code>true</code> only primary working copies will be returned
+	 * @since 3.2
+	 */
+	private static IRubyElement getElementAtOffset(RubyEditor editor, boolean primaryOnly) throws RubyModelException {
+		return getElementAtOffset(getInput(editor, primaryOnly), (ITextSelection)editor.getSelectionProvider().getSelection());
+	}
+	
+	public static IRubyElement getElementAtOffset(IRubyElement input, ITextSelection selection) throws RubyModelException {
+		if (input instanceof IRubyScript) {
+			IRubyScript cunit= (IRubyScript) input;
+			RubyModelUtil.reconcile(cunit);
+			IRubyElement ref= cunit.getElementAt(selection.getOffset());
+			if (ref == null)
+				return input;
+			else
+				return ref;
+		}
+		return null;
+	}
 
     public static IRubyScript getInputAsRubyScript(RubyEditor editor) {
         Object editorInput = SelectionConverter.getInput(editor);
