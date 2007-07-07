@@ -461,7 +461,7 @@
             sequence="M1+SPACE">
       </key>
       <key
-            commandId="org.rubypeople.rdt.ui.edit.text.ruby.content.assist.proposals "
+            commandId="org.rubypeople.rdt.ui.edit.text.ruby.content.assist.proposals"
             contextId="org.rubypeople.rdt.ui.rubyEditorScope"
             schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
             sequence="CTRL+SPACE"
@@ -470,7 +470,7 @@
       <key
             sequence="M1+M2+P"
             contextId="org.rubypeople.rdt.ui.rubyEditorScope"
-            commandId="org.rubypeople.rdt.ui.edit.text.ruby.goto.matching.bracket "
+            commandId="org.rubypeople.rdt.ui.edit.text.ruby.goto.matching.bracket"
             schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"/>
       <key
             sequence="F3"
@@ -486,6 +486,11 @@
             sequence="M1+O"
             contextId="org.rubypeople.rdt.ui.rubyEditorScope"
             commandId="org.rubypeople.rdt.ui.edit.text.ruby.show.outline"
+            schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"/>
+      <key
+            sequence="M1+F3"
+            contextId="org.rubypeople.rdt.ui.rubyEditorScope"
+            commandId="org.rubypeople.rdt.ui.navigate.ruby.open.structure"
             schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"/>
     </extension>
    <extension point="org.eclipse.ui.commands">
@@ -581,6 +586,12 @@
             description="%ActionDefinition.show.outline.description"
             categoryId="org.eclipse.ui.category.navigate"
             id="org.rubypeople.rdt.ui.edit.text.ruby.show.outline">
+      </command>
+      <command
+            name="%ActionDefinition.open.structure.name"
+            description="%ActionDefinition.open.structure.description"
+            categoryId="org.eclipse.ui.category.navigate"
+            id="org.rubypeople.rdt.ui.navigate.ruby.open.structure">
       </command>
       <command
             name="%ActionDefinition.toggleComment.name" 

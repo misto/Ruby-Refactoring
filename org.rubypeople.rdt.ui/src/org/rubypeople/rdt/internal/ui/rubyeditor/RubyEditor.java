@@ -257,6 +257,11 @@ public class RubyEditor extends RubyAbstractEditor {
 		action.setActionDefinitionId(IRubyEditorActionDefinitionIds.SHOW_OUTLINE);
 		setAction(IRubyEditorActionDefinitionIds.SHOW_OUTLINE, action);
 		PlatformUI.getWorkbench().getHelpSystem().setHelp(action, IRubyHelpContextIds.SHOW_OUTLINE_ACTION);
+		
+		action= new TextOperationAction(RubyEditorMessages.getBundleForConstructedKeys(),"OpenStructure.", this, RubySourceViewer.OPEN_STRUCTURE, true); //$NON-NLS-1$
+		action.setActionDefinitionId(IRubyEditorActionDefinitionIds.OPEN_STRUCTURE);
+		setAction(IRubyEditorActionDefinitionIds.OPEN_STRUCTURE, action);
+		PlatformUI.getWorkbench().getHelpSystem().setHelp(action, IRubyHelpContextIds.OPEN_STRUCTURE_ACTION);
 
         action = new FormatAction(RubyPlugin.getDefault().getPluginProperties(), "FormatAction.", this);
         action.setActionDefinitionId(IRubyEditorActionDefinitionIds.FORMAT);
