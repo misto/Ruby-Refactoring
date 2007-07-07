@@ -92,6 +92,7 @@ import org.eclipse.ui.IViewPart;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchPartReference;
 import org.eclipse.ui.IWorkbenchPartSite;
+import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.SelectionEnabler;
 import org.eclipse.ui.actions.ActionContext;
 import org.eclipse.ui.actions.ActionGroup;
@@ -251,6 +252,11 @@ public class RubyEditor extends RubyAbstractEditor {
         action= new GotoMatchingBracketAction(this);
         action.setActionDefinitionId(IRubyEditorActionDefinitionIds.GOTO_MATCHING_BRACKET);
         setAction(GotoMatchingBracketAction.GOTO_MATCHING_BRACKET, action);
+        
+		action= new TextOperationAction(RubyEditorMessages.getBundleForConstructedKeys(),"ShowOutline.", this, RubySourceViewer.SHOW_OUTLINE, true); //$NON-NLS-1$
+		action.setActionDefinitionId(IRubyEditorActionDefinitionIds.SHOW_OUTLINE);
+		setAction(IRubyEditorActionDefinitionIds.SHOW_OUTLINE, action);
+		PlatformUI.getWorkbench().getHelpSystem().setHelp(action, IRubyHelpContextIds.SHOW_OUTLINE_ACTION);
 
         action = new FormatAction(RubyPlugin.getDefault().getPluginProperties(), "FormatAction.", this);
         action.setActionDefinitionId(IRubyEditorActionDefinitionIds.FORMAT);
@@ -272,7 +278,7 @@ public class RubyEditor extends RubyAbstractEditor {
 		resAction= new InformationDispatchAction(RubyEditorMessages.getBundleForConstructedKeys(), "ShowRDoc.", (TextOperationAction) resAction); //$NON-NLS-1$
 		resAction.setActionDefinitionId(IRubyEditorActionDefinitionIds.SHOW_RDOC);
 		setAction("ShowRDoc", resAction); //$NON-NLS-1$
-//		PlatformUI.getWorkbench().getHelpSystem().setHelp(resAction, IRubyHelpContextIds.SHOW_JAVADOC_ACTION);
+		PlatformUI.getWorkbench().getHelpSystem().setHelp(resAction, IRubyHelpContextIds.SHOW_JAVADOC_ACTION);
         
         SurroundWithBeginRescueAction beginRescueAction = new SurroundWithBeginRescueAction(this);
         beginRescueAction.setActionDefinitionId(IRubyEditorActionDefinitionIds.SURROUND_WITH_BEGIN_RESCUE);

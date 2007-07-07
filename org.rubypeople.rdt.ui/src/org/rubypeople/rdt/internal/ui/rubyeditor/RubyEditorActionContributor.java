@@ -31,6 +31,7 @@ public class RubyEditorActionContributor extends BasicTextEditorActionContributo
 	
     protected RetargetTextEditorAction contentAssistProposal;
     private RetargetTextEditorAction fGotoMatchingBracket;
+    private RetargetTextEditorAction fShowOutline;
 	private RetargetTextEditorAction fQuickAssistAction;
 	
 	private RetargetAction fRetargetShowRubyDoc;
@@ -44,6 +45,9 @@ public class RubyEditorActionContributor extends BasicTextEditorActionContributo
 		fRetargetShowRubyDoc.setActionDefinitionId(IRubyEditorActionDefinitionIds.SHOW_RDOC);
 		markAsPartListener(fRetargetShowRubyDoc);
 
+		fShowOutline= new RetargetTextEditorAction(RubyEditorMessages.getBundleForConstructedKeys(), "ShowOutline."); //$NON-NLS-1$
+		fShowOutline.setActionDefinitionId(IRubyEditorActionDefinitionIds.SHOW_OUTLINE);
+		
         contentAssistProposal = new RetargetTextEditorAction(RubyUIMessages.getResourceBundle(),
                 "ContentAssistProposal.");
         fGotoMatchingBracket = new RetargetTextEditorAction(b, "GotoMatchingBracket."); //$NON-NLS-1$
@@ -61,15 +65,20 @@ public class RubyEditorActionContributor extends BasicTextEditorActionContributo
 		fPartListeners.add(action);
 	}
 
-    public void contributeToMenu(IMenuManager menuManager) {
-        IMenuManager editMenu = menuManager.findMenuUsingPath(IWorkbenchActionConstants.M_EDIT);
+    public void contributeToMenu(IMenuManager menu) {
+        IMenuManager editMenu = menu.findMenuUsingPath(IWorkbenchActionConstants.M_EDIT);
         if (editMenu != null) {
             editMenu.add(new Separator());
             editMenu.add(contentAssistProposal);
             editMenu.add(fQuickAssistAction);
         }
         
-        IMenuManager gotoMenu= menuManager.findMenuUsingPath("navigate/goTo"); //$NON-NLS-1$
+		IMenuManager navigateMenu= menu.findMenuUsingPath(IWorkbenchActionConstants.M_NAVIGATE);
+		if (navigateMenu != null) {
+			navigateMenu.appendToGroup(IWorkbenchActionConstants.SHOW_EXT, fShowOutline);
+		}
+        
+        IMenuManager gotoMenu= menu.findMenuUsingPath("navigate/goTo"); //$NON-NLS-1$
         if (gotoMenu != null) {
             gotoMenu.add(new Separator("additions2"));  //$NON-NLS-1$
             gotoMenu.appendToGroup("additions2", fGotoMatchingBracket); //$NON-NLS-1$
@@ -88,7 +97,8 @@ public class RubyEditorActionContributor extends BasicTextEditorActionContributo
         fGotoMatchingBracket.setAction(getAction(textEditor,
                 GotoMatchingBracketAction.GOTO_MATCHING_BRACKET));
         fQuickAssistAction.setAction(getAction(textEditor, ITextEditorActionConstants.QUICK_ASSIST));
-
+        fShowOutline.setAction(getAction(textEditor, IRubyEditorActionDefinitionIds.SHOW_OUTLINE));
+        fShowRubyDoc.setAction(getAction(textEditor, "ShowRDoc")); //$NON-NLS-1$
         
         if (part instanceof RubyEditor) {
         		RubyEditor javaEditor= (RubyEditor) part;

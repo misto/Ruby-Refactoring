@@ -4,6 +4,7 @@ import java.util.Vector;
 
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.jface.preference.IPreferenceStore;
+import org.eclipse.jface.text.AbstractInformationControlManager;
 import org.eclipse.jface.text.DefaultInformationControl;
 import org.eclipse.jface.text.IAutoEditStrategy;
 import org.eclipse.jface.text.IDocument;
@@ -51,6 +52,8 @@ import org.rubypeople.rdt.internal.ui.text.IRubyPartitions;
 import org.rubypeople.rdt.internal.ui.text.RubyAnnotationHover;
 import org.rubypeople.rdt.internal.ui.text.RubyCommentScanner;
 import org.rubypeople.rdt.internal.ui.text.RubyDoubleClickSelector;
+import org.rubypeople.rdt.internal.ui.text.RubyElementProvider;
+import org.rubypeople.rdt.internal.ui.text.RubyOutlineInformationControl;
 import org.rubypeople.rdt.internal.ui.text.RubyPartitionScanner;
 import org.rubypeople.rdt.internal.ui.text.RubyReconciler;
 import org.rubypeople.rdt.internal.ui.text.comment.CommentFormattingStrategy;
@@ -68,6 +71,7 @@ import org.rubypeople.rdt.internal.ui.text.ruby.SingleTokenRubyScanner;
 import org.rubypeople.rdt.internal.ui.text.ruby.hover.RubyEditorTextHoverDescriptor;
 import org.rubypeople.rdt.internal.ui.text.ruby.hover.RubyEditorTextHoverProxy;
 import org.rubypeople.rdt.internal.ui.text.ruby.hover.RubyInformationProvider;
+import org.rubypeople.rdt.ui.actions.IRubyEditorActionDefinitionIds;
 
 public class RubySourceViewerConfiguration extends TextSourceViewerConfiguration {
 
@@ -538,6 +542,54 @@ public class RubySourceViewerConfiguration extends TextSourceViewerConfiguration
 		if (getEditor() != null)
 			return new RubyCorrectionAssistant(getEditor());
 		return null;
+	}
+	
+	/**
+	 * Returns the outline presenter which will determine and shown
+	 * information requested for the current cursor position.
+	 *
+	 * @param sourceViewer the source viewer to be configured by this configuration
+	 * @param doCodeResolve a boolean which specifies whether code resolve should be used to compute the Java element
+	 * @return an information presenter
+	 * @since 2.1
+	 */
+	public IInformationPresenter getOutlinePresenter(ISourceViewer sourceViewer, boolean doCodeResolve) {
+		InformationPresenter presenter;
+		if (doCodeResolve)
+			presenter= new InformationPresenter(getOutlinePresenterControlCreator(sourceViewer, IRubyEditorActionDefinitionIds.OPEN_STRUCTURE));
+		else
+			presenter= new InformationPresenter(getOutlinePresenterControlCreator(sourceViewer, IRubyEditorActionDefinitionIds.SHOW_OUTLINE));
+		presenter.setDocumentPartitioning(getConfiguredDocumentPartitioning(sourceViewer));
+		presenter.setAnchor(AbstractInformationControlManager.ANCHOR_GLOBAL);
+		IInformationProvider provider= new RubyElementProvider(getEditor(), doCodeResolve);
+		presenter.setInformationProvider(provider, IDocument.DEFAULT_CONTENT_TYPE);
+		presenter.setInformationProvider(provider, IRubyPartitions.RUBY_MULTI_LINE_COMMENT);
+		presenter.setInformationProvider(provider, IRubyPartitions.RUBY_SINGLE_LINE_COMMENT);
+		presenter.setInformationProvider(provider, IRubyPartitions.RUBY_STRING);
+		presenter.setInformationProvider(provider, IRubyPartitions.RUBY_REGULAR_EXPRESSION);
+		presenter.setInformationProvider(provider, IRubyPartitions.RUBY_COMMAND);
+		presenter.setSizeConstraints(50, 20, true, false);
+		return presenter;
+	}
+	
+	/**
+	 * Returns the outline presenter control creator. The creator is a factory creating outline
+	 * presenter controls for the given source viewer. This implementation always returns a creator
+	 * for <code>JavaOutlineInformationControl</code> instances.
+	 *
+	 * @param sourceViewer the source viewer to be configured by this configuration
+	 * @param commandId the ID of the command that opens this control
+	 * @return an information control creator
+	 * @since 1.0
+	 */
+	private IInformationControlCreator getOutlinePresenterControlCreator(ISourceViewer sourceViewer, final String commandId) {
+		return new IInformationControlCreator() {
+			public IInformationControl createInformationControl(Shell parent) {
+				int shellStyle= SWT.RESIZE;
+				int treeStyle= SWT.V_SCROLL | SWT.H_SCROLL;
+				return new RubyOutlineInformationControl(parent, shellStyle, treeStyle, commandId);
+			}
+		};
 	}
 
 }

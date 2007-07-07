@@ -21,6 +21,7 @@ import org.eclipse.jface.text.DocumentEvent;
 import org.eclipse.jface.text.IAutoEditStrategy;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.IPositionUpdater;
+import org.eclipse.jface.text.information.IInformationPresenter;
 import org.eclipse.jface.text.link.ILinkedModeListener;
 import org.eclipse.jface.text.link.InclusivePositionUpdater;
 import org.eclipse.jface.text.link.LinkedModeModel;
@@ -42,14 +43,33 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.texteditor.AbstractDecoratedTextEditorPreferenceConstants;
 import org.eclipse.ui.texteditor.AbstractTextEditor;
+import org.rubypeople.rdt.ui.text.RubySourceViewerConfiguration;
 
 public class RubySourceViewer extends ProjectionViewer implements IPropertyChangeListener {
 
+	/**
+	 * Text operation code for requesting the outline for the current input.
+	 */
+	public static final int SHOW_OUTLINE= 51;
+
+	/**
+	 * Text operation code for requesting the outline for the element at the current position.
+	 */
+	public static final int OPEN_STRUCTURE= 52;
+
+	/**
+	 * Text operation code for requesting the hierarchy for the current input.
+	 */
+	public static final int SHOW_HIERARCHY= 53;
+	
     private boolean fIgnoreTextConverters = false;
     
     /** The linked position list for code auto edit */
 	protected final LinkedList fPositionList = new LinkedList();
     
+	private IInformationPresenter fOutlinePresenter;
+	private IInformationPresenter fStructurePresenter;
+	
     /**
      * This viewer's foreground color.
      * @since 0.8.0
@@ -190,6 +210,21 @@ public class RubySourceViewer extends ProjectionViewer implements IPropertyChang
         }
 
         super.configure(configuration);
+		if (configuration instanceof RubySourceViewerConfiguration) {
+			RubySourceViewerConfiguration javaSVCconfiguration= (RubySourceViewerConfiguration)configuration;
+			fOutlinePresenter= javaSVCconfiguration.getOutlinePresenter(this, false);
+			if (fOutlinePresenter != null)
+				fOutlinePresenter.install(this);
+
+			fStructurePresenter= javaSVCconfiguration.getOutlinePresenter(this, true);
+			if (fStructurePresenter != null)
+				fStructurePresenter.install(this);
+
+//			fHierarchyPresenter= javaSVCconfiguration.getHierarchyPresenter(this, true);
+//			if (fHierarchyPresenter != null)
+//				fHierarchyPresenter.install(this);
+
+		}
 
         if (fPreferenceStore != null) {
             fPreferenceStore.addPropertyChangeListener(this);
@@ -204,21 +239,33 @@ public class RubySourceViewer extends ProjectionViewer implements IPropertyChang
      * @since 0.8.0
      */
     public void unconfigure() {
-        if (fForegroundColor != null) {
-            fForegroundColor.dispose();
-            fForegroundColor= null;
-        }
-        if (fBackgroundColor != null) {
-            fBackgroundColor.dispose();
-            fBackgroundColor= null;
-        }
+    	if (fOutlinePresenter != null) {
+			fOutlinePresenter.uninstall();
+			fOutlinePresenter= null;
+		}
+		if (fStructurePresenter != null) {
+			fStructurePresenter.uninstall();
+			fStructurePresenter= null;
+		}
+//		if (fHierarchyPresenter != null) {
+//			fHierarchyPresenter.uninstall();
+//			fHierarchyPresenter= null;
+//		}
+		if (fForegroundColor != null) {
+			fForegroundColor.dispose();
+			fForegroundColor= null;
+		}
+		if (fBackgroundColor != null) {
+			fBackgroundColor.dispose();
+			fBackgroundColor= null;
+		}
 
-        if (fPreferenceStore != null)
-            fPreferenceStore.removePropertyChangeListener(this);
+		if (fPreferenceStore != null)
+			fPreferenceStore.removePropertyChangeListener(this);
 
-        super.unconfigure();
+		super.unconfigure();
 
-        fIsConfigured= false;
+		fIsConfigured= false;
     }
     
     /*
@@ -266,10 +313,41 @@ public class RubySourceViewer extends ProjectionViewer implements IPropertyChang
 
         return null;
     }
+    
+	/*
+	 * @see ITextOperationTarget#canDoOperation(int)
+	 */
+	public boolean canDoOperation(int operation) {
+		if (operation == SHOW_OUTLINE)
+			return fOutlinePresenter != null;
+		if (operation == OPEN_STRUCTURE)
+			return fStructurePresenter != null;
+//		if (operation == SHOW_HIERARCHY)
+//			return fHierarchyPresenter != null;
+
+		return super.canDoOperation(operation);
+	}
 
     public void doOperation(int operation) {
-        if (getTextWidget() == null || !redraws()) { return; }
-        super.doOperation(operation);
+    	if (getTextWidget() == null)
+			return;
+
+		switch (operation) {
+			case SHOW_OUTLINE:
+				if (fOutlinePresenter != null)
+					fOutlinePresenter.showInformation();
+				return;
+			case OPEN_STRUCTURE:
+				if (fStructurePresenter != null)
+					fStructurePresenter.showInformation();
+				return;
+//			case SHOW_HIERARCHY:
+//				if (fHierarchyPresenter != null)
+//					fHierarchyPresenter.showInformation();
+//				return;
+		}
+
+		super.doOperation(operation);
     }
     
 	/*

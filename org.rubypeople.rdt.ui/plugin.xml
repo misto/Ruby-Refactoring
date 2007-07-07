@@ -482,6 +482,11 @@
             contextId="org.rubypeople.rdt.ui.rubyEditorScope" 
             commandId="org.rubypeople.rdt.ui.edit.text.ruby.open.type"
             schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"/>
+      <key
+            sequence="M1+O"
+            contextId="org.rubypeople.rdt.ui.rubyEditorScope"
+            commandId="org.rubypeople.rdt.ui.edit.text.ruby.show.outline"
+            schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"/>
     </extension>
    <extension point="org.eclipse.ui.commands">
       <category
@@ -570,6 +575,12 @@
             categoryId="org.eclipse.ui.category.navigate"
             id="org.rubypeople.rdt.ui.edit.text.ruby.open.type"
             name="%OpenTypeAction.label">
+      </command>
+       <command
+            name="%ActionDefinition.show.outline.name"
+            description="%ActionDefinition.show.outline.description"
+            categoryId="org.eclipse.ui.category.navigate"
+            id="org.rubypeople.rdt.ui.edit.text.ruby.show.outline">
       </command>
       <command
             name="%ActionDefinition.toggleComment.name" 
