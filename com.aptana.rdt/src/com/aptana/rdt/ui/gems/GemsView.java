@@ -26,7 +26,6 @@ import org.rubypeople.rdt.ui.TableViewerSorter;
 import com.aptana.rdt.AptanaRDTPlugin;
 import com.aptana.rdt.core.gems.Gem;
 import com.aptana.rdt.core.gems.GemListener;
-import com.aptana.rdt.internal.core.gems.GemManager;
 
 public class GemsView extends ViewPart implements GemListener {
 
