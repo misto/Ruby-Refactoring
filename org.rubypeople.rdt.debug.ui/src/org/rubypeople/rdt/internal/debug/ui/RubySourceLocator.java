@@ -106,7 +106,11 @@ public class RubySourceLocator implements IPersistableSourceLocator, ISourcePres
 			filename = aFilename;
 			workspaceFile = RdtDebugCorePlugin.getWorkspace().getRoot().getFileForLocation(new Path(filename));
 			if (workspaceFile == null) {
-				workspaceFile = RdtDebugCorePlugin.getWorkspace().getRoot().getFile(new Path(filename));
+				try {
+					workspaceFile = RdtDebugCorePlugin.getWorkspace().getRoot().getFile(new Path(filename));
+				} catch (RuntimeException e) {
+					workspaceFile = null;
+				}
 				if (workspaceFile != null && !workspaceFile.exists()) {
 					workspaceFile = null;
 				}
