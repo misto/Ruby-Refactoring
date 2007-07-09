@@ -16,7 +16,6 @@ import org.rubypeople.rdt.core.Flags;
 import org.rubypeople.rdt.core.IMember;
 import org.rubypeople.rdt.core.IMethod;
 import org.rubypeople.rdt.core.IRubyElement;
-import org.rubypeople.rdt.core.IType;
 import org.rubypeople.rdt.core.RubyModelException;
 
 /**
@@ -84,25 +83,9 @@ public class MemberFilter extends ViewerFilter {
                 }
                 if (hasFilter(FILTER_STATIC) && method.isSingleton()) { return false; }
             }
-            if (hasFilter(FILTER_LOCALTYPES) && memberType == IRubyElement.TYPE
-                    && isLocalType((IType) member)) { return false; }
-
-            if (member.getElementName().startsWith("<")) { // filter out
-                // <clinit>
-                // //$NON-NLS-1$
-                return false;
-            }
+            if (hasFilter(FILTER_LOCALTYPES) && 
+            		(memberType == IRubyElement.LOCAL_VARIABLE || memberType == IRubyElement.DYNAMIC_VAR)) { return false; }
         }
         return true;
-    }
-
-    private boolean isLocalType(IType type) {
-        IRubyElement parent = type.getParent();
-        return parent instanceof IMember && !(parent instanceof IType);
-    }
-
-    private boolean isTopLevelType(IMember member) {
-        IType parent = member.getDeclaringType();
-        return parent == null;
     }
 }
