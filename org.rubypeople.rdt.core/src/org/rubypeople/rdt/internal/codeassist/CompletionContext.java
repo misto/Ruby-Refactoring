@@ -1,7 +1,14 @@
 package org.rubypeople.rdt.internal.codeassist;
 
+import org.jruby.ast.ClassNode;
+import org.jruby.ast.MethodDefNode;
+import org.jruby.ast.ModuleNode;
+import org.jruby.ast.Node;
 import org.rubypeople.rdt.core.IRubyScript;
 import org.rubypeople.rdt.core.RubyModelException;
+import org.rubypeople.rdt.internal.core.RubyScript;
+import org.rubypeople.rdt.internal.ti.util.ClosestSpanningNodeLocator;
+import org.rubypeople.rdt.internal.ti.util.INodeAcceptor;
 
 public class CompletionContext {
 	
@@ -182,6 +189,25 @@ public class CompletionContext {
 	public boolean fullPrefixIsConstant() {
 		if (getFullPrefix() == null || getFullPrefix().length() == 0) return false;
 		return Character.isUpperCase(getFullPrefix().charAt(0));
+	}
+
+	/**
+	 * Returns whether we're inside a type definition and not inside a method definition (used to determine if we should only show class level methods)
+	 * @return
+	 */
+	public boolean inTypeDefinition() {
+		Node spanner = ClosestSpanningNodeLocator.Instance().findClosestSpanner(getRootNode(), getOffset(), new INodeAcceptor() {
+			
+			public boolean doesAccept(Node node) {
+				return node instanceof MethodDefNode || node instanceof ClassNode || node instanceof ModuleNode;
+			}
+		
+		});
+		return spanner instanceof ClassNode || spanner instanceof ModuleNode;
+	}
+	
+	Node getRootNode() {
+		return ((RubyScript) getScript()).lastGoodAST;
 	}
 
 }

@@ -52,7 +52,6 @@ import org.rubypeople.rdt.core.search.SearchMatch;
 import org.rubypeople.rdt.core.search.SearchParticipant;
 import org.rubypeople.rdt.core.search.SearchPattern;
 import org.rubypeople.rdt.internal.core.RubyElement;
-import org.rubypeople.rdt.internal.core.RubyScript;
 import org.rubypeople.rdt.internal.core.RubyType;
 import org.rubypeople.rdt.internal.core.parser.RubyParser;
 import org.rubypeople.rdt.internal.core.search.BasicSearchEngine;
@@ -76,10 +75,14 @@ public class CompletionEngine {
 	private CompletionRequestor fRequestor;
 	private CompletionContext fContext;
 	private Set<IType> fVisitedTypes;
+	/**
+	 * temporary place to hold the original type we're completing for. Used to determine if we should be showing private methods.
+	 */
+	private IType fOriginalType;
 
 	public CompletionEngine(CompletionRequestor requestor) {
 		this.fRequestor = requestor;
-	}
+	}	
 
 	public void complete(IRubyScript script, int offset) throws RubyModelException {
 		this.fRequestor.beginReporting();		
@@ -258,7 +261,7 @@ public class CompletionEngine {
 			type = element.getDeclaringType();
 		}
 		if (type == null) return;
-		List<CompletionProposal> list = sort(suggestMethods(100, type, true));
+		List<CompletionProposal> list = sort(suggestMethods(100, type, !fContext.inTypeDefinition()));
 		for (CompletionProposal proposal : list) {
 			fRequestor.accept(proposal);
 		}
@@ -275,8 +278,10 @@ public class CompletionEngine {
 	 */
 	private Map<String, CompletionProposal> suggestMethods(int confidence, IType type, boolean includeInstanceMethods) throws RubyModelException {
 		if (fVisitedTypes == null) fVisitedTypes = new HashSet<IType>();
-		Map<String, CompletionProposal> list = doSuggestMethods(100, type, true);
+		fOriginalType = type;
+		Map<String, CompletionProposal> list = doSuggestMethods(100, type, includeInstanceMethods);
 		fVisitedTypes.clear();
+		fOriginalType = null;
 		return list;
 	}
 
@@ -357,17 +362,18 @@ public class CompletionEngine {
 		if (fVisitedTypes.contains(type)) return proposals;
 		fVisitedTypes.add(type);
 		IMethod[] methods = type.getMethods();
-		if (methods == null) return proposals;
-		for (int k = 0; k < methods.length; k++) {
-			if (methods[k] == null) continue;
-			if (!includeInstanceMethods && !methods[k].isSingleton()) {
-				continue;
-			}
-			CompletionProposal proposal = suggestMethod(methods[k], type.getElementName(), confidence);
-		    if (proposal != null && !proposals.containsKey(proposal.getName())) {
-		    	proposals.put(proposal.getName(), proposal); // If a method name matches an existing suggestion (i.e. its overriden in the subclass), don't suggest it again!
-		    }
-		}		
+		if (methods != null) {
+			for (int k = 0; k < methods.length; k++) {
+				if (methods[k] == null) continue;
+				if (!includeInstanceMethods && !methods[k].isSingleton()) {
+					continue;
+				}
+				CompletionProposal proposal = suggestMethod(methods[k], type.getElementName(), confidence);
+				if (proposal != null && !proposals.containsKey(proposal.getName())) {
+					proposals.put(proposal.getName(), proposal); // If a method name matches an existing suggestion (i.e. its overriden in the subclass), don't suggest it again!
+				}
+			}		
+		}
 		proposals.putAll(addModuleMethods(confidence - 1, type)); // Decrement confidence by one as a hack to make sure as we move up the inheritance chain we suggest "closer" parents methods first
 		if (!type.isModule()) proposals.putAll(addSuperClassMethods(confidence - 1, type, includeInstanceMethods));
 		return proposals;
@@ -435,6 +441,7 @@ public class CompletionEngine {
 			switch (method.getVisibility()) {
 			case IMethod.PRIVATE:
 				flags |= Flags.AccPrivate;
+				if (!fOriginalType.getElementName().equals(typeName)) return null; // FIXME We should do a comparison of types, not names
 				if (fContext.hasReceiver()) return null; // can't invoke a private method on a receiver
 				break;
 			case IMethod.PUBLIC:
@@ -475,7 +482,7 @@ public class CompletionEngine {
 			// FIXME Try to stop all the multiple re-parsing of the source! Can
 			// we parse once and pass the root node around?
 			// Parse
-			Node rootNode = ((RubyScript) fContext.getScript()).lastGoodAST;
+			Node rootNode = fContext.getRootNode();
 			if (rootNode == null) {
 				return;
 			}
