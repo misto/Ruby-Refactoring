@@ -35,27 +35,30 @@ public class PatternStrings {
 	}
 	
 	public static String getMethodSignature(IMethod method) {
+		
 		StringBuffer buffer= new StringBuffer();
-		buffer.append(RubyElementLabels.getElementLabel(
-			method.getDeclaringType(), 
-			RubyElementLabels.T_FULLY_QUALIFIED | RubyElementLabels.USE_RESOLVED));
-		boolean isConstructor= method.getElementName().equals(method.getDeclaringType().getElementName());
-		if (!isConstructor) {
+		if (method.isSingleton() || method.isConstructor()) {
+			buffer.append(RubyElementLabels.getElementLabel(method.getDeclaringType(), RubyElementLabels.USE_RESOLVED));
 			buffer.append('.');
 		}
-		buffer.append(getUnqualifiedMethodSignature(method, !isConstructor));
-		
+		boolean isConstructor= method.isConstructor();
+		if (!isConstructor) {
+			buffer.append(getUnqualifiedMethodSignature(method, !isConstructor));
+		} else {
+			buffer.append("new");
+		}
+			
 		return buffer.toString();
 	}
 	
-	private static String getUnqualifiedMethodSignature(IMethod method, boolean includeName) {
+	private static String getUnqualifiedMethodSignature(IMethod method, boolean isNotConstructor) {
 		StringBuffer buffer= new StringBuffer();
-		if (includeName) {
+		if (isNotConstructor) {
 			buffer.append(method.getElementName());
 		}
-		buffer.append('(');
+//		buffer.append('(');
 		// TODO Add parameter names, or arity?
-		buffer.append(')');
+//		buffer.append(')');
 		
 		return buffer.toString();
 	}
@@ -65,11 +68,10 @@ public class PatternStrings {
 	}
 
 	public static String getTypeSignature(IType field) {
-		return RubyElementLabels.getElementLabel(field, 
-			RubyElementLabels.T_FULLY_QUALIFIED | RubyElementLabels.USE_RESOLVED);
+		return RubyElementLabels.getElementLabel(field, RubyElementLabels.USE_RESOLVED);
 	}	
 	
 	public static String getFieldSignature(IField field) {
-		return RubyElementLabels.getElementLabel(field, RubyElementLabels.F_FULLY_QUALIFIED);
+		return RubyElementLabels.getElementLabel(field, 0);
 	}	
 }

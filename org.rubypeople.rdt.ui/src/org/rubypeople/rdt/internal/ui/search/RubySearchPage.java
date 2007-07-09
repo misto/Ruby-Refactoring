@@ -486,7 +486,7 @@ public class RubySearchPage extends DialogPage implements ISearchPage, IRubySear
 		selectParticipants.setLayoutData(gd);
 		selectParticipants.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
-				PreferencePageSupport.showPreferencePage(getShell(), "org.eclipse.jdt.ui.preferences.SearchParticipantsExtensionPoint", new SearchParticipantsExtensionPoint()); //$NON-NLS-1$
+				PreferencePageSupport.showPreferencePage(getShell(), "org.rubypeople.rdt.ui.preferences.SearchParticipantsExtensionPoint", new SearchParticipantsExtensionPoint()); //$NON-NLS-1$
 			}
 
 		});
@@ -775,6 +775,11 @@ public class RubySearchPage extends DialogPage implements ISearchPage, IRubySear
 					break;
 				}
 				case IRubyElement.FIELD:
+				case IRubyElement.INSTANCE_VAR:
+				case IRubyElement.LOCAL_VARIABLE:
+				case IRubyElement.CLASS_VAR:
+				case IRubyElement.GLOBAL:
+				case IRubyElement.CONSTANT:
 					return new SearchPatternData(FIELD, REFERENCES, true, PatternStrings.getFieldSignature((IField) element), element, isInsideJRE);
 				case IRubyElement.METHOD:
 					IMethod method= (IMethod) element;
