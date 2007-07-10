@@ -94,6 +94,8 @@ public abstract class NewTypeWizardPage extends NewContainerWizardPage {
 
 	private final static String PAGE_NAME= "NewTypeWizardPage"; //$NON-NLS-1$
 	
+	/** Field ID of the package input field. */
+	protected final static String PACKAGE= PAGE_NAME + ".package";	 //$NON-NLS-1$
 	/** Field ID of the enclosing type input field. */
 	protected final static String ENCLOSING= PAGE_NAME + ".enclosing"; //$NON-NLS-1$
 	/** Field ID of the enclosing type checkbox. */
@@ -608,7 +610,8 @@ public abstract class NewTypeWizardPage extends NewContainerWizardPage {
 		ISourceFolderRoot root = getSourceFolderRoot();
 		ISourceFolder pack= getSourceFolder();
 		if (pack == null) {
-			pack= root.getSourceFolder(new String[] {});		}
+			pack= root.getSourceFolder(new String[] {});		
+		}
 		
 		if (!pack.exists()) {
 			String packName= pack.getElementName();
@@ -807,7 +810,13 @@ public abstract class NewTypeWizardPage extends NewContainerWizardPage {
 	 */
 	private void typePageDialogFieldChanged(DialogField field) {
 		String fieldName= null;
-		if (field == fTypeNameDialogField) {
+		if (field == fPackageDialogField) {
+			/*fPackageStatus=*/ packageChanged();
+//			updatePackageStatusLabel();
+			fTypeNameStatus= typeNameChanged();
+			fSuperClassStatus= superClassChanged();			
+			fieldName= PACKAGE;
+		} else if (field == fTypeNameDialogField) {
 			fTypeNameStatus= typeNameChanged();
 			fieldName= TYPENAME;
 		} else if (field == fSuperClassDialogField) {
@@ -905,7 +914,13 @@ public abstract class NewTypeWizardPage extends NewContainerWizardPage {
 	 */
 	protected void handleFieldChanged(String fieldName) {
 		super.handleFieldChanged(fieldName);
-		
+		if (fieldName == CONTAINER) {
+			/*fPackageStatus=*/ packageChanged();
+//			fEnclosingTypeStatus= enclosingTypeChanged();			
+			fTypeNameStatus= typeNameChanged();
+			fSuperClassStatus= superClassChanged();
+			fSuperModulesStatus= superInterfacesChanged();
+		}
 		doStatusUpdate();
 	}
 	
