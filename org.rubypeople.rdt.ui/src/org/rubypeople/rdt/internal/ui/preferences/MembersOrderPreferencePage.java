@@ -281,7 +281,7 @@ public class MembersOrderPreferencePage extends PreferencePage implements IWorkb
                 String s= (String) element;
                 if (s.equals(FIELDS)) {
                     //0 will give the default field image   
-                    descriptor= RubyElementImageProvider.getFieldImageDescriptor();
+                    descriptor= RubyElementImageProvider.getConstantImageDescriptor();
                 } else if (s.equals(CONSTRUCTORS)) {
                     descriptor= RubyElementImageProvider.getMethodImageDescriptor(visibility);
                     //add a constructor adornment to the image descriptor
@@ -289,7 +289,7 @@ public class MembersOrderPreferencePage extends PreferencePage implements IWorkb
                 } else if (s.equals(METHODS)) {
                     descriptor= RubyElementImageProvider.getMethodImageDescriptor(visibility);
                 } else if (s.equals(STATIC_FIELDS)) {
-                    descriptor= RubyElementImageProvider.getFieldImageDescriptor();
+                    descriptor= RubyElementImageProvider.getConstantImageDescriptor();
                     //add a static fields adornment to the image descriptor
                     descriptor= new RubyElementImageDescriptor(descriptor, RubyElementImageDescriptor.STATIC, RubyElementImageProvider.SMALL_SIZE);
                 } else if (s.equals(STATIC_METHODS)) {

@@ -140,18 +140,7 @@ public class CompletionEngine {
 						
 						});
 						for (Node typeNode : typeNodes) {
-							List<Node> methods = ScopedNodeLocator.Instance().findNodesInScope(typeNode, new INodeAcceptor() {
-								
-								public boolean doesAccept(Node node) {
-									return (node instanceof DefnNode) || (node instanceof DefsNode);
-								}
-							
-							});
-							for (Node methodNode : methods) {
-								MethodDefNode methodDef = (MethodDefNode) methodNode;
-								NodeMethod method = new NodeMethod(methodDef);
-								list.add(suggestMethod(method, name, 100));
-							}
+							list.addAll(addASTMethodsInScope(typeNode, name));
 						}
 					}					
 					IType[] types = requestor.findType(name);
@@ -181,6 +170,28 @@ public class CompletionEngine {
 		fContext = null;
 	}
 
+	private Collection<CompletionProposal> addASTMethodsInScope(Node typeNode, String name) {
+		List<CompletionProposal> list = new ArrayList<CompletionProposal>();
+		if (typeNode == null) return list;
+		List<Node> methods = ScopedNodeLocator.Instance().findNodesInScope(typeNode, new INodeAcceptor() {
+			
+			public boolean doesAccept(Node node) {
+				return (node instanceof DefnNode) || (node instanceof DefsNode);
+			}
+		
+		});
+		for (Node methodNode : methods) {
+			Node scoping = findNearestScope(typeNode, methodNode.getPosition().getStartOffset() - 1);
+			if (!scoping.equals(typeNode)) continue;
+			MethodDefNode methodDef = (MethodDefNode) methodNode;
+			NodeMethod method = new NodeMethod(methodDef);
+			CompletionProposal proposal = suggestMethod(method, name, 100);
+			if (proposal == null) continue;
+			list.add(proposal);
+		}
+		return list;
+	}
+
 	private Map<String, CompletionProposal> suggestTypesConstants(IType type) throws RubyModelException {
 		Map<String, CompletionProposal> proposals = new HashMap<String, CompletionProposal>();
 		SearchPattern pattern = SearchPattern.createPattern(IRubyElement.CONSTANT, "*", IRubySearchConstants.DECLARATIONS, SearchPattern.R_PATTERN_MATCH);
@@ -190,7 +201,7 @@ public class CompletionEngine {
 			IRubyElement element = (IRubyElement) match.getElement();
 			if (element.getElementType() != IRubyElement.CONSTANT) continue; // XXX we shouldn't have to do this
 			// Add proposal
-			CompletionProposal proposal = createProposal(fContext.getReplaceStart(), CompletionProposal.FIELD_REF, element.getElementName());
+			CompletionProposal proposal = createProposal(fContext.getReplaceStart(), CompletionProposal.CONSTANT_REF, element.getElementName());
 			proposal.setType(type.getFullyQualifiedName());
 			proposal.setName(element.getElementName());
 			proposals.put(element.getElementName(), proposal);
@@ -249,19 +260,31 @@ public class CompletionEngine {
 
 	private void suggestMethodsForEnclosingType(IRubyScript script) throws RubyModelException {
 		IMember element = (IMember) script.getElementAt(fContext.getOffset());
-		IType type = null;
+		boolean includeInstance = !fContext.inTypeDefinition();
+		IType[] types;
 		if (element == null) {
 			// We're in the top level, so we're in "Object"
 		    RubyElementRequestor requestor = new RubyElementRequestor(script);
-		    IType[] types = requestor.findType(OBJECT);
-		    if (types != null && types.length > 0) type = types[0];
+		    IType[] tmpTypes = requestor.findType(OBJECT);
+		    List<IType> filtered = new ArrayList<IType>();
+		    for (int i = 0; i < tmpTypes.length; i++) {
+				// FIXME We shouldn't be getting these types with bad fully qualified names anyhow, should we?
+				if (!tmpTypes[i].getFullyQualifiedName().equals(OBJECT)) continue;
+				filtered.add(tmpTypes[i]);
+			}
+		    types = filtered.toArray(new IType[filtered.size()]);
+		    includeInstance = false;
 		} else if (element instanceof IType) {
-			type = (IType) element;
+			types = new IType[] {(IType) element};
 		} else {
-			type = element.getDeclaringType();
+			types = new IType[] {element.getDeclaringType()};
 		}
-		if (type == null) return;
-		List<CompletionProposal> list = sort(suggestMethods(100, type, !fContext.inTypeDefinition()));
+		if (types == null || types.length < 1) return;
+		Map<String, CompletionProposal> map = new HashMap<String, CompletionProposal>();
+		for (int i = 0; i < types.length; i++) {
+			map.putAll(suggestMethods(100, types[i], includeInstance));
+		}
+		List<CompletionProposal> list = sort(map);
 		for (CompletionProposal proposal : list) {
 			fRequestor.accept(proposal);
 		}
@@ -300,7 +323,7 @@ public class CompletionEngine {
 			String name = element.getElementName();
 			if (!fContext.prefixStartsWith(name))
 				continue;
-			CompletionProposal proposal = createProposal(fContext.getReplaceStart(), CompletionProposal.FIELD_REF, name);
+			CompletionProposal proposal = createProposal(fContext.getReplaceStart(), CompletionProposal.CONSTANT_REF, name);
 			proposal.setType(name);
 			fRequestor.accept(proposal);
 		}
@@ -349,7 +372,7 @@ public class CompletionEngine {
 			String name = element.getElementName();
 			if (!fContext.prefixStartsWith(name))
 				continue;
-			CompletionProposal proposal = createProposal(fContext.getReplaceStart(), CompletionProposal.FIELD_REF, name);
+			CompletionProposal proposal = createProposal(fContext.getReplaceStart(), CompletionProposal.CONSTANT_REF, name);
 			proposal.setType(name);
 			fRequestor.accept(proposal);
 		}
@@ -487,24 +510,37 @@ public class CompletionEngine {
 				return;
 			}
 
-			// XXX Just find enclosing scope and grab variables?
-			Node enclosingNode = ClosestSpanningNodeLocator.Instance().findClosestSpanner(rootNode, fContext.getOffset(), new INodeAcceptor() {
-				public boolean doesAccept(Node node) {
-					return (node instanceof DefnNode || node instanceof DefsNode || node instanceof ClassNode || node instanceof ModuleNode || node instanceof RootNode);
-				}
-			});
-			
+			// Grab enclosing scope
+			Node enclosingNode = findNearestScope(rootNode, fContext.getOffset());
+			if (enclosingNode == null) enclosingNode = rootNode;
+			// Add variables in this scope
 			Collection<String> variables = addVariablesinScope(getScope(enclosingNode));
 			for (String variable : variables) {
-				CompletionProposal proposal = new CompletionProposal(CompletionProposal.LOCAL_VARIABLE_REF, variable, 100);
+				int type = CompletionProposal.LOCAL_VARIABLE_REF;
+				if (variable.startsWith("$")) {
+					type = CompletionProposal.GLOBAL_REF;
+				}
+				CompletionProposal proposal = new CompletionProposal(type, variable, 100);
 				proposal.setReplaceRange(fContext.getReplaceStart(), fContext.getReplaceStart() + variable.length());
 				fRequestor.accept(proposal);
 			}			
 
+			// Add methods in this scope
+			Node enclosingTypeNode = ClosestSpanningNodeLocator.Instance().findClosestSpanner(rootNode, fContext.getOffset(), new INodeAcceptor() {
+				public boolean doesAccept(Node node) {
+					return (node instanceof ClassNode || node instanceof ModuleNode || node instanceof RootNode);
+				}
+			});
+			if (enclosingTypeNode == null) enclosingTypeNode = rootNode;
+			Collection<CompletionProposal> methodProposals = addASTMethodsInScope(enclosingTypeNode, "");
+			for (CompletionProposal proposal : methodProposals) {
+				if (proposal == null) continue;
+				fRequestor.accept(proposal);
+			}
 
 			// Find the enclosing type (class or module) to get instance and
 			// classvars from
-			Node enclosingTypeNode = ClosestSpanningNodeLocator.Instance().findClosestSpanner(rootNode, fContext.getOffset(), new INodeAcceptor() {
+			enclosingTypeNode = ClosestSpanningNodeLocator.Instance().findClosestSpanner(rootNode, fContext.getOffset(), new INodeAcceptor() {
 				public boolean doesAccept(Node node) {
 					return (node instanceof ClassNode || node instanceof ModuleNode);
 				}
@@ -523,6 +559,14 @@ public class CompletionEngine {
 		}
 	}
 
+	private Node findNearestScope(Node scopeNode, int offset) {
+		return ClosestSpanningNodeLocator.Instance().findClosestSpanner(scopeNode, offset, new INodeAcceptor() {
+			public boolean doesAccept(Node node) {
+				return (node instanceof DefnNode || node instanceof DefsNode || node instanceof ClassNode || node instanceof ModuleNode || node instanceof RootNode);
+			}
+		});
+	}
+
 	private Set<String> addVariablesinScope(StaticScope scope) {
 		Set<String> matches = new HashSet<String>();
 		if (scope == null) return matches;
@@ -538,6 +582,7 @@ public class CompletionEngine {
 	}
 
 	private StaticScope getScope(Node enclosingNode) {
+		if (enclosingNode == null) return ((RootNode)fContext.getRootNode()).getStaticScope();
 		if (enclosingNode instanceof RootNode) {
 			RootNode root = (RootNode) enclosingNode;
 			return root.getStaticScope();
@@ -643,7 +688,7 @@ public class CompletionEngine {
 			fields.add(attr);
 		}
 		for (String field : fields) {
-			CompletionProposal proposal = new CompletionProposal(CompletionProposal.FIELD_REF, field, 100);
+			CompletionProposal proposal = new CompletionProposal(CompletionProposal.CONSTANT_REF, field, 100);
 			proposal.setReplaceRange(fContext.getReplaceStart(), fContext.getReplaceStart() + field.length());
 			fRequestor.accept(proposal);
 		}

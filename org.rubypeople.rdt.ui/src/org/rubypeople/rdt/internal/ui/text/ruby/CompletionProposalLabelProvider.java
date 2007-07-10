@@ -53,8 +53,17 @@ public class CompletionProposalLabelProvider {
 			descriptor = RubyElementImageProvider.getTypeImageDescriptor(
 						false, false, false);
 			break;
-		case CompletionProposal.FIELD_REF:
-			descriptor = RubyElementImageProvider.getFieldImageDescriptor();
+		case CompletionProposal.CONSTANT_REF:
+			descriptor = RubyElementImageProvider.getConstantImageDescriptor();
+			break;
+		case CompletionProposal.GLOBAL_REF:
+			descriptor = RubyElementImageProvider.getGlobalVariableImageDescriptor();
+			break;
+		case CompletionProposal.INSTANCE_VARIABLE_REF:
+			descriptor = RubyElementImageProvider.getInstanceVariableImageDescriptor();
+			break;
+		case CompletionProposal.CLASS_VARIABLE_REF:
+			descriptor = RubyElementImageProvider.getClassVariableImageDescriptor();
 			break;
 		case CompletionProposal.LOCAL_VARIABLE_REF:
 		case CompletionProposal.VARIABLE_DECLARATION:
@@ -87,7 +96,7 @@ public class CompletionProposalLabelProvider {
 		int flags= proposal.getFlags();
 		int kind= proposal.getKind();
 
-		if (kind == CompletionProposal.FIELD_REF || kind == CompletionProposal.METHOD_DECLARATION || kind == CompletionProposal.METHOD_DECLARATION || kind == CompletionProposal.METHOD_NAME_REFERENCE || kind == CompletionProposal.METHOD_REF)
+		if (kind == CompletionProposal.CONSTANT_REF || kind == CompletionProposal.METHOD_DECLARATION || kind == CompletionProposal.METHOD_DECLARATION || kind == CompletionProposal.METHOD_NAME_REFERENCE || kind == CompletionProposal.METHOD_REF)
 			if (Flags.isStatic(flags))
 				adornments |= RubyElementImageDescriptor.STATIC;
 
@@ -104,7 +113,10 @@ public class CompletionProposalLabelProvider {
 //			return createOverrideMethodProposalLabel(proposal);
 		case CompletionProposal.TYPE_REF:
 			return createTypeProposalLabel(proposal);
-		case CompletionProposal.FIELD_REF:
+		case CompletionProposal.CONSTANT_REF:
+		case CompletionProposal.CLASS_VARIABLE_REF:
+		case CompletionProposal.INSTANCE_VARIABLE_REF:
+		case CompletionProposal.GLOBAL_REF:
 		case CompletionProposal.LOCAL_VARIABLE_REF:
 		case CompletionProposal.VARIABLE_DECLARATION:
 		case CompletionProposal.METHOD_DECLARATION:

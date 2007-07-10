@@ -2,17 +2,20 @@ package org.rubypeople.rdt.core;
 
 public class CompletionProposal {
 
-	public static final int FIELD_REF = 2;
+	public static final int GLOBAL_REF = 1;
+	public static final int CONSTANT_REF = 2;
 	public static final int KEYWORD = 3;
+	public static final int INSTANCE_VARIABLE_REF = 4;
 	public static final int LOCAL_VARIABLE_REF = 5;
 	public static final int METHOD_REF = 6;
 	public static final int METHOD_DECLARATION = 7;
+	public static final int CLASS_VARIABLE_REF = 8;
 	public static final int TYPE_REF = 9;
 	public static final int VARIABLE_DECLARATION = 10;
 	public static final int POTENTIAL_METHOD_DECLARATION = 11;
 	public static final int METHOD_NAME_REFERENCE = 12;
 	
-	protected static final int FIRST_KIND = FIELD_REF;
+	protected static final int FIRST_KIND = GLOBAL_REF;
 	protected static final int LAST_KIND = METHOD_NAME_REFERENCE;
 
 	/**

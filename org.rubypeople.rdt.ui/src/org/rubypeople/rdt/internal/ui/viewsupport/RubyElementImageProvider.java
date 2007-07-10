@@ -301,8 +301,19 @@ public class RubyElementImageProvider {
         return RubyPluginImages.DESC_OBJS_MODULE;
     }
 
-    public static ImageDescriptor getFieldImageDescriptor() {
-        // TODO What about other types of fields!
+    public static ImageDescriptor getConstantImageDescriptor() {
+        return RubyPluginImages.DESC_OBJS_CONSTANT;
+    }
+    
+    public static ImageDescriptor getClassVariableImageDescriptor() {
         return RubyPluginImages.DESC_OBJS_CLASS_VAR;
+    }
+    
+    public static ImageDescriptor getInstanceVariableImageDescriptor() {
+        return RubyPluginImages.DESC_OBJS_INSTANCE_VAR;
+    }
+    
+    public static ImageDescriptor getGlobalVariableImageDescriptor() {
+        return RubyPluginImages.DESC_OBJS_GLOBAL;
     }
 }

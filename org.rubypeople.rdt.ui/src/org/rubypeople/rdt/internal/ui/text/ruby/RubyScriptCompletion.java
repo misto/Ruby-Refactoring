@@ -131,7 +131,9 @@ public class RubyScriptCompletion extends CompletionRequestor {
 				return baseRelevance + 4;
 			case CompletionProposal.POTENTIAL_METHOD_DECLARATION:
 				return baseRelevance + 4 /* + 99 */;
-			case CompletionProposal.FIELD_REF:
+			case CompletionProposal.CONSTANT_REF:			
+			case CompletionProposal.CLASS_VARIABLE_REF:
+			case CompletionProposal.INSTANCE_VARIABLE_REF:
 				return baseRelevance + 5;
 			case CompletionProposal.LOCAL_VARIABLE_REF:
 			case CompletionProposal.VARIABLE_DECLARATION:
