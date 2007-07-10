@@ -128,7 +128,7 @@ public class CompletionEngine {
 				for (ITypeGuess guess : guesses) {
 					final String name = guess.getType();
 					if (fContext.isBroken()) {
-						Node rootNode = new RubyParser().parse(fContext.getCorrectedSource());
+						Node rootNode = fContext.getRootNode();
 						List<Node> typeNodes = ScopedNodeLocator.Instance().findNodesInScope(rootNode, new INodeAcceptor() {
 						
 							public boolean doesAccept(Node node) {

@@ -7,6 +7,7 @@ import org.jruby.ast.Node;
 import org.rubypeople.rdt.core.IRubyScript;
 import org.rubypeople.rdt.core.RubyModelException;
 import org.rubypeople.rdt.internal.core.RubyScript;
+import org.rubypeople.rdt.internal.core.parser.RubyParser;
 import org.rubypeople.rdt.internal.ti.util.ClosestSpanningNodeLocator;
 import org.rubypeople.rdt.internal.ti.util.INodeAcceptor;
 
@@ -20,6 +21,7 @@ public class CompletionContext {
 	private String fullPrefix;
 	private int replaceStart;
 	private boolean isAfterDoubleSemiColon = false;
+	private Node fRootNode;
 
 	public CompletionContext(IRubyScript script, int offset) throws RubyModelException {
 		this.script = script;
@@ -207,7 +209,26 @@ public class CompletionContext {
 	}
 	
 	Node getRootNode() {
-		return ((RubyScript) getScript()).lastGoodAST;
+		if (fRootNode != null) return fRootNode;
+		RubyParser parser = new RubyParser();
+		if (!isBroken()) {
+			try {
+				fRootNode = parser.parse(getSource());
+			} catch (RuntimeException e) {
+				// ignore
+			}
+		}
+		if (fRootNode == null) {
+			try {
+				fRootNode = parser.parse(getCorrectedSource());
+			} catch (RuntimeException e) {
+				// ignore
+			}
+		}
+		if (fRootNode == null) {
+			fRootNode = ((RubyScript) getScript()).lastGoodAST;
+		}
+		return fRootNode;
 	}
 
 }
