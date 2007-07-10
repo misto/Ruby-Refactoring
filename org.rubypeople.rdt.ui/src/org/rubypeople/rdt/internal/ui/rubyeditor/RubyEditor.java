@@ -751,8 +751,6 @@ public class RubyEditor extends RubyAbstractEditor {
     protected void editorContextMenuAboutToShow(IMenuManager menu) {
         super.editorContextMenuAboutToShow(menu);
         
-        fActionGroups.fillContextMenu(menu) ;
-        
         IExtensionRegistry registry = Platform.getExtensionRegistry();
         IExtensionPoint extensionPoint = registry
                 .getExtensionPoint("org.rubypeople.rdt.ui.editorPopupExtender");
@@ -794,9 +792,10 @@ public class RubyEditor extends RubyAbstractEditor {
 		fContextMenuGroup.setContext(null);
 
 		// Quick views
-		// TODO Add show outline action!
-//		IAction action= getAction(IRubyEditorActionDefinitionIds.SHOW_OUTLINE);
-//		menu.appendToGroup(IContextMenuConstants.GROUP_OPEN, action);        
+		IAction action= getAction(IRubyEditorActionDefinitionIds.SHOW_OUTLINE);
+		menu.appendToGroup(IContextMenuConstants.GROUP_OPEN, action);  
+//		action= getAction(IRubyEditorActionDefinitionIds.OPEN_HIERARCHY);
+//		menu.appendToGroup(IContextMenuConstants.GROUP_OPEN, action);
     }
 
     protected void handlePreferenceStoreChanged(PropertyChangeEvent event) {
