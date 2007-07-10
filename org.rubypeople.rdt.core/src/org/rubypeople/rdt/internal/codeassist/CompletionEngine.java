@@ -52,6 +52,7 @@ import org.rubypeople.rdt.core.search.SearchMatch;
 import org.rubypeople.rdt.core.search.SearchParticipant;
 import org.rubypeople.rdt.core.search.SearchPattern;
 import org.rubypeople.rdt.internal.core.RubyElement;
+import org.rubypeople.rdt.internal.core.RubyScript;
 import org.rubypeople.rdt.internal.core.RubyType;
 import org.rubypeople.rdt.internal.core.parser.RubyParser;
 import org.rubypeople.rdt.internal.core.search.BasicSearchEngine;
@@ -82,7 +83,7 @@ public class CompletionEngine {
 
 	public CompletionEngine(CompletionRequestor requestor) {
 		this.fRequestor = requestor;
-	}	
+	}
 
 	public void complete(IRubyScript script, int offset) throws RubyModelException {
 		this.fRequestor.beginReporting();		
@@ -201,7 +202,7 @@ public class CompletionEngine {
 			IRubyElement element = (IRubyElement) match.getElement();
 			if (element.getElementType() != IRubyElement.CONSTANT) continue; // XXX we shouldn't have to do this
 			// Add proposal
-			CompletionProposal proposal = createProposal(fContext.getReplaceStart(), CompletionProposal.CONSTANT_REF, element.getElementName());
+			CompletionProposal proposal = createProposal(fContext.getReplaceStart(), CompletionProposal.CONSTANT_REF, element.getElementName(), element);
 			proposal.setType(type.getFullyQualifiedName());
 			proposal.setName(element.getElementName());
 			proposals.put(element.getElementName(), proposal);
@@ -323,7 +324,7 @@ public class CompletionEngine {
 			String name = element.getElementName();
 			if (!fContext.prefixStartsWith(name))
 				continue;
-			CompletionProposal proposal = createProposal(fContext.getReplaceStart(), CompletionProposal.CONSTANT_REF, name);
+			CompletionProposal proposal = createProposal(fContext.getReplaceStart(), CompletionProposal.CONSTANT_REF, name, element);
 			proposal.setType(name);
 			fRequestor.accept(proposal);
 		}
@@ -338,7 +339,7 @@ public class CompletionEngine {
 			String name = element.getElementName();
 			if (!fContext.prefixStartsWith(name))
 				continue;
-			CompletionProposal proposal = createProposal(fContext.getReplaceStart(), CompletionProposal.TYPE_REF, name);
+			CompletionProposal proposal = createProposal(fContext.getReplaceStart(), CompletionProposal.TYPE_REF, name, element);
 			proposal.setType(name);
 			fRequestor.accept(proposal);
 		}
@@ -358,8 +359,15 @@ public class CompletionEngine {
 	}
 
 	private CompletionProposal createProposal(int replaceStart, int type, String name) {
+		return createProposal(replaceStart, type, name, 100, null);
+	}
+	private CompletionProposal createProposal(int replaceStart, int type, String name, IRubyElement element) {
+		return createProposal(replaceStart, type, name, 100, element);
+	}
+	private CompletionProposal createProposal(int replaceStart, int type, String name, int confidence, IRubyElement element) {
 		CompletionProposal proposal = new CompletionProposal(type, name, 100);
 		proposal.setReplaceRange(replaceStart, replaceStart + name.length());
+		proposal.setElement(element);
 		return proposal;
 	}
 
@@ -372,7 +380,7 @@ public class CompletionEngine {
 			String name = element.getElementName();
 			if (!fContext.prefixStartsWith(name))
 				continue;
-			CompletionProposal proposal = createProposal(fContext.getReplaceStart(), CompletionProposal.CONSTANT_REF, name);
+			CompletionProposal proposal = createProposal(fContext.getReplaceStart(), CompletionProposal.CONSTANT_REF, name, element);
 			proposal.setType(name);
 			fRequestor.accept(proposal);
 		}
@@ -480,7 +488,7 @@ public class CompletionEngine {
 			RubyCore.log(e);
 			flags |= Flags.AccPublic;
 		}
-		CompletionProposal proposal = new CompletionProposal(CompletionProposal.METHOD_REF, name, confidence);
+		CompletionProposal proposal = createProposal(start, CompletionProposal.METHOD_REF, name, confidence, method);
 		proposal.setReplaceRange(start, start + name.length());
 		proposal.setFlags(flags);
 		proposal.setName(name);
@@ -520,8 +528,7 @@ public class CompletionEngine {
 				if (variable.startsWith("$")) {
 					type = CompletionProposal.GLOBAL_REF;
 				}
-				CompletionProposal proposal = new CompletionProposal(type, variable, 100);
-				proposal.setReplaceRange(fContext.getReplaceStart(), fContext.getReplaceStart() + variable.length());
+				CompletionProposal proposal = createProposal(fContext.getReplaceStart(), type, variable);
 				fRequestor.accept(proposal);
 			}			
 
@@ -688,8 +695,7 @@ public class CompletionEngine {
 			fields.add(attr);
 		}
 		for (String field : fields) {
-			CompletionProposal proposal = new CompletionProposal(CompletionProposal.CONSTANT_REF, field, 100);
-			proposal.setReplaceRange(fContext.getReplaceStart(), fContext.getReplaceStart() + field.length());
+			CompletionProposal proposal = createProposal(fContext.getReplaceStart(), CompletionProposal.CONSTANT_REF, field);
 			fRequestor.accept(proposal);
 		}
 	}

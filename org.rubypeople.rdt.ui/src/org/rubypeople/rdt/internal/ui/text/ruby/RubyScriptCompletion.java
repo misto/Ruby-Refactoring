@@ -13,6 +13,7 @@ import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.swt.graphics.Image;
 import org.rubypeople.rdt.core.CompletionProposal;
 import org.rubypeople.rdt.core.CompletionRequestor;
+import org.rubypeople.rdt.core.IMember;
 import org.rubypeople.rdt.core.IRubyProject;
 import org.rubypeople.rdt.core.IRubyScript;
 import org.rubypeople.rdt.core.compiler.IProblem;
@@ -242,7 +243,12 @@ public class RubyScriptCompletion extends CompletionRequestor {
 		String label= fLabelProvider.createLabel(proposal);
 		int relevance= computeRelevance(proposal);
 		Image image = getImage(fLabelProvider.createImageDescriptor(proposal));
-		return new RubyCompletionProposal(completion, start, length, image, label, relevance);
+		AbstractRubyCompletionProposal rubyProposal = new RubyCompletionProposal(completion, start, length, image, label, relevance);
+		if(proposal.getElement() != null && proposal.getElement() instanceof IMember) {
+			ProposalInfo info = new ProposalInfo((IMember) proposal.getElement());
+			rubyProposal.setProposalInfo(info);
+		}
+		return rubyProposal;
 	}
 	
 	/**

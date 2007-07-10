@@ -314,6 +314,15 @@ public class RubyCompletionProcessor extends TemplateCompletionProcessor
 								proposal, info, MessageFormat.format(
 										"Ruby keyword: {0}",
 										new Object[] { proposal })));
+//				RubyCompletionProposal prop = new CompletionProposal(proposal.substring(prefix
+//						.length(), proposal.length()), documentOffset,
+//						0, proposal.length() - prefix.length(), null,
+//						proposal, info, MessageFormat.format(
+//								"Ruby keyword: {0}",
+//								new Object[] { proposal }));
+//				// get RDoc
+//				prop.
+//				possibleProposals.add(prop);
 			}
 		}
 		ICompletionProposal[] result = new ICompletionProposal[possibleProposals

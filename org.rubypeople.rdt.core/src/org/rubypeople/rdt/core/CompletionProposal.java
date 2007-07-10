@@ -90,6 +90,7 @@ public class CompletionProposal {
 	private int flags;
 	private String type;
 	private String declaringType;
+	private IRubyElement element;
 
 	public CompletionProposal(int kind, String completion, int relevance) {
 		this.completionKind = kind;
@@ -225,5 +226,13 @@ public class CompletionProposal {
 	
 	public void setName(String newName) {
 		this.name = newName;
+	}
+	
+	public void setElement(IRubyElement element) {
+		this.element = element;
+	}
+	
+	public IRubyElement getElement() {
+		return element;
 	}
 }

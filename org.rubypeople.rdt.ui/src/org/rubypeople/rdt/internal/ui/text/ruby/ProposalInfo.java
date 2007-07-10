@@ -18,6 +18,7 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.rubypeople.rdt.core.IMember;
 import org.rubypeople.rdt.core.IRubyElement;
 import org.rubypeople.rdt.core.RubyModelException;
+import org.rubypeople.rdt.core.util.RDocUtil;
 import org.rubypeople.rdt.internal.ui.RubyPlugin;
 
 public class ProposalInfo {
@@ -88,10 +89,11 @@ public class ProposalInfo {
 	 * @throws IOException if reading the javadoc fails
 	 */
 	private String extractRubydoc(IMember member, IProgressMonitor monitor) throws RubyModelException, IOException {
-		if (member != null) {
-			Reader reader=  getHTMLContentReader(member, monitor);
-			if (reader != null)
-				return getString(reader);
+		if (member != null && member.getRubyScript() != null) {
+//			Reader reader=  getHTMLContentReader(member, monitor);
+//			if (reader != null)
+//				return getString(reader);
+			return RDocUtil.getHTMLDocumentation(member);
 		}
 		return null;
 	}
