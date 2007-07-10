@@ -662,14 +662,15 @@ public abstract class NewTypeWizardPage extends NewContainerWizardPage {
 				
 			RubyModelUtil.reconcile(cu);
 			
-			ISourceRange range= createdType.getSourceRange();
-			
+			ISourceRange range= createdType.getSourceRange(); // FIXME The source range seems to be off by one... We have a workaround here, but need to fix it in IType
+			int length = range.getLength();
+			if (lineDelimiter.length() > 1) length++;
 			IBuffer buf= cu.getBuffer();
-			String originalContent= buf.getText(range.getOffset(), range.getLength());
+			String originalContent= buf.getText(range.getOffset(), length);
 
 			String formattedContent= CodeFormatterUtil.format(CodeFormatter.K_CLASS_BODY_DECLARATIONS, originalContent, indent, null, lineDelimiter, pack.getRubyProject());
 //			formattedContent= Strings.trimLeadingTabsAndSpaces(formattedContent);
-			buf.replace(range.getOffset(), range.getLength(), formattedContent);
+			buf.replace(range.getOffset(), length, formattedContent);
 		
 			fCreatedType= createdType;
 
