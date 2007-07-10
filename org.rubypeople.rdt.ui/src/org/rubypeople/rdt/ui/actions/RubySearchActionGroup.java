@@ -126,7 +126,7 @@ public class RubySearchActionGroup extends ActionGroup {
 	public void fillContextMenu(IMenuManager menu) {
 		super.fillContextMenu(menu);
 		
-		if(PreferenceConstants.getPreferenceStore().getBoolean(PreferenceConstants.SEARCH_USE_REDUCED_MENU)) {
+		if (PreferenceConstants.getPreferenceStore().getBoolean(PreferenceConstants.SEARCH_USE_REDUCED_MENU)) {
 			fReferencesGroup.fillContextMenu(menu);
 			fDeclarationsGroup.fillContextMenu(menu);
 
@@ -152,7 +152,7 @@ public class RubySearchActionGroup extends ActionGroup {
 			fWriteAccessGroup.fillContextMenu(target);
 			
 			if (searchSubMenu != null) {
-			fOccurrencesGroup.fillContextMenu(target);
+				fOccurrencesGroup.fillContextMenu(target);
 				searchSubMenu.add(new Separator());
 			}
 			
