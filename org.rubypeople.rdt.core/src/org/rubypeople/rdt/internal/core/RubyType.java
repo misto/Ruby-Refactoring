@@ -64,7 +64,7 @@ public class RubyType extends NamedMember implements IType {
 	public String[] getIncludedModuleNames() throws RubyModelException {		
 		RubyTypeElementInfo info = (RubyTypeElementInfo) getElementInfo();
 		String[] modules = info.getIncludedModuleNames();
-		if (modules == null || modules.length == 0 && getFullyQualifiedName().equals("Object")) {
+		if ((modules == null || modules.length == 0) && getFullyQualifiedName().equals("Object")) {
 			return new String[] {"Kernel"};
 		}
 		return modules;
