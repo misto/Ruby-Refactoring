@@ -1,6 +1,10 @@
 package org.rubypeople.rdt.internal.launching;
 
 import java.io.File;
+import java.io.IOException;
+
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.TransformerException;
 
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.runtime.CoreException;
@@ -12,6 +16,7 @@ import org.rubypeople.rdt.launching.IVMInstall;
 import org.rubypeople.rdt.launching.IVMInstallType;
 import org.rubypeople.rdt.launching.RubyRuntime;
 import org.rubypeople.rdt.launching.VMStandin;
+import org.w3c.dom.Document;
 
 public class TC_RubyRuntime extends ModifyingResourceTest {
 
@@ -86,7 +91,7 @@ public class TC_RubyRuntime extends ModifyingResourceTest {
 		}
 	}
 
-	public void testSetInstalledInterpreters() throws CoreException {
+	public void testSetInstalledInterpreters() throws Exception {		
 		String vmOneName = "InterpreterOne";
 		String vmOneId = vmOneName;
 		String vmTwoName = "InterpreterTwo";
@@ -102,7 +107,7 @@ public class TC_RubyRuntime extends ModifyingResourceTest {
 			IPath vmOneLocation = folderOne.getLocation();
 			assertEquals(
 					"XML should indicate only one interpreter with it being the one selected.",
-					Util.convertToIndependantLineDelimiter("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n" +
+					Util.convertToIndependantLineDelimiter(getXMLHeader() +
 					"<vmSettings defaultVM=\"43,org.rubypeople.rdt.launching.StandardVMType14," + vmOneId + "\">\r\n" +
 					"<vmType id=\"org.rubypeople.rdt.launching.StandardVMType\">\r\n" +
 					vmToXML(vmOneId, vmOneName, vmOneLocation) +
@@ -118,7 +123,7 @@ public class TC_RubyRuntime extends ModifyingResourceTest {
 			assertEquals(2, vmType.getVMInstalls().length);
 			assertEquals(
 					"XML should indicate both interpreters with the first one being selected.",
-					Util.convertToIndependantLineDelimiter("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n" +
+					Util.convertToIndependantLineDelimiter(getXMLHeader() +
 					"<vmSettings defaultVM=\"43,org.rubypeople.rdt.launching.StandardVMType14," + vmOneId + "\">\r\n" +
 					"<vmType id=\"org.rubypeople.rdt.launching.StandardVMType\">\r\n" +
 					vmToXML(vmOneId, vmOneName, vmOneLocation) +
@@ -131,7 +136,7 @@ public class TC_RubyRuntime extends ModifyingResourceTest {
 			assertEquals(2, vmType.getVMInstalls().length);
 			assertEquals(
 					"XML should indicate both interpreters with the second one being selected.",
-					Util.convertToIndependantLineDelimiter("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n" +
+					Util.convertToIndependantLineDelimiter(getXMLHeader() + 
 					"<vmSettings defaultVM=\"" + RubyRuntime.getCompositeIdFromVM(standin2) + "\">\r\n" +
 					"<vmType id=\"org.rubypeople.rdt.launching.StandardVMType\">\r\n" +
 					vmToXML(vmOneId, vmOneName, vmOneLocation) +
@@ -143,6 +148,11 @@ public class TC_RubyRuntime extends ModifyingResourceTest {
 			vmType.disposeVMInstall(vmOneId);
 			vmType.disposeVMInstall(vmTwoId);
 		}
+	}
+
+	private String getXMLHeader() throws IOException, TransformerException, ParserConfigurationException {
+		Document doc = LaunchingPlugin.getDocument();
+		return LaunchingPlugin.serializeDocument(doc).trim() + "\r\n";
 	}
 
 	private String getVMsXML() {
@@ -165,8 +175,8 @@ public class TC_RubyRuntime extends ModifyingResourceTest {
 		xml.append("<libraryLocation src=\"");
 		xml.append(location.toPortableString());
 		xml.append("/lib/ruby/1.8\"/>\r\n");
-		File file = LaunchingPlugin.getFileInPlugin(new Path("ruby" + File.separator + id + File.separator + "lib"));
-		if (file != null) {
+		File file = LaunchingPlugin.getDefault().getStateLocation().append(id).append("lib").toFile();
+		if (file != null && file.exists()) {
 			xml.append("<libraryLocation src=\"");
 			xml.append(Path.fromOSString(file.toString()).toPortableString());
 			xml.append("\"/>\r\n");
