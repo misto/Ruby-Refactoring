@@ -10,11 +10,11 @@ import org.rubypeople.rdt.internal.core.util.Util;
 public class SourceIndexerRequestor implements ISourceElementRequestor {
 
 	private SourceIndexer indexer;
-	private Stack<String> typeStack;
+	private Stack<TypeInfo> typeStack;
 
 	public SourceIndexerRequestor(SourceIndexer sourceIndexer) {
 		this.indexer = sourceIndexer;
-		typeStack = new Stack<String>();
+		typeStack = new Stack<TypeInfo>();
 	}
 
 	public void acceptConstructorReference(String name, int argCount, int offset) {
@@ -34,9 +34,12 @@ public class SourceIndexerRequestor implements ISourceElementRequestor {
 		indexer.addMethodReference(name.toCharArray(), argCount);
 	}
 
-	public void acceptMixin(String string) {
-		indexer.addTypeReference(string.toCharArray());
-
+	public void acceptMixin(String moduleName) {
+		indexer.addTypeReference(moduleName.toCharArray());
+		TypeInfo info = typeStack.peek();
+		char[] simpleName = getSimpleName(info.name);
+		char[][] enclosingTypes = getEnclosingTypeNames(info.name);
+		indexer.addIncludedModuleReference(info.isModule ? Flags.AccModule : 0, new char[0], simpleName, enclosingTypes, moduleName.toCharArray());
 	}
 
 	public void acceptProblem(CategorizedProblem problem) {
@@ -85,7 +88,7 @@ public class SourceIndexerRequestor implements ISourceElementRequestor {
 		char[]simpleName = getSimpleName(type.name);
 		char[][] enclosingTypes = getEnclosingTypeNames(type.name);
 		indexer.addClassDeclaration(type.isModule ? Flags.AccModule : 0, packName, simpleName, enclosingTypes, superclass, mod, type.secondary);
-	    typeStack.push(type.name);
+	    typeStack.push(type);
 	}
 
 	private char[] getSimpleName(String name) {
@@ -97,8 +100,8 @@ public class SourceIndexerRequestor implements ISourceElementRequestor {
 		
 		char[][] names = new char[typeStack.size() + parts.length - 1][];
 		int i = 0;
-		for (String name : typeStack) {
-			names[i++] = name.toCharArray();
+		for (TypeInfo info : typeStack) {
+			names[i++] = info.name.toCharArray();
 		}
 		for (int j = 0; j < parts.length - 1; j++) {
 			names[i++] = parts[j].toCharArray();
@@ -122,8 +125,7 @@ public class SourceIndexerRequestor implements ISourceElementRequestor {
 	}
 
 	public void exitScript(int endOffset) {
-		// TODO Auto-generated method stub
-
+		typeStack.clear();
 	}
 
 	public void exitType(int endOffset) {

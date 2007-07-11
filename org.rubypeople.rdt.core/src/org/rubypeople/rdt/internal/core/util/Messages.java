@@ -161,6 +161,8 @@ public final class Messages extends NLS {
 	public static String engine_searching_matching;
 	public static String engine_searching_indexing;
 	public static String engine_searching;
+	public static String hierarchy_creating;
+	public static String hierarchy_creatingOnType;
 
     static {
         NLS.initializeMessages(BUNDLE_NAME, Messages.class);

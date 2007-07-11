@@ -11,6 +11,7 @@ import org.rubypeople.rdt.internal.core.SourceElementParser;
 import org.rubypeople.rdt.internal.core.search.matching.ConstructorPattern;
 import org.rubypeople.rdt.internal.core.search.matching.FieldPattern;
 import org.rubypeople.rdt.internal.core.search.matching.MethodPattern;
+import org.rubypeople.rdt.internal.core.search.matching.SuperTypeReferencePattern;
 import org.rubypeople.rdt.internal.core.search.matching.TypeDeclarationPattern;
 import org.rubypeople.rdt.internal.core.search.processing.JobManager;
 import org.rubypeople.rdt.internal.core.util.CharOperation;
@@ -64,15 +65,19 @@ public class SourceIndexer implements IIndexConstants {
 		if (superclass != null && !superclass.equals("Object")) {
 			addTypeReference(superclass);
 		}
-		// FIXME Add back in references to super type when we have SuperTypePattern!
-//		addIndexEntry(SUPER_REF, SuperTypeReferencePattern.createIndexKey(modifiers, packageName, name, enclosingTypeNames, typeParameterSignatures, CLASS_SUFFIX, superclass, CLASS_SUFFIX));
-//		if (superinterfaces != null) {
-//			for (int i = 0, max = superinterfaces.length; i < max; i++) {
-//				char[] superinterface = superinterfaces[i];
-//				addTypeReference(superinterface);
-//				addIndexEntry(SUPER_REF, SuperTypeReferencePattern.createIndexKey(modifiers, packageName, name, enclosingTypeNames, typeParameterSignatures, CLASS_SUFFIX, superinterface, MODULE_SUFFIX));
-//			}
-//		}
+		
+		addIndexEntry(SUPER_REF, SuperTypeReferencePattern.createIndexKey(modifiers, packageName, name, enclosingTypeNames, CLASS_SUFFIX, superclass, CLASS_SUFFIX));
+		if (superinterfaces != null) {
+			for (int i = 0, max = superinterfaces.length; i < max; i++) {
+				char[] superinterface = superinterfaces[i];
+				addTypeReference(superinterface);
+				addIncludedModuleReference(modifiers, packageName, name, enclosingTypeNames, superinterface);
+			}
+		}
+	}
+
+	public void addIncludedModuleReference(int modifiers, char[] packageName, char[] name, char[][] enclosingTypeNames, char[] superinterface) {
+		addIndexEntry(SUPER_REF, SuperTypeReferencePattern.createIndexKey(modifiers, packageName, name, enclosingTypeNames, CLASS_SUFFIX, superinterface, MODULE_SUFFIX));
 	}
 	
 	public void addFieldDeclaration(char[] typeName, char[] fieldName) {

@@ -1035,4 +1035,43 @@ public class Util {
 		}
 		return buffer.toString();
 	}
+
+	/**
+	 * Sorts an array of strings in place using quicksort
+	 * in reverse alphabetical order.
+	 */
+	public static void sortReverseOrder(String[] strings) {
+		if (strings.length > 1)
+			quickSortReverse(strings, 0, strings.length - 1);
+	}
+	
+	/**
+	 * Sort the strings in the given collection in reverse alphabetical order.
+	 */
+	private static void quickSortReverse(String[] sortedCollection, int left, int right) {
+		int original_left = left;
+		int original_right = right;
+		String mid = sortedCollection[ (left + right) / 2];
+		do {
+			while (sortedCollection[left].compareTo(mid) > 0) {
+				left++;
+			}
+			while (mid.compareTo(sortedCollection[right]) > 0) {
+				right--;
+			}
+			if (left <= right) {
+				String tmp = sortedCollection[left];
+				sortedCollection[left] = sortedCollection[right];
+				sortedCollection[right] = tmp;
+				left++;
+				right--;
+			}
+		} while (left <= right);
+		if (original_left < right) {
+			quickSortReverse(sortedCollection, original_left, right);
+		}
+		if (left < original_right) {
+			quickSortReverse(sortedCollection, left, original_right);
+		}
+	}
 }

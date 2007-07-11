@@ -627,4 +627,8 @@ public abstract class RubyElement extends PlatformObject implements IRubyElement
 			buffer.append(character);
 		}
 	}
+
+	public IRubyElement unresolved() {
+		return this;
+	}
 }
