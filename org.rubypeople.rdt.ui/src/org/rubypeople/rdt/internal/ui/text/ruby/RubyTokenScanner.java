@@ -44,15 +44,17 @@ public class RubyTokenScanner extends AbstractRubyTokenScanner {
 	private RubyYaccLexer lexer;
 	private LexerSource lexerSource;
 	private ParserSupport parserSupport;
-	private int tokenLength;
-	private int oldOffset;
+	
+	private int fTokenLength;
+	private int fOffset;
+	
 	private boolean isInRegexp;
 	private boolean isInSymbol;
 	private boolean inAlias;
 	private RubyParserResult result;
 	private int origOffset;
 	private int origLength;
-	private String contents;	
+	private String fContents;	
 
 	public RubyTokenScanner(IColorManager manager, IPreferenceStore store) {
 		super(manager, store);
@@ -67,16 +69,16 @@ public class RubyTokenScanner extends AbstractRubyTokenScanner {
 	}
 
 	public int getTokenLength() {
-		return tokenLength;
+		return fTokenLength;
 	}
 
 	public int getTokenOffset() {
-		return oldOffset;
+		return fOffset;
 	}
 
 	public IToken nextToken() {
-		oldOffset = getOffset();
-		tokenLength = 0;
+		fOffset = getOffset();
+		fTokenLength = 0;
 		IToken returnValue = getToken(IRubyColorConstants.RUBY_DEFAULT);
 		boolean isEOF = false;
 		try {
@@ -84,22 +86,22 @@ public class RubyTokenScanner extends AbstractRubyTokenScanner {
 			if (isEOF) {
 				returnValue = Token.EOF;
 			} else {
+				fTokenLength = getOffset() - fOffset;
 				returnValue = token(lexer.token());
 			}
 		} catch (SyntaxException se) {
 			if (lexerSource.getOffset() - origLength == 0)
 				return Token.EOF; // return eof if we hit a problem found at
 									// end of parsing			
-			tokenLength = getOffset() - oldOffset;
+			fTokenLength = getOffset() - fOffset;
 			return getToken(IRubyColorConstants.RUBY_ERROR);
 		} catch (NumberFormatException nfe) {
-			tokenLength = getOffset() - oldOffset;
+			fTokenLength = getOffset() - fOffset;
 			return returnValue;
 		} catch (IOException e) {
 			RubyPlugin.log(e);
 		}
-		if (!isEOF)
-			tokenLength = getOffset() - oldOffset;
+		
 		return returnValue;
 	}
 
@@ -109,10 +111,10 @@ public class RubyTokenScanner extends AbstractRubyTokenScanner {
 
 	private Token doGetToken(String key) {
 		if (isInSymbol)
-			return super.getToken(IRubyColorConstants.RUBY_SYMBOL);
+			return getToken(IRubyColorConstants.RUBY_SYMBOL);
 		if (isInRegexp)
-			return super.getToken(IRubyColorConstants.RUBY_REGEXP);
-		return super.getToken(key);
+			return getToken(IRubyColorConstants.RUBY_REGEXP);
+		return getToken(key);
 	}
 
 	private IToken token(int i) {		
@@ -137,7 +139,10 @@ public class RubyTokenScanner extends AbstractRubyTokenScanner {
 		if (isKeyword(i))
 			return doGetToken(IRubyColorConstants.RUBY_KEYWORD);
 		switch (i) {
-		case Tokens.tSYMBEG:		
+		case Tokens.tSYMBEG:
+			if (looksLikeTertiaryConditionalWithNoSpaces()) {
+				return doGetToken(IRubyColorConstants.RUBY_DEFAULT);
+			}
 			isInSymbol = true;
 			return doGetToken(IRubyColorConstants.RUBY_SYMBOL);
 		case Tokens.tGVAR:
@@ -148,7 +153,7 @@ public class RubyTokenScanner extends AbstractRubyTokenScanner {
 		case Tokens.tFLOAT:
 		case Tokens.tINTEGER:
 			// A character is marked as an integer, lets check for that special case...
-			if ((((oldOffset - origOffset) + 1) < contents.length()) && (contents.charAt((oldOffset - origOffset) + 1) == '?'))
+			if ((((fOffset - origOffset) + 1) < fContents.length()) && (fContents.charAt((fOffset - origOffset) + 1) == '?'))
 				return doGetToken(IRubyColorConstants.RUBY_CHARACTER);
 			return doGetToken(IRubyColorConstants.RUBY_FIXNUM);
 		case Tokens.tREGEXP_BEG:
@@ -160,6 +165,12 @@ public class RubyTokenScanner extends AbstractRubyTokenScanner {
 		default:
 			return doGetToken(IRubyColorConstants.RUBY_DEFAULT);
 		}
+	}
+
+	private boolean looksLikeTertiaryConditionalWithNoSpaces() {
+		if (fTokenLength > 1) return false;
+		char c = fContents.charAt((fOffset - origOffset) - 1);
+		return !Character.isWhitespace(c) && Character.isUnicodeIdentifierPart(c);
 	}
 
 	private boolean shouldReturnDefault(int i) {
@@ -221,8 +232,8 @@ public class RubyTokenScanner extends AbstractRubyTokenScanner {
 			isInRegexp = false;
 		}
 		try {
-			contents = document.get(offset, length);
-			lexerSource = new LexerSource("filename", new StringReader(contents), 0, true);
+			fContents = document.get(offset, length);
+			lexerSource = new LexerSource("filename", new StringReader(fContents), 0, true);
 			lexer.setSource(lexerSource);
 		} catch (BadLocationException e) {
 			lexerSource = new LexerSource("filename", new StringReader(""), 0, true);

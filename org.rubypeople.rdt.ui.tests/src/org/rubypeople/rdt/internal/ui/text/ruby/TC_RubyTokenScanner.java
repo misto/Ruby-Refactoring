@@ -4,6 +4,7 @@ import junit.framework.TestCase;
 
 import org.eclipse.jface.text.Document;
 import org.eclipse.jface.text.rules.IToken;
+import org.eclipse.jface.text.rules.Token;
 import org.rubypeople.rdt.internal.ui.RubyPlugin;
 import org.rubypeople.rdt.internal.ui.text.IRubyColorConstants;
 import org.rubypeople.rdt.internal.ui.text.RubyColorManager;
@@ -16,7 +17,14 @@ public class TC_RubyTokenScanner extends TestCase {
 	protected void setUp() throws Exception {
 		super.setUp();
 		RubyColorManager colorManager = new RubyColorManager(false);
-		fScanner = new RubyTokenScanner(colorManager, RubyPlugin.getDefault().getPreferenceStore());
+		fScanner = new RubyTokenScanner(colorManager, RubyPlugin.getDefault().getPreferenceStore()) {
+		
+			@Override
+			public Token getToken(String key) {
+				return new Token(key);
+			}
+		
+		};
 	}
 
 	private void setUpScanner(String code) {
@@ -32,7 +40,7 @@ public class TC_RubyTokenScanner extends TestCase {
 		IToken token = fScanner.nextToken();
 		assertEquals("Offsets don't match", offset, fScanner.getTokenOffset());
 		assertEquals("Lengths don't match", length, fScanner.getTokenLength());	
-		assertEquals("Colors don't match", fScanner.getToken(color), token); // call getToken so we bypass the scanner's overriding in doGetToken
+		assertEquals("Colors don't match", color, token.getData()); // call getToken so we bypass the scanner's overriding in doGetToken
 	}
 	
 	public void testSimpleClassDefinition() {
