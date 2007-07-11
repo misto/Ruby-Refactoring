@@ -1690,4 +1690,8 @@ public class RubyRuntime {
 		}
 		return new File(path);
 	}
+
+	public static File getIRB() {
+		return getBinExecutable("irb");
+	}
 }
