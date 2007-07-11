@@ -25,9 +25,10 @@ import org.rubypeople.rdt.ui.IRubyConstants;
  * Window>Preferences>Java>Templates. To enable and disable the creation of
  * type comments go to Window>Preferences>Java>Code Generation.
  */
-public class RubySourceLocator implements IPersistableSourceLocator, ISourcePresentation { // ISourcePresentation
-	// {
+public class RubySourceLocator implements IPersistableSourceLocator, ISourcePresentation {
+	
 	private String absoluteWorkingDirectory;
+	private String projectName;
 
 	public RubySourceLocator() {
 
@@ -54,6 +55,7 @@ public class RubySourceLocator implements IPersistableSourceLocator, ISourcePres
 	 */
 	public void initializeDefaults(ILaunchConfiguration configuration) throws CoreException {
 		this.absoluteWorkingDirectory = configuration.getAttribute(IRubyLaunchConfigurationConstants.ATTR_WORKING_DIRECTORY, ""); //$NON-NLS-1$
+		this.projectName = configuration.getAttribute(IRubyLaunchConfigurationConstants.ATTR_PROJECT_NAME, ""); //$NON-NLS-1$
 	}
 
 	/**
@@ -104,6 +106,9 @@ public class RubySourceLocator implements IPersistableSourceLocator, ISourcePres
 		private IFile workspaceFile;
 		public SourceElement(String aFilename, RubySourceLocator pSourceLocator) {
 			filename = aFilename;
+			if (filename.startsWith("./")) {
+				filename = "/" + pSourceLocator.projectName + filename.substring(1);
+			}
 			workspaceFile = RdtDebugCorePlugin.getWorkspace().getRoot().getFileForLocation(new Path(filename));
 			if (workspaceFile == null) {
 				try {
