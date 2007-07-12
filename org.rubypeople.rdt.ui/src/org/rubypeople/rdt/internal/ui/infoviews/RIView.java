@@ -15,6 +15,7 @@ import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.action.IToolBarManager;
+import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.viewers.IStructuredContentProvider;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.TableViewer;
@@ -125,7 +126,11 @@ public class RIView extends ViewPart implements RdocListener, IVMInstallChangedL
         });
         
         // search result
-        searchResult = new Browser(form, SWT.BORDER);
+        try {
+        	searchResult = new Browser(form, SWT.BORDER);
+		} catch (Exception e) {
+			MessageDialog.openError(Display.getDefault().getActiveShell(), "Unable to create embedded browser", "It appears that you do not have an embeddable browser. Please see http://www.eclipse.org/swt/faq.php#browserlinux for more information if you are on Linux.");
+		}
         
         form.setWeights(new int[]{1, 3});        
         
