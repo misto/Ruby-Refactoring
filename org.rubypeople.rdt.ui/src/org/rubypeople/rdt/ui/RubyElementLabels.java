@@ -10,6 +10,8 @@
  *******************************************************************************/
 package org.rubypeople.rdt.ui;
 
+import java.io.File;
+
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.IAdaptable;
@@ -552,10 +554,11 @@ public class RubyElementLabels {
                     buf.append('.');
                     getElementLabel(type.getParent(), 0, buf);
                 }
-            } else {
+            } else { // FIXME This ends up happening before the enclosing types get spit out
             	ISourceFolder folder = type.getSourceFolder();
             	if (!folder.isDefaultPackage()) {
-                  getSourceFolderLabel(type.getSourceFolder(), flags & QUALIFIER_FLAGS, buf);
+                  getSourceFolderLabel(folder, flags & QUALIFIER_FLAGS, buf);
+                  buf.append('/');
             	}
                 getRubyScriptLabel(type.getRubyScript(), (flags & QUALIFIER_FLAGS), buf);
                 try {
@@ -665,7 +668,8 @@ public class RubyElementLabels {
 				}
 				buf.append(name.substring(start));
 		} else {
-			buf.append(pack.getElementName());
+			String name = pack.getElementName();
+			buf.append(name.replace(File.separatorChar, '/'));
 		}
 		if (getFlag(flags, P_POST_QUALIFIED)) {
 			buf.append(CONCAT_STRING);
