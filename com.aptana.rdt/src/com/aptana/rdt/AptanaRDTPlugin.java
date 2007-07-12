@@ -21,8 +21,6 @@ import org.eclipse.core.runtime.preferences.InstanceScope;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.osgi.framework.BundleContext;
-import org.osgi.framework.FrameworkEvent;
-import org.osgi.framework.FrameworkListener;
 import org.rubypeople.rdt.internal.core.RubyModelManager.EclipsePreferencesListener;
 import org.rubypeople.rdt.internal.launching.LaunchingPlugin;
 import org.rubypeople.rdt.internal.ui.IRubyStatusConstants;
@@ -239,16 +237,7 @@ public class AptanaRDTPlugin extends AbstractUIPlugin {
 		initializePreferences();
 		context.registerService(IGemManager.class.getName(), getGemManager(), null);
 		
-		context.addFrameworkListener(new FrameworkListener() {
-		
-			public void frameworkEvent(FrameworkEvent event) {
-				if (event.getType() == FrameworkEvent.STARTED) {
-					GemManager.getInstance().initialize();
-				}
-		
-			}
-		
-		});
+
 		getGemManager().addGemListener(new GemListener() {
 		
 			public void managerInitialized() {
