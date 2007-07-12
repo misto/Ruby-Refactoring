@@ -546,7 +546,7 @@ public class RubyElementLabels {
             buf.append(CONCAT_STRING);
             IType declaringType = type.getDeclaringType();
             if (declaringType != null) {
-                getTypeLabel(declaringType, T_FULLY_QUALIFIED | (flags & QUALIFIER_FLAGS), buf);
+                getTypeLabel(declaringType, T_CONTAINER_QUALIFIED | (flags & QUALIFIER_FLAGS), buf);
                 int parentType = type.getParent().getElementType();
                 if (parentType == IRubyElement.METHOD || parentType == IRubyElement.FIELD) { // anonymous
                                                                         // or
@@ -554,36 +554,37 @@ public class RubyElementLabels {
                     buf.append('.');
                     getElementLabel(type.getParent(), 0, buf);
                 }
-            } else { // FIXME This ends up happening before the enclosing types get spit out
-            	ISourceFolder folder = type.getSourceFolder();
-            	if (!folder.isDefaultPackage()) {
-                  getSourceFolderLabel(folder, flags & QUALIFIER_FLAGS, buf);
-                  buf.append('/');
-            	}
-                getRubyScriptLabel(type.getRubyScript(), (flags & QUALIFIER_FLAGS), buf);
-                try {
-    				int offset = type.getNameRange().getOffset();
-    				buf.append(", offset: ");
-    				buf.append(offset);
-    			} catch (RubyModelException e) {
-    				RubyPlugin.log(e);
-    			}        
-            }
+                buf.append(CONCAT_STRING);
+            } 
+            ISourceFolder folder = type.getSourceFolder();
+			if (!folder.isDefaultPackage()) {
+				getSourceFolderLabel(folder, flags & QUALIFIER_FLAGS, buf);
+				buf.append('/');
+			}
+			getRubyScriptLabel(type.getRubyScript(), (flags & QUALIFIER_FLAGS),
+					buf);
+			try {
+				int offset = type.getNameRange().getOffset();
+				buf.append(", offset: ");
+				buf.append(offset);
+			} catch (RubyModelException e) {
+				RubyPlugin.log(e);
+			}   
         }
     }
 
     /**
-     * Appends the label for a import container, import or package declaration
-     * to a {@link StringBuffer}. Considers the D_* flags.
-     * 
-     * @param declaration
-     *            The element to render.
-     * @param flags
-     *            The rendering flags. Flags with names starting with 'D_' are
-     *            considered.
-     * @param buf
-     *            The buffer to append the resulting label to.
-     */
+	 * Appends the label for a import container, import or package declaration
+	 * to a {@link StringBuffer}. Considers the D_* flags.
+	 * 
+	 * @param declaration
+	 *            The element to render.
+	 * @param flags
+	 *            The rendering flags. Flags with names starting with 'D_' are
+	 *            considered.
+	 * @param buf
+	 *            The buffer to append the resulting label to.
+	 */
     public static void getDeclarationLabel(IRubyElement declaration, long flags, StringBuffer buf) {
         if (getFlag(flags, D_QUALIFIED)) {
             IRubyElement openable = (IRubyElement) declaration.getOpenable();
