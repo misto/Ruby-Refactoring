@@ -326,7 +326,7 @@ public class CompletionEngine {
 			String name = element.getElementName();
 			if (names.contains(name)) continue;
 			names.add(name);
-			CompletionProposal proposal = createProposal(fContext.getReplaceStart(), CompletionProposal.CONSTANT_REF, name, element);
+			CompletionProposal proposal = createProposal(fContext.getReplaceStart(), CompletionProposal.GLOBAL_REF, name, element);
 			proposal.setType(name);
 			fRequestor.accept(proposal);
 		}
