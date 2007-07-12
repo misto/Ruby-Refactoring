@@ -90,6 +90,7 @@ public class CompletionEngine {
 		if (fContext.emptyPrefix()) { // no prefix, so we could suggest anything
 			suggestMethodsForEnclosingType(script);
 			getDocumentsRubyElementsInScope();
+			suggestGlobals();
 		} else {
 			if (fContext.isDoubleSemiColon()) {				
 				String prefix = fContext.getFullPrefix();
@@ -117,6 +118,10 @@ public class CompletionEngine {
 				suggestConstantNames();
 				return;
 			} 
+			if (fContext.isGlobal()) { // looks like a global
+				suggestGlobals();
+				return;
+			}
 			if (fContext.isExplicitMethodInvokation()) {
 				ITypeInferrer inferrer = new DefaultTypeInferrer();
 				List<ITypeGuess> guesses = inferrer.infer(fContext.getCorrectedSource(), fContext.getOffset());
@@ -161,9 +166,6 @@ public class CompletionEngine {
 					suggestMethodsForEnclosingType(script);				
 				}
 				getDocumentsRubyElementsInScope();
-			}
-			if (fContext.isGlobal()) { // looks like a global
-				suggestGlobals();
 			}
 		}
 		this.fRequestor.endReporting();
@@ -315,14 +317,15 @@ public class CompletionEngine {
 	}
 	
 	private void suggestGlobals() {
-		SearchPattern pattern = SearchPattern.createPattern(IRubyElement.GLOBAL, "*", IRubySearchConstants.DECLARATIONS, SearchPattern.R_PATTERN_MATCH);
+		SearchPattern pattern = SearchPattern.createPattern(IRubyElement.GLOBAL, "$*", IRubySearchConstants.DECLARATIONS, SearchPattern.R_PATTERN_MATCH);
 		IRubySearchScope scope = BasicSearchEngine.createRubySearchScope(new IRubyElement[] {fContext.getScript().getRubyProject()});
 		List<SearchMatch> results = search(pattern, scope);		
+		Set<String> names = new HashSet<String>();
 		for (SearchMatch match: results) {
 			IRubyElement element = (IRubyElement) match.getElement();
 			String name = element.getElementName();
-			if (!fContext.prefixStartsWith(name))
-				continue;
+			if (names.contains(name)) continue;
+			names.add(name);
 			CompletionProposal proposal = createProposal(fContext.getReplaceStart(), CompletionProposal.CONSTANT_REF, name, element);
 			proposal.setType(name);
 			fRequestor.accept(proposal);
@@ -372,14 +375,12 @@ public class CompletionEngine {
 	}
 
 	private void suggestConstantNames() {
-		SearchPattern pattern = SearchPattern.createPattern(IRubyElement.CONSTANT, "*", IRubySearchConstants.DECLARATIONS, SearchPattern.R_PATTERN_MATCH);
+		SearchPattern pattern = SearchPattern.createPattern(IRubyElement.CONSTANT, fContext.getPartialPrefix()+ "*", IRubySearchConstants.DECLARATIONS, SearchPattern.R_PATTERN_MATCH);
 		IRubySearchScope scope = BasicSearchEngine.createRubySearchScope(new IRubyElement[] {fContext.getScript()});
 		List<SearchMatch> results = search(pattern, scope);
 		for (SearchMatch match: results) {
 			IRubyElement element = (IRubyElement) match.getElement();
 			String name = element.getElementName();
-			if (!fContext.prefixStartsWith(name))
-				continue;
 			CompletionProposal proposal = createProposal(fContext.getReplaceStart(), CompletionProposal.CONSTANT_REF, name, element);
 			proposal.setType(name);
 			fRequestor.accept(proposal);
