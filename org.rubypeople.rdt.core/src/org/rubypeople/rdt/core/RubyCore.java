@@ -47,6 +47,14 @@ import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.core.runtime.preferences.IEclipsePreferences;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
+import org.osgi.framework.FrameworkEvent;
+import org.osgi.framework.FrameworkListener;
+import org.rubypeople.rdt.core.search.IRubySearchConstants;
+import org.rubypeople.rdt.core.search.SearchEngine;
+import org.rubypeople.rdt.core.search.SearchMatch;
+import org.rubypeople.rdt.core.search.SearchParticipant;
+import org.rubypeople.rdt.core.search.SearchPattern;
+import org.rubypeople.rdt.core.search.SearchRequestor;
 import org.rubypeople.rdt.internal.core.BatchOperation;
 import org.rubypeople.rdt.internal.core.DefaultWorkingCopyOwner;
 import org.rubypeople.rdt.internal.core.LoadpathAttribute;
@@ -276,6 +284,8 @@ public class RubyCore extends Plugin {
 	public static final String USER_LIBRARY_CONTAINER_ID= "org.rubypeople.rdt.USER_LIBRARY"; //$NON-NLS-1$
 		
 	private static final boolean VERBOSE = false;
+
+	private RubyProjectListener fProjectListener;
 	
     public RubyCore() {
         super();
@@ -303,8 +313,9 @@ public class RubyCore extends Plugin {
     public void start(BundleContext context) throws Exception {
         super.start(context);
         RubyModelManager.getRubyModelManager().startup();
-
-        ResourcesPlugin.getWorkspace().addResourceChangeListener(new RubyProjectListener(), IResourceChangeEvent.POST_CHANGE);
+      
+        fProjectListener = new RubyProjectListener();
+        ResourcesPlugin.getWorkspace().addResourceChangeListener(fProjectListener, IResourceChangeEvent.POST_CHANGE);
     }
 
     /*
@@ -315,6 +326,7 @@ public class RubyCore extends Plugin {
      */
     public void stop(BundleContext context) throws Exception {
         try {
+        	ResourcesPlugin.getWorkspace().removeResourceChangeListener(fProjectListener);
             RubyModelManager.getRubyModelManager().shutdown();
         } finally {
             // ensure we call super.stop as the last thing
@@ -1435,6 +1447,26 @@ public class RubyCore extends Plugin {
 					checkDelta(children[i]);
 				}
 			}
+		}
+	}
+
+
+	public static void forceIndexing() {
+		SearchEngine engine = new SearchEngine();
+		SearchParticipant[] participants = new SearchParticipant[] { SearchEngine.getDefaultSearchParticipant() };
+		SearchPattern pattern = SearchPattern.createPattern(IRubyElement.TYPE, "*", IRubySearchConstants.DECLARATIONS, SearchPattern.R_PATTERN_MATCH);
+		SearchRequestor requestor = new SearchRequestor() {
+		
+			@Override
+			public void acceptSearchMatch(SearchMatch match) throws CoreException {
+				// do nothing		
+			}
+		
+		};
+		try {
+			engine.search(pattern, participants, SearchEngine.createWorkspaceScope(), requestor, null);
+		} catch (CoreException e) {
+			// ignore
 		}
 	}
 }
