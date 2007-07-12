@@ -52,7 +52,6 @@ import org.rubypeople.rdt.core.search.SearchMatch;
 import org.rubypeople.rdt.core.search.SearchParticipant;
 import org.rubypeople.rdt.core.search.SearchPattern;
 import org.rubypeople.rdt.internal.core.RubyElement;
-import org.rubypeople.rdt.internal.core.RubyScript;
 import org.rubypeople.rdt.internal.core.RubyType;
 import org.rubypeople.rdt.internal.core.parser.RubyParser;
 import org.rubypeople.rdt.internal.core.search.BasicSearchEngine;
@@ -334,11 +333,14 @@ public class CompletionEngine {
 		SearchPattern pattern = SearchPattern.createPattern(IRubyElement.TYPE, "*", IRubySearchConstants.DECLARATIONS, SearchPattern.R_PATTERN_MATCH);
 		IRubySearchScope scope = BasicSearchEngine.createRubySearchScope(new IRubyElement[] {fContext.getScript().getRubyProject()});
 		List<SearchMatch> results = search(pattern, scope);		
+		Set<String> names = new HashSet<String>();
 		for (SearchMatch match: results) {
 			IRubyElement element = (IRubyElement) match.getElement();
 			String name = element.getElementName();
 			if (!fContext.prefixStartsWith(name))
 				continue;
+			if (names.contains(name)) continue;
+			names.add(name);
 			CompletionProposal proposal = createProposal(fContext.getReplaceStart(), CompletionProposal.TYPE_REF, name, element);
 			proposal.setType(name);
 			fRequestor.accept(proposal);
