@@ -663,21 +663,26 @@ public class GemManager implements IGemManager {
 
 			@Override
 			protected IStatus run(IProgressMonitor monitor) {
-				gems = loadLocalCache(getConfigFile(LOCAL_GEMS_CACHE_FILE));
-				if (gems.isEmpty()) {
-					gems = loadLocalGems();
-					storeGemCache(gems, getConfigFile(LOCAL_GEMS_CACHE_FILE));
-				}
-				isInitialized = true;
-				synchronized (listeners) {
-					for (GemListener listener : listeners) {
-						listener.managerInitialized();
+				try {
+					gems = loadLocalCache(getConfigFile(LOCAL_GEMS_CACHE_FILE));
+					if (gems.isEmpty()) {
+						gems = loadLocalGems();
+						storeGemCache(gems, getConfigFile(LOCAL_GEMS_CACHE_FILE));
 					}
-				}
-				synchronized (listeners) {
-					for (GemListener listener : listeners) {
-						listener.gemsRefreshed();
+					isInitialized = true;
+					synchronized (listeners) {
+						for (GemListener listener : listeners) {
+							listener.managerInitialized();
+						}
 					}
+					synchronized (listeners) {
+						for (GemListener listener : listeners) {
+							listener.gemsRefreshed();
+						}
+					}
+				} catch (Exception e) {
+					AptanaRDTPlugin.log(e);
+					return Status.CANCEL_STATUS;
 				}
 				return Status.OK_STATUS;
 			}
@@ -691,11 +696,16 @@ public class GemManager implements IGemManager {
 
 			@Override
 			protected IStatus run(IProgressMonitor monitor) {
-				remoteGems = loadLocalCache(getConfigFile(REMOTE_GEMS_CACHE_FILE));
-				if (remoteGems.isEmpty()) {
-					remoteGems = loadRemoteGems();
-					storeGemCache(remoteGems,
-							getConfigFile(REMOTE_GEMS_CACHE_FILE));
+				try {
+					remoteGems = loadLocalCache(getConfigFile(REMOTE_GEMS_CACHE_FILE));
+					if (remoteGems.isEmpty()) {
+						remoteGems = loadRemoteGems();
+						storeGemCache(remoteGems,
+								getConfigFile(REMOTE_GEMS_CACHE_FILE));
+					}
+				} catch (Exception e) {
+					AptanaRDTPlugin.log(e);
+					return Status.CANCEL_STATUS;
 				}
 				return Status.OK_STATUS;
 			}
