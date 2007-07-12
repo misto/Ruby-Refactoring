@@ -330,15 +330,13 @@ public class CompletionEngine {
 	}
 
 	private void suggestTypeNames() {	
-		SearchPattern pattern = SearchPattern.createPattern(IRubyElement.TYPE, "*", IRubySearchConstants.DECLARATIONS, SearchPattern.R_PATTERN_MATCH);
+		SearchPattern pattern = SearchPattern.createPattern(IRubyElement.TYPE, fContext.getPartialPrefix() + "*", IRubySearchConstants.DECLARATIONS, SearchPattern.R_PATTERN_MATCH);
 		IRubySearchScope scope = BasicSearchEngine.createRubySearchScope(new IRubyElement[] {fContext.getScript().getRubyProject()});
 		List<SearchMatch> results = search(pattern, scope);		
 		Set<String> names = new HashSet<String>();
 		for (SearchMatch match: results) {
 			IRubyElement element = (IRubyElement) match.getElement();
 			String name = element.getElementName();
-			if (!fContext.prefixStartsWith(name))
-				continue;
 			if (names.contains(name)) continue;
 			names.add(name);
 			CompletionProposal proposal = createProposal(fContext.getReplaceStart(), CompletionProposal.TYPE_REF, name, element);
