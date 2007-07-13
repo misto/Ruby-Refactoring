@@ -1119,5 +1119,6 @@
    <extension
          point="org.eclipse.ui.startup">
       <startup class="org.rubypeople.rdt.internal.ui.ForceIndexer"/>
+      <startup class="org.rubypeople.rdt.internal.ui.RubyInstalledDetector"/>
    </extension>
 </plugin>
