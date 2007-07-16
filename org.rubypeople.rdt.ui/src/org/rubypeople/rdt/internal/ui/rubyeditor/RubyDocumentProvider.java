@@ -6,6 +6,7 @@ import java.util.List;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IMarker;
+import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -48,11 +49,13 @@ import org.eclipse.ui.texteditor.MarkerAnnotation;
 import org.eclipse.ui.texteditor.MarkerUtilities;
 import org.eclipse.ui.texteditor.ResourceMarkerAnnotationModel;
 import org.rubypeople.rdt.core.IProblemRequestor;
+import org.rubypeople.rdt.core.IRubyProject;
 import org.rubypeople.rdt.core.IRubyScript;
 import org.rubypeople.rdt.core.RubyCore;
 import org.rubypeople.rdt.core.RubyModelException;
 import org.rubypeople.rdt.core.compiler.CategorizedProblem;
 import org.rubypeople.rdt.core.compiler.IProblem;
+import org.rubypeople.rdt.internal.core.RubyProject;
 import org.rubypeople.rdt.internal.ui.RubyPlugin;
 import org.rubypeople.rdt.internal.ui.RubyPluginImages;
 import org.rubypeople.rdt.internal.ui.text.ruby.IProblemRequestorExtension;
@@ -209,7 +212,12 @@ public class RubyDocumentProvider extends TextFileDocumentProvider implements IR
 			extension.setIsActive(false);
 			extension.setIsHandlingTemporaryProblems(isHandlingTemporaryProblems());
 		}
-		
+		// FIXME If project doesn't have ruby nature, add it here
+		IRubyProject project = original.getRubyProject();
+		IProject iProject = input.getFile().getProject();
+		if (!RubyProject.hasRubyNature(iProject)) {
+			RubyCore.addRubyNature(iProject, null);
+		}
 		original.becomeWorkingCopy(requestor, getProgressMonitor());
 		cuInfo.fCopy = original;
 		
