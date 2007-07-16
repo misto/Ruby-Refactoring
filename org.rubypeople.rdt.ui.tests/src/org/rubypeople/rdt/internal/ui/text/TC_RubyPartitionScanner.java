@@ -301,5 +301,18 @@ public class TC_RubyPartitionScanner extends TestCase {
 		assertEquals(RubyPartitionScanner.RUBY_COMMAND, this.getContentType(code, 63));
 		assertEquals(RubyPartitionScanner.RUBY_DEFAULT, this.getContentType(code, 65));
 	}
+	
+	public void testPercentXCommand() {
+		String code = "if (@options.do_it)\n" +
+	         "  %x{#{cmd}}\n" +
+	         "end\n";
+		assertEquals(RubyPartitionScanner.RUBY_DEFAULT, this.getContentType(code, 1));  // i'f'
+		assertEquals(RubyPartitionScanner.RUBY_COMMAND, this.getContentType(code, 22));	// '%'x
+		assertEquals(RubyPartitionScanner.RUBY_COMMAND, this.getContentType(code, 24));	// %x'{'
+		assertEquals(RubyPartitionScanner.RUBY_DEFAULT, this.getContentType(code, 27)); //'c'md
+		assertEquals(RubyPartitionScanner.RUBY_COMMAND, this.getContentType(code, 30)); // cmd'}'
+		assertEquals(RubyPartitionScanner.RUBY_COMMAND, this.getContentType(code, 31)); // cmd}'}'
+		assertEquals(RubyPartitionScanner.RUBY_DEFAULT, this.getContentType(code, 33)); //'e'nd
+	}
 }
 
