@@ -186,7 +186,7 @@ public class CompletionEngine {
 			Node scoping = findNearestScope(typeNode, methodNode.getPosition().getStartOffset() - 1);
 			if (!scoping.equals(typeNode)) continue;
 			MethodDefNode methodDef = (MethodDefNode) methodNode;
-			NodeMethod method = new NodeMethod(methodDef);
+			NodeMethod method = new NodeMethod(methodDef, fContext.getScript());
 			CompletionProposal proposal = suggestMethod(method, name, 100);
 			if (proposal == null) continue;
 			list.add(proposal);
@@ -652,7 +652,7 @@ public class CompletionEngine {
 			}
 			if (!fContext.prefixStartsWith(name))
 				continue;
-			NodeMethod method = new NodeMethod((MethodDefNode)methodDefinition);
+			NodeMethod method = new NodeMethod((MethodDefNode)methodDefinition, fContext.getScript());
 			suggestMethod(method, typeName, 100);
 		}
 		addTypesVariables(typeNode);
@@ -787,9 +787,11 @@ public class CompletionEngine {
 	
 	private class NodeMethod implements IMethod {
 		private MethodDefNode node;
+		private IRubyScript fScript;
 
-		public NodeMethod(MethodDefNode methodDefinition) {
+		public NodeMethod(MethodDefNode methodDefinition, IRubyScript script) {
 			this.node = methodDefinition;
+			this.fScript = script;
 		}
 
 		public String[] getParameterNames() throws RubyModelException {
@@ -833,7 +835,7 @@ public class CompletionEngine {
 		}
 
 		public IOpenable getOpenable() {
-			return null;
+			return fScript;
 		}
 
 		public IRubyElement getParent() {
@@ -889,7 +891,7 @@ public class CompletionEngine {
 		}
 
 		public IRubyScript getRubyScript() {
-			return null;
+			return fScript;
 		}
 
 		public IType getType(String name, int occurrenceCount) {
