@@ -301,9 +301,11 @@ public class RubyPartitionScanner implements IPartitionTokenScanner {
 			return new Token(fContentType);
 		case Tokens.tSTRING_BEG:
 			fOpeningString = fContents.substring(fOffset - origOffset, lexerSource.getOffset()).trim();
-			if (fOpeningString.equals("'")) {
+			if (fOpeningString.equals("'") || fOpeningString.startsWith("%q")) {
 				inSingleQuote = true;
-			} 
+			} else if (fOpeningString.startsWith("<<")) { // here-doc
+				fOpeningString += "\n";
+			}
 			fContentType = RUBY_STRING;			
 			return new Token(RUBY_STRING);
 		case Tokens.tXSTRING_BEG:
