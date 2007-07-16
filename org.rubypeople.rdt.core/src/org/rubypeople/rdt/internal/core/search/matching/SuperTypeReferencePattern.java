@@ -54,7 +54,7 @@ public static char[] createIndexKey(
 		superTypeName = OBJECT;
 	char[] superSimpleName = CharOperation.lastSegment(superTypeName, "::");
 	char[] superQualification = null;
-	if (superSimpleName != superTypeName) {
+	if (!CharOperation.equals(superSimpleName, superTypeName)) {
 		int length = superTypeName.length - superSimpleName.length - 1;
 		superQualification = new char[length];
 		System.arraycopy(superTypeName, 0, superQualification, 0, length);
@@ -63,7 +63,7 @@ public static char[] createIndexKey(
 	// if the supertype name contains a $, then split it into: source name and append the $ prefix to the qualification
 	//	e.g. p.A$B ---> p.A$ + B
 	char[] superTypeSourceName = CharOperation.lastSegment(superSimpleName, "::");
-	if (superTypeSourceName != superSimpleName) {
+	if (!CharOperation.equals(superSimpleName, superTypeSourceName)) {
 		int start = superQualification == null ? 0 : superQualification.length + 1;
 		int prefixLength = superSimpleName.length - superTypeSourceName.length;
 		char[] mangledQualification = new char[start + prefixLength];
@@ -82,7 +82,7 @@ public static char[] createIndexKey(
 		packageName = ONE_ZERO; // save some space
 	
 
-	// superSimpleName / superQualification / simpleName / enclosingTypeName / typeParameters / packageName / superClassOrInterface classOrInterface modifiers
+	// superSimpleName / superQualification / simpleName / enclosingTypeName / packageName / superClassOrModule classOrModule modifiers
 	int superLength = superSimpleName == null ? 0 : superSimpleName.length;
 	int superQLength = superQualification == null ? 0 : superQualification.length;
 	int simpleLength = simpleName == null ? 0 : simpleName.length;
