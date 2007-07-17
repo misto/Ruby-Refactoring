@@ -46,6 +46,7 @@ import org.osgi.service.prefs.BackingStoreException;
 import org.rubypeople.rdt.core.ILoadpathContainer;
 import org.rubypeople.rdt.core.ILoadpathEntry;
 import org.rubypeople.rdt.core.IParent;
+import org.rubypeople.rdt.core.IRegion;
 import org.rubypeople.rdt.core.IRubyElement;
 import org.rubypeople.rdt.core.IRubyModelMarker;
 import org.rubypeople.rdt.core.IRubyModelStatus;
@@ -55,6 +56,7 @@ import org.rubypeople.rdt.core.IRubyScript;
 import org.rubypeople.rdt.core.ISourceFolder;
 import org.rubypeople.rdt.core.ISourceFolderRoot;
 import org.rubypeople.rdt.core.IType;
+import org.rubypeople.rdt.core.ITypeHierarchy;
 import org.rubypeople.rdt.core.RubyCore;
 import org.rubypeople.rdt.core.RubyModelException;
 import org.rubypeople.rdt.core.WorkingCopyOwner;
@@ -2458,5 +2460,34 @@ public class RubyProject extends Openable implements IProjectNature, IRubyElemen
 	 */
 	protected char getHandleMementoDelimiter() {
 		return JEM_RUBYPROJECT;
+	}
+	
+	/**
+	 * @see IRubyProject
+	 */
+	public ITypeHierarchy newTypeHierarchy(
+		IRegion region,
+		IProgressMonitor monitor)
+		throws RubyModelException {			
+		return newTypeHierarchy(region, DefaultWorkingCopyOwner.PRIMARY, monitor);
+	}
+	
+	/**
+	 * @see IJavaProject
+	 */
+	public ITypeHierarchy newTypeHierarchy(
+		IRegion region,
+		WorkingCopyOwner owner,
+		IProgressMonitor monitor)
+		throws RubyModelException {
+
+		if (region == null) {
+			throw new IllegalArgumentException(Messages.hierarchy_nullRegion);
+		}
+		IRubyScript[] workingCopies = RubyModelManager.getRubyModelManager().getWorkingCopies(owner, true/*add primary working copies*/);
+		CreateTypeHierarchyOperation op =
+			new CreateTypeHierarchyOperation(region, workingCopies, null, true);
+		op.runOperation(monitor);
+		return op.getResult();
 	}
 }
