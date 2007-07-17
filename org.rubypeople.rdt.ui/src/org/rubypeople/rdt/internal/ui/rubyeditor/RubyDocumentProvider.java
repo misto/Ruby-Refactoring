@@ -49,7 +49,6 @@ import org.eclipse.ui.texteditor.MarkerAnnotation;
 import org.eclipse.ui.texteditor.MarkerUtilities;
 import org.eclipse.ui.texteditor.ResourceMarkerAnnotationModel;
 import org.rubypeople.rdt.core.IProblemRequestor;
-import org.rubypeople.rdt.core.IRubyProject;
 import org.rubypeople.rdt.core.IRubyScript;
 import org.rubypeople.rdt.core.RubyCore;
 import org.rubypeople.rdt.core.RubyModelException;
@@ -212,8 +211,7 @@ public class RubyDocumentProvider extends TextFileDocumentProvider implements IR
 			extension.setIsActive(false);
 			extension.setIsHandlingTemporaryProblems(isHandlingTemporaryProblems());
 		}
-		// FIXME If project doesn't have ruby nature, add it here
-		IRubyProject project = original.getRubyProject();
+		// If project doesn't have ruby nature, add it here
 		IProject iProject = input.getFile().getProject();
 		if (!RubyProject.hasRubyNature(iProject)) {
 			RubyCore.addRubyNature(iProject, null);
