@@ -849,4 +849,8 @@ public class LaunchingPlugin extends Plugin implements IVMInstallChangedListener
 			return null;
 		}
 	}
+
+	public static void info(String string) {
+		log(new Status(IStatus.INFO, PLUGIN_ID, -1, string, null));		
+	}
 }
