@@ -671,12 +671,12 @@ public class GemManager implements IGemManager {
 					}
 					isInitialized = true;
 					synchronized (listeners) {
-						for (GemListener listener : listeners) {
+						for (GemListener listener : new ArrayList<GemListener>(listeners)) {
 							listener.managerInitialized();
 						}
 					}
 					synchronized (listeners) {
-						for (GemListener listener : listeners) {
+						for (GemListener listener : new ArrayList<GemListener>(listeners)) {
 							listener.gemsRefreshed();
 						}
 					}
