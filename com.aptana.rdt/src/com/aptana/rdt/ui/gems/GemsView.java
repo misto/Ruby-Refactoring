@@ -86,7 +86,7 @@ public class GemsView extends ViewPart implements GemListener {
 
 	@Override
 	public void setFocus() {
-		// do nothing
+		gemViewer.getTable().setFocus();
 	}
 
 	/**
