@@ -25,7 +25,6 @@
 package org.rubypeople.rdt.core;
 
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.rubypeople.rdt.internal.core.RubyMethod;
 
 /**
  * @author Chris
@@ -33,7 +32,7 @@ import org.rubypeople.rdt.internal.core.RubyMethod;
  */
 public interface IType extends IRubyElement, IMember {
 
-	public RubyMethod getMethod(String name, String[] parameterNames);
+	public IMethod getMethod(String name, String[] parameterNames);
 
 	/**
 	 * Returns the methods and constructors declared by this type. For binary
@@ -198,5 +197,17 @@ public interface IType extends IRubyElement, IMember {
 	 * @return a type hierarchy for this type containing this type and all of its supertypes
 	 */
 	ITypeHierarchy newSupertypeHierarchy(IProgressMonitor monitor) throws RubyModelException;
+
+	/**
+	 * Creates and returns a type hierarchy for this type containing
+	 * this type, all of its supertypes, and all its subtypes in the workspace.
+	 *
+	 * @param monitor the given progress monitor
+	 * @exception RubyModelException if this element does not exist or if an
+	 *		exception occurs while accessing its corresponding resource.
+	 * @return a type hierarchy for this type containing
+	 * this type, all of its supertypes, and all its subtypes in the workspace
+	 */
+	ITypeHierarchy newTypeHierarchy(IProgressMonitor monitor) throws RubyModelException;
 
 }

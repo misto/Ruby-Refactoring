@@ -47,8 +47,6 @@ import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.core.runtime.preferences.IEclipsePreferences;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
-import org.osgi.framework.FrameworkEvent;
-import org.osgi.framework.FrameworkListener;
 import org.rubypeople.rdt.core.search.IRubySearchConstants;
 import org.rubypeople.rdt.core.search.SearchEngine;
 import org.rubypeople.rdt.core.search.SearchMatch;
@@ -59,6 +57,7 @@ import org.rubypeople.rdt.internal.core.BatchOperation;
 import org.rubypeople.rdt.internal.core.DefaultWorkingCopyOwner;
 import org.rubypeople.rdt.internal.core.LoadpathAttribute;
 import org.rubypeople.rdt.internal.core.LoadpathEntry;
+import org.rubypeople.rdt.internal.core.Region;
 import org.rubypeople.rdt.internal.core.RubyCorePreferenceInitializer;
 import org.rubypeople.rdt.internal.core.RubyModel;
 import org.rubypeople.rdt.internal.core.RubyModelManager;
@@ -1468,5 +1467,14 @@ public class RubyCore extends Plugin {
 		} catch (CoreException e) {
 			// ignore
 		}
+	}
+
+	/**
+	 * Returns a new empty region.
+	 * 
+	 * @return a new empty region
+	 */
+	public static IRegion newRegion() {
+		return new Region();
 	}
 }

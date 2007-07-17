@@ -38,6 +38,7 @@ import org.rubypeople.rdt.core.IType;
 import org.rubypeople.rdt.core.ITypeHierarchy;
 import org.rubypeople.rdt.core.RubyModelException;
 import org.rubypeople.rdt.core.WorkingCopyOwner;
+import org.rubypeople.rdt.core.search.SearchEngine;
 import org.rubypeople.rdt.internal.core.util.MementoTokenizer;
 
 /**
@@ -112,7 +113,7 @@ public class RubyType extends NamedMember implements IType {
 		return array;
 	}
 
-	public RubyMethod getMethod(String name, String[] parameterNames) {
+	public IMethod getMethod(String name, String[] parameterNames) {
 		return new RubyMethod(this, name, parameterNames);
 	}
 
@@ -320,6 +321,15 @@ public class RubyType extends NamedMember implements IType {
 	/**
 	 * @see IType
 	 */
+	public ITypeHierarchy newTypeHierarchy(IProgressMonitor monitor) throws RubyModelException {
+		CreateTypeHierarchyOperation op= new CreateTypeHierarchyOperation(this, null, SearchEngine.createWorkspaceScope(), true);
+		op.runOperation(monitor);
+		return op.getResult();
+	}
+	
+	/**
+	 * @see IType
+	 */
 	public ITypeHierarchy newSupertypeHierarchy(IProgressMonitor monitor) throws RubyModelException {
 		return this.newSupertypeHierarchy(DefaultWorkingCopyOwner.PRIMARY, monitor);
 	}
@@ -333,11 +343,9 @@ public class RubyType extends NamedMember implements IType {
 		throws RubyModelException {
 
 		IRubyScript[] workingCopies = RubyModelManager.getRubyModelManager().getWorkingCopies(owner, true/*add primary working copies*/);
-//		CreateTypeHierarchyOperation op= new CreateTypeHierarchyOperation(this, workingCopies, SearchEngine.createWorkspaceScope(), false);
-//		op.runOperation(monitor);
-//		return op.getResult();
-		// XXX Implement!
-		return null;
+		CreateTypeHierarchyOperation op= new CreateTypeHierarchyOperation(this, workingCopies, SearchEngine.createWorkspaceScope(), false);
+		op.runOperation(monitor);
+		return op.getResult();
 	}
 
 }

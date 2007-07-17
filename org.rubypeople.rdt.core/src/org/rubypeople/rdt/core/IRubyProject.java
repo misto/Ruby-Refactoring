@@ -182,4 +182,19 @@ public interface IRubyProject extends IRubyElement, IParent {
 	 * @since 1.0
 	 */
 	IType findType(String fullyQualifiedName, IProgressMonitor progressMonitor) throws RubyModelException;
+
+	/**
+	 * Creates and returns a type hierarchy for all types in the given
+	 * region, considering subtypes within that region.
+	 *
+	 * @param monitor the given progress monitor
+	 * @param region the given region
+	 * @exception RubyModelException if this element does not exist or if an
+	 *		exception occurs while accessing its corresponding resource
+	 * @exception IllegalArgumentException if region is <code>null</code>
+	 * @return a type hierarchy for all types in the given
+	 * region, considering subtypes within that region
+	 */
+	ITypeHierarchy newTypeHierarchy(IRegion region, IProgressMonitor monitor)
+		throws RubyModelException;
 }

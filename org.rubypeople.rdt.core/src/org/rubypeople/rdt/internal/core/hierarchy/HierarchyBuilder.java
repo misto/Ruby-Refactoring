@@ -14,6 +14,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.OperationCanceledException;
 import org.rubypeople.rdt.core.IType;
 import org.rubypeople.rdt.core.RubyModelException;
 import org.rubypeople.rdt.internal.core.RubyElement;
@@ -163,6 +165,16 @@ public abstract class HierarchyBuilder {
 		// Add focus if not already in (case of a type with no explicit super type)
 		if (!this.hierarchy.contains(focusType)) {
 			this.hierarchy.addRootClass(focusType);
+		}
+	}
+	
+	protected void worked(IProgressMonitor monitor, int work) {
+		if (monitor != null) {
+			if (monitor.isCanceled()) {
+				throw new OperationCanceledException();
+			} else {
+				monitor.worked(work);
+			}
 		}
 	}
 }
