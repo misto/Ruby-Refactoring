@@ -10,7 +10,7 @@
 
 		<!-- Defines where cruise looks for changes, to decide whether to run the build --> 
 		<modificationset quietperiod="180"> 
-			<svn RepositoryLocation="https://svn.sourceforge.net/svnroot/rubyeclipse"/>
+			<svn RepositoryLocation="https://rubyeclipse.svn.sourceforge.net/svnroot/rubyeclipse"/>
 		</modificationset>
 
 		<!-- Configures the actual build loop, how often and which build file/target --> 
