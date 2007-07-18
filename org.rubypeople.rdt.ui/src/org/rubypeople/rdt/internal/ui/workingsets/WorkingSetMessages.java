@@ -18,6 +18,16 @@ public class WorkingSetMessages extends NLS {
 
 	public static String WorkingSetModel_others_name;
 	
+	public static String ClearWorkingSetAction_text;
+	public static String ClearWorkingSetAction_toolTip;
+	
+	public static String SelectWorkingSetAction_text;
+	public static String SelectWorkingSetAction_toolTip;
+	
+	public static String EditWorkingSetAction_text;
+	public static String EditWorkingSetAction_toolTip;
+	public static String EditWorkingSetAction_error_nowizard_title;
+	public static String EditWorkingSetAction_error_nowizard_message;	
 	
 	static {
 		NLS.initializeMessages(BUNDLE_NAME, WorkingSetMessages.class);
