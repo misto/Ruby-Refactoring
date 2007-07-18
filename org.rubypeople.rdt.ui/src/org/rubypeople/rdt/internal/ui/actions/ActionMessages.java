@@ -62,6 +62,7 @@ public final class ActionMessages extends NLS {
 	
 	public static String SelectAllAction_label;
 	public static String SelectAllAction_tooltip;
+	public static String NewWizardsActionGroup_new;
 
     static {
         NLS.initializeMessages(BUNDLE_NAME, ActionMessages.class);
