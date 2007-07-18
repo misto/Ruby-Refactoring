@@ -11,6 +11,7 @@ import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.resource.ImageRegistry;
 import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.graphics.ImageData;
 import org.osgi.framework.Bundle;
 
 public class RubyPluginImages {
@@ -128,7 +129,8 @@ public class RubyPluginImages {
     public static final ImageDescriptor DESC_OVR_SYNCH_AND_IMPLEMENTS= createUnManaged(T_OVR, "sync_impl.gif");   //$NON-NLS-1$
     public static final ImageDescriptor DESC_OVR_CONSTRUCTOR= createUnManaged(T_OVR, "constr_ovr.gif");         //$NON-NLS-1$
     public static final ImageDescriptor DESC_OVR_DEPRECATED= createUnManaged(T_OVR, "deprecated.gif");  
-	    
+    public static final ImageDescriptor DESC_OVR_FOCUS= createUnManagedCached(T_OVR, "focus_ovr.gif"); //$NON-NLS-1$    
+    
     public static final ImageDescriptor DESC_OBJS_GHOST= createManagedFromKey(T_OBJ, IMG_OBJS_GHOST);
     public static final ImageDescriptor DESC_OBJS_IMPDECL= createManagedFromKey(T_OBJ, IMG_CTOOLS_RUBY_IMPORT);
     public static final ImageDescriptor DESC_OBJS_IMPCONT= createManagedFromKey(T_OBJ, IMG_CTOOLS_RUBY_IMPORT_CONTAINER);
@@ -302,6 +304,14 @@ public class RubyPluginImages {
 	}
 	
 	/*
+	 * Creates an image descriptor for the given prefix and name in the JDT UI bundle and let tye descriptor cache the image data.
+	 * If no image could be found, the 'missing image descriptor' is returned.
+	 */
+	private static ImageDescriptor createUnManagedCached(String prefix, String name) {
+		return new CachedImageDescriptor(create(prefix, name, true));
+	}
+	
+	/*
 	 * Creates an image descriptor for the given prefix and name in the JDT UI bundle. The path can
 	 * contain variables like $NL$.
 	 * If no image could be found, <code>useMissingImageDescriptor</code> decides if either
@@ -351,5 +361,21 @@ public class RubyPluginImages {
 			return (ImageDescriptor) fgAvoidSWTErrorMap.get(key);
 		}
 		return getImageRegistry().getDescriptor(key);
+	}
+	
+	private static final class CachedImageDescriptor extends ImageDescriptor {
+		private ImageDescriptor fDescriptor;
+		private ImageData fData;
+
+		public CachedImageDescriptor(ImageDescriptor descriptor) {
+			fDescriptor = descriptor;
+		}
+
+		public ImageData getImageData() {
+			if (fData == null) {
+				fData= fDescriptor.getImageData();
+			}
+			return fData;
+		}
 	}
 }
