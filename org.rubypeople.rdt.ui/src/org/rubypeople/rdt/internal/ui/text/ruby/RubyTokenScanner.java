@@ -169,8 +169,14 @@ public class RubyTokenScanner extends AbstractRubyTokenScanner {
 
 	private boolean looksLikeTertiaryConditionalWithNoSpaces() {
 		if (fTokenLength > 1) return false;
-		char c = fContents.charAt((fOffset - origOffset) - 1);
-		return !Character.isWhitespace(c) && Character.isUnicodeIdentifierPart(c);
+		int index = (fOffset - origOffset) - 1;
+		if (index < 0) return false;
+		try {
+			char c = fContents.charAt(index);
+			return !Character.isWhitespace(c) && Character.isUnicodeIdentifierPart(c);
+		} catch (RuntimeException e) {
+			return false;
+		}
 	}
 
 	private boolean shouldReturnDefault(int i) {
