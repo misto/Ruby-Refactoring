@@ -288,6 +288,7 @@ public final class RubyModelUtil {
 	 * @return Returns <code>true</code> if the method has the given name and parameter types and constructor state.
 	 */
 	public static boolean isSameMethodSignature(String name, String[] paramTypes, boolean isConstructor, IMethod curr) throws RubyModelException {
+		// XXX Remove paramTypes arg!
 		if (isConstructor || name.equals(curr.getElementName())) {
 			if (isConstructor == curr.isConstructor()) {
 //				if (paramTypes.length == curr.getNumberOfParameters()) {
