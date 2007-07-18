@@ -72,7 +72,7 @@ public class FTC_ClassicDebuggerCommunicationTest extends
 	}
 
 	public void startRubyProcess() throws Exception {
-		String cmd = FTC_ClassicDebuggerCommunicationTest.RUBY_INTERPRETER + " -I" + createIncludeDir() +  " -I" + getTmpDir().replace('\\', '/') + " -reclipseDebugVerbose.rb " + getRubyTestFilename();
+		String cmd = FTC_ClassicDebuggerCommunicationTest.RUBY_INTERPRETER + " -I" + createIncludeDir() +  " -I" + getTmpDir().replace('\\', '/') + " -rclassic-debug-verbose.rb " + getRubyTestFilename();
 		System.out.println("Starting: " + cmd);
 		process = Runtime.getRuntime().exec(cmd);
 		rubyStderrRedirectorThread = new OutputRedirectorThread(process.getErrorStream());
