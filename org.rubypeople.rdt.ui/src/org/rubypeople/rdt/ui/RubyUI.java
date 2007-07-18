@@ -101,6 +101,22 @@ public final class RubyUI {
 	public static final String ID_PERSPECTIVE= 		"org.rubypeople.rdt.ui.PerspectiveRuby"; //$NON-NLS-1$
 
 	public static final String ID_RUBY_RESOURCE_VIEW = "org.rubypeople.rdt.ui.ViewRubyResources"; //$NON-NLS-1$
+
+	/** 
+	 * The view part id of the type hierarchy part
+	 * (value <code>"org.rubypeople.rdt.ui.TypeHierarchy"</code>).
+	 * <p>
+	 * When this id is used to access
+	 * a view part with <code>IWorkbenchPage.findView</code> or 
+	 * <code>showView</code>, the returned <code>IViewPart</code>
+	 * can be safely cast to an <code>ITypeHierarchyViewPart</code>.
+	 * </p>
+	 *
+	 * @see ITypeHierarchyViewPart
+	 * @see org.eclipse.ui.IWorkbenchPage#findView(java.lang.String)
+	 * @see org.eclipse.ui.IWorkbenchPage#showView(java.lang.String)
+	 */ 
+	public static final String ID_TYPE_HIERARCHY= 		"org.rubypeople.rdt.ui.TypeHierarchy"; //$NON-NLS-1$
 		
 	/**
 	 * Returns the Ruby element wrapped by the given editor input.
