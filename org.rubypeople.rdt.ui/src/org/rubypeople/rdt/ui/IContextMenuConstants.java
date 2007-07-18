@@ -1,5 +1,7 @@
 package org.rubypeople.rdt.ui;
 
+import org.eclipse.ui.navigator.ICommonMenuConstants;
+
 
 public interface IContextMenuConstants {
 	/**
@@ -25,4 +27,28 @@ public interface IContextMenuConstants {
 	 * @since 2.0
 	 */
 	public static final String TARGET_ID_SUBTYPES_VIEW= RubyUI.ID_TYPE_HIERARCHY + ".subtypes"; //$NON-NLS-1$	
+
+	/**
+	 * Pop-up menu: name of group for show actions (value <code>"group.show"</code>).
+	 * <p>
+	 * Examples for show actions are:
+	 * <ul>
+	 *  <li>Show in Navigator</li>
+	 *  <li>Show in Type Hierarchy</li>
+	 * </ul>
+	 * </p>
+	 */
+	public static final String GROUP_SHOW=		ICommonMenuConstants.GROUP_SHOW;
+	
+	/**
+	 * Pop-up menu: name of group for new actions (value <code>"group.new"</code>).
+	 * <p>
+	 * Examples for new actions are:
+	 * <ul>
+	 *  <li>Create new class</li>
+	 *  <li>Create new interface</li>
+	 * </ul>
+	 * </p>
+	 */
+	public static final String GROUP_NEW=		ICommonMenuConstants.GROUP_NEW;
 }
