@@ -54,6 +54,10 @@ class XmlPrinter
     out("<error>" + s + "</error>", *params)
   end
 
+  def printMessage(s, *params)
+    out("<message>" + s + "</message>", *params)
+  end
+
   def printVariable(name, binding, kind)
     printVariableValue(name, eval(name, binding), kind)
   end
@@ -326,7 +330,16 @@ class DEBUGGER__
     end
 
     def var_list(ary, binding, kind)
-      ary.sort!
+      ary.sort! do |v1, v2|
+        if v1 == 'self'
+          result = -1
+        elsif v2 == 'self'
+          result = 1
+        else
+          result = v1 <=> v2
+        end
+        result
+      end
       @printer.printXml("<variables>")
       for v in ary
         @printer.printVariable(v,binding, kind)
@@ -562,13 +575,18 @@ class DEBUGGER__
         break_points[id] = Breakpoint.new(true, 0, file, pos)
         @printer.printXml("<breakpointAdded no=\"%d\" location=\"%s:%s\"/>", id, file, pos)
 
-      when /^\s*delete\s+(\d+)$/
-        breakpoint_id = $1.to_i
-        if break_points.delete(breakpoint_id)
-          @printer.printXml("<breakpointDeleted no=\"%d\"/>", breakpoint_id)
+      when /^\s*delete\s+(.*)$/
+        arg = $1
+        if arg !~ /(?:^\d+$)/
+          @printer.printError "Delete argument '#{arg}' needs to be positive number"
         else
-          @printer.printXml("<error>No breakpoint with id: %d. Currently following breakpoints defined: %s</error>",
-                            breakpoint_id, break_points.keys.join(', '))
+          breakpoint_id = arg.to_i
+          if break_points.delete(breakpoint_id)
+            @printer.printXml("<breakpointDeleted no=\"%d\"/>", breakpoint_id)
+          else
+            @printer.printError("No breakpoint with id: %d. Currently following breakpoints defined: %s",
+              breakpoint_id, break_points.keys.join(', '))
+          end
         end
 
         #        when /^\s*wat(?:ch)?\s+(.+)$/
@@ -700,9 +718,15 @@ class DEBUGGER__
         rescue Exception => error
           @printer.printLoadResult($', error)
         end
+        
+      when /^\s*exit$/
+        @printer.printMessage("finished")
+        set_trace_func nil
+        @socket.close
+        exit!
 
       else
-        @printer.debug("Unknown input : %s", input)
+        @printer.printMessage("Unknown input: %s", input)
       end
 
     end
@@ -772,8 +796,8 @@ class DEBUGGER__
       file = File.basename(file)
       n = 1
       break_points.each_value do |b|
-        @printer.debug("file=%s, pos=%s; breakpoint=[valid=%s, type=%s, file=%s, pos=%s]\n ",
-                       file, pos, b.valid, b.type, b.file, b.pos)
+#        @printer.debug("file=%s, pos=%s; breakpoint=[valid=%s, type=%s, file=%s, pos=%s]\n ",
+#                       file, pos, b.valid, b.type, b.file, b.pos)
         if b.valid
           if b.type == 0 and b.file == file and b.pos == pos # breakpoint
             @printer.printBreakpoint(n, debug_funcname(id), file, pos)
@@ -815,7 +839,7 @@ class DEBUGGER__
       @line = line
       case event
       when 'line'
-        DEBUGGER__.printer().debug("trace line, file=%s, line=%s, stop_next=%d, binding=%s", file, line, @stop_next, binding)
+        # DEBUGGER__.printer().debug("trace line, file=%s, line=%s, stop_next=%d, binding=%s", file, line, @stop_next, binding)
         frame_set_pos(binding, file, line, id)
         if !@no_step or @frames.size == @no_step
           @stop_next -= 1
@@ -832,7 +856,7 @@ class DEBUGGER__
         end
 
       when 'call'
-        DEBUGGER__.printer().debug("trace call, file=%s, line=%s, method=%s", file, line, id.id2name)
+#        DEBUGGER__.printer().debug("trace call, file=%s, line=%s, method=%s", file, line, id.id2name)
         @frames.unshift [binding, file, line, id]
         if check_break_points(file, id.id2name, binding, id) or
           check_break_points(klass.to_s, id.id2name, binding, id) then
@@ -852,7 +876,7 @@ class DEBUGGER__
         @frames.unshift [binding, file, line, id]
 
       when 'return', 'end'
-        DEBUGGER__.printer().debug("trace return and end, file=%s, line=%s", file, line)
+#        DEBUGGER__.printer().debug("trace return and end, file=%s, line=%s", file, line)
         if @frames.size == @finish_pos
           @stop_next = 1
           @finish_pos = 0
@@ -860,7 +884,7 @@ class DEBUGGER__
         @frames.shift
 
       when 'end'
-        DEBUGGER__.printer().debug("trace end, file=%s, line=%s", file, line)
+#        DEBUGGER__.printer().debug("trace end, file=%s, line=%s", file, line)
         @frames.shift
 
       when 'raise'
@@ -1103,10 +1127,15 @@ class DEBUGGER__
     sleep(1.0) # workaround for large files with ruby 1.6.8, otherwise parse exceptions
     loop do
       sleep(0.1)
-      newData, _, _ = IO.select( [socket], nil, nil, 0.001 )
-      next unless newData
+      new_data, _, _ = IO.select( [socket], nil, nil, 0.001 )
+      next unless new_data
       DEBUGGER__.traceOff()
-      input = newData[0].gets.chomp!
+      input = new_data[0].gets
+      unless input
+        @@printer.debug "Socket #{socket} closed. Ending."
+        break
+      end
+      input.chomp!
       input.strip!
       @@printer.debug("READ #{input}")
       if !DEBUGGER__.isStarted && input == "cont" then
@@ -1147,7 +1176,8 @@ class DEBUGGER__
     begin
       DEBUGGER__.readCommandLoop()
     rescue ScriptError, StandardError => error
-      puts error
+      y error
+      y error.backtrace
     end
   }
 
