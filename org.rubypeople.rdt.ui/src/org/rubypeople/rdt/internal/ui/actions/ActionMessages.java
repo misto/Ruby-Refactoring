@@ -59,6 +59,9 @@ public final class ActionMessages extends NLS {
 	public static String OpenNewRubyProjectWizardAction_text;
 	public static String OpenNewRubyProjectWizardAction_description;
 	public static String OpenNewRubyProjectWizardAction_tooltip;
+	
+	public static String SelectAllAction_label;
+	public static String SelectAllAction_tooltip;
 
     static {
         NLS.initializeMessages(BUNDLE_NAME, ActionMessages.class);
