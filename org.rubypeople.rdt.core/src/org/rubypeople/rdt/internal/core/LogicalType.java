@@ -12,7 +12,7 @@ public class LogicalType extends RubyType implements IType {
 	private IType[] types;
 
 	public LogicalType(IType[] types) {
-		super(null, types[0].getElementName());
+		super((RubyElement)types[0].getParent(), types[0].getElementName());
 		this.types = types;
 	}
 	
@@ -35,5 +35,5 @@ public class LogicalType extends RubyType implements IType {
 		}
 		return false;
 	}
-
+	
 }
