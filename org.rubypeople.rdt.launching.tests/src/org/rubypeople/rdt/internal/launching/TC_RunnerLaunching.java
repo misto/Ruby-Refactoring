@@ -90,6 +90,9 @@ public class TC_RunnerLaunching extends ModifyingResourceTest {
 			buffer.append(new Path(StandardVMDebugger.getDirectoryOfRubyDebuggerFile()).toOSString());
 			if (Platform.getOS().equals(Platform.OS_WIN32))
 				buffer.append("\"");
+		}
+		addSyncArgs(buffer);
+		if (debug) {
 			buffer.append(" -r");
 			buffer.append(debugFile);
 			buffer.append(" -rclassic-debug");
@@ -101,6 +104,16 @@ public class TC_RunnerLaunching extends ModifyingResourceTest {
 		buffer.append(' ');
 		buffer.append(PROGRAM_ARGUMENTS);
 		return buffer.toString();
+	}
+
+	private void addSyncArgs(StringBuffer buffer) {
+		buffer.append(" -I ");
+		if (Platform.getOS().equals(Platform.OS_WIN32))
+			buffer.append("\"");
+		buffer.append(LaunchingPlugin.getFileInPlugin(new Path("ruby/sync.rb")).getParent());
+		if (Platform.getOS().equals(Platform.OS_WIN32))
+			buffer.append("\"");
+		buffer.append(" -rsync.rb");
 	}
 
 	public void testDebugEnabled() throws Exception {
