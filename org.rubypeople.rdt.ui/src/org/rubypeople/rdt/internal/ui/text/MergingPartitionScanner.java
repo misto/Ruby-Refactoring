@@ -50,8 +50,6 @@ public class MergingPartitionScanner implements IPartitionTokenScanner {
 		IToken token = null;
 		while(!(token = fScanner.nextToken()).isEOF()) {
 			if (lastToken != null && token.getData().equals(lastToken.getData())) {
-//				fLength = (fScanner.getTokenOffset() - fOffset) + fScanner.getTokenLength();
-//				Assert.isTrue(fLength >= 0);
 			} else if (lastToken == null) {
 				lastToken = token;
 				fOffset = fScanner.getTokenOffset();

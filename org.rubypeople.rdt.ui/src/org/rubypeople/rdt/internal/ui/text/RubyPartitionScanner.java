@@ -52,6 +52,11 @@ public class RubyPartitionScanner implements IPartitionTokenScanner {
 		public IToken getToken() {
 			return token;
 		}
+		
+		@Override
+		public String toString() {
+			return getToken().getData() + ": offset: " + getOffset() + ", length: " + getLength();
+		}
 	}
 	
 	private RubyYaccLexer lexer;
@@ -154,6 +159,18 @@ public class RubyPartitionScanner implements IPartitionTokenScanner {
 					addClosingBraceToken();
 					setLexerPastDynamicSectionOfString();
 					return popTokenOffQueue();
+				} else if (lexerToken == Tokens.tSTRING_BEG) {
+					String opening = fContents.substring(fOffset - origOffset, lexerSource.getOffset());
+					int index = opening.indexOf(",");
+					if (opening.trim().startsWith("<<") && index != -1) {
+						addHereDocStartToken(index);
+						addCommaToken(index); 
+						scanRestOfLine(opening, index);
+						// set up state variables
+						fOpeningString = opening.substring(0, index).trim() + "\n";
+						fContentType = RUBY_STRING;
+						return popTokenOffQueue();
+					}
 				}
 				returnValue = getToken(lexerToken);				
 			}
@@ -184,6 +201,26 @@ public class RubyPartitionScanner implements IPartitionTokenScanner {
 		if (!isEOF)
 			fLength = getOffset() - fOffset;
 		return returnValue;
+	}
+
+	private void scanRestOfLine(String opening, int index) {
+		String possible = opening.substring(index + 1);
+		RubyPartitionScanner scanner = new RubyPartitionScanner();
+		IDocument document = new Document(possible);
+		scanner.setRange(document, 0, possible.length());
+		IToken token;
+		while (!(token = scanner.nextToken()).isEOF()) {
+			push(new QueuedToken(token, scanner.getTokenOffset() + fOffset + index + 1, scanner.getTokenLength()));
+		}
+		setOffset(fOffset + index + 1 + possible.length());
+	}
+
+	private void addCommaToken(int index) {
+		push(new QueuedToken(new Token(RUBY_DEFAULT), fOffset + index, 1));
+	}
+
+	private void addHereDocStartToken(int index) {
+		push(new QueuedToken(new Token(RUBY_STRING), fOffset, index));
 	}
 
 	private void setOffset(int offset) {
