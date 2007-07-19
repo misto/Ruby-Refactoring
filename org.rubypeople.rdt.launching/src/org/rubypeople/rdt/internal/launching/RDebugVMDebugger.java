@@ -53,7 +53,11 @@ public class RDebugVMDebugger extends StandardVMDebugger {
 	}
 
 	public static String findRDebugExecutable(File vmInstallLocation) {
-		return vmInstallLocation + File.separator + "bin" + File.separator + RDEBUG_EXECUTABLE;
+		String path = vmInstallLocation.getAbsolutePath();
+		if (!vmInstallLocation.getName().equals("bin")) {
+			path += File.separator + "bin";
+		}
+		return path + File.separator + RDEBUG_EXECUTABLE;
 	}
 	
 }
