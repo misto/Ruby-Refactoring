@@ -89,6 +89,11 @@ public class RubyUIMessages extends NLS {
 	public static String OpenTypeAction_errorMessage;
 	public static String RubyOutlineControl_statusFieldText_hideInheritedMembers;
 	public static String RubyOutlineControl_statusFieldText_showInheritedMembers;
+	public static String OpenTypeHierarchyUtil_selectionDialog_title;
+	public static String OpenTypeHierarchyUtil_selectionDialog_message;
+	public static String OpenTypeHierarchyUtil_error_open_perspective;
+	public static String OpenTypeHierarchyUtil_error_open_editor;
+	public static String OpenTypeHierarchyUtil_error_open_view;
 
     private RubyUIMessages() {
     }

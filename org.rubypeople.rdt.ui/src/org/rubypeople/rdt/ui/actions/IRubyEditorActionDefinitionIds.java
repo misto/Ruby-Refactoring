@@ -164,5 +164,13 @@ public interface IRubyEditorActionDefinitionIds extends ITextEditorActionDefinit
 	 * @since 1.0
 	 */
 	public static final String OPEN_STRUCTURE= "org.rubypeople.rdt.ui.navigate.ruby.open.structure"; //$NON-NLS-1$
+	
+	/**
+	 * Action definition ID of the navigate -> Show Hierarchy action
+	 * (value <code>"org.rubypeople.rdt.ui.edit.text.ruby.open.hierarchy"</code>).
+	 * 
+	 * @since 1.0
+	 */
+	public static final String OPEN_HIERARCHY= "org.rubypeople.rdt.ui.edit.text.ruby.open.hierarchy"; //$NON-NLS-1$
 
 }

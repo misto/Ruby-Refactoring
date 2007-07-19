@@ -117,6 +117,12 @@ public final class RubyUI {
 	 * @see org.eclipse.ui.IWorkbenchPage#showView(java.lang.String)
 	 */ 
 	public static final String ID_TYPE_HIERARCHY= 		"org.rubypeople.rdt.ui.TypeHierarchy"; //$NON-NLS-1$
+
+	/**
+	 * The id of the Ruby hierarchy perspective
+	 * (value <code>"org.rubypeople.rdt.ui.RubyHierarchyPerspective"</code>).
+	 */	
+	public static final String ID_HIERARCHYPERSPECTIVE= "org.rubypeople.rdt.ui.RubyHierarchyPerspective"; //$NON-NLS-1$
 		
 	/**
 	 * Returns the Ruby element wrapped by the given editor input.

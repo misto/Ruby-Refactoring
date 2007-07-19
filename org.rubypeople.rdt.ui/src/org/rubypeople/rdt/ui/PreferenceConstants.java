@@ -344,6 +344,15 @@ public class PreferenceConstants {
 	public static final String LINK_BROWSING_MEMBERS_TO_EDITOR = "org.rubypeople.rdt.ui.browsing.memberstoeditor"; //$NON-NLS-1$
 
 	/**
+	 * A named preference that controls whether the hierarchy view's selection is linked to the active editor.
+	 * <p>
+	 * Value is of type <code>Boolean</code>.
+	 * </p>
+	 */
+	public static final String LINK_TYPEHIERARCHY_TO_EDITOR= "org.rubypeople.rdt.ui.packages.linktypehierarchytoeditor"; //$NON-NLS-1$
+
+	
+	/**
 	 * Preference key suffix for strikethrough text style preference keys.
 	 * 
 	 * @since 0.9.0
@@ -813,6 +822,7 @@ public class PreferenceConstants {
 		store.setDefault(PreferenceConstants.LINK_BROWSING_PROJECTS_TO_EDITOR, true);
 		store.setDefault(PreferenceConstants.LINK_BROWSING_TYPES_TO_EDITOR, true);
 		store.setDefault(PreferenceConstants.LINK_BROWSING_MEMBERS_TO_EDITOR, true);
+		store.setDefault(PreferenceConstants.LINK_TYPEHIERARCHY_TO_EDITOR, false);
 
 		// MembersOrderPreferencePage
 		store.setDefault(PreferenceConstants.APPEARANCE_MEMBER_SORT_ORDER, "T,SF,SM,F,C,M"); //$NON-NLS-1$

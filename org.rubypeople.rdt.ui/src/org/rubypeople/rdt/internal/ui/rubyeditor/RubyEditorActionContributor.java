@@ -32,6 +32,7 @@ public class RubyEditorActionContributor extends BasicTextEditorActionContributo
     protected RetargetTextEditorAction contentAssistProposal;
     private RetargetTextEditorAction fGotoMatchingBracket;
     private RetargetTextEditorAction fShowOutline;
+    private RetargetTextEditorAction fOpenHierarchy;
 	private RetargetTextEditorAction fQuickAssistAction;
 	
 	private RetargetAction fRetargetShowRubyDoc;
@@ -47,6 +48,9 @@ public class RubyEditorActionContributor extends BasicTextEditorActionContributo
 
 		fShowOutline= new RetargetTextEditorAction(RubyEditorMessages.getBundleForConstructedKeys(), "ShowOutline."); //$NON-NLS-1$
 		fShowOutline.setActionDefinitionId(IRubyEditorActionDefinitionIds.SHOW_OUTLINE);
+		
+		fOpenHierarchy= new RetargetTextEditorAction(RubyEditorMessages.getBundleForConstructedKeys(), "OpenHierarchy."); //$NON-NLS-1$
+		fOpenHierarchy.setActionDefinitionId(IRubyEditorActionDefinitionIds.OPEN_HIERARCHY);
 		
         contentAssistProposal = new RetargetTextEditorAction(RubyUIMessages.getResourceBundle(),
                 "ContentAssistProposal.");
@@ -76,15 +80,14 @@ public class RubyEditorActionContributor extends BasicTextEditorActionContributo
 		IMenuManager navigateMenu= menu.findMenuUsingPath(IWorkbenchActionConstants.M_NAVIGATE);
 		if (navigateMenu != null) {
 			navigateMenu.appendToGroup(IWorkbenchActionConstants.SHOW_EXT, fShowOutline);
+			navigateMenu.appendToGroup(IWorkbenchActionConstants.SHOW_EXT, fOpenHierarchy);
 		}
         
         IMenuManager gotoMenu= menu.findMenuUsingPath("navigate/goTo"); //$NON-NLS-1$
         if (gotoMenu != null) {
             gotoMenu.add(new Separator("additions2"));  //$NON-NLS-1$
             gotoMenu.appendToGroup("additions2", fGotoMatchingBracket); //$NON-NLS-1$
-        }
-        
-       
+        }       
     }
 
     public void setActiveEditor(IEditorPart part) {
@@ -98,6 +101,7 @@ public class RubyEditorActionContributor extends BasicTextEditorActionContributo
                 GotoMatchingBracketAction.GOTO_MATCHING_BRACKET));
         fQuickAssistAction.setAction(getAction(textEditor, ITextEditorActionConstants.QUICK_ASSIST));
         fShowOutline.setAction(getAction(textEditor, IRubyEditorActionDefinitionIds.SHOW_OUTLINE));
+        fOpenHierarchy.setAction(getAction(textEditor, IRubyEditorActionDefinitionIds.OPEN_HIERARCHY));
         fShowRubyDoc.setAction(getAction(textEditor, "ShowRDoc")); //$NON-NLS-1$
         
         if (part instanceof RubyEditor) {
