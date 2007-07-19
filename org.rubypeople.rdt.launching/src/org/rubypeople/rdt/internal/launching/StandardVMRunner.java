@@ -22,6 +22,7 @@ import java.util.Map;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.NullProgressMonitor;
+import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.SubProgressMonitor;
 import org.eclipse.debug.core.ILaunch;
 import org.eclipse.debug.core.model.IProcess;
@@ -32,6 +33,8 @@ import org.rubypeople.rdt.launching.VMRunnerConfiguration;
 
 public class StandardVMRunner extends AbstractVMRunner {
 	
+	private static final String LOADPATH_SWITCH = "-I";
+
 	protected static final String END_OF_OPTIONS_DELIMITER = "--";
 	
 	protected IVMInstall fVMInstance;
@@ -180,7 +183,7 @@ public class StandardVMRunner extends AbstractVMRunner {
 			String path = lp[i];
 			// Don't add project to loadpath if project is working directory
 			if (working != null && working.equals(path)) continue;
-			strings.add("-I"); //$NON-NLS-1$
+			strings.add(LOADPATH_SWITCH); //$NON-NLS-1$
 			strings.add(path);
 		}
 		return strings;
@@ -212,6 +215,7 @@ public class StandardVMRunner extends AbstractVMRunner {
 		if (lp.length > 0) {
 			arguments.addAll(convertLoadPath(config, lp));
 		}
+		addStreamSync(arguments);
 		arguments.add(END_OF_OPTIONS_DELIMITER);
 		
 		arguments.add(config.getFileToLaunch());
@@ -249,6 +253,13 @@ public class StandardVMRunner extends AbstractVMRunner {
 		process.setAttribute(IProcess.ATTR_CMDLINE, renderCommandLine(cmdLine));
 		subMonitor.worked(1);
 		subMonitor.done();
+	}
+
+	protected void addStreamSync(List<String> arguments) {
+		File sync = LaunchingPlugin.getFileInPlugin(new Path("ruby/sync.rb"));
+		arguments.add(LOADPATH_SWITCH);
+		arguments.add(sync.getParent());
+		arguments.add("-rsync.rb");
 	}
 
 }

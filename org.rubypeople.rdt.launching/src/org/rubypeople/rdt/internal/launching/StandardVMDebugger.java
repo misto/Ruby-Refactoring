@@ -77,6 +77,7 @@ public class StandardVMDebugger extends StandardVMRunner implements IVMRunner {
 		if (cp.length > 0) {
 			arguments.addAll(convertLoadPath(config, cp));
 		}
+		addStreamSync(arguments);
 		arguments.addAll(debugSpecificVMArgs(debugTarget));		
 		
 		arguments.add(StandardVMRunner.END_OF_OPTIONS_DELIMITER);
