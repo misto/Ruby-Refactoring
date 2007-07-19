@@ -1670,7 +1670,11 @@ public class RubyRuntime {
 		IVMInstall vm = RubyRuntime.getDefaultVMInstall();
 		if (vm == null) return null;
 		File installLocation = vm.getInstallLocation();
-		String path = installLocation.getAbsolutePath() + File.separator + "bin" + File.separator + command;
+		String path = installLocation.getAbsolutePath();
+		if (!installLocation.getName().equals("bin")) {
+			path += File.separator + "bin";
+		}
+		path += File.separator + command;
 		if (Platform.getOS().equals(Platform.OS_WIN32)) {
 			path += ".bat";
 		}
@@ -1682,8 +1686,11 @@ public class RubyRuntime {
 			String version = vm2.getRubyVersion();
 			if (version == null || version.length() < 3) return file;
 			version = version.substring(0, 3);
-			path = installLocation.getAbsolutePath() + File.separator + "bin"
-					+ File.separator + command + version;
+			path = installLocation.getAbsolutePath();
+			if (!installLocation.getName().equals("bin")) {
+				path += File.separator + "bin";
+			}
+			path = File.separator + command + version;
 			if (Platform.getOS().equals(Platform.OS_WIN32)) {
 				path += ".bat";
 			}
