@@ -14,6 +14,7 @@ import java.util.Arrays;
 import java.util.Comparator;
 
 import org.eclipse.core.resources.ResourcesPlugin;
+import org.eclipse.core.runtime.Path;
 import org.rubypeople.rdt.core.IRubyModel;
 import org.rubypeople.rdt.core.IRubyProject;
 import org.rubypeople.rdt.core.RubyCore;
@@ -37,6 +38,7 @@ public class TypeInfoFactory {
 	}
 
 	public TypeInfo create(char[] packageName, char[] typeName, char[][] enclosingName, boolean isModule, String path) {
+		path = new Path(path).toPortableString();
 		String pn= getPackageName(packageName);
 		String tn= new String(typeName);
 		TypeInfo result= null;

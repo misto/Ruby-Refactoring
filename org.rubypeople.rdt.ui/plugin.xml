@@ -489,6 +489,10 @@
             commandId="org.rubypeople.rdt.ui.edit.text.ruby.open.editor"
             schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"/>
       <key
+            sequence="F4"
+            commandId="org.rubypeople.rdt.ui.edit.text.ruby.open.type.hierarchy"
+            schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"/>
+      <key
             sequence="M1+M2+T"
             contextId="org.rubypeople.rdt.ui.rubyEditorScope" 
             commandId="org.rubypeople.rdt.ui.edit.text.ruby.open.type"
