@@ -36,4 +36,9 @@ public class LogicalType extends RubyType implements IType {
 		return false;
 	}
 	
+	@Override
+	public boolean isModule() {
+		return types[0].isModule();
+	}
+	
 }
