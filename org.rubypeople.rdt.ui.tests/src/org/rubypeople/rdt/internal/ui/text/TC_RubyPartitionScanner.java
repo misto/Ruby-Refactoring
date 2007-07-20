@@ -9,6 +9,7 @@ import junit.framework.TestCase;
 import org.eclipse.jface.text.Document;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.rules.FastPartitioner;
+import org.rubypeople.rdt.internal.ui.text.RubyPartitionScanner.EndBraceFinder;
 
 /**
  * @author Chris
@@ -319,7 +320,30 @@ public class TC_RubyPartitionScanner extends TestCase {
 		assertContentType(RubyPartitionScanner.RUBY_STRING, code, 177);	// 'e'nd_sql
 	}
 	
+	public void testScaryString() {
+		String code = "puts \"match|#{$`}<<#{$&}>>#{$'}|\"\n" +
+			"pp $~";
+		assertContentType(RubyPartitionScanner.RUBY_DEFAULT, code, 1); // p'u'ts
+		assertContentType(RubyPartitionScanner.RUBY_STRING, code, 5); // '"'match
+		assertContentType(RubyPartitionScanner.RUBY_STRING, code, 13); // #'{'$`
+		assertContentType(RubyPartitionScanner.RUBY_DEFAULT, code, 14); // $
+		assertContentType(RubyPartitionScanner.RUBY_DEFAULT, code, 15); // `
+		assertContentType(RubyPartitionScanner.RUBY_STRING, code, 16); // }
+		assertContentType(RubyPartitionScanner.RUBY_STRING, code, 20); // {
+		assertContentType(RubyPartitionScanner.RUBY_DEFAULT, code, 21); // $
+		assertContentType(RubyPartitionScanner.RUBY_DEFAULT, code, 22); // &
+		assertContentType(RubyPartitionScanner.RUBY_STRING, code, 23); // }
+		assertContentType(RubyPartitionScanner.RUBY_STRING, code, 27); // {
+		assertContentType(RubyPartitionScanner.RUBY_DEFAULT, code, 28); // $
+		assertContentType(RubyPartitionScanner.RUBY_DEFAULT, code, 29); // '
+		assertContentType(RubyPartitionScanner.RUBY_STRING, code, 30); // }
+		assertContentType(RubyPartitionScanner.RUBY_DEFAULT, code, 34); // 'p'p $~
+	}
 	// TODO Handle yet even wackier heredoc syntax: http://blog.jayfields.com/2006/12/ruby-multiline-strings-here-doc-or.html
 
+	public void testBraceFinderHandlesWeirdGlobal() {
+		EndBraceFinder finder = new EndBraceFinder("$'}|\"\npp $~");
+		assertEquals(2, finder.find());		
+	}
 }
 
