@@ -150,21 +150,12 @@ public class HierarchyLabelProvider extends AppearanceAwareLabelProvider {
 			return new RubyElementImageDescriptor(RubyPluginImages.DESC_OBJS_CLASS, 0, RubyElementImageProvider.BIG_SIZE);
 		}
 		
-		int flags= hierarchy.getCachedFlags(type);
-		if (flags == -1) {
-			return new RubyElementImageDescriptor(RubyPluginImages.DESC_OBJS_CLASS, 0, RubyElementImageProvider.BIG_SIZE);
-		}
-		
-		boolean isModule= Flags.isModule(flags);
+		boolean isModule= type.isModule();
 		boolean isInner= (type.getDeclaringType() != null);
 		
 		ImageDescriptor desc= RubyElementImageProvider.getTypeImageDescriptor(isModule, isInner, isDifferentScope(type));
 
-		int adornmentFlags= 0;
-		if (Flags.isStatic(flags)) {
-			adornmentFlags |= RubyElementImageDescriptor.STATIC;
-		}
-		
+		int adornmentFlags= 0;		
 		return new RubyElementImageDescriptor(desc, adornmentFlags, RubyElementImageProvider.BIG_SIZE);
 	}
 		
