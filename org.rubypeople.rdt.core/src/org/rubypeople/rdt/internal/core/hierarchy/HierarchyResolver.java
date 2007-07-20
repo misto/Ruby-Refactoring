@@ -52,6 +52,8 @@ public class HierarchyResolver {
 					// Grab the types from the script and then connect them up!
 					IType[] types = cu.getAllTypes();
 					for (int j = 0; j < types.length; j++) {
+						IType type = types[j];
+						if (!type.getFullyQualifiedName().equals(builder.focusQualifiedName)) continue;
 						try {
 							reportHierarchy(types[j]);
 						} catch (RubyModelException e) {
@@ -79,7 +81,7 @@ public class HierarchyResolver {
 		this.builder.connect(type, superclass, superinterfaces);
 		if (type.isClass() && superclass != null) {
 			reportHierarchy(superclass);
-		} // FIXME What about Modules!? How do we recurse through those?
+		}
 	}
 
 	private IType[] findSuperInterfaces(IType type) throws RubyModelException {
@@ -99,7 +101,9 @@ public class HierarchyResolver {
 
 	private IType getLogicalType(IType type, String name) {
 		RubyElementRequestor requestor = new RubyElementRequestor(type.getRubyScript());
-		return new LogicalType(requestor.findType(name));
+		IType[] types = requestor.findType(name);
+		if (types == null || types.length == 0) return null;
+		return new LogicalType(types);
 	}
 
 	private void reset() {

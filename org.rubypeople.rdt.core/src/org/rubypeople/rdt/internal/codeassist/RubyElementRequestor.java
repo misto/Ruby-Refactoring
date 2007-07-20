@@ -38,6 +38,7 @@ public class RubyElementRequestor {
 		List<SearchMatch> matches = requestor.getResults();
 		for (SearchMatch match : matches) {
 			IType type = (IType) match.getElement();
+			if (!type.getFullyQualifiedName().equals(fullyQualifiedName)) continue;
 			types.add(type);
 		}
 		return types.toArray(new IType[types.size()]);		
