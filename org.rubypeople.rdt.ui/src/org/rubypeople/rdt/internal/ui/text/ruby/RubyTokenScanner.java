@@ -146,6 +146,7 @@ public class RubyTokenScanner extends AbstractRubyTokenScanner {
 			isInSymbol = true;
 			return doGetToken(IRubyColorConstants.RUBY_SYMBOL);
 		case Tokens.tGVAR:
+		case Tokens.tBACK_REF:
 			return doGetToken(IRubyColorConstants.RUBY_GLOBAL);
 		case Tokens.tIVAR:
 		case Tokens.tCVAR: // FIXME Allow for unique coloring of class variables...
