@@ -90,6 +90,7 @@ import org.rubypeople.rdt.core.search.IRubySearchScope;
 import org.rubypeople.rdt.internal.compiler.util.HashtableOfObjectToInt;
 import org.rubypeople.rdt.internal.core.buffer.BufferManager;
 import org.rubypeople.rdt.internal.core.builder.RubyBuilder;
+import org.rubypeople.rdt.internal.core.hierarchy.TypeHierarchy;
 import org.rubypeople.rdt.internal.core.parser.MarkerUtility;
 import org.rubypeople.rdt.internal.core.parser.RubyParser;
 import org.rubypeople.rdt.internal.core.search.RubyWorkspaceScope;
@@ -110,6 +111,7 @@ import org.xml.sax.SAXException;
 public class RubyModelManager implements IContentTypeChangeListener, ISaveParticipant {
 
     private static final String BUFFER_MANAGER_DEBUG = RubyCore.PLUGIN_ID + "/debug/buffermanager"; //$NON-NLS-1$
+    private static final String TYPE_HIERARCHY_DEBUG = RubyCore.PLUGIN_ID + "/debug/typehierarchy"; //$NON-NLS-1$
     private static final String RUBYMODEL_DEBUG = RubyCore.PLUGIN_ID + "/debug/rubymodel"; //$NON-NLS-1$
     private static final String DELTA_DEBUG = RubyCore.PLUGIN_ID + "/debug/rubydelta"; //$NON-NLS-1$
     private static final String DELTA_DEBUG_VERBOSE = RubyCore.PLUGIN_ID
@@ -1444,6 +1446,9 @@ public class RubyModelManager implements IContentTypeChangeListener, ISavePartic
             String option = Platform.getDebugOption(BUFFER_MANAGER_DEBUG);
             if (option != null) BufferManager.VERBOSE = option.equalsIgnoreCase("true"); //$NON-NLS-1$
 
+            option = Platform.getDebugOption(TYPE_HIERARCHY_DEBUG);
+            if (option != null) TypeHierarchy.DEBUG = option.equalsIgnoreCase("true"); //$NON-NLS-1$
+            
             option = Platform.getDebugOption(BUILDER_DEBUG);
             if (option != null) RubyBuilder.DEBUG = option.equalsIgnoreCase("true"); //$NON-NLS-1$
 

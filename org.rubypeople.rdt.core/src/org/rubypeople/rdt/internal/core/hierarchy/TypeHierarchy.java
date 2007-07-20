@@ -61,7 +61,7 @@ import org.rubypeople.rdt.internal.core.util.Util;
  */
 public class TypeHierarchy implements ITypeHierarchy, IElementChangedListener {
 
-	public static boolean DEBUG = true;
+	public static boolean DEBUG = false;
 	
 	static final byte VERSION = 0x0000;
 	// SEPARATOR
