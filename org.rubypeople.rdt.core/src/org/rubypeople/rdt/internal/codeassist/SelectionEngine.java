@@ -178,6 +178,7 @@ public class SelectionEngine {
 			
 			
 			String typeName = ASTUtil.getNameReflectively(receiver);
+			if (typeName == null) typeName = "Object";
 			CollectingSearchRequestor requestor = new CollectingSearchRequestor();
 			SearchPattern pattern = SearchPattern.createPattern(
 					IRubyElement.TYPE, typeName,

@@ -154,6 +154,7 @@ public abstract class ASTUtil {
 	 * @return name or null
 	 */
 	public static String getNameReflectively(Node node) {
+		if (node == null) return "";
 		if (node instanceof ClassNode) {
 			ClassNode classNode = (ClassNode) node;
 			return getNameReflectively(classNode.getCPath());
