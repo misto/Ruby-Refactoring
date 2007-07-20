@@ -53,7 +53,7 @@ public class HierarchyResolver {
 					IType[] types = cu.getAllTypes();
 					for (int j = 0; j < types.length; j++) {
 						try {
-							reportHierarchy(types[i]);
+							reportHierarchy(types[j]);
 						} catch (RubyModelException e) {
 							// ignore
 						}
@@ -69,7 +69,7 @@ public class HierarchyResolver {
 
 	private void reportHierarchy(IType type) throws RubyModelException {
 		IType superclass;
-		if (type.isModule()){ // do not connect interfaces to Object
+		if (type.isModule()){ // do not connect modules to Object
 			superclass = null;
 		} else {
 			superclass = findSuperClass(type);
@@ -77,6 +77,9 @@ public class HierarchyResolver {
 		IType[] superinterfaces = findSuperInterfaces(type);
 		
 		this.builder.connect(type, superclass, superinterfaces);
+		if (type.isClass() && superclass != null) {
+			reportHierarchy(superclass);
+		} // FIXME What about Modules!? How do we recurse through those?
 	}
 
 	private IType[] findSuperInterfaces(IType type) throws RubyModelException {
@@ -90,6 +93,7 @@ public class HierarchyResolver {
 
 	private IType findSuperClass(IType type) throws RubyModelException {
 		String name = type.getSuperclassName();
+		if (name == null) return null;
 		return getLogicalType(type, name);
 	}
 
