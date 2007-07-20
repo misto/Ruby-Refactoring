@@ -255,7 +255,7 @@ public class RubyPartitionScanner implements IPartitionTokenScanner {
 	}
 
 	private void scanTokensInsideDynamicPortion() {
-		String possible = new String(fContents.substring(fOffset - origOffset));			
+		String possible = new String(fContents.substring(fOffset - origOffset));		
 		int end = findEnd(possible);
 		if (end != -1) {
 			possible = possible.substring(0, end); 
@@ -417,7 +417,7 @@ public class RubyPartitionScanner implements IPartitionTokenScanner {
 		setPartialRange(document, offset, length, null, -1);
 	}
 
-	private static class EndBraceFinder {
+	public static class EndBraceFinder {
 		private String input;
 		private List<String> stack;
 		
@@ -431,6 +431,7 @@ public class RubyPartitionScanner implements IPartitionTokenScanner {
 				char c = input.charAt(i);
 				switch (c) {
 				case '\\':
+				case '$':
 					// skip next character
 					i++;
 					break;
