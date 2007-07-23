@@ -345,5 +345,23 @@ public class TC_RubyPartitionScanner extends TestCase {
 		EndBraceFinder finder = new EndBraceFinder("$'}|\"\npp $~");
 		assertEquals(2, finder.find());		
 	}
+	
+	public void testNestedHeredocs() {
+		String code = "methods += <<-BEGIN + nn_element_def(element) + <<-END\n" +
+					"  def #{element.downcase}(attributes = {})\n" +
+					"BEGIN\n" +
+					"  end\n" +
+					"END";
+		assertContentType(RubyPartitionScanner.RUBY_DEFAULT, code, 1);
+		assertContentType(RubyPartitionScanner.RUBY_STRING, code, 11);
+		assertContentType(RubyPartitionScanner.RUBY_STRING, code, 18);
+		assertContentType(RubyPartitionScanner.RUBY_DEFAULT, code, 20);
+		assertContentType(RubyPartitionScanner.RUBY_DEFAULT, code, 46);
+		assertContentType(RubyPartitionScanner.RUBY_STRING, code, 48);
+		assertContentType(RubyPartitionScanner.RUBY_STRING, code, 62); // #'{'
+		assertContentType(RubyPartitionScanner.RUBY_DEFAULT, code, 63); // #{'e'lem
+		assertContentType(RubyPartitionScanner.RUBY_STRING, code, 79); // case'}'
+		assertContentType(RubyPartitionScanner.RUBY_STRING, code, 112); // EN'D'
+  	}
 }
 
