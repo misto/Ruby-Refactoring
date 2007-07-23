@@ -161,7 +161,7 @@ public class RubyPartitionScanner implements IPartitionTokenScanner {
 					return popTokenOffQueue();
 				} else if (lexerToken == Tokens.tSTRING_BEG) {
 					String opening = fContents.substring(fOffset - origOffset, lexerSource.getOffset());
-					int index = opening.indexOf(",");
+					int index = indexOf(opening, ", +");
 					if (opening.trim().startsWith("<<") && index != -1) {
 						addHereDocStartToken(index);
 						addCommaToken(index); 
@@ -201,6 +201,24 @@ public class RubyPartitionScanner implements IPartitionTokenScanner {
 		if (!isEOF)
 			fLength = getOffset() - fOffset;
 		return returnValue;
+	}
+
+	private int indexOf(String opening, String string) {
+		String trimmed = opening.trim();
+		int diff = opening.indexOf(trimmed.charAt(0)); // Count leading whitespace
+		int lowest = -1;
+		for (int i = 0; i < string.length(); i++) {
+			char c = string.charAt(i);
+			int value = trimmed.indexOf(c);
+			if (value == -1) continue;
+			value +=  diff;
+			if (lowest == -1) {
+				lowest = value;
+				continue;
+			}			
+			if (value < lowest) lowest = value;
+		}
+		return lowest;
 	}
 
 	private void scanRestOfLine(String opening, int index) {
