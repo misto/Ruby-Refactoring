@@ -298,7 +298,7 @@
       
    <objectContribution
          id="org.rubypeople.rdt.refactoring.refactoringContext"
-         objectClass="org.rubypeople.rdt.internal.core.RubyLocalVar">
+         objectClass="org.rubypeople.rdt.internal.core.LocalVariable">
       <action
             class="org.rubypeople.rdt.refactoring.action.ConvertTempToFieldAction"
             id="org.rubypeople.rdt.refactoring.action.ConvertTempToFieldAction"
