@@ -366,7 +366,7 @@ public class RubyElementLabels {
             // qualification
             if (getFlag(flags, M_FULLY_QUALIFIED)) {
                 if (method.getDeclaringType() != null) {
-                getTypeLabel(method.getDeclaringType(), T_FULLY_QUALIFIED
+                getTypeLabel(method.getDeclaringType(), T_CONTAINER_QUALIFIED
                         | (flags & QUALIFIER_FLAGS), buf);
                 buf.append('.');
                 }
@@ -416,7 +416,7 @@ public class RubyElementLabels {
             if (getFlag(flags, M_POST_QUALIFIED)) {
                 if (method.getDeclaringType() != null) {
                 buf.append(CONCAT_STRING);
-                getTypeLabel(method.getDeclaringType(), T_FULLY_QUALIFIED
+                getTypeLabel(method.getDeclaringType(), T_CONTAINER_QUALIFIED
                         | (flags & QUALIFIER_FLAGS), buf);
                 }
             }
