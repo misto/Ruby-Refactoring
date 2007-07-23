@@ -11,7 +11,6 @@ package org.rubypeople.rdt.refactoring.action;
 
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.MenuManager;
-import org.eclipse.jface.action.Separator;
 import org.eclipse.ui.actions.ActionGroup;
 import org.rubypeople.rdt.refactoring.core.TextSelectionProvider;
 import org.rubypeople.rdt.refactoring.core.convertlocaltofield.ConvertLocalToFieldRefactoring;
@@ -36,14 +35,11 @@ import org.rubypeople.rdt.ui.actions.RubyActionGroup;
 
 public class RefactoringActionGroup extends ActionGroup {
 
-	private static final String INSERT_AFTER_GROUP_NAME = "group.edit"; //$NON-NLS-1$
-
 	public void fillContextMenu(IMenuManager menu) {
 		TextSelectionProvider selectionProvider = new TextSelectionProvider(null);
-		menu.insertAfter(INSERT_AFTER_GROUP_NAME, new Separator());
-		menu.insertAfter(INSERT_AFTER_GROUP_NAME, getSourceMenu(menu, selectionProvider));
-		menu.insertAfter(INSERT_AFTER_GROUP_NAME, getRefactorMenu(selectionProvider));
-		menu.insertAfter(INSERT_AFTER_GROUP_NAME, new Separator());
+		IMenuManager source = menu.findMenuUsingPath(RubyActionGroup.MENU_ID);
+		addSourceMenuItems(source, selectionProvider);
+		menu.insertAfter(RubyActionGroup.MENU_ID, getRefactorMenu(selectionProvider));
 	}
 
 	private IMenuManager getRefactorMenu(TextSelectionProvider selectionProvider) {
@@ -66,11 +62,9 @@ public class RefactoringActionGroup extends ActionGroup {
 		return submenu;
 	}
 	
-	private IMenuManager getSourceMenu(IMenuManager menu, TextSelectionProvider selectionProvider) {
-		IMenuManager submenu =  RubyActionGroup.getRubySourceMenu(menu) ;
-		submenu.insertAfter(RubyActionGroup.RUBY_SOURCE_SEPARATOR, new RefactoringAction(GenerateAccessorsRefactoring.class, GenerateAccessorsRefactoring.NAME, selectionProvider));
-		submenu.insertAfter(RubyActionGroup.RUBY_SOURCE_SEPARATOR, new RefactoringAction(GenerateConstructorRefactoring.class, GenerateConstructorRefactoring.NAME, selectionProvider));
-		submenu.insertAfter(RubyActionGroup.RUBY_SOURCE_SEPARATOR, new RefactoringAction(OverrideMethodRefactoring.class, OverrideMethodRefactoring.NAME, selectionProvider));
-		return submenu;
+	private void addSourceMenuItems(IMenuManager source, TextSelectionProvider selectionProvider) {		
+		source.add(new RefactoringAction(GenerateAccessorsRefactoring.class, GenerateAccessorsRefactoring.NAME, selectionProvider));
+		source.add(new RefactoringAction(GenerateConstructorRefactoring.class, GenerateConstructorRefactoring.NAME, selectionProvider));
+		source.add(new RefactoringAction(OverrideMethodRefactoring.class, OverrideMethodRefactoring.NAME, selectionProvider));
 	}
 }
