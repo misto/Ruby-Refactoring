@@ -708,20 +708,105 @@
 		</command>
 	</extension>
    
+   
+   <extension
+         point="org.eclipse.ui.actionSets">
+      <actionSet
+            label="%CodingActionSet.label"
+            description="%CodingActionSet.description"
+            visible="false"
+            id="org.rubypeople.rdt.ui.CodingActionSet">   
+<!-- =========================================================================== -->
+<!-- Source Menu                                                                 -->
+<!-- =========================================================================== -->
+         <menu
+               label="%SourceMenu.label"
+               path="edit"
+               id="org.rubypeople.rdt.ui.source.menu">
+		    <separator
+                  name="commentGroup">
+            </separator>
+            <separator
+                  name="editGroup">
+            </separator>
+            <separator
+                  name="generateGroup">
+            </separator>
+            <separator
+                  name="codeGroup">
+            </separator>
+            <separator
+                  name="convertGroup">
+            </separator>
+         </menu>
+         
+<!-- edit group -->
+		<action
+               definitionId="org.rubypeople.rdt.ui.edit.text.ruby.uncomment"
+               label="%UncommentAction.label"
+               menubarPath="org.rubypeople.rdt.ui.source.menu/editGroup"
+               retarget="true"
+               id="org.rubypeople.rdt.ui.actions.Uncomment">
+         </action>
+         <action
+               definitionId="org.rubypeople.rdt.ui.edit.text.ruby.comment"
+               label="%CommentAction.label"
+               menubarPath="org.rubypeople.rdt.ui.source.menu/editGroup"
+               retarget="true"
+               id="org.rubypeople.rdt.ui.actions.Comment">
+         </action>
+         <action
+            definitionId="org.rubypeople.rdt.ui.edit.text.ruby.toggle.comment"
+            label="%ToggleCommentAction.label"
+            retarget="true"
+            menubarPath="org.rubypeople.rdt.ui.source.menu/editGroup"
+            id="org.rubypeople.rdt.ui.actions.ToggleComment">
+         </action>
+         <action
+            definitionId="org.rubypeople.rdt.ui.edit.text.ruby.format"
+            label="%FormatAction.label"
+            retarget="true"
+            menubarPath="org.rubypeople.rdt.ui.source.menu/editGroup"
+            id="org.rubypeople.rdt.ui.actions.Format">
+         </action>
+         <action
+               definitionId="org.rubypeople.rdt.ui.edit.text.ruby.surround.with.begin.rescue"
+               label="%SurroundWithBeginRescueAction.label"
+               retarget="true"
+               menubarPath="org.rubypeople.rdt.ui.source.menu/editGroup"
+               id="org.rubypeople.rdt.ui.actions.SurroundWithBeginRescue">
+         </action>
+<!-- Comment Group -->
+      </actionSet>
+   </extension>  
+   <extension
+         point="org.eclipse.ui.actionSetPartAssociations">
+      <actionSetPartAssociation
+            targetID="org.rubypeople.rdt.ui.CodingActionSet">
+         <part
+               id="org.rubypeople.rdt.ui.TypeHierarchy">
+         </part>
+         <part
+               id="org.rubypeople.rdt.ui.EditorRubyFile">
+         </part>
+         <part
+               id="org.rubypeople.rdt.ui.ProjectsView">
+         </part>
+         <part
+               id="org.rubypeople.rdt.ui.TypesView">
+         </part>
+         <part
+               id="org.rubypeople.rdt.ui.MembersView">
+         </part>
+      </actionSetPartAssociation>
+   </extension>
+   
    <extension
          point="org.eclipse.ui.actionSets">
       <actionSet
             label="%RubyActionSet.label"
             visible="false"
             id="org.rubypeople.rdt.ui.rubyActionSet">
-         <menu
-               label="%Ruby.menu.label"
-               path="edit"
-               id="org.rubypeople.rdt.ui.ruby.menu">
-            <separator
-                  name="editGroup">
-            </separator>
-         </menu>
          <action
                class="org.rubypeople.rdt.ui.actions.OpenTypeAction"
                definitionId="org.rubypeople.rdt.ui.edit.text.ruby.open.type"
@@ -755,41 +840,6 @@
                class="org.rubypeople.rdt.internal.ui.actions.AddRubyNatureAction"
                menubarPath="project/additions"
                id="addRubyNature">
-         </action>
-         <action
-               definitionId="org.rubypeople.rdt.ui.edit.text.ruby.uncomment"
-               label="%UncommentAction.label"
-               menubarPath="org.rubypeople.rdt.ui.ruby.menu/editGroup"
-               retarget="true"
-               id="org.rubypeople.rdt.ui.actions.Uncomment">
-         </action>
-         <action
-               definitionId="org.rubypeople.rdt.ui.edit.text.ruby.comment"
-               label="%CommentAction.label"
-               menubarPath="org.rubypeople.rdt.ui.ruby.menu/editGroup"
-               retarget="true"
-               id="org.rubypeople.rdt.ui.actions.Comment">
-         </action>
-         <action
-            definitionId="org.rubypeople.rdt.ui.edit.text.ruby.toggle.comment"
-            label="%ToggleCommentAction.label"
-            retarget="true"
-            menubarPath="org.rubypeople.rdt.ui.ruby.menu/editGroup"
-            id="org.rubypeople.rdt.ui.actions.ToggleComment">
-         </action>
-         <action
-            definitionId="org.rubypeople.rdt.ui.edit.text.ruby.format"
-            label="%FormatAction.label"
-            retarget="true"
-            menubarPath="org.rubypeople.rdt.ui.ruby.menu/editGroup"
-            id="org.rubypeople.rdt.ui.actions.Format">
-         </action>
-         <action
-               definitionId="org.rubypeople.rdt.ui.edit.text.ruby.surround.with.begin.rescue"
-               label="%SurroundWithBeginRescueAction.label"
-               retarget="true"
-               menubarPath="org.rubypeople.rdt.ui.ruby.menu/editGroup"
-               id="org.rubypeople.rdt.ui.actions.SurroundWithBeginRescue">
          </action>
       </actionSet>
       <actionSet
@@ -866,6 +916,9 @@
          </part>
          <part
                id="org.rubypeople.rdt.ui.ViewRubyResources">
+         </part>
+         <part
+               id="org.rubypeople.rdt.ui.TypeHierarchy">
          </part>
          <part
                id="org.rubypeople.rdt.ui.EditorRubyFile">

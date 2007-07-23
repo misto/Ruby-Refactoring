@@ -131,6 +131,7 @@ import org.rubypeople.rdt.ui.PreferenceConstants;
 import org.rubypeople.rdt.ui.actions.FormatAction;
 import org.rubypeople.rdt.ui.actions.IRubyEditorActionDefinitionIds;
 import org.rubypeople.rdt.ui.actions.OpenEditorActionGroup;
+import org.rubypeople.rdt.ui.actions.RubyActionGroup;
 import org.rubypeople.rdt.ui.actions.RubySearchActionGroup;
 import org.rubypeople.rdt.ui.actions.SurroundWithBeginRescueAction;
 import org.rubypeople.rdt.ui.text.folding.IRubyFoldingStructureProvider;
@@ -200,10 +201,10 @@ public class RubyEditor extends RubyAbstractEditor {
     private BracketInserter fBracketInserter = new BracketInserter();
 	private CompositeActionGroup fActionGroups;
 	private CompositeActionGroup fContextMenuGroup;
-
+	private RubyActionGroup fGenerateActionGroup;
+	
 	private InformationPresenter fInformationPresenter;
 
-	
     public RubyEditor() {
         super();
         setDocumentProvider(RubyPlugin.getDefault().getRubyDocumentProvider());
@@ -225,6 +226,32 @@ public class RubyEditor extends RubyAbstractEditor {
 
     protected void createActions() {
         super.createActions();
+        
+        ActionGroup oeg, rsg;
+		fActionGroups= new CompositeActionGroup(new ActionGroup[] {
+			oeg= new OpenEditorActionGroup(this),
+			rsg= new RubySearchActionGroup(this)
+		});
+		
+		fGenerateActionGroup= new RubyActionGroup(this, ITextEditorActionConstants.GROUP_EDIT);
+		fContextMenuGroup= new CompositeActionGroup(new ActionGroup[] {oeg, rsg, fGenerateActionGroup});
+        
+        fFoldingGroup= new FoldingActionGroup(this, getViewer());
+        
+        ISelectionProvider provider= getSite().getSelectionProvider();
+        ISelection selection= provider.getSelection();
+        
+        ResourceAction resAction= new TextOperationAction(RubyEditorMessages.getBundleForConstructedKeys(), "ShowRDoc.", this, ISourceViewer.INFORMATION, true); //$NON-NLS-1$
+		resAction= new InformationDispatchAction(RubyEditorMessages.getBundleForConstructedKeys(), "ShowRDoc.", (TextOperationAction) resAction); //$NON-NLS-1$
+		resAction.setActionDefinitionId(IRubyEditorActionDefinitionIds.SHOW_RDOC);
+		setAction("ShowRDoc", resAction); //$NON-NLS-1$
+		PlatformUI.getWorkbench().getHelpSystem().setHelp(resAction, IRubyHelpContextIds.SHOW_JAVADOC_ACTION);
+        
+        SurroundWithBeginRescueAction beginRescueAction = new SurroundWithBeginRescueAction(this);
+        beginRescueAction.setActionDefinitionId(IRubyEditorActionDefinitionIds.SURROUND_WITH_BEGIN_RESCUE);
+        beginRescueAction.update(selection);
+        provider.addSelectionChangedListener(beginRescueAction);
+        setAction(SurroundWithBeginRescueAction.SURROUND_WTH_BEGIN_RESCUE, beginRescueAction);
         
         Action action = new ContentAssistAction(RubyPlugin.getDefault().getPluginProperties(),
                 "ContentAssistProposal.", this);
@@ -262,34 +289,15 @@ public class RubyEditor extends RubyAbstractEditor {
 		action.setActionDefinitionId(IRubyEditorActionDefinitionIds.OPEN_STRUCTURE);
 		setAction(IRubyEditorActionDefinitionIds.OPEN_STRUCTURE, action);
 		PlatformUI.getWorkbench().getHelpSystem().setHelp(action, IRubyHelpContextIds.OPEN_STRUCTURE_ACTION);
+		
+		action= new TextOperationAction(RubyEditorMessages.getBundleForConstructedKeys(),"OpenHierarchy.", this, RubySourceViewer.SHOW_HIERARCHY, true); //$NON-NLS-1$
+		action.setActionDefinitionId(IRubyEditorActionDefinitionIds.OPEN_HIERARCHY);
+		setAction(IRubyEditorActionDefinitionIds.OPEN_HIERARCHY, action);
+		PlatformUI.getWorkbench().getHelpSystem().setHelp(action, IRubyHelpContextIds.OPEN_HIERARCHY_ACTION);
 
         action = new FormatAction(RubyPlugin.getDefault().getPluginProperties(), "FormatAction.", this);
         action.setActionDefinitionId(IRubyEditorActionDefinitionIds.FORMAT);
         setAction("Format", action);
-                       
-        ActionGroup oeg, rsg;
-		fActionGroups= new CompositeActionGroup(new ActionGroup[] {
-			oeg= new OpenEditorActionGroup(this),
-			rsg= new RubySearchActionGroup(this)
-		});
-		fContextMenuGroup= new CompositeActionGroup(new ActionGroup[] {oeg, rsg});
-        
-        fFoldingGroup= new FoldingActionGroup(this, getViewer());
-        
-        ISelectionProvider provider= getSite().getSelectionProvider();
-        ISelection selection= provider.getSelection();
-        
-        ResourceAction resAction= new TextOperationAction(RubyEditorMessages.getBundleForConstructedKeys(), "ShowRDoc.", this, ISourceViewer.INFORMATION, true); //$NON-NLS-1$
-		resAction= new InformationDispatchAction(RubyEditorMessages.getBundleForConstructedKeys(), "ShowRDoc.", (TextOperationAction) resAction); //$NON-NLS-1$
-		resAction.setActionDefinitionId(IRubyEditorActionDefinitionIds.SHOW_RDOC);
-		setAction("ShowRDoc", resAction); //$NON-NLS-1$
-		PlatformUI.getWorkbench().getHelpSystem().setHelp(resAction, IRubyHelpContextIds.SHOW_JAVADOC_ACTION);
-        
-        SurroundWithBeginRescueAction beginRescueAction = new SurroundWithBeginRescueAction(this);
-        beginRescueAction.setActionDefinitionId(IRubyEditorActionDefinitionIds.SURROUND_WITH_BEGIN_RESCUE);
-        beginRescueAction.update(selection);
-        provider.addSelectionChangedListener(beginRescueAction);
-        setAction(SurroundWithBeginRescueAction.SURROUND_WTH_BEGIN_RESCUE, beginRescueAction);
     }
    
     /**
@@ -749,9 +757,26 @@ public class RubyEditor extends RubyAbstractEditor {
     }
 
     protected void editorContextMenuAboutToShow(IMenuManager menu) {
-        super.editorContextMenuAboutToShow(menu);
+        super.editorContextMenuAboutToShow(menu);       
         
-        IExtensionRegistry registry = Platform.getExtensionRegistry();
+		menu.insertAfter(IContextMenuConstants.GROUP_OPEN, new GroupMarker(IContextMenuConstants.GROUP_SHOW));
+
+		ActionContext context= new ActionContext(getSelectionProvider().getSelection());
+		fContextMenuGroup.setContext(context);
+		fContextMenuGroup.fillContextMenu(menu);
+		fContextMenuGroup.setContext(null);
+
+		// Quick views
+		IAction action= getAction(IRubyEditorActionDefinitionIds.SHOW_OUTLINE);
+		menu.appendToGroup(IContextMenuConstants.GROUP_OPEN, action);  
+		action= getAction(IRubyEditorActionDefinitionIds.OPEN_HIERARCHY);
+		menu.appendToGroup(IContextMenuConstants.GROUP_OPEN, action);
+		
+		addExtensionMenuItems(menu);
+    }
+
+	private void addExtensionMenuItems(IMenuManager menu) {
+		IExtensionRegistry registry = Platform.getExtensionRegistry();
         IExtensionPoint extensionPoint = registry
                 .getExtensionPoint("org.rubypeople.rdt.ui.editorPopupExtender");
         IExtension[] extensions = extensionPoint.getExtensions();
@@ -782,21 +807,7 @@ public class RubyEditor extends RubyAbstractEditor {
                 }
             }
         }
-
-        
-		menu.insertAfter(IContextMenuConstants.GROUP_OPEN, new GroupMarker(IContextMenuConstants.GROUP_SHOW));
-
-		ActionContext context= new ActionContext(getSelectionProvider().getSelection());
-		fContextMenuGroup.setContext(context);
-		fContextMenuGroup.fillContextMenu(menu);
-		fContextMenuGroup.setContext(null);
-
-		// Quick views
-		IAction action= getAction(IRubyEditorActionDefinitionIds.SHOW_OUTLINE);
-		menu.appendToGroup(IContextMenuConstants.GROUP_OPEN, action);  
-//		action= getAction(IRubyEditorActionDefinitionIds.OPEN_HIERARCHY);
-//		menu.appendToGroup(IContextMenuConstants.GROUP_OPEN, action);
-    }
+	}
 
     protected void handlePreferenceStoreChanged(PropertyChangeEvent event) {
         super.handlePreferenceStoreChanged(event);
