@@ -19,7 +19,6 @@ import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.ImageData;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Display;
-import org.rubypeople.rdt.core.Flags;
 import org.rubypeople.rdt.core.IMethod;
 import org.rubypeople.rdt.core.IRubyElement;
 import org.rubypeople.rdt.core.IType;
@@ -75,7 +74,7 @@ public class HierarchyLabelProvider extends AppearanceAwareLabelProvider {
 	private TypeHierarchyLifeCycle fHierarchy;
 	
 	public HierarchyLabelProvider(TypeHierarchyLifeCycle lifeCycle) {
-		super(DEFAULT_TEXTFLAGS | RubyElementLabels.USE_RESOLVED, DEFAULT_IMAGEFLAGS);
+		super(DEFAULT_TEXTFLAGS | RubyElementLabels.T_CONTAINER_QUALIFIED | RubyElementLabels.USE_RESOLVED, DEFAULT_IMAGEFLAGS);
 		
 		fHierarchy= lifeCycle;
 		fFilter= null;
