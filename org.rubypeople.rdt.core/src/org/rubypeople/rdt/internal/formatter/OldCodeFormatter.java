@@ -16,7 +16,7 @@ import org.rubypeople.rdt.core.formatter.Indents;
 public class OldCodeFormatter extends CodeFormatter {
 
     private final static String BLOCK_BEGIN_RE = "(class|module|def|if|unless|case|while|until|for|begin|do)";
-    private final static String BLOCK_MID_RE = "(else|elsif|when|rescue|ensure)";
+    private final static String BLOCK_MID_RE = "(else|elsif|rescue|ensure)";
     private final static String BLOCK_END_RE = "(end)";
     private final static String DELIMITER_RE = "[?$/(){}#\\`.:\\]\\[]";
     private final static String[] LITERAL_BEGIN_LITERALS = { "\"", "'", "=begin", "%[Qqrxw]?.",
