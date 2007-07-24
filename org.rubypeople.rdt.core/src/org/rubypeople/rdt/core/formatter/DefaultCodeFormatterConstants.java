@@ -111,6 +111,21 @@ public class DefaultCodeFormatterConstants {
      */
     public static final String FORMATTER_INDENT_EMPTY_LINES = RubyCore.PLUGIN_ID
             + ".formatter.indent_empty_lines"; //$NON-NLS-1$   
+    
+    /**
+     * <pre>
+     *    FORMATTER / Option to ident empty lines
+     *        - option id:         &quot;org.rubypeople.rdt.core.formatter.indent_case_body&quot;
+     *        - possible values:   { TRUE, FALSE }
+     *        - default:           FALSE
+     * </pre>
+     * 
+     * @see #TRUE
+     * @see #FALSE
+     * @since 1.0
+     */
+    public static final String FORMATTER_INDENT_CASE_BODY = RubyCore.PLUGIN_ID
+            + ".formatter.indent_case_body"; //$NON-NLS-1$   
 
     /**
      * <pre>

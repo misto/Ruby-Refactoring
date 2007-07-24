@@ -19,6 +19,9 @@ public class DefaultCodeFormatterOptions {
     public int tab_char;
     public int tab_size;
     public int comment_line_length;
+    
+	public boolean indent_case_body = true;
+	public boolean indent_empty_lines = true;
 
     public static DefaultCodeFormatterOptions getDefaultSettings() {
         DefaultCodeFormatterOptions options = new DefaultCodeFormatterOptions();
@@ -52,6 +55,8 @@ public class DefaultCodeFormatterOptions {
         this.tab_char = TAB;
         this.tab_size = DEFAULT_TAB_SIZE;
         this.indentation_size = DEFAULT_INDENT_SIZE;
+        this.indent_case_body = true;
+        this.indent_empty_lines = true;
     }
 
     public void setEclipseDefaultSettings() {
@@ -63,6 +68,8 @@ public class DefaultCodeFormatterOptions {
         this.tab_char = SPACE;
         this.tab_size = 2;
         this.indentation_size = 2;
+        this.indent_case_body = true;
+        this.indent_empty_lines = true;
     }
 
     public Map getMap() {
@@ -84,10 +91,34 @@ public class DefaultCodeFormatterOptions {
         }
         options.put(DefaultCodeFormatterConstants.FORMATTER_TAB_SIZE, Integer
                 .toString(this.tab_size));
+        options.put(DefaultCodeFormatterConstants.FORMATTER_INDENT_CASE_BODY, Boolean
+                .toString(this.indent_case_body));
+        options.put(DefaultCodeFormatterConstants.FORMATTER_INDENT_EMPTY_LINES, Boolean
+                .toString(this.indent_empty_lines));
         return options;
     }
 
     public void set(Map settings) {
+    	final Object indentCaseBodyOption = settings.get(DefaultCodeFormatterConstants.FORMATTER_INDENT_CASE_BODY);
+    	if (indentCaseBodyOption != null) {
+            try {
+                this.indent_case_body = Boolean.parseBoolean((String) indentCaseBodyOption);
+            } catch (NumberFormatException e) {
+                this.indent_case_body = true;
+            } catch(ClassCastException e) {
+                this.indent_case_body = true;
+            }
+        }    	
+    	final Object indentEmptyLinesOption = settings.get(DefaultCodeFormatterConstants.FORMATTER_INDENT_EMPTY_LINES);
+    	if (indentEmptyLinesOption != null) {
+            try {
+                this.indent_empty_lines = Boolean.parseBoolean((String) indentEmptyLinesOption);
+            } catch (NumberFormatException e) {
+                this.indent_empty_lines = true;
+            } catch(ClassCastException e) {
+                this.indent_empty_lines = true;
+            }
+        }    	
         final Object commentLineLengthOption = settings.get(DefaultCodeFormatterConstants.FORMATTER_COMMENT_LINE_LENGTH);
         if (commentLineLengthOption != null) {
             try {

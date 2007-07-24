@@ -16,7 +16,7 @@ import org.rubypeople.rdt.core.formatter.Indents;
 public class OldCodeFormatter extends CodeFormatter {
 
     private final static String BLOCK_BEGIN_RE = "(class|module|def|if|unless|case|while|until|for|begin|do)";
-    private final static String BLOCK_MID_RE = "(else|elsif|rescue|ensure)";
+    private String BLOCK_MID_RE = "(else|elsif|rescue|ensure)";
     private final static String BLOCK_END_RE = "(end)";
     private final static String DELIMITER_RE = "[?$/(){}#\\`.:\\]\\[]";
     private final static String[] LITERAL_BEGIN_LITERALS = { "\"", "'", "=begin", "%[Qqrxw]?.",
@@ -174,7 +174,7 @@ public class OldCodeFormatter extends CodeFormatter {
 
         try {
             pat = Pattern.compile("(^|[\\s]|;)" + BLOCK_BEGIN_RE + "($|[\\s]|" + DELIMITER_RE
-                    + ")|(^|[\\s])" + BLOCK_MID_RE + "($|[\\s]|" + DELIMITER_RE + ")|(^|[\\s]|;)"
+                    + ")|(^|[\\s])" + getBlockMiddleRegex() + "($|[\\s]|" + DELIMITER_RE + ")|(^|[\\s]|;)"
                     + BLOCK_END_RE + "($|[\\s]|;)|" + LITERAL_BEGIN_RE + "|" + DELIMITER_RE);
         } catch (PatternSyntaxException e) {
             System.out.println(e);
@@ -326,6 +326,15 @@ public class OldCodeFormatter extends CodeFormatter {
         }
         return firstBlockMarker;
     }
+
+	private String getBlockMiddleRegex() {
+		if (this.preferences.indent_case_body) {
+			return BLOCK_MID_RE;
+		}
+		StringBuffer buffer = new StringBuffer(BLOCK_MID_RE);
+		buffer.insert(1, "when|");
+		return buffer.toString();		
+	}
 
     /*
      * (defun ruby-forward-string (term &optional end no-error expand) (let ((n
