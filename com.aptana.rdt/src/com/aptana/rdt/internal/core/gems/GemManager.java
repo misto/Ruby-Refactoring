@@ -305,7 +305,7 @@ public class GemManager implements IGemManager {
 			String command = UPDATE_COMMAND + " " + gem.getName();
 			ILaunchConfiguration config = createGemLaunchConfiguration(command, true);
 			final ILaunch launch = config.launch(ILaunchManager.RUN_MODE, null);
-			Job job = new Job("Notify gem listeners of uninstalled gem") {
+			Job job = new Job("Updating gem " + gem.getName()) {
 			
 				@Override
 				protected IStatus run(IProgressMonitor monitor) {
@@ -405,7 +405,7 @@ public class GemManager implements IGemManager {
 			}
 			ILaunchConfiguration config = createGemLaunchConfiguration(command, true);
 			final ILaunch launch = config.launch(ILaunchManager.RUN_MODE, null);	
-			Job job = new Job("Notify gem listeners of uninstalled gem") {
+			Job job = new Job("Installing gem " + gem.getName()) {
 			
 				@Override
 				protected IStatus run(IProgressMonitor monitor) {
@@ -454,7 +454,7 @@ public class GemManager implements IGemManager {
 			}
 			ILaunchConfiguration config = createGemLaunchConfiguration(command, true);
 			final ILaunch launch = config.launch(ILaunchManager.RUN_MODE, null);
-			Job job = new Job("Notify gem listeners of uninstalled gem") {
+			Job job = new Job("Notifying gem listeners of uninstalled gem") {
 			
 				@Override
 				protected IStatus run(IProgressMonitor monitor) {
@@ -633,7 +633,7 @@ public class GemManager implements IGemManager {
 		try {
 			ILaunchConfiguration config = createGemLaunchConfiguration(UPDATE_COMMAND, true);
 			final ILaunch launch = config.launch(ILaunchManager.RUN_MODE, null);
-			Job job = new Job("Notify gem listeners of uninstalled gem") {
+			Job job = new Job("Updating gem listing") {
 			
 				@Override
 				protected IStatus run(IProgressMonitor monitor) {
