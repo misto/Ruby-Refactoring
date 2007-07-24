@@ -141,8 +141,8 @@ public class RubyAutoIndentStrategy extends DefaultIndentLineAutoEditStrategy im
 
 	private boolean shouldDeIndent(String trimmed) {
 		if (trimmed == null || trimmed.length() == 0) return false;
-		return trimmed.equals("rescue") || trimmed.equals("else") || trimmed.equals("ensure") || trimmed.equals(BLOCK_CLOSER)
-			|| trimmed.startsWith("when ") || trimmed.startsWith("elsif ");
+		return trimmed.equals("rescue") || trimmed.equals("else") || trimmed.equals("ensure") 
+			|| trimmed.equals(BLOCK_CLOSER) || trimmed.startsWith("elsif ");
 	}
 
 	private boolean unclosedBlock(IDocument d, String trimmed, int offset) {
@@ -177,7 +177,7 @@ public class RubyAutoIndentStrategy extends DefaultIndentLineAutoEditStrategy im
 
 	private boolean atStartOfBlock(String line) {
 		return line.startsWith("class ") || line.startsWith("if ") || line.startsWith("module ") 
-		  || line.startsWith("unless ") || line.startsWith("def ") || line.equals("begin") 
+		  || line.startsWith("unless ") || line.startsWith("def ") || line.equals("begin") || line.startsWith("case ") 
 		  || openBlockPattern.matcher(line).matches();
 	}
 
