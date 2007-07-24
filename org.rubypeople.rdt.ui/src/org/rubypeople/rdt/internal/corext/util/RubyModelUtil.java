@@ -78,6 +78,10 @@ public final class RubyModelUtil {
 	public static ISourceFolderRoot getSourceFolderRoot(IRubyElement element) {
 		return (ISourceFolderRoot) element.getAncestor(IRubyElement.SOURCE_FOLDER_ROOT);
 	}
+	
+	public static ISourceFolder getSourceFolder(IRubyElement element) {
+		return (ISourceFolder) element.getAncestor(IRubyElement.SOURCE_FOLDER);
+	}
 
 	public static boolean isExcludedPath(IPath resourcePath, IPath[] exclusionPatterns) {
 		char[] path = resourcePath.toString().toCharArray();

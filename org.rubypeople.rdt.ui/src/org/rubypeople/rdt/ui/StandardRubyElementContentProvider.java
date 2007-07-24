@@ -10,6 +10,7 @@
  *******************************************************************************/
 package org.rubypeople.rdt.ui;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -193,6 +194,17 @@ public class StandardRubyElementContentProvider implements ITreeContentProvider 
 
 	private Object[] getSourceFolders(ISourceFolderRoot root) throws RubyModelException {
 		IRubyElement[] fragments= root.getChildren();
+		List<IRubyElement> list = new ArrayList<IRubyElement>();
+		for (int i = 0; i < fragments.length; i++) {
+			if (!(fragments[i] instanceof ISourceFolder)) continue;
+			ISourceFolder folder = (ISourceFolder) fragments[i];
+			if (folder.isDefaultPackage()) continue;
+			String name = folder.getElementName();
+			int index = name.indexOf(File.separatorChar);
+			if (index == -1) list.add(folder);
+		}
+		fragments = new IRubyElement[list.size()];
+		fragments = list.toArray(fragments);
 		Object[] nonRubyResources= root.getNonRubyResources();
 		if (nonRubyResources == null)
 			return fragments;
@@ -210,7 +222,7 @@ public class StandardRubyElementContentProvider implements ITreeContentProvider 
 		for (int i= 0; i < roots.length; i++) {
 			ISourceFolderRoot root= roots[i];
 			if (isProjectSourceFolderRoot(root)) {
-				Object[] children= root.getChildren();
+				Object[] children= getChildren(root);
 				for (int k= 0; k < children.length; k++) 
 					list.add(children[k]);
 			}
@@ -230,7 +242,21 @@ public class StandardRubyElementContentProvider implements ITreeContentProvider 
 	}
 
 	private Object[] getFoldersAndRubyScripts(ISourceFolder folder) throws RubyModelException {
-		return concatenate(folder.getRubyScripts(), folder.getNonRubyResources());
+		ISourceFolderRoot root = (ISourceFolderRoot) folder.getParent();
+		IRubyElement[] children = root.getChildren();
+		List<IRubyElement> list = new ArrayList<IRubyElement>();
+		for (int i = 0; i < children.length; i++) {
+			if (children[i].equals(folder)) continue;
+			if (!children[i].getElementName().startsWith(folder.getElementName())) continue;
+			String name = children[i].getElementName();
+			name = name.substring(folder.getElementName().length() + 1);
+			int index = name.indexOf(File.separator);
+			if (index != -1) continue;
+			list.add(children[i]);
+		}
+		IRubyElement[] folders = new IRubyElement[list.size()];
+		folders = list.toArray(folders);
+		return concatenate(folders, concatenate(folder.getRubyScripts(), folder.getNonRubyResources()));
 	}
 
 

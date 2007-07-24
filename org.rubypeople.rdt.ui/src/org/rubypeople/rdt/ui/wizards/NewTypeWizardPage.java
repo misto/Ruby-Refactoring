@@ -20,27 +20,21 @@ import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Text;
-import org.eclipse.ui.dialogs.ElementListSelectionDialog;
 import org.rubypeople.rdt.core.IBuffer;
 import org.rubypeople.rdt.core.IRubyElement;
 import org.rubypeople.rdt.core.IRubyProject;
 import org.rubypeople.rdt.core.IRubyScript;
 import org.rubypeople.rdt.core.ISourceFolder;
-import org.rubypeople.rdt.core.ISourceFolderRoot;
 import org.rubypeople.rdt.core.ISourceRange;
 import org.rubypeople.rdt.core.IType;
 import org.rubypeople.rdt.core.RubyConventions;
-import org.rubypeople.rdt.core.RubyModelException;
 import org.rubypeople.rdt.core.formatter.CodeFormatter;
 import org.rubypeople.rdt.core.search.IRubySearchConstants;
 import org.rubypeople.rdt.core.search.IRubySearchScope;
 import org.rubypeople.rdt.core.search.SearchEngine;
-import org.rubypeople.rdt.internal.core.RubyProject;
 import org.rubypeople.rdt.internal.corext.codemanipulation.StubUtility;
 import org.rubypeople.rdt.internal.corext.util.CodeFormatterUtil;
-import org.rubypeople.rdt.internal.corext.util.Messages;
 import org.rubypeople.rdt.internal.corext.util.RubyModelUtil;
-import org.rubypeople.rdt.internal.ui.RubyPlugin;
 import org.rubypeople.rdt.internal.ui.RubyPluginImages;
 import org.rubypeople.rdt.internal.ui.dialogs.StatusInfo;
 import org.rubypeople.rdt.internal.ui.dialogs.TypeSelectionDialog2;
@@ -54,9 +48,7 @@ import org.rubypeople.rdt.internal.ui.wizards.dialogfields.LayoutUtil;
 import org.rubypeople.rdt.internal.ui.wizards.dialogfields.ListDialogField;
 import org.rubypeople.rdt.internal.ui.wizards.dialogfields.Separator;
 import org.rubypeople.rdt.internal.ui.wizards.dialogfields.StringButtonDialogField;
-import org.rubypeople.rdt.internal.ui.wizards.dialogfields.StringButtonStatusDialogField;
 import org.rubypeople.rdt.internal.ui.wizards.dialogfields.StringDialogField;
-import org.rubypeople.rdt.ui.RubyElementLabelProvider;
 
 public abstract class NewTypeWizardPage extends NewContainerWizardPage {
 	
@@ -115,7 +107,6 @@ public abstract class NewTypeWizardPage extends NewContainerWizardPage {
 	 */
 	private IType fCurrType;
 	private StringDialogField fTypeNameDialogField;
-	private StringButtonStatusDialogField fPackageDialogField;
 	
 	private StringButtonDialogField fSuperClassDialogField;
 	private ListDialogField fSuperModulesDialogField;
@@ -127,7 +118,6 @@ public abstract class NewTypeWizardPage extends NewContainerWizardPage {
 	protected IStatus fSuperModulesStatus;	
 
 	private int fTypeKind;
-	private ISourceFolder fCurrSourceFolder;
 
 	private boolean fCanModifySourceFolder;
 	
@@ -170,12 +160,6 @@ public abstract class NewTypeWizardPage extends NewContainerWizardPage {
 		
 		TypeFieldsAdapter adapter= new TypeFieldsAdapter();
 		
-		fPackageDialogField= new StringButtonStatusDialogField(adapter);
-		fPackageDialogField.setDialogFieldListener(adapter);
-		fPackageDialogField.setLabelText(getPackageLabel()); 
-		fPackageDialogField.setButtonLabel(NewWizardMessages.NewTypeWizardPage_package_button); 
-		fPackageDialogField.setStatusWidthHint(NewWizardMessages.NewTypeWizardPage_default); 
-		
 		fTypeNameDialogField= new StringDialogField();
 		fTypeNameDialogField.setDialogFieldListener(adapter);
 		fTypeNameDialogField.setLabelText(getTypeNameLabel()); 
@@ -207,68 +191,8 @@ public abstract class NewTypeWizardPage extends NewContainerWizardPage {
 	 * @return the label that is used for the package input field.
 	 * @since 3.2
 	 */
-	protected String getPackageLabel() {
+	protected String getSourceFolderLabel() {
 		return NewWizardMessages.NewTypeWizardPage_package_label;
-	}
-	
-	/**
-	 * A hook method that gets called when the package field has changed. The method 
-	 * validates the package name and returns the status of the validation. The validation
-	 * also updates the package fragment model.
-	 * <p>
-	 * Subclasses may extend this method to perform their own validation.
-	 * </p>
-	 * 
-	 * @return the status of the validation
-	 */
-	protected IStatus packageChanged() {
-		StatusInfo status= new StatusInfo();
-		fPackageDialogField.enableButton(getSourceFolderRoot() != null);
-		
-		String packName= getPackageText();
-		if (packName.length() > 0) {
-			IStatus val= RubyConventions.validateSourceFolderName(packName);
-			if (val.getSeverity() == IStatus.ERROR) {
-				status.setError(Messages.format(NewWizardMessages.NewTypeWizardPage_error_InvalidPackageName, val.getMessage())); 
-				return status;
-			} else if (val.getSeverity() == IStatus.WARNING) {
-				status.setWarning(Messages.format(NewWizardMessages.NewTypeWizardPage_warning_DiscouragedPackageName, val.getMessage())); 
-				// continue
-			}
-		}
-		
-		ISourceFolderRoot root= getSourceFolderRoot();
-		if (root != null) {		
-			fCurrSourceFolder= root.getSourceFolder(packName);
-		} else {
-			status.setError(""); //$NON-NLS-1$
-		}
-		return status;
-	}
-	
-	/**
-	 * Returns the text of the package input field.
-	 * 
-	 * @return the text of the package input field
-	 */
-	public String getPackageText() {
-		return fPackageDialogField.getText();
-	}
-	
-	/**
-	 * Creates the controls for the package name field. Expects a <code>GridLayout</code> with at 
-	 * least 4 columns.
-	 * 
-	 * @param composite the parent composite
-	 * @param nColumns number of columns to span
-	 */	
-	protected void createPackageControls(Composite composite, int nColumns) {
-		fPackageDialogField.doFillIntoGrid(composite, nColumns);
-		Text text= fPackageDialogField.getTextControl(null);
-		LayoutUtil.setWidthHint(text, getMaxFieldWidth());	
-		LayoutUtil.setHorizontalGrabbing(text);
-//		ControlContentAssistHelper.createTextContentAssistant(text, fCurrPackageCompletionProcessor);
-//		TextFieldNavigationHandler.install(text);
 	}
 	
 	/**
@@ -408,7 +332,7 @@ public abstract class NewTypeWizardPage extends NewContainerWizardPage {
 	}
 	
 	private void typePageLinkActivated(SelectionEvent e) {
-		ISourceFolderRoot root= getSourceFolderRoot();
+		ISourceFolder root= getSourceFolder();
 		if (root != null) {
 			// TODO Uncomment!
 //			PreferenceDialog dialog= PreferencesUtil.createPropertyDialogOn(getShell(), root.getProject(), CodeTemplatePreferencePage.PROP_ID, null, null);
@@ -421,62 +345,13 @@ public abstract class NewTypeWizardPage extends NewContainerWizardPage {
 	}
 	
 	private void typePageChangeControlPressed(DialogField field) {
-		if (field == fPackageDialogField) {
-			ISourceFolder pack= chooseSourceFolder();	
-			if (pack != null) {
-				fPackageDialogField.setText(pack.getElementName());
-			}
-		} else if (field == fSuperClassDialogField) {
+		if (field == fSuperClassDialogField) {
 			IType type= chooseSuperClass();
 			if (type != null) {
 				// TODO Spit out fully qualified name?!
 				fSuperClassDialogField.setText(type.getElementName());
 			}
 		}
-	}
-	
-	/**
-	 * Opens a selection dialog that allows to select a package. 
-	 * 
-	 * @return returns the selected package or <code>null</code> if the dialog has been canceled.
-	 * The caller typically sets the result to the package input field.
-	 * <p>
-	 * Clients can override this method if they want to offer a different dialog.
-	 * </p>
-	 * 
-	 * @since 0.9.0
-	 */
-	protected ISourceFolder chooseSourceFolder() {
-		ISourceFolderRoot froot= getSourceFolderRoot();
-		IRubyElement[] packages= null;
-		try {
-			if (froot != null && froot.exists()) {
-				packages= froot.getChildren();
-			}
-		} catch (RubyModelException e) {
-			RubyPlugin.log(e);
-		}
-		if (packages == null) {
-			packages= new IRubyElement[0];
-		}
-		
-		ElementListSelectionDialog dialog= new ElementListSelectionDialog(getShell(), new RubyElementLabelProvider(RubyElementLabelProvider.SHOW_DEFAULT));
-		dialog.setIgnoreCase(false);
-		dialog.setTitle(NewWizardMessages.NewTypeWizardPage_ChoosePackageDialog_title); 
-		dialog.setMessage(NewWizardMessages.NewTypeWizardPage_ChoosePackageDialog_description); 
-		dialog.setEmptyListMessage(NewWizardMessages.NewTypeWizardPage_ChoosePackageDialog_empty); 
-		dialog.setElements(packages);
-		dialog.setHelpAvailable(false);
-		
-		ISourceFolder pack= getSourceFolder();
-		if (pack != null) {
-			dialog.setInitialSelections(new Object[] { pack });
-		}
-
-		if (dialog.open() == Window.OK) {
-			return (ISourceFolder) dialog.getFirstResult();
-		}
-		return null;
 	}
 	
 	private void typePageCustomButtonPressed(DialogField field, int index) {		
@@ -553,39 +428,12 @@ public abstract class NewTypeWizardPage extends NewContainerWizardPage {
 		}
 		return newName.toString();
 	}
-
-	/**
-	 * Returns the package fragment corresponding to the current input.
-	 * 
-	 * @return a package fragment or <code>null</code> if the input 
-	 * could not be resolved.
-	 */
-	public ISourceFolder getSourceFolder() {
-		return fCurrSourceFolder;		
-	}
-	
-	/**
-	 * Sets the source folder to the given value. The method updates the model 
-	 * and the text of the control.
-	 * 
-	 * @param pack the source folder to be set
-	 * @param canBeModified if <code>true</code> the package fragment is
-	 * editable; otherwise it is read-only.
-	 */
-	public void setSourceFolder(ISourceFolder pack, boolean canBeModified) {
-		fCurrSourceFolder= pack;
-		fCanModifySourceFolder= canBeModified;
-		String str= (pack == null) ? "" : pack.getElementName(); //$NON-NLS-1$
-		fPackageDialogField.setText(str);
-		updateEnableState();
-	}	
 	
 	/*
 	 * Updates the enable state of buttons related to the enclosing type selection checkbox.
 	 */
 	private void updateEnableState() {
-		boolean enclosing= isEnclosingTypeSelected();
-		fPackageDialogField.setEnabled(fCanModifySourceFolder && !enclosing);
+		
 	}	
 	
 	private boolean isEnclosingTypeSelected() {
@@ -607,18 +455,14 @@ public abstract class NewTypeWizardPage extends NewContainerWizardPage {
 
 		monitor.beginTask(NewWizardMessages.NewTypeWizardPage_operationdesc, 8); 
 		
-		ISourceFolderRoot root = getSourceFolderRoot();
 		ISourceFolder pack= getSourceFolder();
-		if (pack == null) {
-			pack= root.getSourceFolder(new String[] {});		
-		}
 		
-		if (!pack.exists()) {
-			String packName= pack.getElementName();
-			pack= root.createSourceFolder(packName, true, new SubProgressMonitor(monitor, 1));
-		} else {
+//		if (!pack.exists()) {
+//			String packName= pack.getElementName();
+//			pack= root.createSourceFolder(packName, true, new SubProgressMonitor(monitor, 1));
+//		} else {
 			monitor.worked(1);
-		}
+//		}
 		
 		boolean needsSave;
 		IRubyScript connectedCU= null;
@@ -727,7 +571,7 @@ public abstract class NewTypeWizardPage extends NewContainerWizardPage {
 	 * @since 1.0
 	 */
 	protected void chooseSuperModules() {
-		ISourceFolderRoot root= getSourceFolderRoot();
+		ISourceFolder root= getSourceFolder();
 		if (root == null) {
 			return;
 		}		
@@ -811,13 +655,7 @@ public abstract class NewTypeWizardPage extends NewContainerWizardPage {
 	 */
 	private void typePageDialogFieldChanged(DialogField field) {
 		String fieldName= null;
-		if (field == fPackageDialogField) {
-			/*fPackageStatus=*/ packageChanged();
-//			updatePackageStatusLabel();
-			fTypeNameStatus= typeNameChanged();
-			fSuperClassStatus= superClassChanged();			
-			fieldName= PACKAGE;
-		} else if (field == fTypeNameDialogField) {
+		if (field == fTypeNameDialogField) {
 			fTypeNameStatus= typeNameChanged();
 			fieldName= TYPENAME;
 		} else if (field == fSuperClassDialogField) {
@@ -853,7 +691,7 @@ public abstract class NewTypeWizardPage extends NewContainerWizardPage {
 	 */
 	protected IStatus superClassChanged() {
 		StatusInfo status= new StatusInfo();
-		ISourceFolderRoot root= getSourceFolderRoot();
+		ISourceFolder root= getSourceFolder();
 		fSuperClassDialogField.enableButton(root != null);
 				
 		String sclassName= getSuperClass();
@@ -916,7 +754,7 @@ public abstract class NewTypeWizardPage extends NewContainerWizardPage {
 	protected void handleFieldChanged(String fieldName) {
 		super.handleFieldChanged(fieldName);
 		if (fieldName == CONTAINER) {
-			/*fPackageStatus=*/ packageChanged();
+//			/*fPackageStatus=*/ packageChanged();
 //			fEnclosingTypeStatus= enclosingTypeChanged();			
 			fTypeNameStatus= typeNameChanged();
 			fSuperClassStatus= superClassChanged();
@@ -936,17 +774,12 @@ public abstract class NewTypeWizardPage extends NewContainerWizardPage {
 		ArrayList initSuperinterfaces= new ArrayList(5);
 
 		IRubyProject project= null;
-		ISourceFolder folder= null;
+		ISourceFolder folder= getSourceFolder();
 		IType enclosingType= null;
 				
 		if (elem != null) {
 			// evaluate the enclosing type
 			project= elem.getRubyProject();
-			if (elem instanceof RubyProject) {
-				folder = getSourceFolderRoot().getSourceFolder(new String[0]);
-			} else {
-				folder= (ISourceFolder) elem.getAncestor(IRubyElement.SOURCE_FOLDER);
-			}
 			IType typeInCU= (IType) elem.getAncestor(IRubyElement.TYPE);
 			if (typeInCU != null) {
 				if (typeInCU.getRubyScript() != null) {
@@ -1019,7 +852,7 @@ public abstract class NewTypeWizardPage extends NewContainerWizardPage {
 	protected IStatus superInterfacesChanged() {
 		StatusInfo status= new StatusInfo();
 		
-		ISourceFolderRoot root= getSourceFolderRoot();
+		ISourceFolder root= getSourceFolder();
 		fSuperModulesDialogField.enableButton(0, root != null);
 						
 		if (root != null) {
@@ -1052,7 +885,7 @@ public abstract class NewTypeWizardPage extends NewContainerWizardPage {
 	 * @since 0.9
 	 */
 	protected IType chooseSuperClass() {
-		ISourceFolderRoot root= getSourceFolderRoot();
+		ISourceFolder root= getSourceFolder();
 		if (root == null) {
 			return null;
 		}
