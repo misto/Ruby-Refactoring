@@ -24,7 +24,7 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 import org.rubypeople.rdt.core.IRubyElement;
 import org.rubypeople.rdt.core.IRubyProject;
-import org.rubypeople.rdt.core.ISourceFolderRoot;
+import org.rubypeople.rdt.core.ISourceFolder;
 import org.rubypeople.rdt.core.IType;
 import org.rubypeople.rdt.core.RubyConventions;
 import org.rubypeople.rdt.core.RubyModelException;
@@ -106,7 +106,7 @@ public class RubyNewTestCaseWizardPage extends NewTypeWizardPage {
 		container.setLayout(layout);
     	
 		createContainerControls(container, nColumns);
-		createPackageControls(container, nColumns);
+//		createPackageControls(container, nColumns);
 		createSeparator(container, nColumns);
 		createTypeNameControls(container, nColumns);                     
 		createSuperClassControls(container, nColumns);
@@ -261,7 +261,7 @@ public class RubyNewTestCaseWizardPage extends NewTypeWizardPage {
 	}
 	
 	private IType chooseClassToTestType() {	
-		ISourceFolderRoot root= getSourceFolderRoot();
+		ISourceFolder root= getSourceFolder();
 		if (root == null) {
 			return null;
 		}
@@ -321,7 +321,7 @@ public class RubyNewTestCaseWizardPage extends NewTypeWizardPage {
 		
 		fClassUnderTest= null;
 		
-		ISourceFolderRoot root = getSourceFolderRoot();
+		ISourceFolder root = getSourceFolder();
 		if (root == null) {
 			return status;
 		}
