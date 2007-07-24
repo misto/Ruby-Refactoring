@@ -96,7 +96,8 @@ public class SourceFolderRootInfo extends OpenableElementInfo {
 		int nonJavaResourcesCounter = 0;
 		try {
 			ILoadpathEntry[] classpath = project.getResolvedLoadpath(true/*ignoreUnresolvedEntry*/, false/*don't generateMarkerOnError*/, false/*don't returnResolutionInProgress*/);
-			IResource[] members = folder.members();
+			IResource[] members = new IResource[0];
+			if (folder != null) members = folder.members();
 			nextResource: for (int i = 0, max = members.length; i < max; i++) {
 				IResource member = members[i];
 				switch (member.getType()) {
