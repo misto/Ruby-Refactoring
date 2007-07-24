@@ -694,5 +694,33 @@ end
 </part>
 </test>
 
+<test ID="CaseWithWhens">
+<part>
+<assertionMessage>Indent when</assertionMessage>  
+<unformatted>
+module Foo
+  def bar
+    case baz
+  when 'sweet harmonious biscuits'
+when 'yuck'
+    when 'eww'
+    end
+    end
+end
+</unformatted>
+<formatted>
+module Foo
+  def bar
+    case baz
+      when 'sweet harmonious biscuits'
+      when 'yuck'
+      when 'eww'
+    end
+  end
+end
+</formatted>
+</part>
+</test>
+
 </tests>
 

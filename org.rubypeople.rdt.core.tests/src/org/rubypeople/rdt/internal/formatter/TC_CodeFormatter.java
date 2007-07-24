@@ -140,4 +140,8 @@ public class TC_CodeFormatter extends TestCase {
 		doTest("LineStartingWithParen");
 	}
 	
+	public void testCaseWithWhens() {
+		doTest("CaseWithWhens");
+	}
+	
 }
