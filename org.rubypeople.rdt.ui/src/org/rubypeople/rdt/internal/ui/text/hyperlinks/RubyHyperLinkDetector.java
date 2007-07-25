@@ -19,7 +19,6 @@ import org.jruby.ast.Node;
 import org.jruby.lexer.yacc.SyntaxException;
 import org.rubypeople.rdt.core.IRubyScript;
 import org.rubypeople.rdt.core.RubyModelException;
-import org.rubypeople.rdt.internal.codeassist.SelectionEngine;
 import org.rubypeople.rdt.internal.core.parser.RubyParser;
 import org.rubypeople.rdt.internal.ui.RubyPlugin;
 import org.rubypeople.rdt.ui.IWorkingCopyManager;
@@ -84,7 +83,6 @@ public class RubyHyperLinkDetector implements IHyperlinkDetector {
 		List extensions = initExtensions();
 		// first ask the extensions
 		if (extensions.size() > 0) {
-			SelectionEngine engine = new SelectionEngine();
 			IWorkingCopyManager manager = RubyPlugin.getDefault().getWorkingCopyManager();
 			IRubyScript script = manager.getWorkingCopy(fEditorInput);
 			if (script == null) return null;
