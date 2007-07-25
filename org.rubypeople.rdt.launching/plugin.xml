@@ -25,7 +25,7 @@
             id="org.rubypeople.rdt.launching.LaunchConfigurationTypeRubyApplication">
       </launchConfigurationType>
    </extension>
-      <extension
+   <extension
          point="org.rubypeople.rdt.core.loadpathVariableInitializer">
       <loadpathVariableInitializer
             variable="RUBY_LIB"
