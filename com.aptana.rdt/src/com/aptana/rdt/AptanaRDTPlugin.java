@@ -27,7 +27,6 @@ import com.aptana.rdt.core.gems.Gem;
 import com.aptana.rdt.core.gems.GemListener;
 import com.aptana.rdt.core.gems.IGemManager;
 import com.aptana.rdt.internal.core.gems.GemManager;
-import com.aptana.rdt.internal.ui.RubyRedMessages;
 
 /**
  * The activator class controls the plug-in life cycle

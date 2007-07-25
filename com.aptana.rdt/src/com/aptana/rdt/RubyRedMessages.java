@@ -1,4 +1,4 @@
-package com.aptana.rdt.internal.ui;
+package com.aptana.rdt;
 
 import org.eclipse.osgi.util.NLS;
 
