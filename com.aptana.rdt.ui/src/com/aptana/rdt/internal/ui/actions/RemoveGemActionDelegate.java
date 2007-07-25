@@ -23,6 +23,7 @@ import com.aptana.rdt.core.gems.Gem;
 import com.aptana.rdt.internal.core.gems.GemManager;
 import com.aptana.rdt.ui.gems.GemsMessages;
 import com.aptana.rdt.ui.gems.GemsView;
+import com.aptana.rdt.ui.gems.RemoveGemDialog;
 
 /**
  * Install a gem
@@ -52,7 +53,14 @@ public class RemoveGemActionDelegate implements IObjectActionDelegate, IViewActi
 		Display.getDefault().asyncExec(new Runnable() {
 		
 			public void run() {
-				AptanaRDTPlugin.getDefault().getGemManager().removeGem(selectedGem);		
+				if (selectedGem.hasMultipleVersions()) {
+					RemoveGemDialog dialog = new RemoveGemDialog(Display.getDefault().getActiveShell(), selectedGem.versions());
+					if (dialog.open() == RemoveGemDialog.OK) {
+						AptanaRDTPlugin.getDefault().getGemManager().removeGem(new Gem(selectedGem.getName(), dialog.getVersion(), selectedGem.getDescription()));
+					}
+				} else {
+					AptanaRDTPlugin.getDefault().getGemManager().removeGem(selectedGem);		
+				}
 			}
 		
 		});

@@ -26,7 +26,6 @@ import org.rubypeople.rdt.ui.TableViewerSorter;
 import com.aptana.rdt.AptanaRDTPlugin;
 import com.aptana.rdt.core.gems.Gem;
 import com.aptana.rdt.core.gems.GemListener;
-import com.aptana.rdt.internal.core.gems.GemManager;
 
 public class GemsView extends ViewPart implements GemListener {
 
@@ -53,7 +52,14 @@ public class GemsView extends ViewPart implements GemListener {
 					TableItem item = gemTable.getItem(gemTable.getSelectionIndex());
 					Gem gem = (Gem) item.getData();
 					if (MessageDialog.openConfirm(gemTable.getShell(), null, GemsMessages.bind(GemsMessages.RemoveGemDialog_msg, gem.getName()))) {
-						AptanaRDTPlugin.getDefault().getGemManager().removeGem(gem);
+						if (gem.hasMultipleVersions()) {
+							RemoveGemDialog dialog = new RemoveGemDialog(Display.getDefault().getActiveShell(), gem.versions());
+							if (dialog.open() == RemoveGemDialog.OK) {
+								AptanaRDTPlugin.getDefault().getGemManager().removeGem(new Gem(gem.getName(), dialog.getVersion(), gem.getDescription()));
+							}
+						} else {
+							AptanaRDTPlugin.getDefault().getGemManager().removeGem(gem);		
+						}
 					}
 				}
 			}
