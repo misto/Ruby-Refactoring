@@ -46,6 +46,7 @@ import org.rubypeople.rdt.core.ISourceRange;
 import org.rubypeople.rdt.core.IType;
 import org.rubypeople.rdt.core.RubyCore;
 import org.rubypeople.rdt.core.RubyModelException;
+import org.rubypeople.rdt.core.search.CollectingSearchRequestor;
 import org.rubypeople.rdt.core.search.IRubySearchConstants;
 import org.rubypeople.rdt.core.search.IRubySearchScope;
 import org.rubypeople.rdt.core.search.SearchMatch;
@@ -55,7 +56,6 @@ import org.rubypeople.rdt.internal.core.RubyElement;
 import org.rubypeople.rdt.internal.core.RubyType;
 import org.rubypeople.rdt.internal.core.parser.RubyParser;
 import org.rubypeople.rdt.internal.core.search.BasicSearchEngine;
-import org.rubypeople.rdt.internal.core.search.CollectingSearchRequestor;
 import org.rubypeople.rdt.internal.core.util.ASTUtil;
 import org.rubypeople.rdt.internal.core.util.Util;
 import org.rubypeople.rdt.internal.ti.BasicTypeGuess;
@@ -277,7 +277,9 @@ public class CompletionEngine {
 		    types = filtered.toArray(new IType[filtered.size()]);
 		    includeInstance = false;
 		} else if (element instanceof IType) {
-			types = new IType[] {(IType) element};
+			IType type = (IType) element;			
+			RubyElementRequestor requestor = new RubyElementRequestor(script);
+			types = requestor.findType(type.getFullyQualifiedName());
 		} else {
 			types = new IType[] {element.getDeclaringType()};
 		}

@@ -8,14 +8,12 @@
  * Contributors:
  *     IBM Corporation - initial API and implementation
  *******************************************************************************/
-package org.rubypeople.rdt.internal.core.search;
+package org.rubypeople.rdt.core.search;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.core.runtime.CoreException;
-import org.rubypeople.rdt.core.search.SearchMatch;
-import org.rubypeople.rdt.core.search.SearchRequestor;
 
 /**
  * Collects the results returned by a <code>SearchEngine</code>.
