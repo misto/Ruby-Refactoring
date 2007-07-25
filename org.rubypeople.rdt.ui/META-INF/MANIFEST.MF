@@ -60,6 +60,7 @@ Require-Bundle: org.eclipse.ui.ide,
  org.eclipse.core.filesystem,
  org.eclipse.core.expressions,
  org.eclipse.ltk.core.refactoring,
- com.ibm.icu
+ com.ibm.icu,
+ com.aptana.rdt
 Eclipse-LazyStart: true
 Bundle-RequiredExecutionEnvironment: J2SE-1.5

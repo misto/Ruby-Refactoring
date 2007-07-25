@@ -54,6 +54,8 @@ import org.rubypeople.rdt.internal.ui.wizards.dialogfields.LayoutUtil;
 import org.rubypeople.rdt.internal.ui.wizards.dialogfields.ListDialogField;
 import org.rubypeople.rdt.launching.RubyRuntime;
 
+import com.aptana.rdt.launching.IGemRuntime;
+
 
 public class VariableBlock {
 	
@@ -114,7 +116,7 @@ public class VariableBlock {
 	
 	private String[] getReservedVariableNames() {
 		return new String[] {
-			RubyRuntime.RUBYLIB_VARIABLE
+			RubyRuntime.RUBYLIB_VARIABLE, IGemRuntime.GEMLIB_VARIABLE
 		};
 	}
 	
