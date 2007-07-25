@@ -70,6 +70,11 @@
   	  <param name="element.id" value="com.aptana.rdt"/>
   	  <param name="project.name" value="com.aptana.rdt"/>
   	</antcall>
+  	<antcall target="svn.co">
+  	  <param name="target" value="plugins"/>
+  	  <param name="element.id" value="com.aptana.rdt.ui"/>
+  	  <param name="project.name" value="com.aptana.rdt.ui"/>
+  	</antcall>
     <antcall target="svn.co">
       <param name="target" value="features"/>
       <param name="element.id" value="org.rubypeople.rdt-tests"/>
