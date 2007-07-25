@@ -434,7 +434,6 @@ public class GemManager implements IGemManager {
 	 * @see com.aptana.rdt.internal.gems.IGemManager#removeGem(com.aptana.rdt.internal.gems.Gem)
 	 */
 	public boolean removeGem(final Gem gem) {
-		if (gem.hasMultipleVersions()) return false;
 		try {
 			String command = UNINSTALL_COMMAND + " " + gem.getName();			
 			if (gem.getVersion() != null

@@ -34,4 +34,6 @@ public interface IGemManager {
 	
 	public abstract boolean isInitialized();
 
+	public abstract void initialize();
+
 }
