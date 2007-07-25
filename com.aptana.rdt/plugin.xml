@@ -202,4 +202,12 @@
          point="org.eclipse.ui.startup">
       <startup class="com.aptana.rdt.internal.core.gems.RubyGemsInitializer"/>
    </extension>
+   
+   <extension
+         point="org.rubypeople.rdt.core.loadpathVariableInitializer">
+      <loadpathVariableInitializer
+            variable="GEM_LIB"
+            class="com.aptana.rdt.internal.launching.GemLoadpathVariablesInitializer">
+      </loadpathVariableInitializer>
+   </extension>
 </plugin>

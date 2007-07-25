@@ -9,6 +9,7 @@ Eclipse-LazyStart: true
 Bundle-Vendor: Aptana, Inc.
 Export-Package: com.aptana.rdt,
  com.aptana.rdt.core.gems,
+ com.aptana.rdt.launching,
  com.aptana.rdt.internal.core.gems;x-friends:="com.aptana.rdt.tests",
  com.aptana.rdt.internal.parser.warnings,
  com.aptana.rdt.internal.ui.preferences
