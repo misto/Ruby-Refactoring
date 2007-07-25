@@ -49,6 +49,7 @@ import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.preferences.IWorkbenchPreferenceContainer;
 import org.rubypeople.rdt.core.ILoadpathEntry;
 import org.rubypeople.rdt.core.IRubyProject;
+import org.rubypeople.rdt.core.RubyCore;
 import org.rubypeople.rdt.internal.corext.util.Messages;
 import org.rubypeople.rdt.internal.ui.RubyPlugin;
 import org.rubypeople.rdt.internal.ui.actions.WorkbenchRunnableAdapter;
@@ -74,8 +75,9 @@ public class LibrariesWorkbookPage extends BuildPathBasePage {
 	private Control fSWTControl;
 
 	private final int IDX_ADDEXT= 0;
-	private final int IDX_EDIT= 2;
-	private final int IDX_REMOVE= 3;
+	private final int IDX_ADDVAR= 1;
+	private final int IDX_EDIT= 3;
+	private final int IDX_REMOVE= 4;
 		
 	public LibrariesWorkbookPage(CheckedListDialogField classPathList, IWorkbenchPreferenceContainer pageContainer) {
 		fClassPathList= classPathList;
@@ -83,6 +85,7 @@ public class LibrariesWorkbookPage extends BuildPathBasePage {
 		
 		String[] buttonLabels= new String[] { 
 			NewWizardMessages.LibrariesWorkbookPage_libraries_addextjar_button, 
+			NewWizardMessages.LibrariesWorkbookPage_libraries_addvariable_button,
 			/* */ null,  
 			NewWizardMessages.LibrariesWorkbookPage_libraries_edit_button, 
 			NewWizardMessages.LibrariesWorkbookPage_libraries_remove_button,
@@ -200,6 +203,9 @@ public class LibrariesWorkbookPage extends BuildPathBasePage {
 		switch (index) {	
 		case IDX_ADDEXT: /* add external folder */
 			libentries= openExtFolderDialog(null);
+			break;
+		case IDX_ADDVAR: /* add variable */
+			libentries= openVariableSelectionDialog(null);
 			break;
 		case IDX_EDIT: /* edit */
 			editEntry();
@@ -384,6 +390,9 @@ public class LibrariesWorkbookPage extends BuildPathBasePage {
 				} 
 			}
 			break;
+		case ILoadpathEntry.CPE_VARIABLE:
+			res= openVariableSelectionDialog(elem);
+			break;
 		}
 		if (res != null && res.length > 0) {
 			CPListElement curr= res[0];
@@ -538,4 +547,39 @@ public class LibrariesWorkbookPage extends BuildPathBasePage {
 			}
 		}
 	}	
+	
+	private CPListElement[] openVariableSelectionDialog(CPListElement existing) {
+		List existingElements= fLibrariesList.getElements();
+		ArrayList existingPaths= new ArrayList(existingElements.size());
+		for (int i= 0; i < existingElements.size(); i++) {
+			CPListElement elem= (CPListElement) existingElements.get(i);
+			if (elem.getEntryKind() == ILoadpathEntry.CPE_VARIABLE) {
+				existingPaths.add(elem.getPath());
+			}
+		}
+		IPath[] existingPathsArray= (IPath[]) existingPaths.toArray(new IPath[existingPaths.size()]);
+		
+		if (existing == null) {
+			IPath[] paths= BuildPathDialogAccess.chooseVariableEntries(getShell(), existingPathsArray);
+			if (paths != null) {
+				ArrayList result= new ArrayList();
+				for (int i = 0; i < paths.length; i++) {
+					CPListElement elem= new CPListElement(fCurrJProject, ILoadpathEntry.CPE_VARIABLE, paths[i], null);
+					IPath resolvedPath= RubyCore.getResolvedVariablePath(paths[i]);
+					elem.setIsMissing((resolvedPath == null) || !resolvedPath.toFile().exists());
+					if (!existingElements.contains(elem)) {
+						result.add(elem);
+					}
+				}
+				return (CPListElement[]) result.toArray(new CPListElement[result.size()]);
+			}
+		} else {
+			IPath path= BuildPathDialogAccess.configureVariableEntry(getShell(), existing.getPath(), existingPathsArray);
+			if (path != null) {
+				CPListElement elem= new CPListElement(fCurrJProject, ILoadpathEntry.CPE_VARIABLE, path, null);
+				return new CPListElement[] { elem };
+			}
+		}
+		return null;
+	}
 }

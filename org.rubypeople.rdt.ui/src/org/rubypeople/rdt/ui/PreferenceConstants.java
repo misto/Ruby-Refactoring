@@ -22,6 +22,7 @@ import org.rubypeople.rdt.core.RubyCore;
 import org.rubypeople.rdt.internal.ui.RubyPlugin;
 import org.rubypeople.rdt.internal.ui.preferences.PreferencesMessages;
 import org.rubypeople.rdt.internal.ui.preferences.formatter.ProfileManager;
+import org.rubypeople.rdt.launching.RubyRuntime;
 
 public class PreferenceConstants {
 
@@ -763,8 +764,7 @@ public class PreferenceConstants {
 	}
 	
 	private static ILoadpathEntry getRubyVMVariableEntry() {
-		// FIXME We need to define more library variables! RUBY_CORE, RUBY_STD_LIB, RUBY_SITE_LIB
-		return RubyCore.newVariableEntry(new Path("RUBY_LIB")); //$NON-NLS-1$
+		return RubyCore.newVariableEntry(new Path(RubyRuntime.RUBYLIB_VARIABLE)); //$NON-NLS-1$
 	}
 	
 	public static String encodeRubyVMLibrary(String desc, ILoadpathEntry[] cpentries) {

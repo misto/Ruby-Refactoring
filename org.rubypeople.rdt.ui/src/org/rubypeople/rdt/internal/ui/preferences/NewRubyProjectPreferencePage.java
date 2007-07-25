@@ -65,6 +65,7 @@ import org.rubypeople.rdt.internal.ui.IRubyHelpContextIds;
 import org.rubypeople.rdt.internal.ui.RubyPlugin;
 import org.rubypeople.rdt.internal.ui.dialogs.StatusInfo;
 import org.rubypeople.rdt.internal.ui.dialogs.StatusUtil;
+import org.rubypeople.rdt.launching.RubyRuntime;
 import org.rubypeople.rdt.ui.PreferenceConstants;
 import org.rubypeople.rdt.ui.RubyUI;
 	
@@ -273,11 +274,11 @@ public class NewRubyProjectPreferencePage extends PreferencePage implements IWor
 	}
 	
 	private static ILoadpathEntry getJREContainerEntry() {
-		return RubyCore.newContainerEntry(new Path("org.rubypeople.rdt.launching.RUBY_CONTAINER")); //$NON-NLS-1$
+		return RubyCore.newContainerEntry(new Path(RubyRuntime.RUBY_CONTAINER)); //$NON-NLS-1$
 	}
 	
 	private static ILoadpathEntry getJREVariableEntry() {
-		return RubyCore.newVariableEntry(new Path("RUBY_LIB")); //$NON-NLS-1$
+		return RubyCore.newVariableEntry(new Path(RubyRuntime.RUBYLIB_VARIABLE)); //$NON-NLS-1$
 	}	
 
 	/*

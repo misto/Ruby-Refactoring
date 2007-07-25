@@ -198,7 +198,6 @@ public class AddSourceFolderWizardPage extends NewElementWizardPage {
 	private final IPath fOrginalPath;
 	private final boolean fLinkedMode;
 	
-	private IPath fNewOutputLocation;
 	private CPListElement fOldProjectSourceFolder;
 
 	private List fModifiedElements;
@@ -476,11 +475,9 @@ public class AddSourceFolderWizardPage extends NewElementWizardPage {
 		if (!fAllowConflict && fCanCommitConflictingBuildpath)
 			return new StatusInfo();
 		
-		fNewOutputLocation= null;
 		IRubyModelStatus status= RubyConventions.validateLoadpath(javaProject, CPListElement.convertToLoadpathEntries(fExistingEntries), null);
 		if (!status.isOK()) {
 			//Don't know what the problem is, report to user
-			fNewOutputLocation= null;
 			if (fCanCommitConflictingBuildpath) {
 				result.setInfo(NewWizardMessages.AddSourceFolderWizardPage_conflictWarning + status.getMessage());
 			} else {

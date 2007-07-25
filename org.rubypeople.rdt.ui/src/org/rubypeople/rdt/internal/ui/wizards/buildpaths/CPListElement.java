@@ -439,17 +439,15 @@ public class CPListElement {
 			case ILoadpathEntry.CPE_VARIABLE:
 				IPath resolvedPath= RubyCore.getResolvedVariablePath(path);
 				res= null;
-				isMissing=  root.findMember(resolvedPath) == null && !resolvedPath.toFile().isFile();
+				isMissing=  !resolvedPath.toFile().isDirectory();
 				break;
 			case ILoadpathEntry.CPE_LIBRARY:
 				res= root.findMember(path);
 				if (res == null) {
-//					if (!ArchiveFileFilter.isArchivePath(path)) {
-						if (root.getWorkspace().validatePath(path.toString(), IResource.FOLDER).isOK()
-								&& root.getProject(path.segment(0)).exists()) {
-							res= root.getFolder(path);
-						}
-//					}
+					if (root.getWorkspace().validatePath(path.toString(), IResource.FOLDER).isOK()
+							&& root.getProject(path.segment(0)).exists()) {
+						res= root.getFolder(path);
+					}
 					isMissing= !path.toFile().isDirectory(); // look for external Folders
 				} else if (res.isLinked()) {
 					linkTarget= res.getLocation();

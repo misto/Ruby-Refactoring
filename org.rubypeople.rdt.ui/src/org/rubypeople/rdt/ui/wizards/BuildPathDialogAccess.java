@@ -40,7 +40,9 @@ import org.rubypeople.rdt.internal.ui.IUIConstants;
 import org.rubypeople.rdt.internal.ui.RubyPlugin;
 import org.rubypeople.rdt.internal.ui.wizards.NewWizardMessages;
 import org.rubypeople.rdt.internal.ui.wizards.TypedViewerFilter;
+import org.rubypeople.rdt.internal.ui.wizards.buildpaths.EditVariableEntryDialog;
 import org.rubypeople.rdt.internal.ui.wizards.buildpaths.MultipleFolderSelectionDialog;
+import org.rubypeople.rdt.internal.ui.wizards.buildpaths.NewVariableEntryDialog;
 
 /**
  * Class that gives access to dialogs used by the Java build path page to configure classpath entries
@@ -186,5 +188,54 @@ public final class BuildPathDialogAccess {
 		RubyPlugin.getDefault().getDialogSettings().put(IUIConstants.DIALOGSTORE_LASTEXTJAR, dialog.getFilterPath());
 
 		return Path.fromOSString(res).makeAbsolute();	
+	}
+
+	/**
+	 * Shows the UI for selecting new variable classpath entries. See {@link IClasspathEntry#CPE_VARIABLE} for
+	 * details about variable classpath entries.
+	 * The dialog returns an array of the selected variable entries or <code>null</code> if the dialog has
+	 * been canceled. The dialog does not apply any changes.
+	 * 
+	 * @param shell The parent shell for the dialog.
+	 * @param existingPaths An array of paths that are already on the classpath and therefore should not be
+	 * selected again.
+	 * @return Returns an non empty array of the selected variable entries or <code>null</code> if the dialog has
+	 * been canceled.
+	 */
+	public static IPath[] chooseVariableEntries(Shell shell, IPath[] existingPaths) {
+		if (existingPaths == null) {
+			throw new IllegalArgumentException();
+		}
+		NewVariableEntryDialog dialog= new NewVariableEntryDialog(shell);
+		if (dialog.open() == Window.OK) {
+			return dialog.getResult();
+		}
+		return null;
+	}
+	
+	/**
+	 * Shows the UI for configuring a variable classpath entry. See {@link IClasspathEntry#CPE_VARIABLE} for
+	 * details about variable classpath entries.
+	 * The dialog returns the configured classpath entry path or <code>null</code> if the dialog has
+	 * been canceled. The dialog does not apply any changes.
+	 * 
+	 * @param shell The parent shell for the dialog.
+	 * @param initialEntryPath The initial variable classpath variable path or <code>null</code> to use
+	 * an empty path. 
+	 * @param existingPaths An array of paths that are already on the classpath and therefore should not be
+	 * selected again.
+	 * @return Returns the configures classpath entry path or <code>null</code> if the dialog has
+	 * been canceled.
+	 */
+	public static IPath configureVariableEntry(Shell shell, IPath initialEntryPath, IPath[] existingPaths) {
+		if (existingPaths == null) {
+			throw new IllegalArgumentException();
+		}
+		
+		EditVariableEntryDialog dialog= new EditVariableEntryDialog(shell, initialEntryPath, existingPaths);
+		if (dialog.open() == Window.OK) {
+			return dialog.getPath();
+		}
+		return null;
 	}
 }
