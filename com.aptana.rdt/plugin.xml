@@ -83,7 +83,7 @@
 <!-- =================================================================================== -->
 <extension
       point="org.eclipse.core.runtime.preferences">
-   <initializer class="com.aptana.rdt.internal.core.RubyRedPreferenceInitializer"/>
+   <initializer class="com.aptana.rdt.internal.core.AptanaRDTPreferenceInitializer"/>
 </extension>
    
    <extension

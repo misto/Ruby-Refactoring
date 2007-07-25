@@ -11,7 +11,7 @@ import org.eclipse.core.runtime.preferences.IEclipsePreferences;
 import com.aptana.rdt.AptanaRDTPlugin;
 import com.aptana.rdt.internal.parser.warnings.LintOptions;
 
-public class RubyRedPreferenceInitializer extends AbstractPreferenceInitializer {
+public class AptanaRDTPreferenceInitializer extends AbstractPreferenceInitializer {
 
     public void initializeDefaultPreferences() {		
     	HashSet optionNames = AptanaRDTPlugin.getDefault().optionNames;
