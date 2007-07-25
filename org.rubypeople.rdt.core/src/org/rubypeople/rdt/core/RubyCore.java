@@ -1477,4 +1477,18 @@ public class RubyCore extends Plugin {
 	public static IRegion newRegion() {
 		return new Region();
 	}
+
+	/**
+	 * Returns the names of all known loadpath variables.
+	 * <p>
+	 * Loadpath variable values are persisted locally to the workspace, and 
+	 * are preserved from session to session.
+	 * <p>
+	 *
+	 * @return the list of loadpath variable names
+	 * @see #setLoadpathVariable(String, IPath)
+	 */
+	public static String[] getLoadpathVariableNames() {
+		return RubyModelManager.getRubyModelManager().variableNames();
+	}
 }

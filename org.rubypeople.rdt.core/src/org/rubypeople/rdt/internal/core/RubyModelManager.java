@@ -2953,4 +2953,15 @@ public class RubyModelManager implements IContentTypeChangeListener, ISavePartic
 		return VERBOSE;
 	}
 
+	public synchronized String[] variableNames(){
+		int length = this.variables.size();
+		String[] result = new String[length];
+		Iterator vars = this.variables.keySet().iterator();
+		int index = 0;
+		while (vars.hasNext()) {
+			result[index++] = (String) vars.next();
+		}
+		return result;
+	}
+
 }
