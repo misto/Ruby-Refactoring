@@ -338,7 +338,7 @@ public class AptanaRDTPlugin extends Plugin {
 	}
 
 	public static void log(Throwable e) {
-		log(new Status(IStatus.ERROR, getPluginId(), -1, RubyRedMessages.RubyRedPlugin_internal_error, e)); 
+		log(new Status(IStatus.ERROR, getPluginId(), -1, AptanaRDTMessages.RubyRedPlugin_internal_error, e)); 
 	}
 	
 	public static void log(IStatus status) {
