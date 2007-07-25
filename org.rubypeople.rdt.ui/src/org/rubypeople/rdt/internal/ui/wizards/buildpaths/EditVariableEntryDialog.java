@@ -250,7 +250,7 @@ public class EditVariableEntryDialog extends StatusDialog {
 				return status;
 			}
 			File file= resolvedPath.toFile();
-			if (!file.isFile()) {				
+			if (!file.isDirectory()) {				
 				String message= Messages.format(NewWizardMessages.EditVariableEntryDialog_filename_error_filenotexists, resolvedPath.toOSString()); 
 				status.setInfo(message);
 				return status;
