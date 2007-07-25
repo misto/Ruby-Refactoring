@@ -44,8 +44,6 @@ import org.eclipse.debug.core.ILaunchConfigurationWorkingCopy;
 import org.eclipse.debug.core.ILaunchManager;
 import org.eclipse.debug.core.model.IProcess;
 import org.eclipse.debug.ui.IDebugUIConstants;
-import org.eclipse.jface.dialogs.Dialog;
-import org.eclipse.swt.widgets.Display;
 import org.rubypeople.rdt.launching.IRubyLaunchConfigurationConstants;
 import org.rubypeople.rdt.launching.IVMInstall;
 import org.rubypeople.rdt.launching.RubyRuntime;
@@ -57,8 +55,6 @@ import com.aptana.rdt.AptanaRDTPlugin;
 import com.aptana.rdt.core.gems.Gem;
 import com.aptana.rdt.core.gems.GemListener;
 import com.aptana.rdt.core.gems.IGemManager;
-import com.aptana.rdt.ui.gems.GemsMessages;
-import com.aptana.rdt.ui.gems.RemoveGemDialog;
 
 public class GemManager implements IGemManager {
 
@@ -438,14 +434,7 @@ public class GemManager implements IGemManager {
 	 * @see com.aptana.rdt.internal.gems.IGemManager#removeGem(com.aptana.rdt.internal.gems.Gem)
 	 */
 	public boolean removeGem(final Gem gem) {
-		if (gem.hasMultipleVersions()) {
-			RemoveGemDialog dialog = new RemoveGemDialog(Display.getDefault().getActiveShell(), gem.versions());
-			if (dialog.open() == Dialog.OK) {
-				return removeGem(new Gem(gem.getName(), dialog.getVersion(), null));
-			} else {
-				return false;
-			}
-		}
+		if (gem.hasMultipleVersions()) return false;
 		try {
 			String command = UNINSTALL_COMMAND + " " + gem.getName();			
 			if (gem.getVersion() != null

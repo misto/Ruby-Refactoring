@@ -12,18 +12,16 @@ import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Platform;
+import org.eclipse.core.runtime.Plugin;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.core.runtime.preferences.DefaultScope;
 import org.eclipse.core.runtime.preferences.IEclipsePreferences;
 import org.eclipse.core.runtime.preferences.IPreferencesService;
 import org.eclipse.core.runtime.preferences.InstanceScope;
-import org.eclipse.jface.resource.ImageDescriptor;
-import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.osgi.framework.BundleContext;
 import org.rubypeople.rdt.internal.core.RubyModelManager.EclipsePreferencesListener;
 import org.rubypeople.rdt.internal.launching.LaunchingPlugin;
-import org.rubypeople.rdt.internal.ui.IRubyStatusConstants;
 
 import com.aptana.rdt.core.gems.Gem;
 import com.aptana.rdt.core.gems.GemListener;
@@ -34,7 +32,7 @@ import com.aptana.rdt.internal.ui.RubyRedMessages;
 /**
  * The activator class controls the plug-in life cycle
  */
-public class AptanaRDTPlugin extends AbstractUIPlugin {
+public class AptanaRDTPlugin extends Plugin {
 
 	// The plug-in ID
 	public static final String PLUGIN_ID = "com.aptana.rdt";
@@ -328,17 +326,6 @@ public class AptanaRDTPlugin extends AbstractUIPlugin {
 	public static AptanaRDTPlugin getDefault() {
 		return plugin;
 	}
-
-	/**
-	 * Returns an image descriptor for the image file at the given
-	 * plug-in relative path
-	 *
-	 * @param path the path
-	 * @return the image descriptor
-	 */
-	public static ImageDescriptor getImageDescriptor(String path) {
-		return imageDescriptorFromPlugin(PLUGIN_ID, path);
-	}
 	
 	public static File getFileInPlugin(IPath path) {
 		try {
@@ -352,7 +339,7 @@ public class AptanaRDTPlugin extends AbstractUIPlugin {
 	}
 
 	public static void log(Throwable e) {
-		log(new Status(IStatus.ERROR, getPluginId(), IRubyStatusConstants.INTERNAL_ERROR, RubyRedMessages.RubyRedPlugin_internal_error, e)); 
+		log(new Status(IStatus.ERROR, getPluginId(), -1, RubyRedMessages.RubyRedPlugin_internal_error, e)); 
 	}
 	
 	public static void log(IStatus status) {
