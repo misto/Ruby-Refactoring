@@ -7,6 +7,7 @@ import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
@@ -44,6 +45,7 @@ import org.eclipse.debug.core.ILaunchConfigurationWorkingCopy;
 import org.eclipse.debug.core.ILaunchManager;
 import org.eclipse.debug.core.model.IProcess;
 import org.eclipse.debug.ui.IDebugUIConstants;
+import org.rubypeople.rdt.internal.launching.StandardVMType;
 import org.rubypeople.rdt.launching.IRubyLaunchConfigurationConstants;
 import org.rubypeople.rdt.launching.IVMInstall;
 import org.rubypeople.rdt.launching.RubyRuntime;
@@ -279,14 +281,36 @@ public class GemManager implements IGemManager {
 	}
 
 	private Set<Gem> loadLocalGems() {
-		if (!isRubyGemsInstalled()) return new HashSet<Gem>();
-		ILaunchConfiguration config = createGemLaunchConfiguration(LIST_COMMAND + " " + LOCAL_SWITCH, false);
-		List<String> lines = readOutput(config);
-		StringBuffer buffer = new StringBuffer();
-		for (int i = 0; i < lines.size(); i++) {
-			buffer.append(lines.get(i));
-			if (i < (lines.size() - 1)) buffer.append("\n");
+		if (!isRubyGemsInstalled()) return new HashSet<Gem>();	
+		
+		StringBuffer buffer;
+		try {
+			List<String> line = new ArrayList<String>();
+			IVMInstall vm = RubyRuntime.getDefaultVMInstall();
+			File executable = StandardVMType.findRubyExecutable(vm.getInstallLocation());
+			line.add(executable.getAbsolutePath());
+			line.add(getGemScriptPath());
+			line.add(LIST_COMMAND);
+			line.add(LOCAL_SWITCH);
+			File workingDirectory = new File(getGemScriptPath()).getParentFile();
+			String[] cmdLine = new String[line.size()];
+			cmdLine = line.toArray(cmdLine);
+			Process p = DebugPlugin.exec(cmdLine, workingDirectory);
+			BufferedReader reader = new BufferedReader(new InputStreamReader(p.getInputStream()));
+			String liner = null;
+			buffer = new StringBuffer();
+			while ((liner = reader.readLine()) != null) {
+				buffer.append(liner);
+				buffer.append("\n");
+			}
+		} catch (CoreException e) {
+			AptanaRDTPlugin.log(e);
+			return new HashSet<Gem>();
+		} catch (IOException e) {
+			AptanaRDTPlugin.log(e);
+			return new HashSet<Gem>();
 		}
+		buffer.deleteCharAt(buffer.length() - 1); // remove last \n
 		GemParser parser = new GemParser();
 		return parser.parse(buffer.toString());
 	}
@@ -564,7 +588,7 @@ public class GemManager implements IGemManager {
 		listeners.remove(listener);
 	}
 
-	public IPath getGemInstallPath() {
+	public IPath getGemInstallPath() { // FIXME Make like loadLocalGems, so a console view is never shown when this gets run!
 		if (fGemInstallPath == null) {
 			if (!isRubyGemsInstalled()) return null;
 			ILaunchConfiguration config = createGemLaunchConfiguration("environment", false);
