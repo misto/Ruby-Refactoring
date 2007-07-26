@@ -11,18 +11,13 @@ import com.aptana.rdt.AptanaRDTPlugin;
 public class RubyGemsInitializer implements IStartup, IVMInstallChangedListener {
 
 	public void earlyStartup() {
-		// If ruby isn't set up, listen until we have an interpreter
-		IVMInstall vm = RubyRuntime.getDefaultVMInstall();
-		if (vm == null) {
-			RubyRuntime.addVMInstallChangedListener(this);
-		} else {
-			AptanaRDTPlugin.getDefault().getGemManager().initialize();
-		}
+		AptanaRDTPlugin.getDefault().getGemManager().initialize();
+		RubyRuntime.addVMInstallChangedListener(this); // when default interpreter changes, refresh local gem listing
 	}
 
 	public void defaultVMInstallChanged(IVMInstall previous, IVMInstall current) {
-		if (current != null && !AptanaRDTPlugin.getDefault().getGemManager().isInitialized()) {
-			AptanaRDTPlugin.getDefault().getGemManager().initialize();
+		if (current != null) {
+			AptanaRDTPlugin.getDefault().getGemManager().refresh();
 		}		
 	}
 
