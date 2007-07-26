@@ -43,11 +43,12 @@ import org.eclipse.debug.core.ILaunchConfiguration;
 import org.eclipse.debug.core.ILaunchConfigurationType;
 import org.eclipse.debug.core.ILaunchConfigurationWorkingCopy;
 import org.eclipse.debug.core.ILaunchManager;
-import org.eclipse.debug.core.model.IProcess;
 import org.eclipse.debug.ui.IDebugUIConstants;
 import org.rubypeople.rdt.internal.launching.StandardVMType;
 import org.rubypeople.rdt.launching.IRubyLaunchConfigurationConstants;
 import org.rubypeople.rdt.launching.IVMInstall;
+import org.rubypeople.rdt.launching.IVMInstallChangedListener;
+import org.rubypeople.rdt.launching.PropertyChangeEvent;
 import org.rubypeople.rdt.launching.RubyRuntime;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
@@ -85,11 +86,24 @@ public class GemManager implements IGemManager {
 	protected boolean isInitialized;
 
 	private GemManager() {
-		gems = new HashSet<Gem>();
+		gems = loadLocalCache(getConfigFile(LOCAL_GEMS_CACHE_FILE));
 		// FIXME Somehow allow user to refresh remote gem list
 		// FIXME Do an incremental check for new remote gems somehow?
-		remoteGems = new HashSet<Gem>();
+		remoteGems = loadLocalCache(getConfigFile(REMOTE_GEMS_CACHE_FILE));
 		listeners = new HashSet<GemListener>();
+		RubyRuntime.addVMInstallChangedListener(new IVMInstallChangedListener() {
+		
+			public void vmRemoved(IVMInstall removedVm) {}
+		
+			public void vmChanged(PropertyChangeEvent event) {}
+		
+			public void vmAdded(IVMInstall newVm) {}
+		
+			public void defaultVMInstallChanged(IVMInstall previous, IVMInstall current) {
+				fGemInstallPath = null;		
+			}
+		
+		});
 	}
 	
 	public boolean isInitialized() {
@@ -176,8 +190,7 @@ public class GemManager implements IGemManager {
 			try {
 				lines = getContents();
 			} catch (DataFormatException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				AptanaRDTPlugin.log(e);
 			}
 			return convertToGems(lines);
 		} catch (MalformedURLException e) {
@@ -281,17 +294,26 @@ public class GemManager implements IGemManager {
 	}
 
 	private Set<Gem> loadLocalGems() {
-		if (!isRubyGemsInstalled()) return new HashSet<Gem>();	
-		
+		if (!isRubyGemsInstalled()) return new HashSet<Gem>();
+		GemParser parser = new GemParser();
+		List<String> commands = new ArrayList<String>();
+		commands.add(LIST_COMMAND);
+		commands.add(LOCAL_SWITCH);
+		return parser.parse(execAndReadOutput(commands));
+	}
+
+	private String execAndReadOutput(List<String> commands) {
 		StringBuffer buffer;
 		try {
 			List<String> line = new ArrayList<String>();
 			IVMInstall vm = RubyRuntime.getDefaultVMInstall();
+			if (vm == null) return "";
 			File executable = StandardVMType.findRubyExecutable(vm.getInstallLocation());
 			line.add(executable.getAbsolutePath());
 			line.add(getGemScriptPath());
-			line.add(LIST_COMMAND);
-			line.add(LOCAL_SWITCH);
+			for (String command : commands) {
+				line.add(command);
+			}
 			File workingDirectory = new File(getGemScriptPath()).getParentFile();
 			String[] cmdLine = new String[line.size()];
 			cmdLine = line.toArray(cmdLine);
@@ -305,14 +327,13 @@ public class GemManager implements IGemManager {
 			}
 		} catch (CoreException e) {
 			AptanaRDTPlugin.log(e);
-			return new HashSet<Gem>();
+			return "";
 		} catch (IOException e) {
 			AptanaRDTPlugin.log(e);
-			return new HashSet<Gem>();
+			return "";
 		}
 		buffer.deleteCharAt(buffer.length() - 1); // remove last \n
-		GemParser parser = new GemParser();
-		return parser.parse(buffer.toString());
+		return buffer.toString();
 	}
 
 	/*
@@ -588,53 +609,19 @@ public class GemManager implements IGemManager {
 		listeners.remove(listener);
 	}
 
-	public IPath getGemInstallPath() { // FIXME Make like loadLocalGems, so a console view is never shown when this gets run!
+	public IPath getGemInstallPath() {
 		if (fGemInstallPath == null) {
 			if (!isRubyGemsInstalled()) return null;
-			ILaunchConfiguration config = createGemLaunchConfiguration("environment", false);
-			List<String> lines = readOutput(config);
-			if (lines == null || lines.size() < 3) return null;
-			String path = lines.get(2);
+			List<String> commands = new ArrayList<String>();
+			commands.add("environment");
+			String output = execAndReadOutput(commands);
+			String[] lines = output.split("\n");
+			if (lines == null || lines.length < 3) return null;
+			String path = lines[2];
 			path = path.substring(path.indexOf("INSTALLATION DIRECTORY:") + 23);
 			fGemInstallPath = new Path(path.trim());
 		}
 		return fGemInstallPath;
-	}
-
-	private List<String> readOutput(ILaunchConfiguration config) {
-		List<String> lines = new ArrayList<String>();
-		File file = null;
-		BufferedReader reader = null;
-		try {
-			ILaunch launch = config.launch(ILaunchManager.RUN_MODE, null);
-			IProcess[] processes = launch.getProcesses();
-			IProcess p = processes[0];
-			while (!p.isTerminated()) {
-				Thread.yield();
-			}
-			file = new File(config.getAttribute(IDebugUIConstants.ATTR_CAPTURE_IN_FILE, (String) null));
-			reader = new BufferedReader(new FileReader(file));			
-			String line = null;
-			while ((line = reader.readLine()) != null) {
-				lines.add(line);
-			}
-		} catch(CoreException e) {
-			AptanaRDTPlugin.log(e);
-		} catch (FileNotFoundException e) {
-			AptanaRDTPlugin.log(e);
-		} catch (IOException e) {
-			AptanaRDTPlugin.log(e);
-		} finally {
-			try {
-				if (reader != null) reader.close();
-			} catch (IOException e) {
-				// ignore
-			}
-			if (file != null) {
-				file.delete();
-			}
-		}
-		return lines;
 	}
 
 	public IPath getGemPath(String gemName) {
@@ -689,11 +676,10 @@ public class GemManager implements IGemManager {
 			@Override
 			protected IStatus run(IProgressMonitor monitor) {
 				try {
-					gems = loadLocalCache(getConfigFile(LOCAL_GEMS_CACHE_FILE));
-					if (gems.isEmpty()) {
+//					if (gems.isEmpty()) {
 						gems = loadLocalGems();
 						storeGemCache(gems, getConfigFile(LOCAL_GEMS_CACHE_FILE));
-					}
+//					}
 					isInitialized = true;
 					synchronized (listeners) {
 						for (GemListener listener : new ArrayList<GemListener>(listeners)) {
@@ -722,12 +708,11 @@ public class GemManager implements IGemManager {
 			@Override
 			protected IStatus run(IProgressMonitor monitor) {
 				try {
-					remoteGems = loadLocalCache(getConfigFile(REMOTE_GEMS_CACHE_FILE));
-					if (remoteGems.isEmpty()) {
+//					if (remoteGems.isEmpty()) {
 						remoteGems = loadRemoteGems();
 						storeGemCache(remoteGems,
 								getConfigFile(REMOTE_GEMS_CACHE_FILE));
-					}
+//					}
 				} catch (Exception e) {
 					AptanaRDTPlugin.log(e);
 					return Status.CANCEL_STATUS;

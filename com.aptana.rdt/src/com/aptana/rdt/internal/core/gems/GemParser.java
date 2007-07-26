@@ -5,12 +5,12 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import com.aptana.rdt.AptanaRDTPlugin;
 import com.aptana.rdt.core.gems.Gem;
 
 public class GemParser {
 
 	public Set<Gem> parse(String string) {
+		if (string == null || string.trim().length() == 0) return new HashSet<Gem>();
 		String[] raw = string.split("\n");
 		List<String> lines = new ArrayList<String>();
 		for (int i = 0; i < raw.length; i++) {
