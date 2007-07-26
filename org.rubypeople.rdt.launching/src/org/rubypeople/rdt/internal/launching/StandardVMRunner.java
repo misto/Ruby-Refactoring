@@ -147,7 +147,7 @@ public class StandardVMRunner extends AbstractVMRunner {
 			return string;
 		}
 				
-		// Build the path to the ruby executable.  First try 'bin'
+		// Build the path to the ruby executable.
 		String installLocation = fVMInstance.getInstallLocation().getAbsolutePath() + File.separatorChar;
 		File exe = new File(installLocation + "bin" + File.separatorChar + command); //$NON-NLS-1$ 		
 		if (fileExists(exe)){
@@ -155,6 +155,18 @@ public class StandardVMRunner extends AbstractVMRunner {
 			return string;
 		}
 		exe = new File(exe.getAbsolutePath() + ".exe"); //$NON-NLS-1$
+		if (fileExists(exe)){
+			string.add(exe.getAbsolutePath());
+			return string;
+		}
+		// HACK FIXME This is just to allow for jruby!
+		String path = installLocation + "bin" + File.separatorChar + "j" + command; //$NON-NLS-1$  //$NON-NLS-2$
+		exe = new File(path + ".bat"); //$NON-NLS-1$ 	
+		if (fileExists(exe)){
+			string.add(exe.getAbsolutePath());
+			return string;
+		}
+		exe = new File(path);
 		if (fileExists(exe)){
 			string.add(exe.getAbsolutePath());
 			return string;
