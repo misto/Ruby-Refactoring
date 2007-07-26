@@ -22,6 +22,7 @@ import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IPartListener;
 import org.eclipse.ui.IPropertyListener;
 import org.eclipse.ui.IWindowListener;
+import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.rubypeople.rdt.internal.debug.core.model.RubyDebugTarget;
@@ -115,7 +116,9 @@ public class CodeReloader implements IPartListener, IPropertyListener, IWindowLi
 			public void run() {
 				IWorkbenchWindow activeWindow = RdtDebugUiPlugin.getDefault().getWorkbench().getActiveWorkbenchWindow();
 				if (activeWindow == null) { return; }
-				addAsListener(RdtDebugUiPlugin.getDefault().getWorkbench().getActiveWorkbenchWindow().getActivePage().getActivePart());
+				IWorkbenchPage page = activeWindow.getActivePage();
+				if (page == null) { return; }
+				addAsListener(page.getActivePart());
 			}
 		});
 	}
