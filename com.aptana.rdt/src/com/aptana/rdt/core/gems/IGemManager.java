@@ -6,34 +6,118 @@ import org.eclipse.core.runtime.IPath;
 
 public interface IGemManager {
 
-	public abstract boolean update(Gem gem);
+	/**
+	 * Returns a listing of the local gems.
+	 * 
+	 * @return a Set<Gem> of the installed gems.
+	 */
+	public Set<Gem> getGems();
 
-	public abstract boolean installGem(Gem gem);
+	/**
+	 * Returns a listing of the remote gems.
+	 * 
+	 * @return a Set<Gem> of the remote gems available for install.
+	 */
+	public Set<Gem> getRemoteGems();
 
-	public abstract boolean removeGem(Gem gem);
+	public boolean installGem(Gem gem);
 
-	public abstract Set<Gem> getGems();
+	/**
+	 * Removes or uninstalls the supplied gem.
+	 * 
+	 * @param gem
+	 *            the Gem to remove
+	 * @return a boolean indicating whether the operation was a success.
+	 */
+	public boolean removeGem(Gem gem);
 
-	public abstract boolean refresh();
+	/**
+	 * Updates the supplied gem, if a newer version is available.
+	 * 
+	 * @param gem
+	 *            the Gem to update
+	 * @return a boolean indicating whether the operation was a success.
+	 */
+	public boolean update(Gem gem);
 
-	public abstract void addGemListener(GemListener listener);
+	/**
+	 * Runs a "gem update" command for all gems. For any local gems that have a
+	 * newer version, the IOGemManager will install the new versions.
+	 * 
+	 * @return a boolean indicating whether the operation was a success.
+	 */
+	public boolean updateAll();
 
-	public abstract Set<Gem> getRemoteGems();
+	/**
+	 * Query method to indicate if a gem using the supplied name is installed
+	 * locally.
+	 * 
+	 * @param gemName
+	 *            The unique name of the gem
+	 * @return a boolean indicating whether the gem is installed
+	 */
+	public boolean gemInstalled(String gemName);
 
-	public abstract boolean gemInstalled(String gemName);
+	/**
+	 * Forces the GemManager to refresh it's listing of local gems
+	 * 
+	 * @return a boolean indicating if it was a successful operation
+	 */
+	public boolean refresh();
 
-	public abstract void removeGemListener(GemListener listener);
+	public void addGemListener(GemListener listener);
 
-	public abstract IPath getGemInstallPath();
+	public void removeGemListener(GemListener listener);
 
-	public abstract IPath getGemPath(String gemName);
-	
-	public abstract IPath getGemPath(String gemName, String version);
+	/**
+	 * The base IPath where gems are installed.
+	 * 
+	 * @return an IPath indicating where gems get installed
+	 */
+	public IPath getGemInstallPath();
 
-	public abstract boolean updateAll();
-	
-	public abstract boolean isInitialized();
+	/**
+	 * Returns an IPath pointing to the latest version of the gem with the
+	 * supplied name.
+	 * 
+	 * @param gemName
+	 * @return an IPath pointing to the gem's location on disk for the latest
+	 *         version of the gem
+	 */
+	public IPath getGemPath(String gemName);
 
-	public abstract void initialize();
+	/**
+	 * Returns an IPath pointing to the supplied version of the gem with the
+	 * supplied name.
+	 * 
+	 * @param gemName
+	 *            The name of the gem to match
+	 * @param version
+	 *            The version to match
+	 * @return an IPath pointing to the gem's location on disk
+	 */
+	public IPath getGemPath(String gemName, String version);
+
+	/**
+	 * Determine whether it appears that the RubyGems library is installed (for
+	 * the current/default VM).
+	 * 
+	 * @return a boolean indicating if it appears that RubyGems is installed
+	 */
+	public boolean isRubyGemsInstalled();
+
+	/**
+	 * Forces the IGemManager to load local cached copies of the remote and
+	 * local gems listings. If empty, it refreshes it's local and remote gem
+	 * listing from original sources.
+	 */
+	public void initialize();
+
+	/**
+	 * Query to indicate whether the IGemManager has been initialized yet.
+	 * 
+	 * @return
+	 */
+	public boolean isInitialized();
 
 }

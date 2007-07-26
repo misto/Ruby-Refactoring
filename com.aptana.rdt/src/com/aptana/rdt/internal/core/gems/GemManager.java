@@ -389,7 +389,7 @@ public class GemManager implements IGemManager {
 		return path + File.separator + "bin" + File.separator + "gem";
 	}
 	
-	private boolean isRubyGemsInstalled() {
+	public boolean isRubyGemsInstalled() {
 		String path = getGemScriptPath();
 		if (path == null) return false;
 		File file = new File(path);
