@@ -69,8 +69,6 @@ public class GemManager implements IGemManager {
 	private static final String UPDATE_COMMAND = "update";
 	private static final String EXECUTABLE = "ruby";
 
-	private static final String VM_ARGS = "-e STDOUT.sync=true -e STDERR.sync=true -e load(ARGV.shift)";
-
 	private static final String REMOTE_GEMS_CACHE_FILE = "remote_gems.xml";
 	private static final String LOCAL_GEMS_CACHE_FILE = "local_gems.xml";
 
@@ -100,7 +98,9 @@ public class GemManager implements IGemManager {
 			public void vmAdded(IVMInstall newVm) {}
 		
 			public void defaultVMInstallChanged(IVMInstall previous, IVMInstall current) {
-				fGemInstallPath = null;		
+				fGemInstallPath = null;
+				gems.clear();
+				storeGemCache(gems, getConfigFile(LOCAL_GEMS_CACHE_FILE));
 			}
 		
 		});
@@ -398,7 +398,7 @@ public class GemManager implements IGemManager {
 					arguments);
 			wc.setAttribute(
 					IRubyLaunchConfigurationConstants.ATTR_VM_ARGUMENTS,
-					VM_ARGS);
+					"");
 			Map<String, String> map = new HashMap<String, String>();
 			map.put(IRubyLaunchConfigurationConstants.ATTR_RUBY_COMMAND,
 					EXECUTABLE);
