@@ -22,7 +22,7 @@ public class LogicalType extends RubyType implements IType {
 		for (int i = 0; i < types.length; i++) {
 			IRubyElement[] subchildren = types[i].getChildren();
 			for (int j = 0; j < subchildren.length; j++) {
-				children.add(subchildren[j]);
+				if (subchildren[j] != null) children.add(subchildren[j]);
 			}
 		}
 		return (IRubyElement[]) children.toArray(new IRubyElement[children.size()]);

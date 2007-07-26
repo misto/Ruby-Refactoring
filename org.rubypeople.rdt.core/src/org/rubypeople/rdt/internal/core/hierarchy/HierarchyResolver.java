@@ -13,6 +13,8 @@ import org.rubypeople.rdt.internal.codeassist.RubyElementRequestor;
 import org.rubypeople.rdt.internal.core.LogicalType;
 import org.rubypeople.rdt.internal.core.Openable;
 
+import com.sun.org.apache.bcel.internal.generic.GETSTATIC;
+
 public class HierarchyResolver {
 
 	private boolean superTypesOnly;
@@ -25,40 +27,25 @@ public class HierarchyResolver {
 	public void resolve(Openable[] openables, HashSet localTypes, IProgressMonitor monitor) {
 		try {
 			int openablesLength = openables.length;
-			boolean[] hasLocalType = new boolean[openablesLength];
-			org.rubypeople.rdt.core.IRubyScript[] cus = new org.rubypeople.rdt.core.IRubyScript[openablesLength];
-			int unitsIndex = 0;
 			
 			IType focus = this.builder.getType();
-			Openable focusOpenable = null;
-			if (focus != null) {
-				focusOpenable = (Openable)focus.getRubyScript();
-			}
 			
 			for (int i = 0; i < openablesLength; i++) {
 				Openable openable = openables[i];
 				if (openable instanceof org.rubypeople.rdt.core.IRubyScript) {
 					org.rubypeople.rdt.core.IRubyScript cu = (org.rubypeople.rdt.core.IRubyScript)openable;
-
-					// contains a potential subtype as a local or anonymous type?
-					boolean containsLocalType = false;
-					if (localTypes == null) { // case of hierarchy on region
-						containsLocalType = true;
-					} else {
-						IPath path = cu.getPath();
-						containsLocalType = localTypes.contains(path.toString());
-					}
 					
 					// Grab the types from the script and then connect them up!
 					IType[] types = cu.getAllTypes();
 					for (int j = 0; j < types.length; j++) {
 						IType type = types[j];
-						if (!type.getFullyQualifiedName().equals(builder.focusQualifiedName)) continue;
-						try {
-							reportHierarchy(types[j]);
-						} catch (RubyModelException e) {
-							// ignore
-						}
+						if (focusIsInHierarchy(focus, type)) { // if it's our focus type, or a subclass
+							try {
+								reportHierarchy(type);
+							} catch (RubyModelException e) {
+								// ignore
+							}
+						}						
 					}
 				}
 			}			
@@ -67,6 +54,12 @@ public class HierarchyResolver {
 		} finally {
 			reset();
 		}		
+	}
+
+	private boolean focusIsInHierarchy(IType focus, IType type) throws RubyModelException {
+		if (focus == null || type == null) return false;
+		if (type.getFullyQualifiedName().equals(focus.getFullyQualifiedName())) return true; // type is focus
+		return focusIsInHierarchy(focus, findSuperClass(type));
 	}
 
 	private void reportHierarchy(IType type) throws RubyModelException {
@@ -88,7 +81,14 @@ public class HierarchyResolver {
 		String[] names = type.getIncludedModuleNames();
 		List<IType> types = new ArrayList<IType>();
 		for (int i = 0; i < names.length; i++) {
-			types.add(getLogicalType(type, names[i]));
+			IType logical = getLogicalType(type, names[i]);
+			if (logical == null) {
+				// try to see if full name is in same namespace.
+				String namespace = type.getFullyQualifiedName().substring(0, type.getFullyQualifiedName().length() - type.getElementName().length());
+				logical = getLogicalType(type, namespace + names[i]);
+				if (logical == null) continue;
+			}
+			types.add(logical);
 		}
 		return (IType[]) types.toArray(new IType[types.size()]);
 	}
@@ -100,10 +100,27 @@ public class HierarchyResolver {
 	}
 
 	private IType getLogicalType(IType type, String name) {
+//		if (type instanceof LogicalType) {
+//			try {
+//				return getLogicalType((LogicalType)type, name);
+//			} catch (RubyModelException e) {
+//				// ignore
+//			}
+//		}
 		RubyElementRequestor requestor = new RubyElementRequestor(type.getRubyScript());
 		IType[] types = requestor.findType(name);
 		if (types == null || types.length == 0) return null;
 		return new LogicalType(types);
+	}
+	
+	private IType getLogicalType(LogicalType type, String name) throws RubyModelException {
+		IType[] types = type.getTypes();
+		for (int i = 0; i < types.length; i++) {
+			RubyElementRequestor requestor = new RubyElementRequestor(types[i].getRubyScript());
+			IType[] result = requestor.findType(name);
+			if (types != null && types.length > 0) return new LogicalType(result); // FIXME Concatenate results?
+		}
+		return null;
 	}
 
 	private void reset() {
