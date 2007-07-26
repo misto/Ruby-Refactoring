@@ -169,7 +169,6 @@ public class GemManager implements IGemManager {
 	}
 
 	private Set<Gem> loadRemoteGems() {
-
 		try {
 			List<String> lines = new ArrayList<String>();
 			try {
@@ -280,6 +279,7 @@ public class GemManager implements IGemManager {
 	}
 
 	private Set<Gem> loadLocalGems() {
+		if (!isRubyGemsInstalled()) return new HashSet<Gem>();
 		ILaunchConfiguration config = createGemLaunchConfiguration(LIST_COMMAND + " " + LOCAL_SWITCH, false);
 		List<String> lines = readOutput(config);
 		StringBuffer buffer = new StringBuffer();
@@ -297,6 +297,7 @@ public class GemManager implements IGemManager {
 	 * @see com.aptana.rdt.internal.gems.IGemManager#update(com.aptana.rdt.internal.gems.Gem)
 	 */
 	public boolean update(final Gem gem) {
+		if (!isRubyGemsInstalled()) return false;
 		try {
 			String command = UPDATE_COMMAND + " " + gem.getName();
 			ILaunchConfiguration config = createGemLaunchConfiguration(command, true);
@@ -382,9 +383,17 @@ public class GemManager implements IGemManager {
 
 	private static String getGemScriptPath() {
 		IVMInstall vm = RubyRuntime.getDefaultVMInstall();
+		if (vm == null) return null;
 		File installLocation = vm.getInstallLocation();
 		String path = installLocation.getAbsolutePath();
 		return path + File.separator + "bin" + File.separator + "gem";
+	}
+	
+	private boolean isRubyGemsInstalled() {
+		String path = getGemScriptPath();
+		if (path == null) return false;
+		File file = new File(path);
+		return file.exists();
 	}
 
 	/*
@@ -393,6 +402,7 @@ public class GemManager implements IGemManager {
 	 * @see com.aptana.rdt.internal.gems.IGemManager#installGem(com.aptana.rdt.internal.gems.Gem)
 	 */
 	public boolean installGem(final Gem gem) {
+		if (!isRubyGemsInstalled()) return false;
 		try {
 			String command = INSTALL_COMMAND + " " + gem.getName();
 			if (gem.getVersion() != null
@@ -434,6 +444,7 @@ public class GemManager implements IGemManager {
 	 * @see com.aptana.rdt.internal.gems.IGemManager#removeGem(com.aptana.rdt.internal.gems.Gem)
 	 */
 	public boolean removeGem(final Gem gem) {
+		if (!isRubyGemsInstalled()) return false;
 		try {
 			String command = UNINSTALL_COMMAND + " " + gem.getName();			
 			if (gem.getVersion() != null
@@ -555,6 +566,7 @@ public class GemManager implements IGemManager {
 
 	public IPath getGemInstallPath() {
 		if (fGemInstallPath == null) {
+			if (!isRubyGemsInstalled()) return null;
 			ILaunchConfiguration config = createGemLaunchConfiguration("environment", false);
 			List<String> lines = readOutput(config);
 			if (lines == null || lines.size() < 3) return null;
@@ -618,6 +630,7 @@ public class GemManager implements IGemManager {
 	}
 
 	public boolean updateAll() {
+		if (!isRubyGemsInstalled()) return false;
 		try {
 			ILaunchConfiguration config = createGemLaunchConfiguration(UPDATE_COMMAND, true);
 			final ILaunch launch = config.launch(ILaunchManager.RUN_MODE, null);
