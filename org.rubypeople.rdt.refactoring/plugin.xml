@@ -19,34 +19,6 @@
                path="edit">
             <separator name="org.rubypeople.rdt.refactoring.refactoringGroup"/>
          </menu>
-         <menu
-               id="org.rubypeople.rdt.refactoring.sourceMenu"
-               label="%rubyRefactoring.sourceMenuLabel"
-               path="edit">
-            <separator name="org.rubypeople.rdt.refactoring.sourceGeneratorGroup"/>
-         </menu>
-<!-- Source: -->       
-         <action
-               class="org.rubypeople.rdt.refactoring.action.OverrideMethodAction"
-               definitionId="org.rubypeople.rdt.refactoring.command.OverrideMethod"
-               id="org.rubypeople.rdt.refactoring.overrideMethodAction"
-               label="%rubyRefactoring.OverrideMethodLabel"
-               menubarPath="org.rubypeople.rdt.refactoring.sourceMenu/org.rubypeople.rdt.refactoring.sourceGeneratorGroup"
-               tooltip="Add Constructor from Superclass"/>
-         <action
-               class="org.rubypeople.rdt.refactoring.action.GenerateConstructorAction"
-               definitionId="org.rubypeople.rdt.refactoring.command.GenerateConstructor"
-               id="org.rubypeople.rdt.refactoring.generateConstructorAction"
-               label="%rubyRefactoring.GenerateConstructorLabel"
-               menubarPath="org.rubypeople.rdt.refactoring.sourceMenu/org.rubypeople.rdt.refactoring.sourceGeneratorGroup"
-               tooltip="Generate Constructor"/>
-         <action
-               class="org.rubypeople.rdt.refactoring.action.GenerateAccessorsAction"
-               definitionId="org.rubypeople.rdt.refactoring.command.GenerateAccessors"
-               id="org.rubypeople.rdt.refactoring.generateaccessors"
-               label="%rubyRefactoring.GenerateAccessorLabel"
-               menubarPath="org.rubypeople.rdt.refactoring.sourceMenu/org.rubypeople.rdt.refactoring.sourceGeneratorGroup"
-               tooltip="Generate Accessors"/>      
 <!-- experimental
          <action
                class="org.rubypeople.rdt.refactoring.action.FormatSourceAction"
@@ -398,4 +370,42 @@
          </enablement>
       </changePreviewViewer>
    </extension>
+<extension
+      point="org.eclipse.ui.actionSets">
+   <actionSet
+         id="org.rubypeople.rdt.ui.RefactoringActionSet"
+         label="org.rubypeople.rdt.ui.RefactoringActionSet"
+         visible="false">
+      <action
+            class="org.rubypeople.rdt.refactoring.action.GenerateConstructorAction"
+            definitionId="org.rubypeople.rdt.refactoring.command.GenerateConstructor"
+            id="org.rubypeople.rdt.refactoring.generateConstructorAction"
+            label="%rubyRefactoring.GenerateConstructorLabel"
+            menubarPath="org.rubypeople.rdt.ui.source.menu/generateGroup"
+            style="push"
+            tooltip="Generate Constructor"/>
+      <action
+            class="org.rubypeople.rdt.refactoring.action.GenerateAccessorsAction"
+            definitionId="org.rubypeople.rdt.refactoring.command.GenerateAccessors"
+            id="org.rubypeople.rdt.refactoring.generateaccessors"
+            label="%rubyRefactoring.GenerateAccessorLabel"
+            menubarPath="org.rubypeople.rdt.ui.source.menu/generateGroup"
+            style="push"
+            tooltip="Generate Accessors"/>
+      <action
+            class="org.rubypeople.rdt.refactoring.action.OverrideMethodAction"
+            definitionId="org.rubypeople.rdt.refactoring.command.OverrideMethod"
+            id="org.rubypeople.rdt.refactoring.overrideMethodAction"
+            label="%rubyRefactoring.OverrideMethodLabel"
+            menubarPath="org.rubypeople.rdt.ui.source.menu/generateGroup"
+            style="push"
+            tooltip="Add Constructor from Superclass"/>
+   </actionSet>
+</extension>
+<extension
+      point="org.eclipse.ui.actionSetPartAssociations">
+   <actionSetPartAssociation targetID="org.rubypeople.rdt.ui.RefactoringActionSet">
+      <part id="org.rubypeople.rdt.ui.EditorRubyFile"/>
+   </actionSetPartAssociation>
+</extension>
 </plugin>
