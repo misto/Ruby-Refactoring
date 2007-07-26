@@ -5,15 +5,12 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 
-import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.rubypeople.rdt.core.IType;
 import org.rubypeople.rdt.core.RubyModelException;
 import org.rubypeople.rdt.internal.codeassist.RubyElementRequestor;
 import org.rubypeople.rdt.internal.core.LogicalType;
 import org.rubypeople.rdt.internal.core.Openable;
-
-import com.sun.org.apache.bcel.internal.generic.GETSTATIC;
 
 public class HierarchyResolver {
 
@@ -100,27 +97,10 @@ public class HierarchyResolver {
 	}
 
 	private IType getLogicalType(IType type, String name) {
-//		if (type instanceof LogicalType) {
-//			try {
-//				return getLogicalType((LogicalType)type, name);
-//			} catch (RubyModelException e) {
-//				// ignore
-//			}
-//		}
 		RubyElementRequestor requestor = new RubyElementRequestor(type.getRubyScript());
 		IType[] types = requestor.findType(name);
 		if (types == null || types.length == 0) return null;
 		return new LogicalType(types);
-	}
-	
-	private IType getLogicalType(LogicalType type, String name) throws RubyModelException {
-		IType[] types = type.getTypes();
-		for (int i = 0; i < types.length; i++) {
-			RubyElementRequestor requestor = new RubyElementRequestor(types[i].getRubyScript());
-			IType[] result = requestor.findType(name);
-			if (types != null && types.length > 0) return new LogicalType(result); // FIXME Concatenate results?
-		}
-		return null;
 	}
 
 	private void reset() {
