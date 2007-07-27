@@ -602,10 +602,10 @@
             name="%OpenTypeAction.label">
       </command>
       <command
-            name="%ActionDefinition.openTypeInHierarchy.name"
-            description="%ActionDefinition.openTypeInHierarchy.description"
             categoryId="org.eclipse.ui.category.navigate"
-            id="org.rubypeople.rdt.ui.navigate.open.type.in.hierarchy">
+            description="%ActionDefinition.openTypeInHierarchy.description"
+            id="org.rubypeople.rdt.ui.navigate.open.type.in.hierarchy"
+            name="%ActionDefinition.openTypeInHierarchy.name">
       </command>
       <command
             name="%ActionDefinition.show.outline.name"
@@ -686,6 +686,11 @@
             categoryId="org.eclipse.search.ui.category.search"
             id="org.rubypeople.rdt.ui.edit.text.ruby.search.read.access.in.working.set">
       </command>
+      <command
+            categoryId="org.eclipse.ui.category.navigate"
+            description="%ActionDefinition.openTypeHierarchy.description"
+            id="org.rubypeople.rdt.ui.edit.text.ruby.open.type.hierarchy"
+            name="%ActionDefinition.openTypeHierarchy.name"/>
      
    </extension>
    <extension
