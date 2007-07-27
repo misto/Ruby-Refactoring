@@ -358,7 +358,7 @@ public class RuntimeLoadpathEntry implements IRuntimeLoadpathEntry {
 	private void initializeLoadpathProperty() {
 		switch (getType()) {
 			case VARIABLE:
-				if (getVariableName().equals(RubyRuntime.RUBYLIB_VARIABLE)) {
+				if (getVariableName().equals(RubyRuntime.RUBYLIB_VARIABLE) || getVariableName().equals("GEM_LIB")) {
 					setLoadpathProperty(STANDARD_CLASSES);
 				} else {
 					setLoadpathProperty(USER_CLASSES);
