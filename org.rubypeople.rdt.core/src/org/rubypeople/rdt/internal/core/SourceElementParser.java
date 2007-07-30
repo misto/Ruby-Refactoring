@@ -52,6 +52,7 @@ import org.jruby.ast.InstVarNode;
 import org.jruby.ast.IterNode;
 import org.jruby.ast.LocalAsgnNode;
 import org.jruby.ast.ModuleNode;
+import org.jruby.ast.NewlineNode;
 import org.jruby.ast.Node;
 import org.jruby.ast.RootNode;
 import org.jruby.ast.SClassNode;
@@ -74,7 +75,7 @@ import org.rubypeople.rdt.internal.core.util.ASTUtil;
  * @author Chris
  * 
  */
-public class SourceElementParser extends InOrderVisitor { // TODO Rename to SourceElementParser
+public class SourceElementParser extends InOrderVisitor {
 
 	private static final String MODULE_FUNCTION = "module_function";
 	private static final String EMPTY_STRING = "";
@@ -473,6 +474,9 @@ public class SourceElementParser extends InOrderVisitor { // TODO Rename to Sour
 			if (mixinNameNode instanceof ConstNode) {
 				mixins.add(((ConstNode) mixinNameNode).getName());
 			}
+			if (mixinNameNode instanceof Colon2Node) {
+				mixins.add(ASTUtil.getFullyQualifiedName((Colon2Node) mixinNameNode));
+			}
 		}
 		for (String string : mixins) {
 			requestor.acceptMixin(string);
@@ -522,6 +526,39 @@ public class SourceElementParser extends InOrderVisitor { // TODO Rename to Sour
 		} else if (name.equals(MODULE_FUNCTION)) {
 			for (String methodName : arguments) {
 				requestor.acceptModuleFunction(methodName);
+			}
+		} else if (name.equals("class_eval")) {
+			Node receiver = iVisited.getReceiverNode();
+			if (receiver instanceof ConstNode || receiver instanceof Colon2Node) {			
+			String receiverName = null;
+				if (receiver instanceof Colon2Node) {
+					receiverName = ASTUtil
+							.getFullyQualifiedName((Colon2Node) receiver);
+				} else {
+					receiverName = ASTUtil.getNameReflectively(receiver);
+				}
+				requestor.acceptMethodReference(name, arguments.size(),
+						iVisited.getPosition().getStartOffset());
+
+				pushVisibility(Visibility.PUBLIC);
+
+				TypeInfo typeInfo = new TypeInfo();
+				typeInfo.name = receiverName;
+				typeInfo.declarationStart = iVisited.getPosition()
+						.getStartOffset();
+				typeInfo.nameSourceStart = receiver.getPosition()
+						.getStartOffset();
+				typeInfo.nameSourceEnd = receiver.getPosition().getEndOffset() - 1;
+				typeInfo.isModule = false;
+				typeInfo.modules = new String[0];
+				typeInfo.secondary = false;
+				requestor.enterType(typeInfo);
+
+				Instruction ins = super.visitCallNode(iVisited);
+				popVisibility();
+				requestor.exitType(iVisited.getPosition().getEndOffset() - 2);
+
+				return ins;		
 			}
 		}
 		requestor.acceptMethodReference(name, arguments.size(), iVisited.getPosition().getStartOffset());
