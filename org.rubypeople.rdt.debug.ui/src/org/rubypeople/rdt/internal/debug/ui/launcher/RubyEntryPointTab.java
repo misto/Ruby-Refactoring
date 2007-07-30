@@ -1,6 +1,7 @@
 package org.rubypeople.rdt.internal.debug.ui.launcher;
 
-import org.eclipse.core.resources.IFile;
+import java.io.File;
+
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
@@ -21,14 +22,14 @@ import org.rubypeople.rdt.internal.debug.ui.RdtDebugUiMessages;
 import org.rubypeople.rdt.internal.debug.ui.RdtDebugUiPlugin;
 import org.rubypeople.rdt.internal.ui.RubyPlugin;
 import org.rubypeople.rdt.internal.ui.RubyPluginImages;
-import org.rubypeople.rdt.internal.ui.util.RubyFileSelector;
+import org.rubypeople.rdt.internal.ui.util.FileSelector;
 import org.rubypeople.rdt.internal.ui.util.RubyProjectSelector;
 import org.rubypeople.rdt.launching.IRubyLaunchConfigurationConstants;
 
 public class RubyEntryPointTab extends AbstractLaunchConfigurationTab {
 	protected String originalFileName, originalProjectName;
 	protected RubyProjectSelector projectSelector;
-	protected RubyFileSelector fileSelector;
+	protected FileSelector fileSelector;
 
 	public RubyEntryPointTab() {
 		super();
@@ -48,7 +49,7 @@ public class RubyEntryPointTab extends AbstractLaunchConfigurationTab {
 		});
 
 		new Label(composite, SWT.NONE).setText(RdtDebugUiMessages.LaunchConfigurationTab_RubyEntryPoint_fileLabel);
-		fileSelector = new RubyFileSelector(composite, projectSelector);
+		fileSelector = new FileSelector(composite);
 		fileSelector.setBrowseDialogMessage(RdtDebugUiMessages.LaunchConfigurationTab_RubyEntryPoint_fileSelectorMessage);
 		fileSelector.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
 		fileSelector.addModifyListener(new ModifyListener() {
@@ -89,8 +90,8 @@ public class RubyEntryPointTab extends AbstractLaunchConfigurationTab {
 
 	public void performApply(ILaunchConfigurationWorkingCopy configuration) {
 		configuration.setAttribute(IRubyLaunchConfigurationConstants.ATTR_PROJECT_NAME, projectSelector.getSelectionText());
-		IFile file = fileSelector.getSelection();
-		configuration.setAttribute(IRubyLaunchConfigurationConstants.ATTR_FILE_NAME, file == null ? "" : file.getProjectRelativePath().toString());
+		File file = fileSelector.getSelection();
+		configuration.setAttribute(IRubyLaunchConfigurationConstants.ATTR_FILE_NAME, file == null ? "" : file.getAbsolutePath());
 	}
 
 	protected Composite createPageRoot(Composite parent) {
@@ -108,21 +109,16 @@ public class RubyEntryPointTab extends AbstractLaunchConfigurationTab {
 	}
 
 	public boolean isValid(ILaunchConfiguration launchConfig) {
-		try {
-				
-			String projectName = launchConfig.getAttribute(IRubyLaunchConfigurationConstants.ATTR_PROJECT_NAME, "");
-			if (projectName.length() == 0) {
-				setErrorMessage(RdtDebugUiMessages.LaunchConfigurationTab_RubyEntryPoint_invalidProjectSelectionMessage);
-				return false;
-			}
+		String projectName = projectSelector.getSelectionText();
+		if (projectName.length() == 0) {
+			setErrorMessage(RdtDebugUiMessages.LaunchConfigurationTab_RubyEntryPoint_invalidProjectSelectionMessage);
+			return false;
+		}
 
-			String fileName = launchConfig.getAttribute(IRubyLaunchConfigurationConstants.ATTR_FILE_NAME, "");
-			if (fileName.length() == 0) {
-				setErrorMessage(RdtDebugUiMessages.LaunchConfigurationTab_RubyEntryPoint_invalidFileSelectionMessage);
-				return false;
-			}
-		} catch (CoreException e) {
-			log(e);
+		String fileName = fileSelector.getSelectionText();
+		if (fileName.length() == 0) {
+			setErrorMessage(RdtDebugUiMessages.LaunchConfigurationTab_RubyEntryPoint_invalidFileSelectionMessage);
+			return false;
 		}
 		
 		setErrorMessage(null);
