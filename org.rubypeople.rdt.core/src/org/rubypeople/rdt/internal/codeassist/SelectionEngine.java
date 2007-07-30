@@ -59,8 +59,6 @@ import org.rubypeople.rdt.internal.ti.util.FirstPrecursorNodeLocator;
 import org.rubypeople.rdt.internal.ti.util.INodeAcceptor;
 import org.rubypeople.rdt.internal.ti.util.OffsetNodeLocator;
 
-import com.sun.corba.se.impl.io.FVDCodeBaseImpl;
-
 public class SelectionEngine {
 
 	private HashSet<IType> fVisitedTypes;
@@ -156,10 +154,32 @@ public class SelectionEngine {
 					if (method.getElementName().equals(methodName))
 						possible.add(method);
 				}
-			}		
+			}
+			if (possible.isEmpty()) {
+				// do a global search for method declarations matching this name				
+				try {
+					List<SearchMatch> results = search(IRubyElement.METHOD, methodName, IRubySearchConstants.DECLARATIONS, SearchPattern.R_EXACT_MATCH);
+					for (SearchMatch match : results) {
+						IRubyElement element = (IRubyElement) match.getElement();
+						possible.add(element);
+					}
+				} catch (CoreException e) {
+					RubyCore.log(e);
+				}
+			}
 			return possible.toArray(new IRubyElement[possible.size()]);
 		}
 		return new IRubyElement[0];
+	}
+
+	private List<SearchMatch> search(int type, String patternString, int limitTo, int matchRule) throws CoreException {
+		SearchEngine engine = new SearchEngine();
+		SearchPattern pattern = SearchPattern.createPattern(type, patternString, limitTo, matchRule);
+		SearchParticipant[] participants = new SearchParticipant[] {SearchEngine.getDefaultSearchParticipant()};
+		CollectingSearchRequestor requestor = new CollectingSearchRequestor();
+		IRubySearchScope scope = SearchEngine.createWorkspaceScope();
+		engine.search(pattern, participants, scope, requestor, null);
+		return requestor.getResults();
 	}
 	
 	private IType[] getReceiver(IRubyScript script, String source, Node selected, Node root, int start) {
