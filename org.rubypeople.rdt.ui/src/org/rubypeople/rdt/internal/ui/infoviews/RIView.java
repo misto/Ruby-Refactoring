@@ -158,6 +158,7 @@ public class RIView extends ViewPart implements RdocListener, IVMInstallChangedL
 	private void contributeToActionBars() {
 		IAction refreshAction = new Action() {
 			public void run() {
+				clearCache();
 				updatePage();
 			}
 		};
@@ -169,7 +170,14 @@ public class RIView extends ViewPart implements RdocListener, IVMInstallChangedL
 		manager.add(refreshAction);		
 	}
 	
-    private void updatePage() {
+    protected void clearCache() {
+		File index = getCachedIndex();
+		if (index != null) {
+			index.delete();
+		}
+	}
+
+	private void updatePage() {
     	initSearchList();
     	Display.getDefault().asyncExec(new Runnable () {
 		      public void run () {
@@ -416,27 +424,24 @@ public class RIView extends ViewPart implements RdocListener, IVMInstallChangedL
         protected void handleOutput(final String content) {
         	if (content == null)
 				return;
-//			try {
-				buffer = new StringBuffer();
-				buffer.append(content.replace("\n", "<br/>"));
-				buffer.insert(0, HEADER); // Put the header before all the contents
-				buffer.append(TAIL); // Put the body and html close tags at end
-				final String text = buffer.toString();
-				Display.getDefault().syncExec(new Runnable() {
-					public void run() {
-						searchResult.setText(text);
-					}
-				});
-//			} catch (IOException ioe) {
-//				ioe.printStackTrace();
-//			}
+			buffer = new StringBuffer();
+			buffer.append(content.replace("\n", "<br/>"));
+			buffer.insert(0, HEADER); // Put the header before all the contents
+			buffer.append(TAIL); // Put the body and html close tags at end
+			final String text = buffer.toString();
+			Display.getDefault().syncExec(new Runnable() {
+				public void run() {
+					searchResult.setText(text);
+				}
+			});
         }
     }
 
     /**
-	 * When teh rdoc has changed, automatically update/regenerate the view
+	 * When the rdoc has changed, automatically update/regenerate the view
 	 */
 	public void rdocChanged() {
+		clearCache();
 		updatePage();		
 	}
 	
@@ -517,6 +522,7 @@ public class RIView extends ViewPart implements RdocListener, IVMInstallChangedL
 	}
 
 	public void defaultVMInstallChanged(IVMInstall previous, IVMInstall current) {
+		clearCache();
 		updatePage();		
 	}
 
