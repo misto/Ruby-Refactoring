@@ -19,10 +19,18 @@
    <extension
          point="org.eclipse.debug.core.launchConfigurationTypes">
       <launchConfigurationType
-            name="%LaunchConfigurationTypeRubyApplication.name"
             delegate="org.rubypeople.rdt.launching.RubyLaunchDelegate"
+            id="org.rubypeople.rdt.launching.LaunchConfigurationTypeRubyApplication"
             modes="run,debug"
-            id="org.rubypeople.rdt.launching.LaunchConfigurationTypeRubyApplication">
+            name="%LaunchConfigurationTypeRubyApplication.name"
+            public="true"
+            sourceLocatorId="org.rubypeople.rdt.debug.ui.rubySourceLocator">
+         <fileExtension
+               default="true"
+               extension="rb"/>
+         <fileExtension
+               default="true"
+               extension="rbw"/>
       </launchConfigurationType>
    </extension>
    <extension
@@ -63,6 +71,6 @@
             id="org.rubypeople.rdt.launching.loadpathentry.variableLoadpathEntry"
             class="org.rubypeople.rdt.internal.launching.VariableLoadpathEntry">
       </runtimeLoadpathEntry>
-   </extension>  
+   </extension>
 
 </plugin>

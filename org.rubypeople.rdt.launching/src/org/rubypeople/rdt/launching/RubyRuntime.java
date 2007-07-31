@@ -1658,7 +1658,7 @@ public class RubyRuntime {
 	}	
 	
 	public static File getRI() {
-		return getBinExecutable("ri");
+		return getBinExecutable("qri");
 	}
 	
 	public static File getRDoc() {
@@ -1676,6 +1676,9 @@ public class RubyRuntime {
 		path += File.separator + command;
 		if (Platform.getOS().equals(Platform.OS_WIN32)) {
 			path += ".bat";
+			File file = new File(path);
+			if (file.exists()) return file;
+			path = path.substring(0, path.length() - 3) + "cmd";			
 		}
 		File file = new File(path);
 		if (file.exists()) return file;
