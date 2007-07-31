@@ -2,16 +2,28 @@ package org.rubypeople.rdt.internal.ui.infoviews;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.Reader;
+import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
+import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
+import org.eclipse.debug.core.DebugPlugin;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.action.IToolBarManager;
@@ -40,6 +52,8 @@ import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.part.PageBook;
 import org.eclipse.ui.part.ViewPart;
+import org.rubypeople.rdt.internal.launching.LaunchingPlugin;
+import org.rubypeople.rdt.internal.launching.StandardVMType;
 import org.rubypeople.rdt.internal.ui.RubyPlugin;
 import org.rubypeople.rdt.internal.ui.RubyPluginImages;
 import org.rubypeople.rdt.internal.ui.rdocexport.RDocUtility;
@@ -48,6 +62,8 @@ import org.rubypeople.rdt.launching.IVMInstall;
 import org.rubypeople.rdt.launching.IVMInstallChangedListener;
 import org.rubypeople.rdt.launching.PropertyChangeEvent;
 import org.rubypeople.rdt.launching.RubyRuntime;
+
+import com.aptana.rdt.AptanaRDTPlugin;
 
 public class RIView extends ViewPart implements RdocListener, IVMInstallChangedListener {
 
@@ -155,9 +171,13 @@ public class RIView extends ViewPart implements RdocListener, IVMInstallChangedL
 	
     private void updatePage() {
     	initSearchList();
-        if( riFound ){
-        	pageBook.showPage(form);
-        }        
+    	Display.getDefault().asyncExec(new Runnable () {
+		      public void run () {
+		    	  if (riFound) {
+		    		  pageBook.showPage(form);
+		    	  }        
+		      }
+		 });
     }
     
     private void showSelectedItem() {
@@ -175,14 +195,67 @@ public class RIView extends ViewPart implements RdocListener, IVMInstallChangedL
         RubyRuntime.removeVMInstallChangedListener(this);
         super.dispose();
     }
+    
+    protected File getCachedIndex() {
+		IPath location = RubyPlugin.getDefault().getStateLocation();
+		location = location.append("ri.index");
+		return location.toFile();
+	}
+    
+    protected File getFRIIndexFile() {
+		IPath location = RubyPlugin.getDefault().getStateLocation();
+		location = location.append(".fastri-index");
+		return location.toFile();
+	}
         
-    private synchronized void initSearchList() {        
-        RubyInvoker invoker = new RIPopulator(this);
-        Job job = new RubyInvokerJob(invoker);
-        job.setPriority(Job.LONG);
-        job.schedule();
+    private synchronized void initSearchList() {
+    	File file = getCachedIndex();
+    	if (file.exists()) {
+    		try {
+				List<String> results = read(new FileReader(file));
+				fgPossibleMatches = Collections.unmodifiableList(results);
+				riFound = true;
+				 Display.getDefault().asyncExec(new Runnable () {
+	    		      public void run () {
+	    		    	filterSearchList();
+	    		    	if (riFound) pageBook.showPage(form);
+	    		      }
+	    		   });
+				return;
+			} catch (FileNotFoundException e) {
+				RubyPlugin.log(e);
+			}    		
+    	} 
+    	RubyInvoker invoker = new RIPopulator(this);
+		Job job = new RubyInvokerJob(invoker);
+		job.setPriority(Job.LONG);
+		job.schedule();
 	}	
 	
+	protected List<String> read(Reader reader) {
+		Set<String> results = new HashSet<String>();
+		BufferedReader reader2 = null;
+		try {
+			reader2 = new BufferedReader(reader);
+			String line = null;                  
+			while ((line = reader2.readLine()) != null) {
+				results.add(line.trim());
+			}			
+		} catch (IOException e) {
+			RubyPlugin.log(e);
+		} finally {
+			try {
+				if (reader2 != null) 
+					reader2.close();
+			} catch (IOException e) {
+				// ignore
+			}
+		}
+		List<String> list = new ArrayList<String>(results);
+		Collections.sort(list);
+		return list;
+	}
+
 	private static class RubyInvokerJob extends Job {
 		private RubyInvoker invoker;
 
@@ -209,7 +282,7 @@ public class RIView extends ViewPart implements RdocListener, IVMInstallChangedL
         		}
 			}
         } else {
-        	filteredList = fgPossibleMatches;
+        	filteredList = new ArrayList<String>(fgPossibleMatches);
         }
         searchListViewer.setInput(filteredList);       
         if (filteredList.size() > 0) searchListViewer.getTable().setSelection(0);             
@@ -237,38 +310,85 @@ public class RIView extends ViewPart implements RdocListener, IVMInstallChangedL
 
     abstract class RubyInvoker {
         protected abstract List<String> getArgList();
-        protected abstract void handleOutput(Process process);
+        protected abstract void handleOutput(String content);
         protected void beforeInvoke(){}
         
-        public final void invoke() {        	
-        	// check the ri path for existence. It might have been unconfigured
-			// and set to the default value or the file could have been removed
-			File file = RubyRuntime.getRI();
+        public final void invoke() {
+        	File file = getFRIIndexFile();
+        	if (!file.exists()) {
+        		List<String> commands = new ArrayList<String>();            	
+            	commands.add("--index-file=\"" + file.getAbsolutePath() + "\"");
+            	commands.add("-b");
+        		String output = execAndReadOutput(getFastRiServerPath(), commands);
+        	}
+		
+        	List<String> commands = getArgList();        	
+        	commands.add("--index-file=\"" + file.getAbsolutePath() + "\"");
+			String content = execAndReadOutput(getFastRiPath(), commands);			
 
-			// If we can't find it ourselves then display an error to the user
-			if (file == null || !file.exists() || !file.isFile()) {
+			// If we can't find it ourselves then display an error to the
+			// user
+			if (content == null) {
 				riFound = false;
-				PlatformUI.getWorkbench().getDisplay().asyncExec(new Runnable() {
-					public void run() {
-						pageBook.showPage(riNotFoundLabel());
-					}
-				});				
+				PlatformUI.getWorkbench().getDisplay().asyncExec(
+						new Runnable() {
+							public void run() {
+								pageBook.showPage(riNotFoundLabel());
+							}
+						});
 				return;
 			}
-			   		
-   		try {        			
-                List<String> args = getArgList();
-                args.add(0, file.getAbsolutePath());
-                ProcessBuilder builder = new ProcessBuilder();
-                builder.command(args);
-                builder.redirectErrorStream(true);
-                Process p = builder.start();
-                handleOutput(p); 
-    		} catch (IOException e)  {
-    			// message of RuntimeException will be displayed in the RI View
-    			throw new RuntimeException(e.getMessage(), e);
-    		}      
+			handleOutput(content);    
         }
+        
+    	private String getFastRiServerPath() {
+    		File file = LaunchingPlugin.getFileInPlugin(new Path("ruby/fastri-server"));
+    		if (file == null || !file.exists() || !file.isFile()) return null;
+    		return file.getAbsolutePath();
+		}
+		private String execAndReadOutput(String file, List<String> commands) {
+			if (file == null) return null;
+    		StringBuffer buffer;
+    		try {
+    			List<String> line = new ArrayList<String>();
+    			IVMInstall vm = RubyRuntime.getDefaultVMInstall();
+    			if (vm == null) return "";
+    			File executable = StandardVMType.findRubyExecutable(vm.getInstallLocation());
+    			line.add(executable.getAbsolutePath());
+    			line.add(file);
+    			for (String command : commands) {
+    				line.add(command);
+    			}
+    			File workingDirectory = new File(file).getParentFile();
+    			String[] cmdLine = new String[line.size()];
+    			cmdLine = line.toArray(cmdLine);
+    			Process p = DebugPlugin.exec(cmdLine, workingDirectory);    			
+    			BufferedReader reader = new BufferedReader(new InputStreamReader(p.getInputStream()));
+    			String liner = null;
+    			buffer = new StringBuffer();
+    			while ((liner = reader.readLine()) != null) {
+    				buffer.append(liner);
+    				buffer.append("\n");
+    				if (!reader.ready()) {
+    					Thread.yield();
+    				}
+    			}
+    		} catch (CoreException e) {
+    			AptanaRDTPlugin.log(e);
+    			return "";
+    		} catch (IOException e) {
+    			AptanaRDTPlugin.log(e);
+    			return "";
+    		}
+    		buffer.deleteCharAt(buffer.length() - 1); // remove last \n
+    		return buffer.toString();
+    	}
+        
+    	private String getFastRiPath() {
+    		File file = LaunchingPlugin.getFileInPlugin(new Path("ruby/fri"));
+    		if (file == null || !file.exists() || !file.isFile()) return null;
+    		return file.getAbsolutePath();
+		}
     }
     
     private class RIDescriptionUpdater extends RubyInvoker {
@@ -284,8 +404,6 @@ public class RIView extends ViewPart implements RdocListener, IVMInstallChangedL
         protected List<String> getArgList() {
             List<String> args = new ArrayList<String>();
             args.add("--no-pager");
-            args.add("-f");
-            args.add("html");
             args.add(searchValue);
             return args;
         }
@@ -294,26 +412,13 @@ public class RIView extends ViewPart implements RdocListener, IVMInstallChangedL
             searchResult.setText(InfoViewMessages.RubyInformation_please_wait);
         }
         
-		void addToBuffer(int position, final String line) {			
-		    if (position < 0) position = 0;
-		    StringBuffer modifiedLine = new StringBuffer(line);
-		    if (!line.endsWith(">")) modifiedLine.append("<br/>");
-			modifiedLine.append("\r\n");				
-			buffer.insert(position, modifiedLine.toString());
-		}
 
-        protected void handleOutput(final Process process) {
-        	if (process == null)
+        protected void handleOutput(final String content) {
+        	if (content == null)
 				return;
-			try {
+//			try {
 				buffer = new StringBuffer();
-				InputStreamReader isr = new InputStreamReader(process.getInputStream());
-				BufferedReader br = new BufferedReader(isr);
-				// Insert all the text
-				String line = null; // FIXME What do we do if this process hits an error?
-				while ((line = br.readLine()) != null) {
-					addToBuffer(buffer.length() - 1, line);
-				}
+				buffer.append(content.replace("\n", "<br/>"));
 				buffer.insert(0, HEADER); // Put the header before all the contents
 				buffer.append(TAIL); // Put the body and html close tags at end
 				final String text = buffer.toString();
@@ -322,9 +427,9 @@ public class RIView extends ViewPart implements RdocListener, IVMInstallChangedL
 						searchResult.setText(text);
 					}
 				});
-			} catch (IOException ioe) {
-				ioe.printStackTrace();
-			}
+//			} catch (IOException ioe) {
+//				ioe.printStackTrace();
+//			}
         }
     }
 
@@ -351,40 +456,58 @@ public class RIView extends ViewPart implements RdocListener, IVMInstallChangedL
 		}
 
 		@Override
-		protected void handleOutput(Process process) {
-			if (process == null) return;
+		protected void handleOutput(String content) {
+			if (content == null) return;
 			view.riFound = false;
-            BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
+            BufferedReader reader = new BufferedReader(new StringReader(content));
             String line = null;
-            fgPossibleMatches = new ArrayList<String>();
-            try {
-                while ((line = reader.readLine()) != null) {
-                    fgPossibleMatches.add(line.trim());
-                }
-                // if no matches were found display an error message
-                if( fgPossibleMatches.size() == 0 ){
-                	view.riNotFound();
-                } else {
-                	view.riFound = true;
-                }
-            }
-            catch (IOException e) {
-                RubyPlugin.log(e);
-            }		
-            final Display display = Display.getDefault();
-    		display.asyncExec (new Runnable () {
+            fgPossibleMatches = read(new StringReader(content));
+            // if no matches were found display an error message
+            if (fgPossibleMatches.isEmpty()){
+                view.riNotFound();
+            } else {
+                view.riFound = true;
+                cacheListings(content);
+            }	
+            Display.getDefault().asyncExec(new Runnable () {
     		      public void run () {
     		    	filterSearchList();
     		    	if (riFound) pageBook.showPage(form);
     		      }
     		   });
 		}
+
+		private void cacheListings(String content) {
+			File file = getCachedIndex();
+			FileWriter writer = null;
+			try {
+				file.createNewFile();
+				writer = new FileWriter(file);
+				writer.write(content);
+			} catch (IOException e) {
+				RubyPlugin.log(e);
+			} finally {
+				try {
+					if (writer != null)
+						writer.close();
+				} catch (IOException e) {
+					// ignore
+				}
+			}
+		}
 		
 	}
 	
 	void riNotFound() {
 		riFound = false;
-		pageBook.showPage( riNotFoundLabel() );
+		Display.getDefault().asyncExec(new Runnable() {
+		
+			public void run() {
+				pageBook.showPage( riNotFoundLabel() );
+			}
+		
+		});
+		
 	}
 	
 	protected Label riNotFoundLabel() {
