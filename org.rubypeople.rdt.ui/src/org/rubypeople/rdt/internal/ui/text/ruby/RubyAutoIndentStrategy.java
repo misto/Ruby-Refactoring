@@ -103,14 +103,14 @@ public class RubyAutoIndentStrategy extends DefaultIndentLineAutoEditStrategy im
 				String unindented = "";
 				if (length > 0) {
 					unindented = previousIndent.substring(0, length);
-				}
-				if (!unindented.equals(indent.toString())) {
-					d.replace(start, c.offset - start, unindented + trimmed);
+				}				// FIXME Deindenting 'end' of case that has indented 'when's comes out incorrectly
+				if (length < indent.length()) { // if calculated indent length is less than indent we currently have queued up...
+					d.replace(start, c.offset - start, unindented + trimmed); // fix indent of this line
 					int shift = previousIndent.length() - unindented.length();
-					c.offset = c.offset - shift;
+					c.offset = c.offset - shift; // change where we're adding the newline
 					if (trimmed.equals(BLOCK_CLOSER)) // if we're closing the block, remove an indent unit
 						buf.delete(buf.length() - shift, buf.length());
-				}			
+				}
 			}
 //			 If we're hitting return at the end of the line of a new block, add indent
 			if (atStartOfBlock(trimmed)) {
