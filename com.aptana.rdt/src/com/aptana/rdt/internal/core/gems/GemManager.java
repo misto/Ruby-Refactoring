@@ -324,6 +324,9 @@ public class GemManager implements IGemManager {
 			while ((liner = reader.readLine()) != null) {
 				buffer.append(liner);
 				buffer.append("\n");
+				if (!reader.ready()) { // if the reader isn't ready, yield so we don't keep blocking here
+					Thread.yield();
+				}
 			}
 		} catch (CoreException e) {
 			AptanaRDTPlugin.log(e);
