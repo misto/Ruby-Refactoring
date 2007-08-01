@@ -205,7 +205,12 @@ public class RubyPartitionScanner implements IPartitionTokenScanner {
 
 	private int indexOf(String opening, String string) {
 		String trimmed = opening.trim();
-		int diff = opening.indexOf(trimmed.charAt(0)); // Count leading whitespace
+		int diff;
+		if (trimmed.length() == 0) {
+			diff = opening.length();
+		} else {
+		    diff = opening.indexOf(trimmed.charAt(0)); // Count leading whitespace
+		}
 		int lowest = -1;
 		for (int i = 0; i < string.length(); i++) {
 			char c = string.charAt(i);
