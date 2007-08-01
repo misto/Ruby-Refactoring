@@ -231,8 +231,16 @@ public class RubyTokenScanner extends AbstractRubyTokenScanner {
 	private boolean isKeyword(int i) {
 		if (i >= MIN_KEYWORD && i <= MAX_KEYWORD) return true;
 		if (i != Tokens.tIDENTIFIER) return false;
-		String src = fContents.substring((fOffset - origOffset), (fOffset - origOffset) + fTokenLength);
+		String src;
+		try {
+			src = fContents.substring((fOffset - origOffset), (fOffset - origOffset) + fTokenLength);
+		} catch (RuntimeException e) {
+			RubyPlugin.log(e);
+			return false;
+		}
+		if (src == null || src.trim().length() == 0) return false;
 		Preferences prefs = RubyPlugin.getDefault().getPluginPreferences();
+		if (prefs == null) return false;
 		String rawKeywords = prefs.getString(PreferenceConstants.EDITOR_USER_KEYWORDS);
 		if (rawKeywords == null || rawKeywords.length() == 0) {
 			return false;
@@ -242,6 +250,7 @@ public class RubyTokenScanner extends AbstractRubyTokenScanner {
 			return false;
 		}
 		for (int j = 0; j < keywords.length; j++) {
+			if (keywords[j] == null) continue;
 			if (keywords[j].equals(src.trim())) return true;
 		}
 		return false;
