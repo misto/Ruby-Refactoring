@@ -8,12 +8,13 @@ import org.eclipse.jface.text.DefaultIndentLineAutoEditStrategy;
 import org.eclipse.jface.text.DocumentCommand;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.IRegion;
-import org.eclipse.jface.text.ITypedRegion;
 import org.eclipse.jface.text.TextUtilities;
 import org.eclipse.jface.util.IPropertyChangeListener;
 import org.eclipse.jface.util.PropertyChangeEvent;
 import org.jruby.lexer.yacc.SyntaxException;
 import org.rubypeople.rdt.core.IRubyProject;
+import org.rubypeople.rdt.core.RubyCore;
+import org.rubypeople.rdt.core.formatter.DefaultCodeFormatterConstants;
 import org.rubypeople.rdt.internal.core.parser.RubyParser;
 import org.rubypeople.rdt.internal.corext.util.CodeFormatterUtil;
 import org.rubypeople.rdt.internal.ui.RubyPlugin;
@@ -83,37 +84,49 @@ public class RubyAutoIndentStrategy extends DefaultIndentLineAutoEditStrategy im
 			StringBuffer buf= new StringBuffer(c.text + indent);
 
 
-			IRegion reg= d.getLineInformation(line);
-			int lineEnd= reg.getOffset() + reg.getLength();
+			IRegion currentLineRegion= d.getLineInformation(line);
+			int lineEnd= currentLineRegion.getOffset() + currentLineRegion.getLength();
 
 			int contentStart= findEndOfWhiteSpace(d, c.offset, lineEnd);
 			c.length=  Math.max(contentStart - c.offset, 0);
 
-			int start= reg.getOffset();
-			ITypedRegion region= TextUtilities.getPartition(d, fPartitioning, start, true);
-//			if (IRubyPartitions.RUBY_DOC.equals(region.getType()))
-//				start= d.getLineInformationOfOffset(region.getOffset()).getOffset();
-			// if 
-			String trimmed = getTrimmedLine(d, start, c.offset);
-			if (shouldDeIndent(trimmed)) {
+			int startOfCurrentLine= currentLineRegion.getOffset();
+			
+			String trimmed = getTrimmedLine(d, startOfCurrentLine, c.offset);
+			if (mightHaveToShiftCurrentLine(trimmed)) {// check to see if we need to fix the indentation of this line
 				IRegion previousLineRegion = d.getLineInformation(line - 1);
+				String previousLine = getTrimmedLine(d, previousLineRegion.getOffset(), previousLineRegion.getOffset() + previousLineRegion.getLength());				
 				String previousIndent= indenter.computeIndentation(previousLineRegion.getOffset()).toString();
-				// FIXME This all assumes spaces!
-				int length = previousIndent.length() - CodeFormatterUtil.createIndentString(1, fProject).length();
+				
+				// FIXME This all assumes spaces!				
 				String unindented = "";
-				if (length > 0) {
-					unindented = previousIndent.substring(0, length);
+				if (middleOfBlockRightAfterBeginning(trimmed, previousLine) ) {
+					unindented = previousIndent;
+					if (whenAfterCase(trimmed, previousLine)) {
+						// add extra indent, dpending upon code formatting option
+						if (RubyCore.getPlugin().getPluginPreferences().getBoolean(DefaultCodeFormatterConstants.FORMATTER_INDENT_CASE_BODY)) {
+							unindented += CodeFormatterUtil.createIndentString(1, fProject);
+						}
+					}
+				} else {
+					int length = previousIndent.length() - CodeFormatterUtil.createIndentString(1, fProject).length();
+					int nextCalculated = nextMeaningfulIndentLength(d, indenter, line);
+					int unit = CodeFormatterUtil.createIndentString(1, fProject).length();
+					if (nextCalculated != -1 && (length > (nextCalculated + unit))) {
+						unindented = previousIndent.substring(0, length - unit);
+					} else {
+						unindented = previousIndent.substring(0, length);
+					}
 				}				// FIXME Deindenting 'end' of case that has indented 'when's comes out incorrectly
-				if (length < indent.length()) { // if calculated indent length is less than indent we currently have queued up...
-					d.replace(start, c.offset - start, unindented + trimmed); // fix indent of this line
-					int shift = previousIndent.length() - unindented.length();
+				if (unindented.length() != indent.length()) { // if calculated indent length is less than indent we currently have queued up...
+					d.replace(startOfCurrentLine, c.offset - startOfCurrentLine, unindented + trimmed); // fix indent of this line
+					int shift = indent.length() - unindented.length();
 					c.offset = c.offset - shift; // change where we're adding the newline
-					if (trimmed.equals(BLOCK_CLOSER)) // if we're closing the block, remove an indent unit
-						buf.delete(buf.length() - shift, buf.length());
+					buf.delete(buf.length() - shift, buf.length()); // remove additional indent from being inserted
 				}
 			}
 //			 If we're hitting return at the end of the line of a new block, add indent
-			if (atStartOfBlock(trimmed)) {
+			if (atIndentPoint(trimmed)) {
 				buf.append(CodeFormatterUtil.createIndentString(1, fProject));
 				c.caretOffset= c.offset + buf.length();
 				c.shiftsCaret= false;
@@ -139,10 +152,56 @@ public class RubyAutoIndentStrategy extends DefaultIndentLineAutoEditStrategy im
 		}
 	}
 
-	private boolean shouldDeIndent(String trimmed) {
+	private int nextMeaningfulIndentLength(IDocument d, RubyIndenter indenter, int line) throws BadLocationException {
+		for (int i = line + 1; i < d.getNumberOfLines(); i++) {
+			IRegion nextLineRegion = d.getLineInformation(i);
+			String trimmed = getTrimmedLine(d, nextLineRegion.getOffset(), nextLineRegion.getOffset() + nextLineRegion.getLength());
+			if (trimmed == null || trimmed.length() == 0) continue;
+			String nextIndent= indenter.computeIndentation(nextLineRegion.getOffset()).toString();
+			return nextIndent.length();
+		}
+		return -1;
+	}
+
+	private boolean middleOfBlockRightAfterBeginning(String trimmed, String previousLine) {
+		return middleOfIfRightAfterBeginning(trimmed, previousLine) || middleOfBeginRightAfterBeginning(trimmed, previousLine) || elseRightAfterElsif(trimmed, previousLine)
+		|| ensureRightAfterRescue(trimmed, previousLine) || whenAfterCase(trimmed, previousLine);
+	}
+
+	private boolean middleOfBeginRightAfterBeginning(String trimmed, String previousLine) {
+		return previousLine.equals("begin") && (trimmed.startsWith("rescue") || trimmed.equals("ensure") || trimmed.equals("rescue"));
+	}
+
+	private boolean middleOfIfRightAfterBeginning(String trimmed, String previousLine) {
+		return previousLine.startsWith("if ") && (trimmed.startsWith("elsif") || trimmed.equals("else"));
+	}
+	
+	private boolean ensureRightAfterRescue(String trimmed, String previousLine) {
+		return (previousLine.startsWith("rescue ") || previousLine.equals("rescue")) && trimmed.equals("ensure");
+	}
+	
+	private boolean elseRightAfterElsif(String trimmed, String previousLine) {
+		return previousLine.startsWith("elsif ") && trimmed.equals("else");
+	}
+	
+	private boolean whenAfterCase(String trimmed, String previousLine) {
+		return previousLine.startsWith("case ") && trimmed.startsWith("when ");
+	}
+
+	private boolean atIndentPoint(String trimmed) {
+		if (trimmed == null || trimmed.length() == 0) return false;
+		return atStartOfBlock(trimmed) || isMiddleOfBlockKeyword(trimmed);
+	}
+
+	private boolean isMiddleOfBlockKeyword(String trimmed) {
 		if (trimmed == null || trimmed.length() == 0) return false;
 		return trimmed.equals("rescue") || trimmed.equals("else") || trimmed.equals("ensure") 
-			|| trimmed.equals(BLOCK_CLOSER) || trimmed.startsWith("elsif ");
+			|| trimmed.startsWith("elsif ") || trimmed.startsWith("rescue ") || trimmed.startsWith("when ");
+	}
+	
+	private boolean mightHaveToShiftCurrentLine(String trimmed) {
+		if (trimmed == null || trimmed.length() == 0) return false;
+		return isMiddleOfBlockKeyword(trimmed) || trimmed.equals(BLOCK_CLOSER);
 	}
 
 	private boolean unclosedBlock(IDocument d, String trimmed, int offset) {
