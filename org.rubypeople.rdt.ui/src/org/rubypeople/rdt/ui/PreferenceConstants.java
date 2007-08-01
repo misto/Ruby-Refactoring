@@ -680,6 +680,16 @@ public class PreferenceConstants {
 	 * @since 0.9.0
 	 */
 	public static final String EDITOR_MARK_METHOD_EXIT_POINTS = "markMethodExitPoints"; //$NON-NLS-1$
+	
+	/**
+	 * A named preference that holds user defined "keywords".
+	 * <p>
+	 * Value is of type <code>String</code>.
+	 * </p>
+	 * 
+	 * @since 1.0
+	 */
+	public static final String EDITOR_USER_KEYWORDS = "userDefinedKeywords"; //$NON-NLS-1$
 
 	
 	/**
@@ -807,6 +817,7 @@ public class PreferenceConstants {
 		store.setDefault(LOADPATH_RUBYVMLIBRARY_INDEX, 0); 
 		
 		store.setDefault(PreferenceConstants.EDITOR_SHOW_SEGMENTS, false);
+		store.setDefault(PreferenceConstants.EDITOR_USER_KEYWORDS, "");
 
 		// FIXME We can't enabling using code formatter yet, because it breaks
 		// on formatting templates (when inserting via content assist)

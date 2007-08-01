@@ -96,6 +96,11 @@
             class="org.rubypeople.rdt.internal.ui.preferences.DebuggerPreferencePage"
             id="org.rubypeople.rdt.ui.preferences.debugger"
             name="%PreferencePage.rdtDebuggerPreferences"/>
+      <page
+            category="org.rubypeople.rdt.ui.preferences.RubyEditorColoringPreferencePage"
+            class="org.rubypeople.rdt.internal.ui.preferences.KeywordPreferencePage"
+            id="org.rubypeople.rdt.ui.preferences.PreferencePageKeyword"
+            name="Keywords"/>
    </extension>
 <!-- =========================================================================== -->
 <!-- Ruby Perspective 																 -->

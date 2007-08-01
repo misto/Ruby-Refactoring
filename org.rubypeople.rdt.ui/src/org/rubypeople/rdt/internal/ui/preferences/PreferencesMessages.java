@@ -182,6 +182,15 @@ public final class PreferencesMessages extends NLS {
 	public static String NewRubyProjectPreferencePage_folders_error_invalidcp;
 	public static String NewRubyProjectPreferencePage_folders_error_invalidsrcname;
 	public static String NewRubyProjectPreferencePage_folders_error_namesempty;
+	public static String KeywordPreferencePage_description;
+	public static String KeywordPreferencePage_title;
+	public static String KeywordInputDialog_new_title;
+	public static String KeywordInputDialog_edit_title;
+	public static String KeywordInputDialog_name_label;
+	public static String KeywordInputDialog_error_enterName;
+	public static String KeywordInputDialog_error_comma;
+	public static String KeywordInputDialog_error_entryExists;
+	public static String KeywordInputDialog_error_noSpace;
 	
     static {
         NLS.initializeMessages(BUNDLE_NAME, PreferencesMessages.class);

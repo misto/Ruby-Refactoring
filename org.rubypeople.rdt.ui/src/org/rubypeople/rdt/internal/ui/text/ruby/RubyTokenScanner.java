@@ -3,6 +3,7 @@ package org.rubypeople.rdt.internal.ui.text.ruby;
 import java.io.IOException;
 import java.io.StringReader;
 
+import org.eclipse.core.runtime.Preferences;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.IDocument;
@@ -19,6 +20,7 @@ import org.jruby.parser.RubyParserResult;
 import org.jruby.parser.Tokens;
 import org.rubypeople.rdt.internal.ui.RubyPlugin;
 import org.rubypeople.rdt.internal.ui.text.IRubyColorConstants;
+import org.rubypeople.rdt.ui.PreferenceConstants;
 import org.rubypeople.rdt.ui.text.IColorManager;
 
 public class RubyTokenScanner extends AbstractRubyTokenScanner {
@@ -227,7 +229,22 @@ public class RubyTokenScanner extends AbstractRubyTokenScanner {
 	}
 
 	private boolean isKeyword(int i) {
-		return (i >= MIN_KEYWORD && i <= MAX_KEYWORD);
+		if (i >= MIN_KEYWORD && i <= MAX_KEYWORD) return true;
+		if (i != Tokens.tIDENTIFIER) return false;
+		String src = fContents.substring((fOffset - origOffset), (fOffset - origOffset) + fTokenLength);
+		Preferences prefs = RubyPlugin.getDefault().getPluginPreferences();
+		String rawKeywords = prefs.getString(PreferenceConstants.EDITOR_USER_KEYWORDS);
+		if (rawKeywords == null || rawKeywords.length() == 0) {
+			return false;
+		}
+		String[] keywords = rawKeywords.split(",");
+		if (keywords == null || keywords.length == 0) {
+			return false;
+		}
+		for (int j = 0; j < keywords.length; j++) {
+			if (keywords[j].equals(src.trim())) return true;
+		}
+		return false;
 	}
 
 	public void setRange(IDocument document, int offset, int length) {
