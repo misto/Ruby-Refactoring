@@ -205,16 +205,18 @@ public class RIView extends ViewPart implements RdocListener, IVMInstallChangedL
     }
     
     protected File getCachedIndex() {
-		IPath location = RubyPlugin.getDefault().getStateLocation();
-		location = location.append("ri.index");
-		return location.toFile();
+		return getStateFile("ri.index");
 	}
     
     protected File getFRIIndexFile() {
-		IPath location = RubyPlugin.getDefault().getStateLocation();
-		location = location.append(".fastri-index");
-		return location.toFile();
+		return getStateFile(".fastri-index");
 	}
+    
+    private File getStateFile(String name) {
+    	IPath location = RubyPlugin.getDefault().getStateLocation();
+		location = location.append(name);
+		return location.toFile();
+    }
         
     private synchronized void initSearchList() {
     	File file = getCachedIndex();
@@ -356,12 +358,17 @@ public class RIView extends ViewPart implements RdocListener, IVMInstallChangedL
 		}
 		private String execAndReadOutput(String file, List<String> commands) {
 			if (file == null) return null;
-    		StringBuffer buffer;
+    		StringBuffer buffer = new StringBuffer();
     		try {
     			List<String> line = new ArrayList<String>();
     			IVMInstall vm = RubyRuntime.getDefaultVMInstall();
     			if (vm == null) return "";
     			File executable = StandardVMType.findRubyExecutable(vm.getInstallLocation());
+    			if (executable.getName().contains("rubyw")) {
+    				String name = executable.getName();
+    				name = name.replace("rubyw", "ruby");
+    				executable = new File(executable.getParent() + File.separator + name);
+    			}
     			line.add(executable.getAbsolutePath());
     			line.add(file);
     			for (String command : commands) {
@@ -372,8 +379,7 @@ public class RIView extends ViewPart implements RdocListener, IVMInstallChangedL
     			cmdLine = line.toArray(cmdLine);
     			Process p = DebugPlugin.exec(cmdLine, workingDirectory);    			
     			BufferedReader reader = new BufferedReader(new InputStreamReader(p.getInputStream()));
-    			String liner = null;
-    			buffer = new StringBuffer();
+    			String liner = null;    			
     			while ((liner = reader.readLine()) != null) {
     				buffer.append(liner);
     				buffer.append("\n");
@@ -381,13 +387,16 @@ public class RIView extends ViewPart implements RdocListener, IVMInstallChangedL
     					Thread.yield();
     				}
     			}
+    			p.waitFor();
     		} catch (CoreException e) {
     			AptanaRDTPlugin.log(e);
     			return "";
     		} catch (IOException e) {
     			AptanaRDTPlugin.log(e);
     			return "";
-    		}
+    		} catch (InterruptedException e) {
+    			AptanaRDTPlugin.log(e);
+			}
     		buffer.deleteCharAt(buffer.length() - 1); // remove last \n
     		return buffer.toString();
     	}
