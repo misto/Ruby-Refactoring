@@ -67,6 +67,20 @@ public class TC_RubyAutoIndentStrategy extends TestCase {
 				"end", d.get());
 	}
 
+	public void testHandlesElsifAfterIfProperly() throws Exception {
+		DocumentCommand c = addNewline("def if_else_test\r\n" +
+"  if a == true\r\n" +
+"    elsif false\r\n" +
+"  end\r\n" +
+"end", 49);
+		assertEquals("\r\n    ", c.text);
+		assertEquals("def if_else_test\r\n" +
+				"  if a == true\r\n" +
+				"  elsif false\r\n" +
+				"  end\r\n" +
+				"end", d.get());
+	}
+	
 	private DocumentCommand addNewline(String source, int offset) {
 		RubyAutoIndentStrategy strategy = new RubyAutoIndentStrategy(null, null);
 		DocumentCommand c = createNewLineCommandAt(offset);
