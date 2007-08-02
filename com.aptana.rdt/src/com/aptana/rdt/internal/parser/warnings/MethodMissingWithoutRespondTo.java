@@ -12,6 +12,9 @@ import com.aptana.rdt.AptanaRDTPlugin;
 
 public class MethodMissingWithoutRespondTo extends RubyLintVisitor {
 
+	private static final String RESPOND_TO = "respond_to";
+	private static final String METHOD_MISSING = "method_missing";
+	
 	private Map<String, DefnNode> methods = new HashMap<String, DefnNode>();
 	
 	public MethodMissingWithoutRespondTo(String contents) {
@@ -31,8 +34,8 @@ public class MethodMissingWithoutRespondTo extends RubyLintVisitor {
 	
 	@Override
 	public void exitClassNode(ClassNode iVisited) {
-		if (methods.containsKey("method_missing") && !methods.containsKey("respond_to")) {
-			createProblem(methods.get("method_missing").getNameNode().getPosition(), "Class defines method_missing, but does not define custom respond_to");
+		if (methods.containsKey(METHOD_MISSING) && !methods.containsKey(RESPOND_TO)) {
+			createProblem(methods.get(METHOD_MISSING).getNameNode().getPosition(), "Class defines method_missing, but does not define custom respond_to");
 		}
 		methods.clear();
 		super.exitClassNode(iVisited);
