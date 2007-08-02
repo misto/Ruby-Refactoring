@@ -6,7 +6,9 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.ProjectScope;
+import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
@@ -64,6 +66,7 @@ import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.editors.text.EditorsUI;
 import org.eclipse.ui.editors.text.TextEditor;
+import org.eclipse.ui.internal.editors.text.JavaFileEditorInput;
 import org.eclipse.ui.texteditor.AbstractDecoratedTextEditorPreferenceConstants;
 import org.eclipse.ui.texteditor.ChainedPreferenceStore;
 import org.eclipse.ui.texteditor.IDocumentProvider;
@@ -77,10 +80,13 @@ import org.rubypeople.rdt.core.IMember;
 import org.rubypeople.rdt.core.IRubyElement;
 import org.rubypeople.rdt.core.IRubyProject;
 import org.rubypeople.rdt.core.IRubyScript;
+import org.rubypeople.rdt.core.ISourceFolder;
+import org.rubypeople.rdt.core.ISourceFolderRoot;
 import org.rubypeople.rdt.core.ISourceRange;
 import org.rubypeople.rdt.core.ISourceReference;
 import org.rubypeople.rdt.core.RubyCore;
 import org.rubypeople.rdt.core.RubyModelException;
+import org.rubypeople.rdt.internal.core.ExternalRubyScript;
 import org.rubypeople.rdt.internal.ui.RubyPlugin;
 import org.rubypeople.rdt.internal.ui.rubyeditor.RubyEditor.ITextConverter;
 import org.rubypeople.rdt.internal.ui.search.IOccurrencesFinder;
@@ -347,6 +353,17 @@ public abstract class RubyAbstractEditor extends TextEditor {
      * @see org.eclipse.ui.editors.text.TextEditor#doSetInput(org.eclipse.ui.IEditorInput)
      */
     protected void doSetInput(IEditorInput input) throws CoreException {
+    	if (input instanceof JavaFileEditorInput) {
+    		JavaFileEditorInput duh = (JavaFileEditorInput) input;
+    		IProject[] projects = RubyCore.getRubyProjects();
+    		if (projects != null && projects.length > 0) {
+    			IRubyProject proj = RubyCore.create(projects[0]);    		
+        		ISourceFolderRoot root = proj.getSourceFolderRoot(duh.getPath().removeLastSegments(1).toPortableString());
+        		ISourceFolder folder = root.getSourceFolder("");
+        		IRubyScript script = folder.getRubyScript(duh.getPath().lastSegment());
+        		input = new RubyScriptEditorInput((ExternalRubyScript) script);
+    		}
+    	}
     	if (input instanceof IRubyScriptEditorInput) {
     		setDocumentProvider(RubyPlugin.getDefault().getExternalDocumentProvider());
     	} else {
