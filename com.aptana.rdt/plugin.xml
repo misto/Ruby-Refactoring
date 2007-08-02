@@ -77,9 +77,16 @@
        			<argument prefKey="com.aptana.rdt.compiler.problem.maxReturns"/>
        	</error>
         <error
-              categoryId="org.rubypeople.rdt.errors.potentialProblems"
+              categoryId="org.rubypeople.rdt.errors.codeConvention"
               label="Constant name doesn&apos;t match convention"
-              prefKey="com.aptana.rdt.compiler.problem.constantNamingConvention"/>		
+              prefKey="com.aptana.rdt.compiler.problem.constantNamingConvention"/>
+        <category
+              id="org.rubypeople.rdt.errors.codeConvention"
+              name="Ruby Coding Conventions"/>
+        <error
+              categoryId="org.rubypeople.rdt.errors.potentialProblems"
+              label="method_missing defined without re-defined respond_to"
+              prefKey="com.aptana.rdt.compiler.problem.methodMissingWithoutRespondTo"/>		
  </extension>
  
 <!-- =================================================================================== -->

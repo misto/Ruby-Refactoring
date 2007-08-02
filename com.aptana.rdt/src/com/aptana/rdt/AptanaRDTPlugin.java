@@ -203,6 +203,12 @@ public class AptanaRDTPlugin extends Plugin {
 	 */
 	public static final String COMPILER_PB_CONSTANT_NAMING_CONVENTION = PLUGIN_ID + ".compiler.problem.constantNamingConvention"; //$NON-NLS-1$
 
+	/**
+ 	 * Possible  configurable option ID.
+ 	 * @see #getDefaultOptions()
+	 * @since 1.0.0
+	 */
+	public static final String COMPILER_PB_METHOD_MISSING_NO_RESPOND_TO = PLUGIN_ID + "com.aptana.rdt.compiler.problem.methodMissingWithoutRespondTo";
 	
 	// The shared instance
 	private static AptanaRDTPlugin plugin;
