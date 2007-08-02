@@ -46,6 +46,13 @@ public abstract class RubyLintVisitor extends AbstractVisitor {
 	public List<CategorizedProblem> getProblems() {
 		return problems;
 	}
+	
+	public boolean isIgnored() {
+		String value = getSeverity();
+		if (value != null && value.equals(RubyCore.IGNORE))
+			return true;
+		return false;
+	}
 
 	protected void createProblem(ISourcePosition position, String message) {
 		String value = getSeverity();
