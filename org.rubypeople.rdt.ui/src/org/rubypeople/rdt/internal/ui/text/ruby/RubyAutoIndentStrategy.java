@@ -165,7 +165,7 @@ public class RubyAutoIndentStrategy extends DefaultIndentLineAutoEditStrategy im
 
 	private boolean middleOfBlockRightAfterBeginning(String trimmed, String previousLine) {
 		return middleOfIfRightAfterBeginning(trimmed, previousLine) || middleOfBeginRightAfterBeginning(trimmed, previousLine) || elseRightAfterElsif(trimmed, previousLine)
-		|| ensureRightAfterRescue(trimmed, previousLine) || whenAfterCase(trimmed, previousLine);
+		|| ensureRightAfterRescue(trimmed, previousLine) || whenAfterCase(trimmed, previousLine) || elsifRightAfterElsif(trimmed, previousLine);
 	}
 
 	private boolean middleOfBeginRightAfterBeginning(String trimmed, String previousLine) {
@@ -182,6 +182,10 @@ public class RubyAutoIndentStrategy extends DefaultIndentLineAutoEditStrategy im
 	
 	private boolean elseRightAfterElsif(String trimmed, String previousLine) {
 		return previousLine.startsWith("elsif ") && trimmed.equals("else");
+	}
+	
+	private boolean elsifRightAfterElsif(String trimmed, String previousLine) {
+		return previousLine.startsWith("elsif ") && trimmed.startsWith("elsif ");
 	}
 	
 	private boolean whenAfterCase(String trimmed, String previousLine) {
