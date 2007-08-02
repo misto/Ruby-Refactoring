@@ -86,7 +86,11 @@
         <error
               categoryId="org.rubypeople.rdt.errors.potentialProblems"
               label="method_missing defined without re-defined respond_to"
-              prefKey="com.aptana.rdt.compiler.problem.methodMissingWithoutRespondTo"/>		
+              prefKey="com.aptana.rdt.compiler.problem.methodMissingWithoutRespondTo"/>
+        <error
+              categoryId="org.rubypeople.rdt.errors.potentialProblems"
+              label="Dynamic variables Aliases Local Variable"
+              prefKey="com.aptana.rdt.compiler.problem.dynamicVariableAliasesLocal"/>		
  </extension>
  
 <!-- =================================================================================== -->

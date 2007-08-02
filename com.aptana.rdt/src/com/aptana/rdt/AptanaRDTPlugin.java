@@ -210,6 +210,13 @@ public class AptanaRDTPlugin extends Plugin {
 	 */
 	public static final String COMPILER_PB_METHOD_MISSING_NO_RESPOND_TO = PLUGIN_ID + "com.aptana.rdt.compiler.problem.methodMissingWithoutRespondTo";
 	
+	/**
+ 	 * Possible  configurable option ID.
+ 	 * @see #getDefaultOptions()
+	 * @since 1.0.0
+	 */
+	public static final String COMPILER_PB_DYNAMIC_VARIABLE_ALIASES_LOCAL = PLUGIN_ID + "com.aptana.rdt.compiler.problem.dynamicVariableAliasesLocal";
+	
 	// The shared instance
 	private static AptanaRDTPlugin plugin;
 	
