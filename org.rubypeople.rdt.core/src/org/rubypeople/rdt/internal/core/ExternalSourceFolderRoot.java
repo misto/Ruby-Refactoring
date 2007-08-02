@@ -8,6 +8,8 @@ import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
 import org.rubypeople.rdt.core.IRubyElement;
 import org.rubypeople.rdt.core.IRubyModelStatusConstants;
 import org.rubypeople.rdt.core.ISourceFolder;
@@ -174,6 +176,11 @@ public class ExternalSourceFolderRoot extends SourceFolderRoot implements ISourc
 			return super.getResource();
 		}
 		return null;
+	}
+	
+	@Override
+	protected IStatus validateOnLoadpath() { // FIXME This is a HACK. Override so all external roots are said to be on loadpath. This is done so opening external file through File > Open File.. shows content in outline page.
+		return Status.OK_STATUS;
 	}
 
 	protected boolean resourceExists() {
