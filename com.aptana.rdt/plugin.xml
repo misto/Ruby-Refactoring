@@ -75,7 +75,11 @@
        			label="Maximum number of returns in a method" 
        			prefKey="com.aptana.rdt.compiler.problem.codeComplexityReturns">
        			<argument prefKey="com.aptana.rdt.compiler.problem.maxReturns"/>
-       	</error>		
+       	</error>
+        <error
+              categoryId="org.rubypeople.rdt.errors.potentialProblems"
+              label="Constant name doesn&apos;t match convention"
+              prefKey="com.aptana.rdt.compiler.problem.constantNamingConvention"/>		
  </extension>
  
 <!-- =================================================================================== -->

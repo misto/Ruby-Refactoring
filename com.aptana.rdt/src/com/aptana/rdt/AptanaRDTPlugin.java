@@ -196,6 +196,14 @@ public class AptanaRDTPlugin extends Plugin {
 	 */
 	public static final String COMPILER_PB_ASSIGNMENT_PRECEDENCE = PLUGIN_ID + ".compiler.problem.assignmentPrecedence"; //$NON-NLS-1$
 
+	/**
+ 	 * Possible  configurable option ID.
+ 	 * @see #getDefaultOptions()
+	 * @since 1.0.0
+	 */
+	public static final String COMPILER_PB_CONSTANT_NAMING_CONVENTION = PLUGIN_ID + ".compiler.problem.constantNamingConvention"; //$NON-NLS-1$
+
+	
 	// The shared instance
 	private static AptanaRDTPlugin plugin;
 	

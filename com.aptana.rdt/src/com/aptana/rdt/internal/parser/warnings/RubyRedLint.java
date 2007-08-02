@@ -82,6 +82,7 @@ public class RubyRedLint extends CompilationParticipant {
 		visitors.add(new ComparableInclusionVisitor(contents));
 		visitors.add(new EnumerableInclusionVisitor(contents));
 		visitors.add(new AndOrUsedOnRighthandAssignment(contents));
+		visitors.add(new ConstantNamingConvention(contents));
 		return visitors;
 	}
 }
