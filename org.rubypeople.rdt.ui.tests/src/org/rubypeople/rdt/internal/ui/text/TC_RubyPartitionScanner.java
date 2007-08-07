@@ -363,5 +363,20 @@ public class TC_RubyPartitionScanner extends TestCase {
 		assertContentType(RubyPartitionScanner.RUBY_STRING, code, 79); // case'}'
 		assertContentType(RubyPartitionScanner.RUBY_STRING, code, 112); // EN'D'
   	}
+	
+	public void testBug5448() {
+		String code = "m.class_collisions controller_class_path,       \"#{controller_class_name}Controller\", # Sessions Controller\r\n" +
+		"    \"#{controller_class_name}Helper\"";
+		assertContentType(RubyPartitionScanner.RUBY_DEFAULT, code, 1);
+		assertContentType(RubyPartitionScanner.RUBY_DEFAULT, code, 40);
+		assertContentType(RubyPartitionScanner.RUBY_STRING, code, 48);
+		assertContentType(RubyPartitionScanner.RUBY_STRING, code, 50);
+		assertContentType(RubyPartitionScanner.RUBY_DEFAULT, code, 51);
+		assertContentType(RubyPartitionScanner.RUBY_DEFAULT, code, 71);
+		assertContentType(RubyPartitionScanner.RUBY_STRING, code, 72);
+		assertContentType(RubyPartitionScanner.RUBY_STRING, code, 83);
+		assertContentType(RubyPartitionScanner.RUBY_DEFAULT, code, 84);
+		assertContentType(RubyPartitionScanner.RUBY_SINGLE_LINE_COMMENT, code, 86);
+  	}
 }
 
