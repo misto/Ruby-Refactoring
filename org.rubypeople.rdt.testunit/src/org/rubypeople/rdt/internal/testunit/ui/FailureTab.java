@@ -148,7 +148,6 @@ public class FailureTab extends TestRunTab implements IMenuListener {
 			String className = getClassName();
 			String methodName = getMethodName();
 			if (className != null) {
-                System.err.println("MethodName: " + methodName); 
                 manager.add(new OpenTestAction(fRunnerViewPart, className, methodName, true));
 				manager.add(new Separator());
 				manager.add(new RerunAction(fRunnerViewPart, getSelectedTestId(), 
