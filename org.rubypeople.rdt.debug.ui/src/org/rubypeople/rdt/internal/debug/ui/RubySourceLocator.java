@@ -106,6 +106,7 @@ public class RubySourceLocator implements IPersistableSourceLocator, ISourcePres
 		private IFile workspaceFile;
 		public SourceElement(String aFilename, RubySourceLocator pSourceLocator) {
 			filename = aFilename;
+			if (filename == null) return;
 			if (filename.startsWith("./") && pSourceLocator.projectName != null && pSourceLocator.projectName.trim().length() > 0) {
 				filename = "/" + pSourceLocator.projectName + filename.substring(1);
 			}
