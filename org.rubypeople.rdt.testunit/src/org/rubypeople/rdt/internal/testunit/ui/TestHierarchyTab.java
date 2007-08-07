@@ -19,6 +19,7 @@ import java.util.ListIterator;
 import java.util.Map;
 import java.util.Vector;
 
+import org.eclipse.core.runtime.IStatus;
 import org.eclipse.debug.core.ILaunchManager;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IAction;
@@ -43,6 +44,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeItem;
+import org.rubypeople.rdt.core.RubyConventions;
 import org.rubypeople.rdt.testunit.ITestRunListener;
 
 /*
@@ -439,7 +441,8 @@ public class TestHierarchyTab extends TestRunTab implements IMenuListener {
 	}
 
 	private boolean testClassExists(String className) {
-        return true; // FIXME We need to re-implement this!
+		IStatus status = RubyConventions.validateRubyTypeName(className);
+        return status.isOK();
 	}
 
 	public void newTreeEntry(String treeEntry) {
