@@ -70,8 +70,9 @@ class RubyEditorAppearanceConfigurationBlock extends AbstractConfigurationBlock 
 	private OverlayPreferenceStore.OverlayKey[] createOverlayStoreKeys() {
 		
 		ArrayList overlayKeys= new ArrayList();
-
+		
 		overlayKeys.add(new OverlayPreferenceStore.OverlayKey(OverlayPreferenceStore.STRING, PreferenceConstants.EDITOR_MATCHING_BRACKETS_COLOR));
+		overlayKeys.add(new OverlayPreferenceStore.OverlayKey(OverlayPreferenceStore.BOOLEAN, PreferenceConstants.HOVERS_ENABLED));
 		overlayKeys.add(new OverlayPreferenceStore.OverlayKey(OverlayPreferenceStore.BOOLEAN, PreferenceConstants.EDITOR_MATCHING_BRACKETS));
 		overlayKeys.add(new OverlayPreferenceStore.OverlayKey(OverlayPreferenceStore.BOOLEAN, PreferenceConstants.EDITOR_EVALUTE_TEMPORARY_PROBLEMS));
 		overlayKeys.add(new OverlayPreferenceStore.OverlayKey(OverlayPreferenceStore.BOOLEAN, PreferenceConstants.EDITOR_SMART_HOME_END));
@@ -208,6 +209,9 @@ class RubyEditorAppearanceConfigurationBlock extends AbstractConfigurationBlock 
 		label= PreferencesMessages.RubyEditorPreferencePage_highlightMatchingBrackets; 
 		addCheckBox(appearanceComposite, label, PreferenceConstants.EDITOR_MATCHING_BRACKETS, 0);
 
+		label= PreferencesMessages.RubyEditorPreferencePage_enableHovers; 
+		addCheckBox(appearanceComposite, label, PreferenceConstants.HOVERS_ENABLED, 0);
+		
 		Label l= new Label(appearanceComposite, SWT.LEFT );
 		gd= new GridData(GridData.HORIZONTAL_ALIGN_FILL);
 		gd.horizontalSpan= 2;

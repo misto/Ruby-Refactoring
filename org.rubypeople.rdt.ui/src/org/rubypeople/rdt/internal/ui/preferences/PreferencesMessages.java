@@ -191,6 +191,7 @@ public final class PreferencesMessages extends NLS {
 	public static String KeywordInputDialog_error_comma;
 	public static String KeywordInputDialog_error_entryExists;
 	public static String KeywordInputDialog_error_noSpace;
+	public static String RubyEditorPreferencePage_enableHovers;
 	
     static {
         NLS.initializeMessages(BUNDLE_NAME, PreferencesMessages.class);

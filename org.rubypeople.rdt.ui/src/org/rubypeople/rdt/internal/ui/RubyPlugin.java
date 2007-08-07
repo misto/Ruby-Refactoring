@@ -22,6 +22,7 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Platform;
+import org.eclipse.core.runtime.Preferences;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.debug.internal.ui.ImageDescriptorRegistry;
@@ -594,6 +595,10 @@ public class RubyPlugin extends AbstractUIPlugin implements IRubyColorConstants 
 	 * @since 1.0
 	 */
 	public RubyEditorTextHoverDescriptor[] getRubyEditorTextHoverDescriptors() {
+		Preferences prefs = getPluginPreferences();
+		if (prefs != null && !prefs.getBoolean(PreferenceConstants.HOVERS_ENABLED)) {
+			return new RubyEditorTextHoverDescriptor[0];
+		}
 		if (fRubyEditorTextHoverDescriptors == null) {
 			fRubyEditorTextHoverDescriptors= RubyEditorTextHoverDescriptor.getContributedHovers();
 			ConfigurationElementSorter sorter= new ConfigurationElementSorter() {

@@ -388,6 +388,14 @@ public class PreferenceConstants {
 	 * @see org.eclipse.jface.preference.PreferenceConverter
 	 */
 	public final static String EDITOR_MATCHING_BRACKETS_COLOR = "matchingBracketsColor"; //$NON-NLS-1$
+	
+	/**
+	 * A named preference that controls if the Ruby hovers get created.
+	 * <p>
+	 * Value is of type <code>Boolean</code>.
+	 * </p>
+	 */
+	public final static String HOVERS_ENABLED = "hovers_enabled"; //$NON-NLS-1$
 
 	/**
 	 * A named preference that controls if the Ruby code assist gets auto
@@ -870,6 +878,7 @@ public class PreferenceConstants {
 		store.setDefault(PreferenceConstants.EDITOR_MATCHING_BRACKETS, true);
 		PreferenceConverter.setDefault(store, PreferenceConstants.EDITOR_MATCHING_BRACKETS_COLOR, new RGB(192, 192, 192));
 
+		store.setDefault(PreferenceConstants.HOVERS_ENABLED, true);
 		store.setDefault(PreferenceConstants.CODEASSIST_AUTOACTIVATION, true);
 		store.setDefault(PreferenceConstants.CODEASSIST_AUTOACTIVATION_DELAY, 200);
 
