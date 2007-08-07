@@ -15,6 +15,7 @@ import java.util.Set;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.IStatus;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.dialogs.ErrorDialog;
 import org.eclipse.jface.dialogs.MessageDialog;
@@ -24,6 +25,7 @@ import org.rubypeople.rdt.core.IRubyElement;
 import org.rubypeople.rdt.core.IRubyModel;
 import org.rubypeople.rdt.core.IRubyProject;
 import org.rubypeople.rdt.core.IType;
+import org.rubypeople.rdt.core.RubyConventions;
 import org.rubypeople.rdt.core.RubyModelException;
 import org.rubypeople.rdt.internal.ui.rubyeditor.EditorUtility;
 
@@ -93,6 +95,9 @@ public abstract class OpenEditorAction extends Action {
 	private IType internalFindType(IRubyProject project, String className, Set<IRubyProject> visitedProjects) throws RubyModelException {
 		if (visitedProjects.contains(project))
 			return null;
+		
+		IStatus status = RubyConventions.validateRubyTypeName(className);
+		if (!status.isOK()) return null;
 		
 		IType type= project.findType(className, (IProgressMonitor) null);
 		if (type != null)
