@@ -20,7 +20,22 @@ public interface IGemManager {
 	 */
 	public Set<Gem> getRemoteGems();
 
+	/**
+	 * Install the supplied gem including it's dependencies
+	 * 
+	 * @param gem
+	 * @return
+	 */
 	public boolean installGem(Gem gem);
+
+	/**
+	 * Install teh supplied gem
+	 * 
+	 * @param gem
+	 * @param includeDependencies
+	 * @return
+	 */
+	public boolean installGem(Gem gem, boolean includeDependencies);
 
 	/**
 	 * Removes or uninstalls the supplied gem.

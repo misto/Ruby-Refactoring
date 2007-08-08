@@ -61,6 +61,7 @@ import com.aptana.rdt.core.gems.IGemManager;
 
 public class GemManager implements IGemManager {
 
+	private static final String INCLUDE_DEPENDENCIES_SWITCH = "-y";
 	private static final String LOCAL_SWITCH = "-l";
 	private static final String LIST_COMMAND = "list";
 	private static final String INSTALL_COMMAND = "install";
@@ -446,16 +447,26 @@ public class GemManager implements IGemManager {
 
 	/*
 	 * (non-Javadoc)
-	 * 
-	 * @see com.aptana.rdt.internal.gems.IGemManager#installGem(com.aptana.rdt.internal.gems.Gem)
+	 * @see com.aptana.rdt.core.gems.IGemManager#installGem(com.aptana.rdt.core.gems.Gem)
 	 */
 	public boolean installGem(final Gem gem) {
+		return installGem(gem, true);
+	}
+	
+	/*
+	 * (non-Javadoc)
+	 * @see com.aptana.rdt.core.gems.IGemManager#installGem(com.aptana.rdt.core.gems.Gem, boolean)
+	 */
+	public boolean installGem(final Gem gem, boolean includeDependencies) {
 		if (!isRubyGemsInstalled()) return false;
 		try {
 			String command = INSTALL_COMMAND + " " + gem.getName();
 			if (gem.getVersion() != null
 					&& gem.getVersion().trim().length() > 0) {
 				command += " " + VERSION_SWITCH + " " + gem.getVersion();
+			}
+			if (includeDependencies) {
+				command += " " + INCLUDE_DEPENDENCIES_SWITCH;
 			}
 			ILaunchConfiguration config = createGemLaunchConfiguration(command, true);
 			final ILaunch launch = config.launch(ILaunchManager.RUN_MODE, null);	
