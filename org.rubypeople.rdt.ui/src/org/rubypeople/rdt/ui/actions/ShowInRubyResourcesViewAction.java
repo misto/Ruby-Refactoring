@@ -35,7 +35,7 @@ import org.rubypeople.rdt.internal.ui.rubyeditor.RubyEditor;
  * </p>
  * @since 2.0
  */
-public class ShowInPackageViewAction extends SelectionDispatchAction {
+public class ShowInRubyResourcesViewAction extends SelectionDispatchAction {
 	
 	private RubyEditor fEditor;
 	
@@ -46,7 +46,7 @@ public class ShowInPackageViewAction extends SelectionDispatchAction {
 	 * 
 	 * @param site the site providing context information for this action
 	 */
-	public ShowInPackageViewAction(IWorkbenchSite site) {
+	public ShowInRubyResourcesViewAction(IWorkbenchSite site) {
 		super(site);
 		setText(ActionMessages.ShowInPackageViewAction_label); 
 		setDescription(ActionMessages.ShowInPackageViewAction_description); 
@@ -58,7 +58,7 @@ public class ShowInPackageViewAction extends SelectionDispatchAction {
 	 * Note: This constructor is for internal use only. Clients should not call this constructor.
 	 * @param editor the Ruby editor
 	 */
-	public ShowInPackageViewAction(RubyEditor editor) {
+	public ShowInRubyResourcesViewAction(RubyEditor editor) {
 		this(editor.getEditorSite());
 		fEditor= editor;
 		setEnabled(SelectionConverter.canOperateOn(fEditor));

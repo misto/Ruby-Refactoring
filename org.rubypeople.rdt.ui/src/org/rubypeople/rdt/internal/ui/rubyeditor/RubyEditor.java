@@ -133,7 +133,7 @@ import org.rubypeople.rdt.ui.actions.IRubyEditorActionDefinitionIds;
 import org.rubypeople.rdt.ui.actions.OpenEditorActionGroup;
 import org.rubypeople.rdt.ui.actions.RubyActionGroup;
 import org.rubypeople.rdt.ui.actions.RubySearchActionGroup;
-import org.rubypeople.rdt.ui.actions.ShowInPackageViewAction;
+import org.rubypeople.rdt.ui.actions.ShowInRubyResourcesViewAction;
 import org.rubypeople.rdt.ui.actions.SurroundWithBeginRescueAction;
 import org.rubypeople.rdt.ui.text.folding.IRubyFoldingStructureProvider;
 import org.rubypeople.rdt.ui.text.folding.IRubyFoldingStructureProviderExtension;
@@ -277,7 +277,7 @@ public class RubyEditor extends RubyAbstractEditor {
         WorkbenchHelp.setHelp(action, IRubyHelpContextIds.TOGGLE_COMMENT_ACTION);
         configureToggleCommentAction();
         
-        action= new ShowInPackageViewAction(this);
+        action= new ShowInRubyResourcesViewAction(this);
 		action.setActionDefinitionId(IRubyEditorActionDefinitionIds.SHOW_IN_RUBY_RESOURCES_VIEW);
 		setAction("ShowInPackageView", action); //$NON-NLS-1$
         
