@@ -45,6 +45,7 @@ public class RubyInstalledDetector implements IStartup {
 
 			private void openPreferencePage(String pageId) {
 				PreferenceDialog prefDialog = PreferencesUtil.createPreferenceDialogOn(Display.getDefault().getActiveShell(), pageId, null, null);
+				prefDialog.setBlockOnOpen(false);
 				prefDialog.open();
 			}
 
