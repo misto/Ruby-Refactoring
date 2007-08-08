@@ -640,9 +640,11 @@ public class GemManager implements IGemManager {
 
 	public IPath getGemPath(String gemName) {
 		IPath path = getGemInstallPath();
+		if (path == null) return null;
 		path = path.append("gems");
 		File gemFolder = path.toFile();
 		File[] gems = gemFolder.listFiles();
+		if (gems == null) return null;
 		for (int i = 0; i < gems.length; i++) {
 			if (gems[i].getName().startsWith(gemName)) 
 				return new Path(gems[i].getAbsolutePath()).append("lib");
