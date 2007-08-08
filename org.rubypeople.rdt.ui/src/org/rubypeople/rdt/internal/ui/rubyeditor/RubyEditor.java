@@ -133,6 +133,7 @@ import org.rubypeople.rdt.ui.actions.IRubyEditorActionDefinitionIds;
 import org.rubypeople.rdt.ui.actions.OpenEditorActionGroup;
 import org.rubypeople.rdt.ui.actions.RubyActionGroup;
 import org.rubypeople.rdt.ui.actions.RubySearchActionGroup;
+import org.rubypeople.rdt.ui.actions.ShowInPackageViewAction;
 import org.rubypeople.rdt.ui.actions.SurroundWithBeginRescueAction;
 import org.rubypeople.rdt.ui.text.folding.IRubyFoldingStructureProvider;
 import org.rubypeople.rdt.ui.text.folding.IRubyFoldingStructureProviderExtension;
@@ -275,6 +276,10 @@ public class RubyEditor extends RubyAbstractEditor {
         markAsStateDependentAction("ToggleComment", true); //$NON-NLS-1$
         WorkbenchHelp.setHelp(action, IRubyHelpContextIds.TOGGLE_COMMENT_ACTION);
         configureToggleCommentAction();
+        
+        action= new ShowInPackageViewAction(this);
+		action.setActionDefinitionId(IRubyEditorActionDefinitionIds.SHOW_IN_RUBY_RESOURCES_VIEW);
+		setAction("ShowInPackageView", action); //$NON-NLS-1$
         
         action= new GotoMatchingBracketAction(this);
         action.setActionDefinitionId(IRubyEditorActionDefinitionIds.GOTO_MATCHING_BRACKET);
@@ -757,8 +762,7 @@ public class RubyEditor extends RubyAbstractEditor {
     }
 
     protected void editorContextMenuAboutToShow(IMenuManager menu) {
-        super.editorContextMenuAboutToShow(menu);       
-        
+        super.editorContextMenuAboutToShow(menu);        
 		menu.insertAfter(IContextMenuConstants.GROUP_OPEN, new GroupMarker(IContextMenuConstants.GROUP_SHOW));
 
 		ActionContext context= new ActionContext(getSelectionProvider().getSelection());

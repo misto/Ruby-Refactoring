@@ -186,6 +186,7 @@
          <perspectiveShortcut
                id="org.rubypeople.rdt.ui.RubyBrowsingPerspective">
          </perspectiveShortcut>
+         <showInPart id="org.rubypeople.rdt.ui.ViewRubyResources"/>
       </perspectiveExtension>
       <perspectiveExtension
             targetID="org.rubypeople.rdt.ui.RubyBrowsingPerspective">
@@ -629,6 +630,12 @@
             description="%ActionDefinition.open.structure.description"
             categoryId="org.eclipse.ui.category.navigate"
             id="org.rubypeople.rdt.ui.navigate.ruby.open.structure">
+      </command>
+      <command
+            name="%ActionDefinition.showInPackageView.name"
+            description="%ActionDefinition.showInPackageView.description"
+            categoryId="org.eclipse.ui.category.navigate"
+            id="org.rubypeople.rdt.ui.edit.text.ruby.show.in.ruby.resources.view">
       </command>
       <command
             name="%ActionDefinition.toggleComment.name" 

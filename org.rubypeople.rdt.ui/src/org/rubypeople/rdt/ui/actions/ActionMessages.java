@@ -12,6 +12,11 @@ public class ActionMessages {
 	public static String SurroundWithBeginRescueAction_dialog_title;
 
 	public static String QuickMenuAction_menuTextWithShortcut;
+	public static String ShowInPackageViewAction_label;
+	public static String ShowInPackageViewAction_description;
+	public static String ShowInPackageViewAction_tooltip;
+	public static String ShowInPackageViewAction_error_message;
+	public static String ShowInPackageViewAction_dialog_title;
 	
 	static {
 		NLS.initializeMessages(BUNDLE_NAME, ActionMessages.class);

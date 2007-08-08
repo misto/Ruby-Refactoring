@@ -173,4 +173,11 @@ public interface IRubyEditorActionDefinitionIds extends ITextEditorActionDefinit
 	 */
 	public static final String OPEN_HIERARCHY= "org.rubypeople.rdt.ui.edit.text.ruby.open.hierarchy"; //$NON-NLS-1$
 
+	
+	/**
+	 * Action definition ID of the navigate -> show in ruby resources view action
+	 * (value <code>"org.rubypeople.rdt.ui.edit.text.ruby.show.in.ruby.resources.view"</code>).
+	 */
+	public static final String SHOW_IN_RUBY_RESOURCES_VIEW= "org.rubypeople.rdt.ui.edit.text.ruby.show.in.ruby.resources.view"; //$NON-NLS-1$
+
 }

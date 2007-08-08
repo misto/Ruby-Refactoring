@@ -96,5 +96,9 @@ public class RdtActionConstants {
 	 */
 	public static final String FIND_WRITE_ACCESS_IN_WORKING_SET= "org.rubypeople.rdt.ui.actions.WriteAccessInWorkingSet"; //$NON-NLS-1$
 	
-	
+	/**
+	 * Navigate menu: name of standard Show in Ruby Resources View global action
+	 * (value <code>"org.rubypeople.rdt.ui.actions.ShowInRubyResourcesView"</code>).
+	 */
+	public static final String SHOW_IN_RESOURCES_VIEW= "org.rubypeople.rdt.ui.actions.ShowInRubyResourcesView"; //$NON-NLS-1$
 }
