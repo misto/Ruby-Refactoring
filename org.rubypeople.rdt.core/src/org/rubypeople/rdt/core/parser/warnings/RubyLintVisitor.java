@@ -1,4 +1,4 @@
-package org.rubypeople.rdt.internal.core.parser.warnings;
+package org.rubypeople.rdt.core.parser.warnings;
 
 import java.util.ArrayList;
 import java.util.List;

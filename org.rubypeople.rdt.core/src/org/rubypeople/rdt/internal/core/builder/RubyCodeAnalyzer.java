@@ -25,11 +25,11 @@ import org.jruby.ast.Node;
 import org.jruby.ast.visitor.NodeVisitor;
 import org.jruby.lexer.yacc.SyntaxException;
 import org.rubypeople.rdt.core.RubyCore;
+import org.rubypeople.rdt.core.parser.warnings.DelegatingVisitor;
+import org.rubypeople.rdt.core.parser.warnings.RubyLintVisitor;
 import org.rubypeople.rdt.internal.core.parser.Error;
 import org.rubypeople.rdt.internal.core.parser.ImmediateWarnings;
 import org.rubypeople.rdt.internal.core.parser.RubyParser;
-import org.rubypeople.rdt.internal.core.parser.warnings.DelegatingVisitor;
-import org.rubypeople.rdt.internal.core.parser.warnings.RubyLintVisitor;
 
 public final class RubyCodeAnalyzer implements SingleFileCompiler {
     private final IMarkerManager markerManager;

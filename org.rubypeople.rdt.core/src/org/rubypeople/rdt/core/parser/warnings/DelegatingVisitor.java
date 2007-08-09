@@ -1,4 +1,4 @@
-package org.rubypeople.rdt.internal.core.parser.warnings;
+package org.rubypeople.rdt.core.parser.warnings;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -100,6 +100,8 @@ import org.jruby.ast.ZSuperNode;
 import org.jruby.evaluator.Instruction;
 import org.rubypeople.rdt.core.compiler.CategorizedProblem;
 import org.rubypeople.rdt.internal.core.parser.InOrderVisitor;
+import org.rubypeople.rdt.internal.core.parser.warnings.ConstantReassignmentVisitor;
+import org.rubypeople.rdt.internal.core.parser.warnings.EmptyStatementVisitor;
 
 /**
  * <p>DelegatingVisitor takes a list of visitors, traverse the AST in order, and at

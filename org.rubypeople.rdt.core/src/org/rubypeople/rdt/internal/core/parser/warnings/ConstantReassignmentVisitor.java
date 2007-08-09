@@ -6,6 +6,7 @@ import java.util.Set;
 import org.jruby.ast.ConstDeclNode;
 import org.jruby.evaluator.Instruction;
 import org.rubypeople.rdt.core.RubyCore;
+import org.rubypeople.rdt.core.parser.warnings.RubyLintVisitor;
 
 public class ConstantReassignmentVisitor extends RubyLintVisitor {
 

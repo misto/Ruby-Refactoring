@@ -7,6 +7,7 @@ import org.jruby.ast.IterNode;
 import org.jruby.ast.WhenNode;
 import org.jruby.evaluator.Instruction;
 import org.rubypeople.rdt.core.RubyCore;
+import org.rubypeople.rdt.core.parser.warnings.RubyLintVisitor;
 
 public class EmptyStatementVisitor extends RubyLintVisitor {
 

@@ -16,13 +16,13 @@ import org.rubypeople.rdt.core.IRubyModelMarker;
 import org.rubypeople.rdt.core.RubyCore;
 import org.rubypeople.rdt.core.RubyModelException;
 import org.rubypeople.rdt.core.compiler.CategorizedProblem;
+import org.rubypeople.rdt.core.parser.warnings.DelegatingVisitor;
+import org.rubypeople.rdt.core.parser.warnings.RubyLintVisitor;
 import org.rubypeople.rdt.internal.core.parser.Error;
 import org.rubypeople.rdt.internal.core.parser.RdtWarnings;
 import org.rubypeople.rdt.internal.core.parser.RubyParser;
 import org.rubypeople.rdt.internal.core.parser.TaskParser;
 import org.rubypeople.rdt.internal.core.parser.TaskTag;
-import org.rubypeople.rdt.internal.core.parser.warnings.DelegatingVisitor;
-import org.rubypeople.rdt.internal.core.parser.warnings.RubyLintVisitor;
 
 /**
  * @author Chris
