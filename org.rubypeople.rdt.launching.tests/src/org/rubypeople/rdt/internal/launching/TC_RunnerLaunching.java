@@ -110,10 +110,10 @@ public class TC_RunnerLaunching extends ModifyingResourceTest {
 		buffer.append(" -I ");
 		if (Platform.getOS().equals(Platform.OS_WIN32))
 			buffer.append("\"");
-		buffer.append(LaunchingPlugin.getFileInPlugin(new Path("ruby/sync.rb")).getParent());
+		buffer.append(LaunchingPlugin.getFileInPlugin(new Path("ruby").append(StandardVMRunner.STREAM_FLUSH_SCRIPT)).getParent());
 		if (Platform.getOS().equals(Platform.OS_WIN32))
 			buffer.append("\"");
-		buffer.append(" -rsync.rb");
+		buffer.append(" -r" + StandardVMRunner.STREAM_FLUSH_SCRIPT);
 	}
 
 	public void testDebugEnabled() throws Exception {
