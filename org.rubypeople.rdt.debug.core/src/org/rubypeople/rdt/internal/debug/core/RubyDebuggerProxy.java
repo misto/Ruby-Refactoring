@@ -225,6 +225,7 @@ public class RubyDebuggerProxy {
 
 	public RubyVariable readInspectExpression(RubyStackFrame frame, String expression) throws RubyProcessingException {
 		try {
+			expression = expression.replaceAll("\n", "\\\\n");
 			this.println(commandFactory.createInspect(frame, expression));
 			RubyVariable[] variables = new VariableReader(getMultiReaderStrategy()).readVariables(frame);
 			if (variables.length == 0) {
