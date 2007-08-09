@@ -268,7 +268,7 @@ public class StandardVMRunner extends AbstractVMRunner {
 	}
 
 	protected void addStreamSync(List<String> arguments) {
-		File sync = LaunchingPlugin.getFileInPlugin(new Path("ruby").append(STREAM_FLUSH_SCRIPT));
+		File sync = LaunchingPlugin.getFileInPlugin(new Path("ruby").append("flush").append(STREAM_FLUSH_SCRIPT));
 		arguments.add(LOADPATH_SWITCH);
 		arguments.add(sync.getParent());
 		arguments.add("-r" + STREAM_FLUSH_SCRIPT);
