@@ -1195,8 +1195,8 @@ public class RubyEditor extends RubyAbstractEditor {
                 case '\'':
                 case '"':
                     if (!fCloseStrings || nextToken == Symbols.TokenIDENT
-                            || prevToken == Symbols.TokenIDENT || next != null && next.length() > 1
-                            || previous != null && previous.length() > 1) return;
+                            /*|| prevToken == Symbols.TokenIDENT */ || next != null && next.length() > 1
+                            /*|| previous != null && previous.length() > 1*/) return;
                     break;
 
                 default:
@@ -1204,7 +1204,7 @@ public class RubyEditor extends RubyAbstractEditor {
                 }
 
                 ITypedRegion partition = TextUtilities.getPartition(document,
-                        IRubyPartitions.RUBY_PARTITIONING, offset, true);
+                        IRubyPartitions.RUBY_PARTITIONING, offset - 1, true);
                 if (!IDocument.DEFAULT_CONTENT_TYPE.equals(partition.getType())) return;
 
                 if (!validateEditorInputState()) return;
