@@ -293,8 +293,16 @@ public class StandardVMType extends AbstractVMInstallType {
 					p.destroy();
 				}
 			}
-		}
-		
+			// If we find one at /usr/bin/ruby, try to see if there's one at /usr/local/bin/ruby. If so, then prefer that.
+			if (rubyExecutable != null && rubyExecutable.getAbsolutePath().startsWith("/usr/bin")) {
+				File rubyHome =	tryLocation(new File("/usr/local/bin/ruby"));
+				if (rubyHome != null) return rubyHome;
+			}
+		}		
+		return tryLocation(rubyExecutable);
+	}
+
+	private File tryLocation(File rubyExecutable) {
 		if (rubyExecutable == null) {
 			return null;
 		}
