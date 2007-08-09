@@ -12,7 +12,7 @@ import org.jruby.ast.SelfNode;
 import org.jruby.ast.VCallNode;
 import org.jruby.evaluator.Instruction;
 import org.jruby.runtime.Visibility;
-import org.rubypeople.rdt.internal.core.parser.warnings.RubyLintVisitor;
+import org.rubypeople.rdt.core.parser.warnings.RubyLintVisitor;
 import org.rubypeople.rdt.internal.core.util.ASTUtil;
 
 import com.aptana.rdt.AptanaRDTPlugin;

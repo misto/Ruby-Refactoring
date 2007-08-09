@@ -6,7 +6,7 @@ import org.jruby.ast.DefnNode;
 import org.jruby.ast.DefsNode;
 import org.jruby.ast.ReturnNode;
 import org.jruby.evaluator.Instruction;
-import org.rubypeople.rdt.internal.core.parser.warnings.RubyLintVisitor;
+import org.rubypeople.rdt.core.parser.warnings.RubyLintVisitor;
 
 import com.aptana.rdt.AptanaRDTPlugin;
 

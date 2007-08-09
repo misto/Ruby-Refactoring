@@ -11,11 +11,11 @@ import org.rubypeople.rdt.core.compiler.BuildContext;
 import org.rubypeople.rdt.core.compiler.CategorizedProblem;
 import org.rubypeople.rdt.core.compiler.CompilationParticipant;
 import org.rubypeople.rdt.core.compiler.ReconcileContext;
+import org.rubypeople.rdt.core.parser.warnings.DelegatingVisitor;
+import org.rubypeople.rdt.core.parser.warnings.RubyLintVisitor;
 import org.rubypeople.rdt.internal.core.parser.RubyParser;
 import org.rubypeople.rdt.internal.core.parser.warnings.ConstantReassignmentVisitor;
-import org.rubypeople.rdt.internal.core.parser.warnings.DelegatingVisitor;
 import org.rubypeople.rdt.internal.core.parser.warnings.EmptyStatementVisitor;
-import org.rubypeople.rdt.internal.core.parser.warnings.RubyLintVisitor;
 
 import com.aptana.rdt.AptanaRDTPlugin;
 

@@ -9,7 +9,7 @@ import org.jruby.ast.IfNode;
 import org.jruby.ast.Node;
 import org.jruby.ast.WhenNode;
 import org.jruby.evaluator.Instruction;
-import org.rubypeople.rdt.internal.core.parser.warnings.RubyLintVisitor;
+import org.rubypeople.rdt.core.parser.warnings.RubyLintVisitor;
 
 import com.aptana.rdt.AptanaRDTPlugin;
 

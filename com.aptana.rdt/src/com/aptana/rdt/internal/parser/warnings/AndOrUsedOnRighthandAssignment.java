@@ -4,7 +4,7 @@ import org.jruby.ast.AndNode;
 import org.jruby.ast.Node;
 import org.jruby.ast.OrNode;
 import org.jruby.evaluator.Instruction;
-import org.rubypeople.rdt.internal.core.parser.warnings.RubyLintVisitor;
+import org.rubypeople.rdt.core.parser.warnings.RubyLintVisitor;
 import org.rubypeople.rdt.internal.core.util.ASTUtil;
 
 import com.aptana.rdt.AptanaRDTPlugin;
