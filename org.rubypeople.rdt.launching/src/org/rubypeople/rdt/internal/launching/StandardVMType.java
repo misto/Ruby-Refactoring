@@ -145,7 +145,7 @@ public class StandardVMType extends AbstractVMInstallType {
 	private LibraryInfo generateLibraryInfo(File rubyHome, File rubyExecutable) {
 		LibraryInfo info = null;		
 		//locate the script to grab us our loadpaths
-		File file = LaunchingPlugin.getFileInPlugin(new Path("ruby/loadpath.rb")); //$NON-NLS-1$
+		File file = LaunchingPlugin.getFileInPlugin(new Path("ruby").append("standard_vm_type").append("loadpath.rb")); //$NON-NLS-1$
 		if (file.exists()) {	
 			String rubyExecutablePath = rubyExecutable.getAbsolutePath();
 			String[] cmdLine = new String[] {rubyExecutablePath, file.getAbsolutePath()};  //$NON-NLS-1$
