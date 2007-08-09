@@ -8,9 +8,9 @@ import junit.framework.TestCase;
 import org.jruby.ast.Node;
 import org.rubypeople.eclipse.shams.resources.ShamFile;
 import org.rubypeople.rdt.core.compiler.CategorizedProblem;
+import org.rubypeople.rdt.core.parser.warnings.DelegatingVisitor;
+import org.rubypeople.rdt.core.parser.warnings.RubyLintVisitor;
 import org.rubypeople.rdt.internal.core.parser.RubyParser;
-import org.rubypeople.rdt.internal.core.parser.warnings.DelegatingVisitor;
-import org.rubypeople.rdt.internal.core.parser.warnings.RubyLintVisitor;
 
 public class TC_RubyLintVisitor extends TestCase {
 	
