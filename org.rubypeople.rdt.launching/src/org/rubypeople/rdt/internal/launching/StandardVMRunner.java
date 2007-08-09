@@ -33,8 +33,8 @@ import org.rubypeople.rdt.launching.VMRunnerConfiguration;
 
 public class StandardVMRunner extends AbstractVMRunner {
 	
+	public static final String STREAM_FLUSH_SCRIPT = "rdt_stream_sync.rb";
 	private static final String LOADPATH_SWITCH = "-I";
-
 	protected static final String END_OF_OPTIONS_DELIMITER = "--";
 	
 	protected IVMInstall fVMInstance;
@@ -268,10 +268,10 @@ public class StandardVMRunner extends AbstractVMRunner {
 	}
 
 	protected void addStreamSync(List<String> arguments) {
-		File sync = LaunchingPlugin.getFileInPlugin(new Path("ruby/sync.rb"));
+		File sync = LaunchingPlugin.getFileInPlugin(new Path("ruby").append(STREAM_FLUSH_SCRIPT));
 		arguments.add(LOADPATH_SWITCH);
 		arguments.add(sync.getParent());
-		arguments.add("-rsync.rb");
+		arguments.add("-r" + STREAM_FLUSH_SCRIPT);
 	}
 
 }
