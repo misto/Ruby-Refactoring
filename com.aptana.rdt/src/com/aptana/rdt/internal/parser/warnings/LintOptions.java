@@ -30,6 +30,7 @@ public class LintOptions {
 	public static final long ConstantNamingConvention = 0x800000;
 	public static final long DynamicVariableAliasesLocal = 0x1000000;
 	public static final long LocalVariablePossibleAttributeAccess = 0x2000000;
+	public static final long LocalMethodNamingConvention = 0x4000000;
 	
 	public static final String ERROR = RubyCore.ERROR;
 	public static final String WARNING = RubyCore.WARNING;
@@ -52,6 +53,7 @@ public class LintOptions {
 		| ConstantNamingConvention
 		| DynamicVariableAliasesLocal
 		| LocalVariablePossibleAttributeAccess
+		| LocalMethodNamingConvention
 		/*| NullReference -- keep RubyCore#getDefaultOptions comment in sync */;
 	
 	public int maxLocals = 5;
@@ -83,6 +85,7 @@ public class LintOptions {
 		optionsMap.put(AptanaRDTPlugin.COMPILER_PB_METHOD_MISSING_NO_RESPOND_TO, getSeverityString(MethodMissingWithoutRespondTo));
 		optionsMap.put(AptanaRDTPlugin.COMPILER_PB_DYNAMIC_VARIABLE_ALIASES_LOCAL, getSeverityString(DynamicVariableAliasesLocal));
 		optionsMap.put(AptanaRDTPlugin.COMPILER_PB_LOCAL_VARIABLE_POSSIBLE_ATTRIBUTE_ACCESS, getSeverityString(LocalVariablePossibleAttributeAccess));
+		optionsMap.put(AptanaRDTPlugin.COMPILER_PB_LOCAL_METHOD_NAMING_CONVENTION, getSeverityString(LocalMethodNamingConvention));
 		optionsMap.put(AptanaRDTPlugin.COMPILER_PB_MAX_ARGUMENTS, String.valueOf(maxArguments));
 		optionsMap.put(AptanaRDTPlugin.COMPILER_PB_MAX_LINES, String.valueOf(maxLines));
 		optionsMap.put(AptanaRDTPlugin.COMPILER_PB_MAX_LOCALS, String.valueOf(maxLocals));
@@ -122,6 +125,7 @@ public class LintOptions {
 		if ((optionValue = optionsMap.get(AptanaRDTPlugin.COMPILER_PB_METHOD_MISSING_NO_RESPOND_TO)) != null)  updateSeverity(MethodMissingWithoutRespondTo, optionValue);
 		if ((optionValue = optionsMap.get(AptanaRDTPlugin.COMPILER_PB_DYNAMIC_VARIABLE_ALIASES_LOCAL)) != null)  updateSeverity(DynamicVariableAliasesLocal, optionValue);
 		if ((optionValue = optionsMap.get(AptanaRDTPlugin.COMPILER_PB_LOCAL_VARIABLE_POSSIBLE_ATTRIBUTE_ACCESS)) != null)  updateSeverity(LocalVariablePossibleAttributeAccess, optionValue);
+		if ((optionValue = optionsMap.get(AptanaRDTPlugin.COMPILER_PB_LOCAL_METHOD_NAMING_CONVENTION)) != null)  updateSeverity(LocalMethodNamingConvention, optionValue);
 		if ((optionValue = optionsMap.get(AptanaRDTPlugin.COMPILER_PB_MAX_LOCALS)) != null) {
 			if (optionValue instanceof String) {
 				String stringValue = (String) optionValue;

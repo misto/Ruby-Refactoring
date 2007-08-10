@@ -94,7 +94,11 @@
         <error
               categoryId="org.rubypeople.rdt.errors.potentialProblems"
               label="Local Variable assignment possibly intended to access attribute"
-              prefKey="com.aptana.rdt.compiler.problem.localVariablePossibleAttributeAccess"/>		
+              prefKey="com.aptana.rdt.compiler.problem.localVariablePossibleAttributeAccess"/>
+        <error
+              categoryId="org.rubypeople.rdt.errors.codeConvention"
+              label="Method or local variables doesn&apos;t match convention (under_scores vs camelCase)"
+              prefKey="com.aptana.rdt.compiler.problem.methodOrLocalNamingConvention"/>		
  </extension>
  
 <!-- =================================================================================== -->

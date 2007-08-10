@@ -224,6 +224,14 @@ public class AptanaRDTPlugin extends Plugin {
 	 */
 	public static final String COMPILER_PB_LOCAL_VARIABLE_POSSIBLE_ATTRIBUTE_ACCESS = PLUGIN_ID + ".compiler.problem.localVariablePossibleAttributeAccess"; //$NON-NLS-1$
 	
+	/**
+ 	 * Possible  configurable option ID.
+ 	 * @see #getDefaultOptions()
+	 * @since 1.0.0
+	 */
+	public static final String COMPILER_PB_LOCAL_METHOD_NAMING_CONVENTION = PLUGIN_ID + ".compiler.problem.methodOrLocalNamingConvention"; //$NON-NLS-1$
+	
+	
 	// The shared instance
 	private static AptanaRDTPlugin plugin;
 	

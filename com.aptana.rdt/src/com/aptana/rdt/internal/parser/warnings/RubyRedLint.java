@@ -86,6 +86,7 @@ public class RubyRedLint extends CompilationParticipant {
 		visitors.add(new MethodMissingWithoutRespondTo(contents));
 		visitors.add(new DynamicVariableAliasesLocal(contents));
 		visitors.add(new LocalVariablePossibleAttributeAccess(contents));
+		visitors.add(new LocalAndMethodNamingConvention(contents));
 		List<RubyLintVisitor> filtered = new ArrayList<RubyLintVisitor>();
 		for (RubyLintVisitor visitor : visitors) {
 			if (visitor.isIgnored()) continue;
