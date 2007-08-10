@@ -90,7 +90,11 @@
         <error
               categoryId="org.rubypeople.rdt.errors.potentialProblems"
               label="Dynamic variables Aliases Local Variable"
-              prefKey="com.aptana.rdt.compiler.problem.dynamicVariableAliasesLocal"/>		
+              prefKey="com.aptana.rdt.compiler.problem.dynamicVariableAliasesLocal"/>
+        <error
+              categoryId="org.rubypeople.rdt.errors.potentialProblems"
+              label="Local Variable assignment possibly intended to access attribute"
+              prefKey="com.aptana.rdt.compiler.problem.localVariablePossibleAttributeAccess"/>		
  </extension>
  
 <!-- =================================================================================== -->

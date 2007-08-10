@@ -208,14 +208,21 @@ public class AptanaRDTPlugin extends Plugin {
  	 * @see #getDefaultOptions()
 	 * @since 1.0.0
 	 */
-	public static final String COMPILER_PB_METHOD_MISSING_NO_RESPOND_TO = PLUGIN_ID + ".compiler.problem.methodMissingWithoutRespondTo";
+	public static final String COMPILER_PB_METHOD_MISSING_NO_RESPOND_TO = PLUGIN_ID + ".compiler.problem.methodMissingWithoutRespondTo"; //$NON-NLS-1$
 	
 	/**
  	 * Possible  configurable option ID.
  	 * @see #getDefaultOptions()
 	 * @since 1.0.0
 	 */
-	public static final String COMPILER_PB_DYNAMIC_VARIABLE_ALIASES_LOCAL = PLUGIN_ID + ".compiler.problem.dynamicVariableAliasesLocal";
+	public static final String COMPILER_PB_DYNAMIC_VARIABLE_ALIASES_LOCAL = PLUGIN_ID + ".compiler.problem.dynamicVariableAliasesLocal"; //$NON-NLS-1$
+	
+	/**
+ 	 * Possible  configurable option ID.
+ 	 * @see #getDefaultOptions()
+	 * @since 1.0.0
+	 */
+	public static final String COMPILER_PB_LOCAL_VARIABLE_POSSIBLE_ATTRIBUTE_ACCESS = PLUGIN_ID + ".compiler.problem.localVariablePossibleAttributeAccess"; //$NON-NLS-1$
 	
 	// The shared instance
 	private static AptanaRDTPlugin plugin;
