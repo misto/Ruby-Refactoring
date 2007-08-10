@@ -1197,53 +1197,7 @@ public class InOrderVisitor extends AbstractVisitor {
 	}
 	
 	protected List<String> getArgumentsFromFunctionCall(IArgumentNode iVisited) {
-		List<String> arguments = new ArrayList<String>();
-		Node argsNode = iVisited.getArgsNode();
-		Iterator iter = null;
-		if (argsNode instanceof SplatNode) {
-			SplatNode splat = (SplatNode) argsNode;
-			iter = splat.childNodes().iterator();
-		} else if (argsNode instanceof ArrayNode) {
-			ArrayNode arrayNode = (ArrayNode) iVisited.getArgsNode();
-			iter = arrayNode.childNodes().iterator();
-		} else if (argsNode == null) {
-			// Block?
-			Node iterNode = null;
-			if (iVisited instanceof FCallNode) {
-				FCallNode fcall = (FCallNode) iVisited;
-				iterNode = fcall.getIterNode();
-			} else if (iVisited instanceof CallNode) {
-				CallNode call = (CallNode) iVisited;	
-				iterNode = call.getIterNode();
-			}
-			if (iterNode == null) return arguments;
-			if (iterNode instanceof IterNode) { // yup, it has a block
-				IterNode yeah = (IterNode) iterNode;
-				Node varNode = yeah.getVarNode();
-				if (varNode instanceof DAsgnNode) { // single variable in block
-					DAsgnNode dassgn = (DAsgnNode) varNode;
-					arguments.add(dassgn.getName());
-				} else if (varNode instanceof MultipleAsgnNode) { // multiple variables in block
-					MultipleAsgnNode multi = (MultipleAsgnNode) varNode;
-					ListNode list = multi.getHeadNode();
-					if (list != null)
-						iter = list.childNodes().iterator();
-					else {
-						Node multiArgsNode = multi.getArgsNode();
-						if (multiArgsNode instanceof DAsgnNode) { // single variable in block
-							DAsgnNode dassgn = (DAsgnNode) multiArgsNode;
-							arguments.add(dassgn.getName());
-						}
-					}
-				}
-			}
-		}
-		if (iter == null) return arguments;
-		for (; iter.hasNext();) {
-			Node argument = (Node) iter.next();
-			arguments.add(ASTUtil.getNameReflectively(argument));
-		}
-		return arguments;
+		return ASTUtil.getArgumentsFromFunctionCall(iVisited);
 	}
 
 }

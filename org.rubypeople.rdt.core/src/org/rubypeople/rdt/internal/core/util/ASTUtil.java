@@ -7,7 +7,9 @@ import java.util.List;
 
 import org.jruby.ast.ArgsNode;
 import org.jruby.ast.ArgumentNode;
+import org.jruby.ast.ArrayNode;
 import org.jruby.ast.AttrAssignNode;
+import org.jruby.ast.CallNode;
 import org.jruby.ast.ClassNode;
 import org.jruby.ast.ClassVarAsgnNode;
 import org.jruby.ast.ClassVarDeclNode;
@@ -15,20 +17,26 @@ import org.jruby.ast.ClassVarNode;
 import org.jruby.ast.Colon2Node;
 import org.jruby.ast.ConstDeclNode;
 import org.jruby.ast.ConstNode;
+import org.jruby.ast.DAsgnNode;
 import org.jruby.ast.DStrNode;
+import org.jruby.ast.FCallNode;
 import org.jruby.ast.FalseNode;
 import org.jruby.ast.FixnumNode;
 import org.jruby.ast.GlobalAsgnNode;
 import org.jruby.ast.GlobalVarNode;
 import org.jruby.ast.HashNode;
+import org.jruby.ast.IArgumentNode;
 import org.jruby.ast.InstAsgnNode;
 import org.jruby.ast.InstVarNode;
+import org.jruby.ast.IterNode;
 import org.jruby.ast.ListNode;
 import org.jruby.ast.LocalAsgnNode;
 import org.jruby.ast.ModuleNode;
+import org.jruby.ast.MultipleAsgnNode;
 import org.jruby.ast.NilNode;
 import org.jruby.ast.Node;
 import org.jruby.ast.SelfNode;
+import org.jruby.ast.SplatNode;
 import org.jruby.ast.StrNode;
 import org.jruby.ast.TrueNode;
 import org.jruby.ast.ZArrayNode;
@@ -205,6 +213,56 @@ public abstract class ASTUtil {
 			|| (node instanceof ConstDeclNode) || (node instanceof ConstNode)
 			|| (node instanceof ClassVarAsgnNode) || (node instanceof ClassVarDeclNode)
 			|| (node instanceof ClassVarNode);
+	}
+
+	public static List<String> getArgumentsFromFunctionCall(IArgumentNode iVisited) {
+		List<String> arguments = new ArrayList<String>();
+		Node argsNode = iVisited.getArgsNode();
+		Iterator iter = null;
+		if (argsNode instanceof SplatNode) {
+			SplatNode splat = (SplatNode) argsNode;
+			iter = splat.childNodes().iterator();
+		} else if (argsNode instanceof ArrayNode) {
+			ArrayNode arrayNode = (ArrayNode) iVisited.getArgsNode();
+			iter = arrayNode.childNodes().iterator();
+		} else if (argsNode == null) {
+			// Block?
+			Node iterNode = null;
+			if (iVisited instanceof FCallNode) {
+				FCallNode fcall = (FCallNode) iVisited;
+				iterNode = fcall.getIterNode();
+			} else if (iVisited instanceof CallNode) {
+				CallNode call = (CallNode) iVisited;	
+				iterNode = call.getIterNode();
+			}
+			if (iterNode == null) return arguments;
+			if (iterNode instanceof IterNode) { // yup, it has a block
+				IterNode yeah = (IterNode) iterNode;
+				Node varNode = yeah.getVarNode();
+				if (varNode instanceof DAsgnNode) { // single variable in block
+					DAsgnNode dassgn = (DAsgnNode) varNode;
+					arguments.add(dassgn.getName());
+				} else if (varNode instanceof MultipleAsgnNode) { // multiple variables in block
+					MultipleAsgnNode multi = (MultipleAsgnNode) varNode;
+					ListNode list = multi.getHeadNode();
+					if (list != null)
+						iter = list.childNodes().iterator();
+					else {
+						Node multiArgsNode = multi.getArgsNode();
+						if (multiArgsNode instanceof DAsgnNode) { // single variable in block
+							DAsgnNode dassgn = (DAsgnNode) multiArgsNode;
+							arguments.add(dassgn.getName());
+						}
+					}
+				}
+			}
+		}
+		if (iter == null) return arguments;
+		for (; iter.hasNext();) {
+			Node argument = (Node) iter.next();
+			arguments.add(ASTUtil.getNameReflectively(argument));
+		}
+		return arguments;
 	}
 
 }
