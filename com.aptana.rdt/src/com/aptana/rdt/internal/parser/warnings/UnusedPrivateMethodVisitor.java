@@ -1,7 +1,9 @@
 package com.aptana.rdt.internal.parser.warnings;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 import org.jruby.ast.CallNode;
 import org.jruby.ast.ClassNode;
@@ -20,6 +22,7 @@ import com.aptana.rdt.AptanaRDTPlugin;
 public class UnusedPrivateMethodVisitor extends RubyLintVisitor {
 
 	private Map<String, Node> privateMethods = new HashMap<String, Node>();
+	private Set<String> usedMethods = new HashSet<String>();
 	private Visibility visibility;
 	
 	public UnusedPrivateMethodVisitor(String contents) {
@@ -28,7 +31,7 @@ public class UnusedPrivateMethodVisitor extends RubyLintVisitor {
 	}
 	
 	public Instruction visitFCallNode(FCallNode iVisited) {
-		privateMethods.remove(iVisited.getName()); // we've used the method
+		usedMethods.add(iVisited.getName()); // we've used the method
 		// FIXME Handle case where we call public/private/protected methods with arguments (so current visibility is not changed, but existing methods' visibility is changed)
 		return null;
 	}
@@ -36,12 +39,12 @@ public class UnusedPrivateMethodVisitor extends RubyLintVisitor {
 	public Instruction visitCallNode(CallNode iVisited) {
 		Node receiver = iVisited.getReceiverNode();
 		if (receiver instanceof SelfNode)
-			privateMethods.remove(iVisited.getName()); // we've used the method
+			usedMethods.add(iVisited.getName()); // we've used the method
 		return null;
 	}
 	
 	public Instruction visitVCallNode(VCallNode iVisited) {
-		privateMethods.remove(iVisited.getName()); // we've used the method
+		usedMethods.add(iVisited.getName()); // we've used the method
 		if (iVisited.getName().equals("private")) {
 			visibility = Visibility.PRIVATE;
 		} else if (iVisited.getName().equals("protected")) {
@@ -54,11 +57,17 @@ public class UnusedPrivateMethodVisitor extends RubyLintVisitor {
 	
 	public Instruction visitClassNode(ClassNode iVisited) {
 		privateMethods.clear();
+		usedMethods.clear();
 		visibility = Visibility.PUBLIC;
 		return null;
 	}
 	
 	public void exitClassNode(ClassNode iVisited) {
+		for (String name : usedMethods) {
+			if (privateMethods.containsKey(name)) {
+				privateMethods.remove(name);
+			}
+		}
 		for (Node method : privateMethods.values()) {
 			createProblem(method.getPosition(), "Unused private method " + ASTUtil.getNameReflectively(method));
 		}		
