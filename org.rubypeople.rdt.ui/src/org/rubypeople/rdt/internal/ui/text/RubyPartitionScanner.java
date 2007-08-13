@@ -333,14 +333,15 @@ public class RubyPartitionScanner implements IPartitionTokenScanner {
 	}
 
 	private void parseOutComments(List comments) {
-		int i = 0;
 		for (Iterator iter = comments.iterator(); iter.hasNext();) {
 			CommentNode comment = (CommentNode) iter.next();
 			int offset = correctOffset(comment);
 			int length = comment.getContent().length();
+			if (isCommentMultiLine(comment)) {
+				length = (origOffset + comment.getPosition().getEndOffset()) - offset;
+			}
 			Token token = new Token(getContentType(comment));
 			push(new QueuedToken(token, offset, length));
-			i++;
 		}
 	}
 
