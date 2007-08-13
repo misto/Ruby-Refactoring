@@ -130,9 +130,7 @@ public class RDocUtil {
 			ruby.setCurrentDirectory(getRDocScriptPath());
 			IRubyObject object = ruby.evalScript(script);
 			docs = object.toString();
-		} catch (IOException e) {
-			// ignore
-		} catch (RaiseException e) {
+		} catch (Exception e) {
 			// ignore
 		}
 		return docs;		
