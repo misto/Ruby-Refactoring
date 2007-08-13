@@ -585,19 +585,7 @@ public class GemManager implements IGemManager {
 	 * @see com.aptana.rdt.internal.gems.IGemManager#getRemoteGems()
 	 */
 	public Set<Gem> getRemoteGems() {
-		SortedSet<Gem> sorted = new TreeSet<Gem>(remoteGems);
-		SortedSet<Gem> logical = new TreeSet<Gem>();
-		String name = null;
-		Collection<Gem> temp = new HashSet<Gem>();
-		for (Gem gem : sorted) {
-			if (name != null && !gem.getName().equals(name)) {
-				logical.add(LogicalGem.create(temp));
-				temp.clear();
-			}
-			name = gem.getName();
-			temp.add(gem);
-		}
-		return Collections.unmodifiableSortedSet(logical);
+		return Collections.unmodifiableSortedSet(new TreeSet<Gem>(remoteGems));
 	}
 
 	/*
@@ -728,6 +716,7 @@ public class GemManager implements IGemManager {
 						remoteGems = loadRemoteGems();
 						storeGemCache(remoteGems,
 								getConfigFile(REMOTE_GEMS_CACHE_FILE));
+						remoteGems = makeLogical(remoteGems);
 //					}
 				} catch (Exception e) {
 					AptanaRDTPlugin.log(e);
@@ -738,5 +727,21 @@ public class GemManager implements IGemManager {
 
 		};
 		job.schedule();
+	}
+
+	protected Set<Gem> makeLogical(Set<Gem> remoteGems) {
+		SortedSet<Gem> sorted = new TreeSet<Gem>(remoteGems);
+		SortedSet<Gem> logical = new TreeSet<Gem>();
+		String name = null;
+		Collection<Gem> temp = new HashSet<Gem>();
+		for (Gem gem : sorted) {
+			if (name != null && !gem.getName().equals(name)) {
+				logical.add(LogicalGem.create(temp));
+				temp.clear();
+			}
+			name = gem.getName();
+			temp.add(gem);
+		}
+		return Collections.unmodifiableSortedSet(logical);
 	}
 }
