@@ -63,8 +63,6 @@ import org.rubypeople.rdt.launching.IVMInstallChangedListener;
 import org.rubypeople.rdt.launching.PropertyChangeEvent;
 import org.rubypeople.rdt.launching.RubyRuntime;
 
-import com.aptana.rdt.AptanaRDTPlugin;
-
 public class RIView extends ViewPart implements RdocListener, IVMInstallChangedListener {
 
 	private boolean riFound = false;
@@ -389,13 +387,13 @@ public class RIView extends ViewPart implements RdocListener, IVMInstallChangedL
     			}
     			p.waitFor();
     		} catch (CoreException e) {
-    			AptanaRDTPlugin.log(e);
+    			RubyPlugin.log(e);
     			return "";
     		} catch (IOException e) {
-    			AptanaRDTPlugin.log(e);
+    			RubyPlugin.log(e);
     			return "";
     		} catch (InterruptedException e) {
-    			AptanaRDTPlugin.log(e);
+    			RubyPlugin.log(e);
 			}
     		buffer.deleteCharAt(buffer.length() - 1); // remove last \n
     		return buffer.toString();

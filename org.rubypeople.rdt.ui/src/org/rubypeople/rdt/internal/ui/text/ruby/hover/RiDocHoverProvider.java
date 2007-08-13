@@ -7,6 +7,10 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IPath;
+import org.eclipse.core.runtime.Path;
+import org.eclipse.debug.core.DebugPlugin;
 import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.BadPartitioningException;
 import org.eclipse.jface.text.IDocument;
@@ -16,9 +20,13 @@ import org.eclipse.jface.text.ITextViewer;
 import org.rubypeople.rdt.core.ICodeAssist;
 import org.rubypeople.rdt.core.IMethod;
 import org.rubypeople.rdt.core.IRubyElement;
+import org.rubypeople.rdt.core.IType;
 import org.rubypeople.rdt.core.RubyModelException;
+import org.rubypeople.rdt.internal.launching.LaunchingPlugin;
+import org.rubypeople.rdt.internal.launching.StandardVMType;
 import org.rubypeople.rdt.internal.ui.RubyPlugin;
 import org.rubypeople.rdt.internal.ui.text.IRubyPartitions;
+import org.rubypeople.rdt.launching.IVMInstall;
 import org.rubypeople.rdt.launching.RubyRuntime;
 
 public class RiDocHoverProvider extends AbstractRubyEditorTextHover {
@@ -58,7 +66,7 @@ public class RiDocHoverProvider extends AbstractRubyEditorTextHover {
 					// ignore
 				}
 			}
-			if (contentType != null && (contentType.equals(IRubyPartitions.RUBY_MULTI_LINE_COMMENT) || contentType.equals(IRubyPartitions.RUBY_SINGLE_LINE_COMMENT))) {
+			if (contentType != null && !contentType.equals(IRubyPartitions.RUBY_DEFAULT)) {
 				return null;
 			}
 			String symbol = textViewer.getDocument().get(hoverRegion.getOffset(), hoverRegion.getLength());	
@@ -70,53 +78,95 @@ public class RiDocHoverProvider extends AbstractRubyEditorTextHover {
 		return null;
 	}
 	
-	
-	private String getRIResult(String symbol) {
-		if (symbol == null || symbol.trim().length() == 0) return null;
-		File ri = RubyRuntime.getRI();
-    	if (ri == null || !ri.exists() || !ri.isFile()) return null;
-    	
-    	List<String> args = new ArrayList<String>();
-    	args.add(0, ri.getAbsolutePath());
-    	// these will get rid of some of the overhead formatting
-    	args.add("-f");
-    	args.add("html");
-    	args.add("--no-pager");
-    	
-    	BufferedReader br = null; 
-    	try {
-			args.add('"' + symbol + '"');
-			String[] argArray= (String[]) args.toArray(new String[args.size()]);
-			Process p = Runtime.getRuntime().exec(argArray);
-			if (p == null) return null;
-			br = new BufferedReader(new InputStreamReader(p.getInputStream()));
-			// TODO: format the documentation that was fetched from RI 
-			// for now: read the first 15 lines so 
-			StringBuffer buf = new StringBuffer();
-			for(int i = 0; i < 15; i++){
-				String line = br.readLine();
-				if(line != null){
-					buf.append(line);
-					buf.append("<br />");
-				} else {
-					break;
-				}				
+    protected File getFRIIndexFile() {
+		return getStateFile(".fastri-index");
+	}
+    
+    private File getStateFile(String name) {
+    	IPath location = RubyPlugin.getDefault().getStateLocation();
+		location = location.append(name);
+		return location.toFile();
+    }
+    
+    private String getFastRiServerPath() {
+    	return getFilePath(new Path("ruby").append("fastri-server"));
+	}
+    
+    private String getFastRiPath() {
+		return getFilePath(new Path("ruby").append("fri"));
+	}
+    
+    private String getFilePath(IPath path) {
+    	File file = LaunchingPlugin.getFileInPlugin(path);
+		if (file == null || !file.exists() || !file.isFile()) return null;
+		return file.getAbsolutePath();
+    }
+    
+    private String execAndReadOutput(String file, List<String> commands) {
+		if (file == null) return null;
+		StringBuffer buffer = new StringBuffer();
+		try {
+			List<String> line = new ArrayList<String>();
+			IVMInstall vm = RubyRuntime.getDefaultVMInstall();
+			if (vm == null) return "";
+			File executable = StandardVMType.findRubyExecutable(vm.getInstallLocation());
+			if (executable.getName().contains("rubyw")) {
+				String name = executable.getName();
+				name = name.replace("rubyw", "ruby");
+				executable = new File(executable.getParent() + File.separator + name);
 			}
-			// If ambiguous, return nothing
-			if (buf.indexOf("More than one method matched your request") > -1) return null;
-			return "" + buf.toString();			
-    	} catch (IOException e) {
-			RubyPlugin.log(e);
-		} finally {
-			if(br != null){
-				try {
-					br.close();
-				} catch (IOException e) {
-					RubyPlugin.log(e);
+			line.add(executable.getAbsolutePath());
+			line.add(file);
+			for (String command : commands) {
+				line.add(command);
+			}
+			File workingDirectory = new File(file).getParentFile();
+			String[] cmdLine = new String[line.size()];
+			cmdLine = line.toArray(cmdLine);
+			Process p = DebugPlugin.exec(cmdLine, workingDirectory);    			
+			BufferedReader reader = new BufferedReader(new InputStreamReader(p.getInputStream()));
+			String liner = null;    		
+			while (!reader.ready()) {
+				Thread.yield();
+			}
+			while ((liner = reader.readLine()) != null) {
+				buffer.append(liner);
+				buffer.append("\n");
+				if (!reader.ready()) {
+					Thread.yield();
 				}
 			}
-		}		
-		return null;
+			p.waitFor();
+		} catch (CoreException e) {
+			RubyPlugin.log(e);
+			return "";
+		} catch (IOException e) {
+			RubyPlugin.log(e);
+			return "";
+		} catch (InterruptedException e) {
+			RubyPlugin.log(e);
+		}
+		buffer.deleteCharAt(buffer.length() - 1); // remove last \n
+		return buffer.toString();
+	}
+	
+	private String getRIResult(String symbol) {
+		if (symbol == null || symbol.trim().length() == 0) return null;		
+		File file = getFRIIndexFile();
+    	if (!file.exists()) {
+    		List<String> commands = new ArrayList<String>();            	
+        	commands.add("--index-file=\"" + file.getAbsolutePath() + "\"");
+        	commands.add("-b");
+    		String output = execAndReadOutput(getFastRiServerPath(), commands);
+    	}
+	
+    	List<String> commands = new ArrayList<String>();  
+    	commands.add("--no-pager");
+    	commands.add("--index-file=\"" + file.getAbsolutePath() + "\"");
+		String content = execAndReadOutput(getFastRiPath(), commands);			
+		if (content == null) return null;	
+		if (content.indexOf("More than one method matched your request") > -1) return null;
+		return content;			
 	}
 	
 	@Override
@@ -130,11 +180,11 @@ public class RiDocHoverProvider extends AbstractRubyEditorTextHover {
 	private String getRICompatibleName(IRubyElement element) {
 		switch (element.getElementType()) {
 		case IRubyElement.TYPE:
-			return element.getElementName();
+			return ((IType) element).getFullyQualifiedName();
 		case IRubyElement.METHOD:
 			IMethod method = (IMethod) element;
 			String delimeter = method.isSingleton() ? "::" : "#";
-			return method.getDeclaringType().getElementName() + delimeter + element.getElementName();
+			return method.getDeclaringType().getFullyQualifiedName() + delimeter + element.getElementName();
 
 		default:
 			return null;
