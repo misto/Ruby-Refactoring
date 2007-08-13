@@ -378,5 +378,16 @@ public class TC_RubyPartitionScanner extends TestCase {
 		assertContentType(RubyPartitionScanner.RUBY_DEFAULT, code, 84);
 		assertContentType(RubyPartitionScanner.RUBY_SINGLE_LINE_COMMENT, code, 86);
   	}
+	
+	public void testBug5208() {
+		String code = "=begin\r\n" +
+		"  This is a comment\r\n" +
+		"=end\r\n" +
+		"require 'gosu'";
+		assertContentType(RubyPartitionScanner.RUBY_MULTI_LINE_COMMENT, code, 0);
+		assertContentType(RubyPartitionScanner.RUBY_MULTI_LINE_COMMENT, code, 32); // =en'd'
+		assertContentType(RubyPartitionScanner.RUBY_DEFAULT, code, 36); // 'r'equire
+		assertContentType(RubyPartitionScanner.RUBY_STRING, code, 44);
+  	}
 }
 
