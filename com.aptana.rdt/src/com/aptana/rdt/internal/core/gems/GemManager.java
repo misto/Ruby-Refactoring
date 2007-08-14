@@ -500,7 +500,7 @@ public class GemManager implements IGemManager {
 					&& gem.getVersion().trim().length() > 0) {
 				command += " " + VERSION_SWITCH + " " + gem.getVersion();
 			}
-			ILaunchConfiguration config = createGemLaunchConfiguration(command, false);
+			ILaunchConfiguration config = createGemLaunchConfiguration(command, true);
 			final ILaunch launch = config.launch(ILaunchManager.RUN_MODE, null);
 			Job job = new Job("Notifying gem listeners of uninstalled gem") {
 			
