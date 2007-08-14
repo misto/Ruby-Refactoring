@@ -243,7 +243,24 @@ public class StandardVMRunner extends AbstractVMRunner {
 		String[] cmdLine= new String[arguments.size()];
 		arguments.toArray(cmdLine);
 		
-		String[] envp= config.getEnvironment();
+		String[] env2;
+        String[] envp= config.getEnvironment();
+        if (!Platform.getOS().equals(Platform.OS_WIN32)) { // if not on windows, hack to add a basic PATH
+            File exe = StandardVMType.findRubyExecutable (fVMInstance
+                    .getInstallLocation());
+            String env = "PATH=" + exe.getParent() + File.pathSeparator
+                    + "/usr/local/bin" + File.pathSeparator + "/usr/bin" + File.pathSeparator + "PATH";
+
+            if (envp != null) {
+                env2 = new String[envp.length];
+                System.arraycopy(envp, 0, env2, 0, envp.length);
+                env2[ envp.length] = env;
+            } else {
+                env2 = new String[] { env };
+            }
+        } else {
+            env2 = envp;
+        }
 		
 		subMonitor.worked(1);
 
@@ -255,7 +272,7 @@ public class StandardVMRunner extends AbstractVMRunner {
 		subMonitor.subTask(LaunchingMessages.StandardVMRunner_Starting_virtual_machine____3); 
 		Process p= null;
 		File workingDir = getWorkingDir(config);
-		p= exec(cmdLine, workingDir, envp);
+		p= exec(cmdLine, workingDir, env2);
 		if (p == null) {
 			return;
 		}
