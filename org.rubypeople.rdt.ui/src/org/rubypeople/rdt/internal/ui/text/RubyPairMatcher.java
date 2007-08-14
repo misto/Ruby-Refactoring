@@ -16,6 +16,22 @@ import org.eclipse.jface.text.IRegion;
 import org.eclipse.jface.text.Region;
 import org.eclipse.jface.text.TextUtilities;
 import org.eclipse.jface.text.source.ICharacterPairMatcher;
+import org.jruby.ast.BeginNode;
+import org.jruby.ast.CaseNode;
+import org.jruby.ast.ClassNode;
+import org.jruby.ast.DefnNode;
+import org.jruby.ast.DefsNode;
+import org.jruby.ast.ForNode;
+import org.jruby.ast.IfNode;
+import org.jruby.ast.IterNode;
+import org.jruby.ast.ModuleNode;
+import org.jruby.ast.Node;
+import org.jruby.ast.SClassNode;
+import org.jruby.ast.WhenNode;
+import org.jruby.ast.WhileNode;
+import org.rubypeople.rdt.internal.core.parser.RubyParser;
+import org.rubypeople.rdt.internal.ti.util.ClosestSpanningNodeLocator;
+import org.rubypeople.rdt.internal.ti.util.INodeAcceptor;
 
 /**
  * Helper class for match pairs of characters.
@@ -46,14 +62,83 @@ public class RubyPairMatcher implements ICharacterPairMatcher {
             return null;
 
         fDocument= document;
-
-        if (fDocument != null && matchPairsAt() && fStartPos != fEndPos)
+        
+        if (fDocument != null && matchPairsAt() && fStartPos != fEndPos) // match parens
             return new Region(fStartPos, fEndPos - fStartPos + 1);
 
+        if (fDocument != null && matchBlocksAt() && fStartPos != fEndPos) // match code blocks
+            return new Region(fStartPos, fEndPos - fStartPos + 1);
+        
         return null;
     }
 
-    /* (non-Javadoc)
+    private boolean matchBlocksAt() {
+    	fStartPos= -1;
+        fEndPos= -1;
+		String src = fDocument.get();
+		if (src.length() == 0) {
+			return false;
+		}
+		RubyParser parser = new RubyParser();
+		Node root = parser.parse(src);
+		Node spanning = ClosestSpanningNodeLocator.Instance().findClosestSpanner(root, fOffset, new INodeAcceptor() {
+		
+			public boolean doesAccept(Node node) {
+				if (node instanceof IfNode) {
+					IfNode ifNode = (IfNode) node;
+					// FIXME Only grab IfNode if it isn't a modifier!
+				}
+				return node instanceof ModuleNode || node instanceof SClassNode || node instanceof ClassNode || 
+				node instanceof DefnNode || node instanceof DefsNode || node instanceof BeginNode || node instanceof WhileNode || 
+				node instanceof CaseNode || node instanceof ForNode || node instanceof IfNode || node instanceof IterNode;
+			}
+		
+		});
+		if (spanning == null) return false;
+		if (!isOnEnd(spanning) && !isOnBeginning(spanning)) {
+			return false;
+		}
+		if (isOnEnd(spanning)) {
+			fAnchor = RIGHT;
+		} else {
+			fAnchor = LEFT;
+		}
+		fStartPos = spanning.getPosition().getStartOffset();
+		fEndPos = spanning.getPosition().getEndOffset();
+		if (src.length() == fEndPos) {
+			fEndPos -= 1;
+		}
+		return true;
+	}
+
+	private boolean isOnBeginning(Node spanning) {
+		return (fOffset >= spanning.getPosition().getStartOffset()) && (fOffset <= spanning.getPosition().getStartOffset() + getKeywordLength(spanning));
+	}
+
+	private boolean isOnEnd(Node spanning) {
+		return (fOffset >= spanning.getPosition().getEndOffset() - 4) && (fOffset <= spanning.getPosition().getEndOffset());
+	}
+
+	private int getKeywordLength(Node spanning) {
+		if ((spanning instanceof ClassNode) || (spanning instanceof BeginNode) || (spanning instanceof WhileNode)) {
+			return 5;
+		}
+		if ((spanning instanceof DefnNode) || (spanning instanceof DefsNode) || (spanning instanceof ForNode)) {
+			return 3;
+		}
+		if (spanning instanceof WhenNode) {
+			return 4;
+		}
+		if (spanning instanceof ModuleNode) {
+			return 6;
+		}
+		if ((spanning instanceof IfNode) || (spanning instanceof IterNode)) {
+			return 2;
+		}
+		return 1;
+	}
+
+	/* (non-Javadoc)
      * @see org.eclipse.jface.text.source.ICharacterPairMatcher#getAnchor()
      */
     public int getAnchor() {
