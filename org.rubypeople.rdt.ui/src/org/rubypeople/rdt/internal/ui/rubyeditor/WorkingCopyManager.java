@@ -23,7 +23,7 @@ import org.rubypeople.rdt.ui.IWorkingCopyManager;
 import org.rubypeople.rdt.ui.IWorkingCopyManagerExtension;
 
 /**
- * This working copy manager works together with a given compilation unit
+ * This working copy manager works together with a given ruby script
  * document provider and additionally offers to "overwrite" the working copy
  * provided by this document provider.
  */
@@ -35,7 +35,7 @@ public class WorkingCopyManager implements IWorkingCopyManager, IWorkingCopyMana
 
 	/**
 	 * Creates a new working copy manager that co-operates with the given
-	 * compilation unit document provider.
+	 * ruby script document provider.
 	 * 
 	 * @param provider
 	 *            the provider
