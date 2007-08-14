@@ -349,7 +349,7 @@ public class GemManager implements IGemManager {
 		if (!isRubyGemsInstalled()) return false;
 		try {
 			String command = UPDATE_COMMAND + " " + gem.getName();
-			ILaunchConfiguration config = createGemLaunchConfiguration(command, true);
+			ILaunchConfiguration config = createGemLaunchConfiguration(command, false);
 			final ILaunch launch = config.launch(ILaunchManager.RUN_MODE, null);
 			Job job = new Job("Updating gem " + gem.getName()) {
 			
@@ -380,7 +380,7 @@ public class GemManager implements IGemManager {
 		return DebugPlugin.getDefault().getLaunchManager();
 	}
 
-	private ILaunchConfiguration createGemLaunchConfiguration(String arguments, boolean interactive) {
+	private ILaunchConfiguration createGemLaunchConfiguration(String arguments, boolean isSudo) {
 		String gemPath = getGemScriptPath();
 		ILaunchConfiguration config = null;
 		try {
@@ -403,6 +403,7 @@ public class GemManager implements IGemManager {
 			wc.setAttribute(
 					IRubyLaunchConfigurationConstants.ATTR_VM_ARGUMENTS,
 					"");
+			wc.setAttribute(IRubyLaunchConfigurationConstants.ATTR_IS_SUDO, isSudo);
 			Map<String, String> map = new HashMap<String, String>();
 			map.put(IRubyLaunchConfigurationConstants.ATTR_RUBY_COMMAND,
 					EXECUTABLE);
@@ -411,18 +412,7 @@ public class GemManager implements IGemManager {
 							IRubyLaunchConfigurationConstants.ATTR_VM_INSTALL_TYPE_SPECIFIC_ATTRS_MAP,
 							map);
 			wc.setAttribute(IDebugUIConstants.ATTR_PRIVATE, true);
-			wc.setAttribute(IDebugUIConstants.ATTR_LAUNCH_IN_BACKGROUND,
-					!interactive);
-			if (!interactive) {
-				wc.setAttribute(IDebugUIConstants.ATTR_CAPTURE_IN_CONSOLE,
-						false);
-				IPath outFilePath = AptanaRDTPlugin.getDefault()
-						.getStateLocation();
-				outFilePath = outFilePath.append(System.currentTimeMillis()
-						+ ".txt");
-				wc.setAttribute(IDebugUIConstants.ATTR_CAPTURE_IN_FILE,
-						outFilePath.toPortableString());
-			}
+			wc.setAttribute(IDebugUIConstants.ATTR_LAUNCH_IN_BACKGROUND, false);
 			config = wc.doSave();
 		} catch (CoreException ce) {
 			// ignore for now
@@ -510,7 +500,7 @@ public class GemManager implements IGemManager {
 					&& gem.getVersion().trim().length() > 0) {
 				command += " " + VERSION_SWITCH + " " + gem.getVersion();
 			}
-			ILaunchConfiguration config = createGemLaunchConfiguration(command, true);
+			ILaunchConfiguration config = createGemLaunchConfiguration(command, false);
 			final ILaunch launch = config.launch(ILaunchManager.RUN_MODE, null);
 			Job job = new Job("Notifying gem listeners of uninstalled gem") {
 			
@@ -647,7 +637,7 @@ public class GemManager implements IGemManager {
 	public boolean updateAll() {
 		if (!isRubyGemsInstalled()) return false;
 		try {
-			ILaunchConfiguration config = createGemLaunchConfiguration(UPDATE_COMMAND, true);
+			ILaunchConfiguration config = createGemLaunchConfiguration(UPDATE_COMMAND, false);
 			final ILaunch launch = config.launch(ILaunchManager.RUN_MODE, null);
 			Job job = new Job("Updating gem listing") {
 			
