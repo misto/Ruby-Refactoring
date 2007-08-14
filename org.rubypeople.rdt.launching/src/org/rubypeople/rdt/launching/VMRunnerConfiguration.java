@@ -32,6 +32,7 @@ public class VMRunnerConfiguration {
 	private String fWorkingDirectory;
 	private Map fVMSpecificAttributesMap;
 	private boolean fResume = true;
+	private boolean fIsSudo;
 	
 	private static final String[] fgEmpty= new String[0];
 	
@@ -220,5 +221,13 @@ public class VMRunnerConfiguration {
 	 */
 	public boolean isResumeOnStartup() {
 		return fResume;
+	}
+
+	public void setIsSudo(boolean isSudo) {
+		fIsSudo = isSudo;		
+	}
+	
+	public boolean isSudo() {
+		return fIsSudo;
 	}
 }

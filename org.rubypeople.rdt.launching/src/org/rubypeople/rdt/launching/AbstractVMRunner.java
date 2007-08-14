@@ -60,6 +60,7 @@ public abstract class AbstractVMRunner implements IVMRunner {
 	 * @see DebugPlugin#exec(String[], File)
 	 */
 	protected Process exec(String[] cmdLine, File workingDirectory) throws CoreException {
+		LaunchingPlugin.info("Starting: " + getCmdLineAsString(cmdLine));
 		return DebugPlugin.exec(cmdLine, workingDirectory);
 	}
 	
@@ -68,7 +69,7 @@ public abstract class AbstractVMRunner implements IVMRunner {
 	 * @see DebugPlugin#exec(String[], File, String[])
 	 */
 	protected Process exec(String[] cmdLine, File workingDirectory, String[] envp) throws CoreException {
-		LaunchingPlugin.info("Starting: " + getCmdLineAsString(cmdLine)) ;
+		LaunchingPlugin.info("Starting: " + getCmdLineAsString(cmdLine));
 		return DebugPlugin.exec(cmdLine, workingDirectory, envp);
 	}	
 	

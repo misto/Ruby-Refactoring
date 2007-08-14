@@ -433,4 +433,8 @@ public abstract class AbstractRubyLaunchConfigurationDelegate extends
 		}
 		return (String[]) userEntries.toArray(new String[userEntries.size()]);
 	}
+	
+	public boolean getIsSudo(ILaunchConfiguration configuration) throws CoreException {
+		return configuration.getAttribute(IRubyLaunchConfigurationConstants.ATTR_IS_SUDO, false);
+	}
 }

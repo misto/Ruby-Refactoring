@@ -23,6 +23,7 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
+import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.SubProgressMonitor;
 import org.eclipse.debug.core.ILaunch;
 import org.eclipse.debug.core.model.IProcess;
@@ -130,6 +131,10 @@ public class StandardVMRunner extends AbstractVMRunner {
 	 */
 	protected List<String> constructProgramString(VMRunnerConfiguration config) throws CoreException {
 		List<String> string = new ArrayList<String>();
+		if (!Platform.getOS().equals(Platform.OS_WIN32) && config.isSudo()) {
+			string.add("sudo");
+		}
+		
 		// Look for the user-specified ruby executable command
 		String command= null;
 		Map map= config.getVMSpecificAttributesMap();

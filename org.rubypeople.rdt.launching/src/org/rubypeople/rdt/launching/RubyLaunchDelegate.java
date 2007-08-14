@@ -70,6 +70,8 @@ public class RubyLaunchDelegate extends AbstractRubyLaunchConfigurationDelegate 
 		// Loadpath
 		String[] classpath = getLoadpath(configuration);
 		
+		boolean isSudo = getIsSudo(configuration);
+		
 		// Create VM config
 		VMRunnerConfiguration runConfig = new VMRunnerConfiguration(mainTypeName, classpath);
 		runConfig.setProgramArguments(execArgs.getProgramArgumentsArray());
@@ -77,6 +79,7 @@ public class RubyLaunchDelegate extends AbstractRubyLaunchConfigurationDelegate 
 		runConfig.setVMArguments(execArgs.getVMArgumentsArray());
 		runConfig.setWorkingDirectory(workingDirName);
 		runConfig.setVMSpecificAttributesMap(vmAttributesMap);
+		runConfig.setIsSudo(isSudo);
 		
 		// check for cancellation
 		if (monitor.isCanceled()) {

@@ -194,5 +194,7 @@ public interface IRubyLaunchConfigurationConstants {
 	 * configuration (via the <code>ATTR_LOADPATH_PROVIDER</code> attribute).
 	 */
 	public static final String ATTR_LOADPATH = LaunchingPlugin.getUniqueIdentifier() + ".CUSTOM_LOAD_PATH";	 //$NON-NLS-1$	
+
+	public static final String ATTR_IS_SUDO = LaunchingPlugin.getUniqueIdentifier() + ".IS_SUDO";	 //$NON-NLS-1$
 	
 }
