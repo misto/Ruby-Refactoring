@@ -69,17 +69,6 @@ public class RubyCompletionProposal extends AbstractRubyCompletionProposal {
 	 */
 	protected boolean isValidPrefix(String prefix) {
 		String word= getDisplayString();
-		if (isInRubydoc()) {
-			int idx = word.indexOf("{@link "); //$NON-NLS-1$
-			if (idx==0) {
-				word = word.substring(7);
-			} else {
-				idx = word.indexOf("{@value "); //$NON-NLS-1$
-				if (idx==0) {
-					word = word.substring(8);
-				}
-			}
-		}
 		return isPrefix(prefix, word);
 	}
 	
