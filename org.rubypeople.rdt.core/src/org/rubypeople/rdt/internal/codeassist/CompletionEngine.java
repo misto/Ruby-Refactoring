@@ -475,7 +475,7 @@ public class CompletionEngine {
 			switch (method.getVisibility()) {
 			case IMethod.PRIVATE:
 				flags |= Flags.AccPrivate;
-				if (!fOriginalType.getElementName().equals(typeName)) return null; // FIXME We should do a comparison of types, not names
+				if (fOriginalType != null && !fOriginalType.getElementName().equals(typeName)) return null; // FIXME We should do a comparison of types, not names
 				if (fContext.hasReceiver()) return null; // can't invoke a private method on a receiver
 				break;
 			case IMethod.PUBLIC:
