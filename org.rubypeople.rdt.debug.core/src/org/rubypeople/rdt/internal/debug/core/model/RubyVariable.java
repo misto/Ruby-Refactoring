@@ -1,11 +1,16 @@
 package org.rubypeople.rdt.internal.debug.core.model;
 
 import org.eclipse.core.runtime.PlatformObject;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.debug.core.DebugException;
 import org.eclipse.debug.core.ILaunch;
 import org.eclipse.debug.core.model.IDebugTarget;
 import org.eclipse.debug.core.model.IValue;
 import org.eclipse.debug.core.model.IVariable;
+import org.jruby.lexer.yacc.SyntaxException;
+import org.rubypeople.rdt.internal.core.parser.RubyParser;
+import org.rubypeople.rdt.internal.debug.core.RdtDebugCorePlugin;
+import org.rubypeople.rdt.internal.debug.core.RubyDebuggerProxy;
 
 //see RubyDebugTarget for the reason why PlatformObject is being extended
 public class RubyVariable extends PlatformObject implements IVariable {
@@ -17,7 +22,7 @@ public class RubyVariable extends PlatformObject implements IVariable {
     private RubyStackFrame stackFrame;
     private String name;
     private String objectId;
-    private RubyValue value;
+    private IValue value;
     private RubyVariable parent;
 
     public RubyVariable(RubyStackFrame stackFrame, String name, String scope) {
@@ -92,26 +97,43 @@ public class RubyVariable extends PlatformObject implements IVariable {
      * @see org.eclipse.debug.core.model.IValueModification#setValue(String)
      */
     public void setValue(String expression) throws DebugException {
+    	try {
+			RubyVariable var = getRubyDebuggerProxy().readInspectExpression(stackFrame, getName() + " = " + expression);
+			this.value = var.getValue();
+		} catch (RubyProcessingException e) {
+			throw new DebugException(new Status(Status.ERROR, RdtDebugCorePlugin.PLUGIN_ID, -1, e.getMessage(), e));
+		}
     }
+    
+    public RubyDebuggerProxy getRubyDebuggerProxy() {
+		return ((RubyDebugTarget) this.getDebugTarget()).getRubyDebuggerProxy();
+	}
 
     /**
      * @see org.eclipse.debug.core.model.IValueModification#setValue(IValue)
      */
     public void setValue(IValue value) throws DebugException {
+    	value.getValueString();
     }
 
     /**
      * @see org.eclipse.debug.core.model.IValueModification#supportsValueModification()
      */
     public boolean supportsValueModification() {
-        return false;
+        return true;
     }
 
     /**
      * @see org.eclipse.debug.core.model.IValueModification#verifyValue(String)
      */
     public boolean verifyValue(String expression) throws DebugException {
-        return false;
+    	try {
+			RubyParser parser = new RubyParser();
+			parser.parse(expression);
+		} catch (SyntaxException e) {
+			return false;
+		}
+        return true;
     }
 
     /**
