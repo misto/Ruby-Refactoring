@@ -15,7 +15,7 @@ public class MisspelledConstructorVisitor extends RubyLintVisitor {
 	public Instruction visitDefnNode(DefnNode iVisited) {
 		String methodName = iVisited.getName();
 		if (methodName.equals("intialize") || methodName.equals("initialise") || methodName.equals("initalize")) {
-			createProblem(iVisited.getPosition(), "Possible mis-spelling of constructor");
+			createProblem(iVisited.getNameNode().getPosition(), "Possible mis-spelling of constructor");
 		}
 		return null;
 	}
@@ -25,4 +25,8 @@ public class MisspelledConstructorVisitor extends RubyLintVisitor {
 		return AptanaRDTPlugin.COMPILER_PB_MISSPELLED_CONSTRUCTOR;
 	}
 
+	@Override
+	protected int getProblemID() {
+		return 1234567;
+	}
 }
