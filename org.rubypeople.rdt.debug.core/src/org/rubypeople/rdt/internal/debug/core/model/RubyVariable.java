@@ -113,7 +113,13 @@ public class RubyVariable extends PlatformObject implements IVariable {
      * @see org.eclipse.debug.core.model.IValueModification#setValue(IValue)
      */
     public void setValue(IValue value) throws DebugException {
-    	setValue(value.getValueString());
+    	if (value instanceof RubyValue) {
+    		RubyValue val = (RubyValue) value;
+    		RubyVariable var = val.getOwner();
+    		setValue(var.getName()); // just do a basic assignment
+    	} else {
+    		setValue(value.getValueString());
+    	}
     }
 
     /**

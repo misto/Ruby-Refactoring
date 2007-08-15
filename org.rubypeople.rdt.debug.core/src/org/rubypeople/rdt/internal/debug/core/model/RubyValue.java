@@ -115,4 +115,8 @@ public class RubyValue extends PlatformObject implements IValue {
 		return this.getValueString() ;
 	}
 
+	public RubyVariable getOwner() {
+		return owner;		
+	}
+
 }
