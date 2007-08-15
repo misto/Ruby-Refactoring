@@ -612,7 +612,7 @@ public class Util {
 			throw new RubyModelException(e);
 		}
 		try {
-			return org.rubypeople.rdt.internal.compiler.util.Util.getInputStreamAsByteArray(stream, -1);
+			return org.rubypeople.rdt.core.util.Util.getInputStreamAsByteArray(stream, -1);
 		} catch (IOException e) {
 			throw new RubyModelException(e, IRubyModelStatusConstants.IO_EXCEPTION);
 		} finally {
@@ -694,7 +694,7 @@ public class Util {
 			return lineSeparator;
 		
 		// system line delimiter
-		return org.rubypeople.rdt.internal.compiler.util.Util.LINE_SEPARATOR;
+		return org.rubypeople.rdt.core.util.Util.LINE_SEPARATOR;
 	}
 	
 	/**

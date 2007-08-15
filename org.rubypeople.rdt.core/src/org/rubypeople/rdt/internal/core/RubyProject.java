@@ -1099,7 +1099,7 @@ public class RubyProject extends Openable implements IProjectNature, IRubyElemen
 		if (rscFile.exists()) {
 			byte[] bytes = Util.getResourceContentsAsByteArray(rscFile);
 			try {
-				property = new String(bytes, org.rubypeople.rdt.internal.compiler.util.Util.UTF_8); // .classpath
+				property = new String(bytes, org.rubypeople.rdt.core.util.Util.UTF_8); // .classpath
 																									// always
 																									// encoded
 																									// with
@@ -1123,12 +1123,12 @@ public class RubyProject extends Openable implements IProjectNature, IRubyElemen
 				if (file != null && file.exists()) {
 					byte[] bytes;
 					try {
-						bytes = org.rubypeople.rdt.internal.compiler.util.Util.getFileByteContent(file);
+						bytes = org.rubypeople.rdt.core.util.Util.getFileByteContent(file);
 					} catch (IOException e) {
 						return null;
 					}
 					try {
-						property = new String(bytes, org.rubypeople.rdt.internal.compiler.util.Util.UTF_8); // .classpath
+						property = new String(bytes, org.rubypeople.rdt.core.util.Util.UTF_8); // .classpath
 																											// always
 																											// encoded
 																											// with
@@ -2092,7 +2092,7 @@ public class RubyProject extends Openable implements IProjectNature, IRubyElemen
 		IFile rscFile = this.project.getFile(key);
 		byte[] bytes = null;
 		try {
-			bytes = value.getBytes(org.rubypeople.rdt.internal.compiler.util.Util.UTF_8); // .loadpath
+			bytes = value.getBytes(org.rubypeople.rdt.core.util.Util.UTF_8); // .loadpath
 																							// always
 																							// encoded
 																							// with

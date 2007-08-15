@@ -199,7 +199,7 @@ public class IndexManager extends JobManager {
 	
 	private char[][] readIndexState(String dirOSString) {
 		try {
-			char[] savedIndexNames = org.rubypeople.rdt.internal.compiler.util.Util.getFileCharContent(savedIndexNamesFile, null);
+			char[] savedIndexNames = org.rubypeople.rdt.core.util.Util.getFileCharContent(savedIndexNamesFile, null);
 			if (savedIndexNames.length > 0) {
 				char[][] names = CharOperation.splitOn('\n', savedIndexNames);
 				if (names.length > 1) {

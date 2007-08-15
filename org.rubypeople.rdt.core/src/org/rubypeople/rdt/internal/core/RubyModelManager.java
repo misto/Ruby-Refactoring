@@ -2139,15 +2139,15 @@ public class RubyModelManager implements IContentTypeChangeListener, ISavePartic
 							"CPContainer SET  - missbehaving container\n" + //$NON-NLS-1$
 							"	container path: " + containerPath + '\n' + //$NON-NLS-1$
 							"	projects: {" +//$NON-NLS-1$
-							org.rubypeople.rdt.internal.compiler.util.Util.toString(
+							org.rubypeople.rdt.core.util.Util.toString(
 								projects, 
-								new org.rubypeople.rdt.internal.compiler.util.Util.Displayable(){ 
+								new org.rubypeople.rdt.core.util.Util.Displayable(){ 
 									public String displayString(Object o) { return ((IRubyProject) o).getElementName(); }
 								}) +
 							"}\n	values on previous session: {\n"  +//$NON-NLS-1$
-							org.rubypeople.rdt.internal.compiler.util.Util.toString(
+							org.rubypeople.rdt.core.util.Util.toString(
 								respectiveContainers, 
-								new org.rubypeople.rdt.internal.compiler.util.Util.Displayable(){ 
+								new org.rubypeople.rdt.core.util.Util.Displayable(){ 
 									public String displayString(Object o) { 
 										StringBuffer buffer = new StringBuffer("		"); //$NON-NLS-1$
 										if (o == null) {
@@ -2166,9 +2166,9 @@ public class RubyModelManager implements IContentTypeChangeListener, ISavePartic
 									}
 								}) +
 							"}\n	new values: {\n"  +//$NON-NLS-1$
-							org.rubypeople.rdt.internal.compiler.util.Util.toString(
+							org.rubypeople.rdt.core.util.Util.toString(
 								respectiveContainers, 
-								new org.rubypeople.rdt.internal.compiler.util.Util.Displayable(){ 
+								new org.rubypeople.rdt.core.util.Util.Displayable(){ 
 									public String displayString(Object o) { 
 										StringBuffer buffer = new StringBuffer("		"); //$NON-NLS-1$
 										if (o == null) {
@@ -2209,8 +2209,8 @@ public class RubyModelManager implements IContentTypeChangeListener, ISavePartic
 		if (CP_RESOLVE_VERBOSE){
 			Util.verbose(
 				"CPVariable SET  - setting variables\n" + //$NON-NLS-1$
-				"	variables: " + org.rubypeople.rdt.internal.compiler.util.Util.toString(variableNames) + '\n' +//$NON-NLS-1$
-				"	values: " + org.rubypeople.rdt.internal.compiler.util.Util.toString(variablePaths)); //$NON-NLS-1$
+				"	variables: " + org.rubypeople.rdt.core.util.Util.toString(variableNames) + '\n' +//$NON-NLS-1$
+				"	values: " + org.rubypeople.rdt.core.util.Util.toString(variablePaths)); //$NON-NLS-1$
 		}
 		
 		if (variablePutIfInitializingWithSameValue(variableNames, variablePaths))
@@ -2315,7 +2315,7 @@ public class RubyModelManager implements IContentTypeChangeListener, ISavePartic
 									Util.verbose(
 										"CPVariable SET  - updating affected project due to setting variables\n" + //$NON-NLS-1$
 										"	project: " + affectedProject.getElementName() + '\n' + //$NON-NLS-1$
-										"	variables: " + org.rubypeople.rdt.internal.compiler.util.Util.toString(dbgVariableNames)); //$NON-NLS-1$
+										"	variables: " + org.rubypeople.rdt.core.util.Util.toString(dbgVariableNames)); //$NON-NLS-1$
 								}
 
 								affectedProject
@@ -2336,7 +2336,7 @@ public class RubyModelManager implements IContentTypeChangeListener, ISavePartic
 				if (CP_RESOLVE_VERBOSE){
 					Util.verbose(
 						"CPVariable SET  - FAILED DUE TO EXCEPTION\n" + //$NON-NLS-1$
-						"	variables: " + org.rubypeople.rdt.internal.compiler.util.Util.toString(dbgVariableNames), //$NON-NLS-1$
+						"	variables: " + org.rubypeople.rdt.core.util.Util.toString(dbgVariableNames), //$NON-NLS-1$
 						System.err); 
 					e.printStackTrace();
 				}

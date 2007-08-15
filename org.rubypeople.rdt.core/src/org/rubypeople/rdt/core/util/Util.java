@@ -1,4 +1,4 @@
-package org.rubypeople.rdt.internal.compiler.util;
+package org.rubypeople.rdt.core.util;
 
 import java.io.File;
 import java.io.FileInputStream;

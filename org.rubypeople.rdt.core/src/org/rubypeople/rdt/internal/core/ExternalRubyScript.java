@@ -14,7 +14,7 @@ import org.rubypeople.rdt.core.IBuffer;
 import org.rubypeople.rdt.core.RubyCore;
 import org.rubypeople.rdt.core.RubyModelException;
 import org.rubypeople.rdt.core.WorkingCopyOwner;
-import org.rubypeople.rdt.internal.compiler.util.Util;
+import org.rubypeople.rdt.core.util.Util;
 import org.rubypeople.rdt.internal.core.buffer.BufferManager;
 import org.rubypeople.rdt.internal.core.parser.RubyParser;
 

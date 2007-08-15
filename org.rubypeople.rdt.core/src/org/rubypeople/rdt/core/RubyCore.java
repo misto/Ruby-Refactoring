@@ -1066,15 +1066,15 @@ public class RubyCore extends Plugin {
 				"CPContainer SET  - setting container\n" + //$NON-NLS-1$
 				"	container path: " + containerPath + '\n' + //$NON-NLS-1$
 				"	projects: {" +//$NON-NLS-1$
-				org.rubypeople.rdt.internal.compiler.util.Util.toString(
+				org.rubypeople.rdt.core.util.Util.toString(
 					affectedProjects, 
-					new org.rubypeople.rdt.internal.compiler.util.Util.Displayable(){ 
+					new org.rubypeople.rdt.core.util.Util.Displayable(){ 
 						public String displayString(Object o) { return ((IRubyProject) o).getElementName(); }
 					}) +
 				"}\n	values: {\n"  +//$NON-NLS-1$
-				org.rubypeople.rdt.internal.compiler.util.Util.toString(
+				org.rubypeople.rdt.core.util.Util.toString(
 					respectiveContainers, 
-					new org.rubypeople.rdt.internal.compiler.util.Util.Displayable(){ 
+					new org.rubypeople.rdt.core.util.Util.Displayable(){ 
 						public String displayString(Object o) { 
 							StringBuffer buffer = new StringBuffer("		"); //$NON-NLS-1$
 							if (o == null) {
