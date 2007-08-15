@@ -89,7 +89,7 @@ public class StandardVMDebugger extends StandardVMRunner implements IVMRunner {
 		String[] cmdLine = new String[arguments.size()];
 		arguments.toArray(cmdLine);
 
-		String[] envp = config.getEnvironment();
+		String[] envp = getEnvironment(config);
 
 		// check for cancellation
 		if (monitor.isCanceled()) {
