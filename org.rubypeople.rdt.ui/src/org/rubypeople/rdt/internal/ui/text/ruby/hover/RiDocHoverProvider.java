@@ -56,7 +56,8 @@ public class RiDocHoverProvider extends AbstractRubyEditorTextHover {
 			}
 		}
 		try {
-			IDocument doc = textViewer.getDocument();				
+			IDocument doc = textViewer.getDocument();		
+			if (doc == null) return null;
 			String contentType = null;
 			if (doc instanceof IDocumentExtension3) {
 				IDocumentExtension3 extension = (IDocumentExtension3) doc;		
@@ -68,8 +69,8 @@ public class RiDocHoverProvider extends AbstractRubyEditorTextHover {
 			}
 			if (contentType != null && !contentType.equals(IRubyPartitions.RUBY_DEFAULT)) {
 				return null;
-			}
-			String symbol = textViewer.getDocument().get(hoverRegion.getOffset(), hoverRegion.getLength());	
+			}			
+			String symbol = doc.get(hoverRegion.getOffset(), hoverRegion.getLength());	
 			if (symbol != null && (symbol.startsWith("@") || symbol.startsWith("$") || symbol.startsWith(":"))) return null; // don't try class/instance/global variables or symbols
 			return getRIResult(symbol);
 		} catch (BadLocationException e) {
