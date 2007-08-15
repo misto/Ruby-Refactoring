@@ -29,8 +29,24 @@ public class RubyRedLint extends CompilationParticipant {
 			RootNode node = context.getAST();
 			if (node == null) return;
 			node.accept(visitor);
-			List<CategorizedProblem> problems = visitor.getProblems();			
-			context.putProblems(IRubyModelMarker.RUBY_MODEL_PROBLEM_MARKER, problems.toArray(new CategorizedProblem[problems.size()]));
+			List<CategorizedProblem> problems = visitor.getProblems();		
+			CategorizedProblem[] oldProblems = context.getProblems(IRubyModelMarker.RUBY_MODEL_PROBLEM_MARKER);
+			if (oldProblems == null || oldProblems.length == 0) {
+				context.putProblems(IRubyModelMarker.RUBY_MODEL_PROBLEM_MARKER, problems.toArray(new CategorizedProblem[problems.size()]));
+			} else {
+				CategorizedProblem[] combined = new CategorizedProblem[problems
+						.size()
+						+ oldProblems.length];
+				for (int i = 0; i < oldProblems.length; i++) {
+					combined[i] = oldProblems[i];
+				}
+				int j = oldProblems.length;
+				for (CategorizedProblem problem : problems) {
+					combined[j++] = problem;
+				}
+				context.putProblems(IRubyModelMarker.RUBY_MODEL_PROBLEM_MARKER,
+						combined);
+			}
 		} catch (RubyModelException e) {
 			AptanaRDTPlugin.log(e);
 		}
