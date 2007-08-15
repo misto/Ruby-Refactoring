@@ -451,56 +451,61 @@ public class CompletionEngine {
 	}
 
 	private CompletionProposal suggestMethod(IMethod method, String typeName, int confidence) {
-		int start = fContext.getReplaceStart();
-		String name = method.getElementName();
-		int flags = Flags.AccDefault;
-		if (method.isSingleton()) {
-			flags |= Flags.AccStatic;
-			if (method.isConstructor())
-				name = CONSTRUCTOR_INVOKE_NAME;
-			else {
-				if (name.startsWith(typeName)) {
-					name = name.substring(typeName.length() + 1);
-				}
-			}
-		} else {
-			// Don't show instance methods if the thing we're working on is a class' name!
-			// FIXME We do want to show if it is a constant, but not a class name
-			if (fContext.fullPrefixIsConstant()) return null;
-		}
-		if (!fContext.prefixStartsWith(name))
-			return null;
-		
 		try {
-			switch (method.getVisibility()) {
-			case IMethod.PRIVATE:
-				flags |= Flags.AccPrivate;
-				if (fOriginalType != null && !fOriginalType.getElementName().equals(typeName)) return null; // FIXME We should do a comparison of types, not names
-				if (fContext.hasReceiver()) return null; // can't invoke a private method on a receiver
-				break;
-			case IMethod.PUBLIC:
-				flags |= Flags.AccPublic; // FIXME Check if receiver is of same class as method's declaring type, if not, skip this method. (so we can invoke with no receiver inside same class, with explicit self as receiver, or with receiver who has same class).
-				break;
-			case IMethod.PROTECTED:
-				flags |= Flags.AccProtected;
-				break;
-			default:
-				break;
+			int start = fContext.getReplaceStart();
+			String name = method.getElementName();
+			int flags = Flags.AccDefault;
+			if (method.isSingleton()) {
+				flags |= Flags.AccStatic;
+				if (method.isConstructor())
+					name = CONSTRUCTOR_INVOKE_NAME;
+				else {
+					if (name.startsWith(typeName)) {
+						name = name.substring(typeName.length() + 1);
+					}
+				}
+			} else {
+				// Don't show instance methods if the thing we're working on is a class' name!
+				// FIXME We do want to show if it is a constant, but not a class name
+				if (fContext.fullPrefixIsConstant()) return null;
 			}
-		} catch (RubyModelException e) {
+			if (!fContext.prefixStartsWith(name))
+				return null;
+			
+			try {
+				switch (method.getVisibility()) {
+				case IMethod.PRIVATE:
+					flags |= Flags.AccPrivate;
+					if (fOriginalType != null && !fOriginalType.getElementName().equals(typeName)) return null; // FIXME We should do a comparison of types, not names
+					if (fContext.hasReceiver()) return null; // can't invoke a private method on a receiver
+					break;
+				case IMethod.PUBLIC:
+					flags |= Flags.AccPublic; // FIXME Check if receiver is of same class as method's declaring type, if not, skip this method. (so we can invoke with no receiver inside same class, with explicit self as receiver, or with receiver who has same class).
+					break;
+				case IMethod.PROTECTED:
+					flags |= Flags.AccProtected;
+					break;
+				default:
+					break;
+				}
+			} catch (RubyModelException e) {
+				RubyCore.log(e);
+				flags |= Flags.AccPublic;
+			}
+			CompletionProposal proposal = createProposal(start, CompletionProposal.METHOD_REF, name, confidence, method);
+			proposal.setReplaceRange(start, start + name.length());
+			proposal.setFlags(flags);
+			proposal.setName(name);
+			IType declaringType = method.getDeclaringType();
+			String declaringName = typeName;
+			if (declaringType != null)
+				declaringName = declaringType.getFullyQualifiedName();
+			proposal.setDeclaringType(declaringName);
+			return proposal;
+		} catch (RuntimeException e) {
 			RubyCore.log(e);
-			flags |= Flags.AccPublic;
+			return null;
 		}
-		CompletionProposal proposal = createProposal(start, CompletionProposal.METHOD_REF, name, confidence, method);
-		proposal.setReplaceRange(start, start + name.length());
-		proposal.setFlags(flags);
-		proposal.setName(name);
-		IType declaringType = method.getDeclaringType();
-		String declaringName = typeName;
-		if (declaringType != null)
-			declaringName = declaringType.getFullyQualifiedName();
-		proposal.setDeclaringType(declaringName);
-		return proposal;
 	}
 
 	/**
