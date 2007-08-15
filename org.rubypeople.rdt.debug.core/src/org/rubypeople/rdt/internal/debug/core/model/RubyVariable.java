@@ -113,7 +113,7 @@ public class RubyVariable extends PlatformObject implements IVariable {
      * @see org.eclipse.debug.core.model.IValueModification#setValue(IValue)
      */
     public void setValue(IValue value) throws DebugException {
-    	value.getValueString();
+    	setValue(value.getValueString());
     }
 
     /**

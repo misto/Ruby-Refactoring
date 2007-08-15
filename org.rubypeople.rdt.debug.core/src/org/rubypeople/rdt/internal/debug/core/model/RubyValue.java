@@ -31,10 +31,18 @@ public class RubyValue extends PlatformObject implements IValue {
 	}	
 	
 	public RubyValue(RubyVariable owner, String valueString, String type, boolean hasChildren) {
-		this.valueString = valueString ;	
-		this.owner = owner ;
-		this.hasChildren = hasChildren ;
-		this.referenceTypeName = type ;
+		this.valueString = valueString;
+		if (type != null && type.equals("String")) {
+			this.valueString = '"' + this.valueString + '"';
+		} else if (this.valueString.startsWith("Empty ")) {
+			this.valueString = this.valueString.substring(6) + "[0]";
+		} else if (this.valueString.endsWith("element(s))")) {
+			int index = this.valueString.substring(0, this.valueString.length() - 11).lastIndexOf("(");
+			this.valueString = this.valueString.substring(0, index).trim() + "[" + this.valueString.substring(index + 1, this.valueString.length() - 11).trim() + "]";
+		}
+		this.owner = owner;
+		this.hasChildren = hasChildren;
+		this.referenceTypeName = type;
 	}
 	
 
