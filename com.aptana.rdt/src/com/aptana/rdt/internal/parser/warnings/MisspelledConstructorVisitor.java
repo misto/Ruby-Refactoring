@@ -8,6 +8,8 @@ import com.aptana.rdt.AptanaRDTPlugin;
 
 public class MisspelledConstructorVisitor extends RubyLintVisitor {
 
+	public static final int PROBLEM_ID = 1234567;
+
 	public MisspelledConstructorVisitor(String contents) {
 		super(AptanaRDTPlugin.getDefault().getOptions(), contents);
 	}
@@ -27,6 +29,6 @@ public class MisspelledConstructorVisitor extends RubyLintVisitor {
 
 	@Override
 	protected int getProblemID() {
-		return 1234567;
+		return PROBLEM_ID;
 	}
 }
