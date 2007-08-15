@@ -12,6 +12,9 @@ import org.rubypeople.rdt.ui.text.ruby.IProblemLocation;
 import org.rubypeople.rdt.ui.text.ruby.IQuickFixProcessor;
 import org.rubypeople.rdt.ui.text.ruby.IRubyCompletionProposal;
 
+import com.aptana.rdt.internal.parser.warnings.ConstantNamingConvention;
+import com.aptana.rdt.internal.parser.warnings.MisspelledConstructorVisitor;
+
 public class QuickFixProcessor implements IQuickFixProcessor {
 
 	public IRubyCompletionProposal[] getCorrections(IInvocationContext context, IProblemLocation[] locations) throws CoreException {
@@ -19,7 +22,7 @@ public class QuickFixProcessor implements IQuickFixProcessor {
 			return null;
 		}
 
-		HashSet handledProblems = new HashSet(locations.length);
+		HashSet<Integer> handledProblems = new HashSet<Integer>(locations.length);
 		ArrayList<IRubyCompletionProposal> resultingCollections = new ArrayList<IRubyCompletionProposal>();
 		for (int i = 0; i < locations.length; i++) {
 			IProblemLocation curr = locations[i];
@@ -43,6 +46,15 @@ public class QuickFixProcessor implements IQuickFixProcessor {
 		case IProblem.ArgumentIsNeverUsed:
 			LocalCorrectionsSubProcessor.addUnusedMemberProposal(context, problem, proposals);
 			break;
+		case MisspelledConstructorVisitor.PROBLEM_ID:
+			LocalCorrectionsSubProcessor.addReplacementProposal("initialize\n", "Rename to 'initialize'", problem, proposals);
+			break;
+		case ConstantNamingConvention.PROBLEM_ID:
+			IRubyScript script = context.getRubyScript();
+			String src = script.getSource();
+			String constName = src.substring(problem.getOffset(), problem.getOffset() + problem.getLength());
+			LocalCorrectionsSubProcessor.addReplacementProposal(constName.toUpperCase(), "Convert to all uppercase", problem, proposals);
+			break;
 		default:
 		}
 	}
@@ -53,6 +65,8 @@ public class QuickFixProcessor implements IQuickFixProcessor {
 		case IProblem.UnusedPrivateField:
 		case IProblem.LocalVariableIsNeverUsed:
 		case IProblem.ArgumentIsNeverUsed:
+		case MisspelledConstructorVisitor.PROBLEM_ID:
+		case ConstantNamingConvention.PROBLEM_ID:
 			return true;
 		default:
 			return false;
