@@ -12,7 +12,8 @@ import com.aptana.rdt.AptanaRDTPlugin;
 
 public class MethodMissingWithoutRespondTo extends RubyLintVisitor {
 
-	private static final String RESPOND_TO = "respond_to";
+	public static final int PROBLEM_ID = 1234569;
+	private static final String RESPOND_TO = "respond_to?";
 	private static final String METHOD_MISSING = "method_missing";
 	
 	private Map<String, DefnNode> methods = new HashMap<String, DefnNode>();
@@ -39,6 +40,11 @@ public class MethodMissingWithoutRespondTo extends RubyLintVisitor {
 		}
 		methods.clear();
 		super.exitClassNode(iVisited);
+	}
+	
+	@Override
+	protected int getProblemID() {
+		return PROBLEM_ID;
 	}
 
 }
