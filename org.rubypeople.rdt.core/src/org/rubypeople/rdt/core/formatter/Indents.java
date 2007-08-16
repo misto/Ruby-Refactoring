@@ -269,4 +269,8 @@ public class Indents {
         return ch == '\n' || ch == '\r';
     }
 
+	public static String extractIndentString(String line, Map options) {
+		return extractIndentString(line, getTabWidth(options), getIndentWidth(options));		
+	}
+
 }
