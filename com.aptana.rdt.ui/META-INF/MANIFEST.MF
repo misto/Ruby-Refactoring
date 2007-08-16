@@ -12,6 +12,8 @@ Require-Bundle: org.eclipse.ui,
  org.rubypeople.rdt.core,
  com.aptana.rdt,
  org.rubypeople.rdt.ui,
- org.rubypeople.rdt.launching
+ org.rubypeople.rdt.launching,
+ org.jruby,
+ org.rubypeople.rdt.refactoring
 Eclipse-LazyStart: true
 Export-Package: com.aptana.rdt.internal.ui.preferences

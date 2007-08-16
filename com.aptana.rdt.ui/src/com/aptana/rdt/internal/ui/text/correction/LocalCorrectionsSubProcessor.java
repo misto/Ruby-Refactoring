@@ -18,8 +18,12 @@ public class LocalCorrectionsSubProcessor {
 	}
 
 	public static void addReplacementProposal(String replacement, String display, IProblemLocation problem, Collection<IRubyCompletionProposal> proposals) {
+		addReplacementProposal(problem.getOffset(), problem.getLength(), replacement, display, proposals);
+	}
+	
+	public static void addReplacementProposal(int offset, int length, String replacement, String display, Collection<IRubyCompletionProposal> proposals) {
 		Image image= RubyPlugin.getDefault().getWorkbench().getSharedImages().getImage(ISharedImages.IMG_OBJS_ERROR_TSK);
-		CorrectionProposal proposal = new CorrectionProposal(replacement, problem.getOffset(), problem.getLength(), image, display, 100);
+		CorrectionProposal proposal = new CorrectionProposal(replacement, offset, length, image, display, 100);
 		proposals.add(proposal);		
 	}
 

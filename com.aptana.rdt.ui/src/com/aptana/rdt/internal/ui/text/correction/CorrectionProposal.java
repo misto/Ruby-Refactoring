@@ -19,7 +19,7 @@ public class CorrectionProposal extends RubyCompletionProposal {
 	@Override
 	public void apply(ITextViewer viewer, char trigger, int stateMask, int offset) {
 		IDocument document= viewer.getDocument();
-		apply(document, trigger, offset);
+		apply(document, trigger, getReplacementOffset());
 	}
 
 }
