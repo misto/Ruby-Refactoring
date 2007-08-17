@@ -47,6 +47,10 @@ import org.jruby.parser.StaticScope;
 public abstract class ASTUtil {
 	private static final boolean VERBOSE = false;
 
+	private static final String NAMESPACE_DELIMETER = "::";
+	private static final String OBJECT = "Object";
+	private static final String EMPTY_STRING = "";
+	
 	/**
 	 * @param argsNode
 	 * @param bodyNode 
@@ -263,6 +267,36 @@ public abstract class ASTUtil {
 			arguments.add(ASTUtil.getNameReflectively(argument));
 		}
 		return arguments;
+	}
+
+	/**
+	 * Build up the fully qualified name of the super class for a class
+	 * declaration
+	 * 
+	 * @param superNode
+	 * @return
+	 */
+	public static String getSuperClassName(Node superNode) {
+		if (superNode == null)
+			return OBJECT;
+		return getFullyQualifiedName(superNode);
+	}
+	
+	public static String getFullyQualifiedName(Node node) {
+		if (node == null)
+			return EMPTY_STRING;
+		if (node instanceof ConstNode) {
+			ConstNode constNode = (ConstNode) node;
+			return constNode.getName();
+		}
+		if (node instanceof Colon2Node) {
+			Colon2Node colonNode = (Colon2Node) node;
+			String prefix = getFullyQualifiedName(colonNode.getLeftNode());
+			if (prefix.length() > 0)
+				prefix = prefix + NAMESPACE_DELIMETER;
+			return prefix + colonNode.getName();
+		}
+		return EMPTY_STRING;
 	}
 
 }

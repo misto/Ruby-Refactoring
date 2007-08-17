@@ -78,7 +78,6 @@ import org.rubypeople.rdt.internal.core.util.ASTUtil;
 public class SourceElementParser extends InOrderVisitor {
 
 	private static final String MODULE_FUNCTION = "module_function";
-	private static final String EMPTY_STRING = "";
 	private static final String PROTECTED = "protected";
 	private static final String PRIVATE = "private";
 	private static final String PUBLIC = "public";
@@ -88,7 +87,6 @@ public class SourceElementParser extends InOrderVisitor {
 	private static final String ALIAS = "alias :";
 	private static final String MODULE = "Module";
 	private static final String CONSTRUCTOR_NAME = "initialize";
-	private static final String NAMESPACE_DELIMETER = "::";
 	private static final String OBJECT = "Object";
 	
 	private List<Visibility> visibilities = new ArrayList<Visibility>();
@@ -117,12 +115,12 @@ public class SourceElementParser extends InOrderVisitor {
 		pushVisibility(Visibility.PUBLIC);
 
 		TypeInfo typeInfo = new TypeInfo();
-		typeInfo.name = getFullyQualifiedName(iVisited.getCPath());
+		typeInfo.name = ASTUtil.getFullyQualifiedName(iVisited.getCPath());
 		typeInfo.declarationStart = iVisited.getPosition().getStartOffset();
 		typeInfo.nameSourceStart = iVisited.getCPath().getPosition().getStartOffset();
 		typeInfo.nameSourceEnd = iVisited.getCPath().getPosition().getEndOffset() - 1;
 		if (!typeInfo.name.equals(OBJECT)) {
-		  String superClass = getSuperClassName(iVisited.getSuperNode());
+		  String superClass = ASTUtil.getSuperClassName(iVisited.getSuperNode());
 		  typeInfo.superclass = superClass;
 		}
 		typeInfo.isModule = false;
@@ -147,7 +145,7 @@ public class SourceElementParser extends InOrderVisitor {
 	public Instruction visitModuleNode(ModuleNode iVisited) {
 		pushVisibility(Visibility.PUBLIC);
 		TypeInfo typeInfo = new TypeInfo();
-		typeInfo.name = getFullyQualifiedName(iVisited.getCPath());
+		typeInfo.name = ASTUtil.getFullyQualifiedName(iVisited.getCPath());
 		typeInfo.declarationStart = iVisited.getPosition().getStartOffset();
 		typeInfo.nameSourceStart = iVisited.getCPath().getPosition().getStartOffset();
 		typeInfo.nameSourceEnd = iVisited.getCPath().getPosition().getEndOffset() - 1;
@@ -244,36 +242,6 @@ public class SourceElementParser extends InOrderVisitor {
 	
 	private void popVisibility() {
 		visibilities.remove(visibilities.size() - 1);		
-	}
-
-	private String getFullyQualifiedName(Node node) {
-		if (node == null)
-			return EMPTY_STRING;
-		if (node instanceof ConstNode) {
-			ConstNode constNode = (ConstNode) node;
-			return constNode.getName();
-		}
-		if (node instanceof Colon2Node) {
-			Colon2Node colonNode = (Colon2Node) node;
-			String prefix = getFullyQualifiedName(colonNode.getLeftNode());
-			if (prefix.length() > 0)
-				prefix = prefix + NAMESPACE_DELIMETER;
-			return prefix + colonNode.getName();
-		}
-		return EMPTY_STRING;
-	}
-	
-	/**
-	 * Build up the fully qualified name of the super class for a class
-	 * declaration
-	 * 
-	 * @param superNode
-	 * @return
-	 */
-	private String getSuperClassName(Node superNode) {
-		if (superNode == null)
-			return OBJECT;
-		return getFullyQualifiedName(superNode);
 	}
 	
 	@Override
