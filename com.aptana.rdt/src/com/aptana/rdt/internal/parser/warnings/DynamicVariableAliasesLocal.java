@@ -2,7 +2,6 @@ package com.aptana.rdt.internal.parser.warnings;
 
 import java.util.List;
 
-import org.jruby.ast.ArrayNode;
 import org.jruby.ast.IterNode;
 import org.jruby.ast.ListNode;
 import org.jruby.ast.LocalAsgnNode;
