@@ -616,7 +616,11 @@ public class RubyModelManager implements IContentTypeChangeListener, ISavePartic
         	// Don't accept the problem if a marker already exists for this same problem...
         	try {
 				IResource resource = workingCopy.getUnderlyingResource();
-				IMarker marker = MarkerUtility.markerExists(resource, problem.getMessage(), problem.getSourceLineNumber(), IRubyModelMarker.RUBY_MODEL_PROBLEM_MARKER);
+				String markerType = IRubyModelMarker.RUBY_MODEL_PROBLEM_MARKER;
+				if (problem.isTask()) {
+					markerType = IRubyModelMarker.TASK_MARKER;
+				}
+				IMarker marker = MarkerUtility.markerExists(resource, problem.getMessage(), problem.getSourceLineNumber(), markerType);
 				if (marker != null) return;
 			} catch (RubyModelException e) {
 				// ignore
