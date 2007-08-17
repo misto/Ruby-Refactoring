@@ -57,6 +57,7 @@ import com.aptana.rdt.AptanaRDTPlugin;
 import com.aptana.rdt.core.gems.Gem;
 import com.aptana.rdt.core.gems.GemListener;
 import com.aptana.rdt.core.gems.IGemManager;
+import com.aptana.rdt.core.gems.LogicalGem;
 
 public class GemManager implements IGemManager {
 
