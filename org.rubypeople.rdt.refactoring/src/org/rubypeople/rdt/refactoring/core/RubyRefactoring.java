@@ -32,7 +32,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Map;
 
-import org.eclipse.core.internal.resources.File;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -158,11 +157,11 @@ public abstract class RubyRefactoring extends Refactoring {
 		return compositeChange;
 	}
 
-	private Collection<File> getAllAffectedFiles(Change change) {
-		Collection<File> affectedFiles = new ArrayList<File>();
+	private Collection<IFile> getAllAffectedFiles(Change change) {
+		Collection<IFile> affectedFiles = new ArrayList<IFile>();
 		for (Object object : change.getAffectedObjects()) {
-			if (object instanceof File) {
-				affectedFiles.add((File) object);
+			if (object instanceof IFile) {
+				affectedFiles.add((IFile) object);
 			}
 		}
 		return affectedFiles;
