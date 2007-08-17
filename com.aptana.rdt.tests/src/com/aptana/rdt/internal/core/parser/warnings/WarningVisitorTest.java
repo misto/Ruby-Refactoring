@@ -7,9 +7,9 @@ import junit.framework.TestCase;
 
 import org.jruby.ast.Node;
 import org.rubypeople.rdt.core.compiler.IProblem;
+import org.rubypeople.rdt.core.parser.warnings.DelegatingVisitor;
+import org.rubypeople.rdt.core.parser.warnings.RubyLintVisitor;
 import org.rubypeople.rdt.internal.core.parser.RubyParser;
-import org.rubypeople.rdt.internal.core.parser.warnings.DelegatingVisitor;
-import org.rubypeople.rdt.internal.core.parser.warnings.RubyLintVisitor;
 
 public abstract class WarningVisitorTest extends TestCase {
 

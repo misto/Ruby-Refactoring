@@ -1,6 +1,6 @@
 package com.aptana.rdt.internal.core.parser.warnings;
 
-import org.rubypeople.rdt.internal.core.parser.warnings.RubyLintVisitor;
+import org.rubypeople.rdt.core.parser.warnings.RubyLintVisitor;
 
 import com.aptana.rdt.internal.parser.warnings.EnumerableInclusionVisitor;
 
