@@ -133,6 +133,7 @@ public class SearchMessages extends NLS {
 	public static String group_occurrences;
 	public static String group_declarations;
 	public static String group_writeReferences;
+	public static String group_occurrences_quickMenu_noEntriesAvailable;
 	
 	public static String RubyElementAction_operationUnavailable_title;
 	public static String RubyElementAction_operationUnavailable_generic;
