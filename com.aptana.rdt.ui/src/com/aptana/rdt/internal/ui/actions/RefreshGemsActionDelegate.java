@@ -18,7 +18,6 @@ import org.eclipse.ui.IViewPart;
 import org.eclipse.ui.IWorkbenchPart;
 
 import com.aptana.rdt.AptanaRDTPlugin;
-import com.aptana.rdt.internal.core.gems.GemManager;
 
 /**
  * Install a gem

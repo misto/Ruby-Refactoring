@@ -28,8 +28,7 @@ import org.rubypeople.rdt.ui.TableViewerSorter;
 
 import com.aptana.rdt.AptanaRDTPlugin;
 import com.aptana.rdt.core.gems.Gem;
-import com.aptana.rdt.internal.core.gems.GemManager;
-import com.aptana.rdt.internal.core.gems.LogicalGem;
+import com.aptana.rdt.core.gems.LogicalGem;
 
 public class InstallGemDialog extends Dialog {
 

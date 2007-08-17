@@ -16,7 +16,6 @@ import org.jruby.ast.visitor.rewriter.ReWriteVisitor;
 import org.rubypeople.rdt.core.IRubyScript;
 import org.rubypeople.rdt.core.compiler.IProblem;
 import org.rubypeople.rdt.core.formatter.Indents;
-import org.rubypeople.rdt.internal.formatter.IndentationState;
 import org.rubypeople.rdt.internal.ti.util.ClosestSpanningNodeLocator;
 import org.rubypeople.rdt.internal.ti.util.INodeAcceptor;
 import org.rubypeople.rdt.internal.ui.rubyeditor.ASTProvider;
