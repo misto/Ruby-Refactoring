@@ -50,10 +50,8 @@ public class LintOptions {
 		| AssignmentPrecedence
 		| SubclassDoesntCallSuper
 		| MethodMissingWithoutRespondTo
-		| ConstantNamingConvention
 		| DynamicVariableAliasesLocal
 		| LocalVariablePossibleAttributeAccess
-		| LocalMethodNamingConvention
 		/*| NullReference -- keep RubyCore#getDefaultOptions comment in sync */;
 	
 	public int maxLocals = 5;
