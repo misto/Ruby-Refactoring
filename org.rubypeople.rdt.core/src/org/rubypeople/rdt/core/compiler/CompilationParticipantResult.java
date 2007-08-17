@@ -44,4 +44,8 @@ public String toString() {
 	return this.resource.toString();
 }
 
+public CategorizedProblem[] getProblems() {
+	return problems;
+}
+
 }
