@@ -107,7 +107,7 @@ public class MatchLocator {
 	}
 
 	public static IRubyElement getProjectOrJar(IRubyElement element) {
-		while (!(element instanceof IRubyProject) && !(element instanceof ExternalSourceFolderRoot)) {
+		while (!(element instanceof IRubyProject)) {
 			element = element.getParent();
 		}
 		return element;
