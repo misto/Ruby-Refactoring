@@ -99,8 +99,8 @@ public class QuickFixProcessor implements IQuickFixProcessor {
 			Map options = script.getRubyProject().getOptions(true);
 			String indent = Indents.extractIndentString(line, options);			
 			text = indent + text;
-			text = text.replaceAll("\\n", "\n" + indent);
 			text = text + "\n";
+			text = text.replaceAll("\\n", "\n" + indent);			
 			LocalCorrectionsSubProcessor.addReplacementProposal(offset, 0, text, "Add respond_to? method stub", proposals);
 			break;
 		default:
