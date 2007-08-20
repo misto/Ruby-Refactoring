@@ -267,6 +267,9 @@ public class StandardVMType extends AbstractVMInstallType {
 					break;
 				}
 			}
+			if (rubyExecutable == null) { // if all else fails, just try "C:/ruby"				
+				rubyExecutable = new File("C:" + File.separator + "ruby" + File.separator + "bin" + File.separator + "ruby.exe");
+			}
 		} else { // Mac, Linux - so let's just run 'which ruby' and parse out the result
 			String[] cmdLine = new String[] { "which", "ruby" }; //$NON-NLS-1$ //$NON-NLS-2$
 			Process p = null;			
@@ -293,9 +296,13 @@ public class StandardVMType extends AbstractVMInstallType {
 					p.destroy();
 				}
 			}
-			// If we find one at /usr/bin/ruby, try to see if there's one at /usr/local/bin/ruby. If so, then prefer that.
-			if (rubyExecutable != null && rubyExecutable.getAbsolutePath().startsWith("/usr/bin")) {
+			// If we don;t find ruby, or we find one at /usr/bin/ruby:
+			// try to see if there's one at /usr/local or /opt/local. If so, then prefer one of those.
+			if (rubyExecutable == null || rubyExecutable.getAbsolutePath().startsWith("/usr/bin")) {
 				File rubyHome =	tryLocation(new File("/usr/local/bin/ruby"));
+				if (rubyHome != null) return rubyHome;
+				
+				rubyHome =	tryLocation(new File("/opt/local/bin/ruby"));
 				if (rubyHome != null) return rubyHome;
 			}
 		}		
@@ -307,7 +314,7 @@ public class StandardVMType extends AbstractVMInstallType {
 			return null;
 		}
 
-		File bin= new File(rubyExecutable.getParent());
+		File bin = rubyExecutable.getParentFile();
 		if (!bin.exists()) return null;
 		File rubyHome = bin.getParentFile();
 		if (!rubyHome.exists()) return null;
