@@ -25,7 +25,7 @@ public class AccidentalBooleanAssignmentVisitor extends RubyLintVisitor {
 	public Instruction visitIfNode(IfNode iVisited) {
 		Node condition = iVisited.getCondition();
 		if (containsAssignment(condition)) {
-			createProblem(iVisited.getPosition(), "Possible accidental boolean assignment");
+			createProblem(condition.getPosition(), "Possible accidental boolean assignment");
 		}
 		return super.visitIfNode(iVisited);
 	}
