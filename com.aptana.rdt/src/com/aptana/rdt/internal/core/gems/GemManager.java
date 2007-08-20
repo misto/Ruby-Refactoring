@@ -61,6 +61,7 @@ import com.aptana.rdt.core.gems.LogicalGem;
 
 public class GemManager implements IGemManager {
 
+	private static final String INSTALLATION_DIRECTORY = "INSTALLATION DIRECTORY:";
 	private static final String INCLUDE_DEPENDENCIES_SWITCH = "-y";
 	private static final String LOCAL_SWITCH = "-l";
 	private static final String LIST_COMMAND = "list";
@@ -607,10 +608,13 @@ public class GemManager implements IGemManager {
 			List<String> commands = new ArrayList<String>();
 			commands.add("environment");
 			String output = execAndReadOutput(commands);
+			if (output == null) return null;
 			String[] lines = output.split("\n");
 			if (lines == null || lines.length < 3) return null;
 			String path = lines[2];
-			path = path.substring(path.indexOf("INSTALLATION DIRECTORY:") + 23);
+			int index = path.indexOf(INSTALLATION_DIRECTORY);
+			if (index == -1) return null;
+			path = path.substring(index + INSTALLATION_DIRECTORY.length());
 			fGemInstallPath = new Path(path.trim());
 		}
 		return fGemInstallPath;
