@@ -16,6 +16,7 @@ import org.eclipse.search.ui.text.Match;
 import org.jruby.ast.ArgumentNode;
 import org.jruby.ast.BlockArgNode;
 import org.jruby.ast.BlockNode;
+import org.jruby.ast.CallNode;
 import org.jruby.ast.ClassNode;
 import org.jruby.ast.ClassVarAsgnNode;
 import org.jruby.ast.ClassVarDeclNode;
@@ -27,6 +28,7 @@ import org.jruby.ast.DAsgnNode;
 import org.jruby.ast.DVarNode;
 import org.jruby.ast.DefnNode;
 import org.jruby.ast.DefsNode;
+import org.jruby.ast.FCallNode;
 import org.jruby.ast.GlobalAsgnNode;
 import org.jruby.ast.GlobalVarNode;
 import org.jruby.ast.InstAsgnNode;
@@ -37,6 +39,8 @@ import org.jruby.ast.ModuleNode;
 import org.jruby.ast.Node;
 import org.jruby.ast.ReturnNode;
 import org.jruby.ast.SymbolNode;
+import org.jruby.ast.VCallNode;
+import org.jruby.ast.types.INameNode;
 import org.jruby.lexer.yacc.IDESourcePosition;
 import org.jruby.lexer.yacc.ISourcePosition;
 import org.jruby.lexer.yacc.SyntaxException;
@@ -197,9 +201,9 @@ public class OccurrencesFinder extends AbstractOccurencesFinder {
 			pushSymbolRefs(root, fSelectedNode, fUsages);
 		}
 
-		// if ( isMethodRefNode(fSelectedNode)) {
-		// pushMethodRefs( root, fSelectedNode, occurrences );
-		// }
+		if ( fMarkMethodOccurrences && isMethodRefNode(fSelectedNode)) {
+			pushMethodRefs( root, fSelectedNode, fUsages );
+		}
 
 		if (fMarkConstantOccurrences && isConstRef(fSelectedNode)) {
 			pushConstRefs(root, fSelectedNode, fUsages);
@@ -230,6 +234,10 @@ public class OccurrencesFinder extends AbstractOccurencesFinder {
 		positions = new LinkedList<Position>(new HashSet<Position>(positions));
 
 		return positions;
+	}
+
+	private boolean isMethodRefNode(Node selectedNode) {
+		return selectedNode instanceof VCallNode || selectedNode instanceof FCallNode || selectedNode instanceof CallNode;
 	}
 
 	// ****************************************************************************
@@ -602,6 +610,29 @@ public class OccurrencesFinder extends AbstractOccurencesFinder {
 			if (searchResult instanceof ConstDeclNode) fWriteUsages.add(searchResult);
 		}
 	}
+	
+	/**
+	 * Collects all pertinent method calls
+	 */
+	private void pushMethodRefs(Node root, Node orig, List<Node> occurrences) {
+		if (!isMethodRefNode(orig)) {
+			return;
+		}
+
+		final String matchName = ASTUtil.getNameReflectively(orig);
+		List<Node> searchResults = ScopedNodeLocator.Instance().findNodesInScope(root, new INodeAcceptor() {
+			public boolean doesAccept(Node node) {
+				if (isMethodRefNode(node)) {
+					return ASTUtil.getNameReflectively(node).equals(matchName);
+				}
+				return false;
+			}
+		});
+
+		for (Node searchResult : searchResults) {
+			occurrences.add(searchResult);
+		}
+	}
 
 	/**
 	 * Collects all pertinent type ref occurrences
@@ -698,8 +729,17 @@ public class OccurrencesFinder extends AbstractOccurencesFinder {
 			// one
 			name = ((SymbolNode) node).getName();
 			return new IDESourcePosition(pos.getFile(), pos.getStartLine(), pos.getEndLine(), pos.getStartOffset(), pos.getStartOffset() + name.length() + 1);
+		} else if (node instanceof CallNode) {
+			CallNode vcall = (CallNode) node;
+			name = vcall.getName();
+			String receiver = ASTUtil.stringRepresentation(vcall.getReceiverNode());	
+			int start = pos.getStartOffset() + receiver.length() + 1;
+			return new IDESourcePosition(pos.getFile(), pos.getStartLine(), pos.getEndLine(), start, start + name.length());
+		} else if (node instanceof INameNode) {
+			INameNode vcall = (INameNode) node;
+			name = vcall.getName();
+			return new IDESourcePosition(pos.getFile(), pos.getStartLine(), pos.getEndLine(), pos.getStartOffset(), pos.getStartOffset() + name.length());
 		}
-
 		if (name == null) {
 			throw new RuntimeException("Couldn't get the name for: " + node.toString());
 		}
