@@ -5,6 +5,7 @@ import java.util.Collection;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.ui.ISharedImages;
 import org.rubypeople.rdt.internal.ui.RubyPlugin;
+import org.rubypeople.rdt.ui.RubyUI;
 import org.rubypeople.rdt.ui.text.ruby.IInvocationContext;
 import org.rubypeople.rdt.ui.text.ruby.IProblemLocation;
 import org.rubypeople.rdt.ui.text.ruby.IRubyCompletionProposal;
@@ -22,7 +23,7 @@ public class LocalCorrectionsSubProcessor {
 	}
 	
 	public static void addReplacementProposal(int offset, int length, String replacement, String display, Collection<IRubyCompletionProposal> proposals) {
-		Image image= RubyPlugin.getDefault().getWorkbench().getSharedImages().getImage(ISharedImages.IMG_OBJS_ERROR_TSK);
+		Image image= RubyUI.getSharedImages().getImage(org.rubypeople.rdt.ui.ISharedImages.IMG_OBJS_CORRECTION_CHANGE);
 		CorrectionProposal proposal = new CorrectionProposal(replacement, offset, length, image, display, 100);
 		proposals.add(proposal);		
 	}
