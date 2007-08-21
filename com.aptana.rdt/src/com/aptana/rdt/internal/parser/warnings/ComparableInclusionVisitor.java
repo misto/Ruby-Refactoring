@@ -11,6 +11,7 @@ import org.jruby.lexer.yacc.ISourcePosition;
 import org.rubypeople.rdt.core.parser.warnings.RubyLintVisitor;
 
 import com.aptana.rdt.AptanaRDTPlugin;
+import com.aptana.rdt.IProblem;
 
 public class ComparableInclusionVisitor extends RubyLintVisitor {
 
@@ -71,6 +72,11 @@ public class ComparableInclusionVisitor extends RubyLintVisitor {
 		includedComparable = false;
 		pos = null;
 		definedComparableMethod = false;
+	}
+	
+	@Override
+	protected int getProblemID() {
+		return IProblem.ComparableInclusionMissingCompareMethod;
 	}
 
 }
