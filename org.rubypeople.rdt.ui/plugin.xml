@@ -1498,4 +1498,11 @@
       <startup class="org.rubypeople.rdt.internal.ui.ForceIndexer"/>
       <startup class="org.rubypeople.rdt.internal.ui.RubyInstalledDetector"/>
    </extension>
+   <extension
+         point="org.rubypeople.rdt.ui.quickFixProcessors">
+      <quickFixProcessor
+            class="org.rubypeople.rdt.internal.ui.text.correction.QuickFixProcessor"
+            id="org.rubypeople.rdt.ui.quickFixProcessor"
+            name="Default Quick Fix Processor"/>
+   </extension>
 </plugin>
