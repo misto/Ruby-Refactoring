@@ -36,7 +36,7 @@ public class RubyTokenScanner extends AbstractRubyTokenScanner {
 	private static String[] fgTokenProperties = { IRubyColorConstants.RUBY_KEYWORD, IRubyColorConstants.RUBY_DEFAULT, 
 		IRubyColorConstants.RUBY_FIXNUM, IRubyColorConstants.RUBY_CHARACTER, IRubyColorConstants.RUBY_SYMBOL, 
 		IRubyColorConstants.RUBY_INSTANCE_VARIABLE, IRubyColorConstants.RUBY_GLOBAL, 
-		IRubyColorConstants.RUBY_REGEXP, IRubyColorConstants.RUBY_ERROR
+		IRubyColorConstants.RUBY_ERROR
 	// TODO Add Ability to set colors for return and operators
 	// IRubyColorConstants.RUBY_METHOD_NAME,
 	// IRubyColorConstants.RUBY_KEYWORD_RETURN,
@@ -50,7 +50,6 @@ public class RubyTokenScanner extends AbstractRubyTokenScanner {
 	private int fTokenLength;
 	private int fOffset;
 	
-	private boolean isInRegexp;
 	private boolean isInSymbol;
 	private boolean inAlias;
 	private RubyParserResult result;
@@ -114,8 +113,6 @@ public class RubyTokenScanner extends AbstractRubyTokenScanner {
 	private Token doGetToken(String key) {
 		if (isInSymbol)
 			return getToken(IRubyColorConstants.RUBY_SYMBOL);
-		if (isInRegexp)
-			return getToken(IRubyColorConstants.RUBY_REGEXP);
 		return getToken(key);
 	}
 
@@ -159,12 +156,6 @@ public class RubyTokenScanner extends AbstractRubyTokenScanner {
 			if ((((fOffset - origOffset) + 1) < fContents.length()) && (fContents.charAt((fOffset - origOffset) + 1) == '?'))
 				return doGetToken(IRubyColorConstants.RUBY_CHARACTER);
 			return doGetToken(IRubyColorConstants.RUBY_FIXNUM);
-		case Tokens.tREGEXP_BEG:
-			isInRegexp = true;
-			return doGetToken(IRubyColorConstants.RUBY_REGEXP);
-		case Tokens.tREGEXP_END:
-			isInRegexp = false;
-			return doGetToken(IRubyColorConstants.RUBY_REGEXP);
 		default:
 			return doGetToken(IRubyColorConstants.RUBY_DEFAULT);
 		}
@@ -261,9 +252,6 @@ public class RubyTokenScanner extends AbstractRubyTokenScanner {
 		lexer.setState(LexState.EXPR_BEG);
 		parserSupport.initTopLocalVariables();
 		isInSymbol = false;
-		if (offset == 0) {
-			isInRegexp = false;
-		}
 		try {
 			fContents = document.get(offset, length);
 			lexerSource = new LexerSource("filename", new StringReader(fContents), 0, true);
