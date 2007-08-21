@@ -14,7 +14,6 @@ import org.jruby.ast.visitor.rewriter.DefaultFormatHelper;
 import org.jruby.ast.visitor.rewriter.FormatHelper;
 import org.jruby.ast.visitor.rewriter.ReWriteVisitor;
 import org.rubypeople.rdt.core.IRubyScript;
-import org.rubypeople.rdt.core.compiler.IProblem;
 import org.rubypeople.rdt.core.formatter.Indents;
 import org.rubypeople.rdt.internal.ti.util.ClosestSpanningNodeLocator;
 import org.rubypeople.rdt.internal.ti.util.INodeAcceptor;
@@ -25,9 +24,7 @@ import org.rubypeople.rdt.ui.text.ruby.IProblemLocation;
 import org.rubypeople.rdt.ui.text.ruby.IQuickFixProcessor;
 import org.rubypeople.rdt.ui.text.ruby.IRubyCompletionProposal;
 
-import com.aptana.rdt.internal.parser.warnings.ConstantNamingConvention;
-import com.aptana.rdt.internal.parser.warnings.MethodMissingWithoutRespondTo;
-import com.aptana.rdt.internal.parser.warnings.MisspelledConstructorVisitor;
+import com.aptana.rdt.IProblem;
 
 public class QuickFixProcessor implements IQuickFixProcessor {
 
@@ -54,22 +51,23 @@ public class QuickFixProcessor implements IQuickFixProcessor {
 			return;
 		}
 		switch (id) {
-		case IProblem.UnusedPrivateMethod:
-		case IProblem.UnusedPrivateField:
-		case IProblem.LocalVariableIsNeverUsed:
-		case IProblem.ArgumentIsNeverUsed:
-			LocalCorrectionsSubProcessor.addUnusedMemberProposal(context, problem, proposals);
-			break;
-		case MisspelledConstructorVisitor.PROBLEM_ID:
+		case IProblem.MisspelledConstructor:
 			LocalCorrectionsSubProcessor.addReplacementProposal("initialize\n", "Rename to 'initialize'", problem, proposals);
 			break;
-		case ConstantNamingConvention.PROBLEM_ID:
+		case IProblem.ConstantNamingConvention:
 			IRubyScript script = context.getRubyScript();
 			String src = script.getSource();
 			String constName = src.substring(problem.getOffset(), problem.getOffset() + problem.getLength());
 			LocalCorrectionsSubProcessor.addReplacementProposal(constName.toUpperCase(), "Convert to all uppercase", problem, proposals);
 			break;
-		case MethodMissingWithoutRespondTo.PROBLEM_ID:
+		case IProblem.LocalAndMethodNamingConvention:
+			script = context.getRubyScript();
+			src = script.getSource();
+			constName = src.substring(problem.getOffset(), problem.getOffset() + problem.getLength());
+			String fixed = constName.toLowerCase(); // FIXME We need to convert in a smarter way!
+			LocalCorrectionsSubProcessor.addReplacementProposal(fixed, "Convert to lowercase_with_undercores convention", problem, proposals);
+			break;
+		case IProblem.MethodMissingWithoutRespondTo:
 			// FIXME Only do this stuff when we apply the proposal! Don't do all this work just to create the proposal...
 			script = context.getRubyScript();
 			src = script.getSource();
@@ -112,13 +110,10 @@ public class QuickFixProcessor implements IQuickFixProcessor {
 
 	public boolean hasCorrections(IRubyScript unit, int problemId) {
 		switch (problemId) {
-		case IProblem.UnusedPrivateMethod:
-		case IProblem.UnusedPrivateField:
-		case IProblem.LocalVariableIsNeverUsed:
-		case IProblem.ArgumentIsNeverUsed:
-		case MisspelledConstructorVisitor.PROBLEM_ID:
-		case ConstantNamingConvention.PROBLEM_ID:
-		case MethodMissingWithoutRespondTo.PROBLEM_ID:
+		case IProblem.MisspelledConstructor:
+		case IProblem.ConstantNamingConvention:
+		case IProblem.MethodMissingWithoutRespondTo:
+		case IProblem.LocalAndMethodNamingConvention:
 			return true;
 		default:
 			return false;
