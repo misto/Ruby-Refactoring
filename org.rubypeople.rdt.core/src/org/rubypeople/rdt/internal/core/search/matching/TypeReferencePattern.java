@@ -30,7 +30,7 @@ import org.rubypeople.rdt.internal.core.util.CharOperation;
 	
 	public TypeReferencePattern(char[] qualification, char[] simpleName, int matchRule) {
 		this(matchRule);
-		if (qualification.length == 0) {
+		if (qualification != null && qualification.length == 0) {
 			this.qualification = null;
 		} else {
 			this.qualification = isCaseSensitive() ? qualification : CharOperation.toLowerCase(qualification);
