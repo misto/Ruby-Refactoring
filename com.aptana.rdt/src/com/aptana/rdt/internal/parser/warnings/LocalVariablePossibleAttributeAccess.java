@@ -11,6 +11,7 @@ import org.rubypeople.rdt.core.parser.warnings.RubyLintVisitor;
 import org.rubypeople.rdt.internal.core.util.ASTUtil;
 
 import com.aptana.rdt.AptanaRDTPlugin;
+import com.aptana.rdt.IProblem;
 
 public class LocalVariablePossibleAttributeAccess extends RubyLintVisitor {
 
@@ -68,6 +69,11 @@ public class LocalVariablePossibleAttributeAccess extends RubyLintVisitor {
 			}
 		}
 		super.exitClassNode(iVisited);
+	}
+	
+	@Override
+	protected int getProblemID() {
+		return IProblem.LocalVariablePossibleAttributeAccess;
 	}
 
 }
