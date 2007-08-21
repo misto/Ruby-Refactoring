@@ -78,6 +78,12 @@ public class QuickFixProcessor implements IQuickFixProcessor {
 			String fixed = Util.camelCaseToUnderscores(constName).toUpperCase();
 			LocalCorrectionsSubProcessor.addReplacementProposal(fixed, "Convert to UPPERCASE_WITH_UNDERSCORES convention", problem, proposals);
 			break;
+		case IProblem.LocalVariablePossibleAttributeAccess:
+			String local = getProblemSource(context, problem);
+			fixed = "self." + local;
+			LocalCorrectionsSubProcessor.addReplacementProposal(fixed, "change assignment to " + fixed + " to use attribute", problem, proposals);
+			// TODO Add a proposal to invoke rename local refactoring
+			break;
 		case IProblem.LocalAndMethodNamingConvention:
 			String name = getProblemSource(context, problem);
 			fixed = Util.camelCaseToUnderscores(name).toLowerCase();
