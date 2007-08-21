@@ -2,6 +2,7 @@ package com.aptana.rdt.ui;
 
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.osgi.framework.BundleContext;
+import org.rubypeople.rdt.core.RubyModelException;
 
 /**
  * The activator class controls the plug-in life cycle
@@ -45,6 +46,10 @@ public class AptanaRDTUIPlugin extends AbstractUIPlugin {
 	 */
 	public static AptanaRDTUIPlugin getDefault() {
 		return plugin;
+	}
+
+	public static void log(RubyModelException e) {
+		getDefault().getLog().log(e.getStatus());		
 	}
 
 }
