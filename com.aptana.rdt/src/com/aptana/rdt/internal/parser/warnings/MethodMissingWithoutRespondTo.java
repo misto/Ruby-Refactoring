@@ -9,10 +9,10 @@ import org.jruby.evaluator.Instruction;
 import org.rubypeople.rdt.core.parser.warnings.RubyLintVisitor;
 
 import com.aptana.rdt.AptanaRDTPlugin;
+import com.aptana.rdt.IProblem;
 
 public class MethodMissingWithoutRespondTo extends RubyLintVisitor {
 
-	public static final int PROBLEM_ID = 1234569;
 	private static final String RESPOND_TO = "respond_to?";
 	private static final String METHOD_MISSING = "method_missing";
 	
@@ -44,7 +44,7 @@ public class MethodMissingWithoutRespondTo extends RubyLintVisitor {
 	
 	@Override
 	protected int getProblemID() {
-		return PROBLEM_ID;
+		return IProblem.MethodMissingWithoutRespondTo;
 	}
 
 }

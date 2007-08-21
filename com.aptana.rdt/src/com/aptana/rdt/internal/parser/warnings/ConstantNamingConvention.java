@@ -7,10 +7,9 @@ import org.jruby.lexer.yacc.ISourcePosition;
 import org.rubypeople.rdt.core.parser.warnings.RubyLintVisitor;
 
 import com.aptana.rdt.AptanaRDTPlugin;
+import com.aptana.rdt.IProblem;
 
 public class ConstantNamingConvention extends RubyLintVisitor {
-
-	public static final int PROBLEM_ID = 1234568;
 
 	public ConstantNamingConvention(String contents) {
 		super(contents);
@@ -34,7 +33,7 @@ public class ConstantNamingConvention extends RubyLintVisitor {
 	
 	@Override
 	protected int getProblemID() {
-		return PROBLEM_ID;
+		return IProblem.ConstantNamingConvention;
 	}
 
 }

@@ -7,6 +7,7 @@ import org.jruby.evaluator.Instruction;
 import org.rubypeople.rdt.core.parser.warnings.RubyLintVisitor;
 
 import com.aptana.rdt.AptanaRDTPlugin;
+import com.aptana.rdt.IProblem;
 
 public class LocalAndMethodNamingConvention extends RubyLintVisitor {
 
@@ -44,6 +45,11 @@ public class LocalAndMethodNamingConvention extends RubyLintVisitor {
 			createProblem(iVisited.getPosition(), "Local variable name doesn't match the under_scores_all_lower convention: " + name);
 		}
 		return super.visitDefsNode(iVisited);
+	}
+	
+	@Override
+	protected int getProblemID() {
+		return IProblem.LocalAndMethodNamingConvention;
 	}
 	
 }
