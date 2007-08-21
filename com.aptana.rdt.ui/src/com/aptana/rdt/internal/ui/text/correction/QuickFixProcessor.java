@@ -76,6 +76,7 @@ public class QuickFixProcessor implements IQuickFixProcessor {
 		case IProblem.ConstantNamingConvention:
 			String constName = getProblemSource(context, problem);
 			String fixed = Util.camelCaseToUnderscores(constName).toUpperCase();
+			// FIXME Use the rename refactoring!
 			LocalCorrectionsSubProcessor.addReplacementProposal(fixed, "Convert to UPPERCASE_WITH_UNDERSCORES convention", problem, proposals);
 			break;
 		case IProblem.LocalVariablePossibleAttributeAccess:
@@ -87,6 +88,7 @@ public class QuickFixProcessor implements IQuickFixProcessor {
 		case IProblem.LocalAndMethodNamingConvention:
 			String name = getProblemSource(context, problem);
 			fixed = Util.camelCaseToUnderscores(name).toLowerCase();
+			// FIXME Use the rename refactoring!
 			LocalCorrectionsSubProcessor.addReplacementProposal(fixed, "Convert to lowercase_with_undercores convention", problem, proposals);
 			break;
 		case IProblem.MethodMissingWithoutRespondTo:
