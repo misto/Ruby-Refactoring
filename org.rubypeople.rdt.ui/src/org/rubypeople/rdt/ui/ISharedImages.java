@@ -28,6 +28,12 @@ public interface ISharedImages {
 	 * @since 1.0.0
 	 */
 	public static final String IMG_OBJS_EXTERNAL_ARCHIVE_WITH_SOURCE= RubyPluginImages.IMG_OBJS_EXTJAR_WSRC;
+	
+	/** 
+	 * Key to access the shared image or image descriptor for correction changes.
+	 * @since 1.0.0
+	 */
+	public static final String IMG_OBJS_CORRECTION_CHANGE= RubyPluginImages.IMG_OBJS_CORRECTION_CHANGE;
 
 	
 	Image getImage(String key);
