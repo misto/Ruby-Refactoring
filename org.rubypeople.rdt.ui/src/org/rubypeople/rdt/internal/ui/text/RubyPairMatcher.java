@@ -29,9 +29,11 @@ import org.jruby.ast.Node;
 import org.jruby.ast.SClassNode;
 import org.jruby.ast.WhenNode;
 import org.jruby.ast.WhileNode;
+import org.jruby.lexer.yacc.SyntaxException;
 import org.rubypeople.rdt.internal.core.parser.RubyParser;
 import org.rubypeople.rdt.internal.ti.util.ClosestSpanningNodeLocator;
 import org.rubypeople.rdt.internal.ti.util.INodeAcceptor;
+import org.rubypeople.rdt.internal.ui.RubyPlugin;
 
 /**
  * Helper class for match pairs of characters.
@@ -79,8 +81,17 @@ public class RubyPairMatcher implements ICharacterPairMatcher {
 		if (src.length() == 0) {
 			return false;
 		}
-		RubyParser parser = new RubyParser();
-		Node root = parser.parse(src);
+		Node root;
+		try {
+			RubyParser parser = new RubyParser();
+			root = parser.parse(src);
+		} catch (SyntaxException e) {
+			// ignore
+			return false;
+		} catch (RuntimeException e) {
+			RubyPlugin.log(e);
+			return false;
+		}
 		Node spanning = ClosestSpanningNodeLocator.Instance().findClosestSpanner(root, fOffset, new INodeAcceptor() {
 		
 			public boolean doesAccept(Node node) {
