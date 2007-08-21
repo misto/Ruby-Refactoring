@@ -32,6 +32,7 @@ import org.rubypeople.rdt.core.formatter.CodeFormatter;
 import org.rubypeople.rdt.core.search.IRubySearchConstants;
 import org.rubypeople.rdt.core.search.IRubySearchScope;
 import org.rubypeople.rdt.core.search.SearchEngine;
+import org.rubypeople.rdt.core.util.Util;
 import org.rubypeople.rdt.internal.corext.codemanipulation.StubUtility;
 import org.rubypeople.rdt.internal.corext.util.CodeFormatterUtil;
 import org.rubypeople.rdt.internal.corext.util.RubyModelUtil;
@@ -118,8 +119,6 @@ public abstract class NewTypeWizardPage extends NewContainerWizardPage {
 	protected IStatus fSuperModulesStatus;	
 
 	private int fTypeKind;
-
-	private boolean fCanModifySourceFolder;
 	
 	/**
 	 * Constant to signal that the created type is a class.
@@ -409,38 +408,9 @@ public abstract class NewTypeWizardPage extends NewContainerWizardPage {
 	 * @since 0.9.0
 	 */
 	protected String getRubyScriptName(String typeName) {
-		return convertCamelCaseToUnderscore(typeName) + RubyModelUtil.DEFAULT_SCRIPT_SUFFIX;
+		return Util.camelCaseToUnderscores(typeName) + RubyModelUtil.DEFAULT_SCRIPT_SUFFIX;
 	}
 	
-	private String convertCamelCaseToUnderscore(String name) {
-		StringBuffer newName = new StringBuffer();
-		boolean lastWasUpper = false;
-		for (int i = 0; i < name.length(); i++) {
-			char c = name.charAt(i);
-			newName.append(Character.toLowerCase(c));
-			if (lastWasUpper && Character.isLowerCase(c)) {
-				if (newName.length() > 2) newName.insert(newName.length() - 2, "_");
-				lastWasUpper = false;
-			}
-			if (Character.isUpperCase(c)) {				
-				lastWasUpper = true;
-			} 
-		}
-		return newName.toString();
-	}
-	
-	/*
-	 * Updates the enable state of buttons related to the enclosing type selection checkbox.
-	 */
-	private void updateEnableState() {
-		
-	}	
-	
-	private boolean isEnclosingTypeSelected() {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
 	/**
 	 * Creates the new type using the entered field values.
 	 * 
