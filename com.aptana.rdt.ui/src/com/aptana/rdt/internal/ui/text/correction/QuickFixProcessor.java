@@ -15,6 +15,7 @@ import org.jruby.ast.visitor.rewriter.FormatHelper;
 import org.jruby.ast.visitor.rewriter.ReWriteVisitor;
 import org.rubypeople.rdt.core.IRubyScript;
 import org.rubypeople.rdt.core.formatter.Indents;
+import org.rubypeople.rdt.core.util.Util;
 import org.rubypeople.rdt.internal.ti.util.ClosestSpanningNodeLocator;
 import org.rubypeople.rdt.internal.ti.util.INodeAcceptor;
 import org.rubypeople.rdt.internal.ui.rubyeditor.ASTProvider;
@@ -58,13 +59,14 @@ public class QuickFixProcessor implements IQuickFixProcessor {
 			IRubyScript script = context.getRubyScript();
 			String src = script.getSource();
 			String constName = src.substring(problem.getOffset(), problem.getOffset() + problem.getLength());
-			LocalCorrectionsSubProcessor.addReplacementProposal(constName.toUpperCase(), "Convert to all uppercase", problem, proposals);
+			String fixed = Util.camelCaseToUnderscores(constName).toUpperCase();
+			LocalCorrectionsSubProcessor.addReplacementProposal(fixed, "Convert to UPPERCASE_WITH_UNDERSCORES convention", problem, proposals);
 			break;
 		case IProblem.LocalAndMethodNamingConvention:
 			script = context.getRubyScript();
 			src = script.getSource();
 			constName = src.substring(problem.getOffset(), problem.getOffset() + problem.getLength());
-			String fixed = constName.toLowerCase(); // FIXME We need to convert in a smarter way!
+			fixed = Util.camelCaseToUnderscores(constName).toLowerCase();
 			LocalCorrectionsSubProcessor.addReplacementProposal(fixed, "Convert to lowercase_with_undercores convention", problem, proposals);
 			break;
 		case IProblem.MethodMissingWithoutRespondTo:
