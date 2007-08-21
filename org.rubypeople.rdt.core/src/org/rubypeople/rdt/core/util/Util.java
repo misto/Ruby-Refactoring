@@ -206,4 +206,23 @@ public class Util {
 
 		return contents;
 	}
+
+	public static String camelCaseToUnderscores(String name) {
+		if (name == null) return null;
+		if (name.length() == 0) return "";
+		StringBuffer newName = new StringBuffer();
+		boolean lastWasUpper = false;
+		for (int i = 0; i < name.length(); i++) {
+			char c = name.charAt(i);
+			newName.append(Character.toLowerCase(c));
+			if (lastWasUpper && Character.isLowerCase(c)) {
+				if (newName.length() > 2) newName.insert(newName.length() - 2, "_");
+				lastWasUpper = false;
+			}
+			if (Character.isUpperCase(c)) {				
+				lastWasUpper = true;
+			} 
+		}
+		return newName.toString();
+	}
 }
