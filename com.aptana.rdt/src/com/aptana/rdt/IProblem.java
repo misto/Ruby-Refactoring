@@ -6,4 +6,5 @@ public interface IProblem {
 	public static final int MethodMissingWithoutRespondTo = 130;
 	public static final int LocalAndMethodNamingConvention = 131;
 	public static final int ComparableInclusionMissingCompareMethod = 132;
+	public static final int EnumerableInclusionMissingEachMethod = 133;
 }
