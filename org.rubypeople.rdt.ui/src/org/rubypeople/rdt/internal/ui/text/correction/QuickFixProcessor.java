@@ -12,6 +12,7 @@ import org.jruby.ast.visitor.rewriter.FormatHelper;
 import org.rubypeople.rdt.core.IRubyScript;
 import org.rubypeople.rdt.core.compiler.IProblem;
 import org.rubypeople.rdt.internal.ui.RubyPlugin;
+import org.rubypeople.rdt.ui.text.correction.CorrectionProposal;
 import org.rubypeople.rdt.ui.text.ruby.IInvocationContext;
 import org.rubypeople.rdt.ui.text.ruby.IProblemLocation;
 import org.rubypeople.rdt.ui.text.ruby.IQuickFixProcessor;

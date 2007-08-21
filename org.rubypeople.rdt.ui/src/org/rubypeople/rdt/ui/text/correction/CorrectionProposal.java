@@ -1,4 +1,4 @@
-package org.rubypeople.rdt.internal.ui.text.correction;
+package org.rubypeople.rdt.ui.text.correction;
 
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.ITextViewer;
