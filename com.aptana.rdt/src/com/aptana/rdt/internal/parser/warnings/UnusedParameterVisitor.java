@@ -12,6 +12,9 @@ import org.jruby.ast.ListNode;
 import org.jruby.ast.LocalVarNode;
 import org.jruby.ast.Node;
 import org.jruby.evaluator.Instruction;
+import org.jruby.lexer.yacc.IDESourcePosition;
+import org.jruby.lexer.yacc.ISourcePosition;
+import org.rubypeople.rdt.core.compiler.IProblem;
 import org.rubypeople.rdt.core.parser.warnings.RubyLintVisitor;
 import org.rubypeople.rdt.internal.core.util.ASTUtil;
 
@@ -41,7 +44,10 @@ public class UnusedParameterVisitor extends RubyLintVisitor {
 	
 	public void exitDefnNode(DefnNode iVisited) {
 		for (Node unused : declared.values()) {
-			createProblem(unused.getPosition(), "Unused Method parameter " + ASTUtil.getNameReflectively(unused));
+			String name = ASTUtil.getNameReflectively(unused);
+			ISourcePosition original = unused.getPosition();
+			ISourcePosition pos = new IDESourcePosition(original.getFile(), original.getStartLine(), original.getEndLine(), original.getStartOffset(), original.getStartOffset() + name.length());
+			createProblem(pos, "Unused Method parameter " + name);
 		}
 		declared.clear();
 	}
@@ -70,4 +76,8 @@ public class UnusedParameterVisitor extends RubyLintVisitor {
 		return super.visitLocalVarNode(iVisited);
 	}
 
+	@Override
+	protected int getProblemID() {
+		return IProblem.ArgumentIsNeverUsed;
+	}
 }

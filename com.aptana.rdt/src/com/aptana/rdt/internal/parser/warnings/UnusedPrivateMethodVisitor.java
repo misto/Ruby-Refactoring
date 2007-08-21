@@ -14,6 +14,7 @@ import org.jruby.ast.SelfNode;
 import org.jruby.ast.VCallNode;
 import org.jruby.evaluator.Instruction;
 import org.jruby.runtime.Visibility;
+import org.rubypeople.rdt.core.compiler.IProblem;
 import org.rubypeople.rdt.core.parser.warnings.RubyLintVisitor;
 import org.rubypeople.rdt.internal.core.util.ASTUtil;
 
@@ -84,5 +85,10 @@ public class UnusedPrivateMethodVisitor extends RubyLintVisitor {
 	protected String getOptionKey() {
 		return AptanaRDTPlugin.COMPILER_PB_UNUSED_PRIVATE_MEMBER;
 	}	
+	
+	@Override
+	protected int getProblemID() {
+		return IProblem.UnusedPrivateMethod;
+	}
 
 }
