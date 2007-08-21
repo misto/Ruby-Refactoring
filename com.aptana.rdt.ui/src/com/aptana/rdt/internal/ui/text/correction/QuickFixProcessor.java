@@ -14,6 +14,7 @@ import org.jruby.ast.visitor.rewriter.DefaultFormatHelper;
 import org.jruby.ast.visitor.rewriter.FormatHelper;
 import org.jruby.ast.visitor.rewriter.ReWriteVisitor;
 import org.rubypeople.rdt.core.IRubyScript;
+import org.rubypeople.rdt.core.RubyModelException;
 import org.rubypeople.rdt.core.formatter.Indents;
 import org.rubypeople.rdt.core.util.Util;
 import org.rubypeople.rdt.internal.ti.util.ClosestSpanningNodeLocator;
@@ -56,23 +57,19 @@ public class QuickFixProcessor implements IQuickFixProcessor {
 			LocalCorrectionsSubProcessor.addReplacementProposal("initialize\n", "Rename to 'initialize'", problem, proposals);
 			break;
 		case IProblem.ConstantNamingConvention:
-			IRubyScript script = context.getRubyScript();
-			String src = script.getSource();
-			String constName = src.substring(problem.getOffset(), problem.getOffset() + problem.getLength());
+			String constName = getSource(context, problem);
 			String fixed = Util.camelCaseToUnderscores(constName).toUpperCase();
 			LocalCorrectionsSubProcessor.addReplacementProposal(fixed, "Convert to UPPERCASE_WITH_UNDERSCORES convention", problem, proposals);
 			break;
 		case IProblem.LocalAndMethodNamingConvention:
-			script = context.getRubyScript();
-			src = script.getSource();
-			constName = src.substring(problem.getOffset(), problem.getOffset() + problem.getLength());
-			fixed = Util.camelCaseToUnderscores(constName).toLowerCase();
+			String name = getSource(context, problem);
+			fixed = Util.camelCaseToUnderscores(name).toLowerCase();
 			LocalCorrectionsSubProcessor.addReplacementProposal(fixed, "Convert to lowercase_with_undercores convention", problem, proposals);
 			break;
 		case IProblem.MethodMissingWithoutRespondTo:
 			// FIXME Only do this stuff when we apply the proposal! Don't do all this work just to create the proposal...
-			script = context.getRubyScript();
-			src = script.getSource();
+			IRubyScript script = context.getRubyScript();
+			String src = script.getSource();
 			int offset = 0;
 			Node rootNode = ASTProvider.getASTProvider().getAST(script, ASTProvider.WAIT_YES, null);
 			Node typeNode = ClosestSpanningNodeLocator.Instance().findClosestSpanner(rootNode, problem.getOffset(), new INodeAcceptor() {
@@ -104,6 +101,13 @@ public class QuickFixProcessor implements IQuickFixProcessor {
 			break;
 		default:
 		}
+	}
+
+	private String getSource(IInvocationContext context, IProblemLocation problem) throws RubyModelException {
+		IRubyScript script = context.getRubyScript();
+		String src = script.getSource();
+		String constName = src.substring(problem.getOffset(), problem.getOffset() + problem.getLength());
+		return constName;
 	}
 	
 	protected FormatHelper getFormatHelper() {
