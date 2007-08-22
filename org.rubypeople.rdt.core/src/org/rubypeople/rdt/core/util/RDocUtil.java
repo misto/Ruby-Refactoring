@@ -11,7 +11,6 @@ import org.eclipse.jface.text.IRegion;
 import org.eclipse.jface.text.Region;
 import org.jruby.Ruby;
 import org.jruby.ast.CommentNode;
-import org.jruby.exceptions.RaiseException;
 import org.jruby.lexer.yacc.ISourcePosition;
 import org.jruby.runtime.builtin.IRubyObject;
 import org.rubypeople.rdt.core.IMember;
@@ -128,7 +127,7 @@ public class RDocUtil {
 		Ruby ruby = getJRubyInstance();		
 		try {			
 			ruby.setCurrentDirectory(getRDocScriptPath());
-			IRubyObject object = ruby.evalScript(script);
+			IRubyObject object = ruby.evalScriptlet(script);
 			docs = object.toString();
 		} catch (Exception e) {
 			// ignore

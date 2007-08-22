@@ -100,11 +100,11 @@ public class TypeHierarchy implements ITypeHierarchy, IElementChangedListener {
 	protected IRubyScript[] workingCopies;
 
 	protected Map classToSuperclass;
-	protected Map typeToSuperInterfaces;
+	protected Map typeToSuperModules;
 	protected Map typeToSubtypes;
 	protected Map typeFlags;
 	protected TypeVector rootClasses = new TypeVector();
-	protected ArrayList interfaces = new ArrayList(10);
+	protected ArrayList modules = new ArrayList(10);
 	public ArrayList missingTypes = new ArrayList(4);
 	
 	protected static final IType[] NO_TYPE = new IType[0];
@@ -219,8 +219,8 @@ private void addAllCheckingDuplicates(ArrayList list, IType[] collection) {
 /**
  * Adds the type to the collection of interfaces.
  */
-protected void addInterface(IType type) {
-	this.interfaces.add(type);
+protected void addModule(IType type) {
+	this.modules.add(type);
 }
 /**
  * Adds the type to the collection of root classes
@@ -286,15 +286,15 @@ protected void cacheSuperclass(IType type, IType superclass) {
 	} 
 }
 /**
- * Caches all of the superinterfaces that are specified for the
+ * Caches all of the supermodules that are specified for the
  * type.
  */
-protected void cacheSuperInterfaces(IType type, IType[] superinterfaces) {
-	this.typeToSuperInterfaces.put(type, superinterfaces);
-	for (int i = 0; i < superinterfaces.length; i++) {
-		IType superinterface = superinterfaces[i];
-		if (superinterface != null) {
-			addSubtype(superinterface, type);
+protected void cacheSuperModules(IType type, IType[] supermodules) {
+	this.typeToSuperModules.put(type, supermodules);
+	for (int i = 0; i < supermodules.length; i++) {
+		IType supermodule = supermodules[i];
+		if (supermodule != null) {
+			addSubtype(supermodule, type);
 		}
 	}
 }
@@ -336,7 +336,7 @@ public boolean contains(IType type) {
 	if (this.rootClasses.contains(type)) return true;
 
 	// interfaces
-	if (this.interfaces.contains(type)) return true;
+	if (this.modules.contains(type)) return true;
 	
 	return false;
 }
@@ -359,7 +359,7 @@ public void elementChanged(ElementChangedEvent event) {
 public boolean exists() {
 	if (!this.needsRefresh) return true;
 	
-	return (this.focusType == null || this.focusType.exists()) && this.javaProject().exists();
+	return (this.focusType == null || this.focusType.exists()) && this.rubyProject().exists();
 }
 /**
  * Notifies listeners that this hierarchy has changed and needs
@@ -412,9 +412,9 @@ public IType[] getAllClasses() {
 /**
  * @see ITypeHierarchy
  */
-public IType[] getAllInterfaces() {
-	IType[] collection= new IType[this.interfaces.size()];
-	this.interfaces.toArray(collection);
+public IType[] getAllModules() {
+	IType[] collection= new IType[this.modules.size()];
+	this.modules.toArray(collection);
 	return collection;
 }
 /**
@@ -460,27 +460,27 @@ public IType[] getAllSuperclasses(IType type) {
 /**
  * @see ITypeHierarchy
  */
-public IType[] getAllSuperInterfaces(IType type) {
+public IType[] getAllSuperModules(IType type) {
 	ArrayList supers = new ArrayList();
-	if (this.typeToSuperInterfaces.get(type) == null) {
+	if (this.typeToSuperModules.get(type) == null) {
 		return NO_TYPE;
 	}
-	getAllSuperInterfaces0(type, supers);
-	IType[] superinterfaces = new IType[supers.size()];
-	supers.toArray(superinterfaces);
-	return superinterfaces;
+	getAllSuperModules0(type, supers);
+	IType[] supermodules = new IType[supers.size()];
+	supers.toArray(supermodules);
+	return supermodules;
 }
-private void getAllSuperInterfaces0(IType type, ArrayList supers) {
-	IType[] superinterfaces = (IType[]) this.typeToSuperInterfaces.get(type);
+private void getAllSuperModules0(IType type, ArrayList supers) {
+	IType[] superinterfaces = (IType[]) this.typeToSuperModules.get(type);
 	if (superinterfaces != null && superinterfaces.length != 0) {
 		addAllCheckingDuplicates(supers, superinterfaces);
 		for (int i = 0; i < superinterfaces.length; i++) {
-			getAllSuperInterfaces0(superinterfaces[i], supers);
+			getAllSuperModules0(superinterfaces[i], supers);
 		}
 	}
 	IType superclass = (IType) this.classToSuperclass.get(type);
 	if (superclass != null) {
-		getAllSuperInterfaces0(superclass, supers);
+		getAllSuperModules0(superclass, supers);
 	}
 }
 /**
@@ -488,7 +488,7 @@ private void getAllSuperInterfaces0(IType type, ArrayList supers) {
  */
 public IType[] getAllSupertypes(IType type) {
 	ArrayList supers = new ArrayList();
-	if (this.typeToSuperInterfaces.get(type) == null) {
+	if (this.typeToSuperModules.get(type) == null) {
 		return NO_TYPE;
 	}
 	getAllSupertypes0(type, supers);
@@ -497,11 +497,11 @@ public IType[] getAllSupertypes(IType type) {
 	return supertypes;
 }
 private void getAllSupertypes0(IType type, ArrayList supers) {
-	IType[] superinterfaces = (IType[]) this.typeToSuperInterfaces.get(type);
+	IType[] superinterfaces = (IType[]) this.typeToSuperModules.get(type);
 	if (superinterfaces != null && superinterfaces.length != 0) {
 		addAllCheckingDuplicates(supers, superinterfaces);
 		for (int i = 0; i < superinterfaces.length; i++) {
-			getAllSuperInterfaces0(superinterfaces[i], supers);
+			getAllSuperModules0(superinterfaces[i], supers);
 		}
 	}
 	IType superclass = (IType) this.classToSuperclass.get(type);
@@ -516,7 +516,7 @@ private void getAllSupertypes0(IType type, ArrayList supers) {
 public IType[] getAllTypes() {
 	IType[] classes = getAllClasses();
 	int classesLength = classes.length;
-	IType[] allInterfaces = getAllInterfaces();
+	IType[] allInterfaces = getAllModules();
 	int interfacesLength = allInterfaces.length;
 	IType[] all = new IType[classesLength + interfacesLength];
 	System.arraycopy(classes, 0, all, 0, classesLength);
@@ -538,23 +538,23 @@ public int getCachedFlags(IType type) {
 /**
  * @see ITypeHierarchy
  */
-public IType[] getExtendingInterfaces(IType type) {
-	if (!this.isInterface(type)) return NO_TYPE;
-	return getExtendingInterfaces0(type);
+public IType[] getExtendingModules(IType type) {
+	if (!this.isModule(type)) return NO_TYPE;
+	return getExtendingModules0(type);
 }
 /**
- * Assumes that the type is an interface
- * @see #getExtendingInterfaces
+ * Assumes that the type is an module
+ * @see #getExtendingModules
  */
-private IType[] getExtendingInterfaces0(IType extendedInterface) {
-	Iterator iter = this.typeToSuperInterfaces.keySet().iterator();
+private IType[] getExtendingModules0(IType extendedInterface) {
+	Iterator iter = this.typeToSuperModules.keySet().iterator();
 	ArrayList interfaceList = new ArrayList();
 	while (iter.hasNext()) {
 		IType type = (IType) iter.next();
-		if (!this.isInterface(type)) {
+		if (!this.isModule(type)) {
 			continue;
 		}
-		IType[] superInterfaces = (IType[]) this.typeToSuperInterfaces.get(type);
+		IType[] superInterfaces = (IType[]) this.typeToSuperModules.get(type);
 		if (superInterfaces != null) {
 			for (int i = 0; i < superInterfaces.length; i++) {
 				IType superInterface = superInterfaces[i];
@@ -571,26 +571,26 @@ private IType[] getExtendingInterfaces0(IType extendedInterface) {
 /**
  * @see ITypeHierarchy
  */
-public IType[] getImplementingClasses(IType type) {
-	if (!this.isInterface(type)) {
+public IType[] getIncludingClasses(IType type) {
+	if (!this.isModule(type)) {
 		return NO_TYPE;
 	}
-	return getImplementingClasses0(type);
+	return getIncludingClasses0(type);
 }
 /**
  * Assumes that the type is an interface
- * @see #getImplementingClasses
+ * @see #getIncludingClasses
  */
-private IType[] getImplementingClasses0(IType interfce) {
+private IType[] getIncludingClasses0(IType interfce) {
 	
-	Iterator iter = this.typeToSuperInterfaces.keySet().iterator();
+	Iterator iter = this.typeToSuperModules.keySet().iterator();
 	ArrayList iMenters = new ArrayList();
 	while (iter.hasNext()) {
 		IType type = (IType) iter.next();
-		if (this.isInterface(type)) {
+		if (this.isModule(type)) {
 			continue;
 		}
-		IType[] types = (IType[]) this.typeToSuperInterfaces.get(type);
+		IType[] types = (IType[]) this.typeToSuperModules.get(type);
 		for (int i = 0; i < types.length; i++) {
 			IType iFace = types[i];
 			if (iFace.equals(interfce)) {
@@ -611,12 +611,12 @@ public IType[] getRootClasses() {
 /**
  * @see ITypeHierarchy
  */
-public IType[] getRootInterfaces() {
-	IType[] allInterfaces = getAllInterfaces();
+public IType[] getRootModules() {
+	IType[] allInterfaces = getAllModules();
 	IType[] roots = new IType[allInterfaces.length];
 	int rootNumber = 0;
 	for (int i = 0; i < allInterfaces.length; i++) {
-		IType[] superInterfaces = getSuperInterfaces(allInterfaces[i]);
+		IType[] superInterfaces = getSuperModules(allInterfaces[i]);
 		if (superInterfaces == null || superInterfaces.length == 0) {
 			roots[rootNumber++] = allInterfaces[i];
 		}
@@ -631,7 +631,7 @@ public IType[] getRootInterfaces() {
  * @see ITypeHierarchy
  */
 public IType[] getSubclasses(IType type) {
-	if (this.isInterface(type)) {
+	if (this.isModule(type)) {
 		return NO_TYPE;
 	}
 	TypeVector vector = (TypeVector)this.typeToSubtypes.get(type);
@@ -660,7 +660,7 @@ private IType[] getSubtypesForType(IType type) {
  * @see ITypeHierarchy
  */
 public IType getSuperclass(IType type) {
-	if (this.isInterface(type)) {
+	if (this.isModule(type)) {
 		return null;
 	}
 	return (IType) this.classToSuperclass.get(type);
@@ -668,8 +668,8 @@ public IType getSuperclass(IType type) {
 /**
  * @see ITypeHierarchy
  */
-public IType[] getSuperInterfaces(IType type) {
-	IType[] types = (IType[]) this.typeToSuperInterfaces.get(type);
+public IType[] getSuperModules(IType type) {
+	IType[] types = (IType[]) this.typeToSuperModules.get(type);
 	if (types == null) {
 		return NO_TYPE;
 	}
@@ -681,9 +681,9 @@ public IType[] getSuperInterfaces(IType type) {
 public IType[] getSupertypes(IType type) {
 	IType superclass = getSuperclass(type);
 	if (superclass == null) {
-		return getSuperInterfaces(type);
+		return getSuperModules(type);
 	} else {
-		TypeVector superTypes = new TypeVector(getSuperInterfaces(type));
+		TypeVector superTypes = new TypeVector(getSuperModules(type));
 		superTypes.add(superclass);
 		return superTypes.elements();
 	}
@@ -800,11 +800,11 @@ protected void initialize(int size) {
 	}
 	int smallSize = (size / 2);
 	this.classToSuperclass = new HashMap(size);
-	this.interfaces = new ArrayList(smallSize);
+	this.modules = new ArrayList(smallSize);
 	this.missingTypes = new ArrayList(smallSize);
 	this.rootClasses = new TypeVector();
 	this.typeToSubtypes = new HashMap(smallSize);
-	this.typeToSuperInterfaces = new HashMap(smallSize);
+	this.typeToSuperModules = new HashMap(smallSize);
 	this.typeFlags = new HashMap(smallSize);
 	
 	this.projectRegion = new Region();
@@ -854,7 +854,7 @@ private boolean isAffectedByRubyModel(IRubyElementDelta delta, IRubyElement elem
 	switch (delta.getKind()) {
 		case IRubyElementDelta.ADDED :
 		case IRubyElementDelta.REMOVED :
-			return element.equals(this.javaProject().getRubyModel());
+			return element.equals(this.rubyProject().getRubyModel());
 		case IRubyElementDelta.CHANGED :
 			return isAffectedByChildren(delta);
 	}
@@ -876,7 +876,7 @@ private boolean isAffectedByRubyProject(IRubyElementDelta delta, IRubyElement el
 		case IRubyElementDelta.ADDED :
 			try {
 				// if the added project is on the classpath, then the hierarchy has changed
-				ILoadpathEntry[] classpath = ((RubyProject)this.javaProject()).getExpandedLoadpath(true);
+				ILoadpathEntry[] classpath = ((RubyProject)this.rubyProject()).getExpandedLoadpath(true);
 				for (int i = 0; i < classpath.length; i++) {
 					if (classpath[i].getEntryKind() == ILoadpathEntry.CPE_PROJECT 
 							&& classpath[i].getPath().equals(element.getPath())) {
@@ -886,7 +886,7 @@ private boolean isAffectedByRubyProject(IRubyElementDelta delta, IRubyElement el
 				if (this.focusType != null) {
 					// if the hierarchy's project is on the added project classpath, then the hierarchy has changed
 					classpath = ((RubyProject)element).getExpandedLoadpath(true);
-					IPath hierarchyProject = javaProject().getPath();
+					IPath hierarchyProject = rubyProject().getPath();
 					for (int i = 0; i < classpath.length; i++) {
 						if (classpath[i].getEntryKind() == ILoadpathEntry.CPE_PROJECT 
 								&& classpath[i].getPath().equals(hierarchyProject)) {
@@ -1007,18 +1007,13 @@ protected boolean isAffectedByOpenable(IRubyElementDelta delta, IRubyElement ele
 	}
 	return false;
 }
-private boolean isInterface(IType type) {
-//	int flags = this.getCachedFlags(type);
-//	if (flags == -1) {
-		return type.isModule();
-//	} else {
-//		return Flags.isModule(flags);
-//	}
+private boolean isModule(IType type) {
+	return type.isModule();
 }
 /**
- * Returns the java project this hierarchy was created in.
+ * Returns the ruby project this hierarchy was created in.
  */
-public IRubyProject javaProject() {
+public IRubyProject rubyProject() {
 	return this.focusType.getRubyProject();
 }
 protected static byte[] readUntil(InputStream input, byte separator) throws RubyModelException, IOException{
@@ -1112,7 +1107,7 @@ public static ITypeHierarchy load(IType type, InputStream input, WorkingCopyOwne
 			byte info = (byte)input.read();
 			
 			if((info & INTERFACE) != 0) {
-				typeHierarchy.addInterface(element);
+				typeHierarchy.addModule(element);
 			}
 			if((info & COMPUTED_FOR) != 0) {
 				if(!element.equals(type)) {
@@ -1166,7 +1161,7 @@ public static ITypeHierarchy load(IType type, InputStream input, WorkingCopyOwne
 			superInterfaces[interfaceCount++] = types[new Integer(new String(b2)).intValue()];
 			System.arraycopy(superInterfaces, 0, superInterfaces = new IType[interfaceCount], 0, interfaceCount);
 			
-			typeHierarchy.cacheSuperInterfaces(
+			typeHierarchy.cacheSuperModules(
 				types[subClass],
 				superInterfaces);
 		}
@@ -1290,7 +1285,7 @@ public void store(OutputStream output, IProgressMonitor monitor) throws RubyMode
 				hashtable2.put(index, superClass);
 			}
 		}
-		types = this.typeToSuperInterfaces.keySet().toArray();
+		types = this.typeToSuperModules.keySet().toArray();
 		for (int i = 0; i < types.length; i++) {
 			Object t = types[i];
 			if(hashtable.get(t) == null) {
@@ -1298,7 +1293,7 @@ public void store(OutputStream output, IProgressMonitor monitor) throws RubyMode
 				hashtable.put(t, index);
 				hashtable2.put(index, t);
 			}
-			Object[] sp = (Object[])this.typeToSuperInterfaces.get(t);
+			Object[] sp = (Object[])this.typeToSuperModules.get(t);
 			if(sp != null) {
 				for (int j = 0; j < sp.length; j++) {
 					Object superInterface = sp[j];
@@ -1349,7 +1344,7 @@ public void store(OutputStream output, IProgressMonitor monitor) throws RubyMode
 			if(this.focusType != null && this.focusType.equals(t)) {
 				info |= COMPUTED_FOR;
 			}
-			if(this.interfaces.contains(t)) {
+			if(this.modules.contains(t)) {
 				info |= INTERFACE;
 			}
 			if(this.rootClasses.contains(t)) {
@@ -1373,10 +1368,10 @@ public void store(OutputStream output, IProgressMonitor monitor) throws RubyMode
 		output.write(SEPARATOR1);
 		
 		// save superinterfaces
-		types = this.typeToSuperInterfaces.keySet().toArray();
+		types = this.typeToSuperModules.keySet().toArray();
 		for (int i = 0; i < types.length; i++) {
 			IRubyElement key = (IRubyElement)types[i];
-			IRubyElement[] values = (IRubyElement[])this.typeToSuperInterfaces.get(key);
+			IRubyElement[] values = (IRubyElement[])this.typeToSuperModules.get(key);
 			
 			if(values.length > 0) {
 				output.write(((Integer)hashtable.get(key)).toString().getBytes());

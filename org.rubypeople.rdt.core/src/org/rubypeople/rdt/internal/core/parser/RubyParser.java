@@ -26,7 +26,7 @@ import org.jruby.common.NullWarnings;
 import org.jruby.lexer.yacc.LexerSource;
 import org.jruby.lexer.yacc.SyntaxException;
 import org.jruby.parser.DefaultRubyParser;
-import org.jruby.parser.RubyParserConfiguration;
+import org.jruby.parser.ParserConfiguration;
 import org.jruby.parser.RubyParserPool;
 import org.jruby.parser.RubyParserResult;
 import org.rubypeople.rdt.core.RubyCore;
@@ -60,8 +60,9 @@ public class RubyParser {
         	parser.setWarnings(warnings);
         	String fileName = "";
         	if (file != null) fileName = file.getName();
-        	LexerSource lexerSource = new LexerSource(fileName, content, 0, true);
-        	result = parser.parse(new RubyParserConfiguration(false), lexerSource);
+        	ParserConfiguration config = new ParserConfiguration(0, true, false);
+        	LexerSource lexerSource = LexerSource.getSource(fileName, content, null, config);
+        	result = parser.parse(config, lexerSource);
         } catch (SyntaxException e) {
         	throw e;
         } finally {

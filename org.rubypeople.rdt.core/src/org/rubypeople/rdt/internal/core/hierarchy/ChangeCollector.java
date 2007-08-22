@@ -403,7 +403,7 @@ public class ChangeCollector {
 		}
 		
 		// check super interfaces
-		IType[] existingSuperInterfaces = this.hierarchy.getSuperInterfaces(type);
+		IType[] existingSuperInterfaces = this.hierarchy.getSuperModules(type);
 		String[] newSuperInterfaces = type.getIncludedModuleNames();
 		if (existingSuperInterfaces.length != newSuperInterfaces.length) {
 			return true;

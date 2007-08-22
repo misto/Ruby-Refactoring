@@ -76,7 +76,7 @@ IType[] getAllClasses();
  * 
  * @return all interfaces in this type hierarchy's graph
  */
-IType[] getAllInterfaces();
+IType[] getAllModules();
 /**
  * Returns all resolved subtypes (direct and indirect) of the
  * given type, in no particular order, limited to the
@@ -118,7 +118,7 @@ IType[] getAllSuperclasses(IType type);
  * @param type the given type
  * @return all resolved superinterfaces (direct and indirect) of the given type, an empty array if none
  */
-IType[] getAllSuperInterfaces(IType type);
+IType[] getAllSuperModules(IType type);
 /**
  * Returns all resolved supertypes of the
  * given type, in bottom-up order. An empty array
@@ -168,7 +168,7 @@ int getCachedFlags(IType type);
  * @return all interfaces resolved to extend the given interface limited to the interfaces in this
  * hierarchy's graph, an empty array if none.
  */
-IType[] getExtendingInterfaces(IType type);
+IType[] getExtendingModules(IType type);
 /**
  * Returns all classes resolved to implement the given interface,
  * in no particular order, limited to the classes in this type
@@ -180,7 +180,7 @@ IType[] getExtendingInterfaces(IType type);
  * @return all classes resolved to implement the given interface limited to the classes in this type
  * hierarchy's  graph, an empty array if none
  */
-IType[] getImplementingClasses(IType type);
+IType[] getIncludingClasses(IType type);
 /**
  * Returns all classes in the graph which have no resolved superclass,
  * in no particular order.
@@ -194,7 +194,7 @@ IType[] getRootClasses();
  * 
  * @return all interfaces in the graph which have no resolved superinterfaces
  */
-IType[] getRootInterfaces();
+IType[] getRootModules();
 /**
  * Returns the direct resolved subclasses of the given class,
  * in no particular order, limited to the classes in this
@@ -245,7 +245,7 @@ IType getSuperclass(IType type);
  * @return the direct resolved interfaces that the given type implements or extends limited to the interfaces in this type
  * hierarchy's graph
  */
-IType[] getSuperInterfaces(IType type);
+IType[] getSuperModules(IType type);
 /**
  * Returns the resolved supertypes of the given type,
  * in no particular order, limited to the types in this

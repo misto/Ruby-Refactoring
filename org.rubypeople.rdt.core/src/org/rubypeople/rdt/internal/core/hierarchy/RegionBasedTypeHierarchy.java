@@ -120,12 +120,12 @@ protected boolean isAffectedByOpenable(IRubyElementDelta delta, IRubyElement ele
 /**
  * Returns the java project this hierarchy was created in.
  */
-public IRubyProject javaProject() {
+public IRubyProject rubyProject() {
 	return this.project;
 }
 public void pruneDeadBranches() {
 	pruneDeadBranches(getRootClasses());
-	pruneDeadBranches(getRootInterfaces());
+	pruneDeadBranches(getRootModules());
 }
 /*
  * Returns whether all subtypes of the given type have been pruned.
@@ -162,7 +162,7 @@ protected void removeType(IType type) {
 		TypeVector types = (TypeVector)this.typeToSubtypes.get(superclass);
 		if (types != null) types.remove(type);
 	}
-	IType[] superinterfaces = (IType[])this.typeToSuperInterfaces.remove(type);
+	IType[] superinterfaces = (IType[])this.typeToSuperModules.remove(type);
 	if (superinterfaces != null) {
 		for (int i = 0, length = superinterfaces.length; i < length; i++) {
 			IType superinterface = superinterfaces[i];
@@ -170,7 +170,7 @@ protected void removeType(IType type) {
 			if (types != null) types.remove(type);
 		}
 	}
-	this.interfaces.remove(type);
+	this.modules.remove(type);
 }
 
 }

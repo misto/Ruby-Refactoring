@@ -46,7 +46,7 @@ public abstract class HierarchyBuilder {
 	public HierarchyBuilder(TypeHierarchy hierarchy) throws RubyModelException {
 		
 		this.hierarchy = hierarchy;
-		RubyProject project = (RubyProject) hierarchy.javaProject();
+		RubyProject project = (RubyProject) hierarchy.rubyProject();
 		
 		IType focusType = hierarchy.getType();
 		org.rubypeople.rdt.core.IRubyScript unitToLookInside = focusType == null ? null : focusType.getRubyScript();
@@ -119,7 +119,7 @@ public abstract class HierarchyBuilder {
 		}
 		// now do the caching
 		if (typeHandle.isModule()) {
-			this.hierarchy.addInterface(typeHandle);
+			this.hierarchy.addModule(typeHandle);
 		} else {
 			if (superclassHandle == null) {
 				this.hierarchy.addRootClass(typeHandle);
@@ -130,7 +130,7 @@ public abstract class HierarchyBuilder {
 		if (superinterfaceHandles == null) {
 			superinterfaceHandles = TypeHierarchy.NO_TYPE;
 		}
-		this.hierarchy.cacheSuperInterfaces(typeHandle, superinterfaceHandles);
+		this.hierarchy.cacheSuperModules(typeHandle, superinterfaceHandles);
 		 
 		// record flags
 		this.hierarchy.cacheFlags(typeHandle, /*type.getModifiers()*/ 0 );

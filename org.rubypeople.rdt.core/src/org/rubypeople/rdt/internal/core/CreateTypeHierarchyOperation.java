@@ -116,7 +116,7 @@ public IRubyModelStatus verify() {
 	if (elementToProcess != null && !elementToProcess.exists()) {
 		return new RubyModelStatus(IRubyModelStatusConstants.ELEMENT_DOES_NOT_EXIST, elementToProcess);
 	}
-	IRubyProject project = this.typeHierarchy.javaProject();
+	IRubyProject project = this.typeHierarchy.rubyProject();
 	if (project != null && !project.exists()) {
 		return new RubyModelStatus(IRubyModelStatusConstants.ELEMENT_DOES_NOT_EXIST, project);
 	}
