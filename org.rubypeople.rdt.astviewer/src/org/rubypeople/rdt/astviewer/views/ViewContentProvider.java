@@ -48,7 +48,7 @@ import org.jruby.ast.Node;
 import org.jruby.common.NullWarnings;
 import org.jruby.lexer.yacc.LexerSource;
 import org.jruby.parser.DefaultRubyParser;
-import org.jruby.parser.RubyParserConfiguration;
+import org.jruby.parser.ParserConfiguration;
 import org.jruby.parser.RubyParserPool;
 import org.rubypeople.rdt.astviewer.Activator;
 import org.rubypeople.rdt.internal.ui.rubyeditor.RubyEditor;
@@ -120,8 +120,9 @@ class ViewContentProvider implements IStructuredContentProvider, ITreeContentPro
 	public Node getRootNode() {
 		LexerSource lexerSource;
 		try {
-			lexerSource = new LexerSource(getName(), new InputStreamReader(getContents()), 1, true);
-			return parser.parse(new RubyParserConfiguration(false), lexerSource).getAST();
+			ParserConfiguration config = new ParserConfiguration(1, true, false);
+			lexerSource = LexerSource.getSource(getName(), new InputStreamReader(getContents()), null, config);
+			return parser.parse(config, lexerSource).getAST();
 		} catch (CoreException e) {
 			return null;
 		}
