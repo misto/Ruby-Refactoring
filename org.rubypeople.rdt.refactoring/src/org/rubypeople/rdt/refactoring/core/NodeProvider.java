@@ -64,10 +64,9 @@ import org.jruby.common.NullWarnings;
 import org.jruby.lexer.yacc.LexerSource;
 import org.jruby.lexer.yacc.SyntaxException;
 import org.jruby.parser.DefaultRubyParser;
-import org.jruby.parser.RubyParserConfiguration;
+import org.jruby.parser.ParserConfiguration;
 import org.jruby.parser.RubyParserPool;
 import org.jruby.parser.RubyParserResult;
-//import org.jruby.parser.postprocessor.DefaultCommentPlacer;
 import org.rubypeople.rdt.refactoring.nodewrapper.AttrAccessorNodeWrapper;
 import org.rubypeople.rdt.refactoring.nodewrapper.FieldNodeWrapper;
 import org.rubypeople.rdt.refactoring.nodewrapper.MethodCallNodeWrapper;
@@ -104,8 +103,9 @@ public class NodeProvider {
 		DefaultRubyParser parser;
 		parser = RubyParserPool.getInstance().borrowParser();
 		parser.setWarnings(new NullWarnings());
-		LexerSource lexerSource = new LexerSource(fileName, reader, 1, true);
-		RubyParserConfiguration parserConfig = new RubyParserConfiguration(false);
+		
+		ParserConfiguration parserConfig = new ParserConfiguration(1, true, false);
+		LexerSource lexerSource = LexerSource.getSource(fileName, reader, null, parserConfig);		
 //		parserConfig.addPostProcessor(new DefaultCommentPlacer());
 		RubyParserResult result = parser.parse(parserConfig, lexerSource);
 		return (RootNode) result.getAST();

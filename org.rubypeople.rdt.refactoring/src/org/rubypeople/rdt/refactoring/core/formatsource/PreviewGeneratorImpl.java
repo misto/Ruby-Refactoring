@@ -39,9 +39,8 @@ import org.jruby.ast.visitor.rewriter.utils.ReWriterContext;
 import org.jruby.common.NullWarnings;
 import org.jruby.lexer.yacc.LexerSource;
 import org.jruby.parser.DefaultRubyParser;
-import org.jruby.parser.RubyParserConfiguration;
+import org.jruby.parser.ParserConfiguration;
 import org.jruby.parser.RubyParserPool;
-//import org.jruby.parser.postprocessor.DefaultCommentPlacer;
 
 public class PreviewGeneratorImpl implements PreviewGenerator {
 
@@ -58,9 +57,9 @@ public class PreviewGeneratorImpl implements PreviewGenerator {
 		DefaultRubyParser parser = RubyParserPool.getInstance().borrowParser();
 		parser.setWarnings(new NullWarnings());
 
-		LexerSource lexerSource = new LexerSource("", new StringReader(source), 1, true); //$NON-NLS-1$
-		ReWriteVisitor visitor = factory.createReWriteVisitor();
-		RubyParserConfiguration parserConfig = new RubyParserConfiguration(false);
+		ParserConfiguration parserConfig = new ParserConfiguration(1, true, false);
+		LexerSource lexerSource = LexerSource.getSource("", new StringReader(source), null, parserConfig); //$NON-NLS-1$
+		ReWriteVisitor visitor = factory.createReWriteVisitor();		
 //		parserConfig.addPostProcessor(new DefaultCommentPlacer());
 		parser.parse(parserConfig, lexerSource).getAST().accept(visitor);
 		visitor.flushStream();
