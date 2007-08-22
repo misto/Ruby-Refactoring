@@ -1,6 +1,7 @@
 package org.rubypeople.rdt.internal.formatter;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Hashtable;
 
@@ -11,6 +12,11 @@ import javax.xml.parsers.ParserConfigurationException;
 import junit.framework.Assert;
 import junit.framework.TestCase;
 
+import org.eclipse.jface.text.BadLocationException;
+import org.eclipse.jface.text.IDocument;
+import org.eclipse.text.edits.MalformedTreeException;
+import org.eclipse.text.edits.TextEdit;
+import org.rubypeople.rdt.core.formatter.CodeFormatter;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -44,7 +50,7 @@ public class TC_CodeFormatter extends TestCase {
 	}
 
 	public void parseXmlConfiguration() throws SAXException, IOException, ParserConfigurationException, FactoryConfigurationError {
-		Document document = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(this.getClass().getResourceAsStream("FormatTestData.xml"));
+		Document document = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(getInputDataStream());
 		NodeList tests = document.getElementsByTagName("test");
 		for (int i = 0; i < tests.getLength(); i++) {
 			Node test = tests.item(i);
@@ -60,6 +66,10 @@ public class TC_CodeFormatter extends TestCase {
 			}
 			testMap.put(name, partList);
 		}
+	}
+
+	protected InputStream getInputDataStream() {
+		return this.getClass().getResourceAsStream("FormatTestData.xml");
 	}
 
 	private void createTestData(ArrayList partList, NodeList partNodes) {
@@ -84,14 +94,27 @@ public class TC_CodeFormatter extends TestCase {
 	public void doTest(String name) {
 		ArrayList partList = (ArrayList) testMap.get(name);
 		for (int i = 0; i < partList.size(); i++) {
-			TestData data = (TestData) partList.get(i);             
-			String formatted = new OldCodeFormatter().formatString(data.unformattedText);
+			TestData data = (TestData) partList.get(i);
+			TextEdit edit = getCodeFormatter().format(-1, data.unformattedText, 0, data.unformattedText.length(), 0, "\n");
+			IDocument doc = new org.eclipse.jface.text.Document(data.unformattedText);
+			try {
+				edit.apply(doc);
+			} catch (MalformedTreeException e) {
+				fail(e.getMessage());
+			} catch (BadLocationException e) {
+				fail(e.getMessage());
+			}
+			String formatted = doc.get();
 			log("---------- " + data.assertionMessage + " --------") ;
 			log(data.unformattedText) ;
 			log("------------") ;
 			log(formatted) ;
 			Assert.assertEquals(data.assertionMessage, data.formattedText, formatted);
 		}
+	}
+
+	protected CodeFormatter getCodeFormatter() {
+		return new OldCodeFormatter();
 	}
 
 	private void log(String formatted) {

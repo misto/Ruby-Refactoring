@@ -5,7 +5,7 @@
 <part>
 <assertionMessage>Keywords</assertionMessage>  
 <unformatted>
-class xx
+class Xx
  def xx()
      if bla() then
 bla
@@ -16,7 +16,7 @@ end
 end
 </unformatted>
 <formatted>
-class xx
+class Xx
   def xx()
     if bla() then
       bla
