@@ -106,7 +106,7 @@ public class TraditionalHierarchyViewer extends TypeHierarchyViewer {
 					for (int i= 0; i < classes.length; i++) {
 						res.add(classes[i]);
 					}
-					IType[] interfaces= hierarchy.getRootInterfaces();
+					IType[] interfaces= hierarchy.getRootModules();
 					for (int i= 0; i < interfaces.length; i++) {
 						res.add(interfaces[i]);
 					}
@@ -114,7 +114,7 @@ public class TraditionalHierarchyViewer extends TypeHierarchyViewer {
 					if (Flags.isModule(hierarchy.getCachedFlags(input))) {
 						res.add(input);
 					} else if (isAnonymousFromInterface(input)) {
-						res.add(hierarchy.getSuperInterfaces(input)[0]);
+						res.add(hierarchy.getSuperModules(input)[0]);
 					} else {
 						IType[] roots= hierarchy.getRootClasses();
 						for (int i= 0; i < roots.length; i++) {

@@ -14,8 +14,8 @@ import org.jruby.lexer.yacc.LexState;
 import org.jruby.lexer.yacc.LexerSource;
 import org.jruby.lexer.yacc.RubyYaccLexer;
 import org.jruby.lexer.yacc.SyntaxException;
+import org.jruby.parser.ParserConfiguration;
 import org.jruby.parser.ParserSupport;
-import org.jruby.parser.RubyParserConfiguration;
 import org.jruby.parser.RubyParserResult;
 import org.jruby.parser.Tokens;
 import org.rubypeople.rdt.internal.ui.RubyPlugin;
@@ -61,7 +61,7 @@ public class RubyTokenScanner extends AbstractRubyTokenScanner {
 		super(manager, store);
 		lexer = new RubyYaccLexer();
 		parserSupport = new ParserSupport();
-		parserSupport.setConfiguration(new RubyParserConfiguration(false));
+		parserSupport.setConfiguration(new ParserConfiguration(0, true, false));
 		result = new RubyParserResult();
 		parserSupport.setResult(result);
 		lexer.setParserSupport(parserSupport);
@@ -252,12 +252,13 @@ public class RubyTokenScanner extends AbstractRubyTokenScanner {
 		lexer.setState(LexState.EXPR_BEG);
 		parserSupport.initTopLocalVariables();
 		isInSymbol = false;
+		ParserConfiguration config = new ParserConfiguration(0, true, false);
 		try {
-			fContents = document.get(offset, length);
-			lexerSource = new LexerSource("filename", new StringReader(fContents), 0, true);
+			fContents = document.get(offset, length);			
+			lexerSource = LexerSource.getSource("filename", new StringReader(fContents), null, config);
 			lexer.setSource(lexerSource);
 		} catch (BadLocationException e) {
-			lexerSource = new LexerSource("filename", new StringReader(""), 0, true);
+			lexerSource = LexerSource.getSource("filename", new StringReader(""), null, config);
 			lexer.setSource(lexerSource);
 		}
 		origOffset = offset;

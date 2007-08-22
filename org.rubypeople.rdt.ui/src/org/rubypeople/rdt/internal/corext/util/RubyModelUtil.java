@@ -188,7 +188,7 @@ public final class RubyModelUtil {
 			return true;
 		}
 		if (Flags.isModule(hierarchy.getCachedFlags(possibleSuperType))) {
-			IType[] superInterfaces= hierarchy.getSuperInterfaces(type);
+			IType[] superInterfaces= hierarchy.getSuperModules(type);
 			for (int i= 0; i < superInterfaces.length; i++) {
 				IType curr= superInterfaces[i];
 				if (possibleSuperType.equals(curr) || isSuperType(hierarchy, possibleSuperType, curr)) {
@@ -250,7 +250,7 @@ public final class RubyModelUtil {
 			}
 		}
 		if (!isConstructor) {
-			IType[] superInterfaces= hierarchy.getSuperInterfaces(type);
+			IType[] superInterfaces= hierarchy.getSuperModules(type);
 			for (int i= 0; i < superInterfaces.length; i++) {
 				IMethod res= findMethodInHierarchy(hierarchy, superInterfaces[i], name, paramTypes, false);
 				if (res != null) {

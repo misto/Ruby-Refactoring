@@ -20,8 +20,8 @@ import org.jruby.lexer.yacc.LexState;
 import org.jruby.lexer.yacc.LexerSource;
 import org.jruby.lexer.yacc.RubyYaccLexer;
 import org.jruby.lexer.yacc.SyntaxException;
+import org.jruby.parser.ParserConfiguration;
 import org.jruby.parser.ParserSupport;
-import org.jruby.parser.RubyParserConfiguration;
 import org.jruby.parser.RubyParserResult;
 import org.jruby.parser.Tokens;
 import org.rubypeople.rdt.internal.core.util.ASTUtil;
@@ -90,7 +90,7 @@ public class RubyPartitionScanner implements IPartitionTokenScanner {
 	public RubyPartitionScanner() {
 		lexer = new RubyYaccLexer();
 		parserSupport = new ParserSupport();
-		parserSupport.setConfiguration(new RubyParserConfiguration(false));
+		parserSupport.setConfiguration(new ParserConfiguration(0, false));
 		result = new RubyParserResult();
 		parserSupport.setResult(result);
 		lexer.setParserSupport(parserSupport);
@@ -107,12 +107,13 @@ public class RubyPartitionScanner implements IPartitionTokenScanner {
 			length += diff;
 		}
 		if (myOffset == -1) myOffset = 0;
+		ParserConfiguration config = new ParserConfiguration(0, true, false);
 		try {			
-			fContents = document.get(myOffset, length);
-			lexerSource = new LexerSource("filename", new StringReader(fContents), 0, true);
+			fContents = document.get(myOffset, length);			
+			lexerSource = LexerSource.getSource("filename", new StringReader(fContents), null, config);
 			lexer.setSource(lexerSource);
 		} catch (BadLocationException e) {
-			lexerSource = new LexerSource("filename", new StringReader(""), 0, true);
+			lexerSource = LexerSource.getSource("filename", new StringReader(""), null, config);
 			lexer.setSource(lexerSource);
 		}
 		origOffset = myOffset;

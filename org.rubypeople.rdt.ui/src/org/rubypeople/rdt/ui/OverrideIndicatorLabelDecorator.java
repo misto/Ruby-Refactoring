@@ -189,7 +189,7 @@ public class OverrideIndicatorLabelDecorator implements ILabelDecorator, ILightw
 				return RubyElementImageDescriptor.OVERRIDES;
 			}
 		}
-		IType[] interfaces= hierarchy.getSuperInterfaces(type);
+		IType[] interfaces= hierarchy.getSuperModules(type);
 		for (int i= 0; i < interfaces.length; i++) {
 			IMethod res= RubyModelUtil.findMethodInHierarchy(hierarchy, interfaces[i], name, paramTypes, false);
 			if (res != null) {

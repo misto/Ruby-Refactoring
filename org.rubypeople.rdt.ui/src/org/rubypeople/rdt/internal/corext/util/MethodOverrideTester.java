@@ -122,7 +122,7 @@ public class MethodOverrideTester {
 			}
 		}
 		if (!overriding.isConstructor()) {
-			IType[] interfaces= fHierarchy.getSuperInterfaces(type);
+			IType[] interfaces= fHierarchy.getSuperModules(type);
 			for (int i= 0; i < interfaces.length; i++) {
 				IMethod res= findOverriddenMethodInHierarchy(interfaces[i], overriding);
 				if (res != null) {
@@ -154,7 +154,7 @@ public class MethodOverrideTester {
 			}
 		}
 		if (!overriding.isConstructor()) {
-			IType[] superInterfaces= fHierarchy.getSuperInterfaces(type);
+			IType[] superInterfaces= fHierarchy.getSuperModules(type);
 			for (int i= 0; i < superInterfaces.length; i++) {
 				IMethod res= findOverriddenMethodInHierarchy(superInterfaces[i], overriding);
 				if (res != null) {
