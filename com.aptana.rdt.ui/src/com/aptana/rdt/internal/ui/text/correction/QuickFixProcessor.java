@@ -10,11 +10,11 @@ import org.jruby.ast.ClassNode;
 import org.jruby.ast.DefnNode;
 import org.jruby.ast.ModuleNode;
 import org.jruby.ast.Node;
-import org.jruby.ast.visitor.rewriter.DefaultFormatHelper;
 import org.jruby.ast.visitor.rewriter.FormatHelper;
 import org.jruby.ast.visitor.rewriter.ReWriteVisitor;
 import org.rubypeople.rdt.core.IRubyScript;
 import org.rubypeople.rdt.core.RubyModelException;
+import org.rubypeople.rdt.core.formatter.EditableFormatHelper;
 import org.rubypeople.rdt.core.formatter.Indents;
 import org.rubypeople.rdt.core.util.Util;
 import org.rubypeople.rdt.internal.ti.util.ClosestSpanningNodeLocator;
@@ -176,6 +176,9 @@ public class QuickFixProcessor implements IQuickFixProcessor {
 	}
 	
 	protected FormatHelper getFormatHelper() {
-		return new DefaultFormatHelper();
+		EditableFormatHelper helper = new EditableFormatHelper();
+		helper.setAlwaysParanthesizeMethodCalls(true);
+		helper.setAlwaysParanthesizeMethodDefs(true);
+		return helper;
 	}
 }
