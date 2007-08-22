@@ -1,10 +1,8 @@
 package org.rubypeople.rdt.internal.ui.text.hyperlinks;
 
-import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.IExtension;
 import org.eclipse.core.runtime.IExtensionPoint;
@@ -15,13 +13,7 @@ import org.eclipse.jface.text.ITextViewer;
 import org.eclipse.jface.text.hyperlink.IHyperlink;
 import org.eclipse.jface.text.hyperlink.IHyperlinkDetector;
 import org.eclipse.ui.IEditorInput;
-import org.jruby.ast.Node;
-import org.jruby.lexer.yacc.SyntaxException;
-import org.rubypeople.rdt.core.IRubyScript;
-import org.rubypeople.rdt.core.RubyModelException;
-import org.rubypeople.rdt.internal.core.parser.RubyParser;
 import org.rubypeople.rdt.internal.ui.RubyPlugin;
-import org.rubypeople.rdt.ui.IWorkingCopyManager;
 import org.rubypeople.rdt.ui.text.hyperlinks.IHyperlinkProvider;
 
 public class RubyHyperLinkDetector implements IHyperlinkDetector {
@@ -79,29 +71,16 @@ public class RubyHyperLinkDetector implements IHyperlinkDetector {
 	}
 
 	public IHyperlink[] detectHyperlinks(ITextViewer textViewer, IRegion region, boolean canShowMultipleHyperlinks) {
-		IRegion newRegion = region;
 		List extensions = initExtensions();
-		// first ask the extensions
-		if (extensions.size() > 0) {
-			IWorkingCopyManager manager = RubyPlugin.getDefault().getWorkingCopyManager();
-			IRubyScript script = manager.getWorkingCopy(fEditorInput);
-			if (script == null) return null;
-			RubyParser parser = new RubyParser();
-			try {
-				Node root = parser.parse((IFile) script.getResource(), new StringReader(script.getSource()));
-				for (int i = 0; i < extensions.size(); i++) {
-					IHyperlinkProvider currentProvider = (IHyperlinkProvider) extensions.get(i);
-					IHyperlink link = currentProvider.getHyperlink(fEditorInput, textViewer, root, newRegion, true);
-					// TODO: either do that or query all HyperlinkProviders and
-					// return a list of hyperlinks?
-					if (link != null) {
-						return new IHyperlink[] { link };
-					}
-				}
-			} catch (SyntaxException se) {
-				// ignore
-			} catch (RubyModelException e) {
-				//ignore 
+		if (extensions.isEmpty()) return null;
+		// FIXME We cheat and pass a null Node down to providers, because so far we only have one, and it doesn't use it. So this allows us to speed things up by not parsing the file...
+		for (int i = 0; i < extensions.size(); i++) {
+			IHyperlinkProvider currentProvider = (IHyperlinkProvider) extensions.get(i);
+			IHyperlink link = currentProvider.getHyperlink(fEditorInput, textViewer, null, region, canShowMultipleHyperlinks);
+			// TODO: either do that or query all HyperlinkProviders and
+			// return a list of hyperlinks?
+			if (link != null) {
+				return new IHyperlink[] { link };
 			}
 		}
 		return null;

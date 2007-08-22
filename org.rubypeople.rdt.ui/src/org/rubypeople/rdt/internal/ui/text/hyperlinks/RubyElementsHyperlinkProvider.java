@@ -62,7 +62,7 @@ public class RubyElementsHyperlinkProvider implements IHyperlinkProvider {
 		IRegion newRegion = RubyWordFinder.findWord(textViewer.getDocument(), region.getOffset());
 		try {
 			IWorkingCopyManager manager = RubyPlugin.getDefault().getWorkingCopyManager();
-			IRubyScript script = manager.getWorkingCopy(input);			
+			IRubyScript script = manager.getWorkingCopy(input);
 			IRubyElement[] elements = SelectionConverter.codeResolve(script, newRegion.getOffset(), newRegion.getLength());
 			if (elements == null || elements.length == 0) {
 				return null;
