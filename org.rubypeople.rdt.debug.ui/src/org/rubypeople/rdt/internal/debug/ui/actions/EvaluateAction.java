@@ -225,9 +225,9 @@ public abstract class EvaluateAction implements IWorkbenchWindowActionDelegate, 
         IRunnableWithProgress runnable = new IRunnableWithProgress() {
             public void run(IProgressMonitor monitor) throws InvocationTargetException, InterruptedException {
                 if (stackFrame.isSuspended()) {
-                    IRubyElement javaElement= getRubyElement(stackFrame);
-                    if (javaElement != null) {
-                        IRubyProject project = javaElement.getRubyProject();
+                    IRubyElement rubyElement= getRubyElement(stackFrame);
+                    if (rubyElement != null) {
+                        IRubyProject project = rubyElement.getRubyProject();
                         try {
                             Object selection= getSelectedObject();
                             if (!(selection instanceof String)) {

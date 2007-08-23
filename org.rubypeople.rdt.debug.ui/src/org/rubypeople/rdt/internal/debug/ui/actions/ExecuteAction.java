@@ -11,12 +11,12 @@
 package org.rubypeople.rdt.internal.debug.ui.actions;
 
 
-import java.text.MessageFormat;
-
 import org.eclipse.debug.core.DebugException;
 import org.eclipse.debug.core.model.IValue;
+import org.eclipse.debug.core.model.IVariable;
 import org.eclipse.swt.widgets.Display;
 import org.rubypeople.rdt.internal.debug.core.model.IEvaluationResult;
+import org.rubypeople.rdt.internal.debug.core.model.RubyValue;
 import org.rubypeople.rdt.internal.debug.ui.RdtDebugUiPlugin;
 import org.rubypeople.rdt.internal.debug.ui.display.IDataDisplay;
 
@@ -38,19 +38,56 @@ public class ExecuteAction extends EvaluateAction {
 				}
 			});
 		} else {		
-			IValue value = result.getValue();
-			IDataDisplay dataDisplay= getDirectDataDisplay();
-			if (dataDisplay != null) {
-				try {
-					dataDisplay.displayExpressionValue(value.getValueString());
-				} catch (DebugException e) {
-					RdtDebugUiPlugin.log(e);
-				} 
-			}
-			evaluationCleanup();
+			final Display display = RdtDebugUiPlugin.getStandardDisplay();
+			display.asyncExec(new Runnable() {
+				public void run() {
+					if (display.isDisposed()) {
+						return;
+					}
+					IValue value = result.getValue();
+					IDataDisplay dataDisplay= getDirectDataDisplay();
+					if (dataDisplay != null) {
+						try {
+							dataDisplay.displayExpressionValue(valueToCode(value));
+						} catch (DebugException e) {
+							RdtDebugUiPlugin.log(e);
+						} 
+					}
+					evaluationCleanup();
+				}				
+			});			
 		}
 	}
 
+	protected String valueToCode(IValue value) throws DebugException {
+		String string = value.getValueString();
+		if (value instanceof RubyValue) {
+			RubyValue rubyValue = (RubyValue) value;
+			if (value.getReferenceTypeName().equals("Array")) {
+				StringBuffer buffer = new StringBuffer("[");
+				IVariable[] vars = rubyValue.getVariables();
+				for (int i = 0; i < vars.length; i++) {
+					buffer.append(vars[i].getValue().getValueString());
+					if (i < vars.length - 1)
+						buffer.append(", ");
+				}
+				buffer.append("]");
+				string = buffer.toString();
+			} else if (value.getReferenceTypeName().equals("Hash")) {
+				StringBuffer buffer = new StringBuffer("{");
+				IVariable[] vars = rubyValue.getVariables();
+				for (int i = 0; i < vars.length; i++) {
+					buffer.append(vars[i]);
+					if (i < vars.length - 1)
+						buffer.append(", ");
+				}
+				buffer.append("}");
+				string = buffer.toString();
+			}
+		}
+		return "=> " + string;
+	}
+	
 	/**
 	 * @see org.eclipse.jdt.internal.debug.ui.actions.EvaluateAction#getDataDisplay()
 	 */
