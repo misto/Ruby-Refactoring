@@ -45,7 +45,7 @@ else {
      <div id="banner">
 		 <table border="0" cellspacing="0" cellpadding="0" width="100%" bgcolor="#CC0000">
 		    <tr>
-		      <td width="126"><a href="index.html" target="_top"><img alt="RDT" border="0" src="images/menu_rdt.png"></a></td>
+		      <td width="126"><a href="http://rubyeclipse.sourceforge.net" target="_top"><img alt="RDT" border="0" src="images/menu_rdt.png"></a></td>
 		      <td width="50"><img width="282" border="0" src="images/gradient.png" alt=""></td>
 		      <td align="right" style="padding-right: 5px;">
 		        <big><b><font face="Helvetica, Arial, sans-serif" color="#ffffff">

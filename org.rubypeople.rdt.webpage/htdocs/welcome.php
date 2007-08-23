@@ -9,12 +9,13 @@
   <table bgcolor="#ffffff" border="0" cellpadding="2" cellspacing="5" width="100%">
     <tr>
       <td align="right" valign="top" width="20"><img src="images/arrow.gif" alt="" border="0" height="16" width="16"></td>
-      <td valign="top"><font face="arial,helvetica,geneva" size="-1"><b> Welcome to RDT</b>
+      <td valign="top"><font face="arial,helvetica,geneva" size="-1">
+      	<b> Welcome to RDT</b>
         <br/>
         <p>RDT is an open source Ruby IDE for the Eclipse platform.<br>
 Features supported are syntax highlighting, on the fly syntax check,
 graphical outline, Test::Unit view/runner, Ruby application launching, 
-content assist, source formatter, and a Ruby debugger.<br/>
+content assist, source formatter, Ruby debugging, Type Hierarchy view, Ruby specific Search, Refactoring, and much, much more.<br/>
 A regular expression plugin is also available (Thanks to the <a href="http://e-p-i-c.sourceforge.net/" target="_top">EPIC</a> project).<br/>
         </p>
         <br/>
@@ -31,7 +32,20 @@ A regular expression plugin is also available (Thanks to the <a href="http://e-p
     <!-- INSERT NEW NEWS HERE!!! -->
 			
 	<table>
-	<tr>
+	  <tr>
+        <td align="right" valign="top" width="20"><img src="images/arrow.gif" alt="->" border="0" height="16" width="16"></td>
+        <td valign="top"><font face="arial,helvetica,geneva" size="-1">
+          <b>Aptana News</b>
+          <br/>
+          <p>Once again, I've been a bit lax about updating this site. For those who haven't heard, Aptana has <a href="http://www.aptana.com/blog/?p=108">hired me full-time to work on RDT and RadRails</a>.</p>
+		  <p>As a result, much of the project will be migrating over to Aptana's site and infrastructure. One of those is our Trac site. We've already moved over to using 
+		  <a href="http://www.aptana.com/trac">http://www.aptana.com/trac</a> as the new Trac site for RDT and RadRails combined. This should hopefully be our last move of Trac.</p>
+		  
+		  <p>You can also keep up with general Aptana updates as well as <a href="http://www.aptana.com/blog/?cat=5">RDT and RadRails specific news</a> on the <a href="http://www.aptana.com/blog/">Aptana blog</a>.</p>
+		  		  
+        </font></td>
+      </tr>
+	  <tr>
       <td align="right" valign="top" width="20"><img src="images/arrow.gif" alt="->" border="0" height="16" width="16"></td>
       <td valign="top"><font face="arial,helvetica,geneva" size="-1"><b>Trac site, developer blog, and Google Summer of Code (2006-07-26)</b>
         <br/>
@@ -49,45 +63,6 @@ They've already finished phase one and have a modified version of RDT available 
 
 <p>Also we have a project accepted for Google's Summer of Code. <a href="http://soc.jayunit.net/">Jason Morrison</a> is doing work on type inferrence for Ruby and we're integrating that with RDT. 
 We've already had some success in doing some initial groundwork such as <a href="http://soc.jayunit.net/articles/2006/07/21/the-one-where-more-occurrences-get-marked-and-subsequently-hit-the-big-screen">Marking occurrences of variables</a>.</p>
-        </font>
-      </td>
-    </tr>
-	 <tr>
-      <td align="right" valign="top" width="20"><img src="images/arrow.gif" alt="->" border="0" height="16" width="16"></td>
-      <td valign="top"><font face="arial,helvetica,geneva" size="-1"><b>0.8.0 Released (2005-12-29)</b>
-        <br/>
-The best news about this release is the Ruby Browsing perspective. Then there is the New Class wizard and
-improvements on template handling and syntax highlighting.
-The complete <a href="http://download.rubypeople.org/nightly/Changelog.txt">Changelog</a>. 
-
-RDT 0.8.0 runs with Eclipse 3.1 and 3.2 (tested with RC1a).
-
-You definitely should <a href="http://rubyeclipse.sourceforge.net/download.rdt.html">download and install</a>. This build is available in the integration and release stream. 
-        </font>
-      </td>
-    </tr>
-	
-	 <tr>
-      <td align="right" valign="top" width="20"><img src="images/arrow.gif" alt="->" border="0" height="16" width="16"></td>
-      <td valign="top"><font face="arial,helvetica,geneva" size="-1"><b>0.7.0 Release Candidate (2005-12-29)</b>
-        <br/>
-The development of 0.7.0 has reached a point where we can present a release candidate. New features include ruby specific searching and text hovers with ri information. Next to that there are a lot of improvements with code completion, in the editor, outline view and debugger, more details can be found in the 
-<a href="http://download.rubypeople.org/nightly/Changelog.txt">Changelog</a>. 
-Note that our update site URLs have changed. The old URLs have been redirected, but the udpate manager doesn't handle it correctly. Please read the 
-<a href="http://rubyeclipse.sourceforge.net/download.rdt.html">download information</a> if you want to use the udpate manager (this build is available in the integration stream). 
-  
-The final release of 0.7.0 is scheduled for next week but the exact date is up to the feedback we will receive.</p>
-        </font>
-      </td>
-    </tr>
-	
-				    <tr>
-      <td align="right" valign="top" width="20"><img src="images/arrow.gif" alt="->" border="0" height="16" width="16"></td>
-      <td valign="top"><font face="arial,helvetica,geneva" size="-1"><b>Article on developerWorks (2005-10-18)</b>
-        <br/>
-Recently Neal Ford has published an article on IBM's developerWorks site. It gives an excellent overview of RDT, particularly useful for newbies:<br/>
- <a href="http://www-128.ibm.com/developerworks/opensource/library/os-rubyeclipse/">Using the Ruby Development Tools plug-in for Eclipse</a>
-</p>
         </font>
       </td>
     </tr>
