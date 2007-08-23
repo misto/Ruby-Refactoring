@@ -61,7 +61,7 @@
 			<email 
 				mailhost="mail.sf.net" 
 				returnaddress="mbarchfe@users.sf.net" 
-				buildresultsurl="http://rdtcc.pluginbuilder.org/cruisecontrol/buildresults/RDT"
+				buildresultsurl="http://rdtcc.pluginbuilder.org:8080/cruisecontrol/buildresults/RDT"
 				skipusers="true"
 	   			spamwhilebroken="false">
 				<always address="rubyeclipse-build@lists.sourceforge.net"/>
