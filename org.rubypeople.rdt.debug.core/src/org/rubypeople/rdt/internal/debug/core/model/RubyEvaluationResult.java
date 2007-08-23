@@ -18,7 +18,7 @@ public class RubyEvaluationResult implements IEvaluationResult {
 
 	public String[] getErrorMessages() {
 		// TODO Auto-generated method stub
-		return null;
+		return new String[0];
 	}
 
 	public DebugException getException() {
@@ -46,7 +46,7 @@ public class RubyEvaluationResult implements IEvaluationResult {
 	}
 	
 	public boolean hasErrors() {
-		return false;
+		return getErrorMessages().length > 0 || getException() != null;
 	}
 
 }

@@ -5,6 +5,9 @@ import java.io.IOException;
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IMarkerDelta;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
+import org.eclipse.debug.core.DebugException;
 import org.eclipse.debug.core.DebugPlugin;
 import org.eclipse.debug.core.model.IBreakpoint;
 import org.rubypeople.rdt.debug.core.RubyLineBreakpoint;
@@ -243,7 +246,7 @@ public class RubyDebuggerProxy {
 		}
 	}
 	
-	public IEvaluationResult evaluate(RubyStackFrame frame, String expression) throws RubyProcessingException {
+	public IEvaluationResult evaluate(RubyStackFrame frame, String expression) {
 		expression = expression.replaceAll("\\r\\n", "\n");
 		expression = expression.replaceAll("\\n", "; ");
 		expression = expression.trim();
@@ -255,9 +258,11 @@ public class RubyDebuggerProxy {
 				result.setValue(variables[0].getValue());
 			}
 		} catch (IOException ioex) {
-			// TODO Set DebugException
-			ioex.printStackTrace();
-			throw new RuntimeException(ioex.getMessage());
+			DebugException ex = new DebugException(new Status(IStatus.ERROR, RdtDebugCorePlugin.PLUGIN_ID, DebugException.INTERNAL_ERROR, ioex.getMessage(), ioex));
+			result.setException(ex);
+		} catch (RubyProcessingException e) {
+			DebugException ex = new DebugException(new Status(IStatus.ERROR, RdtDebugCorePlugin.PLUGIN_ID, DebugException.TARGET_REQUEST_FAILED, e.getMessage(), e));
+			result.setException(ex);
 		}
 		return result;
 	}
