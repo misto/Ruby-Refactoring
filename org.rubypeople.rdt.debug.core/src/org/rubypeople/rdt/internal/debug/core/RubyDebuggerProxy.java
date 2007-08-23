@@ -13,8 +13,10 @@ import org.rubypeople.rdt.internal.debug.core.commands.BreakpointCommand;
 import org.rubypeople.rdt.internal.debug.core.commands.ClassicDebuggerConnection;
 import org.rubypeople.rdt.internal.debug.core.commands.GenericCommand;
 import org.rubypeople.rdt.internal.debug.core.commands.RubyDebugConnection;
+import org.rubypeople.rdt.internal.debug.core.model.IEvaluationResult;
 import org.rubypeople.rdt.internal.debug.core.model.IRubyDebugTarget;
 import org.rubypeople.rdt.internal.debug.core.model.RubyDebugTarget;
+import org.rubypeople.rdt.internal.debug.core.model.RubyEvaluationResult;
 import org.rubypeople.rdt.internal.debug.core.model.RubyProcessingException;
 import org.rubypeople.rdt.internal.debug.core.model.RubyStackFrame;
 import org.rubypeople.rdt.internal.debug.core.model.RubyThread;
@@ -224,19 +226,38 @@ public class RubyDebuggerProxy {
 	}
 
 	public RubyVariable readInspectExpression(RubyStackFrame frame, String expression) throws RubyProcessingException {
-		try {
-			expression = expression.replaceAll("\n", "\\\\n");
+		try {			
+			expression = expression.replaceAll("\\n", "\\\\n");
+			RubyEvaluationResult result = new RubyEvaluationResult(expression, frame.getThread());
 			this.println(commandFactory.createInspect(frame, expression));
 			RubyVariable[] variables = new VariableReader(getMultiReaderStrategy()).readVariables(frame);
 			if (variables.length == 0) {
 				return null;
 			} else {
+				result.setValue(variables[0].getValue());
 				return variables[0];
 			}
 		} catch (IOException ioex) {
 			ioex.printStackTrace();
 			throw new RuntimeException(ioex.getMessage());
 		}
+	}
+	
+	public IEvaluationResult evaluate(RubyStackFrame frame, String expression) throws RubyProcessingException {
+		expression = expression.replaceAll("\\n", "\\\\n");
+		RubyEvaluationResult result = new RubyEvaluationResult(expression, frame.getThread());
+		try {						
+			this.println(commandFactory.createInspect(frame, expression));
+			RubyVariable[] variables = new VariableReader(getMultiReaderStrategy()).readVariables(frame);
+			if (variables.length > 0) {
+				result.setValue(variables[0].getValue());
+			}
+		} catch (IOException ioex) {
+			// TODO Set DebugException
+			ioex.printStackTrace();
+			throw new RuntimeException(ioex.getMessage());
+		}
+		return result;
 	}
 
 	public void sendStepOverEnd(RubyStackFrame stackFrame) {

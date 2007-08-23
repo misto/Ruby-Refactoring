@@ -97,4 +97,8 @@ public class RdtDebugCorePlugin extends Plugin {
 	public static boolean isRubyDebuggerVerbose() {
 		return isRubyDebuggerVerbose;
 	}
+
+	public static String getPluginIdentifier() {
+		return PLUGIN_ID;
+	}
 }
