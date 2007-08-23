@@ -67,7 +67,6 @@ import org.rubypeople.rdt.debug.ui.RdtDebugUiConstants;
 import org.rubypeople.rdt.internal.debug.core.RdtDebugCorePlugin;
 import org.rubypeople.rdt.internal.debug.core.RubyDebuggerProxy;
 import org.rubypeople.rdt.internal.debug.core.model.IEvaluationResult;
-import org.rubypeople.rdt.internal.debug.core.model.RubyProcessingException;
 import org.rubypeople.rdt.internal.debug.core.model.RubyStackFrame;
 import org.rubypeople.rdt.internal.debug.core.model.RubyValue;
 import org.rubypeople.rdt.internal.debug.core.model.RubyVariable;
@@ -228,20 +227,16 @@ public abstract class EvaluateAction implements IWorkbenchWindowActionDelegate, 
                     IRubyElement rubyElement= getRubyElement(stackFrame);
                     if (rubyElement != null) {
                         IRubyProject project = rubyElement.getRubyProject();
-                        try {
-                            Object selection= getSelectedObject();
-                            if (!(selection instanceof String)) {
-                                return;
-                            }
-                            String expression= (String)selection;                            
-                            setEvaluating(true);
-                            RubyDebuggerProxy proxy = stackFrame.getRubyDebuggerProxy();
-                            IEvaluationResult result = proxy.evaluate(stackFrame, expression);
-                            evaluationComplete(result);
+                        Object selection= getSelectedObject();
+                        if (!(selection instanceof String)) {
                             return;
-                        } catch (RubyProcessingException e) {
-                            throw new InvocationTargetException(e, getExceptionMessage(e));
                         }
+                        String expression= (String)selection;                            
+                        setEvaluating(true);
+                        RubyDebuggerProxy proxy = stackFrame.getRubyDebuggerProxy();
+                        IEvaluationResult result = proxy.evaluate(stackFrame, expression);
+                        evaluationComplete(result);
+                        return;
                     }
                     throw new InvocationTargetException(null, ActionMessages.Evaluate_error_message_src_context); 
                 }
