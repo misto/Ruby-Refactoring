@@ -1,8 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?eclipse version="3.0"?>
 <plugin>
-	
-			<extension point="org.eclipse.ui.preferencePages">
+    <extension point="org.eclipse.ui.views">
+      <view
+            name="%displayViewName"
+            icon="$nl$/icons/full/etool16/disp_sbook.gif"
+            category="org.eclipse.debug.ui"
+            class="org.rubypeople.rdt.internal.debug.ui.display.DisplayView"
+            id="org.rubypeople.rdt.debug.ui.DisplayView">
+      </view>
+    </extension>
+	<extension point="org.eclipse.ui.preferencePages">
 		<page name="%PreferencePage.RubyInterpreter.name"
 			category="org.rubypeople.rdt.ui.preferences.PreferencePageRubyBase"
 			class="org.rubypeople.rdt.internal.debug.ui.preferences.RubyInterpreterPreferencePage"
@@ -90,6 +98,33 @@
            style="push"
            toolbarPath="rdtExceptions"
            tooltip="%modifyCatchpoint.tooltip"/>
+  </viewContribution>
+  <viewContribution
+        id="org.rubypeople.rdt.debug.ui.DisplayViewActions"
+        targetID="org.rubypeople.rdt.debug.ui.DisplayView">
+      <action
+               toolbarPath="evaluationGroup"
+               id="org.rubypeople.rdt.debug.ui.displayViewToolbar.Execute"
+               hoverIcon="$nl$/icons/full/etool16/run_sbook.gif"
+               class="org.rubypeople.rdt.internal.debug.ui.actions.ExecuteAction"
+               disabledIcon="$nl$/icons/full/dtool16/run_sbook.gif"
+               enablesFor="+"
+               icon="$nl$/icons/full/etool16/run_sbook.gif"
+               helpContextId="execute_action_context"
+               label="%Execute.label"
+               tooltip="%Execute.tooltip">
+            <enablement>
+               <and>
+                  <systemProperty
+                           name="org.rubypeople.rdt.debug.ui.debuggerActive"
+                           value="true">
+                  </systemProperty>
+                  <objectClass
+                        name="org.eclipse.jface.text.ITextSelection">
+                  </objectClass>
+               </and>
+            </enablement>
+         </action>
   </viewContribution>
 	</extension>
 	<extension point="org.eclipse.ui.contexts">
@@ -283,4 +318,30 @@
 			</action>
 		</actionSet>
 	</extension>
+ <extension
+       point="org.eclipse.ui.perspectiveExtensions">
+    <perspectiveExtension targetID="org.eclipse.debug.ui.DebugPerspective">
+       <view
+             id="org.rubypeople.rdt.debug.ui.DisplayView"
+             relationship="stack"
+             relative="org.eclipse.ui.console.ConsoleView"
+             visible="false"/>
+       <viewShortcut id="org.rubypeople.rdt.debug.ui.DisplayView"/>
+       <view
+             id="org.rubypeople.rdt.ui.TypeHierarchy"
+             relationship="stack"
+             relative="org.eclipse.debug.ui.DebugView"
+             visible="false"/>
+       <view
+             id="org.eclipse.search.SearchResultView"
+             relationship="stack"
+             relative="org.eclipse.ui.console.ConsoleView"
+             visible="false"/>
+       <view
+             id="org.rubypeople.rdt.ui.ViewRubyResources"
+             relationship="stack"
+             relative="org.eclipse.debug.ui.DebugView"
+             visible="false"/>
+    </perspectiveExtension>
+ </extension>
 </plugin>

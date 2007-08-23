@@ -6,7 +6,9 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.debug.internal.ui.ImageDescriptorRegistry;
+import org.eclipse.jface.dialogs.ErrorDialog;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
@@ -15,6 +17,8 @@ import org.rubypeople.rdt.core.RubyCore;
 import org.rubypeople.rdt.debug.ui.RdtDebugUiConstants;
 import org.rubypeople.rdt.internal.debug.core.model.RubyVariable;
 import org.rubypeople.rdt.internal.debug.ui.evaluation.EvaluationExpressionModel;
+import org.rubypeople.rdt.ui.PreferenceConstants;
+import org.rubypeople.rdt.ui.text.RubyTextTools;
 
 public class RdtDebugUiPlugin extends AbstractUIPlugin implements RdtDebugUiConstants {
 
@@ -24,6 +28,7 @@ public class RdtDebugUiPlugin extends AbstractUIPlugin implements RdtDebugUiCons
     private EvaluationExpressionModel evaluationExpressionModel;
     
     private ImageDescriptorRegistry fImageDescriptorRegistry;
+	private RubyTextTools fTextTools;
 
 	public RdtDebugUiPlugin() {
 		super();
@@ -35,7 +40,11 @@ public class RdtDebugUiPlugin extends AbstractUIPlugin implements RdtDebugUiCons
 	}
 
 	public static IWorkbenchPage getActivePage() {
-		return RdtDebugUiPlugin.getActiveWorkbenchWindow().getActivePage();
+		IWorkbenchWindow w = getActiveWorkbenchWindow();
+		if (w != null) {
+			return w.getActivePage();
+		}
+		return null;
 	}
 
 	public static RdtDebugUiPlugin getDefault() {
@@ -60,6 +69,7 @@ public class RdtDebugUiPlugin extends AbstractUIPlugin implements RdtDebugUiCons
 		ActionFilterAdapterFactory actionFilterAdapterFactory= new ActionFilterAdapterFactory();
 		manager.registerAdapters(actionFilterAdapterFactory, RubyVariable.class);
 		new CodeReloader();
+		EvaluationContextManager.startup();
     }
 
 	@Override
@@ -107,4 +117,35 @@ public class RdtDebugUiPlugin extends AbstractUIPlugin implements RdtDebugUiCons
 		return getDefault().fImageDescriptorRegistry;
 	}
 
+	public RubyTextTools getRubyTextTools() {
+		if (fTextTools == null) {
+			fTextTools = new RubyTextTools(PreferenceConstants.getPreferenceStore());
+		}
+		return fTextTools;
+	}
+
+	/**
+	 * Returns the active workbench shell or <code>null</code> if none
+	 * 
+	 * @return the active workbench shell or <code>null</code> if none
+	 */
+	public static Shell getActiveWorkbenchShell() {
+		IWorkbenchWindow window = getActiveWorkbenchWindow();
+		if (window != null) {
+			return window.getShell();
+		}
+		return null;
+	}
+
+		/**
+	 * Utility method with conventions
+	 */
+	public static void errorDialog(String message, Throwable t) {
+		log(t);
+		Shell shell = getActiveWorkbenchShell();
+		if (shell != null) {
+			IStatus status= new Status(IStatus.ERROR, getUniqueIdentifier(), RdtDebugUiConstants.INTERNAL_ERROR, "Error logged from RDT Debug UI: ", t); //$NON-NLS-1$	
+			ErrorDialog.openError(shell, "Error", message, status); 
+		}	
+	}
 }
