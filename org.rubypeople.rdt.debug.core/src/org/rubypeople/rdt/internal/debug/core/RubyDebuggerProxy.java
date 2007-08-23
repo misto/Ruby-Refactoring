@@ -244,7 +244,9 @@ public class RubyDebuggerProxy {
 	}
 	
 	public IEvaluationResult evaluate(RubyStackFrame frame, String expression) throws RubyProcessingException {
-		expression = expression.replaceAll("\\n", "\\\\n");
+		expression = expression.replaceAll("\\r\\n", "\n");
+		expression = expression.replaceAll("\\n", "; ");
+		expression = expression.trim();
 		RubyEvaluationResult result = new RubyEvaluationResult(expression, frame.getThread());
 		try {						
 			this.println(commandFactory.createInspect(frame, expression));
