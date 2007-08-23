@@ -53,6 +53,20 @@ public class RubyTextTools {
     /** The preference change listener */
     private PreferenceListener fPreferenceListener = new PreferenceListener();
 
+	/**
+	 * Creates a new Ruby text tools collection.
+	 *
+	 * @param store the preference store to initialize the text tools. The text tool
+	 *			instance installs a listener on the passed preference store to adapt itself to
+	 *			changes in the preference store. In general <code>PreferenceConstants.
+	 *			getPreferenceStore()</code> should be used to initialize the text tools.
+	 * @see org.rubypeople.rdt.ui.PreferenceConstants#getPreferenceStore()
+	 * @since 2.0
+	 */
+	public RubyTextTools(IPreferenceStore store) {
+		this(store, null, true);
+	}
+    
     /**
      * Creates a new Ruby text tools collection.
      * 
