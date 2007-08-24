@@ -77,7 +77,7 @@ import org.eclipse.ui.texteditor.ITextEditorActionDefinitionIds;
 import org.eclipse.ui.texteditor.IUpdate;
 import org.eclipse.ui.texteditor.IWorkbenchActionDefinitionIds;
 import org.rubypeople.rdt.debug.ui.RdtDebugUiConstants;
-import org.rubypeople.rdt.internal.debug.ui.JDISourceViewer;
+import org.rubypeople.rdt.internal.debug.ui.RubyDebugSourceViewer;
 import org.rubypeople.rdt.internal.debug.ui.RdtDebugUiPlugin;
 import org.rubypeople.rdt.internal.ui.text.IRubyPartitions;
 import org.rubypeople.rdt.ui.text.RubyTextTools;
@@ -136,7 +136,7 @@ public class DisplayView extends ViewPart implements ITextInputListener, IPerspe
 	protected IDataDisplay fDataDisplay= new DataDisplay();
 	protected IDocumentListener fDocumentListener= null;
 	
-	protected JDISourceViewer fSourceViewer;
+	protected RubyDebugSourceViewer fSourceViewer;
 	protected IAction fClearDisplayAction;
 	protected DisplayViewAction fContentAssistAction;
 
@@ -159,7 +159,7 @@ public class DisplayView extends ViewPart implements ITextInputListener, IPerspe
 	public void createPartControl(Composite parent) {
 		
 		int styles= SWT.V_SCROLL | SWT.H_SCROLL | SWT.MULTI | SWT.FULL_SELECTION;
-		fSourceViewer= new JDISourceViewer(parent, null, styles);
+		fSourceViewer= new RubyDebugSourceViewer(parent, null, styles);
 		fSourceViewer.configure(new DisplayViewerConfiguration());
 		fSourceViewer.getSelectionProvider().addSelectionChangedListener(getSelectionChangedListener());
 		IDocument doc= getRestoredDocument();

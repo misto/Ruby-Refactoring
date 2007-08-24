@@ -42,11 +42,11 @@ import org.rubypeople.rdt.internal.debug.ui.display.DisplayViewerConfiguration;
 import org.rubypeople.rdt.internal.ui.text.IRubyPartitions;
 
 /**
- * A source viewer configured to display Java source. This
+ * A source viewer configured to display Ruby source. This
  * viewer obeys the font and color preferences specified in
- * the Java UI plugin.
+ * the Ruby UI plugin.
  */
-public class JDISourceViewer extends SourceViewer implements IPropertyChangeListener {
+public class RubyDebugSourceViewer extends SourceViewer implements IPropertyChangeListener {
 	
 	private Font fFont;
 	private Color fBackgroundColor;
@@ -54,7 +54,7 @@ public class JDISourceViewer extends SourceViewer implements IPropertyChangeList
 	private IPreferenceStore fStore;
 	private DisplayViewerConfiguration fConfiguration;
 
-	public JDISourceViewer(Composite parent, IVerticalRuler ruler, int styles) {
+	public RubyDebugSourceViewer(Composite parent, IVerticalRuler ruler, int styles) {
 		super(parent, ruler, styles);
 		StyledText text= this.getTextWidget();
 		text.addBidiSegmentListener(new  BidiSegmentListener() {
