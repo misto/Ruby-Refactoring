@@ -561,4 +561,18 @@ public class BasicSearchEngine {
 		}
 		return buffer.toString();
 	}
+
+	/**
+	 * @see SearchEngine#createHierarchyScope(IType) for detailed comment.
+	 */
+	public static IRubySearchScope createHierarchyScope(IType type) throws RubyModelException {
+		return createHierarchyScope(type, DefaultWorkingCopyOwner.PRIMARY);
+	}
+	
+	/**
+	 * @see SearchEngine#createHierarchyScope(IType,WorkingCopyOwner) for detailed comment.
+	 */
+	public static IRubySearchScope createHierarchyScope(IType type, WorkingCopyOwner owner) throws RubyModelException {
+		return new HierarchyScope(type, owner);
+	}
 }

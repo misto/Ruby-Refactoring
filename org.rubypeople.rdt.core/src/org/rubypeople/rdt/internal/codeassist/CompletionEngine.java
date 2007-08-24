@@ -926,5 +926,9 @@ public class CompletionEngine {
 			return null;
 		}
 
+		public boolean isPrivate() throws RubyModelException {
+			return false;
+		}
+
 	}
 }

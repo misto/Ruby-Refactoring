@@ -135,5 +135,9 @@ public class RubyMethod extends NamedMember implements IMethod {
 		}
 		return method;
 	}
+	
+	public boolean isPrivate() throws RubyModelException {
+		return getVisibility() == PRIVATE;
+	}
 
 }

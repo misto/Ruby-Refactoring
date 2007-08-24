@@ -328,6 +328,20 @@ public class RubyType extends NamedMember implements IType {
 	}
 	
 	/**
+	 * @see IType#newTypeHierarchy(WorkingCopyOwner, IProgressMonitor)
+	 */
+	public ITypeHierarchy newTypeHierarchy(
+		WorkingCopyOwner owner,
+		IProgressMonitor monitor)
+		throws RubyModelException {
+			
+		IRubyScript[] workingCopies = RubyModelManager.getRubyModelManager().getWorkingCopies(owner, true/*add primary working copies*/);
+		CreateTypeHierarchyOperation op= new CreateTypeHierarchyOperation(this, workingCopies, SearchEngine.createWorkspaceScope(), true);
+		op.runOperation(monitor);
+		return op.getResult();	
+	}
+	
+	/**
 	 * @see IType
 	 */
 	public ITypeHierarchy newSupertypeHierarchy(IProgressMonitor monitor) throws RubyModelException {

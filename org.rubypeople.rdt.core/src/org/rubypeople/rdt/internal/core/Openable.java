@@ -102,7 +102,7 @@ public abstract class Openable extends RubyElement implements IOpenable, IBuffer
 			IBuffer buffer = getBufferManager().getBuffer(this);
 			if (buffer == null) {
 				// try to (re)open a buffer
-				buffer = openBuffer(null);
+				buffer = openBuffer(null, info);
 			}
 			return buffer;
 		}
@@ -113,8 +113,9 @@ public abstract class Openable extends RubyElement implements IOpenable, IBuffer
 	 * Opens a buffer on the contents of this element, and returns the buffer,
 	 * or returns <code>null</code> if opening fails. By default, do nothing -
 	 * subclasses that have buffers must override as required.
+	 * @param info 
 	 */
-	protected IBuffer openBuffer(IProgressMonitor pm) {
+	protected IBuffer openBuffer(IProgressMonitor pm, Object info) throws RubyModelException {
 		return null;
 	}
 

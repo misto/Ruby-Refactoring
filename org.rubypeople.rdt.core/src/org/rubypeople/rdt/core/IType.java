@@ -210,4 +210,25 @@ public interface IType extends IRubyElement, IMember {
 	 */
 	ITypeHierarchy newTypeHierarchy(IProgressMonitor monitor) throws RubyModelException;
 
+	/**
+	 * Creates and returns a type hierarchy for this type containing
+	 * this type, all of its supertypes, and all its subtypes in the workspace, 
+	 * considering types in the working copies with the given owner. 
+	 * In other words, the owner's working copies will take 
+	 * precedence over their original compilation units in the workspace.
+	 * <p>
+	 * Note that if a working copy is empty, it will be as if the original compilation
+	 * unit had been deleted.
+	 * <p>
+	 *
+	 * @param owner the owner of working copies that take precedence over their original compilation units
+	 * @param monitor the given progress monitor
+	 * @return a type hierarchy for this type containing
+	 * this type, all of its supertypes, and all its subtypes in the workspace
+	 * @exception RubyModelException if this element does not exist or if an
+	 *		exception occurs while accessing its corresponding resource.
+	 * @since 3.0
+	 */
+	ITypeHierarchy newTypeHierarchy(WorkingCopyOwner owner, IProgressMonitor monitor) throws RubyModelException;
+
 }

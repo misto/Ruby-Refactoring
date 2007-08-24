@@ -3,6 +3,7 @@ package org.rubypeople.rdt.core.search;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.rubypeople.rdt.core.IRubyElement;
+import org.rubypeople.rdt.core.IType;
 import org.rubypeople.rdt.core.RubyModelException;
 import org.rubypeople.rdt.core.WorkingCopyOwner;
 import org.rubypeople.rdt.internal.core.search.BasicSearchEngine;
@@ -142,7 +143,7 @@ public class SearchEngine {
 
 	/**
 	 * Searches for matches of a given search pattern. Search patterns can be created using helper
-	 * methods (from a String pattern or a Java element) and encapsulate the description of what is
+	 * methods (from a String pattern or a Ruby element) and encapsulate the description of what is
 	 * being searched (for example, search method declarations in a case sensitive way).
 	 *
 	 * @param pattern the pattern to search
@@ -158,6 +159,19 @@ public class SearchEngine {
 	 */
 	public void search(SearchPattern pattern, SearchParticipant[] participants, IRubySearchScope scope, SearchRequestor requestor, IProgressMonitor monitor) throws CoreException {
 		this.basicEngine.search(pattern, participants, scope, requestor, monitor);
+	}
+
+	/**
+	 * Returns a Ruby search scope limited to the hierarchy of the given type.
+	 * The Ruby elements resulting from a search with this scope will
+	 * be types in this hierarchy, or members of the types in this hierarchy.
+	 *
+	 * @param type the focus of the hierarchy scope
+	 * @return a new hierarchy scope
+	 * @exception RubyModelException if the hierarchy could not be computed on the given type
+	 */
+	public static IRubySearchScope createHierarchyScope(IType type) throws RubyModelException {
+		return BasicSearchEngine.createHierarchyScope(type);
 	}
 
 }

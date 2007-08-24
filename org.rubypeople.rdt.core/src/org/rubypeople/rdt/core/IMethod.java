@@ -45,4 +45,6 @@ public interface IMethod extends IRubyElement, IMember {
 
 	public int getNumberOfParameters() throws RubyModelException;
 
+	public boolean isPrivate() throws RubyModelException;
+
 }
