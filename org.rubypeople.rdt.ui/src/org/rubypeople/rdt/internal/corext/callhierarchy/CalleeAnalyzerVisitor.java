@@ -3,8 +3,13 @@ package org.rubypeople.rdt.internal.corext.callhierarchy;
 import java.util.Map;
 
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.OperationCanceledException;
 import org.jruby.ast.CallNode;
+import org.jruby.ast.ClassNode;
+import org.jruby.ast.DefnNode;
+import org.jruby.ast.DefsNode;
 import org.jruby.ast.FCallNode;
+import org.jruby.ast.ModuleNode;
 import org.jruby.ast.Node;
 import org.jruby.ast.VCallNode;
 import org.jruby.evaluator.Instruction;
@@ -26,12 +31,10 @@ class CalleeAnalyzerVisitor extends InOrderVisitor {
 	private IProgressMonitor fProgressMonitor;
 	private int fMethodStartPosition;
 	private int fMethodEndPosition;
-	private Node fCompilationUnit;
 
-	public CalleeAnalyzerVisitor(IMethod method, Node cu, IProgressMonitor progressMonitor) {
+	public CalleeAnalyzerVisitor(IMethod method, IProgressMonitor progressMonitor) {
         fSearchResults = new CallSearchResultCollector();
         this.fMethod = method;
-        this.fCompilationUnit= cu;
         this.fProgressMonitor = progressMonitor;
 
         try {
@@ -114,6 +117,39 @@ class CalleeAnalyzerVisitor extends InOrderVisitor {
         }
 
         return true;
+    }
+    
+    @Override
+    public Instruction visitDefnNode(DefnNode iVisited) {
+    	 progressMonitorWorked(1);
+    	return super.visitDefnNode(iVisited);
+    }
+    
+    @Override
+    public Instruction visitDefsNode(DefsNode iVisited) {
+    	 progressMonitorWorked(1);
+    	return super.visitDefsNode(iVisited);
+    }
+    
+    @Override
+    public Instruction visitClassNode(ClassNode iVisited) {
+    	 progressMonitorWorked(1);
+    	return super.visitClassNode(iVisited);
+    }
+    
+    @Override
+    public Instruction visitModuleNode(ModuleNode iVisited) {
+    	 progressMonitorWorked(1);
+    	return super.visitModuleNode(iVisited);
+    }
+    
+    private void progressMonitorWorked(int work) {
+        if (fProgressMonitor != null) {
+            fProgressMonitor.worked(work);
+            if (fProgressMonitor.isCanceled()) {
+                throw new OperationCanceledException();
+            }
+        }
     }
 
 }

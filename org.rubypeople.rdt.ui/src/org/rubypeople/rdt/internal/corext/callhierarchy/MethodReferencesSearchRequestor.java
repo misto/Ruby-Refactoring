@@ -20,8 +20,9 @@ import org.rubypeople.rdt.core.search.SearchRequestor;
 
 class MethodReferencesSearchRequestor extends SearchRequestor {
     private CallSearchResultCollector fSearchResults;
-    private boolean fRequireExactMatch = true;
-
+    private boolean fRequireExactMatch = false;
+//  FIXME I turned off the check for exact match, because our SearchEngine doesn't yet properly classify accuracy!
+    
     MethodReferencesSearchRequestor() {
         fSearchResults = new CallSearchResultCollector();
     }
@@ -34,9 +35,9 @@ class MethodReferencesSearchRequestor extends SearchRequestor {
      * @see org.eclipse.jdt.core.search.SearchRequestor#acceptSearchMatch(org.eclipse.jdt.core.search.SearchMatch)
      */
     public void acceptSearchMatch(SearchMatch match) {
-//        if (fRequireExactMatch && (match.getAccuracy() != SearchMatch.A_ACCURATE)) { // FIXME I turned off the check for exact match, because our SearchEngine doesn't yet properly classify accuracy!
-//            return;
-//        }
+        if (fRequireExactMatch && (match.getAccuracy() != SearchMatch.A_ACCURATE)) { 
+            return;
+        }
         
         if (match.isInsideDocComment()) {
             return;
