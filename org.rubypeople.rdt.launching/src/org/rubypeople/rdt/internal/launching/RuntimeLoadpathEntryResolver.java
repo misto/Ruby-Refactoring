@@ -90,7 +90,7 @@ public class RuntimeLoadpathEntryResolver implements IRuntimeLoadpathEntryResolv
 		return getResolver().resolveRuntimeLoadpathEntry(entry, project);
 	}
 
-	/* (non-Rubydoc)
+	/* (non-Javadoc)
 	 * @see org.eclipse.jdt.launching.IRuntimeLoadpathEntryResolver2#isVMInstallReference(org.eclipse.jdt.core.ILoadpathEntry)
 	 */
 	public boolean isVMInstallReference(ILoadpathEntry entry) {

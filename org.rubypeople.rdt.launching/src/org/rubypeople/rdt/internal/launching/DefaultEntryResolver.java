@@ -27,7 +27,7 @@ import org.rubypeople.rdt.launching.RubyRuntime;
  * Default resolver for a contributed classpath entry
  */
 public class DefaultEntryResolver implements IRuntimeLoadpathEntryResolver {
-	/* (non-Rubydoc)
+	/* (non-Javadoc)
 	 * @see org.eclipse.jdt.launching.IRuntimeLoadpathEntryResolver#resolveRuntimeLoadpathEntry(org.eclipse.jdt.launching.IRuntimeLoadpathEntry, org.eclipse.debug.core.ILaunchConfiguration)
 	 */
 	public IRuntimeLoadpathEntry[] resolveRuntimeLoadpathEntry(IRuntimeLoadpathEntry entry, ILaunchConfiguration configuration) throws CoreException {
@@ -42,7 +42,7 @@ public class DefaultEntryResolver implements IRuntimeLoadpathEntryResolver {
 		}
 		return (IRuntimeLoadpathEntry[]) resolved.toArray(new IRuntimeLoadpathEntry[resolved.size()]);
 	}
-	/* (non-Rubydoc)
+	/* (non-Javadoc)
 	 * @see org.eclipse.jdt.launching.IRuntimeLoadpathEntryResolver#resolveRuntimeLoadpathEntry(org.eclipse.jdt.launching.IRuntimeLoadpathEntry, org.eclipse.jdt.core.IRubyProject)
 	 */
 	public IRuntimeLoadpathEntry[] resolveRuntimeLoadpathEntry(IRuntimeLoadpathEntry entry, IRubyProject project) throws CoreException {
@@ -58,7 +58,7 @@ public class DefaultEntryResolver implements IRuntimeLoadpathEntryResolver {
 		return (IRuntimeLoadpathEntry[]) resolved.toArray(new IRuntimeLoadpathEntry[resolved.size()]);
 	}
 		
-	/* (non-Rubydoc)
+	/* (non-Javadoc)
 	 * @see org.eclipse.jdt.launching.IRuntimeLoadpathEntryResolver#resolveVMInstall(org.eclipse.jdt.core.ILoadpathEntry)
 	 */
 	public IVMInstall resolveVMInstall(ILoadpathEntry entry) throws CoreException {

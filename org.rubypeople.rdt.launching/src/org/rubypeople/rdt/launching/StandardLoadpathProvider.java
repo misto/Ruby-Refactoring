@@ -29,7 +29,7 @@ import org.rubypeople.rdt.core.IRubyProject;
  */
 public class StandardLoadpathProvider implements IRuntimeLoadpathProvider {
 
-	/* (non-Rubydoc)
+	/* (non-Javadoc)
 	 * @see org.eclipse.jdt.launching.IRuntimeLoadpathProvider#computeUnresolvedLoadpath(org.eclipse.debug.core.ILaunchConfiguration)
 	 */
 	public IRuntimeLoadpathEntry[] computeUnresolvedLoadpath(ILaunchConfiguration configuration) throws CoreException {
@@ -64,7 +64,7 @@ public class StandardLoadpathProvider implements IRuntimeLoadpathProvider {
 		return recoverRuntimePath(configuration, IRubyLaunchConfigurationConstants.ATTR_LOADPATH);
 	}
 
-	/* (non-Rubydoc)
+	/* (non-Javadoc)
 	 * @see org.eclipse.jdt.launching.IRuntimeLoadpathProvider#resolveLoadpath(org.eclipse.jdt.launching.IRuntimeLoadpathEntry[], org.eclipse.debug.core.ILaunchConfiguration)
 	 */
 	public IRuntimeLoadpathEntry[] resolveLoadpath(IRuntimeLoadpathEntry[] entries, ILaunchConfiguration configuration) throws CoreException {

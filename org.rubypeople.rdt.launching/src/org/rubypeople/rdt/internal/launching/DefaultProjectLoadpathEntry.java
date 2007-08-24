@@ -60,7 +60,7 @@ public class DefaultProjectLoadpathEntry extends AbstractRuntimeLoadpathEntry {
 		setRubyProject(project);
 	}
 	
-	/* (non-Rubydoc)
+	/* (non-Javadoc)
 	 * @see org.eclipse.jdt.internal.launching.AbstractRuntimeLoadpathEntry#buildMemento(org.w3c.dom.Document, org.w3c.dom.Element)
 	 */
 	protected void buildMemento(Document document, Element memento) throws CoreException {
@@ -68,7 +68,7 @@ public class DefaultProjectLoadpathEntry extends AbstractRuntimeLoadpathEntry {
 		memento.setAttribute("exportedEntriesOnly", Boolean.toString(fExportedEntriesOnly)); //$NON-NLS-1$
 	}
 	
-	/* (non-Rubydoc)
+	/* (non-Javadoc)
 	 * @see org.eclipse.jdt.launching.IRuntimeLoadpathEntry2#initializeFrom(org.w3c.dom.Element)
 	 */
 	public void initializeFrom(Element memento) throws CoreException {
@@ -85,13 +85,13 @@ public class DefaultProjectLoadpathEntry extends AbstractRuntimeLoadpathEntry {
 			fExportedEntriesOnly = Boolean.valueOf(name).booleanValue();
 		}
 	}
-	/* (non-Rubydoc)
+	/* (non-Javadoc)
 	 * @see org.eclipse.jdt.launching.IRuntimeLoadpathEntry2#getTypeId()
 	 */
 	public String getTypeId() {
 		return TYPE_ID;
 	}
-	/* (non-Rubydoc)
+	/* (non-Javadoc)
 	 * @see org.eclipse.jdt.launching.IRuntimeLoadpathEntry#getType()
 	 */
 	public int getType() {
@@ -102,28 +102,28 @@ public class DefaultProjectLoadpathEntry extends AbstractRuntimeLoadpathEntry {
 		return getRubyProject().getProject();
 	}
 	
-	/* (non-Rubydoc)
+	/* (non-Javadoc)
 	 * @see org.eclipse.jdt.launching.IRuntimeLoadpathEntry#getLocation()
 	 */
 	public String getLocation() {
 		return getProject().getLocation().toOSString();
 	}
 	
-	/* (non-Rubydoc)
+	/* (non-Javadoc)
 	 * @see org.eclipse.jdt.launching.IRuntimeLoadpathEntry#getPath()
 	 */
 	public IPath getPath() {
 		return getProject().getFullPath();
 	}
 	
-	/* (non-Rubydoc)
+	/* (non-Javadoc)
 	 * @see org.eclipse.jdt.launching.IRuntimeLoadpathEntry#getResource()
 	 */
 	public IResource getResource() {
 		return getProject();
 	}
 	
-	/* (non-Rubydoc)
+	/* (non-Javadoc)
 	 * @see org.rubypeople.rdt.launching.IRuntimeLoadpathEntry2#getRuntimeLoadpathEntries(org.eclipse.debug.core.ILaunchConfiguration)
 	 */
 	public IRuntimeLoadpathEntry[] getRuntimeLoadpathEntries(ILaunchConfiguration configuration) throws CoreException {
@@ -295,13 +295,13 @@ public class DefaultProjectLoadpathEntry extends AbstractRuntimeLoadpathEntry {
 		}
 		return;
 	}	
-	/* (non-Rubydoc)
+	/* (non-Javadoc)
 	 * @see org.eclipse.jdt.launching.IRuntimeLoadpathEntry2#isComposite()
 	 */
 	public boolean isComposite() {
 		return true;
 	}
-	/* (non-Rubydoc)
+	/* (non-Javadoc)
 	 * @see org.eclipse.jdt.launching.IRuntimeLoadpathEntry2#getName()
 	 */
 	public String getName() {
@@ -310,7 +310,7 @@ public class DefaultProjectLoadpathEntry extends AbstractRuntimeLoadpathEntry {
 		}
 		return MessageFormat.format(LaunchingMessages.DefaultProjectLoadpathEntry_4, getRubyProject().getElementName()); 
 	}
-	/* (non-Rubydoc)
+	/* (non-Javadoc)
 	 * @see java.lang.Object#equals(java.lang.Object)
 	 */
 	public boolean equals(Object obj) {
@@ -321,7 +321,7 @@ public class DefaultProjectLoadpathEntry extends AbstractRuntimeLoadpathEntry {
 		}
 		return false;
 	}
-	/* (non-Rubydoc)
+	/* (non-Javadoc)
 	 * @see java.lang.Object#hashCode()
 	 */
 	public int hashCode() {

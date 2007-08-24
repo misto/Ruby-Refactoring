@@ -551,7 +551,7 @@ public class RuntimeLoadpathEntry implements IRuntimeLoadpathEntry {
 		return super.toString();
 		
 	}
-	/* (non-Rubydoc)
+	/* (non-Javadoc)
 	 * @see org.eclipse.jdt.launching.IRuntimeLoadpathEntry#getRubyProject()
 	 */
 	public IRubyProject getRubyProject() {

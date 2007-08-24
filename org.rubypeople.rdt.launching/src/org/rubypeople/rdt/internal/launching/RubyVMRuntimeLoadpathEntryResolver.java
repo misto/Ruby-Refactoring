@@ -158,7 +158,7 @@ public class RubyVMRuntimeLoadpathEntryResolver implements IRuntimeLoadpathEntry
 		return null;
 	}
 
-	/* (non-Rubydoc)
+	/* (non-Javadoc)
 	 * @see org.eclipse.jdt.launching.IRuntimeLoadpathEntryResolver2#isVMInstallReference(org.eclipse.jdt.core.ILoadpathEntry)
 	 */
 	public boolean isVMInstallReference(ILoadpathEntry entry) {
