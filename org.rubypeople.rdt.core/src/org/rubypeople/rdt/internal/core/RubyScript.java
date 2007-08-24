@@ -296,7 +296,7 @@ public class RubyScript extends Openable implements IRubyScript {
 	}
 
 	/*
-	 * (non-Rubydoc)
+	 * (non-Javadoc)
 	 * 
 	 * @see org.rubypeople.rdt.internal.core.parser.RubyElement#getElementType()
 	 */
@@ -305,7 +305,7 @@ public class RubyScript extends Openable implements IRubyScript {
 	}
 
 	/*
-	 * (non-Rubydoc)
+	 * (non-Javadoc)
 	 * 
 	 * @see org.rubypeople.rdt.core.IRubyScript#reconcile()
 	 */
@@ -314,7 +314,7 @@ public class RubyScript extends Openable implements IRubyScript {
 	}
 
 	/*
-	 * (non-Rubydoc)
+	 * (non-Javadoc)
 	 * 
 	 * @see org.rubypeople.rdt.core.IRubyScript#reconcile()
 	 */
@@ -341,7 +341,7 @@ public class RubyScript extends Openable implements IRubyScript {
 	}
 
 	/*
-	 * (non-Rubydoc)
+	 * (non-Javadoc)
 	 * 
 	 * @see org.rubypeople.rdt.core.ISourceReference#getSourceRange()
 	 */
@@ -357,7 +357,7 @@ public class RubyScript extends Openable implements IRubyScript {
 	}
 
 	/*
-	 * (non-Rubydoc)
+	 * (non-Javadoc)
 	 * 
 	 * @see org.rubypeople.rdt.core.ISourceReference#getSource()
 	 */

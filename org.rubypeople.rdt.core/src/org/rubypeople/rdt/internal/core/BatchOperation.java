@@ -29,7 +29,7 @@ public class BatchOperation implements IWorkspaceRunnable {
 		this.runnable = runnable;
 	}
 
-	/* (non-Rubydoc)
+	/* (non-Javadoc)
 	 * @see org.eclipse.jdt.internal.core.RubyModelOperation#executeOperation()
 	 */
 	protected void executeOperation() throws RubyModelException {
@@ -49,7 +49,7 @@ public class BatchOperation implements IWorkspaceRunnable {
 		}
 	}
 	
-	/* (non-Rubydoc)
+	/* (non-Javadoc)
 	 * @see org.eclipse.jdt.internal.core.RubyModelOperation#verify()
 	 */
 	protected IRubyModelStatus verify() {

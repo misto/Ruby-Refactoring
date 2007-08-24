@@ -183,7 +183,7 @@ public class RubyType extends NamedMember implements IType {
 	}
 
 	/*
-	 * (non-Rubydoc)
+	 * (non-Javadoc)
 	 * 
 	 * @see org.rubypeople.rdt.core.IRubyType#isClass()
 	 */

@@ -44,7 +44,7 @@ public abstract class SourceRefElement extends RubyElement implements ISourceRef
 	}
 	
 	/*
-	 * (non-Rubydoc)
+	 * (non-Javadoc)
 	 * 
 	 * @see org.rubypeople.rdt.core.IMember#getRubyScript()
 	 */
