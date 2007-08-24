@@ -12,14 +12,17 @@
 package org.rubypeople.rdt.internal.corext.callhierarchy;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.StringTokenizer;
 
+import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.jruby.ast.Node;
 import org.rubypeople.rdt.core.IMember;
 import org.rubypeople.rdt.core.IMethod;
+import org.rubypeople.rdt.core.IRubyElement;
 import org.rubypeople.rdt.core.IRubyScript;
 import org.rubypeople.rdt.core.search.IRubySearchScope;
 import org.rubypeople.rdt.core.search.SearchEngine;
@@ -58,31 +61,29 @@ public class CallHierarchy {
     }
 
     public Collection getImplementingMethods(IMethod method) {
-//    	 FIXME Implement this!
-//        if (isSearchUsingImplementorsEnabled()) {
-//            IRubyElement[] result = Implementors.getInstance().searchForImplementors(new IRubyElement[] {
-//                        method
-//                    }, new NullProgressMonitor());
-//
-//            if ((result != null) && (result.length > 0)) {
-//                return Arrays.asList(result);
-//            }
-//        }
+        if (isSearchUsingImplementorsEnabled()) {
+            IRubyElement[] result = Implementors.getInstance().searchForImplementors(new IRubyElement[] {
+                        method
+                    }, new NullProgressMonitor());
+
+            if ((result != null) && (result.length > 0)) {
+                return Arrays.asList(result);
+            }
+        }
 
         return new ArrayList(0);
     }
 
     public Collection getInterfaceMethods(IMethod method) {
-    	// FIXME Implement this!
-//        if (isSearchUsingImplementorsEnabled()) {
-//            IRubyElement[] result = Implementors.getInstance().searchForInterfaces(new IRubyElement[] {
-//                        method
-//                    }, new NullProgressMonitor());
-//
-//            if ((result != null) && (result.length > 0)) {
-//                return Arrays.asList(result);
-//            }
-//        }
+        if (isSearchUsingImplementorsEnabled()) {
+            IRubyElement[] result = Implementors.getInstance().searchForInterfaces(new IRubyElement[] {
+                        method
+                    }, new NullProgressMonitor());
+
+            if ((result != null) && (result.length > 0)) {
+                return Arrays.asList(result);
+            }
+        }
 
         return new ArrayList(0);
     }
