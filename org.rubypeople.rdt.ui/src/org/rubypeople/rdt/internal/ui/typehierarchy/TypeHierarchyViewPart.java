@@ -116,6 +116,7 @@ import org.rubypeople.rdt.ui.PreferenceConstants;
 import org.rubypeople.rdt.ui.RubyElementLabels;
 import org.rubypeople.rdt.ui.RubyUI;
 import org.rubypeople.rdt.ui.actions.OpenEditorActionGroup;
+import org.rubypeople.rdt.ui.actions.OpenViewActionGroup;
 import org.rubypeople.rdt.ui.actions.RubySearchActionGroup;
 
 /**
@@ -862,7 +863,7 @@ public class TypeHierarchyViewPart extends ViewPart implements ITypeHierarchyVie
 		fActionGroups= new CompositeActionGroup(new ActionGroup[] {
 				new NewWizardsActionGroup(this.getSite()),
 				new OpenEditorActionGroup(this), 
-//				new OpenViewActionGroup(this), 
+				new OpenViewActionGroup(this), 
 //				new CCPActionGroup(this), 
 //				new GenerateActionGroup(this),
 //				new RefactorActionGroup(this),

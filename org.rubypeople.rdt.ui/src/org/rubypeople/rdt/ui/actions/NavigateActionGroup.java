@@ -31,7 +31,7 @@ import org.eclipse.ui.actions.ActionGroup;
 public class NavigateActionGroup extends ActionGroup {
 
 	private OpenEditorActionGroup fOpenEditorActionGroup;
-//	private OpenViewActionGroup fOpenViewActionGroup;
+	private OpenViewActionGroup fOpenViewActionGroup;
 	
 	/**
 	 * Creates a new <code>NavigateActionGroup</code>. The group requires
@@ -42,7 +42,7 @@ public class NavigateActionGroup extends ActionGroup {
 	 */
 	public NavigateActionGroup(IViewPart  part) {
 		fOpenEditorActionGroup= new OpenEditorActionGroup(part);
-//		fOpenViewActionGroup= new OpenViewActionGroup(part);
+		fOpenViewActionGroup= new OpenViewActionGroup(part);
 	}
 
 	/**
@@ -61,7 +61,7 @@ public class NavigateActionGroup extends ActionGroup {
 	public void dispose() {
 		super.dispose();
 		fOpenEditorActionGroup.dispose();
-//		fOpenViewActionGroup.dispose();
+		fOpenViewActionGroup.dispose();
 	}
 
 	/* (non-Javadoc)
@@ -70,7 +70,7 @@ public class NavigateActionGroup extends ActionGroup {
 	public void fillActionBars(IActionBars actionBars) {
 		super.fillActionBars(actionBars);
 		fOpenEditorActionGroup.fillActionBars(actionBars);
-//		fOpenViewActionGroup.fillActionBars(actionBars);
+		fOpenViewActionGroup.fillActionBars(actionBars);
 	}
 
 	/* (non-Javadoc)
@@ -80,7 +80,7 @@ public class NavigateActionGroup extends ActionGroup {
 		super.fillContextMenu(menu);
 		
 		fOpenEditorActionGroup.fillContextMenu(menu);
-//		fOpenViewActionGroup.fillContextMenu(menu);
+		fOpenViewActionGroup.fillContextMenu(menu);
 	}
 
 	/* (non-Javadoc)
@@ -89,7 +89,7 @@ public class NavigateActionGroup extends ActionGroup {
 	public void setContext(ActionContext context) {
 		super.setContext(context);
 		fOpenEditorActionGroup.setContext(context);
-//		fOpenViewActionGroup.setContext(context);
+		fOpenViewActionGroup.setContext(context);
 	}
 
 	/* (non-Javadoc)
@@ -98,6 +98,6 @@ public class NavigateActionGroup extends ActionGroup {
 	public void updateActionBars() {
 		super.updateActionBars();
 		fOpenEditorActionGroup.updateActionBars();
-//		fOpenViewActionGroup.updateActionBars();
+		fOpenViewActionGroup.updateActionBars();
 	}
 }
