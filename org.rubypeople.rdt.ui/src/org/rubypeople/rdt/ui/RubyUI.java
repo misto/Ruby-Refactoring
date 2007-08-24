@@ -12,10 +12,12 @@ package org.rubypeople.rdt.ui;
 
 import org.eclipse.jface.util.Assert;
 import org.eclipse.ui.IEditorInput;
+import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.texteditor.IDocumentProvider;
 import org.rubypeople.rdt.core.IRubyElement;
 import org.rubypeople.rdt.internal.ui.RubyPlugin;
 import org.rubypeople.rdt.internal.ui.SharedImages;
+import org.rubypeople.rdt.internal.ui.rubyeditor.EditorUtility;
 
 /**
  * Central access point for the Ruby UI plug-in (id
@@ -177,5 +179,21 @@ public final class RubyUI {
 	 */
 	public static IDocumentProvider getDocumentProvider() {
 		return RubyPlugin.getDefault().getRubyDocumentProvider();
+	}
+
+	/** 
+	 * Reveals the given java element  in the given editor. If the element is not an instance
+	 * of <code>ISourceReference</code> this method result in a NOP. If it is a source
+	 * reference no checking is done if the editor displays a compilation unit or class file that 
+	 * contains the source reference element. The editor simply reveals the source range 
+	 * denoted by the given element.
+	 * 
+	 * @param part the editor displaying a compilation unit or class file
+	 * @param element the element to be revealed
+	 * 
+	 * @since 2.0
+	 */
+	public static void revealInEditor(IEditorPart part, IRubyElement element) {
+		EditorUtility.revealInEditor(part, element);
 	}
 }

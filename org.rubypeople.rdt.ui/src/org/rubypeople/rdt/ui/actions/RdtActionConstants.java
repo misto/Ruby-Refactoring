@@ -9,6 +9,19 @@ public class RdtActionConstants {
 	public static final String OPEN= "org.rubypeople.rdt.ui.actions.Open"; //$NON-NLS-1$
 	
 	/**
+	 * Navigate menu: name of standard Open Type Hierarchy global action
+	 * (value <code>"org.rubypeople.rdt.ui.actions.OpenTypeHierarchy"</code>).
+	 */
+	public static final String OPEN_TYPE_HIERARCHY= "org.rubypeople.rdt.ui.actions.OpenTypeHierarchy"; //$NON-NLS-1$
+
+    /**
+     * Navigate menu: name of standard Open Call Hierarchy global action
+     * (value <code>"org.rubypeople.rdt.ui.actions.OpenCallHierarchy"</code>).
+     * @since 3.0
+     */
+    public static final String OPEN_CALL_HIERARCHY= "org.rubypeople.rdt.ui.actions.OpenCallHierarchy"; //$NON-NLS-1$
+	
+	/**
 	 * Edit menu: name of standard Show Rubydoc global action
 	 * (value <code>"org.rubypeople.rdt.ui.actions.ShowRubyDoc"</code>).
 	 */

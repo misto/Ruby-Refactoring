@@ -46,7 +46,7 @@ import org.eclipse.ui.IWorkbenchSite;
 public abstract class SelectionDispatchAction extends Action implements ISelectionChangedListener {
     
     private IWorkbenchSite fSite;
-    private ISelectionProvider fExtraSelectionProvider;
+    private ISelectionProvider fSpecialSelectionProvider;
     
     /**
      * Creates a new action with no text and no image.
@@ -59,7 +59,7 @@ public abstract class SelectionDispatchAction extends Action implements ISelecti
     protected SelectionDispatchAction(IWorkbenchSite site) {
         Assert.isNotNull(site);
         fSite= site;
-        fExtraSelectionProvider= null;
+        fSpecialSelectionProvider= null;
     }
 
     /**
@@ -76,10 +76,8 @@ public abstract class SelectionDispatchAction extends Action implements ISelecti
      * @since 3.2
      */
     protected SelectionDispatchAction(IWorkbenchSite site, ISelectionProvider provider) {
-        Assert.isNotNull(site);
-        Assert.isNotNull(provider);
-        fSite= site;
-        fExtraSelectionProvider= provider;
+    	this(site);
+        setSpecialSelectionProvider(provider);
     }
 
     /**
@@ -112,18 +110,35 @@ public abstract class SelectionDispatchAction extends Action implements ISelecti
         return fSite.getShell();
     }
     
-    /**
-     * Returns the selection provider managed by the site owning this action or the selection provider explicitly set in
-     * {@link #SelectionDispatchAction(IWorkbenchSite, ISelectionProvider)}.
-     * 
-     * @return the site's selection provider    
-     */
-    public ISelectionProvider getSelectionProvider() {
-        if (fExtraSelectionProvider != null) {
-            return fExtraSelectionProvider;
-        }
-        return fSite.getSelectionProvider();
-    }
+	/**
+	 * Returns the selection provider managed by the site owning this action or the selection
+	 * provider explicitly set in {@link #setSpecialSelectionProvider(ISelectionProvider)}.
+	 * 
+	 * @return the site's selection provider	
+	 */
+	public ISelectionProvider getSelectionProvider() {
+		if (fSpecialSelectionProvider != null) {
+			return fSpecialSelectionProvider;
+		}
+		return fSite.getSelectionProvider();
+	}
+	
+	/**
+	 * Sets a special selection provider which will be used instead of the site's selection provider.
+	 * This method should be used directly after constructing the action and before the action is
+	 * registered as a selection listener. The invocation will not a perform a selection change notification. 
+	 * 
+	 * @param provider a special selection provider which is used
+	 * instead of the site's selection provider or <code>null</code> to use the site's
+	 * selection provider. Clients can for example use a {@link ConvertingSelectionProvider}
+	 * to first convert a selection before passing it to the action.
+	 * 
+	 * @since 3.2
+	 */
+	public void setSpecialSelectionProvider(ISelectionProvider provider) {
+		fSpecialSelectionProvider= provider;
+	}
+    
 
     /**
      * Updates the action's enablement state according to the given selection. This

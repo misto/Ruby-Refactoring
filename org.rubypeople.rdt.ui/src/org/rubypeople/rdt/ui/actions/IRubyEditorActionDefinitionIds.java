@@ -173,6 +173,18 @@ public interface IRubyEditorActionDefinitionIds extends ITextEditorActionDefinit
 	 */
 	public static final String OPEN_HIERARCHY= "org.rubypeople.rdt.ui.edit.text.ruby.open.hierarchy"; //$NON-NLS-1$
 
+	/**
+	 * Action definition ID of the navigate -> open type hierarchy action
+	 * (value <code>"org.rubypeople.rdt.ui.edit.text.ruby.open.type.hierarchy"</code>).
+	 */
+	public static final String OPEN_TYPE_HIERARCHY= "org.rubypeople.rdt.ui.edit.text.ruby.open.type.hierarchy"; //$NON-NLS-1$
+	
+    /**
+     * Action definition ID of the navigate -> open call hierarchy action
+     * (value <code>"org.rubypeople.rdt.ui.edit.text.ruby.open.call.hierarchy"</code>).
+     * @since 3.0
+     */
+    public static final String OPEN_CALL_HIERARCHY= "org.rubypeople.rdt.ui.edit.text.ruby.open.call.hierarchy"; //$NON-NLS-1$
 	
 	/**
 	 * Action definition ID of the navigate -> show in ruby resources view action

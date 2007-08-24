@@ -398,6 +398,12 @@
             class="org.rubypeople.rdt.internal.ui.typehierarchy.TypeHierarchyViewPart"
             id="org.rubypeople.rdt.ui.TypeHierarchy">
       </view>
+      <view
+            category="org.rubypeople.rdt.ui.ruby"
+            class="org.rubypeople.rdt.internal.ui.callhierarchy.CallHierarchyViewPart"
+            icon="$nl$/icons/full/eview16/call_hierarchy.gif"
+            id="org.rubypeople.rdt.callhierarchy.view"
+            name="%callHierarchyViewName"/>
    </extension>
    <extension point="org.eclipse.ui.editors">
       <editor
@@ -497,6 +503,10 @@
       <key
             sequence="F4"
             commandId="org.rubypeople.rdt.ui.edit.text.ruby.open.type.hierarchy"
+            schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"/>
+      <key
+            sequence="CTRL+ALT+H"
+            commandId="org.rubypeople.rdt.ui.edit.text.ruby.open.call.hierarchy"
             schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"/>
       <key
             sequence="M1+M2+T"
@@ -703,6 +713,11 @@
             description="%ActionDefinition.openTypeHierarchy.description"
             id="org.rubypeople.rdt.ui.edit.text.ruby.open.type.hierarchy"
             name="%ActionDefinition.openTypeHierarchy.name"/>
+      <command
+            categoryId="org.eclipse.ui.category.navigate"
+            description="%ActionDefinition.openCallHierarchy.description"
+            id="org.rubypeople.rdt.ui.edit.text.ruby.open.call.hierarchy"
+            name="%ActionDefinition.openCallHierarchy.name"/>
      
    </extension>
    <extension
@@ -902,6 +917,13 @@
                retarget="true"
                menubarPath="navigate/open.ext"
                id="org.rubypeople.rdt.ui.actions.OpenTypeHierarchy">
+         </action>
+         <action
+               definitionId="org.rubypeople.rdt.ui.edit.text.ruby.open.call.hierarchy"
+               label="%OpenCallHierarchyAction.label"
+               retarget="true"
+               menubarPath="navigate/open.ext"
+               id="org.rubypeople.rdt.ui.actions.OpenCallHierarchy">
          </action>
        </actionSet>
    </extension>

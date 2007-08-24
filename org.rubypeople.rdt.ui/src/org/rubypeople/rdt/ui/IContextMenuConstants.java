@@ -59,4 +59,26 @@ public interface IContextMenuConstants {
 	 * </p>
 	 */
 	public static final String GROUP_NEW=		ICommonMenuConstants.GROUP_NEW;	
+	
+	/**
+	 * Pop-up menu: name of group for search actions (value <code>"group.search"</code>).
+	 */	
+	public static final String GROUP_SEARCH=		ICommonMenuConstants.GROUP_SEARCH;
+	
+	/**
+	 * Pop-up menu: name of group for open actions (value <code>"group.open"</code>).
+	 * <p>
+	 * Examples for open actions are:
+	 * <ul>
+	 *  <li>Open To</li>
+	 *  <li>Open With</li>
+	 * </ul>
+	 * </p>
+	 */
+	public static final String GROUP_OPEN=		ICommonMenuConstants.GROUP_OPEN;	
+
+	/**
+	 * Pop-up menu: name of group for properties actions (value <code>"group.properties"</code>).
+	 */	
+	public static final String GROUP_PROPERTIES=	ICommonMenuConstants.GROUP_PROPERTIES;
 }

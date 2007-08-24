@@ -193,6 +193,10 @@ public class RubyPluginImages {
     
 	public static final ImageDescriptor DESC_ELCL_VIEW_MENU= createManaged(T_ELCL, "view_menu.gif", IMG_ELCL_VIEW_MENU); //$NON-NLS-1$
 	public static final ImageDescriptor DESC_DLCL_VIEW_MENU= createManaged(T_DLCL, "view_menu.gif", IMG_DLCL_VIEW_MENU); //$NON-NLS-1$
+	
+    // Call Hierarchy
+    public static final ImageDescriptor DESC_OVR_RECURSIVE= createUnManaged(T_OVR, "recursive_co.gif");              //$NON-NLS-1$
+    public static final ImageDescriptor DESC_OVR_MAX_LEVEL= createUnManaged(T_OVR, "maxlevel_co.gif");                    //$NON-NLS-1$
     
     public static final ImageDescriptor DESC_MISC_PUBLIC= createManagedFromKey(T_OBJ, IMG_MISC_PUBLIC);
     public static final ImageDescriptor DESC_MISC_PROTECTED= createManagedFromKey(T_OBJ, IMG_MISC_PROTECTED);

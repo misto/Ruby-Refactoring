@@ -175,4 +175,14 @@ public class SelectionConverter {
 		return runnable.result;
 	}
 
+	public static IRubyElement[] codeResolveOrInputForked(RubyEditor editor) throws InvocationTargetException, InterruptedException {
+		IRubyElement input= getInput(editor);
+		ITextSelection selection= (ITextSelection)editor.getSelectionProvider().getSelection();
+		IRubyElement[] result= performForkedCodeResolve(input, selection);
+		if (result.length == 0) {
+			result= new IRubyElement[] {input};
+		}
+		return result;
+	}
+
 }

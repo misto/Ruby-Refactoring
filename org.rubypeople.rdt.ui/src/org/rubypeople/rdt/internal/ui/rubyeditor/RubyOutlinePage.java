@@ -56,6 +56,8 @@ import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.Widget;
 import org.eclipse.ui.IActionBars;
 import org.eclipse.ui.PlatformUI;
+import org.eclipse.ui.actions.ActionContext;
+import org.eclipse.ui.actions.ActionGroup;
 import org.eclipse.ui.model.IWorkbenchAdapter;
 import org.eclipse.ui.model.WorkbenchAdapter;
 import org.eclipse.ui.part.IPageSite;
@@ -86,6 +88,7 @@ import org.rubypeople.rdt.internal.ui.IRubyHelpContextIds;
 import org.rubypeople.rdt.internal.ui.RubyPlugin;
 import org.rubypeople.rdt.internal.ui.RubyPluginImages;
 import org.rubypeople.rdt.internal.ui.actions.AbstractToggleLinkingAction;
+import org.rubypeople.rdt.internal.ui.actions.CompositeActionGroup;
 import org.rubypeople.rdt.internal.ui.preferences.MembersOrderPreferenceCache;
 import org.rubypeople.rdt.internal.ui.viewsupport.AppearanceAwareLabelProvider;
 import org.rubypeople.rdt.internal.ui.viewsupport.DecoratingRubyLabelProvider;
@@ -95,6 +98,8 @@ import org.rubypeople.rdt.ui.PreferenceConstants;
 import org.rubypeople.rdt.ui.RubyElementSorter;
 import org.rubypeople.rdt.ui.actions.CustomFiltersActionGroup;
 import org.rubypeople.rdt.ui.actions.MemberFilterActionGroup;
+import org.rubypeople.rdt.ui.actions.OpenViewActionGroup;
+import org.rubypeople.rdt.ui.actions.RubySearchActionGroup;
 
 
 /**
@@ -836,6 +841,8 @@ public class RubyOutlinePage extends Page implements IContentOutlinePage, IAdapt
      */
     private CustomFiltersActionGroup fCustomFiltersActionGroup;
 
+	private CompositeActionGroup fActionGroups;
+
     public RubyOutlinePage(String contextMenuID, RubyAbstractEditor editor) {
         super();
 
@@ -1011,6 +1018,14 @@ public class RubyOutlinePage extends Page implements IContentOutlinePage, IAdapt
         
         updateSelectionProvider(site);
         
+//      we must create the groups after we have set the selection provider to the site
+		fActionGroups= new CompositeActionGroup(new ActionGroup[] {
+				new OpenViewActionGroup(this),
+//				new CCPActionGroup(this),
+//				new GenerateActionGroup(this),
+//				new RefactorActionGroup(this),
+				new RubySearchActionGroup(this)});
+        
         // register global actions
         IActionBars actionBars= site.getActionBars();
         actionBars.setGlobalActionHandler(ITextEditorActionConstants.UNDO, fEditor.getAction(ITextEditorActionConstants.UNDO));
@@ -1083,6 +1098,9 @@ public class RubyOutlinePage extends Page implements IContentOutlinePage, IAdapt
             fMenu.dispose();
             fMenu= null;
         }
+        
+        if (fActionGroups != null)
+			fActionGroups.dispose();
 
         fTogglePresentation.setEditor(null);
 
@@ -1181,6 +1199,10 @@ public class RubyOutlinePage extends Page implements IContentOutlinePage, IAdapt
 
     protected void contextMenuAboutToShow(IMenuManager menu) {
         RubyPlugin.createStandardGroups(menu);
+        
+        IStructuredSelection selection= (IStructuredSelection)getSelection();
+		fActionGroups.setContext(new ActionContext(selection));
+		fActionGroups.fillContextMenu(menu);
     }
 
     /*

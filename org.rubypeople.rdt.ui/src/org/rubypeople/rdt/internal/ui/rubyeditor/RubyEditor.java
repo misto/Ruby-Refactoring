@@ -131,6 +131,7 @@ import org.rubypeople.rdt.ui.PreferenceConstants;
 import org.rubypeople.rdt.ui.actions.FormatAction;
 import org.rubypeople.rdt.ui.actions.IRubyEditorActionDefinitionIds;
 import org.rubypeople.rdt.ui.actions.OpenEditorActionGroup;
+import org.rubypeople.rdt.ui.actions.OpenViewActionGroup;
 import org.rubypeople.rdt.ui.actions.RubyActionGroup;
 import org.rubypeople.rdt.ui.actions.RubySearchActionGroup;
 import org.rubypeople.rdt.ui.actions.ShowInRubyResourcesViewAction;
@@ -228,14 +229,15 @@ public class RubyEditor extends RubyAbstractEditor {
     protected void createActions() {
         super.createActions();
         
-        ActionGroup oeg, rsg;
+        ActionGroup oeg, ovg, rsg;
 		fActionGroups= new CompositeActionGroup(new ActionGroup[] {
 			oeg= new OpenEditorActionGroup(this),
+			ovg= new OpenViewActionGroup(this),
 			rsg= new RubySearchActionGroup(this)
 		});
 		
 		fGenerateActionGroup= new RubyActionGroup(this, ITextEditorActionConstants.GROUP_EDIT);
-		fContextMenuGroup= new CompositeActionGroup(new ActionGroup[] {oeg, rsg, fGenerateActionGroup});
+		fContextMenuGroup= new CompositeActionGroup(new ActionGroup[] {oeg, ovg, rsg, fGenerateActionGroup});
         
         fFoldingGroup= new FoldingActionGroup(this, getViewer());
         

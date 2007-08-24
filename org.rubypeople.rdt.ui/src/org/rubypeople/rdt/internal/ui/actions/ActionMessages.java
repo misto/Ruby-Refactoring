@@ -68,6 +68,19 @@ public final class ActionMessages extends NLS {
 	public static String OpenTypeInHierarchyAction_tooltip;
 	public static String OpenTypeInHierarchyAction_dialogTitle;
 	public static String OpenTypeInHierarchyAction_dialogMessage;
+	
+	public static String SelectionConverter_codeResolve_failed;
+	
+	public static String OpenTypeHierarchyAction_label;
+	public static String OpenTypeHierarchyAction_tooltip;
+	public static String OpenTypeHierarchyAction_description;
+	public static String OpenTypeHierarchyAction_messages_no_ruby_element;
+	public static String OpenTypeHierarchyAction_messages_title;
+	public static String OpenTypeHierarchyAction_dialog_title;
+	public static String OpenTypeHierarchyAction_messages_no_ruby_resources;
+	public static String OpenTypeHierarchyAction_messages_unknown_import_decl;
+	public static String OpenTypeHierarchyAction_messages_no_types;
+	public static String OpenTypeHierarchyAction_messages_no_valid_ruby_element;
 
     static {
         NLS.initializeMessages(BUNDLE_NAME, ActionMessages.class);
