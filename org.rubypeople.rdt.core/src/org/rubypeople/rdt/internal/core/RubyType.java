@@ -25,6 +25,7 @@
 package org.rubypeople.rdt.internal.core;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -36,6 +37,7 @@ import org.rubypeople.rdt.core.IRubyScript;
 import org.rubypeople.rdt.core.ISourceFolder;
 import org.rubypeople.rdt.core.IType;
 import org.rubypeople.rdt.core.ITypeHierarchy;
+import org.rubypeople.rdt.core.RubyCore;
 import org.rubypeople.rdt.core.RubyModelException;
 import org.rubypeople.rdt.core.WorkingCopyOwner;
 import org.rubypeople.rdt.core.search.SearchEngine;
@@ -360,6 +362,23 @@ public class RubyType extends NamedMember implements IType {
 		CreateTypeHierarchyOperation op= new CreateTypeHierarchyOperation(this, workingCopies, SearchEngine.createWorkspaceScope(), false);
 		op.runOperation(monitor);
 		return op.getResult();
+	}
+
+	public IMethod[] findMethods(IMethod method) {
+		List<IMethod> filtered = new ArrayList<IMethod>();
+		try {
+			ArrayList<IRubyElement> list = getChildrenOfType(METHOD);
+			for (IRubyElement element : list) {
+				IMethod other = (IMethod) element;
+				if (!other.getElementName().equals(method.getElementName())) continue;
+				filtered.add(other);
+			}
+		} catch (RubyModelException e) {
+			RubyCore.log(e);
+		}
+		IMethod[] array = new IMethod[filtered.size()];
+		filtered.toArray(array);
+		return array;
 	}
 
 }

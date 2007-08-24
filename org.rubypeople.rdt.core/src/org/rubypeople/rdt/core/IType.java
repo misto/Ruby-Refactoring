@@ -231,4 +231,6 @@ public interface IType extends IRubyElement, IMember {
 	 */
 	ITypeHierarchy newTypeHierarchy(WorkingCopyOwner owner, IProgressMonitor monitor) throws RubyModelException;
 
+	public IMethod[] findMethods(IMethod method);
+
 }
