@@ -16,6 +16,8 @@ import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.IToolBarManager;
 import org.eclipse.jface.text.ITextSelection;
 import org.eclipse.jface.util.Assert;
+import org.eclipse.jface.util.IPropertyChangeListener;
+import org.eclipse.jface.util.PropertyChangeEvent;
 import org.eclipse.jface.viewers.IContentProvider;
 import org.eclipse.jface.viewers.ILabelProvider;
 import org.eclipse.jface.viewers.IOpenListener;
@@ -44,6 +46,7 @@ import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.IWorkbenchPartReference;
 import org.eclipse.ui.IWorkbenchPartSite;
+import org.eclipse.ui.IWorkingSetManager;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.actions.ActionContext;
@@ -59,10 +62,12 @@ import org.rubypeople.rdt.core.IType;
 import org.rubypeople.rdt.core.RubyModelException;
 import org.rubypeople.rdt.internal.ui.RubyPlugin;
 import org.rubypeople.rdt.internal.ui.actions.CompositeActionGroup;
+import org.rubypeople.rdt.internal.ui.actions.NewWizardsActionGroup;
 import org.rubypeople.rdt.internal.ui.viewsupport.AppearanceAwareLabelProvider;
 import org.rubypeople.rdt.internal.ui.viewsupport.DecoratingRubyLabelProvider;
 import org.rubypeople.rdt.internal.ui.viewsupport.RubyElementImageProvider;
 import org.rubypeople.rdt.internal.ui.viewsupport.RubyUILabelProvider;
+import org.rubypeople.rdt.internal.ui.workingsets.WorkingSetFilterActionGroup;
 import org.rubypeople.rdt.ui.IWorkingCopyManager;
 import org.rubypeople.rdt.ui.PreferenceConstants;
 import org.rubypeople.rdt.ui.RubyElementLabelProvider;
@@ -71,9 +76,15 @@ import org.rubypeople.rdt.ui.RubyElementSorter;
 import org.rubypeople.rdt.ui.StandardRubyElementContentProvider;
 import org.rubypeople.rdt.ui.actions.CustomFiltersActionGroup;
 import org.rubypeople.rdt.ui.actions.OpenEditorActionGroup;
+import org.rubypeople.rdt.ui.actions.OpenViewActionGroup;
+import org.rubypeople.rdt.ui.actions.RubySearchActionGroup;
 
-public abstract class RubyBrowsingPart extends ViewPart implements
+abstract class RubyBrowsingPart extends ViewPart implements
 		ISelectionListener {
+	
+	private static final String TAG_SELECTED_ELEMENTS= "selectedElements"; //$NON-NLS-1$
+	private static final String TAG_SELECTED_ELEMENT= "selectedElement"; //$NON-NLS-1$
+	private static final String TAG_SELECTED_ELEMENT_PATH= "selectedElementPath"; //$NON-NLS-1$
 
 	private StructuredViewer fViewer;
 	private IMemento fMemento;
@@ -82,7 +93,9 @@ public abstract class RubyBrowsingPart extends ViewPart implements
 	protected Object fPreviousSelectedElement;
 	private ILabelProvider fTitleProvider;
 	
-	// Actions
+//	 Actions
+	private WorkingSetFilterActionGroup fWorkingSetFilterActionGroup;
+	private boolean fHasWorkingSetFilter= true;
 	private boolean fHasCustomFilter= true;
 	private OpenEditorActionGroup fOpenEditorGroup;
 	protected CompositeActionGroup fActionGroups;
@@ -135,8 +148,7 @@ public abstract class RubyBrowsingPart extends ViewPart implements
 			if (ref != null && ref.getId() == getSite().getId())
 				fProcessSelectionEvents = false;
 		}
-	};
-	
+	};	
 	
 	public RubyBrowsingPart() {
 		super();
@@ -145,14 +157,47 @@ public abstract class RubyBrowsingPart extends ViewPart implements
 	
 	protected void createActions() {
 		fActionGroups= new CompositeActionGroup(new ActionGroup[] {
-				fOpenEditorGroup= new OpenEditorActionGroup(this)
-				});
+				new NewWizardsActionGroup(this.getSite()),
+				fOpenEditorGroup= new OpenEditorActionGroup(this),
+				new OpenViewActionGroup(this),
+//				fCCPActionGroup= new CCPActionGroup(this),
+//				new GenerateActionGroup(this),
+//				new RefactorActionGroup(this),
+//				new ImportActionGroup(this),
+//				fBuildActionGroup= new BuildActionGroup(this),
+				new RubySearchActionGroup(this)});
+
+
+		if (fHasWorkingSetFilter) {
+			String viewId= getConfigurationElement().getAttribute("id"); //$NON-NLS-1$
+			Assert.isNotNull(viewId);
+			IPropertyChangeListener workingSetListener= new IPropertyChangeListener() {
+				public void propertyChange(PropertyChangeEvent event) {
+					doWorkingSetChanged(event);
+				}
+			};
+			fWorkingSetFilterActionGroup= new WorkingSetFilterActionGroup(getSite(), workingSetListener);
+			fViewer.addFilter(fWorkingSetFilterActionGroup.getWorkingSetFilter());
+		}
 
 //		 Custom filter group
 		if (fHasCustomFilter)
 			fCustomFiltersActionGroup= new CustomFiltersActionGroup(this, fViewer);
 		
 		fToggleLinkingAction= new ToggleLinkingAction(this);
+	}
+	
+	private void doWorkingSetChanged(PropertyChangeEvent event) {
+		String property= event.getProperty();
+		if (IWorkingSetManager.CHANGE_WORKING_SET_NAME_CHANGE.equals(property))
+			updateTitle();
+		else	if (IWorkingSetManager.CHANGE_WORKING_SET_CONTENT_CHANGE.equals(property)) {
+			updateTitle();
+			fViewer.getControl().setRedraw(false);
+			fViewer.refresh();
+			fViewer.getControl().setRedraw(true);
+		}
+
 	}
 	
 	/**
@@ -259,9 +304,22 @@ public abstract class RubyBrowsingPart extends ViewPart implements
 		}
 	}
 	
+	private void saveSelectionState(IMemento memento) {
+		Object elements[]= ((IStructuredSelection) fViewer.getSelection()).toArray();
+		if (elements.length > 0) {
+			IMemento selectionMem= memento.createChild(TAG_SELECTED_ELEMENTS);
+			for (int i= 0; i < elements.length; i++) {
+				IMemento elementMem= selectionMem.createChild(TAG_SELECTED_ELEMENT);
+				Object o= elements[i];
+				if (o instanceof IRubyElement)
+					elementMem.putString(TAG_SELECTED_ELEMENT_PATH, ((IRubyElement) elements[i]).getHandleIdentifier());
+			}
+		}
+	}
+	
 	protected void restoreState(IMemento memento) {
-//		if (fHasWorkingSetFilter)
-//			fWorkingSetFilterActionGroup.restoreState(memento);
+		if (fHasWorkingSetFilter)
+			fWorkingSetFilterActionGroup.restoreState(memento);
 		if (fHasCustomFilter)
 			fCustomFiltersActionGroup.restoreState(memento);
 
@@ -282,8 +340,8 @@ public abstract class RubyBrowsingPart extends ViewPart implements
 		fillToolBar(toolBar);
 
 
-//		if (fHasWorkingSetFilter)
-//			fWorkingSetFilterActionGroup.fillActionBars(getViewSite().getActionBars());
+		if (fHasWorkingSetFilter)
+			fWorkingSetFilterActionGroup.fillActionBars(getViewSite().getActionBars());
 
 		actionBars.updateActionBars();
 
@@ -294,6 +352,10 @@ public abstract class RubyBrowsingPart extends ViewPart implements
 
 		IMenuManager menu= actionBars.getMenuManager();
 		menu.add(fToggleLinkingAction);
+	}
+	
+	protected boolean hasWorkingSetFilter() {
+		return fHasWorkingSetFilter;
 	}
 	
 	protected void fillToolBar(IToolBarManager tbm) {
@@ -861,12 +923,16 @@ public abstract class RubyBrowsingPart extends ViewPart implements
 				memento.putMemento(fMemento);
 			return;
 		}
-//		if (fHasWorkingSetFilter)
-//			fWorkingSetFilterActionGroup.saveState(memento);
+		if (fHasWorkingSetFilter)
+			fWorkingSetFilterActionGroup.saveState(memento);
 		if (fHasCustomFilter)
 			fCustomFiltersActionGroup.saveState(memento);
-//		saveSelectionState(memento);
+		saveSelectionState(memento);
 		saveLinkingEnabled(memento);
+	}
+	
+	void setHasWorkingSetFilter(boolean state) {
+		fHasWorkingSetFilter= state;
 	}
 	
 	private void saveLinkingEnabled(IMemento memento) {
@@ -929,6 +995,14 @@ public abstract class RubyBrowsingPart extends ViewPart implements
 				setSelectionFromEditor(editor);
 			}
 		}
+	}
+	
+	protected final ILabelProvider getLabelProvider() {
+		return fLabelProvider;
+	}
+	
+	protected final ILabelProvider getTitleProvider() {
+		return fTitleProvider;
 	}
 	
 	/**
