@@ -556,7 +556,7 @@ public abstract class EvaluateAction implements IWorkbenchWindowActionDelegate, 
 		return message;
 	}
 	
-	/* (non-Rubydoc)
+	/* (non-Javadoc)
 	 * @see org.eclipse.ui.IActionDelegate#run(IAction)
 	 */
 	public void run(IAction action) {
@@ -564,7 +564,7 @@ public abstract class EvaluateAction implements IWorkbenchWindowActionDelegate, 
 		run();
 	}
 
-	/* (non-Rubydoc)
+	/* (non-Javadoc)
 	 * @see org.eclipse.ui.IActionDelegate#selectionChanged(IAction, ISelection)
 	 */
 	public void selectionChanged(IAction action, ISelection selection) { 
