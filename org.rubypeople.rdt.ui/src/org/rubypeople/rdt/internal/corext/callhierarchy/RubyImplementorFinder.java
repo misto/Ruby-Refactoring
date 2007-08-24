@@ -22,7 +22,7 @@ import org.rubypeople.rdt.core.RubyModelException;
 import org.rubypeople.rdt.internal.ui.RubyPlugin;
 
 public class RubyImplementorFinder implements IImplementorFinder {
-    /* (non-Rubydoc)
+    /* (non-Javadoc)
 	 * @see org.eclipse.jdt.internal.corext.callhierarchy.IImplementorFinder#findImplementingTypes(org.eclipse.jdt.core.IType, org.eclipse.core.runtime.IProgressMonitor)
 	 */
 	public Collection findImplementingTypes(IType type, IProgressMonitor progressMonitor) {
@@ -42,7 +42,7 @@ public class RubyImplementorFinder implements IImplementorFinder {
         return null;
     }
 
-	/* (non-Rubydoc)
+	/* (non-Javadoc)
 	 * @see org.eclipse.jdt.internal.corext.callhierarchy.IImplementorFinder#findInterfaces(org.eclipse.jdt.core.IType, org.eclipse.core.runtime.IProgressMonitor)
      */
     public Collection findInterfaces(IType type, IProgressMonitor progressMonitor) {

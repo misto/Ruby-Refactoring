@@ -74,7 +74,7 @@ public class FiltersDialog extends SelectionStatusDialog {
 	}
 
 	/*
-	 * (non-Rubydoc) Method declared on Dialog.
+	 * (non-Javadoc) Method declared on Dialog.
 	 */
 	protected Control createDialogArea(Composite composite) {
 		Composite parent = (Composite) super.createDialogArea(composite);

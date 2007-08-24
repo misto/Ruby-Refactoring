@@ -54,7 +54,7 @@ public class SuperTypeHierarchyCache {
 			fTypeHierarchy= null;
 		}
 		
-		/* (non-Rubydoc)
+		/* (non-Javadoc)
 		 * @see java.lang.Object#toString()
 		 */
 		public String toString() {

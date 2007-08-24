@@ -45,7 +45,7 @@ class CallerMethodWrapper extends MethodWrapper {
         return CallHierarchyMessages.CallerMethodWrapper_taskname; 
     }
 
-    /* (non-Rubydoc)
+    /* (non-Javadoc)
 	 * @see org.eclipse.jdt.internal.corext.callhierarchy.MethodWrapper#createMethodWrapper(org.eclipse.jdt.internal.corext.callhierarchy.MethodCall)
 	 */
 	protected MethodWrapper createMethodWrapper(MethodCall methodCall) {

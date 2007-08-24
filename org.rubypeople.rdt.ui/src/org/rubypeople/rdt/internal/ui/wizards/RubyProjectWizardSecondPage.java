@@ -104,7 +104,7 @@ public class RubyProjectWizardSecondPage extends RubyCapabilityConfigurationPage
 	}
 	
 	
-	/* (non-Rubydoc)
+	/* (non-Javadoc)
 	 * @see org.eclipse.jface.dialogs.IDialogPage#setVisible(boolean)
 	 */
 	public void setVisible(boolean visible) {

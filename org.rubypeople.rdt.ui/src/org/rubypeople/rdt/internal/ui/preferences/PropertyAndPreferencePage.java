@@ -297,20 +297,20 @@ public abstract class PropertyAndPreferencePage extends PreferencePage implement
 		StatusUtil.applyToStatusLine(this, status);
 	}
 
-	/* (non-Rubydoc)
+	/* (non-Javadoc)
 	 * @see org.eclipse.ui.IWorkbenchPreferencePage#init(org.eclipse.ui.IWorkbench)
 	 */
 	public void init(IWorkbench workbench) {
 	}
 
-	/* (non-Rubydoc)
+	/* (non-Javadoc)
 	 * @see org.eclipse.ui.IWorkbenchPropertyPage#getElement()
 	 */
 	public IAdaptable getElement() {
 		return fProject;
 	}
 
-	/* (non-Rubydoc)
+	/* (non-Javadoc)
 	 * @see org.eclipse.ui.IWorkbenchPropertyPage#setElement(org.eclipse.core.runtime.IAdaptable)
 	 */
 	public void setElement(IAdaptable element) {
@@ -318,7 +318,7 @@ public abstract class PropertyAndPreferencePage extends PreferencePage implement
 	}
 	
 	
-	/* (non-Rubydoc)
+	/* (non-Javadoc)
 	 * @see org.eclipse.jface.preference.PreferencePage#applyData(java.lang.Object)
 	 */
 	public void applyData(Object data) {

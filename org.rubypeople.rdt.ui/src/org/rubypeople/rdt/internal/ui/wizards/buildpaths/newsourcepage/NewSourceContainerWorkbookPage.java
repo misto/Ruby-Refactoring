@@ -227,7 +227,7 @@ public class NewSourceContainerWorkbookPage extends BuildPathBasePage implements
         return RubyPlugin.getActiveWorkbenchShell();
     }
 
-    /* (non-Rubydoc)
+    /* (non-Javadoc)
      * @see org.eclipse.jdt.internal.ui.wizards.buildpaths.BuildPathBasePage#getSelection()
      */
     public List getSelection() {
@@ -259,7 +259,7 @@ public class NewSourceContainerWorkbookPage extends BuildPathBasePage implements
         return selectedList;
     }
 
-    /* (non-Rubydoc)
+    /* (non-Javadoc)
      * @see org.eclipse.jdt.internal.ui.wizards.buildpaths.BuildPathBasePage#setSelection(java.util.List)
      */
     public void setSelection(List selection, boolean expand) {
@@ -303,7 +303,7 @@ public class NewSourceContainerWorkbookPage extends BuildPathBasePage implements
         fPackageExplorer.setSelection(cpEntries);
     }
 
-    /* (non-Rubydoc)
+    /* (non-Javadoc)
      * @see org.eclipse.jdt.internal.ui.wizards.buildpaths.BuildPathBasePage#isEntryKind(int)
      */
     public boolean isEntryKind(int kind) {

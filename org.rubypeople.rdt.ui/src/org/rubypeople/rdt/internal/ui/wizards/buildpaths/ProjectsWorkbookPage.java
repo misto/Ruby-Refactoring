@@ -171,7 +171,7 @@ public class ProjectsWorkbookPage extends BuildPathBasePage {
 		}
 	}
 	
-	/* (non-Rubydoc)
+	/* (non-Javadoc)
 	 * @see org.eclipse.jdt.internal.ui.wizards.buildpaths.BuildPathBasePage#isEntryKind(int)
 	 */
 	public boolean isEntryKind(int kind) {

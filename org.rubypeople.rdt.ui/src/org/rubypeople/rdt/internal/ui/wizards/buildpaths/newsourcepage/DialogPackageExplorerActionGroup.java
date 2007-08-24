@@ -749,7 +749,7 @@ public class DialogPackageExplorerActionGroup extends CompositeActionGroup {
         fListeners.remove(listener);
     }
     
-    /* (non-Rubydoc)
+    /* (non-Javadoc)
      * @see org.eclipse.jdt.internal.ui.actions.CompositeActionGroup#dispose()
      */
     public void dispose() {

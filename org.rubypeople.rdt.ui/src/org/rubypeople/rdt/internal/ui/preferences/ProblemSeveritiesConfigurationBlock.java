@@ -317,7 +317,7 @@ public class ProblemSeveritiesConfigurationBlock extends OptionsConfigurationBlo
 		return new String[] { title, message };
 	}
 	
-	/* (non-Rubydoc)
+	/* (non-Javadoc)
 	 * @see org.eclipse.jdt.internal.ui.preferences.OptionsConfigurationBlock#dispose()
 	 */
 	public void dispose() {

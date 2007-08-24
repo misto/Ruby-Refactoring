@@ -70,14 +70,14 @@ public class LoadpathOrderingWorkbookPage extends BuildPathBasePage {
 		fLoadPathList.selectElements(new StructuredSelection(selElements));
 	}
 		
-	/* (non-Rubydoc)
+	/* (non-Javadoc)
 	 * @see org.eclipse.jdt.internal.ui.wizards.buildpaths.BuildPathBasePage#isEntryKind(int)
 	 */
 	public boolean isEntryKind(int kind) {
 		return true;
 	}
 
-	/* (non-Rubydoc)
+	/* (non-Javadoc)
 	 * @see org.eclipse.jdt.internal.ui.wizards.buildpaths.BuildPathBasePage#init(org.eclipse.jdt.core.IRubyProject)
 	 */
 	public void init(IRubyProject javaProject) {

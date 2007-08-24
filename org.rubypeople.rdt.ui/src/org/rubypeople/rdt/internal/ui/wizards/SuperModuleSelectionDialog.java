@@ -52,7 +52,7 @@ public class SuperModuleSelectionDialog extends TypeSelectionDialog2 {
 		super.createButtonsForButtonBar(parent);
 	}
 	
-	/* (non-Rubydoc)
+	/* (non-Javadoc)
 	 * @see org.eclipse.jface.dialogs.Dialog#getDialogBoundsSettings()
 	 */
 	protected IDialogSettings getDialogBoundsSettings() {

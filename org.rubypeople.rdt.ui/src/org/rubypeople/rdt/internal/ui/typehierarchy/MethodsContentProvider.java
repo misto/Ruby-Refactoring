@@ -53,7 +53,7 @@ public class MethodsContentProvider implements IStructuredContentProvider, IWork
 		}
 	}
 	
-	/* (non-Rubydoc)
+	/* (non-Javadoc)
 	 * @see IStructuredContentProvider#providesWorkingCopies()
 	 */
 	public boolean providesWorkingCopies() {

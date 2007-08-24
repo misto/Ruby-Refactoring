@@ -59,14 +59,14 @@ public class RubyProjectWizard extends NewElementWizard implements IExecutableEx
         addPage(fSecondPage);
     }		
     
-    /* (non-Rubydoc)
+    /* (non-Javadoc)
      * @see org.eclipse.jdt.internal.ui.wizards.NewElementWizard#finishPage(org.eclipse.core.runtime.IProgressMonitor)
      */
     protected void finishPage(IProgressMonitor monitor) throws InterruptedException, CoreException {
     	fSecondPage.performFinish(monitor); // use the full progress monitor
     }
        
-	/* (non-Rubydoc)
+	/* (non-Javadoc)
 	 * @see org.eclipse.jface.wizard.IWizard#performFinish()
 	 */
 	public boolean performFinish() {
@@ -92,7 +92,7 @@ public class RubyProjectWizard extends NewElementWizard implements IExecutableEx
         fConfigElement= cfig;
     }
     
-    /* (non-Rubydoc)
+    /* (non-Javadoc)
      * @see IWizard#performCancel()
      */
     public boolean performCancel() {
@@ -100,7 +100,7 @@ public class RubyProjectWizard extends NewElementWizard implements IExecutableEx
         return super.performCancel();
     }
     
-	/* (non-Rubydoc)
+	/* (non-Javadoc)
 	 * @see org.eclipse.jdt.internal.ui.wizards.NewElementWizard#getCreatedElement()
 	 */
 	public IRubyElement getCreatedElement() {

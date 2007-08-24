@@ -83,7 +83,7 @@ public class LoadpathContainerSelectionPage extends WizardPage {
 		validatePage();
 	}
 
-	/* (non-Rubydoc)
+	/* (non-Javadoc)
 	 * @see IDialogPage#createControl(Composite)
 	 */
 	public void createControl(Composite parent) {
@@ -141,14 +141,14 @@ public class LoadpathContainerSelectionPage extends WizardPage {
 		}
 	}	
 
-	/* (non-Rubydoc)
+	/* (non-Javadoc)
 	 * @see IWizardPage#canFlipToNextPage()
 	 */
 	public boolean canFlipToNextPage() {
 		return isPageComplete(); // avoid the getNextPage call to prevent potential plugin load
 	}
 
-	/* (non-Rubydoc)
+	/* (non-Javadoc)
 	 * @see org.eclipse.jface.dialogs.IDialogPage#setVisible(boolean)
 	 */
 	public void setVisible(boolean visible) {

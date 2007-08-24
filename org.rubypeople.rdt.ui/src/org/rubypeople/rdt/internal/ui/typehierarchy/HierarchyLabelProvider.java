@@ -115,7 +115,7 @@ public class HierarchyLabelProvider extends AppearanceAwareLabelProvider {
 		return true;
 	}
 	
-	/* (non-Rubydoc)
+	/* (non-Javadoc)
 	 * @see ILabelProvider#getText
 	 */ 	
 	public String getText(Object element) {
@@ -124,7 +124,7 @@ public class HierarchyLabelProvider extends AppearanceAwareLabelProvider {
 	}	
 	
 	
-	/* (non-Rubydoc)
+	/* (non-Javadoc)
 	 * @see ILabelProvider#getImage
 	 */ 
 	public Image getImage(Object element) {
@@ -158,7 +158,7 @@ public class HierarchyLabelProvider extends AppearanceAwareLabelProvider {
 		return new RubyElementImageDescriptor(desc, adornmentFlags, RubyElementImageProvider.BIG_SIZE);
 	}
 		
-	/* (non-Rubydoc)
+	/* (non-Javadoc)
 	 * @see org.eclipse.jface.viewers.IColorProvider#getForeground(java.lang.Object)
 	 */
 	public Color getForeground(Object element) {

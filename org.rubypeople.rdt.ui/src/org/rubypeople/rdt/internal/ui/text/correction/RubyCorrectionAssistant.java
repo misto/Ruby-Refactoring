@@ -101,7 +101,7 @@ public class RubyCorrectionAssistant extends QuickAssistAssistant {
 		return manager.getColor(rgb);
 	}
 
-	/* (non-Rubydoc)
+	/* (non-Javadoc)
 	 * @see org.eclipse.jface.text.contentassist.IContentAssistant#install(org.eclipse.jface.text.ITextViewer)
 	 */
 	public void install(ISourceViewer sourceViewer) {
@@ -114,7 +114,7 @@ public class RubyCorrectionAssistant extends QuickAssistAssistant {
 
 
 
-	/* (non-Rubydoc)
+	/* (non-Javadoc)
 	 * @see org.eclipse.jface.text.contentassist.ContentAssistant#uninstall()
 	 */
 	public void uninstall() {

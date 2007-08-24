@@ -74,7 +74,7 @@ public class ProjectSelectionDialog extends SelectionStatusDialog {
 		
 	}
 
-	/* (non-Rubydoc)
+	/* (non-Javadoc)
 	 * Method declared on Dialog.
 	 */
 	protected Control createDialogArea(Composite parent) {
@@ -150,7 +150,7 @@ public class ProjectSelectionDialog extends SelectionStatusDialog {
 		}
 	}
 
-	/* (non-Rubydoc)
+	/* (non-Javadoc)
 	 * @see org.eclipse.ui.dialogs.SelectionStatusDialog#computeResult()
 	 */
 	protected void computeResult() {

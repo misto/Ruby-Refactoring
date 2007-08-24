@@ -123,14 +123,14 @@ public class RubyElementImageDescriptor extends CompositeImageDescriptor {
         return new Point(fSize.x, fSize.y);
     }
     
-    /* (non-Rubydoc)
+    /* (non-Javadoc)
      * Method declared in CompositeImageDescriptor
      */
     protected Point getSize() {
         return fSize;
     }
     
-    /* (non-Rubydoc)
+    /* (non-Javadoc)
      * Method declared on Object.
      */
     public boolean equals(Object object) {
@@ -141,14 +141,14 @@ public class RubyElementImageDescriptor extends CompositeImageDescriptor {
         return (fBaseImage.equals(other.fBaseImage) && fFlags == other.fFlags && fSize.equals(other.fSize));
     }
     
-    /* (non-Rubydoc)
+    /* (non-Javadoc)
      * Method declared on Object.
      */
     public int hashCode() {
         return fBaseImage.hashCode() | fFlags | fSize.hashCode();
     }
     
-    /* (non-Rubydoc)
+    /* (non-Javadoc)
      * Method declared in CompositeImageDescriptor
      */
     protected void drawCompositeImage(int width, int height) {

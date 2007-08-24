@@ -56,7 +56,7 @@ public class LoadpathModifierAction extends Action {
         fOperation= operation;
     }
 
-    /* (non-Rubydoc)
+    /* (non-Javadoc)
      * @see org.eclipse.jface.action.Action#run()
      */
     public void run() {
@@ -119,7 +119,7 @@ public class LoadpathModifierAction extends Action {
         return fOperation.getDescription(type);
     }
     
-    /* (non-Rubydoc)
+    /* (non-Javadoc)
      * @see org.eclipse.jface.action.Action#getId()
      */
     public String getId() {

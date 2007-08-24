@@ -86,7 +86,7 @@ public class VariablePathDialogField extends StringButtonDialogField {
 			}
 		}
 		
-		/* (non-Rubydoc)
+		/* (non-Javadoc)
 		 * @see ISelectionChangedListener#selectionChanged(SelectionChangedEvent)
 		 */
 		public void selectionChanged(SelectionChangedEvent event) {

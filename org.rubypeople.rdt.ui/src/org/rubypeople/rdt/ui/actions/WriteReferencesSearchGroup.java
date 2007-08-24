@@ -135,7 +135,7 @@ public class WriteReferencesSearchGroup extends ActionGroup  {
 	}
 	
 	
-	/* (non-Rubydoc)
+	/* (non-Javadoc)
 	 * Method declared on ActionGroup.
 	 */
 	public void fillContextMenu(IMenuManager manager) {

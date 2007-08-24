@@ -119,14 +119,14 @@ public class ProblemMarkerManager implements IResourceChangeListener, IAnnotatio
 		}
 	}
 	
-	/* (non-Rubydoc)
+	/* (non-Javadoc)
 	 * @see IAnnotationModelListener#modelChanged(IAnnotationModel)
 	 */
 	public void modelChanged(IAnnotationModel model) {
 		// no action
 	}
 
-	/* (non-Rubydoc)
+	/* (non-Javadoc)
 	 * @see IAnnotationModelListenerExtension#modelChanged(AnnotationModelEvent)
 	 */
 	public void modelChanged(AnnotationModelEvent event) {

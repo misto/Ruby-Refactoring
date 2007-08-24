@@ -111,7 +111,7 @@ public class BuildPathsPropertyPage extends PropertyPage implements IStatusChang
 		return pageSettings;
 	}
 	
-	/* (non-Rubydoc)
+	/* (non-Javadoc)
 	 * @see org.eclipse.jface.dialogs.IDialogPage#setVisible(boolean)
 	 */
 	public void setVisible(boolean visible) {
@@ -234,7 +234,7 @@ public class BuildPathsPropertyPage extends PropertyPage implements IStatusChang
 		return true;
 	}
 	
-	/* (non-Rubydoc)
+	/* (non-Javadoc)
 	 * @see IStatusChangeListener#statusChanged
 	 */
 	public void statusChanged(IStatus status) {
@@ -242,7 +242,7 @@ public class BuildPathsPropertyPage extends PropertyPage implements IStatusChang
 		StatusUtil.applyToStatusLine(this, status);
 	}
 	
-	/* (non-Rubydoc)
+	/* (non-Javadoc)
 	 * @see org.eclipse.jface.preference.PreferencePage#applyData(java.lang.Object)
 	 */
 	public void applyData(Object data) {

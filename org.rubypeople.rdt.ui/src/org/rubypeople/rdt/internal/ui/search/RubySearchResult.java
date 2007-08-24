@@ -186,7 +186,7 @@ public class RubySearchResult extends AbstractTextSearchResult implements IEdito
 			}
 		}
 	}
-	/* (non-Rubydoc)
+	/* (non-Javadoc)
 	 * @see org.eclipse.search.ui.ISearchResultCategory#getFile(java.lang.Object)
 	 */
 	public IFile getFile(Object element) {
@@ -204,7 +204,7 @@ public class RubySearchResult extends AbstractTextSearchResult implements IEdito
 	}
 	
 	/*
-	 * (non-Rubydoc)
+	 * (non-Javadoc)
 	 * 
 	 * @see org.eclipse.search2.ui.text.IStructureProvider#isShownInEditor(org.eclipse.search2.ui.text.Match,
 	 *      org.eclipse.ui.IEditorPart)
@@ -220,7 +220,7 @@ public class RubySearchResult extends AbstractTextSearchResult implements IEdito
 		return false;
 	}
 
-	/* (non-Rubydoc)
+	/* (non-Javadoc)
 	 * @see org.eclipse.search.ui.ISearchResult#getQuery()
 	 */
 	public ISearchQuery getQuery() {

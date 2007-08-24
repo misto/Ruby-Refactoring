@@ -100,13 +100,13 @@ public class OpenTypeHierarchyAction extends SelectionDispatchAction {
 		setEnabled(SelectionConverter.canOperateOn(fEditor));
 	}
 	
-	/* (non-Rubydoc)
+	/* (non-Javadoc)
 	 * Method declared on SelectionDispatchAction.
 	 */
 	public void selectionChanged(ITextSelection selection) {
 	}
 
-	/* (non-Rubydoc)
+	/* (non-Javadoc)
 	 * Method declared on SelectionDispatchAction.
 	 */
 	public void selectionChanged(IStructuredSelection selection) {
@@ -137,7 +137,7 @@ public class OpenTypeHierarchyAction extends SelectionDispatchAction {
 		}
 	}
 	
-	/* (non-Rubydoc)
+	/* (non-Javadoc)
 	 * Method declared on SelectionDispatchAction.
 	 */
 	public void run(ITextSelection selection) {
@@ -163,7 +163,7 @@ public class OpenTypeHierarchyAction extends SelectionDispatchAction {
 		}
 	}
 	
-	/* (non-Rubydoc)
+	/* (non-Javadoc)
 	 * Method declared on SelectionDispatchAction.
 	 */
 	public void run(IStructuredSelection selection) {

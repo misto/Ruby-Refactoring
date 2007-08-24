@@ -44,7 +44,7 @@ class FiltersDialog extends StatusDialog {
         super(parentShell);
     }
 
-    /* (non-Rubydoc)
+    /* (non-Javadoc)
      * Method declared on Window.
      */
     protected void configureShell(Shell newShell) {
@@ -53,7 +53,7 @@ class FiltersDialog extends StatusDialog {
         PlatformUI.getWorkbench().getHelpSystem().setHelp(newShell, IRubyHelpContextIds.CALL_HIERARCHY_FILTERS_DIALOG);
     }
 
-    /* (non-Rubydoc)
+    /* (non-Javadoc)
      * Method declared on Dialog.
      */
     protected Control createDialogArea(Composite parent) {

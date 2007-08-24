@@ -135,7 +135,7 @@ public class RubyCapabilityConfigurationPage extends NewElementWizardPage {
 		fRubyProject= jproject;
 	}	
 
-	/* (non-Rubydoc)
+	/* (non-Javadoc)
 	 * @see WizardPage#createControl
 	 */	
 	public void createControl(Composite parent) {

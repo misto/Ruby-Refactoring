@@ -47,7 +47,7 @@ public class NamePatternFilter extends ViewerFilter {
     }
     
     
-    /* (non-Rubydoc)
+    /* (non-Javadoc)
      * Method declared on ViewerFilter.
      */
     public boolean select(Viewer viewer, Object parentElement, Object element) {

@@ -129,7 +129,7 @@ public class ReferencesSearchGroup extends ActionGroup  {
 		return MENU_TEXT;
 	}
 	
-	/* (non-Rubydoc)
+	/* (non-Javadoc)
 	 * Method declared in ActionGroup
 	 */
 	public void fillActionBars(IActionBars actionBars) {
@@ -157,7 +157,7 @@ public class ReferencesSearchGroup extends ActionGroup  {
 	}
 	
 	
-	/* (non-Rubydoc)
+	/* (non-Javadoc)
 	 * Method declared on ActionGroup.
 	 */
 	public void fillContextMenu(IMenuManager manager) {

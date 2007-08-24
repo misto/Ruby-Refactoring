@@ -555,7 +555,7 @@ public class RubySearchPage extends DialogPage implements ISearchPage, IRubySear
 	}
 	
 	
-	/* (non-Rubydoc)
+	/* (non-Javadoc)
 	 * @see org.eclipse.jface.dialogs.DialogPage#dispose()
 	 */
 	public void dispose() {

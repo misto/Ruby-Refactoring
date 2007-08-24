@@ -108,7 +108,7 @@ public abstract class OptionsConfigurationBlock {
 			}
 		}
 			
-		/* (non-Rubydoc)
+		/* (non-Javadoc)
 		 * @see java.lang.Object#toString()
 		 */
 		public String toString() {

@@ -178,7 +178,7 @@ class SearchScopeActionGroup extends ActionGroup {
 		javaSearchMM.setRemoveAllWhenShown(true);
 		
 		javaSearchMM.addMenuListener(new IMenuListener() {
-			/* (non-Rubydoc)
+			/* (non-Javadoc)
 			 * @see org.eclipse.jface.action.IMenuListener#menuAboutToShow(org.eclipse.jface.action.IMenuManager)
 			 */
 			public void menuAboutToShow(IMenuManager manager) {

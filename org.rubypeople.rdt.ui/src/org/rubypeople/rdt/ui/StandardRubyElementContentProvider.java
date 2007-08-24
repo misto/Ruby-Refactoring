@@ -134,33 +134,33 @@ public class StandardRubyElementContentProvider implements ITreeContentProvider 
 		fProvideWorkingCopy= b;
 	}
 
-	/* (non-Rubydoc)
+	/* (non-Javadoc)
 	 * @see IWorkingCopyProvider#providesWorkingCopies()
 	 */
 	public boolean providesWorkingCopies() {
 		return getProvideWorkingCopy();
 	}
 
-	/* (non-Rubydoc)
+	/* (non-Javadoc)
 	 * Method declared on IStructuredContentProvider.
 	 */
 	public Object[] getElements(Object parent) {
 		return getChildren(parent);
 	}
 	
-	/* (non-Rubydoc)
+	/* (non-Javadoc)
 	 * Method declared on IContentProvider.
 	 */
 	public void inputChanged(Viewer viewer, Object oldInput, Object newInput) {
 	}
 
-	/* (non-Rubydoc)
+	/* (non-Javadoc)
 	 * Method declared on IContentProvider.
 	 */
 	public void dispose() {
 	}
 
-	/* (non-Rubydoc)
+	/* (non-Javadoc)
 	 * Method declared on ITreeContentProvider.
 	 */
 	public Object[] getChildren(Object element) {
@@ -260,7 +260,7 @@ public class StandardRubyElementContentProvider implements ITreeContentProvider 
 	}
 
 
-	/* (non-Rubydoc)
+	/* (non-Javadoc)
 	 * @see ITreeContentProvider
 	 */
 	public boolean hasChildren(Object element) {
@@ -297,7 +297,7 @@ public class StandardRubyElementContentProvider implements ITreeContentProvider 
 		return (children != null) && children.length > 0;
 	}
 	 
-	/* (non-Rubydoc)
+	/* (non-Javadoc)
 	 * Method declared on ITreeContentProvider.
 	 */
 	public Object getParent(Object element) {

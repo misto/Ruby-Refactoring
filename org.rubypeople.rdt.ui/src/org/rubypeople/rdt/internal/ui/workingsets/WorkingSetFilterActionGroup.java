@@ -212,7 +212,7 @@ public class WorkingSetFilterActionGroup extends ActionGroup implements IWorking
 	}
 	
 
-	/* (non-Rubydoc)
+	/* (non-Javadoc)
 	 * @see ActionGroup#fillActionBars(IActionBars)
 	 */
 	public void fillActionBars(IActionBars actionBars) {
@@ -306,7 +306,7 @@ public class WorkingSetFilterActionGroup extends ActionGroup implements IWorking
 		fMenuListener= null;
 	}
 	
-	/* (non-Rubydoc)
+	/* (non-Javadoc)
 	 * @see ActionGroup#dispose()
 	 */
 	public void dispose() {

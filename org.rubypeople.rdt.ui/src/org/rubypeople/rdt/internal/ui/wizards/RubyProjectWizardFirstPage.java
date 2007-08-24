@@ -121,7 +121,7 @@ public class RubyProjectWizardFirstPage extends WizardPage {
 			fNameField.setText(name);
 		}
 
-		/* (non-Rubydoc)
+		/* (non-Javadoc)
 		 * @see org.eclipse.jdt.internal.ui.wizards.dialogfields.IDialogFieldListener#dialogFieldChanged(org.eclipse.jdt.internal.ui.wizards.dialogfields.DialogField)
 		 */
 		public void dialogFieldChanged(DialogField field) {
@@ -190,7 +190,7 @@ public class RubyProjectWizardFirstPage extends WizardPage {
 		}
 
 		/*
-		 * (non-Rubydoc)
+		 * (non-Javadoc)
 		 * 
 		 * @see java.util.Observer#update(java.util.Observable,
 		 *      java.lang.Object)
@@ -213,7 +213,7 @@ public class RubyProjectWizardFirstPage extends WizardPage {
 			return fWorkspaceRadio.isSelected();
 		}
 
-		/* (non-Rubydoc)
+		/* (non-Javadoc)
 		 * @see org.eclipse.jdt.internal.ui.wizards.dialogfields.IStringButtonAdapter#changeControlPressed(org.eclipse.jdt.internal.ui.wizards.dialogfields.DialogField)
 		 */
 		public void changeControlPressed(DialogField field) {
@@ -239,7 +239,7 @@ public class RubyProjectWizardFirstPage extends WizardPage {
 			}
 		}
 
-		/* (non-Rubydoc)
+		/* (non-Javadoc)
 		 * @see org.eclipse.jdt.internal.ui.wizards.dialogfields.IDialogFieldListener#dialogFieldChanged(org.eclipse.jdt.internal.ui.wizards.dialogfields.DialogField)
 		 */
 		public void dialogFieldChanged(DialogField field) {
@@ -301,14 +301,14 @@ public class RubyProjectWizardFirstPage extends WizardPage {
 			return false;
 		}
 
-		/* (non-Rubydoc)
+		/* (non-Javadoc)
 		 * @see org.eclipse.swt.events.SelectionListener#widgetSelected(org.eclipse.swt.events.SelectionEvent)
 		 */
 		public void widgetSelected(SelectionEvent e) {
 			widgetDefaultSelected(e);
 		}
 
-		/* (non-Rubydoc)
+		/* (non-Javadoc)
 		 * @see org.eclipse.swt.events.SelectionListener#widgetDefaultSelected(org.eclipse.swt.events.SelectionEvent)
 		 */
 		public void widgetDefaultSelected(SelectionEvent e) {
@@ -453,14 +453,14 @@ public class RubyProjectWizardFirstPage extends WizardPage {
 			fGroup.setEnabled(!detect);
 		}
 		
-		/* (non-Rubydoc)
+		/* (non-Javadoc)
 		 * @see org.eclipse.swt.events.SelectionListener#widgetSelected(org.eclipse.swt.events.SelectionEvent)
 		 */
 		public void widgetSelected(SelectionEvent e) {
 			widgetDefaultSelected(e);
 		}
 
-		/* (non-Rubydoc)
+		/* (non-Javadoc)
 		 * @see org.eclipse.swt.events.SelectionListener#widgetDefaultSelected(org.eclipse.swt.events.SelectionEvent)
 		 */
 		public void widgetDefaultSelected(SelectionEvent e) {
@@ -480,7 +480,7 @@ public class RubyProjectWizardFirstPage extends WizardPage {
 		}
 		
 
-		/* (non-Rubydoc)
+		/* (non-Javadoc)
 		 * @see org.eclipse.jdt.internal.ui.wizards.dialogfields.IDialogFieldListener#dialogFieldChanged(org.eclipse.jdt.internal.ui.wizards.dialogfields.DialogField)
 		 */
 		public void dialogFieldChanged(DialogField field) {
@@ -572,14 +572,14 @@ public class RubyProjectWizardFirstPage extends WizardPage {
 			return fDetect;
 		}
 
-		/* (non-Rubydoc)
+		/* (non-Javadoc)
 		 * @see org.eclipse.swt.events.SelectionListener#widgetSelected(org.eclipse.swt.events.SelectionEvent)
 		 */
 		public void widgetSelected(SelectionEvent e) {
 			widgetDefaultSelected(e);
 		}
 
-		/* (non-Rubydoc)
+		/* (non-Javadoc)
 		 * @see org.eclipse.swt.events.SelectionListener#widgetDefaultSelected(org.eclipse.swt.events.SelectionEvent)
 		 */
 		public void widgetDefaultSelected(SelectionEvent e) {

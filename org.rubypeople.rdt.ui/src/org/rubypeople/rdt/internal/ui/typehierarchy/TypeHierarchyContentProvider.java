@@ -134,7 +134,7 @@ public abstract class TypeHierarchyContentProvider implements ITreeContentProvid
 	}
 	
 	
-	/* (non-Rubydoc)
+	/* (non-Javadoc)
 	 * @see IReconciled#providesWorkingCopies()
 	 */
 	public boolean providesWorkingCopies() {

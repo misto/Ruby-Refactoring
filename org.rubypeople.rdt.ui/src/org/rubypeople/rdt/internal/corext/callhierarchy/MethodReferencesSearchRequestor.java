@@ -31,7 +31,7 @@ class MethodReferencesSearchRequestor extends SearchRequestor {
         return fSearchResults.getCallers();
     }
 
-    /* (non-Rubydoc)
+    /* (non-Javadoc)
      * @see org.eclipse.jdt.core.search.SearchRequestor#acceptSearchMatch(org.eclipse.jdt.core.search.SearchMatch)
      */
     public void acceptSearchMatch(SearchMatch match) {

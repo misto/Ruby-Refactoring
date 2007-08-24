@@ -97,7 +97,7 @@ public class TypeFilter implements IPropertyChangeListener {
 		return false;
 	}
 
-	/* (non-Rubydoc)
+	/* (non-Javadoc)
 	 * @see org.eclipse.jface.util.IPropertyChangeListener#propertyChange(org.eclipse.jface.util.PropertyChangeEvent)
 	 */
 	public synchronized void propertyChange(PropertyChangeEvent event) {

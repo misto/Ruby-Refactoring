@@ -84,13 +84,13 @@ public class OpenAction extends SelectionDispatchAction {
 		setEnabled(SelectionConverter.canOperateOn(fEditor));
 	}
 	
-	/* (non-Rubydoc)
+	/* (non-Javadoc)
 	 * Method declared on SelectionDispatchAction.
 	 */
 	public void selectionChanged(ITextSelection selection) {
 	}
 
-	/* (non-Rubydoc)
+	/* (non-Javadoc)
 	 * Method declared on SelectionDispatchAction.
 	 */
 	public void selectionChanged(IStructuredSelection selection) {
@@ -113,7 +113,7 @@ public class OpenAction extends SelectionDispatchAction {
 		return true;
 	}
 	
-	/* (non-Rubydoc)
+	/* (non-Javadoc)
 	 * Method declared on SelectionDispatchAction.
 	 */
 	public void run(ITextSelection selection) {
@@ -139,7 +139,7 @@ public class OpenAction extends SelectionDispatchAction {
 		}
 	}
 	
-	/* (non-Rubydoc)
+	/* (non-Javadoc)
 	 * Method declared on SelectionDispatchAction.
 	 */
 	public void run(IStructuredSelection selection) {

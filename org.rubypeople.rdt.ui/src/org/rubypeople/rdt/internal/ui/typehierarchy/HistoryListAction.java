@@ -147,7 +147,7 @@ public class HistoryListAction extends Action {
 			PlatformUI.getWorkbench().getHelpSystem().setHelp(newShell, IRubyHelpContextIds.HISTORY_LIST_DIALOG);
 		}
 
-		/* (non-Rubydoc)
+		/* (non-Javadoc)
 		 * @see org.eclipse.jface.window.Window#create()
 		 */
 		public void create() {

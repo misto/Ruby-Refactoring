@@ -112,7 +112,7 @@ public class CoreUtility {
 			return fProject != null && fProject.equals(other.fProject);
 		}
 		
-		/* (non-Rubydoc)
+		/* (non-Javadoc)
 		 * @see org.eclipse.core.runtime.jobs.Job#run(org.eclipse.core.runtime.IProgressMonitor)
 		 */
 		protected IStatus run(IProgressMonitor monitor) {

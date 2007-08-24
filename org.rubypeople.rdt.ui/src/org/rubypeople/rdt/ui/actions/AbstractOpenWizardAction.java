@@ -67,7 +67,7 @@ public abstract class AbstractOpenWizardAction extends Action {
 		fCreatedElement= null;
 	}
 
-	/* (non-Rubydoc)
+	/* (non-Javadoc)
 	 * @see org.eclipse.jface.action.Action#run()
 	 */
 	public void run() {

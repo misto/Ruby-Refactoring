@@ -64,13 +64,13 @@ public class ShowInRubyResourcesViewAction extends SelectionDispatchAction {
 		setEnabled(SelectionConverter.canOperateOn(fEditor));
 	}
 	
-	/* (non-Rubydoc)
+	/* (non-Javadoc)
 	 * Method declared on SelectionDispatchAction.
 	 */
 	public void selectionChanged(ITextSelection selection) {
 	}
 
-	/* (non-Rubydoc)
+	/* (non-Javadoc)
 	 * Method declared on SelectionDispatchAction.
 	 */
 	public void selectionChanged(IStructuredSelection selection) {
@@ -83,7 +83,7 @@ public class ShowInRubyResourcesViewAction extends SelectionDispatchAction {
 		return selection.getFirstElement() instanceof IRubyElement;
 	}
 	
-	/* (non-Rubydoc)
+	/* (non-Javadoc)
 	 * Method declared on SelectionDispatchAction.
 	 */
 	public void run(ITextSelection selection) {
@@ -98,7 +98,7 @@ public class ShowInRubyResourcesViewAction extends SelectionDispatchAction {
 		}	
 	}
 	
-	/* (non-Rubydoc)
+	/* (non-Javadoc)
 	 * Method declared on SelectionDispatchAction.
 	 */
 	public void run(IStructuredSelection selection) {

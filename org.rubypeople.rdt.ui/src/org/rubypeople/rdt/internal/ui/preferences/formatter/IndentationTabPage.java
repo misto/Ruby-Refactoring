@@ -95,7 +95,7 @@ public class IndentationTabPage extends ModifyDialogTabPage {
         fPreview.setPreviewText(PREVIEW);
     }
     
-    /* (non-Rubydoc)
+    /* (non-Javadoc)
      * @see org.eclipse.jdt.internal.ui.preferences.formatter.ModifyDialogTabPage#doCreateRubyPreview(org.eclipse.swt.widgets.Composite)
      */
     protected RubyPreview doCreateRubyPreview(Composite parent) {
@@ -103,7 +103,7 @@ public class IndentationTabPage extends ModifyDialogTabPage {
         return fPreview;
     }
 
-    /* (non-Rubydoc)
+    /* (non-Javadoc)
      * @see org.eclipse.jdt.internal.ui.preferences.formatter.ModifyDialogTabPage#doUpdatePreview()
      */
     protected void doUpdatePreview() {

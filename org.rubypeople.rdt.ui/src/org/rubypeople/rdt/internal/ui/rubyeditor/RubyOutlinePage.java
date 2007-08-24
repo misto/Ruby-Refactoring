@@ -883,7 +883,7 @@ public class RubyOutlinePage extends Page implements IContentOutlinePage, IAdapt
         return type.exists() ? type : null;
     }
 
-    /* (non-Rubydoc)
+    /* (non-Javadoc)
      * Method declared on Page
      */
     public void init(IPageSite pageSite) {

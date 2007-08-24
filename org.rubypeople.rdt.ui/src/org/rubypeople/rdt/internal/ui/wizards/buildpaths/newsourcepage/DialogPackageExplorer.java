@@ -149,7 +149,7 @@ public class DialogPackageExplorer implements IMenuListener, ISelectionChangedLi
             return text;
         }
         
-        /* (non-Rubydoc)
+        /* (non-Javadoc)
          * @see org.eclipse.jdt.internal.ui.viewsupport.RubyUILabelProvider#getForeground(java.lang.Object)
          */
         public Color getForeground(Object element) {

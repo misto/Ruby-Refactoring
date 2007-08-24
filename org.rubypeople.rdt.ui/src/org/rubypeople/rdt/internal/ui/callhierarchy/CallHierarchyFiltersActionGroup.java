@@ -56,7 +56,7 @@ public class CallHierarchyFiltersActionGroup extends ActionGroup {
         fPart= part;
     }
 
-    /* (non-Rubydoc)
+    /* (non-Javadoc)
      * Method declared on ActionGroup.
      */
     public void fillActionBars(IActionBars actionBars) {
@@ -68,7 +68,7 @@ public class CallHierarchyFiltersActionGroup extends ActionGroup {
         viewMenu.add(new ShowFilterDialogAction());
     }
 
-    /* (non-Rubydoc)
+    /* (non-Javadoc)
      * Method declared on ActionGroup.
      */
     public void dispose() {

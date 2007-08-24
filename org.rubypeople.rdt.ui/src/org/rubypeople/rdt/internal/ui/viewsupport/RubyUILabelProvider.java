@@ -128,7 +128,7 @@ public class RubyUILabelProvider implements ILabelProvider, IColorProvider {
         return image;
     }
 
-    /* (non-Rubydoc)
+    /* (non-Javadoc)
      * @see ILabelProvider#getImage
      */
     public Image getImage(Object element) {
@@ -151,7 +151,7 @@ public class RubyUILabelProvider implements ILabelProvider, IColorProvider {
     }
 
 
-    /* (non-Rubydoc)
+    /* (non-Javadoc)
      * @see ILabelProvider#getText
      */
     public String getText(Object element) {
@@ -163,7 +163,7 @@ public class RubyUILabelProvider implements ILabelProvider, IColorProvider {
         return decorateText(result, element);
     }
 
-    /* (non-Rubydoc)
+    /* (non-Javadoc)
      * @see IBaseLabelProvider#dispose
      */
     public void dispose() {
@@ -178,7 +178,7 @@ public class RubyUILabelProvider implements ILabelProvider, IColorProvider {
         fImageLabelProvider.dispose();
     }
     
-    /* (non-Rubydoc)
+    /* (non-Javadoc)
      * @see IBaseLabelProvider#addListener(ILabelProviderListener)
      */
     public void addListener(ILabelProviderListener listener) {
@@ -191,14 +191,14 @@ public class RubyUILabelProvider implements ILabelProvider, IColorProvider {
         fListeners.add(listener);   
     }
 
-    /* (non-Rubydoc)
+    /* (non-Javadoc)
      * @see IBaseLabelProvider#isLabelProperty(Object, String)
      */
     public boolean isLabelProperty(Object element, String property) {
         return true;    
     }
 
-    /* (non-Rubydoc)
+    /* (non-Javadoc)
      * @see IBaseLabelProvider#removeListener(ILabelProviderListener)
      */
     public void removeListener(ILabelProviderListener listener) {
@@ -225,14 +225,14 @@ public class RubyUILabelProvider implements ILabelProvider, IColorProvider {
         return null;
     }
 
-    /* (non-Rubydoc)
+    /* (non-Javadoc)
      * @see org.eclipse.jface.viewers.IColorProvider#getForeground(java.lang.Object)
      */
     public Color getForeground(Object element) {
         return null;
     }
 
-    /* (non-Rubydoc)
+    /* (non-Javadoc)
      * @see org.eclipse.jface.viewers.IColorProvider#getBackground(java.lang.Object)
      */
     public Color getBackground(Object element) {

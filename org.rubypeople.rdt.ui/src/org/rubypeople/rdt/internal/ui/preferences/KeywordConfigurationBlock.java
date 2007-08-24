@@ -57,27 +57,27 @@ public class KeywordConfigurationBlock extends OptionsConfigurationBlock {
 		public KeywordLabelProvider() {
 		}
 		
-		/* (non-Rubydoc)
+		/* (non-Javadoc)
 		 * @see org.eclipse.jface.viewers.ILabelProvider#getImage(java.lang.Object)
 		 */
 		public Image getImage(Object element) {
 			return null; // RubyPluginImages.get(RubyPluginImages.IMG_OBJS_REFACTORING_INFO);
 		}
 
-		/* (non-Rubydoc)
+		/* (non-Javadoc)
 		 * @see org.eclipse.jface.viewers.ILabelProvider#getText(java.lang.Object)
 		 */
 		public String getText(Object element) {
 			return getColumnText(element, 0);
 		}
 		
-		/* (non-Rubydoc)
+		/* (non-Javadoc)
 		 * @see org.eclipse.jface.viewers.ITableLabelProvider#getColumnImage(java.lang.Object, int)
 		 */
 		public Image getColumnImage(Object element, int columnIndex) {
 			return null;
 		}
-		/* (non-Rubydoc)
+		/* (non-Javadoc)
 		 * @see org.eclipse.jface.viewers.ITableLabelProvider#getColumnText(java.lang.Object, int)
 		 */
 		public String getColumnText(Object element, int columnIndex) {
@@ -88,7 +88,7 @@ public class KeywordConfigurationBlock extends OptionsConfigurationBlock {
 			return ""; //$NON-NLS-1$
 		}
 
-		/* (non-Rubydoc)
+		/* (non-Javadoc)
 		 * @see org.eclipse.jface.viewers.IFontProvider#getFont(java.lang.Object)
 		 */
 		public Font getFont(Object element) {
@@ -252,7 +252,7 @@ public class KeywordConfigurationBlock extends OptionsConfigurationBlock {
 		return null;
 	}	
 	
-	/* (non-Rubydoc)
+	/* (non-Javadoc)
 	 * @see org.eclipse.jdt.internal.ui.preferences.OptionsConfigurationBlock#updateControls()
 	 */
 	protected void updateControls() {

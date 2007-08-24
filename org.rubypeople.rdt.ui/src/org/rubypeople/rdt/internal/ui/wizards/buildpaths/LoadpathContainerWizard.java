@@ -95,7 +95,7 @@ public class LoadpathContainerWizard extends Wizard {
 		return fNewEntries;
 	}
 
-	/* (non-Rubydoc)
+	/* (non-Javadoc)
 	 * @see IWizard#performFinish()
 	 */
 	public boolean performFinish() {
@@ -113,7 +113,7 @@ public class LoadpathContainerWizard extends Wizard {
 		return false;
 	}
 
-	/* (non-Rubydoc)
+	/* (non-Javadoc)
 	 * @see IWizard#addPages()
 	 */
 	public void addPages() {
@@ -169,7 +169,7 @@ public class LoadpathContainerWizard extends Wizard {
 		return containerPage;
 	}
 	
-	/* (non-Rubydoc)
+	/* (non-Javadoc)
 	 * @see IWizard#getNextPage(IWizardPage)
 	 */
 	public IWizardPage getNextPage(IWizardPage page) {
@@ -199,7 +199,7 @@ public class LoadpathContainerWizard extends Wizard {
 		return null;
 	}
 	
-	/* (non-Rubydoc)
+	/* (non-Javadoc)
 	 * @see org.eclipse.jface.wizard.Wizard#dispose()
 	 */
 	public void dispose() {
@@ -212,7 +212,7 @@ public class LoadpathContainerWizard extends Wizard {
 		super.dispose();
 	}
 
-	/* (non-Rubydoc)
+	/* (non-Javadoc)
 	 * @see IWizard#canFinish()
 	 */
 	public boolean canFinish() {

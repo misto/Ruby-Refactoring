@@ -155,7 +155,7 @@ public class ModifyDialog extends StatusDialog {
         super.updateStatus(status != null ? status : fStandardStatus);    
     }
 
-    /* (non-Rubydoc)
+    /* (non-Javadoc)
      * @see org.eclipse.jface.window.Window#getInitialSize()
      */
     protected Point getInitialSize() {
@@ -173,7 +173,7 @@ public class ModifyDialog extends StatusDialog {
         return initialSize;
     }
     
-    /* (non-Rubydoc)
+    /* (non-Javadoc)
      * @see org.eclipse.jface.window.Window#getInitialLocation(org.eclipse.swt.graphics.Point)
      */
     protected Point getInitialLocation(Point initialSize) {
@@ -195,7 +195,7 @@ public class ModifyDialog extends StatusDialog {
         return super.close();
     }
     
-    /* (non-Rubydoc)
+    /* (non-Javadoc)
      * @see org.eclipse.jface.dialogs.Dialog#okPressed()
      */
     protected void okPressed() {

@@ -149,7 +149,7 @@ public class LinkFolderDialog extends StatusDialog {
 			fLinkLocation.setText(text);
 		}
 
-        /*(non-Rubydoc)
+        /*(non-Javadoc)
          * @see org.eclipse.jdt.internal.ui.wizards.dialogfields.IStringButtonAdapter#changeControlPressed(org.eclipse.jdt.internal.ui.wizards.dialogfields.DialogField)
          */
         public void changeControlPressed(DialogField field) {
@@ -339,7 +339,7 @@ public class LinkFolderDialog extends StatusDialog {
         setStatusLineAboveButtons(true);
 	}
 
-	/* (non-Rubydoc)
+	/* (non-Javadoc)
      * Method declared in Window.
      */
     protected void configureShell(Shell shell) {
@@ -370,7 +370,7 @@ public class LinkFolderDialog extends StatusDialog {
     	fTarget= target;
     }
 
-    /* (non-Rubydoc)
+    /* (non-Javadoc)
      * Method declared on Dialog.
      */
     protected Control createDialogArea(Composite parent) {
@@ -494,7 +494,7 @@ public class LinkFolderDialog extends StatusDialog {
         super.updateStatus(status);
     }
    
-    /* (non-Rubydoc)
+    /* (non-Javadoc)
      * @see org.eclipse.ui.dialogs.SelectionStatusDialog#okPressed()
      */
     protected void okPressed() {

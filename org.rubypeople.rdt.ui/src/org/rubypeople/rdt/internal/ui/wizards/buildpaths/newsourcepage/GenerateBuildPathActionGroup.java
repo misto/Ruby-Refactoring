@@ -341,7 +341,7 @@ public class GenerateBuildPathActionGroup extends ActionGroup {
 		
     }
             
-    /* (non-Rubydoc)
+    /* (non-Javadoc)
      * Method declared in ActionGroup
      */
     public void fillActionBars(IActionBars actionBar) {
@@ -349,7 +349,7 @@ public class GenerateBuildPathActionGroup extends ActionGroup {
         setGlobalActionHandlers(actionBar);
     }
     
-    /* (non-Rubydoc)
+    /* (non-Javadoc)
      * Method declared in ActionGroup
      */
     public void fillContextMenu(IMenuManager menu) {

@@ -46,7 +46,7 @@ public class NewWizardsActionGroup extends ActionGroup {
 	}
 	
 
-	/* (non-Rubydoc)
+	/* (non-Javadoc)
 	 * Method declared in ActionGroup
 	 */
 	public void fillContextMenu(IMenuManager menu) {

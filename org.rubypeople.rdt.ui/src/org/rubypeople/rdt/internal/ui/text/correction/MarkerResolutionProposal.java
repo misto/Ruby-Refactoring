@@ -38,14 +38,14 @@ public class MarkerResolutionProposal implements IRubyCompletionProposal {
 		fMarker= marker;
 	}
 
-	/* (non-Rubydoc)
+	/* (non-Javadoc)
 	 * @see org.eclipse.jface.text.contentassist.ICompletionProposal#apply(org.eclipse.jface.text.IDocument)
 	 */
 	public void apply(IDocument document) {
 		fResolution.run(fMarker);
 	}
 
-	/* (non-Rubydoc)
+	/* (non-Javadoc)
 	 * @see org.eclipse.jface.text.contentassist.ICompletionProposal#getAdditionalProposalInfo()
 	 */
 	public String getAdditionalProposalInfo() {
@@ -61,21 +61,21 @@ public class MarkerResolutionProposal implements IRubyCompletionProposal {
 		return null;
 	}
 
-	/* (non-Rubydoc)
+	/* (non-Javadoc)
 	 * @see org.eclipse.jface.text.contentassist.ICompletionProposal#getContextInformation()
 	 */
 	public IContextInformation getContextInformation() {
 		return null;
 	}
 
-	/* (non-Rubydoc)
+	/* (non-Javadoc)
 	 * @see org.eclipse.jface.text.contentassist.ICompletionProposal#getDisplayString()
 	 */
 	public String getDisplayString() {
 		return fResolution.getLabel();
 	}
 
-	/* (non-Rubydoc)
+	/* (non-Javadoc)
 	 * @see org.eclipse.jface.text.contentassist.ICompletionProposal#getImage()
 	 */
 	public Image getImage() {
@@ -85,7 +85,7 @@ public class MarkerResolutionProposal implements IRubyCompletionProposal {
 		return RubyPluginImages.get(RubyPluginImages.IMG_CORRECTION_CHANGE);
 	}
 
-	/* (non-Rubydoc)
+	/* (non-Javadoc)
 	 * @see org.eclipse.jdt.internal.ui.text.java.IRubyCompletionProposal#getRelevance()
 	 */
 	public int getRelevance() {
@@ -95,7 +95,7 @@ public class MarkerResolutionProposal implements IRubyCompletionProposal {
 		return 10;
 	}
 
-	/* (non-Rubydoc)
+	/* (non-Javadoc)
 	 * @see org.eclipse.jface.text.contentassist.ICompletionProposal#getSelection(org.eclipse.jface.text.IDocument)
 	 */
 	public Point getSelection(IDocument document) {

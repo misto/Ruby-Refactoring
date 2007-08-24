@@ -62,14 +62,14 @@ public class ProblemLocation implements IProblemLocation {
 	}
 
 
-	/* (non-Rubydoc)
+	/* (non-Javadoc)
 	 * @see org.eclipse.jdt.internal.ui.text.correction.IProblemLocation#getProblemId()
 	 */
 	public int getProblemId() {
 		return fId;
 	}
 
-	/* (non-Rubydoc)
+	/* (non-Javadoc)
 	 * @see org.eclipse.jdt.internal.ui.text.correction.IProblemLocation#getProblemArguments()
 	 */
 	public String[] getProblemArguments() {
@@ -77,28 +77,28 @@ public class ProblemLocation implements IProblemLocation {
 		return new String[0];
 	}
 
-	/* (non-Rubydoc)
+	/* (non-Javadoc)
 	 * @see org.eclipse.jdt.internal.ui.text.correction.IProblemLocation#getLength()
 	 */
 	public int getLength() {
 		return fLength;
 	}
 
-	/* (non-Rubydoc)
+	/* (non-Javadoc)
 	 * @see org.eclipse.jdt.internal.ui.text.correction.IProblemLocation#getOffset()
 	 */
 	public int getOffset() {
 		return fOffset;
 	}
 
-	/* (non-Rubydoc)
+	/* (non-Javadoc)
 	 * @see org.eclipse.jdt.ui.text.java.IProblemLocation#isError()
 	 */
 	public boolean isError() {
 		return fIsError;
 	}
 
-	/* (non-Rubydoc)
+	/* (non-Javadoc)
 	 * @see org.eclipse.jdt.ui.text.java.IProblemLocation#getMarkerType()
 	 */
 	public String getMarkerType() {
@@ -106,7 +106,7 @@ public class ProblemLocation implements IProblemLocation {
 	}
 	
 	/*
-	 * (non-Rubydoc)
+	 * (non-Javadoc)
 	 * @see org.eclipse.jdt.internal.ui.text.correction.IProblemLocation#getCoveringNode(org.eclipse.jdt.core.dom.CompilationUnit)
 	 */
 	public Node getCoveringNode(RootNode astRoot) {
@@ -114,7 +114,7 @@ public class ProblemLocation implements IProblemLocation {
 	}
 
 	/*
-	 * (non-Rubydoc)
+	 * (non-Javadoc)
 	 * @see org.eclipse.jdt.internal.ui.text.correction.IProblemLocation#getCoveredNode(org.eclipse.jdt.core.dom.CompilationUnit)
 	 */
 	public Node getCoveredNode(RootNode astRoot) {

@@ -291,7 +291,7 @@ public class MemberFilterActionGroup extends ActionGroup {
             }, false);
     }
     
-    /* (non-Rubydoc)
+    /* (non-Javadoc)
      * @see ActionGroup#fillActionBars(IActionBars)
      */
     public void fillActionBars(IActionBars actionBars) {

@@ -84,14 +84,14 @@ public class CPVariableElementLabelProvider extends LabelProvider implements ICo
 		return super.getText(element);
 	}
 
-	/* (non-Rubydoc)
+	/* (non-Javadoc)
 	 * @see org.eclipse.jface.viewers.IColorProvider#getForeground(java.lang.Object)
 	 */
 	public Color getForeground(Object element) {
 		return null;
 	}
 
-	/* (non-Rubydoc)
+	/* (non-Javadoc)
 	 * @see org.eclipse.jface.viewers.IColorProvider#getBackground(java.lang.Object)
 	 */
 	public Color getBackground(Object element) {
@@ -108,7 +108,7 @@ public class CPVariableElementLabelProvider extends LabelProvider implements ICo
 		return null;
 	}
 
-	/* (non-Rubydoc)
+	/* (non-Javadoc)
 	 * @see org.eclipse.jface.viewers.IBaseLabelProvider#dispose()
 	 */
 	public void dispose() {

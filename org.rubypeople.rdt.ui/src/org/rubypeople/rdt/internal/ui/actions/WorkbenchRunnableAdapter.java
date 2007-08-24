@@ -93,7 +93,7 @@ public class WorkbenchRunnableAdapter implements IRunnableWithProgress {
 	
 	public void runAsUserJob(String name, final Object jobFamiliy) {
 		Job buildJob = new Job(name){ 
-			/* (non-Rubydoc)
+			/* (non-Javadoc)
 			 * @see org.eclipse.core.runtime.jobs.Job#run(org.eclipse.core.runtime.IProgressMonitor)
 			 */
 			protected IStatus run(IProgressMonitor monitor) {

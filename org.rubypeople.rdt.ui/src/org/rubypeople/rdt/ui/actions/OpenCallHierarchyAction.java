@@ -92,14 +92,14 @@ public class OpenCallHierarchyAction extends SelectionDispatchAction {
         setEnabled(SelectionConverter.canOperateOn(fEditor));
     }
     
-    /* (non-Rubydoc)
+    /* (non-Javadoc)
      * Method declared on SelectionDispatchAction.
      */
 	public void selectionChanged(ITextSelection selection) {
         // Do nothing
     }
 
-    /* (non-Rubydoc)
+    /* (non-Javadoc)
      * Method declared on SelectionDispatchAction.
      */
 	public void selectionChanged(IStructuredSelection selection) {
@@ -120,7 +120,7 @@ public class OpenCallHierarchyAction extends SelectionDispatchAction {
         }
     }
     
-    /* (non-Rubydoc)
+    /* (non-Javadoc)
      * Method declared on SelectionDispatchAction.
      */
 	public void run(ITextSelection selection) {
@@ -173,7 +173,7 @@ public class OpenCallHierarchyAction extends SelectionDispatchAction {
         return null;
     }
 
-    /* (non-Rubydoc)
+    /* (non-Javadoc)
      * Method declared on SelectionDispatchAction.
      */
 	public void run(IStructuredSelection selection) {

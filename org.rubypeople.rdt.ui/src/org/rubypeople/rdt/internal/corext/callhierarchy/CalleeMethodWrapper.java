@@ -25,7 +25,7 @@ class CalleeMethodWrapper extends MethodWrapper {
     private Comparator fMethodWrapperComparator = new MethodWrapperComparator();
 
     private static class MethodWrapperComparator implements Comparator {
-        /* (non-Rubydoc)
+        /* (non-Javadoc)
          * @see java.util.Comparator#compare(java.lang.Object, java.lang.Object)
          */
         public int compare(Object o1, Object o2) {
@@ -64,7 +64,7 @@ class CalleeMethodWrapper extends MethodWrapper {
         return result;
     }
 
-	/* (non-Rubydoc)
+	/* (non-Javadoc)
 	 * @see org.eclipse.jdt.internal.corext.callhierarchy.MethodWrapper#getTaskName()
      */
     protected String getTaskName() {

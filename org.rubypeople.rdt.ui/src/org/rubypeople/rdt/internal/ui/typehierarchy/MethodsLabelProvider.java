@@ -75,7 +75,7 @@ public class MethodsLabelProvider extends AppearanceAwareLabelProvider {
 		return res.getDeclaringType();
 	}
 
-	/* (non-Rubydoc)
+	/* (non-Javadoc)
 	 * @see ILabelProvider#getText
 	 */ 	
 	public String getText(Object element) {
@@ -95,7 +95,7 @@ public class MethodsLabelProvider extends AppearanceAwareLabelProvider {
 		return text;
 	}
 
-	/* (non-Rubydoc)
+	/* (non-Javadoc)
 	 * @see org.eclipse.jface.viewers.IColorProvider#getForeground(java.lang.Object)
 	 */
 	public Color getForeground(Object element) {

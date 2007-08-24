@@ -134,14 +134,14 @@ public class ProblemsLabelDecorator implements ILabelDecorator, ILightweightLabe
 	}
 	
 
-	/* (non-Rubydoc)
+	/* (non-Javadoc)
 	 * @see ILabelDecorator#decorateText(String, Object)
 	 */
 	public String decorateText(String text, Object element) {
 		return text;
 	}	
 
-	/* (non-Rubydoc)
+	/* (non-Javadoc)
 	 * @see ILabelDecorator#decorateImage(Image, Object)
 	 */
 	public Image decorateImage(Image image, Object obj) {
@@ -311,7 +311,7 @@ public class ProblemsLabelDecorator implements ILabelDecorator, ILightweightLabe
 		return false;
 	}	
 	
-	/* (non-Rubydoc)
+	/* (non-Javadoc)
 	 * @see IBaseLabelProvider#dispose()
 	 */
 	public void dispose() {
@@ -324,14 +324,14 @@ public class ProblemsLabelDecorator implements ILabelDecorator, ILightweightLabe
 		}
 	}
 
-	/* (non-Rubydoc)
+	/* (non-Javadoc)
 	 * @see IBaseLabelProvider#isLabelProperty(Object, String)
 	 */
 	public boolean isLabelProperty(Object element, String property) {
 		return true;
 	}
 	
-	/* (non-Rubydoc)
+	/* (non-Javadoc)
 	 * @see IBaseLabelProvider#addListener(ILabelProviderListener)
 	 */
 	public void addListener(ILabelProviderListener listener) {
@@ -349,7 +349,7 @@ public class ProblemsLabelDecorator implements ILabelDecorator, ILightweightLabe
 		}
 	}	
 
-	/* (non-Rubydoc)
+	/* (non-Javadoc)
 	 * @see IBaseLabelProvider#removeListener(ILabelProviderListener)
 	 */
 	public void removeListener(ILabelProviderListener listener) {
@@ -372,7 +372,7 @@ public class ProblemsLabelDecorator implements ILabelDecorator, ILightweightLabe
 		}
 	}
 		
-	/* (non-Rubydoc)
+	/* (non-Javadoc)
 	 * @see org.eclipse.jface.viewers.ILightweightLabelDecorator#decorate(java.lang.Object, org.eclipse.jface.viewers.IDecoration)
 	 */
 	public void decorate(Object element, IDecoration decoration) { 

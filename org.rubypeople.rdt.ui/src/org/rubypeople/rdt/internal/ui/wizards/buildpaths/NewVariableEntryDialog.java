@@ -145,7 +145,7 @@ public class NewVariableEntryDialog extends StatusDialog {
 	}
 	
 	
-	/* (non-Rubydoc)
+	/* (non-Javadoc)
 	 * @see Window#configureShell(Shell)
 	 */
 	protected void configureShell(Shell shell) {
@@ -153,14 +153,14 @@ public class NewVariableEntryDialog extends StatusDialog {
 		PlatformUI.getWorkbench().getHelpSystem().setHelp(shell, IRubyHelpContextIds.NEW_VARIABLE_ENTRY_DIALOG);
 	}	
 	
-	/* (non-Rubydoc)
+	/* (non-Javadoc)
 	 * @see org.eclipse.jface.dialogs.Dialog#getDialogBoundsSettings()
 	 */
 	protected IDialogSettings getDialogBoundsSettings() {
 		return RubyPlugin.getDefault().getDialogSettingsSection(getClass().getName());
 	}
 			
-	/* (non-Rubydoc)
+	/* (non-Javadoc)
 	 * @see org.eclipse.jface.dialogs.Dialog#createDialogArea(org.eclipse.swt.widgets.Composite)
 	 */
 	protected Control createDialogArea(Composite parent) {

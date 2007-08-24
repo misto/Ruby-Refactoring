@@ -251,7 +251,7 @@ public class LibrariesWorkbookPage extends BuildPathBasePage {
 		return null;
 	}
 	
-	/* (non-Rubydoc)
+	/* (non-Javadoc)
 	 * @see org.eclipse.jdt.internal.ui.wizards.buildpaths.BuildPathBasePage#addElement(org.eclipse.jdt.internal.ui.wizards.buildpaths.CPListElement)
 	 */
 	public void addElement(CPListElement element) {
@@ -522,7 +522,7 @@ public class LibrariesWorkbookPage extends BuildPathBasePage {
 		return new CPListElement(fCurrJProject, ILoadpathEntry.CPE_LIBRARY, res.getFullPath(), res);
 	}
 		
-	/* (non-Rubydoc)
+	/* (non-Javadoc)
 	 * @see org.eclipse.jdt.internal.ui.wizards.buildpaths.BuildPathBasePage#isEntryKind(int)
 	 */
 	public boolean isEntryKind(int kind) {

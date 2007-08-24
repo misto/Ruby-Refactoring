@@ -128,7 +128,7 @@ public abstract class NewElementWizard extends Wizard implements INewWizard {
 	}
 	
 
-	/* (non-Rubydoc)
+	/* (non-Javadoc)
 	 * @see org.eclipse.ui.IWorkbenchWizard#init(org.eclipse.ui.IWorkbench, org.eclipse.jface.viewers.IStructuredSelection)
 	 */
 	public void init(IWorkbench workbench, IStructuredSelection currentSelection) {

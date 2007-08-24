@@ -226,7 +226,7 @@ public class ChangeCorrectionProposal implements IRubyCompletionProposal, IComma
 		fName= name;
 	}
 
-	/* (non-Rubydoc)
+	/* (non-Javadoc)
 	 * @see org.eclipse.jdt.ui.text.java.IRubyCompletionProposal#getRelevance()
 	 */
 	public int getRelevance() {
@@ -241,7 +241,7 @@ public class ChangeCorrectionProposal implements IRubyCompletionProposal, IComma
 		fRelevance= relevance;
 	}
 
-	/* (non-Rubydoc)
+	/* (non-Javadoc)
 	 * @see org.eclipse.jdt.internal.ui.text.correction.IShortcutProposal#getProposalId()
 	 */
 	public String getCommandId() {

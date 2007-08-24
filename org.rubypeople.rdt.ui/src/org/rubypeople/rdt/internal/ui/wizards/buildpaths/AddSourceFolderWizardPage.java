@@ -131,7 +131,7 @@ public class AddSourceFolderWizardPage extends NewElementWizardPage {
 			fLinkLocation.setText(path.toOSString());
 		}
 		
-		/*(non-Rubydoc)
+		/*(non-Javadoc)
 		 * @see org.eclipse.jdt.internal.ui.wizards.dialogfields.IStringButtonAdapter#changeControlPressed(org.eclipse.jdt.internal.ui.wizards.dialogfields.DialogField)
 		 */
 		public void changeControlPressed(DialogField field) {

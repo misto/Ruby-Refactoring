@@ -365,7 +365,7 @@ public class CPListElement {
 		return fPath.hashCode() + fEntryKind;
 	}
 	
-	/* (non-Rubydoc)
+	/* (non-Javadoc)
 	 * @see java.lang.Object#toString()
 	 */
 	public String toString() {

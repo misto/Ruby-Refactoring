@@ -40,7 +40,7 @@ public class CodeFormatterPreferencePage extends PropertyAndPreferencePage {
         setTitle(PreferencesMessages.CodeFormatterPreferencePage_title);         
     }
 
-    /* (non-Rubydoc)
+    /* (non-Javadoc)
      * @see org.eclipse.jface.dialogs.IDialogPage#createControl(org.eclipse.swt.widgets.Composite)
      */
     public void createControl(Composite parent) {
@@ -59,21 +59,21 @@ public class CodeFormatterPreferencePage extends PropertyAndPreferencePage {
         PlatformUI.getWorkbench().getHelpSystem().setHelp(getControl(), IRubyHelpContextIds.CODEFORMATTER_PREFERENCE_PAGE);
     }
 
-    /* (non-Rubydoc)
+    /* (non-Javadoc)
      * @see org.eclipse.jdt.internal.ui.preferences.PropertyAndPreferencePage#createPreferenceContent(org.eclipse.swt.widgets.Composite)
      */
     protected Control createPreferenceContent(Composite composite) {
         return fConfigurationBlock.createContents(composite);
     }
     
-    /* (non-Rubydoc)
+    /* (non-Javadoc)
      * @see org.eclipse.jdt.internal.ui.preferences.PropertyAndPreferencePage#hasProjectSpecificOptions(org.eclipse.core.resources.IProject)
      */
     protected boolean hasProjectSpecificOptions(IProject project) {
         return fConfigurationBlock.hasProjectSpecificOptions(project);
     }
     
-    /* (non-Rubydoc)
+    /* (non-Javadoc)
      * @see org.eclipse.jdt.internal.ui.preferences.PropertyAndPreferencePage#enableProjectSpecificSettings(boolean)
      */
     protected void enableProjectSpecificSettings(boolean useProjectSpecificSettings) {
@@ -83,21 +83,21 @@ public class CodeFormatterPreferencePage extends PropertyAndPreferencePage {
         }
     }
     
-    /* (non-Rubydoc)
+    /* (non-Javadoc)
      * @see org.eclipse.jdt.internal.ui.preferences.PropertyAndPreferencePage#getPreferencePageID()
      */
     protected String getPreferencePageID() {
         return PREF_ID;
     }
     
-    /* (non-Rubydoc)
+    /* (non-Javadoc)
      * @see org.eclipse.jdt.internal.ui.preferences.PropertyAndPreferencePage#getPropertyPageID()
      */
     protected String getPropertyPageID() {
         return PROP_ID;
     }
     
-    /* (non-Rubydoc)
+    /* (non-Javadoc)
      * @see org.eclipse.jface.dialogs.DialogPage#dispose()
      */
     public void dispose() {
@@ -107,7 +107,7 @@ public class CodeFormatterPreferencePage extends PropertyAndPreferencePage {
         super.dispose();
     }
     
-    /* (non-Rubydoc)
+    /* (non-Javadoc)
      * @see org.eclipse.jface.preference.IPreferencePage#performDefaults()
      */
     protected void performDefaults() {
@@ -117,7 +117,7 @@ public class CodeFormatterPreferencePage extends PropertyAndPreferencePage {
         super.performDefaults();
     }
 
-    /* (non-Rubydoc)
+    /* (non-Javadoc)
      * @see org.eclipse.jface.preference.IPreferencePage#performOk()
      */
     public boolean performOk() {
@@ -127,7 +127,7 @@ public class CodeFormatterPreferencePage extends PropertyAndPreferencePage {
         return super.performOk();
     }
     
-    /* (non-Rubydoc)
+    /* (non-Javadoc)
      * @see org.eclipse.jdt.internal.ui.preferences.PropertyAndPreferencePage#setElement(org.eclipse.core.runtime.IAdaptable)
      */
     public void setElement(IAdaptable element) {

@@ -35,14 +35,14 @@ public class CallHierarchyLabelDecorator implements ILabelDecorator {
         // Do nothing
     }   
 
-    /* (non-Rubydoc)
+    /* (non-Javadoc)
      * @see ILabelDecorator#decorateText(String, Object)
      */
     public String decorateText(String text, Object element) {
         return text;
     }   
 
-    /* (non-Rubydoc)
+    /* (non-Javadoc)
      * @see ILabelDecorator#decorateImage(Image, Object)
      */
     public Image decorateImage(Image image, Object element) {
@@ -76,28 +76,28 @@ public class CallHierarchyLabelDecorator implements ILabelDecorator {
         return methodWrapper.getLevel() > CallHierarchyUI.getDefault().getMaxCallDepth();
     }
     
-    /* (non-Rubydoc)
+    /* (non-Javadoc)
      * @see IBaseLabelProvider#addListener(ILabelProviderListener)
      */
     public void addListener(ILabelProviderListener listener) {
         // Do nothing
     }
 
-    /* (non-Rubydoc)
+    /* (non-Javadoc)
      * @see IBaseLabelProvider#dispose()
      */
     public void dispose() {
         // Nothing to dispose
     }
 
-    /* (non-Rubydoc)
+    /* (non-Javadoc)
      * @see IBaseLabelProvider#isLabelProperty(Object, String)
      */
     public boolean isLabelProperty(Object element, String property) {
         return true;
     }
 
-    /* (non-Rubydoc)
+    /* (non-Javadoc)
      * @see IBaseLabelProvider#removeListener(ILabelProviderListener)
      */
     public void removeListener(ILabelProviderListener listener) {

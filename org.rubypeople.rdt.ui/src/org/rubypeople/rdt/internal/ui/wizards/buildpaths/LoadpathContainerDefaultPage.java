@@ -90,7 +90,7 @@ public class LoadpathContainerDefaultPage extends NewElementWizardPage implement
 		updateStatus(status);
 	}
 
-	/* (non-Rubydoc)
+	/* (non-Javadoc)
 	 * @see IDialogPage#createControl(Composite)
 	 */
 	public void createControl(Composite parent) {
@@ -109,21 +109,21 @@ public class LoadpathContainerDefaultPage extends NewElementWizardPage implement
 		PlatformUI.getWorkbench().getHelpSystem().setHelp(composite, IRubyHelpContextIds.CLASSPATH_CONTAINER_DEFAULT_PAGE);
 	}
 
-	/* (non-Rubydoc)
+	/* (non-Javadoc)
 	 * @see ILoadpathContainerPage#finish()
 	 */
 	public boolean finish() {
 		return true;
 	}
 	
-	/* (non-Rubydoc)
+	/* (non-Javadoc)
 	 * @see ILoadpathContainerPage#getSelection()
 	 */
 	public ILoadpathEntry getSelection() {
 		return RubyCore.newContainerEntry(new Path(fEntryField.getText()));
 	}
 	
-	/* (non-Rubydoc)
+	/* (non-Javadoc)
 	 * @see org.eclipse.jdt.ui.wizards.ILoadpathContainerPageExtension#initialize(org.eclipse.jdt.core.IRubyProject, org.eclipse.jdt.core.ILoadpathEntry)
 	 */
 	public void initialize(IRubyProject project, ILoadpathEntry[] currentEntries) {
@@ -135,7 +135,7 @@ public class LoadpathContainerDefaultPage extends NewElementWizardPage implement
 		}
 	}		
 
-	/* (non-Rubydoc)
+	/* (non-Javadoc)
 	 * @see ILoadpathContainerPage#setSelection(ILoadpathEntry)
 	 */
 	public void setSelection(ILoadpathEntry containerEntry) {

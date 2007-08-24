@@ -104,7 +104,7 @@ public class RubySearchResultPage extends AbstractTextSearchViewPage implements 
 	        return getNewCollator().compare(name1, name2);
 	    }
 	    
-		/* (non-Rubydoc)
+		/* (non-Javadoc)
 		 * @see org.eclipse.jface.viewers.ViewerSorter#getCollator()
 		 */
 		public final java.text.Collator getCollator() {
@@ -465,7 +465,7 @@ public class RubySearchResultPage extends AbstractTextSearchViewPage implements 
 		return super.getViewer();
 	}
 	
-	/* (non-Rubydoc)
+	/* (non-Javadoc)
 	 * @see org.eclipse.search.ui.text.AbstractTextSearchViewPage#restoreState(org.eclipse.ui.IMemento)
 	 */
 	public void restoreState(IMemento memento) {
@@ -500,7 +500,7 @@ public class RubySearchResultPage extends AbstractTextSearchViewPage implements 
 		}
 	}
 
-	/* (non-Rubydoc)
+	/* (non-Javadoc)
 	 * @see org.eclipse.search.ui.text.AbstractTextSearchViewPage#saveState(org.eclipse.ui.IMemento)
 	 */
 	public void saveState(IMemento memento) {
@@ -564,7 +564,7 @@ public class RubySearchResultPage extends AbstractTextSearchViewPage implements 
 		setFilters(newFilters);
 	}
 	
-	/* (non-Rubydoc)
+	/* (non-Javadoc)
 	 * @see org.eclipse.search.ui.text.AbstractTextSearchViewPage#handleSearchResultChanged(org.eclipse.search.ui.SearchResultEvent)
 	 */
 	protected synchronized void handleSearchResultChanged(SearchResultEvent e) {
@@ -771,7 +771,7 @@ public class RubySearchResultPage extends AbstractTextSearchViewPage implements 
 	}
 
 
-	/* (non-Rubydoc)
+	/* (non-Javadoc)
 	 * @see org.eclipse.core.runtime.IAdaptable#getAdapter(java.lang.Class)
 	 */
 	public Object getAdapter(Class adapter) {

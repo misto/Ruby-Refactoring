@@ -42,7 +42,7 @@ public abstract class AbstractHierarchyViewerSorter extends ViewerSorter {
 	public abstract boolean isSortByDefiningType();
 	public abstract boolean isSortAlphabetically();
 	
-	/* (non-Rubydoc)
+	/* (non-Javadoc)
 	 * @see org.eclipse.jface.viewers.ViewerSorter#category(java.lang.Object)
 	 */
 	public int category(Object element) {
@@ -60,7 +60,7 @@ public abstract class AbstractHierarchyViewerSorter extends ViewerSorter {
 		return OTHER;
 	}
 
-	/* (non-Rubydoc)
+	/* (non-Javadoc)
 	 * @see org.eclipse.jface.viewers.ViewerSorter#compare(null, null, null)
 	 */
 	public int compare(Viewer viewer, Object e1, Object e2) {

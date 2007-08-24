@@ -30,7 +30,7 @@ class SelectWorkingSetAction extends Action {
 		PlatformUI.getWorkbench().getHelpSystem().setHelp(this, IRubyHelpContextIds.CALL_HIERARCHY_SEARCH_SCOPE_ACTION);
 	}
 	/*
-	 * (non-Rubydoc)
+	 * (non-Javadoc)
 	 * 
 	 * @see org.eclipse.jface.action.Action#run()
 	 */

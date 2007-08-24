@@ -212,7 +212,7 @@ public class CUCorrectionProposal extends ChangeCorrectionProposal  {
 		}
 	}
 
-	/* (non-Rubydoc)
+	/* (non-Javadoc)
 	 * @see org.eclipse.jface.text.contentassist.ICompletionProposal#apply(org.eclipse.jface.text.IDocument)
 	 */
 	public void apply(IDocument document) {
@@ -294,7 +294,7 @@ public class CUCorrectionProposal extends ChangeCorrectionProposal  {
 	}
 		
 	
-	/* (non-Rubydoc)
+	/* (non-Javadoc)
 	 * @see org.eclipse.jdt.internal.ui.text.correction.ChangeCorrectionProposal#createChange()
 	 */
 	protected final Change createChange() throws CoreException {
@@ -330,7 +330,7 @@ public class CUCorrectionProposal extends ChangeCorrectionProposal  {
 		return getTextChange().getPreviewContent(new NullProgressMonitor());
 	}
 
-	/* (non-Rubydoc)
+	/* (non-Javadoc)
 	 * @see java.lang.Object#toString()
 	 */
 	public String toString() {

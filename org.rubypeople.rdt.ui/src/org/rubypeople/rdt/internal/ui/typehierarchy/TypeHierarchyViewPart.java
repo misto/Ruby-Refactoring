@@ -583,7 +583,7 @@ public class TypeHierarchyViewPart extends ViewPart implements ITypeHierarchyVie
 		super.dispose();
 	}
 		
-	/* (non-Rubydoc)
+	/* (non-Javadoc)
 	 * @see org.eclipse.core.runtime.IAdaptable#getAdapter(java.lang.Class)
 	 */
 	public Object getAdapter(Class key) {
@@ -1590,7 +1590,7 @@ public class TypeHierarchyViewPart extends ViewPart implements ITypeHierarchyVie
 		
 	}
 
-	/* (non-Rubydoc)
+	/* (non-Javadoc)
 	 * @see org.eclipse.jdt.internal.ui.viewsupport.IViewPartInputProvider#getViewPartInput()
 	 */
 	public Object getViewPartInput() {
