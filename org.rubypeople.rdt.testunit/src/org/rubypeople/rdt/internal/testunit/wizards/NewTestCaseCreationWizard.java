@@ -38,14 +38,14 @@ public class NewTestCaseCreationWizard extends NewElementWizard {
 		addPage(fPage);
 	}
 	
-	/* (non-Rubydoc)
+	/* (non-Javadoc)
 	 * @see org.eclipse.jdt.internal.ui.wizards.NewElementWizard#finishPage(org.eclipse.core.runtime.IProgressMonitor)
 	 */
 	protected void finishPage(IProgressMonitor monitor) throws InterruptedException, CoreException {
 		fPage.createType(monitor); // use the full progress monitor
 	}
 		
-	/* (non-Rubydoc)
+	/* (non-Javadoc)
 	 * @see org.eclipse.jface.wizard.IWizard#performFinish()
 	 */
 	public boolean performFinish() {
@@ -60,7 +60,7 @@ public class NewTestCaseCreationWizard extends NewElementWizard {
 		return res;
 	}
 
-	/* (non-Rubydoc)
+	/* (non-Javadoc)
 	 * @see org.eclipse.jdt.internal.ui.wizards.NewElementWizard#getCreatedElement()
 	 */
 	public IRubyElement getCreatedElement() {
