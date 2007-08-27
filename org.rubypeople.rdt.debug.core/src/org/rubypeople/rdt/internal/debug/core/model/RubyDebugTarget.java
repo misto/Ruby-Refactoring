@@ -22,6 +22,7 @@ import org.eclipse.debug.core.model.IDebugTarget;
 import org.eclipse.debug.core.model.IMemoryBlock;
 import org.eclipse.debug.core.model.IProcess;
 import org.eclipse.debug.core.model.IThread;
+import org.rubypeople.rdt.debug.core.RubyLineBreakpoint;
 import org.rubypeople.rdt.internal.debug.core.RdtDebugCorePlugin;
 import org.rubypeople.rdt.internal.debug.core.RubyDebuggerProxy;
 import org.rubypeople.rdt.internal.debug.core.SuspensionPoint;
@@ -40,6 +41,7 @@ public class RubyDebugTarget extends PlatformObject implements IRubyDebugTarget 
 	private RubyDebuggerProxy rubyDebuggerProxy;
 	private int port;
 	private File debugParameterFile;
+	private ArrayList<IBreakpoint> fBreakPoints;
 
 	public RubyDebugTarget(ILaunch launch) {
 		this(launch, null);
@@ -54,10 +56,10 @@ public class RubyDebugTarget extends PlatformObject implements IRubyDebugTarget 
 		this.port = port;
 		this.process = process;
 		this.threads = new RubyThread[0];
+		this.fBreakPoints = new ArrayList<IBreakpoint>(5);
 		this.isTerminated = false;
 		if (DebugPlugin.getDefault() != null) { // null only expected in Unit test
-			IBreakpointManager manager = DebugPlugin.getDefault().getBreakpointManager();
-			manager.addBreakpointListener(this);
+			initializeBreakpoints();
 		}
 		addDebugParameter("$RemoteDebugPort=" + port);
 	}
@@ -232,7 +234,14 @@ public class RubyDebugTarget extends PlatformObject implements IRubyDebugTarget 
 		if (isTerminated) {
 			return;
 		}
-		this.getRubyDebuggerProxy().addBreakpoint(breakpoint);
+		if (!getBreakpoints().contains(breakpoint)) {
+			this.getRubyDebuggerProxy().addBreakpoint(breakpoint);
+			getBreakpoints().add(breakpoint);
+		}		
+	}
+
+	private List<IBreakpoint> getBreakpoints() {
+		return fBreakPoints;
 	}
 
 	public void breakpointRemoved(IBreakpoint breakpoint, IMarkerDelta arg1) {
@@ -240,6 +249,7 @@ public class RubyDebugTarget extends PlatformObject implements IRubyDebugTarget 
 			return;
 		}
 		this.getRubyDebuggerProxy().removeBreakpoint(breakpoint);
+		fBreakPoints.remove(breakpoint);
 	}
 
 	public void breakpointChanged(IBreakpoint breakpoint, IMarkerDelta arg1) {
@@ -297,6 +307,48 @@ public class RubyDebugTarget extends PlatformObject implements IRubyDebugTarget 
 			}
 		}
 		return debugParameterFile;
+	}
+	
+	/**
+	 * Reinstall all breakpoints installed in the given resources
+	 */
+	public void reinstallBreakpointsIn(List resources, List classNames) {
+		List breakpoints= getBreakpoints();
+		IBreakpoint[] copy= new IBreakpoint[breakpoints.size()];
+		breakpoints.toArray(copy);
+		IBreakpoint breakpoint= null;
+//		String installedType= null;
+		
+		for (int i= 0; i < copy.length; i++) {
+			breakpoint= copy[i];
+			if (breakpoint instanceof RubyLineBreakpoint) {
+//				try {
+//					installedType= breakpoint.getTypeName();
+//					if (classNames.contains(installedType)) {
+						breakpointRemoved(breakpoint, null);
+						breakpointAdded(breakpoint);
+//					}
+//				} catch (CoreException ce) {
+//					RdtDebugCorePlugin.log(ce);
+//					continue;
+//				}
+			}
+		}		
+	}
+	
+	/**
+	 * Installs all Ruby breakpoints that currently exist in
+	 * the breakpoint manager
+	 */
+	protected void initializeBreakpoints() {
+		IBreakpointManager manager= DebugPlugin.getDefault().getBreakpointManager();
+		manager.addBreakpointListener(this);
+		IBreakpoint[] bps = manager.getBreakpoints(RdtDebugCorePlugin.MODEL_IDENTIFIER);
+		for (int i = 0; i < bps.length; i++) {
+			if (bps[i].getModelIdentifier().equals(RdtDebugCorePlugin.MODEL_IDENTIFIER)) {
+				breakpointAdded(bps[i]);
+			}
+		}
 	}
 
 	private boolean addDebugParameter(String line) {

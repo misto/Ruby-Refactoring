@@ -11,6 +11,7 @@ import org.rubypeople.rdt.core.RubyCore;
 public class RdtDebugCorePlugin extends Plugin {
 
 	public static final String PLUGIN_ID = "org.rubypeople.rdt.debug.core"; //$NON-NLS-1$
+	public static final String MODEL_IDENTIFIER = "org.rubypeople.rdt.debug";
 
 	private static boolean isRubyDebuggerVerbose = false;
 

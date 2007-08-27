@@ -7,18 +7,24 @@ import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.debug.core.DebugException;
+import org.eclipse.debug.core.model.IBreakpoint;
 import org.eclipse.debug.core.model.LineBreakpoint;
+import org.rubypeople.rdt.internal.debug.core.RdtDebugCorePlugin;
 
 public class RubyLineBreakpoint extends LineBreakpoint {
-	public static final String RUBY_BREAKPOINT_MARKER = "org.rubypeople.rdt.debug.core.RubyBreakpointMarker"; //$NON-NLS-1$
+	public static final String RUBY_BREAKPOINT_MARKER = "org.rubypeople.rdt.debug.core.rubyLineBreakpointMarker"; //$NON-NLS-1$
 
 	private int index = -1 ; // index of breakpoint on ruby debugger side
+	
+	public RubyLineBreakpoint() {		
+	}
 	
 	public RubyLineBreakpoint(final IResource resource, final int lineNumber) throws CoreException {
 		IWorkspaceRunnable wr = new IWorkspaceRunnable() {
 			public void run(IProgressMonitor monitor) throws CoreException {
 				setMarker(resource.createMarker(RUBY_BREAKPOINT_MARKER));
 				getMarker().setAttribute(IMarker.LINE_NUMBER, lineNumber + 1);
+				getMarker().setAttribute(IBreakpoint.ID, getModelIdentifier());
 				getMarker().setAttribute(REGISTERED, false);
 				// setEnabled must be set before calling setRegistered
 				setEnabled(true);
@@ -57,7 +63,7 @@ public class RubyLineBreakpoint extends LineBreakpoint {
 	}
 
 	public String getModelIdentifier() {
-		return "org.rubypeople.rdt.debug";
+		return RdtDebugCorePlugin.MODEL_IDENTIFIER;
 	}
 
 	public int getIndex() {
