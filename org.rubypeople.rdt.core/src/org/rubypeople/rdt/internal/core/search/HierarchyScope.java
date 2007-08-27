@@ -56,7 +56,7 @@ public class HierarchyScope implements IRubySearchScope {
 	
 	public boolean needsRefresh;
 
-	/* (non-Rubydoc)
+	/* (non-Javadoc)
 	 * Adds the given resource to this search scope.
 	 */
 	public void add(IResource element) {
@@ -71,7 +71,7 @@ public class HierarchyScope implements IRubySearchScope {
 		elements[elementCount++] = element;
 	}
 	
-	/* (non-Rubydoc)
+	/* (non-Javadoc)
 	 * Creates a new hiearchy scope for the given type.
 	 */
 	public HierarchyScope(IType type, WorkingCopyOwner owner) throws RubyModelException {
@@ -179,7 +179,7 @@ public class HierarchyScope implements IRubySearchScope {
 			}
 		}
 	}
-	/* (non-Rubydoc)
+	/* (non-Javadoc)
 	 * @see IRubySearchScope#encloses(String)
 	 */
 	public boolean encloses(String resourcePath) {
@@ -215,7 +215,7 @@ public class HierarchyScope implements IRubySearchScope {
 		}		
 		return false;
 	}
-	/* (non-Rubydoc)
+	/* (non-Javadoc)
 	 * @see IRubySearchScope#encloses(IRubyElement)
 	 */
 	public boolean encloses(IRubyElement element) {
@@ -262,7 +262,7 @@ public class HierarchyScope implements IRubySearchScope {
 		} 
 		return false;
 	}
-	/* (non-Rubydoc)
+	/* (non-Javadoc)
 	 * @see IRubySearchScope#enclosingProjectsAndJars()
 	 * @deprecated
 	 */
