@@ -9,6 +9,7 @@ import java.util.Set;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.CoreException;
+import org.jruby.ast.AliasNode;
 import org.jruby.ast.ArgumentNode;
 import org.jruby.ast.CallNode;
 import org.jruby.ast.ClassNode;
@@ -77,7 +78,27 @@ public class SelectionEngine {
 		}
 		Node selected = OffsetNodeLocator.Instance().getNodeAtOffset(root,
 				start);
-
+		if (selected instanceof AliasNode) {
+			// figure out if we're pointing at new name or old name.
+			AliasNode aliasNode = (AliasNode) selected;
+			int startOffset = aliasNode.getPosition().getStartOffset();
+			int diff = start - startOffset;
+			if (diff < (6 + aliasNode.getNewName().length() + 1)) return new IRubyElement[0]; // if we're not over the old name, don't resolve this to anything! FIXME Resolve it to the new method!
+			String methodName = aliasNode.getOldName();
+			// FIXME Only search within the current class/module scope!			
+			// do a global search for method declarations matching this name	
+			List<IRubyElement> possible = new ArrayList<IRubyElement>();
+			try {
+				List<SearchMatch> results = search(IRubyElement.METHOD, methodName, IRubySearchConstants.DECLARATIONS, SearchPattern.R_EXACT_MATCH);
+				for (SearchMatch match : results) {
+					IRubyElement element = (IRubyElement) match.getElement();
+					possible.add(element);
+				}
+			} catch (CoreException e) {
+				RubyCore.log(e);
+			}			
+			return possible.toArray(new IRubyElement[possible.size()]);
+		}
 		if (selected instanceof Colon2Node) {
 			String simpleName = ((Colon2Node)selected).getName();
 			String fullyQualifiedName = ASTUtil.getFullyQualifiedName((Colon2Node) selected);
