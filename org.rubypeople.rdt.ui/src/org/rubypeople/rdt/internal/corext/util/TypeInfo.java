@@ -206,7 +206,7 @@ public abstract class TypeInfo {
 			}
 			for (int i= 0; i < fEnclosingNames.length; i++) {
 				if (buf.length() > 0) {
-					buf.append('.');
+					buf.append("::");
 				}
 				buf.append(fEnclosingNames[i]);
 			}
