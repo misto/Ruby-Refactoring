@@ -17,6 +17,7 @@ Export-Package: edu.emory.mathcs.backport.java.util,
  edu.emory.mathcs.backport.java.util.concurrent.atomic,
  edu.emory.mathcs.backport.java.util.concurrent.helpers,
  edu.emory.mathcs.backport.java.util.concurrent.locks,
+ jline,
  jregex,
  jregex.util.io,
  org.jruby,
@@ -67,5 +68,6 @@ Export-Package: edu.emory.mathcs.backport.java.util,
  org.jvyamlb.util,
  org.objectweb.asm,
  org.objectweb.asm.commons,
- org.objectweb.asm.signature
+ org.objectweb.asm.signature,
+ org.objectweb.asm.util
 Bundle-Vendor: org.jruby
