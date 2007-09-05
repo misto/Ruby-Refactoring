@@ -235,7 +235,8 @@ public class RubyDebugTarget extends PlatformObject implements IRubyDebugTarget 
 			return;
 		}
 		if (!getBreakpoints().contains(breakpoint)) {
-			this.getRubyDebuggerProxy().addBreakpoint(breakpoint);
+			if (this.getRubyDebuggerProxy() != null) 
+				this.getRubyDebuggerProxy().addBreakpoint(breakpoint);
 			getBreakpoints().add(breakpoint);
 		}		
 	}
