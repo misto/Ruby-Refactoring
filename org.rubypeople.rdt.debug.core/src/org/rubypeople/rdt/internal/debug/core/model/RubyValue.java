@@ -10,10 +10,6 @@ import org.eclipse.debug.core.model.IVariable;
 /**
  * @author Administrator
  *
- * To change this generated comment edit the template variable "typecomment":
- * Window>Preferences>Java>Templates.
- * To enable and disable the creation of type comments go to
- * Window>Preferences>Java>Code Generation.
  */
 
 //see RubyDebugTarget for the reason why PlatformObject is being extended
@@ -39,6 +35,8 @@ public class RubyValue extends PlatformObject implements IValue {
 		} else if (this.valueString.endsWith("element(s))")) {
 			int index = this.valueString.substring(0, this.valueString.length() - 11).lastIndexOf("(");
 			this.valueString = this.valueString.substring(0, index).trim() + "[" + this.valueString.substring(index + 1, this.valueString.length() - 11).trim() + "]";
+		} else if (type != null && type.equals("Symbol")) {
+			this.valueString = ':' + this.valueString;
 		}
 		this.owner = owner;
 		this.hasChildren = hasChildren;
