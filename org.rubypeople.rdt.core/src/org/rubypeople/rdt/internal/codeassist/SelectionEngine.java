@@ -58,6 +58,7 @@ import org.rubypeople.rdt.internal.ti.util.ClosestSpanningNodeLocator;
 import org.rubypeople.rdt.internal.ti.util.FirstPrecursorNodeLocator;
 import org.rubypeople.rdt.internal.ti.util.INodeAcceptor;
 import org.rubypeople.rdt.internal.ti.util.OffsetNodeLocator;
+import org.rubypeople.rdt.internal.ti.util.ScopedNodeLocator;
 
 public class SelectionEngine {
 
@@ -104,17 +105,37 @@ public class SelectionEngine {
 			String name = constNode.getName();
 			// Try to find a matching constant in this script
 			// TODO Use convention of all caps versus camelcase to decided which to search for first?
-			IRubyElement element = findChild(name, IRubyElement.CONSTANT, script);
-			if (element != null) {
-			  return new IRubyElement[] { element };	
+			try {
+				IRubySearchScope scope = SearchEngine.createRubySearchScope(new IRubyElement[] {script});
+				List<SearchMatch> matches = search(scope, IRubyElement.CONSTANT, name, IRubySearchConstants.DECLARATIONS, SearchPattern.R_EXACT_MATCH);
+				for (SearchMatch match : matches) {
+					IRubyElement element = (IRubyElement) match.getElement();
+					if (element != null) {
+						return new IRubyElement[] { element };	
+					}
+				}
+			} catch (CoreException e) {
+				RubyCore.log(e);
 			}
 			// Now search for a type in this script
-			element = findChild(name, IRubyElement.TYPE, script);
-			if (element != null) {
-			  return new IRubyElement[] { element };	
+			try {
+				IRubySearchScope scope = SearchEngine.createRubySearchScope(new IRubyElement[] {script});				
+				List<SearchMatch> matches = search(scope, IRubyElement.TYPE, name, IRubySearchConstants.DECLARATIONS, SearchPattern.R_EXACT_MATCH);
+				for (SearchMatch match : matches) {
+					IRubyElement element = (IRubyElement) match.getElement();
+					if (element != null) {
+						return new IRubyElement[] { element };	
+					}
+				}
+			} catch (CoreException e) {
+				RubyCore.log(e);
 			}
 			RubyElementRequestor completer = new RubyElementRequestor(script);
-			return completer.findType(name);
+			IType[] types = completer.findType(name);
+			if (types != null && types.length > 0) return types;
+			String fullyQualifiedName = getFullyQualifiedName(root, name);
+			if (fullyQualifiedName == null) return new IRubyElement[0];
+			return completer.findType(fullyQualifiedName); // get fully qualified name of surrounding type!
 		}
 		if (isLocalVarRef(selected)) {
 			// TODO Try the local namespace first!			
@@ -171,16 +192,47 @@ public class SelectionEngine {
 		}
 		return new IRubyElement[0];
 	}
+	
+	private String getFullyQualifiedName(Node root, String name) {
+		List<Node> surrounding = ScopedNodeLocator.Instance().findNodesInScope(root, new INodeAcceptor() {
+		
+			public boolean doesAccept(Node node) {
+				return node instanceof ModuleNode || node instanceof ClassNode;
+			}
+		
+		});
+		// drop last class/module
+		if (surrounding.size() < 2) return null;
+		surrounding.remove(surrounding.size() - 1);
+		StringBuffer buffer = new StringBuffer();
+		boolean first = true;
+		for (Node node : surrounding) {
+			if (!first) {
+				buffer.append("::");
+			}
+			buffer.append(ASTUtil.getNameReflectively(node));
+			if (first) {
+				first = false;
+			}
+		}
+		buffer.append("::");
+		buffer.append(name);
+		return buffer.toString();
+	}
 
 	private List<SearchMatch> search(int type, String patternString, int limitTo, int matchRule) throws CoreException {
+		return search(SearchEngine.createWorkspaceScope(), type, patternString, limitTo, matchRule);
+	}
+	
+	private List<SearchMatch> search(IRubySearchScope scope, int type, String patternString, int limitTo, int matchRule) throws CoreException {
 		SearchEngine engine = new SearchEngine();
 		SearchPattern pattern = SearchPattern.createPattern(type, patternString, limitTo, matchRule);
 		SearchParticipant[] participants = new SearchParticipant[] {SearchEngine.getDefaultSearchParticipant()};
 		CollectingSearchRequestor requestor = new CollectingSearchRequestor();
-		IRubySearchScope scope = SearchEngine.createWorkspaceScope();
 		engine.search(pattern, participants, scope, requestor, null);
 		return requestor.getResults();
 	}
+	
 	
 	private IType[] getReceiver(IRubyScript script, String source, Node selected, Node root, int start) {
 		List<IType> types = new ArrayList<IType>();
