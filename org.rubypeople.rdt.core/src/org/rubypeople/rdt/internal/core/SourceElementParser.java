@@ -548,8 +548,8 @@ public class SourceElementParser extends InOrderVisitor {
 		method.isClassLevel = inSingletonClass;
 		method.name = name;
 		method.visibility = convertVisibility(visibility);
-		method.nameSourceStart = iVisited.getPosition().getStartOffset() + ALIAS.length();
-		method.nameSourceEnd = iVisited.getPosition().getStartOffset() + ALIAS.length() + iVisited.getNewName().length() - 1;
+		method.nameSourceStart = iVisited.getPosition().getStartOffset() + ALIAS.length() - 1;
+		method.nameSourceEnd = iVisited.getPosition().getStartOffset() + ALIAS.length() - 1 + iVisited.getNewName().length() - 1;
 		method.parameterNames = new String[0]; // TODO Find the existing method and steal it's parameter names	
 		requestor.enterMethod(method);
 		requestor.exitMethod(iVisited.getPosition().getEndOffset());
