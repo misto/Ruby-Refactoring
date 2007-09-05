@@ -59,27 +59,23 @@ public class SearchEngine {
 	 *   or {@link SearchPattern#R_PREFIX_MATCH} if a prefix non case sensitive match is requested.
 	 * @param searchFor determines the nature of the searched elements
 	 *	<ul>
-	 * 	<li>{@link IJavaSearchConstants#CLASS}: only look for classes</li>
-	 *		<li>{@link IJavaSearchConstants#INTERFACE}: only look for interfaces</li>
-	 * 	<li>{@link IJavaSearchConstants#ENUM}: only look for enumeration</li>
-	 *		<li>{@link IJavaSearchConstants#ANNOTATION_TYPE}: only look for annotation type</li>
-	 * 	<li>{@link IJavaSearchConstants#CLASS_AND_ENUM}: only look for classes and enumerations</li>
-	 *		<li>{@link IJavaSearchConstants#CLASS_AND_INTERFACE}: only look for classes and interfaces</li>
-	 * 	<li>{@link IJavaSearchConstants#TYPE}: look for all types (ie. classes, interfaces, enum and annotation types)</li>
+	 * 	    <li>{@link IRubySearchConstants#CLASS}: only look for classes</li>
+	 *		<li>{@link IRubySearchConstants#MODULE}: only look for modules</li>
+	 * 	    <li>{@link IRubySearchConstants#TYPE}: look for all types</li>
 	 *	</ul>
 	 * @param scope the scope to search in
 	 * @param nameRequestor the requestor that collects the results of the search
 	 * @param waitingPolicy one of
 	 * <ul>
-	 *		<li>{@link IJavaSearchConstants#FORCE_IMMEDIATE_SEARCH} if the search should start immediately</li>
-	 *		<li>{@link IJavaSearchConstants#CANCEL_IF_NOT_READY_TO_SEARCH} if the search should be cancelled if the
+	 *		<li>{@link IRubySearchConstants#FORCE_IMMEDIATE_SEARCH} if the search should start immediately</li>
+	 *		<li>{@link IRubySearchConstants#CANCEL_IF_NOT_READY_TO_SEARCH} if the search should be cancelled if the
 	 *			underlying indexer has not finished indexing the workspace</li>
-	 *		<li>{@link IJavaSearchConstants#WAIT_UNTIL_READY_TO_SEARCH} if the search should wait for the
+	 *		<li>{@link IRubySearchConstants#WAIT_UNTIL_READY_TO_SEARCH} if the search should wait for the
 	 *			underlying indexer to finish indexing the workspace</li>
 	 * </ul>
 	 * @param progressMonitor the progress monitor to report progress to, or <code>null</code> if no progress
 	 *							monitor is provided
-	 * @exception JavaModelException if the search failed. Reasons include:
+	 * @exception RubyModelException if the search failed. Reasons include:
 	 *	<ul>
 	 *		<li>the classpath is incorrectly set</li>
 	 *	</ul>
