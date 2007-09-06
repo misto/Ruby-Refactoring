@@ -10,12 +10,11 @@
  *******************************************************************************/
 package org.rubypeople.rdt.internal.ui.viewsupport;
 
-import org.eclipse.swt.graphics.Color;
-
 import org.eclipse.jface.viewers.DecoratingLabelProvider;
 import org.eclipse.jface.viewers.IColorProvider;
-
+import org.eclipse.swt.graphics.Color;
 import org.eclipse.ui.PlatformUI;
+import org.rubypeople.rdt.ui.ProblemsLabelDecorator;
 
 public class DecoratingRubyLabelProvider extends DecoratingLabelProvider implements IColorProvider {
     
@@ -36,8 +35,7 @@ public class DecoratingRubyLabelProvider extends DecoratingLabelProvider impleme
     public DecoratingRubyLabelProvider(RubyUILabelProvider labelProvider, boolean errorTick) {
         super(labelProvider, PlatformUI.getWorkbench().getDecoratorManager().getLabelDecorator());
         if (errorTick) {
-            // TODO Uncomment when we have a ProblemsLabelDecorator
-            //labelProvider.addLabelDecorator(new ProblemsLabelDecorator(null));
+            labelProvider.addLabelDecorator(new ProblemsLabelDecorator(null));
         }
     }
 

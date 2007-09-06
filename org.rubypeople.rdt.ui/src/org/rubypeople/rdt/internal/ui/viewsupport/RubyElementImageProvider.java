@@ -101,14 +101,16 @@ public class RubyElementImageProvider {
     private ImageDescriptor computeDescriptor(Object element, int flags) {
         if (element instanceof IRubyElement) {
             return getRubyImageDescriptor((IRubyElement) element, flags);
+        } else if (element instanceof IAdaptable) { 
+        	return getWorkbenchImageDescriptor((IAdaptable) element, flags); 
         } else if (element instanceof IFile) {
             IFile file = (IFile) element;
-            if (RubyCore.isRubyLikeFileName(file.getName())) { return getCUResourceImageDescriptor(
-                    file, flags); // image for a CU not on the build path
+            if (RubyCore.isRubyLikeFileName(file.getName())) { 
+            	return getCUResourceImageDescriptor(
+                    file, flags); // image for a ruby script not on the build path
             }
             return getWorkbenchImageDescriptor(file, flags);
-        } else if (element instanceof IAdaptable) { return getWorkbenchImageDescriptor(
-                (IAdaptable) element, flags); }
+        } 
         return null;
     }
 
