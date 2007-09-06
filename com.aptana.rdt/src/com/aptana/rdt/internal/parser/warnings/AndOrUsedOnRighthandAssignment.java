@@ -12,7 +12,7 @@ import com.aptana.rdt.AptanaRDTPlugin;
 public class AndOrUsedOnRighthandAssignment extends RubyLintVisitor {
 	
 	public AndOrUsedOnRighthandAssignment(String contents) {
-		super(contents);
+		super(AptanaRDTPlugin.getDefault().getOptions(), contents);
 	}
 
 	@Override

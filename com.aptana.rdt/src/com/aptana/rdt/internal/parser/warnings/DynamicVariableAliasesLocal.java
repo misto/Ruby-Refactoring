@@ -15,7 +15,7 @@ import com.aptana.rdt.AptanaRDTPlugin;
 public class DynamicVariableAliasesLocal extends RubyLintVisitor {
 
 	public DynamicVariableAliasesLocal(String contents) {
-		super(contents);
+		super(AptanaRDTPlugin.getDefault().getOptions(), contents);
 	}
 
 	@Override

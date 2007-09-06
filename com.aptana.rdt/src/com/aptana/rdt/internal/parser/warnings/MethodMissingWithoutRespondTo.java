@@ -19,7 +19,7 @@ public class MethodMissingWithoutRespondTo extends RubyLintVisitor {
 	private Map<String, DefnNode> methods = new HashMap<String, DefnNode>();
 	
 	public MethodMissingWithoutRespondTo(String contents) {
-		super(contents);
+		super(AptanaRDTPlugin.getDefault().getOptions(), contents);
 	}
 
 	@Override

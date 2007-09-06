@@ -4,6 +4,7 @@ import org.jruby.ast.ConstDeclNode;
 import org.jruby.evaluator.Instruction;
 import org.jruby.lexer.yacc.IDESourcePosition;
 import org.jruby.lexer.yacc.ISourcePosition;
+import org.rubypeople.rdt.core.RubyCore;
 import org.rubypeople.rdt.core.parser.warnings.RubyLintVisitor;
 
 import com.aptana.rdt.AptanaRDTPlugin;
@@ -12,7 +13,7 @@ import com.aptana.rdt.IProblem;
 public class ConstantNamingConvention extends RubyLintVisitor {
 
 	public ConstantNamingConvention(String contents) {
-		super(contents);
+		super(AptanaRDTPlugin.getDefault().getOptions(), contents);
 	}
 
 	@Override
