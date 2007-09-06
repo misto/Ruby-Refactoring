@@ -16,6 +16,7 @@ import org.eclipse.core.resources.IResource;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.StructuredSelection;
+import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorPart;
@@ -31,6 +32,8 @@ import org.rubypeople.rdt.internal.ui.RubyPlugin;
 import org.rubypeople.rdt.internal.ui.RubyViewerFilter;
 import org.rubypeople.rdt.internal.ui.rubyeditor.ExternalRubyFileEditorInput;
 import org.rubypeople.rdt.internal.ui.rubyeditor.IRubyScriptEditorInput;
+import org.rubypeople.rdt.internal.ui.viewsupport.AppearanceAwareLabelProvider;
+import org.rubypeople.rdt.internal.ui.viewsupport.DecoratingRubyLabelProvider;
 import org.rubypeople.rdt.ui.RubyUI;
 
 public class RubyResourcesView extends ResourceNavigator implements IShowInTarget {
@@ -171,6 +174,11 @@ public class RubyResourcesView extends ResourceNavigator implements IShowInTarge
 		}
 
 		return false;
+	}
+	
+	@Override
+	protected void initLabelProvider(TreeViewer viewer) {
+		 viewer.setLabelProvider(new DecoratingRubyLabelProvider(new AppearanceAwareLabelProvider()));
 	}
 	
 	/**
