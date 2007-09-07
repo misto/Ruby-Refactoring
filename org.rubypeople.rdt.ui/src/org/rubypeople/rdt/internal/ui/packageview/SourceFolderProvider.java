@@ -99,7 +99,6 @@ public class SourceFolderProvider implements IPropertyChangeListener {
 	}
 	
 	private List filter(List children) throws RubyModelException {
-		// FIXME Just remove this?
 		if (fFoldPackages) {
 			int size= children.size();
 			for (int i = 0; i < size; i++) {
@@ -439,8 +438,8 @@ public class SourceFolderProvider implements IPropertyChangeListener {
 	}
 
 	private boolean arePackagesFoldedInHierarchicalLayout(){
-		// TODO Uncomment and allow folding packages preference setting
+		// TODO Uncomment and allow folding packages preference setting?
 //		return PreferenceConstants.getPreferenceStore().getBoolean(PreferenceConstants.APPEARANCE_FOLD_PACKAGES_IN_PACKAGE_EXPLORER);
-		return true;
+		return false;
 	}
 }
