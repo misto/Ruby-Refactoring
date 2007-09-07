@@ -63,7 +63,7 @@ import org.rubypeople.rdt.internal.ui.wizards.buildpaths.newsourcepage.LoadpathM
 public class RemoveFromBuildpathAction extends Action implements ISelectionChangedListener {
 
 	private final IWorkbenchSite fSite;
-	private List fSelectedElements; //IPackageFramgentRoot || IRubyProject || ClassPathContainer iff isEnabled()
+	private List fSelectedElements; // ISourceFolderRoot || IRubyProject || LoadPathContainer iff isEnabled()
 
 	public RemoveFromBuildpathAction(IWorkbenchSite site) {
 		super(NewWizardMessages.NewSourceContainerWorkbookPage_ToolBar_RemoveFromCP_label, RubyPluginImages.DESC_ELCL_REMOVE_FROM_BP);
