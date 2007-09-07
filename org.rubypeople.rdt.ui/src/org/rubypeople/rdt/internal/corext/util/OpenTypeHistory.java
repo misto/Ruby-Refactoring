@@ -36,6 +36,7 @@ import org.rubypeople.rdt.core.RubyCore;
 import org.rubypeople.rdt.core.RubyModelException;
 import org.rubypeople.rdt.core.search.IRubySearchScope;
 import org.rubypeople.rdt.core.search.SearchEngine;
+import org.rubypeople.rdt.internal.corext.CorextMessages;
 import org.rubypeople.rdt.internal.ui.RubyPlugin;
 import org.w3c.dom.Element;
 

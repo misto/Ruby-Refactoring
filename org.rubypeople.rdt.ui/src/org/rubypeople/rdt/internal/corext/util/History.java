@@ -37,6 +37,7 @@ import javax.xml.transform.stream.StreamResult;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IStatus;
+import org.rubypeople.rdt.internal.corext.CorextMessages;
 import org.rubypeople.rdt.internal.ui.RubyPlugin;
 import org.rubypeople.rdt.internal.ui.RubyUIException;
 import org.rubypeople.rdt.internal.ui.RubyUIStatus;

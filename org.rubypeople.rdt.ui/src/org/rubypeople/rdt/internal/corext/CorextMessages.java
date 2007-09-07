@@ -1,4 +1,4 @@
-package org.rubypeople.rdt.internal.corext.util;
+package org.rubypeople.rdt.internal.corext;
 
 import org.eclipse.osgi.util.NLS;
 
