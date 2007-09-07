@@ -23,6 +23,10 @@ public class ExternalRubyFileEditorInput implements IStorageEditorInput, ILocati
 	public ExternalRubyFileEditorInput(File file) {
 		storage = new LocalFileStorage(file);
 	}
+	
+	public ExternalRubyFileEditorInput(LocalFileStorage file) {
+		storage = file;
+	}
 
 	public boolean exists() {
 		return storage.getFile().exists();

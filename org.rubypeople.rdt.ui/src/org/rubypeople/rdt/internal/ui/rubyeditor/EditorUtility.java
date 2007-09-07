@@ -34,6 +34,7 @@ import org.rubypeople.rdt.core.IRubyProject;
 import org.rubypeople.rdt.core.IRubyScript;
 import org.rubypeople.rdt.core.ISourceRange;
 import org.rubypeople.rdt.core.ISourceReference;
+import org.rubypeople.rdt.core.LocalFileStorage;
 import org.rubypeople.rdt.core.RubyCore;
 import org.rubypeople.rdt.core.RubyModelException;
 import org.rubypeople.rdt.internal.core.ExternalRubyScript;
@@ -46,7 +47,7 @@ import org.rubypeople.rdt.ui.RubyUI;
 public class EditorUtility {
 	
 	/**
-	 * Opens a Ruby editor for an element (IJavaElement, IFile, IStorage...)
+	 * Opens a Ruby editor for an element (IRubyElement, IFile, IStorage...)
 	 * @return the IEditorPart or null if wrong element type or opening failed
 	 */
 	public static IEditorPart openInEditor(Object inputElement, boolean activate) throws RubyModelException, PartInitException {
@@ -134,6 +135,10 @@ public class EditorUtility {
 
 		if (input instanceof IFile)
 			return new FileEditorInput((IFile) input);
+		
+		if (input instanceof LocalFileStorage) {
+			return new ExternalRubyFileEditorInput((LocalFileStorage)input);
+		}
 
 		return null;
 	}
