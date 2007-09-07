@@ -11,16 +11,17 @@ import org.eclipse.ui.IMemento;
 import org.eclipse.ui.IPersistableElement;
 import org.eclipse.ui.IStorageEditorInput;
 import org.eclipse.ui.editors.text.ILocationProvider;
+import org.rubypeople.rdt.core.LocalFileStorage;
 
 /**
  * @since 3.0
  */
 public class ExternalRubyFileEditorInput implements IStorageEditorInput, ILocationProvider, IPersistableElement {
 
-	private SystemFileStorage storage;
+	private LocalFileStorage storage;
 
 	public ExternalRubyFileEditorInput(File file) {
-		storage = new SystemFileStorage(file);
+		storage = new LocalFileStorage(file);
 	}
 
 	public boolean exists() {
