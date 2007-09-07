@@ -43,6 +43,14 @@ public class PackagesMessages extends NLS {
 	public static String PackageExplorer_notFound;
 	public static String PackageExplorer_filteredDialog_title;
 	public static String PackageExplorer_removeFilters;
+
+	public static String DragAdapter_deleting;
+	public static String DragAdapter_refreshing;
+	public static String DragAdapter_problem;
+	public static String DragAdapter_problemTitle;
+
+	public static String DropAdapter_errorTitle;
+	public static String DropAdapter_errorMessage;
 	
 	static {
 		NLS.initializeMessages(BUNDLE_NAME, PackagesMessages.class);

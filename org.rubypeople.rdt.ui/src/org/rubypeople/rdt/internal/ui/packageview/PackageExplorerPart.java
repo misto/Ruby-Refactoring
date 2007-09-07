@@ -115,7 +115,6 @@ import org.rubypeople.rdt.core.IType;
 import org.rubypeople.rdt.core.RubyCore;
 import org.rubypeople.rdt.core.RubyModelException;
 import org.rubypeople.rdt.internal.core.util.Messages;
-import org.rubypeople.rdt.internal.ui.IRubyHelpContextIds;
 import org.rubypeople.rdt.internal.ui.RubyPlugin;
 import org.rubypeople.rdt.internal.ui.dnd.DelegatingDropAdapter;
 import org.rubypeople.rdt.internal.ui.dnd.RdtViewerDragAdapter;
@@ -926,7 +925,7 @@ public class PackageExplorerPart extends ViewPart
 		TransferDragSourceListener[] dragListeners= new TransferDragSourceListener[] {
 			new SelectionTransferDragAdapter(fViewer),
 			new ResourceTransferDragAdapter(fViewer),
-//			new FileTransferDragAdapter(fViewer)
+			new FileTransferDragAdapter(fViewer)
 		};
 		fViewer.addDragSupport(ops, transfers, new RdtViewerDragAdapter(fViewer, dragListeners));
 	}
@@ -938,7 +937,7 @@ public class PackageExplorerPart extends ViewPart
 			FileTransfer.getInstance()};
 		TransferDropTargetListener[] dropListeners= new TransferDropTargetListener[] {
 			new SelectionTransferDropAdapter(fViewer),
-//			new FileTransferDropAdapter(fViewer),
+			new FileTransferDropAdapter(fViewer),
 //			new WorkingSetDropAdapter(this)
 		};
 		fViewer.addDropSupport(ops, transfers, new DelegatingDropAdapter(dropListeners));
@@ -1651,7 +1650,7 @@ public class PackageExplorerPart extends ViewPart
     		case IRubyElement.TYPE:
     		case IRubyElement.METHOD:
     		case IRubyElement.FIELD:
-    			// select parent cu/classfile
+    			// select parent script
     			element2= (IRubyElement)element2.getOpenable();
     			break;
     		case IRubyElement.RUBY_MODEL:

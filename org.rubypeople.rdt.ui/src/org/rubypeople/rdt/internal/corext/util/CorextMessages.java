@@ -9,6 +9,11 @@ public class CorextMessages extends NLS {
 	public static String History_error_serialize;
 	public static String History_error_read;
 	public static String TypeInfoHistory_consistency_check;
+
+	public static String Resources_fileModified;
+	public static String Resources_modifiedResources;
+	public static String Resources_outOfSync;
+	public static String Resources_outOfSyncResources;
 	
 	static {
 		NLS.initializeMessages(BUNDLE_NAME, CorextMessages.class);
