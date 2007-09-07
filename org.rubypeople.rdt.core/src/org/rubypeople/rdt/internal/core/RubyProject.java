@@ -2490,4 +2490,34 @@ public class RubyProject extends Openable implements IProjectNature, IRubyElemen
 		op.runOperation(monitor);
 		return op.getResult();
 	}
+	
+	/*
+	 * @see IRubyProject
+	 */
+	public boolean isOnLoadpath(IResource resource) {
+		IPath exactPath = resource.getFullPath();
+		IPath path = exactPath;
+		
+		// ensure that folders are only excluded if all of their children are excluded
+		boolean isFolderPath = resource.getType() == IResource.FOLDER;
+		
+		ILoadpathEntry[] classpath;
+		try {
+			classpath = this.getResolvedLoadpath(true/*ignoreUnresolvedEntry*/, false/*don't generateMarkerOnError*/, false/*don't returnResolutionInProgress*/);
+		} catch(RubyModelException e){
+			return false; // not a Ruby project
+		}
+		for (int i = 0; i < classpath.length; i++) {
+			ILoadpathEntry entry = classpath[i];
+			IPath entryPath = entry.getPath();
+			if (entryPath.equals(exactPath)) { // source folder roots must match exactly entry pathes (no exclusion there)
+				return true;
+			}
+			if (entryPath.isPrefixOf(path) 
+					&& !Util.isExcluded(path, ((LoadpathEntry)entry).fullInclusionPatternChars(), ((LoadpathEntry)entry).fullExclusionPatternChars(), isFolderPath)) {
+				return true;
+			}
+		}
+		return false;
+	}
 }

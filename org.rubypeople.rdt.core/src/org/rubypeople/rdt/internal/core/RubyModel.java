@@ -287,4 +287,29 @@ protected char getHandleMementoDelimiter(){
 	return 0;
 }
 
+/*
+ * @see IRubyModel
+ */
+public boolean contains(IResource resource) {
+	switch (resource.getType()) {
+		case IResource.ROOT:
+		case IResource.PROJECT:
+			return true;
+	}
+	// file or folder
+	IRubyProject[] projects;
+	try {
+		projects = this.getRubyProjects();
+	} catch (RubyModelException e) {
+		return false;
+	}
+	for (int i = 0, length = projects.length; i < length; i++) {
+		RubyProject project = (RubyProject)projects[i];
+		if (!project.contains(resource)) {
+			return false;
+		}
+	}
+	return true;
+}
+
 }

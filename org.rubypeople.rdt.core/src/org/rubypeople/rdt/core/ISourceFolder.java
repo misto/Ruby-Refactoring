@@ -121,7 +121,20 @@ public interface ISourceFolder extends IRubyElement, IParent, IOpenable  {
 	 * @see IClasspathEntry#getExclusionPatterns()
 	 */
 	Object[] getNonRubyResources() throws RubyModelException;
+	
 	IRubyScript getRubyScript(String name);
+	
 	boolean isDefaultPackage();
+	
+	/**
+	 * Returns whether this source folder's name is
+	 * a prefix of other source folders in this source folder's
+	 * root.
+	 *
+	 * @exception RubyModelException if this element does not exist or if an
+	 *		exception occurs while accessing its corresponding resource.
+	 * @return true if this source folder's name is a prefix of other source fragments in this source folder's root, false otherwise
+	 */
+	boolean hasSubfolders() throws RubyModelException;
 
 }

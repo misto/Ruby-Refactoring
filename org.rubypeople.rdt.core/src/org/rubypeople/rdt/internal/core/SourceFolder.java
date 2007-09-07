@@ -16,6 +16,7 @@ import org.rubypeople.rdt.core.IParent;
 import org.rubypeople.rdt.core.IRubyElement;
 import org.rubypeople.rdt.core.IRubyScript;
 import org.rubypeople.rdt.core.ISourceFolder;
+import org.rubypeople.rdt.core.ISourceFolderRoot;
 import org.rubypeople.rdt.core.RubyModelException;
 import org.rubypeople.rdt.core.WorkingCopyOwner;
 import org.rubypeople.rdt.internal.core.util.MementoTokenizer;
@@ -242,6 +243,23 @@ public class SourceFolder extends Openable implements ISourceFolder {
 	 */
 	protected char getHandleMementoDelimiter() {
 		return RubyElement.JEM_SOURCE_FOLDER;
+	}
+	
+	/**
+	 * @see ISourceFolder#hasSubfolders()
+	 */
+	public boolean hasSubfolders() throws RubyModelException {
+		IRubyElement[] packages= ((ISourceFolderRoot)getParent()).getChildren();
+		int namesLength = this.names.length;
+		nextPackage: for (int i= 0, length = packages.length; i < length; i++) {
+			String[] otherNames = ((SourceFolder) packages[i]).names;
+			if (otherNames.length <= namesLength) continue nextPackage;
+			for (int j = 0; j < namesLength; j++)
+				if (!this.names[j].equals(otherNames[j]))
+					continue nextPackage;
+			return true;
+		}
+		return false;
 	}
 
 }

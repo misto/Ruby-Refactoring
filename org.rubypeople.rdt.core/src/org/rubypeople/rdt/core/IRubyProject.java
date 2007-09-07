@@ -197,4 +197,18 @@ public interface IRubyProject extends IRubyElement, IParent {
 	 */
 	ITypeHierarchy newTypeHierarchy(IRegion region, IProgressMonitor monitor)
 		throws RubyModelException;
+
+	/**
+	 * Returns whether the given resource is on the loadpath of this project,
+	 * that is, referenced from a loadpath entry and not explicitly excluded
+	 * using an exclusion pattern.
+	 * 
+	 * @param resource the given resource
+	 * @return <code>true</code> if the given resource is on the loadpath of
+	 * this project, <code>false</code> otherwise
+	 * @see ILoadpathEntry#getInclusionPatterns()
+	 * @see ILoadpathEntry#getExclusionPatterns()
+	 * @since 2.1
+	 */
+	boolean isOnLoadpath(IResource resource);
 }

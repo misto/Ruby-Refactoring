@@ -4,6 +4,7 @@
  */
 package org.rubypeople.rdt.core;
 
+import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IWorkspace;
 
 /**
@@ -56,4 +57,27 @@ public interface IRubyModel extends IParent, IRubyElement, IOpenable {
 	 * @return the workspace associated with this Ruby model
 	 */
 	IWorkspace getWorkspace();
+
+	/**
+	 * Returns whether this Ruby model contains an <code>IRubyElement</code>
+	 * whose resource is the given resource or a non-Ruby resource which is the
+	 * given resource.
+	 * <p>
+	 * Note: no existency check is performed on the argument resource. If it is
+	 * not accessible (see <code>IResource.isAccessible()</code>) yet but
+	 * would be located in Ruby model range, then it will return
+	 * <code>true</code>.
+	 * </p>
+	 * <p>
+	 * If the resource is accessible, it can be reached by navigating the Ruby
+	 * model down using the <code>getChildren()</code> and/or
+	 * <code>getNonRubyResources()</code> methods.
+	 * </p>
+	 * 
+	 * @param resource
+	 *            the resource to check
+	 * @return true if the resource is accessible through the Ruby model
+	 * @since 2.1
+	 */
+	boolean contains(IResource resource);
 }
