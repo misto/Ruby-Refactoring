@@ -13,6 +13,7 @@ import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IStorage;
 import org.eclipse.core.runtime.IAdaptable;
+import org.eclipse.core.runtime.IPath;
 import org.eclipse.jface.viewers.ContentViewer;
 import org.eclipse.jface.viewers.IBaseLabelProvider;
 import org.eclipse.jface.viewers.ILabelProvider;
@@ -22,20 +23,24 @@ import org.eclipse.ui.model.IWorkbenchAdapter;
 import org.rubypeople.rdt.core.IMember;
 import org.rubypeople.rdt.core.IMethod;
 import org.rubypeople.rdt.core.IRubyElement;
+import org.rubypeople.rdt.core.IRubyProject;
+import org.rubypeople.rdt.core.ISourceFolder;
+import org.rubypeople.rdt.core.ISourceFolderRoot;
 import org.rubypeople.rdt.core.IType;
 import org.rubypeople.rdt.core.RubyModelException;
+import org.rubypeople.rdt.internal.corext.util.RubyModelUtil;
 import org.rubypeople.rdt.internal.ui.RubyPlugin;
+import org.rubypeople.rdt.internal.ui.packageview.LoadPathContainer;
 import org.rubypeople.rdt.internal.ui.preferences.MembersOrderPreferenceCache;
 
 /**
  * @author Chris
- * 
- * To change the template for this generated type comment go to Window -
- * Preferences - Java - Code Generation - Code and Comments
  */
 public class RubyElementSorter extends ViewerSorter {
 
     private static final int PROJECTS = 1;
+    private static final int SOURCEFOLDERROOTS= 2;
+	private static final int SOURCEFOLDER= 3;
 
     private static final int RUBYSCRIPTS = 4;
 
@@ -54,6 +59,7 @@ public class RubyElementSorter extends ViewerSorter {
     private static final int OTHERS = 51;
 
     private MembersOrderPreferenceCache fMemberOrderCache;
+    private Collator fNewCollator; // collator from ICU
 
     /**
      * Constructor.
@@ -61,6 +67,7 @@ public class RubyElementSorter extends ViewerSorter {
     public RubyElementSorter() {    
         super(null); // delay initialization of collator
         fMemberOrderCache= RubyPlugin.getDefault().getMemberOrderPreferenceCache();
+        fNewCollator= null;
     }
     
     /* (non-Javadoc)
@@ -103,6 +110,10 @@ public class RubyElementSorter extends ViewerSorter {
                 return IMPORT_CONTAINER;
             case IRubyElement.IMPORT_DECLARATION:
                 return IMPORT_DECLARATION;
+            case IRubyElement.SOURCE_FOLDER :
+				return SOURCEFOLDER;
+			case IRubyElement.SOURCE_FOLDER_ROOT :
+				return SOURCEFOLDERROOTS;
             case IRubyElement.RUBY_PROJECT:
                 return PROJECTS;
             case IRubyElement.SCRIPT:
@@ -116,7 +127,11 @@ public class RubyElementSorter extends ViewerSorter {
             return PROJECTS;
         } else if (element instanceof IContainer) {
             return RESOURCEFOLDERS;
-        } else if (element instanceof IStorage) { return STORAGE; }
+        } else if (element instanceof IStorage) { 
+        	return STORAGE; 
+        } else if (element instanceof LoadPathContainer) {
+			return SOURCEFOLDERROOTS;
+		}
         return OTHERS;
     }
 
@@ -131,6 +146,28 @@ public class RubyElementSorter extends ViewerSorter {
     public int compare(Viewer viewer, Object e1, Object e2) {
         int cat1 = category(e1);
         int cat2 = category(e2);
+        
+        if (needsLoadpathComparision(e1, cat1, e2, cat2)) {
+			ISourceFolderRoot root1= getSourceFolderRoot(e1);
+			ISourceFolderRoot root2= getSourceFolderRoot(e2);
+			if (root1 == null) {
+				if (root2 == null) {
+					return 0;
+				} else {
+					return 1;
+				}
+			} else if (root2 == null) {
+				return -1;
+			}
+			// check if not same to avoid expensive class path access
+			if (!root1.getPath().equals(root2.getPath())) {
+				int p1= getLoadPathIndex(root1);
+				int p2= getLoadPathIndex(root2);
+				if (p1 != p2) {
+					return p1 - p2;
+				}
+			}
+		}
 
         if (cat1 != cat2) return cat1 - cat2;
 
@@ -221,5 +258,56 @@ public class RubyElementSorter extends ViewerSorter {
         }
         return null;
     }
+    
+	private boolean needsLoadpathComparision(Object e1, int cat1, Object e2, int cat2) {
+		if ((cat1 == SOURCEFOLDERROOTS && cat2 == SOURCEFOLDERROOTS) ||
+			(cat1 == SOURCEFOLDER && 
+				((ISourceFolder)e1).getParent().getResource() instanceof IProject && 
+				cat2 == SOURCEFOLDERROOTS) ||
+			(cat1 == SOURCEFOLDERROOTS &&
+				cat2 == SOURCEFOLDER && 
+				((ISourceFolder)e2).getParent().getResource() instanceof IProject)) {
+			IRubyProject p1= getRubyProject(e1);
+			return p1 != null && p1.equals(getRubyProject(e2));
+		}
+		return false;
+	}
+	
+	private IRubyProject getRubyProject(Object element) {
+		if (element instanceof IRubyElement) {
+			return ((IRubyElement)element).getRubyProject();
+		} else if (element instanceof LoadPathContainer) {
+			return ((LoadPathContainer)element).getRubyProject();
+		}
+		return null;
+	}
+	
+	private ISourceFolderRoot getSourceFolderRoot(Object element) {
+		if (element instanceof LoadPathContainer) {
+			// return first source folder root from the container
+			LoadPathContainer cp= (LoadPathContainer)element;
+			Object[] roots= cp.getSourceFolderRoots();
+			if (roots.length > 0)
+				return (ISourceFolderRoot)roots[0];
+			// non resolvable - return null
+			return null;
+		}
+		return RubyModelUtil.getSourceFolderRoot((IRubyElement)element);
+	}
+	
+	private int getLoadPathIndex(ISourceFolderRoot root) {
+		try {
+			IPath rootPath= root.getPath();
+			ISourceFolderRoot[] roots= root.getRubyProject().getSourceFolderRoots();
+			for (int i= 0; i < roots.length; i++) {
+				if (roots[i].getPath().equals(rootPath)) {
+					return i;
+				}
+			}
+		} catch (RubyModelException e) {
+		}
+
+		return Integer.MAX_VALUE;
+	}
 
 }

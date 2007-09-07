@@ -406,6 +406,26 @@ public class StandardRubyElementContentProvider implements ITreeContentProvider 
 		System.arraycopy(a2, 0, res, a1Len, a2Len); 
 		return res;
 	}
+	
+	/**
+	 * Note: This method is for internal use only. Clients should not call this method.
+	 */
+	protected Object skipProjectSourceFolderRoot(ISourceFolderRoot root) {
+		if (isProjectSourceFolderRoot(root))
+			return root.getParent(); 
+		return root;
+	}
 
+	/**
+	 * Note: This method is for internal use only. Clients should not call this method.
+	 */
+	protected boolean isSourceFolderEmpty(IRubyElement element) throws RubyModelException {
+		if (element instanceof ISourceFolder) {
+			ISourceFolder fragment= (ISourceFolder)element;
+			if (fragment.exists() && !(fragment.hasChildren() || fragment.getNonRubyResources().length > 0) && fragment.hasSubfolders()) 
+				return true;
+		}
+		return false;
+	}
 
 }

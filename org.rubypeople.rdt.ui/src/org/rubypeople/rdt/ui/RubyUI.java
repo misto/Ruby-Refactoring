@@ -10,14 +10,22 @@
  *******************************************************************************/
 package org.rubypeople.rdt.ui;
 
+import org.eclipse.jface.operation.IRunnableContext;
 import org.eclipse.jface.util.Assert;
+import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorPart;
+import org.eclipse.ui.dialogs.SelectionDialog;
 import org.eclipse.ui.texteditor.IDocumentProvider;
 import org.rubypeople.rdt.core.IRubyElement;
+import org.rubypeople.rdt.core.RubyModelException;
+import org.rubypeople.rdt.core.search.IRubySearchScope;
 import org.rubypeople.rdt.internal.ui.RubyPlugin;
+import org.rubypeople.rdt.internal.ui.RubyUIMessages;
 import org.rubypeople.rdt.internal.ui.SharedImages;
+import org.rubypeople.rdt.internal.ui.dialogs.TypeSelectionDialog2;
 import org.rubypeople.rdt.internal.ui.rubyeditor.EditorUtility;
+import org.rubypeople.rdt.ui.dialogs.TypeSelectionExtension;
 
 /**
  * Central access point for the Ruby UI plug-in (id
@@ -125,6 +133,22 @@ public final class RubyUI {
 	 * (value <code>"org.rubypeople.rdt.ui.RubyHierarchyPerspective"</code>).
 	 */	
 	public static final String ID_HIERARCHYPERSPECTIVE= "org.rubypeople.rdt.ui.RubyHierarchyPerspective"; //$NON-NLS-1$
+
+	/**
+	 * The view part id of the Packages view
+	 * (value <code>"org.rubypeople.rdt.ui.PackageExplorer"</code>).
+	 * <p>
+	 * When this id is used to access
+	 * a view part with <code>IWorkbenchPage.findView</code> or 
+	 * <code>showView</code>, the returned <code>IViewPart</code>
+	 * can be safely cast to an <code>IPackagesViewPart</code>.
+	 * </p>
+	 *
+	 * @see IPackagesViewPart
+	 * @see org.eclipse.ui.IWorkbenchPage#findView(java.lang.String)
+	 * @see org.eclipse.ui.IWorkbenchPage#showView(java.lang.String)
+	 */ 
+	public static final String ID_PACKAGES= 			"org.rubypeople.rdt.ui.PackageExplorer"; //$NON-NLS-1$
 		
 	/**
 	 * Returns the Ruby element wrapped by the given editor input.
@@ -195,5 +219,84 @@ public final class RubyUI {
 	 */
 	public static void revealInEditor(IEditorPart part, IRubyElement element) {
 		EditorUtility.revealInEditor(part, element);
+	}
+	
+	/**
+	 * Creates a selection dialog that lists all types in the given scope.
+	 * The caller is responsible for opening the dialog with <code>Window.open</code>,
+	 * and subsequently extracting the selected type(s) (of type
+	 * <code>IType</code>) via <code>SelectionDialog.getResult</code>.
+	 * 
+	 * @param parent the parent shell of the dialog to be created
+	 * @param context the runnable context used to show progress when the dialog
+	 *   is being populated
+	 * @param scope the scope that limits which types are included
+	 * @param multipleSelection <code>true</code> if multiple selection is allowed
+	 * 
+	 * @return a new selection dialog
+	 * 
+	 * @exception RubyModelException if the selection dialog could not be opened
+	 */
+	public static SelectionDialog createTypeDialog(Shell parent, IRunnableContext context, IRubySearchScope scope, int elementKinds, boolean multipleSelection) throws RubyModelException {
+		return createTypeDialog(parent, context, scope, elementKinds, multipleSelection, "");//$NON-NLS-1$
+	}
+	
+	/**
+	 * Creates a selection dialog that lists all types in the given scope.
+	 * The caller is responsible for opening the dialog with <code>Window.open</code>,
+	 * and subsequently extracting the selected type(s) (of type
+	 * <code>IType</code>) via <code>SelectionDialog.getResult</code>.
+	 * 
+	 * @param parent the parent shell of the dialog to be created
+	 * @param context the runnable context used to show progress when the dialog
+	 *   is being populated
+	 * @param scope the scope that limits which types are included
+	 * @param multipleSelection <code>true</code> if multiple selection is allowed
+	 * @param filter the initial pattern to filter the set of types. For example "Abstract" shows 
+	 *  all types starting with "abstract". The meta character '?' representing any character and 
+	 *  '*' representing any string are supported. Clients can pass an empty string if no filtering 
+	 *  is required.
+	 *  
+	 * @return a new selection dialog
+	 * 
+	 * @exception RubyModelException if the selection dialog could not be opened
+	 * 
+	 * @since 2.0
+	 */
+	public static SelectionDialog createTypeDialog(Shell parent, IRunnableContext context, IRubySearchScope scope, int elementKinds, boolean multipleSelection, String filter) throws RubyModelException {
+		return createTypeDialog(parent, context, scope, elementKinds, multipleSelection, filter, null);
+	}
+	
+	/**
+	 * Creates a selection dialog that lists all types in the given scope.
+	 * The caller is responsible for opening the dialog with <code>Window.open</code>,
+	 * and subsequently extracting the selected type(s) (of type
+	 * <code>IType</code>) via <code>SelectionDialog.getResult</code>.
+	 * 
+	 * @param parent the parent shell of the dialog to be created
+	 * @param context the runnable context used to show progress when the dialog
+	 *   is being populated
+	 * @param scope the scope that limits which types are included
+	 * @param multipleSelection <code>true</code> if multiple selection is allowed
+	 * @param filter the initial pattern to filter the set of types. For example "Abstract" shows 
+	 *  all types starting with "abstract". The meta character '?' representing any character and 
+	 *  '*' representing any string are supported. Clients can pass an empty string if no filtering
+	 *  is required.
+	 * @param extension a user interface extension to the type selection dialog or <code>null</code>
+	 *  if no extension is desired
+	 *  
+	 * @return a new selection dialog
+	 * 
+	 * @exception RubyModelException if the selection dialog could not be opened
+	 * 
+	 * @since 3.2
+	 */
+	public static SelectionDialog createTypeDialog(Shell parent, IRunnableContext context, IRubySearchScope scope, int elementKinds, 
+			boolean multipleSelection, String filter, TypeSelectionExtension extension) throws RubyModelException {
+		TypeSelectionDialog2 dialog= new TypeSelectionDialog2(parent, multipleSelection, 
+			context, scope, elementKinds, extension);
+		dialog.setMessage(RubyUIMessages.RubyUI_defaultDialogMessage); 
+		dialog.setFilter(filter);
+		return dialog;
 	}
 }

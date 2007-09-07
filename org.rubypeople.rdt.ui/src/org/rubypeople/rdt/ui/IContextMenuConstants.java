@@ -81,4 +81,26 @@ public interface IContextMenuConstants {
 	 * Pop-up menu: name of group for properties actions (value <code>"group.properties"</code>).
 	 */	
 	public static final String GROUP_PROPERTIES=	ICommonMenuConstants.GROUP_PROPERTIES;
+	
+	/**
+	 * Pop-up menu: name of group for reorganize actions (value <code>"group.reorganize"</code>).
+	 */	
+	public static final String GROUP_REORGANIZE=	ICommonMenuConstants.GROUP_REORGANIZE;	
+	
+	/**
+	 * Pop-up menu: name of group for build actions (value <code>"group.build"</code>).
+	 */
+	public static final String GROUP_BUILD=		ICommonMenuConstants.GROUP_BUILD;
+	
+	/**
+	 * Pop-up menu: name of group for goto actions (value <code>"group.goto"</code>).
+	 * <p>
+	 * Examples for open actions are:
+	 * <ul>
+	 *  <li>Go Into</li>
+	 *  <li>Go To</li>
+	 * </ul>
+	 * </p>
+	 */
+	public static final String GROUP_GOTO=		ICommonMenuConstants.GROUP_GOTO;
 }

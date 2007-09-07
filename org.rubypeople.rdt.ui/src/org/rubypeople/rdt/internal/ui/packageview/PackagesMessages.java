@@ -18,6 +18,31 @@ public class PackagesMessages extends NLS {
 	
 	public static String ClassPathContainer_unbound_label;
 	public static String ClassPathContainer_unknown_label;
+
+	public static String CollapseAllAction_label;
+	public static String CollapseAllAction_description;
+	public static String CollapseAllAction_tooltip;
+
+	public static String GotoResource_dialog_title;
+	public static String GotoResource_action_label;
+
+	public static String GotoType_action_label;
+	public static String GotoType_action_description;
+	public static String GotoType_error_message;
+	public static String GotoType_dialog_message;
+	public static String GotoType_dialog_title;
+
+	public static String PackageExplorer_element_not_present;
+
+	public static String PackageExplorerPart_workspace;
+	public static String PackageExplorerPart_workingSetModel;
+	public static String PackageExplorer_title;
+	public static String PackageExplorer_toolTip;
+	public static String PackageExplorer_toolTip2;
+	public static String PackageExplorer_toolTip3;
+	public static String PackageExplorer_notFound;
+	public static String PackageExplorer_filteredDialog_title;
+	public static String PackageExplorer_removeFilters;
 	
 	static {
 		NLS.initializeMessages(BUNDLE_NAME, PackagesMessages.class);

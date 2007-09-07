@@ -27,7 +27,34 @@ public class WorkingSetMessages extends NLS {
 	public static String EditWorkingSetAction_text;
 	public static String EditWorkingSetAction_toolTip;
 	public static String EditWorkingSetAction_error_nowizard_title;
-	public static String EditWorkingSetAction_error_nowizard_message;	
+	public static String EditWorkingSetAction_error_nowizard_message;
+
+	public static String WorkingSetConfigurationDialog_title;
+	public static String WorkingSetConfigurationDialog_message;
+	public static String WorkingSetConfigurationDialog_new_label;
+	public static String WorkingSetConfigurationDialog_edit_label;
+	public static String WorkingSetConfigurationDialog_remove_label;
+	public static String WorkingSetConfigurationDialog_up_label;
+	public static String WorkingSetConfigurationDialog_down_label;
+	public static String WorkingSetConfigurationDialog_selectAll_label;
+	public static String WorkingSetConfigurationDialog_deselectAll_label;
+
+	public static String ConfigureWorkingSetAction_label;
+
+	public static String ViewActionGroup_show_label;
+	public static String ViewActionGroup_projects_label;
+	public static String ViewActionGroup_workingSets_label;
+
+	public static String RemoveWorkingSetElementAction_label;
+
+	public static String OpenPropertiesWorkingSetAction_label;
+
+	public static String OpenCloseWorkingSetAction_close_error_title;
+	public static String OpenCloseWorkingSetAction_close_error_message;
+	public static String OpenCloseWorkingSetAction_open_error_title;
+	public static String OpenCloseWorkingSetAction_open_error_message;
+	public static String OpenCloseWorkingSetAction_close_label;
+	public static String OpenCloseWorkingSetAction_open_label;	
 	
 	static {
 		NLS.initializeMessages(BUNDLE_NAME, WorkingSetMessages.class);

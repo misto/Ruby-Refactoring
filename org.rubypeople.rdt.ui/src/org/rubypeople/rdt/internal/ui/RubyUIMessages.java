@@ -95,6 +95,8 @@ public class RubyUIMessages extends NLS {
 	public static String OpenTypeHierarchyUtil_error_open_editor;
 	public static String OpenTypeHierarchyUtil_error_open_view;
 
+	public static String RubyUI_defaultDialogMessage;
+
     private RubyUIMessages() {
     }
 

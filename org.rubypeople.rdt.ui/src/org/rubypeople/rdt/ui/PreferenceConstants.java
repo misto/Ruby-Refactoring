@@ -727,6 +727,22 @@ public class PreferenceConstants {
 	public static final String TYPEFILTER_ENABLED= "org.rubypeople.rdt.ui.typefilter.enabled"; //$NON-NLS-1$	
 	
 	/**
+	 * A named preference that specifies whether children of a compilation unit are shown in the package explorer.
+	 * <p>
+	 * Value is of type <code>Boolean</code>.
+	 * </p>
+	 */
+	public static final String SHOW_CU_CHILDREN= "org.rubypeople.rdt.ui.packages.cuchildren"; //$NON-NLS-1$
+	
+	/**
+	 * A named preference that controls whether the package explorer's selection is linked to the active editor.
+	 * <p>
+	 * Value is of type <code>Boolean</code>.
+	 * </p>
+	 */
+	public static final String LINK_PACKAGES_TO_EDITOR= "org.rubypeople.rdt.ui.packages.linktoeditor"; //$NON-NLS-1$
+	
+	/**
 	 * A named preference that defines the key for the hover modifiers.
 	 *
 	 * @see RubyUI
@@ -834,6 +850,8 @@ public class PreferenceConstants {
 		// store.setDefault(PreferenceConstants.TEMPLATES_USE_CODEFORMATTER,
 		// true);
 		
+		store.setDefault(PreferenceConstants.LINK_PACKAGES_TO_EDITOR, false);
+		
 		store.setDefault(PreferenceConstants.SEARCH_USE_REDUCED_MENU, false);
 
 		store.setDefault(PreferenceConstants.FORMATTER_PROFILE, ProfileManager.DEFAULT_PROFILE);
@@ -854,7 +872,7 @@ public class PreferenceConstants {
 		store.setDefault(PreferenceConstants.APPEARANCE_COMPRESS_PACKAGE_NAMES, false);
 		store.setDefault(PreferenceConstants.APPEARANCE_PKG_NAME_PATTERN_FOR_PKG_VIEW, ""); //$NON-NLS-1$
 		store.setDefault(PreferenceConstants.BROWSING_STACK_VERTICALLY, false);
-
+		store.setDefault(PreferenceConstants.SHOW_CU_CHILDREN, true);
 		store.setDefault(PreferenceConstants.EDITOR_CORRECTION_INDICATION, true);
 		store.setDefault(PreferenceConstants.EDITOR_EVALUTE_TEMPORARY_PROBLEMS, true);
 

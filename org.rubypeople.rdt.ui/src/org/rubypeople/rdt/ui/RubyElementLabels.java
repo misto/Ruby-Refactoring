@@ -223,6 +223,29 @@ public class RubyElementLabels {
             | I_POST_QUALIFIED | T_POST_QUALIFIED | D_POST_QUALIFIED | CF_POST_QUALIFIED
             | CU_POST_QUALIFIED).longValue();
 
+	/**
+	 * Prepend first category (if any) to field.
+	 * @since 3.2 
+	 */
+	public final static long F_CATEGORY= 1L << 49;
+	/**
+	 * Prepend first category (if any) to method.
+	 * @since 3.2
+	 */
+	public final static long M_CATEGORY= 1L << 50;
+	/**
+	 * Prepend first category (if any) to type.
+	 * @since 3.2 
+	 */
+	public final static long T_CATEGORY= 1L << 51;
+    
+	/**
+	 * Show category for all elements.
+	 * @since 3.2
+	 */
+	public final static long ALL_CATEGORY= new Long(RubyElementLabels.F_CATEGORY | RubyElementLabels.M_CATEGORY | RubyElementLabels.T_CATEGORY).longValue();
+	
+    
     /**
      * User-readable string for separating post qualified names (e.g. " - ").
      */
@@ -655,7 +678,7 @@ public class RubyElementLabels {
 		} else if (getFlag(flags, P_COMPRESSED) && fgPkgNameLength >= 0) {
 				String name= pack.getElementName();
 				int start= 0;
-				int dot= name.indexOf('.', start);
+				int dot= name.indexOf('/', start);
 				while (dot > 0) {
 					if (dot - start > fgPkgNameLength-1) {
 						buf.append(fgPkgNamePrefix);
@@ -665,7 +688,7 @@ public class RubyElementLabels {
 					} else
 						buf.append(name.substring(start, dot + 1));
 					start= dot + 1;
-					dot= name.indexOf('.', start);
+					dot= name.indexOf('/', start);
 				}
 				buf.append(name.substring(start));
 		} else {
