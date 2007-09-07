@@ -77,7 +77,6 @@ public class ExternalSourceFolderRoot extends SourceFolderRoot implements ISourc
 		vChildren.add(pkg);
 
 		try {
-			RubyProject rubyProject = (RubyProject) getRubyProject();
 			RubyModelManager manager = RubyModelManager.getRubyModelManager();
 			File[] members = folder.listFiles();
 
@@ -87,8 +86,6 @@ public class ExternalSourceFolderRoot extends SourceFolderRoot implements ISourc
 				if (member.isDirectory()) {
 					String[] newNames = Util.arrayConcat(pkgName, manager.intern(memberName));
 					computeFolderChildren(member, newNames, vChildren);
-					ISourceFolder child = getSourceFolder(newNames);
-					vChildren.add(child);
 				} else if (member.isFile()) {
 					// do nothing
 				}
