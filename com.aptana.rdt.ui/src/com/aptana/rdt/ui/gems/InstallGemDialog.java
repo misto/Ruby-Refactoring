@@ -63,13 +63,15 @@ public class InstallGemDialog extends Dialog {
 		GridData nameTextData = new GridData();
 		nameTextData.widthHint = 150;
 		nameText.setLayoutData(nameTextData);
+		final MyViewerFilter filter = new MyViewerFilter();
 		nameText.addModifyListener(new ModifyListener() {
 		
 			public void modifyText(ModifyEvent e) {
 				if (filterByText) {
-					getShell().getDisplay().syncExec(new Runnable() {
+					getShell().getDisplay().asyncExec(new Runnable() {
 
 						public void run() {
+							filter.setText(nameText.getText());
 							gemViewer.refresh();
 						}
 					});
@@ -112,7 +114,7 @@ public class InstallGemDialog extends Dialog {
 		gemViewer.setContentProvider(contentProvider);
 		TableViewerSorter.bind(gemViewer);
 		gemViewer.setInput(AptanaRDTPlugin.getDefault().getGemManager().getRemoteGems());
-		gemViewer.addFilter(new MyViewerFilter(nameText));
+		gemViewer.addFilter(filter);
 
 		gemViewer.addSelectionChangedListener(new ISelectionChangedListener() {
 		
@@ -158,17 +160,21 @@ public class InstallGemDialog extends Dialog {
 	
 	private static class MyViewerFilter extends ViewerFilter {
 		
-		private Text text;
+		private String value;
 
-		public MyViewerFilter(Text text) {
-			this.text = text;
+		public void setText(String value) {
+			if (value == null) {
+				this.value = null;
+			} else {
+				this.value = value.toLowerCase();			
+			}
 		}
 
 		@Override
 		public boolean select(Viewer viewer, Object parentElement, Object element) {
+			if (value == null || value.trim().length() == 0) return true;
 			Gem gem = (Gem) element;
-			// TODO If there's no text show nothing?
-			return gem.getName().toLowerCase().startsWith(text.getText().toLowerCase());
+			return gem.getName().toLowerCase().startsWith(value);
 		}
 		
 	}
