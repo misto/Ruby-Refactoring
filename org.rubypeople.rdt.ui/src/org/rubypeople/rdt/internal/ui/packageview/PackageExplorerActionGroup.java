@@ -56,10 +56,9 @@ import org.rubypeople.rdt.internal.ui.wizards.buildpaths.newsourcepage.GenerateB
 import org.rubypeople.rdt.internal.ui.workingsets.ViewActionGroup;
 import org.rubypeople.rdt.internal.ui.workingsets.WorkingSetActionGroup;
 import org.rubypeople.rdt.ui.IContextMenuConstants;
-import org.rubypeople.rdt.ui.PreferenceConstants;
+import org.rubypeople.rdt.ui.actions.CCPActionGroup;
 import org.rubypeople.rdt.ui.actions.CustomFiltersActionGroup;
 import org.rubypeople.rdt.ui.actions.NavigateActionGroup;
-import org.rubypeople.rdt.ui.actions.RdtActionConstants;
 import org.rubypeople.rdt.ui.actions.RubySearchActionGroup;
 
 class PackageExplorerActionGroup extends CompositeActionGroup {
@@ -102,7 +101,7 @@ class PackageExplorerActionGroup extends CompositeActionGroup {
 		setGroups(new ActionGroup[] {
 			new NewWizardsActionGroup(site),
 			fNavigateActionGroup= new NavigateActionGroup(fPart), 
-//			new CCPActionGroup(fPart),
+			new CCPActionGroup(fPart),
             new GenerateBuildPathActionGroup(fPart),
 //			new GenerateActionGroup(fPart), 
 //			fRefactorActionGroup= new RefactorActionGroup(fPart),

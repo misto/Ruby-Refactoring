@@ -46,6 +46,7 @@ import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.editors.text.EditorsUI;
+import org.eclipse.ui.navigator.ICommonMenuConstants;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.eclipse.ui.progress.WorkbenchJob;
 import org.eclipse.ui.texteditor.ChainedPreferenceStore;
@@ -500,12 +501,11 @@ public class RubyPlugin extends AbstractUIPlugin implements IRubyColorConstants 
 	}
 
 	public static boolean isDebug() {
-		// TODO set to true based on debugging/tracing!
-		return false;
+		return getDefault().isDebugging();
 	}
 
 	/**
-	 * Creates the Java plugin standard groups in a context menu.
+	 * Creates the Ruby plugin standard groups in a context menu.
 	 * 
 	 * @param menu
 	 *            the menu manager to be populated
@@ -517,6 +517,7 @@ public class RubyPlugin extends AbstractUIPlugin implements IRubyColorConstants 
 		menu.add(new GroupMarker(IContextMenuConstants.GROUP_GOTO));
 		menu.add(new Separator(IContextMenuConstants.GROUP_OPEN));
 		menu.add(new GroupMarker(IContextMenuConstants.GROUP_SHOW));
+		menu.add(new Separator(ICommonMenuConstants.GROUP_EDIT));
 		menu.add(new Separator(IContextMenuConstants.GROUP_REORGANIZE));
 		menu.add(new Separator(IContextMenuConstants.GROUP_GENERATE));
 		menu.add(new Separator(IContextMenuConstants.GROUP_SEARCH));
