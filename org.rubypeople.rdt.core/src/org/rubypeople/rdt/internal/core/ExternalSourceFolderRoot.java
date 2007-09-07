@@ -2,6 +2,7 @@ package org.rubypeople.rdt.internal.core;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 import org.eclipse.core.resources.IResource;
@@ -78,8 +79,7 @@ public class ExternalSourceFolderRoot extends SourceFolderRoot implements ISourc
 
 		try {
 			RubyModelManager manager = RubyModelManager.getRubyModelManager();
-			File[] members = folder.listFiles();
-
+			File[] members = folder.listFiles();			
 			for (int i = 0, max = members.length; i < max; i++) {
 				File member = members[i];
 				String memberName = member.getName();

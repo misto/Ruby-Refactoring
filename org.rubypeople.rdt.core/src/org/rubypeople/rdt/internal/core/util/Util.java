@@ -1074,4 +1074,55 @@ public class Util {
 			quickSortReverse(sortedCollection, left, original_right);
 		}
 	}
+
+		/**
+	 * Returns the concatenation of the given array parts using the given separator between each
+	 * part and appending the given name at the end.
+	 * <br>
+	 * <br>
+	 * For example:<br>
+	 * <ol>
+	 * <li><pre>
+	 *    name = "c"
+	 *    array = { "a", "b" }
+	 *    separator = '.'
+	 *    => result = "a.b.c"
+	 * </pre>
+	 * </li>
+	 * <li><pre>
+	 *    name = null
+	 *    array = { "a", "b" }
+	 *    separator = '.'
+	 *    => result = "a.b"
+	 * </pre></li>
+	 * <li><pre>
+	 *    name = " c"
+	 *    array = null
+	 *    separator = '.'
+	 *    => result = "c"
+	 * </pre></li>
+	 * </ol>
+	 * 
+	 * @param array the given array
+	 * @param name the given name
+	 * @param separator the given separator
+	 * @return the concatenation of the given array parts using the given separator between each
+	 * part and appending the given name at the end
+	 */
+	public static final String concatWith(
+		String[] array,
+		String name,
+		char separator) {
+		
+		if (array == null || array.length == 0) return name;
+		if (name == null || name.length() == 0) return concatWith(array, separator);
+		StringBuffer buffer = new StringBuffer();
+		for (int i = 0, length = array.length; i < length; i++) {
+			buffer.append(array[i]);
+			buffer.append(separator);
+		}
+		buffer.append(name);
+		return buffer.toString();
+		
+	}
 }
