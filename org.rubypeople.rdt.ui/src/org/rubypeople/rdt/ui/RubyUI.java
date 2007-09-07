@@ -56,9 +56,9 @@ public final class RubyUI {
 
 	/**
 	 * The id of the Ruby action set
-	 * (value <code>"org.rubypeople.rdt.ui.RubyActionSet"</code>).
+	 * (value <code>"org.rubypeople.rdt.ui.rubyActionSet"</code>).
 	 */
-	public static final String ID_ACTION_SET = "org.rubypeople.rdt.ui.RubyActionSet"; //$NON-NLS-1$
+	public static final String ID_ACTION_SET = "org.rubypeople.rdt.ui.rubyActionSet"; //$NON-NLS-1$
 
 	/**
 	 * The editor part id of the editor that presents Ruby compilation units

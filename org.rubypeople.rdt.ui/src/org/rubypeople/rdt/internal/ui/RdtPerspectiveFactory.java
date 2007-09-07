@@ -7,7 +7,7 @@ import org.eclipse.ui.IPerspectiveFactory;
 import org.eclipse.ui.console.IConsoleConstants;
 import org.eclipse.ui.progress.IProgressConstants;
 import org.rubypeople.rdt.ui.IRubyConstants;
-import org.rubypeople.rdt.ui.actions.IRubyActionSetIds;
+import org.rubypeople.rdt.ui.RubyUI;
 
 public class RdtPerspectiveFactory implements IPerspectiveFactory {
 
@@ -33,8 +33,8 @@ public class RdtPerspectiveFactory implements IPerspectiveFactory {
 		bottomLeft.addView(IPageLayout.ID_OUTLINE);
 		
 		layout.addActionSet(IDebugUIConstants.LAUNCH_ACTION_SET);
-		layout.addActionSet(IRubyActionSetIds.RUBY_ACTION_SET_ID);
-		layout.addActionSet(IRubyActionSetIds.ID_ELEMENT_CREATION_ACTION_SET);
+		layout.addActionSet(RubyUI.ID_ACTION_SET);
+		layout.addActionSet(RubyUI.ID_ELEMENT_CREATION_ACTION_SET);
 		layout.addActionSet(IPageLayout.ID_NAVIGATE_ACTION_SET);
 		
 		// views - debugging
@@ -46,7 +46,7 @@ public class RdtPerspectiveFactory implements IPerspectiveFactory {
 		layout.addShowViewShortcut(IPageLayout.ID_RES_NAV);
 				
 		// new actions - Ruby project creation wizard
-        layout.addNewWizardShortcut("org.rubypeople.rdt.ui.wizards.RubyNewClassWizard"); //$NON-NLS-1$
+        layout.addNewWizardShortcut(IRubyConstants.ID_NEW_CLASS_WIZARD);
         layout.addNewWizardShortcut("org.eclipse.ui.wizards.new.folder");//$NON-NLS-1$
         layout.addNewWizardShortcut("org.eclipse.ui.wizards.new.file");//$NON-NLS-1$
         layout.addNewWizardShortcut("org.eclipse.ui.editors.wizards.UntitledTextFileWizard");//$NON-NLS-1$
