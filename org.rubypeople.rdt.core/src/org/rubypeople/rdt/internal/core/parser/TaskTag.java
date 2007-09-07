@@ -22,14 +22,6 @@ public class TaskTag extends DefaultProblem implements IProblem {
 		return priority;
 	}
 
-	public boolean isError() {
-		return false;
-	}
-
-	public boolean isWarning() {
-		return false;
-	}
-
 	public boolean isTask() {
 		return true;
 	}

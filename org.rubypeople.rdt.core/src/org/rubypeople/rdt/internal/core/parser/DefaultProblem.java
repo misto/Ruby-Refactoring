@@ -65,4 +65,8 @@ abstract class DefaultProblem extends CategorizedProblem {
 	public String getMarkerType() {
 		return isTask() ? MARKER_TYPE_TASK : MARKER_TYPE_PROBLEM;
 	}
+	
+	public String[] getArguments() {
+		return null;
+	}
 }

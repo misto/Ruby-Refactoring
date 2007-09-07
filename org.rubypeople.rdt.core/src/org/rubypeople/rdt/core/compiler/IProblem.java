@@ -74,6 +74,12 @@ public interface IProblem {
 	 * @return the problem id
 	 */
 	int getID();
+	
+	/**
+	 * Answer back the original arguments recorded into the problem.
+	 * @return the original arguments recorded into the problem
+	 */
+	String[] getArguments();
 
 	/**
 	 * Answer a localized, human-readable message string which describes the

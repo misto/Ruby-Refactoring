@@ -140,4 +140,16 @@ public String[] getExtraMarkerAttributeNames() {
 public Object[] getExtraMarkerAttributeValues() {
 	return new Object[] {};
 }
+
+public boolean isTask() {
+	return false;
+}
+
+public boolean isError() {
+	return false;
+}
+
+public boolean isWarning() {
+	return false;
+}
 }

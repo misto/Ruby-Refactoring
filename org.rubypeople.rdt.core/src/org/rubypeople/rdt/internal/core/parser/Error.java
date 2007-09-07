@@ -23,13 +23,4 @@ public class Error extends DefaultProblem {
 	public boolean isError() {
 		return true;
 	}
-	
-	public boolean isWarning() {
-		return false;
-	}
-	
-	public boolean isTask() {
-		return false;
-	}
-
 }

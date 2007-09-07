@@ -23,12 +23,4 @@ public class Warning extends DefaultProblem {
 	public boolean isWarning() {
 		return true;
 	}
-	
-	public boolean isError() {
-		return false;
-	}
-	
-	public boolean isTask() {
-		return false;
-	}
 }
