@@ -94,8 +94,17 @@ public class RubyUIMessages extends NLS {
 	public static String OpenTypeHierarchyUtil_error_open_perspective;
 	public static String OpenTypeHierarchyUtil_error_open_editor;
 	public static String OpenTypeHierarchyUtil_error_open_view;
-
 	public static String RubyUI_defaultDialogMessage;
+	public static String Spelling_error_case_label;
+	public static String Spelling_error_label;
+	public static String AbstractSpellingDictionary_encodingError;
+	public static String Spelling_dictionary_file_extension;
+	public static String Spelling_correct_label;
+	public static String Spelling_case_label;
+	public static String Spelling_add_info;
+	public static String Spelling_add_label;
+	public static String Spelling_ignore_info;
+	public static String Spelling_ignore_label;
 
     private RubyUIMessages() {
     }

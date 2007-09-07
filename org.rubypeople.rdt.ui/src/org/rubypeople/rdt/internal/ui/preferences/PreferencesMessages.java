@@ -192,6 +192,28 @@ public final class PreferencesMessages extends NLS {
 	public static String KeywordInputDialog_error_entryExists;
 	public static String KeywordInputDialog_error_noSpace;
 	public static String RubyEditorPreferencePage_enableHovers;
+	public static String SpellingPreferencePage_dictionary_error;
+	public static String SpellingPreferencePage_locale_error;
+	public static String SpellingPreferencePage_empty_threshold;
+	public static String SpellingPreferencePage_invalid_threshold;
+	public static String SpellingPreferencePage_preferences_user;
+	public static String SpellingPreferencePage_ignore_digits_label;
+	public static String SpellingPreferencePage_ignore_mixed_label;
+	public static String SpellingPreferencePage_ignore_sentence_label;
+	public static String SpellingPreferencePage_ignore_upper_label;
+	public static String SpellingPreferencePage_ignore_url_label;
+	public static String SpellingPreferencePage_preferences_engine;
+	public static String SpellingPreferencePage_dictionary_label;
+	public static String SpellingPreferencePage_workspace_dictionary_label;
+	public static String SpellingPreferencePage_browse_label;
+	public static String SpellingPreferencePage_preferences_advanced;
+	public static String SpellingPreferencePage_proposals_threshold;
+	public static String SpellingPreferencePage_enable_contentassist_label;
+	public static String SpellingPreferencePage_filedialog_title;
+	public static String SpellingPreferencePage_filter_dictionary_extension;
+	public static String SpellingPreferencePage_filter_all_extension;
+	public static String SpellingPreferencePage_filter_dictionary_label;
+	public static String SpellingPreferencePage_filter_all_label;
 	
     static {
         NLS.initializeMessages(BUNDLE_NAME, PreferencesMessages.class);

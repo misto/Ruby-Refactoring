@@ -44,13 +44,13 @@ import org.rubypeople.rdt.core.formatter.DefaultCodeFormatterConstants;
 import org.rubypeople.rdt.internal.corext.util.CodeFormatterUtil;
 import org.rubypeople.rdt.internal.ui.RubyPlugin;
 import org.rubypeople.rdt.internal.ui.rubyeditor.IRubyScriptDocumentProvider;
-import org.rubypeople.rdt.internal.ui.rubyeditor.RubyAbstractEditor;
 import org.rubypeople.rdt.internal.ui.text.ContentAssistPreference;
 import org.rubypeople.rdt.internal.ui.text.HTMLTextPresenter;
 import org.rubypeople.rdt.internal.ui.text.IRubyColorConstants;
 import org.rubypeople.rdt.internal.ui.text.IRubyPartitions;
 import org.rubypeople.rdt.internal.ui.text.RubyAnnotationHover;
 import org.rubypeople.rdt.internal.ui.text.RubyCommentScanner;
+import org.rubypeople.rdt.internal.ui.text.RubyCompositeReconcilingStrategy;
 import org.rubypeople.rdt.internal.ui.text.RubyDoubleClickSelector;
 import org.rubypeople.rdt.internal.ui.text.RubyElementProvider;
 import org.rubypeople.rdt.internal.ui.text.RubyOutlineInformationControl;
@@ -65,7 +65,6 @@ import org.rubypeople.rdt.internal.ui.text.ruby.AbstractRubyTokenScanner;
 import org.rubypeople.rdt.internal.ui.text.ruby.RubyAutoIndentStrategy;
 import org.rubypeople.rdt.internal.ui.text.ruby.RubyCompletionProcessor;
 import org.rubypeople.rdt.internal.ui.text.ruby.RubyFormattingStrategy;
-import org.rubypeople.rdt.internal.ui.text.ruby.RubyReconcilingStrategy;
 import org.rubypeople.rdt.internal.ui.text.ruby.RubyTokenScanner;
 import org.rubypeople.rdt.internal.ui.text.ruby.SingleTokenRubyScanner;
 import org.rubypeople.rdt.internal.ui.text.ruby.hover.RubyEditorTextHoverDescriptor;
@@ -421,11 +420,14 @@ public class RubySourceViewerConfiguration extends TextSourceViewerConfiguration
 	public IReconciler getReconciler(ISourceViewer sourceViewer) {
 		final ITextEditor editor = getEditor();
 		if (editor != null && editor.isEditable()) {
-			RubyReconciler reconciler = new RubyReconciler(fTextEditor, new RubyReconcilingStrategy((RubyAbstractEditor) fTextEditor), true);
+			
+			RubyCompositeReconcilingStrategy strategy = new RubyCompositeReconcilingStrategy(editor, getConfiguredDocumentPartitioning(sourceViewer));
+			RubyReconciler reconciler = new RubyReconciler(editor, strategy, false);
 			reconciler.setIsIncrementalReconciler(false);
 			reconciler.setIsAllowedToModifyDocument(false);
 			reconciler.setProgressMonitor(new NullProgressMonitor());
 			reconciler.setDelay(500);
+			
 			return reconciler;
 		}
 		return null;

@@ -26,7 +26,7 @@ import org.rubypeople.rdt.ui.text.ruby.IProblemLocation;
 public class ProblemLocation implements IProblemLocation {
 
 	private final int fId;
-//	private final String[] fArguments;
+	private final String[] fArguments;
 	private final int fOffset;
 	private final int fLength;
 	private final boolean fIsError;
@@ -34,7 +34,7 @@ public class ProblemLocation implements IProblemLocation {
 
 	public ProblemLocation(int offset, int length, IRubyAnnotation annotation) {
 		fId= annotation.getId();
-//		fArguments= annotation.getArguments();
+		fArguments= annotation.getArguments();
 		fOffset= offset;
 		fLength= length;
 		fIsError= RubyMarkerAnnotation.ERROR_ANNOTATION_TYPE.equals(annotation.getType());
@@ -45,7 +45,7 @@ public class ProblemLocation implements IProblemLocation {
 
 	public ProblemLocation(int offset, int length, int id, String[] arguments, boolean isError, String markerType) {
 		fId= id;
-//		fArguments= arguments;
+		fArguments= arguments;
 		fOffset= offset;
 		fLength= length;
 		fIsError= isError;
@@ -54,7 +54,7 @@ public class ProblemLocation implements IProblemLocation {
 	
 	public ProblemLocation(IProblem problem) {
 		fId= problem.getID();
-//		fArguments= problem.getArguments();
+		fArguments= problem.getArguments();
 		fOffset= problem.getSourceStart();
 		fLength= problem.getSourceEnd() - fOffset + 1;
 		fIsError= problem.isError();
@@ -73,8 +73,7 @@ public class ProblemLocation implements IProblemLocation {
 	 * @see org.eclipse.jdt.internal.ui.text.correction.IProblemLocation#getProblemArguments()
 	 */
 	public String[] getProblemArguments() {
-//		return fArguments;
-		return new String[0];
+		return fArguments;
 	}
 
 	/* (non-Javadoc)

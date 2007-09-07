@@ -582,6 +582,13 @@ public class RubyDocumentProvider extends TextFileDocumentProvider implements IR
 		public String getText() {
 			return fProblem.getMessage();
 		}
+		
+		/*
+		 * @see IRubyAnnotation#getArguments()
+		 */
+		public String[] getArguments() {
+			return isProblem() ? fProblem.getArguments() : null;
+		}
 
 		/*
 		 * @see IRubyAnnotation#isProblem()

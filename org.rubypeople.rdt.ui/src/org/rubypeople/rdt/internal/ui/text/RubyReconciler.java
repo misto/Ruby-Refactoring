@@ -10,9 +10,9 @@ import org.eclipse.core.resources.IResourceChangeEvent;
 import org.eclipse.core.resources.IResourceChangeListener;
 import org.eclipse.core.resources.IResourceDelta;
 import org.eclipse.core.resources.IWorkspace;
+import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.ITextViewer;
 import org.eclipse.jface.text.reconciler.DirtyRegion;
-import org.eclipse.jface.text.reconciler.IReconcilingStrategy;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IFileEditorInput;
 import org.eclipse.ui.texteditor.ITextEditor;
@@ -73,7 +73,7 @@ public class RubyReconciler extends NotifyingReconciler {
      * @param strategy
      * @param isIncremental
      */
-    public RubyReconciler(ITextEditor editor, IReconcilingStrategy strategy, boolean isIncremental) {
+    public RubyReconciler(ITextEditor editor, RubyCompositeReconcilingStrategy strategy, boolean isIncremental) {
         super(strategy, isIncremental);
         this.fTextEditor = editor;
 
@@ -114,6 +114,8 @@ public class RubyReconciler extends NotifyingReconciler {
         if (!fIninitalProcessDone) return;
 
         super.forceReconciling();
+        RubyCompositeReconcilingStrategy strategy= (RubyCompositeReconcilingStrategy) getReconcilingStrategy(IDocument.DEFAULT_CONTENT_TYPE);
+		strategy.notifyListeners(false);
     }
 
     /*
@@ -126,6 +128,19 @@ public class RubyReconciler extends NotifyingReconciler {
             super.initialProcess();
         }
         fIninitalProcessDone = true;
+    }
+    
+    @Override
+    protected void reconcilerReset() {
+    	super.reconcilerReset();
+    	RubyCompositeReconcilingStrategy strategy= (RubyCompositeReconcilingStrategy) getReconcilingStrategy(IDocument.DEFAULT_CONTENT_TYPE);
+		strategy.notifyListeners(true);
+    }
+    
+    @Override
+    protected void aboutToBeReconciled() {
+    	RubyCompositeReconcilingStrategy strategy= (RubyCompositeReconcilingStrategy) getReconcilingStrategy(IDocument.DEFAULT_CONTENT_TYPE);
+		strategy.aboutToBeReconciled();
     }
 
 }

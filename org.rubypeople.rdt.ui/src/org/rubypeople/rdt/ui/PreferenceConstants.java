@@ -22,6 +22,8 @@ import org.rubypeople.rdt.core.RubyCore;
 import org.rubypeople.rdt.internal.ui.RubyPlugin;
 import org.rubypeople.rdt.internal.ui.preferences.PreferencesMessages;
 import org.rubypeople.rdt.internal.ui.preferences.formatter.ProfileManager;
+import org.rubypeople.rdt.internal.ui.text.spelling.SpellCheckEngine;
+import org.rubypeople.rdt.internal.ui.text.spelling.engine.ISpellCheckPreferenceKeys;
 import org.rubypeople.rdt.launching.RubyRuntime;
 
 public class PreferenceConstants {
@@ -786,6 +788,103 @@ public class PreferenceConstants {
 	 */
 	public static final String SEARCH_USE_REDUCED_MENU= "Search.usereducemenu"; //$NON-NLS-1$
 	
+	/**
+	 * A named preference that controls whether words containing digits should
+	 * be skipped during spell-checking.
+	 * <p>
+	 * Value is of type <code>Boolean</code>.
+	 * </p>
+	 * 
+	 * @since 3.0
+	 */
+	public final static String SPELLING_IGNORE_DIGITS= ISpellCheckPreferenceKeys.SPELLING_IGNORE_DIGITS;
+
+	/**
+	 * A named preference that controls whether mixed case words should be
+	 * skipped during spell-checking.
+	 * <p>
+	 * Value is of type <code>Boolean</code>.
+	 * </p>
+	 * 
+	 * @since 3.0
+	 */
+	public final static String SPELLING_IGNORE_MIXED= ISpellCheckPreferenceKeys.SPELLING_IGNORE_MIXED;
+
+	/**
+	 * A named preference that controls whether sentence capitalization should
+	 * be ignored during spell-checking.
+	 * <p>
+	 * Value is of type <code>Boolean</code>.
+	 * </p>
+	 * 
+	 * @since 3.0
+	 */
+	public final static String SPELLING_IGNORE_SENTENCE= ISpellCheckPreferenceKeys.SPELLING_IGNORE_SENTENCE;
+
+	/**
+	 * A named preference that controls whether upper case words should be
+	 * skipped during spell-checking.
+	 * <p>
+	 * Value is of type <code>Boolean</code>.
+	 * </p>
+	 * 
+	 * @since 3.0
+	 */
+	public final static String SPELLING_IGNORE_UPPER= ISpellCheckPreferenceKeys.SPELLING_IGNORE_UPPER;
+
+	/**
+	 * A named preference that controls whether URLs should be ignored during
+	 * spell-checking.
+	 * <p>
+	 * Value is of type <code>Boolean</code>.
+	 * </p>
+	 * 
+	 * @since 3.0
+	 */
+	public final static String SPELLING_IGNORE_URLS= ISpellCheckPreferenceKeys.SPELLING_IGNORE_URLS;
+	
+	/**
+	 * A named preference that controls the locale used for spell-checking.
+	 * <p>
+	 * Value is of type <code>String</code>.
+	 * </p>
+	 * 
+	 * @since 3.0
+	 */
+	public final static String SPELLING_LOCALE= ISpellCheckPreferenceKeys.SPELLING_LOCALE;
+
+	/**
+	 * A named preference that controls the number of proposals offered during
+	 * spell-checking.
+	 * <p>
+	 * Value is of type <code>Integer</code>.
+	 * </p>
+	 * 
+	 * @since 3.0
+	 */
+	public final static String SPELLING_PROPOSAL_THRESHOLD= ISpellCheckPreferenceKeys.SPELLING_PROPOSAL_THRESHOLD;
+
+	/**
+	 * A named preference that specifies the workspace user dictionary.
+	 * <p>
+	 * Value is of type <code>Integer</code>.
+	 * </p>
+	 * 
+	 * @since 3.0
+	 */
+	public final static String SPELLING_USER_DICTIONARY= ISpellCheckPreferenceKeys.SPELLING_USER_DICTIONARY;
+	
+	/**
+	 * A named preference that specifies whether spelling dictionaries are available to content assist.
+	 * <p>
+	 * Value is of type <code>Boolean</code>.
+	 * </p>
+	 * 
+	 * @since 3.0
+	 */
+	public final static String SPELLING_ENABLE_CONTENTASSIST= ISpellCheckPreferenceKeys.SPELLING_ENABLE_CONTENTASSIST;
+	
+	
 	private static String getDefaultRubyVMLibraries() {
 		StringBuffer buf= new StringBuffer();
 		ILoadpathEntry cntentry= getRubyVMContainerEntry();
@@ -891,6 +990,17 @@ public class PreferenceConstants {
 		store.setDefault(PreferenceConstants.DEBUGGER_USE_RUBY_DEBUG, false);
 
 		store.setDefault(PreferenceConstants.EDITOR_SYNC_OUTLINE_ON_CURSOR_MOVE, true);
+		
+//		 spell checking
+		store.setDefault(PreferenceConstants.SPELLING_LOCALE, SpellCheckEngine.getDefaultLocale().toString());
+		store.setDefault(PreferenceConstants.SPELLING_IGNORE_DIGITS, true);
+		store.setDefault(PreferenceConstants.SPELLING_IGNORE_MIXED, true);
+		store.setDefault(PreferenceConstants.SPELLING_IGNORE_SENTENCE, true);
+		store.setDefault(PreferenceConstants.SPELLING_IGNORE_UPPER, true);
+		store.setDefault(PreferenceConstants.SPELLING_IGNORE_URLS, true);
+		store.setDefault(PreferenceConstants.SPELLING_USER_DICTIONARY, ""); //$NON-NLS-1$
+		store.setDefault(PreferenceConstants.SPELLING_PROPOSAL_THRESHOLD, 20);
+		store.setDefault(PreferenceConstants.SPELLING_ENABLE_CONTENTASSIST, false);
 
 		// RubyEditorPreferencePage
 		store.setDefault(PreferenceConstants.EDITOR_MATCHING_BRACKETS, true);

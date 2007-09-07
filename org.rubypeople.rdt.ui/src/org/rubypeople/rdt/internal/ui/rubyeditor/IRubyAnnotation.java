@@ -112,5 +112,13 @@ public interface IRubyAnnotation {
 	 * <code>null<code> if no marker type can be evaluated. 
 	 */
 	String getMarkerType();
+	
+	/**
+	 * Returns the problem arguments or <code>null</code> if no problem arguments can be evaluated.
+	 * 
+	 * @return returns the problem arguments or <code>null</code> if no problem
+	 *  arguments can be evaluated.
+	 */
+	String[] getArguments();
 
 }
