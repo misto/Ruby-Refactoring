@@ -44,6 +44,7 @@ import org.rubypeople.rdt.core.IRubyProject;
 import org.rubypeople.rdt.core.IRubyScript;
 import org.rubypeople.rdt.core.ISourceRange;
 import org.rubypeople.rdt.core.IType;
+import org.rubypeople.rdt.core.ITypeHierarchy;
 import org.rubypeople.rdt.core.RubyCore;
 import org.rubypeople.rdt.core.RubyModelException;
 import org.rubypeople.rdt.core.search.CollectingSearchRequestor;
@@ -149,12 +150,14 @@ public class CompletionEngine {
 						}
 					}					
 					IType[] types = requestor.findType(name);
-					for (int i = 0; i < types.length; i++) {
+					Map<String, CompletionProposal> mapAll = new HashMap<String, CompletionProposal>();
+					for (int i = 0; i < types.length; i++) {						
 						Map<String, CompletionProposal> map = suggestMethods(guess.getConfidence(), types[i], true);
-						list.addAll(map.values());						
+						mapAll.putAll(map);
 					}
+					list.addAll(mapAll.values());		
 				}
-				list.addAll(suggestAllMethodsMatchingPrefix(script));
+				list.addAll(suggestAllMethodsMatchingPrefix(script)); // FIXME Only do this if we have no suggestions? Have a minimum length threshold?
 				Collections.sort(list, new CompletionProposalComparator());
 				for (CompletionProposal proposal : list) {
 					fRequestor.accept(proposal);
@@ -252,7 +255,7 @@ public class CompletionEngine {
 			String typeName = "";
 			if (type != null)
 				typeName = type.getElementName();
-			CompletionProposal proposal = suggestMethod(element, typeName, 100); // TODO Base confidence on accuracy in match?
+			CompletionProposal proposal = suggestMethod(element, typeName, 50); // TODO Base confidence on accuracy in match?
 		    if (proposal != null) {
 		    	list.add(proposal);
 		    }
@@ -306,10 +309,27 @@ public class CompletionEngine {
 	private Map<String, CompletionProposal> suggestMethods(int confidence, IType type, boolean includeInstanceMethods) throws RubyModelException {
 		if (fVisitedTypes == null) fVisitedTypes = new HashSet<IType>();
 		fOriginalType = type;
-		Map<String, CompletionProposal> list = doSuggestMethods(100, type, includeInstanceMethods);
-		fVisitedTypes.clear();
+		// FIXME We want to avoid visiting the same types across the guesses too!
+		Map<String, CompletionProposal> proposals = new HashMap<String, CompletionProposal>();		
+		ITypeHierarchy hierarchy = type.newSupertypeHierarchy(null);
+		IType[] all = hierarchy.getAllTypes();
+		for (int j = 0; j < all.length; j++) {
+			if (fVisitedTypes.contains(all[j])) continue;
+			fVisitedTypes.add(all[j]);
+			IMethod[] methods = all[j].getMethods();
+			if (methods != null) {
+				for (int k = 0; k < methods.length; k++) {
+					if (methods[k] == null) continue;
+					CompletionProposal proposal = suggestMethod(methods[k], all[j].getElementName(), confidence);
+					if (proposal != null && !proposals.containsKey(proposal.getName())) {
+						proposals.put(proposal.getName(), proposal); // If a method name matches an existing suggestion (i.e. its overriden in the subclass), don't suggest it again!
+					}
+				}		
+			}
+		}
 		fOriginalType = null;
-		return list;
+		fVisitedTypes.clear();
+		return proposals;		
 	}
 
 	private List<CompletionProposal> sort(Map<String, CompletionProposal> proposals) {
@@ -370,7 +390,7 @@ public class CompletionEngine {
 		return createProposal(replaceStart, type, name, 100, element);
 	}
 	private CompletionProposal createProposal(int replaceStart, int type, String name, int confidence, IRubyElement element) {
-		CompletionProposal proposal = new CompletionProposal(type, name, 100);
+		CompletionProposal proposal = new CompletionProposal(type, name, confidence);
 		proposal.setReplaceRange(replaceStart, replaceStart + name.length());
 		proposal.setElement(element);
 		return proposal;
@@ -387,67 +407,6 @@ public class CompletionEngine {
 			proposal.setType(name);
 			fRequestor.accept(proposal);
 		}
-	}
-
-	private Map<String, CompletionProposal> doSuggestMethods(int confidence, IType type, boolean includeInstanceMethods) throws RubyModelException {
-		Map<String, CompletionProposal> proposals = new HashMap<String, CompletionProposal>();
-		if (type == null)
-			return proposals;		
-		if (fVisitedTypes.contains(type)) return proposals;
-		fVisitedTypes.add(type);
-		IMethod[] methods = type.getMethods();
-		if (methods != null) {
-			for (int k = 0; k < methods.length; k++) {
-				if (methods[k] == null) continue;
-				if (!includeInstanceMethods && !methods[k].isSingleton()) {
-					continue;
-				}
-				CompletionProposal proposal = suggestMethod(methods[k], type.getElementName(), confidence);
-				if (proposal != null && !proposals.containsKey(proposal.getName())) {
-					proposals.put(proposal.getName(), proposal); // If a method name matches an existing suggestion (i.e. its overriden in the subclass), don't suggest it again!
-				}
-			}		
-		}
-		proposals.putAll(addModuleMethods(confidence - 1, type)); // Decrement confidence by one as a hack to make sure as we move up the inheritance chain we suggest "closer" parents methods first
-		if (!type.isModule()) proposals.putAll(addSuperClassMethods(confidence - 1, type, includeInstanceMethods));
-		return proposals;
-	}
-
-	private Map<String, CompletionProposal> addModuleMethods(int confidence, IType type) {
-		Map<String, CompletionProposal> proposals = new HashMap<String, CompletionProposal>();
-		String[] modules = null;
-		try {
-			modules = type.getIncludedModuleNames();
-		} catch (RubyModelException e) {
-			// ignore
-		}
-		if (modules == null || modules.length == 0) return proposals;
-		RubyElementRequestor requestor = new RubyElementRequestor(type.getRubyScript());
-		for (int i = 0; i < modules.length; i++) {			
-			IType[] moduleTypes = requestor.findType(modules[i]);
-			for (int j = 0; j < moduleTypes.length; j++) {
-				try {
-					IType moduleType = moduleTypes[j];
-					proposals.putAll(doSuggestMethods(confidence, moduleType, true));
-				} catch (RubyModelException e) {
-					// ignore
-				}
-			}
-		}
-		return proposals;
-	}
-
-	private Map<String, CompletionProposal> addSuperClassMethods(int confidence, IType type, boolean includeInstanceMethods) throws RubyModelException {
-		Map<String, CompletionProposal> proposals = new HashMap<String, CompletionProposal>();
-		String superClass = type.getSuperclassName();
-		if (superClass == null) return proposals;
-		RubyElementRequestor requestor = new RubyElementRequestor(type.getRubyScript());
-		IType[] supers = requestor.findType(superClass);
-		for (int i = 0; i < supers.length; i++) {
-			IType superType = supers[i];
-			proposals.putAll(doSuggestMethods(confidence, superType, includeInstanceMethods));
-		}
-		return proposals;
 	}
 
 	private CompletionProposal suggestMethod(IMethod method, String typeName, int confidence) {
