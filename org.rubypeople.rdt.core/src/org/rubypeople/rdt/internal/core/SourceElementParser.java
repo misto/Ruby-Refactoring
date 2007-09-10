@@ -30,6 +30,8 @@ import java.util.LinkedList;
 import java.util.List;
 
 import org.jruby.ast.AliasNode;
+import org.jruby.ast.ArgsNode;
+import org.jruby.ast.ArgumentNode;
 import org.jruby.ast.ArrayNode;
 import org.jruby.ast.AssignableNode;
 import org.jruby.ast.CallNode;
@@ -50,9 +52,9 @@ import org.jruby.ast.GlobalVarNode;
 import org.jruby.ast.InstAsgnNode;
 import org.jruby.ast.InstVarNode;
 import org.jruby.ast.IterNode;
+import org.jruby.ast.ListNode;
 import org.jruby.ast.LocalAsgnNode;
 import org.jruby.ast.ModuleNode;
-import org.jruby.ast.NewlineNode;
 import org.jruby.ast.Node;
 import org.jruby.ast.RootNode;
 import org.jruby.ast.SClassNode;
@@ -186,7 +188,7 @@ public class SourceElementParser extends InOrderVisitor {
 		} else {
 			requestor.enterMethod(methodInfo);
 		}
-
+		
 		Instruction ins = super.visitDefnNode(iVisited); // now traverse it's body
 		int end = iVisited.getPosition().getEndOffset() - 2;
 		if (methodInfo.isConstructor) {
@@ -195,6 +197,38 @@ public class SourceElementParser extends InOrderVisitor {
 			requestor.exitMethod(end);
 		}
 		return ins;
+	}
+	
+	@Override
+	public Instruction visitArgsNode(ArgsNode iVisited) {
+		// Add args as local vars!
+		ListNode list = iVisited.getArgs();
+		if (list != null) {
+			for (int i = 0; i < list.size(); i++) {
+				Node arg = list.get(i);
+				FieldInfo field = new FieldInfo();
+				field.declarationStart = arg.getPosition().getStartOffset();
+				field.nameSourceStart = arg.getPosition().getStartOffset();
+				String name = ASTUtil.getNameReflectively(arg);
+				field.nameSourceEnd = arg.getPosition().getStartOffset()
+						+ name.length() - 1;
+				field.name = name;
+				requestor.enterField(field);
+				requestor.exitField(arg.getPosition().getEndOffset() - 1);
+			}
+		}
+		ArgumentNode arg = iVisited.getRestArgNode();
+		if (arg != null) {
+			FieldInfo field = new FieldInfo();	
+			field.declarationStart = arg.getPosition().getStartOffset() + 1;
+			field.nameSourceStart = arg.getPosition().getStartOffset() + 1;
+			String name = ASTUtil.getNameReflectively(arg);
+			field.nameSourceEnd = arg.getPosition().getStartOffset() + name.length();			
+			field.name = name;
+			requestor.enterField(field);
+			requestor.exitField(arg.getPosition().getEndOffset());		
+		}
+		return super.visitArgsNode(iVisited);
 	}
 	
 	@Override

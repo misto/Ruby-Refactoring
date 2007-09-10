@@ -28,6 +28,7 @@ import org.jruby.ast.InstAsgnNode;
 import org.jruby.ast.InstVarNode;
 import org.jruby.ast.LocalAsgnNode;
 import org.jruby.ast.LocalVarNode;
+import org.jruby.ast.MethodDefNode;
 import org.jruby.ast.ModuleNode;
 import org.jruby.ast.Node;
 import org.jruby.ast.VCallNode;
@@ -159,10 +160,17 @@ public class SelectionEngine {
 			return completer.findType(fullyQualifiedName); // get fully qualified name of surrounding type!
 		}
 		if (isLocalVarRef(selected)) {
-			// TODO Try the local namespace first!			
-			List<IRubyElement> possible = getChildrenWithName(script
-					.getChildren(), IRubyElement.LOCAL_VARIABLE,
+			IRubyElement spanner = script.getElementAt(selected.getPosition().getStartOffset());
+			List<IRubyElement> possible = new ArrayList<IRubyElement>();
+			if (spanner instanceof IParent) {
+				IParent parent = (IParent) spanner;
+				possible = getChildrenWithName(parent.getChildren(), IRubyElement.LOCAL_VARIABLE,
+						getName(selected));
+			}
+			if (possible.isEmpty()) {
+				possible = getChildrenWithName(script.getChildren(), IRubyElement.LOCAL_VARIABLE,
 					getName(selected));
+			}
 			return possible.toArray(new IRubyElement[possible.size()]);
 		}
 		if (isInstanceVarRef(selected)) {
