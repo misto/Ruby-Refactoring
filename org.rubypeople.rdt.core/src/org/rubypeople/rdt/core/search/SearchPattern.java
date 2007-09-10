@@ -952,6 +952,9 @@ public abstract class SearchPattern extends InternalSearchPattern {
 		char[] declaringQualification = null;
 		switch (element.getElementType()) {
 			case IRubyElement.FIELD :
+			case IRubyElement.INSTANCE_VAR :
+			case IRubyElement.CONSTANT :
+			case IRubyElement.CLASS_VAR :
 				IField field = (IField) element; 
 				if (!ignoreDeclaringType) {
 					IType declaringClass = field.getDeclaringType();
