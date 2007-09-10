@@ -43,6 +43,8 @@ import org.jruby.ast.ZArrayNode;
 import org.jruby.ast.types.INameNode;
 import org.jruby.lexer.yacc.ISourcePosition;
 import org.jruby.parser.StaticScope;
+import org.rubypeople.rdt.internal.ti.util.ClosestSpanningNodeLocator;
+import org.rubypeople.rdt.internal.ti.util.INodeAcceptor;
 
 public abstract class ASTUtil {
 	private static final boolean VERBOSE = false;
@@ -297,6 +299,42 @@ public abstract class ASTUtil {
 			return prefix + colonNode.getName();
 		}
 		return EMPTY_STRING;
+	}
+
+	public static String getNamespace(Node root, int offset) {
+		List<Node> surrounding = new ArrayList<Node>();
+		Node typeNode = ClosestSpanningNodeLocator.Instance().findClosestSpanner(root, offset, new INodeAcceptor() {
+		
+			public boolean doesAccept(Node node) {
+				return node instanceof ModuleNode || node instanceof ClassNode;
+			}
+		
+		});
+		while (typeNode != null) {
+			surrounding.add(0, typeNode);
+			typeNode = ClosestSpanningNodeLocator.Instance().findClosestSpanner(root, typeNode.getPosition().getStartOffset() - 1, new INodeAcceptor() {
+				
+				public boolean doesAccept(Node node) {
+					return node instanceof ModuleNode || node instanceof ClassNode;
+				}
+			
+			});
+		}
+		// drop last class/module
+		if (surrounding.size() < 2) return "";
+		surrounding.remove(surrounding.size() - 1);
+		StringBuffer buffer = new StringBuffer();
+		boolean first = true;
+		for (Node node : surrounding) {
+			if (!first) {
+				buffer.append("::");
+			}
+			buffer.append(getNameReflectively(node));
+			if (first) {
+				first = false;
+			}
+		}
+		return buffer.toString();
 	}
 
 }

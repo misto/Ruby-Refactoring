@@ -155,7 +155,7 @@ public class SelectionEngine {
 			RubyElementRequestor completer = new RubyElementRequestor(script);
 			IType[] types = completer.findType(name);
 			if (types != null && types.length > 0) return types;
-			String fullyQualifiedName = getFullyQualifiedName(root, name);
+			String fullyQualifiedName = getFullyQualifiedName(root, constNode.getPosition().getStartOffset(), name);
 			if (fullyQualifiedName == null) return new IRubyElement[0];
 			return completer.findType(fullyQualifiedName); // get fully qualified name of surrounding type!
 		}
@@ -222,31 +222,12 @@ public class SelectionEngine {
 		return new IRubyElement[0];
 	}
 	
-	private String getFullyQualifiedName(Node root, String name) {
-		List<Node> surrounding = ScopedNodeLocator.Instance().findNodesInScope(root, new INodeAcceptor() {
-		
-			public boolean doesAccept(Node node) {
-				return node instanceof ModuleNode || node instanceof ClassNode;
-			}
-		
-		});
-		// drop last class/module
-		if (surrounding.size() < 2) return null;
-		surrounding.remove(surrounding.size() - 1);
-		StringBuffer buffer = new StringBuffer();
-		boolean first = true;
-		for (Node node : surrounding) {
-			if (!first) {
-				buffer.append("::");
-			}
-			buffer.append(ASTUtil.getNameReflectively(node));
-			if (first) {
-				first = false;
-			}
+	private String getFullyQualifiedName(Node root, int offset, String name) {
+		String namespace = ASTUtil.getNamespace(root, offset);
+		if (namespace == null || namespace.trim().length() == 0) {
+			return name;
 		}
-		buffer.append("::");
-		buffer.append(name);
-		return buffer.toString();
+		return namespace + "::" + name;
 	}
 
 	private List<SearchMatch> search(int type, String patternString, int limitTo, int matchRule) throws CoreException {
