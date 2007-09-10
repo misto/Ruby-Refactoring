@@ -1,7 +1,6 @@
 package com.aptana.rdt.internal.core.gems;
 
 import java.io.BufferedReader;
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -24,7 +23,7 @@ import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 import java.util.zip.DataFormatException;
-import java.util.zip.Inflater;
+import java.util.zip.InflaterInputStream;
 
 import javax.xml.parsers.FactoryConfigurationError;
 import javax.xml.parsers.ParserConfigurationException;
@@ -249,7 +248,7 @@ public class GemManager implements IGemManager {
 
 	private List<String> getContents() throws MalformedURLException,
 			IOException, DataFormatException {
-		String outputString = decompress(getZippedGemIndex());		
+		String outputString = new String(getZippedGemIndex());		
 		String[] lineArray = outputString.split("\n");
 		return Arrays.asList(lineArray);
 	}
@@ -261,13 +260,13 @@ public class GemManager implements IGemManager {
 		try {
 			URL url = new URL(GEM_INDEX_URL);
 			URLConnection con = url.openConnection();
-			content = (InputStream) con.getContent();
+			content = new InflaterInputStream((InputStream) con.getContent());			
 			while (true) {
 				int bytesToRead = content.available();
 				byte[] tmp = new byte[bytesToRead];
 				int length = content.read(tmp);
 				if (length == -1)
-					break;
+					break;				
 				while ((index + length) > input.length) { // if we'll overflow the
 															// array, we need to
 															// expand it
@@ -294,36 +293,6 @@ public class GemManager implements IGemManager {
 		byte[] newInput = new byte[index];
 		System.arraycopy(input, 0, newInput, 0, index);
 		return newInput;
-	}
-
-	private String decompress(byte[] input) throws DataFormatException {
-		// Decompress the bytes
-		Inflater decompresser = new Inflater();
-		decompresser.setInput(input);
-
-		// Create an expandable byte array to hold the decompressed data
-		ByteArrayOutputStream bos = new ByteArrayOutputStream(input.length);
-
-		try {
-			// Decompress the data
-			byte[] buf = new byte[1024];
-			while (!decompresser.finished()) {
-				int count = decompresser.inflate(buf);
-				bos.write(buf, 0, count);
-			}
-			// Get the decompressed data
-			byte[] result = bos.toByteArray();
-
-			// Decode the bytes into a String
-			return new String(result);
-		} catch (DataFormatException e) {			
-			return "";
-		} finally {
-			try {
-				bos.close();
-			} catch (IOException ioe) {}
-			decompresser.end();
-		}
 	}
 
 	private Set<Gem> loadLocalGems() {
