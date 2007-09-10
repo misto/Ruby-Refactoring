@@ -254,27 +254,41 @@ public class GemManager implements IGemManager {
 		return Arrays.asList(lineArray);
 	}
 
-	private byte[] getZippedGemIndex() throws MalformedURLException, IOException {
-		URL url = new URL(GEM_INDEX_URL);
-		URLConnection con = url.openConnection();
-		InputStream content = (InputStream) con.getContent();
+	private byte[] getZippedGemIndex() {
+		InputStream content = null;
 		byte[] input = new byte[1024];
 		int index = 0;
-		while (true) {
-			int bytesToRead = content.available();
-			byte[] tmp = new byte[bytesToRead];
-			int length = content.read(tmp);
-			if (length == -1)
-				break;
-			while ((index + length) > input.length) { // if we'll overflow the
-														// array, we need to
-														// expand it
-				byte[] newInput = new byte[input.length * 2];
-				System.arraycopy(input, 0, newInput, 0, input.length);
-				input = newInput;
+		try {
+			URL url = new URL(GEM_INDEX_URL);
+			URLConnection con = url.openConnection();
+			content = (InputStream) con.getContent();
+			while (true) {
+				int bytesToRead = content.available();
+				byte[] tmp = new byte[bytesToRead];
+				int length = content.read(tmp);
+				if (length == -1)
+					break;
+				while ((index + length) > input.length) { // if we'll overflow the
+															// array, we need to
+															// expand it
+					byte[] newInput = new byte[input.length * 2];
+					System.arraycopy(input, 0, newInput, 0, input.length);
+					input = newInput;
+				}
+				System.arraycopy(tmp, 0, input, index, length);
+				index += length;
 			}
-			System.arraycopy(tmp, 0, input, index, length);
-			index += length;
+		} catch (Exception e) {
+			AptanaRDTPlugin.log(e);
+			return new byte[0];
+		} finally {		
+			try {
+				if (content != null) {
+					content.close();
+				}
+			} catch (IOException e) {
+				// ignore
+			}
 		}
 		// Strip byte array down to just length of the content we actually read in.
 		byte[] newInput = new byte[index];
