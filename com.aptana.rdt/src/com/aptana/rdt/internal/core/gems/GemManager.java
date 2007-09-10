@@ -1,6 +1,7 @@
 package com.aptana.rdt.internal.core.gems;
 
 import java.io.BufferedReader;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -285,14 +286,30 @@ public class GemManager implements IGemManager {
 		// Decompress the bytes
 		Inflater decompresser = new Inflater();
 		decompresser.setInput(input);
-		byte[] result = new byte[input.length * 10]; // XXX This is a hack. I
-														// have no idea what the
-														// length should be here
-		int resultLength = decompresser.inflate(result);
-		decompresser.end();
 
-		// Decode the bytes into a String
-		return new String(result, 0, resultLength);
+		// Create an expandable byte array to hold the decompressed data
+		ByteArrayOutputStream bos = new ByteArrayOutputStream(input.length);
+
+		try {
+			// Decompress the data
+			byte[] buf = new byte[1024];
+			while (!decompresser.finished()) {
+				int count = decompresser.inflate(buf);
+				bos.write(buf, 0, count);
+			}
+			// Get the decompressed data
+			byte[] result = bos.toByteArray();
+
+			// Decode the bytes into a String
+			return new String(result);
+		} catch (DataFormatException e) {			
+			return "";
+		} finally {
+			try {
+				bos.close();
+			} catch (IOException ioe) {}
+			decompresser.end();
+		}
 	}
 
 	private Set<Gem> loadLocalGems() {
