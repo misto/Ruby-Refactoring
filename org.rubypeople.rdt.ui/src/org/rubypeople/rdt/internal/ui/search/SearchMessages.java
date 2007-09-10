@@ -192,6 +192,9 @@ public class SearchMessages extends NLS {
 	public static String Search_FindWriteReferencesInProjectAction_label;
 	public static String Search_FindWriteReferencesInProjectAction_tooltip;
 
+	public static String Search_FindHierarchyReferencesAction_label;
+	public static String Search_FindHierarchyReferencesAction_tooltip;
+
 	static {
 		NLS.initializeMessages(BUNDLE_NAME, SearchMessages.class);
 	}

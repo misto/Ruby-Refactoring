@@ -78,6 +78,12 @@ public interface IRubyEditorActionDefinitionIds extends ITextEditorActionDefinit
 	public static final String SEARCH_REFERENCES_IN_PROJECT= "org.rubypeople.rdt.ui.edit.text.ruby.search.references.in.project"; //$NON-NLS-1$
 
 	/**
+	 * Action definition ID of the search -> references in hierarchy action
+	 * (value <code>"org.rubypeople.rdt.ui.edit.text.ruby.search.references.in.hierarchy"</code>).
+	 */
+	public static final String SEARCH_REFERENCES_IN_HIERARCHY= "org.rubypeople.rdt.ui.edit.text.ruby.search.references.in.hierarchy"; //$NON-NLS-1$
+	
+	/**
 	 * Action definition ID of the search -> references in working set action
 	 * (value <code>"org.rubypeople.rdt.ui.edit.text.ruby.search.references.in.working.set"</code>).
 	 */

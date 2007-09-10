@@ -42,6 +42,12 @@ public class RdtActionConstants {
 	public static final String FIND_REFERENCES_IN_PROJECT= "org.rubypeople.rdt.ui.actions.ReferencesInProject"; //$NON-NLS-1$
 
 	/**
+	 * Search menu: name of standard Find References in Hierarchy global action
+	 * (value <code>"org.rubypeople.rdt.ui.actions.ReferencesInHierarchy"</code>).
+	 */
+	public static final String FIND_REFERENCES_IN_HIERARCHY= "org.rubypeople.rdt.ui.actions.ReferencesInHierarchy"; //$NON-NLS-1$
+	
+	/**
 	 * Search menu: name of standard Find References in Working Set global action
 	 * (value <code>"org.rubypeople.rdt.ui.actions.ReferencesInWorkingSet"</code>).
 	 */

@@ -692,6 +692,12 @@
             id="org.rubypeople.rdt.ui.edit.text.ruby.search.references.in.project">
       </command>
       <command
+            name="%ActionDefinition.referencesInHierarchy.name"
+            description="%ActionDefinition.referencesInHierarchy.description"
+            categoryId="org.eclipse.search.ui.category.search"
+            id="org.rubypeople.rdt.ui.edit.text.ruby.search.references.in.hierarchy">
+      </command>
+      <command
             name="%ActionDefinition.referencesInWorkingSet.name"
             description="%ActionDefinition.referencesInWorkingSet.description"
             categoryId="org.eclipse.search.ui.category.search"
@@ -1164,6 +1170,14 @@
                menubarPath="org.eclipse.search.menu/referencesSubMenu/group1"
                allowLabelUpdate="true"
                id="org.rubypeople.rdt.ui.actions.ReferencesInWorkingSet">
+         </action>
+         <action
+               definitionId="org.rubypeople.rdt.ui.edit.text.ruby.search.references.in.hierarchy"
+               label="%InHierarchy.label"
+               retarget="true"
+               menubarPath="org.eclipse.search.menu/referencesSubMenu/group1"
+               allowLabelUpdate="true"
+               id="org.rubypeople.rdt.ui.actions.ReferencesInHierarchy">
          </action>
          <action
                definitionId="org.rubypeople.rdt.ui.edit.text.ruby.search.references.in.hierarchy"
