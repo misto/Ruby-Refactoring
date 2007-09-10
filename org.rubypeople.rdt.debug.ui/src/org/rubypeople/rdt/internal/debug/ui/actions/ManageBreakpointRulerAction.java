@@ -12,6 +12,7 @@ import java.util.List;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IResource;
+import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.debug.core.DebugPlugin;
 import org.eclipse.debug.core.IBreakpointManager;
@@ -29,6 +30,7 @@ import org.eclipse.ui.texteditor.IDocumentProvider;
 import org.eclipse.ui.texteditor.ITextEditor;
 import org.eclipse.ui.texteditor.IUpdate;
 import org.rubypeople.rdt.debug.core.RubyLineBreakpoint;
+import org.rubypeople.rdt.internal.ui.rubyeditor.IRubyScriptEditorInput;
 
 /**
  * 
@@ -87,8 +89,9 @@ public class ManageBreakpointRulerAction extends Action implements IUpdate {
 		if (model == null) { return breakpoints; }
 		try {
 			IResource resource = getResource();
+			if (resource == null) resource = ResourcesPlugin.getWorkspace().getRoot();
 			if (resource == null) return breakpoints;
-			IMarker[] markers = resource.findMarkers("org.rubypeople.rdt.debug.core.RubyBreakpointMarker", // IBreakpoint.BREAKPOINT_MARKER,
+			IMarker[] markers = resource.findMarkers(IBreakpoint.BREAKPOINT_MARKER,
 					false, IResource.DEPTH_INFINITE);
 
 			IBreakpointManager breakpointManager = DebugPlugin.getDefault().getBreakpointManager();
@@ -185,10 +188,27 @@ public class ManageBreakpointRulerAction extends Action implements IUpdate {
 		getDocument();
 		int rulerLine = getVerticalRulerInfo().getLineOfLastMouseButtonActivity();
 		try {
-			RubyLineBreakpoint bp = new RubyLineBreakpoint(((IFileEditorInput) editorInput).getFile(), rulerLine);
+			IResource resource = getResource(editorInput);
+			if (resource.equals(ResourcesPlugin.getWorkspace().getRoot())) {
+				RubyLineBreakpoint bp = new RubyLineBreakpoint(resource, rulerLine, getFileName(editorInput));
+			} else {
+				RubyLineBreakpoint bp = new RubyLineBreakpoint(resource, rulerLine);
+			}
 		} catch (CoreException x) {
 			System.out.println(x.getMessage());
 		}
+	}
+
+	private String getFileName(IEditorInput editorInput) {
+		if (editorInput instanceof IRubyScriptEditorInput)
+			return ((IRubyScriptEditorInput) editorInput).getRubyScript().getPath().makeAbsolute().toOSString();
+		return null;
+	}
+
+	private IResource getResource(IEditorInput editorInput) {
+		if (editorInput instanceof IFileEditorInput)
+			return ((IFileEditorInput) editorInput).getFile();
+		return ResourcesPlugin.getWorkspace().getRoot();
 	}
 
 	protected void removeMarkers(List markers) {
