@@ -262,8 +262,7 @@ public class GemManager implements IGemManager {
 			URLConnection con = url.openConnection();
 			content = new InflaterInputStream((InputStream) con.getContent());			
 			while (true) {
-				int bytesToRead = content.available();
-				byte[] tmp = new byte[bytesToRead];
+				byte[] tmp = new byte[4096];
 				int length = content.read(tmp);
 				if (length == -1)
 					break;				
