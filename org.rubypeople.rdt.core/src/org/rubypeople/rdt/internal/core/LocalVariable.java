@@ -28,13 +28,14 @@ import java.util.HashMap;
 
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.rubypeople.rdt.core.ILocalVariable;
 import org.rubypeople.rdt.internal.core.util.Util;
 
 /**
  * @author Chris
  * 
  */
-public class LocalVariable extends RubyField {
+public class LocalVariable extends RubyField implements ILocalVariable {
 
     private int start;
     private int end;
