@@ -14,18 +14,24 @@ import org.rubypeople.rdt.internal.debug.core.RdtDebugCorePlugin;
 public class RubyLineBreakpoint extends LineBreakpoint {
 	public static final String RUBY_BREAKPOINT_MARKER = "org.rubypeople.rdt.debug.core.rubyLineBreakpointMarker"; //$NON-NLS-1$
 
+	private static final String EXTERNAL_FILENAME = "externalFileName";
 	private int index = -1 ; // index of breakpoint on ruby debugger side
 	
 	public RubyLineBreakpoint() {		
 	}
 	
 	public RubyLineBreakpoint(final IResource resource, final int lineNumber) throws CoreException {
+		this(resource, lineNumber, resource.getName());
+	}
+	
+	public RubyLineBreakpoint(final IResource resource, final int lineNumber, final String fileName) throws CoreException {
 		IWorkspaceRunnable wr = new IWorkspaceRunnable() {
 			public void run(IProgressMonitor monitor) throws CoreException {
 				setMarker(resource.createMarker(RUBY_BREAKPOINT_MARKER));
 				getMarker().setAttribute(IMarker.LINE_NUMBER, lineNumber + 1);
 				getMarker().setAttribute(IBreakpoint.ID, getModelIdentifier());
 				getMarker().setAttribute(REGISTERED, false);
+				getMarker().setAttribute(EXTERNAL_FILENAME, fileName);
 				// setEnabled must be set before calling setRegistered
 				setEnabled(true);
 				setRegistered(true);
@@ -40,7 +46,11 @@ public class RubyLineBreakpoint extends LineBreakpoint {
 	}
 	
 	public String getFileName() throws CoreException {
-		return ensureMarker().getResource().getName();
+		IResource resource = ensureMarker().getResource();
+		if (resource.equals(ResourcesPlugin.getWorkspace().getRoot())) {
+			return ensureMarker().getAttribute(EXTERNAL_FILENAME, "");
+		}
+		return resource.getName();
 	}
 
 	public int getLineNumber() throws CoreException {
