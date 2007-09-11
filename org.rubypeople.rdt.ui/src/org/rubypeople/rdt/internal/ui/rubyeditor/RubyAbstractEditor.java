@@ -1500,10 +1500,9 @@ public abstract class RubyAbstractEditor extends TextEditor {
 
 		// Mark occurrences
 		fOccurrencesFinderJob= new OccurrencesFinderJob(document, positions, selection);
-		//fOccurrencesFinderJob.setPriority(Job.DECORATE);
-		//fOccurrencesFinderJob.setSystem(true);
-		//fOccurrencesFinderJob.schedule();
-		fOccurrencesFinderJob.run(new NullProgressMonitor());
+		fOccurrencesFinderJob.setPriority(Job.DECORATE);
+		fOccurrencesFinderJob.setSystem(true);
+		fOccurrencesFinderJob.schedule();
 	}
 	
 	protected void setMarkOccurrencePreferences(IOccurrencesFinder occurrencesFinder)
