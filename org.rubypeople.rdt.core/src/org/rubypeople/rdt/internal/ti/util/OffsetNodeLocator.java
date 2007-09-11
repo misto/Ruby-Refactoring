@@ -86,6 +86,10 @@ public class OffsetNodeLocator extends NodeLocator {
 				if (!((locatedNode instanceof Colon2Node) && (iVisited instanceof ConstNode))) {
 				locatedNode = iVisited;
 				}
+				if (iVisited instanceof ArgsNode) {
+					ArgsNode args = (ArgsNode) iVisited;
+					handleNode(args.getRestArgNode());
+				}
 			}
 		}
 		
