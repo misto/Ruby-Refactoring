@@ -701,7 +701,10 @@ public class OccurrencesFinder extends AbstractOccurencesFinder {
 
 		// TODO refactor the getting-of-name
 		String name = null;
-		if (node instanceof ReturnNode) {
+		if (node instanceof ArgumentNode) {
+			ArgumentNode argNode = (ArgumentNode) node;
+			name = argNode.getName();
+		} else if (node instanceof ReturnNode) {
 			return node.getPosition();
 		} else if (isLocalVarRef(node) || isDVarRef(node) || isInstanceVarRef(node) || isGlobalVarRef(node) || isClassVarRef(node) || isConstRef(node) || node instanceof BlockArgNode) {
 			name = ASTUtil.getNameReflectively(node);
