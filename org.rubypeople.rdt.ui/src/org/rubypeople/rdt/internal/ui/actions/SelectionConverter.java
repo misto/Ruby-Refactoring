@@ -16,6 +16,8 @@ import org.eclipse.ui.PlatformUI;
 import org.rubypeople.rdt.core.ICodeAssist;
 import org.rubypeople.rdt.core.IRubyElement;
 import org.rubypeople.rdt.core.IRubyScript;
+import org.rubypeople.rdt.core.ISourceRange;
+import org.rubypeople.rdt.core.ISourceReference;
 import org.rubypeople.rdt.core.RubyModelException;
 import org.rubypeople.rdt.internal.corext.util.RubyModelUtil;
 import org.rubypeople.rdt.internal.ui.RubyPlugin;
@@ -184,5 +186,38 @@ public class SelectionConverter {
 		}
 		return result;
 	}
+
+	public static IRubyElement resolveEnclosingElement(RubyEditor editor, ITextSelection selection) throws RubyModelException {
+		return resolveEnclosingElement(getInput(editor), selection);
+	}
+		
+	public static IRubyElement resolveEnclosingElement(IRubyElement input, ITextSelection selection) throws RubyModelException {
+		IRubyElement atOffset= null;
+			if (input instanceof IRubyScript) {
+				IRubyScript cunit= (IRubyScript)input;
+				RubyModelUtil.reconcile(cunit);
+				atOffset= cunit.getElementAt(selection.getOffset());
+			} else {
+				return null;
+			}
+			if (atOffset == null) {
+				return input;
+			} else {
+				int selectionEnd= selection.getOffset() + selection.getLength();
+				IRubyElement result= atOffset;
+				if (atOffset instanceof ISourceReference) {
+					ISourceRange range= ((ISourceReference)atOffset).getSourceRange();
+					while (range.getOffset() + range.getLength() < selectionEnd) {
+						result= result.getParent();
+						if (! (result instanceof ISourceReference)) {
+							result= input;
+							break;
+						}
+						range= ((ISourceReference)result).getSourceRange();
+					}
+				}
+				return result;
+			}
+		}
 
 }

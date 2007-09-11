@@ -15,6 +15,7 @@ import org.eclipse.jface.util.Assert;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorPart;
+import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.dialogs.SelectionDialog;
 import org.eclipse.ui.texteditor.IDocumentProvider;
 import org.rubypeople.rdt.core.IRubyElement;
@@ -298,5 +299,20 @@ public final class RubyUI {
 		dialog.setMessage(RubyUIMessages.RubyUI_defaultDialogMessage); 
 		dialog.setFilter(filter);
 		return dialog;
+	}
+	
+	/**
+	 * Opens a Ruby editor on the given Ruby element. The element can be a ruby script. 
+	 * If there already is an open Ruby editor for the given element, it is returned.
+	 *
+	 * @param element the input element; a ruby script 
+	 *   (<code>IRubyScript</code>)
+	 * @return the editor, or </code>null</code> if wrong element type or opening failed
+	 * @exception PartInitException if the editor could not be initialized
+	 * @exception RubyModelException if this element does not exist or if an
+	 *		exception occurs while accessing its underlying resource
+	 */
+	public static IEditorPart openInEditor(IRubyElement element) throws RubyModelException, PartInitException {
+		return EditorUtility.openInEditor(element);
 	}
 }
