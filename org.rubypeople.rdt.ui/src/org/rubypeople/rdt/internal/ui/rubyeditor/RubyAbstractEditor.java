@@ -358,7 +358,7 @@ public abstract class RubyAbstractEditor extends TextEditor {
     protected void doSetInput(IEditorInput input) throws CoreException {  
     	// HACK Ugly code here in the beginning to handle Eclipse 3.2 and 3.3 opening external files. We wrap them into our own external ruby editor..
     	IPath path = null;
-    	if (input.getClass().getName().equals("org.eclipse.ui.internal.editors.text.JavaFileEditorInput")) { // Eclipse 3.2 uses this editor input for external files...
+    	if (externalFileOpenedInEclipse32(input)) { // Eclipse 3.2 uses this editor input for external files...
     		try {
 				Method method = input.getClass().getDeclaredMethod("getPath", new Class[0]);
 				if (method != null) {
@@ -380,12 +380,12 @@ public abstract class RubyAbstractEditor extends TextEditor {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-    	} else if (input.getClass().getName().equals("org.eclipse.ui.ide.FileStoreEditorInput")) { // Eclipse 3.3 uses this editor input for external files...
+    	} else if (externalFileOpenedInEclipse33(input)) { // Eclipse 3.3 uses this editor input for external files...
     		try {
 				Method method = input.getClass().getDeclaredMethod("getURI", new Class[0]);
 				if (method != null) {
 					URI uri = (URI) method.invoke(input, new Object[0]);
-					if (uri != null) {
+					if (uri != null && uri.getScheme().equals("file")) {
 						path = new Path(uri.getPath());
 					}
 				}
@@ -406,13 +406,14 @@ public abstract class RubyAbstractEditor extends TextEditor {
 				e.printStackTrace();
 			}
     	}
-    	if (path != null && (input.getClass().getName().equals("org.eclipse.ui.internal.editors.text.JavaFileEditorInput") || input.getClass().getName().equals("org.eclipse.ui.ide.FileStoreEditorInput"))) {
+    	if (path != null && (externalFileOpenedInEclipse32(input) || externalFileOpenedInEclipse33(input))) {
     		IProject[] projects = RubyCore.getRubyProjects();
-    		if (projects != null && projects.length > 0) {
+    		if (projects != null && projects.length > 0) { // search for the file in one of the ruby projects loadpaths
     			IRubyProject proj = RubyCore.create(projects[0]);    		
         		ISourceFolderRoot root = proj.getSourceFolderRoot(path.removeLastSegments(1).toPortableString());
         		ISourceFolder folder = root.getSourceFolder("");
         		IRubyScript script = folder.getRubyScript(path.lastSegment());
+        		// FIXME Check to see if it exists?
         		input = new RubyScriptEditorInput((ExternalRubyScript) script);
     		}
     	}
@@ -424,6 +425,14 @@ public abstract class RubyAbstractEditor extends TextEditor {
         super.doSetInput(input);
         setOutlinePageInput(fOutlinePage, input);
     }
+
+	private boolean externalFileOpenedInEclipse33(IEditorInput input) {
+		return input.getClass().getName().equals("org.eclipse.ui.ide.FileStoreEditorInput");
+	}
+
+	private boolean externalFileOpenedInEclipse32(IEditorInput input) {
+		return input.getClass().getName().equals("org.eclipse.ui.internal.editors.text.JavaFileEditorInput");
+	}
 
     protected void setOutlinePageInput(RubyOutlinePage page, IEditorInput input) {
 		if (page == null)
