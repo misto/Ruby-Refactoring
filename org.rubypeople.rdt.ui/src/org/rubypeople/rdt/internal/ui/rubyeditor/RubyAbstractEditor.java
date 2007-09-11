@@ -1,5 +1,8 @@
 package org.rubypeople.rdt.internal.ui.rubyeditor;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -9,9 +12,11 @@ import java.util.Map;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.ProjectScope;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.NullProgressMonitor;
+import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
@@ -65,7 +70,6 @@ import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.editors.text.EditorsUI;
 import org.eclipse.ui.editors.text.TextEditor;
-import org.eclipse.ui.internal.editors.text.JavaFileEditorInput;
 import org.eclipse.ui.texteditor.AbstractDecoratedTextEditorPreferenceConstants;
 import org.eclipse.ui.texteditor.ChainedPreferenceStore;
 import org.eclipse.ui.texteditor.IDocumentProvider;
@@ -351,15 +355,64 @@ public abstract class RubyAbstractEditor extends TextEditor {
      * 
      * @see org.eclipse.ui.editors.text.TextEditor#doSetInput(org.eclipse.ui.IEditorInput)
      */
-    protected void doSetInput(IEditorInput input) throws CoreException {
-    	if (input instanceof JavaFileEditorInput) {
-    		JavaFileEditorInput duh = (JavaFileEditorInput) input;
+    protected void doSetInput(IEditorInput input) throws CoreException {  
+    	// HACK Ugly code here in the beginning to handle Eclipse 3.2 and 3.3 opening external files. We wrap them into our own external ruby editor..
+    	IPath path = null;
+    	if (input.getClass().getName().equals("org.eclipse.ui.internal.editors.text.JavaFileEditorInput")) { // Eclipse 3.2 uses this editor input for external files...
+    		try {
+				Method method = input.getClass().getDeclaredMethod("getPath", new Class[0]);
+				if (method != null) {
+					path = (IPath) method.invoke(input, new Object[0]);
+				}
+			} catch (SecurityException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (IllegalArgumentException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (NoSuchMethodException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (IllegalAccessException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (InvocationTargetException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+    	} else if (input.getClass().getName().equals("org.eclipse.ui.ide.FileStoreEditorInput")) { // Eclipse 3.3 uses this editor input for external files...
+    		try {
+				Method method = input.getClass().getDeclaredMethod("getURI", new Class[0]);
+				if (method != null) {
+					URI uri = (URI) method.invoke(input, new Object[0]);
+					if (uri != null) {
+						path = new Path(uri.getPath());
+					}
+				}
+			} catch (SecurityException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (IllegalArgumentException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (NoSuchMethodException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (IllegalAccessException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (InvocationTargetException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+    	}
+    	if (path != null && (input.getClass().getName().equals("org.eclipse.ui.internal.editors.text.JavaFileEditorInput") || input.getClass().getName().equals("org.eclipse.ui.ide.FileStoreEditorInput"))) {
     		IProject[] projects = RubyCore.getRubyProjects();
     		if (projects != null && projects.length > 0) {
     			IRubyProject proj = RubyCore.create(projects[0]);    		
-        		ISourceFolderRoot root = proj.getSourceFolderRoot(duh.getPath().removeLastSegments(1).toPortableString());
+        		ISourceFolderRoot root = proj.getSourceFolderRoot(path.removeLastSegments(1).toPortableString());
         		ISourceFolder folder = root.getSourceFolder("");
-        		IRubyScript script = folder.getRubyScript(duh.getPath().lastSegment());
+        		IRubyScript script = folder.getRubyScript(path.lastSegment());
         		input = new RubyScriptEditorInput((ExternalRubyScript) script);
     		}
     	}
