@@ -8,6 +8,7 @@ import org.jruby.ast.ArgsNode;
 import org.jruby.ast.ArgumentNode;
 import org.jruby.ast.Node;
 import org.jruby.evaluator.Instruction;
+import org.jruby.lexer.yacc.ISourcePosition;
 
 /**
  * Visitor to find all nodes within a specific scope adhering to a certain condition.
@@ -78,6 +79,15 @@ public class ScopedNodeLocator extends NodeLocator {
 			}
 		}
 		
+		ArgumentNode argNode = iVisited.getRestArgNode();
+		if (argNode != null) {
+			if (acceptor.doesAccept(argNode)) {
+				ISourcePosition pos = argNode.getPosition();
+				pos.adjustStartOffset(1); // Rest args are off by one...
+				argNode.setPosition(pos);
+				locatedNodes.add(argNode);
+			}
+		}
 		return super.visitArgsNode(iVisited);
 //		
 //		handleNode(iVisited);
