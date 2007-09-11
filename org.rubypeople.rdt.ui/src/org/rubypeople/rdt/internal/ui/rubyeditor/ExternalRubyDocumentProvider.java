@@ -54,7 +54,7 @@ public class ExternalRubyDocumentProvider extends AbstractDocumentProvider {
 	}
 
 	protected IAnnotationModel createAnnotationModel(Object element) throws CoreException {
-		return new ExternalFileRubyAnnotationModel();
+		return new ExternalFileRubyAnnotationModel(null);
 	}
 	
 

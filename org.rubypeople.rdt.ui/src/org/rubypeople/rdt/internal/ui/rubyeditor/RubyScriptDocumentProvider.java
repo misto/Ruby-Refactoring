@@ -183,26 +183,14 @@ public class RubyScriptDocumentProvider extends FileDocumentProvider {
 	/**
 	 * Creates an annotation model derived from the given class file editor input.
 	 * 
-	 * @param classFileEditorInput the editor input from which to query the annotations
+	 * @param rubyScriptEditorInput the editor input from which to query the annotations
 	 * @return the created annotation model
 	 * @exception CoreException if the editor input could not be accessed
 	 */
-	protected IAnnotationModel createRubyScriptAnnotationModel(IRubyScriptEditorInput classFileEditorInput) throws CoreException {
-//		IResource resource= null;
-//		IRubyScript classFile= classFileEditorInput.getRubyScript();
-//
-//		IResourceLocator locator= (IResourceLocator) classFile.getAdapter(IResourceLocator.class);
-//		if (locator != null)
-//			resource= locator.getContainingResource(classFile);
-//
-//		if (resource != null) {
-//			RubyScriptMarkerAnnotationModel model= new RubyScriptMarkerAnnotationModel(resource);
-//			model.setRubyScript(classFile);
-//			return model;
-//		}
-//
-//		return null;
-		return new ExternalFileRubyAnnotationModel();
+	protected IAnnotationModel createRubyScriptAnnotationModel(IRubyScriptEditorInput rubyScriptEditorInput) throws CoreException {
+		IRubyScript script = rubyScriptEditorInput.getRubyScript();
+		ExternalFileRubyAnnotationModel model = new ExternalFileRubyAnnotationModel(script);
+		return model;
 	}
 
 	/*
