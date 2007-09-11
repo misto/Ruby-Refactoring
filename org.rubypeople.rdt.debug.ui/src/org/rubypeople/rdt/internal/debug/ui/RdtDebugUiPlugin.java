@@ -69,7 +69,11 @@ public class RdtDebugUiPlugin extends AbstractUIPlugin implements RdtDebugUiCons
 		ActionFilterAdapterFactory actionFilterAdapterFactory= new ActionFilterAdapterFactory();
 		manager.registerAdapters(actionFilterAdapterFactory, RubyVariable.class);
 		new CodeReloader();
-		EvaluationContextManager.startup();
+		try {
+			EvaluationContextManager.startup();
+		} catch (Exception e) {
+			log(e);
+		}
     }
 
 	@Override
