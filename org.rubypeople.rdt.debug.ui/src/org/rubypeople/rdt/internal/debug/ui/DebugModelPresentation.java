@@ -29,7 +29,7 @@ public class DebugModelPresentation extends LabelProvider implements IDebugModel
 		if (item instanceof RubyLineBreakpoint) {
 			RubyLineBreakpoint breakpoint = (RubyLineBreakpoint) item;
 			try {
-				return breakpoint.getMarker().getResource().getName() + ":" + breakpoint.getLineNumber();
+				return breakpoint.getFileName() + ":" + breakpoint.getLineNumber();
 			} catch (CoreException e) {
 				DebugUIPlugin.log(e) ;
 				return "--";
