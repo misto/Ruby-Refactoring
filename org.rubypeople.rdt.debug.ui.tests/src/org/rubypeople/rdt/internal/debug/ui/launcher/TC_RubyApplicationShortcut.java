@@ -30,7 +30,7 @@ import org.rubypeople.rdt.launching.IVMInstall;
 import org.rubypeople.rdt.launching.IVMInstallType;
 import org.rubypeople.rdt.launching.RubyRuntime;
 import org.rubypeople.rdt.launching.VMStandin;
-import org.rubypeople.rdt.ui.IRubyConstants;
+import org.rubypeople.rdt.ui.RubyUI;
 
 public class TC_RubyApplicationShortcut extends ModifyingResourceTest {
 
@@ -191,7 +191,7 @@ public class TC_RubyApplicationShortcut extends ModifyingResourceTest {
 		String fullPath = RdtDebugUiPlugin.getWorkspace().getRoot().getLocation().toOSString() + File.separator + file.getFullPath().toOSString();
 		Object sourceElement = sourceLocator.getSourceElement(fullPath);
 		IEditorInput input = sourceLocator.getEditorInput(sourceElement);
-		IEditorPart rubyEditor = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage().openEditor(input, IRubyConstants.EDITOR_ID);
+		IEditorPart rubyEditor = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage().openEditor(input, RubyUI.ID_RUBY_EDITOR);
 
 		shortcut.launch(rubyEditor, ILaunchManager.RUN_MODE);
 		
@@ -218,7 +218,7 @@ public class TC_RubyApplicationShortcut extends ModifyingResourceTest {
 		Object sourceElement = sourceLocator.getSourceElement(tmpFile.getAbsolutePath());
 		IEditorInput input = sourceLocator.getEditorInput(sourceElement);
 
-		IEditorPart rubyExternalEditor = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage().openEditor(input, IRubyConstants.EXTERNAL_FILES_EDITOR_ID);
+		IEditorPart rubyExternalEditor = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage().openEditor(input, RubyUI.ID_EXTERNAL_EDITOR);
 
 		shortcut.launch(rubyExternalEditor, ILaunchManager.RUN_MODE);
 
