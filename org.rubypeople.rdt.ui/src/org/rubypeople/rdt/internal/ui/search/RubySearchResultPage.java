@@ -71,6 +71,7 @@ import org.rubypeople.rdt.internal.corext.util.Messages;
 import org.rubypeople.rdt.internal.ui.RubyPlugin;
 import org.rubypeople.rdt.internal.ui.RubyPluginImages;
 import org.rubypeople.rdt.internal.ui.dnd.RdtViewerDragAdapter;
+import org.rubypeople.rdt.internal.ui.packageview.SelectionTransferDragAdapter;
 import org.rubypeople.rdt.internal.ui.search.RubySearchResult.MatchFilterEvent;
 import org.rubypeople.rdt.internal.ui.util.ExceptionHandler;
 import org.rubypeople.rdt.internal.ui.viewsupport.ProblemTableViewer;
@@ -151,7 +152,7 @@ public class RubySearchResultPage extends AbstractTextSearchViewPage implements 
 	private FilterAction[] fFilterActions;
 	private FiltersDialogAction fFilterDialogAction;
 	
-	private static final String[] SHOW_IN_TARGETS= new String[] { RubyUI.ID_RUBY_RESOURCE_VIEW, IPageLayout.ID_RES_NAV };
+	private static final String[] SHOW_IN_TARGETS= new String[] { RubyUI.ID_RUBY_EXPLORER, IPageLayout.ID_RES_NAV };
 	public static final IShowInTargetList SHOW_IN_TARGET_LIST= new IShowInTargetList() {
 		public String[] getShowInTargetIds() {
 			return SHOW_IN_TARGETS;
@@ -173,10 +174,10 @@ public class RubySearchResultPage extends AbstractTextSearchViewPage implements 
 		fFilterActions= new FilterAction[allFilters.length];
 		for (int i= 0; i < fFilterActions.length; i++) {
 			fFilterActions[i]= new FilterAction(this, allFilters[i]);
-			fFilterActions[i].setId("org.eclipse.jdt.search.filters."+i); //$NON-NLS-1$
+			fFilterActions[i].setId("org.rubypeople.rdt.search.filters."+i); //$NON-NLS-1$
 		}
 		fFilterDialogAction= new FiltersDialogAction(this);
-		fFilterDialogAction.setId("org.eclipse.jdt.search.filters."+allFilters.length); //$NON-NLS-1$
+		fFilterDialogAction.setId("org.rubypeople.rdt.search.filters."+allFilters.length); //$NON-NLS-1$
 		RubyPluginImages.setLocalImageDescriptors(fFilterDialogAction, "filter_ps.gif"); //$NON-NLS-1$
 	}
 
@@ -311,7 +312,7 @@ public class RubySearchResultPage extends AbstractTextSearchViewPage implements 
 		int ops= DND.DROP_COPY | DND.DROP_LINK;
 		
 		TransferDragSourceListener[] dragListeners= new TransferDragSourceListener[] {
-//			new SelectionTransferDragAdapter(viewer),
+			new SelectionTransferDragAdapter(viewer),
 			new ResourceTransferDragAdapter(viewer)
 		};
 		
