@@ -10,9 +10,11 @@ import org.eclipse.core.resources.IWorkspaceRunnable;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.jface.text.Position;
 import org.eclipse.ui.texteditor.AbstractMarkerAnnotationModel;
 import org.rubypeople.rdt.core.IRubyScript;
 import org.rubypeople.rdt.internal.core.ExternalRubyScript;
+import org.rubypeople.rdt.internal.ui.RubyPlugin;
 
 public class ExternalFileRubyAnnotationModel extends AbstractMarkerAnnotationModel {
 
@@ -22,6 +24,7 @@ public class ExternalFileRubyAnnotationModel extends AbstractMarkerAnnotationMod
 	public ExternalFileRubyAnnotationModel(IRubyScript script) {
 		fScript = script;
 		fWorkspace= ResourcesPlugin.getWorkspace();
+		// TODO Grab all the markers from workspace root which match this file, and add annotaions for them?
 	}
 	
 	protected void deleteMarkers(final IMarker[] markers) throws CoreException {
