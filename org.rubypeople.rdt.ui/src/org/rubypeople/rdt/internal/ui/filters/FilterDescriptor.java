@@ -30,7 +30,7 @@ import org.rubypeople.rdt.ui.RubyUI;
 
 /**
  * Represents a custom filter which is provided by the
- * "org.eclipse.jdt.ui.javaElementFilters" extension point.
+ * "org.rubypeople.rdt.ui.rubyElementFilters" extension point.
  * 
  * since 2.0
  */

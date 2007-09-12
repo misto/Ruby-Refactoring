@@ -1560,5 +1560,100 @@
               id="org.rubypeople.rdt.internal.ui.text.spelling.DefaultSpellingEngine">
         </engine>
     </extension>
+    
+<!-- =========================================================================== -->
+<!-- Filter Support                                                              -->
+<!-- =========================================================================== -->
+   <extension
+         point="org.rubypeople.rdt.ui.rubyElementFilters">
+<!-- Ruby Explorer -->
+      <filter
+            targetId="org.rubypeople.rdt.ui.RubyExplorer"
+            name="%HideSystemFiles.label"
+            enabled="true"
+            description="%HideSystemFiles.description"
+            pattern=".*">
+      </filter>
+      <filter
+            targetId="org.rubypeople.rdt.ui.RubyExplorer"
+            name="%HideNonRubyElements.label"
+            enabled="false"
+            description="%HideNonRubyElements.description"
+            class="org.rubypeople.rdt.internal.ui.filters.NonRubyElementFilter"
+            id="org.rubypeople.rdt.ui.RubyExplorer.NonRubyElementFilter">
+      </filter>
+      <filter
+            targetId="org.rubypeople.rdt.ui.RubyExplorer"
+            name="%HideReferencedLibraries.label"
+            enabled="false"
+            description="%HideReferencedLibraries.description"
+            class="org.rubypeople.rdt.internal.ui.filters.LibraryFilter"
+            id="org.rubypeople.rdt.ui.RubyExplorer.LibraryFilter">
+      </filter>
+      <filter
+            targetId="org.rubypeople.rdt.ui.RubyExplorer"
+            name="%HideRubyFiles.label"
+            enabled="false"
+            description="%HideRubyFiles.description"
+            class="org.rubypeople.rdt.internal.ui.filters.RubyFileFilter"
+            id="org.rubypeople.rdt.ui.RubyExplorer.RubyFileFilter">
+      </filter>
+      <filter
+            targetId="org.rubypeople.rdt.ui.RubyExplorer"
+            name="%HideImportDeclaration.label"
+            enabled="true"
+            description="%HideImportDeclaration.description"
+            class="org.rubypeople.rdt.internal.ui.filters.ImportDeclarationFilter"
+            id="org.rubypeople.rdt.ui.RubyExplorer.ImportDeclarationFilter">
+      </filter>
+      <filter
+            targetId="org.rubypeople.rdt.ui.RubyExplorer"
+            name="%HideNonRubyProjects.label"
+            enabled="false"
+            description="%HideNonRubyProjects.description"
+            class="org.rubypeople.rdt.internal.ui.filters.NonRubyProjectsFilter"
+            id="org.rubypeople.rdt.ui.RubyExplorer.NonRubyProjectsFilter">
+      </filter>
+      <filter
+            targetId="org.rubypeople.rdt.ui.RubyExplorer"
+            name="%HideNonSharedProjects.label"
+            enabled="false"
+            description="%HideNonSharedProjects.description"
+            class="org.rubypeople.rdt.internal.ui.filters.NonSharedProjectFilter"
+            id="org.rubypeople.rdt.ui.RubyExplorer.NonSharedProjectsFilter">
+      </filter>
+      <filter
+            targetId="org.rubypeople.rdt.ui.RubyExplorer"
+            name="%HideClosedProjects.label"
+            enabled="false"
+            description="%HideClosedProjects.description"
+            class="org.rubypeople.rdt.internal.ui.filters.ClosedProjectFilter"
+            id="org.rubypeople.rdt.ui.RubyExplorer.ClosedProjectsFilter">
+      </filter>
+      <filter
+            targetId="org.rubypeople.rdt.ui.RubyExplorer"
+            name="%HideFields.label"
+            enabled="false"
+            description="%HideFields.description"
+            class="org.rubypeople.rdt.internal.ui.filters.FieldsFilter"
+            id="org.rubypeople.rdt.ui.RubyExplorer.FieldsFilter">
+      </filter>
+      <filter
+            targetId="org.rubypeople.rdt.ui.RubyExplorer"
+            name="%HideStatics.label"
+            enabled="false"
+            description="%HideStatics.description"
+            class="org.rubypeople.rdt.internal.ui.filters.StaticsFilter"
+            id="org.rubypeople.rdt.ui.RubyExplorer.StaticsFilter">
+      </filter>
+      <filter
+            targetId="org.rubypeople.rdt.ui.RubyExplorer"
+            name="%HideNonPublic.label"
+            enabled="false"
+            description="%HideNonPublic.description"
+            class="org.rubypeople.rdt.internal.ui.filters.NonPublicFilter"
+            id="org.rubypeople.rdt.ui.RubyExplorer.NonPublicFilter">
+      </filter>
+   </extension>
    
 </plugin>
