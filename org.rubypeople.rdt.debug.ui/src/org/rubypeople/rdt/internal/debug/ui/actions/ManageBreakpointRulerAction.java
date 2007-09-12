@@ -30,6 +30,8 @@ import org.eclipse.ui.texteditor.IDocumentProvider;
 import org.eclipse.ui.texteditor.ITextEditor;
 import org.eclipse.ui.texteditor.IUpdate;
 import org.rubypeople.rdt.debug.core.RubyLineBreakpoint;
+import org.rubypeople.rdt.internal.debug.ui.RdtDebugUiPlugin;
+import org.rubypeople.rdt.internal.ui.rubyeditor.ExternalFileRubyAnnotationModel;
 import org.rubypeople.rdt.internal.ui.rubyeditor.IRubyScriptEditorInput;
 
 /**
@@ -89,22 +91,23 @@ public class ManageBreakpointRulerAction extends Action implements IUpdate {
 		if (model == null) { return breakpoints; }
 		try {
 			IResource resource = getResource();
-			if (resource == null) resource = ResourcesPlugin.getWorkspace().getRoot();
+			if (resource == null) resource = ResourcesPlugin.getWorkspace().getRoot();			
 			if (resource == null) return breakpoints;
 			IMarker[] markers = resource.findMarkers(IBreakpoint.BREAKPOINT_MARKER,
-					false, IResource.DEPTH_INFINITE);
+					true, IResource.DEPTH_INFINITE);
+			if (markers.length < 1) return breakpoints;
 
 			IBreakpointManager breakpointManager = DebugPlugin.getDefault().getBreakpointManager();
 			IDocument document = getDocument();
 			for (int i = 0; i < markers.length; i++) {
 				IBreakpoint breakpoint = breakpointManager.getBreakpoint(markers[i]);
-				if (breakpoint != null && breakpointManager.isRegistered(breakpoint) && includesRulerLine(model.getMarkerPosition(markers[i]), document)) {
+				if (breakpoint != null && breakpointManager.isRegistered(breakpoint) && includesRulerLine(model, markers[i], document)) {
 					breakpoints.add(breakpoint);
 				}
 			}
 
 		} catch (CoreException x) {
-			System.out.println(x.getStatus());
+			RdtDebugUiPlugin.log(x.getStatus());
 		}
 		return breakpoints;
 	}
@@ -131,13 +134,24 @@ public class ManageBreakpointRulerAction extends Action implements IUpdate {
 	 *            the document the position refers to
 	 * @return <code>true</code> if the line is included by the given position
 	 */
-	protected boolean includesRulerLine(Position position, IDocument document) {
-		if (position != null) {
+	protected boolean includesRulerLine(AbstractMarkerAnnotationModel model, IMarker marker, IDocument document) {
+		if (model instanceof ExternalFileRubyAnnotationModel) {
 			try {
-				int markerLine = document.getLineOfOffset(position.getOffset());
+				Integer lineNum = (Integer) marker.getAttribute(IMarker.LINE_NUMBER);
 				int line = fRuler.getLineOfLastMouseButtonActivity();
-				if (line == markerLine) { return true; }
-			} catch (BadLocationException x) {}
+				if (line == (lineNum - 1)) { return true; }
+			} catch (CoreException e) {
+				RdtDebugUiPlugin.log(e);
+			}
+		} else {
+			Position position = model.getMarkerPosition(marker);
+			if (position != null) {
+				try {
+					int markerLine = document.getLineOfOffset(position.getOffset());
+					int line = fRuler.getLineOfLastMouseButtonActivity();
+					if (line == markerLine) { return true; }
+				} catch (BadLocationException x) {}
+			}
 		}
 		return false;
 	}
