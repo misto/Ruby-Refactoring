@@ -338,7 +338,7 @@
              relative="org.eclipse.ui.console.ConsoleView"
              visible="false"/>
        <view
-             id="org.rubypeople.rdt.ui.PackageExplorer"
+             id="org.rubypeople.rdt.ui.RubyExplorer"
              relationship="stack"
              relative="org.eclipse.debug.ui.DebugView"
              visible="false"/>
