@@ -157,7 +157,10 @@ public class CompletionEngine {
 					}
 					list.addAll(mapAll.values());		
 				}
-				list.addAll(suggestAllMethodsMatchingPrefix(script)); // FIXME Only do this if we have no suggestions? Have a minimum length threshold?
+				// Only search for all methods matching prefix if we're unsure of type (multiple guesses, or none)
+				if (guesses.size() > 1 || (guesses.size() == 1 && guesses.get(0).getType().equals(OBJECT))) {
+					list.addAll(suggestAllMethodsMatchingPrefix(script)); 
+				}
 				Collections.sort(list, new CompletionProposalComparator());
 				for (CompletionProposal proposal : list) {
 					fRequestor.accept(proposal);
