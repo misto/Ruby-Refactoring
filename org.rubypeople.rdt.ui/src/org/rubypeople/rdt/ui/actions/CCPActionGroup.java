@@ -14,6 +14,7 @@ import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.ISelectionProvider;
+import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.swt.dnd.Clipboard;
 import org.eclipse.ui.IActionBars;
 import org.eclipse.ui.IViewPart;
@@ -21,10 +22,13 @@ import org.eclipse.ui.IWorkbenchSite;
 import org.eclipse.ui.actions.ActionFactory;
 import org.eclipse.ui.actions.ActionGroup;
 import org.eclipse.ui.actions.DeleteResourceAction;
+import org.eclipse.ui.actions.RenameResourceAction;
 import org.eclipse.ui.actions.SelectionListenerAction;
 import org.eclipse.ui.navigator.ICommonMenuConstants;
 import org.eclipse.ui.part.Page;
 import org.eclipse.ui.texteditor.IWorkbenchActionDefinitionIds;
+import org.eclipse.ui.views.navigator.ResourceNavigatorRenameAction;
+import org.rubypeople.rdt.ui.IPackagesViewPart;
 
 /**
  * Action group that adds the copy, cut, paste actions to a view part's context
@@ -45,9 +49,12 @@ public class CCPActionGroup extends ActionGroup {
 
  	private SelectionListenerAction fDeleteAction;
 	private SelectionListenerAction fCopyAction;
+	private RenameResourceAction fRenameAction;
 //	private SelectionDispatchAction fCopyQualifiedNameAction;
 	private PasteAction fPasteAction;
 //	private SelectionListenerAction fCutAction;
+	
+	private TreeViewer fTreeViewer;
 	
 	/**
 	 * Creates a new <code>CCPActionGroup</code>. The group requires that
@@ -56,8 +63,12 @@ public class CCPActionGroup extends ActionGroup {
 	 * 
 	 * @param part the view part that owns this action group
 	 */
-	public CCPActionGroup(IViewPart  part) {
-		this(part.getSite());
+	public CCPActionGroup(IViewPart part) {
+		if (part instanceof IPackagesViewPart) {
+			IPackagesViewPart pack = (IPackagesViewPart) part;
+			fTreeViewer = pack.getTreeViewer();
+		}
+		init(part.getSite());
 	}
 	
 	/**
@@ -71,7 +82,11 @@ public class CCPActionGroup extends ActionGroup {
 		this(page.getSite());
 	}
 
-	private CCPActionGroup(IWorkbenchSite site) {
+	private CCPActionGroup(IWorkbenchSite site) {		
+		init(site);
+	}
+
+	private void init(IWorkbenchSite site) {
 		fSite= site;
 		fClipboard= new Clipboard(site.getShell().getDisplay());
 		
@@ -87,10 +102,17 @@ public class CCPActionGroup extends ActionGroup {
 //		fCutAction= new CutAction(fSite.getShell(), fClipboard, fPasteAction);
 //		fCutAction.setActionDefinitionId(IWorkbenchActionDefinitionIds.CUT);
 		
+		if (fTreeViewer != null) {
+			fRenameAction = new ResourceNavigatorRenameAction(fSite.getShell(), fTreeViewer);
+		} else {
+			fRenameAction = new RenameResourceAction(fSite.getShell());
+		}
+		fRenameAction.setActionDefinitionId(IWorkbenchActionDefinitionIds.RENAME);
+		
 		fDeleteAction= new DeleteResourceAction(fSite.getShell());
 		fDeleteAction.setActionDefinitionId(IWorkbenchActionDefinitionIds.DELETE);
 		
-		fActions= new SelectionListenerAction[] { /*fCutAction,*/ fCopyAction, /*fCopyQualifiedNameAction,*/ fPasteAction, fDeleteAction };
+		fActions= new SelectionListenerAction[] { /*fCutAction,*/ fCopyAction, /*fCopyQualifiedNameAction,*/ fPasteAction, fDeleteAction, fRenameAction };
 		registerActionsAsSelectionChangeListeners();
 	}
 
@@ -131,6 +153,7 @@ public class CCPActionGroup extends ActionGroup {
 //		actionBars.setGlobalActionHandler(CopyQualifiedNameAction.ACTION_HANDLER_ID, fCopyQualifiedNameAction);
 //		actionBars.setGlobalActionHandler(ActionFactory.CUT.getId(), fCutAction);
 		actionBars.setGlobalActionHandler(ActionFactory.PASTE.getId(), fPasteAction);
+		actionBars.setGlobalActionHandler(ActionFactory.RENAME.getId(), fRenameAction);
 	}
 	
 	/* (non-Javadoc)
