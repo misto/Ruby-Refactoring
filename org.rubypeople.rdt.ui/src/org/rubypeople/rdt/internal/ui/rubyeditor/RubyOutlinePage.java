@@ -96,6 +96,7 @@ import org.rubypeople.rdt.internal.ui.viewsupport.StatusBarUpdater;
 import org.rubypeople.rdt.ui.IRubyConstants;
 import org.rubypeople.rdt.ui.PreferenceConstants;
 import org.rubypeople.rdt.ui.RubyElementSorter;
+import org.rubypeople.rdt.ui.RubyUI;
 import org.rubypeople.rdt.ui.actions.CustomFiltersActionGroup;
 import org.rubypeople.rdt.ui.actions.MemberFilterActionGroup;
 import org.rubypeople.rdt.ui.actions.OpenViewActionGroup;
@@ -1161,7 +1162,7 @@ public class RubyOutlinePage extends Page implements IContentOutlinePage, IAdapt
         if (key == IShowInTargetList.class) {
             return new IShowInTargetList() {
                 public String[] getShowInTargetIds() {
-                    return new String[] { IRubyConstants.RUBY_RESOURCES_VIEW_ID };
+                    return new String[] { RubyUI.ID_RUBY_EXPLORER };
                 }
 
             };

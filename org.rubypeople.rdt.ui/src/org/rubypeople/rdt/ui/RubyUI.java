@@ -111,8 +111,6 @@ public final class RubyUI {
 	 */	
 	public static final String ID_PERSPECTIVE= 		"org.rubypeople.rdt.ui.PerspectiveRuby"; //$NON-NLS-1$
 
-	public static final String ID_RUBY_RESOURCE_VIEW = "org.rubypeople.rdt.ui.ViewRubyResources"; //$NON-NLS-1$
-
 	/** 
 	 * The view part id of the type hierarchy part
 	 * (value <code>"org.rubypeople.rdt.ui.TypeHierarchy"</code>).

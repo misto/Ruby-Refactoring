@@ -30,7 +30,7 @@ import org.eclipse.ui.IEditorRegistry;
 import org.eclipse.ui.IFileEditorMapping;
 import org.eclipse.ui.IPropertyListener;
 import org.eclipse.ui.internal.WorkbenchPlugin;
-import org.rubypeople.rdt.ui.IRubyConstants;
+import org.rubypeople.rdt.ui.RubyUI;
 
 /**
  * RubyViewerFilter uses the Editor mappings for recognising and filtering files
@@ -105,7 +105,7 @@ public class RubyFileMatcher {
 			IEditorDescriptor[] editors = mapping.getEditors();
 			for (int j = 0; j < editors.length; j++) {
 				IEditorDescriptor descriptor = editors[j];
-				if (descriptor.getId().equals(IRubyConstants.EDITOR_ID)) {
+				if (descriptor.getId().equals(RubyUI.ID_RUBY_EDITOR)) {
 					// a mapping can also use a filename instead of a suffix
 					if (mapping.getExtension() != null
 							&& mapping.getExtension().length() != 0) {

@@ -593,7 +593,7 @@ public class TypeHierarchyViewPart extends ViewPart implements ITypeHierarchyVie
 		if (key == IShowInTargetList.class) {
 			return new IShowInTargetList() {
 				public String[] getShowInTargetIds() {
-					return new String[] { RubyUI.ID_RUBY_RESOURCE_VIEW, IPageLayout.ID_RES_NAV  };
+					return new String[] { RubyUI.ID_RUBY_EXPLORER, IPageLayout.ID_RES_NAV  };
 				}
 
 			};
