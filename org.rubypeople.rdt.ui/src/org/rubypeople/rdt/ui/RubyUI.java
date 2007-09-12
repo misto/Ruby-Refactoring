@@ -135,7 +135,7 @@ public final class RubyUI {
 
 	/**
 	 * The view part id of the Packages view
-	 * (value <code>"org.rubypeople.rdt.ui.PackageExplorer"</code>).
+	 * (value <code>"org.rubypeople.rdt.ui.RubyExplorer"</code>).
 	 * <p>
 	 * When this id is used to access
 	 * a view part with <code>IWorkbenchPage.findView</code> or 
@@ -147,7 +147,7 @@ public final class RubyUI {
 	 * @see org.eclipse.ui.IWorkbenchPage#findView(java.lang.String)
 	 * @see org.eclipse.ui.IWorkbenchPage#showView(java.lang.String)
 	 */ 
-	public static final String ID_RUBY_EXPLORER= 			"org.rubypeople.rdt.ui.PackageExplorer"; //$NON-NLS-1$
+	public static final String ID_RUBY_EXPLORER= 			"org.rubypeople.rdt.ui.RubyExplorer"; //$NON-NLS-1$
 		
 	/**
 	 * Returns the Ruby element wrapped by the given editor input.

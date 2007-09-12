@@ -124,7 +124,7 @@ then the pattern attribute must not provided.
 &lt;pre&gt;
  &lt;extension point=&quot;org.rubypeople.rdt.ui.rubyElementFilters&quot;&gt;
   &lt;filter
-   id=&quot;org.rubypeople.rdt.ui.PackageExplorer.LibraryFilter&quot;
+   id=&quot;org.rubypeople.rdt.ui.RubyExplorer.LibraryFilter&quot;
    name=&quot;%HideReferencedLibraries.label&quot;
    description=&quot;%HideReferencedLibraries.description&quot;
    targetId=&quot;org.rubypeople.rdt.ui.RubyExplorer&quot;
