@@ -2,6 +2,7 @@
 <?eclipse version="3.0"?>
 <plugin>
   
+   <extension-point id="rubyElementFilters" name="%elementFiltersName" schema="schema/rubyElementFilters.exsd"/>
    <extension-point id="textHoverProvider" name="%textHoverProvider" schema="schema/textHoverProvider.exsd"/>  
    <extension-point id="hyperlinkProvider" name="%hyperlinkProvider" schema="schema/hyperlinkProvider.exsd"/>  
    <extension-point id="foldingStructureProviders" name="%foldingStructureProviders" schema="schema/foldingStructureProviders.exsd"/>
