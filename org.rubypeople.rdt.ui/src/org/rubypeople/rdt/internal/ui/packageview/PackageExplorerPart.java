@@ -162,7 +162,7 @@ public class PackageExplorerPart extends ViewPart
 	private static final int HIERARCHICAL_LAYOUT= 0x1;
 	private static final int FLAT_LAYOUT= 0x2;
 	
-	public final static String VIEW_ID= RubyUI.ID_PACKAGES;
+	public final static String VIEW_ID= RubyUI.ID_RUBY_EXPLORER;
 				
 	// Persistance tags.
 	static final String TAG_SELECTION= "selection"; //$NON-NLS-1$

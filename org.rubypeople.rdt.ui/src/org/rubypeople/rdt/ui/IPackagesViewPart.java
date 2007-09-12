@@ -22,7 +22,7 @@ import org.eclipse.ui.IViewPart;
  * This interface is not intended to be implemented by clients.
  * </p>
  *
- * @see RubyUI#ID_PACKAGES
+ * @see RubyUI#ID_RUBY_EXPLORER
  */
 public interface IPackagesViewPart extends IViewPart {
 	/**
