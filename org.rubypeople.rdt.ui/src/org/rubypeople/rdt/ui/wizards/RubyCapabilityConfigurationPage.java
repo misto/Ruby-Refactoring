@@ -239,7 +239,7 @@ public class RubyCapabilityConfigurationPage extends NewElementWizardPage {
 		}
 		
 		int nSteps= 6;			
-		monitor.beginTask(NewWizardMessages.RubyCapabilityConfigurationPage_op_desc_java, nSteps); 
+		monitor.beginTask(NewWizardMessages.RubyCapabilityConfigurationPage_op_desc_ruby, nSteps); 
 		
 		try {
 			IProject project= getRubyProject().getProject();

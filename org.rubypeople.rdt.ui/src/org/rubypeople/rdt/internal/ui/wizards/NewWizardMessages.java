@@ -361,7 +361,7 @@ public class NewWizardMessages extends NLS {
 	public static String RubyProjectWizardSecondPage_operation_remove;
 	public static String RubyCapabilityConfigurationPage_title;
 	public static String RubyCapabilityConfigurationPage_description;
-	public static String RubyCapabilityConfigurationPage_op_desc_java;
+	public static String RubyCapabilityConfigurationPage_op_desc_ruby;
 	public static String LoadPathDetector_operation_description;
 	public static String NewTypeWizardPage_SuperClassDialog_message;
 	public static String NewTypeWizardPage_SuperClassDialog_title;
