@@ -21,7 +21,7 @@ import org.rubypeople.rdt.core.RubyModelException;
 import org.rubypeople.rdt.internal.ui.IRubyHelpContextIds;
 import org.rubypeople.rdt.internal.ui.RubyPlugin;
 import org.rubypeople.rdt.internal.ui.actions.SelectionConverter;
-import org.rubypeople.rdt.internal.ui.resourcesview.RubyResourcesView;
+import org.rubypeople.rdt.internal.ui.packageview.PackageExplorerPart;
 import org.rubypeople.rdt.internal.ui.rubyeditor.RubyEditor;
 /**
  * This action reveals the currently selected Ruby element in the 
@@ -120,7 +120,7 @@ public class ShowInRubyResourcesViewAction extends SelectionDispatchAction {
 		if (openable instanceof IRubyElement)
 			element= (IRubyElement)openable;
 		
-		RubyResourcesView view= RubyResourcesView.openInActivePerspective();
+		PackageExplorerPart view= PackageExplorerPart.openInActivePerspective();
 		view.tryToReveal(element);
 	}
 
