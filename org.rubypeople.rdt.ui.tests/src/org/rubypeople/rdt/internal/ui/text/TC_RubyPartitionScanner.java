@@ -32,6 +32,17 @@ public class TC_RubyPartitionScanner extends TestCase {
 		getContentType("%[\"#{\"]", 0);
 	    assert(true);
 	}	
+	
+	/**
+	 * http://www.aptana.com/trac/ticket/5730
+ 	 */
+	public void testBug5730() {
+		getContentType("# Comment\n" +
+	"=begin\n" +
+	"puts 'hi'\n" +
+	"=ne", 0);
+	    assert(true);
+	}	
 
 	public void testPartitioningOfSingleLineComment() {
 		String source = "# This is a comment\n";
