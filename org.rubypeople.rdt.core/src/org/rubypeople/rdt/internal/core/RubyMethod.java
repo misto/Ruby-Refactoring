@@ -52,6 +52,24 @@ public class RubyMethod extends NamedMember implements IMethod {
 	}
 	
 	/**
+	 * @see RubyElement#getHandleMemento(StringBuffer)
+	 */
+	protected void getHandleMemento(StringBuffer buff) {
+		((RubyElement) getParent()).getHandleMemento(buff);
+		char delimiter = getHandleMementoDelimiter();
+		buff.append(delimiter);
+		escapeMementoName(buff, getElementName());
+		for (int i = 0; i < this.parameterNames.length; i++) {
+			buff.append(delimiter);
+			escapeMementoName(buff, this.parameterNames[i]);
+		}
+		if (this.occurrenceCount > 1) {
+			buff.append(JEM_COUNT);
+			buff.append(this.occurrenceCount);
+		}
+	}
+	
+	/**
 	 * @see RubyElement#getHandleMemento()
 	 */
 	protected char getHandleMementoDelimiter() {
