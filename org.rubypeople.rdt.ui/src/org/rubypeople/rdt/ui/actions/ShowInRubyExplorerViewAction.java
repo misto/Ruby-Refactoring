@@ -25,7 +25,7 @@ import org.rubypeople.rdt.internal.ui.packageview.PackageExplorerPart;
 import org.rubypeople.rdt.internal.ui.rubyeditor.RubyEditor;
 /**
  * This action reveals the currently selected Ruby element in the 
- * package explorer. 
+ * ruby explorer. 
  * <p>
  * The action is applicable to selections containing elements of type
  * <code>IRubyElement</code>.
@@ -40,7 +40,7 @@ public class ShowInRubyExplorerViewAction extends SelectionDispatchAction {
 	private RubyEditor fEditor;
 	
 	/**
-	 * Creates a new <code>ShowInPackageViewAction</code>. The action requires 
+	 * Creates a new <code>ShowInRubyExplorerViewAction</code>. The action requires 
 	 * that the selection provided by the site's selection provider is of type 
 	 * <code>org.eclipse.jface.viewers.IStructuredSelection</code>.
 	 * 
@@ -107,11 +107,7 @@ public class ShowInRubyExplorerViewAction extends SelectionDispatchAction {
 		run((IRubyElement)selection.getFirstElement());
 	}
 	
-	/*
-	 * No Rubydoc. The method should be internal but can't be changed since
-	 * we shipped it with a public visibility 
-	 */
-	public void run(IRubyElement element) {
+	private void run(IRubyElement element) {
 		if (element == null)
 			return;
 			
