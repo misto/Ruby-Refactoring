@@ -1,6 +1,5 @@
 package org.rubypeople.rdt.internal.core.builder;
 
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 
@@ -17,7 +16,7 @@ public abstract class AbstractRdtTestCase extends TestCase {
     static protected final String REMOVING_MARKERS_SUB_TASK = "Removing Markers...";
 
     protected abstract void assertMarkersRemoved(List expectedFiles);
-    abstract AbstractRdtCompiler createCompiler(IMarkerManager markerManager, List singleCompilers);
+    abstract AbstractRdtCompiler createCompiler(IMarkerManager markerManager);
 
     protected ShamMonitor monitor;
     protected ShamFile t1;
@@ -26,8 +25,6 @@ public abstract class AbstractRdtTestCase extends TestCase {
     protected ShamFolder f1;
     protected ShamProject project;
     protected ShamMarkerManager markerManager;
-    protected ShamSingleCompiler singleCompiler1;
-    protected ShamSingleCompiler singleCompiler2;
     protected AbstractRdtCompiler compiler;
     private ShamFile nonRubyFile;
 
@@ -40,11 +37,8 @@ public abstract class AbstractRdtTestCase extends TestCase {
         project = new ShamProject("test");
     
         markerManager = new ShamMarkerManager();
-        singleCompiler1 = new ShamSingleCompiler();
-        singleCompiler2 = new ShamSingleCompiler();
-        List singleCompilers = ListUtil.create(singleCompiler1, singleCompiler2);
         
-        compiler = createCompiler(markerManager, singleCompilers);
+        compiler = createCompiler(markerManager);
         monitor = new ShamMonitor();
     }
 
@@ -102,8 +96,6 @@ public abstract class AbstractRdtTestCase extends TestCase {
                 t1.getFullPath().toString());
         monitor.assertSubTasks(subTasks);
         assertMarkersRemoved(ListUtil.create(t1,t2));
-        singleCompiler1.assertCompiled(new HashSet(expectedFiles));
-        singleCompiler2.assertCompiled(new HashSet(expectedFiles));
     }
 
     public void testCompileSkipsNonRubyFiles() throws Exception {
@@ -131,8 +123,6 @@ public abstract class AbstractRdtTestCase extends TestCase {
     
         monitor.assertSubTasks(subTasks);
         assertMarkersRemoved(expectedFiles);
-        singleCompiler1.assertCompiled(new HashSet(expectedFiles));
-        singleCompiler2.assertCompiled(new HashSet(expectedFiles));
     }
 
 }

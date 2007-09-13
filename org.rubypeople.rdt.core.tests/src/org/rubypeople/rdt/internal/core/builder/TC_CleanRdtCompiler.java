@@ -5,9 +5,8 @@ import java.util.List;
 
 public class TC_CleanRdtCompiler extends AbstractRdtTestCase {
 
-    AbstractRdtCompiler createCompiler(IMarkerManager markerManager, List singleCompilers) {
-        return new CleanRdtCompiler(project, 
-                markerManager, singleCompilers);
+    AbstractRdtCompiler createCompiler(IMarkerManager markerManager) {
+        return new CleanRdtCompiler(project, markerManager);
     }
 
     protected void assertMarkersRemoved(List expectedFiles) {

@@ -1,7 +1,6 @@
 package org.rubypeople.rdt.internal.core.builder;
 
 import java.util.Arrays;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 
@@ -27,8 +26,6 @@ public class TC_IncrementalRdtCompiler extends AbstractRdtTestCase {
         List subTasks = ListUtil.create(REMOVING_MARKERS_SUB_TASK);
         monitor.assertSubTasks(subTasks);
         assertMarkersRemoved(ListUtil.create(t1));
-        singleCompiler1.assertCompiled(new HashSet());
-        singleCompiler2.assertCompiled(new HashSet());
     }
 
     protected void assertMarkersRemoved(List expectedFiles) {
@@ -63,10 +60,10 @@ public class TC_IncrementalRdtCompiler extends AbstractRdtTestCase {
         return childDelta;
     }
 
-    AbstractRdtCompiler createCompiler(IMarkerManager markerManager, List singleCompilers) {
+    AbstractRdtCompiler createCompiler(IMarkerManager markerManager) {
         delta.setResource(project);
         return new IncrementalRdtCompiler(project, delta, 
-                markerManager, singleCompilers);
+                markerManager);
     }
 
 }
