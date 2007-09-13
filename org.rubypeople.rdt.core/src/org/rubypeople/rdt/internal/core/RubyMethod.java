@@ -50,6 +50,13 @@ public class RubyMethod extends NamedMember implements IMethod {
 	public int getElementType() {
 		return RubyElement.METHOD;
 	}
+	
+	/**
+	 * @see RubyElement#getHandleMemento()
+	 */
+	protected char getHandleMementoDelimiter() {
+		return RubyElement.JEM_METHOD;
+	}
 
 	/*
 	 * @see RubyElement#getPrimaryElement(boolean)
