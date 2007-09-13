@@ -301,12 +301,6 @@
         id="org.rubypeople.rdt.debug.ui.RDTDebugActionSet"
         label="Ruby Debug"
         visible="true">
-        <menu
-               id="org.eclipse.ui.run"
-               label="Run"
-               path="additions">
-            <separator name="breakpointGroup"/>
-         </menu>
 			<action
 				definitionId="org.rubypeople.rdt.debug.ui.commands.ModifyCatchpoint"
 				label="%modifyCatchpoint.label"
@@ -318,6 +312,35 @@
 			</action>
 		</actionSet>
 	</extension>
+	
+	<extension
+         point="org.eclipse.ui.actionSetPartAssociations">
+      <actionSetPartAssociation
+            targetID="org.eclipse.debug.ui.launchActionSet">
+         <part
+               id="org.rubypeople.rdt.ui.RubyExplorer">
+         </part>
+         <part
+               id="org.rubypeople.rdt.ui.TypeHierarchy">
+         </part>
+         <part
+               id="org.rubypeople.rdt.ui.EditorRubyFile">
+         </part>
+         <part
+               id="org.rubypeople.rdt.ui.ExternalRubyEditor">
+         </part>
+         <part
+               id="org.rubypeople.rdt.ui.ProjectsView">
+         </part>
+         <part
+               id="org.rubypeople.rdt.ui.TypesView">
+         </part>
+         <part
+               id="org.rubypeople.rdt.ui.MembersView">
+         </part>
+      </actionSetPartAssociation>
+   </extension>
+	
  <extension
        point="org.eclipse.ui.perspectiveExtensions">
     <perspectiveExtension targetID="org.eclipse.debug.ui.DebugPerspective">
