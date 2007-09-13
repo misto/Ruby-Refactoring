@@ -35,9 +35,9 @@ public abstract class AbstractRdtCompiler {
         for (int i = 0; i < fParticipants.length; i++) {
         	fParticipants[i].aboutToBuild(rubyProject);
         }
-        List<IFile> files = getFilesToCompile();
+        BuildContext[] files = getBuildContexts();
         int filesToClear = getFilesToClear().size();
-        int taskCount = (filesToClear) +  (files.size() * fParticipants.length);
+        int taskCount = (filesToClear) + (files.length * fParticipants.length);
         
         monitor.beginTask("Building " + project.getName() + "...", taskCount);
         
@@ -51,8 +51,7 @@ public abstract class AbstractRdtCompiler {
         monitor.done();
     }   
 
-	private void compileFiles(List<IFile> list, IProgressMonitor monitor) throws CoreException {
-    	BuildContext[] contexts = getBuildContexts(list);        
+	private void compileFiles(BuildContext[] contexts, IProgressMonitor monitor) throws CoreException {
  		if (fParticipants != null) {
  			for (int i = 0; i < fParticipants.length; i++) {
  				if (monitor.isCanceled())
@@ -69,6 +68,10 @@ public abstract class AbstractRdtCompiler {
  		}
     }
 
+	private BuildContext[] getBuildContexts() throws CoreException {
+		return getBuildContexts(getFilesToCompile());
+	}
+	
     private BuildContext[] getBuildContexts(List<IFile> list) {
 		List<BuildContext> contexts = new ArrayList<BuildContext>();
     	for (IFile file : list) {

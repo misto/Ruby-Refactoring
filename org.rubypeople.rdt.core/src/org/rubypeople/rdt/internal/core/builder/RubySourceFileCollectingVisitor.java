@@ -23,6 +23,7 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.content.IContentDescription;
 import org.eclipse.core.runtime.content.IContentType;
+import org.rubypeople.rdt.core.RubyCore;
 
 public final class RubySourceFileCollectingVisitor implements IResourceProxyVisitor {
 
@@ -63,8 +64,7 @@ public final class RubySourceFileCollectingVisitor implements IResourceProxyVisi
 					return false;
 				visitedLinks.add(unique);
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				RubyCore.log(e);
 				return false;
 			}
         }
