@@ -21,7 +21,8 @@
       <launchConfigurationType
             delegate="org.rubypeople.rdt.launching.RubyLaunchDelegate"
             id="org.rubypeople.rdt.launching.LaunchConfigurationTypeRubyApplication"
-            modes="run,debug"
+            migrationDelegate="org.rubypeople.rdt.internal.launching.RubyMigrationDelegate"
+            modes="run, debug"
             name="%LaunchConfigurationTypeRubyApplication.name"
             public="true"
             sourceLocatorId="org.rubypeople.rdt.debug.ui.rubySourceLocator">
