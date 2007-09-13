@@ -17,6 +17,8 @@ import org.eclipse.ui.IContributorResourceAdapter;
 import org.eclipse.ui.views.tasklist.ITaskListResourceAdapter;
 import org.rubypeople.rdt.core.IRubyElement;
 import org.rubypeople.rdt.core.IRubyScript;
+import org.rubypeople.rdt.core.ISourceFolder;
+import org.rubypeople.rdt.core.ISourceFolderRoot;
 import org.rubypeople.rdt.internal.corext.util.RubyModelUtil;
 
 /**
@@ -48,12 +50,25 @@ public class RubyElementAdapterFactory implements IAdapterFactory, IContributorR
 		// corresponding resource
 		switch (element.getElementType()) {
 		case IRubyElement.TYPE:
-			// top level types behave like the CU
+			// top level types behave like the ruby script
 			IRubyElement parent = element.getParent();
 			if (parent instanceof IRubyScript) { return RubyModelUtil.toOriginal((IRubyScript) parent).getResource(); }
 			return null;
 		case IRubyElement.SCRIPT:
 			return RubyModelUtil.toOriginal((IRubyScript) element).getResource();
+		case IRubyElement.SOURCE_FOLDER:
+			ISourceFolder folder = (ISourceFolder) element;
+			ISourceFolderRoot root= (ISourceFolderRoot) element.getAncestor(IRubyElement.SOURCE_FOLDER_ROOT);
+			if (!root.isExternal()) {
+				return element.getResource();
+			}
+			return null;
+		case IRubyElement.SOURCE_FOLDER_ROOT:
+			root = (ISourceFolderRoot) element;
+			if (root.isExternal()) {
+				return null;
+			}
+			return root.getResource();
 		case IRubyElement.RUBY_PROJECT:
 		case IRubyElement.RUBY_MODEL:
 			return element.getResource();
