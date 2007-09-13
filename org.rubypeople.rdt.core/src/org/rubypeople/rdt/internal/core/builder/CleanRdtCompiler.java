@@ -14,8 +14,7 @@ public class CleanRdtCompiler extends AbstractRdtCompiler  {
         this(project, new MarkerManager());
     }
     
-    private CleanRdtCompiler(IProject project,
-            MarkerManager markerManager) {
+    public CleanRdtCompiler(IProject project, IMarkerManager markerManager) {
         super(project, markerManager);
     }
 
