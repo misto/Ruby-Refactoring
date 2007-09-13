@@ -19,18 +19,13 @@ public class IncrementalRdtCompiler extends AbstractRdtCompiler {
     private final IResourceDelta rootDelta;
 
     public IncrementalRdtCompiler(IProject project, IResourceDelta delta, 
-            IMarkerManager markerManager, List<SingleFileCompiler> singleCompilers) {
-        super(project, markerManager, singleCompilers);
+            IMarkerManager markerManager) {
+        super(project, markerManager);
         this.rootDelta = delta;
     }
 
     public IncrementalRdtCompiler(IProject project, IResourceDelta delta) {
         this(project, delta, new MarkerManager()); 
-    }
-
-    private IncrementalRdtCompiler(IProject project, IResourceDelta delta, 
-           MarkerManager manager) {
-        this(project, delta, manager, singleFileCompilers(manager));
     }
 
     protected void removeMarkers(IMarkerManager markerManager) {
@@ -40,11 +35,14 @@ public class IncrementalRdtCompiler extends AbstractRdtCompiler {
         }
     }
 
-    protected List getFilesToCompile() {
+    protected List getFilesToCompile() throws CoreException {
+    	if (filesToCompile == null) {
+    		analyzeFiles();
+    	}
         return filesToCompile;
     }
 
-    protected void analyzeFiles() throws CoreException {
+    private void analyzeFiles() throws CoreException {
         filesToClear = new ArrayList();
         filesToCompile = new ArrayList();
         
@@ -69,7 +67,10 @@ public class IncrementalRdtCompiler extends AbstractRdtCompiler {
     }
 
 	@Override
-	protected List getFilesToClear() {
+	protected List getFilesToClear() throws CoreException {
+		if (filesToClear == null) {
+			analyzeFiles();
+		}
 		return filesToClear;
 	}
 

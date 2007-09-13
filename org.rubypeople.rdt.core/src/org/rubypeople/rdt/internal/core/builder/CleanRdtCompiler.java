@@ -13,30 +13,28 @@ public class CleanRdtCompiler extends AbstractRdtCompiler  {
     public CleanRdtCompiler(IProject project) {
         this(project, new MarkerManager());
     }
-
-    public CleanRdtCompiler(IProject project, 
-            IMarkerManager markerManager, List singleCompilers) {
-        super(project, markerManager, singleCompilers);
-    }
-
+    
     private CleanRdtCompiler(IProject project,
             MarkerManager markerManager) {
-        this(project, markerManager, singleFileCompilers(markerManager));
+        super(project, markerManager);
     }
 
     protected void removeMarkers(IMarkerManager markerManager) {
         markerManager.removeProblemsAndTasksFor(project);
     }
 
-    protected List<IFile> getFilesToClear() {
+    protected List<IFile> getFilesToClear() throws CoreException {
+    	return getFilesToCompile();
+    }
+
+    protected List<IFile> getFilesToCompile() throws CoreException {
+    	if (projectFiles == null) {
+    		analyzeFiles();
+    	}
         return projectFiles;
     }
 
-    protected List<IFile> getFilesToCompile() {
-        return projectFiles;
-    }
-
-    protected void analyzeFiles() throws CoreException {
+    private void analyzeFiles() throws CoreException {
         ProjectFileFinder finder = new ProjectFileFinder(project);
         projectFiles = finder.findFiles();
     }

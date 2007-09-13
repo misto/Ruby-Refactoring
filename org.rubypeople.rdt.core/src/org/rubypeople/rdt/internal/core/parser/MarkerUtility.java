@@ -69,6 +69,14 @@ public class MarkerUtility {
 	}
 
 	public static void createProblemMarker(IResource underlyingResource, IProblem problem) {
+		if (problem.isTask()) {
+			try {
+				createTask(underlyingResource, (TaskTag) problem);
+			} catch (CoreException e) {
+				RubyCore.log(e);
+			}
+			return;
+		}
 		try {
 			IMarker marker = markerExists(underlyingResource, problem.getMessage(), problem.getSourceLineNumber(), IRubyModelMarker.RUBY_MODEL_PROBLEM_MARKER);
 			if (marker != null) return;

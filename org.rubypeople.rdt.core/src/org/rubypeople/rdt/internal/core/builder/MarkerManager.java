@@ -36,7 +36,7 @@ class MarkerManager implements IMarkerManager {
     }
     
 	public void addProblem(IFile file, IProblem problem) {
-		MarkerUtility.createProblemMarker(file, problem);		
+		MarkerUtility.createProblemMarker(file, problem);	
 	}
 
 }
