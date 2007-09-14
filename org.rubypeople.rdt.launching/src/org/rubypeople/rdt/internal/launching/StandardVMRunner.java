@@ -173,11 +173,12 @@ public class StandardVMRunner extends AbstractVMRunner {
 				string.add(exe.getAbsolutePath());
 				return string;
 			}
-		}
-		exe = new File(path);
-		if (fileExists(exe)){
-			string.add(exe.getAbsolutePath());
-			return string;
+		} else {
+			exe = new File(path);
+			if (fileExists(exe)){
+				string.add(exe.getAbsolutePath());
+				return string;
+			}
 		}
 		
 		// not found

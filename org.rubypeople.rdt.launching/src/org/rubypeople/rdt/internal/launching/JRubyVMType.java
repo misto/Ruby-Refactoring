@@ -164,7 +164,7 @@ public class JRubyVMType extends AbstractVMInstallType {
 		for (int i = 0; i < fgCandidateRubyFiles.length; i++) {
 			for (int j = 0; j < fgCandidateRubyLocations.length; j++) {
 				File rubyFile = new File(vmInstallLocation, fgCandidateRubyLocations[j] + fgCandidateRubyFiles[i]);
-				if (rubyFile.isFile() && isPlatformProper(rubyFile)) { // FIXME Only check for .bat on win32 and others on other platforms
+				if (rubyFile.isFile() && isPlatformProper(rubyFile)) { // Only check for .bat on win32 and others on other platforms
 					return rubyFile;
 				}				
 			}
