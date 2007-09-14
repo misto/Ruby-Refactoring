@@ -26,12 +26,6 @@
             name="%LaunchConfigurationTypeRubyApplication.name"
             public="true"
             sourceLocatorId="org.rubypeople.rdt.debug.ui.rubySourceLocator">
-         <fileExtension
-               default="true"
-               extension="rb"/>
-         <fileExtension
-               default="true"
-               extension="rbw"/>
       </launchConfigurationType>
    </extension>
    <extension
@@ -72,6 +66,15 @@
             id="org.rubypeople.rdt.launching.loadpathentry.variableLoadpathEntry"
             class="org.rubypeople.rdt.internal.launching.VariableLoadpathEntry">
       </runtimeLoadpathEntry>
+   </extension>
+   <extension
+         point="org.eclipse.core.expressions.propertyTesters">
+      <propertyTester
+            class="org.rubypeople.rdt.launching.PropertyTester2"
+            id="org.rubypeople.rdt.launching.RubyLaunchableTester"
+            namespace="org.rubypeople.rdt.launching"
+            properties="extendsClass, hasMethod, isContainer, hasProjectNature"
+            type="org.eclipse.core.runtime.IAdaptable"/>
    </extension>
 
 </plugin>
