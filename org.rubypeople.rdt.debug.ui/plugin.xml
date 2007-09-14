@@ -231,6 +231,10 @@
 								<test
 									property="org.eclipse.debug.ui.matchesContentType"
 									value="org.eclipse.ant.core.antBuildFile"/>
+								<and>
+               	    				<test property="org.rubypeople.rdt.launching.isContainer"/>
+               	     				<test property="org.rubypeople.rdt.launching.hasProjectNature" args="org.rubypeople.rdt.core.rubynature"/>
+               	  				</and>
 							</or>
 						</iterate>
 					</with>
