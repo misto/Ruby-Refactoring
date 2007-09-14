@@ -167,10 +167,12 @@ public class StandardVMRunner extends AbstractVMRunner {
 		}
 		// HACK FIXME This is just to allow for jruby!
 		String path = installLocation + "bin" + File.separatorChar + "j" + command; //$NON-NLS-1$  //$NON-NLS-2$
-		exe = new File(path + ".bat"); //$NON-NLS-1$ 	
-		if (fileExists(exe)){
-			string.add(exe.getAbsolutePath());
-			return string;
+		if (Platform.getOS().equals(Platform.OS_WIN32)) {
+			exe = new File(path + ".bat"); //$NON-NLS-1$ 	
+			if (fileExists(exe)){
+				string.add(exe.getAbsolutePath());
+				return string;
+			}
 		}
 		exe = new File(path);
 		if (fileExists(exe)){
