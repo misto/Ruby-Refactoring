@@ -361,7 +361,7 @@ public class RIView extends ViewPart implements RdocListener, IVMInstallChangedL
     			List<String> line = new ArrayList<String>();
     			IVMInstall vm = RubyRuntime.getDefaultVMInstall();
     			if (vm == null) return "";
-    			File executable = StandardVMType.findRubyExecutable(vm.getInstallLocation());
+    			File executable = vm.getVMInstallType().findExecutable(vm.getInstallLocation());
     			if (executable.getName().contains("rubyw")) {
     				String name = executable.getName();
     				name = name.replace("rubyw", "ruby");
