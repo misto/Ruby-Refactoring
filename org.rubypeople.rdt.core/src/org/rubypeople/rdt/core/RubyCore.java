@@ -38,21 +38,25 @@ import org.eclipse.core.runtime.IExtensionPoint;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.OperationCanceledException;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Plugin;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.core.runtime.SubProgressMonitor;
 import org.eclipse.core.runtime.jobs.ISchedulingRule;
 import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.core.runtime.preferences.IEclipsePreferences;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.rubypeople.rdt.core.search.IRubySearchConstants;
+import org.rubypeople.rdt.core.search.IRubySearchScope;
 import org.rubypeople.rdt.core.search.SearchEngine;
 import org.rubypeople.rdt.core.search.SearchMatch;
 import org.rubypeople.rdt.core.search.SearchParticipant;
 import org.rubypeople.rdt.core.search.SearchPattern;
 import org.rubypeople.rdt.core.search.SearchRequestor;
+import org.rubypeople.rdt.core.search.TypeNameRequestor;
 import org.rubypeople.rdt.internal.core.BatchOperation;
 import org.rubypeople.rdt.internal.core.DefaultWorkingCopyOwner;
 import org.rubypeople.rdt.internal.core.LoadpathAttribute;
@@ -64,6 +68,7 @@ import org.rubypeople.rdt.internal.core.RubyModelManager;
 import org.rubypeople.rdt.internal.core.RubyProject;
 import org.rubypeople.rdt.internal.core.SetLoadpathOperation;
 import org.rubypeople.rdt.internal.core.util.MementoTokenizer;
+import org.rubypeople.rdt.internal.core.util.Messages;
 import org.rubypeople.rdt.internal.core.util.Util;
 
 public class RubyCore extends Plugin {
@@ -375,8 +380,13 @@ public class RubyCore extends Plugin {
 
     public static void log(int severity, String string, Throwable e) {
         getPlugin().getLog().log(new Status(severity, PLUGIN_ID, IStatus.OK, string, e));
-        System.out.println(string);
-        if (e != null) e.printStackTrace();
+        if (severity == Status.ERROR) {
+        	// send stack trace to Trac!
+        }
+        if (VERBOSE) {
+        	System.out.println(string);
+        	if (e != null) e.printStackTrace();
+        }
     }
 
     public static String getOSDirectory(Plugin plugin) {
@@ -1449,26 +1459,6 @@ public class RubyCore extends Plugin {
 		}
 	}
 
-
-	public static void forceIndexing() {
-		SearchEngine engine = new SearchEngine();
-		SearchParticipant[] participants = new SearchParticipant[] { SearchEngine.getDefaultSearchParticipant() };
-		SearchPattern pattern = SearchPattern.createPattern(IRubyElement.TYPE, "*", IRubySearchConstants.DECLARATIONS, SearchPattern.R_PATTERN_MATCH);
-		SearchRequestor requestor = new SearchRequestor() {
-		
-			@Override
-			public void acceptSearchMatch(SearchMatch match) throws CoreException {
-				// do nothing		
-			}
-		
-		};
-		try {
-			engine.search(pattern, participants, SearchEngine.createWorkspaceScope(), requestor, null);
-		} catch (CoreException e) {
-			// ignore
-		}
-	}
-
 	/**
 	 * Returns a new empty region.
 	 * 
@@ -1490,5 +1480,81 @@ public class RubyCore extends Plugin {
 	 */
 	public static String[] getLoadpathVariableNames() {
 		return RubyModelManager.getRubyModelManager().variableNames();
+	}
+	
+	/**
+	 * Initializes RubyCore internal structures to allow subsequent operations (such 
+	 * as the ones that need a resolved classpath) to run full speed. A client may 
+	 * choose to call this method in a background thread early after the workspace 
+	 * has started so that the initialization is transparent to the user.
+	 * <p>
+	 * However calling this method is optional. Services will lazily perform 
+	 * initialization when invoked. This is only a way to reduce initialization 
+	 * overhead on user actions, if it can be performed before at some 
+	 * appropriate moment.
+	 * </p><p>
+	 * This initialization runs accross all Ruby projects in the workspace. Thus the
+	 * workspace root scheduling rule is used during this operation.
+	 * </p><p>
+	 * This method may return before the initialization is complete. The 
+	 * initialization will then continue in a background thread.
+	 * </p><p>
+	 * This method can be called concurrently.
+	 * </p>
+	 * 
+	 * @param monitor a progress monitor, or <code>null</code> if progress
+	 *    reporting and cancellation are not desired
+	 * @exception CoreException if the initialization fails, 
+	 * 		the status of the exception indicates the reason of the failure
+	 * @since 3.1
+	 */
+	public static void initializeAfterLoad(IProgressMonitor monitor) throws CoreException {
+		try {
+			if (monitor != null) monitor.beginTask(Messages.javamodel_initialization, 100);
+			// dummy query for waiting until the indexes are ready and classpath containers/variables are initialized
+			SearchEngine engine = new SearchEngine();
+			IRubySearchScope scope = SearchEngine.createWorkspaceScope(); // initialize all containers and variables
+			try {
+				engine.searchAllTypeNames(
+					null,
+					"!@$#!@".toCharArray(), //$NON-NLS-1$
+					SearchPattern.R_PATTERN_MATCH | SearchPattern.R_CASE_SENSITIVE,
+					IRubySearchConstants.CLASS,
+					scope, 
+					new TypeNameRequestor() {
+						public void acceptType(
+							boolean isModule,
+							char[] packageName,
+							char[] simpleTypeName,
+							char[][] enclosingTypeNames,
+							String path) {
+							// no type to accept
+						}
+					},
+					// will not activate index query caches if indexes are not ready, since it would take to long
+					// to wait until indexes are fully rebuild
+					IRubySearchConstants.CANCEL_IF_NOT_READY_TO_SEARCH,
+					monitor == null ? null : new SubProgressMonitor(monitor, 99) // 99% of the time is spent in the dummy search
+				); 
+			} catch (RubyModelException e) {
+				// /search failed: ignore
+			} catch (OperationCanceledException e) {
+				if (monitor != null && monitor.isCanceled())
+					throw e;
+				// else indexes were not ready: catch the exception so that jars are still refreshed
+			}			
+//			final RubyModel model = RubyModelManager.getRubyModelManager().getRubyModel();
+//			// ensure external jars are refreshed (see https://bugs.eclipse.org/bugs/show_bug.cgi?id=93668)
+//			try {
+//				model.refreshExternalArchives(
+//					null/*refresh all projects*/, 
+//					monitor == null ? null : new SubProgressMonitor(monitor, 1) // 1% of the time is spent in jar refresh
+//				);
+//			} catch (RubyModelException e) {
+//				// refreshing failed: ignore
+//			}
+		} finally {
+			if (monitor != null) monitor.done();
+		}
 	}
 }
