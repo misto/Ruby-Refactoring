@@ -371,4 +371,23 @@
              visible="false"/>
     </perspectiveExtension>
  </extension>
+ 
+	<!-- Adapters for contextual launch -->
+	<extension point="org.eclipse.core.runtime.adapters">
+         <factory 
+            class="" 
+            adaptableType="org.rubypeople.rdt.core.IRubyElement">
+            <adapter type="org.eclipse.debug.ui.actions.ILaunchable"/>
+         </factory>
+         <factory 
+            class="" 
+            adaptableType="org.eclipse.core.resources.IResource">
+            <adapter type="org.eclipse.debug.ui.actions.ILaunchable"/>
+         </factory>
+<!--         <factory 
+            class="" 
+            adaptableType="org.rubypeople.rdt.internal.ui.rubyeditor.IRubyScriptEditorInput">
+            <adapter type="org.eclipse.debug.ui.actions.ILaunchable"/>
+         </factory>      -->    
+    </extension>
 </plugin>
