@@ -16,9 +16,18 @@ public class JRubyVMRunner extends StandardVMRunner implements IVMRunner {
 		if (args == null) {
 			return;
 		}
+		boolean isBatch = false;
+		if (!v.isEmpty()) {
+			String command = v.get(0);
+			if (command.equals("sudo")) {
+				command = v.get(1);
+			}
+			if (command.endsWith(".bat")) isBatch = true;
+		}
+		
 		for (int i= 0; i < args.length; i++) {
-			if (isVMArgs && args[i].charAt(0) == '-') {
-				v.add("\"" + args[i] + " " + args[++i] + "\""); // FIXME Only do this if we're launching a .bat file?
+			if (isVMArgs && isBatch && args[i].charAt(0) == '-') {
+				v.add("\"" + args[i] + " " + args[++i] + "\""); // Only do this if we're launching a .bat file, and only for VM args (like -e)
 			} else {
 				v.add(args[i]);
 			}
