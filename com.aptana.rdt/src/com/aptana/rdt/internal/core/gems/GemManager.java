@@ -309,7 +309,7 @@ public class GemManager implements IGemManager {
 			List<String> line = new ArrayList<String>();
 			IVMInstall vm = RubyRuntime.getDefaultVMInstall();
 			if (vm == null) return "";
-			File executable = StandardVMType.findRubyExecutable(vm.getInstallLocation());
+			File executable = vm.getVMInstallType().findExecutable(vm.getInstallLocation());
 			line.add(executable.getAbsolutePath());
 			line.add(getGemScriptPath());
 			for (String command : commands) {
