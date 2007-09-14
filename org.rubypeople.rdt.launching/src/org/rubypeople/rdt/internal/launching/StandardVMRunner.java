@@ -39,6 +39,7 @@ public class StandardVMRunner extends AbstractVMRunner {
 	protected static final String END_OF_OPTIONS_DELIMITER = "--";
 	
 	protected IVMInstall fVMInstance;
+	private boolean isVMArgs = true;
 
 	public StandardVMRunner(IVMInstall vmInstance) {
 		fVMInstance= vmInstance;
@@ -84,7 +85,7 @@ public class StandardVMRunner extends AbstractVMRunner {
 		return buf.toString();
 	}	
 	
-	protected void addArguments(String[] args, List<String> v) {
+	protected void addArguments(String[] args, List<String> v, boolean isVMArgs) {
 		if (args == null) {
 			return;
 		}
@@ -144,7 +145,7 @@ public class StandardVMRunner extends AbstractVMRunner {
 		
 		// If no ruby command was specified, use default executable
 		if (command == null) {
-			File exe = StandardVMType.findRubyExecutable(fVMInstance.getInstallLocation());
+			File exe = fVMInstance.getVMInstallType().findExecutable(fVMInstance.getInstallLocation());
 			if (exe == null) {
 				abort(MessageFormat.format(LaunchingMessages.StandardVMRunner_Unable_to_locate_executable_for__0__1, fVMInstance.getName()), null, IRubyLaunchConfigurationConstants.ERR_INTERNAL_ERROR); 
 			}
@@ -226,7 +227,7 @@ public class StandardVMRunner extends AbstractVMRunner {
 		// VM args are the first thing after the ruby program so that users can specify
 		// options like '-client' & '-server' which are required to be the first option
 		String[] allVMArgs = combineVmArgs(config, fVMInstance);
-		addArguments(allVMArgs, arguments);
+		addArguments(allVMArgs, arguments, isVMArgs );
 		
 		String[] lp= config.getLoadPath();
 		if (lp.length > 0) {
@@ -238,7 +239,7 @@ public class StandardVMRunner extends AbstractVMRunner {
 		arguments.add(config.getFileToLaunch());
 		
 		String[] programArgs= config.getProgramArguments();
-		addArguments(programArgs, arguments);
+		addArguments(programArgs, arguments, !isVMArgs);
 				
 		String[] cmdLine= new String[arguments.size()];
 		arguments.toArray(cmdLine);

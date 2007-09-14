@@ -28,6 +28,8 @@ import org.rubypeople.rdt.launching.VMRunnerConfiguration;
 
 public class StandardVMDebugger extends StandardVMRunner implements IVMRunner {
 
+	private boolean isVMArgs = true;
+
 	public StandardVMDebugger(IVMInstall vmInstance) {
 		super(vmInstance);
 	}
@@ -71,7 +73,7 @@ public class StandardVMDebugger extends StandardVMRunner implements IVMRunner {
 		// options like '-client' & '-server' which are required to be the first
 		// options
 		String[] allVMArgs = combineVmArgs(config, fVMInstance);
-		addArguments(allVMArgs, arguments);
+		addArguments(allVMArgs, arguments, isVMArgs );
 
 		String[] cp = config.getLoadPath();
 		if (cp.length > 0) {
@@ -85,7 +87,7 @@ public class StandardVMDebugger extends StandardVMRunner implements IVMRunner {
 		arguments.addAll(debugArgs(debugTarget));		
 
 		arguments.add(config.getFileToLaunch());		
-		addArguments(config.getProgramArguments(), arguments);
+		addArguments(config.getProgramArguments(), arguments, !isVMArgs);
 		String[] cmdLine = new String[arguments.size()];
 		arguments.toArray(cmdLine);
 

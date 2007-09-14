@@ -107,4 +107,8 @@ public interface IVMInstallType {
 	 */
 	public File detectInstallLocation();
 
+	File findExecutable(File installLocation);
+
+	String getVMVersion(File installLocation, File executable);
+
 }

@@ -15,6 +15,9 @@
             class="org.rubypeople.rdt.internal.launching.StandardVMType"
             id="org.rubypeople.rdt.launching.StandardVMType">
       </vmInstallType>
+      <vmInstallType
+            class="org.rubypeople.rdt.internal.launching.JRubyVMType"
+            id="org.rubypeople.rdt.launching.JRubyVMType"/>
    </extension>   
    <extension
          point="org.eclipse.debug.core.launchConfigurationTypes">

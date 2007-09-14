@@ -18,11 +18,6 @@ import org.rubypeople.rdt.launching.RubyRuntime;
 
 public class StandardVM extends AbstractVMInstall {
 
-	/**
-	 * Convenience handle to the system-specific file separator character
-	 */															
-	private static final char fgSeparator = File.separatorChar;
-
 	public StandardVM(IVMInstallType type, String id) {
 		super(type, id);
 	}
@@ -45,10 +40,10 @@ public class StandardVM extends AbstractVMInstall {
 	}
 
 	public String getRubyVersion() {
-		 StandardVMType installType = (StandardVMType) getVMInstallType();
+		 IVMInstallType installType = getVMInstallType();
 	        File installLocation = getInstallLocation();
 	        if (installLocation != null) {
-	            File executable = StandardVMType.findRubyExecutable(installLocation);
+	            File executable = installType.findExecutable(installLocation);
 	            if (executable != null) {
 	                String vmVersion = installType.getVMVersion(installLocation, executable);
 	                // strip off extra info

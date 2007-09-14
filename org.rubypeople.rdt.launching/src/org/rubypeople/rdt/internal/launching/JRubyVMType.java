@@ -24,14 +24,14 @@ import org.eclipse.osgi.service.environment.Constants;
 import org.rubypeople.rdt.launching.AbstractVMInstallType;
 import org.rubypeople.rdt.launching.IVMInstall;
 
-public class StandardVMType extends AbstractVMInstallType {
+public class JRubyVMType extends AbstractVMInstallType {
 
 	/**
 	 * Map of the install path for which we were unable to generate
 	 * the library info during this session.
 	 */
 	private static Map<String, LibraryInfo> fgFailedInstallPath= new HashMap<String, LibraryInfo>();
-	
+
 	/**
 	 * Convenience handle to the system-specific file separator character
 	 */															
@@ -41,16 +41,84 @@ public class StandardVMType extends AbstractVMInstallType {
 	 * The list of locations in which to look for the ruby executable in candidate
 	 * VM install locations, relative to the VM install location.
 	 */
-	private static final String[] fgCandidateRubyFiles = {"rubyw", "rubyw.exe", "ruby", "ruby.exe"}; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
+	private static final String[] fgCandidateRubyFiles = {"jrubyw", "jrubyw.bat", "jruby", "jruby.bat"}; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
 	private static final String[] fgCandidateRubyLocations = {"", "bin" + fgSeparator}; //$NON-NLS-1$ //$NON-NLS-2$
 	
 	
 	@Override
 	protected IVMInstall doCreateVMInstall(String id) {
-		return new StandardVM(this, id);
+		return new JRubyVM(this, id);
 	}
 
-	public IPath[] getDefaultLibraryLocations(File installLocation) {		
+	public File detectInstallLocation() {
+		File rubyExecutable = null;
+		if (Platform.getOS().equals(Constants.OS_WIN32)) {
+			String winPath = System.getenv("Path");  // iterate through system path and try to find jruby.bat
+			String[] paths = winPath.split(";");
+			for (int i = 0; i < paths.length; i++) {
+				String possibleExecutablePath = paths[i] + File.separator + "jruby.bat";
+				File possible = new File(possibleExecutablePath);
+				if (possible.exists()) {
+					rubyExecutable = possible; 
+					break;
+				}
+			}
+		} else { // Mac, Linux - so let's just run 'which jruby' and parse out the result
+			String[] cmdLine = new String[] { "which", "jruby" }; //$NON-NLS-1$ //$NON-NLS-2$
+			Process p = null;			
+			try {
+				p = Runtime.getRuntime().exec(cmdLine);
+				IProcess process = DebugPlugin.newProcess(new Launch(null,
+						ILaunchManager.RUN_MODE, null), p,
+						"JRuby VM Install Detection"); //$NON-NLS-1$
+				for (int i = 0; i < 200; i++) {
+					// Wait no more than 10 seconds (200 * 50 mils)
+					if (process.isTerminated()) {
+						break;
+					}
+					try {
+						Thread.sleep(50);
+					} catch (InterruptedException e) {
+					}
+				}
+				rubyExecutable = parseRubyExecutableLocation(process);
+			} catch (IOException ioe) {
+				LaunchingPlugin.log(ioe);
+			} finally {
+				if (p != null) {
+					p.destroy();
+				}
+			}
+			// If we don't find ruby, or we find one at /usr/bin/ruby:
+			// try to see if there's one at /usr/local or /opt/local. If so, then prefer one of those.
+			if (rubyExecutable == null || rubyExecutable.getAbsolutePath().startsWith("/usr/bin")) {
+				File rubyHome =	tryLocation(new File("/usr/local/bin/jruby"));
+				if (rubyHome != null) return rubyHome;
+				
+				rubyHome =	tryLocation(new File("/opt/local/bin/jruby"));
+				if (rubyHome != null) return rubyHome;
+			}
+		}		
+		return tryLocation(rubyExecutable);
+	}
+	
+	private File tryLocation(File rubyExecutable) {
+		if (rubyExecutable == null) {
+			return null;
+		}
+
+		File bin = rubyExecutable.getParentFile();
+		if (!bin.exists()) return null;
+		File rubyHome = bin.getParentFile();
+		if (!rubyHome.exists()) return null;
+		if (!canDetectDefaultSystemLibraries(rubyHome, rubyExecutable)) {
+			return null;
+		}	
+	
+		return rubyHome;
+	}
+
+	public IPath[] getDefaultLibraryLocations(File installLocation) {
 		File rubyExecutable = findRubyExecutable(installLocation);
 		LibraryInfo info;
 		if (rubyExecutable == null) {
@@ -67,7 +135,7 @@ public class StandardVMType extends AbstractVMInstallType {
 	}
 
 	public String getName() {
-		return LaunchingMessages.StandardVMType_Standard_VM_3; 
+		return "JRuby VM";
 	}
 
 	public IStatus validateInstallLocation(File rubyHome) {
@@ -82,11 +150,11 @@ public class StandardVMType extends AbstractVMInstallType {
 				status = new Status(IStatus.ERROR, LaunchingPlugin.getUniqueIdentifier(), 0, LaunchingMessages.StandardVMType_Not_a_JDK_root__System_library_was_not_found__1, null); 
 			}
 		}
-		return status;		
+		return status;
 	}
 	
 	/**
-	 * Starting in the specified VM install location, attempt to find the 'ruby' executable
+	 * Starting in the specified VM install location, attempt to find the 'jruby' executable
 	 * file.  If found, return the corresponding <code>File</code> object, otherwise return
 	 * <code>null</code>.
 	 */
@@ -96,7 +164,7 @@ public class StandardVMType extends AbstractVMInstallType {
 		for (int i = 0; i < fgCandidateRubyFiles.length; i++) {
 			for (int j = 0; j < fgCandidateRubyLocations.length; j++) {
 				File rubyFile = new File(vmInstallLocation, fgCandidateRubyLocations[j] + fgCandidateRubyFiles[i]);
-				if (rubyFile.isFile()) {
+				if (rubyFile.isFile()) { // FIXME Only check for .bat on win32 and others on other platforms
 					return rubyFile;
 				}				
 			}
@@ -105,6 +173,33 @@ public class StandardVMType extends AbstractVMInstallType {
 	}
 	
 	/**
+	 * Parses the output from 'Standard Ruby VM Install Detector'.
+	 */
+	protected File parseRubyExecutableLocation(IProcess process) {
+		IStreamsProxy streamsProxy = process.getStreamsProxy();
+		String text = null;
+		if (streamsProxy != null) {
+			text = streamsProxy.getOutputStreamMonitor().getContents();
+		}
+		BufferedReader reader = new BufferedReader(new StringReader(text));
+		List<String> lines = new ArrayList<String>();
+		try {
+			String line = null;
+			while ((line = reader.readLine()) != null) {
+				lines.add(line);
+			}
+		} catch (IOException e) {
+			LaunchingPlugin.log(e);
+		}
+		if (lines.size() > 0) {
+			String location = lines.remove(0);
+		    File executable = new File(location);
+		    if (executable.isFile() && executable.exists()) return executable;
+		}
+		return null;
+	}
+
+	/**
 	 * Return <code>true</code> if the appropriate system libraries can be found for the
 	 * specified ruby executable, <code>false</code> otherwise.
 	 */
@@ -112,12 +207,35 @@ public class StandardVMType extends AbstractVMInstallType {
 		IPath[] locations = getDefaultLibraryLocations(rubyHome);
 		return locations.length > 0; 
 	}
-
-	public String getVMVersion(File installLocation, File executable) {
-		LibraryInfo info = getLibraryInfo(installLocation, executable);
-		return info.getVersion();
+	
+	/**
+	 * Returns default library info for the given install location.
+	 * 
+	 * @param installLocation
+	 * @return LibraryInfo
+	 */
+	protected LibraryInfo getDefaultLibraryInfo(File installLocation) {
+		IPath[] dflts = getDefaultSystemLibrary(installLocation);
+		String[] strings = new String[dflts.length];
+		for (int i = 0; i < dflts.length; i++) {
+			strings[i] = dflts[i].toOSString();
+		}
+		return new LibraryInfo("1.8.4", strings);		 //$NON-NLS-1$
 	}
-
+	
+	/**
+	 * Return an <code>IPath</code> corresponding to the single library file containing the
+	 * standard Ruby classes for VMs version 1.8.x.
+	 */
+	protected IPath[] getDefaultSystemLibrary(File rubyHome) {
+		String stdPath = rubyHome.getAbsolutePath() + fgSeparator + "lib" + fgSeparator + "ruby" + fgSeparator + "1.8";
+		String sitePath = rubyHome.getAbsolutePath() + fgSeparator + "lib" + fgSeparator + "ruby" + fgSeparator + "site_ruby" + fgSeparator + "1.8";
+		IPath[] paths = new IPath[2];		
+		paths[0] = new Path(sitePath);
+		paths[1] = new Path(stdPath);
+		return paths;
+	}
+	
 	/**
 	 * Return library information corresponding to the specified install
 	 * location. If the info does not exist, create it using the given Java
@@ -208,7 +326,7 @@ public class StandardVMType extends AbstractVMInstallType {
 		}
 		return null;
 	}
-
+	
 	/**
 	 * Do not consider libraries which does not exist.
 	 * @param libraries
@@ -223,137 +341,12 @@ public class StandardVMType extends AbstractVMInstallType {
 		libraries.removeAll(toRemove);
 	}
 
-	/**
-	 * Returns default library info for the given install location.
-	 * 
-	 * @param installLocation
-	 * @return LibraryInfo
-	 */
-	protected LibraryInfo getDefaultLibraryInfo(File installLocation) {
-		IPath[] dflts = getDefaultSystemLibrary(installLocation);
-		String[] strings = new String[dflts.length];
-		for (int i = 0; i < dflts.length; i++) {
-			strings[i] = dflts[i].toOSString();
-		}
-		return new LibraryInfo("1.8.4", strings);		 //$NON-NLS-1$
-	}
-	
-	/**
-	 * Return an <code>IPath</code> corresponding to the single library file containing the
-	 * standard Ruby classes for VMs version 1.8.x.
-	 */
-	protected IPath[] getDefaultSystemLibrary(File rubyHome) {
-		String stdPath = rubyHome.getAbsolutePath() + fgSeparator + "lib" + fgSeparator + "ruby" + fgSeparator + "1.8";
-		String sitePath = rubyHome.getAbsolutePath() + fgSeparator + "lib" + fgSeparator + "ruby" + fgSeparator + "site_ruby" + fgSeparator + "1.8";
-		IPath[] paths = new IPath[2];		
-		paths[0] = new Path(sitePath);
-		paths[1] = new Path(stdPath);
-		return paths;
-	}
-
-	/* (non-Javadoc)
-	 * @see org.eclipse.jdt.launching.IVMInstallType#detectInstallLocation()
-	 */
-	public File detectInstallLocation() {
-		File rubyExecutable = null;
-		if (Platform.getOS().equals(Constants.OS_WIN32)) {
-			String winPath = System.getenv("Path");  // iterate through system path and try to find ruby.exe
-			String[] paths = winPath.split(";");
-			for (int i = 0; i < paths.length; i++) {
-				String possibleExecutablePath = paths[i] + File.separator + "ruby.exe";
-				File possible = new File(possibleExecutablePath);
-				if (possible.exists()) {
-					rubyExecutable = possible; 
-					break;
-				}
-			}
-			if (rubyExecutable == null) { // if all else fails, just try "C:/ruby"				
-				rubyExecutable = new File("C:" + File.separator + "ruby" + File.separator + "bin" + File.separator + "ruby.exe");
-			}
-		} else { // Mac, Linux - so let's just run 'which ruby' and parse out the result
-			String[] cmdLine = new String[] { "which", "ruby" }; //$NON-NLS-1$ //$NON-NLS-2$
-			Process p = null;			
-			try {
-				p = Runtime.getRuntime().exec(cmdLine);
-				IProcess process = DebugPlugin.newProcess(new Launch(null,
-						ILaunchManager.RUN_MODE, null), p,
-						"Standard Ruby VM Install Detection"); //$NON-NLS-1$
-				for (int i = 0; i < 200; i++) {
-					// Wait no more than 10 seconds (200 * 50 mils)
-					if (process.isTerminated()) {
-						break;
-					}
-					try {
-						Thread.sleep(50);
-					} catch (InterruptedException e) {
-					}
-				}
-				rubyExecutable = parseRubyExecutableLocation(process);
-			} catch (IOException ioe) {
-				LaunchingPlugin.log(ioe);
-			} finally {
-				if (p != null) {
-					p.destroy();
-				}
-			}
-			// If we don;t find ruby, or we find one at /usr/bin/ruby:
-			// try to see if there's one at /usr/local or /opt/local. If so, then prefer one of those.
-			if (rubyExecutable == null || rubyExecutable.getAbsolutePath().startsWith("/usr/bin")) {
-				File rubyHome =	tryLocation(new File("/usr/local/bin/ruby"));
-				if (rubyHome != null) return rubyHome;
-				
-				rubyHome =	tryLocation(new File("/opt/local/bin/ruby"));
-				if (rubyHome != null) return rubyHome;
-			}
-		}		
-		return tryLocation(rubyExecutable);
-	}
-
-	private File tryLocation(File rubyExecutable) {
-		if (rubyExecutable == null) {
-			return null;
-		}
-
-		File bin = rubyExecutable.getParentFile();
-		if (!bin.exists()) return null;
-		File rubyHome = bin.getParentFile();
-		if (!rubyHome.exists()) return null;
-		if (!canDetectDefaultSystemLibraries(rubyHome, rubyExecutable)) {
-			return null;
-		}	
-	
-		return rubyHome;
-	}
-
-	/**
-	 * Parses the output from 'Standard Ruby VM Install Detector'.
-	 */
-	protected File parseRubyExecutableLocation(IProcess process) {
-		IStreamsProxy streamsProxy = process.getStreamsProxy();
-		String text = null;
-		if (streamsProxy != null) {
-			text = streamsProxy.getOutputStreamMonitor().getContents();
-		}
-		BufferedReader reader = new BufferedReader(new StringReader(text));
-		List<String> lines = new ArrayList<String>();
-		try {
-			String line = null;
-			while ((line = reader.readLine()) != null) {
-				lines.add(line);
-			}
-		} catch (IOException e) {
-			LaunchingPlugin.log(e);
-		}
-		if (lines.size() > 0) {
-			String location = lines.remove(0);
-		    File executable = new File(location);
-		    if (executable.isFile() && executable.exists()) return executable;
-		}
-		return null;
-	}
-
 	public File findExecutable(File installLocation) {
 		return findRubyExecutable(installLocation);
 	}
 	
+	public String getVMVersion(File installLocation, File executable) {
+		LibraryInfo info = getLibraryInfo(installLocation, executable);
+		return info.getVersion();
+	}
 }
