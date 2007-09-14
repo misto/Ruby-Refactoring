@@ -56,6 +56,7 @@ import org.rubypeople.rdt.core.IBuffer;
 import org.rubypeople.rdt.core.IRubyScript;
 import org.rubypeople.rdt.core.RubyCore;
 import org.rubypeople.rdt.core.WorkingCopyOwner;
+import org.rubypeople.rdt.internal.corext.util.OpenTypeHistory;
 import org.rubypeople.rdt.internal.corext.util.TypeFilter;
 import org.rubypeople.rdt.internal.formatter.OldCodeFormatter;
 import org.rubypeople.rdt.internal.ui.preferences.MembersOrderPreferenceCache;
@@ -175,6 +176,14 @@ public class RubyPlugin extends AbstractUIPlugin implements IRubyColorConstants 
 		upgradeOldProjects();
 		String generateRdocOption = Platform.getDebugOption(RubyPlugin.PLUGIN_ID + "/generaterdoc");
 		RDocUtility.setDebugging(generateRdocOption == null ? false : generateRdocOption.equalsIgnoreCase("true"));
+				
+		// Initialize AST provider
+		getASTProvider();
+		new InitializeAfterLoadJob().schedule();
+	}
+	
+	/* package */ static void initializeAfterLoad(IProgressMonitor monitor) {
+		OpenTypeHistory.getInstance().checkConsistency(monitor);
 	}
 
 	private void listenForNewProjects() {

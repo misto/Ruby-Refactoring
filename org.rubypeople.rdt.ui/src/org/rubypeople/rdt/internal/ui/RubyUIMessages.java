@@ -105,6 +105,8 @@ public class RubyUIMessages extends NLS {
 	public static String Spelling_add_label;
 	public static String Spelling_ignore_info;
 	public static String Spelling_ignore_label;
+	public static String RubyPlugin_initializing_ui;
+	public static String InitializeAfterLoadJob_starter_job_name;
 
     private RubyUIMessages() {
     }
