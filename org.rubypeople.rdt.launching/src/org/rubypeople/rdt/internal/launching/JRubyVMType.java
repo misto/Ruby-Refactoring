@@ -164,7 +164,7 @@ public class JRubyVMType extends AbstractVMInstallType {
 		for (int i = 0; i < fgCandidateRubyFiles.length; i++) {
 			for (int j = 0; j < fgCandidateRubyLocations.length; j++) {
 				File rubyFile = new File(vmInstallLocation, fgCandidateRubyLocations[j] + fgCandidateRubyFiles[i]);
-				if (rubyFile.isFile()) { // FIXME Only check for .bat on win32 and others on other platforms
+				if (rubyFile.isFile() && isPlatformProper(rubyFile)) { // FIXME Only check for .bat on win32 and others on other platforms
 					return rubyFile;
 				}				
 			}
@@ -172,6 +172,14 @@ public class JRubyVMType extends AbstractVMInstallType {
 		return null;							
 	}
 	
+	private static boolean isPlatformProper(File rubyFile) {
+		if (Platform.getOS().equals(Platform.OS_WIN32)) {
+			return rubyFile.getName().endsWith(".bat");
+		} else {
+			return !rubyFile.getName().endsWith(".bat");
+		}
+	}
+
 	/**
 	 * Parses the output from 'Standard Ruby VM Install Detector'.
 	 */
