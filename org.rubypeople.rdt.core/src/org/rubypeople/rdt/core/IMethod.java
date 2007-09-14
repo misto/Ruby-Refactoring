@@ -47,4 +47,8 @@ public interface IMethod extends IRubyElement, IMember {
 
 	public boolean isPrivate() throws RubyModelException;
 
+	public boolean isPublic() throws RubyModelException;
+	
+	public boolean isProtected() throws RubyModelException;
+
 }

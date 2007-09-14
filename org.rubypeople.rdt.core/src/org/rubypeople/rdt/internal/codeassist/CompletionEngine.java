@@ -892,5 +892,15 @@ public class CompletionEngine {
 			return false;
 		}
 
+		public boolean isProtected() throws RubyModelException {
+			// TODO Auto-generated method stub
+			return false;
+		}
+
+		public boolean isPublic() throws RubyModelException {
+			// TODO Auto-generated method stub
+			return false;
+		}
+
 	}
 }
