@@ -73,7 +73,7 @@
    <extension
          point="org.eclipse.core.expressions.propertyTesters">
       <propertyTester
-            class="org.rubypeople.rdt.launching.PropertyTester2"
+            class="org.rubypeople.rdt.internal.launching.RubyLaunchableTester"
             id="org.rubypeople.rdt.launching.RubyLaunchableTester"
             namespace="org.rubypeople.rdt.launching"
             properties="extendsClass, hasMethod, isContainer, hasProjectNature"
