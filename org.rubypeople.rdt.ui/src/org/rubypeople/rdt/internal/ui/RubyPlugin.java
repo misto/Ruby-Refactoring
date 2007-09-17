@@ -197,14 +197,14 @@ public class RubyPlugin extends AbstractUIPlugin implements IRubyColorConstants 
 					if (dw != null) {
 						IWorkbenchPage page = dw.getActivePage();
 						if (page != null) {
-							if (page.findView(RubyUI.ID_RUBY_EXPLORER) == null) {
-								IViewPart part = page.findView(RubyUI.ID_RUBY_RESOURCE_VIEW);
-								if (part != null) {
-									page.hideView(part);
-									page.showView(RubyUI.ID_RUBY_EXPLORER);
-									store.setValue(OPENED_RUBY_EXPLORER, true);
-								}								
+							IViewPart part = page.findView(RubyUI.ID_RUBY_RESOURCE_VIEW);
+							if (part != null) {
+								page.hideView(part);
 							}
+							if (page.findView(RubyUI.ID_RUBY_EXPLORER) == null) {
+								page.showView(RubyUI.ID_RUBY_EXPLORER);
+							}
+							store.setValue(OPENED_RUBY_EXPLORER, true);				
 						}
 					}
 				} catch (PartInitException ignored) {}
