@@ -64,6 +64,9 @@ public class TC_RunnerLaunching extends ModifyingResourceTest {
 		standin.setInstallLocation(location.getLocation().toFile());
 		interpreter = standin.convertToRealVM();
 		RubyRuntime.setDefaultVMInstall(interpreter, null, true);
+		
+		LaunchingPlugin.getDefault().getPluginPreferences().setValue(PreferenceConstants.USE_RUBY_DEBUG, false);
+		// TODO Add a test for using ruby debug!
 	}
 
 	@Override
@@ -83,6 +86,7 @@ public class TC_RunnerLaunching extends ModifyingResourceTest {
 		buffer.append(new Path(interpreter.getInstallLocation().getAbsolutePath()).append("bin").append("ruby").toOSString());
 		buffer.append("\" ");
 		buffer.append(INTERPRETER_ARGUMENTS);
+		addSyncArgs(buffer);
 		if (debug) {
 			buffer.append(" -I ");
 			if (Platform.getOS().equals(Platform.OS_WIN32))
@@ -90,8 +94,7 @@ public class TC_RunnerLaunching extends ModifyingResourceTest {
 			buffer.append(new Path(StandardVMDebugger.getDirectoryOfRubyDebuggerFile()).toOSString());
 			if (Platform.getOS().equals(Platform.OS_WIN32))
 				buffer.append("\"");
-		}
-		addSyncArgs(buffer);
+		}		
 		if (debug) {
 			buffer.append(" -r");
 			buffer.append(debugFile);
