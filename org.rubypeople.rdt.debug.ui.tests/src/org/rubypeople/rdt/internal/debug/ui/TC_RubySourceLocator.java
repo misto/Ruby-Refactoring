@@ -24,10 +24,7 @@ import org.eclipse.debug.core.ILaunchConfigurationWorkingCopy;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
-import org.eclipse.ui.actions.CreateFileAction;
 import org.rubypeople.rdt.internal.debug.core.model.RubyStackFrame;
-import org.rubypeople.rdt.internal.debug.ui.RdtDebugUiPlugin;
-import org.rubypeople.rdt.internal.debug.ui.RubySourceLocator;
 
 public class TC_RubySourceLocator extends TestCase {
 
