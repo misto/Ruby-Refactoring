@@ -4,6 +4,7 @@ import java.io.File;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
+import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.debug.core.ILaunchConfiguration;
@@ -62,7 +63,7 @@ public class RubyEntryPointTab extends AbstractLaunchConfigurationTab {
 
 
 	public void setDefaults(ILaunchConfigurationWorkingCopy configuration) {
-		IResource selectedResource = RubyPlugin.getDefault().getSelectedResource() ;
+		IResource selectedResource = RubyPlugin.getDefault().getSelectedResource();
 		if (!RubyPlugin.getDefault().isRubyFile(selectedResource)) {
 			return ;
 		}
@@ -90,8 +91,30 @@ public class RubyEntryPointTab extends AbstractLaunchConfigurationTab {
 
 	public void performApply(ILaunchConfigurationWorkingCopy configuration) {
 		configuration.setAttribute(IRubyLaunchConfigurationConstants.ATTR_PROJECT_NAME, projectSelector.getSelectionText());
-		File file = fileSelector.getSelection();
-		configuration.setAttribute(IRubyLaunchConfigurationConstants.ATTR_FILE_NAME, file == null ? "" : file.getAbsolutePath());
+		String text = fileSelector.getSelectionText();
+		File test = new File(text);
+		if (!test.exists()) {
+			try {
+				String workingDirectory = configuration.getAttribute(IRubyLaunchConfigurationConstants.ATTR_WORKING_DIRECTORY, (String)null);
+				if (workingDirectory != null && !workingDirectory.trim().equals("")) {
+					String blah = workingDirectory + text;
+					test = new File(blah);
+				}
+			} catch (CoreException e) {
+				RdtDebugUiPlugin.log(e);
+			}
+			if (!test.exists()) {
+				String projectName = projectSelector.getSelectionText();
+				IProject project = ResourcesPlugin.getWorkspace().getRoot().getProject(projectName);
+				if (project != null) {
+					test = project.getLocation().append(text).toFile();
+				}
+			}
+			if (!test.exists()) {
+				text = "";
+			}
+		}
+		configuration.setAttribute(IRubyLaunchConfigurationConstants.ATTR_FILE_NAME, text);
 	}
 
 	protected Composite createPageRoot(Composite parent) {
@@ -119,6 +142,27 @@ public class RubyEntryPointTab extends AbstractLaunchConfigurationTab {
 		if (fileName.length() == 0) {
 			setErrorMessage(RdtDebugUiMessages.LaunchConfigurationTab_RubyEntryPoint_invalidFileSelectionMessage);
 			return false;
+		}
+		File test = new File(fileName);
+		if (!test.exists()) {
+			try {
+				String workingDirectory = launchConfig.getAttribute(IRubyLaunchConfigurationConstants.ATTR_WORKING_DIRECTORY, (String)null);
+				if (workingDirectory != null && !workingDirectory.trim().equals("")) {
+					String blah = workingDirectory + fileName;
+					test = new File(blah);
+				}
+			} catch (CoreException e) {
+				RdtDebugUiPlugin.log(e);
+			}
+			if (!test.exists()) {
+				IProject project = ResourcesPlugin.getWorkspace().getRoot().getProject(projectName);
+				if (project != null) {
+					test = project.getLocation().append(fileName).toFile();
+				}
+			}
+			if (!test.exists()) {
+				return false;
+			}
 		}
 		
 		setErrorMessage(null);
