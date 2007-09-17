@@ -132,41 +132,57 @@ public class RubyEntryPointTab extends AbstractLaunchConfigurationTab {
 	}
 
 	public boolean isValid(ILaunchConfiguration launchConfig) {
-		String projectName = projectSelector.getSelectionText();
-		if (projectName.length() == 0) {
-			setErrorMessage(RdtDebugUiMessages.LaunchConfigurationTab_RubyEntryPoint_invalidProjectSelectionMessage);
-			return false;
-		}
-
-		String fileName = fileSelector.getSelectionText();
-		if (fileName.length() == 0) {
-			setErrorMessage(RdtDebugUiMessages.LaunchConfigurationTab_RubyEntryPoint_invalidFileSelectionMessage);
-			return false;
-		}
-		File test = new File(fileName);
-		if (!test.exists()) {
-			try {
-				String workingDirectory = launchConfig.getAttribute(IRubyLaunchConfigurationConstants.ATTR_WORKING_DIRECTORY, (String)null);
-				if (workingDirectory != null && !workingDirectory.trim().equals("")) {
-					String blah = workingDirectory + fileName;
-					test = new File(blah);
-				}
-			} catch (CoreException e) {
-				RdtDebugUiPlugin.log(e);
-			}
-			if (!test.exists()) {
-				IProject project = ResourcesPlugin.getWorkspace().getRoot().getProject(projectName);
-				if (project != null) {
-					test = project.getLocation().append(fileName).toFile();
-				}
-			}
-			if (!test.exists()) {
+		try {
+			String projectName = launchConfig.getAttribute(IRubyLaunchConfigurationConstants.ATTR_PROJECT_NAME, "");
+			if (projectName.length() == 0) {
+				setErrorMessage(RdtDebugUiMessages.LaunchConfigurationTab_RubyEntryPoint_invalidProjectSelectionMessage);
 				return false;
 			}
+
+			IProject project = ResourcesPlugin.getWorkspace().getRoot().getProject(projectName);
+			if (project == null) {
+				setErrorMessage(RdtDebugUiMessages.LaunchConfigurationTab_RubyEntryPoint_invalidProjectSelectionMessage);
+				return false;
+			}
+			if (!project.exists()) {
+				setErrorMessage(RdtDebugUiMessages.LaunchConfigurationTab_RubyEntryPoint_invalidProjectSelectionMessage);
+				return false;
+			}
+			
+			String fileName = launchConfig.getAttribute(IRubyLaunchConfigurationConstants.ATTR_FILE_NAME, "");
+			if (fileName.length() == 0) {
+				setErrorMessage(RdtDebugUiMessages.LaunchConfigurationTab_RubyEntryPoint_invalidFileSelectionMessage);
+				return false;
+			}
+			File test = new File(fileName);
+			if (!test.exists()) {
+				try {
+					String workingDirectory = launchConfig.getAttribute(IRubyLaunchConfigurationConstants.ATTR_WORKING_DIRECTORY, (String)null);
+					if (workingDirectory != null && !workingDirectory.trim().equals("")) {
+						String blah = workingDirectory + fileName;
+						test = new File(blah);
+					}
+				} catch (CoreException e) {
+					RdtDebugUiPlugin.log(e);
+				}
+				if (!test.exists()) {
+					if (project != null) {
+						test = project.getLocation().append(fileName).toFile();
+					}
+				}
+				if (!test.exists()) {
+					setErrorMessage(RdtDebugUiMessages.LaunchConfigurationTab_RubyEntryPoint_invalidFileSelectionMessage);
+					return false;
+				}
+			}
+			
+			setErrorMessage(null);
+			return true;
+		} catch (CoreException e) {
+			setErrorMessage(e.getMessage());
+			RdtDebugUiPlugin.log(e);
 		}
-		
-		setErrorMessage(null);
-		return true;
+		return false;
 	}
 
 	protected void log(Throwable t) {
