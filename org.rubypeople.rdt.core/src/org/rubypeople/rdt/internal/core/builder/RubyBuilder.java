@@ -12,6 +12,7 @@
 package org.rubypeople.rdt.internal.core.builder;
 
 import java.io.DataOutputStream;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.Map;
@@ -19,12 +20,18 @@ import java.util.Set;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
+import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.resources.IncrementalProjectBuilder;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.rubypeople.rdt.core.ILoadpathEntry;
 import org.rubypeople.rdt.core.IRubyModelMarker;
 import org.rubypeople.rdt.core.RubyCore;
+import org.rubypeople.rdt.core.RubyModelException;
+import org.rubypeople.rdt.internal.core.LoadpathEntry;
 import org.rubypeople.rdt.internal.core.RubyModelManager;
+import org.rubypeople.rdt.internal.core.RubyProject;
 
 
 public class RubyBuilder extends IncrementalProjectBuilder {
@@ -32,6 +39,8 @@ public class RubyBuilder extends IncrementalProjectBuilder {
     public static boolean DEBUG;
 
     private IProject currentProject;
+	private RubyProject rubyProject;
+	private IWorkspaceRoot workspaceRoot;
 
 	protected IProject[] build(int kind, Map args, IProgressMonitor monitor) throws CoreException {
 	    this.currentProject = getProject();
@@ -46,10 +55,81 @@ public class RubyBuilder extends IncrementalProjectBuilder {
 
         if (DEBUG)
             RubyCore.trace("Finished build of " + buildDescription()); //$NON-NLS-1$
-		return null;
+        
+        IProject[] requiredProjects = getRequiredProjects(true);
+		return requiredProjects;
+	}
+	
+	@Override
+	protected void clean(IProgressMonitor monitor) throws CoreException {
+		this.currentProject = getProject();
+		if (currentProject == null || !currentProject.isAccessible()) return;
+		
+		initializeBuilder();
+		
+		super.clean(monitor);
 	}
     
-    private AbstractRdtCompiler createCompiler(int kind) {
+    private void initializeBuilder() {
+    	this.rubyProject = (RubyProject) RubyCore.create(currentProject);
+    	this.workspaceRoot = currentProject.getWorkspace().getRoot();		
+	}
+
+	/*
+	 * Return the list of projects for which it requires a resource delta. This
+	 * builder's project is implicitly included and need not be specified.
+	 * Builders must re-specify the list of interesting projects every time they
+	 * are run as this is not carried forward beyond the next build. Missing
+	 * projects should be specified but will be ignored until they are added to
+	 * the workspace.
+	 */
+	private IProject[] getRequiredProjects(boolean includeBinaryPrerequisites) {
+		if (rubyProject == null || workspaceRoot == null)
+			return new IProject[0];
+
+		ArrayList projects = new ArrayList();
+		try {
+			ILoadpathEntry[] entries = rubyProject.getExpandedLoadpath(true);
+			for (int i = 0, l = entries.length; i < l; i++) {
+				ILoadpathEntry entry = entries[i];
+				IPath path = entry.getPath();
+				IProject p = null;
+				switch (entry.getEntryKind()) {
+				case ILoadpathEntry.CPE_PROJECT:
+					p = workspaceRoot.getProject(path.lastSegment()); // missing
+																		// projects
+																		// are
+																		// considered
+																		// too
+					if (((LoadpathEntry) entry).isOptional()
+							&& !RubyProject.hasRubyNature(p)) // except if
+																// entry is
+																// optional
+						p = null;
+					break;
+				case ILoadpathEntry.CPE_LIBRARY:
+					if (includeBinaryPrerequisites && path.segmentCount() > 1) {
+						// some binary resources on the class path can come from
+						// projects that are not included in the project
+						// references
+						IResource resource = workspaceRoot.findMember(path
+								.segment(0));
+						if (resource instanceof IProject)
+							p = (IProject) resource;
+					}
+				}
+				if (p != null && !projects.contains(p))
+					projects.add(p);
+			}
+		} catch (RubyModelException e) {
+			return new IProject[0];
+		}
+		IProject[] result = new IProject[projects.size()];
+		projects.toArray(result);
+		return result;
+	}
+
+	private AbstractRdtCompiler createCompiler(int kind) {
         if (isPartialBuild(kind))
             return new IncrementalRdtCompiler(currentProject, getDelta(currentProject));
         return new CleanRdtCompiler(currentProject);
