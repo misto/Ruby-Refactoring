@@ -150,6 +150,11 @@ public final class RubyUI {
 	public static final String ID_RUBY_EXPLORER= 			"org.rubypeople.rdt.ui.RubyExplorer"; //$NON-NLS-1$
 		
 	/**
+	 * @deprecated View is going to be removed
+	 */
+	public static final String ID_RUBY_RESOURCE_VIEW = "org.rubypeople.rdt.ui.ViewRubyResources"; //$NON-NLS-1$
+	
+	/**
 	 * Returns the Ruby element wrapped by the given editor input.
 	 * 
 	 * @param editorInput

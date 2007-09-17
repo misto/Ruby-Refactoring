@@ -41,6 +41,7 @@ import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorPart;
+import org.eclipse.ui.IViewPart;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PartInitException;
@@ -74,6 +75,7 @@ import org.rubypeople.rdt.internal.ui.text.ruby.hover.RubyEditorTextHoverDescrip
 import org.rubypeople.rdt.internal.ui.text.template.contentassist.RubyTemplateAccess;
 import org.rubypeople.rdt.internal.ui.viewsupport.ProblemMarkerManager;
 import org.rubypeople.rdt.ui.PreferenceConstants;
+import org.rubypeople.rdt.ui.RubyUI;
 import org.rubypeople.rdt.ui.text.RubyTextTools;
 
 public class RubyPlugin extends AbstractUIPlugin implements IRubyColorConstants {
@@ -82,6 +84,7 @@ public class RubyPlugin extends AbstractUIPlugin implements IRubyColorConstants 
 	private static final String ORG_ECLIPSE_UI_VIEWS_PROBLEM_VIEW = "org.eclipse.ui.views.ProblemView";
 	protected static RubyPlugin plugin;
 	public static final String PLUGIN_ID = "org.rubypeople.rdt.ui"; //$NON-NLS-1$
+	private static final String OPENED_RUBY_EXPLORER = PLUGIN_ID + ".opened.ruby.explorer";
 
 	protected RubyTextTools textTools;
 	protected RubyFileMatcher rubyFileMatcher;
@@ -173,13 +176,42 @@ public class RubyPlugin extends AbstractUIPlugin implements IRubyColorConstants 
 		fMembersOrderPreferenceCache.install(store);
 
 		listenForNewProjects();
-		upgradeOldProjects();
+		upgradeOldProjects();		
+		openRubyExplorer();
+		
 		String generateRdocOption = Platform.getDebugOption(RubyPlugin.PLUGIN_ID + "/generaterdoc");
 		RDocUtility.setDebugging(generateRdocOption == null ? false : generateRdocOption.equalsIgnoreCase("true"));
 				
 		// Initialize AST provider
 		getASTProvider();
 		new InitializeAfterLoadJob().schedule();
+	}
+
+	private void openRubyExplorer() {
+		final IPreferenceStore store = RubyPlugin.getDefault().getPreferenceStore();
+		if (store.getBoolean(OPENED_RUBY_EXPLORER)) return;
+		WorkbenchJob job = new WorkbenchJob("Show New Ruby Explorer View") {
+			public IStatus runInUIThread(IProgressMonitor monitor) {
+				try {
+					IWorkbenchWindow dw = PlatformUI.getWorkbench().getActiveWorkbenchWindow();
+					if (dw != null) {
+						IWorkbenchPage page = dw.getActivePage();
+						if (page != null) {
+							if (page.findView(RubyUI.ID_RUBY_EXPLORER) == null) {
+								IViewPart part = page.findView(RubyUI.ID_RUBY_RESOURCE_VIEW);
+								if (part != null) {
+									page.hideView(part);
+									page.showView(RubyUI.ID_RUBY_EXPLORER);
+									store.setValue(OPENED_RUBY_EXPLORER, true);
+								}								
+							}
+						}
+					}
+				} catch (PartInitException ignored) {}
+				return Status.OK_STATUS;
+			}
+		};
+		job.schedule();
 	}
 	
 	/* package */ static void initializeAfterLoad(IProgressMonitor monitor) {
