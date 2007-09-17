@@ -23,19 +23,19 @@ public class FileSelector extends ResourceSelector {
 			}			
 		}
 		
-		String selectedDirectory = dialog.open();
-		if (selectedDirectory != null) {
-			textField.setText(selectedDirectory);
+		String selectedFile = dialog.open();
+		if (selectedFile != null) {
+			textField.setText(selectedFile);
 		}		
 
 	}
 
 	@Override
 	protected String validateResourceSelection() {
-		String directory = textField.getText();
-		File directoryFile = new File(directory);
+		String file = textField.getText();
+		File directoryFile = new File(file);
 		if (directoryFile.exists() && directoryFile.isFile())
-			return directory;
+			return file;
 		return EMPTY_STRING;
 	}
 
