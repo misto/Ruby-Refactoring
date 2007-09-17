@@ -596,7 +596,7 @@ end
 puts %-class-
 puts %Q(class (m) class)
 puts %Q{class {m} class}
-puts %Q{ def class #{class} { if } class}
+puts %Q{ def class #{class Chris; end} { if } class}
 if
 puts ""
 </unformatted>
@@ -604,7 +604,7 @@ puts ""
 puts %-class-
 puts %Q(class (m) class)
 puts %Q{class {m} class}
-puts %Q{ def class #{class} { if } class}
+puts %Q{ def class #{class Chris; end} { if } class}
 if
   puts ""
 </formatted>
