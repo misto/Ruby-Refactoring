@@ -7,7 +7,6 @@ import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerException;
 
 import org.eclipse.core.resources.IFolder;
-import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
 import org.rubypeople.rdt.core.tests.ModifyingResourceTest;
@@ -29,6 +28,7 @@ public class TC_RubyRuntime extends ModifyingResourceTest {
 	public TC_RubyRuntime(String name) {
 		super(name);
 	}
+	// TODO Need to create a test vm type or something
 
 	@Override
 	protected void setUp() throws Exception {
