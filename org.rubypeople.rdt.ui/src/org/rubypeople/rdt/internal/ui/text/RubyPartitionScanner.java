@@ -189,12 +189,12 @@ public class RubyPartitionScanner implements IPartitionTokenScanner {
 				// TODO recover somehow by removing this chunk out of the fContents?
 				int start = se.getPosition().getStartOffset();
 				int length = fContents.length() - start;
-				QueuedToken qtoken = new QueuedToken(new Token(RUBY_MULTI_LINE_COMMENT), start, length);
-				if (fOffset == 0) { // If we never got to read in beginning contents
+				QueuedToken qtoken = new QueuedToken(new Token(RUBY_MULTI_LINE_COMMENT), start + origOffset, length);
+				if (fOffset == origOffset) { // If we never got to read in beginning contents
 					RubyPartitionScanner scanner = new RubyPartitionScanner();
-					String possible = fContents.substring(0, se.getPosition().getStartOffset());
+					String possible = fContents.substring(0, start);
 					IDocument document = new Document(possible);
-					scanner.setRange(document, 0, possible.length());
+					scanner.setRange(document, origOffset, possible.length());
 					IToken token;
 					while (!(token = scanner.nextToken()).isEOF()) {
 						push(new QueuedToken(token, scanner.getTokenOffset() + fOffset, scanner.getTokenLength()));
@@ -215,8 +215,10 @@ public class RubyPartitionScanner implements IPartitionTokenScanner {
 		} catch (IOException e) {
 			RubyPlugin.log(e);
 		}
-		if (!isEOF)
+		if (!isEOF) {
 			fLength = getOffset() - fOffset;
+			Assert.isTrue(fLength >= 0);
+		}
 		return returnValue;
 	}
 
