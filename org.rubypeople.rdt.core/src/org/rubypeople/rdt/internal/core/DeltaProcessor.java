@@ -20,6 +20,7 @@ import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
+import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.ISafeRunnable;
 import org.eclipse.core.runtime.PerformanceStats;
 import org.eclipse.core.runtime.SafeRunner;
@@ -112,6 +113,12 @@ public class DeltaProcessor {
 			return buffer.toString();
 		}
 	}
+	
+	private final static String EXTERNAL_JAR_ADDED = "external jar added"; //$NON-NLS-1$
+	private final static String EXTERNAL_JAR_CHANGED = "external jar changed"; //$NON-NLS-1$
+	private final static String EXTERNAL_JAR_REMOVED = "external jar removed"; //$NON-NLS-1$
+	private final static String EXTERNAL_JAR_UNCHANGED = "external jar unchanged"; //$NON-NLS-1$
+	private final static String INTERNAL_JAR_IGNORE = "internal jar ignore"; //$NON-NLS-1$
 	
     public static final int DEFAULT_CHANGE_EVENT = 0; // must not collide with
     private final static int NON_RUBY_RESOURCE = -1;
@@ -2027,5 +2034,242 @@ public class DeltaProcessor {
 				return true;
 		}
 		return true;
+	}
+
+	/*
+	 * Check all external archive (referenced by given roots, projects or model) status and issue a corresponding root delta.
+	 * Also triggers index updates
+	 */
+	public void checkExternalArchiveChanges(IRubyElement[] elementsToRefresh, IProgressMonitor monitor) throws RubyModelException {
+		try {
+			for (int i = 0, length = elementsToRefresh.length; i < length; i++) {
+				this.addForRefresh(elementsToRefresh[i]);
+			}
+			boolean hasDelta = this.createExternalArchiveDelta(monitor);
+			if (monitor != null && monitor.isCanceled()) return; 
+			if (hasDelta){
+				// force loadpath marker refresh of affected projects
+				RubyModel.flushExternalFileCache();
+								
+				IRubyElementDelta[] projectDeltas = this.currentDelta.getAffectedChildren();
+				final int length = projectDeltas.length;
+				final IProject[] projectsToTouch = new IProject[length];
+				for (int i = 0; i < length; i++) {
+					IRubyElementDelta delta = projectDeltas[i];
+					RubyProject rubyProject = (RubyProject)delta.getElement();
+					rubyProject.getResolvedLoadpath(
+						true/*ignoreUnresolvedEntry*/, 
+						true/*generateMarkerOnError*/, 
+						false/*don't returnResolutionInProgress*/);
+					projectsToTouch[i] = rubyProject.getProject();
+				}
+				
+				// no need to rebuild if external folders/files change
+//				// touch the projects to force them to be recompiled while taking the workspace lock 
+//				// so that there is no concurrency with the Java builder
+//				// see https://bugs.eclipse.org/bugs/show_bug.cgi?id=96575
+//				IWorkspaceRunnable runnable = new IWorkspaceRunnable() {
+//					public void run(IProgressMonitor progressMonitor) throws CoreException {
+//						for (int i = 0; i < length; i++) {
+//							IProject project = projectsToTouch[i];
+//							
+//							// touch to force a build of this project
+//							if (RubyBuilder.DEBUG)
+//								System.out.println("Touching project " + project.getName() + " due to external jar file change"); //$NON-NLS-1$ //$NON-NLS-2$
+//							project.touch(progressMonitor);
+//						}
+//					}
+//				};
+//				try {
+//					ResourcesPlugin.getWorkspace().run(runnable, monitor);
+//				} catch (CoreException e) {
+//					throw new RubyModelException(e);
+//				}
+				
+				if (this.currentDelta != null) { // if delta has not been fired while creating markers
+					this.fire(this.currentDelta, DEFAULT_CHANGE_EVENT);
+				}
+			}
+		} finally {
+			this.currentDelta = null;
+			if (monitor != null) monitor.done();
+		}
+	}
+	
+	/*
+	 * Check if external archives have changed and create the corresponding deltas.
+	 * Returns whether at least on delta was created.
+	 */
+	private boolean createExternalArchiveDelta(IProgressMonitor monitor) {
+		
+		if (this.refreshedElements == null) return false;
+			
+		HashMap externalArchivesStatus = new HashMap();
+		boolean hasDelta = false;
+		
+		// find JARs to refresh
+		HashSet archivePathsToRefresh = new HashSet();
+		Iterator iterator = this.refreshedElements.iterator();
+		this.refreshedElements = null; // null out early to avoid concurrent modification exception (see https://bugs.eclipse.org/bugs/show_bug.cgi?id=63534)
+		while (iterator.hasNext()) {
+			IRubyElement element = (IRubyElement)iterator.next();
+			switch(element.getElementType()){
+				case IRubyElement.SOURCE_FOLDER_ROOT :
+					archivePathsToRefresh.add(element.getPath());
+					break;
+				case IRubyElement.RUBY_PROJECT :
+					RubyProject javaProject = (RubyProject) element;
+					if (!RubyProject.hasRubyNature(javaProject.getProject())) {
+						// project is not accessible or has lost its Ruby nature
+						break;
+					}
+					ILoadpathEntry[] classpath;
+					try {
+						classpath = javaProject.getResolvedLoadpath(true/*ignoreUnresolvedEntry*/, false/*don't generateMarkerOnError*/, false/*don't returnResolutionInProgress*/);
+						for (int j = 0, cpLength = classpath.length; j < cpLength; j++){
+							if (classpath[j].getEntryKind() == ILoadpathEntry.CPE_LIBRARY){
+								archivePathsToRefresh.add(classpath[j].getPath());
+							}
+						}
+					} catch (RubyModelException e) {
+						// project doesn't exist -> ignore
+					}
+					break;
+				case IRubyElement.RUBY_MODEL :
+					Iterator projectNames = this.state.getOldRubyProjecNames().iterator();
+					while (projectNames.hasNext()) {
+						String projectName = (String) projectNames.next();
+						IProject project = ResourcesPlugin.getWorkspace().getRoot().getProject(projectName);
+						if (!RubyProject.hasRubyNature(project)) {
+							// project is not accessible or has lost its Ruby nature
+							continue;
+						}
+						javaProject = (RubyProject) RubyCore.create(project);
+						try {
+							classpath = javaProject.getResolvedLoadpath(true/*ignoreUnresolvedEntry*/, false/*don't generateMarkerOnError*/, false/*don't returnResolutionInProgress*/);
+						} catch (RubyModelException e2) {
+							// project doesn't exist -> ignore
+							continue;
+						}
+						for (int k = 0, cpLength = classpath.length; k < cpLength; k++){
+							if (classpath[k].getEntryKind() == ILoadpathEntry.CPE_LIBRARY){
+								archivePathsToRefresh.add(classpath[k].getPath());
+							}
+						}
+					}
+					break;
+			}
+		}
+		
+		// perform refresh
+		Iterator projectNames = this.state.getOldRubyProjecNames().iterator();
+		IWorkspaceRoot wksRoot = ResourcesPlugin.getWorkspace().getRoot();
+		while (projectNames.hasNext()) {
+			
+			if (monitor != null && monitor.isCanceled()) break; 
+			
+			String projectName = (String) projectNames.next();
+			IProject project = wksRoot.getProject(projectName);
+			if (!RubyProject.hasRubyNature(project)) {
+				// project is not accessible or has lost its Ruby nature
+				continue;
+			}
+			RubyProject javaProject = (RubyProject) RubyCore.create(project);
+			ILoadpathEntry[] entries;
+			try {
+				entries = javaProject.getResolvedLoadpath(true/*ignoreUnresolvedEntry*/, false/*don't generateMarkerOnError*/, false/*don't returnResolutionInProgress*/);
+			} catch (RubyModelException e1) {
+				// project does not exist -> ignore
+				continue;
+			}
+			for (int j = 0; j < entries.length; j++){
+				if (entries[j].getEntryKind() == ILoadpathEntry.CPE_LIBRARY) {
+					
+					IPath entryPath = entries[j].getPath();
+					
+					if (!archivePathsToRefresh.contains(entryPath)) continue; // not supposed to be refreshed
+					
+					String status = (String)externalArchivesStatus.get(entryPath); 
+					if (status == null){
+						
+						// compute shared status
+						Object targetLibrary = RubyModel.getTarget(wksRoot, entryPath, true);
+		
+						if (targetLibrary == null){ // missing JAR
+							if (this.state.getExternalLibTimeStamps().remove(entryPath) != null){
+								externalArchivesStatus.put(entryPath, EXTERNAL_JAR_REMOVED);
+								// the jar was physically removed: remove the index
+								this.manager.indexManager.removeIndex(entryPath);
+							}
+		
+						} else if (targetLibrary instanceof File){ // external JAR
+		
+							File externalFile = (File)targetLibrary;
+							
+							// check timestamp to figure if JAR has changed in some way
+							Long oldTimestamp =(Long) this.state.getExternalLibTimeStamps().get(entryPath);
+							long newTimeStamp = getTimeStamp(externalFile);
+							if (oldTimestamp != null){
+		
+								if (newTimeStamp == 0){ // file doesn't exist
+									externalArchivesStatus.put(entryPath, EXTERNAL_JAR_REMOVED);
+									this.state.getExternalLibTimeStamps().remove(entryPath);
+									// remove the index
+									this.manager.indexManager.removeIndex(entryPath);
+		
+								} else if (oldTimestamp.longValue() != newTimeStamp){
+									externalArchivesStatus.put(entryPath, EXTERNAL_JAR_CHANGED);
+									this.state.getExternalLibTimeStamps().put(entryPath, new Long(newTimeStamp));
+									// first remove the index so that it is forced to be re-indexed
+									this.manager.indexManager.removeIndex(entryPath);
+									// then index the jar
+									this.manager.indexManager.indexLibrary(entryPath, project.getProject());
+								} else {
+									externalArchivesStatus.put(entryPath, EXTERNAL_JAR_UNCHANGED);
+								}
+							} else {
+								if (newTimeStamp == 0){ // jar still doesn't exist
+									externalArchivesStatus.put(entryPath, EXTERNAL_JAR_UNCHANGED);
+								} else {
+									externalArchivesStatus.put(entryPath, EXTERNAL_JAR_ADDED);
+									this.state.getExternalLibTimeStamps().put(entryPath, new Long(newTimeStamp));
+									// index the new jar
+									this.manager.indexManager.indexLibrary(entryPath, project.getProject());
+								}
+							}
+						} else { // internal JAR
+							externalArchivesStatus.put(entryPath, INTERNAL_JAR_IGNORE);
+						}
+					}
+					// according to computed status, generate a delta
+					status = (String)externalArchivesStatus.get(entryPath); 
+					if (status != null){
+						if (status == EXTERNAL_JAR_ADDED){
+							SourceFolderRoot root = (SourceFolderRoot) javaProject.getSourceFolderRoot(entryPath.toString());
+							if (VERBOSE){
+								System.out.println("- External JAR ADDED, affecting root: "+root.getElementName()); //$NON-NLS-1$
+							} 
+							elementAdded(root, null, null);
+							hasDelta = true;
+						} else if (status == EXTERNAL_JAR_CHANGED) {
+							SourceFolderRoot root = (SourceFolderRoot) javaProject.getSourceFolderRoot(entryPath.toString());
+							if (VERBOSE){
+								System.out.println("- External JAR CHANGED, affecting root: "+root.getElementName()); //$NON-NLS-1$
+							}
+							contentChanged(root);
+							hasDelta = true;
+						} else if (status == EXTERNAL_JAR_REMOVED) {
+							SourceFolderRoot root = (SourceFolderRoot) javaProject.getSourceFolderRoot(entryPath.toString());
+							if (VERBOSE){
+								System.out.println("- External JAR REMOVED, affecting root: "+root.getElementName()); //$NON-NLS-1$
+							}
+							elementRemoved(root, null, null);
+							hasDelta = true;
+						}
+					}
+				}
+			}
+		}
+		return hasDelta;
 	}
 }

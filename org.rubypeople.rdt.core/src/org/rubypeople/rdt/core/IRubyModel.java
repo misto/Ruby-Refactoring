@@ -6,6 +6,7 @@ package org.rubypeople.rdt.core;
 
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IWorkspace;
+import org.eclipse.core.runtime.IProgressMonitor;
 
 /**
  * @author cawilliams
@@ -80,4 +81,6 @@ public interface IRubyModel extends IParent, IRubyElement, IOpenable {
 	 * @since 2.1
 	 */
 	boolean contains(IResource resource);
+
+	void refreshExternalArchives(IRubyElement[] elements, IProgressMonitor monitor) throws RubyModelException;
 }

@@ -167,7 +167,7 @@ public class RubyModelManager implements IContentTypeChangeListener, ISavePartic
      */
     public DeltaProcessingState deltaState = new DeltaProcessingState();
 
-	private IndexManager indexManager = null;
+	public IndexManager indexManager = null;
     
     /**
      * Unique handle onto the RubyModel

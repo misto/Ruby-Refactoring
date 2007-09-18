@@ -20,6 +20,7 @@ import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.Path;
+import org.eclipse.core.runtime.SubProgressMonitor;
 import org.rubypeople.rdt.core.IOpenable;
 import org.rubypeople.rdt.core.IRubyElement;
 import org.rubypeople.rdt.core.IRubyModel;
@@ -312,4 +313,13 @@ public boolean contains(IResource resource) {
 	return true;
 }
 
+	/**
+	 * @see IRubyModel#refreshExternalArchives(IRubyElement[], IProgressMonitor)
+	 */
+	public void refreshExternalArchives(IRubyElement[] elementsScope, IProgressMonitor monitor) throws RubyModelException {
+		if (elementsScope == null){
+			elementsScope = new IRubyElement[] { this };
+		}
+		RubyModelManager.getRubyModelManager().getDeltaProcessor().checkExternalArchiveChanges(elementsScope, monitor);
+	}
 }
