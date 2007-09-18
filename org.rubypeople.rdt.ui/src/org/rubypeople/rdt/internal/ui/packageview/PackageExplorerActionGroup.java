@@ -59,6 +59,7 @@ import org.rubypeople.rdt.ui.IContextMenuConstants;
 import org.rubypeople.rdt.ui.actions.CCPActionGroup;
 import org.rubypeople.rdt.ui.actions.CustomFiltersActionGroup;
 import org.rubypeople.rdt.ui.actions.NavigateActionGroup;
+import org.rubypeople.rdt.ui.actions.ProjectActionGroup;
 import org.rubypeople.rdt.ui.actions.RubySearchActionGroup;
 
 class PackageExplorerActionGroup extends CompositeActionGroup {
@@ -108,7 +109,7 @@ class PackageExplorerActionGroup extends CompositeActionGroup {
 //			new ImportActionGroup(fPart),
 //			new BuildActionGroup(fPart),
 			new RubySearchActionGroup(fPart),
-//			new ProjectActionGroup(fPart), 
+			new ProjectActionGroup(fPart), 
 			fViewActionGroup= new ViewActionGroup(fPart.getRootMode(), workingSetListener, site),
 			fCustomFiltersActionGroup= new CustomFiltersActionGroup(fPart, viewer),
 //			new LayoutActionGroup(fPart),

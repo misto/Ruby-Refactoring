@@ -17,6 +17,9 @@ public class ActionMessages {
 	public static String ShowInPackageViewAction_tooltip;
 	public static String ShowInPackageViewAction_error_message;
 	public static String ShowInPackageViewAction_dialog_title;
+	public static String OpenProjectAction_dialog_title;
+	public static String OpenProjectAction_dialog_message;
+	public static String OpenProjectAction_error_message;
 	
 	static {
 		NLS.initializeMessages(BUNDLE_NAME, ActionMessages.class);
