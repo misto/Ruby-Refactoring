@@ -52,10 +52,7 @@ import org.osgi.framework.BundleContext;
 import org.rubypeople.rdt.core.search.IRubySearchConstants;
 import org.rubypeople.rdt.core.search.IRubySearchScope;
 import org.rubypeople.rdt.core.search.SearchEngine;
-import org.rubypeople.rdt.core.search.SearchMatch;
-import org.rubypeople.rdt.core.search.SearchParticipant;
 import org.rubypeople.rdt.core.search.SearchPattern;
-import org.rubypeople.rdt.core.search.SearchRequestor;
 import org.rubypeople.rdt.core.search.TypeNameRequestor;
 import org.rubypeople.rdt.internal.core.BatchOperation;
 import org.rubypeople.rdt.internal.core.DefaultWorkingCopyOwner;
@@ -1543,16 +1540,16 @@ public class RubyCore extends Plugin {
 					throw e;
 				// else indexes were not ready: catch the exception so that jars are still refreshed
 			}			
-//			final RubyModel model = RubyModelManager.getRubyModelManager().getRubyModel();
-//			// ensure external jars are refreshed (see https://bugs.eclipse.org/bugs/show_bug.cgi?id=93668)
-//			try {
-//				model.refreshExternalArchives(
-//					null/*refresh all projects*/, 
-//					monitor == null ? null : new SubProgressMonitor(monitor, 1) // 1% of the time is spent in jar refresh
-//				);
-//			} catch (RubyModelException e) {
-//				// refreshing failed: ignore
-//			}
+			final RubyModel model = RubyModelManager.getRubyModelManager().getRubyModel();
+			// ensure external jars are refreshed (see https://bugs.eclipse.org/bugs/show_bug.cgi?id=93668)
+			try {
+				model.refreshExternalArchives(
+					null/*refresh all projects*/, 
+					monitor == null ? null : new SubProgressMonitor(monitor, 1) // 1% of the time is spent in jar refresh
+				);
+			} catch (RubyModelException e) {
+				// refreshing failed: ignore
+			}
 		} finally {
 			if (monitor != null) monitor.done();
 		}
