@@ -11,9 +11,7 @@
 package org.rubypeople.rdt.internal.corext.util;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFile;
@@ -254,41 +252,6 @@ public abstract class RubyElementResourceMapping extends ResourceMapping {
 			return new ResourceTraversal[] {
 				new ResourceTraversal(new IResource[] {fUnit.getResource()}, IResource.DEPTH_ONE, 0)
 			};
-		}
-	}
-	
-	private static final class LogicalPackageResourceMapping extends ResourceMapping {
-		private final ISourceFolder[] fFragments;
-		private LogicalPackageResourceMapping(ISourceFolder[] fragments) {
-			fFragments= fragments;
-		}
-		public Object getModelObject() {
-			return fFragments;
-		}
-		public IProject[] getProjects() {
-			Set result= new HashSet();
-			for (int i= 0; i < fFragments.length; i++) {
-				result.add(fFragments[i].getRubyProject().getProject());
-			}
-			return (IProject[])result.toArray(new IProject[result.size()]);
-		}
-		public ResourceTraversal[] getTraversals(ResourceMappingContext context, IProgressMonitor monitor) throws CoreException {
-			List result= new ArrayList();
-			if (context instanceof RemoteResourceMappingContext) {
-				for (int i= 0; i < fFragments.length; i++) {
-					result.add(new ResourceTraversal(
-						new IResource[] {fFragments[i].getResource()}, IResource.DEPTH_ONE, 0));
-				}
-			} else {
-				for (int i= 0; i < fFragments.length; i++) {
-					result.add(new LocalPackageFragementTraversal(fFragments[i]));
-				}
-			}
-			return (ResourceTraversal[])result.toArray(new ResourceTraversal[result.size()]);
-		}
-		
-		public String getModelProviderId() {
-			return RubyModelProvider.RUBY_MODEL_PROVIDER_ID;
 		}
 	}
 	
