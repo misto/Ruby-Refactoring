@@ -190,13 +190,15 @@ public class RubyPartitionScanner implements IPartitionTokenScanner {
 				int start = se.getPosition().getStartOffset();
 				int length = fContents.length() - start;
 				QueuedToken qtoken = new QueuedToken(new Token(RUBY_MULTI_LINE_COMMENT), start, length);
-				RubyPartitionScanner scanner = new RubyPartitionScanner();
-				String possible = fContents.substring(0, se.getPosition().getStartOffset());
-				IDocument document = new Document(possible);
-				scanner.setRange(document, 0, possible.length());
-				IToken token;
-				while (!(token = scanner.nextToken()).isEOF()) {
-					push(new QueuedToken(token, scanner.getTokenOffset() + fOffset, scanner.getTokenLength()));
+				if (fOffset == 0) { // If we never got to read in beginning contents
+					RubyPartitionScanner scanner = new RubyPartitionScanner();
+					String possible = fContents.substring(0, se.getPosition().getStartOffset());
+					IDocument document = new Document(possible);
+					scanner.setRange(document, 0, possible.length());
+					IToken token;
+					while (!(token = scanner.nextToken()).isEOF()) {
+						push(new QueuedToken(token, scanner.getTokenOffset() + fOffset, scanner.getTokenLength()));
+					}
 				}
 				push(qtoken);
 				push(new QueuedToken(Token.EOF, start + length, 0));
