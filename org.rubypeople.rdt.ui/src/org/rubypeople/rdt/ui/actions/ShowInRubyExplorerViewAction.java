@@ -20,6 +20,7 @@ import org.rubypeople.rdt.core.IRubyElement;
 import org.rubypeople.rdt.core.RubyModelException;
 import org.rubypeople.rdt.internal.ui.IRubyHelpContextIds;
 import org.rubypeople.rdt.internal.ui.RubyPlugin;
+import org.rubypeople.rdt.internal.ui.actions.ActionMessages;
 import org.rubypeople.rdt.internal.ui.actions.SelectionConverter;
 import org.rubypeople.rdt.internal.ui.packageview.PackageExplorerPart;
 import org.rubypeople.rdt.internal.ui.rubyeditor.RubyEditor;

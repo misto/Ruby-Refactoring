@@ -81,6 +81,28 @@ public final class ActionMessages extends NLS {
 	public static String OpenTypeHierarchyAction_messages_unknown_import_decl;
 	public static String OpenTypeHierarchyAction_messages_no_types;
 	public static String OpenTypeHierarchyAction_messages_no_valid_ruby_element;
+	
+	public static String SurroundWithBeginRescueAction_label;
+	public static String SurroundWithBeginRescueAction_error;
+	public static String SurroundWithBeginRescueAction_dialog_title;
+
+	public static String QuickMenuAction_menuTextWithShortcut;
+	public static String ShowInPackageViewAction_label;
+	public static String ShowInPackageViewAction_description;
+	public static String ShowInPackageViewAction_tooltip;
+	public static String ShowInPackageViewAction_error_message;
+	public static String ShowInPackageViewAction_dialog_title;
+	public static String OpenProjectAction_dialog_title;
+	public static String OpenProjectAction_dialog_message;
+	public static String OpenProjectAction_error_message;
+	public static String RefreshAction_label;
+	public static String RefreshAction_toolTip;
+	public static String RefreshAction_progressMessage;
+	public static String RefreshAction_error_title;
+	public static String RefreshAction_error_message;
+	public static String RefreshAction_locationDeleted_message;
+	public static String RefreshAction_locationDeleted_title;
+	public static String BuildAction_label;
 
     static {
         NLS.initializeMessages(BUNDLE_NAME, ActionMessages.class);

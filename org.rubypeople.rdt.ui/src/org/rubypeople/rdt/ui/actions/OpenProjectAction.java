@@ -34,6 +34,7 @@ import org.eclipse.ui.actions.OpenResourceAction;
 import org.eclipse.ui.dialogs.ElementListSelectionDialog;
 import org.rubypeople.rdt.internal.ui.IRubyHelpContextIds;
 import org.rubypeople.rdt.internal.ui.RubyPlugin;
+import org.rubypeople.rdt.internal.ui.actions.ActionMessages;
 import org.rubypeople.rdt.internal.ui.actions.WorkbenchRunnableAdapter;
 import org.rubypeople.rdt.internal.ui.util.ExceptionHandler;
 import org.rubypeople.rdt.ui.RubyElementLabelProvider;

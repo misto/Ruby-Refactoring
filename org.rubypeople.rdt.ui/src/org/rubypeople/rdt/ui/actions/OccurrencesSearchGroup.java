@@ -25,6 +25,7 @@ import org.eclipse.ui.actions.ActionGroup;
 import org.eclipse.ui.keys.IBindingService;
 import org.eclipse.ui.texteditor.ITextEditorActionConstants;
 import org.rubypeople.rdt.internal.corext.util.Messages;
+import org.rubypeople.rdt.internal.ui.actions.ActionMessages;
 import org.rubypeople.rdt.internal.ui.rubyeditor.RubyEditor;
 import org.rubypeople.rdt.internal.ui.search.SearchMessages;
 
