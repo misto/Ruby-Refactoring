@@ -56,6 +56,7 @@ import org.rubypeople.rdt.internal.ui.wizards.buildpaths.newsourcepage.GenerateB
 import org.rubypeople.rdt.internal.ui.workingsets.ViewActionGroup;
 import org.rubypeople.rdt.internal.ui.workingsets.WorkingSetActionGroup;
 import org.rubypeople.rdt.ui.IContextMenuConstants;
+import org.rubypeople.rdt.ui.actions.BuildActionGroup;
 import org.rubypeople.rdt.ui.actions.CCPActionGroup;
 import org.rubypeople.rdt.ui.actions.CustomFiltersActionGroup;
 import org.rubypeople.rdt.ui.actions.NavigateActionGroup;
@@ -107,7 +108,7 @@ class PackageExplorerActionGroup extends CompositeActionGroup {
 //			new GenerateActionGroup(fPart), 
 //			fRefactorActionGroup= new RefactorActionGroup(fPart),
 //			new ImportActionGroup(fPart),
-//			new BuildActionGroup(fPart),
+			new BuildActionGroup(fPart),
 			new RubySearchActionGroup(fPart),
 			new ProjectActionGroup(fPart), 
 			fViewActionGroup= new ViewActionGroup(fPart.getRootMode(), workingSetListener, site),
