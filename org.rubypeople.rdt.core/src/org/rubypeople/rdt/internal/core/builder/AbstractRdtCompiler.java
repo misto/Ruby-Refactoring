@@ -1,9 +1,5 @@
 package org.rubypeople.rdt.internal.core.builder;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -26,8 +22,6 @@ public abstract class AbstractRdtCompiler {
     }
 
     protected abstract void removeMarkers(IMarkerManager markerManager);
-    protected abstract List<IFile> getFilesToCompile() throws CoreException;
-    protected abstract List getFilesToClear() throws CoreException;
 
     public void compile(IProgressMonitor monitor) throws CoreException {    
     	IRubyProject rubyProject = getRubyProject();
@@ -36,14 +30,13 @@ public abstract class AbstractRdtCompiler {
         	fParticipants[i].aboutToBuild(rubyProject);
         }
         BuildContext[] files = getBuildContexts();
-        int filesToClear = getFilesToClear().size();
-        int taskCount = (filesToClear) + (files.length * fParticipants.length);
+        int taskCount = files.length * (fParticipants.length + 1);
         
         monitor.beginTask("Building " + project.getName() + "...", taskCount);
         
         monitor.subTask("Removing Markers...");
         removeMarkers(markerManager);
-        monitor.worked(filesToClear);
+        monitor.worked(files.length);
 		
         monitor.subTask("Analyzing Files...");
         compileFiles(files, monitor);
@@ -68,17 +61,8 @@ public abstract class AbstractRdtCompiler {
  		}
     }
 
-	private BuildContext[] getBuildContexts() throws CoreException {
-		return getBuildContexts(getFilesToCompile());
-	}
-	
-    private BuildContext[] getBuildContexts(List<IFile> list) {
-		List<BuildContext> contexts = new ArrayList<BuildContext>();
-    	for (IFile file : list) {
-			contexts.add(new BuildContext(file));
-		}
-    	return contexts.toArray(new BuildContext[contexts.size()]);
-	}
+	abstract protected BuildContext[] getBuildContexts() throws CoreException;
+
 
 	private IRubyProject getRubyProject() {
 		return RubyCore.create(project);

@@ -10,12 +10,13 @@ import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IResourceDelta;
 import org.eclipse.core.resources.IResourceDeltaVisitor;
 import org.eclipse.core.runtime.CoreException;
+import org.rubypeople.rdt.core.compiler.BuildContext;
 import org.rubypeople.rdt.internal.core.util.Util;
 
 public class IncrementalRdtCompiler extends AbstractRdtCompiler {
 
-    private List filesToCompile;
-    private List filesToClear;
+    private List<BuildContext> contexts;
+    private List<IFile> filesToClear;
     private final IResourceDelta rootDelta;
 
     public IncrementalRdtCompiler(IProject project, IResourceDelta delta, 
@@ -35,43 +36,47 @@ public class IncrementalRdtCompiler extends AbstractRdtCompiler {
         }
     }
 
-    protected List getFilesToCompile() throws CoreException {
-    	if (filesToCompile == null) {
-    		analyzeFiles();
-    	}
-        return filesToCompile;
-    }
-
     private void analyzeFiles() throws CoreException {
-        filesToClear = new ArrayList();
-        filesToCompile = new ArrayList();
+        filesToClear = new ArrayList<IFile>();
+        contexts = new ArrayList<BuildContext>();
         
         rootDelta.accept(new IResourceDeltaVisitor() {
             public boolean visit(IResourceDelta delta) throws CoreException {
                 IResource resource = delta.getResource();
-                if (isRubyFile(resource)) {
+                if (isRubyFile(resource) || isERBFile(resource)) {
                     if (delta.getKind() == IResourceDelta.REMOVED) {
-                        filesToClear.add(resource);
+                        filesToClear.add((IFile)resource);
                     } else if (delta.getKind() == IResourceDelta.ADDED
                             || delta.getKind() == IResourceDelta.CHANGED) {
-                        filesToCompile.add(resource);
+                    	filesToClear.add((IFile)resource);
+                    	if (isERBFile(resource)) {
+                    		contexts.add(new ERBBuildContext((IFile)resource));
+                    	} else {
+                    		contexts.add(new BuildContext((IFile)resource));
+                    	}
                     }
                 }
                 return true;
             }
 
-            private boolean isRubyFile(IResource resource) {
+            private boolean isERBFile(IResource resource) {            	
+            	if (!(resource instanceof IFile))
+            		return false;
+            	String name = resource.getName();
+				return name.endsWith(".erb") || name.endsWith(".rhtml");
+			}
+
+			private boolean isRubyFile(IResource resource) {
                 return resource instanceof IFile && Util.isRubyLikeFileName(resource.getName());
             }});
-        filesToClear.addAll(filesToCompile);
     }
 
 	@Override
-	protected List getFilesToClear() throws CoreException {
-		if (filesToClear == null) {
+	protected BuildContext[] getBuildContexts() throws CoreException {
+		if (contexts == null) {
 			analyzeFiles();
 		}
-		return filesToClear;
+	    return contexts.toArray(new BuildContext[contexts.size()]);
 	}
 
 }

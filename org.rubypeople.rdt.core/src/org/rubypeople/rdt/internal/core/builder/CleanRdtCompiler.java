@@ -1,14 +1,16 @@
 package org.rubypeople.rdt.internal.core.builder;
 
+import java.util.ArrayList;
 import java.util.List;
 
-import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
+import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
+import org.rubypeople.rdt.core.compiler.BuildContext;
 
 public class CleanRdtCompiler extends AbstractRdtCompiler  {
 
-    private List<IFile> projectFiles;
+    private List<BuildContext> contexts;
 
     public CleanRdtCompiler(IProject project) {
         this(project, new MarkerManager());
@@ -22,20 +24,16 @@ public class CleanRdtCompiler extends AbstractRdtCompiler  {
         markerManager.removeProblemsAndTasksFor(project);
     }
 
-    protected List<IFile> getFilesToClear() throws CoreException {
-    	return getFilesToCompile();
-    }
-
-    protected List<IFile> getFilesToCompile() throws CoreException {
-    	if (projectFiles == null) {
-    		analyzeFiles();
-    	}
-        return projectFiles;
-    }
-
     private void analyzeFiles() throws CoreException {
-        ProjectFileFinder finder = new ProjectFileFinder(project);
-        projectFiles = finder.findFiles();
+    	contexts = new ArrayList<BuildContext>();
+    	project.accept(new BuildContextCollector(contexts), IResource.NONE);
     }
 
+	@Override
+	protected BuildContext[] getBuildContexts() throws CoreException {
+		if (contexts == null) {
+			analyzeFiles();
+		}
+	    return contexts.toArray(new BuildContext[contexts.size()]);
+	}
 }
