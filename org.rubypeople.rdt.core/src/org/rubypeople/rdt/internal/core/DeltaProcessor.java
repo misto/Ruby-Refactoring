@@ -795,28 +795,41 @@ public class DeltaProcessor {
     private void nonRubyResourcesChanged(Openable element, IResourceDelta delta)
             throws RubyModelException {
 
-        // reset non-java resources if element was open
-        if (element.isOpen()) {
-            RubyElementInfo info = (RubyElementInfo) element.getElementInfo();
-            switch (element.getElementType()) {
-            case IRubyElement.RUBY_MODEL:
-                ((RubyModelInfo) info).nonRubyResources = null;
-                currentDelta().addResourceDelta(delta);
-                return;
-            case IRubyElement.RUBY_PROJECT:
-                ((RubyProjectElementInfo) info).setNonRubyResources(null);
-                break;
-            }
-        }
+		// reset non-ruby resources if element was open
+		if (element.isOpen()) {
+			RubyElementInfo info = (RubyElementInfo)element.getElementInfo();
+			switch (element.getElementType()) {
+				case IRubyElement.RUBY_MODEL :
+					((RubyModelInfo) info).nonRubyResources = null;
+					currentDelta().addResourceDelta(delta);
+					return;
+				case IRubyElement.RUBY_PROJECT :
+					((RubyProjectElementInfo) info).setNonRubyResources(null);
+	
+					// if a package fragment root is the project, clear it too
+					RubyProject project = (RubyProject) element;
+					SourceFolderRoot projectRoot =
+						(SourceFolderRoot) project.getSourceFolderRoot(project.getProject());
+					if (projectRoot.isOpen()) {
+						((SourceFolderRootInfo) projectRoot.getElementInfo()).setNonRubyResources(
+							null);
+					}
+					break;
+				case IRubyElement.SOURCE_FOLDER :
+					 ((SourceFolderInfo) info).setNonRubyResources(null);
+					break;
+				case IRubyElement.SOURCE_FOLDER_ROOT :
+					 ((SourceFolderRootInfo) info).setNonRubyResources(null);
+			}
+		}
 
-        RubyElementDelta current = currentDelta();
-        RubyElementDelta elementDelta = current.find(element);
-        if (elementDelta == null) {
-            // don't use find after creating the delta as it can be null (see
-            // https://bugs.eclipse.org/bugs/show_bug.cgi?id=63434)
-            elementDelta = current.changed(element, IRubyElementDelta.F_CONTENT);
-        }
-        elementDelta.addResourceDelta(delta);
+		RubyElementDelta current = currentDelta();
+		RubyElementDelta elementDelta = current.find(element);
+		if (elementDelta == null) {
+			// don't use find after creating the delta as it can be null (see https://bugs.eclipse.org/bugs/show_bug.cgi?id=63434)
+			elementDelta = current.changed(element, IRubyElementDelta.F_CONTENT);
+		}
+		elementDelta.addResourceDelta(delta);
     }
 
     /*
