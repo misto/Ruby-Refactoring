@@ -43,6 +43,23 @@ public class TC_RubyPartitionScanner extends TestCase {
 	"=ne", 0);
 	    assert(true);
 	}	
+	
+	/**
+	 * http://www.aptana.com/trac/ticket/6052
+ 	 */
+	public void testBug6052() {
+		getContentType("# Use this class to maintain the decision process\n" +
+						"# To choose a next aprt of text etc.\n" +
+						"class Logic\n" +
+						"=begin\n" +
+						"  def initialize\n" +
+						"  end\n" +
+						"############################################################################################\n" +
+						"  private\n" +
+						"############################################################################################ \n" +
+						"end", 0);
+	    assert(true);
+	}
 
 	public void testPartitioningOfSingleLineComment() {
 		String source = "# This is a comment\n";
