@@ -175,13 +175,8 @@ public class SourceFolderProvider implements IPropertyChangeListener {
 		ArrayList topLevelElements= new ArrayList(elements.length);
 		for (int i= 0; i < elements.length; i++) {
 			IRubyElement iRubyElement= elements[i];
-			if (iRubyElement instanceof ISourceFolder && (((ISourceFolder)iRubyElement).isDefaultPackage())) {
-				Object[] children = ((ISourceFolder)iRubyElement).getRubyScripts();
-				for (int j = 0; j < children.length; j++) {
-					topLevelElements.add(children[j]);
-				}
-			//if the name of the SourceFolder is the top level package it will contain no "/" separators
-			} else if (iRubyElement instanceof ISourceFolder && (iRubyElement.getElementName().indexOf(File.separatorChar)==-1) && !(((ISourceFolder)iRubyElement).isDefaultPackage()) ) {
+			// for default src folder, grab it's scripts (unless it's part of project as src folder root)			
+			if (iRubyElement instanceof ISourceFolder && (iRubyElement.getElementName().indexOf(File.separatorChar)==-1) && !(((ISourceFolder)iRubyElement).isDefaultPackage()) ) {
 				topLevelElements.add(iRubyElement);
 			}
 		}	
