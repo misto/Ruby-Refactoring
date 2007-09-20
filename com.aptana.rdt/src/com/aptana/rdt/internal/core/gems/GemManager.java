@@ -663,8 +663,8 @@ public class GemManager implements IGemManager {
 	}
 
 	public void initialize() {
-		scheduleLoadingRemoteGems();
-		scheduleLoadingLocalGems();		
+		scheduleLoadingLocalGems();	
+		scheduleLoadingRemoteGems();			
 	}
 
 	private void scheduleLoadingLocalGems() {
@@ -673,10 +673,8 @@ public class GemManager implements IGemManager {
 			@Override
 			protected IStatus run(IProgressMonitor monitor) {
 				try {
-//					if (gems.isEmpty()) {
-						gems = loadLocalGems();
-						storeGemCache(gems, getConfigFile(LOCAL_GEMS_CACHE_FILE));
-//					}
+					gems = loadLocalGems();
+					storeGemCache(gems, getConfigFile(LOCAL_GEMS_CACHE_FILE));
 					isInitialized = true;
 					synchronized (listeners) {
 						for (GemListener listener : new ArrayList<GemListener>(listeners)) {
@@ -705,12 +703,10 @@ public class GemManager implements IGemManager {
 			@Override
 			protected IStatus run(IProgressMonitor monitor) {
 				try {
-//					if (remoteGems.isEmpty()) {
-						remoteGems = loadRemoteGems();
-						storeGemCache(remoteGems,
+					remoteGems = loadRemoteGems();
+					storeGemCache(remoteGems,
 								getConfigFile(REMOTE_GEMS_CACHE_FILE));
-						remoteGems = makeLogical(remoteGems);
-//					}
+					remoteGems = makeLogical(remoteGems);
 				} catch (Exception e) {
 					AptanaRDTPlugin.log(e);
 					return Status.CANCEL_STATUS;
