@@ -37,6 +37,7 @@ import org.rubypeople.rdt.core.ISourceFolderRoot;
 import org.rubypeople.rdt.core.RubyCore;
 import org.rubypeople.rdt.core.RubyModelException;
 import org.rubypeople.rdt.internal.core.builder.RubyBuilder;
+import org.rubypeople.rdt.internal.core.hierarchy.TypeHierarchy;
 import org.rubypeople.rdt.internal.core.search.indexing.IndexManager;
 import org.rubypeople.rdt.internal.core.util.CharOperation;
 import org.rubypeople.rdt.internal.core.util.Util;
@@ -431,8 +432,7 @@ public class DeltaProcessor {
                             stopDeltas();
                             checkProjectsBeingAddedOrRemoved(delta);
                             if (this.refreshedElements != null) {
-                            	// TODO Actually update external references too
-//								createExternalArchiveDelta(null);
+								createExternalArchiveDelta(null);
 							}
                             IRubyElementDelta translatedDelta = processResourceDelta(delta);
                             if (translatedDelta != null) {
@@ -447,7 +447,7 @@ public class DeltaProcessor {
 							listeners = this.state.elementChangedListeners;
 							listenerCount = this.state.elementChangedListenerCount;
 						}
-//						notifyTypeHierarchies(listeners, listenerCount);
+						notifyTypeHierarchies(listeners, listenerCount);
 						fire(null, ElementChangedEvent.POST_CHANGE);
                     } finally {
 						// workaround for bug 15168 circular errors not reported 
@@ -470,9 +470,8 @@ public class DeltaProcessor {
 				}
 				// this.processPostChange = false;
 				if(isAffectedBy(delta)) { // avoid populating for SYNC or MARKER deltas
-					// FIXME Update the loadpath markers
 					updateLoadpathMarkers(delta, updates);
-//					RubyBuilder.buildStarting();
+					RubyBuilder.buildStarting();
 				}
 				// does not fire any deltas
 				return;
@@ -480,6 +479,28 @@ public class DeltaProcessor {
         }
     }
 
+    private void notifyTypeHierarchies(IElementChangedListener[] listeners, int listenerCount) {
+		for (int i= 0; i < listenerCount; i++) {
+			final IElementChangedListener listener = listeners[i];
+			if (!(listener instanceof TypeHierarchy)) continue;
+    	 
+			// wrap callbacks with Safe runnable for subsequent listeners to be called when some are causing grief
+			SafeRunner.run(new ISafeRunnable() {
+				public void handleException(Throwable exception) {
+					Util.log(exception, "Exception occurred in listener of Ruby element change notification"); //$NON-NLS-1$
+				}
+				public void run() throws Exception {
+					TypeHierarchy typeHierarchy = (TypeHierarchy)listener;
+					if (typeHierarchy.hasFineGrainChanges()) {
+						// case of changes in primary working copies
+						typeHierarchy.needsRefresh = true;
+						typeHierarchy.fireChange();
+					}
+				}
+			});
+		}
+	}
+    
     /*
 	 * Update the .loadpath format, missing entries and cycle markers for the projects affected by the given delta.
 	 */

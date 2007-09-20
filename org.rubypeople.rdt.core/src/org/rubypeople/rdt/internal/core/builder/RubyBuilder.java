@@ -172,4 +172,12 @@ public class RubyBuilder extends IncrementalProjectBuilder {
 			// assume there were no problems
 		}
 	}
+	
+	public static void buildStarting() {
+		
+	}
+	
+	public static void buildFinished() {
+		
+	}
 }
