@@ -12,6 +12,7 @@ package org.rubypeople.rdt.ui;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.eclipse.core.resources.IFile;
@@ -198,7 +199,10 @@ public class StandardRubyElementContentProvider implements ITreeContentProvider 
 		for (int i = 0; i < fragments.length; i++) {
 			if (!(fragments[i] instanceof ISourceFolder)) continue;
 			ISourceFolder folder = (ISourceFolder) fragments[i];
-			if (folder.isDefaultPackage()) continue;
+			if (folder.isDefaultPackage()) {
+				list.addAll(Arrays.asList(folder.getRubyScripts()));
+				continue;
+			}
 			String name = folder.getElementName();
 			int index = name.indexOf(File.separatorChar);
 			if (index == -1) list.add(folder);

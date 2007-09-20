@@ -131,10 +131,7 @@ public class ExternalFileTypeInfo extends TypeInfo {
 	}
 		
 	public String getPath() {
-		StringBuffer result= new StringBuffer(fPath);
-//		result.append(IRubySearchScope.JAR_FILE_ENTRY_SEPARATOR);
-		getElementPath(result);
-		return result.toString();
+		return fPath;
 	}
 	
 	public long getContainerTimestamp() {

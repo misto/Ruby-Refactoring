@@ -369,6 +369,10 @@ public class PackageExplorerContentProvider extends StandardRubyElementContentPr
 			// have to handle additions to them specially. 
 			if (parent instanceof ISourceFolder) {
 				Object grandparent= internalGetParent(parent);
+				if (((ISourceFolder)parent).isDefaultPackage()) {
+					parent = grandparent;
+					grandparent = internalGetParent(parent);
+				}
 				// 1GE8SI6: ITPJUI:WIN98 - Rename is not shown in Packages View
 				// avoid posting a refresh to an unvisible parent
 				if (parent.equals(fInput)) {
