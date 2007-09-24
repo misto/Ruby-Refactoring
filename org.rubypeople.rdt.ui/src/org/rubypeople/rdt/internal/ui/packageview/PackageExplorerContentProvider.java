@@ -432,7 +432,7 @@ public class PackageExplorerContentProvider extends StandardRubyElementContentPr
 		IRubyElementDelta[] affectedChildren= delta.getAffectedChildren();
 		if (affectedChildren.length > 1) {
 			// a package fragment might become non empty refresh from the parent
-			if (element instanceof ISourceFolder) {
+			if (element instanceof ISourceFolder) {				
 				IRubyElement parent= (IRubyElement)internalGetParent(element);
 				// 1GE8SI6: ITPJUI:WIN98 - Rename is not shown in Packages View
 				// avoid posting a refresh to an unvisible parent
@@ -532,16 +532,28 @@ public class PackageExplorerContentProvider extends StandardRubyElementContentPr
 		// this could be optimized by handling all the added children in the parent
 		if ((status & IResourceDelta.REMOVED) != 0) {
 			if (parent instanceof ISourceFolder) {
+				Object grandparent= internalGetParent(parent);
+				// if grandparent is src folder root that is equal to project, refresh project
+				if (grandparent instanceof ISourceFolderRoot && ((ISourceFolderRoot)grandparent).getResource().equals(((ISourceFolderRoot)grandparent).getRubyProject().getProject())) {
+					parent = grandparent;
+					grandparent = internalGetParent(parent);
+				}				
 				// refresh one level above to deal with empty package filtering properly
-				postRefresh(internalGetParent(parent), PARENT, parent);
+				postRefresh(grandparent, PARENT, parent);
 				return true;
 			} else 
 				postRemove(resource);
 		}
 		if ((status & IResourceDelta.ADDED) != 0) {
 			if (parent instanceof ISourceFolder) {
+				Object grandparent= internalGetParent(parent);
+				// if grandparent is src folder root that is equal to project, refresh project
+				if (grandparent instanceof ISourceFolderRoot && ((ISourceFolderRoot)grandparent).getResource().equals(((ISourceFolderRoot)grandparent).getRubyProject().getProject())) {
+					parent = grandparent;
+					grandparent = internalGetParent(parent);
+				}				
 				// refresh one level above to deal with empty package filtering properly
-				postRefresh(internalGetParent(parent), PARENT, parent);	
+				postRefresh(grandparent, PARENT, parent);	
 				return true;
 			} else
 				postAdd(parent, resource);
