@@ -11,6 +11,7 @@ import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Plugin;
 import org.eclipse.core.runtime.Status;
@@ -20,6 +21,7 @@ import org.eclipse.core.runtime.preferences.IEclipsePreferences;
 import org.eclipse.core.runtime.preferences.IPreferencesService;
 import org.eclipse.core.runtime.preferences.InstanceScope;
 import org.osgi.framework.BundleContext;
+import org.rubypeople.rdt.core.RubyCore;
 import org.rubypeople.rdt.internal.core.RubyModelManager.EclipsePreferencesListener;
 import org.rubypeople.rdt.internal.launching.LaunchingPlugin;
 
@@ -27,6 +29,7 @@ import com.aptana.rdt.core.gems.Gem;
 import com.aptana.rdt.core.gems.GemListener;
 import com.aptana.rdt.core.gems.IGemManager;
 import com.aptana.rdt.internal.core.gems.GemManager;
+import com.aptana.rdt.launching.IGemRuntime;
 
 /**
  * The activator class controls the plug-in life cycle
@@ -413,5 +416,18 @@ public class AptanaRDTPlugin extends Plugin {
 	
 	public IGemManager getGemManager() {
 		return GemManager.getInstance();
+	}
+	
+	public static IPath findGem(String string) {
+		IGemManager gemManager = getDefault().getGemManager();
+		if (gemManager == null) return null;
+		IPath path = gemManager.getGemPath(string);
+		if (path == null) return null;
+		IPath resPath = new Path(IGemRuntime.GEMLIB_VARIABLE);
+		IPath rubyLibPath = RubyCore.getResolvedVariablePath(resPath);
+		for (int k= rubyLibPath.segmentCount(); k < path.segmentCount(); k++) {
+			resPath= resPath.append(path.segment(k));
+		}
+		return resPath;
 	}
 }
