@@ -26,8 +26,8 @@ import org.eclipse.ui.IViewPart;
 import org.eclipse.ui.IWorkbenchSite;
 import org.eclipse.ui.actions.ActionGroup;
 import org.eclipse.ui.actions.CloseResourceAction;
+import org.eclipse.ui.actions.CloseUnrelatedProjectsAction;
 import org.eclipse.ui.ide.IDEActionFactory;
-import org.eclipse.ui.internal.ide.actions.CloseUnrelatedProjectsAction;
 import org.rubypeople.rdt.ui.IContextMenuConstants;
 
 /**
