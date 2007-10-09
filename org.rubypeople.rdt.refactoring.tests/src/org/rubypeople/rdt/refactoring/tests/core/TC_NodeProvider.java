@@ -99,13 +99,13 @@ public class TC_NodeProvider extends FileTestCase {
 		assertEquals(3, nodes.length);
 		
 		assertEquals("var0", nodes[0].getName());
-		assertEquals(2, nodes[0].getIndex());
+		assertEquals(0, nodes[0].getIndex());
 
 		assertEquals("var1", nodes[1].getName());
-		assertEquals(3, nodes[1].getIndex());
+		assertEquals(1, nodes[1].getIndex());
 
 		assertEquals("var4", nodes[2].getName());
-		assertEquals(4, nodes[2].getIndex());
+		assertEquals(2, nodes[2].getIndex());
 	}
 	
 	public void testLocalNamesFromLocalAsgnNodes() {
@@ -113,8 +113,8 @@ public class TC_NodeProvider extends FileTestCase {
 		String[] names = SelectionNodeProvider.localNamesFromLocalAsgnNodes(NodeProvider.gatherLocalAsgnNodes(rootNode.getBodyNode()));
 		
 		assertEquals(5, names.length);
-		assertEquals("var0", names[2]);
-		assertEquals("var1", names[3]);
-		assertEquals("var4", names[4]);
+		assertEquals("var0", names[0]);
+		assertEquals("var1", names[1]);
+		assertEquals("var4", names[2]);
 	}
 }
