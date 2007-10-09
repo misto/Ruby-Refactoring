@@ -7,7 +7,8 @@ import java.util.Map;
 
 import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.debug.internal.ui.contexts.DebugContextManager;
-import org.eclipse.debug.internal.ui.contexts.provisional.IDebugContextListener;
+import org.eclipse.debug.ui.contexts.DebugContextEvent;
+import org.eclipse.debug.ui.contexts.IDebugContextListener;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.ui.IWindowListener;
@@ -206,6 +207,11 @@ public class EvaluationContextManager implements IDebugContextListener, IWindowL
 	 * @see org.eclipse.ui.IWindowListener#windowOpened(org.eclipse.ui.IWorkbenchWindow)
 	 */
 	public void windowOpened(IWorkbenchWindow window) {
+	}
+
+	public void debugContextChanged(DebugContextEvent event) {
+		// TODO Auto-generated method stub
+		
 	}
 
 }
