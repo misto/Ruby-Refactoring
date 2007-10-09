@@ -72,7 +72,7 @@ public class ArgsNodeWrapper implements INodeWrapper {
 	}
 
 	public boolean hasArgs() {
-		return argsNode.getArgsCount() != 0 || argsNode.getOptArgs() != null || argsNode.getBlockArgNode() != null || argsNode.getRestArg() > 0;
+		return argsNode.getArgs().size() != 0 || argsNode.getOptArgs() != null || argsNode.getBlockArgNode() != null || argsNode.getRestArg() > 0;
 	}
 
 	public ListNode getOptArgs() {
@@ -101,7 +101,7 @@ public class ArgsNodeWrapper implements INodeWrapper {
 	public boolean argsCountMatches(MethodCallNodeWrapper callNode) {
 		int callArgs = callNode.getArgsCount();
 		
-		int minArgs = argsNode.getArgsCount();
+		int minArgs = argsNode.getArgs().size();
 		int maxArgs = minArgs + getOptArgsCount();
 		if(argsNode.getRestArg() >= 0){
 			maxArgs = Integer.MAX_VALUE;

@@ -49,7 +49,7 @@ public class AfterLastNodeInMethodOffsetProvider extends OffsetProvider {
 		Node methodContentNode = methodNode.getWrappedNode().getBodyNode();
 		if (methodContentNode == null) {
 			ArgsNode argsNode = methodNode.getWrappedNode().getArgsNode();
-			if (argsNode.getArgsCount() > 0) {
+			if (argsNode.getArgs().size() > 0) {
 				return argsNode;
 			}
 			return methodNode.getWrappedNode().getNameNode();
