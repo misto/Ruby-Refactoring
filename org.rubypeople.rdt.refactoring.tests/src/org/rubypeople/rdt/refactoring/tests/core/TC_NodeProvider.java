@@ -42,6 +42,7 @@ import org.jruby.ast.RootNode;
 import org.jruby.lexer.yacc.IDESourcePosition;
 import org.rubypeople.rdt.refactoring.core.NodeProvider;
 import org.rubypeople.rdt.refactoring.core.SelectionNodeProvider;
+import org.rubypeople.rdt.refactoring.tests.FakeNodes;
 import org.rubypeople.rdt.refactoring.tests.FileTestCase;
 import org.rubypeople.rdt.refactoring.util.NodeUtil;
 
@@ -81,7 +82,7 @@ public class TC_NodeProvider extends FileTestCase {
 	}
 	
 	public void testNodeAssignableFrom() {
-		assertTrue(NodeUtil.nodeAssignableFrom(new DefnNode(null, null, null, null, null, null), DefnNode.class));	
+		assertTrue(NodeUtil.nodeAssignableFrom(FakeNodes.defn(), DefnNode.class));	
 		assertTrue(NodeUtil.nodeAssignableFrom(new LocalVarNode(null, 0, ""), LocalVarNode.class));
 	}
 	

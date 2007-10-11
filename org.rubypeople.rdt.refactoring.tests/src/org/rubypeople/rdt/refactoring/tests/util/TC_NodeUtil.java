@@ -4,13 +4,12 @@ import junit.framework.TestCase;
 
 import org.jruby.ast.BlockNode;
 import org.jruby.ast.ClassNode;
-import org.jruby.ast.DefnNode;
-import org.jruby.ast.DefsNode;
 import org.jruby.ast.InstVarNode;
 import org.jruby.ast.IterNode;
 import org.jruby.ast.RootNode;
 import org.jruby.parser.BlockStaticScope;
 import org.jruby.runtime.DynamicScope;
+import org.rubypeople.rdt.refactoring.tests.FakeNodes;
 import org.rubypeople.rdt.refactoring.util.NodeUtil;
 
 public class TC_NodeUtil extends TestCase {
@@ -19,11 +18,11 @@ public class TC_NodeUtil extends TestCase {
 	}
 
 	public void testHasScope_DefnNode() {
-		assertTrue(NodeUtil.hasScope(new DefnNode(null, null, null, null, null, null)));
+		assertTrue(NodeUtil.hasScope(FakeNodes.defn()));
 	}
 
 	public void testHasScope_DefsNode() {
-		assertTrue(NodeUtil.hasScope(new DefsNode(null, null, null, null, null, null)));
+		assertTrue(NodeUtil.hasScope(FakeNodes.defs()));
 	}
 
 	public void testHasScope_IterNode() {

@@ -179,7 +179,7 @@ public class LocalToFieldConverter extends MultiEditProvider {
 
 	private boolean hasSameClass(Node assignmentValue, Class<?>... klasses) {
 
-		for (Class klass : klasses) {
+		for (Class<?> klass : klasses) {
 			if (assignmentValue.getClass().equals(klass)) {
 				return true;
 			}

@@ -86,7 +86,7 @@ public class LocalToFieldEditProvider extends ReplaceEditProvider {
 	private Node stripComments(Node wrappedNode) {
 		
 		wrappedNode.getComments().clear();
-		List childs = wrappedNode.childNodes();
+		List<?> childs = wrappedNode.childNodes();
 		for(int i = 0; i < childs.size(); i++){
 			if(childs.get(i) instanceof Node)
 				stripComments((Node)childs.get(i));

@@ -75,14 +75,12 @@ import org.rubypeople.rdt.refactoring.util.Constants;
 
 public class NodeFactory {
 
-	public static final ISourcePosition pos = new IDESourcePosition();
-
-	public static final Node NULL_POSITION_NODE = new NewlineNode(pos, null);
+	public static final Node NULL_POSITION_NODE = new NewlineNode(new IDESourcePosition(), null);
 
 	public static FCallNode createSimpleAccessorNode(String definitionName, String attrName) {
-		ArrayNode argsNode = new ArrayNode(pos);
-		argsNode.add(new SymbolNode(pos, attrName));
-		return new FCallNode(pos, definitionName, argsNode);
+		ArrayNode argsNode = new ArrayNode(new IDESourcePosition());
+		argsNode.add(new SymbolNode(new IDESourcePosition(), attrName));
+		return new FCallNode(new IDESourcePosition(), definitionName, argsNode);
 	}
 
 	public static DefsNode createStaticMethodNode(String methodName, Collection<String> args, StaticScope scopeNode, Node body) {
@@ -95,13 +93,13 @@ public class NodeFactory {
 	}
 
 	public static DefnNode createMethodNode(String methodName, ArgsNode argsNode, Node body) {
-		ArgumentNode methodNameNode = new ArgumentNode(pos, methodName);
-		return new DefnNode(pos, methodNameNode, argsNode, new LocalStaticScope(null), body != null ? new NewlineNode(body.getPosition(), body) : null, Visibility.PUBLIC);
+		ArgumentNode methodNameNode = new ArgumentNode(new IDESourcePosition(), methodName);
+		return new DefnNode(new IDESourcePosition(), methodNameNode, argsNode, new LocalStaticScope(null), body != null ? new NewlineNode(body.getPosition(), body) : null, Visibility.PUBLIC);
 	}
 	
 	public static DefnNode createMethodNodeWithoutNewline(String methodName, ArgsNode argsNode, Node body) {
-		ArgumentNode methodNameNode = new ArgumentNode(pos, methodName);
-		return new DefnNode(pos, methodNameNode, argsNode, new LocalStaticScope(null), body, Visibility.PUBLIC);
+		ArgumentNode methodNameNode = new ArgumentNode(new IDESourcePosition(), methodName);
+		return new DefnNode(new IDESourcePosition(), methodNameNode, argsNode, new LocalStaticScope(null), body, Visibility.PUBLIC);
 	}
 	
 	public static DefsNode createStaticMethodNode(String className, String methodName, ArgsNodeWrapper argsNode, StaticScope scopeNode) {
@@ -109,7 +107,7 @@ public class NodeFactory {
 	}	
 	
 	public static DefsNode createStaticMethodNode(String className, String methodName, ArgsNode argsNode, StaticScope scopeNode, Node body) {
-		return new DefsNode(pos, createConstNode(className), createArgumentNode(methodName), argsNode, scopeNode, body);
+		return new DefsNode(new IDESourcePosition(), createConstNode(className), createArgumentNode(methodName), argsNode, scopeNode, body);
 	}
 
 	public static ArgsNode createArgsNode(String...args) {
@@ -123,11 +121,11 @@ public class NodeFactory {
 	public static ArgsNode createArgsNode(String[] args, ListNode optArgs, int restArgs, ArgumentNode restArgNode, BlockArgNode blockArg) {
 		ListNode argumentsList = null;
 		if (args.length > 0) {
-			argumentsList = new ListNode(pos);
+			argumentsList = new ListNode(new IDESourcePosition());
 			for (String arg : args)
-				argumentsList.add(new ArgumentNode(pos, arg));
+				argumentsList.add(new ArgumentNode(new IDESourcePosition(), arg));
 		}
-		ArgsNode argsNode = new ArgsNode(pos, argumentsList, optArgs, restArgs, restArgNode, blockArg);
+		ArgsNode argsNode = new ArgsNode(new IDESourcePosition(), argumentsList, optArgs, restArgs, restArgNode, blockArg);
 		return argsNode;
 	}
 
@@ -136,40 +134,40 @@ public class NodeFactory {
 	}
 
 	public static DefnNode createDefaultConstructor() {
-		return createConstructor(new BlockNode(pos));
+		return createConstructor(new BlockNode(new IDESourcePosition()));
 	}
 
 
 	public static InstAsgnNode createInstAsgnNode(String name, Node valueNode) {
-		return new InstAsgnNode(pos, name, valueNode);
+		return new InstAsgnNode(new IDESourcePosition(), name, valueNode);
 	}
 
 	public static InstVarNode createInstVarNode(String name) {
-		return new InstVarNode(pos, name);
+		return new InstVarNode(new IDESourcePosition(), name);
 	}
 
 	public static Node createSuperNode(Collection<String> args) {
 		if (args.isEmpty()) {
-			return new ZSuperNode(pos);
+			return new ZSuperNode(new IDESourcePosition());
 		}
 		ArrayNode argsNode = createArrayNodeWithLocalVarNodes(args);
-		return new SuperNode(pos, argsNode);
+		return new SuperNode(new IDESourcePosition(), argsNode);
 	}
 
 	private static ArrayNode createArrayNodeWithLocalVarNodes(Collection<String> args) {
-		ArrayNode arrayNode = new ArrayNode(pos);
+		ArrayNode arrayNode = new ArrayNode(new IDESourcePosition());
 		for (String name : args) {
-			arrayNode.add(new LocalVarNode(pos, 0, name));
+			arrayNode.add(new LocalVarNode(new IDESourcePosition(), 0, name));
 		}
 		return arrayNode;
 	}
 
 	public static BlockNode createBlockNode() {
-		return new BlockNode(pos);
+		return new BlockNode(new IDESourcePosition());
 	}
 
 	public static BlockNode createBlockNode(Node...content) {
-		BlockNode blockNode = new BlockNode(pos);
+		BlockNode blockNode = new BlockNode(new IDESourcePosition());
 		for (Node node : content) {
 			blockNode.add(node);
 		}
@@ -204,11 +202,11 @@ public class NodeFactory {
 	}
 
 	public static NewlineNode createNewLineNode(Node nextNode) {
-		return new NewlineNode(pos, nextNode);
+		return new NewlineNode(new IDESourcePosition(), nextNode);
 	}
 
 	public static ListNode createListNode(Collection<? extends Node> nodes) {
-		ListNode listNode = new ListNode(pos);
+		ListNode listNode = new ListNode(new IDESourcePosition());
 		for (Node aktNode : nodes) {
 			listNode.add(aktNode);
 		}
@@ -216,24 +214,24 @@ public class NodeFactory {
 	}
 
 	public static ListNode createListNode() {
-		return new ListNode(pos);
+		return new ListNode(new IDESourcePosition());
 	}
 
 	public static ClassNode createClassNode(String className, Node scopeNode) {
-		Colon2Node classNameNode = new Colon2Node(pos, null, className);
-		return new ClassNode(pos, classNameNode, new LocalStaticScope(null), scopeNode, null);
+		Colon2Node classNameNode = new Colon2Node(new IDESourcePosition(), null, className);
+		return new ClassNode(new IDESourcePosition(), classNameNode, new LocalStaticScope(null), scopeNode, null);
 	}
 
 	public static Node createCommentNode(String commentValue) {
-		return new CommentNode(pos, commentValue);
+		return new CommentNode(new IDESourcePosition(), commentValue);
 	}
 
 	public static ClassVarNode createClassVarNode(String name) {
-		return new ClassVarNode(pos, name);
+		return new ClassVarNode(new IDESourcePosition(), name);
 	}
 
 	public static ClassVarAsgnNode createClassVarAsgnNode(String name, Node valueNode) {
-		return new ClassVarAsgnNode(pos, name, valueNode);
+		return new ClassVarAsgnNode(new IDESourcePosition(), name, valueNode);
 	}
 
 	public static Node createMethodCallNode(String name, Collection<? extends Node> arguments) {
@@ -254,15 +252,15 @@ public class NodeFactory {
 	}
 
 	public static FCallNode createFCallNode(String name, Collection<? extends Node> arguments) {
-		return new FCallNode(pos, name, createArrayNode(arguments));
+		return new FCallNode(new IDESourcePosition(), name, createArrayNode(arguments));
 	}
 	
 	public static FCallNode createFCallNode(String name, Node argumentNode){
-		return new FCallNode(pos, name, argumentNode);
+		return new FCallNode(new IDESourcePosition(), name, argumentNode);
 	}
 
 	public static ArrayNode createArrayNode(Collection<? extends Node> nodes) {
-		ArrayNode arrNode = new ArrayNode(pos);
+		ArrayNode arrNode = new ArrayNode(new IDESourcePosition());
 		for (Node aktNode : nodes) {
 			arrNode.add(aktNode);
 		}
@@ -270,26 +268,26 @@ public class NodeFactory {
 	}
 
 	public static Node createVCallNode(String name) {
-		return new VCallNode(pos, name);
+		return new VCallNode(new IDESourcePosition(), name);
 	}
 
 	public static LocalAsgnNode createLocalAsgnNode(String name, int id, Node valueNode) {
-		return new LocalAsgnNode(pos, name, id, valueNode);
+		return new LocalAsgnNode(new IDESourcePosition(), name, id, valueNode);
 	}
 
 	public static MultipleAsgnNode createMultipleAsgnNode(Collection<? extends Node> headNodes, Node valueNode) {
 		ListNode listNode = createListNode(headNodes);
-		MultipleAsgnNode multipleAsgnNode = new MultipleAsgnNode(pos, listNode, null);
+		MultipleAsgnNode multipleAsgnNode = new MultipleAsgnNode(new IDESourcePosition(), listNode, null);
 		multipleAsgnNode.setValueNode(valueNode);
 		return multipleAsgnNode;
 	}
 
 	public static SymbolNode createSymboleNode(String symbolName) {
-		return new SymbolNode(pos, symbolName);
+		return new SymbolNode(new IDESourcePosition(), symbolName);
 	}
 
 	public static DVarNode createDVarNode(String name) {
-		return new DVarNode(pos, 0, name);
+		return new DVarNode(new IDESourcePosition(), 0, name);
 	}
 
 	public static ISourcePosition unionPositions(ISourcePosition first, ISourcePosition second) {
@@ -351,40 +349,40 @@ public class NodeFactory {
 	}
 
 	public static CallNode createCallNode(Node receiverNode,String name,Node argsNode) {
-		return new CallNode(pos, receiverNode, name, argsNode);
+		return new CallNode(new IDESourcePosition(), receiverNode, name, argsNode);
 	}
 
 	public static ArgumentNode createArgumentNode(String name) {
-		return new ArgumentNode(pos, name);
+		return new ArgumentNode(new IDESourcePosition(), name);
 	}
 	
 	public static FCallNode createAccessorNode(AttrAccessorNodeWrapper accessor) {
-		ArrayNode argsNode = new ArrayNode(pos);
-		argsNode.add(new SymbolNode(pos, accessor.getAttrName()));
-		return new FCallNode(pos, accessor.getAccessorTypeName(), argsNode);
+		ArrayNode argsNode = new ArrayNode(new IDESourcePosition());
+		argsNode.add(new SymbolNode(new IDESourcePosition(), accessor.getAttrName()));
+		return new FCallNode(new IDESourcePosition(), accessor.getAccessorTypeName(), argsNode);
 	}
 
 	public static ConstNode createConstNode(String name) {
-		return new ConstNode(pos, name);
+		return new ConstNode(new IDESourcePosition(), name);
 	}
 
 	public static ArgsCatNode createArgsCatNode(Node firstNode, Node secondNode) {
-		return new ArgsCatNode(pos, firstNode, secondNode);
+		return new ArgsCatNode(new IDESourcePosition(), firstNode, secondNode);
 	}
 
 	public static SelfNode createSelfNode() {
-		return new SelfNode(pos);
+		return new SelfNode(new IDESourcePosition());
 	}
 
 	public static ArrayNode createArrayNode() {
-		return new ArrayNode(pos);
+		return new ArrayNode(new IDESourcePosition());
 	}
 
 	public static Node createLocalVarNode(String argName) {
-		return new LocalVarNode(pos, 0, argName);
+		return new LocalVarNode(new IDESourcePosition(), 0, argName);
 	}
 
 	public static Node createConstDeclNode(String name, Node valueNode) {
-		return new ConstDeclNode(pos, name, null, valueNode);
+		return new ConstDeclNode(new IDESourcePosition(), name, null, valueNode);
 	}
 }

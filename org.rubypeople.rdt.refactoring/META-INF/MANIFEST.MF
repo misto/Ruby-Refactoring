@@ -6,6 +6,12 @@ Bundle-Version: 0.0.0
 Bundle-Activator: org.rubypeople.rdt.refactoring.RefactoringPlugin
 Bundle-Localization: plugin
 Export-Package: .,
+ org.jruby,
+ org.jruby.ast,
+ org.jruby.ast.visitor.rewriter,
+ org.jruby.lexer.yacc,
+ org.jruby.parser,
+ org.jruby.runtime,
  org.rubypeople.rdt.refactoring,
  org.rubypeople.rdt.refactoring.action,
  org.rubypeople.rdt.refactoring.classnodeprovider,

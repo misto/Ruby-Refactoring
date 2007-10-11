@@ -38,10 +38,12 @@ import org.jruby.ast.NewlineNode;
 import org.jruby.ast.RootNode;
 import org.jruby.lexer.yacc.IDESourcePosition;
 import org.jruby.lexer.yacc.ISourcePosition;
+import org.jruby.parser.BlockStaticScope;
 import org.rubypeople.rdt.refactoring.documentprovider.StringDocumentProvider;
 import org.rubypeople.rdt.refactoring.nodewrapper.ClassNodeWrapper;
 import org.rubypeople.rdt.refactoring.nodewrapper.MethodNodeWrapper;
 import org.rubypeople.rdt.refactoring.nodewrapper.RealClassNodeWrapper;
+import org.rubypeople.rdt.refactoring.tests.FakeNodes;
 
 public class TC_MethodNodeWrapper extends TestCase {
 
@@ -54,17 +56,17 @@ public class TC_MethodNodeWrapper extends TestCase {
 	}
 
 	private MethodNodeWrapper createReaderMethod(String name) {
-		MethodNodeWrapper wrapper = new MethodNodeWrapper(new DefnNode(EMPTY_POSITION, new ArgumentNode(EMPTY_POSITION, name), new ArgsNode(EMPTY_POSITION, null, null, 0, null, null), null, null, null), klass);
+		MethodNodeWrapper wrapper = new MethodNodeWrapper(FakeNodes.defn(name), klass);
 		return wrapper;
 	}
 	
 	private MethodNodeWrapper createWriterMethod(String name) {
-		MethodNodeWrapper wrapper = new MethodNodeWrapper(new DefnNode(EMPTY_POSITION, new ArgumentNode(EMPTY_POSITION, name), new ArgsNode(EMPTY_POSITION, new ArrayNode(EMPTY_POSITION, new ArgumentNode(EMPTY_POSITION, "value")), null, 0, null, null), null, null, null), klass);
+		MethodNodeWrapper wrapper = new MethodNodeWrapper(new DefnNode(EMPTY_POSITION, new ArgumentNode(EMPTY_POSITION, name), new ArgsNode(EMPTY_POSITION, new ArrayNode(EMPTY_POSITION, new ArgumentNode(EMPTY_POSITION, "value")), null, 0, null, null), new BlockStaticScope(null), null, null), klass);
 		return wrapper;
 	}
 	
 	private MethodNodeWrapper createInvalidWriterMethod(String name) {
-		MethodNodeWrapper wrapper = new MethodNodeWrapper(new DefnNode(EMPTY_POSITION, new ArgumentNode(EMPTY_POSITION, name), new ArgsNode(EMPTY_POSITION, new ArrayNode(EMPTY_POSITION, new ArgumentNode(EMPTY_POSITION, "value")).add(new ArgumentNode(EMPTY_POSITION, "value2")), null, 0, null, null), null, null, null), klass);
+		MethodNodeWrapper wrapper = new MethodNodeWrapper(new DefnNode(EMPTY_POSITION, new ArgumentNode(EMPTY_POSITION, name), new ArgsNode(EMPTY_POSITION, new ArrayNode(EMPTY_POSITION, new ArgumentNode(EMPTY_POSITION, "value")).add(new ArgumentNode(EMPTY_POSITION, "value2")), null, 0, null, null), new BlockStaticScope(null), null, null), klass);
 		return wrapper;
 	}
 

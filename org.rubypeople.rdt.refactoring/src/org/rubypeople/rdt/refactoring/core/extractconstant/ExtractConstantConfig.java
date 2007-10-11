@@ -10,8 +10,8 @@
 package org.rubypeople.rdt.refactoring.core.extractconstant;
 
 import org.jruby.ast.Node;
+import org.jruby.ast.visitor.rewriter.ReWriteVisitor;
 import org.rubypeople.rdt.core.RubyConventions;
-import org.rubypeople.rdt.internal.core.util.ASTUtil;
 import org.rubypeople.rdt.refactoring.core.NodeFactory;
 import org.rubypeople.rdt.refactoring.core.RefactoringConfig;
 import org.rubypeople.rdt.refactoring.core.SelectionInformation;
@@ -78,7 +78,7 @@ public class ExtractConstantConfig extends RefactoringConfig {
 	}
 	
 	private String extractConstantName(Node node) {
-		String name = ASTUtil.stringRepresentation(node);
+		String name = ReWriteVisitor.createCodeFromNode(node, "");
 		name = trim(name);				
 		if (RubyConventions.validateConstant(name).isOK())
 			return name;
