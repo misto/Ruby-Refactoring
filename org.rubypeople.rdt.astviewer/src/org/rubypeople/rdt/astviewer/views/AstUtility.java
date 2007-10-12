@@ -29,8 +29,10 @@
 package org.rubypeople.rdt.astviewer.views;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Iterator;
 
+import org.jruby.ast.CommentNode;
 import org.jruby.ast.NewlineNode;
 import org.jruby.ast.Node;
 import org.jruby.ast.RootNode;
@@ -56,7 +58,7 @@ public class AstUtility {
 			str.append(name.substring(name.lastIndexOf(".") + 1, name.length()));
 			if(it.hasNext())
 				str.append(", ");
-		} 
+		} 		
 		return str.toString();
 	}
 	
@@ -74,6 +76,13 @@ public class AstUtility {
 		posString.append(":");
 		posString.append(n.getPosition().getEndOffset());
 		posString.append("]");
+		
+		Collection comments = n.getComments();
+		Iterator commentItr = comments.iterator();
+		while(commentItr.hasNext()){
+			posString.append("\n").append(((CommentNode)commentItr.next()).getContent());
+		}
+		
 		return posString.toString();
 	}
 

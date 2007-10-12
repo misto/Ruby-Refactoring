@@ -50,6 +50,8 @@ import org.jruby.lexer.yacc.LexerSource;
 import org.jruby.parser.DefaultRubyParser;
 import org.jruby.parser.ParserConfiguration;
 import org.jruby.parser.RubyParserPool;
+import org.jruby.parser.postprocessor.DefaultCommentPlacer;
+//import org.jruby.parser.postprocessor.DefaultCommentPlacer;
 import org.rubypeople.rdt.astviewer.Activator;
 import org.rubypeople.rdt.internal.ui.rubyeditor.RubyEditor;
 
@@ -120,8 +122,9 @@ class ViewContentProvider implements IStructuredContentProvider, ITreeContentPro
 	public Node getRootNode() {
 		LexerSource lexerSource;
 		try {
-			ParserConfiguration config = new ParserConfiguration(1, true, false);
+			ParserConfiguration config = new ParserConfiguration(0, true, false);
 			lexerSource = LexerSource.getSource(getName(), new InputStreamReader(getContents()), null, config);
+			config.addPostProcessor(new DefaultCommentPlacer());
 			return parser.parse(config, lexerSource).getAST();
 		} catch (CoreException e) {
 			return null;
