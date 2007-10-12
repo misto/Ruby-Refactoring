@@ -45,7 +45,7 @@ public class FieldRenameEditProvider extends ReplaceEditProvider {
 		super(false);
 		this.fieldItem = fieldItem;
 		this.newName = newName;
-		this.position = fieldItem.getFieldNode().getPosition();
+		this.position = fieldItem.getFieldNode().getPositionIncludingComments();
 	}
 	
 	@Override

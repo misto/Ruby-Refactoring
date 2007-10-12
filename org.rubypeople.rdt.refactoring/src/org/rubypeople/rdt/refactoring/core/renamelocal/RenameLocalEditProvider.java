@@ -134,7 +134,7 @@ public class RenameLocalEditProvider extends MultiEditProvider implements Observ
 	protected Collection<EditProvider> getEditProviders() {
 		Collection<EditProvider> edits = new ArrayList<EditProvider>();
 		for (Node n : renameVariables()) {
-			edits.add(new SimpleNodeEditProvider(new NewlineNode(n.getPosition(), n)));
+			edits.add(new SimpleNodeEditProvider(new NewlineNode(n.getPositionIncludingComments(), n)));
 		}
 		return edits;
 	}
