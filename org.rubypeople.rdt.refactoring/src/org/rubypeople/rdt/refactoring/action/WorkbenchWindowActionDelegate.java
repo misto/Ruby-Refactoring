@@ -35,6 +35,7 @@ import org.eclipse.ui.IEditorActionDelegate;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.IWorkbenchWindowActionDelegate;
+import org.rubypeople.rdt.core.RubyModelException;
 import org.rubypeople.rdt.internal.ui.RubyPlugin;
 import org.rubypeople.rdt.refactoring.core.RubyRefactoring;
 import org.rubypeople.rdt.refactoring.core.TextSelectionProvider;
@@ -60,7 +61,11 @@ public abstract class WorkbenchWindowActionDelegate implements IWorkbenchWindowA
 			RubyPlugin.log(e);
 		}
 		
-		new RefactoringAction(klass, name, new TextSelectionProvider(action)).run();
+		try {
+			new RefactoringAction(klass, name, new TextSelectionProvider(action)).run();
+		} catch (RubyModelException e) {
+			RubyPlugin.log(e);
+		}
 	}
 
 	public void dispose() {

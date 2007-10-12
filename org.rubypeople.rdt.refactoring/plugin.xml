@@ -10,7 +10,7 @@
       point="org.eclipse.ui.popupMenus">
    <objectContribution
          id="org.rubypeople.rdt.refactoring.refactoringContext"
-         objectClass="org.eclipse.core.resources.IFile">
+         objectClass="org.rubypeople.rdt.core.IRubyScript">
          <menu
                id="org.rubypeople.rdt.refactoring.refactoringMenu"
                label="%rubyRefactoring.refactoringMenuLabel"
@@ -24,17 +24,6 @@
             label="Rename"
             menubarPath="org.rubypeople.rdt.refactoring.refactoringMenu/org.rubypeople.rdt.refactoring.refactoringGroup">
       </action>
-      <visibility>
-         <and>
-            <objectClass
-                  name="org.eclipse.core.resources.IResource">
-            </objectClass>
-            <objectState
-                  name="name"
-                  value="*.rb">
-            </objectState>
-         </and>
-      </visibility>
    </objectContribution>     
 </extension>
 
@@ -358,8 +347,7 @@
    <command
          categoryId="org.rubypeople.rdt.refactoring.commands.refactoring"
          id="org.rubypeople.rdt.refactoring.command.ConvertTempToField"
-         name="%rubyRefactoring.ConvertTempToFieldLabel">
-   </command>
+         name="%rubyRefactoring.ConvertTempToFieldLabel"/>
    <command
          categoryId="org.rubypeople.rdt.refactoring.commands.refactoring"
          id="org.rubypeople.rdt.refactoring.command.PushDown"
@@ -527,9 +515,9 @@
          <part
                id="org.rubypeople.rdt.ui.EditorRubyFile">
          </part>
-         <!--<part
+         <part
                id="org.rubypeople.rdt.ui.ViewRubyResources">
-         </part>-->
+         </part>
       </actionSetPartAssociation>
    </extension>
 

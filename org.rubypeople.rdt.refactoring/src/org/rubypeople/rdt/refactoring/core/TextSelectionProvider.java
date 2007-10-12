@@ -28,7 +28,6 @@
 
 package org.rubypeople.rdt.refactoring.core;
 
-import org.eclipse.core.resources.IFile;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.text.ITextSelection;
 import org.eclipse.jface.text.TextSelection;
@@ -39,6 +38,7 @@ import org.eclipse.ui.internal.handlers.CommandLegacyActionWrapper;
 import org.rubypeople.rdt.core.RubyModelException;
 import org.rubypeople.rdt.internal.core.Member;
 import org.rubypeople.rdt.internal.core.MemberElementInfo;
+import org.rubypeople.rdt.internal.core.RubyScript;
 import org.rubypeople.rdt.internal.ui.RubyPlugin;
 import org.rubypeople.rdt.internal.ui.rubyeditor.RubyEditor;
 
@@ -49,7 +49,7 @@ public class TextSelectionProvider {
 	private int end;
 	private int caret;
 
-	public TextSelectionProvider(IAction action) {
+	public TextSelectionProvider(IAction action) throws RubyModelException {
 		
 		if (invokedFromContextMenu(action) || invokedFromMenu(action) || invokedFromShortcut(action)) {
 			initEditor();
@@ -83,8 +83,7 @@ public class TextSelectionProvider {
 		caret = editor.getCaretPosition().getOffset();
 	}
 
-	@SuppressWarnings("restriction") //$NON-NLS-1$
-	private void initOutline(IAction action) {
+	private void initOutline(IAction action) throws RubyModelException {
 		TreeSelection selection = (TreeSelection) ((PluginAction) action).getSelection();
 		Object selectedObject = selection.toArray()[0];
 		if (selectedObject instanceof Member) {
@@ -97,8 +96,8 @@ public class TextSelectionProvider {
 			} catch (RubyModelException e) {
 				RubyPlugin.log(e);
 			}
-		} else if (selectedObject instanceof IFile) {
-			activeDocument = ((IFile) selectedObject).getFullPath().toString();
+		} else if (selectedObject instanceof RubyScript) {
+			activeDocument = ((RubyScript) selectedObject).getCorrespondingResource().getFullPath().toString();
 		}
 	}
 
