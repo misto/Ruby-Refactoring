@@ -1,0 +1,40 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+		<title>Merge Class Parts in File</title>
+		<link rel="stylesheet" type="text/css" href="../../format.css">
+	</head>
+	<body>
+		<h1>Merge Class Parts in File</h1>
+		<h2>Description</h2>
+		In Ruby it is allowed to declare a class at several places in the same or in different files.
+		Class declarations following after a first one will logically be added to the first class
+		declaration. This language feature is called open classes.<br>
+		So an instance of a Ruby class will provide the combined functionality of all the class
+		declaration parts even when they are spread over several files.
+		The Merge Ruby Class Parts refactoring pulls all those class declarations together and
+		merges them into one single part. This might be useful to get a better overview in a
+		larger Ruby project.<br>
+		This refactoring works for merging several class parts distributed over two or more files. 
+		<h3>Conditions</h3>
+			<list>
+			<li>The active file needs to have at least one other file included which contains
+			one or more parts of classes in the active file.
+			</li>
+			</list>
+		
+		<h2>Options</h2>
+		<p><img src="images/merge_with_external_class_parts_options.png" alt="Merge With External Class Parts"></p><br>
+		
+		<p>In the tree all classes of the current file which have several parts in other files are listed. The target
+		class will be merged with the checked parts in the required files.<br>
+		</p>
+		
+		<hr>
+		<a href="http://ifsoftware.ch"><img src="images/logo_small.gif" border="0" alt="Institute for Software"></a><br>
+	 	<p><a href="mailto:ifs@hsr.ch?subject=Ruby%20Refactoring%3A%20Merge%20With%20External%20Class%20Parts">Feedback</a></p>
+		
+	</body>
+</html>

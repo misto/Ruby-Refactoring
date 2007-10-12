@@ -1,0 +1,40 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+		<title>Inline Method</title>
+		<link rel="stylesheet" type="text/css" href="../../format.css">
+	</head>
+	<body>
+		<h1>Inline Method</h1>
+		<h2>Description</h2>
+		The Inline Method refactoring removes a method and replaces the call with its content.
+		This might make sense if you have almost empty methods without much logic, perhaps
+		after applying other refactorings. Generally having multiple methods with clear names
+		is better than one big chunk of code.<br>
+		<h3>Conditions</h3>
+		<list>
+			<li>The caret has to be set at a method call to invoke this refactoring.</li>
+		</list>
+		
+		<h2>Options</h2>
+		<p><img src="images/inline_method_options.png" alt="Inline Method"></p>
+		
+	
+		<p><table border="1">
+		  <tr>
+		    <th>Option</th>
+		    <th>Description</th>
+		  </tr>
+		  <tr>
+		    <td>Delete method declaration</td>
+		    <td>If the inlined method is not used anymore, its definition can be removed by checking this flag.</td>
+		  </tr>
+		</table></p>
+		<hr>
+		<a href="http://ifsoftware.ch"><img src="images/logo_small.gif" border="0" alt="Institute for Software"></a><br>
+	 	<p><a href="mailto:ifs@hsr.ch?subject=Ruby%20Refactoring%3A%20Inline%20Method">Feedback</a></p>
+		
+	</body>
+</html>

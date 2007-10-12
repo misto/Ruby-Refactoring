@@ -1,0 +1,46 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+		<title>Move Field</title>
+		<link rel="stylesheet" type="text/css" href="../../format.css">
+	</head>
+	<body>
+		<h1>Move Field</h1>
+		<h2>Description</h2>
+		This refactoring moves, as its name says, a field from one class into another one. This is
+		useful if the responsibility for a field is not in the owning class, but in
+		another one. In this case, the field should better be moved to that class.<br>
+		References to that field will be updated and point then to the new field.
+		<h3>Conditions</h3>
+			<list>
+			<li>The caret has to be set at the field which should be moved.</li>
+			</list>
+		<h2>Options</h2>
+		<p><img src="images/move_field_options.png" alt="Move Field"></p><br>
+		To move a field to another class, there has to be at least one other class visible to the current fields class.
+		And an instance of this class has to be accessible through another field of the current class because the
+		references have to be updated. The possible classes and fields are listed in the dialog:<br>
+		
+		<p><table border="1">
+		  <tr>
+		    <th>Option</th>
+		    <th>Description</th>
+		  </tr>
+		  <tr>
+		    <td>Move to class</td>
+		    <td>Here the target class can be selected among the possible target classes to move the field to.</td>
+		  </tr>
+		  <tr>
+		    <td>Class is accessible by</td>
+		    <td>The field which can be selected here has to point at an instance of the class seleced as target.</td>
+		  </tr>
+		</table></p>
+		
+		<hr>
+		<a href="http://ifsoftware.ch"><img src="images/logo_small.gif" border="0" alt="Institute for Software"></a><br>
+	 	<p><a href="mailto:ifs@hsr.ch?subject=Ruby%20Refactoring%3A%20Move%20Field">Feedback</a></p>
+		
+	</body>
+</html>

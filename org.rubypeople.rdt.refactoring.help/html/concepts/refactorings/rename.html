@@ -1,0 +1,43 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+		<title>Rename</title>
+		<link rel="stylesheet" type="text/css" href="../../format.css">
+	</head>
+	<body>
+		<h1>Rename</h1>
+		<h2>Description</h2>
+		The Rename refactoring can handle several items in the Ruby code. Depending on the selection a different
+		dialog is opened providing specific options for the refactoring process.<br>
+		The following items can be renamed:
+		
+		<ul>
+		  <li>Class</li>
+		  <li>Field</li>
+		  <li>File</li>
+		  <li>Local Variable</li>
+		  <li>Method</li>
+		  <li>Module</li>
+		</ul>
+		
+		<h3>Conditions</h3>
+		<list>
+		<li>To rename an item from the list above, the caret has to be set in its name. The refactoring
+		recognizes itself what to rename.
+		</list>
+		<h2>Options</h2>
+		<p><img src="images/rename_options.png" alt="Rename"></p><br>
+		For the renaming refactoring there is usually only one option, the new name for the item.<br>
+		Altough some certain rename refactorings have a further selection page, where all depending call
+		(i.e. a method call) can be checked for renaming too. Since Ruby is a dynamically typed language
+		it is quite hard to find such calls automatically. So they have to be chosen by hand.
+		
+		
+		<hr>
+		<a href="http://ifsoftware.ch"><img src="images/logo_small.gif" border="0" alt="Institute for Software"></a><br>
+	 	<p><a href="mailto:ifs@hsr.ch?subject=Ruby%20Refactoring%3A%20Rename">Feedback</a></p>
+		
+	</body>
+</html>
