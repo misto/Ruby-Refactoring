@@ -32,6 +32,8 @@ package org.rubypeople.rdt.refactoring.ui.pages.movemethod;
 
 import org.eclipse.ltk.ui.refactoring.UserInputWizardPage;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.ui.PlatformUI;
+import org.eclipse.ui.help.IWorkbenchHelpSystem;
 import org.rubypeople.rdt.refactoring.core.movemethod.MoveMethodConfig;
 
 
@@ -49,5 +51,7 @@ public class SecondMoveMethodPage extends UserInputWizardPage {
 		SecondMoveMethodPageComposite pageContent = new SecondMoveMethodPageComposite(parent, config);
 	
 		setControl(pageContent);
+		IWorkbenchHelpSystem helpSystem = PlatformUI.getWorkbench().getHelpSystem();
+		helpSystem.setHelp(pageContent, "org.rubypeople.rdt.refactoring.refactoring_move_method");
 	}
 }

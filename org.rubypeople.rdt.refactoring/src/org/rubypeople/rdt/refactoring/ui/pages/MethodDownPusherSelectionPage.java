@@ -31,6 +31,8 @@ package org.rubypeople.rdt.refactoring.ui.pages;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.ui.PlatformUI;
+import org.eclipse.ui.help.IWorkbenchHelpSystem;
 import org.rubypeople.rdt.refactoring.core.pushdown.MethodDownPusher;
 import org.rubypeople.rdt.refactoring.ui.NotifiedContainerCheckedTree;
 
@@ -58,5 +60,10 @@ public class MethodDownPusherSelectionPage extends RefactoringWizardPage {
 	private NotifiedContainerCheckedTree initTree(Composite c) {
 		tree = new NotifiedContainerCheckedTree(c, methodDownPusher, methodDownPusher);
 		return tree;
+	}
+	
+	protected void setHelpContextIDs(){
+		IWorkbenchHelpSystem helpSystem = PlatformUI.getWorkbench().getHelpSystem();
+		helpSystem.setHelp(getControl(), "org.rubypeople.rdt.refactoring.refactoring_push_down");
 	}
 }

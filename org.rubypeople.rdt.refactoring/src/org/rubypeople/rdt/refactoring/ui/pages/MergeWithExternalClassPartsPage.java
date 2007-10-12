@@ -34,6 +34,8 @@ import org.eclipse.jface.viewers.TreeSelection;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.ui.PlatformUI;
+import org.eclipse.ui.help.IWorkbenchHelpSystem;
 import org.jruby.ast.Node;
 import org.jruby.ast.visitor.rewriter.ReWriteVisitor;
 import org.rubypeople.rdt.refactoring.core.NodeFactory;
@@ -100,5 +102,10 @@ public class MergeWithExternalClassPartsPage extends RefactoringWizardPage {
 
 	private NotifiedContainerCheckedTree initTree(Composite c) {
 		return  new NotifiedContainerCheckedTree(c, merger, merger);
+	}
+	
+	protected void setHelpContextIDs(){
+		IWorkbenchHelpSystem helpSystem = PlatformUI.getWorkbench().getHelpSystem();
+		helpSystem.setHelp(getControl(), "org.rubypeople.rdt.refactoring.refactoring_merge_with_external_class_parts");
 	}
 }

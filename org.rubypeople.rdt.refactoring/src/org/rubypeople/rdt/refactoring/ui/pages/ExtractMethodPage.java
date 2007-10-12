@@ -40,6 +40,8 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Table;
+import org.eclipse.ui.PlatformUI;
+import org.eclipse.ui.help.IWorkbenchHelpSystem;
 import org.rubypeople.rdt.refactoring.core.SelectionInformation;
 import org.rubypeople.rdt.refactoring.core.extractmethod.ExtractedMethodHelper;
 import org.rubypeople.rdt.refactoring.core.extractmethod.MethodExtractor;
@@ -221,5 +223,10 @@ public class ExtractMethodPage extends RefactoringWizardPage implements IValidat
 
 	public ArrayList<String> getInvalidNames() {
 		return extractedMethod.getLocalOnlyVariables();
+	}
+	
+	protected void setHelpContextIDs(){
+		IWorkbenchHelpSystem helpSystem = PlatformUI.getWorkbench().getHelpSystem();
+		helpSystem.setHelp(getControl(), "org.rubypeople.rdt.refactoring.refactoring_extract_method");
 	}
 }

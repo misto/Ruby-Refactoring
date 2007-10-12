@@ -41,6 +41,8 @@ import org.eclipse.swt.layout.RowLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Group;
+import org.eclipse.ui.PlatformUI;
+import org.eclipse.ui.help.IWorkbenchHelpSystem;
 import org.rubypeople.rdt.refactoring.core.convertlocaltofield.LocalToFieldConverter;
 import org.rubypeople.rdt.refactoring.ui.LabeledTextField;
 import org.rubypeople.rdt.refactoring.util.NameValidator;
@@ -139,5 +141,10 @@ public class ConvertLocalToFieldPage extends RefactoringWizardPage {
 				converter.setInitPlace(initPlace);
 			}
 		});
+	}
+	
+	protected void setHelpContextIDs(){
+		IWorkbenchHelpSystem helpSystem = PlatformUI.getWorkbench().getHelpSystem();
+		helpSystem.setHelp(getControl(), "org.rubypeople.rdt.refactoring.refactoring_convert_local_variable_to_field");
 	}
 }

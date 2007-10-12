@@ -43,6 +43,8 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
+import org.eclipse.ui.PlatformUI;
+import org.eclipse.ui.help.IWorkbenchHelpSystem;
 import org.rubypeople.rdt.refactoring.core.splitlocal.ISplittedNamesReceiver;
 import org.rubypeople.rdt.refactoring.core.splitlocal.LocalVarUsage;
 import org.rubypeople.rdt.refactoring.core.splitlocal.SplitLocalRefactoring;
@@ -177,5 +179,8 @@ public class SplitLocalPage extends RefactoringWizardPage {
 
 		receiver.setNewNames(newNames);
 	}
-
+	protected void setHelpContextIDs(){
+		IWorkbenchHelpSystem helpSystem = PlatformUI.getWorkbench().getHelpSystem();
+		helpSystem.setHelp(getControl(), "org.rubypeople.rdt.refactoring.refactoring_split_local_variable");
+	}
 }

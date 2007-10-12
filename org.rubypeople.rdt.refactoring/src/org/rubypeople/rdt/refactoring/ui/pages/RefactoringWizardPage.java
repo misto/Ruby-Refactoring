@@ -30,6 +30,8 @@
 package org.rubypeople.rdt.refactoring.ui.pages;
 
 import org.eclipse.ltk.ui.refactoring.UserInputWizardPage;
+import org.eclipse.ui.PlatformUI;
+import org.eclipse.ui.help.IWorkbenchHelpSystem;
 import org.rubypeople.rdt.refactoring.core.IRefactoringConfig;
 import org.rubypeople.rdt.refactoring.core.RefactoringConditionChecker;
 import org.rubypeople.rdt.refactoring.core.RubyRefactoring;
@@ -47,8 +49,10 @@ public abstract class RefactoringWizardPage extends UserInputWizardPage {
 		} else {
 			pageIsDisabled();
 		}
-		
+
+		setHelpContextIDs();
 		super.setVisible(visible);
+
 	}
 
 	public void pageIsEnabled() {
@@ -66,5 +70,15 @@ public abstract class RefactoringWizardPage extends UserInputWizardPage {
 	}
 	
 	public void pageIsDisabled() {
+	}
+	
+	@Override
+	public void performHelp() {
+		super.performHelp();
+	}
+	
+	protected void setHelpContextIDs(){
+		IWorkbenchHelpSystem helpSystem = PlatformUI.getWorkbench().getHelpSystem();
+		helpSystem.setHelp(getControl(), "org.rubypeople.rdt.refactoring.refactoring_wizard_page");
 	}
 }

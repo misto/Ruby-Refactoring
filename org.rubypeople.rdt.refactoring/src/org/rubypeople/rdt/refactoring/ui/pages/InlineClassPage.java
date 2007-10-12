@@ -39,6 +39,8 @@ import org.eclipse.swt.layout.RowLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.List;
+import org.eclipse.ui.PlatformUI;
+import org.eclipse.ui.help.IWorkbenchHelpSystem;
 import org.rubypeople.rdt.refactoring.core.inlineclass.InlineClassConfig;
 import org.rubypeople.rdt.refactoring.nodewrapper.ClassNodeWrapper;
 
@@ -115,5 +117,8 @@ public class InlineClassPage extends RefactoringWizardPage {
 			}	
 		});
 	}
-
+	protected void setHelpContextIDs(){
+		IWorkbenchHelpSystem helpSystem = PlatformUI.getWorkbench().getHelpSystem();
+		helpSystem.setHelp(getControl(), "org.rubypeople.rdt.refactoring.refactoring_inline_class");
+	}
 }

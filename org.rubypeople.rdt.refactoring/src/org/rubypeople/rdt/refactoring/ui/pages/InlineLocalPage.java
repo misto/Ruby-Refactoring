@@ -42,6 +42,8 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
+import org.eclipse.ui.PlatformUI;
+import org.eclipse.ui.help.IWorkbenchHelpSystem;
 import org.rubypeople.rdt.refactoring.core.inlinelocal.InlineLocalConfig;
 import org.rubypeople.rdt.refactoring.core.inlinelocal.InlineLocalRefactoring;
 import org.rubypeople.rdt.refactoring.ui.LabeledTextField;
@@ -168,5 +170,8 @@ public class InlineLocalPage extends RefactoringWizardPage {
 		GridData layoutData = new GridData(GridData.FILL_HORIZONTAL);
 		infoLabel.setLayoutData(layoutData);
 	}
-
+	protected void setHelpContextIDs(){
+		IWorkbenchHelpSystem helpSystem = PlatformUI.getWorkbench().getHelpSystem();
+		helpSystem.setHelp(getControl(), "org.rubypeople.rdt.refactoring.refactoring_inline_local_variable");
+	}
 }

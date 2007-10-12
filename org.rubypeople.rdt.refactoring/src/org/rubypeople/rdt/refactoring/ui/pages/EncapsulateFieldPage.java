@@ -37,6 +37,8 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
+import org.eclipse.ui.PlatformUI;
+import org.eclipse.ui.help.IWorkbenchHelpSystem;
 import org.rubypeople.rdt.refactoring.core.encapsulatefield.FieldEncapsulator;
 import org.rubypeople.rdt.refactoring.nodewrapper.VisibilityNodeWrapper;
 import org.rubypeople.rdt.refactoring.ui.pages.encapsulatefield.EncapsulateFieldAccessorComposite;
@@ -121,5 +123,9 @@ public class EncapsulateFieldPage extends RefactoringWizardPage {
 		Label existingAccessorLabel = new Label(fieldInfoGroup, SWT.NONE);
 		existingAccessorLabel.setText(Messages.EncapsulateFieldPage_FieldAccessor + fieldEncapsulator.getExistingAccessorName());
 	}
-
+	
+	protected void setHelpContextIDs(){
+		IWorkbenchHelpSystem helpSystem = PlatformUI.getWorkbench().getHelpSystem();
+		helpSystem.setHelp(getControl(), "org.rubypeople.rdt.refactoring.refactoring_encapsulate_field");
+	}
 }

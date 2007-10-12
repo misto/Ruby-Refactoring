@@ -322,8 +322,9 @@ public class NodeFactory {
 		methodNode.addComments(comments);
 		BlockNode block = createBlockNode();
 		block.add(createNewLineNode(methodNode));
-		if (!visibility.equals(VisibilityNodeWrapper.METHOD_VISIBILITY.NONE))
+		if (!visibility.equals(VisibilityNodeWrapper.METHOD_VISIBILITY.NONE)) {
 			block.add(createVisibilityNode(visibility, methodName));
+		}
 		return block;
 	}
 
@@ -384,5 +385,13 @@ public class NodeFactory {
 
 	public static Node createConstDeclNode(String name, Node valueNode) {
 		return new ConstDeclNode(new IDESourcePosition(), name, null, valueNode);
+	}
+	
+	public static FCallNode createSimpleAccessorNode(String definitionName,	ArrayList<String> attrNames) {
+		ArrayNode argsNode = new ArrayNode(new IDESourcePosition());
+		for (String currentAttr : attrNames) {
+			argsNode.add(new SymbolNode(new IDESourcePosition(), currentAttr));
+		}
+		return new FCallNode(new IDESourcePosition(), definitionName, argsNode);
 	}
 }

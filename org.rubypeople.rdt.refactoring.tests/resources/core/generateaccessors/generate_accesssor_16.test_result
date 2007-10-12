@@ -4,14 +4,14 @@ class X
     @b
   end
 
-def a= a
-@a = a
-end
-public :a=
+  def a= a
+    @a = a
+  end
+  public :a=
 
-def b= b
-@b = b
-end
-public :b=
+  def b= b
+    @b = b
+  end
+  public :b=
 
 end

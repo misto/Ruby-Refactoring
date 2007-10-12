@@ -37,6 +37,8 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
+import org.eclipse.ui.PlatformUI;
+import org.eclipse.ui.help.IWorkbenchHelpSystem;
 import org.rubypeople.rdt.refactoring.core.movefield.MoveFieldConfig;
 import org.rubypeople.rdt.refactoring.core.movefield.MoveFieldRefactoring;
 
@@ -139,5 +141,10 @@ public class MoveFieldPage extends RefactoringWizardPage {
 		final GridData gridData = new GridData();
 		gridData.horizontalSpan = 2;
 		title.setLayoutData(gridData);
+	}
+	
+	protected void setHelpContextIDs(){
+		IWorkbenchHelpSystem helpSystem = PlatformUI.getWorkbench().getHelpSystem();
+		helpSystem.setHelp(getControl(), "org.rubypeople.rdt.refactoring.refactoring_move_field");
 	}
 }

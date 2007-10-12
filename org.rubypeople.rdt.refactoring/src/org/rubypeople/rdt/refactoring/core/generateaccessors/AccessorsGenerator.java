@@ -92,26 +92,50 @@ public class AccessorsGenerator extends EditAndTreeContentProvider implements II
 
 	public Collection<EditProvider> getEditProviders() {
 		Collection<TreeAccessor> treeAccessors = getTreeAccessors();
-		LinkedHashSet<TreeAttribute> attribtes = getTreeAttributes(treeAccessors);
-		Collection<EditProvider> generatedAccessors = getGeneratedAccessors(attribtes);
+		LinkedHashSet<TreeAttribute> attributes = getTreeAttributes(treeAccessors);
+		Collection<EditProvider> generatedAccessors = getGeneratedAccessors(attributes);
 		return generatedAccessors;
 	}
 
 	private Collection<EditProvider> getGeneratedAccessors(LinkedHashSet<TreeAttribute> attribtes) {
+		
 		Collection<EditProvider> providers = new ArrayList<EditProvider>();
-		for (TreeAttribute attr : attribtes) {
-			providers.addAll(attr.getGeneratedAccessors());
+		for (TreeAttribute attr : attribtes){
+			GeneratedAccessor currentAccessor = attr.getGeneratedAccessor();
+			addToAccessorOfSameType(currentAccessor, providers);
 		}
 		return providers;
 	}
 
+	private void addToAccessorOfSameType(GeneratedAccessor newAccessor, Collection<EditProvider> providers) {
+
+		GeneratedAccessor matchingAccessor = null;
+		for(EditProvider currentAccessor : providers){
+			if(haveSameType(newAccessor, (GeneratedAccessor) currentAccessor)){
+				matchingAccessor = (GeneratedAccessor)currentAccessor;
+			}
+		}
+		if(matchingAccessor == null){
+			providers.add(newAccessor);
+		}
+		else{
+			matchingAccessor.addAttr(newAccessor.getFirstAttrName());
+		}
+		
+	}
+
+	private boolean haveSameType(GeneratedAccessor newAccessor, GeneratedAccessor currentAccessor) {
+		
+		return newAccessor.definitionName.equals(currentAccessor.definitionName);
+	}
+
 	private LinkedHashSet<TreeAttribute> getTreeAttributes(Collection<TreeAccessor> treeAccessors) {
-		LinkedHashSet<TreeAttribute> attribtes = new LinkedHashSet<TreeAttribute>();
+		LinkedHashSet<TreeAttribute> attributes = new LinkedHashSet<TreeAttribute>();
 		for (TreeAccessor accessor : treeAccessors) {
 			setSelection(accessor);
-			attribtes.add(accessor.getAttribute());
+			attributes.add(accessor.getAttribute());
 		}
-		return attribtes;
+		return attributes;
 	}
 
 	private void setSelection(TreeAccessor accessor) {
@@ -313,15 +337,14 @@ public class AccessorsGenerator extends EditAndTreeContentProvider implements II
 				return TreeClass.this;
 			}
 
-			public Collection<EditProvider> getGeneratedAccessors() {
-				Collection<EditProvider> accessors = new ArrayList<EditProvider>();
+			public GeneratedAccessor getGeneratedAccessor() {
 				if (readerSelected && writerSelected)
-					accessors.add(new GeneratedAccessor(AttrAccessorNodeWrapper.ATTR_ACCESSOR, toString(), type, classNode));
+					return new GeneratedAccessor(AttrAccessorNodeWrapper.ATTR_ACCESSOR, toString(), type, classNode);
 				else if (readerSelected)
-					accessors.add(new GeneratedAccessor(AttrAccessorNodeWrapper.ATTR_READER, toString(), type, classNode));
+					return new GeneratedAccessor(AttrAccessorNodeWrapper.ATTR_READER, toString(), type, classNode);
 				else if (writerSelected)
-					accessors.add(new GeneratedAccessor(AttrAccessorNodeWrapper.ATTR_WRITER, toString(), type, classNode));
-				return accessors;
+					return new GeneratedAccessor(AttrAccessorNodeWrapper.ATTR_WRITER, toString(), type, classNode);
+				return null;
 			}
 
 			public class TreeAccessor {

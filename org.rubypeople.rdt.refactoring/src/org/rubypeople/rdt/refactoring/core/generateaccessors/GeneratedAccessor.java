@@ -30,6 +30,7 @@ package org.rubypeople.rdt.refactoring.core.generateaccessors;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Iterator;
 
 import org.jruby.ast.BlockNode;
 import org.jruby.ast.FCallNode;
@@ -53,14 +54,15 @@ public class GeneratedAccessor extends InsertEditProvider {
 
 	private int type;
 
-	private String attrName;
+	private ArrayList<String> attrNames;
 
 	private ClassNodeWrapper classNode;
 
 	public GeneratedAccessor(String definitionName, String instVarName, int type, ClassNodeWrapper classNode) {
 		super(true);
 		this.definitionName = definitionName;
-		this.attrName = instVarName;
+		this.attrNames = new ArrayList<String>();
+		this.attrNames.add(instVarName);
 		this.type = type;
 		this.classNode = classNode;
 	}
@@ -95,19 +97,31 @@ public class GeneratedAccessor extends InsertEditProvider {
 	}
 
 	private Node getSimpleInsertNode() {
-		FCallNode accessorNode = NodeFactory.createSimpleAccessorNode(definitionName, attrName);
+		FCallNode accessorNode = NodeFactory.createSimpleAccessorNode(definitionName, attrNames);
 		return NodeFactory.createNewLineNode(accessorNode);
 	}
 
 	private Node[] getMethodInsertNode() {
 		Collection<Node> methodNodes = new ArrayList<Node>();
-		if (isReader() || isAccessor())
-			methodNodes.add(NodeFactory.createGetterSetter(attrName, false, VisibilityNodeWrapper.METHOD_VISIBILITY.PUBLIC));
-		if (isAccessor()) {
-			methodNodes.add(NodeFactory.createNewLineNode(null));
+		Iterator<String> iter = attrNames.iterator();
+		
+		while(iter.hasNext()) {
+			String attrName = iter.next();
+			
+			if (isReader() || isAccessor())
+				methodNodes.add(NodeFactory.createGetterSetter(attrName, false, VisibilityNodeWrapper.METHOD_VISIBILITY.PUBLIC));
+			
+			// if we generate both methods, we separate them with a newline
+			if (isAccessor())
+				methodNodes.add(NodeFactory.createNewLineNode(null));
+			
+			if (isWriter() || isAccessor())
+				methodNodes.add(NodeFactory.createGetterSetter(attrName, true, VisibilityNodeWrapper.METHOD_VISIBILITY.PUBLIC));
+			
+			if(iter.hasNext())
+				methodNodes.add(NodeFactory.createNewLineNode(null));
 		}
-		if (isWriter() || isAccessor())
-			methodNodes.add(NodeFactory.createGetterSetter(attrName, true, VisibilityNodeWrapper.METHOD_VISIBILITY.PUBLIC));
+		
 		return methodNodes.toArray(new Node[methodNodes.size()]);
 	}
 
@@ -115,8 +129,12 @@ public class GeneratedAccessor extends InsertEditProvider {
 		IOffsetProvider offsetProvider = new AccessorOffsetProvider(classNode, type, document);
 		return offsetProvider.getOffset();
 	}
-
-	public String getInstVarName() {
-		return attrName;
+	
+	public boolean addAttr(String attrName){
+		return attrNames.add(attrName);
+	}
+	
+	public String getFirstAttrName(){
+		return attrNames.get(0);
 	}
 }

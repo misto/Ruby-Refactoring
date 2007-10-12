@@ -36,6 +36,8 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
+import org.eclipse.ui.PlatformUI;
+import org.eclipse.ui.help.IWorkbenchHelpSystem;
 import org.rubypeople.rdt.refactoring.core.inlinemethod.IRemoveDeclaration;
 
 public class InlineMethodPage extends RefactoringWizardPage {
@@ -76,5 +78,9 @@ public class InlineMethodPage extends RefactoringWizardPage {
 			}});
 		
 		setControl(body);
+	}
+	protected void setHelpContextIDs(){
+		IWorkbenchHelpSystem helpSystem = PlatformUI.getWorkbench().getHelpSystem();
+		helpSystem.setHelp(getControl(), "org.rubypeople.rdt.refactoring.refactoring_inline_method");
 	}
 }

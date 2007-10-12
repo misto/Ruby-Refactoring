@@ -35,6 +35,8 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Widget;
+import org.eclipse.ui.PlatformUI;
+import org.eclipse.ui.help.IWorkbenchHelpSystem;
 import org.rubypeople.rdt.refactoring.ui.ConstructorGenerationTree;
 import org.rubypeople.rdt.refactoring.ui.util.SwtUtils;
 
@@ -74,5 +76,9 @@ public class ConstructorSelectionPage extends RefactoringWizardPage {
 		Group paramGroup = SwtUtils.initGroup(c, Messages.ConstructorSelectionPage_ParametrisedConstructor);
 		Label paramLabel = SwtUtils.initLabel(paramGroup, Messages.ConstructorSelectionPage_ParametrisedConstructorCode);
 		return new Widget[] { emptyGroup, emptyLable, paramGroup, paramLabel };
+	}
+	protected void setHelpContextIDs(){
+		IWorkbenchHelpSystem helpSystem = PlatformUI.getWorkbench().getHelpSystem();
+		helpSystem.setHelp(getControl(), "org.rubypeople.rdt.refactoring.source_generators_generate_constructor_using_fields");
 	}
 }

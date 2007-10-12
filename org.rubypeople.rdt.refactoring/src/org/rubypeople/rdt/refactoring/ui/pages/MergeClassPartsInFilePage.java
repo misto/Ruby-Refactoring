@@ -41,6 +41,8 @@ import org.eclipse.swt.widgets.List;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableItem;
+import org.eclipse.ui.PlatformUI;
+import org.eclipse.ui.help.IWorkbenchHelpSystem;
 import org.jruby.ast.Node;
 import org.jruby.ast.visitor.rewriter.ReWriteVisitor;
 import org.rubypeople.rdt.refactoring.core.NodeFactory;
@@ -196,5 +198,10 @@ public class MergeClassPartsInFilePage extends RefactoringWizardPage {
 		config.setCheckedClassParts(new ArrayList<PartialClassNodeWrapper>());
 		config.setSelectedClassPart(null);
 
+	}
+	
+	protected void setHelpContextIDs(){
+		IWorkbenchHelpSystem helpSystem = PlatformUI.getWorkbench().getHelpSystem();
+		helpSystem.setHelp(getControl(), "org.rubypeople.rdt.refactoring.refactoring_merge_class_parts_in_file");
 	}
 }

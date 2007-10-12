@@ -31,6 +31,8 @@ package org.rubypeople.rdt.refactoring.ui.pages;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Listener;
+import org.eclipse.ui.PlatformUI;
+import org.eclipse.ui.help.IWorkbenchHelpSystem;
 import org.rubypeople.rdt.refactoring.ui.IErrorMessageGenerator;
 import org.rubypeople.rdt.refactoring.ui.IErrorMessageReceiver;
 import org.rubypeople.rdt.refactoring.ui.LabeledTextField;
@@ -71,5 +73,9 @@ public class RenamePage extends RefactoringWizardPage implements IErrorMessageRe
 	public void setError(String error) {
 		setErrorMessage(error);
 		setPageComplete(error == null);
+	}
+	protected void setHelpContextIDs(){
+		IWorkbenchHelpSystem helpSystem = PlatformUI.getWorkbench().getHelpSystem();
+		helpSystem.setHelp(getControl(), "org.rubypeople.rdt.refactoring.refactoring_rename");
 	}
 }
