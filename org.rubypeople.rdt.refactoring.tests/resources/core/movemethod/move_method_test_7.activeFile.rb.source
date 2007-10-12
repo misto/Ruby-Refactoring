@@ -1,6 +1,6 @@
 class A
   def moveMethod arg
-    puts A.method2 1
+    puts A.method2(1)
   end
   private :moveMethod
   def method
