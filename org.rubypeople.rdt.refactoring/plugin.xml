@@ -134,20 +134,6 @@
             </enablement>
          </action>
          <action
-               class="org.rubypeople.rdt.refactoring.action.PullUpAction"
-               definitionId="org.rubypeople.rdt.refactoring.command.PullUp"
-               id="org.rubypeople.rdt.refactoring.pullUpAction"
-               label="%rubyRefactoring.PullUpLabel"
-               menubarPath="org.rubypeople.rdt.refactoring.refactoringMenu/org.rubypeople.rdt.refactoring.refactoringGroup"
-               style="push"
-               tooltip="Pulls up a method into it's supperclass">
-            <enablement>
-               <objectClass
-                     name="org.eclipse.jface.text.TextSelection">
-               </objectClass>
-            </enablement>
-         </action>
-         <action
                class="org.rubypeople.rdt.refactoring.action.MoveMethodAction"
                definitionId="org.rubypeople.rdt.refactoring.command.MoveMethod"
                id="org.rubypeople.rdt.refactoring.MoveMethod"
@@ -256,20 +242,6 @@
                menubarPath="org.rubypeople.rdt.refactoring.refactoringMenu/org.rubypeople.rdt.refactoring.refactoringGroup"
                style="push"
                tooltip="Extracts the selected code into a new method.">
-            <enablement>
-               <objectClass
-                     name="org.eclipse.jface.text.TextSelection">
-               </objectClass>
-            </enablement>
-         </action>
-        <action
-               class="org.rubypeople.rdt.refactoring.action.ExtractConstantAction"
-               definitionId="org.rubypeople.rdt.refactoring.command.ExtractConstant"
-               id="org.rubypeople.rdt.refactoring.extractConstantAction"
-               label="%rubyRefactoring.ExtractConstantLabel"
-               menubarPath="org.rubypeople.rdt.refactoring.refactoringMenu/org.rubypeople.rdt.refactoring.refactoringGroup"
-               style="push"
-               tooltip="Extracts the selected value into a new constant.">
             <enablement>
                <objectClass
                      name="org.eclipse.jface.text.TextSelection">
