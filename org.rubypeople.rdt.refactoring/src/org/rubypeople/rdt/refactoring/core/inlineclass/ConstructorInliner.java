@@ -61,9 +61,7 @@ public class ConstructorInliner extends InsertEditProvider{
 		ISourcePosition constructorPosition = constructor.getPosition();
 		
 		inlinedConstructor.setPosition(constructorPosition);
-		
-		inlinedConstructor.addComments(constructor.getComments());
-	
+			
 		return NodeFactory.createBlockNode(false, true, inlinedConstructor);
 	}
 
