@@ -55,7 +55,7 @@
          id="org.kxml2"
          download-size="29"
          install-size="32"
-         version="2.1.4"/>
+         version="0.0.0"/>
 
    <plugin
          id="org.rubypeople.rdt.doc.user"
@@ -68,7 +68,7 @@
          id="org.epic.regexp"
          download-size="43"
          install-size="51"
-         version="0.1.4"/>
+         version="0.0.0"/>
 
    <plugin
          id="org.rubypeople.rdt.ui"
@@ -117,7 +117,7 @@
          id="org.jruby"
          download-size="2359"
          install-size="2359"
-         version="1.0.0.4212p"
+         version="0.0.0"
          unpack="false"/>
 
    <plugin
