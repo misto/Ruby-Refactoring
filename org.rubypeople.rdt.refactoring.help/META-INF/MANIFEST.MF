@@ -4,6 +4,5 @@ Bundle-Name: Ruby Refactoring Help
 Bundle-SymbolicName: org.rubypeople.rdt.refactoring.help;singleton:=true
 Bundle-Version: 0.0.0
 Bundle-Vendor: Institute for Software
-Bundle-Localization: plugin
 Eclipse-LazyStart: true
 Require-Bundle: org.eclipse.help

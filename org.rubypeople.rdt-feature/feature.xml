@@ -33,22 +33,23 @@
       <import plugin="org.eclipse.ui.editors"/>
       <import plugin="org.eclipse.ui.console"/>
       <import plugin="org.eclipse.debug.ui"/>
-      <import plugin="org.eclipse.ui.workbench"/>
       <import plugin="org.eclipse.ui.forms"/>
-      <import plugin="org.eclipse.core.expressions"/>
-      <import plugin="org.eclipse.ui.cheatsheets"/>
-      <import plugin="org.eclipse.debug.core"/>
-      <import plugin="org.eclipse.team.core"/>
-      <import plugin="org.eclipse.ui.intro"/>
+      <import plugin="org.eclipse.ui.navigator"/>
       <import plugin="org.eclipse.search"/>
       <import plugin="org.eclipse.compare"/>
       <import plugin="org.eclipse.core.filesystem"/>
+      <import plugin="org.eclipse.core.expressions"/>
       <import plugin="org.eclipse.ltk.core.refactoring"/>
       <import plugin="com.ibm.icu"/>
+      <import plugin="org.eclipse.debug.core"/>
+      <import plugin="org.eclipse.team.core"/>
+      <import plugin="org.eclipse.ui.cheatsheets"/>
       <import plugin="org.eclipse.jface"/>
+      <import plugin="org.eclipse.ui.workbench"/>
       <import plugin="org.eclipse.text"/>
       <import plugin="org.eclipse.core.variables"/>
       <import plugin="org.eclipse.ltk.ui.refactoring"/>
+      <import plugin="org.eclipse.help"/>
    </requires>
 
    <plugin
@@ -136,6 +137,13 @@
 
    <plugin
          id="com.aptana.rdt.ui"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="org.rubypeople.rdt.refactoring.help"
          download-size="0"
          install-size="0"
          version="0.0.0"
