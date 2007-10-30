@@ -55,7 +55,7 @@ public class RefactoringAction extends Action {
 		Shell shell = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell();
 		try {
 			if (PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage().saveAllEditors(true)) {
-				Constructor<RubyRefactoring> constructor = refactoringClass.getConstructors()[0];
+				Constructor<? extends RubyRefactoring> constructor = (Constructor<? extends RubyRefactoring>) refactoringClass.getConstructors()[0];
 				Object[] args;
 				if(constructor.getParameterTypes().length == 1) {
 					args = new Object[] {selectionProvider};
