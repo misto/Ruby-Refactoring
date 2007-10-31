@@ -88,10 +88,10 @@ public class HsrFormatter
 	}
 
 	private static OldCodeFormatter getFormatter()
-	{
+	{/*
 		if (RubyPlugin.getDefault() != null) {
 			return RubyPlugin.getDefault().getCodeFormatter();
-		}
+		}*/
 	
 		Map<String, String> options = new HashMap<String, String>();
 		options.put(DefaultCodeFormatterConstants.FORMATTER_TAB_CHAR, "space"); //$NON-NLS-1$
