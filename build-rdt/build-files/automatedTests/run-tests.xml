@@ -1,5 +1,6 @@
 <project name="Run automated Tests" default="run" basedir=".">
 	<taskdef resource="org/pluginbuilder/anttasks/pluginbuildertasks.properties" classpath="../pluginbuilder-anttasks.jar" />
+	<typedef resource="org/pluginbuilder/anttasks/pluginbuildertypes.properties" classpath="../pluginbuilder-anttasks.jar" />
 
 	<property file="../../build_local.properties" />
 	<property file="run-tests.properties" />
@@ -58,10 +59,26 @@
 		</ant>
 		<copy file="${test.eclipse.host}/${test.aggregated.report}" todir="${test.result.dir}/xml" />
 		<style style="${junit.xsl.file}" basedir="${test.result.dir}/xml" destdir="${test.result.dir}/html" />
-
+		<antcall target="checkTestResultFileForErrors"/>
 	</target>
 	
-	<target name="markErrorOrFailure" if="isErrorOrFailure">
+	<target name="checkTestResultFileForErrors">
+		<!-- the result coming from the eclipse test process is not reliable: 
+		 it can be 0 even if the suite has errors or failures.
+	     Therefore we check the test result file for errors if the result is 0.
+	     Many thanks to Bernd Kolb/openArchitectureWare for contributing the 
+	     hasErrorOrFailure task -->
+		
+		<echo message="Checke auf Fehler: ${test.aggregated.report}"/>
+		
+        <condition property="isErrorOrFailure">
+			<hasErrorOrFailure reportFile="${test.result.dir}/xml/${test.aggregated.report}" />
+        </condition>
+
+        <antcall target="-markErrorOrFailure" />        
+	</target>
+	
+	<target name="-markErrorOrFailure" if="isErrorOrFailure">
 		<echo level="error" message="TESTS FAILED"/>
 	</target>
 
