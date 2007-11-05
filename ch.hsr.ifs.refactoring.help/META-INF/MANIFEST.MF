@@ -1,0 +1,8 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Ruby Refactoring Help
+Bundle-SymbolicName: ch.hsr.ifs.refactoring.help;singleton:=true
+Bundle-Version: 0.0.0
+Bundle-Vendor: Institute for Software
+Eclipse-LazyStart: true
+Require-Bundle: org.eclipse.help

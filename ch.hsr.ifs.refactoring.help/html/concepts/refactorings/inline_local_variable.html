@@ -1,0 +1,49 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+		<title>Inline Local Variable</title>
+		<link rel="stylesheet" type="text/css" href="../../format.css">
+	</head>
+	<body>
+		<h1>Inline Local Variable</h1>
+		<h2>Description</h2>
+		The Inline Local Variable refactoring replaces all occurrences of a local variable with the value it
+		got assigned once. Furthermore the assignment is removed as it will not be used anymore.
+		Usually this refactoring is used to simplify other refactorings or if it does not make sense
+		to keep the variable as it makes the code just more complex.<br>
+		<h3>Conditions</h3>
+		<list>
+			<li>Method arguments cannot be inlined as they have no fixed assignment and
+			thus a possibly different value with every call. </li>
+			<li>Yet only variables which have one assignment can be inlined. You can use 
+			<a href="split_local_variable.html">Split Local Variable</a> first to have only one assignment.</li>
+		</list>
+		
+		<h2>Options</h2>
+		<p><img src="images/inline_local_variable_options.png" alt="Replace Temp with Query"></p>
+		There is the option to replace the variable with a method "Replace Temp with Query". If
+		this flag is set a method with the entered name is created containing the assigned value or expression
+		which was the assignment value of the variable. Subsequently method calls replace the usage of the local variable.<br>
+	
+		<p><table border="1">
+		  <tr>
+		    <th>Option</th>
+		    <th>Description</th>
+		  </tr>
+		  <tr>
+		    <td>Replace Temp with Query</td>
+		    <td>Flag for activating the replacement of the variable with a method definition and the 
+		    subsequently needed method calls.</td>
+		  </tr>
+		  <tr>
+		    <td>New Method Name</td>
+		    <td>The name of the new method created when the "Replace Temp with Query" flag is set.</td>
+		  </tr>
+		</table></p>
+		<hr>
+		<a href="http://ifsoftware.ch"><img src="images/logo_small.gif" border="0" alt="Institute for Software"></a><br>
+	 	<p><a href="mailto:ifs@hsr.ch?subject=Ruby%20Refactoring%3A%20Inline%20Local%20Variable">Feedback</a></p>
+	</body>
+</html>

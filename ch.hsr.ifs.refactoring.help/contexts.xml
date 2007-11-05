@@ -1,0 +1,86 @@
+<contexts>
+	<context id="refactoring_wizard_page">
+		<description>Refactoring Help</description>
+		<topic href="html/concepts/refactorings/refactorings.html" label="Refactoring Ruby Code" />
+	</context>
+	<context id="refactoring_convert_local_variable_to_field">
+		<description>Convert Local Variable to Field</description>
+		<topic href="html/concepts/refactorings/convert_local_variable_to_field.html" label="Convert Local Variable to Field" />
+		<topic href="html/concepts/refactorings/refactorings.html" label="Ruby Refactorings" />
+	</context>
+	<context id="refactoring_encapsulate_field">
+		<description>Encapsulate Field</description>
+		<topic href="html/concepts/refactorings/encapsulate_field.html" label="Encapsulate Field" />
+		<topic href="html/concepts/refactorings/refactorings.html" label="Ruby Refactorings" />
+	</context>
+	<context id="refactoring_extract_method">
+		<description>Extract Method</description>
+		<topic href="html/concepts/refactorings/extract_method.html" label="Extract Method" />
+		<topic href="html/concepts/refactorings/refactorings.html" label="Ruby Refactorings" />
+	</context>
+	<context id="refactoring_inline_class">
+		<description>Inline Class</description>
+		<topic href="html/concepts/refactorings/inline_class.html" label="Inline Class" />
+		<topic href="html/concepts/refactorings/refactorings.html" label="Ruby Refactorings" />
+	</context>
+	<context id="refactoring_inline_local_variable">
+		<description>Inline Local Variable</description>
+		<topic href="html/concepts/refactorings/inline_local_variable.html" label="Inline Local Variable" />
+		<topic href="html/concepts/refactorings/refactorings.html" label="Ruby Refactorings" />
+	</context>
+	<context id="refactoring_inline_method">
+		<description>Inline Method</description>
+		<topic href="html/concepts/refactorings/inline_method.html" label="Inline Method" />
+		<topic href="html/concepts/refactorings/refactorings.html" label="Ruby Refactorings" />
+	</context>
+	<context id="refactoring_merge_class_parts_in_file">
+		<description>Merge Class Parts in File</description>
+		<topic href="html/concepts/refactorings/merge_class_parts_in_file.html" label="Merge Class Parts in File" />
+		<topic href="html/concepts/refactorings/refactorings.html" label="Ruby Refactorings" />
+	</context>
+	<context id="refactoring_merge_with_external_class_parts">
+		<description>Merge With External Class Parts</description>
+		<topic href="html/concepts/refactorings/merge_with_external_class_parts.html" label="Merge With External Class Parts" />
+		<topic href="html/concepts/refactorings/refactorings.html" label="Ruby Refactorings" />
+	</context>
+	<context id="refactoring_move_field">
+		<description>Move Field</description>
+		<topic href="html/concepts/refactorings/move_field.html" label="Move Field" />
+		<topic href="html/concepts/refactorings/refactorings.html" label="Ruby Refactorings" />
+	</context>
+	<context id="refactoring_move_method">
+		<description>Move Method</description>
+		<topic href="html/concepts/refactorings/move_method.html" label="Move Method" />
+		<topic href="html/concepts/refactorings/refactorings.html" label="Ruby Refactorings" />
+	</context>
+	<context id="refactoring_push_down">
+		<description>Push Down</description>
+		<topic href="html/concepts/refactorings/push_down.html" label="Push Down" />
+		<topic href="html/concepts/refactorings/refactorings.html" label="Ruby Refactorings" />
+	</context>
+	<context id="refactoring_rename">
+		<description>Rename</description>
+		<topic href="html/concepts/refactorings/rename.html" label="Rename" />
+		<topic href="html/concepts/refactorings/refactorings.html" label="Ruby Refactorings" />
+	</context>
+	<context id="refactoring_split_local_variable">
+		<description>Split Local Variable</description>
+		<topic href="html/concepts/refactorings/split_local_variable.html" label="Split Local Variable" />
+		<topic href="html/concepts/refactorings/refactorings.html" label="Ruby Refactorings" />
+	</context>
+	<context id="source_generators_generate_accessors">
+		<description>Generate Accessors</description>
+		<topic href="html/concepts/source_generators/generate_accessors.html" label="Generate Accessors" />
+		<topic href="html/concepts/source_generators/source_generators.html" label="Source Generators" />
+	</context>
+	<context id="source_generators_generate_constructor_using_fields">
+		<description>Generate Constructor Using Fields</description>
+		<topic href="html/concepts/source_generators/generate_constructor_using_fields.html" label="Generate Constructor Using Fields" />
+		<topic href="html/concepts/source_generators/source_generators.html" label="Source Generators" />
+	</context>
+	<context id="source_generators_override_method">
+		<description>Override Method</description>
+		<topic href="html/concepts/source_generators/override_method.html" label="Override Method" />
+		<topic href="html/concepts/source_generators/source_generators.html" label="Source Generators" />
+	</context>
+</contexts>
