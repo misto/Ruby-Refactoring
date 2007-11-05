@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <projectDescription>
-	<name>org.rubypeople.rdt.refactoring.help</name>
+	<name>ch.hsr.ifs.refactoring.help</name>
 	<comment></comment>
 	<projects>
 	</projects>
@@ -18,6 +18,6 @@
 	</buildSpec>
 	<natures>
 		<nature>org.eclipse.pde.PluginNature</nature>
-		                <nature>org.eclipse.jdt.core.javanature</nature>
+		<nature>org.eclipse.jdt.core.javanature</nature>
 	</natures>
 </projectDescription>
