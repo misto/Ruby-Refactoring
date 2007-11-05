@@ -6,12 +6,13 @@ Bundle-Version: 0.0.0
 Bundle-Activator: org.rubypeople.rdt.refactoring.tests.TestsPlugin
 Bundle-Localization: plugin
 Export-Package: .
-Require-Bundle: org.eclipse.ui,
+Require-Bundle: ch.hsr.ifs.refactoring.core,
+ org.eclipse.jface,
+ org.eclipse.text,
+ org.eclipse.ui,
  org.eclipse.core.runtime,
  org.junit,
  org.rubypeople.rdt.refactoring,
- org.eclipse.core.resources,
- org.eclipse.text,
  org.rubypeople.rdt.core
 Eclipse-LazyStart: true
 Bundle-ClassPath: refactoringtests.jar

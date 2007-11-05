@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<feature
+      id="ch.hsr.ifs.refactoring"
+      label="Refactoring Feature"
+      version="0.10.0"
+      provider-name="Institute for Software">
+
+   <description url="http://www.example.com/description">
+      [Enter Feature Description here.]
+   </description>
+
+   <copyright url="http://www.example.com/copyright">
+      [Enter Copyright Description here.]
+   </copyright>
+
+   <license url="http://www.example.com/license">
+      [Enter License Description here.]
+   </license>
+
+   <plugin
+         id="org.rubypeople.rdt.refactoring"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"/>
+
+   <plugin
+         id="org.rubypeople.rdt.refactoring.help"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"/>
+
+</feature>

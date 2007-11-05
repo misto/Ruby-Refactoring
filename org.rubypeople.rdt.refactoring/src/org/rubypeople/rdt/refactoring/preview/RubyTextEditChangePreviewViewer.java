@@ -38,6 +38,7 @@ import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.rubypeople.rdt.internal.ui.compare.RubyMergeViewer;
+import org.rubypeople.rdt.refactoring.core.RubyTextFileChange;
 import org.rubypeople.rdt.ui.RubyElementLabelProvider;
 
 

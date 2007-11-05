@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<site>
+   <feature url="features/ch.hsr.ifs.refactoring_0.10.0.jar" id="ch.hsr.ifs.refactoring" version="0.10.0"/>
+</site>

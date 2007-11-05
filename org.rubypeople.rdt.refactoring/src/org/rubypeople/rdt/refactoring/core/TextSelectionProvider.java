@@ -41,8 +41,9 @@ import org.rubypeople.rdt.internal.core.MemberElementInfo;
 import org.rubypeople.rdt.internal.core.RubyScript;
 import org.rubypeople.rdt.internal.ui.RubyPlugin;
 import org.rubypeople.rdt.internal.ui.rubyeditor.RubyEditor;
+import org.rubypeople.rdt.refactoring.RefactoringPlugin;
 
-public class TextSelectionProvider {
+public class TextSelectionProvider implements ITextSelectionProvider {
 
 	private String activeDocument;
 	private int start;
@@ -94,33 +95,48 @@ public class TextSelectionProvider {
 				end = info.getNameSourceEnd()+1;
 				caret = start;
 			} catch (RubyModelException e) {
-				RubyPlugin.log(e);
+				RefactoringPlugin.log(e);
 			}
 		} else if (selectedObject instanceof RubyScript) {
 			activeDocument = ((RubyScript) selectedObject).getCorrespondingResource().getFullPath().toString();
 		}
 	}
 
+	/* (non-Javadoc)
+	 * @see org.rubypeople.rdt.refactoring.core.ITextSelectionProvider#getSelectionInformation()
+	 */
 	public SelectionInformation getSelectionInformation() {
 		if(activeDocument == null) {
-			RubyEditor editor = (RubyEditor) PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage().getActiveEditor();
+			RubyEditor editor = (RubyEditor) RubyPlugin.getActiveWorkbenchWindow().getActivePage().getActiveEditor();
 			activeDocument = editor.getViewer().getDocument().get();
 		}
 		return new SelectionInformation(getStartOffset(), getEndOffset(), activeDocument);
 	}
 	
+	/* (non-Javadoc)
+	 * @see org.rubypeople.rdt.refactoring.core.ITextSelectionProvider#getCarretPosition()
+	 */
 	public int getCarretPosition() {
 		return caret;
 	}
 	
+	/* (non-Javadoc)
+	 * @see org.rubypeople.rdt.refactoring.core.ITextSelectionProvider#getStartOffset()
+	 */
 	public int getStartOffset() {
 		return start;
 	}
 	
+	/* (non-Javadoc)
+	 * @see org.rubypeople.rdt.refactoring.core.ITextSelectionProvider#getEndOffset()
+	 */
 	public int getEndOffset() {
 		return end;
 	}
 
+	/* (non-Javadoc)
+	 * @see org.rubypeople.rdt.refactoring.core.ITextSelectionProvider#getActiveDocument()
+	 */
 	public String getActiveDocument() {
 		return activeDocument;
 	}

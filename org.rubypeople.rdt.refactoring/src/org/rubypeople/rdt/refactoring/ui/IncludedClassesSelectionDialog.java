@@ -39,12 +39,8 @@ import org.rubypeople.rdt.refactoring.documentprovider.IDocumentProvider;
 import org.rubypeople.rdt.refactoring.nodewrapper.ClassNodeWrapper;
 import org.rubypeople.rdt.ui.wizards.RubyClassSelectionDialog;
 
-public class IncludedClassesSelectionDialog extends RubyClassSelectionDialog {
+public class IncludedClassesSelectionDialog extends RubyClassSelectionDialog implements ClassesSelectionDialog {
 	private final IDocumentProvider doc;
-
-	public IncludedClassesSelectionDialog(IDocumentProvider doc, String title) {
-		this(doc, title, null);		
-	}
 
 	public IncludedClassesSelectionDialog(IDocumentProvider doc, String title, String methodname) {
 		super(PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell());

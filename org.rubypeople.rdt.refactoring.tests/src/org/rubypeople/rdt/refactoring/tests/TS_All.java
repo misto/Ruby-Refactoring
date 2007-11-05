@@ -31,6 +31,9 @@ package org.rubypeople.rdt.refactoring.tests;
 import junit.framework.Test;
 import junit.framework.TestSuite;
 
+import org.rubypeople.rdt.core.formatter.CodeFormatter;
+import org.rubypeople.rdt.refactoring.RefactoringPlugin;
+import org.rubypeople.rdt.refactoring.core.RdtRefactoringObjectFactory;
 import org.rubypeople.rdt.refactoring.tests.classnodeprovider.TS_ClassNodeProvider;
 import org.rubypeople.rdt.refactoring.tests.core.TS_Core;
 import org.rubypeople.rdt.refactoring.tests.core.convertlocaltofield.TS_LocalToField;
@@ -58,12 +61,23 @@ import org.rubypeople.rdt.refactoring.tests.core.renamemethod.TS_RenameMethod;
 import org.rubypeople.rdt.refactoring.tests.core.renamemodule.TS_RenameModule;
 import org.rubypeople.rdt.refactoring.tests.core.splitlocal.TS_SplitLocal;
 import org.rubypeople.rdt.refactoring.tests.util.TS_Util;
+import org.rubypeople.rdt.refactoring.util.RdtCodeFormatter;
+import org.rubypeople.rdt.refactoring.util.RefactoringCodeFormatter;
 
-public class TS_All
-{
+public class TS_All {
+	
+	public static Test suite() {
+		
+		RefactoringPlugin.setRefactoringObjectFactory(new RdtRefactoringObjectFactory(){
 
-	public static Test suite()
-	{
+			public RefactoringCodeFormatter getFormatter() {
+				return new RdtCodeFormatter() {
+					protected CodeFormatter getRubyPluginFormatter() {
+						return null;
+					}
+				};
+			}});
+		
 		TestSuite suite = new TestSuite("All Refactoring Tests");
 		suite.addTest(TS_GenerateAccessors.suite());
 		suite.addTest(TS_GenerateConstructor.suite());

@@ -1,17 +1,15 @@
 package org.rubypeople.rdt.refactoring.core;
 
+import org.eclipse.core.resources.IWorkspaceRunnable;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.ISafeRunnable;
 import org.eclipse.core.runtime.SafeRunner;
-
-import org.eclipse.core.resources.IWorkspaceRunnable;
-
 import org.eclipse.ltk.core.refactoring.Change;
 import org.eclipse.ltk.core.refactoring.CompositeChange;
 import org.eclipse.ltk.core.refactoring.RefactoringStatus;
 import org.rubypeople.rdt.core.RubyCore;
-import org.rubypeople.rdt.internal.ui.RubyPlugin;
+import org.rubypeople.rdt.refactoring.RefactoringPlugin;
 
 public class DynamicValidationStateChange extends CompositeChange implements WorkspaceTracker.Listener {
 	
@@ -108,7 +106,7 @@ public class DynamicValidationStateChange extends CompositeChange implements Wor
 					change.dispose();
 				}
 				public void handleException(Throwable exception) {
-					RubyPlugin.log(exception);
+					RefactoringPlugin.log(exception);
 				}
 			});
 		}

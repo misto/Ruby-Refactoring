@@ -9,7 +9,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.eclipse.core.filesystem.EFS;
-
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IResourceStatus;
@@ -21,8 +20,8 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.MultiStatus;
 import org.eclipse.core.runtime.Status;
 import org.rubypeople.rdt.internal.ui.IRubyStatusConstants;
-import org.rubypeople.rdt.internal.ui.RubyPlugin;
 import org.rubypeople.rdt.internal.ui.RubyUIStatus;
+import org.rubypeople.rdt.refactoring.RefactoringPlugin;
 
 public class Resources {
 
@@ -58,7 +57,7 @@ public class Resources {
 		}
 		if (result != null)
 			return result;
-		return new Status(IStatus.OK, RubyPlugin.getPluginId(), IStatus.OK, "", null); //$NON-NLS-1$		
+		return new Status(IStatus.OK, RefactoringPlugin.PLUGIN_ID, IStatus.OK, "", null); //$NON-NLS-1$		
 	}
 
 	/**
@@ -98,7 +97,7 @@ public class Resources {
 				readOnlyFiles.add(resource);
 		}
 		if (readOnlyFiles.size() == 0)
-			return new Status(IStatus.OK, RubyPlugin.getPluginId(), IStatus.OK, "", null); //$NON-NLS-1$
+			return new Status(IStatus.OK, RefactoringPlugin.PLUGIN_ID, IStatus.OK, "", null); //$NON-NLS-1$
 			
 		Map<IFile, Long> oldTimeStamps= createModificationStampMap(readOnlyFiles);
 		IStatus status= ResourcesPlugin.getWorkspace().validateEdit(
@@ -115,7 +114,7 @@ public class Resources {
 		}
 		if (modified != null)	
 			return modified;
-		return new Status(IStatus.OK, RubyPlugin.getPluginId(), IStatus.OK, "", null); //$NON-NLS-1$
+		return new Status(IStatus.OK, RefactoringPlugin.PLUGIN_ID, IStatus.OK, "", null); //$NON-NLS-1$
 	}
 
 	private static Map<IFile, Long> createModificationStampMap(List<IResource> files){
@@ -138,7 +137,7 @@ public class Resources {
 			((MultiStatus)status).add(entry);
 			return status;
 		} else {
-			MultiStatus result= new MultiStatus(RubyPlugin.getPluginId(),
+			MultiStatus result= new MultiStatus(RefactoringPlugin.PLUGIN_ID,
 				IRubyStatusConstants.VALIDATE_EDIT_CHANGED_CONTENT,
 				"CorextMessages.Resources_modifiedResources", null); 
 			result.add(status);
@@ -222,7 +221,7 @@ public class Resources {
 		try {
 			resource.setResourceAttributes(resourceAttributes);
 		} catch (CoreException e) {
-			RubyPlugin.log(e);
+			RefactoringPlugin.log(e);
 		}
 	}
 }

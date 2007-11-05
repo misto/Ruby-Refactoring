@@ -39,9 +39,9 @@ import org.eclipse.swt.widgets.Display;
 import org.rubypeople.rdt.core.formatter.DefaultCodeFormatterConstants;
 import org.rubypeople.rdt.internal.ui.preferences.formatter.RubyScriptPreview;
 
-public class RdtCodeViewer extends RubyScriptPreview {
+public class RdtCodeViewer extends RubyScriptPreview implements CodeViewer {
 
-	public static RdtCodeViewer create(Composite parent) {
+	public static CodeViewer create(Composite parent) {
 		Map<String, String> map = new HashMap<String, String>();
 		map.put(DefaultCodeFormatterConstants.FORMATTER_TAB_CHAR, " "); //$NON-NLS-1$
 		return new RdtCodeViewer(map, parent);
@@ -60,20 +60,25 @@ public class RdtCodeViewer extends RubyScriptPreview {
 		fPreviewDocument.set(fPreviewText);
 	}
 
+	/* (non-Javadoc)
+	 * @see org.rubypeople.rdt.refactoring.ui.CodeViewer#setBackgroundColor(int, int, org.eclipse.swt.graphics.RGB)
+	 */
 	public void setBackgroundColor(int start, int length, RGB color) {
 		setBackgroundColor(start, length, new Color(Display.getCurrent(), color));
 	}
 
+	/* (non-Javadoc)
+	 * @see org.rubypeople.rdt.refactoring.ui.CodeViewer#setBackgroundColor(int, int, int)
+	 */
 	public void setBackgroundColor(int start, int length, int color) {
 		setBackgroundColor(start, length, Display.getCurrent().getSystemColor(color));
 	}
 
-	public void setBackgroundColor(int start, int length, Color color) {
+	private void setBackgroundColor(int start, int length, Color color) {
 		StyleRange styleRangeNode = new StyleRange();
 		styleRangeNode.start = start;
 		styleRangeNode.length = length;
 		styleRangeNode.background = color;
 		getTextWidget().setStyleRange(styleRangeNode);
 	}
-
 }

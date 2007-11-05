@@ -34,7 +34,8 @@ import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.Separator;
 import org.eclipse.ui.actions.ActionGroup;
 import org.rubypeople.rdt.core.RubyModelException;
-import org.rubypeople.rdt.internal.ui.RubyPlugin;
+import org.rubypeople.rdt.refactoring.RefactoringPlugin;
+import org.rubypeople.rdt.refactoring.core.ITextSelectionProvider;
 import org.rubypeople.rdt.refactoring.core.TextSelectionProvider;
 import org.rubypeople.rdt.refactoring.core.convertlocaltofield.ConvertLocalToFieldRefactoring;
 import org.rubypeople.rdt.refactoring.core.encapsulatefield.EncapsulateFieldRefactoring;
@@ -58,11 +59,11 @@ public class RefactoringActionGroup extends ActionGroup {
 	private static final String INSERT_AFTER_GROUP_NAME = "group.edit"; //$NON-NLS-1$
 
 	public void fillContextMenu(IMenuManager menu) {
-		TextSelectionProvider selectionProvider;
+		ITextSelectionProvider selectionProvider;
 		try {
 			selectionProvider = new TextSelectionProvider(null);
 		} catch (RubyModelException e) {
-			RubyPlugin.log("Caugth RubyModelException, can't build context menu for erroneous file.");
+			RefactoringPlugin.log("Caugth RubyModelException, can't build context menu for erroneous file.");
 			return;
 		}
 		
@@ -72,7 +73,7 @@ public class RefactoringActionGroup extends ActionGroup {
 		menu.insertAfter(INSERT_AFTER_GROUP_NAME, new Separator());
 	}
 
-	private IMenuManager getRefactorMenu(TextSelectionProvider selectionProvider) {
+	private IMenuManager getRefactorMenu(ITextSelectionProvider selectionProvider) {
 		IMenuManager submenu = new MenuManager(Messages.RefactoringActionGroup);
 		submenu.add(new RefactoringAction(ConvertLocalToFieldRefactoring.class, ConvertLocalToFieldRefactoring.NAME, selectionProvider));
 		submenu.add(new RefactoringAction(EncapsulateFieldRefactoring.class, EncapsulateFieldRefactoring.NAME, selectionProvider));
@@ -90,7 +91,7 @@ public class RefactoringActionGroup extends ActionGroup {
 		return submenu;
 	}
 	
-	private void addSourceMenuItems(IMenuManager menu, TextSelectionProvider selectionProvider) {
+	private void addSourceMenuItems(IMenuManager menu, ITextSelectionProvider selectionProvider) {
 		menu.add(new RefactoringAction(GenerateAccessorsRefactoring.class, GenerateAccessorsRefactoring.NAME, selectionProvider));
 		menu.add(new RefactoringAction(GenerateConstructorRefactoring.class, GenerateConstructorRefactoring.NAME, selectionProvider));
 		menu.add(new RefactoringAction(OverrideMethodRefactoring.class, OverrideMethodRefactoring.NAME, selectionProvider));

@@ -499,8 +499,14 @@
             class="org.rubypeople.rdt.refactoring.preview.RubyTextEditChangePreviewViewer"
     		id="org.rubypeople.rdt.refactoring.preview.RubyTextEditChangePreviewViewer">
          <enablement>
-            <instanceof value="org.rubypeople.rdt.refactoring.preview.RubyTextFileChange"/>
+            <instanceof value="org.rubypeople.rdt.refactoring.core.RubyTextFileChange"/>
          </enablement>
       </changePreviewViewer>
    </extension>
+<extension
+      point="org.eclipse.ui.startup">
+   <startup
+         class="org.rubypeople.rdt.refactoring.RdtRefactoringActivator">
+   </startup>
+</extension>
 </plugin>

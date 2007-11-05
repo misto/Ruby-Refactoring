@@ -1,21 +1,18 @@
 package org.rubypeople.rdt.refactoring.core;
 
+import org.eclipse.core.filebuffers.FileBuffers;
+import org.eclipse.core.filebuffers.ITextFileBuffer;
+import org.eclipse.core.filebuffers.ITextFileBufferManager;
+import org.eclipse.core.filebuffers.LocationKind;
+import org.eclipse.core.resources.IFile;
+import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.SubProgressMonitor;
-
-import org.eclipse.core.filebuffers.FileBuffers;
-import org.eclipse.core.filebuffers.ITextFileBuffer;
-import org.eclipse.core.filebuffers.ITextFileBufferManager;
-
-import org.eclipse.core.resources.IFile;
-import org.eclipse.core.resources.IResource;
-
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.IDocumentExtension4;
-
 import org.eclipse.ltk.core.refactoring.Change;
 import org.eclipse.ltk.core.refactoring.RefactoringStatus;
 import org.rubypeople.rdt.core.IRubyElement;
@@ -249,6 +246,6 @@ public abstract class RDTChange extends Change {
 	
 	private static ITextFileBuffer getBuffer(IFile file) {
 		ITextFileBufferManager manager= FileBuffers.getTextFileBufferManager();
-		return manager.getTextFileBuffer(file.getFullPath());
+		return manager.getTextFileBuffer(file.getFullPath(), LocationKind.NORMALIZE);
 	}
 }
