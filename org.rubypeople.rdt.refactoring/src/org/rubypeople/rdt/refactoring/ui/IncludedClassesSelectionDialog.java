@@ -28,41 +28,22 @@
 
 package org.rubypeople.rdt.refactoring.ui;
 
-import java.util.ArrayList;
-import java.util.Collection;
-
 import org.eclipse.ui.PlatformUI;
 import org.rubypeople.rdt.core.IRubyElement;
-import org.rubypeople.rdt.internal.core.RubyType;
-import org.rubypeople.rdt.refactoring.classnodeprovider.IncludedClassesProvider;
+import org.rubypeople.rdt.core.search.IRubySearchConstants;
+import org.rubypeople.rdt.core.search.SearchEngine;
+import org.rubypeople.rdt.internal.ui.dialogs.OpenTypeSelectionDialog2;
 import org.rubypeople.rdt.refactoring.documentprovider.IDocumentProvider;
-import org.rubypeople.rdt.refactoring.nodewrapper.ClassNodeWrapper;
-import org.rubypeople.rdt.ui.wizards.RubyClassSelectionDialog;
 
-public class IncludedClassesSelectionDialog extends RubyClassSelectionDialog implements ClassesSelectionDialog {
-	private final IDocumentProvider doc;
+public class IncludedClassesSelectionDialog extends OpenTypeSelectionDialog2 implements ClassesSelectionDialog {
 
 	public IncludedClassesSelectionDialog(IDocumentProvider doc, String title, String methodname) {
-		super(PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell());
+		super(PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell(), false, PlatformUI.getWorkbench().getProgressService(),
+				SearchEngine.createWorkspaceScope(), IRubySearchConstants.TYPE);
 		setMessage(title);
-		this.doc = doc;
-		setElements(getClasses(methodname));
+		setTitle(title);
 	}
 
-
-	protected Object[] getClasses(String methodname) {
-		if(doc == null) return new Object[0];
-		
-		Collection<ClassNodeWrapper> allClassNodes = new IncludedClassesProvider(doc).getAllClassNodes();
-		ArrayList<IRubyElement> names = new ArrayList<IRubyElement>();
-		for (ClassNodeWrapper node : allClassNodes) {
-			if(methodname == null || node.hasMethod(methodname)) {
-				names.add(new RubyType(null, node.getName()));
-			}
-		}
-		return names.toArray();
-	}
-	
 	public String getSelectedName() {
 		return ((IRubyElement) getFirstResult()).getElementName();
 	}

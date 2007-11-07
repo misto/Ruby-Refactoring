@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<feature
+      id="ch.hsr.ifs.refactoring.rdt-feature"
+      label="RDT Refactoring Feature"
+      version="0.0.0"
+      provider-name="Institute for Software">
+
+   <description url="http://www.example.com/description">
+      [Enter Feature Description here.]
+   </description>
+
+   <copyright url="http://www.example.com/copyright">
+      [Enter Copyright Description here.]
+   </copyright>
+
+   <license url="http://www.example.com/license">
+      [Enter License Description here.]
+   </license>
+
+   <requires>
+      <import plugin="org.rubypeople.rdt.core"/>
+      <import plugin="org.rubypeople.rdt.ui"/>
+      <import plugin="org.eclipse.jface.text"/>
+      <import plugin="org.eclipse.jface"/>
+      <import plugin="org.eclipse.ui"/>
+      <import plugin="org.eclipse.core.runtime"/>
+      <import plugin="org.eclipse.ui.editors"/>
+      <import plugin="org.eclipse.core.resources"/>
+      <import plugin="org.eclipse.ui.ide"/>
+      <import plugin="org.eclipse.ltk.core.refactoring"/>
+      <import plugin="org.eclipse.core.filesystem"/>
+      <import plugin="org.eclipse.compare"/>
+      <import plugin="org.eclipse.ltk.ui.refactoring"/>
+      <import plugin="org.eclipse.core.filebuffers"/>
+      <import plugin="org.eclipse.help"/>
+   </requires>
+
+   <plugin
+         id="org.rubypeople.rdt.refactoring"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"/>
+
+   <plugin
+         id="ch.hsr.ifs.refactoring.core"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="ch.hsr.ifs.refactoring.help"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+</feature>
