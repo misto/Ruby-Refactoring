@@ -32,20 +32,50 @@
       <actionSet
             label="%CodingActionSet.label"
             description="%CodingActionSet.description"
-            visible="false"
+            visible="true"
             id="org.rubypeople.rdt.refactoring.CodingActionSet">
-         <menu
-               id="org.rubypeople.rdt.refactoring.refactoringMenu"
+      
+      <menu
                label="%rubyRefactoring.refactoringMenuLabel"
-               path="edit">
-            <separator name="org.rubypeople.rdt.refactoring.refactoringGroup"/>
-         </menu>
-         <menu
-               id="org.rubypeople.rdt.refactoring.sourceMenu"
+               path="edit"
+               id="org.eclipse.dltk.ui.refactoring.menu">
+            <separator name="undoRedoGroup"/>
+            <separator name="reorgGroup"/>
+            <separator name="codingGroup"/>
+            <separator name="reorgGroup2"/>
+            <separator name="typeGroup"/>
+            <separator name="codingGroup2"/>
+            <separator name="typeGroup2"/>
+            <separator name="scriptGroup"/>
+       </menu>       
+         
+                  <menu
                label="%rubyRefactoring.sourceMenuLabel"
-               path="edit">
-            <separator name="org.rubypeople.rdt.refactoring.sourceGeneratorGroup"/>
-         </menu>       
+               path="edit"
+               id="org.eclipse.dltk.ui.source.menu">
+		    <separator
+                  name="commentGroup">
+            </separator>
+            <separator
+                  name="editGroup">
+            </separator>
+            <separator
+                  name="importGroup">
+            </separator>
+            <separator
+                  name="generateGroup">
+            </separator>
+            <separator
+                  name="codeGroup">
+            </separator>
+            <separator
+                  name="externalizeGroup">
+            </separator>
+            <separator
+                  name="convertGroup">
+            </separator>
+         </menu>
+
 <!-- Source: -->       
          <action
                class="org.rubypeople.rdt.refactoring.action.OverrideMethodAction"
@@ -85,14 +115,14 @@
                      name="org.eclipse.jface.text.TextSelection">
                </objectClass>
             </enablement>
-         </action>     
+         </action> 
 <!-- Refactorings: -->
          <action
                class="org.rubypeople.rdt.refactoring.action.SplitLocalAction"
                definitionId="org.rubypeople.rdt.refactoring.command.SplitTemp"
                id="org.rubypeople.rdt.refactoring.splitTempAction"
                label="%rubyRefactoring.SplitTempLabel"
-               menubarPath="org.eclipse.dltk.ui.refactoring.menu/reorgGroup"
+               menubarPath="org.eclipse.dltk.ui.refactoring.menu/org.rubypeople.rdt.refactoring.refactoringGroup"
                tooltip="Split Temporary Variable">
             <enablement>
                <or>

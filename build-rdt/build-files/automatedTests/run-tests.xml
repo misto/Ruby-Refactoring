@@ -63,12 +63,6 @@
 	</target>
 	
 	<target name="checkTestResultFileForErrors">
-		<!-- the result coming from the eclipse test process is not reliable: 
-		 it can be 0 even if the suite has errors or failures.
-	     Therefore we check the test result file for errors if the result is 0.
-	     Many thanks to Bernd Kolb/openArchitectureWare for contributing the 
-	     hasErrorOrFailure task -->
-		
 		<echo message="Checke auf Fehler: ${test.aggregated.report}"/>
 		
         <condition property="isErrorOrFailure">
