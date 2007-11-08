@@ -54,6 +54,7 @@ public class LocalNodeWrapper implements INodeWrapper {
 
 	public static final int D_ASGN_NODE = 4;
 
+	@SuppressWarnings("unchecked")
 	public static final Class[] LOCAL_NODES_CLASSES = { LocalAsgnNode.class, LocalVarNode.class, DVarNode.class, DAsgnNode.class };
 
 	private Node wrappedNode;
@@ -166,7 +167,7 @@ public class LocalNodeWrapper implements INodeWrapper {
 		return gatherLocalNodes(baseNode, DAsgnNode.class, LocalAsgnNode.class);
 	}
 
-	private static Collection<LocalNodeWrapper> gatherLocalNodes(Node baseNode, Class... klasses) {
+	private static Collection<LocalNodeWrapper> gatherLocalNodes(Node baseNode, Class<? extends Node>... klasses) {
 		Collection<LocalNodeWrapper> localNodes = new ArrayList<LocalNodeWrapper>();
 		for (Node aktNode : NodeProvider.getSubNodes(baseNode, klasses)) {
 			localNodes.add(new LocalNodeWrapper(aktNode));

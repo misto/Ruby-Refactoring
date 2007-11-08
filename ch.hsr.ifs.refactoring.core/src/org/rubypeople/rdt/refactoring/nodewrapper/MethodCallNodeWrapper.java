@@ -42,6 +42,7 @@ import org.rubypeople.rdt.refactoring.util.NodeUtil;
 
 public class MethodCallNodeWrapper implements INodeWrapper {
 
+	@SuppressWarnings("unchecked")
 	static final Class[] METHOD_CALL_NODE_CLASSES = { CallNode.class, VCallNode.class, FCallNode.class , AttrAssignNode.class};
 
 	public static final int INVALID_TYPE = -1;
@@ -147,7 +148,7 @@ public class MethodCallNodeWrapper implements INodeWrapper {
 		return null;
 	}
 
-	public static Class[] METHOD_CALL_NODE_CLASSES() {
+	public static Class<? extends Node>[] METHOD_CALL_NODE_CLASSES() {
 		return METHOD_CALL_NODE_CLASSES.clone();
 	}
 }

@@ -50,7 +50,9 @@ public class FieldNodeWrapper implements INodeWrapper {
 	public static final int SYMBOL_NODE = 5;
 	public static final int CLASS_VAR_DECL_NODE = 6;
 	
+	@SuppressWarnings("unchecked")
 	final static Class[] FIELD_NODE_CLASSES = { InstAsgnNode.class, InstVarNode.class, ClassVarAsgnNode.class, ClassVarNode.class, ClassVarDeclNode.class, SymbolNode.class };
+	@SuppressWarnings("unchecked")
 	static final Class[] FIELD_NODE_CLASSES_WITHOUT_SYMBOL_NODE = { InstAsgnNode.class, InstVarNode.class, ClassVarAsgnNode.class, ClassVarNode.class, ClassVarDeclNode.class };
 
 	public static final String ATTR_NAME = "attr"; //$NON-NLS-1$
@@ -124,7 +126,7 @@ public class FieldNodeWrapper implements INodeWrapper {
 		return wrappedNode.getPosition();
 	}
 
-	public static Class[] fieldNodeClasses() {
+	public static Class<? extends Node>[] fieldNodeClasses() {
 		return FIELD_NODE_CLASSES.clone();
 	}
 }

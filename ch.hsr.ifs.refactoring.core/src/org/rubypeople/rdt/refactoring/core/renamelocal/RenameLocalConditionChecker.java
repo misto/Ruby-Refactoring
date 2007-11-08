@@ -60,6 +60,7 @@ public class RenameLocalConditionChecker extends RefactoringConditionChecker {
 
 	private static final String NO_LOCAL_VARIABLES = Messages.RenameLocalConditionChecker_NoLocalVariable;
 
+	@SuppressWarnings("unchecked")
 	private static final Class[] SELECTED_NODE_TYPES = {LocalVarNode.class, LocalAsgnNode.class, ArgumentNode.class,
 		BlockArgNode.class, DVarNode.class, DAsgnNode.class};
 

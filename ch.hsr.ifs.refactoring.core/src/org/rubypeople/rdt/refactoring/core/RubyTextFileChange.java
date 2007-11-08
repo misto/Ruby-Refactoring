@@ -115,6 +115,7 @@ public class RubyTextFileChange extends Change {
 		return change.equals(obj);
 	}
 
+	@SuppressWarnings("unchecked") // Can't change the interface
 	public Object getAdapter(Class adapter) {
 		return change.getAdapter(adapter);
 	}
@@ -175,6 +176,7 @@ public class RubyTextFileChange extends Change {
 		return change.hashCode();
 	}
 
+	@SuppressWarnings("unchecked") // Can't change the interface
 	public boolean hasOneGroupCategory(List groupCategories) {
 		return change.hasOneGroupCategory(groupCategories);
 	}
