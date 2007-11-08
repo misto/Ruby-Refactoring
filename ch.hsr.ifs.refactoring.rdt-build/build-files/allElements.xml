@@ -8,11 +8,11 @@
 	<target name="norcpbuild" unless="build.container.feature">
 		<ant antfile="${genericTargets}" target="${target}">
 			<property name="type" value="feature" />
-			<property name="id" value="ch.hsr.ifs.refactoring.rdt-feature" />
+			<property name="id" value="ch.hsr.ifs.refactoring.rdt_feature" />
 		</ant>
 		<ant antfile="${genericTargets}" target="${target}">
 			<property name="type" value="feature" />
-			<property name="id" value="ch.hsr.ifs.refactoring.rdt-tests-feature" />
+			<property name="id" value="ch.hsr.ifs.refactoring.rdt_tests_feature" />
 		</ant>
 		
 	</target>
@@ -25,12 +25,12 @@
 	</target>
 	
 	<!-- generated assemble targets -->	     
-	<target name="assemble.ch.hsr.ifs.refactoring.rdt-feature">
+	<target name="assemble.ch.hsr.ifs.refactoring.rdt_feature">
 		<ant antfile="${assembleScriptName}" dir="${buildDirectory}">
 			<property name="zipargs" value="" />
 		</ant>
 	</target>
-	<target name="assemble.ch.hsr.ifs.refactoring.rdt-tests-feature">
+	<target name="assemble.ch.hsr.ifs.refactoring.rdt_tests_feature">
 		<ant antfile="${assembleScriptName}" dir="${buildDirectory}">
 			<property name="zipargs" value="" />
 		</ant>

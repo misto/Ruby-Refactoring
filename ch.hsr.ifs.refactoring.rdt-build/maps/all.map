@@ -1,6 +1,6 @@
-feature@ch.hsr.ifs.refactoring.rdt-feature=COPY,/home/misto/repos/rdt,ch.hsr.ifs.refactoring
+feature@ch.hsr.ifs.refactoring.rdt_feature=COPY,/home/misto/repos/rdt/ch.hsr.ifs.refactoring.rdt-feature,ch.hsr.ifs.refactoring
 plugin@org.rubypeople.rdt.refactoring=COPY,/home/misto/repos/rdt,org.rubypeople.rdt.refactoring
 plugin@ch.hsr.ifs.refactoring.core=COPY,/home/misto/repos/rdt,ch.hsr.ifs.refactoring.core
 plugin@ch.hsr.ifs.refactoring.help=COPY,/home/misto/repos/rdt,ch.hsr.ifs.refactoring.help
-feature@ch.hsr.ifs.refactoring.rdt-tests-feature=COPY,/home/misto/workspaces/rdt,ch.hsr.ifs.refactoring.rdt-tests-feature
+feature@ch.hsr.ifs.refactoring.rdt_tests_feature=COPY,/home/misto/repos/rdt,ch.hsr.ifs.refactoring.rdt-tests-feature
 plugin@org.rubypeople.rdt.refactoring.tests=COPY,/home/misto/repos/rdt,org.rubypeople.rdt.refactoring.tests

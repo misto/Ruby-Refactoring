@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <feature
-      id="ch.hsr.ifs.refactoring.rdt-feature"
+      id="ch.hsr.ifs.refactoring.rdt_feature"
       label="RDT Refactoring Feature"
       version="0.0.0"
       provider-name="Institute for Software">
