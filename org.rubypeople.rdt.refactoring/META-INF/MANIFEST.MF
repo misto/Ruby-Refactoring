@@ -8,8 +8,6 @@ Eclipse-LazyStart: false
 Bundle-Vendor: %rubyRefactoring.providerName
 Bundle-ClassPath: refactoring.jar
 Require-Bundle: ch.hsr.ifs.refactoring.core,
- org.rubypeople.rdt.core,
- org.rubypeople.rdt.ui,
  org.eclipse.jface.text,
  org.eclipse.jface,
  org.eclipse.ui,
@@ -20,6 +18,17 @@ Require-Bundle: ch.hsr.ifs.refactoring.core,
  org.eclipse.ltk.core.refactoring,
  org.eclipse.core.filesystem,
  org.eclipse.compare,
- org.eclipse.ltk.ui.refactoring
-Export-Package: org.rubypeople.rdt.refactoring.core,
+ org.eclipse.ltk.ui.refactoring,
+ org.rubypeople.rdt.core,
+ org.rubypeople.rdt.ui
+Export-Package: org.rubypeople.rdt.refactoring.core;
+  uses:="org.rubypeople.rdt.refactoring,
+   org.rubypeople.rdt.refactoring.util,
+   org.rubypeople.rdt.refactoring.documentprovider,
+   org.rubypeople.rdt.refactoring.ui,
+   org.eclipse.ltk.core.refactoring,
+   org.eclipse.jface.action,
+   org.eclipse.core.resources,
+   org.eclipse.swt.widgets,
+   org.eclipse.core.runtime",
  org.rubypeople.rdt.refactoring.util
