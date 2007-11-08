@@ -4,7 +4,6 @@ Bundle-Name: Test Plug-in
 Bundle-SymbolicName: org.rubypeople.rdt.refactoring.tests
 Bundle-Version: 0.0.0
 Bundle-Activator: org.rubypeople.rdt.refactoring.tests.TestsPlugin
-Bundle-Localization: plugin
 Export-Package: .
 Require-Bundle: ch.hsr.ifs.refactoring.core,
  org.eclipse.jface,
