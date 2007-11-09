@@ -7,6 +7,12 @@
 
 	<import file="../build_shared.xml" />
 
+	<property name='emma.dir' value='.' />
+	        <path id='emma.lib' >
+	                <fileset dir='${emma.dir}' includes='*.jar' />
+	        </path>
+	<taskdef resource='emma_ant.properties' classpathref='emma.lib' />
+	
 	<target name="-init">
 		<antcall target="-purgeTestEclipseHost" />
 		<property name="eclipse.installation.dir" value="${test.eclipse.base}/eclipse" />
@@ -20,36 +26,46 @@
 
 	<target name="-installTestEclipseHost" description="Install Eclipse and all required plug-ins for testing" unless="isEclipseInstallationAvailable">
 		<echo message="Installing plug-ins for testing" />
+
+		<condition property="buildResultZipDest" value="${test.eclipse.base}" else="${test.eclipse.host}">
+			<equals arg1="${archivePrefix}" arg2="eclipse" />
+		</condition>
 		
+		<unzip dest="${buildResultZipDest}">
+			<fileset dir="${buildDirectory}" includes="${buildType}-**/*.zip" excludes="**/${archiveNamePrefix}-*"/>
+		</unzip>
+
+		<emma enabled="${emma.enabled}">
+			<instr metadatafile="${buildDirectory}/results/metadata.emma" mode="overwrite">
+				<instrpath>
+					<fileset dir="${buildResultZipDest}" includes="**/*.jar" />
+				</instrpath>
+			</instr>
+		</emma>
+
 		<unzip dest="${test.eclipse.base}">
 			<fileset dir="." includes="eclipse-test-framework*.zip" />
 		</unzip>
 		<unzip dest="${test.eclipse.host}">
 			<fileset dir="." includes="org.pluginbuilder.autotestsuite*.zip" />
 		</unzip>
-		<condition property="buildResultZipDest" value="${test.eclipse.base}" else="${test.eclipse.host}">
-			<equals arg1="${archivePrefix}" arg2="eclipse" />
-		</condition>
-		<unzip dest="${buildResultZipDest}">
-			<fileset dir="${buildDirectory}" includes="${buildType}-**/*.zip" excludes="**/${archiveNamePrefix}-*"/>
-		</unzip>
+		
 		<!-- unpack eclipse after the features because there might be product features extracted which contain a config.ini -->
 	 	<antcall target="unpack.eclipse">
 			<param name="unpack.eclipse" value="true"/>
 		</antcall>
 	</target>
 
-	
-	<target name="-runTestSuite" description="Should be called from allTests.xml only">
+	<target name="-runTestSuite" description="Should be called from allTests.xml only">	
 		<ant target="core-test" antfile="${test.library.xml}" dir="${test.eclipse.host}">
 			<property name="data-dir" value="${test.workspace} -clean" />
-    		<property name="plugin-name" value="org.rubypeople.rdt.refactoring.tests" />
+    		<property name="plugin-name" value="org.rubypeople.rdt.refactoring.tests -dev /usr/share/emma/lib/emma.jar" />
     		<property name="classname" value="org.rubypeople.rdt.refactoring.tests.TS_All" />
 			<property name="eclipse-home" value="${test.eclipse.host}" />
 		</ant>
 	</target>
 	
-	<target name="run" depends="-init,-runTestSuite" description="Run manually defined tests and create a report.">
+	<target name="run" depends="-init,-runTestSuite,-emmaReport" description="Run manually defined tests and create a report.">
 		<delete dir="${test.result.dir}" />
 		<mkdir dir="${test.result.dir}/xml" />	
 		<BundleFileLocator eclipseInstallationRoot="${test.eclipse.host}" bundleId="org.pluginbuilder.autotestsuite.application" filePath="JUNIT.XSL" property="junit.xsl.file" />
@@ -61,6 +77,16 @@
 		<copy file="${test.eclipse.host}/${test.aggregated.report}" todir="${test.result.dir}/xml" />
 		<style style="${junit.xsl.file}" basedir="${test.result.dir}/xml" destdir="${test.result.dir}/html" />
 		<antcall target="checkTestResultFileForErrors"/>
+	</target>
+	
+	<target name="-emmaReport">
+		<copy file="${test.eclipse.host}/coverage.ec" todir="${buildDirectory}/results" failonerror="false"/>
+		  <emma enabled="${emma.enabled}">
+			<report sourcepath="/tmp/pluginbuilder/ch.hsr.ifs.refactoring.rdt-build/plugins/ch.hsr.ifs.refactoring.core/src">
+				<fileset dir="${buildDirectory}/results" includes="*.ec, *.emma"/>
+			        <html outfile="${buildDirectory}/results/coverage.html" />
+			</report>
+		  </emma>
 	</target>
 	
 	<target name="checkTestResultFileForErrors">
