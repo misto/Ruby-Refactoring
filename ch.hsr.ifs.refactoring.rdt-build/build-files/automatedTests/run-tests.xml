@@ -36,7 +36,7 @@
 		</unzip>
 
 		<emma enabled="${emma.enabled}">
-			<instr metadatafile="${buildDirectory}/results/metadata.emma" mode="overwrite">
+			<instr metadatafile="${buildDirectory}/metadata.emma" mode="overwrite">
 				<instrpath>
 					<fileset dir="${buildResultZipDest}" includes="**/*.jar" />
 				</instrpath>
@@ -59,7 +59,7 @@
 	<target name="-runTestSuite" description="Should be called from allTests.xml only">	
 		<ant target="core-test" antfile="${test.library.xml}" dir="${test.eclipse.host}">
 			<property name="data-dir" value="${test.workspace} -clean" />
-    		<property name="plugin-name" value="org.rubypeople.rdt.refactoring.tests -dev /usr/share/emma/lib/emma.jar" />
+    		<property name="plugin-name" value="org.rubypeople.rdt.refactoring.tests -dev ${basedir}/emma.jar" />
     		<property name="classname" value="org.rubypeople.rdt.refactoring.tests.TS_All" />
 			<property name="eclipse-home" value="${test.eclipse.host}" />
 		</ant>
@@ -80,11 +80,19 @@
 	</target>
 	
 	<target name="-emmaReport">
-		<copy file="${test.eclipse.host}/coverage.ec" todir="${buildDirectory}/results" failonerror="false"/>
+		
+		<mkdir dir="${buildDirectory}/results/coverage" />
 		  <emma enabled="${emma.enabled}">
-			<report sourcepath="/tmp/pluginbuilder/ch.hsr.ifs.refactoring.rdt-build/plugins/ch.hsr.ifs.refactoring.core/src">
-				<fileset dir="${buildDirectory}/results" includes="*.ec, *.emma"/>
-			        <html outfile="${buildDirectory}/results/coverage.html" />
+			<report>
+				<fileset dir="${buildDirectory}" includes="*.emma"/>
+				<fileset dir="${test.eclipse.host}" includes="*.ec"/>
+			    <html outfile="${buildDirectory}/results/coverage/coverage.html" />
+
+				<sourcepath>
+					<dirset dir="${buildDirectory}/plugins">
+					</dirset>
+				</sourcepath>
+				
 			</report>
 		  </emma>
 	</target>
