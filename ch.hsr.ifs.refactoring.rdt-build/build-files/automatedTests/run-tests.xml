@@ -7,10 +7,9 @@
 
 	<import file="../build_shared.xml" />
 
-	<property name='emma.dir' value='.' />
-	        <path id='emma.lib' >
-	                <fileset dir='${emma.dir}' includes='*.jar' />
-	        </path>
+	<path id='emma.lib' >
+		<fileset dir='.' includes='*.jar' />
+	</path>
 	<taskdef resource='emma_ant.properties' classpathref='emma.lib' />
 	
 	<target name="-init">
@@ -40,6 +39,8 @@
 				<instrpath>
 					<fileset dir="${buildResultZipDest}" includes="**/*.jar" />
 				</instrpath>
+				<!-- http://emma.sourceforge.net/reference/ch02s06s02.html#filtersyntax.ANT -->
+		        <filter includes="${emma.filter.includes}" excludes="${emma.filter.excludes}" />
 			</instr>
 		</emma>
 
