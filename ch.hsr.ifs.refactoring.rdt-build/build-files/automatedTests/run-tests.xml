@@ -84,7 +84,7 @@
 		
 		<mkdir dir="${buildDirectory}/results/coverage" />
 		  <emma enabled="${emma.enabled}">
-			<report>
+			<report encoding="UTF-8">
 				<fileset dir="${buildDirectory}" includes="*.emma"/>
 				<fileset dir="${test.eclipse.host}" includes="*.ec"/>
 			    <html outfile="${buildDirectory}/results/coverage/coverage.html" />
