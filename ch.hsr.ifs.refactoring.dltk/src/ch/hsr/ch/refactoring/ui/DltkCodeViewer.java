@@ -31,7 +31,7 @@ package ch.hsr.ch.refactoring.ui;
 import org.eclipse.dltk.internal.ui.editor.ScriptSourceViewer;
 import org.eclipse.dltk.ruby.internal.ui.RubyUI;
 import org.eclipse.dltk.ruby.internal.ui.preferences.SimpleRubySourceViewerConfiguration;
-import org.eclipse.dltk.ruby.internal.ui.text.RubyPartitions;
+import org.eclipse.dltk.ruby.internal.ui.text.IRubyPartitions;
 import org.eclipse.dltk.ruby.internal.ui.text.RubyTextTools;
 import org.eclipse.dltk.ui.text.ScriptSourceViewerConfiguration;
 import org.eclipse.jface.preference.IPreferenceStore;
@@ -54,11 +54,11 @@ public class DltkCodeViewer extends ScriptSourceViewer implements CodeViewer {
 		setDocument(new Document(""));
 		
 		RubyTextTools textTools = RubyUI.getDefault().getTextTools();
-		textTools.setupDocumentPartitioner(getDocument(), RubyPartitions.RUBY_PARTITIONING);
+		textTools.setupDocumentPartitioner(getDocument(), IRubyPartitions.RUBY_PARTITIONING);
 
 		ScriptSourceViewerConfiguration configuration = new SimpleRubySourceViewerConfiguration(textTools
 				.getColorManager(), store, null,
-				RubyPartitions.RUBY_PARTITIONING, false);
+				IRubyPartitions.RUBY_PARTITIONING, false);
 		configure(configuration);
 	}
 
